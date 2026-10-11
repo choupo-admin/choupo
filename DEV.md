@@ -2034,6 +2034,9 @@ exists in `src/`; (iii) labels 43.2 F A^0.82 as "43-70 kW/m2" (it is a
 duty in kW for A in m2, not a flux); (iv) its tube-rupture "2/3 rule" may
 be superseded in current API 521 (unverified); `toluene.dat`'s Antoine
 range ends below its Tb; acetone, N2, H2, NH3, Ar carry no `reviewStatus`.
+(i)-(iii) CLOSED 2026-10-11: corrected in `docs/designGuide.tex` and
+`docs/design-heuristics.md`, PDF rebuilt; the guide now says Choupo has NO
+relief model and points at the EduTool.  (iv) stays open: unverified.
 
 **C60. AN EDUTOOL ON PROCESS SAFETY: GALL AND KLETZ, THE COOLING-FAILURE
 SCENARIO, AND INHERENT SAFETY ON THE AMMONIA LOOP (Vítor, 2026-10-11,

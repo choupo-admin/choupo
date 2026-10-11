@@ -572,13 +572,13 @@ This is a Pareto orientation, not a safety course. The governing standards are *
 
 **When a device is mandatory.** *Every* closed volume that can be isolated and over-pressured needs an independent overpressure-protection device — no exceptions for "small" vessels. The trigger is the credible-cause inventory, not size. A relief device is the last line of defence: it must work with zero operator action and zero instrument power, which is why a spring-loaded PSV (or rupture disc) is preferred over an instrumented trip for the primary case.
 
-**Set vs design pressure (the WHY).** Design pressure is set ABOVE the maximum operating pressure so the PSV does not weep on normal swings. Heuristic: **design P = max(1.1 × operating P, operating P + 1.7 bar)**; for vessels under ~7 barg the +1.7 bar floor dominates, above it the +10% rule does. The **PSV set pressure = design pressure (MAWP)**. Code allows accumulation above set — typically **+10%** for a single non-fire device, **+16%** for multiple devices, and **+21%** for the fire case — because momentary overshoot during full relief is tolerable but permanent yield is not.
+**Set vs design pressure (the WHY).** Design pressure is set ABOVE the maximum operating pressure so the PSV does not weep on normal swings. Heuristic: **design P = max(1.1 × operating P, operating P + 1.7 bar)**; the two rules cross at 17 barg (0.1 × 17 bar = 1.7 bar): below that the +1.7 bar floor dominates, above it the +10% rule does. The **PSV set pressure = design pressure (MAWP)**. Code allows accumulation above set — typically **+10%** for a single non-fire device, **+16%** for multiple devices, and **+21%** for the fire case — because momentary overshoot during full relief is tolerable but permanent yield is not.
 
 **Sizing scenarios — size for the worst credible single cause (API 521).**
 
 | Scenario | Typical controlling load | Why / note |
 |---|---|---|
-| External fire | Wetted-area heat input ≈ **43–70 kW/m²** (q = 43.2·F·A^0.82, SI) | Often controls vessels with large liquid inventory; sets a large orifice |
+| External fire | Heat input to the wetted area, **Q = C·F·A^0.82** (Q in kW for A in m²; C ≈ 43.2 with adequate drainage and fire-fighting, higher without; a total duty, not a flux) | Often controls vessels with large liquid inventory; sets a large orifice |
 | Blocked outlet | Full pump/compressor/feed flow at shut-in | Common control case for pumped/compressed systems |
 | Thermal expansion | Liquid trapped between two valves, heated | Tiny relief (¾"×1") — but mandatory; cheap to forget |
 | Tube rupture (HX) | High-P side leaks to low-P side; full ΔP flow | The "2/3 rule": if low-side design P < 2/3 high-side, must relieve |
@@ -594,7 +594,7 @@ Size each, then **the largest required orifice wins**; pick the next standard AP
 | Rupture disc | Fast/large relief, fouling/corrosive, polymerising | Non-reclosing (full loss of inventory); cheap |
 | Disc + PSV in series | Corrosive service needing reseal | Disc isolates/protects the PSV; best of both |
 
-**Disposal — flare vs vent.** Vent to atmosphere only if the relieved fluid is **non-toxic, non-flammable** at grade and the discharge disperses safely (e.g. steam, air, inert). Flammable/toxic streams route to a **closed flare header → knockout drum → flare**, sized so flare-tip exit velocity stays below ~**0.5 Mach** and grade-level radiation stays under **~6.3 kW/m²** at the fence (API 521). Choupo models the relieved stream as a flash to header pressure; the **PSV-vent enthalpy and flare duty appear in the first-law ledger**, so the energy of blowdown is visible, not hidden.
+**Disposal — flare vs vent.** Vent to atmosphere only if the relieved fluid is **non-toxic, non-flammable** at grade and the discharge disperses safely (e.g. steam, air, inert). Flammable/toxic streams route to a **closed flare header → knockout drum → flare**, sized so flare-tip exit velocity stays below ~**0.5 Mach** and grade-level radiation stays under **~6.3 kW/m²** at the fence (API 521). Choupo has **no relief model**: no unit relieves a stream, and no PSV-vent enthalpy or flare duty appears in any ledger.  The EduTool *Designing for overpressure* sizes a relief device from engine-computed fluid properties (Z, k, latent heat); the relieving rate and the device are the reader's.
 
 **Spacing/segregation (Pareto).** Fired heaters and flares are ignition sources — keep **~15 m** from process units handling flammables; locate control rooms and the flare upwind/away. These setbacks are an insurance-grade default (IRI/GAP, API 521 §5), refined later by a dispersion/QRA study.
 

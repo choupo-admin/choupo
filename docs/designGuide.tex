@@ -1857,8 +1857,8 @@ disc) is preferred over an instrumented trip for the primary case.
 \textbf{Set vs design pressure (the WHY).} Design pressure is set ABOVE
 the maximum operating pressure so the PSV does not weep on normal
 swings. Heuristic: \textbf{design P = max(1.1 \(\times\) operating P, operating P
-+ 1.7 bar)}; for vessels under \textasciitilde7 barg the +1.7 bar floor
-dominates, above it the +10\% rule does. The \textbf{PSV set pressure =
++ 1.7 bar)}; the two rules cross at 17 barg (0.1 \(\times\) 17 bar = 1.7 bar):
+below that the +1.7 bar floor dominates, above it the +10\% rule does. The \textbf{PSV set pressure =
 design pressure (MAWP)}. Code allows accumulation above set ---
 typically \textbf{+10\%} for a single non-fire device, \textbf{+16\%}
 for multiple devices, and \textbf{+21\%} for the fire case --- because
@@ -1875,8 +1875,7 @@ Scenario & Typical controlling load & Why / note \\
 \endhead
 \bottomrule\noalign{}
 \endlastfoot
-External fire & Wetted-area heat input \(\approx\) \textbf{43--70 kW/m\textsuperscript{2}} (q =
-43.2\textperiodcentered{}F\textperiodcentered{}A\^{}0.82, SI) & Often controls vessels with large liquid
+External fire & Heat input to the wetted area, \textbf{Q = C\textperiodcentered{}F\textperiodcentered{}A\^{}0.82} (Q in kW for A in m\textsuperscript{2}; C \(\approx\) 43.2 with adequate drainage and fire-fighting, higher without; a total duty, not a flux) & Often controls vessels with large liquid
 inventory; sets a large orifice \\
 Blocked outlet & Full pump/compressor/feed flow at shut-in & Common
 control case for pumped/compressed systems \\
@@ -1915,10 +1914,11 @@ discharge disperses safely (e.g. steam, air, inert). Flammable/toxic
 streams route to a \textbf{closed flare header \(\rightarrow\) knockout drum \(\rightarrow\) flare},
 sized so flare-tip exit velocity stays below
 \textasciitilde{}\textbf{0.5 Mach} and grade-level radiation stays under
-**\textasciitilde6.3 kW/m\textsuperscript{2}** at the fence (API 521). Choupo models the
-relieved stream as a flash to header pressure; the \textbf{PSV-vent
-enthalpy and flare duty appear in the first-law ledger}, so the energy
-of blowdown is visible, not hidden.
+**\textasciitilde6.3 kW/m\textsuperscript{2}** at the fence (API 521). Choupo has \textbf{no relief
+model}: no unit relieves a stream, and no PSV-vent enthalpy or flare duty
+appears in any ledger.  The EduTool \emph{Designing for overpressure}
+sizes a relief device from engine-computed fluid properties (Z, k, latent
+heat); the relieving rate and the device are the reader's.
 
 \textbf{Spacing/segregation (Pareto).} Fired heaters and flares are
 ignition sources --- keep \textbf{\textasciitilde15 m} from process
