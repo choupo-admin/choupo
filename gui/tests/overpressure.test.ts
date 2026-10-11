@@ -50,7 +50,7 @@ import {
   RELIEF_WITNESS_LOOP, WATER_REF_DENSITY, criticalCoefficient,
   criticalPressureRatio, derivedCriticalConstant, derivedLiquidConstant,
   derivedSubcriticalConstant, designPressureGauge, fireCoefficientSI,
-  fireHeatInput, fireOverrides, gasArea, liquidArea, loopGas, loopOverrides,
+  fireHeatInput, fireOverrides, fireRunState, gasArea, liquidArea, loopGas, loopOverrides,
   loopRelievingPressure, maxAccumulatedGauge, opComposition, readPoint,
   recordScalar, relievingPressureAbs, subcriticalCoefficient, ventMassFlow,
 } from "../src/ui/methods/overpressure.js";
@@ -271,6 +271,23 @@ describe("overpressure: the fire witness", () => {
     expect(s.regime).toBe("critical");
     expect(s.A_mm2).toBeGreaterThan(500);
     expect(s.A_mm2).toBeLessThan(5000);
+  });
+  it("the bench's two-run settle: off-state, then at state, then still", () => {
+    const P1 = relievingPressureAbs(FIRE_DEFAULT_MAWP_BARG * 1e5, "fire");
+    const at = (T: number, Tb: number, P = P1) =>
+      ({ T, P, Z: 0.9, k: 1.1, T_bubble: Tb, Hvap: 2.5e4 });
+    //  The first run at a guessed T reports the boiling temperature: not yet
+    //  at state, run again there.
+    expect(fireRunState(at(470, 394.109436036), 470, P1))
+      .toEqual({ atState: false, nextT: 394.109436 });
+    //  The second run, at it: at state, nothing more to run.
+    expect(fireRunState(at(394.109436, 394.109436036), 394.109436, P1))
+      .toEqual({ atState: true, nextT: null });
+    //  A result for another pressure (the reader just moved the MAWP) is not
+    //  drawn as the relieving state.
+    expect(fireRunState(at(394.109436, 394.109436036, 8e5), 394.109436, P1).atState)
+      .toBe(false);
+    expect(fireRunState(null, 400, P1)).toEqual({ atState: false, nextT: null });
   });
   it("reads a propertyPoint result", () => {
     const r = { operationResults: [{ name: FIRE_OP, type: "propertyPoint",

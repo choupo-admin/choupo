@@ -50,16 +50,15 @@ import { tutorialByName } from "../../cases/tutorials.js";
 import { guideUrl, openGuide } from "../../help/guideLinks.js";
 import { KnobField, KnobNumber, PanelNote } from "./knobPanel.js";
 import { LessonLimits, LessonStepView } from "./lessonStep.js";
-import { useNarrowViewport } from "./methodsChrome.js";
 import {
   OVERPRESSURE_LIMITS, OVERPRESSURE_SOURCES, OVERPRESSURE_STEPS,
 } from "./overpressureLesson.js";
 import {
   ACCUMULATION, DESIGN_GUIDE_RELIEF, FIRE_COMPONENT, FIRE_DEFAULT_MAWP_BARG,
-  FIRE_OP, FIRE_SHIPPED_T_K, LOOP_OPERATING,
-  LOOP_OPS, P_ATM_PA, RELIEF_WITNESS_FIRE, RELIEF_WITNESS_LOOP, SET_LIMITS,
-  WATER_REF_DENSITY, designPressureGauge, fireCoefficientSI, fireHeatInput,
-  fireOverrides, fireVapourRate, gasArea, liquidArea, loopGas, loopOverrides,
+  FIRE_OP, FIRE_SHIPPED_T_K, LOOP_OPERATING, LOOP_OPS, PSI_PA, P_ATM_PA,
+  RELIEF_WITNESS_FIRE, RELIEF_WITNESS_LOOP, SET_LIMITS, WATER_REF_DENSITY,
+  designPressureGauge, fireCoefficientSI, fireHeatInput, fireOverrides,
+  fireRunState, fireVapourRate, gasArea, liquidArea, loopGas, loopOverrides,
   maxAccumulatedGauge, readPoint, recordScalar, relievingPressureAbs,
   specificGravity, ventMassFlow, type DeviceCase, type GasSizing, type LoopOp,
 } from "./overpressure.js";
@@ -177,7 +176,7 @@ function LadderBench(): JSX.Element {
   const mawp = designPressureGauge(opG);
   const p1g = maxAccumulatedGauge(mawp, c);
   const a = ACCUMULATION[c];
-  const floorWins = mawp + a.minPsi * 6894.757293168361 > mawp * (1 + a.frac);
+  const floorWins = mawp + a.minPsi * PSI_PA > mawp * (1 + a.frac);
   return (
     <Box>
       <Title order={5}>The ladder for your vessel</Title>
@@ -348,11 +347,10 @@ function FireBench({ onOutcome }: { onOutcome: (o: FireOutcome | null) => void }
     `P=${P1},T=${Tstate}`, "choupoProps");
   const pt = readPoint(run.result, FIRE_OP, `Hvap_${FIRE_COMPONENT}`);
   const Tb = pt?.T_bubble;
+  const { atState, nextT } = fireRunState(pt, Tstate, P1);
   useEffect(() => {
-    if (typeof Tb === "number" && Math.abs(Tb - Tstate) > 1e-4) setTstate(Number(Tb.toFixed(6)));
-  }, [Tb, Tstate]);
-  const atState = pt !== null && typeof Tb === "number"
-    && Math.abs(pt.T - Tb) <= 1e-3 && Math.abs(pt.P - P1) <= 1e-6 * P1;
+    if (nextT !== null) setTstate(nextT);
+  }, [nextT]);
 
   const Q = fireHeatInput(A, F, adequate);
   const lambda = atState && pt?.Hvap !== undefined ? pt.Hvap / (M / 1000) : NaN;
@@ -395,7 +393,7 @@ function FireBench({ onOutcome }: { onOutcome: (o: FireOutcome | null) => void }
       </Box>
       <Box mt={8}>
         <Waiting runs={[run]} what="the engine is evaluating acetone at the relieving pressure" />
-        {!atState && run.result !== null && run.err === null && (
+        {!atState && typeof Tb === "number" && run.err === null && (
           <Text size="xs" c="dimmed">re-running at the boiling temperature the engine just found…</Text>
         )}
       </Box>
@@ -510,7 +508,6 @@ function TwoPhaseBench({ fire }: { fire: FireOutcome | null }): JSX.Element {
 
 export function OverpressureTool(): JSX.Element {
   const [fire, setFire] = useState<FireOutcome | null>(null);
-  const narrow = useNarrowViewport();
   return (
     <Box style={{ flex: 1, minHeight: 0, overflowY: "auto" }} px="md" py="sm">
       <Stack gap="md" style={{ maxWidth: 940, margin: "0 auto" }}>
@@ -548,12 +545,6 @@ export function OverpressureTool(): JSX.Element {
         <Title order={4}>Part 3 — sizing</Title>
         {step(8)}
         {step(9)}
-        {narrow && (
-          <Text size="xs" c="dimmed">
-            The tables below may be wider than this screen: swipe them
-            sideways to see every column.
-          </Text>
-        )}
         <LoopBench />
         {step(10)}
         <LiquidBench />

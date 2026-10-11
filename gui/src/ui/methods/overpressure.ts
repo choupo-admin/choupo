@@ -381,6 +381,22 @@ export function readPoint(r: RunResult | null | undefined, op: string,
     Hvap: hvapKey ? num(hvapKey) : undefined };
 }
 
+/** WHERE THE FIRE BENCH STANDS after a run.  The witness is evaluated at a
+ *  temperature the page chooses; its numbers belong to the relieving state
+ *  only when that temperature IS the boiling temperature the run reports at
+ *  P1.  `nextT` is the temperature to run at next (null: stay), and
+ *  `atState` says whether this run's Z, k and latent heat may be drawn.
+ *  T_bubble does not depend on the evaluation temperature, so one extra run
+ *  settles it. */
+export function fireRunState(pt: PointReading | null, T_run: number, P1_Pa: number):
+  { atState: boolean; nextT: number | null } {
+  const Tb = pt?.T_bubble;
+  if (!pt || typeof Tb !== "number") return { atState: false, nextT: null };
+  const nextT = Math.abs(Tb - T_run) > 1e-4 ? Number(Tb.toFixed(6)) : null;
+  const atState = Math.abs(pt.T - Tb) <= 1e-3 && Math.abs(pt.P - P1_Pa) <= 1e-6 * P1_Pa;
+  return { atState, nextT };
+}
+
 // ---- The overrides ------------------------------------------------------------
 
 /** The loop witness's two relieving pressures, in operation order (the
