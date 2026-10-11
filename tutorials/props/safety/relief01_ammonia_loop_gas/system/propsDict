@@ -1,0 +1,74 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+  relief01_ammonia_loop_gas -- THE GAS SIDE OF A BLOCKED-OUTLET RELIEF VALVE
+  ON THE AMMONIA SYNTHESIS LOOP (DEV.md 4c C61, the "Designing for
+  overpressure" EduTool).
+
+  THE QUESTION.  The converter's outlet is blocked while the recycle
+  compressor goes on delivering the converter feed.  The relief valve on
+  the feed side must pass that whole flow at the relieving pressure, and
+  the gas relief equation needs two properties of the gas there besides
+  its molar mass: the compressibility factor Z and the ratio of specific
+  heats k = Cp/Cv.  This case computes both, for the same loop at 150 bar
+  and at 50 bar -- the two green-ammonia feasibility cases the
+  Process-safety EduTool compares (tutorials/plant/greenAmmoniaFeasibility
+  and greenAmmoniaFeasibility50bar).
+
+  WHERE THE STATES COME FROM.
+    * composition -- each plant's converged converter feed (`PreheatedFeed`),
+      copied as the component flows in kmol/h exactly as the plant's
+      converged/PreheatedFeed prints them.  propertyPoint normalises the
+      composition, so the flows ARE the composition; the EduTool reads them
+      again as the relieving rate.  gui/tests/overpressure.test.ts holds
+      every number to the plant's own converged file.
+    * T -- the same stream's temperature (653.15 K and 593.15 K): a blocked
+      outlet relieves the gas as it arrives.
+    * P -- the RELIEVING pressure, worked from the stream's operating
+      pressure in the EduTool and written here to the digit:
+        operating (gauge)  = P_stream - 1.01325 bar
+        MAWP (gauge)       = max(1.1 x operating, operating + 1.7 bar)
+                             (the Design Guide's rule of thumb for the
+                             design pressure, docs/designGuide.tex,
+                             "Pressure relief, flare & safety basics")
+        set pressure       = MAWP (a single device)
+        relieving (gauge)  = max(1.10 x MAWP, MAWP + 3 psi)
+        relieving (abs)    = relieving (gauge) + 1.01325 bar
+      The MAWP is a rule of thumb applied to a feasibility case that sizes
+      no vessel; no number here is the design pressure of any real loop.
+
+  WHAT IS COMPUTED.  propertyPoint's base set: Z on the SRK vapour root,
+  and gamma = Cp_ig/(Cp_ig - R) from the records' ideal-gas heat capacities
+  -- the ideal-gas ratio the gas relief equation is derived with.
+\*---------------------------------------------------------------------------*/
+operations
+(
+    {
+        name        loop150;
+        type        propertyPoint;
+        state
+        {
+            T            653.15 K;
+            P            18240876.8436 Pa;
+            composition  { N2 4123.739318;  H2 14802.00492;
+                           NH3 289.0029004;  Ar 43.10262744; }
+        }
+    }
+    {
+        name        loop50;
+        type        propertyPoint;
+        state
+        {
+            T            593.15 K;
+            P            6028858.2307 Pa;
+            composition  { N2 6767.395149;  H2 22357.84009;
+                           NH3 1220.234416;  Ar 106.2303573; }
+        }
+    }
+);

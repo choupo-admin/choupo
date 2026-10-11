@@ -176,6 +176,31 @@ scalar evaluateProperty(const std::string& propKey,
     // documented both keys from the day it was written; the catalogue never
     // implemented them, so the entropy01 ledger witness was refused a key
     // the header promised (found 2026-08-30 building that witness).
+    // Hvap_<comp>: the PURE-component latent heat of vaporisation [J/mol] at
+    // the scan T -- Component::Hvap_latent, the record's HvapTb carried to T
+    // by the Watson correlation, which is the SAME term H_liquid_formation
+    // subtracts from h_pure_ig to price every liquid (ThermoPackage.H, the
+    // "h_ig - dHvap" rung).  Added 2026-10-11 (DEV.md 4c C61) for the
+    // overpressure EduTool's fire case, whose relief load is the fire's heat
+    // input divided by this number; a page typing it in TypeScript would be
+    // a second home for it.  Two refusals, each by name: a record without
+    // Tc, Tb and HvapTb (raised by Hvap_latent itself), and a T at or above
+    // Tc, where no latent heat exists -- Hvap_latent returns 0 there for the
+    // enthalpy legs, which is right for a sum and wrong for a divisor.  A
+    // `pureFluids {}` package prices its own surface, which this key does
+    // not consult.
+    if (matchPerComp("Hvap", i))
+    {
+        const Component& c = thermo.comp(i);
+        if (c.Tc() > 0.0 && T >= c.Tc())
+            throw std::runtime_error(
+                "Hvap: T = " + std::to_string(T) + " K is at or above the"
+                " critical temperature of '" + c.name() + "' ("
+                + std::to_string(c.Tc()) + " K) -- there is no latent heat"
+                " above the critical point");
+        return c.Hvap_latent(T);
+    }
+
     if (matchPerComp("s_ig", i))
         return thermo.comp(i).s_pure_ig(T);
     if (matchPerComp("h_ig", i))

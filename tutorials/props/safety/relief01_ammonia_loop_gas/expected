@@ -1,0 +1,27 @@
+# Reference KPIs (golden master, auto-recorded by runTests --record).
+# units: stream F is kmol/s (canonical SI, as in the result JSON); the run LOG prints kmol/h.
+# kind   name      key         expected        reltol
+diag    loop150                Cp_ig            29.8985186167      1e-4
+diag    loop150                H_R              258.83362137       1e-4
+diag    loop150                H_ig             9770.2186076       1e-4
+diag    loop150                H_real           10029.052229       1e-4
+diag    loop150                P                18240876.8436      1e-4
+diag    loop150                S_R              -0.122977107449    1e-4
+diag    loop150                S_ig             129.551194701      1e-4
+diag    loop150                S_real           129.428217594      1e-4
+diag    loop150                T                653.15             1e-4
+diag    loop150                Z                1.06292561774      1e-4
+diag    loop150                gamma            1.38521316932      1e-4
+diag    loop150                v_molar          0.000316449401973  1e-4
+diag    loop50                 Cp_ig            30.1315777327      1e-4
+diag    loop50                 H_R              64.6879856225      1e-4
+diag    loop50                 H_ig             6909.16913111      1e-4
+diag    loop50                 H_real           6973.85711674      1e-4
+diag    loop50                 P                6028858.2307       1e-4
+diag    loop50                 S_R              -0.071275509664    1e-4
+diag    loop50                 S_ig             138.977694981      1e-4
+diag    loop50                 S_real           138.906419472      1e-4
+diag    loop50                 T                593.15             1e-4
+diag    loop50                 Z                1.0218025043       1e-4
+diag    loop50                 gamma            1.38109816877      1e-4
+diag    loop50                 v_molar          0.000835854357802  1e-4

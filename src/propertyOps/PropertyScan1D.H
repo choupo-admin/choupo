@@ -72,6 +72,7 @@ Description
                                               x[<comp>] this draws a
                                               classical T-x-y diagram)
       Activity model     :  gamma_<comp>
+      Latent heat (pure) :  Hvap_<comp>   (record HvapTb, Watson to T)
       Ideal gas (mixture):  H_ig  S_ig  Cp_ig
       EoS                :  Z  v_molar  H_R  S_R  H_real  S_real
 
