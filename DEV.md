@@ -1991,6 +1991,28 @@ accepts today, and that is a policy call.
      loop (membrane18), the dynamic loop (unsteady03), the UF law
      (membrane19) and the UF loop in time (unsteady04).
 
+**C63. THE DCF GETS ITS START-UP YEARS: A MULTI-YEAR CONSTRUCTION, A
+RAMP-UP AND START-UP COSTS (Vítor, 2026-10-11, verbatim: "Sabes se foi feita
+a análise económica com anos de arranque e capital circulante e fundo de
+maneio?", then "Avança" to the commander's proposal).**  Measured before
+dispatch: the working capital IS built up (`EconomicsPass.cpp:164-290`,
+receivables/payables/minimum cash/process inventory/product stock, gross
+and net published); the cash-flow timeline is ONE construction year with
+FCI and WC both at t = 0 and full production from year 1
+(`EconomicsPass.cpp:926-935`); `constructionPeriod` other than 1 is
+ANNOUNCED as not implemented (`:679-692`) and exactly one corpus case
+declares one (`ammonia02_full_plant`, 2 years), so its published NPV does
+not honour its own declaration; 10 corpus postDicts carry `economics`.
+Scope (stated default, the commander's proposal Vítor approved): opt-in
+keys -- a capital schedule over the construction years, a ramp-up of
+production fractions for the first operating years (revenue and the
+VARIABLE costs scale, the fixed ones do not), start-up costs as their own
+line, working capital at the start of operation; a case declaring none of
+them byte-identical; `ammonia02`'s NPV rows MOVE (it finally honours its 2
+years) and go to Vítor as a list before any record; `greenAmmoniaBasicDesign`
+declares the new keys as labelled assumptions, its moved rows also listed.
+Status: dispatched 2026-10-11.
+
 **C62. THE GREEN-AMMONIA BASIC DESIGN: WHAT IS SIZED, AND RELIEF VALVES
 SIZED AT THIS STAGE (Vítor, 2026-10-11, verbatim: "Podes ver se o processo
 green amónia já tem tudo dimensionado detalhadamente? Podes se por o
