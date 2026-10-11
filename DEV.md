@@ -2100,6 +2100,26 @@ reaches every LIQUID-phase use of acetic acid's enthalpy (about 37 cases
 declare the component).  RESERVED for Vítor: it is a curation decision on
 a record (which vapour basis the record speaks, and whether the dimer is
 priced) and it moves goldens across the corpus.
+REVIEW DONE 2026-10-11, merged (branch claude/c60-review, b3239460a):
+all twelve points taken; the MTT default is now the ENGINE's bubble point
+of the reactor contents at the failure instant (new props witness
+`bubble01_reaction_mass_boiling_point`, run live by the page; the min-Tb
+value stays as a labelled proxy); the semi-batch estimate with the mass
+correction tracks the engine within ~1 K over 22 failure runs (6.6 K low
+without it), which moved the worst dosing instant to portion 4; the
+acetic-acid finding is shown on the page as a limitation, reproduced from
+the records by a test (the tree's own dimer record: the saturated vapour
+is ~82 % dimer at 25 C; breaking it costs ~25.9 kJ per mol of acid, which
+brings the liquid heat of reaction to about zero).  NOT read: Golikova et
+al. 2020 (paywalled) -- cited as unread, its number not quoted; Stoessel's
+book (the mass-ratio form is read from Chen et al. 2016, which cites it);
+the Bhopal scrubber-capacity point was dropped, no read source states it.
+Validated on the branch after its last commit (main had not moved):
+`--gui` 29/0, the three cases 3/0; checkGui's off-screen and occlusion
+probes clean on the page at 1400 and 390 px (the full walk was disturbed
+by a concurrent dev server).  OPEN: the witnesses' `constant/reactions`
+comment still calls -26.06 kJ/mol "the authoritative value" -- it goes
+with the reserved acetic-acid decision.
 
 **C59. THE AUTOMATIC FLOWSHEET LAYOUT IS SPAGHETTI; MAKE IT READABLE, ALWAYS
 (Vítor, 2026-10-10, verbatim: "o layout do flowsheet parece esparguete!
