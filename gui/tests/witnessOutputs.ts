@@ -159,11 +159,16 @@ export const WITNESS_OUTPUTS: readonly WitnessOutput[] = [
     file: "trajectory.csv",
     readBy: ["processSafety.test.ts"],
   },
+  //  The overpressure EduTool (C61) reads the same PreheatedFeed files: its
+  //  loop witness copies each plant's converter feed, and its test holds the
+  //  copy to them.
   ...["greenAmmoniaFeasibility", "greenAmmoniaFeasibility50bar"].flatMap(
     (c) => ["Recycle", "PreheatedFeed", "HotEffluent"].map((s) => ({
       caseDir: `tutorials/plant/${c}`,
       file: `converged/${s}`,
-      readBy: ["processSafety.test.ts"],
+      readBy: s === "PreheatedFeed"
+        ? ["processSafety.test.ts", "overpressure.test.ts"]
+        : ["processSafety.test.ts"],
     }))),
 ];
 

@@ -409,7 +409,8 @@ export const SAFETY_LIMITS: readonly LessonLimit[] = [
       + "closed one would pressurise.  The engine's temperature there is the "
       + "hypothetical the methodology defines the MTSR on, not a prediction "
       + "of what the vessel does.  Venting a runaway is the subject of the "
-      + "overpressure page planned beside this one." },
+      + "overpressure page beside this one (Designing for overpressure, "
+      + "Part 5)." },
   { id: "td24",
     title: "No decomposition data",
     body: "No record in Choupo carries a decomposition onset, and nothing "
