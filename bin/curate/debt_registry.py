@@ -209,6 +209,95 @@ NC_COMPILATION = {
         "cites 'Burcat 2005 / JANAF' -- the publication, not the file; whether that is a citable paper or the database under another name is the ruling reserved above.",
 }
 
+#  NO_GRANT_CASE_LOCAL -- case-local records naming a no-grant compilation
+#  (Engineering Toolbox, REFPROP) as the origin of a value (2026-10-11, DEV.md
+#  4c C65 item c).  Every entry is a SEALED MIRROR of
+#  data/standards/components/NH3.dat as it stood before C65: its
+#  liquidViscosity was an Andrade fit to the Engineering Toolbox
+#  saturated-liquid table, and, measured against the reference correlation
+#  (Monogenidou, Assael & Huber, J. Phys. Chem. Ref. Data 47, 023102 (2018),
+#  Table 6), wrong by -28 % at 200 K and +29..+86 % from 260 to 320 K.  The
+#  catalogue record now carries a fit to that Table 6; each mirror keeps the
+#  old block until its case is RE-IMPORTED (bin/choupo-import), and a
+#  re-import moves goldens (C65's measured list), so it is Vitor's list under
+#  CLAUDE.md 10, not a sweep this registry may take.
+#
+#  REMEDY, the same for every entry: re-import the case from the corrected
+#  catalogue record (or edit the mirror's liquidViscosity block and re-seal),
+#  after the moved rows are shown; the pin then goes STALE and must leave.
+NO_GRANT_CASE_LOCAL = {
+    "tutorials/plant/ammonia02_full_plant/constant/components/NH3.dat":
+        "sealed NH3 mirror; Engineering Toolbox viscosity fit -- re-import.",
+    "tutorials/plant/ammonia03_quench_converter/constant/components/NH3.dat":
+        "sealed NH3 mirror; Engineering Toolbox viscosity fit -- re-import.",
+    "tutorials/plant/ammoniaStaged01_yield/constant/components/NH3.dat":
+        "sealed NH3 mirror; Engineering Toolbox viscosity fit -- re-import.",
+    "tutorials/plant/ammoniaStaged02_equilibrium/constant/components/NH3.dat":
+        "sealed NH3 mirror; Engineering Toolbox viscosity fit -- re-import.",
+    "tutorials/plant/ammoniaStaged03_approach/constant/components/NH3.dat":
+        "sealed NH3 mirror; Engineering Toolbox viscosity fit -- re-import.",
+    "tutorials/plant/ammoniaStaged04_kinetic/constant/components/NH3.dat":
+        "sealed NH3 mirror; Engineering Toolbox viscosity fit -- re-import.",
+    "tutorials/plant/greenAmmoniaBasicDesign/constant/components/NH3.dat":
+        "sealed NH3 mirror; Engineering Toolbox viscosity fit -- re-import.",
+    "tutorials/plant/greenAmmoniaFeasibility/constant/components/NH3.dat":
+        "sealed NH3 mirror; Engineering Toolbox viscosity fit -- re-import.",
+    "tutorials/plant/greenAmmoniaFeasibility50bar/constant/components/NH3.dat":
+        "sealed NH3 mirror; Engineering Toolbox viscosity fit -- re-import.",
+    "tutorials/plant/greenAmmoniaIndustrialN2/constant/components/NH3.dat":
+        "sealed NH3 mirror; Engineering Toolbox viscosity fit -- re-import.",
+    "tutorials/props/compare/compare_visc_liquid_ammonia/constant/components/NH3.dat":
+        "sealed NH3 mirror; Engineering Toolbox viscosity fit -- re-import.",
+    "tutorials/props/gibbs/landscape01_ammonia_synthesis/constant/components/NH3.dat":
+        "sealed NH3 mirror; Engineering Toolbox viscosity fit -- re-import.",
+    "tutorials/props/gibbs/landscape06_nitrogen_fixation_routes/constant/components/NH3.dat":
+        "sealed NH3 mirror; Engineering Toolbox viscosity fit -- re-import.",
+    "tutorials/props/gibbs/landscape07_sugar_nitrogen_all_pathways/constant/components/NH3.dat":
+        "sealed NH3 mirror; Engineering Toolbox viscosity fit -- re-import.",
+    "tutorials/props/gibbs/nh3_equilibrium_map/constant/components/NH3.dat":
+        "sealed NH3 mirror; Engineering Toolbox viscosity fit -- re-import.",
+    "tutorials/props/gibbs/reactionEnthalpy01_haber_kirchhoff/constant/components/NH3.dat":
+        "sealed NH3 mirror; Engineering Toolbox viscosity fit -- re-import.",
+    "tutorials/props/hydraulics/letdown02_valve_fluid_properties/constant/components/NH3.dat":
+        "sealed NH3 mirror; Engineering Toolbox viscosity fit -- re-import.",
+    "tutorials/props/kinetics/ammoniaRate01_dyson_simon/constant/components/NH3.dat":
+        "sealed NH3 mirror; Engineering Toolbox viscosity fit -- re-import.",
+    "tutorials/props/safety/relief01_ammonia_loop_gas/constant/components/NH3.dat":
+        "sealed NH3 mirror; Engineering Toolbox viscosity fit -- re-import.",
+    "tutorials/steady/absorption/absorber01_NH3_water/constant/components/NH3.dat":
+        "sealed NH3 mirror; Engineering Toolbox viscosity fit -- re-import.",
+    "tutorials/steady/absorption/stripper01_NH3_water/constant/components/NH3.dat":
+        "sealed NH3 mirror; Engineering Toolbox viscosity fit -- re-import.",
+    "tutorials/steady/distillation/column13_sour_water_stage_identity/constant/components/NH3.dat":
+        "sealed NH3 mirror; Engineering Toolbox viscosity fit -- re-import.",
+    "tutorials/steady/distillation/stripper01_sour_water/constant/components/NH3.dat":
+        "sealed NH3 mirror; Engineering Toolbox viscosity fit -- re-import.",
+    "tutorials/steady/distillation/stripper02_sour_water_h2s/constant/components/NH3.dat":
+        "sealed NH3 mirror; Engineering Toolbox viscosity fit -- re-import.",
+    "tutorials/steady/economics/economics03_startup_years/constant/components/NH3.dat":
+        "sealed NH3 mirror; Engineering Toolbox viscosity fit -- re-import.",
+    "tutorials/steady/flash/flash09_nh3_water_reactive/constant/components/NH3.dat":
+        "sealed NH3 mirror; Engineering Toolbox viscosity fit -- re-import.",
+    "tutorials/steady/flash/flash12_nh3_acetic_ethanol_reactive/constant/components/NH3.dat":
+        "sealed NH3 mirror; Engineering Toolbox viscosity fit -- re-import.",
+    "tutorials/steady/flash/flash13_acetic_ethanol_vacuum_flash/constant/components/NH3.dat":
+        "sealed NH3 mirror; Engineering Toolbox viscosity fit -- re-import.",
+    "tutorials/steady/flowsheets/ammonia01_synthesis_loop/constant/components/NH3.dat":
+        "sealed NH3 mirror; Engineering Toolbox viscosity fit -- re-import.",
+    "tutorials/steady/gibbs/gibbs10_ammonia_fugacity/constant/components/NH3.dat":
+        "sealed NH3 mirror; Engineering Toolbox viscosity fit -- re-import.",
+    "tutorials/steady/gibbs/gibbs12_element_potential_newton/constant/components/NH3.dat":
+        "sealed NH3 mirror; Engineering Toolbox viscosity fit -- re-import.",
+    "tutorials/steady/gibbs/gibbs13_adiabatic_approach_direction/constant/components/NH3.dat":
+        "sealed NH3 mirror; Engineering Toolbox viscosity fit -- re-import.",
+    "tutorials/steady/hydraulics/letdown01_ammonia_flashing/constant/components/NH3.dat":
+        "sealed NH3 mirror; Engineering Toolbox viscosity fit -- re-import.",
+    "tutorials/steady/reactors/equil03_ammonia_oxidation_declared_pathways/constant/components/NH3.dat":
+        "sealed NH3 mirror; Engineering Toolbox viscosity fit -- re-import.",
+    "tutorials/steady/thermo/basis01_two_unit_chain/constant/components/NH3.dat":
+        "sealed NH3 mirror; Engineering Toolbox viscosity fit -- re-import.",
+}
+
 #  INVERTED_VALIDITY_WINDOWS -- REMOVED 2026-08-05, the waiver is discharged.
 #
 #  Six records declared `Trange (hi lo)` with hi <= lo and the engine merely

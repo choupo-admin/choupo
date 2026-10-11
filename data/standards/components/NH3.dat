@@ -13,7 +13,9 @@
            reference EOS; standardThermochemistry cross-checked vs NASA TM-4513
            (McBride-Gordon-Reno 1993); vaporPressure -- individual
            literature value, primary re-citation pending (IST review);
-           liquidViscosity -- Engineering Toolbox saturated-liquid table.
+           liquidViscosity -- fitted to Monogenidou, Assael & Huber,
+           J. Phys. Chem. Ref. Data 47, 023102 (2018), Table 6;
+           Vliq -- Gao et al., J. Phys. Chem. Ref. Data 52, 013102 (2023).
 \*---------------------------------------------------------------------------*/
 
 name        NH3;
@@ -73,14 +75,23 @@ liquidHeatCapacity
 }
 
 // Liquid transport.  liquidViscosity: ln(mu/Pa.s) = A + B/T (Andrade).
-// Andrade A,B = least-squares fit to the Engineering Toolbox saturated-liquid
-// ammonia table:  mu = 0.306 / 0.239 / 0.186 mPa.s  @ 223 / 273 / 323 K
-// (AAD ~2% over 223-323 K).  Cross-check: mu(239.85 K, b.p.) = 0.277 mPa.s
-// (literature scatter 0.26-0.28; a calorimetric/JPCRD viscosity ref would
-// be needed for tighter work).
+// A, B = least-squares fit (in ln mu against 1/T) to the SATURATED-LIQUID
+// column of Monogenidou, Assael & Huber, J. Phys. Chem. Ref. Data 47, 023102
+// (2018), Table 6 -- the reference correlation for ammonia, read in the NIST
+// reprint (srd.nist.gov/jpcrdreprint/1.5036724.pdf):
+//     T [K]      200     220     240     260     280     300     320
+//     mu [uPa s] 516.02  347.27  251.04  192.06  153.03  125.00  103.20
+// AAD 0.51 %, max 0.71 % over these seven points (200-320 K); mu(239.82 K)
+// = 0.2532 mPa s.  At 340 K the two-constant form is already 3 % off, so
+// the validity stops at 320 K.
+// REPLACED 2026-10-11 (DEV.md 4c C65 item c): the former A -9.665, B 353.6
+// was fitted to the Engineering Toolbox saturated-liquid table -- a no-grant
+// compilation under the licence policy (CLAUDE.md 10), never a value's
+// origin -- and measured against Table 6 it was not merely unlicensed but
+// wrong: -28 % at 200 K, +29 % at 260 K, +65 % at 300 K, +86 % at 320 K.
 liquidViscosity
 {
-    andrade { A -9.665; B 353.6; }
+    andrade { A -11.8350; B 852.25; }
 }
 
 provenance
@@ -99,9 +110,10 @@ provenance
     liquidViscosity
     {
         origin       regressed;
-        method       "Andrade least-squares fit to Engineering Toolbox saturated-liquid mu(T) (3 pts, 223-323 K)";
-        validity     (223 323);
-        uncertainty  "~2% AAD vs the ET table";
+        method       "Andrade least-squares fit (ln mu vs 1/T) to the saturated-liquid viscosities of the reference correlation, Table 6 (7 points, 200-320 K)";
+        citation     "Monogenidou, Assael & Huber, J. Phys. Chem. Ref. Data 47, 023102 (2018), doi:10.1063/1.5036724, Table 6";
+        validity     (200 320);
+        uncertainty  "AAD 0.51 %, max 0.71 % against Table 6; the correlation itself is stated at 0.6-5 % depending on T and P";
     }
 }
 

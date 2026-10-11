@@ -94,6 +94,19 @@ orphan.  Fired by hand, observed lines:
   the mention to README.mdX left the original path as a SUBSTRING of the
   sabotaged one, so the `in` test still matched.  A sabotage must remove the
   thing, not decorate it; the second attempt (README.md -> nothing) fired.
+
+THE NO-GRANT NAMES AND THE CASE-LOCAL ARM (2026-10-11, C65 item c).  The
+first run of the widened pattern failed on its own, on the real thing:
+data/standards/components/NH3.dat named Engineering Toolbox in its header
+and in its liquidViscosity `method` (fixed in the same commit).  Then, by
+hand, each restored and the gate re-run to exit 0:
+  S1  one NH3 mirror's pin removed from NO_GRANT_CASE_LOCAL -> FAILED, naming
+      that mirror's line as a NEW case-local violation;
+  S2  `citation "REFPROP 10 output; ..."` in a catalogue record -> FAILED;
+  S3  the same record citing a primary `..., via Engineering Toolbox` -> OK,
+      so the read-through branch is real for the new names too;
+  S4  a pin for a case-local record that names nothing -> STALE PIN, naming
+      NO_GRANT_CASE_LOCAL.
 """
 import re
 import sys
@@ -104,16 +117,32 @@ from pathlib import Path
 #  tolerating?" is a fact with exactly one home.
 import sys as _sys
 _sys.path.insert(0, str(Path(__file__).resolve().parent))
-from debt_registry import SOURCE_LICENCE, NC_COMPILATION
+from debt_registry import SOURCE_LICENCE, NC_COMPILATION, NO_GRANT_CASE_LOCAL
 
 ROOT = Path(__file__).resolve().parents[2]
 
 #  The protocol's NEVER list, as name patterns.  DECHEMA is handled
 #  separately: a NAMED monograph in the series (Knapp et al.) is a citable
 #  publication, while "curated from the DECHEMA bank" is transcription.
+#  TWO MORE NO-GRANT NAMES (2026-10-11, DEV.md 4c C65 item c).  CLAUDE.md
+#  section 10 names Engineering Toolbox and REFPROP beside DIPPR, Yaws, CRC and
+#  NIST SRD/WebBook as no-grant sources -- "nothing to honour" -- and this gate
+#  had never heard either name: NH3.dat shipped an Andrade viscosity fitted to
+#  the Engineering Toolbox table, with the site named in its `method`, for as
+#  long as the record existed.  They join the aggregator rule unchanged: a
+#  primary read THROUGH either (`..., via Engineering Toolbox`) is a route and
+#  stays compliant; either AS the origin of a value fails.  REFPROP is NIST's
+#  program, whose fluid files implement published equations of state -- the
+#  equation's paper is the primary to cite, the program at most a route.
+#  Kept as its own constant because the CASE-LOCAL arm below reaches these
+#  two names only (see NO_GRANT_CASE_LOCAL in debt_registry).
+NO_GRANT_NAMES = r'Engineering\s*Tool\s*box|engineeringtoolbox(?:\.com)?|REFPROP'
+NO_GRANT_NEW = re.compile(r'\b(' + NO_GRANT_NAMES + r')\b', re.I)
+
 ENCUMBERED = re.compile(
     r'\b(CRC\s+Handbook|NIST\s+WebBook|NIST\s+SRD|DIPPR|Yaws|'
-    r'CAS\s+Common\s+Chemistry|DDBST|Dortmund\s+Data\s+Bank)\b', re.I)
+    r'CAS\s+Common\s+Chemistry|DDBST|Dortmund\s+Data\s+Bank|'
+    + NO_GRANT_NAMES + r')\b', re.I)
 DECHEMA = re.compile(r'\bDECHEMA\b', re.I)
 
 #  A NONCOMMERCIAL COMPILATION -- a SECOND shape, and the difference from
@@ -400,6 +429,50 @@ LICENCE_WORD = re.compile(r'(?m)^\s*licence\s+(\w+)\s*;')
 PINNED = SOURCE_LICENCE
 SCAN = ["data/standards"]
 
+#  THE CASE-LOCAL ARM (2026-10-11, C65 item c), and why it is NARROW.  Every
+#  arm above scans data/standards/ alone; a case's constant/ records ship in
+#  the same public tree and no arm looks at them.  The sweep that taught this
+#  gate the two names above found them in 35 case-local records -- every one
+#  a sealed MIRROR of NH3.dat, carrying the Engineering Toolbox viscosity the
+#  catalogue record no longer carries, until each case is re-imported (which
+#  moves goldens, so it is Vitor's list, CLAUDE.md 10).  They are PINNED, one
+#  remedy for all, in debt_registry.NO_GRANT_CASE_LOCAL.  The arm reaches the
+#  two NEW names only: the same sweep, run with every name this gate knows,
+#  found 4 mirrors of methylAcetate.dat (pinned at their origin in
+#  SOURCE_LICENCE), 30 mirrors naming Burcat (pinned at their origin in
+#  NC_COMPILATION) and 13 AUTHORED case-local pair records transcribing
+#  DECHEMA -- widening the whole gate to tutorials/ is a ~47-pin decision of
+#  its own, recorded in DEV.md (C65) and not taken here.
+CASE_LOCAL_ROOT = "tutorials"
+
+
+def case_local_no_grant():
+    """Case-local records naming a newly-taught no-grant compilation AS a
+    value's origin (the same via/authority rules as the catalogue arm), and
+    the number of records scanned."""
+    found, nscan = [], 0
+    for p in sorted((ROOT / CASE_LOCAL_ROOT).rglob("*.dat")):
+        if "constant" not in p.parts:
+            continue
+        nscan += 1
+        try:
+            lines = p.read_text(errors="ignore").splitlines()
+        except OSError:
+            continue
+        for n, line in enumerate(lines, 1):
+            hit = NO_GRANT_NEW.search(line)
+            if not hit or VIA.search(line[:hit.start()]):
+                continue
+            window = " ".join(lines[max(0, n - 3):n])
+            if VIA.search(window.split(hit.group(0))[0]):
+                continue
+            if not AUTHORITY_FIELD.search(window):
+                continue
+            found.append((p.relative_to(ROOT).as_posix(), n, hit.group(0),
+                          line.strip()[:110]))
+            break
+    return found, nscan
+
 
 def main() -> int:
     violations, pinned_seen, nfiles = [], set(), 0
@@ -562,7 +635,23 @@ def main() -> int:
             print("  NO-GRANT STANDARD TABLE: " + v)
         return 1
 
+    cl_found, cl_nscan = case_local_no_grant()
+    cl_seen = set()
+    for rel, n, name, text in cl_found:
+        if rel in NO_GRANT_CASE_LOCAL:
+            cl_seen.add(rel)
+        else:
+            violations.append(f"{rel}:{n}  {name} cited AS the authority in a "
+                              f"case-local record (not 'via')\n        {text}")
+    if cl_nscan < 1000:
+        print(f"check_source_licence: FAILED -- only {cl_nscan} case-local "
+              "record(s) scanned against a floor of 1000; the case-local scan "
+              "surface has collapsed.")
+        return 1
+
     stale = sorted(set(PINNED) - pinned_seen)
+    stale += [f"{s} (NO_GRANT_CASE_LOCAL)"
+              for s in sorted(set(NO_GRANT_CASE_LOCAL) - cl_seen)]
     stale += [f"{s} (NC_COMPILATION)"
               for s in sorted(set(NC_COMPILATION) - nc_seen)]
     violations += nc_new
@@ -575,8 +664,9 @@ def main() -> int:
             #  this arm, and "remove it from PINNED" sent the reader to the
             #  wrong constant for every NC_COMPILATION entry.
             where = "NC_COMPILATION" if s.endswith("(NC_COMPILATION)") \
+                else "NO_GRANT_CASE_LOCAL" if s.endswith("(NO_GRANT_CASE_LOCAL)") \
                 else "SOURCE_LICENCE"
-            name = s.replace(" (NC_COMPILATION)", "")
+            name = s.replace(" (NC_COMPILATION)", "").replace(" (NO_GRANT_CASE_LOCAL)", "")
             print(f"  STALE PIN: {name} no longer cites an encumbered "
                   f"source -- remove it from debt_registry.{where}")
         if violations:
@@ -645,7 +735,13 @@ def main() -> int:
           "compliant and is not counted.  "
           f"NonCommercial compilations: no new record names Burcat/ReSpecTh "
           f"as a value's origin; {len(NC_COMPILATION)} existing ones do and "
-          f"are pinned.  Accepted third-party databanks, by CONTRACT here and "
+          f"are pinned.  Engineering Toolbox and REFPROP (C65) are among the "
+          f"names refused, and they alone are also sought in the {cl_nscan} "
+          f"case-local records under tutorials/**/constant/: "
+          f"{len(NO_GRANT_CASE_LOCAL)} name one as a value's origin, all "
+          f"sealed NH3 mirrors awaiting re-import, pinned (every other name "
+          f"is judged in data/standards/ only).  "
+          f"Accepted third-party databanks, by CONTRACT here and "
           f"cross-checked against the importer's LICENSE constant: "
           f"{accepted_txt} -- and that acceptance has a SCOPE: "
           f"{len(EXCLUDED_TABLES)} excluded interaction-parameter table "
