@@ -517,6 +517,9 @@ function EconomicsBody({ econ }: { econ: NonNullable<RunResult["economics"]> }) 
   // The first operating year whose cumulative DCF turns non-negative -- the
   // discounted payback year (highlighted in the table).
   const paybackYear = econ.cashFlow.find((r) => r.year > 0 && r.cumulativeDCF >= 0)?.year;
+  //  The start-up years (C63): two more columns, drawn only when the engine
+  //  published them -- i.e. when the case declared a timeline.
+  const timeline = econ.cashFlow.some((r) => r.startupCost !== undefined);
   return (
     <>
       <Text size="xs" c="dimmed" mb={6}>
@@ -551,8 +554,10 @@ function EconomicsBody({ econ }: { econ: NonNullable<RunResult["economics"]> }) 
           <Table.Thead><Table.Tr>
             <Table.Th>Year</Table.Th>
             <Table.Th ta="right">Capital</Table.Th>
+            {timeline && <Table.Th ta="right">p</Table.Th>}
             <Table.Th ta="right">Revenue</Table.Th>
             <Table.Th ta="right">OPEX</Table.Th>
+            {timeline && <Table.Th ta="right">Start-up</Table.Th>}
             <Table.Th ta="right">Depr.</Table.Th>
             <Table.Th ta="right">Taxable</Table.Th>
             <Table.Th ta="right">Tax</Table.Th>
@@ -568,8 +573,10 @@ function EconomicsBody({ econ }: { econ: NonNullable<RunResult["economics"]> }) 
                 bg={r.year === paybackYear ? "var(--mantine-color-teal-light)" : undefined}>
                 <Table.Td>{r.year}</Table.Td>
                 <Table.Td ta="right">{r.investment !== 0 ? money(r.investment) : "—"}</Table.Td>
+                {timeline && <Table.Td ta="right">{(r.productionFraction ?? 0).toFixed(2)}</Table.Td>}
                 <Table.Td ta="right">{money(r.revenue)}</Table.Td>
                 <Table.Td ta="right">{money(r.opex)}</Table.Td>
+                {timeline && <Table.Td ta="right">{money(r.startupCost ?? 0)}</Table.Td>}
                 <Table.Td ta="right">{money(r.depreciation)}</Table.Td>
                 <Table.Td ta="right">{money(r.taxableIncome)}</Table.Td>
                 <Table.Td ta="right">{money(r.tax)}</Table.Td>
@@ -585,7 +592,8 @@ function EconomicsBody({ econ }: { econ: NonNullable<RunResult["economics"]> }) 
         </Table>
       </ScrollArea>
       <Text size="xs" c="dimmed" mt={4}>
-        Monetary cells in {econ.currency} (k / M suffix).  Year 0 is construction (the capital outflow);
+        Monetary cells in {econ.currency} (k / M suffix).  Years up to 0 are construction (the capital
+        outflows; year 0 is the end of construction, where the working capital is invested);
         the discounted payback row{paybackYear !== undefined ? "" : " (none — never recovered)"} is highlighted.
         Full table in <code>reports/economics/cashFlow.csv</code> / <code>.ods</code>.
       </Text>

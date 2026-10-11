@@ -580,14 +580,21 @@ struct EnergyClosureRecord
 // monetary fields in the report currency (EUR); discount factor dimensionless,
 // discounted cash flow in EUR.  Published by EconomicsPass so the GUI / an
 // outer driver can read the FULL table, not just the headline scalars.
+//  Years run t = 1-Nc .. N: t <= 0 are the Nc construction years (t = 0 is
+//  the END of construction, the start-up instant), t = 1..N the operating
+//  years (DEV.md 4c C63).  With a one-year construction the rows are
+//  t = 0..N, as they always were.
 struct CashFlowYear
 {
-    int    year             = 0;    // t = 0..N
-    scalar investment       = 0.0;  // FCI + WC outflow (year 0 only), <0
-    scalar revenue          = 0.0;  // R_t
+    int    year             = 0;    // t = 1-Nc .. N
+    scalar investment       = 0.0;  // capital outflow (construction years: FCI
+                                    // fraction; t = 0 also WC), <0
+    scalar productionFraction = 1.0; // p_t of the ramp-up (0 in construction)
+    scalar revenue          = 0.0;  // R_t = p_t R
     scalar operatingCost    = 0.0;  // COM_d_t (depreciation NOT included)
+    scalar startupCost      = 0.0;  // start-up cost, expensed in year 1 only
     scalar depreciation     = 0.0;  // d_t (straight line)
-    scalar taxableIncome    = 0.0;  // R - COM_d - d
+    scalar taxableIncome    = 0.0;  // R_t - COM_d_t - startup_t - d
     scalar tax              = 0.0;  // tau * taxableIncome
     scalar afterTaxProfit   = 0.0;  // (R - COM_d - d)(1-tau)
     scalar cashFlow         = 0.0;  // CF_t (after-tax profit + d, + WC/salvage at N)
@@ -652,7 +659,18 @@ struct EconomicsSummary
     scalar                    accLo         = -30.0; // AACE band low  (%)
     scalar                    accHi         = +50.0; // AACE band high (%)
     std::string               currency      = "EUR";
-    std::vector<CashFlowYear> cashFlow;              // rows t = 0..N
+    std::vector<CashFlowYear> cashFlow;              // rows t = 1-Nc..N
+    //  THE START-UP YEARS (C63).  `timelineExtended` is true when the case
+    //  declared anything beyond the one-year, full-production timeline; the
+    //  writers add the production-fraction and start-up columns ONLY then,
+    //  so every other case writes byte-for-byte what it did.
+    bool                      timelineExtended    = false;
+    int                       constructionPeriod  = 1;
+    std::vector<scalar>       capitalSchedule;               // sums to 1
+    std::vector<scalar>       rampUp;                        // first op. years
+    scalar                    startupCostFraction = 0.0;     // x FCI
+    scalar                    startupCost         = 0.0;     // money, year 1
+    scalar                    NPV_projectStart    = 0.0;     // NPV/(1+i)^Nc
     WorkingCapitalBuildUp     workingCapital;        // present only when declared
 };
 

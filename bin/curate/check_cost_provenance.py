@@ -133,6 +133,13 @@ that happened to agree with the model's.
       fraction form keeps WC = 0.15 x FCI with no build-up; a unitless or a
       missing day count is refused BY NAME.  See `check_working_capital`.
 
+  (r) THE START-UP YEARS RECOMPUTE, ROW BY ROW (2026-10-11, DEV.md 4c
+      C63).  On economics03_startup_years the construction schedule, the
+      ramp-up and the start-up cost are recomputed from the declarations and
+      the published KPIs: every cashFlow.csv row, the NPV, the IRR and the
+      discounted payback; a missing or mis-summed schedule refuses by name;
+      the one-year form writes the old shape.  See `check_startup_years`.
+
   (o) A DECISION SAYS WHOSE IT IS.  `refuseOnMissingPrice` decides whether an
       appraisal REFUSES on an absent price or reports zero revenue, and it was
       a float read with a silent default.  Two probes, built here because
@@ -694,6 +701,217 @@ def check_working_capital(fails):
         fails.append("(q) a missing `payables` is not refused BY NAME")
 
 
+SUCASE = ROOT / "tutorials/steady/economics/economics03_startup_years"
+
+
+def check_startup_years(fails):
+    """(r) THE START-UP YEARS RECOMPUTE, ROW BY ROW (2026-10-11, DEV.md 4c
+    C63).  On economics03_startup_years, which declares `constructionPeriod`,
+    `capitalSchedule`, `rampUp` and `startupCostFraction`, the whole timeline
+    is RECOMPUTED here from the postDict's own declarations and the run's
+    published KPIs (FCI, WC, revenue, COM_d, C_RM, C_UT) -- never from the
+    engine's arithmetic:
+
+      * construction year k of N spends f_k FCI at t = k - N; t = 0 also
+        invests the WC; every year is discounted by 1/(1+i)^t;
+      * operating year t at production fraction p_t (1 after the list):
+        R_t = p_t R, COM_d,t = COM_d - 1.23 (1 - p_t)(C_RM + C_UT) -- only
+        the variable group scales; the start-up cost s FCI is deducted in
+        year 1; d = FCI / depreciableLife while t <= depreciableLife;
+        CF_t = (R_t - COM_d,t - S_t - d_t)(1 - tau) + d_t; + WC at t = N;
+      * every row of reports/economics/cashFlow.csv (rounded to whole
+        currency units) is that row, the NPV is the sum, the IRR zeroes it,
+        and the discounted payback is where the cumulative turns positive;
+      * the console names the NPV at the START of construction and announces
+        that the WC does not follow the ramp-up.
+    Probes, on copies: N = 3 with no schedule REFUSES naming
+    `capitalSchedule`; a schedule summing to 0.9 REFUSES printing the sum;
+    with the four keys removed and `constructionPeriod 1;` the CSV has NO
+    `productionFraction` column, the JSON no `timeline` object, and the NPV
+    is the one-year closed form (-FCI - WC at t = 0, full production).
+    SABOTAGES, BY HAND, 2026-10-11, in EconomicsPass.cpp under
+    `destructive_session`'s journal, each restored byte for byte and the
+    engine rebuilt; the gate then returned OK:
+      S1  the ramp-up scales the FIXED group too (COM_d,t = p COM_d)
+          -> FAILED: "economics.NPV = 83242548.4524, recomputed
+          78315195.448214", the IRR, the payback, rows 1 and 2.
+      S2  the start-up cost taken after tax instead of deducted
+          -> FAILED: NPV 77259998.8132, row 1 "4161972, recomputed
+          5322688.05".
+      S3  the WC invested at the FIRST construction year
+          -> FAILED: NPV 76574121.0009, rows -2 and 0.
+      S4  the schedule's sum check removed
+          -> FAILED: "a capitalSchedule summing to 0.9 is not refused naming
+          its sum (rc=0)" -- and ONLY that, which is why the probe exists.
+    The first run of the two refusal probes FAILED on a correct engine: they
+    edited the postDict's header COMMENT, which quotes the same keys, so the
+    case ran unchanged and was "not refused"; a probe now edits only the
+    `economics {}` block.
+    NOT CHECKED: whether the conventions are right (WC not ramped, start-up
+    expensed in year 1 -- stated defaults, put to Vitor); a schedule's
+    REALISM.
+    """
+    if not SUCASE.exists():
+        fails.append("(r) %s is missing -- this arm CANNOT RUN and must not "
+                     "pass." % SUCASE.name)
+        return
+    post = _nc((SUCASE / "system" / "postDict").read_text(errors="replace"))
+    econ = re.search(r'\beconomics\s*\{(.*?)\n\}', post, re.S)
+    if not econ:
+        fails.append("(r) %s declares no economics block" % SUCASE.name)
+        return
+    eb = econ.group(1)
+
+    def num(key):
+        m = re.search(r'\b%s\s+([-0-9.eE+]+)\s*;' % key, eb)
+        return float(m.group(1)) if m else None
+
+    def lst(key):
+        m = re.search(r'\b%s\s*\(([^)]*)\)' % key, eb)
+        return [float(x) for x in m.group(1).split()] if m else None
+    N = int(num("constructionPeriod"))
+    sched, ramp = lst("capitalSchedule"), lst("rampUp")
+    s_frac = num("startupCostFraction")
+    life, i, tau = int(num("projectLife")), num("discountRate"), num("taxRate")
+    dlife = int(num("depreciableLife"))
+    if not (N > 1 and sched and ramp and s_frac):
+        fails.append("(r) %s must declare all four start-up keys with N > 1 "
+                     "-- otherwise this arm tests nothing" % SUCASE.name)
+        return
+
+    def run_copy(edit=None):
+        tmp = tempfile.mkdtemp(prefix="cost_su_")
+        d = Path(tmp) / SUCASE.name
+        shutil.copytree(SUCASE, d, ignore=shutil.ignore_patterns(
+            "design", "reports", "converged", "postProcessing", "iterations"))
+        if edit:
+            #  The edit reaches ONLY the `economics {}` block: the file's
+            #  header quotes the same keys in a comment, and a probe that
+            #  edits the comment proves nothing (it did, on its first run).
+            pd = d / "system" / "postDict"
+            txt = pd.read_text(errors="replace")
+            m = re.search(r'\neconomics\s*\{', txt)
+            pd.write_text(txt[:m.start()] + edit(txt[m.start():]))
+        q = subprocess.run([str(BIN), str(d)], capture_output=True, text=True,
+                           cwd=str(ROOT), timeout=600)
+        csvp = d / "reports" / "economics" / "cashFlow.csv"
+        csvt = csvp.read_text() if csvp.exists() else ""
+        shutil.rmtree(tmp, ignore_errors=True)
+        return q.returncode, q.stdout + q.stderr, csvt
+
+    rc, out, csvt = run_copy()
+    if rc != 0:
+        fails.append("(r) %s failed (rc=%d)" % (SUCASE.name, rc))
+        return
+    e = _kpi_line(out, "economics")
+    if e is None or not csvt:
+        fails.append("(r) the run publishes no economics KPI line or no "
+                     "cashFlow.csv")
+        return
+    FCI, WC, R, COM = e["FCI"], e["WC"], e["revenue"], e["COM_d"]
+    V = e["C_RM"] + e["C_UT"]
+    d_ann = FCI / dlife
+    S = s_frac * FCI
+    want = {}
+    for k in range(1, N + 1):
+        want[k - N] = -sched[k - 1] * FCI
+    want[0] -= WC
+    for t in range(1, life + 1):
+        p = ramp[t - 1] if t <= len(ramp) else 1.0
+        com = COM - 1.23 * (1.0 - p) * V
+        d_t = d_ann if t <= dlife else 0.0
+        st = S if t == 1 else 0.0
+        want[t] = (p * R - com - st - d_t) * (1.0 - tau) + d_t
+    want[life] += WC
+    npv = sum(cf / (1.0 + i) ** t for t, cf in want.items())
+    if abs(npv - e["NPV"]) > 1e-8 * max(abs(npv), 1.0):
+        fails.append("(r) economics.NPV = %.6f, recomputed %.6f from the "
+                     "declared timeline" % (e["NPV"], npv))
+    irr = e.get("IRR")
+    if irr is None or not math.isfinite(irr):
+        fails.append("(r) the witness publishes no IRR -- it is meant to be "
+                     "profitable, so the IRR arm cannot run")
+    else:
+        at = sum(cf / (1.0 + irr) ** t for t, cf in want.items())
+        if abs(at) > 1e-6 * FCI:
+            fails.append("(r) NPV at the published IRR %.6f is %.3f, not zero"
+                         % (irr, at))
+    cum, prev, pb = 0.0, 0.0, None
+    for t in sorted(want):
+        disc = want[t] / (1.0 + i) ** t
+        prev, cum = cum, cum + disc
+        if cum >= 0.0 and t > 0:
+            pb = (t - 1) + (-prev / disc)
+            break
+    if pb is None or abs(pb - e["paybackYears"]) > 1e-8 * max(pb, 1.0):
+        fails.append("(r) economics.paybackYears = %s, recomputed %s"
+                     % (e.get("paybackYears"), pb))
+    rows = [l for l in csvt.splitlines() if l and not l.startswith("#")]
+    head = rows[0].split(",")
+    if "productionFraction" not in head or not any(
+            h.startswith("startupCost_") for h in head):
+        fails.append("(r) cashFlow.csv carries no productionFraction / "
+                     "startupCost columns on a case that declares the keys")
+    else:
+        iy, icf = head.index("year"), head.index(
+            next(h for h in head if h.startswith("cashFlow_")))
+        seen = {}
+        for l in rows[1:]:
+            c = l.split(",")
+            if len(c) != len(head) or not re.fullmatch(r'-?\d+', c[iy]):
+                break
+            seen[int(c[iy])] = float(c[icf])
+        if sorted(seen) != sorted(want):
+            fails.append("(r) cashFlow.csv years %s, expected %s"
+                         % (sorted(seen), sorted(want)))
+        for t, cf in want.items():
+            if t in seen and abs(seen[t] - cf) > 1.0:
+                fails.append("(r) cashFlow.csv year %d: cash flow %.0f, "
+                             "recomputed %.2f" % (t, seen[t], cf))
+    for phrase in ("NPV at the START of construction",
+                   "does NOT follow the ramp-up",
+                   "an EXPENSE of operating year 1",
+                   "year by year ("):
+        if phrase not in out:
+            fails.append("(r) the console does not say `%s`" % phrase)
+
+    #  ---- probes on copies -----------------------------------------------
+    rc, o, _ = run_copy(lambda t: re.sub(r'\n\s*capitalSchedule\s*\([^)]*\)\s*;',
+                                         '\n', t, count=1))
+    if rc == 0 or "no capitalSchedule is declared" not in o:
+        fails.append("(r) constructionPeriod %d with no capitalSchedule is not "
+                     "refused BY NAME (rc=%d)" % (N, rc))
+    rc, o, _ = run_copy(lambda t: re.sub(r'capitalSchedule\s*\([^)]*\)',
+                                         'capitalSchedule ( 0.3 0.4 0.2 )', t,
+                                         count=1))
+    if rc == 0 or "sums to 0.9" not in o:
+        fails.append("(r) a capitalSchedule summing to 0.9 is not refused "
+                     "naming its sum (rc=%d)" % rc)
+
+    def one_year(t):
+        t = re.sub(r'\n\s*(capitalSchedule|rampUp)\s*\([^)]*\)\s*;', '\n', t)
+        t = re.sub(r'\n\s*startupCostFraction\s+[0-9.]+\s*;', '\n', t)
+        return re.sub(r'constructionPeriod\s+\d+\s*;', 'constructionPeriod 1;', t)
+    rc, o, c1 = run_copy(one_year)
+    e1 = _kpi_line(o, "economics")
+    if rc != 0 or e1 is None:
+        fails.append("(r) the one-year form of the witness failed (rc=%d)" % rc)
+    else:
+        cf_op = lambda t: ((e1["revenue"] - e1["COM_d"]
+                            - (e1["FCI"] / dlife if t <= dlife else 0.0))
+                           * (1.0 - tau) + (e1["FCI"] / dlife if t <= dlife else 0.0))
+        npv1 = -(e1["FCI"] + e1["WC"]) + sum(
+            cf_op(t) / (1.0 + i) ** t for t in range(1, life + 1)) \
+            + e1["WC"] / (1.0 + i) ** life
+        if abs(npv1 - e1["NPV"]) > 1e-8 * max(abs(npv1), 1.0):
+            fails.append("(r) the one-year NPV is %.6f, the closed form %.6f"
+                         % (e1["NPV"], npv1))
+        if "productionFraction" in c1 or '"timeline"' in o:
+            fails.append("(r) a case declaring none of the keys writes the "
+                         "start-up columns or the JSON timeline -- it must be "
+                         "byte-identical to the old shape")
+
+
 def main():
     if not BIN.exists():
         print("check_cost_provenance: FAIL -- choupoSolve missing; run `make all`")
@@ -990,6 +1208,7 @@ def main():
     check_policy_is_named(fails)
     check_retired_name_refused(fails)
     check_working_capital(fails)
+    check_startup_years(fails)
 
     if fails:
         print("check_cost_provenance: FAIL")
@@ -997,7 +1216,12 @@ def main():
             print("  - " + f)
         return 1
 
-    print("check_cost_provenance: OK -- the WORKING CAPITAL built up on "
+    print("check_cost_provenance: OK -- the START-UP YEARS of "
+          "economics03_startup_years RECOMPUTE row by row from the declared "
+          "construction schedule, ramp-up and start-up cost (NPV, IRR, "
+          "payback, every cashFlow.csv row), a missing or mis-summed schedule "
+          "is refused by name, and the one-year form keeps the old shape; "
+          "the WORKING CAPITAL built up on "
           "greenAmmoniaIndustrialN2 RECOMPUTES line by line (stocks valued at "
           "COST, receivables, cash, payables; GROSS = capital circulante, NET = "
           "fundo de maneio = the cash flow's WC), the fraction form is "

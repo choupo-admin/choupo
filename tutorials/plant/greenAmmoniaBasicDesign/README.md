@@ -155,6 +155,23 @@ assumed U); the NPV at the base case's appraisal knobs is −329 M EUR
 against −493 M EUR. The NPV moved because the energy bill did, not the
 capital.
 
+### The start-up years (DEV.md 4c C63)
+
+The appraisal is a basic-design one, so it declares how the plant gets
+built and started: a **three-year construction** spending the FCI as
+`( 0.25 0.45 0.30 )` at the end of each year, a **ramp-up** to 70 % and 90 %
+of design production in the first two operating years, and a **start-up
+cost** of 0.08 × FCI expensed in the first. Every one of these is an
+**author-set assumption**, not a datum. Year 0 is the end of construction,
+so the construction outflows are compounded to start-up; the working
+capital is invested in full at year 0 and does not follow the ramp-up (the
+run says so). The ramp-up scales the revenue and the variable costs only,
+and because this plant loses money in every operating year at these prices,
+producing less in years 1 and 2 loses LESS: the NPV moves only from
+−328.9 to −329.5 M EUR, the compounded capital and the start-up cost
+slightly outweighing the smaller early losses. The run prints the table
+year by year.
+
 ### The relief valves (DEV.md 4c C62)
 
 Ten pressure-relief valves are sized as `reliefValve` items of the sizing

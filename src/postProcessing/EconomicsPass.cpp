@@ -347,10 +347,20 @@ void writeCashFlowCsv(const EconomicsSummary& e)
     f << "# AACE Class-" << e.estimateClass << " estimate -- accuracy band "
       << std::fixed << std::setprecision(0) << e.accLo << "% / +" << e.accHi
       << "%\n";
-    f << "year,investment_" << cur
-      << ",revenue_"        << cur
-      << ",operatingCost_"  << cur
-      << ",depreciation_"   << cur
+    //  THE START-UP YEARS (C63): two columns more, and only when the case
+    //  declared a timeline beyond the one-year, full-production shape -- so
+    //  every other case writes this file byte-for-byte as before.
+    const bool ext = e.timelineExtended;
+    if (ext)
+        f << "# year <= 0: construction (capital at the END of each year);"
+             " year 0 = end of construction = start-up, where the WC is"
+             " invested; years 1.." << e.projectLife << ": operation\n";
+    f << "year,investment_" << cur;
+    if (ext) f << ",productionFraction";
+    f << ",revenue_"        << cur
+      << ",operatingCost_"  << cur;
+    if (ext) f << ",startupCost_" << cur;
+    f << ",depreciation_"   << cur
       << ",taxableIncome_"  << cur
       << ",tax_"            << cur
       << ",afterTaxProfit_" << cur
@@ -362,10 +372,12 @@ void writeCashFlowCsv(const EconomicsSummary& e)
     for (const auto& r : e.cashFlow)
     {
         f << r.year
-          << "," << csvNum(r.investment,     0)
-          << "," << csvNum(r.revenue,        0)
-          << "," << csvNum(r.operatingCost,  0)
-          << "," << csvNum(r.depreciation,   0)
+          << "," << csvNum(r.investment,     0);
+        if (ext) f << "," << csvNum(r.productionFraction, 4);
+        f << "," << csvNum(r.revenue,        0)
+          << "," << csvNum(r.operatingCost,  0);
+        if (ext) f << "," << csvNum(r.startupCost, 0);
+        f << "," << csvNum(r.depreciation,   0)
           << "," << csvNum(r.taxableIncome,  0)
           << "," << csvNum(r.tax,            0)
           << "," << csvNum(r.afterTaxProfit, 0)
@@ -383,6 +395,19 @@ void writeCashFlowCsv(const EconomicsSummary& e)
     f << "COM_d,"        << csvNum(e.COM_d, 0) << "\n";
     f << "revenue,"      << csvNum(e.revenue, 0) << "\n";
     f << "NPV,"          << csvNum(e.NPV,   0) << "\n";
+    if (ext)
+    {
+        f << "NPV_atStartOfConstruction," << csvNum(e.NPV_projectStart, 0) << "\n";
+        f << "constructionPeriod_yr," << e.constructionPeriod << "\n";
+        f << "capitalSchedule";
+        for (const auto x : e.capitalSchedule) f << "," << csvNum(x, 6);
+        f << "\n";
+        f << "rampUp";
+        for (const auto x : e.rampUp) f << "," << csvNum(x, 6);
+        f << "\n";
+        f << "startupCostFraction," << csvNum(e.startupCostFraction, 6) << "\n";
+        f << "startupCost,"         << csvNum(e.startupCost, 0) << "\n";
+    }
     f << "IRR_pct,"      << (e.haveIRR ? csvNum(100.0 * e.IRR, 2) : "") << "\n";
     f << "discountedPayback_yr," << csvNum(e.discPayback,   2) << "\n";
     f << "simplePayback_yr,"     << csvNum(e.simplePayback, 2) << "\n";
@@ -463,8 +488,12 @@ void writeCashFlowOds(const EconomicsSummary& e)
     ods.newRow();
     ods.textCell("Year",                       OdsWriter::Header);
     ods.textCell("Fixed+Working Capital",      OdsWriter::Header);
+    if (e.timelineExtended)
+        ods.textCell("Production fraction",    OdsWriter::Header);
     ods.textCell("Revenue",                    OdsWriter::Header);
     ods.textCell("OPEX (COM_d)",               OdsWriter::Header);
+    if (e.timelineExtended)
+        ods.textCell("Start-up cost",          OdsWriter::Header);
     ods.textCell("Depreciation",               OdsWriter::Header);
     ods.textCell("Taxable income",             OdsWriter::Header);
     ods.textCell("Tax",                        OdsWriter::Header);
@@ -489,8 +518,12 @@ void writeCashFlowOds(const EconomicsSummary& e)
         ods.newRow();
         ods.numberCell(r.year,            0, rowSt);
         ods.numberCell(r.investment,      0, rowSt);
+        if (e.timelineExtended)
+            ods.numberCell(r.productionFraction, 4, rowSt);
         ods.numberCell(r.revenue,         0, rowSt);
         ods.numberCell(r.operatingCost,   0, rowSt);
+        if (e.timelineExtended)
+            ods.numberCell(r.startupCost, 0, rowSt);
         ods.numberCell(r.depreciation,    0, rowSt);
         ods.numberCell(r.taxableIncome,   0, rowSt);
         ods.numberCell(r.tax,             0, rowSt);
@@ -523,6 +556,13 @@ void writeCashFlowOds(const EconomicsSummary& e)
     metric("Annual revenue (R)",             e.revenue, 0, false);
     metric("NPV @ " + csvNum(100.0 * e.discountRate, 1) + "%",
            e.NPV, 0, e.NPV > 0.0);
+    if (e.timelineExtended)
+    {
+        metric("NPV at the start of construction", e.NPV_projectStart, 0,
+               e.NPV_projectStart > 0.0);
+        metric("Construction period [yr]", e.constructionPeriod, 0, false);
+        metric("Start-up cost (year 1)", e.startupCost, 0, false);
+    }
     metric("IRR [%]", e.haveIRR ? 100.0 * e.IRR : std::nan(""), 2,
            e.haveIRR);
     metric("Discounted payback [yr]", e.discPayback,   2,
@@ -597,6 +637,233 @@ bool refuseOnMissingPriceOf(const DictPtr& d)
     return true;
 }
 
+// =========================================================================
+//  THE START-UP YEARS: A MULTI-YEAR CONSTRUCTION, A RAMP-UP AND A START-UP
+//  COST (2026-10-11, DEV.md 4c C63).  Vitor: "Sabes se foi feita a analise
+//  economica com anos de arranque e capital circulante e fundo de maneio?"
+//
+//  OPT-IN.  A case that declares none of the keys below, and
+//  `constructionPeriod 1;` or no such key, computes, prints and writes
+//  exactly what it did before (measured against a build of the parent
+//  commit on every economics case in the corpus, not argued).
+//
+//      constructionPeriod  3;                 // whole years, >= 1
+//      capitalSchedule     ( 0.3 0.5 0.2 );   // FCI fraction spent at the
+//                                             // END of each construction
+//                                             // year; must sum to 1
+//      rampUp              ( 0.6 0.85 );      // production fraction of the
+//                                             // first operating years; 1
+//                                             // thereafter
+//      startupCostFraction 0.08;              // start-up cost, x FCI
+//
+//  THE CONVENTION, AND WHERE IT WAS READ.  The capital half was read on
+//  2026-10-11 from CAPCOST 2017 (`capcost_2017_rev2.xlsm`, sha256
+//  2747f01f...f428e4), the program Turton, Shaeiwitz, Bhattacharyya &
+//  Whiting distribute with "Analysis, Synthesis and Design of Chemical
+//  Processes" (5th ed.) -- the same file `costing/Turton.cpp` reads its
+//  coefficients from.  Its worksheet "COM Summary" asks for a "Construction
+//  period" (C47) and a "Distribution of Fixed Capital Investment (must sum
+//  to one)" by "End of year One ... Five" (B49:C54), and its worksheet
+//  "Cash Flow Analysis" (B48:L63) lays the timeline out as:
+//    * the FCI fraction of construction year k spent at the END of year k
+//      and discounted as (1+i)^-k (rows 50-51);
+//    * the working capital invested at the end of the LAST construction
+//      year, the same instant as the last capital fraction (row 52);
+//    * operation beginning the year after, for a "Project Life (Years after
+//      Startup)" (C45) -- so `projectLife` here counts OPERATING years, as
+//      it always did;
+//    * depreciation starting in the first operating year (row 53);
+//    * the working capital recovered, untaxed, at the end of the last
+//      operating year (row 63).
+//  The BOOK's chapter was NOT read; what is cited is the authors' program.
+//
+//  WHERE TIME ZERO IS -- the one place this differs from CAPCOST, and why.
+//  CAPCOST's year 0 is the START of the project (before construction).
+//  Choupo's year 0 has always been the END of construction -- the start-up
+//  instant, where the whole FCI and the WC sat for its one construction
+//  year -- and it STAYS there, so every one-year case is unchanged.  The
+//  construction years are therefore years 1-N ... 0, and their outflows are
+//  COMPOUNDED forward to start-up by the same factor 1/(1+i)^t, with t <= 0.
+//  The IRR, both paybacks and the sign of the NPV do not depend on where
+//  time zero is; the NPV itself is the CAPCOST one times (1+i)^N, and a
+//  run with N > 1 prints both.
+//
+//  A CONSTRUCTION PERIOD ABOVE 1 WITH NO SCHEDULE REFUSES.  The schedule
+//  moves the NPV by an amount of the same order as the construction delay
+//  itself (front-loaded or back-loaded spending), and a uniform default
+//  would be a policy nobody chose -- the rule `workingCapital {}` already
+//  applies to its day counts.  The refusal names the remedy with CAPCOST's
+//  own two-year example, (0.6 0.4).
+//
+//  THE RAMP-UP SCALES THE REVENUE AND THE VARIABLE COSTS, AND NOTHING ELSE.
+//  COM_d as this file assembles it is a sum of three groups, each
+//  proportional to one direct cost:  0.180 FCI  +  2.73 C_OL  +
+//  1.23 (C_RM + C_UT + C_WT).  The first two do not change while a plant
+//  learns to run at capacity (the equipment, its maintenance and its crew
+//  are all there in year 1); the third is the material, utility and waste
+//  bill, which follows the throughput.  So in an operating year at
+//  production fraction p:
+//      R_t     = p R
+//      COM_d,t = 0.180 FCI + 2.73 C_OL + 1.23 p (C_RM + C_UT + C_WT)
+//  The split is the equation's own structure, not one invented here: every
+//  overhead the 1.23 carries rides on the variable group already.  What is
+//  NOT modelled: a ramp-up that degrades yield or quality (p scales the
+//  products and the raw materials alike), and a utility bill that is not
+//  proportional to throughput.
+//
+//  THE WORKING CAPITAL DOES NOT FOLLOW THE RAMP-UP.  It is invested IN FULL
+//  at the end of construction (CAPCOST's row 52), because the stocks, the
+//  cash and the credit lines must be in place before the first product
+//  ships, and recovered at the end of life as before.  Announced whenever a
+//  ramp-up is declared, so a reader does not assume the opposite.
+//
+//  THE START-UP COST IS A FRACTION OF FCI, ON ITS OWN LINE, EXPENSED IN THE
+//  FIRST OPERATING YEAR.  A fraction because that is how a start-up cost is
+//  estimated at this stage (it scales with the plant, and a money amount
+//  would not follow the FCI when a sweep moves the plant's size).  It is an
+//  EXPENSE of year 1 -- commissioning, off-spec product, training -- so it
+//  is deducted from that year's taxable income like COM_d, and it is not
+//  depreciated.  NEITHER CHOICE WAS READ IN A BOOK: CAPCOST's cash-flow
+//  sheet carries no start-up line at all.  Both are stated defaults of this
+//  pass and are printed on the line itself.
+// =========================================================================
+struct DcfTimeline
+{
+    int                 constructionPeriod = 1;
+    std::vector<scalar> capitalSchedule { 1.0 };   // sums to 1
+    std::vector<scalar> rampUp;                    // first operating years
+    scalar              startupCostFraction = 0.0;
+    bool                scheduleDeclared   = false;
+    bool                extended           = false; // anything beyond the old shape
+
+    //  Production fraction of operating year t (t >= 1).
+    scalar productionFraction(int t) const
+    {
+        return (t >= 1 && t <= static_cast<int>(rampUp.size()))
+             ? rampUp[static_cast<std::size_t>(t - 1)] : 1.0;
+    }
+};
+
+std::string fmtList(const std::vector<scalar>& v)
+{
+    std::ostringstream os;
+    os << "(";
+    for (const auto x : v) os << " " << x;
+    os << " )";
+    return os.str();
+}
+
+DcfTimeline readTimeline(const DictPtr& d, int projectLife)
+{
+    DcfTimeline tl;
+
+    const scalar cp = d->lookupScalarOrDefault("constructionPeriod", 1.0);
+    if (!(cp >= 1.0) || std::fabs(cp - std::round(cp)) > 1e-9)
+    {
+        std::ostringstream m;
+        m << "economics: constructionPeriod " << cp << " is not a whole number"
+             " of years >= 1.  The cash flow places each construction year's"
+             " capital at the END of that year, so the period is counted in"
+             " whole years: declare 1, 2, 3, ...";
+        throw std::runtime_error(m.str());
+    }
+    tl.constructionPeriod = static_cast<int>(std::lround(cp));
+    const int N = tl.constructionPeriod;
+
+    if (d->found("capitalSchedule"))
+    {
+        tl.scheduleDeclared = true;
+        tl.capitalSchedule  = d->lookupList("capitalSchedule");
+        if (static_cast<int>(tl.capitalSchedule.size()) != N)
+        {
+            std::ostringstream m;
+            m << "economics: capitalSchedule " << fmtList(tl.capitalSchedule)
+              << " carries " << tl.capitalSchedule.size() << " fraction(s) and"
+                 " constructionPeriod is " << N << ": declare exactly one FCI"
+                 " fraction per construction year, spent at the END of that"
+                 " year.";
+            throw std::runtime_error(m.str());
+        }
+        scalar sum = 0.0;
+        for (const auto f : tl.capitalSchedule)
+        {
+            if (!(f >= 0.0) || f > 1.0)
+                throw std::runtime_error(
+                    "economics: capitalSchedule " + fmtList(tl.capitalSchedule)
+                    + " holds a fraction outside [0, 1]; each entry is the share"
+                      " of the FCI spent in one construction year.");
+            sum += f;
+        }
+        if (std::fabs(sum - 1.0) > 1e-9)
+        {
+            std::ostringstream m;
+            m << std::setprecision(12)
+              << "economics: capitalSchedule " << fmtList(tl.capitalSchedule)
+              << " sums to " << sum << ", not 1.  The schedule distributes"
+                 " the WHOLE fixed capital investment over the construction"
+                 " years; a sum below 1 would leave capital unspent and one"
+                 " above 1 would spend more than the FCI the costing priced.";
+            throw std::runtime_error(m.str());
+        }
+    }
+    else if (N > 1)
+    {
+        std::ostringstream m;
+        m << "economics: constructionPeriod is " << N << " and no"
+             " capitalSchedule is declared.  How the fixed capital is spent"
+             " over the " << N << " years moves the NPV (spending late is"
+             " cheaper in present value than spending early), and an even"
+             " split would be a policy nobody chose.  Declare one FCI fraction"
+             " per construction year, summing to 1, spent at the END of each"
+             " year -- e.g. `capitalSchedule ( 0.6 0.4 );`, the two-year"
+             " example of CAPCOST 2017, the costing program of Turton et al.";
+        throw std::runtime_error(m.str());
+    }
+
+    if (d->found("rampUp"))
+    {
+        tl.rampUp = d->lookupList("rampUp");
+        if (tl.rampUp.empty())
+            throw std::runtime_error(
+                "economics: rampUp ( ) is empty.  Declare the production"
+                " fraction of each of the first operating years, e.g."
+                " `rampUp ( 0.6 0.85 );`, or delete the key for full production"
+                " from year 1.");
+        if (static_cast<int>(tl.rampUp.size()) > projectLife)
+        {
+            std::ostringstream m;
+            m << "economics: rampUp " << fmtList(tl.rampUp) << " lists "
+              << tl.rampUp.size() << " operating years and projectLife is "
+              << projectLife << ": a ramp-up longer than the plant's life is"
+                 " a declaration error.";
+            throw std::runtime_error(m.str());
+        }
+        for (const auto p : tl.rampUp)
+            if (!(p >= 0.0) || p > 1.0)
+                throw std::runtime_error(
+                    "economics: rampUp " + fmtList(tl.rampUp) + " holds a"
+                    " fraction outside [0, 1]; each entry is the share of the"
+                    " design production reached in one operating year.");
+    }
+
+    if (d->found("startupCostFraction"))
+    {
+        tl.startupCostFraction = d->lookupScalar("startupCostFraction");
+        if (!(tl.startupCostFraction >= 0.0))
+        {
+            std::ostringstream m;
+            m << "economics: startupCostFraction " << tl.startupCostFraction
+              << " is negative; it is the start-up cost as a fraction of the"
+                 " FCI (e.g. 0.08).";
+            throw std::runtime_error(m.str());
+        }
+    }
+
+    tl.extended = (N > 1) || !tl.rampUp.empty()
+               || d->found("startupCostFraction");
+    return tl;
+}
+
 } // anonymous namespace
 
 EconomicsPass::EconomicsPass(const DictPtr& economicsDict)
@@ -659,37 +926,14 @@ int EconomicsPass::run(SimulationResult& result)
     //  corpus run, 2026-08-27.  Reading it costs nothing and moves no number
     //  -- there is one method and every case names it -- but a key that does
     //  not exist must now say so instead of being quietly ignored.
-    //  `constructionPeriod` WAS READ BY NOTHING IN THE WHOLE TREE, and the
-    //  cash-flow timeline hardcodes ONE year ("Year 0 = construction ... for
-    //  a 1-year construction", below).  So a case declaring 2 was discounted
-    //  over 1 and nothing said so.
-    //
-    //  ONE SHIPPED CASE DOES DECLARE 2 -- ammonia02_full_plant, deliberately,
-    //  beside `projectLife 15`.  Its published NPV therefore does not match
-    //  its own declaration, which is a live finding and a better one than the
-    //  coincidence the first draft of this comment claimed.
-    //
-    //  IT ANNOUNCES; IT DOES NOT REFUSE, and the first version of this code
-    //  got that wrong.  Refusing would break a case whose author declared a
-    //  two-year construction on purpose -- my judgement overriding theirs --
-    //  and implementing a real multi-year draw-down MOVES a published NPV,
-    //  which is a scientific decision and is reserved.  Announcing states the
-    //  gap beside the answer and moves nothing, which is what this project
-    //  does with every other declared-but-unmodelled fact.
-    const scalar constructionPeriod = econDict_->lookupScalarOrDefault("constructionPeriod", 1.0);
-    if (std::fabs(constructionPeriod - 1.0) > 1e-9)
-    {
-        std::ostringstream cp;
-        cp << "the case declares constructionPeriod = " << constructionPeriod
-           << ", and this DCF models a ONE-year construction: the whole FCI"
-              " and working capital are placed at t = 0 and operating cash"
-              " flows begin in year 1.  A multi-year draw-down is NOT"
-              " implemented, so the NPV, IRR and paybacks below are computed"
-              " on a 1-year construction whatever this key says.";
-        std::cout << "  [economics] " << cp.str() << "\n";
-        AdvisoryLog::instance().add("economics", "warning",
-                                    "constructionPeriod", cp.str());
-    }
+    //  THE START-UP YEARS (2026-10-11, DEV.md 4c C63).  `constructionPeriod`
+    //  was read by nothing until 2026-08-27 and then only ANNOUNCED as not
+    //  implemented, so `ammonia02_full_plant`, which declares 2, was
+    //  discounted over one.  It is honoured now, with the capital schedule,
+    //  the ramp-up and the start-up cost beside it -- see `readTimeline`
+    //  above for the grammar, the convention and where it was read.
+    const DcfTimeline timeline =
+        readTimeline(econDict_, static_cast<int>(std::lround(projectLife)));
 
     const std::string econMethod   = econDict_->lookupWordOrDefault("method", "discountedCashFlow");
     if (econMethod != "discountedCashFlow")
@@ -922,31 +1166,61 @@ int EconomicsPass::run(SimulationResult& result)
     const int    Nlife    = static_cast<int>(std::lround(projectLife));
     const int    Ndepr    = static_cast<int>(std::lround(depreciableLife));
 
-    // Build the cash-flow timeline.  Year 0 = construction (-FCI and -WC at
-    // startup are both placed at t=0 here for a 1-year construction; the WC
-    // is recovered untaxed at end-of-life, salvage is taxed on the gain).
-    std::vector<scalar> cashFlow(Nlife + 1, 0.0);
-    cashFlow[0] = -FCI - WC;                 // construction + working capital
+    //  Build the cash-flow timeline (C63; see `readTimeline` for the
+    //  convention and where it was read).  Year 0 is the END of
+    //  construction, the start-up instant; construction year k of N spends
+    //  its capital fraction at t = k - N (t <= 0), the working capital is
+    //  invested at t = 0, and the plant operates in years 1..Nlife.  With
+    //  N = 1 and no ramp-up or start-up cost declared this is exactly the
+    //  old one-year timeline: -FCI - WC at t = 0, full production from year
+    //  1.  The WC is recovered untaxed at end-of-life, salvage is taxed on
+    //  the gain.  cashFlow[k] holds year t = k + tFirst.
+    const int    Nc     = timeline.constructionPeriod;
+    const int    tFirst = 1 - Nc;
+    const int    Nrows  = Nlife + Nc;            // years tFirst..Nlife
+    auto at = [&](int t) -> std::size_t { return static_cast<std::size_t>(t - tFirst); };
+
+    const scalar C_var        = C_RM + C_UT + C_WT;   // the variable group
+    const scalar startupCost  = timeline.startupCostFraction * FCI;
+    auto revenueAt  = [&](int t) { return timeline.productionFraction(t) * R; };
+    auto comAt      = [&](int t)
+    {
+        const scalar p = timeline.productionFraction(t);
+        return (p == 1.0) ? COM_d
+                          : 0.180 * FCI + 2.73 * C_OL + 1.23 * (p * C_var);
+    };
+    auto startupAt  = [&](int t) { return (t == 1) ? startupCost : 0.0; };
+
+    std::vector<scalar> cashFlow(static_cast<std::size_t>(Nrows), 0.0);
+    std::vector<scalar> capitalOut(static_cast<std::size_t>(Nrows), 0.0);
+    for (int k = 1; k <= Nc; ++k)                // construction, end of year k
+        capitalOut[at(k - Nc)] = -(timeline.capitalSchedule[static_cast<std::size_t>(k - 1)] * FCI);
+    capitalOut[at(0)] -= WC;                     // working capital at start-up
+    for (int t = tFirst; t <= 0; ++t) cashFlow[at(t)] = capitalOut[at(t)];
     for (int t = 1; t <= Nlife; ++t)
     {
         const scalar d_t  = (t <= Ndepr) ? d_annual : 0.0;
-        const scalar CF_t = (R - COM_d - d_t) * (1.0 - taxRate) + d_t;
-        cashFlow[t] = CF_t;
+        const scalar CF_t = (revenueAt(t) - comAt(t) - startupAt(t) - d_t)
+                          * (1.0 - taxRate) + d_t;
+        cashFlow[at(t)] = CF_t;
     }
-    cashFlow[Nlife] += WC + salvage * (1.0 - taxRate);  // WC untaxed; salvage taxed
+    cashFlow[at(Nlife)] += WC + salvage * (1.0 - taxRate);  // WC untaxed; salvage taxed
 
     auto npvAt = [&](scalar i) -> scalar
     {
         scalar npv = 0.0;
-        for (int t = 0; t <= Nlife; ++t)
-            npv += cashFlow[t] / std::pow(1.0 + i, t);
+        for (int t = tFirst; t <= Nlife; ++t)
+            npv += cashFlow[at(t)] / std::pow(1.0 + i, t);
         return npv;
     };
     auto dNpvAt = [&](scalar i) -> scalar
     {
         scalar d = 0.0;
-        for (int t = 1; t <= Nlife; ++t)
-            d += -static_cast<scalar>(t) * cashFlow[t] / std::pow(1.0 + i, t + 1);
+        for (int t = tFirst; t <= Nlife; ++t)
+        {
+            if (t == 0) continue;                // the t = 0 term has no slope
+            d += -static_cast<scalar>(t) * cashFlow[at(t)] / std::pow(1.0 + i, t + 1);
+        }
         return d;
     };
 
@@ -959,9 +1233,9 @@ int EconomicsPass::run(SimulationResult& result)
     {
         scalar cum = 0.0;
         int    prevSign = 0;
-        for (int t = 0; t <= Nlife; ++t)
+        for (int t = tFirst; t <= Nlife; ++t)
         {
-            cum += cashFlow[t];
+            cum += cashFlow[at(t)];
             const int s = (cum > 0.0) ? 1 : (cum < 0.0 ? -1 : 0);
             if (s != 0 && prevSign != 0 && s != prevSign) ++cumSignChanges;
             if (s != 0) prevSign = s;
@@ -1049,13 +1323,15 @@ int EconomicsPass::run(SimulationResult& result)
 
     // ---- 8.  Payback ----------------------------------------------------
     // Discounted payback (DEFAULT): year the cumulative DISCOUNTED cash flow
-    // first turns positive (linear interpolation within the year).
+    // first turns positive (linear interpolation within the year).  It is
+    // counted in OPERATING years after start-up; a multi-year construction
+    // enters through its capital, compounded to start-up (C63).
     scalar discPayback = std::nan("");
     {
         scalar cum = 0.0, prevCum = 0.0;
-        for (int t = 0; t <= Nlife; ++t)
+        for (int t = tFirst; t <= Nlife; ++t)
         {
-            const scalar disc = cashFlow[t] / std::pow(1.0 + discountRate, t);
+            const scalar disc = cashFlow[at(t)] / std::pow(1.0 + discountRate, t);
             prevCum = cum;
             cum += disc;
             if (cum >= 0.0 && t > 0)
@@ -1067,9 +1343,77 @@ int EconomicsPass::run(SimulationResult& result)
         }
     }
     // Simple PBP (labelled; understates): FCI / (after-tax operating CF + d).
+    //  With a RAMP-UP or a START-UP COST the operating cash flow is not one
+    //  number, so the closed form would describe a plant that does not
+    //  exist: the payback is then the operating time after start-up at which
+    //  the UNDISCOUNTED operating cash flows (end-of-life recovery excluded)
+    //  first add up to the FCI, interpolated within the year.  With a
+    //  constant cash flow the two are the same rule, and the closed form is
+    //  kept for that case so nothing it printed moves.
     const scalar afterTaxOpCF = (R - COM_d - d_annual) * (1.0 - taxRate) + d_annual;
-    const scalar simplePayback = (afterTaxOpCF > 0.0) ? (FCI / afterTaxOpCF)
-                                                      : std::nan("");
+    scalar simplePayback = (afterTaxOpCF > 0.0) ? (FCI / afterTaxOpCF)
+                                                : std::nan("");
+    if (!timeline.rampUp.empty() || startupCost != 0.0)
+    {
+        simplePayback = std::nan("");
+        scalar cum = 0.0;
+        for (int t = 1; t <= Nlife; ++t)
+        {
+            const scalar d_t  = (t <= Ndepr) ? d_annual : 0.0;
+            const scalar CF_t = (revenueAt(t) - comAt(t) - startupAt(t) - d_t)
+                              * (1.0 - taxRate) + d_t;
+            if (CF_t > 0.0 && cum + CF_t >= FCI)
+            {
+                simplePayback = (t - 1) + (FCI - cum) / CF_t;
+                break;
+            }
+            cum += CF_t;
+        }
+    }
+
+    // ---- 8b. The year-by-year table (years tFirst..Nlife) ---------------
+    // The classic Perry / Turton income/cash-flow statement.  A construction
+    // year (t <= 0) carries only its capital -- the FCI fraction spent at its
+    // end, plus the working capital at t = 0; an operating year carries the
+    // revenue and COM_d at its production fraction, the start-up cost in
+    // year 1, the depreciation and the tax.  Built once here so the console
+    // table, the CSV, the .ods and the result JSON draw the SAME rows.
+    std::vector<CashFlowYear> cashFlowRows;
+    {
+        scalar cumDisc = 0.0;
+        for (int t = tFirst; t <= Nlife; ++t)
+        {
+            CashFlowYear row;
+            row.year           = t;
+            const scalar d_t   = (t >= 1 && t <= Ndepr) ? d_annual : 0.0;
+            if (t <= 0)
+            {
+                row.investment         = capitalOut[at(t)];   // <= 0
+                row.productionFraction = 0.0;
+            }
+            else
+            {
+                row.productionFraction = timeline.productionFraction(t);
+                row.revenue       = revenueAt(t);
+                row.operatingCost = comAt(t);
+                row.startupCost   = startupAt(t);
+                row.depreciation  = d_t;
+                row.taxableIncome = row.revenue - row.operatingCost
+                                  - row.startupCost - d_t;
+                row.tax           = taxRate * row.taxableIncome;
+                row.afterTaxProfit = row.taxableIncome - row.tax;
+            }
+            row.cashFlow        = cashFlow[at(t)];   // includes WC/salvage at N
+            row.discountFactor  = 1.0 / std::pow(1.0 + discountRate, t);
+            row.discountedCF    = cashFlow[at(t)] * row.discountFactor;
+            cumDisc            += row.discountedCF;
+            row.cumulativeDCF   = cumDisc;
+            cashFlowRows.push_back(row);
+        }
+    }
+    //  The NPV referred to the START of construction, CAPCOST's own year 0
+    //  (see `readTimeline`): N years before start-up.
+    const scalar NPV_projectStart = NPV / std::pow(1.0 + discountRate, Nc);
 
     // ---- 9.  Report (glass-box: every term on its own printed line) -----
     //  THE ACCURACY BAND COMES FROM ONE HOME, AND A DECLARED ONE IS THE
@@ -1256,8 +1600,48 @@ int EconomicsPass::run(SimulationResult& result)
     std::cout << "    discount rate i              = " << discountRate << "\n";
     std::cout << "    project life N               = " << std::setprecision(0)
               << projectLife << " yr\n";
+    if (timeline.extended)
+    {
+        //  THE START-UP YEARS (C63), printed so every number the table below
+        //  carries can be redone by hand.  Silent when nothing was declared,
+        //  so a one-year case prints exactly what it did.
+        std::cout << "    construction period Nc       = " << Nc
+                  << " yr; capital at the END of each construction year: "
+                  << fmtList(timeline.capitalSchedule) << " x FCI\n"
+                  << "    year 0 = end of construction (start-up); construction"
+                     " years are t = " << tFirst << ".." << 0
+                  << ": discounted by 1/(1+i)^t like every year,\n"
+                     "      so a t < 0 outflow is COMPOUNDED to start-up\n";
+        if (!timeline.rampUp.empty())
+        {
+            std::cout << "    ramp-up p_t                  = "
+                      << fmtList(timeline.rampUp) << ", 1 thereafter\n"
+                      << "      R_t = p_t R ;  COM_d,t = 0.180 FCI + 2.73 C_OL"
+                         " + 1.23 p_t (C_RM + C_UT + C_WT)\n";
+            const std::string m =
+                "the ramp-up scales the revenue and the variable costs only;"
+                " the working capital is invested IN FULL at the end of"
+                " construction (t = 0) and does NOT follow the ramp-up -- the"
+                " stocks, cash and credit lines are in place before the first"
+                " product ships (CAPCOST 2017 places the whole WC at the end"
+                " of construction).  A ramped working capital is not modelled.";
+            if (AdvisoryLog::instance().add("assumed", "warning", "economics", m))
+                std::cout << "  [assumed] economics: " << m << "\n";
+        }
+        if (econDict_->found("startupCostFraction"))
+            std::cout << "    start-up cost = " << std::setprecision(3)
+                      << timeline.startupCostFraction << " x FCI   = "
+                      << std::setprecision(0) << std::setw(14) << startupCost
+                      << " EUR, an EXPENSE of operating year 1 (deducted from"
+                         " its taxable income, not depreciated)\n";
+    }
     std::cout << "    NPV(i=" << std::setprecision(3) << discountRate << ")        = "
               << std::setprecision(0) << std::setw(14) << NPV << " EUR\n";
+    if (Nc > 1)
+        std::cout << "    NPV at the START of construction = NPV/(1+i)^" << Nc
+                  << " = " << std::setprecision(0) << NPV_projectStart
+                  << " EUR  (CAPCOST's year 0; the IRR and paybacks do not"
+                     " depend on it)\n";
     if (haveIRR)
         std::cout << "    IRR (bisection+Newton)       = " << std::setprecision(2)
                   << 100.0 * IRR << " %\n";
@@ -1276,6 +1660,32 @@ int EconomicsPass::run(SimulationResult& result)
     if (std::isfinite(simplePayback))
         std::cout << "    simple payback (understates) = " << std::setprecision(2)
                   << simplePayback << " yr\n";
+    if (timeline.extended)
+    {
+        //  The table a student audits from, year by year, in the console as
+        //  well as in reports/economics/cashFlow.csv -- printed only when the
+        //  timeline is more than the one-year shape (the old run printed no
+        //  table, and a one-year case still prints none).
+        std::cout << "\n    year by year (" << (result.costs.empty() ? std::string("EUR")
+                                    : result.costs.begin()->second.currency)
+                  << "; t <= 0 construction, t = 0 also the WC):\n"
+                  << "    " << std::setw(4) << "t" << std::setw(7) << "p_t"
+                  << std::setw(15) << "capital" << std::setw(15) << "revenue"
+                  << std::setw(15) << "COM_d,t" << std::setw(14) << "start-up"
+                  << std::setw(14) << "deprec." << std::setw(14) << "tax"
+                  << std::setw(15) << "cash flow" << std::setw(11) << "1/(1+i)^t"
+                  << std::setw(16) << "cumulative DCF" << "\n";
+        for (const auto& r : cashFlowRows)
+            std::cout << "    " << std::setw(4) << r.year
+                      << std::setw(7) << std::setprecision(3) << r.productionFraction
+                      << std::setprecision(0)
+                      << std::setw(15) << r.investment << std::setw(15) << r.revenue
+                      << std::setw(15) << r.operatingCost << std::setw(14) << r.startupCost
+                      << std::setw(14) << r.depreciation << std::setw(14) << r.tax
+                      << std::setw(15) << r.cashFlow
+                      << std::setw(11) << std::setprecision(4) << r.discountFactor
+                      << std::setprecision(0) << std::setw(16) << r.cumulativeDCF << "\n";
+    }
     std::cout << "=====================================================================\n\n";
 
     // ---- 10.  Publish headline KPIs (the differentiator) ----------------
@@ -1312,8 +1722,9 @@ int EconomicsPass::run(SimulationResult& result)
     }
 
     // ---- 11.  Build the year-by-year DCF table + emit the spreadsheet ----
-    // The classic Perry / Turton income/cash-flow statement (years 0..N): the
-    // SHEET is the deliverable, the log above is the echo.  Every column is
+    // The classic Perry / Turton income/cash-flow statement (years 1-Nc..N,
+    // so 0..N for one construction year), built in 8b: the SHEET is the
+    // deliverable, the log above is the echo.  Every column is
     // reconstructed from the same scalars the log printed (glass-box: the .ods
     // adds NOTHING the student cannot also read in the log).
     EconomicsSummary& summary = result.economics;
@@ -1341,35 +1752,14 @@ int EconomicsPass::run(SimulationResult& result)
                           ? std::string("EUR")
                           : result.costs.begin()->second.currency;
 
-    scalar cumDisc = 0.0;
-    for (int t = 0; t <= Nlife; ++t)
-    {
-        CashFlowYear row;
-        row.year           = t;
-        // Year 0 is construction: the only outflow is the capital (FCI + WC);
-        // the operating columns are zero.  cashFlow[0] already carries that
-        // negative outflow (-FCI - WC).
-        const scalar d_t   = (t >= 1 && t <= Ndepr) ? d_annual : 0.0;
-        if (t == 0)
-        {
-            row.investment    = cashFlow[0];   // -FCI - WC
-        }
-        else
-        {
-            row.revenue       = R;
-            row.operatingCost = COM_d;
-            row.depreciation  = d_t;
-            row.taxableIncome = R - COM_d - d_t;
-            row.tax           = taxRate * row.taxableIncome;
-            row.afterTaxProfit = row.taxableIncome - row.tax;
-        }
-        row.cashFlow        = cashFlow[t];     // already includes WC/salvage at N
-        row.discountFactor  = 1.0 / std::pow(1.0 + discountRate, t);
-        row.discountedCF    = cashFlow[t] * row.discountFactor;
-        cumDisc            += row.discountedCF;
-        row.cumulativeDCF   = cumDisc;
-        summary.cashFlow.push_back(row);
-    }
+    summary.cashFlow      = cashFlowRows;
+    summary.timelineExtended   = timeline.extended;
+    summary.constructionPeriod = Nc;
+    summary.capitalSchedule    = timeline.capitalSchedule;
+    summary.rampUp             = timeline.rampUp;
+    summary.startupCostFraction = timeline.startupCostFraction;
+    summary.startupCost        = startupCost;
+    summary.NPV_projectStart   = NPV_projectStart;
 
     // Persist both the .csv and the coloured .ods (reports/economics/).
     writeCashFlowCsv(summary);

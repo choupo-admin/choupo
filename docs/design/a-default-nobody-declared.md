@@ -132,8 +132,9 @@ places it bit are named here rather than quietly worked around.**
   STOPPED.**  `projectLife` 10, `discountRate` 0.10, `taxRate` 0.21,
   `depreciableLife` 9, `salvageFraction` 0, `workingCapital` 0.15,
   `streamFactor` 0.90, `siteFactor` 0.50, `contingencyFee` 1.18, `N_np` 7,
-  `estimateClass` 4, `constructionPeriod` 1 (this one already announces when it
-  is declared and unmodelled), `langFactor` 3.63, `operatorAnnualHours` 1960.
+  `estimateClass` 4, `constructionPeriod` 1 (this one then announced when it
+  was declared and unmodelled; since 2026-10-11 it is modelled, DEV.md 4c
+  C63), `langFactor` 3.63, `operatorAnnualHours` 1960.
   Announcing all fourteen on every economics run is a wall of text, and the
   reader who meets fourteen identical sentences reads none of them — which is
   the summary block's own failure mode, arriving by a different road.  Whether

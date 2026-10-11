@@ -6,7 +6,7 @@
   "runtime": "not recorded; runTests does not time per case and this script does not run the corpus"
  },
  "counts": {
-  "cases": 462,
+  "cases": 468,
   "witnesses": 16,
   "validationOp": 6,
   "anchored": 12
@@ -609,6 +609,35 @@
   "tutorials/batch/reactor/batch08_isothermal_duty": {
    "application": "choupoBatch",
    "unitTypes": [
+    "batchReactor"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [],
+   "hasGolden": true
+  },
+  "tutorials/batch/reactor/batch26_cooling_failure": {
+   "application": "choupoBatch",
+   "unitTypes": [
+    "batchReactor"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [],
+   "hasGolden": true
+  },
+  "tutorials/batch/reactor/batch27_semibatch_dosing": {
+   "application": "choupoBatch",
+   "unitTypes": [
+    "batchAccumulator",
     "batchReactor"
    ],
    "thermo": {
@@ -2615,6 +2644,31 @@
    "roles": [],
    "hasGolden": true
   },
+  "tutorials/props/safety/relief01_ammonia_loop_gas": {
+   "application": "choupoProps",
+   "ops": [
+    "propertyPoint"
+   ],
+   "thermo": {
+    "formulation": "phiPhi"
+   },
+   "roles": [],
+   "hasGolden": true
+  },
+  "tutorials/props/safety/relief02_acetone_fire_case": {
+   "application": "choupoProps",
+   "ops": [
+    "propertyPoint"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [],
+   "hasGolden": true
+  },
   "tutorials/props/scan/binary01_lle_water_nbutanol": {
    "application": "choupoProps",
    "ops": [
@@ -2729,6 +2783,20 @@
    "ops": [
     "propertyPoint",
     "propertyScan1D"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [],
+   "hasGolden": true
+  },
+  "tutorials/props/thermo/bubble01_reaction_mass_boiling_point": {
+   "application": "choupoProps",
+   "ops": [
+    "propertyPoint"
    ],
    "thermo": {
     "formulation": "gammaPhi",
@@ -3692,6 +3760,14 @@
     "activityModels": [
      "ideal"
     ]
+   },
+   "roles": [],
+   "hasGolden": true
+  },
+  "tutorials/steady/economics/economics03_startup_years": {
+   "application": "choupoSolve",
+   "thermo": {
+    "formulation": "diluteSolution"
    },
    "roles": [],
    "hasGolden": true
@@ -6806,6 +6882,8 @@
     "tutorials/batch/reactor/batch06_adaptive_runaway",
     "tutorials/batch/reactor/batch07_lhhw_methylAcetate",
     "tutorials/batch/reactor/batch08_isothermal_duty",
+    "tutorials/batch/reactor/batch26_cooling_failure",
+    "tutorials/batch/reactor/batch27_semibatch_dosing",
     "tutorials/batch/recipes/recipe01_react_then_distill",
     "tutorials/batch/recipes/recipe02_setpoint_ramp",
     "tutorials/batch/recipes/recipe03_conditional_partial",
@@ -6937,6 +7015,8 @@
     "tutorials/props/molecular/srk01_h2n2_density",
     "tutorials/props/reactor/thiele01_sphere_first_order",
     "tutorials/props/reactor/thiele02_prater_temperature",
+    "tutorials/props/safety/relief01_ammonia_loop_gas",
+    "tutorials/props/safety/relief02_acetone_fire_case",
     "tutorials/props/scan/binary01_lle_water_nbutanol",
     "tutorials/props/scan/hxy01_ethanol_water_1atm",
     "tutorials/props/scan/phase01_water_full",
@@ -6946,6 +7026,7 @@
     "tutorials/props/scan/ternary03_lle_water_ethanol_benzene",
     "tutorials/props/steam/steam01_if97_verification",
     "tutorials/props/steam/steam02_water_transport",
+    "tutorials/props/thermo/bubble01_reaction_mass_boiling_point",
     "tutorials/props/thermo/standardState01_hydrogen_enthalpy_TP",
     "tutorials/props/thermo/temperature01_gas_thermometer",
     "tutorials/props/thermo/temperature02_engineers_ladder",
@@ -7040,6 +7121,7 @@
     "tutorials/steady/drying/sprayDryer07_design",
     "tutorials/steady/economics/economics01_esterification_dcf",
     "tutorials/steady/economics/economics02_irr_sweep",
+    "tutorials/steady/economics/economics03_startup_years",
     "tutorials/steady/electrodialysis/ed01_nacl_desalination",
     "tutorials/steady/electrodialysis/ed02_over_limiting_current",
     "tutorials/steady/electrodialysis/ed03_stack_record",
@@ -7282,6 +7364,7 @@
     "tutorials/steady/gas-solid/bagFilter01_dust"
    ],
    "batchAccumulator": [
+    "tutorials/batch/reactor/batch27_semibatch_dosing",
     "tutorials/batch/recipes/recipe01_react_then_distill",
     "tutorials/batch/recipes/recipe04_charge_enthalpy",
     "tutorials/batch/still/still03_with_receiver",
@@ -7328,6 +7411,8 @@
     "tutorials/batch/reactor/batch06_adaptive_runaway",
     "tutorials/batch/reactor/batch07_lhhw_methylAcetate",
     "tutorials/batch/reactor/batch08_isothermal_duty",
+    "tutorials/batch/reactor/batch26_cooling_failure",
+    "tutorials/batch/reactor/batch27_semibatch_dosing",
     "tutorials/batch/recipes/recipe01_react_then_distill",
     "tutorials/batch/recipes/recipe02_setpoint_ramp",
     "tutorials/batch/recipes/recipe03_conditional_partial"
@@ -8046,6 +8131,8 @@
     "tutorials/batch/reactor/batch05_crystalliser",
     "tutorials/batch/reactor/batch06_adaptive_runaway",
     "tutorials/batch/reactor/batch08_isothermal_duty",
+    "tutorials/batch/reactor/batch26_cooling_failure",
+    "tutorials/batch/reactor/batch27_semibatch_dosing",
     "tutorials/batch/recipes/recipe01_react_then_distill",
     "tutorials/batch/recipes/recipe02_setpoint_ramp",
     "tutorials/batch/recipes/recipe03_conditional_partial",
@@ -8141,10 +8228,12 @@
     "tutorials/props/molecular/solubility01_hildebrand_ladder",
     "tutorials/props/reactor/thiele01_sphere_first_order",
     "tutorials/props/reactor/thiele02_prater_temperature",
+    "tutorials/props/safety/relief02_acetone_fire_case",
     "tutorials/props/scan/phase01_water_full",
     "tutorials/props/scan/ternary02_bubbleT_benzene_toluene_water",
     "tutorials/props/steam/steam01_if97_verification",
     "tutorials/props/steam/steam02_water_transport",
+    "tutorials/props/thermo/bubble01_reaction_mass_boiling_point",
     "tutorials/props/thermo/temperature01_gas_thermometer",
     "tutorials/props/thermo/temperature02_engineers_ladder",
     "tutorials/props/thermoTest/atoms01_formula_parser",
@@ -8464,7 +8553,10 @@
     "tutorials/props/molecular/pcsaft02_states_crosscheck",
     "tutorials/props/molecular/pcsaft03_association_pure",
     "tutorials/props/molecular/srk01_h2n2_density",
+    "tutorials/props/safety/relief01_ammonia_loop_gas",
+    "tutorials/props/safety/relief02_acetone_fire_case",
     "tutorials/props/steam/steam02_water_transport",
+    "tutorials/props/thermo/bubble01_reaction_mass_boiling_point",
     "tutorials/props/thermo/temperature01_gas_thermometer",
     "tutorials/props/thermo/temperature02_engineers_ladder"
    ],

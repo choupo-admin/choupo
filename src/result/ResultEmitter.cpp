@@ -1160,15 +1160,40 @@ void emitResultJson(std::ostream& os, const SimulationResult& r)
                << ", \"productionCostPerKg\": " << num(w.productionCostPerKg)
                << "\n    },\n";
         }
+        //  THE START-UP YEARS (2026-10-11, DEV.md 4c C63), ONLY when the
+        //  case declared a timeline beyond the one-year, full-production
+        //  shape -- every other case's JSON is byte-for-byte what it was.
+        //  The rows then also run over the construction years (year <= 0).
+        if (e.timelineExtended)
+        {
+            auto list = [&](const std::vector<scalar>& v)
+            {
+                std::string out = "[";
+                for (std::size_t k = 0; k < v.size(); ++k)
+                    out += (k ? ", " : "") + num(v[k]);
+                return out + "]";
+            };
+            os << "    \"timeline\": { \"constructionPeriod\": " << e.constructionPeriod
+               << ", \"capitalSchedule\": " << list(e.capitalSchedule)
+               << ", \"rampUp\": " << list(e.rampUp)
+               << ", \"startupCostFraction\": " << num(e.startupCostFraction)
+               << ", \"startupCost\": " << num(e.startupCost)
+               << ", \"NPV_atStartOfConstruction\": " << num(e.NPV_projectStart)
+               << " },\n";
+        }
         os << "    \"cashFlow\": [";
         for (std::size_t i = 0; i < e.cashFlow.size(); ++i)
         {
             const auto& cf = e.cashFlow[i];
             os << (i ? ",\n" : "\n") << "      { \"year\": " << cf.year
-               << ", \"investment\": "     << num(cf.investment)
-               << ", \"revenue\": "        << num(cf.revenue)
-               << ", \"opex\": "           << num(cf.operatingCost)
-               << ", \"depreciation\": "   << num(cf.depreciation)
+               << ", \"investment\": "     << num(cf.investment);
+            if (e.timelineExtended)
+                os << ", \"productionFraction\": " << num(cf.productionFraction);
+            os << ", \"revenue\": "        << num(cf.revenue)
+               << ", \"opex\": "           << num(cf.operatingCost);
+            if (e.timelineExtended)
+                os << ", \"startupCost\": " << num(cf.startupCost);
+            os << ", \"depreciation\": "   << num(cf.depreciation)
                << ", \"taxableIncome\": "  << num(cf.taxableIncome)
                << ", \"tax\": "            << num(cf.tax)
                << ", \"afterTaxProfit\": " << num(cf.afterTaxProfit)

@@ -117,6 +117,14 @@ economics
     method              discountedCashFlow;
     projectLife         15;
     constructionPeriod  2;
+    //  How the FCI is spent over the two construction years, at the END of
+    //  each (DEV.md 4c C63).  AUTHOR-SET ASSUMPTION, not a datum for this
+    //  plant: it is the two-year example distribution CAPCOST 2017 (the
+    //  costing program of Turton et al.) ships with.  Until 2026-10-11 the
+    //  engine discounted this case over ONE construction year whatever the
+    //  line above said; it honours the two years now, so the NPV is the
+    //  one this declaration describes.
+    capitalSchedule     ( 0.6 0.4 );
     discountRate        0.10;
     taxRate             0.21;
     depreciation        straightLine;

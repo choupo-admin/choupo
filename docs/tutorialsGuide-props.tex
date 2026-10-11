@@ -3498,6 +3498,97 @@ k = 40 1/s is a TEACHING VALUE chosen so the generalised modulus lands near 1 --
 \goldmore{23}
 \end{tutgolden}
 
+\subsection{safety}
+\grouptheory{safety}
+\clearpage
+\tutentry{relief01\_ammonia\_loop\_gas}{tutorials/props/safety/relief01\_ammonia\_loop\_gas}
+\begin{tutscheme}
+\begin{tikzpicture}[>={Stealth[length=2mm]}, every node/.style={font=\scriptsize}]
+  \node[draw, rounded corners=2pt, align=center, minimum width=3.1cm, minimum height=0.8cm, fill=black!4] at (0.0,-0.0) {\textbf{loop150}\\[-1pt]{\tiny propertyPoint}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=3.1cm, minimum height=0.8cm, fill=black!4] at (3.6,-0.0) {\textbf{loop50}\\[-1pt]{\tiny propertyPoint}};
+\end{tikzpicture}
+\end{tutscheme}
+\tutwhat{The ammonia synthesis loop's converter feed at the relieving pressure of a blocked outlet, at 150 bar and at 50 bar: the compressibility factor and Cp/Cv the gas relief-valve equation needs, computed with the SRK the loop runs on}
+\begin{tutnarrative}
+THE GAS SIDE OF A BLOCKED-OUTLET RELIEF VALVE ON THE AMMONIA SYNTHESIS LOOP (DEV.md 4c C61, the "Designing for overpressure" EduTool).
+
+THE QUESTION. The converter's outlet is blocked while the recycle compressor goes on delivering the converter feed. The relief valve on the feed side must pass that whole flow at the relieving pressure, and the gas relief equation needs two properties of the gas there besides its molar mass: the compressibility factor Z and the ratio of specific heats k = Cp/Cv. This case computes both, for the same loop at 150 bar and at 50 bar -- the two green-ammonia feasibility cases the Process-safety EduTool compares (tutorials/plant/greenAmmoniaFeasibility and greenAmmoniaFeasibility50bar).
+
+WHERE THE STATES COME FROM. composition -- each plant's converged converter feed (`PreheatedFeed`), copied as the component flows in kmol/h exactly as the plant's converged/PreheatedFeed prints them. propertyPoint normalises the composition, so the flows ARE the composition; the EduTool reads them again as the relieving rate. gui/tests/overpressure.test.ts holds every number to the plant's own converged file. T -- the same stream's temperature (653.15 K and 593.15 K): a blocked outlet relieves the gas as it arrives. P -- the RELIEVING pressure, worked from the stream's operating pressure in the EduTool and written here to the digit: operating (gauge) = P\_stream - 1.01325 bar MAWP (gauge) = max(1.1 x operating, operating + 1.7 bar) (the Design Guide's rule of thumb for the design pressure, docs/designGuide.tex, "Pressure relief, flare \& safety basics") set pressure = MAWP (a single device) relieving (gauge) = max(1.10 x MAWP, MAWP + 3 psi) relieving (abs) = relieving (gauge) + 1.01325 bar The MAWP is a rule of thumb applied to a feasibility case that sizes no vessel; no number here is the design pressure of any real loop.
+
+WHAT IS COMPUTED. propertyPoint's base set: Z on the SRK vapour root, and gamma = Cp\_ig/(Cp\_ig - R) from the records' ideal-gas heat capacities -- the ideal-gas ratio the gas relief equation is derived with.
+
+\end{tutnarrative}
+\tutreadme{The gas side of a blocked-outlet relief valve on the green-ammonia synthesis loop: the converter's outlet is shut while the recycle compressor goes on delivering the converter feed, so the valve on the feed side must pass that whole flow at the relieving pressure.}
+\tutreadme{Two propertyPoint operations, one per loop pressure of the two C57 feasibility cases ([greenAmmoniaFeasibility](../../../plant/greenAmmoniaFeasibility) at 150 bar and [greenAmmoniaFeasibility50bar](../../../plant/greenAmmoniaFeasibility50bar)):}
+\tutreadme{$\ast$ the composition is each plant's converged converter feed (PreheatedFeed), copied as component flows in kmol/h --- propertyPoint normalises it, and the EduTool reads the same numbers back as the relieving rate; $\ast$ the temperature is that stream's; $\ast$ the pressure is the relieving pressure of a single device set at a MAWP given by the Design Guide's rule of thumb, max(1.1 $\times$ operating, operating + 1.7 bar), plus the 10 \% accumulation --- worked out in the propsDict header.}
+\tutreadme{What the run gives the relief equation is Z (SRK vapour root, kij = 0, announced) and k = Cp/Cv (the ideal-gas ratio). The sizing itself is the EduTool's arithmetic: $\ast$Designing for overpressure$\ast$ (DEV.md 4c C61), where the 50 bar loop turns out to need a relief valve about four and a half times larger than the 150 bar one.}
+\tutreadme{Nothing here is a design pressure or a relief load for a real loop.}
+\begin{tutgolden}
+\goldrow{diag}{loop150}{Cp\_ig}{29.8985186167}
+\goldrow{diag}{loop150}{H\_R}{258.83362137}
+\goldrow{diag}{loop150}{H\_ig}{9770.2186076}
+\goldrow{diag}{loop150}{H\_real}{10029.052229}
+\goldrow{diag}{loop150}{P}{18240876.8436}
+\goldrow{diag}{loop150}{S\_R}{-0.122977107449}
+\goldrow{diag}{loop150}{S\_ig}{129.551194701}
+\goldrow{diag}{loop150}{S\_real}{129.428217594}
+\goldrow{diag}{loop150}{T}{653.15}
+\goldrow{diag}{loop150}{Z}{1.06292561774}
+\goldrow{diag}{loop150}{gamma}{1.38521316932}
+\goldrow{diag}{loop150}{v\_molar}{0.000316449401973}
+\goldrow{diag}{loop50}{Cp\_ig}{30.1315777327}
+\goldrow{diag}{loop50}{H\_R}{64.6879856225}
+\goldmore{10}
+\end{tutgolden}
+
+\clearpage
+\tutentry{relief02\_acetone\_fire\_case}{tutorials/props/safety/relief02\_acetone\_fire\_case}
+\begin{tutscheme}
+\begin{tikzpicture}[>={Stealth[length=2mm]}, every node/.style={font=\scriptsize}]
+  \node[draw, rounded corners=2pt, align=center, minimum width=3.1cm, minimum height=0.8cm, fill=black!4] at (0.0,-0.0) {\textbf{relieving}\\[-1pt]{\tiny propertyPoint}};
+\end{tikzpicture}
+\end{tutscheme}
+\tutwhat{An acetone drum in a pool fire: the boiling temperature at the relieving pressure, the latent heat there, and the vapour's Z and Cp/Cv -- the fluid properties the fire-case relief load and the gas sizing equation need, computed by the engine rather than typed in}
+\begin{tutnarrative}
+THE FLUID SIDE OF A FIRE-CASE RELIEF VALVE (DEV.md 4c C61, the "Designing for overpressure" EduTool).
+
+THE QUESTION. A drum of acetone, a flammable solvent, sits in a pool fire. Its relief valve opens at the set pressure and the pressure climbs to the relieving pressure P1 = set + allowed accumulation; there the liquid BOILS, and the fire's heat leaves as vapour. The relief load is the heat absorbed divided by the latent heat, and the valve passes that vapour. So four properties of the fluid decide the valve, and all four are computed here:
+
+T\_bubble the boiling temperature at P1 (the relieving temperature) Hvap\_acetone the latent heat of vaporisation at that temperature Z the vapour's compressibility factor at (T, P1) gamma Cp/Cv of the vapour (the ideal-gas ratio, Cp\_ig/(Cp\_ig-R))
+
+THE NUMBERS ARE AUTHOR-SET, and the EduTool moves them. P is the relieving pressure of a drum whose MAWP is 5 barg, protected for the fire case with the set pressure at the MAWP: 1.21 x 5 barg + 1.01325 bar = 7.06325 bar absolute. The 5 barg is a round number chosen for the lesson, not a property of any real drum. T is the boiling temperature the SAME run reports at that pressure (T\_bubble), written back by hand so that Z, gamma and the latent heat are evaluated AT the relieving state; the EduTool does the same thing live, in two runs, whenever the reader moves the MAWP, and its test holds this file's T to its own T\_bubble.
+
+WHERE EACH NUMBER COMES FROM. T\_bubble: the bubble point of pure acetone on the package in constant/thermoPhysPropDict (ideal liquid, SRK vapour). Hvap\_acetone: the record's HvapTb carried to T by the Watson correlation, Component::Hvap\_latent -- the same term the engine subtracts from the ideal-gas enthalpy to price every liquid stream. Z: the SRK vapour root. gamma: the record's ideal-gas heat capacity.
+
+WHY ACETONE AND NOT TOLUENE. The first draft of this case was a toluene drum, and its run announced that toluene's Antoine record is fitted only from 273 to 380 K -- below the normal boiling point, so every boiling temperature of a pressurised toluene drum is an EXTRAPOLATED vapour pressure. A relief temperature resting on an extrapolation is a weak first lesson. Acetone's record covers 259.16 to 507.60 K, which holds the relieving state of any drum this EduTool lets the reader set.
+
+WHAT THIS CASE DOES NOT SAY. Nothing here is a relief-valve design: the sizing is the EduTool's arithmetic on these numbers, and no number in either is a design for a real vessel.
+
+\end{tutnarrative}
+\tutreadme{The fluid side of a fire-case relief valve. A drum of acetone sits in a pool fire; its valve opens at the set pressure (here the MAWP, 5 barg --- a round number for the lesson) and the pressure climbs to the relieving pressure with the 21 \% fire accumulation, 7.06325 bar absolute. There the liquid boils, and the fire's heat leaves as vapour.}
+\tutreadme{One propertyPoint operation, at the relieving pressure and at the boiling temperature the same run reports there, asks for the four numbers the relief load and the gas sizing equation need:}
+\tutreadme{Hvap\_<comp> is a property key added for this case (DEV.md 4c C61): it is the same latent heat the engine subtracts from the ideal-gas enthalpy to price every liquid, and it refuses at or above the critical temperature.}
+\tutreadme{Why acetone and not toluene: toluene's Antoine record is fitted only from 273 to 380 K, below its own normal boiling point, so every boiling temperature of a pressurised toluene drum would be an extrapolated vapour pressure. Acetone's covers 259.16 to 507.60 K.}
+\tutreadme{The sizing is the EduTool's arithmetic: $\ast$Designing for overpressure$\ast$. Nothing here is a relief design for a real vessel.}
+\begin{tutgolden}
+\goldrow{diag}{relieving}{Cp\_ig}{90.7915819779}
+\goldrow{diag}{relieving}{H\_R}{-1286.05234531}
+\goldrow{diag}{relieving}{H\_ig}{-209206.764976}
+\goldrow{diag}{relieving}{H\_real}{-210492.817321}
+\goldrow{diag}{relieving}{Hvap\_acetone}{24520.5209741}
+\goldrow{diag}{relieving}{P}{706325}
+\goldrow{diag}{relieving}{S\_R}{-2.25049969273}
+\goldrow{diag}{relieving}{S\_ig}{301.885255534}
+\goldrow{diag}{relieving}{S\_real}{299.634755842}
+\goldrow{diag}{relieving}{T}{394.109436}
+\goldrow{diag}{relieving}{T\_bubble}{394.109436036}
+\goldrow{diag}{relieving}{Z}{0.87065495897}
+\goldrow{diag}{relieving}{Z\_liquid}{0.0242535783371}
+\goldrow{diag}{relieving}{gamma}{1.10080932363}
+\goldmore{2}
+\end{tutgolden}
+
 \subsection{scan}
 \grouptheory{scan}
 \clearpage
@@ -3766,6 +3857,40 @@ The (rho,T) viscosity / conductivity kernels get their density from the IF97 the
 
 \subsection{thermo}
 \grouptheory{thermo}
+\clearpage
+\tutentry{bubble01\_reaction\_mass\_boiling\_point}{tutorials/props/thermo/bubble01\_reaction\_mass\_boiling\_point}
+\begin{tutscheme}
+\begin{tikzpicture}[>={Stealth[length=2mm]}, every node/.style={font=\scriptsize}]
+  \node[draw, rounded corners=2pt, align=center, minimum width=3.1cm, minimum height=0.8cm, fill=black!4] at (0.0,-0.0) {\textbf{reactionMassBubblePoint}\\[-1pt]{\tiny propertyPoint}};
+\end{tikzpicture}
+\end{tutscheme}
+\tutwhat{The boiling point of a reaction mass: the bubble point of the esterification batch's contents, the technical limit (MTT) of a cooling-failure scenario}
+\begin{tutnarrative}
+the BOILING POINT OF A REACTION MASS, which is what the thermal-safety methodology takes as the technical limit MTT of an open vessel at atmospheric pressure.
+
+The mass is the one in tutorials/batch/reactor/batch26\_cooling\_failure (and batch27, the same reaction dosed): acetic acid, ethanol, ethyl acetate and water. constant/ is a COPY of batch26's sealed constant/ (the same records under the same manifest, the same thermoPhysPropDict; only the reactor's own constant/reactions is left out, because no property operation reads it), so the boiling point below is computed on exactly the thermodynamics the reactor case declares: an IDEAL liquid (Raoult, gamma = 1) over an ideal gas.
+
+The composition is the reactor's at batch26's shipped cooling failure (t\_f = 600 s; mole fractions of the trajectory row at 600 s, 39.3 \% of the ethanol converted). The process-safety EduTool rewrites the four lines with the reactor contents at the failure instant the reader chooses, read from the engine's own trajectory, and reads T\_bubble back. ONE KEY PER LINE: the GUI's override anchors on a key at the start of a line, so a composition written on one line is a knob that silently misses.
+
+WHAT THIS IS NOT. The real quaternary is far from ideal -- ethyl acetate, ethanol and water form azeotropes that boil below every pure component -- so the ideal bubble point is the reactor case's own model answer, not a measured boiling point. And it is a bubble point at the failure instant: as a runaway converts the mass, its composition, and so its boiling point, moves.
+
+\end{tutnarrative}
+\begin{tutgolden}
+\goldrow{diag}{reactionMassBubblePoint}{Cp\_ig}{73.3777733752}
+\goldrow{diag}{reactionMassBubblePoint}{H\_R}{0}
+\goldrow{diag}{reactionMassBubblePoint}{H\_ig}{-334788.670229}
+\goldrow{diag}{reactionMassBubblePoint}{H\_real}{-334788.670229}
+\goldrow{diag}{reactionMassBubblePoint}{P}{101300}
+\goldrow{diag}{reactionMassBubblePoint}{S\_R}{0}
+\goldrow{diag}{reactionMassBubblePoint}{S\_ig}{297.421125497}
+\goldrow{diag}{reactionMassBubblePoint}{S\_real}{297.421125497}
+\goldrow{diag}{reactionMassBubblePoint}{T}{330}
+\goldrow{diag}{reactionMassBubblePoint}{T\_bubble}{362.340104804}
+\goldrow{diag}{reactionMassBubblePoint}{Z}{1}
+\goldrow{diag}{reactionMassBubblePoint}{gamma}{1.12779034023}
+\goldrow{diag}{reactionMassBubblePoint}{v\_molar}{0.0270856136618}
+\end{tutgolden}
+
 \clearpage
 \tutentry{standardState01\_hydrogen\_enthalpy\_TP}{tutorials/props/thermo/standardState01\_hydrogen\_enthalpy\_TP}
 \begin{tutscheme}

@@ -162,6 +162,14 @@ It is read now, and a value other than 1 is **ANNOUNCED**, on the console and
 in the end-of-run caveat block, saying exactly what the DCF did instead.  The
 NPV does not move.
 
+**SUPERSEDED 2026-10-11 (DEV.md 4c C63), and the announcement is retired.**
+Vítor commissioned the multi-year construction: `constructionPeriod` is
+honoured, with a `capitalSchedule` the case must declare when the period is
+above 1, and `ammonia02_full_plant` now declares `( 0.6 0.4 )` and is
+discounted over the two years it always said.  Its NPV moved, as this section
+said it would, and the moved rows went to Vítor as a list.  Record:
+[`the-start-up-years-of-a-cash-flow.md`](the-start-up-years-of-a-cash-flow.md).
+
 ### The mistake I made here, because it is the slice's own subject
 
 The first version of this fix **refused** anything but 1, and this section
