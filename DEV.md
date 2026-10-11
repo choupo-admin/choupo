@@ -1991,6 +1991,25 @@ accepts today, and that is a policy call.
      loop (membrane18), the dynamic loop (unsteady03), the UF law
      (membrane19) and the UF loop in time (unsteady04).
 
+**C65. THE DEBTS THE SAFETY AND LETDOWN SLICES FOUND: THREE RECORDS, ONE
+VALVE, ONE GATE (commander, 2026-10-11, under Vítor's "Avança da melhor
+forma porra! Eu vou dando feedback"; moved golden rows still go to him as a
+list before any record, CLAUDE.md §10).**  Measured: (a) `aceticAcid.dat`
+pairs a monomer ideal-gas datum with an `HvapTb` to the associated vapour
+(C60 ENGINE/DATA FINDING; liquid heat of reaction -25.9 vs calorimetric
+~-3.6 kJ/mol); (b) `NH3.dat:29` `Vliq 2.50e-5` is the molar volume at Tb,
+anchored by the engine at 25 C -- liquid NH3 ~13 % too dense at 253 K
+(C64); (c) `NH3.dat:16,69,87` `liquidViscosity` is regressed from
+Engineering Toolbox, a no-grant source by the licence policy, and
+`check_source_licence` has no arm for it; (d) the `valve` prices its
+energy balance on its own surface (Watson latent, ideal-gas vapour) --
+letdown01 38.66 kW unexplained, credo01 pinned for the same (C64); 41
+corpus cases declare NH3.  Scope: correct each record from a PRIMARY open
+source, teach `check_source_licence` the no-grant compilations the policy
+names, price the valve through `flashState::priceState`; measure every
+moved row and list it, record nothing that moves.  Status: dispatched
+2026-10-11.
+
 **C64. AN EDUTOOL ON LARGE PRESSURE LETDOWN: CHOKED FLOW, CAVITATION,
 FLASHING, NOISE AND HOW INDUSTRY STAGES THE DROP (Vítor, 2026-10-11,
 verbatim: "sabes como habitualmente se dá a redução de pressão de mais de
