@@ -1,0 +1,27 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*--------------------------------*- Choupo -*----------------------------------*\
+  0/internalStates/reactor -- the initial HOLDUP of 'reactor', the SINGLE
+  source of truth.  The whole batch is charged at t = 0: equimolar acetic
+  acid and ethanol, the same 18.5 mol as batch02, at T_p.
+\*-----------------------------------------------------------------------------*/
+
+recordType  internalState;
+
+unit        "reactor";
+equipment   batchReactor;
+
+holdup
+{
+    T            330.0 K;          // T_p
+    P            1.013 bar;
+    V            0.001;            // m^3 (the rate is first order in ethanol, so V cancels from the extent rate)
+    totalMoles   0.0185;           // kmol
+    molarComposition  { ethanol 0.5;  aceticAcid 0.5;  ethylAcetate 0.0;  water 0.0; }
+}

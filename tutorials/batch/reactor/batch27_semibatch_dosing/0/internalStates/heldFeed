@@ -1,0 +1,26 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*--------------------------------*- Choupo -*----------------------------------*\
+  0/internalStates/heldFeed -- empty.  The dosing interlock moves into it
+  whatever is left in the dosing tank when the cooling fails, so that no
+  later portion reaches the reactor (see system/flowsheetDict).
+\*-----------------------------------------------------------------------------*/
+
+recordType  internalState;
+
+unit        "heldFeed";
+equipment   batchAccumulator;
+
+holdup
+{
+    T            330.0 K;          // placeholder; takes the held feed's T
+    P            1.013 bar;
+    V            0.0005;
+    totalMoles   0.0;              // empty
+}

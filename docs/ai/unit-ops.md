@@ -1833,6 +1833,17 @@ Actions: `transfer` (partial via `fraction`), `setParameter`, `when`
 condition-triggered (`quantity` can be `T`, `total`, `n_<comp>`,
 `x_<comp>`; `op` is `gt`/`ge`/`lt`/`le`).
 
+A `batchReactor` accepts `setParameter` keys `T_setpoint` and `T` (an
+announced T impulse) and, since 2026-10-11, `adiabatic`: `value 1` is a
+COOLING FAILURE -- from that instant the jacket removes no heat and the
+reactor integrates T by the adiabatic energy balance, starting from the
+temperature it was held at (announced `[cooling failure]`); `value 0` keeps
+the jacket working (a no-op, so one recipe can be run with and without the
+failure).  Bringing the cooling back is refused.  Witnesses:
+`tutorials/batch/reactor/batch26_cooling_failure` (batch) and
+`batch27_semibatch_dosing` (the same reaction dosed in portions, with a
+dosing interlock written as a transfer of the remaining feed).
+
 # choupoCtrl / choupoSemiContinuous (dynamic continuous, with / without control)
 
 The dynamic units below run under BOTH binaries (one driver,

@@ -310,24 +310,32 @@ void BatchReactor::initialise(const DictPtr&       unitDict,
                     dutyByStateDiff_ = false;
     }
 
-    if (mode_ == Mode::Adiabatic)
+    if (mode_ == Mode::Adiabatic) requireAdiabaticData_();
+}
+
+// -----------------------------------------------------------------------
+//  The data an ADIABATIC energy balance reads, checked in ONE place: at
+//  initialise for a reactor declared adiabatic, and at the instant a recipe
+//  takes the cooling away (setOperationParameter "adiabatic").  Two copies
+//  of this check would be two answers to "can this reactor go adiabatic?".
+// -----------------------------------------------------------------------
+void BatchReactor::requireAdiabaticData_() const
+{
+    // Each component must carry the thermo the chosen energy basis reads:
+    //   liquidDH     -> liquidHeatCapacity (legacy)
+    //   gasConstantV -> ideal-gas Cp + formation (h_pure_ig / Cv)
+    for (std::size_t i = 0; i < state_.n.size(); ++i)
     {
-        // Each component must carry the thermo the chosen energy basis reads:
-        //   liquidDH     -> liquidHeatCapacity (legacy)
-        //   gasConstantV -> ideal-gas Cp + formation (h_pure_ig / Cv)
-        for (std::size_t i = 0; i < n; ++i)
-        {
-            const auto& c = thermo.comp(i);
-            if (energy_ == Energy::LiquidDH && !c.hasCpLiquid())
-                throw std::runtime_error("BatchReactor (adiabatic, liquidDH):"
-                    " component '" + c.name() + "' has no liquidHeatCapacity"
-                    " in its.dat file");
-            if (energy_ == Energy::GasConstantV && (!c.hasCpIdealGas() || !c.hasGibbsData()))
-                throw std::runtime_error("BatchReactor (adiabatic, gasConstantV):"
-                    " component '" + c.name() + "' needs idealGasHeatCapacity +"
-                    " standardThermochemistry (for u_i = h_pure_ig − R_uT and Cv) in its"
-                    " .dat file");
-        }
+        const auto& c = thermo_->comp(i);
+        if (energy_ == Energy::LiquidDH && !c.hasCpLiquid())
+            throw std::runtime_error("BatchReactor (adiabatic, liquidDH):"
+                " component '" + c.name() + "' has no liquidHeatCapacity"
+                " in its.dat file");
+        if (energy_ == Energy::GasConstantV && (!c.hasCpIdealGas() || !c.hasGibbsData()))
+            throw std::runtime_error("BatchReactor (adiabatic, gasConstantV):"
+                " component '" + c.name() + "' needs idealGasHeatCapacity +"
+                " standardThermochemistry (for u_i = h_pure_ig − R_uT and Cv) in its"
+                " .dat file");
     }
 }
 
@@ -572,6 +580,73 @@ void BatchReactor::setOperationParameter(const std::string& key, scalar value)
         }
         state_.T    = value;
         if (mode_ == Mode::Isothermal) T_setpoint_ = value;
+        return;
+    }
+    if (key == "adiabatic")
+    {
+        //  THE COOLING FAILURE (DEV.md 4c C60, 2026-10-11).  A recipe event
+        //  `setParameter reactor adiabatic 1` says: from this instant the
+        //  jacket removes no heat.  The reactor stops being HELD at its
+        //  setpoint and its temperature is integrated by the same adiabatic
+        //  energy balance a reactor declared `mode adiabatic` uses, starting
+        //  from the temperature it was held at, with whatever reactant has
+        //  accumulated.  That is the scenario of the thermal-safety
+        //  methodology (the MTSR is where it ends), and it was not one
+        //  declaration before: `mode` is read once, at the charge.
+        //
+        //  `value 0` keeps the jacket working -- a no-op on an isothermal
+        //  reactor, so a page can run the SAME recipe with and without the
+        //  failure.  Bringing cooling BACK is refused: the jacket returning
+        //  would hold the reactor at some temperature again, which is a
+        //  setpoint and a duty this key does not declare.
+        if (value != 0.0 && value != 1.0)
+            throw std::runtime_error("BatchReactor '" + name_ + "': key"
+                " 'adiabatic' takes 1 (the jacket stops removing heat) or 0"
+                " (it keeps working); got " + std::to_string(value) + ".");
+        if (mode_ == Mode::Adiabatic)
+        {
+            if (value == 1.0)
+                throw std::runtime_error("BatchReactor '" + name_ + "': the"
+                    " recipe sets 'adiabatic 1' on a reactor that is already"
+                    " adiabatic -- there is no cooling left to lose.");
+            throw std::runtime_error("BatchReactor '" + name_ + "': the"
+                " recipe sets 'adiabatic 0' on an adiabatic reactor.  Bringing"
+                " the cooling back is not modelled: the jacket would hold the"
+                " reactor at a temperature again, which is a setpoint and a"
+                " duty this key does not declare.");
+        }
+        if (value == 0.0) return;   // the jacket keeps working: nothing changes
+
+        //  A reactor with no resolved heat of reaction would go adiabatic
+        //  and stay at its temperature for ever -- a silently thermally
+        //  neutral answer to a safety question.  Refuse, naming what is
+        //  missing.
+        if (!dutyMissing_.empty())
+        {
+            std::string why;
+            for (const auto& m : dutyMissing_) why += "\n    " + m;
+            throw std::runtime_error("BatchReactor '" + name_ + "': cannot"
+                " take the cooling away -- the adiabatic energy balance needs"
+                " a heat of reaction and this reactor has none:" + why);
+        }
+        requireAdiabaticData_();
+
+        //  The jacket's last isothermal segment ends HERE, on the state it
+        //  held; an adiabatic reactor exchanges nothing, so no record opens.
+        closeSegment_(lastTime_);
+        const scalar T_held = T_setpoint_;
+        mode_       = Mode::Adiabatic;
+        T_setpoint_ = 0;
+        state_.T    = T_held;   // the adiabatic leg starts where it was held
+
+        scalar nTot = 0.0;
+        for (auto v : state_.n) nTot += v;
+        std::cout << "  [cooling failure] batchReactor '" << name_ << "' at t = "
+                  << lastTime_ << " s: the jacket stops removing heat.  The"
+                     " reactor is ADIABATIC from here on, starting at T = "
+                  << T_held << " K with " << nTot << " kmol in the vessel;"
+                     " its temperature is now integrated by the energy"
+                     " balance (the same one `mode adiabatic` uses).\n";
         return;
     }
     // Anything else: delegate to base so the standard error fires.
