@@ -2035,6 +2035,8 @@ the start-up cost's tax treatment (expensed in year 1) and the WC-not-ramped
 rule are stated defaults no source was read for; CAPCOST's COM_d labour
 factor is 2.76 against this pass's 2.73 (found, not touched).  Record
 `docs/design/the-start-up-years-of-a-cash-flow.md`.
+MERGED 2026-10-11 on Vítor's go-ahead ("Avança da melhor forma"): the
+four listed rows recorded, nothing else moved in either golden.
 
 **C62. THE GREEN-AMMONIA BASIC DESIGN: WHAT IS SIZED, AND RELIEF VALVES
 SIZED AT THIS STAGE (Vítor, 2026-10-11, verbatim: "Podes ver se o processo
