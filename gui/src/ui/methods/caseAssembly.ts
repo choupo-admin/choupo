@@ -173,7 +173,7 @@ export const CITES = {
     contains: "if (!result.converged) return;" },
   convergedWipe: { file: MAIN, line: 1023, contains: "fs::remove_all(dir);" },
   designWrite: { file: MAIN, line: 1398, contains: "writeDesignSheets(result);" },
-  designNone: { file: "src/io/DesignSheetWriter.cpp", line: 165,
+  designNone: { file: "src/io/DesignSheetWriter.cpp", line: 171,
     contains: "if (result.sizings.empty()) return 0;" },
   resultJson: { file: MAIN, line: 1425,
     contains: "emitResultJson(std::cout, result);" },

@@ -2055,8 +2055,9 @@ scenarios with the case's own Z, k and bubble point; the coefficients are
 `EquipmentSizing::notCostedBecause` -- listed apart, never a failure, so no
 total moves or reads INCOMPLETE; an item the model COULD price but lacks an
 input for still refuses (the tray rule).  The C++ arithmetic
-(`sizing/ReliefArithmetic.H`) and the EduTool's TypeScript are ONE procedure
-in two homes, so a gate holds each to the other's pinned examples.  Trap: a
+(`src/postProcessing/sizing/ReliefArithmetic.H`) and the EduTool's
+TypeScript are ONE procedure in two homes, so a gate holds each to the
+other's pinned examples.  Trap: a
 design-sheet key as long as the pad ran into its value -- `setw` is a
 minimum.  Gate: `check_relief_valve`.  Record:
 [`docs/design/a-relief-valve-is-a-sized-item.md`](docs/design/a-relief-valve-is-a-sized-item.md).
