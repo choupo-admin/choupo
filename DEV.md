@@ -2022,6 +2022,15 @@ crystalliser09_KHT_KCl_series, column07_naphtaliSandholm (an overlap),
 designSpec01_triple_equal_areas.  Residual: many-product plants share one
 vertical trunk; ed06's energy wires cross its power stubs; no real-browser
 drag exercised (rules tested as pure functions).
+FOLLOW-UP 2026-10-11 (Vítor: "a localização das utilidades está uma grande
+salganhada!"): the old canvas had written EVERY node, stubs included, into
+`choupo.layouts.v1` on each drag, and C59's "a working copy wins whole"
+honoured those machine positions.  Now a stub is stored as an OFFSET from its
+unit and follows it (`gui/src/case/stubDocking.ts`, `resolveArrangement`);
+localStorage is `choupo.layouts.v2`, a v1 copy is set aside once with a
+notice and Restore/Forget in the `layout` menu; `.cho` schema 2 carries stub
+offsets; before a run a stub says cooling/heating only when the case declares
+it (`gui/src/case/dutySign.ts`), else "sign after run".
 
 **C58. AN EDUTOOL ON FRONT-END LOADING: HOW INDUSTRY STAGES A PROCESS
 DESIGN (Vítor, 2026-10-10, verbatim: "Podes fazer um EduTool sobre O que a
