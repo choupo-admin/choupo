@@ -36,6 +36,7 @@ import { IconBolt } from "@tabler/icons-react";
 
 import type { StreamSpec } from "../case/types.js";
 import { dutyUtilityLabel, type DutyAllocationFacts } from "../case/dutyUtility.js";
+import { DUTY_TIER_COLOUR } from "../case/dutySign.js";
 import { scalarToSI } from "../dict/scalarSI.js";
 import { useStore } from "../state/store.js";
 import { phaseColor as phaseColorFor } from "./plotting/palette.js";
@@ -91,7 +92,12 @@ interface StreamTerminalData {
    *  base) or "condenser" (cooling, top).  dutyKW is filled post-run from
    *  the column's Q_reboiler_kW / Q_condenser_kW KPI. */
   dutyPort?: "reboiler" | "condenser" | "Q" | "power" | "jacket";
-  tier?: "heating" | "cooling" | "power";
+  /** "unknown": a single duty whose sign the declaration does not fix --
+   *  drawn neutral until the run says (case/dutySign.ts). */
+  tier?: "heating" | "cooling" | "power" | "unknown";
+  /** The side of its unit the stub docks on (toGraph `dutyQSide`): its
+   *  handle faces the unit from there, whatever sign the run later shows. */
+  dockSide?: "above" | "below";
   dutyKW?: number;
   /** Utility the case DECLARES for this duty: on a column port
    *  (operation.<port>.utility) or, for a single-duty unit, `utility <name>;`
@@ -115,7 +121,7 @@ interface StreamTerminalData {
 export function StreamTerminal({ data, selected }: NodeProps) {
   const { name, role, stream, phaseColor, phaseLabel, phaseGlyph, utilityCategory, resolved,
           streamNumber, showNumbers, streamOrigin, feedDrivenTag,
-          dutyPort, tier, dutyKW, utilityName, dutyAlloc, dutyEurH } =
+          dutyPort, tier, dockSide, dutyKW, utilityName, dutyAlloc, dutyEurH } =
     data as StreamTerminalData;
   const prefs = useStore((s) => s.displayPrefs);
 
@@ -125,11 +131,14 @@ export function StreamTerminal({ data, selected }: NodeProps) {
   if (dutyPort) {
     const isPower = tier === "power";
     const heating = tier === "heating";
-    const color = isPower ? "#9775fa" : heating ? "#e8590c" : "#22b8cf";
-    const icon = isPower ? "⚡" : heating ? "♨" : "❄";
-    // Stub docks below the unit for heating + power (handle points up), above
-    // for cooling.  W (shaft work) for the power tier, Q (heat) otherwise.
-    const handleTop = heating || isPower;
+    const unknown = tier === "unknown";
+    const color = isPower ? "#9775fa" : DUTY_TIER_COLOUR[heating ? "heating" : unknown ? "unknown" : "cooling"];
+    const icon = isPower ? "⚡" : heating ? "♨" : unknown ? "±" : "❄";
+    // Stub docks below the unit for heating + power + an unknown sign
+    // (handle points up), above for cooling -- or wherever toGraph docked
+    // it (`dockSide`), so a sign the run reveals never turns the handle
+    // away from the unit.  W (shaft work) for the power tier, Q otherwise.
+    const handleTop = dockSide !== undefined ? dockSide === "below" : heating || isPower || unknown;
     const valLabel = isPower ? "W" : "Q";
     const service = dutyUtilityLabel(dutyAlloc, utilityName);
     return (
@@ -171,7 +180,7 @@ export function StreamTerminal({ data, selected }: NodeProps) {
         <Text size="xs" c="dimmed" ff="monospace">
           {dutyKW !== undefined && Number.isFinite(dutyKW)
             ? `${valLabel} = ${dutyKW > 0 ? "+" : ""}${dutyKW.toFixed(1)} kW`
-            : isPower ? "electricity" : heating ? "heating" : "cooling"}
+            : isPower ? "electricity" : heating ? "heating" : unknown ? "sign after run" : "cooling"}
           {dutyEurH !== undefined && Number.isFinite(dutyEurH) && dutyEurH !== 0
             ? `  ·  ${dutyEurH.toFixed(1)} €/h`
             : ""}

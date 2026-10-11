@@ -30,7 +30,8 @@ import { parse, toJson } from "../src/dict/index.js";
 import type { JsonDict } from "../src/dict/index.js";
 import { flowsheetToGraph, type FlowsheetGraph } from "../src/case/toGraph.js";
 import { layoutScore, measureLayout, type LayoutMetrics } from "../src/case/layoutMetrics.js";
-import { placeUnsavedNodes, type XY } from "../src/case/flowsheetLayout.js";
+import type { XY } from "../src/case/flowsheetLayout.js";
+import { resolveArrangement } from "../src/case/stubDocking.js";
 import { layoutFromChoText } from "../src/state/layout.js";
 import { legacyPositions } from "./layoutLegacy.js";
 
@@ -96,21 +97,19 @@ function collectViews(): View[] {
 }
 
 function curatedPositions(graph: FlowsheetGraph, cho: string): Map<string, XY> | null {
-  const saved = layoutFromChoText(cho).nodes;
-  if (Object.keys(saved).length === 0) return null;
+  const saved = layoutFromChoText(cho);
+  if (Object.keys(saved.nodes).length === 0) return null;
   const nb = new Map<string, string[]>();
   for (const e of graph.edges) {
     nb.set(e.source, [...(nb.get(e.source) ?? []), e.target]);
     nb.set(e.target, [...(nb.get(e.target) ?? []), e.source]);
   }
-  return placeUnsavedNodes(
+  // The SAME resolution the canvas draws (case/stubDocking.ts): saved units
+  // and terminals exactly, every stub docked on its unit.
+  return resolveArrangement(
     graph.nodes.map((n) => n.id), new Map(graph.nodes.map((n) => [n.id, n.position])), saved,
     (id) => { const s = graph.sizes.get(id) ?? { width: 190, height: 84 }; return { w: s.width, h: s.height }; },
     (id) => nb.get(id) ?? [],
-    (id) => {
-      const o = (graph.nodes.find((n) => n.id === id)?.data as { ownerUnit?: string } | undefined)?.ownerUnit;
-      return o ? `unit:${o}` : undefined;
-    },
   );
 }
 

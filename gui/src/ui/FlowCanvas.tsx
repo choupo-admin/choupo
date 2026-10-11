@@ -94,9 +94,12 @@ import { TearEdge } from "./TearEdge.js";
 import { WaypointEdge } from "./WaypointEdge.js";
 import { UnitNode } from "./UnitNode.js";
 import { loadLayout, saveLayout, clearLayout, snapshotLayout, layoutFromChoText,
-  layoutToChoText, mergeLayouts,
+  layoutToChoText, mergeLayouts, loadLegacyLayout, restoreLegacyLayout,
+  forgetLegacyLayout, markLegacyNoticed,
   type XY, type HandlePos, type CaseLayout } from "../state/layout.js";
-import { placeUnsavedNodes } from "../case/flowsheetLayout.js";
+import { automaticStubOffsets, dockStubs, isStubId, resolveArrangement,
+  stubOwnerOf } from "../case/stubDocking.js";
+import { DUTY_TIER_COLOUR } from "../case/dutySign.js";
 import { runControl } from "../case/runControl.js";
 import { readFlag, writeFlag, NODE_DETAILS_KEY } from "../state/prefs.js";
 import { operationScratch } from "../case/scratch.js";
@@ -477,33 +480,40 @@ function CanvasInner({ flowsheet, scrubInstant }: {
   useEffect(() => { handlePosRef.current = handlePos; }, [handlePos]);
   useEffect(() => { setHandlePos(layout.handles); }, [layout]);
 
-  // Where every node is drawn.  A SAVED position is used exactly; a node the
-  // saved arrangement does not name (a unit added to the case since, a stub
-  // the snapshot predates) is placed by the automatic layout RELATIVE TO A
-  // SAVED NEIGHBOUR -- a stub beside its owner -- and moves no saved node.
+  // Where every node is drawn (case/stubDocking.ts `resolveArrangement`).  A
+  // SAVED unit or terminal is used exactly; one the saved arrangement does
+  // not name (a unit added to the case since) is placed by the automatic
+  // layout RELATIVE TO A SAVED NEIGHBOUR and moves no saved node; and every
+  // docked utility / duty / power stub sits ON ITS UNIT -- at the offset the
+  // reader gave it if he dragged it, else at the automatic one.  A stub is
+  // never placed absolutely: it is an annotation of its unit.
   const placed = useMemo(() => {
     const neighbours = new Map<string, string[]>();
     for (const e of graph.edges) {
       neighbours.set(e.source, [...(neighbours.get(e.source) ?? []), e.target]);
       neighbours.set(e.target, [...(neighbours.get(e.target) ?? []), e.source]);
     }
-    const owner = new Map<string, string>();
-    for (const n of graph.nodes) {
-      const o = (n.data as { ownerUnit?: unknown }).ownerUnit;
-      if (typeof o === "string") owner.set(n.id, `unit:${o}`);
-    }
-    return placeUnsavedNodes(
+    return resolveArrangement(
       graph.nodes.map((n) => n.id),
       new Map(graph.nodes.map((n) => [n.id, n.position])),
-      layout.nodes,
+      layout,
       (id) => {
         const s = graph.sizes.get(id);
         return s ? { w: s.width, h: s.height } : { w: 190, h: 84 };
       },
       (id) => neighbours.get(id) ?? [],
-      (id) => owner.get(id),
     );
   }, [graph, layout]);
+  // The stubs' docking: the automatic offset of each from its unit, and the
+  // offsets the READER chose by dragging a stub (persisted with the working
+  // copy, so the stub keeps them and still follows its unit).
+  const stubIds = useMemo(() => graph.nodes.map((n) => n.id).filter(isStubId), [graph]);
+  const autoStubOffsets = useMemo(
+    () => automaticStubOffsets(graph.nodes.map((n) => n.id),
+                               new Map(graph.nodes.map((n) => [n.id, n.position]))),
+    [graph]);
+  const userStubOffsetsRef = useRef<{ [id: string]: XY }>(layout.stubs ?? {});
+  useEffect(() => { userStubOffsetsRef.current = { ...(layout.stubs ?? {}) }; }, [layout]);
   const applyStored = useCallback(
     (n: Node): Node => {
       const pos = placed.get(n.id);
@@ -535,9 +545,25 @@ function CanvasInner({ flowsheet, scrubInstant }: {
     }
   }, [graph, applyStored]);
 
+  // A STUB FOLLOWS ITS UNIT: whenever a unit moves (dragged, or moved with a
+  // selection), every stub docked on it is re-docked at its offset in the
+  // same update.  A stub the reader is dragging himself is left free; on
+  // release its new offset is recorded (`onNodeDragStop`).
   const onNodesChange = useCallback(
-    (changes: NodeChange[]) => setNodes((nds) => applyNodeChanges(changes, nds)),
-    [],
+    (changes: NodeChange[]) => setNodes((nds) => {
+      const next = applyNodeChanges(changes, nds);
+      const moved = changes.filter((c) => c.type === "position");
+      if (moved.length === 0 || stubIds.length === 0) return next;
+      const free = new Set(moved.map((c) => (c as { id: string }).id).filter(isStubId));
+      const pos = new Map(next.map((n) => [n.id, n.position]));
+      const docked = dockStubs(pos, stubIds, autoStubOffsets, userStubOffsetsRef.current, free);
+      return next.map((n) => {
+        if (!isStubId(n.id) || free.has(n.id)) return n;
+        const p = docked.get(n.id);
+        return p && (p.x !== n.position.x || p.y !== n.position.y) ? { ...n, position: p } : n;
+      });
+    }),
+    [stubIds, autoStubOffsets],
   );
 
   // --- where the `.cho` marker lives on disk + how to write it ---------------
@@ -568,6 +594,7 @@ function CanvasInner({ flowsheet, scrubInstant }: {
   // bends, handles) -- state/layout.ts `snapshotLayout` says why it is whole.
   const buildLayout = useCallback((): CaseLayout => snapshotLayout(
     reactFlow.getNodes(), edgeCentersRef.current, handlePosRef.current, reactFlow.getViewport(),
+    userStubOffsetsRef.current,
   ), [reactFlow]);
 
   // THE READER'S ARRANGEMENT IS THE WORKING COPY, AND ONLY THE WORKING COPY.
@@ -581,7 +608,26 @@ function CanvasInner({ flowsheet, scrubInstant }: {
   const commitWorkingCopy = useCallback(() => {
     saveLayout(tutorialName, buildLayout());
   }, [tutorialName, buildLayout]);
-  const persistNodePositions = commitWorkingCopy;
+  // A drag released: a STUB the reader dragged keeps the offset from its unit
+  // he gave it (only a real move records one -- a stub carried along with
+  // its unit in a selection keeps the offset it had); then the whole
+  // arrangement is the working copy.
+  const persistNodePositions = useCallback(
+    (_e: unknown, _node: Node, dragged: Node[]) => {
+      const all = new Map(reactFlow.getNodes().map((n) => [n.id, n.position]));
+      for (const n of dragged ?? []) {
+        const owner = stubOwnerOf(n.id);
+        const op = owner !== undefined ? all.get(owner) : undefined;
+        if (!op) continue;
+        const off = { x: n.position.x - op.x, y: n.position.y - op.y };
+        const cur = userStubOffsetsRef.current[n.id] ?? autoStubOffsets.get(n.id);
+        if (!cur || Math.abs(cur.x - off.x) > 0.5 || Math.abs(cur.y - off.y) > 0.5)
+          userStubOffsetsRef.current = { ...userStubOffsetsRef.current, [n.id]: off };
+      }
+      commitWorkingCopy();
+    },
+    [reactFlow, autoStubOffsets, commitWorkingCopy],
+  );
 
   // The `layout` menu.  AUTOMATIC: draw the case with the automatic layout
   // again (its `.cho`, if it ships one, is left alone on disk -- this
@@ -600,6 +646,37 @@ function CanvasInner({ flowsheet, scrubInstant }: {
     setLayoutEpoch((e) => e + 1);
     window.setTimeout(() => reactFlow.fitView({ padding: 0.25, maxZoom: 1.1, duration: 200 }), 50);
   }, [tutorialName, reactFlow]);
+
+  // AN ARRANGEMENT FROM BEFORE 2026-10-11 (state/layout.ts `migrateV1`): it
+  // was set aside, not applied, because it cannot tell the nodes the reader
+  // moved from the ones a machine placed.  Said ONCE, and offered back in
+  // the `layout` menu until the reader restores or forgets it.
+  const legacy = useMemo(
+    () => { void layoutEpoch; return tutorialName ? loadLegacyLayout(tutorialName) : undefined; },
+    [tutorialName, layoutEpoch]);
+  const restoreEarlier = useCallback(() => {
+    if (!restoreLegacyLayout(tutorialName)) return;
+    setLayoutEpoch((e) => e + 1);
+    window.setTimeout(() => reactFlow.fitView({ padding: 0.25, maxZoom: 1.1, duration: 200 }), 50);
+  }, [tutorialName, reactFlow]);
+  const forgetEarlier = useCallback(() => {
+    forgetLegacyLayout(tutorialName);
+    setLayoutEpoch((e) => e + 1);
+  }, [tutorialName]);
+  useEffect(() => {
+    //  Re-read the store, not the memo: an effect run twice (React's strict
+    //  mode, a re-render before the write lands) must say it ONCE.
+    if (!legacy || !tutorialName || loadLegacyLayout(tutorialName)?.noticed) return;
+    markLegacyNoticed(tutorialName);
+    notifications.show({
+      title: "Your earlier arrangement was replaced by the automatic layout",
+      message: "This browser held an arrangement of this flowsheet saved before 2026-10-11, "
+        + "which mixed your own moves with positions the program had placed (its utility "
+        + "stubs among them).  It is kept: layout -> Restore my earlier arrangement brings "
+        + "your units back, with every utility stub docked on its unit.",
+      color: "blue", autoClose: 15000,
+    });
+  }, [legacy, tutorialName]);
   const saveLayoutToCase = useCallback(() => {
     if (!markerLoc) return;
     void writeCaseFile(markerLoc, markerRel, layoutToChoText(buildLayout()))
@@ -828,11 +905,11 @@ function CanvasInner({ flowsheet, scrubInstant }: {
   //  ONE evaluation, read by the node AND by its dashed edge, so the two can
   //  never disagree.  The decision is case/dutyUtility.ts's.
   const dutyRun = useMemo(() => {
-    const m = new Map<string, { idle: boolean; tier: "heating" | "cooling" }>();
+    const m = new Map<string, { idle: boolean; tier: "heating" | "cooling" | "unknown" }>();
     for (const n of graph.nodes) {
       const d = n.data as { dutyPort?: string; ownerUnit?: string; tier?: string };
       if (d.dutyPort !== "Q" || !d.ownerUnit) continue;
-      const pre = d.tier === "cooling" ? "cooling" : "heating";
+      const pre = d.tier === "cooling" ? "cooling" : d.tier === "heating" ? "heating" : "unknown";
       const st = dutyStubFromRun(runResult?.utilityAllocation, d.ownerUnit, "",
                                  runResult?.kpis?.[d.ownerUnit] !== undefined, pre);
       m.set(n.id, { idle: st.idle, tier: st.tier });
@@ -1043,7 +1120,7 @@ function CanvasInner({ flowsheet, scrubInstant }: {
         //  idle stub, coloured by the sign the engine published.
         const stubRun = isDuty ? dutyRun.get(e.source) : undefined;
         const color = stubRun
-          ? (stubRun.tier === "heating" ? "#e8590c" : "#22b8cf")
+          ? DUTY_TIER_COLOUR[stubRun.tier]
           : (isEnergy || isDuty)
           ? (e.style as { stroke?: string } | undefined)?.stroke
               ?? "var(--mantine-color-accent-5)"
@@ -1392,6 +1469,18 @@ function CanvasInner({ flowsheet, scrubInstant }: {
                       title="Forget this browser's arrangement and go back to the layout the case ships in its .cho">
                       Case layout (.cho)
                     </Button>
+                  )}
+                  {legacy && (
+                    <>
+                      <Button size="compact-xs" variant="subtle" onClick={restoreEarlier}
+                        title="Bring back the arrangement this browser held before 2026-10-11 (units and terminals where you had them; every utility stub docked on its unit)">
+                        Restore my earlier arrangement
+                      </Button>
+                      <Button size="compact-xs" variant="subtle" color="gray" onClick={forgetEarlier}
+                        title="Forget the arrangement this browser held before 2026-10-11, for good">
+                        Forget my earlier arrangement
+                      </Button>
+                    </>
                   )}
                   {markerLoc && (
                     <Button size="compact-xs" variant="subtle" onClick={saveLayoutToCase}

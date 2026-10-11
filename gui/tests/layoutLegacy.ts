@@ -13,7 +13,7 @@
 
 import type { FlowsheetGraph } from "../src/case/toGraph.js";
 import type { XY } from "../src/case/flowsheetLayout.js";
-import { PHASE_SPLIT_TYPES } from "../src/case/dutyTypes.js";
+import { COOLING_DUTY_TYPES, PHASE_SPLIT_TYPES } from "../src/case/dutyTypes.js";
 
 const X_STEP = 240;
 const X_STEP_COMPOSITE = 340;
@@ -101,10 +101,18 @@ export function legacyPositions(graph: FlowsheetGraph): Map<string, XY> {
     if (d.dutyPort === undefined || d.ownerUnit === undefined) continue;
     const p = pos.get(`unit:${d.ownerUnit}`);
     if (!p) continue;
+    // The single-duty stub's side by the rule of THAT time (a numeric Q's
+    // sign, else the cooling-by-construction types), not by today's
+    // case/dutySign.ts -- the reference must not move when the app does.
+    const owner = view.units.find((u) => u.name === d.ownerUnit);
+    const q = (owner?.operation as { Q?: unknown } | undefined)?.Q;
+    const oldCooling = d.dutyPort === "Q"
+      ? (typeof q === "number" ? q < 0 : COOLING_DUTY_TYPES.has(owner?.type ?? ""))
+      : d.tier === "cooling";
     const dy = d.dutyPort === "reboiler" ? 175
       : d.dutyPort === "condenser" ? -150
       : d.dutyPort === "power" ? 150
-      : d.tier === "cooling" ? -150 : 150;
+      : oldCooling ? -150 : 150;
     pos.set(n.id, { x: p.x + 35, y: p.y + dy });
   }
   return pos;

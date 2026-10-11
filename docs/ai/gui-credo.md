@@ -417,11 +417,26 @@ flow left to right, declared tears as the recycles routed above or below
 the train, feeds beside their consumer and products beside their
 producer, crossings reduced, the main train straight).  The moment the
 reader moves ANY node, connection point or edge bend, the WHOLE drawing
-is snapshotted -- every node, including the ones nobody touched -- so a
-later improvement of the algorithm never reshuffles the untouched nodes
-around the moved one.  A node the saved arrangement does not name (a unit
-added to the case since, a stub the snapshot predates) is placed by the
-automatic layout relative to a saved neighbour, moving no saved node.
+is snapshotted -- every unit and terminal, including the ones nobody
+touched -- so a later improvement of the algorithm never reshuffles the
+untouched nodes around the moved one.  A node the saved arrangement does
+not name (a unit added to the case since) is placed by the automatic
+layout relative to a saved neighbour, moving no saved node.
+**A docked utility / duty / power stub is an annotation of its unit, not a
+free node** (2026-10-11, `gui/src/case/stubDocking.ts`): it is never stored
+at absolute coordinates, it sits at its unit plus an offset -- the
+automatic one, or the one the reader gave it by dragging the stub -- and
+it FOLLOWS its unit whenever the unit moves.  (The first C59 snapshots
+stored stubs absolutely, and a `choupo.layouts.v1` copy written by the
+older canvas held them at the automatic position of a unit the `.cho` had
+moved: the green-ammonia plant drew every DUTY stub in one row across the
+top.  A v1 copy is therefore set aside, not applied, said once, and
+offered back as **Restore my earlier arrangement** -- units where the
+reader had them, stubs docked.)  Before a run a single-duty stub claims
+only the sign its declaration implies (`gui/src/case/dutySign.ts`: a
+declared `Q`, a cooling-by-construction type, or a `phaseChanger`'s
+`outletT` against a DECLARED inlet temperature); otherwise it reads a
+neutral **duty / sign after run**, never "heating" by default.
 The way back is the canvas's `layout` menu: **Automatic layout** (this
 browser only), **Case layout (.cho)** when the case ships one, and **Save
 layout to case** -- the ONE write of the tracked `.cho`, explicit, on a

@@ -50,7 +50,9 @@ import type { FlowsheetView, StreamSpec, UnitSpec } from "./types.js";
 // The duty/work unit-type sets — SHARED with UnitNode.tsx (single source of
 // truth), so the stub node + edge here always match the handle there.
 import { layoutFlowsheet, type LayoutEdge, type LayoutNode } from "./flowsheetLayout.js";
-import { COLUMN_TYPES, HEAT_DUTY_TYPES, COOLING_DUTY_TYPES, POWER_DRAW_TYPES, PHASE_SPLIT_TYPES, DYNAMIC_HOLDUP_TYPES } from "./dutyTypes.js";
+import { stubNodeId } from "./stubDocking.js";
+import { DUTY_TIER_COLOUR, preRunDutyTier, type DutyTier } from "./dutySign.js";
+import { COLUMN_TYPES, HEAT_DUTY_TYPES, POWER_DRAW_TYPES, PHASE_SPLIT_TYPES, DYNAMIC_HOLDUP_TYPES } from "./dutyTypes.js";
 
 export interface FlowsheetGraph {
   nodes: Node[];
@@ -199,7 +201,7 @@ function jacketHeating(
  *  stub nodes it builds, gathered once so the layout can keep their room free. */
 function stubPlanFor(
   u: UnitSpec, flowsheet: JsonDict, rawFiles: { [relPath: string]: string } | undefined,
-  heatLinked: Set<string>, workCoupled: Set<string>,
+  heatLinked: Set<string>, workCoupled: Set<string>, dutyTier: DutyTier,
 ): StubPlan[] {
   const plan: StubPlan[] = [];
   if (COLUMN_TYPES.has(u.type)) {
@@ -208,11 +210,8 @@ function stubPlanFor(
     if (!heatLinked.has(`${u.name}:condenser`))
       plan.push({ port: "condenser", side: "above", width: stubSize("condenser").width });
   }
-  if (HEAT_DUTY_TYPES.has(u.type)) {
-    const opQ = (u.operation as { [k: string]: JsonValue } | undefined)?.["Q"];
-    const cooling = typeof opQ === "number" ? opQ < 0 : COOLING_DUTY_TYPES.has(u.type);
-    plan.push({ port: "Q", side: cooling ? "above" : "below", width: stubSize("Q").width });
-  }
+  if (HEAT_DUTY_TYPES.has(u.type))
+    plan.push({ port: "Q", side: dutyQSide(dutyTier), width: stubSize("Q").width });
   if (DYNAMIC_HOLDUP_TYPES.has(u.type)) {
     const ua = scalarToSI((u.operation as { [k: string]: JsonValue } | undefined)?.["UA"]);
     if (Number.isFinite(ua) && ua > 0)
@@ -223,6 +222,14 @@ function stubPlanFor(
   if (u.type === "electricLoad" || (isDraw && !workCoupled.has(u.name)))
     plan.push({ port: "power", side: "below", width: stubSize("power").width });
   return plan;
+}
+
+/** Where a single-duty stub docks: a cooling duty above the box, a heating
+ *  or a not-yet-known one below.  ONE home: the stub's position, its
+ *  handle (StreamTerminal) and the unit's anchor (UnitNode) all read it, so
+ *  a sign the run later reveals never moves the stub off its anchor. */
+export function dutyQSide(tier: DutyTier): "above" | "below" {
+  return tier === "cooling" ? "above" : "below";
 }
 
 /** The room a unit's stubs need on one side of its box. */
@@ -304,8 +311,19 @@ export function flowsheetToGraph(
   const tearSet = view.tearStreams ?? new Set<string>();
   const unitsByName = new Map(view.units.map((u) => [u.name, u]));
   const composite = view.units.some((u) => u.type === "sector");
+  // THE PRE-RUN SIGN of each single heat duty -- ONE evaluation
+  // (case/dutySign.ts), read by the stub's side, its node, its wire and the
+  // unit's anchor, so the four can never disagree.
+  const dutyCtx = { producers, unitsByName,
+                    streams: view.streams,
+                    operationOf: (u: UnitSpec) => memberOperation(u, rawFiles) };
+  const dutyTierOf = new Map<string, DutyTier>();
+  for (const u of view.units)
+    if (HEAT_DUTY_TYPES.has(u.type)) dutyTierOf.set(u.name, preRunDutyTier(u, dutyCtx));
   const stubsOf = new Map<string, StubPlan[]>();
-  for (const u of view.units) stubsOf.set(u.name, stubPlanFor(u, flowsheet, rawFiles, heatLinked, workCoupled));
+  for (const u of view.units)
+    stubsOf.set(u.name, stubPlanFor(u, flowsheet, rawFiles, heatLinked, workCoupled,
+                                    dutyTierOf.get(u.name) ?? "unknown"));
 
   const lNodes: LayoutNode[] = [];
   for (const f of feeds)
@@ -468,6 +486,9 @@ export function flowsheetToGraph(
       id: `unit:${u.name}`,
       type: "unitNode",
       data: { unit: u, heatLinkedPorts: linkedPorts, powerStub,
+              ...(dutyTierOf.has(u.name)
+                ? { dutyQTier: dutyTierOf.get(u.name), dutyQSide: dutyQSide(dutyTierOf.get(u.name)!) }
+                : {}),
               recipeOut: recipeOut.has(u.name), recipeIn: recipeIn.has(u.name) },
       position: posOf(`unit:${u.name}`),
     });
@@ -501,7 +522,7 @@ export function flowsheetToGraph(
     // Heat-linked ports show the link edge instead of a utility stub.
     if (!heatLinked.has(`${u.name}:reboiler`))
       nodes.push({
-        id: `duty:${u.name}:reboiler`,
+        id: stubNodeId(u.name, "reboiler"),
         type: "streamTerminal",
         data: { name: "reboiler", role: "utility", dutyPort: "reboiler",
                 ownerUnit: u.name, tier: "heating", utilityName: portUtility("reboiler") },
@@ -509,7 +530,7 @@ export function flowsheetToGraph(
       });
     if (!heatLinked.has(`${u.name}:condenser`))
       nodes.push({
-        id: `duty:${u.name}:condenser`,
+        id: stubNodeId(u.name, "condenser"),
         type: "streamTerminal",
         data: { name: "condenser", role: "utility", dutyPort: "condenser",
                 ownerUnit: u.name, tier: "cooling", utilityName: portUtility("condenser") },
@@ -524,23 +545,20 @@ export function flowsheetToGraph(
   // and the utilityAllocation row with empty port).
   for (const u of view.units) {
     if (!HEAT_DUTY_TYPES.has(u.type)) continue;
-    // Pre-run tier guess: from a numeric Q in the dict, else the type
-    // (cooler -> cooling, otherwise heating).  Post-run the sign of the
+    // The pre-run sign: what the declaration says, or "unknown" -- never
+    // "heating" by default (case/dutySign.ts).  Post-run the sign of the
     // resolved Q is authoritative (FlowCanvas/StreamTerminal).
-    const opQ = (u.operation as { [k: string]: JsonValue } | undefined)?.["Q"];
-    const tier: "heating" | "cooling" =
-      typeof opQ === "number" ? (opQ >= 0 ? "heating" : "cooling")
-      : COOLING_DUTY_TYPES.has(u.type) ? "cooling" : "heating";
+    const tier = dutyTierOf.get(u.name) ?? "unknown";
     //  The utility the case DECLARES for this duty: `utility <name>;` at the
     //  unit's own level, beside `type` (DEV.md 4c C52) -- the key the
     //  engine's allocation reads.  This used to read `operation.utility`, a
     //  key no engine reader has ever read.
     const declUtil = u.utility;
     nodes.push({
-      id: `duty:${u.name}:Q`,
+      id: stubNodeId(u.name, "Q"),
       type: "streamTerminal",
       data: { name: "duty", role: "utility", dutyPort: "Q", ownerUnit: u.name,
-              tier, utilityName: typeof declUtil === "string" ? declUtil : undefined },
+              tier, dockSide: dutyQSide(tier), utilityName: typeof declUtil === "string" ? declUtil : undefined },
       position: stubAt(u, "Q"),
     });
   }
@@ -558,7 +576,7 @@ export function flowsheetToGraph(
     if (!(Number.isFinite(ua) && ua > 0)) continue;
     const heating = jacketHeating(u, flowsheet, rawFiles);
     nodes.push({
-      id: `duty:${u.name}:jacket`,
+      id: stubNodeId(u.name, "jacket"),
       type: "streamTerminal",
       data: { name: "jacket", role: "utility", dutyPort: "jacket", ownerUnit: u.name,
               tier: heating ? "heating" : "cooling" },
@@ -576,7 +594,7 @@ export function flowsheetToGraph(
     if (!isDraw && !isGen) continue;
     if (isDraw && workCoupled.has(u.name)) continue;   // mechanically driven -> no grid stub
     nodes.push({
-      id: `duty:${u.name}:power`,
+      id: stubNodeId(u.name, "power"),
       type: "streamTerminal",
       data: { name: "power", role: "utility", dutyPort: "power", ownerUnit: u.name,
               tier: "power",
@@ -747,7 +765,7 @@ export function flowsheetToGraph(
       const heating = port === "reboiler";
       edges.push({
         id: `e:duty:${u.name}:${port}`,
-        source: `duty:${u.name}:${port}`,
+        source: stubNodeId(u.name, port),
         target: `unit:${u.name}`,
         targetHandle: port,
         type: "smoothstep",
@@ -763,25 +781,24 @@ export function flowsheetToGraph(
   }
 
   // Duty stub -> heater/cooler: the same dashed UTILITY edge for the single-Q
-  // units.  No dedicated target handle (the unit has stream handles only), so
-  // it lands on the nearest border; tier colour follows the pre-run guess.
+  // units, docked on the unit's `Q` anchor; its colour follows the pre-run
+  // sign (neutral while the sign is unknown).
   for (const u of view.units) {
     if (!HEAT_DUTY_TYPES.has(u.type)) continue;
-    const opQ = (u.operation as { [k: string]: JsonValue } | undefined)?.["Q"];
-    const heating = typeof opQ === "number" ? opQ >= 0 : u.type !== "cooler";
+    const tier = dutyTierOf.get(u.name) ?? "unknown";
     edges.push({
       id: `e:duty:${u.name}:Q`,
-      source: `duty:${u.name}:Q`,
+      source: stubNodeId(u.name, "Q"),
       target: `unit:${u.name}`,
       targetHandle: "Q",
       type: "smoothstep",
       animated: false,
       style: {
-        stroke: heating ? "#e8590c" : "#22b8cf",
+        stroke: DUTY_TIER_COLOUR[tier],
         strokeWidth: 1.6,
         strokeDasharray: "6 3",
       },
-      data: { kind: "duty", tier: heating ? "heating" : "cooling" },
+      data: { kind: "duty", tier },
     });
   }
 
@@ -791,12 +808,12 @@ export function flowsheetToGraph(
   // (T_jacket - T_initial).  Mirrors the heater/cooler duty edge.
   for (const u of view.units) {
     if (!DYNAMIC_HOLDUP_TYPES.has(u.type)) continue;
-    const stub = nodes.find((n) => n.id === `duty:${u.name}:jacket`);
+    const stub = nodes.find((n) => n.id === stubNodeId(u.name, "jacket"));
     if (!stub) continue;
     const heating = (stub.data as { tier?: string }).tier !== "cooling";
     edges.push({
       id: `e:duty:${u.name}:jacket`,
-      source: `duty:${u.name}:jacket`,
+      source: stubNodeId(u.name, "jacket"),
       target: `unit:${u.name}`,
       type: "smoothstep",
       animated: false,
@@ -818,7 +835,7 @@ export function flowsheetToGraph(
     if (isDraw && workCoupled.has(u.name)) continue;
     edges.push({
       id: `e:duty:${u.name}:power`,
-      source: `duty:${u.name}:power`,
+      source: stubNodeId(u.name, "power"),
       target: `unit:${u.name}`,
       targetHandle: "power",
       type: "smoothstep",
@@ -953,6 +970,23 @@ function readTearStreams(flowsheet: JsonDict, rawFiles?: { [relPath: string]: st
     } catch { /* unparseable solverDict -- ignore */ }
   }
   return [];
+}
+
+/** A unit's `operation` block: its own, or -- for a unit drawn in a
+ *  composite view, whose block is empty there -- the one its own folder's
+ *  flowsheetDict declares.  Read for the pre-run duty sign only
+ *  (case/dutySign.ts); nothing drawn on the node changes. */
+function memberOperation(u: UnitSpec, rawFiles?: { [relPath: string]: string }): JsonDict {
+  if (Object.keys(u.operation ?? {}).length > 0 || !rawFiles) return u.operation ?? {};
+  const text = memberFlowsheetText(rawFiles, u.name);
+  if (!text) return u.operation ?? {};
+  try {
+    const ast = toJson(parse(text, { sourceName: u.name + "/flowsheetDict" })) as JsonDict;
+    const op = ast["operation"];
+    return op && typeof op === "object" && !Array.isArray(op) ? op as JsonDict : {};
+  } catch {
+    return {};
+  }
 }
 
 function readComposite(

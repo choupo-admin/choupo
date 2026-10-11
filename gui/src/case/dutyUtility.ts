@@ -137,15 +137,16 @@ export interface DutyRowFacts extends DutyAllocationFacts {
  *     negative Q).
  *
  * Before a run (`unitRan` false) nothing is decided here: `idle` is false and
- * the pre-run tier stands.
+ * the pre-run tier stands -- which is "unknown" wherever the declaration does
+ * not fix the sign (case/dutySign.ts), never "heating" by default.
  */
 export function dutyStubFromRun(
   rows: readonly DutyRowFacts[] | undefined,
   owner: string,
   port: string,
   unitRan: boolean,
-  preRunTier: "heating" | "cooling",
-): { row: DutyRowFacts | undefined; idle: boolean; tier: "heating" | "cooling" } {
+  preRunTier: "heating" | "cooling" | "unknown",
+): { row: DutyRowFacts | undefined; idle: boolean; tier: "heating" | "cooling" | "unknown" } {
   const row = (rows ?? []).find((a) => a.unit === owner && a.port === port);
   if (!unitRan) return { row, idle: false, tier: preRunTier };
   if (!row) return { row, idle: true, tier: preRunTier };
