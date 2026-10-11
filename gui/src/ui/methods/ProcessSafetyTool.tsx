@@ -17,7 +17,7 @@
   layer" (DEV.md 4c C60, commissioned by Vitor 2026-10-11).
 
   A NOTES page with the engine running inside it, on the "Process safety"
-  shelf (C61, the overpressure page, will join it).  Part 0 is the thesis
+  shelf (C61, the overpressure page, sits beside it).  Part 0 is the thesis
   (Gall beside Kletz, Flixborough and Bhopal, read from the sources named in
   processSafetyLesson.ts).  Lesson 1 runs Stoessel's cooling-failure scenario
   on two witnesses -- a batch and the same reaction dosed -- with the
@@ -547,6 +547,14 @@ export function ProcessSafetyTool(): JSX.Element {
         {step(9)}
         <CoolingFailureBench />
         {step(10)}
+        <Text size="sm">
+          What a vessel needs once the boiling is the barrier -- the relief
+          device, its sizing, and where the relief goes:{" "}
+          <Anchor component="button" type="button"
+            onClick={() => setActiveMethodTool("overpressure")}>
+            Designing for overpressure
+          </Anchor>.
+        </Text>
         <Text size="sm">
           Continue with{" "}
           <Anchor component="button" type="button"

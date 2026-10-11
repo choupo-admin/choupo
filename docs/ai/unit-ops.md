@@ -2049,10 +2049,12 @@ Supported property keywords (in `propertyPoint.state` selectors and
 in `propertyScanND.properties`): `T`, `P`, `Psat_<comp>`, `T_bubble`,
 `gamma_<comp>`, `y_eq_<comp>`, `Cp_liquid_<comp>` (pure-component liquid Cp,
 per compound — fails loudly if a compound has no `liquidHeatCapacity`),
+`Hvap_<comp>` (pure-component latent heat, J/mol: the record's `HvapTb`
+carried to T by Watson — refuses without Tc/Tb/HvapTb or at T >= Tc),
 `Cp_ig`, `H_ig`, `S_ig`, `Z`, `v_molar`, `H_R`, `S_R`,
 `H_real`, `S_real`, `viscosity` / `mu`, `thermal_conductivity` / `k`,
 `diffusivity` / `D`, `mu_L`, `k_L`, `D_L`.  `Psat_<comp>`, `gamma_<comp>`,
-`y_eq_<comp>`, `Cp_liquid_<comp>` are PER-COMPONENT (one value per named
+`y_eq_<comp>`, `Cp_liquid_<comp>`, `Hvap_<comp>` are PER-COMPONENT (one value per named
 compound); the rest are mixture scalars at `state.composition`.
 
 # More steady units (choupoSolve)

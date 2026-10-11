@@ -14,8 +14,8 @@
     "Process safety",
     "Flowsheeting & numerics"
   ],
-  "liveTools": 53,
-  "registryTools": 53,
+  "liveTools": 54,
+  "registryTools": 54,
   "tools": [
     {
       "id": "what-is-temperature",
@@ -380,6 +380,13 @@
       "discipline": "Process safety",
       "teaches": "Why every protective layer is itself a system that can fail (Gall beside Kletz's 'what you don't have, can't leak'), read through the Flixborough Court of Inquiry and the Bhopal protection that existed on paper; Stoessel's cooling-failure scenario run by the engine -- the accumulation, the MTSR with the dosed reactor's mass correction, against the reaction mass's bubble point and an assumed T_D24 (where the decomposition's adiabatic time to maximum rate is 24 h), the five criticality classes -- on a batch and on the same reaction dosed, with a dosing interlock that can fail; and a 50 bar ammonia loop that converts less per pass, circulates more gas and about four times as much ammonia in the recycle stream, and earns less, so that the engine cannot call it safer without sizing the equipment.",
       "href": "/app/?workspace=methods&tool=process-safety"
+    },
+    {
+      "id": "overpressure",
+      "label": "Designing for overpressure: scenarios, devices and relief sizing",
+      "discipline": "Process safety",
+      "teaches": "Why a relief system is sized for the worst credible cause (blocked outlet, external fire, cooling or reflux failure, runaway, tube rupture, thermal expansion), the pressure ladder from operating to set, MAWP and the allowed accumulation, the devices and the back pressure behind them, the published gas, liquid and fire-case equations worked on fluid properties the engine computes -- an acetone drum in a fire, and an ammonia loop whose 50 bar version needs a relief valve about four and a half times larger -- where the relief goes after the valve, and why a runaway vent is two-phase and larger.",
+      "href": "/app/?workspace=methods&tool=overpressure"
     },
     {
       "id": "route-screening",

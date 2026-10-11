@@ -1,0 +1,68 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+  relief02_acetone_fire_case -- THE FLUID SIDE OF A FIRE-CASE RELIEF VALVE
+  (DEV.md 4c C61, the "Designing for overpressure" EduTool).
+
+  THE QUESTION.  A drum of acetone, a flammable solvent, sits in a pool
+  fire.  Its relief valve opens at the set pressure and the pressure climbs
+  to the relieving pressure P1 = set + allowed accumulation; there the
+  liquid BOILS, and the
+  fire's heat leaves as vapour.  The relief load is the heat absorbed
+  divided by the latent heat, and the valve passes that vapour.  So four
+  properties of the fluid decide the valve, and all four are computed here:
+
+      T_bubble       the boiling temperature at P1 (the relieving temperature)
+      Hvap_acetone   the latent heat of vaporisation at that temperature
+      Z              the vapour's compressibility factor at (T, P1)
+      gamma          Cp/Cv of the vapour (the ideal-gas ratio, Cp_ig/(Cp_ig-R))
+
+  THE NUMBERS ARE AUTHOR-SET, and the EduTool moves them.  P is the
+  relieving pressure of a drum whose MAWP is 5 barg, protected for the fire
+  case with the set pressure at the MAWP: 1.21 x 5 barg + 1.01325 bar
+  = 7.06325 bar absolute.  The 5 barg is a round number chosen for the
+  lesson, not a property of any real drum.  T is the boiling temperature
+  the SAME run reports at that pressure (T_bubble), written back by hand so
+  that Z, gamma and the latent heat are evaluated AT the relieving state;
+  the EduTool does the same thing live, in two runs, whenever the reader
+  moves the MAWP, and its test holds this file's T to its own T_bubble.
+
+  WHERE EACH NUMBER COMES FROM.  T_bubble: the bubble point of pure acetone
+  on the package in constant/thermoPhysPropDict (ideal liquid, SRK vapour).
+  Hvap_acetone: the record's HvapTb carried to T by the Watson correlation,
+  Component::Hvap_latent -- the same term the engine subtracts from the
+  ideal-gas enthalpy to price every liquid stream.  Z: the SRK vapour root.
+  gamma: the record's ideal-gas heat capacity.
+
+  WHY ACETONE AND NOT TOLUENE.  The first draft of this case was a toluene
+  drum, and its run announced that toluene's Antoine record is fitted only
+  from 273 to 380 K -- below the normal boiling point, so every boiling
+  temperature of a pressurised toluene drum is an EXTRAPOLATED vapour
+  pressure.  A relief temperature resting on an extrapolation is a weak
+  first lesson.  Acetone's record covers 259.16 to 507.60 K, which holds the
+  relieving state of any drum this EduTool lets the reader set.
+
+  WHAT THIS CASE DOES NOT SAY.  Nothing here is a relief-valve design: the
+  sizing is the EduTool's arithmetic on these numbers, and no number in
+  either is a design for a real vessel.
+\*---------------------------------------------------------------------------*/
+operations
+(
+    {
+        name        relieving;
+        type        propertyPoint;
+        state
+        {
+            T            394.109436 K;
+            P            706325 Pa;
+            composition  { acetone 1.0; }
+        }
+        properties  ( T_bubble Hvap_acetone );
+    }
+);

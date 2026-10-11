@@ -1,0 +1,23 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*  ONE component, the liquid ideal (it is pure, so its activity coefficient
+    is 1 by definition) and the vapour on SRK, so that the vapour's
+    compressibility at the relieving pressure is a real-gas number and not
+    1 by construction.  The same gammaPhi + SRK-vapour form the corpus uses
+    for its C4 splitter (column15) and its gas thermometer (temperature01). */
+
+recordType    thermophysicalPropertySystem;
+schemaVersion 2;
+components    ( acetone );
+equilibrium
+{
+    formulation gammaPhi;
+    liquid  { activityModel { model ideal; } }
+    vapour  { fugacityModel SRK; }
+}

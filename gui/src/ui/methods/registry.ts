@@ -70,7 +70,7 @@ export type MethodToolId =
   | "declared-pathways" | "reactor-ladder" | "route-screening"
   | "least-squares" | "element-potential" | "limiting-reactant"
   | "reaction-enthalpy" | "standard-state" | "case-assembly" | "run-log"
-  | "front-end-loading" | "process-safety";
+  | "front-end-loading" | "process-safety" | "overpressure";
 
 /** WHAT KIND OF TOOL THIS IS, and the field exists to keep a boundary legible
  *  rather than to switch behaviour.
@@ -131,7 +131,7 @@ export const METHOD_DISCIPLINES = [
   //  Moving a tool is an editorial act, taken by the owner, never by drift.
   "Process design & economics",
   //  THE SHELF FOR PROCESS SAFETY (2026-10-11, DEV.md 4c C60, and C61 --
-  //  designing for overpressure -- joins it next).  Thermal runaway, the
+  //  designing for overpressure -- beside it).  Thermal runaway, the
   //  cooling-failure scenario, inherent safety against protective layers:
   //  none of it is reaction engineering's question (how fast, how much) or
   //  design-and-economics' (in what order, at what cost), though it borrows
@@ -1200,6 +1200,33 @@ export const METHOD_TOOLS: MethodTool[] = [
       + "earns less, so that the engine cannot call it safer without sizing "
       + "the equipment.",
     theory: "ch:batch-adiabatic",
+  },
+  //  COMMISSIONED 2026-10-11 (DEV.md 4c C61): "E depois outro sobre design
+  //  de sistemas para lidar com a sobre pressão".  A CONSTRUCTION beside the
+  //  C60 page: the reader drives the sizing on fluid properties two
+  //  propertyPoint witnesses compute in the browser (relief01, the ammonia
+  //  loop gas; relief02, an acetone drum in a fire).  The sizing arithmetic
+  //  is the page's own (overpressure.ts) -- the engine has no relief model.
+  //  `theory` is the SRK chapter, because the Theory Guide has no relief
+  //  chapter and the Z the gas equation needs is the SRK vapour root; the
+  //  Design Guide's relief chapter is deep-linked from the page itself.
+  //  First version, for Vitor's review.
+  {
+    id: "overpressure",
+    label: "Designing for overpressure: scenarios, devices and relief sizing",
+    discipline: "Process safety", kind: "construction",
+    status: "live",
+    teaches: "Why a relief system is sized for the worst credible cause "
+      + "(blocked outlet, external fire, cooling or reflux failure, runaway, "
+      + "tube rupture, thermal expansion), the pressure ladder from operating "
+      + "to set, MAWP and the allowed accumulation, the devices and the back "
+      + "pressure behind them, the published gas, liquid and fire-case "
+      + "equations worked on fluid properties the engine computes -- an "
+      + "acetone drum in a fire, and an ammonia loop whose 50 bar version "
+      + "needs a relief valve about four and a half times larger -- where "
+      + "the relief goes after the valve, and why a runaway vent is "
+      + "two-phase and larger.",
+    theory: "ch:cubic-eos",
   },
   //  Route screening (C24, 2026-09-29): three known routes to methanol
   //  through the paper filters, cheapest first -- margin, atom economy,

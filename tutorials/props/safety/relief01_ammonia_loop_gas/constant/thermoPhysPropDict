@@ -1,0 +1,43 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*  The loop gas on SRK with van der Waals one-fluid mixing and kij = 0 --
+    the vapour model the green-ammonia feasibility plants declare
+    (`vapour { fugacityModel SRK; }`), which is the only model this case
+    exercises: every operation is a single-phase gas state.  The plants'
+    LIQUID convention (ammonia on the Raoult rung, the permanent gases on
+    the Henry rung) plays no part here and is not repeated.  The records
+    are the catalogue's; the plants carry merged copies that differ from
+    them only in fields a gas-phase Z and Cp/Cv never read (the Henry role,
+    a low-temperature Antoine range for N2, a solubility parameter). */
+
+recordType    thermophysicalPropertySystem;
+schemaVersion 2;
+
+components    ( N2  H2  NH3  Ar );
+
+equilibrium
+{
+    formulation phiPhi;
+
+    equationOfState
+    {
+        model      SRK;
+        mixingRule vanDerWaalsOneFluid;
+    }
+
+    liquid { fugacityRoute equationOfState; root liquid; }
+    vapour { fugacityRoute equationOfState; root vapour; }
+}
+
+caloric
+{
+    energyBasis elementsDatum;
+    liquid { departureRoute equilibriumEquationOfState; root liquid; }
+    vapour { departureRoute equilibriumEquationOfState; root vapour; }
+}

@@ -554,7 +554,8 @@ export const SAFETY_LIMITS: readonly LessonLimit[] = [
       + "closed one would pressurise.  The engine's temperature there is the "
       + "hypothetical the methodology defines the MTSR on, not a prediction "
       + "of what the vessel does.  Venting a runaway is the subject of the "
-      + "overpressure page planned beside this one." },
+      + "overpressure page beside this one (Designing for overpressure, "
+      + "Part 5)." },
   { id: "mtt",
     title: "The MTT is an ideal bubble point at the failure instant",
     body: "The bubble point is solved on the reactor case's declared "
