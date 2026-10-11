@@ -15,9 +15,13 @@
 /*---------------------------------------------------------------------------*\
   Process safety, as LESSON TEXT (commission C60, 2026-10-11).  Vitor:
   "Então acho que podes por isso num edutool de segurança".  Corrected the
-  same day on a second opinion Vitor relayed (DEV.md 4c C60, REVIEW
-  2026-10-11): twelve points, each re-checked against a source READ for it,
-  and the ones that could not be checked say so on the page.
+  same day on two second opinions Vitor relayed (DEV.md 4c C60, REVIEW and
+  SECOND REVIEW 2026-10-11): twelve points, then seven, each re-checked
+  against a source READ for it, and the ones that could not be checked say
+  so on the page.  The second review replaced the reaction: the witnesses
+  now run a FICTITIOUS reaction whose records are coherent by construction,
+  instead of a real esterification whose acetic-acid record carries a known
+  inconsistency (that record is its own item in DEV.md C60).
 
   WHAT IS QUOTED AND WHAT IS NOT.  A quotation on this page is verbatim
   from a source that was READ for it, and is held to that source's wording
@@ -42,21 +46,30 @@
       Chem. Eng. Trans. 48 (2016) 601-606 (open access): equations (1)-(4),
       Stoessel's semi-batch cooling-failure temperature with the mass
       correction, cited there to Stoessel 2008.
+    * Who Gall and Kletz were (second review, point 7): John Gall
+      (1925-2014) was an American paediatrician (his Wikipedia entry and
+      the author notes of Systemantics); Trevor Kletz (1922-2013)
+      graduated in chemistry in 1944 and joined ICI as a research chemist,
+      later managed plants, and in 1968 became ICI's first technical
+      safety adviser (his Wikipedia entry; the IChemE and trade-press
+      obituaries of November 2013 agree).  Neither was an engineer by
+      training, which is why the page no longer calls them "two
+      engineers".
 
   NOT read, and the page says so where it leans on them: Stoessel's book
   itself; John Gall's Systemantics (his lines are PARAPHRASED -- the book
   could not be read and its wording circulates in several forms); Kletz &
   Amyotte's handbook (its five headings are named from the library record,
-  the definitions are ours); Golikova et al., J. Therm. Anal. Calorim. 139
-  (2020) 1301, the calorimetry of the liquid esterification the review
-  pointed at (located, not readable from here -- so no measured value is
-  quoted).  Kletz's "What you don't have, can't leak" is quoted as the
-  TITLE of his 1978 paper, a bibliographic fact.
+  the definitions are ours).  Kletz's "What you don't have, can't leak" is
+  quoted as the TITLE of his 1978 paper, a bibliographic fact.
 
-  ENGINE CLAIMS carry the file and line they were read at.
+  CODE PATHS, BINARIES AND RECIPE LINES live in SAFETY_TECH_NOTES, drawn
+  in a collapsed technical note, not in the lesson's prose (second review,
+  point 7); engine claims there carry the file and line they were read at.
 \*---------------------------------------------------------------------------*/
 
 import type { LessonLimit, LessonStep } from "./lessonStep.js";
+
 
 /** Every verbatim quotation the page prints, with where it comes from.  The
  *  test holds each `text` to the page (it must appear in a step) and the
@@ -111,7 +124,7 @@ export const SAFETY_STEPS: readonly LessonStep[] = [
   // ---- Part 0: the thesis -------------------------------------------------
   {
     n: 1,
-    title: "Two engineers who said the same thing",
+    title: "A paediatrician and a chemist who said the same thing",
     body: "John Gall was a paediatrician who wrote, in Systemantics (1975), "
       + "a short book of laws about how systems behave.  In paraphrase -- "
       + "the book could not be checked for this page, and its lines "
@@ -120,24 +133,25 @@ export const SAFETY_STEPS: readonly LessonStep[] = [
       + "complex system can fail in more ways than anyone can list; and a "
       + "system pushes back against whoever tries to change it.  A fourth, "
       + "usually called Gall's law: a complex system that works is found to "
-      + "have grown out of a simple system that worked.  Trevor Kletz was an "
-      + "ICI chemist who turned to plant safety; his autobiography is titled "
-      + "By Accident ... a Life Preventing Them in Industry (2000).  His 1978 "
-      + "paper is titled \"What you don't have, can't leak\".  The two say "
-      + "one thing from two sides.  Every protective layer -- an alarm, an "
-      + "interlock, a scrubber, a relief valve -- is itself a system, with "
-      + "its own ways of failing, its own maintenance, its own bypass "
-      + "switch.  Removing a hazard removes the need to rely on a layer; "
-      + "adding a layer adds a system.  That is why the order in which a "
-      + "designer asks the questions matters: first whether the hazard can "
-      + "be removed or made smaller, and only then how to protect against "
-      + "what remains.  This is not an argument against protection layers.  "
-      + "Once the hazard has been made as small as the process allows, "
-      + "independent protection layers are still needed for the hazard that "
-      + "remains; in the words of Amyotte, Khan and Kletz (2009), \"the "
-      + "hierarchy of controls does not invalidate the usefulness of "
-      + "engineered and procedural safety measures\".  What the order "
-      + "changes is how much rests on them.",
+      + "have grown out of a simple system that worked.  Trevor Kletz was a "
+      + "chemist: he joined ICI as a research chemist in 1944, managed "
+      + "plants, and from 1968 was its first technical safety adviser; his "
+      + "autobiography is titled By Accident ... a Life Preventing Them in "
+      + "Industry (2000).  His 1978 paper is titled \"What you don't have, "
+      + "can't leak\".  The two say one thing from two sides.  Every "
+      + "protective layer -- an alarm, an interlock, a scrubber, a relief "
+      + "valve -- is itself a system, with its own ways of failing, its own "
+      + "maintenance, its own bypass switch.  Removing a hazard removes the "
+      + "need to rely on a layer; adding a layer adds a system.  That is why "
+      + "the order in which a designer asks the questions matters: first "
+      + "whether the hazard can be removed or made smaller, and only then "
+      + "how to protect against what remains.  This is not an argument "
+      + "against protection layers.  Once the hazard has been made as small "
+      + "as the process allows, independent protection layers are still "
+      + "needed for the hazard that remains; in the words of Amyotte, Khan "
+      + "and Kletz (2009), \"the hierarchy of controls does not invalidate "
+      + "the usefulness of engineered and procedural safety measures\".  "
+      + "What the order changes is how much rests on them.",
   },
   {
     n: 2,
@@ -218,17 +232,24 @@ export const SAFETY_STEPS: readonly LessonStep[] = [
       + "INTENSIFICATION: hold less of the hazardous material -- a smaller "
       + "inventory, a smaller vessel, an intermediate used as it is made.  "
       + "SUBSTITUTION: use a less hazardous material or route -- the "
-      + "route to the same insecticide that makes no MIC.  ATTENUATION: use the hazard in "
-      + "a milder form -- lower pressure, lower temperature, diluted, "
-      + "refrigerated.  LIMITATION OF EFFECTS: design so that a failure does "
-      + "less -- smaller pipes, slower additions, a layout that keeps people "
-      + "away.  SIMPLIFICATION: fewer things to go wrong, and those that do "
-      + "go wrong visibly.  None of these is a layer that can be switched "
-      + "off.  The rest of this page applies two of them with the engine "
-      + "running: limiting what a batch reactor holds by dosing it "
-      + "(lesson 1), and attenuating an ammonia loop by lowering its "
-      + "pressure (lesson 2) -- where the principles turn out to pull in "
-      + "different directions.",
+      + "route to the same insecticide that makes no MIC.  ATTENUATION: use "
+      + "the hazard in a milder form -- a process that RUNS at a lower "
+      + "pressure or temperature, a diluted material.  LIMITATION OF "
+      + "EFFECTS: design so that a failure does less -- smaller pipes, a "
+      + "vessel that holds only what can safely react, a layout that keeps "
+      + "people away.  SIMPLIFICATION: fewer things to go wrong, and those "
+      + "that do go wrong visibly.  What these have in common is that, once "
+      + "built, they do not depend on a system that has to keep working: a "
+      + "vessel built smaller stays smaller.  That is why a material kept "
+      + "cold by REFRIGERATION is not on the list, though it is colder: the "
+      + "low temperature is held by an active system that must keep running "
+      + "-- and at Bhopal the refrigeration had been switched off and its "
+      + "coolant drained.  An interlock, a scrubber and a refrigeration unit "
+      + "can each be switched off; a smaller inventory cannot.  The rest of "
+      + "this page applies two of the headings with the engine running: "
+      + "limiting what a batch reactor holds by dosing it (lesson 1), and "
+      + "attenuating an ammonia loop by lowering its pressure (lesson 2) -- "
+      + "where the principles turn out to pull in different directions.",
   },
   // ---- Lesson 1: the cooling-failure scenario ----------------------------
   {
@@ -241,8 +262,8 @@ export const SAFETY_STEPS: readonly LessonStep[] = [
       + "asks one question first: what if, at time t, the cooling fails?  "
       + "From then on the vessel is adiabatic, and whatever reactant is in "
       + "it and has not yet reacted -- the ACCUMULATION -- reacts and heats "
-      + "the mass, to a temperature T_cf.  The largest T_cf over every "
-      + "instant at which the failure could happen is the maximum "
+      + "the mass, to a temperature T_cf.  The largest T_cf over the "
+      + "instants at which the failure could happen is the maximum "
       + "temperature of the synthesis reaction, MTSR.  If the whole charge "
       + "reacted adiabatically, the mass would rise by the adiabatic "
       + "temperature rise; a fraction X_ac of the charge left unreacted "
@@ -265,7 +286,7 @@ export const SAFETY_STEPS: readonly LessonStep[] = [
         + "mole of the limiting reactant (negative: exothermic)",
         unit: "J/mol" },
       { sym: "n_\\mathrm{A}", means: "the moles of the limiting reactant "
-        + "the whole batch receives", unit: "mol" },
+        + "the whole batch receives (reactant B on this page)", unit: "mol" },
       { sym: "M_\\mathrm{f}", means: "the final mass of the reaction mass: "
         + "everything the batch is given", unit: "kg" },
       { sym: "c_p", means: "the specific heat capacity of the reaction "
@@ -289,12 +310,11 @@ export const SAFETY_STEPS: readonly LessonStep[] = [
     ],
     note: "On this page the engine computes the adiabatic rise itself, by "
       + "running the batch witness with the failure at t = 0: its heat of "
-      + "reaction comes from the species' formation data (printed in the run "
-      + "log as [reaction heat]) and the heat capacities from each "
-      + "component record's own molar Cp, so it does NOT hold c_p constant. "
-      + " The estimate's masses are the run's own amounts times the "
-      + "records' molar masses.  Nothing in the formula above is typed into "
-      + "the page.",
+      + "reaction comes from the records' formation data (the run log "
+      + "prints it as [reaction heat]) and its heat capacities from each "
+      + "component record's own constant molar Cp.  The estimate's masses "
+      + "are the run's own amounts times the records' molar masses.  "
+      + "Nothing in the formula above is typed into the page.",
   },
   {
     n: 6,
@@ -305,25 +325,25 @@ export const SAFETY_STEPS: readonly LessonStep[] = [
       + "vessel (or the temperature at which a closed one reaches its relief "
       + "pressure): if the runaway reaches it, the mass boils, which removes "
       + "heat if the vapour can get away and raises the pressure if it "
-      + "cannot.  T_D24 is not a decomposition onset, and not the onset a "
-      + "DSC trace shows: it is the temperature at which the adiabatic time "
-      + "to maximum rate, TMR_ad, of the SECONDARY decomposition is 24 hours "
-      + "(Sheng et al., Molecules 30 (2025) 2939, section 3.3, citing "
-      + "Stoessel).  Started there with no cooling, the decomposition would "
-      + "take a day to run away; started hotter, less.  It is derived from "
-      + "the decomposition's kinetics -- the heat it releases and how fast "
-      + "that rate grows with temperature -- usually measured by "
-      + "differential scanning calorimetry (DSC) and adiabatic calorimetry "
-      + "(ARC), through an approximation of the form below.  No record in "
-      + "Choupo carries decomposition kinetics, so on this page T_D24 is an "
-      + "ASSUMPTION you set, labelled as one.  The MTT is the engine's: the "
-      + "bubble point of the reactor contents at the failure instant, from a "
-      + "choupoProps run of the bubble01 witness on the reactor case's own "
-      + "thermodynamics -- an ideal liquid, so a real mixture that forms "
-      + "azeotropes would boil lower.  Beside it the page shows the cruder "
-      + "PROXY it once used, the lowest normal boiling point among the "
-      + "components: a number of the right size, not the boiling point of "
-      + "the reaction mass.",
+      + "cannot.  It is one technical limit among others -- a vessel's "
+      + "design temperature, the temperature at which a dissolved gas is "
+      + "released or a product degrades -- and the one to compare with is "
+      + "whichever comes first.  T_D24 is not a decomposition onset, and "
+      + "not the onset a DSC trace shows: it is the temperature at which "
+      + "the adiabatic time to maximum rate, TMR_ad, of the SECONDARY "
+      + "decomposition is 24 hours (Sheng et al., Molecules 30 (2025) 2939, "
+      + "section 3.3, citing Stoessel).  Started there with no cooling, the "
+      + "decomposition would take a day to run away; started hotter, less.  "
+      + "It is derived from the decomposition's kinetics -- the heat it "
+      + "releases and how fast that rate grows with temperature -- usually "
+      + "measured by differential scanning calorimetry (DSC) and adiabatic "
+      + "calorimetry (ARC), through an approximation of the form below.  "
+      + "On this page the MTT is the engine's: the bubble point of the "
+      + "reactor contents at the failure instant, computed at the reactor's "
+      + "pressure, 1.013 bar.  Beside it the page offers a cruder PROXY, the "
+      + "lowest normal boiling point among the components: a number of the "
+      + "right size, not the boiling point of the reaction mass.  T_D24 is "
+      + "an ASSUMPTION you set (step 8 says why).",
     formula: String.raw`\mathrm{TMR}_\mathrm{ad} \approx \frac{c_p\, R\, T_0^2}{q_0\, E}`,
     where: [
       { sym: "\\mathrm{TMR}_\\mathrm{ad}", means: "the adiabatic time to "
@@ -344,51 +364,75 @@ export const SAFETY_STEPS: readonly LessonStep[] = [
   {
     n: 7,
     title: "The five criticality classes",
-    body: "Stoessel orders the four temperatures and reads off one of five "
-      + "classes.  The table below is the one an open-access 2025 paper "
-      + "prints citing his book (Molecules 30 (2025) 2939, Table 11); the "
-      + "book itself was not read for this page.  The last column is our "
-      + "reading of what each ordering implies, not a quotation, and not a "
-      + "verdict on any real process.  The class is a statement about ORDER, "
-      + "which is why it is useful early: you need four temperatures, not a "
-      + "full runaway model.",
-    formula: String.raw`T_\mathrm{p} \le \mathrm{MTSR} < \mathrm{MTT} < T_\mathrm{D24} \;\Rightarrow\; \text{class 1}`,
-    where: [
-      { sym: "\\mathrm{MTT}", means: "the maximum temperature for "
-        + "technical reasons; here, the boiling point of the reaction mass",
-        unit: "K" },
-      { sym: "T_\\mathrm{D24}", means: "the temperature at which the "
-        + "adiabatic time to maximum rate of the secondary decomposition is "
-        + "24 h", unit: "K" },
-    ],
+    body: "Stoessel orders the four temperatures -- T_p, the MTSR, the MTT "
+      + "and T_D24 -- and reads off one of five classes.  The table below "
+      + "is the one an open-access 2025 paper prints citing his book "
+      + "(Molecules 30 (2025) 2939, Table 11); the book itself was not read "
+      + "for this page.  The last column is our reading of what each "
+      + "ordering implies, not a quotation, and not a verdict on any real "
+      + "process.  The class is a statement about ORDER, which is why it is "
+      + "useful early: you need four temperatures, not a full runaway "
+      + "model.",
   },
   {
     n: 8,
-    title: "The batch: all of the reactant, from the start",
-    body: "The batch witness charges the whole reaction -- equimolar acetic "
-      + "acid and ethanol, the esterification of the batch02 tutorial -- "
-      + "at T_p = 330 K and holds it there.  The accumulation starts at 1: "
-      + "a cooling failure in the first minute releases the whole adiabatic "
-      + "rise, so the batch's MTSR is its T_cf at t = 0.  As the batch "
-      + "converts, X_ac falls, and so does T_cf.  "
-      + "Move the failure time and the engine re-runs: the recipe line "
-      + "`setParameter reactor adiabatic 1` takes the jacket away at that "
-      + "instant (src/unitOperations/batch/BatchReactor.cpp:585-651) and "
-      + "the reactor integrates its temperature from there.  Put the "
-      + "engine's T_cf beside the estimate: the mass of a batch does not "
-      + "change, so the estimate is T_p + X_ac ΔT_ad, and the two differ by "
-      + "a fraction of a kelvin, because the specific heat of the mass "
-      + "changes as reactants become products and the formula holds it "
-      + "fixed.",
+    title: "Before the runs: what this reactor is, and what it leaves out",
+    body: "Everything that follows runs on a reaction that does not exist.  "
+      + "A + B -> P, in an inert solvent S, is FICTITIOUS: its four "
+      + "substances are records written for this page, and every number in "
+      + "them -- molar masses, vapour pressures, heat capacities, the heat "
+      + "of reaction, the rate constants -- is an author-set teaching "
+      + "assumption, chosen so the lesson can show what it has to show and "
+      + "made COHERENT by construction: each boiling point and latent heat "
+      + "follows from its own vapour-pressure equation, the heat of "
+      + "reaction (-60 kJ per mol of B) follows from the records' own "
+      + "formation data and does not change with temperature, and mass is "
+      + "conserved.  (An earlier version ran a real esterification, one of "
+      + "whose records priced the liquid on two different vapours and so "
+      + "made the heat of reaction several times too large; a runaway "
+      + "lesson must not run on a known inconsistency.)  Five things to "
+      + "hold in mind while reading the runs.  The reactor has NO VAPOUR "
+      + "PHASE: it is a closed liquid, so past the boiling point it goes on "
+      + "heating where a real open vessel would boil and a closed one would "
+      + "pressurise -- temperatures above the MTT are the hypothetical the "
+      + "methodology defines the MTSR on, not a prediction of what a vessel "
+      + "does.  T_D24 is ASSUMED: nothing here models a decomposition, so "
+      + "its value is yours to set.  The liquid is declared IDEAL "
+      + "(Raoult's law), so it has no azeotrope and its bubble point lies "
+      + "between the boiling points of the substances in it.  Each "
+      + "component's heat capacity is a CONSTANT, while the MIXTURE's "
+      + "specific heat changes with composition: the reaction itself does "
+      + "not change it here (the product's heat capacity was set to the sum "
+      + "of the reactants'), but dosing does, because the semi-batch vessel "
+      + "holds a different mixture at every instant.  And the bubble point "
+      + "is computed at 1.013 bar, the reactor's pressure.",
   },
   {
     n: 9,
+    title: "The batch: all of the reactant, from the start",
+    body: "The batch witness charges the whole reaction -- 5 mol of A, 5 mol "
+      + "of B and 15 mol of the solvent -- at T_p = 330 K and holds it "
+      + "there.  The accumulation starts at 1: a cooling failure in the "
+      + "first instant releases the whole adiabatic rise, so the batch's "
+      + "MTSR is its T_cf at t = 0.  As the batch converts, X_ac falls, and "
+      + "so does T_cf.  Move the failure time and the engine re-runs with "
+      + "the jacket taken away at that instant.  Put the engine's T_cf "
+      + "beside the estimate: the mass of a batch does not change, so the "
+      + "estimate is T_p + X_ac ΔT_ad, and here the two agree to the "
+      + "integration error -- because the reaction leaves the heat capacity "
+      + "of the charge unchanged, which is exactly what the formula "
+      + "assumes.  In a real reaction mass they part by the change in "
+      + "specific heat; on this page that difference appears only in the "
+      + "semi-batch.",
+  },
+  {
+    n: 10,
     title: "Semi-batch: limit what is there by dosing it",
     body: "The semi-batch witness runs the same reaction with the same "
-      + "totals at the same T_p, but only the acid is charged.  The ethanol "
-      + "is dosed in sixteen portions, one every 15 minutes.  At any moment "
-      + "the reactor holds only what it has been given and has not yet "
-      + "converted, so the accumulation stays small, T_cf stays low, "
+      + "totals at the same T_p, but only A and the solvent are charged.  "
+      + "B is dosed in sixteen portions, one every 15 minutes.  At any "
+      + "moment the reactor holds only what it has been given and has not "
+      + "yet converted, so the accumulation stays small, T_cf stays low, "
       + "and the peak cooling duty the jacket must supply falls with it -- "
       + "the engine's utility ledger reports both peaks.  This is "
       + "intensification applied to time rather than to a vessel.  Two "
@@ -399,48 +443,100 @@ export const SAFETY_STEPS: readonly LessonStep[] = [
       + "accumulation heats a smaller mass, which is what the factor "
       + "M_f/M(t) is for.  Leave it out and the estimate puts the worst "
       + "instant at the end of the dosing, where the accumulation is "
-      + "largest, and falls several kelvin short of the engine; keep it and "
-      + "the estimate follows the engine to about a kelvin, and the worst "
-      + "instant -- the semi-batch's MTSR -- moves to the early-middle of the "
-      + "dosing, where the accumulation is already large and the mass still "
-      + "small.  The knob starts there.  What is left of the gap is the "
-      + "specific heat: early on the vessel holds mostly acetic acid, whose "
-      + "specific heat is lower than the final mixture's.",
+      + "largest; keep it and the worst instant -- the semi-batch's MTSR -- "
+      + "moves to the early-middle of the dosing, where the accumulation is "
+      + "already near its plateau and the mass still small.  The knob "
+      + "starts there.  What is left of the gap between the estimate and "
+      + "the engine is the mixture's specific heat, which the formula holds "
+      + "fixed: early on the vessel holds mostly A and the solvent, whose "
+      + "specific heat per kilogram differs a little from the final "
+      + "mixture's.",
   },
   {
-    n: 10,
+    n: 11,
+    title: "Which instant, and which maximum",
+    body: "The MTSR is a maximum over the instants at which the cooling "
+      + "could fail, and with discrete doses those instants are not alike: "
+      + "the accumulation JUMPS at each portion and decays between them, so "
+      + "the worst instant is right AFTER a portion, and an instant just "
+      + "before the next one is the least bad.  The bench lets you put the "
+      + "failure just before or just after a portion and see the jump.  It "
+      + "keeps three numbers apart.  (a) The scenario you chose: one "
+      + "failure instant, one engine run, one T_cf.  (b) The largest value "
+      + "of the estimate T_p + X_ac ΔT_ad M_f/M(t), evaluated on the "
+      + "engine's normal-operation run at every row the run writes -- every "
+      + "50 s, which includes each portion's own instant, because the row "
+      + "there is written after the transfer.  (c) The largest T_cf the "
+      + "ENGINE reached among the failure instants it was asked about: one "
+      + "second after each of the sixteen portions, and one second before "
+      + "each for contrast, one run each, when you ask for them.  Neither "
+      + "(b) nor (c) is a maximum over every instant; both are maxima over a "
+      + "stated sample, and the post-portion instants are the ones worth "
+      + "sampling because between portions the accumulation only decays.  "
+      + "For the batch the search is short: the accumulation falls from the "
+      + "first instant, so the MTSR is the failure at t = 0, which the "
+      + "engine runs.",
+  },
+  {
+    n: 12,
+    title: "The class of a scenario, the class of the process",
+    body: "A class orders four temperatures, so it depends on which T_cf is "
+      + "put in the MTSR slot.  The class shown beside the scenario you "
+      + "chose answers what happens if the cooling fails THEN; it is not the "
+      + "class of the process.  The class of the PROCESS takes the maximum "
+      + "-- the engine-confirmed one where the search has been run, the "
+      + "estimate's until then, and the page says which.  The MTT moves "
+      + "too: here the bubble point of what the reactor holds rises as the "
+      + "light reactants become the heavy product, so the margin that "
+      + "matters is MTT(t) - T_cf(t) at each instant, and the table below "
+      + "lists it at the instants searched.  Early in the batch the runaway "
+      + "overshoots a low boiling point; later it stays under a higher one; "
+      + "the classes along the run need not be the class of the maximum, "
+      + "and with the default T_D24 several of them appear in one batch.",
+  },
+  {
+    n: 13,
     title: "The interlock is a system too",
     body: "The MTSR scenario takes the accumulation at the failure instant "
       + "-- the reactant already fed and not yet converted -- which assumes "
       + "the dosing STOPS when the cooling does.  In a plant that is an "
       + "interlock: a temperature or a cooling-flow signal, a logic solver "
-      + "and a valve on the feed.  In the witness it is one recipe line, "
-      + "written as what it achieves -- what is left in the dosing tank is "
-      + "moved to a vessel nothing is ever dosed from.  Switch it off and "
-      + "run the failure again: the pump goes on dosing into an adiabatic "
-      + "reactor, every portion reacts as it arrives at a temperature where "
-      + "the reaction is fast, and the temperature climbs toward the "
-      + "batch's -- the earlier the failure, the closer, because more of the "
-      + "feed is still to come.  That is no longer the textbook scenario "
-      + "but a COMPOUND one, a cooling failure AND a feed-stop failure, and "
-      + "what the engine reports for it is the maximum temperature after "
-      + "both: it extends the MTSR scenario, it is not an MTSR.  The "
-      + "inherently safer version of the same idea limits the dose "
-      + "PHYSICALLY -- a dosing vessel that holds no more than the reactor "
-      + "can safely accumulate, a pump that cannot deliver faster -- so "
-      + "that safety no longer depends on the interlock.  The interlock is "
-      + "not thrown away: measures are ranked, inherent first, then passive "
-      + "engineered, then active engineered, then procedural (the order "
-      + "Amyotte, Khan and Kletz give, from most to least effective), and a "
-      + "good active layer stays where it is.  Gall would recognise the "
-      + "choice: a protection that has to act, or a hazard that is not "
-      + "there to act on.  For the continuous reactor's half of this picture "
-      + "(heat generated against heat removed, and why a cooled CSTR can "
-      + "have three steady states), see the Van Heerden page.",
+      + "and a valve on the feed.  Switch it off and run the failure again: "
+      + "the pump goes on dosing into an adiabatic reactor, every portion "
+      + "reacts as it arrives at a temperature where the reaction is fast, "
+      + "and the temperature climbs toward the batch's -- the earlier the "
+      + "failure, the closer, because more of the feed is still to come.  "
+      + "That is no longer the textbook scenario but a COMPOUND one, a "
+      + "cooling failure AND a feed-stop failure, and what the engine "
+      + "reports for it is the maximum temperature after both: it extends "
+      + "the MTSR scenario, it is not an MTSR.  Now take the worst feed "
+      + "failure -- a valve left open, a pump run away -- and the WHOLE "
+      + "dosing tank enters at once.  The engine ends where the pump left "
+      + "running ends, only sooner: a pump that can deliver only so fast "
+      + "limits the RATE at which the feed enters, not the TOTAL that can "
+      + "enter, and with all of B waiting in the tank that total is the "
+      + "batch's.  What makes safety no longer depend on the interlock is "
+      + "to bound the TOTAL: a dosing vessel -- or a batch-wise charge -- "
+      + "whose WHOLE content, added to what has already accumulated, keeps "
+      + "T_cf below the limits.  The bench below runs both: the witness "
+      + "whose tank holds all of B, and the same reactor with a day tank "
+      + "that holds a quarter, refilled from storage only when it is empty.  "
+      + "One thing is left, and it is said rather than hidden: the refill "
+      + "is a discrete, deliberate act, taken when the day tank is empty "
+      + "and the reactor's state is known -- a procedure, or an interlock of "
+      + "its own.  Nor is the dosing interlock thrown away: measures are "
+      + "ranked, inherent first, then passive engineered, then active "
+      + "engineered, then procedural (the order Amyotte, Khan and Kletz "
+      + "give, from most to least effective), and a good active layer stays "
+      + "where it is.  Gall would recognise the choice: a protection that "
+      + "has to act, or a hazard that is not there to act on.  For the "
+      + "continuous reactor's half of this picture (heat generated against "
+      + "heat removed, and why a cooled CSTR can have three steady states), "
+      + "see the Van Heerden page.",
   },
   // ---- Lesson 2: inherent safety against economics -----------------------
   {
-    n: 11,
+    n: 14,
     title: "Lesson 2: attenuate the ammonia loop",
     body: "The green-ammonia feasibility cases make the same ammonia from "
       + "the same feeds at a 150 bar loop and at a 50 bar loop -- the second "
@@ -479,74 +575,131 @@ export const SAFETY_STEPS: readonly LessonStep[] = [
       + "temperature from its own KPIs.",
   },
   {
-    n: 12,
+    n: 15,
     title: "What the engine can say about the inventory, and what it cannot",
     body: "Whether the 50 bar loop is SAFER is a question about the "
-      + "inventory -- how much hydrogen and ammonia the loop holds, and how "
-      + "much energy the compressed gas stores -- and an inventory is a "
-      + "flow times a residence time, or a pressure times a volume.  The "
-      + "feasibility cases size no vessel: they are duty-only studies "
-      + "(stage 2 of a staged design, see Front-End Loading), so no volume "
-      + "exists to multiply, and this page invents none.  What the engine "
-      + "does say is what the loop CIRCULATES: at 50 bar it moves more gas "
-      + "through the converter, more hydrogen round the recycle, and about "
-      + "four times as much ammonia in the recycle stream, because the "
-      + "chiller condenses less of it at the lower pressure.  Equipment is "
-      + "sized on those flows.  So the engine cannot conclude that the "
-      + "lower-pressure design is safer overall: it shows a real "
-      + "attenuation of the pressure hazard, and beside it larger "
-      + "circulating flows and a larger ammonia recycle -- at a lower gross "
-      + "margin.  The inventory, and with it the total risk, needs the "
-      + "equipment sizing of both designs, which is the next stage's work.  "
-      + "Flixborough's 94 % unconverted cyclohexane illustrates the same "
-      + "trade: a low conversion per pass is paid for in material "
-      + "circulating.",
+      + "inventory -- how many moles of hydrogen and ammonia the loop holds, "
+      + "and how much energy the compressed gas stores.  For a gas the "
+      + "amount held in a volume V is n = PV/(ZRT): at a third of the "
+      + "pressure the same volume holds about a third of the moles -- but "
+      + "the lower-pressure loop needs more volume.  The engine gives one "
+      + "concrete piece of that: the VOLUMETRIC flow of the converter "
+      + "feed, Q = F Z R T / P, from each loop's molar flow, temperature "
+      + "and pressure and the engine's own compressibility factor Z at "
+      + "that state.  The ratio of the two is a product of four factors -- "
+      + "more moles, a lower temperature, a third of the pressure, a Z "
+      + "nearer 1 -- and the table below multiplies them out: the 50 bar "
+      + "converter must pass about four times the volume of gas per hour.  "
+      + "What that proves: equipment sized on the volumetric flow of that "
+      + "gas -- the converter, its exchangers, the recycle compressor's "
+      + "suction -- is larger at 50 bar.  What it does not prove: that the "
+      + "loop HOLDS more.  That needs the volumes of the vessels and pipes "
+      + "and the time the gas spends in them, which these duty-only studies "
+      + "(stage 2 of a staged design, see Front-End Loading) do not size, "
+      + "so no inventory is computed and this page invents none.  Nor is "
+      + "the inventory the whole of the risk: the total risk also depends "
+      + "on the release scenarios, on how often each one happens, on the "
+      + "protections in place and on who is exposed, and for how long.  So "
+      + "the engine cannot conclude that the lower-pressure design is safer "
+      + "overall: it shows a real attenuation of the pressure, and beside "
+      + "it larger circulating flows, a larger volume of gas to handle and "
+      + "about four times as much ammonia in the recycle stream, because "
+      + "the chiller condenses less of it at the lower pressure -- at a "
+      + "lower gross margin.  Flixborough's 94 % unconverted cyclohexane "
+      + "illustrates the same trade: a low conversion per pass is paid for "
+      + "in material circulating.",
+    formula: String.raw`Q = \frac{F\, Z\, R\, T}{P}, \qquad \frac{Q_{50}}{Q_{150}} = \frac{F_{50}}{F_{150}}\,\frac{Z_{50}}{Z_{150}}\,\frac{T_{50}}{T_{150}}\,\frac{P_{150}}{P_{50}}`,
+    where: [
+      { sym: "Q", means: "the volumetric flow of the converter feed at its "
+        + "own temperature and pressure", unit: "m^3/h" },
+      { sym: "F", means: "its molar flow", unit: "kmol/h" },
+      { sym: "Z", means: "its compressibility factor at that state (the "
+        + "engine's, on the loop gas's own equation of state)", unit: "–" },
+      { sym: "T", means: "its temperature", unit: "K" },
+      { sym: "P", means: "its pressure", unit: "Pa" },
+      { sym: "Q_{50}", means: "Q of the 50 bar loop (subscripts 50 and "
+        + "150 name the loop each quantity belongs to)", unit: "m^3/h" },
+      { sym: "Q_{150}", means: "Q of the 150 bar loop", unit: "m^3/h" },
+      { sym: "F_{50}", means: "F of the 50 bar loop", unit: "kmol/h" },
+      { sym: "F_{150}", means: "F of the 150 bar loop", unit: "kmol/h" },
+      { sym: "Z_{50}", means: "Z of the 50 bar loop's converter feed",
+        unit: "–" },
+      { sym: "Z_{150}", means: "Z of the 150 bar loop's converter feed",
+        unit: "–" },
+      { sym: "T_{50}", means: "T of the 50 bar loop's converter feed",
+        unit: "K" },
+      { sym: "T_{150}", means: "T of the 150 bar loop's converter feed",
+        unit: "K" },
+      { sym: "P_{150}", means: "P of the 150 bar loop's converter feed",
+        unit: "Pa" },
+      { sym: "P_{50}", means: "P of the 50 bar loop's converter feed",
+        unit: "Pa" },
+    ],
+    note: "R is the gas constant (step 6).  The molar flows, temperatures "
+      + "and pressures are the converter feeds of the two loop runs; Z is "
+      + "from a property run at each feed's own state.  The ideal-gas "
+      + "estimate (Z = 1) is shown beside it.",
   },
 ];
 
+/** WHAT THE PAGE RUNS, for the reader who wants to reproduce it: the
+ *  witnesses, the binaries, the recipe lines moved and the engine lines
+ *  the scenario rests on, each read at the line given.  Drawn in a
+ *  collapsed technical note, never in the lesson's prose (second review,
+ *  point 7). */
+export const SAFETY_TECH_NOTES: readonly LessonLimit[] = [
+  { id: "batch-runs",
+    title: "The cooling-failure runs",
+    body: "tutorials/batch/reactor/batch26_cooling_failure (the batch) and "
+      + "tutorials/batch/reactor/batch27_semibatch_dosing (the semi-batch), "
+      + "run in your browser by choupoBatch (WASM).  The page moves only "
+      + "their recipe lines: the failure time, `value 0|1` on the event "
+      + "`setParameter reactor adiabatic`, and the feed event that follows "
+      + "it (`to heldFeed; fraction 1;` the interlock holds the feed, "
+      + "`fraction 0;` it fails, `to reactor; fraction 1;` the whole tank "
+      + "enters).  The cooling failure is the batchReactor's own branch for "
+      + "that key (src/unitOperations/batch/BatchReactor.cpp:585-651): from "
+      + "the event the reactor is integrated by the same adiabatic energy "
+      + "balance `mode adiabatic` uses, from the temperature it was held at.  "
+      + "A dose charged into a hot reactor is mixed by enthalpy equality "
+      + "(src/unitOperations/batch/BatchUnitOperation.cpp:236-274).  A "
+      + "failure is placed one second after (or before) a portion, never "
+      + "on it: two events at one instant would be ordered by the driver's "
+      + "sort." },
+  { id: "tank-runs",
+    title: "The dosing-vessel runs",
+    body: "tutorials/batch/reactor/batch28_dosing_vessel_limit is batch27 "
+      + "with a day tank holding a quarter of B, refilled from storage at "
+      + "3150, 6750 and 10350 s.  Its failure scenario is three events at "
+      + "one instant: the cooling failure, the whole day tank into the "
+      + "reactor, and what is left in storage set aside (no refill after a "
+      + "failure).  The page runs it, and batch27 with its whole tank "
+      + "entering, one second after the first portion and one second after "
+      + "each refill -- the instants at which the vessel connected to the "
+      + "reactor is fullest." },
+  { id: "bubble-runs",
+    title: "The bubble points",
+    body: "tutorials/props/thermo/bubble01_reaction_mass_boiling_point, run "
+      + "by choupoProps (WASM): one propertyPoint with `properties ( "
+      + "T_bubble )` at 1.013 bar, on a copy of batch26's sealed constant/, "
+      + "with its four composition lines rewritten to the reactor's mole "
+      + "fractions at the instant in question, read from the engine's "
+      + "normal-operation trajectory (just before a portion: the row at the "
+      + "portion's instant minus what that transfer moved)." },
+  { id: "loop-runs",
+    title: "The ammonia loops",
+    body: "tutorials/plant/greenAmmoniaFeasibility and "
+      + "greenAmmoniaFeasibility50bar, unchanged, run by choupoSolve (WASM).  "
+      + "The flows are the converter feed (PreheatedFeed), its effluent "
+      + "(HotEffluent), the Recycle and the ProductNH3 stream of each run; "
+      + "the gross margin is the economics pass's grossMargin_RM_UT KPI.  "
+      + "Z is from tutorials/props/safety/relief01_ammonia_loop_gas (the "
+      + "overpressure page's witness, whose two operations carry each "
+      + "loop's converter-feed composition), run by choupoProps with its "
+      + "temperatures and pressures rewritten to each feed's own." },
+];
+
 export const SAFETY_LIMITS: readonly LessonLimit[] = [
-  { id: "witness",
-    title: "The esterification is a teaching witness, not data",
-    body: "The reaction is a pedagogical thermal-safety witness: neither its "
-      + "kinetics nor its thermal excursion are data for real acetic acid / "
-      + "ethanol esterification.  The Arrhenius constants are a test "
-      + "reaction (the witnesses' constant/reactions says so), so the times "
-      + "on this page are not those of any real esterification; the liquid "
-      + "heat capacities are constant; and the heat of reaction is too "
-      + "large, for the reason the next note gives." },
-  { id: "reaction-heat",
-    title: "Why the heat of reaction is too large: one record, two vapours",
-    body: "The run log prints the liquid heat of reaction as -25.95 kJ per "
-      + "mol of ethanol at 330 K ([reaction heat]).  The engine prices a "
-      + "liquid from its ideal-gas formation datum minus a heat of "
-      + "vaporisation scaled from the normal boiling point by Watson's rule "
-      + "(src/thermo/Component.cpp:1134, through Hvap_latent at :1294).  "
-      + "For acetic acid those two numbers describe two different vapours. "
-      + " The record's formation datum, dHf_298 = -432.25 kJ/mol, is the "
-      + "MONOMER ideal gas; its HvapTb = 24.39 kJ/mol is the vaporisation to "
-      + "the real vapour, which is largely DIMERISED -- far below ethanol's "
-      + "38.56 kJ/mol for a liquid boiling 40 K higher "
-      + "(tutorials/batch/reactor/batch26_cooling_failure/constant/"
-      + "components/aceticAcid.dat:25 and :31).  The tree's own record of "
-      + "the vapour dimerisation (data/standards/chemistry/"
-      + "aceticAcid-dissolution.dat, Chao & Zwolinski 1978, K and dH read "
-      + "from the primary) says the saturated vapour at 25 °C holds about "
-      + "four-fifths of its acid as dimers, and taking them apart costs "
-      + "about 26 kJ per mole of acid: the engine's liquid acetic acid sits "
-      + "that much too high in enthalpy.  Put it back and the same records "
-      + "give a liquid heat of reaction near zero -- of the order of a "
-      + "kilojoule per mole on this back-of-envelope estimate, which is not "
-      + "a measurement.  The liquid "
-      + "reaction has been measured calorimetrically (Golikova et al., J. "
-      + "Therm. Anal. Calorim. 139 (2020) 1301, at 313.15 K); that paper "
-      + "could not be read for this page, so no measured value is quoted.  "
-      + "So the temperature rises on this page are several times what "
-      + "these same records would give with the dimer priced -- which keeps "
-      + "the witness a vivid teaching runaway and makes it no model of a "
-      + "real one.  The record is not changed here: "
-      + "which vapour it speaks for, and whether the dimer is priced, is a "
-      + "curation decision that moves every liquid-phase use of acetic acid "
-      + "in the corpus." },
   { id: "vapour",
     title: "No vapour phase in the batch reactor",
     body: "The batch reactor is a closed liquid.  Above the MTT a real open "
@@ -557,33 +710,40 @@ export const SAFETY_LIMITS: readonly LessonLimit[] = [
       + "overpressure page beside this one (Designing for overpressure, "
       + "Part 5)." },
   { id: "mtt",
-    title: "The MTT is an ideal bubble point at the failure instant",
+    title: "The MTT is a bubble point at a sampled instant",
     body: "The bubble point is solved on the reactor case's declared "
-      + "thermodynamics, an ideal liquid: ethyl acetate, ethanol and water "
-      + "form azeotropes that boil lower, which an ideal model cannot show. "
-      + " And it is taken at the composition of the failure instant; as the "
-      + "runaway converts the mass, the composition, and so the boiling "
-      + "point, moves." },
+      + "thermodynamics, an ideal liquid, at 1.013 bar.  It is taken at the "
+      + "composition of a failure instant; as the runaway converts the mass "
+      + "the composition, and so the boiling point, moves on.  It is one "
+      + "technical limit; a real vessel may meet another first." },
   { id: "td24",
     title: "No decomposition data",
     body: "No record in Choupo carries decomposition kinetics, and nothing "
       + "here models a secondary reaction.  T_D24 is your assumption, and "
       + "its default is a round number for the exercise, not a property of "
-      + "this mixture." },
+      + "this mixture -- which does not exist." },
+  { id: "search",
+    title: "The maxima are over samples",
+    body: "The estimate's maximum is over the rows the run writes (every "
+      + "50 s); the engine's is over the instants it was asked about.  "
+      + "Neither is a maximum over every instant.  The page names the "
+      + "instants." },
   { id: "volume",
     title: "The dosed reactor does not grow",
     body: "A batchReactor holds its declared volume while a charge adds "
-      + "liquid.  The rate here is first order in ethanol and zero order in "
-      + "the acid, so the extent rate k n_EtOH does not depend on V and no "
-      + "number on this page moves; a law with another concentration "
-      + "dependence would be wrong in a dosed vessel.  The mass correction "
-      + "of the estimate uses the MASS the vessel holds, which the engine "
-      + "does carry." },
+      + "liquid.  The rate here is first order in B and zero order in A, "
+      + "so the extent rate k n_B does not depend on V and no number on "
+      + "this page moves; a law with another concentration dependence "
+      + "would be wrong in a dosed vessel.  The mass correction of the "
+      + "estimate uses the MASS the vessel holds, which the engine does "
+      + "carry." },
   { id: "loop-inventory",
     title: "No inventory for the ammonia loop",
     body: "The feasibility cases size no equipment, so the loop's hydrogen "
       + "and ammonia inventories and the energy stored in the compressed gas "
-      + "are not computed.  The flows are; the inventory needs volumes." },
+      + "are not computed.  The flows are, and so is the volumetric flow; "
+      + "the inventory needs volumes, and the risk needs scenarios, "
+      + "frequencies, protections and exposure." },
   { id: "classes",
     title: "The classes are a screen, not a design",
     body: "A criticality class says how the four temperatures are ordered.  "

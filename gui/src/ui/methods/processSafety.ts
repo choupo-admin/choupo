@@ -21,22 +21,29 @@
   ZERO PHYSICS IN TYPESCRIPT, and what that leaves here.  Every temperature,
   every accumulation and every flow is the ENGINE's, read off a run the page
   makes in the browser -- and so is the technical limit MTT, the bubble point
-  of the reactor contents at the failure instant, from a choupoProps run of
-  bubble01 on the reactor case's own thermodynamics.  What this file
-  computes is the methodology's own arithmetic ON those numbers -- a ratio
-  (the accumulation), Stoessel's estimate of the temperature after a cooling
-  failure, T_p + X_ac dT_ad M_f/M(t), put beside the engine's so the two can
-  be compared (the masses are the run's own amounts times the records'
-  molar masses), the five-way comparison that is the criticality class, and
-  the loop's per-pass conversion from the converter's own feed and effluent.
-  Two numbers are NOT the engine's, and both are labelled as such where they
-  are drawn: T_D24 -- the temperature at which the adiabatic time to maximum
+  of the reactor contents at a failure instant, from a choupoProps run of
+  bubble01 on the reactor case's own thermodynamics, and so is the
+  compressibility factor of each ammonia loop's converter feed.  What this
+  file computes is the methodology's own arithmetic ON those numbers -- a
+  ratio (the accumulation), Stoessel's estimate of the temperature after a
+  cooling failure, T_p + X_ac dT_ad M_f/M(t), put beside the engine's so the
+  two can be compared (the masses are the run's own amounts times the
+  records' molar masses), the five-way comparison that is the criticality
+  class, the loop's per-pass conversion from the converter's own feed and
+  effluent, and the ratio of two volumetric flows F Z R T / P.
+
+  THE REACTION IS FICTITIOUS (second review, 2026-10-11): A + B -> P in an
+  inert solvent S, four case-local records made coherent by construction
+  (tutorials/batch/reactor/batch26_cooling_failure/constant/).  The species
+  names below are those records' names.
+
+  ONE number is not the engine's, and it is labelled as such where it is
+  drawn: T_D24 -- the temperature at which the adiabatic time to maximum
   rate of the secondary decomposition is 24 h -- which no record here can
   supply (it needs decomposition kinetics, measured by calorimetry), so it
-  is an assumption the reader sets; and the MTT PROXY the page shows beside
-  the bubble point, the lowest normal boiling point among the witness's own
-  component records, which is a number of the right size and not the
-  boiling point of the reaction mass.
+  is an assumption the reader sets.  The MTT PROXY the page offers beside
+  the bubble point, the lowest normal boiling point among the components,
+  is the records' own Tb, not the boiling point of the reaction mass.
 \*---------------------------------------------------------------------------*/
 
 import type { DictOverride } from "../../case/methodRun.js";
@@ -46,56 +53,86 @@ import type { RunResult, StreamResult, TrajectoryData } from "../../adapters/Sol
 
 export const SAFETY_WITNESS_BATCH = "batch/reactor/batch26_cooling_failure";
 export const SAFETY_WITNESS_SEMI = "batch/reactor/batch27_semibatch_dosing";
+/** batch27 with a day tank that holds a quarter of B, refilled batch-wise. */
+export const SAFETY_WITNESS_TANK = "batch/reactor/batch28_dosing_vessel_limit";
 export const SAFETY_WITNESS_NH3_150 = "plant/greenAmmoniaFeasibility";
 export const SAFETY_WITNESS_NH3_50 = "plant/greenAmmoniaFeasibility50bar";
 /** The props witness that computes the bubble point of a reaction mass of
  *  these four components on the reactor case's own thermodynamics (its
  *  constant/ is a copy of batch26's sealed constant/). */
 export const SAFETY_WITNESS_BUBBLE = "props/thermo/bubble01_reaction_mass_boiling_point";
+/** The overpressure page's loop-gas witness: two propertyPoint operations
+ *  carrying each loop's converter-feed composition.  This page runs it at
+ *  the feed's OWN temperature and pressure (read from the loop runs) to have
+ *  the engine's Z there; the overpressure page runs it at the relieving
+ *  pressure.  Held to overpressure.ts's constant by the test. */
+export const SAFETY_WITNESS_Z = "props/safety/relief01_ammonia_loop_gas";
 
 const FLOWSHEET = "system/flowsheetDict";
 
-/** The reactor unit both batch witnesses name, and the species whose
+/** The reactor unit the batch witnesses name, and the species whose
  *  unconverted amount is the accumulation (the reaction is first order in
- *  it and it is the reactant the semi-batch witness doses). */
+ *  it and it is the reactant the semi-batch witnesses dose). */
 export const REACTOR = "reactor";
-export const DOSED = "ethanol";
+export const DOSED = "reactantB";
 /** The four species of the reaction mass, as the records name them. */
-export const SPECIES = ["aceticAcid", "ethanol", "ethylAcetate", "water"] as const;
+export const SPECIES = ["reactantA", "reactantB", "productP", "solventS"] as const;
+/** The pressure every bubble point on the page is computed at [bar]: the
+ *  reactor's (bubble01 system/propsDict, batch26 0/internalStates/reactor). */
+export const BUBBLE_P_BAR = 1.013;
 
-/** The semi-batch witness's dosing schedule, as its flowsheetDict declares
- *  it.  A COPY of the dict's numbers, held to them by the test -- the page
- *  needs them to place a failure between two portions, never on one. */
+/** The semi-batch witnesses' dosing schedule, as their flowsheetDicts
+ *  declare it.  A COPY of the dicts' numbers, held to them by the test. */
 export const PORTIONS = 16;
 export const PORTION_SPACING_S = 900;
-/** The failure lands this long AFTER a portion.  A failure exactly at a
- *  portion's instant would leave the order of the two events to the
- *  driver's sort, so the page never asks for one. */
-export const FAIL_AFTER_PORTION_S = 50;
+/** A failure is placed this long after (or before) a portion's instant.
+ *  Exactly AT the instant would leave the order of the two events to the
+ *  driver's sort (std::sort, not stable), so the page never asks for that.
+ *  One second of reaction at T_p converts under 0.1 % of what is there. */
+export const FAIL_OFFSET_S = 1;
+/** batch28's day-tank refills [s], as its flowsheetDict declares them. */
+export const REFILL_TIMES = [3150, 6750, 10350] as const;
 /** The portion the semi-batch knob starts after: where Stoessel's
- *  mass-corrected estimate, read on the witness's own normal-operation
- *  trajectory, has its maximum -- the semi-batch's MTSR instant -- held to
- *  that trajectory by the test.  Early-middle of the dosing, NOT the last
- *  portion: the accumulation is largest late, the mass it heats smallest
- *  early. */
-export const DEFAULT_PORTION = 4;
+ *  mass-corrected estimate, evaluated right after each portion on the
+ *  witness's own normal-operation trajectory, is largest -- held to that
+ *  trajectory by the test. */
+export const DEFAULT_PORTION = 6;
 
 /** The batch witness's failure-time knob range [s]: past an hour the
  *  remaining accumulation is a few per cent and the run's horizon (6000 s)
  *  would no longer see the adiabatic leg finish. */
 export const BATCH_TF_MAX_S = 3600;
+/** The batch instants the MTT(t) table is evaluated at [s]. */
+export const BATCH_TABLE_T = [0, 600, 1200, 1800, 2400, 3000, 3600] as const;
 
-export function failTimeAfterPortion(n: number): number {
-  return (n - 1) * PORTION_SPACING_S + FAIL_AFTER_PORTION_S;
+export type Side = "after" | "before";
+
+/** The failure instant just after (or just before) portion n [s].  "Before
+ *  portion 1" does not exist: portion 1 lands at t = 0. */
+export function failTime(n: number, side: Side): number {
+  return (n - 1) * PORTION_SPACING_S + (side === "after" ? FAIL_OFFSET_S : -FAIL_OFFSET_S);
+}
+
+/** What happens to the feed when the cooling fails, as the semi-batch
+ *  witnesses' feed event reads it. */
+export type FeedFailure = "held" | "pumpOn" | "wholeTank";
+
+/** The words and fraction of the feed event for each reading. */
+function feedEvent(feed: FeedFailure, hold: string): { to: string; fraction: number } {
+  if (feed === "held") return { to: hold, fraction: 1 };
+  if (feed === "pumpOn") return { to: hold, fraction: 0 };
+  return { to: REACTOR, fraction: 1 };
 }
 
 // ---- The overrides: the recipe lines the page moves -------------------------
 //
 //  batch26 declares ONE recipe event: `time` and `value` are unique there.
-//  batch27 declares the failure FIRST and the interlock SECOND, then sixteen
-//  portions: `time` occurrences 1 and 2 are the two safety events, `fraction`
-//  occurrence 1 is the interlock, and `value` is unique.  The test applies
-//  each override set to the real witness and reads the result back.
+//  batch27 declares the failure FIRST and the feed event SECOND, then sixteen
+//  portions: `time` occurrences 1 and 2 are the two safety events, `to` and
+//  `fraction` occurrence 1 are the feed event, and `value` is unique.
+//  batch28 adds a THIRD safety event (storage set aside: `fraction`
+//  occurrence 2) before its refills and portions.  The test applies each
+//  override set to the real witness and reads the result back.
 
 /** `tFail` null runs normal operation: the same recipe with `value 0`, the
  *  jacket keeps working. */
@@ -108,27 +145,50 @@ export function batchOverrides(tFail: number | null): DictOverride[] {
   ];
 }
 
-/** `afterPortion` null runs normal operation (no failure, interlock moves
- *  nothing).  Otherwise the cooling fails 50 s after that portion and the
- *  interlock either holds the rest of the feed back (`fraction 1`) or fails
- *  (`fraction 0`). */
-export function semiOverrides(
-  afterPortion: number | null, interlock: boolean,
-): DictOverride[] {
-  if (afterPortion === null)
+/** batch27.  `tFail` null runs normal operation (no failure, the feed
+ *  event moves nothing).  Otherwise the cooling fails at tFail and the feed
+ *  does what `feed` says. */
+export function semiOverrides(tFail: number | null, feed: FeedFailure = "held"): DictOverride[] {
+  if (tFail === null)
     return [
       { file: FLOWSHEET, key: "value", value: 0, unit: "" },
       { file: FLOWSHEET, key: "fraction", value: 0, unit: "", occurrence: 1 },
     ];
-  const t = failTimeAfterPortion(afterPortion);
+  const e = feedEvent(feed, "heldFeed");
   return [
-    { file: FLOWSHEET, key: "time", value: t, unit: "", occurrence: 1 },
-    { file: FLOWSHEET, key: "time", value: t, unit: "", occurrence: 2 },
+    { file: FLOWSHEET, key: "time", value: tFail, unit: "", occurrence: 1 },
+    { file: FLOWSHEET, key: "time", value: tFail, unit: "", occurrence: 2 },
     { file: FLOWSHEET, key: "value", value: 1, unit: "" },
-    { file: FLOWSHEET, key: "fraction", value: interlock ? 1 : 0, unit: "",
-      occurrence: 1 },
+    { file: FLOWSHEET, key: "to", word: e.to, occurrence: 1 },
+    { file: FLOWSHEET, key: "fraction", value: e.fraction, unit: "", occurrence: 1 },
   ];
 }
+
+/** batch28.  As batch27, plus the third safety event: at a failure what is
+ *  left in storage is set aside (the day tank is not refilled). */
+export function tankOverrides(tFail: number | null, feed: FeedFailure = "wholeTank"): DictOverride[] {
+  if (tFail === null)
+    return [
+      { file: FLOWSHEET, key: "value", value: 0, unit: "" },
+      { file: FLOWSHEET, key: "fraction", value: 0, unit: "", occurrence: 1 },
+      { file: FLOWSHEET, key: "fraction", value: 0, unit: "", occurrence: 2 },
+    ];
+  const e = feedEvent(feed, "heldFeed");
+  return [
+    { file: FLOWSHEET, key: "time", value: tFail, unit: "", occurrence: 1 },
+    { file: FLOWSHEET, key: "time", value: tFail, unit: "", occurrence: 2 },
+    { file: FLOWSHEET, key: "time", value: tFail, unit: "", occurrence: 3 },
+    { file: FLOWSHEET, key: "value", value: 1, unit: "" },
+    { file: FLOWSHEET, key: "to", word: e.to, occurrence: 1 },
+    { file: FLOWSHEET, key: "fraction", value: e.fraction, unit: "", occurrence: 1 },
+    { file: FLOWSHEET, key: "fraction", value: 1, unit: "", occurrence: 2 },
+  ];
+}
+
+/** The instants at which a feed failure can deliver the most into the
+ *  reactor in batch28: right after the first portion and right after each
+ *  refill, when the day tank is fullest [s]. */
+export const TANK_WORST_T = [FAIL_OFFSET_S, ...REFILL_TIMES.map((t) => t + FAIL_OFFSET_S)];
 
 // ---- Reading a batch run ----------------------------------------------------
 
@@ -145,19 +205,25 @@ export function reactorT(traj: TrajectoryData | undefined): Series | null {
   return T && traj ? { t: traj.t, y: T } : null;
 }
 
-/** The ACCUMULATION X_ac(t): the dosed reactant still unconverted IN THE
- *  REACTOR, as a fraction of all of it the batch will ever receive.  The
- *  denominator is the sum over EVERY vessel of the run's first row, before
- *  anything has reacted -- the batch witness has it all in the reactor, the
- *  semi-batch witness mostly in the dosing tank.  Read from the run, never
- *  typed. */
+/** All of the dosed reactant the batch will ever receive [kmol]: the sum
+ *  over EVERY vessel of the run's first row, before anything has reacted. */
+function dosedTotal(traj: TrajectoryData): number {
+  let total = 0;
+  for (const [k, v] of Object.entries(traj.vars))
+    if (k.endsWith(`.n_${DOSED}`) && v.length > 0) total += v[0]!;
+  return total;
+}
+
+/** The ACCUMULATION X_ac(t) at every row: the dosed reactant still
+ *  unconverted IN THE REACTOR, as a fraction of all of it the batch will
+ *  ever receive.  Read from the run, never typed.  A row at a portion's
+ *  instant is written AFTER the transfer, so it is the state right after
+ *  the portion. */
 export function accumulation(traj: TrajectoryData | undefined): Series | null {
   if (!traj || traj.t.length === 0) return null;
   const inReactor = column(traj, `${REACTOR}.n_${DOSED}`);
   if (!inReactor) return null;
-  let total = 0;
-  for (const [k, v] of Object.entries(traj.vars))
-    if (k.endsWith(`.n_${DOSED}`) && v.length > 0) total += v[0]!;
+  const total = dosedTotal(traj);
   if (!(total > 0)) return null;
   return { t: traj.t, y: inReactor.map((n) => n / total) };
 }
@@ -177,11 +243,91 @@ export function at(s: Series, t: number): number {
   return y[y.length - 1]!;
 }
 
+/** The species amounts in the REACTOR at a failure instant [kmol].
+ *
+ *  `t` just AFTER a portion interpolates between the row at the portion's
+ *  instant (written after the transfer) and the next.  `t` just BEFORE a
+ *  portion cannot be interpolated -- the row at the portion's instant is
+ *  already past the jump -- so it is that row minus what the transfer at
+ *  that instant moved, read from the other vessels' change between the row
+ *  before it and the row at it (in normal operation nothing else moves
+ *  them).  The second of reaction between t and the portion is neglected:
+ *  under 0.1 % of what is there at T_p. */
+export function reactorMoles(
+  traj: TrajectoryData | undefined, t: number,
+): { [comp: string]: number } | null {
+  if (!traj) return null;
+  const k = traj.t.findIndex((r) => r > t);
+  const jump = k > 0 && traj.t[k]! - t <= FAIL_OFFSET_S + 1e-9 ? k : -1;
+  const out: { [comp: string]: number } = {};
+  for (const sp of SPECIES) {
+    const c = column(traj, `${REACTOR}.n_${sp}`);
+    if (!c) return null;
+    if (jump < 0) { out[sp] = Math.max(0, at({ t: traj.t, y: c }, t)); continue; }
+    let moved = 0;
+    for (const [name, v] of Object.entries(traj.vars)) {
+      if (!name.endsWith(`.n_${sp}`) || name.startsWith(`${REACTOR}.`)) continue;
+      moved += v[jump - 1]! - v[jump]!;
+    }
+    out[sp] = Math.max(0, c[jump]! - moved);
+  }
+  return out;
+}
+
+/** The species amounts in another vessel at t [kmol], interpolated between
+ *  rows (the dosing vessels change only at their own transfers, and the
+ *  rows the page asks about lie after them). */
+export function vesselMoles(
+  traj: TrajectoryData | undefined, vessel: string, t: number,
+): { [comp: string]: number } | null {
+  if (!traj) return null;
+  const out: { [comp: string]: number } = {};
+  for (const sp of SPECIES) {
+    const c = column(traj, `${vessel}.n_${sp}`);
+    if (!c) return null;
+    out[sp] = Math.max(0, at({ t: traj.t, y: c }, t));
+  }
+  return out;
+}
+
+/** Mole fractions of a set of amounts, or null when there is nothing. */
+export function fractions(
+  n: { [comp: string]: number } | null,
+): { [comp: string]: number } | null {
+  if (!n) return null;
+  const sum = SPECIES.reduce((a, sp) => a + (n[sp] ?? 0), 0);
+  if (!(sum > 0)) return null;
+  const x: { [comp: string]: number } = {};
+  for (const sp of SPECIES) x[sp] = (n[sp] ?? 0) / sum;
+  return x;
+}
+
+/** The reactor's mole fractions at a failure instant: the composition whose
+ *  bubble point is the MTT at that instant. */
+export function reactorComposition(
+  traj: TrajectoryData | undefined, t: number,
+): { [comp: string]: number } | null {
+  return fractions(reactorMoles(traj, t));
+}
+
+/** The reactor's mole fractions right after the WHOLE content of `vessel`
+ *  has entered it at t: the composition whose bubble point is the MTT of
+ *  a whole-tank feed failure. */
+export function dumpComposition(
+  traj: TrajectoryData | undefined, vessel: string, t: number,
+): { [comp: string]: number } | null {
+  const r = reactorMoles(traj, t);
+  const v = vesselMoles(traj, vessel, t);
+  if (!r || !v) return null;
+  const n: { [comp: string]: number } = {};
+  for (const sp of SPECIES) n[sp] = r[sp]! + v[sp]!;
+  return fractions(n);
+}
+
 export interface FailureReading {
   /** The highest reactor temperature the run reached [K]: T_cf, the
    *  temperature after a cooling failure at that run's instant, when the
-   *  adiabatic leg has finished.  (The MTSR is the largest T_cf over every
-   *  instant the failure could happen; one run is one instant.) */
+   *  adiabatic leg has finished.  One run is one instant. */
   Tmax: number;
   /** The temperature at the start of the run [K] (T_p). */
   T0: number;
@@ -217,15 +363,9 @@ export function recordMolarMasses(
   return out;
 }
 
-/** The mass ratio M_f / M(t) of Stoessel's semi-batch form: the mass of
- *  everything the batch will ever be given (every vessel, the run's first
- *  row) over the mass in the REACTOR at t.  1 for a batch, whose mass does
- *  not change.  Null when a species has no molar mass or a column is
- *  missing -- never a ratio of 1 put in its place. */
-export function massRatio(
-  traj: TrajectoryData | undefined, mw: { [comp: string]: number },
-): Series | null {
-  if (!traj || traj.t.length === 0) return null;
+/** The mass of everything the batch will ever be given [kg]: every vessel,
+ *  the run's first row.  Null when a species has no molar mass. */
+function finalMass(traj: TrajectoryData, mw: { [comp: string]: number }): number | null {
   let Mf = 0;
   for (const [k, v] of Object.entries(traj.vars)) {
     const m = /\.n_([A-Za-z0-9_]+)$/.exec(k);
@@ -234,6 +374,20 @@ export function massRatio(
     if (w === undefined) return null;
     Mf += v[0]! * w;
   }
+  return Mf;
+}
+
+/** The mass ratio M_f / M(t) of Stoessel's semi-batch form at every row:
+ *  the mass of everything the batch will ever be given over the mass in the
+ *  REACTOR at t.  1 for a batch, whose mass does not change.  Null when a
+ *  species has no molar mass or a column is missing -- never a ratio of 1
+ *  put in its place. */
+export function massRatio(
+  traj: TrajectoryData | undefined, mw: { [comp: string]: number },
+): Series | null {
+  if (!traj || traj.t.length === 0) return null;
+  const Mf = finalMass(traj, mw);
+  if (Mf === null) return null;
   const cols: [number[], number][] = [];
   for (const sp of SPECIES) {
     const c = column(traj, `${REACTOR}.n_${sp}`);
@@ -259,34 +413,72 @@ export function tcfEstimate(
     Tp + x * dTad * (ratio ? ratio.y[i]! : 1)) };
 }
 
-/** The largest value of a series and where it is: the MTSR of an estimate
- *  curve is its maximum over the failure instants. */
+export interface PointEstimate { X: number; ratio: number; Tcf: number }
+
+/** The same estimate at ONE failure instant, with the reactor's contents
+ *  read by `reactorMoles` (so "just before a portion" is the state before
+ *  the transfer, not an interpolation across it). */
+export function estimateAt(
+  traj: TrajectoryData | undefined, mw: { [comp: string]: number },
+  Tp: number, dTad: number, t: number,
+): PointEstimate | null {
+  if (!traj) return null;
+  const n = reactorMoles(traj, t);
+  const Mf = finalMass(traj, mw);
+  const total = dosedTotal(traj);
+  if (!n || Mf === null || !(total > 0)) return null;
+  let M = 0;
+  for (const sp of SPECIES) {
+    const w = mw[sp];
+    if (w === undefined) return null;
+    M += n[sp]! * w;
+  }
+  const X = n[DOSED]! / total;
+  const ratio = Mf / M;
+  return { X, ratio, Tcf: Tp + X * dTad * ratio };
+}
+
+/** The estimate for the WORST FEED FAILURE at every row: the whole content
+ *  of the dosing vessel `vessel` enters the reactor as the cooling fails,
+ *  so the reactant that can react adiabatically is the accumulation plus
+ *  the vessel's, heating the reactor's mass plus the vessel's:
+ *  T_p + (n_B,reactor + n_B,vessel)/n_B,total dT_ad M_f/(M_reactor +
+ *  M_vessel).  The vessel is at T_p, so its sensible heat is the same as
+ *  the reactor's and the form needs no other term. */
+export function dumpEstimate(
+  traj: TrajectoryData | undefined, vessel: string,
+  mw: { [comp: string]: number }, Tp: number, dTad: number,
+): Series | null {
+  if (!traj || traj.t.length === 0) return null;
+  const Mf = finalMass(traj, mw);
+  const total = dosedTotal(traj);
+  if (Mf === null || !(total > 0)) return null;
+  const cols: [number[], number[], number][] = [];
+  for (const sp of SPECIES) {
+    const r = column(traj, `${REACTOR}.n_${sp}`);
+    const v = column(traj, `${vessel}.n_${sp}`);
+    const w = mw[sp];
+    if (!r || !v || w === undefined) return null;
+    cols.push([r, v, w]);
+  }
+  const iB = SPECIES.indexOf(DOSED);
+  const y = traj.t.map((_, i) => {
+    let M = 0;
+    for (const [r, v, w] of cols) M += (r[i]! + v[i]!) * w;
+    const nB = cols[iB]![0][i]! + cols[iB]![1][i]!;
+    return M > 0 ? Tp + (nB / total) * dTad * (Mf / M) : NaN;
+  });
+  return { t: traj.t, y };
+}
+
+/** The largest value of a series and where it is: the maximum of an
+ *  estimate curve over the rows it was evaluated at. */
 export function maxOf(s: Series): { t: number; y: number } | null {
   let best: { t: number; y: number } | null = null;
   s.y.forEach((y, i) => {
     if (Number.isFinite(y) && (best === null || y > best.y)) best = { t: s.t[i]!, y };
   });
   return best;
-}
-
-/** The reactor's mole fractions at t, from a run's trajectory: the
- *  composition whose bubble point is the MTT at that failure instant. */
-export function reactorComposition(
-  traj: TrajectoryData | undefined, t: number,
-): { [comp: string]: number } | null {
-  if (!traj) return null;
-  const n: { [comp: string]: number } = {};
-  let sum = 0;
-  for (const sp of SPECIES) {
-    const c = column(traj, `${REACTOR}.n_${sp}`);
-    if (!c) return null;
-    const v = Math.max(0, at({ t: traj.t, y: c }, t));
-    n[sp] = v;
-    sum += v;
-  }
-  if (!(sum > 0)) return null;
-  for (const sp of SPECIES) n[sp] = n[sp]! / sum;
-  return n;
 }
 
 /** The four composition lines of the bubble-point witness, rewritten.
@@ -326,6 +518,10 @@ export function kpi(r: RunResult | null | undefined, unit: string, key: string):
 //    3  T_p <= MTT <= MTSR < T_D24
 //    4  T_p <= MTT < T_D24 < MTSR
 //    5  T_p <  T_D24 < MTSR < MTT  or  T_p < T_D24 < MTT < MTSR
+//
+//  The function orders the four numbers it is given.  Handed one failure
+//  instant's T_cf it classes that SCENARIO; handed the maximum over the
+//  instants searched, the process.  The page says which it is doing.
 
 export type CriticalityClass = 1 | 2 | 3 | 4 | 5;
 
@@ -377,11 +573,11 @@ export const CLASS_MEANING: Readonly<Record<CriticalityClass, string>> = {
 export interface RecordTb { component: string; Tb: number }
 
 /** Every `Tb` the witness's component records declare, read from the raw
- *  files the page runs.  The LOWEST is the MTT PROXY the page shows beside
- *  the engine's bubble point: a number of the right size, never the boiling
- *  point of the reaction mass (an ideal mixture boils between its
- *  components' boiling points, and real esters, ethanol and water form
- *  azeotropes that boil lower still). */
+ *  files the page runs.  The LOWEST is the MTT PROXY the page offers beside
+ *  the engine's bubble point: the boiling point of the most volatile
+ *  component, never the boiling point of the reaction mass -- an ideal
+ *  mixture boils between its components' boiling points, so the proxy is
+ *  below the bubble point whenever a heavier component is present. */
 export function recordBoilingPoints(
   raw: { [rel: string]: string } | undefined,
 ): RecordTb[] {
@@ -412,6 +608,9 @@ export interface LoopReading {
   /** Converter pressure [bar] and temperature [K], from its KPIs. */
   P_bar: number;
   T_K: number;
+  /** The converter feed's own temperature [K] and pressure [Pa]. */
+  feedT_K: number;
+  feedP_Pa: number;
   /** Converter feed and recycle, total and per species [kmol/h]. */
   feed_kmol_h: number;
   feedH2_kmol_h: number;
@@ -456,6 +655,8 @@ export function readLoop(r: RunResult | null | undefined): LoopReading | string 
   return {
     P_bar: P === null ? NaN : P / 1e5,
     T_K: T ?? NaN,
+    feedT_K: feed.T,
+    feedP_Pa: feed.P,
     feed_kmol_h: flow(feed),
     feedH2_kmol_h: feedH2,
     recycle_kmol_h: flow(rec),
@@ -466,4 +667,52 @@ export function readLoop(r: RunResult | null | undefined): LoopReading | string 
     h2PerPass: feedH2 > 0 ? (1.5 * made) / feedH2 : NaN,
     grossMargin_RM_UT: kpi(r, "economics", "grossMargin_RM_UT"),
   };
+}
+
+/** The Z witness's two operations, one per loop, and the overrides that put
+ *  each at its converter feed's own temperature and pressure (the witness
+ *  ships them at the RELIEVING pressure, for the overpressure page).  T and
+ *  P occur once per operation, loop150 first. */
+export const Z_OPS = { p150: "loop150", p50: "loop50" } as const;
+
+export function zOverrides(a: LoopReading, b: LoopReading): DictOverride[] {
+  const f = "system/propsDict";
+  return [
+    { file: f, key: "T", value: a.feedT_K, unit: "K", occurrence: 1 },
+    { file: f, key: "P", value: a.feedP_Pa, unit: "Pa", occurrence: 1 },
+    { file: f, key: "T", value: b.feedT_K, unit: "K", occurrence: 2 },
+    { file: f, key: "P", value: b.feedP_Pa, unit: "Pa", occurrence: 2 },
+  ];
+}
+
+export interface GasPoint { T: number; P: number; Z: number }
+
+/** One propertyPoint operation's T, P and Z, or null. */
+export function readGasPoint(r: RunResult | null | undefined, op: string): GasPoint | null {
+  const d = r?.operationResults?.find((o) => o.name === op)?.diagnostics;
+  const num = (k: string): number | null =>
+    typeof d?.[k] === "number" && Number.isFinite(d[k]) ? d[k]! : null;
+  const T = num("T"), P = num("P"), Z = num("Z");
+  return T === null || P === null || Z === null ? null : { T, P, Z };
+}
+
+export interface VolumetricRatio {
+  /** The four factors of Q50/Q150 = (F50/F150)(Z50/Z150)(T50/T150)(P150/P50). */
+  flow: number; z: number; temperature: number; pressure: number;
+  /** Their product with Z, and without it (the ideal-gas estimate). */
+  real: number; ideal: number;
+}
+
+/** The ratio of the two converter feeds' VOLUMETRIC flows, Q = F Z R T / P,
+ *  from the loops' molar flows and the engine's Z at each feed's own
+ *  state. */
+export function volumetricRatio(
+  a: LoopReading, b: LoopReading, za: GasPoint, zb: GasPoint,
+): VolumetricRatio {
+  const flowR = b.feed_kmol_h / a.feed_kmol_h;
+  const z = zb.Z / za.Z;
+  const temperature = zb.T / za.T;
+  const pressure = za.P / zb.P;
+  const ideal = flowR * temperature * pressure;
+  return { flow: flowR, z, temperature, pressure, ideal, real: ideal * z };
 }
