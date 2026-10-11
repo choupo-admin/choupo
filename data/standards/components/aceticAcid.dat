@@ -22,7 +22,16 @@ Pc          57.86;
 omega       0.4665;
 Tb          391.05;
 HvapTb      24390;
-Vliq        5.752e-5;          // 57.52 cm³/mol at 25°C
+//  WHICH VAPOUR THIS SPEAKS (2026-10-11, DEV.md 4c C65 item a): the
+//  measured latent heat to the real, ASSOCIATED vapour (82 % of the
+//  molecules dimerised at 298 K by chemistry/aceticAcid-dissolution.dat),
+//  while dHf_298 below is the ideal-gas MONOMER (NBS TN 270-3, -103.31
+//  kcal/mol).  The liquid rung derived from the pair therefore sits ~24 kJ/mol
+//  above NBS's liquid (-460.4 against -484.5 kJ/mol).  NOT changed here: the
+//  value is right for the readers that need the measured heat and wrong only
+//  for the liquid rung -- docs/design/one-record-two-vapours-acetic-acid.md
+//  measures both, and the fix is an engine decision reserved for Vitor.
+Vliq       5.752e-5;          // 57.52 cm³/mol at 25°C
 //  ANCHOR, never an input.  The engine DERIVES the Hildebrand
 //  parameter from HvapTb and Vliq (the tree stores no derivative);
 //  this is what ChemSep v8.3 computed independently, so the
