@@ -30,7 +30,7 @@
     * the storage-pressure override, applied to the real witness;
     * the numbers the page's prose and the registry line state, recomputed
       from the goldens (the hand estimate of the flash, the volume ratio,
-      the pressure ratio of 70, the 39 kW residual the limits name);
+      the pressure ratio of 70, the valve closing on the report's surface);
     * the drawings, rendered on the shipped numbers, with no NaN and an
       aria-label each;
     * the lesson text: no quotation marks, every equation parses, every
@@ -224,7 +224,12 @@ describe("letdown: the witnesses, held to what they copy", () => {
 
 describe("letdown: the numbers the prose states, recomputed from the goldens", () => {
   const vfLP = golden(LETDOWN_WITNESS, "kpi", "ValveLP", "vf");
-  it("the hand estimate of the flash lands within 3 % of the engine's vf", () => {
+  //  6 %, not 3 % (C65 item d).  The valve now balances on the package's
+  //  formation surface, whose latent heat at 239 K is the Watson crossing at
+  //  298 K plus the liquid and ideal-gas Cp legs plus the SRK departure --
+  //  about 4 % below the record's HvapTb, which is the lambda this estimate
+  //  divides by -- so the engine flashes about 4 % more than the estimate.
+  it("the hand estimate of the flash lands within 6 % of the engine's vf", () => {
     const raw = tutorialByName(LETDOWN_WITNESS)!.files.rawFiles!;
     const nh3 = raw["constant/components/NH3.dat"]!;
     const cp = Number(/liquidHeatCapacity\s*\{[^}]*coefficients\s*\(\s*([0-9.]+)\s*\)/.exec(nh3)![1]);
@@ -232,7 +237,7 @@ describe("letdown: the numbers the prose states, recomputed from the goldens", (
     const est = flashFractionEstimate(cp,
       golden(LETDOWN_WITNESS, "kpi", "ValveLP", "T_in"),
       golden(LETDOWN_WITNESS, "kpi", "ValveLP", "T_out"), lambda);
-    expect(rel(est, vfLP)).toBeLessThan(0.03);
+    expect(rel(est, vfLP)).toBeLessThan(0.06);
   });
   it("the volume grows 'about forty times' (the registry line)", () => {
     const r = golden(LETDOWN_WITNESS, "kpi", "ValveLP", "volumeRatio");
@@ -254,12 +259,17 @@ describe("letdown: the numbers the prose states, recomputed from the goldens", (
     expect(SHIPPED_P_OUT.ValveLP).toBeLessThan(Pv);
     expect(SHIPPED_P_OUT.ValveHP).toBeGreaterThan(Pv);
   });
-  it("the residual the limits name ('about 39 kW') is the witness's own", () => {
+  it("the valve closes on the report's surface, and the gas valve cools (step 6)", () => {
+    //  C65 item d: the valve prices both ends through flashState::priceState,
+    //  so the plant's first law closes and the purge shows its Joule-Thomson
+    //  cooling.  The old limit ("about 39 kW") is gone with the gap, and the
+    //  energy-closure gate no longer pins this case.
     const r = golden(LETDOWN_WITNESS, "boundary", "global", "residual_kW");
-    expect(Math.round(r)).toBe(39);
-    expect(LETDOWN_LIMITS.find((l) => l.id === "valve-surface")!.body).toContain("about 39 kW");
+    expect(Math.abs(r)).toBeLessThan(0.01);
+    expect(golden(LETDOWN_WITNESS, "kpi", "PurgeValve", "dT")).toBeLessThan(-1);
+    expect(LETDOWN_LIMITS.find((l) => l.id === "valve-surface")).toBeUndefined();
     expect(tree("bin/curate/check_energy_closure.py"))
-      .toMatch(/letdown01_ammonia_flashing": 38\.66/);
+      .not.toMatch(/letdown01_ammonia_flashing":/);
   });
 });
 
@@ -306,10 +316,10 @@ describe("letdown: the lesson text", () => {
     //  new one is added here, with the words it is cited for.
     const expectAt: { [cite: string]: string } = {
       "src/unitOperations/valve/Valve.H:32": "isenthalpic",
-      "src/unitOperations/valve/Valve.cpp:130": "thermo.Hmixture",
-      "src/unitOperations/valve/Valve.cpp:236": "HOMOGENEOUS, NO SLIP",
+      "src/unitOperations/valve/Valve.cpp:147": "flashState::priceState(T, Pout",
+      "src/unitOperations/valve/Valve.cpp:263": "HOMOGENEOUS, NO SLIP",
       "src/thermo/ThermoPackage.cpp:1875": "ThermoPackage::density",
-      "src/thermo/ThermoPackage.cpp:1069": "ThermoPackage::Hvapour(scalar T",
+      "src/unitOperations/flash/StreamEquilibrium.H:822": "inline scalar priceState(",
       "src/propertyOps/PropertyPoint.cpp:73": "Cp_ig / (Cp_ig - constant::R)",
       "src/propertyOps/PropertyEvaluator.cpp:167": "thermo.Psat(i, T)",
     };

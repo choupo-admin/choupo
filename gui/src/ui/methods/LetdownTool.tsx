@@ -261,7 +261,7 @@ function GasBench({ run, props, xT, setXT }: {
           <Table.Tr><Table.Td>the purge letdown&apos;s x</Table.Td><Table.Td>{fx(x, 4)}</Table.Td><Table.Td>140 → {bar(purge?.P_out, 1)} bar</Table.Td></Table.Tr>
           <Table.Tr><Table.Td>regime</Table.Td><Table.Td>{Number.isFinite(x) && Number.isFinite(xch) ? (x >= xch ? "choked" : "not choked") : "—"}</Table.Td><Table.Td /></Table.Tr>
           <Table.Tr><Table.Td>volume ratio out/in</Table.Td><Table.Td>{fx(purge?.volumeRatio, 1)}</Table.Td><Table.Td>engine, letdown01 PurgeValve</Table.Td></Table.Tr>
-          <Table.Tr><Table.Td>outlet temperature [K]</Table.Td><Table.Td>{fx(purge?.T_out, 2)}</Table.Td><Table.Td>engine: no Joule-Thomson effect (step 6)</Table.Td></Table.Tr>
+          <Table.Tr><Table.Td>outlet temperature [K]</Table.Td><Table.Td>{fx(purge?.T_out, 2)}</Table.Td><Table.Td>engine, letdown01 PurgeValve: the Joule-Thomson cooling (step 6)</Table.Td></Table.Tr>
         </Table.Tbody>
       </PanTable>
       <PanelNote>

@@ -72,33 +72,45 @@ int Valve::solve(const DictPtr& dict,
     }
     for (auto& v : z) v /= zsum;
 
-    // Isenthalpic: H_out = H_in.
+    // Isenthalpic: H_out = H_in -- ON THE SURFACE THE REPORT PRICES ON.
     //
     // THE FEED'S OWN VAPOUR FRACTION, read rather than assumed (2026-09-02).
-    // This priced the inlet as a sub-cooled liquid unconditionally --
-    // `Hliquid(Tfeed, z, Tref)`, commented "= 0 by construction" -- and
-    // printed "(liquid)" in the banner whatever arrived.  A valve fed vapour
-    // or a two-phase stream therefore solved for the wrong outlet
-    // temperature, silently and at exit 0: the Newton converges, the regime
-    // and vf it reports are consequences of a feed enthalpy that was never
-    // the feed's.
+    // This priced the inlet as a sub-cooled liquid unconditionally and printed
+    // "(liquid)" in the banner whatever arrived; a valve fed vapour or a
+    // two-phase stream solved for the wrong outlet temperature at exit 0.
     //
-    // It is the SAME defect corrected in `adiabaticFlash`, and the correction
-    // was not carried across -- the twin was found by an audit, not by the
-    // suite, because no corpus case feeds this unit anything but a liquid.
+    // ONE SURFACE, THE REPORT'S (2026-10-11, DEV.md 4c C65 item d).  Until
+    // then both ends were priced on the unit's OWN surface: `Hliquid` /
+    // `Hvapour` / `Hmixture` at Tref = T_feed -- a Watson latent heat and an
+    // IDEAL-GAS vapour with no pressure term -- while the energy report
+    // prices the very same two streams on the formation surface of the
+    // package, departure functions included.  So `H_out = H_in` held on a
+    // surface nobody else reads, and the report found what was left:
+    // letdown01_ammonia_flashing's ValveLP -39.50 kW (liquid ammonia flashed
+    // 20 bar -> 1 atm; the Watson latent against the package's), and its gas
+    // valve +0.44 kW -- the JOULE-THOMSON effect a throttle exists to show,
+    // absent because an ideal-gas vapour has no pressure term.  The family
+    // CLAUDE.md 6 names: THE STATE A UNIT COMPUTES WITH IS NOT THE STATE ITS
+    // STREAMS CARRY, in its simplest shape -- two surfaces for one unit.
     //
-    // Priced on the SAME surface the outlet uses (`Hmixture` at this Tref),
-    // never the formation surface: an inlet and an outlet weighed on two
-    // different references is a worse error than the one being fixed.  With
-    // vf = 0 and Tref = Tfeed this is Hliquid(Tfeed, z, Tfeed) = 0 exactly,
-    // so every existing case is byte-identical.
-    const scalar Tref  = Tfeed;
+    // Both ends now go through `flashState::priceState` (StreamEquilibrium.H),
+    // the call the report's own rule is: resolve the state, price the
+    // EQUILIBRIUM phases when it is a split, else the carried phase -- never a
+    // quality blend at the overall z.  On an ideal-gas package with an
+    // ideal liquid this is the same physics as before up to the Watson-vs-
+    // formation latent heat; on a cubic EoS a gas valve now cools.
+    //
     //  An UNPINNED inlet means its own equilibrium (R-E2); read in this
     //  unit's own thermo world, single phase included (DEV.md C33).
+    const std::string who = "valve '" + (dict->name().empty() ? type()
+                                                               : dict->name()) + "'";
+    const bool   pinnedFeed = feedDict->lookupScalarOrDefault("phasePinned", 0.0) > 0.5;
     const scalar vfFeed = flashState::resolvedInletVaporFraction(
         feedDict, Tfeed, Pfeed, z, thermo, "valve inlet");
-    const scalar Hin   = (1.0 - vfFeed) * thermo.Hliquid(Tfeed, z, Tref)
-                       +        vfFeed  * thermo.Hvapour(Tfeed, z, Tref);
+    //  J/mol: `priceState` returns F x (kJ/kmol), so F = 1 is per mole.
+    const scalar Hin   = flashState::priceState(Tfeed, Pfeed, z, 1.0,
+                                                pinnedFeed, vfFeed, thermo,
+                                                who + " inlet", nullptr);
     const scalar Hreq  = Hin;
 
     std::cout << "Feed:       F = " << (F * 3600.0) << " kmol/h, T = " << Tfeed
@@ -127,17 +139,32 @@ int Valve::solve(const DictPtr& dict,
     auto f = [&](scalar T)
     {
         lastSol = flashAt(T);
-        return thermo.Hmixture(T, lastSol.V_over_F, lastSol.x, lastSol.y, Tref)
+        //  The OUTLET priced exactly as the stream this unit publishes will
+        //  be: unpinned, carrying the vapour fraction of this search's own
+        //  flash (the report resolves it at the same (T, P, z)).
+        const scalar b  = lastSol.V_over_F;
+        const scalar vf = (b <= 1.0e-9) ? 0.0 : (b >= 1.0 - 1.0e-9) ? 1.0 : b;
+        return flashState::priceState(T, Pout, z, 1.0, false, vf, thermo,
+                                      who + " outlet", nullptr)
              - Hreq;
     };
     auto df = [&](scalar T)
     {
-        const scalar dT = 0.5;
+        //  1 mK, not 0.5 K (2026-10-11, C65 item d).  A central difference
+        //  across a whole kelvin straddles the bubble point of a nearly pure
+        //  liquid, where the slope jumps by the latent heat, and the Newton
+        //  then CREEPS (ValveLP: 34 iterations, each closing ~20 % of the
+        //  gap).  Inside one phase region the difference is the slope.
+        const scalar dT = 1.0e-3;
         return (f(T + dT) - f(T - dT)) / (2.0 * dT);
     };
 
     solver::NROptions nro;
-    nro.tolerance          = 1.0;          // J/mol
+    //  1e-6 J/mol, not 1 J/mol (2026-10-11, C65 item d).  The residual is
+    //  PER MOLE, so its kW is the tolerance times the flow: 1 J/mol on
+    //  letdown01's ValveLP (0.81 kmol/s) left 0.77 kW unattributed in the
+    //  energy report, which checks the unit's balance on its own streams.
+    nro.tolerance          = 1.0e-6;       // J/mol
     //  200, not 30 (2026-10-11, DEV.md 4c C64).  A nearly pure liquid
     //  throttled below its vapour pressure -- liquid ammonia, 20 bar ->
     //  1 atm -- puts the root on the steep, kinked stretch of H(T) where
