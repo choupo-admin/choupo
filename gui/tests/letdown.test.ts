@@ -167,7 +167,7 @@ describe("letdown: the valve arithmetic against the fluids implementation", () =
   it("the regimes: flashing below Pv, cavitation when only the dip is, none otherwise", () => {
     expect(liquidRegime(20e5, 1e5, 1.9e5, 0.9)).toBe("flashing");
     expect(liquidRegime(20e5, 3e5, 1.9e5, 0.9)).toBe("cavitation");
-    expect(liquidRegime(20e5, 15e5, 1.9e5, 0.9)).toBe("no vapour");
+    expect(liquidRegime(20e5, 15e5, 1.9e5, 0.9)).toBe("neither");
   });
   it("equal-ratio stages close on P2, and the fewest that avoid vapour is minimal", () => {
     const s = stagedDrop(20e5, 3e5, 5, 0.9);

@@ -250,7 +250,7 @@ export function cavitationIndex(P1: number, P2: number, Pv: number): number {
   return (P1 - Pv) / (P1 - P2);
 }
 
-export type LiquidRegime = "flashing" | "cavitation" | "no vapour";
+export type LiquidRegime = "flashing" | "cavitation" | "neither";
 
 /** Which of the three things a liquid does in the valve, read from where
  *  the vena-contracta pressure and the outlet pressure sit against the
@@ -258,7 +258,7 @@ export type LiquidRegime = "flashing" | "cavitation" | "no vapour";
 export function liquidRegime(P1: number, P2: number, Pv: number, FL: number): LiquidRegime {
   if (P2 <= Pv) return "flashing";
   if (venaContractaPressure(P1, P2, FL) <= Pv) return "cavitation";
-  return "no vapour";
+  return "neither";
 }
 
 // ---- Part 4: stages, turbines --------------------------------------------------

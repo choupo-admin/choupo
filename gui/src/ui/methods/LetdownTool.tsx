@@ -325,7 +325,7 @@ function LiquidBench({ run, props, P2, setP2, FL, setFL }: {
           <Table.Tr><Table.Td>critical pressure of NH3, Pc [bar]</Table.Td><Table.Td>{bar(Pc)}</Table.Td><Table.Td>NH3 record</Table.Td></Table.Tr>
           <Table.Tr><Table.Td>F_F</Table.Td><Table.Td>{ok ? fx(liquidCriticalRatioFactor(Pv, Pc), 4) : "—"}</Table.Td><Table.Td>step 10</Table.Td></Table.Tr>
           <Table.Tr><Table.Td>largest effective drop ΔP_max [bar], against P1 − P2</Table.Td><Table.Td>{ok ? `${bar(chokedLiquidDrop(P1, Pv, Pc, FL))} vs ${bar(P1 - P2)}` : "—"}</Table.Td><Table.Td>step 10</Table.Td></Table.Tr>
-          <Table.Tr><Table.Td><b>regime</b></Table.Td><Table.Td><b>{regime ?? "—"}</b></Table.Td><Table.Td>steps 8, 9</Table.Td></Table.Tr>
+          <Table.Tr><Table.Td><b>regime</b></Table.Td><Table.Td><b>{regime === "neither" ? "neither cavitation nor flashing" : regime ?? "—"}</b></Table.Td><Table.Td>steps 8, 9</Table.Td></Table.Tr>
           <Table.Tr><Table.Td>engine: vapour, molar fraction out</Table.Td><Table.Td>{fx(lp?.vf, 5)}</Table.Td><Table.Td>dissolved gas included (step 9)</Table.Td></Table.Tr>
         </Table.Tbody>
       </PanTable>

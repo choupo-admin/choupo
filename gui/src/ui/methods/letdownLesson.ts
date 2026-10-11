@@ -137,7 +137,7 @@ export const LETDOWN_STEPS: readonly LessonStep[] = [
     title: "What the liquid does: first the gas it held, then the ammonia itself",
     body: "The witness below takes the liquid ammonia that leaves the "
       + "green-ammonia plant's high-pressure separator -- at 140 bar and "
-      + "-20 C -- down to the plant's own two drums, 20 bar and then the "
+      + "-20 °C -- down to the plant's own two drums, 20 bar and then the "
       + "atmospheric store.  The first throttle releases mostly the hydrogen "
       + "and nitrogen the separator dissolved in the ammonia: that liquid "
       + "was in equilibrium with the loop gas at 140 bar, so ANY drop lets "
@@ -177,7 +177,10 @@ export const LETDOWN_STEPS: readonly LessonStep[] = [
       + "what follows: the erosion of the trim and the pipe, the noise, and "
       + "why the place a flashing valve is installed matters as much as the "
       + "valve.",
-    formula: String.raw`Q = \frac{m_L}{\rho_L} + \frac{m_V}{\rho_V}, \qquad u = \frac{4\,Q}{\pi D^2}`,
+    formula: String.raw`\begin{aligned}
+Q &= \frac{m_L}{\rho_L} + \frac{m_V}{\rho_V}\\
+u &= \frac{4\,Q}{\pi D^2}
+\end{aligned}`,
     where: [
       { sym: "Q", means: "the volumetric flow, liquid and vapour together "
         + "and moving together (no slip)", unit: "m3/s" },
@@ -195,7 +198,7 @@ export const LETDOWN_STEPS: readonly LessonStep[] = [
       + "carried in temperature by Rackett, the vapour density from the "
       + "equation of state (src/thermo/ThermoPackage.cpp:1875).  The "
       + "dissolved hydrogen, nitrogen and argon have no liquid density at "
-      + "-20 C and are priced at the density of the rest; the run says so.",
+      + "-20 °C and are priced at the density of the rest; the run says so.",
   },
 
   // ---- Part 2: gas -------------------------------------------------------------
@@ -240,7 +243,10 @@ export const LETDOWN_STEPS: readonly LessonStep[] = [
       + "with your x_T beside the ideal nozzle, both against the "
       + "pressure-drop ratio, and marks where the purge letdown sits: far "
       + "into the flat part.",
-    formula: String.raw`x = \frac{P_1 - P_2}{P_1}, \quad F_\gamma = \frac{k}{1.4}, \quad x_\mathrm{ch} = F_\gamma\, x_T, \quad Y = 1 - \frac{x}{3\,F_\gamma\, x_T}, \quad W \propto Y \sqrt{x}`,
+    formula: String.raw`\begin{aligned}
+x &= \frac{P_1 - P_2}{P_1}, \qquad F_\gamma = \frac{k}{1.4}, \qquad x_\mathrm{ch} = F_\gamma\, x_T\\
+Y &= 1 - \frac{x}{3\,F_\gamma\, x_T}, \qquad W \propto Y \sqrt{x}
+\end{aligned}`,
     where: [
       { sym: "x", means: "the pressure-drop ratio across the valve", unit:
         "–" },
@@ -305,7 +311,10 @@ export const LETDOWN_STEPS: readonly LessonStep[] = [
       + "outlet; a smaller F_L means a deep dip below it.  The question for "
       + "any liquid valve is where that dip sits against the liquid's "
       + "vapour pressure.",
-    formula: String.raw`F_L^2 = \frac{P_1 - P_2}{P_1 - P_\mathrm{vc}} \;\Rightarrow\; P_\mathrm{vc} = P_1 - \frac{P_1 - P_2}{F_L^2}`,
+    formula: String.raw`\begin{aligned}
+F_L^2 &= \frac{P_1 - P_2}{P_1 - P_\mathrm{vc}}\\
+\Rightarrow\; P_\mathrm{vc} &= P_1 - \frac{P_1 - P_2}{F_L^2}
+\end{aligned}`,
     where: [
       { sym: "F_L", means: "the liquid pressure recovery factor of the "
         + "valve: YOURS on this page", unit: "–" },
@@ -363,11 +372,13 @@ export const LETDOWN_STEPS: readonly LessonStep[] = [
     where: [],
     note: "The regime on the bench is read from where P_vc and P_2 sit "
       + "against P_v: flashing when P_2 is at or below it, cavitation when "
-      + "only P_vc is, no vapour from the ammonia otherwise.  The "
+      + "only P_vc is, no boiling of the liquid otherwise.  The "
       + "DISSOLVED gas comes out on any drop below the drum pressure "
-      + "whatever the regime -- the engine's outlet carries it -- and a "
-      + "bubble of permanent gas does not collapse on recovery the way a "
-      + "vapour bubble does.",
+      + "whatever the regime, and it leaves carrying ammonia vapour at "
+      + "the ammonia's partial pressure -- which is why the engine's "
+      + "outlet still shows some vapour and a small cooling with the "
+      + "storage pressure above Pv.  A bubble of permanent gas does not "
+      + "collapse on recovery the way a vapour bubble does.",
   },
   {
     n: 10,
@@ -380,7 +391,10 @@ export const LETDOWN_STEPS: readonly LessonStep[] = [
       + "pressure, with F_F falling as the vapour pressure approaches the "
       + "critical pressure.  A valve sized on a drop larger than that is "
       + "undersized, because the flow it was sized for never arrives.",
-    formula: String.raw`\Delta P_\mathrm{max} = F_L^2\,(P_1 - F_F\,P_v), \qquad F_F = 0.96 - 0.28\sqrt{\frac{P_v}{P_c}}`,
+    formula: String.raw`\begin{aligned}
+\Delta P_\mathrm{max} &= F_L^2\,(P_1 - F_F\,P_v)\\
+F_F &= 0.96 - 0.28\sqrt{\frac{P_v}{P_c}}
+\end{aligned}`,
     where: [
       { sym: "\\Delta P_\\mathrm{max}", means: "the largest pressure drop "
         + "that still raises the flow", unit: "Pa" },
@@ -404,7 +418,7 @@ export const LETDOWN_STEPS: readonly LessonStep[] = [
       + "body.  The bench splits the drop into stages of equal pressure "
       + "RATIO -- this page's model, not a maker's -- each with your F_L, "
       + "and draws every stage's dip against the vapour pressure.  The "
-      + "large first stages take most of the bar and have plenty of margin; "
+      + "large first stages take most of the drop and have plenty of margin; "
       + "the last one, nearest the vapour pressure, decides.  When the "
       + "outlet itself is below the vapour pressure no number of stages "
       + "helps: the last stage flashes, which is why staging is the cure "
@@ -466,7 +480,10 @@ export const LETDOWN_STEPS: readonly LessonStep[] = [
       + "work cools the gas far more than a throttle, which is why "
       + "expanders appear where the cold is wanted.  The bench works both "
       + "on the witness's numbers, the gas as an ideal gas.",
-    formula: String.raw`\dot{W}_\mathrm{liq} = \eta\, Q_1\,(P_1 - P_2), \qquad \dot{W}_\mathrm{gas} = \dot{n}\, c_p\, T_1 \left[1 - \left(\frac{P_2}{P_1}\right)^{(k-1)/k}\right]`,
+    formula: String.raw`\begin{aligned}
+\dot{W}_\mathrm{liq} &= \eta\, Q_1\,(P_1 - P_2)\\
+\dot{W}_\mathrm{gas} &= \dot{n}\, c_p\, T_1 \left[1 - \left(\frac{P_2}{P_1}\right)^{(k-1)/k}\right]
+\end{aligned}`,
     where: [
       { sym: "\\dot{W}_\\mathrm{liq}", means: "the shaft power a liquid "
         + "turbine delivers", unit: "W" },
@@ -572,9 +589,9 @@ export const LETDOWN_LIMITS: readonly LessonLimit[] = [
     title: "The ammonia liquid density is high",
     body: "The engine prices liquid ammonia from the record's Vliq, carried "
       + "in temperature by Rackett.  Checked once against an open reference "
-      + "equation of state (CoolProp), the engine's density at -20 C is "
+      + "equation of state (CoolProp), the engine's density at -20 °C is "
       + "about an eighth too high: the record's Vliq matches ammonia at its "
-      + "normal boiling point, not at 25 C where the engine anchors it.  "
+      + "normal boiling point, not at 25 °C where the engine anchors it.  "
       + "So the inlet volumetric flows here are about an eighth low and the "
       + "volume ratios about an eighth high.  The record is the curator's "
       + "to correct; this page does not." },
