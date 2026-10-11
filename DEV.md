@@ -2012,6 +2012,14 @@ them byte-identical; `ammonia02`'s NPV rows MOVE (it finally honours its 2
 years) and go to Vítor as a list before any record; `greenAmmoniaBasicDesign`
 declares the new keys as labelled assumptions, its moved rows also listed.
 Status: dispatched 2026-10-11.
+BUILT 2026-10-11 on `claude/c63-startup-years` (ce1bc0dc4), NOT merged:
+four rows move (ammonia02 NPV/IRR/payback, greenAmmoniaBasicDesign NPV),
+listed to Vítor the same day with their reasons; WAITING on his approval
+to record.  Stated defaults without a source, put to him: ramp-up scales
+revenue and the 1.23(C_RM+C_UT+C_WT) group only; WC in full at the end of
+construction, not ramped; start-up cost expensed in operating year 1.
+Found, not changed: CAPCOST's COM_d labour factor is 2.76, this pass
+uses 2.73.
 
 **C62. THE GREEN-AMMONIA BASIC DESIGN: WHAT IS SIZED, AND RELIEF VALVES
 SIZED AT THIS STAGE (Vítor, 2026-10-11, verbatim: "Podes ver se o processo
