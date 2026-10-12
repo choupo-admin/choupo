@@ -2,17 +2,15 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://choupo.org/schemas/operations/pfr.schema.json",
   "title": "pfr operation",
-  "description": "Isothermal plug-flow reactor. The volume is integrated by RK4; nSteps controls the spatial discretisation.",
+  "description": "Plug-flow reactor. The volume is integrated by RK4; nSteps controls the spatial discretisation. Isothermal, adiabatic, or cooled through a wall (on the multi-reaction path a multitubular bed with a coolant of its own).",
   "type": "object",
-  "required": [
-    "V_R"
-  ],
+  "required": [],
   "properties": {
     "V_R": {
       "type": "number",
       "exclusiveMinimum": 0,
       "title": "Reactor volume",
-      "description": "Total reactor volume; RK4 integrates over the residence-time interval [0, V_R / Q_feed].",
+      "description": "Total reactor volume; RK4 integrates over the residence-time interval [0, V_R / Q_feed]. Required unless `tubes.length` is declared (then the volume is N pi d_i^2/4 L, and V_R beside it is REFUSED -- one home).",
       "unit": "m3",
       "default": 0.005
     },
@@ -45,21 +43,21 @@
       "type": "number",
       "exclusiveMinimum": 0,
       "title": "Wall coefficient",
-      "description": "Required by `thermalMode heatExchange`.",
+      "description": "The OVERALL wall coefficient, declared. With `thermalMode heatExchange`, required unless `wallHeatTransfer` computes it (the two are exclusive).",
       "unit": "W/m2/K"
     },
     "areaPerVolume": {
       "type": "number",
       "exclusiveMinimum": 0,
       "title": "Heat-transfer area per volume",
-      "description": "Tube surface per unit reactor volume. Required by `thermalMode heatExchange`.",
+      "description": "Tube surface per unit reactor volume. Required by `thermalMode heatExchange` unless `tubes` gives it (4/d_i; then it is REFUSED).",
       "unit": "m2/m3"
     },
     "T_coolant": {
       "type": "number",
       "exclusiveMinimum": 0,
       "title": "Coolant temperature",
-      "description": "Required by `thermalMode heatExchange`.",
+      "description": "The constant coolant temperature of the legacy form. Required by `thermalMode heatExchange` unless a `coolant {}` block is declared (then it is REFUSED).",
       "unit": "K"
     },
     "catalystLoading": {
@@ -87,6 +85,16 @@
           "title": "Particle diameter",
           "description": "Taken by Ergun as the equivalent-sphere diameter (an irregular granule's sieve size overstates it: the drop is then a lower estimate). No default.",
           "unit": "m"
+        },
+        "shape": {
+          "type": "string",
+          "enum": [
+            "sphere",
+            "cylinder"
+          ],
+          "title": "Particle shape",
+          "description": "Read by the `wallHeatTransfer` correlation (Li & Finlayson has one form per shape, with its own window). No default.",
+          "unit": "-"
         }
       },
       "additionalProperties": false
@@ -123,6 +131,130 @@
           "title": "Allowable drop",
           "description": "Optional design budget; a drop above it is ANNOUNCED (never clamped) with the (L/D)^2 remedy.",
           "unit": "Pa"
+        }
+      },
+      "additionalProperties": false
+    },
+    "tubes": {
+      "type": "object",
+      "title": "Catalyst tubes (multitubular bed)",
+      "description": "Multi-reaction path only (DEV.md 4c C69). The bed is N parallel tubes: area per volume 4/d_i, the cross-section N pi d_i^2/4 (Ergun runs per tube), the volume N pi d_i^2/4 L. `L_over_D` or `areaPerVolume` beside it are REFUSED.",
+      "required": [
+        "count",
+        "innerDiameter"
+      ],
+      "properties": {
+        "count": {
+          "type": "number",
+          "exclusiveMinimum": 0,
+          "title": "Number of tubes",
+          "description": "May be real (an outer driver solves it); the sizer rounds it UP to whole tubes.",
+          "unit": "-"
+        },
+        "innerDiameter": {
+          "type": "number",
+          "exclusiveMinimum": 0,
+          "title": "Tube inner diameter",
+          "description": "The bed's diameter.",
+          "unit": "m"
+        },
+        "length": {
+          "type": "number",
+          "exclusiveMinimum": 0,
+          "title": "Tube length",
+          "description": "Fixes the bed volume; exclusive with `V_R` (absent, V_R gives the length).",
+          "unit": "m"
+        },
+        "wallThickness": {
+          "type": "number",
+          "exclusiveMinimum": 0,
+          "title": "Tube wall thickness",
+          "description": "With `wallConductivity`, puts the wall's resistance in series with the bed side; both or neither. Needed by the sizer (the outside diameter).",
+          "unit": "m"
+        },
+        "wallConductivity": {
+          "type": "number",
+          "exclusiveMinimum": 0,
+          "title": "Tube wall conductivity",
+          "description": "Both or neither with `wallThickness`.",
+          "unit": "W/m/K"
+        }
+      },
+      "additionalProperties": false
+    },
+    "wallHeatTransfer": {
+      "type": "object",
+      "title": "Bed-to-wall coefficient (correlation)",
+      "description": "`thermalMode heatExchange` only. The bed side of U from a packed-tube correlation object at the LOCAL gas (needs `tubes`, `catalyst { particleDiameter; shape; }`, a `coolant { film; }` and transport viscosity + thermalConductivity), in series with the wall and the coolant film. Exclusive with a declared `U`.",
+      "required": [
+        "model"
+      ],
+      "properties": {
+        "model": {
+          "type": "string",
+          "enum": [
+            "LiFinlayson"
+          ],
+          "title": "Correlation",
+          "description": "Li & Finlayson, Chem. Eng. Sci. 32 (1977) 1055 -- the 1-D overall coefficient U_w (read in Iordanidis, PhD thesis, Univ. Twente 2002). Any other word is REFUSED.",
+          "unit": "-"
+        }
+      },
+      "additionalProperties": false
+    },
+    "coolant": {
+      "type": "object",
+      "title": "Coolant",
+      "description": "`thermalMode heatExchange` only (DEV.md 4c C69). boiling: one temperature T_in. coCurrent / counterCurrent: a sensible coolant marched with its own energy balance (counter-current is SHOT, announced). `T_coolant` beside it is REFUSED.",
+      "required": [
+        "arrangement",
+        "T_in"
+      ],
+      "properties": {
+        "arrangement": {
+          "type": "string",
+          "enum": [
+            "coCurrent",
+            "counterCurrent",
+            "boiling"
+          ],
+          "title": "Arrangement",
+          "description": "How the coolant flows; named, never defaulted.",
+          "unit": "-"
+        },
+        "T_in": {
+          "type": "number",
+          "exclusiveMinimum": 0,
+          "title": "Coolant inlet temperature",
+          "description": "The boiling temperature for `boiling`.",
+          "unit": "K"
+        },
+        "flow": {
+          "type": "number",
+          "exclusiveMinimum": 0,
+          "title": "Coolant mass flow",
+          "description": "Total, all tubes. Sensible coolant only (refused when boiling).",
+          "unit": "kg/s"
+        },
+        "cp": {
+          "type": "number",
+          "exclusiveMinimum": 0,
+          "title": "Coolant heat capacity",
+          "description": "Exclusive with `utility`.",
+          "unit": "J/kg/K"
+        },
+        "utility": {
+          "type": "string",
+          "title": "Utility record",
+          "description": "A SENSIBLE utility record whose mean cp (dutyPerKg / |T_in - T_out|) is used, announced. Exclusive with `cp`.",
+          "unit": "-"
+        },
+        "film": {
+          "type": "number",
+          "exclusiveMinimum": 0,
+          "title": "Coolant film coefficient",
+          "description": "Declared; required with `wallHeatTransfer`, refused beside a declared overall `U`.",
+          "unit": "W/m2/K"
         }
       },
       "additionalProperties": false

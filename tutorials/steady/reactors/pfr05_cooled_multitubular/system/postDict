@@ -1,0 +1,49 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+  THE MULTITUBULAR REACTOR, SIZED AND COSTED FROM ITS OWN TUBES.
+
+  `type pfr` reaches the catalyst-bed sizer, which sees that the unit
+  published `nTubes` and sizes a tube BUNDLE in a shell instead of one
+  cylinder (src/postProcessing/sizing/CatalystBedSize.cpp):
+
+    reactor          the tubes the designSpec solved, rounded UP to whole
+                     tubes; the shell ID from the bundle-diameter rule of the
+                     exchanger design (one tube pass); priced as a fixed-
+                     tube-sheet shell-and-tube exchanger of the tubes'
+                     outside area -- a costing CHOICE, said on its basis.
+    catalystCharge   the BUILT tubes' volume x the unit's own catalystLoading
+                     (its bulk density, 1300 kg/m3, Table 2 -- one home: no
+                     copy is declared here), priced at the case's catalyst
+                     price.
+
+  AUTHOR-SET, none cited: the design pressure (a salt-cooled reactor at
+  1 atm; the shell holds the salt's pump head), the tube pitch (1.25 x the
+  outside diameter, triangular), and the catalyst price.
+\*---------------------------------------------------------------------------*/
+
+sizing
+{
+    units
+    (
+        { unitName reactor;  type pfr;  material SS304;
+          designRules { pressureDesign  5.0;          // bar g -- AUTHOR-SET
+                        tubePitch       35.375 mm;    // 1.25 x 28.3 mm -- AUTHOR-SET
+                        tubePattern     triangular;   // AUTHOR-SET
+                        catalystPrice   30.0; } }     // EUR/kg -- AUTHOR-SET ASSUMPTION
+    );
+}
+costing
+{
+    method    Turton;
+    year      2026;
+    cepci     820;
+    cepci2001 397;
+    usdToEur  0.92;
+}

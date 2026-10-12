@@ -38,6 +38,7 @@ License
 #include "thermo/reaction/ExpressionRate.H"
 #include "thermo/reaction/ReactionRate.H"
 #include "thermo/reaction/Reaction.H"
+#include "thermo/utility/UtilityCatalogue.H"
 #include "unitOperations/flash/StreamEquilibrium.H"
 #include <algorithm>
 #include <cmath>
@@ -90,7 +91,7 @@ int PFR::solve(const DictPtr& dict,
 
     const scalar F_in_kmols = feedDict->lookupScalar("F",   Dims::molarFlow);
     const scalar T          = feedDict->lookupScalar("T",   Dims::temperature);
-    const scalar V_R        = operDict->lookupScalar("V_R", Dims::volume);
+    const scalar V_R        = bedVolume(operDict);
 
     const int    nSteps  = static_cast<int>(operDict->lookupScalarOrDefault("nSteps", 100));
     const int    nWrite  = static_cast<int>(operDict->lookupScalarOrDefault("writeInterval", 0));
@@ -554,9 +555,15 @@ int PFR::solveMultiReaction(const DictPtr&       dict,
     if (!isoT && !adiab && !hx)
         throw std::runtime_error("PFR: thermalMode must be `isothermal`, `adiabatic` "
             "or `heatExchange` (got '" + tmode + "')");
-    const scalar Uw = hx ? operDict->lookupScalar("U") : 0.0;                 // W/(m^2.K)
-    const scalar aV = hx ? operDict->lookupScalar("areaPerVolume") : 0.0;     // m^2/m^3
-    const scalar Tc = hx ? operDict->lookupScalar("T_coolant", Dims::temperature) : 0.0;
+    //  The coolant, the wall coefficient and the area per volume are read
+    //  below, after the bed's geometry (the tubes give the area).  A key
+    //  only `heatExchange` reads is refused in any other mode.
+    if (!hx)
+        for (const char* key : { "coolant", "wallHeatTransfer" })
+            if (operDict->found(key))
+                throw std::runtime_error(std::string("PFR: `operation.") + key
+                    + "` is read only by `thermalMode heatExchange` (this bed is `"
+                    + tmode + "`) -- a key nothing reads is refused, not ignored.");
 
     // CATALYST LOADING.  A heterogeneous rate constant is reported per gram of dry
     // catalyst; the bed converts it to a volumetric rate.  Absent => already volumetric.
@@ -626,6 +633,41 @@ int PFR::solveMultiReaction(const DictPtr&       dict,
     //  Eq 39 reads -- one home).  Absent both keys nothing here runs and the
     //  bed is byte-identical to the constant-pressure march it always was.
     const BedHydraulics hyd = readBedHydraulics(operDict, thermo, V_R, verbosity);
+
+    //  ---- HEAT EXCHANGE THROUGH THE WALL (thermalMode heatExchange) ------
+    //  The legacy form (U, areaPerVolume, T_coolant) is read exactly as it
+    //  always was; the C69 form (tubes, a wall correlation, a coolant with
+    //  its own energy balance) only when its keys are declared.
+    WallExchange wx;
+    scalar MW_in = 0.0;                                   // kg/kmol
+    for (std::size_t i = 0; i < n; ++i) MW_in += z_in[i] * thermo.comp(i).MW();
+    if (hx) readWallExchange(wx, operDict, hyd, thermo, F_in_kmols * MW_in, verbosity);
+    const scalar Uw = wx.Udecl;                           // W/(m^2.K)
+    const scalar aV = wx.aV;                              // m^2/m^3
+    const scalar Tc = wx.Tc_in;                           // K (constant coolant)
+    //  A sensible coolant's temperature is one more marched state, after
+    //  the enthalpy (and the pressure, when Ergun marches it).
+    const std::size_t iTc = hyd.ergun ? n + 2 : n + 1;
+    //  The local overall coefficient, on the inside area: the declared one,
+    //  or the bed-side correlation at the local gas in series with the wall
+    //  and the coolant film.  `res` receives the correlation's numbers.
+    auto Uat = [&](scalar Tk, const sVector& zz,
+                   BedWallHeatTransfer::Result* res) -> scalar
+    {
+        if (!wx.corr) return wx.Udecl;
+        scalar MW = 0.0;
+        for (std::size_t i = 0; i < n; ++i) MW += zz[i] * thermo.comp(i).MW();
+        BedWallHeatTransfer::Context c;
+        c.G      = wx.G;
+        c.dp     = wx.dp;
+        c.dt     = wx.dt;
+        c.mu     = thermo.viscosityGas(Tk, zz);
+        c.lambda = thermo.thermalConductivityGas(Tk, zz);
+        c.cp     = thermo.Cp_ig(Tk, zz) / (1.0e-3 * MW);         // J/(kg K)
+        const BedWallHeatTransfer::Result r = wx.corr->evaluate(c);
+        if (res) *res = r;
+        return 1.0 / (1.0 / r.U + wx.R_wall + wx.R_film);
+    };
 
     //  The state a law is handed, at a point of the bed.
     //  `Fi` are molar flows in mol/s; the buffers must outlive the state.
@@ -797,7 +839,20 @@ int PFR::solveMultiReaction(const DictPtr&       dict,
             for (std::size_t i = 0; i < n; ++i) dy[i] += nu[j][i] * rj;
         }
         // Enthalpy: conserved when adiabatic; a jacket adds U a (T_c - T) per volume.
-        dy[n] = (!isoT && hx) ? Uw * aV * (Tc - Tk) : 0.0;     // W/m^3
+        if (!hx || wx.legacy)
+            dy[n] = (!isoT && hx) ? Uw * aV * (Tc - Tk) : 0.0;     // W/m^3
+        else
+        {
+            //  C69: the local U, and a coolant that may change temperature.
+            //  q is the heat INTO the process per bed volume; a sensible
+            //  coolant takes -q: co-current it moves WITH V, counter-current
+            //  AGAINST it, so its dT/dV changes sign.
+            const scalar Tcl = wx.variable() ? y[iTc] : Tc;
+            const scalar q   = Uat(Tk, zz, nullptr) * aV * (Tcl - Tk);
+            dy[n] = q;
+            if (wx.variable())
+                dy[iTc] = (wx.mode == CoolantMode::coCurrent ? -q : q) / wx.mcp;
+        }
         //  dP/dV = (dP/dz) / A: the bed's volume is its cross-section times
         //  its length, so a step dV is a length dV / A.
         if (hyd.ergun) dy[n + 1] = ergunGradient(hyd, thermo, Tk, Pk, zz, Ftot) / hyd.A;
@@ -814,6 +869,16 @@ int PFR::solveMultiReaction(const DictPtr&       dict,
             profile_.columns["F_" + thermo.comp(i).name()].push_back(y[i]);
         profile_.columns["T"].push_back(Tk);
         if (hyd.ergun) profile_.columns["P"].push_back(y[n + 1]);
+        if (wx.variable()) profile_.columns["T_coolant"].push_back(y[iTc]);
+        if (wx.corr)
+        {
+            //  The local overall coefficient the wall term used here.
+            scalar Ft = 0.0;
+            for (std::size_t i = 0; i < n; ++i) Ft += std::max(y[i], 0.0);
+            sVector zz(n, 0.0);
+            if (Ft > 0.0) for (std::size_t i = 0; i < n; ++i) zz[i] = std::max(y[i], 0.0) / Ft;
+            profile_.columns["U"].push_back(Uat(Tk, zz, nullptr));
+        }
         if (!exprLaws.empty())
         {
             //  The rate each declared law is running at, in kmol per m3 (or
@@ -849,17 +914,25 @@ int PFR::solveMultiReaction(const DictPtr&       dict,
                         hyd.ergun ? yy[n + 1] : P);
     };
 
-    sVector y(hyd.ergun ? n + 2 : n + 1, 0.0);
+    sVector y((hyd.ergun ? n + 2 : n + 1) + (wx.variable() ? 1 : 0), 0.0);
     for (std::size_t i = 0; i < n; ++i) y[i] = F_i[i];
     if (hyd.ergun) y[n + 1] = P;                   // Pa, marched with the species
     // The inlet ENTHALPY FLOW [W] on the elements datum -- the conserved quantity.
     // Only needed (and only computable) when the reactor is NOT isothermal: a
     // fictitious species has no elements datum, and an isothermal run never asks.
     y[n] = isoT ? 0.0 : F_in * thermo.H_stream_formation(T, P, vf_in, z_in);
+    const sVector y_in = y;
 
-    scalar T_max = T, T_min = T;
+    scalar T_max = T, T_min = T, V_hot = 0.0;
     const scalar dV = V_R / nSteps;
-    push(0.0, y, T);
+    //  ONE MARCH from the bed inlet, `y` its initial state.  `record` keeps
+    //  the profile and the extremes; a counter-current coolant's shooting
+    //  marches (below) record nothing.  Every march starts its temperature
+    //  guess at the feed's, so the same initial state gives the same march.
+    auto march = [&](sVector y, bool record) -> sVector
+    {
+    T_lastGuess = T;
+    if (record) { T_max = T; T_min = T; V_hot = 0.0; push(0.0, y, T); }
     for (int m = 0; m < nSteps; ++m)
     {
         auto k1 = dydV(y);
@@ -886,10 +959,103 @@ int PFR::solveMultiReaction(const DictPtr&       dict,
         for (std::size_t i = 0; i < y.size(); ++i) y[i] += frac * dy[i];
         for (std::size_t i = 0; i < n; ++i)
             if (y[i] < 0.0) y[i] = 0.0;              // round-off dust only
+        if (!record) continue;
         const scalar Tnow = T_of(y);
-        if (!isoT) { if (Tnow > T_max) T_max = Tnow; if (Tnow < T_min) T_min = Tnow; }
+        if (!isoT) { if (Tnow > T_max) { T_max = Tnow; V_hot = dV * (m + 1); }
+                     if (Tnow < T_min) T_min = Tnow; }
         push(dV * (m + 1), y, Tnow);
     }
+    return y;
+    };
+
+    //  ---- THE COOLANT'S BOUNDARY CONDITION ---------------------------------
+    //  Co-current, constant or boiling: the coolant's state at the bed inlet
+    //  is KNOWN, and one march is the answer.  Counter-current: the coolant
+    //  ENTERS at the bed OUTLET, so its temperature at the bed inlet -- its
+    //  own outlet -- is the unknown of a two-point boundary-value problem.
+    //  It is SHOT: march with a guess, compare the coolant temperature the
+    //  march arrives at at V_R with the declared T_in, and move the guess on
+    //  a BRACKETED root (expanded outward from T_in until the residual
+    //  changes sign, then Illinois false position).  Said aloud, with the
+    //  number of marches and the final residual -- and with the fact that a
+    //  counter-current cooled bed can have more than one steady state: this
+    //  is the one the bracket found.
+    int shootMarches = 0;
+    if (wx.variable()) y[iTc] = wx.Tc_in;
+    if (wx.mode == CoolantMode::counterCurrent)
+    {
+        auto residual = [&](scalar Tc0) -> scalar
+        {
+            sVector y0 = y;
+            y0[iTc] = Tc0;
+            ++shootMarches;
+            const sVector yE = march(y0, false);
+            const scalar r = yE[iTc] - wx.Tc_in;
+            if (verbosity >= 3)
+                std::cout << "    [coolant] shot " << shootMarches << ": coolant outlet "
+                          << std::setprecision(10) << Tc0 << " K -> it would enter at "
+                          << yE[iTc] << " K (residual " << r << " K)\n";
+            if (!std::isfinite(r))
+                throw std::runtime_error("PFR: counter-current coolant: the march"
+                    " shot with a coolant outlet temperature of "
+                    + std::to_string(Tc0) + " K returned a non-finite coolant"
+                      " temperature at the bed outlet -- the bed ran away on this"
+                      " guess.  Check the coolant flow, its cp and the wall"
+                      " coefficient; no answer is published from a failed shot.");
+            return r;
+        };
+        scalar a = wx.Tc_in, fa = residual(a);
+        scalar b = a, fb = fa;
+        scalar step = std::max(1.0, std::abs(fa));
+        int expansions = 0;
+        while (fa * fb > 0.0)
+        {
+            //  Tc(V_R) rises with the guess, so a positive residual means the
+            //  guess is too high: step down, else up.
+            b  = (fa > 0.0) ? a - step : a + step;
+            if (b < 1.0) b = 1.0;
+            fb = residual(b);
+            if (fa * fb > 0.0) { a = b; fa = fb; step *= 2.0; }
+            if (++expansions > 60 || (b <= 1.0 && fa * fb > 0.0))
+                throw std::runtime_error("PFR: counter-current coolant: no"
+                    " coolant outlet temperature was found that brings the"
+                    " coolant in at its declared T_in = "
+                    + std::to_string(wx.Tc_in) + " K (no sign change in "
+                    + std::to_string(expansions) + " bracket expansions).  The"
+                      " shooting problem has no root here -- an error in the"
+                      " coolant's flow, cp or temperature is likelier than a"
+                      " physical answer.");
+        }
+        const int expanded = expansions;
+        //  Illinois false position on the bracket [a, b].
+        int side = 0;
+        scalar c = (fa == 0.0) ? a : b, fc = (fa == 0.0) ? fa : fb;
+        for (int it = 0; it < 200 && fa != 0.0; ++it)
+        {
+            c  = (a * fb - b * fa) / (fb - fa);
+            fc = residual(c);
+            if (std::abs(fc) < 1.0e-9 || std::abs(b - a) < 1.0e-10) break;
+            if (fc * fb > 0.0)
+            { b = c; fb = fc; if (side == -1) fa *= 0.5; side = -1; }
+            else
+            { a = c; fa = fc; if (side == +1) fb *= 0.5; side = +1; }
+        }
+        y[iTc] = c;
+        std::ostringstream os;
+        os << std::setprecision(6)
+           << "[coolant] counter-current: a two-point boundary-value problem."
+              "  The coolant's outlet temperature (at the bed INLET) was SHOT"
+              " until the coolant enters the bed outlet at its declared T_in = "
+           << wx.Tc_in << " K: " << shootMarches << " marches (" << expanded
+           << " bracket expansions from T_in, then Illinois false position),"
+              " coolant outlet " << c << " K, residual " << fc << " K.  A"
+              " counter-current cooled bed can have more than one steady"
+              " state; this is the one the bracket found";
+        AdvisoryLog::instance().add("model", "info", "pfr (coolant)", os.str());
+        if (verbosity >= 2) std::cout << "  " << os.str() << "\n";
+    }
+    const scalar Tc_start = wx.variable() ? y[iTc] : 0.0;
+    y = march(y, true);
     for (std::size_t i = 0; i < n; ++i) F_i[i] = y[i];
     const scalar T_out = T_of(y);
     const scalar P_out = hyd.ergun ? y[n + 1] : P;
@@ -915,6 +1081,10 @@ int PFR::solveMultiReaction(const DictPtr&       dict,
     kpis_["V_R"]          = V_R;
     kpis_["T"]            = T;
     if (anyConcLaw) kpis_["tau_s"] = tau;        // liquid basis, as the single path
+    //  The bed's bulk density, where the rate is per kg of catalyst: the
+    //  `pfr` sizer prices the charge from THIS number and refuses a second
+    //  copy in its designRules (C69, one home).
+    if (catLoad > 0.0) kpis_["catalystLoading"] = catLoad;
     publishBedHydraulics(hyd, thermo, T, P, T_out, P_out, z_in, z_out, F_in, F_out,
                          verbosity);
     kpis_["nReactions"]   = static_cast<scalar>(R);
@@ -924,6 +1094,93 @@ int PFR::solveMultiReaction(const DictPtr&       dict,
     kpis_["T_out"]        = T_out;                 // RESULT when non-isothermal
     if (!isoT) { kpis_["T_max"] = T_max; kpis_["T_min"] = T_min;
                  kpis_["dT_rise"] = T_out - T; kpis_["hotSpot_dT"] = T_max - T; }
+    //  ---- THE COOLED BED (C69): what the wall and the coolant did ----------
+    //  Published only on the C69 route, so every other bed's KPIs are what
+    //  they were.  The duty is read from the MARCHED enthalpy (the same
+    //  integral the outlet temperature comes from); a sensible coolant's
+    //  own balance, m cp (T_out - T_in), is published beside it, and the two
+    //  agree to the march's round-off by construction (one RK4 integrates
+    //  both from one integrand) -- the difference is published, not assumed.
+    if (hx && !wx.legacy)
+    {
+        kpis_["areaPerVolume"] = aV;
+        kpis_["A_wall_m2"]     = aV * V_R;
+        kpis_["hotSpot_V_m3"]  = V_hot;
+        if (hyd.hasGeometry) kpis_["hotSpot_z_m"] = V_hot / hyd.A;
+        const scalar Tc_out = (wx.mode == CoolantMode::coCurrent)      ? y[iTc]
+                            : (wx.mode == CoolantMode::counterCurrent) ? Tc_start
+                            : wx.Tc_in;
+        const scalar Qc_kW = -(y[n] - y_in[n]) / 1000.0;      // heat INTO the coolant
+        kpis_["T_coolant_in"]  = wx.Tc_in;
+        kpis_["T_coolant_out"] = Tc_out;
+        kpis_["Q_coolant_kW"]  = Qc_kW;
+        if (wx.variable())
+        {
+            kpis_["coolant_mdot_kg_s"]  = wx.mdot;
+            kpis_["coolant_cp_J_kgK"]   = wx.cp;
+            //  The coolant's own balance against the marched duty: equal to
+            //  the march's round-off by construction, PRINTED rather than
+            //  pinned (a golden on a round-off number pins the round-off).
+            if (verbosity >= 2)
+                std::cout << "  [coolant] its own balance m cp (T_out - T_in) = "
+                          << std::scientific << std::setprecision(10)
+                          << wx.mcp * (Tc_out - wx.Tc_in) / 1000.0 << " kW against the"
+                             " marched duty " << Qc_kW << " kW\n" << std::fixed;
+        }
+        if (wx.mode == CoolantMode::counterCurrent)
+        {
+            kpis_["coolantShootingMarches"]    = static_cast<scalar>(shootMarches);
+        }
+        if (wx.corr)
+        {
+            //  Every number the coefficient was computed from, at the inlet:
+            //  a reader (and the gate) can redo the correlation by hand.
+            BedWallHeatTransfer::Result rin, rout;
+            const scalar Uin  = Uat(T, z_in, &rin);
+            const scalar Uout = Uat(T_out, z_out, &rout);
+            scalar MWi = 0.0;
+            for (std::size_t i = 0; i < n; ++i) MWi += z_in[i] * thermo.comp(i).MW();
+            kpis_["U_in"]           = Uin;
+            kpis_["U_out"]          = Uout;
+            kpis_["U_bed_in"]       = rin.U;
+            kpis_["Re_p_wall_in"]   = rin.Re;
+            kpis_["Pr_wall_in"]     = rin.Pr;
+            kpis_["Nu_wall_in"]     = rin.Nu;
+            kpis_["G_tube_kg_m2_s"] = wx.G;
+            kpis_["mu_gas_wall_in"]     = thermo.viscosityGas(T, z_in);
+            kpis_["lambda_gas_wall_in"] = thermo.thermalConductivityGas(T, z_in);
+            kpis_["cp_gas_wall_in"]     = thermo.Cp_ig(T, z_in) / (1.0e-3 * MWi);
+            kpis_["R_wall_m2K_W"]   = wx.R_wall;
+            kpis_["R_film_m2K_W"]   = wx.R_film;
+            for (const auto* r : { &rin, &rout })
+                if (!r->inValidity)
+                {
+                    const std::string msg = std::string("[wall] the bed-side coefficient ("
+                        + wx.corr->type() + ") is EXTRAPOLATED at the bed ")
+                        + (r == &rin ? "inlet" : "outlet") + ": " + r->validityNote
+                        + " -- its stated window is " + wx.corr->validityWindow()
+                        + "; the value is used, not clamped";
+                    AdvisoryLog::instance().add("model", "warning", "pfr (wall)", msg);
+                    if (verbosity >= 1) std::cout << "  " << msg << "\n";
+                }
+            if (verbosity >= 2)
+                std::cout << "  [wall] U_w (bed side, " << wx.corr->type() << ") "
+                          << std::fixed << std::setprecision(2) << rin.U
+                          << " W/m2/K at the inlet (Re_p " << std::setprecision(1)
+                          << rin.Re << ", Pr " << std::setprecision(3) << rin.Pr
+                          << ", d_p/d_t " << std::setprecision(4) << wx.dp / wx.dt
+                          << "); overall U " << std::setprecision(2) << Uin << " -> "
+                          << Uout << " W/m2/K inlet -> outlet\n";
+        }
+        if (verbosity >= 2)
+            std::cout << std::fixed << "  [coolant] " << std::setprecision(2)
+                      << "T " << wx.Tc_in << " K in -> " << Tc_out << " K out;"
+                      << " it takes " << std::setprecision(3) << Qc_kW
+                      << " kW; hot spot " << std::setprecision(2) << T_max
+                      << " K at V = " << std::setprecision(5) << V_hot << " m3"
+                      << (hyd.hasGeometry ? " (z = " + std::to_string(V_hot / hyd.A) + " m)" : std::string())
+                      << "\n";
+    }
     sVector concK, xK, Fin_vec(n, 0.0);
     for (std::size_t i = 0; i < n; ++i) Fin_vec[i] = z_in[i] * F_in;
     const RateState inletState = stateAt(T, P, Fin_vec, concK, xK);
@@ -1103,13 +1360,54 @@ PFR::BedHydraulics PFR::readBedHydraulics(const DictPtr&       op,
     BedHydraulics h;
     const bool hasPD = op->found("pressureDrop");
     h.hasGeometry = op->found("L_over_D");
+    //  A MULTITUBULAR bed (C69): the tubes ARE the geometry.  A slenderness
+    //  beside them would be a second geometry for the same bed.
+    if (op->found("tubes"))
+    {
+        if (h.hasGeometry)
+            throw std::runtime_error("PFR: `operation.tubes` and"
+                " `operation.L_over_D` both describe the bed's geometry -- a"
+                " multitubular bed's cross-section is its tubes' (N pi d_i^2 / 4)"
+                " and its length theirs.  Delete `L_over_D`.");
+        auto t = op->subDict("tubes");
+        for (const auto& key : t->keys())
+            if (key != "count" && key != "innerDiameter" && key != "length"
+                && key != "wallThickness" && key != "wallConductivity")
+                throw std::runtime_error("PFR: `operation.tubes." + key + "` is"
+                    " not read.  The block accepts `count`, `innerDiameter`,"
+                    " `length`, `wallThickness` and `wallConductivity`.");
+        h.tubes  = true;
+        h.nTubes = t->lookupScalar("count", Dims::dimensionless);
+        h.D      = t->lookupScalar("innerDiameter", Dims::length);
+        if (!(h.nTubes > 0.0) || !(h.D > 0.0))
+            throw std::runtime_error("PFR: `tubes.count` and"
+                " `tubes.innerDiameter` must be > 0.");
+        const bool th = t->found("wallThickness"), tk = t->found("wallConductivity");
+        if (th != tk)
+            throw std::runtime_error("PFR: `tubes.wallThickness` and"
+                " `tubes.wallConductivity` are declared together or not at all"
+                " -- a wall resistance needs both, and one alone is a number"
+                " nothing would read.");
+        if (th)
+        {
+            h.dOuter = h.D + 2.0 * t->lookupScalar("wallThickness", Dims::length);
+            h.wallK  = t->lookupScalar("wallConductivity", Dims::thermalCond);
+            if (!(h.dOuter > h.D) || !(h.wallK > 0.0))
+                throw std::runtime_error("PFR: `tubes.wallThickness` and"
+                    " `tubes.wallConductivity` must be > 0.");
+        }
+        h.hasGeometry = true;
+        h.A = 0.25 * constant::pi * h.D * h.D * h.nTubes;
+        h.L = t->found("length") ? t->lookupScalar("length", Dims::length) : V_R / h.A;
+        h.L_over_D = h.L / h.D;
+    }
     if (hasPD && !h.hasGeometry)
         throw std::runtime_error("PFR: `operation.pressureDrop` integrates"
             " dP/dz along the bed, and a volume has no length: declare the"
             " bed's slenderness `operation.L_over_D` (D and L follow from it"
             " and V_R).  It is the ONE home of that number -- the `pfr` sizer"
             " reads it from this unit and refuses a second copy.");
-    if (h.hasGeometry)
+    if (h.hasGeometry && !h.tubes)
     {
         h.L_over_D = op->lookupScalar("L_over_D", Dims::dimensionless);
         if (!(h.L_over_D > 0.0))
@@ -1205,10 +1503,24 @@ void PFR::publishBedHydraulics(const BedHydraulics& h, const ThermoPackage& ther
                                scalar F_in_mols, scalar F_out_mols, int verbosity)
 {
     if (!h.hasGeometry) return;
+    if (h.tubes)
+    {
+        //  A multitubular bed publishes its TUBES, never an `L_over_D`: that
+        //  KPI is the slenderness the `pfr` sizer wraps ONE cylinder around,
+        //  and a bundle of tubes is not one cylinder (C69).
+        kpis_["nTubes"]   = h.nTubes;
+        kpis_["d_tube_m"] = h.D;
+        kpis_["L_tube_m"] = h.L;
+        kpis_["A_bed_m2"] = h.A;
+        if (h.dOuter > 0.0) kpis_["d_tube_outer_m"] = h.dOuter;
+    }
+    else
+    {
     kpis_["L_over_D"] = h.L_over_D;
     kpis_["D_bed_m"]  = h.D;
     kpis_["L_bed_m"]  = h.L;
     kpis_["A_bed_m2"] = h.A;
+    }
     if (!h.ergun) return;
 
     //  The inlet's regime, for the reader: the superficial velocity, the
@@ -1265,7 +1577,10 @@ void PFR::publishBedHydraulics(const BedHydraulics& h, const ThermoPackage& ther
         }
     }
     if (verbosity >= 2)
-        std::cout << "\n  [ergun] bed hydraulics (straight cylinder of V_R at L/D "
+        std::cout << "\n  [ergun] bed hydraulics ("
+                  << (h.tubes ? "per tube: " + std::to_string(h.nTubes)
+                                + " parallel tubes, L/d_t "
+                              : std::string("straight cylinder of V_R at L/D "))
                   << std::fixed << std::setprecision(2) << h.L_over_D << ")\n"
                   << "    D = " << std::setprecision(3) << h.D << " m, L = " << h.L
                   << " m, A = " << h.A << " m2;  eps = " << h.eps << ", dp = "
@@ -1280,9 +1595,243 @@ void PFR::publishBedHydraulics(const BedHydraulics& h, const ThermoPackage& ther
     if (verbosity >= 2) std::cout << "\n\n";
 }
 
+// ---------------------------------------------------------------------------
+//  THE BED VOLUME: ONE HOME FOR THE LENGTH (DEV.md 4c C69).  A multitubular
+//  bed that declares its tubes' length HAS a volume, N pi d_i^2 / 4 L, and a
+//  `V_R` beside it would be a second home for the same number.  Without a
+//  length (or without tubes) the volume is the declared `V_R`, read exactly
+//  as it always was.
+// ---------------------------------------------------------------------------
+scalar PFR::bedVolume(const DictPtr& op)
+{
+    if (op->found("tubes") && op->subDict("tubes")->found("length"))
+    {
+        if (op->found("V_R"))
+            throw std::runtime_error("PFR: `operation.V_R` and"
+                " `operation.tubes.length` both fix the bed's volume (V_R = N"
+                " pi d_i^2 / 4 L).  Declare ONE: the tube length (and the volume"
+                " follows), or V_R (and the length follows).");
+        auto t = op->subDict("tubes");
+        const scalar N = t->lookupScalar("count", Dims::dimensionless);
+        const scalar d = t->lookupScalar("innerDiameter", Dims::length);
+        const scalar L = t->lookupScalar("length", Dims::length);
+        if (!(N > 0.0) || !(d > 0.0) || !(L > 0.0))
+            throw std::runtime_error("PFR: `tubes.count`, `tubes.innerDiameter`"
+                " and `tubes.length` must be > 0.");
+        return 0.25 * constant::pi * d * d * N * L;
+    }
+    return op->lookupScalar("V_R", Dims::volume);
+}
+
+// ---------------------------------------------------------------------------
+//  HEAT EXCHANGE THROUGH THE BED WALL (thermalMode heatExchange).  See the
+//  description in PFR.H for the grammar; every refusal names its remedy.
+// ---------------------------------------------------------------------------
+void PFR::readWallExchange(WallExchange& w, const DictPtr& op,
+                           const BedHydraulics& h, const ThermoPackage& thermo,
+                           scalar massFlow_kg_s, int verbosity)
+{
+    const bool hasCoolant = op->found("coolant");
+    const bool hasCorr    = op->found("wallHeatTransfer");
+
+    //  ---- the LEGACY form, read exactly as before ----------------------
+    if (!hasCoolant && !hasCorr && !h.tubes)
+    {
+        w.legacy = true;
+        w.Udecl  = op->lookupScalar("U");                                   // W/(m^2.K)
+        w.aV     = op->lookupScalar("areaPerVolume");                       // m^2/m^3
+        w.Tc_in  = op->lookupScalar("T_coolant", Dims::temperature);
+        return;
+    }
+
+    //  ---- the area per volume: the tubes', or the declared one ---------
+    if (h.tubes)
+    {
+        if (op->found("areaPerVolume"))
+            throw std::runtime_error("PFR: `operation.areaPerVolume` beside"
+                " `operation.tubes`: a tube of inner diameter d_i has 4/d_i of"
+                " wall per volume of bed, so the number is the tubes' and a"
+                " second copy could disagree.  Delete `areaPerVolume`.");
+        w.aV = 4.0 / h.D;
+    }
+    else
+        w.aV = op->lookupScalar("areaPerVolume");
+
+    //  ---- the coolant ----------------------------------------------------
+    if (hasCoolant && op->found("T_coolant"))
+        throw std::runtime_error("PFR: `operation.T_coolant` beside"
+            " `operation.coolant {}`: the coolant's temperature is"
+            " `coolant.T_in` -- one home.  Delete `T_coolant`.");
+    if (!hasCoolant)
+    {
+        if (hasCorr)
+            throw std::runtime_error("PFR: `operation.wallHeatTransfer` computes"
+                " the BED side of the wall; the coolant side needs its own film,"
+                " declared in `operation.coolant { film <W/m2/K>; ... }`, and the"
+                " coolant block also says how the coolant flows.  Declare it.");
+        w.mode  = CoolantMode::constant;
+        w.Tc_in = op->lookupScalar("T_coolant", Dims::temperature);
+    }
+    else
+    {
+        auto c = op->subDict("coolant");
+        for (const auto& key : c->keys())
+            if (key != "arrangement" && key != "T_in" && key != "flow"
+                && key != "cp" && key != "utility" && key != "film")
+                throw std::runtime_error("PFR: `operation.coolant." + key + "` is"
+                    " not read.  The block accepts `arrangement`, `T_in`, `flow`,"
+                    " `cp` or `utility`, and `film`.");
+        static const std::vector<std::string> arr =
+            { "coCurrent", "counterCurrent", "boiling" };
+        if (!c->found("arrangement"))
+            throw std::runtime_error("PFR: `operation.coolant` needs its"
+                " `arrangement` -- coCurrent, counterCurrent or boiling.  How the"
+                " coolant flows changes the hot spot; it is named, not defaulted.");
+        const std::string a = c->lookupWord("arrangement");
+        if (std::find(arr.begin(), arr.end(), a) == arr.end())
+            throw std::runtime_error("PFR: " + registryRefusal::message(
+                "coolant arrangement", a, arr, "Accepted"));
+        w.mode  = (a == "coCurrent")      ? CoolantMode::coCurrent
+                : (a == "counterCurrent") ? CoolantMode::counterCurrent
+                                          : CoolantMode::boiling;
+        w.Tc_in = c->lookupScalar("T_in", Dims::temperature);
+        if (w.mode == CoolantMode::boiling)
+        {
+            for (const char* key : { "flow", "cp", "utility" })
+                if (c->found(key))
+                    throw std::runtime_error(std::string("PFR: `coolant.") + key
+                        + "` is not read by a BOILING coolant: it stays at `T_in`"
+                          " whatever it takes (the latent heat absorbs the duty),"
+                          " so its flow and heat capacity change nothing here.");
+        }
+        else
+        {
+            w.mdot = c->lookupScalar("flow", Dims::massFlow);
+            if (!(w.mdot > 0.0))
+                throw std::runtime_error("PFR: `coolant.flow` must be > 0.");
+            if (c->found("cp") == c->found("utility"))
+                throw std::runtime_error("PFR: a sensible coolant needs its heat"
+                    " capacity from ONE place: `coolant.cp <J/kg/K>;` or `coolant."
+                    "utility <record>;` (the record's mean cp, dutyPerKg / |T_in -"
+                    " T_out|) -- declare exactly one.");
+            if (c->found("cp"))
+            {
+                w.cp     = c->lookupScalar("cp", Dims::heatCapacity);
+                w.cpFrom = "declared";
+            }
+            else
+            {
+                const std::string un = c->lookupWord("utility");
+                const Utility& u = UtilityCatalogue::byName(un);
+                const scalar dT = std::abs(u.T_in - u.T_out);
+                if (u.mechanism != "sensible" || !(dT > 0.0) || !(u.dutyPerKg > 0.0))
+                    throw std::runtime_error("PFR: `coolant.utility " + un + "` is"
+                        " a '" + u.mechanism + "' utility; only a SENSIBLE record"
+                        " (a temperature drop and a duty per kg) gives a mean cp."
+                        "  A boiling coolant is `arrangement boiling;`.");
+                w.cp     = u.dutyPerKg / dT;
+                w.cpFrom = "utility " + un;
+                std::ostringstream os;
+                os << "[coolant] cp = " << w.cp << " J/kg/K, the MEAN heat"
+                      " capacity of utility record '" << un << "' (dutyPerKg "
+                   << u.dutyPerKg << " J/kg over its " << dT << " K loop): one"
+                      " number for the whole coolant path, taken from a record"
+                      " whose loop temperatures are not this coolant's";
+                AdvisoryLog::instance().add("model", "info", "pfr (coolant)", os.str());
+                if (verbosity >= 2) std::cout << "  " << os.str() << "\n";
+            }
+            if (!(w.cp > 0.0))
+                throw std::runtime_error("PFR: the coolant's cp must be > 0.");
+            w.mcp = w.mdot * w.cp;
+        }
+    }
+
+    //  ---- the wall coefficient: declared, or computed ------------------
+    if (hasCorr && op->found("U"))
+        throw std::runtime_error("PFR: `operation.U` (an OVERALL coefficient,"
+            " declared) beside `operation.wallHeatTransfer` (the bed side of one,"
+            " computed): the two answer the same question.  Delete one -- a"
+            " declared U is the whole wall, film and coolant included.");
+    if (!hasCorr)
+    {
+        w.Udecl = op->lookupScalar("U", Dims::heatTransfer_h);
+        if (!(w.Udecl > 0.0))
+            throw std::runtime_error("PFR: `operation.U` must be > 0.");
+        if (hasCoolant && op->subDict("coolant")->found("film"))
+            throw std::runtime_error("PFR: `coolant.film` beside a declared"
+                " `operation.U`: the declared U is the OVERALL coefficient and"
+                " already holds the coolant's film.  Delete the film, or compute"
+                " the bed side with `wallHeatTransfer` and keep it.");
+        return;
+    }
+
+    auto wh = op->subDict("wallHeatTransfer");
+    for (const auto& key : wh->keys())
+        if (key != "model")
+            throw std::runtime_error("PFR: `operation.wallHeatTransfer." + key
+                + "` is not read.  The block names the correlation (`model`); the"
+                  " particle's size and shape live in `operation.catalyst`.");
+    if (!wh->found("model"))
+        throw std::runtime_error("PFR: `operation.wallHeatTransfer` needs `model"
+            " <name>;` -- the correlation is named, never defaulted.");
+    if (!h.tubes)
+        throw std::runtime_error("PFR: `operation.wallHeatTransfer` correlates"
+            " the coefficient of a packed TUBE on the particle-to-tube diameter"
+            " ratio; declare the tubes (`operation.tubes { count;"
+            " innerDiameter; ... }`).");
+    if (!op->found("catalyst") || !op->subDict("catalyst")->found("particleDiameter"))
+        throw std::runtime_error("PFR: `operation.wallHeatTransfer` reads the"
+            " particle: declare `operation { catalyst { particleDiameter"
+            " <length>; shape sphere|cylinder; } }` (6 V_p / A_p).");
+    if (!thermo.hasTransport() || !thermo.hasThermalConductivity())
+        throw std::runtime_error("PFR: `operation.wallHeatTransfer` needs the"
+            " gas VISCOSITY and THERMAL CONDUCTIVITY, and this package declares "
+            + std::string(thermo.hasTransport() ? "no conductivity model"
+                                                : "no transport model")
+            + " -- add `transport { viscosity { model Chung; }"
+              " thermalConductivity { model Eucken; } }` to the"
+              " thermoPhysPropDict.  None is assumed.");
+    auto cat = op->subDict("catalyst");
+    w.corr = BedWallHeatTransfer::New(wh->lookupWord("model"));
+    w.corr->readParticle(cat, "PFR");
+    w.dp = cat->lookupScalar("particleDiameter", Dims::length);
+    w.dt = h.D;
+    w.G  = massFlow_kg_s / h.A;
+    auto c = op->subDict("coolant");
+    if (!c->found("film"))
+        throw std::runtime_error("PFR: the coolant's film coefficient is"
+            " needed in series with the bed side: declare `coolant { film"
+            " <W/m2/K>; }` and say where it came from.  No coolant correlation"
+            " is wired (the shell side of a reactor is a design of its own).");
+    const scalar hc = c->lookupScalar("film", Dims::heatTransfer_h);
+    if (!(hc > 0.0))
+        throw std::runtime_error("PFR: `coolant.film` must be > 0.");
+    //  Wall and film on the INSIDE area: the coolant's on d_i/d_o of its
+    //  own (outside) area, the wall's cylindrical resistance.
+    const scalar dO = (h.dOuter > 0.0) ? h.dOuter : h.D;
+    w.R_film = (h.D / dO) / hc;
+    w.R_wall = (h.dOuter > 0.0) ? h.D * std::log(h.dOuter / h.D) / (2.0 * h.wallK) : 0.0;
+
+    const auto v = w.corr->verify();
+    std::ostringstream os;
+    os << "[wall] the bed-side coefficient is " << w.corr->type() << ": "
+       << w.corr->citation() << "; window " << w.corr->validityWindow()
+       << "; in series with "
+       << (h.dOuter > 0.0 ? std::string("the tube wall")
+                          : std::string("NO tube-wall resistance (no wallThickness"
+                                        " / wallConductivity declared)"))
+       << " and the DECLARED coolant film.  Anchor (" << v.kind << "): "
+       << v.anchor << ", deviation " << std::scientific << std::setprecision(2)
+       << v.dev << " -- an arithmetic anchor proves a transcription, not the"
+          " physics";
+    AdvisoryLog::instance().add("model", "info", "pfr (wall)", os.str());
+    if (verbosity >= 2) std::cout << "  " << os.str() << "\n" << std::fixed;
+}
+
 void PFR::refuseBedHydraulicsOnSinglePath(const DictPtr& op)
 {
-    for (const char* key : { "pressureDrop", "L_over_D" })
+    for (const char* key : { "pressureDrop", "L_over_D", "tubes", "coolant",
+                             "wallHeatTransfer" })
         if (op->found(key))
             throw std::runtime_error(std::string("PFR: `operation.") + key
                 + "` is read by the MULTI-reaction path only (`reactions ("

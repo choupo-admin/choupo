@@ -858,8 +858,8 @@
     },
     "check_schema_coverage": {
       "exit": 0,
-      "claim": "check_schema_coverage: OK -- every one of the 93 registered operations carries a schema (89 exercised by the corpus over 1032 case use(s)); no schema rejects a key a running case uses, none marks required a key a running case omits, and 8 registry-derived alias group(s) agree property-for-property",
-      "seconds": 105.3
+      "claim": "check_schema_coverage: OK -- every one of the 93 registered operations carries a schema (89 exercised by the corpus over 1033 case use(s)); no schema rejects a key a running case uses, none marks required a key a running case omits, and 8 registry-derived alias group(s) agree property-for-property",
+      "seconds": 35.8
     },
     "check_sdem": {
       "exit": 0,
@@ -1165,6 +1165,11 @@
       "exit": 0,
       "claim": "check_rate_expression: OK -- the C++ law and the expression agree (0.138888888889 mol/s) and both equal the closed-form Michaelis-Menten CSTR; precedence held by value (2^3^2 = 512, 8/4/2 = 1, -1^2 = -1); 16 refusals fired by name; a table read at its midpoint doubles the rate exactly, announced.  NOT CHECKED: whether any law is RIGHT (the witness's Vmax and Km are author-set; the ammonia law's anchors are check_ammonia_rate's), the batchReactor and dynamicCSTR routes, and the WASM build (check_wasm_dialect's).",
       "seconds": 2.7
+    },
+    "check_cooled_pfr": {
+      "exit": 0,
+      "claim": "check_cooled_pfr: OK -- (a) Li-Finlayson U_w 64.2158 and overall U 60.4130 W/m2/K recomputed at 1e-10; (b) coolant balance closes (639.083 kW); hot spot 665.00 K at z = 0.700 m, 3871.18 tubes solved; (d) 3872 tubes, A 688.496 m2, shell ID 2.2949 m, catalyst 4941.7 kg recomputed; (c) coCurrent: gas 643.74021 K, coolant out 642.28775 K = independent RK4 (max |diff| 1.6e-10 K); (c) counterCurrent: gas 623.07641 K, coolant out 657.69278 K = independent RK4 (max |diff| 6.2e-11 K) + bisection shooting; (e) 13 refusals fired by name; (f) the legacy form publishes no C69 KPI",
+      "seconds": 6.2
     }
   }
 }

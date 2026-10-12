@@ -1,0 +1,67 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: PAlump  (C8H4O3 -- the PRODUCT LUMP of a one-reaction model)
+  CASE-LOCAL, and not a substance.  The single-reaction o-xylene model
+  (constant/reactions) carries the heat of the WHOLE oxidation network --
+  phthalic anhydride and the CO/CO2 the real catalyst also makes -- in one
+  reaction, and this record is that reaction's product.  Only its
+  formation enthalpy is a fact about it, and that fact is DERIVED from the
+  source's heat of reaction; every other number is borrowed from the
+  catalogue's oXylene record and says so.  It must never be promoted to
+  data/standards/: phthalic anhydride proper is not in the catalogue, and
+  this is not it.
+\*---------------------------------------------------------------------------*/
+
+name        PAlump;
+
+reviewStatus   unverified;
+reviewReason   caseLocalLumpOfAOneReactionModel_notASubstance;
+formula     C8H4O3;          // phthalic anhydride's: closes the element balance of the lumped reaction
+
+MW          148.117;         // kg/kmol  [from the formula, 2026 standard atomic weights]
+
+//  BORROWED, a TEACHING ASSUMPTION: the lump is at most 1.2 mol% of the
+//  gas, so its critical constants (read by the Chung viscosity) and its
+//  ideal-gas Cp move the mixture's properties by about a percent.  These are
+//  the catalogue's data/standards/components/oXylene.dat values, copied.
+Tc          630.2590;        // K    [borrowed: oXylene.dat]
+Pc          37.37460;        // bar  [borrowed: oXylene.dat]
+omega       0.31200;         // [-]  [borrowed: oXylene.dat]
+
+//  BORROWED for the package's phase test only: the bed runs at 625-690 K and
+//  1 atm, far above any dew point of 1.2 mol% of an aromatic, so no number
+//  of this run depends on it.  Real phthalic anhydride is much LESS
+//  volatile than o-xylene: this record must not be used to condense it.
+vaporPressure
+{
+    model         Antoine;
+    // log10(Psat [bar]) = A - B / (T[K] + C)   [borrowed: oXylene.dat]
+    coefficients  (4.22028   1538.93   -52.5474);
+    Trange        (283.62  617.65);
+}
+
+idealGasHeatCapacity
+{
+    model         polynomial;
+    // Cp [J/(mol.K)] = a0 + a1 T + a2 T^2 + a3 T^3   [borrowed: oXylene.dat]
+    coefficients  (-3.37066  0.51896  -0.000193422  -1.30232e-08);
+    Trange        (200  1000);
+}
+
+standardThermochemistry
+{
+    //  DERIVED so that SUM nu_i dHf_i of `oXylene + 3 O2 -> PAlump + 3 water`
+    //  is the source's lumped heat of reaction at 298 K:
+    //    dHf(PAlump) = dH_rxn - 3 dHf(water, g) + dHf(oXylene, g) - 3 dHf(O2)
+    //                = -306707 kcal/kmol x 4.184 + 3 x 241826 + 16610 - 0
+    //                = -1283262.1 + 725478.0 + 16610.0 = -541174.1 J/mol,
+    //  with dH_rxn from Zuluaga-Botero et al., Catalysts 10 (2020) 626,
+    //  Table 3 (CC BY 4.0), and dHf(water) and dHf(oXylene) the catalogue's
+    //  own records -- so the engine's SUM nu_i h_i returns the source's
+    //  number at 298 K whatever oXylene's (estimated) datum is.
+    dHf_298   -541174.1;     // J/mol ideal-gas [DERIVED -- see above]
+    //  BORROWED, and read by NO number of this run: the record grammar
+    //  requires an absolute entropy, and only an equilibrium (a Gibbs
+    //  reactor, a K) would read it.  This case computes none; a case that
+    //  did would be pricing a lump's entropy, which has no meaning.
+    s_298     355.03;        // J/(mol K) [borrowed: oXylene.dat]
+}

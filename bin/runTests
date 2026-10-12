@@ -3789,6 +3789,23 @@ PYEOF
     fi
     rm -f /tmp/pfrergun.$$
 
+    # cooled multitubular pfr gate (2026-10-12, DEV.md 4c C69).  The bed-to-
+    # wall coefficient (Li & Finlayson, a correlation object) recomputed by
+    # hand from the run's own gas properties; the coolant's own balance and
+    # the hot spot; co- AND counter-current coolant against an INDEPENDENT
+    # RK4 (+ bisection shooting) on N2's own Cp; the multitubular sizer; 13
+    # refusals by name; the legacy U/areaPerVolume/T_coolant form untouched.
+    # Four by-hand sabotages, all caught.
+    if "$ROOT/bin/curate/check_cooled_pfr.py" > /tmp/cooledpfr.$$ 2>&1; then
+        printf "PASS  %-40s  (%s)\n" "cooled-pfr-gate" "$(head -1 /tmp/cooledpfr.$$)"
+        pass=$((pass+1))
+    else
+        printf "FAIL  %-40s  (run bin/curate/check_cooled_pfr.py)\n" "cooled-pfr-gate"
+        cat /tmp/cooledpfr.$$
+        fail=$((fail+1))
+    fi
+    rm -f /tmp/cooledpfr.$$
+
     # transport-correlation gate (2026-09-05).  The five transport families
     # (Chung, Eucken, Fuller, Andrade/Vogel/chemsepEq101, SatoRiedel/
     # chemsepEq16) and the shared Wilke phi_ij became objects with a window, a

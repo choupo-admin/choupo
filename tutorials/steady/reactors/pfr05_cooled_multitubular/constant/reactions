@@ -1,0 +1,85 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+  o-XYLENE OXIDATION ON V2O5, THE SINGLE-REACTION MODEL
+
+      C8H10 + 3 O2  ->  C8H4O3 + 3 H2O          (C 8 = 8; H 10 = 4 + 6; O 6 = 3 + 3)
+
+  The classic sensitivity witness of fixed-bed reactor design: van
+  Welsenaere & Froment's one-reaction model, as tabulated -- with its heat of
+  reaction, rate constant and operating data -- by Zuluaga-Botero,
+  Dobrosz-Gomez & Gomez-Garcia, "Parametric Sensitivity Analysis for the
+  Industrial Case of O-Xylene Oxidation to Phthalic Anhydride in a Packed Bed
+  Catalytic Reactor", Catalysts 10 (2020) 626, doi:10.3390/catal10060626,
+  CC BY 4.0, Tables 2 and 3 (read 2026-10-12).  The 1970 paper itself was NOT
+  read.
+
+  ONE REACTION CARRIES THE HEAT OF THE WHOLE NETWORK.  The source's
+  -306 707 kcal/kmol is a LUMPED heat (phthalic anhydride and the CO and CO2
+  the real network also makes): the pure C8H4O3 reaction releases less.  So
+  the product here is the LUMP `PAlump` (constant/components/PAlump.dat),
+  whose formation enthalpy is DERIVED from that heat -- the engine prices
+  every heat of reaction as SUM nu_i h_i on the formation datum (CLAUDE.md
+  "Heat of reaction -- ONE enthalpy base"), and this is how the source's
+  number reaches it without a `dH_rxn` override.
+
+  THE UNIT READING, SAID BECAUSE IT IS A READING.  Table 3 prints
+  k1 = 21.07 e^19.837 "kmol/(h kg_cat kPa)" with r = rho_L k1 e^(-13636/T) P_A,
+  21.07 being the table's oxygen partial pressure in kPa.  Read in kPa, the
+  rate at 625 K is ~10^4 times what the same table's U = 82.7 kcal/(m2 h K)
+  could remove from a 25 mm tube (101.325^2 = 1.03e4): the numbers are a
+  working reactor only on an ATMOSPHERE basis, ln k = 19.837 - 13636/T in
+  kmol/(kg_cat h atm^2) with p_O2 = 21.07 kPa = 0.2079 atm.  That basis is
+  what is written below.  The rate reads the LOCAL p[O2] -- the source holds
+  it at its inlet value (pseudo-first order) -- so it falls here with the
+  oxygen the reaction consumes and with the bed's pressure drop: a declared
+  departure of about 15 % in the rate at full conversion.
+\*---------------------------------------------------------------------------*/
+
+oXyleneOxidation
+{
+    stoichiometry
+    (
+        { component oXylene;  nu -1; }
+        { component O2;       nu -3; }
+        { component PAlump;   nu  1; }
+        { component water;    nu  3; }
+    );
+
+    kinetics
+    {
+        type     expression;
+        source   "van Welsenaere & Froment (1970) single-reaction model, as tabulated by Zuluaga-Botero, Dobrosz-Gomez & Gomez-Garcia, Catalysts 10 (2020) 626, Table 3 (CC BY 4.0); read on the atm basis -- see the header";
+        basis    catalystMass;       // per kg of catalyst; the bed's bulk density makes it volumetric
+        rateOf   extent;             // = the rate of o-xylene consumption (nu = -1)
+
+        parameters
+        {
+            lnA         19.837     -;            // Table 3
+            Ta          13636      K;            // Table 3, a = E/R
+            kunit       1          kmol/kg/h;    // the rate constant's unit, atm^-2 folded into the pressures below
+            atmosphere  1          atm;
+        }
+
+        definitions
+        {
+            k     "kunit * exp(lnA - Ta/T)";
+        }
+
+        rate    "k * (p[O2]/atmosphere) * (p[oXylene]/atmosphere)";
+
+        rateConstant { name k;  unit kmol/kg/h; }
+
+        caveats
+        (
+            "ONE lumped reaction: the source's heat of reaction is the network's (phthalic anhydride + COx), carried by the product lump PAlump. Selectivity is not modelled."
+            "The rate is the source's intrinsic expression at the BULK gas: no effectiveness factor, no film -- the source's own pseudo-homogeneous assumption."
+        );
+    }
+}

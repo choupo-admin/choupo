@@ -92,6 +92,47 @@ Description
     stream all see the marched pressure; the outlet leaves at P_in - dP.
     Absent both keys, nothing of this runs and the bed is the
     constant-pressure march it always was, byte for byte.
+
+    A MULTITUBULAR, COOLED BED (multi-reaction path, DEV.md 4c C69,
+    2026-10-12).  Catalyst in N parallel tubes, coolant in the shell:
+
+        operation
+        {
+            thermalMode heatExchange;
+            tubes   { count <->; innerDiameter <length>; length <length>;
+                      wallThickness <length>; wallConductivity <W/m/K>; }
+            catalyst         { particleDiameter <length>; shape sphere|cylinder; }
+            wallHeatTransfer { model LiFinlayson; }      // or `U <W/m2/K>;`
+            coolant { arrangement coCurrent|counterCurrent|boiling;
+                      T_in <T>;  flow <mass flow>;  cp <J/kg/K> | utility <name>;
+                      film <W/m2/K>; }
+        }
+
+    THE TUBES are the bed's geometry: area per volume 4/d_i, the cross-
+    section N pi d_i^2/4 (Ergun runs on it, so per tube), and the bed volume
+    N pi d_i^2/4 L -- ONE home for the length: `tubes.length` and `V_R` are
+    exclusive (with no length, V_R gives it), and `L_over_D` or
+    `areaPerVolume` beside `tubes` refuse.  `count` may be a real number
+    (an outer driver solves it); the sizer rounds it UP to whole tubes, said.
+    THE WALL COEFFICIENT is either DECLARED (`U`, overall, on the inside
+    area) or computed from a packed-bed WALL correlation object
+    (reactor/wallHeatTransfer/BedWallHeatTransfer: Li & Finlayson's 1-D
+    U_w on the particle Reynolds number, at the LOCAL gas state), in series
+    with the tube wall (`wallThickness`/`wallConductivity`, else NOT
+    included, announced) and the coolant's DECLARED `film`.  Both at once
+    refuse.  THE COOLANT is `boiling` (one temperature, today's behaviour),
+    or a sensible fluid of declared mass flow and cp (or a `utility`
+    record's mean cp, dutyPerKg / |T_in - T_out|, announced) flowing
+    `coCurrent` (an initial-value problem, marched with the species) or
+    `counterCurrent` (a TWO-POINT boundary-value problem: the coolant
+    outlet temperature at the bed inlet is SHOT, on a bracketed root,
+    until the coolant enters at its declared T_in -- announced, with the
+    number of marches and the residual).  Without a `coolant {}` block the
+    legacy keys `U`, `areaPerVolume`, `T_coolant` run exactly as before.
+    Published: the hot spot (T_max, its volume and its axial position), the
+    coolant outlet temperature, the duty the coolant takes (from the
+    marched enthalpy) and, on the correlation route, every number the
+    coefficient was computed from at the inlet.
 \*---------------------------------------------------------------------------*/
 
 #pragma once
@@ -99,8 +140,10 @@ Description
 #include "core/Dictionary.H"
 #include "thermo/ThermoPackage.H"
 #include "unitOperations/UnitOperation.H"
+#include "unitOperations/reactor/wallHeatTransfer/BedWallHeatTransfer.H"
 
 #include <map>
+#include <memory>
 #include <string>
 #include <vector>
 
@@ -154,7 +197,41 @@ private:
         scalar eps = 0.0;             // bed void fraction
         scalar dp  = 0.0;             // particle (Ergun equivalent) diameter, m
         scalar allowable = 0.0;       // Pa; 0 = none declared
+        //  A MULTITUBULAR bed (operation.tubes, C69): D is the tube's inner
+        //  diameter, A the cross-section of ALL tubes, L the tube length.
+        bool   tubes   = false;
+        scalar nTubes  = 0.0;         // may be real (an outer driver solves it)
+        scalar dOuter  = 0.0;         // m; 0 = no wall declared
+        scalar wallK   = 0.0;         // W/(m K); 0 = no wall declared
     };
+
+    //  The bed volume: `V_R`, or N pi d^2/4 L when `tubes.length` is
+    //  declared -- one home for the length, the two refused together.
+    static scalar bedVolume(const DictPtr& operDict);
+
+    //  Heat exchange with a coolant through the bed wall (thermalMode
+    //  heatExchange).  `legacy` is the U + areaPerVolume + T_coolant form,
+    //  untouched; every other route is the C69 one (see the description).
+    enum class CoolantMode { constant, coCurrent, counterCurrent, boiling };
+    struct WallExchange
+    {
+        bool        legacy = false;
+        scalar      Udecl  = 0.0;     // W/(m2 K) declared; 0 -> correlation
+        scalar      aV     = 0.0;     // m2/m3
+        std::unique_ptr<BedWallHeatTransfer> corr;
+        scalar      dp = 0.0, dt = 0.0, G = 0.0;   // correlation context
+        scalar      R_wall = 0.0, R_film = 0.0;    // m2 K/W, inside area
+        CoolantMode mode  = CoolantMode::constant;
+        scalar      Tc_in = 0.0;      // K
+        scalar      mcp   = 0.0;      // W/K, a sensible coolant's flow x cp
+        scalar      mdot  = 0.0, cp = 0.0;          // kg/s, J/(kg K)
+        std::string cpFrom;           // "declared" | "utility <name>"
+        bool variable() const
+        { return mode == CoolantMode::coCurrent || mode == CoolantMode::counterCurrent; }
+    };
+    static void readWallExchange(WallExchange& w, const DictPtr& operDict,
+                                 const BedHydraulics& h, const ThermoPackage& thermo,
+                                 scalar massFlow_kg_s, int verbosity);
     static BedHydraulics readBedHydraulics(const DictPtr& operDict,
                                            const ThermoPackage& thermo,
                                            scalar V_R, int verbosity);

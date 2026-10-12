@@ -1,0 +1,44 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+  o-xylene in air at 1 atm and 625-680 K: an ideal gas.  The TRANSPORT block
+  is read by the bed: the Ergun drop needs the gas viscosity, and the
+  bed-to-wall coefficient (Li & Finlayson) the viscosity, the conductivity
+  and the heat capacity -- dilute-gas models, exact enough at 1 atm.
+\*---------------------------------------------------------------------------*/
+
+recordType    thermophysicalPropertySystem;
+schemaVersion 2;
+
+components       ( oXylene  O2  N2  water  PAlump );
+
+equilibrium
+{
+    formulation gammaPhi;
+
+    liquid
+    {
+        activityModel ideal;
+        standardState pureLiquid;
+    }
+
+    vapour
+    {
+        fugacityModel idealGas;
+    }
+}
+
+transport
+{
+    vapour
+    {
+        viscosity           { model Chung; }    // gas mu   (Tc, Pc, omega, M)
+        thermalConductivity { model Eucken; }   // gas k    (Cp + mu)
+    }
+}
