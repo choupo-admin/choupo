@@ -5952,12 +5952,16 @@ if [ "$#" -eq 0 ]; then
     rm -f /tmp/reliefvalve.$$
 
     # Converter-shell gate (2026-10-12, DEV.md 4c C69): the green-ammonia
-    # basic design's CONVERTER sector is ONE pressure shell -- D the widest
-    # member's and H their stacked heights, recomputed from the members'
-    # own sheets; the bed shells become baskets (not costed, naming the
-    # shell); ONE relief valve at the shell's design pressure on the
-    # sector's outlet; the sheets at the sector's own level; five
-    # refusals fired by name.  Three by-hand sabotages, all caught.
+    # basic design's CONVERTER sector is ONE pressure shell -- D the beds'
+    # ONE declared diameter (each bed's height its V_R over it, the binding
+    # bed at its allowable: the smallest admissible diameter) and H the
+    # members stacked, recomputed from their own sheets; the bed shells
+    # become baskets (not costed, naming the shell); ONE relief valve at the
+    # shell's design pressure on the sector's outlet; the sheets at the
+    # sector's own level; eight refusals fired by name; the smallest
+    # admissible diameter re-bracketed per bed and end to end at two other
+    # diameters; the DesignSpec's `largestOf` on a two-bed fixture.  Ten
+    # by-hand sabotages, all caught.
     if "$ROOT/bin/curate/check_converter_shell.py" > /tmp/convshell.$$ 2>&1; then
         printf "PASS  %-40s  (%s)\n" "converter-shell-gate" "$(gate_claim check_converter_shell /tmp/convshell.$$)"
         pass=$((pass+1))

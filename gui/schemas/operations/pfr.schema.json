@@ -74,6 +74,13 @@
       "description": "Multi-reaction path only. Gives the bed a cross-section (D, L, A published as KPIs) as the straight cylinder of V_R at this ratio; the `pfr` sizer builds the shell on it and REFUSES a second L_over_D in its designRules -- one home. Required by `pressureDrop`.",
       "unit": "-"
     },
+    "diameter": {
+      "type": "number",
+      "exclusiveMinimum": 0,
+      "title": "Bed diameter",
+      "description": "Multi-reaction path only (DEV.md 4c C69). Gives the bed a cross-section of DECLARED diameter: L = V_R / (pi D^2 / 4), published with D_bed_declared_m. The form a multibed converter's beds take, all reading one plant variable (the converterShell refuses a bed at its own L_over_D). `L_over_D` or `tubes` beside it are REFUSED.",
+      "unit": "m"
+    },
     "catalyst": {
       "type": "object",
       "title": "Catalyst particle",

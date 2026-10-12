@@ -34,11 +34,12 @@
                           process-gas and refrigerant values.
     Bed1/2/3          the `pfr` sizer (CatalystBedSize) READS each bed's own
                       V_R and sizes TWO items under it: the SHELL, a vessel
-                      of that volume at the bed's OWN L/D (1.5, read from
-                      the unit's `operation.L_over_D` -- the cross-section
-                      its Ergun pressure drop is integrated on; the bed's
-                      header says why not the base case's 6), costed on the
-                      Turton vessel set; its sheet carries the bed's dP; and the
+                      of that volume at the bed's DECLARED diameter (the
+                      converter's one diameter, read from the unit's
+                      `operation.diameter` -- the cross-section its Ergun
+                      pressure drop is integrated on), H = V_R / (pi D^2 / 4);
+                      inside the converter it is a BASKET and not costed (see
+                      CONVERTER below); its sheet carries the bed's dP; and the
                       CATALYST CHARGE, m = V_R x catalystBulkDensity, priced
                       at catalystPrice -- a `declared-unit-price` line, no
                       index, no module factor.  The two catalyst numbers,
@@ -54,11 +55,19 @@
                       the three beds and the two interbed coolers (DEV.md 4c
                       C69; CONVERTER/system/flowsheetDict says where that
                       construction was read).  `type converterShell` reads
-                      the sector's units from the topology, stacks their
-                      geometries axially (D the widest member's, H the sum of
-                      theirs: the beds' shells and the coolers' Kern shells),
-                      sizes ONE ASME wall at 167 bar and prices it on the
-                      Turton vessel set.  The beds' own shells become baskets
+                      the sector's units from the topology.  Its DIAMETER is
+                      the beds' ONE declared diameter ($D_converter, solved
+                      by system/outerDict as the smallest at which every
+                      bed's Ergun drop is within its 1 bar; each bed's
+                      height is its V_R over that cross-section); a cooler
+                      whose Kern shell would not fit is refused, and a `D`
+                      here would be a second home (refused).  Its HEIGHT
+                      stacks the members (the beds and the coolers' Kern
+                      shells).  It brackets the smallest diameter holding
+                      every bed within its allowable on the solved beds,
+                      names the binding bed and says whether the converter
+                      sits at it, sizes ONE ASME wall at 167 bar and prices
+                      it on the Turton vessel set.  The beds' own shells become baskets
                       (NOT costed, each naming the converter shell); the
                       catalyst charges stay priced; the two coolers keep
                       their Turton exchanger cost, whose own shell share is
@@ -223,10 +232,11 @@ sizing
         //  answer (system/outerDict) -- sizes the shell around it, and
         //  prices the catalyst charge from the two DECLARED numbers below,
         //  which are AUTHOR-SET ASSUMPTIONS (see the header).
-        //  NO L_over_D here: each bed declares its own slenderness
-        //  (CONVERTER/Bed<N>/system/flowsheetDict `operation.L_over_D`, the
-        //  cross-section its Ergun pressure drop is integrated on) and the
-        //  sizer READS it from the unit -- one home (DEV.md 4c C66).
+        //  NO geometry here: each bed declares the converter's ONE
+        //  diameter (CONVERTER/Bed<N>/system/flowsheetDict `operation.
+        //  diameter $D_converter;`, the cross-section its Ergun pressure
+        //  drop is integrated on) and the sizer READS it from the unit --
+        //  one home (DEV.md 4c C66, C69).
         { unitName CONVERTER.Bed1;  type pfr;  material SS316;
           designRules { pressureDesign       167;
                         catalystBulkDensity  2500.0;   // kg/m3 -- AUTHOR-SET ASSUMPTION
@@ -243,7 +253,9 @@ sizing
         //  ---- THE CONVERTER: ONE pressure shell around the sector ------
         //  AFTER every member's entry: the shell reads what its members
         //  were sized as, and refuses a member not yet sized.  The loop's
-        //  design pressure, as every high-pressure item here.
+        //  design pressure, as every high-pressure item here.  NO `D`: the
+        //  converter's diameter is its beds' (system/flowsheetDict
+        //  `D_converter`, solved by system/outerDict).
         { unitName CONVERTER;  type converterShell;  material SS316;
           designRules { pressureDesign  167; } }
 

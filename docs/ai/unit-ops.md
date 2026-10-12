@@ -197,15 +197,22 @@ operation
 ```
 `L_over_D` gives the bed a cross-section (D, L, A published as KPIs) and the `pfr`
 sizer builds its shell on it, refusing a second `L_over_D` in its designRules.
+`diameter <length>;` in its place (C69) DECLARES the cross-section and the length
+follows, L = V_R / (pi D^2 / 4) (`D_bed_declared_m` published) -- the form a multibed
+converter's beds take, every bed reading ONE plant variable (`diameter $D_converter;`):
+a `converterShell` refuses a bed at its own `L_over_D`.  `L_over_D` or `tubes` beside
+`diameter` refuse.
 `pressureDrop` marches `dP/dV = (dP/dz)/A` from Ergun's equation with the species
 (density from the package's EoS, viscosity from its declared `transport` — required,
 dilute-gas); the rate law and `T` read the local `P`; the outlet leaves at `P_in − ΔP`
 (`dP_bed_bar`, `P_out_bar`, `Re_p_in`, `u_superficial_in/out`, `mu_gas_in`, `rho_gas_in`;
 a `P` profile column).  A drop above `allowable` is ANNOUNCED with the remedy — at a
-fixed volume the drop goes as (L/D)²; nothing is clamped.  Absent both keys the bed is
+fixed volume the drop goes as (L/D)² (at a declared diameter, as D⁻⁴ to D⁻⁶); nothing
+is clamped.  Absent both keys the bed is
 the constant-pressure march it always was.  The single-reaction path refuses them.
-Example: `tutorials/plant/greenAmmonia03_basicDesign` (three beds, L/D 1.5; at L/D 6 the
-loop did not converge).
+Example: `tutorials/plant/greenAmmonia03_basicDesign` (three beds at the converter's ONE
+diameter, solved by its DesignSpec as the smallest at which every bed is within its
+1 bar; C66 had each bed at its own L/D 1.5, and at L/D 6 the loop did not converge).
 **A cooled MULTITUBULAR bed** (multi-reaction path, `thermalMode heatExchange`, C69):
 ```
 operation

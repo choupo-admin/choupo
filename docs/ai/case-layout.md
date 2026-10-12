@@ -624,7 +624,7 @@ entry:
 ```
 { unitName CONVERTER;  type converterShell;  material SS316;
   designRules { pressureDesign 167;     // bar g, REQUIRED
-                // D <length>;  H <length>;   optional, never smaller than the members
+                // H <length>;   optional, never below the stack; NO D (see below)
               } }
 { unitName CONVERTER;  type reliefValve;  material SS316;     // ONE valve on ONE shell
   designRules { scenarios ( { scenario blockedOutlet; } ); } }
@@ -633,10 +633,25 @@ entry:
 The members are the sector's units, read from the topology (never listed
 again); each must already be sized and publish a geometry -- a vessel shell's
 `D`/`H` or an exchanger DESIGN's `shellID`/`tubeLength` -- or it is refused by
-name.  The shell stacks them axially (D the widest member's, H the sum of
-theirs; no head space, annulus or plenum), its wall is ASME thin-wall at its
-own `pressureDesign` (not below a member's, refused), priced on the Turton
-vessel set.  The members' own vessel shells become internal baskets: NOT
+name.  **ONE diameter, the shell's:** every bed is a `pfr` of declared
+`diameter`, all reading one plant variable (`diameter $D_converter;` in each
+bed folder, `D_converter <m>;` in the plant's `variables {}`); a bed at its own
+`L_over_D`, two diameters, a `D` in these designRules (a second home) and an
+exchanger wider than the converter are refused.  The diameter lives in the
+flowsheet because the beds need it DURING the solve (each bed's Ergun drop
+moves the pressure the gas reacts at, and the stream table carries it); choose
+it there -- the witness's DesignSpec solves it as the smallest at which every
+bed's Ergun drop is within its `allowable`, with a `largestOf` target over the
+beds' `dP_over_allowable` (`docs/ai/outer-drivers.md`), so no bed is named in
+advance as the binding one.  The shell then BRACKETS that smallest diameter on
+the solved beds (each bed's drop scaled from its own, viscous ~ D^-4 and
+inertial ~ D^-6 by its published `ergunInertialShare_bed`, the axial state held
+fixed -- exact at the solved D), on [0.1, 10] m, names the binding bed and
+says whether the converter's diameter sits at it, above it (a narrower one
+would do) or below it (a bed exceeds its allowable, a warning); no root in the
+bracket is refused by name.  It publishes `D_smallestAdmissible`.  The shell stacks the members axially (H the sum; no head space,
+annulus or plenum), its wall is ASME thin-wall at its own `pressureDesign`
+(not below a member's, refused), priced on the Turton vessel set.  The members' own vessel shells become internal baskets: NOT
 costed, each naming the shell.  A member exchanger keeps its Turton exchanger
 cost (no bundle-only correlation exists, so its shell share counts twice --
 said on the basis).  Sheets: `design/<SECTOR>/shell`, `design/<SECTOR>/psv`.

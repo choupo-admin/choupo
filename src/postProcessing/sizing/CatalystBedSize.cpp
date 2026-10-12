@@ -127,21 +127,34 @@ std::vector<EquipmentSizing> CatalystBedSize::size(const std::string& unitName,
     //  A straight cylinder holding exactly the bed volume: no head space, no
     //  distributor, no support grid -- the shell is the bed's envelope and
     //  the basis says so, so a reader does not take it for a vendor drawing.
-    const scalar D = std::cbrt(4.0 * V_R / (constant::pi * L_over_D));   // m
-    const scalar H = L_over_D * D;                                       // m
+    //  A bed of DECLARED DIAMETER (C69) publishes it: the shell takes that
+    //  diameter itself, never one re-derived from a slenderness (the two
+    //  agree only to round-off, and only one of them is the declaration).
+    const auto ddIt = k.find("D_bed_declared_m");
+    const bool dFromUnit = (ddIt != k.end());
+    const scalar D = dFromUnit ? ddIt->second
+                   : std::cbrt(4.0 * V_R / (constant::pi * L_over_D));   // m
+    const scalar H = dFromUnit ? V_R / (0.25 * constant::pi * D * D)
+                   : L_over_D * D;                                       // m
     const auto mech = vesselMechanics::wall(D, H, pressureDesign, material,
                                             jointEff, corrosionAllow);
 
     shell.set("V_R",            V_R,            "m3");    // Turton vessel sizeKey
     shell.set("D",              D,              "m");
     shell.set("H",              H,              "m");
-    shell.set("L_over_D",       L_over_D,       "-");
+    shell.set("L_over_D",       dFromUnit ? H / D : L_over_D, "-");
     shell.set("t_wall",         mech.t_wall,    "m");
     shell.set("weight",         mech.weight,    "kg");
     shell.set("pressureDesign", pressureDesign, "bar");
     shell.basis = "catalyst volume V_R read from the unit (rating model);"
                   " shell = straight cylinder of that volume at L_over_D";
-    if (ldFromUnit)
+    if (dFromUnit)
+        shell.basis = "catalyst volume V_R read from the unit (rating model);"
+                      " shell = straight cylinder of that volume at the bed's"
+                      " DECLARED diameter (read from the unit's"
+                      " operation.diameter, the cross-section its pressure drop"
+                      " is integrated on; H = V_R / (pi D^2 / 4))";
+    else if (ldFromUnit)
         shell.basis += " (read from the unit's operation.L_over_D, the"
                        " cross-section its pressure drop is integrated on)";
     //  The bed's pressure drop, where the unit computed one: a number on the

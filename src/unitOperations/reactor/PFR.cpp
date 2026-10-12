@@ -861,6 +861,7 @@ int PFR::solveMultiReaction(const DictPtr&       dict,
 
     // ---- RK4 march along the reactor volume, recording the axial profile ----
     profile_.columns.clear();
+    sVector ergunViscous, ergunInertial;      // a declared-diameter bed only
     profile_.xAxis = "V";
     auto push = [&](scalar V, const sVector& y, scalar Tk)
     {
@@ -869,6 +870,18 @@ int PFR::solveMultiReaction(const DictPtr&       dict,
             profile_.columns["F_" + thermo.comp(i).name()].push_back(y[i]);
         profile_.columns["T"].push_back(Tk);
         if (hyd.ergun) profile_.columns["P"].push_back(y[n + 1]);
+        if (hyd.ergun && hyd.diameterDeclared)
+        {
+            //  The two Ergun terms at this stored point, for the share the
+            //  inertial one carries over the WHOLE bed (published below).
+            scalar Ft = 0.0;
+            for (std::size_t i = 0; i < n; ++i) Ft += std::max(y[i], 0.0);
+            sVector zz(n, 0.0);
+            if (Ft > 0.0) for (std::size_t i = 0; i < n; ++i) zz[i] = std::max(y[i], 0.0) / Ft;
+            const ErgunTerms et = ergunTerms(hyd, thermo, Tk, y[n + 1], zz, Ft);
+            ergunViscous.push_back(et.viscous);
+            ergunInertial.push_back(et.inertial);
+        }
         if (wx.variable()) profile_.columns["T_coolant"].push_back(y[iTc]);
         if (wx.corr)
         {
@@ -932,7 +945,8 @@ int PFR::solveMultiReaction(const DictPtr&       dict,
     auto march = [&](sVector y, bool record) -> sVector
     {
     T_lastGuess = T;
-    if (record) { T_max = T; T_min = T; V_hot = 0.0; push(0.0, y, T); }
+    if (record) { T_max = T; T_min = T; V_hot = 0.0;
+                  ergunViscous.clear(); ergunInertial.clear(); push(0.0, y, T); }
     for (int m = 0; m < nSteps; ++m)
     {
         auto k1 = dydV(y);
@@ -1087,6 +1101,24 @@ int PFR::solveMultiReaction(const DictPtr&       dict,
     if (catLoad > 0.0) kpis_["catalystLoading"] = catLoad;
     publishBedHydraulics(hyd, thermo, T, P, T_out, P_out, z_in, z_out, F_in, F_out,
                          verbosity);
+    //  THE SHARE OF THE BED'S DROP THE INERTIAL TERM CARRIES (C69), on a
+    //  declared-diameter bed only (so no other bed's KPIs change).  At a
+    //  fixed volume and a FROZEN axial state, the viscous term goes as u L
+    //  ~ D^-4 and the inertial as u^2 L ~ D^-6, so the drop at another
+    //  diameter D' is dP [(1 - s) (D/D')^4 + s (D/D')^6] -- the arithmetic
+    //  a `converterShell` brackets its smallest admissible diameter on.  The
+    //  share is a trapezoid over the stored points; the drop it splits is
+    //  the MARCHED one, so at D' = D the scaling returns it exactly.
+    if (hyd.ergun && hyd.diameterDeclared && ergunViscous.size() > 1)
+    {
+        scalar Iv = 0.0, Ii = 0.0;
+        for (std::size_t k = 1; k < ergunViscous.size(); ++k)
+        {
+            Iv += 0.5 * (ergunViscous[k - 1]  + ergunViscous[k]);
+            Ii += 0.5 * (ergunInertial[k - 1] + ergunInertial[k]);
+        }
+        if (Iv + Ii > 0.0) kpis_["ergunInertialShare_bed"] = Ii / (Iv + Ii);
+    }
     kpis_["nReactions"]   = static_cast<scalar>(R);
     kpis_["nSteps"]       = static_cast<scalar>(nSteps);
     kpis_["F_in_kmol_h"]  = F_in_kmols * 3600.0;
@@ -1360,6 +1392,27 @@ PFR::BedHydraulics PFR::readBedHydraulics(const DictPtr&       op,
     BedHydraulics h;
     const bool hasPD = op->found("pressureDrop");
     h.hasGeometry = op->found("L_over_D");
+    //  A bed of DECLARED DIAMETER (C69): the diameter is given -- inside a
+    //  multibed converter it is the shell's, shared by every bed -- and the
+    //  length follows from the volume.  A slenderness beside it would be a
+    //  second home for the same cross-section.
+    if (op->found("diameter"))
+    {
+        if (h.hasGeometry || op->found("tubes"))
+            throw std::runtime_error("PFR: `operation.diameter` and `operation."
+                + std::string(h.hasGeometry ? "L_over_D" : "tubes") + "` both"
+                " describe the bed's cross-section -- a bed of declared diameter"
+                " has its length from its volume, L = V_R / (pi D^2 / 4).  Keep"
+                " one.");
+        h.D = op->lookupScalar("diameter", Dims::length);
+        if (!(h.D > 0.0))
+            throw std::runtime_error("PFR: `operation.diameter` must be > 0.");
+        h.diameterDeclared = true;
+        h.hasGeometry      = true;
+        h.A = 0.25 * constant::pi * h.D * h.D;
+        h.L = V_R / h.A;
+        h.L_over_D = h.L / h.D;
+    }
     //  A MULTITUBULAR bed (C69): the tubes ARE the geometry.  A slenderness
     //  beside them would be a second geometry for the same bed.
     if (op->found("tubes"))
@@ -1405,9 +1458,10 @@ PFR::BedHydraulics PFR::readBedHydraulics(const DictPtr&       op,
         throw std::runtime_error("PFR: `operation.pressureDrop` integrates"
             " dP/dz along the bed, and a volume has no length: declare the"
             " bed's slenderness `operation.L_over_D` (D and L follow from it"
-            " and V_R).  It is the ONE home of that number -- the `pfr` sizer"
-            " reads it from this unit and refuses a second copy.");
-    if (h.hasGeometry && !h.tubes)
+            " and V_R) or its `operation.diameter` (L follows).  It is the ONE"
+            " home of that number -- the `pfr` sizer reads it from this unit"
+            " and refuses a second copy.");
+    if (h.hasGeometry && !h.tubes && !h.diameterDeclared)
     {
         h.L_over_D = op->lookupScalar("L_over_D", Dims::dimensionless);
         if (!(h.L_over_D > 0.0))
@@ -1481,8 +1535,8 @@ PFR::BedHydraulics PFR::readBedHydraulics(const DictPtr&       op,
     return h;
 }
 
-scalar PFR::ergunGradient(const BedHydraulics& h, const ThermoPackage& thermo,
-                          scalar T, scalar P, const sVector& z, scalar Ftot)
+PFR::ErgunTerms PFR::ergunTerms(const BedHydraulics& h, const ThermoPackage& thermo,
+                                scalar T, scalar P, const sVector& z, scalar Ftot)
 {
     const scalar vmol = thermo.hasEos() ? thermo.eos().molarVolume(T, P, z)
                                         : constant::R * T / P;      // m3/mol
@@ -1494,7 +1548,17 @@ scalar PFR::ergunGradient(const BedHydraulics& h, const ThermoPackage& thermo,
     const scalar e   = h.eps;
     const scalar a = 150.0 * (1.0 - e) * (1.0 - e) * mu / (e * e * e * h.dp * h.dp);
     const scalar b = 1.75 * (1.0 - e) * rho / (e * e * e * h.dp);
-    return -(a * u + b * u * u);
+    ErgunTerms t;
+    t.viscous  = a * u;
+    t.inertial = b * u * u;
+    return t;
+}
+
+scalar PFR::ergunGradient(const BedHydraulics& h, const ThermoPackage& thermo,
+                          scalar T, scalar P, const sVector& z, scalar Ftot)
+{
+    const ErgunTerms t = ergunTerms(h, thermo, T, P, z, Ftot);
+    return -(t.viscous + t.inertial);
 }
 
 void PFR::publishBedHydraulics(const BedHydraulics& h, const ThermoPackage& thermo,
@@ -1518,6 +1582,9 @@ void PFR::publishBedHydraulics(const BedHydraulics& h, const ThermoPackage& ther
     {
     kpis_["L_over_D"] = h.L_over_D;
     kpis_["D_bed_m"]  = h.D;
+    //  Published ONLY when the diameter was declared: the sizer builds the
+    //  shell on it, and a converterShell holds its beds to ONE diameter.
+    if (h.diameterDeclared) kpis_["D_bed_declared_m"] = h.D;
     kpis_["L_bed_m"]  = h.L;
     kpis_["A_bed_m2"] = h.A;
     }
@@ -1567,7 +1634,15 @@ void PFR::publishBedHydraulics(const BedHydraulics& h, const ThermoPackage& ther
             os << std::fixed << std::setprecision(3)
                << "the bed loses " << dP / 1.0e5 << " bar, ABOVE the declared"
                   " allowable " << h.allowable / 1.0e5 << " bar (x"
-               << dP / h.allowable << ").  At a fixed volume both u and L go"
+               << dP / h.allowable << ").  ";
+            if (h.diameterDeclared)
+                os << "At a fixed volume u and L both go as 1/D^2, so the drop"
+                      " falls as D^-4 (viscous) to D^-6 (inertial): a wider bed"
+                      " (a larger `diameter`), a larger particle or a bed the"
+                      " gas crosses RADIALLY is the remedy; nothing here"
+                      " reduces it";
+            else
+                os << "At a fixed volume both u and L go"
                   " as (L/D)^(2/3), so the drop goes as u^2 L ~ (L/D)^2: a"
                   " lower L_over_D, a larger particle or a bed the gas crosses"
                   " RADIALLY (through its thickness, not its length) is the"
@@ -1580,6 +1655,9 @@ void PFR::publishBedHydraulics(const BedHydraulics& h, const ThermoPackage& ther
         std::cout << "\n  [ergun] bed hydraulics ("
                   << (h.tubes ? "per tube: " + std::to_string(h.nTubes)
                                 + " parallel tubes, L/d_t "
+                              : h.diameterDeclared
+                              ? std::string("straight cylinder of V_R at the"
+                                            " declared diameter, L/D ")
                               : std::string("straight cylinder of V_R at L/D "))
                   << std::fixed << std::setprecision(2) << h.L_over_D << ")\n"
                   << "    D = " << std::setprecision(3) << h.D << " m, L = " << h.L
@@ -1830,8 +1908,8 @@ void PFR::readWallExchange(WallExchange& w, const DictPtr& op,
 
 void PFR::refuseBedHydraulicsOnSinglePath(const DictPtr& op)
 {
-    for (const char* key : { "pressureDrop", "L_over_D", "tubes", "coolant",
-                             "wallHeatTransfer" })
+    for (const char* key : { "pressureDrop", "L_over_D", "diameter", "tubes",
+                             "coolant", "wallHeatTransfer" })
         if (op->found(key))
             throw std::runtime_error(std::string("PFR: `operation.") + key
                 + "` is read by the MULTI-reaction path only (`reactions ("

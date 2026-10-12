@@ -44,11 +44,11 @@ is replaced by:
 
 | unit | what it is | its number, and why |
 |---|---|---|
-| `Bed1` | adiabatic `pfr`, Dyson & Simon (1968) rate law, iron catalyst | 8.89 m³, SOLVED so the bed **leaves at 515 °C**, 5 K under the 520 °C the base data give as the catalyst's limit; run to a 5 K approach it would leave above that |
+| `Bed1` | adiabatic `pfr`, Dyson & Simon (1968) rate law, iron catalyst | 8.95 m³, SOLVED so the bed **leaves at 515 °C**, 5 K under the 520 °C the base data give as the catalyst's limit; run to a 5 K approach it would leave above that |
 | `InterbedCooler1` | `phaseChanger` to 420 °C, raising HP steam | 420 °C author-set |
-| `Bed2` | the same rate law | 18.42 m³, SOLVED so the effluent is **5 K short of equilibrium** (US 5,352,428's per bed approach, the base case's source) |
+| `Bed2` | the same rate law | 18.41 m³, SOLVED so the effluent is **5 K short of equilibrium** (US 5,352,428's per bed approach, the base case's source) |
 | `InterbedCooler2` | to 410 °C, raising HP steam | 410 °C author-set |
-| `Bed3` | the same rate law | 31.74 m³, the same 5 K criterion |
+| `Bed3` | the same rate law | 31.70 m³, the same 5 K criterion |
 
 **The five are ONE SECTOR, `CONVERTER`** (DEV.md 4c C69): five
 calculations, one piece of equipment.  Industrially a multibed converter
@@ -57,7 +57,8 @@ exchange (`CONVERTER/system/flowsheetDict` says where that construction was
 read: a Kellogg patent and a licensor's product page; neither has TWO
 interbed coolers, which is this case's own arrangement).  So the units
 live in `CONVERTER/`, their names are `CONVERTER.Bed1` ... in every report
-and KPI, and `system/postDict` prices ONE shell for them.  The grouping
+and KPI, and `system/postDict` prices ONE shell for them -- at ONE
+diameter, which the three beds share (below).  The grouping
 moved the energy recycle's cut: the CONVERTER runs before the FEHE and the
 loop is torn at `PreheatedFeed` (`system/solverDict` says why), at a
 recycle tolerance of 1e-10.
@@ -98,9 +99,9 @@ authority on all of them.
 
 | bed | in | out | NH₃ out | approach | volume | D × L | pressure drop |
 |---|---|---|---|---|---|---|---|
-| 1 | 380.1 °C | 515.0 °C | 9.80 % | 34.1 K | 8.89 m³ | 1.96 × 2.94 m | 0.67 bar |
-| 2 | 420.0 °C | 493.4 °C | 14.78 % | 5.0 K | 18.42 m³ | 2.50 × 3.75 m | 0.31 bar |
-| 3 | 410.0 °C | 464.4 °C | 18.72 % | 5.0 K | 31.74 m³ | 3.00 × 4.50 m | 0.17 bar |
+| 1 | 379.8 °C | 515.0 °C | 9.83 % | 34.1 K | 8.95 m³ | 2.23 × 2.30 m | 0.31 bar |
+| 2 | 420.0 °C | 493.3 °C | 14.80 % | 5.0 K | 18.41 m³ | 2.23 × 4.72 m | 0.62 bar |
+| 3 | 410.0 °C | 463.9 °C | 18.71 % | 5.0 K | 31.70 m³ | 2.23 × 8.13 m | 1.00 bar |
 
 | | this case | feasibility case |
 |---|---|---|
@@ -109,10 +110,10 @@ authority on all of them.
 | hydrogen converted per pass | 28.3 % | 29.7 % |
 | recycle / make-up (mol/mol) | 2.44 | 2.28 |
 | HP steam raised | 29.59 MW, in the interbed coolers | 30.94 MW, in the converter |
-| feed preheat | 64.01 MW by the FEHE, **recovered** | 60.86 MW of molten salt, **bought** |
-| refrigeration (−20 °C) | 21.45 MW | 20.24 MW |
+| feed preheat | 64.07 MW by the FEHE, **recovered** | 60.86 MW of molten salt, **bought** |
+| refrigeration (−20 °C) | 21.53 MW | 20.24 MW |
 | compression | 13.73 MW | 13.67 MW |
-| catalyst | 59.05 m³ | (none: a space-velocity vessel) |
+| catalyst | 59.06 m³ | (none: a space-velocity vessel) |
 | plant first law | closes to 1.76 kW (0.002 %) | 9.0 kW |
 
 An adiabatic bed publishes no duty (`Q_kW` 0), so the steam is raised and
@@ -120,27 +121,45 @@ credited where the heat is removed — the two interbed coolers, each of
 which declares the base case's case-local credit utility
 `steamGenerationHP` and is held to the allocation's 10 K approach.
 
-### The beds' pressure drop, and why they are squat (DEV.md 4c C66)
+### The beds' pressure drop, and ONE diameter for the three (DEV.md 4c C66, C69)
 
-Each bed declares its slenderness `operation.L_over_D` -- the ONE home of
-it: the bed is the straight cylinder of its volume at that ratio, the
-`pfr` integrates Ergun's pressure drop along that length on that
-cross-section (`operation.pressureDrop { model Ergun; ... }`), and the
-sizer builds the shell on the same number. The particle (8 mm, the middle
-of the 6-10 mm window Dyson & Simon's Eq 39 was computed for), the void
-fraction (0.40) and the budget (1 bar per bed) are **author-set**, said in
-`CONVERTER/Bed1/system/flowsheetDict`. At the L/D 6 the case carried before, the
-loop did not converge: its first pass lost 35, 24 and 16 bar across the
-three beds. At a fixed volume both the gas velocity and the bed length go
-as (L/D)^(2/3), so the drop goes as (L/D)^2; at L/D 1.5 the beds lose
-0.67, 0.31 and 0.17 bar (the table above), and the inertial term carries
-98-99 % of it (superficial velocity 0.70, 0.43 and 0.28 m/s at the bed inlets, Re_p 3600-8100). The price is steel: a wider shell at
-167 bar has a thicker wall, so the three shells cost 18.7 M EUR (total
-module) where the slender ones cost 11.9 M EUR. A bed the gas crosses
-RADIALLY -- through its thickness, not its length -- is the other answer,
-and this `pfr` does not model one. The tables below this one were read
-off the run BEFORE C66's beds (sub-percent moves; the golden is the
-authority, and it moves with the list put to Vitor).
+The three beds sit in ONE pressure shell, so they share ONE diameter, the
+converter's: each bed declares `operation.diameter $D_converter;`, a plant
+variable -- in the flowsheet, because a bed needs its cross-section DURING
+the solve -- and its length is its volume over that cross-section,
+L = V_R / (π D²/4). The `pfr` integrates Ergun's pressure drop along that
+length (`operation.pressureDrop { model Ergun; ... }`). The particle (8 mm,
+the middle of the 6-10 mm window Dyson & Simon's Eq 39 was computed for),
+the void fraction (0.40) and the budget (1 bar per bed) are **author-set**,
+said in `CONVERTER/Bed1/system/flowsheetDict`.
+
+**The diameter is solved**, as the fourth unknown of the DesignSpec
+(`system/outerDict`): the SMALLEST at which every bed's drop is within its
+1 bar, written as "the LARGEST of the three drops over allowable equals 1"
+(a `largestOf` target), so no bed is named in advance as the binding one.
+At one diameter the gas velocity is nearly the same in the three beds and
+the drop grows with the bed's length, so the largest volume binds: bed 3
+loses exactly 1.00 bar, bed 1 0.31 and bed 2 0.62, and the converter is
+2.23 m across. The drop falls as D⁻⁴ (viscous) to D⁻⁶ (inertial; here the
+inertial term carries 99 % of it over each bed, superficial velocity
+0.51-0.55 m/s at the bed inlets, Re_p 6300-6500), so no narrower converter
+would do -- the `converterShell` sizer brackets the same smallest diameter
+on the solved beds (each bed's drop scaled to another diameter by its own
+inertial share, the axial state held fixed), finds it at the converter's
+2.23 m with bed 3 binding, and says so on the run.  Started from 2.6 m, the
+DesignSpec comes back to 2.2283 m in three Newton steps.
+
+C66 had given each bed its OWN slenderness, L/D 1.5 (at the L/D 6 the case
+carried before, the loop did not converge: its first pass lost 35, 24 and
+16 bar across the three beds): 1.96, 2.50 and 3.00 m wide, losing 0.67,
+0.31 and 0.17 bar. Three diameters cannot share one shell -- a shell around
+them is as wide as the widest along its whole height, which is how the first
+one-shell version of this case came out MORE expensive than three separate
+vessels. A bed the gas crosses RADIALLY -- through its thickness, not its
+length -- is the other answer, and this `pfr` does not model one. The
+tables below this section were read off the run BEFORE C66's beds and C69's
+one diameter (sub-percent moves; the golden is the authority, and it moves
+with the list put to Vitor).
 
 ### The gross margin, and why it nearly doubled
 
@@ -188,35 +207,50 @@ the design. With two passes of 20 ft tubes (the first trial) the gas lost
 flowsheet declares and converges on; the designed area is costed.
 
 The beds are sized by the `pfr` sizer from their own volume: a shell (a
-vessel at the bed's own L/D 1.5, Turton's vessel set, its sheet carrying
-the bed's pressure drop) and a **catalyst charge** priced from two
+vessel at the converter's diameter, its sheet carrying the bed's pressure
+drop; inside the converter it is a basket, not costed) and a **catalyst
+charge** priced from two
 declared numbers, 2500 kg/m³ and 15 EUR/kg — **author-set assumptions**,
 the same round numbers `ammoniaReactor04_kineticSizing` declares, with no source
-behind either: 0.33, 0.69 and 1.19 M EUR for the three charges.
+behind either: 0.34, 0.69 and 1.19 M EUR for the three charges.
 
 **The converter is ONE pressure shell** (DEV.md 4c C69): `type
 converterShell` reads the CONVERTER sector's five units from the topology,
-stacks their geometries -- the three bed shells and the two coolers' Kern
-shells -- into one straight cylinder as wide as the widest (bed 3, 3.00 m)
-and as tall as their sum (17.29 m), and walls it at 167 bar: 122.0 m³,
-199 mm of wall, 259 t, 31.44 M EUR total module.  The beds' own shells
-become internal BASKETS -- sized and drawn, not costed -- where as three
-pressure vessels they had cost 18.70 M EUR.  ONE shell costs MORE here,
-and the reason is the geometry, not the idea: C66 gave each bed L/D 1.5
-of its own volume, so the beds are 1.96, 2.50 and 3.00 m wide and the
-shell, as wide as the widest along its whole height, holds 122 m³ around
-61 m³ of members.  A converter designed as one vessel gives its beds ONE
-diameter -- that is the next design decision, and it moves the beds'
-pressure drop with it.  The two coolers keep their Turton exchanger cost,
-whose own shell share is then counted twice (no bundle-only correlation
-exists; said on the shell's basis).
+takes the beds' ONE diameter (2.23 m) -- refusing a bed at its own
+slenderness, two diameters, a `D` of its own and a cooler too wide to fit
+(their Kern shells are 0.71 and 0.68 m) -- stacks the members into one
+straight cylinder as tall as their sum (2.30 + 4.72 + 8.13 m of bed and two
+3.05 m coolers: 21.24 m), and walls it at 167 bar: 82.8 m³, 148 mm of wall,
+177 t, 16.79 M EUR total module.  The beds' own shells become internal
+BASKETS -- sized and drawn, not costed.
 
-The fixed capital is 73.9 M EUR (61.0 M EUR with three separate bed
-shells; 41.4 M EUR at the feasibility stage, whose converter was one
-space-velocity vessel and whose exchangers rested on an assumed U); the NPV
-at the base case's appraisal knobs is −372 M EUR against −493 M EUR. The
-NPV moved from the feasibility case because the energy bill did, much more
-than the capital.
+**What the one shell costs against three, AT THE SAME DIAMETER** (measured:
+the same design point with the `converterShell` entry removed, so each bed
+keeps its own 167 bar shell at 2.23 m): three shells 3.12 + 5.12 + 7.67 =
+15.90 M EUR, against the one shell's 16.79 M EUR -- the ONE shell is
+0.89 M EUR DEARER here, FCI 59.14 against 58.24 M EUR.  It is not the
+grouping that costs more: a shell around the three beds ALONE (59.1 m³)
+would be 12.6 M EUR on the same Turton vessel curve, 3.3 M EUR under three
+separate ones (one vessel's cost grows more slowly than its volume).  It is
+the 6.10 m of the two coolers' Kern shells stacked inside it at the full
+2.23 m and 167 bar -- 4.2 M EUR of pressure wall -- while each cooler keeps
+its own Turton exchanger cost too (0.49 and 0.48 M EUR, its own shell
+included).  So the coolers' shells are counted TWICE: once as converter
+height, once inside their exchanger price.  Whether a real converter would
+stack them at full diameter (rather than in the centre of an annular bed,
+or as a bundle in the transfer space) is a construction question this
+sizer does not answer; the basis says so.  The comparisons this page used
+to make were not at one diameter: three shells at their OWN L/D 1.5 (1.96,
+2.50 and 3.00 m) cost 18.70 M EUR, and a first one-shell version built
+around the widest of them, 3.00 m, cost 31.44 M EUR -- both figures measure
+the diameters, not the grouping.
+
+The fixed capital is 59.1 M EUR (61.0 M EUR before C69, with three separate bed shells at their own L/D 1.5;
+41.4 M EUR at the feasibility stage, whose converter was one space-velocity
+vessel and whose exchangers rested on an assumed U); the NPV at the base
+case's appraisal knobs is −341 M EUR against −493 M EUR. The NPV moved from
+the feasibility case because the energy bill did, much more than the
+capital.
 
 ### The start-up years (DEV.md 4c C63)
 
@@ -253,7 +287,7 @@ on every scenario and governed by the one needing the largest area:
 | MakeupComp1 | 74 | discharge blocked | gas | 50 071 | 1651 |
 | MakeupComp2 | 167 | discharge blocked | gas | 50 071 | 758 |
 | RecycleComp | 167 | discharge blocked | gas | 109 370 | 1373 |
-| CONVERTER/shell | 167 | outlet blocked | gas at 738 K | 159 812 | 3065 |
+| CONVERTER/shell | 167 | outlet blocked | gas at 737 K | 159 923 | 3066 |
 | Separator | 167 | gas line, liquid line | gas line | 109 463 | 1355 |
 | LetdownHP | 22 | gas line, liquid line, fire | liquid line | 49 849 | 354 |
 | StorageFlash | 2 | gas line, liquid line, fire | liquid line | 49 172 | 1140 |
@@ -331,9 +365,9 @@ reached here).
 
 ## What this case does NOT claim
 
-* A converter's internals: the one shell is its members STACKED (no head
-  space, cooling annulus, cartridge, distributor or plenum), around beds
-  each at its own diameter; no quench.
+* A converter's internals: the one shell is its members STACKED at the
+  beds' one diameter (no head space, cooling annulus, cartridge,
+  distributor, support grid or plenum); no quench.
 * Catalyst life or reduction, the pellet's diffusion correction (Eq 39:
   the particle is declared, but only the Ergun drop reads it -- the beds
   run Eq 19 alone), a radial-flow bed, or a start-up heater: the loop is

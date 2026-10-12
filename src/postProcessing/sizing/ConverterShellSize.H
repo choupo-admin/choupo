@@ -41,7 +41,7 @@ Description
 
         { unitName CONVERTER;  type converterShell;  material SS316;
           designRules { pressureDesign 167;      // bar g, REQUIRED
-                        D <length>;  H <length>; // optional, never smaller than the members
+                        H <length>;              // optional, never below the stack
                         corrosionAllow ...;  jointEfficiency ...; } }
 
     THE MEMBERS ARE THE SECTOR'S UNITS, read from the solved topology (the
@@ -53,11 +53,41 @@ Description
     sector with no sized item, an item with no geometry, and a name that is
     not a sector of the plant are REFUSED by name.
 
-    THE SHELL IS THE MEMBERS STACKED AXIALLY: internal diameter the widest
-    member's, height the sum of the members' -- a straight cylinder with no
-    head space, cooling annulus, distributor, plenum or transfer duct, said
-    in the basis.  A
-    declared `D` or `H` smaller than that is REFUSED (a shell smaller than
+    ONE DIAMETER, THE SHELL'S, WITH ONE HOME IN THE FLOWSHEET.  The beds sit
+    in one shell, so they share one diameter: every catalyst-bed member must
+    be a `pfr` of DECLARED diameter (`operation.diameter`, one plant
+    variable read by every bed) -- a bed at its own `L_over_D`, or two beds
+    declaring two diameters, are REFUSED by name.  The diameter lives in the
+    flowsheet and not here because a bed needs its cross-section DURING the
+    solve (its Ergun drop is integrated along its length L = V_R/(pi D^2/4))
+    and this pass runs after it; so a `D` in these designRules is refused as
+    a second home, and the diameter is chosen where the beds are solved (the
+    witness's DesignSpec solves it as the smallest at which every bed's
+    Ergun drop is within its allowable, a `largestOf` target that names no
+    bed in advance).  A member exchanger whose shell is wider than the
+    converter does not fit, and is refused.
+
+    THE SMALLEST ADMISSIBLE DIAMETER, BRACKETED.  Each bed publishes its
+    drop at the converter's D0 and the share the INERTIAL term carries over
+    the bed (`ergunInertialShare_bed`).  At a fixed volume and a FROZEN
+    axial state the viscous term goes as D^-4 and the inertial as D^-6, so
+    r_i(D) = r_i(D0) [(1 - s_i)(D0/D)^4 + s_i (D0/D)^6] is bed i's drop over
+    its allowable at any D -- exact at D0, the one approximation being that
+    a different drop would move the pressure the gas reacts at.  max_i r_i
+    falls monotonically, so its root at 1 is ONE number: the smallest
+    diameter holding every bed, bisected in ln D on [0.1, 10] m (a SEARCH
+    bracket, wider than any converter built), announced with the bracket and
+    the BINDING bed, published as `D_smallestAdmissible`; no root in the
+    bracket is REFUSED by name (no axial-flow converter meets the budgets).
+    It then says whether the converter's D0 sits at it (the binding bed at
+    its allowable to `bindingTolerance`, 0.2 %), above it (a narrower
+    converter would do) or below it (a bed exceeds its allowable, a
+    warning).  It does NOT move D0: the beds were solved there.
+
+    THE SHELL IS THE MEMBERS STACKED AXIALLY at that diameter: height the
+    sum of the members' -- a straight cylinder with no head space, cooling
+    annulus, distributor, plenum or transfer duct, said in the basis.  A
+    declared `H` smaller than the stack is REFUSED (a shell smaller than
     what it holds); a larger one is used and said.  The wall is ASME thin-
     wall through `VesselMechanics` at the shell's own `pressureDesign`, which
     may not be BELOW a member's (refused); priced on the existing Turton

@@ -191,7 +191,11 @@ private:
     //  The bed's geometry and its opt-in Ergun drop (see the description).
     struct BedHydraulics
     {
-        bool   hasGeometry = false;   // operation.L_over_D declared
+        bool   hasGeometry = false;   // operation.L_over_D, diameter or tubes declared
+        //  A bed of DECLARED diameter (operation.diameter, C69): D is given,
+        //  L = V_R / (pi D^2 / 4).  The form a converter's beds take, where
+        //  the diameter is the shell's and every bed shares it.
+        bool   diameterDeclared = false;
         bool   ergun       = false;   // operation.pressureDrop { model Ergun; }
         scalar L_over_D = 0.0, D = 0.0, L = 0.0, A = 0.0;   // -, m, m, m2
         scalar eps = 0.0;             // bed void fraction
@@ -235,6 +239,13 @@ private:
     static BedHydraulics readBedHydraulics(const DictPtr& operDict,
                                            const ThermoPackage& thermo,
                                            scalar V_R, int verbosity);
+    //  Ergun's two terms at the local state, as MAGNITUDES [Pa/m]: the
+    //  viscous a u and the inertial b u^2 (Ftot in mol/s).  ONE home for the
+    //  arithmetic: the gradient below is their sum, and a declared-diameter
+    //  bed integrates them apart to publish the share each carries (C69).
+    struct ErgunTerms { scalar viscous = 0.0, inertial = 0.0; };
+    static ErgunTerms ergunTerms(const BedHydraulics& h, const ThermoPackage& thermo,
+                                 scalar T, scalar P, const sVector& z, scalar Ftot);
     //  dP/dz [Pa/m] (negative) at the local state; Ftot in mol/s.
     static scalar ergunGradient(const BedHydraulics& h, const ThermoPackage& thermo,
                                 scalar T, scalar P, const sVector& z, scalar Ftot);
