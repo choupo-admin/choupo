@@ -201,8 +201,10 @@ suffixes below are accepted -- anything else is a parse error.  Includes:
 - **Density / mass concentration:** `kg/m3`, `g/cm3`, `g/mL`, `mg/L`, `g/L`,
   `ppm` (= mg/L, the w/v water-analysis convention -- NOT a fraction).
 - **Molar mass:** `kg/kmol`, `g/mol`.
-- **Molar energy:** `J/mol`, `kJ/mol`, `J/kmol`, `kJ/kmol`.
-- **Molar heat capacity:** no parseable named unit (`^`, `(`, `)` are not
+- **Molar energy:** `J/mol`, `kJ/mol`, `J/kmol`, `kJ/kmol`, `cal/mol` (the
+  thermochemical calorie, 4.184 J -- for a rate law written in calories).
+- **Molar heat capacity:** `cal/mol/K` only (the R a calorie rate law is
+  written with); otherwise no parseable named unit (`^`, `(`, `)` are not
   word characters) -- use the bracket form or raw SI (J/mol/K).
 - **Dimensionless:** `-`, `%`.
 

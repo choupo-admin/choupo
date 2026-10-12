@@ -237,11 +237,18 @@ const std::map<std::string, UnitSpec>& table()
         { "kJ/mol",  UnitSpec{ 1.0e3,       Dims::molarEnergy } },
         { "J/kmol",  UnitSpec{ 1.0e-3,      Dims::molarEnergy } },
         { "kJ/kmol", UnitSpec{ 1.0,         Dims::molarEnergy } },
+        //   The THERMOCHEMICAL calorie, 4.184 J exactly (NIST SP 811, 2008,
+        //   B.8): the unit a 1960s rate law writes its activation energy
+        //   in (Dyson & Simon 1968, Eq 18).  A law that reads E/R sees the
+        //   calorie's definition cancel; one that mixes E in calories with
+        //   R in joules must not exist, which is why R gets the unit too.
+        { "cal/mol",  UnitSpec{ 4.184,      Dims::molarEnergy } },
 
         // ----- molar heat capacity → J/(mol*K) --------------------------
         { "J/(mol.K)",   UnitSpec{ 1.0,     Dims::molarHeatCap } },
         { "J/(kmol.K)",  UnitSpec{ 1.0e-3,  Dims::molarHeatCap } },
         { "kJ/(kmol.K)", UnitSpec{ 1.0,     Dims::molarHeatCap } },
+        { "cal/mol/K",   UnitSpec{ 4.184,   Dims::molarHeatCap } },   // thermochemical, above; spelled like W/m2/K because ( ) are not word characters
 
         // ----- dimensionless / percent ----------------------------------
         { "-",       UnitSpec{ 1.0,         Dims::dimensionless } },

@@ -98,6 +98,25 @@ Description
         not pascal, and the conversion happens at the caller's edge where it
         is visible.
 
+    WHERE THE NUMBERS LIVE (DEV.md 4c C66, 2026-10-12, Vitor: "Um PFR tem
+    de ter os parametros cineticos definidos no caso em /constant ... Isto
+    assim nao e nada glass box com tudo definido nos dicionarios!").  This
+    file keeps the FUNCTIONAL FORM of each equation -- Eq 2's five-term
+    log10 Ka, the shapes of Eqs 6-8, Eq 18/19, Eq 39's cubic, the
+    reference-mixture line -- and NOT ONE of the paper's numbers as a value
+    it computes with.  Every constant (k0, E and the R it is written with,
+    the Ka and fugacity coefficients, the 21 Table I constants with their
+    three pressures, the reference mixture, the particle window, the
+    pressures Eq 19 was fitted over) is DECLARED in the case's
+    `constant/reactions` under `kinetics { type dysonSimon1968; ... }`
+    (property axiom 3: kinetics are the CASE's), read by
+    `DysonSimonConstants::fromDict`, and REFUSED by name when missing -- a
+    default here would be a second home.  The paper's own values live in
+    `DysonSimonConstants::paper()` and are used for two things only: the
+    `verify()` anchors, and `differencesFromPaper()`, which names every
+    declared value that is not the paper's so the run ANNOUNCES it (a
+    catalyst refitted or activity-adjusted is legitimate; silent is not).
+
     WHAT EQUATION 40 DOES NOT INCLUDE, AND THE AUTHORS SAY SO.  There is no
     correction in it for the effect of particle size on REDUCTION, on
     POISONING or on catalyst AGEING.  A bed sized from this expression is a
@@ -109,6 +128,7 @@ Description
 
 #pragma once
 
+#include "core/Dictionary.H"
 #include "core/Types.H"
 
 #include <string>
@@ -168,36 +188,116 @@ struct AmmoniaRateResult
     static const std::string& freshCatalystCaveat();
 };
 
+//  EVERY NUMBER THE LAW USES, as the CASE declares it -- see "WHERE THE
+//  NUMBERS LIVE" above.  The grammar (constant/reactions):
+//
+//      kinetics
+//      {
+//          type dysonSimon1968;  roles { ... }  effectivenessFactor ...;
+//          rateConstant              // Eq 18/19
+//          { k0 <kmol NH3/(m3 bed h) atm^0.5>;  E <cal/mol>;  R <cal/(mol.K)>;
+//            fittedPressure { min <p>; max <p>; } }
+//          equilibriumConstant { coefficients ( a b c d e ); }      // Eq 2
+//          fugacityCoefficients                                       // Eqs 6-8
+//          { H2 ( c0 .. c6 );  N2 ( c0 .. c4 );  NH3 ( c0 .. c4 ); }
+//          effectivenessFactorTable                                   // Eq 39
+//          { referenceMixture { H2_over_N2 <->; inertFraction <->; }
+//            particleDiameter { min <length>; max <length>; }
+//            columns ( { P <p>; b ( b1 .. b7 ); } ... ); }
+//      }
+struct DysonSimonConstants
+{
+    //  Eq 19's pre-exponential, kmol NH3 / (m3 bed h) atm^0.5.  Eq 18's (the
+    //  rate of N2 consumed) is half of it -- two NH3 per N2 -- and is
+    //  DERIVED, never declared beside it.
+    scalar k0 = 0.0;
+    //  E and the gas constant it is written with, held in the paper's
+    //  calorie.  Declared `cal/mol` and `cal/(mol.K)`; the grammar converts
+    //  both to joules and `fromDict` divides the same 4.184 back out, which
+    //  round-trips the paper's two values exactly -- and the ratio E/R is
+    //  what the law reads, so the calorie's own definition cancels.
+    scalar E_cal = 0.0;
+    scalar R_cal = 0.0;
+    //  The pressures Eq 19 was fitted over (atm): outside them the rate is
+    //  ANNOUNCED as extrapolated, never refused.
+    scalar ratePmin_atm = 0.0;
+    scalar ratePmax_atm = 0.0;
+
+    //  Eq 2: log10 Ka = a log10 T + b T + c T^2 + d / T + e  (T in K, Ka in atm^-1)
+    scalar Ka[5] = {};
+    //  Eq 6: ln gamma_H2 = exp(c0 T^0.125 + c1) P - exp(c2 T^0.5 + c3) P^2
+    //                      + c4 exp(c5 T + c6) (exp(-P / c4) - 1)
+    scalar gH2[7] = {};
+    //  Eqs 7, 8: gamma = c0 + c1 T + c2 P + c3 T^2 + c4 P^2  (T in K, P in atm)
+    scalar gN2[5]  = {};
+    scalar gNH3[5] = {};
+
+    //  Eq 39 + Table I: xi = b1 + b2 T + b3 eta + b4 T^2 + b5 eta^2 + b6 T^3
+    //  + b7 eta^3, one column per tabulated pressure, ascending in P.
+    struct Column { scalar P_atm = 0.0; scalar b[7] = {}; };
+    std::vector<Column> tableI;
+
+    //  The mixture Eq 39's eta (the N2 conversion) is measured on, and the
+    //  particles it was computed for (mm).
+    scalar refH2overN2 = 0.0;
+    scalar refInert    = 0.0;
+    scalar dpMin_mm    = 0.0;
+    scalar dpMax_mm    = 0.0;
+
+    scalar k0_Eq18() const { return 0.5 * k0; }
+    scalar refN2() const { return (1.0 - refInert) / (1.0 + refH2overN2); }
+    scalar refH2() const { return refH2overN2 * refN2(); }
+
+    //  The PUBLISHED set (Dyson & Simon 1968).  A verification anchor ONLY:
+    //  nothing evaluates a case with it.
+    static const DysonSimonConstants& paper();
+
+    //  Read the `kinetics {}` block.  Every number is REQUIRED and every
+    //  missing one is refused by name, with the paper's value as the remedy.
+    static DysonSimonConstants fromDict(const DictPtr& kinetics,
+                                        const std::string& who);
+
+    //  "<name>: declared X, the paper's Y" for every value that is not the
+    //  paper's (relative 1e-12, so the same decimal digits parse equal).
+    std::vector<std::string> differencesFromPaper() const;
+
+    //  The law written out with every number in it, for the run log.
+    std::string lawText() const;
+};
+
 class DysonSimon1968
 {
 public:
     //  The three members every correlation in this tree carries.
     static const std::string& type();
     static const std::string& citation();
-    static const std::string& validityWindow();
+    static std::string validityWindow(const DysonSimonConstants& k);
 
     //  Eq 2 alone -- the equilibrium constant, atm^-1, T in kelvin.
-    static scalar equilibriumConstant(scalar T_K);
+    static scalar equilibriumConstant(const DysonSimonConstants& k, scalar T_K);
 
     //  Eqs 6, 7, 8 -- fugacity coefficients, T in kelvin, P in atmospheres.
-    static scalar gammaH2 (scalar T_K, scalar P_atm);
-    static scalar gammaN2 (scalar T_K, scalar P_atm);
-    static scalar gammaNH3(scalar T_K, scalar P_atm);
+    static scalar gammaH2 (const DysonSimonConstants& k, scalar T_K, scalar P_atm);
+    static scalar gammaN2 (const DysonSimonConstants& k, scalar T_K, scalar P_atm);
+    static scalar gammaNH3(const DysonSimonConstants& k, scalar T_K, scalar P_atm);
 
     //  Eq 39 alone, at one of the THREE TABULATED pressures.  Throws, by
     //  name, if P is not one of 150, 225 or 300 atm: Table I has no form in
     //  pressure, only three columns of it.
-    static scalar effectivenessAtTabulatedP(scalar P_atm, scalar T_K, scalar eta);
+    static scalar effectivenessAtTabulatedP(const DysonSimonConstants& k,
+                                            scalar P_atm, scalar T_K, scalar eta);
 
     //  Eqs 2-8, 18, 19, 39, 40 together.
-    static AmmoniaRateResult evaluate(const AmmoniaRateContext& c);
+    static AmmoniaRateResult evaluate(const DysonSimonConstants& k,
+                                      const AmmoniaRateContext& c);
 
     //  Eqs 2-8, 18 and 19 ONLY -- the INTRINSIC rate, with Eq 39 NOT formed.
     //  Needs no particle.  The result carries xi = 1 with `xiAvailable`
     //  false and a `xiRoute` that says, in words, that the correction was
     //  NOT priced -- which is a different statement from the sub-6 mm branch
     //  of `evaluate()`, where the authors priced it and found it unity.
-    static AmmoniaRateResult evaluateIntrinsic(const AmmoniaRateContext& c);
+    static AmmoniaRateResult evaluateIntrinsic(const DysonSimonConstants& k,
+                                               const AmmoniaRateContext& c);
 
     //  THE TEMPERATURE AT WHICH THIS GAS IS AT EQUILIBRIUM under Eq 2 with
     //  Eqs 6-8 -- the T* where Eq 19's forward and reverse terms are equal for
@@ -210,13 +310,15 @@ public:
     //  equilibrium -- which is Gillespie & Beattie's, not the package's
     //  Gibbs surface; the two differ, and a caller comparing against a
     //  `gibbsReactor` must say which one it is quoting.
-    static scalar equilibriumTemperatureOf(const AmmoniaRateContext& c,
+    static scalar equilibriumTemperatureOf(const DysonSimonConstants& k,
+                                           const AmmoniaRateContext& c,
                                            scalar Tlo, scalar Thi);
 
     //  The reference mixture Eq 39's eta is measured on: 3:1 H2/N2 with
     //  12.7 % inerts at eta = 0.  Returns the mole fractions at conversion
     //  eta, and is how a bench walks along the paper's own abscissa.
-    static AmmoniaRateContext referenceMixture(scalar eta, scalar T_K, scalar P_atm);
+    static AmmoniaRateContext referenceMixture(const DysonSimonConstants& k,
+                                               scalar eta, scalar T_K, scalar P_atm);
 
     //  The paper's figures are in lb-mol/ft^3/h and Eq 19 is in
     //  kg-mol/m^3/h.  Converting is a deliberate act with a name.
@@ -240,6 +342,9 @@ public:
         scalar tolerance  = 0.0; // absolute, on |computed - expected|
         bool   pass       = false;
     };
+    //  Run on `DysonSimonConstants::paper()`: the anchors' literals are the
+    //  published set's, so they say nothing about a case's own numbers --
+    //  `differencesFromPaper()` is what says whether a case uses them.
     static std::vector<Anchor> verify();
 };
 

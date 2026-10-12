@@ -29,7 +29,11 @@ License
 
 #include "AmmoniaSynthesisRate.H"
 
+#include "core/Dimensions.H"
+#include "core/Units.H"
+
 #include <cmath>
+#include <iomanip>
 #include <sstream>
 #include <stdexcept>
 
@@ -37,45 +41,286 @@ namespace Choupo {
 
 namespace {
 
-//  The gas constant Eq 18 is written with: calories, not joules.  Changing it
-//  to 8.314 would change the activation energy's meaning silently.
-constexpr scalar R_cal_per_mol_K = 1.987;
+//  1 thermochemical calorie = 4.184 J exactly: the factor the grammar's
+//  `cal/mol` and `cal/(mol.K)` carry (core/Units.cpp).  Divided back out in
+//  `fromDict`, so E and R are held in the calorie the paper wrote them in --
+//  changing either to joules here would change the activation energy's
+//  meaning silently, and the ratio E/R the law reads would not move a bit.
+constexpr scalar J_per_cal = 4.184;
 
-//  Eq 18's pre-exponential, and Eq 19's, which is twice it by the
-//  stoichiometry (two ammonia per nitrogen).  Both literals are the paper's.
-constexpr scalar k0_Eq18  = 8.849e14;
-constexpr scalar k0_Eq19  = 1.7698e15;
-constexpr scalar E_cal    = 40765.0;
-
-//  The reference mixture Eq 39's eta is measured on: 3 : 1 hydrogen to
-//  nitrogen with 12.7 % inerts, at eta = 0.
-constexpr scalar refInert = 0.127;
-constexpr scalar refN2    = (1.0 - refInert) / 4.0;          // 0.21825
-constexpr scalar refH2    = 3.0 * refN2;                     // 0.65475
-
-//  TABLE I -- the constants of Equation 39, AT THREE PRESSURES AND NOWHERE
-//  ELSE.  There is no functional form in pressure in this paper: there are
-//  three columns.  That is why `effectivenessAtTabulatedP` refuses any other
-//  pressure and why `evaluate` interpolates only BETWEEN them, aloud.
-struct TableIRow { scalar P_atm; scalar b[7]; };
-const TableIRow tableI[3] =
-{
-    { 150.0, { -17.539096, 0.07697849, 6.900548, -1.082790e-4,
-               -26.42469,  4.927648e-8, 38.93727 } },
-    { 225.0, {  -8.2125534, 0.03774149, 6.190112, -5.354571e-5,
-               -20.86963,  2.379142e-8, 27.88403 } },
-    { 300.0, {  -4.6757259, 0.02354872, 4.687353, -3.463308e-5,
-               -11.28031,  1.540881e-8, 10.46627 } }
-};
-
-scalar evalEq39(const TableIRow& r, scalar T, scalar eta)
+scalar evalEq39(const DysonSimonConstants::Column& r, scalar T, scalar eta)
 {
     return r.b[0] + r.b[1]*T + r.b[2]*eta + r.b[3]*T*T
          + r.b[4]*eta*eta + r.b[5]*T*T*T + r.b[6]*eta*eta*eta;
 }
 
+std::string num(scalar v)
+{
+    std::ostringstream os;
+    os << std::setprecision(12) << v;
+    return os.str();
+}
+
+template <std::size_t N>
+std::string numList(const scalar (&v)[N])
+{
+    std::string out = "(";
+    for (std::size_t i = 0; i < N; ++i) out += " " + num(v[i]);
+    return out + " )";
+}
+
 } // namespace
 
+// ---------------------------------------------------------------------------
+//  THE PUBLISHED SET -- a VERIFICATION ANCHOR, never a value a case is
+//  evaluated with.  Dyson & Simon (1968): Eq 18/19 (k0, E, R), Eq 2 (Ka,
+//  after Gillespie & Beattie 1930), Eqs 6-8 (fugacity coefficients), Table I
+//  (Eq 39) and the reference mixture Eq 39's eta is measured on.  A case
+//  declares its own copy in constant/reactions; `differencesFromPaper`
+//  compares the two and the run announces every difference.
+// ---------------------------------------------------------------------------
+const DysonSimonConstants& DysonSimonConstants::paper()
+{
+    static const DysonSimonConstants k = []
+    {
+        DysonSimonConstants p;
+        p.k0           = 1.7698e15;     // Eq 19 (Eq 18's 8.849e14, x 2)
+        p.E_cal        = 40765.0;       // Eq 18, cal/mol
+        p.R_cal        = 1.987;         // Eq 18, cal/(mol K)
+        p.ratePmin_atm = 150.0;
+        p.ratePmax_atm = 300.0;
+        const scalar Ka[5]  = { -2.691122, -5.519265e-5, 1.848863e-7, 2001.6, 2.6899 };
+        const scalar gH2[7] = { -3.8402, 0.541, -0.1263, -15.980, 300.0, -0.011901, -5.941 };
+        const scalar gN2[5] = { 0.93431737, 0.3101804e-3, 0.295896e-3, -0.2707279e-6, 0.4775207e-6 };
+        const scalar gNH3[5]= { 0.1438996, 0.2028538e-2, -0.4487672e-3, -0.1142945e-5, 0.2761216e-6 };
+        for (int i = 0; i < 5; ++i) { p.Ka[i] = Ka[i]; p.gN2[i] = gN2[i]; p.gNH3[i] = gNH3[i]; }
+        for (int i = 0; i < 7; ++i) p.gH2[i] = gH2[i];
+        p.tableI = {
+            { 150.0, { -17.539096, 0.07697849, 6.900548, -1.082790e-4,
+                       -26.42469,  4.927648e-8, 38.93727 } },
+            { 225.0, {  -8.2125534, 0.03774149, 6.190112, -5.354571e-5,
+                       -20.86963,  2.379142e-8, 27.88403 } },
+            { 300.0, {  -4.6757259, 0.02354872, 4.687353, -3.463308e-5,
+                       -11.28031,  1.540881e-8, 10.46627 } } };
+        p.refH2overN2 = 3.0;
+        p.refInert    = 0.127;
+        p.dpMin_mm    = 6.0;
+        p.dpMax_mm    = 10.0;
+        return p;
+    }();
+    return k;
+}
+
+DysonSimonConstants DysonSimonConstants::fromDict(const DictPtr& kin,
+                                                  const std::string& who)
+{
+    const DysonSimonConstants& P = paper();
+    auto refuse = [&](const std::string& path, const std::string& paperValue)
+    {
+        throw std::runtime_error(who + ": dysonSimon1968 needs `kinetics."
+            + path + "` -- every number the law uses is DECLARED by the case"
+            " (constant/reactions; kinetics are the case's, property axiom"
+            " 3), and none has a default in code: a default would be a second"
+            " home for a constant a reader cannot see.  The paper's value"
+            " (Dyson & Simon 1968): " + paperValue
+            + ".  The complete block is in tutorials/plant/"
+              "ammoniaStaged04_kinetic/constant/reactions.");
+    };
+    auto sub = [&](const DictPtr& d, const std::string& path,
+                   const std::string& key, const std::string& paperValue)
+    {
+        if (!d->found(key)) refuse(path + key + " { ... }", paperValue);
+        return d->subDict(key);
+    };
+    auto scalarOf = [&](const DictPtr& d, const std::string& path,
+                        const std::string& key, const Dimensions& dims,
+                        const std::string& paperValue)
+    {
+        if (!d->found(key)) refuse(path + key, paperValue);
+        return d->lookupScalar(key, dims);
+    };
+    auto listOf = [&](const DictPtr& d, const std::string& path,
+                      const std::string& key, std::size_t n,
+                      const std::string& paperValue)
+    {
+        if (!d->found(key)) refuse(path + key, paperValue);
+        const auto v = d->lookupList(key);
+        if (v.size() != n)
+            throw std::runtime_error(who + ": dysonSimon1968 `kinetics." + path
+                + key + "` carries " + std::to_string(v.size())
+                + " numbers; its equation has exactly " + std::to_string(n)
+                + ".  The paper's: " + paperValue + ".");
+        return v;
+    };
+
+    DysonSimonConstants k;
+
+    //  Eq 18/19.
+    auto rc = sub(kin, "", "rateConstant",
+        "rateConstant { k0 1.7698e15; E 40765 cal/mol; R 1.987 cal/(mol.K);"
+        " fittedPressure { min 150 atm; max 300 atm; } }");
+    k.k0    = scalarOf(rc, "rateConstant.", "k0", Dims::dimensionless,
+                       num(P.k0) + " kmol NH3/(m3 bed h) atm^0.5 (Eq 19)");
+    k.E_cal = scalarOf(rc, "rateConstant.", "E", Dims::molarEnergy,
+                       "E 40765 cal/mol") / J_per_cal;
+    k.R_cal = scalarOf(rc, "rateConstant.", "R", Dims::molarHeatCap,
+                       "R 1.987 cal/(mol.K)") / J_per_cal;
+    auto fp = sub(rc, "rateConstant.", "fittedPressure",
+                  "fittedPressure { min 150 atm; max 300 atm; }");
+    k.ratePmin_atm = scalarOf(fp, "rateConstant.fittedPressure.", "min",
+                              Dims::pressure, "150 atm") / units::atm_to_Pa;
+    k.ratePmax_atm = scalarOf(fp, "rateConstant.fittedPressure.", "max",
+                              Dims::pressure, "300 atm") / units::atm_to_Pa;
+    if (!(k.k0 > 0.0) || !(k.R_cal > 0.0) || !(k.ratePmax_atm > k.ratePmin_atm))
+        throw std::runtime_error(who + ": dysonSimon1968 `rateConstant` needs"
+            " k0 > 0, R > 0 and fittedPressure.max > .min.");
+
+    //  Eq 2.
+    {
+        auto d = sub(kin, "", "equilibriumConstant",
+                     "equilibriumConstant { coefficients " + numList(P.Ka) + "; }");
+        const auto v = listOf(d, "equilibriumConstant.", "coefficients", 5, numList(P.Ka));
+        for (int i = 0; i < 5; ++i) k.Ka[i] = v[i];
+    }
+
+    //  Eqs 6-8.
+    {
+        auto d = sub(kin, "", "fugacityCoefficients",
+                     "fugacityCoefficients { H2 " + numList(P.gH2) + "; N2 "
+                     + numList(P.gN2) + "; NH3 " + numList(P.gNH3) + "; }");
+        const auto h = listOf(d, "fugacityCoefficients.", "H2", 7, numList(P.gH2));
+        const auto n = listOf(d, "fugacityCoefficients.", "N2", 5, numList(P.gN2));
+        const auto a = listOf(d, "fugacityCoefficients.", "NH3", 5, numList(P.gNH3));
+        for (int i = 0; i < 7; ++i) k.gH2[i] = h[i];
+        for (int i = 0; i < 5; ++i) { k.gN2[i] = n[i]; k.gNH3[i] = a[i]; }
+        if (k.gH2[4] == 0.0)
+            throw std::runtime_error(who + ": dysonSimon1968"
+                " `fugacityCoefficients.H2` c4 is zero; Eq 6 divides P by it.");
+    }
+
+    //  Eq 39 + Table I.
+    {
+        auto t = sub(kin, "", "effectivenessFactorTable",
+            "effectivenessFactorTable { referenceMixture { H2_over_N2 3;"
+            " inertFraction 0.127; } particleDiameter { min 6 mm; max 10 mm; }"
+            " columns ( { P 150 atm; b ( ... ); } { P 225 atm; ... }"
+            " { P 300 atm; ... } ); }");
+        auto rm = sub(t, "effectivenessFactorTable.", "referenceMixture",
+                      "referenceMixture { H2_over_N2 3; inertFraction 0.127; }");
+        k.refH2overN2 = scalarOf(rm, "effectivenessFactorTable.referenceMixture.",
+                                 "H2_over_N2", Dims::dimensionless, "3");
+        k.refInert    = scalarOf(rm, "effectivenessFactorTable.referenceMixture.",
+                                 "inertFraction", Dims::dimensionless, "0.127");
+        auto dp = sub(t, "effectivenessFactorTable.", "particleDiameter",
+                      "particleDiameter { min 6 mm; max 10 mm; }");
+        k.dpMin_mm = 1000.0 * scalarOf(dp, "effectivenessFactorTable.particleDiameter.",
+                                       "min", Dims::length, "6 mm");
+        k.dpMax_mm = 1000.0 * scalarOf(dp, "effectivenessFactorTable.particleDiameter.",
+                                       "max", Dims::length, "10 mm");
+        if (!t->hasDictList("columns"))
+            refuse("effectivenessFactorTable.columns ( { P <p>; b ( ... ); } ... )",
+                   "three columns, at 150, 225 and 300 atm (Table I)");
+        for (const auto& c : t->lookupDictList("columns"))
+        {
+            Column col;
+            col.P_atm = scalarOf(c, "effectivenessFactorTable.columns[].", "P",
+                                 Dims::pressure, "150, 225, 300 atm") / units::atm_to_Pa;
+            const auto b = listOf(c, "effectivenessFactorTable.columns[].", "b", 7,
+                                  "Table I's seven constants b1..b7 at that pressure");
+            for (int i = 0; i < 7; ++i) col.b[i] = b[i];
+            if (!k.tableI.empty() && !(col.P_atm > k.tableI.back().P_atm))
+                throw std::runtime_error(who + ": dysonSimon1968"
+                    " `effectivenessFactorTable.columns` must be in ASCENDING"
+                    " pressure -- the interpolation between columns reads them"
+                    " in order.");
+            k.tableI.push_back(col);
+        }
+        if (k.tableI.empty())
+            refuse("effectivenessFactorTable.columns", "three columns (Table I)");
+        if (!(k.refInert >= 0.0) || !(k.refInert < 1.0) || !(k.refH2overN2 > 0.0)
+            || !(k.dpMax_mm > k.dpMin_mm) || !(k.dpMin_mm > 0.0))
+            throw std::runtime_error(who + ": dysonSimon1968"
+                " `effectivenessFactorTable` needs 0 <= inertFraction < 1,"
+                " H2_over_N2 > 0 and 0 < particleDiameter.min < .max.");
+    }
+    return k;
+}
+
+std::vector<std::string> DysonSimonConstants::differencesFromPaper() const
+{
+    const DysonSimonConstants& P = paper();
+    std::vector<std::string> out;
+    auto cmp = [&](const std::string& name, scalar declared, scalar published)
+    {
+        if (std::abs(declared - published) > 1.0e-12 * std::abs(published))
+            out.push_back(name + ": declared " + num(declared)
+                          + ", the paper's " + num(published));
+    };
+    cmp("rateConstant.k0", k0, P.k0);
+    cmp("rateConstant.E [cal/mol]", E_cal, P.E_cal);
+    cmp("rateConstant.R [cal/(mol.K)]", R_cal, P.R_cal);
+    cmp("rateConstant.fittedPressure.min [atm]", ratePmin_atm, P.ratePmin_atm);
+    cmp("rateConstant.fittedPressure.max [atm]", ratePmax_atm, P.ratePmax_atm);
+    for (int i = 0; i < 5; ++i)
+        cmp("equilibriumConstant.coefficients[" + std::to_string(i) + "]", Ka[i], P.Ka[i]);
+    for (int i = 0; i < 7; ++i)
+        cmp("fugacityCoefficients.H2[" + std::to_string(i) + "]", gH2[i], P.gH2[i]);
+    for (int i = 0; i < 5; ++i)
+    {
+        cmp("fugacityCoefficients.N2[" + std::to_string(i) + "]", gN2[i], P.gN2[i]);
+        cmp("fugacityCoefficients.NH3[" + std::to_string(i) + "]", gNH3[i], P.gNH3[i]);
+    }
+    cmp("effectivenessFactorTable.referenceMixture.H2_over_N2", refH2overN2, P.refH2overN2);
+    cmp("effectivenessFactorTable.referenceMixture.inertFraction", refInert, P.refInert);
+    cmp("effectivenessFactorTable.particleDiameter.min [mm]", dpMin_mm, P.dpMin_mm);
+    cmp("effectivenessFactorTable.particleDiameter.max [mm]", dpMax_mm, P.dpMax_mm);
+    if (tableI.size() != P.tableI.size())
+        out.push_back("effectivenessFactorTable.columns: declared "
+            + std::to_string(tableI.size()) + " columns, the paper's Table I has "
+            + std::to_string(P.tableI.size()));
+    else
+        for (std::size_t c = 0; c < tableI.size(); ++c)
+        {
+            const std::string tag = "effectivenessFactorTable.columns["
+                                  + std::to_string(c) + "]";
+            cmp(tag + ".P [atm]", tableI[c].P_atm, P.tableI[c].P_atm);
+            for (int i = 0; i < 7; ++i)
+                cmp(tag + ".b[" + std::to_string(i) + "]",
+                    tableI[c].b[i], P.tableI[c].b[i]);
+        }
+    return out;
+}
+
+std::string DysonSimonConstants::lawText() const
+{
+    std::ostringstream os;
+    os << "      Eq 19   V3 = k0 exp(-E / (R T)) [ Ka^2 a_N2 a_H2^1.5 / a_NH3 - a_NH3 / a_H2^1.5 ]"
+          "   kmol NH3/(m3 bed h)\n"
+       << "              k0 = " << num(k0) << " kmol NH3/(m3 bed h) atm^0.5"
+          "   (Eq 18's, per N2: k0/2 = " << num(k0_Eq18()) << ")\n"
+       << "              E  = " << num(E_cal) << " cal/mol,  R = " << num(R_cal)
+       << " cal/(mol K)   ->  E/R = " << num(E_cal / R_cal) << " K\n"
+       << "              fitted over " << num(ratePmin_atm) << " to "
+       << num(ratePmax_atm) << " atm\n"
+       << "      Eqs 3-5 a_i = x_i gamma_i P   (P in atm)\n"
+       << "      Eq 2    log10 Ka = a log10 T + b T + c T^2 + d / T + e,"
+          "  (a b c d e) = " << numList(Ka) << "   [Ka in atm^-1, T in K]\n"
+       << "      Eq 6    ln gamma_H2 = exp(c0 T^0.125 + c1) P - exp(c2 T^0.5 + c3) P^2"
+          " + c4 exp(c5 T + c6) (exp(-P / c4) - 1)\n"
+       << "              (c0 .. c6) = " << numList(gH2) << "\n"
+       << "      Eq 7    gamma_N2  = c0 + c1 T + c2 P + c3 T^2 + c4 P^2,"
+          "  (c0 .. c4) = " << numList(gN2) << "\n"
+       << "      Eq 8    gamma_NH3 = c0 + c1 T + c2 P + c3 T^2 + c4 P^2,"
+          "  (c0 .. c4) = " << numList(gNH3) << "\n"
+       << "      Eq 39   xi = b1 + b2 T + b3 eta + b4 T^2 + b5 eta^2 + b6 T^3"
+          " + b7 eta^3   (Table I; eta = N2 conversion on H2/N2 = "
+       << num(refH2overN2) << " with " << num(100.0 * refInert)
+       << " % inerts; " << num(dpMin_mm) << " to " << num(dpMax_mm) << " mm particles)\n";
+    for (const auto& c : tableI)
+        os << "              P = " << num(c.P_atm) << " atm   (b1 .. b7) = "
+           << numList(c.b) << "\n";
+    return os.str();
+}
 const std::string& AmmoniaRateResult::freshCatalystCaveat()
 {
     //  Paraphrased from the authors' own statement of what Eq 40 leaves out.
@@ -108,87 +353,109 @@ const std::string& DysonSimon1968::citation()
     return s;
 }
 
-const std::string& DysonSimon1968::validityWindow()
+std::string DysonSimon1968::validityWindow(const DysonSimonConstants& k)
 {
-    static const std::string s =
-        "150 to 300 atm. The effectiveness factor xi (Eq 39) is TABULATED at"
-        " exactly 150, 225 and 300 atm and has no form in pressure at all, so"
-        " it is refused outside that interval and LINEARLY INTERPOLATED"
-        " between the tabulated columns (announced -- the interpolation is"
-        " Choupo's choice, not the paper's). xi applies to 6 to 10 mm"
-        " particles; BELOW 6 mm the authors' own position is that no"
-        " diffusion correction is needed, so xi = 1 there is THEIRS. xi was"
-        " computed on a 3:1 H2/N2 mixture with 12.7 % inerts; the authors"
-        " report that other ratios change it and judged the effect on"
-        " industrial converter design negligible -- their judgement about"
-        " their application, not a Choupo claim. The rate itself (Eq 19) is"
-        " ANNOUNCED rather than refused outside 150-300 atm, because it is a"
-        " closed expression in T, P and composition that degrades smoothly,"
-        " where Eq 39 is a cubic with three tabulated columns and nothing"
-        " between or beyond them.";
-    return s;
+    std::ostringstream os;
+    os << num(k.ratePmin_atm) << " to " << num(k.ratePmax_atm) << " atm (the"
+          " pressures the case declares Eq 19 was fitted over). The"
+          " effectiveness factor xi (Eq 39) is TABULATED at exactly";
+    for (std::size_t c = 0; c < k.tableI.size(); ++c)
+        os << (c == 0 ? " " : (c + 1 == k.tableI.size() ? " and " : ", "))
+           << num(k.tableI[c].P_atm);
+    os << " atm and has no form in pressure at all, so it is refused outside"
+          " that interval and LINEARLY INTERPOLATED between the tabulated"
+          " columns (announced -- the interpolation is Choupo's choice, not"
+          " the paper's). xi applies to " << num(k.dpMin_mm) << " to "
+       << num(k.dpMax_mm) << " mm particles; BELOW " << num(k.dpMin_mm)
+       << " mm the authors' own position is that no diffusion correction is"
+          " needed, so xi = 1 there is THEIRS. xi was computed on a "
+       << num(k.refH2overN2) << ":1 H2/N2 mixture with "
+       << num(100.0 * k.refInert) << " % inerts; the authors report that"
+          " other ratios change it and judged the effect on industrial"
+          " converter design negligible -- their judgement about their"
+          " application, not a Choupo claim. The rate itself (Eq 19) is"
+          " ANNOUNCED rather than refused outside its fitted pressures,"
+          " because it is a closed expression in T, P and composition that"
+          " degrades smoothly, where Eq 39 is a cubic with tabulated columns"
+          " and nothing between or beyond them.";
+    return os.str();
 }
 
-scalar DysonSimon1968::equilibriumConstant(scalar T_K)
+scalar DysonSimon1968::equilibriumConstant(const DysonSimonConstants& k,
+                                          scalar T_K)
 {
     if (!(T_K > 0.0))
         throw std::runtime_error("DysonSimon1968: equilibrium constant asked"
             " at a non-positive temperature -- Eq 2 carries log10(T) and"
-            " 2001.6/T and neither exists there.");
-    const scalar log10Ka = -2.691122 * std::log10(T_K)
-                         -  5.519265e-5 * T_K
-                         +  1.848863e-7 * T_K * T_K
-                         +  2001.6 / T_K
-                         +  2.6899;
+            " d/T and neither exists there.");
+    //  Eq 2's FORM; its five numbers are the case's (k.Ka).
+    const scalar log10Ka = k.Ka[0] * std::log10(T_K)
+                         + k.Ka[1] * T_K
+                         + k.Ka[2] * T_K * T_K
+                         + k.Ka[3] / T_K
+                         + k.Ka[4];
     return std::pow(10.0, log10Ka);
 }
 
-scalar DysonSimon1968::gammaH2(scalar T_K, scalar P_atm)
+//  Eq 6's FORM (the exponents 0.125 and 0.5 are the form); its seven numbers
+//  are the case's (k.gH2).
+scalar DysonSimon1968::gammaH2(const DysonSimonConstants& k, scalar T_K,
+                               scalar P_atm)
 {
-    const scalar t1 = std::exp(-3.8402 * std::pow(T_K, 0.125) + 0.541) * P_atm;
-    const scalar t2 = std::exp(-0.1263 * std::sqrt(T_K) - 15.980) * P_atm * P_atm;
-    const scalar t3 = 300.0 * std::exp(-0.011901 * T_K - 5.941)
-                    * (std::exp(-P_atm / 300.0) - 1.0);
+    const scalar* c = k.gH2;
+    const scalar t1 = std::exp(c[0] * std::pow(T_K, 0.125) + c[1]) * P_atm;
+    const scalar t2 = std::exp(c[2] * std::sqrt(T_K) + c[3]) * P_atm * P_atm;
+    const scalar t3 = c[4] * std::exp(c[5] * T_K + c[6])
+                    * (std::exp(-P_atm / c[4]) - 1.0);
     return std::exp(t1 - t2 + t3);
 }
 
-scalar DysonSimon1968::gammaN2(scalar T_K, scalar P_atm)
+//  Eqs 7 and 8 share one FORM; their numbers are the case's.
+scalar DysonSimon1968::gammaN2(const DysonSimonConstants& k, scalar T_K,
+                               scalar P_atm)
 {
-    return 0.93431737
-         + 0.3101804e-3 * T_K
-         + 0.295896e-3  * P_atm
-         - 0.2707279e-6 * T_K * T_K
-         + 0.4775207e-6 * P_atm * P_atm;
+    const scalar* c = k.gN2;
+    return c[0]
+         + c[1] * T_K
+         + c[2] * P_atm
+         + c[3] * T_K * T_K
+         + c[4] * P_atm * P_atm;
 }
 
-scalar DysonSimon1968::gammaNH3(scalar T_K, scalar P_atm)
+scalar DysonSimon1968::gammaNH3(const DysonSimonConstants& k, scalar T_K,
+                                scalar P_atm)
 {
-    return 0.1438996
-         + 0.2028538e-2 * T_K
-         - 0.4487672e-3 * P_atm
-         - 0.1142945e-5 * T_K * T_K
-         + 0.2761216e-6 * P_atm * P_atm;
+    const scalar* c = k.gNH3;
+    return c[0]
+         + c[1] * T_K
+         + c[2] * P_atm
+         + c[3] * T_K * T_K
+         + c[4] * P_atm * P_atm;
 }
 
-scalar DysonSimon1968::effectivenessAtTabulatedP(scalar P_atm, scalar T_K,
+scalar DysonSimon1968::effectivenessAtTabulatedP(const DysonSimonConstants& k,
+                                                 scalar P_atm, scalar T_K,
                                                  scalar eta)
 {
-    for (const auto& r : tableI)
+    for (const auto& r : k.tableI)
         if (std::abs(r.P_atm - P_atm) < 1.0e-9)
             return evalEq39(r, T_K, eta);
 
     std::ostringstream os;
-    os << "DysonSimon1968: Equation 39 is TABULATED at 150, 225 and 300 atm"
-          " and was asked at " << P_atm << " atm. Table I is three columns of"
+    os << "DysonSimon1968: Equation 39 is TABULATED at";
+    for (const auto& r : k.tableI) os << " " << num(r.P_atm);
+    os << " atm and was asked at " << P_atm << " atm. Table I is columns of"
           " constants, not a function of pressure, so there is nothing to"
           " evaluate here. Use `evaluate()`, which interpolates BETWEEN the"
           " tabulated pressures and says that it did.";
     throw std::runtime_error(os.str());
 }
 
-AmmoniaRateContext DysonSimon1968::referenceMixture(scalar eta, scalar T_K,
+AmmoniaRateContext DysonSimon1968::referenceMixture(const DysonSimonConstants& k,
+                                                    scalar eta, scalar T_K,
                                                     scalar P_atm)
 {
+    const scalar refN2 = k.refN2(), refH2 = k.refH2(), refInert = k.refInert;
     if (!(eta > 0.0) || eta >= 1.0)
         throw std::runtime_error("DysonSimon1968: the reference mixture is"
             " asked at a nitrogen conversion outside (0, 1). At eta = 0 there"
@@ -221,7 +488,8 @@ namespace {
 //  serving both `evaluate()` (which then forms Eq 39/40) and
 //  `evaluateIntrinsic()` (which does not), so the two can never price the
 //  intrinsic rate two different ways.
-void evaluateIntrinsicInto(const AmmoniaRateContext& c, AmmoniaRateResult& r)
+void evaluateIntrinsicInto(const DysonSimonConstants& k,
+                           const AmmoniaRateContext& c, AmmoniaRateResult& r)
 {
     if (!(c.T_K > 0.0) || !(c.P_atm > 0.0))
         throw std::runtime_error("DysonSimon1968: temperature and pressure"
@@ -248,10 +516,10 @@ void evaluateIntrinsicInto(const AmmoniaRateContext& c, AmmoniaRateResult& r)
         throw std::runtime_error(os.str());
     }
 
-    r.Ka        = DysonSimon1968::equilibriumConstant(c.T_K);
-    r.gamma_N2  = DysonSimon1968::gammaN2 (c.T_K, c.P_atm);
-    r.gamma_H2  = DysonSimon1968::gammaH2 (c.T_K, c.P_atm);
-    r.gamma_NH3 = DysonSimon1968::gammaNH3(c.T_K, c.P_atm);
+    r.Ka        = DysonSimon1968::equilibriumConstant(k, c.T_K);
+    r.gamma_N2  = DysonSimon1968::gammaN2 (k, c.T_K, c.P_atm);
+    r.gamma_H2  = DysonSimon1968::gammaH2 (k, c.T_K, c.P_atm);
+    r.gamma_NH3 = DysonSimon1968::gammaNH3(k, c.T_K, c.P_atm);
 
     //  Eqs 3-5: a_i = X_i f_i^0 with f_i^0 = gamma_i P (Lewis & Randall).
     r.a_N2  = c.x_N2  * r.gamma_N2  * c.P_atm;
@@ -262,16 +530,17 @@ void evaluateIntrinsicInto(const AmmoniaRateContext& c, AmmoniaRateResult& r)
     r.forwardTerm = r.Ka * r.Ka * r.a_N2 * a2_32 / r.a_NH3;
     r.reverseTerm = r.a_NH3 / a2_32;
 
-    r.k = k0_Eq18 * std::exp(-E_cal / (R_cal_per_mol_K * c.T_K));
+    r.k = k.k0_Eq18() * std::exp(-k.E_cal / (k.R_cal * c.T_K));
     r.rateIntrinsic_kmolNH3_per_m3bed_h =
-        k0_Eq19 * std::exp(-E_cal / (R_cal_per_mol_K * c.T_K))
+        k.k0 * std::exp(-k.E_cal / (k.R_cal * c.T_K))
         * (r.forwardTerm - r.reverseTerm);
 
-    if (c.P_atm < 150.0 || c.P_atm > 300.0)
+    if (c.P_atm < k.ratePmin_atm || c.P_atm > k.ratePmax_atm)
     {
         std::ostringstream os;
         os << "[window] the rate expression (Eq 19) was evaluated at "
-           << c.P_atm << " atm, OUTSIDE the 150-300 atm the correlation was"
+           << c.P_atm << " atm, OUTSIDE the " << num(k.ratePmin_atm) << "-"
+           << num(k.ratePmax_atm) << " atm the correlation was"
               " fitted over -- extrapolated, still returned. The fugacity"
               " coefficients of Eqs 6-8 are the part that degrades first.";
         r.announcements.push_back(os.str());
@@ -282,6 +551,7 @@ void evaluateIntrinsicInto(const AmmoniaRateContext& c, AmmoniaRateResult& r)
     //  Eq 39's eta is the conversion of nitrogen measured from the reference
     //  mixture. Inverting the reference line for the ammonia this gas
     //  carries: X3 = 2 refN2 eta / (1 - 2 refN2 eta).
+    const scalar refN2 = k.refN2(), refInert = k.refInert;
     r.eta_N2conversion = c.x_NH3 / (2.0 * refN2 * (1.0 + c.x_NH3));
 
     //  HOW FAR THIS GAS IS FROM THE LINE eta WAS DEFINED ON. Reported with
@@ -289,10 +559,11 @@ void evaluateIntrinsicInto(const AmmoniaRateContext& c, AmmoniaRateResult& r)
     //  thresholds this file chose, not validity limits the paper states.
     const scalar h2n2 = c.x_H2 / c.x_N2;
     const scalar inertRef = refInert / (1.0 - 2.0 * refN2 * r.eta_N2conversion);
-    if (std::abs(h2n2 - 3.0) > 0.01 || std::abs(c.x_inert - inertRef) > 0.005)
+    if (std::abs(h2n2 - k.refH2overN2) > 0.01 || std::abs(c.x_inert - inertRef) > 0.005)
     {
         std::ostringstream os;
-        os << "[reference] xi was computed by the authors on a 3.00 : 1"
+        os << "[reference] xi was computed by the authors on a "
+           << num(k.refH2overN2) << " : 1"
               " H2/N2 mixture carrying " << inertRef << " inerts at this"
               " conversion; this gas is " << h2n2 << " : 1 carrying "
            << c.x_inert << ". The authors report that other H2/N2 ratios"
@@ -305,10 +576,11 @@ void evaluateIntrinsicInto(const AmmoniaRateContext& c, AmmoniaRateResult& r)
 
 } // namespace
 
-AmmoniaRateResult DysonSimon1968::evaluateIntrinsic(const AmmoniaRateContext& c)
+AmmoniaRateResult DysonSimon1968::evaluateIntrinsic(const DysonSimonConstants& k,
+                                                    const AmmoniaRateContext& c)
 {
     AmmoniaRateResult r;
-    evaluateIntrinsicInto(c, r);
+    evaluateIntrinsicInto(k, c, r);
     //  xi = 1 here means UNPRICED: Eq 39 was not formed.  Said in the route so
     //  a reader of the result cannot mistake it for the sub-6 mm branch of
     //  `evaluate()`, where the same number is the authors' own finding.
@@ -316,14 +588,16 @@ AmmoniaRateResult DysonSimon1968::evaluateIntrinsic(const AmmoniaRateContext& c)
     r.xiAvailable = false;
     r.xiRoute = "Eq 39 NOT evaluated: the INTRINSIC rate (Eq 19) was asked"
         " for, so xi = 1 here is UNPRICED -- the diffusion correction the"
-        " paper supplies (Eq 39 + Table I, 6-10 mm particles, 150-300 atm)"
+        " paper supplies (Eq 39 + Table I, declared in the case beside the"
+        " rate)"
         " exists and was not applied. Declare a particle and ask for Eq 40"
         " to price it.";
     r.rate_kmolNH3_per_m3bed_h = r.rateIntrinsic_kmolNH3_per_m3bed_h;
     return r;
 }
 
-scalar DysonSimon1968::equilibriumTemperatureOf(const AmmoniaRateContext& c,
+scalar DysonSimon1968::equilibriumTemperatureOf(const DysonSimonConstants& k,
+                                                const AmmoniaRateContext& c,
                                                 scalar Tlo, scalar Thi)
 {
     if (!(Thi > Tlo) || !(Tlo > 0.0))
@@ -333,7 +607,7 @@ scalar DysonSimon1968::equilibriumTemperatureOf(const AmmoniaRateContext& c,
     {
         AmmoniaRateContext cc = c;
         cc.T_K = T;
-        const AmmoniaRateResult r = evaluateIntrinsic(cc);
+        const AmmoniaRateResult r = evaluateIntrinsic(k, cc);
         return r.forwardTerm - r.reverseTerm;       // > 0: below equilibrium T
     };
     scalar lo = Tlo, hi = Thi;
@@ -363,22 +637,24 @@ scalar DysonSimon1968::equilibriumTemperatureOf(const AmmoniaRateContext& c,
     return 0.5 * (lo + hi);
 }
 
-AmmoniaRateResult DysonSimon1968::evaluate(const AmmoniaRateContext& c)
+AmmoniaRateResult DysonSimon1968::evaluate(const DysonSimonConstants& k,
+                                           const AmmoniaRateContext& c)
 {
     AmmoniaRateResult r;
-    evaluateIntrinsicInto(c, r);
+    evaluateIntrinsicInto(k, c, r);
 
     //  ---- xi: Eq 39 + Table I, and every branch of it is named ----
     if (!(c.particleDiameter_mm > 0.0))
         throw std::runtime_error("DysonSimon1968: no particle diameter was"
             " declared, so Equation 40 cannot be formed. There is NO default"
             " here on purpose -- which branch applies depends entirely on the"
-            " size (below 6 mm the authors need no correction at all, 6-10 mm"
-            " is Table I's range, above 10 mm is nobody's). Declare"
+            " size (below " + num(k.dpMin_mm) + " mm the authors need no"
+            " correction at all, " + num(k.dpMin_mm) + "-" + num(k.dpMax_mm)
+            + " mm is Table I's range, above it is nobody's). Declare"
             " `particleDiameter` in millimetres, or ask for the INTRINSIC"
             " rate (Eq 19) which needs no particle.");
 
-    if (c.particleDiameter_mm < 6.0)
+    if (c.particleDiameter_mm < k.dpMin_mm)
     {
         r.xi = 1.0;
         r.xiAvailable = true;
@@ -395,11 +671,12 @@ AmmoniaRateResult DysonSimon1968::evaluate(const AmmoniaRateContext& c)
         //  printed for another and nobody could see it.
         r.announcements.push_back("[particle] " + r.xiRoute);
     }
-    else if (c.particleDiameter_mm > 10.0)
+    else if (c.particleDiameter_mm > k.dpMax_mm)
     {
         std::ostringstream os;
         os << "DysonSimon1968: the effectiveness factor of Eq 39 was fitted"
-              " for 6 to 10 mm particles and this bed is packed with "
+              " for " << num(k.dpMin_mm) << " to " << num(k.dpMax_mm)
+           << " mm particles and this bed is packed with "
            << c.particleDiameter_mm << " mm. Table I is a cubic in T and eta"
               " with no particle size in it at all, so there is nothing to"
               " extrapolate: a larger particle is a different diffusion"
@@ -407,12 +684,13 @@ AmmoniaRateResult DysonSimon1968::evaluate(const AmmoniaRateContext& c)
               " particle inside the range, or ask for the INTRINSIC rate.";
         throw std::runtime_error(os.str());
     }
-    else if (c.P_atm < 150.0 || c.P_atm > 300.0)
+    else if (c.P_atm < k.tableI.front().P_atm || c.P_atm > k.tableI.back().P_atm)
     {
         std::ostringstream os;
         os << "DysonSimon1968: the effectiveness factor was asked at "
-           << c.P_atm << " atm. Table I gives three columns -- 150, 225 and"
-              " 300 atm -- and no form in pressure, so outside that interval"
+           << c.P_atm << " atm. Table I gives columns at";
+        for (const auto& col : k.tableI) os << " " << num(col.P_atm);
+        os << " atm and no form in pressure, so outside that interval"
               " there is no correlation to evaluate and this REFUSES rather"
               " than extrapolating a cubic through three points. The rate"
               " expression itself (Eq 19) only ANNOUNCES out there, because"
@@ -425,10 +703,13 @@ AmmoniaRateResult DysonSimon1968::evaluate(const AmmoniaRateContext& c)
         //  tabulated column, or linearly interpolated between the two that
         //  bracket it -- and the interpolation is ANNOUNCED with both
         //  endpoints, because it is Choupo's choice and not the paper's.
+        //  A single declared column is a table with no interval: it is only
+        //  ever reached AT its own pressure (the window test above).
+        const std::size_t N = k.tableI.size();
         std::size_t lo = 0;
-        while (lo + 2 < 3 && c.P_atm > tableI[lo + 1].P_atm) ++lo;
-        const TableIRow& A = tableI[lo];
-        const TableIRow& B = tableI[lo + 1];
+        while (lo + 2 < N && c.P_atm > k.tableI[lo + 1].P_atm) ++lo;
+        const DysonSimonConstants::Column& A = k.tableI[lo];
+        const DysonSimonConstants::Column& B = k.tableI[N > 1 ? lo + 1 : lo];
 
         const scalar xiA = evalEq39(A, c.T_K, r.eta_N2conversion);
         const scalar xiB = evalEq39(B, c.T_K, r.eta_N2conversion);
@@ -486,6 +767,7 @@ AmmoniaRateResult DysonSimon1968::evaluate(const AmmoniaRateContext& c)
 std::vector<DysonSimon1968::Anchor> DysonSimon1968::verify()
 {
     std::vector<Anchor> out;
+    const DysonSimonConstants& K = DysonSimonConstants::paper();
 
     // ---------------------------------------------------------------------
     //  A1 -- THEORY. The rate expression and the equilibrium constant are
@@ -498,9 +780,9 @@ std::vector<DysonSimon1968::Anchor> DysonSimon1968::verify()
     //  the direction the reaction runs.
     // ---------------------------------------------------------------------
     {
-        AmmoniaRateContext c = referenceMixture(0.2, 700.0, 300.0);
+        AmmoniaRateContext c = referenceMixture(K, 0.2, 700.0, 300.0);
         c.particleDiameter_mm = 8.0;
-        const auto r = evaluate(c);
+        const auto r = evaluate(K, c);
         const scalar Q = r.a_NH3 / (std::sqrt(r.a_N2) * std::pow(r.a_H2, 1.5));
         const scalar lhs = r.forwardTerm / r.reverseTerm;
         const scalar rhs = (r.Ka / Q) * (r.Ka / Q);
@@ -526,11 +808,11 @@ std::vector<DysonSimon1968::Anchor> DysonSimon1968::verify()
     //  carries the root find's own error and the tolerance says so.
     // ---------------------------------------------------------------------
     {
-        auto rateAt = [](scalar eta) -> scalar
+        auto rateAt = [&K](scalar eta) -> scalar
         {
-            AmmoniaRateContext c = DysonSimon1968::referenceMixture(eta, 700.0, 300.0);
+            AmmoniaRateContext c = DysonSimon1968::referenceMixture(K, eta, 700.0, 300.0);
             c.particleDiameter_mm = 8.0;
-            return DysonSimon1968::evaluate(c).rateIntrinsic_kmolNH3_per_m3bed_h;
+            return DysonSimon1968::evaluate(K, c).rateIntrinsic_kmolNH3_per_m3bed_h;
         };
         scalar lo = 1.0e-6, hi = 0.99;
         scalar flo = rateAt(lo);
@@ -542,9 +824,9 @@ std::vector<DysonSimon1968::Anchor> DysonSimon1968::verify()
             else hi = mid;
         }
         const scalar etaEq = 0.5 * (lo + hi);
-        AmmoniaRateContext c = referenceMixture(etaEq, 700.0, 300.0);
+        AmmoniaRateContext c = referenceMixture(K, etaEq, 700.0, 300.0);
         c.particleDiameter_mm = 8.0;
-        const auto r = evaluate(c);
+        const auto r = evaluate(K, c);
         Anchor a;
         a.name = "V3 == 0 at the Gillespie-Beattie equilibrium";
         a.kind = "theory";
@@ -555,8 +837,8 @@ std::vector<DysonSimon1968::Anchor> DysonSimon1968::verify()
             " measured.";
         a.computed  = r.rateIntrinsic_kmolNH3_per_m3bed_h;
         a.expected  = 0.0;
-        a.tolerance = 1.0e-6 * std::abs(r.forwardTerm) * k0_Eq19
-                    * std::exp(-E_cal / (R_cal_per_mol_K * 700.0));
+        a.tolerance = 1.0e-6 * std::abs(r.forwardTerm) * K.k0
+                    * std::exp(-K.E_cal / (K.R_cal * 700.0));
         a.pass = std::abs(a.computed - a.expected) <= a.tolerance;
         out.push_back(a);
     }
@@ -574,7 +856,7 @@ std::vector<DysonSimon1968::Anchor> DysonSimon1968::verify()
             " produces. It proves the five coefficients were typed"
             " correctly. It proves NOTHING about ammonia: a wrong equation"
             " typed consistently would pass it.";
-        a.computed  = equilibriumConstant(700.0);
+        a.computed  = equilibriumConstant(K, 700.0);
         a.expected  = 8.8060688324288414e-3;
         a.tolerance = 1.0e-12;
         a.pass = std::abs(a.computed - a.expected) <= a.tolerance;
@@ -591,7 +873,7 @@ std::vector<DysonSimon1968::Anchor> DysonSimon1968::verify()
         a.statement = "Equation 39 on Table I's 300 atm column against the"
             " literal it produces -- a transcription check on seven"
             " constants, and no more than that.";
-        a.computed  = effectivenessAtTabulatedP(300.0, 700.0, 0.2);
+        a.computed  = effectivenessAtTabulatedP(K, 300.0, 700.0, 0.2);
         a.expected  = 0.69337909;
         a.tolerance = 1.0e-8;
         a.pass = std::abs(a.computed - a.expected) <= a.tolerance;
@@ -608,9 +890,9 @@ std::vector<DysonSimon1968::Anchor> DysonSimon1968::verify()
     //  consecutive columns and `expected` is that it be positive.
     // ---------------------------------------------------------------------
     {
-        const scalar x150 = effectivenessAtTabulatedP(150.0, 700.0, 0.2);
-        const scalar x225 = effectivenessAtTabulatedP(225.0, 700.0, 0.2);
-        const scalar x300 = effectivenessAtTabulatedP(300.0, 700.0, 0.2);
+        const scalar x150 = effectivenessAtTabulatedP(K, 150.0, 700.0, 0.2);
+        const scalar x225 = effectivenessAtTabulatedP(K, 225.0, 700.0, 0.2);
+        const scalar x300 = effectivenessAtTabulatedP(K, 300.0, 700.0, 0.2);
         const scalar gap = std::min(x150 - x225, x225 - x300);
         Anchor a;
         a.name = "xi falls monotonically with pressure";

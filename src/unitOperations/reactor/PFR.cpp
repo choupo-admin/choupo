@@ -87,6 +87,7 @@ struct DysonSimonBed
     bool        eq39  = false;   // Eq 40 (xi from Eq 39 + Table I) vs Eq 19 alone
     scalar      dp_mm = 0.0;     // particle diameter in mm when eq39
     scalar      P_atm = 0.0;
+    DysonSimonConstants K;       // EVERY number of the law, as the case declares it
 
     // What the integration SAW, gathered for the report: every RK4 stage
     // evaluates the law, so the sentences are collected here and said once.
@@ -113,13 +114,26 @@ DysonSimonBed readDysonSimonBed(const DictPtr&       rxn,
     DysonSimonBed b;
     auto kin = rxn->subDict("kinetics");
 
+    //  The law's NUMBERS are the case's (DEV.md 4c C66): `rateConstant`,
+    //  `equilibriumConstant`, `fugacityCoefficients` and
+    //  `effectivenessFactorTable` carry every one of them, and
+    //  DysonSimonConstants::fromDict refuses each missing value by name.  Any
+    //  OTHER key is not read by this law and is refused -- a key the engine
+    //  does not read is a comment that looks like a declaration.
+    static const std::vector<std::string> kinKeys = { "type", "roles",
+        "effectivenessFactor", "rateConstant", "equilibriumConstant",
+        "fugacityCoefficients", "effectivenessFactorTable" };
     for (const auto& key : kin->keys())
-        if (key != "type" && key != "roles" && key != "effectivenessFactor")
+        if (std::find(kinKeys.begin(), kinKeys.end(), key) == kinKeys.end())
             throw std::runtime_error(who + ": kinetics key `" + key + "` is not"
-                " read by the dysonSimon1968 law -- its constants are the"
-                " paper's own (AmmoniaSynthesisRate.cpp) and the block accepts"
-                " exactly `type`, `roles {}` and `effectivenessFactor`.  A key"
-                " the engine does not read is a comment; remove it.");
+                " read by the dysonSimon1968 law, whose block accepts exactly"
+                " `type`, `roles {}`, `effectivenessFactor` and the four"
+                " blocks that carry its constants (`rateConstant`,"
+                " `equilibriumConstant`, `fugacityCoefficients`,"
+                " `effectivenessFactorTable`).  An `A` or an `Ea` belongs to"
+                " an Arrhenius law; this one's pre-exponential is"
+                " `rateConstant.k0`.  Remove the key.");
+    b.K = DysonSimonConstants::fromDict(kin, who);
     if (rxn->found("reversible"))
         throw std::runtime_error(who + ": `reversible` has no meaning under"
             " dysonSimon1968 -- Equation 19 carries its own reverse term and"
@@ -200,9 +214,10 @@ DysonSimonBed readDysonSimonBed(const DictPtr&       rxn,
             throw std::runtime_error(who + ": `effectivenessFactor dysonSimonEq39`"
                 " forms Equation 40, and which branch of Eq 39 applies depends"
                 " entirely on the particle size -- declare `operation {"
-                " catalyst { particleDiameter <length>; } }` (6 to 10 mm is"
-                " Table I's range; below 6 mm the authors need no correction;"
-                " above 10 mm the law refuses).  No default particle exists.");
+                " catalyst { particleDiameter <length>; } }` (the declared"
+                " `effectivenessFactorTable.particleDiameter` window is Table"
+                " I's range; below it the authors need no correction; above it"
+                " the law refuses).  No default particle exists.");
         b.dp_mm = 1000.0 * operDict->subDict("catalyst")
                                   ->lookupScalar("particleDiameter", Dims::length);
     }
@@ -254,8 +269,8 @@ AmmoniaRateContext dysonSimonContext(const DysonSimonBed& b, scalar T,
 AmmoniaRateResult dysonSimonEvaluate(DysonSimonBed& b, scalar T, const sVector& x)
 {
     const AmmoniaRateContext c = dysonSimonContext(b, T, x);
-    AmmoniaRateResult r = b.eq39 ? DysonSimon1968::evaluate(c)
-                                 : DysonSimon1968::evaluateIntrinsic(c);
+    AmmoniaRateResult r = b.eq39 ? DysonSimon1968::evaluate(b.K, c)
+                                 : DysonSimon1968::evaluateIntrinsic(b.K, c);
     if (b.eq39)
     {
         b.xiMin = std::min(b.xiMin, r.xi);
@@ -902,6 +917,15 @@ int PFR::solveMultiReaction(const DictPtr&       dict,
         AdvisoryLog::instance().add("model", "info", locus, routeMsg);
         AdvisoryLog::instance().add("model", "info", locus,
                                     AmmoniaRateResult::freshCatalystCaveat());
+        //  A DECLARED CONSTANT THAT IS NOT THE PAPER'S IS ANNOUNCED, ONE BY
+        //  ONE (DEV.md 4c C66).  A refitted or activity-adjusted catalyst is
+        //  legitimate; a number that differs in silence is not.
+        const std::vector<std::string> differs = b.K.differencesFromPaper();
+        for (const auto& d : differs)
+            AdvisoryLog::instance().add("model", "warning", locus,
+                "[constants] a declared constant is NOT Dyson & Simon's"
+                " published value -- " + d + ".  The law is evaluated with"
+                " the declared one.");
         for (const auto& a : rin.announcements)
             if (a.rfind("[window]", 0) == 0)
                 AdvisoryLog::instance().add("model", "warning", locus, a);
@@ -917,12 +941,31 @@ int PFR::solveMultiReaction(const DictPtr&       dict,
             std::cout << "\n  [dysonSimon1968] " << rname[jBed] << " -- bed on the"
                          " Dyson & Simon (1968) rate law\n"
                       << "    source:  " << DysonSimon1968::citation() << "\n"
-                      << "    window:  " << DysonSimon1968::validityWindow() << "\n"
+                      << "    the law, with every number as constant/reactions"
+                         " declares it (the FORM is the engine's, the numbers"
+                         " are the case's):\n" << b.K.lawText()
+                      << "    constants: "
+                      << (differs.empty()
+                            ? std::string("every declared value is the paper's")
+                            : std::to_string(differs.size())
+                              + " declared value(s) differ from the paper's"
+                                " -- listed below")
+                      << "\n";
+            for (const auto& d : differs)
+                std::cout << "      [constants] " << d << "\n";
+            std::cout << "    window:  " << DysonSimon1968::validityWindow(b.K) << "\n"
                       << "    route:   " << routeMsg << "\n"
                       << "    inlet:   T = " << std::fixed << std::setprecision(2) << T
                       << " K, P = " << std::setprecision(3) << b.P_atm << " atm, x(N2) "
                       << std::setprecision(5) << z_in[b.iN2] << ", x(H2) " << z_in[b.iH2]
-                      << ", x(NH3) " << z_in[b.iNH3] << " -> V3 = " << std::setprecision(4)
+                      << ", x(NH3) " << z_in[b.iNH3] << "\n"
+                      << "             Ka(T_in) = " << std::scientific << std::setprecision(6)
+                      << rin.Ka << " atm^-1, gamma N2/H2/NH3 = " << std::fixed
+                      << std::setprecision(5) << rin.gamma_N2 << " / " << rin.gamma_H2
+                      << " / " << rin.gamma_NH3 << ", k0 exp(-E/RT) = "
+                      << std::scientific << std::setprecision(6)
+                      << 2.0 * rin.k << std::fixed
+                      << "\n             -> V3 = " << std::setprecision(4)
                       << rin.rateIntrinsic_kmolNH3_per_m3bed_h << " kmol NH3/(m3 bed h)";
             if (b.eq39) std::cout << ", xi = " << rin.xi << ", Eq 40 = "
                                   << rin.rate_kmolNH3_per_m3bed_h;
@@ -1144,7 +1187,7 @@ int PFR::solveMultiReaction(const DictPtr&       dict,
             {
                 AmmoniaRateContext cc = cOut;
                 cc.T_K = Tq;
-                const AmmoniaRateResult rq = DysonSimon1968::evaluateIntrinsic(cc);
+                const AmmoniaRateResult rq = DysonSimon1968::evaluateIntrinsic(b.K, cc);
                 return rq.forwardTerm - rq.reverseTerm;
             };
             const scalar Tlo = std::max(300.0, T_out - 500.0);
@@ -1152,7 +1195,7 @@ int PFR::solveMultiReaction(const DictPtr&       dict,
             const scalar Tcap = 1500.0;
             const bool loPositive = imbalance(Tlo) > 0.0;
             while (Thi < Tcap && (imbalance(Thi) > 0.0) == loPositive) Thi += 100.0;
-            const scalar Teq = DysonSimon1968::equilibriumTemperatureOf(cOut, Tlo, std::min(Thi, Tcap));
+            const scalar Teq = DysonSimon1968::equilibriumTemperatureOf(b.K, cOut, Tlo, std::min(Thi, Tcap));
             kpis_["T_eq_outlet_K"] = Teq;
             kpis_["approach_K"]    = Teq - T_out;
         }
@@ -1263,11 +1306,28 @@ int PFR::solveMultiReaction(const DictPtr&       dict,
                              << "   (peak " << T_max << " K, hot spot +"
                              << (T_max - T) << " K)";
         std::cout << "\n";
+        //  ONE LINE PER REACTION, IN ITS OWN LAW'S WORDS.  It printed
+        //  `law[j].kForward(T)` for every reaction, and for a Dyson-Simon bed
+        //  `law[j]` is a default-constructed RateLaw: the line read
+        //  `k(T_in) = 0.000e+00 [Arrhenius]` beside a bed that converts --
+        //  a banner keyed on one model describing a model that is not running
+        //  (the 2026-08-04 trap; DEV.md 4c C66).  The law object says what it is.
         for (std::size_t j = 0; j < R; ++j)
-            std::cout << "  " << std::left << std::setw(12) << rname[j] << std::right
-                      << "  k(T_in) = " << std::scientific << std::setprecision(3)
-                      << law[j].kForward(T)
-                      << "   [" << law[j].typeName() << "]\n" << std::fixed;
+        {
+            std::cout << "  " << std::left << std::setw(12) << rname[j] << std::right;
+            if (bed[j])
+                std::cout << "  k(T_in) = " << std::scientific << std::setprecision(3)
+                          << kpis_["k_" + rname[j]]
+                          << "   [" << DysonSimon1968::type()
+                          << ": Eq 18's k0 exp(-E/RT), per N2 -- its rate is"
+                             " the Eq 19 bracket above, not k times"
+                             " concentrations]\n";
+            else
+                std::cout << "  k(T_in) = " << std::scientific << std::setprecision(3)
+                          << law[j].kForward(T)
+                          << "   [" << law[j].typeName() << "]\n";
+            std::cout << std::fixed;
+        }
         std::cout << "=====================================================================\n\n";
     }
     return 0;

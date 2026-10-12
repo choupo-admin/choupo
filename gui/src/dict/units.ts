@@ -179,6 +179,10 @@ const TABLE: Record<string, UnitSpec> = {
   "kJ/mol": { factor: 1.0e3, affine: false },
   "J/kmol": { factor: 1.0e-3, affine: false },
   "kJ/kmol": { factor: 1.0, affine: false },
+  // the thermochemical calorie, 4.184 J exactly (mirrors src/core/Units.cpp;
+  // a 1960s rate law's E and the R it is written with)
+  "cal/mol": { factor: 4.184, affine: false },
+  "cal/mol/K": { factor: 4.184, affine: false },
 
   // molar heat capacity → J/(mol.K)  (mirrors src/core/Units.cpp)
   "J/(mol.K)": { factor: 1.0, affine: false },
