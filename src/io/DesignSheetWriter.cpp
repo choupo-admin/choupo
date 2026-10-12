@@ -215,7 +215,11 @@ std::size_t write(const std::string&                       caseRoot,
             const std::string prefix = sz.sector + ".";
             if (leaf.rfind(prefix, 0) == 0) leaf = leaf.substr(prefix.size());
         }
-        dir /= leaf;
+        //  AN ITEM THE SECTOR ITSELF REALISES (C69: a converter's one
+        //  pressure shell, named by the sector) lives at the sector's own
+        //  level, `design/<SECTOR>/<tag>`, beside its members' directories --
+        //  never `design/<SECTOR>/<SECTOR>/`.
+        if (sz.sector.empty() || uname != sz.sector) dir /= leaf;
         fs::create_directories(dir, ec);
 
         //  THE SHEET'S NAME is the item's TAG where the unit realises more

@@ -1247,10 +1247,15 @@ auto_generate() {
             [ -n "$s" ] && [ -n "$f" ] && printf 'stream  %-22s %-16s %-18s %s\n' "$s" "F" "$f" "$reltol"
             [ -n "$s" ] && [ -n "$t" ] && printf 'stream  %-22s %-16s %-18s %s\n' "$s" "T" "$t" "$reltol"
         done
-        # kpis: every numeric key per unit (skip iterations)
-        printf '%s\n' "$kpis_sec" | grep -P '"\w+": \{' | while read -r line; do
+        # kpis: every numeric key per unit (skip iterations).  A unit of a
+        # SECTORED plant is named `SECTOR.unit` (2026-10-12, DEV.md 4c C69):
+        # the unit pattern admits the dot, or every KPI of every unit inside a
+        # sector arrives unpinned -- measured on greenAmmonia03_basicDesign the
+        # day its beds became the CONVERTER sector, 136 rows the recorder no
+        # longer wrote.  The reader (get_value) always accepted the dotted name.
+        printf '%s\n' "$kpis_sec" | grep -P '"[\w.]+": \{' | while read -r line; do
             local u
-            u=$(printf '%s' "$line" | grep -oP '"\K\w+(?=": \{)')
+            u=$(printf '%s' "$line" | grep -oP '"\K[\w.]+(?=": \{)')
             [ -z "$u" ] && continue
             printf '%s' "$line" | grep -oP '"\w+":\s*-?[0-9][0-9.eE+-]*' | while read -r kv; do
                 local k v
@@ -3789,6 +3794,23 @@ PYEOF
     fi
     rm -f /tmp/pfrergun.$$
 
+    # cooled multitubular pfr gate (2026-10-12, DEV.md 4c C69).  The bed-to-
+    # wall coefficient (Li & Finlayson, a correlation object) recomputed by
+    # hand from the run's own gas properties; the coolant's own balance and
+    # the hot spot; co- AND counter-current coolant against an INDEPENDENT
+    # RK4 (+ bisection shooting) on N2's own Cp; the multitubular sizer; 13
+    # refusals by name; the legacy U/areaPerVolume/T_coolant form untouched.
+    # Four by-hand sabotages, all caught.
+    if "$ROOT/bin/curate/check_cooled_pfr.py" > /tmp/cooledpfr.$$ 2>&1; then
+        printf "PASS  %-40s  (%s)\n" "cooled-pfr-gate" "$(gate_claim check_cooled_pfr /tmp/cooledpfr.$$)"
+        pass=$((pass+1))
+    else
+        printf "FAIL  %-40s  (run bin/curate/check_cooled_pfr.py)\n" "cooled-pfr-gate"
+        cat /tmp/cooledpfr.$$
+        fail=$((fail+1))
+    fi
+    rm -f /tmp/cooledpfr.$$
+
     # transport-correlation gate (2026-09-05).  The five transport families
     # (Chung, Eucken, Fuller, Andrade/Vogel/chemsepEq101, SatoRiedel/
     # chemsepEq16) and the shared Wilke phi_ij became objects with a window, a
@@ -5728,7 +5750,7 @@ for case_dir in "${CASES[@]}"; do
             fail=$((fail+1)); continue
         fi
         if [ -n "$bad" ]; then
-            printf "FAIL  %-40s  (KPI mismatch)" "$name_short"; printf "$bad\n"; fail=$((fail+1)); continue
+            printf "FAIL  %-40s  (KPI mismatch)" "$name_short"; printf '%b\n' "$bad"; fail=$((fail+1)); continue
         fi
         #  Say WHICH claim passed.  "checked vs reference" is true of a
         #  self-recorded golden and would be a false advertisement for an
@@ -5945,6 +5967,27 @@ if [ "$#" -eq 0 ]; then
         fail=$((fail+1))
     fi
     rm -f /tmp/reliefvalve.$$
+
+    # Converter-shell gate (2026-10-12, DEV.md 4c C69): the green-ammonia
+    # basic design's CONVERTER sector is ONE pressure shell -- D the beds'
+    # ONE declared diameter (each bed's height its V_R over it, the binding
+    # bed at its allowable: the smallest admissible diameter) and H the
+    # members stacked, recomputed from their own sheets; the bed shells
+    # become baskets (not costed, naming the shell); ONE relief valve at the
+    # shell's design pressure on the sector's outlet; the sheets at the
+    # sector's own level; eight refusals fired by name; the smallest
+    # admissible diameter re-bracketed per bed and end to end at two other
+    # diameters; the DesignSpec's `largestOf` on a two-bed fixture.  Ten
+    # by-hand sabotages, all caught.
+    if "$ROOT/bin/curate/check_converter_shell.py" > /tmp/convshell.$$ 2>&1; then
+        printf "PASS  %-40s  (%s)\n" "converter-shell-gate" "$(gate_claim check_converter_shell /tmp/convshell.$$)"
+        pass=$((pass+1))
+    else
+        printf "FAIL  %-40s  (run bin/curate/check_converter_shell.py)\n" "converter-shell-gate"
+        cat /tmp/convshell.$$
+        fail=$((fail+1))
+    fi
+    rm -f /tmp/convshell.$$
 
     # Energy-boundary pinned gate (2026-09-05): the plant-boundary first law
     # the energyBalance report decides now travels on the result as

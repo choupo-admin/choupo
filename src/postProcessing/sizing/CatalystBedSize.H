@@ -67,6 +67,8 @@ Description
 #pragma once
 #include "EquipmentSize.H"
 
+#include <map>
+#include <string>
 #include <vector>
 
 namespace Choupo {
@@ -80,6 +82,17 @@ public:
         const Material&         material,
         const DictPtr&          designRules) const override;
 private:
+    //  A bed of catalyst TUBES (the unit publishes `nTubes`, DEV.md 4c C69):
+    //  one `reactor` item, a tube bundle in a shell -- see the .cpp.
+    static EquipmentSizing sizeMultitubular(const std::string& unitName,
+        const std::map<std::string, scalar>& k, const Material& material,
+        const DictPtr& designRules, scalar pressureDesign);
+    static scalar multitubularVolume(const std::map<std::string, scalar>& k);
+    //  The catalyst charge of a bed volume -- one rule for both shapes.
+    static EquipmentSizing catalystCharge(const std::string& unitName,
+        const std::map<std::string, scalar>& k, const DictPtr& designRules,
+        scalar V_bed);
+
     inline static const std::string type_ = "pfr";
 };
 

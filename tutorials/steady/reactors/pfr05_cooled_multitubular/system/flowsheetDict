@@ -1,0 +1,82 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+  pfr05_cooled_multitubular  --  A COOLED MULTITUBULAR PLUG-FLOW REACTOR.
+
+  Catalyst in N parallel tubes, molten salt in the shell.  A strongly
+  exothermic gas-phase oxidation heats each tube faster than the wall can
+  take the heat away near the inlet, so the temperature RISES, peaks -- the
+  HOT SPOT -- and falls as the reactant is used up.  That peak is the number
+  a designer of such a reactor watches: a few kelvin more at the inlet, or a
+  few tenths of a kilopascal more o-xylene, and the peak runs away (the
+  source's Table 4 gives the critical inlet pressures).
+
+  WHAT IS SOLVED.  The bed is a one-dimensional pseudo-homogeneous plug flow
+  (the source's model), marched by RK4 along the volume: the species, the
+  enthalpy (T is read back from it), the pressure (Ergun, per tube) and the
+  COOLANT's temperature, which here changes along the tubes by its own
+  energy balance (coolant { arrangement ...; }).  The wall coefficient is
+  NOT typed: Li & Finlayson's correlation for a packed tube computes the bed
+  side at the LOCAL gas, in series with the tube wall and the salt's film.
+  system/outerDict then SOLVES the number of tubes for a hot spot at its
+  limit -- see there for why fewer tubes run COOLER here.
+
+  WHERE EACH NUMBER COMES FROM.  Zuluaga-Botero, Dobrosz-Gomez &
+  Gomez-Garcia, Catalysts 10 (2020) 626 (CC BY 4.0), Table 2: tube diameter
+  0.025 m, tube length 2 m, 3000 tubes (the starting guess here), particle
+  2 mm, bed porosity 0.5, bulk density 1300 kg/m3, 101.325 kPa, coolant
+  72 000 kg/h of cp 0.3105 kcal/(kg K) entering at 625 K; Table 3 the rate.
+  AUTHOR-SET, none cited: the o-xylene inlet pressure (0/feed), the tube
+  wall (1.65 mm of a 16 W/(m K) steel), the salt's film (1000 W/(m2 K)),
+  the spherical pellet, and the hot-spot limit in system/outerDict.  The
+  source's own overall U, 82.7 kcal/(m2 h K) = 96.2 W/(m2 K), is NOT used:
+  compare it with the U_in / U_out KPIs this run computes.
+\*---------------------------------------------------------------------------*/
+
+variables
+{
+    nTubes   3000;          // SOLVED by system/outerDict; the source's count is the start
+}
+
+units
+(
+    {
+        name        reactor;
+        type        pfr;
+        in          feed;
+        outputs     ( product );
+
+        operation
+        {
+            nSteps           400;
+            thermalMode      heatExchange;
+            catalystLoading  1300;                     // kg/m3 -- the bed's bulk density (Table 2)
+            tubes
+            {
+                count             $nTubes;
+                innerDiameter     0.025 m;             // Table 2
+                length            2 m;                 // Table 2 -- the bed volume follows
+                wallThickness     1.65 mm;             // AUTHOR-SET
+                wallConductivity  16;                  // W/(m K) -- AUTHOR-SET (a stainless steel)
+            }
+            catalyst          { particleDiameter 2 mm;  shape sphere; }   // Table 2; the shape AUTHOR-SET
+            pressureDrop      { model Ergun;  voidFraction 0.5; }        // Table 2's porosity
+            wallHeatTransfer  { model LiFinlayson; }
+            coolant
+            {
+                arrangement   coCurrent;
+                T_in          625 K;                   // Table 2 / Section 6
+                flow          20 kg/s;                 // 72 000 kg/h, Table 2
+                cp            1299.13;                 // J/(kg K) = 0.3105 kcal/(kg K), Table 2
+                film          1000;                    // W/(m2 K), salt side -- AUTHOR-SET
+            }
+        }
+        reactions   ( oXyleneOxidation );
+    }
+);

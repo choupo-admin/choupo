@@ -28,7 +28,8 @@ WHAT THIS GATE CHECKS, on throwaway copies of
       recomputed from the declaration.
   (c) THE OUTLET LEAVES AT P_in - dP: the produced stream's P in the result
       JSON is the integrated outlet, not the inlet's.
-  (d) EVERY REFUSAL FIRES BY NAME: a `pressureDrop` without `L_over_D`; no
+  (d) EVERY REFUSAL FIRES BY NAME: `diameter` beside `L_over_D` (C69); a
+      `pressureDrop` without `L_over_D`; no
       `voidFraction`; an unknown model; no particle; an unread key in the
       block; and the keys on the SINGLE-reaction path.
   (e) AN EXCEEDED ALLOWABLE IS ANNOUNCED, in the caveat block, with the
@@ -38,6 +39,16 @@ WHAT THIS GATE CHECKS, on throwaway copies of
       flowsheet.  (Byte-identity of the result JSON against the parent build
       was measured once, by hand, on every corpus pfr case -- DEV.md 4c C66;
       this arm is the part that can be re-run.)
+
+  (g) A DECLARED DIAMETER (C69): the same bed declared as `diameter D` (the
+      D its L/D 20 gives) publishes D_bed_declared_m, a length V_R / A, and
+      the same closed-form outlet at 1e-7; and the share of its drop the
+      INERTIAL term carries over the bed, `ergunInertialShare_bed` (what a
+      converterShell scales each bed's drop to another diameter on), is the
+      closed form c G / (a + c G) at 1e-9 -- isothermal and unreacting, both
+      Ergun terms go as 1/rho at fixed G, so the share is the same at every
+      point of the bed; and the L_over_D bed (a) does NOT publish it, so no
+      bed outside a converter gains a KPI.
 
 WHAT THIS DOES NOT CHECK, said plainly:
   * whether Ergun is RIGHT for an ammonia catalyst bed (wall effect,
@@ -54,6 +65,9 @@ SABOTAGES PERFORMED (by hand, 2026-10-12), each against this gate:
   S2  dP/dV = dP/dz (the division by A dropped).  Caught by (a).
   S3  the outlet left at P = 0 (the flowsheet's inlet pressure).  Caught by
       (c).
+  S4  (C69) the pfr publishes the VISCOUS share as `ergunInertialShare_bed`
+      (Iv and Ii swapped).  Caught by (g)'s closed form (0.2335 against
+      0.7665).  Run on a copy of the tree, 2026-10-12.
 """
 import json
 import math
@@ -186,8 +200,46 @@ def main() -> int:
         claims.append(f"(a) closed form P_out {P_out_cf/1e5:.6f} bar, engine "
                       f"{P_out/1e5:.6f} bar (rel {rel:.1e}); dP {k['dP_bed_bar']:.4f} bar")
 
+    # ---- (g) a DECLARED diameter (C69): the same bed, the same drop -------
+    #  The bed at L/D 20 has the diameter D computed above; declared as
+    #  `diameter D`, its length must come out as V_R / (pi D^2 / 4) and its
+    #  drop on the same closed form -- one cross-section, two spellings.
+    with tempfile.TemporaryDirectory() as td:
+        case = make(td, OPERATION.replace("            L_over_D      20;\n",
+                                          "            diameter      " + repr(D) + " m;\n") % "")
+        rc, out, js = run(case)
+        kd = (js or {}).get("kpis", {}).get("wgs", {})
+        if rc != 0 or "D_bed_declared_m" not in kd:
+            fails.append("(g) a declared `diameter` did not run, or published no"
+                         " D_bed_declared_m")
+        else:
+            if abs(kd["L_bed_m"] - V_R / A) > 1e-12 * L:
+                fails.append(f"(g) L_bed_m {kd['L_bed_m']} != V_R / (pi D^2/4)")
+            rel_g = abs(kd["P_out_bar"] * 1e5 - P_out_cf) / P_out_cf
+            if rel_g > 1.0e-7:
+                fails.append(f"(g) declared diameter: P_out against the closed form"
+                             f" rel {rel_g:.2e} > 1e-7")
+            if "L_over_D" in kd and abs(kd["L_over_D"] - LD) > 1e-9 * LD:
+                fails.append("(g) the published L_over_D is not L/D")
+            share_cf = c * G / (a + c * G)
+            share = kd.get("ergunInertialShare_bed")
+            if share is None or abs(share - share_cf) > 1e-9 * share_cf:
+                fails.append(f"(g) ergunInertialShare_bed {share!r} is not the closed"
+                             f" form c G / (a + c G) = {share_cf!r}")
+            if "ergunInertialShare_bed" in k:
+                fails.append("(g) the L_over_D bed publishes ergunInertialShare_bed --"
+                             " a KPI only a declared-diameter bed carries")
+            claims.append(f"(g) inertial share {share_cf:.6f} = c G/(a + c G) (only on the"
+                          " declared-diameter bed)")
+            claims.append(f"(g) the same bed at a DECLARED diameter {D:.5f} m: L = V_R/A,"
+                          f" P_out on the same closed form (rel {rel_g:.1e})")
+
     # ---- (d) refusals ------------------------------------------------------
     probes = [
+        ("diameter beside L_over_D",
+         OPERATION.replace("            L_over_D      20;\n",
+                           "            L_over_D      20;\n            diameter      0.05 m;\n") % "",
+         False, "both describe the bed's cross-section"),
         ("no L_over_D", OPERATION.replace("            L_over_D      20;\n", "") % "",
          False, "operation.L_over_D"),
         ("no voidFraction", OPERATION.replace("  voidFraction 0.40;", "") % "",

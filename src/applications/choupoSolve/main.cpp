@@ -102,6 +102,7 @@ Description
 #include "thermo/heatCapacity/HeatCapacityModel.H"
 #include "thermo/phase/Phase.H"
 #include "unitOperations/heatTransfer/htc/HeatTransferCorrelation.H"
+#include "unitOperations/reactor/wallHeatTransfer/BedWallHeatTransfer.H"
 #include "thermo/vaporPressure/VaporPressureModel.H"
 #include "thermo/reaction/ReactionRate.H"
 #include "unitOperations/UnitOperation.H"
@@ -454,6 +455,7 @@ try
     HeatCapacityModel ::registerBuiltins();
     Phase           ::registerBuiltins();
     HeatTransferCorrelation::registerBuiltins();
+    BedWallHeatTransfer::registerBuiltins();   // a cooled pfr's bed-to-wall U (C69)
     CycloneModel    ::registerBuiltins();
     GibbsMethod     ::registerBuiltins();
     UnitOperation   ::registerBuiltins();

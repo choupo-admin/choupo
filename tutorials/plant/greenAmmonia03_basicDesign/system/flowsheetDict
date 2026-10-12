@@ -21,21 +21,33 @@
   bed 3's effluent, which closes an ENERGY recycle through three kinetic
   beds (the second tear in system/solverDict).
 
+  THE BEDS AND THEIR COOLERS ARE ONE SECTOR, CONVERTER (DEV.md 4c C69):
+  five calculations, one piece of equipment -- a single pressure shell
+  holding the beds and the interbed exchange (CONVERTER/system/flowsheetDict
+  says where that construction was read).  The grouping is a fact about the
+  EQUIPMENT; system/postDict sizes and prices ONE shell for it.  Since then
+  the CONVERTER runs before the FEHE and the energy recycle is torn at
+  PreheatedFeed, the stream the FEHE closes the loop with: a tear cannot be
+  declared on a sector's outlet by its plant label (the plan refuses it as
+  an INLET TEAR).
+
           Recycle -[RecycleComp]------------------------------------------->[LoopMix] <- Makeup
              ^                                                                  |
-             |                    +------ HotEffluent (tear) -------+           v
+             |                    +------ HotEffluent ---------------+           v
              |                    v                                 |      [FEHE] cold side
-             |   CooledEffluent <-[FEHE] hot side                   |           | PreheatedFeed ~381 C
-             |        |                                             |           v
-             |   [WaterCooler] 40 C                                 |      [Bed1] -> 515 C
-             |        |                                             |           |
-             |   [Chiller] -20 C                                    |  [InterbedCooler1] -> 420 C  (HP steam)
-             |        |                                             |           |
-             |   [Separator] 140 bar -- RawLiquid -> let-down        |      [Bed2]  5 K approach
-             |        |                                             |           |
-             +--[PurgeSplit]-- Purge                                 |  [InterbedCooler2] -> 410 C  (HP steam)
-                                                                    |           |
-                                                                    +------ [Bed3]  5 K approach
+             |   CooledEffluent <-[FEHE] hot side                   |           | PreheatedFeed ~381 C (tear)
+             |        |                                    +--------|-----------|----- CONVERTER ---+
+             |   [WaterCooler] 40 C                        |        |           v                   |
+             |        |                                    |        |      [Bed1] -> 515 C          |
+             |   [Chiller] -20 C                           |        |           |                   |
+             |        |                                    |        |  [InterbedCooler1] -> 420 C   |
+             |   [Separator] 140 bar -- RawLiquid          |        |           |      (HP steam)   |
+             |        |                -> let-down         |        |      [Bed2]  5 K approach     |
+             +--[PurgeSplit]-- Purge                       |        |           |                   |
+                                                           |        |  [InterbedCooler2] -> 410 C   |
+                                                           |        |           |      (HP steam)   |
+                                                           |        +------ [Bed3]  5 K approach    |
+                                                           +----------------------------------------+
 
   WHERE EACH NUMBER COMES FROM: the base case's header for everything it
   shares.  New here: the bed volumes are SOLVED, not typed -- system/outerDict
@@ -60,12 +72,8 @@ sectors
     Aftercooler
     RecycleComp
     LoopMix
+    CONVERTER          // Bed1, InterbedCooler1, Bed2, InterbedCooler2, Bed3 -- one shell
     FEHE
-    Bed1
-    InterbedCooler1
-    Bed2
-    InterbedCooler2
-    Bed3
     WaterCooler
     Chiller
     Separator
@@ -94,12 +102,8 @@ connections
     Recycle             { from PurgeSplit/Recycle;  to RecycleComp/Feed; }
     CompRecycle         { from RecycleComp/Out;  to LoopMix/Recycle; }
     Mixed               { from LoopMix/Out;  to FEHE/Cold; }
-    PreheatedFeed       { from FEHE/ColdOut;  to Bed1/Feed; }
-    Bed1Out             { from Bed1/Out;  to InterbedCooler1/Feed; }
-    Bed2Feed            { from InterbedCooler1/Out;  to Bed2/Feed; }
-    Bed2Out             { from Bed2/Out;  to InterbedCooler2/Feed; }
-    Bed3Feed            { from InterbedCooler2/Out;  to Bed3/Feed; }
-    HotEffluent         { from Bed3/Out;  to FEHE/Hot; }
+    PreheatedFeed       { from FEHE/ColdOut;  to CONVERTER/PreheatedFeed; }
+    HotEffluent         { from CONVERTER/HotEffluent;  to FEHE/Hot; }
     CooledEffluent      { from FEHE/HotOut;  to WaterCooler/Feed; }
     WaterCooledEffluent { from WaterCooler/Out;  to Chiller/Feed; }
     ChilledEffluent     { from Chiller/Out;  to Separator/Feed; }
@@ -118,24 +122,26 @@ connections
 //  DesignSpec OVERWRITES these values on every evaluation, starting from its
 //  own `initial`.  They live HERE, at the plant, because a unit folder that
 //  declares no `variables {}` of its own resolves its `$references` against
-//  the plant's (src/unitOperations/flowsheet/MemberFolder.H) -- so
-//  Bed1/system/flowsheetDict reads `V_R $V_Bed1;` and nothing in a bed folder
+//  the plant's (src/unitOperations/flowsheet/MemberFolder.H), here through the
+//  CONVERTER sector, which declares none either -- so
+//  CONVERTER/Bed1/system/flowsheetDict reads `V_R $V_Bed1;` and nothing in a bed folder
 //  types a volume.  The values written below are the DESIGN POINT the
 //  DesignSpec last converged to, so a run without the outerDict RATES the
 //  designed beds; they are never a specification.
 variables
 {
-    V_Bed1             8.8861 m3;
-    V_Bed2            18.4225 m3;
-    V_Bed3            31.7447 m3;
+    V_Bed1             8.9510 m3;
+    V_Bed2            18.4115 m3;
+    V_Bed3            31.6971 m3;
+    D_converter        2.2283 m;     // the CONVERTER's one diameter, read by every bed
     NH3_t_h            { compute "ProductNH3.F * 17.0305 * 3.6"; }
     NH3_t_day          { compute "NH3_t_h * 24"; }
     W_compression_kW   { compute "N2Boost.W_shaft_kW + MakeupComp1.W_shaft_kW + MakeupComp2.W_shaft_kW + RecycleComp.W_shaft_kW"; }
     W_specific_kWh_t   { compute "W_compression_kW / NH3_t_h"; }
     H2_specific_kg_t   { compute "H2Feed.F * 2.01588 * 3.6 * 1000 / NH3_t_h"; }
-    y_NH3_converter    { compute "Bed3.y_NH3_out"; }
-    V_catalyst_m3      { compute "Bed1.V_R + Bed2.V_R + Bed3.V_R"; }
-    Q_steam_kW         { compute "-(InterbedCooler1.Q_kW + InterbedCooler2.Q_kW)"; }
+    y_NH3_converter    { compute "CONVERTER.Bed3.y_NH3_out"; }
+    V_catalyst_m3      { compute "CONVERTER.Bed1.V_R + CONVERTER.Bed2.V_R + CONVERTER.Bed3.V_R"; }
+    Q_steam_kW         { compute "-(CONVERTER.InterbedCooler1.Q_kW + CONVERTER.InterbedCooler2.Q_kW)"; }
     Q_refrigeration_kW { compute "-Chiller.Q_kW"; }
     purge_kmol_h       { compute "Purge.F * 3600"; }
     NH3_per_pass_kmol_h { compute "(PreheatedFeed.F - HotEffluent.F) * 3600"; }   // N2 + 3 H2 -> 2 NH3: one mole lost per NH3 made

@@ -3,7 +3,7 @@
 # kind   name      key         expected        reltol
 stream  FlashGas               F                0.0415445974779  1e-4
 stream  FlashGas               T                238.884926778      1e-4
-stream  FuelGas                F                0.00338939130354 1e-4
+stream  FuelGas                F                0.00339264003654 1e-4
 stream  FuelGas                T                248.677720887    1e-4
 stream  LetdownGas             F                0.00354665692591   1e-4
 stream  LetdownGas             T                253.01994131       1e-4
@@ -11,7 +11,7 @@ stream  LetdownLiquid          F                0.813252311193     1e-4
 stream  LetdownLiquid          T                253.01994131       1e-4
 stream  ProductNH3             F                0.771707755979   1e-4
 stream  ProductNH3             T                238.884926778      1e-4
-stream  Purge                  F                0.00338939130354 1e-4
+stream  Purge                  F                0.00339264003654 1e-4
 stream  Purge                  T                253.15             1e-4
 stream  RawLiquid              F                0.816798968119     1e-4
 stream  RawLiquid              T                253.15             1e-4
@@ -45,16 +45,16 @@ kpi     DrumLP                 Q_kW             0                  1e-4
 kpi     DrumLP                 T                238.884926778      1e-4
 kpi     DrumLP                 V_over_F         0.0510845093794  1e-4
 kpi     DrumLP                 phaseSet         0                  1e-4
-kpi     PurgeValve             F                0.00338939130354 1e-4
+kpi     PurgeValve             F                0.00339264003654 1e-4
 kpi     PurgeValve             P_in             14000000           1e-4
 kpi     PurgeValve             P_out            200000             1e-4
-kpi     PurgeValve             Q_in             0.000544600224488 1e-4
-kpi     PurgeValve             Q_out            0.035061157945   1e-4
+kpi     PurgeValve             Q_in             0.00054512158929 1e-4
+kpi     PurgeValve             Q_out            0.035094692642   1e-4
 kpi     PurgeValve             T_in             253.15             1e-4
 kpi     PurgeValve             T_out            248.677720887    1e-4
 kpi     PurgeValve             dP               13800000           1e-4
-kpi     PurgeValve             dT               -4.47393981436   1e-4
-kpi     PurgeValve             massFlow         0.0259332404525  1e-4
+kpi     PurgeValve             dT               -4.47443695939   1e-4
+kpi     PurgeValve             massFlow         0.0259595936621  1e-4
 kpi     PurgeValve             rho_V_out        0.739657272392   1e-4
 kpi     PurgeValve             rho_in           47.6188574415    1e-4
 kpi     PurgeValve             rho_out          0.739657272392   1e-4

@@ -28,6 +28,7 @@ License
 
 #include "DesignSpec.H"
 #include "ResponseExtractor.H"
+#include "core/Advisory.H"
 #include "core/Dictionary.H"
 #include "postProcessing/PostProcessor.H"
 #include "solver/NewtonND.H"
@@ -43,6 +44,23 @@ License
 #include <stdexcept>
 
 namespace Choupo {
+
+DesignSpec::Largest DesignSpec::largestOf(const SimulationResult& r,
+                                          const Target& tg)
+{
+    Largest L;
+    L.value = -std::numeric_limits<scalar>::infinity();
+    for (const auto& p : tg.paths)
+    {
+        const scalar v = extractResponse(r, p, "DesignSpec");
+        if (v > L.value) { L.value = v; L.path = p; }
+    }
+    for (const auto& p : tg.paths)
+        if (p != L.path
+            && L.value - extractResponse(r, p, "DesignSpec") <= tg.tol)
+        { L.tiedWith = p; break; }
+    return L;
+}
 
 DesignSpec::DesignSpec(const DictPtr& dict)
 {
@@ -76,8 +94,25 @@ DesignSpec::DesignSpec(const DictPtr& dict)
     for (auto& t : tgs)
     {
         Target tg;
-        // Pick form: equality if `lhs` is present, value otherwise.
-        if (t->found("lhs") || t->found("rhs"))
+        // Pick form: equality if `lhs` is present, largest-of if
+        // `largestOf` is, value otherwise.
+        if (t->found("largestOf"))
+        {
+            if (t->found("path") || t->found("lhs") || t->found("rhs"))
+                throw std::runtime_error("DesignSpec: a target with"
+                    " `largestOf` names its quantities there -- `path`,"
+                    " `lhs` or `rhs` beside it would be a second target in"
+                    " one entry.  Keep one form.");
+            tg.kind  = Target::Kind::LargestOf;
+            tg.paths = t->lookupWordList("largestOf");
+            if (tg.paths.size() < 2)
+                throw std::runtime_error("DesignSpec: `largestOf` needs at"
+                    " least two quantities (it names "
+                    + std::to_string(tg.paths.size()) + "); one quantity is"
+                      " the plain `path` form.");
+            tg.value = t->lookupScalar("value");
+        }
+        else if (t->found("lhs") || t->found("rhs"))
         {
             // `{ lhs <pathA>;  rhs <pathB>;  tol <X>; }` ---
             // enforces resp(A) = resp(B).
@@ -173,6 +208,13 @@ int DesignSpec::run()
                       << std::scientific << std::setprecision(6)
                       << tg.value
                       << "   (tol " << tg.tol << ")\n";
+        else if (tg.kind == Target::Kind::LargestOf)
+        {
+            std::cout << "the LARGEST of (";
+            for (const auto& p : tg.paths) std::cout << " " << p;
+            std::cout << " )  ->  " << std::scientific << std::setprecision(6)
+                      << tg.value << "   (tol " << tg.tol << ")\n";
+        }
         else
             std::cout << tg.lhs << "  ==  " << tg.rhs
                       << "   (tol " << std::scientific
@@ -222,6 +264,8 @@ int DesignSpec::run()
                 const scalar resp = extractResponse(r, tg.path, "DesignSpec");
                 F[j] = (resp - tg.value) / tg.tol;
             }
+            else if (tg.kind == Target::Kind::LargestOf)
+                F[j] = (largestOf(r, tg).value - tg.value) / tg.tol;
             else
             {
                 const scalar a = extractResponse(r, tg.lhs, "DesignSpec");
@@ -303,6 +347,29 @@ int DesignSpec::run()
             clone->setScalarAtPath("variables." + vars_[i].variable, xi);
     }
     auto finalResult = simulator_(clone, ov);
+    //  A largest-of target says WHICH quantity it found largest at the
+    //  design point -- the author did not name it, so the run does -- and
+    //  whether a second one sits within the target's tolerance of it (a
+    //  kink at the answer: the two share the bound).
+    for (const auto& tg : targets_)
+    {
+        if (tg.kind != Target::Kind::LargestOf) continue;
+        const Largest L = largestOf(finalResult, tg);
+        std::ostringstream os;
+        os << std::setprecision(6) << "largestOf: at the design point"
+              " the largest is " << L.path << " = " << L.value << " (target "
+           << tg.value << ", tol " << tg.tol << "); the others:";
+        for (std::size_t k = 0; k < tg.paths.size(); ++k)
+            if (tg.paths[k] != L.path)
+                os << " " << tg.paths[k] << " = "
+                   << extractResponse(finalResult, tg.paths[k], "DesignSpec");
+        if (!L.tiedWith.empty())
+            os << ".  " << L.tiedWith << " is within the tolerance of it: the"
+                  " two share the bound, and the answer sits on the kink of"
+                  " max()";
+        std::cout << "[designSpec] " << os.str() << "\n";
+        AdvisoryLog::instance().add("model", "info", "designSpec", os.str());
+    }
     //  THE POST-PROCESSING CHAIN RUNS ON THE REPRESENTATIVE PASS (2026-09-26,
     //  taken on a stated default -- DEV.md 4c C2).  Until today this driver
     //  stored `postDict_` and never read it, while the run header announced

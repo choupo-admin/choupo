@@ -1,0 +1,31 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*--- Choupo stream state.  Every DIMENSIONAL value carries its unit; the parser converts to SI.
+     componentMolarFlows is the OVERALL material (all phases); a phases{} block, when present,
+     is a decomposition that sums back to it exactly. ---*/
+
+/*  THE FEED.  The source's mass velocity, G = 3600 m/h x 1.293 kg/m3 =
+    1.293 kg/(m2 s) (Zuluaga-Botero et al. 2020, Table 2: "superficial
+    velocity" and "gas mixture density"), through its 3000 tubes of 0.025 m:
+    1.9041 kg/s of gas.  O2 at the table's 21.07 kPa; o-xylene at 1.2 kPa --
+    AUTHOR-SET, below the critical inlet pressures the source's Table 4
+    reports for this single-reaction model (1.417 to 1.863 kPa by
+    arrangement), so the bed is sensitive and does not run away; N2 the
+    balance.  Molar flows = 230.2772 kmol/h x (1.2, 21.07, 79.055)/101.325. */
+
+componentMolarFlows
+{
+    oXylene     2.727191 kmol/h;
+    O2          47.884923 kmol/h;
+    N2          179.665048 kmol/h;
+}
+
+T               625 K;          // the source's T0 = Tc = 625 K
+P               101325 Pa;      // the source's total pressure, 101.325 kPa
+phase           gas;

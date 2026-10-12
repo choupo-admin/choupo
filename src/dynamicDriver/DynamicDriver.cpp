@@ -119,6 +119,7 @@ Description
 #include "thermo/heatCapacity/HeatCapacityModel.H"
 #include "thermo/phase/Phase.H"
 #include "unitOperations/heatTransfer/htc/HeatTransferCorrelation.H"
+#include "unitOperations/reactor/wallHeatTransfer/BedWallHeatTransfer.H"
 #include "thermo/vaporPressure/VaporPressureModel.H"
 #include "unitOperations/dynamic/DynamicUnitOperation.H"
 #include "unitOperations/flash/StreamEquilibrium.H"   // the C36 #1 saturation refusal
@@ -378,6 +379,7 @@ try
     HeatCapacityModel ::registerBuiltins();
     Phase             ::registerBuiltins();
     HeatTransferCorrelation::registerBuiltins();
+    BedWallHeatTransfer::registerBuiltins();   // a cooled pfr's bed-to-wall U (C69)
     //  The STEADY units too, since the quasi-steady seam (2026-09-30): a
     //  `quasiSteady` block wraps any of them, and a unit is not installed
     //  until everything it constructs is (the choupoBatch/diafilter rule).

@@ -1,0 +1,53 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+  THE TUBE COUNT, SOLVED AGAINST THE HOT SPOT.
+
+  The plant's feed is fixed (0/feed), so the number of tubes sets the mass
+  velocity G in each one, and G sets three things at once: the time a
+  parcel of gas spends on the catalyst (more tubes -> more catalyst -> more
+  conversion), the pressure drop (more tubes -> slower gas -> a smaller
+  drop -> higher partial pressures), and the bed-to-wall coefficient,
+  which Li & Finlayson correlate as G^0.8 (more tubes -> SLOWER gas -> a
+  WORSE wall).  All three push the same way, so here MORE tubes run
+  HOTTER -- measured, 2026-10-12, on this case:
+
+        tubes      2500    3000    3500    4000    5000
+        T_max [K]  641.7   648.4   656.8   668.5   747.4  (runaway)
+        X(oX)      0.30    0.46    0.62    0.76    0.98
+
+  and the design question is the largest count -- the most catalyst, the
+  most conversion -- at which the hot spot stays at its limit.  The count
+  is a real number here (a Newton manipulates it); the sizer rounds it UP
+  to whole tubes and says so.  The limit, 665 K (392 C), is AUTHOR-SET.
+\*---------------------------------------------------------------------------*/
+
+type designSpec;
+
+manipulate
+(
+    { variable nTubes;   initial 3000;  min 2200;  max 6000; }   // tubes
+);
+
+targets
+(
+    { path reactor.T_max;   value 665.0;   tol 0.01; }   // K -- the hot-spot limit, AUTHOR-SET
+);
+
+options
+{
+    maxIter      40;
+    tolF         1.0;
+    fdStep       1.0e-3;
+}
+
+report
+{
+    file     designspec_history.csv;
+}

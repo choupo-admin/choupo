@@ -187,8 +187,8 @@ describe("letdown: the witnesses, held to what they copy", () => {
   const raw = tutorialByName(LETDOWN_WITNESS)!.files.rawFiles!;
   const praw = tutorialByName(LETDOWN_PROPS)!.files.rawFiles!;
   for (const s of ["RawLiquid", "Purge"]) {
-    it(`0/${s} is the plant's converged/${s}, to the digit`, () => {
-      const conv = witnessOutput(`tutorials/${LETDOWN_PLANT}`, `converged/${s}`);
+    it(`0/${s} is the plant's converged/MAIN/${s}, to the digit`, () => {
+      const conv = witnessOutput(`tutorials/${LETDOWN_PLANT}`, `converged/MAIN/${s}`);
       const mine = raw[`0/${s}`]!;
       expect(flows(mine)).toEqual(flows(conv));
       expect(scalar(mine, "T")).toBe(scalar(conv, "T"));

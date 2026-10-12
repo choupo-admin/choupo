@@ -56,9 +56,7 @@ EquipmentSizing exchangerRecord(const std::string& unitName,
     scalar Q_kW, scalar U, scalar LMTD, scalar A, scalar pressureDesign,
     const Material& material, const std::string& basis)
 {
-    // Empirical weight ≈ 30 kg per m² (TEMA shell+tubes mid-range);
-    // material factor scales linearly via density ratio (CS = 7850 kg/m³).
-    const scalar weight = 30.0 * A * (material.density / 7850.0);
+    const scalar weight = ShellTubeHX::bundleWeight(A, material);
 
     EquipmentSizing d;
     d.unitName       = unitName;
@@ -516,6 +514,15 @@ std::vector<EquipmentSizing> ShellTubeHX::size(const std::string& unitName,
         " the unit, not declared") };
 }
 
+
+//  THE ONE HOME of the exchanger weight rule, reachable by a sizer that
+//  realises a tube bundle without being a heater (the multitubular reactor,
+//  C69): empirical weight ~ 30 kg per m2 (TEMA shell + tubes mid-range), the
+//  material factor scaling linearly with the density ratio (CS = 7850 kg/m3).
+scalar ShellTubeHX::bundleWeight(scalar A, const Material& material)
+{
+    return 30.0 * A * (material.density / 7850.0);
+}
 
 EquipmentSizing ShellTubeHX::sizeFromDuty(const std::string& unitName,
     scalar                  Q_kW,

@@ -177,6 +177,9 @@
   "BedHydraulics": [
    "src/unitOperations/reactor/PFR.H"
   ],
+  "BedWallHeatTransfer": [
+   "src/unitOperations/reactor/wallHeatTransfer/BedWallHeatTransfer.H"
+  ],
   "BinaryTxy": [
    "src/thermo/SaturationCurves.H"
   ],
@@ -282,6 +285,9 @@
   "ConstraintSpec": [
    "src/outerDriver/ConstraintSpec.H"
   ],
+  "Context": [
+   "src/unitOperations/reactor/wallHeatTransfer/BedWallHeatTransfer.H"
+  ],
   "ContinuousStream": [
    "src/unitOperations/dynamic/DynamicUnitOperation.H"
   ],
@@ -296,6 +302,9 @@
   ],
   "ConversionReactor": [
    "src/unitOperations/reactor/ConversionReactor.H"
+  ],
+  "ConverterShellSize": [
+   "src/postProcessing/sizing/ConverterShellSize.H"
   ],
   "CoolingTower": [
    "src/unitOperations/heatTransfer/CoolingTower.H"
@@ -825,6 +834,9 @@
   "LeithLicht": [
    "src/unitOperations/separation/cycloneModel/LeithLicht.H"
   ],
+  "LiFinlayson": [
+   "src/unitOperations/reactor/wallHeatTransfer/LiFinlayson.H"
+  ],
   "LimitViolation": [
    "src/streams/AnalysisReconciler.H"
   ],
@@ -1271,6 +1283,7 @@
   "Result": [
    "src/thermo/electrolyte/AqueousVolumetric.H",
    "src/unitOperations/distillation/TrayHydraulics.H",
+   "src/unitOperations/reactor/wallHeatTransfer/BedWallHeatTransfer.H",
    "src/unitOperations/saturation/BubblePoint.H",
    "src/unitOperations/saturation/DewPoint.H"
   ],
@@ -1677,7 +1690,8 @@
   "VerifyResult": [
    "src/unitOperations/heatTransfer/htc/HeatTransferCorrelation.H",
    "src/unitOperations/heatTransfer/htc/PhaseChangeHTC.H",
-   "src/unitOperations/hydraulics/friction/FrictionFactorCorrelation.H"
+   "src/unitOperations/hydraulics/friction/FrictionFactorCorrelation.H",
+   "src/unitOperations/reactor/wallHeatTransfer/BedWallHeatTransfer.H"
   ],
   "VesselSize": [
    "src/postProcessing/sizing/VesselSize.H"
@@ -1699,6 +1713,9 @@
   ],
   "Wall": [
    "src/postProcessing/sizing/VesselMechanics.H"
+  ],
+  "WallExchange": [
+   "src/unitOperations/reactor/PFR.H"
   ],
   "WallSolution": [
    "src/unitOperations/membrane/massTransfer/Polarisation.H"
@@ -1886,6 +1903,10 @@
    {
     "key": "reliefValve",
     "type": "ReliefValveSize"
+   },
+   {
+    "key": "converterShell",
+    "type": "ConverterShellSize"
    }
   ],
   "src/propertyOps/ConstantEstimator.cpp": [
@@ -2622,6 +2643,12 @@
     "type": "DirectMin"
    }
   ],
+  "src/unitOperations/reactor/wallHeatTransfer/BedWallHeatTransfer.cpp": [
+   {
+    "key": "LiFinlayson",
+    "type": "LiFinlayson"
+   }
+  ],
   "src/unitOperations/separation/cycloneModel/CycloneModel.cpp": [
    {
     "key": "Lapple",
@@ -2890,6 +2917,7 @@
    "src/unitOperations/heatTransfer/htc/HeatTransferCorrelation.H",
    "src/unitOperations/reactor/PureSolidPhase.H",
    "src/unitOperations/reactor/gibbsMethod/GibbsMethod.H",
+   "src/unitOperations/reactor/wallHeatTransfer/BedWallHeatTransfer.H",
    "src/unitOperations/separation/cycloneModel/CycloneModel.H"
   ],
   "src/applications/choupoSolve/registerUserTypesStub.cpp": [],
@@ -3043,7 +3071,6 @@
    "src/core/Origin.H",
    "src/core/ThermoResolution.H"
   ],
-  "src/core/Types.H": [],
   "src/core/Units.cpp": [
    "src/core/Dimensions.H",
    "src/core/Types.H",
@@ -3181,6 +3208,7 @@
    "src/unitOperations/heatTransfer/htc/HeatTransferCorrelation.H",
    "src/unitOperations/reactor/PureSolidPhase.H",
    "src/unitOperations/reactor/gibbsMethod/GibbsMethod.H",
+   "src/unitOperations/reactor/wallHeatTransfer/BedWallHeatTransfer.H",
    "src/unitOperations/separation/cycloneModel/CycloneModel.H"
   ],
   "src/io/DesignSheetWriter.cpp": [
@@ -3651,6 +3679,7 @@
    "src/postProcessing/sizing/CatalystBedSize.H",
    "src/postProcessing/sizing/DesignDefaults.H",
    "src/postProcessing/sizing/EquipmentSize.H",
+   "src/postProcessing/sizing/ShellTubeHX.H",
    "src/postProcessing/sizing/VesselMechanics.H",
    "src/result/SimulationResult.H",
    "src/result/UnitProfile.H",
@@ -3659,7 +3688,9 @@
    "src/thermo/Component.H",
    "src/thermo/PackageAudit.H",
    "src/thermo/SaturationCurves.H",
-   "src/thermo/ThermoPackage.H"
+   "src/thermo/ThermoPackage.H",
+   "src/unitOperations/heatTransfer/htc/HeatTransferCorrelation.H",
+   "src/unitOperations/heatTransfer/htc/ShellTubeDesign.H"
   ],
   "src/postProcessing/sizing/ColumnSize.cpp": [
    "src/core/Advisory.H",
@@ -3702,6 +3733,33 @@
    "src/materials/Material.H",
    "src/postProcessing/sizing/CompressorSize.H",
    "src/postProcessing/sizing/EquipmentSize.H",
+   "src/result/SimulationResult.H",
+   "src/result/UnitProfile.H",
+   "src/solver/Convergence.H",
+   "src/streams/ProcessStream.H",
+   "src/thermo/Component.H",
+   "src/thermo/PackageAudit.H",
+   "src/thermo/SaturationCurves.H",
+   "src/thermo/ThermoPackage.H"
+  ],
+  "src/postProcessing/sizing/ConverterShellSize.cpp": [
+   "src/core/Advisory.H",
+   "src/core/Constants.H",
+   "src/core/Dictionary.H",
+   "src/core/Dimensions.H",
+   "src/core/FlatUnit.H",
+   "src/core/Identifiers.H",
+   "src/core/Origin.H",
+   "src/core/ProblemDivergence.H",
+   "src/core/RegistryRefusal.H",
+   "src/core/ResultRecords.H",
+   "src/core/ThermoResolution.H",
+   "src/core/Types.H",
+   "src/materials/Material.H",
+   "src/postProcessing/sizing/ConverterShellSize.H",
+   "src/postProcessing/sizing/DesignDefaults.H",
+   "src/postProcessing/sizing/EquipmentSize.H",
+   "src/postProcessing/sizing/VesselMechanics.H",
    "src/result/SimulationResult.H",
    "src/result/UnitProfile.H",
    "src/solver/Convergence.H",
@@ -3780,6 +3838,7 @@
    "src/postProcessing/sizing/CatalystBedSize.H",
    "src/postProcessing/sizing/ColumnSize.H",
    "src/postProcessing/sizing/CompressorSize.H",
+   "src/postProcessing/sizing/ConverterShellSize.H",
    "src/postProcessing/sizing/CrystalliserSize.H",
    "src/postProcessing/sizing/CycloneSize.H",
    "src/postProcessing/sizing/EquipmentSize.H",
@@ -4499,11 +4558,6 @@
    "src/unitOperations/UnitOperation.H",
    "src/unitOperations/flash/IsothermalFlash.H",
    "src/unitOperations/saturation/BubblePoint.H"
-  ],
-  "src/propertyOps/PropertyOperation.H": [
-   "src/core/Dictionary.H",
-   "src/core/Dimensions.H",
-   "src/core/Types.H"
   ],
   "src/propertyOps/PropertyOperation.cpp": [
    "src/core/Constants.H",
@@ -6691,6 +6745,7 @@
    "src/unitOperations/reactor/PureSolidPhase.H",
    "src/unitOperations/reactor/TemperatureApproach.H",
    "src/unitOperations/reactor/gibbsMethod/GibbsMethod.H",
+   "src/unitOperations/reactor/wallHeatTransfer/BedWallHeatTransfer.H",
    "src/unitOperations/rotating/Compressor.H",
    "src/unitOperations/rotating/ElectricLoad.H",
    "src/unitOperations/rotating/Pump.H",
@@ -8076,6 +8131,8 @@
    "src/thermo/reaction/ExpressionRate.H",
    "src/thermo/reaction/Reaction.H",
    "src/thermo/reaction/ReactionRate.H",
+   "src/thermo/utility/Utility.H",
+   "src/thermo/utility/UtilityCatalogue.H",
    "src/unitOperations/UnitOperation.H",
    "src/unitOperations/flash/IsothermalFlash.H",
    "src/unitOperations/flash/PureSaturationPlateau.H",
@@ -8083,7 +8140,8 @@
    "src/unitOperations/reactor/CatalystPellet.H",
    "src/unitOperations/reactor/PFR.H",
    "src/unitOperations/reactor/PolymerKPIs.H",
-   "src/unitOperations/reactor/ReactionHeat.H"
+   "src/unitOperations/reactor/ReactionHeat.H",
+   "src/unitOperations/reactor/wallHeatTransfer/BedWallHeatTransfer.H"
   ],
   "src/unitOperations/reactor/PolymerKPIs.cpp": [
    "src/core/Dictionary.H",
@@ -8271,6 +8329,14 @@
    "src/solver/NewtonND.H",
    "src/unitOperations/reactor/pellet/Catalyst.H",
    "src/unitOperations/reactor/pellet/PelletDiffusion.H"
+  ],
+  "src/unitOperations/reactor/wallHeatTransfer/BedWallHeatTransfer.cpp": [
+   "src/core/Dictionary.H",
+   "src/core/Dimensions.H",
+   "src/core/RegistryRefusal.H",
+   "src/core/Types.H",
+   "src/unitOperations/reactor/wallHeatTransfer/BedWallHeatTransfer.H",
+   "src/unitOperations/reactor/wallHeatTransfer/LiFinlayson.H"
   ],
   "src/unitOperations/rotating/Compressor.cpp": [
    "src/core/Constants.H",
@@ -8706,6 +8772,7 @@
    "src/postProcessing/sizing/CatalystBedSize.cpp",
    "src/postProcessing/sizing/ColumnSize.cpp",
    "src/postProcessing/sizing/CompressorSize.cpp",
+   "src/postProcessing/sizing/ConverterShellSize.cpp",
    "src/postProcessing/sizing/CrystalliserSize.cpp",
    "src/postProcessing/sizing/CycloneSize.cpp",
    "src/postProcessing/sizing/DesignDefaults.cpp",
@@ -8862,6 +8929,7 @@
    "src/dynamicDriver/DynamicDriver.cpp",
    "src/postProcessing/sizing/CatalystBedSize.cpp",
    "src/postProcessing/sizing/ColumnSize.cpp",
+   "src/postProcessing/sizing/ConverterShellSize.cpp",
    "src/postProcessing/sizing/ReliefValveSize.cpp",
    "src/postProcessing/sizing/StirredTank.cpp",
    "src/postProcessing/sizing/VesselMechanics.cpp",
@@ -8992,6 +9060,7 @@
    "src/postProcessing/sizing/CatalystBedSize.cpp",
    "src/postProcessing/sizing/ColumnSize.cpp",
    "src/postProcessing/sizing/CompressorSize.cpp",
+   "src/postProcessing/sizing/ConverterShellSize.cpp",
    "src/postProcessing/sizing/CrystalliserSize.cpp",
    "src/postProcessing/sizing/CycloneSize.cpp",
    "src/postProcessing/sizing/DesignDefaults.cpp",
@@ -9033,7 +9102,6 @@
    "src/propertyOps/PitzerActivity.cpp",
    "src/propertyOps/PolarisationIndex.cpp",
    "src/propertyOps/PropertyEvaluator.cpp",
-   "src/propertyOps/PropertyOperation.H",
    "src/propertyOps/PropertyOperation.cpp",
    "src/propertyOps/PropertyPoint.cpp",
    "src/propertyOps/PropertyScan1D.cpp",
@@ -9237,6 +9305,7 @@
    "src/unitOperations/reactor/pellet/CatalystRegistry.cpp",
    "src/unitOperations/reactor/pellet/EffectiveDiffusivity.cpp",
    "src/unitOperations/reactor/pellet/PelletDiffusion.cpp",
+   "src/unitOperations/reactor/wallHeatTransfer/BedWallHeatTransfer.cpp",
    "src/unitOperations/rotating/Compressor.cpp",
    "src/unitOperations/rotating/ElectricLoad.cpp",
    "src/unitOperations/rotating/IsentropicCore.cpp",
@@ -9308,6 +9377,7 @@
    "src/postProcessing/sizing/CatalystBedSize.cpp",
    "src/postProcessing/sizing/ColumnSize.cpp",
    "src/postProcessing/sizing/CompressorSize.cpp",
+   "src/postProcessing/sizing/ConverterShellSize.cpp",
    "src/postProcessing/sizing/CrystalliserSize.cpp",
    "src/postProcessing/sizing/CycloneSize.cpp",
    "src/postProcessing/sizing/DesignDefaults.cpp",
@@ -9349,7 +9419,6 @@
    "src/propertyOps/PitzerActivity.cpp",
    "src/propertyOps/PolarisationIndex.cpp",
    "src/propertyOps/PropertyEvaluator.cpp",
-   "src/propertyOps/PropertyOperation.H",
    "src/propertyOps/PropertyOperation.cpp",
    "src/propertyOps/PropertyPoint.cpp",
    "src/propertyOps/PropertyScan1D.cpp",
@@ -9553,6 +9622,7 @@
    "src/unitOperations/reactor/pellet/CatalystRegistry.cpp",
    "src/unitOperations/reactor/pellet/EffectiveDiffusivity.cpp",
    "src/unitOperations/reactor/pellet/PelletDiffusion.cpp",
+   "src/unitOperations/reactor/wallHeatTransfer/BedWallHeatTransfer.cpp",
    "src/unitOperations/rotating/Compressor.cpp",
    "src/unitOperations/rotating/ElectricLoad.cpp",
    "src/unitOperations/rotating/IsentropicCore.cpp",
@@ -9622,6 +9692,7 @@
    "src/postProcessing/sizing/CatalystBedSize.cpp",
    "src/postProcessing/sizing/ColumnSize.cpp",
    "src/postProcessing/sizing/CompressorSize.cpp",
+   "src/postProcessing/sizing/ConverterShellSize.cpp",
    "src/postProcessing/sizing/CrystalliserSize.cpp",
    "src/postProcessing/sizing/CycloneSize.cpp",
    "src/postProcessing/sizing/EquipmentSize.cpp",
@@ -9703,6 +9774,7 @@
    "src/postProcessing/sizing/CatalystBedSize.cpp",
    "src/postProcessing/sizing/ColumnSize.cpp",
    "src/postProcessing/sizing/CompressorSize.cpp",
+   "src/postProcessing/sizing/ConverterShellSize.cpp",
    "src/postProcessing/sizing/CrystalliserSize.cpp",
    "src/postProcessing/sizing/CycloneSize.cpp",
    "src/postProcessing/sizing/EquipmentSize.cpp",
@@ -9959,6 +10031,7 @@
    "src/postProcessing/sizing/CatalystBedSize.cpp",
    "src/postProcessing/sizing/ColumnSize.cpp",
    "src/postProcessing/sizing/CompressorSize.cpp",
+   "src/postProcessing/sizing/ConverterShellSize.cpp",
    "src/postProcessing/sizing/CrystalliserSize.cpp",
    "src/postProcessing/sizing/CycloneSize.cpp",
    "src/postProcessing/sizing/EquipmentSize.cpp",
@@ -10206,6 +10279,7 @@
    "src/postProcessing/sizing/CatalystBedSize.cpp",
    "src/postProcessing/sizing/ColumnSize.cpp",
    "src/postProcessing/sizing/CompressorSize.cpp",
+   "src/postProcessing/sizing/ConverterShellSize.cpp",
    "src/postProcessing/sizing/CrystalliserSize.cpp",
    "src/postProcessing/sizing/CycloneSize.cpp",
    "src/postProcessing/sizing/EquipmentSize.cpp",
@@ -10253,6 +10327,7 @@
    "src/core/RegistryRefusal.cpp",
    "src/postProcessing/costing/CostingModel.cpp",
    "src/postProcessing/costing/Turton.cpp",
+   "src/postProcessing/sizing/ConverterShellSize.cpp",
    "src/postProcessing/sizing/ReliefValveSize.cpp",
    "src/postProcessing/sizing/ShellTubeHX.cpp",
    "src/postProcessing/sizing/VesselSize.cpp",
@@ -10285,7 +10360,8 @@
    "src/unitOperations/membrane/osmotic/OsmoticModel.cpp",
    "src/unitOperations/membrane/pressureDrop/PressureDropModel.cpp",
    "src/unitOperations/membrane/transport/TransportModel.cpp",
-   "src/unitOperations/reactor/PFR.cpp"
+   "src/unitOperations/reactor/PFR.cpp",
+   "src/unitOperations/reactor/wallHeatTransfer/BedWallHeatTransfer.cpp"
   ],
   "src/core/RegistryScan.H": [
    "src/core/RegistryScan.cpp",
@@ -10324,6 +10400,7 @@
    "src/postProcessing/sizing/CatalystBedSize.cpp",
    "src/postProcessing/sizing/ColumnSize.cpp",
    "src/postProcessing/sizing/CompressorSize.cpp",
+   "src/postProcessing/sizing/ConverterShellSize.cpp",
    "src/postProcessing/sizing/CrystalliserSize.cpp",
    "src/postProcessing/sizing/CycloneSize.cpp",
    "src/postProcessing/sizing/DesignDefaults.cpp",
@@ -10396,6 +10473,7 @@
    "src/postProcessing/sizing/CatalystBedSize.cpp",
    "src/postProcessing/sizing/ColumnSize.cpp",
    "src/postProcessing/sizing/CompressorSize.cpp",
+   "src/postProcessing/sizing/ConverterShellSize.cpp",
    "src/postProcessing/sizing/CrystalliserSize.cpp",
    "src/postProcessing/sizing/CycloneSize.cpp",
    "src/postProcessing/sizing/EquipmentSize.cpp",
@@ -10491,6 +10569,7 @@
    "src/postProcessing/sizing/CatalystBedSize.cpp",
    "src/postProcessing/sizing/ColumnSize.cpp",
    "src/postProcessing/sizing/CompressorSize.cpp",
+   "src/postProcessing/sizing/ConverterShellSize.cpp",
    "src/postProcessing/sizing/CrystalliserSize.cpp",
    "src/postProcessing/sizing/CycloneSize.cpp",
    "src/postProcessing/sizing/DesignDefaults.cpp",
@@ -10533,7 +10612,6 @@
    "src/propertyOps/PitzerActivity.cpp",
    "src/propertyOps/PolarisationIndex.cpp",
    "src/propertyOps/PropertyEvaluator.cpp",
-   "src/propertyOps/PropertyOperation.H",
    "src/propertyOps/PropertyOperation.cpp",
    "src/propertyOps/PropertyPoint.cpp",
    "src/propertyOps/PropertyScan1D.cpp",
@@ -10756,6 +10834,7 @@
    "src/unitOperations/reactor/pellet/CatalystRegistry.cpp",
    "src/unitOperations/reactor/pellet/EffectiveDiffusivity.cpp",
    "src/unitOperations/reactor/pellet/PelletDiffusion.cpp",
+   "src/unitOperations/reactor/wallHeatTransfer/BedWallHeatTransfer.cpp",
    "src/unitOperations/rotating/Compressor.cpp",
    "src/unitOperations/rotating/ElectricLoad.cpp",
    "src/unitOperations/rotating/IsentropicCore.cpp",
@@ -10869,6 +10948,7 @@
    "src/postProcessing/sizing/CatalystBedSize.cpp",
    "src/postProcessing/sizing/ColumnSize.cpp",
    "src/postProcessing/sizing/CompressorSize.cpp",
+   "src/postProcessing/sizing/ConverterShellSize.cpp",
    "src/postProcessing/sizing/CrystalliserSize.cpp",
    "src/postProcessing/sizing/CycloneSize.cpp",
    "src/postProcessing/sizing/EquipmentSize.cpp",
@@ -10993,6 +11073,10 @@
    "src/postProcessing/sizing/CompressorSize.cpp",
    "src/postProcessing/sizing/EquipmentSize.cpp"
   ],
+  "src/postProcessing/sizing/ConverterShellSize.H": [
+   "src/postProcessing/sizing/ConverterShellSize.cpp",
+   "src/postProcessing/sizing/EquipmentSize.cpp"
+  ],
   "src/postProcessing/sizing/CrystalliserSize.H": [
    "src/postProcessing/sizing/CrystalliserSize.cpp",
    "src/postProcessing/sizing/EquipmentSize.cpp"
@@ -11004,6 +11088,7 @@
   "src/postProcessing/sizing/DesignDefaults.H": [
    "src/postProcessing/sizing/CatalystBedSize.cpp",
    "src/postProcessing/sizing/ColumnSize.cpp",
+   "src/postProcessing/sizing/ConverterShellSize.cpp",
    "src/postProcessing/sizing/DesignDefaults.cpp",
    "src/postProcessing/sizing/ReliefValveSize.cpp",
    "src/postProcessing/sizing/StirredTank.cpp",
@@ -11015,6 +11100,7 @@
    "src/postProcessing/sizing/CatalystBedSize.cpp",
    "src/postProcessing/sizing/ColumnSize.cpp",
    "src/postProcessing/sizing/CompressorSize.cpp",
+   "src/postProcessing/sizing/ConverterShellSize.cpp",
    "src/postProcessing/sizing/CrystalliserSize.cpp",
    "src/postProcessing/sizing/CycloneSize.cpp",
    "src/postProcessing/sizing/EquipmentSize.cpp",
@@ -11048,6 +11134,7 @@
    "src/postProcessing/sizing/ReliefValveSize.cpp"
   ],
   "src/postProcessing/sizing/ShellTubeHX.H": [
+   "src/postProcessing/sizing/CatalystBedSize.cpp",
    "src/postProcessing/sizing/ColumnSize.cpp",
    "src/postProcessing/sizing/EquipmentSize.cpp",
    "src/postProcessing/sizing/ShellTubeHX.cpp"
@@ -11067,6 +11154,7 @@
   "src/postProcessing/sizing/VesselMechanics.H": [
    "src/postProcessing/sizing/CatalystBedSize.cpp",
    "src/postProcessing/sizing/ColumnSize.cpp",
+   "src/postProcessing/sizing/ConverterShellSize.cpp",
    "src/postProcessing/sizing/StirredTank.cpp",
    "src/postProcessing/sizing/VesselMechanics.cpp",
    "src/postProcessing/sizing/VesselSize.cpp"
@@ -11476,6 +11564,7 @@
    "src/postProcessing/sizing/CatalystBedSize.cpp",
    "src/postProcessing/sizing/ColumnSize.cpp",
    "src/postProcessing/sizing/CompressorSize.cpp",
+   "src/postProcessing/sizing/ConverterShellSize.cpp",
    "src/postProcessing/sizing/CrystalliserSize.cpp",
    "src/postProcessing/sizing/CycloneSize.cpp",
    "src/postProcessing/sizing/EquipmentSize.cpp",
@@ -11541,6 +11630,7 @@
    "src/postProcessing/sizing/CatalystBedSize.cpp",
    "src/postProcessing/sizing/ColumnSize.cpp",
    "src/postProcessing/sizing/CompressorSize.cpp",
+   "src/postProcessing/sizing/ConverterShellSize.cpp",
    "src/postProcessing/sizing/CrystalliserSize.cpp",
    "src/postProcessing/sizing/CycloneSize.cpp",
    "src/postProcessing/sizing/EquipmentSize.cpp",
@@ -11671,6 +11761,7 @@
    "src/postProcessing/sizing/CatalystBedSize.cpp",
    "src/postProcessing/sizing/ColumnSize.cpp",
    "src/postProcessing/sizing/CompressorSize.cpp",
+   "src/postProcessing/sizing/ConverterShellSize.cpp",
    "src/postProcessing/sizing/CrystalliserSize.cpp",
    "src/postProcessing/sizing/CycloneSize.cpp",
    "src/postProcessing/sizing/EquipmentSize.cpp",
@@ -11974,6 +12065,7 @@
    "src/postProcessing/sizing/CatalystBedSize.cpp",
    "src/postProcessing/sizing/ColumnSize.cpp",
    "src/postProcessing/sizing/CompressorSize.cpp",
+   "src/postProcessing/sizing/ConverterShellSize.cpp",
    "src/postProcessing/sizing/CrystalliserSize.cpp",
    "src/postProcessing/sizing/CycloneSize.cpp",
    "src/postProcessing/sizing/EquipmentSize.cpp",
@@ -12184,6 +12276,7 @@
    "src/postProcessing/sizing/CatalystBedSize.cpp",
    "src/postProcessing/sizing/ColumnSize.cpp",
    "src/postProcessing/sizing/CompressorSize.cpp",
+   "src/postProcessing/sizing/ConverterShellSize.cpp",
    "src/postProcessing/sizing/CrystalliserSize.cpp",
    "src/postProcessing/sizing/CycloneSize.cpp",
    "src/postProcessing/sizing/EquipmentSize.cpp",
@@ -12539,6 +12632,7 @@
    "src/postProcessing/sizing/CatalystBedSize.cpp",
    "src/postProcessing/sizing/ColumnSize.cpp",
    "src/postProcessing/sizing/CompressorSize.cpp",
+   "src/postProcessing/sizing/ConverterShellSize.cpp",
    "src/postProcessing/sizing/CrystalliserSize.cpp",
    "src/postProcessing/sizing/CycloneSize.cpp",
    "src/postProcessing/sizing/EquipmentSize.cpp",
@@ -12811,6 +12905,7 @@
    "src/postProcessing/sizing/CatalystBedSize.cpp",
    "src/postProcessing/sizing/ColumnSize.cpp",
    "src/postProcessing/sizing/CompressorSize.cpp",
+   "src/postProcessing/sizing/ConverterShellSize.cpp",
    "src/postProcessing/sizing/CrystalliserSize.cpp",
    "src/postProcessing/sizing/CycloneSize.cpp",
    "src/postProcessing/sizing/EquipmentSize.cpp",
@@ -12953,6 +13048,7 @@
    "src/postProcessing/sizing/CatalystBedSize.cpp",
    "src/postProcessing/sizing/ColumnSize.cpp",
    "src/postProcessing/sizing/CompressorSize.cpp",
+   "src/postProcessing/sizing/ConverterShellSize.cpp",
    "src/postProcessing/sizing/CrystalliserSize.cpp",
    "src/postProcessing/sizing/CycloneSize.cpp",
    "src/postProcessing/sizing/EquipmentSize.cpp",
@@ -13922,7 +14018,8 @@
    "src/reporting/UtilityAllocationReport.cpp",
    "src/streams/UtilityCircuit.cpp",
    "src/thermo/utility/UtilityCatalogue.cpp",
-   "src/unitOperations/flowsheet/Flowsheet.cpp"
+   "src/unitOperations/flowsheet/Flowsheet.cpp",
+   "src/unitOperations/reactor/PFR.cpp"
   ],
   "src/thermo/utility/UtilityCatalogue.H": [
    "src/applications/choupoBatch/main.cpp",
@@ -13933,7 +14030,8 @@
    "src/reporting/UtilityAllocationReport.cpp",
    "src/streams/UtilityCircuit.cpp",
    "src/thermo/utility/UtilityCatalogue.cpp",
-   "src/unitOperations/flowsheet/Flowsheet.cpp"
+   "src/unitOperations/flowsheet/Flowsheet.cpp",
+   "src/unitOperations/reactor/PFR.cpp"
   ],
   "src/thermo/vaporPressure/AmbroseWalton.H": [
    "src/propertyOps/EstimateComponent.cpp",
@@ -14392,6 +14490,7 @@
    "src/applications/choupoProps/main.cpp",
    "src/applications/choupoSolve/main.cpp",
    "src/dynamicDriver/DynamicDriver.cpp",
+   "src/postProcessing/sizing/CatalystBedSize.cpp",
    "src/postProcessing/sizing/ShellTubeHX.cpp",
    "src/propertyOps/HeatTransferBench.cpp",
    "src/unitOperations/heatTransfer/HeatExchanger.cpp",
@@ -14413,6 +14512,7 @@
    "src/unitOperations/heatTransfer/htc/PhaseChangeHTC.cpp"
   ],
   "src/unitOperations/heatTransfer/htc/ShellTubeDesign.H": [
+   "src/postProcessing/sizing/CatalystBedSize.cpp",
    "src/postProcessing/sizing/ShellTubeHX.cpp",
    "src/unitOperations/heatTransfer/HeatExchanger.cpp",
    "src/unitOperations/heatTransfer/htc/ShellTubeDesign.cpp"
@@ -14641,6 +14741,16 @@
   "src/unitOperations/reactor/pellet/PelletDiffusion.H": [
    "src/propertyOps/ThielePellet.cpp",
    "src/unitOperations/reactor/pellet/PelletDiffusion.cpp"
+  ],
+  "src/unitOperations/reactor/wallHeatTransfer/BedWallHeatTransfer.H": [
+   "src/applications/choupoSolve/main.cpp",
+   "src/dynamicDriver/DynamicDriver.cpp",
+   "src/unitOperations/UnitOperation.cpp",
+   "src/unitOperations/reactor/PFR.cpp",
+   "src/unitOperations/reactor/wallHeatTransfer/BedWallHeatTransfer.cpp"
+  ],
+  "src/unitOperations/reactor/wallHeatTransfer/LiFinlayson.H": [
+   "src/unitOperations/reactor/wallHeatTransfer/BedWallHeatTransfer.cpp"
   ],
   "src/unitOperations/rotating/Compressor.H": [
    "src/unitOperations/UnitOperation.cpp",

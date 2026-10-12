@@ -4,20 +4,41 @@
 |     \\\|///  O perations    |  https://choupo.org  --  GPL-3.0-or-later     |
 \*-----------------------------------------------------------------------------*/
 /*---------------------------------------------------------------------------*\
-  outerDict -- WHERE THE THREE CATALYST VOLUMES ARE COMPUTED (DEV.md 4c C66).
+  outerDict -- WHERE THE THREE CATALYST VOLUMES AND THE CONVERTER'S ONE
+  DIAMETER ARE COMPUTED (DEV.md 4c C66, C69).
 
   The `pfr` is a RATING model: it integrates the volume it is given.  A basic
   design SIZES the bed instead -- it fixes a criterion and finds the volume
   that meets it.  This DesignSpec does that, for all three beds AT ONCE:
 
-      $V_Bed1  ->  Bed1.T_out       = 788.15 K   (515 C: 5 K under the 520 C
+      $V_Bed1  ->  CONVERTER.Bed1.T_out      = 788.15 K  (515 C: 5 K under the 520 C
                                                   the base data give as the
                                                   catalyst's limit)
-      $V_Bed2  ->  Bed2.approach_K  = 5 K        (US 5,352,428, Bhakta &
-      $V_Bed3  ->  Bed3.approach_K  = 5 K         Grotz 1994: "the effluent
+      $V_Bed2  ->  CONVERTER.Bed2.approach_K = 5 K       (US 5,352,428, Bhakta &
+      $V_Bed3  ->  CONVERTER.Bed3.approach_K = 5 K        Grotz 1994: "the effluent
                                                   from each bed has an
                                                   approach to equilibrium of
                                                   5 C")
+      $D_converter -> the LARGEST of the three beds' dP_over_allowable = 1
+                                                  (C69)
+
+  THE FOURTH UNKNOWN IS THE CONVERTER'S DIAMETER.  The three beds sit in ONE
+  shell and so share ONE diameter (each bed reads `diameter $D_converter;`),
+  and the diameter is the SMALLEST at which every bed's Ergun drop is within
+  its declared allowable (1 bar, CONVERTER/Bed1's header).  Each drop falls
+  monotonically as the converter widens (at a fixed volume u and L both go
+  as 1/D^2), so the LARGEST of the three drops over allowable falls
+  monotonically too, and the smallest admissible diameter is the one at
+  which that largest sits exactly at 1.  The target says exactly that
+  (`largestOf`), so no bed is named in advance as the binding one: the run
+  names the one that binds at the design point (bed 3 here -- at one
+  diameter the longest bed is the largest volume).  The converterShell sizer
+  then brackets the same smallest diameter on the solved beds and says
+  whether the converter's sits at it.  Solved inside this Newton rather than
+  bracketed around it: a 1-D bracket would re-run the whole 3 x 3 DesignSpec
+  at every trial diameter, and the drop is smooth and monotone in D.  The
+  one non-smoothness is max() itself, where the largest changes hands; it
+  is not at this answer (the run says so if it ever is).
 
   SIMULTANEOUS, NOT SEQUENTIAL, and why that is the honest reading.  The
   DesignSpec is ONE Newton on n case variables against n targets, its
@@ -36,7 +57,9 @@
   Newton last converged to (with the Ergun pressure drop on, from the
   constant-pressure design point 8.7238 / 18.2281 / 31.4450 m3, in two
   Newton steps and fifteen evaluations; the hand-tuned 8.72 / 18.23 /
-  31.44 m3 the case carried before C66 had reached that one in one step).  So a
+  31.44 m3 the case carried before C66 had reached that one in one step; with
+  the fourth unknown, C69, from 8.8861 / 18.4225 / 31.7447 m3 and 2.26 m, in
+  two Newton steps and nineteen evaluations).  So a
   run without this file RATES the designed beds, and a group that changes
   anything upstream re-solves them by running the case.  The post-processing chain (sizing, relief valves,
   costing, economics) runs once, on the replay at the design point --
@@ -55,16 +78,23 @@ manipulate
     //  Bounds are advisory clips on the Newton step, not physics: below the
     //  lower bound a bed is so short its approach is hundreds of kelvin and
     //  the residual flat.
-    { variable V_Bed1;   initial  8.8861; min 2.0;   max  40.0; }   // m3 of catalyst bed
-    { variable V_Bed2;   initial 18.4225; min 4.0;   max  80.0; }
-    { variable V_Bed3;   initial 31.7447; min 6.0;   max 150.0; }
+    { variable V_Bed1;   initial  8.9510; min 2.0;   max  40.0; }   // m3 of catalyst bed
+    { variable V_Bed2;   initial 18.4115; min 4.0;   max  80.0; }
+    { variable V_Bed3;   initial 31.6971; min 6.0;   max 150.0; }
+    { variable D_converter; initial 2.2283; min 1.5; max  4.0; }   // m, the converter's one diameter
 );
 
 targets
 (
-    { path Bed1.T_out;        value 788.15;   tol 0.02; }   // K -- 515 C
-    { path Bed2.approach_K;   value 5.0;      tol 0.02; }   // K, US 5,352,428 per-bed approach
-    { path Bed3.approach_K;   value 5.0;      tol 0.02; }
+    { path CONVERTER.Bed1.T_out;        value 788.15;   tol 0.02; }   // K -- 515 C
+    { path CONVERTER.Bed2.approach_K;   value 5.0;      tol 0.02; }   // K, US 5,352,428 per-bed approach
+    { path CONVERTER.Bed3.approach_K;   value 5.0;      tol 0.02; }
+    //  The LARGEST of the beds' drops over allowable at 1: the smallest
+    //  diameter at which every bed is within its allowable (C69).
+    { largestOf ( CONVERTER.Bed1.dP_over_allowable
+                  CONVERTER.Bed2.dP_over_allowable
+                  CONVERTER.Bed3.dP_over_allowable );
+      value 1.0;   tol 0.002; }
 );
 
 options

@@ -97,6 +97,10 @@ public:
         const Material&         material,
         const DictPtr&          designRules);
 
+    //  The exchanger WEIGHT rule (30 kg per m2 of area, scaled by the
+    //  material's density), one home for every item priced as a bundle.
+    static scalar bundleWeight(scalar A, const Material& material);
+
 private:
     inline static const std::string type_ = "shellTubeHX";
 };

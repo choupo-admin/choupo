@@ -189,6 +189,16 @@ int SizingPass::run(SimulationResult& result)
     std::map<std::string, std::string> sectorOf;
     for (const auto& fu : result.topology)
         if (!fu.sector.empty()) sectorOf[fu.name] = fu.sector;
+    //  AN ITEM A SECTOR REALISES (C69: a converter's one pressure shell, and
+    //  the relief valve that protects it) names the SECTOR as its unit; it is
+    //  filed under that sector, as the stamped sectors are -- the name is
+    //  matched against the topology's own sector list, never split.
+    {
+        std::map<std::string, std::string> own;
+        for (const auto& [u, s] : sectorOf) own[s] = s;
+        for (const auto& [s, same] : own)
+            if (!sectorOf.count(s)) sectorOf[s] = same;
+    }
 
     //  TWO LISTS: `units ( ... )`, the items a flowsheet unit realises, and
     //  `storage ( ... )`, the tanks attached to a boundary stream (2026-10-07,
@@ -491,7 +501,24 @@ int SizingPass::run(SimulationResult& result)
                     }
             }
             for (auto& dims : itemList)
+            {
+                //  ONE SHELL AROUND OTHER ITEMS (C69): the members' own
+                //  vessel shells it takes over are inside a pressure vessel
+                //  now -- internal baskets, NOT costed, each naming it.
+                const std::vector<std::string> enclosed = dims.encloses;
+                const std::string shellId = dims.itemId();
                 emitItem(uname, utype, matName, std::move(dims));
+                for (const auto& id : enclosed)
+                {
+                    auto it = result.sizings.find(id);
+                    if (it == result.sizings.end()) continue;
+                    it->second.notCostedBecause = "inside the pressure shell "
+                        + shellId + ": an internal basket, not a pressure vessel"
+                          " -- its shell is priced as part of " + shellId;
+                    std::cout << "        encloses: " << id << "   (its own shell"
+                                 " is NOT costed: it is inside " << shellId << ")\n";
+                }
+            }
         }
         catch (const std::exception& e)
         {

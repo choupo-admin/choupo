@@ -197,15 +197,52 @@ operation
 ```
 `L_over_D` gives the bed a cross-section (D, L, A published as KPIs) and the `pfr`
 sizer builds its shell on it, refusing a second `L_over_D` in its designRules.
+`diameter <length>;` in its place (C69) DECLARES the cross-section and the length
+follows, L = V_R / (pi D^2 / 4) (`D_bed_declared_m` published) -- the form a multibed
+converter's beds take, every bed reading ONE plant variable (`diameter $D_converter;`):
+a `converterShell` refuses a bed at its own `L_over_D`.  `L_over_D` or `tubes` beside
+`diameter` refuse.
 `pressureDrop` marches `dP/dV = (dP/dz)/A` from Ergun's equation with the species
 (density from the package's EoS, viscosity from its declared `transport` — required,
 dilute-gas); the rate law and `T` read the local `P`; the outlet leaves at `P_in − ΔP`
 (`dP_bed_bar`, `P_out_bar`, `Re_p_in`, `u_superficial_in/out`, `mu_gas_in`, `rho_gas_in`;
 a `P` profile column).  A drop above `allowable` is ANNOUNCED with the remedy — at a
-fixed volume the drop goes as (L/D)²; nothing is clamped.  Absent both keys the bed is
+fixed volume the drop goes as (L/D)² (at a declared diameter, as D⁻⁴ to D⁻⁶); nothing
+is clamped.  Absent both keys the bed is
 the constant-pressure march it always was.  The single-reaction path refuses them.
-Example: `tutorials/plant/greenAmmonia03_basicDesign` (three beds, L/D 1.5; at L/D 6 the
-loop did not converge).
+Example: `tutorials/plant/greenAmmonia03_basicDesign` (three beds at the converter's ONE
+diameter, solved by its DesignSpec as the smallest at which every bed is within its
+1 bar; C66 had each bed at its own L/D 1.5, and at L/D 6 the loop did not converge).
+**A cooled MULTITUBULAR bed** (multi-reaction path, `thermalMode heatExchange`, C69):
+```
+operation
+{
+    thermalMode      heatExchange;
+    catalystLoading  1300;                         // kg/m3, a per-kg rate's bulk density
+    tubes   { count $nTubes; innerDiameter 25 mm; length 2 m;    // length XOR V_R
+              wallThickness 1.65 mm; wallConductivity 16; }      // wall: both or neither
+    catalyst         { particleDiameter 2 mm;  shape sphere; }  // sphere | cylinder
+    wallHeatTransfer { model LiFinlayson; }       // OR `U <W/m2/K>;` (overall) -- not both
+    coolant { arrangement coCurrent;              // coCurrent | counterCurrent | boiling
+              T_in 625 K;  flow 20 kg/s;  cp 1299.13;   // or `utility <sensible record>;`
+              film 1000; }                        // W/m2/K, coolant side -- declared
+}
+```
+The tubes ARE the geometry: area per volume 4/d_i, Ergun per tube on N pi d_i^2/4,
+the volume N pi d_i^2/4 L (`V_R` beside `tubes.length` refuses; `L_over_D` and
+`areaPerVolume` beside `tubes` refuse).  The bed side of U is Li & Finlayson's 1-D
+correlation at the LOCAL gas (needs `transport { viscosity; thermalConductivity; }`),
+in series with the wall and the declared film; a point outside its window is announced.
+A sensible coolant has its own energy balance marched with the bed; counter-current is
+SHOT (announced: marches, bracket, residual — a counter-current bed can have several
+steady states).  KPIs: `T_max`, `hotSpot_V_m3`, `hotSpot_z_m`, `T_coolant_out`,
+`Q_coolant_kW`, `U_in/U_out`, and every number U was computed from at the inlet; profile
+columns `T_coolant`, `U`.  The `pfr` sizer then builds a tube bundle in a shell
+(`reactor`, needs `tubePitch` and `tubePattern` in designRules) plus the catalyst charge
+on the unit's own `catalystLoading`.  Without a `coolant {}` block the flat `U;`,
+`areaPerVolume;`, `T_coolant;` form runs as before.  Example:
+`tutorials/steady/reactors/pfr05_cooled_multitubular` (o-xylene oxidation; the tube
+count SOLVED for a 665 K hot spot).
 NOTE: `cstr`/`pfr` compute concentration on the **liquid** molar volume
 (Vliq) — a liquid-basis model.  For a GAS-phase reactor prefer
 `conversionReactor` (below) — unless its rate law is written in T, P and mole

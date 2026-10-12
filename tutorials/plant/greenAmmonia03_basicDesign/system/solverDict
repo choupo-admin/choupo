@@ -9,10 +9,22 @@
 /*---------------------------------------------------------------------------*\
   solverDict -- the recycle plan.  Two cuts, both in the synthesis loop:
   the MATERIAL recycle (Recycle, the separator vapour going back) and the
-  ENERGY recycle (HotEffluent, bed 3's outlet that preheats bed 1's
-  feed in the FEHE, through three kinetic beds).
+  ENERGY recycle through the FEHE and the three kinetic beds, cut at
+  PreheatedFeed, the FEHE's cold outlet that is bed 1's feed.  The cut was
+  HotEffluent until the beds became the CONVERTER sector (DEV.md 4c C69):
+  HotEffluent is now that sector's outlet, and a tear cannot be declared on
+  a sector's outlet by its plant label (the plan refuses it as an INLET
+  TEAR), so the CONVERTER runs before the FEHE and the loop is cut where the
+  FEHE closes it.  The converged answer is the same to the recycle tolerance.
+  And the tolerance went from 1e-8 to 1e-10 with it: a tear at a REACTOR's
+  inlet hands the bed the seed while the energy report reads the FEHE's
+  produced stream, so bed 1's own first law shows the tear residual -- at
+  1e-8 it was -3.1e-5 kW, above the report's 1e-6 kW floor for a unit with
+  no duty, and the run printed ENERGY BALANCE FAILED for a residual that is
+  the recycle's, not the bed's.  At 1e-10 the Newton takes 23 iterations
+  instead of 18 and the bed closes under the floor.
 \*---------------------------------------------------------------------------*/
-tearStreams        ( Recycle  HotEffluent );
+tearStreams        ( Recycle  PreheatedFeed );
 recycleSolver       Newton;
-recycleTol          1e-8;
+recycleTol          1e-10;
 recycleMaxIter      200;

@@ -1,0 +1,27 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  PEQ 2026-27 -- Green ammonia, 1200 t/day     |
+|      \\|//   H eat-transfer |  FEL-3 basic design: kinetic beds, Kern HX    |
+|     \\\|///  O perations    |  https://choupo.org  --  GPL-3.0-or-later     |
+\*-----------------------------------------------------------------------------*/
+/*--- Choupo stream state.  Every DIMENSIONAL value carries its unit; the parser converts to SI.
+     componentMolarFlows is the OVERALL material (all phases); a phases{} block, when present,
+     is a decomposition that sums back to it exactly. ---*/
+
+componentMolarFlows
+{
+    N2     4334 kmol/h;
+    H2    15534 kmol/h;
+    NH3     310 kmol/h;
+    Ar       45 kmol/h;
+}
+T               653 K;
+P               151 bar;
+phase           gas;
+// TEAR SEED, authored: an estimate of the converter inlet (~1.5 % NH3 at
+// ~380 C, the FEHE's cold outlet), rounded from the C66 design point.  The
+// solver overwrites it.  It is the energy recycle's tear since the beds and
+// their interbed coolers became ONE sector, CONVERTER (DEV.md 4c C69): the
+// converter now runs BEFORE the FEHE, and the stream the FEHE closes the
+// loop with is this one -- a tear cannot be declared on a sector's boundary
+// outlet by its plant label (the plan refuses it as an INLET TEAR), so the
+// old tear, HotEffluent, could not stay where it was.

@@ -29,6 +29,8 @@ License
 #include "ResponseExtractor.H"
 
 #include <stdexcept>
+#include <string>
+#include <utility>
 
 namespace Choupo {
 
@@ -49,6 +51,28 @@ scalar MW_mix(const SimulationResult& r, const sVector& z)
     return mw;
 }
 
+//  WHERE THE OWNER'S NAME ENDS (DEV.md 4c C69).  A response is `owner.field`
+//  -- a unit and one of its KPIs, or a stream and one of its fields -- and an
+//  owner in a SECTORED plant is itself dotted (`CONVERTER.Bed1.T_out`).  The
+//  name is never split by a rule about names: each dot is tried, left to
+//  right, against the result's OWN unit and stream lists, and the first
+//  split that names an owner the run actually has wins.  On a flat case the
+//  first dot is the only candidate, so every key resolves exactly as it did.
+std::pair<std::string, std::string> ownerAndField(const SimulationResult& r,
+                                                  const std::string&      key)
+{
+    for (auto dot = key.find('.'); dot != std::string::npos;
+         dot = key.find('.', dot + 1))
+    {
+        const std::string a = key.substr(0, dot), b = key.substr(dot + 1);
+        auto itU = r.kpis.find(a);
+        if (itU != r.kpis.end() && itU->second.count(b)) return { a, b };
+        if (r.streams.count(a)) return { a, b };
+    }
+    const auto dot = key.find('.');
+    return { key.substr(0, dot), key.substr(dot + 1) };
+}
+
 } // anonymous namespace
 
 scalar extractResponse(const SimulationResult& r,
@@ -60,8 +84,7 @@ scalar extractResponse(const SimulationResult& r,
         throw std::runtime_error(ctx + ": response key '" + key
             + "' is not in 'unit.kpi' or 'stream.field' format");
 
-    const std::string a = key.substr(0, dot);
-    const std::string b = key.substr(dot + 1);
+    const auto [a, b] = ownerAndField(r, key);
 
     // First try unit KPIs.
     auto itU = r.kpis.find(a);
@@ -94,8 +117,7 @@ Dimensions expectedResponseDimensions(const SimulationResult& r,
 {
     const auto dot = key.find('.');
     if (dot == std::string::npos) return Dims::dimensionless;
-    const std::string a = key.substr(0, dot);
-    const std::string b = key.substr(dot + 1);
+    const auto [a, b] = ownerAndField(r, key);
 
     // KPI side: dimensionless (no metadata available).
     if (r.kpis.count(a)) return Dims::dimensionless;

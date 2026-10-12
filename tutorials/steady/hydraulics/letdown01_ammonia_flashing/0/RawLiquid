@@ -7,7 +7,7 @@
 |        |     O ptimization  |                                               |
 \*-----------------------------------------------------------------------------*/
 /*--- The separator liquid of tutorials/plant/greenAmmonia03_basicDesign, copied
-     to the digit from that plant's converged/RawLiquid (gui/tests/
+     to the digit from that plant's converged/MAIN/RawLiquid (gui/tests/
      letdown.test.ts holds the copy to the plant's own file).
 
      `phase liquid;` is declared here and not in the plant.  The stream is
@@ -18,10 +18,10 @@
 
 componentMolarFlows
 {
-    N2    3.74565784 kmol/h;
-    H2    9.524325101 kmol/h;
-    NH3    2927.077991 kmol/h;
-    Ar    0.1085002094 kmol/h;
+    N2    3.74598046 kmol/h;
+    H2    9.524099506 kmol/h;
+    NH3    2927.071982 kmol/h;
+    Ar    0.1084728532 kmol/h;
 }
 
 T               253.15 K;

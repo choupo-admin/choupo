@@ -2,7 +2,7 @@
 # units: stream F is kmol/s (canonical SI, as in the result JSON); the run LOG prints kmol/h.
 # kind   name      key         expected        reltol
 diag    purge                  Cp_ig            28.9239504326      1e-4
-diag    purge                  H_R              -132.700068704   1e-4
+diag    purge                  H_R              -132.714805313   1e-4
 diag    purge                  H_ig             -2297.81017849     1e-4
 diag    purge                  H_real           -2430.46102009     1e-4
 diag    purge                  P                14000000           1e-4

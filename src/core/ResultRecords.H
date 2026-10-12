@@ -406,6 +406,16 @@ struct EquipmentSizing
     //  is said to be outside the scope, once, by the sizer that knows it.
     std::string                                  notCostedBecause;
 
+    //  THE ITEMS WHOSE PRESSURE SHELL THIS ITEM IS (2026-10-12, DEV.md 4c
+    //  C69).  A multibed converter is ONE pressure vessel holding the beds
+    //  and the interbed exchangers; its `converterShell` item lists here the
+    //  members' own shells it takes over, and the sizing pass then marks each
+    //  of them NOT costed (`notCostedBecause`, naming this item) -- a member
+    //  shell inside a pressure vessel is an internal basket, not a second
+    //  pressure vessel.  EMPTY on every other item, so nothing they reach
+    //  changes.
+    std::vector<std::string>                     encloses;
+
     void assume(const std::string& key)
     {
         for (const auto& k : assumed) if (k == key) return;
