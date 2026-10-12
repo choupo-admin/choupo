@@ -1991,6 +1991,28 @@ accepts today, and that is a policy call.
      loop (membrane18), the dynamic loop (unsteady03), the UF law
      (membrane19) and the UF loop in time (unsteady04).
 
+**C66. THE GREEN-AMMONIA CONVERTER BEDS, SIZED AS A BASIC DESIGN SIZES
+THEM (Vítor, 2026-10-12, asking "No Ammonia Green Design, como é que o PFR
+é dimensionado?"; taken under his standing "Avança da melhor forma").**
+Measured: each bed's catalyst volume is DECLARED and was tuned BY HAND
+against a criterion (`greenAmmoniaBasicDesign/Bed1/system/flowsheetDict`:
+V_R 8.72 m3 so bed 1 leaves at 515 C, 5 K under the 520 C catalyst limit;
+Bed2 18.23 and Bed3 31.44 m3 for a 5 K approach), because a `$variable`
+in a unit FOLDER does not resolve against the plant's `variables {}` and a
+DesignSpec cannot reach it (C57); the rate is Dyson-Simon Eq 19 with the
+effectiveness factor taken as 1 (`effectivenessFactor intrinsic`,
+announced as unpriced; the paper's Eq 39 exists in the engine and needs a
+particle diameter); the `pfr` computes NO pressure drop (`PFR.cpp` has no
+Ergun term; `pellet/Catalyst.H` names Ergun as a future reader); the sizer
+then wraps V_R in a straight cylinder at a declared L/D 6 and prices
+V_R x 2500 kg/m3 of catalyst (both author-set).  Scope: (1) let a
+DesignSpec reach a unit-folder variable, and SOLVE each bed's V_R to its
+stated criterion; (2) the basic-design rate with Eq 39 and a declared
+particle size; (3) an opt-in Ergun pressure drop in the `pfr` on the bed's
+own cross-section, so the L/D is checked against an allowable drop rather
+than typed.  Moved rows listed before any record.  Status: dispatched
+2026-10-12.
+
 **C65. THE DEBTS THE SAFETY AND LETDOWN SLICES FOUND: THREE RECORDS, ONE
 VALVE, ONE GATE (commander, 2026-10-11, under Vítor's "Avança da melhor
 forma porra! Eu vou dando feedback"; moved golden rows still go to him as a
