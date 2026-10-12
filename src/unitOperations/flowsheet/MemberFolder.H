@@ -56,6 +56,7 @@ Description
 #include "core/Dictionary.H"
 
 #include <filesystem>
+#include <iostream>
 #include <stdexcept>
 #include <string>
 
@@ -121,6 +122,41 @@ inline void bindMemberVariables(const DictPtr&     cd,
         return;                                   // its own scope, no collision
     }
     cd->propagateVarsDict(outer);
+}
+
+/// A NODE RUN ALONE KEEPS THE PLANT'S VARIABLES SCOPE (DEV.md 4c C66).  A
+/// unit or sector folder run in place (runCase on the folder: the working
+/// directory has no system/controlDict of its own) is the same dict the
+/// plant's flatten reads, and there its `$references` resolve against the
+/// plant's `variables {}` (bindMemberVariables above).  Alone, the file had
+/// nothing to resolve them against and refused a reference the whole-plant
+/// run accepts -- so the node takes the NEAREST ancestor flowsheetDict that
+/// declares a `variables {}` block, by the same rule and the same shadowing
+/// refusal, and says which.  A case root is untouched: it IS the level that
+/// owns its variables.  Called by choupoSolve's main on the dict it opened.
+inline void bindNodeToAncestorVariables(const DictPtr& node,
+                                        const std::string& nodePath)
+{
+    namespace fs = std::filesystem;
+    if (fs::exists("system/controlDict") || node->found("variables")) return;
+    fs::path p = fs::current_path();
+    for (int up = 0; up < 6 && p.has_parent_path() && p.parent_path() != p; ++up)
+    {
+        p = p.parent_path();
+        for (const char* rel : { "flowsheetDict", "system/flowsheetDict" })
+        {
+            if (!fs::exists(p / rel)) continue;
+            auto anc = Dictionary::fromFile((p / rel).string());
+            if (!anc->varsDict()) continue;
+            bindMemberVariables(node, anc, fs::current_path().filename().string(),
+                                nodePath);
+            std::cout << "[variables] this node declares no `variables {}`;"
+                         " its $references resolve against "
+                      << (p / rel).string() << " -- the level that owns them"
+                         " in the whole-plant run.\n";
+            return;
+        }
+    }
 }
 
 inline DictPtr readMemberDict(const DictPtr&     parent,
