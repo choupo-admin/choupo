@@ -2062,6 +2062,20 @@ sensitivity; a feasibility -> basic-design comparison of consumptions,
 investment and profitability, each difference traced to the model change.
 And FEL stage is never equated with an AACE class (maturity of definition
 decides the class): tables say "illustrated design stage".
+SCREENING MERGED 2026-10-12 (8ebf3325e): `ammoniaRoutes01_screening`, green
+/ grey / blue on raw materials and on assumed specific energy consumptions
+(margins after energy per kg NH3: green from water and electricity -0.031,
+grey 0.554, blue 0.611 EUR; green at the PEQ battery limit 0.130).  FOUND:
+(i) the PEQ base data's H2 at 4.50 EUR/kg against electricity at 0.100
+EUR/kWh buys 45 kWh/kg H2, 1.35x the electrolysis floor, nothing left for
+the electrolyser -- put to Vítor; (ii) the margin table is worked BY HAND in
+the README from engine-published flows (EconomicsPass prices one plant per
+run and refuses without costed equipment) -- a per-route screening pass is
+an architecture decision; (iii) a `conversionReactor` stamps its inlet's
+vapour fraction on an all-gas outlet at 1 atm (the case runs at 0.02 bar to
+stay ideal-gas) -- an engine defect of the state family, not yet fixed;
+(iv) RouteScreeningTool is methanol-specific, generalising it is a few
+hundred lines, not done.
 
 **C67. A CASE CARRIES ITS OWN KINETICS: RATE EXPRESSIONS IN THE DICT, AND A
 FACTORY A CASE'S `code/` CAN REGISTER INTO (Vítor, 2026-10-12, verbatim:
@@ -2125,6 +2139,23 @@ dependent kinetics -> case constant/), which the `constexpr` constants in
 (done first): migrate every dysonSimon1968 case byte-identically.
 SUPERSEDED the same day by C67 (option 3): item 4 stopped, item 2 deferred
 until C67 lands; items 1, 3 and the banner fix continue.
+MERGED 2026-10-12 (ff36172b4): item 1 -- a member folder with no
+`variables {}` resolves `$names` against the enclosing level (one home,
+`MemberFolder.H`; a homonym refuses), and a 3x3 designSpec SOLVES the three
+bed volumes (Bed1 T_out 788.15 K, Bed2/3 approach 5 K); a designSpec's
+result block now follows the reports, so their rows reach the JSON (15
+`boundary global` rows appended on four designSpec cases); item 3 -- opt-in
+Ergun in the pfr (`operation { L_over_D; catalyst { particleDiameter; }
+pressureDrop { model Ergun; voidFraction; allowable; } }`), one home for
+L/D, gate `check_pfr_ergun`: at L/D 6 the loop did not converge (35/24/16
+bar first-pass drops), so the case runs L/D 1.5, 8 mm, void 0.40, allowable
+1 bar -- ALL AUTHOR-SET, Vítor may want to choose the geometry -- drops
+0.67/0.31/0.17 bar, volumes 8.89/18.42/31.74 m3, shells 11.9 -> 18.7 M EUR,
+NPV -329.5 -> -344.7 M EUR; 393 rows moved + 42 new in greenAmmoniaBasicDesign,
+letdown01 12 (+ValveHP T_out 3e-8), letdown02 2, recorded after the list.
+Eq 39 REFUSES below 150 atm and the loop runs at ~148.9 atm: item 2 needs a
+decision (a higher loop pressure or a declared approximation).  The banner
+prints the law's own k.  Item 4 parked on `claude/c66-item4-constants-wip`.
 
 **C65. THE DEBTS THE SAFETY AND LETDOWN SLICES FOUND: THREE RECORDS, ONE
 VALVE, ONE GATE (commander, 2026-10-11, under Vítor's "Avança da melhor
