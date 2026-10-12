@@ -7,24 +7,53 @@
 //  Its inlet temperature is what the FEHE delivers; its outlet temperature and
 //  conversion are RESULTS.
 //
-//  THE VOLUME IS DECLARED, AND IT WAS CHOSEN AGAINST A STATED CRITERION.  The
-//  first bed is the hottest: an adiabatic bed fed at ~381 C heats itself as it
-//  converts, and run to a 5 K approach it would leave above the 520 C the
-//  base data give as the catalyst's limit.  So bed 1 is sized to LEAVE AT
-//  515 C, 5 K under that limit -- the run prints its `T_out` and its
-//  `approach_K`, read both.  Like the compressor powers, the number was found
-//  by running the case (a scan of V_R against T_out), and it moves the day a
-//  group changes anything upstream: re-tune it.  Why it is not solved by a
-//  DesignSpec, as tutorials/plant/ammoniaStaged04_kinetic solves its bed: a
-//  `$variable` in a unit FOLDER does not resolve against the plant's
-//  `variables {}` block, so an outer driver cannot reach it (see README).
+//  THE VOLUME IS SOLVED AGAINST A STATED CRITERION.  The first bed is the
+//  hottest: an adiabatic bed fed at ~381 C heats itself as it converts, and
+//  run to a 5 K approach it would leave above the 520 C the base data give as
+//  the catalyst's limit.  So bed 1 is sized to LEAVE AT 515 C (788.15 K), 5 K
+//  under that limit.  The volume is `$V_Bed1`, declared in the PLANT's
+//  `variables {}` (system/flowsheetDict) and SOLVED by the DesignSpec in
+//  system/outerDict (Bed1.T_out = 788.15 K, simultaneously with beds 2 and
+//  3).  A unit folder with no `variables {}` of its own resolves its
+//  `$references` against the plant's -- until DEV.md 4c C66 it did not, and
+//  this number was found by hand.  The run prints `T_out` and `approach_K`:
+//  read both.
+//
+//  THE BED HAS A CROSS-SECTION, AND THE GAS LOSES PRESSURE CROSSING IT
+//  (DEV.md 4c C66).  `L_over_D` is the ONE home of the bed's slenderness: the
+//  bed is the straight cylinder of V_R at that ratio, its Ergun pressure drop
+//  is integrated along that length (`pressureDrop`), and the `pfr` sizer
+//  builds the shell on the same number, read from here.  Every number in the
+//  three lines is AUTHOR-SET, none is a vendor's:
+//    * particleDiameter 8 mm -- the middle of the 6-10 mm window Dyson &
+//      Simon's Eq 39 was computed for, taken by Ergun as an EQUIVALENT-SPHERE
+//      diameter, so for irregular granules the drop below is a LOWER estimate;
+//    * voidFraction 0.40 -- a random-packing value; the drop goes as
+//      (1-eps)/eps^3, so 0.36 instead would raise it by about half;
+//    * allowable 1 bar per bed -- a stated design budget with no source
+//      behind it; the run announces any bed above it.
+//  WHY L/D 1.5 AND NOT THE 6 THE CASE CARRIED (the base case's converter
+//  ratio).  Measured: at L/D 6 the first pass of the loop lost 35, 24 and 16
+//  bar across the three beds, and the recycle did not converge (a later
+//  iterate consumed a bed's whole inlet pressure, refused by name).  The
+//  scaling below puts the converged L/D 6 drops near 11, 5 and 3 bar --
+//  three-quarters of the 20 bar between the loop and the separator, on a
+//  budget of 1 bar each.  At a fixed volume both
+//  the superficial velocity and the length go as (L/D)^(2/3), so the drop
+//  goes as (L/D)^2: at 1.5 the three beds lose 0.67, 0.31 and 0.17 bar, all
+//  inside the budget.  A squat bed is the axial-flow answer; a bed the gas
+//  crosses RADIALLY (through its thickness, not its length) is the other,
+//  and this `pfr` does not model one.
 
 type      pfr;
 operation
 {
-    V_R          8.72 m3;       // catalyst bed -- chosen so the bed LEAVES at 515 C; see above
+    V_R          $V_Bed1;       // catalyst bed -- SOLVED by system/outerDict; see above
     nSteps       400;           // RK4 axial steps
     thermalMode  adiabatic;     // T is a RESULT: the bed heats itself
+    L_over_D     1.5;           // the bed (and its shell) -- see above; the sizer reads it here
+    catalyst     { particleDiameter 8 mm; }                        // AUTHOR-SET, see above
+    pressureDrop { model Ergun;  voidFraction 0.40;  allowable 1 bar; }   // AUTHOR-SET, see above
 }
 reactions ( ammoniaSynthesis );
 boundary  { inlets ( Feed );  outlets ( Out ); }

@@ -566,7 +566,7 @@ try
     const std::string flowsheetPath =
         fs::exists("flowsheetDict") ? "flowsheetDict" : "system/flowsheetDict";
     auto flowsheetDict = Dictionary::fromFile(flowsheetPath);
-    auto controlDict   = Dictionary::fromFile(resolveUp("system/controlDict"));
+    auto controlDict   = Dictionary::fromFile(resolveUp("system/controlDict"));  bindNodeToAncestorVariables(flowsheetDict, flowsheetPath);  // C66: MemberFolder.H
 
     // Verbosity is read HERE (before any thermo load) so the 0-silent contract
     // covers the LOAD phase too: the package/builder announcement chorus below
@@ -1217,10 +1217,10 @@ try
         // without a single representative pass (sweep, fit) skip this.
         bool haveRepresentative = false;
         std::vector<Advisory>          outerAdvisories;
-        std::vector<Divergence>        outerDivergences;
+        std::vector<Divergence>        outerDivergences;  SimulationResult representative;  // C66: kept for the result block (OuterDriver.H)
         if (driver->hasFinalResult())
         {
-            SimulationResult r = driver->finalResult();
+            SimulationResult& r = representative;  r = driver->finalResult();
             runReports(r);
             if (!validate0(r)) finalRc = 1;
             writeConverged(r);
@@ -1322,7 +1322,7 @@ try
             printProblemDivergence(outerDivergences);
             printAdvisorySummary(outerAdvisories);
         }
-
+        if (haveRepresentative && !driver->emitsRepresentativeJson()) { representative.advisories = outerAdvisories; representative.divergences = outerDivergences; emitResultJson(std::cout, representative); }  // C66: the result block written AFTER the reports and the caveats, as on the direct path (OuterDriver.H, emitsRepresentativeJson)
         //  THE POSTDICT IS AUDITED UNDER AN OUTER DRIVER TOO (2026-09-26).
         //  The audit below the direct path was the ONLY site, so a postDict
         //  under any outer driver was never audited: a dead key in a sizing

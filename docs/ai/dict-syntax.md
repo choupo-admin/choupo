@@ -273,6 +273,18 @@ how a 2-D DesignSpec problem reduces to two scalars (`$A` + `$F_steam`).
 References inherit the variable's declared dimensions — the
 dim-check upstream still works through the indirection.
 
+**A unit or sector FOLDER reaches the plant's variables.**  In a sectored
+case a member that lives in its own folder (`<case>/Bed1/system/flowsheetDict`)
+and declares no `variables {}` of its own resolves its `$name` references
+against the enclosing level's block — the plant's — and the binding is live,
+so a DesignSpec at the plant can manipulate a value written in a unit folder
+(`V_R $V_Bed1;` in the folder, `V_Bed1 8.72 m3;` in the plant's
+`variables {}`; see `tutorials/plant/greenAmmoniaBasicDesign`).  A member that
+declares its own block keeps it, and a name it shares with an enclosing level
+is REFUSED: the driver would write one and the unit would read the other.  A
+folder run alone (no `controlDict` of its own) resolves against the nearest
+ancestor flowsheetDict that declares the block, and says which.
+
 ## Computed `$variables`
 
 For post-processing arithmetic, a variable can be a `compute`

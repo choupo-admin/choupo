@@ -3758,6 +3758,22 @@ PYEOF
     fi
     rm -f /tmp/ammrate.$$
 
+    # pfr Ergun gate (2026-10-12, DEV.md 4c C66).  The multi-reaction pfr's
+    # opt-in bed pressure drop: the integrated outlet held to the closed form
+    # of a non-reacting isothermal ideal-gas bed (P_out^2 = P_in^2 - 2KL),
+    # the geometry recomputed from V_R and L/D, the outlet leaving at the
+    # integrated P, six refusals by name, the allowable announced.  Three
+    # by-hand sabotages, all caught.
+    if "$ROOT/bin/curate/check_pfr_ergun.py" > /tmp/pfrergun.$$ 2>&1; then
+        printf "PASS  %-40s  (%s)\n" "pfr-ergun-gate" "$(head -1 /tmp/pfrergun.$$)"
+        pass=$((pass+1))
+    else
+        printf "FAIL  %-40s  (run bin/curate/check_pfr_ergun.py)\n" "pfr-ergun-gate"
+        cat /tmp/pfrergun.$$
+        fail=$((fail+1))
+    fi
+    rm -f /tmp/pfrergun.$$
+
     # transport-correlation gate (2026-09-05).  The five transport families
     # (Chung, Eucken, Fuller, Andrade/Vogel/chemsepEq101, SatoRiedel/
     # chemsepEq16) and the shared Wilke phi_ij became objects with a window, a

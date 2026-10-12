@@ -423,7 +423,7 @@ std::map<std::string,std::string> flattenNode(const DictPtr&                    
         //       twoSectorDemo) load UNCHANGED via this fallback.
         // The two are never both present for a given node; if neither exists the
         // member must be an inline block in the parent dict.
-        cd = readMemberDict(dict, folderPath, member, memberBase);
+        cd = readMemberDict(dict, folderPath, member, memberBase);   // + the variables scope
 
         // Stream state never lives in a flowsheetDict -- refuse a member's
         // `streams {}` block just as loudly as the root's, naming the node.

@@ -80,7 +80,7 @@ Description
     under this law; whether Eq 39's diffusion correction is applied is a
     DECLARED word (`effectivenessFactor intrinsic | dysonSimonEq39`), never a
     default, and the intrinsic route announces that xi = 1 is UNPRICED there.
-    Still NOT wired: any other reactor, a pressure drop, catalyst ageing (see
+    Still NOT wired: any other reactor, catalyst ageing (see
     `freshCatalystCaveat`), and the pellet as a modelled object (the rung
     beyond D).  The announcement the four `catalystLoading` reactors make
     about eta = 1 is unchanged by this file and does not fire on a

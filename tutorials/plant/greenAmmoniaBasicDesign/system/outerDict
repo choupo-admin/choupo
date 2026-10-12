@@ -1,0 +1,80 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  PEQ 2026-27 -- Green ammonia, 1200 t/day     |
+|      \\|//   H eat-transfer |  FEL-3 basic design: the beds SIZED           |
+|     \\\|///  O perations    |  https://choupo.org  --  GPL-3.0-or-later     |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+  outerDict -- WHERE THE THREE CATALYST VOLUMES ARE COMPUTED (DEV.md 4c C66).
+
+  The `pfr` is a RATING model: it integrates the volume it is given.  A basic
+  design SIZES the bed instead -- it fixes a criterion and finds the volume
+  that meets it.  This DesignSpec does that, for all three beds AT ONCE:
+
+      $V_Bed1  ->  Bed1.T_out       = 788.15 K   (515 C: 5 K under the 520 C
+                                                  the base data give as the
+                                                  catalyst's limit)
+      $V_Bed2  ->  Bed2.approach_K  = 5 K        (US 5,352,428, Bhakta &
+      $V_Bed3  ->  Bed3.approach_K  = 5 K         Grotz 1994: "the effluent
+                                                  from each bed has an
+                                                  approach to equilibrium of
+                                                  5 C")
+
+  SIMULTANEOUS, NOT SEQUENTIAL, and why that is the honest reading.  The
+  DesignSpec is ONE Newton on n case variables against n targets, its
+  Jacobian by finite differences (src/outerDriver/DesignSpec.cpp) -- there is
+  no "one spec per variable" mode.  Here the coupling is real: bed 1's volume
+  moves its outlet, the interbed cooler lands bed 2's inlet at a FIXED 420 C
+  whatever comes in, but bed 1's conversion still moves bed 2's composition
+  and so its approach; and bed 3's effluent closes the FEHE energy recycle
+  that sets bed 1's inlet.  So the 3 x 3 Jacobian is lower-triangular only
+  approximately, and solving the three together is what the loop requires.
+  Each residual is scaled by its own `tol`, so `tolF 1` is "every target
+  within its tolerance".
+
+  ONE starting point, not two: each `initial` below equals the value in
+  system/flowsheetDict's `variables {}`, and both are the design point this
+  Newton last converged to (with the Ergun pressure drop on, from the
+  constant-pressure design point 8.7238 / 18.2281 / 31.4450 m3, in two
+  Newton steps and fifteen evaluations; the hand-tuned 8.72 / 18.23 /
+  31.44 m3 the case carried before C66 had reached that one in one step).  So a
+  run without this file RATES the designed beds, and a group that changes
+  anything upstream re-solves them by running the case.  The post-processing chain (sizing, relief valves,
+  costing, economics) runs once, on the replay at the design point --
+  `DesignSpec::postDictPolicy()`, said on the run header.
+
+  WHAT IS NOT SOLVED HERE, and stays a declared decision: the two interbed
+  outlet temperatures (420 and 410 C) and the recycle compressor's power.  A
+  designer would optimise the interbed temperatures against catalyst volume;
+  that is an optimisation, not a specification, and it is not this file.
+\*---------------------------------------------------------------------------*/
+
+type designSpec;
+
+manipulate
+(
+    //  Bounds are advisory clips on the Newton step, not physics: below the
+    //  lower bound a bed is so short its approach is hundreds of kelvin and
+    //  the residual flat.
+    { variable V_Bed1;   initial  8.8861; min 2.0;   max  40.0; }   // m3 of catalyst bed
+    { variable V_Bed2;   initial 18.4225; min 4.0;   max  80.0; }
+    { variable V_Bed3;   initial 31.7447; min 6.0;   max 150.0; }
+);
+
+targets
+(
+    { path Bed1.T_out;        value 788.15;   tol 0.02; }   // K -- 515 C
+    { path Bed2.approach_K;   value 5.0;      tol 0.02; }   // K, US 5,352,428 per-bed approach
+    { path Bed3.approach_K;   value 5.0;      tol 0.02; }
+);
+
+options
+{
+    maxIter      40;
+    tolF         1.0;        // |F|_2 < 1: every residual within its own tol
+    fdStep       1.0e-3;
+}
+
+report
+{
+    file     designspec_history.csv;
+}
