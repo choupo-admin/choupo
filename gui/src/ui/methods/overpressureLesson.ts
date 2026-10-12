@@ -392,9 +392,9 @@ export const OVERPRESSURE_STEPS: readonly LessonStep[] = [
     leadsTo: {
       tool: "letdown",
       toolLabel: "Large pressure letdown",
-      stepTitle: "A gas stops accelerating at the speed of sound",
+      stepTitle: "Choked flow: the mass flow stops rising when the throat is sonic",
       body: "The same choked flow is what a letdown valve meets when it "
-        + "takes a pressure ratio above ten: the letdown page draws the "
+        + "takes a large pressure drop: the letdown page draws the "
         + "flow flattening against the pressure-drop ratio, then follows a "
         + "liquid into cavitation and flashing, and the staged trims, "
         + "installation and power-recovery turbines industry uses instead.",

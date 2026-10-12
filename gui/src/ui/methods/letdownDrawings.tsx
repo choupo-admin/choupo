@@ -83,9 +83,12 @@ const bar = (pa: number): string => (pa / 1e5).toFixed(pa < 1e6 ? 2 : 1);
 
 /** The cutaway of a flow-up globe valve and, aligned under it, the pressure
  *  along the flow path: P1, the dip to the vena contracta, the recovery to
- *  P2, against the vapour pressure.  Driven by the bench's numbers. */
-export function ValveProfileDrawing({ P1, P2, Pvc, Pv }: {
-  P1: number; P2: number; Pvc: number; Pv: number;
+ *  P2, against the vapour pressure.  Driven by the bench's numbers.
+ *  `choked` says the flow is choked and Pvc is the pressure the vaporising
+ *  vena contracta is held near (F_F Pv), not the single-phase relation's
+ *  extrapolation (C70). */
+export function ValveProfileDrawing({ P1, P2, Pvc, Pv, choked = false }: {
+  P1: number; P2: number; Pvc: number; Pv: number; choked?: boolean;
 }): JSX.Element {
   const W = 360, H = 300;
   // -- the profile's frame
@@ -110,7 +113,9 @@ export function ValveProfileDrawing({ P1, P2, Pvc, Pv }: {
       aria-label={"A globe valve in cutaway, flow entering below the seat and "
         + "leaving above it, and under it the pressure along that path: "
         + `flat at P1 = ${bar(P1)} bar, falling to its lowest at the vena `
-        + `contracta just past the seat (${below ? "below zero, which a liquid cannot follow" : `${bar(Pvc)} bar`}), `
+        + `contracta just past the seat (${below ? "below zero, which a liquid cannot follow"
+          : choked ? `held near ${bar(Pvc)} bar by vaporisation: the flow is choked`
+          : `${bar(Pvc)} bar`}), `
         + `then recovering to P2 = ${bar(P2)} bar, drawn against the vapour `
         + `pressure Pv = ${bar(Pv)} bar.  ${flashing ? "The outlet is below Pv: flashing."
           : cavitating ? "Only the vena contracta is below Pv: cavitation." : "Nothing falls below Pv."}`}>
@@ -163,7 +168,7 @@ export function ValveProfileDrawing({ P1, P2, Pvc, Pv }: {
       <Label x={x1 - 4} y={Math.abs(y(P2) - yPv) < 14 && y(P2) + 14 < bot ? y(P2) + 13 : y(P2) - 5}
         anchor="end" size={11}>P2</Label>
       {/* the vena-contracta value sits UNDER the axis, where no curve runs */}
-      <Label x={xs.vc} y={bot + 13} size={11}>{below ? "Pvc < 0" : "Pvc"}</Label>
+      <Label x={xs.vc} y={bot + 13} size={11}>{below ? "Pvc < 0" : choked ? "Pvc ≈ F_F·Pv" : "Pvc"}</Label>
       <line x1={xs.vc} x2={xs.vc} y1={yVc} y2={bot} stroke={TEXT} strokeWidth={0.8} />
       {/* vapour where the pressure is below Pv */}
       {(cavitating || flashing) && (
@@ -473,15 +478,16 @@ export function RecoveryDrawing({ P_kW, eta }: { P_kW: number; eta: number }): J
   return (
     <svg viewBox="0 0 360 170" style={SVG_STYLE} role="img"
       aria-label={`The same ${fx(P_kW)} kW of hydraulic power, taken two ways.  `
-        + "Through a valve, all of it becomes heat in the stream.  Through a "
+        + "Through a valve, all of it is dissipated: the stream's enthalpy is "
+        + "unchanged and the availability of the drop is destroyed.  Through a "
         + `power-recovery turbine of efficiency ${eta.toFixed(2)}, ${fx(eta * P_kW)} kW `
-        + `reaches the shaft and ${fx((1 - eta) * P_kW)} kW becomes heat.`}>
+        + `reaches the shaft and ${fx((1 - eta) * P_kW)} kW is dissipated.`}>
       {/* valve row */}
       <ValveSymbol cx={40} cy={44} s={11} />
       <Label x={40} y={74} size={10} fill={INK}>valve</Label>
       <rect x={x0} y={34} width={len} height={20} fill={HUE_B} opacity={0.85} />
       <Label x={x1} y={68} anchor="end" size={10} fill={HUE_B}>
-        {`heat ${fx(P_kW)} kW`}
+        {`${fx(P_kW)} kW hydraulic power dissipated`}
       </Label>
       {/* turbine row */}
       <circle cx={40} cy={122} r={16} fill={BG} stroke={TEXT} strokeWidth={1.4} />
@@ -496,7 +502,7 @@ export function RecoveryDrawing({ P_kW, eta }: { P_kW: number; eta: number }): J
       <rect x={x0} y={112} width={shaft} height={20} fill={HUE_A} />
       <rect x={x0 + shaft} y={112} width={len - shaft} height={20} fill={HUE_B} opacity={0.85} />
       <Label x={x0 + 4} y={106} anchor="start" size={10} fill={HUE_A}>{`shaft ${fx(eta * P_kW)} kW`}</Label>
-      <Label x={x1} y={146} anchor="end" size={10} fill={HUE_B}>{`heat ${fx((1 - eta) * P_kW)} kW`}</Label>
+      <Label x={x1} y={146} anchor="end" size={10} fill={HUE_B}>{`${fx((1 - eta) * P_kW)} kW dissipated`}</Label>
     </svg>
   );
 }

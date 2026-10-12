@@ -1499,7 +1499,9 @@ pressure. Once the pressure ratio falls below the \textbf{critical
 ratio} --- r\_c = {[}2/(\(\gamma\)+1){]} raised to {[}\(\gamma\)/(\(\gamma\)\textminus{}1){]}, \(\approx\) \textbf{0.5
 for most gases} (0.53 for air) --- the velocity at the vena contracta
 reaches the speed of sound and the valve \textbf{CHOKES}: mass flow
-saturates and the surplus \(\Delta\)P is dumped as \textbf{noise (often
+saturates, and the surplus \(\Delta\)P buys no flow --- it is dissipated
+downstream of the vena contracta in shocks and turbulence, as
+\textbf{noise (often
 \textgreater{} 110 dB), vibration and erosion}. Discharging 50 bar \(\rightarrow\) 1
 atm is a ratio of 0.02, i.e. deeply choked.
 
@@ -1518,10 +1520,16 @@ Small gas \(\Delta\)P, sub-critical & one globe valve \\
 Large gas \(\Delta\)P, choked & multi-stage / labyrinth trim, or valves in
 series, + a downstream silencer (each stage takes a sub-critical
 drop) \\
-Liquid, P\textsubscript{2} \textgreater{} Pvap & standard trim \\
-Liquid, P\textsubscript{2} \textless{} Pvap (flashing) & the liquid flashes/cavitates
-and imploding bubbles pit the trim --- use anti-cavitation (multi-step)
-trim, harden it, or flash on purpose into a drum \\
+Liquid, P\textsubscript{2} and the vena contracta both \textgreater{} Pvap & standard trim \\
+Liquid, P\textsubscript{2} \textgreater{} Pvap but the vena contracta
+\textless{} Pvap (cavitation) & imploding bubbles pit the trim --- anti-cavitation
+(multi-step) trim, or an orifice downstream to raise the valve's
+backpressure; harden it \\
+Liquid, P\textsubscript{2} \textless{} Pvap (flashing) & the outlet state
+requires the vapour, so no trim, staging or orifice removes it (an orifice
+only moves the two-phase crossing to the last device) --- harden the trim,
+use an angle body, put the valve at the receiving vessel or flash on
+purpose into a drum \\
 \end{longtable}
 
 Rule of thumb: stage it when the predicted noise exceeds
