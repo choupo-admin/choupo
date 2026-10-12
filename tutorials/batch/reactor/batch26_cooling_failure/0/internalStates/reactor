@@ -8,8 +8,9 @@
 \*-----------------------------------------------------------------------------*/
 /*--------------------------------*- Choupo -*----------------------------------*\
   0/internalStates/reactor -- the initial HOLDUP of 'reactor', the SINGLE
-  source of truth.  The whole batch is charged at t = 0: equimolar acetic
-  acid and ethanol, the same 18.5 mol as batch02, at T_p.
+  source of truth.  The whole batch is charged at t = 0, at T_p: 5 mol of
+  reactant A, 5 mol of reactant B and 15 mol of the inert solvent S
+  (2.25 kg; the fictitious records of constant/components/).
 \*-----------------------------------------------------------------------------*/
 
 recordType  internalState;
@@ -21,7 +22,7 @@ holdup
 {
     T            330.0 K;          // T_p
     P            1.013 bar;
-    V            0.001;            // m^3 (the rate is first order in ethanol, so V cancels from the extent rate)
-    totalMoles   0.0185;           // kmol
-    molarComposition  { ethanol 0.5;  aceticAcid 0.5;  ethylAcetate 0.0;  water 0.0; }
+    V            0.0025;           // m^3 (sum of n Vliq; the rate is first order in B, so V cancels from the extent rate)
+    totalMoles   0.025;            // kmol
+    molarComposition  { reactantA 0.2;  reactantB 0.2;  productP 0.0;  solventS 0.6; }
 }

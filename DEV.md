@@ -2438,6 +2438,35 @@ chemist, not "two engineers"; caveats BEFORE the simulation; code paths
 into a collapsible technical note; minimum-boiling azeotropes named; the
 mixture cp varies with composition while the component cp are constant.
 Dispatched 2026-10-11.
+SECOND REVIEW DONE 2026-10-11 (branch claude/c60-review2, not merged):
+(1) the witnesses run a FICTITIOUS A + B -> P in an inert solvent S, four
+case-local adopted records, coherent by construction (Tb and HvapTb from
+each record's Antoine, Tc = Tb/0.65, Cp_ig from Kirchhoff against Watson's
+slope at Tb, P's formation datum derived so the LIQUID heat of reaction is
+-60.000 kJ/mol of B, dCp = 0, mass conserved); the heat comes from
+formation data, NOT the dH_rxn override, because the override would leave
+every transfer unpriced (a dose into a hot reactor falls back to a molar-T
+average) and bubble01's propertyPoint refuses a species with no formation
+datum.  Old -> new: dT_ad 107.77 -> 74.07 K; batch MTSR (t = 0) 437.77 ->
+404.07 K; batch26 T_cf at 600 s 394.84 -> 374.96 K (now EXACTLY the
+estimate, dCp = 0); semi-batch MTSR 348.29 K (50 s after portion 4) ->
+339.73 K (1 s after portion 6); bubble01 T_bubble 362.34 -> 376.00 K.
+(2) batch27's feed event gains a third reading (`to reactor;`, the whole
+tank enters) and NEW witness batch28_dosing_vessel_limit (a day tank
+holding a quarter of B, refilled only when empty): whole-tank failure
+356.55 K worst (1 s after refill 1) against 404.07 K with the whole of B in
+the tank; the refill is named as what remains.  (3) failures 1 s
+after/before a portion; the page keeps (a) the chosen scenario, (b) the
+estimate's maximum over the 50 s rows, (c) the engine's maximum over 31
+runs on a button (gui/src/case/methodRun.ts gains useMethodRunSweep).
+(4) scenario class vs process class, an MTT(t) - T_cf(t) table at 1.013
+bar (23 bubble-point runs).  (5)-(7) as reviewed; Z at each converter feed
+from relief01 run at the feed's own T, P: Q50/Q150 = 4.19 (ideal 4.33, so
+the review's ~4.4 is the ideal-gas figure).  OPEN, found here, not fixed:
+choupoBatch's "elemental balance UNAVAILABLE" line names the LAST
+species' reason for every species without a formula
+(`parseReason` keyed by the formula text, main.cpp:1726); and the
+Tutorials Guide's plant .tex was already stale on main (regenerated here).
 
 **C59. THE AUTOMATIC FLOWSHEET LAYOUT IS SPAGHETTI; MAKE IT READABLE, ALWAYS
 (Vítor, 2026-10-10, verbatim: "o layout do flowsheet parece esparguete!

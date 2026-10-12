@@ -1,0 +1,28 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*--------------------------------*- Choupo -*----------------------------------*\
+  0/internalStates/dayTank -- the initial HOLDUP of 'dayTank', the only
+  vessel connected to the reactor: a QUARTER of reactant B (1.25 mol), at
+  T_p.  It is refilled from storage three times, each time only once it is
+  empty (system/flowsheetDict).
+\*-----------------------------------------------------------------------------*/
+
+recordType  internalState;
+
+unit        "dayTank";
+equipment   batchAccumulator;
+
+holdup
+{
+    T            330.0 K;          // T_p
+    P            1.013 bar;
+    V            0.0001125;        // m^3 (1.25 mol x Vliq of B)
+    totalMoles   0.00125;          // kmol
+    molarComposition  { reactantA 0.0;  reactantB 1.0;  productP 0.0;  solventS 0.0; }
+}

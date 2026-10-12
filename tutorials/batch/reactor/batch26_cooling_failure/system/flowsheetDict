@@ -10,47 +10,46 @@
   batch26_cooling_failure  --  a BATCH exothermic reaction held at T_p by
   its jacket, and what happens when the jacket stops.
 
-  The reaction is batch02's mass-conserving esterification,
-  AcOH + EtOH -> EtOAc + H2O, first order in ethanol, with the heat of
-  reaction the engine resolves from the species' standardThermochemistry
-  (printed in the run log, per mol of ethanol).  The whole charge --
-  equimolar acid and ethanol -- is in the vessel at t = 0.  That is what
-  makes a batch the WORST case for thermal safety: at t = 0 all of the
-  reactant is unconverted, so a cooling failure at the start releases the
-  whole adiabatic temperature rise.
+  THE REACTION IS FICTITIOUS: A + B -> P in an inert solvent S, an ideal
+  liquid with no vapour phase in the reactor (constant/reactions and
+  constant/components/reactantA.dat say how every number was set).  It is
+  a teaching witness for the process-safety EduTool, not a model of any
+  real chemistry, and its records are coherent by construction: the heat
+  of reaction, -60.000 kJ per mol of B, comes from formation data whose
+  differences are the only thing that carries meaning, and it does not
+  depend on temperature (dCp = 0).  The whole charge -- 5 mol A, 5 mol B,
+  15 mol S -- is in the vessel at t = 0.  That is what makes a batch the
+  WORST case for thermal safety: at t = 0 all of the reactant is
+  unconverted, so a cooling failure at the start releases the whole
+  adiabatic temperature rise.
 
   THE SCENARIO (the recipe below):
 
      t < t_f   isothermal at T_p = 330 K; the jacket removes the heat of
                reaction (the energy ledger records that duty)
      t = t_f   `setParameter reactor adiabatic 1` -- the jacket stops
-     t > t_f   adiabatic: the ethanol still unconverted at t_f (the
+     t > t_f   adiabatic: the B still unconverted at t_f (the
                ACCUMULATION, X_ac) reacts and heats the mass to T_cf
 
   The thermal-safety estimate is T_cf = T_p + X_ac * dT_ad (a batch's
   mass does not change, so Stoessel's semi-batch mass correction is 1),
   with dT_ad the adiabatic rise of the full charge from T_p (run this case
-  with the failure at t = 0 to have the engine compute it).  The engine's
-  T_cf is T_final of a failure run; the EduTool puts the two side by side.
-  The MTSR is the largest T_cf over every failure instant: for a batch,
-  the failure at t = 0.
+  with the failure at t = 0 to have the engine compute it).  Because
+  dCp = 0 here, the total heat capacity of the charge does not change as
+  it reacts, and the estimate is EXACT for this batch: the engine's T_cf
+  (T_final of a failure run) and the estimate agree to the integration
+  error.  The MTSR is the largest T_cf over every failure instant: for a
+  batch, the failure at t = 0.
 
   `value 0` on the same event keeps the jacket working: the same case then
   runs the normal isothermal batch, which is how the EduTool draws X_ac(t).
 
-  PEDAGOGICAL, NOT QUANTITATIVE (the batch02/batch06 caveat, repeated):
-  a thermal-safety teaching witness -- neither its kinetics nor its thermal
-  excursion are data for real acetic acid / ethanol esterification.  The
-  Arrhenius constants are illustrative (constant/reactions); the liquid
-  heat of reaction the run prints is several times too large, because
-  aceticAcid.dat pairs a MONOMER ideal-gas formation datum with a heat of
-  vaporisation to the DIMERISED vapour (DEV.md 4c C60, a curation decision
-  reserved for the owner; this case does not change the record); the
-  liquid heat capacities are constant (degree-0 polynomials); and the
-  vessel has no vapour phase -- past the mixture's boiling point a real
-  open vessel would boil and a closed one would pressurise.  The MTSR is
-  defined on exactly that hypothetical, which is why it is compared with
-  the boiling point (MTT) rather than trusted beyond it.
+  WHAT IS NOT MODELLED: the vessel has no vapour phase -- past the
+  mixture's boiling point a real open vessel would boil and a closed one
+  would pressurise.  The MTSR is defined on exactly that hypothetical,
+  which is why it is compared with the boiling point (MTT) rather than
+  trusted beyond it.  No decomposition is modelled either: T_D24 is an
+  assumption the EduTool's reader sets.
 \*---------------------------------------------------------------------------*/
 
 units
@@ -65,7 +64,7 @@ units
             T_setpoint   330 K;            // T_p, the process temperature
         }
 
-        reaction    esterification_etac_exo;  // see constant/reactions
+        reaction    AB_to_P;              // see constant/reactions
     }
 );
 

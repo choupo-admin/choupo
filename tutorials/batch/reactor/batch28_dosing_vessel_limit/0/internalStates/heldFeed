@@ -1,0 +1,27 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*--------------------------------*- Choupo -*----------------------------------*\
+  0/internalStates/heldFeed -- the initial HOLDUP of 'heldFeed': empty.
+  At a cooling failure what is left in STORAGE is moved into it (the day
+  tank is not refilled after a failure), and, when the interlock works, so
+  is what is left in the day tank (see system/flowsheetDict).
+\*-----------------------------------------------------------------------------*/
+
+recordType  internalState;
+
+unit        "heldFeed";
+equipment   batchAccumulator;
+
+holdup
+{
+    T            330.0 K;          // placeholder; takes the held feed's T
+    P            1.013 bar;
+    V            0.0005;
+    totalMoles   0.0;              // empty
+}

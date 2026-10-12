@@ -7,37 +7,56 @@
 |        |     O ptimization  |                                               |
 \*-----------------------------------------------------------------------------*/
 /*---------------------------------------------------------------------------*\
-  Esterification (Fischer):   AcOH + EtOH  ->  EtOAc + H2O
+  A FICTITIOUS exothermic liquid reaction:   A + B  ->  P   (in solvent S)
 
-  A MASS-CONSERVING first-order test reaction (60.052 + 46.069 = 88.106 +
-  18.015 = 106.121 g/mol on both sides), replacing the old non-conserving
-  ethanol -> water toy reaction (which destroyed ~28 g/mol and left the
-  mass-balance report ~50 % open).  Pseudo-first-order: rate = k.[ethanol]
-  (order 1 in ethanol, 0 in the acid), so the SAME first-order Arrhenius
-  kinetics carry over; only the chemistry now closes.
+  The process-safety EduTool's teaching reaction (DEV.md 4c C60, second
+  review).  It replaced a real esterification that the lesson had been
+  running on a known thermodynamic inconsistency (the acetic-acid record's
+  two vapour bases, which made its liquid heat of reaction several times too
+  large -- that record is its own item in DEV.md C60 and is not touched
+  here).  Nothing below is data; every number is an author-set teaching
+  assumption, chosen so the lesson shows what it has to show.
+
+  * MASS: 100 + 80 = 180 g/mol (the records' MW), conserved by construction.
+
+  * RATE: first order in B, zero order in A, so the extent rate is k n_B
+    and does not depend on the volume (a dosed batchReactor holds its
+    declared volume while a charge adds liquid; with this law that changes
+    no number).  k = A exp(-Ea/RT) with the values below: about 8e-4 1/s
+    at 330 K (a time constant of ~20 min, so a batch is ~95 % converted in
+    an hour) and ~0.1 1/s at 400 K -- a runaway that finishes in seconds.
+
+  * HEAT: -60.000 kJ per mol of B, from the four records' formation data
+    (the engine prints it as [reaction heat]).  It does NOT depend on
+    temperature: Cp_liq(P) = Cp_liq(A) + Cp_liq(B), so dCp = 0 (Kirchhoff),
+    and the adiabatic energy balance -- which reads one heat of reaction --
+    is the exact first law on these records.  That is why the heat comes
+    from formation data and not from a `dH_rxn` override: the override is
+    a number the engine cannot cross-check, while the formation data also
+    price every transfer (a dose charged into a hot reactor is mixed by
+    enthalpy equality) and the props witness's bubble-point run, which
+    evaluates the mixture's ideal-gas enthalpy and refuses a species that
+    has no formation datum.
 \*---------------------------------------------------------------------------*/
 
-esterification_etac_exo
+AB_to_P
 {
-    limitingReactant   ethanol;
+    limitingReactant   reactantB;
 
     stoichiometry
     (
-        { component aceticAcid;    nu -1;  order 0; }
-        { component ethanol;       nu -1;  order 1; }
-        { component ethylAcetate;  nu  1;  order 0; }
-        { component water;         nu  1;  order 0; }
+        { component reactantA;  nu -1;  order 0; }
+        { component reactantB;  nu -1;  order 1; }
+        { component productP;   nu  1;  order 0; }
     );
 
     kinetics
     {
         type   Arrhenius;
-        A      1.0e8;        // 1/s -- ILLUSTRATIVE pseudo-first-order Arrhenius
-                               // (a mass-conserving TEST reaction, not a fitted esterification rate)
-        Ea     7.0e4;        // J/mol (70 kJ/mol)
+        A      1.0e8;        // 1/s     author-set
+        Ea     7.0e4;        // J/mol   author-set (70 kJ/mol)
     }
 
-    // Heat of reaction: from the species' standardThermochemistry (elements datum) --
-    // the engine computes -26.06 kJ/mol of ethanol, the authoritative value.
-    // No dict dH_rxn override here: all four species carry formation data.
+    // Heat of reaction: from the records' formation data (no dH_rxn
+    // override; see the header).
 }
