@@ -5750,7 +5750,7 @@ for case_dir in "${CASES[@]}"; do
             fail=$((fail+1)); continue
         fi
         if [ -n "$bad" ]; then
-            printf "FAIL  %-40s  (KPI mismatch)" "$name_short"; printf "$bad\n"; fail=$((fail+1)); continue
+            printf "FAIL  %-40s  (KPI mismatch)" "$name_short"; printf '%b\n' "$bad"; fail=$((fail+1)); continue
         fi
         #  Say WHICH claim passed.  "checked vs reference" is true of a
         #  self-recorded golden and would be a false advertisement for an
