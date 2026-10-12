@@ -1991,6 +1991,34 @@ accepts today, and that is a policy call.
      loop (membrane18), the dynamic loop (unsteady03), the UF law
      (membrane19) and the UF loop in time (unsteady04).
 
+**C68. ONE LADDER FOR THE AMMONIA CASES, AND ITS MISSING FIRST RUNG
+(Vítor, 2026-10-12, verbatim: "os vários níveis de simulação do processo de
+amónia têm a nomenclatura confusa. Não se percebe a sequência de
+refinação da simulação, desde o Gibbs, ao pfr com dimensionamento
+detalhado de tudo", then "Avança com isso e faz também o screening").**
+Measured: two ladders on two axes share one vocabulary --
+`ammoniaStaged01_yield`..`04_kinetic` is a REACTOR-MODEL ladder in one
+loop (its texts say "stage A of three" and "stage D of four"), while
+`greenAmmoniaFeasibility`, `...50bar`, `greenAmmoniaBasicDesign` are
+PROJECT-STAGE rungs (FEL-2, FEL-3) of the whole plant, and
+`greenAmmoniaIndustrialN2` (the PEQ base case, a hybrid) is named by its
+N2 source; there is NO ammonia FEL-1 screening (route screening exists for
+methanol only: `screen01_methanol_routes`, `RouteScreeningTool`).
+Decided (names on a stated default, flat prefixed names because the case
+index and FASTSET treat each `tutorials/plant/<dir>` as one case family --
+nested case folders were not measured to work):
+`greenAmmonia1_screening` (NEW, FEL-1: input-output gross margin of the
+reaction routes), `greenAmmonia2_feasibilityGibbs150bar`,
+`greenAmmonia2_feasibilityGibbs50bar`, `greenAmmonia3_basicDesignPFR`,
+`greenAmmoniaPEQ_baseCase` (outside the ladder, says it is the hybrid base
+case), and the reactor ladder `ammoniaReactorLadder1_conversion`,
+`2_gibbs`, `3_gibbsApproach`, `4_pfrKinetic` ("rung N of 4"); a README map
+of the sequence (stage, reactor model, exchangers, estimate class, what is
+decided); old names kept as aliases so shared `?case=` links resolve.
+Sequenced: the screening case now (new files only); the renames AFTER C66
+merges (it edits greenAmmoniaBasicDesign), and BEFORE C67.  Status:
+screening dispatched 2026-10-12.
+
 **C67. A CASE CARRIES ITS OWN KINETICS: RATE EXPRESSIONS IN THE DICT, AND A
 FACTORY A CASE'S `code/` CAN REGISTER INTO (Vítor, 2026-10-12, verbatim:
 "Eu até aceito o /user, mas o código tem de ficar no caso!!! ... Isto é a
