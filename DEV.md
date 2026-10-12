@@ -2112,6 +2112,18 @@ vary postDict prices (SweepDriver.cpp:148 varies flowsheet paths only).
 Stated default: an opt-in `economics { sensitivity {} }` one-at-a-time
 analysis on the same converged pass, one cash-flow home.  The
 feasibility -> basic-design comparison waits for C69.
+MERGED 2026-10-12: `economics { sensitivity {} }` (relative|absolute
+stated per input; `FCI { relative accuracyBand; }` -- the declared band
+had been PRINTED and reached no NPV until then), one cash-flow home
+`appraise`, gate `check_economic_sensitivity`; 9 other economics cases
+byte-identical, no golden moved, 40 new `sens_` rows.  What the tornado
+teaches: H2 and NH3 prices +-20 % swing the NPV ~14x the whole capital
+band; no single input flips the sign (break-even H2 ~3.55 EUR/kg or NH3
+~1.21 EUR/kg); a higher discount rate and fewer hours IMPROVE the NPV
+because the plant loses 69.4 MEUR/yr operating; 150 vs 50 bar differ by
+4.3 MEUR, less than any bar.  OPEN for Vítor (pedagogy): a two-way /
+scenario analysis (H2 and NH3 moving together is what would flip it);
+no tornado drawn in the GUI yet.
 
 **C67. A CASE CARRIES ITS OWN KINETICS: RATE EXPRESSIONS IN THE DICT, AND A
 FACTORY A CASE'S `code/` CAN REGISTER INTO (Vítor, 2026-10-12, verbatim:
