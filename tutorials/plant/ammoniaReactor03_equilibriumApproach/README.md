@@ -270,9 +270,10 @@ raw document.  A curator who wants to rely on it should retrieve US 4,568,530
 and check the sentence before quoting it onward.
 
 **What replaces it:** an integrated rate law, which is rung 4
-(`ammoniaReactor04_kineticSizing`, built 2026-09-26).  `AmmoniaSynthesisRate.{H,cpp}`
-under `src/unitOperations/reactor/kinetics/` is read by `pfr` through
-`kinetics { type dysonSimon1968; }`, and a DesignSpec on the bed's own
+(`ammoniaReactor04_kineticSizing`, built 2026-09-26).  Its Dyson & Simon
+rate law is written in its own `constant/reactions` (`kinetics { type
+expression; }`, every constant with its unit) and integrated by `pfr`, and a
+DesignSpec on the bed's own
 approach-to-equilibrium KPI computes **6.9898 m³** for a 5 K per-bed approach
 — against this case's 18.63 m³ — at 16.60 % per-pass conversion, because a
 single adiabatic bed cannot be the isothermal converter this case assumes.

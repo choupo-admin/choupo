@@ -86,8 +86,10 @@ count.
    entry).
 7. **The only ammonia rate law** in the tree, Dyson & Simon (1968),
    declares "150 to 300 atm" and refuses outside it
-   (`AmmoniaSynthesisRate.cpp:111–117`), so the kinetic side of the ambient
-   point is shown by no engine number.
+   (`AmmoniaSynthesisRate.cpp:111–117` when this was written; since
+   2026-10-12 the law is written in the cases and its Table I is a declared
+   table the engine refuses to extrapolate), so the kinetic side of the
+   ambient point is shown by no engine number.
 
 ## 3. What was built
 
@@ -219,7 +221,7 @@ defined`, the registry.ts lesson one band down.
 Used, each already in the tree and read there: Larson & Dodge, J. Am.
 Chem. Soc. 45 (1923) 2918 (`nh3_equilibrium_map` header; named as where the
 measured pins live, not repeated); Dyson & Simon, Ind. Eng. Chem. Fundam.
-7 (1968) 605–610 (`AmmoniaSynthesisRate.cpp:99–105`, for the validity window
+7 (1968) 605–610 (`AmmoniaSynthesisRate.cpp:99–105` when written -- retired 2026-10-12, the law now in the cases' constant/reactions -- for the validity window
 only); the two record citations glucose.dat carries (Ponomarev &
 Migarskaya 1960; Boerio-Goates 1991) are the datum's own and are not
 re-quoted on the page.  Left uncited, said so on the page: nitrogenase, its

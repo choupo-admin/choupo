@@ -81,23 +81,11 @@
   "AmbroseWalton": [
    "src/thermo/vaporPressure/AmbroseWalton.H"
   ],
-  "AmmoniaRateBench": [
-   "src/propertyOps/AmmoniaRateBench.H"
-  ],
-  "AmmoniaRateContext": [
-   "src/unitOperations/reactor/kinetics/AmmoniaSynthesisRate.H"
-  ],
-  "AmmoniaRateResult": [
-   "src/unitOperations/reactor/kinetics/AmmoniaSynthesisRate.H"
-  ],
   "AnalysisReconciliation": [
    "src/streams/ProcessStream.H"
   ],
   "Analyte": [
    "src/streams/ProcessStream.H"
-  ],
-  "Anchor": [
-   "src/unitOperations/reactor/kinetics/AmmoniaSynthesisRate.H"
   ],
   "Andrade": [
    "src/thermo/transport/Andrade.H"
@@ -185,6 +173,9 @@
   ],
   "BatchUnitOperation": [
    "src/unitOperations/batch/BatchUnitOperation.H"
+  ],
+  "BedHydraulics": [
+   "src/unitOperations/reactor/PFR.H"
   ],
   "BinaryTxy": [
    "src/thermo/SaturationCurves.H"
@@ -360,6 +351,9 @@
   "DatumAmendment": [
    "src/unitOperations/batch/BatchUnitOperation.H"
   ],
+  "Def": [
+   "src/thermo/reaction/ExpressionRate.H"
+  ],
   "DemandSample": [
    "src/unitOperations/batch/BatchUnitOperation.H"
   ],
@@ -368,6 +362,9 @@
   ],
   "DesignSpec": [
    "src/outerDriver/DesignSpec.H"
+  ],
+  "Detail": [
+   "src/thermo/reaction/ExpressionRate.H"
   ],
   "DewPoint": [
    "src/unitOperations/saturation/DewPoint.H"
@@ -416,9 +413,6 @@
   ],
   "DynamicUnitOperation": [
    "src/unitOperations/dynamic/DynamicUnitOperation.H"
-  ],
-  "DysonSimon1968": [
-   "src/unitOperations/reactor/kinetics/AmmoniaSynthesisRate.H"
   ],
   "EDSherwood": [
    "src/thermo/electrochem/EDStack.H"
@@ -591,6 +585,9 @@
   "ExplainProperty": [
    "src/propertyOps/ExplainProperty.H"
   ],
+  "ExpressionRate": [
+   "src/thermo/reaction/ExpressionRate.H"
+  ],
   "Extractor": [
    "src/unitOperations/separation/Extractor.H"
   ],
@@ -630,6 +627,9 @@
   "Fluxes": [
    "src/unitOperations/batch/BatchDiafilter.H"
   ],
+  "Formula": [
+   "src/core/Formula.H"
+  ],
   "FreezingPoint": [
    "src/propertyOps/FreezingPoint.H"
   ],
@@ -650,6 +650,9 @@
   ],
   "GasEntry": [
    "src/thermo/electrolyte/SpeciationSolver.H"
+  ],
+  "GasSizing": [
+   "src/postProcessing/sizing/ReliefArithmetic.H"
   ],
   "GasSolidSplitter": [
    "src/unitOperations/separation/GasSolidSplitter.H"
@@ -957,6 +960,9 @@
   "NRTrace": [
    "src/solver/NewtonRaphson.H"
   ],
+  "Node": [
+   "src/core/Formula.H"
+  ],
   "NonConvergence": [
    "src/thermo/electrolyte/ReactiveVLE.H"
   ],
@@ -1022,6 +1028,9 @@
   ],
   "PairSpanGuard": [
    "src/thermo/PairAudit.H"
+  ],
+  "Param": [
+   "src/thermo/reaction/ExpressionRate.H"
   ],
   "ParetoSweepDriver": [
    "src/outerDriver/ParetoSweepDriver.H"
@@ -1180,6 +1189,15 @@
   "RateLaw": [
    "src/thermo/reaction/RateLaw.H"
   ],
+  "RateLawBench": [
+   "src/propertyOps/RateLawBench.H"
+  ],
+  "RateOffer": [
+   "src/thermo/reaction/ReactionRate.H"
+  ],
+  "RateState": [
+   "src/thermo/reaction/ReactionRate.H"
+  ],
   "RatedTest": [
    "src/thermo/membrane/MembraneModule.H"
   ],
@@ -1191,6 +1209,9 @@
   ],
   "ReactionGibbs": [
    "src/propertyOps/ReactionGibbs.H"
+  ],
+  "ReactionRate": [
+   "src/thermo/reaction/ReactionRate.H"
   ],
   "ReactionSpec": [
    "src/unitOperations/batch/BatchReactor.H",
@@ -1222,6 +1243,15 @@
   ],
   "RecycleLoop": [
    "src/result/SimulationResult.H"
+  ],
+  "ReliefScenario": [
+   "src/core/ResultRecords.H"
+  ],
+  "ReliefService": [
+   "src/core/ResultRecords.H"
+  ],
+  "ReliefValveSize": [
+   "src/postProcessing/sizing/ReliefValveSize.H"
   ],
   "Report": [
    "src/reporting/Report.H"
@@ -1493,11 +1523,17 @@
   "SweepDriver": [
    "src/outerDriver/SweepDriver.H"
   ],
+  "Symbol": [
+   "src/core/Formula.H"
+  ],
   "SystemClassification": [
    "src/thermo/SystemClassifier.H"
   ],
   "TSATwinBed": [
    "src/unitOperations/separation/TSATwinBed.H"
+  ],
+  "Table": [
+   "src/core/Formula.H"
   ],
   "TabularSizeDistribution": [
    "src/core/distribution/TabularSizeDistribution.H"
@@ -1528,6 +1564,9 @@
   ],
   "Topology": [
    "src/reporting/Topology.H"
+  ],
+  "Trace": [
+   "src/core/Formula.H"
   ],
   "TransferRecord": [
    "src/result/SimulationResult.H"
@@ -1607,6 +1646,9 @@
   ],
   "UtilityCircuit": [
    "src/streams/UtilityCircuit.H"
+  ],
+  "Validity": [
+   "src/thermo/reaction/ExpressionRate.H"
   ],
   "ValidityDomain": [
    "src/core/Origin.H"
@@ -1840,6 +1882,10 @@
    {
     "key": "pfr",
     "type": "CatalystBedSize"
+   },
+   {
+    "key": "reliefValve",
+    "type": "ReliefValveSize"
    }
   ],
   "src/propertyOps/ConstantEstimator.cpp": [
@@ -2002,8 +2048,8 @@
     "type": "FrictionBench"
    },
    {
-    "key": "ammoniaRateBench",
-    "type": "AmmoniaRateBench"
+    "key": "rateLawBench",
+    "type": "RateLawBench"
    },
    {
     "key": "transportBench",
@@ -2156,6 +2202,20 @@
    {
     "key": "IF97",
     "type": "IF97WaterFluid"
+   }
+  ],
+  "src/thermo/reaction/ReactionRate.cpp": [
+   {
+    "key": "Arrhenius",
+    "type": ""
+   },
+   {
+    "key": "LHHW",
+    "type": ""
+   },
+   {
+    "key": "expression",
+    "type": ""
    }
   ],
   "src/unitOperations/UnitOperation.cpp": [
@@ -2641,6 +2701,7 @@
    "src/thermo/membrane/MembraneRegistry.H",
    "src/thermo/phase/Phase.H",
    "src/thermo/pureFluid/PureFluidModel.H",
+   "src/thermo/reaction/ReactionRate.H",
    "src/thermo/solution/SolutionPair.H",
    "src/thermo/solution/SolutionRegistry.H",
    "src/thermo/transport/CorrelationVerify.H",
@@ -2810,6 +2871,7 @@
    "src/thermo/phase/Phase.H",
    "src/thermo/pureFluid/PureFluidModel.H",
    "src/thermo/reaction/Reaction.H",
+   "src/thermo/reaction/ReactionRate.H",
    "src/thermo/solution/SolutionPair.H",
    "src/thermo/solution/SolutionRegistry.H",
    "src/thermo/transport/CorrelationVerify.H",
@@ -2824,6 +2886,7 @@
    "src/thermo/vaporPressure/VaporPressureModel.H",
    "src/unitOperations/UnitOperation.H",
    "src/unitOperations/flowsheet/Flowsheet.H",
+   "src/unitOperations/flowsheet/MemberFolder.H",
    "src/unitOperations/heatTransfer/htc/HeatTransferCorrelation.H",
    "src/unitOperations/reactor/PureSolidPhase.H",
    "src/unitOperations/reactor/gibbsMethod/GibbsMethod.H",
@@ -2951,6 +3014,13 @@
    "src/core/ExprEval.H",
    "src/core/Types.H"
   ],
+  "src/core/Formula.cpp": [
+   "src/core/DictAudit.H",
+   "src/core/Dictionary.H",
+   "src/core/Dimensions.H",
+   "src/core/Formula.H",
+   "src/core/Types.H"
+  ],
   "src/core/OdsWriter.cpp": [
    "src/core/MiniZip.H",
    "src/core/OdsWriter.H"
@@ -2973,6 +3043,7 @@
    "src/core/Origin.H",
    "src/core/ThermoResolution.H"
   ],
+  "src/core/Types.H": [],
   "src/core/Units.cpp": [
    "src/core/Dimensions.H",
    "src/core/Types.H",
@@ -3088,6 +3159,7 @@
    "src/thermo/phase/Phase.H",
    "src/thermo/pureFluid/PureFluidModel.H",
    "src/thermo/reaction/Reaction.H",
+   "src/thermo/reaction/ReactionRate.H",
    "src/thermo/solution/SolutionPair.H",
    "src/thermo/solution/SolutionRegistry.H",
    "src/thermo/transport/CorrelationVerify.H",
@@ -3208,7 +3280,6 @@
    "src/outerDriver/OuterDriver.H",
    "src/outerDriver/ResponseExtractor.H",
    "src/postProcessing/PostProcessor.H",
-   "src/result/ResultEmitter.H",
    "src/result/SimulationResult.H",
    "src/result/UnitProfile.H",
    "src/solver/Convergence.H",
@@ -3713,6 +3784,7 @@
    "src/postProcessing/sizing/CycloneSize.H",
    "src/postProcessing/sizing/EquipmentSize.H",
    "src/postProcessing/sizing/EvaporatorSize.H",
+   "src/postProcessing/sizing/ReliefValveSize.H",
    "src/postProcessing/sizing/ShellTubeHX.H",
    "src/postProcessing/sizing/SprayDryerSize.H",
    "src/postProcessing/sizing/StirredTank.H",
@@ -3792,6 +3864,39 @@
    "src/thermo/PricedDensity.H",
    "src/thermo/SaturationCurves.H",
    "src/thermo/ThermoPackage.H"
+  ],
+  "src/postProcessing/sizing/ReliefValveSize.cpp": [
+   "src/core/Advisory.H",
+   "src/core/Constants.H",
+   "src/core/Dictionary.H",
+   "src/core/Dimensions.H",
+   "src/core/FlatUnit.H",
+   "src/core/Identifiers.H",
+   "src/core/Origin.H",
+   "src/core/ProblemDivergence.H",
+   "src/core/RegistryRefusal.H",
+   "src/core/ResultRecords.H",
+   "src/core/ThermoResolution.H",
+   "src/core/Types.H",
+   "src/materials/Material.H",
+   "src/postProcessing/sizing/DesignDefaults.H",
+   "src/postProcessing/sizing/EquipmentSize.H",
+   "src/postProcessing/sizing/PhaseDensity.H",
+   "src/postProcessing/sizing/ReliefArithmetic.H",
+   "src/postProcessing/sizing/ReliefValveSize.H",
+   "src/result/SimulationResult.H",
+   "src/result/UnitProfile.H",
+   "src/solver/Convergence.H",
+   "src/solver/NewtonRaphson.H",
+   "src/streams/ProcessStream.H",
+   "src/streams/StreamMass.H",
+   "src/thermo/Component.H",
+   "src/thermo/PackageAudit.H",
+   "src/thermo/SaturationCurves.H",
+   "src/thermo/ThermoPackage.H",
+   "src/thermo/equationOfState/EquationOfState.H",
+   "src/unitOperations/UnitOperation.H",
+   "src/unitOperations/saturation/BubblePoint.H"
   ],
   "src/postProcessing/sizing/ShellTubeHX.cpp": [
    "src/core/Advisory.H",
@@ -3930,14 +4035,6 @@
    "src/thermo/PackageAudit.H",
    "src/thermo/SaturationCurves.H",
    "src/thermo/ThermoPackage.H"
-  ],
-  "src/propertyOps/AmmoniaRateBench.cpp": [
-   "src/core/Dictionary.H",
-   "src/core/Dimensions.H",
-   "src/core/Types.H",
-   "src/propertyOps/AmmoniaRateBench.H",
-   "src/propertyOps/PropertyOperation.H",
-   "src/unitOperations/reactor/kinetics/AmmoniaSynthesisRate.H"
   ],
   "src/propertyOps/ConstantEstimator.cpp": [
    "src/propertyOps/ConstantEstimator.H",
@@ -4403,6 +4500,11 @@
    "src/unitOperations/flash/IsothermalFlash.H",
    "src/unitOperations/saturation/BubblePoint.H"
   ],
+  "src/propertyOps/PropertyOperation.H": [
+   "src/core/Dictionary.H",
+   "src/core/Dimensions.H",
+   "src/core/Types.H"
+  ],
   "src/propertyOps/PropertyOperation.cpp": [
    "src/core/Constants.H",
    "src/core/Dictionary.H",
@@ -4410,7 +4512,6 @@
    "src/core/Identifiers.H",
    "src/core/Origin.H",
    "src/core/Types.H",
-   "src/propertyOps/AmmoniaRateBench.H",
    "src/propertyOps/ENRTLMixedSolventOp.H",
    "src/propertyOps/ENRTLMultiSaltOp.H",
    "src/propertyOps/ElectrolytePackageActivity.H",
@@ -4442,6 +4543,7 @@
    "src/propertyOps/PropertyScanTernary.H",
    "src/propertyOps/PsychrometricChart.H",
    "src/propertyOps/PurePhaseDiagram.H",
+   "src/propertyOps/RateLawBench.H",
    "src/propertyOps/ReactionCurve.H",
    "src/propertyOps/ReactionGibbs.H",
    "src/propertyOps/ScalingScan.H",
@@ -4592,6 +4694,17 @@
    "src/thermo/RecordResolver.H",
    "src/thermo/ThermoPackage.H",
    "src/thermo/vaporPressure/VaporPressureModel.H"
+  ],
+  "src/propertyOps/RateLawBench.cpp": [
+   "src/core/Dictionary.H",
+   "src/core/Dimensions.H",
+   "src/core/Formula.H",
+   "src/core/Types.H",
+   "src/core/Units.H",
+   "src/propertyOps/PropertyOperation.H",
+   "src/propertyOps/RateLawBench.H",
+   "src/thermo/reaction/ExpressionRate.H",
+   "src/thermo/reaction/ReactionRate.H"
   ],
   "src/propertyOps/ReactionCurve.cpp": [
    "src/core/Advisory.H",
@@ -6206,6 +6319,18 @@
    "src/thermo/pureFluid/SaturationCurve.H",
    "src/thermo/vaporPressure/VaporPressureModel.H"
   ],
+  "src/thermo/reaction/ExpressionRate.cpp": [
+   "src/core/Advisory.H",
+   "src/core/DictAudit.H",
+   "src/core/Dictionary.H",
+   "src/core/Dimensions.H",
+   "src/core/Formula.H",
+   "src/core/RegistryRefusal.H",
+   "src/core/Types.H",
+   "src/core/Units.H",
+   "src/thermo/reaction/ExpressionRate.H",
+   "src/thermo/reaction/ReactionRate.H"
+  ],
   "src/thermo/reaction/RateLaw.cpp": [
    "src/core/Dictionary.H",
    "src/core/Dimensions.H",
@@ -6218,7 +6343,8 @@
    "src/thermo/ThermoPackage.H",
    "src/thermo/activityCoefficient/ActivityModel.H",
    "src/thermo/reaction/RateLaw.H",
-   "src/thermo/reaction/Reaction.H"
+   "src/thermo/reaction/Reaction.H",
+   "src/thermo/reaction/ReactionRate.H"
   ],
   "src/thermo/reaction/Reaction.cpp": [
    "src/core/Constants.H",
@@ -6232,6 +6358,22 @@
    "src/thermo/PackageAudit.H",
    "src/thermo/ThermoPackage.H",
    "src/thermo/reaction/Reaction.H"
+  ],
+  "src/thermo/reaction/ReactionRate.cpp": [
+   "src/core/Dictionary.H",
+   "src/core/Dimensions.H",
+   "src/core/Formula.H",
+   "src/core/Identifiers.H",
+   "src/core/Origin.H",
+   "src/core/RegistryRefusal.H",
+   "src/core/Types.H",
+   "src/solver/Convergence.H",
+   "src/thermo/Component.H",
+   "src/thermo/PackageAudit.H",
+   "src/thermo/ThermoPackage.H",
+   "src/thermo/reaction/ExpressionRate.H",
+   "src/thermo/reaction/RateLaw.H",
+   "src/thermo/reaction/ReactionRate.H"
   ],
   "src/thermo/solidEquilibrium/SolidEquilibriumService.cpp": [
    "src/core/Advisory.H",
@@ -6751,6 +6893,7 @@
    "src/core/Identifiers.H",
    "src/core/Origin.H",
    "src/core/ProblemDivergence.H",
+   "src/core/RegistryRefusal.H",
    "src/core/ResultRecords.H",
    "src/core/ThermoResolution.H",
    "src/core/Types.H",
@@ -6766,8 +6909,8 @@
    "src/thermo/ThermoAnnounce.H",
    "src/thermo/ThermoPackage.H",
    "src/thermo/heatCapacity/HeatCapacityModel.H",
-   "src/thermo/reaction/RateLaw.H",
    "src/thermo/reaction/Reaction.H",
+   "src/thermo/reaction/ReactionRate.H",
    "src/unitOperations/batch/BatchReactor.H",
    "src/unitOperations/batch/BatchUnitOperation.H",
    "src/unitOperations/reactor/CatalystPellet.H",
@@ -6819,7 +6962,7 @@
    "src/thermo/PackageAudit.H",
    "src/thermo/SaturationCurves.H",
    "src/thermo/ThermoPackage.H",
-   "src/thermo/reaction/RateLaw.H",
+   "src/thermo/reaction/ReactionRate.H",
    "src/unitOperations/batch/BatchAccumulator.H",
    "src/unitOperations/batch/BatchAdsorber.H",
    "src/unitOperations/batch/BatchCrystalliser.H",
@@ -6989,6 +7132,7 @@
    "src/core/Dimensions.H",
    "src/core/Identifiers.H",
    "src/core/Origin.H",
+   "src/core/RegistryRefusal.H",
    "src/core/Types.H",
    "src/solver/Convergence.H",
    "src/streams/Composition.H",
@@ -6997,8 +7141,8 @@
    "src/thermo/ThermoAnnounce.H",
    "src/thermo/ThermoPackage.H",
    "src/thermo/heatCapacity/HeatCapacityModel.H",
-   "src/thermo/reaction/RateLaw.H",
    "src/thermo/reaction/Reaction.H",
+   "src/thermo/reaction/ReactionRate.H",
    "src/unitOperations/dynamic/BalanceSnapshot.H",
    "src/unitOperations/dynamic/DynamicCSTR.H",
    "src/unitOperations/dynamic/DynamicUnitOperation.H",
@@ -7017,7 +7161,7 @@
    "src/thermo/Component.H",
    "src/thermo/PackageAudit.H",
    "src/thermo/ThermoPackage.H",
-   "src/thermo/reaction/RateLaw.H",
+   "src/thermo/reaction/ReactionRate.H",
    "src/unitOperations/UnitOperation.H",
    "src/unitOperations/dynamic/BalanceSnapshot.H",
    "src/unitOperations/dynamic/DynamicCSTR.H",
@@ -7824,6 +7968,7 @@
    "src/core/Constants.H",
    "src/core/Dictionary.H",
    "src/core/Dimensions.H",
+   "src/core/Formula.H",
    "src/core/Identifiers.H",
    "src/core/Origin.H",
    "src/core/Types.H",
@@ -7835,8 +7980,9 @@
    "src/thermo/Component.H",
    "src/thermo/PackageAudit.H",
    "src/thermo/ThermoPackage.H",
-   "src/thermo/reaction/RateLaw.H",
+   "src/thermo/reaction/ExpressionRate.H",
    "src/thermo/reaction/Reaction.H",
+   "src/thermo/reaction/ReactionRate.H",
    "src/unitOperations/UnitOperation.H",
    "src/unitOperations/flash/IsothermalFlash.H",
    "src/unitOperations/flash/PureSaturationPlateau.H",
@@ -7914,6 +8060,7 @@
    "src/core/Constants.H",
    "src/core/Dictionary.H",
    "src/core/Dimensions.H",
+   "src/core/Formula.H",
    "src/core/Identifiers.H",
    "src/core/Origin.H",
    "src/core/RegistryRefusal.H",
@@ -7926,8 +8073,9 @@
    "src/thermo/PackageAudit.H",
    "src/thermo/ThermoPackage.H",
    "src/thermo/equationOfState/EquationOfState.H",
-   "src/thermo/reaction/RateLaw.H",
+   "src/thermo/reaction/ExpressionRate.H",
    "src/thermo/reaction/Reaction.H",
+   "src/thermo/reaction/ReactionRate.H",
    "src/unitOperations/UnitOperation.H",
    "src/unitOperations/flash/IsothermalFlash.H",
    "src/unitOperations/flash/PureSaturationPlateau.H",
@@ -7935,8 +8083,7 @@
    "src/unitOperations/reactor/CatalystPellet.H",
    "src/unitOperations/reactor/PFR.H",
    "src/unitOperations/reactor/PolymerKPIs.H",
-   "src/unitOperations/reactor/ReactionHeat.H",
-   "src/unitOperations/reactor/kinetics/AmmoniaSynthesisRate.H"
+   "src/unitOperations/reactor/ReactionHeat.H"
   ],
   "src/unitOperations/reactor/PolymerKPIs.cpp": [
    "src/core/Dictionary.H",
@@ -8081,10 +8228,6 @@
    "src/unitOperations/reactor/PureSolidPhase.H",
    "src/unitOperations/reactor/gibbsMethod/GibbsMethod.H",
    "src/unitOperations/reactor/gibbsMethod/ReactiveFlash.H"
-  ],
-  "src/unitOperations/reactor/kinetics/AmmoniaSynthesisRate.cpp": [
-   "src/core/Types.H",
-   "src/unitOperations/reactor/kinetics/AmmoniaSynthesisRate.H"
   ],
   "src/unitOperations/reactor/pellet/Catalyst.cpp": [
    "src/core/Dictionary.H",
@@ -8487,6 +8630,7 @@
    "src/streams/ProcessStream.H",
    "src/thermo/Component.H",
    "src/thermo/PackageAudit.H",
+   "src/thermo/PricedDensity.H",
    "src/thermo/ThermoPackage.H",
    "src/unitOperations/UnitOperation.H",
    "src/unitOperations/flash/IsothermalFlash.H",
@@ -8569,6 +8713,7 @@
    "src/postProcessing/sizing/EvaporatorSize.cpp",
    "src/postProcessing/sizing/Inventory.cpp",
    "src/postProcessing/sizing/PhaseDensity.cpp",
+   "src/postProcessing/sizing/ReliefValveSize.cpp",
    "src/postProcessing/sizing/ShellTubeHX.cpp",
    "src/postProcessing/sizing/SprayDryerSize.cpp",
    "src/postProcessing/sizing/StirredTank.cpp",
@@ -8636,6 +8781,7 @@
    "src/thermo/phase/LiquidPhase.cpp",
    "src/thermo/phase/SolidPhase.cpp",
    "src/thermo/pureFluid/SaturationCurve.cpp",
+   "src/thermo/reaction/ExpressionRate.cpp",
    "src/thermo/solidEquilibrium/SolidEquilibriumService.cpp",
    "src/thermo/transport/ChapmanEnskog.cpp",
    "src/thermo/transport/ChemSepCond16.cpp",
@@ -8716,6 +8862,7 @@
    "src/dynamicDriver/DynamicDriver.cpp",
    "src/postProcessing/sizing/CatalystBedSize.cpp",
    "src/postProcessing/sizing/ColumnSize.cpp",
+   "src/postProcessing/sizing/ReliefValveSize.cpp",
    "src/postProcessing/sizing/StirredTank.cpp",
    "src/postProcessing/sizing/VesselMechanics.cpp",
    "src/postProcessing/sizing/VesselSize.cpp",
@@ -8791,7 +8938,9 @@
    "src/applications/choupoSolve/main.cpp",
    "src/core/DictAudit.cpp",
    "src/core/Dictionary.cpp",
+   "src/core/Formula.cpp",
    "src/core/RegistryRefusal.cpp",
+   "src/thermo/reaction/ExpressionRate.cpp",
    "src/unitOperations/flowsheet/Flowsheet.cpp"
   ],
   "src/core/DictCanonical.H": [
@@ -8814,6 +8963,7 @@
    "src/core/DictCanonical.cpp",
    "src/core/Dictionary.cpp",
    "src/core/DisplayUnits.cpp",
+   "src/core/Formula.cpp",
    "src/core/RegistryRefusal.cpp",
    "src/core/distribution/LogNormalSize.cpp",
    "src/core/distribution/RosinRammler.cpp",
@@ -8849,12 +8999,12 @@
    "src/postProcessing/sizing/EvaporatorSize.cpp",
    "src/postProcessing/sizing/Inventory.cpp",
    "src/postProcessing/sizing/PhaseDensity.cpp",
+   "src/postProcessing/sizing/ReliefValveSize.cpp",
    "src/postProcessing/sizing/ShellTubeHX.cpp",
    "src/postProcessing/sizing/SprayDryerSize.cpp",
    "src/postProcessing/sizing/StirredTank.cpp",
    "src/postProcessing/sizing/StorageTankSize.cpp",
    "src/postProcessing/sizing/VesselSize.cpp",
-   "src/propertyOps/AmmoniaRateBench.cpp",
    "src/propertyOps/CurationDossier.cpp",
    "src/propertyOps/ENRTLMixedSolventOp.cpp",
    "src/propertyOps/ENRTLMultiSaltOp.cpp",
@@ -8883,6 +9033,7 @@
    "src/propertyOps/PitzerActivity.cpp",
    "src/propertyOps/PolarisationIndex.cpp",
    "src/propertyOps/PropertyEvaluator.cpp",
+   "src/propertyOps/PropertyOperation.H",
    "src/propertyOps/PropertyOperation.cpp",
    "src/propertyOps/PropertyPoint.cpp",
    "src/propertyOps/PropertyScan1D.cpp",
@@ -8891,6 +9042,7 @@
    "src/propertyOps/PropertyScanTernary.cpp",
    "src/propertyOps/PsychrometricChart.cpp",
    "src/propertyOps/PurePhaseDiagram.cpp",
+   "src/propertyOps/RateLawBench.cpp",
    "src/propertyOps/ReactionCurve.cpp",
    "src/propertyOps/ReactionGibbs.cpp",
    "src/propertyOps/ScalingScan.cpp",
@@ -8978,8 +9130,10 @@
    "src/thermo/phase/VaporPhase.cpp",
    "src/thermo/pureFluid/PureFluidModel.cpp",
    "src/thermo/pureFluid/SaturationCurve.cpp",
+   "src/thermo/reaction/ExpressionRate.cpp",
    "src/thermo/reaction/RateLaw.cpp",
    "src/thermo/reaction/Reaction.cpp",
+   "src/thermo/reaction/ReactionRate.cpp",
    "src/thermo/solution/SolutionPair.cpp",
    "src/thermo/solution/SolutionRegistry.cpp",
    "src/thermo/transport/Andrade.cpp",
@@ -9124,6 +9278,7 @@
    "src/core/Dictionary.cpp",
    "src/core/Dimensions.cpp",
    "src/core/DisplayUnits.cpp",
+   "src/core/Formula.cpp",
    "src/core/RegistryRefusal.cpp",
    "src/core/Units.cpp",
    "src/core/distribution/LogNormalSize.cpp",
@@ -9160,12 +9315,12 @@
    "src/postProcessing/sizing/EvaporatorSize.cpp",
    "src/postProcessing/sizing/Inventory.cpp",
    "src/postProcessing/sizing/PhaseDensity.cpp",
+   "src/postProcessing/sizing/ReliefValveSize.cpp",
    "src/postProcessing/sizing/ShellTubeHX.cpp",
    "src/postProcessing/sizing/SprayDryerSize.cpp",
    "src/postProcessing/sizing/StirredTank.cpp",
    "src/postProcessing/sizing/StorageTankSize.cpp",
    "src/postProcessing/sizing/VesselSize.cpp",
-   "src/propertyOps/AmmoniaRateBench.cpp",
    "src/propertyOps/CurationDossier.cpp",
    "src/propertyOps/ENRTLMixedSolventOp.cpp",
    "src/propertyOps/ENRTLMultiSaltOp.cpp",
@@ -9194,6 +9349,7 @@
    "src/propertyOps/PitzerActivity.cpp",
    "src/propertyOps/PolarisationIndex.cpp",
    "src/propertyOps/PropertyEvaluator.cpp",
+   "src/propertyOps/PropertyOperation.H",
    "src/propertyOps/PropertyOperation.cpp",
    "src/propertyOps/PropertyPoint.cpp",
    "src/propertyOps/PropertyScan1D.cpp",
@@ -9202,6 +9358,7 @@
    "src/propertyOps/PropertyScanTernary.cpp",
    "src/propertyOps/PsychrometricChart.cpp",
    "src/propertyOps/PurePhaseDiagram.cpp",
+   "src/propertyOps/RateLawBench.cpp",
    "src/propertyOps/ReactionCurve.cpp",
    "src/propertyOps/ReactionGibbs.cpp",
    "src/propertyOps/ScalingScan.cpp",
@@ -9289,8 +9446,10 @@
    "src/thermo/phase/VaporPhase.cpp",
    "src/thermo/pureFluid/PureFluidModel.cpp",
    "src/thermo/pureFluid/SaturationCurve.cpp",
+   "src/thermo/reaction/ExpressionRate.cpp",
    "src/thermo/reaction/RateLaw.cpp",
    "src/thermo/reaction/Reaction.cpp",
+   "src/thermo/reaction/ReactionRate.cpp",
    "src/thermo/solution/SolutionPair.cpp",
    "src/thermo/solution/SolutionRegistry.cpp",
    "src/thermo/transport/Andrade.cpp",
@@ -9469,6 +9628,7 @@
    "src/postProcessing/sizing/EvaporatorSize.cpp",
    "src/postProcessing/sizing/Inventory.cpp",
    "src/postProcessing/sizing/PhaseDensity.cpp",
+   "src/postProcessing/sizing/ReliefValveSize.cpp",
    "src/postProcessing/sizing/ShellTubeHX.cpp",
    "src/postProcessing/sizing/SprayDryerSize.cpp",
    "src/postProcessing/sizing/StirredTank.cpp",
@@ -9502,6 +9662,14 @@
    "src/unitOperations/batch/BatchUnitOperation.cpp",
    "src/unitOperations/batch/FixedBedAdsorber.cpp",
    "src/unitOperations/flowsheet/Flowsheet.cpp"
+  ],
+  "src/core/Formula.H": [
+   "src/core/Formula.cpp",
+   "src/propertyOps/RateLawBench.cpp",
+   "src/thermo/reaction/ExpressionRate.cpp",
+   "src/thermo/reaction/ReactionRate.cpp",
+   "src/unitOperations/reactor/CSTR.cpp",
+   "src/unitOperations/reactor/PFR.cpp"
   ],
   "src/core/Identifiers.H": [
    "src/applications/choupoBatch/main.cpp",
@@ -9541,6 +9709,7 @@
    "src/postProcessing/sizing/EvaporatorSize.cpp",
    "src/postProcessing/sizing/Inventory.cpp",
    "src/postProcessing/sizing/PhaseDensity.cpp",
+   "src/postProcessing/sizing/ReliefValveSize.cpp",
    "src/postProcessing/sizing/ShellTubeHX.cpp",
    "src/postProcessing/sizing/SprayDryerSize.cpp",
    "src/postProcessing/sizing/StirredTank.cpp",
@@ -9648,6 +9817,7 @@
    "src/thermo/pureFluid/SaturationCurve.cpp",
    "src/thermo/reaction/RateLaw.cpp",
    "src/thermo/reaction/Reaction.cpp",
+   "src/thermo/reaction/ReactionRate.cpp",
    "src/thermo/solidEquilibrium/SolidEquilibriumService.cpp",
    "src/thermo/transport/Andrade.cpp",
    "src/thermo/transport/BrockBird.cpp",
@@ -9795,6 +9965,7 @@
    "src/postProcessing/sizing/EvaporatorSize.cpp",
    "src/postProcessing/sizing/Inventory.cpp",
    "src/postProcessing/sizing/PhaseDensity.cpp",
+   "src/postProcessing/sizing/ReliefValveSize.cpp",
    "src/postProcessing/sizing/ShellTubeHX.cpp",
    "src/postProcessing/sizing/SprayDryerSize.cpp",
    "src/postProcessing/sizing/StirredTank.cpp",
@@ -9906,6 +10077,7 @@
    "src/thermo/pureFluid/SaturationCurve.cpp",
    "src/thermo/reaction/RateLaw.cpp",
    "src/thermo/reaction/Reaction.cpp",
+   "src/thermo/reaction/ReactionRate.cpp",
    "src/thermo/transport/Andrade.cpp",
    "src/thermo/transport/BrockBird.cpp",
    "src/thermo/transport/ChapmanEnskog.cpp",
@@ -10040,6 +10212,7 @@
    "src/postProcessing/sizing/EvaporatorSize.cpp",
    "src/postProcessing/sizing/Inventory.cpp",
    "src/postProcessing/sizing/PhaseDensity.cpp",
+   "src/postProcessing/sizing/ReliefValveSize.cpp",
    "src/postProcessing/sizing/ShellTubeHX.cpp",
    "src/postProcessing/sizing/SprayDryerSize.cpp",
    "src/postProcessing/sizing/StirredTank.cpp",
@@ -10080,6 +10253,7 @@
    "src/core/RegistryRefusal.cpp",
    "src/postProcessing/costing/CostingModel.cpp",
    "src/postProcessing/costing/Turton.cpp",
+   "src/postProcessing/sizing/ReliefValveSize.cpp",
    "src/postProcessing/sizing/ShellTubeHX.cpp",
    "src/postProcessing/sizing/VesselSize.cpp",
    "src/solver/ODE/ODEIntegrator.cpp",
@@ -10091,11 +10265,15 @@
    "src/thermo/heatCapacity/HeatCapacityModel.cpp",
    "src/thermo/membrane/MembraneModule.cpp",
    "src/thermo/membrane/MembraneModuleRegistry.cpp",
+   "src/thermo/reaction/ExpressionRate.cpp",
+   "src/thermo/reaction/ReactionRate.cpp",
    "src/thermo/transport/TransportModel.cpp",
    "src/unitOperations/batch/BatchElectrodialysis.cpp",
+   "src/unitOperations/batch/BatchReactor.cpp",
    "src/unitOperations/batch/BatchStill.cpp",
    "src/unitOperations/crystallisation/Crystalliser.cpp",
    "src/unitOperations/distillation/DistillationColumn.cpp",
+   "src/unitOperations/dynamic/DynamicCSTR.cpp",
    "src/unitOperations/electrochem/ElectrodialysisStack.cpp",
    "src/unitOperations/heatTransfer/DryingCurve.cpp",
    "src/unitOperations/heatTransfer/HeatExchanger.cpp",
@@ -10153,6 +10331,7 @@
    "src/postProcessing/sizing/EvaporatorSize.cpp",
    "src/postProcessing/sizing/Inventory.cpp",
    "src/postProcessing/sizing/PhaseDensity.cpp",
+   "src/postProcessing/sizing/ReliefValveSize.cpp",
    "src/postProcessing/sizing/ShellTubeHX.cpp",
    "src/postProcessing/sizing/SprayDryerSize.cpp",
    "src/postProcessing/sizing/StirredTank.cpp",
@@ -10223,6 +10402,7 @@
    "src/postProcessing/sizing/EvaporatorSize.cpp",
    "src/postProcessing/sizing/Inventory.cpp",
    "src/postProcessing/sizing/PhaseDensity.cpp",
+   "src/postProcessing/sizing/ReliefValveSize.cpp",
    "src/postProcessing/sizing/ShellTubeHX.cpp",
    "src/postProcessing/sizing/SprayDryerSize.cpp",
    "src/postProcessing/sizing/StirredTank.cpp",
@@ -10281,6 +10461,7 @@
    "src/core/Dimensions.cpp",
    "src/core/DisplayUnits.cpp",
    "src/core/ExprEval.cpp",
+   "src/core/Formula.cpp",
    "src/core/RegistryRefusal.cpp",
    "src/core/Units.cpp",
    "src/core/distribution/LogNormalSize.cpp",
@@ -10317,13 +10498,13 @@
    "src/postProcessing/sizing/EvaporatorSize.cpp",
    "src/postProcessing/sizing/Inventory.cpp",
    "src/postProcessing/sizing/PhaseDensity.cpp",
+   "src/postProcessing/sizing/ReliefValveSize.cpp",
    "src/postProcessing/sizing/ShellTubeHX.cpp",
    "src/postProcessing/sizing/SprayDryerSize.cpp",
    "src/postProcessing/sizing/StirredTank.cpp",
    "src/postProcessing/sizing/StorageTankSize.cpp",
    "src/postProcessing/sizing/VesselMechanics.cpp",
    "src/postProcessing/sizing/VesselSize.cpp",
-   "src/propertyOps/AmmoniaRateBench.cpp",
    "src/propertyOps/CurationDossier.cpp",
    "src/propertyOps/ENRTLMixedSolventOp.cpp",
    "src/propertyOps/ENRTLMultiSaltOp.cpp",
@@ -10352,6 +10533,7 @@
    "src/propertyOps/PitzerActivity.cpp",
    "src/propertyOps/PolarisationIndex.cpp",
    "src/propertyOps/PropertyEvaluator.cpp",
+   "src/propertyOps/PropertyOperation.H",
    "src/propertyOps/PropertyOperation.cpp",
    "src/propertyOps/PropertyPoint.cpp",
    "src/propertyOps/PropertyScan1D.cpp",
@@ -10360,6 +10542,7 @@
    "src/propertyOps/PropertyScanTernary.cpp",
    "src/propertyOps/PsychrometricChart.cpp",
    "src/propertyOps/PurePhaseDiagram.cpp",
+   "src/propertyOps/RateLawBench.cpp",
    "src/propertyOps/ReactionCurve.cpp",
    "src/propertyOps/ReactionGibbs.cpp",
    "src/propertyOps/ScalingScan.cpp",
@@ -10462,8 +10645,10 @@
    "src/thermo/phase/VaporPhase.cpp",
    "src/thermo/pureFluid/PureFluidModel.cpp",
    "src/thermo/pureFluid/SaturationCurve.cpp",
+   "src/thermo/reaction/ExpressionRate.cpp",
    "src/thermo/reaction/RateLaw.cpp",
    "src/thermo/reaction/Reaction.cpp",
+   "src/thermo/reaction/ReactionRate.cpp",
    "src/thermo/solidEquilibrium/SolidEquilibriumService.cpp",
    "src/thermo/solution/SolutionPair.cpp",
    "src/thermo/solution/SolutionRegistry.cpp",
@@ -10567,7 +10752,6 @@
    "src/unitOperations/reactor/gibbsMethod/GibbsMethod.cpp",
    "src/unitOperations/reactor/gibbsMethod/GibbsSolidPhase.cpp",
    "src/unitOperations/reactor/gibbsMethod/ReactiveFlash.cpp",
-   "src/unitOperations/reactor/kinetics/AmmoniaSynthesisRate.cpp",
    "src/unitOperations/reactor/pellet/Catalyst.cpp",
    "src/unitOperations/reactor/pellet/CatalystRegistry.cpp",
    "src/unitOperations/reactor/pellet/EffectiveDiffusivity.cpp",
@@ -10607,12 +10791,14 @@
    "src/propertyOps/FitParameters.cpp",
    "src/propertyOps/HeatCapacityFit.cpp",
    "src/propertyOps/Kinetics1D.cpp",
+   "src/propertyOps/RateLawBench.cpp",
    "src/propertyOps/Speciate.cpp",
    "src/propertyOps/VaporPressureFit.cpp",
    "src/propertyOps/VleConsistency.cpp",
    "src/reporting/ComputedReport.cpp",
    "src/thermo/electrochem/EDStack.cpp",
    "src/thermo/membrane/MembraneModule.cpp",
+   "src/thermo/reaction/ExpressionRate.cpp",
    "src/thermo/vaporPressure/Antoine.cpp",
    "src/unitOperations/membrane/SpiralWoundModule.cpp",
    "src/unitOperations/reactor/PFR.cpp"
@@ -10687,6 +10873,7 @@
    "src/postProcessing/sizing/CycloneSize.cpp",
    "src/postProcessing/sizing/EquipmentSize.cpp",
    "src/postProcessing/sizing/EvaporatorSize.cpp",
+   "src/postProcessing/sizing/ReliefValveSize.cpp",
    "src/postProcessing/sizing/ShellTubeHX.cpp",
    "src/postProcessing/sizing/SprayDryerSize.cpp",
    "src/postProcessing/sizing/StirredTank.cpp",
@@ -10818,6 +11005,7 @@
    "src/postProcessing/sizing/CatalystBedSize.cpp",
    "src/postProcessing/sizing/ColumnSize.cpp",
    "src/postProcessing/sizing/DesignDefaults.cpp",
+   "src/postProcessing/sizing/ReliefValveSize.cpp",
    "src/postProcessing/sizing/StirredTank.cpp",
    "src/postProcessing/sizing/VesselSize.cpp"
   ],
@@ -10831,6 +11019,7 @@
    "src/postProcessing/sizing/CycloneSize.cpp",
    "src/postProcessing/sizing/EquipmentSize.cpp",
    "src/postProcessing/sizing/EvaporatorSize.cpp",
+   "src/postProcessing/sizing/ReliefValveSize.cpp",
    "src/postProcessing/sizing/ShellTubeHX.cpp",
    "src/postProcessing/sizing/SprayDryerSize.cpp",
    "src/postProcessing/sizing/StirredTank.cpp",
@@ -10848,7 +11037,15 @@
   "src/postProcessing/sizing/PhaseDensity.H": [
    "src/postProcessing/sizing/Inventory.cpp",
    "src/postProcessing/sizing/PhaseDensity.cpp",
+   "src/postProcessing/sizing/ReliefValveSize.cpp",
    "src/postProcessing/sizing/StorageTankSize.cpp"
+  ],
+  "src/postProcessing/sizing/ReliefArithmetic.H": [
+   "src/postProcessing/sizing/ReliefValveSize.cpp"
+  ],
+  "src/postProcessing/sizing/ReliefValveSize.H": [
+   "src/postProcessing/sizing/EquipmentSize.cpp",
+   "src/postProcessing/sizing/ReliefValveSize.cpp"
   ],
   "src/postProcessing/sizing/ShellTubeHX.H": [
    "src/postProcessing/sizing/ColumnSize.cpp",
@@ -10877,10 +11074,6 @@
   "src/postProcessing/sizing/VesselSize.H": [
    "src/postProcessing/sizing/EquipmentSize.cpp",
    "src/postProcessing/sizing/VesselSize.cpp"
-  ],
-  "src/propertyOps/AmmoniaRateBench.H": [
-   "src/propertyOps/AmmoniaRateBench.cpp",
-   "src/propertyOps/PropertyOperation.cpp"
   ],
   "src/propertyOps/CasePackage.H": [
    "src/applications/choupoProps/main.cpp",
@@ -11024,7 +11217,6 @@
   ],
   "src/propertyOps/PropertyOperation.H": [
    "src/applications/choupoProps/main.cpp",
-   "src/propertyOps/AmmoniaRateBench.cpp",
    "src/propertyOps/ENRTLMixedSolventOp.cpp",
    "src/propertyOps/ENRTLMultiSaltOp.cpp",
    "src/propertyOps/ElectrolytePackageActivity.cpp",
@@ -11056,6 +11248,7 @@
    "src/propertyOps/PropertyScanTernary.cpp",
    "src/propertyOps/PsychrometricChart.cpp",
    "src/propertyOps/PurePhaseDiagram.cpp",
+   "src/propertyOps/RateLawBench.cpp",
    "src/propertyOps/ReactionCurve.cpp",
    "src/propertyOps/ReactionGibbs.cpp",
    "src/propertyOps/ScalingScan.cpp",
@@ -11094,6 +11287,10 @@
   "src/propertyOps/PurePhaseDiagram.H": [
    "src/propertyOps/PropertyOperation.cpp",
    "src/propertyOps/PurePhaseDiagram.cpp"
+  ],
+  "src/propertyOps/RateLawBench.H": [
+   "src/propertyOps/PropertyOperation.cpp",
+   "src/propertyOps/RateLawBench.cpp"
   ],
   "src/propertyOps/ReactionCurve.H": [
    "src/propertyOps/PropertyOperation.cpp",
@@ -11249,7 +11446,6 @@
    "src/applications/choupoProps/main.cpp",
    "src/applications/choupoSolve/main.cpp",
    "src/dynamicDriver/DynamicDriver.cpp",
-   "src/outerDriver/DesignSpec.cpp",
    "src/outerDriver/OptimizationDriver.cpp",
    "src/outerDriver/ParetoSweepDriver.cpp",
    "src/outerDriver/SweepDriver.cpp",
@@ -11286,6 +11482,7 @@
    "src/postProcessing/sizing/EvaporatorSize.cpp",
    "src/postProcessing/sizing/Inventory.cpp",
    "src/postProcessing/sizing/PhaseDensity.cpp",
+   "src/postProcessing/sizing/ReliefValveSize.cpp",
    "src/postProcessing/sizing/ShellTubeHX.cpp",
    "src/postProcessing/sizing/SprayDryerSize.cpp",
    "src/postProcessing/sizing/StirredTank.cpp",
@@ -11350,6 +11547,7 @@
    "src/postProcessing/sizing/EvaporatorSize.cpp",
    "src/postProcessing/sizing/Inventory.cpp",
    "src/postProcessing/sizing/PhaseDensity.cpp",
+   "src/postProcessing/sizing/ReliefValveSize.cpp",
    "src/postProcessing/sizing/ShellTubeHX.cpp",
    "src/postProcessing/sizing/SprayDryerSize.cpp",
    "src/postProcessing/sizing/StirredTank.cpp",
@@ -11479,6 +11677,7 @@
    "src/postProcessing/sizing/EvaporatorSize.cpp",
    "src/postProcessing/sizing/Inventory.cpp",
    "src/postProcessing/sizing/PhaseDensity.cpp",
+   "src/postProcessing/sizing/ReliefValveSize.cpp",
    "src/postProcessing/sizing/ShellTubeHX.cpp",
    "src/postProcessing/sizing/SprayDryerSize.cpp",
    "src/postProcessing/sizing/StirredTank.cpp",
@@ -11544,6 +11743,7 @@
    "src/thermo/phase/LiquidPhase.cpp",
    "src/thermo/reaction/RateLaw.cpp",
    "src/thermo/reaction/Reaction.cpp",
+   "src/thermo/reaction/ReactionRate.cpp",
    "src/unitOperations/UnitOperation.cpp",
    "src/unitOperations/batch/BatchAccumulator.cpp",
    "src/unitOperations/batch/BatchAdsorber.cpp",
@@ -11655,6 +11855,7 @@
   ],
   "src/solver/NewtonRaphson.H": [
    "src/postProcessing/EconomicsPass.cpp",
+   "src/postProcessing/sizing/ReliefValveSize.cpp",
    "src/propertyOps/PhaseEnvelope.cpp",
    "src/solver/NewtonRaphson.cpp",
    "src/thermo/SaturationCurves.cpp",
@@ -11779,6 +11980,7 @@
    "src/postProcessing/sizing/EvaporatorSize.cpp",
    "src/postProcessing/sizing/Inventory.cpp",
    "src/postProcessing/sizing/PhaseDensity.cpp",
+   "src/postProcessing/sizing/ReliefValveSize.cpp",
    "src/postProcessing/sizing/ShellTubeHX.cpp",
    "src/postProcessing/sizing/SprayDryerSize.cpp",
    "src/postProcessing/sizing/StirredTank.cpp",
@@ -11881,6 +12083,7 @@
   "src/streams/StreamMass.H": [
    "src/applications/choupoSolve/main.cpp",
    "src/io/DesignSheetWriter.cpp",
+   "src/postProcessing/sizing/ReliefValveSize.cpp",
    "src/reporting/ElementBalanceReport.cpp",
    "src/reporting/EnergyBalanceReport.cpp",
    "src/reporting/MassBalanceReport.cpp",
@@ -11987,6 +12190,7 @@
    "src/postProcessing/sizing/EvaporatorSize.cpp",
    "src/postProcessing/sizing/Inventory.cpp",
    "src/postProcessing/sizing/PhaseDensity.cpp",
+   "src/postProcessing/sizing/ReliefValveSize.cpp",
    "src/postProcessing/sizing/ShellTubeHX.cpp",
    "src/postProcessing/sizing/SprayDryerSize.cpp",
    "src/postProcessing/sizing/StirredTank.cpp",
@@ -12094,6 +12298,7 @@
    "src/thermo/pureFluid/SaturationCurve.cpp",
    "src/thermo/reaction/RateLaw.cpp",
    "src/thermo/reaction/Reaction.cpp",
+   "src/thermo/reaction/ReactionRate.cpp",
    "src/thermo/transport/Andrade.cpp",
    "src/thermo/transport/BrockBird.cpp",
    "src/thermo/transport/ChapmanEnskog.cpp",
@@ -12340,6 +12545,7 @@
    "src/postProcessing/sizing/EvaporatorSize.cpp",
    "src/postProcessing/sizing/Inventory.cpp",
    "src/postProcessing/sizing/PhaseDensity.cpp",
+   "src/postProcessing/sizing/ReliefValveSize.cpp",
    "src/postProcessing/sizing/ShellTubeHX.cpp",
    "src/postProcessing/sizing/SprayDryerSize.cpp",
    "src/postProcessing/sizing/StirredTank.cpp",
@@ -12405,6 +12611,7 @@
    "src/thermo/phase/LiquidPhase.cpp",
    "src/thermo/reaction/RateLaw.cpp",
    "src/thermo/reaction/Reaction.cpp",
+   "src/thermo/reaction/ReactionRate.cpp",
    "src/unitOperations/UnitOperation.cpp",
    "src/unitOperations/batch/BatchAccumulator.cpp",
    "src/unitOperations/batch/BatchAdsorber.cpp",
@@ -12497,7 +12704,8 @@
   "src/thermo/PricedDensity.H": [
    "src/postProcessing/sizing/PhaseDensity.cpp",
    "src/thermo/PricedDensity.cpp",
-   "src/unitOperations/storage/StorageTank.cpp"
+   "src/unitOperations/storage/StorageTank.cpp",
+   "src/unitOperations/valve/Valve.cpp"
   ],
   "src/thermo/PropertyContext.H": [
    "src/applications/choupoBatch/main.cpp",
@@ -12609,6 +12817,7 @@
    "src/postProcessing/sizing/EvaporatorSize.cpp",
    "src/postProcessing/sizing/Inventory.cpp",
    "src/postProcessing/sizing/PhaseDensity.cpp",
+   "src/postProcessing/sizing/ReliefValveSize.cpp",
    "src/postProcessing/sizing/ShellTubeHX.cpp",
    "src/postProcessing/sizing/SprayDryerSize.cpp",
    "src/postProcessing/sizing/StirredTank.cpp",
@@ -12750,6 +12959,7 @@
    "src/postProcessing/sizing/EvaporatorSize.cpp",
    "src/postProcessing/sizing/Inventory.cpp",
    "src/postProcessing/sizing/PhaseDensity.cpp",
+   "src/postProcessing/sizing/ReliefValveSize.cpp",
    "src/postProcessing/sizing/ShellTubeHX.cpp",
    "src/postProcessing/sizing/SprayDryerSize.cpp",
    "src/postProcessing/sizing/StirredTank.cpp",
@@ -12814,6 +13024,7 @@
    "src/thermo/phase/LiquidPhase.cpp",
    "src/thermo/reaction/RateLaw.cpp",
    "src/thermo/reaction/Reaction.cpp",
+   "src/thermo/reaction/ReactionRate.cpp",
    "src/unitOperations/UnitOperation.cpp",
    "src/unitOperations/batch/BatchAccumulator.cpp",
    "src/unitOperations/batch/BatchAdsorber.cpp",
@@ -13276,6 +13487,7 @@
    "src/applications/choupoProps/main.cpp",
    "src/applications/choupoSolve/main.cpp",
    "src/dynamicDriver/DynamicDriver.cpp",
+   "src/postProcessing/sizing/ReliefValveSize.cpp",
    "src/propertyOps/ExplainProperty.cpp",
    "src/propertyOps/MixingRules.cpp",
    "src/propertyOps/PropertyEvaluator.cpp",
@@ -13477,14 +13689,16 @@
    "src/thermo/phase/SolidPhase.cpp",
    "src/thermo/pureFluid/SaturationCurve.cpp"
   ],
-  "src/thermo/reaction/RateLaw.H": [
-   "src/thermo/reaction/RateLaw.cpp",
-   "src/unitOperations/batch/BatchReactor.cpp",
-   "src/unitOperations/batch/BatchUnitOperation.cpp",
-   "src/unitOperations/dynamic/DynamicCSTR.cpp",
-   "src/unitOperations/dynamic/DynamicUnitOperation.cpp",
+  "src/thermo/reaction/ExpressionRate.H": [
+   "src/propertyOps/RateLawBench.cpp",
+   "src/thermo/reaction/ExpressionRate.cpp",
+   "src/thermo/reaction/ReactionRate.cpp",
    "src/unitOperations/reactor/CSTR.cpp",
    "src/unitOperations/reactor/PFR.cpp"
+  ],
+  "src/thermo/reaction/RateLaw.H": [
+   "src/thermo/reaction/RateLaw.cpp",
+   "src/thermo/reaction/ReactionRate.cpp"
   ],
   "src/thermo/reaction/Reaction.H": [
    "src/applications/choupoSolve/main.cpp",
@@ -13507,6 +13721,21 @@
    "src/unitOperations/reactor/gibbsMethod/GibbsMethod.cpp",
    "src/unitOperations/reactor/gibbsMethod/GibbsSolidPhase.cpp",
    "src/unitOperations/reactor/gibbsMethod/ReactiveFlash.cpp"
+  ],
+  "src/thermo/reaction/ReactionRate.H": [
+   "src/applications/choupoBatch/main.cpp",
+   "src/applications/choupoSolve/main.cpp",
+   "src/dynamicDriver/DynamicDriver.cpp",
+   "src/propertyOps/RateLawBench.cpp",
+   "src/thermo/reaction/ExpressionRate.cpp",
+   "src/thermo/reaction/RateLaw.cpp",
+   "src/thermo/reaction/ReactionRate.cpp",
+   "src/unitOperations/batch/BatchReactor.cpp",
+   "src/unitOperations/batch/BatchUnitOperation.cpp",
+   "src/unitOperations/dynamic/DynamicCSTR.cpp",
+   "src/unitOperations/dynamic/DynamicUnitOperation.cpp",
+   "src/unitOperations/reactor/CSTR.cpp",
+   "src/unitOperations/reactor/PFR.cpp"
   ],
   "src/thermo/solidEquilibrium/SolidEquilibrium.H": [
    "src/propertyOps/ScalingScan.cpp",
@@ -13762,6 +13991,7 @@
   "src/unitOperations/UnitOperation.H": [
    "src/applications/choupoSolve/main.cpp",
    "src/dynamicDriver/DynamicDriver.cpp",
+   "src/postProcessing/sizing/ReliefValveSize.cpp",
    "src/postProcessing/sizing/ShellTubeHX.cpp",
    "src/propertyOps/EnthalpyConcentration.cpp",
    "src/propertyOps/FitParameters.cpp",
@@ -14071,6 +14301,7 @@
    "src/unitOperations/flowsheet/Flowsheet.cpp"
   ],
   "src/unitOperations/flowsheet/MemberFolder.H": [
+   "src/applications/choupoSolve/main.cpp",
    "src/reporting/ModelBoundaryLedger.cpp",
    "src/unitOperations/flowsheet/Flowsheet.cpp"
   ],
@@ -14392,11 +14623,6 @@
    "src/unitOperations/reactor/gibbsMethod/GibbsMethod.cpp",
    "src/unitOperations/reactor/gibbsMethod/ReactiveFlash.cpp"
   ],
-  "src/unitOperations/reactor/kinetics/AmmoniaSynthesisRate.H": [
-   "src/propertyOps/AmmoniaRateBench.cpp",
-   "src/unitOperations/reactor/PFR.cpp",
-   "src/unitOperations/reactor/kinetics/AmmoniaSynthesisRate.cpp"
-  ],
   "src/unitOperations/reactor/pellet/Catalyst.H": [
    "src/propertyOps/ThielePellet.cpp",
    "src/unitOperations/reactor/pellet/Catalyst.cpp",
@@ -14438,6 +14664,7 @@
    "src/unitOperations/rotating/Turbine.cpp"
   ],
   "src/unitOperations/saturation/BubblePoint.H": [
+   "src/postProcessing/sizing/ReliefValveSize.cpp",
    "src/propertyOps/EnthalpyConcentration.cpp",
    "src/propertyOps/FitParameters.cpp",
    "src/propertyOps/PhaseEnvelope.cpp",

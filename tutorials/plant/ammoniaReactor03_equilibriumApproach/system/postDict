@@ -88,8 +88,8 @@
 
   WHAT REPLACES IT: an integrated rate law, which is rung 4 of this
   sequence (tutorials/plant/ammoniaReactor04_kineticSizing, built 2026-09-26 --
-  `pfr` reads `AmmoniaSynthesisRate` through `kinetics { type
-  dysonSimon1968; }` and a DesignSpec computes the bed volume from the
+  `pfr` integrates the Dyson & Simon law that case writes in its own
+  constant/reactions, and a DesignSpec computes the bed volume from the
   effluent's approach to equilibrium).  The pellet effectiveness factor is
   the rung beyond D.  This volume stays a feasibility-class number: enough to
   cost a vessel, not enough to build one.

@@ -32,9 +32,10 @@
   THE CONTRAST THE PAGE CLOSES ON, computed here and never typed.  Two anchor
   cells:  298.15 K / 1 bar -- ambient, where the reaction is thermodynamically
   favourable and nothing in this tree can make it go (the only ammonia rate
-  law here, Dyson & Simon 1968, REFUSES a pressure below 150 atm by name:
-  src/unitOperations/reactor/kinetics/AmmoniaSynthesisRate.cpp,
-  `validityWindow`) -- and 700 K / 200 bar, the gibbs10_ammonia_fugacity
+  law here, Dyson & Simon 1968, written in the cases that use it, was fitted
+  over 150-300 atm and its effectiveness factor is a table at 150, 225 and
+  300 atm that the engine REFUSES to extrapolate: tutorials/props/kinetics/
+  ammoniaRate01_dyson_simon/constant/reactions) -- and 700 K / 200 bar, the gibbs10_ammonia_fugacity
   operating point, which this ideal-gas kernel answers as the SHAPE and that
   SRK case answers with the fugacity correction folded in.  The third anchor,
   700 K / 1 bar, is what the same chemistry reaches at converter temperature

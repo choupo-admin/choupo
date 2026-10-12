@@ -404,7 +404,9 @@ src/
 ├── streams/             ProcessStream  (T, P, F, z, vf — what travels between units)
 ├── thermo/              Component, ThermoPackage, Database, phase/, vaporPressure/,
 │                         activityCoefficient/, equationOfState/, heatCapacity/,
-│                         membrane/ (Membrane + MembraneRegistry)
+│                         membrane/ (Membrane + MembraneRegistry),
+│                         reaction/ (ReactionRate factory: RateLaw = Arrhenius/LHHW,
+│                         ExpressionRate = `type expression`, on core/Formula)
 ├── materials/           Material + MaterialRegistry (reads the flat
 │                       data/standards/assets/ home, kind constructionMaterial)
 ├── solver/              NewtonRaphson (1-D), NewtonND (n-D), Wegstein,
@@ -2047,6 +2049,39 @@ invented for a round number converts unsourced into falsely sourced.  Gate:
 whole postDict line and took the entry's braces with it, refusing the RUN --
 a probe must remove the statement, not the line).  Record:
 [`docs/design/a-catalyst-bed-is-sized-by-its-kinetics.md`](docs/design/a-catalyst-bed-is-sized-by-its-kinetics.md).
+
+**A CASE CARRIES ITS OWN KINETICS (2026-10-12, DEV.md 4c C67 -- Vítor's
+architecture decision, option 3; do NOT recompile a rate law's numbers into
+the engine).**  Rule: **a rate law's NUMBERS live in the case's `constant/`,
+never in `src/`** (axiom 3 of the property layout).  Every law reaches a
+reactor through ONE explicit factory, `thermo/reaction/ReactionRate`
+(`registerType`/`New`/`registerBuiltins`, called from the mains before
+`registerUserTypes()`): `Arrhenius` and `LHHW` (`RateLaw`, arithmetic
+unchanged), `expression` (`ExpressionRate`: the law WRITTEN in
+constant/reactions as a formula over declared parameters WITH UNITS, the
+state the reactor supplies -- `T`, `P`, `x[i]`, `p[i]`, `c[i]` -- named
+definitions and declared 1-D tables; compiled ONCE by `core/Formula`, a
+dependency-free recursive-descent evaluator, dimension-checked, printed back AS
+PARSED, refusing by name an unknown symbol, a dimension mismatch, a definition
+cycle, a non-finite value, a table read outside its points), or a law a
+case's `code/` registers (local only: the site has no compiler).  The `cstr`
+and `pfr` multi-reaction paths take every law through the factory;
+`batchReactor`/`dynamicCSTR` keep their own native words (CHEMKIN forms,
+`Arrhenius`) and send every other word to it; the single-reaction paths read
+`Arrhenius` only and say so.  The compiled Dyson & Simon law
+(`reactor/kinetics/AmmoniaSynthesisRate`) is RETIRED: the three cases that use
+it write it (identical shared definitions, held together by
+`check_ammonia_rate`, which now holds the paper's anchors), and every number
+it published is reproduced -- the bench and every other kinetics case
+byte-identical against the parent build, the two kinetic beds to round-off.  A law declared `forward`/
+`reverse` with an `equilibriumTemperatureWindow` gets the pfr's `approach_K`
+for free; `fugacityCoefficients` its inlet ratio to the package's.  NOT done:
+package fugacities as symbols (a rate would then move with the EoS choice,
+silently), conditionals in the grammar (a branch is a choice of WHICH law to
+write), the C67 decision on Eq 39 at 148.9 atm (open; the table refuses, as
+before).  Gates: `check_rate_expression` · `check_ammonia_rate`.  Witnesses
+`tutorials/steady/userops/userOp03_case_rate_law` (one law, both routes) and
+`tutorials/props/kinetics/ammoniaRate01_dyson_simon` (`rateLawBench`).
 
 **A RELIEF VALVE IS A SIZED ITEM OF THE UNIT IT PROTECTS (2026-10-11, DEV.md
 4c C62, on a stated default).**  `type reliefValve` in the sizing pass: one

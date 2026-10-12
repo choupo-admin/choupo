@@ -6,7 +6,7 @@
   "runtime": "not recorded; runTests does not time per case and this script does not run the corpus"
  },
  "counts": {
-  "cases": 472,
+  "cases": 473,
   "witnesses": 16,
   "validationOp": 6,
   "anchored": 12
@@ -2428,7 +2428,7 @@
   "tutorials/props/kinetics/ammoniaRate01_dyson_simon": {
    "application": "choupoProps",
    "ops": [
-    "ammoniaRateBench"
+    "rateLawBench"
    ],
    "thermo": {
     "formulation": "gammaPhi",
@@ -6778,6 +6778,20 @@
    "roles": [],
    "hasGolden": true
   },
+  "tutorials/steady/userops/userOp03_case_rate_law": {
+   "application": "choupoSolve",
+   "unitTypes": [
+    "cstr"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [],
+   "hasGolden": false
+  },
   "tutorials/steady/utilities/utility01_dowtherm_preheat": {
    "application": "choupoSolve",
    "unitTypes": [
@@ -7370,6 +7384,7 @@
     "tutorials/steady/thermoTest/model5_nrtl_flash",
     "tutorials/steady/userops/userOp01_yield_reactor",
     "tutorials/steady/userops/userOp02_component_splitter",
+    "tutorials/steady/userops/userOp03_case_rate_law",
     "tutorials/steady/utilities/utility01_dowtherm_preheat",
     "tutorials/steady/utilities/utility02_hitec_csp_heater",
     "tutorials/steady/utilities/utility03_glycol_brine_chiller"
@@ -7560,7 +7575,8 @@
     "tutorials/steady/reactors/cstr04_adiabatic",
     "tutorials/steady/reactors/cstr05_multiplicity",
     "tutorials/steady/reactors/cstr06_jacketed",
-    "tutorials/steady/reactors/cstr07_lhhw_methylAcetate"
+    "tutorials/steady/reactors/cstr07_lhhw_methylAcetate",
+    "tutorials/steady/userops/userOp03_case_rate_law"
    ],
    "cyclone": [
     "tutorials/steady/gas-solid/cyclone01_dust_removal",
@@ -8483,6 +8499,7 @@
     "tutorials/steady/thermoTest/model1_lumped_evaporator",
     "tutorials/steady/userops/userOp01_yield_reactor",
     "tutorials/steady/userops/userOp02_component_splitter",
+    "tutorials/steady/userops/userOp03_case_rate_law",
     "tutorials/steady/utilities/utility01_dowtherm_preheat",
     "tutorials/steady/utilities/utility02_hitec_csp_heater",
     "tutorials/steady/utilities/utility03_glycol_brine_chiller",
@@ -8502,9 +8519,6 @@
   "byOp": {
    "activityCoefficients": [
     "tutorials/props/molecular/nrtl01_ethanol_water_package"
-   ],
-   "ammoniaRateBench": [
-    "tutorials/props/kinetics/ammoniaRate01_dyson_simon"
    ],
    "electrolyteActivity": [
     "tutorials/props/electrolyte/pitzer02_nacl_package"
@@ -8667,6 +8681,9 @@
    ],
    "purePhaseDiagram": [
     "tutorials/props/scan/phase01_water_full"
+   ],
+   "rateLawBench": [
+    "tutorials/props/kinetics/ammoniaRate01_dyson_simon"
    ],
    "reactionCurve": [
     "tutorials/ctrl/ctrl17_step_reaction_curve"

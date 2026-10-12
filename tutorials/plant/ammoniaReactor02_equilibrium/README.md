@@ -21,11 +21,10 @@ differs is `converter`.
 | **3** `ammoniaReactor03_equilibriumApproach` | `gibbsReactor` **+ 5 K approach** | a realistic outlet | a bed volume the engine computed |
 | **4** `ammoniaReactor04_kineticSizing` | adiabatic `pfr` on the Dyson & Simon (1968) rate law, volume solved by a DesignSpec | a bed volume the ENGINE computed | a pellet effectiveness factor (announced as unpriced); a cost |
 
-Rung 4 exists since 2026-09-26.  `src/unitOperations/reactor/kinetics/AmmoniaSynthesisRate.{H,cpp}`
-used to be included by its own `.cpp` and by `AmmoniaRateBench.cpp` alone,
-and this README named that gap rather than implying it; `PFR.cpp` now reads
-the law through `kinetics { type dysonSimon1968; }`, and rung 4's README
-carries what the wiring found.
+Rung 4 exists since 2026-09-26, and since 2026-10-12 (DEV.md 4c C67) its
+rate law is written in rung 4's own `constant/reactions` as `kinetics { type
+expression; }` -- the engine carries no ammonia law of its own any more.
+Rung 4's README carries what the wiring found.
 
 Background: `docs/design/how-a-process-design-is-staged.md`, and DEV.md C8.
 
