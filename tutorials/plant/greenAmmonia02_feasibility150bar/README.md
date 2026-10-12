@@ -138,6 +138,58 @@ exchangers were designed) and costed by Turton, the fixed capital is
 estimate is Class 4 (−30 % / +50 %), and with this hydrogen price there is
 no IRR: the base case's README says why that is a price, not a defect.
 
+### The sensitivity: which input decides
+
+`system/postDict` ends with a `sensitivity {}` block (DEV.md 4c C68): the
+economics pass moves each input **alone** to two ends and prices the same
+converged run again, through the same cash flow — a tornado, printed sorted
+by NPV swing and written to `reports/economics/sensitivity.csv`. The FCI's
+ends are the declared accuracy band itself (`relative accuracyBand;`), so
+the −30 % / +50 % finally reaches the NPV; every other end is an author-set
+assumption, said so in the postDict: the prices and the three utility bills
+±20 %, the discount rate 8 % / 12 %, the stream factor 0.85 / 0.95.
+
+| input (low / high end) | NPV at low | NPV at high | swing |
+|---|---|---|---|
+| H₂ price (3.60 / 5.40 EUR/kg) | −24.60 | −961.60 | 937.00 |
+| NH₃ price (0.80 / 1.20 EUR/kg) | −954.22 | −31.99 | 922.23 |
+| discount rate (8 % / 12 %) | −540.94 | −452.88 | 88.06 |
+| molten-salt bill, `hitecSalt` (×0.8 / ×1.2) | −454.29 | −531.91 | 77.62 |
+| **FCI, the accuracy band** (28.97 / 62.08 M EUR) | −468.75 | −533.69 | 64.94 |
+| N₂ price (0.04 / 0.06 EUR/kg) | −468.99 | −517.21 | 48.22 |
+| HP-steam credit, `steamGenerationHP` (×0.8 / ×1.2) | −516.78 | −469.42 | 47.35 |
+| stream factor (0.85 / 0.95) | −472.48 | −513.72 | 41.24 |
+| electricity bill (×0.8 / ×1.2) | −476.10 | −510.11 | 34.01 |
+
+M EUR; the base NPV is −493.10 M EUR. What it teaches:
+
+* **The two prices decide, the capital does not.** A ±20 % move of either
+  the hydrogen or the ammonia price swings the NPV by about 0.93 G EUR —
+  fourteen times the whole −30 / +50 % capital band. At this stage a better
+  capital estimate cannot rescue or sink the project; the margin R − C_RM
+  can. The capital band also moves the NPV about twice as far as the
+  capital itself, because 0.180 FCI rides inside COM_d every year.
+* **No single input flips the sign.** Hydrogen at 3.60 EUR/kg leaves the
+  NPV at −24.6 M EUR (an IRR of 5.84 %, below the 10 % rate); ammonia at
+  1.20 EUR/kg at −32.0 M EUR (IRR 5.15 %). The NPV is linear in each price,
+  so the two break-evens read straight off the table: hydrogen at about
+  3.55 EUR/kg with ammonia at 1.00, or ammonia at about 1.21 EUR/kg with
+  hydrogen at 4.50. Both moving together is a different question — a
+  one-at-a-time sensitivity does not ask it, by construction.
+* **Two bars point the "wrong" way, and both say the same thing.** A higher
+  discount rate makes the NPV *less* negative, and more hours on stream make
+  it *worse*: the plant loses money on every hour it runs (R − COM_d =
+  −69.4 M EUR/yr), so discounting those losses harder, or running fewer
+  hours, helps.
+* **The molten-salt bill outranks the capital band** — the 25.9 M EUR/yr
+  that the pinch says a feed/effluent match can avoid (the basic-design
+  case installs it).
+
+It is a **sensitivity, not an uncertainty analysis**: no probability is
+attached to any end, and inputs that move together in a market (the
+hydrogen and the electricity prices) are moved one at a time. The table's
+own header says so.
+
 ## What this case does NOT claim
 
 * **No heat-exchanger network.** The pinch gives targets; the matches,

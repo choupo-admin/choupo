@@ -127,6 +127,41 @@ against −493 M EUR. Class 4 is −30 % / +50 %: those two capitals are inside
 each other's band, so at this stage they **cannot** decide between the two
 pressures — the point the *Front-End Loading* EduTool draws.
 
+**The sensitivity says the same, with numbers.** `system/postDict` ends
+with the same `sensitivity {}` block as the 150 bar case (DEV.md 4c C68;
+the FCI's ends are the declared accuracy band, every other end an
+author-set assumption — prices and the three utility bills ±20 %, discount
+rate 8 % / 12 %, stream factor 0.85 / 0.95). Its tornado
+(`reports/economics/sensitivity.csv`), M EUR, base NPV −488.80, beside the
+150 bar swings:
+
+| input (low / high end) | NPV at low | NPV at high | swing | swing at 150 bar |
+|---|---|---|---|---|
+| H₂ price (3.60 / 5.40 EUR/kg) | −20.30 | −957.30 | 937.00 | 937.00 |
+| NH₃ price (0.80 / 1.20 EUR/kg) | −949.91 | −27.69 | 922.22 | 922.23 |
+| discount rate (8 % / 12 %) | −536.83 | −448.40 | 88.43 | 88.06 |
+| hot-oil bill, `dowthermA` (×0.8 / ×1.2) | −453.83 | −523.76 | 69.93 | 77.62 (molten salt) |
+| **FCI, the accuracy band** (24.61 / 52.73 M EUR) | −468.11 | −523.28 | 55.17 | 64.94 |
+| N₂ price (0.04 / 0.06 EUR/kg) | −464.69 | −512.91 | 48.22 | 48.22 |
+| stream factor (0.85 / 0.95) | −467.71 | −509.88 | 42.17 | 41.24 |
+| HP-steam credit (×0.8 / ×1.2) | −505.87 | −471.73 | 34.14 | 47.35 |
+| electricity bill (×0.8 / ×1.2) | −480.65 | −496.94 | 16.29 | 34.01 |
+
+The two alternatives differ in NPV by **4.3 M EUR** — less than the
+smallest bar of either tornado — and the inputs that dominate both (the
+hydrogen and ammonia prices) move the two loops by the same amount to the
+nearest 0.01 M EUR, because the same molecules are bought and sold. So
+nothing a price does can rank the two pressures; what differs is only what
+each loop buys: half the electricity swing (less compression), a smaller
+steam credit (−11.40 against −15.81 M EUR/yr in the margin table above),
+and a capital band whose own swing (55.2 M EUR) is nearly thirteen times
+the difference. As at 150 bar,
+no single input flips the NPV's sign (hydrogen at 3.60 EUR/kg leaves
+−20.3 M EUR, IRR 6.38 %), and the discount-rate and stream-factor bars
+point the "wrong" way because the plant loses money on every hour it runs.
+A sensitivity, not an uncertainty analysis: no probability is attached to
+any end.
+
 ## What this case does NOT claim
 
 * **That a catalyst exists** that approaches equilibrium at 400 °C and 50
