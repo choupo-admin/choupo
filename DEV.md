@@ -1991,6 +1991,32 @@ accepts today, and that is a policy call.
      loop (membrane18), the dynamic loop (unsteady03), the UF law
      (membrane19) and the UF loop in time (unsteady04).
 
+**C67. A CASE CARRIES ITS OWN KINETICS: RATE EXPRESSIONS IN THE DICT, AND A
+FACTORY A CASE'S `code/` CAN REGISTER INTO (Vítor, 2026-10-12, verbatim:
+"Eu até aceito o /user, mas o código tem de ficar no caso!!! ... Isto é a
+única forma de o caso ficar auto contido", then "Faz o 3" to the
+commander's three options -- ARCHITECTURE DECISION, his).**  Measured: the
+`pfr` dispatches kinetics on a fixed word list, `{ "Arrhenius", "LHHW",
+"dysonSimon1968" }` (`src/unitOperations/reactor/PFR.cpp:101`, `:353`,
+`:733`), not a factory; the Dyson-Simon constants are `constexpr` in
+`src/unitOperations/reactor/kinetics/AmmoniaSynthesisRate.cpp:42-54`;
+case-local C++ exists for UNIT OPERATIONS only (`<case>/code/` +
+`registerUserTypes()`, built by `bin/buildCode` into a per-case binary,
+`src/applications/choupoSolve/main.cpp:128-134,459`; witnesses
+`tutorials/steady/userops/userOp01_yield_reactor`, `userOp02`), and a case
+with `code/` does NOT run on the site (no compiler in the browser).  The
+decision: (i) `type expression;` -- the rate law written in
+`constant/reactions` with its named parameters, evaluated by a small
+dependency-free expression evaluator in the engine, runs everywhere; (ii)
+a `ReactionRate` base with the explicit factory (`registerType`/`New`/
+`registerBuiltins`), Arrhenius and LHHW as built-ins, and
+`registerUserTypes()` able to register a case-local law from `code/`
+(local only, said so); (iii) the ammonia law re-expressed in each case's
+`constant/reactions` through route (i), every number visible, and the C++
+`AmmoniaSynthesisRate` retired or reduced to the verification anchors
+(one home).  Sequenced AFTER C66 items 1 and 3 merge (both touch
+`PFR.cpp`).  Status: waiting on C66.
+
 **C66. THE GREEN-AMMONIA CONVERTER BEDS, SIZED AS A BASIC DESIGN SIZES
 THEM (Vítor, 2026-10-12, asking "No Ammonia Green Design, como é que o PFR
 é dimensionado?"; taken under his standing "Avança da melhor forma").**
@@ -2025,6 +2051,8 @@ announced.  This is the three-axiom layout's own axiom 3 (equipment-
 dependent kinetics -> case constant/), which the `constexpr` constants in
 `AmmoniaSynthesisRate.cpp:42-54` contradicted.  Added to C66 as item 4
 (done first): migrate every dysonSimon1968 case byte-identically.
+SUPERSEDED the same day by C67 (option 3): item 4 stopped, item 2 deferred
+until C67 lands; items 1, 3 and the banner fix continue.
 
 **C65. THE DEBTS THE SAFETY AND LETDOWN SLICES FOUND: THREE RECORDS, ONE
 VALVE, ONE GATE (commander, 2026-10-11, under Vítor's "Avança da melhor
