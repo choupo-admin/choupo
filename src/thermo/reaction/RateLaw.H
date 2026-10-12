@@ -76,6 +76,7 @@ Class
 
 #include "core/Dictionary.H"
 #include "core/Types.H"
+#include "thermo/reaction/ReactionRate.H"
 
 #include <cstddef>
 #include <string>
@@ -86,7 +87,10 @@ namespace Choupo
 
 class ThermoPackage;
 
-class RateLaw
+//  Since 2026-10-12 (DEV.md 4c C67) the two built-in members of the
+//  ReactionRate factory, `Arrhenius` and `LHHW`.  The arithmetic is the same
+//  to the last bit; what changed is only how a reactor reaches it.
+class RateLaw : public ReactionRate
 {
 public:
 
@@ -106,7 +110,14 @@ public:
     // The forward rate constant alone, for reporting.
     scalar kForward(scalar T) const;
 
-    const std::string& typeName() const { return type_; }
+    // ---- ReactionRate ------------------------------------------------------
+    scalar netRate(const ThermoPackage& thermo, const RateState& s) const override
+    { return netRate(thermo, s.T, *s.conc, *s.x); }
+    bool   hasRateConstant() const override { return true; }
+    scalar rateConstant(const ThermoPackage&, const RateState& s) const override
+    { return kForward(s.T); }
+
+    const std::string& typeName() const override { return type_; }
     bool  isLHHW()        const { return ads_; }
     bool  activityBasis() const { return activity_; }
 

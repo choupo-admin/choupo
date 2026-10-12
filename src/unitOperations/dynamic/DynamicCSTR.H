@@ -64,7 +64,9 @@ Description
 
 #pragma once
 
-#include "thermo/reaction/RateLaw.H"
+#include "thermo/reaction/ReactionRate.H"
+
+#include <memory>
 
 #include "DynamicUnitOperation.H"
 
@@ -145,11 +147,12 @@ private:
         scalar                   A_pre = 0;
         scalar                   Ea    = 0;
         scalar                   dH    = 0;
-        // LHHW: the whole law (basis, adsorption denominator, reverse leg) parsed
-        // once by the SHARED RateLaw, so a dynamic reactor and a steady CSTR cannot
-        // disagree about what an adsorption denominator means.
-        bool                     lhhw  = false;
-        RateLaw                  law;
+        // A FACTORY law (LHHW, `type expression`, a user law), parsed once by
+        // the SHARED ReactionRate factory, so a dynamic reactor and a steady
+        // CSTR cannot disagree about what a law means.  `Arrhenius` stays this
+        // vessel's own (A_pre / Ea above).
+        bool                     factoryLaw = false;
+        std::shared_ptr<const ReactionRate> law;
     };
 
     const ThermoPackage*     thermo_ = nullptr;

@@ -91,6 +91,7 @@ Description
 #include "thermo/membrane/MembraneModuleRegistry.H"
 #include "thermo/electrochem/EDStackRegistry.H"
 #include "thermo/adsorbent/AdsorbentRegistry.H"
+#include "thermo/reaction/ReactionRate.H"
 #include "unitOperations/UnitOperation.H"
 #include "unitOperations/separation/cycloneModel/CycloneModel.H"
 #include "unitOperations/reactor/gibbsMethod/GibbsMethod.H"
@@ -383,6 +384,7 @@ try
     CycloneModel    ::registerBuiltins();
     GibbsMethod     ::registerBuiltins();
     UnitOperation   ::registerBuiltins();
+    ReactionRate    ::registerBuiltins();   // LHHW, expression (Arrhenius is the vessel's own)
     DynamicUnitOperation::registerBuiltins();
     //  The CONTROL layer's own factories (Controller, Signal) are registered
     //  by the application that owns that layer -- choupoCtrl's main -- never

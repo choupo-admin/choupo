@@ -29,7 +29,7 @@ License
 #include "CSTR.H"
 #include "CatalystPellet.H"
 #include "core/Constants.H"
-#include "thermo/reaction/RateLaw.H"
+#include "thermo/reaction/ReactionRate.H"
 #include "thermo/reaction/Reaction.H"
 #include "solver/NewtonRaphson.H"
 #include "solver/NewtonND.H"
@@ -178,8 +178,12 @@ int CSTR::solve(const DictPtr& dict,
     auto kinDict = rxnDict->subDict("kinetics");
     const std::string ktype = kinDict->lookupWord("type");
     if (ktype != "Arrhenius")
-        throw std::runtime_error("CSTR: only kinetics 'Arrhenius' implemented (got '"
-            + ktype + "')");
+        throw std::runtime_error("CSTR: the single-reaction path (`reaction <name>;`)"
+            " reads `kinetics { type Arrhenius; }` only -- its Damkohler number and"
+            " closed-form checks are about that law (got '" + ktype + "').  Every"
+            " other law -- LHHW, `type expression`, a law registered from the"
+            " case's code/ -- is read on the multi-reaction path: declare the"
+            " reaction in a `reactions ( <name> );` list (one element is fine).");
     const scalar A_pre = kinDict->lookupScalar("A");
     const scalar Ea    = kinDict->lookupScalar("Ea");
 
@@ -484,15 +488,21 @@ int CSTR::solveMultiReaction(const DictPtr&       dict,
     // The RATE LAW is parsed once and evaluated at whatever temperature the
     // solver is currently trying -- in a non-isothermal CSTR that is the UNKNOWN
     // outlet temperature.  Power law or LHHW, the reactor does not care.
-    std::vector<RateLaw> law;
+    //  Every law comes through the ONE factory (thermo/reaction/ReactionRate):
+    //  Arrhenius, LHHW, a `type expression` written in the case, or a law a
+    //  case's code/ registered.  The reactor hands it T, P, the liquid-basis
+    //  concentrations in mol/m3 and the mole fractions.
+    std::vector<std::unique_ptr<ReactionRate>> law;
     law.reserve(R);
+    RateOffer offer;
+    offer.concentrationBasis = "F_i / Q, Q on the liquid basis F * sum z_i Vliq_i";
     for (std::size_t j = 0; j < R; ++j)
     {
         rname[j] = rxnList[j]->lookupWordOrDefault("name", "rxn" + std::to_string(j + 1));
         for (const auto& s : rxnList[j]->lookupDictList("stoichiometry"))
             nu[j][thermo.indexOf(s->lookupWord("component"))] = s->lookupScalar("nu");
-        law.push_back(RateLaw::fromDict(rxnList[j], thermo,
-                                        "CSTR: reaction '" + rname[j] + "'"));
+        law.push_back(ReactionRate::New(rxnList[j], thermo,
+                                        "CSTR: reaction '" + rname[j] + "'", offer));
     }
 
     // ---- THERMAL MODE -------------------------------------------------
@@ -545,6 +555,8 @@ int CSTR::solveMultiReaction(const DictPtr&       dict,
     //  The conversion is all it is: the pellet stays a POINT and eta = 1 is
     //  assumed.  Say so -- see reactor/CatalystPellet.H.
     announceUnresolvedPellet("cstr", catLoad, verbosity);
+    for (std::size_t j = 0; j < R; ++j)
+        law[j]->checkLoading(catLoad > 0.0, "CSTR: reaction '" + rname[j] + "'");
 
     if (!isoT)
         for (std::size_t j = 0; j < R; ++j)
@@ -612,7 +624,12 @@ int CSTR::solveMultiReaction(const DictPtr&       dict,
 
             sVector g(R, 0.0);
             for (std::size_t j = 0; j < R; ++j)
-                g[j] = xi[j] - catFactor * law[j].netRate(thermo, Tk, conc, xx) * V_R;
+            {
+                RateState rs;
+                rs.T = Tk; rs.P = P; rs.conc = &conc; rs.x = &xx;
+                rs.amountPerKmol = 1000.0;                  // conc in mol/m3
+                g[j] = xi[j] - catFactor * law[j]->netRate(thermo, rs) * V_R;
+            }
             return g;
         };
         solver::NDOptions o;
@@ -872,10 +889,22 @@ int CSTR::solveMultiReaction(const DictPtr&       dict,
         kpis_["T_guess"]      = Tguess;
         kpis_["steadyStates"] = scalar(roots.size());   // 3 means multiplicity
     }
+    //  The outlet state, for a law whose rate constant reads more than T.
+    sVector concOut(n, 0.0), xOut(n, 0.0);
+    {
+        const sVector Fo = flowsOf(xi);
+        scalar Fsum = 0.0;
+        for (std::size_t i = 0; i < n; ++i) { concOut[i] = Fo[i] / Q; Fsum += Fo[i]; }
+        if (Fsum > 0.0) for (std::size_t i = 0; i < n; ++i) xOut[i] = Fo[i] / Fsum;
+    }
+    RateState outState;
+    outState.T = T_out; outState.P = P; outState.conc = &concOut; outState.x = &xOut;
+    outState.amountPerKmol = 1000.0;
     for (std::size_t j = 0; j < R; ++j)
     {
         kpis_["xi_" + rname[j] + "_mol_per_s"] = xi[j];
-        kpis_["k_"  + rname[j]] = law[j].kForward(T_out);
+        if (law[j]->hasRateConstant())
+            kpis_["k_"  + rname[j]] = law[j]->rateConstant(thermo, outState);
     }
     // Duty from the ENTHALPY BALANCE on the formation datum (one reaction-heat
     // resolver -- never a per-reaction dH_rxn key).
@@ -922,11 +951,16 @@ int CSTR::solveMultiReaction(const DictPtr&       dict,
                              << (T_out - T) << " K, landed from T_guess = " << Tguess << " K)";
         std::cout << "\n";
         for (std::size_t j = 0; j < R; ++j)
+        {
             std::cout << "  " << std::left << std::setw(12) << rname[j] << std::right
-                      << "  k(T_out) = " << std::scientific << std::setprecision(3)
-                      << law[j].kForward(T_out)
-                      << "   xi = " << xi[j] << " mol/s"
-                      << "   [" << law[j].typeName() << "]\n" << std::fixed;
+                      << "  k(T_out) = " << std::scientific << std::setprecision(3);
+            if (law[j]->hasRateConstant())
+                std::cout << law[j]->rateConstant(thermo, outState);
+            else
+                std::cout << "(none declared)";
+            std::cout << "   xi = " << xi[j] << " mol/s"
+                      << "   [" << law[j]->typeName() << "]\n" << std::fixed;
+        }
         std::cout << "=====================================================================\n\n";
     }
     return converged ? 0 : 1;

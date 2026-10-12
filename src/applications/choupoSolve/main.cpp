@@ -103,6 +103,7 @@ Description
 #include "thermo/phase/Phase.H"
 #include "unitOperations/heatTransfer/htc/HeatTransferCorrelation.H"
 #include "thermo/vaporPressure/VaporPressureModel.H"
+#include "thermo/reaction/ReactionRate.H"
 #include "unitOperations/UnitOperation.H"
 #include "unitOperations/separation/cycloneModel/CycloneModel.H"
 #include "unitOperations/reactor/gibbsMethod/GibbsMethod.H"
@@ -456,7 +457,8 @@ try
     CycloneModel    ::registerBuiltins();
     GibbsMethod     ::registerBuiltins();
     UnitOperation   ::registerBuiltins();
-    registerUserTypes();          // case-local unit ops (empty by default)
+    ReactionRate    ::registerBuiltins();   // Arrhenius, LHHW, expression (before the case's own)
+    registerUserTypes();          // case-local unit ops AND rate laws (empty by default)
     OuterDriver     ::registerBuiltins();
     PostProcessor   ::registerBuiltins();
     Report          ::registerBuiltins();

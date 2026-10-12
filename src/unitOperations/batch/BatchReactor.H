@@ -63,7 +63,9 @@ Description
 
 #pragma once
 
-#include "thermo/reaction/RateLaw.H"
+#include "thermo/reaction/ReactionRate.H"
+
+#include <memory>
 
 #include "BatchUnitOperation.H"
 
@@ -128,11 +130,14 @@ private:
     //   ModArrhenius  k = A·T^b·exp(−Ea/RT)              (the 3-parameter form)
     //   ThirdBody     k·[M], [M] = Σ eff_j·c_j           (explicit +M reactant)
     //   Falloff       Lindemann/Troe blend of kLow,kInf  (pressure dependence)
-    // LHHW joins the CHEMKIN gas forms as a peer: it does not replace them, it is
-    // simply the rate law a CATALYTIC surface obeys.  Its whole definition lives in
-    // the shared `RateLaw`, so a batch reactor and a steady CSTR cannot disagree
-    // about what an adsorption denominator means.
-    enum class RateForm { Arrhenius, ModArrhenius, ThirdBody, Falloff, LHHW };
+    // Every OTHER word -- LHHW, `type expression`, a law a case's code/
+    // registered -- is a `Factory` law: built by the shared ReactionRate
+    // factory (thermo/reaction/ReactionRate.H), so a batch reactor and a
+    // steady CSTR cannot disagree about what an adsorption denominator, or a
+    // formula written in the case, means.  The four CHEMKIN forms stay this
+    // vessel's own: they carry the cm-mol-s unit conversion and the pressure
+    // fall-off no factory law has.
+    enum class RateForm { Arrhenius, ModArrhenius, ThirdBody, Falloff, Factory };
 
     // Per-reaction kinetic + thermo data
     struct ReactionSpec
@@ -153,8 +158,8 @@ private:
         scalar                   b_low = 0;
         scalar                   Ea_low = 0;
         sVector                  troe;           // (a T*** T* [T**]); empty => Lindemann
-        // LHHW: the whole law (basis, adsorption denominator, reverse leg) parsed once.
-        RateLaw                  law;
+        // A Factory law (LHHW, expression, a user law), parsed once.
+        std::shared_ptr<const ReactionRate> law;
     };
 
     enum class Mode { Isothermal, Adiabatic };
