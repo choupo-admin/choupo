@@ -2140,6 +2140,25 @@ because the plant loses 69.4 MEUR/yr operating; 150 vs 50 bar differ by
 4.3 MEUR, less than any bar.  OPEN for Vítor (pedagogy): a two-way /
 scenario analysis (H2 and NH3 moving together is what would flip it);
 no tornado drawn in the GUI yet.
+STAGE COMPARISON BUILT 2026-10-12 on branch `claude/c68-stage-comparison`
+(not merged): `bin/curate/gen_ammonia_stage_comparison.py` writes a section
+of `tutorials/plant/greenAmmonia03_basicDesign/README.md` (home chosen: the page the student
+at rung 3 opens, which already carried two hand comparisons, both stale --
+replaced by pointers) from three engine runs (the two cases and the
+feasibility case at the basic design's start-up years); `--check` gated in
+`bin/runTests`.  Measured: NPV -493.10 -> -340.93 M EUR, of which the
+feed/effluent exchanger the feasibility flowsheet omits BY CONSTRUCTION is
++187.45 (molten salt no longer bought +182.56) -- more than the whole
+difference; the model refinements together -39.13 (converter shell -26.49,
+less steam, more refrigeration, interbed coolers); the catalyst the
+feasibility did not cost -7.82; the start-up years, a CHANGED ASSUMPTION,
++10.14 on the feasibility plant but -1.33 on the basic-design one (the
+ramp-up saves more on the plant that loses more per year).  FOUND: the
+catalogue's "ten relief valves" was stale after C69 (eight; fixed); the
+loop pressure drop is DECLARED in both stages (separator 140 bar), the Kern
+exchanger drops are not applied to the streams.  OPEN for Vítor
+(pedagogy): whether the feasibility appraisal should be priced at its own
+pinch target as well, so the stage comparison isolates the models.
 
 **C67. A CASE CARRIES ITS OWN KINETICS: RATE EXPRESSIONS IN THE DICT, AND A
 FACTORY A CASE'S `code/` CAN REGISTER INTO (Vítor, 2026-10-12, verbatim:
