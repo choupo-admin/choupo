@@ -694,7 +694,7 @@ not read a ranking of projects out of a ranking of classes.  Source: AACE
 International RP 18R-97 Table 1 (rev. 2020-08-07); the reading of both
 revisions is `docs/design/how-a-process-design-is-staged.md` §1.
 
-Quoting an NPV to four significant figures off a Class-5 estimate is the classic glass-box failure: the ±50% CAPEX band swamps the answer. Always run the case at both error bounds.
+Quoting an NPV to four significant figures off a Class-5 estimate is the classic glass-box failure: the ±50% CAPEX band swamps the answer. Always run the case at both error bounds. In Choupo the economics pass does it for you: a `sensitivity` block inside the postDict's `economics` block moves each declared input *alone* to two ends and prices the same converged run again — a *tornado*, sorted by NPV swing. `FCI { relative accuracyBand; }` takes the capital to the two ends of the declared band; `price.<stream> { relative ( -0.2 0.2 ); }`, `utility.<name>`, `discountRate`, `streamFactor`, `taxRate` and `labourRate` move the rest (`relative` ends are fractions of the base value, `absolute` ends are values of the input). Read it as a *sensitivity*, not an uncertainty analysis: no probability is attached to either end, and inputs that move together in the market (the hydrogen and the electricity price) are moved one at a time. See `greenAmmonia02_feasibility150bar`, where a ±20% move of the hydrogen or the ammonia price swings the NPV some fourteen times as far as the whole −30/+50% capital band.
 
 ## Materials of construction & mechanical design
 

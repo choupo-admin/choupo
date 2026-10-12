@@ -29,12 +29,15 @@ License
 #include "EconomicsPass.H"
 #include "EstimateClass.H"
 #include "core/Advisory.H"
+#include "core/RegistryRefusal.H"
 
 #include "core/Dictionary.H"
 #include "core/Dimensions.H"
 #include "core/OdsWriter.H"
 #include "solver/NewtonRaphson.H"
 
+#include <algorithm>
+#include <cctype>
 #include <cmath>
 #include <filesystem>
 #include <fstream>
@@ -165,7 +168,7 @@ WorkingCapitalBuildUp buildWorkingCapital(const DictPtr& model,
     const SimulationResult& result,
     const std::vector<PricedStream>& rawMats,
     const std::vector<PricedStream>& products,
-    scalar R, scalar C_RM, scalar COM_d, scalar H)
+    scalar R, scalar C_RM, scalar COM_d, scalar H, bool verbose)
 {
     auto days = [&](const char* key) -> scalar
     {
@@ -300,7 +303,9 @@ WorkingCapitalBuildUp buildWorkingCapital(const DictPtr& model,
     b.net = b.gross - liab;
 
     //  The unit costs, printed per component held, so the valuation is
-    //  something a reader can redo.
+    //  something a reader can redo.  Printed for the base appraisal only: a
+    //  sensitivity re-appraisal (C68) builds the same lines again, silently.
+    if (!verbose) return b;
     std::set<std::string> held;
     for (const auto& [id, sz] : result.sizings)
         for (const auto& [c, kg] : sz.inventory.massOf()) held.insert(c);
@@ -864,307 +869,137 @@ DcfTimeline readTimeline(const DictPtr& d, int projectLife)
     return tl;
 }
 
-} // anonymous namespace
-
-EconomicsPass::EconomicsPass(const DictPtr& economicsDict)
-:   econDict_(economicsDict)
-{}
-
-int EconomicsPass::run(SimulationResult& result)
+// =========================================================================
+//  ONE APPRAISAL, ONE HOME (2026-10-12, DEV.md 4c C68).
+//
+//  Everything from the annual bills to the NPV, the IRR and the paybacks is
+//  computed HERE, from one bundle of inputs, and nowhere else.  The base
+//  appraisal calls it once; the opt-in `sensitivity {}` block (below) calls
+//  it again once per declared input and end, with that ONE input moved.  A
+//  sensitivity that re-derived the cash flow in a second copy would be a
+//  second home for the appraisal, and the day the two copies disagreed --
+//  a working capital that follows the revenue in one and not the other, a
+//  ramp-up honoured in one only -- every tornado bar would be a number
+//  about a plant this pass does not price.  So the sensitivity has no
+//  arithmetic of its own: it edits a copy of the inputs and calls this.
+//
+//  The function is the body `run()` used to carry inline, moved verbatim
+//  (the same operations in the same order), so the base appraisal of every
+//  case is byte-identical to what it was.  The only additions are the
+//  `verbose` flag, which silences the two things a re-appraisal must not
+//  repeat (the held-material valuation table and the extreme-IRR warning),
+//  and the per-utility scale, which is empty -- every factor 1 -- in the
+//  base case.
+// =========================================================================
+struct AppraisalInputs
 {
-    // ---- 0.  Pre-flight: CAPEX must already be in result.costs ----------
-    if (result.costs.empty())
-    {
-        std::cerr << "EconomicsPass: result.costs is empty -- did the "
-                     "sizing+costing passes run first?\n";
-        return 1;
-    }
+    //  ---- what a sensitivity may move --------------------------------
+    scalar FCI          = 0.0;       // EUR, Turton Eq. 7.5
+    scalar streamFactor = 0.90;      // fraction of 8760 h on stream
+    scalar discountRate = 0.10;
+    scalar taxRate      = 0.21;
+    scalar labourRate   = 0.0;       // EUR/h
+    std::vector<PricedStream> rawMats;    // price EUR/kg, massFlow kg/s
+    std::vector<PricedStream> products;
+    //  The ALLOCATED utility rows, in the allocation's order: (utility
+    //  name, EUR/h).  A carried or unserved row has no price and is not
+    //  here.  `utilityScale` multiplies every row of one utility (C68's
+    //  `utility.<name>`); absent, a row is summed as published.
+    std::vector<std::pair<std::string, scalar>> utilityEurH;
+    std::map<std::string, scalar>               utilityScale;
 
-    // ---- 1.  Dict knobs (cited teaching defaults, Turton §10/§8) --------
-    const scalar projectLife       = econDict_->lookupScalarOrDefault("projectLife",        10.0);
-    const scalar discountRate      = econDict_->lookupScalarOrDefault("discountRate",        0.10);
-    const scalar taxRate           = econDict_->lookupScalarOrDefault("taxRate",             0.21);
-    const scalar depreciableLife   = econDict_->lookupScalarOrDefault("depreciableLife",      9.0);
-    const scalar salvageFraction   = econDict_->lookupScalarOrDefault("salvageFraction",      0.0);
-    //  `workingCapital` IS EITHER A FRACTION OF FCI OR A MODEL (C44 slice
-    //  4): a number keeps the rule it always was, a BLOCK builds the working
-    //  capital up from what the plant holds and owes (`buildWorkingCapital`).
-    //  The fraction 0.15 is also the comparison line a model prints.
-    constexpr scalar workingCapitalDefault = 0.15;
-    DictPtr wcModel;
-    scalar  workingCapital = workingCapitalDefault;
-    if (econDict_->found("workingCapital")
-        && std::holds_alternative<DictPtr>(econDict_->entryValue("workingCapital")))
-        wcModel = econDict_->subDict("workingCapital");
-    else
-        workingCapital = econDict_->lookupScalarOrDefault("workingCapital",
-                                                          workingCapitalDefault);
-    const scalar streamFactor      = econDict_->lookupScalarOrDefault("streamFactor",         0.90);
-    const scalar siteFactor        = econDict_->lookupScalarOrDefault("siteFactor",           0.50);
-    const scalar contingencyFee    = econDict_->lookupScalarOrDefault("contingencyFee",       1.18);
-    const scalar N_np              = econDict_->lookupScalarOrDefault("N_np",                  7.0);
-    const int    estimateClass     = static_cast<int>(
-                                      econDict_->lookupScalarOrDefault("estimateClass",       4.0));
-    //  A DECLARED NUMBER THE ENGINE DISPATCHES ON MUST REFUSE ONE IT DOES NOT
-    //  KNOW (2026-09-07).  The old code branched on `estimateClass <= 4`, so
-    //  0, 9 or -3 selected a band by arithmetic accident and said nothing.
-    const Choupo::estimateClass::Row* const ecl =
-        Choupo::estimateClass::find(estimateClass);
-    if (!ecl)
-        throw std::runtime_error(
-            "economics: estimateClass " + std::to_string(estimateClass)
-            + " is not an AACE 18R-97 class.  Registered: "
-            + Choupo::estimateClass::registered()
-            + " (5 = concept screening, least defined; 1 = check estimate,"
-              " most defined).  See src/postProcessing/EstimateClass.H.");
-    const bool   refuseOnMissing   = refuseOnMissingPriceOf(econDict_);
+    //  ---- what it never moves -----------------------------------------
+    scalar  projectLife            = 10.0;
+    scalar  depreciableLife        = 9.0;
+    scalar  salvageFraction        = 0.0;
+    scalar  workingCapitalFraction = 0.15;
+    DictPtr wcModel;                       // non-null: the built-up WC
+    scalar  operatorsTotal         = 0.0;  // operating positions
+    scalar  operatorAnnualHours    = 1960.0;
+    DcfTimeline timeline;
+};
 
-    //  `method` WAS DECORATIVE.  Three tutorial cases declare
-    //  `method discountedCashFlow;` and nothing read it: the pass is
-    //  hardcoded DCF, so the key parsed, sat there, and the author believed
-    //  they had SELECTED something.  Found by the postDict audit on its first
-    //  corpus run, 2026-08-27.  Reading it costs nothing and moves no number
-    //  -- there is one method and every case names it -- but a key that does
-    //  not exist must now say so instead of being quietly ignored.
-    //  THE START-UP YEARS (2026-10-11, DEV.md 4c C63).  `constructionPeriod`
-    //  was read by nothing until 2026-08-27 and then only ANNOUNCED as not
-    //  implemented, so `ammonia02_full_plant`, which declares 2, was
-    //  discounted over one.  It is honoured now, with the capital schedule,
-    //  the ramp-up and the start-up cost beside it -- see `readTimeline`
-    //  above for the grammar, the convention and where it was read.
-    const DcfTimeline timeline =
-        readTimeline(econDict_, static_cast<int>(std::lround(projectLife)));
+struct AppraisalOutcome
+{
+    scalar H = 0.0;                        // operating hours per year
+    scalar C_OL = 0.0, C_RM = 0.0, C_UT = 0.0, C_UT_credit = 0.0;
+    scalar C_WT = 0.0, R = 0.0, COM_d = 0.0;
+    scalar WC = 0.0, TCI = 0.0;
+    WorkingCapitalBuildUp wcb;
+    scalar d_annual = 0.0, salvage = 0.0, startupCost = 0.0;
+    int    Nc = 1, tFirst = 0, Nlife = 0;
+    scalar NPV = 0.0, NPV_projectStart = 0.0;
+    scalar IRR = std::nan("");
+    bool   haveIRR = false, irrAmbiguous = false;
+    int    cumSignChanges = 0;
+    scalar discPayback = std::nan(""), simplePayback = std::nan("");
+    std::vector<CashFlowYear> cashFlowRows;
+};
 
-    const std::string econMethod   = econDict_->lookupWordOrDefault("method", "discountedCashFlow");
-    if (econMethod != "discountedCashFlow")
-        throw std::runtime_error("EconomicsPass: unknown method '" + econMethod
-            + "'.  Implemented: discountedCashFlow (the only one -- straight-"
-              "line or MACRS depreciation inside it is the separate"
-              " `depreciation` key).");
+AppraisalOutcome appraise(const AppraisalInputs& in,
+                          const SimulationResult& result, bool verbose)
+{
+    AppraisalOutcome o;
+    const scalar FCI          = in.FCI;
+    const scalar discountRate = in.discountRate;
+    const scalar taxRate      = in.taxRate;
+    const DcfTimeline& timeline = in.timeline;
 
-    const std::string deprMethod   = econDict_->lookupWordOrDefault("depreciation", "straightLine");
+    const scalar H = in.streamFactor * 8760.0;   // operating hours per year
+    o.H = H;
 
-    if (deprMethod != "straightLine")
-        std::cerr << "EconomicsPass: depreciation '" << deprMethod
-                  << "' not implemented (only straightLine) -- using straightLine.\n";
-
-    const scalar H = streamFactor * 8760.0;   // operating hours per year
-
-    // ---- 2.  Prices (constant/economics tier; refuse if absent) ---------
-    bool priceFilePresent = false;
-    DictPtr prices = loadPriceFile(priceFilePresent);
-
-    auto missing = [&](const std::string& what) -> int
-    {
-        std::cerr << "\nEconomicsPass: REQUIRED PRICE MISSING -- " << what << "\n"
-                  << "  Remedy: add it to the case-scoped 'constant/economics' file,\n"
-                  << "  each value dated and primary-cited (provenance { origin; method; }).\n"
-                  << "  No price ever defaults to a literal in code (glass-box policy).\n"
-                  << "  To proceed anyway with loud-but-defaulted prices, set\n"
-                  << "  'refuseOnMissingPrice 0;' in the economics{} postDict block.\n\n";
-        return 1;
-    };
-
-    if (!priceFilePresent)
-    {
-        if (refuseOnMissing) return missing("the file 'constant/economics' does not exist");
-        std::cerr << "EconomicsPass: 'constant/economics' absent and "
-                     "refuseOnMissingPrice=0 -- proceeding with ZERO revenue and "
-                     "raw-material cost (LOUD: the appraisal is CAPEX/utility only).\n";
-    }
-
-    // CEPCI-target consistency note: the CostingPass already updated every
-    // C_BM to the target year via its own cepci/cepci2001 ratio; the FCI we
-    // build here inherits that year.  We surface the costing year for audit.
-
-    // ---- 3.  CAPEX ladder from result.costs (Turton Eq. 7.5) ------------
-    //   C_BM°  (base CS, P=1, F_M=F_P=1) is recovered from the stored
-    //   purchased cost and the B1/B2 factors:  C_BM° = Cp * (B1 + B2).
-    scalar sum_C_BM  = 0.0;   // S C_BM,i   (actual material/pressure)
-    scalar sum_C_BM0 = 0.0;   // S C_BM°,i  (base case)
-    scalar sum_Cp    = 0.0;   // S purchased  (for the Lang cross-check)
-    for (const auto& [uname, cb] : result.costs)
-    {
-        sum_C_BM += cb.bareModuleCost;
-        sum_Cp   += cb.purchasedCost;
-
-        const auto fB1 = cb.factors.find("B1");
-        const auto fB2 = cb.factors.find("B2");
-        if (fB1 != cb.factors.end() && fB2 != cb.factors.end())
-            sum_C_BM0 += cb.purchasedCost * (fB1->second + fB2->second);
-        else
-            sum_C_BM0 += cb.bareModuleCost;  // no base factors: conservative
-    }
-
-    const scalar FCI = contingencyFee * sum_C_BM + siteFactor * sum_C_BM0;
-    scalar WC  = workingCapital * FCI;     // replaced by the NET working
-    scalar TCI = FCI + WC;                 // capital when a model is declared
-
-    // Lang cross-check (solid-fluid 3.63 default) -- a reconciliation line
-    // only; NEVER fed into the module-factor FCI (would double-count install).
-    const scalar langFactor   = econDict_->lookupScalarOrDefault("langFactor", 3.63);
-    const scalar FCI_Lang     = langFactor * sum_Cp;
-
-    // ---- 4.  OPEX -- Turton cost-of-manufacture COM_d (Eq. 8.1) ---------
-    // C_UT: reuse the already-computed utility allocation (€/h) * annual H.
-    //  SUM THE ALLOCATED ROWS, AND SAY WHAT WAS NOT (AS4).  This loop used
-    //  to sum `eur_h` across EVERY row without consulting `a.allocated`,
-    //  though its own comment said "allocated".  An unallocated row carries
-    //  eur_h = 0, so with no utility catalogue loaded -- a documented, common
-    //  case -- C_UT came out 0 EUR/yr and NPV/IRR printed strongly positive
-    //  for a plant whose steam is free.  The printed line read
-    //  "C_UT (utilities, allocated) = 0 EUR/yr": a zero, not a refusal, and
-    //  the parenthetical actively asserted the completeness it did not have.
-    //
-    //  A number that cannot be computed is not zero.  The allocated rows are
-    //  summed; the unallocated ones are COUNTED and named, and the caller is
-    //  told the utility bill is a LOWER BOUND rather than a cost.
-    //
-    //  A CARRIED DUTY IS NOT AN UNPRICED ONE (DEV.md 4c C52).  The loop used
-    //  to count every unallocated row, and a carried row -- a process-process
-    //  exchanger's recovered heat, a duty met by a utility stream or a heat
-    //  link -- is unallocated BY DESIGN: there is nothing to buy.  So the
-    //  green-ammonia FEHE was counted as one of "2 duties that could not be
-    //  allocated" and its C_UT called a lower bound for a heat nobody pays
-    //  for.  Only an UNSERVED duty (no catalogue utility can meet it) leaves a
-    //  hole in the bill.
-    //
-    //  A CREDIT IS SUMMED, NEVER CLAMPED.  A row with a negative eur_h is heat
-    //  or power the plant SELLS or reuses (steam raised in a waste-heat
-    //  boiler, electricity generated); it reduces C_UT, and the credits are
-    //  printed on their own line so a net bill never hides a gross one.
+    // ---- the utility bill (allocated rows only; credits summed) ---------
     scalar C_UT = 0.0;
     scalar C_UT_credit = 0.0;               // the negative part, EUR/yr (<= 0)
-    std::size_t unpricedDuties = 0;
-    for (const auto& a : result.utilityAllocation)
+    for (const auto& [utility, eurH0] : in.utilityEurH)
     {
-        if (a.allocated)
-        {
-            C_UT += a.eur_h;                // €/h, priced against a utility
-            if (a.eur_h < 0.0) C_UT_credit += a.eur_h;
-        }
-        else if (!a.carried) ++unpricedDuties;  // a real duty nobody could price
+        const auto   sc   = in.utilityScale.find(utility);
+        const scalar eurH = (sc == in.utilityScale.end()) ? eurH0
+                                                          : eurH0 * sc->second;
+        C_UT += eurH;                       // €/h, priced against a utility
+        if (eurH < 0.0) C_UT_credit += eurH;
     }
     C_UT        *= H;             // €/yr
     C_UT_credit *= H;             // €/yr
-    if (unpricedDuties)
-    {
-        std::cerr << "[economics] " << unpricedDuties << " heat duty/duties"
-                     " could not be allocated to a catalogue utility, so they"
-                     " are NOT in C_UT.\n            The utility bill below is"
-                     " a LOWER BOUND, and every figure derived from it"
-                     " (COM_d, NPV, IRR) inherits that.\n            Load a"
-                     " utility catalogue, or declare the missing service, to"
-                     " make it a cost.\n";
-        AdvisoryLog::instance().add("economics", "warning", "unpriced-utility",
-                                    std::to_string(unpricedDuties) +
-                                    " duty/duties absent from C_UT");
-    }
 
-    // C_OL: operating labour, Turton Eq. 8.3.
-    //   N_OL = (6.29 + 0.23*N_np)^0.5  operators per shift;
-    //   ~4.5 shift-positions cover one operating position around the clock;
-    //   labour rate (€/h) from constant/economics.
-    const scalar N_OL_per_shift = std::sqrt(6.29 + 0.23 * N_np);
-    const scalar operatorsTotal = 4.5 * N_OL_per_shift;   // operating positions
-    scalar labourRate = 0.0;      // €/h
-    bool   haveLabour = false;
-    if (prices && prices->found("labourRate"))
-    {
-        labourRate = prices->lookupScalar("labourRate");
-        haveLabour = true;
-    }
-    if (!haveLabour)
-    {
-        if (refuseOnMissing) return missing("labourRate (€/h, e.g. Eurostat/BLS chem sector)");
-        std::cerr << "EconomicsPass: labourRate absent -- C_OL set to 0 (LOUD).\n";
-    }
-    // Labour cost = total operating positions * annual salary per operator.
-    // The salary is the LOADED hourly rate * the hours ONE operator works in a
-    // year (operatorAnnualHours, ~1960 h = 49 wk x 40 h, Eurostat/BLS basis) --
-    // NOT the plant's annual operating hours H.  (Conflating the two would pay
-    // each operator the full 7884 plant-hours, a ~4x overstatement: the bug
-    // this guards against.  Turton Sec. 8 cross-check: ~66 kUSD/yr/operator.)
-    const scalar operatorAnnualHours =
-        econDict_->lookupScalarOrDefault("operatorAnnualHours", 1960.0);
-    const scalar C_OL = operatorsTotal * labourRate * operatorAnnualHours;  // €/yr
-
-    // C_RM: raw materials.  Each `rawMaterials ( { stream; price; } ... )`
-    // entry prices a feed stream's mass flow.
-    std::vector<PricedStream> rawMats;
+    // ---- labour, raw materials, waste, COM_d (Turton Eq. 8.1) -----------
+    const scalar C_OL = in.operatorsTotal * in.labourRate * in.operatorAnnualHours;  // €/yr
     scalar C_RM = 0.0;
-    if (prices && prices->found("rawMaterials"))
-    {
-        for (const auto& rm : prices->lookupDictList("rawMaterials"))
-        {
-            PricedStream ps;
-            ps.stream = rm->lookupWord("stream");
-            ps.price  = rm->lookupScalar("price");           // €/kg
-            ps.massFlow = streamMassFlow(result, ps.stream); // kg/s
-            ps.provenance = rm->found("provenance")
-                ? rm->subDict("provenance")->lookupWordOrDefault("origin", "")
-                : "";
-            C_RM += ps.price * ps.massFlow * 3600.0 * H;     // €/yr
-            rawMats.push_back(std::move(ps));
-        }
-    }
-    else if (refuseOnMissing && !priceFilePresent)
-    {
-        // already handled by the file-missing branch above
-    }
-
-    // C_WT: waste treatment -- NOT costed in this Pareto phase.  Explicit zero
-    // with a loud line (a real plant must price effluent / solids handling).
+    for (const auto& ps : in.rawMats)
+        C_RM += ps.price * ps.massFlow * 3600.0 * H;     // €/yr
+    //  C_WT: waste treatment -- NOT costed in this Pareto phase.  Explicit
+    //  zero with a loud line (a real plant must price effluent / solids
+    //  handling).
     const scalar C_WT = 0.0;
-
     const scalar COM_d = 0.180 * FCI
                        + 2.73  * C_OL
                        + 1.23  * (C_RM + C_UT + C_WT);
 
-    // ---- 5.  Revenue ----------------------------------------------------
-    std::vector<PricedStream> products;
+    // ---- revenue ---------------------------------------------------------
     scalar R = 0.0;             // €/yr
-    if (prices && prices->found("products"))
-    {
-        for (const auto& pr : prices->lookupDictList("products"))
-        {
-            PricedStream ps;
-            ps.stream   = pr->lookupWord("stream");
-            ps.price    = pr->lookupScalar("price");           // €/kg
-            ps.massFlow = streamMassFlow(result, ps.stream);   // kg/s
-            ps.provenance = pr->found("provenance")
-                ? pr->subDict("provenance")->lookupWordOrDefault("origin", "")
-                : "";
-            R += ps.price * ps.massFlow * 3600.0 * H;          // €/yr
-            products.push_back(std::move(ps));
-        }
-    }
-    if (products.empty())
-    {
-        if (refuseOnMissing && priceFilePresent)
-            return missing("at least one 'products ( { stream; price; } )' entry");
-        std::cerr << "EconomicsPass: no priced products -- revenue R = 0 (LOUD: "
-                     "NPV/IRR will be a pure cost stream, not an appraisal).\n";
-    }
+    for (const auto& ps : in.products)
+        R += ps.price * ps.massFlow * 3600.0 * H;          // €/yr
 
-    // ---- 5b. Working capital built up (C44 slice 4), when declared -------
+    // ---- working capital: a fraction of FCI, or built up (C44 slice 4) --
+    scalar WC  = in.workingCapitalFraction * FCI;
+    scalar TCI = FCI + WC;
     WorkingCapitalBuildUp wcb;
-    if (wcModel)
+    if (in.wcModel)
     {
-        wcb = buildWorkingCapital(wcModel, result, rawMats, products,
-                                  R, C_RM, COM_d, H);
-        wcb.fractionUsed = workingCapital;
-        wcb.fractionRule = workingCapital * FCI;
+        wcb = buildWorkingCapital(in.wcModel, result, in.rawMats, in.products,
+                                  R, C_RM, COM_d, H, verbose);
+        wcb.fractionUsed = in.workingCapitalFraction;
+        wcb.fractionRule = in.workingCapitalFraction * FCI;
         WC  = wcb.net;
         TCI = FCI + WC;
     }
 
-    // ---- 6.  DCF -- straight-line depreciation, after-tax cash flow -----
-    const scalar d_annual = (depreciableLife > 0.0) ? (FCI / depreciableLife) : 0.0;
-    const scalar salvage  = salvageFraction * FCI;
+    // ---- DCF -- straight-line depreciation, after-tax cash flow ---------
+    const scalar d_annual = (in.depreciableLife > 0.0) ? (FCI / in.depreciableLife) : 0.0;
+    const scalar salvage  = in.salvageFraction * FCI;
 
-    const int    Nlife    = static_cast<int>(std::lround(projectLife));
-    const int    Ndepr    = static_cast<int>(std::lround(depreciableLife));
+    const int    Nlife    = static_cast<int>(std::lround(in.projectLife));
+    const int    Ndepr    = static_cast<int>(std::lround(in.depreciableLife));
 
     //  Build the cash-flow timeline (C63; see `readTimeline` for the
     //  convention and where it was read).  Year 0 is the END of
@@ -1226,7 +1061,7 @@ int EconomicsPass::run(SimulationResult& result)
 
     const scalar NPV = npvAt(discountRate);
 
-    // ---- 7.  IRR -- bisection bracket on [0,1], Newton polish -----------
+    // ---- IRR -- bisection bracket on [0,1], Newton polish ---------------
     // Multiple-IRR guard: >1 sign change in the CUMULATIVE cash flow means the
     // NPV(i)=0 root may not be unique -> announce, prefer NPV.
     int cumSignChanges = 0;
@@ -1311,7 +1146,7 @@ int EconomicsPass::run(SimulationResult& result)
             // Loud scale check: an extreme IRR means the cash flow dwarfs the
             // investment -- usually a throughput too large for the costed
             // equipment (the appraisal is mis-scaled), not a real 1000%-return.
-            if (IRR > 2.0)
+            if (verbose && IRR > 2.0)
                 std::cerr << "EconomicsPass: IRR = " << (100.0 * IRR)
                           << "% is EXTREME (>200%) -- the annual cash flow dwarfs the"
                              " investment (FCI = " << FCI << " EUR).  Verify the project"
@@ -1321,7 +1156,7 @@ int EconomicsPass::run(SimulationResult& result)
         }
     }
 
-    // ---- 8.  Payback ----------------------------------------------------
+    // ---- Payback --------------------------------------------------------
     // Discounted payback (DEFAULT): year the cumulative DISCOUNTED cash flow
     // first turns positive (linear interpolation within the year).  It is
     // counted in OPERATING years after start-up; a multi-year construction
@@ -1371,7 +1206,7 @@ int EconomicsPass::run(SimulationResult& result)
         }
     }
 
-    // ---- 8b. The year-by-year table (years tFirst..Nlife) ---------------
+    // ---- The year-by-year table (years tFirst..Nlife) -------------------
     // The classic Perry / Turton income/cash-flow statement.  A construction
     // year (t <= 0) carries only its capital -- the FCI fraction spent at its
     // end, plus the working capital at t = 0; an operating year carries the
@@ -1411,9 +1246,790 @@ int EconomicsPass::run(SimulationResult& result)
             cashFlowRows.push_back(row);
         }
     }
+
+    o.C_OL = C_OL;  o.C_RM = C_RM;  o.C_UT = C_UT;  o.C_UT_credit = C_UT_credit;
+    o.C_WT = C_WT;  o.R = R;        o.COM_d = COM_d;
+    o.WC = WC;      o.TCI = TCI;    o.wcb = wcb;
+    o.d_annual = d_annual;  o.salvage = salvage;  o.startupCost = startupCost;
+    o.Nc = Nc;  o.tFirst = tFirst;  o.Nlife = Nlife;
+    o.NPV = NPV;
     //  The NPV referred to the START of construction, CAPCOST's own year 0
     //  (see `readTimeline`): N years before start-up.
-    const scalar NPV_projectStart = NPV / std::pow(1.0 + discountRate, Nc);
+    o.NPV_projectStart = NPV / std::pow(1.0 + discountRate, Nc);
+    o.IRR = IRR;  o.haveIRR = haveIRR;
+    o.irrAmbiguous = irrAmbiguous;  o.cumSignChanges = cumSignChanges;
+    o.discPayback = discPayback;  o.simplePayback = simplePayback;
+    o.cashFlowRows = std::move(cashFlowRows);
+    return o;
+}
+
+// =========================================================================
+//  THE ECONOMIC SENSITIVITY: ONE INPUT AT A TIME (2026-10-12, DEV.md 4c
+//  C68).  Vitor accepted "the feasibility cases gain a preliminary CAPEX and
+//  a sensitivity"; the CAPEX was there, the sensitivity was not, and an
+//  outer `sweep` could not supply it: a sweep varies FLOWSHEET paths, while
+//  what a feasibility-stage sensitivity varies -- the capital, the prices,
+//  the discount rate, the time on stream -- lives in this pass.
+//
+//  OPT-IN.  A case that declares no `sensitivity` block computes, prints,
+//  publishes and writes exactly what it did; nothing is announced.
+//
+//      economics
+//      {
+//          ...
+//          sensitivity
+//          {
+//              FCI                 { relative accuracyBand; }      // the declared band, -30/+50 %
+//              price.ProductNH3    { relative ( -0.20 0.20 ); }    // a fraction of the base price
+//              discountRate        { absolute ( 0.08 0.12 ); }     // the input's own value
+//              utility.electricity { relative ( -0.20 0.20 ); }    // scales that utility's bill
+//          }
+//      }
+//
+//  Each entry names ONE input and says, explicitly, whether its two numbers
+//  are RELATIVE changes (fractions of the base value) or ABSOLUTE values of
+//  the input; `relative accuracyBand` reads the FCI's two ends from the
+//  `accuracyBand` this block already declares (or the class's default,
+//  announced as such), so the band has one home and finally reaches the NPV.
+//
+//  THE INPUTS, and what each one moves through `appraise` (nothing else):
+//    FCI              relative       the fixed capital, and every term that is
+//                                    a function of it -- the 0.180 FCI of
+//                                    COM_d, the depreciation, the salvage,
+//                                    the start-up cost, and the working
+//                                    capital (the fraction rule, or the
+//                                    built-up model's minimum cash and its
+//                                    stocks valued at COM_d per kg)
+//    price.<stream>   rel. / abs.    the EUR/kg of a stream constant/economics
+//                                    prices (a raw material or a product)
+//    utility.<name>   relative       the bill of one allocated utility --
+//                                    every row it serves, credits included
+//                                    (a steam CREDIT is the same price)
+//    labourRate       rel. / abs.    EUR/h of operating labour
+//    discountRate     rel. / abs.
+//    taxRate          rel. / abs.
+//    streamFactor     rel. / abs.    the hours on stream: every annual flow
+//                                    is an hourly rate times 8760 x this
+//
+//  NO RE-SOLVE.  Every input above enters AFTER the flowsheet: prices and
+//  rates do not move a flow, and the time on stream scales the hours, not
+//  the rates.  So each bar is the SAME converged pass priced again, which is
+//  why the block lives here and not in an outer driver.
+//
+//  A SENSITIVITY IS NOT AN UNCERTAINTY ANALYSIS.  No probability is attached
+//  to any end, the inputs are moved one at a time (their correlations --
+//  the hydrogen price and the electricity price, say -- are not), and the
+//  table answers "which input is the NPV most exposed to", never "how
+//  likely is a loss".  The header of every table says so.
+// =========================================================================
+struct SensitivityInput
+{
+    std::string key;                 // as declared: FCI, price.H2Feed, ...
+    std::string kpiKey;              // the same with every non-word char -> '_'
+    std::string mode;                // "relative" | "absolute"
+    bool        fromBand = false;    // FCI { relative accuracyBand; }
+    scalar      declLo = 0.0, declHi = 0.0;   // as declared
+    std::string unit;                // of the input's VALUE
+    scalar      base = 0.0, lo = 0.0, hi = 0.0;   // the input's value
+    AppraisalOutcome atLo, atHi;
+};
+
+//  The input's value in an appraisal bundle.  A utility's "value" is the
+//  factor on its bill, 1 in the base case.
+scalar sensitivityValue(const AppraisalInputs& in, const std::string& key)
+{
+    if (key == "FCI")          return in.FCI;
+    if (key == "discountRate") return in.discountRate;
+    if (key == "taxRate")      return in.taxRate;
+    if (key == "streamFactor") return in.streamFactor;
+    if (key == "labourRate")   return in.labourRate;
+    if (key.rfind("price.", 0) == 0)
+    {
+        const std::string s = key.substr(6);
+        for (const auto& p : in.rawMats)  if (p.stream == s) return p.price;
+        for (const auto& p : in.products) if (p.stream == s) return p.price;
+    }
+    if (key.rfind("utility.", 0) == 0)
+    {
+        const auto it = in.utilityScale.find(key.substr(8));
+        return it == in.utilityScale.end() ? 1.0 : it->second;
+    }
+    throw std::logic_error("EconomicsPass: sensitivityValue reached an input"
+                           " readSensitivity did not accept: " + key);
+}
+
+//  A copy of the bundle with ONE input set to `v`.  Everything the input
+//  moves downstream is moved by `appraise`, not here.
+AppraisalInputs withSensitivityValue(AppraisalInputs in, const std::string& key,
+                                     scalar v)
+{
+    if      (key == "FCI")          in.FCI          = v;
+    else if (key == "discountRate") in.discountRate = v;
+    else if (key == "taxRate")      in.taxRate      = v;
+    else if (key == "streamFactor") in.streamFactor = v;
+    else if (key == "labourRate")   in.labourRate   = v;
+    else if (key.rfind("price.", 0) == 0)
+    {
+        const std::string s = key.substr(6);
+        for (auto& p : in.rawMats)  if (p.stream == s) p.price = v;
+        for (auto& p : in.products) if (p.stream == s) p.price = v;
+    }
+    else if (key.rfind("utility.", 0) == 0) in.utilityScale[key.substr(8)] = v;
+    else
+        throw std::logic_error("EconomicsPass: withSensitivityValue reached an"
+                               " input readSensitivity did not accept: " + key);
+    return in;
+}
+
+void resolveSensitivityEnds(SensitivityInput& s, scalar accLoPct, scalar accHiPct);
+
+//  Read and check the `sensitivity {}` block.  Every refusal names the entry
+//  and the remedy; nothing here defaults a number.
+std::vector<SensitivityInput> readSensitivity(const DictPtr& block,
+                                              const AppraisalInputs& base)
+{
+    const std::string where = "economics { sensitivity { ... } }";
+
+    //  The accepted names, built from what THIS case prices: a price or a
+    //  utility the case does not price cannot be perturbed, and the list in
+    //  a refusal is the list that would have been accepted.
+    std::vector<std::string> pricedStreams, pricedUtilities;
+    for (const auto& p : base.rawMats)  pricedStreams.push_back(p.stream);
+    for (const auto& p : base.products) pricedStreams.push_back(p.stream);
+    for (const auto& [u, eurH] : base.utilityEurH)
+        if (std::find(pricedUtilities.begin(), pricedUtilities.end(), u)
+            == pricedUtilities.end())
+            pricedUtilities.push_back(u);
+    std::vector<std::string> accepted
+        { "FCI", "discountRate", "labourRate", "streamFactor", "taxRate" };
+    for (const auto& s : pricedStreams)   accepted.push_back("price." + s);
+    for (const auto& u : pricedUtilities) accepted.push_back("utility." + u);
+
+    auto list = [](const std::vector<std::string>& v)
+    {
+        std::string s;
+        for (const auto& x : v) s += (s.empty() ? "" : " ") + x;
+        return s.empty() ? std::string("(none)") : s;
+    };
+
+    if (block->keys().empty())
+        throw std::runtime_error(where + " declares no input.  Name at least"
+            " one, e.g. `FCI { relative accuracyBand; }`, or delete the block."
+            "  Accepted in this case: " + list(accepted));
+
+    std::vector<SensitivityInput> out;
+    for (const auto& key : block->keys())
+    {
+        //  ---- which input -------------------------------------------
+        const bool isPrice   = key.rfind("price.", 0) == 0;
+        const bool isUtility = key.rfind("utility.", 0) == 0;
+        if (std::find(accepted.begin(), accepted.end(), key) == accepted.end())
+        {
+            if (isPrice)
+                throw std::runtime_error(where + ": `" + key + "` perturbs the"
+                    " price of stream '" + key.substr(6) + "', and"
+                    " constant/economics prices no such stream (neither a"
+                    " `products` nor a `rawMaterials` entry).  A sensitivity"
+                    " moves a price the case DECLARES; it never invents one."
+                    "  Priced streams: " + list(pricedStreams));
+            if (isUtility)
+                throw std::runtime_error(where + ": `" + key + "` scales the"
+                    " bill of utility '" + key.substr(8) + "', and no duty of"
+                    " this run is allocated to it, so it has no bill to scale."
+                    "  Utilities this run prices: " + list(pricedUtilities));
+            throw std::runtime_error("economics: "
+                + registryRefusal::message("economic sensitivity input", key,
+                                           accepted, "Accepted"));
+        }
+
+        SensitivityInput s;
+        s.key = key;
+        s.kpiKey = key;
+        for (auto& c : s.kpiKey)
+            if (!(std::isalnum(static_cast<unsigned char>(c)) || c == '_')) c = '_';
+
+        //  ---- its form: { relative (lo hi); } | { absolute (lo hi); } --
+        const EntryValue& ev = block->entryValue(key);
+        if (!std::holds_alternative<DictPtr>(ev))
+            throw std::runtime_error(where + ": `" + key + "` must be a block"
+                " saying whether its two numbers are fractions or values --"
+                " `" + key + " { relative ( -0.2 0.2 ); }` or `" + key
+                + " { absolute ( lo hi ); }`.  A bare list would leave that to"
+                " a guess.");
+        const DictPtr e = block->subDict(key);
+        for (const auto& k : e->keys())
+            if (k != "relative" && k != "absolute")
+                throw std::runtime_error(where + ": `" + key + " { " + k
+                    + " ... }` is not a form this block knows.  Declare exactly"
+                      " one of `relative ( lo hi );` (fractions of the base"
+                      " value) or `absolute ( lo hi );` (values of the input).");
+        const bool rel = e->found("relative"), abs = e->found("absolute");
+        if (rel == abs)
+            throw std::runtime_error(where + ": `" + key + "` must declare"
+                " exactly ONE of `relative ( lo hi );` and `absolute ( lo hi );`"
+                + std::string(rel ? " -- it declares both." : " -- it declares neither."));
+        s.mode = rel ? "relative" : "absolute";
+
+        const bool relOnly = (key == "FCI") || isUtility;
+        if (!rel && relOnly)
+            throw std::runtime_error(where + ": `" + key + "` takes `relative`"
+                " only -- " + (isUtility
+                    ? std::string("a utility's bill is many rows at many prices,"
+                                  " so only a factor on it has one meaning")
+                    : std::string("the capital is the costing's answer, and its"
+                                  " ends are fractions of it (or the declared"
+                                  " `accuracyBand`, `relative accuracyBand;`)"))
+                + ".");
+
+        const EntryValue& form = e->entryValue(s.mode);
+        if (std::holds_alternative<std::string>(form))
+        {
+            const std::string w = std::get<std::string>(form);
+            if (w != "accuracyBand" || key != "FCI")
+                throw std::runtime_error(where + ": `" + key + " { " + s.mode
+                    + " " + w + "; }` -- the only word this slot takes is"
+                      " `accuracyBand`, on `FCI { relative accuracyBand; }`;"
+                      " every other entry declares its two numbers,"
+                      " `( lo hi )`.");
+            e->lookupWord(s.mode);              // consulted: the audit sees it
+            s.fromBand = true;
+        }
+        else
+        {
+            if (!std::holds_alternative<std::vector<scalar>>(form))
+                throw std::runtime_error(where + ": `" + key + " { " + s.mode
+                    + " ... }` must be two numbers, `( lo hi )`.");
+            const std::vector<scalar> v = e->lookupList(s.mode);
+            if (v.size() != 2 || !(v[0] < v[1]))
+            {
+                std::ostringstream m;
+                m << where << ": `" << key << " { " << s.mode << " ( ";
+                for (const auto x : v) m << x << " ";
+                m << "); }` must be exactly two numbers, the LOW end first and"
+                     " below the HIGH one.";
+                throw std::runtime_error(m.str());
+            }
+            s.declLo = v[0];
+            s.declHi = v[1];
+        }
+
+        if      (key == "FCI" || isPrice) s.unit = isPrice ? "EUR/kg" : "EUR";
+        else if (key == "labourRate")     s.unit = "EUR/h";
+        else if (isUtility)               s.unit = "x bill";
+        else                              s.unit = "-";
+        s.base = sensitivityValue(base, key);
+        //  Declared ends are checked HERE, before a number is printed; the
+        //  band's ends wait for the band (resolved after it is read).
+        if (!s.fromBand) resolveSensitivityEnds(s, 0.0, 0.0);
+        out.push_back(std::move(s));
+    }
+    return out;
+}
+
+//  The two ends of one input, as values, checked against what the input can
+//  physically be.  Called once the accuracy band is known.
+void resolveSensitivityEnds(SensitivityInput& s, scalar accLoPct, scalar accHiPct)
+{
+    const std::string where = "economics { sensitivity { " + s.key + " } }";
+    if (s.fromBand)
+    {
+        s.declLo = accLoPct / 100.0;
+        s.declHi = accHiPct / 100.0;
+    }
+    if (s.mode == "relative")
+    {
+        s.lo = s.base * (1.0 + s.declLo);
+        s.hi = s.base * (1.0 + s.declHi);
+    }
+    else
+    {
+        s.lo = s.declLo;
+        s.hi = s.declHi;
+    }
+
+    auto refuse = [&](const std::string& why)
+    {
+        std::ostringstream m;
+        m << std::setprecision(6) << where << ": the ends evaluate to "
+          << s.lo << " and " << s.hi << " (base " << s.base << "), and " << why;
+        throw std::runtime_error(m.str());
+    };
+    const bool isPrice = s.key.rfind("price.", 0) == 0;
+    if (s.key == "FCI" && !(s.lo > 0.0))
+        refuse("a fixed capital must stay positive (a relative low end must be"
+               " above -1).");
+    if ((isPrice || s.key == "labourRate" || s.key.rfind("utility.", 0) == 0)
+        && !(s.lo >= 0.0))
+        refuse("a price, a labour rate or a utility bill factor cannot be"
+               " negative.");
+    if (s.key == "discountRate" && !(s.lo > -1.0))
+        refuse("a discount rate at or below -100 % has no present value.");
+    if (s.key == "taxRate" && !(s.lo >= 0.0 && s.hi < 1.0))
+        refuse("a tax rate lies in [0, 1).");
+    if (s.key == "streamFactor" && !(s.lo > 0.0 && s.hi <= 1.0))
+        refuse("a stream factor is a fraction of the year, in (0, 1].");
+}
+
+//  The NPV swing of one input: what separates its two bars.
+scalar npvSwing(const SensitivityInput& s)
+{
+    return std::fabs(s.atHi.NPV - s.atLo.NPV);
+}
+
+//  "low", "high", "both" or "" -- which end turns the NPV's sign against
+//  the base case's.  An NPV of exactly zero is a break-even, not a flip.
+std::string npvSignFlip(const SensitivityInput& s, scalar baseNPV)
+{
+    auto flips = [&](scalar v) { return (baseNPV > 0.0 && v < 0.0)
+                                     || (baseNPV < 0.0 && v > 0.0); };
+    const bool l = flips(s.atLo.NPV), h = flips(s.atHi.NPV);
+    return (l && h) ? "both" : l ? "low" : h ? "high" : "";
+}
+
+//  The inputs in tornado order: largest NPV swing first, a tie kept in the
+//  order the block declares them.
+std::vector<const SensitivityInput*> tornadoOrder(const std::vector<SensitivityInput>& v)
+{
+    std::vector<const SensitivityInput*> o;
+    for (const auto& s : v) o.push_back(&s);
+    std::stable_sort(o.begin(), o.end(),
+        [](const SensitivityInput* a, const SensitivityInput* b)
+        { return npvSwing(*a) > npvSwing(*b); });
+    return o;
+}
+
+//  The header every sensitivity table carries, console and CSV alike.
+const char* const kSensitivityCaveat =
+    "A SENSITIVITY, NOT AN UNCERTAINTY ANALYSIS: each input is moved ALONE to"
+    " its declared low and high end, every other input held at its base value,"
+    " on the SAME converged flowsheet (no re-solve: every flow and duty is the"
+    " base run's) and through the SAME cash-flow arithmetic as the base"
+    " appraisal.  No probability is attached to any end and no correlation"
+    " between inputs is taken: the table says which input the NPV is most"
+    " exposed to, not how likely any outcome is.";
+
+std::string fmtValue(scalar v, const std::string& unit)
+{
+    std::ostringstream os;
+    if (unit == "EUR")         os << std::fixed << std::setprecision(0) << v;
+    else if (unit == "x bill") os << "x" << std::fixed << std::setprecision(3) << v;
+    else                       os << std::defaultfloat << std::setprecision(6) << v;
+    return os.str();
+}
+
+std::string fmtIRR(const AppraisalOutcome& o)
+{
+    if (!o.haveIRR || !std::isfinite(o.IRR)) return "none";
+    std::ostringstream os;
+    os << std::fixed << std::setprecision(2) << 100.0 * o.IRR << " %";
+    return os.str();
+}
+
+void printSensitivity(const std::vector<SensitivityInput>& v,
+                      const AppraisalOutcome& base, const std::string& cur)
+{
+    std::cout << "\n==============  Economic sensitivity (one input at a time)  ==============\n";
+    //  The caveat, wrapped at the table's width.
+    {
+        std::istringstream words(kSensitivityCaveat);
+        std::string w, line = "  ";
+        while (words >> w)
+        {
+            if (line.size() + w.size() + 1 > 78) { std::cout << line << "\n"; line = "  "; }
+            line += (line.size() > 2 ? " " : "") + w;
+        }
+        std::cout << line << "\n";
+    }
+    std::cout << std::fixed << std::setprecision(0)
+              << "  base: NPV = " << base.NPV << " " << cur << ", IRR = "
+              << fmtIRR(base) << ", discounted payback = ";
+    if (std::isfinite(base.discPayback))
+        std::cout << std::setprecision(2) << base.discPayback << " yr\n";
+    else
+        std::cout << "never within the project life\n";
+    std::cout << "  sorted by NPV swing |NPV(high) - NPV(low)|, largest first; "
+                 "`relative` ends are\n  fractions of the base value, `absolute`"
+                 " ends are values of the input.\n\n";
+
+    std::cout << "    " << std::left << std::setw(28) << "input" << std::right
+              << std::setw(14) << "low" << std::setw(14) << "high"
+              << std::setw(16) << "NPV(low)" << std::setw(16) << "NPV(high)"
+              << std::setw(15) << "swing" << std::setw(11) << "IRR(low)"
+              << std::setw(11) << "IRR(high)" << "  NPV sign flips\n";
+    for (const auto* s : tornadoOrder(v))
+    {
+        std::cout << "    " << std::left << std::setw(28) << s->key << std::right
+                  << std::setw(14) << fmtValue(s->lo, s->unit)
+                  << std::setw(14) << fmtValue(s->hi, s->unit)
+                  << std::fixed << std::setprecision(0)
+                  << std::setw(16) << s->atLo.NPV << std::setw(16) << s->atHi.NPV
+                  << std::setw(15) << npvSwing(*s)
+                  << std::setw(11) << fmtIRR(s->atLo) << std::setw(11) << fmtIRR(s->atHi);
+        const std::string f = npvSignFlip(*s, base.NPV);
+        std::cout << "  " << (f.empty() ? "no" : "at the " + f + " end") << "\n";
+    }
+    for (const auto& s : v)
+        if (s.fromBand)
+            std::cout << "    (FCI's ends are the declared accuracy band, "
+                      << std::setprecision(0) << 100.0 * s.declLo << " % / +"
+                      << 100.0 * s.declHi << " %, read from `accuracyBand`)\n";
+    std::cout << "=====================================================================\n\n";
+}
+
+void writeSensitivityCsv(const std::vector<SensitivityInput>& v,
+                         const AppraisalOutcome& base, const std::string& cur)
+{
+    const fs::path dir = fs::path("reports") / "economics";
+    fs::create_directories(dir);
+    const fs::path path = dir / "sensitivity.csv";
+    std::ofstream f(path);
+    if (!f.is_open())
+        throw std::runtime_error("EconomicsPass: cannot open " + path.string());
+    f << "# One-at-a-time economic sensitivity (tornado), currency " << cur << "\n";
+    f << "# " << kSensitivityCaveat << "\n";
+    f << "# base: NPV_" << cur << "," << csvNum(base.NPV, 0)
+      << ",IRR_pct," << (base.haveIRR ? csvNum(100.0 * base.IRR, 4) : "")
+      << ",discountedPayback_yr," << csvNum(base.discPayback, 4) << "\n";
+    f << "input,mode,declaredLow,declaredHigh,unit,baseValue,valueLow,valueHigh,"
+         "NPV_low_" << cur << ",NPV_high_" << cur << ",NPVswing_" << cur
+      << ",IRR_low_pct,IRR_high_pct,discountedPayback_low_yr,"
+         "discountedPayback_high_yr,NPVsignFlip\n";
+    auto irr = [](const AppraisalOutcome& o)
+    { return (o.haveIRR && std::isfinite(o.IRR)) ? csvNum(100.0 * o.IRR, 4) : std::string(); };
+    for (const auto* s : tornadoOrder(v))
+        f << s->key << "," << s->mode << (s->fromBand ? " accuracyBand" : "")
+          << "," << csvNum(s->declLo, 6) << "," << csvNum(s->declHi, 6)
+          << "," << s->unit << "," << csvNum(s->base, 6)
+          << "," << csvNum(s->lo, 6) << "," << csvNum(s->hi, 6)
+          << "," << csvNum(s->atLo.NPV, 0) << "," << csvNum(s->atHi.NPV, 0)
+          << "," << csvNum(npvSwing(*s), 0)
+          << "," << irr(s->atLo) << "," << irr(s->atHi)
+          << "," << csvNum(s->atLo.discPayback, 4) << "," << csvNum(s->atHi.discPayback, 4)
+          << "," << npvSignFlip(*s, base.NPV) << "\n";
+    f.close();
+    std::cout << "  [economics] sensitivity table -> " << path.string() << "\n";
+}
+
+} // anonymous namespace
+
+EconomicsPass::EconomicsPass(const DictPtr& economicsDict)
+:   econDict_(economicsDict)
+{}
+
+int EconomicsPass::run(SimulationResult& result)
+{
+    // ---- 0.  Pre-flight: CAPEX must already be in result.costs ----------
+    if (result.costs.empty())
+    {
+        std::cerr << "EconomicsPass: result.costs is empty -- did the "
+                     "sizing+costing passes run first?\n";
+        return 1;
+    }
+
+    // ---- 1.  Dict knobs (cited teaching defaults, Turton §10/§8) --------
+    const scalar projectLife       = econDict_->lookupScalarOrDefault("projectLife",        10.0);
+    const scalar discountRate      = econDict_->lookupScalarOrDefault("discountRate",        0.10);
+    const scalar taxRate           = econDict_->lookupScalarOrDefault("taxRate",             0.21);
+    const scalar depreciableLife   = econDict_->lookupScalarOrDefault("depreciableLife",      9.0);
+    const scalar salvageFraction   = econDict_->lookupScalarOrDefault("salvageFraction",      0.0);
+    //  `workingCapital` IS EITHER A FRACTION OF FCI OR A MODEL (C44 slice
+    //  4): a number keeps the rule it always was, a BLOCK builds the working
+    //  capital up from what the plant holds and owes (`buildWorkingCapital`).
+    //  The fraction 0.15 is also the comparison line a model prints.
+    constexpr scalar workingCapitalDefault = 0.15;
+    DictPtr wcModel;
+    scalar  workingCapital = workingCapitalDefault;
+    if (econDict_->found("workingCapital")
+        && std::holds_alternative<DictPtr>(econDict_->entryValue("workingCapital")))
+        wcModel = econDict_->subDict("workingCapital");
+    else
+        workingCapital = econDict_->lookupScalarOrDefault("workingCapital",
+                                                          workingCapitalDefault);
+    const scalar streamFactor      = econDict_->lookupScalarOrDefault("streamFactor",         0.90);
+    const scalar siteFactor        = econDict_->lookupScalarOrDefault("siteFactor",           0.50);
+    const scalar contingencyFee    = econDict_->lookupScalarOrDefault("contingencyFee",       1.18);
+    const scalar N_np              = econDict_->lookupScalarOrDefault("N_np",                  7.0);
+    const int    estimateClass     = static_cast<int>(
+                                      econDict_->lookupScalarOrDefault("estimateClass",       4.0));
+    //  A DECLARED NUMBER THE ENGINE DISPATCHES ON MUST REFUSE ONE IT DOES NOT
+    //  KNOW (2026-09-07).  The old code branched on `estimateClass <= 4`, so
+    //  0, 9 or -3 selected a band by arithmetic accident and said nothing.
+    const Choupo::estimateClass::Row* const ecl =
+        Choupo::estimateClass::find(estimateClass);
+    if (!ecl)
+        throw std::runtime_error(
+            "economics: estimateClass " + std::to_string(estimateClass)
+            + " is not an AACE 18R-97 class.  Registered: "
+            + Choupo::estimateClass::registered()
+            + " (5 = concept screening, least defined; 1 = check estimate,"
+              " most defined).  See src/postProcessing/EstimateClass.H.");
+    const bool   refuseOnMissing   = refuseOnMissingPriceOf(econDict_);
+
+    //  `method` WAS DECORATIVE.  Three tutorial cases declare
+    //  `method discountedCashFlow;` and nothing read it: the pass is
+    //  hardcoded DCF, so the key parsed, sat there, and the author believed
+    //  they had SELECTED something.  Found by the postDict audit on its first
+    //  corpus run, 2026-08-27.  Reading it costs nothing and moves no number
+    //  -- there is one method and every case names it -- but a key that does
+    //  not exist must now say so instead of being quietly ignored.
+    //  THE START-UP YEARS (2026-10-11, DEV.md 4c C63).  `constructionPeriod`
+    //  was read by nothing until 2026-08-27 and then only ANNOUNCED as not
+    //  implemented, so `ammonia02_full_plant`, which declares 2, was
+    //  discounted over one.  It is honoured now, with the capital schedule,
+    //  the ramp-up and the start-up cost beside it -- see `readTimeline`
+    //  above for the grammar, the convention and where it was read.
+    const DcfTimeline timeline =
+        readTimeline(econDict_, static_cast<int>(std::lround(projectLife)));
+
+    const std::string econMethod   = econDict_->lookupWordOrDefault("method", "discountedCashFlow");
+    if (econMethod != "discountedCashFlow")
+        throw std::runtime_error("EconomicsPass: unknown method '" + econMethod
+            + "'.  Implemented: discountedCashFlow (the only one -- straight-"
+              "line or MACRS depreciation inside it is the separate"
+              " `depreciation` key).");
+
+    const std::string deprMethod   = econDict_->lookupWordOrDefault("depreciation", "straightLine");
+
+    if (deprMethod != "straightLine")
+        std::cerr << "EconomicsPass: depreciation '" << deprMethod
+                  << "' not implemented (only straightLine) -- using straightLine.\n";
+
+    // ---- 2.  Prices (constant/economics tier; refuse if absent) ---------
+    bool priceFilePresent = false;
+    DictPtr prices = loadPriceFile(priceFilePresent);
+
+    auto missing = [&](const std::string& what) -> int
+    {
+        std::cerr << "\nEconomicsPass: REQUIRED PRICE MISSING -- " << what << "\n"
+                  << "  Remedy: add it to the case-scoped 'constant/economics' file,\n"
+                  << "  each value dated and primary-cited (provenance { origin; method; }).\n"
+                  << "  No price ever defaults to a literal in code (glass-box policy).\n"
+                  << "  To proceed anyway with loud-but-defaulted prices, set\n"
+                  << "  'refuseOnMissingPrice 0;' in the economics{} postDict block.\n\n";
+        return 1;
+    };
+
+    if (!priceFilePresent)
+    {
+        if (refuseOnMissing) return missing("the file 'constant/economics' does not exist");
+        std::cerr << "EconomicsPass: 'constant/economics' absent and "
+                     "refuseOnMissingPrice=0 -- proceeding with ZERO revenue and "
+                     "raw-material cost (LOUD: the appraisal is CAPEX/utility only).\n";
+    }
+
+    // CEPCI-target consistency note: the CostingPass already updated every
+    // C_BM to the target year via its own cepci/cepci2001 ratio; the FCI we
+    // build here inherits that year.  We surface the costing year for audit.
+
+    // ---- 3.  CAPEX ladder from result.costs (Turton Eq. 7.5) ------------
+    //   C_BM°  (base CS, P=1, F_M=F_P=1) is recovered from the stored
+    //   purchased cost and the B1/B2 factors:  C_BM° = Cp * (B1 + B2).
+    scalar sum_C_BM  = 0.0;   // S C_BM,i   (actual material/pressure)
+    scalar sum_C_BM0 = 0.0;   // S C_BM°,i  (base case)
+    scalar sum_Cp    = 0.0;   // S purchased  (for the Lang cross-check)
+    for (const auto& [uname, cb] : result.costs)
+    {
+        sum_C_BM += cb.bareModuleCost;
+        sum_Cp   += cb.purchasedCost;
+
+        const auto fB1 = cb.factors.find("B1");
+        const auto fB2 = cb.factors.find("B2");
+        if (fB1 != cb.factors.end() && fB2 != cb.factors.end())
+            sum_C_BM0 += cb.purchasedCost * (fB1->second + fB2->second);
+        else
+            sum_C_BM0 += cb.bareModuleCost;  // no base factors: conservative
+    }
+
+    const scalar FCI = contingencyFee * sum_C_BM + siteFactor * sum_C_BM0;
+    //  WC = workingCapital x FCI, or the NET working capital when a model
+    //  is declared, and TCI = FCI + WC: both computed in `appraise`.
+
+    // Lang cross-check (solid-fluid 3.63 default) -- a reconciliation line
+    // only; NEVER fed into the module-factor FCI (would double-count install).
+    const scalar langFactor   = econDict_->lookupScalarOrDefault("langFactor", 3.63);
+    const scalar FCI_Lang     = langFactor * sum_Cp;
+
+    // ---- 4.  OPEX inputs -- the bills COM_d (Turton Eq. 8.1) is built from
+    //  Gathered here, priced in `appraise` (the ONE home of the arithmetic,
+    //  C68): the utility rows, the labour rate, the raw materials and the
+    //  products, each refused here, in this order, when absent.
+    AppraisalInputs baseIn;
+    baseIn.FCI                    = FCI;
+    baseIn.streamFactor           = streamFactor;
+    baseIn.discountRate           = discountRate;
+    baseIn.taxRate                = taxRate;
+    baseIn.projectLife            = projectLife;
+    baseIn.depreciableLife        = depreciableLife;
+    baseIn.salvageFraction        = salvageFraction;
+    baseIn.workingCapitalFraction = workingCapital;
+    baseIn.wcModel                = wcModel;
+    baseIn.timeline               = timeline;
+
+    // C_UT: reuse the already-computed utility allocation (€/h) * annual H.
+    //  SUM THE ALLOCATED ROWS, AND SAY WHAT WAS NOT (AS4).  This loop used
+    //  to sum `eur_h` across EVERY row without consulting `a.allocated`,
+    //  though its own comment said "allocated".  An unallocated row carries
+    //  eur_h = 0, so with no utility catalogue loaded -- a documented, common
+    //  case -- C_UT came out 0 EUR/yr and NPV/IRR printed strongly positive
+    //  for a plant whose steam is free.  The printed line read
+    //  "C_UT (utilities, allocated) = 0 EUR/yr": a zero, not a refusal, and
+    //  the parenthetical actively asserted the completeness it did not have.
+    //
+    //  A number that cannot be computed is not zero.  The allocated rows are
+    //  summed (in `appraise`); the unallocated ones are COUNTED and named,
+    //  and the caller is told the utility bill is a LOWER BOUND rather than
+    //  a cost.
+    //
+    //  A CARRIED DUTY IS NOT AN UNPRICED ONE (DEV.md 4c C52).  The loop used
+    //  to count every unallocated row, and a carried row -- a process-process
+    //  exchanger's recovered heat, a duty met by a utility stream or a heat
+    //  link -- is unallocated BY DESIGN: there is nothing to buy.  So the
+    //  green-ammonia FEHE was counted as one of "2 duties that could not be
+    //  allocated" and its C_UT called a lower bound for a heat nobody pays
+    //  for.  Only an UNSERVED duty (no catalogue utility can meet it) leaves a
+    //  hole in the bill.
+    //
+    //  A CREDIT IS SUMMED, NEVER CLAMPED.  A row with a negative eur_h is heat
+    //  or power the plant SELLS or reuses (steam raised in a waste-heat
+    //  boiler, electricity generated); it reduces C_UT, and the credits are
+    //  printed on their own line so a net bill never hides a gross one.
+    std::size_t unpricedDuties = 0;
+    for (const auto& a : result.utilityAllocation)
+    {
+        if (a.allocated)
+            baseIn.utilityEurH.emplace_back(a.utility, a.eur_h);  // €/h
+        else if (!a.carried) ++unpricedDuties;  // a real duty nobody could price
+    }
+    if (unpricedDuties)
+    {
+        std::cerr << "[economics] " << unpricedDuties << " heat duty/duties"
+                     " could not be allocated to a catalogue utility, so they"
+                     " are NOT in C_UT.\n            The utility bill below is"
+                     " a LOWER BOUND, and every figure derived from it"
+                     " (COM_d, NPV, IRR) inherits that.\n            Load a"
+                     " utility catalogue, or declare the missing service, to"
+                     " make it a cost.\n";
+        AdvisoryLog::instance().add("economics", "warning", "unpriced-utility",
+                                    std::to_string(unpricedDuties) +
+                                    " duty/duties absent from C_UT");
+    }
+
+    // C_OL: operating labour, Turton Eq. 8.3.
+    //   N_OL = (6.29 + 0.23*N_np)^0.5  operators per shift;
+    //   ~4.5 shift-positions cover one operating position around the clock;
+    //   labour rate (€/h) from constant/economics.
+    const scalar N_OL_per_shift = std::sqrt(6.29 + 0.23 * N_np);
+    const scalar operatorsTotal = 4.5 * N_OL_per_shift;   // operating positions
+    scalar labourRate = 0.0;      // €/h
+    bool   haveLabour = false;
+    if (prices && prices->found("labourRate"))
+    {
+        labourRate = prices->lookupScalar("labourRate");
+        haveLabour = true;
+    }
+    if (!haveLabour)
+    {
+        if (refuseOnMissing) return missing("labourRate (€/h, e.g. Eurostat/BLS chem sector)");
+        std::cerr << "EconomicsPass: labourRate absent -- C_OL set to 0 (LOUD).\n";
+    }
+    // Labour cost = total operating positions * annual salary per operator.
+    // The salary is the LOADED hourly rate * the hours ONE operator works in a
+    // year (operatorAnnualHours, ~1960 h = 49 wk x 40 h, Eurostat/BLS basis) --
+    // NOT the plant's annual operating hours H.  (Conflating the two would pay
+    // each operator the full 7884 plant-hours, a ~4x overstatement: the bug
+    // this guards against.  Turton Sec. 8 cross-check: ~66 kUSD/yr/operator.)
+    const scalar operatorAnnualHours =
+        econDict_->lookupScalarOrDefault("operatorAnnualHours", 1960.0);
+    baseIn.labourRate          = labourRate;
+    baseIn.operatorsTotal      = operatorsTotal;
+    baseIn.operatorAnnualHours = operatorAnnualHours;
+
+    // C_RM: raw materials.  Each `rawMaterials ( { stream; price; } ... )`
+    // entry prices a feed stream's mass flow.
+    if (prices && prices->found("rawMaterials"))
+    {
+        for (const auto& rm : prices->lookupDictList("rawMaterials"))
+        {
+            PricedStream ps;
+            ps.stream = rm->lookupWord("stream");
+            ps.price  = rm->lookupScalar("price");           // €/kg
+            ps.massFlow = streamMassFlow(result, ps.stream); // kg/s
+            ps.provenance = rm->found("provenance")
+                ? rm->subDict("provenance")->lookupWordOrDefault("origin", "")
+                : "";
+            baseIn.rawMats.push_back(std::move(ps));
+        }
+    }
+    else if (refuseOnMissing && !priceFilePresent)
+    {
+        // already handled by the file-missing branch above
+    }
+
+    // ---- 5.  Revenue ----------------------------------------------------
+    if (prices && prices->found("products"))
+    {
+        for (const auto& pr : prices->lookupDictList("products"))
+        {
+            PricedStream ps;
+            ps.stream   = pr->lookupWord("stream");
+            ps.price    = pr->lookupScalar("price");           // €/kg
+            ps.massFlow = streamMassFlow(result, ps.stream);   // kg/s
+            ps.provenance = pr->found("provenance")
+                ? pr->subDict("provenance")->lookupWordOrDefault("origin", "")
+                : "";
+            baseIn.products.push_back(std::move(ps));
+        }
+    }
+    const std::vector<PricedStream>& products = baseIn.products;
+    if (products.empty())
+    {
+        if (refuseOnMissing && priceFilePresent)
+            return missing("at least one 'products ( { stream; price; } )' entry");
+        std::cerr << "EconomicsPass: no priced products -- revenue R = 0 (LOUD: "
+                     "NPV/IRR will be a pure cost stream, not an appraisal).\n";
+    }
+
+    // ---- 5b. The sensitivity block (C68), read and checked BEFORE any
+    //  number is printed, so a malformed declaration refuses the appraisal
+    //  instead of trailing it.  Absent, nothing is read and nothing said.
+    std::vector<SensitivityInput> sensitivity;
+    if (econDict_->found("sensitivity"))
+    {
+        if (!std::holds_alternative<DictPtr>(econDict_->entryValue("sensitivity")))
+            throw std::runtime_error("economics: `sensitivity` must be a block,"
+                " `sensitivity { FCI { relative accuracyBand; } ... }`.");
+        sensitivity = readSensitivity(econDict_->subDict("sensitivity"), baseIn);
+    }
+
+    // ---- 6-8b.  THE APPRAISAL: bills, COM_d, working capital (built up
+    //  when declared, C44 slice 4), the DCF timeline (C63), NPV, IRR,
+    //  paybacks and the year-by-year table -- ONE call to the ONE home.
+    const AppraisalOutcome base = appraise(baseIn, result, /*verbose*/ true);
+    const scalar H             = base.H;
+    const scalar C_OL          = base.C_OL;
+    const scalar C_RM          = base.C_RM;
+    const scalar C_UT          = base.C_UT;
+    const scalar C_UT_credit   = base.C_UT_credit;
+    const scalar C_WT          = base.C_WT;
+    const scalar COM_d         = base.COM_d;
+    const scalar R             = base.R;
+    const scalar WC            = base.WC;
+    const scalar TCI           = base.TCI;
+    const WorkingCapitalBuildUp& wcb = base.wcb;
+    const scalar d_annual      = base.d_annual;
+    const int    Nc            = base.Nc;
+    const int    tFirst        = base.tFirst;
+    const int    Nlife         = base.Nlife;
+    const scalar startupCost   = base.startupCost;
+    const scalar NPV           = base.NPV;
+    const scalar IRR           = base.IRR;
+    const bool   haveIRR       = base.haveIRR;
+    const bool   irrAmbiguous  = base.irrAmbiguous;
+    const int    cumSignChanges = base.cumSignChanges;
+    const scalar discPayback   = base.discPayback;
+    const scalar simplePayback = base.simplePayback;
+    const scalar NPV_projectStart = base.NPV_projectStart;
+    const std::vector<CashFlowYear>& cashFlowRows = base.cashFlowRows;
 
     // ---- 9.  Report (glass-box: every term on its own printed line) -----
     //  THE ACCURACY BAND COMES FROM ONE HOME, AND A DECLARED ONE IS THE
@@ -1688,6 +2304,21 @@ int EconomicsPass::run(SimulationResult& result)
     }
     std::cout << "=====================================================================\n\n";
 
+    // ---- 9b. THE SENSITIVITY (C68), only when declared: each input's two
+    //  ends priced by the SAME `appraise`, silently, on a copy of the base
+    //  inputs with that one input moved.  The FCI's ends may be the band
+    //  just printed (`relative accuracyBand`), which is why this follows it.
+    const std::string sensCurrency = result.costs.empty()
+                                   ? std::string("EUR")
+                                   : result.costs.begin()->second.currency;
+    for (auto& s : sensitivity)
+    {
+        if (s.fromBand) resolveSensitivityEnds(s, acc_lo, acc_hi);
+        s.atLo = appraise(withSensitivityValue(baseIn, s.key, s.lo), result, false);
+        s.atHi = appraise(withSensitivityValue(baseIn, s.key, s.hi), result, false);
+    }
+    if (!sensitivity.empty()) printSensitivity(sensitivity, base, sensCurrency);
+
     // ---- 10.  Publish headline KPIs (the differentiator) ----------------
     auto& econ = result.kpis["economics"];
     econ["FCI"]          = FCI;
@@ -1719,6 +2350,21 @@ int EconomicsPass::run(SimulationResult& result)
         econ["WC_net"]              = wcb.net;
         econ["WC_fractionRule"]     = wcb.fractionRule;
         econ["productionCostPerKg"] = wcb.productionCostPerKg;
+    }
+    //  THE SENSITIVITY, two ends per declared input (C68) -- published only
+    //  when declared, so every other case publishes exactly what it did.
+    //  `sens_<input>_...`, the input's name with every character a golden
+    //  key cannot carry ('.' of `price.<stream>`) written as '_'.  An IRR or
+    //  a payback that does not exist at an end is NaN, as the base's are.
+    for (const auto& s : sensitivity)
+    {
+        const std::string k = "sens_" + s.kpiKey + "_";
+        econ[k + "NPV_low"]      = s.atLo.NPV;
+        econ[k + "NPV_high"]     = s.atHi.NPV;
+        econ[k + "IRR_low"]      = s.atLo.haveIRR ? s.atLo.IRR : std::nan("");
+        econ[k + "IRR_high"]     = s.atHi.haveIRR ? s.atHi.IRR : std::nan("");
+        econ[k + "payback_low"]  = s.atLo.discPayback;
+        econ[k + "payback_high"] = s.atHi.discPayback;
     }
 
     // ---- 11.  Build the year-by-year DCF table + emit the spreadsheet ----
@@ -1765,6 +2411,7 @@ int EconomicsPass::run(SimulationResult& result)
     writeCashFlowCsv(summary);
     writeCashFlowOds(summary);
     if (wcb.present) writeWorkingCapitalCsv(summary);
+    if (!sensitivity.empty()) writeSensitivityCsv(sensitivity, base, summary.currency);
 
     return 0;
 }
