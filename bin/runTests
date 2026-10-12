@@ -4606,6 +4606,24 @@ PYEOF
     fi
     rm -f /tmp/sdemt.$$
 
+    # The green-ammonia FEASIBILITY -> BASIC-DESIGN comparison (DEV.md 4c
+    # C68) is a generated section of the basic-design case's README: three
+    # engine runs (the two cases and the feasibility case at the basic
+    # design's start-up years), an NPV decomposition held to the engine's own
+    # NPVs, and every direction the prose states held to the runs.  ~70 s,
+    # almost all of it the basic design's DesignSpec.
+    if "$ROOT/bin/curate/gen_ammonia_stage_comparison.py" --check > /tmp/amst.$$ 2>&1; then
+        printf "PASS  %-40s  (%s)\n" "ammonia-stage-comparison-gate" \
+            "$(grep -m1 '^gen_ammonia_stage_comparison: OK' /tmp/amst.$$)"
+        pass=$((pass+1))
+    else
+        printf "FAIL  %-40s  (run bin/curate/gen_ammonia_stage_comparison.py, then commit)\n" \
+            "ammonia-stage-comparison-gate"
+        cat /tmp/amst.$$
+        fail=$((fail+1))
+    fi
+    rm -f /tmp/amst.$$
+
     # The Theory Guide's bibliography is numbered IN SOURCE ORDER by LaTeX, so
     # the order the entries are written in IS the numbering a reader sees --
     # a derived fact with a hand-maintained home.  It had drifted all the way:
