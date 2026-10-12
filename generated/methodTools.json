@@ -189,7 +189,7 @@
       "id": "letdown",
       "label": "Large pressure letdown: choked flow, cavitation, flashing and noise",
       "discipline": "Hydraulics & control",
-      "teaches": "What a valve taking a pressure ratio above ten does to the stream: the green-ammonia separator liquid let down 140 -> 20 -> 1 bar through the engine's isenthalpic valve -- the dissolved gas first, then the ammonia flashing, the temperature falling to its boiling point and the volume growing about forty times; the purge gas choked at a pressure ratio of 70; the vena contracta against the vapour pressure (cavitation versus flashing, F_L yours); staged and tortuous-path trims, where the valve is installed, hardened trims, and power-recovery turbines instead of a valve; and why the noise follows the dissipated power.",
+      "teaches": "What a valve taking a large pressure drop does to the stream, and why its severity depends on the fluid's state, its vapour pressure, the valve's F_L and x_T, its geometry and the flow: the green-ammonia separator liquid let down 140 -> 20 -> 1 bar through the engine's isenthalpic valve -- the dissolved gas first, then the ammonia flashing, the temperature falling to the two-phase equilibrium state at the outlet pressure and the volume growing about forty times; the purge gas's mass flow choked at a pressure ratio of 70; the vena contracta against the vapour pressure (cavitation versus flashing, F_L yours) and the liquid choke; staged and tortuous-path trims, where the valve is installed, hardened trims, and power-recovery turbines instead of a valve; and why the noise follows the dissipated power.",
       "href": "/app/?workspace=methods&tool=letdown"
     },
     {

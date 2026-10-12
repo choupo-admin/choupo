@@ -21,7 +21,7 @@
 
   WHAT WAS READ AND WHAT WAS NOT, said once here and again on the page.
   IEC 60534 (the control-valve sizing standard, Part 2-1; the noise
-  prediction methods, Parts 8-3 and 8-4) and ISA RP75.23 are copyrighted
+  prediction methods, Parts 8-3 and 8-4) and ISA-RP75.23 are copyrighted
   and were NOT read.  Every valve relation on this page reached it through
   the open-source `fluids` library's control-valve module (C. Bell, MIT
   licence), named beside it in LETDOWN_SOURCES; no table of valve-style
@@ -32,6 +32,14 @@
 
   ENGINE CLAIMS carry the file and line they were read at, and the test
   holds each to that line.
+
+  REVIEWED 2026-10-12 (DEV.md 4c C70): no universal pressure-ratio
+  criterion; a valve conserves h and destroys availability; choking limits
+  MASS FLOW; the gas cap x_eff; the liquid's single-phase P_vc shown as the
+  extrapolation it is, with the choke computed; the two-phase equilibrium
+  state rather than a boiling point; staging and an orifice against
+  flashing; what IEC 60534-8-4 covers; the expander's formal estimate; the
+  ISA designations as ISA lists them; the EU values as daily L_EX,8h.
 \*---------------------------------------------------------------------------*/
 
 import type { LessonLimit, LessonStep } from "./lessonStep.js";
@@ -52,9 +60,13 @@ export const LETDOWN_SOURCES: readonly LetdownSource[] = [
   { id: "iec-60534-2-1",
     cite: "IEC 60534-2-1, Industrial-process control valves -- Part 2-1: "
       + "Flow capacity -- Sizing equations for fluid flow under installed "
-      + "conditions; and ISA-75.01.01-2007, its ISA counterpart",
+      + "conditions; and ANSI/ISA-75.01.01-2012 (60534-2-1 MOD), its ISA "
+      + "adoption",
     used: "the source of the relations above as the fluids module cites "
-      + "them.  NOT READ: copyrighted; reached through fluids." },
+      + "them; the ISA designation as ISA's own listing (isa.org) gives it.  "
+      + "NOT READ: copyrighted; reached through fluids, whose liquid sizing "
+      + "docstring says the model does not officially apply to liquid "
+      + "mixtures." },
   { id: "iec-60534-8",
     cite: "IEC 60534-8-3, Control valve aerodynamic noise prediction method "
       + "(the 2010 edition, which fluids implements as its 2011 printing); "
@@ -65,17 +77,22 @@ export const LETDOWN_SOURCES: readonly LetdownSource[] = [
       + "downstream of the valve and 1 m from the pipe wall) is as the "
       + "fluids docstrings describe it." },
   { id: "isa-rp75-23",
-    cite: "ISA RP75.23, Considerations for Evaluating Control Valve "
-      + "Cavitation (1995)",
+    cite: "ISA-RP75.23-1995 (R2024), Considerations for Evaluating Control "
+      + "Valve Cavitation",
     used: "the cavitation index sigma = (P1 - Pv)/(P1 - P2), as the fluids "
-      + "docstring cites it.  NOT READ." },
+      + "docstring cites it; the designation and its 2024 reaffirmation as "
+      + "ISA's own listing (isa.org) gives them.  NOT READ." },
   { id: "eu-noise",
     cite: "Directive 2003/10/EC of the European Parliament and of the "
-      + "Council (noise), as the European Agency for Safety and Health at "
-      + "Work summarises it (osha.europa.eu, Directive 2003/10/EC - noise)",
-    used: "read: the daily and weekly exposure action values of 80 and "
-      + "85 dB(A) and the exposure limit value of 87 dB(A).  The directive's "
-      + "own text could not be fetched; the summary was read." },
+      + "Council (noise), Articles 2 and 3, read as published on "
+      + "legislation.gov.uk; and the European Agency for Safety and Health "
+      + "at Work's summary of it (osha.europa.eu)",
+    used: "read: the lower and upper exposure action values of 80 and "
+      + "85 dB(A) and the exposure limit value of 87 dB(A), all DAILY "
+      + "noise exposure levels L_EX,8h (Article 3(1)); a weekly level may "
+      + "replace the daily one only where daily exposure varies markedly "
+      + "from one working day to the next, in duly justified circumstances "
+      + "and under the conditions of Article 3(3)." },
   { id: "sulzer",
     cite: "Sulzer, Ammonia and urea fertilizers (application page, "
       + "sulzer.com)",
@@ -105,15 +122,21 @@ export const LETDOWN_STEPS: readonly LessonStep[] = [
     body: "A chemical plant often has to move a stream from a vessel at one "
       + "pressure to a vessel at a far lower one: the liquid of a "
       + "high-pressure separator to a storage tank, a purge gas to a fuel "
-      + "header, a rich solvent to its regenerator.  When the pressure ratio "
-      + "is above about ten the simplest device, a valve, is asked to do "
-      + "something hard.  A valve is a restriction: it takes the pressure "
-      + "away by making the fluid accelerate through a small opening and "
-      + "then letting the jet break up in turbulence downstream.  No shaft "
-      + "work is done and, over the short distance of the valve, no heat "
-      + "crosses the wall, so the steady-flow energy balance leaves the "
-      + "enthalpy unchanged.  The pressure energy is not lost to the "
-      + "balance; it is degraded, inside the stream, into internal energy.  "
+      + "header, a rich solvent to its regenerator.  When the drop is large "
+      + "the simplest device, a valve, can be asked to do something hard -- "
+      + "and how hard is not set by the pressure ratio alone: it depends on "
+      + "the fluid's state, its vapour pressure, the valve's own factors F_L "
+      + "and x_T, its geometry and the flow, which is what the rest of this "
+      + "page works through.  A valve is a restriction: it takes the "
+      + "pressure away by making the fluid accelerate through a small "
+      + "opening and then letting the jet break up in turbulence "
+      + "downstream.  No shaft work is done and, over the short distance of "
+      + "the valve, no heat crosses the wall, so the steady-flow energy "
+      + "balance, with the changes of kinetic and potential energy "
+      + "neglected, leaves the enthalpy unchanged.  Energy is conserved; "
+      + "what the pressure drop DESTROYS is availability -- the stream's "
+      + "capacity to do work, its exergy -- through the entropy generated in "
+      + "the turbulent dissipation.  "
       + "Choupo's valve solves exactly that balance and returns the outlet "
       + "temperature and vapour fraction as results.",
     formula: String.raw`h_2(T_2, P_2) = h_1(T_1, P_1)`,
@@ -140,13 +163,16 @@ export const LETDOWN_STEPS: readonly LessonStep[] = [
       + "green-ammonia plant's high-pressure separator -- at 140 bar and "
       + "-20 °C -- down to the plant's own two drums, 20 bar and then the "
       + "atmospheric store.  The first throttle releases mostly the hydrogen "
-      + "and nitrogen the separator dissolved in the ammonia: that liquid "
-      + "was in equilibrium with the loop gas at 140 bar, so ANY drop lets "
-      + "some of it out, and the temperature hardly moves.  The second "
+      + "and nitrogen the separator dissolved in the ammonia: because the "
+      + "separator liquid is initially in equilibrium with the loop gas, "
+      + "even a small pressure reduction can begin to release dissolved "
+      + "gas, and the temperature hardly moves.  The second "
       + "throttle goes below the ammonia's own vapour pressure, and the "
       + "ammonia boils.  The heat for that boiling has nowhere to come from "
-      + "but the liquid, which cools until it sits at its boiling point at "
-      + "the outlet pressure.  A hand estimate catches what the engine "
+      + "but the liquid, which cools until the stream reaches its two-phase "
+      + "equilibrium state at the outlet pressure -- the dissolved hydrogen, "
+      + "nitrogen and argon included, so not exactly the pure ammonia's "
+      + "boiling point.  A hand estimate catches what the engine "
       + "computes: the sensible heat the liquid gives up between the two "
       + "temperatures, divided by the latent heat, is the fraction that "
       + "flashes.",
@@ -205,18 +231,21 @@ u &= \frac{4\,Q}{\pi D^2}
   // ---- Part 2: gas -------------------------------------------------------------
   {
     n: 4,
-    title: "A gas stops accelerating at the speed of sound",
+    title: "Choked flow: the mass flow stops rising when the throat is sonic",
     body: "Let a gas down through a restriction and lower the downstream "
       + "pressure step by step: the flow rises, at first quickly and then "
       + "more slowly, and at one pressure ratio it stops rising at all.  At "
       + "that point the gas in the narrowest section is moving at its own "
       + "speed of sound, and a pressure signal from downstream can no "
       + "longer travel upstream against it -- the restriction no longer "
-      + "knows that the outlet pressure fell.  The flow is CHOKED.  For an "
+      + "knows that the outlet pressure fell.  The flow is CHOKED, and what "
+      + "is limited is the MASS FLOW, not the velocity everywhere: "
+      + "downstream of the throat the gas can go on expanding and become "
+      + "supersonic.  For an "
       + "ideal gas in an ideal nozzle the critical ratio depends on k alone, "
       + "and for the purge gas of the witness, mostly hydrogen and "
       + "nitrogen, the engine's k makes it close to one half: every drop "
-      + "below about half of the inlet pressure buys no flow at all.",
+      + "below about half of the inlet pressure buys no more mass flow.",
     formula: String.raw`\frac{P^*}{P_1} = \left(\frac{2}{k+1}\right)^{k/(k-1)}`,
     where: [
       { sym: "P^*", means: "the pressure in the throat when the flow is "
@@ -231,52 +260,61 @@ u &= \frac{4\,Q}{\pi D^2}
   },
   {
     n: 5,
-    title: "In a valve, the choke comes later: the factor x_T",
+    title: "In a valve, the choke is set by the factor x_T",
     body: "A valve is not a nozzle.  The jet leaving its seat contracts, "
       + "separates and partly recovers its pressure, and the pressure drop "
       + "across the whole valve at which the flow chokes depends on the "
       + "valve's geometry.  The control-valve sizing standard expresses "
       + "that through a factor the valve's maker measures, x_T, scaled for "
-      + "the gas by k/1.4 because the factor is measured with air.  Below "
-      + "the choke the flow grows as the square root of the pressure-drop "
-      + "ratio times an expansion factor Y that falls to two thirds at the "
-      + "choke; above it, it is flat.  The chart below draws the valve "
-      + "with your x_T beside the ideal nozzle, both against the "
+      + "the gas by k/1.4 because the factor is measured with air.  The "
+      + "pressure-drop ratio the valve can use is capped at the choke: "
+      + "below it the flow grows as the square root of the ratio times an "
+      + "expansion factor Y that falls to two thirds at the choke; beyond "
+      + "it both are held at the cap, and the flow is flat.  x_T is "
+      + "specific to a valve style and to its travel, so whether a valve "
+      + "chokes at a larger or a smaller pressure-drop ratio than an ideal "
+      + "nozzle depends on it: at the illustrative x_T = 0.7 it chokes at a "
+      + "larger one, at a low x_T at a smaller one.  The chart below draws "
+      + "the valve with your x_T beside the ideal nozzle, both against the "
       + "pressure-drop ratio, and marks where the purge letdown sits: far "
       + "into the flat part.",
     formula: String.raw`\begin{aligned}
-x &= \frac{P_1 - P_2}{P_1}, \qquad F_\gamma = \frac{k}{1.4}, \qquad x_\mathrm{ch} = F_\gamma\, x_T\\
-Y &= 1 - \frac{x}{3\,F_\gamma\, x_T}, \qquad W \propto Y \sqrt{x}
+x &= \frac{P_1 - P_2}{P_1}, \qquad F_\gamma = \frac{k}{1.4}, \qquad x_\mathrm{eff} = \min\left(x,\; F_\gamma\, x_T\right)\\
+Y &= 1 - \frac{x_\mathrm{eff}}{3\,F_\gamma\, x_T}, \qquad W \propto Y \sqrt{x_\mathrm{eff}}
 \end{aligned}`,
     where: [
       { sym: "x", means: "the pressure-drop ratio across the valve", unit:
         "–" },
       { sym: "F_\\gamma", means: "the specific heat ratio factor", unit:
         "–" },
-      { sym: "x_\\mathrm{ch}", means: "the pressure-drop ratio at which the "
-        + "valve chokes", unit: "–" },
+      { sym: "x_\\mathrm{eff}", means: "the pressure-drop ratio the valve "
+        + "can use: x up to the choke at F_gamma x_T, held at that cap beyond "
+        + "it", unit: "–" },
       { sym: "x_T", means: "the valve's pressure-differential ratio factor "
         + "at choked flow, measured by its maker: YOURS on this page",
         unit: "–" },
-      { sym: "Y", means: "the expansion factor, 1 at no drop and 2/3 at the "
-        + "choke", unit: "–" },
+      { sym: "Y", means: "the expansion factor, 1 at no drop and 2/3 at and "
+        + "beyond the choke", unit: "–" },
       { sym: "W", means: "the mass flow through the valve at a fixed "
         + "opening and inlet state", unit: "kg/s" },
     ],
     note: "IEC 60534-2-1 as the open fluids library implements it "
-      + "(is_choked_turbulent_g and size_control_valve_g); the standard was "
-      + "not read.  The default x_T = 0.7 is that library's own keyword "
-      + "default, not a value for any valve.",
+      + "(is_choked_turbulent_g and size_control_valve_g, which floors Y at "
+      + "2/3 and replaces x by F_gamma x_T when choked -- the same cap); "
+      + "the standard was not read.  The default x_T = 0.7 is that "
+      + "library's own keyword default, not a value for any valve.",
   },
   {
     n: 6,
-    title: "Past the choke, more pressure drop buys velocity and noise",
+    title: "Past the choke, more pressure drop buys no mass flow",
     body: "When the purge is let down from 140 bar to 2 bar, the valve can "
       + "use only the first part of that drop to make flow.  The rest is "
       + "spent DOWNSTREAM of the narrowest section: the jet leaves it at "
-      + "sonic speed, overexpands, and slows through a train of shocks and "
-      + "turbulent mixing, which is where most of the energy turns into "
-      + "heat and a little of it into sound.  The gas also leaves occupying "
+      + "sonic speed, expands to supersonic, and slows through a train of "
+      + "shocks and turbulent mixing.  The enthalpy is the same on both "
+      + "sides; what those shocks and that mixing destroy is the "
+      + "availability of the pressure, and a small part of the power "
+      + "dissipated is radiated as sound.  The gas also leaves occupying "
       + "tens of times its inlet volume -- the engine's volume ratio for "
       + "the purge -- so the outlet line runs fast unless its bore is "
       + "enlarged.  And a real gas changes temperature on throttling "
@@ -375,13 +413,20 @@ F_L^2 &= \frac{P_1 - P_2}{P_1 - P_\mathrm{vc}}\\
     where: [],
     note: "The regime on the bench is read from where P_vc and P_2 sit "
       + "against P_v: flashing when P_2 is at or below it, cavitation when "
-      + "only P_vc is, no boiling of the liquid otherwise.  The "
-      + "DISSOLVED gas comes out on any drop below the drum pressure "
-      + "whatever the regime, and it leaves carrying ammonia vapour at "
-      + "the ammonia's partial pressure -- which is why the engine's "
-      + "outlet still shows some vapour and a small cooling with the "
-      + "storage pressure above Pv.  A bubble of permanent gas does not "
-      + "collapse on recovery the way a vapour bubble does.",
+      + "only P_vc is, no boiling of the liquid otherwise.  P_v is the PURE "
+      + "ammonia's vapour pressure, so the classification is a didactic "
+      + "approximation: the liquid also holds dissolved hydrogen, nitrogen "
+      + "and argon, and the liquid relations of the control-valve standard "
+      + "are not meant for a mixture that vaporises -- the fluids "
+      + "implementation says its liquid sizing model does not officially "
+      + "apply to liquid mixtures.  Because the drum liquid is in "
+      + "equilibrium with its gas, even a small drop below the drum "
+      + "pressure can begin to release DISSOLVED gas, whatever the regime, "
+      + "and it leaves carrying ammonia vapour at the ammonia's partial "
+      + "pressure -- which is why the engine's outlet still shows some "
+      + "vapour and a small cooling with the storage pressure above Pv.  A "
+      + "bubble of permanent gas does not collapse on recovery the way a "
+      + "vapour bubble does.",
   },
   {
     n: 10,
@@ -393,10 +438,22 @@ F_L^2 &= \frac{P_1 - P_2}{P_1 - P_\mathrm{vc}}\\
       + "times the inlet pressure less a fraction F_F of the vapour "
       + "pressure, with F_F falling as the vapour pressure approaches the "
       + "critical pressure.  A valve sized on a drop larger than that is "
-      + "undersized, because the flow it was sized for never arrives.",
+      + "undersized, because the flow it was sized for never arrives.  This "
+      + "is also what the vena-contracta relation of step 7 cannot see.  "
+      + "Written for a single phase, it puts the second throttle's vena "
+      + "contracta at the plant's store, with F_L = 0.9, at "
+      + "20 - 18.99/0.81 = -3.44 bar: an EXTRAPOLATION past the point "
+      + "where the liquid vaporises, and nonphysical.  Long before that the "
+      + "vaporising vena contracta chokes the flow: with the engine's P_v "
+      + "of 1.894 bar and the record's P_c, F_F P_v = 0.9238 × 1.894 = "
+      + "1.75 bar, so the largest drop is 0.81 (20 - 1.75) = 14.78 bar and "
+      + "the flow chokes once the outlet falls below about 5.22 bar.  The "
+      + "bench computes these on your F_L and storage pressure, and draws "
+      + "the dip held near F_F P_v once the flow is choked.",
     formula: String.raw`\begin{aligned}
 \Delta P_\mathrm{max} &= F_L^2\,(P_1 - F_F\,P_v)\\
-F_F &= 0.96 - 0.28\sqrt{\frac{P_v}{P_c}}
+F_F &= 0.96 - 0.28\sqrt{\frac{P_v}{P_c}}\\
+P_{2,\mathrm{ch}} &= P_1 - \Delta P_\mathrm{max}
 \end{aligned}`,
     where: [
       { sym: "\\Delta P_\\mathrm{max}", means: "the largest pressure drop "
@@ -405,6 +462,8 @@ F_F &= 0.96 - 0.28\sqrt{\frac{P_v}{P_c}}
         unit: "–" },
       { sym: "P_c", means: "the critical pressure of the liquid: from the "
         + "NH3 record", unit: "Pa" },
+      { sym: "P_{2,\\mathrm{ch}}", means: "the outlet pressure below which "
+        + "the liquid flow is choked", unit: "Pa" },
     ],
     note: "IEC 60534-2-1 as fluids implements it "
       + "(FF_critical_pressure_ratio_l, is_choked_turbulent_l); the "
@@ -422,10 +481,13 @@ F_F &= 0.96 - 0.28\sqrt{\frac{P_v}{P_c}}
       + "RATIO -- this page's model, not a maker's -- each with your F_L, "
       + "and draws every stage's dip against the vapour pressure.  The "
       + "large first stages take most of the drop and have plenty of margin; "
-      + "the last one, nearest the vapour pressure, decides.  When the "
-      + "outlet itself is below the vapour pressure no number of stages "
-      + "helps: the last stage flashes, which is why staging is the cure "
-      + "for cavitation and not for flashing.",
+      + "the last one, nearest the vapour pressure, decides.  So staging "
+      + "can prevent or mitigate cavitation.  When the outlet itself is "
+      + "below the vapour pressure it cannot remove the flashing: the "
+      + "final vaporisation is required by the outlet state, and the last "
+      + "stage flashes whatever the count.  Staging can still help there "
+      + "-- it holds the velocities down and controls where the vapour "
+      + "forms.",
     formula: String.raw`P_i = P_1 \left(\frac{P_2}{P_1}\right)^{i/n}, \qquad i = 1, \dots, n`,
     where: [
       { sym: "P_i", means: "the pressure after stage i", unit: "Pa" },
@@ -461,7 +523,13 @@ F_F &= 0.96 - 0.28\sqrt{\frac{P_v}{P_c}}
       + "3 at its full velocity, eroding the bends and slugging the "
       + "receiver.  A second remedy splits the drop between devices: a "
       + "fixed restriction orifice, or a second valve, in series with the "
-      + "control valve, so that neither takes the whole drop; an angle "
+      + "control valve, so that neither takes the whole drop.  Against "
+      + "cavitation that is very useful: the orifice raises the control "
+      + "valve's backpressure, which lifts its vena contracta.  Against "
+      + "flashing it is not a cure: if the final pressure is below the "
+      + "vapour pressure the orifice does not remove the flashing, it moves "
+      + "the two-phase crossing to the last device -- the orifice -- and "
+      + "the control valve upstream of it may then stay liquid.  An angle "
       + "body that discharges straight down the outlet pipe, and a trim of "
       + "hardened alloy or ceramic, are what a flashing valve is usually "
       + "built with, because its erosion can only be resisted, not "
@@ -470,9 +538,12 @@ F_F &= 0.96 - 0.28\sqrt{\frac{P_v}{P_c}}
   {
     n: 14,
     title: "Recover the energy instead of dissipating it",
-    body: "Every throttle turns a mechanical energy into heat.  For a "
-      + "liquid that energy is the volumetric flow times the pressure drop, "
-      + "and on a large flow it is not small.  A hydraulic power-recovery "
+    body: "Every throttle conserves the stream's enthalpy and destroys the "
+      + "availability of its pressure drop.  For a liquid, the volumetric "
+      + "flow times the pressure drop is the hydraulic power that drop "
+      + "could ideally deliver, in the incompressible limit, and a valve "
+      + "dissipates all of it; on a large flow it is not small.  A "
+      + "hydraulic power-recovery "
       + "turbine -- often a pump run backwards -- takes the drop instead of "
       + "the valve and delivers most of that power at a shaft, usually to "
       + "a pump on the same train: in CO2 removal the rich solvent let "
@@ -482,7 +553,11 @@ F_F &= 0.96 - 0.28\sqrt{\frac{P_v}{P_c}}
       + "turboexpander, and it does a second thing: an expansion that does "
       + "work cools the gas far more than a throttle, which is why "
       + "expanders appear where the cold is wanted.  The bench works both "
-      + "on the witness's numbers, the gas as an ideal gas.",
+      + "on the witness's numbers, the gas as an ideal gas with constant "
+      + "c_p and k: its expander outlet temperature is a FORMAL estimate, "
+      + "low enough that part of the purge may condense, and a real design "
+      + "solves an isentropic equilibrium flash.  The point it makes "
+      + "stands: an expander produces far more cold than a throttle.",
     formula: String.raw`\begin{aligned}
 \dot{W}_\mathrm{liq} &= \eta\, Q_1\,(P_1 - P_2)\\
 \dot{W}_\mathrm{gas} &= \dot{n}\, c_p\, T_1 \left[1 - \left(\frac{P_2}{P_1}\right)^{(k-1)/k}\right]
@@ -514,13 +589,17 @@ F_F &= 0.96 - 0.28\sqrt{\frac{P_v}{P_c}}
       + "vena contracta; a liquid valve from turbulence and, much more "
       + "strongly, from cavitation.  The sound travels down the pipe and "
       + "out through its wall.  IEC 60534-8-3 (gas) and IEC 60534-8-4 "
-      + "(liquid) predict the A-weighted level 1 m downstream of the valve "
+      + "(turbulent liquid flow and cavitation -- not flashing) predict the "
+      + "A-weighted level 1 m downstream of the valve "
       + "and 1 m from the pipe wall, from the flow, the valve's factors and "
       + "the pipe: this page does not run them.  What it shows is the "
       + "decibel arithmetic -- ten times the acoustic power is 10 dB -- and "
       + "the yardstick a level is judged against: the European noise "
-      + "directive sets daily exposure action values of 80 and 85 dB(A) "
-      + "and a limit of 87 dB(A) for workers.  The usual remedies are the "
+      + "directive sets lower and upper exposure action values of 80 and "
+      + "85 dB(A) and a limit of 87 dB(A) for workers, as daily noise "
+      + "exposure levels L_EX,8h; a weekly level may replace the daily one "
+      + "only in the directive's specific circumstances, where the daily "
+      + "exposure varies markedly from day to day.  The usual remedies are the "
       + "ones of Part 4 -- a low-noise trim splits the jet into many small "
       + "ones, and a smaller jet's sound peaks at a higher frequency -- "
       + "plus a heavier pipe wall, acoustic insulation, "
@@ -532,9 +611,9 @@ F_F &= 0.96 - 0.28\sqrt{\frac{P_v}{P_c}}
       { sym: "\\dot{W}_a", means: "one sound power", unit: "W" },
       { sym: "\\dot{W}_b", means: "the other", unit: "W" },
     ],
-    note: "The action and limit values: the European Agency for Safety and "
-      + "Health at Work's summary of Directive 2003/10/EC.  They are "
-      + "exposures over a working day, not a property of a valve; a valve "
+    note: "The action and limit values: Directive 2003/10/EC, Article 3.  "
+      + "They are exposures over a working day, not a property of a valve; "
+      + "a valve "
       + "specification states its own ceiling, and this page found no open "
       + "source that fixes a common one, so it states none.",
   },
@@ -569,10 +648,12 @@ export const LETDOWN_LIMITS: readonly LessonLimit[] = [
       + "and its noise is predicted by the standard's methods." },
   { id: "standards-unread",
     title: "The standards were not read",
-    body: "IEC 60534-2-1, IEC 60534-8-3 and -8-4 and ISA RP75.23 are "
-      + "copyrighted and were not available.  Every valve relation here "
-      + "came through the open fluids library, named at the foot of the "
-      + "page.  Read the standard before using any of it." },
+    body: "IEC 60534-2-1 (ANSI/ISA-75.01.01-2012), IEC 60534-8-3 and -8-4 "
+      + "and ISA-RP75.23-1995 (R2024) are copyrighted and were not "
+      + "available.  Every valve relation here came through the open fluids "
+      + "library, named at the foot of the page.  Read the standard before "
+      + "using any of it.  Its liquid relations are not meant for a mixture "
+      + "that vaporises, which ammonia carrying dissolved gas is." },
   { id: "no-valve-sizing",
     title: "Choupo does not size a valve",
     body: "The engine's valve is an isenthalpic throttle with a flash: no "
@@ -604,6 +685,7 @@ export const LETDOWN_LIMITS: readonly LessonLimit[] = [
     title: "Equal-ratio stages are this page's model",
     body: "A maker distributes the drop over its stages in its own way, "
       + "with its own factor for each, and measures the result.  The bench "
-      + "shows why staging helps cavitation and cannot help flashing, not "
-      + "how many stages a real trim needs." },
+      + "shows why staging can prevent or mitigate cavitation and cannot "
+      + "remove the flashing the outlet state requires, not how many stages "
+      + "a real trim needs." },
 ];

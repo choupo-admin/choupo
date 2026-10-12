@@ -40,12 +40,13 @@ import { tutorialByName } from "../../cases/tutorials.js";
 import {
   FL_DEFAULT, LETDOWN_PROPS, LETDOWN_WITNESS, LINE_BORE_DEFAULT,
   PROPS_GAS_OP, PROPS_LIQUID_OP, SHIPPED_P_OUT, TURBINE_EFF_DEFAULT,
-  XT_DEFAULT, cavitationIndex, chokedLiquidDrop, chokedPressureRatio,
-  criticalPressureRatio, flashFractionEstimate, hydraulicPower,
-  idealExpander, levelDifference, lineVelocity, liquidCriticalRatioFactor,
-  liquidRegime, nozzleFlowFraction, readProps, readValve, recordScalar,
-  stagedDrop, stagesToAvoidVapour, storagePressureOverride, valveFlowFraction,
-  venaContractaPressure, type ValveReading,
+  XT_DEFAULT, cavitationIndex, chokedLiquidDrop, chokedLiquidOutletPressure,
+  chokedPressureRatio, criticalPressureRatio, effectivePressureRatio,
+  expansionFactor, flashFractionEstimate, hydraulicPower, idealExpander,
+  levelDifference, lineVelocity, liquidCriticalRatioFactor, liquidRegime,
+  nozzleFlowFraction, physicalVenaContracta, readProps, readValve,
+  recordScalar, stagedDrop, stagesToAvoidVapour, storagePressureOverride,
+  valveFlowFraction, venaContractaPressure, type ValveReading,
 } from "./letdown.js";
 import {
   BubbleCollapseDrawing, ChokedFlowChart, InstallationDrawing,
@@ -240,11 +241,14 @@ function GasBench({ run, props, xT, setXT }: {
         <Figure caption={<>The valve (solid, blue) and an ideal nozzle (dashed,
           orange): mass flow as a fraction of the choked flow, at a fixed inlet
           state and opening, against the pressure-drop ratio.  Both rise and
-          then stop rising; the valve chokes later because its jet recovers
-          part of its pressure.  The circle is the purge letdown, at a ratio
-          the flow never sees: everything right of the dashed lines is
-          pressure the valve turns into velocity, shocks and sound, not
-          flow.</>}>
+          then stop rising.  With your x_T = {fx(xT, 2)} the valve chokes at
+          {xch > 1 - rc ? " a larger" : " a smaller"} pressure-drop ratio than
+          the nozzle; x_T belongs to the valve&apos;s style and travel, and the
+          default 0.7 is only an illustration.  The circle is the purge
+          letdown: everything right of the dashed lines buys no more mass
+          flow -- downstream of the throat that pressure goes into a
+          supersonic jet, shocks and mixing, its availability destroyed and a
+          small part of it radiated as sound.</>}>
           <ChokedFlowChart valve={curves.valve} nozzle={curves.nozzle}
             xCh={xch} xNozzle={1 - rc} xCase={Number.isFinite(x) ? x : null} />
         </Figure>
@@ -259,7 +263,9 @@ function GasBench({ run, props, xT, setXT }: {
           <Table.Tr><Table.Td>nozzle critical ratio P*/P1</Table.Td><Table.Td>{fx(rc, 4)}</Table.Td><Table.Td>step 4</Table.Td></Table.Tr>
           <Table.Tr><Table.Td>valve chokes at x = F_γ x_T</Table.Td><Table.Td>{fx(xch, 4)}</Table.Td><Table.Td>step 5, x_T yours</Table.Td></Table.Tr>
           <Table.Tr><Table.Td>the purge letdown&apos;s x</Table.Td><Table.Td>{fx(x, 4)}</Table.Td><Table.Td>140 → {bar(purge?.P_out, 1)} bar</Table.Td></Table.Tr>
-          <Table.Tr><Table.Td>regime</Table.Td><Table.Td>{Number.isFinite(x) && Number.isFinite(xch) ? (x >= xch ? "choked" : "not choked") : "—"}</Table.Td><Table.Td /></Table.Tr>
+          <Table.Tr><Table.Td>x_eff = min(x, F_γ x_T), what the valve can use</Table.Td><Table.Td>{Number.isFinite(x) && Number.isFinite(k) ? fx(effectivePressureRatio(x, k, xT), 4) : "—"}</Table.Td><Table.Td>step 5</Table.Td></Table.Tr>
+          <Table.Tr><Table.Td>Y at x_eff</Table.Td><Table.Td>{Number.isFinite(x) && Number.isFinite(k) ? fx(expansionFactor(x, k, xT), 4) : "—"}</Table.Td><Table.Td>step 5</Table.Td></Table.Tr>
+          <Table.Tr><Table.Td>regime</Table.Td><Table.Td>{Number.isFinite(x) && Number.isFinite(xch) ? (x >= xch ? "choked: the mass flow is capped" : "not choked") : "—"}</Table.Td><Table.Td /></Table.Tr>
           <Table.Tr><Table.Td>volume ratio out/in</Table.Td><Table.Td>{fx(purge?.volumeRatio, 1)}</Table.Td><Table.Td>engine, letdown01 PurgeValve</Table.Td></Table.Tr>
           <Table.Tr><Table.Td>outlet temperature [K]</Table.Td><Table.Td>{fx(purge?.T_out, 2)}</Table.Td><Table.Td>engine, letdown01 PurgeValve: the Joule-Thomson cooling (step 6)</Table.Td></Table.Tr>
         </Table.Tbody>
@@ -288,6 +294,9 @@ function LiquidBench({ run, props, P2, setP2, FL, setFL }: {
   const P1 = lp?.P_in ?? NaN;
   const ok = Number.isFinite(Pv) && Number.isFinite(P1);
   const Pvc = ok ? venaContractaPressure(P1, P2, FL) : NaN;
+  const okPc = ok && Number.isFinite(Pc);
+  const phys = okPc ? physicalVenaContracta(P1, P2, Pv, Pc, FL) : null;
+  const FF = okPc ? liquidCriticalRatioFactor(Pv, Pc) : NaN;
   const regime = ok ? liquidRegime(P1, P2, Pv, FL) : null;
   return (
     <Box>
@@ -305,11 +314,14 @@ function LiquidBench({ run, props, P2, setP2, FL, setFL }: {
           seat, turns up through it past the plug, and leaves above.  Under
           it, the pressure along that path on your numbers -- P1 from the
           run, the dip at the vena contracta from your F_L, the recovery to
-          P2, against the engine&apos;s vapour pressure (dashed).  Circles
-          are vapour; crosses where it collapses.  Move the storage pressure
-          above the vapour pressure and a low F_L to see cavitation, below it
-          to see flashing.</>}>
-          <ValveProfileDrawing P1={P1} P2={P2} Pvc={Pvc} Pv={Pv} />
+          P2, against the engine&apos;s vapour pressure (dashed).  Once the
+          flow is choked the dip is drawn held near F_F P_v, where the
+          vaporising vena contracta sits, not at the single-phase
+          extrapolation.  Circles are vapour; crosses where it collapses.
+          Move the storage pressure above the vapour pressure and a low F_L
+          to see cavitation, below it to see flashing.</>}>
+          <ValveProfileDrawing P1={P1} P2={P2} Pvc={phys ? phys.P_vc : Pvc} Pv={Pv}
+            choked={phys?.choked ?? false} />
         </Figure>
       )}
       <PanTable>
@@ -320,11 +332,13 @@ function LiquidBench({ run, props, P2, setP2, FL, setFL }: {
           <Table.Tr><Table.Td>inlet P1 [bar], T1 [K]</Table.Td><Table.Td>{bar(lp?.P_in)}, {fx(lp?.T_in, 2)}</Table.Td><Table.Td>engine, letdown01</Table.Td></Table.Tr>
           <Table.Tr><Table.Td>vapour pressure of NH3 at T1, Pv [bar]</Table.Td><Table.Td>{bar(Pv, 3)}</Table.Td><Table.Td>engine, Psat_NH3 (letdown02)</Table.Td></Table.Tr>
           <Table.Tr><Table.Td>outlet P2 [bar]</Table.Td><Table.Td>{bar(P2, 3)}</Table.Td><Table.Td>yours</Table.Td></Table.Tr>
-          <Table.Tr><Table.Td>vena contracta P_vc [bar]</Table.Td><Table.Td>{Pvc < 0 ? `${bar(Pvc)} (below zero: the liquid vaporises first)` : bar(Pvc)}</Table.Td><Table.Td>step 7</Table.Td></Table.Tr>
+          <Table.Tr><Table.Td>vena contracta P_vc, single-phase relation [bar]</Table.Td><Table.Td>{phys?.choked ? `${bar(Pvc)} -- an extrapolation, nonphysical: the flow is choked first` : bar(Pvc)}</Table.Td><Table.Td>step 7</Table.Td></Table.Tr>
           <Table.Tr><Table.Td>cavitation index σ</Table.Td><Table.Td>{ok ? fx(cavitationIndex(P1, P2, Pv), 3) : "—"}</Table.Td><Table.Td>step 8</Table.Td></Table.Tr>
           <Table.Tr><Table.Td>critical pressure of NH3, Pc [bar]</Table.Td><Table.Td>{bar(Pc)}</Table.Td><Table.Td>NH3 record</Table.Td></Table.Tr>
-          <Table.Tr><Table.Td>F_F</Table.Td><Table.Td>{ok ? fx(liquidCriticalRatioFactor(Pv, Pc), 4) : "—"}</Table.Td><Table.Td>step 10</Table.Td></Table.Tr>
-          <Table.Tr><Table.Td>largest effective drop ΔP_max [bar], against P1 − P2</Table.Td><Table.Td>{ok ? `${bar(chokedLiquidDrop(P1, Pv, Pc, FL))} vs ${bar(P1 - P2)}` : "—"}</Table.Td><Table.Td>step 10</Table.Td></Table.Tr>
+          <Table.Tr><Table.Td>F_F = 0.96 − 0.28 √(Pv/Pc)</Table.Td><Table.Td>{okPc ? fx(FF, 4) : "—"}</Table.Td><Table.Td>step 10</Table.Td></Table.Tr>
+          <Table.Tr><Table.Td>F_F Pv, the vena contracta at the choke [bar]</Table.Td><Table.Td>{okPc ? bar(FF * Pv) : "—"}</Table.Td><Table.Td>step 10</Table.Td></Table.Tr>
+          <Table.Tr><Table.Td>largest effective drop ΔP_max [bar], against P1 − P2</Table.Td><Table.Td>{okPc ? `${bar(chokedLiquidDrop(P1, Pv, Pc, FL))} vs ${bar(P1 - P2)}` : "—"}</Table.Td><Table.Td>step 10</Table.Td></Table.Tr>
+          <Table.Tr><Table.Td>choked once P2 falls below [bar]</Table.Td><Table.Td>{okPc ? `${bar(chokedLiquidOutletPressure(P1, Pv, Pc, FL))}${phys?.choked ? " -- choked here" : " -- not choked here"}` : "—"}</Table.Td><Table.Td>step 10</Table.Td></Table.Tr>
           <Table.Tr><Table.Td><b>regime</b></Table.Td><Table.Td><b>{regime === "neither" ? "neither cavitation nor flashing" : regime ?? "—"}</b></Table.Td><Table.Td>steps 8, 9</Table.Td></Table.Tr>
           <Table.Tr><Table.Td>engine: vapour, molar fraction out</Table.Td><Table.Td>{fx(lp?.vf, 5)}</Table.Td><Table.Td>dissolved gas included (step 9)</Table.Td></Table.Tr>
         </Table.Tbody>
@@ -333,7 +347,11 @@ function LiquidBench({ run, props, P2, setP2, FL, setFL }: {
         The F_L default, {FL_DEFAULT}, is the open fluids library&apos;s keyword
         default; a real valve&apos;s F_L is its maker&apos;s, and falls as the
         valve opens.  The vapour pressure is the NH3 record&apos;s Antoine curve
-        at the temperature the first throttle left the liquid at.
+        at the temperature the first throttle left the liquid at -- the PURE
+        ammonia&apos;s, so classifying this liquid, which holds dissolved
+        H2, N2 and Ar, by it is a didactic approximation, and the
+        standard&apos;s liquid relations are not meant for a mixture that
+        vaporises.
       </PanelNote>
     </Box>
   );
@@ -364,8 +382,10 @@ function StagesBench({ run, props, P2, FL }: {
           ratio.  Each restriction dips to its own vena contracta; a circle
           marks a stage whose dip reaches the vapour pressure (dashed).
           {P2 <= Pv ? <> The outlet is below the vapour pressure, so the last
-            stage flashes whatever the count: staging cures cavitation, not
-            flashing.</> : need !== null
+            stage flashes whatever the count: staging can prevent or
+            mitigate cavitation, but cannot remove the flashing the outlet
+            state requires -- it can still hold velocities down and control
+            where the vapour forms.</> : need !== null
             ? <> At these numbers {need} stage{need > 1 ? "s" : ""} keep every dip
               above it.</>
             : <> No count up to 20 keeps every dip above it.</>}</>}>
@@ -380,7 +400,8 @@ function StagesBench({ run, props, P2, FL }: {
           {stages.map((s) => (
             <Table.Tr key={s.i}>
               <Table.Td>{s.i}</Table.Td><Table.Td>{bar(s.P_in)}</Table.Td>
-              <Table.Td>{bar(s.P_out)}</Table.Td><Table.Td>{bar(s.P_vc)}</Table.Td>
+              <Table.Td>{bar(s.P_out)}</Table.Td>
+              <Table.Td>{bar(s.P_vc)}{s.P_vc < 0 ? " (single-phase extrapolation)" : ""}</Table.Td>
               <Table.Td>{s.P_vc > Pv ? "above" : "at or below"}</Table.Td>
             </Table.Tr>
           ))}
@@ -416,9 +437,11 @@ function RecoveryBench({ run, props }: { run: MethodRunState; props: MethodRunSt
           value={eta} onChange={setEta} />
       </Box>
       <Figure caption={<>The first ammonia throttle&apos;s hydraulic power, Q1 (P1 − P2)
-        from the run, taken by a valve (top: all of it becomes heat in the
-        stream) and by a power-recovery turbine of your efficiency (bottom:
-        the blue part reaches the shaft).</>}>
+        from the run -- the power the drop could ideally deliver in the
+        incompressible limit -- taken by a valve (top: all of it dissipated;
+        the stream&apos;s enthalpy is unchanged and the availability is
+        destroyed) and by a power-recovery turbine of your efficiency
+        (bottom: the blue part reaches the shaft).</>}>
         <RecoveryDrawing P_kW={pHP / 1000} eta={eta} />
       </Figure>
       <PanTable>
@@ -429,17 +452,19 @@ function RecoveryBench({ run, props }: { run: MethodRunState; props: MethodRunSt
           <Table.Tr><Table.Td>ammonia, first throttle</Table.Td><Table.Td>{fx(pHP / 1000, 1)}</Table.Td><Table.Td>{fx(eta * pHP / 1000, 1)}</Table.Td></Table.Tr>
           <Table.Tr><Table.Td>ammonia, second throttle (flashing)</Table.Td><Table.Td>{fx(P(lp) / 1000, 1)}</Table.Td><Table.Td>{fx(eta * P(lp) / 1000, 1)}</Table.Td></Table.Tr>
           <Table.Tr><Table.Td>purge gas, ideal isentropic expander</Table.Td><Table.Td>{fx((ex?.W ?? NaN) / 1000, 1)}</Table.Td><Table.Td>{fx(eta * (ex?.W ?? NaN) / 1000, 1)}</Table.Td></Table.Tr>
-          <Table.Tr><Table.Td>purge gas: the ideal expander&apos;s outlet T [K]</Table.Td><Table.Td>{fx(ex?.T2s, 1)}</Table.Td><Table.Td>throttle: {fx(purge?.T_out, 1)}</Table.Td></Table.Tr>
+          <Table.Tr><Table.Td>purge gas: the ideal expander&apos;s outlet T [K], a formal ideal-gas estimate</Table.Td><Table.Td>{fx(ex?.T2s, 1)}</Table.Td><Table.Td>throttle: {fx(purge?.T_out, 1)}</Table.Td></Table.Tr>
         </Table.Tbody>
       </PanTable>
       <PanelNote>
         The liquid rows are the incompressible limit, on the run&apos;s inlet
         volumetric flow; the gas row is an ideal gas with the engine&apos;s Cp and
         k, molar flow from the run.  The expander&apos;s outlet temperature is
-        why an expander is a source of cold, and it is below the range the
-        records&apos; correlations were fitted over -- an ideal-gas number, not a
-        design.  The efficiency default, {TURBINE_EFF_DEFAULT}, is a round
-        number for the lesson.
+        a FORMAL estimate -- constant Cp and k, below the range the
+        records&apos; correlations were fitted over, and low enough that part
+        of the purge may condense; a real design solves an isentropic
+        equilibrium flash.  What it shows stands: an expander produces far
+        more cold than a throttle.  The efficiency default,
+        {TURBINE_EFF_DEFAULT}, is a round number for the lesson.
       </PanelNote>
     </Box>
   );
@@ -458,7 +483,7 @@ function NoiseBench({ run, props }: { run: MethodRunState; props: MethodRunState
     ? idealExpander(purge.F, gas.Cp_ig, purge.T_in, gas.k, purge.P_out / purge.P_in) : null;
   const rows: [string, number][] = [
     ["ammonia, first throttle", P(hp)],
-    ["ammonia, second throttle", P(lp)],
+    ["ammonia, second throttle (flashing)", P(lp)],
     ["purge gas", ex?.W ?? NaN],
   ];
   const ref = P(hp);
@@ -486,7 +511,10 @@ function NoiseBench({ run, props }: { run: MethodRunState; props: MethodRunState
         assumes the same fraction of each valve&apos;s dissipated power becomes
         sound, and that fraction -- which differs between a gas and a liquid,
         and rises steeply with cavitation and with the jet&apos;s Mach number --
-        is exactly what the IEC 60534-8 methods compute.  No sound level is
+        is exactly what the IEC 60534-8 methods compute: 8-3 for a gas, 8-4
+        for turbulent liquid flow and cavitation.  8-4 does not cover
+        flashing, so the flashing row is a comparison of mechanical power
+        and nothing more, not an IEC noise estimate.  No sound level is
         printed, because none was computed.
       </PanelNote>
     </Box>
@@ -509,10 +537,13 @@ export function LetdownTool(): JSX.Element {
         <Box>
           <Title order={3}>Large pressure letdown: choked flow, cavitation, flashing and noise</Title>
           <Text size="sm" c="dimmed" mt={4}>
-            What a valve taking a pressure ratio above ten does to the stream,
-            why that makes it a design problem -- wear, vapour, velocity and
+            What a valve taking a large pressure drop does to the stream, why
+            that can make it a design problem -- wear, vapour, velocity and
             sound -- and how industry takes the drop instead, worked on the
-            green-ammonia plant&apos;s own liquid and purge with the engine running.
+            green-ammonia plant&apos;s own liquid and purge with the engine
+            running.  How severe a letdown is depends on the fluid&apos;s
+            state, its vapour pressure, the valve&apos;s F_L and x_T, its
+            geometry and the flow, never on the pressure ratio alone.
           </Text>
           <Text size="sm" mt={6}>
             Beside it on this shelf,{" "}
@@ -583,7 +614,11 @@ export function LetdownTool(): JSX.Element {
           valve: the drop is shared, so the valve takes only part of it (solid)
           instead of all of it (dotted), and each device&apos;s vena contracta
           dips less.  The orifice cannot move, so it is sized for the normal
-          flow and the valve keeps the control.</>}>
+          flow and the valve keeps the control.  Against cavitation it is very
+          useful: it raises the valve&apos;s backpressure.  Against flashing
+          it is not a cure: if the final P2 is below the vapour pressure the
+          orifice does not remove the flashing, it moves the two-phase
+          crossing to the last device -- the orifice itself.</>}>
           <SeriesDrawing />
         </Figure>
         {step(14)}

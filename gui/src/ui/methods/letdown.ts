@@ -34,7 +34,8 @@
     * The liquid and gas choked-flow conditions, the critical pressure
       ratio factor F_F, the specific heat ratio factor F_gamma = k/1.4, the
       expansion factor Y and the vena-contracta pressure written with F_L,
-      are IEC 60534-2-1 (ISA-75.01.01-2007) as the open-source `fluids`
+      are IEC 60534-2-1 (ANSI/ISA-75.01.01-2012 (60534-2-1 MOD)) as the
+      open-source `fluids`
       library implements them (C. Bell, fluids/control_valve.py, MIT
       licence, version 1.0.27, read in full: cavitation_index,
       FF_critical_pressure_ratio_l, control_valve_choke_P_l,
@@ -45,8 +46,14 @@
       and x_T are READER-DECLARED assumptions here, with the defaults the
       fluids functions carry as their own keyword defaults (F_L = 0.9,
       x_T = 0.7), labelled as such on the page.
-    * The cavitation index sigma = (P1 - Pv)/(P1 - P2) is ISA RP75.23 as
-      the same library's docstring cites it; RP75.23 was NOT read.
+    * The cavitation index sigma = (P1 - Pv)/(P1 - P2) is ISA-RP75.23-1995
+      (R2024) as the same library's docstring cites it; RP75.23 was NOT
+      read.  (Both ISA designations were checked against ISA's own listing,
+      isa.org, 2026-10-12, for C70.)
+    * The gas pressure-drop ratio is CAPPED at the choke, x_eff =
+      min(x, F_gamma x_T), and Y and the flow are evaluated at x_eff -- which
+      is what size_control_valve_g does (Y floored at 2/3, x replaced by
+      F_gamma x_T when choked).
     * The ideal nozzle's critical pressure ratio is the overpressure page's
       own (criticalPressureRatio, overpressure.ts), derived there.
     * The equal-ratio staging is THIS PAGE'S MODEL of a staged trim, chosen
@@ -196,20 +203,28 @@ export function chokedPressureRatio(k: number, xT: number): number {
   return specificHeatRatioFactor(k) * xT;
 }
 
-/** The expansion factor Y = 1 - x/(3 F_gamma x_T), floored at 2/3 (its value
- *  at the choke), as the fluids implementation writes it. */
+/** The pressure-drop ratio the valve can USE: x_eff = min(x, F_gamma x_T).
+ *  Past the choke a larger x buys no more mass flow, so both Y and the
+ *  flow are evaluated at the cap. */
+export function effectivePressureRatio(x: number, k: number, xT: number): number {
+  return Math.min(x, chokedPressureRatio(k, xT));
+}
+
+/** The expansion factor Y = 1 - x_eff/(3 F_gamma x_T), on the CAPPED ratio:
+ *  1 at no drop, 2/3 at and beyond the choke (the fluids implementation
+ *  writes the same thing as a floor at 2/3). */
 export function expansionFactor(x: number, k: number, xT: number): number {
-  return Math.max(1 - x / (3 * specificHeatRatioFactor(k) * xT), 2 / 3);
+  return 1 - effectivePressureRatio(x, k, xT) / (3 * specificHeatRatioFactor(k) * xT);
 }
 
 /** The valve's mass flow as a FRACTION of its choked flow, at fixed P1, T1
- *  and opening: W is proportional to Y sqrt(x) below the choke and constant
- *  above it. */
+ *  and opening: W is proportional to Y sqrt(x_eff), with Y and x_eff both
+ *  on the capped ratio, so it rises up to the choke and is flat beyond. */
 export function valveFlowFraction(x: number, k: number, xT: number): number {
-  const xc = chokedPressureRatio(k, xT);
   if (x <= 0) return 0;
-  if (x >= xc) return 1;
-  return expansionFactor(x, k, xT) * Math.sqrt(x)
+  const xc = chokedPressureRatio(k, xT);
+  const xe = effectivePressureRatio(x, k, xT);
+  return expansionFactor(x, k, xT) * Math.sqrt(xe)
     / ((2 / 3) * Math.sqrt(xc));
 }
 
@@ -228,8 +243,11 @@ export function nozzleFlowFraction(x: number, k: number): number {
 // ---- Part 3: liquid ------------------------------------------------------------
 
 /** The vena-contracta pressure, from the definition of F_L:
- *  F_L^2 = (P1 - P2)/(P1 - P_vc).  It can come out below zero: a liquid
- *  cannot follow it there, and the page says so rather than drawing it. */
+ *  F_L^2 = (P1 - P2)/(P1 - P_vc).  A SINGLE-PHASE relation: once it falls
+ *  below F_F P_v the liquid vaporises at the vena contracta and the flow is
+ *  choked (chokedLiquidDrop), so a value below that -- below zero, at the
+ *  plant's store -- is an extrapolation and nonphysical; the page says so
+ *  and draws the dip held near F_F P_v instead. */
 export function venaContractaPressure(P1: number, P2: number, FL: number): number {
   return P1 - (P1 - P2) / (FL * FL);
 }
@@ -245,7 +263,24 @@ export function chokedLiquidDrop(P1: number, Pv: number, Pc: number, FL: number)
   return FL * FL * (P1 - liquidCriticalRatioFactor(Pv, Pc) * Pv);
 }
 
-/** ISA RP75.23's cavitation index (as fluids cites it): larger is safer. */
+/** The outlet pressure below which a liquid valve is choked,
+ *  P1 - Delta P_max. */
+export function chokedLiquidOutletPressure(P1: number, Pv: number, Pc: number,
+  FL: number): number {
+  return P1 - chokedLiquidDrop(P1, Pv, Pc, FL);
+}
+
+/** The vena-contracta pressure the page DRAWS: the single-phase relation
+ *  while the flow is not choked, and F_F P_v once it is (the pressure the
+ *  vaporising vena contracta is held near).  `choked` says which. */
+export function physicalVenaContracta(P1: number, P2: number, Pv: number,
+  Pc: number, FL: number): { P_vc: number; choked: boolean } {
+  const floor = liquidCriticalRatioFactor(Pv, Pc) * Pv;
+  const Pvc = venaContractaPressure(P1, P2, FL);
+  return Pvc < floor ? { P_vc: floor, choked: true } : { P_vc: Pvc, choked: false };
+}
+
+/** ISA-RP75.23's cavitation index (as fluids cites it): larger is safer. */
 export function cavitationIndex(P1: number, P2: number, Pv: number): number {
   return (P1 - Pv) / (P1 - P2);
 }
@@ -254,7 +289,8 @@ export type LiquidRegime = "flashing" | "cavitation" | "neither";
 
 /** Which of the three things a liquid does in the valve, read from where
  *  the vena-contracta pressure and the outlet pressure sit against the
- *  vapour pressure. */
+ *  vapour pressure -- the PURE component's, which for a liquid holding
+ *  dissolved gas is a didactic approximation (the page says so). */
 export function liquidRegime(P1: number, P2: number, Pv: number, FL: number): LiquidRegime {
   if (P2 <= Pv) return "flashing";
   if (venaContractaPressure(P1, P2, FL) <= Pv) return "cavitation";
@@ -291,15 +327,18 @@ export function stagesToAvoidVapour(P1: number, P2: number, Pv: number,
 }
 
 /** The hydraulic power a liquid's pressure drop represents [W]: Q dP, for an
- *  incompressible liquid -- what a valve turns into heat and an ideal
- *  turbine would deliver at its shaft. */
+ *  incompressible liquid -- the power an ideal turbine would deliver at its
+ *  shaft, and the power a valve DISSIPATES (the stream's enthalpy is
+ *  unchanged; what is destroyed is availability, by entropy generation). */
 export function hydraulicPower(Q_m3_s: number, dP_Pa: number): number {
   return Q_m3_s * dP_Pa;
 }
 
 /** An ideal-gas isentropic expansion from T1 at a pressure ratio r = P2/P1:
  *  the outlet temperature [K] and the work it delivers [W] for a molar flow
- *  F [kmol/s] with an ideal-gas heat capacity Cp [J/(mol K)] and ratio k. */
+ *  F [kmol/s] with an ideal-gas heat capacity Cp [J/(mol K)] and ratio k.
+ *  A FORMAL estimate (constant Cp and k, no condensation): a real design
+ *  solves an isentropic equilibrium flash. */
 export function idealExpander(F_kmol_s: number, Cp: number, T1: number,
   k: number, r: number): { T2s: number; W: number } {
   const T2s = T1 * r ** ((k - 1) / k);

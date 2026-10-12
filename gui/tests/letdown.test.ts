@@ -33,6 +33,9 @@
       the pressure ratio of 70, the valve closing on the report's surface);
     * the drawings, rendered on the shipped numbers, with no NaN and an
       aria-label each;
+    * the C70 review (2026-10-12): the gas cap x_eff, step 10's choke
+      numbers recomputed from the goldens, and the phrases the review
+      removed kept out;
     * the lesson text: no quotation marks, every equation parses, every
       engine citation lands on the line it names.
 \*---------------------------------------------------------------------------*/
@@ -47,11 +50,12 @@ import { methodCase } from "../src/case/methodRun.js";
 import { tutorialByName } from "../src/cases/tutorials.js";
 import {
   LETDOWN_PLANT, LETDOWN_PROPS, LETDOWN_WITNESS, SHIPPED_P_OUT, VALVES,
-  cavitationIndex, chokedLiquidDrop, chokedPressureRatio,
-  criticalPressureRatio, expansionFactor, flashFractionEstimate,
-  liquidCriticalRatioFactor, liquidRegime, nozzleFlowFraction, stagedDrop,
-  stagesToAvoidVapour, storagePressureOverride, valveFlowFraction,
-  venaContractaPressure,
+  cavitationIndex, chokedLiquidDrop, chokedLiquidOutletPressure,
+  chokedPressureRatio, criticalPressureRatio, effectivePressureRatio,
+  expansionFactor, flashFractionEstimate, liquidCriticalRatioFactor,
+  liquidRegime, nozzleFlowFraction, physicalVenaContracta, recordScalar,
+  stagedDrop, stagesToAvoidVapour, storagePressureOverride,
+  valveFlowFraction, venaContractaPressure,
 } from "../src/ui/methods/letdown.js";
 import {
   BubbleCollapseDrawing, ChokedFlowChart, InstallationDrawing,
@@ -159,6 +163,23 @@ describe("letdown: the valve arithmetic against the fluids implementation", () =
     expect(nozzleFlowFraction(xs * (1 - 1e-9), k)).toBeCloseTo(1, 6);
     expect(nozzleFlowFraction(0.99, k)).toBe(1);
   });
+  it("the gas ratio is CAPPED at the choke: x_eff = min(x, F_gamma x_T), Y and W on x_eff (C70)", () => {
+    const k = 1.3, xT = 0.6, xc = chokedPressureRatio(k, xT);
+    expect(effectivePressureRatio(0.2, k, xT)).toBe(0.2);
+    expect(effectivePressureRatio(0.95, k, xT)).toBe(xc);
+    //  past the choke Y is exactly its value at the cap, not a floor reached
+    //  from an uncapped x
+    expect(expansionFactor(0.95, k, xT)).toBe(expansionFactor(xc, k, xT));
+    for (const x of [0.05, 0.2, 0.4, xc, 0.8, 0.99]) {
+      const xe = Math.min(x, (k / 1.4) * xT);
+      const W = (1 - xe / (3 * (k / 1.4) * xT)) * Math.sqrt(xe);
+      const Wc = (2 / 3) * Math.sqrt(xc);
+      expect(valveFlowFraction(x, k, xT)).toBeCloseTo(W / Wc, 12);
+    }
+    //  the fluids implementation's own form: Y floored at 2/3, x -> F_gamma x_T
+    expect(expansionFactor(0.95, k, xT))
+      .toBeCloseTo(Math.max(1 - 0.95 / (3 * (k / 1.4) * xT), 2 / 3), 12);
+  });
   it("the vena-contracta pressure is the definition of F_L, inverted", () => {
     const P1 = 20e5, P2 = 3e5, FL = 0.9;
     const Pvc = venaContractaPressure(P1, P2, FL);
@@ -259,6 +280,29 @@ describe("letdown: the numbers the prose states, recomputed from the goldens", (
     expect(SHIPPED_P_OUT.ValveLP).toBeLessThan(Pv);
     expect(SHIPPED_P_OUT.ValveHP).toBeGreaterThan(Pv);
   });
+  it("step 10's choke numbers: P_vc = -3.44 bar is an extrapolation; F_F Pv = 1.75, dP_max = 14.78, P2 = 5.22 bar (C70)", () => {
+    const P1 = golden(LETDOWN_WITNESS, "kpi", "ValveLP", "P_in");
+    const P2 = golden(LETDOWN_WITNESS, "kpi", "ValveLP", "P_out");
+    const Pv = golden(LETDOWN_PROPS, "diag", "liquidLP", "Psat_NH3");
+    const Pc = recordScalar(tutorialByName(LETDOWN_PROPS)!.files.rawFiles, "NH3", "Pc")! * 1e5;
+    const FL = 0.9;
+    const FF = liquidCriticalRatioFactor(Pv, Pc);
+    const body = LETDOWN_STEPS.find((s) => s.n === 10)!.body;
+    const say = (v: number, d: number) => expect(body).toContain(v.toFixed(d));
+    say(P1 / 1e5, 0); say((P1 - P2) / 1e5, 2); say(FL * FL, 2);
+    say(venaContractaPressure(P1, P2, FL) / 1e5, 2);       // -3.44
+    say(FF, 4); say(Pv / 1e5, 3); say(FF * Pv / 1e5, 2);    // 0.9238, 1.894, 1.75
+    say(chokedLiquidDrop(P1, Pv, Pc, FL) / 1e5, 2);         // 14.78
+    say(chokedLiquidOutletPressure(P1, Pv, Pc, FL) / 1e5, 2); // 5.22
+    expect(body).toMatch(/EXTRAPOLATION/);
+    expect(body).toMatch(/nonphysical/);
+    //  and the bench draws the choked dip at F_F Pv, not at the extrapolation
+    const phys = physicalVenaContracta(P1, P2, Pv, Pc, FL);
+    expect(phys.choked).toBe(true);
+    expect(rel(phys.P_vc, FF * Pv)).toBeLessThan(1e-12);
+    //  above the choke pressure the single-phase relation stands
+    expect(physicalVenaContracta(P1, 6e5, Pv, Pc, FL).choked).toBe(false);
+  });
   it("the valve closes on the report's surface, and the gas valve cools (step 6)", () => {
     //  C65 item d: the valve prices both ends through flashState::priceState,
     //  so the plant's first law closes and the purge shows its Joule-Thomson
@@ -277,6 +321,7 @@ describe("letdown: the drawings render on the shipped numbers", () => {
   const svgs = [
     createElement(ValveProfileDrawing, { P1: 20e5, P2: 1.01325e5, Pvc: -0.4e5, Pv: 1.894e5 }),
     createElement(ValveProfileDrawing, { P1: 20e5, P2: 4e5, Pvc: 1e5, Pv: 1.894e5 }),
+    createElement(ValveProfileDrawing, { P1: 20e5, P2: 1.01325e5, Pvc: 1.75e5, Pv: 1.894e5, choked: true }),
     createElement(ChokedFlowChart, {
       valve: [[0, 0], [0.5, 0.9], [1, 1]], nozzle: [[0, 0], [0.47, 1], [1, 1]],
       xCh: 0.7, xNozzle: 0.47, xCase: 0.986 }),
@@ -287,7 +332,7 @@ describe("letdown: the drawings render on the shipped numbers", () => {
     createElement(RecoveryDrawing, { P_kW: 222.5, eta: 0.75 }),
     createElement(BubbleCollapseDrawing),
   ];
-  it("eight drawings (nine renders), each an SVG with an aria-label and no NaN", () => {
+  it("eight drawings (ten renders), each an SVG with an aria-label and no NaN", () => {
     for (const el of svgs) {
       const html = renderToStaticMarkup(el);
       expect(html.startsWith("<svg")).toBe(true);
@@ -295,6 +340,46 @@ describe("letdown: the drawings render on the shipped numbers", () => {
       expect(html).toMatch(/aria-label="[^"]{40,}"/);
       expect(html).not.toMatch(/NaN|Infinity|undefined/);
     }
+  });
+  it("a valve dissipates its hydraulic power, it does not make heat of it (C70)", () => {
+    //  the first throttle's Q1 (P1 - P2), from the goldens: 222 kW
+    const P_kW = golden(LETDOWN_WITNESS, "kpi", "ValveHP", "Q_in")
+      * golden(LETDOWN_WITNESS, "kpi", "ValveHP", "dP") / 1000;
+    expect(Math.round(P_kW)).toBe(222);
+    const html = renderToStaticMarkup(createElement(RecoveryDrawing, { P_kW, eta: 0.75 }));
+    expect(html).toContain("222 kW hydraulic power dissipated");
+    expect(html).not.toMatch(/>heat /);
+  });
+});
+
+describe("letdown: the C70 review, held", () => {
+  const lesson = LETDOWN_STEPS.map((s) => `${s.title} ${s.body} ${s.note ?? ""}`).join(" ")
+    + LETDOWN_LIMITS.map((l) => l.body).join(" ")
+    + LETDOWN_SOURCES.map((s) => `${s.cite} ${s.used}`).join(" ");
+  const page = tree("gui/src/ui/methods/LetdownTool.tsx");
+  const reg = METHOD_TOOLS.find((m) => m.id === "letdown")!.teaches;
+  const back = OVERPRESSURE_STEPS.find((s) => s.leadsTo?.tool === "letdown")!.leadsTo!.body;
+  it("no universal pressure-ratio criterion, anywhere the page or its links say it", () => {
+    for (const t of [lesson, page, reg, back]) expect(t).not.toMatch(/(above|about) (about )?ten\b/i);
+  });
+  it("a valve conserves h; no pressure energy is degraded into internal energy", () => {
+    expect(lesson).not.toMatch(/degraded/);
+    expect(LETDOWN_STEPS[0]!.body).toMatch(/availability/);
+  });
+  it("choking limits the MASS FLOW, and the valve does not choke 'later' as a rule", () => {
+    expect(LETDOWN_STEPS.find((s) => s.n === 4)!.title).toMatch(/mass flow/);
+    expect(lesson + page).not.toMatch(/chokes later|choke comes later/);
+  });
+  it("cites the ISA documents as ISA lists them, and the EU values as daily L_EX,8h", () => {
+    expect(lesson).toContain("ANSI/ISA-75.01.01-2012 (60534-2-1 MOD)");
+    expect(lesson).toContain("ISA-RP75.23-1995 (R2024)");
+    expect(lesson).not.toContain("ISA-75.01.01-2007");
+    expect(lesson).not.toMatch(/daily and weekly/);
+    expect(LETDOWN_STEPS.find((s) => s.n === 15)!.body).toContain("L_EX,8h");
+  });
+  it("IEC 60534-8-4 is not said to cover flashing", () => {
+    expect(LETDOWN_STEPS.find((s) => s.n === 15)!.body).toMatch(/not flashing/);
+    expect(page).toMatch(/does not cover\s+flashing/);
   });
 });
 
