@@ -2,7 +2,7 @@
   A DOCKED STUB IS AN ANNOTATION OF ITS UNIT (DEV.md 4c C59, the stub
   follow-up, 2026-10-11).
 
-  Vítor opened plant/greenAmmoniaFeasibility50bar on the live site after C59
+  Vítor opened plant/greenAmmonia02_feasibility50bar on the live site after C59
   and saw "the location of the utilities is a big mess": every DUTY stub in
   one row across the top of the canvas, far from its unit, and the three
   coolers labelled "heating" before any run.  Cause: the pre-C59 canvas had
@@ -42,7 +42,7 @@ import {
 import { legacyPositions } from "./layoutLegacy.js";
 
 const HERE = fileURLToPath(new URL(".", import.meta.url));
-const CASE = join(HERE, "..", "..", "tutorials", "plant", "greenAmmoniaFeasibility50bar");
+const CASE = join(HERE, "..", "..", "tutorials", "plant", "greenAmmonia02_feasibility50bar");
 
 /** The case as the canvas receives it: every text file, keyed relative to
  *  the case root (run outputs left out). */
@@ -161,7 +161,7 @@ describe("(2) a v1 working copy, written the way the old canvas wrote it", () =>
     v1Nodes[id] = isStubId(id) ? { x: p.x, y: p.y }
       : { x: 320 * (i % 6), y: 260 * Math.floor(i / 6) };
   });
-  const V1 = { "plant/greenAmmoniaFeasibility50bar": { nodes: v1Nodes, edges: { e: { x: 1, y: 2 } },
+  const V1 = { "plant/greenAmmonia02_feasibility50bar": { nodes: v1Nodes, edges: { e: { x: 1, y: 2 } },
                                                        handles: {} } };
 
   it("the v1 stubs WERE far from their units (the defect, reproduced)", () => {
@@ -175,7 +175,7 @@ describe("(2) a v1 working copy, written the way the old canvas wrote it", () =>
 
   it("is set aside, not applied: the case opens on the automatic layout with stubs docked", () => {
     localStorage.setItem("choupo.layouts.v1", JSON.stringify(V1));
-    const working = loadLayout("plant/greenAmmoniaFeasibility50bar");
+    const working = loadLayout("plant/greenAmmonia02_feasibility50bar");
     expect(working.nodes).toEqual({});
     const l = mergeLayouts(working, layoutFromChoText(""));
     expectDocked(resolveArrangement(IDS, AUTO, l, SIZE, (id) => NB.get(id) ?? []));
@@ -183,16 +183,16 @@ describe("(2) a v1 working copy, written the way the old canvas wrote it", () =>
     expect(localStorage.getItem("choupo.layouts.v2")).not.toBeNull();
     expect(JSON.parse(localStorage.getItem("choupo.layouts.v1")!)).toEqual(V1);
     // The set-aside copy carries no stub.
-    const kept = loadLegacyLayout("plant/greenAmmoniaFeasibility50bar")!;
+    const kept = loadLegacyLayout("plant/greenAmmonia02_feasibility50bar")!;
     expect(Object.keys(kept.nodes).some(isStubId)).toBe(false);
     expect(Object.keys(kept.nodes).length).toBe(IDS.length - STUBS.length);
   });
 
   it("restored, it brings the reader's units back -- and docks every stub on its unit", () => {
     localStorage.setItem("choupo.layouts.v1", JSON.stringify(V1));
-    expect(restoreLegacyLayout("plant/greenAmmoniaFeasibility50bar")).toBe(true);
-    expect(loadLegacyLayout("plant/greenAmmoniaFeasibility50bar")).toBeUndefined();
-    const l = mergeLayouts(loadLayout("plant/greenAmmoniaFeasibility50bar"), layoutFromChoText(""));
+    expect(restoreLegacyLayout("plant/greenAmmonia02_feasibility50bar")).toBe(true);
+    expect(loadLegacyLayout("plant/greenAmmonia02_feasibility50bar")).toBeUndefined();
+    const l = mergeLayouts(loadLayout("plant/greenAmmonia02_feasibility50bar"), layoutFromChoText(""));
     const pos = resolveArrangement(IDS, AUTO, l, SIZE, (id) => NB.get(id) ?? []);
     for (const id of IDS.filter((i) => !isStubId(i))) expect(pos.get(id)).toEqual(v1Nodes[id]);
     expectDocked(pos);

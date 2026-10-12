@@ -688,7 +688,7 @@ std::map<std::string,std::string> flattenNode(const DictPtr&                    
             // UNRESOLVED list is left for the global library (buildAugmentedDict 3a): it
             // was DROPPED until 2026-10-10, and a unit folder at the plant root (whose
             // walk-up never reaches the case's constant/reactions) failed with "missing
-            // sub-dictionary 'reaction'" (greenAmmoniaBasicDesign, DEV.md 4c C57).
+            // sub-dictionary 'reaction'" (greenAmmonia03_basicDesign, DEV.md 4c C57).
             if (cd->found("reactions") && !cd->hasDictList("reactions"))
             {
                 const auto names = cd->lookupWordList("reactions");

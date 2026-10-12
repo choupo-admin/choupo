@@ -1,4 +1,4 @@
-# Green ammonia, 1200 t/day — the base case of the PEQ 2026-27 project
+# Green ammonia, 1200 t/day — the reference case of the PEQ 2026-27 brief
 
 The starting point a design-project group opens: the plant of the **project
 base data (v2)** — electrolytic hydrogen at 30 bar, nitrogen from an on-site
@@ -10,15 +10,23 @@ source /path/to/Choupo/etc/bashrc
 runCase -f .
 ```
 
-The same plant is also described at two design stages, each a copy of this
-case with one thing changed:
-[`greenAmmoniaFeasibility`](../greenAmmoniaFeasibility) (FEL-2: no
-feed/effluent exchanger, every duty bought from a utility, pinch targets
-and the gross margin with the energy priced; with a 50 bar variant,
-[`greenAmmoniaFeasibility50bar`](../greenAmmoniaFeasibility50bar)) and
-[`greenAmmoniaBasicDesign`](../greenAmmoniaBasicDesign) (FEL-3: the
-converter as three adiabatic catalyst beds on a rate law, every exchanger
-designed).
+**It is the brief's REFERENCE case, and it sits outside the numbered
+sequence on purpose.** Its detail differs from equipment to equipment, as a
+reference plant's does: the converter is an equilibrium model (one Gibbs
+reactor, 5 K short of equilibrium) while the six exchangers are designed in
+detail (Kern). That is not a defect to be fixed; it is why the numbered cases
+exist. Each is a copy of this case with one thing changed, so the stage it
+illustrates is uniform:
+
+| rung | case | illustrated design stage | what changes against this case |
+|---|---|---|---|
+| 1 | [`ammoniaRoutes01_screening`](../ammoniaRoutes01_screening) | FEL-1, screening | not a copy: the production routes on paper, the common entry |
+| 2 | [`greenAmmonia02_feasibility150bar`](../greenAmmonia02_feasibility150bar) | FEL-2, feasibility | no feed/effluent exchanger, every duty bought from a utility, pinch targets and the gross margin with the energy priced |
+| 2 | [`greenAmmonia02_feasibility50bar`](../greenAmmonia02_feasibility50bar) | FEL-2, an exploratory alternative | the same at 50 bar, resting on a catalyst hypothesis |
+| 3 | [`greenAmmonia03_basicDesign`](../greenAmmonia03_basicDesign) | FEL-3, basic design (process side) | the converter as three adiabatic catalyst beds on a rate law, volumes solved, every exchanger designed |
+
+Its `estimateClass 4` is, like theirs, the author's statement of how far the
+project is defined — not a consequence of the model.
 
 Seventeen units, no sectors, each in its **own folder** (`Converter/`,
 `Separator/`, …) with its `system/flowsheetDict` and its `.cho` marker. The
@@ -53,10 +61,10 @@ path, so three Gibbs beds in series with coolers between them give the same
 outlet as one Gibbs reactor at the last bed's temperature. The first-pass
 practice is therefore one reactor at the converter outlet temperature with
 an approach to equilibrium (the definition and its source are in
-[`ammoniaStaged03_approach`](../ammoniaStaged03_approach)). The number of
+[`ammoniaReactor03_equilibriumApproach`](../ammoniaReactor03_equilibriumApproach)). The number of
 beds, their inlet temperatures against the catalyst's 520 °C limit and their
 catalyst volumes need a rate law: a plug-flow reactor
-([`ammoniaStaged04_kinetic`](../ammoniaStaged04_kinetic)), task 2.
+([`ammoniaReactor04_kineticSizing`](../ammoniaReactor04_kineticSizing)), task 2.
 
 ## What the run shows
 

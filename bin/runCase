@@ -76,6 +76,27 @@ while [ "$#" -gt 0 ]; do
 done
 
 CASE="${1:-.}"
+
+# A RENAMED tutorial (tutorials/ALIASES, DEV.md 4c C68): a path under
+# tutorials/ that no longer exists but whose identifier -- or the root of it,
+# for a drilled unit folder -- is a former name resolves to the current case,
+# ANNOUNCED.  The map has one home; the GUI imports the same file.
+if [ ! -d "$CASE" ] && [[ "$CASE" == *tutorials/* ]]; then
+    ALIASES="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)/tutorials/ALIASES"
+    REL="${CASE##*tutorials/}"; REL="${REL%/}"
+    if [ -f "$ALIASES" ]; then
+        while read -r OLD NEW; do
+            case "$OLD" in ''|'#'*) continue ;; esac
+            if [ "$REL" = "$OLD" ] || [[ "$REL" == "$OLD/"* ]]; then
+                NEWCASE="${CASE%"$REL"*}${NEW}${REL#"$OLD"}"
+                echo "runCase: '$CASE' was renamed -- running '$NEWCASE' (tutorials/ALIASES)" >&2
+                CASE="$NEWCASE"
+                break
+            fi
+        done < "$ALIASES"
+    fi
+fi
+
 CASE_ABS=$(cd "$CASE" 2>/dev/null && pwd) || {
     echo "runCase: '$CASE' is not a directory" >&2; exit 1; }
 

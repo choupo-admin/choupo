@@ -8,5 +8,5 @@
 \*-----------------------------------------------------------------------------*/
 tier          tutorial;
 application  choupoSolve;
-description  "STAGED DESIGN SEQUENCE, stage A of three -- YIELD. The ammonia synthesis loop with a conversionReactor on a DECLARED single-pass conversion of 25 % of the nitrogen. Claims a converged MATERIAL balance and nothing else: no reactor size, no equipment cost -- and NOT a converged heat balance, which this reactor cannot deliver against an SRK-priced stream (README section 4). Diff the flowsheetDict against ammoniaStaged02_equilibrium and the only block that moves is the converter.";
+description  "AMMONIA REACTOR-MODEL LADDER, rung 1 of 4 -- FIXED CONVERSION. The ammonia synthesis loop with a conversionReactor on a DECLARED single-pass conversion of 25 % of the nitrogen. Claims a converged MATERIAL balance and nothing else: no reactor size, no equipment cost -- and NOT a converged heat balance, which this reactor cannot deliver against an SRK-priced stream (README section 4). Diff the flowsheetDict against ammoniaReactor02_equilibrium and the only block that moves is the converter.";
 verbosity    3;

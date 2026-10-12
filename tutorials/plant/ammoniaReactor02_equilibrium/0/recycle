@@ -13,7 +13,7 @@
 // estimate, NOT a specification.  The no-silent-crutch credo: the seed is
 // visible and yours to own.
 //
-// The seed is the SAME in all three stages, and deliberately so: three
+// The seed is the SAME in all four rungs, and deliberately so: four
 // different seeds would leave a reader unable to tell a difference in the
 // answer from a difference in where the solver started.
 // ---------------------------------------------------------------------------

@@ -1103,7 +1103,7 @@ both, and the plant now closes at +0.0064 kW.
 every published number, measured against a build of the parent commit: three
 price ideal gas on an all-vapour inlet, which IS the sum the old code
 performed, and three publish no duty at all, so the suite says nothing about
-theirs either way.  (3) The negative result, again: `greenAmmoniaIndustrialN2` got
+theirs either way.  (3) The negative result, again: `greenAmmoniaPEQ_baseCase` got
 WORSE (-12.70 -> -13.72 kW) BECAUSE its Deoxo now closes exactly and its
 1.0166 kW had been cancelling someone else's.  **And what the fix then made
 visible is not an engine defect at all**: `acetone02`/`acetone03` run no EoS --
@@ -1124,7 +1124,7 @@ phase declaration is what closed it).  Record:
 (2026-09-26).**  `IsothermalFlash` re-resolved its feed through `solveCore`
 and ACCEPTED a two-phase root above every present component's Tc while the
 report, resolving the same feed through `flashState::equilibriumAt`,
-discarded it -- the whole -22 274.7 kW of `ammoniaStaged04_kinetic` on one
+discarded it -- the whole -22 274.7 kW of `ammoniaReactor04_kineticSizing` on one
 separator; the discard is ONE home now (`flashState::supercriticalSplitDiscarded`,
 both readers call it, gate `check_inlet_resolution` arm (h)).  Enumerated in
 the same commit, per the 2026-09-25 rule: every reader that goes THROUGH

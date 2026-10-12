@@ -50,7 +50,7 @@ namespace {
 //  THE DEFECT THIS EXISTS TO END (measured 2026-09-25).  Both terms of this
 //  reactor's duty used to be sums of `h_pure_ig` -- IDEAL GAS -- while the
 //  stream it produces is priced by the package, which may be a cubic EoS.
-//  `ammoniaStaged01_yield` is the witness: its converter runs at 200 bar
+//  `ammoniaReactor01_fixedConversion` is the witness: its converter runs at 200 bar
 //  under `fugacityModel SRK`, the energy report read dH = 53257.785726 kW
 //  across it and the unit declared Q = 50979.639980 kW, a 104.468736 %
 //  closure -- and that 2278.1457 kW gap was, to the last digit, the whole of

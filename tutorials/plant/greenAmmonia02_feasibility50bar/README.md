@@ -1,11 +1,18 @@
-# Green ammonia, 1200 t/day — the feasibility stage with a 50 bar loop
+# Green ammonia, 1200 t/day — feasibility study, 50 bar loop: an exploratory alternative
 
-The feasibility study of
-[`greenAmmoniaFeasibility`](../greenAmmoniaFeasibility) (FEL-2, an AACE
-Class 4 type study; read that README first) with the synthesis loop moved
-from **150 to 50 bar**. It is the speculation the feasibility stage allows:
+**Illustrated design stage: FEL-2** — the SAME stage as
+[`greenAmmonia02_feasibility150bar`](../greenAmmonia02_feasibility150bar)
+(read that README first), not a further one. It is an **exploratory
+alternative** of that study: the synthesis loop moved from **150 to 50 bar**,
+the speculation the feasibility stage allows —
 *what would this plant earn if a catalyst approached equilibrium at 400 °C
 and 50 bar?*
+
+**THE CATALYST IS A HYPOTHESIS, and the whole case rests on it.** No rate law
+in this tree supports a converter that approaches equilibrium at 400 °C and
+50 bar (the section below says why); the case assumes one exists. Its
+`estimateClass 4` is, as in the 150 bar case, the author's statement of how
+far the project is defined, not a consequence of the model or the stage.
 
 ```bash
 source /path/to/Choupo/etc/bashrc
@@ -19,8 +26,8 @@ approached equilibrium at the temperature declared. It does not say that
 such a catalyst exists.** The converter here is a Gibbs reactor at 400 °C,
 5 K short of equilibrium: the case assumes an activity no rate law in this
 tree supports. The only ammonia kinetics Choupo carries — Dyson & Simon
-(1968), used by [`greenAmmoniaBasicDesign`](../greenAmmoniaBasicDesign) and
-[`ammoniaStaged04_kinetic`](../ammoniaStaged04_kinetic) — are for an
+(1968), used by [`greenAmmonia03_basicDesign`](../greenAmmonia03_basicDesign) and
+[`ammoniaReactor04_kineticSizing`](../ammoniaReactor04_kineticSizing) — are for an
 **iron** catalyst and were fitted over 150-300 atm; nothing here extends
 them to 50 bar. Ruthenium-based catalysts are reported to be far more
 active than iron and to run at lower pressures (down to 90 bar in the

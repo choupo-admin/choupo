@@ -24,7 +24,7 @@ import { datasheetOdsRows, heatExchangerDatasheetHtml }
 import type { UnitSpec } from "../src/case/types.js";
 import { witnessOutput } from "./witnessRead.js";
 
-const CASE = "tutorials/plant/greenAmmoniaIndustrialN2";
+const CASE = "tutorials/plant/greenAmmoniaPEQ_baseCase";
 const sheetText = (unit: string) => witnessOutput(CASE, `design/${unit}/shellTubeHX`);
 const files = (unit: string) => ({ [`design/${unit}/shellTubeHX`]: sheetText(unit) });
 

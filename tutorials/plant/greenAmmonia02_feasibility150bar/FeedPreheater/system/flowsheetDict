@@ -9,7 +9,7 @@
 //  it from the catalogue as if nothing were recovered; the pinch targets
 //  (system/postDict, pinchPass) say how much of it the converter effluent
 //  could pay instead.  That match is the next stage's design
-//  (tutorials/plant/greenAmmoniaBasicDesign installs the exchanger).
+//  (tutorials/plant/greenAmmonia03_basicDesign installs the exchanger).
 
 type      phaseChanger;
 operation { outletT 653.15 K; }      // 380 C, the base data's converter inlet

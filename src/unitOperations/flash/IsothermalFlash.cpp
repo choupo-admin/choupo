@@ -1765,7 +1765,7 @@ int IsothermalFlash::solve(const DictPtr& dict,
             //  since 2026-09-08 and said so; this duty resolved it through
             //  `solveCore` directly and ACCEPTED it -- blending a liquid
             //  that cannot exist into H_in.  Two readers of one state, two
-            //  answers: ammoniaStaged04's separator, fed at 844.86 K and
+            //  answers: ammoniaReactor04's separator, fed at 844.86 K and
             //  200 bar (N2/H2/NH3/Ar, highest Tc present 405.4 K), closed at
             //  90.32 % and carried the whole plant residual, -22 274.7 kW.
             //  ONE home for the criterion and the sentence; the unit does

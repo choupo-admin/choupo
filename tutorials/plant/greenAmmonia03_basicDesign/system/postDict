@@ -6,7 +6,7 @@
 /*---------------------------------------------------------------------------*\
   postDict -- THE BASIC-DESIGN STAGE (FEL-3 on the process side).  The
   sizing, costing, storage, inventory, working capital and appraisal of the
-  base case (tutorials/plant/greenAmmoniaIndustrialN2/system/postDict, whose
+  base case (tutorials/plant/greenAmmoniaPEQ_baseCase/system/postDict, whose
   header gives every shared rule and its reason; they are not repeated
   here), with the converter's items replaced:
 
@@ -44,7 +44,7 @@
                       index, no module factor.  The two catalyst numbers,
                       2500 kg/m3 and 15 EUR/kg, are AUTHOR-SET ASSUMPTIONS
                       -- the same round numbers tutorials/plant/
-                      ammoniaStaged04_kinetic declares, with no source behind
+                      ammoniaReactor04_kineticSizing declares, with no source behind
                       either; replace them with a vendor's.  No head space,
                       distributor, support grid or internals: the shell is
                       the bed's envelope.  Each bed is its own shell here;
@@ -72,7 +72,9 @@
   method is AACE's Class 4 methodology; Class 3 is estimated from
   semi-detailed unit costs and vendor quotations, which no part of Choupo
   reads.  So `estimateClass 4` and its band stay below, unchanged: what
-  moved to FEL-3 here is the PROCESS fidelity, not the cost estimate.
+  moved to FEL-3 here is the PROCESS fidelity, not the cost estimate.  The
+  class is the author's statement of how far the project is defined; it
+  never follows from the model used or the design stage illustrated.
 \*---------------------------------------------------------------------------*/
 
 sizing
@@ -339,7 +341,7 @@ economics
     siteFactor          0.50;
     contingencyFee      1.18;
     N_np                15;          // 4 compressors + 8 exchangers + 3 beds
-    estimateClass       4;
+    estimateClass       4;           // the AUTHOR's statement of how far the project is defined (AACE's primary characteristic) -- not a consequence of the model or of the design stage illustrated
     accuracyBand        ( -30 50 );  // the wide corner of Class 4 -- chosen
     refuseOnMissingPrice 1;
 

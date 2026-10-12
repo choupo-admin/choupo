@@ -11,7 +11,7 @@
   Turton's equipment-factored method -- a Class 4 METHOD -- so this is FEL-3
   in its process fidelity and a study-type estimate in its cost (README).
 
-  DERIVED FROM tutorials/plant/greenAmmoniaIndustrialN2 (the PEQ 2026-27 base
+  DERIVED FROM tutorials/plant/greenAmmoniaPEQ_baseCase (the PEQ 2026-27 base
   case): the same feeds, package, compressors, FEHE, coolers, separation,
   let-down and utilities.  ONE block differs: the base case's single Gibbs
   converter is replaced by THREE ADIABATIC CATALYST BEDS on the Dyson & Simon

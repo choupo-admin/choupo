@@ -7,7 +7,7 @@
 |        |     O ptimization  |                                               |
 \*-----------------------------------------------------------------------------*/
 /*---------------------------------------------------------------------------*\
-  reactions -- ammoniaStaged01_yield.  STOICHIOMETRY ONLY: a conversionReactor
+  reactions -- ammoniaReactor01_fixedConversion.  STOICHIOMETRY ONLY: a conversionReactor
   needs no kinetics, because its extent is SPECIFIED rather than computed.
 
   N2 + 3 H2 -> 2 NH3

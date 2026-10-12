@@ -50,7 +50,7 @@
 
   WHAT IS NOT IN THIS CASE, and is the groups' work (base data, section 2.8):
   the converter's beds (number, inlet temperatures, catalyst volume -- they
-  need a rate law, tutorials/plant/ammoniaStaged04_kinetic); the H2O + O2 of
+  need a rate law, tutorials/plant/ammoniaReactor04_kineticSizing); the H2O + O2 of
   the hydrogen (the feed here is pure H2); the cold gas/gas exchanger before
   the chiller (so the chiller duty is an upper bound); the purge scrubber and
   the let-down gas recovery; the cooling water, the refrigeration cycle and

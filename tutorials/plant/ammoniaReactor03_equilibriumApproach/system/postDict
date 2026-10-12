@@ -7,10 +7,10 @@
 |        |     O ptimization  |                                               |
 \*-----------------------------------------------------------------------------*/
 /*---------------------------------------------------------------------------*\
-  postDict -- STAGE C ONLY.  Stages A and B carry no postDict at all, and that
+  postDict -- RUNG 3 ONLY.  Rungs 1 and 2 carry no postDict at all, and that
   absence is the sequence's invariant working:
 
-      A STAGE MAY NOT COST WHAT IT DID NOT SIZE.
+      A RUNG MAY NOT COST WHAT IT DID NOT SIZE.
 
   =========================================================================
   WHY THE CONVERTER'S VOLUME IS NOT TYPED IN
@@ -67,9 +67,9 @@
       [basis] vessel 'converter': spaceVelocity 20000 1/h on NORMAL gas
               volume; at (700 K, 200 bar) that is 259.665 1/h on ACTUAL gas
 
-  The sheet's `basis` field says NORMAL in words.  Stage D's PFR publishes
+  The sheet's `basis` field says NORMAL in words.  Rung 4's PFR publishes
   its own `GHSV_normal_h` KPI on the SAME reference (both read
-  `core/Constants.H`'s T_normal / P_normal), so C's assumed 20000 and D's
+  `core/Constants.H`'s T_normal / P_normal), so rung 3's assumed 20000 and rung 4's
   computed value are on one basis by construction.
 
   WHERE 20000 Nm3/(m3.h) COMES FROM: IT IS A DECLARED ASSUMPTION.  Those are
@@ -86,8 +86,8 @@
   quoted in the flowsheetDict, which were read out of the retrieved text
   itself.
 
-  WHAT REPLACES IT: an integrated rate law, which is stage D of this
-  sequence (tutorials/plant/ammoniaStaged04_kinetic, built 2026-09-26 --
+  WHAT REPLACES IT: an integrated rate law, which is rung 4 of this
+  sequence (tutorials/plant/ammoniaReactor04_kineticSizing, built 2026-09-26 --
   `pfr` reads `AmmoniaSynthesisRate` through `kinetics { type
   dysonSimon1968; }` and a DesignSpec computes the bed volume from the
   effluent's approach to equilibrium).  The pellet effectiveness factor is

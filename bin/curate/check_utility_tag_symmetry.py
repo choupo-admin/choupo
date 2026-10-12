@@ -88,7 +88,7 @@ MATH = ROOT / "src/reporting/BalanceMath.H"
 
 #  (b),(c): a FIXTURE this gate builds, because no shipped case reaches the
 #  path any more.  MEASURED 2026-09-09 over all ten cases that tag a utility
-#  stream: only greenAmmoniaIndustrialN2 announced; utility01-03 REFUSE their
+#  stream: only greenAmmoniaPEQ_baseCase announced; utility01-03 REFUSE their
 #  energy balance outright (a component with no enthalpy datum), so the
 #  announcement site is never reached, and the other cases never present the
 #  tagged stream to a unit's energy balance at all -- A WITNESS THAT CANNOT

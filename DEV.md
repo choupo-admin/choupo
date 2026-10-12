@@ -2076,6 +2076,23 @@ vapour fraction on an all-gas outlet at 1 atm (the case runs at 0.02 bar to
 stay ideal-gas) -- an engine defect of the state family, not yet fixed;
 (iv) RouteScreeningTool is methanol-specific, generalising it is a few
 hundred lines, not done.
+RENAMES DONE 2026-10-12 on branch `claude/c68-renames` (not merged): the
+eight directories and their `.cho` markers moved by `git mv` to the revised
+names; every current reference followed (FASTSET, the gates and pin lists,
+the GUI's EduTools and tests, `docs/ai/`, the catalogue, the guides --
+regenerated and rebuilt -- CLAUDE.md, engine comments, case cross-links);
+the reactor ladder says "rung N of 4" throughout, and the green sequence
+and its postDicts say "illustrated design stage" and that `estimateClass`
+is the author's statement of maturity.  ONE alias home, `tutorials/ALIASES`
+(old -> new identifier): the GUI resolves `?case=<old>` and a drilled
+`<old>/<unit>` through it and corrects the address bar, `bin/runCase`
+resolves an old path ANNOUNCED, and `check_doc_references` lets THIS
+file's dated records keep the name a case had when they were written (and
+only this file).  No golden moved.  The dated records here, the design
+records under `docs/design/` and CHANGELOG keep the old names on purpose;
+the FEL EduTool's per-stage class column (the record's §2.3 table) now
+reads "usually" -- whether the tool should drop the stage-class pairing is
+a pedagogical question for Vítor.
 
 **C67. A CASE CARRIES ITS OWN KINETICS: RATE EXPRESSIONS IN THE DICT, AND A
 FACTORY A CASE'S `code/` CAN REGISTER INTO (Vítor, 2026-10-12, verbatim:

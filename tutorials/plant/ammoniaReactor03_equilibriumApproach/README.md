@@ -1,4 +1,4 @@
-# `ammoniaStaged03_approach` — stage C of the staged design sequence
+# `ammoniaReactor03_equilibriumApproach` — rung 3 of 4 of the ammonia reactor-model ladder
 
 **THE RUNG NOTHING ELSE IN THE CORPUS EXERCISES.**  `gibbsReactor` has read
 `operation.temperatureApproach` and announced it loudly since
@@ -13,18 +13,18 @@ capability no gate can see.
 
 Three cases form a ladder of reactor fidelity over one unchanged ammonia
 synthesis loop.  **Between consecutive stages exactly one thing moves: the
-reactor model.**  Against stage B the difference is literally one line.
+reactor model.**  Against rung 2 the difference is literally one line.
 
 | | reactor | claims | must not claim |
 |---|---|---|---|
-| A `ammoniaStaged01_yield` | `conversionReactor`, declared conversion | a material balance | a reactor size; an equipment-factored cost |
-| B `ammoniaStaged02_equilibrium` | `gibbsReactor`, true equilibrium | the thermodynamic ceiling | any size, any cost |
-| **C** *this case* | `gibbsReactor` **+ 5 K approach** | a realistic outlet; downstream units may be sized; the converter may be costed | a bed volume the **engine** computed |
-| **D** `ammoniaStaged04_kinetic` | adiabatic `pfr` on the Dyson & Simon (1968) rate law, volume solved by a DesignSpec | a bed volume the engine computed | a pellet effectiveness factor (announced as unpriced); a cost |
+| 1 `ammoniaReactor01_fixedConversion` | `conversionReactor`, declared conversion | a material balance | a reactor size; an equipment-factored cost |
+| 2 `ammoniaReactor02_equilibrium` | `gibbsReactor`, true equilibrium | the thermodynamic ceiling | any size, any cost |
+| **3** *this case* | `gibbsReactor` **+ 5 K approach** | a realistic outlet; downstream units may be sized; the converter may be costed | a bed volume the **engine** computed |
+| **4** `ammoniaReactor04_kineticSizing` | adiabatic `pfr` on the Dyson & Simon (1968) rate law, volume solved by a DesignSpec | a bed volume the engine computed | a pellet effectiveness factor (announced as unpriced); a cost |
 
 ```bash
-diff tutorials/plant/ammoniaStaged02_equilibrium/system/flowsheetDict \
-     tutorials/plant/ammoniaStaged03_approach/system/flowsheetDict
+diff tutorials/plant/ammoniaReactor02_equilibrium/system/flowsheetDict \
+     tutorials/plant/ammoniaReactor03_equilibriumApproach/system/flowsheetDict
 ```
 
 Background: `docs/design/how-a-process-design-is-staged.md`, and DEV.md C8.
@@ -102,7 +102,7 @@ unchanged except for the key, against the engine as it then stood:
 **And the silent one was the key every surface named** — the GUI schema
 (with a wrong sign and a `minimum: 0` that forbade the endothermic case),
 the generated `docs/ai/schemas-reference.md`, `docs/ai/unit-ops.md`, and
-`tutorials/plant/greenAmmoniaIndustrialN2`'s README.  A reader who followed
+`tutorials/plant/greenAmmoniaPEQ_baseCase`'s README.  A reader who followed
 any of them got a number nothing announced.  This case was the witness.
 
 **RETIRED 2026-09-26, on a stated default (DEV.md section 5, the 2026-09-25
@@ -132,7 +132,7 @@ That last clause bites here: this package declares no SRK binary interaction
 parameters, so all six pairs run k_ij = 0.  **Some unknown part of a 5 K
 approach at 200 bar is paying for that, not for catalyst kinetics.**  The
 approach is a stand-in for a rate law this case does not have — which is
-stage D, `ammoniaStaged04_kinetic`, built 2026-09-26.  Its measured answer
+rung 4, `ammoniaReactor04_kineticSizing`, built 2026-09-26.  Its measured answer
 sharpens this paragraph: a single ADIABATIC bed on the Dyson & Simon law
 reaches a 5 K approach at only 16.60 % per-pass conversion, because it heats
 itself to 845 K on the way, so this case's 46.60 % is the conversion of an
@@ -165,10 +165,14 @@ Sizing and costing (`system/postDict`):
 | let-down drum | V_R = 0.5288 m³ | `drum V = Q*tau` | 21 410 € | 25 264 € |
 | **total** | | | **7 517 733 €** | **8 870 925 €** |
 
-**The estimate class is AACE 18R-97 Class 4** — the "study or feasibility"
-class, whose methodology 18R-97 states as *equipment factored or parametric
-models*, which is exactly what a per-item size feeding a Guthrie/Turton
-bare-module factor is.  **The class's maturity and accuracy bands are NOT
+**By METHODOLOGY this estimate sits in AACE 18R-97 Class 4** — the "study
+or feasibility" class, whose methodology 18R-97 states as *equipment factored
+or parametric models*, which is exactly what a per-item size feeding a
+Guthrie/Turton bare-module factor is.  Methodology is a SECONDARY
+characteristic: the class is set by the PRIMARY one, the maturity of the
+project definition, and a reactor model does not decide that — the same
+arithmetic on a project defined no further than this loop is still an early
+estimate, whatever reactor sits in it.  **The class's maturity and accuracy bands are NOT
 restated here**: `src/postProcessing/EstimateClass.H` is this repository's ONE
 home for that table, transcribed from the standard, and it explains why the
 engine does not pre-determine a single band for a class.  Read it there.
@@ -177,7 +181,7 @@ engine does not pre-determine a single band for a class.  Read it there.
 
 `tutorials/plant/ammonia02_full_plant` sized this converter with a
 `designRules` block carrying a literal `volume` and put the provenance in a
-`//` comment beside it (the flagship `greenAmmoniaIndustrialN2` did the same
+`//` comment beside it (the flagship `greenAmmoniaPEQ_baseCase` did the same
 until 2026-10-02, when its sizing and costing chain left the base case).
 Measured 2026-10-05: that comment said ~20 000 Nm³/(m³·h) while its own 80 m³
 at its own converter inlet was **11 360** Nm³/(m³·h) — a factor of 1.76 that
@@ -245,8 +249,8 @@ prints the conversion beside the volume it produced:
 ```
 
 The normal reference has ONE home (`core/Constants.H`, `T_normal` /
-`P_normal`), which stage D's PFR also reads for its `GHSV_normal_h` KPI — so
-this case's assumed 20 000 and stage D's computed value are on one basis by
+`P_normal`), which rung 4's PFR also reads for its `GHSV_normal_h` KPI — so
+this case's assumed 20 000 and rung 4's computed value are on one basis by
 construction.
 
 **Where 20 000 Nm³/(m³·h) comes from: it is a declared assumption.**  Those are
@@ -265,14 +269,14 @@ a fetch-and-summarise of the patent page and was NOT verified by reading the
 raw document.  A curator who wants to rely on it should retrieve US 4,568,530
 and check the sentence before quoting it onward.
 
-**What replaces it:** an integrated rate law, which is stage D
-(`ammoniaStaged04_kinetic`, built 2026-09-26).  `AmmoniaSynthesisRate.{H,cpp}`
+**What replaces it:** an integrated rate law, which is rung 4
+(`ammoniaReactor04_kineticSizing`, built 2026-09-26).  `AmmoniaSynthesisRate.{H,cpp}`
 under `src/unitOperations/reactor/kinetics/` is read by `pfr` through
 `kinetics { type dysonSimon1968; }`, and a DesignSpec on the bed's own
 approach-to-equilibrium KPI computes **6.9898 m³** for a 5 K per-bed approach
 — against this case's 18.63 m³ — at 16.60 % per-pass conversion, because a
 single adiabatic bed cannot be the isothermal converter this case assumes.
-The pellet effectiveness factor is the rung beyond D (announced there as
+The pellet effectiveness factor is the rung beyond 4 (announced there as
 unpriced; the paper's own correction, switched on with an 8 mm particle, makes
 the same bed 15.04 m³).  This volume stays a feasibility-class number: enough
 to cost a vessel, not enough to build one.
@@ -311,7 +315,7 @@ of the range US 5,352,428 states:
 
 | approach | per-pass N₂ conversion | converter outlet y(NH₃) | recycle / makeup | converter inlet, mol/s |
 |---|---|---|---|---|
-| 0 K (stage B, the ceiling) | 47.9288 % | 0.310807 | 1.0257 | 4 501.5 |
+| 0 K (rung 2, the ceiling) | 47.9288 % | 0.310807 | 1.0257 | 4 501.5 |
 | **5 K (this case)** | **46.6023 %** | **0.300194** | **1.0778** | **4 617.4** |
 | 10 K | 45.2867 % | 0.289846 | 1.1323 | 4 738.3 |
 | 30 K | 40.1644 % | 0.251177 | 1.3739 | 5 275.4 |
@@ -319,7 +323,7 @@ of the range US 5,352,428 states:
 The last column is the one that reaches the catalyst charge: at a fixed space
 velocity the bed volume is proportional to it.  The converter inlet is
 **2.6 % larger at a 5 K approach and 17.2 % larger at 30 K than the ceiling
-says it will be**, so a bed sized on stage B's answer is short by that much —
+says it will be**, so a bed sized on rung 2's answer is short by that much —
 and every balance closes in all four runs.  That is what "sizing against a fiction"
 means in numbers.
 
@@ -330,7 +334,7 @@ the converter inlet carries only 0.82 mol% NH₃ against the 3.5 vol% of the
 commercial converter US 5,352,428 describes — a quarter of it.  Two inherited
 causes: the separator runs at 250 K / 200 bar
 and condenses nearly all the ammonia, and the SRK package declares no binary
-interaction parameters.  See stage B's README, section 5.  **46.60 % is this
+interaction parameters.  See rung 2's README, section 5.  **46.60 % is this
 flowsheet's realistic per-pass conversion, not the ammonia industry's.**
 
 The converter is also isothermal at 700 K, where a real one is a train of
@@ -340,10 +344,10 @@ adiabatic beds with inter-bed cooling — see
 ## 8. Running it
 
 ```bash
-bin/choupo-lint  tutorials/plant/ammoniaStaged03_approach
-bin/choupo-init0 tutorials/plant/ammoniaStaged03_approach
-runCase          tutorials/plant/ammoniaStaged03_approach
-cat tutorials/plant/ammoniaStaged03_approach/design/converter/vessel
+bin/choupo-lint  tutorials/plant/ammoniaReactor03_equilibriumApproach
+bin/choupo-init0 tutorials/plant/ammoniaReactor03_equilibriumApproach
+runCase          tutorials/plant/ammoniaReactor03_equilibriumApproach
+cat tutorials/plant/ammoniaReactor03_equilibriumApproach/design/converter/vessel
 ```
 
 ## 9. Sources

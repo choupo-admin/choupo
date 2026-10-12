@@ -68,7 +68,7 @@ WHAT THIS CHECKS, all from fresh runs of corpus cases:
       component's Tc -- blending a liquid that cannot exist into H_in --
       while the balance report, resolving the SAME feed through
       `flashState::equilibriumAt`, discarded it and said so.  Two readers of
-      one state, two answers: ammoniaStaged04_kinetic's separator, fed at
+      one state, two answers: ammoniaReactor04_kineticSizing's separator, fed at
       844.86 K and 200 bar (N2/H2/NH3/Ar, highest Tc present 405.4 K), closed
       at 90.32 % and carried the WHOLE plant residual, -22 274.7 kW (5.918 %).
       Four parts, read from a fresh run of that case:
@@ -293,7 +293,7 @@ CONTROL = "tutorials/steady/flash/flash13_acetic_ethanol_vacuum_flash"
 BAND_KW = 0.5
 #  (h) the supercritical-feed witness: the first corpus case to put a stream
 #  above every component's Tc through an isothermalFlash on the duty path.
-SUPERCRITICAL = "tutorials/plant/ammoniaStaged04_kinetic"
+SUPERCRITICAL = "tutorials/plant/ammoniaReactor04_kineticSizing"
 SUPERCRITICAL_UNIT = "separator"
 SUPERCRITICAL_FEED = "reacted"
 ONE_HOME = ROOT / "src/unitOperations/flash/StreamEquilibrium.H"
@@ -579,7 +579,7 @@ def main() -> int:
                 "(h1) IsothermalFlash.cpp does not CALL "
                 "`flashState::supercriticalSplitDiscarded` -- the duty is "
                 "back to accepting a two-phase root above every Tc that the "
-                "balance report discards (ammoniaStaged04: -22 274.7 kW on "
+                "balance report discards (ammoniaReactor04: -22 274.7 kW on "
                 "one separator).")
         if re.search(r"aboveEveryCriticalT\s*\(", flash):
             fail.append(
@@ -589,11 +589,11 @@ def main() -> int:
                 "which holds the test AND the sentence.")
 
         # (h2)-(h4) the supercritical witness, run fresh
-        sc = tmp / "ammoniaStaged04"
+        sc = tmp / "ammoniaReactor04"
         shutil.copytree(ROOT / SUPERCRITICAL, sc)
         rc, log = run(sc)
         if rc != 0:
-            fail.append("(h) ammoniaStaged04_kinetic did not run -- the "
+            fail.append("(h) ammoniaReactor04_kineticSizing did not run -- the "
                         "supercritical-feed arm cannot judge")
         else:
             #  (h2) the site line
@@ -621,7 +621,7 @@ def main() -> int:
                 fail.append("(h4) no energy closure row for the separator")
             elif abs(c - 100.0) > 0.5:
                 fail.append(
-                    f"(h4) ammoniaStaged04's separator closes at {c:.2f} % -- "
+                    f"(h4) ammoniaReactor04's separator closes at {c:.2f} % -- "
                     "its duty and the balance report are pricing the 844.86 K "
                     "feed on different phase sets (R-E5).  Before 2026-09-26 "
                     "this read 90.32 %, and it was the whole plant residual.")
@@ -641,7 +641,7 @@ def main() -> int:
             #  and publish NO liquid.
             conv = sc / "converged" / SUPERCRITICAL_FEED
             if not conv.is_file():
-                fail.append("(j2) ammoniaStaged04 wrote no converged/"
+                fail.append("(j2) ammoniaReactor04 wrote no converged/"
                             f"{SUPERCRITICAL_FEED} -- the drum fixture "
                             "cannot be built")
             else:
@@ -935,7 +935,7 @@ def main() -> int:
           "separator outlets.  THE FLASH DUTY DISCARDS THE "
           "SAME SUPERCRITICAL ROOT THE REPORT DISCARDS, through ONE home "
           "(`flashState::supercriticalSplitDiscarded`, source-checked): "
-          "ammoniaStaged04's separator, fed at 844.86 K, announces the "
+          "ammoniaReactor04's separator, fed at 844.86 K, announces the "
           "discard at its site and ONCE on AdvisoryLog and closes at 100 +- "
           "0.5 % beside the report's own discard line.  AN AUTHORED INLET "
           f"IS READ AS WHAT IT MEANS DURING THE SOLVE: {len(INLET_READERS)} "

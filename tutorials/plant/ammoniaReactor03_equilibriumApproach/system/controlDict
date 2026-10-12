@@ -8,5 +8,5 @@
 \*-----------------------------------------------------------------------------*/
 tier          tutorial;
 application  choupoSolve;
-description  "STAGED DESIGN SEQUENCE, stage C of three -- REALISTIC OUTLET. The same loop with the gibbsReactor detuned by a 5 K approach to equilibrium, the rung nothing else in this corpus exercises. The outlet is realistic enough to size downstream units against and to cost the converter from a DECLARED space velocity, which is an AACE 18R-97 Class-4 posture.";
+description  "AMMONIA REACTOR-MODEL LADDER, rung 3 of 4 -- REALISTIC OUTLET. The same loop with the gibbsReactor detuned by a 5 K approach to equilibrium, the rung nothing else in this corpus exercises. The outlet is realistic enough to size downstream units against and to cost the converter from a DECLARED space velocity (an estimate method; its AACE class is set by how far the whole project is defined, not by the reactor model).";
 verbosity    3;

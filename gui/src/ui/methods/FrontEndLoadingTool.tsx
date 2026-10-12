@@ -34,11 +34,11 @@ License
   content is the AACE range of ranges and the decision it supports, which is
   arithmetic on a published table; no simulator computes an estimate band.
   The plant cases that show Choupo at each stage's fidelity are named and
-  linked, not run: the heaviest (greenAmmoniaIndustrialN2, seventeen units,
+  linked, not run: the heaviest (greenAmmoniaPEQ_baseCase, seventeen units,
   two recycles, costing and DCF) is a whole plant, and running it to show a
   number the page does not need would teach the wait, not the stage.  The
-  C57 stage cases (greenAmmoniaFeasibility, its 50 bar variant and
-  greenAmmoniaBasicDesign) exist since 2026-10-10 and are linked from
+  C57 stage cases (greenAmmonia02_feasibility150bar, its 50 bar variant and
+  greenAmmonia03_basicDesign) exist since 2026-10-10 and are linked from
   FEL_STAGES; none is wired as a live witness.
 
   THE DATA AND THE ARITHMETIC are in frontEndLoading.ts and the prose in
@@ -218,7 +218,7 @@ function StageStrip({ active, onPick }: {
               border: `${active === s.id ? 2 : 1}px solid ${
                 active === s.id ? "var(--mantine-color-accent-5)" : GRID}`,
             }}>
-            <Text size="xs" c="dimmed">AACE Class {s.aace}</Text>
+            <Text size="xs" c="dimmed">usually AACE Class {s.aace}</Text>
             <Text size="sm" fw={600} style={{ lineHeight: 1.25 }}>
               {s.names.split(" (")[0]}
             </Text>
@@ -256,7 +256,7 @@ function StageDetail({ s }: { s: FelStage }): JSX.Element {
     <Table withTableBorder withColumnBorders fz="sm" mt={8}>
       <Table.Tbody>
         {row("Names", s.names)}
-        {row("AACE estimate class", s.aace)}
+        {row("AACE class usually reached (set by how far the project is defined, never by the stage)", s.aace)}
         {row("What it decides", s.decides)}
         {row("Simulation fidelity", s.fidelity)}
         {row("Deliverables", s.deliverables)}
@@ -397,7 +397,7 @@ export function FrontEndLoadingTool(): JSX.Element {
           <Table striped withTableBorder withColumnBorders fz="xs" mt={10}>
             <Table.Thead>
               <Table.Tr>
-                <Table.Th>class</Table.Th>
+                <Table.Th>usual class</Table.Th>
                 <Table.Th>definition complete</Table.Th>
                 <Table.Th>end usage</Table.Th>
                 <Table.Th>typical method</Table.Th>
@@ -510,7 +510,7 @@ export function FrontEndLoadingTool(): JSX.Element {
           <Table striped withTableBorder withColumnBorders fz="xs" mt={10}>
             <Table.Thead>
               <Table.Tr>
-                <Table.Th>class</Table.Th>
+                <Table.Th>usual class</Table.Th>
                 <Table.Th>band A [M€]</Table.Th>
                 <Table.Th>band B [M€]</Table.Th>
                 <Table.Th>ratio needed, (1+H)/(1+L)</Table.Th>
@@ -559,7 +559,7 @@ export function FrontEndLoadingTool(): JSX.Element {
           <Table.Thead>
             <Table.Tr>
               <Table.Th>stage</Table.Th>
-              <Table.Th>class</Table.Th>
+              <Table.Th>usual class</Table.Th>
               <Table.Th>what Choupo runs</Table.Th>
               <Table.Th>not produced by Choupo</Table.Th>
             </Table.Tr>

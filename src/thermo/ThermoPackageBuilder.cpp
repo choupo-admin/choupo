@@ -2093,7 +2093,7 @@ bool ThermoPackageBuilder::v2NativeFormulation(const DictPtr& v2)
 //  was written inside the gammaPhi branch, and diluteSolution REFUSED a
 //  transport block naming exactly this act ("the gammaPhi wiring exists;
 //  extending it is a per-formulation act").  The concrete case that
-//  named it: greenAmmoniaIndustrialN2's exchanger designs need the loop
+//  named it: greenAmmoniaPEQ_baseCase's exchanger designs need the loop
 //  gas's viscosity and conductivity.  Moved verbatim; null when the
 //  system declares no transport.
 static DictPtr v2TransportDict(const DictPtr& v2)

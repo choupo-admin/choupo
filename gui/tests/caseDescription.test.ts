@@ -15,7 +15,7 @@
 import { describe, it, expect } from "vitest";
 import { caseDescription, LEAD_MAX_CHARS } from "../src/case/caseDescription";
 
-//  The OPENING of tutorials/plant/greenAmmoniaIndustrialN2's description AS
+//  The OPENING of tutorials/plant/greenAmmoniaPEQ_baseCase's description AS
 //  IT STOOD UNTIL 2026-10-01 (the case was then rewritten and its description
 //  changed), copied verbatim and cut at its first full stop; it continued
 //  (SRK vapour, the Henry constants, the purification package).  Ninety

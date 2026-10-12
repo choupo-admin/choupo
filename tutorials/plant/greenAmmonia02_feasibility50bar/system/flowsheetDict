@@ -5,7 +5,7 @@
 \*-----------------------------------------------------------------------------*/
 /*---------------------------------------------------------------------------*\
   GREEN AMMONIA, 1200 t/day -- THE FEASIBILITY STAGE AT A LOW LOOP PRESSURE.
-  The SAME study as tutorials/plant/greenAmmoniaFeasibility (FEL-2, duties
+  The SAME study as tutorials/plant/greenAmmonia02_feasibility150bar (FEL-2, duties
   only, the same feeds, package, utilities and prices), with the synthesis
   loop moved from 150 to 50 bar -- the speculation the stage allows: what
   the plant would earn IF a catalyst approached equilibrium at 400 C and

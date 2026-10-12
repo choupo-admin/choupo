@@ -134,7 +134,7 @@ inline bool aboveEveryCriticalT(scalar T, const sVector& z,
 //  `solveCore` directly (R-E1, with the unit's own phase set), so the report
 //  discarded the root and the unit blended it -- two readers of one state
 //  disagreeing about what counts as a phase.  Measured on
-//  `ammoniaStaged04_kinetic`: the separator, fed at 844.86 K and 200 bar,
+//  `ammoniaReactor04_kineticSizing`: the separator, fed at 844.86 K and 200 bar,
 //  closed at 90.32 % and the whole plant residual, -22 274.7 kW (5.918 %),
 //  was that one unit.
 //
@@ -150,7 +150,7 @@ inline bool aboveEveryCriticalT(scalar T, const sVector& z,
 //  (the balance report) names T and gets one line; a reader re-solved on
 //  every recycle pass and Jacobian perturbation (a unit's duty) must NOT, or
 //  each trial T is a new entry -- measured: 18 lines for one fact in
-//  ammoniaStaged04's caveat block on the first build.  Such a caller prints T
+//  ammoniaReactor04's caveat block on the first build.  Such a caller prints T
 //  at its own site instead and puts the stream's identity in `locus`.
 inline std::optional<std::string>
 supercriticalSplitDiscarded(const FlashSolution& fs,
@@ -331,7 +331,7 @@ inline std::optional<FlashSolution> equilibriumAt(scalar               T,
     //  THE DISCARD ITSELF LIVES ONE FUNCTION UP (`supercriticalSplitDiscarded`,
     //  2026-09-26): `IsothermalFlash`'s duty re-resolves its feed through
     //  `solveCore` directly and needed the SAME sentence, and the day it had
-    //  its own copy of the test it had none -- ammoniaStaged04's separator
+    //  its own copy of the test it had none -- ammoniaReactor04's separator
     //  accepted the root this block discards and the plant lost 22 274.7 kW.
     //  A three-phase or two-liquid answer (only a VLLE `recipe` returns
     //  one) carries a LIQUID fraction in `V_over_F`, which the discard would

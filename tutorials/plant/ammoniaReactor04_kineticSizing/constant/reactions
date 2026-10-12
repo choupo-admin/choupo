@@ -7,9 +7,9 @@
 |        |     O ptimization  |                                               |
 \*-----------------------------------------------------------------------------*/
 /*---------------------------------------------------------------------------*\
-  reactions -- STAGE D ONLY.  Stages A, B and C carry no reactions library:
+  reactions -- RUNG 4 ONLY.  Rungs 1, 2 and 3 carry no reactions library:
   A declares a conversion, B and C minimise Gibbs energy.  A rate law is what
-  stage D adds, and it is the ONE thing this file declares.
+  rung 4 adds, and it is the ONE thing this file declares.
 
   THE RATE LAW IS NOT WRITTEN HERE.  `type dysonSimon1968;` selects the
   correlation object curated in

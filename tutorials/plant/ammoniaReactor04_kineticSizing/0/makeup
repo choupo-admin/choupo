@@ -10,7 +10,7 @@
      componentMolarFlows is the OVERALL material (all phases); a phases{} block, when present,
      is a decomposition that sums back to it exactly. ---*/
 // PLANT-BOUNDARY INLET.  8000 kmol/h of stoichiometric makeup: H2:N2 = 3.0
-// exactly, argon 1.00 mol%.  IDENTICAL in all four stages -- the ladder is
+// exactly, argon 1.00 mol%.  IDENTICAL in all four rungs -- the ladder is
 // about the reactor, so the feed must not move with it.
 
 componentMolarFlows

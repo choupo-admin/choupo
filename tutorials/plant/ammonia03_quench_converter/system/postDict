@@ -43,7 +43,7 @@
   reader nor a gate can detect either.  For the loop appraisal, read
   ammonia02 -- and read its converter volume knowing it rests on an assumed
   space velocity, not a rate law.  For the bed
-  that CAN be sized, read `ammoniaStaged04_kinetic` (2026-09-26): its
+  that CAN be sized, read `ammoniaReactor04_kineticSizing` (2026-09-26): its
   converter is a `pfr` whose volume a DesignSpec solves, and `type pfr` in
   its postDict sizes that volume as a shell and a catalyst charge -- the
   kinetic result this header says a bed's size must be.  The three beds

@@ -45,7 +45,7 @@ WHAT THIS DOES NOT CHECK, said plainly:
   * the dense-gas viscosity: the package's model is dilute-gas;
   * the sizer's one-home refusal (`L_over_D` in both the unit and the
     designRules) -- it needs a postDict, and `check_design_sheet` runs the
-    sized cases; the shell's L/D on greenAmmoniaBasicDesign's sheet is read
+    sized cases; the shell's L/D on greenAmmonia03_basicDesign's sheet is read
     from the unit, which that case's golden pins.
 
 SABOTAGES PERFORMED (by hand, 2026-10-12), each against this gate:

@@ -137,7 +137,7 @@ WHAT THIS CHECKS:
 
   (n) A CATALYST BED IS SIZED FROM ITS OWN KINETIC VOLUME, AND ITS CHARGE
       IS PRICED ONLY FROM WHAT THE CASE DECLARES (2026-09-26).  On
-      `ammoniaStaged04_kinetic` -- a `pfr` whose `V_R` a designSpec SOLVES,
+      `ammoniaReactor04_kineticSizing` -- a `pfr` whose `V_R` a designSpec SOLVES,
       the first case where the post-processing chain runs on an outer
       driver's representative pass -- the converter's `shell` sheet carries
       the SAME `V_R` the unit's own KPI publishes in the result JSON (to the
@@ -167,7 +167,7 @@ WHAT THIS CHECKS:
       (T, P) by whatever `spaceVelocity` was typed, while every published
       GHSV is on NORMAL gas volume -- a factor of 77 at an ammonia
       converter's 700 K / 200 bar, taken at exit 0.  On
-      `ammoniaStaged03_approach` (the one corpus case that sizes by space
+      `ammoniaReactor03_equilibriumApproach` (the one corpus case that sizes by space
       velocity) the converter sheet's `V_R` is RECOMPUTED here from the
       run's own `N_in_mol_s` KPI and the postDict's declared `spaceVelocity`
       as N R T_n / P_n x 3600 / SV (T_n 273.15 K, P_n 101325 Pa), at the
@@ -191,7 +191,7 @@ WHAT THIS CHECKS:
       author-set, the original), `U` + `utility <name>` (the LMTD computed
       counter-current from the unit's own `T_in`/`T_out` KPIs and the
       utility record's `T_in`/`T_out`), and neither (a RATED unit's own
-      `area` passed through).  On `greenAmmoniaIndustrialN2` every cooler
+      `area` passed through).  On `greenAmmoniaPEQ_baseCase` every cooler
       declaring a `utility` has its sheet's `LMTD` and `A` RECOMPUTED here
       from the run's KPI line, the postDict's `U` and the utility record
       read from `data/standards/utilities/`, at the sheet's printed
@@ -222,7 +222,7 @@ WHAT THIS CHECKS:
       RESULT: the run finds the smallest tube count delivering the duty and
       writes the bundle, both films, five resistances, F, the area required
       and installed, the utility flow and both pressure drops.  On
-      `greenAmmoniaIndustrialN2` (all six exchangers) every sheet is held to
+      `greenAmmoniaPEQ_baseCase` (all six exchangers) every sheet is held to
       arithmetic written out again here: the declarations reach the sheet
       (tube sizes, passes, shells, both foulings, the wall conductivity of
       the material RECORD); nTubes = tubesPerPass x passes; A = n_shells pi
@@ -252,7 +252,7 @@ WHAT THIS CHECKS:
 
   (q) A STORAGE TANK IS SIZED FROM ITS STREAM AND PRICED ON THE ROW THE
       PROGRAM CARRIES (2026-10-07, DEV.md 4c C44 slice 2).  On
-      `greenAmmoniaIndustrialN2` the store attached to `ProductNH3` has its
+      `greenAmmoniaPEQ_baseCase` the store attached to `ProductNH3` has its
       density RECOMPUTED from the case's component records, its volumes and
       tank count from the postDict's declarations and the stream's own
       `F_mass`, and each tank's three costs from the CAPCOST 2017
@@ -263,7 +263,7 @@ WHAT THIS CHECKS:
       `check_storage`.
 
   (r) WHAT EACH ITEM HOLDS IS V x FRACTION x RHO x COMPOSITION (2026-10-07,
-      DEV.md 4c C44 slice 3).  On `greenAmmoniaIndustrialN2` every item
+      DEV.md 4c C44 slice 3).  On `greenAmmoniaPEQ_baseCase` every item
       publishing an `inventory` has each held phase's density RECOMPUTED from
       the case's records (anchored Rackett for a liquid, the SRK vapour root
       for a gas), its mass and per-component split recomputed, its sheet's
@@ -348,17 +348,17 @@ COLUMN  = "tutorials/steady/distillation/column09_tray_hydraulics"
 #  the corpus where the post-processing chain runs on an outer driver's
 #  representative pass at all, and the only one whose second item is priced
 #  from a DECLARED unit price rather than a Turton correlation.
-KINETIC = "tutorials/plant/ammoniaStaged04_kinetic"
+KINETIC = "tutorials/plant/ammoniaReactor04_kineticSizing"
 
 #  THE SPACE-VELOCITY WITNESS (2026-10-05).  The one corpus case that sizes a
 #  catalyst vessel from a declared `spaceVelocity`, and so the one whose
 #  `spaceVelocityBasis` declaration reaches the arithmetic.
-SPACEV  = "tutorials/plant/ammoniaStaged03_approach"
+SPACEV  = "tutorials/plant/ammoniaReactor03_equilibriumApproach"
 
 #  THE EXCHANGER-ROUTES WITNESS (2026-10-07).  The one corpus case whose
 #  coolers declare a `utility` instead of an LMTD, and whose rated
 #  interchanger is sized on its own area.
-HXROUTE = "tutorials/plant/greenAmmoniaIndustrialN2"
+HXROUTE = "tutorials/plant/greenAmmoniaPEQ_baseCase"
 
 TOL = 1.0e-6      # relative, between two projections of the same number
 
@@ -2156,7 +2156,7 @@ def _anchored_rackett_rho(case: Path, comp: dict, T: float):
 def check_storage(problems, notes):
     """(q) A STORAGE TANK IS SIZED FROM ITS STREAM AND COSTED ON THE ROW THE
     PROGRAM CARRIES (2026-10-07, DEV.md 4c C44 slice 2).  On
-    `greenAmmoniaIndustrialN2`, whose postDict attaches `NH3Storage` to the
+    `greenAmmoniaPEQ_baseCase`, whose postDict attaches `NH3Storage` to the
     boundary stream `ProductNH3`:
 
       * the tank's `massFlow` is the stream's own published `F_mass`;
@@ -2388,7 +2388,7 @@ def _stream_json(out: str, stream: str):
 def check_inventory(problems, notes):
     """(r) WHAT EACH ITEM HOLDS IS ITS VOLUME x FRACTION x DENSITY x
     COMPOSITION, AND NOTHING ELSE (2026-10-07, DEV.md 4c C44 slice 3).  On
-    `greenAmmoniaIndustrialN2`, for every item whose result line carries an
+    `greenAmmoniaPEQ_baseCase`, for every item whose result line carries an
     `inventory` object:
 
       * the volume is the item's own `V_R`; each held stream's fraction is

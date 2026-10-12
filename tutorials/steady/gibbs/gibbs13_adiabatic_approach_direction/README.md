@@ -5,7 +5,7 @@ ammonia converter, fed a gas that already carries 16 % NH3 (N2 19, H2 57,
 NH3 16, Ar 8 mol%; author-set to be representative of a last bed, not a
 plant measurement), entering at 415 °C and 150 bar, with a 10 K approach to
 equilibrium (the band US 5,352,428 calls "preferably 1 C. to 10 C."; see
-`ammoniaStaged03_approach` for the source).  `operation.T` is the SEED of the
+`ammoniaReactor03_equilibriumApproach` for the source).  `operation.T` is the SEED of the
 outer Newton on the outlet temperature, and it is set to 495 °C — 80 K
 hotter than the answer — on purpose.  The `0/out` file is an initial
 estimate of the stream and is NOT that seed; the unit reads its seed from

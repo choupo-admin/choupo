@@ -27,7 +27,7 @@
   no source would be a falsehood nobody could detect.
 
   The two reactor volumes step 7 quotes are the ammonia ladder's goldens
-  (ammoniaStaged03_approach and ammoniaStaged04_kinetic `expected`), held
+  (ammoniaReactor03_equilibriumApproach and ammoniaReactor04_kineticSizing `expected`), held
   there by tests/frontEndLoading.test.ts; the band arithmetic of steps 3, 4
   and 6 is held to src/postProcessing/EstimateClass.H through the
   transcription in frontEndLoading.ts.

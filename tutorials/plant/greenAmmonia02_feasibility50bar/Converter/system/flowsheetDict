@@ -10,13 +10,13 @@
 //  temperature, 5 K short of equilibrium; its duty is the reaction heat
 //  the intercoolers must remove (steam).  How many beds, and how big, is
 //  a question for a plug-flow reactor with a rate law
-//  (tutorials/plant/ammoniaStaged04_kinetic) -- task 2.
+//  (tutorials/plant/ammoniaReactor04_kineticSizing) -- task 2.
 //
 //  temperatureApproach: the ammonia content is the equilibrium one 5 K
 //  ABOVE the actual temperature (US 5,352,428, Bhakta & Grotz 1994: "the
 //  ammonia concentration corresponds to the equilibrium concentration at
 //  a temperature 5 C. above the actual temperature"; design range 0-30 C,
-//  preferably 1-10 C).  See tutorials/plant/ammoniaStaged03_approach.
+//  preferably 1-10 C).  See tutorials/plant/ammoniaReactor03_equilibriumApproach.
 
 //  utility: WHAT SERVES ITS DUTY.  The ~22 MW the converter releases at
 //  400 C is raised as HP steam in a waste-heat boiler -- a CREDIT, not a

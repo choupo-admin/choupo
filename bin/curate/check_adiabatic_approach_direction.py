@@ -48,7 +48,7 @@ tutorials/steady/gibbs/gibbs13_adiabatic_approach_direction (sealed; seeded
       copy prints NO approach line and no `(adiabatic mode:` clause;
       gibbs10_ammonia_fugacity (isothermal, no approach) runs to exit 0 with
       its golden unmoved -- measured byte-identical against a build of the
-      parent commit on 2026-10-03 for ammoniaStaged03_approach (isothermal
+      parent commit on 2026-10-03 for ammoniaReactor03_equilibriumApproach (isothermal
       WITH an approach) and for the dT = 0 copies, a two-build comparison
       this gate does not repeat.
   (f) SOURCE ARM.  The adiabatic branch of GibbsReactor.cpp calls
@@ -80,7 +80,7 @@ probe is then ANNOUNCED through announceOuterNotConverged and the direction
 read at its last iterate; no corpus case reaches it).  A multi-bed converter
 on a recycle (ammonia03_quench_converter declares no approach).  The
 isothermal direction itself, which check_reaction_subset_approach's source
-arm and the ammoniaStaged03 golden cover.  And it reads no number of the
+arm and the ammoniaReactor03 golden cover.  And it reads no number of the
 physics beyond the ORDER of three outlets: it does not say 18.36 % is the
 right answer, only that it is below 18.84 % and the same from two seeds.
 """

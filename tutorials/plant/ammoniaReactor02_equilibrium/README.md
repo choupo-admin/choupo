@@ -1,4 +1,4 @@
-# `ammoniaStaged02_equilibrium` — stage B of the staged design sequence
+# `ammoniaReactor02_equilibrium` — rung 2 of 4 of the ammonia reactor-model ladder
 
 **THE THERMODYNAMIC CEILING.**  The per-pass conversion this case reports is
 a **ceiling that no real converter reaches**, and **sizing anything
@@ -16,15 +16,15 @@ differs is `converter`.
 
 | | reactor | claims | must not claim |
 |---|---|---|---|
-| **A** `ammoniaStaged01_yield` | `conversionReactor`, declared conversion | a material balance | a reactor size; an equipment-factored cost |
-| **B** *this case* | `gibbsReactor`, **true equilibrium** | the thermodynamic **ceiling** | any size, any cost, anything sized against its outlet |
-| **C** `ammoniaStaged03_approach` | `gibbsReactor` **+ 5 K approach** | a realistic outlet | a bed volume the engine computed |
-| **D** `ammoniaStaged04_kinetic` | adiabatic `pfr` on the Dyson & Simon (1968) rate law, volume solved by a DesignSpec | a bed volume the ENGINE computed | a pellet effectiveness factor (announced as unpriced); a cost |
+| **1** `ammoniaReactor01_fixedConversion` | `conversionReactor`, declared conversion | a material balance | a reactor size; an equipment-factored cost |
+| **2** *this case* | `gibbsReactor`, **true equilibrium** | the thermodynamic **ceiling** | any size, any cost, anything sized against its outlet |
+| **3** `ammoniaReactor03_equilibriumApproach` | `gibbsReactor` **+ 5 K approach** | a realistic outlet | a bed volume the engine computed |
+| **4** `ammoniaReactor04_kineticSizing` | adiabatic `pfr` on the Dyson & Simon (1968) rate law, volume solved by a DesignSpec | a bed volume the ENGINE computed | a pellet effectiveness factor (announced as unpriced); a cost |
 
-Stage D exists since 2026-09-26.  `src/unitOperations/reactor/kinetics/AmmoniaSynthesisRate.{H,cpp}`
+Rung 4 exists since 2026-09-26.  `src/unitOperations/reactor/kinetics/AmmoniaSynthesisRate.{H,cpp}`
 used to be included by its own `.cpp` and by `AmmoniaRateBench.cpp` alone,
 and this README named that gap rather than implying it; `PFR.cpp` now reads
-the law through `kinetics { type dysonSimon1968; }`, and stage D's README
+the law through `kinetics { type dysonSimon1968; }`, and rung 4's README
 carries what the wiring found.
 
 Background: `docs/design/how-a-process-design-is-staged.md`, and DEV.md C8.
@@ -62,7 +62,7 @@ holds: every unit closes at 100.00 % and the plant boundary closes at
   **a stage may not cost what it did not size**, and nothing may be sized
   against a ceiling.
 * **It does not claim to describe a real converter's outlet.**  For that, read
-  stage C, which is this case plus one key.
+  rung 3, which is this case plus one key.
 
 ## 4. What the ceiling is worth — measured, not asserted
 
@@ -71,11 +71,11 @@ ladder, all measured by running the cases:
 
 | | per-pass N₂ conversion | converter outlet y(NH₃) | recycle / makeup |
 |---|---|---|---|
-| A — declared 25 % (an assumption) | 25.0000 % | 0.149843 | 2.5646 |
-| **B — this case, the ceiling** | **47.9288 %** | **0.310807** | **1.0257** |
-| C — 5 K approach | 46.6023 % | 0.300194 | 1.0778 |
+| 1 — declared 25 % (an assumption) | 25.0000 % | 0.149843 | 2.5646 |
+| **2 — this case, the ceiling** | **47.9288 %** | **0.310807** | **1.0257** |
+| 3 — 5 K approach | 46.6023 % | 0.300194 | 1.0778 |
 
-And two probes run outside the shipped cases, by editing stage C's approach to
+And two probes run outside the shipped cases, by editing rung 3's approach to
 the ends of the range its source states (US 5,352,428: "0 °C. to 30 °C. and
 preferably 1 °C. to 10 °C."):
 
@@ -86,7 +86,7 @@ preferably 1 °C. to 10 °C."):
 
 **Read the last column.**  At the outer end of the source's own range the
 recycle is 34 % larger than the ceiling says it needs to be — so a compressor,
-a converter and an interchanger sized on stage B's answer are all under-sized
+a converter and an interchanger sized on rung 2's answer are all under-sized
 by that much, at exit 0, with every balance closing.  *The fiction is not that
 the arithmetic is wrong; it is that the arithmetic is answering a different
 question.*
@@ -120,8 +120,8 @@ of being recompressed.
 
 The makeup is 8 000 kmol/h (N₂ 1 980, H₂ 5 940, Ar 80 — H₂:N₂ exactly 3.0,
 argon 1.00 mol%), where `ammonia01_synthesis_loop` runs 1 kmol/h.  The reason is
-stage C: at 1 kmol/h the catalyst charge is about 2 litres, below the lower
-bound of every vessel cost correlation the engine carries, so stage C could not
+rung 3: at 1 kmol/h the catalyst charge is about 2 litres, below the lower
+bound of every vessel cost correlation the engine carries, so rung 3 could not
 honestly cost it.
 
 **The scale-up changes no intensive answer, and that is checked rather than
@@ -132,16 +132,16 @@ mass balance at 99.9973 %.
 ## 7. Running it
 
 ```bash
-bin/choupo-lint  tutorials/plant/ammoniaStaged02_equilibrium   # validate, no solve
-bin/choupo-init0 tutorials/plant/ammoniaStaged02_equilibrium   # materialise 0/
-runCase          tutorials/plant/ammoniaStaged02_equilibrium
-bin/runTests     tutorials/plant/ammoniaStaged02_equilibrium   # golden-master check
+bin/choupo-lint  tutorials/plant/ammoniaReactor02_equilibrium   # validate, no solve
+bin/choupo-init0 tutorials/plant/ammoniaReactor02_equilibrium   # materialise 0/
+runCase          tutorials/plant/ammoniaReactor02_equilibrium
+bin/runTests     tutorials/plant/ammoniaReactor02_equilibrium   # golden-master check
 ```
 
 ```bash
 # the sequence, as a diff
-diff tutorials/plant/ammoniaStaged02_equilibrium/system/flowsheetDict \
-     tutorials/plant/ammoniaStaged03_approach/system/flowsheetDict
+diff tutorials/plant/ammoniaReactor02_equilibrium/system/flowsheetDict \
+     tutorials/plant/ammoniaReactor03_equilibriumApproach/system/flowsheetDict
 ```
 
 ## 8. Sources

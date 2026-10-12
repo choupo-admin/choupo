@@ -450,7 +450,7 @@ export const LANDSCAPE_LIMITS: readonly LessonLimit[] = [
       + "rate law the tree does carry refuses the ambient pressure by name.  "
       + "A student who wants the kinetic side of ammonia has the Dyson & Simon "
       + "bench (`ammoniaRate01_dyson_simon`) and the staged kinetic converter "
-      + "(`ammoniaStaged04_kinetic`), both inside that law's own window; a "
+      + "(`ammoniaReactor04_kineticSizing`), both inside that law's own window; a "
       + "student who wants a bioreactor has `batchReactor` and `dynamicCSTR`, "
       + "which take a DECLARED rate law and are the right door.",
   },

@@ -1457,7 +1457,7 @@ def validate_staged_agrees(staged, out):
         #  parsed (2026-10-07, DEV.md 4c C48): an `equipment <unit> basis`
         #  row pins a SENTENCE, compared `exact` as a word, and parsing it as
         #  a float first crashed the importer with a traceback on every case
-        #  that carries one (greenAmmoniaIndustrialN2 since C44 slice 1) --
+        #  that carries one (greenAmmoniaPEQ_baseCase since C44 slice 1) --
         #  a reseal that could not even reach its own skip below.
         if kind not in ("diag", "kpi", "stream", "closure", "utility"):
             skipped += 1

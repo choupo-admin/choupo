@@ -7,20 +7,20 @@
 |        |     O ptimization  |                                               |
 \*-----------------------------------------------------------------------------*/
 /*---------------------------------------------------------------------------*\
-  outerDict -- STAGE D ONLY.  THIS IS WHERE THE BED VOLUME IS COMPUTED.
+  outerDict -- RUNG 4 ONLY.  THIS IS WHERE THE BED VOLUME IS COMPUTED.
 
-  The PFR is a RATING model: it integrates the volume it is given.  Stage D's
+  The PFR is a RATING model: it integrates the volume it is given.  Rung 4's
   claim -- "a bed volume the ENGINE computed" -- is therefore the answer of
   this DesignSpec, a Newton on one case variable against one target:
 
       $V_bed  ->  converter.approach_K  =  5 K
 
-  THE TARGET is the same source and the same number stage C declares, read
+  THE TARGET is the same source and the same number rung 3 declares, read
   the way the source itself defines it PER BED.  US 5,352,428 (Bhakta &
   Grotz, CF Braun and Co, 4 October 1994), verbatim: "The effluent from each
   bed has an approach to equilibrium of 5 C., i.e., the ammonia concentration
   corresponds to the equilibrium concentration at a temperature 5 C. above
-  the actual temperature."  Stage C IMPOSED that number on an isothermal
+  the actual temperature."  Rung 3 IMPOSED that number on an isothermal
   Gibbs converter; here the engine SOLVES for the bed volume at which an
   adiabatic kinetic bed's effluent actually reaches it.  `approach_K` is the
   PFR's own KPI: T* - T_out, where T* is the temperature at which the outlet
@@ -28,7 +28,7 @@
   Beattie, Eq 2) -- NOT the package's Gibbs surface; the README states how far
   the two equilibria sit apart.
 
-  WHY NOT STAGE C's 46.60 % PER-PASS CONVERSION AS THE TARGET.  It is not
+  WHY NOT RUNG 3's 46.60 % PER-PASS CONVERSION AS THE TARGET.  It is not
   reachable by this bed at any volume: a single ADIABATIC bed's conversion is
   capped where its adiabatic line crosses the retreating equilibrium curve,
   and that cap is far below an isothermal 700 K converter's.  The README

@@ -414,7 +414,7 @@ n_N &= n_\mathrm{eq}\big(T_N + \Delta T,\; P;\; b\big)
       + "their inlet temperatures against the catalyst's limit and their "
       + "catalyst volumes are questions about RATE, and a rate needs a "
       + "kinetic plug-flow reactor: in Choupo, `tutorials/plant/"
-      + "ammoniaStaged04_kinetic`.  Three Gibbs beds can never answer them, "
+      + "ammoniaReactor04_kineticSizing`.  Three Gibbs beds can never answer them, "
       + "however many you draw.",
   },
   {
@@ -503,9 +503,9 @@ export const APPROACH_LIMITS: readonly LessonLimit[] = [
       + "recommendation.  A real approach comes from a plant measurement on a "
       + "specific catalyst at a specific point in its life; there is no "
       + "measurement anywhere in this tool.  The corpus cases that declare "
-      + "an approach declare an UNCALIBRATED one: `ammoniaStaged03_approach` "
-      + "carries a magnitude chosen for the staged sequence, "
-      + "`greenAmmoniaIndustrialN2` takes the patent's 5 K at its converter "
+      + "an approach declare an UNCALIBRATED one: `ammoniaReactor03_equilibriumApproach` "
+      + "carries a magnitude chosen for the reactor-model ladder, "
+      + "`greenAmmoniaPEQ_baseCase` takes the patent's 5 K at its converter "
       + "outlet (step 8), and the five "
       + "`gibbsMap` witnesses of the companion survey page declare the key "
       + "at zero so a slider can move it.",

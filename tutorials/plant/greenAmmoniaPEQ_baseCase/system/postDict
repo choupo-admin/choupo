@@ -115,7 +115,7 @@
                       h), normal basis, on the INLET gas) is the same
                       ASSUMED feasibility figure ammonia02 uses -- not a
                       datum for any catalyst.  A rate law sizes the beds
-                      (ammoniaStaged04_kinetic); that is the groups' task 2.
+                      (ammoniaReactor04_kineticSizing); that is the groups' task 2.
     drums       (3)   Separator LetdownHP StorageFlash, by VAPOUR residence
                       time (V = Q_vapour * tau, ideal gas), the precedent
                       ammonia02 sets.  READ THIS: the Separator is a
@@ -404,7 +404,7 @@ economics
     siteFactor          0.50;
     contingencyFee      1.18;
     N_np                11;          // 4 compressors + 6 exchangers + 1 reactor
-    estimateClass       4;
+    estimateClass       4;           // the AUTHOR's statement of how far the project is defined (AACE's primary characteristic) -- not a consequence of the model or of the design stage illustrated
     accuracyBand        ( -30 50 );  // the wide corner of Class 4 -- chosen
     refuseOnMissingPrice 1;
 

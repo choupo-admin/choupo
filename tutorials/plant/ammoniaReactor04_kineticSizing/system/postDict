@@ -7,10 +7,10 @@
 |        |     O ptimization  |                                               |
 \*-----------------------------------------------------------------------------*/
 /*---------------------------------------------------------------------------*\
-  postDict -- STAGE D.  THE BED THE ENGINE SIZED IS COSTED FROM ITS OWN VOLUME.
+  postDict -- RUNG 4.  THE BED THE ENGINE SIZED IS COSTED FROM ITS OWN VOLUME.
 
-  The sequence's invariant -- A STAGE MAY NOT COST WHAT IT DID NOT SIZE --
-  is what kept this file out of stage D until 2026-09-26, and it is what
+  The sequence's invariant -- A RUNG MAY NOT COST WHAT IT DID NOT SIZE --
+  is what kept this file out of rung 4 until 2026-09-26, and it is what
   lets it in now: the converter's volume is `V_R`, the PFR's own KPI, SOLVED
   by system/outerDict's DesignSpec against the effluent's 5 K approach.  No
   volume is typed here.  The `pfr` sizer READS that KPI from the
@@ -30,7 +30,7 @@
                     of the bed's own volume at the declared L/D, ASME
                     thin-wall at pressureDesign.  COSTED as a `vessel` on the
                     Turton vessel set already in Choupo (App. A), the      
-                    same way stage C, ammonia02 and the flagship cost theirs.
+                    same way rung 3, ammonia02 and the flagship cost theirs.
                     NO head space, distributor, support grid or internals: the
                     shell is the bed's envelope, not a vendor drawing.
 
@@ -44,15 +44,15 @@
                     `catalystPrice` below and the run REFUSES the charge by
                     name and prints `TOTALS (EUR) -- INCOMPLETE`.
 
-  Also sized and costed, exactly as stage C sizes them: the high-pressure
+  Also sized and costed, exactly as rung 3 sizes them: the high-pressure
   SEPARATOR and the LET-DOWN drum (vapour residence time; vessel set).
 
   NOT sized, NOT costed: the preheater (`feedPreheat` is a `phaseChanger`, a
   duty with no exchanger geometry declared -- an area would need U and an
   approach nobody has stated for it), the mixer and the splitter (no
-  equipment), and everything stage C's postDict lists as absent from this
+  equipment), and everything rung 3's postDict lists as absent from this
   topology (no compressors, no feed/effluent interchanger).  This CAPEX is
-  therefore PARTIAL IN UNITS as C's is, and the pellet effectiveness factor
+  therefore PARTIAL IN UNITS as rung 3's is, and the pellet effectiveness factor
   the README calls UNPRICED stays unpriced: the bed here is the fresh, clean,
   fully reduced bed of Eq 19, and a real charge is larger.
 
@@ -69,12 +69,12 @@
   magnetite-based charge is heavier than a light supported one; the number
   moves the charge mass one-for-one) and a quotation in the currency and
   year of the report.  Every other number in this file follows the same
-  rule as stage C's: pressureDesign is the 200 bar loop plus a 10 % margin
+  rule as rung 3's: pressureDesign is the 200 bar loop plus a 10 % margin
   (220 bar, as C, ammonia02 and ammonia03 declare), and `L_over_D 6.0` is
   the tall-vessel ratio the same three cases use for their converters.
 
   `corrosionAllow` and `jointEfficiency` are DELIBERATELY NOT DECLARED, as in
-  stage C: the engine supplies both from `sizing/DesignDefaults`, announces
+  rung 3: the engine supplies both from `sizing/DesignDefaults`, announces
   each at its site and in the end-of-run caveat block, and lists them on the
   shell's sheet under `assumed ( ... )` -- the difference between a number
   this case chose and a number the engine chose, made visible.
@@ -88,7 +88,7 @@ sizing
         //  catalyst-bed sizer (shell + catalystCharge).
         { unitName converter;  type pfr;  material SS316;
           designRules { pressureDesign       220.0;    // bar: 200 bar loop + 10 % margin
-                        L_over_D             6.0;      // tall vessel, as stage C's converter
+                        L_over_D             6.0;      // tall vessel, as rung 3's converter
                         catalystBulkDensity  2500.0;   // kg/m3 -- AUTHOR-SET ASSUMPTION, see header
                         catalystPrice        15.0; } } // EUR/kg, today's money -- AUTHOR-SET ASSUMPTION, see header
 

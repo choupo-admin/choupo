@@ -1,4 +1,4 @@
-# `ammoniaStaged01_yield` — stage A of the staged design sequence
+# `ammoniaReactor01_fixedConversion` — rung 1 of 4 of the ammonia reactor-model ladder
 
 **A DECLARED CONVERSION AND NOTHING ELSE.**  The reactor is a
 `conversionReactor`: it converts 25 % of the inlet nitrogen because this
@@ -22,10 +22,10 @@ tear seed, separator, let-down and purge are byte-identical across all three.
 
 | | reactor | claims | must not claim |
 |---|---|---|---|
-| **A** *this case* | `conversionReactor`, declared conversion | a material balance | a reactor size; an equipment-factored cost |
-| **B** `ammoniaStaged02_equilibrium` | `gibbsReactor`, true equilibrium | the thermodynamic ceiling | any size, any cost |
-| **C** `ammoniaStaged03_approach` | `gibbsReactor` + 5 K approach | a realistic outlet | a bed volume the engine computed |
-| **D** `ammoniaStaged04_kinetic` | adiabatic `pfr` on the Dyson & Simon (1968) rate law, volume solved by a DesignSpec | a bed volume the engine computed | a pellet effectiveness factor (announced as unpriced); a cost |
+| **1** *this case* | `conversionReactor`, declared conversion | a material balance | a reactor size; an equipment-factored cost |
+| **2** `ammoniaReactor02_equilibrium` | `gibbsReactor`, true equilibrium | the thermodynamic ceiling | any size, any cost |
+| **3** `ammoniaReactor03_equilibriumApproach` | `gibbsReactor` + 5 K approach | a realistic outlet | a bed volume the engine computed |
+| **4** `ammoniaReactor04_kineticSizing` | adiabatic `pfr` on the Dyson & Simon (1968) rate law, volume solved by a DesignSpec | a bed volume the engine computed | a pellet effectiveness factor (announced as unpriced); a cost |
 
 Background: `docs/design/how-a-process-design-is-staged.md`, and DEV.md C8.
 
@@ -50,8 +50,11 @@ one declared number.
   contact time and no catalyst.  There is nothing here from which a volume
   follows.
 * **No cost — and the reason is the METHODOLOGY, not squeamishness.**  This
-  case carries **no `system/postDict`**.  A stage-A estimate is AACE 18R-97
-  **Class 5**, whose methodology the standard states as *capacity factored,
+  case carries **no `system/postDict`**.  By METHODOLOGY, an estimate that
+  has only a declared conversion to go on belongs to AACE 18R-97 **Class 5**
+  (the class itself is set by the standard's PRIMARY characteristic, the
+  maturity of the project definition, which no reactor model decides --
+  methodology is a secondary one), whose methodology the standard states as *capacity factored,
   parametric models, judgment, or analogy* — the whole plant scaled from a
   reference plant, with **no individual item sized at all**.  Choupo's costing
   chain is per-item Guthrie/Turton bare-module: **equipment factored**, which
@@ -129,29 +132,29 @@ many commercial process designs".  Turning that pair into a nitrogen conversion
 needs the feed's H₂:N₂ ratio and its inert content, which the passage does not
 give.  **So the patent brackets 0.25 and does not source it.**
 
-**What would replace it: stages B and C.**  That is the entire point of the
+**What would replace it: rungs 2 and 3.**  That is the entire point of the
 ladder, and the verdict is recorded here as measured, whichever way it fell:
 
 | | per-pass N₂ conversion | converter outlet y(NH₃) | recycle / makeup | NH₃ product |
 |---|---|---|---|---|
-| **A — the 25 % assumption** | **25.0000 %** | 0.149843 | **2.5646** | 1 394.9 t/d |
-| B — the ceiling | 47.9288 % | 0.310807 | 1.0257 | 1 525.9 t/d |
-| C — 5 K approach | 46.6023 % | 0.300194 | 1.0778 | 1 521.5 t/d |
+| **1 — the 25 % assumption** | **25.0000 %** | 0.149843 | **2.5646** | 1 394.9 t/d |
+| 2 — the ceiling | 47.9288 % | 0.310807 | 1.0257 | 1 525.9 t/d |
+| 3 — 5 K approach | 46.6023 % | 0.300194 | 1.0778 | 1 521.5 t/d |
 
 **The screening assumption was PESSIMISTIC, and the price is visible.**  Stage
-A recirculates 2.56 mol per mol of makeup where stage C needs 1.08 — 2.4
+Rung 1 recirculates 2.56 mol per mol of makeup where rung 3 needs 1.08 — 2.4
 times the recycle, which puts **1.72 times as much gas through the converter**
 (28 516.83 against 16 622.66 kmol/h).  Every unit on the loop is over-sized by
 that ratio, and so in a real plant would be the interchanger and the recycle
 compressor this flowsheet does not draw.  And it still makes **8.3 % less
-ammonia than stage C**, because the larger recycle carries more argon out
+ammonia than rung 3**, because the larger recycle carries more argon out
 through a larger purge.  **An assumption is not a lie; an assumption never
 checked is.**
 
-Be careful reading stage A's outlet y(NH₃) = 0.1498 against the patent's
+Be careful reading rung 1's outlet y(NH₃) = 0.1498 against the patent's
 16.1 vol%.  They are close, and the closeness is a coincidence: the patent's
 converter starts from a three-times-richer inlet (3.5 mol% NH₃ against
-1.14 % here).  See stage B's README, section 5, for why this loop's inlet is so lean.
+1.14 % here).  See rung 2's README, section 5, for why this loop's inlet is so lean.
 
 ## 6. Design choices this case makes, and where they are declared
 
@@ -171,15 +174,15 @@ converter starts from a three-times-richer inlet (3.5 mol% NH₃ against
 ## 7. Running it
 
 ```bash
-bin/choupo-lint  tutorials/plant/ammoniaStaged01_yield
-bin/choupo-init0 tutorials/plant/ammoniaStaged01_yield
-runCase          tutorials/plant/ammoniaStaged01_yield
+bin/choupo-lint  tutorials/plant/ammoniaReactor01_fixedConversion
+bin/choupo-init0 tutorials/plant/ammoniaReactor01_fixedConversion
+runCase          tutorials/plant/ammoniaReactor01_fixedConversion
 ```
 
 ```bash
-# the one thing that moves between stages A and B
-diff tutorials/plant/ammoniaStaged01_yield/system/flowsheetDict \
-     tutorials/plant/ammoniaStaged02_equilibrium/system/flowsheetDict
+# the one thing that moves between rungs 1 and 2
+diff tutorials/plant/ammoniaReactor01_fixedConversion/system/flowsheetDict \
+     tutorials/plant/ammoniaReactor02_equilibrium/system/flowsheetDict
 ```
 
 ## 8. Sources

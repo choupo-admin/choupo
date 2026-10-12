@@ -7,22 +7,22 @@
 |        |     O ptimization  |                                               |
 \*-----------------------------------------------------------------------------*/
 /*---------------------------------------------------------------------------*\
-  THE STAGED DESIGN SEQUENCE -- STAGE D: THE KINETIC BED.
+  THE AMMONIA REACTOR-MODEL LADDER -- RUNG 4: THE KINETIC BED.
 
-  The same loop as stages A, B and C (`ammoniaStaged01_yield`,
-  `ammoniaStaged02_equilibrium`, `ammoniaStaged03_approach`): the makeup, the
+  The same loop as rungs 1, 2 and 3 (`ammoniaReactor01_fixedConversion`,
+  `ammoniaReactor02_equilibrium`, `ammoniaReactor03_equilibriumApproach`): the makeup, the
   pressure, the components, the property package, the recycle plan and the
   tear seed are byte-identical.  What moves is the CONVERTER: it is now an
   ADIABATIC plug-flow catalyst bed integrating the Dyson & Simon (1968) rate
   law, and its volume is what the engine COMPUTES (system/outerDict).
 
-  TWO BLOCKS DIFFER FROM STAGE C, NOT ONE, AND THE SECOND IS A CONSEQUENCE OF
-  THE FIRST.  Stage C's `gibbsReactor` declares `T 700 K`: it IMPOSES the
+  TWO BLOCKS DIFFER FROM RUNG 3, NOT ONE, AND THE SECOND IS A CONSEQUENCE OF
+  THE FIRST.  Rung 3's `gibbsReactor` declares `T 700 K`: it IMPOSES the
   converter temperature, and the duty it reports silently includes heating
   the loop gas from the mixer's ~274 K to 700 K.  A kinetic bed cannot impose
   a temperature -- it integrates from the state it is fed -- so the preheat
-  that stage C folded into the reactor's duty becomes a unit of its own here
-  (`feedPreheat`), whose duty is a RESULT.  Diff this file against stage C's
+  that rung 3 folded into the reactor's duty becomes a unit of its own here
+  (`feedPreheat`), whose duty is a RESULT.  Diff this file against rung 3's
   and that is what you will see: the converter block replaced, and one
   preheater inserted in front of it.
 
@@ -70,21 +70,21 @@
       $V_bed      so that  converter.approach_K = 5 K     (US 5,352,428's per-bed
                                                            approach, the SAME
                                                            source and value as
-                                                           stage C's)
+                                                           rung 3's)
   The manipulated volume lives in `variables {}` below; the unit reads it
   through `$V_bed`.  Nothing here types a volume.
 
-  WHY THE TARGET IS AN APPROACH AND NOT STAGE C's 46.60 % CONVERSION.  Stage
-  C's converter is ISOTHERMAL at 700 K.  A single ADIABATIC bed heats itself
+  WHY THE TARGET IS AN APPROACH AND NOT RUNG 3's 46.60 % CONVERSION.  Stage
+  Rung 3's converter is ISOTHERMAL at 700 K.  A single ADIABATIC bed heats itself
   as it converts, and ammonia equilibrium retreats as it heats, so the bed's
   conversion is capped where its adiabatic line meets the equilibrium curve
   -- far below what an isothermal converter at 700 K reaches.  That cap is
   MEASURED in the README (a volume sweep), and it is why no volume of this bed
-  can hit stage C's number: the target would be unreachable, and a
+  can hit rung 3's number: the target would be unreachable, and a
   DesignSpec asked for it would diverge honestly.  The reachable, sourced
   target is the one the patent states PER BED.
 
-  SCALE, TOPOLOGY, SEED: read stage C's flowsheetDict; nothing about them
+  SCALE, TOPOLOGY, SEED: read rung 3's flowsheetDict; nothing about them
   moved.  TOPOLOGY ONLY here -- stream state lives on disk in 0/.
 \*---------------------------------------------------------------------------*/
 // stream state lives on disk in 0/ (per-stream files); flowsheetDict is TOPOLOGY only
@@ -98,7 +98,7 @@
 //  sixteen volumes.
 variables
 {
-    V_bed       6.0;        // m3 of catalyst bed; stage C's space-velocity bed is 18.63 m3
+    V_bed       6.0;        // m3 of catalyst bed; rung 3's space-velocity bed is 18.63 m3
 }
 
 units
@@ -110,8 +110,8 @@ units
         outputs  ( mixed );
     }
     {
-        //  THE PREHEAT STAGE C HID INSIDE ITS REACTOR.  `outletT 700 K` is the
-        //  ONE thermal fact stage C states about its converter (its declared
+        //  THE PREHEAT RUNG 3 HID INSIDE ITS REACTOR.  `outletT 700 K` is the
+        //  ONE thermal fact rung 3 states about its converter (its declared
         //  isothermal temperature), inherited so the ladder's rule -- one
         //  thing moves per rung -- holds as closely as a kinetic bed allows:
         //  the same inlet temperature, now declared on the stream that
@@ -126,7 +126,7 @@ units
     }
     {
         //  ===================================================================
-        //  STAGE D -- THE KINETIC BED.
+        //  RUNG 4 -- THE KINETIC BED.
         //
         //  An adiabatic plug-flow reactor over ONE reaction, `ammoniaSynthesis`
         //  in constant/reactions, whose rate law is `dysonSimon1968`: the
@@ -140,7 +140,7 @@ units
         //  IT.  The PFR is a rating model (it integrates a declared volume),
         //  so "the bed volume the engine computed" is the DesignSpec's answer:
         //  the volume at which the bed's outlet is 5 K short of the rate law's
-        //  own equilibrium.  Compare it with stage C's 18.63 m3, which is
+        //  own equilibrium.  Compare it with rung 3's 18.63 m3, which is
         //  arithmetic on an assumed space velocity.
         //
         //  NO `catalystLoading`: Equation 19 is already per cubic metre of

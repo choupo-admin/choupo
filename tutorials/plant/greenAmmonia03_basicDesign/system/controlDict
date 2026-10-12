@@ -14,7 +14,7 @@ application  choupoSolve;
 //  plant at one design stage, not a feature being isolated.
 
 tier         showcase;
-description  "Green ammonia, 1200 t/day, at the BASIC-DESIGN stage (FEL-3 on the process side): the PEQ 2026-27 base case with its Gibbs converter replaced by three adiabatic catalyst beds on the Dyson-Simon (1968) rate law for an iron catalyst, two interbed coolers raising HP steam (a declared credit), and the feed/effluent exchanger preheating bed 1 against bed 3. Every exchanger is designed by the Kern method; the beds are sized from their own volumes with a declared catalyst charge; Turton costing and a DCF, still a study-type estimate.";
+description  "Green ammonia, 1200 t/day, BASIC DESIGN (illustrated design stage FEL-3, process side; rung 3 of the green-ammonia sequence): the PEQ 2026-27 base case with its Gibbs converter replaced by three adiabatic catalyst beds on the Dyson-Simon (1968) rate law for an iron catalyst, two interbed coolers raising HP steam (a declared credit), and the feed/effluent exchanger preheating bed 1 against bed 3. Every exchanger is designed by the Kern method; the three bed volumes are SOLVED by the engine (a DesignSpec on the outlet temperature and the approach to equilibrium) and the beds sized from them with a declared catalyst charge; Turton costing and a DCF, still a study-type estimate.";
 verbosity    3;
 
 reports

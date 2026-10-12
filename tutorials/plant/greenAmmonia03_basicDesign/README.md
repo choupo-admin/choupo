@@ -1,8 +1,8 @@
-# Green ammonia, 1200 t/day — the basic-design stage (FEL-3, process side)
+# Green ammonia, 1200 t/day — basic design (process side)
 
-The PEQ 2026-27 green-ammonia plant as it is described at the **basic
-design** stage: FEL-3 in both numberings (FEED, basic engineering). The
-stage's fidelity, from
+**Illustrated design stage: FEL-3**, process side (FEL-3 in both
+numberings: FEED, basic engineering). The PEQ 2026-27 green-ammonia plant as
+it is described at the **basic design** stage. The stage's fidelity, from
 [`docs/design/how-a-process-design-is-staged.md`](../../../docs/design/how-a-process-design-is-staged.md)
 §2.3: *the reactor on real kinetics where they exist; the exchangers rated
 against geometry.* Both are here.
@@ -12,23 +12,28 @@ source /path/to/Choupo/etc/bashrc
 runCase -f .
 ```
 
-**This is FEL-3 on the PROCESS side only.** The cost beside it is still
-Turton's equipment-factored method, which is AACE's Class 4 methodology;
-a Class 3 estimate is built from semi-detailed unit costs and vendor
+**This is FEL-3 on the PROCESS side only, and the estimate class is not read
+off the stage.** The cost beside it is still Turton's equipment-factored
+method; a Class 3 estimate is built from semi-detailed unit costs and vendor
 quotations, which no part of Choupo reads. So `system/postDict` keeps
-`estimateClass 4` and its −30 % / +50 % band: the process fidelity moved
-to FEL-3, the cost estimate did not.
+`estimateClass 4` and its −30 % / +50 % band — the author's statement of how
+far the project is defined (AACE's primary characteristic), never a
+consequence of the model or of the design stage illustrated: the process
+fidelity moved to FEL-3, the cost estimate did not.
 
-| case | stage | converter | exchangers |
-|---|---|---|---|
-| [`greenAmmoniaFeasibility`](../greenAmmoniaFeasibility) | feasibility, FEL-2 | one Gibbs reactor 5 K short of equilibrium | duties only; areas on an assumed U |
-| [`greenAmmoniaFeasibility50bar`](../greenAmmoniaFeasibility50bar) | the same study, 50 bar | the same, at 400 °C | the same |
-| **this case** | basic design, FEL-3 (process side) | **three adiabatic beds on a rate law** | **every one designed (Kern)** |
+It is rung 3 of the green-ammonia sequence, which the common entry
+[`ammoniaRoutes01_screening`](../ammoniaRoutes01_screening) maps in full:
+
+| rung | case | illustrated design stage | converter | exchangers |
+|---|---|---|---|---|
+| 2 | [`greenAmmonia02_feasibility150bar`](../greenAmmonia02_feasibility150bar) | FEL-2, feasibility | one Gibbs reactor 5 K short of equilibrium | duties only; areas on an assumed U |
+| 2 | [`greenAmmonia02_feasibility50bar`](../greenAmmonia02_feasibility50bar) | FEL-2, an exploratory alternative at 50 bar | the same, at 400 °C — a catalyst hypothesis | the same |
+| 3 | **this case** | FEL-3, basic design (process side) | **three adiabatic beds on a rate law, volumes solved** | **every one designed (Kern)** |
 
 ## What it is derived from, and what differs
 
 It is a copy of the base case
-[`greenAmmoniaIndustrialN2`](../greenAmmoniaIndustrialN2): the same feeds,
+[`greenAmmoniaPEQ_baseCase`](../greenAmmoniaPEQ_baseCase): the same feeds,
 package, compressors, feed/effluent exchanger (FEHE), coolers, separation,
 let-down, utilities and appraisal, and the same six Kern exchanger designs.
 Read the base case's README for all of that.
@@ -48,7 +53,7 @@ is replaced by:
 The rate law is the correlation object
 `src/unitOperations/reactor/kinetics/AmmoniaSynthesisRate.{H,cpp}`, selected
 by `kinetics { type dysonSimon1968; }` in `constant/reactions` (copied from
-[`ammoniaStaged04_kinetic`](../ammoniaStaged04_kinetic), whose README is the
+[`ammoniaReactor04_kineticSizing`](../ammoniaReactor04_kineticSizing), whose README is the
 reference for it). The FEHE now preheats bed 1 against bed 3's effluent, an
 energy recycle through three kinetic beds (the second tear in
 `system/solverDict`). The recycle compressor's power was re-tuned to 908 kW
@@ -173,7 +178,7 @@ The beds are sized by the `pfr` sizer from their own volume: a shell (a
 vessel at the bed's own L/D 1.5, Turton's vessel set, its sheet carrying
 the bed's pressure drop) and a **catalyst charge** priced from two
 declared numbers, 2500 kg/m³ and 15 EUR/kg — **author-set assumptions**,
-the same round numbers `ammoniaStaged04_kinetic` declares, with no source
+the same round numbers `ammoniaReactor04_kineticSizing` declares, with no source
 behind either: 0.33, 0.69 and 1.19 M EUR for the three charges. Each bed is its own shell here; a real converter stacks them in
 one.
 
@@ -304,7 +309,7 @@ reached here).
   check is reachable.
 * A low-pressure loop: the Dyson & Simon kinetics are for an iron catalyst,
   and the 50 bar speculation stays at the feasibility stage
-  ([`greenAmmoniaFeasibility50bar`](../greenAmmoniaFeasibility50bar)).
+  ([`greenAmmonia02_feasibility50bar`](../greenAmmonia02_feasibility50bar)).
 * Everything the base case lists as not in it (the purge scrubber, the
   let-down gas recovery, the cooling-water, refrigeration and steam
   systems as equipment).

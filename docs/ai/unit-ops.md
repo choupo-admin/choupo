@@ -204,7 +204,7 @@ dilute-gas); the rate law and `T` read the local `P`; the outlet leaves at `P_in
 a `P` profile column).  A drop above `allowable` is ANNOUNCED with the remedy — at a
 fixed volume the drop goes as (L/D)²; nothing is clamped.  Absent both keys the bed is
 the constant-pressure march it always was.  The single-reaction path refuses them.
-Example: `tutorials/plant/greenAmmoniaBasicDesign` (three beds, L/D 1.5; at L/D 6 the
+Example: `tutorials/plant/greenAmmonia03_basicDesign` (three beds, L/D 1.5; at L/D 6 the
 loop did not converge).
 NOTE: `cstr`/`pfr` compute concentration on the **liquid** molar volume
 (Vliq) — a liquid-basis model.  For a GAS-phase reactor prefer
@@ -237,7 +237,7 @@ own equilibrium, US 5,352,428's per-bed definition — not the package's Gibbs s
 at both ends, the inlet ratio of the law's fugacity coefficients to the package's
 (`phi_law_over_pkg_*_in`) and, on the Eq 40 route, `xi_min`/`xi_max`.  Wire the
 volume to a DesignSpec on `approach_K` to SIZE the bed.  Example:
-`tutorials/plant/ammoniaStaged04_kinetic` (stage D of the staged design sequence).
+`tutorials/plant/ammoniaReactor04_kineticSizing` (rung 4 of 4 of the ammonia reactor-model ladder: the engine SOLVES the bed volume).
 
 ### `conversionReactor`
 Stoichiometric reactor: you **specify the per-pass conversion** of the

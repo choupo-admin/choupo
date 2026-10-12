@@ -11,7 +11,7 @@
   an assumed U on the exchangers.  What it DECIDES: is the process feasible,
   and what is its gross margin once the energy the balances demand is priced.
 
-  DERIVED FROM tutorials/plant/greenAmmoniaIndustrialN2 (the PEQ 2026-27 base
+  DERIVED FROM tutorials/plant/greenAmmoniaPEQ_baseCase (the PEQ 2026-27 base
   case): the same feeds, the same property package and records, the same
   compressors, loop pressure, separation and let-down, the same Gibbs
   converter 5 K short of equilibrium with its declared HP-steam credit.  ONE

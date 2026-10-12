@@ -7,11 +7,11 @@
 |        |     O ptimization  |                                               |
 \*-----------------------------------------------------------------------------*/
 /*---------------------------------------------------------------------------*\
-  THE STAGED DESIGN SEQUENCE -- flowsheet, SHARED BY ALL THREE STAGES.
+  THE AMMONIA REACTOR-MODEL LADDER -- flowsheet, SHARED BY RUNGS 1-3.
 
   Everything in this file except the `converter` block is BYTE-IDENTICAL
-  across ammoniaStaged01_yield, ammoniaStaged02_equilibrium and
-  ammoniaStaged03_approach.  Diff two of them and the only thing that moves
+  across ammoniaReactor01_fixedConversion, ammoniaReactor02_equilibrium and
+  ammoniaReactor03_equilibriumApproach.  Diff two of them and the only thing that moves
   is the reactor model -- which is the whole point: one rung of the fidelity
   ladder at a time, and nothing else.
 
@@ -38,7 +38,7 @@
   tutorials/steady/flowsheets/ammonia01_synthesis_loop, whose structure this
   flowsheet copies: that case runs 1 kmol/h of makeup, and at that rate the
   converter's catalyst charge is about 2 litres -- below the lower bound of
-  every vessel cost correlation the engine carries, so stage C could not
+  every vessel cost correlation the engine carries, so rung 3 could not
   honestly cost it.  The flowsheet is linear in flow (the flash and the
   reactor are both intensive), so the scale-up changes no intensive answer;
   compare this case's converter y_NH3 against ammonia01's own golden and they
@@ -57,7 +57,7 @@ units
     }
     {
         //  ===================================================================
-        //  STAGE B -- GIBBS REACTOR AT TRUE EQUILIBRIUM.
+        //  RUNG 2 -- GIBBS REACTOR AT TRUE EQUILIBRIUM.
         //
         //  No conversion is declared.  The outlet is the composition that
         //  minimises the Gibbs energy of the declared species at 700 K and
@@ -68,7 +68,7 @@ units
         //  There is no `temperatureApproach` key here, and its absence is the
         //  stage: the reaction is taken all the way to equilibrium.  What
         //  comes out is a CEILING.  No converter reaches it, because reaching
-        //  it takes infinite catalyst -- see the README, and see stage C.
+        //  it takes infinite catalyst -- see the README, and see rung 3.
         //  ===================================================================
         name       converter;
         type       gibbsReactor;

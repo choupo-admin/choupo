@@ -4,7 +4,7 @@
 |     \\\|///  O perations    |  https://choupo.org  --  GPL-3.0-or-later     |
 \*-----------------------------------------------------------------------------*/
 /*---------------------------------------------------------------------------*\
-  postDict -- THE FEASIBILITY STAGE (FEL-2, an AACE Class 4 type study;
+  postDict -- THE FEASIBILITY STAGE (illustrated design stage FEL-2;
   docs/design/how-a-process-design-is-staged.md 2.3).  Four passes:
 
     pinchPass   the energy TARGETS of the process duties (Linnhoff-Flower
@@ -19,7 +19,7 @@
                 match on purpose: every duty is bought from, or sold to, a
                 utility, and the pinch says how much of that the matches of
                 the next stage could avoid.
-    sizing      a Class 4 equipment list: every exchanger on an ASSUMED U
+    sizing      an equipment list: every exchanger on an ASSUMED U
                 (A = Q/(U*LMTD), the LMTD computed from the unit's own
                 temperatures and the named utility's record) -- the
                 fidelity 2.3 gives this stage; no tube, no shell, no film.
@@ -36,7 +36,7 @@
 
   THE U VALUES ARE AUTHOR-SET ASSUMPTIONS, none cited -- the same numbers the
   base case declared before its exchangers were designed (git history of
-  tutorials/plant/greenAmmoniaIndustrialN2/system/postDict, C44 slice 1),
+  tutorials/plant/greenAmmoniaPEQ_baseCase/system/postDict, C44 slice 1),
   plus two new ones: the EffluentCooler takes the WaterCooler's 500, and the
   FeedPreheater 400 W/m2/K (loop gas against molten salt).  An assumed U is
   what a feasibility estimate carries; the basic-design case replaces every
@@ -45,7 +45,7 @@
   Everything else -- the compressors, the converter vessel on an ASSUMED
   space velocity, the three drums, the product storage, the inventory, the
   working capital and the appraisal knobs -- is the base case's, with the
-  same reasons (read tutorials/plant/greenAmmoniaIndustrialN2/system/
+  same reasons (read tutorials/plant/greenAmmoniaPEQ_baseCase/system/
   postDict; they are not repeated here).  Materials follow the base case's
   rule; the FeedPreheater is SS316 because its salt side runs at 500 C.
 
@@ -164,7 +164,7 @@ economics
     siteFactor          0.50;
     contingencyFee      1.18;
     N_np                12;          // 4 compressors + 7 exchangers + 1 reactor
-    estimateClass       4;
+    estimateClass       4;           // the AUTHOR's statement of how far the project is defined (AACE's primary characteristic) -- not a consequence of the model or of the design stage illustrated
     accuracyBand        ( -30 50 );
     refuseOnMissingPrice 1;
 

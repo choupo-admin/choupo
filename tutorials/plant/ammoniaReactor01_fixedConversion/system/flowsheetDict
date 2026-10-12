@@ -7,11 +7,11 @@
 |        |     O ptimization  |                                               |
 \*-----------------------------------------------------------------------------*/
 /*---------------------------------------------------------------------------*\
-  THE STAGED DESIGN SEQUENCE -- flowsheet, SHARED BY ALL THREE STAGES.
+  THE AMMONIA REACTOR-MODEL LADDER -- flowsheet, SHARED BY RUNGS 1-3.
 
   Everything in this file except the `converter` block is BYTE-IDENTICAL
-  across ammoniaStaged01_yield, ammoniaStaged02_equilibrium and
-  ammoniaStaged03_approach.  Diff two of them and the only thing that moves
+  across ammoniaReactor01_fixedConversion, ammoniaReactor02_equilibrium and
+  ammoniaReactor03_equilibriumApproach.  Diff two of them and the only thing that moves
   is the reactor model -- which is the whole point: one rung of the fidelity
   ladder at a time, and nothing else.
 
@@ -38,7 +38,7 @@
   tutorials/steady/flowsheets/ammonia01_synthesis_loop, whose structure this
   flowsheet copies: that case runs 1 kmol/h of makeup, and at that rate the
   converter's catalyst charge is about 2 litres -- below the lower bound of
-  every vessel cost correlation the engine carries, so stage C could not
+  every vessel cost correlation the engine carries, so rung 3 could not
   honestly cost it.  The flowsheet is linear in flow (the flash and the
   reactor are both intensive), so the scale-up changes no intensive answer;
   compare this case's converter y_NH3 against ammonia01's own golden and they
@@ -57,14 +57,14 @@ units
     }
     {
         //  ===================================================================
-        //  STAGE A -- YIELD (STOICHIOMETRIC) REACTOR.
+        //  RUNG 1 -- YIELD (STOICHIOMETRIC) REACTOR.
         //
         //  The reactor is a DECLARED single-pass conversion of the limiting
         //  reactant and nothing else.  It knows no thermodynamics: it will
         //  produce whatever conversion this dict asks for, at any temperature
         //  and any pressure, whether or not equilibrium allows it.  That is
         //  not a defect of the model -- it is what a yield reactor IS, and it
-        //  is why stage A may claim a MATERIAL balance and nothing beyond one.
+        //  is why rung 1 may claim a MATERIAL balance and nothing beyond one.
         //  It may not claim a converged HEAT balance either: this unit prices
         //  its duty on the ideal-gas rung while these streams are priced by
         //  SRK at 200 bar, and the plant's first law is out by 2278.14 kW
@@ -82,7 +82,7 @@ units
         //  and its inert content, which that passage does not give -- so it
         //  brackets 0.25 and does not source it.
         //
-        //  WHAT WOULD REPLACE IT: stage B and stage C.  That is the whole
+        //  WHAT WOULD REPLACE IT: rung 2 and rung 3.  That is the whole
         //  point of the ladder.  An assumption is not a lie; an assumption
         //  never checked is.
         //  ===================================================================
