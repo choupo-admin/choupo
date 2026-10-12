@@ -2118,7 +2118,7 @@ a `ReactionRate` base with the explicit factory (`registerType`/`New`/
 `constant/reactions` through route (i), every number visible, and the C++
 `AmmoniaSynthesisRate` retired or reduced to the verification anchors
 (one home).  Sequenced AFTER C66 items 1 and 3 merge (both touch
-`PFR.cpp`).  Status: waiting on C66.
+`PFR.cpp`).  Status: dispatched 2026-10-12, after C66 and the C68 renames merged (b5b2c851d).
 BUILT 2026-10-12 on branch `claude/c67-kinetics` (not merged).  (ii)
 `thermo/reaction/ReactionRate` -- explicit factory, `Arrhenius`/`LHHW` (the
 old `RateLaw`, arithmetic unchanged) and `expression` built in, called from
