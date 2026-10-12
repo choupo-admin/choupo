@@ -160,6 +160,8 @@ def norm(path):
 
 # ------------------------------------------------------------------ the runs
 def run_case(src, work, edit=None):
+    if not (ROOT / "choupoSolve").exists():
+        fail("no native build of this tree (choupoSolve is missing): run `make all` first")
     dst = work / src.name
     shutil.copytree(src, dst, ignore=shutil.ignore_patterns(
         "converged", "design", "reports", "iterations"))
