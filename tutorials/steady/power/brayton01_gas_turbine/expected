@@ -52,3 +52,7 @@ stream  feed                   T                298.15           1e-4
 stream  hot                    T                1246.40394023    1e-4
 kpi     combustor              vf_out           1                1e-4
 kpi     turbine                W_shaft_kW       -15.3023165845   1e-4
+boundary global                 H_feeds_kW       0                1e-4
+boundary global                 Q_boundary_kW    14.6976834155    1e-4
+boundary global                 H_products_kW    14.6975237179    1e-4
+boundary global                 W_shaft_kW       -5.30231658445   1e-4
