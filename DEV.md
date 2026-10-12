@@ -930,7 +930,12 @@ accepts today, and that is a policy call.
 > equilibrium flash); ANSI/ISA-75.01.01-2012 and ISA-RP75.23-1995 (R2024)
 > (to be verified against ISA's own listing before citing); EU 80/85/87
 > dB(A) are daily L_EX,8h values, weekly only in the directive's specific
-> circumstances.  Status: dispatched 2026-10-12.
+> circumstances.  MERGED 2026-10-12: all 17 applied; the gas code already
+> capped Y at 2/3 (now written as x_eff explicitly, same numbers); no render
+> had lost F_F's root; both ISA designations and the directive's Art. 3(3)
+> verified at the source; the Design Guide's control-valve table had a
+> flashing row prescribing anti-cavitation trim (split into no-vapour /
+> cavitation / flashing).  `--gui` PASS 31 / FAIL 0, no golden moved.
 
 > **PHASE CONSOLIDATED 2026-10-12 (Vítor: "Consolida esta fase como achares
 > melhor", weekly credit near its limit).**  `main` 23d4cdbcb is clean, no
