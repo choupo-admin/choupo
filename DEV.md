@@ -2012,7 +2012,7 @@ priced), the interbed exchangers kept as their own blocks (the
 interbed-exchanger converter is an industrial reference, e.g. a three-bed
 radial converter with interbed exchangers -- cite a source read).
 Sequenced AFTER C66 merges, the C68 renames and C67 (all touch the pfr or
-this case).  Status: queued.
+this case).  Status: dispatched 2026-10-12 after C67 merged.
 
 **C68. ONE LADDER FOR THE AMMONIA CASES, AND ITS MISSING FIRST RUNG
 (Vítor, 2026-10-12, verbatim: "os vários níveis de simulação do processo de
@@ -2147,6 +2147,13 @@ closure gap at cancellation level), and eight bench rows are REMOVED with
 the compiled verify() (`anchor1..5_pass`, `anchorCount`, `anchorsPassed`,
 `particleDiameter_mm`).  NOT re-recorded: put to Vítor.  Eq 39 at 148.9 atm
 stays OPEN (the table refuses, as before).
+MERGED 2026-10-12 (3a4534f42) after the commander's validation on the merge:
+`--gui` 31/0, `--fast` 72/0, every kinetics case (the two apparent
+failures were sub-sector folders walked as cases, identical on main),
+`check_rate_expression`, `check_ammonia_rate`, `check_wasm_dialect`,
+`check_compile_clean`, `check_layering`, `check_energy_closure`; recorded
+with the list: greenAmmonia03 `FEHE.H_closure_gap_kW` (round-off) + three
+new X_H2 rows, ammoniaRate01's eight retired verify() rows removed.
 
 **C66. THE GREEN-AMMONIA CONVERTER BEDS, SIZED AS A BASIC DESIGN SIZES
 THEM (Vítor, 2026-10-12, asking "No Ammonia Green Design, como é que o PFR
