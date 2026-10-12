@@ -2140,8 +2140,8 @@ because the plant loses 69.4 MEUR/yr operating; 150 vs 50 bar differ by
 4.3 MEUR, less than any bar.  OPEN for Vítor (pedagogy): a two-way /
 scenario analysis (H2 and NH3 moving together is what would flip it);
 no tornado drawn in the GUI yet.
-STAGE COMPARISON MERGED 2026-10-12 (branch `claude/c68-stage-comparison`)
-: `bin/curate/gen_ammonia_stage_comparison.py` writes a section
+STAGE COMPARISON MERGED 2026-10-12 (branch `claude/c68-stage-comparison`):
+`bin/curate/gen_ammonia_stage_comparison.py` writes a section
 of `tutorials/plant/greenAmmonia03_basicDesign/README.md` (home chosen: the page the student
 at rung 3 opens, which already carried two hand comparisons, both stale --
 replaced by pointers) from three engine runs (the two cases and the
