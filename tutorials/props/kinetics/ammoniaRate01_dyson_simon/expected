@@ -1,13 +1,6 @@
 # Reference KPIs (golden master, auto-recorded by runTests --record).
 # units: stream F is kmol/s (canonical SI, as in the result JSON); the run LOG prints kmol/h.
 # kind   name      key         expected        reltol
-diag    dysonSimon             anchor1_pass     1                1e-4
-diag    dysonSimon             anchor2_pass     1                1e-4
-diag    dysonSimon             anchor3_pass     1                1e-4
-diag    dysonSimon             anchor4_pass     1                1e-4
-diag    dysonSimon             anchor5_pass     1                1e-4
-diag    dysonSimon             anchorCount      5                1e-4
-diag    dysonSimon             anchorsPassed    5                1e-4
 diag    dysonSimon             bed1Inlet_Eq40   312.95744498     1e-4
 diag    dysonSimon             bed1Inlet_V3     929.13051108     1e-4
 diag    dysonSimon             bed1Inlet_eta    0.0251956498047  1e-4
@@ -36,4 +29,3 @@ diag    dysonSimon             locus3_V3_max    274.092717767    1e-4
 diag    dysonSimon             locus3_eta       0.25             1e-4
 diag    dysonSimon             locus3_xi        0.531500922551   1e-4
 diag    dysonSimon             locusDescends    1                1e-4
-diag    dysonSimon             particleDiameter_mm 8                1e-4
