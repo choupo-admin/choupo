@@ -1,0 +1,133 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+  ammoniaRoutes01_screening  --  SCREENING THE PRODUCTION ROUTES TO AMMONIA,
+  ON PAPER, BEFORE ANY FLOWSHEET EXISTS.
+
+  The first rung of the ammonia ladder: Douglas' input-output level, the
+  stage at which a route is kept or dropped on its gross margin.  Three
+  production routes make the same product by the same synthesis step,
+  N2 + 3 H2 -> 2 NH3, and differ in where the hydrogen and the nitrogen
+  come from.  GREEN: water electrolysis, air separation, synthesis.  GREY:
+  steam reforming of methane, the water-gas shift, air in a secondary
+  reformer, synthesis; the CO2 is emitted.  BLUE: grey, with the process
+  CO2 captured and stored.  Grey and blue share one overall equation; blue
+  differs only in what is done with the CO2, which no reaction can show.
+  Each route is sized to make 2936 kmol/h of NH3 (1200.0 t/day, the PEQ
+  base case's design rate) from 1468 kmol/h of N2.
+
+  The four route and heat units run at 298.15 K and 0.02 bar.  That is the
+  REFERENCE STATE, not a process condition: below the vapour pressure of
+  water at 25 C every species is the ideal gas its formation datum is
+  written for, and an ideal gas's enthalpy does not depend on pressure, so
+  every heat below is a standard one, with water as vapour (the
+  lower-heating-value basis).  The same heats are NOT process duties: the
+  utility allocation every steady run performs serves them with LP steam
+  and chilled water at 25 C, and those rows are not a design.
+
+  WHAT THE ENGINE ANSWERS, unit by unit; none needs a rate law.
+  `electrolytic` and `reforming` are conversion reactors at X = 1 on the
+  green and the grey/blue overall equations: their feeds are the raw
+  materials per kg of NH3, and dHrxn_kJ_per_mol is the heat of reaction on
+  the ideal-gas rung, per 2 mol NH3.  `waterSplitting` is the electrolyser
+  alone, H2O -> H2 + 1/2 O2, on the route's 4404 kmol/h of water: its duty
+  Q_kW is the least power a thermoneutral electrolyser fed STEAM can be
+  supplied with, the FLOOR under the green route's assumed electricity (an
+  electrolyser fed liquid water must also pay the water's enthalpy of
+  vaporisation, the higher-heating-value basis, so its floor is higher).
+  `combustion`, CH4 + 2 O2 -> CO2 + 2 H2O, has a dHrxn_kJ_per_mol that IS
+  the lower heating value of methane, which turns a reformer's fuel,
+  declared in GJ, into kilograms of methane and CO2.  `synthesis150` and
+  `synthesis50` hold the shared step at equilibrium at 700 K and 150 or
+  50 bar: the single-pass ceiling.  It is the same for every route, so it
+  decides nothing between them; it says what the next rung must add, a
+  recycle loop.
+
+  THE MARGINS ARE IN THE README, NOT IN THE ENGINE.  A level-1 margin is
+  arithmetic on these flows and a list of prices: product value minus raw
+  materials per kg of NH3, then a SECOND margin after the energy each route
+  needs (electricity, reformer fuel, CO2 compression and storage, a CO2
+  price), each an assumed specific consumption.  The engine's economics
+  pass prices ONE plant per run and needs costed equipment, so it cannot
+  price three routes that have none; the README states every price (the
+  three the PEQ base case declares, the rest author-set and labelled) and
+  works the table from the numbers this run publishes.
+\*---------------------------------------------------------------------------*/
+
+// stream state lives on disk in 0/ (per-stream files); flowsheetDict is TOPOLOGY only
+
+units
+(
+    {
+        name        electrolytic;
+        type        conversionReactor;
+        in          feedElectrolytic;
+        outputs     ( outElectrolytic );
+        reaction    electrolyticRoute;
+        operation
+        {
+            conversion  1.0;      // input-output: every mole of N2 leaves as NH3
+        }
+    }
+    {
+        name        reforming;
+        type        conversionReactor;
+        in          feedReforming;
+        outputs     ( outReforming );
+        reaction    reformingRoute;
+        operation
+        {
+            conversion  1.0;      // input-output: every mole of N2 leaves as NH3
+        }
+    }
+    {
+        name        waterSplitting;
+        type        conversionReactor;
+        in          feedWaterSplitting;
+        outputs     ( outWaterSplitting );
+        reaction    waterSplitting;
+        operation
+        {
+            conversion  1.0;      // all the water the route needs, split
+        }
+    }
+    {
+        name        combustion;
+        type        conversionReactor;
+        in          feedCombustion;
+        outputs     ( outCombustion );
+        reaction    methaneCombustion;
+        operation
+        {
+            conversion  1.0;
+        }
+    }
+    {
+        name        synthesis150;
+        type        equilibriumReactor;
+        in          feedSynthesis150;
+        outputs     ( outSynthesis150 );
+        operation
+        {
+            T                    700 K;
+        }
+        reactions   ( ammoniaSynthesis );
+    }
+    {
+        name        synthesis50;
+        type        equilibriumReactor;
+        in          feedSynthesis50;
+        outputs     ( outSynthesis50 );
+        operation
+        {
+            T                    700 K;
+        }
+        reactions   ( ammoniaSynthesis );
+    }
+);
