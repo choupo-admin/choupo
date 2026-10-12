@@ -466,7 +466,7 @@ Pick the **inherent characteristic** to linearise the loop: **equal-percentage**
 
 XFIGCHOKINGX
 
-For a GAS, flow does NOT keep rising as you drop the downstream pressure. Once the pressure ratio falls below the **critical ratio** — r_c = [2/(γ+1)] raised to [γ/(γ−1)], ≈ **0.5 for most gases** (0.53 for air) — the velocity at the vena contracta reaches the speed of sound and the valve **CHOKES**: mass flow saturates and the surplus ΔP is dumped as **noise (often > 110 dB), vibration and erosion**. Discharging 50 bar → 1 atm is a ratio of 0.02, i.e. deeply choked.
+For a GAS, flow does NOT keep rising as you drop the downstream pressure. Once the pressure ratio falls below the **critical ratio** — r_c = [2/(γ+1)] raised to [γ/(γ−1)], ≈ **0.5 for most gases** (0.53 for air) — the velocity at the vena contracta reaches the speed of sound and the valve **CHOKES**: mass flow saturates, and the surplus ΔP buys no flow — it is dissipated downstream of the vena contracta in shocks and turbulence, as **noise (often > 110 dB), vibration and erosion**. Discharging 50 bar → 1 atm is a ratio of 0.02, i.e. deeply choked.
 
 So a single standard valve CAN pass the flow, but across a deeply choked drop it screams, erodes its trim and shakes the pipe — which is why a large letdown is usually **staged**:
 
@@ -474,8 +474,9 @@ So a single standard valve CAN pass the flow, but across a deeply choked drop it
 |---|---|
 | Small gas ΔP, sub-critical | one globe valve |
 | Large gas ΔP, choked | multi-stage / labyrinth trim, or valves in series, + a downstream silencer (each stage takes a sub-critical drop) |
-| Liquid, P₂ > Pvap | standard trim |
-| Liquid, P₂ < Pvap (flashing) | the liquid flashes/cavitates and imploding bubbles pit the trim — use anti-cavitation (multi-step) trim, harden it, or flash on purpose into a drum |
+| Liquid, P₂ and the vena contracta both > Pvap | standard trim |
+| Liquid, P₂ > Pvap but the vena contracta < Pvap (cavitation) | imploding bubbles pit the trim — anti-cavitation (multi-step) trim, or an orifice downstream to raise the valve's backpressure; harden it |
+| Liquid, P₂ < Pvap (flashing) | the outlet state requires the vapour, so no trim, staging or orifice removes it (an orifice only moves the two-phase crossing to the last device) — harden the trim, use an angle body, put the valve at the receiving vessel or flash on purpose into a drum |
 
 Rule of thumb: stage it when the predicted noise exceeds ~85–90 dBA or the trim-exit velocity is high. The glass-box check: drop the pressure across a `valve` in Choupo and read the outlet T and phase — a flashing liquid shows up as a vapour fraction at the outlet before you ever buy the trim.
 
