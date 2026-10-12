@@ -1165,6 +1165,11 @@
       "exit": 0,
       "claim": "check_rate_expression: OK -- the C++ law and the expression agree (0.138888888889 mol/s) and both equal the closed-form Michaelis-Menten CSTR; precedence held by value (2^3^2 = 512, 8/4/2 = 1, -1^2 = -1); 16 refusals fired by name; a table read at its midpoint doubles the rate exactly, announced.  NOT CHECKED: whether any law is RIGHT (the witness's Vmax and Km are author-set; the ammonia law's anchors are check_ammonia_rate's), the batchReactor and dynamicCSTR routes, and the WASM build (check_wasm_dialect's).",
       "seconds": 2.7
+    },
+    "check_economic_sensitivity": {
+      "exit": 0,
+      "claim": "check_economic_sensitivity: OK -- the tornado of both feasibility cases (greenAmmonia02_feasibility150bar / 50bar) is published row by row in sensitivity.csv, the console and the result JSON, which agree; from the BASE cashFlow.csv alone the discount-rate ends recompute, the product-price ends recompute with the working capital moving by its receivables line, and the capital ends are the declared accuracyBand applied to the FCI; on an economics01 probe the FCI ends recompute through WC, 0.180 FCI and depreciation; five malformed declarations refuse by name; a case without the block prints, publishes and writes nothing of it; and every discounting and after-tax expression lives inside appraise(), which both ends of every bar call.  NOT COVERED: whether an end is sensible (author's assumption), correlated inputs, a perturbed ramp-up or multi-year construction, IRR/payback recomputation, and byte-identity against the previous build (measured once, not gated).",
+      "seconds": 1.4
     }
   }
 }
