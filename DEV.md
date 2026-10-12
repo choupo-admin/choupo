@@ -2018,6 +2018,27 @@ decided); old names kept as aliases so shared `?case=` links resolve.
 Sequenced: the screening case now (new files only); the renames AFTER C66
 merges (it edits greenAmmoniaBasicDesign), and BEFORE C67.  Status:
 screening dispatched 2026-10-12.
+NAMES REVISED 2026-10-12 after a second opinion Vítor relayed (accepted):
+keep the TWO axes (reactor-model fidelity vs project stage -- one ladder
+would teach that a project only matures by swapping Gibbs for a PFR),
+name each case by its PURPOSE, models in the description, two digits:
+`ammoniaRoutes01_screening` (three production routes, not "green"),
+`greenAmmonia02_feasibility150bar`, `greenAmmonia02_feasibility50bar`
+(an exploratory alternative of the same stage, its catalyst hypothesis
+visible), `greenAmmonia03_basicDesign`, `greenAmmoniaPEQ_baseCase`
+(the brief's reference case, different detail in different equipment --
+outside the numbering, linked to both), `ammoniaReactor01_fixedConversion`,
+`02_equilibrium`, `03_equilibriumApproach`, `04_kineticSizing` (the engine
+solves the volume); `ammonia01/02/03` stay as "synthesis-loop
+fundamentals" with their 200 bar, capacity and model boundary stated (no
+"full ammonia plant" claim if syngas production is not modelled); aliases
+kept, the catalogue shows canonical names only.  Three additions taken:
+the screening compares routes on an equivalent basis (assumed specific
+energy consumptions); the feasibility cases gain a preliminary CAPEX and a
+sensitivity; a feasibility -> basic-design comparison of consumptions,
+investment and profitability, each difference traced to the model change.
+And FEL stage is never equated with an AACE class (maturity of definition
+decides the class): tables say "illustrated design stage".
 
 **C67. A CASE CARRIES ITS OWN KINETICS: RATE EXPRESSIONS IN THE DICT, AND A
 FACTORY A CASE'S `code/` CAN REGISTER INTO (Vítor, 2026-10-12, verbatim:
@@ -2057,7 +2078,7 @@ DesignSpec cannot reach it (C57); the rate is Dyson-Simon Eq 19 with the
 effectiveness factor taken as 1 (`effectivenessFactor intrinsic`,
 announced as unpriced; the paper's Eq 39 exists in the engine and needs a
 particle diameter); the `pfr` computes NO pressure drop (`PFR.cpp` has no
-Ergun term; `pellet/Catalyst.H` names Ergun as a future reader); the sizer
+Ergun term; `src/unitOperations/reactor/pellet/Catalyst.H` names Ergun as a future reader); the sizer
 then wraps V_R in a straight cylinder at a declared L/D 6 and prices
 V_R x 2500 kg/m3 of catalyst (both author-set).  Scope: (1) let a
 DesignSpec reach a unit-folder variable, and SOLVE each bed's V_R to its
