@@ -2009,6 +2009,26 @@ source, teach `check_source_licence` the no-grant compilations the policy
 names, price the valve through `flashState::priceState`; measure every
 moved row and list it, record nothing that moves.  Status: dispatched
 2026-10-11.
+MERGED 2026-10-12 (d67b7f036).  (d) the valve prices both ends through
+`flashState::priceState`: every valve closes to <= 5e-8 kW, credo01's plant
+-5.44 -> 0 and letdown01's +38.66 -> 0 kW, the SRK purge valve now cools
+(Joule-Thomson, 253.15 -> 248.68 K); 50 rows moved (credo01 16, letdown01
+30 + ValveHP T_out 6 mK, letdown02 4), listed to Vítor and recorded; both
+cases left `check_energy_closure`'s pins.  (b) `NH3.dat` Vliq = 2.8245e-5
+(25 C, Gao et al. JPCRD 2023 via CoolProp); (c) NH3 liquid viscosity
+refitted to Monogenidou, Assael & Huber JPCRD 2018 (the Engineering
+Toolbox fit was +86 % at 320 K); `check_source_licence` refuses
+Engineering Toolbox and REFPROP as value origins.  Both reach the corpus
+only on RE-IMPORT of the 35 sealed NH3 cases (pinned in
+`debt_registry.NO_GRANT_CASE_LOCAL`): measured 241 rows in 8 cases (liquid
+NH3 -13 % density, tanks +13 % volume, FCI ~+0.45 M, NPV ~-0.9 M per
+green-ammonia plant) -- put to Vítor.  (a) acetic acid: no honest data-only
+fix (the monomer-basis HvapTb breaks 34 of 38 cases); the engine must
+price the dimerisation -- architecture, Vítor's; record
+`docs/design/one-record-two-vapours-acetic-acid.md`.  Also found: 13
+case-local pair records transcribing DECHEMA (licence gate does not scan
+tutorials/ for them; ~47 pins to widen it); `WilkeChang.cpp:45` uses the
+25 C Vliq where the correlation wants the molar volume at Tb.
 
 **C64. AN EDUTOOL ON LARGE PRESSURE LETDOWN: CHOKED FLOW, CAVITATION,
 FLASHING, NOISE AND HOW INDUSTRY STAGES THE DROP (Vítor, 2026-10-11,
