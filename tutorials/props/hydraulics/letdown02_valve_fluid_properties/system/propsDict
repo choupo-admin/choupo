@@ -24,16 +24,18 @@
       its first throttle left it (253.0137962 K, copied from that case's
       converged/LetdownLiquid; gui/tests/letdown.test.ts holds it to the
       ValveHP T_out golden).  Whether its second throttle cavitates or
-      flashes is decided by the ammonia's VAPOUR PRESSURE at that
+      flashes is judged by the ammonia's VAPOUR PRESSURE at that
       temperature, Psat_NH3 (the record's Antoine curve), against the
-      pressure at the valve's vena contracta.
+      pressure at the valve's vena contracta -- the PURE ammonia's, so for
+      a liquid holding dissolved gas a didactic approximation.
 
   Compositions are the component flows in kmol/h exactly as letdown01's
   converged streams print them; propertyPoint normalises them.  The
   liquid's dissolved H2, N2 and Ar do not enter Psat_NH3 -- that key is
   the pure ammonia's vapour pressure, the P_v of the valve-sizing
-  equations.  The gas that the drum liquid still holds comes out on any
-  drop below 20 bar, and that is letdown01's to show, not this case's.
+  equations.  The drum liquid is in equilibrium with its gas at 20 bar,
+  so even a small drop below it can begin to release the gas it still
+  holds, and that is letdown01's to show, not this case's.
 \*---------------------------------------------------------------------------*/
 operations
 (

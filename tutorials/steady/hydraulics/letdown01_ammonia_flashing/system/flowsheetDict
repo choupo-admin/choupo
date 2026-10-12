@@ -56,9 +56,9 @@
 
 units
 (
-    //  The first throttle: separator liquid, 140 -> 20 bar.  Below the
-    //  pressure it left the separator at, the dissolved gas comes out at
-    //  once -- the liquid was saturated with it at 140 bar.
+    //  The first throttle: separator liquid, 140 -> 20 bar.  The liquid
+    //  left the separator in equilibrium with the loop gas at 140 bar, so
+    //  even a small pressure reduction can begin to release dissolved gas.
     {
         name        ValveHP;
         type        valve;
