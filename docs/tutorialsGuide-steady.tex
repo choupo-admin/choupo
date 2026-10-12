@@ -7363,7 +7363,7 @@ Package: the plant's own (Henry for the dissolved gases in ammonia, SRK for the 
 \begin{tutgolden}
 \goldrow{stream}{FlashGas}{F}{0.0415445974779}
 \goldrow{stream}{FlashGas}{T}{238.884926778}
-\goldrow{stream}{FuelGas}{F}{0.00338939130354}
+\goldrow{stream}{FuelGas}{F}{0.00339264003654}
 \goldrow{stream}{FuelGas}{T}{248.677720887}
 \goldrow{stream}{LetdownGas}{F}{0.00354665692591}
 \goldrow{stream}{LetdownGas}{T}{253.01994131}
@@ -7371,7 +7371,7 @@ Package: the plant's own (Henry for the dissolved gases in ammonia, SRK for the 
 \goldrow{stream}{LetdownLiquid}{T}{253.01994131}
 \goldrow{stream}{ProductNH3}{F}{0.771707755979}
 \goldrow{stream}{ProductNH3}{T}{238.884926778}
-\goldrow{stream}{Purge}{F}{0.00338939130354}
+\goldrow{stream}{Purge}{F}{0.00339264003654}
 \goldrow{stream}{Purge}{T}{253.15}
 \goldrow{stream}{RawLiquid}{F}{0.816798968119}
 \goldrow{stream}{RawLiquid}{T}{253.15}
@@ -9850,6 +9850,44 @@ The exothermic esterification heats its own stream, which accelerates the Arrhen
 \goldrow{kpi}{reactor}{k\_esterification\_etac}{0.00357499942014}
 \goldrow{kpi}{reactor}{nReactions}{1}
 \goldmore{7}
+\end{tutgolden}
+
+\clearpage
+\tutentry{pfr05\_cooled\_multitubular}{tutorials/steady/reactors/pfr05\_cooled\_multitubular}
+\begin{tutscheme}
+\begin{tikzpicture}[>={Stealth[length=2mm]}, every node/.style={font=\scriptsize}]
+  \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (reactor) at (0.0,-0.0) {\textbf{reactor}\\[-1pt]{\tiny pfr}};
+  \draw[->] ($(reactor.west)+(-1.05,0.00)$) -- ($(reactor.west)+(0,0.00)$) node[at start, above, font=\tiny, anchor=south west] {feed};
+  \draw[->] ($(reactor.east)+(0,0.00)$) -- ($(reactor.east)+(1.05,0.00)$) node[at end, above, font=\tiny, anchor=south east] {product};
+\end{tikzpicture}
+\end{tutscheme}
+\tutwhat{A COOLED MULTITUBULAR PFR: o-xylene oxidation in salt-cooled tubes -- the hot spot is a RESULT, and the tube count is SOLVED against it}
+\begin{tutnarrative}
+A COOLED MULTITUBULAR PLUG-FLOW REACTOR.
+
+Catalyst in N parallel tubes, molten salt in the shell. A strongly exothermic gas-phase oxidation heats each tube faster than the wall can take the heat away near the inlet, so the temperature RISES, peaks -- the HOT SPOT -- and falls as the reactant is used up. That peak is the number a designer of such a reactor watches: a few kelvin more at the inlet, or a few tenths of a kilopascal more o-xylene, and the peak runs away (the source's Table 4 gives the critical inlet pressures).
+
+WHAT IS SOLVED. The bed is a one-dimensional pseudo-homogeneous plug flow (the source's model), marched by RK4 along the volume: the species, the enthalpy (T is read back from it), the pressure (Ergun, per tube) and the COOLANT's temperature, which here changes along the tubes by its own energy balance (coolant \{ arrangement ...; \}). The wall coefficient is NOT typed: Li \& Finlayson's correlation for a packed tube computes the bed side at the LOCAL gas, in series with the tube wall and the salt's film. system/outerDict then SOLVES the number of tubes for a hot spot at its limit -- see there for why fewer tubes run COOLER here.
+
+WHERE EACH NUMBER COMES FROM. Zuluaga-Botero, Dobrosz-Gomez \& Gomez-Garcia, Catalysts 10 (2020) 626 (CC BY 4.0), Table 2: tube diameter 0.025 m, tube length 2 m, 3000 tubes (the starting guess here), particle 2 mm, bed porosity 0.5, bulk density 1300 kg/m3, 101.325 kPa, coolant 72 000 kg/h of cp 0.3105 kcal/(kg K) entering at 625 K; Table 3 the rate. AUTHOR-SET, none cited: the o-xylene inlet pressure (0/feed), the tube wall (1.65 mm of a 16 W/(m K) steel), the salt's film (1000 W/(m2 K)), the spherical pellet, and the hot-spot limit in system/outerDict. The source's own overall U, 82.7 kcal/(m2 h K) = 96.2 W/(m2 K), is NOT used: compare it with the U\_in / U\_out KPIs this run computes.
+
+\end{tutnarrative}
+\begin{tutgolden}
+\goldrow{stream}{feed}{F}{0.0639658783333}
+\goldrow{stream}{feed}{T}{625}
+\goldrow{stream}{product}{F}{0.0639658783333}
+\goldrow{stream}{product}{T}{655.871241388}
+\goldrow{kpi}{reactor}{A\_bed\_m2}{1.90026269868}
+\goldrow{kpi}{reactor}{A\_wall\_m2}{608.084063579}
+\goldrow{kpi}{reactor}{F\_in\_kmol\_h}{230.277162}
+\goldrow{kpi}{reactor}{F\_out\_kmol\_h}{230.277162}
+\goldrow{kpi}{reactor}{GHSV\_normal\_h}{1358.08204294}
+\goldrow{kpi}{reactor}{G\_tube\_kg\_m2\_s}{1.00201918836}
+\goldrow{kpi}{reactor}{L\_tube\_m}{2}
+\goldrow{kpi}{reactor}{Nu\_wall\_in}{36.5561173269}
+\goldrow{kpi}{reactor}{P\_out\_bar}{0.772127318262}
+\goldrow{kpi}{reactor}{Pr\_wall\_in}{0.776054107796}
+\goldmore{78}
 \end{tutgolden}
 
 \clearpage
