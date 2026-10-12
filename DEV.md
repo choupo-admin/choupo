@@ -907,6 +907,33 @@ accepts today, and that is a policy call.
 
 ## 4c. Commissioned by Vítor (he ASKED for this; it is not a candidate)
 
+> **PHASE CONSOLIDATED 2026-10-12 (Vítor: "Consolida esta fase como achares
+> melhor", weekly credit near its limit).**  `main` 23d4cdbcb is clean, no
+> general running, no branch unmerged.  MERGED this phase: C60 safety
+> EduTool (+2 reviews), C61 overpressure, C62 relief valves, C63 DCF
+> start-up years and working capital, C64 letdown EduTool, C65 data debts,
+> C66 beds sized by criterion (Ergun), C67 kinetics in the case
+> (`ReactionRate` factory, `type expression`), C68 ladder renames +
+> `ammoniaRoutes01_screening` + feasibility sensitivity (tornado) + the
+> feasibility -> basic-design comparison, C69 cooled multitubular pfr + one
+> converter shell at one diameter.  Site published through C69.
+> OPEN, VÍTOR'S (pedagogy / RESERVED), in the order they block work:
+> (1) price the feasibility appraisal at its own pinch target too, so the
+> stage comparison isolates the models (C68; today +187 MEUR of the +152
+> is the heat recovery the feasibility flowsheet omits); (2) a two-way /
+> scenario sensitivity (H2 and NH3 together is what flips the NPV); (3) the
+> coolers' shells counted twice in the converter (C69); (4) 167 bar shell
+> materials (SS rated 100 bar); (5) acetic-acid dimerisation architecture;
+> (6) re-import of the 35 sealed NH3 cases; (7) the 13 case-local DECHEMA
+> pair records; (8) Eq 39 below 150 atm; (9) L/D 1.5 and 8 mm particles;
+> (10) CAPCOST labour factor 2.76 vs 2.73; (11) catalyst activityFactor;
+> (12) FEL/AACE wording in the FEL EduTool; (13) PEQ H2/electricity
+> prices (H2 at 4.50 EUR/kg against 0.100 EUR/kWh leaves nothing for the
+> electrolyser); (14) tube-rupture 2/3 vs 10/13 (unverified).  NEXT SLICES
+> the commander would take, none started: the `conversionReactor` outlet
+> vf stamped from the inlet (C68 finding iii, state family); a GUI tornado
+> for the `sens_` KPIs; a per-route screening pass (C68 finding ii).
+
 > **RESUMED 2026-10-03 under a standing mandate (Vítor, verbatim: "Assume a
 > responsabilidade e avança sempre da forma mais razoável!  À medida que eu
 > for revendo logo se corrige depois").**  Read as: the commander decides
