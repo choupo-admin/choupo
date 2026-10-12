@@ -1991,6 +1991,29 @@ accepts today, and that is a policy call.
      loop (membrane18), the dynamic loop (unsteady03), the UF law
      (membrane19) and the UF loop in time (unsteady04).
 
+**C69. HEAT EXCHANGE IN AND AROUND A CATALYST BED: A COOLED MULTITUBULAR
+PFR, AND A MULTIBED CONVERTER THAT IS ONE VESSEL (Vítor, 2026-10-12,
+asking whether a PFR can size an internal heat exchanger "em contacto com o
+catalisador ou a seguir ao enchimento", and relaying a second opinion he
+accepted).**  Measured: the `pfr` already has `thermalMode heatExchange`
+with a DECLARED U, a DECLARED `areaPerVolume` and a CONSTANT `T_coolant`
+(`src/unitOperations/reactor/PFR.cpp:755-769`, U a (T_c - T) per unit
+volume, marched with the species by the same RK4).  Missing: (a) a coolant
+that changes temperature along the bed (co-current / counter-current, its
+own energy balance; boiling = constant T as today); (b) the area from a
+TUBE GEOMETRY (number of tubes, tube inner diameter -- a multitubular
+reactor), so a designSpec can SOLVE the tube count against a hot-spot or
+outlet target; (c) U from a PACKED-BED WALL heat-transfer correlation, cited
+and windowed (NOT an empty-tube Dittus-Boelter); (d) a sizer for the
+multitubular reactor; and (e) the ammonia case's three beds and two
+interbed coolers grouped as ONE multibed CONVERTER -- a sector whose items
+share ONE pressure shell in sizing and costing (today three shells are
+priced), the interbed exchangers kept as their own blocks (the
+interbed-exchanger converter is an industrial reference, e.g. a three-bed
+radial converter with interbed exchangers -- cite a source read).
+Sequenced AFTER C66 merges, the C68 renames and C67 (all touch the pfr or
+this case).  Status: queued.
+
 **C68. ONE LADDER FOR THE AMMONIA CASES, AND ITS MISSING FIRST RUNG
 (Vítor, 2026-10-12, verbatim: "os vários níveis de simulação do processo de
 amónia têm a nomenclatura confusa. Não se percebe a sequência de
