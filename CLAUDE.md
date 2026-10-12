@@ -2103,6 +2103,30 @@ design-sheet key as long as the pad ran into its value -- `setw` is a
 minimum.  Gate: `check_relief_valve`.  Record:
 [`docs/design/a-relief-valve-is-a-sized-item.md`](docs/design/a-relief-valve-is-a-sized-item.md).
 
+**A CONVERTER IS ONE SHELL, AND ITS BEDS SHARE ONE DIAMETER (2026-10-12,
+DEV.md 4c C69, on stated defaults).**  A `pfr` may be a COOLED MULTITUBULAR
+reactor (`tubes {}`, `coolant { arrangement coCurrent|counterCurrent|
+boiling; }`, `wallHeatTransfer { model LiFinlayson; }` -- the area and the
+bed volume from the geometry, the coolant's own energy balance on the same
+RK4, a packed-tube wall coefficient at the local gas; absent, byte-identical),
+and a sector may be sized as ONE pressure shell (`type converterShell` in the
+postDict: the beds are uncosted baskets, ONE relief valve on the shell).
+Rule: **inside a converter the beds share ONE diameter, and its one home is
+the flowsheet variable the beds read** -- the Ergun drop is integrated WITH
+the reactions, so D must be known during the solve and a D declared on the
+shell in the postDict is REFUSED by name (it would size a converter whose
+drops are not the stream table's); each bed's length is V_R/(pi D^2/4), a
+bed's own `L_over_D` refuses there.  D is solved by a `designSpec` target
+`largestOf ( ... )` (the largest bed `dP_over_allowable` = 1, no bed named in
+advance); the shell sizer CHECKS it (`D_smallestAdmissible`, binding bed,
+bracket).  The first cut compared one shell at the widest bed with three
+shells at three diameters -- a comparison of different vessels; at EQUAL D
+the one shell costs MORE on greenAmmonia03 (its coolers sit inside it at full
+diameter and 167 bar).  NAMED, not fixed: the coolers' shells are counted
+twice.  Gates: `check_cooled_pfr` · `check_converter_shell` ·
+`check_pfr_ergun`.  Record:
+[`docs/design/a-converter-is-one-shell.md`](docs/design/a-converter-is-one-shell.md).
+
 **AN ECONOMIC SENSITIVITY IS THE BASE APPRAISAL PRICED AGAIN, AND NOTHING
 ELSE (2026-10-12, DEV.md 4c C68, on a stated default).**  An opt-in
 `economics { sensitivity { <input> { relative|absolute ( lo hi ); } } }`
