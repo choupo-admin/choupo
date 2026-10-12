@@ -154,7 +154,7 @@ kpi     Chiller                vf_out           0.829143842958   1e-4
 kpi     FEHE                   C_cold           165539.245695    1e-4
 kpi     FEHE                   C_hot            153535.683772    1e-4
 kpi     FEHE                   C_r              0.927488119975   1e-4
-kpi     FEHE                   H_closure_gap_kW 1.14174326882e-07 1e-4
+kpi     FEHE                   H_closure_gap_kW 1.63295044331e-06 1e-4
 kpi     FEHE                   LMTD             72.9952183688    1e-4
 kpi     FEHE                   NTU              7.16445827429    1e-4
 kpi     FEHE                   Q                64084915.9236    1e-4
@@ -1199,3 +1199,6 @@ kpi     Bed3                   u_superficial_out 0.290865992459   1e-4
 equipment Bed1/shell             values.dP_bed    0.669734730675   1e-4
 equipment Bed2/shell             values.dP_bed    0.311033387711   1e-4
 equipment Bed3/shell             values.dP_bed    0.170104576833   1e-4
+kpi     Bed1                   X_H2             0.147025324233   1e-4
+kpi     Bed2                   X_H2             0.091838744979   1e-4
+kpi     Bed3                   X_H2             0.073992307575   1e-4
