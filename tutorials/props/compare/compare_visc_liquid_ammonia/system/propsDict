@@ -11,15 +11,17 @@
   ===========================
 
   Liquid-viscosity Andrade correlation for pure ammonia (NH3), 235-300 K.
-  Coefficients live in data/standards/components/NH3.dat (PROVISIONAL — a
-  2-point Andrade fit; see that file's provenance block).
-
-  Validation anchor: mu_NH3(liquid) @ 239.85 K (normal b.p., -33.3 degC) is
-  approx 0.255 mPa.s.  This 2-point PROVISIONAL Andrade fit gives ~0.277 mPa.s
-  at 240 K -- about 9% ABOVE the anchor, i.e. it does NOT yet pass through the
-  cross-check point.  That gap is the honest state of a provisional fit (see
-  the provenance block in NH3.dat); refitting against more low-T data would
-  close it.  Note this case scans a SINGLE method (Andrade) -- it is a
+  This case is SEALED: it runs its own copy, constant/components/NH3.dat,
+  whose Andrade pair was fitted to the Engineering Toolbox table -- a no-grant
+  source (CLAUDE.md 10) -- and, measured against the reference correlation
+  (Monogenidou, Assael & Huber, J. Phys. Chem. Ref. Data 47, 023102 (2018),
+  Table 6), is +10 % at 240 K and +65 % at 300 K.  Since 2026-10-11 (DEV.md
+  4c C65 item c) the CATALOGUE record data/standards/components/NH3.dat
+  carries a fit to that Table 6 (AAD 0.51 % over 200-320 K; 0.253 mPa.s at
+  the normal boiling point, against Table 6's 0.2510 at 240 K).  This copy
+  keeps the old pair until the case is re-imported, and check_source_licence
+  pins it until then; the golden pins only the scan's point counts, so the
+  re-import moves no golden row.  Note this case scans a SINGLE method (Andrade) -- it is a
   single-correlation curve, not a multi-method comparison.  Ammonia is liquid
   only under pressure in this T window; viscosity_liquid is a pure-T
   correlation, so the state P is immaterial to the value.

@@ -57,8 +57,13 @@ Description
     expansion energy instead of dissipating it, use a pump / compressor /
     turbine --- each a visible box, never hidden inside another unit.
 
-    Feed is treated as a sub-cooled liquid at T_feed (same reference
-    convention as AdiabaticFlash); H_in cancels by anchoring Tref = T_feed.
+    The feed is read in the phase it MEANS (an unpinned authored inlet is
+    its own equilibrium), and both ends are priced through
+    `flashState::priceState` -- the formation surface the energy report
+    prices the same streams on, departure functions included -- so the
+    report finds the valve closed and a gas throttled on a cubic EoS shows
+    its Joule-Thomson cooling (2026-10-11, DEV.md 4c C65 item d; until then
+    a Watson latent heat and an ideal-gas vapour, the unit's own surface).
 
     Algorithm: nested 1-D Newton in T_out (outer) over isothermal-flash
     inner calls at (T, P_out), identical in spirit to AdiabaticFlash ---

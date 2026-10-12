@@ -1991,6 +1991,25 @@ accepts today, and that is a policy call.
      loop (membrane18), the dynamic loop (unsteady03), the UF law
      (membrane19) and the UF loop in time (unsteady04).
 
+**C65. THE DEBTS THE SAFETY AND LETDOWN SLICES FOUND: THREE RECORDS, ONE
+VALVE, ONE GATE (commander, 2026-10-11, under Vítor's "Avança da melhor
+forma porra! Eu vou dando feedback"; moved golden rows still go to him as a
+list before any record, CLAUDE.md §10).**  Measured: (a) `aceticAcid.dat`
+pairs a monomer ideal-gas datum with an `HvapTb` to the associated vapour
+(C60 ENGINE/DATA FINDING; liquid heat of reaction -25.9 vs calorimetric
+~-3.6 kJ/mol); (b) `NH3.dat:29` `Vliq 2.50e-5` is the molar volume at Tb,
+anchored by the engine at 25 C -- liquid NH3 ~13 % too dense at 253 K
+(C64); (c) `NH3.dat:16,69,87` `liquidViscosity` is regressed from
+Engineering Toolbox, a no-grant source by the licence policy, and
+`check_source_licence` has no arm for it; (d) the `valve` prices its
+energy balance on its own surface (Watson latent, ideal-gas vapour) --
+letdown01 38.66 kW unexplained, credo01 pinned for the same (C64); 41
+corpus cases declare NH3.  Scope: correct each record from a PRIMARY open
+source, teach `check_source_licence` the no-grant compilations the policy
+names, price the valve through `flashState::priceState`; measure every
+moved row and list it, record nothing that moves.  Status: dispatched
+2026-10-11.
+
 **C64. AN EDUTOOL ON LARGE PRESSURE LETDOWN: CHOKED FLOW, CAVITATION,
 FLASHING, NOISE AND HOW INDUSTRY STAGES THE DROP (Vítor, 2026-10-11,
 verbatim: "sabes como habitualmente se dá a redução de pressão de mais de
@@ -2013,6 +2032,49 @@ qualitative or a labelled estimate; valve-style factors (F_L, x_T) are
 reader-declared assumptions, never a transcribed table; MANY drawings and
 schematics (Vítor's explicit ask).  The engine-side valve sizer is a later
 item, not this slice.  Status: dispatched 2026-10-11.
+BUILT 2026-10-11 on branch `claude/c64-letdown`, NOT merged (the general's
+report has the validation).  CORRECTION to the dispatch measurement above:
+the plant's letdowns are 140 -> 20 bar and 20 -> 1.01325 bar (the
+separator is at 140 bar, `Separator/system/flowsheetDict`), and both are
+ISOTHERMAL flashes at a declared T, not throttles -- no valve exists in that
+plant.  `letdown` (construction, 16 steps, five benches, eight inline-SVG
+drawings) on "Hydraulics & control", not "Process safety" (the page's
+question is how a restriction takes a drop -- the pump-system page's
+neighbour; safety is linked, both ways with `overpressure` by a `leadsTo`
+each).  Engine: the `valve` publishes its volumetric flow (Q_in, Q_out,
+rho_in/out, volumeRatio, x_mass_out) and its T-Newton's maxIter 30 -> 200
+(a nearly pure liquid flashed across Psat creeps; no existing iterate
+moves).  Witnesses `tutorials/steady/hydraulics/letdown01_ammonia_flashing`
+(the plant's separator liquid and purge, copied to the digit: ValveLP
+253.02 -> 238.88 K, vf 0.0490, volume x42.6; purge 140 -> 2 bar) and
+`tutorials/props/hydraulics/letdown02_valve_fluid_properties` (purge k, Z;
+Psat_NH3 at 253.02 K).  IEC 60534 was NOT read: every valve relation via the
+open `fluids` control_valve module (MIT), F_L and x_T reader-declared with
+that library's keyword defaults.  FOUND, not fixed (Vítor's): (i) the valve
+balances on its own surface (Hliquid/Hvapour, a Watson latent and an
+ideal-gas vapour with no pressure term), so letdown01's first law is open by
+38.66 kW (pinned in check_energy_closure, the credo01 family) and a GAS
+throttle shows no Joule-Thomson effect; the fix (pricing through
+`flashState::priceState`) moves credo01/inletState01 goldens; (ii) the NH3
+record's `Vliq` 2.50e-5 m3/mol is ammonia's density at its normal boiling
+point, not at 25 C where `ThermoPackage::density` anchors it, so liquid
+ammonia comes out ~13 % dense at 253 K (cross-checked against CoolProp);
+every pump, pipe, tank and sizer pricing liquid ammonia inherits it.
+
+MERGED 2026-10-11 (C64): `letdown` on "Hydraulics & control" (the
+general's reasoned choice), 16 steps, eight SVG schematics, the ammonia
+letdown run live (witnesses `letdown01_ammonia_flashing`,
+`letdown02_valve_fluid_properties`); the valve publishes volume KPIs and
+its iteration cap is 200.  Validated on the merge: the five valve/relief
+cases 5/0, `--fast` 71/0, the general's `--gui` 31/0 (main moved only in
+DEV.md since).  FOUND, open: (i) the valve's energy balance is on its own
+surface (Watson latent, ideal-gas vapour) -- letdown01 leaves 38.66 kW
+unexplained, pinned like credo01; the fix is `flashState::priceState`
+and moves credo01/inletState01 goldens; (ii) `NH3.dat` `Vliq` is the
+density at Tb, anchored by the engine at 25 C: liquid NH3 ~13 % too dense
+at 253 K; (iii) `NH3.dat` `liquidViscosity` is regressed from Engineering
+Toolbox, a no-grant source; (iv) H2-NH3 Henry pair used ~35 K below its
+range (announced).
 
 **C63. THE DCF GETS ITS START-UP YEARS: A MULTI-YEAR CONSTRUCTION, A
 RAMP-UP AND START-UP COSTS (Vítor, 2026-10-11, verbatim: "Sabes se foi feita

@@ -170,6 +170,20 @@ export const WITNESS_OUTPUTS: readonly WitnessOutput[] = [
         ? ["processSafety.test.ts", "overpressure.test.ts"]
         : ["processSafety.test.ts"],
     }))),
+  //  The pressure-letdown EduTool (C64): its witness copies the basic
+  //  design's separator liquid and purge, and its props witness copies the
+  //  20 bar drum liquid letdown01 itself converges to; the test holds each
+  //  copy to the file it was taken from.
+  ...["RawLiquid", "Purge"].map((s) => ({
+    caseDir: "tutorials/plant/greenAmmoniaBasicDesign",
+    file: `converged/${s}`,
+    readBy: ["letdown.test.ts"],
+  })),
+  {
+    caseDir: "tutorials/steady/hydraulics/letdown01_ammonia_flashing",
+    file: "converged/LetdownLiquid",
+    readBy: ["letdown.test.ts"],
+  },
 ];
 
 /** What `witnessSetup.ts` found for each declared output, keyed by

@@ -1343,6 +1343,20 @@ Use it upstream of a flash to set the drum pressure.  Warns if `P >= P_in`.
 in  feed;  outputs (throttled );
 operation { P  1.0 bar; }          // the downstream pressure (the only knob)
 ```
+KPIs: `P_in`, `P_out`, `dP`, `T_in`, `T_out`, `dT`, `vf`, `F`, and --- since
+2026-10-11 --- what the throttle does to the volume the stream occupies,
+homogeneous (no slip) on the package's own phase densities: `massFlow`
+[kg/s], `Q_in`, `Q_out` [m3/s], `rho_in`, `rho_out` [kg/m3], `volumeRatio`
+(`Q_out/Q_in`), `x_mass_out` (vapour mass fraction out), and `rho_L_out` /
+`rho_V_out` when that phase is present.  A dissolved gas with no liquid
+density (H2 in liquid ammonia) is priced at the density of the rest,
+announced; when no density can be had the volumetric KPIs are NOT published
+and the run says why.  The energy balance is priced on the SAME surface the
+plant's energy report uses (`flashState::priceState`, since 2026-10-11), so
+the report finds the valve closed, and a GAS throttled on a cubic equation of
+state shows its Joule-Thomson cooling (on an ideal-gas vapour there is none,
+by definition).  Worked example:
+`tutorials/steady/hydraulics/letdown01_ammonia_flashing`.
 
 ## Storage and inventory
 

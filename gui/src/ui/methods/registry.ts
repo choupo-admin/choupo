@@ -70,7 +70,7 @@ export type MethodToolId =
   | "declared-pathways" | "reactor-ladder" | "route-screening"
   | "least-squares" | "element-potential" | "limiting-reactant"
   | "reaction-enthalpy" | "standard-state" | "case-assembly" | "run-log"
-  | "front-end-loading" | "process-safety" | "overpressure";
+  | "front-end-loading" | "process-safety" | "overpressure" | "letdown";
 
 /** WHAT KIND OF TOOL THIS IS, and the field exists to keep a boundary legible
  *  rather than to switch behaviour.
@@ -668,6 +668,42 @@ export const METHOD_TOOLS: MethodTool[] = [
     discipline: "Hydraulics & control", kind: "construction", status: "live",
     teaches: "The operating point is an intersection: the pump model's rise falling with flow against the pipe system's demand rising with it — crossed where the engine's own columns cross.",
     theory: "ch:rotating",
+  },
+  //  COMMISSIONED 2026-10-11 (DEV.md 4c C64): "sabes como habitualmente se
+  //  da a reducao de pressao de mais de 10x de uma corrente num processo
+  //  quimico? ... pode ser um problema de desgaste e de ruido", then "Faz e
+  //  se puder coloca muitas imagens e esquemas!".  A CONSTRUCTION with two
+  //  witnesses run in the browser (letdown01: the green-ammonia separator
+  //  liquid and purge through the engine's `valve`; letdown02: the purge's
+  //  k and ammonia's vapour pressure) and the valve arithmetic of
+  //  letdown.ts on their numbers.
+  //  ON THIS SHELF, NOT ON "Process safety", where the brief offered to put
+  //  it: the question the page answers is how a restriction takes a pressure
+  //  drop and what the fluid does in it -- choked flow, the vena contracta,
+  //  the control-valve sizing standard -- which is the hydraulics of the
+  //  pump-and-system page beside it.  Erosion, noise and a valve passing gas
+  //  it was not sized for are CONSEQUENCES, and the page links both ways
+  //  with the overpressure page for them rather than bending the safety
+  //  shelf's name around a valve.
+  //  `theory` is the Theory Guide's valve item (an isenthalpic let-down as
+  //  an adiabatic flash), the closest chapter it has.  First version, for
+  //  Vitor's review.
+  {
+    id: "letdown",
+    label: "Large pressure letdown: choked flow, cavitation, flashing and noise",
+    discipline: "Hydraulics & control", kind: "construction",
+    status: "live",
+    teaches: "What a valve taking a pressure ratio above ten does to the "
+      + "stream: the green-ammonia separator liquid let down 140 -> 20 -> "
+      + "1 bar through the engine's isenthalpic valve -- the dissolved gas "
+      + "first, then the ammonia flashing, the temperature falling to its "
+      + "boiling point and the volume growing about forty times; the purge "
+      + "gas choked at a pressure ratio of 70; the vena contracta against "
+      + "the vapour pressure (cavitation versus flashing, F_L yours); staged "
+      + "and tortuous-path trims, where the valve is installed, hardened "
+      + "trims, and power-recovery turbines instead of a valve; and why the "
+      + "noise follows the dissipated power.",
+    theory: "ch:bubble-dew-ref",
   },
   {
     id: "merkel", label: "Cooling tower (Merkel)",

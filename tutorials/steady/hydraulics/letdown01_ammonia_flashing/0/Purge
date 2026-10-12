@@ -1,0 +1,23 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*--- The loop purge of tutorials/plant/greenAmmoniaBasicDesign, copied to
+     the digit from that plant's converged/Purge (gui/tests/letdown.test.ts
+     holds the copy to the plant's own file). ---*/
+
+componentMolarFlows
+{
+    N2    2.427913344 kmol/h;
+    H2    9.433545835 kmol/h;
+    NH3    0.2629407274 kmol/h;
+    Ar    0.03840712276 kmol/h;
+}
+
+T               253.15 K;
+P               14000000 Pa;
+phase           gas;

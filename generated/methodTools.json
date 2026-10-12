@@ -14,8 +14,8 @@
     "Process safety",
     "Flowsheeting & numerics"
   ],
-  "liveTools": 54,
-  "registryTools": 54,
+  "liveTools": 55,
+  "registryTools": 55,
   "tools": [
     {
       "id": "what-is-temperature",
@@ -184,6 +184,13 @@
       "discipline": "Hydraulics & control",
       "teaches": "The operating point is an intersection: the pump model's rise falling with flow against the pipe system's demand rising with it — crossed where the engine's own columns cross.",
       "href": "/app/?workspace=methods&tool=pump-system"
+    },
+    {
+      "id": "letdown",
+      "label": "Large pressure letdown: choked flow, cavitation, flashing and noise",
+      "discipline": "Hydraulics & control",
+      "teaches": "What a valve taking a pressure ratio above ten does to the stream: the green-ammonia separator liquid let down 140 -> 20 -> 1 bar through the engine's isenthalpic valve -- the dissolved gas first, then the ammonia flashing, the temperature falling to its boiling point and the volume growing about forty times; the purge gas choked at a pressure ratio of 70; the vena contracta against the vapour pressure (cavitation versus flashing, F_L yours); staged and tortuous-path trims, where the valve is installed, hardened trims, and power-recovery turbines instead of a valve; and why the noise follows the dissipated power.",
+      "href": "/app/?workspace=methods&tool=letdown"
     },
     {
       "id": "merkel",
