@@ -2012,6 +2012,19 @@ particle size; (3) an opt-in Ergun pressure drop in the `pfr` on the bed's
 own cross-section, so the L/D is checked against an allowable drop rather
 than typed.  Moved rows listed before any record.  Status: dispatched
 2026-10-12.
+RULING 2026-10-12 (Vítor, verbatim: "Um PFR tem de ter os parâmetros
+cinéticos definidos no caso em /constant não é? ... Isto assim não é nada
+glass box com tudo definido nos dicionários!"): KINETIC PARAMETERS ARE
+DECLARED IN THE CASE'S `constant/`, never compiled into the engine.  A law
+object keeps its FUNCTIONAL FORM in code; every NUMBER it uses (Dyson-Simon:
+k0, E, Ka constants, fugacity-correlation constants, Table I) is declared
+in `constant/reactions` with units and a source per group, read by the
+engine, refused if missing; the paper's values survive in code only as
+verification anchors, and a case value that differs from the paper's is
+announced.  This is the three-axiom layout's own axiom 3 (equipment-
+dependent kinetics -> case constant/), which the `constexpr` constants in
+`AmmoniaSynthesisRate.cpp:42-54` contradicted.  Added to C66 as item 4
+(done first): migrate every dysonSimon1968 case byte-identically.
 
 **C65. THE DEBTS THE SAFETY AND LETDOWN SLICES FOUND: THREE RECORDS, ONE
 VALVE, ONE GATE (commander, 2026-10-11, under Vítor's "Avança da melhor
