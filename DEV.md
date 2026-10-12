@@ -2030,11 +2030,11 @@ methanol only: `screen01_methanol_routes`, `RouteScreeningTool`).
 Decided (names on a stated default, flat prefixed names because the case
 index and FASTSET treat each `tutorials/plant/<dir>` as one case family --
 nested case folders were not measured to work):
-`greenAmmonia1_screening` (NEW, FEL-1: input-output gross margin of the
-reaction routes), `greenAmmonia2_feasibilityGibbs150bar`,
-`greenAmmonia2_feasibilityGibbs50bar`, `greenAmmonia3_basicDesignPFR`,
-`greenAmmoniaPEQ_baseCase` (outside the ladder, says it is the hybrid base
-case), and the reactor ladder `ammoniaReactorLadder1_conversion`,
+"greenAmmonia1_screening" (NEW, FEL-1: input-output gross margin of the
+reaction routes), "greenAmmonia2_feasibilityGibbs150bar",
+"greenAmmonia2_feasibilityGibbs50bar", "greenAmmonia3_basicDesignPFR",
+"greenAmmoniaPEQ_baseCase" (outside the ladder, says it is the hybrid base
+case), and the reactor ladder "ammoniaReactorLadder1_conversion",
 `2_gibbs`, `3_gibbsApproach`, `4_pfrKinetic` ("rung N of 4"); a README map
 of the sequence (stage, reactor model, exchangers, estimate class, what is
 decided); old names kept as aliases so shared `?case=` links resolve.
@@ -2045,12 +2045,12 @@ NAMES REVISED 2026-10-12 after a second opinion Vítor relayed (accepted):
 keep the TWO axes (reactor-model fidelity vs project stage -- one ladder
 would teach that a project only matures by swapping Gibbs for a PFR),
 name each case by its PURPOSE, models in the description, two digits:
-`ammoniaRoutes01_screening` (three production routes, not "green"),
-`greenAmmonia02_feasibility150bar`, `greenAmmonia02_feasibility50bar`
+"ammoniaRoutes01_screening" (three production routes, not "green"),
+"greenAmmonia02_feasibility150bar", "greenAmmonia02_feasibility50bar"
 (an exploratory alternative of the same stage, its catalyst hypothesis
-visible), `greenAmmonia03_basicDesign`, `greenAmmoniaPEQ_baseCase`
+visible), "greenAmmonia03_basicDesign", "greenAmmoniaPEQ_baseCase"
 (the brief's reference case, different detail in different equipment --
-outside the numbering, linked to both), `ammoniaReactor01_fixedConversion`,
+outside the numbering, linked to both), "ammoniaReactor01_fixedConversion",
 `02_equilibrium`, `03_equilibriumApproach`, `04_kineticSizing` (the engine
 solves the volume); `ammonia01/02/03` stay as "synthesis-loop
 fundamentals" with their 200 bar, capacity and model boundary stated (no
