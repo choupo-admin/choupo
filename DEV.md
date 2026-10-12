@@ -2438,6 +2438,15 @@ chemist, not "two engineers"; caveats BEFORE the simulation; code paths
 into a collapsible technical note; minimum-boiling azeotropes named; the
 mixture cp varies with composition while the component cp are constant.
 Dispatched 2026-10-11.
+MERGED 2026-10-12: the witnesses' own goldens re-recorded with the list
+shown to Vítor (ΔT_ad 107.77 -> 74.07 K, batch MTSR 437.77 -> 404.07 K,
+semi-batch MTSR 348.29 -> 339.73 K right after portion 6, bubble01 362.34 ->
+376.00 K) plus the new `batch28_dosing_vessel_limit` (356.55 K); no other
+golden moved.  Validated on the merge: `--gui` 31/0, batch/safety cases
+16/0, `--fast` 71/0, `check_energy_closure`, `check_element_closure` (the
+general's intermittent failure did not reproduce); the page seen rendered
+at desk width by checkGui (clean; the harness later refused on an
+unrelated page under load).
 SECOND REVIEW DONE 2026-10-11 (branch claude/c60-review2, not merged):
 (1) the witnesses run a FICTITIOUS A + B -> P in an inert solvent S, four
 case-local adopted records, coherent by construction (Tb and HvapTb from
