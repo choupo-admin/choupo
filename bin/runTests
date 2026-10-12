@@ -1247,10 +1247,15 @@ auto_generate() {
             [ -n "$s" ] && [ -n "$f" ] && printf 'stream  %-22s %-16s %-18s %s\n' "$s" "F" "$f" "$reltol"
             [ -n "$s" ] && [ -n "$t" ] && printf 'stream  %-22s %-16s %-18s %s\n' "$s" "T" "$t" "$reltol"
         done
-        # kpis: every numeric key per unit (skip iterations)
-        printf '%s\n' "$kpis_sec" | grep -P '"\w+": \{' | while read -r line; do
+        # kpis: every numeric key per unit (skip iterations).  A unit of a
+        # SECTORED plant is named `SECTOR.unit` (2026-10-12, DEV.md 4c C69):
+        # the unit pattern admits the dot, or every KPI of every unit inside a
+        # sector arrives unpinned -- measured on greenAmmonia03_basicDesign the
+        # day its beds became the CONVERTER sector, 136 rows the recorder no
+        # longer wrote.  The reader (get_value) always accepted the dotted name.
+        printf '%s\n' "$kpis_sec" | grep -P '"[\w.]+": \{' | while read -r line; do
             local u
-            u=$(printf '%s' "$line" | grep -oP '"\K\w+(?=": \{)')
+            u=$(printf '%s' "$line" | grep -oP '"\K[\w.]+(?=": \{)')
             [ -z "$u" ] && continue
             printf '%s' "$line" | grep -oP '"\w+":\s*-?[0-9][0-9.eE+-]*' | while read -r kv; do
                 local k v
@@ -3797,7 +3802,7 @@ PYEOF
     # refusals by name; the legacy U/areaPerVolume/T_coolant form untouched.
     # Four by-hand sabotages, all caught.
     if "$ROOT/bin/curate/check_cooled_pfr.py" > /tmp/cooledpfr.$$ 2>&1; then
-        printf "PASS  %-40s  (%s)\n" "cooled-pfr-gate" "$(head -1 /tmp/cooledpfr.$$)"
+        printf "PASS  %-40s  (%s)\n" "cooled-pfr-gate" "$(gate_claim check_cooled_pfr /tmp/cooledpfr.$$)"
         pass=$((pass+1))
     else
         printf "FAIL  %-40s  (run bin/curate/check_cooled_pfr.py)\n" "cooled-pfr-gate"
@@ -5945,6 +5950,23 @@ if [ "$#" -eq 0 ]; then
         fail=$((fail+1))
     fi
     rm -f /tmp/reliefvalve.$$
+
+    # Converter-shell gate (2026-10-12, DEV.md 4c C69): the green-ammonia
+    # basic design's CONVERTER sector is ONE pressure shell -- D the widest
+    # member's and H their stacked heights, recomputed from the members'
+    # own sheets; the bed shells become baskets (not costed, naming the
+    # shell); ONE relief valve at the shell's design pressure on the
+    # sector's outlet; the sheets at the sector's own level; five
+    # refusals fired by name.  Three by-hand sabotages, all caught.
+    if "$ROOT/bin/curate/check_converter_shell.py" > /tmp/convshell.$$ 2>&1; then
+        printf "PASS  %-40s  (%s)\n" "converter-shell-gate" "$(gate_claim check_converter_shell /tmp/convshell.$$)"
+        pass=$((pass+1))
+    else
+        printf "FAIL  %-40s  (run bin/curate/check_converter_shell.py)\n" "converter-shell-gate"
+        cat /tmp/convshell.$$
+        fail=$((fail+1))
+    fi
+    rm -f /tmp/convshell.$$
 
     # Energy-boundary pinned gate (2026-09-05): the plant-boundary first law
     # the energyBalance report decides now travels on the result as

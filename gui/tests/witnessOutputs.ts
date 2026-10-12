@@ -173,10 +173,12 @@ export const WITNESS_OUTPUTS: readonly WitnessOutput[] = [
   //  The pressure-letdown EduTool (C64): its witness copies the basic
   //  design's separator liquid and purge, and its props witness copies the
   //  20 bar drum liquid letdown01 itself converges to; the test holds each
-  //  copy to the file it was taken from.
+  //  copy to the file it was taken from.  The plant is SECTORED since
+  //  DEV.md 4c C69 (its beds are the CONVERTER sector), so its state views
+  //  repeat the geography and a plant-level stream lives under MAIN/.
   ...["RawLiquid", "Purge"].map((s) => ({
     caseDir: "tutorials/plant/greenAmmonia03_basicDesign",
-    file: `converged/${s}`,
+    file: `converged/MAIN/${s}`,
     readBy: ["letdown.test.ts"],
   })),
   {

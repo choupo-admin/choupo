@@ -10,11 +10,11 @@
   design SIZES the bed instead -- it fixes a criterion and finds the volume
   that meets it.  This DesignSpec does that, for all three beds AT ONCE:
 
-      $V_Bed1  ->  Bed1.T_out       = 788.15 K   (515 C: 5 K under the 520 C
+      $V_Bed1  ->  CONVERTER.Bed1.T_out      = 788.15 K  (515 C: 5 K under the 520 C
                                                   the base data give as the
                                                   catalyst's limit)
-      $V_Bed2  ->  Bed2.approach_K  = 5 K        (US 5,352,428, Bhakta &
-      $V_Bed3  ->  Bed3.approach_K  = 5 K         Grotz 1994: "the effluent
+      $V_Bed2  ->  CONVERTER.Bed2.approach_K = 5 K       (US 5,352,428, Bhakta &
+      $V_Bed3  ->  CONVERTER.Bed3.approach_K = 5 K        Grotz 1994: "the effluent
                                                   from each bed has an
                                                   approach to equilibrium of
                                                   5 C")
@@ -62,9 +62,9 @@ manipulate
 
 targets
 (
-    { path Bed1.T_out;        value 788.15;   tol 0.02; }   // K -- 515 C
-    { path Bed2.approach_K;   value 5.0;      tol 0.02; }   // K, US 5,352,428 per-bed approach
-    { path Bed3.approach_K;   value 5.0;      tol 0.02; }
+    { path CONVERTER.Bed1.T_out;        value 788.15;   tol 0.02; }   // K -- 515 C
+    { path CONVERTER.Bed2.approach_K;   value 5.0;      tol 0.02; }   // K, US 5,352,428 per-bed approach
+    { path CONVERTER.Bed3.approach_K;   value 5.0;      tol 0.02; }
 );
 
 options

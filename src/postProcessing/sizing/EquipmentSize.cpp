@@ -29,6 +29,7 @@ License
 #include "EquipmentSize.H"
 #include "CatalystBedSize.H"
 #include "ColumnSize.H"
+#include "ConverterShellSize.H"
 #include "CrystalliserSize.H"
 #include "CycloneSize.H"
 #include "CompressorSize.H"
@@ -103,6 +104,11 @@ void EquipmentSize::registerBuiltins()
     //  type, because no flowsheet unit is a relief valve.
     registerType("reliefValve",
         []{ return std::make_unique<ReliefValveSize>(); });
+    //  THE FIRST ITEM A SECTOR REALISES (2026-10-12, DEV.md 4c C69): ONE
+    //  pressure shell around a sector's beds and exchangers -- a multibed
+    //  converter.  The word names the EQUIPMENT; `unitName` names the sector.
+    registerType("converterShell",
+        []{ return std::make_unique<ConverterShellSize>(); });
 }
 
 } // namespace Choupo

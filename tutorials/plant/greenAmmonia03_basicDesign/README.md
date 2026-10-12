@@ -50,6 +50,18 @@ is replaced by:
 | `InterbedCooler2` | to 410 °C, raising HP steam | 410 °C author-set |
 | `Bed3` | the same rate law | 31.74 m³, the same 5 K criterion |
 
+**The five are ONE SECTOR, `CONVERTER`** (DEV.md 4c C69): five
+calculations, one piece of equipment.  Industrially a multibed converter
+is one pressure shell holding the beds -- in a basket -- and the interbed
+exchange (`CONVERTER/system/flowsheetDict` says where that construction was
+read: a Kellogg patent and a licensor's product page; neither has TWO
+interbed coolers, which is this case's own arrangement).  So the units
+live in `CONVERTER/`, their names are `CONVERTER.Bed1` ... in every report
+and KPI, and `system/postDict` prices ONE shell for them.  The grouping
+moved the energy recycle's cut: the CONVERTER runs before the FEHE and the
+loop is torn at `PreheatedFeed` (`system/solverDict` says why), at a
+recycle tolerance of 1e-10.
+
 The rate law is WRITTEN in this case's `constant/reactions` — `kinetics {
 type expression; }`, every constant of Dyson & Simon's Eqs 2, 6–8, 18 and 19
 with its unit and its equation number (DEV.md 4c C67: the kinetics live in
@@ -57,7 +69,7 @@ the case) — the same law
 [`ammoniaReactor04_kineticSizing`](../ammoniaReactor04_kineticSizing) writes, whose README is the
 reference for it; `bin/curate/check_ammonia_rate.py` holds the copies equal. The FEHE now preheats bed 1 against bed 3's effluent, an
 energy recycle through three kinetic beds (the second tear in
-`system/solverDict`). The recycle compressor's power was re-tuned to 908 kW
+`system/solverDict`, cut at `PreheatedFeed`). The recycle compressor's power was re-tuned to 908 kW
 so the loop sits again at the base case's 150.9 bar.
 
 **The bed volumes are SOLVED, not typed** (DEV.md 4c C66). Each bed reads
@@ -117,7 +129,7 @@ cross-section (`operation.pressureDrop { model Ergun; ... }`), and the
 sizer builds the shell on the same number. The particle (8 mm, the middle
 of the 6-10 mm window Dyson & Simon's Eq 39 was computed for), the void
 fraction (0.40) and the budget (1 bar per bed) are **author-set**, said in
-`Bed1/system/flowsheetDict`. At the L/D 6 the case carried before, the
+`CONVERTER/Bed1/system/flowsheetDict`. At the L/D 6 the case carried before, the
 loop did not converge: its first pass lost 35, 24 and 16 bar across the
 three beds. At a fixed volume both the gas velocity and the bed length go
 as (L/D)^(2/3), so the drop goes as (L/D)^2; at L/D 1.5 the beds lose
@@ -171,7 +183,7 @@ Their boiling-water film (5000 W/m²/K) is **typed**, as the base case
 types the chiller's boiling ammonia: no boiling correlation is wired into
 the design. With two passes of 20 ft tubes (the first trial) the gas lost
 ~13 bar in the tubes, so they are one pass of 10 ft — the sheet in
-`design/InterbedCooler1/shellTubeHX` has the rest. The FEHE comes out at
+`design/CONVERTER/InterbedCooler1/shellTubeHX` has the rest. The FEHE comes out at
 1817 m² at U 482 W/m²/K over four shells, against the 2000 m² at U 550 the
 flowsheet declares and converges on; the designed area is costed.
 
@@ -180,14 +192,31 @@ vessel at the bed's own L/D 1.5, Turton's vessel set, its sheet carrying
 the bed's pressure drop) and a **catalyst charge** priced from two
 declared numbers, 2500 kg/m³ and 15 EUR/kg — **author-set assumptions**,
 the same round numbers `ammoniaReactor04_kineticSizing` declares, with no source
-behind either: 0.33, 0.69 and 1.19 M EUR for the three charges. Each bed is its own shell here; a real converter stacks them in
-one.
+behind either: 0.33, 0.69 and 1.19 M EUR for the three charges.
 
-The fixed capital is 61.0 M EUR (41.4 M EUR at the feasibility stage, whose
-converter was one space-velocity vessel and whose exchangers rested on an
-assumed U; 54.1 M EUR here before C66 squatted the beds); the NPV at the
-base case's appraisal knobs is −345 M EUR against −493 M EUR. The NPV
-moved because the energy bill did, much more than the capital.
+**The converter is ONE pressure shell** (DEV.md 4c C69): `type
+converterShell` reads the CONVERTER sector's five units from the topology,
+stacks their geometries -- the three bed shells and the two coolers' Kern
+shells -- into one straight cylinder as wide as the widest (bed 3, 3.00 m)
+and as tall as their sum (17.29 m), and walls it at 167 bar: 122.0 m³,
+199 mm of wall, 259 t, 31.44 M EUR total module.  The beds' own shells
+become internal BASKETS -- sized and drawn, not costed -- where as three
+pressure vessels they had cost 18.70 M EUR.  ONE shell costs MORE here,
+and the reason is the geometry, not the idea: C66 gave each bed L/D 1.5
+of its own volume, so the beds are 1.96, 2.50 and 3.00 m wide and the
+shell, as wide as the widest along its whole height, holds 122 m³ around
+61 m³ of members.  A converter designed as one vessel gives its beds ONE
+diameter -- that is the next design decision, and it moves the beds'
+pressure drop with it.  The two coolers keep their Turton exchanger cost,
+whose own shell share is then counted twice (no bundle-only correlation
+exists; said on the shell's basis).
+
+The fixed capital is 73.9 M EUR (61.0 M EUR with three separate bed
+shells; 41.4 M EUR at the feasibility stage, whose converter was one
+space-velocity vessel and whose exchangers rested on an assumed U); the NPV
+at the base case's appraisal knobs is −372 M EUR against −493 M EUR. The
+NPV moved from the feasibility case because the energy bill did, much more
+than the capital.
 
 ### The start-up years (DEV.md 4c C63)
 
@@ -208,8 +237,10 @@ year by year.
 
 ### The relief valves (DEV.md 4c C62)
 
-Ten pressure-relief valves are sized as `reliefValve` items of the sizing
-pass, each one more item of the unit it protects (`design/<unit>/psv`). The
+Eight pressure-relief valves are sized as `reliefValve` items of the sizing
+pass, each one more item of the unit it protects (`design/<unit>/psv`) --
+ONE on the converter's one shell (`design/CONVERTER/psv`) where its three
+beds had one each while each was its own vessel. The
 **set pressure is read** from the protected item's own `pressureDesign`
 (gauge, the MAWP; one valve set at it), never typed; the **scenarios are
 declared** in `system/postDict`, because which causes of overpressure are
@@ -222,9 +253,7 @@ on every scenario and governed by the one needing the largest area:
 | MakeupComp1 | 74 | discharge blocked | gas | 50 071 | 1651 |
 | MakeupComp2 | 167 | discharge blocked | gas | 50 071 | 758 |
 | RecycleComp | 167 | discharge blocked | gas | 109 370 | 1373 |
-| Bed1/shell | 167 | outlet blocked | gas at 788 K | 159 440 | 3269 |
-| Bed2/shell | 167 | outlet blocked | gas at 767 K | 159 440 | 3165 |
-| Bed3/shell | 167 | outlet blocked | gas at 738 K | 159 440 | 3058 |
+| CONVERTER/shell | 167 | outlet blocked | gas at 738 K | 159 812 | 3065 |
 | Separator | 167 | gas line, liquid line | gas line | 109 463 | 1355 |
 | LetdownHP | 22 | gas line, liquid line, fire | liquid line | 49 849 | 354 |
 | StorageFlash | 2 | gas line, liquid line, fire | liquid line | 49 172 | 1140 |
@@ -243,7 +272,8 @@ reader's.
 Read these before quoting them:
 
 * **Relief does not cure an under-rated shell.** The run warns that four
-  items -- Bed1, Bed2, Bed3 and the Separator -- are designed at 167 bar in
+  items -- the CONVERTER's shell (and its three bed baskets, sized as
+  vessels) and the Separator -- are designed at 167 bar in
   stainless steels whose material record rates 100 bar (`[rating]
   WARNING`). A valve set at 167 barg protects a vessel built for 167 barg;
   it does nothing for one that could not be built to it. The materials are
@@ -261,8 +291,8 @@ Read these before quoting them:
   normal flow, which over-states what a centrifugal machine delivers
   against a closed valve (it surges) and is the full displacement of a
   reciprocating one.
-* **No fire case on the beds or the Separator.** A bed holds gas and no
-  liquid, so nothing boils to carry the fire's heat away (its wall fails
+* **No fire case on the converter or the Separator.** The converter holds
+  gas and no liquid, so nothing boils to carry the fire's heat away (its wall fails
   first: a depressuring question). The Separator's liquid at its fire
   relieving pressure (1.21 x 167 barg) is above ammonia's critical pressure
   and does not boil; declaring the scenario makes the run refuse by name.
@@ -301,9 +331,9 @@ reached here).
 
 ## What this case does NOT claim
 
-* A converter vessel: three separate shells are costed, not one pressure
-  shell with internals, a cartridge, an interbed exchanger inside it or a
-  quench.
+* A converter's internals: the one shell is its members STACKED (no head
+  space, cooling annulus, cartridge, distributor or plenum), around beds
+  each at its own diameter; no quench.
 * Catalyst life or reduction, the pellet's diffusion correction (Eq 39:
   the particle is declared, but only the Ergun drop reads it -- the beds
   run Eq 19 alone), a radial-flow bed, or a start-up heater: the loop is

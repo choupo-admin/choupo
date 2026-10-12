@@ -7,15 +7,15 @@
 |        |     O ptimization  |                                               |
 \*-----------------------------------------------------------------------------*/
 /*--- The loop purge of tutorials/plant/greenAmmonia03_basicDesign, copied to
-     the digit from that plant's converged/Purge (gui/tests/letdown.test.ts
+     the digit from that plant's converged/MAIN/Purge (gui/tests/letdown.test.ts
      holds the copy to the plant's own file). ---*/
 
 componentMolarFlows
 {
-    N2    2.436431451 kmol/h;
-    H2    9.463085828 kmol/h;
-    NH3    0.2637929516 kmol/h;
-    Ar    0.03849845903 kmol/h;
+    N2    2.43643144 kmol/h;
+    H2    9.46308579 kmol/h;
+    NH3    0.2637929505 kmol/h;
+    Ar    0.03849845891 kmol/h;
 }
 
 T               253.15 K;

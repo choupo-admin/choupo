@@ -611,6 +611,35 @@ refuses it).  Named and refused: `tubeRupture`,
 COSTED and the capital total does not move.  Sheet: `design/<unit>/psv`,
 with a `relief {}` block naming each scenario's stream, phase and regime and
 the governing one.  Worked case: `tutorials/plant/greenAmmonia03_basicDesign`.
+A valve may also protect a SECTOR's own item (`unitName CONVERTER;`, below):
+its `blockedOutlet` streams are the sector's outlets, read from the topology.
+
+**ONE PRESSURE SHELL AROUND A SECTOR'S EQUIPMENT -- `type converterShell`
+(DEV.md 4c C69).**  A multibed converter is one pressure vessel holding its
+beds and interbed exchangers, while the flowsheet still computes each as its
+own block.  Group the blocks as ONE SECTOR (the case's sector mechanism) and
+size the shell with one entry that names the sector, AFTER every member's own
+entry:
+
+```
+{ unitName CONVERTER;  type converterShell;  material SS316;
+  designRules { pressureDesign 167;     // bar g, REQUIRED
+                // D <length>;  H <length>;   optional, never smaller than the members
+              } }
+{ unitName CONVERTER;  type reliefValve;  material SS316;     // ONE valve on ONE shell
+  designRules { scenarios ( { scenario blockedOutlet; } ); } }
+```
+
+The members are the sector's units, read from the topology (never listed
+again); each must already be sized and publish a geometry -- a vessel shell's
+`D`/`H` or an exchanger DESIGN's `shellID`/`tubeLength` -- or it is refused by
+name.  The shell stacks them axially (D the widest member's, H the sum of
+theirs; no head space, annulus or plenum), its wall is ASME thin-wall at its
+own `pressureDesign` (not below a member's, refused), priced on the Turton
+vessel set.  The members' own vessel shells become internal baskets: NOT
+costed, each naming the shell.  A member exchanger keeps its Turton exchanger
+cost (no bundle-only correlation exists, so its shell share counts twice --
+said on the basis).  Sheets: `design/<SECTOR>/shell`, `design/<SECTOR>/psv`.
 
 **A VESSEL SIZED BY SPACE VELOCITY DECLARES WHICH GAS VOLUME (2026-10-05).**
 `type vessel` builds its volume from ONE of `volume` (m3, author-set),

@@ -303,6 +303,9 @@
   "ConversionReactor": [
    "src/unitOperations/reactor/ConversionReactor.H"
   ],
+  "ConverterShellSize": [
+   "src/postProcessing/sizing/ConverterShellSize.H"
+  ],
   "CoolingTower": [
    "src/unitOperations/heatTransfer/CoolingTower.H"
   ],
@@ -1900,6 +1903,10 @@
    {
     "key": "reliefValve",
     "type": "ReliefValveSize"
+   },
+   {
+    "key": "converterShell",
+    "type": "ConverterShellSize"
    }
   ],
   "src/propertyOps/ConstantEstimator.cpp": [
@@ -3735,6 +3742,33 @@
    "src/thermo/SaturationCurves.H",
    "src/thermo/ThermoPackage.H"
   ],
+  "src/postProcessing/sizing/ConverterShellSize.cpp": [
+   "src/core/Advisory.H",
+   "src/core/Constants.H",
+   "src/core/Dictionary.H",
+   "src/core/Dimensions.H",
+   "src/core/FlatUnit.H",
+   "src/core/Identifiers.H",
+   "src/core/Origin.H",
+   "src/core/ProblemDivergence.H",
+   "src/core/RegistryRefusal.H",
+   "src/core/ResultRecords.H",
+   "src/core/ThermoResolution.H",
+   "src/core/Types.H",
+   "src/materials/Material.H",
+   "src/postProcessing/sizing/ConverterShellSize.H",
+   "src/postProcessing/sizing/DesignDefaults.H",
+   "src/postProcessing/sizing/EquipmentSize.H",
+   "src/postProcessing/sizing/VesselMechanics.H",
+   "src/result/SimulationResult.H",
+   "src/result/UnitProfile.H",
+   "src/solver/Convergence.H",
+   "src/streams/ProcessStream.H",
+   "src/thermo/Component.H",
+   "src/thermo/PackageAudit.H",
+   "src/thermo/SaturationCurves.H",
+   "src/thermo/ThermoPackage.H"
+  ],
   "src/postProcessing/sizing/CrystalliserSize.cpp": [
    "src/core/Advisory.H",
    "src/core/Dictionary.H",
@@ -3804,6 +3838,7 @@
    "src/postProcessing/sizing/CatalystBedSize.H",
    "src/postProcessing/sizing/ColumnSize.H",
    "src/postProcessing/sizing/CompressorSize.H",
+   "src/postProcessing/sizing/ConverterShellSize.H",
    "src/postProcessing/sizing/CrystalliserSize.H",
    "src/postProcessing/sizing/CycloneSize.H",
    "src/postProcessing/sizing/EquipmentSize.H",
@@ -8737,6 +8772,7 @@
    "src/postProcessing/sizing/CatalystBedSize.cpp",
    "src/postProcessing/sizing/ColumnSize.cpp",
    "src/postProcessing/sizing/CompressorSize.cpp",
+   "src/postProcessing/sizing/ConverterShellSize.cpp",
    "src/postProcessing/sizing/CrystalliserSize.cpp",
    "src/postProcessing/sizing/CycloneSize.cpp",
    "src/postProcessing/sizing/DesignDefaults.cpp",
@@ -8893,6 +8929,7 @@
    "src/dynamicDriver/DynamicDriver.cpp",
    "src/postProcessing/sizing/CatalystBedSize.cpp",
    "src/postProcessing/sizing/ColumnSize.cpp",
+   "src/postProcessing/sizing/ConverterShellSize.cpp",
    "src/postProcessing/sizing/ReliefValveSize.cpp",
    "src/postProcessing/sizing/StirredTank.cpp",
    "src/postProcessing/sizing/VesselMechanics.cpp",
@@ -9023,6 +9060,7 @@
    "src/postProcessing/sizing/CatalystBedSize.cpp",
    "src/postProcessing/sizing/ColumnSize.cpp",
    "src/postProcessing/sizing/CompressorSize.cpp",
+   "src/postProcessing/sizing/ConverterShellSize.cpp",
    "src/postProcessing/sizing/CrystalliserSize.cpp",
    "src/postProcessing/sizing/CycloneSize.cpp",
    "src/postProcessing/sizing/DesignDefaults.cpp",
@@ -9339,6 +9377,7 @@
    "src/postProcessing/sizing/CatalystBedSize.cpp",
    "src/postProcessing/sizing/ColumnSize.cpp",
    "src/postProcessing/sizing/CompressorSize.cpp",
+   "src/postProcessing/sizing/ConverterShellSize.cpp",
    "src/postProcessing/sizing/CrystalliserSize.cpp",
    "src/postProcessing/sizing/CycloneSize.cpp",
    "src/postProcessing/sizing/DesignDefaults.cpp",
@@ -9653,6 +9692,7 @@
    "src/postProcessing/sizing/CatalystBedSize.cpp",
    "src/postProcessing/sizing/ColumnSize.cpp",
    "src/postProcessing/sizing/CompressorSize.cpp",
+   "src/postProcessing/sizing/ConverterShellSize.cpp",
    "src/postProcessing/sizing/CrystalliserSize.cpp",
    "src/postProcessing/sizing/CycloneSize.cpp",
    "src/postProcessing/sizing/EquipmentSize.cpp",
@@ -9734,6 +9774,7 @@
    "src/postProcessing/sizing/CatalystBedSize.cpp",
    "src/postProcessing/sizing/ColumnSize.cpp",
    "src/postProcessing/sizing/CompressorSize.cpp",
+   "src/postProcessing/sizing/ConverterShellSize.cpp",
    "src/postProcessing/sizing/CrystalliserSize.cpp",
    "src/postProcessing/sizing/CycloneSize.cpp",
    "src/postProcessing/sizing/EquipmentSize.cpp",
@@ -9990,6 +10031,7 @@
    "src/postProcessing/sizing/CatalystBedSize.cpp",
    "src/postProcessing/sizing/ColumnSize.cpp",
    "src/postProcessing/sizing/CompressorSize.cpp",
+   "src/postProcessing/sizing/ConverterShellSize.cpp",
    "src/postProcessing/sizing/CrystalliserSize.cpp",
    "src/postProcessing/sizing/CycloneSize.cpp",
    "src/postProcessing/sizing/EquipmentSize.cpp",
@@ -10237,6 +10279,7 @@
    "src/postProcessing/sizing/CatalystBedSize.cpp",
    "src/postProcessing/sizing/ColumnSize.cpp",
    "src/postProcessing/sizing/CompressorSize.cpp",
+   "src/postProcessing/sizing/ConverterShellSize.cpp",
    "src/postProcessing/sizing/CrystalliserSize.cpp",
    "src/postProcessing/sizing/CycloneSize.cpp",
    "src/postProcessing/sizing/EquipmentSize.cpp",
@@ -10284,6 +10327,7 @@
    "src/core/RegistryRefusal.cpp",
    "src/postProcessing/costing/CostingModel.cpp",
    "src/postProcessing/costing/Turton.cpp",
+   "src/postProcessing/sizing/ConverterShellSize.cpp",
    "src/postProcessing/sizing/ReliefValveSize.cpp",
    "src/postProcessing/sizing/ShellTubeHX.cpp",
    "src/postProcessing/sizing/VesselSize.cpp",
@@ -10356,6 +10400,7 @@
    "src/postProcessing/sizing/CatalystBedSize.cpp",
    "src/postProcessing/sizing/ColumnSize.cpp",
    "src/postProcessing/sizing/CompressorSize.cpp",
+   "src/postProcessing/sizing/ConverterShellSize.cpp",
    "src/postProcessing/sizing/CrystalliserSize.cpp",
    "src/postProcessing/sizing/CycloneSize.cpp",
    "src/postProcessing/sizing/DesignDefaults.cpp",
@@ -10428,6 +10473,7 @@
    "src/postProcessing/sizing/CatalystBedSize.cpp",
    "src/postProcessing/sizing/ColumnSize.cpp",
    "src/postProcessing/sizing/CompressorSize.cpp",
+   "src/postProcessing/sizing/ConverterShellSize.cpp",
    "src/postProcessing/sizing/CrystalliserSize.cpp",
    "src/postProcessing/sizing/CycloneSize.cpp",
    "src/postProcessing/sizing/EquipmentSize.cpp",
@@ -10523,6 +10569,7 @@
    "src/postProcessing/sizing/CatalystBedSize.cpp",
    "src/postProcessing/sizing/ColumnSize.cpp",
    "src/postProcessing/sizing/CompressorSize.cpp",
+   "src/postProcessing/sizing/ConverterShellSize.cpp",
    "src/postProcessing/sizing/CrystalliserSize.cpp",
    "src/postProcessing/sizing/CycloneSize.cpp",
    "src/postProcessing/sizing/DesignDefaults.cpp",
@@ -10901,6 +10948,7 @@
    "src/postProcessing/sizing/CatalystBedSize.cpp",
    "src/postProcessing/sizing/ColumnSize.cpp",
    "src/postProcessing/sizing/CompressorSize.cpp",
+   "src/postProcessing/sizing/ConverterShellSize.cpp",
    "src/postProcessing/sizing/CrystalliserSize.cpp",
    "src/postProcessing/sizing/CycloneSize.cpp",
    "src/postProcessing/sizing/EquipmentSize.cpp",
@@ -11025,6 +11073,10 @@
    "src/postProcessing/sizing/CompressorSize.cpp",
    "src/postProcessing/sizing/EquipmentSize.cpp"
   ],
+  "src/postProcessing/sizing/ConverterShellSize.H": [
+   "src/postProcessing/sizing/ConverterShellSize.cpp",
+   "src/postProcessing/sizing/EquipmentSize.cpp"
+  ],
   "src/postProcessing/sizing/CrystalliserSize.H": [
    "src/postProcessing/sizing/CrystalliserSize.cpp",
    "src/postProcessing/sizing/EquipmentSize.cpp"
@@ -11036,6 +11088,7 @@
   "src/postProcessing/sizing/DesignDefaults.H": [
    "src/postProcessing/sizing/CatalystBedSize.cpp",
    "src/postProcessing/sizing/ColumnSize.cpp",
+   "src/postProcessing/sizing/ConverterShellSize.cpp",
    "src/postProcessing/sizing/DesignDefaults.cpp",
    "src/postProcessing/sizing/ReliefValveSize.cpp",
    "src/postProcessing/sizing/StirredTank.cpp",
@@ -11047,6 +11100,7 @@
    "src/postProcessing/sizing/CatalystBedSize.cpp",
    "src/postProcessing/sizing/ColumnSize.cpp",
    "src/postProcessing/sizing/CompressorSize.cpp",
+   "src/postProcessing/sizing/ConverterShellSize.cpp",
    "src/postProcessing/sizing/CrystalliserSize.cpp",
    "src/postProcessing/sizing/CycloneSize.cpp",
    "src/postProcessing/sizing/EquipmentSize.cpp",
@@ -11100,6 +11154,7 @@
   "src/postProcessing/sizing/VesselMechanics.H": [
    "src/postProcessing/sizing/CatalystBedSize.cpp",
    "src/postProcessing/sizing/ColumnSize.cpp",
+   "src/postProcessing/sizing/ConverterShellSize.cpp",
    "src/postProcessing/sizing/StirredTank.cpp",
    "src/postProcessing/sizing/VesselMechanics.cpp",
    "src/postProcessing/sizing/VesselSize.cpp"
@@ -11509,6 +11564,7 @@
    "src/postProcessing/sizing/CatalystBedSize.cpp",
    "src/postProcessing/sizing/ColumnSize.cpp",
    "src/postProcessing/sizing/CompressorSize.cpp",
+   "src/postProcessing/sizing/ConverterShellSize.cpp",
    "src/postProcessing/sizing/CrystalliserSize.cpp",
    "src/postProcessing/sizing/CycloneSize.cpp",
    "src/postProcessing/sizing/EquipmentSize.cpp",
@@ -11574,6 +11630,7 @@
    "src/postProcessing/sizing/CatalystBedSize.cpp",
    "src/postProcessing/sizing/ColumnSize.cpp",
    "src/postProcessing/sizing/CompressorSize.cpp",
+   "src/postProcessing/sizing/ConverterShellSize.cpp",
    "src/postProcessing/sizing/CrystalliserSize.cpp",
    "src/postProcessing/sizing/CycloneSize.cpp",
    "src/postProcessing/sizing/EquipmentSize.cpp",
@@ -11704,6 +11761,7 @@
    "src/postProcessing/sizing/CatalystBedSize.cpp",
    "src/postProcessing/sizing/ColumnSize.cpp",
    "src/postProcessing/sizing/CompressorSize.cpp",
+   "src/postProcessing/sizing/ConverterShellSize.cpp",
    "src/postProcessing/sizing/CrystalliserSize.cpp",
    "src/postProcessing/sizing/CycloneSize.cpp",
    "src/postProcessing/sizing/EquipmentSize.cpp",
@@ -12007,6 +12065,7 @@
    "src/postProcessing/sizing/CatalystBedSize.cpp",
    "src/postProcessing/sizing/ColumnSize.cpp",
    "src/postProcessing/sizing/CompressorSize.cpp",
+   "src/postProcessing/sizing/ConverterShellSize.cpp",
    "src/postProcessing/sizing/CrystalliserSize.cpp",
    "src/postProcessing/sizing/CycloneSize.cpp",
    "src/postProcessing/sizing/EquipmentSize.cpp",
@@ -12217,6 +12276,7 @@
    "src/postProcessing/sizing/CatalystBedSize.cpp",
    "src/postProcessing/sizing/ColumnSize.cpp",
    "src/postProcessing/sizing/CompressorSize.cpp",
+   "src/postProcessing/sizing/ConverterShellSize.cpp",
    "src/postProcessing/sizing/CrystalliserSize.cpp",
    "src/postProcessing/sizing/CycloneSize.cpp",
    "src/postProcessing/sizing/EquipmentSize.cpp",
@@ -12572,6 +12632,7 @@
    "src/postProcessing/sizing/CatalystBedSize.cpp",
    "src/postProcessing/sizing/ColumnSize.cpp",
    "src/postProcessing/sizing/CompressorSize.cpp",
+   "src/postProcessing/sizing/ConverterShellSize.cpp",
    "src/postProcessing/sizing/CrystalliserSize.cpp",
    "src/postProcessing/sizing/CycloneSize.cpp",
    "src/postProcessing/sizing/EquipmentSize.cpp",
@@ -12844,6 +12905,7 @@
    "src/postProcessing/sizing/CatalystBedSize.cpp",
    "src/postProcessing/sizing/ColumnSize.cpp",
    "src/postProcessing/sizing/CompressorSize.cpp",
+   "src/postProcessing/sizing/ConverterShellSize.cpp",
    "src/postProcessing/sizing/CrystalliserSize.cpp",
    "src/postProcessing/sizing/CycloneSize.cpp",
    "src/postProcessing/sizing/EquipmentSize.cpp",
@@ -12986,6 +13048,7 @@
    "src/postProcessing/sizing/CatalystBedSize.cpp",
    "src/postProcessing/sizing/ColumnSize.cpp",
    "src/postProcessing/sizing/CompressorSize.cpp",
+   "src/postProcessing/sizing/ConverterShellSize.cpp",
    "src/postProcessing/sizing/CrystalliserSize.cpp",
    "src/postProcessing/sizing/CycloneSize.cpp",
    "src/postProcessing/sizing/EquipmentSize.cpp",

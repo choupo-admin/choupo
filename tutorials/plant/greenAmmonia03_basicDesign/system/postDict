@@ -47,12 +47,31 @@
                       ammoniaReactor04_kineticSizing declares, with no source behind
                       either; replace them with a vendor's.  No head space,
                       distributor, support grid or internals: the shell is
-                      the bed's envelope.  Each bed is its own shell here;
-                      a real converter stacks them in one.
+                      the bed's envelope.  Inside the converter (below) that
+                      envelope is an internal BASKET, not a pressure vessel,
+                      so it is sized, drawn and NOT costed.
+    CONVERTER         ONE PRESSURE SHELL around the sector of the same name --
+                      the three beds and the two interbed coolers (DEV.md 4c
+                      C69; CONVERTER/system/flowsheetDict says where that
+                      construction was read).  `type converterShell` reads
+                      the sector's units from the topology, stacks their
+                      geometries axially (D the widest member's, H the sum of
+                      theirs: the beds' shells and the coolers' Kern shells),
+                      sizes ONE ASME wall at 167 bar and prices it on the
+                      Turton vessel set.  The beds' own shells become baskets
+                      (NOT costed, each naming the converter shell); the
+                      catalyst charges stay priced; the two coolers keep
+                      their Turton exchanger cost, whose own shell share is
+                      then counted twice -- Turton carries no bundle-only
+                      correlation, so that over-estimate is SAID, not
+                      corrected by an invented factor.  No head space,
+                      cooling annulus, distributor or plenum is added.
 
     the relief valves (DEV.md 4c C62)
                       `reliefValve` items: one more item of each PROTECTED
-                      unit (design/<unit>/psv), its set pressure READ from
+                      unit (design/<unit>/psv) -- and of the CONVERTER, whose
+                      ONE shell needs ONE valve where its three beds had
+                      three (design/CONVERTER/psv) -- its set pressure READ from
                       that unit's sized pressureDesign, sized by API 520
                       Part I on every DECLARED scenario (blockedOutlet,
                       fire) and governed by the largest area.  NOT COSTED --
@@ -158,7 +177,8 @@ sizing
         { unitName FEHE;         type shellTubeHX;  material SS316;            // hot side 733 K
           designRules { pressureDesign 167;
                         design { method Kern;
-                                 tubeStream HotEffluent;      // the hot effluent in the tubes
+                                 tubeStream CONVERTER.HotEffluent;   // the hot effluent in the tubes -- the
+                                                                     // CONVERTER sector's outlet, by its identity
                                  tubeOD 25.4 mm;  tubeID 19.86 mm;  tubeLength 6.096 m;
                                  tubePitch 31.75 mm;  tubePattern triangular;
                                  tubePasses 1;                // counter-current: the ends cross
@@ -173,7 +193,7 @@ sizing
         //  The bed effluent in the TUBES (the high-pressure side), boiler
         //  feedwater boiling on the shell at the steamHP header's 41 bar.
         //  F = 1 (a boiling utility); the passes only buy gas velocity.
-        { unitName InterbedCooler1; type shellTubeHX; material SS316;          // bed 1 outlet ~790 K
+        { unitName CONVERTER.InterbedCooler1; type shellTubeHX; material SS316;          // bed 1 outlet ~790 K
           designRules { utility steamGenerationHP;  // HP steam raised -- the declared credit
                         pressureDesign 167;
                         design { method Kern;  processSide tube;
@@ -185,7 +205,7 @@ sizing
                                  utilitySideFilm 5000 W/m2/K; // boiling water -- AUTHOR-SET, see header
                                  fouling { tubeSide 0.0002 m2.K/W;  shellSide 0.0002 m2.K/W; }
                                } } }
-        { unitName InterbedCooler2; type shellTubeHX; material SS316;
+        { unitName CONVERTER.InterbedCooler2; type shellTubeHX; material SS316;
           designRules { utility steamGenerationHP;
                         pressureDesign 167;
                         design { method Kern;  processSide tube;
@@ -204,21 +224,28 @@ sizing
         //  prices the catalyst charge from the two DECLARED numbers below,
         //  which are AUTHOR-SET ASSUMPTIONS (see the header).
         //  NO L_over_D here: each bed declares its own slenderness
-        //  (Bed<N>/system/flowsheetDict `operation.L_over_D`, the
+        //  (CONVERTER/Bed<N>/system/flowsheetDict `operation.L_over_D`, the
         //  cross-section its Ergun pressure drop is integrated on) and the
         //  sizer READS it from the unit -- one home (DEV.md 4c C66).
-        { unitName Bed1;  type pfr;  material SS316;
+        { unitName CONVERTER.Bed1;  type pfr;  material SS316;
           designRules { pressureDesign       167;
                         catalystBulkDensity  2500.0;   // kg/m3 -- AUTHOR-SET ASSUMPTION
                         catalystPrice        15.0; } } // EUR/kg -- AUTHOR-SET ASSUMPTION
-        { unitName Bed2;  type pfr;  material SS316;
+        { unitName CONVERTER.Bed2;  type pfr;  material SS316;
           designRules { pressureDesign       167;
                         catalystBulkDensity  2500.0;
                         catalystPrice        15.0; } }
-        { unitName Bed3;  type pfr;  material SS316;
+        { unitName CONVERTER.Bed3;  type pfr;  material SS316;
           designRules { pressureDesign       167;
                         catalystBulkDensity  2500.0;
                         catalystPrice        15.0; } }
+
+        //  ---- THE CONVERTER: ONE pressure shell around the sector ------
+        //  AFTER every member's entry: the shell reads what its members
+        //  were sized as, and refuses a member not yet sized.  The loop's
+        //  design pressure, as every high-pressure item here.
+        { unitName CONVERTER;  type converterShell;  material SS316;
+          designRules { pressureDesign  167; } }
 
         //  ---- the drums: vapour residence (see the header) --------------
         { unitName Separator;    type vessel;  material SS304;                 // -20 C
@@ -262,17 +289,16 @@ sizing
           designRules { scenarios ( { scenario blockedOutlet; } ); } }
         { unitName RecycleComp;  type reliefValve;  material SS304;
           designRules { scenarios ( { scenario blockedOutlet; } ); } }
-        //  The beds: a blocked converter outlet, the loop flow still coming.
-        //  NO fire case: a bed holds gas and no liquid -- nothing boils to
-        //  carry the fire's heat away, so a relief valve does not protect a
-        //  gas-filled shell in a fire (its wall overheats first); that is a
-        //  depressuring / fireproofing question, not a relief load.
-        { unitName Bed1;  type reliefValve;  material SS316;
-          designRules { protects shell;  scenarios ( { scenario blockedOutlet; } ); } }
-        { unitName Bed2;  type reliefValve;  material SS316;
-          designRules { protects shell;  scenarios ( { scenario blockedOutlet; } ); } }
-        { unitName Bed3;  type reliefValve;  material SS316;
-          designRules { protects shell;  scenarios ( { scenario blockedOutlet; } ); } }
+        //  The CONVERTER: ONE shell, so ONE valve (C69; the three beds had
+        //  one each while each was its own vessel).  A blocked converter
+        //  outlet -- the sector's only outlet, HotEffluent -- with the loop
+        //  flow still coming.  NO fire case: the converter holds gas and no
+        //  liquid -- nothing boils to carry the fire's heat away, so a
+        //  relief valve does not protect a gas-filled shell in a fire (its
+        //  wall overheats first); that is a depressuring / fireproofing
+        //  question, not a relief load.
+        { unitName CONVERTER;  type reliefValve;  material SS316;
+          designRules { scenarios ( { scenario blockedOutlet; } ); } }
         //  The three drums: either outlet can close (the gas line, or the
         //  level-controlled liquid line), and a pool fire boils the liquid
         //  their declared `inventory` holds -- its `fraction` is the level.

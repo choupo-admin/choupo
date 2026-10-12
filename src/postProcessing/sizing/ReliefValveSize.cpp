@@ -190,11 +190,31 @@ std::vector<EquipmentSizing> ReliefValveSize::size(const std::string& unitName,
     if (scen.empty())
         throw std::runtime_error(who + ": `scenarios` is empty.");
 
-    const FlatUnit* fu = nullptr;
-    for (const auto& u : result.topology) if (u.name == unitName) fu = &u;
-    if (!fu)
-        throw std::runtime_error(who + ": the unit is not in the solved"
-            " topology, so its outlets are unknown.");
+    const FlatUnit* fu0 = nullptr;
+    for (const auto& u : result.topology) if (u.name == unitName) fu0 = &u;
+    //  A SECTOR'S OWN ITEM (C69: one converter shell around a sector's beds
+    //  and exchangers) is protected at the SECTOR's outlets: the streams its
+    //  units produce and none of its units consumes, read from the topology.
+    FlatUnit sectorAsUnit;
+    if (!fu0)
+    {
+        std::set<std::string> consumed;
+        std::vector<std::string> produced;
+        for (const auto& u : result.topology)
+            if (u.sector == unitName || u.sector.rfind(unitName + ".", 0) == 0)
+            {
+                for (const auto& s : u.ins)  consumed.insert(s);
+                for (const auto& s : u.outs) produced.push_back(s);
+            }
+        for (const auto& s : produced)
+            if (!consumed.count(s)) sectorAsUnit.outs.push_back(s);
+        if (produced.empty())
+            throw std::runtime_error(who + ": neither a unit nor a sector of the"
+                " solved topology, so its outlets are unknown.");
+        sectorAsUnit.name = unitName;
+        fu0 = &sectorAsUnit;
+    }
+    const FlatUnit* fu = fu0;
 
     EquipmentSizing d;
     d.unitName      = unitName;
