@@ -34,6 +34,8 @@ License
 #include "thermo/ThermoAnnounce.H"
 #include "thermo/reaction/Reaction.H"
 
+#include "core/RegistryRefusal.H"
+
 #include <algorithm>
 #include <cmath>
 #include <iostream>
@@ -109,6 +111,9 @@ void DynamicCSTR::initialise(const DictPtr&        unitDict,
         auto rxn = reactionsDict->subDict(rn);
         ReactionSpec r;
         r.name = rn;
+        //  `Arrhenius` is this vessel's own word and reads a power-law `order`
+        //  per reactant; a factory law reads its own stoichiometry.
+        const bool ownLaw = rxn->subDict("kinetics")->lookupWord("type") == "Arrhenius";
         auto stoich = rxn->lookupDictList("stoichiometry");
         for (const auto& s : stoich)
         {
@@ -121,25 +126,37 @@ void DynamicCSTR::initialise(const DictPtr&        unitDict,
             // backwards -- it made the LOOSE reading uniform instead of the strict
             // one.  Now all five readers go through Reaction::forwardOrder, so the
             // asymmetry that forced the retreat is gone.
-            r.order.push_back(Reaction::forwardOrder(
-                *s, r.nu.back(), s->lookupWord("component"), "dynamicCSTR"));
+            r.order.push_back(ownLaw ? Reaction::forwardOrder(
+                *s, r.nu.back(), s->lookupWord("component"), "dynamicCSTR") : 0.0);
         }
         auto kin = rxn->subDict("kinetics");
         const std::string ktype = kin->lookupWord("type");
-        if (ktype == "LHHW")
-        {
-            r.lhhw = true;
-            r.law  = RateLaw::fromDict(rxn, thermo,
-                                       "DynamicCSTR: reaction '" + rn + "'");
-        }
-        else if (ktype == "Arrhenius")
+        if (ktype == "Arrhenius")
         {
             r.A_pre = kin->lookupScalar("A");
             r.Ea    = kin->lookupScalar("Ea");
         }
+        else if (ReactionRate::isRegistered(ktype))
+        {
+            //  LHHW, a `type expression` written in the case, or a user law.
+            //  This vessel carries no pressure a rate law can read, and forms
+            //  c_i = n_i / V in kmol/m3.
+            r.factoryLaw = true;
+            RateOffer offer;
+            offer.pressure = false;
+            offer.concentrationBasis = "n_i / V";
+            const std::string who = "DynamicCSTR: reaction '" + rn + "'";
+            r.law = ReactionRate::New(rxn, thermo, who, offer);
+            r.law->checkLoading(catalystLoading_ > 0.0, who);
+        }
         else
-            throw std::runtime_error("DynamicCSTR: kinetics type must be `Arrhenius`"
-                " or `LHHW` (reaction '" + rn + "', got '" + ktype + "')");
+        {
+            std::vector<std::string> words = { "Arrhenius" };
+            for (const auto& w : ReactionRate::availableTypes())
+                if (w != "Arrhenius") words.push_back(w);
+            throw std::runtime_error("DynamicCSTR: reaction '" + rn + "': "
+                + registryRefusal::message("kinetics type", ktype, words, "Accepted"));
+        }
 
         // Heat of reaction on the ONE enthalpy base (elements/formation datum),
         // resolved ONCE here through the shared helper.  When every reacting
@@ -572,7 +589,7 @@ scalar DynamicCSTR::rateOfReaction_(const ReactionSpec& rxn,
     // or activity), the adsorption denominator and the reverse leg.  With conc in
     // kmol/m^3, a `catalystLoading` in kg/m^3 turns a per-gram rate constant into
     // the reactor's volumetric one exactly: mol/(g.s) x kg/m^3 = kmol/(m^3.s).
-    if (rxn.lhhw)
+    if (rxn.factoryLaw)
     {
         const std::size_t nc = n.size();
         sVector conc(nc, 0.0), x(nc, 0.0);
@@ -581,7 +598,10 @@ scalar DynamicCSTR::rateOfReaction_(const ReactionSpec& rxn,
         { conc[j] = std::max<scalar>(n[j], 0.0) / V; ntot += std::max<scalar>(n[j], 0.0); }
         if (ntot > 0.0) for (std::size_t j = 0; j < nc; ++j) x[j] = std::max<scalar>(n[j], 0.0) / ntot;
         const scalar cf = (catalystLoading_ > 0.0) ? catalystLoading_ : 1.0;
-        return cf * rxn.law.netRate(*thermo_, T, conc, x);
+        RateState rs;
+        rs.T = T; rs.P = std::nan(""); rs.conc = &conc; rs.x = &x;
+        rs.amountPerKmol = 1.0;                       // conc in kmol/m3
+        return cf * rxn.law->netRate(*thermo_, rs);
     }
 
     const scalar k = rxn.A_pre * std::exp(-rxn.Ea / (constant::R * T));

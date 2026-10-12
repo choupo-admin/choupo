@@ -123,6 +123,16 @@ ALLOWED_PATHS = {
     "data/proposed/":                        "RETIRED 2026-07-13, named as retired",
     "data/standards/propertyPackages/":      "RETIRED 2026-07-15, named as retired",
     "data/standards/components/true/aqueous/": "RETIRED layout, named as banned",
+    # RETIRED 2026-10-12 (DEV.md 4c C67): the compiled Dyson-Simon ammonia
+    # law left the engine for the cases that use it (`type expression` in
+    # their constant/reactions); its anchors moved to check_ammonia_rate.
+    # DEV.md's dated records (C8, C66, C67) name it as it was when written.
+    "src/unitOperations/reactor/kinetics/":
+        "RETIRED 2026-10-12, DEV.md 4c C67 -- named in dated records",
+    "src/unitOperations/reactor/kinetics/AmmoniaSynthesisRate":
+        "RETIRED 2026-10-12, DEV.md 4c C67 -- named in dated records",
+    "src/unitOperations/reactor/kinetics/AmmoniaSynthesisRate.cpp":
+        "RETIRED 2026-10-12, DEV.md 4c C67 -- named in dated records",
     "generated/indexes/":  "never built; named in CLAUDE.md as a correction, so\n"
                            "                          the next reader stops looking for it",
     # DELETED, and named BECAUSE it was deleted.  DEV.md records the finding

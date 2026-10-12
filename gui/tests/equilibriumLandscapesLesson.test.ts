@@ -142,7 +142,7 @@ describe("the equilibrium-landscapes lesson", () => {
     expect(s).toContain("wrong by a heat of sublimation");
     expect(s).toContain("Component.cpp:1413–1425");
     expect(s).toContain("Reaction.cpp:136–149");
-    expect(s).toContain("AmmoniaSynthesisRate.cpp:111–117");
+    expect(s).toContain("Formula.cpp:485–496");
   });
 
   it("cites nothing for the enzyme, and says so", () => {

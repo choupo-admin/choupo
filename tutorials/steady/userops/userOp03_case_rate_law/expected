@@ -1,0 +1,29 @@
+# Reference KPIs (golden master, auto-recorded by runTests --record).
+# units: stream F is kmol/s (canonical SI, as in the result JSON); the run LOG prints kmol/h.
+# kind   name      key         expected        reltol
+stream  feedCode               F                0.000277777777778  1e-4
+stream  feedCode               T                350                1e-4
+stream  feedExpr               F                0.000277777777778  1e-4
+stream  feedExpr               T                350                1e-4
+stream  productCode            F                0.000277777777778  1e-4
+stream  productCode            T                350                1e-4
+stream  productExpr            F                0.000277777777778  1e-4
+stream  productExpr            T                350                1e-4
+kpi     reactorCode            F_in_kmol_h      1                  1e-4
+kpi     reactorCode            F_out_kmol_h     1                  1e-4
+kpi     reactorCode            T                350                1e-4
+kpi     reactorCode            T_out            350                1e-4
+kpi     reactorCode            V_R              0.025              1e-4
+kpi     reactorCode            k_mm_code        0.01               1e-4
+kpi     reactorCode            nReactions       1                  1e-4
+kpi     reactorCode            tau_s            1125               1e-4
+kpi     reactorCode            xi_mm_code_mol_per_s 0.138888888889     1e-4
+kpi     reactorExpr            F_in_kmol_h      1                  1e-4
+kpi     reactorExpr            F_out_kmol_h     1                  1e-4
+kpi     reactorExpr            T                350                1e-4
+kpi     reactorExpr            T_out            350                1e-4
+kpi     reactorExpr            V_R              0.025              1e-4
+kpi     reactorExpr            k_mm_expr        0.01               1e-4
+kpi     reactorExpr            nReactions       1                  1e-4
+kpi     reactorExpr            tau_s            1125               1e-4
+kpi     reactorExpr            xi_mm_expr_mol_per_s 0.138888888889     1e-4

@@ -1,0 +1,55 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+  userOp03_case_rate_law  --  ONE rate law, written TWICE, by the two routes
+  a case has to carry its own kinetics (DEV.md 4c C67).
+
+    reactorCode   reads `kinetics { type michaelisMenten; }` -- a law
+                  written in C++ in THIS case's code/ folder and registered
+                  into the engine's rate-law factory from
+                  code/registerUserTypes.cpp.  `bin/buildCode` compiles it
+                  into a per-case binary; it runs on a machine with a
+                  compiler and NOT on the site (the browser has none).
+
+    reactorExpr   reads `kinetics { type expression; }` -- the SAME law
+                  written as a formula in constant/reactions, evaluated by
+                  the engine's own expression evaluator.  It runs
+                  everywhere, the site included.
+
+  The two reactors are fed the same stream and must give the same answer;
+  both must equal the closed-form CSTR solution of Michaelis-Menten
+  kinetics (a quadratic in the outlet concentration).  `bin/curate/
+  check_rate_expression.py` holds all three together.
+
+  Why ever write the C++ one, if the formula is shorter?  Because some laws
+  are not a formula: a rate that needs an inner solve (a surface coverage
+  found by Newton, a population moment), a loop, a table the case reads
+  from a file.  The C++ route is the door for those; this witness walks
+  through it with a law simple enough to check by hand.
+\*---------------------------------------------------------------------------*/
+
+units
+(
+    {
+        name        reactorCode;
+        type        cstr;
+        in          feedCode;
+        outputs     ( productCode );
+        operation   { V_R 0.025; }               // m^3
+        reactions   ( mm_code );                 // law: code/MichaelisMenten.{H,cpp}
+    }
+    {
+        name        reactorExpr;
+        type        cstr;
+        in          feedExpr;
+        outputs     ( productExpr );
+        operation   { V_R 0.025; }               // m^3
+        reactions   ( mm_expr );                 // law: constant/reactions, `type expression`
+    }
+);

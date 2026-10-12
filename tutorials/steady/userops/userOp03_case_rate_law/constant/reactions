@@ -1,0 +1,59 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+  reactions -- A -> B on a SATURATING rate law, r = Vmax c_A / (Km + c_A):
+  first order in A at low concentration, zero order at high.  The form is
+  Michaelis & Menten's (Biochem. Z. 49 (1913) 333); the two numbers are
+  AUTHOR-SET for this witness -- chosen so the reactor sits between the two
+  limits (c_A about Km) -- and are not anybody's measurement.
+
+  The SAME law twice: `mm_code` is read by the C++ in code/, `mm_expr` by
+  the engine's expression evaluator.  The numbers are in both blocks; a
+  case that carries one law twice holds the copies equal itself (the gate
+  does, here).
+\*---------------------------------------------------------------------------*/
+
+mm_code
+{
+    stoichiometry
+    (
+        { component compA;  nu -1; }
+        { component compB;  nu  1; }
+    );
+    kinetics
+    {
+        type    michaelisMenten;           // registered from code/registerUserTypes.cpp
+        species compA;                     // the substrate
+        Vmax    1.0e-2  kmol/m3/s;         // author-set
+        Km      5.0     kmol/m3;           // author-set
+    }
+}
+
+mm_expr
+{
+    stoichiometry
+    (
+        { component compA;  nu -1; }
+        { component compB;  nu  1; }
+    );
+    kinetics
+    {
+        type    expression;
+        source  "Michaelis & Menten, Biochem. Z. 49 (1913) 333 -- the saturating form; Vmax and Km author-set for this witness, not measured";
+        basis   reactorVolume;
+        rateOf  extent;
+        parameters
+        {
+            Vmax  1.0e-2  kmol/m3/s;       // author-set
+            Km    5.0     kmol/m3;         // author-set
+        }
+        rate    "Vmax * c[compA] / (Km + c[compA])";
+        rateConstant { name Vmax;  unit kmol/m3/s; }
+    }
+}

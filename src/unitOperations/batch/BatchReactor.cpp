@@ -37,6 +37,8 @@ License
 #include "thermo/ThermoAnnounce.H"
 #include "solver/ODE/ODEIntegrator.H"
 
+#include "core/RegistryRefusal.H"
+
 #include <algorithm>
 #include <cmath>
 #include <iostream>
@@ -170,6 +172,13 @@ void BatchReactor::initialise(const DictPtr&       unitDict,
         ReactionSpec r;
         r.name = rxnName;
 
+        //  The vessel's OWN words read a power-law `order` per reactant; a
+        //  factory law (LHHW, expression, a user law) reads its own
+        //  stoichiometry and refuses what it does not read.
+        const std::string ktypeEarly = rxn->subDict("kinetics")->lookupWord("type");
+        const bool ownLaw = ktypeEarly == "Arrhenius" || ktypeEarly == "modifiedArrhenius"
+                         || ktypeEarly == "thirdBody" || ktypeEarly == "falloff";
+
         auto stoich = rxn->lookupDictList("stoichiometry");
         r.comps.reserve(stoich.size());
         r.nu.reserve(stoich.size());
@@ -186,8 +195,8 @@ void BatchReactor::initialise(const DictPtr&       unitDict,
             // backwards -- it made the LOOSE reading uniform instead of the strict
             // one.  Now all five readers go through Reaction::forwardOrder, so the
             // asymmetry that forced the retreat is gone.
-            r.order.push_back(Reaction::forwardOrder(
-                *s, r.nu.back(), s->lookupWord("component"), "batchReactor"));
+            r.order.push_back(ownLaw ? Reaction::forwardOrder(
+                *s, r.nu.back(), s->lookupWord("component"), "batchReactor") : 0.0);
         }
 
         auto kin = rxn->subDict("kinetics");
@@ -242,20 +251,31 @@ void BatchReactor::initialise(const DictPtr&       unitDict,
             r.tbEff = kin->found("thirdBody")
                       ? thirdBodyEfficiencies_(kin, thermo) : sVector{};
         }
-        else if (ktype == "LHHW")
+        else if (ReactionRate::isRegistered(ktype))
         {
-            // Langmuir-Hinshelwood-Hougen-Watson.  No CHEMKIN unit conversion and no
-            // molecularity: an LHHW rate constant is reported in whatever basis its
-            // paper used, and the adsorption denominator is dimensionless in it.
-            r.form = RateForm::LHHW;
-            r.law  = RateLaw::fromDict(rxn, thermo,
-                                       "BatchReactor: reaction '" + rxnName + "'");
+            // A FACTORY law -- LHHW (Langmuir-Hinshelwood-Hougen-Watson), a
+            // `type expression` written in the case, or a law a case's code/
+            // registered.  No CHEMKIN unit conversion and no molecularity: such
+            // a law is reported in whatever basis its source used.  This vessel
+            // carries no pressure a rate law can read (a law that reads P
+            // refuses here), and forms c_i = n_i / V in kmol/m3.
+            r.form = RateForm::Factory;
+            RateOffer offer;
+            offer.pressure = false;
+            offer.concentrationBasis = "n_i / V";
+            const std::string who = "BatchReactor: reaction '" + rxnName + "'";
+            r.law = ReactionRate::New(rxn, thermo, who, offer);
+            r.law->checkLoading(catalystLoading_ > 0.0, who);
         }
         else
         {
-            throw std::runtime_error("BatchReactor: reaction '" + rxnName
-                + "': unknown kinetics type '" + ktype + "' (expected Arrhenius,"
-                " modifiedArrhenius, thirdBody, falloff, or LHHW)");
+            std::vector<std::string> words = { "Arrhenius", "modifiedArrhenius",
+                                               "thirdBody", "falloff" };
+            for (const auto& w : ReactionRate::availableTypes())
+                if (std::find(words.begin(), words.end(), w) == words.end())
+                    words.push_back(w);
+            throw std::runtime_error("BatchReactor: reaction '" + rxnName + "': "
+                + registryRefusal::message("kinetics type", ktype, words, "Accepted"));
         }
 
         // Heat of reaction on the ONE enthalpy base (elements/formation datum).
@@ -403,7 +423,7 @@ scalar BatchReactor::rateOfReaction_(const ReactionSpec& rxn,
     // (kg of dry catalyst per m^3) converts a per-gram constant into the reactor's
     // volumetric kmol/(m^3.s).  With conc in kmol/m^3 the factor is the loading
     // itself: mol/(g.s) x kg/m^3 = kmol/(m^3.s), exactly.
-    if (rxn.form == RateForm::LHHW)
+    if (rxn.form == RateForm::Factory)
     {
         const std::size_t nc = n.size();
         sVector conc(nc, 0.0), x(nc, 0.0);
@@ -411,7 +431,10 @@ scalar BatchReactor::rateOfReaction_(const ReactionSpec& rxn,
         for (std::size_t j = 0; j < nc; ++j) { conc[j] = std::max<scalar>(n[j], 0.0) / V; ntot += std::max<scalar>(n[j], 0.0); }
         if (ntot > 0.0) for (std::size_t j = 0; j < nc; ++j) x[j] = std::max<scalar>(n[j], 0.0) / ntot;
         const scalar cf = (catalystLoading_ > 0.0) ? catalystLoading_ : 1.0;
-        return cf * rxn.law.netRate(*thermo_, T, conc, x);
+        RateState rs;
+        rs.T = T; rs.P = std::nan(""); rs.conc = &conc; rs.x = &x;
+        rs.amountPerKmol = 1.0;                       // conc in kmol/m3
+        return cf * rxn.law->netRate(*thermo_, rs);
     }
 
     scalar k = 0.0;
@@ -424,7 +447,7 @@ scalar BatchReactor::rateOfReaction_(const ReactionSpec& rxn,
             k = Reaction::modifiedArrheniusRate(rxn.A_pre, rxn.b, rxn.Ea, T);
             break;
         case RateForm::ThirdBody:
-        case RateForm::LHHW: break;   // handled above
+        case RateForm::Factory: break;   // handled above
         case RateForm::Falloff:
         {
             sVector conc(n.size());

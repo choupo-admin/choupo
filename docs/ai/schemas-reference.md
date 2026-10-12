@@ -76,16 +76,6 @@ Adiabatic flash (Q = 0). The feed flashes to the outlet pressure; outlet tempera
 |---|:-:|---|---|---|
 | `P` | ✓ | number | Pa | Pressure at which the flash is solved. |
 
-## `ammoniaRateBench`  (ammoniaRateBench operation)
-
-The ammonia synthesis rate of Dyson & Simon (1968) — Ind. Eng. Chem. Fundam. 7(4) 605-610 — as a cited correlation object, in three parts. VERIFY (always): five anchors, each stating whether it is THEORY (an identity the expression must satisfy, such as Eq 19's two terms having ratio (Ka/Q)^2) or ARITHMETIC (the closed form at a stated point against a literal, which proves a TRANSCRIPTION and never a physics). Nothing here is measured by Choupo: the data these equations were fitted to are Nielsen, Kjaer and Hansen's. LOCUS (optional): sweeping temperature at a fixed nitrogen conversion on the paper's own reference mixture locates the temperature of greatest net rate, and three conversions show that locus DESCENDING — the curve a quench converter zigzags about. POINTS (optional): the rate at states the case declares. Note the SYMBOL COLLISION: the paper writes xi for the effectiveness factor and eta for the conversion of nitrogen, which is the opposite of CatalystPellet.H and of most textbooks.
-
-| Field | Required | Type | Unit | Description |
-|---|:-:|---|---|---|
-| `catalyst` |   | object | — | There is NO default particle size: which branch of Eq 39/40 applies depends entirely on it, so omitting this block makes Equation 40 refu… |
-| `locus` |   | object | — | Optional. Sweep temperature at each declared conversion and report where the net rate is greatest. |
-| `points` |   | array[object] | — | Optional. Evaluate the rate at gases the case declares — typically the bed states another case computed. Nothing is ranked or compared. |
-
 ## `bagFilter`  (bagFilter operation)
 
 Fabric (bag-house) filter. Collection is near-total; the cake-dominated pressure drop ΔP = μ·V·(K1 + K2·W) follows from the air-to-cloth ratio V = Q/area. Requires a feed particle-size distribution and a gas-viscosity model.
@@ -765,7 +755,7 @@ Isothermal plug-flow reactor. The volume is integrated by RK4; nSteps controls t
 | `T_coolant` |   | number | K | Required by `thermalMode heatExchange`. |
 | `catalystLoading` |   | number | kg/m3 | Mass of catalyst per unit reactor volume. |
 | `L_over_D` |   | number | - | Multi-reaction path only. Gives the bed a cross-section (D, L, A published as KPIs) as the straight cylinder of V_R at this ratio; the `p… |
-| `catalyst` |   | object | — | The particle the bed is packed with: read by a dysonSimon1968 bed's Eq 39 (`effectivenessFactor dysonSimonEq39`) and by the Ergun `pressu… |
+| `catalyst` |   | object | — | The particle the bed is packed with, read by the Ergun `pressureDrop`. (Until 2026-10-12 a dysonSimon1968 bed's Eq 39 read it too; since … |
 | `pressureDrop` |   | object | — | Multi-reaction path only. Integrates Ergun's dP/dz = -[150 mu (1-eps)^2 u/(eps^3 dp^2) + 1.75 rho (1-eps) u^2/(eps^3 dp)] along the bed w… |
 
 ## `phaseChanger`  (phaseChanger operation)
@@ -950,6 +940,16 @@ Pure-component P-T phase diagram: the vapour-pressure curve from the component's
 | `grid` |   | object | — | `{ n <points>; }` — how finely the domain is sampled. |
 | `solid` |   | object | — | Declares the solid so the diagram gains its two solid boundaries. Raw SI values. |
 | `output` |   | object | — | `{ file <name>.csv; }` — where the per-row results are written, relative to the case directory. |
+
+## `rateLawBench`  (rateLawBench operation)
+
+A rate law written in the case, on the bench, without a reactor around it. The law is the case's own: `reaction <name>;` names a reaction of constant/reactions whose kinetics are `type expression;`, and the bench prints it back as the engine PARSED it, every number with its unit. LOCUS (optional): sweep temperature at fixed conversions of a key reactant, walked from a base mixture along the reaction's own stoichiometry, and locate the temperature of the greatest value of a reported quantity -- for a reversible exothermic reaction the locus DESCENDS, the curve a quench converter zigzags about. POINTS (optional): the law at states the case declares. What is published is the case's choice (`report`). The bench holds no anchors of its own: a law's checks are a gate's (bin/curate/check_ammonia_rate.py for the ammonia law). It replaced the ammonia-only `ammoniaRateBench` on 2026-10-12 (DEV.md 4c C67), when the Dyson & Simon law left the engine for the case.
+
+| Field | Required | Type | Unit | Description |
+|---|:-:|---|---|---|
+| `report` | ✓ | array[object] | — | Each a parameter, a definition, or the law's own `rate` (or `forward` / `reverse` when it declares its legs), converted to the declared u… |
+| `locus` |   | object | — | Optional. Sweep temperature at each declared conversion and report where the `maximise` quantity is greatest. A maximum found ON an end o… |
+| `points` |   | array[object] | — | Optional. Evaluate the law at gases the case declares -- typically the states another case computed. Nothing is ranked or compared. When … |
 
 ## `reactionCurve`  (reactionCurve operation)
 

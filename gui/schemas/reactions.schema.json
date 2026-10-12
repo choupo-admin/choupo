@@ -39,10 +39,25 @@
     "Kinetics": {
       "type": "object",
       "required": ["type"],
+      "description": "The rate law, selected by `type` through the ReactionRate factory (thermo/reaction/ReactionRate.H). Built in: `Arrhenius` and `LHHW` (power law / Langmuir-Hinshelwood-Hougen-Watson, A and Ea), `expression` (the law written here as a formula -- every number in the case, DEV.md 4c C67). batchReactor also reads its own CHEMKIN words (modifiedArrhenius, thirdBody, falloff). A case's code/ folder may register its own word (local only: the site has no compiler).",
       "properties": {
-        "type": { "type": "string", "enum": ["Arrhenius", "LHHW", "dysonSimon1968"] },
-        "A":    { "type": "number", "exclusiveMinimum": 0, "description": "Pre-exponential factor." },
-        "Ea":   { "type": "number", "minimum": 0,         "description": "Activation energy (J/mol)." }
+        "type": { "type": "string", "enum": ["Arrhenius", "LHHW", "expression", "modifiedArrhenius", "thirdBody", "falloff"] },
+        "A":    { "type": "number", "exclusiveMinimum": 0, "description": "Pre-exponential factor (Arrhenius / LHHW)." },
+        "Ea":   { "type": "number", "minimum": 0,         "description": "Activation energy, J/mol (Arrhenius / LHHW)." },
+        "source":      { "type": "string", "description": "expression: the citation the numbers come from. Required." },
+        "basis":       { "type": "string", "enum": ["reactorVolume", "catalystMass"], "description": "expression: per m3 of reactor (catalyst BED, for a packed bed) or per kg of catalyst (the reactor then needs catalystLoading). Required, no default." },
+        "rateOf":      { "type": "string", "description": "expression: `extent`, or a component whose net formation rate the formula is (divided by its nu). Required." },
+        "parameters":  { "type": "object", "description": "expression: named constants, each WITH its unit (`-` for a pure number)." },
+        "tables":      { "type": "object", "description": "expression: 1-D tables -- `x ( ... ); xUnit u; <column> ( ... ); ...; yUnit u;` -- each column callable as a function of one argument, linear between its points, refused outside them." },
+        "definitions": { "type": "object", "description": "expression: named formulas (quoted), evaluated in dependency order; a cycle is refused." },
+        "rate":        { "type": "string", "description": "expression: the rate formula, with the dimensions of its basis. Either this, or forward + reverse." },
+        "forward":     { "type": "string", "description": "expression: the forward leg; the net rate is forward - reverse and their balance is the law's own equilibrium." },
+        "reverse":     { "type": "string", "description": "expression: the reverse leg." },
+        "rateConstant":         { "type": "object", "description": "expression: `{ name <parameter or definition>; unit <u>; }` -- what the reactor publishes as k_<reaction>." },
+        "fugacityCoefficients": { "type": "object", "description": "expression: `<component> <definition>;` -- the law's OWN fugacity coefficients; the pfr publishes their ratio to the package's at the inlet." },
+        "validity":    { "type": "object", "description": "expression: `<symbol|parameter|definition> { min; max; outside announce|refuse; unit; }`." },
+        "equilibriumTemperatureWindow": { "type": "object", "description": "expression with legs: `{ min .. K; max .. K; }` -- where the law's own equilibrium temperature is searched (the pfr's approach_K)." },
+        "caveats":     { "type": "array", "items": { "type": "string" }, "description": "expression: sentences announced on every run." }
       },
       "additionalProperties": true
     }

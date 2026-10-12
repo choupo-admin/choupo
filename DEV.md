@@ -2119,6 +2119,34 @@ a `ReactionRate` base with the explicit factory (`registerType`/`New`/
 `AmmoniaSynthesisRate` retired or reduced to the verification anchors
 (one home).  Sequenced AFTER C66 items 1 and 3 merge (both touch
 `PFR.cpp`).  Status: dispatched 2026-10-12, after C66 and the C68 renames merged (b5b2c851d).
+BUILT 2026-10-12 on branch `claude/c67-kinetics` (not merged).  (ii)
+`thermo/reaction/ReactionRate` -- explicit factory, `Arrhenius`/`LHHW` (the
+old `RateLaw`, arithmetic unchanged) and `expression` built in, called from
+choupoSolve/choupoBatch/the dynamic driver BEFORE `registerUserTypes()`; the
+cstr and pfr multi-reaction paths take every law through it, batchReactor and
+dynamicCSTR keep their native words (CHEMKIN forms; the dynamic CSTR's
+Arrhenius) and send every other word to it, the single-reaction paths read
+Arrhenius only and refuse naming the multi grammar.  Witness
+`userOp03_case_rate_law`: Michaelis-Menten in C++ (code/) and as an
+expression, two CSTRs, one answer, the closed form.  (i) `type expression`
+on `core/Formula` (parse once, dimensions checked, printed back as parsed;
+exp ln log10 sqrt pow min max + declared 1-D tables, linear, never
+extrapolated); symbols T, P, x[i], p[i], c[i] -- package fugacities
+deliberately NOT supplied; declared `basis` and `rateOf`; optional legs,
+`rateConstant`, `fugacityCoefficients`, `validity` (announce|refuse),
+`equilibriumTemperatureWindow`, `caveats`.  (iii) Dyson-Simon written in the
+three cases (bench with Eq 39 as Table I + `dp` window `outside refuse`;
+the two kinetic beds Eq 19 alone); `AmmoniaSynthesisRate.{H,cpp}` and
+`ammoniaRateBench` RETIRED (generic `rateLawBench`); the anchors moved to
+`check_ammonia_rate`, evaluated on every case's copy.  Measured against a
+build of b5b2c851d: every other kinetics case byte-identical (log and JSON,
+the commit banner aside); the bench's every published number identical;
+reactor04 within 4e-10; greenAmmonia03 (designSpec) to solver round-off --
+ONE golden row moves, `FEHE.H_closure_gap_kW` 1.14e-7 -> 1.63e-6 kW (a
+closure gap at cancellation level), and eight bench rows are REMOVED with
+the compiled verify() (`anchor1..5_pass`, `anchorCount`, `anchorsPassed`,
+`particleDiameter_mm`).  NOT re-recorded: put to Vítor.  Eq 39 at 148.9 atm
+stays OPEN (the table refuses, as before).
 
 **C66. THE GREEN-AMMONIA CONVERTER BEDS, SIZED AS A BASIC DESIGN SIZES
 THEM (Vítor, 2026-10-12, asking "No Ammonia Green Design, como é que o PFR

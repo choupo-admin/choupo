@@ -86,6 +86,12 @@ law, so this case's refusal to divide it stands.)*
 
 ## 3. Part B — the rate law as a cited object
 
+> **Superseded 2026-10-12 (DEV.md 4c C67).**  The compiled object this section
+> describes is retired: the law is WRITTEN in each case that uses it
+> (`kinetics { type expression; }` in constant/reactions), the bench is the
+> generic `rateLawBench`, and the anchors live in `check_ammonia_rate`.  The
+> section is kept as the record of what was built and why.
+
 `src/unitOperations/reactor/kinetics/AmmoniaSynthesisRate.{H,cpp}`: Dyson &
 Simon, Ind. Eng. Chem. Fundam. 7 (1968) 605–610, Eqs 2, 6–8, 18, 19, 39 with
 Table I, and 40.  Built the way this tree builds correlations — a declared

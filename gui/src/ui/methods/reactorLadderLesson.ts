@@ -218,7 +218,7 @@ X_\mathrm{eq} = \frac{\sqrt{K}}{1+\sqrt{K}}`,
     title: "Rung 3 — what the rate delivers: a volume",
     body: "Only now does a volume appear.  The plug-flow reactor integrates "
       + "the rate along the bed.  Its reverse term is built from the SAME "
-      + "equilibrium constant, $k_r = k_f / K$ (PFR.cpp:373–377), so the net "
+      + "equilibrium constant, $k_r = k_f / K$ (PFR.cpp:166–170), so the net "
       + "rate vanishes exactly at the limit: the profile rises toward the "
       + "rung-2 line and cannot cross it, however long the bed.  Read the "
       + "shape.  Most of the conversion arrives in the first part of the bed, "
@@ -291,7 +291,7 @@ export const LADDER_LIMITS: readonly LadderLimit[] = [
     id: "volume-is-a-shape",
     title: "The PFR's volume axis is a shape, not a size.",
     body: "This kinetic reactor prices concentrations on a LIQUID molar volume "
-      + "(PFR.cpp:804, \"liquid-basis volumetric flow\"), so on a gas at "
+      + "(PFR.cpp:596, \"liquid-basis volumetric flow\"), so on a gas at "
       + "10 bar the concentrations, and hence the volume, are not those of "
       + "the real gas.  The rate constant is pfr02's illustrative one, chosen "
       + "small for the same reason.  What the profile shows faithfully is its "

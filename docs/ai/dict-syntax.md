@@ -201,8 +201,13 @@ suffixes below are accepted -- anything else is a parse error.  Includes:
 - **Density / mass concentration:** `kg/m3`, `g/cm3`, `g/mL`, `mg/L`, `g/L`,
   `ppm` (= mg/L, the w/v water-analysis convention -- NOT a fraction).
 - **Molar mass:** `kg/kmol`, `g/mol`.
-- **Molar energy:** `J/mol`, `kJ/mol`, `J/kmol`, `kJ/kmol`.
-- **Molar heat capacity:** no parseable named unit (`^`, `(`, `)` are not
+- **Molar energy:** `J/mol`, `kJ/mol`, `J/kmol`, `kJ/kmol`, `cal/mol`, `kcal/mol` (the
+  thermochemical calorie, 4.184 J -- for a rate law written in calories).
+- **Reaction rate** (a `type expression` rate law's value): `kmol/m3/s`, `kmol/m3/h`,
+  `mol/m3/s`, `mol/L/s` per reactor volume; `kmol/kg/s`, `kmol/kg/h`, `mol/g/s`,
+  `mol/kg/s` per catalyst mass.
+- **Molar heat capacity:** `cal/mol/K` (the R a calorie rate law is written with);
+  otherwise no parseable named unit (`^`, `(`, `)` are not
   word characters) -- use the bracket form or raw SI (J/mol/K).
 - **Dimensionless:** `-`, `%`.
 
@@ -317,7 +322,9 @@ variables.A                          // a top-level $variable
 streams.feed.F                       // a feed flow
 ```
 
-A reaction sub-dict carries its `kinetics { … }` (Arrhenius); the **heat of
+A reaction sub-dict carries its `kinetics { … }` (`Arrhenius`, `LHHW`, or `type
+expression;` -- the rate law written in the dict as a formula over named parameters,
+every number with its unit; see `unit-ops.md`); the **heat of
 reaction is computed from the species' `standardThermochemistry`** (the one enthalpy base),
 not from the dict.  An optional `dH_rxn <J/mol>;` (negative = exothermic) is an
 **announced override**, honoured only when a reacting species lacks

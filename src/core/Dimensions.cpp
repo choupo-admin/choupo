@@ -67,6 +67,8 @@ const std::vector<std::pair<Dimensions, std::string>>& prettyNames()
         { Dims::thermalResistance,  "m^2.K/W"       },
         { Dims::permeabilityWater,  "m/(s.Pa)"      },
         { Dims::inverseTime,        "1/s"           },
+        { Dims::reactionRate,       "kmol/(m^3.s)"  },
+        { Dims::specificReactionRate, "kmol/(kg.s)" },
         { Dims::area,               "m^2"           },
         { Dims::volume,             "m^3"           },
         { Dims::length,             "m"             },

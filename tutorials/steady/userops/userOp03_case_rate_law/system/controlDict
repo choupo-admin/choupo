@@ -1,0 +1,12 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+application   choupoSolve;
+description   "ONE rate law written TWICE, by the two routes a case carries its own kinetics: a Michaelis-Menten law in C++ in the case's code/ folder (registered into the rate-law factory, local only) and the same law as `type expression;` in constant/reactions (runs everywhere) -- two CSTRs, one answer, checked against the closed form";
+
+verbosity     3;

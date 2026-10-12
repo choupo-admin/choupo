@@ -85,6 +85,7 @@ Description
 #include "thermo/phase/Phase.H"
 #include "unitOperations/heatTransfer/htc/HeatTransferCorrelation.H"
 #include "thermo/vaporPressure/VaporPressureModel.H"
+#include "thermo/reaction/ReactionRate.H"
 #include "unitOperations/batch/BatchUnitOperation.H"
 #include "io/InternalStateIO.H"
 #include "io/SolutionWriter.H"
@@ -185,6 +186,7 @@ try
     HeatCapacityModel ::registerBuiltins();
     Phase           ::registerBuiltins();
     HeatTransferCorrelation::registerBuiltins();
+    ReactionRate    ::registerBuiltins();   // Arrhenius, LHHW, expression
     BatchUnitOperation::registerBuiltins();
 
     static const char* USAGE =

@@ -208,36 +208,63 @@ Example: `tutorials/plant/greenAmmonia03_basicDesign` (three beds, L/D 1.5; at L
 loop did not converge).
 NOTE: `cstr`/`pfr` compute concentration on the **liquid** molar volume
 (Vliq) — a liquid-basis model.  For a GAS-phase reactor prefer
-`conversionReactor` (below) — with ONE exception, next.
+`conversionReactor` (below) — unless its rate law is written in T, P and mole
+fractions (a `type expression` with no `c[i]`, next), which reads no Vliq.
 
-**A GAS-PHASE CATALYST BED on a cited rate law: `kinetics { type dysonSimon1968; }`**
-(multi-reaction path only, since 2026-09-26).  The Dyson & Simon (1968) ammonia
-synthesis rate (`src/unitOperations/reactor/kinetics/AmmoniaSynthesisRate.{H,cpp}`,
-Ind. Eng. Chem. Fundam. 7 (1968) 605) is selected by name in the reaction's
-`kinetics {}` block; its constants are the paper's and are NOT typed into the
-case.  The rate is in T, P and mole fractions per m³ of catalyst BED, so the
-bed reads no `Vliq`, `V_R` IS the catalyst volume, and `catalystLoading` is
-REFUSED under it.  The block declares exactly three things:
+**A RATE LAW WRITTEN IN THE CASE: `kinetics { type expression; }`** (the
+multi-reaction paths of `cstr` and `pfr`, `batchReactor`, `dynamicCSTR`; since
+2026-10-12, DEV.md 4c C67).  Every law reaches a reactor through ONE factory
+(`thermo/reaction/ReactionRate`): `Arrhenius`, `LHHW`, `expression`, or a word a
+case's `code/` folder registers from `registerUserTypes()` (C++, built by
+`bin/buildCode`, LOCAL ONLY — the site cannot compile it; example
+`tutorials/steady/userops/userOp03_case_rate_law`).  An expression law is a formula
+in `constant/reactions`, compiled once, dimension-checked, and printed back AS PARSED
+in the run log:
 ```
-kinetics
+<reaction>
 {
-    type                 dysonSimon1968;
-    roles { N2 <comp>;  H2 <comp>;  NH3 <comp>; }   // WHICH components play the law's species; all others inert
-    effectivenessFactor  intrinsic;                  // Eq 19 alone, xi = 1 UNPRICED (announced)
-    //                   dysonSimonEq39;             // Eq 40: xi from Eq 39 + Table I; needs
-    //                                               // operation { catalyst { particleDiameter <length>; } }
+    stoichiometry ( { component A; nu -1; } ... );     // no `order`: the formula is the law
+    kinetics
+    {
+        type     expression;
+        source   "<the citation the numbers come from>";      // required
+        basis    reactorVolume;      // or catalystMass (then the reactor needs catalystLoading)
+        rateOf   extent;             // or <component>: the formula is its net formation rate
+        parameters  { k0 1.5e3 kmol/m3/h;  E 60 kJ/mol;  Kelvin 1 K; }   // EVERY one with a unit (`-` = pure number)
+        tables      { TI { x ( 150 225 300 ); xUnit atm;  b0 ( ... ); yUnit -; } }   // optional; linear, never extrapolated
+        definitions { TK "T / Kelvin";  k "k0*exp(-E/(8.314*T))"; }   // dependency order; a cycle refuses
+        rate     "k * c[A] / (1 + c[A]/Ksat)";               // dimensions MUST equal the basis
+        //  or:  forward "..."; reverse "...";   -- net = forward - reverse; their balance is the law's equilibrium
+        rateConstant  { name k; unit kmol/m3/h; }             // optional: published as k_<reaction>
+        validity      { P { min 150 atm; max 300 atm; outside announce; unit atm; } }   // or `outside refuse`
+        // fugacityCoefficients { N2 gN2; }   equilibriumTemperatureWindow { min 300 K; max 1500 K; }   caveats ( "..." );
+    }
 }
 ```
-No default on any of them; `order`, `reversible`, `A`/`Ea` beside it are refused (the
-law does not read them), the stoichiometry must be N2 + 3 H2 -> 2 NH3 up to a factor,
-and the feed stream must carry P (the law is written in atm).  The bed publishes
-`X_N2`, `y_NH3_out`, `approach_K` (the effluent's temperature approach to the LAW's
-own equilibrium, US 5,352,428's per-bed definition — not the package's Gibbs surface),
-`T_eq_outlet_K`, `GHSV_normal_h` (0 °C, 1 atm ideal-gas basis), `tau_gas_s`, the rate
-at both ends, the inlet ratio of the law's fugacity coefficients to the package's
-(`phi_law_over_pkg_*_in`) and, on the Eq 40 route, `xi_min`/`xi_max`.  Wire the
-volume to a DesignSpec on `approach_K` to SIZE the bed.  Example:
-`tutorials/plant/ammoniaReactor04_kineticSizing` (rung 4 of 4 of the ammonia reactor-model ladder: the engine SOLVES the bed volume).
+Symbols a formula may read — what the REACTOR supplies, nothing chosen by the law:
+`T` [K], `P` [Pa], `x[i]` (mole fraction of the reacting fluid), `p[i]` = x_i P [Pa],
+`c[i]` [kmol/m3, as the reactor forms it — `cstr`/`pfr`: liquid basis F_i/Q;
+`batchReactor`/`dynamicCSTR`: n_i/V].  Functions: `exp ln log10 sqrt pow min max`, and
+every table column.  NOT supplied: the package's fugacities or activities (a law fitted
+with its own writes them as definitions; one fitted on the package's activities is
+`LHHW` with `basis activity`).  `batchReactor` and `dynamicCSTR` carry no pressure a law
+can read: a formula using `P`/`p[i]` refuses there.  A bare number is dimensionless, so
+an empirical correlation "in kelvin and atmospheres" says so in itself (`T / Kelvin`).
+Refused by name: an unknown symbol, a dimension mismatch, a parameter with no unit, a
+definition cycle, a non-finite value (naming the definition), a table read outside its
+points, a `validity` declared `refuse` and left, a basis the reactor's loading contradicts.
+**On a GAS bed** (`pfr`, every law in T, P and x — no `c[i]`): the bed reads no `Vliq`, and
+every expression law publishes `X_<reactant>`, `y_<product>_out`, `rate_in/out_kmol<S>_m3_h`
+(and an `r_<S>_kmol_m3_h` profile column), `GHSV_normal_h`, `tau_gas_s`; with declared
+legs and an `equilibriumTemperatureWindow`, `T_eq_outlet_K` and `approach_K` (the
+effluent's approach to the LAW's own equilibrium, US 5,352,428's per-bed definition — not
+the package's Gibbs surface); with `fugacityCoefficients`, `phi_law_over_pkg_<i>_in`.
+Wire `V_R` to a DesignSpec on `approach_K` to SIZE the bed.  Example: the Dyson & Simon
+(1968) ammonia law, written in `tutorials/plant/ammoniaReactor04_kineticSizing` (rung 4
+of 4 of the ammonia reactor-model ladder: the engine SOLVES the bed volume),
+`greenAmmonia03_basicDesign`, and with Eq 39 in the props bench
+`tutorials/props/kinetics/ammoniaRate01_dyson_simon` (`rateLawBench`).
+The single-reaction paths (`reaction <name>;`) of `cstr` and `pfr` read `Arrhenius` only.
 
 ### `conversionReactor`
 Stoichiometric reactor: you **specify the per-pass conversion** of the

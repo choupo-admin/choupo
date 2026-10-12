@@ -237,11 +237,32 @@ const std::map<std::string, UnitSpec>& table()
         { "kJ/mol",  UnitSpec{ 1.0e3,       Dims::molarEnergy } },
         { "J/kmol",  UnitSpec{ 1.0e-3,      Dims::molarEnergy } },
         { "kJ/kmol", UnitSpec{ 1.0,         Dims::molarEnergy } },
+        //   The THERMOCHEMICAL calorie, 4.184 J exactly (NIST SP 811, 2008,
+        //   B.8): the unit a 1960s rate law writes its activation energy in
+        //   (Dyson & Simon 1968, Eq 18).  A law that forms E/(R T) with both
+        //   in calories sees the calorie's definition cancel; R gets the
+        //   unit too, below, so the two never have to be mixed.
+        { "cal/mol",  UnitSpec{ 4.184,      Dims::molarEnergy } },
+        { "kcal/mol", UnitSpec{ 4184.0,     Dims::molarEnergy } },
 
         // ----- molar heat capacity → J/(mol*K) --------------------------
         { "J/(mol.K)",   UnitSpec{ 1.0,     Dims::molarHeatCap } },
         { "J/(kmol.K)",  UnitSpec{ 1.0e-3,  Dims::molarHeatCap } },
         { "kJ/(kmol.K)", UnitSpec{ 1.0,     Dims::molarHeatCap } },
+        { "cal/mol/K",   UnitSpec{ 4.184,   Dims::molarHeatCap } },   // thermochemical, above; spelled like W/m2/K because ( ) are not word characters
+
+        // ----- reaction rate (a `type expression` rate law's value) ------
+        //   Per reactor volume, canonical kmol/(m3 s); per catalyst mass,
+        //   canonical kmol/(kg s) -- numerically mol/(g s), the unit a
+        //   heterogeneous rate constant is reported in.
+        { "kmol/m3/s", UnitSpec{ 1.0,            Dims::reactionRate } },
+        { "kmol/m3/h", UnitSpec{ 1.0 / 3600.0,   Dims::reactionRate } },
+        { "mol/m3/s",  UnitSpec{ 1.0e-3,         Dims::reactionRate } },
+        { "mol/L/s",   UnitSpec{ 1.0,            Dims::reactionRate } },
+        { "kmol/kg/s", UnitSpec{ 1.0,            Dims::specificReactionRate } },
+        { "kmol/kg/h", UnitSpec{ 1.0 / 3600.0,   Dims::specificReactionRate } },
+        { "mol/g/s",   UnitSpec{ 1.0,            Dims::specificReactionRate } },
+        { "mol/kg/s",  UnitSpec{ 1.0e-3,         Dims::specificReactionRate } },
 
         // ----- dimensionless / percent ----------------------------------
         { "-",       UnitSpec{ 1.0,         Dims::dimensionless } },

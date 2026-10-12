@@ -49,18 +49,22 @@ Description
     the canonical regression check.
 
     THE MULTI-REACTION PATH (`reactions ( ... )`) is the general one: any
-    number of reactions, each on its own rate law (power law, LHHW, or --
-    since 2026-09-26 -- the Dyson & Simon (1968) ammonia synthesis bed,
-    `kinetics { type dysonSimon1968; }`, whose rate is in T, P and mole
-    fractions per cubic metre of catalyst BED and needs no liquid molar
-    volume), isothermal, adiabatic or jacketed, the temperature marched as
-    total enthalpy on the package's own surface.  A reactor whose only
-    reaction is a Dyson-Simon bed is a GAS bed: it reads no Vliq, publishes
-    no liquid-basis `tau_s`, and publishes instead its per-pass N2 conversion,
-    the effluent's temperature approach to the law's own equilibrium, the
-    normal-basis GHSV and the actual-gas residence time.  The description
+    number of reactions, each on its own rate law from the ONE factory
+    (thermo/reaction/ReactionRate: Arrhenius, LHHW, a `type expression`
+    written in the case's constant/reactions, or a law a case's code/
+    registered -- DEV.md 4c C67), isothermal, adiabatic or jacketed, the
+    temperature marched as total enthalpy on the package's own surface.  A
+    reactor whose every law reads no concentration (an expression in T, P
+    and mole fractions, per cubic metre of catalyst BED -- the Dyson & Simon
+    ammonia bed is one) is a GAS bed: it reads no Vliq, publishes no
+    liquid-basis `tau_s`, and publishes instead the normal-basis GHSV and
+    the actual-gas residence time; every expression law also publishes the
+    per-pass conversion of its reactants, its rate at both ends and -- when
+    it declares `forward`/`reverse` legs and a window -- the effluent's
+    temperature approach to the law's own equilibrium.  The description
     above this paragraph is the single-reaction path's and is still true of
-    it.
+    it; that path reads `type Arrhenius` only and refuses any other word,
+    naming this one.
 
     THE BED'S CROSS-SECTION AND ITS PRESSURE DROP (multi-reaction path,
     DEV.md 4c C66, 2026-10-12).  A volume has no cross-section; a bed has

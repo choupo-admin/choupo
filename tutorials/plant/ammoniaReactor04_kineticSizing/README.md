@@ -4,11 +4,15 @@
 ammonia synthesis loop as rungs 1, 2 and 3, with the converter as an
 **adiabatic plug-flow catalyst bed integrating the Dyson & Simon (1968) rate
 law**, and the bed volume the answer of a `designSpec` rather than a number
-anybody typed.  Until this case that rate law
-(`src/unitOperations/reactor/kinetics/AmmoniaSynthesisRate.{H,cpp}`) was
-reachable only from the props bench
-(`tutorials/props/kinetics/ammoniaRate01_dyson_simon`); `pfr` reads it now
-through `kinetics { type dysonSimon1968; }` in `constant/reactions`.
+anybody typed.  The rate law is WRITTEN in this case's
+`constant/reactions` — `kinetics { type expression; }`, every constant of
+Eqs 2, 6–8, 18 and 19 beside the formula that uses it, with its unit and its
+equation number (DEV.md 4c C67, 2026-10-12: the kinetics live in the case;
+until then the law was compiled into the engine).  The engine compiles the
+formula once, checks its dimensions, prints it back as PARSED in the run
+log, and `pfr` integrates it.  Read the props bench first
+(`tutorials/props/kinetics/ammoniaRate01_dyson_simon`), which writes the same
+law and adds the paper's Eq 39.
 
 ## 1. Where this sits
 
@@ -168,14 +172,16 @@ relative and the approach by 1e-6 K.
 The engine says each of these on every run, in the end-of-run caveat block
 and the result JSON; this README must agree with it and not soften it.
 
-* **The effectiveness factor is 1 and UNPRICED.**  `effectivenessFactor
-  intrinsic;` integrates Equation 19 alone.  The paper's own diffusion
-  correction — Eq 39 with Table I, for 6–10 mm particles at 150–300 atm —
-  exists in the engine and is deliberately NOT applied: the pellet is the
-  rung beyond 4 (DEV.md C8), and this case says so rather than picking a
-  particle nobody sourced.  **Measured, outside the shipped case**, by
-  switching to `effectivenessFactor dysonSimonEq39;` with `operation {
-  catalyst { particleDiameter 8 mm; } }` — 8 mm being the midpoint of Table
+* **The effectiveness factor is 1 and UNPRICED.**  The declared law is
+  Equation 19 alone (its `caveats` say so on every run).  The paper's own
+  diffusion correction — Eq 39 with Table I, for 6–10 mm particles at
+  150–300 atm — is written in the props bench's copy of the law and is
+  deliberately NOT in this one: the pellet is the rung beyond 4 (DEV.md C8),
+  and this case says so rather than picking a particle nobody sourced.
+  **Measured on 2026-09-26, outside the shipped case** (then through the
+  compiled law's `effectivenessFactor dysonSimonEq39;`; today by adding the
+  bench's Table I, `eta` and `xi` definitions to this law and multiplying
+  both legs by `xi`), with an 8 mm particle — 8 mm being the midpoint of Table
   I's 6–10 mm range, an ASSUMPTION in those words, which a catalyst vendor's
   data sheet would replace — the same 5 K target needs **15.04 m³** (ξ from
   0.319 to 0.490 along the bed, Eq 39 linearly interpolated between the 150
@@ -321,8 +327,8 @@ SAME bound in a third and invents no tighter one.
 |---|---|---|
 | bed inlet temperature | 700 K | inherited from rung 3's declared converter temperature (a declared assumption there) |
 | per-bed approach to equilibrium | 5 K | US 5,352,428, verbatim in `system/outerDict` |
-| effectiveness factor | 1, UNPRICED | a declared route (`effectivenessFactor intrinsic`), announced; the alternative measured in §5 |
-| rate law and every constant in it | Dyson & Simon (1968), Eqs 2, 6–8, 18, 19 | `AmmoniaSynthesisRate.cpp`, cited on every run; fitted to Nielsen, Kjær & Hansen (1964) — nothing measured by Choupo |
+| effectiveness factor | 1, UNPRICED | the declared law is Eq 19 alone, announced by its `caveats`; the alternative measured in §5 |
+| rate law and every constant in it | Dyson & Simon (1968), Eqs 2, 6–8, 18, 19 | written in this case's `constant/reactions` (`type expression`), printed back as parsed on every run, held to the paper's anchors by `check_ammonia_rate`; fitted to Nielsen, Kjær & Hansen (1964) — nothing measured by Choupo |
 | GHSV basis | 0 °C, 1 atm, ideal gas | a stated convention, computed from R, never typed |
 | particle diameter (probe only, §5) | 8 mm | the midpoint of Table I's 6–10 mm range — an ASSUMPTION; a vendor data sheet replaces it |
 | RK4 axial steps | 400 | numerical; checked against 1 600 (§3) |

@@ -9,7 +9,7 @@
 /*---------------------------------------------------------------------------*\
   thermoPhysPropDict -- DECLARED, AND DELIBERATELY NOT USED.
 
-  `ammoniaRateBench` never asks this package anything.  Dyson & Simon's rate
+  `rateLawBench` never asks this package anything.  Dyson & Simon's rate
   law carries its own equilibrium constant (Eq 2, after Gillespie & Beattie
   1930) and its own fugacity coefficients (Eqs 6-8, after Cooper 1967 and
   Newton 1935), and that INDEPENDENCE is the case's point: it is what makes

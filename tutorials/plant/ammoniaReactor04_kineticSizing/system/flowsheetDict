@@ -129,12 +129,13 @@ units
         //  RUNG 4 -- THE KINETIC BED.
         //
         //  An adiabatic plug-flow reactor over ONE reaction, `ammoniaSynthesis`
-        //  in constant/reactions, whose rate law is `dysonSimon1968`: the
-        //  Dyson & Simon (1968) expression already curated in
-        //  src/unitOperations/reactor/kinetics/AmmoniaSynthesisRate.{H,cpp}
-        //  with its citation, its validity window and its five anchors --
-        //  until this case reachable only from the props bench
-        //  (tutorials/props/kinetics/ammoniaRate01_dyson_simon).
+        //  in constant/reactions, whose rate law is WRITTEN there (`type
+        //  expression`): the Dyson & Simon (1968) expression, every constant
+        //  with its unit and its equation number, the source and the
+        //  validity window declared beside it (DEV.md 4c C67) -- the same law
+        //  the props bench writes (tutorials/props/kinetics/
+        //  ammoniaRate01_dyson_simon), held to the paper's anchors by
+        //  bin/curate/check_ammonia_rate.py.
         //
         //  V_R IS NOT A NUMBER HERE; IT IS $V_bed, AND THE OUTER DRIVER SOLVES
         //  IT.  The PFR is a rating model (it integrates a declared volume),
@@ -144,12 +145,12 @@ units
         //  arithmetic on an assumed space velocity.
         //
         //  NO `catalystLoading`: Equation 19 is already per cubic metre of
-        //  catalyst BED (the paper's own unit), so a loading would be a
-        //  second conversion applied to a rate that needs none -- the engine
-        //  REFUSES the key under this law.  NO pellet: the rate law's own
-        //  diffusion correction (Eq 39) exists and is NOT applied
-        //  (`effectivenessFactor intrinsic;` in constant/reactions), which
-        //  the engine announces on every run.  That is the rung beyond D.
+        //  catalyst BED (the law declares `basis reactorVolume;`), so a
+        //  loading would be a second conversion applied to a rate that needs
+        //  none -- the engine REFUSES the key beside that basis.  NO pellet:
+        //  the paper's diffusion correction (Eq 39) is not in the declared
+        //  law, which says so on every run (its `caveats`).  That is the
+        //  rung beyond D.
         //  ===================================================================
         name       converter;
         type       pfr;

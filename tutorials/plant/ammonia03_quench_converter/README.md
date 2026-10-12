@@ -199,7 +199,8 @@ equilibrium and no pressure drop anywhere in this case.  Consequently:
 
   An absence the engine states on every run is a fact; an absence recorded
   only in a comment is a sentence.  (Since 2026-09-26 a bed CAN be sized in
-  this engine — `pfr` on `kinetics { type dysonSimon1968; }` with a
+  this engine — `pfr` on the Dyson & Simon law written in the case
+  (`kinetics { type expression; }`) with a
   DesignSpec on its approach-to-equilibrium KPI, see
   `tutorials/plant/ammoniaReactor04_kineticSizing` — but not THIS case's beds,
   which stay equilibrium beds by construction.)

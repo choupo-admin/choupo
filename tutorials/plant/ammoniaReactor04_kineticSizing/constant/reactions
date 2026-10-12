@@ -8,54 +8,52 @@
 \*-----------------------------------------------------------------------------*/
 /*---------------------------------------------------------------------------*\
   reactions -- RUNG 4 ONLY.  Rungs 1, 2 and 3 carry no reactions library:
-  A declares a conversion, B and C minimise Gibbs energy.  A rate law is what
-  rung 4 adds, and it is the ONE thing this file declares.
+  rung 1 declares a conversion, rungs 2 and 3 minimise Gibbs energy.  A rate
+  law is what rung 4 adds, and it is the ONE thing this file declares.
 
-  THE RATE LAW IS NOT WRITTEN HERE.  `type dysonSimon1968;` selects the
-  correlation object curated in
-  src/unitOperations/reactor/kinetics/AmmoniaSynthesisRate.{H,cpp}:
+  THE RATE LAW IS WRITTEN HERE, every number of it (DEV.md 4c C67, Vitor's
+  ruling of 2026-10-12: the kinetics live in the case).  `type expression;`
+  is a formula over named parameters, the state the reactor supplies (T, P,
+  x[i], p[i], c[i]) and named definitions; the engine compiles it once,
+  checks its dimensions, prints it back as PARSED in the run log, and
+  evaluates it.  Nothing about ammonia is compiled into the engine.
 
       D. C. Dyson and J. M. Simon, "A kinetic expression with diffusion
       correction for ammonia synthesis on industrial catalyst", Ind. Eng.
-      Chem. Fundam. 7 (1968) 605-610 -- Eqs 2, 6-8, 18, 19, 39 + Table I, 40.
+      Chem. Fundam. 7 (1968) 605-610 -- Eqs 2, 3-8, 18 and 19.
 
-  Every constant (the Arrhenius pair of Eq 18/19, Gillespie & Beattie's Ka of
-  Eq 2, the fugacity-coefficient correlations of Eqs 6-8, the 21 constants of
-  Table I) is the paper's own and lives in that one file with its citation,
-  its validity window and five verification anchors; the engine prints the
-  citation and the window on every run.  A case may not re-type them, and
-  this block REFUSES a key the law does not read -- an `A`, an `Ea`, an
-  `order`, a `reversible` -- because a number the engine does not read is a
-  comment that looks like a declaration.  Read the props bench first:
-  tutorials/props/kinetics/ammoniaRate01_dyson_simon.
+  Each group of numbers below carries its equation number.  The same law is
+  written in tutorials/plant/greenAmmonia03_basicDesign and (with the
+  paper's Eq 39 effectiveness factor added) in the props bench
+  tutorials/props/kinetics/ammoniaRate01_dyson_simon -- read the bench
+  first.  Three copies of one law in three cases is the price of a case
+  that carries its own kinetics; `bin/curate/check_ammonia_rate.py` holds
+  the three to each other and to the paper's anchors.
 
-  WHAT IS DECLARED, and why each is a declaration and not a default:
+  WHAT EACH DECLARATION IS, and why it is a declaration and not a default:
 
-    roles {}             WHICH of this case's components play the law's N2,
-                         H2 and NH3.  The engine will not infer them from
-                         names; everything else (argon here) is inert to
-                         Eq 19.
+    basis reactorVolume  Equation 19 returns kg-mol NH3 per cubic metre of
+                         catalyst BED per hour, so the reactor's `V_R` IS the
+                         catalyst volume and there is no `catalystLoading`
+                         (the engine refuses one beside this basis).
+    rateOf NH3           the paper reports the rate of formation of AMMONIA;
+                         the engine divides by nu(NH3) = 2 to get the
+                         reaction's extent rate.
+    forward / reverse    Eq 19's two terms.  Their balance (Q = Ka) is the
+                         law's own equilibrium, and the reactor reports how
+                         far the effluent is from it (`approach_K`).
+    T / Kelvin, P / atmosphere
+                         Eqs 2 and 6-8 are empirical correlations in kelvin
+                         and atmospheres; the formula says so in itself, and
+                         the engine checks every other dimension.
+    fugacityCoefficients the law prices its activities with ITS OWN gammas
+                         (Eqs 6-8, the ones its rate constant was fitted
+                         with), not the package's equation of state; the
+                         reactor publishes the ratio at the inlet.
 
-    effectivenessFactor  `intrinsic` = Equation 19 alone: the effectiveness
-                         factor is taken as 1, and the engine says on every
-                         run that this is UNPRICED -- the paper's own
-                         diffusion correction (Eq 39 with Table I, for 6-10 mm
-                         particles at 150-300 atm) exists in the engine and is
-                         NOT applied here.  That is deliberate and it is stage
-                         D's stated limit: the pellet is the rung beyond D
-                         (DEV.md C8).  `dysonSimonEq39` prices it and needs
-                         `operation { catalyst { particleDiameter ...; } }` on
-                         the reactor; the README measures what it changes.
-
-  UNITS.  Equation 19 returns kg-mol of NH3 per cubic metre of catalyst BED
-  per hour, so the reactor's `V_R` IS the catalyst volume and there is no
-  `catalystLoading` (the engine refuses one under this law).  The pressure
-  the law needs, in atmospheres, is read off the inlet stream and converted
-  at the reactor; nothing here is typed in the paper's units.
-
-  THE STOICHIOMETRY is checked against the law: it must be N2 + 3 H2 -> 2 NH3
-  up to a positive factor, with no other component carrying a nu, because
-  the law is that reaction's rate and no other's.
+  Equation 19 is the INTRINSIC rate: the paper's diffusion correction (Eq 39,
+  Table I) is not in this formula, and the run says so on every pass (the
+  `caveats` below).  The pellet is the rung beyond this one.
 \*---------------------------------------------------------------------------*/
 
 ammoniaSynthesis
@@ -69,8 +67,73 @@ ammoniaSynthesis
 
     kinetics
     {
-        type                 dysonSimon1968;
-        roles { N2 N2;  H2 H2;  NH3 NH3; }
-        effectivenessFactor  intrinsic;       // Eq 19; xi = 1 UNPRICED (announced)
+        type     expression;
+        source   "Dyson, D.C. & Simon, J.M., Ind. Eng. Chem. Fundam. 7(4) (1968) 605-610: Eq 2 (Ka, after Gillespie & Beattie 1930), Eqs 3-8 (activities on the fugacity coefficients of Cooper 1967 / Shaw & Wones 1964 / Newton 1935), Eqs 18-19 (rate, fitted to the data of Nielsen, Kjaer & Hansen, J. Catalysis 3 (1964) 68)";
+        basis    reactorVolume;      // Eq 19 is per m3 of catalyst BED: V_R IS the bed
+        rateOf   NH3;                // Eq 19 is the rate of formation of AMMONIA
+
+        parameters
+        {
+            k0_19       1.7698e15 kmol/m3/h;   // Eq 19 -- twice Eq 18's, two NH3 per N2
+            k0_18       8.849e14  kmol/m3/h;   // Eq 18 -- the constant per N2 (reported as k)
+            E           40765     cal/mol;     // Eqs 18-19
+            R_DS        1.987     cal/mol/K;   // the gas constant Eq 18 is written with
+            Kelvin      1         K;           // Eqs 2 and 6-8 take T in kelvin ...
+            atmosphere  1         atm;         // ... and P in atmospheres
+        }
+
+        definitions
+        {
+            TK    "T / Kelvin";
+            Patm  "P / atmosphere";
+
+            //  Eq 2 -- the equilibrium constant, atm^-1 (Gillespie & Beattie 1930)
+            Ka    "10^(-2.691122*log10(TK) - 5.519265e-5*TK + 1.848863e-7*TK*TK + 2001.6/TK + 2.6899)";
+
+            //  Eqs 6, 7, 8 -- the fugacity coefficients of H2, N2 and NH3
+            gH2   "exp(exp(-3.8402*TK^0.125 + 0.541)*Patm - exp(-0.1263*sqrt(TK) - 15.980)*Patm*Patm + 300*exp(-0.011901*TK - 5.941)*(exp(-Patm/300) - 1))";
+            gN2   "0.93431737 + 0.3101804e-3*TK + 0.295896e-3*Patm - 0.2707279e-6*TK*TK + 0.4775207e-6*Patm*Patm";
+            gNH3  "0.1438996 + 0.2028538e-2*TK - 0.4487672e-3*Patm - 0.1142945e-5*TK*TK + 0.2761216e-6*Patm*Patm";
+
+            //  Eqs 3-5 -- activities a_i = x_i gamma_i P, in atm
+            aN2   "x[N2]  * gN2  * Patm";
+            aH2   "x[H2]  * gH2  * Patm";
+            aNH3  "x[NH3] * gNH3 * Patm";
+
+            //  Eq 19's bracket, its two terms
+            fwd   "Ka*Ka*aN2*aH2^1.5/aNH3";
+            rev   "aNH3/aH2^1.5";
+
+            //  Eqs 18-19 -- the Arrhenius factors
+            k18   "k0_18 * exp(-E/(R_DS*T))";
+            k19   "k0_19 * exp(-E/(R_DS*T))";
+        }
+
+        //  Eq 19, written as its two legs so the law's OWN equilibrium
+        //  (forward = reverse, which is exactly Q = Ka) can be located.
+        forward  "k19*fwd";
+        reverse  "k19*rev";
+
+        rateConstant          { name k18;  unit kmol/m3/h; }
+        fugacityCoefficients  { N2 gN2;  H2 gH2;  NH3 gNH3; }
+
+        validity
+        {
+            //  The rate (Eq 19) was fitted over 150-300 atm; outside it is a
+            //  closed expression that degrades smoothly, so the paper's own
+            //  posture is to extrapolate it -- ANNOUNCED.
+            P  { min 150 atm;  max 300 atm;  outside announce;  unit atm; }
+        }
+
+        //  Where this law's equilibrium temperature is searched for the bed's
+        //  approach: Eq 8's polynomial gamma(NH3) turns NEGATIVE near 1650 K,
+        //  where a negative activity makes the sign test meaningless.
+        equilibriumTemperatureWindow  { min 300 K;  max 1500 K; }
+
+        caveats
+        (
+            "Equation 19 ALONE: the INTRINSIC rate. The effectiveness factor xi of the paper's Eq 39 (Table I, 6-10 mm particles, 150-300 atm) is NOT in this formula, so xi = 1 here is UNPRICED, not found -- and xi multiplies the rate, so a bed sized on Eq 19 is undersized by whatever xi would have been."
+            "Equation 19 carries NO correction for catalyst reduction, poisoning or ageing -- the authors say so themselves. A bed sized from it is a FRESH, CLEAN, FULLY REDUCED bed, and a working converter is none of those for most of its life."
+        );
     }
 }

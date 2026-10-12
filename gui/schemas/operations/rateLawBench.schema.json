@@ -1,0 +1,79 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://choupo.org/schemas/operations/rateLawBench.schema.json",
+  "title": "rateLawBench operation",
+  "description": "A rate law written in the case, on the bench, without a reactor around it. The law is the case's own: `reaction <name>;` names a reaction of constant/reactions whose kinetics are `type expression;`, and the bench prints it back as the engine PARSED it, every number with its unit. LOCUS (optional): sweep temperature at fixed conversions of a key reactant, walked from a base mixture along the reaction's own stoichiometry, and locate the temperature of the greatest value of a reported quantity -- for a reversible exothermic reaction the locus DESCENDS, the curve a quench converter zigzags about. POINTS (optional): the law at states the case declares. What is published is the case's choice (`report`). The bench holds no anchors of its own: a law's checks are a gate's (bin/curate/check_ammonia_rate.py for the ammonia law). It replaced the ammonia-only `ammoniaRateBench` on 2026-10-12 (DEV.md 4c C67), when the Dyson & Simon law left the engine for the case.",
+  "type": "object",
+  "properties": {
+    "report": {
+      "type": "array",
+      "title": "What to publish",
+      "description": "Each a parameter, a definition, or the law's own `rate` (or `forward` / `reverse` when it declares its legs), converted to the declared unit, whose dimensions must be the quantity's. Published per point as `<label>_<name>` and per locus point as `locus<k>_<name>`. Required: what the bench prints is never a default.",
+      "items": {
+        "type": "object",
+        "properties": {
+          "name": { "type": "string", "title": "Quantity", "description": "A parameter or definition of the law, or rate / forward / reverse.", "unit": "-" },
+          "unit": { "type": "string", "title": "Unit", "description": "The unit it is shown and published in (`-` for a pure number).", "unit": "-" }
+        },
+        "required": ["name", "unit"],
+        "additionalProperties": false
+      }
+    },
+    "locus": {
+      "type": "object",
+      "title": "The locus of maximum rate",
+      "description": "Optional. Sweep temperature at each declared conversion and report where the `maximise` quantity is greatest. A maximum found ON an end of the sweep is reported as an edge rather than as a maximum.",
+      "properties": {
+        "pressure": { "type": "number", "exclusiveMinimum": 0, "title": "Pressure", "description": "The pressure of the sweep.", "unit": "Pa" },
+        "maximise": { "type": "string", "title": "Quantity located", "description": "One of the `report` entries; its maximum over the sweep is the locus point.", "unit": "-" },
+        "keyReactant": { "type": "string", "title": "Key reactant", "description": "The reactant whose conversion the locus is drawn against; it must be present in the base mixture.", "unit": "-" },
+        "baseMixture": { "type": "object", "title": "Base mixture", "description": "Mole fractions at zero conversion; must sum to 1 (refused, never normalised). Components outside the reaction are carried as inerts.", "additionalProperties": { "type": "number", "minimum": 0 } },
+        "conversions": {
+          "type": "array",
+          "items": { "type": "number", "exclusiveMinimum": 0, "exclusiveMaximum": 1 },
+          "minItems": 1,
+          "title": "Conversions of the key reactant",
+          "description": "One conversion gives one point of the locus; the locus is the sequence, and a single point cannot show that it descends.",
+          "unit": "-"
+        },
+        "temperature": {
+          "type": "object",
+          "title": "Temperature sweep",
+          "description": "The window swept at each conversion.",
+          "properties": {
+            "from": { "type": "number", "exclusiveMinimum": 0, "title": "Lower temperature", "description": "Start of the sweep.", "unit": "K" },
+            "to":   { "type": "number", "exclusiveMinimum": 0, "title": "Upper temperature", "description": "End of the sweep; must exceed `from`.", "unit": "K" },
+            "n":    { "type": "number", "minimum": 2, "title": "Points", "description": "Number of temperatures swept, at least 2.", "unit": "-" }
+          },
+          "required": ["from", "to", "n"],
+          "additionalProperties": false
+        }
+      },
+      "required": ["pressure", "maximise", "keyReactant", "baseMixture", "conversions", "temperature"],
+      "additionalProperties": false
+    },
+    "points": {
+      "type": "array",
+      "title": "Declared states",
+      "description": "Optional. Evaluate the law at gases the case declares -- typically the states another case computed. Nothing is ranked or compared. When the law declares `forward`/`reverse` legs and an `equilibriumTemperatureWindow`, the temperature at which each gas is at the law's own equilibrium is published too (`<label>_T_eq_K`).",
+      "items": {
+        "type": "object",
+        "properties": {
+          "label": { "type": "string", "title": "Name", "description": "A single word; it keys this state's published diagnostics.", "unit": "-" },
+          "T": { "type": "number", "exclusiveMinimum": 0, "title": "Temperature", "description": "Gas temperature.", "unit": "K" },
+          "P": { "type": "number", "exclusiveMinimum": 0, "title": "Pressure", "description": "Gas pressure.", "unit": "Pa" },
+          "composition": {
+            "type": "object",
+            "title": "Bulk mole fractions",
+            "description": "Must sum to 1: a composition that does not close is REFUSED rather than normalised, because renormalising would hide which entry is wrong. Names outside the reaction (an `inert`, say) are carried as inerts.",
+            "additionalProperties": { "type": "number", "minimum": 0 }
+          }
+        },
+        "required": ["label", "T", "P", "composition"],
+        "additionalProperties": false
+      }
+    }
+  },
+  "required": ["report"],
+  "additionalProperties": false
+}
