@@ -28,8 +28,8 @@
     },
     "check_ammonia_rate": {
       "exit": 0,
-      "claim": "check_ammonia_rate: OK -- 5 anchors, all passing, labelled ['arithmetic', 'theory']; Eqs 2/6-8/19/39 reproduced by a second implementation at every published locus point AND at all three declared states, the latter through the pressure interpolation (an ALGEBRA check; both copies were typed from the same page, so a mistyped COEFFICIENT survives it); the three transcribed gases still match ammonia03's converged answer (a transcription is a second home, so it is held to its source rather than trusted).  NOT CHECKED: whether the rate law is RIGHT (nothing in this tree measures an ammonia rate; the agreement with Nielsen, Kjaer and Hansen's data is the authors' claim, made in 1968), any bed (nothing here integrates a reactor, and the four reactors that announce eta = 1 are untouched by this slice), and the T and eta domain of Table I -- the paper states none, which is why arm (h) exists at all.",
-      "seconds": 0.5
+      "claim": "check_ammonia_rate: OK -- the three declared copies share 19 parameters and definitions verbatim; Eqs 2/6-8/19/39 reproduced by a second implementation at every locus point and at the three declared states (an ALGEBRA check); anchors A1/A3 on all three declared laws, A4/A5 on the bench's Eq 39, A2 on the two reactor laws (theory = identity; arithmetic = a transcription, never a physics; nothing measured by Choupo); the three transcribed gases still match ammonia03's converged answer.  NOT CHECKED: whether the rate law is RIGHT (nothing in this tree measures an ammonia rate; the agreement with Nielsen, Kjaer and Hansen's data is the authors' claim, made in 1968), any bed integration, and the T and eta domain of Table I -- the paper states none, which is why arm (h) exists at all.",
+      "seconds": 0.6
     },
     "check_aq_disambiguation": {
       "exit": 0,
@@ -113,8 +113,8 @@
     },
     "check_case_tiers": {
       "exit": 0,
-      "claim": "check_case_tiers: OK -- 413 witness(es), 37 tutorial(s), 9 showcase(s), recounted from the tree rather than trusted.  Every showcase is a multi-unit or sectored flowsheet; every tutorial carries a README; absence of a `tier` key means WITNESS, so a slice's witness is born classified by its author doing nothing.  NOT CHECKED: whether any case sits in the RIGHT tier (a reading judgement about audience, which no gate can make), and coverage -- nothing here demands the learning surface grow, because deliberate smallness is the point.",
-      "seconds": 0.1
+      "claim": "check_case_tiers: OK -- 424 witness(es), 37 tutorial(s), 12 showcase(s), recounted from the tree rather than trusted.  Every showcase is a multi-unit or sectored flowsheet; every tutorial carries a README; absence of a `tier` key means WITNESS, so a slice's witness is born classified by its author doing nothing.  NOT CHECKED: whether any case sits in the RIGHT tier (a reading judgement about audience, which no gate can make), and coverage -- nothing here demands the learning surface grow, because deliberate smallness is the point.",
+      "seconds": 0.6
     },
     "check_caveat_surface": {
       "exit": 0,
@@ -253,8 +253,8 @@
     },
     "check_doc_references": {
       "exit": 0,
-      "claim": "check_doc_references: OK -- 540 path mention(s) and 201 case name(s) across 21 AI-facing docs all resolve; 9 deliberate absences are listed with their reason and none of them has quietly come true (build outputs git ignores excepted); 2 mention(s) of a RUN OUTPUT are accepted as such -- git ignores the path and the case that writes it exists -- whether or not it has run here.  NOT checked: that the prose calls it a run output, or that the case really writes that file",
-      "seconds": 1.2
+      "claim": "check_doc_references: OK -- 628 path mention(s) and 218 case name(s) across 21 AI-facing docs all resolve; 12 deliberate absences are listed with their reason and none of them has quietly come true (build outputs git ignores excepted); 2 mention(s) of a RUN OUTPUT are accepted as such -- git ignores the path and the case that writes it exists -- whether or not it has run here.  NOT checked: that the prose calls it a run output, or that the case really writes that file; 7 former name(s) of a RENAMED case in the dated record (DEV.md) resolve through tutorials/ALIASES to a case that exists",
+      "seconds": 1.6
     },
     "check_doctrine": {
       "exit": 0,
@@ -858,8 +858,8 @@
     },
     "check_schema_coverage": {
       "exit": 0,
-      "claim": "check_schema_coverage: OK -- every one of the 93 registered operations carries a schema (89 exercised by the corpus over 947 case use(s)); no schema rejects a key a running case uses, none marks required a key a running case omits, and 8 registry-derived alias group(s) agree property-for-property",
-      "seconds": 92.9
+      "claim": "check_schema_coverage: OK -- every one of the 93 registered operations carries a schema (89 exercised by the corpus over 1032 case use(s)); no schema rejects a key a running case uses, none marks required a key a running case omits, and 8 registry-derived alias group(s) agree property-for-property",
+      "seconds": 105.3
     },
     "check_sdem": {
       "exit": 0,
@@ -1160,6 +1160,11 @@
       "exit": 0,
       "claim": "check_pfr_ergun: OK -- (a) closed form P_out 9.120865 bar, engine 9.120865 bar (rel 2.3e-14); dP 0.8791 bar; (d) 6 refusals fired by name; (e) an exceeded allowable is announced, a met one is not; (f) absent the keys, no hydraulics KPI and the outlet at the inlet P",
       "seconds": 0.2
+    },
+    "check_rate_expression": {
+      "exit": 0,
+      "claim": "check_rate_expression: OK -- the C++ law and the expression agree (0.138888888889 mol/s) and both equal the closed-form Michaelis-Menten CSTR; precedence held by value (2^3^2 = 512, 8/4/2 = 1, -1^2 = -1); 16 refusals fired by name; a table read at its midpoint doubles the rate exactly, announced.  NOT CHECKED: whether any law is RIGHT (the witness's Vmax and Km are author-set; the ammonia law's anchors are check_ammonia_rate's), the batchReactor and dynamicCSTR routes, and the WASM build (check_wasm_dialect's).",
+      "seconds": 2.7
     }
   }
 }

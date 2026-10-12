@@ -291,7 +291,7 @@ export const LADDER_LIMITS: readonly LadderLimit[] = [
     id: "volume-is-a-shape",
     title: "The PFR's volume axis is a shape, not a size.",
     body: "This kinetic reactor prices concentrations on a LIQUID molar volume "
-      + "(PFR.cpp:588, \"liquid-basis volumetric flow\"), so on a gas at "
+      + "(PFR.cpp:596, \"liquid-basis volumetric flow\"), so on a gas at "
       + "10 bar the concentrations, and hence the volume, are not those of "
       + "the real gas.  The rate constant is pfr02's illustrative one, chosen "
       + "small for the same reason.  What the profile shows faithfully is its "

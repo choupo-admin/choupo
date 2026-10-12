@@ -6790,7 +6790,7 @@
     ]
    },
    "roles": [],
-   "hasGolden": false
+   "hasGolden": true
   },
   "tutorials/steady/utilities/utility01_dowtherm_preheat": {
    "application": "choupoSolve",

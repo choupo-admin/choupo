@@ -37,6 +37,7 @@ the same stream) and on throwaway copies of its expression half:
       an unknown function, a definition cycle, a non-finite value (naming the
       state), a table read outside its points, a `validity` declared
       `refuse` and left, a per-catalyst-mass law with no `catalystLoading`, a
+      law reading P on a feed that declares none (d15), a
       syntax error (with the column), a power-law `order` the law does not
       read, and an unknown `kinetics.type` (with the registered list).
 
@@ -70,6 +71,11 @@ predicted and is recorded as it happened.
       MESSAGE: a deeper guard (the dictionary's own dimension lookup)
       refuses the same probe a line later, with a sentence that does not
       say what to do.
+  S8  (measured before the fix it guards existed) the pfr/cstr handing a
+      law the feed's P with no check: a feed with no declared P arrives
+      as P = 0, the law divided by it, and the run refused as NON-FINITE
+      rather than by name.  CAUGHT by (d15), which is why the offer now
+      treats P <= 0 as absent and the refusal names the feed.
   (S7, a table point interpolated rather than returned exactly, is
   `check_ammonia_rate`'s arm (f).)
 """
@@ -274,7 +280,24 @@ def main() -> int:
               "declares `order`")
         probe("(d14) unknown kinetics type", lambda t: t.replace(
               "type    expression;", "type    expresion;"), "Registered")
-        notes.append("15 refusals fired by name")
+        #  A law that reads P on a feed that declares none: the reactor must
+        #  not hand it the 1 atm it assumes for its own phase resolution.
+        with tempfile.TemporaryDirectory() as td3:
+            dst = Path(td3) / "case"
+            shutil.copytree(base, dst, ignore=shutil.ignore_patterns("converged", "reports"))
+            feed = dst / "0/feedExpr"
+            feed.write_text(re.sub(r"\nP\s+[^;]*;", "\n", feed.read_text()))
+            rx = dst / "constant/reactions"
+            rx.write_text(rx.read_text().replace(RATE,
+                'rate    "Vmax * c[compA] / (Km + c[compA]) * P / P";'))
+            rcp, outp = run(dst)
+            if rcp == 0:
+                fails.append("(d15) a law reading P on a feed with no P: ran to "
+                             "exit 0 -- a pressure was assumed")
+            elif "declares no P" not in outp:
+                fails.append("(d15) a law reading P on a feed with no P refused, "
+                             f"but not by name.  Got: ...{outp[-300:]}")
+        notes.append("16 refusals fired by name")
 
         # ---- (e) a table interpolates linearly and says so -------------
         rcp, outp = probe("(e)", lambda t: t.replace(RATE,

@@ -516,6 +516,14 @@ int PFR::solveMultiReaction(const DictPtr&       dict,
     law.reserve(R);
     RateOffer offer;
     offer.concentrationBasis = "F_i / Q, Q on the liquid basis F * sum z_i Vliq_i";
+    //  A law that reads P gets the FEED's declared pressure, never the
+    //  1 atm the reactor otherwise assumes for its phase resolution.
+    if (!(dict->subDict("feed")->lookupScalarOrDefault("P", 0.0) > 0.0))
+    {
+        offer.pressure = false;
+        offer.pressureAbsent = "the reactor's feed stream declares no P (or P = 0) --"
+            " declare it on the inlet stream.";
+    }
     for (std::size_t j = 0; j < R; ++j)
     {
         rname[j] = rxnList[j]->lookupWordOrDefault("name", "rxn" + std::to_string(j + 1));

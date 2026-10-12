@@ -3742,7 +3742,7 @@ PYEOF
     # rate-expression gate (2026-10-12, DEV.md 4c C67).  A rate law written in
     # the case is compiled, dimension-checked, printed back as parsed and
     # evaluated as declared; the C++ route (a law registered from code/) and
-    # the formula route agree on one law and equal its closed form; 15
+    # the formula route agree on one law and equal its closed form; 16
     # refusals by name.  Six by-hand sabotages, one of which survived first
     # contact.
     if "$ROOT/bin/curate/check_rate_expression.py" > /tmp/rateexpr.$$ 2>&1; then

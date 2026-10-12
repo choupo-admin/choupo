@@ -411,9 +411,12 @@ ExpressionRate::ExpressionRate(const DictPtr&                  rxn,
     if (forward_) { scan(*forward_); scan(*reverse_); }
     if (usesPressure_ && !offer.pressure)
         throw std::runtime_error(who + ": the formula reads the pressure (P or"
-            " p[i]), and this reactor carries no pressure a rate law can read."
-            "  Write the law in concentrations or mole fractions, or run it in"
-            " a reactor that integrates its pressure (cstr, pfr).");
+            " p[i]), and " + (offer.pressureAbsent.empty()
+                ? std::string("this reactor carries no pressure a rate law can"
+                    " read.  Write the law in concentrations or mole fractions,"
+                    " or run it in a reactor that carries its pressure (cstr, pfr).")
+                : offer.pressureAbsent)
+            + "  No pressure is assumed.");
     if (usesConcentration_ && !offer.concentration)
         throw std::runtime_error(who + ": the formula reads concentrations"
             " (c[i]), which this reactor does not form.");

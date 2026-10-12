@@ -111,6 +111,7 @@ struct RateState
 struct RateOffer
 {
     bool        pressure      = true;
+    std::string pressureAbsent;          // why not, in words (a law reading P refuses with it)
     bool        concentration = true;
     std::string concentrationBasis;      // how the reactor forms c[i], in words
 };
