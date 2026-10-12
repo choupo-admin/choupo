@@ -29,7 +29,7 @@
       bin/choupo-thermoml extract nitrogen --allow-mixture --into data/local/evidence
 
   WHY THESE AND NOT OTHERS.  The green ammonia synthesis loop in
-  tutorials/plant/greenAmmoniaIndustrialN2 runs its separator near 250 K and
+  tutorials/plant/greenAmmoniaPEQ_baseCase runs its separator near 250 K and
   its loop near 200 bar, which is exactly the corner of this study.
 
   THE COMPOSITION CAVEAT, WHICH THIS CASE STATES RATHER THAN HIDES.  The

@@ -1,0 +1,38 @@
+# CASE ALIASES -- the former name of a RENAMED tutorial, and its current one
+# (declared 2026-10-12, DEV.md 4c C68).
+#
+# WHAT THIS IS.  A tutorial renamed in the tree keeps a link somebody has
+# already shared working: `?case=<old>` in the GUI, `runCase tutorials/<old>`
+# on the command line.  This file is the ONE home of that mapping; the GUI
+# imports it raw (gui/src/cases/tutorials.ts, `canonicalCaseName`),
+# `bin/runCase` reads it, and `bin/curate/check_doc_references.py` lets the
+# dated records in DEV.md go on naming a case by the name it had when the
+# record was written.
+#
+# AN ALIAS IS NEVER A SECOND CASE.  It has no directory, it is not listed by
+# `listCases`, the case index or the catalogue, and nothing is ever run under
+# it -- it resolves, once and announced, to the canonical case.  An old name
+# that is a directory again, or a new name that is not one, is a broken alias
+# (gui/tests/caseAliases.test.ts refuses both).
+#
+# FORMAT.  One alias per line, two words separated by spaces:
+#
+#     <old identifier>   <current identifier>
+#
+# where an identifier is the case's path RELATIVE TO tutorials/ -- exactly
+# the identifier the GUI uses (`plant/<name>`, `steady/<subclass>/<name>`).
+# A drilled sub-node of an aliased case resolves through its root
+# (`plant/<old>/Converter` -> `plant/<new>/Converter`).  `#` starts a comment.
+#
+# THE AMMONIA CASES, renamed by PURPOSE (Vitor, 2026-10-12, C68 NAMES
+# REVISED): two axes, two ladders.  The green-ammonia PROJECT-STAGE ladder
+# (greenAmmonia02/03, numbered after ammoniaRoutes01_screening) and the
+# REACTOR-MODEL ladder in one synthesis loop (ammoniaReactor01..04).
+plant/greenAmmoniaFeasibility        plant/greenAmmonia02_feasibility150bar
+plant/greenAmmoniaFeasibility50bar   plant/greenAmmonia02_feasibility50bar
+plant/greenAmmoniaBasicDesign        plant/greenAmmonia03_basicDesign
+plant/greenAmmoniaIndustrialN2       plant/greenAmmoniaPEQ_baseCase
+plant/ammoniaStaged01_yield          plant/ammoniaReactor01_fixedConversion
+plant/ammoniaStaged02_equilibrium    plant/ammoniaReactor02_equilibrium
+plant/ammoniaStaged03_approach       plant/ammoniaReactor03_equilibriumApproach
+plant/ammoniaStaged04_kinetic        plant/ammoniaReactor04_kineticSizing

@@ -178,16 +178,16 @@ describe("the lesson", () => {
       expect(m, c).not.toBeNull();
       return Number(m![1]);
     };
-    const vC = golden("ammoniaStaged03_approach",
+    const vC = golden("ammoniaReactor03_equilibriumApproach",
       /^equipment\s+converter\s+values\.V_R\s+(\S+)/m);
-    const vD = golden("ammoniaStaged04_kinetic",
+    const vD = golden("ammoniaReactor04_kineticSizing",
       /^kpi\s+converter\s+V_R\s+(\S+)/m);
     expect(step(7)).toContain(`${vC.toFixed(2)} m³`);
     expect(step(7)).toContain(`${vD.toFixed(2)} m³`);
-    //  ... and stage D's volume is solved to the 5 K approach the step names.
-    expect(tree("tutorials/plant/ammoniaStaged04_kinetic/system/outerDict"))
+    //  ... and rung 4's volume is solved to the 5 K approach the step names.
+    expect(tree("tutorials/plant/ammoniaReactor04_kineticSizing/system/outerDict"))
       .toMatch(/path converter\.approach_K;\s+value 5\.0;/);
-    expect(tree("tutorials/plant/ammoniaStaged03_approach/system/postDict"))
+    expect(tree("tutorials/plant/ammoniaReactor03_equilibriumApproach/system/postDict"))
       .toMatch(/^\s*spaceVelocity\s/m);
   });
 });
@@ -240,14 +240,14 @@ describe("the stages are the research record's", () => {
 
   it("the claims about the cases hold", () => {
     //  Screening stages carry no cost: no postDict.
-    expect(inTree("tutorials/plant/ammoniaStaged01_yield/system/postDict")).toBe(false);
-    expect(inTree("tutorials/plant/ammoniaStaged02_equilibrium/system/postDict")).toBe(false);
+    expect(inTree("tutorials/plant/ammoniaReactor01_fixedConversion/system/postDict")).toBe(false);
+    expect(inTree("tutorials/plant/ammoniaReactor02_equilibrium/system/postDict")).toBe(false);
     //  The base case declares Class 4, designs six exchangers by Kern, and
     //  its converter is a Gibbs reactor 5 K short of equilibrium.
-    const pd = tree("tutorials/plant/greenAmmoniaIndustrialN2/system/postDict");
+    const pd = tree("tutorials/plant/greenAmmoniaPEQ_baseCase/system/postDict");
     expect(pd).toMatch(/^\s*estimateClass\s+4;/m);
     expect([...pd.matchAll(/design\s*\{\s*method Kern;/g)].length).toBe(6);
-    const conv = tree("tutorials/plant/greenAmmoniaIndustrialN2/Converter/system/flowsheetDict");
+    const conv = tree("tutorials/plant/greenAmmoniaPEQ_baseCase/Converter/system/flowsheetDict");
     expect(conv).toMatch(/^type\s+gibbsReactor;/m);
     expect(conv).toMatch(/temperatureApproach 5;/);
   });

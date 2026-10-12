@@ -18,8 +18,8 @@
   its molar mass: the compressibility factor Z and the ratio of specific
   heats k = Cp/Cv.  This case computes both, for the same loop at 150 bar
   and at 50 bar -- the two green-ammonia feasibility cases the
-  Process-safety EduTool compares (tutorials/plant/greenAmmoniaFeasibility
-  and greenAmmoniaFeasibility50bar).
+  Process-safety EduTool compares (tutorials/plant/greenAmmonia02_feasibility150bar
+  and greenAmmonia02_feasibility50bar).
 
   WHERE THE STATES COME FROM.
     * composition -- each plant's converged converter feed (`PreheatedFeed`),

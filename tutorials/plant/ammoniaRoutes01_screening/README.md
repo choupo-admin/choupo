@@ -13,20 +13,55 @@ runCase -f .
 **Illustrated design stage: screening** (FEL-1 in a three-stage numbering).
 No equipment exists yet, so nothing here is sized or costed.
 
-## Where this case sits
+## Where this case sits: the ammonia cases, on two axes
 
-This is rung 1. The green route then continues through the green-ammonia
-sequence, whose cases will carry these names:
+The ammonia cases refine a simulation along **two independent axes**, and
+each case is named by its purpose on one of them. The **project-stage axis**
+follows one green-ammonia plant from screening to basic design: what the
+project must decide at each stage, and the detail that decision needs —
+here the reactor model, the exchangers and the economics all move together.
+The **reactor-model axis** keeps one synthesis loop fixed and changes only
+the converter, from a declared conversion to a bed whose volume the engine
+solves. They are two ladders, not one: a project does not mature by swapping
+an equilibrium reactor for a kinetic one, and a kinetic reactor does not make
+a study a basic design. A stage column says **"illustrated design stage"**
+for the same reason: the AACE class of an estimate is set by how far the
+project is defined, never by the stage a case illustrates or by the model it
+runs, so where a case declares `estimateClass` it is the author's statement
+of maturity.
 
-| rung | future name | what it adds | directory today |
+**The green-ammonia sequence** (project stage; 1200 t/day, the PEQ 2026-27
+base data):
+
+| rung | case | illustrated design stage | reactor model | exchangers | economics | what is decided |
+|---|---|---|---|---|---|---|
+| 1 | **this case** | FEL-1, screening | none: each route's overall equation at full conversion, plus the synthesis equilibrium | none | margins on raw materials and on assumed specific energy consumptions, worked in this README from the run's flows | which production routes deserve a feasibility study |
+| 2 | [`greenAmmonia02_feasibility150bar`](../greenAmmonia02_feasibility150bar) | FEL-2, feasibility | one Gibbs reactor 5 K short of equilibrium, 150 bar | duties only, each bought from a utility; pinch targets; areas on an assumed U | Turton capital, the gross margin before and after the energy, a DCF | is the plant feasible, and what does the energy cost |
+| 2 | [`greenAmmonia02_feasibility50bar`](../greenAmmonia02_feasibility50bar) | FEL-2, an exploratory alternative | the same at 400 °C and 50 bar — resting on a catalyst hypothesis | the same | the same | what a low-pressure loop would change, *if* a catalyst allowed it |
+| 3 | [`greenAmmonia03_basicDesign`](../greenAmmonia03_basicDesign) | FEL-3, basic design (process side) | three adiabatic beds on the Dyson-Simon rate law, volumes solved by a DesignSpec, Ergun pressure drop | every exchanger designed (Kern) | Turton capital and a DCF, still an equipment-factored estimate | what exactly is built |
+| — | [`greenAmmoniaPEQ_baseCase`](../greenAmmoniaPEQ_baseCase) | the brief's reference case, outside the numbering | one Gibbs reactor 5 K short of equilibrium | six exchangers designed (Kern) | Turton capital and a DCF | the starting point: rungs 2 and 3 are copies of it with one thing changed |
+
+**The reactor-model ladder** (one 200 bar synthesis loop, nothing but the
+converter moves):
+
+| rung | case | converter | what it may claim |
 |---|---|---|---|
-| 1 | `ammoniaRoutes01_screening` | this case: the routes on paper | — |
-| 2 | `greenAmmonia02_feasibility150bar` | the loop with its recycle and purge, an equilibrium converter, every duty priced | [`greenAmmoniaFeasibility`](../greenAmmoniaFeasibility) |
-| 2 | `greenAmmonia02_feasibility50bar` | the same loop at 50 bar | [`greenAmmoniaFeasibility50bar`](../greenAmmoniaFeasibility50bar) |
-| 3 | `greenAmmonia03_basicDesign` | kinetic catalyst beds, every exchanger designed | [`greenAmmoniaBasicDesign`](../greenAmmoniaBasicDesign) |
-| — | `greenAmmoniaPEQ_baseCase` | the PEQ project's reference plant (a hybrid of rungs 2 and 3) | [`greenAmmoniaIndustrialN2`](../greenAmmoniaIndustrialN2) |
+| 1 | [`ammoniaReactor01_fixedConversion`](../ammoniaReactor01_fixedConversion) | `conversionReactor`, a declared 25 % | a material balance |
+| 2 | [`ammoniaReactor02_equilibrium`](../ammoniaReactor02_equilibrium) | `gibbsReactor` at true equilibrium | the thermodynamic ceiling |
+| 3 | [`ammoniaReactor03_equilibriumApproach`](../ammoniaReactor03_equilibriumApproach) | `gibbsReactor` 5 K short of equilibrium | a realistic outlet; a converter costed from a declared space velocity |
+| 4 | [`ammoniaReactor04_kineticSizing`](../ammoniaReactor04_kineticSizing) | adiabatic `pfr` on the Dyson-Simon rate law | a bed volume the engine SOLVES |
 
-The directories still carry their old names until the renaming slice lands.
+**Synthesis-loop fundamentals**, outside both ladders: the Haber-Bosch loop
+with its recycle and purge at 200 bar, the syngas a declared makeup whose
+production is not modelled — `ammonia01_synthesis_loop` (steady/flowsheets,
+1 kmol/h of makeup), [`ammonia02_full_plant`](../ammonia02_full_plant)
+(~1400 t/day, compressors, feed/effluent exchanger, adiabatic converter) and
+[`ammonia03_quench_converter`](../ammonia03_quench_converter) (the same loop
+with a three-bed quench converter).
+
+Former names (`greenAmmoniaFeasibility`, `greenAmmoniaBasicDesign`,
+`greenAmmoniaIndustrialN2`, `ammoniaStaged01_yield`, …) still open the
+renamed cases through [`tutorials/ALIASES`](../../ALIASES).
 
 ## The three routes
 
@@ -110,7 +145,7 @@ Replace each with a dated, cited figure before quoting a margin.
 
 | item | price | where it comes from |
 |---|---|---|
-| ammonia (product) | 1.00 EUR/kg | PEQ base data, `greenAmmoniaIndustrialN2/constant/economics` (itself author-set there: "a green premium over grey ammonia, assumed") |
+| ammonia (product) | 1.00 EUR/kg | PEQ base data, `greenAmmoniaPEQ_baseCase/constant/economics` (itself author-set there: "a green premium over grey ammonia, assumed") |
 | hydrogen | 4.50 EUR/kg | PEQ base data, the same file (author-set there) |
 | nitrogen (ASU) | 0.05 EUR/kg | PEQ base data, the same file (author-set there) |
 | electricity | 27.8 EUR/GJ = 0.100 EUR/kWh | `data/standards/utilities/electricity.dat`, the record the PEQ base case imports (an industrial tariff of the order of Turton et al., Table 8.3) |
@@ -185,7 +220,7 @@ engine's numbers move.
   premium. Grey and blue ammonia would not earn it, so their margins here
   are upper bounds by whatever that premium is.
 * **Rung 1 and rung 2 disagree on the same green battery limit:** 0.160
-  EUR/kg here, 0.145 EUR/kg in `greenAmmoniaFeasibility` (its
+  EUR/kg here, 0.145 EUR/kg in `greenAmmonia02_feasibility150bar` (its
   `grossMargin_RM`, 56.08 M EUR/yr on 387 732 t/yr). The difference is the
   hydrogen the loop purges and flashes off, which an input-output balance
   cannot see because it sends every hydrogen atom to ammonia.

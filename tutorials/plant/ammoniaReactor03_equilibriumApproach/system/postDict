@@ -1,0 +1,151 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+  postDict -- RUNG 3 ONLY.  Rungs 1 and 2 carry no postDict at all, and that
+  absence is the sequence's invariant working:
+
+      A RUNG MAY NOT COST WHAT IT DID NOT SIZE.
+
+  =========================================================================
+  WHY THE CONVERTER'S VOLUME IS NOT TYPED IN
+  =========================================================================
+  The flagship green-ammonia plant and `ammonia02_full_plant` both sized this
+  converter with `designRules { volume <m3>; }` and put where the number came
+  from in a `//` comment beside it.  The design sheet then recorded the basis
+  as "volume (author-set)" and said nothing about a space velocity, because
+  there was nothing about a space velocity for it to read.  A fact a reader
+  must act on, living in a comment, is the shape this project has now found
+  five times.  (ammonia02 declares the rule below since 2026-10-05.)
+
+  This case declares the RULE instead, in grammar the engine parses
+  (`src/postProcessing/sizing/VesselSize.cpp`, the `spaceVelocity` branch):
+
+      spaceVelocity + spaceVelocityBasis  ->  V = Q_basis / SV
+      basis "catalyst V = Q_normal/SV; SV declared on NORMAL gas volume ..."
+
+  so the volume becomes an ENGINE OUTPUT computed from this run's own
+  converter throughput, the rule reaches `design/<unit>/<tag>` in the sheet's
+  own `basis` field, and the volume tracks the flowsheet instead of standing
+  still while it moves.  `flowKey N_in_mol_s` puts the space velocity on the
+  INLET gas, which is the convention every published GHSV uses; the sizer's
+  own default is the OUTLET (`N_out_mol_s`), which for this reaction is 22 %
+  smaller because four moles become two.
+
+  =========================================================================
+  THE BASIS OF THE NUMBER -- DECLARED, BECAUSE THE ENGINE WILL NOT GUESS IT
+  =========================================================================
+  EVERY SPACE VELOCITY IN THE AMMONIA LITERATURE IS QUOTED ON NORMAL GAS
+  VOLUME -- Nm3 of gas per m3 of catalyst per hour.  The same number read on
+  ACTUAL gas volume, at this converter's own 700 K and 200 bar, sizes a bed
+  smaller by the density ratio
+
+      Q_normal / Q_actual = (T_n * P_r) / (P_n * T_r)
+                          = (273.15 K * 2.0e7 Pa) / (101325 Pa * 700 K)
+                          = 77.022
+
+  -- a factor of 77, and it used to be taken at exit 0 with a plausible
+  volume: until 2026-10-05 `VesselSize` divided the ACTUAL flow by whatever
+  was typed, so this file carried the number pre-converted by hand
+  (259.665 1/h) and a paragraph warning the next author not to copy it.  The
+  basis is now a WORD the sizer reads:
+
+      spaceVelocityBasis normal;   Nm3 at 273.15 K and 101325 Pa, ideal gas
+      spaceVelocityBasis actual;   m3 at the unit's own T and P, ideal gas
+
+  and a `spaceVelocity` with no basis, or with any other word (`standard`
+  included -- 15, 20 or 25 degC at 1 bar or 1 atm, depending on who says
+  it), is REFUSED by name, the refusal quoting the ratio at the unit's own
+  conditions.  So the number below is the one the literature quotes, and
+  the run prints the conversion beside the volume it produced:
+
+      [basis] vessel 'converter': spaceVelocity 20000 1/h on NORMAL gas
+              volume; at (700 K, 200 bar) that is 259.665 1/h on ACTUAL gas
+
+  The sheet's `basis` field says NORMAL in words.  Rung 4's PFR publishes
+  its own `GHSV_normal_h` KPI on the SAME reference (both read
+  `core/Constants.H`'s T_normal / P_normal), so rung 3's assumed 20000 and rung 4's
+  computed value are on one basis by construction.
+
+  WHERE 20000 Nm3/(m3.h) COMES FROM: IT IS A DECLARED ASSUMPTION.  Those are
+  the words.  The only primary source retrieved for this case that states a
+  range is US 4,568,530 (Mandelik, Cassata, Shires & van Dijk, MW Kellogg,
+  4 February 1986), "Ammonia synthesis", which says the catalyst space
+  velocities "are generally between 5000 and 150,000 m3 per hour of gas per
+  m3 of catalyst at standard conditions".  That band is a factor of 30 wide
+  and pins nothing; it brackets 20000 and does not source it.  The patent
+  does not say WHICH standard conditions, either, which is the same basis
+  ambiguity one level up.  That quotation also reached here through a
+  fetch-and-summarise of the patent page rather than a read of the raw
+  document -- weaker evidence than the approach-to-equilibrium sentences
+  quoted in the flowsheetDict, which were read out of the retrieved text
+  itself.
+
+  WHAT REPLACES IT: an integrated rate law, which is rung 4 of this
+  sequence (tutorials/plant/ammoniaReactor04_kineticSizing, built 2026-09-26 --
+  `pfr` reads `AmmoniaSynthesisRate` through `kinetics { type
+  dysonSimon1968; }` and a DesignSpec computes the bed volume from the
+  effluent's approach to equilibrium).  The pellet effectiveness factor is
+  the rung beyond D.  This volume stays a feasibility-class number: enough to
+  cost a vessel, not enough to build one.
+
+  =========================================================================
+  WHAT IS SIZED, AND WHAT IS NOT
+  =========================================================================
+  Sized: the CONVERTER (catalyst vessel, space velocity), the high-pressure
+  SEPARATOR and the product LET-DOWN drum (both on vapour residence time).
+  NOT sized, and so not costed: there are no compressors and no exchangers in
+  this flowsheet at all -- the loop is isobaric at 200 bar and the makeup
+  compression and feed/effluent interchange are folded into the unit duties,
+  which is the simplification this topology inherits from
+  `tutorials/steady/flowsheets/ammonia01_synthesis_loop`.  So this CAPEX is
+  PARTIAL IN UNITS, not only in provenance, and it is smaller than a real
+  loop's by the two largest rotating machines.  Read `ammonia02_full_plant`
+  for a loop that carries them.
+
+  `corrosionAllow` and `jointEfficiency` are DELIBERATELY NOT DECLARED here.
+  The engine supplies both from `sizing/DesignDefaults`, announces each one at
+  its site and in the end-of-run caveat block, and lists them in the design
+  sheet's `assumed ( ... )` block -- which is precisely the difference between
+  a number this case chose and a number the engine chose.  Declaring them
+  would silence that, and this is the one case in the corpus whose subject is
+  that distinction.
+\*---------------------------------------------------------------------------*/
+sizing
+{
+    units
+    (
+        //  THE CONVERTER.  The volume is NOT here; the RULE is.
+        { unitName converter;  type vessel;  material SS316;
+          designRules { spaceVelocity 20000;        // 1/h, Nm3 gas / (m3 catalyst h) -- ASSUMED, see above
+                        spaceVelocityBasis normal;  // the basis the number is quoted on
+                        flowKey N_in_mol_s;         // GHSV is on the INLET gas
+                        L_over_D 6.0;
+                        pressureDesign 220.0; } }
+
+        //  The high-pressure SEPARATOR: a knock-out drum, 45 s of vapour holdup.
+        { unitName separator;  type vessel;  material SS316;
+          designRules { residenceTime 45.0;  flowKey F_beta;  flowUnit kmol/s;
+                        L_over_D 3.0;
+                        pressureDesign 220.0; } }
+
+        //  The product LET-DOWN drum at 20 bar: smaller, and carbon steel.
+        { unitName letdown;    type vessel;  material carbonSteel;
+          designRules { residenceTime 60.0;  flowKey F_beta;  flowUnit kmol/s;
+                        L_over_D 3.0;
+                        pressureDesign 25.0; } }
+    );
+}
+costing
+{
+    method    Turton;
+    year      2026;
+    cepci     820;
+    cepci2001 397;
+    usdToEur  0.92;
+}

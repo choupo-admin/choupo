@@ -125,7 +125,7 @@ that happened to agree with the model's.
       source registers no `Guthrie` key.  See `check_retired_name_refused`.
 
   (q) THE WORKING CAPITAL BUILT UP RECOMPUTES, GROSS AND NET (2026-10-07,
-      DEV.md 4c C44 slice 4).  On greenAmmoniaIndustrialN2 every line of
+      DEV.md 4c C44 slice 4).  On greenAmmoniaPEQ_baseCase every line of
       `workingCapital { ... }` -- raw-material stock, process inventory,
       product stock (valued at COST), receivables, minimum cash, payables --
       is recomputed from the case's declarations and the run's published
@@ -494,7 +494,7 @@ def check_retired_name_refused(fails):
 
 #  THE WORKING-CAPITAL WITNESS (2026-10-07, DEV.md 4c C44 slice 4): the one
 #  corpus case that declares `workingCapital { ... }` as a model.
-WCCASE = ROOT / "tutorials/plant/greenAmmoniaIndustrialN2"
+WCCASE = ROOT / "tutorials/plant/greenAmmoniaPEQ_baseCase"
 
 
 def _nc(text):
@@ -511,7 +511,7 @@ def _kpi_line(out, unit):
 
 def check_working_capital(fails):
     """(q) THE WORKING CAPITAL BUILT UP RECOMPUTES, GROSS AND NET (2026-10-07,
-    DEV.md 4c C44 slice 4).  On greenAmmoniaIndustrialN2, which declares
+    DEV.md 4c C44 slice 4).  On greenAmmoniaPEQ_baseCase, which declares
     `workingCapital { rawMaterialStock; receivables; payables; minimumCash; }`
     in days, every line is RECOMPUTED here from the case's own declarations
     and the run's published streams and items -- never from the engine's
@@ -1222,7 +1222,7 @@ def main():
           "payback, every cashFlow.csv row), a missing or mis-summed schedule "
           "is refused by name, and the one-year form keeps the old shape; "
           "the WORKING CAPITAL built up on "
-          "greenAmmoniaIndustrialN2 RECOMPUTES line by line (stocks valued at "
+          "greenAmmoniaPEQ_baseCase RECOMPUTES line by line (stocks valued at "
           "COST, receivables, cash, payables; GROSS = capital circulante, NET = "
           "fundo de maneio = the cash flow's WC), the fraction form is "
           "untouched and malformed day counts are refused by name; "

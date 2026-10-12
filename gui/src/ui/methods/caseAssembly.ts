@@ -70,9 +70,9 @@ const BUILDER = "src/thermo/ThermoPackageBuilder.cpp";
  *  assembly list, the breaks and the lesson prose all reach a line through
  *  this map, so a line that moves is corrected once. */
 export const CITES = {
-  runCaseApplication: { file: "bin/runCase", line: 206,
+  runCaseApplication: { file: "bin/runCase", line: 227,
     contains: "application[[:space:]]+" },
-  runCaseLog: { file: "bin/runCase", line: 220,
+  runCaseLog: { file: "bin/runCase", line: 241,
     contains: 'LOG="$CASE_ABS/log.$APP"' },
   registerUnits: { file: MAIN, line: 458,
     contains: "UnitOperation   ::registerBuiltins();" },
@@ -181,9 +181,9 @@ export const CITES = {
     contains: 'std::cerr << "\\nERROR: " << e.what()' },
   guiCho: { file: "gui/src/ui/FlowCanvas.tsx", line: 453,
     contains: 'k.endsWith(".cho")' },
-  guiReadme: { file: "gui/src/cases/tutorials.ts", line: 447,
+  guiReadme: { file: "gui/src/cases/tutorials.ts", line: 448,
     contains: 'entry.readme = files["README.md"]' },
-  guiNoExpected: { file: "gui/src/cases/tutorials.ts", line: 114,
+  guiNoExpected: { file: "gui/src/cases/tutorials.ts", line: 115,
     contains: '"!../../../tutorials/**/expected"' },
   guiVerbatim: { file: "gui/src/adapters/WasmAdapter.ts", line: 329,
     contains: "if (caseFiles.extraFiles) {" },

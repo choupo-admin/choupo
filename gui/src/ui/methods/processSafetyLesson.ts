@@ -688,8 +688,8 @@ export const SAFETY_TECH_NOTES: readonly LessonLimit[] = [
       + "portion's instant minus what that transfer moved)." },
   { id: "loop-runs",
     title: "The ammonia loops",
-    body: "tutorials/plant/greenAmmoniaFeasibility and "
-      + "greenAmmoniaFeasibility50bar, unchanged, run by choupoSolve (WASM).  "
+    body: "tutorials/plant/greenAmmonia02_feasibility150bar and "
+      + "greenAmmonia02_feasibility50bar, unchanged, run by choupoSolve (WASM).  "
       + "The flows are the converter feed (PreheatedFeed), its effluent "
       + "(HotEffluent), the Recycle and the ProductNH3 stream of each run; "
       + "the gross margin is the economics pass's grossMargin_RM_UT KPI.  "

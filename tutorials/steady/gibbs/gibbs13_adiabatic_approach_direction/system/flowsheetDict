@@ -13,7 +13,7 @@
   THE BED.  The third bed of a staged ammonia converter: the feed already
   carries 16 % NH3 (N2 19, H2 57, NH3 16, Ar 8 mol%), enters at 415 C and
   150 bar, and the bed is ADIABATIC with a 10 K approach to equilibrium (US
-  5,352,428's design band is 1-10 C; see ammoniaStaged03_approach for the
+  5,352,428's design band is 1-10 C; see ammoniaReactor03_equilibriumApproach for the
   source).  `operation.T` is the SEED of the outer Newton on the outlet
   temperature, and it is set 80 K HOTTER than the answer on purpose.
 

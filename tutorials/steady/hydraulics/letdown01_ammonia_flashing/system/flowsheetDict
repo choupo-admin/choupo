@@ -20,13 +20,13 @@
 
   WHERE THE STATES COME FROM.
     * RawLiquid (0/RawLiquid) -- the converged separator liquid of
-      tutorials/plant/greenAmmoniaBasicDesign (converged/RawLiquid),
+      tutorials/plant/greenAmmonia03_basicDesign (converged/RawLiquid),
       copied to the digit: 140 bar, 253.15 K, 2927 kmol/h of ammonia
       carrying the H2, N2 and Ar the separator dissolved in it.
       gui/tests/letdown.test.ts holds the copy to the plant's own file.
     * the two pressures, 20 bar and 1.01325 bar -- the plant's own
       LetdownHP and StorageFlash drums
-      (greenAmmoniaBasicDesign/LetdownHP/system/flowsheetDict,
+      (greenAmmonia03_basicDesign/LetdownHP/system/flowsheetDict,
       .../StorageFlash/system/flowsheetDict).
     * Purge (0/Purge) -- the same plant's converged purge gas (140 bar,
       253.15 K, mostly H2 and N2), copied to the digit.

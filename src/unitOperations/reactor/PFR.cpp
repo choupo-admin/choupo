@@ -56,8 +56,8 @@ namespace {
 
 // ---------------------------------------------------------------------------
 //  A DYSON-SIMON BED: the `kinetics { type dysonSimon1968; }` reaction of the
-//  multi-reaction path, wired 2026-09-26 for stage D of the staged design
-//  sequence (tutorials/plant/ammoniaStaged04_kinetic, DEV.md C8).
+//  multi-reaction path, wired 2026-09-26 for rung 4 of the ammonia reactor-model
+//  ladder (tutorials/plant/ammoniaReactor04_kineticSizing, DEV.md C8).
 //
 //  WHY IT IS NOT A `RateLaw`.  `thermo/reaction/RateLaw` lives in the thermo
 //  band and may not include a unit-operation header; the Dyson-Simon object
@@ -1202,7 +1202,7 @@ int PFR::solveMultiReaction(const DictPtr&       dict,
         //  Space velocity on the NORMAL basis every published ammonia GHSV
         //  uses: cubic metres of gas at 0 degC and 1 atm, as an ideal gas
         //  (R T_n / P_n per mole, the ONE home in core/Constants.H), per
-        //  cubic metre of bed per hour -- the basis stage C's vessel sizer
+        //  cubic metre of bed per hour -- the basis rung 3's vessel sizer
         //  DECLARES (`spaceVelocityBasis normal;`), so the two compare.
         const scalar Vn_m3_per_mol = constant::R * constant::T_normal / constant::P_normal;
         kpis_["GHSV_normal_h"] = F_in * Vn_m3_per_mol * 3600.0 / V_R;

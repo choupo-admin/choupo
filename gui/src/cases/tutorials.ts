@@ -48,6 +48,7 @@ License
 
 import { parse, toJson } from "../dict/index.js";
 import type { CaseFiles } from "../case/types.js";
+import ALIASES_RAW from "../../../tutorials/ALIASES?raw";
 
 // Raw dict text bundled at build time.  Keys look like
 //   "../../../tutorials/steady/process01_reactor_flash/system/controlDict"
@@ -728,8 +729,48 @@ export function filesToCaseFiles(name: string,
 
 export const DEFAULT_TUTORIAL = "plant/ChemicalPlantTutorial";
 
+// -- Renamed cases: the alias map (DEV.md 4c C68) ---------------------------
+// A tutorial renamed in the tree keeps a shared `?case=<old>` link working.
+// The mapping has ONE home, `tutorials/ALIASES` (bin/runCase reads the same
+// file); it is imported raw here.  An alias is NEVER a second case: it is not
+// an entry of TUTORIALS (the index is built from directories, and an old name
+// has none), so the Open-Case list, the catalogue and every listing show the
+// canonical name only -- the map is consulted when a NAME is looked up.  A
+// static import, so a missing file breaks the build instead of emptying the
+// map in silence.
+/** Parse the ALIASES text: `<old> <new>` per line, `#` comments.  Exported
+ *  pure for the test. */
+export function parseCaseAliases(text: string): Record<string, string> {
+  const out: Record<string, string> = {};
+  for (const raw of text.split("\n")) {
+    const line = raw.replace(/#.*$/, "").trim();
+    if (!line) continue;
+    const [oldName, newName, ...rest] = line.split(/\s+/);
+    if (!oldName || !newName || rest.length > 0)
+      throw new Error(`tutorials/ALIASES: malformed line '${raw}'`);
+    out[oldName] = newName;
+  }
+  return out;
+}
+
+export const CASE_ALIASES: Readonly<Record<string, string>> = parseCaseAliases(ALIASES_RAW);
+
+/** The canonical identifier of a case name that may be a FORMER name: the
+ *  name itself when it is not aliased; the current name when it is; and for a
+ *  drilled sub-node of an aliased case (`plant/<old>/Converter`) the same
+ *  sub-path under the current root.  Pure; `aliases` defaults to the map. */
+export function canonicalCaseName(
+  name: string, aliases: Readonly<Record<string, string>> = CASE_ALIASES,
+): string {
+  if (aliases[name]) return aliases[name];
+  for (const [oldName, newName] of Object.entries(aliases))
+    if (name.startsWith(oldName + "/")) return newName + name.slice(oldName.length);
+  return name;
+}
+
 export function tutorialByName(name: string): TutorialEntry | undefined {
-  return TUTORIALS.find((t) => t.name === name) ?? SUBNODES[name];
+  const canon = canonicalCaseName(name);
+  return TUTORIALS.find((t) => t.name === canon) ?? SUBNODES[canon];
 }
 
 /** Resolve a (possibly drilled) view name to its registered ROOT case + the

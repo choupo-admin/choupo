@@ -564,7 +564,7 @@ so whether the volume was solved or typed is said in the case, not by the
 sizer.  There is no Turton set for a catalyst bed and none is invented; a
 density or a price you cannot source is declared as an assumption in a
 comment, in those words.  Worked case:
-`tutorials/plant/ammoniaStaged04_kinetic`.
+`tutorials/plant/ammoniaReactor04_kineticSizing`.
 
 **A PRESSURE-RELIEF VALVE IS ONE MORE ITEM OF THE UNIT IT PROTECTS
 (2026-10-11, DEV.md 4c C62).**  `type reliefValve` sizes a relief valve on the
@@ -610,7 +610,7 @@ refuses it).  Named and refused: `tubeRupture`,
 `thermalExpansion`.  NOT COSTED: the costing table lists the valve as NOT
 COSTED and the capital total does not move.  Sheet: `design/<unit>/psv`,
 with a `relief {}` block naming each scenario's stream, phase and regime and
-the governing one.  Worked case: `tutorials/plant/greenAmmoniaBasicDesign`.
+the governing one.  Worked case: `tutorials/plant/greenAmmonia03_basicDesign`.
 
 **A VESSEL SIZED BY SPACE VELOCITY DECLARES WHICH GAS VOLUME (2026-10-05).**
 `type vessel` builds its volume from ONE of `volume` (m3, author-set),
@@ -633,7 +633,7 @@ the two differ by 77x, so the engine does not guess: a missing basis is
 refused by name with that ratio quoted, and any other word (`standard`
 included -- it means 15, 20 or 25 degC depending on the source) is refused
 naming the two accepted.  The run prints the conversion beside the volume.
-Worked case: `tutorials/plant/ammoniaStaged03_approach`.
+Worked case: `tutorials/plant/ammoniaReactor03_equilibriumApproach`.
 
 **A SHELL-AND-TUBE EXCHANGER CAN BE DESIGNED, NOT ONLY ESTIMATED (2026-10-07).**
 `type shellTubeHX` has four routes, chosen by what `designRules` declares:
@@ -683,7 +683,7 @@ side) and says so; one that boils, or condenses totally, is refused by name.
 Every correlation used outside its window is announced.  On a two-stream
 `heatExchanger` the unit's own declared area and U are published beside the
 design as `A_rated` / `U_rated` and move nothing.  Worked case:
-`tutorials/plant/greenAmmoniaIndustrialN2` (all six exchangers).
+`tutorials/plant/greenAmmoniaPEQ_baseCase` (all six exchangers).
 
 **A STORAGE TANK IS ATTACHED TO A BOUNDARY STREAM (2026-10-07).**  A raw
 material or a product tank is equipment the plant buys, and no flowsheet unit
@@ -715,7 +715,7 @@ and the run says LOWER BOUND on every such tank.  A stream above 1.5 bar
 (pressurised storage) is refused.  This is a postDict ITEM, not the
 `storageTank` UNIT (`docs/ai/unit-ops.md`): the unit is a buffer inside the
 flowsheet that reports a holdup and is not sized or costed; the item is the
-tank the plant buys.  Worked case: `tutorials/plant/greenAmmoniaIndustrialN2`.
+tank the plant buys.  Worked case: `tutorials/plant/greenAmmoniaPEQ_baseCase`.
 
 **WHAT AN ITEM HOLDS (2026-10-07).**  A `units ( ... )` entry may declare, beside
 its `designRules {}`, the material it holds while the plant runs -- the
@@ -770,7 +770,7 @@ is valued at COST: a component a priced raw material brings in at that price, an
 other at COM_d per kg of product -- never at the sales price.  Published as
 `kpis.economics.WC_*` (pinned by the `kpi` kind), the `economics.workingCapital`
 object, and `reports/economics/workingCapital.csv`, with 0.15 x FCI printed
-beside it for comparison.  Worked case: `tutorials/plant/greenAmmoniaIndustrialN2`.
+beside it for comparison.  Worked case: `tutorials/plant/greenAmmoniaPEQ_baseCase`.
 
 **THE START-UP YEARS: CONSTRUCTION, RAMP-UP, START-UP COST (2026-10-11).**  Four
 opt-in keys in the same `economics {}` block; a case declaring none of them (and

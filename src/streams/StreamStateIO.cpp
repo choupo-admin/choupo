@@ -410,7 +410,7 @@ void writeStreamState(const ProcessStream&  s,
     // and every `choupo-init0` seed re-created the over-specification the
     // reader now refuses (T, P and q on a mixture -- 135 tracked files in the
     // corpus carried it, flash01's landing feed among them, and every stream of
-    // ammoniaStaged01-04 carried one and the same stamped q).  The reader
+    // ammoniaReactor01-04 carried one and the same stamped q).  The reader
     // resolves an unpinned mixture at its own (T, P, z) (R-E1), so writing
     // nothing loses no information; for a pure component the split IS
     // information (T, P) do not carry, and it stays.  The pin a mixture may

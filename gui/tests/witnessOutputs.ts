@@ -132,17 +132,17 @@ export const WITNESS_OUTPUTS: readonly WitnessOutput[] = [
   //  two-stream interchanger in four shells, a condensing cooler against
   //  cooling water, and a condensing chiller against a boiling refrigerant.
   {
-    caseDir: "tutorials/plant/greenAmmoniaIndustrialN2",
+    caseDir: "tutorials/plant/greenAmmoniaPEQ_baseCase",
     file: "design/FEHE/shellTubeHX",
     readBy: ["hxDatasheet.test.ts"],
   },
   {
-    caseDir: "tutorials/plant/greenAmmoniaIndustrialN2",
+    caseDir: "tutorials/plant/greenAmmoniaPEQ_baseCase",
     file: "design/WaterCooler/shellTubeHX",
     readBy: ["hxDatasheet.test.ts"],
   },
   {
-    caseDir: "tutorials/plant/greenAmmoniaIndustrialN2",
+    caseDir: "tutorials/plant/greenAmmoniaPEQ_baseCase",
     file: "design/Chiller/shellTubeHX",
     readBy: ["hxDatasheet.test.ts"],
   },
@@ -162,7 +162,7 @@ export const WITNESS_OUTPUTS: readonly WitnessOutput[] = [
   //  The overpressure EduTool (C61) reads the same PreheatedFeed files: its
   //  loop witness copies each plant's converter feed, and its test holds the
   //  copy to them.
-  ...["greenAmmoniaFeasibility", "greenAmmoniaFeasibility50bar"].flatMap(
+  ...["greenAmmonia02_feasibility150bar", "greenAmmonia02_feasibility50bar"].flatMap(
     (c) => ["Recycle", "PreheatedFeed", "HotEffluent"].map((s) => ({
       caseDir: `tutorials/plant/${c}`,
       file: `converged/${s}`,
@@ -175,7 +175,7 @@ export const WITNESS_OUTPUTS: readonly WitnessOutput[] = [
   //  20 bar drum liquid letdown01 itself converges to; the test holds each
   //  copy to the file it was taken from.
   ...["RawLiquid", "Purge"].map((s) => ({
-    caseDir: "tutorials/plant/greenAmmoniaBasicDesign",
+    caseDir: "tutorials/plant/greenAmmonia03_basicDesign",
     file: `converged/${s}`,
     readBy: ["letdown.test.ts"],
   })),

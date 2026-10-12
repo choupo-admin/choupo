@@ -114,7 +114,7 @@ public:
     //  chain from it, so a case with a sizing block ran to exit 0 with no
     //  sizing table, no cost and no `design/` tree -- a banner describing a
     //  chain that was not running (the 2026-08-04 banner trap).  Measured on
-    //  `ammoniaStaged04_kinetic`, whose own outerDict header had recorded
+    //  `ammoniaReactor04_kineticSizing`, whose own outerDict header had recorded
     //  the gap as a fact about the engine.
     //
     //  PURE VIRTUAL, not a base default, so that a new driver must STATE its
@@ -138,7 +138,7 @@ public:
     //  fact a REPORT stamps on the result (the plant-boundary first law,
     //  `globalEnergyBoundary`, above all) reached the console and the report
     //  files and NOT the result block, and a golden could not pin it.
-    //  Measured on greenAmmoniaBasicDesign the day its beds went under a
+    //  Measured on greenAmmonia03_basicDesign the day its beds went under a
     //  designSpec: its five pinned `boundary global` rows went MISSING.  A
     //  driver returning `false` leaves the emission to `main.cpp`, which
     //  writes the block after the reports and the caveat block, exactly as the

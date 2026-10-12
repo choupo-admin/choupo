@@ -40,7 +40,7 @@ License
   2026-10-02: US 2,734,906 for the oxygen limit, EP 0 873 291 B1 for the
   benzene excess.  Douglas's hierarchy is named as the framework and was NOT
   read back online -- the page says so where it uses it.  The ammonia numbers
-  are MEASURED on tutorials/plant/greenAmmoniaIndustrialN2 (converged/), and
+  are MEASURED on tutorials/plant/greenAmmoniaPEQ_baseCase (converged/), and
   the closed form of step 3 is derived on the page.
 \*---------------------------------------------------------------------------*/
 
@@ -174,7 +174,7 @@ r_\mathrm{in} &= \nu \left( 1 + \varepsilon\,\frac{D}{p} \right),
     n: 4,
     title: "The ammonia loop, measured: 3.0 in, 3.6 at the converter",
     body: "Choupo's green ammonia case (tutorials/plant/"
-      + "greenAmmoniaIndustrialN2) feeds hydrogen and nitrogen at 3 : 1 and "
+      + "greenAmmoniaPEQ_baseCase) feeds hydrogen and nitrogen at 3 : 1 and "
       + "its converter sees H₂/N₂ = 3.589.  Both effects of step 3 are in "
       + "it, and they can be separated by running it twice.  The SELECTIVE "
       + "loss first: nitrogen dissolves in liquid ammonia more than hydrogen, "

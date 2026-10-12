@@ -7,7 +7,7 @@ import { tutorialByName } from "../src/cases/tutorials.js";
 import { applyDrillFeeds } from "../src/case/drillSeed.js";
 import { zeroStateText } from "../src/case/toGraph.js";
 
-const CONV = "plant/greenAmmoniaIndustrialN2/Converter";
+const CONV = "plant/greenAmmoniaPEQ_baseCase/Converter";
 const converged = { F: 30.0, T: 651.06, P: 15092690,
                     molarComposition: { N2: 0.2, H2: 0.6, NH3: 0.15, Ar: 0.05 } };
 

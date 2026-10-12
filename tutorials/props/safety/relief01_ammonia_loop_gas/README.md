@@ -10,8 +10,8 @@ goes on delivering the converter feed, so the valve on the feed side must pass
 that whole flow at the relieving pressure.
 
 Two `propertyPoint` operations, one per loop pressure of the two C57
-feasibility cases ([`greenAmmoniaFeasibility`](../../../plant/greenAmmoniaFeasibility)
-at 150 bar and [`greenAmmoniaFeasibility50bar`](../../../plant/greenAmmoniaFeasibility50bar)):
+feasibility cases ([`greenAmmonia02_feasibility150bar`](../../../plant/greenAmmonia02_feasibility150bar)
+at 150 bar and [`greenAmmonia02_feasibility50bar`](../../../plant/greenAmmonia02_feasibility50bar)):
 
 * the **composition** is each plant's converged converter feed
   (`PreheatedFeed`), copied as component flows in kmol/h — `propertyPoint`

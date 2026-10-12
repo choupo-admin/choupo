@@ -6,7 +6,7 @@
   "runtime": "not recorded; runTests does not time per case and this script does not run the corpus"
  },
  "counts": {
-  "cases": 468,
+  "cases": 472,
   "witnesses": 16,
   "validationOp": 6,
   "anchored": 12
@@ -649,6 +649,21 @@
    "roles": [],
    "hasGolden": true
   },
+  "tutorials/batch/reactor/batch28_dosing_vessel_limit": {
+   "application": "choupoBatch",
+   "unitTypes": [
+    "batchAccumulator",
+    "batchReactor"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [],
+   "hasGolden": true
+  },
   "tutorials/batch/recipes/recipe01_react_then_distill": {
    "application": "choupoBatch",
    "unitTypes": [
@@ -1169,7 +1184,7 @@
    "roles": [],
    "hasGolden": true
   },
-  "tutorials/plant/ammoniaStaged01_yield": {
+  "tutorials/plant/ammoniaReactor01_fixedConversion": {
    "application": "choupoSolve",
    "unitTypes": [
     "conversionReactor",
@@ -1183,7 +1198,7 @@
    "roles": [],
    "hasGolden": true
   },
-  "tutorials/plant/ammoniaStaged02_equilibrium": {
+  "tutorials/plant/ammoniaReactor02_equilibrium": {
    "application": "choupoSolve",
    "unitTypes": [
     "gibbsReactor",
@@ -1197,7 +1212,7 @@
    "roles": [],
    "hasGolden": true
   },
-  "tutorials/plant/ammoniaStaged03_approach": {
+  "tutorials/plant/ammoniaReactor03_equilibriumApproach": {
    "application": "choupoSolve",
    "unitTypes": [
     "gibbsReactor",
@@ -1211,7 +1226,7 @@
    "roles": [],
    "hasGolden": true
   },
-  "tutorials/plant/ammoniaStaged04_kinetic": {
+  "tutorials/plant/ammoniaReactor04_kineticSizing": {
    "application": "choupoSolve",
    "unitTypes": [
     "isothermalFlash",
@@ -1222,6 +1237,21 @@
    ],
    "thermo": {
     "formulation": "diluteSolution"
+   },
+   "roles": [],
+   "hasGolden": true
+  },
+  "tutorials/plant/ammoniaRoutes01_screening": {
+   "application": "choupoSolve",
+   "unitTypes": [
+    "conversionReactor",
+    "equilibriumReactor"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
    },
    "roles": [],
    "hasGolden": true
@@ -1237,7 +1267,7 @@
    "roles": [],
    "hasGolden": true
   },
-  "tutorials/plant/greenAmmoniaBasicDesign": {
+  "tutorials/plant/greenAmmonia02_feasibility150bar": {
    "application": "choupoSolve",
    "thermo": {
     "formulation": "diluteSolution"
@@ -1245,7 +1275,7 @@
    "roles": [],
    "hasGolden": true
   },
-  "tutorials/plant/greenAmmoniaFeasibility": {
+  "tutorials/plant/greenAmmonia02_feasibility50bar": {
    "application": "choupoSolve",
    "thermo": {
     "formulation": "diluteSolution"
@@ -1253,7 +1283,7 @@
    "roles": [],
    "hasGolden": true
   },
-  "tutorials/plant/greenAmmoniaFeasibility50bar": {
+  "tutorials/plant/greenAmmonia03_basicDesign": {
    "application": "choupoSolve",
    "thermo": {
     "formulation": "diluteSolution"
@@ -1261,7 +1291,7 @@
    "roles": [],
    "hasGolden": true
   },
-  "tutorials/plant/greenAmmoniaIndustrialN2": {
+  "tutorials/plant/greenAmmoniaPEQ_baseCase": {
    "application": "choupoSolve",
    "thermo": {
     "formulation": "diluteSolution"
@@ -2366,6 +2396,17 @@
     "activityModels": [
      "ideal"
     ]
+   },
+   "roles": [],
+   "hasGolden": true
+  },
+  "tutorials/props/hydraulics/letdown02_valve_fluid_properties": {
+   "application": "choupoProps",
+   "ops": [
+    "propertyPoint"
+   ],
+   "thermo": {
+    "formulation": "phiPhi"
    },
    "roles": [],
    "hasGolden": true
@@ -5499,6 +5540,18 @@
    "roles": [],
    "hasGolden": true
   },
+  "tutorials/steady/hydraulics/letdown01_ammonia_flashing": {
+   "application": "choupoSolve",
+   "unitTypes": [
+    "isothermalFlash",
+    "valve"
+   ],
+   "thermo": {
+    "formulation": "diluteSolution"
+   },
+   "roles": [],
+   "hasGolden": true
+  },
   "tutorials/steady/hydraulics/pipe01_water_line": {
    "application": "choupoSolve",
    "unitTypes": [
@@ -6884,6 +6937,7 @@
     "tutorials/batch/reactor/batch08_isothermal_duty",
     "tutorials/batch/reactor/batch26_cooling_failure",
     "tutorials/batch/reactor/batch27_semibatch_dosing",
+    "tutorials/batch/reactor/batch28_dosing_vessel_limit",
     "tutorials/batch/recipes/recipe01_react_then_distill",
     "tutorials/batch/recipes/recipe02_setpoint_ramp",
     "tutorials/batch/recipes/recipe03_conditional_partial",
@@ -6994,6 +7048,7 @@
     "tutorials/props/heat/htbench01_correlations",
     "tutorials/props/heat/psychro01_n2_water",
     "tutorials/props/heat/psychro02_air_water",
+    "tutorials/props/hydraulics/letdown02_valve_fluid_properties",
     "tutorials/props/hydraulics/moody01_friction_correlations",
     "tutorials/props/kinetics/ammoniaRate01_dyson_simon",
     "tutorials/props/kinetics/rate01_arrhenius_recovery",
@@ -7049,15 +7104,16 @@
     "tutorials/plant/acetonePlant",
     "tutorials/plant/ammonia02_full_plant",
     "tutorials/plant/ammonia03_quench_converter",
-    "tutorials/plant/ammoniaStaged01_yield",
-    "tutorials/plant/ammoniaStaged02_equilibrium",
-    "tutorials/plant/ammoniaStaged03_approach",
-    "tutorials/plant/ammoniaStaged04_kinetic",
+    "tutorials/plant/ammoniaReactor01_fixedConversion",
+    "tutorials/plant/ammoniaReactor02_equilibrium",
+    "tutorials/plant/ammoniaReactor03_equilibriumApproach",
+    "tutorials/plant/ammoniaReactor04_kineticSizing",
+    "tutorials/plant/ammoniaRoutes01_screening",
     "tutorials/plant/esterification2sector",
-    "tutorials/plant/greenAmmoniaBasicDesign",
-    "tutorials/plant/greenAmmoniaFeasibility",
-    "tutorials/plant/greenAmmoniaFeasibility50bar",
-    "tutorials/plant/greenAmmoniaIndustrialN2",
+    "tutorials/plant/greenAmmonia02_feasibility150bar",
+    "tutorials/plant/greenAmmonia02_feasibility50bar",
+    "tutorials/plant/greenAmmonia03_basicDesign",
+    "tutorials/plant/greenAmmoniaPEQ_baseCase",
     "tutorials/plant/hda",
     "tutorials/plant/lithiumBrinePlant",
     "tutorials/plant/polycaprolactonePlant",
@@ -7235,6 +7291,7 @@
     "tutorials/steady/heat/phasechange01_partial_condenser",
     "tutorials/steady/heat/pinch01_four_stream_classic",
     "tutorials/steady/heat/reboiler_water_copper",
+    "tutorials/steady/hydraulics/letdown01_ammonia_flashing",
     "tutorials/steady/hydraulics/pipe01_water_line",
     "tutorials/steady/hydraulics/pipe02_airwater_twophase",
     "tutorials/steady/hydraulics/pumpSystem01_operating_point",
@@ -7365,6 +7422,7 @@
    ],
    "batchAccumulator": [
     "tutorials/batch/reactor/batch27_semibatch_dosing",
+    "tutorials/batch/reactor/batch28_dosing_vessel_limit",
     "tutorials/batch/recipes/recipe01_react_then_distill",
     "tutorials/batch/recipes/recipe04_charge_enthalpy",
     "tutorials/batch/still/still03_with_receiver",
@@ -7413,6 +7471,7 @@
     "tutorials/batch/reactor/batch08_isothermal_duty",
     "tutorials/batch/reactor/batch26_cooling_failure",
     "tutorials/batch/reactor/batch27_semibatch_dosing",
+    "tutorials/batch/reactor/batch28_dosing_vessel_limit",
     "tutorials/batch/recipes/recipe01_react_then_distill",
     "tutorials/batch/recipes/recipe02_setpoint_ramp",
     "tutorials/batch/recipes/recipe03_conditional_partial"
@@ -7455,7 +7514,8 @@
    ],
    "conversionReactor": [
     "tutorials/plant/acetonePlant",
-    "tutorials/plant/ammoniaStaged01_yield",
+    "tutorials/plant/ammoniaReactor01_fixedConversion",
+    "tutorials/plant/ammoniaRoutes01_screening",
     "tutorials/steady/flowsheets/acetone03_luyben_reaction_section",
     "tutorials/steady/reactors/acetone02_luyben_reactor",
     "tutorials/steady/reactors/chlorophenol01_chlorination",
@@ -7592,6 +7652,7 @@
     "tutorials/steady/electrodialysis/ed09_wine_multiionic"
    ],
    "equilibriumReactor": [
+    "tutorials/plant/ammoniaRoutes01_screening",
     "tutorials/steady/reactors/equil01_reforming",
     "tutorials/steady/reactors/equil02_methanol_declared_pathways",
     "tutorials/steady/reactors/equil03_ammonia_oxidation_declared_pathways",
@@ -7644,8 +7705,8 @@
     "tutorials/steady/gas-solid/gasSolidSplitter04_lognormal_psd"
    ],
    "gibbsReactor": [
-    "tutorials/plant/ammoniaStaged02_equilibrium",
-    "tutorials/plant/ammoniaStaged03_approach",
+    "tutorials/plant/ammoniaReactor02_equilibrium",
+    "tutorials/plant/ammoniaReactor03_equilibriumApproach",
     "tutorials/steady/flowsheets/ammonia01_synthesis_loop",
     "tutorials/steady/flowsheets/proxy01_gas_loop",
     "tutorials/steady/gibbs/claus01_thermal_stage",
@@ -7711,10 +7772,10 @@
    ],
    "isothermalFlash": [
     "tutorials/plant/acetonePlant",
-    "tutorials/plant/ammoniaStaged01_yield",
-    "tutorials/plant/ammoniaStaged02_equilibrium",
-    "tutorials/plant/ammoniaStaged03_approach",
-    "tutorials/plant/ammoniaStaged04_kinetic",
+    "tutorials/plant/ammoniaReactor01_fixedConversion",
+    "tutorials/plant/ammoniaReactor02_equilibrium",
+    "tutorials/plant/ammoniaReactor03_equilibriumApproach",
+    "tutorials/plant/ammoniaReactor04_kineticSizing",
     "tutorials/plant/polycaprolactonePlant",
     "tutorials/steady/absorption/absorption01_CO2_water",
     "tutorials/steady/absorption/extraction01_waterButanol",
@@ -7766,6 +7827,7 @@
     "tutorials/steady/flowsheets/process04_research_workflow",
     "tutorials/steady/flowsheets/proxy01_gas_loop",
     "tutorials/steady/flowsheets/recycle_autoinit_tear",
+    "tutorials/steady/hydraulics/letdown01_ammonia_flashing",
     "tutorials/steady/optimisation/optim02_process_cost",
     "tutorials/steady/optimisation/optim05_reactor_npv",
     "tutorials/steady/reactors/chlorophenol01_chlorination",
@@ -7775,10 +7837,10 @@
    ],
    "mixer": [
     "tutorials/plant/acetonePlant",
-    "tutorials/plant/ammoniaStaged01_yield",
-    "tutorials/plant/ammoniaStaged02_equilibrium",
-    "tutorials/plant/ammoniaStaged03_approach",
-    "tutorials/plant/ammoniaStaged04_kinetic",
+    "tutorials/plant/ammoniaReactor01_fixedConversion",
+    "tutorials/plant/ammoniaReactor02_equilibrium",
+    "tutorials/plant/ammoniaReactor03_equilibriumApproach",
+    "tutorials/plant/ammoniaReactor04_kineticSizing",
     "tutorials/plant/polycaprolactonePlant",
     "tutorials/steady/distillation/column12_stage_is_a_flash",
     "tutorials/steady/distillation/column13_sour_water_stage_identity",
@@ -7799,7 +7861,7 @@
     "tutorials/steady/heat/mheatx01_two_hot_one_cold"
    ],
    "pfr": [
-    "tutorials/plant/ammoniaStaged04_kinetic",
+    "tutorials/plant/ammoniaReactor04_kineticSizing",
     "tutorials/plant/polycaprolactonePlant",
     "tutorials/steady/reactors/ladder01_wgs_three_rungs",
     "tutorials/steady/reactors/pfr01_first_order",
@@ -7810,7 +7872,7 @@
    ],
    "phaseChanger": [
     "tutorials/plant/acetonePlant",
-    "tutorials/plant/ammoniaStaged04_kinetic"
+    "tutorials/plant/ammoniaReactor04_kineticSizing"
    ],
    "pipe": [
     "tutorials/steady/hydraulics/pipe01_water_line",
@@ -7881,10 +7943,10 @@
     "tutorials/unsteady/unsteady04_uf_feed_and_bleed_startup"
    ],
    "splitter": [
-    "tutorials/plant/ammoniaStaged01_yield",
-    "tutorials/plant/ammoniaStaged02_equilibrium",
-    "tutorials/plant/ammoniaStaged03_approach",
-    "tutorials/plant/ammoniaStaged04_kinetic",
+    "tutorials/plant/ammoniaReactor01_fixedConversion",
+    "tutorials/plant/ammoniaReactor02_equilibrium",
+    "tutorials/plant/ammoniaReactor03_equilibriumApproach",
+    "tutorials/plant/ammoniaReactor04_kineticSizing",
     "tutorials/plant/polycaprolactonePlant",
     "tutorials/steady/drying/convDryer01_sugar_curve",
     "tutorials/steady/electrodialysis/ed07_feed_and_bleed",
@@ -7938,7 +8000,8 @@
    ],
    "valve": [
     "tutorials/steady/flowsheets/credo01_valve_heater_drum",
-    "tutorials/steady/flowsheets/inletState01_undeclared_vapour"
+    "tutorials/steady/flowsheets/inletState01_undeclared_vapour",
+    "tutorials/steady/hydraulics/letdown01_ammonia_flashing"
    ],
    "williamsOttoPlant": [
     "tutorials/ctrl/ctrl12_williams_otto",
@@ -8133,6 +8196,7 @@
     "tutorials/batch/reactor/batch08_isothermal_duty",
     "tutorials/batch/reactor/batch26_cooling_failure",
     "tutorials/batch/reactor/batch27_semibatch_dosing",
+    "tutorials/batch/reactor/batch28_dosing_vessel_limit",
     "tutorials/batch/recipes/recipe01_react_then_distill",
     "tutorials/batch/recipes/recipe02_setpoint_ramp",
     "tutorials/batch/recipes/recipe03_conditional_partial",
@@ -8161,6 +8225,7 @@
     "tutorials/ctrl/ctrl19_freq_response_cstr",
     "tutorials/ctrl/ctrl20_bode_cstr",
     "tutorials/plant/ChemicalPlantTutorial",
+    "tutorials/plant/ammoniaRoutes01_screening",
     "tutorials/plant/esterification2sector",
     "tutorials/plant/hda",
     "tutorials/plant/lithiumBrinePlant",
@@ -8548,6 +8613,7 @@
    "propertyPoint": [
     "tutorials/props/compare/acetone01_ipa_water_azeotrope",
     "tutorials/props/compare/acetone04_acetone_water_vle",
+    "tutorials/props/hydraulics/letdown02_valve_fluid_properties",
     "tutorials/props/molecular/entropy01_air_ledger",
     "tutorials/props/molecular/pcsaft01_pure_nhexane",
     "tutorials/props/molecular/pcsaft02_states_crosscheck",

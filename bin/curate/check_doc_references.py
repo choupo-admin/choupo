@@ -198,6 +198,54 @@ FOREIGN_ROOT_RE = re.compile(
     r'(?<![\w/:.-])([a-zA-Z][a-zA-Z0-9_-]*)/'
     r'([A-Za-z0-9_./-]+\.(?:md|py|H|cpp|dat|json|sh|txt|csv))')
 
+#  A RENAMED CASE IS A RULE TOO (2026-10-12, DEV.md 4c C68).  The ammonia
+#  cases were renamed by purpose and `tutorials/ALIASES` is the ONE home of
+#  the former names (the GUI resolves a shared `?case=<old>` link through it,
+#  `bin/runCase` a path).  DEV.md is a dated record: an entry written on
+#  2026-09-26 names the case by the name it had on 2026-09-26, and rewriting
+#  that sentence would rewrite history.  So in the dated record ALONE a
+#  former name -- a bare case name or a path whose case root is one --
+#  resolves through the alias map, and only when its CURRENT name exists on
+#  disk (a rename of a deleted case is still a dead reference).  The
+#  AI-facing docs and CLAUDE.md get no such leniency: they are instructions,
+#  and an instruction carries the current name.
+ALIAS_DOCS = {"DEV.md"}
+
+
+def load_aliases():
+    """{old identifier (path under tutorials/): new identifier}."""
+    out = {}
+    f = ROOT / "tutorials" / "ALIASES"
+    if not f.is_file():
+        return out
+    for raw in f.read_text().splitlines():
+        line = raw.split("#", 1)[0].strip()
+        if not line:
+            continue
+        w = line.split()
+        if len(w) != 2:
+            raise SystemExit("check_doc_references: REFUSED -- tutorials/ALIASES"
+                             f" has a malformed line {raw!r}; the alias rule"
+                             " cannot be evaluated and must not pass")
+        out[w[0]] = w[1]
+    return out
+
+
+ALIASES = load_aliases()
+ALIAS_LEAVES = {old.rsplit("/", 1)[-1]: new for old, new in ALIASES.items()}
+
+
+def through_alias(p: str):
+    """The current path of a `tutorials/<old>[/...]` mention, or None."""
+    if not p.startswith("tutorials/"):
+        return None
+    rel = p[len("tutorials/"):].rstrip("/")
+    for old, new in ALIASES.items():
+        if rel == old or rel.startswith(old + "/"):
+            return "tutorials/" + new + rel[len(old):]
+    return None
+
+
 dead = []
 
 
@@ -218,6 +266,7 @@ def main() -> int:
 
     nPaths = nCases = 0
     runOutputs = set()
+    renamed = set()
     for doc in DOCS:
         if not doc.exists():
             dead.append(f"{doc.relative_to(ROOT)}: the doc itself is missing")
@@ -238,6 +287,11 @@ def main() -> int:
                 continue
             if path_exists(p):
                 continue
+            cur = through_alias(p) if str(rel) in ALIAS_DOCS else None
+            if cur is not None and (path_exists(cur)
+                                    or producing_case(cur) is not None):
+                renamed.add(p)
+                continue
             dead.append(f"{rel}: path '{p}' does not exist")
 
         for m in FOREIGN_ROOT_RE.finditer(txt):
@@ -256,6 +310,10 @@ def main() -> int:
         for c in sorted(set(CASE_RE.findall(txt))):
             nCases += 1
             if c not in cases:
+                if str(rel) in ALIAS_DOCS and c in ALIAS_LEAVES \
+                   and (ROOT / "tutorials" / ALIAS_LEAVES[c]).is_dir():
+                    renamed.add(c)
+                    continue
                 dead.append(f"{rel}: case '{c}' is not a tutorial directory")
 
     #  An allow-list entry that has come TRUE is also rot -- the prose still
@@ -286,7 +344,9 @@ def main() -> int:
           " are accepted as such -- git ignores the path and the case that"
           " writes it exists -- whether or not it has run here.  NOT checked:"
           " that the prose calls it a run output, or that the case really"
-          " writes that file")
+          " writes that file; %d former name(s) of a RENAMED case in the dated"
+          " record (DEV.md) resolve through tutorials/ALIASES to a case that"
+          " exists" % len(renamed))
     return 0
 
 

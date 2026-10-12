@@ -34,7 +34,7 @@ License
 import { create } from "zustand";
 import { resolveWorkspaceSearch } from "./workspaceUrl.js";
 
-import { tutorialByName } from "../cases/tutorials.js";
+import { canonicalCaseName, tutorialByName } from "../cases/tutorials.js";
 import { readCaseAt } from "../cases/workspace.js";
 import type { CaseFiles } from "../case/types.js";
 import type { ScratchEdit, ScratchEdits } from "../case/scratch.js";
@@ -440,6 +440,16 @@ function bootCase(): {
     const param = q.get("case");
     if (param) {
       let t = tutorialByName(param);
+      // A FORMER name (tutorials/ALIASES, DEV.md 4c C68) resolves to the
+      // renamed case; the address bar is corrected to the canonical name, so
+      // a link copied from this tab is never the old one again.
+      const canon = canonicalCaseName(param);
+      if (t && canon !== param) {
+        try {
+          q.set("case", canon);
+          history.replaceState(history.state, "", `${window.location.pathname}?${q.toString()}${window.location.hash}`);
+        } catch { /* history blocked -- the case still opens under its canonical name */ }
+      }
       if (t) {
         // Make the drilled sub-case RUNNABLE: freeze its boundary inlets as
         // per-stream 0/ state files (extraFiles) so Run re-solves with the

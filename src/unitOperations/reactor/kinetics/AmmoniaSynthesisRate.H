@@ -74,8 +74,8 @@ Description
     operation's multi-reaction path (`reactor/PFR.cpp`), which selects it with
     `kinetics { type dysonSimon1968; }` in a case's constant/reactions and
     integrates Eq 19 or Eq 40 along an adiabatic or isothermal bed -- the
-    stage-D rung of the staged design sequence
-    (tutorials/plant/ammoniaStaged04_kinetic, DEV.md C8).  The PFR reads Eq 19
+    rung 4 of the ammonia reactor-model ladder
+    (tutorials/plant/ammoniaReactor04_kineticSizing, DEV.md C8).  The PFR reads Eq 19
     as ALREADY per cubic metre of catalyst bed and refuses `catalystLoading`
     under this law; whether Eq 39's diffusion correction is applied is a
     DECLARED word (`effectivenessFactor intrinsic | dysonSimonEq39`), never a

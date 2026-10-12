@@ -22,7 +22,7 @@
   fitted from the IUPAC-NIST Solubility Data Series Vol. 4 -- see the header
   of constant/parameters/Henry/Ar-NH3.dat and the dossier in curation/Ar-NH3/.
   COPIED, with that pair file byte for byte, from
-  tutorials/plant/greenAmmoniaBasicDesign for letdown01 (DEV.md 4c C64): the
+  tutorials/plant/greenAmmonia03_basicDesign for letdown01 (DEV.md 4c C64): the
   curation/ dossier both name lives in that plant, not here.
 \*---------------------------------------------------------------------------*/
 

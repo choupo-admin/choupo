@@ -41,7 +41,7 @@ License
   channel replaces the NUMBER of a DECLARED scalar and deliberately cannot add
   a key ("a knob that needs one is a knob the witness case should declare"),
   and -- measured 2026-09-25 -- no case in the corpus then declared an
-  approach of any kind (`ammoniaStaged03_approach` declares one since that
+  approach of any kind (`ammoniaReactor03_equilibriumApproach` declares one since that
   day; it runs at 200 bar under SRK, where the equivalence below does NOT
   hold, so it is named in the prose and is not a witness).
 

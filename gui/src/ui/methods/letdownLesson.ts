@@ -91,7 +91,7 @@ export const LETDOWN_SOURCES: readonly LetdownSource[] = [
       + "(step 7) were compared with it, and the limit below says what that "
       + "found." },
   { id: "plant",
-    cite: "Choupo tutorial plant/greenAmmoniaBasicDesign",
+    cite: "Choupo tutorial plant/greenAmmonia03_basicDesign",
     used: "the separator liquid and the loop purge, copied to the digit into "
       + "the letdown01 witness, and the two drum pressures (20 bar and "
       + "1 atm) the plant lets its ammonia down to." },

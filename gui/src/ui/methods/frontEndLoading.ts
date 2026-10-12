@@ -194,16 +194,27 @@ export const FEL_NUMBERINGS: readonly Numbering[] = [
  *
  *  THE C57 CASES ARE LISTED (2026-10-10).  Vitor's green-ammonia project
  *  split by stage (DEV.md 4c C57) put two plant cases in the tree, each a
- *  copy of the base case with one thing changed: greenAmmoniaFeasibility
- *  (and its 50 bar variant) on the feasibility stage, greenAmmoniaBasicDesign
- *  on FEED.  The screening stage has no green-ammonia case: route screening
- *  is the route-screening EduTool, on methanol.  None of them is run by the
- *  page; they are linked, as every case here is. */
+ *  copy of the base case with one thing changed: greenAmmonia02_feasibility150bar
+ *  (and its 50 bar variant) on the feasibility stage, greenAmmonia03_basicDesign
+ *  on FEED.  The screening stage gained its ammonia case on 2026-10-12
+ *  (ammoniaRoutes01_screening, DEV.md 4c C68: green, grey and blue routes on
+ *  paper); the route-screening EduTool screens methanol.  None of them is
+ *  run by the page; they are linked, as every case here is.
+ *
+ *  TWO AXES, NOT ONE (C68).  The reactor-model ladder (ammoniaReactor01..04)
+ *  is a FIDELITY axis inside one loop; the green-ammonia cases are the
+ *  PROJECT-STAGE axis.  A reactor rung is listed under a stage because that
+ *  stage typically USES that fidelity, never because swapping the reactor
+ *  model matures a project.  And `aace` is the class an estimate at the end
+ *  of the stage USUALLY carries: the class itself is set by how far the
+ *  project is defined (AACE's primary characteristic), not by the stage. */
 export interface FelStage {
   id: "screening" | "feasibility" | "feed" | "execution";
   /** The names the stage goes by, in the record's words. */
   names: string;
-  /** The AACE class an estimate at the end of this stage carries. */
+  /** The AACE class an estimate at the end of this stage USUALLY carries
+   *  (the record's §2.3 table); the class follows from the maturity of the
+   *  project definition, never automatically from the stage. */
   aace: string;
   decides: string;
   fidelity: string;
@@ -235,9 +246,10 @@ export const FEL_STAGES: readonly FelStage[] = [
       + "scaled from a reference one, and Choupo's costing is per item, which "
       + "is Class 4's method.",
     choupoCases: [
+      "plant/ammoniaRoutes01_screening",
       "steady/reactors/screen01_methanol_routes",
-      "plant/ammoniaStaged01_yield",
-      "plant/ammoniaStaged02_equilibrium",
+      "plant/ammoniaReactor01_fixedConversion",
+      "plant/ammoniaReactor02_equilibrium",
     ],
     choupoTools: ["route-screening", "reactor-ladder"],
     notChoupo: "A capacity-factored whole-plant estimate.",
@@ -262,15 +274,16 @@ export const FEL_STAGES: readonly FelStage[] = [
       + "duty is bought from a utility, the pinch pass gives the targets, and "
       + "the economics pass publishes the gross margin before and after the "
       + "energy is priced -- at 150 bar and, as a speculation, at 50 bar.  "
-      + "The green-ammonia base case declares Class 4 too, and it is a "
-      + "hybrid: a feasibility-stage converter (a Gibbs reactor 5 K short of "
-      + "equilibrium) beside exchangers designed to the next stage's "
-      + "fidelity.",
+      + "The green-ammonia base case is the project brief's reference case, "
+      + "with different detail in different equipment: a feasibility-stage "
+      + "converter (a Gibbs reactor 5 K short of equilibrium) beside "
+      + "exchangers designed to the next stage's fidelity; its author "
+      + "declares Class 4 too.",
     choupoCases: [
-      "plant/ammoniaStaged03_approach",
-      "plant/greenAmmoniaFeasibility",
-      "plant/greenAmmoniaFeasibility50bar",
-      "plant/greenAmmoniaIndustrialN2",
+      "plant/ammoniaReactor03_equilibriumApproach",
+      "plant/greenAmmonia02_feasibility150bar",
+      "plant/greenAmmonia02_feasibility50bar",
+      "plant/greenAmmoniaPEQ_baseCase",
     ],
     choupoTools: ["approach-to-equilibrium", "pinch-composite"],
     notChoupo: "Plot plans, the electrical one-line drawings, and the "
@@ -300,9 +313,9 @@ export const FEL_STAGES: readonly FelStage[] = [
       + "method, so a Choupo 'basic design' is FEL-3 in its process fidelity "
       + "and a study-type estimate in its cost.",
     choupoCases: [
-      "plant/ammoniaStaged04_kinetic",
-      "plant/greenAmmoniaBasicDesign",
-      "plant/greenAmmoniaIndustrialN2",
+      "plant/ammoniaReactor04_kineticSizing",
+      "plant/greenAmmonia03_basicDesign",
+      "plant/greenAmmoniaPEQ_baseCase",
     ],
     choupoTools: ["reactor-ladder", "entu"],
     notChoupo: "P&IDs, mechanical datasheets, relief studies, line sizing "

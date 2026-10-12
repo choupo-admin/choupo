@@ -62,7 +62,7 @@
 
   PROMOTED to the standard catalogue 2026-09-08 on Vitor's decision, from the
   case it was curated in.  Reproduce the whole fit with
-  tutorials/plant/greenAmmoniaIndustrialN2/curation/Ar-NH3/fit-Ar-NH3.py.
+  tutorials/plant/greenAmmoniaPEQ_baseCase/curation/Ar-NH3/fit-Ar-NH3.py.
 
   TWO COPIES EXIST TODAY, and the reason is stated rather than left to be
   discovered: that case is SEALED (`sealed true;`), which FORBIDS the runtime

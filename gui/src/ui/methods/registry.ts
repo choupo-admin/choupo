@@ -749,7 +749,7 @@ export const METHOD_TOOLS: MethodTool[] = [
   //  The engine has read the key since 2026-07-02 and announces it in three
   //  sentences; nothing anywhere carried the teaching, and on that day no
   //  flowsheet case in the corpus declared an approach of any kind
-  //  (`ammoniaStaged03_approach` declares one since; it runs at 200 bar
+  //  (`ammoniaReactor03_equilibriumApproach` declares one since; it runs at 200 bar
   //  under SRK, where the page's two-run equivalence does not hold, so it is
   //  named in the prose and is not a witness).  Since 2026-09-26 the author
   //  declares a MAGNITUDE and the ENGINE assigns the sign; the page teaches

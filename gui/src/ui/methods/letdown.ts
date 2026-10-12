@@ -63,7 +63,7 @@ import { criticalPressureRatio } from "./overpressure.js";
 export const LETDOWN_WITNESS = "steady/hydraulics/letdown01_ammonia_flashing";
 export const LETDOWN_PROPS = "props/hydraulics/letdown02_valve_fluid_properties";
 /** The plant the witness copies its two inlets from. */
-export const LETDOWN_PLANT = "plant/greenAmmoniaBasicDesign";
+export const LETDOWN_PLANT = "plant/greenAmmonia03_basicDesign";
 
 const FLOWSHEET = "system/flowsheetDict";
 

@@ -55,8 +55,8 @@ export const SAFETY_WITNESS_BATCH = "batch/reactor/batch26_cooling_failure";
 export const SAFETY_WITNESS_SEMI = "batch/reactor/batch27_semibatch_dosing";
 /** batch27 with a day tank that holds a quarter of B, refilled batch-wise. */
 export const SAFETY_WITNESS_TANK = "batch/reactor/batch28_dosing_vessel_limit";
-export const SAFETY_WITNESS_NH3_150 = "plant/greenAmmoniaFeasibility";
-export const SAFETY_WITNESS_NH3_50 = "plant/greenAmmoniaFeasibility50bar";
+export const SAFETY_WITNESS_NH3_150 = "plant/greenAmmonia02_feasibility150bar";
+export const SAFETY_WITNESS_NH3_50 = "plant/greenAmmonia02_feasibility50bar";
 /** The props witness that computes the bubble point of a reaction mass of
  *  these four components on the reactor case's own thermodynamics (its
  *  constant/ is a copy of batch26's sealed constant/). */

@@ -165,7 +165,7 @@ describe("the two steps commissioned 2026-10-02 (DEV.md C29)", () => {
     expect(s).toContain("no volume and no path");
     expect(s).toContain("0.191745443741");
     expect(s).toContain("0.191745443739");
-    expect(s).toContain("ammoniaStaged04_kinetic");
+    expect(s).toContain("ammoniaReactor04_kineticSizing");
     const f = prose(step(7).formula!);
     expect(f).toContain(String.raw`A\,n_k &= A\,n_\mathrm{feed} = b`);
     expect(f).toContain(String.raw`n_\mathrm{eq}\big(T_N + \Delta T`);

@@ -18,7 +18,7 @@ Three defects were measured on a scratch copy:
       converged/ view and every choupo-init0 seed re-created the
       over-specification -- 142 tracked 0/ files carried it, 133 of them a
       mixture's two-phase split, one and the same value stamped across every
-      stream of ammoniaStaged01-04;
+      stream of ammoniaReactor01-04;
   (2) the READER accepted all three in silence while its header promised
       "THREE top-level state vars over-specify -> FATAL": with `vaporFraction
       0.9` the run exited 0, the table and the GUI printed 0.900 and the

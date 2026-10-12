@@ -21,7 +21,7 @@ Description
     THE UNIT IS A RATING MODEL.  `PFR` integrates the volume it is given
     (`operation.V_R`) and publishes it as the KPI `V_R`; when an outer driver
     solves that volume against a target (the `designSpec` of
-    `tutorials/plant/ammoniaStaged04_kinetic`, on the effluent's approach to
+    `tutorials/plant/ammoniaReactor04_kineticSizing`, on the effluent's approach to
     equilibrium) the KPI on the representative pass IS the engine's answer.
     This sizer therefore does what `CrystalliserSize` does with the MSMPR's
     declared working volume: it reads the unit's own number and passes it

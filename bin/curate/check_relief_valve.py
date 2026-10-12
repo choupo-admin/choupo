@@ -24,7 +24,7 @@ WHAT THIS CHECKS:
       water reference density, 21 000, 34 500, 0.82, 10 %, 3 psi, 21 %,
       101 325 Pa) is read from BOTH sources and must be equal.
 
-  (b) THE CASE'S VALVES RECOMPUTE.  On `greenAmmoniaBasicDesign`, every
+  (b) THE CASE'S VALVES RECOMPUTE.  On `greenAmmonia03_basicDesign`, every
       `reliefValve` entry of its postDict publishes a `<unit>/psv` item, and
       for each: the set pressure is the protected item's own published
       `pressureDesign` (the item the basis names); every scenario's P1 is
@@ -96,7 +96,7 @@ _CACHE = os.environ.get("CHOUPO_SUITE_OUTPUTS")
 #  through CHOUPO_HOME; a fixture copied to a temporary directory is not
 #  under the tree, so the variable is set rather than inherited by luck.
 ENV = dict(os.environ, CHOUPO_HOME=str(ROOT))
-CASE = ROOT / "tutorials" / "plant" / "greenAmmoniaBasicDesign"
+CASE = ROOT / "tutorials" / "plant" / "greenAmmonia03_basicDesign"
 FIXTURE_SRC = ROOT / "tutorials" / "steady" / "flash" / "flash01_benzene_toluene"
 HEADER = ROOT / "src" / "postProcessing" / "sizing" / "ReliefArithmetic.H"
 TS = ROOT / "gui" / "src" / "ui" / "methods" / "overpressure.ts"

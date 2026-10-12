@@ -201,7 +201,7 @@ equilibrium and no pressure drop anywhere in this case.  Consequently:
   only in a comment is a sentence.  (Since 2026-09-26 a bed CAN be sized in
   this engine — `pfr` on `kinetics { type dysonSimon1968; }` with a
   DesignSpec on its approach-to-equilibrium KPI, see
-  `tutorials/plant/ammoniaStaged04_kinetic` — but not THIS case's beds,
+  `tutorials/plant/ammoniaReactor04_kineticSizing` — but not THIS case's beds,
   which stay equilibrium beds by construction.)
 * **This case publishes NO cost and NO appraisal.**  There is no `costing` and
   no `economics` block.  With the converter unsized, a capital total would omit
