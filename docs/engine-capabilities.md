@@ -235,6 +235,24 @@ non-utility stream pairing) are stated in `PinchPass.H`.  Witness:
 `tutorials/steady/heat/pinch01_four_stream_classic` (107.5 kW / 40 kW /
 pinch 90 °C hot — hand-worked in the case header); gate `check_pinch_p1`.
 
+**Economic sensitivity (tornado, 2026-10-12)** — an opt-in
+`economics { sensitivity { ... } }` block in `system/postDict` moves each
+declared input ALONE to two declared ends (`relative` fractions or `absolute`
+values) and prices the plant again on the same converged run: the FCI (its
+ends may be the declared `accuracyBand`, which until then was printed beside
+the capital and reached no NPV), any price `constant/economics` declares, any
+allocated utility's bill, the labour rate, the discount and tax rates and the
+stream factor.  Every bar goes through the ONE cash-flow function the base
+appraisal uses (`appraise` in `EconomicsPass.cpp`), so the working capital,
+COM_d's 0.180 FCI, depreciation and the start-up years follow each input as
+they follow the base.  Published as a console table sorted by NPV swing,
+`economics.sens_*` KPIs and `reports/economics/sensitivity.csv`, each headed by
+the statement that a sensitivity is not an uncertainty analysis.  An outer
+`sweep` varies flowsheet paths only; this block is the route for prices, rates
+and the capital.  Witnesses: the two `greenAmmonia02_feasibility*` cases; gate
+`check_economic_sensitivity` (recomputes ends from the published
+`cashFlow.csv`, and holds the cash flow to one home in the source).
+
 **One row per physical stream (steady)** — `streamTable.csv` draws one row per
 pipe, under its QUALIFIED IDENTITY, and that row set is exactly the canonical
 manifest's (`choupoSolve --manifest`) — the same set the state model gives a

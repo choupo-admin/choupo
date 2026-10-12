@@ -2103,6 +2103,26 @@ design-sheet key as long as the pad ran into its value -- `setw` is a
 minimum.  Gate: `check_relief_valve`.  Record:
 [`docs/design/a-relief-valve-is-a-sized-item.md`](docs/design/a-relief-valve-is-a-sized-item.md).
 
+**AN ECONOMIC SENSITIVITY IS THE BASE APPRAISAL PRICED AGAIN, AND NOTHING
+ELSE (2026-10-12, DEV.md 4c C68, on a stated default).**  An opt-in
+`economics { sensitivity { <input> { relative|absolute ( lo hi ); } } }`
+block moves each declared input ALONE to two ends on the same converged run
+(every input enters after the flowsheet, so no re-solve): `FCI` (`relative
+accuracyBand;` reads the declared band, which until then was printed and
+reached no NPV), `price.<stream>`, `utility.<name>`, `labourRate`,
+`discountRate`, `taxRate`, `streamFactor`.  Rule: **the cash flow has ONE
+home, `appraise` in `EconomicsPass.cpp`** -- the base calls it once, each bar
+calls it on a copy of the inputs with one moved; a second copy of the
+arithmetic prints bars of the right size for the wrong plant, and is caught
+only by a SOURCE arm, because re-discounting the base cash flow is exactly
+right for the discount rate and wrong for everything that moves the working
+capital.  An unknown input, an undeclared price, a utility with no bill, a
+bare list or an impossible end REFUSE by name; absent, every economics case
+is byte-identical (measured, console + JSON + every reports/economics file).
+Every table says it is NOT an uncertainty analysis.  An outer `sweep` still
+varies flowsheet paths only.  Gate: `check_economic_sensitivity`.  Witnesses:
+`greenAmmonia02_feasibility150bar` / `50bar`.
+
 **A TOOL THAT COULD NOT LOOK REPORTED WHAT IT DID NOT SEE (2026-09-06).**
 The doctrine says a check that cannot run must not PASS; the MIRROR is just as
 bad — **it must not FAIL either, it must REFUSE.**  `bin/drive-app` filed "no

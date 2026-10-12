@@ -10774,6 +10774,23 @@ Why ever write the C++ one, if the formula is shorter? Because some laws are not
 \tutreadme{$\ast$ constant/reactions --- mm\_code names type michaelisMenten; and declares Vmax and Km WITH UNITS, which the C++ reads through the dictionary (so the units are checked there, not trusted); mm\_expr writes the same law as a formula over c[compA], Vmax and Km. $\ast$ code/MichaelisMenten.\{H,cpp\} --- the whole law, thirty lines: read the parameters, return the extent rate in the reactor's convention (RateState::amountPerKmol says whether the reactor works in mol or kmol). $\ast$ code/registerUserTypes.cpp --- one ReactionRate::registerType call; the same explicit factory the built-in Arrhenius, LHHW and expression use. $\ast$ The run log --- the [expression] law is printed back AS PARSED, with the dimensions of every definition; the user law prints its own type name.}
 \tutreadme{V\_R = 0.025 m3, feed 1 kmol/h of A at 12.5 kmol/m3 (liquid basis), Vmax = 0.01 kmol/(m3 s), Km = 5 kmol/m3 (both AUTHOR-SET for this witness --- the form is Michaelis \& Menten's, the numbers are nobody's measurement). The CSTR balance F\_A0 X = V Vmax c\_A / (Km + c\_A) with c\_A = c\_A0 (1 - X) is a quadratic in X, and these numbers put its root at X = 0.5 exactly. Both reactors publish xi = 0.138889 mol/s, i.e. X = 0.5; bin/curate/ check\_rate\_expression.py holds the two reactors to each other and to the closed form.}
 \tutreadme{Write the formula whenever the law IS a formula: it is shorter, it is checked (an unknown symbol, a dimension mismatch, a non-finite value all refuse by name), and it runs everywhere. Write C++ when it is not --- an inner solve, a loop, a property the expression grammar cannot reach. The C++ route has no dimension checker but the dictionary's own (lookupScalar(key, dims)), and it is the author's responsibility to refuse what it does not read, as this one does.}
+\begin{tutgolden}
+\goldrow{stream}{feedCode}{F}{0.000277777777778}
+\goldrow{stream}{feedCode}{T}{350}
+\goldrow{stream}{feedExpr}{F}{0.000277777777778}
+\goldrow{stream}{feedExpr}{T}{350}
+\goldrow{stream}{productCode}{F}{0.000277777777778}
+\goldrow{stream}{productCode}{T}{350}
+\goldrow{stream}{productExpr}{F}{0.000277777777778}
+\goldrow{stream}{productExpr}{T}{350}
+\goldrow{kpi}{reactorCode}{F\_in\_kmol\_h}{1}
+\goldrow{kpi}{reactorCode}{F\_out\_kmol\_h}{1}
+\goldrow{kpi}{reactorCode}{T}{350}
+\goldrow{kpi}{reactorCode}{T\_out}{350}
+\goldrow{kpi}{reactorCode}{V\_R}{0.025}
+\goldrow{kpi}{reactorCode}{k\_mm\_code}{0.01}
+\goldmore{12}
+\end{tutgolden}
 
 \subsection{utilities}
 \grouptheory{utilities}

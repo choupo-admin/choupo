@@ -24,6 +24,7 @@ One driver per case; `type` selects it.  Registered types
 | "What area gives exactly 4500 kg/h?" (meet a spec) | `designSpec` |
 | "Which reflux minimises V_strip?" (best value) | `optimization` |
 | "Fit NRTL to my bubble-T data" | `fitParameters` under **choupoProps** |
+| "How exposed is the NPV to the H2 price, the capital band, the discount rate?" | NO driver — the postDict's `economics { sensitivity {} }` block (`docs/ai/case-layout.md`): a driver mutates the FLOWSHEET, and prices, rates and the FCI live in the economics pass |
 
 The unit-op schemas keep saying *"for 'I need P_out = X' wrap the unit in a
 DesignSpec outerDict"* — §3 below is that pattern, spelled out.

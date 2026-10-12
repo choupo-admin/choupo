@@ -76,6 +76,18 @@ Description
     paybackYears, FCI, TCI, COM_d) so an outer driver (sweep / optimisation)
     resolves "economics.IRR" as an ordinary unit.kpi lookup.
 
+    ONE APPRAISAL, ONE HOME, AND AN OPT-IN SENSITIVITY (DEV.md 4c C68).
+    Everything from the annual bills to NPV / IRR / paybacks is computed by
+    one function, `appraise`, from one bundle of inputs.  An optional
+    `sensitivity { <input> { relative|absolute ( lo hi ); } ... }` block in
+    the economics dict prices the plant again with ONE input moved to each
+    end (FCI -- `relative accuracyBand;` reads the declared band --,
+    price.<stream>, utility.<name>, labourRate, discountRate, taxRate,
+    streamFactor), through the same `appraise`, on the same converged pass:
+    a one-at-a-time tornado, NOT an uncertainty analysis.  Published as
+    `economics.sens_<input>_{NPV,IRR,payback}_{low,high}` and
+    reports/economics/sensitivity.csv; absent, nothing changes.
+
     Must run after SizingPass + CostingPass.
 \*---------------------------------------------------------------------------*/
 

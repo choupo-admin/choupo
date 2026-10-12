@@ -2013,6 +2013,18 @@ interbed-exchanger converter is an industrial reference, e.g. a three-bed
 radial converter with interbed exchangers -- cite a source read).
 Sequenced AFTER C66 merges, the C68 renames and C67 (all touch the pfr or
 this case).  Status: dispatched 2026-10-12 after C67 merged.
+BUILT on branch `claude/c69-heat-exchange` (not merged): part A, the cooled
+multitubular pfr (tube geometry, coolant co/counter-current/boiling, a
+packed-bed wall correlation; witness `pfr05_cooled_multitubular`, gate
+`check_cooled_pfr`); part B, the CONVERTER sector and `type converterShell`
+(gate `check_converter_shell`).  Part B's first one-shell vs three-shell
+comparison (31.4 vs 18.7 MEUR) was MEANINGLESS -- the beds kept DIFFERENT
+diameters inside one shell -- so the rule taken: inside a converter the
+beds share ONE diameter, the shell's (declared, or the smallest D whose
+Ergun drop meets every bed's allowable, announced with the binding bed),
+each bed's height V_R/(pi D^2/4), a bed's own `L_over_D` refused there.  A
+container restart killed that work mid-flight on 2026-10-12; its surviving
+edits were committed as WIP (3deb0b4fe) and the work resumed.
 
 **C68. ONE LADDER FOR THE AMMONIA CASES, AND ITS MISSING FIRST RUNG
 (Vítor, 2026-10-12, verbatim: "os vários níveis de simulação do processo de
@@ -2093,6 +2105,25 @@ records under `docs/design/` and CHANGELOG keep the old names on purpose;
 the FEL EduTool's per-stage class column (the record's §2.3 table) now
 reads "usually" -- whether the tool should drop the stage-class pairing is
 a pedagogical question for Vítor.
+FEASIBILITY SENSITIVITY dispatched 2026-10-12: measured, both feasibility
+cases already carry a preliminary CAPEX (Turton, class 4, a declared
+accuracyBand); what was missing is the sensitivity, and a `sweep` cannot
+vary postDict prices (SweepDriver.cpp:148 varies flowsheet paths only).
+Stated default: an opt-in `economics { sensitivity {} }` one-at-a-time
+analysis on the same converged pass, one cash-flow home.  The
+feasibility -> basic-design comparison waits for C69.
+MERGED 2026-10-12: `economics { sensitivity {} }` (relative|absolute
+stated per input; `FCI { relative accuracyBand; }` -- the declared band
+had been PRINTED and reached no NPV until then), one cash-flow home
+`appraise`, gate `check_economic_sensitivity`; 9 other economics cases
+byte-identical, no golden moved, 40 new `sens_` rows.  What the tornado
+teaches: H2 and NH3 prices +-20 % swing the NPV ~14x the whole capital
+band; no single input flips the sign (break-even H2 ~3.55 EUR/kg or NH3
+~1.21 EUR/kg); a higher discount rate and fewer hours IMPROVE the NPV
+because the plant loses 69.4 MEUR/yr operating; 150 vs 50 bar differ by
+4.3 MEUR, less than any bar.  OPEN for Vítor (pedagogy): a two-way /
+scenario analysis (H2 and NH3 moving together is what would flip it);
+no tornado drawn in the GUI yet.
 
 **C67. A CASE CARRIES ITS OWN KINETICS: RATE EXPRESSIONS IN THE DICT, AND A
 FACTORY A CASE'S `code/` CAN REGISTER INTO (Vítor, 2026-10-12, verbatim:

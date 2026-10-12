@@ -5849,6 +5849,23 @@ if [ "$#" -eq 0 ]; then
     fi
     rm -f /tmp/costprov.$$
 
+    # Economic-sensitivity gate (2026-10-12, DEV.md 4c C68): the opt-in
+    # `economics { sensitivity {} }` tornado must be the BASE appraisal
+    # priced again and nothing else -- its discount-rate, product-price and
+    # capital ends recompute by hand from the published cashFlow.csv, the
+    # refusals fire by name, an absent block is silent, and the cash flow
+    # has one home in EconomicsPass.cpp (a source arm: a correct second copy
+    # is invisible to every output).
+    if "$ROOT/bin/curate/check_economic_sensitivity.py" > /tmp/econsens.$$ 2>&1; then
+        printf "PASS  %-40s  (%s)\n" "economic-sensitivity-gate" "$(tail -1 /tmp/econsens.$$)"
+        pass=$((pass+1))
+    else
+        printf "FAIL  %-40s  (run bin/curate/check_economic_sensitivity.py)\n" "economic-sensitivity-gate"
+        cat /tmp/econsens.$$
+        fail=$((fail+1))
+    fi
+    rm -f /tmp/econsens.$$
+
     # Estimate-class gate (2026-09-25): the AACE 18R-97 classification had TWO
     # homes and they disagreed -- a hand-written table in docs/design-
     # heuristics.md against a two-branch step in EconomicsPass whose
