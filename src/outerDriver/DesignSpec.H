@@ -124,6 +124,9 @@ public:
     { return "applied on the REPRESENTATIVE pass (the replay at the"
              " design point), before the reports"; }
     int                run () override;
+    //  The result block is main.cpp's to write, after the reports{} chain
+    //  (OuterDriver.H, emitsRepresentativeJson).
+    bool emitsRepresentativeJson() const override { return false; }
 
 private:
     inline static const std::string type_ = "designSpec";

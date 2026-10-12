@@ -94,6 +94,7 @@ Dictionary form (topology only -- state in 0/):
 #include "streams/ProcessStream.H"
 #include "thermo/ThermoPackage.H"
 #include "unitOperations/UnitOperation.H"
+#include "unitOperations/flowsheet/MemberFolder.H"   // bindMemberVariables (main.cpp, C66)
 
 #include <functional>
 #include <map>

@@ -132,6 +132,20 @@ public:
     // outerDict it was constructed with.
     virtual int run() = 0;
 
+    //  WHO WRITES THE REPRESENTATIVE RESULT BLOCK (DEV.md 4c C66, 2026-10-12).
+    //  A driver that emits its own JSON at the replay does so BEFORE
+    //  `main.cpp` runs the `reports {}` chain on that same pass -- so every
+    //  fact a REPORT stamps on the result (the plant-boundary first law,
+    //  `globalEnergyBoundary`, above all) reached the console and the report
+    //  files and NOT the result block, and a golden could not pin it.
+    //  Measured on greenAmmoniaBasicDesign the day its beds went under a
+    //  designSpec: its five pinned `boundary global` rows went MISSING.  A
+    //  driver returning `false` leaves the emission to `main.cpp`, which
+    //  writes the block after the reports and the caveat block, exactly as the
+    //  direct path does.  Default `true`: every other driver keeps its
+    //  emission where it was (changing them is a measured slice of its own).
+    virtual bool emitsRepresentativeJson() const { return true; }
+
     // Representative final pass --- e.g. the replay at the optimum for
     // OptimizationDriver / DesignSpec.  Lets the main application run the
     // controlDict `reports {}` chain for outer-driver cases too.  Drivers

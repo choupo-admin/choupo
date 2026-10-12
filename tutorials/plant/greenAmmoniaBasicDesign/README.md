@@ -39,11 +39,11 @@ is replaced by:
 
 | unit | what it is | its number, and why |
 |---|---|---|
-| `Bed1` | adiabatic `pfr`, Dyson & Simon (1968) rate law, iron catalyst | 8.72 m³, chosen so the bed **leaves at 515 °C**, 5 K under the 520 °C the base data give as the catalyst's limit; run to a 5 K approach it would leave above that |
+| `Bed1` | adiabatic `pfr`, Dyson & Simon (1968) rate law, iron catalyst | 8.72 m³, SOLVED so the bed **leaves at 515 °C**, 5 K under the 520 °C the base data give as the catalyst's limit; run to a 5 K approach it would leave above that |
 | `InterbedCooler1` | `phaseChanger` to 420 °C, raising HP steam | 420 °C author-set |
-| `Bed2` | the same rate law | 18.23 m³, chosen so the effluent is **5 K short of equilibrium** (US 5,352,428's per bed approach, the base case's source) |
+| `Bed2` | the same rate law | 18.23 m³, SOLVED so the effluent is **5 K short of equilibrium** (US 5,352,428's per bed approach, the base case's source) |
 | `InterbedCooler2` | to 410 °C, raising HP steam | 410 °C author-set |
-| `Bed3` | the same rate law | 31.44 m³, the same 5 K criterion |
+| `Bed3` | the same rate law | 31.45 m³, the same 5 K criterion |
 
 The rate law is the correlation object
 `src/unitOperations/reactor/kinetics/AmmoniaSynthesisRate.{H,cpp}`, selected
@@ -54,14 +54,20 @@ energy recycle through three kinetic beds (the second tear in
 `system/solverDict`). The recycle compressor's power was re-tuned to 908 kW
 so the loop sits again at the base case's 150.9 bar.
 
-**The bed volumes are DECLARED, chosen by running the case** — the base
-case's posture for its compressor powers. They are not solved by a
-DesignSpec, as `ammoniaStaged04_kinetic` solves its one bed, because a
-`$variable` in a unit **folder** does not resolve against the plant's
-`variables {}` block (measured: `Dictionary.cpp:788-792` refuses it), so an
-outer driver cannot reach a unit that lives in its own folder. The run
-prints each bed's `T_out` and `approach_K`: a group that changes anything
-upstream re-tunes them.
+**The bed volumes are SOLVED, not typed** (DEV.md 4c C66). Each bed reads
+its volume as `V_R $V_BedN;` from the plant's `variables {}` block, and
+`system/outerDict` is a 3 x 3 DesignSpec that solves the three together:
+bed 1's `T_out` = 788.15 K (515 °C), beds 2 and 3's `approach_K` = 5 K.
+Simultaneous, because the beds are coupled -- bed 1's conversion sets bed
+2's composition, and bed 3's effluent closes the FEHE recycle that sets bed
+1's inlet. A unit **folder** reaches the plant's variables because a member
+that declares no `variables {}` of its own resolves its `$references`
+against the enclosing level's (`src/unitOperations/flowsheet/MemberFolder.H`);
+until C66 it did not, and these volumes were found by hand. The values in
+`variables {}` are the design point the Newton last converged to, so a run
+without the outerDict RATES the designed beds; a group that changes anything
+upstream re-solves them by running the case. The sizing, relief, costing and
+economics chain runs once, on the replay at the design point.
 
 Douglas's hierarchy: the same levels as the feasibility case, with level 5
 — the heat-exchanger network — now built (the FEHE and the two interbed
@@ -76,7 +82,7 @@ authority on all of them.
 |---|---|---|---|---|---|
 | 1 | 380.6 °C | 515.0 °C | 9.77 % | 35.1 K | 8.72 m³ |
 | 2 | 420.0 °C | 494.0 °C | 14.79 % | 5.0 K | 18.23 m³ |
-| 3 | 410.0 °C | 464.8 °C | 18.76 % | 5.0 K | 31.44 m³ |
+| 3 | 410.0 °C | 464.8 °C | 18.76 % | 5.0 K | 31.45 m³ |
 
 | | this case | feasibility case |
 |---|---|---|
@@ -88,7 +94,7 @@ authority on all of them.
 | feed preheat | 64.01 MW by the FEHE, **recovered** | 60.86 MW of molten salt, **bought** |
 | refrigeration (−20 °C) | 21.31 MW | 20.24 MW |
 | compression | 13.73 MW | 13.67 MW |
-| catalyst | 58.39 m³ | (none: a space-velocity vessel) |
+| catalyst | 58.40 m³ | (none: a space-velocity vessel) |
 | plant first law | closes to 1.76 kW (0.002 %) | 9.0 kW |
 
 An adiabatic bed publishes no duty (`Q_kW` 0), so the steam is raised and

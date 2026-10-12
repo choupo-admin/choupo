@@ -568,6 +568,40 @@ try
     auto flowsheetDict = Dictionary::fromFile(flowsheetPath);
     auto controlDict   = Dictionary::fromFile(resolveUp("system/controlDict"));
 
+    //  A NODE RUN ALONE KEEPS THE PLANT'S VARIABLES SCOPE (DEV.md 4c C66).  A
+    //  unit or sector folder run in place (runCase on the folder: no
+    //  controlDict of its own) is the same dict the plant's flatten reads,
+    //  and there its `$references` resolve against the plant's `variables {}`
+    //  (MemberFolder.H, bindMemberVariables).  Alone, the file had nothing to
+    //  resolve them against and refused a reference the whole-plant run
+    //  accepts -- so the node takes the NEAREST ancestor flowsheetDict that
+    //  declares a `variables {}` block, by the same rule and the same
+    //  shadowing refusal, and says which.  A case root is untouched: it IS
+    //  the level that owns its variables.
+    if (!fs::exists("system/controlDict") && !flowsheetDict->found("variables"))
+    {
+        fs::path p = fs::current_path();
+        for (int up = 0; up < 6 && p.has_parent_path() && p.parent_path() != p; ++up)
+        {
+            p = p.parent_path();
+            for (const char* rel : { "flowsheetDict", "system/flowsheetDict" })
+            {
+                if (!fs::exists(p / rel)) continue;
+                auto anc = Dictionary::fromFile((p / rel).string());
+                if (!anc->varsDict()) continue;
+                bindMemberVariables(flowsheetDict, anc,
+                                    fs::current_path().filename().string(),
+                                    flowsheetPath);
+                std::cout << "[variables] this node declares no `variables {}`;"
+                             " its $references resolve against "
+                          << (p / rel).string() << " -- the level that owns them"
+                             " in the whole-plant run.\n";
+                up = 6;
+                break;
+            }
+        }
+    }
+
     // Verbosity is read HERE (before any thermo load) so the 0-silent contract
     // covers the LOAD phase too: the package/builder announcement chorus below
     // is gated at >= 2, same threshold as the flash's seed line.
@@ -1218,9 +1252,11 @@ try
         bool haveRepresentative = false;
         std::vector<Advisory>          outerAdvisories;
         std::vector<Divergence>        outerDivergences;
+        SimulationResult               representative;   // kept for the result block
         if (driver->hasFinalResult())
         {
-            SimulationResult r = driver->finalResult();
+            SimulationResult& r = representative;
+            r = driver->finalResult();
             runReports(r);
             if (!validate0(r)) finalRc = 1;
             writeConverged(r);
@@ -1337,6 +1373,18 @@ try
         if (postDict)
             dictAudit::report(dictAudit::auditTree(*postDict, "postDict"),
                               verbosity);
+
+        //  THE RESULT BLOCK OF A DRIVER THAT LEAVES IT TO US (DEV.md 4c C66):
+        //  written after the reports{} chain ran on the representative pass,
+        //  so what a report stamps on the result -- the plant-boundary first
+        //  law above all -- is in the block a golden reads, exactly as on the
+        //  direct path below.
+        if (haveRepresentative && !driver->emitsRepresentativeJson())
+        {
+            representative.advisories  = outerAdvisories;
+            representative.divergences = outerDivergences;
+            emitResultJson(std::cout, representative);
+        }
     }
     else
     {

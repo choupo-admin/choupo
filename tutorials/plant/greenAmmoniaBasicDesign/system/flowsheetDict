@@ -38,12 +38,13 @@
                                                                     +------ [Bed3]  5 K approach
 
   WHERE EACH NUMBER COMES FROM: the base case's header for everything it
-  shares.  New here, every one AUTHOR-SET and said in its own file: the bed
-  volumes (each chosen by running the case against a stated criterion --
-  bed 1 leaves at 515 C, under the base data's 520 C catalyst limit; beds 2
-  and 3 leave 5 K short of equilibrium), the two interbed outlet
-  temperatures (420 and 410 C), and the recycle compressor's power,
-  re-tuned so the loop is again at the base case's 150.9 bar.
+  shares.  New here: the bed volumes are SOLVED, not typed -- system/outerDict
+  is a 3 x 3 DesignSpec on $V_Bed1..3 against each bed's stated criterion
+  (bed 1 leaves at 515 C, under the base data's 520 C catalyst limit; beds 2
+  and 3 leave 5 K short of equilibrium).  AUTHOR-SET and said in its own file:
+  the two interbed outlet temperatures (420 and 410 C), and the recycle
+  compressor's power, re-tuned so the loop is again at the base case's
+  150.9 bar.
 
   TOPOLOGY ONLY.  Stream state lives in 0/, one file per stream.
 \*---------------------------------------------------------------------------*/
@@ -111,8 +112,22 @@ connections
     FlashGas            { from StorageFlash/Vapour; }
 }
 
+//  THE THREE NUMBERS THE OUTER DRIVER OWNS (DEV.md 4c C66).  Each bed's
+//  catalyst volume is SOLVED by system/outerDict against its stated criterion
+//  (bed 1 leaves at 515 C; beds 2 and 3 leave 5 K short of equilibrium); the
+//  DesignSpec OVERWRITES these values on every evaluation, starting from its
+//  own `initial`.  They live HERE, at the plant, because a unit folder that
+//  declares no `variables {}` of its own resolves its `$references` against
+//  the plant's (src/unitOperations/flowsheet/MemberFolder.H) -- so
+//  Bed1/system/flowsheetDict reads `V_R $V_Bed1;` and nothing in a bed folder
+//  types a volume.  The values written below are the DESIGN POINT the
+//  DesignSpec last converged to, so a run without the outerDict RATES the
+//  designed beds; they are never a specification.
 variables
 {
+    V_Bed1             8.7238 m3;
+    V_Bed2            18.2281 m3;
+    V_Bed3            31.4450 m3;
     NH3_t_h            { compute "ProductNH3.F * 17.0305 * 3.6"; }
     NH3_t_day          { compute "NH3_t_h * 24"; }
     W_compression_kW   { compute "N2Boost.W_shaft_kW + MakeupComp1.W_shaft_kW + MakeupComp2.W_shaft_kW + RecycleComp.W_shaft_kW"; }

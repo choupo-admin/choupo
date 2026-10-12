@@ -6,18 +6,17 @@
 //  temperature is set by the interbed cooler before it; its outlet
 //  temperature and conversion are RESULTS.
 //
-//  THE VOLUME IS DECLARED, chosen so the effluent is 5 K short of
-//  equilibrium -- the per-bed approach of US 5,352,428 (Bhakta & Grotz 1994),
-//  the same source and value the base case's Gibbs converter declares, read
-//  through this bed's own `approach_K` KPI (T* from the rate law's own Ka).
-//  Found by running the case; it moves the day anything upstream moves, and
-//  the run prints the approach -- read it.  Bed1's header says why no
-//  DesignSpec solves it.
+//  THE VOLUME IS SOLVED so the effluent is 5 K short of equilibrium -- the
+//  per-bed approach of US 5,352,428 (Bhakta & Grotz 1994), the same source
+//  and value the base case's Gibbs converter declares, read through this
+//  bed's own `approach_K` KPI (T* from the rate law's own Ka).  The volume is
+//  `$V_Bed2`, declared in the plant's `variables {}` and solved by the
+//  DesignSpec in system/outerDict; Bed1's header says how a folder reaches it.
 
 type      pfr;
 operation
 {
-    V_R          18.23 m3;      // catalyst bed -- chosen for a 5 K approach; see above
+    V_R          $V_Bed2;       // catalyst bed -- SOLVED by system/outerDict; see above
     nSteps       400;           // RK4 axial steps
     thermalMode  adiabatic;     // T is a RESULT: the bed heats itself
 }

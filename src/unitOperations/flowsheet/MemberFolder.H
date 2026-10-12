@@ -78,6 +78,51 @@ inline std::string resolveMemberBase(const std::string& folderPath,
 /// Open the member's dict: its folder's flowsheetDict (lean, then system/),
 /// else the parent's inline block of that name.  `memberBase` receives the
 /// resolved directory.  Throws naming both paths tried when nothing is found.
+/// THE VARIABLES SCOPE REACHES A MEMBER FOLDER (DEV.md 4c C66, 2026-10-12).
+/// A member read from its OWN file is parsed on its own, so a `$name` in it
+/// had nothing to resolve against: the plant's `variables {}` block lives in
+/// the ROOT dict, and `Dictionary::fromFile` hands each file only the block
+/// that file itself declares.  So a DesignSpec -- which writes
+/// `variables.<name>` on a clone of the root -- could not reach a value in a
+/// unit folder at all (C57: the green-ammonia beds had to be tuned by hand).
+/// The rule, ONE home for both readers of a member: a member that declares
+/// no `variables {}` of its own resolves its `$references` against its
+/// PARENT's scope (which is the plant's, transitively), and the binding is
+/// LIVE -- the parent's block is shared, never copied, so a driver's write
+/// reaches the leaf exactly as it reaches an inline unit.  A member that
+/// DOES declare its own block keeps it as its scope, and a name it shares
+/// with an enclosing scope is REFUSED: an outer driver writing the plant's
+/// `$x` would otherwise miss the member reading its own `$x`, in silence.
+/// (Nothing else crosses: a member never sees its parent's other entries.)
+inline void bindMemberVariables(const DictPtr&     cd,
+                                const DictPtr&     parent,
+                                const std::string& member,
+                                const std::string& where)
+{
+    if (!cd || !parent || !parent->varsDict()) return;
+    const DictPtr outer = parent->varsDict();
+    if (cd->found("variables")
+        && std::holds_alternative<DictPtr>(cd->entryValue("variables")))
+    {
+        const DictPtr own = cd->subDict("variables");
+        for (const auto& k : own->keys())
+            if (outer->found(k))
+                throw std::runtime_error("Flowsheet: member '" + member + "' ("
+                    + where + ") declares its own `variables { " + k
+                    + " ...; }`, and an enclosing level declares `" + k
+                    + "` too.  The member would read its OWN value while an"
+                    " outer driver (designSpec, sweep, optimisation) writes"
+                    " the enclosing one -- a manipulated variable that moves"
+                    " nothing, in silence.  Declare `" + k + "` ONCE, at the"
+                    " level that owns it (the plant's `variables {}`), and"
+                    " delete it here: a member with no `variables {}` of its"
+                    " own resolves its `$references` against the enclosing"
+                    " level's.");
+        return;                                   // its own scope, no collision
+    }
+    cd->propagateVarsDict(outer);
+}
+
 inline DictPtr readMemberDict(const DictPtr&     parent,
                               const std::string& folderPath,
                               const std::string& member,
@@ -86,8 +131,13 @@ inline DictPtr readMemberDict(const DictPtr&     parent,
     memberBase = resolveMemberBase(folderPath, member);
     const std::string leanDict   = memberBase + "flowsheetDict";
     const std::string systemDict = memberBase + "system/flowsheetDict";
-    if (std::filesystem::exists(leanDict))   return Dictionary::fromFile(leanDict);
-    if (std::filesystem::exists(systemDict)) return Dictionary::fromFile(systemDict);
+    for (const std::string& p : { leanDict, systemDict })
+        if (std::filesystem::exists(p))
+        {
+            DictPtr cd = Dictionary::fromFile(p);
+            bindMemberVariables(cd, parent, member, p);
+            return cd;
+        }
     if (parent && parent->found(member))      return parent->subDict(member);
     throw std::runtime_error("Flowsheet: member '" + member
         + "' has neither a folder (" + leanDict + " or " + systemDict

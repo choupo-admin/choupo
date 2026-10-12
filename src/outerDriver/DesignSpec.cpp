@@ -29,7 +29,6 @@ License
 #include "DesignSpec.H"
 #include "ResponseExtractor.H"
 #include "core/Dictionary.H"
-#include "result/ResultEmitter.H"
 #include "postProcessing/PostProcessor.H"
 #include "solver/NewtonND.H"
 #include "streams/StreamOverrides.H"
@@ -321,7 +320,10 @@ int DesignSpec::run()
         for (auto& pp : chain) pp->run(finalResult);
     }
     setFinalResult(finalResult);          // expose for the reports{} chain
-    emitResultJson(std::cout, finalResult);
+    //  The result block is written by main.cpp AFTER the reports{} chain has
+    //  run on this pass (emitsRepresentativeJson() == false, OuterDriver.H):
+    //  emitting it here put the plant-boundary first law out of the golden's
+    //  reach.
 
     return R.converged ? 0 : 1;
 }
