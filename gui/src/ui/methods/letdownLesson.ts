@@ -128,9 +128,10 @@ export const LETDOWN_STEPS: readonly LessonStep[] = [
         + "specification", unit: "Pa" },
     ],
     note: "The engine's valve: src/unitOperations/valve/Valve.H:32 states "
-      + "the isenthalpic balance, and src/unitOperations/valve/Valve.cpp:130 "
+      + "the isenthalpic balance, and src/unitOperations/valve/Valve.cpp:147 "
       + "is the residual its Newton drives to zero, flashing the stream at "
-      + "the outlet pressure at every trial temperature.",
+      + "the outlet pressure at every trial temperature and pricing both "
+      + "ends on the surface the plant's energy report uses.",
   },
   {
     n: 2,
@@ -193,7 +194,7 @@ u &= \frac{4\,Q}{\pi D^2}
       { sym: "\\pi", means: "the ratio of a circle's circumference to its "
         + "diameter, 3.14159...", unit: "–" },
     ],
-    note: "src/unitOperations/valve/Valve.cpp:236 is where the valve "
+    note: "src/unitOperations/valve/Valve.cpp:263 is where the valve "
       + "builds Q at each end: the liquid density from the record's Vliq "
       + "carried in temperature by Rackett, the vapour density from the "
       + "equation of state (src/thermo/ThermoPackage.cpp:1875).  The "
@@ -280,10 +281,10 @@ Y &= 1 - \frac{x}{3\,F_\gamma\, x_T}, \qquad W \propto Y \sqrt{x}
       + "the purge -- so the outlet line runs fast unless its bore is "
       + "enlarged.  And a real gas changes temperature on throttling "
       + "(the Joule-Thomson effect): most gases cool, which the material of "
-      + "the downstream pipe must tolerate.  Choupo's valve does not "
-      + "compute that last effect for a gas: its vapour enthalpy carries no "
-      + "pressure term, so it returns the inlet temperature (the limits "
-      + "below).",
+      + "the downstream pipe must tolerate.  Choupo's valve computes it: "
+      + "both ends are priced on the package's own enthalpy surface, whose "
+      + "vapour carries the equation of state's pressure term, so the purge "
+      + "leaves the valve a few kelvin colder than it came in.",
     formula: String.raw`\frac{Q_2}{Q_1} = \frac{\rho_1}{\rho_2}`,
     where: [
       { sym: "Q_1", means: "the volumetric flow entering the valve", unit:
@@ -292,9 +293,11 @@ Y &= 1 - \frac{x}{3\,F_\gamma\, x_T}, \qquad W \propto Y \sqrt{x}
       { sym: "\\rho_1", means: "the density entering", unit: "kg/m3" },
       { sym: "\\rho_2", means: "the density leaving", unit: "kg/m3" },
     ],
-    note: "The valve's vapour enthalpy is ThermoPackage::Hvapour "
-      + "(src/thermo/ThermoPackage.cpp:1069), a function of temperature and "
-      + "composition only.",
+    note: "Both ends of the valve are priced by flashState::priceState "
+      + "(src/unitOperations/flash/StreamEquilibrium.H:822), the same call "
+      + "the energy report's rule is; on an SRK package its vapour "
+      + "enthalpy includes the departure from the ideal gas, which is the "
+      + "Joule-Thomson effect.",
   },
 
   // ---- Part 3: liquid ------------------------------------------------------------
@@ -575,16 +578,6 @@ export const LETDOWN_LIMITS: readonly LessonLimit[] = [
     body: "The engine's valve is an isenthalpic throttle with a flash: no "
       + "flow coefficient, no choke, no cavitation check, no noise.  Those "
       + "are this page's arithmetic on the engine's fluid properties." },
-  { id: "valve-surface",
-    title: "The valve's energy balance is on its own surface",
-    body: "The valve balances enthalpy with a liquid enthalpy built from "
-      + "a Watson latent heat and an ideal-gas vapour enthalpy, while the "
-      + "plant's energy report prices the same streams on the formation "
-      + "surface with SRK.  On the letdown witness the report finds about "
-      + "39 kW it cannot attribute, almost all of it in the second "
-      + "ammonia throttle, and the gas valve shows no Joule-Thomson "
-      + "effect at all.  The gate check_energy_closure pins that residual, "
-      + "as it pins the same family on credo01_valve_heater_drum." },
   { id: "density",
     title: "The ammonia liquid density is high",
     body: "The engine prices liquid ammonia from the record's Vliq, carried "
@@ -593,8 +586,10 @@ export const LETDOWN_LIMITS: readonly LessonLimit[] = [
       + "about an eighth too high: the record's Vliq matches ammonia at its "
       + "normal boiling point, not at 25 °C where the engine anchors it.  "
       + "So the inlet volumetric flows here are about an eighth low and the "
-      + "volume ratios about an eighth high.  The record is the curator's "
-      + "to correct; this page does not." },
+      + "volume ratios about an eighth high.  The catalogue record has since "
+      + "been corrected to the 25 °C value; the witness runs its own sealed "
+      + "copy of the record, which keeps the old value until the case is "
+      + "re-imported, so the numbers on this page still carry the error." },
   { id: "homogeneous",
     title: "The two phases move together",
     body: "The outlet volume is homogeneous: no slip between the vapour and "

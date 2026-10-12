@@ -432,7 +432,6 @@ KNOWN_OPEN = {
     "tutorials/plant/esterification2sector": 170.9790,
     "tutorials/plant/polycaprolactonePlant": 20.0100,
     "tutorials/steady/flowsheets/cavett01_recycle_train": 88.0220,
-    "tutorials/steady/flowsheets/credo01_valve_heater_drum": 2.0940,
     "tutorials/steady/flowsheets/proxy01_gas_loop": 51.9550,
     "tutorials/steady/gibbs/gibbs07_wgs_cooled": 150.7280,
     "tutorials/steady/gibbs/gibbs08_wgs_cooled_reactiveflash": 150.7280,
@@ -461,6 +460,15 @@ KNOWN_OPEN = {
 #  report filed a multi-feed column as an internal heat exchanger by its port
 #  count and dropped both duties.  Internal-exchanger status is read off the
 #  unit type now; both close at 0.0000 kW.  PAID, not waived.
+#  ONE ENTRY LEFT IT ON 2026-10-11 (DEV.md 4c C65 item d), and one left
+#  KNOWN_OPEN: letdown01_ammonia_flashing (+38.6639 kW, joined by C64 the same
+#  day) and credo01_valve_heater_drum (2.0940 %, -5.4445 kW).  The `valve`
+#  balanced H_out = H_in on its OWN surface (Hliquid/Hvapour at a Tref -- a
+#  Watson latent heat and an ideal-gas vapour with no pressure term) while the
+#  report priced the same streams on the formation surface with SRK; it now
+#  prices both ends through `flashState::priceState`.  Measured after:
+#  letdown01 +0.0001 kW (the two drums' -6.2e-5 and -1.5e-5 kW), credo01
+#  -0.0000 kW (0.000 %).  PAID, not waived; the valve joined the unit arm.
 KNOWN_OPEN_KW = {
     "tutorials/steady/absorption/absorber01_NH3_water": -27.9838,
     "tutorials/steady/absorption/acetone05_luyben_absorber": 3.1179,
@@ -469,18 +477,6 @@ KNOWN_OPEN_KW = {
     "tutorials/steady/distillation/shortcut01_benzene_toluene": -1.0804,
     "tutorials/steady/flash/flash20_ethanol_water_pcsaft": 42.8610,
     "tutorials/steady/heat/coolingTower01_merkel": 1.5666,
-    #  JOINED 2026-10-11 (DEV.md 4c C64), measured from the case's own
-    #  globalEnergyBoundary line on the day it was written: the `valve`
-    #  balances H_out = H_in on ITS OWN surface (Hliquid/Hvapour with a Tref
-    #  -- a Watson latent heat and an ideal-gas vapour, no pressure term),
-    #  while the report prices the same streams on the formation surface
-    #  with SRK.  ValveLP (liquid ammonia flashing 20 bar -> 1 atm) leaves
-    #  -39.50 kW of it, ValveHP +0.40 and the purge's gas valve +0.44 (the
-    #  Joule-Thomson effect the unit does not compute).  The same family as
-    #  credo01_valve_heater_drum's pin above; the fix is the valve pricing
-    #  through `flashState::priceState`, which moves both existing valve
-    #  cases' goldens and is therefore Vitor's list, not this slice's.
-    "tutorials/steady/hydraulics/letdown01_ammonia_flashing": 38.6639,
     "tutorials/steady/userops/userOp01_yield_reactor": 2.1701,
 }
 
@@ -542,6 +538,13 @@ UNIT_BOUNDARY_DUTY = {"distillationColumn"}
 UNIT_ADIABATIC = {"sprayDryer", "solidDryer", "convectiveDryer"}
 UNIT_MATERIAL_HEAT = {"evaporator"}
 UNIT_DUTY_IS_DH = {"cstr", "conversionReactor"}
+#  `valve` joined 2026-10-11 (DEV.md 4c C65 item d): a throttle declares no
+#  heat and no work, so the report's remainder for it IS the enthalpy change
+#  across its own two streams -- and it must be zero now that it prices both
+#  ends through `flashState::priceState`.  It was not: letdown01's ValveLP
+#  left -39.5039 kW and credo01's V1 +5.4445 kW, each the Watson latent heat
+#  and the ideal-gas vapour of the unit's own surface against the report's.
+UNIT_THROTTLE = {"valve"}
 UNIT_TOL_KW = 1.0e-4
 #  WITNESSES the arm must READ whenever their case is in scope, so it cannot
 #  go green by reading nothing (the check_true_ions shape): the flagship's two
@@ -572,6 +575,15 @@ UNIT_WITNESSES = {
     ("tutorials/steady/distillation/column04_multifeed_sidedraw", "radfracLite"),
     ("tutorials/steady/distillation/column08_radfrac_multidraw", "radfrac"),
     ("tutorials/steady/distillation/column01_benzene_toluene", "column01"),
+    #  The valve: a liquid that hardly flashes (dissolved gas only), a liquid
+    #  that flashes across its vapour pressure, a gas throttled on SRK (its
+    #  Joule-Thomson cooling), a benzene-toluene liquid flashing on an ideal
+    #  package, and an undeclared vapour inlet.
+    ("tutorials/steady/hydraulics/letdown01_ammonia_flashing", "ValveHP"),
+    ("tutorials/steady/hydraulics/letdown01_ammonia_flashing", "ValveLP"),
+    ("tutorials/steady/hydraulics/letdown01_ammonia_flashing", "PurgeValve"),
+    ("tutorials/steady/flowsheets/credo01_valve_heater_drum", "V1"),
+    ("tutorials/steady/flowsheets/inletState01_undeclared_vapour", "V1"),
 }
 UNIT_HEADER = re.compile(r">>>  Unit \[\d+\]:\s+(\S+)\s+\(type = (\w+)\)")
 
@@ -594,6 +606,7 @@ def judge_units(rel: str, txt: str, seen: set, stats: dict, bad: list):
     types = dict(UNIT_HEADER.findall(txt))
     if not any(t in UNIT_ADIABATIC or t in UNIT_DUTY_IS_DH
                or t in UNIT_MATERIAL_HEAT or t in UNIT_BOUNDARY_DUTY
+               or t in UNIT_THROTTLE
                for t in types.values()):
         return
     closures = json_block(txt, "energyClosures")
@@ -621,6 +634,11 @@ def judge_units(rel: str, txt: str, seen: set, stats: dict, bad: list):
                    "balance by construction -- a remainder equal to its "
                    "Q_reboiler + Q_condenser means the REPORT dropped both "
                    "duties (reporting::isProcessToProcessExchanger, C35)" % t)
+        elif t in UNIT_THROTTLE:
+            why = ("a %s is an isenthalpic throttle -- no heat, no work -- so "
+                   "this is the enthalpy change across its own two streams, "
+                   "and its H_out = H_in must hold on the surface the report "
+                   "prices them on (C65 item d)" % t)
         elif t in UNIT_DUTY_IS_DH and "Q_kW" in kpis.get(unit, {}):
             why = ("a %s publishes Q_kW = H_out - H_in on the streams it "
                    "publishes, so nothing may remain unattributed" % t)
@@ -986,7 +1004,8 @@ def main() -> int:
           "sprayDryer/solidDryer/convectiveDryer; an evaporator, whose heat "
           "crosses as its own chest and condensate streams; a "
           "distillationColumn, whose reboiler and condenser cross the "
-          "boundary whatever its feed count; a "
+          "boundary whatever its feed count; a valve, an isenthalpic "
+          "throttle; a "
           "cstr/conversionReactor "
           "that published "
           "Q_kW) leave no more than %.0e kW unattributed in the report, "
