@@ -907,6 +907,31 @@ accepts today, and that is a policy call.
 
 ## 4c. Commissioned by Vítor (he ASKED for this; it is not a candidate)
 
+> **C70. THE LETDOWN EDUTOOL, REVIEWED (Vítor, 2026-10-12: "O chatGPT
+> reviu isto.  Pode ver o que podes aproveitar?").**  A 15-point review of
+> the C64 large-pressure-letdown EduTool plus three citation fixes; the
+> commander's reading: all 15 are substantively right (the architecture of
+> the chapter is kept).  Taken: no universal 10x ratio criterion; a valve
+> conserves h -- what is destroyed is availability/exergy, never "pressure
+> energy degraded into internal energy"; "222 kW hydraulic power
+> dissipated", not "heat"; choking limits MASS FLOW (supersonic flow can
+> exist downstream); the gas equation shows the cap
+> x_eff = min(x, F_gamma x_T); "chokes later" is true only for the
+> illustrative x_T = 0.7; F_F carries its square root wherever printed
+> (the lesson source has it, verify the render); P_vc = -3.44 bar is the
+> single-phase extrapolation, NONPHYSICAL -- vaporisation chokes first,
+> near P2 = 20 - 0.81(20 - 1.75) = 5.22 bar; "two-phase equilibrium state"
+> not "boiling point" (dissolved H2/N2/Ar; IEC liquid equations not meant
+> for mixtures); "even a small pressure reduction CAN begin to release
+> dissolved gas"; staging prevents/mitigates cavitation, cannot remove
+> thermodynamically required final flashing (an orifice moves it); IEC
+> 60534-8-4 does not predict flashing noise; the 74.6 K expander outlet is
+> a FORMAL ideal-gas estimate (condensation possible, needs an isentropic
+> equilibrium flash); ANSI/ISA-75.01.01-2012 and ISA-RP75.23-1995 (R2024)
+> (to be verified against ISA's own listing before citing); EU 80/85/87
+> dB(A) are daily L_EX,8h values, weekly only in the directive's specific
+> circumstances.  Status: dispatched 2026-10-12.
+
 > **PHASE CONSOLIDATED 2026-10-12 (Vítor: "Consolida esta fase como achares
 > melhor", weekly credit near its limit).**  `main` 23d4cdbcb is clean, no
 > general running, no branch unmerged.  MERGED this phase: C60 safety
