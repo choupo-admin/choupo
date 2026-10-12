@@ -41,6 +41,11 @@ base data):
 | 3 | [`greenAmmonia03_basicDesign`](../greenAmmonia03_basicDesign) | FEL-3, basic design (process side) | three adiabatic beds on the Dyson-Simon rate law, volumes solved by a DesignSpec, Ergun pressure drop | every exchanger designed (Kern) | Turton capital and a DCF, still an equipment-factored estimate | what exactly is built |
 | — | [`greenAmmoniaPEQ_baseCase`](../greenAmmoniaPEQ_baseCase) | the brief's reference case, outside the numbering | one Gibbs reactor 5 K short of equilibrium | six exchangers designed (Kern) | Turton capital and a DCF | the starting point: rungs 2 and 3 are copies of it with one thing changed |
 
+What changes between rungs 2 and 3 — consumptions, investment and the NPV,
+each difference traced to what changed between the two stages — is a
+section of the basic-design case's README, generated from the engine's runs
+of both: [From feasibility to basic design](../greenAmmonia03_basicDesign/README.md#from-feasibility-to-basic-design-what-changed-and-why).
+
 **The reactor-model ladder** (one 200 bar synthesis loop, nothing but the
 converter moves):
 
