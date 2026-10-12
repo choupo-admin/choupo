@@ -3739,15 +3739,30 @@ PYEOF
     fi
     rm -f /tmp/friction.$$
 
-    # ammonia-rate gate (2026-09-21).  Dyson & Simon's 1968 rate law became a
-    # cited object with a window, a citation and five verify() anchors that
-    # each state whether they are THEORY or ARITHMETIC -- nothing in this tree
-    # measures an ammonia rate.  The gate re-implements Eqs 2/6-8/19/39 and
-    # reproduces the witness's diagnostics, fires all five refusals, and holds
-    # the three states transcribed from ammonia03 to that case's converged
-    # answer.  Eleven sabotages, two of which did not do what was predicted
-    # (one masked the arm it was aimed at; one survived and closed a real
-    # blind spot in the recomputation).
+    # rate-expression gate (2026-10-12, DEV.md 4c C67).  A rate law written in
+    # the case is compiled, dimension-checked, printed back as parsed and
+    # evaluated as declared; the C++ route (a law registered from code/) and
+    # the formula route agree on one law and equal its closed form; 15
+    # refusals by name.  Six by-hand sabotages, one of which survived first
+    # contact.
+    if "$ROOT/bin/curate/check_rate_expression.py" > /tmp/rateexpr.$$ 2>&1; then
+        printf "PASS  %-40s  (%s)\n" "rate-expression-gate" "$(head -1 /tmp/rateexpr.$$)"
+        pass=$((pass+1))
+    else
+        printf "FAIL  %-40s  (run bin/curate/check_rate_expression.py)\n" "rate-expression-gate"
+        cat /tmp/rateexpr.$$
+        fail=$((fail+1))
+    fi
+    rm -f /tmp/rateexpr.$$
+
+    # ammonia-rate gate (2026-09-21; rewritten 2026-10-12, DEV.md 4c C67).
+    # Dyson & Simon's 1968 rate law is WRITTEN in the three cases that use it
+    # (`type expression` in constant/reactions); the anchors that lived in the
+    # compiled law live here now, evaluated on EACH case's declared law.  The
+    # gate holds the three copies to each other, re-implements Eqs 2/6-8/19/39
+    # and reproduces the bench's diagnostics, fires the law's declared
+    # refusals, and holds the bench's three transcribed states to ammonia03's
+    # converged answer.  Six by-hand sabotages, all caught.
     if "$ROOT/bin/curate/check_ammonia_rate.py" > /tmp/ammrate.$$ 2>&1; then
         printf "PASS  %-40s  (%s)\n" "ammonia-rate-gate" "$(head -1 /tmp/ammrate.$$)"
         pass=$((pass+1))

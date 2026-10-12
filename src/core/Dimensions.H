@@ -201,6 +201,10 @@ inline constexpr Dimensions permeabilitySolute = velocity;
 // ----- kinetic ------------------------------------------------------------
 //   Arrhenius pre-exponential A_pre for a first-order reaction in s⁻¹.
 inline constexpr Dimensions inverseTime    = {  0,  0, -1,  0,  0 };  // 1/s
+//   The value of a `type expression` rate law (thermo/reaction/ExpressionRate):
+//   per reactor volume, or per catalyst mass.
+inline constexpr Dimensions reactionRate         = {  0, -3, -1,  0,  1 };  // kmol/(m³·s)
+inline constexpr Dimensions specificReactionRate = { -1,  0, -1,  0,  1 };  // kmol/(kg·s)
 
 } // namespace Dims
 

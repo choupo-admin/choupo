@@ -179,11 +179,27 @@ const TABLE: Record<string, UnitSpec> = {
   "kJ/mol": { factor: 1.0e3, affine: false },
   "J/kmol": { factor: 1.0e-3, affine: false },
   "kJ/kmol": { factor: 1.0, affine: false },
+  // the thermochemical calorie, 4.184 J exactly (mirrors src/core/Units.cpp;
+  // a 1960s rate law's E and the R it is written with)
+  "cal/mol": { factor: 4.184, affine: false },
+  "kcal/mol": { factor: 4184.0, affine: false },
 
   // molar heat capacity → J/(mol.K)  (mirrors src/core/Units.cpp)
   "J/(mol.K)": { factor: 1.0, affine: false },
   "J/(kmol.K)": { factor: 1.0e-3, affine: false },
   "kJ/(kmol.K)": { factor: 1.0, affine: false },
+  "cal/mol/K": { factor: 4.184, affine: false },
+
+  // reaction rate → kmol/(m3.s) per volume, kmol/(kg.s) per catalyst mass
+  // (mirrors src/core/Units.cpp; a `type expression` rate law's value)
+  "kmol/m3/s": { factor: 1.0, affine: false },
+  "kmol/m3/h": { factor: 1.0 / 3600.0, affine: false },
+  "mol/m3/s": { factor: 1.0e-3, affine: false },
+  "mol/L/s": { factor: 1.0, affine: false },
+  "kmol/kg/s": { factor: 1.0, affine: false },
+  "kmol/kg/h": { factor: 1.0 / 3600.0, affine: false },
+  "mol/g/s": { factor: 1.0, affine: false },
+  "mol/kg/s": { factor: 1.0e-3, affine: false },
 
   // amount → kmol
   mol: { factor: 1.0e-3, affine: false },

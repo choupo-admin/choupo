@@ -29,6 +29,7 @@ License
 #include "CSTR.H"
 #include "CatalystPellet.H"
 #include "core/Constants.H"
+#include "thermo/reaction/ExpressionRate.H"
 #include "thermo/reaction/ReactionRate.H"
 #include "thermo/reaction/Reaction.H"
 #include "solver/NewtonRaphson.H"
@@ -960,6 +961,8 @@ int CSTR::solveMultiReaction(const DictPtr&       dict,
                 std::cout << "(none declared)";
             std::cout << "   xi = " << xi[j] << " mol/s"
                       << "   [" << law[j]->typeName() << "]\n" << std::fixed;
+            if (const ExpressionRate* ex = law[j]->asExpression())
+                std::cout << ex->describe("      ");
         }
         std::cout << "=====================================================================\n\n";
     }

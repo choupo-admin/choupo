@@ -28,6 +28,7 @@ License
 
 #include "ReactionRate.H"
 
+#include "ExpressionRate.H"
 #include "RateLaw.H"
 #include "core/RegistryRefusal.H"
 #include "thermo/ThermoPackage.H"
@@ -110,6 +111,16 @@ void ReactionRate::registerBuiltins()
     };
     registerType("Arrhenius", powerLaw);
     registerType("LHHW",      powerLaw);
+    registerType("expression",
+        [](const DictPtr& rxn, const ThermoPackage& thermo,
+           const std::string& who, const RateOffer& offer)
+            -> std::unique_ptr<ReactionRate>
+        {
+            std::vector<std::string> comps;
+            for (std::size_t i = 0; i < thermo.n(); ++i)
+                comps.push_back(thermo.comp(i).name());
+            return std::make_unique<ExpressionRate>(rxn, comps, who, offer);
+        });
 }
 
 } // namespace Choupo
