@@ -1991,6 +1991,81 @@ accepts today, and that is a policy call.
      loop (membrane18), the dynamic loop (unsteady03), the UF law
      (membrane19) and the UF loop in time (unsteady04).
 
+**C68. ONE LADDER FOR THE AMMONIA CASES, AND ITS MISSING FIRST RUNG
+(Vítor, 2026-10-12, verbatim: "os vários níveis de simulação do processo de
+amónia têm a nomenclatura confusa. Não se percebe a sequência de
+refinação da simulação, desde o Gibbs, ao pfr com dimensionamento
+detalhado de tudo", then "Avança com isso e faz também o screening").**
+Measured: two ladders on two axes share one vocabulary --
+`ammoniaStaged01_yield`..`04_kinetic` is a REACTOR-MODEL ladder in one
+loop (its texts say "stage A of three" and "stage D of four"), while
+`greenAmmoniaFeasibility`, `...50bar`, `greenAmmoniaBasicDesign` are
+PROJECT-STAGE rungs (FEL-2, FEL-3) of the whole plant, and
+`greenAmmoniaIndustrialN2` (the PEQ base case, a hybrid) is named by its
+N2 source; there is NO ammonia FEL-1 screening (route screening exists for
+methanol only: `screen01_methanol_routes`, `RouteScreeningTool`).
+Decided (names on a stated default, flat prefixed names because the case
+index and FASTSET treat each `tutorials/plant/<dir>` as one case family --
+nested case folders were not measured to work):
+`greenAmmonia1_screening` (NEW, FEL-1: input-output gross margin of the
+reaction routes), `greenAmmonia2_feasibilityGibbs150bar`,
+`greenAmmonia2_feasibilityGibbs50bar`, `greenAmmonia3_basicDesignPFR`,
+`greenAmmoniaPEQ_baseCase` (outside the ladder, says it is the hybrid base
+case), and the reactor ladder `ammoniaReactorLadder1_conversion`,
+`2_gibbs`, `3_gibbsApproach`, `4_pfrKinetic` ("rung N of 4"); a README map
+of the sequence (stage, reactor model, exchangers, estimate class, what is
+decided); old names kept as aliases so shared `?case=` links resolve.
+Sequenced: the screening case now (new files only); the renames AFTER C66
+merges (it edits greenAmmoniaBasicDesign), and BEFORE C67.  Status:
+screening dispatched 2026-10-12.
+NAMES REVISED 2026-10-12 after a second opinion Vítor relayed (accepted):
+keep the TWO axes (reactor-model fidelity vs project stage -- one ladder
+would teach that a project only matures by swapping Gibbs for a PFR),
+name each case by its PURPOSE, models in the description, two digits:
+`ammoniaRoutes01_screening` (three production routes, not "green"),
+`greenAmmonia02_feasibility150bar`, `greenAmmonia02_feasibility50bar`
+(an exploratory alternative of the same stage, its catalyst hypothesis
+visible), `greenAmmonia03_basicDesign`, `greenAmmoniaPEQ_baseCase`
+(the brief's reference case, different detail in different equipment --
+outside the numbering, linked to both), `ammoniaReactor01_fixedConversion`,
+`02_equilibrium`, `03_equilibriumApproach`, `04_kineticSizing` (the engine
+solves the volume); `ammonia01/02/03` stay as "synthesis-loop
+fundamentals" with their 200 bar, capacity and model boundary stated (no
+"full ammonia plant" claim if syngas production is not modelled); aliases
+kept, the catalogue shows canonical names only.  Three additions taken:
+the screening compares routes on an equivalent basis (assumed specific
+energy consumptions); the feasibility cases gain a preliminary CAPEX and a
+sensitivity; a feasibility -> basic-design comparison of consumptions,
+investment and profitability, each difference traced to the model change.
+And FEL stage is never equated with an AACE class (maturity of definition
+decides the class): tables say "illustrated design stage".
+
+**C67. A CASE CARRIES ITS OWN KINETICS: RATE EXPRESSIONS IN THE DICT, AND A
+FACTORY A CASE'S `code/` CAN REGISTER INTO (Vítor, 2026-10-12, verbatim:
+"Eu até aceito o /user, mas o código tem de ficar no caso!!! ... Isto é a
+única forma de o caso ficar auto contido", then "Faz o 3" to the
+commander's three options -- ARCHITECTURE DECISION, his).**  Measured: the
+`pfr` dispatches kinetics on a fixed word list, `{ "Arrhenius", "LHHW",
+"dysonSimon1968" }` (`src/unitOperations/reactor/PFR.cpp:101`, `:353`,
+`:733`), not a factory; the Dyson-Simon constants are `constexpr` in
+`src/unitOperations/reactor/kinetics/AmmoniaSynthesisRate.cpp:42-54`;
+case-local C++ exists for UNIT OPERATIONS only (`<case>/code/` +
+`registerUserTypes()`, built by `bin/buildCode` into a per-case binary,
+`src/applications/choupoSolve/main.cpp:128-134,459`; witnesses
+`tutorials/steady/userops/userOp01_yield_reactor`, `userOp02`), and a case
+with `code/` does NOT run on the site (no compiler in the browser).  The
+decision: (i) `type expression;` -- the rate law written in
+`constant/reactions` with its named parameters, evaluated by a small
+dependency-free expression evaluator in the engine, runs everywhere; (ii)
+a `ReactionRate` base with the explicit factory (`registerType`/`New`/
+`registerBuiltins`), Arrhenius and LHHW as built-ins, and
+`registerUserTypes()` able to register a case-local law from `code/`
+(local only, said so); (iii) the ammonia law re-expressed in each case's
+`constant/reactions` through route (i), every number visible, and the C++
+`AmmoniaSynthesisRate` retired or reduced to the verification anchors
+(one home).  Sequenced AFTER C66 items 1 and 3 merge (both touch
+`PFR.cpp`).  Status: waiting on C66.
+
 **C66. THE GREEN-AMMONIA CONVERTER BEDS, SIZED AS A BASIC DESIGN SIZES
 THEM (Vítor, 2026-10-12, asking "No Ammonia Green Design, como é que o PFR
 é dimensionado?"; taken under his standing "Avança da melhor forma").**
@@ -2003,7 +2078,7 @@ DesignSpec cannot reach it (C57); the rate is Dyson-Simon Eq 19 with the
 effectiveness factor taken as 1 (`effectivenessFactor intrinsic`,
 announced as unpriced; the paper's Eq 39 exists in the engine and needs a
 particle diameter); the `pfr` computes NO pressure drop (`PFR.cpp` has no
-Ergun term; `pellet/Catalyst.H` names Ergun as a future reader); the sizer
+Ergun term; `src/unitOperations/reactor/pellet/Catalyst.H` names Ergun as a future reader); the sizer
 then wraps V_R in a straight cylinder at a declared L/D 6 and prices
 V_R x 2500 kg/m3 of catalyst (both author-set).  Scope: (1) let a
 DesignSpec reach a unit-folder variable, and SOLVE each bed's V_R to its
@@ -2012,6 +2087,21 @@ particle size; (3) an opt-in Ergun pressure drop in the `pfr` on the bed's
 own cross-section, so the L/D is checked against an allowable drop rather
 than typed.  Moved rows listed before any record.  Status: dispatched
 2026-10-12.
+RULING 2026-10-12 (Vítor, verbatim: "Um PFR tem de ter os parâmetros
+cinéticos definidos no caso em /constant não é? ... Isto assim não é nada
+glass box com tudo definido nos dicionários!"): KINETIC PARAMETERS ARE
+DECLARED IN THE CASE'S `constant/`, never compiled into the engine.  A law
+object keeps its FUNCTIONAL FORM in code; every NUMBER it uses (Dyson-Simon:
+k0, E, Ka constants, fugacity-correlation constants, Table I) is declared
+in `constant/reactions` with units and a source per group, read by the
+engine, refused if missing; the paper's values survive in code only as
+verification anchors, and a case value that differs from the paper's is
+announced.  This is the three-axiom layout's own axiom 3 (equipment-
+dependent kinetics -> case constant/), which the `constexpr` constants in
+`AmmoniaSynthesisRate.cpp:42-54` contradicted.  Added to C66 as item 4
+(done first): migrate every dysonSimon1968 case byte-identically.
+SUPERSEDED the same day by C67 (option 3): item 4 stopped, item 2 deferred
+until C67 lands; items 1, 3 and the banner fix continue.
 
 **C65. THE DEBTS THE SAFETY AND LETDOWN SLICES FOUND: THREE RECORDS, ONE
 VALVE, ONE GATE (commander, 2026-10-11, under Vítor's "Avança da melhor
@@ -2397,6 +2487,44 @@ chemist, not "two engineers"; caveats BEFORE the simulation; code paths
 into a collapsible technical note; minimum-boiling azeotropes named; the
 mixture cp varies with composition while the component cp are constant.
 Dispatched 2026-10-11.
+MERGED 2026-10-12: the witnesses' own goldens re-recorded with the list
+shown to Vítor (ΔT_ad 107.77 -> 74.07 K, batch MTSR 437.77 -> 404.07 K,
+semi-batch MTSR 348.29 -> 339.73 K right after portion 6, bubble01 362.34 ->
+376.00 K) plus the new `batch28_dosing_vessel_limit` (356.55 K); no other
+golden moved.  Validated on the merge: `--gui` 31/0, batch/safety cases
+16/0, `--fast` 71/0, `check_energy_closure`, `check_element_closure` (the
+general's intermittent failure did not reproduce); the page seen rendered
+at desk width by checkGui (clean; the harness later refused on an
+unrelated page under load).
+SECOND REVIEW DONE 2026-10-11 (branch claude/c60-review2, not merged):
+(1) the witnesses run a FICTITIOUS A + B -> P in an inert solvent S, four
+case-local adopted records, coherent by construction (Tb and HvapTb from
+each record's Antoine, Tc = Tb/0.65, Cp_ig from Kirchhoff against Watson's
+slope at Tb, P's formation datum derived so the LIQUID heat of reaction is
+-60.000 kJ/mol of B, dCp = 0, mass conserved); the heat comes from
+formation data, NOT the dH_rxn override, because the override would leave
+every transfer unpriced (a dose into a hot reactor falls back to a molar-T
+average) and bubble01's propertyPoint refuses a species with no formation
+datum.  Old -> new: dT_ad 107.77 -> 74.07 K; batch MTSR (t = 0) 437.77 ->
+404.07 K; batch26 T_cf at 600 s 394.84 -> 374.96 K (now EXACTLY the
+estimate, dCp = 0); semi-batch MTSR 348.29 K (50 s after portion 4) ->
+339.73 K (1 s after portion 6); bubble01 T_bubble 362.34 -> 376.00 K.
+(2) batch27's feed event gains a third reading (`to reactor;`, the whole
+tank enters) and NEW witness batch28_dosing_vessel_limit (a day tank
+holding a quarter of B, refilled only when empty): whole-tank failure
+356.55 K worst (1 s after refill 1) against 404.07 K with the whole of B in
+the tank; the refill is named as what remains.  (3) failures 1 s
+after/before a portion; the page keeps (a) the chosen scenario, (b) the
+estimate's maximum over the 50 s rows, (c) the engine's maximum over 31
+runs on a button (gui/src/case/methodRun.ts gains useMethodRunSweep).
+(4) scenario class vs process class, an MTT(t) - T_cf(t) table at 1.013
+bar (23 bubble-point runs).  (5)-(7) as reviewed; Z at each converter feed
+from relief01 run at the feed's own T, P: Q50/Q150 = 4.19 (ideal 4.33, so
+the review's ~4.4 is the ideal-gas figure).  OPEN, found here, not fixed:
+choupoBatch's "elemental balance UNAVAILABLE" line names the LAST
+species' reason for every species without a formula
+(`parseReason` keyed by the formula text, main.cpp:1726); and the
+Tutorials Guide's plant .tex was already stale on main (regenerated here).
 
 **C59. THE AUTOMATIC FLOWSHEET LAYOUT IS SPAGHETTI; MAKE IT READABLE, ALWAYS
 (Vítor, 2026-10-10, verbatim: "o layout do flowsheet parece esparguete!

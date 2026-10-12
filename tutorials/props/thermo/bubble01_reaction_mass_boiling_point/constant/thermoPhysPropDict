@@ -7,16 +7,22 @@
 |        |     O ptimization  |                                               |
 \*-----------------------------------------------------------------------------*/
 /*---------------------------------------------------------------------------*\
-  thermoPhysPropDict (v2) -- T1 ideal gamma-phi mixture.
-  Raoult DECLARED, not defaulted (gamma = 1 identically).
-  Migrated mechanically from the v1 flat form (physics identical);
-  v2 contract 2026-07-17.
+  thermoPhysPropDict (v2) -- the FICTITIOUS teaching system of the
+  process-safety EduTool (DEV.md 4c C60): reactants A and B, product P,
+  inert solvent S, every record case-local and author-set (see the header
+  of constant/components/reactantA.dat).
+
+  An IDEAL liquid, DECLARED (Raoult, gamma = 1 identically), over an ideal
+  gas.  For this fictitious mixture the ideality is not an approximation of
+  something else: it is part of the definition.  It also means the mixture
+  has no azeotrope, so its bubble point always lies between the normal
+  boiling points of the components present.
 \*---------------------------------------------------------------------------*/
 
 recordType    thermophysicalPropertySystem;
 schemaVersion 2;
 
-components       ( ethanol  water  aceticAcid  ethylAcetate );
+components       ( reactantA  reactantB  productP  solventS );
 
 equilibrium
 {

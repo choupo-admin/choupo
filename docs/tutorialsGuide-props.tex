@@ -344,9 +344,7 @@ The GUI renders the CSVs via the existing compare machinery (overlay of the $\as
 \end{tutscheme}
 \tutwhat{Liquid-viscosity Andrade for ammonia, 235-300 K (cross-check mu@239.85K \textasciitilde{} 0.255 mPa.s)}
 \begin{tutnarrative}
-Liquid-viscosity Andrade correlation for pure ammonia (NH3), 235-300 K. Coefficients live in data/standards/components/NH3.dat (PROVISIONAL --- a 2-point Andrade fit; see that file's provenance block).
-
-Validation anchor: mu\_NH3(liquid) @ 239.85 K (normal b.p., -33.3 degC) is approx 0.255 mPa.s. This 2-point PROVISIONAL Andrade fit gives \textasciitilde{}0.277 mPa.s at 240 K -- about 9\% ABOVE the anchor, i.e. it does NOT yet pass through the cross-check point. That gap is the honest state of a provisional fit (see the provenance block in NH3.dat); refitting against more low-T data would close it. Note this case scans a SINGLE method (Andrade) -- it is a single-correlation curve, not a multi-method comparison. Ammonia is liquid only under pressure in this T window; viscosity\_liquid is a pure-T correlation, so the state P is immaterial to the value.
+Liquid-viscosity Andrade correlation for pure ammonia (NH3), 235-300 K. This case is SEALED: it runs its own copy, constant/components/NH3.dat, whose Andrade pair was fitted to the Engineering Toolbox table -- a no-grant source (CLAUDE.md 10) -- and, measured against the reference correlation (Monogenidou, Assael \& Huber, J. Phys. Chem. Ref. Data 47, 023102 (2018), Table 6), is +10 \% at 240 K and +65 \% at 300 K. Since 2026-10-11 (DEV.md 4c C65 item c) the CATALOGUE record data/standards/components/NH3.dat carries a fit to that Table 6 (AAD 0.51 \% over 200-320 K; 0.253 mPa.s at the normal boiling point, against Table 6's 0.2510 at 240 K). This copy keeps the old pair until the case is re-imported, and check\_source\_licence pins it until then; the golden pins only the scan's point counts, so the re-import moves no golden row. Note this case scans a SINGLE method (Andrade) -- it is a single-correlation curve, not a multi-method comparison. Ammonia is liquid only under pressure in this T window; viscosity\_liquid is a pure-T correlation, so the state P is immaterial to the value.
 
 \end{tutnarrative}
 \begin{tutgolden}
@@ -2767,6 +2765,43 @@ What the twin buys over psychro01: Y\_sat(60 C) = 0.1534 against the \textasciit
 \subsection{hydraulics}
 \grouptheory{hydraulics}
 \clearpage
+\tutentry{letdown02\_valve\_fluid\_properties}{tutorials/props/hydraulics/letdown02\_valve\_fluid\_properties}
+\begin{tutscheme}
+\begin{tikzpicture}[>={Stealth[length=2mm]}, every node/.style={font=\scriptsize}]
+  \node[draw, rounded corners=2pt, align=center, minimum width=3.1cm, minimum height=0.8cm, fill=black!4] at (0.0,-0.0) {\textbf{purge}\\[-1pt]{\tiny propertyPoint}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=3.1cm, minimum height=0.8cm, fill=black!4] at (3.6,-0.0) {\textbf{liquidLP}\\[-1pt]{\tiny propertyPoint}};
+\end{tikzpicture}
+\end{tutscheme}
+\tutwhat{The two valve inlets of letdown01: the loop purge's Cp/Cv and Z at 140 bar (is the gas letdown choked?) and liquid ammonia's vapour pressure at 253 K (does the liquid letdown cavitate or flash?)}
+\begin{tutnarrative}
+THE TWO FLUID PROPERTIES A LETDOWN VALVE IS JUDGED BY (DEV.md 4c C64, the "Large pressure letdown" EduTool).
+
+The throttles themselves run in tutorials/steady/hydraulics/ letdown01\_ammonia\_flashing. A valve's hydraulic regime is decided by two more numbers, which a flowsheet unit does not publish, so this props case computes them at the two valve inlets of that case:
+
+the GAS: the loop purge at 140 bar and 253.15 K, let down to a fuel header. Whether its flow is choked is decided by the ratio of specific heats k = Cp/Cv -- propertyPoint's `gamma`, Cp\_ig/(Cp\_ig - R), the ideal-gas ratio the critical-pressure-ratio formula is derived with -- and the SRK compressibility Z. the LIQUID: the 20 bar drum liquid of letdown01, at the temperature its first throttle left it (253.0137962 K, copied from that case's converged/LetdownLiquid; gui/tests/letdown.test.ts holds it to the ValveHP T\_out golden). Whether its second throttle cavitates or flashes is decided by the ammonia's VAPOUR PRESSURE at that temperature, Psat\_NH3 (the record's Antoine curve), against the pressure at the valve's vena contracta.
+
+Compositions are the component flows in kmol/h exactly as letdown01's converged streams print them; propertyPoint normalises them. The liquid's dissolved H2, N2 and Ar do not enter Psat\_NH3 -- that key is the pure ammonia's vapour pressure, the P\_v of the valve-sizing equations. The gas that the drum liquid still holds comes out on any drop below 20 bar, and that is letdown01's to show, not this case's.
+
+\end{tutnarrative}
+\begin{tutgolden}
+\goldrow{diag}{purge}{Cp\_ig}{28.9239504326}
+\goldrow{diag}{purge}{H\_R}{-132.650841607}
+\goldrow{diag}{purge}{H\_ig}{-2297.81017849}
+\goldrow{diag}{purge}{H\_real}{-2430.46102009}
+\goldrow{diag}{purge}{P}{14000000}
+\goldrow{diag}{purge}{S\_R}{-0.999810503255}
+\goldrow{diag}{purge}{S\_ig}{103.584345511}
+\goldrow{diag}{purge}{S\_real}{102.584535008}
+\goldrow{diag}{purge}{T}{253.15}
+\goldrow{diag}{purge}{Z}{1.06874405854}
+\goldrow{diag}{purge}{gamma}{1.40342888153}
+\goldrow{diag}{purge}{v\_molar}{0.000160678509513}
+\goldrow{diag}{liquidLP}{Cp\_ig}{34.2366654977}
+\goldrow{diag}{liquidLP}{H\_R}{-2189.645868}
+\goldmore{13}
+\end{tutgolden}
+
+\clearpage
 \tutentry{moody01\_friction\_correlations}{tutorials/props/hydraulics/moody01\_friction\_correlations}
 \begin{tutscheme}
 \begin{tikzpicture}[>={Stealth[length=2mm]}, every node/.style={font=\scriptsize}]
@@ -3864,30 +3899,30 @@ The (rho,T) viscosity / conductivity kernels get their density from the IF97 the
   \node[draw, rounded corners=2pt, align=center, minimum width=3.1cm, minimum height=0.8cm, fill=black!4] at (0.0,-0.0) {\textbf{reactionMassBubblePoint}\\[-1pt]{\tiny propertyPoint}};
 \end{tikzpicture}
 \end{tutscheme}
-\tutwhat{The boiling point of a reaction mass: the bubble point of the esterification batch's contents, the technical limit (MTT) of a cooling-failure scenario}
+\tutwhat{The boiling point of a reaction mass: the bubble point of the cooling-failure batch's contents (fictitious A + B $\to$ P in solvent S, ideal), the technical limit (MTT) of the scenario}
 \begin{tutnarrative}
 the BOILING POINT OF A REACTION MASS, which is what the thermal-safety methodology takes as the technical limit MTT of an open vessel at atmospheric pressure.
 
-The mass is the one in tutorials/batch/reactor/batch26\_cooling\_failure (and batch27, the same reaction dosed): acetic acid, ethanol, ethyl acetate and water. constant/ is a COPY of batch26's sealed constant/ (the same records under the same manifest, the same thermoPhysPropDict; only the reactor's own constant/reactions is left out, because no property operation reads it), so the boiling point below is computed on exactly the thermodynamics the reactor case declares: an IDEAL liquid (Raoult, gamma = 1) over an ideal gas.
+The mass is the one in tutorials/batch/reactor/batch26\_cooling\_failure (and batch27/batch28, the same reaction dosed): the FICTITIOUS reactants A and B, their product P and the inert solvent S. constant/ is a COPY of batch26's sealed constant/ (the same four authored records under the same manifest, the same thermoPhysPropDict; only the reactor's own constant/reactions is left out, because no property operation reads it), so the boiling point below is computed on exactly the thermodynamics the reactor case declares: an IDEAL liquid (Raoult, gamma = 1) over an ideal gas, at the reactor's pressure, 1.013 bar.
 
-The composition is the reactor's at batch26's shipped cooling failure (t\_f = 600 s; mole fractions of the trajectory row at 600 s, 39.3 \% of the ethanol converted). The process-safety EduTool rewrites the four lines with the reactor contents at the failure instant the reader chooses, read from the engine's own trajectory, and reads T\_bubble back. ONE KEY PER LINE: the GUI's override anchors on a key at the start of a line, so a composition written on one line is a knob that silently misses.
+The composition is the reactor's at batch26's shipped cooling failure (t\_f = 600 s; mole fractions of the trajectory row at 600 s, 39.3 \% of B converted). The process-safety EduTool rewrites the four lines with the reactor contents at the failure instant the reader chooses, read from the engine's own trajectory, and reads T\_bubble back. ONE KEY PER LINE: the GUI's override anchors on a key at the start of a line, so a composition written on one line is a knob that silently misses.
 
-WHAT THIS IS NOT. The real quaternary is far from ideal -- ethyl acetate, ethanol and water form azeotropes that boil below every pure component -- so the ideal bubble point is the reactor case's own model answer, not a measured boiling point. And it is a bubble point at the failure instant: as a runaway converts the mass, its composition, and so its boiling point, moves.
+WHAT THIS IS AND IS NOT. The mixture is ideal BY DEFINITION (the substances are fictitious and the case declares it so), so it has no azeotrope: its bubble point lies between the normal boiling points of the components present -- here between B's (345.01 K) and P's (479.99 K), and much nearer the light end, because the volatile components dominate the vapour pressure. It is a bubble point at the failure instant: as a runaway converts the mass, its composition, and so its boiling point, moves -- upward here, as the light reactants become the heavy product.
 
 \end{tutnarrative}
 \begin{tutgolden}
-\goldrow{diag}{reactionMassBubblePoint}{Cp\_ig}{73.3777733752}
+\goldrow{diag}{reactionMassBubblePoint}{Cp\_ig}{113.71926727}
 \goldrow{diag}{reactionMassBubblePoint}{H\_R}{0}
-\goldrow{diag}{reactionMassBubblePoint}{H\_ig}{-334788.670229}
-\goldrow{diag}{reactionMassBubblePoint}{H\_real}{-334788.670229}
+\goldrow{diag}{reactionMassBubblePoint}{H\_ig}{-304682.453301}
+\goldrow{diag}{reactionMassBubblePoint}{H\_real}{-304682.453301}
 \goldrow{diag}{reactionMassBubblePoint}{P}{101300}
 \goldrow{diag}{reactionMassBubblePoint}{S\_R}{0}
-\goldrow{diag}{reactionMassBubblePoint}{S\_ig}{297.421125497}
-\goldrow{diag}{reactionMassBubblePoint}{S\_real}{297.421125497}
+\goldrow{diag}{reactionMassBubblePoint}{S\_ig}{401.345731157}
+\goldrow{diag}{reactionMassBubblePoint}{S\_real}{401.345731157}
 \goldrow{diag}{reactionMassBubblePoint}{T}{330}
-\goldrow{diag}{reactionMassBubblePoint}{T\_bubble}{362.340104804}
+\goldrow{diag}{reactionMassBubblePoint}{T\_bubble}{376.000570165}
 \goldrow{diag}{reactionMassBubblePoint}{Z}{1}
-\goldrow{diag}{reactionMassBubblePoint}{gamma}{1.12779034023}
+\goldrow{diag}{reactionMassBubblePoint}{gamma}{1.07888124878}
 \goldrow{diag}{reactionMassBubblePoint}{v\_molar}{0.0270856136618}
 \end{tutgolden}
 

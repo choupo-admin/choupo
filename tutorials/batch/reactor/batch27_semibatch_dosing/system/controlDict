@@ -9,20 +9,21 @@
 /*---------------------------------------------------------------------------*\
   batch27_semibatch_dosing / system/controlDict
 
-  WHAT THIS CASE IS: batch26's cooling failure on the SAME reaction, run
-  semi-batch -- the ethanol dosed in sixteen portions over four hours
-  (DEV.md 4c C60).  The accumulation of unreacted ethanol at the moment of
-  failure is small, so the MTSR is low: the inherently safer remedy the
+  WHAT THIS CASE IS: batch26's cooling failure on the SAME fictitious
+  reaction, run semi-batch -- reactant B dosed in sixteen portions over
+  four hours (DEV.md 4c C60).  The accumulation of unreacted B at the
+  moment of failure is small, so T_cf stays low: the inherently safer remedy the
   thermal-safety methodology recommends.  A witness of the EduTool
   "Process safety" (gui/src/ui/methods/ProcessSafetyTool.tsx).
 
-  WHAT IS MEASURED AND WHAT IS NOT: as batch26 -- the heat of reaction is
-  the engine's; the kinetics are illustrative; nothing is validated
-  against a measured reactor.  Narrative: system/flowsheetDict header.
+  WHAT IS MEASURED AND WHAT IS NOT: as batch26 -- the substances are
+  fictitious and every property an author-set teaching assumption; nothing
+  is, or could be, validated against a measured reactor.  Narrative:
+  system/flowsheetDict header.
 \*---------------------------------------------------------------------------*/
 
 application   choupoBatch;
-description   "Semi-batch esterification: ethanol dosed in 16 portions over 4 h at 330 K, the jacket fails after the last portion, the small accumulation keeps the MTSR low";
+description   "Semi-batch (fictitious A + B -> P in solvent S): B dosed in 16 portions over 4 h at 330 K, the jacket fails after the last portion, the small accumulation keeps T_cf low";
 
 verbosity     2;
 

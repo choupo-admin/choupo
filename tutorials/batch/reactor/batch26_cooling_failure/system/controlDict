@@ -10,10 +10,11 @@
   batch26_cooling_failure / system/controlDict
 
   WHAT THIS CASE IS: the cooling-failure scenario of thermal process safety
-  on a BATCH reactor (DEV.md 4c C60).  The esterification of batch02 is
-  run isothermally at T_p = 330 K, held there by a jacket; at the time the
-  recipe declares, the jacket stops removing heat and the reactor goes
-  adiabatic with whatever ethanol has not yet reacted.  The temperature it
+  on a BATCH reactor (DEV.md 4c C60).  A FICTITIOUS exothermic liquid
+  reaction, A + B -> P in an inert solvent, is run isothermally at
+  T_p = 330 K, held there by a jacket; at the time the recipe declares,
+  the jacket stops removing heat and the reactor goes adiabatic with
+  whatever B has not yet reacted.  The temperature it
   climbs to is the MAXIMUM TEMPERATURE OF THE SYNTHESIS REACTION (MTSR).
 
   It is a witness of the EduTool "Process safety" (gui/src/ui/methods/
@@ -22,23 +23,23 @@
   normal operation.
 
   WHAT IS MEASURED AND WHAT IS NOT: nothing here is validated against a
-  measured reactor.  The heat of reaction is the engine's, from the
-  species' formation data; the kinetics are ILLUSTRATIVE (see
-  constant/reactions), and the adiabatic leg is a closed liquid with no
+  measured reactor, and nothing could be: the substances are fictitious,
+  every property an author-set teaching assumption (see constant/reactions
+  and constant/components/), and the adiabatic leg is a closed liquid with no
   vapour phase, so temperatures above the mixture's boiling point are the
   hypothetical the methodology asks for, not what a vented vessel would
   do.  Narrative: system/flowsheetDict header.
 \*---------------------------------------------------------------------------*/
 
 application   choupoBatch;
-description   "Cooling failure on a batch esterification: isothermal at 330 K, the jacket stops at t_f, the accumulated ethanol drives T to the MTSR";
+description   "Cooling failure on a batch (fictitious A + B -> P in solvent S): isothermal at 330 K, the jacket stops at t_f, the accumulated B drives T to T_cf";
 
 verbosity     2;
 
 // ---- Time integration ----
 startTime       0;        // s
 endTime         6000;     // s   (100 min: at 330 K the batch is ~95 % converted in an hour)
-deltaT          0.5;      // s   (the adiabatic leg reaches ~440 K, where k ~ 0.5 1/s)
+deltaT          0.5;      // s   (the adiabatic leg reaches ~405 K, where k ~ 0.1 1/s)
 writeInterval   50;       // s   (one trajectory row per 50 s)
 
 //  No <t>/ time directories: the trajectory is what this case is read by,

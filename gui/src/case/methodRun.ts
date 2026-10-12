@@ -315,3 +315,98 @@ export function useCaseFilesRun(
   }, [buildKey, build === null, binary]);
   return { result, err, busy, log };
 }
+
+/** The state of a SWEEP: one witness run under several override sets, in
+ *  order.  `results[i]` is the i-th set's run (null until it has finished,
+ *  and null for a run that did not finish -- its message is `errs[i]`);
+ *  `done` counts the runs that have returned either way. */
+export interface MethodSweepState {
+  results: (RunResult | null)[];
+  errs: (string | null)[];
+  done: number;
+  busy: boolean;
+}
+
+/** A SWEEP of `useMethodRun`: the same witness, one run per override set,
+ *  run ONE AFTER ANOTHER on the same adapter.
+ *
+ *  ADDED 2026-10-11 (DEV.md 4c C60, second review), for the process-safety
+ *  page, whose maximum temperature after a cooling failure is a maximum over
+ *  failure INSTANTS: one instant is one run, and the page must be able to
+ *  say which instants the engine was asked about rather than imply it asked
+ *  about all of them.  The mechanics are this module's (the one home for
+ *  them); what the sweep does NOT do is decide anything -- a run that fails
+ *  stays a failed entry with its message, never a number put in its place.
+ *  `sweepKey` must change whenever the sets change; a newer key aborts the
+ *  sweep in flight.  A null witness stops and clears it. */
+export function useMethodRunSweep(
+  witness: string | null,
+  overrideSets: readonly (readonly DictOverride[])[],
+  sweepKey: string,
+  binary: MethodBinary,
+): MethodSweepState {
+  const [state, setState] = useState<MethodSweepState>(
+    { results: [], errs: [], done: 0, busy: false });
+  const runSeq = useRef(0);
+  const abortRef = useRef<AbortController | null>(null);
+  useEffect(() => () => {
+    runSeq.current++;
+    abortRef.current?.abort();
+  }, []);
+  useEffect(() => {
+    abortRef.current?.abort();
+    const seq = ++runSeq.current;
+    if (!witness) {
+      setState({ results: [], errs: [], done: 0, busy: false });
+      return;
+    }
+    const sets = overrideSets.map((s) => [...s]);
+    const n = sets.length;
+    setState({ results: Array(n).fill(null), errs: Array(n).fill(null),
+      done: 0, busy: n > 0 });
+    if (n === 0) return;
+    const ctrl = new AbortController();
+    abortRef.current = ctrl;
+    const t = setTimeout(() => {
+      void (async () => {
+        const resolved = await resolveAdapter("wasm");
+        if (seq !== runSeq.current) return;
+        if (resolved.kind === "unavailable") {
+          const why = resolved.fallbackReason
+            ?? "The real solver could not be loaded (build the WASM).";
+          setState({ results: Array(n).fill(null), errs: Array(n).fill(why),
+            done: n, busy: false });
+          return;
+        }
+        for (let i = 0; i < n; i++) {
+          let res: RunResult | null = null;
+          let err: string | null = null;
+          try {
+            const r = await resolved.adapter.run(
+              methodCase(witness, sets[i]!), () => {}, ctrl.signal, binary);
+            if (r.status === "done") res = r;
+            else {
+              const detail = r.log.split("\n").map((l) => l.trim()).reverse()
+                .find((l) => /(?:error|fatal|refused|failed)/i.test(l));
+              err = `${binary} did not finish${detail ? `: ${detail}` : "."}`;
+            }
+          } catch (e) {
+            err = e instanceof Error ? e.message : String(e);
+          }
+          if (seq !== runSeq.current || ctrl.signal.aborted) return;
+          setState((s) => {
+            const results = [...s.results];
+            const errs = [...s.errs];
+            results[i] = res;
+            errs[i] = err;
+            return { results, errs, done: i + 1, busy: i + 1 < n };
+          });
+        }
+      })();
+    }, 300);
+    return () => clearTimeout(t);
+    // sweepKey is the change signal for the override sets (see useMethodRun).
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [witness, sweepKey, binary]);
+  return state;
+}

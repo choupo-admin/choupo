@@ -7,10 +7,11 @@
 |        |     O ptimization  |                                               |
 \*-----------------------------------------------------------------------------*/
 /*---------------------------------------------------------------------------*\
-  batch27_semibatch_dosing  --  the SAME reaction as batch26, the same
-  totals, the same T_p, run SEMI-BATCH: the acetic acid is in the reactor
-  and the ethanol is DOSED, a sixteenth at a time every 15 minutes, over
-  four hours.  Then the jacket fails.
+  batch27_semibatch_dosing  --  the SAME fictitious reaction as batch26
+  (A + B -> P in the inert solvent S), the same totals, the same T_p, run
+  SEMI-BATCH: A and the solvent are in the reactor and B is DOSED, a
+  sixteenth at a time every 15 minutes, over four hours.  Then the jacket
+  fails.
 
   This is the inherently safer answer to batch26 in Kletz's sense of
   limiting what is there: a batch reactor holds all of its reactant at
@@ -19,48 +20,61 @@
   what a cooling failure turns into temperature, so limiting it limits the
   maximum temperature of the synthesis reaction (MTSR).  The lever is the
   DOSING RATE against the REACTION RATE: dose faster than the reaction
-  consumes and the reactor fills with unreacted ethanol, which is a batch
-  again.
+  consumes and the reactor fills with unreacted B, which is a batch again.
 
   THE DOSING is written as portions, each a recipe `transfer` from the
   dosing tank, because a recipe transfer is what choupoBatch has: a
   batchReactor carries no continuous feed.  Portion-wise addition is also
   how a hazardous reagent is often added in practice.  Each transfer moves
   a FRACTION of what is left in the tank (1/16, then 1/15, ... then 1), so
-  every portion is 1/16 of the ethanol.  The dosing tank is at T_p, so
-  the feed brings no sensible-heat effect (a cold feed would take some of
-  the reaction's heat; this case leaves that out on purpose).
+  every portion is 1/16 of B.  The dosing tank is at T_p, so the feed
+  brings no sensible-heat effect into the isothermal reactor (into a hot
+  adiabatic one the dose is mixed by enthalpy equality and cools it a
+  little; a cold feed would take more of the reaction's heat -- left out
+  on purpose).  With discrete doses the accumulation jumps at each
+  portion, so the worst instant for a failure is RIGHT AFTER a portion;
+  the trajectory row at a portion's instant is written after the transfer.
 
   THE TWO SAFETY EVENTS come first in the recipe:
 
     1. the COOLING FAILURE at t_f (`adiabatic 1`; `0` keeps the jacket);
-    2. the DOSING INTERLOCK at the same instant: the methodology's
-       assumption that the feed stops when the cooling does.  A recipe
-       transfer has no valve, so the interlock is written as what it
-       achieves -- everything left in the dosing tank is moved to
-       `heldFeed`, a vessel nothing is ever dosed from, and every later
-       portion moves a fraction of an empty tank, which is nothing.
-       `fraction 0` is the interlock FAILING: nothing is held back, the
-       pump keeps dosing into an adiabatic reactor.  In a plant an
-       interlock is a sensor, a logic solver and a valve, each of which can
-       fail; here it is one line, and the EduTool runs it both ways.
+    2. what happens to the FEED at the same instant, one transfer with
+       three readings:
+         `to heldFeed; fraction 1;`  the DOSING INTERLOCK works: the
+             methodology's assumption that the feed stops when the cooling
+             does.  A recipe transfer has no valve, so the interlock is
+             written as what it achieves -- everything left in the dosing
+             tank is moved to `heldFeed`, a vessel nothing is ever dosed
+             from, and every later portion moves a fraction of an empty
+             tank, which is nothing.
+         `fraction 0;`  the interlock FAILS: nothing is held back and the
+             pump keeps dosing into an adiabatic reactor, at its rate.
+         `to reactor; fraction 1;`  the WHOLE dosing tank enters the
+             reactor at once (a valve left open, a pump run away): the
+             worst a feed failure can do, bounded only by what the tank
+             holds.  A flow-limited pump limits the RATE, not the TOTAL:
+             with the whole of B in the tank, that total is the batch's.
+       In a plant an interlock is a sensor, a logic solver and a valve,
+       each of which can fail; here it is one line, and the EduTool runs
+       it all three ways.  batch28_dosing_vessel_limit is the same reactor
+       with a dosing vessel that holds only a quarter of B.
 
   Normal operation, for the accumulation curve: the failure at `value 0`
-  and the interlock at `fraction 0`.
+  and the feed event at `fraction 0`.
 
-  The default t_f is 50 s after the last portion, where the accumulation
-  of this dosing schedule is close to its largest.  That is NOT where the
-  temperature after a failure is largest: early in the dosing the
-  accumulation heats a smaller mass (Stoessel's M_f/M(t) correction), so
-  the MTSR -- the largest T_cf over every instant -- comes earlier; the
-  EduTool shows where.
+  The shipped t_f is 1 s after the last portion, where the accumulation is
+  close to its largest -- NOT where the temperature after a failure is
+  largest: early in the dosing the accumulation heats a smaller mass
+  (Stoessel's M_f/M(t) correction), so the MTSR comes earlier; the EduTool
+  shows where, and confirms it with the engine at every post-portion
+  instant.
 
-  PEDAGOGICAL, NOT QUANTITATIVE, for the reasons batch26 gives.  One more:
-  the reactor's volume is held at its declared value while the dosing adds
-  liquid (a batchReactor does not grow its volume on a charge).  The rate
-  law is first order in ethanol and zero order in the acid, so the extent
-  rate k n_EtOH does not depend on V and this changes no number here; a
-  rate law with a concentration term of another order would be wrong.
+  WHAT IS NOT MODELLED, besides what batch26 names: the reactor's volume
+  is held at its declared value while the dosing adds liquid (a
+  batchReactor does not grow its volume on a charge).  The rate law is
+  first order in B and zero order in A, so the extent rate k n_B does not
+  depend on V and this changes no number here; a rate law with a
+  concentration term of another order would be wrong.
 \*---------------------------------------------------------------------------*/
 
 units
@@ -75,11 +89,11 @@ units
             T_setpoint   330 K;            // T_p, the process temperature
         }
 
-        reaction    esterification_etac_exo;  // see constant/reactions
+        reaction    AB_to_P;              // see constant/reactions
     }
 
     {
-        name        dosingTank;            // the ethanol to be dosed
+        name        dosingTank;            // reactant B, to be dosed
         type        batchAccumulator;
     }
 
@@ -94,18 +108,19 @@ recipe
     //  1. THE COOLING FAILURE.  `value 1`: from this instant the jacket
     //  removes no heat.  `value 0`: it keeps working.
     {
-        time        13550;      // s   t_f, the moment the cooling fails
+        time        13501;      // s   t_f, the moment the cooling fails (1 s after portion 16)
         action      setParameter;
         unit        reactor;
         key         adiabatic;
         value       1;
     }
 
-    //  2. THE DOSING INTERLOCK, at the same instant.  `fraction 1`: what is
-    //  left in the dosing tank is held back.  `fraction 0`: the interlock
-    //  fails and the remaining portions are dosed into a hot reactor.
+    //  2. THE FEED AT THE SAME INSTANT (header: three readings).
+    //  `to heldFeed; fraction 1;` the interlock holds back what is left;
+    //  `fraction 0;` it fails and the remaining portions are dosed into a
+    //  hot reactor; `to reactor; fraction 1;` the whole tank enters at once.
     {
-        time        13550;      // s   the same t_f
+        time        13501;      // s   the same t_f
         action      transfer;
         from        dosingTank;
         to          heldFeed;

@@ -1874,10 +1874,13 @@ COOLING FAILURE -- from that instant the jacket removes no heat and the
 reactor integrates T by the adiabatic energy balance, starting from the
 temperature it was held at (announced `[cooling failure]`); `value 0` keeps
 the jacket working (a no-op, so one recipe can be run with and without the
-failure).  Bringing the cooling back is refused.  Witnesses:
-`tutorials/batch/reactor/batch26_cooling_failure` (batch) and
+failure).  Bringing the cooling back is refused.  Witnesses, all on a
+FICTITIOUS reaction (A + B -> P in a solvent, case-local records):
+`tutorials/batch/reactor/batch26_cooling_failure` (batch),
 `batch27_semibatch_dosing` (the same reaction dosed in portions, with a
-dosing interlock written as a transfer of the remaining feed).
+feed event at the failure written as a transfer: the remaining feed held
+back, dosed on, or the whole tank entering) and
+`batch28_dosing_vessel_limit` (a day tank holding a quarter of the feed).
 
 # choupoCtrl / choupoSemiContinuous (dynamic continuous, with / without control)
 

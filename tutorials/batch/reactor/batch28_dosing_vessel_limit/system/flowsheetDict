@@ -1,0 +1,252 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+  batch28_dosing_vessel_limit  --  batch27 with the DOSING VESSEL SIZED so
+  that a feed failure cannot take the reactor past its limits.
+
+  The same fictitious reaction (A + B -> P in the inert solvent S), the
+  same totals, the same T_p and the same sixteen portions, one every
+  15 minutes.  What changes is where B waits.  In batch27 the dosing tank
+  holds ALL of B, so the worst a feed failure can do -- the whole tank
+  entering at once, or the pump running on with no interlock to stop it --
+  delivers the batch's charge: a flow-limited pump limits the RATE, not
+  the TOTAL.  Here the only vessel connected to the reactor is a DAY TANK
+  that holds a QUARTER of B (four portions).  It is refilled from storage
+  three times, each refill made only once the day tank is empty, between
+  two portions; storage has no line to the reactor.
+
+  THE FAILURE SCENARIO (the first three recipe events, all at t_f):
+
+    1. the COOLING FAILURE (`adiabatic 1`; `0` keeps the jacket);
+    2. the WORST FEED FAILURE: the WHOLE day tank enters the reactor at
+       once (`to reactor; fraction 1;`).  `to heldFeed; fraction 1;` is
+       the interlock holding it back, `fraction 0;` the pump running on
+       through its remaining portions -- which delivers the same total,
+       only later;
+    3. NO REFILL after a failure: what is left in storage is moved to
+       `heldFeed` (`fraction 1`; `fraction 0` in normal operation).
+
+  Event 3 is the honest limit of the claim.  The day tank's size removes
+  the dependence on the DOSING interlock; what remains is the refill,
+  which is a discrete, deliberate act taken when the day tank is empty and
+  the reactor's state is known -- a procedure, or an interlock of its own.
+  The page says so; it does not hide it inside the word "inherent".
+
+  With the whole day tank entering, the worst instant is right after a
+  refill (or at t = 0), when the tank is full: the B that can reach the
+  reactor is then the accumulation plus a quarter of the charge.  The
+  shipped t_f is 1 s after the first refill.
+
+  WHAT IS NOT MODELLED: as batch26 and batch27 (no vapour phase, no
+  decomposition, the reactor's volume held at its declared value -- the
+  rate is first order in B, so V does not enter the extent rate).
+\*---------------------------------------------------------------------------*/
+
+units
+(
+    {
+        name        reactor;
+        type        batchReactor;
+
+        operation
+        {
+            mode         isothermal;       // held by the jacket until the recipe takes it away
+            T_setpoint   330 K;            // T_p, the process temperature
+        }
+
+        reaction    AB_to_P;              // see constant/reactions
+    }
+
+    {
+        name        dayTank;               // a quarter of B: the only vessel with a line to the reactor
+        type        batchAccumulator;
+    }
+
+    {
+        name        storage;               // the other three quarters; it only refills the day tank
+        type        batchAccumulator;
+    }
+
+    {
+        name        heldFeed;              // where a failure puts the feed that does not move on
+        type        batchAccumulator;
+    }
+);
+
+recipe
+(
+    //  1. THE COOLING FAILURE.  `value 1`: from this instant the jacket
+    //  removes no heat.  `value 0`: it keeps working.
+    {
+        time        3151;       // s   t_f: 1 s after the first refill
+        action      setParameter;
+        unit        reactor;
+        key         adiabatic;
+        value       1;
+    }
+
+    //  2. THE WORST FEED FAILURE at the same instant: the whole day tank
+    //  enters the reactor (`to heldFeed;` = the interlock holds it back).
+    {
+        time        3151;       // s   the same t_f
+        action      transfer;
+        from        dayTank;
+        to          reactor;
+        fraction    1;
+    }
+
+    //  3. NO REFILL after a failure: storage is set aside.  `fraction 0`
+    //  in normal operation.
+    {
+        time        3151;       // s   the same t_f
+        action      transfer;
+        from        storage;
+        to          heldFeed;
+        fraction    1;
+    }
+
+    //  4. THE REFILLS: a quarter of B each, only once the day tank is
+    //  empty (after portions 4, 8 and 12; before portions 5, 9 and 13).
+    {
+        time        3150;       // s   refill 1 of 3
+        action      transfer;
+        from        storage;
+        to          dayTank;
+        fraction    0.333333333333;   // 1/3 of what storage holds
+    }
+    {
+        time        6750;       // s   refill 2 of 3
+        action      transfer;
+        from        storage;
+        to          dayTank;
+        fraction    0.5;              // 1/2 of what storage holds
+    }
+    {
+        time        10350;      // s   refill 3 of 3
+        action      transfer;
+        from        storage;
+        to          dayTank;
+        fraction    1;                // all that is left
+    }
+
+    //  5. THE DOSING SCHEDULE: 16 portions, one every 900 s, four from
+    //  each filling of the day tank.
+    {
+        time        0;       // s   portion 1 of 16
+        action      transfer;
+        from        dayTank;
+        to          reactor;
+        fraction    0.25;            // 1/4 of what the day tank holds
+    }
+    {
+        time        900;     // s   portion 2 of 16
+        action      transfer;
+        from        dayTank;
+        to          reactor;
+        fraction    0.333333333333;  // 1/3 of what the day tank holds
+    }
+    {
+        time        1800;    // s   portion 3 of 16
+        action      transfer;
+        from        dayTank;
+        to          reactor;
+        fraction    0.5;             // 1/2 of what the day tank holds
+    }
+    {
+        time        2700;    // s   portion 4 of 16
+        action      transfer;
+        from        dayTank;
+        to          reactor;
+        fraction    1;               // 1/1 of what the day tank holds
+    }
+    {
+        time        3600;    // s   portion 5 of 16
+        action      transfer;
+        from        dayTank;
+        to          reactor;
+        fraction    0.25;            // 1/4 of what the day tank holds
+    }
+    {
+        time        4500;    // s   portion 6 of 16
+        action      transfer;
+        from        dayTank;
+        to          reactor;
+        fraction    0.333333333333;  // 1/3 of what the day tank holds
+    }
+    {
+        time        5400;    // s   portion 7 of 16
+        action      transfer;
+        from        dayTank;
+        to          reactor;
+        fraction    0.5;             // 1/2 of what the day tank holds
+    }
+    {
+        time        6300;    // s   portion 8 of 16
+        action      transfer;
+        from        dayTank;
+        to          reactor;
+        fraction    1;               // 1/1 of what the day tank holds
+    }
+    {
+        time        7200;    // s   portion 9 of 16
+        action      transfer;
+        from        dayTank;
+        to          reactor;
+        fraction    0.25;            // 1/4 of what the day tank holds
+    }
+    {
+        time        8100;    // s   portion 10 of 16
+        action      transfer;
+        from        dayTank;
+        to          reactor;
+        fraction    0.333333333333;  // 1/3 of what the day tank holds
+    }
+    {
+        time        9000;    // s   portion 11 of 16
+        action      transfer;
+        from        dayTank;
+        to          reactor;
+        fraction    0.5;             // 1/2 of what the day tank holds
+    }
+    {
+        time        9900;    // s   portion 12 of 16
+        action      transfer;
+        from        dayTank;
+        to          reactor;
+        fraction    1;               // 1/1 of what the day tank holds
+    }
+    {
+        time        10800;   // s   portion 13 of 16
+        action      transfer;
+        from        dayTank;
+        to          reactor;
+        fraction    0.25;            // 1/4 of what the day tank holds
+    }
+    {
+        time        11700;   // s   portion 14 of 16
+        action      transfer;
+        from        dayTank;
+        to          reactor;
+        fraction    0.333333333333;  // 1/3 of what the day tank holds
+    }
+    {
+        time        12600;   // s   portion 15 of 16
+        action      transfer;
+        from        dayTank;
+        to          reactor;
+        fraction    0.5;             // 1/2 of what the day tank holds
+    }
+    {
+        time        13500;   // s   portion 16 of 16
+        action      transfer;
+        from        dayTank;
+        to          reactor;
+        fraction    1;               // 1/1 of what the day tank holds
+    }
+);

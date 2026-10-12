@@ -1,0 +1,27 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*--------------------------------*- Choupo -*----------------------------------*\
+  0/internalStates/storage -- the initial HOLDUP of 'storage': the other
+  three quarters of reactant B (3.75 mol), at T_p.  It has no line to the
+  reactor: it only refills the day tank.
+\*-----------------------------------------------------------------------------*/
+
+recordType  internalState;
+
+unit        "storage";
+equipment   batchAccumulator;
+
+holdup
+{
+    T            330.0 K;          // T_p
+    P            1.013 bar;
+    V            0.0003375;        // m^3 (3.75 mol x Vliq of B)
+    totalMoles   0.00375;          // kmol
+    molarComposition  { reactantA 0.0;  reactantB 1.0;  productP 0.0;  solventS 0.0; }
+}

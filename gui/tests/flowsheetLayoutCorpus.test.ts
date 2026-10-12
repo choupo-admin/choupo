@@ -144,6 +144,14 @@ const ACCEPTED_REGRESSIONS: { [id: string]: string } = {
   "batch/reactor/batch27_semibatch_dosing":
     "seventeen parallel recipe-transfer edges between one pair of vessels;"
     + " parallel soft edges are routed one by one (reported with C60)",
+  //  C60 second review, 2026-10-11: batch27's dosing-vessel twin -- sixteen
+  //  portions dayTank -> reactor, three refills storage -> dayTank and the
+  //  failure's two hold/feed edges.  The same parallel-soft-edge routing
+  //  defect, the same reason; it goes when parallel edges are bundled.
+  "batch/reactor/batch28_dosing_vessel_limit":
+    "sixteen parallel recipe-transfer edges dayTank -> reactor and three"
+    + " storage -> dayTank; parallel soft edges are routed one by one"
+    + " (reported with C60)",
 };
 
 describe("automatic flowsheet layout over the corpus (C59)", () => {
