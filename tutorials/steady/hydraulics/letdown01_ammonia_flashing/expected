@@ -67,7 +67,7 @@ kpi     ValveHP                P_out            2000000            1e-4
 kpi     ValveHP                Q_in             0.0185381563838    1e-4
 kpi     ValveHP                Q_out            0.0222058666316    1e-4
 kpi     ValveHP                T_in             253.15             1e-4
-kpi     ValveHP                T_out            253.013796233    1e-4
+kpi     ValveHP                T_out            253.013788745    1e-4
 kpi     ValveHP                dP               12000000           1e-4
 kpi     ValveHP                dT               -0.136203767298  1e-4
 kpi     ValveHP                massFlow         13.8824769528      1e-4
