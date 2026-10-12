@@ -125,9 +125,9 @@ connections
 //  designed beds; they are never a specification.
 variables
 {
-    V_Bed1             8.7238 m3;
-    V_Bed2            18.2281 m3;
-    V_Bed3            31.4450 m3;
+    V_Bed1             8.8861 m3;
+    V_Bed2            18.4225 m3;
+    V_Bed3            31.7447 m3;
     NH3_t_h            { compute "ProductNH3.F * 17.0305 * 3.6"; }
     NH3_t_day          { compute "NH3_t_h * 24"; }
     W_compression_kW   { compute "N2Boost.W_shaft_kW + MakeupComp1.W_shaft_kW + MakeupComp2.W_shaft_kW + RecycleComp.W_shaft_kW"; }

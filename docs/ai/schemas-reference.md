@@ -764,6 +764,9 @@ Isothermal plug-flow reactor. The volume is integrated by RK4; nSteps controls t
 | `areaPerVolume` |   | number | m2/m3 | Tube surface per unit reactor volume. Required by `thermalMode heatExchange`. |
 | `T_coolant` |   | number | K | Required by `thermalMode heatExchange`. |
 | `catalystLoading` |   | number | kg/m3 | Mass of catalyst per unit reactor volume. |
+| `L_over_D` |   | number | - | Multi-reaction path only. Gives the bed a cross-section (D, L, A published as KPIs) as the straight cylinder of V_R at this ratio; the `p… |
+| `catalyst` |   | object | — | The particle the bed is packed with: read by a dysonSimon1968 bed's Eq 39 (`effectivenessFactor dysonSimonEq39`) and by the Ergun `pressu… |
+| `pressureDrop` |   | object | — | Multi-reaction path only. Integrates Ergun's dP/dz = -[150 mu (1-eps)^2 u/(eps^3 dp^2) + 1.75 rho (1-eps) u^2/(eps^3 dp)] along the bed w… |
 
 ## `phaseChanger`  (phaseChanger operation)
 

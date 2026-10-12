@@ -185,6 +185,27 @@ datum the heat of reaction is already inside `H`, and an adiabatic reactor conse
 (`Q_kW = 0` exactly).  `T(V)` lands in the axial profile — a hot spot is something you
 *see*.  Requires `standardThermochemistry` on every reacting species (a fictitious toy has no
 elements datum → refused, loudly).  Example: `pfr04_adiabatic` (esterification, +105 K).
+**A packed bed's geometry and pressure drop** (multi-reaction path, opt-in, C66):
+```
+operation
+{
+    V_R          <m^3>;
+    L_over_D     1.5;                                  // the bed's slenderness -- ONE home
+    catalyst     { particleDiameter 8 mm; }            // Ergun's equivalent-sphere diameter
+    pressureDrop { model Ergun;  voidFraction 0.40;  allowable 1 bar; }   // allowable optional
+}
+```
+`L_over_D` gives the bed a cross-section (D, L, A published as KPIs) and the `pfr`
+sizer builds its shell on it, refusing a second `L_over_D` in its designRules.
+`pressureDrop` marches `dP/dV = (dP/dz)/A` from Ergun's equation with the species
+(density from the package's EoS, viscosity from its declared `transport` — required,
+dilute-gas); the rate law and `T` read the local `P`; the outlet leaves at `P_in − ΔP`
+(`dP_bed_bar`, `P_out_bar`, `Re_p_in`, `u_superficial_in/out`, `mu_gas_in`, `rho_gas_in`;
+a `P` profile column).  A drop above `allowable` is ANNOUNCED with the remedy — at a
+fixed volume the drop goes as (L/D)²; nothing is clamped.  Absent both keys the bed is
+the constant-pressure march it always was.  The single-reaction path refuses them.
+Example: `tutorials/plant/greenAmmoniaBasicDesign` (three beds, L/D 1.5; at L/D 6 the
+loop did not converge).
 NOTE: `cstr`/`pfr` compute concentration on the **liquid** molar volume
 (Vliq) — a liquid-basis model.  For a GAS-phase reactor prefer
 `conversionReactor` (below) — with ONE exception, next.

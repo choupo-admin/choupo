@@ -34,8 +34,11 @@
                           process-gas and refrigerant values.
     Bed1/2/3          the `pfr` sizer (CatalystBedSize) READS each bed's own
                       V_R and sizes TWO items under it: the SHELL, a vessel
-                      of that volume at L/D 6 (the base case's converter
-                      ratio) costed on the Turton vessel set, and the
+                      of that volume at the bed's OWN L/D (1.5, read from
+                      the unit's `operation.L_over_D` -- the cross-section
+                      its Ergun pressure drop is integrated on; the bed's
+                      header says why not the base case's 6), costed on the
+                      Turton vessel set; its sheet carries the bed's dP; and the
                       CATALYST CHARGE, m = V_R x catalystBulkDensity, priced
                       at catalystPrice -- a `declared-unit-price` line, no
                       index, no module factor.  The two catalyst numbers,
@@ -198,19 +201,20 @@ sizing
         //  answer (system/outerDict) -- sizes the shell around it, and
         //  prices the catalyst charge from the two DECLARED numbers below,
         //  which are AUTHOR-SET ASSUMPTIONS (see the header).
+        //  NO L_over_D here: each bed declares its own slenderness
+        //  (Bed<N>/system/flowsheetDict `operation.L_over_D`, the
+        //  cross-section its Ergun pressure drop is integrated on) and the
+        //  sizer READS it from the unit -- one home (DEV.md 4c C66).
         { unitName Bed1;  type pfr;  material SS316;
           designRules { pressureDesign       167;
-                        L_over_D             6.0;      // tall vessel, the base case's converter
                         catalystBulkDensity  2500.0;   // kg/m3 -- AUTHOR-SET ASSUMPTION
                         catalystPrice        15.0; } } // EUR/kg -- AUTHOR-SET ASSUMPTION
         { unitName Bed2;  type pfr;  material SS316;
           designRules { pressureDesign       167;
-                        L_over_D             6.0;
                         catalystBulkDensity  2500.0;
                         catalystPrice        15.0; } }
         { unitName Bed3;  type pfr;  material SS316;
           designRules { pressureDesign       167;
-                        L_over_D             6.0;
                         catalystBulkDensity  2500.0;
                         catalystPrice        15.0; } }
 

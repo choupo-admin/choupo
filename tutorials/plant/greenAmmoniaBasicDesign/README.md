@@ -39,11 +39,11 @@ is replaced by:
 
 | unit | what it is | its number, and why |
 |---|---|---|
-| `Bed1` | adiabatic `pfr`, Dyson & Simon (1968) rate law, iron catalyst | 8.72 m³, SOLVED so the bed **leaves at 515 °C**, 5 K under the 520 °C the base data give as the catalyst's limit; run to a 5 K approach it would leave above that |
+| `Bed1` | adiabatic `pfr`, Dyson & Simon (1968) rate law, iron catalyst | 8.89 m³, SOLVED so the bed **leaves at 515 °C**, 5 K under the 520 °C the base data give as the catalyst's limit; run to a 5 K approach it would leave above that |
 | `InterbedCooler1` | `phaseChanger` to 420 °C, raising HP steam | 420 °C author-set |
-| `Bed2` | the same rate law | 18.23 m³, SOLVED so the effluent is **5 K short of equilibrium** (US 5,352,428's per bed approach, the base case's source) |
+| `Bed2` | the same rate law | 18.42 m³, SOLVED so the effluent is **5 K short of equilibrium** (US 5,352,428's per bed approach, the base case's source) |
 | `InterbedCooler2` | to 410 °C, raising HP steam | 410 °C author-set |
-| `Bed3` | the same rate law | 31.45 m³, the same 5 K criterion |
+| `Bed3` | the same rate law | 31.74 m³, the same 5 K criterion |
 
 The rate law is the correlation object
 `src/unitOperations/reactor/kinetics/AmmoniaSynthesisRate.{H,cpp}`, selected
@@ -78,29 +78,51 @@ boilers) instead of targeted.
 Every number is read off a run of this case; the golden (`expected`) is the
 authority on all of them.
 
-| bed | in | out | NH₃ out | approach | volume |
-|---|---|---|---|---|---|
-| 1 | 380.6 °C | 515.0 °C | 9.77 % | 35.1 K | 8.72 m³ |
-| 2 | 420.0 °C | 494.0 °C | 14.79 % | 5.0 K | 18.23 m³ |
-| 3 | 410.0 °C | 464.8 °C | 18.76 % | 5.0 K | 31.45 m³ |
+| bed | in | out | NH₃ out | approach | volume | D × L | pressure drop |
+|---|---|---|---|---|---|---|---|
+| 1 | 380.1 °C | 515.0 °C | 9.80 % | 34.1 K | 8.89 m³ | 1.96 × 2.94 m | 0.67 bar |
+| 2 | 420.0 °C | 493.4 °C | 14.78 % | 5.0 K | 18.42 m³ | 2.50 × 3.75 m | 0.31 bar |
+| 3 | 410.0 °C | 464.4 °C | 18.72 % | 5.0 K | 31.74 m³ | 3.00 × 4.50 m | 0.17 bar |
 
 | | this case | feasibility case |
 |---|---|---|
 | ammonia produced | 1180.2 t/day | 1180.3 t/day |
-| converter outlet NH₃ | 18.76 % (three beds) | 19.70 % (one Gibbs reactor at 460 °C) |
+| converter outlet NH₃ | 18.72 % (three beds) | 19.70 % (one Gibbs reactor at 460 °C) |
 | hydrogen converted per pass | 28.3 % | 29.7 % |
-| recycle / make-up (mol/mol) | 2.43 | 2.28 |
-| HP steam raised | 29.62 MW (17.3 kg/s), in the interbed coolers | 30.94 MW, in the converter |
+| recycle / make-up (mol/mol) | 2.44 | 2.28 |
+| HP steam raised | 29.59 MW, in the interbed coolers | 30.94 MW, in the converter |
 | feed preheat | 64.01 MW by the FEHE, **recovered** | 60.86 MW of molten salt, **bought** |
-| refrigeration (−20 °C) | 21.31 MW | 20.24 MW |
+| refrigeration (−20 °C) | 21.45 MW | 20.24 MW |
 | compression | 13.73 MW | 13.67 MW |
-| catalyst | 58.40 m³ | (none: a space-velocity vessel) |
+| catalyst | 59.05 m³ | (none: a space-velocity vessel) |
 | plant first law | closes to 1.76 kW (0.002 %) | 9.0 kW |
 
 An adiabatic bed publishes no duty (`Q_kW` 0), so the steam is raised and
 credited where the heat is removed — the two interbed coolers, each of
 which declares the base case's case-local credit utility
 `steamGenerationHP` and is held to the allocation's 10 K approach.
+
+### The beds' pressure drop, and why they are squat (DEV.md 4c C66)
+
+Each bed declares its slenderness `operation.L_over_D` -- the ONE home of
+it: the bed is the straight cylinder of its volume at that ratio, the
+`pfr` integrates Ergun's pressure drop along that length on that
+cross-section (`operation.pressureDrop { model Ergun; ... }`), and the
+sizer builds the shell on the same number. The particle (8 mm, the middle
+of the 6-10 mm window Dyson & Simon's Eq 39 was computed for), the void
+fraction (0.40) and the budget (1 bar per bed) are **author-set**, said in
+`Bed1/system/flowsheetDict`. At the L/D 6 the case carried before, the
+loop did not converge: its first pass lost 35, 24 and 16 bar across the
+three beds. At a fixed volume both the gas velocity and the bed length go
+as (L/D)^(2/3), so the drop goes as (L/D)^2; at L/D 1.5 the beds lose
+0.67, 0.31 and 0.17 bar (the table above), and the inertial term carries
+98-99 % of it (superficial velocity 0.70, 0.43 and 0.28 m/s at the bed inlets, Re_p 3600-8100). The price is steel: a wider shell at
+167 bar has a thicker wall, so the three shells cost 18.7 M EUR (total
+module) where the slender ones cost 11.9 M EUR. A bed the gas crosses
+RADIALLY -- through its thickness, not its length -- is the other answer,
+and this `pfr` does not model one. The tables below this one were read
+off the run BEFORE C66's beds (sub-percent moves; the golden is the
+authority, and it moves with the list put to Vitor).
 
 ### The gross margin, and why it nearly doubled
 
@@ -148,18 +170,18 @@ the design. With two passes of 20 ft tubes (the first trial) the gas lost
 flowsheet declares and converges on; the designed area is costed.
 
 The beds are sized by the `pfr` sizer from their own volume: a shell (a
-vessel at L/D 6, Turton's vessel set) and a **catalyst charge** priced
-from two declared numbers, 2500 kg/m³ and 15 EUR/kg — **author-set
-assumptions**, the same round numbers `ammoniaStaged04_kinetic` declares,
-with no source behind either: 0.33, 0.68 and 1.18 M EUR for the three
-charges. Each bed is its own shell here; a real converter stacks them in
+vessel at the bed's own L/D 1.5, Turton's vessel set, its sheet carrying
+the bed's pressure drop) and a **catalyst charge** priced from two
+declared numbers, 2500 kg/m³ and 15 EUR/kg — **author-set assumptions**,
+the same round numbers `ammoniaStaged04_kinetic` declares, with no source
+behind either: 0.33, 0.69 and 1.19 M EUR for the three charges. Each bed is its own shell here; a real converter stacks them in
 one.
 
-The fixed capital is 54.1 M EUR (41.4 M EUR at the feasibility stage, whose
+The fixed capital is 61.0 M EUR (41.4 M EUR at the feasibility stage, whose
 converter was one space-velocity vessel and whose exchangers rested on an
-assumed U); the NPV at the base case's appraisal knobs is −329 M EUR
-against −493 M EUR. The NPV moved because the energy bill did, not the
-capital.
+assumed U; 54.1 M EUR here before C66 squatted the beds); the NPV at the
+base case's appraisal knobs is −345 M EUR against −493 M EUR. The NPV
+moved because the energy bill did, much more than the capital.
 
 ### The start-up years (DEV.md 4c C63)
 
@@ -275,9 +297,11 @@ reached here).
 * A converter vessel: three separate shells are costed, not one pressure
   shell with internals, a cartridge, an interbed exchanger inside it or a
   quench.
-* A bed pressure drop, catalyst life or reduction, pellet size, or a start-
-  up heater: the loop is lit by the FEHE alone, and the converged state is
-  the one a group should check is reachable.
+* Catalyst life or reduction, the pellet's diffusion correction (Eq 39:
+  the particle is declared, but only the Ergun drop reads it -- the beds
+  run Eq 19 alone), a radial-flow bed, or a start-up heater: the loop is
+  lit by the FEHE alone, and the converged state is the one a group should
+  check is reachable.
 * A low-pressure loop: the Dyson & Simon kinetics are for an iron catalyst,
   and the 50 bar speculation stays at the feasibility stage
   ([`greenAmmoniaFeasibility50bar`](../greenAmmoniaFeasibility50bar)).
