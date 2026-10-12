@@ -2,8 +2,8 @@
 |       \|/    C hemicals     |  PEQ 2026-27 -- Green ammonia, 1200 t/day     |
 \*-----------------------------------------------------------------------------*/
 //  CATALYST BED 1 of 3 -- an ADIABATIC plug-flow bed on the Dyson & Simon
-//  (1968) rate law for an IRON catalyst (constant/reactions; the correlation
-//  object is src/unitOperations/reactor/kinetics/AmmoniaSynthesisRate.{H,cpp}).
+//  (1968) rate law for an IRON catalyst, WRITTEN in the case's
+//  constant/reactions (`type expression`, every constant with its unit).
 //  Its inlet temperature is what the FEHE delivers; its outlet temperature and
 //  conversion are RESULTS.
 //

@@ -79,7 +79,7 @@
     "catalyst": {
       "type": "object",
       "title": "Catalyst particle",
-      "description": "The particle the bed is packed with: read by a dysonSimon1968 bed's Eq 39 (`effectivenessFactor dysonSimonEq39`) and by the Ergun `pressureDrop` -- one home. Refused when neither reads it.",
+      "description": "The particle the bed is packed with, read by the Ergun `pressureDrop`. (Until 2026-10-12 a dysonSimon1968 bed's Eq 39 read it too; since DEV.md 4c C67 a rate law is written in the case and declares its own particle as a parameter of its formula.) No default.",
       "properties": {
         "particleDiameter": {
           "type": "number",

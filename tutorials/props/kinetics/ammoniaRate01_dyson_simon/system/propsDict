@@ -8,14 +8,19 @@
 \*-----------------------------------------------------------------------------*/
 /*---------------------------------------------------------------------------*\
   propsDict -- the ammonia synthesis rate of Dyson & Simon (1968), on the
-  bench.  Two questions, and they are different questions.
+  bench.  The law itself is constant/reactions' `ammoniaSynthesis`, every
+  number of it written there (`type expression;`); this file only says
+  where to evaluate it and what to print.  Two questions, and they are
+  different questions.
 
   THE LOCUS.  Sweeping temperature at a FIXED conversion locates the
   temperature of greatest net rate.  Three conversions locate three points of
-  the locus, and the point is that it DESCENDS.  The sweep runs 600-900 K
-  because that is roughly the band an iron catalyst lives in; at the lowest
-  conversion the maximum is pushed ONTO the window's upper edge, and the bench
-  says so rather than reporting an edge as a maximum.
+  the locus, and the point is that it DESCENDS.  The conversion is of N2,
+  walked from the paper's own reference mixture (3:1 H2/N2, 12.7 % inerts)
+  along the reaction's stoichiometry.  The sweep runs 600-900 K because that
+  is roughly the band an iron catalyst lives in; at the lowest conversion the
+  maximum is pushed ONTO the window's upper edge, and the bench says so
+  rather than reporting an edge as a maximum.
 
   THE DECLARED STATES.  Three gases TRANSCRIBED from the converged answer of
   tutorials/plant/ammonia03_quench_converter, at the digits that case's own
@@ -23,21 +28,34 @@
   and it will go stale if that case moves, so `check_ammonia_rate` RUNS
   ammonia03 and holds these three blocks to its converged result.
 
-  The catalyst is 8 mm, inside the 6-10 mm range Equation 39's effectiveness
-  factor was fitted for.  There is NO default particle size anywhere in the
-  engine: omit this block and Equation 40 refuses by name.
+  The catalyst particle is the law's own parameter (`dp 8 mm;` in
+  constant/reactions), inside the 6-10 mm range Eq 39 was fitted for; the
+  law REFUSES one outside it.
 \*---------------------------------------------------------------------------*/
 operations
 (
     {
         name      dysonSimon;
-        type      ammoniaRateBench;
+        type      rateLawBench;
+        reaction  ammoniaSynthesis;          // constant/reactions
 
-        catalyst  { particleDiameter 8 mm; }
+        //  What is printed and published, each in its declared unit.  V3 is
+        //  Eq 19 (intrinsic), xi Eq 39, Eq40 = V3 * xi, eta the paper's
+        //  abscissa (the conversion of N2).
+        report
+        (
+            { name V3;    unit kmol/m3/h; }
+            { name eta;   unit -; }
+            { name xi;    unit -; }
+            { name Eq40;  unit kmol/m3/h; }
+        );
 
         locus
         {
             pressure     300 atm;
+            maximise     V3;
+            keyReactant  N2;
+            baseMixture  { N2 0.21825; H2 0.65475; NH3 0; inert 0.127; }   // Eq 39's reference
             conversions  ( 0.05  0.15  0.25 );
             temperature  { from 600 K;  to 900 K;  n 301; }
         }

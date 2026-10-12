@@ -50,11 +50,12 @@ is replaced by:
 | `InterbedCooler2` | to 410 °C, raising HP steam | 410 °C author-set |
 | `Bed3` | the same rate law | 31.74 m³, the same 5 K criterion |
 
-The rate law is the correlation object
-`src/unitOperations/reactor/kinetics/AmmoniaSynthesisRate.{H,cpp}`, selected
-by `kinetics { type dysonSimon1968; }` in `constant/reactions` (copied from
-[`ammoniaReactor04_kineticSizing`](../ammoniaReactor04_kineticSizing), whose README is the
-reference for it). The FEHE now preheats bed 1 against bed 3's effluent, an
+The rate law is WRITTEN in this case's `constant/reactions` — `kinetics {
+type expression; }`, every constant of Dyson & Simon's Eqs 2, 6–8, 18 and 19
+with its unit and its equation number (DEV.md 4c C67: the kinetics live in
+the case) — the same law
+[`ammoniaReactor04_kineticSizing`](../ammoniaReactor04_kineticSizing) writes, whose README is the
+reference for it; `bin/curate/check_ammonia_rate.py` holds the copies equal. The FEHE now preheats bed 1 against bed 3's effluent, an
 energy recycle through three kinetic beds (the second tear in
 `system/solverDict`). The recycle compressor's power was re-tuned to 908 kW
 so the loop sits again at the base case's 150.9 bar.
@@ -287,8 +288,9 @@ reached here).
 * **The rate law is for an iron catalyst at 150-300 atm**, and this loop
   runs at 148.9 atm: the engine announces on every bed that the rate is
   extrapolated just below its window. The effectiveness factor is taken
-  as 1 (`effectivenessFactor intrinsic`), and the engine says that is
-  unpriced: a real charge with diffusion-limited pellets is larger.
+  as 1 (the declared law is Eq 19 alone), and the law's own `caveats` say
+  that is unpriced on every run: a real charge with diffusion-limited
+  pellets is larger.
 * **Bed 1's 515 °C is a criterion, not a result of optimisation**; the two
   interbed temperatures are author-set; no bed has been optimised against
   catalyst cost.

@@ -33,7 +33,7 @@ License
 #include "Exchange.H"
 #include "FitParameters.H"
 #include "HeatCapacityFit.H"
-#include "AmmoniaRateBench.H"
+#include "RateLawBench.H"
 #include "FrictionBench.H"
 #include "TransportBench.H"
 #include "SolubilityParameter.H"
@@ -201,11 +201,11 @@ void PropertyOperation::registerBuiltins()
     reg("heatCapacityFit", []{ return std::make_unique<HeatCapacityFit>(); });
     reg("heatTransferBench", []{ return std::make_unique<HeatTransferBench>(); });
     reg("frictionBench", []{ return std::make_unique<FrictionBench>(); });
-    //  THE AMMONIA RATE LAW ON THE BENCH.  `DysonSimon1968` carries its own
-    //  verify(); an unwired self-check is a no-silent-crutch violation, and
-    //  this op is the wire -- the same posture as the friction and transport
-    //  families.
-    reg("ammoniaRateBench", []{ return std::make_unique<AmmoniaRateBench>(); });
+    //  A RATE LAW WRITTEN IN THE CASE, ON THE BENCH (`type expression;` in
+    //  constant/reactions; DEV.md 4c C67).  It replaced the ammonia-only
+    //  bench the day the Dyson-Simon law left the engine for the case; the
+    //  law's anchors are held by a gate (check_ammonia_rate), not here.
+    reg("rateLawBench",     []{ return std::make_unique<RateLawBench>(); });
     reg("transportBench", []{ return std::make_unique<TransportBench>(); });
     reg("solubilityParameter", []{ return std::make_unique<SolubilityParameter>(); });
     reg("estimateComponent", []{ return std::make_unique<EstimateComponent>(); });

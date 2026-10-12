@@ -9,8 +9,9 @@
 /*---------------------------------------------------------------------------*\
   ammoniaRate01_dyson_simon -- the ammonia synthesis rate law on the bench.
 
-  THE PACKAGE BELOW IS A FORMALITY AND SAYS SO.  `ammoniaRateBench` asks the
-  correlation object for a rate; it never touches the thermophysical package,
+  THE PACKAGE BELOW IS A FORMALITY AND SAYS SO.  `rateLawBench` evaluates
+  the law written in constant/reactions; it never touches the thermophysical
+  package,
   because Dyson & Simon carry their OWN fugacity coefficients (Eqs 6-8) and
   their OWN equilibrium constant (Eq 2, after Gillespie & Beattie).  That is
   the point of the case rather than an omission: the rate law is an
@@ -20,5 +21,5 @@
 \*---------------------------------------------------------------------------*/
 application  choupoProps;
 tier         tutorial;
-description  "The ammonia synthesis rate of Dyson & Simon (1968) as a cited correlation object: Eq 19's pseudo-homogeneous rate, Eq 39's effectiveness factor over Table I's three tabulated pressures, Eq 40, with a declared 150-300 atm window, an announced pressure interpolation and five verify() anchors that each state whether they are THEORY or ARITHMETIC. It locates the LOCUS OF MAXIMUM RATE at three conversions and shows it descending -- the curve ammonia03_quench_converter zigzags about -- and evaluates the rate at that converter's own bed states.";
+description  "The ammonia synthesis rate of Dyson & Simon (1968), WRITTEN in the case (constant/reactions, `type expression`, every constant with its unit and equation number) and put on the rate-law bench: Eq 19's pseudo-homogeneous rate, Eq 39's effectiveness factor as a declared table over Table I's three pressures, Eq 40, a declared 150-300 atm window and an announced pressure interpolation; the paper's anchors are held by a gate on every case's copy of the law. It locates the LOCUS OF MAXIMUM RATE at three conversions and shows it descending -- the curve ammonia03_quench_converter zigzags about -- and evaluates the rate at that converter's own bed states.";
 verbosity    3;

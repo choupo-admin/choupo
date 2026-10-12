@@ -1,0 +1,160 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+  reactions -- the ammonia synthesis rate of Dyson & Simon (1968), WRITTEN
+  HERE, every number of it, for the props bench (`rateLawBench`, see
+  system/propsDict).  DEV.md 4c C67, Vitor's ruling of 2026-10-12: the
+  kinetics live in the case; nothing about ammonia is compiled into the
+  engine.  The engine compiles each formula once, checks its dimensions and
+  prints it back as PARSED in the run log.
+
+      D. C. Dyson and J. M. Simon, "A kinetic expression with diffusion
+      correction for ammonia synthesis on industrial catalyst", Ind. Eng.
+      Chem. Fundam. 7 (1968) 605-610 -- Eqs 2, 3-8, 18, 19, 39 + Table I, 40.
+
+  The definitions Ka ... k19 are the SAME law the two reactor cases write
+  (tutorials/plant/ammoniaReactor04_kineticSizing and greenAmmonia03_
+  basicDesign); `bin/curate/check_ammonia_rate.py` holds the three copies
+  to each other and to the paper's anchors.  This copy adds what the
+  reactors do not price -- the paper's EFFECTIVENESS FACTOR:
+
+    eta        the paper's abscissa for Eq 39: the conversion of NITROGEN
+               measured from the reference mixture (3:1 H2/N2, 12.7 %
+               inerts), read off the ammonia the gas carries.
+    TableI     Eq 39's constants at the three pressures the paper tabulates,
+               150, 225 and 300 atm.  Linear between them -- Choupo's rule,
+               not the paper's, and the run announces every interpolation --
+               and REFUSED outside them: a table has no form beyond its
+               points.
+    xi         Eq 39, the cubic in T and eta on Table I's constants.
+    V3, Eq40   Eq 19 (intrinsic) and Eq 40 = Eq 19 x xi.
+
+  A SYMBOL COLLISION, read before carrying a letter across: the paper writes
+  xi for the EFFECTIVENESS FACTOR and eta for the CONVERSION of nitrogen;
+  src/unitOperations/reactor/CatalystPellet.H -- and most of the reaction-
+  engineering literature -- writes eta for the effectiveness factor.  This
+  file keeps the PAPER's letters.
+
+  THE PARTICLE.  Eq 39 was fitted for 6-10 mm particles, and `dp` is
+  declared with that window `outside refuse`: a larger particle is a
+  different diffusion problem, not a further value of the cubic.  Below
+  6 mm the AUTHORS' position is that no correction is needed (xi = 1) --
+  which is a different LAW to write (Eq 19 alone, as the reactor cases do),
+  not a branch inside this one.
+\*---------------------------------------------------------------------------*/
+
+ammoniaSynthesis
+{
+    stoichiometry
+    (
+        { component N2;   nu -1; }
+        { component H2;   nu -3; }
+        { component NH3;  nu  2; }
+    );
+
+    kinetics
+    {
+        type     expression;
+        source   "Dyson, D.C. & Simon, J.M., Ind. Eng. Chem. Fundam. 7(4) (1968) 605-610: Eq 2 (Ka, after Gillespie & Beattie 1930), Eqs 3-8 (activities on the fugacity coefficients of Cooper 1967 / Shaw & Wones 1964 / Newton 1935), Eqs 18-19 (rate, fitted to the data of Nielsen, Kjaer & Hansen, J. Catalysis 3 (1964) 68), Eq 39 + Table I (effectiveness factor, diffusion after Nielsen 1956) and Eq 40";
+        basis    reactorVolume;      // Eq 19 / Eq 40 are per m3 of catalyst BED
+        rateOf   NH3;                // ... and are rates of formation of AMMONIA
+
+        parameters
+        {
+            k0_19       1.7698e15 kmol/m3/h;   // Eq 19 -- twice Eq 18's, two NH3 per N2
+            k0_18       8.849e14  kmol/m3/h;   // Eq 18 -- the constant per N2 (reported as k)
+            E           40765     cal/mol;     // Eqs 18-19
+            R_DS        1.987     cal/mol/K;   // the gas constant Eq 18 is written with
+            Kelvin      1         K;           // Eqs 2, 6-8 and 39 take T in kelvin ...
+            atmosphere  1         atm;         // ... and P in atmospheres
+            refInert    0.127     -;           // Eq 39's reference mixture: 12.7 % inerts, 3:1 H2/N2
+            dp          8         mm;          // the particle the bed is packed with
+        }
+
+        tables
+        {
+            //  Table I -- the constants of Eq 39 at the paper's three pressures.
+            TableI
+            {
+                x      ( 150          225          300          );   xUnit atm;
+                b0     ( -17.539096   -8.2125534   -4.6757259   );
+                b1     ( 0.07697849   0.03774149   0.02354872   );
+                b2     ( 6.900548     6.190112     4.687353     );
+                b3     ( -1.082790e-4 -5.354571e-5 -3.463308e-5 );
+                b4     ( -26.42469    -20.86963    -11.28031    );
+                b5     ( 4.927648e-8  2.379142e-8  1.540881e-8  );
+                b6     ( 38.93727     27.88403     10.46627     );
+                yUnit  -;
+            }
+        }
+
+        definitions
+        {
+            TK    "T / Kelvin";
+            Patm  "P / atmosphere";
+
+            //  Eq 2 -- the equilibrium constant, atm^-1 (Gillespie & Beattie 1930)
+            Ka    "10^(-2.691122*log10(TK) - 5.519265e-5*TK + 1.848863e-7*TK*TK + 2001.6/TK + 2.6899)";
+
+            //  Eqs 6, 7, 8 -- the fugacity coefficients of H2, N2 and NH3
+            gH2   "exp(exp(-3.8402*TK^0.125 + 0.541)*Patm - exp(-0.1263*sqrt(TK) - 15.980)*Patm*Patm + 300*exp(-0.011901*TK - 5.941)*(exp(-Patm/300) - 1))";
+            gN2   "0.93431737 + 0.3101804e-3*TK + 0.295896e-3*Patm - 0.2707279e-6*TK*TK + 0.4775207e-6*Patm*Patm";
+            gNH3  "0.1438996 + 0.2028538e-2*TK - 0.4487672e-3*Patm - 0.1142945e-5*TK*TK + 0.2761216e-6*Patm*Patm";
+
+            //  Eqs 3-5 -- activities a_i = x_i gamma_i P, in atm
+            aN2   "x[N2]  * gN2  * Patm";
+            aH2   "x[H2]  * gH2  * Patm";
+            aNH3  "x[NH3] * gNH3 * Patm";
+
+            //  Eq 19's bracket, its two terms
+            fwd   "Ka*Ka*aN2*aH2^1.5/aNH3";
+            rev   "aNH3/aH2^1.5";
+
+            //  Eqs 18-19 -- the Arrhenius factors
+            k18   "k0_18 * exp(-E/(R_DS*T))";
+            k19   "k0_19 * exp(-E/(R_DS*T))";
+
+            //  Eq 39 -- the effectiveness factor, on the paper's own abscissa
+            refN2     "(1 - refInert)/4";
+            eta       "x[NH3] / (2*refN2*(1 + x[NH3]))";
+            ratioH2N2 "x[H2] / x[N2]";
+            xi        "b0(P) + b1(P)*TK + b2(P)*eta + b3(P)*TK*TK + b4(P)*eta*eta + b5(P)*TK*TK*TK + b6(P)*eta*eta*eta";
+
+            //  Eq 19 (intrinsic) and Eq 40
+            V3    "k19*(fwd - rev)";
+            Eq40  "V3*xi";
+        }
+
+        rate  "Eq40";
+
+        validity
+        {
+            //  Eq 19 was fitted over 150-300 atm and degrades smoothly: ANNOUNCED.
+            P          { min 150 atm;  max 300 atm;  outside announce;  unit atm; }
+            //  Eq 39 was fitted for 6-10 mm particles: a different particle is
+            //  a different diffusion problem, so it REFUSES.
+            dp         { min 6 mm;  max 10 mm;  outside refuse;  unit mm; }
+            //  An effectiveness factor outside (0, 1] is the cubic leaving the
+            //  region Table I was fitted in -- a region the paper does not
+            //  state.  ANNOUNCED and returned UNCLAMPED: a clamp would hide it.
+            xi         { min 0;  max 1;  outside announce; }
+            //  The authors computed xi on a 3:1 H2/N2 mixture; they report
+            //  that other ratios change it and judged the effect on converter
+            //  design negligible -- THEIR judgement, repeated as theirs.  The
+            //  band is a REPORTING threshold this file chose, not a limit the
+            //  paper states.
+            ratioH2N2  { min 2.99;  max 3.01;  outside announce; }
+        }
+
+        caveats
+        (
+            "Equation 40 carries NO correction for the effect of particle size on catalyst reduction, on poisoning or on ageing -- the authors say so themselves. A bed sized from this rate is a FRESH, CLEAN, FULLY REDUCED bed, and a working converter is none of those for most of its life."
+        );
+    }
+}

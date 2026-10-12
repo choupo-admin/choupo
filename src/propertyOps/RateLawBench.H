@@ -26,36 +26,41 @@ License
     Required legal notices:  see NOTICE
 -------------------------------------------------------------------------------
 Class
-    Choupo::AmmoniaRateBench
+    Choupo::RateLawBench
 
 Description
-    THE BENCH IS THE WIRE.  `DysonSimon1968` carries a `verify()`, and an
-    unwired self-check is a no-silent-crutch violation -- the same argument
-    the Nusselt, friction and transport families already settled.  This op is
-    how a student reaches the rate law without building a reactor around it.
+    A RATE LAW ON THE BENCH, without a reactor around it.  The law is the
+    one a case writes in its constant/reactions (`kinetics { type expression;
+    }`, thermo/reaction/ExpressionRate), named by `reaction <name>;`; the
+    bench evaluates it and prints it back as PARSED.  It replaced the
+    ammonia-only `ammoniaRateBench` on 2026-10-12 (DEV.md 4c C67), when the
+    Dyson & Simon law left the engine for the case.
 
     It answers two questions, and they are different questions.
 
-    (1) THE LOCUS OF MAXIMUM RATE, and whether it DESCENDS.  Ammonia synthesis
-        is exothermic and reversible, so at any conversion there is one
-        temperature where the net rate is greatest, and that temperature falls
-        as conversion rises.  Sweeping temperature at a fixed conversion on
-        the paper's own reference mixture LOCATES that temperature.  Three
-        conversions locate three points on the locus, and the descent is the
-        whole reason a converter is quenched: it is the curve
-        `tutorials/plant/ammonia03_quench_converter` zigzags about, and until
-        this op existed nothing in the tree could draw it.
+    (1) THE LOCUS OF MAXIMUM RATE, and whether it DESCENDS.  For a reversible
+        exothermic reaction there is one temperature, at each conversion,
+        where the net rate is greatest, and that temperature falls as
+        conversion rises -- the curve a quench converter zigzags about.  A
+        temperature sweep at a fixed conversion LOCATES it.  The conversion
+        is of a declared `keyReactant`, walked from a declared `baseMixture`
+        along the reaction's own stoichiometry; `maximise` names the quantity
+        located (the law's value, or one of its definitions).
 
-    (2) THE RATE AT A STATE THE READER DECLARES.  A converter designer's
-        actual question is "how fast is this gas going, here?", and the states
-        worth asking about are the ones another case computed.  Each declared
-        point is evaluated and reported; nothing is compared or ranked.
+    (2) THE RATE AT A STATE THE READER DECLARES -- each `points` entry is
+        evaluated and reported; nothing is compared or ranked.
+
+    What is published is chosen by the case: `report ( { name <n>; unit <u>;
+    } ... )`, each a definition, a parameter, or the law's own `rate` /
+    `forward` / `reverse`, converted to the declared unit (whose dimensions
+    must be the quantity's).  A composition that does not sum to one is
+    REFUSED, never normalised: which entry is wrong is the author's to say.
 
     WHAT IT DOES NOT DO.  It does not size a bed, integrate along one, or
-    touch any reactor.  It never says which temperature a bed SHOULD run at:
-    the locus of maximum rate is a thermodynamic and kinetic fact, and where
-    to sit relative to it is an engineering choice about catalyst life that
-    no correlation in this tree can price.
+    touch a reactor, and it never says which temperature a bed SHOULD run at.
+    It holds no anchors of its own: the checks a law must pass are a GATE's
+    (bin/curate/check_ammonia_rate.py for the ammonia law), which evaluates
+    every case's declared law through this bench.
 \*---------------------------------------------------------------------------*/
 
 #pragma once
@@ -68,12 +73,12 @@ Description
 
 namespace Choupo {
 
-class AmmoniaRateBench : public PropertyOperation
+class RateLawBench : public PropertyOperation
 {
 public:
     const std::string& type() const override
     {
-        static const std::string t = "ammoniaRateBench";
+        static const std::string t = "rateLawBench";
         return t;
     }
 
