@@ -144,7 +144,16 @@ report  { file designspec_history.csv; }    // optional; iteration history
 * `targets` entries are either a **value spec**
   `{ path <result-path>; value <X> <unit>; tol <X> <unit>; }` or an
   **equality** `{ lhs <pathA>; rhs <pathB>; tol <X>; }` (enforces
-  resp(A) = resp(B) — e.g. equal areas, equal duties).
+  resp(A) = resp(B) — e.g. equal areas, equal duties), or a **largest-of**
+  `{ largestOf ( <pathA> <pathB> ... ); value <X>; tol <X>; }` — the LARGEST
+  of the named quantities must equal `value`.  With quantities that each
+  fall as the knob grows, it solves the SMALLEST knob at which every one is
+  within the bound without naming in advance which one binds (e.g. a
+  converter's one diameter against every bed's `dP_over_allowable`,
+  `tutorials/plant/greenAmmonia03_basicDesign`).  The run names the one it
+  found largest at the design point, and says so when a second sits within
+  `tol` of it (the kink of max()).  At least two quantities; `path`/`lhs`/
+  `rhs` beside it are refused.
 * dim(manipulate) must equal dim(targets) — it is a square Newton-ND.
 * Target stream fields: `F` (kmol/s), `F_mass` (kg/s), `T`, `P`, `vf`.
 * After convergence the simulator is replayed once at the design point, so

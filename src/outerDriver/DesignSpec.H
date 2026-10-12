@@ -63,6 +63,17 @@ Description
             // must be equal.  Used for inter-effect mass closure,
             // recycle balancing, etc.
             { lhs   V1.F_mass;   rhs   effect2.F_cond;         tol 1e-4 kg/s; }
+
+            // Largest-of form (DEV.md 4c C69): the LARGEST of several
+            // computed quantities must equal a literal.  With quantities
+            // that each fall as the manipulated variable grows, it solves
+            // the SMALLEST value at which every one is within the bound --
+            // without the author naming in advance which one binds.  The
+            // design point names the one that did.  max() has a kink where
+            // the largest changes hands; the Newton is smooth everywhere
+            // else, and a kink AT the answer (two equal maxima) is said.
+            { largestOf ( Bed1.dP_over_allowable  Bed2.dP_over_allowable );
+              value 1;   tol 0.002; }
         );
 
         options
@@ -139,20 +150,27 @@ private:
         scalar      hi;
     };
 
-    // Two flavours of target:
-    //   Value:    resp(path) ==  value           (path + value)
-    //   Equality: resp(lhs)  ==  resp(rhs)       (lhs + rhs, no value)
-    // Both share `tol` as the residual normaliser (so |F|_2 ~ 1 means
+    // Three flavours of target:
+    //   Value:     resp(path) ==  value                (path + value)
+    //   Equality:  resp(lhs)  ==  resp(rhs)            (lhs + rhs, no value)
+    //   LargestOf: max_k resp(paths[k]) == value       (largestOf + value)
+    // All share `tol` as the residual normaliser (so |F|_2 ~ 1 means
     // each constraint is satisfied to within tol).
     struct Target
     {
-        enum class Kind { Value, Equality } kind = Kind::Value;
+        enum class Kind { Value, Equality, LargestOf } kind = Kind::Value;
         std::string path;       // Value form
+        std::vector<std::string> paths;   // LargestOf form
         std::string lhs;        // Equality form
         std::string rhs;        // Equality form
         scalar      value = 0;  // canonical SI
         scalar      tol   = 1.0;
     };
+
+    //  The largest of a LargestOf target's quantities in one result, and a
+    //  second one within `tol` of it (empty when none): the kink of max().
+    struct Largest { std::string path; scalar value = 0.0; std::string tiedWith; };
+    static Largest largestOf(const SimulationResult& r, const Target& tg);
 
     std::vector<Manipulate>  vars_;
     std::vector<Target>      targets_;
