@@ -2025,6 +2025,22 @@ Ergun drop meets every bed's allowable, announced with the binding bed),
 each bed's height V_R/(pi D^2/4), a bed's own `L_over_D` refused there.  A
 container restart killed that work mid-flight on 2026-10-12; its surviving
 edits were committed as WIP (3deb0b4fe) and the work resumed.
+MERGED 2026-10-12.  D is NOT declared on the shell (the brief's form,
+rejected with the reason): the Ergun drop is integrated with the
+reactions, so D must be known during the solve -- its one home is the
+flowsheet variable the beds read, solved by a new `designSpec` target
+`largestOf ( ... )` (largest bed dP/allowable = 1), and the shell sizer
+CHECKS it (`D_smallestAdmissible`, binding bed, bracket).  greenAmmonia03:
+D 2.2283 m, Bed3 binding (Bed1 0.31, Bed2 0.62); at EQUAL diameter one
+shell 16.79 vs three 15.90 MEUR (the coolers sit inside at full D and
+167 bar); FCI 61.02 -> 59.14, NPV -344.68 -> -340.93 MEUR.  Goldens
+re-recorded after the list was shown (199 + 7 + 1 rows moved, 277
+renamed, 33 new, 42 retired).  Also: `bin/runTests` printed a failing
+row containing `%` as a format string (fixed).  NAMED, not fixed: the
+coolers' shells counted twice (converter height AND each cooler's Turton
+cost); no head space/distributor in the shell height.  Record
+`docs/design/a-converter-is-one-shell.md`.  NEXT: the feasibility ->
+basic-design comparison (C68 addition) is unblocked.
 
 **C68. ONE LADDER FOR THE AMMONIA CASES, AND ITS MISSING FIRST RUNG
 (Vítor, 2026-10-12, verbatim: "os vários níveis de simulação do processo de
