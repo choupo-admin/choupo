@@ -2121,7 +2121,23 @@ Class 1 & 50-100\% & \textminus{}5/+10\% & Definitive, quote-based \\
 
 Quoting an NPV to four significant figures off a Class-5 estimate is the
 classic glass-box failure: the \(\pm\)50\% CAPEX band swamps the answer.
-Always run the case at both error bounds.
+Always run the case at both error bounds. In Choupo the economics pass
+does it for you: a \texttt{sensitivity} block inside the postDict's
+\texttt{economics} block moves each declared input \emph{alone} to two
+ends and prices the same converged run again --- a \emph{tornado}, sorted
+by NPV swing. \texttt{FCI \{ relative accuracyBand; \}} takes the capital
+to the two ends of the declared band;
+\texttt{price.<stream> \{ relative ( -0.2 0.2 ); \}},
+\texttt{utility.<name>}, \texttt{discountRate},
+\texttt{streamFactor}, \texttt{taxRate} and \texttt{labourRate} move the
+rest (\texttt{relative} ends are fractions of the base value,
+\texttt{absolute} ends are values of the input). Read it as a
+\emph{sensitivity}, not an uncertainty analysis: no probability is
+attached to either end, and inputs that move together in the market (the
+hydrogen and the electricity price) are moved one at a time. See
+\texttt{greenAmmonia02\_feasibility150bar}, where a \(\pm\)20\% move of
+the hydrogen or the ammonia price swings the NPV some fourteen times as
+far as the whole \(-30/+50\)\% capital band.
 
 \hypertarget{materials-of-construction--mechanical-design}{%
 \section{Materials of construction \& mechanical

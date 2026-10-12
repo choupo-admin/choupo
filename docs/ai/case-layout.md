@@ -801,6 +801,43 @@ columns, `productionFraction` and `startupCost_<cur>`, only when any key is
 declared).  Worked case: `tutorials/steady/economics/economics03_startup_years`
 (its postDict checks the cash flow by hand).
 
+**THE ECONOMIC SENSITIVITY: ONE INPUT AT A TIME (2026-10-12).**  An opt-in
+`sensitivity {}` block in the same `economics {}` block prices the plant again
+with each declared input moved ALONE to two ends -- a tornado -- on the same
+converged run (no re-solve: every input enters after the flowsheet) and through
+the same cash-flow arithmetic as the base appraisal.  Absent, nothing is
+computed, printed or published.
+
+```
+sensitivity
+{
+    FCI                 { relative accuracyBand; }      // the declared band's -30/+50 %
+    price.ProductNH3    { relative ( -0.20 0.20 ); }    // fractions of the base EUR/kg
+    utility.electricity { relative ( -0.20 0.20 ); }    // a factor on that utility's bill
+    discountRate        { absolute ( 0.08 0.12 ); }     // values of the input
+    streamFactor        { absolute ( 0.85 0.95 ); }
+}
+```
+
+Each entry says EXPLICITLY whether its two numbers are `relative` (fractions of
+the base value) or `absolute` (values of the input), low end first.  Inputs:
+`FCI` (relative only; `relative accuracyBand;` reads the block's own
+`accuracyBand`, so the capital band reaches the NPV -- it moves WC, the 0.180
+FCI of COM_d, depreciation, salvage and start-up cost with it), `price.<stream>`
+(a stream `constant/economics` prices), `utility.<name>` (relative only; a
+utility a duty of this run is allocated to -- a steam CREDIT scales too),
+`labourRate`, `discountRate`, `taxRate`, `streamFactor`.  An unknown input, a
+price the case does not declare, a utility with no bill, a bare list, both or
+neither form, or an end outside what the input can be (a stream factor above 1)
+each REFUSE by name.  Published: a console table sorted by NPV swing, headed by
+the statement that a sensitivity is NOT an uncertainty analysis (no probability,
+no correlation between inputs); `kpis.economics.sens_<input>_NPV_low/_high`,
+`_IRR_low/_high`, `_payback_low/_high` (the input's `.` written `_`; NaN where
+there is no IRR or payback); and `reports/economics/sensitivity.csv`.  Worked
+cases: `tutorials/plant/greenAmmonia02_feasibility150bar` and `...50bar`.  An
+outer `sweep` still varies only FLOWSHEET paths -- this block is how a price, a
+rate or the capital is varied.
+
 ## Where a numerical option lives — the four homes are INTENTIONAL
 
 Settled 2026-08-04 (Vítor, option A of
