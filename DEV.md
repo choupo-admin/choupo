@@ -1991,6 +1991,69 @@ accepts today, and that is a policy call.
      loop (membrane18), the dynamic loop (unsteady03), the UF law
      (membrane19) and the UF loop in time (unsteady04).
 
+**C67. A CASE CARRIES ITS OWN KINETICS: RATE EXPRESSIONS IN THE DICT, AND A
+FACTORY A CASE'S `code/` CAN REGISTER INTO (Vítor, 2026-10-12, verbatim:
+"Eu até aceito o /user, mas o código tem de ficar no caso!!! ... Isto é a
+única forma de o caso ficar auto contido", then "Faz o 3" to the
+commander's three options -- ARCHITECTURE DECISION, his).**  Measured: the
+`pfr` dispatches kinetics on a fixed word list, `{ "Arrhenius", "LHHW",
+"dysonSimon1968" }` (`src/unitOperations/reactor/PFR.cpp:101`, `:353`,
+`:733`), not a factory; the Dyson-Simon constants are `constexpr` in
+`src/unitOperations/reactor/kinetics/AmmoniaSynthesisRate.cpp:42-54`;
+case-local C++ exists for UNIT OPERATIONS only (`<case>/code/` +
+`registerUserTypes()`, built by `bin/buildCode` into a per-case binary,
+`src/applications/choupoSolve/main.cpp:128-134,459`; witnesses
+`tutorials/steady/userops/userOp01_yield_reactor`, `userOp02`), and a case
+with `code/` does NOT run on the site (no compiler in the browser).  The
+decision: (i) `type expression;` -- the rate law written in
+`constant/reactions` with its named parameters, evaluated by a small
+dependency-free expression evaluator in the engine, runs everywhere; (ii)
+a `ReactionRate` base with the explicit factory (`registerType`/`New`/
+`registerBuiltins`), Arrhenius and LHHW as built-ins, and
+`registerUserTypes()` able to register a case-local law from `code/`
+(local only, said so); (iii) the ammonia law re-expressed in each case's
+`constant/reactions` through route (i), every number visible, and the C++
+`AmmoniaSynthesisRate` retired or reduced to the verification anchors
+(one home).  Sequenced AFTER C66 items 1 and 3 merge (both touch
+`PFR.cpp`).  Status: waiting on C66.
+
+**C66. THE GREEN-AMMONIA CONVERTER BEDS, SIZED AS A BASIC DESIGN SIZES
+THEM (Vítor, 2026-10-12, asking "No Ammonia Green Design, como é que o PFR
+é dimensionado?"; taken under his standing "Avança da melhor forma").**
+Measured: each bed's catalyst volume is DECLARED and was tuned BY HAND
+against a criterion (`greenAmmoniaBasicDesign/Bed1/system/flowsheetDict`:
+V_R 8.72 m3 so bed 1 leaves at 515 C, 5 K under the 520 C catalyst limit;
+Bed2 18.23 and Bed3 31.44 m3 for a 5 K approach), because a `$variable`
+in a unit FOLDER does not resolve against the plant's `variables {}` and a
+DesignSpec cannot reach it (C57); the rate is Dyson-Simon Eq 19 with the
+effectiveness factor taken as 1 (`effectivenessFactor intrinsic`,
+announced as unpriced; the paper's Eq 39 exists in the engine and needs a
+particle diameter); the `pfr` computes NO pressure drop (`PFR.cpp` has no
+Ergun term; `pellet/Catalyst.H` names Ergun as a future reader); the sizer
+then wraps V_R in a straight cylinder at a declared L/D 6 and prices
+V_R x 2500 kg/m3 of catalyst (both author-set).  Scope: (1) let a
+DesignSpec reach a unit-folder variable, and SOLVE each bed's V_R to its
+stated criterion; (2) the basic-design rate with Eq 39 and a declared
+particle size; (3) an opt-in Ergun pressure drop in the `pfr` on the bed's
+own cross-section, so the L/D is checked against an allowable drop rather
+than typed.  Moved rows listed before any record.  Status: dispatched
+2026-10-12.
+RULING 2026-10-12 (Vítor, verbatim: "Um PFR tem de ter os parâmetros
+cinéticos definidos no caso em /constant não é? ... Isto assim não é nada
+glass box com tudo definido nos dicionários!"): KINETIC PARAMETERS ARE
+DECLARED IN THE CASE'S `constant/`, never compiled into the engine.  A law
+object keeps its FUNCTIONAL FORM in code; every NUMBER it uses (Dyson-Simon:
+k0, E, Ka constants, fugacity-correlation constants, Table I) is declared
+in `constant/reactions` with units and a source per group, read by the
+engine, refused if missing; the paper's values survive in code only as
+verification anchors, and a case value that differs from the paper's is
+announced.  This is the three-axiom layout's own axiom 3 (equipment-
+dependent kinetics -> case constant/), which the `constexpr` constants in
+`AmmoniaSynthesisRate.cpp:42-54` contradicted.  Added to C66 as item 4
+(done first): migrate every dysonSimon1968 case byte-identically.
+SUPERSEDED the same day by C67 (option 3): item 4 stopped, item 2 deferred
+until C67 lands; items 1, 3 and the banner fix continue.
+
 **C65. THE DEBTS THE SAFETY AND LETDOWN SLICES FOUND: THREE RECORDS, ONE
 VALVE, ONE GATE (commander, 2026-10-11, under Vítor's "Avança da melhor
 forma porra! Eu vou dando feedback"; moved golden rows still go to him as a
@@ -2009,6 +2072,26 @@ source, teach `check_source_licence` the no-grant compilations the policy
 names, price the valve through `flashState::priceState`; measure every
 moved row and list it, record nothing that moves.  Status: dispatched
 2026-10-11.
+MERGED 2026-10-12 (d67b7f036).  (d) the valve prices both ends through
+`flashState::priceState`: every valve closes to <= 5e-8 kW, credo01's plant
+-5.44 -> 0 and letdown01's +38.66 -> 0 kW, the SRK purge valve now cools
+(Joule-Thomson, 253.15 -> 248.68 K); 50 rows moved (credo01 16, letdown01
+30 + ValveHP T_out 6 mK, letdown02 4), listed to Vítor and recorded; both
+cases left `check_energy_closure`'s pins.  (b) `NH3.dat` Vliq = 2.8245e-5
+(25 C, Gao et al. JPCRD 2023 via CoolProp); (c) NH3 liquid viscosity
+refitted to Monogenidou, Assael & Huber JPCRD 2018 (the Engineering
+Toolbox fit was +86 % at 320 K); `check_source_licence` refuses
+Engineering Toolbox and REFPROP as value origins.  Both reach the corpus
+only on RE-IMPORT of the 35 sealed NH3 cases (pinned in
+`debt_registry.NO_GRANT_CASE_LOCAL`): measured 241 rows in 8 cases (liquid
+NH3 -13 % density, tanks +13 % volume, FCI ~+0.45 M, NPV ~-0.9 M per
+green-ammonia plant) -- put to Vítor.  (a) acetic acid: no honest data-only
+fix (the monomer-basis HvapTb breaks 34 of 38 cases); the engine must
+price the dimerisation -- architecture, Vítor's; record
+`docs/design/one-record-two-vapours-acetic-acid.md`.  Also found: 13
+case-local pair records transcribing DECHEMA (licence gate does not scan
+tutorials/ for them; ~47 pins to widen it); `WilkeChang.cpp:45` uses the
+25 C Vliq where the correlation wants the molar volume at Tb.
 
 **C64. AN EDUTOOL ON LARGE PRESSURE LETDOWN: CHOKED FLOW, CAVITATION,
 FLASHING, NOISE AND HOW INDUSTRY STAGES THE DROP (Vítor, 2026-10-11,
