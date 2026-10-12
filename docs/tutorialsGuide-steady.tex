@@ -5239,11 +5239,11 @@ Compare with flash01\_benzene\_toluene, where the same separation is asked as `i
 \end{tutnarrative}
 \begin{tutgolden}
 \goldrow{kpi}{H1}{T\_out}{413.08978161}
-\goldrow{kpi}{V1}{T\_out}{369.30464285}
-\goldrow{kpi}{V1}{vf}{0.20555173}
+\goldrow{kpi}{V1}{T\_out}{369.263388422}
+\goldrow{kpi}{V1}{vf}{0.199748128548}
 \goldrow{kpi}{V1}{dP}{900000}
-\goldrow{stream}{liquid}{F}{0.0220680075}
-\goldrow{stream}{vapour}{F}{0.0057097703}
+\goldrow{stream}{liquid}{F}{0.0222292186514}
+\goldrow{stream}{vapour}{F}{0.00554855912634}
 \goldrow{utility}{H1}{heating.steamMP.duty\_kW}{260}
 \goldrow{utility}{H1}{heating.steamMP.T}{413.089781612}
 \goldrow{utility}{H1}{heating.steamMP.kg\_s}{0.1305876444}
@@ -5252,7 +5252,7 @@ Compare with flash01\_benzene\_toluene, where the same separation is asked as `i
 \goldrow{stream}{feed}{T}{350}
 \goldrow{stream}{heated}{F}{0.0277777777778}
 \goldrow{stream}{heated}{T}{413.089781612}
-\goldmore{32}
+\goldmore{41}
 \end{tutgolden}
 
 \clearpage
@@ -7325,6 +7325,59 @@ All film/saturation properties are IAPWS-IF97 water (incl. sigma via R1-76). The
 
 \subsection{hydraulics}
 \grouptheory{hydraulics}
+\clearpage
+\tutentry{letdown01\_ammonia\_flashing}{tutorials/steady/hydraulics/letdown01\_ammonia\_flashing}
+\begin{tutscheme}
+\begin{tikzpicture}[>={Stealth[length=2mm]}, every node/.style={font=\scriptsize}]
+  \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (ValveHP) at (0.0,-0.0) {\textbf{ValveHP}\\[-1pt]{\tiny valve}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (DrumHP) at (2.9,-0.0) {\textbf{DrumHP}\\[-1pt]{\tiny isothermalFlash}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (ValveLP) at (5.8,-0.0) {\textbf{ValveLP}\\[-1pt]{\tiny valve}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (DrumLP) at (8.7,-0.0) {\textbf{DrumLP}\\[-1pt]{\tiny isothermalFlash}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (PurgeValve) at (0.0,-1.7) {\textbf{PurgeValve}\\[-1pt]{\tiny valve}};
+  \draw[->] ($(ValveHP.west)+(-1.05,0.00)$) -- ($(ValveHP.west)+(0,0.00)$) node[at start, above, font=\tiny, anchor=south west] {RawLiquid};
+  \draw[->] (ValveHP) -- (DrumHP) node[midway, above, font=\tiny] {ThrottledHP};
+  \draw[->] (DrumHP) -- (ValveLP) node[midway, above, font=\tiny] {LetdownLiquid};
+  \draw[->] (ValveLP) -- (DrumLP) node[midway, above, font=\tiny] {ThrottledLP};
+  \draw[->] ($(PurgeValve.west)+(-1.05,0.00)$) -- ($(PurgeValve.west)+(0,0.00)$) node[at start, above, font=\tiny, anchor=south west] {Purge};
+  \draw[->] ($(DrumHP.east)+(0,0.00)$) -- ($(DrumHP.east)+(1.05,0.00)$) node[at end, above, font=\tiny, anchor=south east] {LetdownGas};
+  \draw[->] ($(DrumLP.east)+(0,-0.17)$) -- ($(DrumLP.east)+(1.05,-0.17)$) node[at end, below, font=\tiny, anchor=north east] {ProductNH3};
+  \draw[->] ($(DrumLP.east)+(0,0.17)$) -- ($(DrumLP.east)+(1.05,0.17)$) node[at end, above, font=\tiny, anchor=south east] {FlashGas};
+  \draw[->] ($(PurgeValve.east)+(0,0.00)$) -- ($(PurgeValve.east)+(1.05,0.00)$) node[at end, above, font=\tiny, anchor=south east] {FuelGas};
+\end{tikzpicture}
+\end{tutscheme}
+\tutwhat{Pressure letdown: the green-ammonia separator liquid throttled 140 $\to$ 20 $\to$ 1 bar (flashing), and the loop purge 140 $\to$ 2 bar (choked gas)}
+\begin{tutnarrative}
+A LARGE PRESSURE LETDOWN, WITH THE ENGINE RUNNING (DEV.md 4c C64, the "Large pressure letdown" EduTool).
+
+THE QUESTION. The liquid ammonia that leaves a synthesis loop's separator at 140 bar has to reach an atmospheric store. That is a pressure ratio of about 140, and it is taken in two throttles, each followed by a drum that lets the released gas go. What does the stream look like on the far side of each valve -- its temperature, how much of it is vapour, and how much SPACE it now occupies? And what does the same throttle do to a gas -- the loop purge -- let down to a fuel header?
+
+WHERE THE STATES COME FROM. RawLiquid (0/RawLiquid) -- the converged separator liquid of tutorials/plant/greenAmmoniaBasicDesign (converged/RawLiquid), copied to the digit: 140 bar, 253.15 K, 2927 kmol/h of ammonia carrying the H2, N2 and Ar the separator dissolved in it. gui/tests/letdown.test.ts holds the copy to the plant's own file. the two pressures, 20 bar and 1.01325 bar -- the plant's own LetdownHP and StorageFlash drums (greenAmmoniaBasicDesign/LetdownHP/system/flowsheetDict, .../StorageFlash/system/flowsheetDict). Purge (0/Purge) -- the same plant's converged purge gas (140 bar, 253.15 K, mostly H2 and N2), copied to the digit. 2 bar for the purge's fuel header -- AUTHOR-SET for the lesson. The plant sends its purge to a boundary and models no letdown of it; no real fuel system is described by this number.
+
+WHAT IS DIFFERENT FROM THE PLANT, AND WHY. The plant takes each drop as an ISOTHERMAL flash whose temperature it declares (253.15 K at 20 bar, 238.15 K at 1 atm) -- a hidden valve and a hidden heat exchanger in one box (see credo01\_valve\_heater\_drum). Here each drop is a `valve`, an isenthalpic throttle (src/unitOperations/valve/Valve.H): the outlet temperature and vapour fraction are RESULTS, and the drum after it has no knobs at all, inheriting T and P from the valve. The plant's own StorageFlash header names the adiabatic letdown as the real one.
+
+WHAT THE VALVE PUBLISHES. Besides T\_out and vf, the valve's volumetric flow on both sides (Q\_in, Q\_out, volumeRatio, rho\_in, rho\_out), built from the package's own phase densities -- homogeneous, no slip. The liquid density is the NH3 record's Vliq carried in T by Rackett, and the dissolved H2, N2 and Ar, which have no liquid density at 253 K, are priced at the density of the rest; the run says so.
+
+Package: the plant's own (Henry for the dissolved gases in ammonia, SRK for the vapour), copied with its case-local Ar-NH3 pair.
+
+\end{tutnarrative}
+\begin{tutgolden}
+\goldrow{stream}{FlashGas}{F}{0.0415445974779}
+\goldrow{stream}{FlashGas}{T}{238.884926778}
+\goldrow{stream}{FuelGas}{F}{0.0033785575081}
+\goldrow{stream}{FuelGas}{T}{248.677720887}
+\goldrow{stream}{LetdownGas}{F}{0.00354665692591}
+\goldrow{stream}{LetdownGas}{T}{253.01994131}
+\goldrow{stream}{LetdownLiquid}{F}{0.813252311193}
+\goldrow{stream}{LetdownLiquid}{T}{253.01994131}
+\goldrow{stream}{ProductNH3}{F}{0.771707755979}
+\goldrow{stream}{ProductNH3}{T}{238.884926778}
+\goldrow{stream}{Purge}{F}{0.0033785575081}
+\goldrow{stream}{Purge}{T}{253.15}
+\goldrow{stream}{RawLiquid}{F}{0.816798968119}
+\goldrow{stream}{RawLiquid}{T}{253.15}
+\goldmore{84}
+\end{tutgolden}
+
 \clearpage
 \tutentry{pipe01\_water\_line}{tutorials/steady/hydraulics/pipe01\_water\_line}
 \begin{tutscheme}
