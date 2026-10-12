@@ -68,6 +68,64 @@
       "title": "Catalyst loading",
       "description": "Mass of catalyst per unit reactor volume.",
       "unit": "kg/m3"
+    },
+    "L_over_D": {
+      "type": "number",
+      "exclusiveMinimum": 0,
+      "title": "Bed slenderness L/D",
+      "description": "Multi-reaction path only. Gives the bed a cross-section (D, L, A published as KPIs) as the straight cylinder of V_R at this ratio; the `pfr` sizer builds the shell on it and REFUSES a second L_over_D in its designRules -- one home. Required by `pressureDrop`.",
+      "unit": "-"
+    },
+    "catalyst": {
+      "type": "object",
+      "title": "Catalyst particle",
+      "description": "The particle the bed is packed with: read by a dysonSimon1968 bed's Eq 39 (`effectivenessFactor dysonSimonEq39`) and by the Ergun `pressureDrop` -- one home. Refused when neither reads it.",
+      "properties": {
+        "particleDiameter": {
+          "type": "number",
+          "exclusiveMinimum": 0,
+          "title": "Particle diameter",
+          "description": "Taken by Ergun as the equivalent-sphere diameter (an irregular granule's sieve size overstates it: the drop is then a lower estimate). No default.",
+          "unit": "m"
+        }
+      },
+      "additionalProperties": false
+    },
+    "pressureDrop": {
+      "type": "object",
+      "title": "Bed pressure drop (opt-in)",
+      "description": "Multi-reaction path only. Integrates Ergun's dP/dz = -[150 mu (1-eps)^2 u/(eps^3 dp^2) + 1.75 rho (1-eps) u^2/(eps^3 dp)] along the bed with the species, on the L_over_D cross-section; the rate law and T read the local P and the outlet leaves at P_in - dP. Needs a declared transport (viscosity) model. Absent, the bed is at constant pressure.",
+      "required": [
+        "model",
+        "voidFraction"
+      ],
+      "properties": {
+        "model": {
+          "type": "string",
+          "enum": [
+            "Ergun"
+          ],
+          "title": "Correlation",
+          "description": "Ergun, Chem. Eng. Prog. 48 (1952) 89. Any other word is REFUSED.",
+          "unit": "-"
+        },
+        "voidFraction": {
+          "type": "number",
+          "exclusiveMinimum": 0,
+          "exclusiveMaximum": 1,
+          "title": "Bed void fraction",
+          "description": "No default: the drop goes as (1-eps)/eps^3.",
+          "unit": "-"
+        },
+        "allowable": {
+          "type": "number",
+          "exclusiveMinimum": 0,
+          "title": "Allowable drop",
+          "description": "Optional design budget; a drop above it is ANNOUNCED (never clamped) with the (L/D)^2 remedy.",
+          "unit": "Pa"
+        }
+      },
+      "additionalProperties": false
     }
   },
   "additionalProperties": false

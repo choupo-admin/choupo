@@ -77,8 +77,24 @@ std::vector<EquipmentSizing> CatalystBedSize::size(const std::string& unitName,
     shell.equipmentType = "vessel";          // priced on the EXISTING vessel set
     shell.material      = material.name;
 
-    const scalar L_over_D = designDefault::valueOr(
-        designRules, designDefault::vesselLoverD, "catalystBed", unitName, shell);
+    //  THE SLENDERNESS HAS ONE HOME (DEV.md 4c C66).  A bed that declares
+    //  `operation.L_over_D` (the cross-section its Ergun pressure drop is
+    //  integrated on) publishes it, and the shell is built on THAT number --
+    //  a second copy here could disagree with the bed whose drop it sized.
+    //  Absent it, the designRules value (or the announced default) as before.
+    const auto ldIt = k.find("L_over_D");
+    const bool ldFromUnit = (ldIt != k.end());
+    if (ldFromUnit && designRules->found("L_over_D"))
+        throw std::runtime_error("CatalystBed: unit '" + unitName
+            + "' declares its bed's slenderness (`operation.L_over_D`, the"
+              " cross-section its pressure drop is integrated on) AND this"
+              " sizer's designRules declare `L_over_D` too.  One number, one"
+              " home: delete the designRules copy -- the shell is built on the"
+              " bed's own.");
+    const scalar L_over_D = ldFromUnit
+        ? ldIt->second
+        : designDefault::valueOr(designRules, designDefault::vesselLoverD,
+                                 "catalystBed", unitName, shell);
     const scalar corrosionAllow = designDefault::valueOr(
         designRules, designDefault::corrosionAllow, "catalystBed", unitName, shell);
     const scalar jointEff = designDefault::valueOr(
@@ -112,6 +128,13 @@ std::vector<EquipmentSizing> CatalystBedSize::size(const std::string& unitName,
     shell.set("pressureDesign", pressureDesign, "bar");
     shell.basis = "catalyst volume V_R read from the unit (rating model);"
                   " shell = straight cylinder of that volume at L_over_D";
+    if (ldFromUnit)
+        shell.basis += " (read from the unit's operation.L_over_D, the"
+                       " cross-section its pressure drop is integrated on)";
+    //  The bed's pressure drop, where the unit computed one: a number on the
+    //  sheet an auditor checks the slenderness against.
+    const auto dpIt = k.find("dP_bed_bar");
+    if (dpIt != k.end()) shell.set("dP_bed", dpIt->second, "bar");
 
     //  ---- item 2: the CATALYST CHARGE ----------------------------------------
     //  Its mass follows from V_R and a bulk density the CASE declares; its

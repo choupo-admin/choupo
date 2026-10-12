@@ -206,11 +206,11 @@ DysonSimonBed readDysonSimonBed(const DictPtr&       rxn,
         b.dp_mm = 1000.0 * operDict->subDict("catalyst")
                                   ->lookupScalar("particleDiameter", Dims::length);
     }
-    else if (hasCatalystBlock)
+    else if (hasCatalystBlock && !operDict->found("pressureDrop"))   // Ergun reads it (C66)
         throw std::runtime_error(who + ": `operation.catalyst` is declared but"
-            " `effectivenessFactor intrinsic` reads no particle -- a declared"
-            " value nothing reads is a comment that looks like a declaration."
-            "  Either ask for `dysonSimonEq39` or remove the block.");
+            " neither `effectivenessFactor dysonSimonEq39` nor a `pressureDrop`"
+            " reads its particle -- a value nothing reads is a comment that looks"
+            " like a declaration.  Ask for either, or remove the block.");
 
     if (operDict->found("catalystLoading"))
         throw std::runtime_error(who + ": `catalystLoading` is declared beside"
@@ -331,7 +331,7 @@ int PFR::solve(const DictPtr& dict,
                                   feedDict->lookupScalarOrDefault("P", 101325.0),
                                   V_R, vf_in, nSteps, z_in);
 
-    auto rxnDict = dict->subDict("reaction");
+    auto rxnDict = dict->subDict("reaction");  refuseBedHydraulicsOnSinglePath(operDict);
 
     const scalar F_in_mol_s = F_in_kmols * 1000.0;                   // kmol/s -> mol/s
 
@@ -824,6 +824,17 @@ int PFR::solveMultiReaction(const DictPtr&       dict,
     const scalar Q   = anyConcLaw ? F_in * V_mol_in : 0.0;
     const scalar tau = anyConcLaw ? V_R / Q : 0.0;
 
+    // ---- THE BED'S GEOMETRY AND AN OPT-IN ERGUN PRESSURE DROP (C66) -------
+    //  `operation.L_over_D` is the ONE home of the bed's slenderness: this
+    //  unit publishes the cross-section it implies (D, L, A) and the `pfr`
+    //  sizer (CatalystBedSize) READS it from here, refusing a second copy
+    //  in its designRules.  `operation.pressureDrop { model Ergun; ... }`
+    //  integrates dP/dz along the bed on that cross-section, with the
+    //  particle of `operation.catalyst.particleDiameter` (the same particle
+    //  Eq 39 reads -- one home).  Absent both keys nothing here runs and the
+    //  bed is byte-identical to the constant-pressure march it always was.
+    const BedHydraulics hyd = readBedHydraulics(operDict, thermo, V_R, verbosity);
+
     // ---- THE DYSON-SIMON BED SAYS WHAT IT IS BEFORE IT MARCHES ---------
     //  Citation, window, route and the inlet evaluation, printed once; the
     //  three sentences a reader must not lose ride AdvisoryLog into the
@@ -940,14 +951,19 @@ int PFR::solveMultiReaction(const DictPtr&       dict,
     // march H (dH/dV = 0 adiabatic; = U a (T_c - T) with a jacket) and RECOVER T
     // by inverting the stream enthalpy at each stage.  Then Q = 0 for an adiabatic
     // reactor BY CONSTRUCTION, and the reaction heat is whatever the thermo says.
-    auto T_from_h = [&](scalar h_target, const sVector& zz, scalar Tguess) -> scalar
+    //  `Pk` is the LOCAL pressure: the inlet's on a constant-pressure bed,
+    //  the Ergun-marched one when `pressureDrop` is declared.  An adiabatic
+    //  bed conserves H across friction (no work, no heat, kinetic energy
+    //  neglected), so T is recovered from H at the pressure the gas is at.
+    auto T_from_h = [&](scalar h_target, const sVector& zz, scalar Tguess,
+                        scalar Pk) -> scalar
     {
         scalar Tk = Tguess;                        // h(T) is monotone (cp > 0)
         for (int it = 0; it < 40; ++it)
         {
-            const scalar h  = thermo.H_stream_formation(Tk, P, vf_in, zz);
+            const scalar h  = thermo.H_stream_formation(Tk, Pk, vf_in, zz);
             const scalar dT = 1.0e-3;
-            const scalar cp = (thermo.H_stream_formation(Tk + dT, P, vf_in, zz) - h) / dT;
+            const scalar cp = (thermo.H_stream_formation(Tk + dT, Pk, vf_in, zz) - h) / dT;
             if (std::abs(cp) < 1.0e-12) break;
             const scalar step = (h_target - h) / cp;
             Tk += std::max(-50.0, std::min(50.0, step));       // damped
@@ -964,11 +980,20 @@ int PFR::solveMultiReaction(const DictPtr&       dict,
         sVector zz(n, 0.0);
         if (Ftot > 0.0) for (std::size_t i = 0; i < n; ++i) zz[i] = std::max(y[i], 0.0) / Ftot;
 
+        const scalar Pk = hyd.ergun ? y[n + 1] : P;
+        if (hyd.ergun && !(Pk > 0.0))
+            throw std::runtime_error("PFR: the Ergun pressure drop has consumed"
+                " the whole inlet pressure inside the bed -- this bed, at this"
+                " L/D, particle and void fraction, cannot pass the flow it is"
+                " given.  A shorter, wider bed (lower L_over_D), a larger"
+                " particle or a radial-flow arrangement is the remedy, not a"
+                " floor on the pressure.");
         const scalar Tk = isoT ? T
-                               : T_from_h(y[n] / std::max(Ftot, 1.0e-30), zz, T_lastGuess);
+                               : T_from_h(y[n] / std::max(Ftot, 1.0e-30), zz, T_lastGuess, Pk);
         if (!isoT) T_lastGuess = Tk;
+        if (hyd.ergun && hasBed) bed[jBed]->P_atm = Pk / units::atm_to_Pa;
 
-        sVector dy(n + 1, 0.0);
+        sVector dy(y.size(), 0.0);
         sVector conc(n, 0.0);
         for (std::size_t i = 0; i < n; ++i) conc[i] = std::max(y[i], 0.0) / Q;
         for (std::size_t j = 0; j < R; ++j)
@@ -980,6 +1005,9 @@ int PFR::solveMultiReaction(const DictPtr&       dict,
         }
         // Enthalpy: conserved when adiabatic; a jacket adds U a (T_c - T) per volume.
         dy[n] = (!isoT && hx) ? Uw * aV * (Tc - Tk) : 0.0;     // W/m^3
+        //  dP/dV = (dP/dz) / A: the bed's volume is its cross-section times
+        //  its length, so a step dV is a length dV / A.
+        if (hyd.ergun) dy[n + 1] = ergunGradient(hyd, thermo, Tk, Pk, zz, Ftot) / hyd.A;
         return dy;
     };
 
@@ -992,6 +1020,8 @@ int PFR::solveMultiReaction(const DictPtr&       dict,
         for (std::size_t i = 0; i < n; ++i)
             profile_.columns["F_" + thermo.comp(i).name()].push_back(y[i]);
         profile_.columns["T"].push_back(Tk);
+        if (hyd.ergun) profile_.columns["P"].push_back(y[n + 1]);
+        if (hyd.ergun && hasBed) bed[jBed]->P_atm = y[n + 1] / units::atm_to_Pa;
         if (hasBed)
         {
             //  The rate the bed is running at, in the paper's own unit, at
@@ -1021,11 +1051,13 @@ int PFR::solveMultiReaction(const DictPtr&       dict,
         for (std::size_t i = 0; i < n; ++i) Ftot += std::max(yy[i], 0.0);
         sVector zz(n, 0.0);
         if (Ftot > 0.0) for (std::size_t i = 0; i < n; ++i) zz[i] = std::max(yy[i], 0.0) / Ftot;
-        return T_from_h(yy[n] / std::max(Ftot, 1.0e-30), zz, T_lastGuess);
+        return T_from_h(yy[n] / std::max(Ftot, 1.0e-30), zz, T_lastGuess,
+                        hyd.ergun ? yy[n + 1] : P);
     };
 
-    sVector y(n + 1, 0.0);
+    sVector y(hyd.ergun ? n + 2 : n + 1, 0.0);
     for (std::size_t i = 0; i < n; ++i) y[i] = F_i[i];
+    if (hyd.ergun) y[n + 1] = P;                   // Pa, marched with the species
     // The inlet ENTHALPY FLOW [W] on the elements datum -- the conserved quantity.
     // Only needed (and only computable) when the reactor is NOT isothermal: a
     // fictitious species has no elements datum, and an isothermal run never asks.
@@ -1050,14 +1082,14 @@ int PFR::solveMultiReaction(const DictPtr&       dict,
         // PFR the wall term of that one sub-step scales with the same
         // fraction (an O(dV) local error at the exhaustion point);
         // adiabatic and isothermal paths are exact.
-        sVector dy(n + 1);
-        for (std::size_t i = 0; i <= n; ++i)
+        sVector dy(y.size());
+        for (std::size_t i = 0; i < y.size(); ++i)
             dy[i] = dV / 6.0 * (k1[i] + 2.0 * k2[i] + 2.0 * k3[i] + k4[i]);
         scalar frac = 1.0;
         for (std::size_t i = 0; i < n; ++i)
             if (dy[i] < 0.0 && y[i] + dy[i] < 0.0)
                 frac = std::min(frac, y[i] / (-dy[i]));
-        for (std::size_t i = 0; i <= n; ++i) y[i] += frac * dy[i];
+        for (std::size_t i = 0; i < y.size(); ++i) y[i] += frac * dy[i];
         for (std::size_t i = 0; i < n; ++i)
             if (y[i] < 0.0) y[i] = 0.0;              // round-off dust only
         const scalar Tnow = T_of(y);
@@ -1066,6 +1098,8 @@ int PFR::solveMultiReaction(const DictPtr&       dict,
     }
     for (std::size_t i = 0; i < n; ++i) F_i[i] = y[i];
     const scalar T_out = T_of(y);
+    const scalar P_out = hyd.ergun ? y[n + 1] : P;
+    if (hyd.ergun && hasBed) bed[jBed]->P_atm = P / units::atm_to_Pa;   // the inlet's, for the inlet KPIs
 
     // ---- Outlet -------------------------------------------------------
     scalar F_out = 0.0;
@@ -1078,7 +1112,7 @@ int PFR::solveMultiReaction(const DictPtr&       dict,
     out.name = "out";
     out.F  = F_out / 1000.0;                 // mol/s -> kmol/s
     out.T  = T_out;                          // a RESULT when non-isothermal
-    out.P  = 0.0;                            // set by the flowsheet
+    out.P  = hyd.ergun ? P_out : 0.0;        // 0 = set by the flowsheet (the inlet's)
     out.z  = z_out;
     out.vf = vf_in;
     produced_.push_back(out);
@@ -1088,6 +1122,8 @@ int PFR::solveMultiReaction(const DictPtr&       dict,
     kpis_["V_R"]          = V_R;
     kpis_["T"]            = T;
     if (anyConcLaw) kpis_["tau_s"] = tau;        // liquid basis, as the single path
+    publishBedHydraulics(hyd, thermo, T, P, T_out, P_out, z_in, z_out, F_in, F_out,
+                         verbosity);
     kpis_["nReactions"]   = static_cast<scalar>(R);
     kpis_["nSteps"]       = static_cast<scalar>(nSteps);
     kpis_["F_in_kmol_h"]  = F_in_kmols * 3600.0;
@@ -1115,6 +1151,7 @@ int PFR::solveMultiReaction(const DictPtr&       dict,
         //  The rate at both ends, in the paper's unit: how far the bed has
         //  collapsed toward equilibrium is that ratio.
         const AmmoniaRateResult rin  = dysonSimonEvaluate(b, T,     z_in);
+        if (hyd.ergun) b.P_atm = P_out / units::atm_to_Pa;   // the outlet's, for rout + approach
         const AmmoniaRateResult rout = dysonSimonEvaluate(b, T_out, z_out);
         kpis_["rate_in_kmolNH3_m3_h"]  = rin.rate_kmolNH3_per_m3bed_h;
         kpis_["rate_out_kmolNH3_m3_h"] = rout.rate_kmolNH3_per_m3bed_h;
@@ -1244,7 +1281,7 @@ int PFR::solveMultiReaction(const DictPtr&       dict,
         const scalar H_in_kW = F_in_kmols * thermo.H_stream_formation(T, P, vf_in, z_in);
         scalar H_out_kW = 0.0;
         for (const auto& s : produced_)
-            H_out_kW += s.F * thermo.H_stream_formation(s.T, P, s.vf, s.z);
+            H_out_kW += s.F * thermo.H_stream_formation(s.T, hyd.ergun ? P_out : P, s.vf, s.z);
         kpis_["Q_kW"] = H_out_kW - H_in_kW;   // ~0 for an adiabatic reactor
     }
     catch (const std::exception&) { /* a species lacks formation data */ }
@@ -1263,14 +1300,232 @@ int PFR::solveMultiReaction(const DictPtr&       dict,
                              << "   (peak " << T_max << " K, hot spot +"
                              << (T_max - T) << " K)";
         std::cout << "\n";
+        //  ONE LINE PER REACTION, IN ITS OWN LAW'S WORDS (DEV.md 4c C66).  This
+        //  printed `law[j].kForward(T)` for every reaction, and for a
+        //  Dyson-Simon bed `law[j]` is a default-constructed RateLaw that is
+        //  never evaluated: the line read `k(T_in) = 0.000e+00 [Arrhenius]`
+        //  beside a bed that converts -- a banner keyed on one model describing
+        //  a model that is not running (the 2026-08-04 trap).  Each law object
+        //  now states its own constant: the RateLaw its typeName and k, the
+        //  bed DysonSimon1968's type and Eq 18's k (the `k_<reaction>` KPI).
         for (std::size_t j = 0; j < R; ++j)
+        {
             std::cout << "  " << std::left << std::setw(12) << rname[j] << std::right
-                      << "  k(T_in) = " << std::scientific << std::setprecision(3)
-                      << law[j].kForward(T)
-                      << "   [" << law[j].typeName() << "]\n" << std::fixed;
+                      << "  k(T_in) = " << std::scientific << std::setprecision(3);
+            if (bed[j])
+                std::cout << kpis_["k_" + rname[j]] << "   [" << DysonSimon1968::type()
+                          << ": Eq 18's k, per N2 -- the rate is Eq 19's activity"
+                             " bracket printed in the [dysonSimon1968] block above,"
+                             " not k times concentrations]\n";
+            else
+                std::cout << law[j].kForward(T) << "   [" << law[j].typeName() << "]\n";
+            std::cout << std::fixed;
+        }
         std::cout << "=====================================================================\n\n";
     }
     return 0;
+}
+
+// ---------------------------------------------------------------------------
+//  THE BED'S CROSS-SECTION AND ITS ERGUN PRESSURE DROP (DEV.md 4c C66).
+//  Defined here, after the march that uses them, and declared in PFR.H --
+//  see the description there for the rule, the equation and the source.
+// ---------------------------------------------------------------------------
+PFR::BedHydraulics PFR::readBedHydraulics(const DictPtr&       op,
+                                          const ThermoPackage& thermo,
+                                          scalar               V_R,
+                                          int                  verbosity)
+{
+    BedHydraulics h;
+    const bool hasPD = op->found("pressureDrop");
+    h.hasGeometry = op->found("L_over_D");
+    if (hasPD && !h.hasGeometry)
+        throw std::runtime_error("PFR: `operation.pressureDrop` integrates"
+            " dP/dz along the bed, and a volume has no length: declare the"
+            " bed's slenderness `operation.L_over_D` (D and L follow from it"
+            " and V_R).  It is the ONE home of that number -- the `pfr` sizer"
+            " reads it from this unit and refuses a second copy.");
+    if (h.hasGeometry)
+    {
+        h.L_over_D = op->lookupScalar("L_over_D", Dims::dimensionless);
+        if (!(h.L_over_D > 0.0))
+            throw std::runtime_error("PFR: `operation.L_over_D` must be > 0.");
+        h.D = std::cbrt(4.0 * V_R / (constant::pi * h.L_over_D));
+        h.A = 0.25 * constant::pi * h.D * h.D;
+        h.L = h.L_over_D * h.D;
+    }
+    if (!hasPD) return h;
+
+    auto pd = op->subDict("pressureDrop");
+    for (const auto& key : pd->keys())
+        if (key != "model" && key != "voidFraction" && key != "allowable")
+            throw std::runtime_error("PFR: `operation.pressureDrop." + key
+                + "` is not read.  The block accepts `model`, `voidFraction`"
+                  " and `allowable`; the particle is `operation.catalyst."
+                  "particleDiameter` (one home: the rate law's effectiveness"
+                  " factor reads the same particle).");
+    if (!pd->found("model"))
+        throw std::runtime_error("PFR: `operation.pressureDrop` needs `model"
+            " Ergun;` -- the one packed-bed correlation this reactor carries,"
+            " named rather than defaulted.");
+    static const std::vector<std::string> models = { "Ergun" };
+    const std::string m = pd->lookupWord("model");
+    if (std::find(models.begin(), models.end(), m) == models.end())
+        throw std::runtime_error("PFR: " + registryRefusal::message(
+            "pressureDrop model", m, models, "Accepted"));
+    if (!pd->found("voidFraction"))
+        throw std::runtime_error("PFR: `operation.pressureDrop` needs the"
+            " bed's `voidFraction` -- the drop goes as (1-eps)/eps^3, so a"
+            " default would choose the answer (0.36 vs 0.42 is a factor of"
+            " two).  Declare it, and say where it came from.");
+    h.eps = pd->lookupScalar("voidFraction", Dims::dimensionless);
+    if (!(h.eps > 0.0) || !(h.eps < 1.0))
+        throw std::runtime_error("PFR: `pressureDrop.voidFraction` must lie"
+            " in (0, 1).");
+    if (!op->found("catalyst") || !op->subDict("catalyst")->found("particleDiameter"))
+        throw std::runtime_error("PFR: `operation.pressureDrop` needs the"
+            " particle: declare `operation { catalyst { particleDiameter"
+            " <length>; } }` (the Ergun equivalent-sphere diameter).  No"
+            " default particle exists.");
+    h.dp = op->subDict("catalyst")->lookupScalar("particleDiameter", Dims::length);
+    if (!(h.dp > 0.0))
+        throw std::runtime_error("PFR: `catalyst.particleDiameter` must be > 0.");
+    if (pd->found("allowable"))
+    {
+        h.allowable = pd->lookupScalar("allowable", Dims::pressure);
+        if (!(h.allowable > 0.0))
+            throw std::runtime_error("PFR: `pressureDrop.allowable` must be > 0.");
+    }
+    if (!thermo.hasTransport())
+        throw std::runtime_error("PFR: the Ergun pressure drop needs the gas"
+            " VISCOSITY and this package declares no transport model -- add"
+            " `transport { viscosity { model Chung; } }` to the"
+            " thermoPhysPropDict.  None is assumed.");
+    h.ergun = true;
+
+    const std::string note =
+        "[ergun] the bed's pressure drop is Ergun's (Chem. Eng. Prog. 48 (1952)"
+        " 89) on the declared void fraction and particle: the particle is"
+        " taken as Ergun's EQUIVALENT-SPHERE diameter, so a sieve size of"
+        " irregular granules overstates it and the drop is a LOWER estimate;"
+        " the gas viscosity is the package's dilute-gas model with NO"
+        " dense-gas correction; the density is "
+        + std::string(thermo.hasEos() ? "the package's equation of state"
+                                      : "the IDEAL GAS (no equation of state is"
+                                        " declared)")
+        + "; the wall effect and any maldistribution are not modelled";
+    AdvisoryLog::instance().add("model", "info", "pfr (Ergun)", note);
+    if (verbosity >= 2) std::cout << "  " << note << "\n";
+    return h;
+}
+
+scalar PFR::ergunGradient(const BedHydraulics& h, const ThermoPackage& thermo,
+                          scalar T, scalar P, const sVector& z, scalar Ftot)
+{
+    const scalar vmol = thermo.hasEos() ? thermo.eos().molarVolume(T, P, z)
+                                        : constant::R * T / P;      // m3/mol
+    scalar MW = 0.0;                                                // kg/kmol
+    for (std::size_t i = 0; i < z.size(); ++i) MW += z[i] * thermo.comp(i).MW();
+    const scalar rho = 1.0e-3 * MW / vmol;                          // kg/m3
+    const scalar u   = Ftot * vmol / h.A;                           // m/s, superficial
+    const scalar mu  = thermo.viscosityGas(T, z);                   // Pa s
+    const scalar e   = h.eps;
+    const scalar a = 150.0 * (1.0 - e) * (1.0 - e) * mu / (e * e * e * h.dp * h.dp);
+    const scalar b = 1.75 * (1.0 - e) * rho / (e * e * e * h.dp);
+    return -(a * u + b * u * u);
+}
+
+void PFR::publishBedHydraulics(const BedHydraulics& h, const ThermoPackage& thermo,
+                               scalar T_in, scalar P_in, scalar T_out, scalar P_out,
+                               const sVector& z_in, const sVector& z_out,
+                               scalar F_in_mols, scalar F_out_mols, int verbosity)
+{
+    if (!h.hasGeometry) return;
+    kpis_["L_over_D"] = h.L_over_D;
+    kpis_["D_bed_m"]  = h.D;
+    kpis_["L_bed_m"]  = h.L;
+    kpis_["A_bed_m2"] = h.A;
+    if (!h.ergun) return;
+
+    //  The inlet's regime, for the reader: the superficial velocity, the
+    //  particle Reynolds number Re_p = rho u dp / (mu (1 - eps)) (Ergun's own
+    //  abscissa) and the share of the drop the INERTIAL term carries.
+    auto regime = [&](scalar T, scalar P, const sVector& z, scalar F,
+                      scalar& u, scalar& Re, scalar& inertial,
+                      scalar& rho, scalar& mu)
+    {
+        const scalar vmol = thermo.hasEos() ? thermo.eos().molarVolume(T, P, z)
+                                            : constant::R * T / P;
+        scalar MW = 0.0;
+        for (std::size_t i = 0; i < z.size(); ++i) MW += z[i] * thermo.comp(i).MW();
+        rho = 1.0e-3 * MW / vmol;
+        mu  = thermo.viscosityGas(T, z);
+        u = F * vmol / h.A;
+        Re = rho * u * h.dp / (mu * (1.0 - h.eps));
+        const scalar e = h.eps;
+        const scalar a = 150.0 * (1.0 - e) * (1.0 - e) * mu / (e * e * e * h.dp * h.dp);
+        const scalar b = 1.75 * (1.0 - e) * rho / (e * e * e * h.dp);
+        inertial = b * u * u / (a * u + b * u * u);
+    };
+    scalar u_in, Re_in, in_in, u_out, Re_out, in_out, rho_in, mu_in, rho_out, mu_out;
+    regime(T_in, P_in, z_in, F_in_mols, u_in, Re_in, in_in, rho_in, mu_in);
+    regime(T_out, P_out, z_out, F_out_mols, u_out, Re_out, in_out, rho_out, mu_out);
+    //  The two properties the drop was priced on, at the inlet: a reader (and
+    //  the gate) can redo Ergun's arithmetic from published numbers.
+    kpis_["rho_gas_in"] = rho_in;
+    kpis_["mu_gas_in"]  = mu_in;
+
+    const scalar dP = P_in - P_out;
+    kpis_["dP_bed_bar"]          = dP / 1.0e5;
+    kpis_["P_out_bar"]           = P_out / 1.0e5;
+    kpis_["u_superficial_in"]    = u_in;
+    kpis_["u_superficial_out"]   = u_out;
+    kpis_["Re_p_in"]             = Re_in;
+    kpis_["ergunInertialShare_in"] = in_in;
+    if (h.allowable > 0.0)
+    {
+        kpis_["dP_over_allowable"] = dP / h.allowable;
+        if (dP > h.allowable)
+        {
+            std::ostringstream os;
+            os << std::fixed << std::setprecision(3)
+               << "the bed loses " << dP / 1.0e5 << " bar, ABOVE the declared"
+                  " allowable " << h.allowable / 1.0e5 << " bar (x"
+               << dP / h.allowable << ").  At a fixed volume both u and L go"
+                  " as (L/D)^(2/3), so the drop goes as u^2 L ~ (L/D)^2: a"
+                  " lower L_over_D, a larger particle or a bed the gas crosses"
+                  " RADIALLY (through its thickness, not its length) is the"
+                  " remedy; nothing here reduces it";
+            AdvisoryLog::instance().add("model", "warning", "pfr (Ergun)", os.str());
+            if (verbosity >= 1) std::cout << "  [ergun] WARNING: " << os.str() << "\n";
+        }
+    }
+    if (verbosity >= 2)
+        std::cout << "\n  [ergun] bed hydraulics (straight cylinder of V_R at L/D "
+                  << std::fixed << std::setprecision(2) << h.L_over_D << ")\n"
+                  << "    D = " << std::setprecision(3) << h.D << " m, L = " << h.L
+                  << " m, A = " << h.A << " m2;  eps = " << h.eps << ", dp = "
+                  << std::setprecision(2) << 1000.0 * h.dp << " mm\n"
+                  << "    u (superficial) " << std::setprecision(4) << u_in << " -> "
+                  << u_out << " m/s;  Re_p(in) = " << std::setprecision(1) << Re_in
+                  << ", inertial share of the drop " << std::setprecision(3) << in_in << "\n"
+                  << "    P " << std::setprecision(4) << P_in / 1.0e5 << " -> "
+                  << P_out / 1.0e5 << " bar:  dP = " << dP / 1.0e5 << " bar";
+    if (verbosity >= 2 && h.allowable > 0.0)
+        std::cout << "  (allowable " << h.allowable / 1.0e5 << " bar, declared)";
+    if (verbosity >= 2) std::cout << "\n\n";
+}
+
+void PFR::refuseBedHydraulicsOnSinglePath(const DictPtr& op)
+{
+    for (const char* key : { "pressureDrop", "L_over_D" })
+        if (op->found(key))
+            throw std::runtime_error(std::string("PFR: `operation.") + key
+                + "` is read by the MULTI-reaction path only (`reactions ("
+                  " <name> );`), which marches the gas bed's pressure with its"
+                  " species; the single-reaction path (`reaction <name>;`)"
+                  " integrates a liquid-basis volume with no cross-section."
+                  "  Declare the reaction as a one-entry `reactions` list.");
 }
 
 } // namespace Choupo

@@ -1991,6 +1991,29 @@ accepts today, and that is a policy call.
      loop (membrane18), the dynamic loop (unsteady03), the UF law
      (membrane19) and the UF loop in time (unsteady04).
 
+**C69. HEAT EXCHANGE IN AND AROUND A CATALYST BED: A COOLED MULTITUBULAR
+PFR, AND A MULTIBED CONVERTER THAT IS ONE VESSEL (Vítor, 2026-10-12,
+asking whether a PFR can size an internal heat exchanger "em contacto com o
+catalisador ou a seguir ao enchimento", and relaying a second opinion he
+accepted).**  Measured: the `pfr` already has `thermalMode heatExchange`
+with a DECLARED U, a DECLARED `areaPerVolume` and a CONSTANT `T_coolant`
+(`src/unitOperations/reactor/PFR.cpp:755-769`, U a (T_c - T) per unit
+volume, marched with the species by the same RK4).  Missing: (a) a coolant
+that changes temperature along the bed (co-current / counter-current, its
+own energy balance; boiling = constant T as today); (b) the area from a
+TUBE GEOMETRY (number of tubes, tube inner diameter -- a multitubular
+reactor), so a designSpec can SOLVE the tube count against a hot-spot or
+outlet target; (c) U from a PACKED-BED WALL heat-transfer correlation, cited
+and windowed (NOT an empty-tube Dittus-Boelter); (d) a sizer for the
+multitubular reactor; and (e) the ammonia case's three beds and two
+interbed coolers grouped as ONE multibed CONVERTER -- a sector whose items
+share ONE pressure shell in sizing and costing (today three shells are
+priced), the interbed exchangers kept as their own blocks (the
+interbed-exchanger converter is an industrial reference, e.g. a three-bed
+radial converter with interbed exchangers -- cite a source read).
+Sequenced AFTER C66 merges, the C68 renames and C67 (all touch the pfr or
+this case).  Status: queued.
+
 **C68. ONE LADDER FOR THE AMMONIA CASES, AND ITS MISSING FIRST RUNG
 (Vítor, 2026-10-12, verbatim: "os vários níveis de simulação do processo de
 amónia têm a nomenclatura confusa. Não se percebe a sequência de
@@ -2007,17 +2030,38 @@ methanol only: `screen01_methanol_routes`, `RouteScreeningTool`).
 Decided (names on a stated default, flat prefixed names because the case
 index and FASTSET treat each `tutorials/plant/<dir>` as one case family --
 nested case folders were not measured to work):
-`greenAmmonia1_screening` (NEW, FEL-1: input-output gross margin of the
-reaction routes), `greenAmmonia2_feasibilityGibbs150bar`,
-`greenAmmonia2_feasibilityGibbs50bar`, `greenAmmonia3_basicDesignPFR`,
-`greenAmmoniaPEQ_baseCase` (outside the ladder, says it is the hybrid base
-case), and the reactor ladder `ammoniaReactorLadder1_conversion`,
+"greenAmmonia1_screening" (NEW, FEL-1: input-output gross margin of the
+reaction routes), "greenAmmonia2_feasibilityGibbs150bar",
+"greenAmmonia2_feasibilityGibbs50bar", "greenAmmonia3_basicDesignPFR",
+"greenAmmoniaPEQ_baseCase" (outside the ladder, says it is the hybrid base
+case), and the reactor ladder "ammoniaReactorLadder1_conversion",
 `2_gibbs`, `3_gibbsApproach`, `4_pfrKinetic` ("rung N of 4"); a README map
 of the sequence (stage, reactor model, exchangers, estimate class, what is
 decided); old names kept as aliases so shared `?case=` links resolve.
 Sequenced: the screening case now (new files only); the renames AFTER C66
 merges (it edits greenAmmoniaBasicDesign), and BEFORE C67.  Status:
 screening dispatched 2026-10-12.
+NAMES REVISED 2026-10-12 after a second opinion Vítor relayed (accepted):
+keep the TWO axes (reactor-model fidelity vs project stage -- one ladder
+would teach that a project only matures by swapping Gibbs for a PFR),
+name each case by its PURPOSE, models in the description, two digits:
+"ammoniaRoutes01_screening" (three production routes, not "green"),
+"greenAmmonia02_feasibility150bar", "greenAmmonia02_feasibility50bar"
+(an exploratory alternative of the same stage, its catalyst hypothesis
+visible), "greenAmmonia03_basicDesign", "greenAmmoniaPEQ_baseCase"
+(the brief's reference case, different detail in different equipment --
+outside the numbering, linked to both), "ammoniaReactor01_fixedConversion",
+`02_equilibrium`, `03_equilibriumApproach`, `04_kineticSizing` (the engine
+solves the volume); `ammonia01/02/03` stay as "synthesis-loop
+fundamentals" with their 200 bar, capacity and model boundary stated (no
+"full ammonia plant" claim if syngas production is not modelled); aliases
+kept, the catalogue shows canonical names only.  Three additions taken:
+the screening compares routes on an equivalent basis (assumed specific
+energy consumptions); the feasibility cases gain a preliminary CAPEX and a
+sensitivity; a feasibility -> basic-design comparison of consumptions,
+investment and profitability, each difference traced to the model change.
+And FEL stage is never equated with an AACE class (maturity of definition
+decides the class): tables say "illustrated design stage".
 
 **C67. A CASE CARRIES ITS OWN KINETICS: RATE EXPRESSIONS IN THE DICT, AND A
 FACTORY A CASE'S `code/` CAN REGISTER INTO (Vítor, 2026-10-12, verbatim:
@@ -2057,7 +2101,7 @@ DesignSpec cannot reach it (C57); the rate is Dyson-Simon Eq 19 with the
 effectiveness factor taken as 1 (`effectivenessFactor intrinsic`,
 announced as unpriced; the paper's Eq 39 exists in the engine and needs a
 particle diameter); the `pfr` computes NO pressure drop (`PFR.cpp` has no
-Ergun term; `pellet/Catalyst.H` names Ergun as a future reader); the sizer
+Ergun term; `src/unitOperations/reactor/pellet/Catalyst.H` names Ergun as a future reader); the sizer
 then wraps V_R in a straight cylinder at a declared L/D 6 and prices
 V_R x 2500 kg/m3 of catalyst (both author-set).  Scope: (1) let a
 DesignSpec reach a unit-folder variable, and SOLVE each bed's V_R to its

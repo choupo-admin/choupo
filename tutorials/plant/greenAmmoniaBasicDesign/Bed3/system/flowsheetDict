@@ -6,20 +6,23 @@
 //  temperature is set by the interbed cooler before it; its outlet
 //  temperature and conversion are RESULTS.
 //
-//  THE VOLUME IS DECLARED, chosen so the effluent is 5 K short of
-//  equilibrium -- the per-bed approach of US 5,352,428 (Bhakta & Grotz 1994),
-//  the same source and value the base case's Gibbs converter declares, read
-//  through this bed's own `approach_K` KPI (T* from the rate law's own Ka).
-//  Found by running the case; it moves the day anything upstream moves, and
-//  the run prints the approach -- read it.  Bed1's header says why no
-//  DesignSpec solves it.
+//  THE VOLUME IS SOLVED so the effluent is 5 K short of equilibrium -- the
+//  per-bed approach of US 5,352,428 (Bhakta & Grotz 1994), the same source
+//  and value the base case's Gibbs converter declares, read through this
+//  bed's own `approach_K` KPI (T* from the rate law's own Ka).  The volume is
+//  `$V_Bed3`, declared in the plant's `variables {}` and solved by the
+//  DesignSpec in system/outerDict; Bed1's header says how a folder reaches it.
+//  Its L_over_D, particle, void fraction and allowable drop: Bed1's header.
 
 type      pfr;
 operation
 {
-    V_R          31.44 m3;      // catalyst bed -- chosen for a 5 K approach; see above
+    V_R          $V_Bed3;       // catalyst bed -- SOLVED by system/outerDict; see above
     nSteps       400;           // RK4 axial steps
     thermalMode  adiabatic;     // T is a RESULT: the bed heats itself
+    L_over_D     1.5;           // the bed (and its shell) -- see above; the sizer reads it here
+    catalyst     { particleDiameter 8 mm; }                        // AUTHOR-SET, see above
+    pressureDrop { model Ergun;  voidFraction 0.40;  allowable 1 bar; }   // AUTHOR-SET, see above
 }
 reactions ( ammoniaSynthesis );
 boundary  { inlets ( Feed );  outlets ( Out ); }
