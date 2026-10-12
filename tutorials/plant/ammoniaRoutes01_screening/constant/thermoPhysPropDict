@@ -1,0 +1,38 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+  thermoPhysPropDict (v2) -- ideal gamma-phi, IDEAL GAS declared.
+  A screen compares routes on their reactions' own numbers, so every unit
+  shares one simple package: an ideal liquid (only water condenses, at
+  298.15 K and 1 atm) under an ideal gas.  The two synthesis equilibria, at
+  50 and 150 bar, are therefore IDEAL-GAS equilibria; a real equation of
+  state moves the 150 bar figure, and that belongs to the next rung (the
+  green-ammonia feasibility cases run SRK).
+\*---------------------------------------------------------------------------*/
+
+recordType    thermophysicalPropertySystem;
+schemaVersion 2;
+
+components       ( NH3  N2  H2  O2  water  CH4  CO2  Ar );
+
+equilibrium
+{
+    formulation gammaPhi;
+
+    liquid
+    {
+        activityModel ideal;
+        standardState pureLiquid;
+    }
+
+    vapour
+    {
+        fugacityModel idealGas;
+    }
+}

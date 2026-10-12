@@ -1,0 +1,122 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+  The reactions of the ammonia screen.  Every equation is balanced; the
+  element count of each side is written beside it (C, H, O, N).
+
+  THE TWO PRODUCTION ROUTES, as overall input-output equations.  The
+  synthesis step, N2 + 3 H2 -> 2 NH3, is the SAME in every route; what the
+  routes differ in is where the hydrogen and the nitrogen come from, and
+  that is all an overall equation keeps.
+
+    electrolyticRoute   3 H2O + N2 -> 2 NH3 + 3/2 O2
+                        water electrolysis (H2), air separation (N2),
+                        synthesis.                    H6 O3 N2 = H6 O3 N2
+
+    reformingRoute      0.884157 CH4 + 1.231686 H2O + 0.268314 O2 + N2
+                          -> 2 NH3 + 0.884157 CO2
+                        steam reforming of methane, the water-gas shift,
+                        AIR in a secondary reformer, synthesis.  The air
+                        brings the nitrogen; its oxygen is burnt inside the
+                        process, so the oxygen is TIED to the nitrogen by
+                        air's own composition: O2/N2 = 0.2095/0.7808 =
+                        0.2683145... (data/standards/mixtures/air.dat),
+                        taken as 0.268314 so that every coefficient has six
+                        exact decimals.  The other two then FOLLOW from the
+                        element balance -- they are not data:
+                          O:  y + 2a = 2x     H:  4x + 2y = 6
+                          =>  x = 3/4 + a/2 = 0.884157 (CH4)
+                              y = 2x - 2a   = 1.231686 (H2O)
+                        C0.884157 H6 O1.768314 N2 = C0.884157 H6 O1.768314 N2
+                        This is the IDEAL plant: every carbon atom leaves as
+                        CO2 and none is burnt for heat.  The fuel a real
+                        reformer fires is not in it (see the README).
+                        Grey and blue ammonia share this equation; blue
+                        captures the CO2 instead of emitting it, which no
+                        reaction can show.
+
+  THE THREE NUMBERS A SCREEN NEEDS BESIDE THEM.
+
+    waterSplitting      H2O -> H2 + 1/2 O2            H2 O1 = H2 O1
+                        the electrolyser alone: its reaction enthalpy at
+                        298.15 K is the least energy a thermoneutral
+                        electrolyser can be supplied with per mole of H2.
+
+    methaneCombustion   CH4 + 2 O2 -> CO2 + 2 H2O     C1 H4 O4 = C1 H4 O4
+                        the fuel: its heat of reaction on the ideal-gas rung
+                        IS the lower heating value of methane, which turns a
+                        declared fuel energy into kilograms of methane and of
+                        CO2.
+
+    ammoniaSynthesis    N2 + 3 H2 <=> 2 NH3           H6 N2 = H6 N2
+                        the step every route shares; its equilibrium is why
+                        the next rung needs a recycle.
+
+  No kinetics: a screen tries not to need a rate law yet.
+\*---------------------------------------------------------------------------*/
+
+electrolyticRoute
+{
+    limitingReactant   N2;
+    stoichiometry
+    (
+        { component water;  nu -3;   }
+        { component N2;     nu -1;   }
+        { component NH3;    nu  2;   }
+        { component O2;     nu  1.5; }
+    );
+}
+
+reformingRoute
+{
+    limitingReactant   N2;
+    stoichiometry
+    (
+        { component CH4;    nu -0.884157; }
+        { component water;  nu -1.231686; }
+        { component O2;     nu -0.268314; }
+        { component N2;     nu -1;        }
+        { component NH3;    nu  2;        }
+        { component CO2;    nu  0.884157; }
+    );
+}
+
+waterSplitting
+{
+    limitingReactant   water;
+    stoichiometry
+    (
+        { component water;  nu -1;   }
+        { component H2;     nu  1;   }
+        { component O2;     nu  0.5; }
+    );
+}
+
+methaneCombustion
+{
+    limitingReactant   CH4;
+    stoichiometry
+    (
+        { component CH4;    nu -1; }
+        { component O2;     nu -2; }
+        { component CO2;    nu  1; }
+        { component water;  nu  2; }
+    );
+}
+
+ammoniaSynthesis
+{
+    limitingReactant   N2;
+    stoichiometry
+    (
+        { component N2;     nu -1; }
+        { component H2;     nu -3; }
+        { component NH3;    nu  2; }
+    );
+}

@@ -1,0 +1,30 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*--- Choupo stream state.  Every DIMENSIONAL value carries its unit; the parser converts to SI.
+     componentMolarFlows is the OVERALL material (all phases); a phases{} block, when present,
+     is a decomposition that sums back to it exactly. ---*/
+
+//  One kmol/h of methane with its stoichiometric oxygen: only the heat of
+//  reaction PER MOLE is read off this unit (the lower heating value).
+//
+//  THE STATE IS THE REFERENCE STATE, NOT A PROCESS CONDITION: 298.15 K and
+//  0.02 bar, below the vapour pressure of water at 25 C, so every
+//  species is the IDEAL GAS its formation datum is written for.  An ideal
+//  gas's enthalpy does not depend on pressure, so the heats this unit
+//  publishes are the standard ones (water as vapour: the lower-heating-
+//  value basis).
+componentMolarFlows
+{
+    CH4      1 kmol/h;
+    O2       2 kmol/h;
+}
+
+T               298.15 K;
+P               0.02 bar;
+phase           gas;

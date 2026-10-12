@@ -1,0 +1,36 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*--- Choupo stream state.  Every DIMENSIONAL value carries its unit; the parser converts to SI.
+     componentMolarFlows is the OVERALL material (all phases); a phases{} block, when present,
+     is a decomposition that sums back to it exactly. ---*/
+
+//  The reforming route at its stoichiometric ratio (constant/reactions), on the
+//  same 1468 kmol/h of N2.  The nitrogen, oxygen and argon are AIR
+//  (data/standards/mixtures/air.dat, N2 : O2 : Ar = 0.7808 : 0.2095 : 0.0093):
+//  O2 = 0.268314 x N2 is the reaction's own coefficient, and
+//  Ar = 0.0093/0.7808 x N2 rides through as an inert.
+//
+//  THE STATE IS THE REFERENCE STATE, NOT A PROCESS CONDITION: 298.15 K and
+//  0.02 bar, below the vapour pressure of water at 25 C, so every
+//  species is the IDEAL GAS its formation datum is written for.  An ideal
+//  gas's enthalpy does not depend on pressure, so the heats this unit
+//  publishes are the standard ones (water as vapour: the lower-heating-
+//  value basis).
+componentMolarFlows
+{
+    CH4      1297.942476 kmol/h;
+    water    1808.115048 kmol/h;
+    O2       393.884952 kmol/h;
+    N2       1468 kmol/h;
+    Ar       17.485143 kmol/h;
+}
+
+T               298.15 K;
+P               0.02 bar;
+phase           gas;
