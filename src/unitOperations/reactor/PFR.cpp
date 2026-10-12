@@ -1263,11 +1263,27 @@ int PFR::solveMultiReaction(const DictPtr&       dict,
                              << "   (peak " << T_max << " K, hot spot +"
                              << (T_max - T) << " K)";
         std::cout << "\n";
+        //  ONE LINE PER REACTION, IN ITS OWN LAW'S WORDS (DEV.md 4c C66).  This
+        //  printed `law[j].kForward(T)` for every reaction, and for a
+        //  Dyson-Simon bed `law[j]` is a default-constructed RateLaw that is
+        //  never evaluated: the line read `k(T_in) = 0.000e+00 [Arrhenius]`
+        //  beside a bed that converts -- a banner keyed on one model describing
+        //  a model that is not running (the 2026-08-04 trap).  Each law object
+        //  now states its own constant: the RateLaw its typeName and k, the
+        //  bed DysonSimon1968's type and Eq 18's k (the `k_<reaction>` KPI).
         for (std::size_t j = 0; j < R; ++j)
+        {
             std::cout << "  " << std::left << std::setw(12) << rname[j] << std::right
-                      << "  k(T_in) = " << std::scientific << std::setprecision(3)
-                      << law[j].kForward(T)
-                      << "   [" << law[j].typeName() << "]\n" << std::fixed;
+                      << "  k(T_in) = " << std::scientific << std::setprecision(3);
+            if (bed[j])
+                std::cout << kpis_["k_" + rname[j]] << "   [" << DysonSimon1968::type()
+                          << ": Eq 18's k, per N2 -- the rate is Eq 19's activity"
+                             " bracket printed in the [dysonSimon1968] block above,"
+                             " not k times concentrations]\n";
+            else
+                std::cout << law[j].kForward(T) << "   [" << law[j].typeName() << "]\n";
+            std::cout << std::fixed;
+        }
         std::cout << "=====================================================================\n\n";
     }
     return 0;
