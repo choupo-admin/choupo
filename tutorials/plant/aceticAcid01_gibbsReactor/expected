@@ -1,0 +1,40 @@
+# Reference KPIs (golden master, auto-recorded by runTests --record).
+# units: stream F is kmol/s (canonical SI, as in the result JSON); the run LOG prints kmol/h.
+# kind   name      key         expected        reltol
+stream  feed                   F                0.0583333333333    1e-4
+stream  feed                   T                460                1e-4
+stream  gas                    F                0.0034726940335    1e-4
+stream  gas                    T                460                1e-4
+stream  liquid                 F                0.0270854817667    1e-4
+stream  liquid                 T                460                1e-4
+kpi     reactor                F_condensate_kmol_h 97.5077343601      1e-4
+kpi     reactor                F_in_kmol_h      210                1e-4
+kpi     reactor                F_out_kmol_h     12.5016985206      1e-4
+kpi     reactor                N_in_mol_s       58.3333333333      1e-4
+kpi     reactor                N_liq_mol_s      27.0854817667      1e-4
+kpi     reactor                N_out_mol_s      30.5581758002      1e-4
+kpi     reactor                P                3000000            1e-4
+kpi     reactor                Q_kW             -3927.08208264     1e-4
+kpi     reactor                T                460                1e-4
+kpi     reactor                converged        1                  1e-4
+kpi     reactor                lambda_C         64803.1705985      1e-4
+kpi     reactor                lambda_H         -43242.0899955     1e-4
+kpi     reactor                lambda_O         -252951.944085     1e-4
+kpi     reactor                liquidFraction   0.886357940467     1e-4
+kpi     reactor                temperatureApproach_K 10                 1e-4
+kpi     reactor                twoPhase         1                  1e-4
+kpi     reactor                x_aceticAcid     1                  1e-4
+kpi     reactor                y_CO             0.80064583738      1e-4
+kpi     reactor                y_aceticAcid     0.197845187124     1e-4
+kpi     reactor                y_dimethylEther  2.01264410111e-08  1e-4
+kpi     reactor                y_methanol       4.0109397021e-08   1e-4
+kpi     reactor                y_methylAcetate  0.000754447567057  1e-4
+kpi     reactor                y_water          0.000754467693498  1e-4
+boundary global               H_feeds_kW       -8588.232649       1e-4
+boundary global               Q_boundary_kW    -3927.08208264     1e-4
+boundary global               H_products_kW    -12515.6544755     1e-4
+boundary global               residual_kW      0.339743875387     1e-4
+utility reactor                cooling.coolingWater.duty_kW -3927.08208264     1e-4
+utility reactor                cooling.coolingWater.T 460                1e-4
+utility reactor                cooling.coolingWater.kg_s 93.9493321206      1e-4
+utility reactor                cooling.coolingWater.eur_h 5.654998199        1e-4

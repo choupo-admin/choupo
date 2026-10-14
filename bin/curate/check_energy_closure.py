@@ -428,7 +428,12 @@ def ratchet_kW(pin: float) -> float:
 #  the corrected cases, read off the engine's report:
 #    acetone07_luyben_column_C2  196.7990 % -> 0.0000 % (residual 0 kW)  LEFT
 #    column03_azeotrope_mesh      60.8760 % -> 0.0000 % (residual 0 kW)  LEFT
+#  ONE JOINED 2026-10-14 (DEV.md 4c C71), a NEW case, measured with `--seed`
+#  on its first golden and NOT diagnosed: aceticAcid02_plant at 1.3610 %
+#  (-79.9842 kW).  Its energyBalance_byUnit.csv puts the remainder at M1
+#  (+82.7738 kW, a mixer at a DECLARED T) and the reactor (-2.7901 kW).
 KNOWN_OPEN = {
+    "tutorials/plant/aceticAcid02_plant": 1.3610,
     "tutorials/plant/esterification2sector": 170.9790,
     "tutorials/plant/polycaprolactonePlant": 20.0100,
     "tutorials/steady/flowsheets/cavett01_recycle_train": 88.0220,
