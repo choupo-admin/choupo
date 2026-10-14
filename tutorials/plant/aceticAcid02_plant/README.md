@@ -53,9 +53,13 @@ acid.  `lightsOut` is a declared plant outlet.
 * **Separations:** UNIFAC, which is **predictive** — the catalogue has no
   regressed pair for most of this system.  Every activity coefficient is an
   estimate from structure.
-* **Vapour:** ideal gas.  Acetic acid is largely dimerised in real vapour; the
-  engine has no model for that, so condenser and degasser splits are
-  indicative.
+* **Vapour:** ideal gas.  Acetic acid is largely dimerised in real vapour.
+  The engine models that dimer only on its REACTIVE-equilibrium path (a
+  `vapourDimerisation` block on the acid's gas-liquid chemistry record; see
+  `tutorials/steady/flash/flash12_nh3_acetic_ethanol_reactive` and `flash13`);
+  a gamma-phi package like this one (UNIFAC liquid, ideal-gas vapour) has no
+  vapour-association fugacity model, so this case does not use it and the
+  condenser and degasser splits are indicative.
 * **CO** has no UNIFAC group, so it sits outside the activity model
   (`approximations` block, announced as a *substitution* on every run).
 * **Battery limits:** the feeds are declared at 30 bar; no compressor or pump

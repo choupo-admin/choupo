@@ -48,6 +48,119 @@ WHY A LEVEL FOR ONE UNIT (2026-09-05, amended 2026-09-07). Until 09-05 the Juice
 \end{tutnarrative}
 
 \clearpage
+\tutentry{aceticAcid01\_gibbsReactor}{tutorials/plant/aceticAcid01\_gibbsReactor}
+\begin{tutscheme}
+\begin{tikzpicture}[>={Stealth[length=2mm]}, every node/.style={font=\scriptsize}]
+  \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (reactor) at (0.0,-0.0) {\textbf{reactor}\\[-1pt]{\tiny gibbsReactor}};
+  \draw[->] ($(reactor.west)+(-1.05,0.00)$) -- ($(reactor.west)+(0,0.00)$) node[at start, above, font=\tiny, anchor=south west] {feed};
+  \draw[->] ($(reactor.east)+(0,-0.17)$) -- ($(reactor.east)+(1.05,-0.17)$) node[at end, below, font=\tiny, anchor=north east] {gas};
+  \draw[->] ($(reactor.east)+(0,0.17)$) -- ($(reactor.east)+(1.05,0.17)$) node[at end, above, font=\tiny, anchor=south east] {liquid};
+\end{tikzpicture}
+\end{tutscheme}
+\tutwhat{ACETIC ACID FROM CO + METHANOL -- a basic Gibbs-reactor tutorial. One gibbsReactor with the six species of the carbonylation chemistry (CO, methanol, acetic acid, dimethyl ether, methyl acetate, water) at 460 K and 30 bar, detuned by a 10 K approach to equilibrium. Thermodynamic ceiling only: no catalyst, no rate law.}
+\begin{tutnarrative}
+acetic acid from CO + methanol.
+
+CO + CH3OH $\to$ CH3COOH (the carbonylation) 2 CH3OH <$\to$ CH3OCH3 + H2O (dimethyl ether) CH3OH + CH3COOH <$\to$ CH3COOCH3 + H2O (methyl acetate)
+
+The reactor is a `gibbsReactor`: it is given the SPECIES and their atoms, never the reactions above. It finds the composition that minimises the Gibbs energy at 460 K and 30 bar, so every pathway the six species allow is open at once. `temperatureApproach 10` then detunes it: the engine evaluates the REACTION equilibrium 10 K away from the physical T (it reads the sign from the thermicity of this feed), so the outlet is 10 K short of equilibrium.
+
+feed (CO + methanol) -$\to$ [reactor] -$\to$ gas -$\to$ liquid
+
+TOPOLOGY ONLY. Stream state lives on disk in 0/, one file per stream.
+
+\end{tutnarrative}
+\tutreadme{A basic tutorial: ONE gibbsReactor, six species, a 10 K approach to equilibrium. It answers a single question --- $\ast$what does thermodynamics alone allow when CO and methanol meet at 460 K and 30 bar?$\ast$ --- and says nothing about how fast, or with what catalyst, it gets there.}
+\tutreadme{The flowsheet never states these reactions. system/flowsheetDict lists the six species with their atoms (C, H, O) and the reactor minimises the Gibbs energy under the atom balances, so every pathway the six species allow is open at once. Species left out are pathways closed by decision: no CO2, H2, CH4, formaldehyde or iodides.}
+\tutreadme{The feed is declared phase gas; at the reactor temperature on purpose: a stream at 300 K with CO and methanol together has no honest single phase, and the energy report refuses to price it (found while writing this case).}
+\tutreadme{The lesson is that the by-products vanish. Carbonylation is so favourable (K \textasciitilde{} 2e5 bar\textasciicircum{}-1 at 470 K, from the formation data) that methanol is used up; methyl acetate and water exist only as the trace left in equilibrium with it, and DME is smaller still. In the real plant they are $\ast$intermediates$\ast$ whose level is set by kinetics and by the catalyst system, not by this equilibrium. A Gibbs reactor gives the ceiling, not the selectivity.}
+\tutreadme{Hand check (order of magnitude, ideal gas, 470 K): dG(carbonylation) \textasciitilde{} -48 kJ/mol gives y\_MeOH \textasciitilde{} 1e-8 to 1e-7 with p\_CO \textasciitilde{} 24 bar and p\_AcOH \textasciitilde{} 6 bar; the engine's 4e-8 agrees. Methyl acetate then follows from K \textasciitilde{} 60 for the esterification, giving \textasciitilde{}7e-4, which also agrees.}
+\tutreadme{temperatureApproach 10 is a MAGNITUDE. The engine reads the thermicity of this feed's transformation (exothermic, dH = -66 437 kJ per kmol of feed), assigns the sign, and evaluates the reaction equilibrium at T + 10 K = 470 K, announcing it. Compared with temperatureApproach 0:}
+\begin{tutgolden}
+\goldrow{stream}{feed}{F}{0.0583333333333}
+\goldrow{stream}{feed}{T}{460}
+\goldrow{stream}{gas}{F}{0.0034726940335}
+\goldrow{stream}{gas}{T}{460}
+\goldrow{stream}{liquid}{F}{0.0270854817667}
+\goldrow{stream}{liquid}{T}{460}
+\goldrow{kpi}{reactor}{F\_condensate\_kmol\_h}{97.5077343601}
+\goldrow{kpi}{reactor}{F\_in\_kmol\_h}{210}
+\goldrow{kpi}{reactor}{F\_out\_kmol\_h}{12.5016985206}
+\goldrow{kpi}{reactor}{N\_in\_mol\_s}{58.3333333333}
+\goldrow{kpi}{reactor}{N\_liq\_mol\_s}{27.0854817667}
+\goldrow{kpi}{reactor}{N\_out\_mol\_s}{30.5581758002}
+\goldrow{kpi}{reactor}{P}{3000000}
+\goldrow{kpi}{reactor}{Q\_kW}{-3927.08208264}
+\goldmore{23}
+\end{tutgolden}
+
+\clearpage
+\tutentry{aceticAcid02\_plant}{tutorials/plant/aceticAcid02\_plant}
+\begin{tutscheme}
+\begin{tikzpicture}[>={Stealth[length=2mm]}, every node/.style={font=\scriptsize}]
+  \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (M1) at (133.4,-0.0) {\textbf{M1}\\[-1pt]{\tiny mixer}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (preheater) at (136.3,-0.0) {\textbf{preheater}\\[-1pt]{\tiny phaseChanger}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (reactor) at (139.2,-0.0) {\textbf{reactor}\\[-1pt]{\tiny gibbsReactor}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (condenser) at (142.1,-0.0) {\textbf{condenser}\\[-1pt]{\tiny isothermalFlash}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (purgeSplit) at (145.0,-0.0) {\textbf{purgeSplit}\\[-1pt]{\tiny splitter}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (M2) at (145.0,-1.7) {\textbf{M2}\\[-1pt]{\tiny mixer}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (letdown) at (147.9,-0.0) {\textbf{letdown}\\[-1pt]{\tiny valve}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (degasser) at (150.8,-0.0) {\textbf{degasser}\\[-1pt]{\tiny isothermalFlash}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (lightsColumn) at (153.7,-0.0) {\textbf{lightsColumn}\\[-1pt]{\tiny distillationColumn}};
+  \draw[->] ($(M1.west)+(-1.05,-0.17)$) -- ($(M1.west)+(0,-0.17)$) node[at start, below, font=\tiny, anchor=north west] {freshMethanol};
+  \draw[->] ($(M1.west)+(-1.05,0.17)$) -- ($(M1.west)+(0,0.17)$) node[at start, above, font=\tiny, anchor=south west] {freshCO};
+  \draw[->, dashed] (purgeSplit.south) .. controls +(0,-1.0) and +(0,-1.0) .. (M1.south) node[midway, below, font=\tiny] {coRecycle};
+  \draw[->] (M1) -- (preheater) node[midway, above, font=\tiny] {mixedFeed};
+  \draw[->] (preheater) -- (reactor) node[midway, above, font=\tiny] {reactorFeed};
+  \draw[->] (reactor) -- (condenser) node[midway, above, font=\tiny] {gas};
+  \draw[->] (condenser) -- (purgeSplit) node[midway, above, font=\tiny] {coGas};
+  \draw[->] (reactor) -- (M2) node[midway, above, font=\tiny] {liquid};
+  \draw[->] (condenser) -- (M2) node[midway, above, font=\tiny] {condensate};
+  \draw[->] (M2) -- (letdown) node[midway, above, font=\tiny] {crudeAcid};
+  \draw[->] (letdown) -- (degasser) node[midway, above, font=\tiny] {letdownOut};
+  \draw[->] (degasser) -- (lightsColumn) node[midway, above, font=\tiny] {columnFeed};
+  \draw[->] ($(purgeSplit.east)+(0,0.00)$) -- ($(purgeSplit.east)+(1.05,0.00)$) node[at end, above, font=\tiny, anchor=south east] {purge};
+  \draw[->] ($(degasser.east)+(0,0.00)$) -- ($(degasser.east)+(1.05,0.00)$) node[at end, above, font=\tiny, anchor=south east] {offgas};
+  \draw[->] ($(lightsColumn.east)+(0,-0.17)$) -- ($(lightsColumn.east)+(1.05,-0.17)$) node[at end, below, font=\tiny, anchor=north east] {lightsOut};
+  \draw[->] ($(lightsColumn.east)+(0,0.17)$) -- ($(lightsColumn.east)+(1.05,0.17)$) node[at end, above, font=\tiny, anchor=south east] {acidProduct};
+\end{tikzpicture}
+\end{tutscheme}
+\tutwhat{ACETIC ACID FROM CO + METHANOL, rung 2 -- the plant around the Gibbs reactor of aceticAcid01: UNIFAC liquid instead of ideal, the reactor gas condensed, the CO recycled against a purge, a degasser, a lights column taking the light by-products (methyl acetate / water / methanol / dimethyl ether) overhead as a declared plant outlet, acetic acid as the bottoms product. One recycle (CO). Still a thermodynamic ceiling: no catalyst, no rate law.}
+\begin{tutnarrative}
+acetic acid from CO + methanol, with its plant. A BASE CASE: it runs, it is NOT optimised, and every number a student would tune is a plain key below (see README section 4).
+
+freshMethanol --+ freshCO --------+-$\to$ [M1] -$\to$ [preheater] -$\to$ [reactor] ----$\to$ liquid ---+ coRecycle ------+ \textasciicircum{} 460 K gibbsReactor | | | 460 K, 30 bar, v | | approach 10 gas | | | | | [condenser] | | 330 K, 30 bar| | | | | | coGas condensate | | | | | [purgeSplit] +-[M2] | | | | | purge coRecycle v +--------------------------------------+ [letdown valve]
+
+[lightsColumn] | | lightsOut acidProduct
+
+ONE recycle: CO, against a 5 \% purge. The light by-products leave through the lights column's distillate (a declared outlet, not recycled -- a second recycle was built first and cost 7 min 25 s a run for a stream that is 94 \% acetic acid). The reactor is the one of aceticAcid01\_gibbsReactor.
+
+\end{tutnarrative}
+\tutreadme{Rung 2 after aceticAcid01\_gibbsReactor. The same Gibbs reactor, now inside a plant: a condenser, a CO recycle against a purge, a degasser, a lights column. It runs (32 s), it converges, and it is deliberately NOT optimised --- every number a student would tune is a plain key in system/flowsheetDict. The optimisation is the exercise.}
+\tutreadme{The case is sealed: everything it reads is in its own constant/.}
+\tutreadme{One recycle (CO), closed with Wegstein in 46 iterations. A second recycle (the lights column's distillate back to the reactor) was built first and abandoned: it cost 7 min 25 s a run, and the stream it recycled is 94 \% acetic acid. lightsOut is a declared plant outlet.}
+\tutreadme{$\ast$ Reactor: the Gibbs reactor of rung 1 --- equilibrium at 460 K, 30 bar, 10 K approach. No catalyst, no rate. Its liquid is ideal by construction (elementPotential: gas plus one ideal condensable); the 10 K barely moves the main product (see rung 1). $\ast$ Separations: UNIFAC, which is predictive --- the catalogue has no regressed pair for most of this system. Every activity coefficient is an estimate from structure. $\ast$ Vapour: ideal gas. Acetic acid is largely dimerised in real vapour. The engine models that dimer only on its REACTIVE-equilibrium path (a vapourDimerisation block on the acid's gas-liquid chemistry record; see tutorials/steady/flash/flash12\_nh3\_acetic\_ethanol\_reactive and flash13); a gamma-phi package like this one (UNIFAC liquid, ideal-gas vapour) has no vapour-association fugacity model, so this case does not use it and the condenser and degasser splits are indicative. $\ast$ CO has no UNIFAC group, so it sits outside the activity model (approximations block, announced as a $\ast$substitution$\ast$ on every run). $\ast$ Battery limits: the feeds are declared at 30 bar; no compressor or pump is modelled for them. $\ast$ Data: dimethyl ether is reviewStatus interim with a Joback formation enthalpy (see rung 1); it is nil in every stream here. $\ast$ Antoine ranges are exceeded at 460 K (dozens of announcements per run) and the column prints [distillate] WARNING lines (47 in the base case): the distillate's bubble point does not converge because CO and dimethyl ether have no real saturation curve at those temperatures, so the distillate temperature is reported at the top tray. Neither changes a flow.}
+\tutreadme{Decision variables (all in system/flowsheetDict unless noted):}
+\tutreadme{Objective: yours to choose. A natural one: acid product value minus CO and methanol cost minus utilities (the condenser, degasser and column duties are in reports/). Choupo's outer drivers (sweep, optimization, designSpec) are described in docs/ai/outer-drivers.md; this case ships without an outerDict on purpose.}
+\begin{tutgolden}
+\goldrow{stream}{acidProduct}{F}{0.0273313243062}
+\goldrow{stream}{acidProduct}{T}{404.142108532}
+\goldrow{stream}{coGas}{F}{0.0239076734336}
+\goldrow{stream}{coGas}{T}{330}
+\goldrow{stream}{coRecycle}{F}{0.0227122897619}
+\goldrow{stream}{coRecycle}{T}{330}
+\goldrow{stream}{columnFeed}{F}{0.027609102084}
+\goldrow{stream}{columnFeed}{T}{380}
+\goldrow{stream}{condensate}{F}{0.00612193446905}
+\goldrow{stream}{condensate}{T}{330}
+\goldrow{stream}{crudeAcid}{F}{0.0279930799343}
+\goldrow{stream}{crudeAcid}{T}{432.199280375}
+\goldrow{stream}{freshCO}{F}{0.0291666666667}
+\goldrow{stream}{freshCO}{T}{300}
+\goldmore{150}
+\end{tutgolden}
+
+\clearpage
 \tutentry{acetonePlant}{tutorials/plant/acetonePlant}
 \begin{tutscheme}
 \begin{tikzpicture}[>={Stealth[length=2mm]}, every node/.style={font=\scriptsize}]

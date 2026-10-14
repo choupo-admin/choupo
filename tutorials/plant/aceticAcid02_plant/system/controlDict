@@ -8,5 +8,5 @@
 \*-----------------------------------------------------------------------------*/
 tier          tutorial;
 application   choupoSolve;
-description   "ACETIC ACID FROM CO + METHANOL, rung 2 -- the plant around the Gibbs reactor of aceticAcid01: UNIFAC liquid instead of ideal, the reactor gas condensed, the CO recycled against a purge, a lights column returning methyl acetate / water / methanol / dimethyl ether to the reactor, acetic acid as the bottoms product. Two recycles. Still a thermodynamic ceiling: no catalyst, no rate law.";
+description   "ACETIC ACID FROM CO + METHANOL, rung 2 -- the plant around the Gibbs reactor of aceticAcid01: UNIFAC liquid instead of ideal, the reactor gas condensed, the CO recycled against a purge, a degasser, a lights column taking the light by-products (methyl acetate / water / methanol / dimethyl ether) overhead as a declared plant outlet, acetic acid as the bottoms product. One recycle (CO). Still a thermodynamic ceiling: no catalyst, no rate law.";
 verbosity     2;

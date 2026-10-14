@@ -30,39 +30,10 @@
   recycle was built first and cost 7 min 25 s a run for a stream that is 94 %
   acetic acid).  The reactor is the one of aceticAcid01_gibbsReactor.
 \*-----------------------------------------------------------------------------*/
-/*---------------------------------------------------------------------------*\
-  aceticAcid02_plant -- acetic acid from CO + methanol, with its plant.
-
-      freshMethanol --+
-      freshCO --------+--> [M1] --> [preheater] --> [reactor] -----> liquid ------+
-      coRecycle ------+      ^        460 K        gibbsReactor        |          |
-      lightsRecycle --+      |                     460 K, 30 bar,      v          |
-                             |                     approach 10        gas         |
-                             |                                         |          |
-                             |                                  [condenser] 330 K |
-                             |                                    |        |      |
-                             |                                  coGas   condensate|
-                             |                                    |        |      |
-                             |                            [purgeSplit]     +--[M2]<+
-                             |                              |     |            |
-                             |                          purge   coRecycle      v
-                             |                                            [letdown valve]
-                             |                                                  |
-                             |                                  [degasser] --> offgas
-                             |                                                  |
-                             |                                            [lightsColumn]
-                             |                                              |         |
-                             +-------------------- lightsRecycle <--- distillate   acidProduct
-
-  Two recycles: CO (against a 5 % purge) and the lights, which the lights
-  column returns to the reactor to be carbonylated or esterified again.
-
-  The reactor is the one of aceticAcid01_gibbsReactor, unchanged.
-\*---------------------------------------------------------------------------*/
 units
 (
     {
-        //  Fresh feeds and the two recycles merge at a DECLARED temperature:
+        //  Fresh feeds and the CO recycle merge at a DECLARED temperature:
         //  a gas+liquid merge has no well-posed adiabatic T (see mixer), and
         //  the preheater below sets the real reactor-feed state.
         name        M1;
