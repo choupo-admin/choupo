@@ -907,6 +907,21 @@ accepts today, and that is a policy call.
 
 ## 4c. Commissioned by Vítor (he ASKED for this; it is not a candidate)
 
+> **C71. ADD THE UPLOADED CASE `aceticAcid02_plant` (Vítor, 2026-10-14:
+> "Podes adicionar este caso ao repositorio?").**  A sealed plant case
+> (Gibbs reactor + condenser + CO recycle/purge + degasser + lights column,
+> base case not optimised).  Both rungs ARRIVED by Vítor's own push
+> (7453fea9a, `aceticAcid01_gibbsReactor` + `aceticAcid02_plant`, sealed,
+> NO `expected` golden -- recorded on a build older than `Valve.H`).
+> Measured on arrival, still open: no golden on either; aceticAcid02's
+> controlDict says "two recycles" where its README and flowsheet have one;
+> its README says the engine has no acetic vapour dimer (true of its UNIFAC
+> path only); first law open at -80 kW (1.4 %), to be pinned as a measured
+> debt.  Status: the general dispatched on the upload was STOPPED by Vítor
+> (2026-10-14); "avança" the same day -- follow-up dispatched: goldens
+> for both (appended, new cases), the two text fixes, the -80 kW pin,
+> FASTSET per its rule, catalogue and tutorials guide.
+
 > **C70. THE LETDOWN EDUTOOL, REVIEWED (Vítor, 2026-10-12: "O chatGPT
 > reviu isto.  Pode ver o que podes aproveitar?").**  A 15-point review of
 > the C64 large-pressure-letdown EduTool plus three citation fixes; the
