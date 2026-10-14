@@ -1,0 +1,23 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*--- Choupo stream state.  Every DIMENSIONAL value carries its unit; the parser converts to SI. ---*/
+// PLANT-BOUNDARY INLET.  CO fed in 10 % molar excess over methanol, as one
+// vapour stream already at the reactor temperature (460 K = 187 C, 30 bar):
+// at this T and P the methanol partial pressure is below its saturation
+// pressure, so `phase gas;` is the true state (the engine checked: g(V=0) > 0).
+
+componentMolarFlows
+{
+    methanol    100 kmol/h;
+    CO          110 kmol/h;
+}
+
+T               460 K;
+phase           gas;
+P               3000000 Pa;

@@ -1,0 +1,54 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+  aceticAcid01_gibbsReactor -- acetic acid from CO + methanol.
+
+      CO + CH3OH   -> CH3COOH                      (the carbonylation)
+      2 CH3OH      <-> CH3OCH3 + H2O               (dimethyl ether)
+      CH3OH + CH3COOH <-> CH3COOCH3 + H2O          (methyl acetate)
+
+  The reactor is a `gibbsReactor`: it is given the SPECIES and their atoms,
+  never the reactions above.  It finds the composition that minimises the
+  Gibbs energy at 460 K and 30 bar, so every pathway the six species allow
+  is open at once.  `temperatureApproach 10` then detunes it: the engine
+  evaluates the REACTION equilibrium 10 K away from the physical T (it reads
+  the sign from the thermicity of this feed), so the outlet is 10 K short of
+  equilibrium.
+
+        feed (CO + methanol) --> [reactor] --> gas
+                                          \--> liquid
+
+  TOPOLOGY ONLY.  Stream state lives on disk in 0/, one file per stream.
+\*---------------------------------------------------------------------------*/
+units
+(
+    {
+        name        reactor;
+        type        gibbsReactor;
+        in          feed;
+        outputs     ( gas  liquid );
+
+        operation
+        {
+            T                    460.0 K;
+            P                    30.0 bar;
+            temperatureApproach  10;            // K, a MAGNITUDE; the engine assigns the sign
+            elements   ( C  H  O );
+            species
+            (
+                { name CO;           atoms ( 1 0 1 ); }
+                { name methanol;     atoms ( 1 4 1 ); }
+                { name aceticAcid;   atoms ( 2 4 2 ); }
+                { name dimethylEther; atoms ( 2 6 1 ); }
+                { name methylAcetate; atoms ( 3 6 2 ); }
+                { name water;        atoms ( 0 2 1 ); }
+            );
+        }
+    }
+);

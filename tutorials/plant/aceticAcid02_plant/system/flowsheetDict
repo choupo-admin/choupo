@@ -1,0 +1,162 @@
+/*---------------------------------------------------------------------------*\
+  aceticAcid02_plant -- acetic acid from CO + methanol, with its plant.
+  A BASE CASE: it runs, it is NOT optimised, and every number a student would
+  tune is a plain key below (see README section 4).
+
+      freshMethanol --+
+      freshCO --------+--> [M1] --> [preheater] --> [reactor] -----> liquid ---+
+      coRecycle ------+      ^        460 K        gibbsReactor        |       |
+                             |                     460 K, 30 bar,      v       |
+                             |                     approach 10        gas      |
+                             |                                         |       |
+                             |                                  [condenser]    |
+                             |                                    330 K, 30 bar|
+                             |                                    |        |   |
+                             |                                  coGas   condensate
+                             |                                    |        |   |
+                             |                            [purgeSplit]     +-[M2]
+                             |                              |     |            |
+                             |                          purge   coRecycle      v
+                             +--------------------------------------+  [letdown valve]
+                                                                           |
+                                                                      [degasser] --> offgas
+                                                                           |
+                                                                    [lightsColumn]
+                                                                      |         |
+                                                                  lightsOut   acidProduct
+
+  ONE recycle: CO, against a 5 % purge.  The light by-products leave through
+  the lights column's distillate (a declared outlet, not recycled -- a second
+  recycle was built first and cost 7 min 25 s a run for a stream that is 94 %
+  acetic acid).  The reactor is the one of aceticAcid01_gibbsReactor.
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+  aceticAcid02_plant -- acetic acid from CO + methanol, with its plant.
+
+      freshMethanol --+
+      freshCO --------+--> [M1] --> [preheater] --> [reactor] -----> liquid ------+
+      coRecycle ------+      ^        460 K        gibbsReactor        |          |
+      lightsRecycle --+      |                     460 K, 30 bar,      v          |
+                             |                     approach 10        gas         |
+                             |                                         |          |
+                             |                                  [condenser] 330 K |
+                             |                                    |        |      |
+                             |                                  coGas   condensate|
+                             |                                    |        |      |
+                             |                            [purgeSplit]     +--[M2]<+
+                             |                              |     |            |
+                             |                          purge   coRecycle      v
+                             |                                            [letdown valve]
+                             |                                                  |
+                             |                                  [degasser] --> offgas
+                             |                                                  |
+                             |                                            [lightsColumn]
+                             |                                              |         |
+                             +-------------------- lightsRecycle <--- distillate   acidProduct
+
+  Two recycles: CO (against a 5 % purge) and the lights, which the lights
+  column returns to the reactor to be carbonylated or esterified again.
+
+  The reactor is the one of aceticAcid01_gibbsReactor, unchanged.
+\*---------------------------------------------------------------------------*/
+units
+(
+    {
+        //  Fresh feeds and the two recycles merge at a DECLARED temperature:
+        //  a gas+liquid merge has no well-posed adiabatic T (see mixer), and
+        //  the preheater below sets the real reactor-feed state.
+        name        M1;
+        type        mixer;
+        inputs      ( freshMethanol  freshCO  coRecycle );
+        outputs     ( mixedFeed );
+        operation   { T 320 K; }
+    }
+    {
+        name        preheater;
+        type        phaseChanger;
+        in          mixedFeed;
+        outputs     ( reactorFeed );
+        operation   { outletT 460 K;  P 30 bar; }
+    }
+    {
+        name        reactor;
+        type        gibbsReactor;
+        in          reactorFeed;
+        outputs     ( gas  liquid );
+        operation
+        {
+            T                    460.0 K;
+            P                    30.0 bar;
+            temperatureApproach  10;            // K, a MAGNITUDE; the engine assigns the sign
+            elements   ( C  H  O );
+            species
+            (
+                { name CO;            atoms ( 1 0 1 ); }
+                { name methanol;      atoms ( 1 4 1 ); }
+                { name aceticAcid;    atoms ( 2 4 2 ); }
+                { name dimethylEther; atoms ( 2 6 1 ); }
+                { name methylAcetate; atoms ( 3 6 2 ); }
+                { name water;         atoms ( 0 2 1 ); }
+            );
+        }
+    }
+    {
+        //  Recovers the acetic acid the reactor gas carries (about a fifth of
+        //  it).  The flash computes the duty that brings its feed to 330 K.
+        name        condenser;
+        type        isothermalFlash;
+        in          gas;
+        outputs     ( condensate  coGas );
+        operation   { T 330 K;  P 30 bar; }
+    }
+    {
+        name        purgeSplit;
+        type        splitter;
+        in          coGas;
+        outputs     ( purge  coRecycle );
+        operation   { fractions ( 0.05  0.95 ); }
+    }
+    {
+        name        M2;
+        type        mixer;
+        inputs      ( liquid  condensate );
+        outputs     ( crudeAcid );
+    }
+    {
+        name        letdown;
+        type        valve;
+        in          crudeAcid;
+        outputs     ( letdownOut );
+        operation   { P 1.5 bar; }
+    }
+    {
+        //  Takes out the permanent gas the condenser left dissolved (CO) and
+        //  the dimethyl ether: a total condenser cannot condense them, and the
+        //  column refuses a feed that makes it try (acetonePlant, hydrogen).
+        //  The offgas also carries a little acid and lights; it is a declared
+        //  plant OUTLET here, not recycled.
+        name        degasser;
+        type        isothermalFlash;
+        in          letdownOut;
+        outputs     ( columnFeed  offgas );
+        operation   { T 380 K;  P 1.5 bar; }
+    }
+    {
+        //  Takes the light by-products overhead and acetic acid out of the
+        //  bottom.  The distillate is a RATE: the column sits OUTSIDE the
+        //  recycle (the CO loop closes at the condenser), so its feed does
+        //  not move from pass to pass and a rate is a well-posed
+        //  specification.  A recovery specification would be an outer secant
+        //  of full column solves -- measured at 7 min 25 s on this plant.
+        name        lightsColumn;
+        type        distillationColumn;
+        model       simultaneous;
+        in          columnFeed;
+        outputs     ( lightsOut  acidProduct );
+        operation
+        {
+            nStages 20;  feedStage 14;  refluxRatio 5.0;  P 1.5 bar;
+            distillateRate 1.0 kmol/h;
+        }
+    }
+);

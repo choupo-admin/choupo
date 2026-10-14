@@ -1,0 +1,12 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+tier          tutorial;
+application   choupoSolve;
+description   "ACETIC ACID FROM CO + METHANOL, rung 2 -- the plant around the Gibbs reactor of aceticAcid01: UNIFAC liquid instead of ideal, the reactor gas condensed, the CO recycled against a purge, a lights column returning methyl acetate / water / methanol / dimethyl ether to the reactor, acetic acid as the bottoms product. Two recycles. Still a thermodynamic ceiling: no catalyst, no rate law.";
+verbosity     2;

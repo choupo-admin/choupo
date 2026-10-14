@@ -1,0 +1,57 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+  thermoPhysPropDict (v2) -- gamma-phi, UNIFAC liquid, ideal-gas vapour.
+
+  UNIFAC is PREDICTIVE (group contribution, no fitted binary pairs): the
+  catalogue holds no regressed pair for most of this system (the UNIQUAC and
+  NRTL files cover only methyl acetate with methanol, water or acetic acid).
+  Every activity coefficient here is therefore an estimate from structure.
+
+  WHAT THIS DOES NOT HAVE, stated rather than hidden:
+    * VAPOUR ASSOCIATION OF ACETIC ACID.  The vapour is an ideal gas.  Real
+      acetic acid vapour is largely dimerised (82 % of the molecules at 298 K,
+      aceticAcid-dissolution.dat), which lowers the vapour's apparent volatility
+      and raises its latent heat.  The engine has no vapour-dimerisation
+      fugacity model; this is a known gap, not a choice.
+    * CO IN THE LIQUID.  No UNIFAC group exists for carbon monoxide, so it sits
+      outside the activity model (gamma = 1, a Psat extrapolated far above its
+      critical temperature) -- the same approximation, with the same sentence
+      of justification, that acetonePlant makes for hydrogen.
+\*---------------------------------------------------------------------------*/
+
+recordType    thermophysicalPropertySystem;
+schemaVersion 2;
+
+components       ( CO  methanol  aceticAcid  dimethylEther  methylAcetate  water );
+
+equilibrium
+{
+    formulation gammaPhi;
+
+    liquid
+    {
+        activityModel { model UNIFAC; }
+        standardState pureLiquid;
+    }
+
+    vapour
+    {
+        fugacityModel idealGas;
+    }
+}
+
+approximations
+{
+    componentOutsideActivityModel
+    {
+        components ( CO );
+        reason     "supercritical permanent gas; no UNIFAC group exists for carbon monoxide. Its liquid mole fraction in this flowsheet is small (the condenser sits at 30 bar, where CO is sparingly soluble in acetic acid) but NOT measured here; Henry in a mixed solvent is the principled route and is not built.";
+    }
+}

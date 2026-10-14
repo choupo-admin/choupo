@@ -1,0 +1,13 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+// TEAR SEED for the CO recycle: the converged value is ~95 kmol/h of CO.
+componentMolarFlows { CO 95 kmol/h; }
+T               330 K;
+P               3000000 Pa;
+phase           gas;

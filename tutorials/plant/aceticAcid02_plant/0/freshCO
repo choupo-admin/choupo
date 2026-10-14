@@ -1,0 +1,14 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+// PLANT-BOUNDARY INLET.  CO, 5 kmol/h above the methanol: the excess leaves
+// through the 5 % purge, which fixes the loop's CO inventory (see README).
+componentMolarFlows { CO 105 kmol/h; }
+T               300 K;
+P               3000000 Pa;
+phase           gas;
