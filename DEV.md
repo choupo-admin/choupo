@@ -920,7 +920,18 @@ accepts today, and that is a policy call.
 > debt.  Status: the general dispatched on the upload was STOPPED by Vítor
 > (2026-10-14); "avança" the same day -- follow-up dispatched: goldens
 > for both (appended, new cases), the two text fixes, the -80 kW pin,
-> FASTSET per its rule, catalogue and tutorials guide.
+> FASTSET per its rule, catalogue and tutorials guide.  MERGED 2026-10-14: goldens
+> recorded (aceticAcid01 37 rows, aceticAcid02 164; new files, no row
+> moved); controlDict, the stale second flowsheetDict diagram and the
+> README dimer sentence corrected (the dimer lives on the reactive path,
+> `ReactiveVLE.cpp`; this gamma-phi package does not use it); first law:
+> aceticAcid01 +0.34 kW, aceticAcid02 -79.98 kW (1.3610 %) PINNED in
+> `check_energy_closure.KNOWN_OPEN`, measured not diagnosed -- the byUnit
+> report puts +82.77 kW at M1 (a mixer at a DECLARED 320 K) and -2.79 kW at
+> the reactor; aceticAcid01 in FASTSET, aceticAcid02 EXCLUDED at 46.5 s.
+> Validated: both cases PASS, `--fast` 73/0, the touched gates OK.  OPEN
+> for Vítor: whether M1's declared temperature (the likely home of the
+> -80 kW) should become adiabatic or a heater.
 
 > **C70. THE LETDOWN EDUTOOL, REVIEWED (Vítor, 2026-10-12: "O chatGPT
 > reviu isto.  Pode ver o que podes aproveitar?").**  A 15-point review of
