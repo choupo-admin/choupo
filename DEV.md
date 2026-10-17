@@ -917,7 +917,13 @@ accepts today, and that is a policy call.
 > SAME published `layout {}` block full-window, opened by a button on the
 > Reports section (and wherever else the layout is drawn), surviving F5,
 > titled, and saying "expired -- reopen from the parent" when its source is
-> gone.  Status: dispatched 2026-10-17.
+> gone.  MERGED 2026-10-17: `?layout=<key>` tab (`LayoutPopOutTab.tsx`,
+> pure logic `case/layoutPopOut.ts`), stash per source never consumed (F5
+> redraws), follows the parent's new runs without resetting the camera,
+> dims by the parent's own staleness, expired panel names how to reopen;
+> buttons on Reports and the EduTool bench; the tables have one home
+> (`PlantLayoutTables.tsx`).  Validated on main e1a94d3bc + C78: `--gui`
+> 32/0 (5469 tests).  NOT seen in a browser (none in the container).
 
 > **2026-10-17, Vítor: "Não me chateies com coisas que tu sabes bem
 > resolver!"** -- taken by the commander, recorded here: (1) C73 group A
