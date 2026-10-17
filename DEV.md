@@ -917,7 +917,11 @@ accepts today, and that is a policy call.
 > hard-stamped; the duty stays priced on the state published.  Moved
 > golden rows are LISTED to Vítor before any record.  Also running: the
 > commander's GUI tornado for the C68 `sens_` KPIs (branch
-> `claude/gui-tornado`).  Status: dispatched 2026-10-17.
+> `claude/gui-tornado`) -- MERGED 2026-10-17: `economics.sensitivity {}`
+> on the result JSON (rows of sensitivity.csv, its order, its caveat; only
+> when declared), 36 `sens_*_value_{low,high}` rows appended, Reports draws
+> the tornado in the engine's order; NOT yet looked at in a browser.
+> Status of C72: dispatched 2026-10-17.
 
 > **C71. ADD THE UPLOADED CASE `aceticAcid02_plant` (Vítor, 2026-10-14:
 > "Podes adicionar este caso ao repositorio?").**  A sealed plant case
