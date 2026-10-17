@@ -16,8 +16,10 @@ are the source of truth.
 │   ├── propsDict            REQUIRED for choupoProps INSTEAD of
 │   │                                   flowsheetDict
 │   ├── solverDict           OPTIONAL  per-unit-op solver options
-│   └── outerDict            OPTIONAL  outer driver (sweep /
-│                                       optimization / DesignSpec)
+│   ├── outerDict            OPTIONAL  outer driver (sweep /
+│   │                                   optimization / DesignSpec)
+│   └── layoutDict           OPTIONAL  the plot plan of the SIZED items
+│                                       (bin/choupo-layout --draft)
 ├── constant/
 │   ├── thermoPhysPropDict   REQUIRED; the thermophysical system (v2
 │   │                          grammar).  Declares `recordType
@@ -883,6 +885,50 @@ payback); `reports/economics/sensitivity.csv`; and the result's
 cases: `tutorials/plant/greenAmmonia02_feasibility150bar` and `...50bar`.  An
 outer `sweep` still varies only FLOWSHEET paths -- this block is how a price, a
 rate or the capital is varied.
+
+## `system/layoutDict` — the plot plan (DEV.md 4c C75)
+
+Optional; absent, nothing changes.  It places the SIZED items of the run (it
+needs a `sizing {}` pass) on a plot plan and the engine checks it after
+sizing.  Start it with `bin/choupo-layout --draft <case>` (never overwrites
+without `--force`) and move every item to where you can defend it.
+
+```
+items
+(
+    { item "converter"; x 40 m; y -6 m; z 0 m; orientation vertical; }
+    { item "makeupComp"; x 6 m; y -8 m; z 0 m; orientation alongX;
+      footprint { length 8 m; width 4 m; height 4 m; }
+      release { source "..."; reason "...";
+                zones ( { zone 2; radius 7.5 m; height 6 m; } ); } }
+    { nonProcess "controlRoom"; kind building; x -30 m; y -40 m; z 0 m;
+      orientation alongX; footprint { length 15 m; width 10 m; height 4 m; }
+      ignition "why it ignites"; }
+);
+areas { <SECTOR> { xMin 0 m; xMax 40 m; yMin -10 m; yMax 10 m; } }   // sectored cases only
+separation ( { source "..."; reason "..."; measure edgeToEdge;
+               distances ( { between ( vessel compressor ); distance 9 m; } ); } );
+wind { from 225 deg; planNorth 0 deg; halfAngle 30 deg; reach 60 m;
+       source "..."; reason "..."; }
+```
+
+* `item` is the design sheet's id (`converter`, `column09/shell`,
+  `DRYING.SD`); `(x, y)` the plan centre, `z` the base, plan `+y` north.
+* The footprint is the item's OWN size when its sizer published a diameter
+  and a length (`D`/`H`, `shellID`/`tubeLength`,
+  `chamberDiameter`/`chamberHeight`); otherwise declare `footprint {}` -- and
+  never declare one on an item that has its own.
+* Angles MUST carry `deg` (the raw form would be radians).
+* Choupo ships NO spacing or zoning table (the published ones grant no
+  redistribution): every distance, zone and angle is yours, with its source.
+* REFUSED: an unknown, duplicate or internal item (trays, a catalyst charge,
+  a relief valve), two footprints that overlap, an area for an unknown sector.
+  ANNOUNCED (caveat block + result JSON): a pair closer than its declared
+  separation, an item outside its sector's area, an ignition source inside a
+  zone or downwind of a release, a rule naming no placed kind, unplaced items.
+* Worked case: `tutorials/plant/ammonia02_full_plant`.  The GUI draws the
+  result in Reports, "Plant layout (3D)".  Record:
+  `docs/design/a-plant-layout-is-declared-and-checked.md`.
 
 ## Where a numerical option lives — the four homes are INTENTIONAL
 
