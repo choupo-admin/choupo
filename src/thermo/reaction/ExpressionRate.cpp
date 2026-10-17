@@ -27,12 +27,12 @@ License
 \*---------------------------------------------------------------------------*/
 
 #include "ExpressionRate.H"
-
+#include <functional>
 #include "core/Advisory.H"
 #include "core/DictAudit.H"
 #include "core/RegistryRefusal.H"
 #include "core/Units.H"
-
+#include <map>
 #include <algorithm>
 #include <cctype>
 #include <cmath>
@@ -40,7 +40,7 @@ License
 #include <set>
 #include <sstream>
 #include <stdexcept>
-
+#include <memory>
 namespace Choupo {
 
 namespace {

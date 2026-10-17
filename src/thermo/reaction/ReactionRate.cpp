@@ -32,9 +32,9 @@ License
 #include "RateLaw.H"
 #include "core/RegistryRefusal.H"
 #include "thermo/ThermoPackage.H"
-
+#include <map>
 #include <stdexcept>
-
+#include <memory>
 namespace Choupo {
 
 std::map<std::string, ReactionRate::Factory>& ReactionRate::registry()

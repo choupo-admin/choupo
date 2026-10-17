@@ -15,9 +15,9 @@
 #include "BedWallHeatTransfer.H"
 #include "LiFinlayson.H"
 #include "core/RegistryRefusal.H"
-
+#include <map>
 #include <stdexcept>
-
+#include <memory>
 namespace Choupo {
 
 std::map<std::string, BedWallHeatTransfer::Factory>& BedWallHeatTransfer::registry()

@@ -28,7 +28,7 @@
 #include <sstream>
 #include <stdexcept>
 #include <tuple>
-
+#include <map>
 namespace Choupo {
 
 std::vector<EquipmentSizing> CatalystBedSize::size(const std::string& unitName,

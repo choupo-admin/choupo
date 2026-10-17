@@ -50,7 +50,7 @@ License
 #include <stdexcept>
 #include <string>
 #include <vector>
-
+#include <memory>
 namespace Choupo {
 
 namespace {
