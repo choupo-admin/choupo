@@ -907,6 +907,22 @@ accepts today, and that is a policy call.
 
 ## 4c. Commissioned by Vítor (he ASKED for this; it is not a candidate)
 
+> **2026-10-17, Vítor: "Não me chateies com coisas que tu sabes bem
+> resolver!"** -- taken by the commander, recorded here: (1) C73 group A
+> (pfr_polyesterification, polycaprolactonePlant: the pfr duty on the
+> published state, the first law closes) RE-RECORDED; (2) C73 group B
+> (cstr04/05/06, pfr04: a liquid esterification whose product is all
+> vapour at 1 atm and 394-454 K) declared at 15 bar, where the product
+> holds the liquid and every golden number reproduces to the printed
+> digit -- a liquid-phase reactor at 454 K is pressurised; the energy
+> solves on the published surface are the NEXT slice (C77); (3) C74's 8
+> boundary rows RE-RECORDED (each moves by exactly its mixer duties); the
+> combination C73+C74 re-measured on polycaprolactonePlant before
+> recording; KNOWN_OPEN re-seeded by `--seed`.  (4) C76: the layouts go in
+> the repository's reference cases; students copy the layoutDict.
+> Standing reading: technical calls inside an agreed scope are the
+> commander's -- ask only architecture, pedagogy, RESERVED, irreversible.
+
 > **C76. THE LAYOUT IN THE TWO PEQ PROJECTS (Vítor, 2026-10-17: "Podes por
 > isso nos dois projetos de PEQ que estou a acompanhar?  NH3 e Ácido
 > Acético").**  Measured: NH3 = `tutorials/plant/greenAmmoniaPEQ_baseCase`
