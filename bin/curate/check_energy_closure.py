@@ -478,15 +478,24 @@ def ratchet_kW(pin: float) -> float:
 #  hda (0.825 % -> 0.000 %) and acetonePlant (0.146 % -> 0.249 %: its M1 and
 #  M2 had been cancelling part of the absorber's -11.2496 kW, which is now
 #  the whole of its residual) were never pinned.
+#  TWO LEFT ON 2026-10-17, when C73 and C74 were merged together (re-measured
+#  with `--seed` over the full steady corpus on the combination): the pfr's
+#  single-reaction duty is priced on the published outlet, which now means
+#  its own equilibrium (DEV.md 4c C73) -- the polyester melt leaves part
+#  vapour, and the old xi*dH_rxn on the feed's liquid rung paid no latent heat.
+#    pfr_polyesterification  18.3420 % -> 0.0000 % (-9.3303 -> 0 kW)    LEFT
+#    polycaprolactonePlant   15.3450 % -> 0.0000 % (-8.4650 kW was its
+#                            Reactor's latent heat, C73; its Mixer's
+#                            +2.1445 kW had been paid by C74)           LEFT
+#  (userOp01_yield_reactor stays in KNOWN_OPEN_KW below: a `code/` case the
+#  standalone `--seed` cannot run -- the blind spot above.)
 KNOWN_OPEN = {
     "tutorials/plant/esterification2sector": 170.9790,
-    "tutorials/plant/polycaprolactonePlant": 15.3450,
     "tutorials/steady/flowsheets/cavett01_recycle_train": 88.0220,
     "tutorials/steady/flowsheets/proxy01_gas_loop": 51.9550,
     "tutorials/steady/gibbs/gibbs07_wgs_cooled": 150.7280,
     "tutorials/steady/gibbs/gibbs08_wgs_cooled_reactiveflash": 150.7280,
     "tutorials/steady/gibbs/gibbs09_wgs_cooled_directmin": 150.6790,
-    "tutorials/steady/reactors/pfr_polyesterification": 18.3420,
     "tutorials/steady/rotating/pump01_water": 65.0000,
     "tutorials/steady/rotating/pump02_pressure_spec": 65.0000,
     "tutorials/steady/thermo/basis01_two_unit_chain": 7.4630,

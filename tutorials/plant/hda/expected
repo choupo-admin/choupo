@@ -63,9 +63,9 @@ stream  hpLiquid               T                320              1e-4
 stream  hpVapor                T                320              1e-4
 stream  mixed                  T                330              1e-4
 boundary global                 H_feeds_kW       284.307970808    1e-4
-boundary global                 Q_boundary_kW    -1276.97587088   1e-4
+boundary global                 Q_boundary_kW    -935.274317468   1e-4
 boundary global                 H_products_kW    -650.760557071   1e-4
-boundary global                 residual_kW      -341.907343001   1e-4
+boundary global                 residual_kW      -0.205789588959  1e-4
 utility Reactor                heating.-.unserved 1                1e-4
 kpi     Mixer                  Q_kW             341.701553412    1e-4
 utility Mixer                  heating.steamLP.duty_kW 341.701553412    1e-4

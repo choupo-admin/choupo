@@ -138,9 +138,9 @@ kpi     reactor                y_methanol       4.01094743366e-08  1e-4
 kpi     reactor                y_methylAcetate  0.000789334259838  1e-4
 kpi     reactor                y_water          0.000721123409883  1e-4
 boundary global               H_feeds_kW       -9856.88413201     1e-4
-boundary global               Q_boundary_kW    -2796.89930523     1e-4
+boundary global               Q_boundary_kW    -2714.02299124     1e-4
 boundary global               H_products_kW    -12573.7992862     1e-4
-boundary global               residual_kW      -79.9841510193     1e-4
+boundary global               residual_kW      2.8921629744       1e-4
 utility condenser              cooling.coolingWater.duty_kW -308.699472538     1e-4
 utility condenser              cooling.coolingWater.T 330                1e-4
 utility condenser              cooling.coolingWater.kg_s 7.38515484541      1e-4

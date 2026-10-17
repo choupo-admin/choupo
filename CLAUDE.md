@@ -1173,7 +1173,9 @@ stream carrying water) -- a unit that prices as the report does inherits the
 report's reading of an under-declared stream, so the case now declares
 `phase gas;`.  ENUMERATED, not fixed (none is in the flagship):
 `evaporativeDryer`, `coolingTower`, `absorber`,
-`stripper`, `pfr`, the CSTR's adiabatic/jacketed T-solves, `phaseChanger`,
+`stripper`, the `pfr`'s and the CSTR's adiabatic/heatExchange T-solves
+(both reactors' ISOTHERMAL duty is priced on the published outlet, which
+means its own equilibrium, since 2026-10-17, DEV.md 4c C73), `phaseChanger`,
 the ADIABATIC `mixer` (its DECLARED-T form, which published no duty at
 all, closed 2026-10-17 by DEV.md 4c C74: it publishes `Q_kW = H(out) -
 SUM H(in)` through `priceState`), `adiabaticFlash` (and `evaporator`,
