@@ -140,6 +140,14 @@ that happened to agree with the model's.
       discounted payback; a missing or mis-summed schedule refuses by name;
       the one-year form writes the old shape.  See `check_startup_years`.
 
+  (s) THE LAND IS A COST THE READER CAN DEFEND (2026-10-17, DEV.md 4c
+      C82).  On ammonia02_full_plant the printed line `Land = P EUR/m2 x A
+      m2 = C EUR` recomputes (P x A = C, to the printed digits), A is the
+      plot area the layout PUBLISHED in the same run, the price's declared
+      `source` is printed beside it, cashFlow.csv's footer carries the same
+      C, and TCI stays FCI + WC (the land is a separate line, not in the
+      ladder).  See `check_land`.
+
   (o) A DECISION SAYS WHOSE IT IS.  `refuseOnMissingPrice` decides whether an
       appraisal REFUSES on an absent price or reports zero revenue, and it was
       a float read with a silent default.  Two probes, built here because
@@ -912,6 +920,62 @@ def check_startup_years(fails):
                          "byte-identical to the old shape")
 
 
+LANDCASE = ROOT / "tutorials/plant/ammonia02_full_plant"
+
+
+def check_land(fails):
+    """(s) THE LAND RECOMPUTES FROM ITS PRINTED LINE (DEV.md 4c C82).  The
+    console line, the plot the layout published, the declared source and the
+    CSV footer are four surfaces of one number; each is read here as text
+    and they must agree."""
+    if not LANDCASE.exists():
+        fails.append("(s) %s is missing -- this arm CANNOT RUN and must not "
+                     "pass." % LANDCASE.name)
+        return
+    tmp = tempfile.mkdtemp(prefix="cost_land_")
+    try:
+        d = Path(tmp) / "land"
+        shutil.copytree(LANDCASE, d, ignore=shutil.ignore_patterns(
+            "reports", "converged", "design", "iterations"))
+        p = subprocess.run([str(BIN), str(d)], capture_output=True, text=True,
+                           cwd=str(ROOT), timeout=600)
+        out = p.stdout + p.stderr
+        if p.returncode != 0:
+            fails.append(f"(s) the land witness exited {p.returncode}")
+            return
+        m = re.search(r"Land = ([\d.]+) EUR/m2 x ([\d.]+) m2\s+=\s+(\d+)\s+EUR", out)
+        if not m:
+            fails.append("(s) the console prints no `Land = P EUR/m2 x A m2 = C EUR`"
+                         " line -- the land's cost cannot be defended from itself")
+            return
+        P, A, C = float(m.group(1)), float(m.group(2)), float(m.group(3))
+        if abs(P * A - C) > 0.5 * P + 1.0:
+            fails.append(f"(s) {P} x {A} = {P * A:.0f}, the line prints {C:.0f}")
+        pa = re.search(r'"plot": \{[^}]*"plotArea": ([-0-9.eE+]+)', out)
+        if not pa or abs(float(pa.group(1)) - A) > 0.05:
+            fails.append(f"(s) the land's area {A} m2 is not the plot the layout"
+                         f" published ({pa.group(1) if pa else 'none'} m2)")
+        src = re.search(r'\n    land\n    \{.*?source\s+"([^"]*)"',
+                        (LANDCASE / "system" / "postDict").read_text(), re.S)
+        if not src or ("price: " + src.group(1)) not in out:
+            fails.append("(s) the land's declared `source` is not printed beside its cost")
+        foot = {}
+        for line in (d / "reports/economics/cashFlow.csv").read_text().splitlines():
+            f = line.split(",")
+            if len(f) >= 2 and not line.startswith("#"):
+                foot.setdefault(f[0], f[1])
+        try:
+            if abs(float(foot["land"]) - C) > 1.0:
+                fails.append(f"(s) cashFlow.csv says land {foot['land']}, the console {C:.0f}")
+            if abs(float(foot["TCI"]) - float(foot["FCI"]) - float(foot["WC"])) > 1.0:
+                fails.append("(s) TCI is not FCI + WC beside a declared land: the land"
+                             " is a separate line, never inside the ladder")
+        except (KeyError, ValueError) as e:
+            fails.append(f"(s) cashFlow.csv lacks a footer line: {e}")
+    finally:
+        shutil.rmtree(tmp, ignore_errors=True)
+
+
 def main():
     if not BIN.exists():
         print("check_cost_provenance: FAIL -- choupoSolve missing; run `make all`")
@@ -1209,6 +1273,7 @@ def main():
     check_retired_name_refused(fails)
     check_working_capital(fails)
     check_startup_years(fails)
+    check_land(fails)
 
     if fails:
         print("check_cost_provenance: FAIL")
@@ -1216,7 +1281,11 @@ def main():
             print("  - " + f)
         return 1
 
-    print("check_cost_provenance: OK -- the START-UP YEARS of "
+    print("check_cost_provenance: OK -- the LAND of ammonia02_full_plant "
+          "recomputes from its printed line (price x the plot area the layout "
+          "published = its cost, its declared source printed beside it, the "
+          "CSV footer the same, TCI still FCI + WC); "
+          "the START-UP YEARS of "
           "economics03_startup_years RECOMPUTE row by row from the declared "
           "construction schedule, ramp-up and start-up cost (NPV, IRR, "
           "payback, every cashFlow.csv row), a missing or mis-summed schedule "

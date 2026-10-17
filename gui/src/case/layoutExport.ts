@@ -78,7 +78,7 @@ import { engineVersionLabel, type EngineVersion } from "./engineVersion.js";
 import { canPopOutLayout, type LayoutPopOutStash } from "./layoutPopOut.js";
 import {
   FINDINGS_CAPTION, findingRows, itemRows, layoutNotes, LEGEND_PHASES, LEGEND_PIPES,
-  LEGEND_SHAPES, PARTICLE_WORD, PIPE_REGISTER_CAPTION, pipeRegister,
+  LEGEND_SHAPES, PARTICLE_WORD, PIPE_REGISTER_CAPTION, pipeRegister, PLOT_CAPTION, plotSummary,
 } from "./layoutTables.js";
 import { phaseCss, PHASE_WORDS } from "./plantLayout.js";
 import type { RunInputs, Staleness } from "./staleness.js";
@@ -328,6 +328,19 @@ export function buildLayoutExport(input: LayoutExportInput): { fileName: string;
       [esc(r.kind), false], [esc(r.sector), false], [esc(r.shape), false],
       [esc(r.position), true], [esc(r.extents), true], [esc(r.sizeFrom), false],
       [esc(r.hazard), false]]), 760);
+  //  ---- the plot (C82): the same words and rows the app draws -------------
+  const plot = plotSummary(layout);
+  const plotHtml = plot
+    ? `<p>${esc(plot.headline)}</p>`
+      + [plot.margin, ...plot.notes, plot.rule].map((n) => `<p class="note">${esc(n)}</p>`).join("")
+      + (plot.sectors.length > 0
+        ? table(PLOT_CAPTION, [["Sector", false], ["Area from", false], ["Plot (m²)", true],
+            ["Footprints (m²)", true]],
+          plot.sectors.map((s) => [[esc(s.sector), false], [esc(s.from), false],
+            [esc(s.plotArea), true], [esc(s.footprintArea), true]]), 520)
+        : "")
+    : "";
+
   const notes = layoutNotes(layout);
   const notesHtml = [notes.unplaced, notes.internal, notes.sources]
     .filter((n): n is string => !!n).map((n) => `<p class="note">${esc(n)}</p>`).join("");
@@ -378,7 +391,9 @@ ${toolbar}
 <p id="${EXPORT_IDS.error}" hidden></p>
 <noscript><p class="note">The 3D view needs JavaScript; the tables below carry every
 position, pipe and finding the engine published.</p></noscript>
-<h2>Findings</h2>
+${plotHtml ? `<h2>Plot</h2>
+${plotHtml}
+` : ""}<h2>Findings</h2>
 ${findingsHtml}
 <h2>Pipe register</h2>
 ${pipesHtml}

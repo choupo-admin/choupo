@@ -1429,7 +1429,12 @@ auto_generate() {
         #  counts and total length.  NOT pinned there: the stream's flow,
         #  T, P and vf, which the `stream` kind already pins in their one
         #  home, and the route's corner points, which the length and the
-        #  gate's orthogonality arm hold.  NOT pinned:
+        #  gate's orthogonality arm hold.  THE PLOT (DEV.md 4c C82) rides it
+        #  too: the `plot` line's `plotArea` and `footprintArea`, and per
+        #  sector (`plotSector:<S>`) the same two and its `from` WORD
+        #  (declaredArea | footprintEnvelope); the plot's corners and its
+        #  margin are what the area is computed from, and the area holds
+        #  them.  NOT pinned:
         #  the source/reason sentences and the zone and wind declarations,
         #  which are the case's own words echoed -- what they DECIDE is
         #  pinned through the findings and the count.
@@ -1450,7 +1455,7 @@ auto_generate() {
                         s = substr(line, RSTART, RLENGTH); sub(/^"[^"]*": "/, "", s); sub(/"$/, "", s)
                         printf "layout %-20s %-16s %-18s %s\n", id, W[i], s, "exact"
                     }
-                nn = split("x y z dx dy dz value limit placed unplaced internal findings length pipes notRouted pipeLength", N, " ")
+                nn = split("x y z dx dy dz value limit placed unplaced internal findings length pipes notRouted pipeLength plotArea footprintArea", N, " ")
                 for (i = 1; i <= nn; i++)
                     if (match(line, "\"" N[i] "\": *-?[0-9][0-9.eE+-]*")) {
                         s = substr(line, RSTART, RLENGTH); sub(/^"[^"]*": */, "", s)

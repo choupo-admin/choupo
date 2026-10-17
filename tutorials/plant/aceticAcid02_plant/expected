@@ -392,3 +392,5 @@ layout  pipe:acidProduct       length           18.5             1e-4
 layout  summary                pipes            16               1e-4
 layout  summary                notRouted        0                1e-4
 layout  summary                pipeLength       312.20322062     1e-4
+layout  plot                   plotArea         3388.5           1e-4
+layout  plot                   footprintArea    160.124878005    1e-4

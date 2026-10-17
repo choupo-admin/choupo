@@ -741,6 +741,30 @@ export interface PlantLayout {
   /** The engine's own counts (DEV.md 4c C81 carries them to the exported
    *  page); absent on a result written before the engine published them. */
   summary?: LayoutSummary;
+  /** THE PLOT (DEV.md 4c C82): the ground the layout occupies, by the
+   *  engine's one rule (quoted in `rule`); absent on a result written
+   *  before the engine published it.  The GUI computes no area. */
+  plot?: LayoutPlot;
+}
+
+/** The plot the engine published: its rectangle (margin included, metres),
+ *  its area and the area the footprints cover (m2), and per sector the
+ *  declared area or the envelope of the sector's footprints. */
+export interface LayoutPlot {
+  margin: number;
+  marginDeclared: boolean;
+  marginReason: string;
+  xMin: number; xMax: number; yMin: number; yMax: number;
+  plotArea: number;
+  footprintArea: number;
+  /** footprintArea / plotArea, as the engine divided it. */
+  footprintShare: number;
+  stackedPairs: number;
+  declaredAreasUnion: number;
+  declaredAreasOverlap: number;
+  /** The engine's own sentence for the rule. */
+  rule: string;
+  sectors: { sector: string; from: string; plotArea: number; footprintArea: number }[];
 }
 
 /** What the engine counted on the layout it checked: items placed, sized but
@@ -793,6 +817,10 @@ export interface CashFlowRow {
   /** Start-up cost, an expense of operating year 1.  Present only when the
    *  case declared the start-up years. */
   startupCost?: number;
+  /** THE LAND (DEV.md 4c C82): its outlay at the start of construction
+   *  (< 0) and its recovery in the last year (> 0), kept OUT of
+   *  `investment`.  Present only when the case declared a land price. */
+  land?: number;
   depreciation: number;
   taxableIncome: number;
   tax: number;
@@ -826,11 +854,29 @@ export interface Economics {
   accLo: number;               // accuracy band low  (%)
   accHi: number;               // accuracy band high (%)
   cashFlow: CashFlowRow[];
+  /** THE LAND (DEV.md 4c C82), present ONLY when the case declared a land
+   *  price: price x area as non-depreciable capital, NOT in TCI, bought in
+   *  year `investedAtYear` (the start of construction) and recovered at its
+   *  purchase value in `recoveredAtYear`. */
+  land?: EconomicsLand;
   /** The one-at-a-time economic sensitivity (DEV.md 4c C68), present ONLY
    *  when the case declared `economics { sensitivity { ... } }`.  The engine
    *  publishes the inputs IN TORNADO ORDER (largest NPV swing first, a tie in
    *  declared order) -- the GUI draws that order and sorts nothing. */
   sensitivity?: EconomicSensitivity;
+}
+
+/** The land as the engine priced it.  `areaFrom` is "layoutPlot" (the plot
+ *  area the layout published) or "declared" (the land block's own `area`). */
+export interface EconomicsLand {
+  price: number;            // currency per m2
+  area: number;             // m2
+  areaFrom: string;
+  cost: number;             // price x area
+  investedAtYear: number;
+  recoveredAtYear: number;
+  source: string;
+  reason: string;
 }
 
 /** The economic sensitivity as the engine published it: one row per declared

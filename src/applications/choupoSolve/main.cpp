@@ -1405,13 +1405,28 @@ try
         auto result = simulate(flowsheetDict, StreamOverrides{});
         finalRc = result.converged ? 0 : 1;
 
-        // Layer 3: optional post-processing on the result
+        // Layer 3: optional post-processing on the result.
+        //  THE LAYOUT IS CHECKED BEFORE THE ECONOMICS (2026-10-17, DEV.md 4c
+        //  C82): it needs the sized items, and the economics may price its
+        //  plot area as land.  So the layout runs where the chain reaches
+        //  `economics`, or after the chain when there is none -- once either
+        //  way.  A case with no layoutDict is untouched (`applyLayout`
+        //  returns at once), and the sizing it reads is complete by then.
+        bool layoutApplied = false;
         if (postDict)
         {
             auto chain = PostProcessor::buildChain(postDict);
-            for (auto& pp : chain) pp->run(result);
+            for (auto& pp : chain)
+            {
+                if (!layoutApplied && pp->type() == "economics")
+                {
+                    applyLayout(result);
+                    layoutApplied = true;
+                }
+                pp->run(result);
+            }
         }
-        applyLayout(result);
+        if (!layoutApplied) applyLayout(result);
 
         //  THE POST-PROCESSING BLOCKS GET THE SAME AUDIT the units get.
         //  `dictAudit` was wired at exactly one site -- each unit's

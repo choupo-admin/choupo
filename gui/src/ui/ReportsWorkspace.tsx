@@ -541,6 +541,9 @@ function EconomicsBody({ econ }: { econ: NonNullable<RunResult["economics"]> }) 
   //  The start-up years (C63): two more columns, drawn only when the engine
   //  published them -- i.e. when the case declared a timeline.
   const timeline = econ.cashFlow.some((r) => r.startupCost !== undefined);
+  //  The land (C82): a metric, a column and a sentence, drawn only when the
+  //  engine published it -- i.e. when the case declared a land price.
+  const land = econ.land;
   return (
     <>
       <Text size="xs" c="dimmed" mb={6}>
@@ -549,6 +552,7 @@ function EconomicsBody({ econ }: { econ: NonNullable<RunResult["economics"]> }) 
       <SimpleGrid cols={{ base: 2, sm: 4 }} spacing="xs" mb="sm">
         <Metric label="FCI" value={`${money(econ.FCI)} ${econ.currency}`} />
         <Metric label="TCI" value={`${money(econ.TCI)} ${econ.currency}`} />
+        {land && <Metric label="Land (not in TCI)" value={`${money(land.cost)} ${econ.currency}`} />}
         <Metric label="COM (no depr.)" value={`${money(econ.COM_d)} ${econ.currency}/yr`} />
         <Metric label="Revenue" value={`${money(econ.revenue)} ${econ.currency}/yr`} />
         <Metric label="NPV"
@@ -570,11 +574,21 @@ function EconomicsBody({ econ }: { econ: NonNullable<RunResult["economics"]> }) 
         Discount rate {(econ.discountRate * 100).toFixed(1)}%, tax {(econ.taxRate * 100).toFixed(0)}%.
         {econ.irrAmbiguous ? "  IRR has multiple sign changes — interpret with care." : ""}
       </Text>
+      {land && (
+        <Text size="xs" c="dimmed" mb={6}>
+          Land: {land.price} {econ.currency}/m² × {land.area.toFixed(0)} m²
+          ({land.areaFrom === "layoutPlot" ? "the plot area the layout published" : "the area the land block declares"})
+          = {money(land.cost)} {econ.currency}, bought in year {land.investedAtYear} (the start of
+          construction), not depreciated, recovered at its purchase value in year {land.recoveredAtYear}.
+          Price: {land.source}.
+        </Text>
+      )}
       <ScrollArea type="auto">
         <Table striped withTableBorder fz="xs" ff="monospace" miw={760}>
           <Table.Thead><Table.Tr>
             <Table.Th>Year</Table.Th>
             <Table.Th ta="right">Capital</Table.Th>
+            {land && <Table.Th ta="right">Land</Table.Th>}
             {timeline && <Table.Th ta="right">p</Table.Th>}
             <Table.Th ta="right">Revenue</Table.Th>
             <Table.Th ta="right">OPEX</Table.Th>
@@ -594,6 +608,7 @@ function EconomicsBody({ econ }: { econ: NonNullable<RunResult["economics"]> }) 
                 bg={r.year === paybackYear ? "var(--mantine-color-teal-light)" : undefined}>
                 <Table.Td>{r.year}</Table.Td>
                 <Table.Td ta="right">{r.investment !== 0 ? money(r.investment) : "—"}</Table.Td>
+                {land && <Table.Td ta="right">{r.land ? money(r.land) : "—"}</Table.Td>}
                 {timeline && <Table.Td ta="right">{(r.productionFraction ?? 0).toFixed(2)}</Table.Td>}
                 <Table.Td ta="right">{money(r.revenue)}</Table.Td>
                 <Table.Td ta="right">{money(r.opex)}</Table.Td>
@@ -614,7 +629,8 @@ function EconomicsBody({ econ }: { econ: NonNullable<RunResult["economics"]> }) 
       </ScrollArea>
       <Text size="xs" c="dimmed" mt={4}>
         Monetary cells in {econ.currency} (k / M suffix).  Years up to 0 are construction (the capital
-        outflows; year 0 is the end of construction, where the working capital is invested);
+        outflows; year 0 is the end of construction, where the working capital is invested{land
+          ? "; the land is bought in the first row, the start of construction, and recovered in the last" : ""});
         the discounted payback row{paybackYear !== undefined ? "" : " (none — never recovered)"} is highlighted.
         Full table in <code>reports/economics/cashFlow.csv</code> / <code>.ods</code>.
       </Text>

@@ -842,6 +842,163 @@ void routePipes(const Dictionary& d, const SimulationResult& r,
               " system/layoutDict");
 }
 
+//  ---- the plot (DEV.md 4c C82) ------------------------------------------
+
+//  THE RULE, ONE SENTENCE, published on the result so every surface quotes
+//  the engine rather than paraphrasing it.
+const char* const kPlotRule =
+    "the plot is the axis-aligned envelope of every declared sector area,"
+    " every placed footprint (process and non-process) and every routed"
+    " pipe's polyline, grown on every side by the declared plot margin;"
+    " the footprint area is the sum of the placed items' plan areas (a"
+    " vertical cylinder's disc, any other item's rectangle), each item"
+    " counted once";
+
+//  The plan area one item covers.
+scalar planArea(const LayoutItem& i)
+{
+    return isCircle(i) ? 0.25 * kPi * i.dx * i.dx : i.dx * i.dy;
+}
+
+//  The area of the UNION of axis-aligned rectangles, exactly, on the grid
+//  their own edges make (no sampling).
+scalar unionArea(const std::vector<LayoutArea>& rs)
+{
+    std::vector<scalar> xs, ys;
+    for (const auto& a : rs)
+    {
+        xs.push_back(a.xMin); xs.push_back(a.xMax);
+        ys.push_back(a.yMin); ys.push_back(a.yMax);
+    }
+    std::sort(xs.begin(), xs.end());
+    std::sort(ys.begin(), ys.end());
+    scalar total = 0;
+    for (std::size_t i = 0; i + 1 < xs.size(); ++i)
+        for (std::size_t j = 0; j + 1 < ys.size(); ++j)
+        {
+            const scalar cx = 0.5 * (xs[i] + xs[i + 1]);
+            const scalar cy = 0.5 * (ys[j] + ys[j + 1]);
+            for (const auto& a : rs)
+                if (cx > a.xMin && cx < a.xMax && cy > a.yMin && cy < a.yMax)
+                {
+                    total += (xs[i + 1] - xs[i]) * (ys[j + 1] - ys[j]);
+                    break;
+                }
+        }
+    return total;
+}
+
+void plotOf(const Dictionary& d, PlantLayoutRecord& rec)
+{
+    LayoutPlot& pl = rec.plot;
+    pl.present = true;
+    pl.rule    = kPlotRule;
+
+    //  ---- the margin: the case's, or 0 m announced ---------------------
+    if (d.found("plot"))
+    {
+        const auto pd = d.subDict("plot");
+        pl.margin         = length(*pd, "margin", "plot");
+        pl.marginReason   = text(*pd, "reason", "plot");
+        pl.marginDeclared = true;
+        if (pl.margin < 0)
+            refuse("plot: `margin " + num(pl.margin) + " m;` -- a margin is the"
+                   " ground kept clear around the plant and cannot be negative");
+    }
+
+    //  ---- the envelope -----------------------------------------------------
+    scalar x0 = 1e300, x1 = -1e300, y0 = 1e300, y1 = -1e300;
+    auto take = [&](scalar xa, scalar xb, scalar ya, scalar yb)
+    {
+        x0 = std::min(x0, xa); x1 = std::max(x1, xb);
+        y0 = std::min(y0, ya); y1 = std::max(y1, yb);
+    };
+    for (const auto& i : rec.items)
+        take(i.x - 0.5 * i.dx, i.x + 0.5 * i.dx, i.y - 0.5 * i.dy, i.y + 0.5 * i.dy);
+    for (const auto& a : rec.areas)
+        take(a.xMin, a.xMax, a.yMin, a.yMax);
+    for (const auto& p : rec.pipes)
+        for (const auto& q : p.route)
+            take(q[0], q[0], q[1], q[1]);
+    pl.xMin = x0 - pl.margin;  pl.xMax = x1 + pl.margin;
+    pl.yMin = y0 - pl.margin;  pl.yMax = y1 + pl.margin;
+    pl.plotArea = (pl.xMax - pl.xMin) * (pl.yMax - pl.yMin);
+
+    //  ---- the footprints ---------------------------------------------------
+    for (const auto& i : rec.items) pl.footprintArea += planArea(i);
+    pl.footprintShare = pl.plotArea > 0 ? pl.footprintArea / pl.plotArea : 0.0;
+    for (std::size_t i = 0; i < rec.items.size(); ++i)
+        for (std::size_t j = i + 1; j < rec.items.size(); ++j)
+            if (clearPlan(rec.items[i], rec.items[j]) < -kTol) ++pl.stackedPairs;
+
+    //  ---- the declared sector areas: their union, and shared ground ------
+    if (!rec.areas.empty())
+    {
+        scalar sum = 0;
+        for (const auto& a : rec.areas) sum += (a.xMax - a.xMin) * (a.yMax - a.yMin);
+        pl.declaredAreasUnion   = unionArea(rec.areas);
+        pl.declaredAreasOverlap = std::max(0.0, sum - pl.declaredAreasUnion);
+        for (std::size_t i = 0; i < rec.areas.size(); ++i)
+            for (std::size_t j = i + 1; j < rec.areas.size(); ++j)
+            {
+                const auto& a = rec.areas[i];
+                const auto& b = rec.areas[j];
+                const scalar w = std::min(a.xMax, b.xMax) - std::max(a.xMin, b.xMin);
+                const scalar h = std::min(a.yMax, b.yMax) - std::max(a.yMin, b.yMin);
+                if (w > kTol && h > kTol)
+                    announce("warning", "layout '" + a.sector + "'",
+                        "the declared areas of sectors " + a.sector + " and "
+                        + b.sector + " share " + num(w * h) + " m2 of ground ("
+                        + num(w) + " m x " + num(h) + " m): the plot counts that"
+                        " ground once, and the two sector areas, published as"
+                        " declared, add up to more than their union");
+            }
+    }
+
+    //  ---- per sector, in the order the plan first names it --------------
+    std::vector<std::string> order;
+    for (const auto& a : rec.areas) order.push_back(a.sector);
+    for (const auto& i : rec.items)
+        if (!i.sector.empty()
+            && std::find(order.begin(), order.end(), i.sector) == order.end())
+            order.push_back(i.sector);
+    for (const auto& sec : order)
+    {
+        LayoutPlotSector ps;
+        ps.sector = sec;
+        scalar a0 = 1e300, a1 = -1e300, b0 = 1e300, b1 = -1e300;
+        for (const auto& i : rec.items)
+        {
+            if (i.sector != sec) continue;
+            ps.footprintArea += planArea(i);
+            a0 = std::min(a0, i.x - 0.5 * i.dx); a1 = std::max(a1, i.x + 0.5 * i.dx);
+            b0 = std::min(b0, i.y - 0.5 * i.dy); b1 = std::max(b1, i.y + 0.5 * i.dy);
+        }
+        const auto ar = std::find_if(rec.areas.begin(), rec.areas.end(),
+            [&](const LayoutArea& a) { return a.sector == sec; });
+        if (ar != rec.areas.end())
+        {
+            ps.from     = "declaredArea";
+            ps.plotArea = (ar->xMax - ar->xMin) * (ar->yMax - ar->yMin);
+        }
+        else
+        {
+            ps.from     = "footprintEnvelope";
+            ps.plotArea = (a1 - a0) * (b1 - b0);
+        }
+        pl.sectors.push_back(ps);
+    }
+
+    if (!pl.marginDeclared)
+        announce("info", "layout",
+            "no `plot { margin; reason; }` is declared, so the plot area ("
+            + num(pl.plotArea) + " m2) is the BARE envelope of the layout -- a"
+              " LOWER BOUND: a real plot keeps ground clear around the plant"
+              " for its roads, its fence and its access, and how much is the"
+              " case's to declare and defend (`plot { margin <m>; reason"
+              " \"...\"; }` in system/layoutDict).  No margin is invented");
+}
+
 } // anonymous namespace
 
 // ===========================================================================
@@ -1273,6 +1430,9 @@ PlantLayoutRecord evaluate(const Dictionary& d, const SimulationResult& r,
     //  ---- the pipes (C80) ---------------------------------------------------
     routePipes(d, r, rec);
 
+    //  ---- the plot (C82): after the pipes, which occupy ground too --------
+    plotOf(d, rec);
+
     if (verbosity >= 2)
     {
         std::cout << "\n[layout] system/layoutDict: " << rec.items.size()
@@ -1305,6 +1465,18 @@ PlantLayoutRecord evaluate(const Dictionary& d, const SimulationResult& r,
         for (const auto& n : rec.notRouted)
             std::cout << "  " << std::left << std::setw(22) << n.stream
                       << "not routed: " << n.reason << "\n";
+        const auto& pl = rec.plot;
+        std::cout << "[layout] plot: " << num(pl.xMax - pl.xMin) << " m x "
+                  << num(pl.yMax - pl.yMin) << " m = " << num(pl.plotArea)
+                  << " m2 (margin " << num(pl.margin) << " m, "
+                  << (pl.marginDeclared ? "declared" : "none declared")
+                  << "); footprints " << num(pl.footprintArea) << " m2 = "
+                  << num(100.0 * pl.footprintShare, 4)
+                  << " % of the plot\n";
+        for (const auto& ps : pl.sectors)
+            std::cout << "  " << std::left << std::setw(22) << ps.sector
+                      << num(ps.plotArea) << " m2 (" << ps.from
+                      << "), footprints " << num(ps.footprintArea) << " m2\n";
     }
     return rec;
 }
@@ -1349,6 +1521,9 @@ std::string draft(const SimulationResult& r, const Dictionary* previous)
     //  because they were drawn around positions the draft moves.
     LayoutPipeRack rack;
     bool hadPipeOverrides = false;
+    bool        hadPlot    = false;
+    scalar      plotMargin = 0.0;
+    std::string plotReason;
     std::map<std::string, std::string> hazardText;   // id -> its lines
     //  A footprint the author already DECLARED for an item with none of its
     //  own, and the author's non-process items: both carried, never guessed.
@@ -1372,6 +1547,13 @@ std::string draft(const SimulationResult& r, const Dictionary* previous)
         wind = readWind(*previous);
         if (previous->found("pipeRack"))
             rack = readRack(*previous, PlantLayoutRecord{});
+        if (previous->found("plot"))
+        {
+            const auto pd = previous->subDict("plot");
+            plotMargin = length(*pd, "margin", "plot");
+            plotReason = text(*pd, "reason", "plot");
+            hadPlot    = true;
+        }
         hadPipeOverrides = previous->found("pipes");
         if (previous->found("items"))
             for (const auto& e : previous->lookupDictList("items"))
@@ -1574,6 +1756,7 @@ std::string draft(const SimulationResult& r, const Dictionary* previous)
          "    pipeRack { y; elevation; laneSpacing; lanesPerTier <n>; tierSpacing;\n"
          "               xStart; xEnd; reason; }   (absent: the engine's stated default)\n"
          "    pipes { <stream> { waypoints ( { x; y; z; } ... ); } }   (optional)\n"
+         "    plot { margin; reason; }   (absent: margin 0 m, announced -- a lower bound)\n"
          "    wind { from <deg>; planNorth <deg>; halfAngle <deg>; reach <m>;\n"
          "           source; reason; }\n"
          "  Record: docs/design/a-plant-layout-is-declared-and-checked.md\n"
@@ -1726,6 +1909,16 @@ std::string draft(const SimulationResult& r, const Dictionary* previous)
              "//      reason       \"...\";\n"
              "//  }\n";
     }
+    if (hadPlot)
+        o << "\n//  The case's own plot margin, carried as declared.\nplot\n{\n"
+          << "    margin " << m(plotMargin) << ";\n"
+          << "    reason " << quoted(plotReason) << ";\n}\n";
+    else
+        o << "\n//  PLOT MARGIN: none declared, and none is written for you.  The plot area\n"
+             "//  the run publishes is then the bare envelope of the layout -- a lower\n"
+             "//  bound.  The ground kept clear around the plant for its roads, fence and\n"
+             "//  access is yours to declare and defend:\n"
+             "//  plot { margin ... m; reason \"...\"; }\n";
     if (hadPipeOverrides)
         o << "\n//  The previous layout's `pipes { ... waypoints ... }` overrides are NOT\n"
              "//  carried: they were drawn around positions this draft has moved.\n";

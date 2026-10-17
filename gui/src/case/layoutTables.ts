@@ -131,6 +131,63 @@ export function pipeRegister(layout: PlantLayout): PipeRegisterView | null {
   };
 }
 
+/** THE PLOT (DEV.md 4c C82) as words and cells: the engine's area, the
+ *  area its footprints cover and their share, the margin and whose it is,
+ *  the engine's own sentence for the rule, and one row per sector.  Every
+ *  number is the engine's, formatted; null when the result carries no plot. */
+export interface PlotView {
+  /** "Plot area 8964 m2 (x .. to .. m, y .. to .. m); the footprints cover 260 m2, 2.9 % of it." */
+  headline: string;
+  /** Whose the margin is (declared, with the case's reason; or none, and
+   *  what that makes the area). */
+  margin: string;
+  /** The engine's rule, quoted. */
+  rule: string;
+  /** Sector areas (where declared) and pairs of items standing one above
+   *  another, said where the engine counted any. */
+  notes: string[];
+  sectors: { sector: string; from: string; plotArea: string; footprintArea: string }[];
+}
+
+export const PLOT_CAPTION =
+  "Plot area, per sector: the declared area where the case declares one, else the envelope"
+  + " of the sector's own footprints.";
+
+const m2 = (v: number) => (Number.isFinite(v) ? v.toFixed(0) : "?");
+
+/** The plot the engine published, as sentences and rows. */
+export function plotSummary(layout: PlantLayout): PlotView | null {
+  const p = layout.plot;
+  if (!p) return null;
+  const notes: string[] = [];
+  if (p.declaredAreasUnion > 0)
+    notes.push(`The declared sector areas cover ${m2(p.declaredAreasUnion)} m²`
+      + (p.declaredAreasOverlap > 0
+        ? `; ${m2(p.declaredAreasOverlap)} m² of it is claimed by two sectors at once.`
+        : "."));
+  if (p.stackedPairs > 0)
+    notes.push(`${p.stackedPairs} pair${p.stackedPairs === 1 ? "" : "s"} of items stand one`
+      + " above the other, and each item's footprint is counted.");
+  return {
+    headline: `Plot area ${m2(p.plotArea)} m² (x ${p.xMin.toFixed(1)} to ${p.xMax.toFixed(1)} m,`
+      + ` y ${p.yMin.toFixed(1)} to ${p.yMax.toFixed(1)} m); the footprints cover`
+      + ` ${m2(p.footprintArea)} m²,`
+      + ` ${(100 * p.footprintShare).toFixed(1)} % of it.`,
+    margin: p.marginDeclared
+      ? `Margin ${p.margin.toFixed(1)} m, declared by the case: ${p.marginReason}`
+      : "No margin declared: the plot is the bare envelope of the layout, a lower bound"
+        + " (declare plot { margin; reason; } in system/layoutDict).",
+    rule: `Rule (the engine's): ${p.rule}.`,
+    notes,
+    sectors: p.sectors.map((s) => ({
+      sector: s.sector,
+      from: s.from === "declaredArea" ? "declared area" : "envelope of its footprints",
+      plotArea: m2(s.plotArea),
+      footprintArea: m2(s.footprintArea),
+    })),
+  };
+}
+
 export const FINDINGS_CAPTION =
   "Findings -- announced by the engine, never refused: a layout that is too close is a"
   + " draft the student must see and defend.";

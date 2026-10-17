@@ -176,6 +176,9 @@ export interface LayoutScene {
   solids: SceneSolid[];
   zones: SceneZone[];
   areas: SceneArea[];
+  /** THE PLOT (DEV.md 4c C82): the rectangle the engine published, outlined
+   *  on the ground; null when the result carries none.  Not computed here. */
+  plot: SceneArea | null;
   links: SceneLink[];
   wind: SceneWind | null;
   pipes: ScenePipe[];
@@ -451,6 +454,12 @@ export function layoutScene(layout: PlantLayout | undefined): LayoutScene | null
     label: `sector ${a.sector}`,
   }));
 
+  const p = layout.plot;
+  const plot: SceneArea | null = p
+    ? { sector: "", x0: p.xMin, x1: p.xMax, z0: -p.yMax, z1: -p.yMin,
+        label: `plot ${p.plotArea.toFixed(0)} m²` }
+    : null;
+
   const links: SceneLink[] = [];
   for (const f of layout.findings) {
     if (f.kind !== "separation" && f.kind !== "ignitionDownwind") continue;
@@ -484,6 +493,7 @@ export function layoutScene(layout: PlantLayout | undefined): LayoutScene | null
     grow([z.center[0] + z.radius, z.center[1] + z.height / 2, z.center[2] + z.radius]);
   }
   for (const a of areas) { grow([a.x0, 0, a.z0]); grow([a.x1, 0, a.z1]); }
+  if (plot) { grow([plot.x0, 0, plot.z0]); grow([plot.x1, 0, plot.z1]); }
 
   //  The pipes, the junctions and the rack, as the engine routed them.
   const pipes = (layout.pipes ?? []).map(pipeOf);
@@ -549,7 +559,7 @@ export function layoutScene(layout: PlantLayout | undefined): LayoutScene | null
     grow(wind.tail); grow(wind.head);
   }
 
-  return { solids, zones, areas, links, wind, pipes, junctions, rack, min, max,
+  return { solids, zones, areas, plot, links, wind, pipes, junctions, rack, min, max,
            fitMin, fitMax };
 }
 

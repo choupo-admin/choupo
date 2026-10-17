@@ -886,6 +886,36 @@ cases: `tutorials/plant/greenAmmonia02_feasibility150bar` and `...50bar`.  An
 outer `sweep` still varies only FLOWSHEET paths -- this block is how a price, a
 rate or the capital is varied.
 
+**THE LAND (2026-10-17, DEV.md 4c C82).**  An opt-in `land {}` block in the same
+`economics {}` block prices the plot as land; absent, nothing changes.
+
+```
+land
+{
+    price   50;          // currency per m2 (the costing's), bare or [0 -2 0 0 0]
+    source  "...";       // where the price comes from
+    reason  "...";       // why it is this plant's
+    // area 25000 m2;    // ONLY where the case has no system/layoutDict
+}
+```
+
+The AREA has one home: where the case declares a plot plan it is the plot area
+the layout PUBLISHES (`plot { margin; }` included, see `system/layoutDict`
+below), and an `area` beside it REFUSES; with no layout, `area` must be
+declared; with neither, the land REFUSES by name (under an outer driver the
+layout is checked after the post-processing chain, so declare `area` there).
+The land is NON-DEPRECIABLE capital, bought at the START of construction (t =
+-constructionPeriod, one row more in the cash flow) and RECOVERED at its
+purchase value, untaxed, at the end of the last operating year -- the
+placement of CAPCOST 2017 ('Cash Flow Analysis' C49 and I63).  It is NOT in TCI
+(still FCI + WC).  `land.price` is a sensitivity input (`relative` or
+`absolute`).  Published: a console line beside the capital, a `land` column and
+footer lines in `reports/economics/cashFlow.csv` (and the .ods),
+`kpis.economics.land` / `landArea`, the result's `economics.land` object and a
+`land` cell on each cash-flow row.  Worked cases:
+`tutorials/plant/ammonia02_full_plant`, `greenAmmoniaPEQ_baseCase` (a round
+placeholder price, said so).
+
 ## `system/layoutDict` — the plot plan (DEV.md 4c C75)
 
 Optional; absent, nothing changes.  It places the SIZED items of the run (it
@@ -910,6 +940,7 @@ separation ( { source "..."; reason "..."; measure edgeToEdge;
                distances ( { between ( vessel compressor ); distance 9 m; } ); } );
 wind { from 225 deg; planNorth 0 deg; halfAngle 30 deg; reach 60 m;
        source "..."; reason "..."; }
+plot { margin 10 m; reason "..."; }   // optional; absent: 0 m, announced
 ```
 
 * `item` is the design sheet's id (`converter`, `column09/shell`,
@@ -940,6 +971,18 @@ wind { from 225 deg; planNorth 0 deg; halfAngle 30 deg; reach 60 m;
   A waypoint route must be orthogonal (one axis per segment).  A stream the
   layout cannot reach (an unsized tank, an unplaced item) is listed as not
   routed, with the reason.  No pressure drop and no cost yet.
+* THE PLOT (C82): the engine publishes the plot area -- the axis-aligned
+  envelope of every declared sector area, every placed footprint and every
+  routed pipe, grown on every side by your margin:
+  ```
+  plot { margin 10 m; reason "perimeter road, fence and access"; }
+  ```
+  Absent, the margin is 0 m and that is ANNOUNCED (the area is then a lower
+  bound).  Published beside it: the footprints' own plan area and its share
+  of the plot, per sector the declared area (or the envelope of the sector's
+  footprints), and the union of the declared sector areas -- two areas that
+  claim the same ground are announced.  The economics prices this plot area
+  as land when it declares `land { price; ... }`.
 * Worked cases: `tutorials/plant/ammonia02_full_plant` (default rack),
   `greenAmmoniaPEQ_baseCase` and `aceticAcid02_plant` (declared racks).  The
   GUI draws the result in Reports, "Plant layout (3D)", with the pipe

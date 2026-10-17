@@ -46,8 +46,9 @@ The risks such a feature carries are specific, and each arm names one:
       areas are written per sector, items with no size of their own are
       listed for the student and not placed; run again without --force it
       REFUSES and leaves the file byte-identical; with --force on the witness
-      it carries the separation table, the declared footprints, the hazards
-      and the non-process item, and its own check finds no shortfall.
+      it carries the separation table, the declared footprints, the hazards,
+      the non-process item and (C82) the plot margin, and its own check
+      finds no shortfall.
   (f) ABSENCE IS SILENCE: the witness with its layoutDict removed publishes
       no `layout` key, prints no `[layout]` line and no PLANT LAYOUT heading.
   (g) A PLACED ITEM WHOSE SIZER REFUSED (2026-10-17, DEV.md 4c C79, the
@@ -84,6 +85,22 @@ The risks such a feature carries are specific, and each arm names one:
       (T101, an unsized tank), a partial `pipeRack`, a fractional
       `lanesPerTier`.  The forced draft carries a declared rack as declared
       and says it did not carry the waypoint overrides.
+
+  (j) THE PLOT (2026-10-17, DEV.md 4c C82), on the same three plants and on
+      two fixtures of the sectored flagship: the published plot RECOMPUTED
+      here from the published items, areas and pipe routes by the stated
+      rule (envelope + the margin read from the case's own layoutDict, 0 m
+      where it declares none), and its area; the footprint area recomputed
+      (a vertical cylinder's disc, any other item's rectangle) and its share;
+      a declared margin announces nothing, an absent one is ANNOUNCED on
+      stderr, the caveat block and the advisories (aceticAcid02); every
+      published plot / plotSector number is pinned by a golden row and every
+      pinned one is published.  On the flagship: two declared sector areas
+      that overlap -- their union and the shared ground recomputed, the
+      overlap announced, each sector's area its declared one; then one area
+      declared and a margin -- the undeclared sector's area is the envelope
+      of its own footprints, the margin grows the plot.  REFUSED, exit 2 and
+      named: a negative margin, a plot block with no reason.
 
 NOT COVERED, said so: whether a declared distance or zone extent is SENSIBLE
 (the author's assumption, by design -- no standard is shipped), a pipe's
@@ -142,6 +159,21 @@ strengthened):
      against the golden.
   S16 a junction placed at its FIRST placed neighbour, not the mean -> (h)
      the junction-touching pipes' lengths against their golden rows.
+  (C82, arm (j), 2026-10-17; each in PlantLayout.cpp, restored byte for
+  byte (sha256 checked) and the engine rebuilt; all CAUGHT on first run):
+  S17 the margin left off the plot's x extent                      -> (j)
+     ammonia02, greenAmmoniaPEQ and the flagship fixture: the plot against
+     its recomputation and the golden.
+  S18 a vertical cylinder's footprint counted as its square        -> (j)
+     the footprint area on all three plants and their golden rows; the
+     flagship's FERMENTATION sector.
+  S19 the absent-margin announcement removed                       -> (j)
+     aceticAcid02 says it on no surface.
+  S20 the union of the sector areas counts shared ground twice     -> (j)
+     the flagship: union 1200 m2 / overlap 0 against 1000 / 200.
+  S21 the routed pipes left out of the envelope                    -> (j)
+     ammonia02's default rack reaches 5 m past the eastmost footprint and
+     aceticAcid02's declared rack past its westmost: both plots short.
 """
 import json
 import re
@@ -150,7 +182,7 @@ import subprocess
 import sys
 import tempfile
 import hashlib
-from math import hypot, atan2, degrees
+from math import hypot, atan2, degrees, pi
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[2]
@@ -501,7 +533,8 @@ def arm_draft(work):
              " -- it must honour every declared separation")
     for needle in ('nonProcess  "controlRoom"', "footprint   { length 8.00 m",
                    "between ( vessel vessel ); distance 4.00 m", "from      225 deg",
-                   "{ zone 1; radius 1.50 m; height 3.00 m; }"):
+                   "{ zone 1; radius 1.50 m; height 3.00 m; }",
+                   "margin 10.00 m;"):
         if needle not in text:
             fail(f"(e) the forced draft did not carry `{needle}`")
     if len(lay.get("items", [])) != 8:
@@ -512,8 +545,23 @@ def arm_draft(work):
                   " non-process item with no shortfall")
 
 
+LAND_BLOCK = re.compile(r"\n    //  THE LAND \(DEV\.md 4c C82\).*?\n    land\n    \{.*?\n    \}\n", re.S)
+
+
+def drop_land(d):
+    """The witness prices its PLOT as land (C82): without a layout the land
+    has no area and refuses by name, so a fixture that removes the layout
+    removes the land block with it."""
+    pd = d / "system" / "postDict"
+    text, n = LAND_BLOCK.subn("\n", pd.read_text())
+    if n != 1:
+        raise RuntimeError("fixture anchor not found: the witness postDict's land block")
+    pd.write_text(text)
+
+
 def arm_absent(work):
     d = prepare(work, "absent", WITNESS, drop_layout=True)
+    drop_land(d)
     out, err, rc = solve(d)
     j = result_json(out)
     if rc != 0 or j is None:
@@ -699,6 +747,7 @@ def arm_pipes(work):
             if len(nr.get("reason", "")) < 10:
                 fail(f"(h) {tag}: {nr['stream']} is not routed and says no reason")
         total += check_routes(tag, lay)
+        check_plot(tag, case, lay, out, err, j)
         # the rack: declared in two cases, the stated default (announced) in one
         rack = lay["pipeRack"]
         default_said = "no `pipeRack` is declared" in err
@@ -741,6 +790,182 @@ def arm_pipes(work):
                   " ends at the published nozzles, junctions and battery limits, each"
                   " reproducing its golden rows; the default rack announced on three"
                   " surfaces where none is declared")
+
+
+MARGIN_RE = re.compile(r"^plot\s*\{[^}]*?margin\s+([-0-9.eE+]+)\s*m\s*;", re.M)
+PLOT_KEYS = ("plotArea", "footprintArea")
+
+
+def margin_of(layout_text):
+    """The margin the case DECLARES, read from its layoutDict as text (an
+    independent home for the number); 0 where it declares none."""
+    m = MARGIN_RE.search(re.sub(r"//[^\n]*", "", layout_text))
+    return float(m.group(1)) if m else 0.0
+
+
+def plan_area(i):
+    if i["shape"] == "cylinder" and i["orientation"] == "vertical":
+        return pi * i["dx"] ** 2 / 4.0
+    return i["dx"] * i["dy"]
+
+
+def plot_recomputed(lay, margin):
+    """The stated rule, recomputed: the envelope of the declared areas, the
+    placed footprints and the routed pipes' points, grown by the margin."""
+    xs, ys = [], []
+    for i in lay["items"]:
+        xs += [i["x"] - i["dx"] / 2, i["x"] + i["dx"] / 2]
+        ys += [i["y"] - i["dy"] / 2, i["y"] + i["dy"] / 2]
+    for a in lay.get("areas", []):
+        xs += [a["xMin"], a["xMax"]]
+        ys += [a["yMin"], a["yMax"]]
+    for p in lay.get("pipes", []):
+        for q in p["route"]:
+            xs.append(q[0])
+            ys.append(q[1])
+    r = (min(xs) - margin, max(xs) + margin, min(ys) - margin, max(ys) + margin)
+    return r, (r[1] - r[0]) * (r[3] - r[2])
+
+
+def close(a, b, rel=1e-9):
+    return abs(a - b) <= rel * max(1.0, abs(a), abs(b))
+
+
+def check_plot(tag, case, lay, out, err, j):
+    """Arm (j) on one plant: the plot recomputed, the margin's announcement,
+    and published <=> pinned."""
+    plot = lay.get("plot")
+    if not plot:
+        fail(f"(j) {tag}: the layout publishes no `plot`")
+        return
+    margin = margin_of((case / "system" / "layoutDict").read_text())
+    rect, area = plot_recomputed(lay, margin)
+    got = (plot["xMin"], plot["xMax"], plot["yMin"], plot["yMax"])
+    if not all(close(a, b) for a, b in zip(rect, got)) or not close(area, plot["plotArea"]):
+        fail(f"(j) {tag}: the plot {got} = {plot['plotArea']} m2; recomputed here"
+             f" {rect} = {area} m2 (margin {margin} m)")
+    if plot["margin"] != margin or plot["marginDeclared"] != (margin != 0.0):
+        fail(f"(j) {tag}: margin {plot['margin']} (declared {plot['marginDeclared']}),"
+             f" the case's layoutDict says {margin}")
+    fa = sum(plan_area(i) for i in lay["items"])
+    if not close(fa, plot["footprintArea"], 1e-8) \
+            or not close(fa / area, plot["footprintShare"], 1e-8):
+        fail(f"(j) {tag}: footprints {plot['footprintArea']} m2 (share"
+             f" {plot['footprintShare']}); recomputed {fa} m2 ({fa / area})")
+    said = "no `plot { margin; reason; }` is declared"
+    caveat = out.split("PLANT LAYOUT", 1)[-1] if "PLANT LAYOUT" in out else ""
+    everywhere = (said in err and said in caveat
+                  and any(said in (a.get("message") or "") for a in j.get("advisories") or []))
+    if plot["marginDeclared"] and said in out + err:
+        fail(f"(j) {tag} declares its plot margin and the default was announced")
+    if not plot["marginDeclared"] and not everywhere:
+        fail(f"(j) {tag} declares no plot margin: that must be ANNOUNCED on stderr, the"
+             " caveat block and the advisories")
+    # published <=> pinned
+    gold = {}
+    for line in (case / "expected").read_text().splitlines():
+        f = line.split()
+        if len(f) >= 5 and f[0] == "layout" and (f[1] == "plot" or f[1].startswith("plotSector:")):
+            gold[(f[1], f[2])] = (f[3], f[4])
+    published = {("plot", k): plot[k] for k in PLOT_KEYS}
+    for s_ in lay.get("plotSectors", []):
+        for k in PLOT_KEYS:
+            published[("plotSector:" + s_["sector"], k)] = s_[k]
+    for key, val in published.items():
+        g = gold.get(key)
+        if g is None:
+            fail(f"(j) {tag}: {key[0]} {key[1]} is published and pinned by no golden row")
+        elif abs(float(g[0]) - val) > float(g[1]) * max(abs(val), 1e-30):
+            fail(f"(j) {tag}: {key[0]} {key[1]} {val} against the golden {g[0]}")
+    for key in gold:
+        if key not in published and key[1] in PLOT_KEYS:
+            fail(f"(j) {tag}: a golden row pins {key[0]} {key[1]}, which the run no"
+                 " longer publishes")
+    PLOT_SEEN.append(tag)
+
+
+PLOT_SEEN = []
+
+FLAGSHIP_ITEMS = ('items ( { item "DRYING.SD"; x 0 m; y 0 m; z 0 m; orientation vertical; }\n'
+                  '        { item "FERMENTATION.Fermentor"; x 20 m; y 0 m; z 0 m;'
+                  ' orientation vertical; } );\n')
+
+
+def arm_plot(work):
+    """(j) on the sectored flagship: declared sector areas, their overlap, an
+    undeclared sector's envelope, a declared margin; and the two refusals."""
+    #  Two declared areas that share ground: 20..30 x -10..10 is claimed twice.
+    d = prepare(work, "plot_overlap", FLAGSHIP, lambda _t: FLAGSHIP_ITEMS
+                + 'areas { DRYING { xMin -10 m; xMax 30 m; yMin -10 m; yMax 10 m; }\n'
+                  '        FERMENTATION { xMin 20 m; xMax 40 m; yMin -10 m; yMax 10 m; } }\n')
+    out, err, rc = solve(d)
+    j = result_json(out) or {}
+    lay = j.get("layout") or {}
+    plot = lay.get("plot") or {}
+    if rc != 0 or not plot:
+        fail(f"(j) flagship, overlapping areas: exit {rc}, plot {'published' if plot else 'ABSENT'}")
+    else:
+        rect, area = plot_recomputed(lay, 0.0)
+        if not close(area, plot["plotArea"]) or not (rect[0] <= -10 and rect[1] >= 40):
+            fail(f"(j) flagship: the plot {plot['plotArea']} m2; recomputed {area} m2 on {rect}")
+        # the union of 40x20 and 20x20 sharing 10x20: 800 + 400 - 200
+        if not close(plot["declaredAreasUnion"], 1000.0) \
+                or not close(plot["declaredAreasOverlap"], 200.0):
+            fail(f"(j) flagship: areas union {plot['declaredAreasUnion']} m2 / overlap"
+                 f" {plot['declaredAreasOverlap']} m2; recomputed 1000 / 200")
+        secs = {x["sector"]: x for x in lay.get("plotSectors", [])}
+        want = {"DRYING": ("declaredArea", 800.0), "FERMENTATION": ("declaredArea", 400.0)}
+        for sec, (frm, a) in want.items():
+            x = secs.get(sec)
+            if not x or x["from"] != frm or not close(x["plotArea"], a):
+                fail(f"(j) flagship: sector {sec} published {x}; expected {frm} {a} m2")
+        msg = "the declared areas of sectors DRYING and FERMENTATION share 200 m2"
+        if msg not in err or msg not in out.split("PLANT LAYOUT", 1)[-1]:
+            fail("(j) flagship: two sector areas sharing ground were not announced on"
+                 " stderr and the caveat block")
+    #  One area declared, a margin: FERMENTATION's area is its footprints' envelope.
+    d = prepare(work, "plot_envelope", FLAGSHIP, lambda _t: FLAGSHIP_ITEMS
+                + 'areas { DRYING { xMin -10 m; xMax 10 m; yMin -10 m; yMax 10 m; } }\n'
+                  'plot { margin 5 m; reason "fixture"; }\n')
+    out, err, rc = solve(d)
+    j = result_json(out) or {}
+    lay = j.get("layout") or {}
+    plot = lay.get("plot") or {}
+    if rc != 0 or not plot:
+        fail(f"(j) flagship, one area and a margin: exit {rc}")
+    else:
+        rect, area = plot_recomputed(lay, 5.0)
+        if not close(area, plot["plotArea"]) or not plot["marginDeclared"]:
+            fail(f"(j) flagship + margin: the plot {plot['plotArea']} m2; recomputed {area} m2")
+        f = next((i for i in lay["items"] if i["id"] == "FERMENTATION.Fermentor"), None)
+        secs = {x["sector"]: x for x in lay.get("plotSectors", [])}
+        x = secs.get("FERMENTATION")
+        if f is None or not x or x["from"] != "footprintEnvelope" \
+                or not close(x["plotArea"], f["dx"] * f["dy"]) \
+                or not close(x["footprintArea"], plan_area(f)):
+            fail(f"(j) flagship: FERMENTATION published {x}; expected the envelope of its"
+                 f" one footprint, {f['dx'] * f['dy'] if f else '?'} m2")
+        if "no `plot { margin; reason; }` is declared" in out + err:
+            fail("(j) flagship: a declared margin was announced as missing")
+    #  Refusals, on the witness's own plot block.
+    n = 0
+    for label, edit, pat in (
+            ("negative margin", sub("    margin  10 m;", "    margin  -1 m;"),
+             r"plot: `margin -1 m;`.*cannot be negative"),
+            ("no reason", lambda t: re.sub(r"\n    reason  \"author-set assumption for this"
+                                           r" exercise: a 10 m strip[^\n]*", "", t),
+             r"plot: `reason` is not declared")):
+        d = prepare(work, "plot_refuse_" + re.sub(r"\W", "_", label), WITNESS, edit)
+        out, err, rc = solve(d)
+        if rc != 2 or not re.search(pat, out + err, re.S):
+            fail(f"(j) refusal `{label}`: exit {rc}, not named")
+        n += 1
+    claims.append(f"the plot recomputed on {len(PLOT_SEEN)} plants ({', '.join(PLOT_SEEN)})"
+                  " from the published footprints, areas and routes with the margin read"
+                  " from each layoutDict, its footprint share, the absent margin announced"
+                  " on three surfaces, every plot number pinned; on the flagship two"
+                  f" overlapping sector areas (union and shared ground recomputed,"
+                  f" announced) and an undeclared sector's footprint envelope; {n} refusals")
 
 
 OVERRIDE = """
@@ -840,6 +1065,7 @@ def main():
         arm_refused_sizer(work)
         arm_pipes(work)
         arm_pipe_override(work)
+        arm_plot(work)
     finally:
         if not keep:
             shutil.rmtree(work, ignore_errors=True)

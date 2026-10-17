@@ -315,30 +315,36 @@ describe("plant layout: the lesson text", () => {
       "PlantLayout.cpp:381": "it.dx = D; it.dy = D; it.dz = L",
       "PlantLayout.cpp:198-201": /"D",\s+"H"[\s\S]*"shellID"[\s\S]*"chamberDiameter"/,
       "PlantLayout.cpp:209": '"sieveTrays"',
-      "PlantLayout.cpp:1008": "already published its size",
-      "PlantLayout.cpp:1020": "No size is",
+      "PlantLayout.cpp:1165": "already published its size",
+      "PlantLayout.cpp:1177": "No size is",
       "PlantLayout.cpp:137": "std::hypot(a.x - b.x, a.y - b.y) - 0.5 * a.dx - 0.5 * b.dx",
-      "PlantLayout.cpp:1140-1142": /tab\.measure == "edgeToEdge"[\s\S]*clearPlan\(a, b\)[\s\S]*std::hypot/,
+      "PlantLayout.cpp:1297-1299": /tab\.measure == "edgeToEdge"[\s\S]*clearPlan\(a, b\)[\s\S]*std::hypot/,
       "PlantLayout.cpp:265": "`measure` is not declared",
-      "PlantLayout.cpp:1001": "it.kind   = s->second.equipmentType",
+      "PlantLayout.cpp:1158": "it.kind   = s->second.equipmentType",
       "PlantLayout.cpp:308": "is declared twice",
-      "PlantLayout.cpp:1144": 'addFinding("separation"',
-      "PlantLayout.cpp:1497-1498": /const scalar gap = std::max\(\{ prev\.dx, prev\.dy, it\.dx, it\.dy \}\);\s*x = prev\.x \+ 0\.5 \* prev\.dx \+ gap \+ 0\.5 \* it\.dx;/,
-      "PlantLayout.cpp:1513": "std::ceil(x * 100.0",
+      "PlantLayout.cpp:1301": 'addFinding("separation"',
+      "PlantLayout.cpp:1679-1680": /const scalar gap = std::max\(\{ prev\.dx, prev\.dy, it\.dx, it\.dy \}\);\s*x = prev\.x \+ 0\.5 \* prev\.dx \+ gap \+ 0\.5 \* it\.dx;/,
+      "PlantLayout.cpp:1695": "std::ceil(x * 100.0",
       "PlantLayout.cpp:81-82": /std::cerr << "\[layout\] "[\s\S]*AdvisoryLog::instance\(\)\.add\("layout"/,
-      "PlantLayout.cpp:1061-1062": /c < -kTol && vz > kTol[\s\S]*OVERLAP/,
-      "PlantLayout.cpp:1228": "w.fromDeg + 180.0",
-      "PlantLayout.cpp:1238-1241": /planBearing\(vx, vy\)[\s\S]*w\.planNorthDeg[\s\S]*wrap180\(trueB - downwind\)[\s\S]*w\.halfAngleDeg/,
-      "PlantLayout.cpp:1237": "dist > w.reach",
+      "PlantLayout.cpp:1218-1219": /c < -kTol && vz > kTol[\s\S]*OVERLAP/,
+      "PlantLayout.cpp:1385": "w.fromDeg + 180.0",
+      "PlantLayout.cpp:1395-1398": /planBearing\(vx, vy\)[\s\S]*w\.planNorthDeg[\s\S]*wrap180\(trueB - downwind\)[\s\S]*w\.halfAngleDeg/,
+      "PlantLayout.cpp:1394": "dist > w.reach",
       "PlantLayout.cpp:106": "carries no unit",
       "PlantLayout.cpp:221": 'lookupWord("ignition")',
-      "PlantLayout.cpp:1204-1207": /dPlan >= z\.radius[\s\S]*verticalOverlap\(rel\.z, z\.height, ig\.z, ig\.dz\)[\s\S]*ignitionInZone/,
+      "PlantLayout.cpp:1361-1364": /dPlan >= z\.radius[\s\S]*verticalOverlap\(rel\.z, z\.height, ig\.z, ig\.dz\)[\s\S]*ignitionInZone/,
       "PlantLayout.cpp:161": "scalar pointToFootprint",
       //  The pipes (C80): the rack route, the length, the default rack.
       "PlantLayout.cpp:803-819":
         /p\.routedBy = "rack";[\s\S]*pts\.push_back\(\{ a\.point\[0\], a\.point\[1\], lz \}\);[\s\S]*pts\.push_back\(\{ b\.point\[0\], ly, lz \}\);[\s\S]*pts\.push_back\(b\.point\);/,
       "PlantLayout.cpp:824": "p.length += segLength(p.route[i - 1], p.route[i]);",
       "PlantLayout.cpp:828": "if (!rack.declared)",
+      //  The plot (C82): the envelope grown by the margin, its area, the
+      //  footprints' own area, the undeclared margin announced.
+      "PlantLayout.cpp:923-925":
+        /pl\.xMin = x0 - pl\.margin;[\s\S]*pl\.plotArea = \(pl\.xMax - pl\.xMin\) \* \(pl\.yMax - pl\.yMin\);/,
+      "PlantLayout.cpp:928": "pl.footprintArea += planArea(i);",
+      "PlantLayout.cpp:992": "if (!pl.marginDeclared)",
     };
     for (const c of cited) expect(CLAIMS[c], `uncovered citation ${c}`).toBeDefined();
     for (const [c, want] of Object.entries(CLAIMS)) {

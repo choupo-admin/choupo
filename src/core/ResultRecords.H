@@ -620,6 +620,9 @@ struct CashFlowYear
     scalar tax              = 0.0;  // tau * taxableIncome
     scalar afterTaxProfit   = 0.0;  // (R - COM_d - d)(1-tau)
     scalar cashFlow         = 0.0;  // CF_t (after-tax profit + d, + WC/salvage at N)
+    scalar land             = 0.0;  // the land (C82): -cost at the start of
+                                    // construction, +cost (recovered) at N;
+                                    // written only when a land price is declared
     scalar discountFactor   = 0.0;  // 1/(1+i)^t
     scalar discountedCF     = 0.0;  // CF_t * discountFactor
     scalar cumulativeDCF    = 0.0;  // running sum of discountedCF
@@ -715,6 +718,20 @@ struct EconomicsSummary
     scalar                    startupCost         = 0.0;     // money, year 1
     scalar                    NPV_projectStart    = 0.0;     // NPV/(1+i)^Nc
     WorkingCapitalBuildUp     workingCapital;        // present only when declared
+    //  THE LAND (C82), present only when the case declares a land price.  A
+    //  non-depreciable capital outlay of price x area, made at the START of
+    //  construction (year `landInvestedAtYear` = -constructionPeriod, CAPCOST's
+    //  year 0) and recovered at its purchase value, untaxed, at the end of the
+    //  last operating year.  NOT part of TCI (TCI = FCI + WC, as before).
+    bool                      landPresent   = false;
+    scalar                    landPrice     = 0.0;   // currency per m2
+    scalar                    landArea      = 0.0;   // m2
+    std::string               landAreaFrom;          // layoutPlot | declared
+    scalar                    landCost      = 0.0;   // price x area
+    int                       landInvestedAtYear  = 0;
+    int                       landRecoveredAtYear = 0;
+    std::string               landSource;
+    std::string               landReason;
     //  THE SENSITIVITY (C68), empty unless the case declared the block; in
     //  tornado order (largest NPV swing first, a tie in declared order).
     std::vector<EconomicSensitivityRow> sensitivity;
@@ -859,6 +876,43 @@ struct LayoutNotRouted
     std::string reason;
 };
 
+//  THE PLOT (2026-10-17, DEV.md 4c C82).  The ground the layout occupies, by
+//  ONE rule (`postProcessing/layout/PlantLayout.cpp`, `plotOf`): the
+//  axis-aligned ENVELOPE of every declared sector area, every placed
+//  footprint (process and non-process) and every routed pipe's polyline,
+//  grown on every side by the case's declared `plot { margin; }` -- or by
+//  0 m, ANNOUNCED, so the area is then a lower bound.  Beside it, the plan
+//  area the footprints themselves cover (each item counted once, so items
+//  standing one above another are counted twice -- `stackedPairs` says how
+//  many such pairs there are) and, where the case declares sector areas,
+//  their UNION and the ground two of them claim at once.  Per sector: the
+//  declared area where there is one, else the envelope of that sector's
+//  footprints (no margin), and the sector's own footprint area.
+struct LayoutPlotSector
+{
+    std::string sector;
+    std::string from;               // declaredArea | footprintEnvelope
+    scalar      plotArea      = 0;  // [m2]
+    scalar      footprintArea = 0;  // [m2]
+};
+
+struct LayoutPlot
+{
+    bool        present        = false;
+    scalar      margin         = 0;     // [m]
+    bool        marginDeclared = false;
+    std::string marginReason;
+    scalar xMin = 0, xMax = 0, yMin = 0, yMax = 0;   // the plot, margin included
+    scalar      plotArea       = 0;     // [m2]
+    scalar      footprintArea  = 0;     // [m2]
+    scalar      footprintShare = 0;     // footprintArea / plotArea
+    int         stackedPairs   = 0;
+    scalar      declaredAreasUnion   = 0;   // [m2]; 0 when no area is declared
+    scalar      declaredAreasOverlap = 0;   // [m2]  sum of the areas - their union
+    std::string rule;                       // the engine's sentence for the rule
+    std::vector<LayoutPlotSector> sectors;
+};
+
 struct PlantLayoutRecord
 {
     std::vector<LayoutItem>            items;
@@ -876,6 +930,7 @@ struct PlantLayoutRecord
     //  are never placed on their own.
     std::vector<std::string>           unplaced;
     std::vector<std::string>           internal;
+    LayoutPlot                         plot;     // C82
 
     bool present() const { return !items.empty(); }
 };

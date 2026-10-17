@@ -90,6 +90,15 @@ Description
     `economics.sensitivity` block (the CSV's rows in its order, which the
     GUI's tornado draws); absent, nothing changes.
 
+    THE LAND (DEV.md 4c C82), opt-in.  `land { price; source; reason; }`
+    prices the plot area the layout publishes (or a declared `area` where
+    the run has no plot plan -- never both) as NON-DEPRECIABLE capital,
+    bought at the START of construction (t = -constructionPeriod, CAPCOST
+    2017's year 0) and recovered at its purchase value, untaxed, at the end
+    of the last operating year (CAPCOST's 'Cash Flow Analysis'!C49 and I63),
+    entering only through `appraise`.  Not in TCI.  `land.price` is a
+    sensitivity input.  Absent, nothing changes.
+
     Must run after SizingPass + CostingPass.
 \*---------------------------------------------------------------------------*/
 

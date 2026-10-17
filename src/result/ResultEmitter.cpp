@@ -1139,6 +1139,21 @@ void emitResultJson(std::ostream& os, const SimulationResult& r)
         os << "    \"estimateClass\": "     << e.estimateClass           << ",\n";
         os << "    \"accLo\": "             << num(e.accLo)              << ",\n";
         os << "    \"accHi\": "             << num(e.accHi)              << ",\n";
+        //  THE LAND (2026-10-17, DEV.md 4c C82), ONLY when the case declared
+        //  a land price -- every other economics case's JSON is byte-for-byte
+        //  what it was.  `cost` and `area` are also `kpis.economics.land` /
+        //  `landArea`, which the golden `kpi` kind pins; the cash-flow rows
+        //  then carry a `land` cell (the outlay at the start of construction,
+        //  the recovery in the last year).
+        if (e.landPresent)
+            os << "    \"land\": { \"price\": " << num(e.landPrice)
+               << ", \"area\": " << num(e.landArea)
+               << ", \"areaFrom\": " << esc(e.landAreaFrom)
+               << ", \"cost\": " << num(e.landCost)
+               << ", \"investedAtYear\": " << e.landInvestedAtYear
+               << ", \"recoveredAtYear\": " << e.landRecoveredAtYear
+               << ", \"source\": " << esc(e.landSource)
+               << ", \"reason\": " << esc(e.landReason) << " },\n";
         //  THE WORKING CAPITAL BUILT UP (2026-10-07, DEV.md 4c C44 slice 4),
         //  ONLY when the case declared the model -- every fraction-of-FCI
         //  case's JSON is byte-for-byte what it was.  The numbers are also
@@ -1224,6 +1239,8 @@ void emitResultJson(std::ostream& os, const SimulationResult& r)
             const auto& cf = e.cashFlow[i];
             os << (i ? ",\n" : "\n") << "      { \"year\": " << cf.year
                << ", \"investment\": "     << num(cf.investment);
+            if (e.landPresent)
+                os << ", \"land\": " << num(cf.land);
             if (e.timelineExtended)
                 os << ", \"productionFraction\": " << num(cf.productionFraction);
             os << ", \"revenue\": "        << num(cf.revenue)
@@ -1407,6 +1424,38 @@ void emitResultJson(std::ostream& os, const SimulationResult& r)
                << ", \"reason\": " << esc(n.reason) << " }";
         }
         os << (L.notRouted.empty() ? "]" : "\n    ]");
+        //  THE PLOT (DEV.md 4c C82): one line for the whole plot, one per
+        //  sector, each with an `"id"` so the golden `layout` kind pins
+        //  `plotArea` and `footprintArea` on it.  The rule is the engine's
+        //  own sentence; the GUI quotes it and computes no area.
+        if (L.plot.present)
+        {
+            const auto& p = L.plot;
+            os << ",\n    \"plot\": { \"id\": \"plot\""
+               << ", \"margin\": " << num(p.margin)
+               << ", \"marginDeclared\": " << (p.marginDeclared ? "true" : "false")
+               << ", \"xMin\": " << num(p.xMin) << ", \"xMax\": " << num(p.xMax)
+               << ", \"yMin\": " << num(p.yMin) << ", \"yMax\": " << num(p.yMax)
+               << ", \"plotArea\": " << num(p.plotArea)
+               << ", \"footprintArea\": " << num(p.footprintArea)
+               << ", \"footprintShare\": " << num(p.footprintShare)
+               << ", \"stackedPairs\": " << p.stackedPairs
+               << ", \"declaredAreasUnion\": " << num(p.declaredAreasUnion)
+               << ", \"declaredAreasOverlap\": " << num(p.declaredAreasOverlap)
+               << ", \"marginReason\": " << esc(p.marginReason)
+               << ", \"rule\": " << esc(p.rule) << " }";
+            os << ",\n    \"plotSectors\": [";
+            for (std::size_t i = 0; i < p.sectors.size(); ++i)
+            {
+                const auto& ps = p.sectors[i];
+                os << (i ? ",\n" : "\n") << "      { \"id\": " << esc("plotSector:" + ps.sector)
+                   << ", \"sector\": " << esc(ps.sector)
+                   << ", \"from\": " << esc(ps.from)
+                   << ", \"plotArea\": " << num(ps.plotArea)
+                   << ", \"footprintArea\": " << num(ps.footprintArea) << " }";
+            }
+            os << (p.sectors.empty() ? "]" : "\n    ]");
+        }
         os << ",\n    \"summary\": { \"id\": \"summary\", \"placed\": "
            << L.items.size() << ", \"unplaced\": " << L.unplaced.size()
            << ", \"internal\": " << L.internal.size()

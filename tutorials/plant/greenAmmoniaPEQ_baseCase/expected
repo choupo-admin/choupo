@@ -1050,3 +1050,7 @@ layout  pipe:FlashGas          length           41.7826268662    1e-4
 layout  summary                pipes            24               1e-4
 layout  summary                notRouted        0                1e-4
 layout  summary                pipeLength       784.172220349    1e-4
+kpi     economics              land             1430800          1e-4
+kpi     economics              landArea         28616            1e-4
+layout  plot                   plotArea         28616            1e-4
+layout  plot                   footprintArea    2755.72778352    1e-4
