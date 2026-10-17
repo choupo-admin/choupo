@@ -146,17 +146,19 @@ interface LegacySessionPrefs {
 
 // A focus pop-out tab (?focus=<key>) shows a synthesised 1-unit mini-flowsheet;
 // like a ?case= deep-link it is TRANSIENT -- it neither restores nor persists
-// the main window's session.
+// the main window's session.  The 3D layout tab (?layout=<key>, DEV.md 4c C78)
+// is one too: it draws its own stash and must not clobber the hub's session.
 function isolatedTab(): boolean {
   if (typeof window === "undefined") return false;
   const q = new URLSearchParams(window.location.search);
-  return q.has("case") || q.has("focus") || q.has("internals");
+  return q.has("case") || q.has("focus") || q.has("internals") || q.has("layout");
 }
 
 /** Public face of the isolated-tab test (gui-credo §4 "Tab citizenship"): a
- *  ?case= / ?focus= / ?internals= pop-out is a satellite of its parent case --
- *  the tutorial gallery / Ctrl+O are gated away from it (opening another case
- *  there would hijack a tab whose URL claims to be something else). */
+ *  ?case= / ?focus= / ?internals= / ?layout= pop-out is a satellite of its
+ *  parent case -- the tutorial gallery / Ctrl+O are gated away from it
+ *  (opening another case there would hijack a tab whose URL claims to be
+ *  something else). */
 export function isIsolatedTab(): boolean {
   return isolatedTab();
 }

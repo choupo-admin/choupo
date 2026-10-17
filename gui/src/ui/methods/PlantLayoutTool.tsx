@@ -31,15 +31,22 @@
   being true would be visible, and the test holds each to the witness.
 \*---------------------------------------------------------------------------*/
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 
 import {
   Alert, Anchor, Box, Button, Group, Loader, SegmentedControl, Stack, Table,
   Text, Title,
 } from "@mantine/core";
+import { IconExternalLink } from "@tabler/icons-react";
 
-import { useMethodRun } from "../../case/methodRun.js";
+import { methodCase, useCaseFilesRun } from "../../case/methodRun.js";
 import { layoutScene } from "../../case/plantLayout.js";
+import {
+  canPopOutLayout, refreshLayoutStash, type LayoutPopOutStash,
+} from "../../case/layoutPopOut.js";
+import { fingerprintCase } from "../../case/staleness.js";
+import type { CaseFiles } from "../../case/types.js";
+import { openLayoutPopOut } from "../../state/useLayoutPopOut.js";
 import { PlantLayout3D } from "../plotting/PlantLayout3D.js";
 import { KnobField, KnobNumber, PanelNote } from "./knobPanel.js";
 import {
@@ -79,9 +86,39 @@ function LayoutBench(): JSX.Element {
     setPreset("");
   };
   const overrides = useMemo(() => layoutOverrides(knobs), [knobs]);
-  const run = useMethodRun(LAYOUT_WITNESS, overrides, JSON.stringify(knobs), "choupoSolve");
+  //  useMethodRun's own mechanics (useCaseFilesRun, the same key), with ONE
+  //  addition: the case each run was BUILT from is kept, so the pop-out tab
+  //  can be titled with the fingerprint of the run it draws -- not of the
+  //  knobs as they stand, which may already have moved while that run was
+  //  in flight.
+  const built = useRef<{ files: CaseFiles; knobs: LayoutKnobs } | null>(null);
+  const run = useCaseFilesRun(() => {
+    const files = methodCase(LAYOUT_WITNESS, overrides);
+    built.current = { files, knobs };
+    return files;
+  }, `${LAYOUT_WITNESS}\u0000${JSON.stringify(knobs)}`, "choupoSolve");
   const layout = run.result?.layout;
   const scene = useMemo(() => layoutScene(layout), [layout]);
+  //  The stash the 3D pop-out would carry (DEV.md 4c C78): only for a
+  //  finished, unrefused run with something to draw -- the same condition
+  //  under which the view below is drawn.  The bench declares no `declared`:
+  //  it re-runs on every knob and nothing on it dims, so its tab does not
+  //  either (case/layoutPopOut.ts).
+  const popStash = useMemo<LayoutPopOutStash | null>(() => {
+    if (run.busy || run.err !== null || !built.current) return null;
+    const lay = run.result?.layout;
+    if (!canPopOutLayout(lay)) return null;
+    const edits: { [k: string]: string } = {};
+    for (const [k, v] of Object.entries(built.current.knobs)) edits[k] = String(v);
+    return { v: 1, source: "bench", caseName: LAYOUT_WITNESS, layout: lay,
+             ran: { fingerprint: fingerprintCase(built.current.files), edits },
+             declared: null };
+  }, [run.result, run.busy, run.err]);
+  //  An open bench tab follows the bench: each new run redraws it.
+  useEffect(() => {
+    if (!popStash) return;
+    try { refreshLayoutStash(window.localStorage, popStash); } catch { /* blocked */ }
+  }, [popStash]);
   const lines = layoutLines(run.log);
   const chosen = PRESETS.find((p) => p.id === preset);
 
@@ -177,6 +214,16 @@ function LayoutBench(): JSX.Element {
       )}
       {run.err === null && scene && (
         <Box mt={8}>
+          {popStash && (
+            <Group justify="flex-end" mb={4}>
+              <Button size="compact-xs" variant="default"
+                leftSection={<IconExternalLink size={13} />}
+                title="Open this plot plan full-window in a new browser tab"
+                onClick={() => openLayoutPopOut(popStash)}>
+                Open in new tab
+              </Button>
+            </Group>
+          )}
           <PlantLayout3D scene={scene} height={420} />
           <PanelNote>
             Cylinders are items whose sizer published a diameter and a length; boxes

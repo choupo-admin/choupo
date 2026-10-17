@@ -54,6 +54,10 @@ import type * as T3 from "three";
 
 import type { LayoutScene } from "../../case/plantLayout.js";
 
+/** The least height a "fill" view draws at, so a squeezed window still
+ *  shows a scene rather than a sliver. */
+const FILL_MIN_HEIGHT = 240;
+
 const COLOURS = {
   process:   0x7d8fa3,
   nonProcess: 0xc2a46b,
@@ -64,7 +68,13 @@ const COLOURS = {
   wind:      0x1c7ed6,
 };
 
-export function PlantLayout3D({ scene, height = 520 }: { scene: LayoutScene; height?: number }) {
+/** `height` is a pixel height, or "fill": take the height of the box the
+ *  view is placed in (the `?layout=` pop-out tab, DEV.md 4c C78) and follow
+ *  it when the window is resized.  Either way three.js is imported only when
+ *  a layout is first shown. */
+export function PlantLayout3D({ scene, height = 520 }: {
+  scene: LayoutScene; height?: number | "fill";
+}) {
   const host = useRef<HTMLDivElement>(null);
   const [error, setError] = useState<string | null>(null);
 
@@ -80,14 +90,22 @@ export function PlantLayout3D({ scene, height = 520 }: { scene: LayoutScene; hei
         const el = host.current;
         if (disposed || !el) return;
 
+        const heightOf = () =>
+          height === "fill" ? Math.max(el.clientHeight, FILL_MIN_HEIGHT) : height;
         const width = Math.max(el.clientWidth, 320);
+        const h0 = heightOf();
         const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
         renderer.setPixelRatio(window.devicePixelRatio || 1);
-        renderer.setSize(width, height);
+        renderer.setSize(width, h0);
         renderer.setClearColor(0x000000, 0);
+        if (height === "fill") {
+          renderer.domElement.style.position = "absolute";
+          renderer.domElement.style.top = "0";
+          renderer.domElement.style.left = "0";
+        }
         el.appendChild(renderer.domElement);
         const labels = new CSS2DRenderer();
-        labels.setSize(width, height);
+        labels.setSize(width, h0);
         labels.domElement.style.position = "absolute";
         labels.domElement.style.top = "0";
         labels.domElement.style.left = "0";
@@ -226,7 +244,7 @@ export function PlantLayout3D({ scene, height = 520 }: { scene: LayoutScene; hei
         //  North marker (plan +y is three.js -Z).
         label("N ↑ (plan +y)", [x0, 0.1, z0 - 2]);
 
-        const camera = new THREE.PerspectiveCamera(45, width / height, 0.1, span * 50);
+        const camera = new THREE.PerspectiveCamera(45, width / h0, 0.1, span * 50);
         camera.position.set(cx - 0.6 * span, 0.7 * span, cz + 0.9 * span);
         const controls = new OrbitControls(camera, renderer.domElement);
         controls.target.set(cx, 0, cz);
@@ -238,9 +256,10 @@ export function PlantLayout3D({ scene, height = 520 }: { scene: LayoutScene; hei
 
         const ro = new ResizeObserver(() => {
           const w = Math.max(el.clientWidth, 320);
-          renderer.setSize(w, height);
-          labels.setSize(w, height);
-          camera.aspect = w / height;
+          const h = heightOf();
+          renderer.setSize(w, h);
+          labels.setSize(w, h);
+          camera.aspect = w / h;
           camera.updateProjectionMatrix();
           draw();
         });
@@ -273,5 +292,12 @@ export function PlantLayout3D({ scene, height = 520 }: { scene: LayoutScene; hei
         carries every position and finding the engine published.
       </Text>
     );
-  return <div ref={host} style={{ position: "relative", width: "100%", height }} />;
+  //  "fill": the box sizes the view; the canvas is absolutely placed inside
+  //  it so the canvas itself can never push the box taller (a feedback loop
+  //  with the ResizeObserver).
+  return (
+    <div ref={host} style={{ position: "relative", width: "100%",
+      height: height === "fill" ? "100%" : height,
+      overflow: height === "fill" ? "hidden" : undefined }} />
+  );
 }

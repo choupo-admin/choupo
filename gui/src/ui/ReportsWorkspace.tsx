@@ -59,6 +59,7 @@ License
 
 import { Fragment, useMemo, useState } from "react";
 import { useReducedMotion } from "@mantine/hooks";
+import { IconExternalLink } from "@tabler/icons-react";
 import {
   Box, Button, Group, ScrollArea, SimpleGrid, Stack, Table, Text, UnstyledButton,
 } from "@mantine/core";
@@ -72,6 +73,8 @@ import { tornadoFigure, fmtMoney, type TornadoFigure } from "../case/tornado.js"
 import { TornadoPlot } from "./plotting/TornadoPlot.js";
 import { layoutScene, type LayoutScene } from "../case/plantLayout.js";
 import { PlantLayout3D } from "./plotting/PlantLayout3D.js";
+import { PlantLayoutLegend, PlantLayoutTables } from "./PlantLayoutTables.js";
+import { popOutCaseLayout } from "../state/useLayoutPopOut.js";
 import {
   parseDesignSheet, unitDesignSheets, type DesignPort, type DesignSheet,
 } from "../case/designSheet.js";
@@ -678,89 +681,26 @@ function SensitivityBody({ fig }: { fig: TornadoFigure }) {
 //  Every number in this section is the engine's: positions, extents, the
 //  measured and the declared distance of every finding.  The 3D view draws
 //  them; the tables repeat them so a reader without WebGL loses nothing.
+//  The SAME block, scene and tables open full-window in a tab of their own
+//  (`?layout=`, DEV.md 4c C78) from the button here; this section reaches
+//  here only when there is a scene, so the button never offers an empty tab;
+//  the stash is built from the store at the click (popOutCaseLayout).
 function LayoutBody({ layout, scene }: {
   layout: NonNullable<RunResult["layout"]>; scene: LayoutScene;
 }) {
-  const f2 = (v: number) => (Number.isFinite(v) ? v.toFixed(2) : "?");
   return (
     <>
-      <Text size="xs" c="dimmed" mb={6}>
-        Declared in <code>system/layoutDict</code>.  Cylinders are items whose sizer published a
-        diameter and a length; boxes are footprints the case declared.  Translucent cylinders
-        are the declared hazardous-area zones (zone 0 densest and solid-edged, zone 1 wire,
-        zone 2 faint and dashed).  Drag to orbit, right-drag to pan, wheel to zoom.
-      </Text>
+      <Group justify="space-between" align="flex-start" wrap="nowrap" gap="sm">
+        <PlantLayoutLegend />
+        <Button size="compact-xs" variant="default" style={{ flex: "0 0 auto" }}
+          leftSection={<IconExternalLink size={13} />}
+          title="Open this plot plan full-window in a new browser tab"
+          onClick={popOutCaseLayout}>
+          Open in new tab
+        </Button>
+      </Group>
       <PlantLayout3D scene={scene} />
-      {layout.findings.length > 0 && (
-        <ScrollArea type="auto" mt="xs">
-          <Table striped withTableBorder fz="xs" miw={760} captionSide="top">
-            <Table.Caption style={{ textAlign: "left" }}>
-              Findings -- announced by the engine, never refused: a layout that is too close
-              is a draft the student must see and defend.
-            </Table.Caption>
-            <Table.Thead><Table.Tr>
-              <Table.Th>Finding</Table.Th>
-              <Table.Th ta="right">Measured (m)</Table.Th>
-              <Table.Th ta="right">Declared (m)</Table.Th>
-              <Table.Th>What the engine said</Table.Th>
-            </Table.Tr></Table.Thead>
-            <Table.Tbody>
-              {layout.findings.map((f) => (
-                <Table.Tr key={f.id}>
-                  <Table.Td ff="monospace">{f.kind}</Table.Td>
-                  <Table.Td ta="right" ff="monospace">{f.kind === "outsideArea" || f.kind === "deadRule" ? "" : f2(f.value)}</Table.Td>
-                  <Table.Td ta="right" ff="monospace">{f.kind === "outsideArea" ? "" : f2(f.limit)}</Table.Td>
-                  <Table.Td>{f.message}</Table.Td>
-                </Table.Tr>
-              ))}
-            </Table.Tbody>
-          </Table>
-        </ScrollArea>
-      )}
-      <ScrollArea type="auto" mt="xs">
-        <Table striped withTableBorder fz="xs" ff="monospace" miw={760}>
-          <Table.Thead><Table.Tr>
-            <Table.Th>Item</Table.Th>
-            <Table.Th>Kind</Table.Th>
-            <Table.Th>Sector</Table.Th>
-            <Table.Th>Shape</Table.Th>
-            <Table.Th ta="right">x, y, z (m)</Table.Th>
-            <Table.Th ta="right">extents (m)</Table.Th>
-            <Table.Th>Size from</Table.Th>
-            <Table.Th>Hazard</Table.Th>
-          </Table.Tr></Table.Thead>
-          <Table.Tbody>
-            {layout.items.map((i) => (
-              <Table.Tr key={i.id}>
-                <Table.Td>{i.id}</Table.Td>
-                <Table.Td>{i.nonProcess ? `${i.kind} (non-process)` : i.kind}</Table.Td>
-                <Table.Td>{i.sector}</Table.Td>
-                <Table.Td>{i.shape} {i.orientation}</Table.Td>
-                <Table.Td ta="right">{f2(i.x)}, {f2(i.y)}, {f2(i.z)}</Table.Td>
-                <Table.Td ta="right">{f2(i.dx)} x {f2(i.dy)} x {f2(i.dz)}</Table.Td>
-                <Table.Td>{i.footprintFrom === "published" ? "its own sizing" : "declared"}</Table.Td>
-                <Table.Td>
-                  {[i.release ? `release (zones ${i.release.zones.map((z) => z.zone).join(", ") || "none"})` : "",
-                    i.ignition ? "ignition" : ""].filter(Boolean).join("; ")}
-                </Table.Td>
-              </Table.Tr>
-            ))}
-          </Table.Tbody>
-        </Table>
-      </ScrollArea>
-      {(layout.unplaced.length > 0 || layout.internal.length > 0) && (
-        <Text size="xs" c="dimmed" mt={4}>
-          {layout.unplaced.length > 0 && <>Sized but not placed: {layout.unplaced.join(", ")}.  </>}
-          {layout.internal.length > 0 && <>Inside or on another item, never placed alone: {layout.internal.join(", ")}.</>}
-        </Text>
-      )}
-      {layout.separation.length > 0 && (
-        <Text size="xs" c="dimmed" mt={4}>
-          Separation distances are the case's own
-          ({layout.separation.map((t) => t.source).join("; ")}).
-          {layout.wind && <>  Wind: {layout.wind.source}.</>}
-        </Text>
-      )}
+      <PlantLayoutTables layout={layout} />
     </>
   );
 }

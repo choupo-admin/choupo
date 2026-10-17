@@ -77,7 +77,7 @@ License
 \*---------------------------------------------------------------------------*/
 
 import type { CaseFiles } from "./types.js";
-import type { ScratchEdits } from "./scratch.js";
+import { applyScratch, type ScratchEdits } from "./scratch.js";
 
 /** What a run was given, reduced to what a later comparison needs. */
 export interface RunInputs {
@@ -140,6 +140,14 @@ export function runInputsOf(applied: CaseFiles, edits: ScratchEdits): RunInputs 
   const flat: { [path: string]: string } = {};
   for (const [path, e] of Object.entries(edits)) flat[path] = `${e.value}${e.unit ? ` ${e.unit}` : ""}`;
   return { fingerprint: fingerprintCase(applied), edits: flat };
+}
+
+/** What is declared NOW, reduced the way a run's stamp is: the case with the
+ *  scratch overlay applied, and the overlay.  ONE home for the reduction --
+ *  the app's staleness hook and the 3D layout pop-out (DEV.md 4c C78) both
+ *  ask it, so the parent and its tab cannot reduce the same case two ways. */
+export function declaredInputsOf(files: CaseFiles, edits: ScratchEdits): RunInputs {
+  return runInputsOf(applyScratch(files, edits), edits);
 }
 
 /** Compare what is declared now against what the drawn result was given.
