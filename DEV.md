@@ -907,6 +907,21 @@ accepts today, and that is a policy call.
 
 ## 4c. Commissioned by Vítor (he ASKED for this; it is not a candidate)
 
+> **C77 MERGED 2026-10-17 (the energy solves on the published surface,
+> named in the C73/C74 decisions).**  The cstr's adiabatic/heatExchange
+> balance and the pfr's march solve on the outlet's own resolved surface
+> (`reactorOutlet::pricedOutlet` / `temperatureOfEnthalpy`, ONE
+> `equilibriumAt` in `ReactorOutlet.cpp`); the pfr resolves the phase at
+> every point of the bed (kinetics still on a liquid basis, said in code).
+> No golden row moved; at 1 atm an adiabatic reactor whose product boils
+> now publishes Q ~ 0 and a jacketed one Q = UA(Tc - Tout) (was +9 kW).
+> Found and fixed on the way: the cstr scan ceiling's Newton stalled on the
+> boiling kink and cstr05 at 1 atm found ONE steady state of three at exit
+> 0.  Cost: one flash per point -- ammoniaReactor04 3.3 -> 9.2 s,
+> greenAmmonia03 47.6 -> 65.2 s.  NAMED, not fixed: the cstr scan ceiling
+> is still a heuristic (composition at T + 1000 K); exposing P as a knob
+> in the van Heerden EduTool is a pedagogy call left open.
+
 > **C80. PIPES BETWEEN THE ITEMS, AND THE FLUID SEEN MOVING (Vítor,
 > 2026-10-17: "os meus alunos tinham as colunas implantadas com as
 > tubagens ligadas entre eles e até tinham o fluido a passar
