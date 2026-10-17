@@ -70,7 +70,8 @@ export type MethodToolId =
   | "declared-pathways" | "reactor-ladder" | "route-screening"
   | "least-squares" | "element-potential" | "limiting-reactant"
   | "reaction-enthalpy" | "standard-state" | "case-assembly" | "run-log"
-  | "front-end-loading" | "process-safety" | "overpressure" | "letdown";
+  | "front-end-loading" | "process-safety" | "overpressure" | "letdown"
+  | "plant-layout";
 
 /** WHAT KIND OF TOOL THIS IS, and the field exists to keep a boundary legible
  *  rather than to switch behaviour.
@@ -1273,6 +1274,36 @@ export const METHOD_TOOLS: MethodTool[] = [
       + "the relief goes after the valve, and why a runaway vent is "
       + "two-phase and larger.",
     theory: "ch:cubic-eos",
+  },
+  //  COMMISSIONED 2026-10-17 (DEV.md 4c C75, slice 2): "Podes fazer um
+  //  EduTool com isso, criar esse dicionario e criar uma tool para gerar o
+  //  layout 3D?", the outline approved the same day with the prevailing wind
+  //  and the ATEX zones added.  A CONSTRUCTION: the reader moves items on the
+  //  ammonia loop's declared plot plan and the engine re-checks it in the
+  //  browser.  ON THIS SHELF and not on "Process safety": a plot plan is a
+  //  design deliverable, and two of the three things it decides (pipe and
+  //  access) are not safety questions; the page links the safety shelf for
+  //  the third.  `theory` is the vessel-sizing section because the Theory
+  //  Guide has no layout chapter, and a vessel's D and H -- the footprint the
+  //  layout reads -- are what that section derives.
+  {
+    id: "plant-layout",
+    label: "Plant layout: where each item stands, and why",
+    discipline: "Process design & economics", kind: "construction",
+    status: "live",
+    teaches: "That a plot plan is a set of decisions about distance -- "
+      + "safety (the domino effect), pipe and access (a tube bundle must be "
+      + "pulled out along its own axis); what a separation distance is, why it "
+      + "is keyed on pairs of equipment kinds and must say whether it is "
+      + "measured edge to edge or centre to centre, and why Choupo ships no "
+      + "spacing table (the published ones grant no redistribution, so the "
+      + "case declares its own, with a source); a guided exercise on the "
+      + "ammonia loop's declared plan, checked by the engine in the browser: "
+      + "a short distance announced, an overlap refused; the prevailing wind "
+      + "(ignition sources upwind of releases) and the hazardous-area zones "
+      + "0, 1 and 2 as envelopes the case declares; and what the model does "
+      + "not do -- pipe lengths, structures, drainage.",
+    theory: "ch:size-vessel",
   },
   //  Route screening (C24, 2026-09-29): three known routes to methanol
   //  through the paper filters, cheapest first -- margin, atom economy,
