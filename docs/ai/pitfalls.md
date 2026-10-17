@@ -643,8 +643,9 @@ of thumb for those units: **a feed that is not a liquid at its (T, P) gets
 its phase pinned**, and a FAILED energy banner whose residual is
 latent-heat-sized is usually a mispriced inlet, not a broken unit.
 (Found by the 2026-08-23 LLM benchmark, which also hit a
-`conversionReactor` variant of the same banner — RESOLVED 2026-08-24: that
-unit now carries its inlet's phase state instead of stamping gas; see its
+`conversionReactor` variant of the same banner — RESOLVED 2026-08-24, and
+since 2026-10-17 that unit publishes its outlet at the outlet's OWN
+equilibrium rather than stamping gas or copying the inlet's phase; see its
 entry in unit-ops.md.)
 
 ### Writing a saturated steam feed — there is no `state` keyword to forget

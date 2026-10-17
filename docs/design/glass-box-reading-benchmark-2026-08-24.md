@@ -69,7 +69,9 @@ the vapour the label denies.
 
 Neither unit invents the label (CSTR has inherited the inlet phase since
 before this session; `conversionReactor` was aligned with it the same
-day — see the F2 ruling).  **Nothing checks whether the label is
+day — see the F2 ruling; superseded for the conversionReactor on
+2026-10-17, DEV.md 4c C72: its outlet is now its own equilibrium at its
+own (T, P, z)).  **Nothing checks whether the label is
 possible.**  The engine's residual message currently GUESSES the cause
 ("usually means a stream priced in the wrong phase"); it holds the
 thermo package and could TEST it and name the offending stream.  *A

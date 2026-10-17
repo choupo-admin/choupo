@@ -94,6 +94,17 @@ non-vapour inlet, so a vapour under a cubic EoS was silent).  The duty is on
 the package's own enthalpy surface now and the announcement is deleted with
 the gap.  Record:
 [`a-duty-on-a-surface-its-streams-are-not-on.md`](a-duty-on-a-surface-its-streams-are-not-on.md).
+**CORRECTION 2026-10-17 (DEV.md 4c C72, Vítor's approval): the outlet no
+longer CARRIES the inlet's phase state either.**  Carrying was a second phase
+model, wrong whenever the reaction moves the product across a phase boundary
+(a liquid water feed split into H2 + O2 published the gas at vf = 0).  The
+outlet is now resolved at its own (T, P, z) by `flashState::equilibriumAt`, a
+declared inlet phase is not carried to the product (a departure from it is
+announced), and the duty is priced on the state published.  The
+esterification of this record is unaffected where its product is liquid at
+the reactor's (T, P): reconstructed at 350 K and 1.01325 bar on the
+esterification2sector package, the product resolves to vf = 0 and the reactor
+row closes at 0.0000 kW.
 
 **F3 — the electrolyte D-list (one campaign, one slice each):** the missing
 worked speciate example (propsDict + thermoPhysPropDict pair); `volatiles`;
