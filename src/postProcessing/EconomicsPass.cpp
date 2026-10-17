@@ -2365,6 +2365,11 @@ int EconomicsPass::run(SimulationResult& result)
         econ[k + "IRR_high"]     = s.atHi.haveIRR ? s.atHi.IRR : std::nan("");
         econ[k + "payback_low"]  = s.atLo.discPayback;
         econ[k + "payback_high"] = s.atHi.discPayback;
+        //  The input's own value at each end (2026-10-17): the label of each
+        //  tornado bar, pinned here so the result's `economics.sensitivity`
+        //  block carries no number that no golden row reads.
+        econ[k + "value_low"]    = s.lo;
+        econ[k + "value_high"]   = s.hi;
     }
 
     // ---- 11.  Build the year-by-year DCF table + emit the spreadsheet ----
@@ -2406,6 +2411,32 @@ int EconomicsPass::run(SimulationResult& result)
     summary.startupCostFraction = timeline.startupCostFraction;
     summary.startupCost        = startupCost;
     summary.NPV_projectStart   = NPV_projectStart;
+    //  THE SENSITIVITY ON THE RESULT (2026-10-17): the rows the CSV below
+    //  writes, in the SAME order (`tornadoOrder`), so the GUI draws the
+    //  engine's ranking and recomputes none of it.
+    if (!sensitivity.empty())
+    {
+        summary.sensitivityCaveat = kSensitivityCaveat;
+        for (const auto* s : tornadoOrder(sensitivity))
+        {
+            EconomicSensitivityRow r;
+            r.input        = s->key;
+            r.kpiKey       = s->kpiKey;
+            r.mode         = s->mode;
+            r.fromBand     = s->fromBand;
+            r.declaredLow  = s->declLo;
+            r.declaredHigh = s->declHi;
+            r.unit         = s->unit;
+            r.baseValue    = s->base;
+            r.valueLow     = s->lo;
+            r.valueHigh    = s->hi;
+            r.NPV_low      = s->atLo.NPV;
+            r.NPV_high     = s->atHi.NPV;
+            r.NPVswing     = npvSwing(*s);
+            r.NPVsignFlip  = npvSignFlip(*s, base.NPV);
+            summary.sensitivity.push_back(std::move(r));
+        }
+    }
 
     // Persist both the .csv and the coloured .ods (reports/economics/).
     writeCashFlowCsv(summary);

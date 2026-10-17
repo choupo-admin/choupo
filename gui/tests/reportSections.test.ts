@@ -21,9 +21,11 @@ import {
 } from "../src/case/reportSections.js";
 
 const NONE: ReportFacts =
-  { equipment: false, sheets: false, columns: false, exchangers: false, economics: false };
+  { equipment: false, sheets: false, columns: false, exchangers: false, economics: false,
+    sensitivity: false };
 const ALL: ReportFacts =
-  { equipment: true, sheets: true, columns: true, exchangers: true, economics: true };
+  { equipment: true, sheets: true, columns: true, exchangers: true, economics: true,
+    sensitivity: true };
 
 describe("reportSections: which reports exist, decided once", () => {
   it("a bare converged run has exactly the three unconditional sections, in "
@@ -34,7 +36,7 @@ describe("reportSections: which reports exist, decided once", () => {
   it("every earned section appears when earned, in page order", () => {
     expect(reportSections(ALL).map((s) => s.id)).toEqual([
       "equipment", "sheets", "utilities", "mass", "energy",
-      "columns", "exchangers", "economics",
+      "columns", "exchangers", "economics", "sensitivity",
     ]);
   });
 
@@ -54,7 +56,8 @@ describe("reportSections: which reports exist, decided once", () => {
     //  not list an equipment entry that scrolls to an explanation of its
     //  own absence.
     const ids = reportSections(NONE).map((s) => s.id);
-    for (const earned of ["equipment", "sheets", "columns", "exchangers", "economics"])
+    for (const earned of ["equipment", "sheets", "columns", "exchangers", "economics",
+                          "sensitivity"])
       expect(ids).not.toContain(earned);
   });
 

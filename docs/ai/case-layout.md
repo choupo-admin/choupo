@@ -876,8 +876,10 @@ neither form, or an end outside what the input can be (a stream factor above 1)
 each REFUSE by name.  Published: a console table sorted by NPV swing, headed by
 the statement that a sensitivity is NOT an uncertainty analysis (no probability,
 no correlation between inputs); `kpis.economics.sens_<input>_NPV_low/_high`,
-`_IRR_low/_high`, `_payback_low/_high` (the input's `.` written `_`; NaN where
-there is no IRR or payback); and `reports/economics/sensitivity.csv`.  Worked
+`_IRR_low/_high`, `_payback_low/_high`, `_value_low/_high` (the input's value
+at each end; the input's `.` written `_`; NaN where there is no IRR or
+payback); `reports/economics/sensitivity.csv`; and the result's
+`economics.sensitivity` block, which the GUI draws as a tornado in Reports.  Worked
 cases: `tutorials/plant/greenAmmonia02_feasibility150bar` and `...50bar`.  An
 outer `sweep` still varies only FLOWSHEET paths -- this block is how a price, a
 rate or the capital is varied.

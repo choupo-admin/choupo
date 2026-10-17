@@ -725,6 +725,40 @@ export interface Economics {
   accLo: number;               // accuracy band low  (%)
   accHi: number;               // accuracy band high (%)
   cashFlow: CashFlowRow[];
+  /** The one-at-a-time economic sensitivity (DEV.md 4c C68), present ONLY
+   *  when the case declared `economics { sensitivity { ... } }`.  The engine
+   *  publishes the inputs IN TORNADO ORDER (largest NPV swing first, a tie in
+   *  declared order) -- the GUI draws that order and sorts nothing. */
+  sensitivity?: EconomicSensitivity;
+}
+
+/** The economic sensitivity as the engine published it: one row per declared
+ *  input, exactly the rows of reports/economics/sensitivity.csv.  Every
+ *  number is the engine's; the GUI computes none of them. */
+export interface EconomicSensitivity {
+  /** The engine's own sentence: a sensitivity, NOT an uncertainty analysis. */
+  caveat: string;
+  inputs: EconomicSensitivityInput[];
+}
+
+export interface EconomicSensitivityInput {
+  input: string;            // as declared: FCI, price.H2Feed, utility.electricity, ...
+  kpiKey: string;           // the `sens_<kpiKey>_...` KPI stem (golden rows)
+  mode: string;             // "relative" | "absolute"
+  fromBand: boolean;        // FCI { relative accuracyBand; }
+  declaredLow: number;      // as declared (a fraction when relative)
+  declaredHigh: number;
+  unit: string;             // of the input's VALUE: EUR, EUR/kg, EUR/h, x bill, -
+  baseValue: number;
+  valueLow: number;         // the input's value at each end
+  valueHigh: number;
+  NPV_low: number;          // the NPV with the input at each end
+  NPV_high: number;
+  NPVswing: number;         // |NPV_high - NPV_low|, the engine's sort key
+  /** "" | "low" | "high" | "both": which end turns the NPV's sign against
+   *  the base case's (the engine decides; an NPV of exactly zero is a
+   *  break-even, not a flip). */
+  NPVsignFlip: string;
 }
 
 /** A PROBLEM DIVERGENCE: the run solved something other than what the case

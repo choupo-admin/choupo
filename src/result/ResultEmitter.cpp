@@ -1181,6 +1181,36 @@ void emitResultJson(std::ostream& os, const SimulationResult& r)
                << ", \"NPV_atStartOfConstruction\": " << num(e.NPV_projectStart)
                << " },\n";
         }
+        //  THE ONE-AT-A-TIME SENSITIVITY (2026-10-17; the pass is C68), ONLY
+        //  when the case declared it -- every other economics case's JSON is
+        //  byte-for-byte what it was.  The rows of sensitivity.csv in its
+        //  (tornado) order, with the engine's own caveat sentence; the GUI's
+        //  tornado draws exactly this.  The numbers are also
+        //  `kpis.economics.sens_*`, pinned by the golden `kpi` kind.
+        if (!e.sensitivity.empty())
+        {
+            os << "    \"sensitivity\": {\n      \"caveat\": " << esc(e.sensitivityCaveat)
+               << ",\n      \"inputs\": [";
+            for (std::size_t i = 0; i < e.sensitivity.size(); ++i)
+            {
+                const auto& sr = e.sensitivity[i];
+                os << (i ? ",\n" : "\n") << "        { \"input\": " << esc(sr.input)
+                   << ", \"kpiKey\": "       << esc(sr.kpiKey)
+                   << ", \"mode\": "         << esc(sr.mode)
+                   << ", \"fromBand\": "     << (sr.fromBand ? "true" : "false")
+                   << ", \"declaredLow\": "  << num(sr.declaredLow)
+                   << ", \"declaredHigh\": " << num(sr.declaredHigh)
+                   << ", \"unit\": "         << esc(sr.unit)
+                   << ", \"baseValue\": "    << num(sr.baseValue)
+                   << ", \"valueLow\": "     << num(sr.valueLow)
+                   << ", \"valueHigh\": "    << num(sr.valueHigh)
+                   << ", \"NPV_low\": "      << num(sr.NPV_low)
+                   << ", \"NPV_high\": "     << num(sr.NPV_high)
+                   << ", \"NPVswing\": "     << num(sr.NPVswing)
+                   << ", \"NPVsignFlip\": "  << esc(sr.NPVsignFlip) << " }";
+            }
+            os << "\n      ]\n    },\n";
+        }
         os << "    \"cashFlow\": [";
         for (std::size_t i = 0; i < e.cashFlow.size(); ++i)
         {
