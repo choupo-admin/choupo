@@ -23391,27 +23391,58 @@ as \file{src/postProcessing/sizing/VesselMechanics.H} records, from
         \;+\; t_{\mathrm{corr}},
    \label{eq:asme-thickness}
 \end{equation}
-where $S$ is the allowable stress (taken as $\sigma_y / F_S$ with
-$F_S = 4$), $E$ is the joint efficiency
+\begin{sloppypar}\noindent which the engine writes in the equivalent form
+$P_{\mathrm{design}} D / (2SE - 1.2\,P_{\mathrm{design}}) + t_{\mathrm{corr}}$
+in \file{src/postProcessing/sizing/VesselMechanics.cpp}, reading
+$P_{\mathrm{design}}$ as a GAUGE pressure. $E$ is the joint efficiency
 ($\texttt{jointEfficiency}$, default $1.0$), and $t_{\mathrm{corr}}$ is
 the corrosion allowance (\texttt{corrosionAllow}, default
-$3\,\mathrm{mm}$). All material properties ($\sigma_y$, $\rho$,
-$F_M$, $T_{\max}$, $P_{\max}$) come from
-\file{data/standards/assets/<name>.dat} --- carbon steel, SS304,
-SS316, aluminium are shipped.
+$3\,\mathrm{mm}$). $S$ is the allowable stress, and the engine applies
+NO safety factor to obtain it: $S$ is the material record's field
+\code{sigma\_y}, used as it stands. The field's NAME is misleading ---
+it reads as a yield strength, but \file{src/materials/Material.H}
+declares it to hold the ALLOWABLE stress, and the carbon-steel record
+labels its $140\,\mathrm{MPa}$ as an allowable at $250\,^\circ$C. A
+record that stored a true yield strength there would be sized on it
+with no margin at all. A record holds ONE such value for every
+temperature: the wall of a $700\,\mathrm{K}$ shell is sized on the same
+$S$ as a $300\,\mathrm{K}$ one.
+\end{sloppypar}
+
+\begin{sloppypar}
+All material properties (\code{sigma\_y}, $\rho$, $F_M$, $T_{\max}$,
+$P_{\max}$) come from \file{data/standards/assets/<name>.dat} ---
+carbon steel, SS304, SS316, aluminium are shipped, and their own
+headers call their numbers unsourced teaching assertions. The two limits
+are COMPARED and ANNOUNCED, never enforced
+(\file{src/postProcessing/sizing/MaterialLimits.H}): a design pressure
+above the record's $P_{\max}$, and a service temperature above its
+$T_{\max}$, each print a \code{[rating]} warning that the end-of-run
+caveat block repeats, and the item is sized and costed anyway. Choupo has
+no design temperature, so the temperature compared is the hottest state
+on the item's ports --- a lower bound on what the metal sees (a hot spot
+inside a bed or a fire case is not in it). Neither limit is a code
+allowable at temperature; each is the record's own service envelope.
+\end{sloppypar}
 
 \subsection{Weight}
 
-With the wall thickness and an end-closure correction (the simulator
-uses $1.2 \,V_{\mathrm{shell}}$ for an elliptical-head approximation),
-the shell metal mass is
+\begin{sloppypar}
+With the wall thickness, the shell metal mass is that of the
+cylinder alone --- no heads, no nozzles, no end-closure correction
+(\file{src/postProcessing/sizing/VesselMechanics.cpp}):
 \begin{equation}
-   m \;=\; \rho \, A_{\mathrm{shell}} \, t \cdot 1.2,
+   m \;=\; \rho \, A_{\mathrm{shell}} \, t,
    \qquad
    A_{\mathrm{shell}} \;=\; \pi D L.
 \end{equation}
-This $m$ is the principal sizing output consumed by the Turton
-correlation downstream.
+This $m$ is published on the item's design sheet, and it is NOT what
+the cost reads. The Turton vessel correlation is sized on the VOLUME
+$V_R$ (\file{src/postProcessing/costing/Turton.cpp}, the vessel
+coefficients' size key), so the weight --- and the density with it ---
+moves no euro. The material reaches the cost through $F_M$, and through
+\code{sigma\_y} once more inside the pressure factor $F_P$.
+\end{sloppypar}
 
 % ---------------------------------------------------------------------
 \section{Heat-exchanger sizing: shell-and-tube}

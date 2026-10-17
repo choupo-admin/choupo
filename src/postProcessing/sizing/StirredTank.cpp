@@ -29,6 +29,7 @@ License
 #include "StirredTank.H"
 
 #include "VesselMechanics.H"
+#include "MaterialLimits.H"
 #include "DesignDefaults.H"
 #include "core/Advisory.H"
 #include "core/Constants.H"
@@ -92,17 +93,9 @@ std::vector<EquipmentSizing> StirredTank::size(const std::string& unitName,
     // but throwing kills the whole run; a loud warning lets sizing complete so
     // the engineer sees the (over-thick) wall AND the rating violation, and
     // can pick a stronger material or lower the design pressure.
-    if (pressureDesign > material.maxP)
-    {
-        char b[220];
-        std::snprintf(b, sizeof(b),
-            "design pressure %.1f bar EXCEEDS material '%s' rating %.1f bar"
-            " -- choose a stronger material or lower the design pressure",
-            static_cast<double>(pressureDesign), material.name.c_str(),
-            static_cast<double>(material.maxP));
-        std::cout << "  [rating] WARNING: vessel '" << unitName << "': " << b << "\n";
-        AdvisoryLog::instance().add("rating", "warning", "vessel '" + unitName + "'", b);
-    }
+    //  THE RECORD'S PRESSURE RATING, from the one home both material limits
+    //  share (`MaterialLimits.H`): announced, never refused.
+    materialLimits::pressure("vessel '" + unitName + "'", material, pressureDesign);
 
     // Geometry
     const scalar D = std::cbrt(4.0 * V_R / (constant::pi * L_over_D));    // m

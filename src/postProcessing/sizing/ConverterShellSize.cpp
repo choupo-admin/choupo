@@ -16,6 +16,7 @@
 
 #include "DesignDefaults.H"
 #include "VesselMechanics.H"
+#include "MaterialLimits.H"
 #include "core/Advisory.H"
 #include "core/Constants.H"
 #include "core/Dimensions.H"
@@ -94,20 +95,9 @@ std::vector<EquipmentSizing> ConverterShellSize::size(const std::string& unitNam
     if (material.sigma_y <= 0.0)
         throw std::runtime_error(who + ": material '" + material.name
             + "' has no sigma_y defined -- the shell wall cannot be sized");
-    if (pressureDesign > material.maxP)
-    {
-        //  The catalyst-bed sizer's warning, word for word in substance: a
-        //  shell designed above its material record's rating is announced.
-        char msg[220];
-        std::snprintf(msg, sizeof(msg),
-            "design pressure %.1f bar EXCEEDS material '%s' rating %.1f bar",
-            static_cast<double>(pressureDesign), material.name.c_str(),
-            static_cast<double>(material.maxP));
-        std::cout << "  [rating] WARNING: converterShell '" << unitName << "': "
-                  << msg << "\n";
-        AdvisoryLog::instance().add("rating", "warning",
-                                    "converterShell '" + unitName + "'", msg);
-    }
+    //  THE RECORD'S PRESSURE RATING, from the one home both material limits
+    //  share (`MaterialLimits.H`): announced, never refused.
+    materialLimits::pressure("converterShell '" + unitName + "'", material, pressureDesign);
 
     struct Member { std::string unit, item; scalar D, H; bool vessel, bed; };
     std::vector<Member> members;

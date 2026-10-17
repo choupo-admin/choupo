@@ -273,6 +273,35 @@ WHAT THIS CHECKS:
       fractions above 1 BY NAME while the item keeps its size.  Sabotages in
       `check_inventory`.
 
+  (t) A MATERIAL'S maxT IS COMPARED AND ANNOUNCED, ONCE PER ITEM (2026-10-17,
+      DEV.md 4c C85).  `maxT` was read by the loader and compared by
+      nothing, so aluminium (record maxT 500 K) on the 700 K converter of
+      `ammoniaReactor03_equilibriumApproach` sized and priced in silence.
+      `sizing/MaterialLimits` is now the ONE home of both record limits
+      (maxP was written out four times), and the sizing pass compares maxT
+      with each item's HOTTEST PORT.  Run on a COPY: the converter in
+      aluminium must print exactly ONE `[rating]` site line naming the
+      service temperature, the record and its maxT, at the converter's own
+      hottest-port T (recomputed here from the run's `converged/` streams),
+      and the end-of-run caveat block must replay it; the SHIPPED case
+      (SS316, maxT 925 K) must say nothing about a service temperature, and
+      neither may any other vessel in the copy.  A source half requires that
+      no sizer compares `material.maxP` or `material.maxT` itself.
+
+      SABOTAGES, by hand, 2026-10-17 (rebuilt, gate run, restored, rebuilt):
+        S1  `MaterialLimits.cpp`: the maxT comparison's `>` made `<` (the
+            limit compared the wrong way)  -> caught: the aluminium copy
+            prints no service-temperature line, and the shipped SS316 run
+            prints one for every vessel.
+        S2  `SizingPass.cpp`: the `materialLimits::temperature(...)` call
+            removed  -> caught: no site line, no caveat line.
+        S3  `MaterialLimits.cpp`: the `AdvisoryLog` add removed from
+            `announce` (the console line kept)  -> caught ONLY by the
+            caveat-replay half -- the site line is still printed, which is
+            the "slightly louder form of silence" this arm exists to refuse.
+        S4  an inline `if (pressureDesign > material.maxP)` restored in
+            `VesselSize.cpp` beside the call  -> caught by the source half.
+
   (l) THE GUI FIXTURE IS STILL THE ENGINE'S OWN OUTPUT.  The readers' unit
       tests run on a TRANSCRIPTION of a sheet, because arm (g) keeps `design/`
       gitignored and no committed file can be read from a test.  This arm runs
@@ -2918,6 +2947,122 @@ def check_exchanger_design_on(case, out, entries, problems, notes):
                  "refused by name" % (checked, len(probes)))
 
 
+MATERIAL_WITNESS = "tutorials/plant/ammoniaReactor03_equilibriumApproach"
+
+
+def _record_scalar(name: str, key: str) -> float:
+    text = (ROOT / "data" / "standards" / "assets" / (name + ".dat")).read_text()
+    return float(re.search(r'^\s*%s\s+([-+0-9.eE]+)' % key, text, re.M).group(1))
+
+
+def check_material_limits(problems, notes):
+    """(t) -- see the module docstring."""
+    tag = "check_design_sheet(t)"
+    src = ROOT / MATERIAL_WITNESS
+    T_LINE = re.compile(r"\[rating\] WARNING: (\w+ '[^']+'): service temperature "
+                        r"([0-9.]+) K \(its hottest port, stream '([^']+)'")
+
+    # --- the shipped case: SS316 everywhere hot, nothing to announce --------
+    proc = subprocess.run([str(ROOT / "choupoSolve"), str(src)],
+                          capture_output=True, text=True)
+    if proc.returncode != 0:
+        problems.append("%s: the shipped %s did not run (exit %d)"
+                        % (tag, MATERIAL_WITNESS, proc.returncode))
+        return
+    if "service temperature" in proc.stdout:
+        problems.append("%s: the SHIPPED %s announces a service temperature "
+                        "although every vessel is within its record's maxT: %s"
+                        % (tag, MATERIAL_WITNESS,
+                           [l.strip() for l in proc.stdout.splitlines()
+                            if "service temperature" in l][:3]))
+
+    # --- the copy: the converter in aluminium -------------------------------
+    def to_aluminium(text):
+        new, n = re.subn(r'(unitName\s+converter;\s*type\s+vessel;\s*material\s+)\w+;',
+                         r'\1aluminium;', text)
+        if n != 1:
+            raise RuntimeError("the converter's sizing entry was not found")
+        return new
+    try:
+        dst, rc, out, err = _run_copy(src, to_aluminium)
+    except RuntimeError as e:
+        problems.append("%s: %s in %s's postDict" % (tag, e, MATERIAL_WITNESS))
+        return
+    try:
+        if rc != 0:
+            problems.append("%s: the aluminium copy did not run (exit %d) -- an "
+                            "announcement must never refuse the run: %s"
+                            % (tag, rc, err.strip()[-300:]))
+            return
+        site = [m for m in T_LINE.finditer(out)]
+        conv = [m for m in site if m.group(1) == "vessel 'converter'"]
+        others = [m.group(1) for m in site if m.group(1) != "vessel 'converter'"]
+        if len(conv) != 1:
+            problems.append("%s: the converter in aluminium (record maxT %.0f K) "
+                            "printed %d service-temperature site line(s), "
+                            "expected exactly ONE" %
+                            (tag, _record_scalar("aluminium", "maxT"), len(conv)))
+            return
+        if others:
+            problems.append("%s: the copy changed only the converter's material, "
+                            "yet these items announce a service temperature: %s"
+                            % (tag, others))
+        m = conv[0]
+        T_said, stream = float(m.group(2)), m.group(3)
+        # recompute the hottest port from the run's own stream states
+        fs = (src / "system" / "flowsheetDict").read_text(errors="replace")
+        blk = fs[fs.index("name       converter;"):]
+        blk = blk[:blk.index("operation")]
+        ports = re.findall(r'\bin\s+(\w+);', blk) + \
+            re.findall(r'outputs\s*\(\s*([^)]*)\)', blk)[0].split()
+        temps = {}
+        for p in ports:
+            j = _stream_json(out, p)
+            if j is not None:
+                temps[p] = j["T"]
+        if not temps:
+            problems.append("%s: no port state of the converter was found in "
+                            "the run's result JSON (%s)" % (tag, ports))
+            return
+        hot = max(temps, key=temps.get)
+        if hot != stream or abs(temps[hot] - T_said) > 0.051:
+            problems.append("%s: the announcement names stream '%s' at %.1f K, "
+                            "but the converter's hottest port is '%s' at %.3f K "
+                            "(ports %s)" % (tag, stream, T_said, hot, temps[hot], temps))
+        maxT = _record_scalar("aluminium", "maxT")
+        if "maxT %.1f K" % maxT not in m.string[m.start():m.start() + 400]:
+            problems.append("%s: the line does not quote the record's maxT %.1f K"
+                            % (tag, maxT))
+        if "not a code allowable" not in m.string[m.start():m.start() + 600]:
+            problems.append("%s: the line no longer says the limit is the "
+                            "record's own, not a code allowable" % tag)
+        # the end-of-run caveat block replays it (an entry in AdvisoryLog)
+        replay = [l for l in out.splitlines()
+                  if l.strip().startswith("- vessel 'converter': service temperature")]
+        if not replay:
+            problems.append("%s: the caveat block does not replay the converter's "
+                            "maxT announcement -- printed at its site and recorded "
+                            "nowhere, the slightly louder form of silence" % tag)
+        notes.append("converter in aluminium: %.1f K on '%s' > maxT %.0f K, "
+                     "announced once and replayed" % (T_said, stream, maxT))
+    finally:
+        shutil.rmtree(dst.parent, ignore_errors=True)
+
+    # --- source half: no sizer compares a record limit itself ---------------
+    sizing = ROOT / "src" / "postProcessing" / "sizing"
+    for f in sorted(sizing.glob("*.cpp")):
+        if f.name == "MaterialLimits.cpp":
+            continue
+        code = re.sub(r'//[^\n]*', '', f.read_text(errors="replace"))
+        if re.search(r'material\.max[PT]\b', code):
+            problems.append("%s: %s compares a material record limit itself -- "
+                            "`sizing/MaterialLimits` is the one home" % (tag, f.name))
+    ml = (sizing / "MaterialLimits.cpp").read_text(errors="replace")
+    if "AdvisoryLog::instance().add(" not in ml:
+        problems.append("%s: MaterialLimits.cpp no longer records its "
+                        "announcements in AdvisoryLog" % tag)
+
+
 def main() -> int:
     problems, notes = [], []
 
@@ -2941,6 +3086,7 @@ def main() -> int:
     check_storage(problems, notes)
     check_inventory(problems, notes)
     check_exchanger_design(problems, notes)
+    check_material_limits(problems, notes)
 
     check_ignored(problems)
     check_refusal(problems)
@@ -2994,7 +3140,12 @@ def main() -> int:
           "witness (every held phase's density, mass and per-component split "
           "RECOMPUTED from the case's records and declarations, the tanks "
           "held to storageTime of production, the undeclared items listed as "
-          "NOT DECLARED, three malformed declarations refused BY NAME), each "
+          "NOT DECLARED, three malformed declarations refused BY NAME) and on "
+          "the material-limit witness (the converter copied into aluminium "
+          "announces its record maxT ONCE, at its hottest port RECOMPUTED "
+          "from the run's own stream states, and the caveat block replays "
+          "it; the shipped SS316 case is silent; no sizer compares a record "
+          "limit outside sizing/MaterialLimits), each "
           "at the address its own "
           "sizing.csv row dictates (sector directory where the row names a "
           "sector, NO extra level where it does not); every `sizing {}` entry "

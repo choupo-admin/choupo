@@ -754,15 +754,20 @@ export const MATERIALS_STEPS: readonly LessonStep[] = [
       + "multiplies the cost "
       + "(src/postProcessing/costing/Turton.cpp:687-689), and sigma_y "
       + "enters the cost again through F_P.  maxP is compared with the "
-      + "design pressure by the vessel sizers, which WARN and go on "
-      + "(src/postProcessing/sizing/VesselSize.cpp:189-198).  maxT is READ "
-      + "(src/materials/MaterialRegistry.cpp:58) and compared by nothing: no "
-      + "sizer checks a service temperature against it, and a record holds "
-      + "ONE allowable stress for every temperature.  A careful case applies "
-      + "it by hand: the green-ammonia base case puts SS316 wherever the "
-      + "process side exceeds the carbon-steel record's maxT "
+      + "design pressure by the vessel sizers "
+      + "(src/postProcessing/sizing/MaterialLimits.cpp:41), and maxT, read "
+      + "by the loader (src/materials/MaterialRegistry.cpp:58), with the "
+      + "hottest stream on each sized item's ports "
+      + "(src/postProcessing/sizing/MaterialLimits.cpp:56-57) -- Choupo has "
+      + "no design temperature, so that is a lower bound on what the metal "
+      + "sees.  Both WARN and go on: nothing is refused, and no wall changes, "
+      + "because a record holds ONE allowable stress for every temperature.  "
+      + "A careful case applies the temperature rule itself: the "
+      + "green-ammonia base case puts SS316 wherever the process side "
+      + "exceeds the carbon-steel record's maxT "
       + "(tutorials/plant/greenAmmoniaPEQ_baseCase/system/postDict:179-180) "
-      + "-- the author's rule, which the engine would not have enforced.  "
+      + "-- the author's rule, which the engine now checks and announces "
+      + "when broken, and does not choose for anyone.  "
       + "And no record carries "
       + "a corrosion rate, a minimum design temperature, a hydrogen-service "
       + "limit or a compatibility with any fluid.  What is sourced is said "
@@ -810,8 +815,10 @@ export const MATERIALS_STEPS: readonly LessonStep[] = [
       + "the cheapest choice on every vessel, which is step 2 in numbers.  "
       + "And put aluminium "
       + "on the 700 K catalyst vessel: its record declares a maxT of 500 K, "
-      + "and the engine says nothing, because nothing reads that field.  "
-      + "The silence is the lesson of step 22, made visible.",
+      + "and the engine says so in a second warning -- and then sizes and "
+      + "prices the vessel on the same allowable stress it would use at room "
+      + "temperature.  A warning is not a design: that is the lesson of "
+      + "step 22, made visible.",
   },
 ];
 
@@ -827,8 +834,9 @@ export const MATERIALS_LIMITS: readonly LessonLimit[] = [
     body: "A record holds a single sigma_y.  Real allowable stresses fall "
       + "with temperature and, in the creep range, with design life; the "
       + "engine sizes a 700 K vessel on the same stress as a 300 K one.  "
-      + "maxT is read and never compared, and no minimum design temperature "
-      + "exists in any record." },
+      + "maxT is compared with the hottest port and announced, never applied "
+      + "to the stress, and no minimum design temperature exists in any "
+      + "record." },
   { id: "one-factor",
     title: "One material factor for every kind of item",
     body: "The record carries one F_M, used for whatever item names it.  "

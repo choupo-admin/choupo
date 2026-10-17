@@ -1675,6 +1675,10 @@ accepts today, and that is a policy call.
      **NO DESIGN TEMPERATURE EXISTS IN THE ENGINE.**  `Material::maxT` is
      parsed (`MaterialRegistry.cpp:58`, declared `Material.H:56`) and has
      **no reader anywhere in `src/`** — verified independently.
+     (PARTLY CLOSED 2026-10-17, C85: `maxT` is now compared with each sized
+     item's hottest port and ANNOUNCED by `sizing/MaterialLimits.H`, beside
+     the maxP comparison; still no design temperature and still one
+     temperature-independent `sigma_y`.)
      `VesselMechanics.cpp:30` uses a flat `material.sigma_y`, so every wall
      in the corpus is computed at a temperature-INDEPENDENT yield stress.
      Consequence on this plant: the converter's shell is designed at 839.6 K

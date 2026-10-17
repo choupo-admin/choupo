@@ -15,6 +15,7 @@
 #include "CatalystBedSize.H"
 
 #include "VesselMechanics.H"
+#include "MaterialLimits.H"
 #include "DesignDefaults.H"
 #include "ShellTubeHX.H"
 #include "core/Dimensions.H"
@@ -112,17 +113,9 @@ std::vector<EquipmentSizing> CatalystBedSize::size(const std::string& unitName,
         designRules, designDefault::corrosionAllow, "catalystBed", unitName, shell);
     const scalar jointEff = designDefault::valueOr(
         designRules, designDefault::jointEfficiency, "catalystBed", unitName, shell);
-    if (pressureDesign > material.maxP)
-    {
-        char b[220];
-        std::snprintf(b, sizeof(b),
-            "design pressure %.1f bar EXCEEDS material '%s' rating %.1f bar",
-            static_cast<double>(pressureDesign), material.name.c_str(),
-            static_cast<double>(material.maxP));
-        std::cout << "  [rating] WARNING: catalystBed '" << unitName << "': " << b << "\n";
-        AdvisoryLog::instance().add("rating", "warning",
-                                    "catalystBed '" + unitName + "'", b);
-    }
+    //  THE RECORD'S PRESSURE RATING, from the one home both material limits
+    //  share (`MaterialLimits.H`): announced, never refused.
+    materialLimits::pressure("catalystBed '" + unitName + "'", material, pressureDesign);
 
     //  A straight cylinder holding exactly the bed volume: no head space, no
     //  distributor, no support grid -- the shell is the bed's envelope and

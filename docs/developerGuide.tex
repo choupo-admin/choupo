@@ -1478,19 +1478,33 @@ automatically --- no recompile needed.
 
 \subsection{Materials}
 
-\file{data/materials/<name>.dat}:
+\file{data/standards/assets/<name>.dat}, a record that declares
+\code{kind constructionMaterial;} (the assets home is flat and holds
+membranes and adsorbents too; the kind is what selects it):
 
 \begin{lstlisting}[language=dict]
-material <name>;
-rho          7900.0;     // kg/m^3
-F_M          1.0;        // Turton material factor
-sigma_y      138.0e6;    // Pa
-maxT         700.0;      // K
-maxP         50.0;       // bar
+name                <name>;
+kind                constructionMaterial;
+density             7850;   // kg/m^3
+F_M                 1.00;   // Turton material factor (carbonSteel = 1)
+sigma_y             140;    // MPa -- the ALLOWABLE stress, used as is
+maxT                700;    // K   -- compared with the hottest port
+maxP                100;    // bar -- compared with pressureDesign
+thermalConductivity 50;     // W/(m K), the exchanger wall
 \end{lstlisting}
 
-\code{MaterialRegistry::loadFrom()} slurps the directory on simulator
-start. No registration step needed.
+\begin{sloppypar}
+\code{sigma\_y} is read in MPa and used DIRECTLY as the allowable stress
+$S$ of the ASME thin-wall formula
+(\file{src/postProcessing/sizing/VesselMechanics.cpp}); the engine
+applies no safety factor, so a record must store an allowable there and
+never a yield strength, whatever the key's name suggests. \code{maxT}
+and \code{maxP} are announced against, never enforced
+(\file{src/postProcessing/sizing/MaterialLimits.H}).
+\code{MaterialRegistry::loadFrom()} scans the directory (and a case's
+own \file{constant/assets/}) on simulator start. No registration step
+needed.
+\end{sloppypar}
 
 \subsection{Utilities}
 

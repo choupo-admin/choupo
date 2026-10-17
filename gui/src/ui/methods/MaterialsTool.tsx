@@ -24,8 +24,9 @@
   and the warnings it raised, verbatim.  Beside them it shows what each
   material RECORD declares, read from data/standards/assets/.  Nothing is
   computed in this file: no wall, no factor, no comparison of a record's
-  limit with a service condition (the engine makes the maxP comparison and
-  not the maxT one, and the page shows exactly that).
+  limit with a service condition (the engine makes both the maxP and the
+  maxT comparison and announces each; the page names which one the engine's
+  own line is about, read from that line's words).
 
   The runs are taken ONE AT A TIME through useCaseFilesRun, and every answer
   the engine gives is kept in a table for the session, so a reader can pick
@@ -225,7 +226,11 @@ function MaterialsBench(): JSX.Element {
             {materials.map((m) => {
               const k = kept.get(`${vessel}|${m.name}`);
               const a = k?.answer;
-              const rating = k?.lines.some((l) => l.includes("[rating]"));
+              const ratingLines = k?.lines.filter((l) => l.includes("[rating]")) ?? [];
+              const ratingWords = [
+                ratingLines.some((l) => l.includes("design pressure")) ? "maxP" : "",
+                ratingLines.some((l) => l.includes("service temperature")) ? "maxT" : "",
+              ].filter(Boolean).join(", ");
               return (
                 <Table.Tr key={m.name}>
                   <Table.Td fw={m.name === material ? 700 : 400}>
@@ -241,7 +246,7 @@ function MaterialsBench(): JSX.Element {
                   <Table.Td ta="right">{k ? fx(a?.F_M, 2) : ""}</Table.Td>
                   <Table.Td ta="right">{k ? fx(a?.F_P, 2) : ""}</Table.Td>
                   <Table.Td ta="right">{k ? kEur(a?.bareModule) : ""}</Table.Td>
-                  <Table.Td>{k ? (k.err ? "refused" : rating ? "yes (maxP)" : "none") : ""}</Table.Td>
+                  <Table.Td>{k ? (k.err ? "refused" : ratingWords ? `yes (${ratingWords})` : "none") : ""}</Table.Td>
                 </Table.Tr>
               );
             })}
@@ -253,8 +258,9 @@ function MaterialsBench(): JSX.Element {
         read off the run&apos;s equipment list (its design sheet and cost row for this
         vessel), and nothing in them is computed on this page.  sigma_y is the
         number the engine uses as the allowable stress.  The engine compares maxP with
-        the design pressure and warns; it compares maxT with nothing, so a vessel
-        hotter than its record allows is sized and priced in silence.  Every number
+        the design pressure, and maxT with the hottest stream on the vessel&apos;s ports,
+        and warns on each; it sizes and prices the vessel anyway, on the same
+        allowable stress at every temperature.  Every number
         in these records is labelled by its own header as unsourced or awaiting
         primary re-citation, except the two F_M values that cite Turton.
       </PanelNote>

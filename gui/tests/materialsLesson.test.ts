@@ -170,8 +170,10 @@ describe("materials: reading the engine's answer", () => {
     ]);
   });
   it("the rating line it filters on is the one the engine prints", () => {
+    expect(tree("src/postProcessing/sizing/MaterialLimits.cpp"))
+      .toContain(`std::cout << "  [rating] WARNING: " << who << ": " << msg`);
     expect(tree("src/postProcessing/sizing/VesselSize.cpp"))
-      .toContain(`std::cout << "  [rating] WARNING: vessel '" << unitName << "': "`);
+      .toContain(`materialLimits::pressure("vessel '" + unitName + "'", material, pressureDesign);`);
   });
 });
 
@@ -247,13 +249,19 @@ describe("materials: the bench's sentences, against the engine's arithmetic", ()
     expect(t[77]).toContain('"V_R"');
     expect(tree(`${CASE}/expected`)).toMatch(/^equipment\s+converter\s+values\.V_R/m);
   });
-  it("maxT has one reader in the engine, and it is the loader", () => {
-    //  The page's strongest claim about the records: maxT is compared by
-    //  nothing.  Held by recounting every mention under src/ that is not the
-    //  thermo package (whose Tmax/Tmin are a different quantity).
+  it("maxT is loaded in one place and compared in one place, by the sizing pass", () => {
+    //  Step 22's claim (DEV.md 4c C85): the loader reads maxT, ONE home
+    //  compares it, and the sizing pass is its one caller.  Held by
+    //  recounting every mention under src/ that is not the thermo package
+    //  (whose Tmax/Tmin are a different quantity).
     const mentions = grepSrc(/\bmaxT\b/);
     expect(mentions.sort()).toEqual([
-      "src/materials/Material.H", "src/materials/MaterialRegistry.cpp"]);
+      "src/materials/Material.H", "src/materials/MaterialRegistry.cpp",
+      "src/postProcessing/SizingPass.cpp",
+      "src/postProcessing/sizing/MaterialLimits.H",
+      "src/postProcessing/sizing/MaterialLimits.cpp"]);
+    expect(grepSrc(/materialLimits::temperature\(/).sort()).toEqual([
+      "src/postProcessing/SizingPass.cpp"]);
   });
 });
 
@@ -341,8 +349,10 @@ describe("materials: the lesson text", () => {
       "Turton.cpp:647-650": [`${SRC}costing/Turton.cpp`, 647, 650,
         /P_gauge = P_design - 1 bar atmosphere[\s\S]*P_des_bar - 1\.0/],
       "Turton.cpp:78": [`${SRC}costing/Turton.cpp`, 78, undefined, '"V_R"'],
-      "VesselSize.cpp:189-198": [`${SRC}sizing/VesselSize.cpp`, 189, 198,
-        /if \(pressureDesign > material\.maxP\)[\s\S]*\[rating\] WARNING/],
+      "MaterialLimits.cpp:41": [`${SRC}sizing/MaterialLimits.cpp`, 41, undefined,
+        "if (!(pressureDesign_bar > material.maxP)) return;"],
+      "MaterialLimits.cpp:56-57": [`${SRC}sizing/MaterialLimits.cpp`, 56, 57,
+        /material\.maxT > 0\.0[\s\S]*if \(!\(T_K > material\.maxT\)\) return;/],
       "MaterialRegistry.cpp:58": ["src/materials/MaterialRegistry.cpp", 58, undefined,
         'm.maxT    = d->lookupScalarOrDefault("maxT",    0.0);'],
       "Material.H:55": ["src/materials/Material.H", 55, undefined, /sigma_y.*allowable stress/],
@@ -354,7 +364,7 @@ describe("materials: the lesson text", () => {
         /SS316 where the process side exceeds the carbon\s+steel record's maxT \(700 K\)/],
     };
     const cited = new Set([...allText.matchAll(
-      /(VesselMechanics\.(?:cpp|H)|DesignDefaults\.cpp|Turton\.cpp|VesselSize\.cpp|MaterialRegistry\.cpp|Material\.H|postDict):(\d+)(?:-(\d+))?/g)]
+      /(VesselMechanics\.(?:cpp|H)|DesignDefaults\.cpp|Turton\.cpp|VesselSize\.cpp|MaterialLimits\.cpp|MaterialRegistry\.cpp|Material\.H|postDict):(\d+)(?:-(\d+))?/g)]
       .map((m) => m[0]));
     for (const c of cited) expect(CLAIMS[c], `uncovered citation ${c}`).toBeDefined();
     for (const [c, [rel, a, b, want]] of Object.entries(CLAIMS)) {

@@ -30,6 +30,7 @@ License
 #include "core/Advisory.H"
 #include "materials/MaterialRegistry.H"
 #include "sizing/EquipmentSize.H"
+#include "sizing/MaterialLimits.H"
 #include "sizing/Inventory.H"
 #include "sizing/StorageTankSize.H"
 
@@ -433,6 +434,30 @@ int SizingPass::run(SimulationResult& result)
                 std::cout << "        " << std::left << std::setw(26) << key
                           << std::fixed << std::setprecision(3) << val << "\n";
             }
+
+        //  THE RECORD'S TEMPERATURE LIMIT, once per item (DEV.md 4c C85).
+        //  `maxT` was read by the loader and compared by nothing, so a
+        //  700 K converter in aluminium (record maxT 500 K) sized in
+        //  silence.  Compared HERE and not in each sizer because the pass
+        //  holds every item's ports; the comparison itself is
+        //  `materialLimits::temperature`, beside the maxP one.  Only an item
+        //  whose `material` is a construction-material RECORD is compared
+        //  (a catalyst charge's or a tray class's word is not one).
+        if (!dims.material.empty())
+        {
+            const auto names = MaterialRegistry::availableNames();
+            if (std::find(names.begin(), names.end(), dims.material) != names.end())
+            {
+                const auto hot = materialLimits::hottestPort(dims, result);
+                if (!hot.stream.empty())
+                    materialLimits::temperature(
+                        (utype.empty() ? std::string("item") : utype)
+                            + " '" + dims.itemId() + "'",
+                        MaterialRegistry::byName(dims.material), hot.T,
+                        "its hottest port, stream '" + hot.stream
+                            + "'; Choupo has no design temperature");
+            }
+        }
 
         {
             auto sit = sectorOf.find(uname);

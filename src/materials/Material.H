@@ -30,7 +30,7 @@ Class
 
 Description
     Properties of a construction material (vessels, exchangers, columns).
-    Read from data/materials/<name>.dat via MaterialRegistry.
+    Read from data/standards/assets/<name>.dat via MaterialRegistry.
 
     Used by:
       * EquipmentSize  — needs σ_y for wall-thickness (ASME §VIII), ρ
