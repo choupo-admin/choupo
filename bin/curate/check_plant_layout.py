@@ -58,17 +58,29 @@ pure scene mapping is tested in gui/tests/plantLayout.test.ts), and
 byte-identity of the cases without a layout (measured once, not gated).
 
 SABOTAGES performed by hand (2026-10-17; each restored with `git checkout`
-and one idempotent `make all`):
-  S1 `clearPlan` circle-circle returns the CENTRE distance        -> (a) caught
-     (the recomputed edge-to-edge distance disagrees), (d) caught.
-  S2 the overlap refusal's condition inverted to `c > kTol`        -> (c)
-     overlap arm caught (exit 0), and the witness itself refused (a).
-  S3 `announce()` writes stderr only, no AdvisoryLog::add         -> (b) caught
-     (no PLANT LAYOUT heading, no advisory in the JSON).
-  S4 the draft skips the `layoutDict && !force` refusal            -> (e) caught
-     (the second draft overwrote the file).
-  S5 `publishedFootprint` reads (D, D) instead of (D, H)           -> (a) caught
-     (dz disagrees with the design sheet's H).
+and one idempotent `make all`; all CAUGHT, two only after the gate was
+strengthened):
+  S1 `clearPlan` circle-circle returns the CENTRE distance        -> (a) the
+     engine's 3.5 m against the 1.886 m recomputed here; (c) the overlap
+     fixture exits 0.
+  S2 the overlap refusal's condition inverted to `c > kTol`        -> (a) the
+     witness itself refused; (c), (d), (e) every fixture refused.
+  S3 `announce()` writes stderr only, no AdvisoryLog::add         -> (b) no
+     PLANT LAYOUT block, no advisory in the JSON; (d) neither hazard finding
+     in the caveat block.
+  S4 the draft skips the `layoutDict && !force` refusal            -> (e) exit 0.
+     The file-unchanged half did NOT fire on its own: the tool is
+     deterministic, so its overwrite was byte-identical to what it replaced.
+     The arm now appends a student edit before the second draft (S4b: caught
+     on both halves).
+  S5 `publishedFootprint` reads (D, D) instead of (D, H)           -> (a) dz
+     against the design sheets' H, all three vessels.
+  S6 the downwind direction taken as `from`, not `from + 180`      -> (a) two
+     spurious downwind findings on the witness; (d) three missing.
+  S7 the zone check's VERTICAL test removed                        -> SURVIVED
+     first: every fixture item stood at grade, so the height half of the
+     envelope had no case.  The hazard fixture now carries a panel 20 m up,
+     inside two zone radii in plan and above both envelopes -> caught.
 """
 import json
 import re
@@ -302,6 +314,15 @@ def arm_hazards(work):
         sub("{ between ( building compressor );     distance 30 m; }", ""),
         sub("{ between ( building vessel );         distance 30 m; }", ""),
         sub("{ between ( building shellTubeHX );    distance 30 m; }", ""),
+        # an ignition source on a platform ABOVE both zone envelopes it sits
+        # within in plan: the envelope is a cylinder of declared HEIGHT, so it
+        # must not be reported (found by sabotage S7: without this item the
+        # vertical half of the rule was untested)
+        sub(ITEMS_OPEN, ITEMS_OPEN
+            + '    { nonProcess "elevatedPanel"; kind panel; x 59.5 m; y -2 m;'
+              ' z 20 m; orientation alongX;'
+              ' footprint { length 1 m; width 1 m; height 1 m; }'
+              ' ignition "an electrical panel on a platform"; }\n'),
     )
     d = prepare(work, "hazards", WITNESS, edit)
     out, err, rc = solve(d)
@@ -342,6 +363,14 @@ def arm_hazards(work):
             fail(f"(d) {fid}: expected at {dist} m, got {got.get(fid)}")
         if not inside and fid in got:
             fail(f"(d) {fid} reported though {rel} is {dist} m away, bearing {bearing}")
+    p = items.get("elevatedPanel")
+    if p is None or point_to_box(items["letdown"]["x"], items["letdown"]["y"], p) >= 4.5:
+        fail("(d) the elevated panel fixture is not where it must be (inside the"
+             " let-down drum's zone-2 radius in plan)")
+    for fid in got:
+        if fid.startswith("ignitionInZone:elevatedPanel:"):
+            fail(f"(d) {fid}: the panel stands 20 m up, above every envelope's"
+                 " declared height, and was reported inside one")
     if "deadRule:flare:flare|vessel" not in got:
         fail(f"(d) the rule naming the absent kind `flare` raised no deadRule; {sorted(got)}")
     caveat = out.split("PLANT LAYOUT", 1)[-1] if "PLANT LAYOUT" in out else ""
@@ -388,6 +417,10 @@ def arm_draft(work):
     for u in ("CONCENTRATION.Evap1", "CONCENTRATION.Cryst"):
         if u not in lay.get("unplaced", []) or f'"{u}"' in text.split("NOT PLACED")[0]:
             fail(f"(e) {u} publishes no size and was placed, or not listed for the student")
+    #  The student's edit, so an overwrite is visible even when the tool would
+    #  write the same proposal again (it is deterministic: a byte-identical
+    #  rewrite passed the hash alone -- found by sabotage S4).
+    lay_path.write_text(lay_path.read_text() + "\n// the student's own edit\n")
     h = hashlib.sha256(lay_path.read_bytes()).hexdigest()
     out, err, rc = run([str(TOOL), "--draft", str(d)])
     if rc != 2 or "never overwritten without --force" not in out + err \
