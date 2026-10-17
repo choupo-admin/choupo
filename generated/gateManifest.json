@@ -1003,8 +1003,8 @@
     },
     "check_theory_citations": {
       "exit": 0,
-      "claim": "check_theory_citations: OK -- docs/theoryGuide.tex: 48 of 81 chapters that carry numbered equations carry a citation (33 pinned as owing one, ratcheting down); 123 \\cite keys all resolve, 123 \\bibitem entries all cited (0 orphans pinned); 15 of 15 engine-cited surnames the guide names reach the bibliography; 5 registered eponymous model keys the guide names are sourced. SCANNED: that one file plus src/ for surnames and factory keys; nothing else in docs/ carries a bibliography. NOT CHECKED: whether a citation is TRUE of the equation beside it, whether an equation NEEDS one, the physico-chemical HYPOTHESES Pedro also asked for, the 537 numbered equation environments individually, and the other seven guides.",
-      "seconds": 1.7
+      "claim": "check_theory_citations: OK -- docs/theoryGuide.tex: 49 of 81 chapters that carry numbered equations carry a citation (32 pinned as owing one, ratcheting down); 123 \\cite keys all resolve, 123 \\bibitem entries all cited (0 orphans pinned); 15 of 15 engine-cited surnames the guide names reach the bibliography; 5 registered eponymous model keys the guide names are sourced. SCANNED: that one file plus src/ for surnames and factory keys; nothing else in docs/ carries a bibliography. NOT CHECKED: whether a citation is TRUE of the equation beside it, whether an equation NEEDS one, the physico-chemical HYPOTHESES Pedro also asked for, the 538 numbered equation environments individually, and the other seven guides.",
+      "seconds": 1.3
     },
     "check_thermal_bed": {
       "exit": 0,
