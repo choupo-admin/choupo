@@ -68,6 +68,8 @@ import { massBalance } from "../case/balances.js";
 import { heatExchangerDatasheetHtml } from "./HeatExchangerDatasheet.js";
 import { findKernDesign, kernView } from "../case/hxDatasheet.js";
 import { columnDatasheetHtml } from "./ColumnDatasheet.js";
+import { tornadoFigure, fmtMoney, type TornadoFigure } from "../case/tornado.js";
+import { TornadoPlot } from "./plotting/TornadoPlot.js";
 import {
   parseDesignSheet, unitDesignSheets, type DesignPort, type DesignSheet,
 } from "../case/designSheet.js";
@@ -123,6 +125,9 @@ function ReportsBody({ runResult }: { runResult: RunResult }) {
     .filter((c) => c.n > 0);
   const tree = useMemo(() => designSheetTree(runResult.designFiles), [runResult.designFiles]);
   const econ = runResult.economics;
+  //  The tornado, built ONCE from the engine's sensitivity rows; null when
+  //  the case declared no sensitivity -- and then there is no section.
+  const tornado = useMemo(() => tornadoFigure(econ), [econ]);
 
   //  THE FACTS, ONCE.  Everything below that decides whether a section exists
   //  reads `sections`; nothing gates inline.
@@ -132,6 +137,7 @@ function ReportsBody({ runResult }: { runResult: RunResult }) {
     columns: columnUnits.length > 0,
     exchangers: hxUnits.length > 0,
     economics: !!econ,
+    sensitivity: tornado !== null,
   };
   const sections = reportSections(facts);
 
@@ -157,6 +163,7 @@ function ReportsBody({ runResult }: { runResult: RunResult }) {
     columns:    () => <ColumnsBody runResult={runResult} columns={columnUnits} />,
     exchangers: () => <ExchangersBody runResult={runResult} units={hxUnits} />,
     economics:  () => (econ ? <EconomicsBody econ={econ} /> : null),
+    sensitivity: () => (tornado ? <SensitivityBody fig={tornado} /> : null),
   };
 
   return (
@@ -596,6 +603,63 @@ function EconomicsBody({ econ }: { econ: NonNullable<RunResult["economics"]> }) 
         outflows; year 0 is the end of construction, where the working capital is invested);
         the discounted payback row{paybackYear !== undefined ? "" : " (none — never recovered)"} is highlighted.
         Full table in <code>reports/economics/cashFlow.csv</code> / <code>.ods</code>.
+      </Text>
+    </>
+  );
+}
+
+/*  ---- Economic sensitivity: the engine's tornado, drawn -------------- */
+//  The caption carries the ENGINE'S OWN sentence (kSensitivityCaveat in
+//  EconomicsPass.cpp, published on the result) -- not a paraphrase here that
+//  could drift from what the console table and the CSV say.  The table
+//  repeats every bar's numbers so nothing on the chart is colour- or
+//  hover-only, and it lists the rows in the engine's order.
+function SensitivityBody({ fig }: { fig: TornadoFigure }) {
+  const cur = fig.currency;
+  const flipText = (f: string) =>
+    f === "" ? "no" : f === "both" ? "at both ends" : `at the ${f} end`;
+  return (
+    <>
+      <Text size="xs" c="dimmed" mb={6}>
+        Base NPV {fmtMoney(fig.baseNPV)} {cur}.  One bar pair per declared input, the input
+        moved alone to its low end (cyan) and its high end (amber); sorted by the engine by
+        NPV swing, largest on top.
+      </Text>
+      <TornadoPlot fig={fig} />
+      <ScrollArea type="auto" mt="xs">
+        <Table striped withTableBorder fz="xs" ff="monospace" miw={760}
+          captionSide="top">
+          <Table.Caption style={{ textAlign: "left" }}>
+            {fig.caveat || "A sensitivity, not an uncertainty analysis: each input is moved"
+              + " alone, every other input held at its base value."}
+          </Table.Caption>
+          <Table.Thead><Table.Tr>
+            <Table.Th>Input</Table.Th>
+            <Table.Th ta="right">Low end</Table.Th>
+            <Table.Th ta="right">High end</Table.Th>
+            <Table.Th ta="right">NPV (low)</Table.Th>
+            <Table.Th ta="right">NPV (high)</Table.Th>
+            <Table.Th ta="right">Swing</Table.Th>
+            <Table.Th>NPV sign flips</Table.Th>
+          </Table.Tr></Table.Thead>
+          <Table.Tbody>
+            {fig.bars.map((b) => (
+              <Table.Tr key={b.input}>
+                <Table.Td>{b.input}</Table.Td>
+                <Table.Td ta="right">{b.lowValueText}</Table.Td>
+                <Table.Td ta="right">{b.highValueText}</Table.Td>
+                <Table.Td ta="right" c={b.npvLow >= 0 ? "teal.4" : "red.5"}>{fmtMoney(b.npvLow)}</Table.Td>
+                <Table.Td ta="right" c={b.npvHigh >= 0 ? "teal.4" : "red.5"}>{fmtMoney(b.npvHigh)}</Table.Td>
+                <Table.Td ta="right">{fmtMoney(b.swing)}</Table.Td>
+                <Table.Td>{flipText(b.signFlip)}</Table.Td>
+              </Table.Tr>
+            ))}
+          </Table.Tbody>
+        </Table>
+      </ScrollArea>
+      <Text size="xs" c="dimmed" mt={4}>
+        NPVs in {cur} (k / M suffix).  Full table in{" "}
+        <code>reports/economics/sensitivity.csv</code>.
       </Text>
     </>
   );

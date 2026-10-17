@@ -71,6 +71,15 @@ built from economics01_esterification_dcf:
       `appraise(withSensitivityValue(`.  No output arm can tell a correct
       second copy from the first; this one can.
 
+  (h) THE RESULT CARRIES THE TABLE (2026-10-17, the GUI tornado).  The
+      result JSON's `economics.sensitivity` block -- the ONLY thing the GUI's
+      tornado reads -- reproduces sensitivity.csv row for row and IN ITS
+      ORDER (the engine's tornado order; the GUI sorts nothing), carries the
+      CSV's own caveat sentence, and every NPV and input end in it equals a
+      `sens_<input>_NPV_*` / `sens_<input>_value_*` KPI, which the golden
+      `kpi` kind pins: published implies pinned.  (f) also requires an
+      absent block to publish no `"sensitivity":` key.
+
 BY-HAND SABOTAGES (2026-10-12), each restored afterwards:
 
   S1  A SECOND HOME: the sensitivity loop priced each end with its own copy
@@ -90,6 +99,18 @@ BY-HAND SABOTAGES (2026-10-12), each restored afterwards:
   S4  THE ABSENT BLOCK NOT SILENT: the table header printed whenever the
       pass ran.  CAUGHT by (f).
 
+BY-HAND SABOTAGES of arm (h) (2026-10-17), each on a --keep copy of the 150
+bar run edited between the run and the check, then --reuse:
+
+  S5  a block value moved (price.H2Feed valueLow 3.6 -> 3.7).  CAUGHT twice:
+      the block disagrees with the CSV and with its KPI.
+  S6  two block rows swapped (the GUI would draw a ranking the engine did not
+      make).  CAUGHT by the order comparison.
+  S7  the `sens_price_H2Feed_value_low` KPI removed (a block number nothing
+      pins).  CAUGHT.
+  S8  the caveat sentence altered.  CAUGHT.
+  S9  the block renamed away (the GUI would draw no tornado).  CAUGHT.
+
 NOT COVERED, said plainly: whether any END is a sensible one (the ends are
 the author's assumptions); correlated inputs (a sensitivity moves one at a
 time, by design); the ramp-up / multi-year construction under a perturbation
@@ -101,6 +122,7 @@ against the previous build -- that was measured when the block was built
 included) and is a measurement, not a gate.
 """
 import csv
+import json
 import re
 import shutil
 import subprocess
@@ -323,6 +345,69 @@ def arm_feasibility(d, out, rc, inputs):
                      f" (1 {pct:+.0f} %) = {F * (1 + pct / 100.0):.0f}")
 
 
+def result_json(out):
+    """The run's result JSON, between the engine's own markers."""
+    m = re.search(r"<<<Choupo:result-begin>>>\s*\n(.*?)\n<<<Choupo:result-end>>>", out, re.S)
+    if not m:
+        return None
+    try:
+        return json.loads(m.group(1))
+    except json.JSONDecodeError:
+        return None
+
+
+def arm_result_block(d, out, rc):
+    """(h) THE RESULT CARRIES THE TABLE THE CSV WRITES -- row for row, in the
+    same order, with the engine's own caveat -- and every number in it is a
+    pinned KPI.  The GUI's tornado draws `economics.sensitivity` and nothing
+    else, so a block that drifted from the CSV (or from the KPIs the golden
+    pins) would draw a tornado about a different appraisal."""
+    name = d.name
+    if rc != 0:
+        return                                   # (a) already said so
+    sens, text = read_sensitivity(d)
+    res = result_json(out)
+    blk = ((res or {}).get("economics") or {}).get("sensitivity")
+    if not blk:
+        fail(f"(h) {name}: the result JSON carries no economics.sensitivity block")
+        return
+    if "NOT AN UNCERTAINTY ANALYSIS" not in blk.get("caveat", "") \
+            or ("# " + blk.get("caveat", "")) not in text:
+        fail(f"(h) {name}: the block's caveat is not the CSV's not-an-uncertainty-analysis sentence")
+    rows = blk.get("inputs", [])
+    order_json = [r.get("input") for r in rows]
+    order_csv = list(sens.keys())
+    if order_json != order_csv:
+        fail(f"(h) {name}: the block's order {order_json} is not the CSV's (tornado)"
+             f" order {order_csv}")
+    kp = kpis_economics(out)
+    for r in rows:
+        k = r.get("input")
+        c = sens.get(k)
+        if c is None:
+            continue
+        mode = r["mode"] + (" accuracyBand" if r.get("fromBand") else "")
+        if mode != c["mode"] or r.get("unit") != c["unit"] \
+                or r.get("NPVsignFlip") != c["NPVsignFlip"]:
+            fail(f"(h) {name} {k}: mode/unit/sign-flip words disagree with the CSV"
+                 f" ({mode!r}/{r.get('unit')!r}/{r.get('NPVsignFlip')!r} vs"
+                 f" {c['mode']!r}/{c['unit']!r}/{c['NPVsignFlip']!r})")
+        pairs = [("declaredLow", "declaredLow", 1e-6), ("declaredHigh", "declaredHigh", 1e-6),
+                 ("baseValue", "baseValue", 1e-6), ("valueLow", "valueLow", 1e-6),
+                 ("valueHigh", "valueHigh", 1e-6), ("NPV_low", "NPV_low_EUR", 1.0),
+                 ("NPV_high", "NPV_high_EUR", 1.0), ("NPVswing", "NPVswing_EUR", 1.0)]
+        for jk, ck, tol in pairs:
+            if not close(float(r[jk]), float(c[ck]), abs_tol=tol, rel=1e-6):
+                fail(f"(h) {name} {k}: block {jk} = {r[jk]} but sensitivity.csv says {c[ck]}")
+        stem = "sens_" + r.get("kpiKey", "")
+        for jk, kk in (("NPV_low", "NPV_low"), ("NPV_high", "NPV_high"),
+                       ("valueLow", "value_low"), ("valueHigh", "value_high")):
+            pub = kp.get(f"{stem}_{kk}")
+            if pub is None or not close(pub, float(r[jk]), abs_tol=0.0, rel=1e-9):
+                fail(f"(h) {name} {k}: block {jk} = {r[jk]} but KPI {stem}_{kk} = {pub}"
+                     " -- a number the golden does not pin")
+
+
 def arm_probe_fci(d, out, rc):
     if rc != 0:
         fail(f"(d) the economics01 probe exited {rc}:\n    "
@@ -420,6 +505,7 @@ def main():
         for c, inputs in zip(FEAS, (FEAS_INPUTS_150, FEAS_INPUTS_50)):
             d, out, rc = get(c.name, c)
             arm_feasibility(d, out, rc, inputs)
+            arm_result_block(d, out, rc)
 
         # (d) the FCI recomputed on a fraction-WC probe
         d, out, rc = get("probe_fci", ECON01, PROBE_BLOCK)
@@ -442,7 +528,7 @@ def main():
         if rc != 0:
             fail(f"(f) economics01 as shipped exited {rc}")
         if re.search(r'"sens_', out) or "Economic sensitivity" in out \
-                or "sensitivity table ->" in out:
+                or "sensitivity table ->" in out or '"sensitivity":' in out:
             fail("(f) economics01 declares no sensitivity block and the run still"
                  " printed or published one")
         if (d / "reports/economics/sensitivity.csv").exists():
@@ -464,6 +550,10 @@ def main():
     print("check_economic_sensitivity: OK -- the tornado of both feasibility"
           " cases (greenAmmonia02_feasibility150bar / 50bar) is published row by"
           " row in sensitivity.csv, the console and the result JSON, which agree;"
+          " the result's economics.sensitivity block (the one input of the GUI"
+          " tornado) reproduces the CSV row for row, in its tornado order, under"
+          " the same caveat sentence, and its every NPV and input end is a KPI"
+          " the golden pins;"
           " from the BASE cashFlow.csv alone the discount-rate ends recompute,"
           " the product-price ends recompute with the working capital moving by"
           " its receivables line, and the capital ends are the declared"

@@ -2234,7 +2234,9 @@ band; no single input flips the sign (break-even H2 ~3.55 EUR/kg or NH3
 because the plant loses 69.4 MEUR/yr operating; 150 vs 50 bar differ by
 4.3 MEUR, less than any bar.  OPEN for Vítor (pedagogy): a two-way /
 scenario analysis (H2 and NH3 moving together is what would flip it);
-no tornado drawn in the GUI yet.
+no tornado drawn in the GUI yet (DRAWN 2026-10-17, branch
+`claude/gui-tornado`: Reports "Economic sensitivity (tornado)", from a new
+`economics.sensitivity` result block; gate arm (h)).
 STAGE COMPARISON MERGED 2026-10-12 (branch `claude/c68-stage-comparison`):
 `bin/curate/gen_ammonia_stage_comparison.py` writes a section
 of `tutorials/plant/greenAmmonia03_basicDesign/README.md` (home chosen: the page the student

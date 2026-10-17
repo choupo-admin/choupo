@@ -674,6 +674,38 @@ function shapeEconomics(e: NonNullable<ResultPayload["economics"]>): Economics {
           cumulativeDCF: n(r.cumulativeDCF),
         }))
       : [],
+    //  The sensitivity (C68): the engine writes the key only when the case
+    //  declared the block, so its ABSENCE stays absence -- no empty tornado.
+    ...(e.sensitivity ? { sensitivity: shapeSensitivity(e.sensitivity) } : {}),
+  };
+}
+
+//  The sensitivity rows in the order the engine published them (tornado
+//  order -- the engine's sort, never redone here).  A row whose NPV is not a
+//  finite number is DROPPED rather than drawn at zero: a bar at the base NPV
+//  would read as "this input does not matter".
+function shapeSensitivity(
+  s: NonNullable<NonNullable<ResultPayload["economics"]>["sensitivity"]>,
+): NonNullable<Economics["sensitivity"]> {
+  const fin = (v: unknown): v is number => typeof v === "number" && Number.isFinite(v);
+  const str = (v: unknown): string => (typeof v === "string" ? v : "");
+  return {
+    caveat: str(s.caveat),
+    inputs: (Array.isArray(s.inputs) ? s.inputs : [])
+      .filter((r) => fin(r.NPV_low) && fin(r.NPV_high) && typeof r.input === "string")
+      .map((r) => ({
+        input: str(r.input), kpiKey: str(r.kpiKey), mode: str(r.mode),
+        fromBand: !!r.fromBand,
+        declaredLow: fin(r.declaredLow) ? r.declaredLow : NaN,
+        declaredHigh: fin(r.declaredHigh) ? r.declaredHigh : NaN,
+        unit: str(r.unit),
+        baseValue: fin(r.baseValue) ? r.baseValue : NaN,
+        valueLow: fin(r.valueLow) ? r.valueLow : NaN,
+        valueHigh: fin(r.valueHigh) ? r.valueHigh : NaN,
+        NPV_low: r.NPV_low as number, NPV_high: r.NPV_high as number,
+        NPVswing: fin(r.NPVswing) ? r.NPVswing : NaN,
+        NPVsignFlip: str(r.NPVsignFlip),
+      })),
   };
 }
 
@@ -784,6 +816,14 @@ interface ResultPayload {
       depreciation: number; taxableIncome: number; tax: number; afterTaxProfit: number;
       cashFlow: number; discountFactor: number; discountedCF: number;
       cumulativeDCF: number }[];
+    sensitivity?: {
+      caveat?: string;
+      inputs?: { input?: string; kpiKey?: string; mode?: string; fromBand?: boolean;
+        declaredLow?: number; declaredHigh?: number; unit?: string;
+        baseValue?: number; valueLow?: number; valueHigh?: number;
+        NPV_low?: number | null; NPV_high?: number | null; NPVswing?: number | null;
+        NPVsignFlip?: string }[];
+    };
   };
 }
 

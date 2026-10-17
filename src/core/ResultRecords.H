@@ -644,6 +644,27 @@ struct WorkingCapitalBuildUp
     scalar                          productionCostPerKg = 0.0;   // EUR/kg product
 };
 
+// ONE ROW OF THE ONE-AT-A-TIME ECONOMIC SENSITIVITY (2026-10-12, DEV.md 4c
+// C68; published on the result 2026-10-17 so the GUI's tornado DRAWS the
+// engine's rows instead of parsing a console table or a CSV).  Exactly the
+// columns of reports/economics/sensitivity.csv, in the same (tornado) order.
+// The two NPVs are also `kpis.economics.sens_<kpiKey>_NPV_low/_high` and the
+// two input values `..._value_low/_high`, which the golden `kpi` kind pins;
+// this record carries the WORDS (input, mode, unit, sign flip) a reader draws.
+struct EconomicSensitivityRow
+{
+    std::string input;              // as declared: FCI, price.H2Feed, ...
+    std::string kpiKey;             // the `sens_<kpiKey>_...` KPI stem
+    std::string mode;               // "relative" | "absolute"
+    bool        fromBand = false;   // FCI { relative accuracyBand; }
+    scalar      declaredLow = 0.0, declaredHigh = 0.0;   // as declared
+    std::string unit;               // of the input's VALUE
+    scalar      baseValue = 0.0, valueLow = 0.0, valueHigh = 0.0;
+    scalar      NPV_low = 0.0, NPV_high = 0.0;
+    scalar      NPVswing = 0.0;     // |NPV_high - NPV_low|, the sort key
+    std::string NPVsignFlip;        // "" | "low" | "high" | "both"
+};
+
 // Headline economic appraisal scalars + the year-by-year DCF table.  Populated
 // by EconomicsPass; mirrors result.kpis["economics"] but typed and complete
 // (the table the .ods / .csv DCF spreadsheet is built from).
@@ -682,6 +703,10 @@ struct EconomicsSummary
     scalar                    startupCost         = 0.0;     // money, year 1
     scalar                    NPV_projectStart    = 0.0;     // NPV/(1+i)^Nc
     WorkingCapitalBuildUp     workingCapital;        // present only when declared
+    //  THE SENSITIVITY (C68), empty unless the case declared the block; in
+    //  tornado order (largest NPV swing first, a tie in declared order).
+    std::vector<EconomicSensitivityRow> sensitivity;
+    std::string                         sensitivityCaveat;
 };
 
 } // namespace Choupo

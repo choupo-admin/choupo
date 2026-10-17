@@ -85,8 +85,10 @@ Description
     price.<stream>, utility.<name>, labourRate, discountRate, taxRate,
     streamFactor), through the same `appraise`, on the same converged pass:
     a one-at-a-time tornado, NOT an uncertainty analysis.  Published as
-    `economics.sens_<input>_{NPV,IRR,payback}_{low,high}` and
-    reports/economics/sensitivity.csv; absent, nothing changes.
+    `economics.sens_<input>_{NPV,IRR,payback,value}_{low,high}`,
+    reports/economics/sensitivity.csv and the result JSON's
+    `economics.sensitivity` block (the CSV's rows in its order, which the
+    GUI's tornado draws); absent, nothing changes.
 
     Must run after SizingPass + CostingPass.
 \*---------------------------------------------------------------------------*/

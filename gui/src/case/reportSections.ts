@@ -37,7 +37,7 @@
 
 export type ReportSectionId =
   | "equipment" | "sheets" | "utilities" | "mass" | "energy"
-  | "columns" | "exchangers" | "economics";
+  | "columns" | "exchangers" | "economics" | "sensitivity";
 
 export interface ReportSection {
   id: ReportSectionId;
@@ -57,6 +57,9 @@ export interface ReportFacts {
   exchangers: boolean;
   /** An economics postDict ran. */
   economics: boolean;
+  /** The economics pass published a sensitivity (the case declared
+   *  `economics { sensitivity { ... } }`) with at least one drawable row. */
+  sensitivity: boolean;
 }
 
 /** The sections, in page order.  ONE list: the rail lists it, the page
@@ -84,6 +87,9 @@ export function reportSections(f: ReportFacts): ReportSection[] {
   if (f.economics)
     out.push({ id: "economics", title: "Economic appraisal (DCF, Perry/Turton)",
       subtitle: "capital, operating cost, cash flow and payback" });
+  if (f.sensitivity)
+    out.push({ id: "sensitivity", title: "Economic sensitivity (tornado)",
+      subtitle: "NPV with each declared input moved alone to its two ends" });
   return out;
 }
 

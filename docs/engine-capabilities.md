@@ -247,7 +247,10 @@ appraisal uses (`appraise` in `EconomicsPass.cpp`), so the working capital,
 COM_d's 0.180 FCI, depreciation and the start-up years follow each input as
 they follow the base.  Published as a console table sorted by NPV swing,
 `economics.sens_*` KPIs and `reports/economics/sensitivity.csv`, each headed by
-the statement that a sensitivity is not an uncertainty analysis.  An outer
+the statement that a sensitivity is not an uncertainty analysis; since
+2026-10-17 also as the result's `economics.sensitivity` block, which the GUI
+draws as a tornado in Reports (the engine's rows and order, nothing
+recomputed).  An outer
 `sweep` varies flowsheet paths only; this block is the route for prices, rates
 and the capital.  Witnesses: the two `greenAmmonia02_feasibility*` cases; gate
 `check_economic_sensitivity` (recomputes ends from the published
