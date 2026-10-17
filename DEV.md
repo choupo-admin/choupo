@@ -907,6 +907,25 @@ accepts today, and that is a policy call.
 
 ## 4c. Commissioned by Vítor (he ASKED for this; it is not a candidate)
 
+> **C83. AN EDUTOOL: THE RADIATION OF A POOL FIRE AND THE DISTANCE IT
+> SETS (Vítor, 2026-10-17: "Faz essa EduTool da radiação do incêndio de
+> poça, se achares importante" -- the commander judged it important: it is
+> where the separation tables' numbers come from, the risk-based half of
+> C75's prescriptive layout).**  Outline (stated to Vítor in the same turn):
+> (1) why a distance -- radiation falls with distance, harm has thresholds;
+> (2) the pool -- mass burning rate (Burgess-Strasser-Grumer, USBM, public
+> domain), diameter, heat release; (3) the flame -- height (Thomas),
+> surface emissive power with smoke obscuration (Mudan), a cylinder; (4)
+> the receiver -- point-source vs solid-flame view factor, atmospheric
+> transmissivity; (5) thresholds and the distance to each (sources must be
+> citable and licence-clean, e.g. US EPA RMP offsite consequence guidance,
+> public domain), compared with the separation table a layout case
+> declares; (6) limits -- wind tilt, smoke, terrain, prescriptive tables vs
+> QRA.  The heat of combustion read from the engine's own catalogue
+> (formation data), never a typed constant; every correlation cited by
+> file:line where computed; no new tutorial case; no no-grant table
+> transcribed.  Status: dispatched 2026-10-17.
+
 > **C82. THE PLOT AREA AND THE COST OF THE LAND (Vítor, 2026-10-17:
 > "Avança", on the commander's proposal after "o layout acaba por ser
 > importante para avaliar os m2 de implementação e o custo do terreno?").**
