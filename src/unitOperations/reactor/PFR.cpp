@@ -117,8 +117,8 @@ int PFR::solve(const DictPtr& dict,
     }
     for (auto& v : z_in) v /= zsum;
 
-    // Inlet phase -- the INLET's, read to price the inlet and as the rung of
-    // the non-isothermal energy march.  It is NOT the outlet's: since C73
+    // Inlet phase -- the INLET's, read to price the inlet and as the march's
+    // first phase guess (C77).  It is NOT the outlet's: since C73
     // (2026-10-17) the product is published at its OWN equilibrium
     // (`reactorOutlet::outletState`), the old "the product leaves in the
     // phase it entered" having published a liquid feed's gas at vf = 0.
@@ -831,21 +831,33 @@ int PFR::solveMultiReaction(const DictPtr&       dict,
     //  the Ergun-marched one when `pressureDrop` is declared.  An adiabatic
     //  bed conserves H across friction (no work, no heat, kinetic energy
     //  neglected), so T is recovered from H at the pressure the gas is at.
+    //
+    //  THE SURFACE H IS INVERTED ON (C77, 2026-10-17): the one the outlet is
+    //  published and priced on -- the local (T, P, z) resolved at its own
+    //  equilibrium and priced by the energy report's rule
+    //  (`reactorOutlet::temperatureOfEnthalpy`), at EVERY point of the march,
+    //  not only at the outlet.  It used to be the INLET's phase rung all
+    //  along the bed, so a product that boiled (or condensed) inside it
+    //  conserved an H that the published outlet, resolved at the T that rung
+    //  gave, did not carry: an "adiabatic" bed with a duty.  Read along the
+    //  axis, the bed is in LOCAL phase equilibrium at each point; the
+    //  kinetics still read the liquid-basis concentrations they always read
+    //  (a phase-aware rate -- a gas-phase rate in the vapour, a liquid one in
+    //  the liquid -- is not modelled; the march says where the local state
+    //  is two-phase only through the T it recovers).  While the state stays
+    //  in one phase the inversion is the same Newton on that phase's rung it
+    //  always was, confirmed by one resolution at the answer.
+    scalar vf_lastGuess = vf_in;                   // the phase the last point resolved to
+    scalar unmatched_last = 0.0;                   // J/mol, a pure fluid's jump only
     auto T_from_h = [&](scalar h_target, const sVector& zz, scalar Tguess,
                         scalar Pk) -> scalar
     {
-        scalar Tk = Tguess;                        // h(T) is monotone (cp > 0)
-        for (int it = 0; it < 40; ++it)
-        {
-            const scalar h  = thermo.H_stream_formation(Tk, Pk, vf_in, zz);
-            const scalar dT = 1.0e-3;
-            const scalar cp = (thermo.H_stream_formation(Tk + dT, Pk, vf_in, zz) - h) / dT;
-            if (std::abs(cp) < 1.0e-12) break;
-            const scalar step = (h_target - h) / cp;
-            Tk += std::max(-50.0, std::min(50.0, step));       // damped
-            if (std::abs(step) < 1.0e-7) break;
-        }
-        return Tk;
+        const reactorOutlet::EnthalpyInversion inv =
+            reactorOutlet::temperatureOfEnthalpy(h_target, Pk, zz, Tguess,
+                                                 vf_lastGuess, vf_in, thermo);
+        vf_lastGuess   = inv.vf;
+        unmatched_last = inv.unmatched_J_per_mol;
+        return inv.T;
     };
 
     scalar T_lastGuess = T;                        // warm start across RK4 stages
@@ -974,7 +986,13 @@ int PFR::solveMultiReaction(const DictPtr&       dict,
     // The inlet ENTHALPY FLOW [W] on the elements datum -- the conserved quantity.
     // Only needed (and only computable) when the reactor is NOT isothermal: a
     // fictitious species has no elements datum, and an isothermal run never asks.
-    y[n] = isoT ? 0.0 : F_in * thermo.H_stream_formation(T, P, vf_in, z_in);
+    // Priced exactly as the published duty prices the inlet (the report's rule,
+    // `flashState::priceState`), so a two-phase feed is its equilibrium phases
+    // and the marched H and the duty start from one number (C77).
+    const bool pinned_in = dict->subDict("feed")
+        ->lookupScalarOrDefault("phasePinned", 0.0) > 0.5;
+    y[n] = isoT ? 0.0 : flashState::priceState(T, P, z_in, F_in, pinned_in,
+                                               vf_in, thermo, "pfr inlet", nullptr);
     const sVector y_in = y;
 
     scalar T_max = T, T_min = T, V_hot = 0.0;
@@ -986,6 +1004,7 @@ int PFR::solveMultiReaction(const DictPtr&       dict,
     auto march = [&](sVector y, bool record) -> sVector
     {
     T_lastGuess = T;
+    vf_lastGuess = vf_in;
     if (record) { T_max = T; T_min = T; V_hot = 0.0;
                   ergunViscous.clear(); ergunInertial.clear(); push(0.0, y, T); }
     for (int m = 0; m < nSteps; ++m)
@@ -1113,6 +1132,7 @@ int PFR::solveMultiReaction(const DictPtr&       dict,
     y = march(y, true);
     for (std::size_t i = 0; i < n; ++i) F_i[i] = y[i];
     const scalar T_out = T_of(y);
+    const scalar unmatched_out = isoT ? 0.0 : unmatched_last;   // J/mol (C77)
     const scalar P_out = hyd.ergun ? y[n + 1] : P;
 
     // ---- Outlet -------------------------------------------------------
@@ -1125,8 +1145,6 @@ int PFR::solveMultiReaction(const DictPtr&       dict,
     //  site's comment.  The pressure is the one this outlet will carry: the
     //  Ergun-marched one when the bed declares a drop, else the feed's (which
     //  the flowsheet gives an outlet published at P = 0).
-    const bool pinned_in = dict->subDict("feed")
-        ->lookupScalarOrDefault("phasePinned", 0.0) > 0.5;
     const reactorOutlet::OutletState outSt = reactorOutlet::outletState(
         T_out, P_out, z_out, pinned_in, vf_in, thermo, "pfr", unitNameOf(dict));
     produced_.clear();
@@ -1399,11 +1417,13 @@ int PFR::solveMultiReaction(const DictPtr&       dict,
         kpis_["Q_kW"] = H_out_kW - H_in_kW;   // ~0 for an adiabatic reactor
     }
     catch (const std::exception&) { /* a species lacks formation data */ }
-    //  The non-isothermal march above is solved on the inlet's phase rung;
-    //  when the published outlet is another phase, say so (ReactorOutlet.H).
-    if (!isoT && kpis_.count("Q_kW"))
-        reactorOutlet::announceEnergyRungMismatch("pfr", unitNameOf(dict),
-            tmode, T_out, vf_in, outSt.vf, kpis_["Q_kW"]);
+    //  The march conserves H on the surface the duty is priced on (C77), so
+    //  the duty IS the marched wall heat: zero adiabatic.  An outlet whose
+    //  enthalpy no T on that surface carries is a pure product on its
+    //  saturation jump (ReactorOutlet.H) -- said.
+    if (!isoT && kpis_.count("Q_kW") && unmatched_out != 0.0)
+        reactorOutlet::announceUnmatchedEnthalpy("pfr", unitNameOf(dict),
+            tmode, T_out, unmatched_out * F_out / 1000.0);   // J/mol x mol/s -> kW
 
     if (verbosity >= 2) reactorOutlet::printOutletState(outSt);
     if (verbosity >= 2)

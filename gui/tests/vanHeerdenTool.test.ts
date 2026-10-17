@@ -182,10 +182,12 @@ describe("recorded knob absences — each pinned by its kind", () => {
     expect(ids()).not.toContain("thermalMode");
   });
 
-  it("P: addressable, but a placebo on a liquid-phase rate law", () => {
+  it("P: addressable, and deliberately not offered", () => {
     // The absence here is a CHOICE, not a grammar miss — so the override
-    // must resolve.  The day the witness turns vapour-phase, the reason is
-    // gone and the knob should appear.  The witness declares its pressure
+    // must resolve.  It is no longer a placebo: since C77 the energy balance
+    // carries the latent heat of a product that boils, so at 1 atm the hot
+    // branch moves (~406 K -> ~361 K).  Whether the page should offer P is
+    // the curator's pedagogical call (DEV.md 4c C77).  The witness declares its pressure
     // in bar (15 bar since 2026-10-17: a liquid esterification at 400 K is
     // pressurised to stay liquid), so the override is written in the dict's
     // own unit -- the override keeps the declared unit, and a value in Pa

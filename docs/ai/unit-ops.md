@@ -115,14 +115,19 @@ not carried; a departure from it is announced (`[cstr] ... the inlet DECLARES
 ...`).  The isothermal duty `Q_kW` is `H_out - H_in` priced on exactly the
 states published (the `pfr` single-reaction path too since C73; it was
 `ξ·ΔH_rxn` on the feed's phase rung, which paid no latent heat when the
-product left part vapour).  **NOT yet on that surface: the `adiabatic` and
-`heatExchange` energy balances**, which still find `T_out` on the FEED's
-phase rung.  When the outlet's own equilibrium at that `T_out` is another
-phase, the run says so (`[cstr] ... the adiabatic energy balance that set
-T_out ... was solved on the INLET's phase rung`) and the published `Q_kW`
-(the report's own `H_out - H_in`) is no longer zero: it is the enthalpy of
-the phase change the balance did not see.  A reactor meant to hold its
-feed's phase is declared at a pressure where its product does.
+product left part vapour).  **The `adiabatic` and `heatExchange` energy
+balances are on that surface too (2026-10-17, DEV.md 4c C77):** `T_out` is
+found with the outlet's enthalpy resolved at each trial T and priced as the
+report prices it (`reactorOutlet::pricedOutlet`), so a product that boils or
+condenses carries its latent heat INTO the balance -- an adiabatic reactor
+publishes `Q_kW = 0` and a jacketed one exactly `UA (T_c - T_out)`, whatever
+phase the product leaves in.  A reactor meant to hold its feed's phase is
+still declared at a pressure where its product does: the balance is now
+right about a boiling product, the liquid-basis kinetics are not (they read
+liquid concentrations whatever the phase).  One case is announced rather
+than closed: a PURE product at its own saturation temperature, where (T, P)
+do not fix its quality (`[cstr|pfr] ... found no outlet temperature at which
+the published state carries the enthalpy it conserved`).
 
 **Rate laws** (`kinetics { type ... }`, shared by `cstr` and `pfr` via `RateLaw`).
 Two families, one formula.  With `theta_i` the concentration (mol/m³) or, when
@@ -203,8 +208,9 @@ operation { V_R <m^3>; nSteps 100;  thermalMode adiabatic; }
 The reactor marches the **total enthalpy** `H` (elements datum) beside the species and
 **recovers `T` by inverting it** — so there is **no `ΔH_rxn` source term**: on the formation
 datum the heat of reaction is already inside `H`, and an adiabatic reactor conserves it
-(`Q_kW = 0` exactly -- while the outlet stays in the feed's phase: the march prices `H` on
-the feed's phase rung, and the outlet is published at its OWN equilibrium, C73, see `cstr`).
+(`Q_kW = 0` exactly, whatever phase the product leaves in: since C77 every point of the
+march is resolved at its own (T, P, z) -- local phase equilibrium along the bed -- and `T`
+is recovered on the surface the outlet is published and priced on, see `cstr`).
 `T(V)` lands in the axial profile — a hot spot is something you
 *see*.  Requires `standardThermochemistry` on every reacting species (a fictitious toy has no
 elements datum → refused, loudly).  Example: `pfr04_adiabatic` (esterification, +105 K).
