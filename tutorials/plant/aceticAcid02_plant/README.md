@@ -115,11 +115,11 @@ ideal-condensable reactor and the gas-only recycle rather than of chemistry.
 
 ## 6. Sizing
 
-[`system/postDict`](system/postDict) sizes the units that are pieces of
+`system/postDict` sizes the units that are pieces of
 equipment — **sizing only, no costing**: pricing the plant is part of the
 optimisation. Every design number in it is an author-set assumption declared
 on its own line with its reason, and its header says which basis each item
-rests on. The sheets land in `design/<unit>/` after a run.
+rests on. After a run the sheets land in `design/`, one folder per unit.
 
 | unit | sized as | basis |
 |---|---|---|
@@ -142,7 +142,7 @@ rests on. The sheets land in `design/<unit>/` after a run.
 
 ## 7. Plant layout
 
-[`system/layoutDict`](system/layoutDict) is the plant's **plot plan**: where
+`system/layoutDict` is the plant's **plot plan**: where
 each sized item stands (plan centre `x`, `y`, base `z`, and which way it
 lies), the separation distances the case requires between kinds of
 equipment, the prevailing wind, and the hazardous-area (ATEX) zones around
@@ -150,7 +150,7 @@ the items that can release CO, methanol or acetic acid vapour. Every run
 checks it after the sizing pass: two items that overlap are **refused**; a
 pair closer than its declared distance, an ignition source inside a zone, or
 one downwind of a release is **announced**. Grammar and checks:
-[`docs/design/a-plant-layout-is-declared-and-checked.md`](../../../docs/design/a-plant-layout-is-declared-and-checked.md).
+`docs/design/a-plant-layout-is-declared-and-checked.md`.
 
 **Every distance, zone extent, wind value and position in the file is a
 placeholder — an author-set assumption for you to replace with your own site
