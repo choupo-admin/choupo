@@ -983,8 +983,9 @@ accepts today, and that is a policy call.
 > tests only declared ignition sources against declared envelopes.  OPEN
 > (finding): `docs/designGuide.tex` ~l.1932 quotes a ~15 m setback
 > attributed to IRI/GAP and API 521 beside "Choupo ships no spacing
-> table" -- to be reconciled (a cited indicative figure in prose, not data
-> the engine carries).
+> table" -- RECONCILED the same day: the guide now calls it an
+> order-of-magnitude orientation the engine does not carry, marks the cited
+> standards "not read here", and points to layoutDict and the EduTool.
 
 > **C73 + C74, AND TWO DECISIONS TAKEN (Vítor, 2026-10-17: "avança como
 > achares melhor", on the three open items after C72).**  Taken: (1)
