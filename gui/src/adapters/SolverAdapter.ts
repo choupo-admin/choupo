@@ -738,6 +738,17 @@ export interface PlantLayout {
   junctions?: LayoutJunction[];
   pipes?: LayoutPipe[];
   notRouted?: { stream: string; reason: string }[];
+  /** The engine's own counts (DEV.md 4c C81 carries them to the exported
+   *  page); absent on a result written before the engine published them. */
+  summary?: LayoutSummary;
+}
+
+/** What the engine counted on the layout it checked: items placed, sized but
+ *  unplaced, internal, findings, pipes routed and not routed, and the total
+ *  routed length (m). */
+export interface LayoutSummary {
+  placed: number; unplaced: number; internal: number; findings: number;
+  pipes: number; notRouted: number; pipeLength: number;
 }
 
 /** The rack the pipes run on: along plan x, its centre line at plan `y`, the

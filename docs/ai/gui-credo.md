@@ -491,6 +491,19 @@ plant-layout bench; it follows its parent through the browser's
 `storage` event and dims exactly as the parent does when the case has
 moved since the run it draws).
 
+A third use of the same Blob mechanics is a SAVED page rather than an
+opened one: "Export as page" on the 3D plant layout (DEV.md 4c C81 --
+Reports, the `?layout=` tab, the EduTools bench) writes ONE
+self-contained HTML file with a `download` name.  The engine's `layout {}`
+block rides in it as JSON data, the viewer is the app's own
+`layoutScene` + `mountLayoutScene` compiled with three.js into one inline
+script (`gui/scripts/layoutViewerPlugin.ts`, a lazy chunk loaded at the
+click), the tables come from the same rows the app draws
+(`case/layoutTables.ts`), and the page loads nothing from the network and
+carries three.js's MIT notice.  A STALE run is not exported -- the button
+stays visible, disabled, saying to run again -- because a shared file has
+no parent to dim against.
+
 ### Stream-name lookup
 Streams cross several naming conventions in the same case:
 - `flowsheetDict` connections: `concentration/condensate1` (slashes)

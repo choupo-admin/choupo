@@ -700,6 +700,7 @@ function shapeLayout(l: NonNullable<ResultPayload["layout"]>): PlantLayout {
     unplaced: arr(l.unplaced).filter((u): u is string => typeof u === "string"),
     internal: arr(l.internal).filter((u): u is string => typeof u === "string"),
     ...shapePipes(l),
+    ...shapeSummary(l),
   };
 }
 
@@ -745,6 +746,20 @@ function shapePipes(l: NonNullable<ResultPayload["layout"]>): Partial<PlantLayou
     notRouted: (Array.isArray(l.notRouted) ? l.notRouted : [])
       .map((n) => ({ stream: str(n.stream), reason: str(n.reason) })),
   };
+}
+
+//  THE SUMMARY the engine counts (placed, unplaced, internal, findings,
+//  pipes, notRouted, pipeLength): carried so a surface that SHOWS a count --
+//  the exported page's footer (DEV.md 4c C81) -- reads the engine's, never
+//  one it re-counted.  Absent, or with any count not a finite number: absent.
+function shapeSummary(l: NonNullable<ResultPayload["layout"]>): Partial<PlantLayout> {
+  const s = l.summary;
+  const fin = (v: unknown): v is number => typeof v === "number" && Number.isFinite(v);
+  if (!s || ![s.placed, s.unplaced, s.internal, s.findings, s.pipes, s.notRouted,
+               s.pipeLength].every(fin)) return {};
+  return { summary: { placed: s.placed as number, unplaced: s.unplaced as number,
+    internal: s.internal as number, findings: s.findings as number, pipes: s.pipes as number,
+    notRouted: s.notRouted as number, pipeLength: s.pipeLength as number } };
 }
 
 // Pass the emitted economics block through verbatim (the C++ already shapes it
@@ -934,6 +949,8 @@ interface ResultPayload {
       F_mass?: number; T?: number; P?: number; vf?: number;
       route?: number[][] }[];
     notRouted?: { stream?: string; reason?: string }[];
+    summary?: { placed?: number; unplaced?: number; internal?: number; findings?: number;
+      pipes?: number; notRouted?: number; pipeLength?: number };
   };
   economics?: {
     present?: boolean;

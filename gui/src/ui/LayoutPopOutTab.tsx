@@ -58,6 +58,7 @@ import {
 } from "../case/layoutPopOut.js";
 import { layoutScene } from "../case/plantLayout.js";
 import { ExpiredTabPanel } from "./ExpiredTabPanel.js";
+import { ExportLayoutButton } from "./ExportLayoutButton.js";
 import { PlantLayout3D } from "./plotting/PlantLayout3D.js";
 import { PlantLayoutLegend, PlantLayoutTables } from "./PlantLayoutTables.js";
 
@@ -111,11 +112,16 @@ export function LayoutPopOutTab() {
       <Box px="md" pt="sm" pb={4} style={{ flex: "0 0 auto" }}>
         <Group justify="space-between" align="baseline" wrap="wrap" gap="xs">
           <Title order={5}>{title}</Title>
-          <Text size="xs" c="dimmed">
-            {stash.source === "bench"
-              ? "Opened from the EduTools plant-layout bench; it redraws when the bench re-runs."
-              : "Opened from Reports → Plant layout (3D); it redraws when that case is run again."}
-          </Text>
+          <Group gap="xs" align="baseline" wrap="wrap">
+            <Text size="xs" c="dimmed">
+              {stash.source === "bench"
+                ? "Opened from the EduTools plant-layout bench; it redraws when the bench re-runs."
+                : "Opened from Reports → Plant layout (3D); it redraws when that case is run again."}
+            </Text>
+            {/* Export as page (DEV.md 4c C81): the stash this tab draws, saved
+                as one self-contained file; disabled while the run is stale. */}
+            <ExportLayoutButton layout={stash.layout} stale={stale} getStash={() => stash} />
+          </Group>
         </Group>
         {stale.stale && (
           <Alert color="yellow" variant="light" mt={6} py={6}

@@ -41,32 +41,30 @@ License
   3D view draws so a reader without WebGL loses nothing.
 \*---------------------------------------------------------------------------*/
 
+//  The words and cells come from case/layoutTables.ts (pure, since C81): the
+//  page "Export as page" writes draws the SAME rows, so what a student shares
+//  is what they saw.  This file only lays them out.
+
 import { Box, Group, ScrollArea, Table, Text } from "@mantine/core";
 
 import type { PlantLayout } from "../adapters/SolverAdapter.js";
-import { endName, phaseCss, PHASE_WORDS, phaseOf, SPEED_RULE, type Phase } from "../case/plantLayout.js";
-
-/** The particle each phase carries, as a word for the legend. */
-const PARTICLE_WORD: Record<Phase, string> = {
-  liquid: "spheres", vapour: "octahedra", twoPhase: "spheres and octahedra", unknown: "cubes",
-};
+import { phaseCss, PHASE_WORDS } from "../case/plantLayout.js";
+import {
+  FINDINGS_CAPTION, findingRows, itemRows, layoutNotes, LEGEND_CONTROLS, LEGEND_PHASES,
+  LEGEND_PIPES, LEGEND_SHAPES, PARTICLE_WORD, PIPE_REGISTER_CAPTION, pipeRegister,
+} from "../case/layoutTables.js";
 
 /** How to read the 3D view (shapes, zones, pipes, controls). */
 export function PlantLayoutLegend({ pipes = false }: { pipes?: boolean }) {
   return (
     <Box mb={6}>
       <Text size="xs" c="dimmed">
-        Declared in <code>system/layoutDict</code>.  Cylinders are items whose sizer published a
-        diameter and a length; boxes are footprints the case declared.  Translucent cylinders
-        are the declared hazardous-area zones (zone 0 densest and solid-edged, zone 1 wire,
-        zone 2 faint and dashed).  A label is the item id (⚠ marks an item the engine named in
-        a finding); hover an item or a pipe for the rest.  Drag to orbit, right-drag to pan,
-        wheel to zoom; Fit frames the plant again.
+        Declared in <code>system/layoutDict</code>.  {LEGEND_SHAPES}  {LEGEND_CONTROLS}
       </Text>
       {pipes && (
         <>
           <Group gap="md" mt={4} wrap="wrap">
-            {(["liquid", "vapour", "twoPhase"] as Phase[]).map((ph) => (
+            {LEGEND_PHASES.map((ph) => (
               <Group key={ph} gap={4} wrap="nowrap">
                 <span aria-hidden style={{ display: "inline-block", width: 14, height: 6,
                   borderRadius: 3, background: phaseCss(ph) }} />
@@ -74,10 +72,7 @@ export function PlantLayoutLegend({ pipes = false }: { pipes?: boolean }) {
               </Group>
             ))}
           </Group>
-          <Text size="xs" c="dimmed" mt={2}>
-            Pipes are routed and measured by the engine (up to the rack, along it, down), and
-            the particles move in the direction of flow; {SPEED_RULE}.  The Flow box stops them.
-          </Text>
+          <Text size="xs" c="dimmed" mt={2}>{LEGEND_PIPES}</Text>
         </>
       )}
     </Box>
@@ -88,24 +83,14 @@ export function PlantLayoutLegend({ pipes = false }: { pipes?: boolean }) {
  *  not route and why.  Every number is the engine's (the stream table's
  *  T, P and mass flow; the route's own length). */
 export function PipeRegister({ layout }: { layout: PlantLayout }) {
-  const pipes = layout.pipes ?? [];
-  const notRouted = layout.notRouted ?? [];
-  if (pipes.length === 0 && notRouted.length === 0) return null;
-  const fx = (v: number | undefined, d: number) =>
-    v === undefined || !Number.isFinite(v) ? "" : v.toFixed(d);
-  const total = pipes.reduce((a, p) => a + p.length, 0);
-  const k = layout.pipeRack;
+  const reg = pipeRegister(layout);
+  if (!reg) return null;
   return (
     <>
       <ScrollArea type="auto" mt="xs">
         <Table striped withTableBorder fz="xs" ff="monospace" miw={860} captionSide="top">
           <Table.Caption style={{ textAlign: "left" }}>
-            Pipe register: routed and measured by the engine; no pressure drop and no cost
-            yet (the next slice).
-            {k && (k.declared
-              ? <> Rack declared by the case at y = {k.y.toFixed(1)} m, {k.elevation.toFixed(1)} m up.</>
-              : <> No rack declared: the engine&apos;s stated default at y = {k.y.toFixed(1)} m,
-                  {" "}{k.elevation.toFixed(1)} m up.</>)}
+            {PIPE_REGISTER_CAPTION}{reg.rack ? ` ${reg.rack}` : ""}
           </Table.Caption>
           <Table.Thead><Table.Tr>
             <Table.Th>Stream</Table.Th>
@@ -117,40 +102,35 @@ export function PipeRegister({ layout }: { layout: PlantLayout }) {
             <Table.Th ta="right">Length (m)</Table.Th>
           </Table.Tr></Table.Thead>
           <Table.Tbody>
-            {pipes.map((p) => {
-              const ph = phaseOf(p.vf);
-              return (
-                <Table.Tr key={p.stream}>
-                  <Table.Td>{p.label ? `${p.stream} (${p.label})` : p.stream}</Table.Td>
-                  <Table.Td>{endName(p.fromKind, p.from)} → {endName(p.toKind, p.to)}</Table.Td>
-                  <Table.Td>
-                    <span aria-hidden style={{ display: "inline-block", width: 10, height: 6,
-                      borderRadius: 3, marginRight: 4, background: phaseCss(ph) }} />
-                    {PHASE_WORDS[ph]}
-                  </Table.Td>
-                  <Table.Td ta="right">{fx(p.T, 1)}</Table.Td>
-                  <Table.Td ta="right">{p.P === undefined ? "" : fx(p.P / 1e5, 2)}</Table.Td>
-                  <Table.Td ta="right">{p.F_mass === undefined ? "" : p.F_mass.toPrecision(4)}</Table.Td>
-                  <Table.Td ta="right">
-                    {p.length.toFixed(1)}{p.routedBy === "waypoints" ? " (declared route)" : ""}
-                  </Table.Td>
-                </Table.Tr>
-              );
-            })}
-            {pipes.length > 0 && (
+            {reg.rows.map((r) => (
+              <Table.Tr key={r.stream}>
+                <Table.Td>{r.stream}</Table.Td>
+                <Table.Td>{r.ends}</Table.Td>
+                <Table.Td>
+                  <span aria-hidden style={{ display: "inline-block", width: 10, height: 6,
+                    borderRadius: 3, marginRight: 4, background: phaseCss(r.phase) }} />
+                  {r.phaseWord}
+                </Table.Td>
+                <Table.Td ta="right">{r.T}</Table.Td>
+                <Table.Td ta="right">{r.P}</Table.Td>
+                <Table.Td ta="right">{r.flow}</Table.Td>
+                <Table.Td ta="right">{r.length}</Table.Td>
+              </Table.Tr>
+            ))}
+            {reg.total && (
               <Table.Tr>
-                <Table.Td colSpan={6} ta="right">{pipes.length} pipes, in all</Table.Td>
-                <Table.Td ta="right">{total.toFixed(1)}</Table.Td>
+                <Table.Td colSpan={6} ta="right">{reg.total.label}</Table.Td>
+                <Table.Td ta="right">{reg.total.length}</Table.Td>
               </Table.Tr>
             )}
           </Table.Tbody>
         </Table>
       </ScrollArea>
-      {notRouted.length > 0 && (
+      {reg.notRouted.length > 0 && (
         <Text size="xs" c="dimmed" mt={4} component="div">
           Not routed (the engine&apos;s reasons):
           <ul style={{ margin: "2px 0 0 18px", padding: 0 }}>
-            {notRouted.map((n) => <li key={n.stream}><code>{n.stream}</code>: {n.reason}</li>)}
+            {reg.notRouted.map((n) => <li key={n.stream}><code>{n.stream}</code>: {n.reason}</li>)}
           </ul>
         </Text>
       )}
@@ -160,17 +140,15 @@ export function PipeRegister({ layout }: { layout: PlantLayout }) {
 
 /** The findings, the placed items and the notes on what was not placed. */
 export function PlantLayoutTables({ layout }: { layout: PlantLayout }) {
-  const f2 = (v: number) => (Number.isFinite(v) ? v.toFixed(2) : "?");
+  const findings = findingRows(layout);
+  const notes = layoutNotes(layout);
   return (
     <>
       <PipeRegister layout={layout} />
-      {layout.findings.length > 0 && (
+      {findings.length > 0 && (
         <ScrollArea type="auto" mt="xs">
           <Table striped withTableBorder fz="xs" miw={760} captionSide="top">
-            <Table.Caption style={{ textAlign: "left" }}>
-              Findings -- announced by the engine, never refused: a layout that is too close
-              is a draft the student must see and defend.
-            </Table.Caption>
+            <Table.Caption style={{ textAlign: "left" }}>{FINDINGS_CAPTION}</Table.Caption>
             <Table.Thead><Table.Tr>
               <Table.Th>Finding</Table.Th>
               <Table.Th ta="right">Measured (m)</Table.Th>
@@ -178,11 +156,11 @@ export function PlantLayoutTables({ layout }: { layout: PlantLayout }) {
               <Table.Th>What the engine said</Table.Th>
             </Table.Tr></Table.Thead>
             <Table.Tbody>
-              {layout.findings.map((f) => (
-                <Table.Tr key={f.id}>
+              {findings.map((f, i) => (
+                <Table.Tr key={layout.findings[i]!.id}>
                   <Table.Td ff="monospace">{f.kind}</Table.Td>
-                  <Table.Td ta="right" ff="monospace">{f.kind === "outsideArea" || f.kind === "deadRule" || f.kind === "sizingRefused" ? "" : f2(f.value)}</Table.Td>
-                  <Table.Td ta="right" ff="monospace">{f.kind === "outsideArea" || f.kind === "sizingRefused" ? "" : f2(f.limit)}</Table.Td>
+                  <Table.Td ta="right" ff="monospace">{f.measured}</Table.Td>
+                  <Table.Td ta="right" ff="monospace">{f.declared}</Table.Td>
                   <Table.Td>{f.message}</Table.Td>
                 </Table.Tr>
               ))}
@@ -203,37 +181,28 @@ export function PlantLayoutTables({ layout }: { layout: PlantLayout }) {
             <Table.Th>Hazard</Table.Th>
           </Table.Tr></Table.Thead>
           <Table.Tbody>
-            {layout.items.map((i) => (
-              <Table.Tr key={i.id}>
-                <Table.Td>{i.id}</Table.Td>
-                <Table.Td>{i.nonProcess ? `${i.kind} (non-process)` : i.kind}</Table.Td>
-                <Table.Td>{i.sector}</Table.Td>
-                <Table.Td>{i.shape} {i.orientation}</Table.Td>
-                <Table.Td ta="right">{f2(i.x)}, {f2(i.y)}, {f2(i.z)}</Table.Td>
-                <Table.Td ta="right">{f2(i.dx)} x {f2(i.dy)} x {f2(i.dz)}</Table.Td>
-                <Table.Td>{i.footprintFrom === "published" ? "its own sizing" : "declared"}</Table.Td>
-                <Table.Td>
-                  {[i.release ? `release (zones ${i.release.zones.map((z) => z.zone).join(", ") || "none"})` : "",
-                    i.ignition ? "ignition" : ""].filter(Boolean).join("; ")}
-                </Table.Td>
+            {itemRows(layout).map((r) => (
+              <Table.Tr key={r.id}>
+                <Table.Td>{r.id}</Table.Td>
+                <Table.Td>{r.kind}</Table.Td>
+                <Table.Td>{r.sector}</Table.Td>
+                <Table.Td>{r.shape}</Table.Td>
+                <Table.Td ta="right">{r.position}</Table.Td>
+                <Table.Td ta="right">{r.extents}</Table.Td>
+                <Table.Td>{r.sizeFrom}</Table.Td>
+                <Table.Td>{r.hazard}</Table.Td>
               </Table.Tr>
             ))}
           </Table.Tbody>
         </Table>
       </ScrollArea>
-      {(layout.unplaced.length > 0 || layout.internal.length > 0) && (
+      {(notes.unplaced || notes.internal) && (
         <Text size="xs" c="dimmed" mt={4}>
-          {layout.unplaced.length > 0 && <>Sized but not placed: {layout.unplaced.join(", ")}.  </>}
-          {layout.internal.length > 0 && <>Inside or on another item, never placed alone: {layout.internal.join(", ")}.</>}
+          {notes.unplaced && <>{notes.unplaced}  </>}
+          {notes.internal}
         </Text>
       )}
-      {layout.separation.length > 0 && (
-        <Text size="xs" c="dimmed" mt={4}>
-          Separation distances are the case's own
-          ({layout.separation.map((t) => t.source).join("; ")}).
-          {layout.wind && <>  Wind: {layout.wind.source}.</>}
-        </Text>
-      )}
+      {notes.sources && <Text size="xs" c="dimmed" mt={4}>{notes.sources}</Text>}
     </>
   );
 }
