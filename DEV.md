@@ -907,6 +907,45 @@ accepts today, and that is a policy call.
 
 ## 4c. Commissioned by Vítor (he ASKED for this; it is not a candidate)
 
+> **C84. AN EDUTOOL: MATERIALS OF CONSTRUCTION, SEALS AND GASKETS -- THE
+> PARETO (Vítor, 2026-10-17: "Temos algum EduTools sobre materiais
+> selantes de bombas vedantes etc? ... sem aço carbono não havia engenharia
+> química ... uma forma pareto de explicar quais os materiais mais usados
+> ... e como se escolhem.  Uma secção de metalurgia seria importante").**
+> Measured: no such EduTool (registry grep); the engine already uses
+> materials in costing (`F_M`) and in the vessel wall (allowable stress,
+> `VesselMechanics.H`), from records `carbonSteel`, `SS304`, `SS316`,
+> `aluminium` in data/standards/assets -- whose own headers say their
+> numbers are UNSOURCED teaching assertions (AP6).  Outline (stated to
+> Vítor the same turn): (1) why materials decide a plant -- corrosion,
+> strength at temperature, safety, cost; (2) the Pareto: carbon steel
+> first and why, then austenitic stainless (304/316, Mo for chlorides),
+> duplex, nickel alloys, titanium, copper alloys for exchangers, aluminium
+> for cryogenic service, non-metallics (PTFE/PFA linings, FRP,
+> glass-lined), refractories; (3) a metallurgy section -- crystal
+> structure, carbon in iron, ductile-brittle transition, creep, welding
+> and heat-affected zone, passivity; (4) how to choose -- corrosion rate
+> and allowance, temperature window, the failure mechanisms that bite in
+> chemical plants (chloride SCC, pitting, hydrogen embrittlement and high
+> temperature hydrogen attack, ammonia SCC of carbon steel -- the PEQ
+> ammonia project), cost; (5) seals and gaskets -- pump mechanical seals
+> (single/double, faces, elastomer compatibility), gaskets (spiral-wound,
+> graphite, PTFE), packing; (6) what Choupo does with a material -- F_M in
+> the cost, the allowable stress in the wall, and what is still
+> unsourced.  No tables from no-grant sources (NACE/ASME/API data are cited,
+> never transcribed); no new tutorial case.  MERGED 2026-10-17: EduTool
+> `materials` (Process design & economics), 23 steps over the six parts,
+> no trade names (UNS numbers), no table transcribed; bench re-runs
+> `ammoniaReactor03_equilibriumApproach` swapping one vessel's material
+> over the four records and shows the engine's wall, F_M, F_P and C_BM.
+> FINDINGS for the engine (C85): `maxT` is read and never compared
+> (aluminium on a 700 K converter, record maxT 500 K, no warning); the
+> Theory Guide mis-states the vessel rule three ways (theoryGuide.tex
+> ~23395 F_S = 4 vs S = sigma_y in VesselMechanics.cpp:30; ~23406 a 1.2
+> head factor never applied; ~23413 weight "consumed by Turton" while the
+> cost reads V_R); the record field `sigma_y` holds an ALLOWABLE stress;
+> the wall reads pressureDesign as gauge while F_P subtracts 1 bar.
+
 > **C83. AN EDUTOOL: THE RADIATION OF A POOL FIRE AND THE DISTANCE IT
 > SETS (Vítor, 2026-10-17: "Faz essa EduTool da radiação do incêndio de
 > poça, se achares importante" -- the commander judged it important: it is
