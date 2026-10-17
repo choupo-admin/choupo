@@ -934,7 +934,15 @@ accepts today, and that is a policy call.
 > register, and a footer naming the case, the run fingerprint and the
 > Choupo version.  GUI only, no engine change, no new case.  The download
 > goes through the GUI's existing save path (the pop-out Blob pattern of
-> gui-credo).  Status: queued behind C80 (same scene component).
+> gui-credo).  MERGED 2026-10-17: `ExportLayoutButton` in Reports, the
+> `?layout=` pop-out and the EduTool bench; the page carries the engine's
+> `layout {}` verbatim, the app's own scene mapping and renderer compiled
+> with three.js into one script (`gui/scripts/layoutViewerPlugin.ts`,
+> `virtual:layout-viewer`, lazy), no network at all, footer with case, run
+> fingerprint, version, date and the three.js MIT notice; ~535 kB per
+> page.  A STALE run is not exported (the button says to re-run).
+> Headless Chromium: webgl2 canvas, no errors, no requests.  NOT seen in
+> a real browser.
 
 > **STANDING RULE (Vítor, 2026-10-17: "Não cries mais casos novos!!!!
 > Usa o que já está!").**  No new tutorial case is created -- by the
