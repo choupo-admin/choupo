@@ -48,6 +48,7 @@ import { fingerprintCase } from "../../case/staleness.js";
 import type { CaseFiles } from "../../case/types.js";
 import { openLayoutPopOut } from "../../state/useLayoutPopOut.js";
 import { PlantLayout3D } from "../plotting/PlantLayout3D.js";
+import { PipeRegister } from "../PlantLayoutTables.js";
 import { KnobField, KnobNumber, PanelNote } from "./knobPanel.js";
 import {
   LAYOUT_WITNESS, PRESETS, SHIPPED, layoutLines, layoutOverrides,
@@ -225,12 +226,16 @@ function LayoutBench(): JSX.Element {
             </Group>
           )}
           <PlantLayout3D scene={scene} height={420} />
+          {layout && <PipeRegister layout={layout} />}
           <PanelNote>
             Cylinders are items whose sizer published a diameter and a length; boxes
             are footprints the case declared.  Translucent cylinders are the declared
             zones (zone 1 wire, zone 2 faint and dashed); an item the engine named in
-            a finding is outlined and labelled FINDING; the arrow is the wind.  Drag
-            to orbit, right-drag to pan, wheel to zoom.  Every position, distance and
+            a finding is outlined and its label carries ⚠; the arrow is the wind.
+            The tubes are the pipes the engine routed over its rack, coloured and
+            shaped by phase, the particles moving in the direction of flow (faster
+            for a larger mass flow, stylised).  Hover anything for its details;
+            drag to orbit, right-drag to pan, wheel to zoom, Fit to frame the plant.  Every position, distance and
             zone extent in this witness is an author-set assumption for the exercise,
             not a value from any standard.
           </PanelNote>

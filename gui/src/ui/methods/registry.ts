@@ -1302,7 +1302,8 @@ export const METHOD_TOOLS: MethodTool[] = [
       + "a short distance announced, an overlap refused; the prevailing wind "
       + "(ignition sources upwind of releases) and the hazardous-area zones "
       + "0, 1 and 2 as envelopes the case declares; and what the model does "
-      + "not do -- pipe lengths, structures, drainage.",
+      + "not do -- pipe cost and pressure drop (the engine routes and measures "
+      + "the pipes, and the page shows their lengths), structures, drainage.",
     theory: "ch:size-vessel",
   },
   //  Route screening (C24, 2026-09-29): three known routes to methanol

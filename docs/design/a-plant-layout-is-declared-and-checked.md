@@ -247,11 +247,148 @@ converts unsourced into falsely sourced."*
 
 ## 9. Not in this slice, named
 
-Pipe lengths and their cost (the next slice: it needs a pipe-rack model and a
-routing rule); structures, racks and multi-level steel (elevation is declared
-but nothing checks access); rotation by an arbitrary angle; a stacking or
-support check; whether any declared distance or zone extent is SENSIBLE --
-by design that is the author's to defend.
+Pipe lengths were the next slice and are §11 below.  Still not here: a
+pipe's pressure drop and its cost (the slice after §11: the route and its
+length now exist for them to read); structures and multi-level steel
+(elevation is declared but nothing checks access); rotation by an arbitrary
+angle; a stacking or support check; whether any declared distance or zone
+extent is SENSIBLE -- by design that is the author's to defend.
+
+## 11. Slice 3 -- the pipes, and the fluid seen moving (DEV.md 4c C80)
+
+Vítor, 2026-10-17: *"os meus alunos tinham as colunas implantadas com as
+tubagens ligadas entre eles e até tinham o fluido a passar
+estilizadamente!!!"*.  The slice §9 named, widened to what his students'
+drawing showed.  THE ENGINE ROUTES AND MEASURES; THE GUI DRAWS.
+
+**Which streams.**  Every MATERIAL stream of the flattened topology (each
+unit's `in`/`inputs` and `outputs`; one pipe per stream IDENTITY, the stream
+table's rule) is either ROUTED or listed in `notRouted` with its reason --
+never dropped in silence.  A pipe's two ends are one of:
+
+* a **placed item** -- reached at its NOZZLE, the item's plan centre at its
+  TOP (z + its height, standing or lying).  Stylised: no sizer publishes a
+  nozzle schedule.  A unit that realises several items is piped through the
+  FIRST of them the case placed (the order of `items`), so a column's
+  overhead loop and a second storage tank are not drawn (named, §9);
+* a **junction** -- an UNSIZED `mixer`, `splitter` or `valve` (the one list,
+  `junctionTypes()`): a tee or a fitting on the line, with no footprint,
+  drawn as a node on the rack's centre line at its lowest tier, at the MEAN
+  plan x of the placed items it is piped to (each unit's first placed item).
+  A junction piped only to other junctions takes their mean, in passes, in
+  flowsheet order -- deterministic, never guessed;
+* a **battery limit** -- a plant inlet (no producer) arrives at the rack's
+  west end `xStart`, a plant outlet (no consumer) leaves at its east end
+  `xEnd`.
+
+Any other end leaves the stream not routed: an unsized unit that is not a
+junction (on `ammonia02_full_plant`, the storage tanks T101 and T201 nobody
+sized, so `makeup`, `makeupStored`, `productNH3` and `productStored` are
+listed with that reason), a sized unit whose items are not placed, a refused
+sizer, a stream consumed by two units.
+
+**The route** is deterministic and ORTHOGONAL: up (or down, for an item
+taller than the rack) from the source nozzle to the pipe's LANE, across to
+the lane, along the rack (plan x), across to the target, down to its nozzle.
+The polyline is published in the DIRECTION OF FLOW (the producer's end
+first), corners only; its length is the polyline's own.
+
+**The rack** runs along plan x.  A case declares it whole:
+
+```
+pipeRack
+{
+    y            -2 m;      // plan y of its centre line
+    elevation    7 m;       // its lowest tier
+    laneSpacing  0.6 m;     // lane to lane, across the rack
+    lanesPerTier 6;
+    tierSpacing  1.2 m;     // tier to tier, upward
+    xStart       -14 m;     // west end: the inlets' battery limit
+    xEnd         100 m;     // east end: the outlets'
+    reason       "...";
+}
+```
+
+-- every key required once the block is present (a partial rack refuses by
+name; `lanesPerTier` a whole number >= 1; `xStart < xEnd`).  Absent, the
+engine uses a STATED DEFAULT and ANNOUNCES it once (stderr, the caveat block,
+the result JSON): the mean plan y of the placed PROCESS items (a building off
+the plot must not drag the rack to it), 6 m up, lanes 0.6 m apart, 6 per
+tier, tiers 1.5 m apart, 5 m past the outermost process footprint at each
+end.  Drafting values, said as such.  **Lanes** are handed out in the order
+the flowsheet first names the streams (each unit's inlets, then its
+outlets): lane k sits in tier k / lanesPerTier, at position k mod
+lanesPerTier across the rack, centred on its line.
+
+**An override** replaces one pipe's route with declared WAYPOINTS:
+
+```
+pipes { rawLiquid { waypoints ( { x 56 m; y -6 m; z 10 m; }
+                                { x 59.5 m; y -6 m; z 10 m; } ); } }
+```
+
+The route is then the source nozzle, the waypoints, the target nozzle (a
+battery limit adds no point of its own), and every segment must run along
+ONE axis or the case is refused naming the segment and where it begins and
+ends.  A key naming no stream, or a stream with no routable end, refuses.
+
+**Published** inside `layout {}` (it exists only with a layout): `pipeRack`
+(with `declared`), `junctions` (unit, type, x, y, z), `pipes` (one line per
+pipe: `pipe:<stream>` id, the stream identity and its plant label, each
+end's kind / id / unit, `routedBy` rack|waypoints, `lane`, `length`, the
+stream's `F_mass`, `T`, `P`, `vf` read from `streams` with the stream
+table's own mass-flow sum -- one home, `overallMassFlow` in the emitter --
+and the `route`), `notRouted` (stream, reason), and the summary's `pipes`,
+`notRouted` and total `pipeLength`.  There is NO `direction` field: the
+route runs in the direction of flow, and a field with one possible value is
+doctrine written in the wrong place (the amplifier rule).  NO pressure drop
+and NO cost.
+
+**Pinned** by the existing `layout` golden kind, argued rather than a new
+kind: the pipes are lines of the same block, one record per line with an
+`"id"`, so one reader serves both.  Each pipe's `length` and its two ends
+(`from`, `to`, as words), each junction's position, the rack's line and the
+summary counts and total.  NOT pinned there: the stream's flow, T, P and vf
+(the `stream` kind pins them in their one home) and the corner points (the
+length and the gate's orthogonality arm hold them).  Appended, none moved:
+52 rows on `ammonia02_full_plant`, 85 on `greenAmmoniaPEQ_baseCase`, 64 on
+`aceticAcid02_plant`; each case run against its golden before the append.
+
+**The cases.**  `greenAmmoniaPEQ_baseCase` and `aceticAcid02_plant` DECLARE
+a rack, labelled as an author-set assumption for the students to replace
+(the C76 posture); `ammonia02_full_plant` declares none and runs on the
+announced default -- one witness per route.
+
+**The draft tool** carries a declared rack as declared, leaves a commented
+`pipeRack` template when none is declared (it never writes values for one),
+and says it did NOT carry `pipes` overrides: they were drawn around
+positions the draft moves.
+
+**The GUI** (`case/plantLayout.ts`, pure and tested;
+`ui/plotting/PlantLayout3D.tsx`; the register in `ui/PlantLayoutTables.tsx`,
+one home for Reports and the `?layout=` pop-out) draws each published route
+as a translucent tube, its phase read off the published vf (`phaseOf`:
+liquid vf <= 1e-6, vapour vf >= 1 - 1e-6, two-phase between) in THREE
+channels -- colour, particle SHAPE (spheres, octahedra, the two alternating)
+and the legend's WORD; the rack and the junctions from the published block;
+and particles moving along the route in the direction of flow at a speed
+`1.2 + 2.4 log10(1 + m/(kg/s))` m/s -- monotone in the published mass flow,
+stylised, said in the legend.  A Flow toggle stops them, and a reader whose
+system asks for reduced motion starts with it off.  The pipe register lists
+stream, from -> to, phase, T, P, flow and length, then every stream not
+routed with the engine's reason.  Nothing is routed or measured in the GUI.
+Riding with it, at Vítor's request from the live site: a label is the item
+id alone (a flagged item's carries a warning glyph; everything else is the
+hover tooltip), labels that collide on screen are DECLUTTERED by priority
+(findings, items, the rest, zone labels -- the zone labels off by default),
+and the camera opens FITTED on the plant (the placed process items and the
+pipes) with a Fit button and fitted Plan and Elevation presets.
+
+**Not here, named:** a pipe's diameter, pressure drop and cost; a clash check
+of a route against an item it passes through or over (a tower taller than
+the rack is crossed by its own lanes); the internal piping of a multi-item
+unit; a rack along plan y or more than one rack; a pipe consumed by two
+units.  Gate: `check_plant_layout` arms (h) and (i).
 
 ## 10. Slice 2 -- the EduTool lesson
 

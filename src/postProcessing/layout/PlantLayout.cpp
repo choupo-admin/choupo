@@ -393,6 +393,455 @@ void setExtents(LayoutItem& it, scalar D_or_len, scalar L_or_width,
     it.dz = height;
 }
 
+//  ---- the pipes (DEV.md 4c C80) ----------------------------------------
+
+//  THE UNSIZED UNITS A PIPE PASSES THROUGH.  A mixer and a splitter are a
+//  tee on a line, a valve a fitting on it: none has a footprint, so each is
+//  drawn as a JUNCTION -- a node on the rack -- rather than left as a hole
+//  in the plant's piping.  Any other unsized unit (a storage tank nobody
+//  sized, a pump with no sizer) is NOT a junction: a stream touching it is
+//  listed as not routed, with that reason, and no place is invented for it.
+//  The ONE list, here, because the layout is the only reader that asks.
+const std::set<std::string>& junctionTypes()
+{
+    static const std::set<std::string> s = { "mixer", "splitter", "valve" };
+    return s;
+}
+
+//  THE STATED DEFAULT RACK, used when the case declares no `pipeRack`, and
+//  ANNOUNCED once.  Drafting values, said as such -- not a standard's.
+constexpr scalar kRackElevation   = 6.0;   // [m]
+constexpr scalar kRackLaneSpacing = 0.6;   // [m]
+constexpr int    kRackLanesPerTier = 6;
+constexpr scalar kRackTierSpacing = 1.5;   // [m]
+constexpr scalar kRackEndMargin   = 5.0;   // [m] beyond the outermost footprint
+
+using Pt = std::vector<scalar>;   // { plan x, plan y, elevation z }
+
+scalar segLength(const Pt& a, const Pt& b)
+{
+    return std::fabs(a[0] - b[0]) + std::fabs(a[1] - b[1])
+         + std::fabs(a[2] - b[2]);
+}
+
+//  How many of the three coordinates differ between two points.
+int axesMoved(const Pt& a, const Pt& b)
+{
+    int n = 0;
+    for (int k = 0; k < 3; ++k)
+        if (std::fabs(a[k] - b[k]) > kTol) ++n;
+    return n;
+}
+
+//  Drop repeated points, then merge collinear runs, so the published
+//  polyline holds only its corners (its length is unchanged by either).
+std::vector<Pt> tidy(const std::vector<Pt>& in)
+{
+    std::vector<Pt> a;
+    for (const auto& p : in)
+        if (a.empty() || axesMoved(a.back(), p) > 0) a.push_back(p);
+    if (a.size() < 3) return a;
+    std::vector<Pt> o{ a[0] };
+    for (std::size_t i = 1; i + 1 < a.size(); ++i)
+    {
+        const Pt& p = o.back(); const Pt& q = a[i]; const Pt& s = a[i + 1];
+        //  q is a corner unless p -> q and q -> s move along the same axis.
+        bool straight = false;
+        for (int k = 0; k < 3; ++k)
+        {
+            bool pq = true, qs = true;
+            for (int m2 = 0; m2 < 3; ++m2)
+                if (m2 != k)
+                {
+                    if (std::fabs(p[m2] - q[m2]) > kTol) pq = false;
+                    if (std::fabs(q[m2] - s[m2]) > kTol) qs = false;
+                }
+            if (pq && qs) { straight = true; break; }
+        }
+        if (!straight) o.push_back(q);
+    }
+    o.push_back(a.back());
+    return o;
+}
+
+LayoutPipeRack readRack(const Dictionary& d, const PlantLayoutRecord& rec)
+{
+    LayoutPipeRack k;
+    if (d.found("pipeRack"))
+    {
+        const auto rd = d.subDict("pipeRack");
+        const std::string w = "pipeRack";
+        k.declared     = true;
+        k.y            = length(*rd, "y",           w);
+        k.elevation    = length(*rd, "elevation",   w);
+        k.laneSpacing  = length(*rd, "laneSpacing", w);
+        k.tierSpacing  = length(*rd, "tierSpacing", w);
+        k.xStart       = length(*rd, "xStart",      w);
+        k.xEnd         = length(*rd, "xEnd",        w);
+        k.reason       = text(*rd, "reason", w);
+        if (!rd->found("lanesPerTier"))
+            refuse(w + ": `lanesPerTier` is not declared (a count, e.g."
+                   " `lanesPerTier 6;`)");
+        const scalar n = rd->lookupScalar("lanesPerTier");
+        if (!(n >= 1.0) || n != std::floor(n))
+            refuse(w + ": `lanesPerTier " + num(n) + ";` -- a count of lanes,"
+                   " a whole number of at least 1");
+        k.lanesPerTier = int(n);
+        if (k.laneSpacing <= 0 || k.tierSpacing <= 0)
+            refuse(w + ": `laneSpacing` and `tierSpacing` must be positive");
+        if (k.elevation < 0)
+            refuse(w + ": `elevation` is a height above grade and cannot be"
+                   " negative");
+        if (k.xEnd <= k.xStart)
+            refuse(w + ": `xStart` (" + num(k.xStart) + " m, where the plant's"
+                   " inlets arrive) must lie west of `xEnd` (" + num(k.xEnd)
+                   + " m, where its outlets leave)");
+        return k;
+    }
+    //  The stated default: on the mean plan y of the placed PROCESS items
+    //  (a building off the plot must not drag the rack to it), at the
+    //  drafting elevation, running past the outermost process footprint by
+    //  the stated margin at both ends.
+    scalar sy = 0, xmin = 1e300, xmax = -1e300;
+    std::size_t n = 0;
+    for (const auto& i : rec.items)
+    {
+        if (i.nonProcess) continue;
+        sy += i.y; ++n;
+        xmin = std::min(xmin, i.x - 0.5 * i.dx);
+        xmax = std::max(xmax, i.x + 0.5 * i.dx);
+    }
+    if (n == 0)
+    {
+        for (const auto& i : rec.items)
+        {
+            sy += i.y; ++n;
+            xmin = std::min(xmin, i.x - 0.5 * i.dx);
+            xmax = std::max(xmax, i.x + 0.5 * i.dx);
+        }
+    }
+    k.y            = n ? sy / scalar(n) : 0.0;
+    k.elevation    = kRackElevation;
+    k.laneSpacing  = kRackLaneSpacing;
+    k.lanesPerTier = kRackLanesPerTier;
+    k.tierSpacing  = kRackTierSpacing;
+    k.xStart       = (n ? xmin : 0.0) - kRackEndMargin;
+    k.xEnd         = (n ? xmax : 0.0) + kRackEndMargin;
+    k.reason       = "the engine's stated default (no pipeRack declared)";
+    return k;
+}
+
+//  Lane k's position on the rack: across the rack within a tier, centred on
+//  the rack's line; the tiers stacked upward from its elevation.
+void laneAt(const LayoutPipeRack& k, int lane, scalar& y, scalar& z)
+{
+    const int tier = lane / k.lanesPerTier;
+    const int pos  = lane % k.lanesPerTier;
+    y = k.y + (scalar(pos) - 0.5 * scalar(k.lanesPerTier - 1)) * k.laneSpacing;
+    z = k.elevation + scalar(tier) * k.tierSpacing;
+}
+
+//  One end of a pipe as the layout can reach it.
+struct End
+{
+    std::string kind;      // item | junction | batteryLimit | "" (unreachable)
+    std::string at;        // item id | junction unit | inlet | outlet
+    std::string unit;      // flowsheet unit, empty at a battery limit
+    Pt          point;     // the nozzle, the junction node; empty at a limit
+    std::string why;       // why it cannot be reached (kind empty)
+};
+
+void routePipes(const Dictionary& d, const SimulationResult& r,
+                PlantLayoutRecord& rec)
+{
+    rec.pipeRack = readRack(d, rec);
+    const auto& rack = rec.pipeRack;
+
+    //  Placed items per unit, in the order the case declared them; the
+    //  sized items per unit; the unit's type.
+    std::map<std::string, std::vector<const LayoutItem*>> placedOf;
+    for (const auto& i : rec.items)
+    {
+        if (i.nonProcess) continue;
+        auto s = r.sizings.find(i.id);
+        if (s != r.sizings.end()) placedOf[s->second.unitName].push_back(&i);
+    }
+    std::map<std::string, std::vector<std::string>> sizedOf;
+    for (const auto& [id, s] : r.sizings) sizedOf[s.unitName].push_back(id);
+    std::map<std::string, std::string> typeOf;
+    for (const auto& u : r.topology) typeOf[u.name] = u.type;
+
+    //  The streams, in the order the flowsheet first names them (each
+    //  unit's inlets, then its outlets): a feed is met before its products.
+    std::vector<std::string> order;
+    std::map<std::string, std::string> producer;
+    std::map<std::string, std::vector<std::string>> consumers;
+    std::set<std::string> seen;
+    for (const auto& u : r.topology)
+    {
+        for (const auto& s : u.ins)
+        {
+            consumers[s].push_back(u.name);
+            if (seen.insert(s).second) order.push_back(s);
+        }
+        for (const auto& s : u.outs)
+        {
+            producer[s] = u.name;
+            if (seen.insert(s).second) order.push_back(s);
+        }
+    }
+
+    //  ---- the junctions, and where each stands on the rack -------------
+    auto isJunction = [&](const std::string& unit) {
+        return !placedOf.count(unit) && !sizedOf.count(unit)
+            && junctionTypes().count(typeOf[unit]);
+    };
+    //  Neighbours: the units at the other end of every stream it touches.
+    std::map<std::string, std::vector<std::string>> nbr;
+    for (const auto& s : order)
+    {
+        auto p = producer.find(s);
+        if (p == producer.end()) continue;
+        for (const auto& c : consumers[s])
+        {
+            nbr[p->second].push_back(c);
+            nbr[c].push_back(p->second);
+        }
+    }
+    //  THE RULE: a junction stands at the MEAN plan x of the placed items it
+    //  is piped to (each unit's first placed item), on the rack's centre
+    //  line, at the rack's elevation.  A junction piped to none takes the
+    //  mean x of the junctions next to it that already have one, in passes,
+    //  in the flowsheet's order -- so it is deterministic and never guessed.
+    std::map<std::string, scalar> jx;
+    std::vector<std::string> jOrder;
+    for (const auto& u : r.topology)
+        if (isJunction(u.name)) jOrder.push_back(u.name);
+    for (const auto& j : jOrder)
+    {
+        scalar sx = 0; std::size_t n = 0;
+        for (const auto& o : nbr[j])
+        {
+            auto p = placedOf.find(o);
+            if (p == placedOf.end()) continue;
+            sx += p->second.front()->x; ++n;
+        }
+        if (n) jx[j] = sx / scalar(n);
+    }
+    for (std::size_t pass = 0; pass < jOrder.size(); ++pass)
+    {
+        bool moved = false;
+        for (const auto& j : jOrder)
+        {
+            if (jx.count(j)) continue;
+            scalar sx = 0; std::size_t n = 0;
+            for (const auto& o : nbr[j])
+                if (jx.count(o)) { sx += jx[o]; ++n; }
+            if (n) { jx[j] = sx / scalar(n); moved = true; }
+        }
+        if (!moved) break;
+    }
+    for (const auto& j : jOrder)
+        if (jx.count(j))
+            rec.junctions.push_back({ j, typeOf[j], jx[j], rack.y,
+                                      rack.elevation });
+
+    //  ---- one end of a stream ------------------------------------------
+    auto endOf = [&](const std::string& unit, bool inlet) {
+        End e;
+        if (unit.empty())
+        {
+            e.kind = "batteryLimit";
+            e.at   = inlet ? "inlet" : "outlet";
+            return e;
+        }
+        e.unit = unit;
+        auto p = placedOf.find(unit);
+        if (p != placedOf.end())
+        {
+            //  THE NOZZLE: a unit realising several items is piped through
+            //  the FIRST of them the case placed (the order of `items`); the
+            //  pipe enters and leaves at that item's plan centre, at its TOP
+            //  (z + its height, standing or lying).  Stylised: no nozzle
+            //  schedule is published by any sizer.
+            const LayoutItem& i = *p->second.front();
+            e.kind  = "item";
+            e.at    = i.id;
+            e.point = { i.x, i.y, i.z + i.dz };
+            return e;
+        }
+        if (jx.count(unit))
+        {
+            e.kind  = "junction";
+            e.at    = unit;
+            e.point = { jx[unit], rack.y, rack.elevation };
+            return e;
+        }
+        auto sz = sizedOf.find(unit);
+        if (refusedSizingOf(r, unit))
+            e.why = "unit `" + unit + "`'s sizer refused (see the sizing"
+                    " table), so it has no item on the plot plan";
+        else if (sz != sizedOf.end())
+        {
+            std::string ids;
+            for (const auto& id : sz->second) ids += (ids.empty() ? "" : ", ") + id;
+            e.why = "unit `" + unit + "` is sized (" + ids + ") but none of"
+                    " its items is placed on the plot plan";
+        }
+        else if (junctionTypes().count(typeOf[unit]))
+            e.why = "junction `" + unit + "` (" + typeOf[unit] + ") is piped"
+                    " to no placed item, directly or through another junction,"
+                    " so it has no place on the rack";
+        else
+            e.why = "unit `" + unit + "` (" + typeOf[unit] + ") has no sized"
+                    " item to place and is not a junction (mixer, splitter,"
+                    " valve)";
+        return e;
+    };
+
+    //  ---- the declared overrides ---------------------------------------
+    std::map<std::string, std::vector<Pt>> overrides;
+    if (d.found("pipes"))
+    {
+        const auto pd = d.subDict("pipes");
+        for (const auto& s : pd->keys())
+        {
+            if (!seen.count(s))
+            {
+                std::vector<std::string> known(order.begin(), order.end());
+                refuse("pipes: `" + s + "` -- " + registryRefusal::message(
+                       "stream", s, known, "Accepted"));
+            }
+            const auto od = pd->subDict(s);
+            const std::string w = "pipes `" + s + "`";
+            if (!od->found("waypoints"))
+                refuse(w + ": `waypoints ( { x <m>; y <m>; z <m>; } ... );` is"
+                       " not declared -- an override IS its waypoints");
+            std::vector<Pt> pts;
+            std::size_t k = 0;
+            for (const auto& wd : od->lookupDictList("waypoints"))
+            {
+                const std::string ww = w + " waypoint " + std::to_string(++k);
+                pts.push_back({ length(*wd, "x", ww), length(*wd, "y", ww),
+                                length(*wd, "z", ww) });
+            }
+            if (pts.empty())
+                refuse(w + ": `waypoints` is empty -- declare at least one");
+            overrides[s] = pts;
+        }
+    }
+
+    //  ---- route ----------------------------------------------------------
+    int lane = 0;
+    for (const auto& s : order)
+    {
+        auto pIt = producer.find(s);
+        const std::string from = pIt == producer.end() ? "" : pIt->second;
+        const auto& cs = consumers[s];
+        if (cs.size() > 1)
+        {
+            std::string who;
+            for (const auto& c : cs) who += (who.empty() ? "" : ", ") + c;
+            rec.notRouted.push_back({ s, "consumed by " + std::to_string(cs.size())
+                                    + " units (" + who + "); a pipe has two ends" });
+            continue;
+        }
+        const std::string to = cs.empty() ? "" : cs.front();
+        const End a = endOf(from, true);
+        const End b = endOf(to, false);
+        if (a.kind.empty() || b.kind.empty())
+        {
+            const std::string why = a.kind.empty() ? a.why : b.why;
+            if (overrides.count(s))
+                refuse("pipes `" + s + "`: an override routes a pipe between"
+                       " two ends the layout reaches, and this stream has"
+                       " none: " + why);
+            rec.notRouted.push_back({ s, why });
+            continue;
+        }
+        LayoutPipe p;
+        p.stream = s;
+        auto lab = r.boundaryOutletLabelOf.find(s);
+        if (lab != r.boundaryOutletLabelOf.end()) p.label = lab->second;
+        p.fromKind = a.kind; p.from = a.at; p.fromUnit = a.unit;
+        p.toKind   = b.kind; p.to   = b.at; p.toUnit   = b.unit;
+
+        std::vector<Pt> pts;
+        auto ov = overrides.find(s);
+        if (ov != overrides.end())
+        {
+            //  A DECLARED ROUTE: the source's anchor, the waypoints, the
+            //  target's anchor -- a battery limit has no anchor of its own,
+            //  so there the route begins or ends at the case's own waypoint.
+            p.routedBy = "waypoints";
+            if (!a.point.empty()) pts.push_back(a.point);
+            for (const auto& q : ov->second) pts.push_back(q);
+            if (!b.point.empty()) pts.push_back(b.point);
+            for (std::size_t i = 1; i < pts.size(); ++i)
+                if (axesMoved(pts[i - 1], pts[i]) > 1)
+                {
+                    std::ostringstream o;
+                    o << "pipes `" << s << "`: segment " << i << " runs from ("
+                      << num(pts[i - 1][0]) << ", " << num(pts[i - 1][1]) << ", "
+                      << num(pts[i - 1][2]) << ") to (" << num(pts[i][0]) << ", "
+                      << num(pts[i][1]) << ", " << num(pts[i][2]) << ") m and"
+                         " moves along more than one axis -- a route is"
+                         " ORTHOGONAL; add the corner between them (the route"
+                         " begins at ";
+                    o << (a.point.empty() ? "the first waypoint"
+                          : "the top of `" + a.at + "`");
+                    o << " and ends at "
+                      << (b.point.empty() ? "the last waypoint"
+                          : "the top of `" + b.at + "`") << ")";
+                    refuse(o.str());
+                }
+        }
+        else
+        {
+            //  THE RACK ROUTE: up (or down) from the source to its lane, across
+            //  to the lane, along the rack, across to the target, down to it.
+            p.routedBy = "rack";
+            p.lane = lane++;
+            scalar ly = 0, lz = 0;
+            laneAt(rack, p.lane, ly, lz);
+            if (a.kind == "batteryLimit") pts.push_back({ rack.xStart, ly, lz });
+            else
+            {
+                pts.push_back(a.point);
+                pts.push_back({ a.point[0], a.point[1], lz });
+                pts.push_back({ a.point[0], ly, lz });
+            }
+            if (b.kind == "batteryLimit") pts.push_back({ rack.xEnd, ly, lz });
+            else
+            {
+                pts.push_back({ b.point[0], ly, lz });
+                pts.push_back({ b.point[0], b.point[1], lz });
+                pts.push_back(b.point);
+            }
+        }
+        p.route = tidy(pts);
+        for (std::size_t i = 1; i < p.route.size(); ++i)
+            p.length += segLength(p.route[i - 1], p.route[i]);
+        rec.pipes.push_back(p);
+    }
+
+    if (!rack.declared)
+        announce("info", "layout",
+            "no `pipeRack` is declared, so the " + std::to_string(rec.pipes.size())
+            + " pipe(s) are routed on the engine's STATED DEFAULT rack: along"
+              " plan x on the mean plan y of the placed process items (y = "
+            + num(rack.y) + " m), lowest tier at " + num(rack.elevation)
+            + " m, lanes " + num(rack.laneSpacing) + " m apart, "
+            + std::to_string(rack.lanesPerTier) + " per tier, tiers "
+            + num(rack.tierSpacing) + " m apart, from x = " + num(rack.xStart)
+            + " m (the inlets' battery limit) to x = " + num(rack.xEnd)
+            + " m (the outlets'), " + num(kRackEndMargin) + " m past the"
+              " outermost process footprint.  Drafting values, not a"
+              " standard's: declare `pipeRack { y; elevation; laneSpacing;"
+              " lanesPerTier; tierSpacing; xStart; xEnd; reason; }` in"
+              " system/layoutDict");
+}
+
 } // anonymous namespace
 
 // ===========================================================================
@@ -821,6 +1270,9 @@ PlantLayoutRecord evaluate(const Dictionary& d, const SimulationResult& r,
         announce("info", "layout", o.str());
     }
 
+    //  ---- the pipes (C80) ---------------------------------------------------
+    routePipes(d, r, rec);
+
     if (verbosity >= 2)
     {
         std::cout << "\n[layout] system/layoutDict: " << rec.items.size()
@@ -835,6 +1287,24 @@ PlantLayoutRecord evaluate(const Dictionary& d, const SimulationResult& r,
                       << num(i.y) << ", " << num(i.z) << ") m, extents "
                       << num(i.dx) << " x " << num(i.dy) << " x "
                       << num(i.dz) << " m (" << i.footprintFrom << ")\n";
+        scalar total = 0;
+        for (const auto& p : rec.pipes) total += p.length;
+        std::cout << "[layout] pipes: " << rec.pipes.size() << " routed ("
+                  << num(total) << " m in all), " << rec.notRouted.size()
+                  << " not routed; rack at y = " << num(rec.pipeRack.y)
+                  << " m, elevation " << num(rec.pipeRack.elevation) << " m ("
+                  << (rec.pipeRack.declared ? "declared" : "stated default")
+                  << ")\n";
+        for (const auto& p : rec.pipes)
+            std::cout << "  " << std::left << std::setw(22) << p.stream
+                      << std::setw(26) << (p.from + " -> " + p.to) << " "
+                      << std::right << std::setw(9) << num(p.length, 5)
+                      << " m  (" << p.routedBy
+                      << (p.lane >= 0 ? ", lane " + std::to_string(p.lane) : "")
+                      << ")\n";
+        for (const auto& n : rec.notRouted)
+            std::cout << "  " << std::left << std::setw(22) << n.stream
+                      << "not routed: " << n.reason << "\n";
     }
     return rec;
 }
@@ -874,6 +1344,11 @@ std::string draft(const SimulationResult& r, const Dictionary* previous)
     //  What the student already declared, carried rather than re-invented.
     std::vector<LayoutSeparationTable> sep;
     LayoutWind wind;
+    //  A rack the author DECLARED is carried as declared (its values do not
+    //  depend on where the draft puts the items); declared waypoints are not,
+    //  because they were drawn around positions the draft moves.
+    LayoutPipeRack rack;
+    bool hadPipeOverrides = false;
     std::map<std::string, std::string> hazardText;   // id -> its lines
     //  A footprint the author already DECLARED for an item with none of its
     //  own, and the author's non-process items: both carried, never guessed.
@@ -895,6 +1370,9 @@ std::string draft(const SimulationResult& r, const Dictionary* previous)
     {
         sep  = readSeparation(*previous);
         wind = readWind(*previous);
+        if (previous->found("pipeRack"))
+            rack = readRack(*previous, PlantLayoutRecord{});
+        hadPipeOverrides = previous->found("pipes");
         if (previous->found("items"))
             for (const auto& e : previous->lookupDictList("items"))
             {
@@ -1093,6 +1571,9 @@ std::string draft(const SimulationResult& r, const Dictionary* previous)
          "    areas { <SECTOR> { xMin; xMax; yMin; yMax; } }\n"
          "    separation ( { source; reason; measure edgeToEdge|centreToCentre;\n"
          "                   distances ( { between ( kindA kindB ); distance; } ); } );\n"
+         "    pipeRack { y; elevation; laneSpacing; lanesPerTier <n>; tierSpacing;\n"
+         "               xStart; xEnd; reason; }   (absent: the engine's stated default)\n"
+         "    pipes { <stream> { waypoints ( { x; y; z; } ... ); } }   (optional)\n"
          "    wind { from <deg>; planNorth <deg>; halfAngle <deg>; reach <m>;\n"
          "           source; reason; }\n"
          "  Record: docs/design/a-plant-layout-is-declared-and-checked.md\n"
@@ -1213,6 +1694,41 @@ std::string draft(const SimulationResult& r, const Dictionary* previous)
              "//                        release { source \"...\"; reason \"...\";\n"
              "//                                  zones ( { zone 2; radius ... m; height ... m; } ); }\n";
     }
+    if (rack.declared)
+    {
+        o << "\n//  The case's own pipe rack, carried as declared.\npipeRack\n{\n"
+          << "    y            " << m(rack.y) << ";\n"
+          << "    elevation    " << m(rack.elevation) << ";\n"
+          << "    laneSpacing  " << m(rack.laneSpacing) << ";\n"
+          << "    lanesPerTier " << rack.lanesPerTier << ";\n"
+          << "    tierSpacing  " << m(rack.tierSpacing) << ";\n"
+          << "    xStart       " << m(rack.xStart) << ";\n"
+          << "    xEnd         " << m(rack.xEnd) << ";\n"
+          << "    reason       " << quoted(rack.reason) << ";\n}\n";
+    }
+    else
+    {
+        o << "\n//  PIPE RACK: none declared, and none is written for you.  Without one the\n"
+             "//  engine routes every pipe on its STATED DEFAULT rack and says so in the\n"
+             "//  run (along plan x on the mean y of the process items, 6 m up, lanes\n"
+             "//  0.6 m apart, 6 per tier, tiers 1.5 m apart, 5 m past the outermost\n"
+             "//  footprint at each end).  Where YOUR rack runs is a design choice you\n"
+             "//  defend -- every pipe length follows from it:\n"
+             "//  pipeRack\n"
+             "//  {\n"
+             "//      y            ... m;      // plan y of its centre line (it runs along x)\n"
+             "//      elevation    ... m;      // its lowest tier\n"
+             "//      laneSpacing  ... m;\n"
+             "//      lanesPerTier ...;\n"
+             "//      tierSpacing  ... m;\n"
+             "//      xStart       ... m;      // west end: where the plant's inlets arrive\n"
+             "//      xEnd         ... m;      // east end: where its outlets leave\n"
+             "//      reason       \"...\";\n"
+             "//  }\n";
+    }
+    if (hadPipeOverrides)
+        o << "\n//  The previous layout's `pipes { ... waypoints ... }` overrides are NOT\n"
+             "//  carried: they were drawn around positions this draft has moved.\n";
     o << "\n// ************************************************************************* //\n";
     return o.str();
 }

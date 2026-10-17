@@ -70,8 +70,39 @@ Description
     all, while a short distance IS a layout -- a draft whose shortfall the
     student must see and defend.
 
-    Pipe lengths, structures and racks, rotation other than the two plan
-    axes, and any distance taken from a standard are NOT here.
+    THE PIPES (2026-10-17, DEV.md 4c C80).  After placement every MATERIAL
+    stream of the flowsheet is either ROUTED or listed as not routed with
+    its reason -- never dropped in silence.  Its two ends:
+      * a PLACED ITEM -- the pipe meets it at its NOZZLE, the item's plan
+        centre at its TOP (z + its height, standing or lying); a unit that
+        realises several items is piped through the FIRST of them the case
+        placed (the order of `items`), so a column's overhead loop and a
+        second storage tank are not drawn;
+      * a JUNCTION -- an UNSIZED mixer, splitter or valve, drawn as a node
+        on the rack's centre line at its lowest tier, at the MEAN plan x of
+        the placed items it is piped to (a junction piped only to other
+        junctions takes their mean, in passes, in flowsheet order);
+      * a BATTERY LIMIT -- a plant inlet arrives at the rack's west end
+        (`xStart`), a plant outlet leaves at its east end (`xEnd`).
+    Any other end (an unsized unit that is not a junction, a sized unit
+    whose items are not placed, a stream consumed by two units) leaves the
+    stream NOT ROUTED, with that reason.
+    THE ROUTE is deterministic and orthogonal: up (or down) from the source
+    nozzle to its LANE, across to the lane, along the rack (plan x), across
+    to the target, down to its nozzle.  The rack runs along plan x; the
+    case declares it (`pipeRack { y; elevation; laneSpacing; lanesPerTier;
+    tierSpacing; xStart; xEnd; reason; }`, every key) or the engine uses a
+    STATED DEFAULT and ANNOUNCES it once.  LANES are handed out in the order
+    the flowsheet first names the streams (each unit's inlets, then its
+    outlets), `lanesPerTier` across the rack centred on its line, the tiers
+    stacked `tierSpacing` upward.  A case may override one pipe's route with
+    declared WAYPOINTS (`pipes { <stream> { waypoints ( { x; y; z; } ... );
+    } }`): the route is then the source nozzle, the waypoints, the target
+    nozzle (a battery limit adds no point), each segment REQUIRED to run
+    along one axis.  The length published is the polyline's own.  NO
+    pressure drop and NO cost: the next slice.  Structures, clash checks of
+    a pipe against an item, rotation other than the two plan axes, and any
+    distance taken from a standard are NOT here.
 \*---------------------------------------------------------------------------*/
 
 #ifndef Choupo_plantLayout_PlantLayout_H

@@ -699,6 +699,51 @@ function shapeLayout(l: NonNullable<ResultPayload["layout"]>): PlantLayout {
     })),
     unplaced: arr(l.unplaced).filter((u): u is string => typeof u === "string"),
     internal: arr(l.internal).filter((u): u is string => typeof u === "string"),
+    ...shapePipes(l),
+  };
+}
+
+//  THE PIPES (DEV.md 4c C80), passed through as routed by the engine.  A pipe
+//  whose length or any route point is not a finite number is DROPPED rather
+//  than drawn through the origin; nothing is routed or measured here.
+function shapePipes(l: NonNullable<ResultPayload["layout"]>): Partial<PlantLayout> {
+  if (!Array.isArray(l.pipes)) return {};
+  const fin = (v: unknown): v is number => typeof v === "number" && Number.isFinite(v);
+  const str = (v: unknown): string => (typeof v === "string" ? v : "");
+  const k = l.pipeRack;
+  const rack = k && [k.y, k.elevation, k.laneSpacing, k.lanesPerTier, k.tierSpacing,
+                     k.xStart, k.xEnd].every(fin)
+    ? { pipeRack: { declared: !!k.declared, y: k.y as number, elevation: k.elevation as number,
+        laneSpacing: k.laneSpacing as number, lanesPerTier: k.lanesPerTier as number,
+        tierSpacing: k.tierSpacing as number, xStart: k.xStart as number,
+        xEnd: k.xEnd as number, reason: str(k.reason) } }
+    : {};
+  const pipes = l.pipes
+    .filter((p) => typeof p.stream === "string" && fin(p.length) && Array.isArray(p.route)
+      && p.route.length >= 2
+      && p.route.every((q) => Array.isArray(q) && q.length === 3 && q.every(fin)))
+    .map((p) => ({
+      stream: str(p.stream),
+      ...(typeof p.label === "string" && p.label ? { label: p.label } : {}),
+      fromKind: str(p.fromKind), from: str(p.from), fromUnit: str(p.fromUnit),
+      toKind: str(p.toKind), to: str(p.to), toUnit: str(p.toUnit),
+      routedBy: str(p.routedBy), lane: fin(p.lane) ? p.lane : -1,
+      length: p.length as number,
+      ...(fin(p.F_mass) ? { F_mass: p.F_mass } : {}),
+      ...(fin(p.T) ? { T: p.T } : {}),
+      ...(fin(p.P) ? { P: p.P } : {}),
+      ...(fin(p.vf) ? { vf: p.vf } : {}),
+      route: (p.route as number[][]).map((q) => [q[0], q[1], q[2]] as [number, number, number]),
+    }));
+  return {
+    ...rack,
+    junctions: (Array.isArray(l.junctions) ? l.junctions : [])
+      .filter((j) => [j.x, j.y, j.z].every(fin))
+      .map((j) => ({ unit: str(j.unit), type: str(j.type),
+                     x: j.x as number, y: j.y as number, z: j.z as number })),
+    pipes,
+    notRouted: (Array.isArray(l.notRouted) ? l.notRouted : [])
+      .map((n) => ({ stream: str(n.stream), reason: str(n.reason) })),
   };
 }
 
@@ -879,6 +924,16 @@ interface ResultPayload {
       value?: number; limit?: number; message?: string }[];
     unplaced?: string[];
     internal?: string[];
+    pipeRack?: { declared?: boolean; y?: number; elevation?: number; laneSpacing?: number;
+      lanesPerTier?: number; tierSpacing?: number; xStart?: number; xEnd?: number;
+      reason?: string };
+    junctions?: { unit?: string; type?: string; x?: number; y?: number; z?: number }[];
+    pipes?: { stream?: string; label?: string; fromKind?: string; from?: string;
+      fromUnit?: string; toKind?: string; to?: string; toUnit?: string;
+      routedBy?: string; lane?: number; length?: number;
+      F_mass?: number; T?: number; P?: number; vf?: number;
+      route?: number[][] }[];
+    notRouted?: { stream?: string; reason?: string }[];
   };
   economics?: {
     present?: boolean;

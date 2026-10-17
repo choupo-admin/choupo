@@ -295,10 +295,16 @@ describe("plant layout: the lesson text", () => {
       expect(LAYOUT_SOURCES.find((s) => s.id === id)!.used).toContain("NOT READ");
     expect(LAYOUT_SOURCES.find((s) => s.id === "atex-1999-92")!.used).toMatch(/^read/);
   });
-  it("says pipe lengths do not exist yet", () => {
-    expect(all).toMatch(/Choupo computes no pipe length/);
-    expect(tree("docs/design/a-plant-layout-is-declared-and-checked.md"))
-      .toMatch(/Pipe lengths and their cost \(the next slice/);
+  it("names the pipe LENGTH and claims no pipe cost (C80)", () => {
+    //  The absence that was buried: lengths exist now, and the page says so.
+    expect(all).not.toMatch(/Choupo computes no pipe length/);
+    expect(all).toMatch(/publishes each pipe's length/);
+    //  ... and the cost does not, and the page says THAT.
+    expect(all).toMatch(/a pipe's pressure drop and its cost/);
+    expect(all).not.toMatch(/pipe cost (is|of) [0-9]/i);
+    const record = tree("docs/design/a-plant-layout-is-declared-and-checked.md");
+    expect(record).toMatch(/## 11\. Slice 3 -- the pipes/);
+    expect(record).toMatch(/NO pressure drop\s+and NO cost/);
   });
   it("every file:line it cites lands on what it claims", () => {
     const src = tree("src/postProcessing/layout/PlantLayout.cpp").split("\n");
@@ -309,25 +315,30 @@ describe("plant layout: the lesson text", () => {
       "PlantLayout.cpp:381": "it.dx = D; it.dy = D; it.dz = L",
       "PlantLayout.cpp:198-201": /"D",\s+"H"[\s\S]*"shellID"[\s\S]*"chamberDiameter"/,
       "PlantLayout.cpp:209": '"sieveTrays"',
-      "PlantLayout.cpp:559": "already published its size",
-      "PlantLayout.cpp:571": "No size is",
+      "PlantLayout.cpp:1008": "already published its size",
+      "PlantLayout.cpp:1020": "No size is",
       "PlantLayout.cpp:137": "std::hypot(a.x - b.x, a.y - b.y) - 0.5 * a.dx - 0.5 * b.dx",
-      "PlantLayout.cpp:691-693": /tab\.measure == "edgeToEdge"[\s\S]*clearPlan\(a, b\)[\s\S]*std::hypot/,
+      "PlantLayout.cpp:1140-1142": /tab\.measure == "edgeToEdge"[\s\S]*clearPlan\(a, b\)[\s\S]*std::hypot/,
       "PlantLayout.cpp:265": "`measure` is not declared",
-      "PlantLayout.cpp:552": "it.kind   = s->second.equipmentType",
+      "PlantLayout.cpp:1001": "it.kind   = s->second.equipmentType",
       "PlantLayout.cpp:308": "is declared twice",
-      "PlantLayout.cpp:695": 'addFinding("separation"',
-      "PlantLayout.cpp:1019-1020": /const scalar gap = std::max\(\{ prev\.dx, prev\.dy, it\.dx, it\.dy \}\);\s*x = prev\.x \+ 0\.5 \* prev\.dx \+ gap \+ 0\.5 \* it\.dx;/,
-      "PlantLayout.cpp:1035": "std::ceil(x * 100.0",
+      "PlantLayout.cpp:1144": 'addFinding("separation"',
+      "PlantLayout.cpp:1497-1498": /const scalar gap = std::max\(\{ prev\.dx, prev\.dy, it\.dx, it\.dy \}\);\s*x = prev\.x \+ 0\.5 \* prev\.dx \+ gap \+ 0\.5 \* it\.dx;/,
+      "PlantLayout.cpp:1513": "std::ceil(x * 100.0",
       "PlantLayout.cpp:81-82": /std::cerr << "\[layout\] "[\s\S]*AdvisoryLog::instance\(\)\.add\("layout"/,
-      "PlantLayout.cpp:612-613": /c < -kTol && vz > kTol[\s\S]*OVERLAP/,
-      "PlantLayout.cpp:779": "w.fromDeg + 180.0",
-      "PlantLayout.cpp:789-792": /planBearing\(vx, vy\)[\s\S]*w\.planNorthDeg[\s\S]*wrap180\(trueB - downwind\)[\s\S]*w\.halfAngleDeg/,
-      "PlantLayout.cpp:788": "dist > w.reach",
+      "PlantLayout.cpp:1061-1062": /c < -kTol && vz > kTol[\s\S]*OVERLAP/,
+      "PlantLayout.cpp:1228": "w.fromDeg + 180.0",
+      "PlantLayout.cpp:1238-1241": /planBearing\(vx, vy\)[\s\S]*w\.planNorthDeg[\s\S]*wrap180\(trueB - downwind\)[\s\S]*w\.halfAngleDeg/,
+      "PlantLayout.cpp:1237": "dist > w.reach",
       "PlantLayout.cpp:106": "carries no unit",
       "PlantLayout.cpp:221": 'lookupWord("ignition")',
-      "PlantLayout.cpp:755-758": /dPlan >= z\.radius[\s\S]*verticalOverlap\(rel\.z, z\.height, ig\.z, ig\.dz\)[\s\S]*ignitionInZone/,
+      "PlantLayout.cpp:1204-1207": /dPlan >= z\.radius[\s\S]*verticalOverlap\(rel\.z, z\.height, ig\.z, ig\.dz\)[\s\S]*ignitionInZone/,
       "PlantLayout.cpp:161": "scalar pointToFootprint",
+      //  The pipes (C80): the rack route, the length, the default rack.
+      "PlantLayout.cpp:803-819":
+        /p\.routedBy = "rack";[\s\S]*pts\.push_back\(\{ a\.point\[0\], a\.point\[1\], lz \}\);[\s\S]*pts\.push_back\(\{ b\.point\[0\], ly, lz \}\);[\s\S]*pts\.push_back\(b\.point\);/,
+      "PlantLayout.cpp:824": "p.length += segLength(p.route[i - 1], p.route[i]);",
+      "PlantLayout.cpp:828": "if (!rack.declared)",
     };
     for (const c of cited) expect(CLAIMS[c], `uncovered citation ${c}`).toBeDefined();
     for (const [c, want] of Object.entries(CLAIMS)) {

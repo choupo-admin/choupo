@@ -320,4 +320,30 @@ wind
     reason      "a prevailing direction lets the plot plan be read for which way a release drifts";
 }
 
+//  THE PIPE RACK (DEV.md 4c C80).  Every stream between two placed items, or
+//  through a mixer or splitter (drawn as a junction on the rack), or to a
+//  battery limit, is routed by the engine: up from the top of its source,
+//  across to its LANE on this rack, along it, and down to the top of its
+//  target -- and its length is published (Reports -> "Plant layout (3D)",
+//  the pipe register).  The rack runs along plan x between the compressor
+//  row (y = -20 to -10) and the reaction row (y = 5 to 14); the plant's
+//  inlets arrive at its west end (xStart) and its outlets leave at its east
+//  end (xEnd), the process area's battery limit -- the tank farm beyond it
+//  is fed from there.  EVERY NUMBER HERE IS AN AUTHOR-SET ASSUMPTION FOR THE
+//  STUDENTS TO REPLACE: where a rack runs, how high and how wide, is a
+//  design choice they must defend (road clearance, access, the length it
+//  costs).  Delete the block and the engine routes on its stated default
+//  rack, and says so.
+pipeRack
+{
+    y            -2 m;
+    elevation    7 m;
+    laneSpacing  0.6 m;
+    lanesPerTier 6;
+    tierSpacing  1.2 m;
+    xStart       -14 m;
+    xEnd         100 m;
+    reason       "author-set assumption for the students to replace: a rack between the compressor and the reaction rows, clear of the roads at 7 m, its east end the process area's battery limit";
+}
+
 // ************************************************************************* //

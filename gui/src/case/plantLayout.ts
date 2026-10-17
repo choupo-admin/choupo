@@ -52,9 +52,24 @@ License
 
   GREYSCALE SURVIVES.  The three zones differ by OPACITY, by EDGE STYLE (solid
   / wire / dashed) and by a LABEL carrying the word, never by colour alone.
+
+  THE PIPES (DEV.md 4c C80).  The engine ROUTES every pipe and measures it;
+  this module only carries the published polyline into three.js coordinates
+  and decides how it LOOKS: its phase read off the published vapour fraction
+  (`phaseOf`, three words, each with its own particle SHAPE beside its colour),
+  and a stylised particle speed that grows monotonically with the published
+  mass flow (`particleSpeed`, said in the legend).  No route, length or
+  junction position is computed here.
+
+  LEGIBILITY (Vítor, on the live site, 2026-10-17).  A label carries the item
+  id ONLY; everything else an item or a pipe has to say is its hover TOOLTIP.
+  Labels that collide on screen are DECLUTTERED by priority -- findings over
+  items over the rest over zone labels (`declutter`, pure) -- and the camera
+  opens FITTED on the plant (`cameraFit`, pure), with Plan and Elevation
+  presets fitted the same way.
 \*---------------------------------------------------------------------------*/
 
-import type { PlantLayout, LayoutItem } from "../adapters/SolverAdapter.js";
+import type { PlantLayout, LayoutItem, LayoutPipe } from "../adapters/SolverAdapter.js";
 
 export type Vec3 = [number, number, number];
 
@@ -75,9 +90,11 @@ export interface SceneSolid {
   release: boolean;
   /** The engine published a finding naming this item. */
   flagged: boolean;
-  /** The text drawn beside it: the item id, its kind, and what the engine
-   *  says about where its size came from. */
+  /** The text drawn beside it: the item id, and nothing else. */
   label: string;
+  /** What the hover tooltip says: kind, size and where it came from, the
+   *  hazards the case declared, and every finding naming the item. */
+  tooltip: string[];
 }
 
 /** One hazardous-area envelope: a vertical cylinder. */
@@ -117,15 +134,223 @@ export interface SceneWind {
   label: string;
 }
 
+/** The phase a pipe is drawn in, read off the published vapour fraction. */
+export type Phase = "liquid" | "vapour" | "twoPhase" | "unknown";
+
+/** One routed pipe, in three.js coordinates, IN THE DIRECTION OF FLOW. */
+export interface ScenePipe {
+  id: string;
+  stream: string;
+  phase: Phase;
+  /** The engine's polyline, mapped; the first point is the source end. */
+  points: Vec3[];
+  /** The engine's length (m), carried, never re-measured. */
+  length: number;
+  /** Published mass flow (kg/s), when the run carries molar masses. */
+  massFlow: number | null;
+  /** Drawing radius (m) and particle speed (m/s): stylised, monotone in flow. */
+  radius: number;
+  speed: number;
+  tooltip: string[];
+}
+
+export interface SceneJunction {
+  unit: string;
+  at: Vec3;
+  label: string;
+}
+
+/** The rack: portals along plan x, one beam per tier the pipes use. */
+export interface SceneRack {
+  x0: number; x1: number;
+  /** three.js Z of the rack's centre line, and its half width. */
+  zc: number; halfWidth: number;
+  /** Heights of the tiers the published lanes occupy. */
+  tiers: number[];
+  /** Plan x of each portal (a drawing convention: every RACK_PORTAL_SPACING). */
+  portals: number[];
+  label: string;
+}
+
 export interface LayoutScene {
   solids: SceneSolid[];
   zones: SceneZone[];
   areas: SceneArea[];
   links: SceneLink[];
   wind: SceneWind | null;
-  /** Bounding box of everything drawn, for the camera. */
+  pipes: ScenePipe[];
+  junctions: SceneJunction[];
+  rack: SceneRack | null;
+  /** Bounding box of everything drawn, for the ground grid. */
   min: Vec3;
   max: Vec3;
+  /** Bounding box the camera FITS: the placed process items, the pipes and
+   *  the junctions (a building or a tank farm far off still lies inside it
+   *  only when the case placed it as process equipment). */
+  fitMin: Vec3;
+  fitMax: Vec3;
+}
+
+//  ---- the pipe's look, from what the engine published --------------------
+
+/** vf within this of 0 or 1 is single-phase: a flash's converged split
+ *  prints vf = 0.999999999 for a vapour. */
+export const PHASE_TOLERANCE = 1e-6;
+
+export function phaseOf(vf: number | undefined): Phase {
+  if (vf === undefined || !Number.isFinite(vf)) return "unknown";
+  if (vf <= PHASE_TOLERANCE) return "liquid";
+  if (vf >= 1 - PHASE_TOLERANCE) return "vapour";
+  return "twoPhase";
+}
+
+/** The legend's words for each phase -- the channel that survives greyscale
+ *  together with the particle shape. */
+export const PHASE_WORDS: Record<Phase, string> = {
+  liquid: "liquid (vf = 0)",
+  vapour: "vapour (vf = 1)",
+  twoPhase: "two-phase (0 < vf < 1)",
+  unknown: "phase not published",
+};
+
+/** Pipe colour per phase: one channel of three (the particle SHAPE and the
+ *  legend WORD are the others), shared by the 3D view and the tables. */
+export const PHASE_COLOURS: Record<Phase, number> = {
+  liquid:   0x1971c2,
+  vapour:   0xc2255c,
+  twoPhase: 0x2b8a3e,
+  unknown:  0x868e96,
+};
+
+export const phaseCss = (p: Phase): string =>
+  `#${PHASE_COLOURS[p].toString(16).padStart(6, "0")}`;
+
+/** The particle each phase carries: a sphere is a drop, an octahedron a
+ *  gas parcel, the two alternate in a two-phase pipe. */
+export const PHASE_PARTICLE: Record<Phase, "sphere" | "octahedron" | "alternating" | "cube"> = {
+  liquid: "sphere",
+  vapour: "octahedron",
+  twoPhase: "alternating",
+  unknown: "cube",
+};
+
+/** Particle speed on screen (m/s in the scene) for a published mass flow
+ *  (kg/s): 1.2 + 2.4 log10(1 + m).  Monotone in the flow and STYLISED --
+ *  it is not the fluid's velocity, which needs a pipe diameter nobody has
+ *  sized yet.  An unpublished flow moves at the slowest speed. */
+export function particleSpeed(massFlow: number | null | undefined): number {
+  const m = massFlow !== null && massFlow !== undefined && Number.isFinite(massFlow)
+    ? Math.max(0, massFlow) : 0;
+  return 1.2 + 2.4 * Math.log10(1 + m);
+}
+
+/** The words the legend prints for the speed rule (one home). */
+export const SPEED_RULE =
+  "particle speed = 1.2 + 2.4·log10(1 + ṁ / (kg/s)) m/s, and tube thickness grows with ṁ"
+  + " the same way -- stylised, monotone in the mass flow, not the fluid's velocity";
+
+/** Drawing radius (m) of a pipe's tube, monotone in the mass flow. */
+export function tubeRadius(massFlow: number | null | undefined): number {
+  const m = massFlow !== null && massFlow !== undefined && Number.isFinite(massFlow)
+    ? Math.max(0, massFlow) : 0;
+  return 0.1 + 0.05 * Math.log10(1 + m);
+}
+
+/** How a pipe end reads in a table or a tooltip. */
+export function endName(kind: string, at: string): string {
+  if (kind === "batteryLimit") return `battery limit (${at})`;
+  if (kind === "junction") return `${at} (junction)`;
+  return at;
+}
+
+/** Portal spacing of the drawn rack (m): a drawing convention, not data. */
+export const RACK_PORTAL_SPACING = 6;
+
+function pipeOf(p: LayoutPipe): ScenePipe {
+  const phase = phaseOf(p.vf);
+  const massFlow = p.F_mass !== undefined && Number.isFinite(p.F_mass) ? p.F_mass : null;
+  const lines = [
+    p.label ? `${p.stream} (${p.label})` : p.stream,
+    `${endName(p.fromKind, p.from)} → ${endName(p.toKind, p.to)}`,
+    PHASE_WORDS[phase],
+  ];
+  const tp: string[] = [];
+  if (p.T !== undefined) tp.push(`T ${p.T.toFixed(1)} K`);
+  if (p.P !== undefined) tp.push(`P ${(p.P / 1e5).toFixed(2)} bar`);
+  if (tp.length) lines.push(tp.join(" · "));
+  if (massFlow !== null) lines.push(`ṁ ${massFlow.toPrecision(4)} kg/s`);
+  lines.push(`length ${p.length.toFixed(1)} m (${p.routedBy === "waypoints"
+    ? "declared waypoints" : "routed on the rack"})`);
+  return {
+    id: `pipe:${p.stream}`, stream: p.stream, phase,
+    points: p.route.map(([x, y, z]) => toThree(x, y, z)),
+    length: p.length, massFlow,
+    radius: tubeRadius(massFlow), speed: particleSpeed(massFlow),
+    tooltip: lines,
+  };
+}
+
+//  ---- legibility: declutter and fit (pure) --------------------------------
+
+/** Label priorities: a finding outranks an item, an item the rest, and a
+ *  zone label yields to everything. */
+export const LABEL_PRIORITY = { finding: 3, item: 2, other: 1, zone: 0 } as const;
+
+/** A label's screen box: centre (x, y) and size, in pixels. */
+export interface LabelBox { key: string; priority: number; x: number; y: number; w: number; h: number }
+
+/** Which labels to show: by priority (highest first; ties in input order),
+ *  each kept only if its box, padded by `pad` px, overlaps no label already
+ *  kept.  Pure, so the rule is tested without a screen. */
+export function declutter(boxes: LabelBox[], pad = 2): Set<string> {
+  const order = boxes.map((b, i) => ({ b, i }))
+    .sort((p, q) => q.b.priority - p.b.priority || p.i - q.i);
+  const kept: LabelBox[] = [];
+  const out = new Set<string>();
+  for (const { b } of order) {
+    if (!(b.w > 0 && b.h > 0) || !Number.isFinite(b.x) || !Number.isFinite(b.y)) continue;
+    const hit = kept.some((k) =>
+      Math.abs(k.x - b.x) * 2 < k.w + b.w + 2 * pad
+      && Math.abs(k.y - b.y) * 2 < k.h + b.h + 2 * pad);
+    if (hit) continue;
+    kept.push(b);
+    out.add(b.key);
+  }
+  return out;
+}
+
+export type ViewPreset = "3d" | "plan" | "elevation";
+
+/** Where the camera stands to FIT the box [min, max] (three.js coordinates)
+ *  with a relative `margin`, for a perspective camera of vertical field of
+ *  view `fovDeg` and aspect `aspect`.  "3d" looks from the south-west and
+ *  above, fitting the box's bounding sphere; "plan" looks straight down with
+ *  plan north up the screen; "elevation" looks north from the south, plan x
+ *  across the screen.  Plan and elevation fit the box's PROJECTED rectangle,
+ *  so the plant fills the frame rather than its sphere. */
+export function cameraFit(min: Vec3, max: Vec3, view: ViewPreset, fovDeg: number,
+                          aspect: number, margin = 0.15): { position: Vec3; target: Vec3 } {
+  const c: Vec3 = [(min[0] + max[0]) / 2, (min[1] + max[1]) / 2, (min[2] + max[2]) / 2];
+  const ext: Vec3 = [Math.max(max[0] - min[0], 1), Math.max(max[1] - min[1], 1),
+                     Math.max(max[2] - min[2], 1)];
+  const vHalf = (fovDeg * Math.PI) / 360;
+  const hHalf = Math.atan(Math.tan(vHalf) * Math.max(aspect, 1e-3));
+  const k = 1 + margin;
+  if (view === "plan") {
+    const d = k * Math.max(ext[0] / 2 / Math.tan(hHalf), ext[2] / 2 / Math.tan(vHalf));
+    //  A hair toward +Z, so the orbit has an "up" and plan north (-Z) is up.
+    return { position: [c[0], max[1] + d, c[2] + 1e-3 * d], target: [c[0], c[1], c[2]] };
+  }
+  if (view === "elevation") {
+    const d = k * Math.max(ext[0] / 2 / Math.tan(hHalf), ext[1] / 2 / Math.tan(vHalf));
+    return { position: [c[0], c[1], max[2] + d], target: c };
+  }
+  const r = (k * Math.hypot(ext[0], ext[1], ext[2])) / 2;
+  const d = r / Math.sin(Math.min(vHalf, hHalf));
+  const dir = [-0.6, 0.7, 0.9];
+  const n = Math.hypot(dir[0]!, dir[1]!, dir[2]!);
+  return { position: [c[0] + (d * dir[0]!) / n, c[1] + (d * dir[1]!) / n,
+                      c[2] + (d * dir[2]!) / n], target: c };
 }
 
 /** Plan (x, y, z-up) to three.js (X, Y-up, Z). */
@@ -149,7 +374,7 @@ function fmt(v: number): string {
   return Math.abs(v) >= 100 ? v.toFixed(0) : v.toFixed(2);
 }
 
-function solidOf(it: LayoutItem, flagged: boolean): SceneSolid {
+function solidOf(it: LayoutItem, flagged: boolean, findings: string[]): SceneSolid {
   //  three.js extents: X = plan dx, Y = dz (up), Z = plan dy.
   const size: Vec3 = [it.dx, it.dz, it.dy];
   const center = toThree(it.x, it.y, it.z + 0.5 * it.dz);
@@ -157,13 +382,29 @@ function solidOf(it: LayoutItem, flagged: boolean): SceneSolid {
     it.orientation === "alongX" ? "x" : it.orientation === "alongY" ? "z" : "y";
   const what = it.nonProcess ? `${it.kind} (non-process)` : it.kind;
   const sizeWord = it.footprintFrom === "declared" ? "declared box" : "own sizing";
+  const dims = it.shape === "cylinder"
+    ? (it.orientation === "vertical" ? `D ${fmt(it.dx)} m × H ${fmt(it.dz)} m`
+      : `D ${fmt(it.orientation === "alongX" ? it.dy : it.dx)} m × L ${fmt(it.orientation === "alongX" ? it.dx : it.dy)} m`)
+    : `${fmt(it.dx)} × ${fmt(it.dy)} × ${fmt(it.dz)} m`;
+  const tooltip = [
+    it.id + (it.sector ? ` (sector ${it.sector})` : ""),
+    `${what} · ${dims} · ${sizeWord}`,
+    `at (${fmt(it.x)}, ${fmt(it.y)}) m, base z ${fmt(it.z)} m`,
+  ];
+  if (it.release)
+    tooltip.push(`release source (zones ${it.release.zones.map((z) => z.zone).join(", ") || "none"})`);
+  if (it.ignition) tooltip.push(`ignition source: ${it.ignition}`);
+  for (const f of findings) tooltip.push(`FINDING: ${f}`);
   return {
     id: it.id, kind: it.kind, sector: it.sector,
     shape: it.shape, axis, center, size,
     nonProcess: it.nonProcess, footprintFrom: it.footprintFrom,
     ignition: !!it.ignition, release: !!it.release, flagged,
-    label: `${it.id} · ${what} · ${sizeWord}`
-      + (flagged ? " · FINDING" : ""),
+    //  A flagged item's label carries a warning GLYPH beside its id: the
+    //  word channel that survives greyscale; the finding itself is in the
+    //  tooltip and on the link's own tag.
+    label: flagged ? `⚠ ${it.id}` : it.id,
+    tooltip,
   };
 }
 
@@ -179,11 +420,16 @@ export function layoutScene(layout: PlantLayout | undefined): LayoutScene | null
   if (!layout || layout.items.length === 0) return null;
 
   const flaggedIds = new Set<string>();
+  const messagesOf = new Map<string, string[]>();
   for (const f of layout.findings)
     if (FINDING_KINDS_THAT_FLAG.has(f.kind))
-      for (const id of namedItems(f.kind, f.a, f.b)) flaggedIds.add(id);
+      for (const id of namedItems(f.kind, f.a, f.b)) {
+        flaggedIds.add(id);
+        messagesOf.set(id, [...(messagesOf.get(id) ?? []), f.message]);
+      }
 
-  const solids = layout.items.map((it) => solidOf(it, flaggedIds.has(it.id)));
+  const solids = layout.items.map((it) =>
+    solidOf(it, flaggedIds.has(it.id), messagesOf.get(it.id) ?? []));
   const byId = new Map(layout.items.map((it) => [it.id, it]));
 
   const zones: SceneZone[] = [];
@@ -215,7 +461,7 @@ export function layoutScene(layout: PlantLayout | undefined): LayoutScene | null
       findingId: f.id, kind: f.kind,
       from: toThree(a.x, a.y, ha), to: toThree(b.x, b.y, hb),
       label: f.kind === "separation"
-        ? `${fmt(f.value)} m < ${fmt(f.limit)} m`
+        ? `${fmt(f.value)} m < ${fmt(f.limit)} m declared`
         : `downwind, ${fmt(f.value)} m`,
     });
   }
@@ -239,6 +485,49 @@ export function layoutScene(layout: PlantLayout | undefined): LayoutScene | null
   }
   for (const a of areas) { grow([a.x0, 0, a.z0]); grow([a.x1, 0, a.z1]); }
 
+  //  The pipes, the junctions and the rack, as the engine routed them.
+  const pipes = (layout.pipes ?? []).map(pipeOf);
+  const junctions: SceneJunction[] = (layout.junctions ?? []).map((j) => ({
+    unit: j.unit, at: toThree(j.x, j.y, j.z), label: `${j.unit} (${j.type})`,
+  }));
+  let rack: SceneRack | null = null;
+  const k = layout.pipeRack;
+  if (k && pipes.length > 0) {
+    const lanes = (layout.pipes ?? []).map((p) => p.lane).filter((l) => l >= 0);
+    const nTiers = lanes.length ? Math.floor(Math.max(...lanes) / k.lanesPerTier) + 1 : 1;
+    const portals: number[] = [];
+    for (let x = k.xStart; x <= k.xEnd + 1e-9; x += RACK_PORTAL_SPACING) portals.push(x);
+    if (portals[portals.length - 1]! < k.xEnd - 1e-9) portals.push(k.xEnd);
+    rack = {
+      x0: k.xStart, x1: k.xEnd, zc: -k.y,
+      halfWidth: 0.5 * k.lanesPerTier * k.laneSpacing,
+      tiers: Array.from({ length: nTiers }, (_, t) => k.elevation + t * k.tierSpacing),
+      portals,
+      label: k.declared ? "pipe rack" : "pipe rack (engine default)",
+    };
+    grow([rack.x0, rack.tiers[rack.tiers.length - 1]!, rack.zc - rack.halfWidth]);
+    grow([rack.x1, 0, rack.zc + rack.halfWidth]);
+  }
+  for (const p of pipes) for (const q of p.points) grow(q);
+
+  //  What the camera fits: the plant, not the ground around it.
+  const fitMin: Vec3 = [Infinity, Infinity, Infinity];
+  const fitMax: Vec3 = [-Infinity, -Infinity, -Infinity];
+  const fit = (q: Vec3) => {
+    for (let i = 0; i < 3; i++) {
+      fitMin[i] = Math.min(fitMin[i]!, q[i]!);
+      fitMax[i] = Math.max(fitMax[i]!, q[i]!);
+    }
+  };
+  const process = solids.filter((x) => !x.nonProcess);
+  for (const x of process.length ? process : solids) {
+    fit([x.center[0] - x.size[0] / 2, x.center[1] - x.size[1] / 2, x.center[2] - x.size[2] / 2]);
+    fit([x.center[0] + x.size[0] / 2, x.center[1] + x.size[1] / 2, x.center[2] + x.size[2] / 2]);
+  }
+  for (const p of pipes) for (const q of p.points) fit(q);
+  for (const j of junctions) fit(j.at);
+  fitMin[1] = Math.min(fitMin[1]!, 0);
+
   //  The wind arrow: the CASE's angles, drawn upwind of the plant pointing
   //  across it.  `from` is a true bearing, `planNorth` the true bearing of
   //  the plan's +y; the plan bearing the wind blows TOWARD is
@@ -260,5 +549,46 @@ export function layoutScene(layout: PlantLayout | undefined): LayoutScene | null
     grow(wind.tail); grow(wind.head);
   }
 
-  return { solids, zones, areas, links, wind, min, max };
+  return { solids, zones, areas, links, wind, pipes, junctions, rack, min, max,
+           fitMin, fitMax };
+}
+
+/** The point at arc length `s` along a polyline, wrapping round its total
+ *  length (a particle that leaves the target end re-enters at the source):
+ *  the drawing's own bookkeeping for the flow animation, never a length the
+ *  engine is asked for. */
+export function pointAlong(points: Vec3[], s: number): Vec3 {
+  if (points.length === 0) return [0, 0, 0];
+  if (points.length === 1) return [...points[0]!];
+  const seg: number[] = [];
+  let total = 0;
+  for (let i = 1; i < points.length; i++) {
+    const a = points[i - 1]!, b = points[i]!;
+    const d = Math.hypot(b[0] - a[0], b[1] - a[1], b[2] - a[2]);
+    seg.push(d);
+    total += d;
+  }
+  if (!(total > 0)) return [...points[0]!];
+  let r = ((s % total) + total) % total;
+  for (let i = 0; i < seg.length; i++) {
+    const d = seg[i]!;
+    if (r <= d || i === seg.length - 1) {
+      const t = d > 0 ? Math.min(1, r / d) : 0;
+      const a = points[i]!, b = points[i + 1]!;
+      return [a[0] + t * (b[0] - a[0]), a[1] + t * (b[1] - a[1]), a[2] + t * (b[2] - a[2])];
+    }
+    r -= d;
+  }
+  return [...points[points.length - 1]!];
+}
+
+/** Whether the reader asked the system for reduced motion: the flow starts
+ *  OFF then (the toggle still turns it on). */
+export function prefersReducedMotion(): boolean {
+  try {
+    return typeof window !== "undefined" && typeof window.matchMedia === "function"
+      && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  } catch {
+    return false;
+  }
 }

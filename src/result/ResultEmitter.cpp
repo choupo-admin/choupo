@@ -67,6 +67,24 @@ std::string esc(const std::string& s) { return escImpl_(s); }
 // we serialise them as null with no surprise.
 std::string num(scalar v) { return jsonNumber(v); }
 
+//  THE OVERALL MASS FLOW of a stream [kg/s]: the fluid AND the solid, summed
+//  over the components the run carries a molar mass for.  ONE home, read by
+//  the stream table and by the layout's pipes, so the two cannot disagree.
+scalar overallMassFlow(const SimulationResult& r, const ProcessStream& s)
+{
+    const auto& names = r.componentNames;
+    scalar F_mass = 0.0;
+    for (std::size_t i = 0; i < names.size(); ++i)
+    {
+        auto it = r.componentMolarMass.find(names[i]);
+        if (it == r.componentMolarMass.end()) continue;
+        const scalar zi = (i < s.z.size()) ? s.z[i] : 0.0;
+        const scalar si = (i < s.s.size()) ? s.s[i] : 0.0;
+        F_mass += (s.F * zi + si) * it->second;   // kmol/s * kg/kmol
+    }
+    return F_mass;
+}
+
 } // namespace
 
 //  THE MACHINE CHANNEL OWNS ITS PRECISION (2026-09-03).  choupoProps wrote
@@ -179,18 +197,7 @@ void emitResultJson(std::ostream& os, const SimulationResult& r)
         scalar F_solid_molar = 0.0;
         for (std::size_t i = 0; i < s.s.size(); ++i) F_solid_molar += s.s[i];
         const scalar F_overall = s.F + F_solid_molar;
-        scalar F_mass = 0.0;
-        if (haveMW)
-        {
-            for (std::size_t i = 0; i < names.size(); ++i)
-            {
-                auto it = r.componentMolarMass.find(names[i]);
-                if (it == r.componentMolarMass.end()) continue;
-                const scalar zi = (i < s.z.size()) ? s.z[i] : 0.0;
-                const scalar si = (i < s.s.size()) ? s.s[i] : 0.0;
-                F_mass += (s.F * zi + si) * it->second;   // kmol/s * kg/kmol
-            }
-        }
+        const scalar F_mass = haveMW ? overallMassFlow(r, s) : 0.0;
         // Solid phase: total solid mass flow [kg/s] + per-component
         // solid mass, so the GUI can show the particulate a stream carries
         // (otherwise a solids-only stream looks empty: F is fluid-only).
@@ -1330,10 +1337,83 @@ void emitResultJson(std::ostream& os, const SimulationResult& r)
         };
         list("unplaced", L.unplaced);
         list("internal", L.internal);
+        //  THE PIPES (DEV.md 4c C80): the rack, the junctions on it, one
+        //  line per routed pipe and one per stream not routed.  The route is
+        //  published IN THE DIRECTION OF FLOW (the producer's end first), so
+        //  no separate direction field is needed; the stream's state is read
+        //  here from `streams` with the stream table's own mass-flow sum, so
+        //  the two surfaces cannot disagree.  The golden `layout` kind pins
+        //  each pipe's `length` and its two ends (`from`, `to`).
+        {
+            const auto& k = L.pipeRack;
+            os << ",\n    \"pipeRack\": { \"id\": \"pipeRack\""
+               << ", \"declared\": " << (k.declared ? "true" : "false")
+               << ", \"y\": " << num(k.y)
+               << ", \"elevation\": " << num(k.elevation)
+               << ", \"laneSpacing\": " << num(k.laneSpacing)
+               << ", \"lanesPerTier\": " << k.lanesPerTier
+               << ", \"tierSpacing\": " << num(k.tierSpacing)
+               << ", \"xStart\": " << num(k.xStart)
+               << ", \"xEnd\": " << num(k.xEnd)
+               << ", \"reason\": " << esc(k.reason) << " }";
+        }
+        os << ",\n    \"junctions\": [";
+        for (std::size_t i = 0; i < L.junctions.size(); ++i)
+        {
+            const auto& j = L.junctions[i];
+            os << (i ? ",\n" : "\n") << "      { \"id\": " << esc("junction:" + j.unit)
+               << ", \"unit\": " << esc(j.unit) << ", \"type\": " << esc(j.type)
+               << ", \"x\": " << num(j.x) << ", \"y\": " << num(j.y)
+               << ", \"z\": " << num(j.z) << " }";
+        }
+        os << (L.junctions.empty() ? "]" : "\n    ]") << ",\n    \"pipes\": [";
+        scalar pipeLength = 0;
+        for (std::size_t i = 0; i < L.pipes.size(); ++i)
+        {
+            const auto& p = L.pipes[i];
+            pipeLength += p.length;
+            os << (i ? ",\n" : "\n") << "      { \"id\": " << esc("pipe:" + p.stream)
+               << ", \"stream\": " << esc(p.stream);
+            if (!p.label.empty()) os << ", \"label\": " << esc(p.label);
+            os << ", \"fromKind\": " << esc(p.fromKind)
+               << ", \"from\": " << esc(p.from)
+               << ", \"fromUnit\": " << esc(p.fromUnit)
+               << ", \"toKind\": " << esc(p.toKind)
+               << ", \"to\": " << esc(p.to)
+               << ", \"toUnit\": " << esc(p.toUnit)
+               << ", \"routedBy\": " << esc(p.routedBy)
+               << ", \"lane\": " << p.lane
+               << ", \"length\": " << num(p.length);
+            auto st = r.streams.find(p.stream);
+            if (st != r.streams.end())
+            {
+                const auto& sv = st->second;
+                if (haveMW) os << ", \"F_mass\": " << num(overallMassFlow(r, sv));
+                os << ", \"T\": " << num(sv.T) << ", \"P\": " << num(sv.P)
+                   << ", \"vf\": " << num(sv.vf);
+            }
+            os << ", \"route\": [";
+            for (std::size_t q = 0; q < p.route.size(); ++q)
+                os << (q ? ", " : "") << "[" << num(p.route[q][0]) << ", "
+                   << num(p.route[q][1]) << ", " << num(p.route[q][2]) << "]";
+            os << "] }";
+        }
+        os << (L.pipes.empty() ? "]" : "\n    ]") << ",\n    \"notRouted\": [";
+        for (std::size_t i = 0; i < L.notRouted.size(); ++i)
+        {
+            const auto& n = L.notRouted[i];
+            os << (i ? ",\n" : "\n") << "      { \"id\": " << esc("notRouted:" + n.stream)
+               << ", \"stream\": " << esc(n.stream)
+               << ", \"reason\": " << esc(n.reason) << " }";
+        }
+        os << (L.notRouted.empty() ? "]" : "\n    ]");
         os << ",\n    \"summary\": { \"id\": \"summary\", \"placed\": "
            << L.items.size() << ", \"unplaced\": " << L.unplaced.size()
            << ", \"internal\": " << L.internal.size()
-           << ", \"findings\": " << L.findings.size() << " }\n  }";
+           << ", \"findings\": " << L.findings.size()
+           << ", \"pipes\": " << L.pipes.size()
+           << ", \"notRouted\": " << L.notRouted.size()
+           << ", \"pipeLength\": " << num(pipeLength) << " }\n  }";
     }
 
     os << "\n}\n";
