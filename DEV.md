@@ -907,6 +907,18 @@ accepts today, and that is a policy call.
 
 ## 4c. Commissioned by Vítor (he ASKED for this; it is not a candidate)
 
+> **C78. THE 3D LAYOUT IN ITS OWN POP-OUT TAB (Vítor, 2026-10-17: "Mas
+> devia de haver um pop up para o layout 3d no Gui").**  Today the 3D view
+> lives only inside Reports -> "Plant layout (3D)" and the EduTool bench.
+> The GUI credo's answer to a large view is a POP-OUT (a real browser tab,
+> never a modal: `docs/ai/gui-credo.md` §4 item 4 and "Tab citizenship"),
+> on the `?internals=` precedent (`gui/src/ui/unitFocus.ts:223`,
+> `AppShell.tsx:111`, `ExpiredTabPanel.tsx`): a `?layout=` tab drawing the
+> SAME published `layout {}` block full-window, opened by a button on the
+> Reports section (and wherever else the layout is drawn), surviving F5,
+> titled, and saying "expired -- reopen from the parent" when its source is
+> gone.  Status: dispatched 2026-10-17.
+
 > **2026-10-17, Vítor: "Não me chateies com coisas que tu sabes bem
 > resolver!"** -- taken by the commander, recorded here: (1) C73 group A
 > (pfr_polyesterification, polycaprolactonePlant: the pfr duty on the
@@ -983,8 +995,9 @@ accepts today, and that is a policy call.
 > tests only declared ignition sources against declared envelopes.  OPEN
 > (finding): `docs/designGuide.tex` ~l.1932 quotes a ~15 m setback
 > attributed to IRI/GAP and API 521 beside "Choupo ships no spacing
-> table" -- to be reconciled (a cited indicative figure in prose, not data
-> the engine carries).
+> table" -- RECONCILED the same day: the guide now calls it an
+> order-of-magnitude orientation the engine does not carry, marks the cited
+> standards "not read here", and points to layoutDict and the EduTool.
 
 > **C73 + C74, AND TWO DECISIONS TAKEN (Vítor, 2026-10-17: "avança como
 > achares melhor", on the three open items after C72).**  Taken: (1)

@@ -1932,8 +1932,14 @@ no PSV-vent enthalpy or flare duty appears in any ledger.
 \textbf{Spacing/segregation (Pareto).} Fired heaters and flares are
 ignition sources --- keep \textbf{\textasciitilde15 m} from process
 units handling flammables; locate control rooms and the flare
-upwind/away. These setbacks are an insurance-grade default (IRI/GAP, API
-521 \textsection{}5), refined later by a dispersion/QRA study.
+upwind/away. That figure is an order-of-magnitude orientation, not a value
+Choupo carries: the binding distances come from the spacing tables and
+standards the project adopts (insurance guidance such as IRI/GAP, API 521
+\textsection{}5 for flares --- not read here), refined later by a
+dispersion/QRA study. Choupo ships no spacing table; a case's
+\texttt{system/layoutDict} declares its own distances, each with its source
+and reason, and the engine announces every pair closer than declared
+(EduTool \emph{Plant layout}, witness \texttt{ammonia02\_full\_plant}).
 
 \textbf{Governing standards --- go to the source; lives depend on it.}
 This section is an orientation only; the binding requirements live in,
