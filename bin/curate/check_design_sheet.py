@@ -1501,11 +1501,21 @@ def _run_copy(src: Path, edit):
     """Run a COPY of a case whose postDict `edit` rewrites, from a temp
     directory the arm owns.  The copy is the probe surface: the shipped case
     stays exactly as shipped, and `design/` is regenerated whole by the run,
-    so the probe is the DECLARATION and never a sheet edited beforehand."""
+    so the probe is the DECLARATION and never a sheet edited beforehand.
+
+    The copy leaves the case's `system/layoutDict` behind (DEV.md 4c C76).
+    A probe here makes ONE item refuse, and a plot plan that places that
+    item then refuses the RUN by its own contract -- an item naming no sized
+    item of this run (`postProcessing/layout/PlantLayout`, held by
+    `check_plant_layout`).  That is a second subject the probe is not about:
+    what these arms assert is that the SIZING pass refuses the item and not
+    the run, and a sized case that carries a plot plan
+    (greenAmmoniaPEQ_baseCase) would otherwise fail them for a reason that
+    is not the sizer's."""
     tmp = Path(tempfile.mkdtemp(prefix="design_sheet_n_"))
     dst = tmp / src.name
     shutil.copytree(src, dst, ignore=shutil.ignore_patterns(
-        "design", "reports", "converged", "postProcessing"))
+        "design", "reports", "converged", "postProcessing", "layoutDict"))
     pd = dst / "system" / "postDict"
     pd.write_text(edit(pd.read_text(errors="replace")))
     proc = subprocess.run([str(ROOT / "choupoSolve"), str(dst)],

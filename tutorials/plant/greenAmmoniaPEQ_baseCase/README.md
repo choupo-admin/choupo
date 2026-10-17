@@ -309,6 +309,49 @@ larger than 15 % of the fixed capital — because the fixed capital excludes
 the electrolysers and the ASU while the raw materials and product are
 priced in full.
 
+## Plant layout
+
+[`system/layoutDict`](system/layoutDict) is the plant's **plot plan**: where
+each sized item stands (plan centre `x`, `y`, base `z`, and which way it
+lies), the separation distances the case requires between kinds of
+equipment, the prevailing wind, and the hazardous-area (ATEX) zones around
+the items that can release hydrogen or ammonia. Every run checks it after
+the sizing pass: two items that overlap are **refused**; a pair closer than
+its declared distance, an ignition source inside a zone, or one downwind of
+a release is **announced**. Grammar and checks:
+[`docs/design/a-plant-layout-is-declared-and-checked.md`](../../../docs/design/a-plant-layout-is-declared-and-checked.md).
+
+**Every distance, zone extent, wind value and position in the file is a
+placeholder — an author-set assumption for you to replace with your own
+site data**, stated so on each line with its `source` and `reason`. None
+comes from a spacing or hazardous-area standard: Choupo ships no such table
+(the published ones grant no redistribution), so a real project takes its
+numbers from the standard its client specifies and from the site's wind
+rose. The nine cylinders (the coolers, the converter and the drums) take
+their size from their own design sheets; the compressors, the FEHE (four
+shells), the two ammonia tanks, the control room and the electrical
+substation have DECLARED boxes, because their sizers publish no diameter
+and length — the engine will not invent one.
+
+**Redraw it** with `bin/choupo-layout --draft --force .` from the case
+directory: it lines the sized items up in flow order again and keeps the
+separation table, wind, boxes, non-process items and zones. **See it** in
+the GUI under Reports → "Plant layout (3D)", and learn to read it in the
+EduTool **"Plant layout: where each item stands, and why"** (Process design
+& economics shelf).
+
+**Two findings are left for you to resolve, on purpose** — say why your
+resolution is safe:
+
+1. the two ammonia tanks stand 12 m apart, shell to shell, against the 17 m
+   the file declares between two tanks — tank spacing is the first thing a
+   tank-farm layout answers;
+2. the electrical substation stands inside the zone 2 envelope of
+   `MakeupComp1` (8 m from its axis, radius 9 m) — switchgear is an ignition
+   source and does not belong in a hazardous area. The substation is also
+   missing from the separation table on purpose: which distance it needs is
+   your call.
+
 ## Engine notes
 
 * The store is declared at −35 °C, not −33.4 °C: a pure liquid at its own

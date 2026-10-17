@@ -1,0 +1,323 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  PEQ 2026-27 -- Green ammonia, 1200 t/day     |
+|      \\|//   H eat-transfer |  The base case of the project base data (v2)  |
+|     \\\|///  O perations    |  https://choupo.org  --  GPL-3.0-or-later     |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+  layoutDict -- the PLOT PLAN of the synthesis plant (DEV.md 4c C76).  A
+  STARTING POINT for the groups, to copy into their own case and change.
+
+  HOW THIS FILE WAS MADE.  `bin/choupo-layout --draft` wrote a proposal: the
+  nine items whose sizers publish a diameter and a length in flow order on
+  one line, and the seven others (the four compressors, the FEHE and the two
+  ammonia tanks) listed for the author to place.  It was then arranged by
+  hand into four rows, west to east in flow order:
+    * the COMPRESSOR ROW to the south (y = -20 m), with the nitrogen,
+      intercooler and aftercooler shells on the row north of it (y = -10 m);
+    * the SYNTHESIS LOOP (y = +5 to +15 m): the FEHE under the converter,
+      the water cooler and the chiller, the separator, the let-down drum and
+      the storage flash;
+    * the TANK FARM well to the south-east, downwind;
+    * the CONTROL ROOM to the north-west, upwind, and an ELECTRICAL
+      SUBSTATION by the compressors -- both NON-PROCESS items.
+  Re-draw from scratch with `bin/choupo-layout --draft --force .`: it keeps
+  the separation table, the wind, the declared boxes, the non-process items
+  and the zones below, and lines the process items up again.
+
+  WHAT IS THE ENGINE'S AND WHAT IS OURS.  The nine sized cylinders take
+  their diameters and lengths from their own design sheets (design/<unit>/).
+  EVERYTHING ELSE IN THIS FILE IS AN AUTHOR-SET ASSUMPTION FOR THE STUDENTS
+  TO REPLACE WITH THEIR OWN SITE DATA: every position, every declared box,
+  every separation distance, the wind, and every hazardous-area zone extent.
+  They are round numbers chosen so that the checks are visible on this
+  plant, not values from any spacing or hazardous-area standard.  Choupo
+  ships no such table: the published ones (CCPS, GAP 2.5.2, Mecklenburgh;
+  IEC 60079-10-1, EI 15, API RP 505) grant no redistribution, and a
+  citation invented for a round number would turn "unsourced" into
+  "falsely sourced".  A real project takes its distances and zone extents
+  from the standard its client specifies, and its wind from the site's
+  measured wind rose.
+
+  TWO FINDINGS ARE LEFT ON PURPOSE -- the groups' first task is to resolve
+  them, and to say why their resolution is safe:
+    1. the two ammonia tanks stand 12 m apart, shell to shell, against the
+       17 m this file declares between two tanks (a separation shortfall);
+    2. the electrical substation stands 8 m from the axis of MakeupComp1's
+       declared zone 2, whose radius is 9 m (an ignition source inside a
+       hazardous area).
+  The run ANNOUNCES both (console, the caveat block, the result JSON, and
+  Reports -> "Plant layout (3D)") rather than refusing: a short distance is
+  a layout a student must see and defend, while an overlap is not a layout
+  at all and is refused.  The substation is also missing from the
+  separation table on purpose: which distance it needs is the groups' call.
+
+  Grammar and checks: docs/design/a-plant-layout-is-declared-and-checked.md
+\*---------------------------------------------------------------------------*/
+
+items
+(
+    //  ---- the compressor row (y = -20 m) ----------------------------------
+    //  A compressor publishes its shaft power, not a size, so each plan box
+    //  is DECLARED -- a machine, its driver and its skid, sized by the author
+    //  by eye against its power.  Nitrogen is not flammable, so N2Boost
+    //  declares no release; the three that carry hydrogen do.
+    {
+        item        "N2Boost";          // 2.1 MW, dry N2
+        x           0 m;
+        y           -20 m;
+        z           0 m;
+        orientation alongX;
+        footprint   { length 8 m; width 4 m; height 3.5 m; }   // author-set
+    }
+    {
+        item        "MakeupComp1";      // 5.2 MW, H2/N2 to 67 bar
+        x           16 m;
+        y           -20 m;
+        z           0 m;
+        orientation alongX;
+        footprint   { length 12 m; width 5 m; height 4.5 m; }   // author-set
+        release
+        {
+            source  "author-set assumption for the students to replace with their own site data; not taken from any hazardous-area standard";
+            reason  "hydrogen-rich syngas across the shaft seals and flanges: secondary-grade release points";
+            zones   ( { zone 2; radius 9 m; height 7 m; } );
+        }
+    }
+    {
+        item        "MakeupComp2";      // 5.5 MW, H2/N2 to 151 bar
+        x           34 m;
+        y           -20 m;
+        z           0 m;
+        orientation alongX;
+        footprint   { length 12 m; width 5 m; height 4.5 m; }   // author-set
+        release
+        {
+            source  "author-set assumption for the students to replace with their own site data; not taken from any hazardous-area standard";
+            reason  "hydrogen-rich syngas at up to 151 bar across the shaft seals and flanges";
+            zones   ( { zone 2; radius 9 m; height 7 m; } );
+        }
+    }
+    {
+        item        "RecycleComp";      // 0.85 MW, loop gas 140 -> 150 bar
+        x           50 m;
+        y           -20 m;
+        z           0 m;
+        orientation alongX;
+        footprint   { length 6 m; width 3.5 m; height 3.5 m; }   // author-set
+        release
+        {
+            source  "author-set assumption for the students to replace with their own site data; not taken from any hazardous-area standard";
+            reason  "recycle gas (H2, N2, NH3, Ar) at loop pressure across the compressor seals";
+            zones   ( { zone 2; radius 6 m; height 5 m; } );
+        }
+    }
+
+    //  ---- the coolers of the make-up train (y = -10 m) ---------------------
+    {
+        item        "N2Cooler";         // D and length from its own design sheet
+        x           0 m;
+        y           -10 m;
+        z           0 m;
+        orientation alongX;
+    }
+    {
+        item        "Intercooler";
+        x           16 m;
+        y           -10 m;
+        z           0 m;
+        orientation alongX;
+    }
+    {
+        item        "Aftercooler";
+        x           34 m;
+        y           -10 m;
+        z           0 m;
+        orientation alongX;
+    }
+
+    //  ---- the synthesis loop (y = +5 to +15 m) -----------------------------
+    //  The FEHE is FOUR 1.07 m shells of 6.1 m tubes in series, and a sizer
+    //  that designs several shells publishes no single shell to draw: its
+    //  box is DECLARED -- two stacked pairs side by side, by hand.
+    {
+        item        "FEHE";
+        x           40 m;
+        y           5 m;
+        z           0 m;
+        orientation alongX;
+        footprint   { length 7 m; width 3 m; height 2.6 m; }   // author-set
+        release
+        {
+            source  "author-set assumption for the students to replace with their own site data; not taken from any hazardous-area standard";
+            reason  "loop gas at 150 bar and up to 733 K on both sides: flanged channel covers and nozzles";
+            zones   ( { zone 2; radius 6 m; height 5 m; } );
+        }
+    }
+    {
+        item        "Converter";        // D and H from its own sizing
+        x           40 m;
+        y           15 m;
+        z           0 m;
+        orientation vertical;
+        release
+        {
+            source  "author-set assumption for the students to replace with their own site data; not taken from any hazardous-area standard";
+            reason  "hydrogen and ammonia at 150 bar and 733 K: the head closure, the catalyst nozzles and the instrument connections";
+            zones   ( { zone 2; radius 6 m; height 12 m; } );
+        }
+    }
+    {
+        item        "WaterCooler";
+        x           52 m;
+        y           5 m;
+        z           0 m;
+        orientation alongX;
+    }
+    {
+        item        "Chiller";
+        x           62 m;
+        y           5 m;
+        z           0 m;
+        orientation alongX;
+    }
+    {
+        item        "Separator";        // D and H from its own sizing
+        x           62 m;
+        y           14 m;
+        z           0 m;
+        orientation vertical;
+        release
+        {
+            source  "author-set assumption for the students to replace with their own site data; not taken from any hazardous-area standard";
+            reason  "liquid ammonia and dissolved hydrogen at 140 bar: the level bridle and the drain";
+            zones   ( { zone 2; radius 6 m; height 9 m; } );
+        }
+    }
+    {
+        item        "LetdownHP";        // D and H from its own sizing
+        x           70 m;
+        y           14 m;
+        z           0 m;
+        orientation vertical;
+        release
+        {
+            source  "author-set assumption for the students to replace with their own site data; not taken from any hazardous-area standard";
+            reason  "flash gas (H2, N2, NH3) released at the 20 bar let-down";
+            zones   ( { zone 1; radius 1.5 m; height 3 m; } { zone 2; radius 4.5 m; height 5 m; } );
+        }
+    }
+    {
+        item        "StorageFlash";     // D and H from its own sizing
+        x           78 m;
+        y           14 m;
+        z           0 m;
+        orientation vertical;
+        release
+        {
+            source  "author-set assumption for the students to replace with their own site data; not taken from any hazardous-area standard";
+            reason  "ammonia vapour and the dissolved gases flashed at 1 atm and -35 C";
+            zones   ( { zone 2; radius 5 m; height 8 m; } );
+        }
+    }
+
+    //  ---- the tank farm, south-east and downwind ---------------------------
+    //  A tank publishes its volume, not a shape, so each plan box is
+    //  DECLARED: 17 898 m3 each (design/NH3Storage/tank<n>), drawn as a
+    //  34 m by 20 m cylinder's bounding box (pi/4 x 34^2 x 19.7 m = 17 900
+    //  m3), the proportions an author-set choice.  The two stand 12 m apart
+    //  (FINDING 1 in the header).
+    {
+        item        "NH3Storage/tank1";
+        x           135 m;
+        y           -35 m;
+        z           0 m;
+        orientation alongX;
+        footprint   { length 34 m; width 34 m; height 20 m; }   // author-set
+        release
+        {
+            source  "author-set assumption for the students to replace with their own site data; not taken from any hazardous-area standard";
+            reason  "refrigerated liquid ammonia at 1 atm: the roof vents and the relief valves";
+            zones   ( { zone 2; radius 20 m; height 25 m; } );
+        }
+    }
+    {
+        item        "NH3Storage/tank2";
+        x           181 m;              // 12 m shell to shell (see FINDING 1)
+        y           -35 m;
+        z           0 m;
+        orientation alongX;
+        footprint   { length 34 m; width 34 m; height 20 m; }   // author-set
+        release
+        {
+            source  "author-set assumption for the students to replace with their own site data; not taken from any hazardous-area standard";
+            reason  "refrigerated liquid ammonia at 1 atm: the roof vents and the relief valves";
+            zones   ( { zone 2; radius 20 m; height 25 m; } );
+        }
+    }
+
+    //  ---- non-process items: their kinds and boxes are declared -----------
+    {
+        nonProcess  "controlRoom";
+        kind        building;
+        x           -30 m;
+        y           35 m;
+        z           0 m;
+        orientation alongX;
+        footprint   { length 15 m; width 10 m; height 4 m; }   // author-set
+        ignition    "non-hazardous-area electrical equipment and people: treated as an ignition source";
+    }
+    {
+        nonProcess  "substation";       // FINDING 2 in the header
+        kind        substation;
+        x           16 m;
+        y           -31 m;
+        z           0 m;
+        orientation alongX;
+        footprint   { length 10 m; width 6 m; height 4 m; }   // author-set
+        ignition    "switchgear and transformers feeding the compressor motors: arcing contacts, an ignition source";
+    }
+);
+
+separation
+(
+    {
+        source  "author-set assumption for the students to replace with their own site data; not taken from any published spacing table";
+        reason  "round numbers chosen so that the check is visible on this plant; a real project takes its distances from the standard its client specifies, with that standard's permission";
+        measure edgeToEdge;
+        distances
+        (
+            { between ( vessel vessel );                distance 4 m;  }
+            { between ( compressor compressor );        distance 4 m;  }
+            { between ( compressor vessel );            distance 9 m;  }
+            { between ( compressor shellTubeHX );       distance 3 m;  }
+            { between ( shellTubeHX vessel );           distance 3 m;  }
+            { between ( shellTubeHX shellTubeHX );      distance 2 m;  }
+            { between ( storageTank storageTank );      distance 17 m; }
+            { between ( storageTank vessel );           distance 45 m; }
+            { between ( storageTank compressor );       distance 45 m; }
+            { between ( storageTank shellTubeHX );      distance 45 m; }
+            { between ( building compressor );          distance 30 m; }
+            { between ( building vessel );              distance 30 m; }
+            { between ( building shellTubeHX );         distance 30 m; }
+            { between ( building storageTank );         distance 60 m; }
+        );
+    }
+);
+
+//  The prevailing wind blows FROM the north-west (true bearing 315 deg); the
+//  plot plan's +y axis points to true north.  An ignition source within
+//  +/- 30 deg of the DOWNWIND direction (south-east) and within 60 m of a
+//  release source is announced.  The control room and the substation stand
+//  upwind or across the wind of every release source, so nothing is; the
+//  tank farm stands downwind of the process, away from both.
+wind
+{
+    from        315 deg;
+    planNorth   0 deg;
+    halfAngle   30 deg;
+    reach       60 m;
+    source      "author-set assumption for the students to replace with their own site data; not a measured wind rose";
+    reason      "a prevailing direction lets the plot plan be read for which way a release drifts";
+}
+
+// ************************************************************************* //
