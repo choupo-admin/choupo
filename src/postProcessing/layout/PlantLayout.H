@@ -103,6 +103,22 @@ Description
     pressure drop and NO cost: the next slice.  Structures, clash checks of
     a pipe against an item, rotation other than the two plan axes, and any
     distance taken from a standard are NOT here.
+
+    THE PLOT (2026-10-17, DEV.md 4c C82).  After the pipes, the ground the
+    layout occupies is published by ONE rule (`plotOf`): the axis-aligned
+    ENVELOPE of every declared sector area, every placed footprint (process
+    and non-process) and every routed pipe's polyline, grown on every side
+    by the case's `plot { margin <m>; reason "..."; }`.  Absent the block
+    the margin is 0 m and that is ANNOUNCED: the area is then a lower bound,
+    and no margin is invented.  An envelope, not a union, because a plot is
+    one parcel of land bought whole; where sector areas are declared their
+    UNION is published beside it, and two areas that claim the same ground
+    are announced with the shared m2.  Also published: the plan area the
+    footprints cover (a vertical cylinder's disc, any other item's
+    rectangle; each item once, so `stackedPairs` counts the pairs that stand
+    one above another) and, per sector, the declared area or else the
+    envelope of the sector's own footprints.  The economics prices this
+    plot area when the case declares a land price (EconomicsPass.cpp).
 \*---------------------------------------------------------------------------*/
 
 #ifndef Choupo_plantLayout_PlantLayout_H

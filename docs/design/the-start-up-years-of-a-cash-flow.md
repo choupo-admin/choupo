@@ -164,8 +164,10 @@ example, labelled an author-set assumption):
 
 ## 8. Not done
 
-* A ramped working capital; a ramp-up that degrades yield; land as a year-0
-  item (CAPCOST carries it; Choupo has no land cost anywhere).
+* A ramped working capital; a ramp-up that degrades yield.  (Land as a
+  year-0 item was listed here as not done; it was BUILT on 2026-10-17,
+  DEV.md 4c C82, at CAPCOST's own placement -- see
+  `a-plant-layout-is-declared-and-checked.md` section 12.)
 * CAPCOST's COM_d coefficient for labour is 2.76 (cell C34) where this pass
   uses 2.73; the difference was found while reading the sheet and is NOT
   touched here -- it would move every economics golden.

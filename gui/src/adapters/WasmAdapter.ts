@@ -701,7 +701,35 @@ function shapeLayout(l: NonNullable<ResultPayload["layout"]>): PlantLayout {
     internal: arr(l.internal).filter((u): u is string => typeof u === "string"),
     ...shapePipes(l),
     ...shapeSummary(l),
+    ...shapePlot(l),
   };
+}
+
+//  THE PLOT (DEV.md 4c C82), passed through as the engine published it.  A
+//  plot whose rectangle or areas are not finite numbers is absent rather than
+//  drawn at zero; a sector row likewise.  No area is computed here.
+function shapePlot(l: NonNullable<ResultPayload["layout"]>): Partial<PlantLayout> {
+  const p = l.plot;
+  const fin = (v: unknown): v is number => typeof v === "number" && Number.isFinite(v);
+  const str = (v: unknown): string => (typeof v === "string" ? v : "");
+  if (!p || ![p.margin, p.xMin, p.xMax, p.yMin, p.yMax, p.plotArea, p.footprintArea,
+               p.footprintShare].every(fin)) return {};
+  return { plot: {
+    margin: p.margin as number, marginDeclared: !!p.marginDeclared,
+    marginReason: str(p.marginReason),
+    xMin: p.xMin as number, xMax: p.xMax as number, yMin: p.yMin as number,
+    yMax: p.yMax as number, plotArea: p.plotArea as number,
+    footprintArea: p.footprintArea as number,
+    footprintShare: p.footprintShare as number,
+    stackedPairs: fin(p.stackedPairs) ? p.stackedPairs : 0,
+    declaredAreasUnion: fin(p.declaredAreasUnion) ? p.declaredAreasUnion : 0,
+    declaredAreasOverlap: fin(p.declaredAreasOverlap) ? p.declaredAreasOverlap : 0,
+    rule: str(p.rule),
+    sectors: (Array.isArray(l.plotSectors) ? l.plotSectors : [])
+      .filter((s) => typeof s.sector === "string" && fin(s.plotArea) && fin(s.footprintArea))
+      .map((s) => ({ sector: str(s.sector), from: str(s.from),
+                     plotArea: s.plotArea as number, footprintArea: s.footprintArea as number })),
+  } };
 }
 
 //  THE PIPES (DEV.md 4c C80), passed through as routed by the engine.  A pipe
@@ -789,12 +817,25 @@ function shapeEconomics(e: NonNullable<ResultPayload["economics"]>): Economics {
             ? { productionFraction: r.productionFraction } : {}),
           ...(typeof r.startupCost === "number"
             ? { startupCost: r.startupCost } : {}),
+          //  The land (C82): written only when the case declared a price.
+          ...(typeof r.land === "number" ? { land: r.land } : {}),
           taxableIncome: n(r.taxableIncome), tax: n(r.tax),
           afterTaxProfit: n(r.afterTaxProfit), cashFlow: n(r.cashFlow),
           discountFactor: n(r.discountFactor), discountedCF: n(r.discountedCF),
           cumulativeDCF: n(r.cumulativeDCF),
         }))
       : [],
+    //  The land (C82): the engine writes the key only when the case declared
+    //  a land price, so its ABSENCE stays absence -- no zero-cost land line.
+    ...(e.land && typeof e.land.cost === "number" && Number.isFinite(e.land.cost)
+      ? { land: {
+          price: n(e.land.price), area: n(e.land.area),
+          areaFrom: typeof e.land.areaFrom === "string" ? e.land.areaFrom : "",
+          cost: e.land.cost, investedAtYear: n(e.land.investedAtYear),
+          recoveredAtYear: n(e.land.recoveredAtYear),
+          source: typeof e.land.source === "string" ? e.land.source : "",
+          reason: typeof e.land.reason === "string" ? e.land.reason : "",
+        } } : {}),
     //  The sensitivity (C68): the engine writes the key only when the case
     //  declared the block, so its ABSENCE stays absence -- no empty tornado.
     ...(e.sensitivity ? { sensitivity: shapeSensitivity(e.sensitivity) } : {}),
@@ -951,6 +992,13 @@ interface ResultPayload {
     notRouted?: { stream?: string; reason?: string }[];
     summary?: { placed?: number; unplaced?: number; internal?: number; findings?: number;
       pipes?: number; notRouted?: number; pipeLength?: number };
+    plot?: { margin?: number; marginDeclared?: boolean; marginReason?: string;
+      xMin?: number; xMax?: number; yMin?: number; yMax?: number;
+      plotArea?: number; footprintArea?: number; footprintShare?: number;
+      stackedPairs?: number;
+      declaredAreasUnion?: number; declaredAreasOverlap?: number; rule?: string };
+    plotSectors?: { sector?: string; from?: string; plotArea?: number;
+      footprintArea?: number }[];
   };
   economics?: {
     present?: boolean;
@@ -961,8 +1009,10 @@ interface ResultPayload {
     discountedPayback?: number | null; simplePayback?: number | null;
     discountRate?: number; taxRate?: number;
     projectLife?: number; estimateClass?: number; accLo?: number; accHi?: number;
+    land?: { price?: number; area?: number; areaFrom?: string; cost?: number;
+      investedAtYear?: number; recoveredAtYear?: number; source?: string; reason?: string };
     cashFlow?: { year: number; investment: number; revenue: number; opex: number;
-      productionFraction?: number; startupCost?: number;
+      productionFraction?: number; startupCost?: number; land?: number;
       depreciation: number; taxableIncome: number; tax: number; afterTaxProfit: number;
       cashFlow: number; discountFactor: number; discountedCF: number;
       cumulativeDCF: number }[];

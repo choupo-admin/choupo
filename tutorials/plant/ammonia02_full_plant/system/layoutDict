@@ -173,4 +173,17 @@ wind
     reason      "a prevailing direction lets the plot plan be read for which way a release drifts";
 }
 
+//  THE PLOT (DEV.md 4c C82).  The engine publishes the plot area as the
+//  envelope of the placed footprints and the routed pipes, grown on every
+//  side by this margin -- the ground kept clear for the roads, the fence and
+//  access.  AUTHOR-SET ASSUMPTION, a round number for this exercise, not
+//  taken from any spacing standard; the students replace it with their own
+//  site's.  The economics prices this plot area as land (system/postDict,
+//  `economics { land { ... } }`).
+plot
+{
+    margin  10 m;
+    reason  "author-set assumption for this exercise: a 10 m strip for the perimeter road, the fence and access around the plant; not taken from any spacing standard";
+}
+
 // ************************************************************************* //

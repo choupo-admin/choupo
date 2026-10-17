@@ -231,6 +231,20 @@ export function mountLayoutScene(m: LayoutModules, el: HTMLDivElement, scene: La
     label(a.label, [a.x0, 0.05, a.z0], LABEL_PRIORITY.other);
   }
 
+  //  The plot (C82): the engine's published rectangle, a dashed outline on
+  //  the ground and its area as the label -- no fill, so the sector areas
+  //  inside it stay legible.
+  if (scene.plot) {
+    const a = scene.plot;
+    const pts = [[a.x0, a.z0], [a.x1, a.z0], [a.x1, a.z1], [a.x0, a.z1]]
+      .map(([x, z]) => new THREE.Vector3(x, 0.03, z));
+    const outline = new THREE.LineLoop(new THREE.BufferGeometry().setFromPoints(pts),
+      new THREE.LineDashedMaterial({ color: COLOURS.area, dashSize: 2, gapSize: 1.5 }));
+    outline.computeLineDistances();
+    world.add(outline);
+    label(a.label, [a.x1, 0.05, a.z1], LABEL_PRIORITY.other);
+  }
+
   //  The items.  Each mesh carries its tooltip for the hover.
   const pickables: T3.Object3D[] = [];
   for (const s of scene.solids) {

@@ -410,3 +410,78 @@ expected outcome is held to the tree by `gui/tests/plantLayoutLesson.test.ts`
 by the rules above).  Not taught, because the engine does not do it: pipe
 lengths and their cost (said so on the page), and any zone extent or
 distance from a standard (named bibliographically, marked NOT READ).
+
+## 12. Slice 4 -- the plot area and the cost of the land (DEV.md 4c C82)
+
+Vítor, 2026-10-17: *"o layout acaba por ser importante para avaliar os m2 de
+implementação e o custo do terreno"*.  Two halves, one number between them.
+
+**The plot area (engine, `PlantLayout.cpp` `plotOf`).**  ONE rule, published
+on the result as the engine's own sentence (`layout.plot.rule`): the plot is
+the axis-aligned ENVELOPE of every declared sector area, every placed
+footprint (process and non-process) and every routed pipe's polyline, grown
+on every side by the case's declared margin,
+
+    plot { margin 10 m; reason "perimeter road, fence and access"; }
+
+An envelope and not a union, because a plot is one parcel of land bought
+whole: ground between two sectors is still bought.  The pipes are in it
+because they occupy ground and their battery limits are where the plant
+meets the outside -- on a default rack they reach past the outermost
+footprint.  ABSENT the block, the margin is 0 m and that is ANNOUNCED
+(stderr, caveat block, advisories): the area is then a LOWER BOUND, and no
+margin is invented.  Published beside the area: the plan area the
+footprints themselves cover (a vertical cylinder's disc, any other item's
+rectangle; each item counted once, so `stackedPairs` counts the pairs that
+stand one above the other) and its share of the plot -- what the separation
+distances, the access and the rack cost in ground; per sector, the declared
+area where there is one, else the envelope of that sector's own footprints;
+and, where sector areas are declared, their UNION and the ground two of them
+claim at once (each such pair announced with its shared m2: the plot counts
+it once, the two published sector areas count it twice).  Pinned by the
+`layout` golden kind: `plot` and `plotSector:<S>` lines, `plotArea` and
+`footprintArea`, and the sector's `from` word.  The draft tool carries a
+declared `plot {}` under `--force` and otherwise writes a commented one.
+
+**The land (economics, `EconomicsPass.cpp` `readLand` + `appraise`).**  An
+opt-in `land { price; source; reason; }` in the economics block prices the
+plot area as land.  The AREA has one home: the layout's published plot where
+the case declares a layoutDict (an `area` beside it refuses -- one plot, one
+area), else a declared `area`; with neither, the land refuses by name.  The
+layout is therefore checked BEFORE the economics pass on the direct path
+(where the chain reaches `economics`; after the chain when there is none),
+and under an outer driver -- which checks the layout after its chain -- a
+land block needs its declared `area`, which the refusal says.
+
+WHERE IT SITS IN THE CASH FLOW, read on 2026-10-17 in CAPCOST 2017 (the
+file `readTimeline` already cites, same sha256): 'COM Summary'!B15:C15 is
+the "Cost of Land" (`costLand`); 'Cash Flow Analysis'!C49 spends it at
+year 0, the START of the project, before the first construction year's
+capital; I63 recovers it at the end of the project life beside the working
+capital, `=workingCapital/10^6 + costLand/10^6`, outside the taxed line.
+CAPCOST's year 0 is Choupo's t = -constructionPeriod (Choupo's year 0 is
+the END of construction), so a land price adds ONE row to the timeline.  The
+land is NOT depreciated, its recovery is at its purchase value and untaxed
+(no appreciation is modelled), and it is NOT in TCI -- a third capital line
+beside FCI and WC, printed on its own line with its source.  It enters the
+appraisal ONLY through `appraise` (the bundle carries price and area; the
+outlay and the recovery are two lines inside it), so the C68 sensitivity
+moves it as `land.price` with no arithmetic of its own.  The cash-flow
+rows keep it OUT of `investment` (whose name is the fixed and working
+capital) and carry it in a `land` cell.  Absent a land block every economics
+case is byte-identical (measured: console, result JSON and every file the
+run writes, on the nine economics cases without a layout, against a build of
+the parent commit; the .ods compared on its content).
+
+WITNESSES.  `ammonia02_full_plant` and `greenAmmoniaPEQ_baseCase` declare
+`plot { margin 10 m; }` and `land { price 50; }` -- a ROUND PLACEHOLDER for
+the students' site, said so in the file, not a market quotation.  Their
+NPV (and, on ammonia02, IRR and payback) MOVE with it, as they must;
+`aceticAcid02_plant` publishes its plot area only (its README makes pricing
+the students' task), with the absent margin announced.
+
+**Not here, named:** appreciation or a resale price different from the
+purchase price; land bought on a schedule; the land's own taxes and fees;
+a non-rectangular plot; the economics of a plot under an outer driver
+without a declared `area`.  Gates: `check_plant_layout` arm (j),
+`check_economic_sensitivity` arms (i)-(l), `check_cost_provenance` arm (s).

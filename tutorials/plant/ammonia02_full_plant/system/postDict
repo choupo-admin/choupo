@@ -136,4 +136,16 @@ economics
     contingencyFee      1.18;
     estimateClass       4;
     refuseOnMissingPrice 1;
+
+    //  THE LAND (DEV.md 4c C82): the plot area the layout publishes
+    //  (system/layoutDict, `plot { margin; }` included) priced as
+    //  non-depreciable capital, bought at the start of construction and
+    //  recovered at its purchase value at the end of the project.  The price
+    //  is a ROUND PLACEHOLDER FOR THE STUDENTS' SITE; NOT A MARKET QUOTATION.
+    land
+    {
+        price   50;     // EUR per m2 of plot
+        source  "placeholder for the students' site; not a market quotation";
+        reason  "a round number so that the land appears in the capital and the cash flow; replace it with the price of the site the group chooses";
+    }
 }

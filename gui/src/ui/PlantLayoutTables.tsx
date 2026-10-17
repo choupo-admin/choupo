@@ -52,6 +52,7 @@ import { phaseCss, PHASE_WORDS } from "../case/plantLayout.js";
 import {
   FINDINGS_CAPTION, findingRows, itemRows, layoutNotes, LEGEND_CONTROLS, LEGEND_PHASES,
   LEGEND_PIPES, LEGEND_SHAPES, PARTICLE_WORD, PIPE_REGISTER_CAPTION, pipeRegister,
+  PLOT_CAPTION, plotSummary,
 } from "../case/layoutTables.js";
 
 /** How to read the 3D view (shapes, zones, pipes, controls). */
@@ -138,12 +139,52 @@ export function PipeRegister({ layout }: { layout: PlantLayout }) {
   );
 }
 
-/** The findings, the placed items and the notes on what was not placed. */
+/** THE PLOT (DEV.md 4c C82): the engine's area, its footprints' share, the
+ *  margin and whose it is, the rule quoted, and one row per sector. */
+export function PlotArea({ layout }: { layout: PlantLayout }) {
+  const v = plotSummary(layout);
+  if (!v) return null;
+  return (
+    <Box mt="xs">
+      <Text size="sm">{v.headline}</Text>
+      <Text size="xs" c="dimmed">{v.margin}</Text>
+      {v.notes.map((n) => <Text key={n} size="xs" c="dimmed">{n}</Text>)}
+      <Text size="xs" c="dimmed">{v.rule}</Text>
+      {v.sectors.length > 0 && (
+        <ScrollArea type="auto" mt={4}>
+          <Table striped withTableBorder fz="xs" ff="monospace" miw={520} captionSide="top">
+            <Table.Caption style={{ textAlign: "left" }}>{PLOT_CAPTION}</Table.Caption>
+            <Table.Thead><Table.Tr>
+              <Table.Th>Sector</Table.Th>
+              <Table.Th>Area from</Table.Th>
+              <Table.Th ta="right">Plot (m²)</Table.Th>
+              <Table.Th ta="right">Footprints (m²)</Table.Th>
+            </Table.Tr></Table.Thead>
+            <Table.Tbody>
+              {v.sectors.map((s) => (
+                <Table.Tr key={s.sector}>
+                  <Table.Td>{s.sector}</Table.Td>
+                  <Table.Td>{s.from}</Table.Td>
+                  <Table.Td ta="right">{s.plotArea}</Table.Td>
+                  <Table.Td ta="right">{s.footprintArea}</Table.Td>
+                </Table.Tr>
+              ))}
+            </Table.Tbody>
+          </Table>
+        </ScrollArea>
+      )}
+    </Box>
+  );
+}
+
+/** The plot, the findings, the placed items and the notes on what was not
+ *  placed. */
 export function PlantLayoutTables({ layout }: { layout: PlantLayout }) {
   const findings = findingRows(layout);
   const notes = layoutNotes(layout);
   return (
     <>
+      <PlotArea layout={layout} />
       <PipeRegister layout={layout} />
       {findings.length > 0 && (
         <ScrollArea type="auto" mt="xs">

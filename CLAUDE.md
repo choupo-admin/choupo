@@ -2156,7 +2156,12 @@ every material stream is routed (item nozzle / junction on the rack /
 battery limit, orthogonally over a declared `pipeRack` or an announced stated
 default, `pipes { <stream> { waypoints } }` overriding one) or listed in
 `notRouted` with its reason, its length published and pinned by the `layout`
-kind; the GUI draws the routes with a stylised flow and computes none.  NOT
+kind; the GUI draws the routes with a stylised flow and computes none.
+**Since C82 it publishes the PLOT AREA** by one rule (`plotOf`: the envelope
+of the declared sector areas, the placed footprints and the routed pipes,
+grown by the case's `plot { margin; reason; }` -- absent, 0 m ANNOUNCED, a
+lower bound), with the footprints' own area and per-sector areas; the layout
+is checked BEFORE the economics so the economics can price that area.  NOT
 done: a pipe's pressure drop and cost (next slice), structures.
 Gate: `check_plant_layout`.  Record:
 [`docs/design/a-plant-layout-is-declared-and-checked.md`](docs/design/a-plant-layout-is-declared-and-checked.md).
@@ -2178,7 +2183,13 @@ capital.  An unknown input, an undeclared price, a utility with no bill, a
 bare list or an impossible end REFUSE by name; absent, every economics case
 is byte-identical (measured, console + JSON + every reports/economics file).
 Every table says it is NOT an uncertainty analysis.  An outer `sweep` still
-varies flowsheet paths only.  Gate: `check_economic_sensitivity`.  Witnesses:
+varies flowsheet paths only.  **THE LAND (C82)** goes through the same home:
+an opt-in `land { price; source; reason; }` prices the layout's published
+plot area (a declared `area` only where there is no layout -- never both) as
+non-depreciable capital at the START of construction, recovered untaxed at
+its purchase value at end of life (CAPCOST 2017's placement), not in TCI;
+`land.price` is a sensitivity input.  Gates: `check_economic_sensitivity`
+(i)-(l), `check_cost_provenance` (s).  Gate: `check_economic_sensitivity`.  Witnesses:
 `greenAmmonia02_feasibility150bar` / `50bar`.
 
 **A TOOL THAT COULD NOT LOOK REPORTED WHAT IT DID NOT SEE (2026-09-06).**

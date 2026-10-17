@@ -540,7 +540,7 @@ equipment StorageFlash           inventory.mass.NH3 5052.78568451    1e-4
 equipment StorageFlash           inventory.mass.total 5052.99347916    1e-4
 kpi     economics              COM_d            424599035.44     1e-4
 kpi     economics              FCI              41229747.1861    1e-4
-kpi     economics              NPV              -294646964.002   1e-4
+kpi     economics              NPV              -295878321.858   1e-4
 kpi     economics              TCI              90443470.3687    1e-4
 kpi     economics              WC               49213723.1826    1e-4
 kpi     economics              WC_fractionRule  6184462.07792    1e-4
@@ -1050,3 +1050,7 @@ layout  pipe:FlashGas          length           41.7826268662    1e-4
 layout  summary                pipes            24               1e-4
 layout  summary                notRouted        0                1e-4
 layout  summary                pipeLength       784.172220349    1e-4
+kpi     economics              land             1430800          1e-4
+kpi     economics              landArea         28616            1e-4
+layout  plot                   plotArea         28616            1e-4
+layout  plot                   footprintArea    2755.72778352    1e-4

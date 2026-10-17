@@ -360,7 +360,10 @@ void writeCashFlowCsv(const EconomicsSummary& e)
         f << "# year <= 0: construction (capital at the END of each year);"
              " year 0 = end of construction = start-up, where the WC is"
              " invested; years 1.." << e.projectLife << ": operation\n";
+    //  THE LAND (C82): a column of its own, and only when declared.
+    const bool hasLand = e.landPresent;
     f << "year,investment_" << cur;
+    if (hasLand) f << ",land_" << cur;
     if (ext) f << ",productionFraction";
     f << ",revenue_"        << cur
       << ",operatingCost_"  << cur;
@@ -378,6 +381,7 @@ void writeCashFlowCsv(const EconomicsSummary& e)
     {
         f << r.year
           << "," << csvNum(r.investment,     0);
+        if (hasLand) f << "," << csvNum(r.land, 0);
         if (ext) f << "," << csvNum(r.productionFraction, 4);
         f << "," << csvNum(r.revenue,        0)
           << "," << csvNum(r.operatingCost,  0);
@@ -397,6 +401,15 @@ void writeCashFlowCsv(const EconomicsSummary& e)
     f << "FCI,"          << csvNum(e.FCI,   0) << "\n";
     f << "WC,"           << csvNum(e.WC,    0) << "\n";
     f << "TCI,"          << csvNum(e.TCI,   0) << "\n";
+    if (hasLand)
+    {
+        f << "land,"              << csvNum(e.landCost,  0) << "\n";
+        f << "landPrice_per_m2,"  << csvNum(e.landPrice, 6) << "\n";
+        f << "landArea_m2,"       << csvNum(e.landArea,  3) << "\n";
+        f << "landAreaFrom,"      << e.landAreaFrom << "\n";
+        f << "landInvestedAtYear," << e.landInvestedAtYear << "\n";
+        f << "landRecoveredAtYear," << e.landRecoveredAtYear << "\n";
+    }
     f << "COM_d,"        << csvNum(e.COM_d, 0) << "\n";
     f << "revenue,"      << csvNum(e.revenue, 0) << "\n";
     f << "NPV,"          << csvNum(e.NPV,   0) << "\n";
@@ -493,6 +506,8 @@ void writeCashFlowOds(const EconomicsSummary& e)
     ods.newRow();
     ods.textCell("Year",                       OdsWriter::Header);
     ods.textCell("Fixed+Working Capital",      OdsWriter::Header);
+    if (e.landPresent)
+        ods.textCell("Land",                   OdsWriter::Header);
     if (e.timelineExtended)
         ods.textCell("Production fraction",    OdsWriter::Header);
     ods.textCell("Revenue",                    OdsWriter::Header);
@@ -523,6 +538,8 @@ void writeCashFlowOds(const EconomicsSummary& e)
         ods.newRow();
         ods.numberCell(r.year,            0, rowSt);
         ods.numberCell(r.investment,      0, rowSt);
+        if (e.landPresent)
+            ods.numberCell(r.land,        0, rowSt);
         if (e.timelineExtended)
             ods.numberCell(r.productionFraction, 4, rowSt);
         ods.numberCell(r.revenue,         0, rowSt);
@@ -557,6 +574,8 @@ void writeCashFlowOds(const EconomicsSummary& e)
     metric("Fixed capital investment (FCI)", e.FCI, 0, false);
     metric("Working capital (WC)",           e.WC,  0, false);
     metric("Total capital investment (TCI)", e.TCI, 0, false);
+    if (e.landPresent)
+        metric("Land (not in TCI; recovered at end of life)", e.landCost, 0, false);
     metric("Cost of manufacture (COM_d)/yr", e.COM_d,   0, false);
     metric("Annual revenue (R)",             e.revenue, 0, false);
     metric("NPV @ " + csvNum(100.0 * e.discountRate, 1) + "%",
@@ -870,6 +889,135 @@ DcfTimeline readTimeline(const DictPtr& d, int projectLife)
 }
 
 // =========================================================================
+//  THE LAND (2026-10-17, DEV.md 4c C82).  Vitor: "o layout acaba por ser
+//  importante para avaliar os m2 de implementacao e o custo do terreno".
+//
+//  OPT-IN.  A case that declares no `land` block computes, prints, publishes
+//  and writes exactly what it did (measured on every economics case of the
+//  corpus against a build of the parent commit, not argued).
+//
+//      land
+//      {
+//          price   30;         // currency per m2 (the costing's), a bare
+//                              // number or `[0 -2 0 0 0] 30`
+//          source  "...";      // where the price comes from
+//          reason  "...";      // why it is the right one for this plant
+//          // area 25000 m2;   // ONLY where the run publishes no plot area
+//      }
+//
+//  THE AREA HAS ONE HOME.  Where the case declares a plot plan, the area is
+//  the layout's published plot area (`layout.plot`, PlantLayout.cpp
+//  `plotOf`), and an `area` declared here beside it is REFUSED -- two homes
+//  for one number.  Where the run publishes no plot area, `area` must be
+//  declared; with neither, the land REFUSES by name.  Under an outer driver
+//  the layout is checked AFTER the post-processing chain, so a land block
+//  there needs its declared `area` (the refusal says so).
+//
+//  WHERE THE LAND SITS IN THE CASH FLOW, and where it was read.  The land is
+//  bought at the START of construction and recovered at the END of the
+//  project at its purchase value; it is NOT depreciated, and its recovery is
+//  untaxed (no gain is assumed, so none is taxed; no appreciation is
+//  modelled).  Read on 2026-10-17 in CAPCOST 2017 (`capcost_2017_rev2.xlsm`,
+//  the same file, sha256 2747f01f...f428e4, `readTimeline` cites): 'COM
+//  Summary'!B15:C15 is the "Cost of Land" (`costLand`); 'Cash Flow
+//  Analysis'!C49 places it at year 0, the START of the project, before the
+//  first construction year's capital (C50 = FCI x the year-1 fraction);
+//  and 'Cash Flow Analysis'!I63 recovers it at the end of the project life
+//  together with the working capital, `=workingCapital/10^6 +
+//  costLand/10^6`, outside the taxed line.  CAPCOST's year 0 is Choupo's
+//  t = -constructionPeriod (Choupo's year 0 is the END of construction,
+//  `readTimeline`), so a land price adds ONE row to the timeline, t = -Nc.
+//  The BOOK's chapter was not read.
+//
+//  NOT IN TCI.  TCI stays FCI + WC as Turton's ladder defines it here; the
+//  land is a third capital line printed beside it, with its own dates.
+// =========================================================================
+struct LandDeclaration
+{
+    bool        present = false;
+    scalar      price   = 0.0;     // currency per m2
+    scalar      area    = 0.0;     // m2
+    std::string areaFrom;          // layoutPlot | declared
+    std::string source, reason;
+
+    std::string areaSentence() const
+    {
+        return areaFrom == "layoutPlot"
+            ? std::string("the layout's published plot area")
+            : std::string("declared in the land block -- the run publishes no plot area");
+    }
+};
+
+LandDeclaration readLand(const DictPtr& econ, const SimulationResult& result)
+{
+    LandDeclaration L;
+    if (!econ->found("land")) return L;
+    const std::string where = "economics { land { ... } }";
+    if (!std::holds_alternative<DictPtr>(econ->entryValue("land")))
+        throw std::runtime_error("economics: `land` must be a block -- `land {"
+            " price <currency per m2>; source \"...\"; reason \"...\"; }`.");
+    const DictPtr d = econ->subDict("land");
+
+    if (!d->found("price"))
+        throw std::runtime_error(where + ": `price` is not declared -- the"
+            " price of the land in the costing's currency per m2 (`price 30;`"
+            " or `price [0 -2 0 0 0] 30;`).  No price is defaulted.");
+    L.price = d->lookupScalar("price", Dimensions(0, -2, 0, 0, 0));
+    if (!(L.price >= 0.0))
+    {
+        std::ostringstream m;
+        m << where << ": `price " << L.price << ";` -- a land price cannot be"
+             " negative.";
+        throw std::runtime_error(m.str());
+    }
+    for (const char* key : { "source", "reason" })
+    {
+        if (!d->found(key) || d->lookupWord(key).empty())
+            throw std::runtime_error(where + ": `" + key + " \"...\";` is not"
+                " declared -- a land price is an assumption the case owes its"
+                " reader: where it comes from (`source`) and why it is this"
+                " plant's (`reason`).");
+    }
+    L.source = d->lookupWord("source");
+    L.reason = d->lookupWord("reason");
+
+    const bool plotPublished = result.layout.plot.present;
+    if (d->found("area"))
+    {
+        if (plotPublished)
+        {
+            std::ostringstream m;
+            m << where << ": `area` is declared, and this run's layout"
+                 " publishes the plot area (" << result.layout.plot.plotArea
+              << " m2, system/layoutDict) -- one plot, one area.  Delete"
+                 " `area`; the land is priced on the plot the layout"
+                 " publishes (its margin is `plot { margin; }` in"
+                 " system/layoutDict).";
+            throw std::runtime_error(m.str());
+        }
+        L.area = d->lookupScalar("area", Dims::area);
+        if (!(L.area > 0.0))
+            throw std::runtime_error(where + ": `area` must be a positive"
+                " area (`area 25000 m2;`).");
+        L.areaFrom = "declared";
+    }
+    else if (plotPublished)
+    {
+        L.area     = result.layout.plot.plotArea;
+        L.areaFrom = "layoutPlot";
+    }
+    else
+        throw std::runtime_error(where + ": a land price is declared and this"
+            " run has no plot area to price -- the case declares no"
+            " system/layoutDict, or (under an outer driver) the layout is"
+            " checked only after the post-processing chain.  Declare a plot"
+            " plan (system/layoutDict) and its area is used, or declare"
+            " `area <m2>;` in the land block.  No area is invented.");
+    L.present = true;
+    return L;
+}
+
+// =========================================================================
 //  ONE APPRAISAL, ONE HOME (2026-10-12, DEV.md 4c C68).
 //
 //  Everything from the annual bills to the NPV, the IRR and the paybacks is
@@ -907,6 +1055,12 @@ struct AppraisalInputs
     //  `utility.<name>`); absent, a row is summed as published.
     std::vector<std::pair<std::string, scalar>> utilityEurH;
     std::map<std::string, scalar>               utilityScale;
+    //  THE LAND (C82): absent unless the case declares a land price.  A
+    //  sensitivity may move `landPrice` (`land.price`); the area is the
+    //  layout's (or the declared) and is never moved here.
+    bool   landPresent = false;
+    scalar landPrice   = 0.0;        // currency per m2
+    scalar landArea    = 0.0;        // m2
 
     //  ---- what it never moves -----------------------------------------
     scalar  projectLife            = 10.0;
@@ -927,6 +1081,7 @@ struct AppraisalOutcome
     scalar WC = 0.0, TCI = 0.0;
     WorkingCapitalBuildUp wcb;
     scalar d_annual = 0.0, salvage = 0.0, startupCost = 0.0;
+    scalar land = 0.0;                     // C82: price x area, 0 when absent
     int    Nc = 1, tFirst = 0, Nlife = 0;
     scalar NPV = 0.0, NPV_projectStart = 0.0;
     scalar IRR = std::nan("");
@@ -1011,8 +1166,12 @@ AppraisalOutcome appraise(const AppraisalInputs& in,
     //  1.  The WC is recovered untaxed at end-of-life, salvage is taxed on
     //  the gain.  cashFlow[k] holds year t = k + tFirst.
     const int    Nc     = timeline.constructionPeriod;
-    const int    tFirst = 1 - Nc;
-    const int    Nrows  = Nlife + Nc;            // years tFirst..Nlife
+    //  THE LAND (C82) adds ONE year, the START of construction (t = -Nc,
+    //  CAPCOST's year 0), when the case declares a land price; absent, the
+    //  timeline is exactly what it was.
+    const int    tFirst = in.landPresent ? -Nc : 1 - Nc;
+    const int    Nrows  = Nlife + 1 - tFirst;    // years tFirst..Nlife
+    const scalar land   = in.landPresent ? in.landPrice * in.landArea : 0.0;
     auto at = [&](int t) -> std::size_t { return static_cast<std::size_t>(t - tFirst); };
 
     const scalar C_var        = C_RM + C_UT + C_WT;   // the variable group
@@ -1031,6 +1190,10 @@ AppraisalOutcome appraise(const AppraisalInputs& in,
     for (int k = 1; k <= Nc; ++k)                // construction, end of year k
         capitalOut[at(k - Nc)] = -(timeline.capitalSchedule[static_cast<std::size_t>(k - 1)] * FCI);
     capitalOut[at(0)] -= WC;                     // working capital at start-up
+    //  THE LAND (C82), bought at the START of construction -- CAPCOST 2017's
+    //  'Cash Flow Analysis'!C49 (`=costLand`, year 0, before the first
+    //  construction year's capital) -- and NOT depreciated.
+    if (in.landPresent) capitalOut[at(-Nc)] -= land;
     for (int t = tFirst; t <= 0; ++t) cashFlow[at(t)] = capitalOut[at(t)];
     for (int t = 1; t <= Nlife; ++t)
     {
@@ -1040,6 +1203,11 @@ AppraisalOutcome appraise(const AppraisalInputs& in,
         cashFlow[at(t)] = CF_t;
     }
     cashFlow[at(Nlife)] += WC + salvage * (1.0 - taxRate);  // WC untaxed; salvage taxed
+    //  THE LAND (C82) recovered at its PURCHASE value at the end of the last
+    //  operating year, beside the working capital and untaxed (no gain is
+    //  assumed, so none is taxed) -- CAPCOST 2017's 'Cash Flow Analysis'!I63
+    //  (`=workingCapital/10^6 + costLand/10^6`).  No appreciation is modelled.
+    if (in.landPresent) cashFlow[at(Nlife)] += land;
 
     auto npvAt = [&](scalar i) -> scalar
     {
@@ -1238,7 +1406,15 @@ AppraisalOutcome appraise(const AppraisalInputs& in,
                 row.tax           = taxRate * row.taxableIncome;
                 row.afterTaxProfit = row.taxableIncome - row.tax;
             }
-            row.cashFlow        = cashFlow[at(t)];   // includes WC/salvage at N
+            //  THE LAND (C82) on its own cell, and OUT of `investment`, whose
+            //  name is the fixed and working capital: the outlay at t = -Nc,
+            //  the recovery at N.  The cash flow carries both.
+            if (in.landPresent)
+            {
+                row.land = (t == -Nc ? -land : 0.0) + (t == Nlife ? land : 0.0);
+                if (t == -Nc) row.investment += land;
+            }
+            row.cashFlow        = cashFlow[at(t)];   // includes WC/salvage (and land) at N
             row.discountFactor  = 1.0 / std::pow(1.0 + discountRate, t);
             row.discountedCF    = cashFlow[at(t)] * row.discountFactor;
             cumDisc            += row.discountedCF;
@@ -1251,6 +1427,7 @@ AppraisalOutcome appraise(const AppraisalInputs& in,
     o.C_WT = C_WT;  o.R = R;        o.COM_d = COM_d;
     o.WC = WC;      o.TCI = TCI;    o.wcb = wcb;
     o.d_annual = d_annual;  o.salvage = salvage;  o.startupCost = startupCost;
+    o.land = land;
     o.Nc = Nc;  o.tFirst = tFirst;  o.Nlife = Nlife;
     o.NPV = NPV;
     //  The NPV referred to the START of construction, CAPCOST's own year 0
@@ -1343,6 +1520,7 @@ scalar sensitivityValue(const AppraisalInputs& in, const std::string& key)
     if (key == "taxRate")      return in.taxRate;
     if (key == "streamFactor") return in.streamFactor;
     if (key == "labourRate")   return in.labourRate;
+    if (key == "land.price")   return in.landPrice;
     if (key.rfind("price.", 0) == 0)
     {
         const std::string s = key.substr(6);
@@ -1368,6 +1546,7 @@ AppraisalInputs withSensitivityValue(AppraisalInputs in, const std::string& key,
     else if (key == "taxRate")      in.taxRate      = v;
     else if (key == "streamFactor") in.streamFactor = v;
     else if (key == "labourRate")   in.labourRate   = v;
+    else if (key == "land.price")   in.landPrice    = v;
     else if (key.rfind("price.", 0) == 0)
     {
         const std::string s = key.substr(6);
@@ -1404,6 +1583,7 @@ std::vector<SensitivityInput> readSensitivity(const DictPtr& block,
         { "FCI", "discountRate", "labourRate", "streamFactor", "taxRate" };
     for (const auto& s : pricedStreams)   accepted.push_back("price." + s);
     for (const auto& u : pricedUtilities) accepted.push_back("utility." + u);
+    if (base.landPresent) accepted.push_back("land.price");
 
     auto list = [](const std::vector<std::string>& v)
     {
@@ -1425,6 +1605,11 @@ std::vector<SensitivityInput> readSensitivity(const DictPtr& block,
         const bool isUtility = key.rfind("utility.", 0) == 0;
         if (std::find(accepted.begin(), accepted.end(), key) == accepted.end())
         {
+            if (key == "land.price")
+                throw std::runtime_error(where + ": `land.price` moves the price"
+                    " of the land, and this economics block declares none (no"
+                    " `land { price; source; reason; }`).  A sensitivity moves a"
+                    " price the case DECLARES; it never invents one.");
             if (isPrice)
                 throw std::runtime_error(where + ": `" + key + "` perturbs the"
                     " price of stream '" + key.substr(6) + "', and"
@@ -1515,6 +1700,7 @@ std::vector<SensitivityInput> readSensitivity(const DictPtr& block,
 
         if      (key == "FCI" || isPrice) s.unit = isPrice ? "EUR/kg" : "EUR";
         else if (key == "labourRate")     s.unit = "EUR/h";
+        else if (key == "land.price")     s.unit = "EUR/m2";
         else if (isUtility)               s.unit = "x bill";
         else                              s.unit = "-";
         s.base = sensitivityValue(base, key);
@@ -1558,7 +1744,8 @@ void resolveSensitivityEnds(SensitivityInput& s, scalar accLoPct, scalar accHiPc
     if (s.key == "FCI" && !(s.lo > 0.0))
         refuse("a fixed capital must stay positive (a relative low end must be"
                " above -1).");
-    if ((isPrice || s.key == "labourRate" || s.key.rfind("utility.", 0) == 0)
+    if ((isPrice || s.key == "labourRate" || s.key == "land.price"
+         || s.key.rfind("utility.", 0) == 0)
         && !(s.lo >= 0.0))
         refuse("a price, a labour rate or a utility bill factor cannot be"
                " negative.");
@@ -1989,6 +2176,17 @@ int EconomicsPass::run(SimulationResult& result)
                      "NPV/IRR will be a pure cost stream, not an appraisal).\n";
     }
 
+    // ---- 5a. THE LAND (C82), read and checked BEFORE any number is printed.
+    //  Absent, nothing is read and nothing said.  See `readLand` for the
+    //  grammar, the area's one home and the placement in the cash flow.
+    const LandDeclaration landDecl = readLand(econDict_, result);
+    if (landDecl.present)
+    {
+        baseIn.landPresent = true;
+        baseIn.landPrice   = landDecl.price;
+        baseIn.landArea    = landDecl.area;
+    }
+
     // ---- 5b. The sensitivity block (C68), read and checked BEFORE any
     //  number is printed, so a malformed declaration refuses the appraisal
     //  instead of trailing it.  Absent, nothing is read and nothing said.
@@ -2018,7 +2216,6 @@ int EconomicsPass::run(SimulationResult& result)
     const WorkingCapitalBuildUp& wcb = base.wcb;
     const scalar d_annual      = base.d_annual;
     const int    Nc            = base.Nc;
-    const int    tFirst        = base.tFirst;
     const int    Nlife         = base.Nlife;
     const scalar startupCost   = base.startupCost;
     const scalar NPV           = base.NPV;
@@ -2104,6 +2301,23 @@ int EconomicsPass::run(SimulationResult& result)
                   << std::setprecision(0) << std::setw(14) << WC
                   << " EUR  (built up below; fundo de maneio)\n";
     std::cout << "    TCI = FCI + WC               = " << std::setw(14) << TCI << " EUR\n";
+    if (landDecl.present)
+    {
+        //  THE LAND (C82), on its own line and NOT in TCI: a third capital
+        //  line, invested and recovered on its own dates.  The stream's
+        //  alignment is restored after, so nothing printed below moves.
+        const std::ios::fmtflags keep = std::cout.flags();
+        std::cout << "    Land = " << std::setprecision(4) << landDecl.price
+                  << " EUR/m2 x " << std::setprecision(1) << landDecl.area
+                  << " m2  = " << std::setprecision(0) << std::right << std::setw(14) << base.land
+                  << " EUR  (area: " << landDecl.areaSentence() << ")\n"
+                  << "      bought at the START of construction (t = " << -Nc
+                  << "), NOT depreciated, recovered at its purchase value,"
+                     " untaxed, at the end of year " << Nlife
+                  << "; NOT in TCI\n"
+                  << "      price: " << landDecl.source << "\n";
+        std::cout.flags(keep);
+    }
     std::cout << "    [Lang cross-check] " << std::setprecision(2) << langFactor
               << "*SCp = " << std::setprecision(0) << FCI_Lang
               << " EUR  (purchased-based; NOT used in FCI)\n";
@@ -2225,7 +2439,7 @@ int EconomicsPass::run(SimulationResult& result)
                   << " yr; capital at the END of each construction year: "
                   << fmtList(timeline.capitalSchedule) << " x FCI\n"
                   << "    year 0 = end of construction (start-up); construction"
-                     " years are t = " << tFirst << ".." << 0
+                     " years are t = " << (1 - Nc) << ".." << 0
                   << ": discounted by 1/(1+i)^t like every year,\n"
                      "      so a t < 0 outflow is COMPOUNDED to start-up\n";
         if (!timeline.rampUp.empty())
@@ -2284,23 +2498,33 @@ int EconomicsPass::run(SimulationResult& result)
         //  table, and a one-year case still prints none).
         std::cout << "\n    year by year (" << (result.costs.empty() ? std::string("EUR")
                                     : result.costs.begin()->second.currency)
-                  << "; t <= 0 construction, t = 0 also the WC):\n"
+                  << "; t <= 0 construction, t = 0 also the WC"
+                  << (landDecl.present ? "; the land bought at t = " + std::to_string(-Nc)
+                                         + " and recovered at t = " + std::to_string(Nlife)
+                                       : std::string())
+                  << "):\n"
                   << "    " << std::setw(4) << "t" << std::setw(7) << "p_t"
-                  << std::setw(15) << "capital" << std::setw(15) << "revenue"
+                  << std::setw(15) << "capital";
+        if (landDecl.present) std::cout << std::setw(15) << "land";
+        std::cout << std::setw(15) << "revenue"
                   << std::setw(15) << "COM_d,t" << std::setw(14) << "start-up"
                   << std::setw(14) << "deprec." << std::setw(14) << "tax"
                   << std::setw(15) << "cash flow" << std::setw(11) << "1/(1+i)^t"
                   << std::setw(16) << "cumulative DCF" << "\n";
         for (const auto& r : cashFlowRows)
+        {
             std::cout << "    " << std::setw(4) << r.year
                       << std::setw(7) << std::setprecision(3) << r.productionFraction
                       << std::setprecision(0)
-                      << std::setw(15) << r.investment << std::setw(15) << r.revenue
+                      << std::setw(15) << r.investment;
+            if (landDecl.present) std::cout << std::setw(15) << r.land;
+            std::cout << std::setw(15) << r.revenue
                       << std::setw(15) << r.operatingCost << std::setw(14) << r.startupCost
                       << std::setw(14) << r.depreciation << std::setw(14) << r.tax
                       << std::setw(15) << r.cashFlow
                       << std::setw(11) << std::setprecision(4) << r.discountFactor
                       << std::setprecision(0) << std::setw(16) << r.cumulativeDCF << "\n";
+        }
     }
     std::cout << "=====================================================================\n\n";
 
@@ -2339,6 +2563,13 @@ int EconomicsPass::run(SimulationResult& result)
     econ["NPV"]          = NPV;
     econ["IRR"]          = haveIRR ? IRR : std::nan("");
     econ["paybackYears"] = std::isfinite(discPayback) ? discPayback : std::nan("");
+    //  THE LAND (C82), only when declared, so every other case publishes
+    //  exactly what it did: its cost and the area it was priced on.
+    if (landDecl.present)
+    {
+        econ["land"]     = base.land;
+        econ["landArea"] = landDecl.area;
+    }
     //  THE BUILD-UP IS PUBLISHED LINE BY LINE (C44 slice 4) -- and only when
     //  declared, so a fraction-of-FCI case publishes exactly what it did.
     //  `WC` above is then the NET figure the cash flow uses.
@@ -2411,6 +2642,18 @@ int EconomicsPass::run(SimulationResult& result)
     summary.startupCostFraction = timeline.startupCostFraction;
     summary.startupCost        = startupCost;
     summary.NPV_projectStart   = NPV_projectStart;
+    if (landDecl.present)
+    {
+        summary.landPresent         = true;
+        summary.landPrice           = landDecl.price;
+        summary.landArea            = landDecl.area;
+        summary.landAreaFrom        = landDecl.areaFrom;
+        summary.landCost            = base.land;
+        summary.landInvestedAtYear  = -Nc;
+        summary.landRecoveredAtYear = Nlife;
+        summary.landSource          = landDecl.source;
+        summary.landReason          = landDecl.reason;
+    }
     //  THE SENSITIVITY ON THE RESULT (2026-10-17): the rows the CSV below
     //  writes, in the SAME order (`tornadoOrder`), so the GUI draws the
     //  engine's ranking and recomputes none of it.

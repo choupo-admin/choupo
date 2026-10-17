@@ -1550,7 +1550,13 @@ def _run_copy(src: Path, edit, keep_layout=True):
     plot plan placed a published shell, and (q)'s `maxTankVolume` copy,
     which changes how many tanks the store is.  A plot plan of the shipped
     items rightly refuses those copies (an item naming no sized item, a
-    box the sizer no longer gives), and that is a second subject."""
+    box the sizer no longer gives), and that is a second subject.
+
+    A copy that leaves the plot plan behind also leaves the LAND behind
+    (DEV.md 4c C82): a witness that prices its plot area as land has no area
+    to price without its layout, and the economics rightly REFUSES that by
+    name (`check_economic_sensitivity` arm (k)) -- a third subject, so the
+    `land { ... }` block goes with the layoutDict."""
     tmp = Path(tempfile.mkdtemp(prefix="design_sheet_n_"))
     dst = tmp / src.name
     ignore = ["design", "reports", "converged", "postProcessing"]
@@ -1558,7 +1564,10 @@ def _run_copy(src: Path, edit, keep_layout=True):
         ignore.append("layoutDict")
     shutil.copytree(src, dst, ignore=shutil.ignore_patterns(*ignore))
     pd = dst / "system" / "postDict"
-    pd.write_text(edit(pd.read_text(errors="replace")))
+    text = pd.read_text(errors="replace")
+    if not keep_layout:
+        text = re.sub(r"\n[ \t]*land\s*\n[ \t]*\{[^{}]*\}", "\n", text)
+    pd.write_text(edit(text))
     proc = subprocess.run([str(ROOT / "choupoSolve"), str(dst)],
                           capture_output=True, text=True)
     return dst, proc.returncode, proc.stdout, proc.stderr

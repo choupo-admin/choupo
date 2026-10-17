@@ -1002,6 +1002,27 @@ accepts today, and that is a policy call.
 > README makes pricing the students' task).  No new case.  Status:
 > dispatched 2026-10-17.
 
+> **C82 MERGED 2026-10-17.**  The layout publishes the PLOT: the
+> axis-aligned envelope of every declared sector area, placed footprint and
+> routed pipe, grown by a declared `plot { margin; reason; }` (absent: 0 m,
+> announced -- a lower bound); the sector union, overlaps, the footprint
+> share and per-sector areas beside it.  Pipes are in the envelope (the
+> general's reasoned disagreement with the brief, accepted: they occupy
+> ground and the battery limits sit at the rack ends).  The economics reads
+> `economics { land { price; source; reason; } }`, the area from the
+> published plot (a declared `area` only where there is no layout; both or
+> neither refuse), bought at t = -constructionPeriod, not depreciated,
+> recovered untaxed at its purchase value at year N, outside TCI -- CAPCOST
+> 2017's placement -- through `appraise` alone; `land.price` joins the C68
+> sensitivity.  Nine economics cases without a layout byte-identical against
+> the parent build.  Four rows MOVED and re-recorded with the list in the
+> commit: ammonia02 NPV/IRR/payback, PEQ NPV (dNPV = -L(1+i)^Nc + L/(1+i)^N,
+> to the euro).  Gates: `check_plant_layout` (j), `check_economic_
+> sensitivity` (i)-(l), `check_cost_provenance` (s).  `--gui` 32/0,
+> `--fast` 71/2 before the re-record (the two witnesses), 3/3 after.  NOT
+> done: appreciation, scheduled purchase, land taxes, land under an outer
+> driver without a declared `area`, a non-rectangular plot.
+
 > **C80 MERGED 2026-10-17.**  The engine routes every material stream
 > between placed items (nozzle at the item's top; one rack, declared as
 > `pipeRack {}` or an announced default; lanes in flowsheet order;
