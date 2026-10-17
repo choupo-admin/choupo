@@ -907,6 +907,18 @@ accepts today, and that is a policy call.
 
 ## 4c. Commissioned by Vítor (he ASKED for this; it is not a candidate)
 
+> **C78. THE 3D LAYOUT IN ITS OWN POP-OUT TAB (Vítor, 2026-10-17: "Mas
+> devia de haver um pop up para o layout 3d no Gui").**  Today the 3D view
+> lives only inside Reports -> "Plant layout (3D)" and the EduTool bench.
+> The GUI credo's answer to a large view is a POP-OUT (a real browser tab,
+> never a modal: `docs/ai/gui-credo.md` §4 item 4 and "Tab citizenship"),
+> on the `?internals=` precedent (`gui/src/ui/unitFocus.ts:223`,
+> `AppShell.tsx:111`, `ExpiredTabPanel.tsx`): a `?layout=` tab drawing the
+> SAME published `layout {}` block full-window, opened by a button on the
+> Reports section (and wherever else the layout is drawn), surviving F5,
+> titled, and saying "expired -- reopen from the parent" when its source is
+> gone.  Status: dispatched 2026-10-17.
+
 > **2026-10-17, Vítor: "Não me chateies com coisas que tu sabes bem
 > resolver!"** -- taken by the commander, recorded here: (1) C73 group A
 > (pfr_polyesterification, polycaprolactonePlant: the pfr duty on the
