@@ -1,8 +1,9 @@
 import { defineConfig } from "vitest/config";
 import { localCataloguePlugin } from "./scripts/localCataloguePlugin.js";
+import { layoutViewerPlugin } from "./scripts/layoutViewerPlugin.js";
 
 export default defineConfig({
-  plugins: [localCataloguePlugin()],
+  plugins: [localCataloguePlugin(), layoutViewerPlugin()],
   test: {
     include: ["tests/**/*.test.ts"],
     environment: "node",

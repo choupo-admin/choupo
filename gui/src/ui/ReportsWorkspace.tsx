@@ -75,6 +75,9 @@ import { layoutScene, type LayoutScene } from "../case/plantLayout.js";
 import { PlantLayout3D } from "./plotting/PlantLayout3D.js";
 import { PlantLayoutLegend, PlantLayoutTables } from "./PlantLayoutTables.js";
 import { popOutCaseLayout } from "../state/useLayoutPopOut.js";
+import { useStaleResult } from "../state/useStaleResult.js";
+import { caseLayoutStash } from "../case/layoutPopOut.js";
+import { ExportLayoutButton } from "./ExportLayoutButton.js";
 import {
   parseDesignSheet, unitDesignSheets, type DesignPort, type DesignSheet,
 } from "../case/designSheet.js";
@@ -685,19 +688,26 @@ function SensitivityBody({ fig }: { fig: TornadoFigure }) {
 //  (`?layout=`, DEV.md 4c C78) from the button here; this section reaches
 //  here only when there is a scene, so the button never offers an empty tab;
 //  the stash is built from the store at the click (popOutCaseLayout).
+//  "Export as page" (DEV.md 4c C81) saves the same run as one self-contained
+//  HTML file; it is disabled while the result is stale (ExportLayoutButton).
 function LayoutBody({ layout, scene }: {
   layout: NonNullable<RunResult["layout"]>; scene: LayoutScene;
 }) {
+  const stale = useStaleResult();
   return (
     <>
       <Group justify="space-between" align="flex-start" wrap="nowrap" gap="sm">
         <PlantLayoutLegend pipes={(layout.pipes?.length ?? 0) > 0} />
-        <Button size="compact-xs" variant="default" style={{ flex: "0 0 auto" }}
-          leftSection={<IconExternalLink size={13} />}
-          title="Open this plot plan full-window in a new browser tab"
-          onClick={popOutCaseLayout}>
-          Open in new tab
-        </Button>
+        <Stack gap={4} align="flex-end" style={{ flex: "0 0 auto" }}>
+          <Button size="compact-xs" variant="default" style={{ flex: "0 0 auto" }}
+            leftSection={<IconExternalLink size={13} />}
+            title="Open this plot plan full-window in a new browser tab"
+            onClick={popOutCaseLayout}>
+            Open in new tab
+          </Button>
+          <ExportLayoutButton layout={layout} stale={stale}
+            getStash={() => caseLayoutStash(useStore.getState())} />
+        </Stack>
       </Group>
       <PlantLayout3D scene={scene} />
       <PlantLayoutTables layout={layout} />

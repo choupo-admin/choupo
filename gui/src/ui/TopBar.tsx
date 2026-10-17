@@ -66,8 +66,7 @@ import { ColorSchemeToggle } from "./ColorSchemeToggle.js";
 import { ClipboardBridge } from "./ClipboardBridge.js";
 import { CaseSwitcher } from "./CaseSwitcher.js";
 import { tabChromeFor } from "./tabChrome.js";
-
-interface EngineVersion { version: string; commit?: string }
+import { engineVersionLabel, fetchEngineVersion, type EngineVersion } from "../case/engineVersion.js";
 
 export function TopBar({ onMinWidth }: {
   /* THE WIDTH THIS BAR MUST KEEP, measured and handed to the shell.
@@ -108,12 +107,9 @@ export function TopBar({ onMinWidth }: {
   // missing stamp shows NO badge rather than a plausible default.
   const [engineVersion, setEngineVersion] = useState<EngineVersion | null>(null);
   useEffect(() => {
-    fetch(`${import.meta.env.BASE_URL}wasm/version.json`)
-      .then((r) => (r.ok ? r.json() : null))
-      .then((v: EngineVersion | null) => {
-        if (v && typeof v.version === "string" && v.version) setEngineVersion(v);
-      })
-      .catch(() => { /* absent (odd deployment): show no badge, never a guess */ });
+    //  Absent (odd deployment): show no badge, never a guess.
+    fetchEngineVersion(import.meta.env.BASE_URL)
+      .then((v) => { if (v) setEngineVersion(v); });
   }, []);
 
   const status = useStore((s) => s.runStatus);
@@ -432,9 +428,7 @@ export function TopBar({ onMinWidth }: {
             <Badge size="sm" radius="sm" variant="light"
               color={engineVersion.version === "Choupo-dev" ? "orange" : "gray"}
               styles={{ root: { textTransform: "none", cursor: "help" } }}>
-              {engineVersion.version === "Choupo-dev"
-                ? `Choupo-dev${engineVersion.commit ? ` · ${engineVersion.commit}` : ""}`
-                : engineVersion.version}
+              {engineVersionLabel(engineVersion)}
             </Badge>
           </Tooltip>
         )}

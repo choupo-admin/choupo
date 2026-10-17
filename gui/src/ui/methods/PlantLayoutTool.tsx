@@ -48,6 +48,7 @@ import { fingerprintCase } from "../../case/staleness.js";
 import type { CaseFiles } from "../../case/types.js";
 import { openLayoutPopOut } from "../../state/useLayoutPopOut.js";
 import { PlantLayout3D } from "../plotting/PlantLayout3D.js";
+import { ExportLayoutButton } from "../ExportLayoutButton.js";
 import { PipeRegister } from "../PlantLayoutTables.js";
 import { KnobField, KnobNumber, PanelNote } from "./knobPanel.js";
 import {
@@ -61,6 +62,9 @@ import {
 import { setActiveMethodTool } from "./registry.js";
 
 const BENCH_ID = "plant-layout-bench";
+
+/** The bench makes no staleness claim (case/layoutPopOut.ts). */
+const NOT_STALE = { stale: false, pendingEdits: 0 } as const;
 
 const step = (n: number) => {
   const s = PLANT_LAYOUT_STEPS.find((q) => q.n === n);
@@ -216,13 +220,17 @@ function LayoutBench(): JSX.Element {
       {run.err === null && scene && (
         <Box mt={8}>
           {popStash && (
-            <Group justify="flex-end" mb={4}>
+            <Group justify="flex-end" mb={4} gap="xs">
               <Button size="compact-xs" variant="default"
                 leftSection={<IconExternalLink size={13} />}
                 title="Open this plot plan full-window in a new browser tab"
                 onClick={() => openLayoutPopOut(popStash)}>
                 Open in new tab
               </Button>
+              {/* The bench re-runs on every knob and never dims (no `declared`):
+                  its export is never stale (DEV.md 4c C81). */}
+              <ExportLayoutButton layout={popStash.layout} stale={NOT_STALE}
+                getStash={() => popStash} />
             </Group>
           )}
           <PlantLayout3D scene={scene} height={420} />

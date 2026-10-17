@@ -33,6 +33,15 @@ declare module "virtual:local-component-catalogue" {
   export default bodies;
 }
 
+//  The exported layout page's viewer (DEV.md 4c C81): three.js and Choupo's
+//  own drawing compiled into one script by scripts/layoutViewerPlugin.ts,
+//  with three.js's version and its MIT licence text.
+declare module "virtual:layout-viewer" {
+  export const script: string;
+  export const threeVersion: string;
+  export const threeLicence: string;
+}
+
 //  KaTeX's contrib entries carry no typings of their own (the package types
 //  only its main entry).  mhchem is imported for its SIDE EFFECT -- it
 //  registers \ce{} on the katex instance and exports nothing -- so the module's
