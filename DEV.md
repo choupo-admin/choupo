@@ -907,6 +907,22 @@ accepts today, and that is a policy call.
 
 ## 4c. Commissioned by Vítor (he ASKED for this; it is not a candidate)
 
+> **C73 + C74, AND TWO DECISIONS TAKEN (Vítor, 2026-10-17: "avança como
+> achares melhor", on the three open items after C72).**  Taken: (1)
+> `ammoniaRoutes01_screening` KEEPS 0.02 bar -- it is the case's own stated
+> LHV reference basis, not a workaround, and moving it is a pedagogy change
+> nobody asked for.  (2) **C73**: the C72 rule extended to `cstr` and `pfr`,
+> which publish their inlet's vf with "no phase change in a reactor"
+> (`CSTR.cpp:419,882`, `PFR.cpp:414,1090`; 33 flowsheets use them).  (3)
+> **C74**, the engine half of aceticAcid02's M1: an ISOTHERMAL `mixer`
+> (`operation { T ...; }`) skips the energy balance and publishes NO duty
+> (`Mixer.cpp:85-98,252,378`), so the heat that brings its outlet to the
+> declared T comes from nowhere -- the -80 kW of aceticAcid02 is that heat.
+> A declared T is legitimate (a mixer + heater); the duty it implies must
+> be published and priced on the report's surface, or the plant's first law
+> cannot close.  19 flowsheets declare a mixer T.  Both: moved golden rows
+> LISTED to Vítor before any record.  Status: dispatched 2026-10-17.
+
 > **C72. A CONVERSION REACTOR'S OUTLET MEANS ITS OWN EQUILIBRIUM (Vítor,
 > 2026-10-17: "Aprovo o 2, avança" -- approving the commander's proposal to
 > revise the 2026-08-24 F2 posture).**  `ConversionReactor.cpp:286` and
