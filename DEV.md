@@ -907,6 +907,25 @@ accepts today, and that is a policy call.
 
 ## 4c. Commissioned by Vítor (he ASKED for this; it is not a candidate)
 
+> **C82. THE PLOT AREA AND THE COST OF THE LAND (Vítor, 2026-10-17:
+> "Avança", on the commander's proposal after "o layout acaba por ser
+> importante para avaliar os m2 de implementação e o custo do terreno?").**
+> Measured: `EconomicsPass.cpp` has no land term (grep), the layout
+> publishes no area.  Slice: (1) the layout publishes the PLOT AREA (rule
+> stated: the declared sector areas where the case declares them, else the
+> envelope of the placed footprints plus a declared margin; per-sector
+> areas; pinned by the `layout` kind); (2) the economics reads a DECLARED
+> land price (EUR/m2, with source/reason, an author-set assumption), and
+> prices the land as NON-DEPRECIABLE capital at year 0, RECOVERED at the end
+> of the project life (the working-capital treatment, Turton's), through the
+> ONE cash-flow home `appraise`; shown in the capital table and the cash
+> flow; `land.price` (or the area) available to the C68 sensitivity;
+> absent a land price, every economics case byte-identical.  Witnesses: the
+> two layout cases that already run economics (ammonia02_full_plant,
+> greenAmmoniaPEQ_baseCase); aceticAcid02 publishes its area only (its
+> README makes pricing the students' task).  No new case.  Status:
+> dispatched 2026-10-17.
+
 > **C80 MERGED 2026-10-17.**  The engine routes every material stream
 > between placed items (nozzle at the item's top; one rack, declared as
 > `pipeRack {}` or an announced default; lanes in flowsheet order;
