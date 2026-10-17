@@ -926,8 +926,24 @@ wind { from 225 deg; planNorth 0 deg; halfAngle 30 deg; reach 60 m;
   ANNOUNCED (caveat block + result JSON): a pair closer than its declared
   separation, an item outside its sector's area, an ignition source inside a
   zone or downwind of a release, a rule naming no placed kind, unplaced items.
-* Worked case: `tutorials/plant/ammonia02_full_plant`.  The GUI draws the
-  result in Reports, "Plant layout (3D)".  Record:
+* THE PIPES (C80): the engine routes every material stream and publishes its
+  length -- from the TOP of its source item (or a junction: an unsized
+  mixer, splitter or valve, drawn on the rack; or the rack's west end for a
+  plant inlet) up to its lane on the rack, along plan x, and down to the top
+  of its target (or the rack's east end for a plant outlet).  Declare the
+  rack, every key, or the engine uses a stated default and says so:
+  ```
+  pipeRack { y -2 m; elevation 7 m; laneSpacing 0.6 m; lanesPerTier 6;
+             tierSpacing 1.2 m; xStart -14 m; xEnd 100 m; reason "..."; }
+  pipes { rawLiquid { waypoints ( { x 56 m; y -6 m; z 10 m; } ... ); } }   // optional override
+  ```
+  A waypoint route must be orthogonal (one axis per segment).  A stream the
+  layout cannot reach (an unsized tank, an unplaced item) is listed as not
+  routed, with the reason.  No pressure drop and no cost yet.
+* Worked cases: `tutorials/plant/ammonia02_full_plant` (default rack),
+  `greenAmmoniaPEQ_baseCase` and `aceticAcid02_plant` (declared racks).  The
+  GUI draws the result in Reports, "Plant layout (3D)", with the pipe
+  register.  Record:
   `docs/design/a-plant-layout-is-declared-and-checked.md`.
 
 ## Where a numerical option lives — the four homes are INTENTIONAL

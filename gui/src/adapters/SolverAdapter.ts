@@ -732,6 +732,38 @@ export interface PlantLayout {
   findings: LayoutFinding[];
   unplaced: string[];
   internal: string[];
+  /** THE PIPES (DEV.md 4c C80), routed by the engine.  Absent on a result
+   *  written before C80; the GUI then draws no pipe and routes none. */
+  pipeRack?: LayoutPipeRack;
+  junctions?: LayoutJunction[];
+  pipes?: LayoutPipe[];
+  notRouted?: { stream: string; reason: string }[];
+}
+
+/** The rack the pipes run on: along plan x, its centre line at plan `y`, the
+ *  lowest tier at `elevation`; `xStart` / `xEnd` are the battery limits. */
+export interface LayoutPipeRack {
+  declared: boolean;
+  y: number; elevation: number; laneSpacing: number; lanesPerTier: number;
+  tierSpacing: number; xStart: number; xEnd: number; reason: string;
+}
+
+/** An unsized mixer, splitter or valve, drawn as a node on the rack. */
+export interface LayoutJunction { unit: string; type: string; x: number; y: number; z: number }
+
+/** One routed pipe.  `route` runs IN THE DIRECTION OF FLOW (plan x, plan y,
+ *  elevation z, metres); `length` is the engine's own.  The stream's state
+ *  (`F_mass` kg/s, `T` K, `P` Pa, `vf`) is the stream table's. */
+export interface LayoutPipe {
+  stream: string;
+  label?: string;
+  fromKind: string; from: string; fromUnit: string;
+  toKind: string; to: string; toUnit: string;
+  routedBy: string;
+  lane: number;
+  length: number;
+  F_mass?: number; T?: number; P?: number; vf?: number;
+  route: [number, number, number][];
 }
 
 /** One row of the year-by-year discounted-cash-flow table (the income / cash-

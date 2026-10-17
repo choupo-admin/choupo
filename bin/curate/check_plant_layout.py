@@ -61,11 +61,37 @@ The risks such a feature carries are specific, and each arm names one:
       no sized item -- the id belongs to an entry only as the entry itself
       or `entry/<tag>` (`EquipmentSizing::isItemOf`).
 
+  (h) THE PIPES (2026-10-17, DEV.md 4c C80), on the three plants that carry
+      a layout (ammonia02_full_plant on the engine's DEFAULT rack,
+      greenAmmoniaPEQ_baseCase and aceticAcid02_plant on DECLARED ones):
+      every stream of the stream table (one per identity: an entry marked
+      `aliasOf`/`boundaryLabel` is a label, an independent home for the set)
+      is routed or listed in `notRouted` with a reason, never both, never
+      dropped; every route is ORTHOGONAL (each segment along one axis), its
+      published length is the polyline's own (recomputed here), and its two
+      ends are where the published block puts them -- an item's top centre,
+      a junction's node, the rack's xStart/xEnd for a battery limit; a rack
+      route claims no override; the default rack is published as such and
+      ANNOUNCED on stderr, the caveat block and the advisories, a declared one
+      announces nothing; each pipe REPRODUCES its golden `layout` rows (from,
+      to, length), every published pipe is pinned and every pinned pipe is
+      published, and the summary's pipe counts agree three ways.
+  (i) A DECLARED ROUTE: on a copy of the witness, `pipes { rawLiquid {
+      waypoints (...) } }` is honoured (separator top -> two waypoints ->
+      let-down top, `routedBy waypoints`, no lane) and its length recomputed;
+      REFUSED, each exit 2 and naming its defect: a diagonal segment, an
+      override naming no stream, an override on a stream with no routable end
+      (T101, an unsized tank), a partial `pipeRack`, a fractional
+      `lanesPerTier`.  The forced draft carries a declared rack as declared
+      and says it did not carry the waypoint overrides.
+
 NOT COVERED, said so: whether a declared distance or zone extent is SENSIBLE
-(the author's assumption, by design -- no standard is shipped), pipe lengths,
-structures, rotations other than the two plan axes, the GUI drawing (its
-pure scene mapping is tested in gui/tests/plantLayout.test.ts), and
-byte-identity of the cases without a layout (measured once, not gated).
+(the author's assumption, by design -- no standard is shipped), a pipe's
+pressure drop and cost (none is computed), whether a route clashes with an
+item it passes, structures, rotations other than the two plan axes, the GUI
+drawing (its pure scene mapping, phase, speed, declutter and camera fit are
+tested in gui/tests/plantLayout.test.ts), and byte-identity of the cases
+without a layout (measured once, not gated).
 
 SABOTAGES performed by hand (2026-10-17; each restored with `git checkout`
 and one idempotent `make all`; all CAUGHT, two only after the gate was
@@ -101,6 +127,21 @@ strengthened):
   S10 `addFinding` skips `announce()` for a sizingRefused finding (the
      finding still published in `layout.findings`)                 -> (g)
      not on stderr, not in the caveat block, not in the advisories.
+  (C80, arms (h) and (i), 2026-10-17; each restored with `cp` of the saved
+  PlantLayout.cpp and one idempotent `make all`, all CAUGHT on first run):
+  S11 the length taken end to end, not along the polyline          -> (h)
+     every pipe's length against its own polyline and its golden row.
+  S12 the corner across to the lane dropped                         -> (h)
+     every rack route moves along two axes at once.
+  S13 declared waypoints ignored (always the rack)                  -> (i)
+     the override not honoured, its length wrong, the diagonal one exit 0.
+  S14 the default-rack announcement removed                         -> (h)
+     ammonia02's default rack said on no surface.
+  S15 a stream with no routable end dropped without a `notRouted` row -> (h)
+     four ammonia02 streams neither routed nor listed; the summary count
+     against the golden.
+  S16 a junction placed at its FIRST placed neighbour, not the mean -> (h)
+     the junction-touching pipes' lengths against their golden rows.
 """
 import json
 import re
@@ -549,6 +590,239 @@ def arm_refused_sizer(work):
                   " a name that only starts like the refused entry's still refuses")
 
 
+# ------------------------------------------------------------ pipes (C80) --
+PIPE_CASES = {
+    "ammonia02": WITNESS,
+    "greenAmmoniaPEQ": ROOT / "tutorials/plant/greenAmmoniaPEQ_baseCase",
+    "aceticAcid02": ROOT / "tutorials/plant/aceticAcid02_plant",
+}
+TOL = 1e-6
+
+
+def stream_identities(j):
+    """The physical streams of a run, from the STREAM TABLE's own rule (one
+    row per identity: an entry marked `aliasOf` or `boundaryLabel` is a
+    label of another), an independent home for the set the pipes must
+    cover."""
+    return {k for k, v in (j.get("streams") or {}).items()
+            if not v.get("aliasOf") and not v.get("boundaryLabel")}
+
+
+def end_point(lay, kind, at, first):
+    """Where a pipe end must lie, recomputed here from the published items,
+    junctions and rack: an item's top centre, a junction's node, or (x only)
+    the rack's end for a battery limit."""
+    if kind == "item":
+        i = next((x for x in lay["items"] if x["id"] == at), None)
+        return None if i is None else (i["x"], i["y"], i["z"] + i["dz"])
+    if kind == "junction":
+        jn = next((x for x in lay.get("junctions", []) if x["unit"] == at), None)
+        return None if jn is None else (jn["x"], jn["y"], jn["z"])
+    if kind == "batteryLimit":
+        return (lay["pipeRack"]["xStart"] if first else lay["pipeRack"]["xEnd"],)
+    return None
+
+
+def check_routes(tag, lay, require_rack_route=True):
+    """Every published route: each segment along ONE axis, its length the
+    polyline's own, its two ends where the published items / junctions /
+    rack say.  Returns the number of pipes checked."""
+    n = 0
+    for p in lay.get("pipes", []):
+        r = p["route"]
+        if len(r) < 2:
+            fail(f"(h) {tag} pipe {p['stream']}: a route of {len(r)} point(s)")
+            continue
+        L = 0.0
+        for a, b in zip(r, r[1:]):
+            moved = sum(1 for k in range(3) if abs(a[k] - b[k]) > TOL)
+            if moved != 1:
+                fail(f"(h) {tag} pipe {p['stream']}: segment {a} -> {b} moves along"
+                     f" {moved} axes -- a route is orthogonal")
+            L += sum(abs(a[k] - b[k]) for k in range(3))
+        if abs(L - p["length"]) > 1e-9 * max(1.0, L):
+            fail(f"(h) {tag} pipe {p['stream']}: published length {p['length']} m,"
+                 f" the polyline's own {L} m")
+        for first, kind, at, pt in ((True, p["fromKind"], p["from"], r[0]),
+                                    (False, p["toKind"], p["to"], r[-1])):
+            want = end_point(lay, kind, at, first)
+            if want is None:
+                fail(f"(h) {tag} pipe {p['stream']}: its end `{at}` ({kind}) is nowhere"
+                     " in the published block")
+            elif kind == "batteryLimit":
+                if p["routedBy"] == "rack" and abs(pt[0] - want[0]) > TOL:
+                    fail(f"(h) {tag} pipe {p['stream']}: a battery-limit end at x ="
+                         f" {pt[0]}, the rack's {'xStart' if first else 'xEnd'} is {want[0]}")
+            elif any(abs(pt[k] - want[k]) > TOL for k in range(3)):
+                fail(f"(h) {tag} pipe {p['stream']}: its {'source' if first else 'target'}"
+                     f" end {pt} is not `{at}`'s point {want}")
+        if require_rack_route and p["routedBy"] != "rack":
+            fail(f"(h) {tag} pipe {p['stream']}: routed by {p['routedBy']}, and the case"
+                 " declares no override")
+        n += 1
+    return n
+
+
+def golden_rows(case):
+    rows = {}
+    for line in (case / "expected").read_text().splitlines():
+        f = line.split()
+        if len(f) >= 5 and f[0] == "layout" and (f[1].startswith("pipe:")
+                                                 or f[1] == "summary"):
+            rows[(f[1], f[2])] = (f[3], f[4])
+    return rows
+
+
+def arm_pipes(work):
+    total = 0
+    for tag, case in PIPE_CASES.items():
+        d = prepare(work, "pipes_" + tag, case)
+        out, err, rc = solve(d)
+        j = result_json(out)
+        lay = (j or {}).get("layout")
+        if rc != 0 or not lay or "pipes" not in lay:
+            fail(f"(h) {tag}: exit {rc}, no layout or no pipes block")
+            continue
+        # every stream routed, or listed with a reason -- never dropped
+        ids = stream_identities(j)
+        routed = [p["stream"] for p in lay["pipes"]]
+        listed = [n["stream"] for n in lay.get("notRouted", [])]
+        if len(set(routed)) != len(routed) or set(routed) & set(listed):
+            fail(f"(h) {tag}: a stream is routed twice, or both routed and listed")
+        missing = ids - set(routed) - set(listed)
+        extra = (set(routed) | set(listed)) - ids
+        if missing:
+            fail(f"(h) {tag}: stream(s) neither routed nor listed: {sorted(missing)}")
+        if extra:
+            fail(f"(h) {tag}: pipe(s) for no stream of the table: {sorted(extra)}")
+        for nr in lay.get("notRouted", []):
+            if len(nr.get("reason", "")) < 10:
+                fail(f"(h) {tag}: {nr['stream']} is not routed and says no reason")
+        total += check_routes(tag, lay)
+        # the rack: declared in two cases, the stated default (announced) in one
+        rack = lay["pipeRack"]
+        default_said = "no `pipeRack` is declared" in err
+        caveat = out.split("PLANT LAYOUT", 1)[-1] if "PLANT LAYOUT" in out else ""
+        if tag == "ammonia02":
+            if rack["declared"] or not default_said \
+                    or "no `pipeRack` is declared" not in caveat \
+                    or not any("no `pipeRack` is declared" in (a.get("message") or "")
+                               for a in j.get("advisories") or []):
+                fail("(h) ammonia02 declares no pipeRack: the default must be published as"
+                     " such AND announced on stderr, the caveat block and the advisories")
+        elif not rack["declared"] or default_said:
+            fail(f"(h) {tag} declares its pipeRack: it must be published as declared,"
+                 " with no default announced")
+        # the pipes reproduce the golden rows, and every pipe is pinned
+        gold = golden_rows(case)
+        for p in lay["pipes"]:
+            pid = "pipe:" + p["stream"]
+            for key, val in (("from", p["from"]), ("to", p["to"]), ("length", p["length"])):
+                g = gold.get((pid, key))
+                if g is None:
+                    fail(f"(h) {tag}: {pid} {key} is published and pinned by no golden row")
+                elif key == "length":
+                    if abs(float(g[0]) - val) > float(g[1]) * max(abs(val), 1e-30):
+                        fail(f"(h) {tag}: {pid} length {val} m against the golden {g[0]} m")
+                elif g[0] != val:
+                    fail(f"(h) {tag}: {pid} {key} `{val}` against the golden `{g[0]}`")
+        pinned = {k[0] for k in gold if k[0].startswith("pipe:")}
+        stale = pinned - {"pipe:" + s for s in routed}
+        if stale:
+            fail(f"(h) {tag}: golden rows pin pipes the run no longer publishes: {sorted(stale)}")
+        summ = lay.get("summary", {})
+        for key, val in (("pipes", len(routed)), ("notRouted", len(listed))):
+            g = gold.get(("summary", key))
+            if g is None or int(float(g[0])) != val or summ.get(key) != val:
+                fail(f"(h) {tag}: summary {key} = {summ.get(key)} / golden"
+                     f" {g[0] if g else 'absent'} / counted here {val}")
+    claims.append(f"{total} pipes on three plants, every stream routed or listed with"
+                  " its reason, each route orthogonal with its length its own and its"
+                  " ends at the published nozzles, junctions and battery limits, each"
+                  " reproducing its golden rows; the default rack announced on three"
+                  " surfaces where none is declared")
+
+
+OVERRIDE = """
+pipes
+{
+    rawLiquid
+    {
+        waypoints ( { x 56 m; y -6 m; z 10 m; } { x 59.5 m; y -6 m; z 10 m; } );
+    }
+}
+"""
+
+
+def arm_pipe_override(work):
+    d = prepare(work, "pipe_override", WITNESS, lambda t: t + OVERRIDE)
+    out, err, rc = solve(d)
+    lay = ((result_json(out) or {}).get("layout")) or {}
+    p = next((x for x in lay.get("pipes", []) if x["stream"] == "rawLiquid"), None)
+    if rc != 0 or p is None:
+        fail(f"(i) the waypoint override exited {rc} / published no rawLiquid pipe")
+        return
+    items = {i["id"]: i for i in lay["items"]}
+    s, t = items["separator"], items["letdown"]
+    want = [[56, -6, s["z"] + s["dz"]], [56, -6, 10], [59.5, -6, 10],
+            [59.5, -6, t["z"] + t["dz"]]]
+    if p["routedBy"] != "waypoints" or p["lane"] != -1 or len(p["route"]) != 4 \
+            or any(abs(a - b) > TOL for q, w in zip(p["route"], want) for a, b in zip(q, w)):
+        fail(f"(i) the declared waypoints were not honoured: {p['routedBy']} {p['route']}")
+    L = (10 - want[0][2]) + 3.5 + (10 - want[3][2])
+    if abs(p["length"] - L) > 1e-9:
+        fail(f"(i) the override's length {p['length']} m, recomputed here {L} m")
+    check_routes("override", lay, require_rack_route=False)
+    n = 1
+    refusals = {
+        "diagonal waypoint": (lambda t: t + OVERRIDE.replace("{ x 59.5 m; y -6 m; z 10 m; }",
+                                                             "{ x 59.5 m; y -2 m; z 10 m; }"),
+                              [r"moves along more than one axis", r"ORTHOGONAL"]),
+        "unknown stream": (lambda t: t + "\npipes { noSuchStream { waypoints ( { x 0 m;"
+                           " y 0 m; z 9 m; } ); } }\n",
+                           [r"pipes: `noSuchStream`", r"Accepted.*rawLiquid"]),
+        "override on an unroutable stream": (
+            lambda t: t + "\npipes { makeup { waypoints ( { x 0 m; y 0 m; z 9 m; } ); } }\n",
+            [r"pipes `makeup`: an override routes a pipe", r"T101"]),
+        "partial pipeRack": (
+            lambda t: t + "\npipeRack { y 0 m; elevation 6 m; laneSpacing 0.6 m;"
+                          " lanesPerTier 6; tierSpacing 1.5 m; xStart -5 m;"
+                          " reason \"r\"; }\n",
+            [r"pipeRack: `xEnd` is not declared"]),
+        "a fractional lane count": (
+            lambda t: t + "\npipeRack { y 0 m; elevation 6 m; laneSpacing 0.6 m;"
+                          " lanesPerTier 2.5; tierSpacing 1.5 m; xStart -5 m; xEnd 70 m;"
+                          " reason \"r\"; }\n",
+            [r"lanesPerTier 2\.5", r"whole number"]),
+    }
+    for label, (edit, pats) in refusals.items():
+        d = prepare(work, "pipe_refuse_" + re.sub(r"\W", "_", label), WITNESS, edit)
+        out, err, rc = solve(d)
+        if rc != 2 or not all(re.search(pt, out + err, re.S) for pt in pats):
+            fail(f"(i) {label}: exit {rc}, expected 2 naming {pats}:\n    "
+                 + "\n    ".join(l for l in (out + err).splitlines() if "ERROR" in l)[:400])
+        else:
+            n += 1
+    # the draft: a declared rack is carried; none declared leaves a template
+    rack = ("\npipeRack { y -1 m; elevation 7 m; laneSpacing 0.5 m; lanesPerTier 4;"
+            " tierSpacing 1.25 m; xStart -6 m; xEnd 70 m; reason \"the author's own\"; }\n")
+    d = prepare(work, "pipe_draft", WITNESS, lambda t: t + rack + OVERRIDE)
+    out, err, rc = run([str(TOOL), "--draft", "--force", str(d)])
+    text = (d / "system/layoutDict").read_text()
+    lay = ((result_json(out) or {}).get("layout")) or {}
+    if rc != 0 or "lanesPerTier 4;" not in text or "xEnd         70.00 m;" not in text \
+            or "the author's own" not in text or "are NOT\n//  carried" not in text \
+            or not lay.get("pipeRack", {}).get("declared"):
+        fail(f"(i) the forced draft (exit {rc}) did not carry the declared rack, or did not"
+             " say it dropped the waypoint overrides")
+    else:
+        n += 1
+    claims.append(f"a declared waypoint route honoured and measured, {n - 2} refusals"
+                  " (a diagonal segment, an unknown stream, an override on an unroutable"
+                  " stream, a partial rack, a fractional lane count), and the draft"
+                  " carrying a declared rack")
+
+
 def main():
     argv = sys.argv[1:]
     keep = Path(argv[argv.index("--keep") + 1]).resolve() if "--keep" in argv else None
@@ -564,6 +838,8 @@ def main():
         arm_draft(work)
         arm_absent(work)
         arm_refused_sizer(work)
+        arm_pipes(work)
+        arm_pipe_override(work)
     finally:
         if not keep:
             shutil.rmtree(work, ignore_errors=True)
@@ -574,8 +850,10 @@ def main():
         return 1
     print("check_plant_layout: OK -- " + "; ".join(claims)
           + ".  NOT COVERED: whether a declared distance or zone is sensible"
-          " (the author's assumption -- no standard is shipped), pipe lengths,"
-          " structures, the GUI drawing (its scene mapping is a vitest), and"
+          " (the author's assumption -- no standard is shipped), a pipe's"
+          " pressure drop and cost (none is computed), whether a route clashes"
+          " with an item (not checked), structures, the GUI drawing (its scene"
+          " mapping is a vitest), and"
           " byte-identity of cases without a layout (measured once, not gated).")
     return 0
 

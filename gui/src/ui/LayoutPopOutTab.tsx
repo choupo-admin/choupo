@@ -130,7 +130,7 @@ export function LayoutPopOutTab() {
             </Text>
           </Alert>
         )}
-        <Box mt={6}><PlantLayoutLegend /></Box>
+        <Box mt={6}><PlantLayoutLegend pipes={(stash.layout.pipes?.length ?? 0) > 0} /></Box>
       </Box>
       <Box className={stale.stale ? "choupo-stale-body" : undefined}
         style={{ flex: 1, minHeight: 0, display: "flex", flexDirection: "column" }}>

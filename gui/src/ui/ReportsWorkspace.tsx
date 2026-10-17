@@ -691,7 +691,7 @@ function LayoutBody({ layout, scene }: {
   return (
     <>
       <Group justify="space-between" align="flex-start" wrap="nowrap" gap="sm">
-        <PlantLayoutLegend />
+        <PlantLayoutLegend pipes={(layout.pipes?.length ?? 0) > 0} />
         <Button size="compact-xs" variant="default" style={{ flex: "0 0 auto" }}
           leftSection={<IconExternalLink size={13} />}
           title="Open this plot plan full-window in a new browser tab"

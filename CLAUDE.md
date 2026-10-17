@@ -2151,7 +2151,13 @@ zone or downwind of a release.  ONE home for the footprint rule
 (`postProcessing/layout/PlantLayout`); `bin/choupo-layout --draft` wraps
 `choupoSolve --layout-draft`, never overwrites without `--force`, and checks
 its own draft.  Golden kind `layout`.  The GUI draws the block in 3D
-(three.js, lazy-loaded).  NOT done: pipe lengths (next slice), structures.
+(three.js, lazy-loaded).  **Since C80 the engine also ROUTES THE PIPES**:
+every material stream is routed (item nozzle / junction on the rack /
+battery limit, orthogonally over a declared `pipeRack` or an announced stated
+default, `pipes { <stream> { waypoints } }` overriding one) or listed in
+`notRouted` with its reason, its length published and pinned by the `layout`
+kind; the GUI draws the routes with a stylised flow and computes none.  NOT
+done: a pipe's pressure drop and cost (next slice), structures.
 Gate: `check_plant_layout`.  Record:
 [`docs/design/a-plant-layout-is-declared-and-checked.md`](docs/design/a-plant-layout-is-declared-and-checked.md).
 

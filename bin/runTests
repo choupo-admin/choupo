@@ -1420,7 +1420,16 @@ auto_generate() {
         #  moves them moves a row) and its shape / orientation /
         #  footprintFrom as WORDS; per finding the measured distance and the
         #  declared limit; and the summary COUNTS, so a finding that appears
-        #  or disappears fails even before its own row exists.  NOT pinned:
+        #  or disappears fails even before its own row exists.  THE PIPES
+        #  (DEV.md 4c C80) ride the same kind, argued rather than added: they
+        #  are lines of the same block, one record per line with an `"id"`
+        #  (`pipe:<stream>`), so one reader serves both -- each pipe's
+        #  `length` and its two ends (`from`, `to`, as WORDS), each
+        #  junction's position, the rack's line, and the summary's pipe
+        #  counts and total length.  NOT pinned there: the stream's flow,
+        #  T, P and vf, which the `stream` kind already pins in their one
+        #  home, and the route's corner points, which the length and the
+        #  gate's orthogonality arm hold.  NOT pinned:
         #  the source/reason sentences and the zone and wind declarations,
         #  which are the case's own words echoed -- what they DECIDE is
         #  pinned through the findings and the count.
@@ -1435,13 +1444,13 @@ auto_generate() {
                 sub(/"release": \{.*/, "", line)
                 sub(/"message": .*/, "", line)
                 if (id == "wind" || id ~ /^area:/) next
-                nw = split("shape orientation footprintFrom", W, " ")
+                nw = split("shape orientation footprintFrom from to", W, " ")
                 for (i = 1; i <= nw; i++)
                     if (match(line, "\"" W[i] "\": \"[^\"]*\"")) {
                         s = substr(line, RSTART, RLENGTH); sub(/^"[^"]*": "/, "", s); sub(/"$/, "", s)
                         printf "layout %-20s %-16s %-18s %s\n", id, W[i], s, "exact"
                     }
-                nn = split("x y z dx dy dz value limit placed unplaced internal findings", N, " ")
+                nn = split("x y z dx dy dz value limit placed unplaced internal findings length pipes notRouted pipeLength", N, " ")
                 for (i = 1; i <= nn; i++)
                     if (match(line, "\"" N[i] "\": *-?[0-9][0-9.eE+-]*")) {
                         s = substr(line, RSTART, RLENGTH); sub(/^"[^"]*": */, "", s)

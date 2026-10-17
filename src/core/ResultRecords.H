@@ -810,6 +810,55 @@ struct LayoutFinding
     std::string message;
 };
 
+//  THE PIPES (2026-10-17, DEV.md 4c C80).  Every stream whose two ends the
+//  layout can reach -- a placed item, a JUNCTION (an unsized mixer, splitter
+//  or valve, drawn as a node on the rack), or a BATTERY LIMIT (a plant inlet
+//  or outlet, at an end of the rack) -- routed ONCE by the rule in
+//  `postProcessing/layout/PlantLayout.H`, its polyline and its LENGTH
+//  published; every other stream listed with the reason it is not routed.
+//  No pressure drop and no cost: those are the next slice.
+struct LayoutPipeRack
+{
+    bool        declared     = false;   // false: the stated default, announced
+    scalar      y            = 0;       // [m] plan y of the rack's centre line
+    scalar      elevation    = 0;       // [m] height of its lowest tier
+    scalar      laneSpacing  = 0;       // [m] across the rack, lane to lane
+    int         lanesPerTier = 0;
+    scalar      tierSpacing  = 0;       // [m] tier to tier, upward
+    scalar      xStart       = 0;       // [m] the inlet battery limit
+    scalar      xEnd         = 0;       // [m] the outlet battery limit
+    std::string reason;
+};
+
+struct LayoutJunction
+{
+    std::string unit;          // the flowsheet unit (qualified name)
+    std::string type;          // mixer | splitter | valve
+    scalar x = 0, y = 0, z = 0;
+};
+
+struct LayoutPipe
+{
+    std::string stream;        // the stream IDENTITY (one row per physical stream)
+    std::string label;         // the plant's boundary name for it, if any
+    //  Each end: `kind` item | junction | batteryLimit; `at` the item id, the
+    //  junction's unit, or `inlet` / `outlet`; `unit` the flowsheet unit.
+    std::string fromKind, from, fromUnit;
+    std::string toKind,   to,   toUnit;
+    std::string routedBy;      // rack | waypoints
+    int         lane = -1;     // -1 on a declared-waypoint route
+    //  The route, IN THE DIRECTION OF FLOW (the producer's end first), plan
+    //  x, plan y and elevation z in metres; every segment along one axis.
+    std::vector<std::vector<scalar>> route;
+    scalar      length = 0;    // [m] the polyline's own length
+};
+
+struct LayoutNotRouted
+{
+    std::string stream;
+    std::string reason;
+};
+
 struct PlantLayoutRecord
 {
     std::vector<LayoutItem>            items;
@@ -817,6 +866,10 @@ struct PlantLayoutRecord
     std::vector<LayoutSeparationTable> separation;
     LayoutWind                         wind;
     std::vector<LayoutFinding>         findings;
+    LayoutPipeRack                     pipeRack;
+    std::vector<LayoutJunction>        junctions;
+    std::vector<LayoutPipe>            pipes;
+    std::vector<LayoutNotRouted>       notRouted;
     //  Sized items the layout does not place.  `unplaced` are placeable items
     //  the case left out (announced); `internal` are items that live inside
     //  or on another one (a tray stack, a catalyst charge, a relief valve) and
