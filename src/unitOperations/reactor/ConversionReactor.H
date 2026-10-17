@@ -78,6 +78,13 @@ namespace Choupo {
 // `Q_reaction_kW / xi` exactly when the package is an ideal gas and does not
 // otherwise -- the difference is the departure function, which belongs to the
 // fluid and not to the reaction.
+//
+// THE OUTLET IS ITS OWN EQUILIBRIUM (DEV.md 4c C72, 2026-10-17).  Its vapour
+// fraction is resolved at its own (T, P, z_out) by `flashState::equilibriumAt`
+// -- never hard-stamped and never copied from the inlet -- and the duty is
+// priced on exactly that state.  A `phase ...;` declared on the inlet is a
+// declaration about the inlet: it is not carried to the product, and a
+// departure from it is announced.  The reasons are in the .cpp (`outletState`).
 class ConversionReactor : public UnitOperation
 {
 public:

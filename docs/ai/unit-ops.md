@@ -342,12 +342,17 @@ esterification_etac                       // one block per NAMED reaction
 Reactants carry `nu < 0`, products `nu > 0`; the block's NAME is what
 `reaction <name>;` / `reactions ( ... )` select.
 
-**THE OUTLET CARRIES THE INLET'S PHASE STATE (ruled 2026-08-24)** -- this
-unit is a stoichiometric bookkeeper with no phase model, so it forwards the
-feed's `vf` unchanged instead of inventing a vapour (it used to hard-stamp
-`phase gas;`, which put a spurious ENERGY BALANCE FAILED banner on
-perfectly-authored liquid-phase duties).  A downstream flash owns any
-split.
+**THE OUTLET IS ITS OWN EQUILIBRIUM (2026-10-17, DEV.md 4c C72)** -- the
+outlet's vapour fraction is resolved at its OWN (T, P, z): liquid, vapour or
+a split, whichever that state is.  It is never stamped (the unit once
+hard-wrote `phase gas;`, which put a spurious ENERGY BALANCE FAILED banner on
+liquid-phase duties) and no longer copied from the feed (the 2026-08-24
+posture, which carried a liquid feed's `vf = 0` onto an all-gas product).  A
+`phase liquid;`/`phase gas;` on the FEED describes the feed only: it is not
+carried to the product, and when the product's own equilibrium is a
+different phase the run says so (`[conversionReactor] ... the inlet DECLARES
+...`).  A reactor meant to hold one phase is declared at a pressure where its
+product does.  `outlet vf = ...` is printed with the unit.
 
 **THE DUTY IS PRICED ON THE PACKAGE'S OWN ENTHALPY SURFACE (2026-09-25)** --
 `Q_kW`, `Q_reaction_kW` and `Q_sensible_kW` are enthalpy differences taken

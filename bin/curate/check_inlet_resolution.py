@@ -170,6 +170,27 @@ WHAT THIS CHECKS, all from fresh runs of corpus cases:
              372.95 K (above both) as VAPOUR -- the control that the fixture
              is not liquid by construction.  The plant's first law must
              close to 1e-6 kW.
+  (m) A CONVERSION REACTOR'S OUTLET MEANS ITS OWN EQUILIBRIUM (2026-10-17,
+      DEV.md 4c C72).  The unit used to COPY its inlet's vf onto an outlet at
+      another T and composition (the 2026-08-24 posture), so a liquid water
+      feed split into H2 + O2 published the gas at vf = 0 and priced it on
+      the liquid rung (C68 finding iii: ammoniaRoutes01_screening runs at
+      0.02 bar partly for that reason).
+        (m1) SOURCE: ConversionReactor.cpp resolves its outlet through
+             `flashState::equilibriumAt` exactly once, publishes the result
+             on BOTH paths (`.vf = outSt.vf`), and never writes the inlet's
+             vf on an outlet stream (`s.vf = vf_in` / `out.vf = vf_in`).
+        (m2) OUTPUT: a fixture on the routes screen's ideal package at
+             298.15 K and 1.01325 bar: liquid water (no phase declared) split
+             to H2 + 1/2 O2 must publish vf = 1; H2 + 1/2 O2 burnt to water
+             must publish vf = 0; the same with the inlet DECLARED `phase
+             gas;` must publish vf = 0 too (a pin describes the inlet), with
+             the two authored inlets' own readings as controls.
+        (m3) ANNOUNCED: the departure from the declared inlet phase is said
+             at its site (stderr) and reaches the result JSON exactly once,
+             and is NOT said for the two unpinned inlets.
+        (m4) The fixture's first law closes to 1e-6 kW: the duty is priced
+             on the state the outlet publishes.
   (e) flash13_acetic_ethanol_vacuum_flash keeps a LARGE duty -- the
       negative control.  Its feed is at 1 atm and it operates at 0.65 atm,
       so its 669 kW is genuine pressure-drop work; a gate that drove every
@@ -254,6 +275,21 @@ restored from a copy and the tree rebuilt with `make all` at the end:
       sites intact), rebuilt.  (l1) PASSES -- every call is in place -- and
       (l2) fails on both `low` branches.
 
+SABOTAGE-VERIFIED 2026-10-17 for (m), by hand on the engine source, each
+applied by asserted string replacement (a sabotage that does not land proves
+nothing), rebuilt, and restored from a copy and rebuilt:
+  S1  both outlet sites back to `s.vf = vf_in` / `out.vf = vf_in` (the
+      resolution still computed).  (m1) fails twice, (m2) three times
+      (splitGas 0, burnt 1, burntPinned 1) and (m4) at -2476.42 kW: the duty
+      priced the resolved state while the stream carried the inlet's.
+  S2  the departure test disarmed (`if (false && declaredSingle ...)`).
+      (m3) fails twice (no JSON entry, no site line).
+  S3  the duty priced on the inlet's vf (`false, vf_in`), the outlet still
+      resolved.  Only (m4) sees it: +2476.42 kW.
+  S4  the AdvisoryLog call removed, the stderr line kept.  (m3) fails on the
+      JSON half alone -- the site line is the slightly-louder form of
+      silence.
+
 SABOTAGE-VERIFIED 2026-08-09: reverting the R-E1 gate (unpinned feeds no
 longer re-flashed -- the pre-slice behaviour) reproduced the original
 defect and this gate named every instance: flash19 Q = 13.4913 kW with its
@@ -271,6 +307,10 @@ WHAT THIS DOES NOT CHECK, said plainly:
   * Whether the incipient band of 1e-3 is the right number.  It is a stated
     choice, not a derived tolerance, and a stream genuinely between 1e-6 and
     1e-3 off saturation is reported by nothing.
+  * The `cstr` and `pfr` outlets: both still publish their INLET's vf
+    (`out.vf = vf_in`, two sites each, "no phase change in a reactor"),
+    the shape (m) took off the conversion reactor.  Enumerated in C72, not
+    changed -- it is a separate decision.
   * Any package with NO vapour phase: the test is vapour-liquid and skips
     those by `hasEos()`.  That skip exists because asking anyway segfaulted
     (`ThermoPackage::Kvec` dereferenced a null EoS handle); the refusal that
@@ -375,6 +415,12 @@ SAT_READ_ALLOWED = {
 }
 SAT_SRC = "tutorials/steady/heat/condenser01_film_nusselt"
 SAT_LOW_K, SAT_HIGH_K = 372.40, 372.95
+
+#  (m) the conversion reactor's outlet is its own equilibrium (C72); the
+#  fixture borrows the routes screen's ideal-gas/Raoult package (water, H2,
+#  O2 on the formation datum).
+CONV_REACTOR = "reactor/ConversionReactor.cpp"
+CONV_SRC = "tutorials/plant/ammoniaRoutes01_screening"
 
 #  (j) the units that search their own OUTLET (or regime) with a flash
 OUTLET_SEARCHERS = [
@@ -905,6 +951,105 @@ def main() -> int:
                 fail.append("(l2) the IF97 dome fixture's first law does not "
                             f"close (residual {m.group(1) if m else None} kW)")
 
+        # (m) a conversionReactor's OUTLET is its own equilibrium (C72).
+        cr_src = strip_comments((UNITS / CONV_REACTOR).read_text())
+        if re.search(r"\b(?:s|out)\.vf\s*=\s*vf_in\b", cr_src):
+            fail.append(f"(m1) {CONV_REACTOR} copies the inlet's vf onto its "
+                        "outlet stream (`s.vf = vf_in` / `out.vf = vf_in`) -- "
+                        "the outlet means its own "
+                        "equilibrium at (T, P, z_out) (DEV.md 4c C72)")
+        if len(re.findall(r"\bflashState::equilibriumAt\s*\(", cr_src)) != 1:
+            fail.append(f"(m1) {CONV_REACTOR} does not resolve its outlet "
+                        "through `flashState::equilibriumAt` exactly once "
+                        "(the one equilibrium home)")
+        if len(re.findall(r"\.vf\s*=\s*outSt\.vf\b", cr_src)) != 2:
+            fail.append(f"(m1) {CONV_REACTOR}: both reaction paths must "
+                        "publish the resolved outlet state (`.vf = outSt.vf`, "
+                        "single- and multi-reaction)")
+        cr = ROOT / CONV_SRC
+        mx = tmp / "conversionOutlet"
+        (mx / "system").mkdir(parents=True)
+        (mx / "0").mkdir()
+        shutil.copytree(cr / "constant", mx / "constant")
+        shutil.copy(cr / "system" / "controlDict", mx / "system" / "controlDict")
+        (mx / "constant" / "reactions").write_text(
+            "waterSplitting\n{\n    limitingReactant water;\n"
+            "    stoichiometry\n    (\n        { component water; nu -1; }\n"
+            "        { component H2; nu 1; }\n        { component O2; nu 0.5; }\n"
+            "    );\n}\n\n"
+            "hydrogenCombustion\n{\n    limitingReactant H2;\n"
+            "    stoichiometry\n    (\n        { component H2; nu -1; }\n"
+            "        { component O2; nu -0.5; }\n"
+            "        { component water; nu 1; }\n    );\n}\n")
+        state = "T               298.15 K;\nP               1.01325 bar;\n"
+        water = "componentMolarFlows\n{\n    water  100 kmol/h;\n}\n" + state
+        knall = ("componentMolarFlows\n{\n    H2  100 kmol/h;\n"
+                 "    O2  50 kmol/h;\n}\n" + state)
+        for nm, txt in (("liqWater", water), ("splitGas", water),
+                        ("gasMix", knall), ("burnt", knall),
+                        ("gasMixPinned", knall + "phase           gas;\n"),
+                        ("burntPinned", knall)):
+            (mx / "0" / nm).write_text(txt)
+        units = ""
+        for un, rxn, inp, out in (("split", "waterSplitting", "liqWater",
+                                   "splitGas"),
+                                  ("burn", "hydrogenCombustion", "gasMix",
+                                   "burnt"),
+                                  ("burnPinned", "hydrogenCombustion",
+                                   "gasMixPinned", "burntPinned")):
+            units += ("    {\n        name " + un + ";\n"
+                      "        type conversionReactor;\n"
+                      "        in " + inp + ";\n"
+                      "        outputs ( " + out + " );\n"
+                      "        reaction " + rxn + ";\n"
+                      "        operation { conversion 1.0; }\n    }\n")
+        (mx / "system" / "flowsheetDict").write_text(
+            "units\n(\n" + units + ");\n")
+        rc, mlog = run(mx)
+        if rc != 0:
+            fail.append(f"(m2) the conversion-outlet fixture did not run "
+                        f"(rc={rc})")
+        else:
+            for side, want, why in (
+                    ("liqWater", 0.0, "the control: water at 298.15 K and "
+                     "1 atm, declaring no phase, is a liquid"),
+                    ("splitGas", 1.0, "H2 + 1/2 O2 at 298.15 K is a gas; the "
+                     "LIQUID inlet's vf was carried onto it"),
+                    ("gasMix", 1.0, "the control: H2 + O2 is a gas"),
+                    ("burnt", 0.0, "pure water at 298.15 K and 1 atm is a "
+                     "liquid; the VAPOUR inlet's vf was carried onto it"),
+                    ("burntPinned", 0.0, "a `phase gas;` on the inlet is a "
+                     "declaration about the INLET, not carried to a product "
+                     "of another composition")):
+                m = re.search(r'"' + side + r'":\s*\{[^}]*"vf":\s*'
+                              r'([-0-9.eE+]+)', mlog)
+                if not m or abs(float(m.group(1)) - want) > 1e-9:
+                    fail.append(f"(m2) `{side}` published at vf = "
+                                f"{m.group(1) if m else None}, expected "
+                                f"{want}: {why}")
+            n_said = len(re.findall(
+                r'"locus":\s*"conversionReactor \'burnPinned\' outlet",\s*'
+                r'"message":\s*"the inlet DECLARES `phase gas;`', mlog))
+            if n_said != 1:
+                fail.append(f"(m3) the departure from burnPinned's declared "
+                            f"inlet phase reached the result JSON {n_said} "
+                            "time(s), expected exactly once")
+            if not re.search(r"\[conversionReactor\] conversionReactor "
+                             r"'burnPinned' outlet: the inlet DECLARES", mlog):
+                fail.append("(m3) the departure from burnPinned's declared "
+                            "inlet phase was not said at its site (stderr)")
+            if re.search(r"conversionReactor '(split|burn)' outlet: the inlet "
+                         r"DECLARES", mlog):
+                fail.append("(m3) a departure was announced for an UNPINNED "
+                            "inlet -- only a declared phase is departed from")
+            m = re.search(r'"globalEnergyBoundary":\s*\{[^}]*"residual_kW":'
+                          r'\s*([-0-9.eE+]+)', mlog)
+            if not m or abs(float(m.group(1))) > 1e-6:
+                fail.append("(m4) the conversion-outlet fixture's first law "
+                            "does not close (residual "
+                            f"{m.group(1) if m else None} kW): the duty is "
+                            "not priced on the state the outlet publishes")
+
         # (e) the negative control: a real pressure-drop duty survives
         ctrl = tmp / "flash13"
         shutil.copytree(ROOT / CONTROL, ctrl)
@@ -955,7 +1100,12 @@ def main() -> int:
           f"both phases call it, and {len(SAT_READ_ALLOWED)} named files "
           "alone read a record's curve), and under condenser01's IF97 "
           f"package pure water at 1 bar is a liquid at {SAT_LOW_K} K and a "
-          f"vapour at {SAT_HIGH_K} K, first law closed.  NOT "
+          f"vapour at {SAT_HIGH_K} K, first law closed.  A CONVERSION "
+          "REACTOR'S OUTLET IS ITS OWN EQUILIBRIUM: resolved once through "
+          "`equilibriumAt` and published on both paths (source); liquid water "
+          "split to H2 + O2 leaves as a gas, H2 + O2 burnt to water leaves as "
+          "a liquid, a `phase gas;` inlet is not carried to its liquid "
+          "product and the departure is said once, first law closed.  NOT "
           "CHECKED: whether a NON-zero duty is right (only the identity has a "
           "closed form); the multi-condition cases' duties, which ride their "
           "goldens; whether the 1e-3 incipient band is the right number (it "
@@ -964,7 +1114,9 @@ def main() -> int:
           "only); any vapourless package, which the test "
           "skips by hasEos(); and the IF97 saturation curve OUTSIDE its "
           "window (273.15 .. 647.096 K), where the record answers announced "
-          "-- no output arm reaches it.")
+          "-- no output arm reaches it; and the cstr's and pfr's outlets, "
+          "which still carry their inlet's vf (enumerated in C72, not "
+          "changed).")
     return 0
 
 
