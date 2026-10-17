@@ -1402,8 +1402,13 @@ and every inlet defaults to liquid, so a gas-dominant merge tries a liquid
 balance and the T-solve can fail.
 
 **Optional `operation { T <K>; }` → isothermal.** The mixer then DECLARES
-the mix temperature and skips the adiabatic energy balance (it announces
-this in the log).  Use it when (a) a furnace/heater downstream fixes T
+the mix temperature instead of solving the adiabatic energy balance — it is
+a mixer and a heater (or cooler) in one box, and it PUBLISHES the duty that
+temperature implies, `Q_kW = H(outlet) − Σ H(inlets)`, priced the way the
+energy report prices the same streams.  That duty is a boundary energy item
+(it closes the plant's first law and is offered to the utility allocation at
+`T_out`, like a heater's); if a merged stream has no enthalpy datum the duty
+is announced UNAVAILABLE and no `Q_kW` is published.  Use it when (a) a furnace/heater downstream fixes T
 anyway (e.g. a reactor feed whose furnace is lumped into the reactor's
 `operation.T`), or (b) the adiabatic balance is ill-posed — a genuine
 gas+liquid merge whose liquid species carry a large formation+latent gap on
@@ -1413,7 +1418,7 @@ and here the author owns it.
 ```
 inputs  (s1  s2  s3 );  outputs (merged );
 operation {}                  // adiabatic: T_out is a result
-operation { T 330 K; }        // isothermal: T_out declared, energy balance skipped
+operation { T 330 K; }        // isothermal: T_out declared, its duty published as Q_kW
 ```
 
 ### `splitter`

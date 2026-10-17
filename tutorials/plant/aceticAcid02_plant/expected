@@ -165,3 +165,8 @@ utility reactor                cooling.coolingWater.duty_kW -3815.74081581     1
 utility reactor                cooling.coolingWater.T 460                1e-4
 utility reactor                cooling.coolingWater.kg_s 91.2856654499      1e-4
 utility reactor                cooling.coolingWater.eur_h 5.49466677476      1e-4
+kpi     M1                     Q_kW             82.8763139937    1e-4
+utility M1                     heating.steamLP.duty_kW 82.8763139937    1e-4
+utility M1                     heating.steamLP.T 320              1e-4
+utility M1                     heating.steamLP.kg_s 0.0379123119825  1e-4
+utility M1                     heating.steamLP.eur_h 3.58025676453    1e-4

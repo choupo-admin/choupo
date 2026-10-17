@@ -441,7 +441,11 @@ Two smaller things fell out and are recorded rather than fixed:
 * `M1`/`M2` now publish raw imbalances of −7.26 and +10.61 kW.  Those are
   explained at their own site — both are declared-isothermal mixers, printing
   `energy balance skipped` — but the ledger is where the size of that
-  approximation becomes readable.
+  approximation becomes readable.  *(2026-10-17, DEV.md 4c C74: an
+  isothermal mixer now publishes the duty its declared T implies as
+  `Q_kW`, priced as the report prices its streams, so `M1`/`M2` close to
+  0.0000 kW and the −11.2496 kW above is the whole of this plant's
+  residual.)*
 * The structural process-to-process exchanger test (`>=2 process in AND >=2
   process out AND no boundary heat`) catches an **absorber**, and would catch
   an extractor or a membrane module.  It changes no number in this plant

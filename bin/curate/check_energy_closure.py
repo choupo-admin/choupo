@@ -112,10 +112,28 @@ WHAT THIS DOES NOT CHECK, said plainly:
     BY CONSTRUCTION -- an adiabatic sprayDryer/solidDryer/convectiveDryer, an
     evaporator (its heat crosses as its own chest/condensate streams; joined
     2026-10-05), a distillationColumn (its reboiler and condenser cross the
-    boundary whatever its feed count; joined 2026-10-05, C35), and a
-    cstr/conversionReactor that published Q_kW -- must leave nothing
-    unattributed.  Every other unit is judged only through the
-    plant sum.
+    boundary whatever its feed count; joined 2026-10-05, C35), a
+    cstr/conversionReactor that published Q_kW, and (2026-10-17, DEV.md 4c
+    C74) a mixer at a DECLARED outlet temperature that published Q_kW --
+    must leave nothing unattributed.  Every other unit is judged only
+    through the plant sum.
+  * A DECLARED-T MIXER WHOSE PUBLISHED STREAMS DO NOT CLOSE ITS MATERIAL.
+    A mixer conserves moles exactly, so its published outlet F must equal
+    the sum of its published inlets -- except where an inlet is a recycle
+    TEAR: the report prices the tear as PUBLISHED after the final pass, the
+    mixer consumed the value that pass started from, and the two differ by
+    the recycle's own convergence gap (inside its declared `recycleTol`).
+    aceticAcid02's M1 consumed coRecycle at 0.0227132153 kmol/s against a
+    published 0.0227122898 (dF 9.255e-7 kmol/s, its recycleTol is 1e-6), so
+    its row leaves -0.1025 kW = dF x h(coRecycle) and its MATERIAL row the
+    same gap (100.0011 %).  That is the recycle's gap, not the mixer's
+    surface, and no tolerance here may be widened to hide it.  So a
+    declared-T mixer whose published sum of inlet F departs from its outlet
+    F by more than MATERIAL_GAP_REL is NOT judged: it is COUNTED and NAMED
+    on the claim line with its gap.  The test reads the material fact
+    itself, never the tear list: hda's, acetonePlant's and
+    polycaprolactonePlant's mixers are tear-fed too, their recycles close
+    to 1e-9, and they ARE judged.
 
 THE UNIT ARM, SABOTAGE-VERIFIED 2026-09-27 by hand on a SCOPED run (a cache
 of seven cases: the flagship, sprayDryer01/05, solidDryer01, cstr07, cstr01,
@@ -144,6 +162,25 @@ restore:
       'radfrac' ... +891.9801 kW", and the plant arm re-fails both cases as
       unpinned (-78.6939 / -891.9801 kW); column01 (single feed) passes.
       Restored with git + `make all`.
+  U7  (2026-10-17, DEV.md 4c C74: the declared-T mixer joins the arm) drop
+      the duty publication -- run as the origin/main build of the same
+      tree, which publishes none -> "the unit arm did not READ its witness"
+      for hda's Mixer, acetonePlant's M1 and M2 and polycaprolactonePlant's
+      Mixer; the plant arm re-fails aceticAcid02_plant (1.3610 %, unpinned
+      once its pin is out) and polycaprolactonePlant (grew from the pinned
+      15.3450 % to 20.0100 %).  hda (0.825 %) is inside the band: only the
+      unit arm sees it.
+  U8  price the outlet on another surface (`F_out * H_stream_formation(T,
+      P, vf, z)` -- the quality blend at the dominant label -- instead of
+      `flashState::priceState`) -> "unit 'Mixer' (mixer) leaves -1360.0039
+      kW" on hda and "+4.1803 kW" on polycaprolactonePlant, and the plant
+      arm re-fails hda (3.1520 %), polycaprolactonePlant (22.9680 %) and
+      aceticAcid02_plant (14.5060 %; its M1 is not judged by this arm -- see
+      the material-gap blind spot -- so the plant arm is what sees it there).
+      acetonePlant's M1 and M2 are NOT caught: their outlets resolve single
+      phase, where the blend IS the resolved price -- a sabotage that changes
+      no number there proves nothing there.  Restored from the saved file
+      (md5-identical) + one `make all`.
   U5  (2026-10-05, the evaporator joins the arm) restore the evaporator's
       Watson duty -> "unit 'CONCENTRATION.Evap1' (evaporator) leaves -21.0456
       kW", Evap2 -10.3209, evaporator02's effect1/2/3 -152.9702 / -62.7408 /
@@ -432,10 +469,18 @@ def ratchet_kW(pin: float) -> float:
 #  on its first golden and NOT diagnosed: aceticAcid02_plant at 1.3610 %
 #  (-79.9842 kW).  Its energyBalance_byUnit.csv puts the remainder at M1
 #  (+82.7738 kW, a mixer at a DECLARED T) and the reactor (-2.7901 kW).
+#  ONE LEFT AND ONE RE-MEASURED ON 2026-10-17 (DEV.md 4c C74): the
+#  declared-T mixer now publishes the duty its temperature implies.
+#    aceticAcid02_plant      1.3610 % -> 0.049 % (+2.8922 kW: the reactor's
+#                            -2.7901 kW and M1's tear gap -0.1025 kW)  LEFT
+#    polycaprolactonePlant  20.0100 % -> 15.3450 % (-10.6095 -> -8.4650 kW;
+#                            its Mixer's +2.1445 kW paid)          RE-PINNED
+#  hda (0.825 % -> 0.000 %) and acetonePlant (0.146 % -> 0.249 %: its M1 and
+#  M2 had been cancelling part of the absorber's -11.2496 kW, which is now
+#  the whole of its residual) were never pinned.
 KNOWN_OPEN = {
-    "tutorials/plant/aceticAcid02_plant": 1.3610,
     "tutorials/plant/esterification2sector": 170.9790,
-    "tutorials/plant/polycaprolactonePlant": 20.0100,
+    "tutorials/plant/polycaprolactonePlant": 15.3450,
     "tutorials/steady/flowsheets/cavett01_recycle_train": 88.0220,
     "tutorials/steady/flowsheets/proxy01_gas_loop": 51.9550,
     "tutorials/steady/gibbs/gibbs07_wgs_cooled": 150.7280,
@@ -550,7 +595,27 @@ UNIT_DUTY_IS_DH = {"cstr", "conversionReactor"}
 #  left -39.5039 kW and credo01's V1 +5.4445 kW, each the Watson latent heat
 #  and the ideal-gas vapour of the unit's own surface against the report's.
 UNIT_THROTTLE = {"valve"}
+#  `mixer` joined 2026-10-17 (DEV.md 4c C74): a mixer at a DECLARED outlet
+#  temperature (`operation { T ...; }`) is a mixer and a heater in one box,
+#  and it publishes the duty that temperature implies as Q_kW = H(outlet) -
+#  SUM H(inlets), every term through `flashState::priceState` -- so nothing
+#  may remain unattributed.  Until then it published NO duty: aceticAcid02's
+#  M1 left +82.7738 kW, hda's Mixer +341.7016 kW (that plant's whole
+#  -341.9073 kW residual), acetonePlant's M1/M2 -5.9308/+10.6069 kW and
+#  polycaprolactonePlant's Mixer +2.1445 kW.  An ADIABATIC mixer publishes no
+#  Q_kW and is not judged here; a declared-T mixer whose duty is UNAVAILABLE
+#  (a merged stream with no enthalpy datum: ed07's ions, unsteady04's BSA)
+#  publishes none either.  A declared-T mixer fed by a recycle TEAR is
+#  counted and named, not judged (see the docstring: the report prices the
+#  published tear, the unit consumed the one the final pass started from).
+UNIT_DECLARED_T = {"mixer"}
 UNIT_TOL_KW = 1.0e-4
+#  The relative material gap above which a declared-T mixer's row is taken to
+#  carry its recycle's convergence gap (see the docstring).  A gate
+#  CONVENTION: measured 2026-10-17, the judged witnesses sit at <= 3.2e-9
+#  (the JSON prints F to 12 figures) and the two unjudged at 3.5e-7
+#  (membrane18's MIX, Newton recycle) and 1.2e-5 (aceticAcid02's M1).
+MATERIAL_GAP_REL = 1.0e-7
 #  WITNESSES the arm must READ whenever their case is in scope, so it cannot
 #  go green by reading nothing (the check_true_ions shape): the flagship's two
 #  dryers and fermentor, and one standalone case of each dryer type.
@@ -589,8 +654,21 @@ UNIT_WITNESSES = {
     ("tutorials/steady/hydraulics/letdown01_ammonia_flashing", "PurgeValve"),
     ("tutorials/steady/flowsheets/credo01_valve_heater_drum", "V1"),
     ("tutorials/steady/flowsheets/inletState01_undeclared_vapour", "V1"),
+    #  The declared-T mixer (C74): a gas+liquid merge whose furnace is lumped
+    #  downstream (hda), two in one plant -- one cooling, one heating
+    #  (acetonePlant) -- and a liquid merge on a two-phase feed
+    #  (polycaprolactonePlant).  All four are fed by a recycle tear whose
+    #  published material closes the mixer to 1e-9, so they are judged.
+    ("tutorials/plant/hda", "Mixer"),
+    ("tutorials/plant/acetonePlant", "M1"),
+    ("tutorials/plant/acetonePlant", "M2"),
+    ("tutorials/plant/polycaprolactonePlant", "Mixer"),
 }
 UNIT_HEADER = re.compile(r">>>  Unit \[\d+\]:\s+(\S+)\s+\(type = (\w+)\)")
+#  The header's next line names the unit's inlets and outlets (either side
+#  of the arrow); read only for a declared-T mixer's material test.
+UNIT_PORTS = re.compile(r">>>  Unit \[\d+\]:\s+(\S+)\s+\(type = \w+\)\s*\n"
+                        r">>>  Inputs:([^\n]*?)\u2192([^\n]*)")
 
 
 def json_block(txt: str, key: str):
@@ -611,11 +689,28 @@ def judge_units(rel: str, txt: str, seen: set, stats: dict, bad: list):
     types = dict(UNIT_HEADER.findall(txt))
     if not any(t in UNIT_ADIABATIC or t in UNIT_DUTY_IS_DH
                or t in UNIT_MATERIAL_HEAT or t in UNIT_BOUNDARY_DUTY
-               or t in UNIT_THROTTLE
+               or t in UNIT_THROTTLE or t in UNIT_DECLARED_T
                for t in types.values()):
         return
     closures = json_block(txt, "energyClosures")
     kpis = json_block(txt, "kpis") or {}
+    portsOf = {u: (ins.split(), outs.split())
+               for u, ins, outs in UNIT_PORTS.findall(txt)}
+    streams = json_block(txt, "streams") or {}
+
+    def material_gap(unit):
+        """(F_out - SUM F_in) / F_out over the PUBLISHED streams, or None
+        when a port is not readable -- the unit is then JUDGED: an unreadable
+        port must never become an exemption."""
+        ins, outs = portsOf.get(unit, ([], []))
+        try:
+            fi = sum(float(streams[n]["F"]) for n in ins)
+            fo = sum(float(streams[n]["F"]) for n in outs)
+        except (KeyError, TypeError, ValueError):
+            return None
+        if not ins or not outs or fo == 0.0:
+            return None
+        return (fo - fi) / fo
     if not isinstance(closures, list):
         stats["noLedger"] += 1          # the report did not run (outer driver)
         return
@@ -647,6 +742,16 @@ def judge_units(rel: str, txt: str, seen: set, stats: dict, bad: list):
         elif t in UNIT_DUTY_IS_DH and "Q_kW" in kpis.get(unit, {}):
             why = ("a %s publishes Q_kW = H_out - H_in on the streams it "
                    "publishes, so nothing may remain unattributed" % t)
+        elif t in UNIT_DECLARED_T and "Q_kW" in kpis.get(unit, {}):
+            gap = material_gap(unit)
+            if gap is not None and abs(gap) > MATERIAL_GAP_REL:
+                stats["tearFed"].append("%s:%s (published material gap %.2e)"
+                                        % (rel, unit, gap))
+                continue
+            why = ("a %s at a DECLARED outlet temperature publishes the duty "
+                   "that temperature implies, Q_kW = H(outlet) - SUM "
+                   "H(inlets), on the streams it publishes (DEV.md 4c C74)"
+                   % t)
         else:
             continue
         rem = float(row.get("remaining_kW", 0.0))
@@ -785,7 +890,7 @@ def main() -> int:
     #  name a case the gate never read and nothing notices -- see the
     #  unanswered-pin arm below, which sabotage S7 exists to prove.
     discovered, bucket = set(), {}
-    unitSeen, unitStats = set(), {"judged": 0, "noLedger": 0}
+    unitSeen, unitStats = set(), {"judged": 0, "noLedger": 0, "tearFed": []}
     ranClean = set()
 
     for case in steady_cases():
@@ -1013,10 +1118,16 @@ def main() -> int:
           "throttle; a "
           "cstr/conversionReactor "
           "that published "
-          "Q_kW) leave no more than %.0e kW unattributed in the report, "
+          "Q_kW; a mixer at a declared outlet T that published Q_kW) leave "
+          "no more than %.0e kW unattributed in the report, "
           "every in-scope witness among %d was read, and %d case(s) running "
           "such a unit published no per-unit ledger (the report did not run "
-          "under an outer driver) and are unjudged.  The arm reads unit "
+          "under an outer driver) and are unjudged.  NOT judged and NAMED: "
+          "%d declared-T mixer(s) whose PUBLISHED inlets do not sum to "
+          "their outlet beyond %.0e relative -- a recycle tear's convergence "
+          "gap (the report prices the published tear, the unit the one the "
+          "final pass started from), which their energy row carries "
+          "too%s.  The arm reads unit "
           "types from the console header, so a unit run at a verbosity that "
           "prints none is unjudged too, and the witnesses are what keep that "
           "from going silent.%s"
@@ -1025,7 +1136,10 @@ def main() -> int:
              len(refused), len(announced), len(noReport), noReportOuter,
              len(unrun),
              unitStats["judged"], UNIT_TOL_KW, len(UNIT_WITNESSES),
-             unitStats["noLedger"],
+             unitStats["noLedger"], len(unitStats["tearFed"]),
+             MATERIAL_GAP_REL,
+             (": " + "; ".join(unitStats["tearFed"]))
+             if unitStats["tearFed"] else "",
              scope_sentence(len(measured) + len(measuredKW) + len(refused)
                             + len(noReport) + len(announced),
                             len(outOfScope))))
