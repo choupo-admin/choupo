@@ -71,7 +71,7 @@ export type MethodToolId =
   | "least-squares" | "element-potential" | "limiting-reactant"
   | "reaction-enthalpy" | "standard-state" | "case-assembly" | "run-log"
   | "front-end-loading" | "process-safety" | "overpressure" | "letdown"
-  | "plant-layout";
+  | "plant-layout" | "pool-fire" | "materials";
 
 /** WHAT KIND OF TOOL THIS IS, and the field exists to keep a boundary legible
  *  rather than to switch behaviour.
@@ -1275,6 +1275,36 @@ export const METHOD_TOOLS: MethodTool[] = [
       + "two-phase and larger.",
     theory: "ch:cubic-eos",
   },
+  //  COMMISSIONED 2026-10-17 (DEV.md 4c C83): "Faz essa EduTool da radiacao
+  //  do incendio de poca, se achares importante" -- where a separation
+  //  table's numbers come from, the risk-based half of the C75 prescriptive
+  //  layout.  A CONSTRUCTION with no engine run: every substance property is
+  //  read from the catalogue record the engine reads, and the fire is the
+  //  page's own arithmetic (poolFire.ts) on published correlations, each
+  //  with its source and licence status on the page.  ON THIS SHELF and not
+  //  on "Process design & economics" beside the layout page: the question is
+  //  what a fire does to the people and equipment around it.  `theory` is
+  //  the integral-properties section, where the formation enthalpy and the
+  //  Watson latent heat the heat of combustion is built from are derived;
+  //  the Theory Guide has no fire chapter.  First version, for Vitor's
+  //  review.
+  {
+    id: "pool-fire",
+    label: "Pool-fire radiation and the distance it sets",
+    discipline: "Process safety", kind: "construction",
+    status: "live",
+    teaches: "How far a pool fire's radiation reaches, built from the fuel "
+      + "up: the heat of combustion from the catalogue's formation "
+      + "enthalpies, the Burgess burning rate calibrated on one public-domain "
+      + "NIST measurement and checked on another, the flame height by Thomas "
+      + "and by Heskestad against measured heights, the emissive power by "
+      + "energy and by Mudan and Croce's smoke correlation (and why it does "
+      + "not fit a methanol flame), the point-source and solid-flame models "
+      + "side by side -- apart near the fire, the same law far away -- and "
+      + "the distance to four published thresholds, set beside the "
+      + "separation the acetic-acid plant's layout declares.",
+    theory: "ch:integrals",
+  },
   //  COMMISSIONED 2026-10-17 (DEV.md 4c C75, slice 2): "Podes fazer um
   //  EduTool com isso, criar esse dicionario e criar uma tool para gerar o
   //  layout 3D?", the outline approved the same day with the prevailing wind
@@ -1304,6 +1334,43 @@ export const METHOD_TOOLS: MethodTool[] = [
       + "0, 1 and 2 as envelopes the case declares; and what the model does "
       + "not do -- pipe cost and pressure drop (the engine routes and measures "
       + "the pipes, and the page shows their lengths), structures, drainage.",
+    theory: "ch:size-vessel",
+  },
+  //  COMMISSIONED 2026-10-17 (DEV.md 4c C84): "Temos algum EduTools sobre
+  //  materiais selantes de bombas vedantes etc? ... sem aço carbono não havia
+  //  engenharia química ... uma forma pareto de explicar quais os materiais
+  //  mais usados ... e como se escolhem.  Uma secção de metalurgia seria
+  //  importante".  A NOTES page in six parts with ONE bench: a corpus case's
+  //  vessel re-sized and re-priced by the engine in the browser for every
+  //  construction-material record.  ON THIS SHELF, not on "Process safety"
+  //  and not on a new one: what a material decides first is the wall and the
+  //  price of an item, which is what this shelf is about, and its safety
+  //  content (cracking, hydrogen attack) is part of how a design chooses; a
+  //  "Materials" shelf would hold one tool, and a discipline label with one
+  //  tenant is what the shelf rule forbids.  `theory` is the vessel-sizing
+  //  section, where the wall the bench changes is derived.
+  {
+    id: "materials",
+    label: "Materials of construction, seals and gaskets: the Pareto, and how to choose",
+    discipline: "Process design & economics", kind: "notes",
+    status: "live",
+    teaches: "Why the material of every wall decides a plant -- corrosion, "
+      + "strength at temperature, toughness, cost; the Pareto of the materials "
+      + "chemical plants are built from, as a teaching ordering: carbon steel "
+      + "first and why, austenitic stainless (304/316, molybdenum against "
+      + "chlorides), duplex, nickel alloys, titanium, copper alloys in "
+      + "exchangers, aluminium in the cold, linings, non-metallics and "
+      + "refractories; the metallurgy behind it -- ferrite and austenite, "
+      + "carbon in iron, the ductile-brittle transition, creep, the weld and "
+      + "its heat-affected zone, sensitisation and the L grades, passivity; "
+      + "how a material is chosen -- corrosion allowance and the wall, the "
+      + "temperature window, chloride stress-corrosion cracking, pitting, "
+      + "hydrogen embrittlement and high temperature hydrogen attack, "
+      + "ammonia stress-corrosion cracking of carbon steel, and the material "
+      + "factor in the cost; pump seals, gaskets, packing and elastomer "
+      + "compatibility; and what Choupo does with a material, on a bench "
+      + "where the engine re-sizes and re-prices one vessel for every "
+      + "material record in the tree.",
     theory: "ch:size-vessel",
   },
   //  Route screening (C24, 2026-09-29): three known routes to methanol

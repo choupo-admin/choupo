@@ -292,12 +292,18 @@ const ProcessSafetyTool = lazy(() =>
 const OverpressureTool = lazy(() =>
   import("./methods/OverpressureTool.js")
     .then((m) => ({ default: m.OverpressureTool })));
+const PoolFireTool = lazy(() =>
+  import("./methods/PoolFireTool.js")
+    .then((m) => ({ default: m.PoolFireTool })));
 const LetdownTool = lazy(() =>
   import("./methods/LetdownTool.js")
     .then((m) => ({ default: m.LetdownTool })));
 const PlantLayoutTool = lazy(() =>
   import("./methods/PlantLayoutTool.js")
     .then((m) => ({ default: m.PlantLayoutTool })));
+const MaterialsTool = lazy(() =>
+  import("./methods/MaterialsTool.js")
+    .then((m) => ({ default: m.MaterialsTool })));
 const WegsteinTool = lazy(() =>
   import("./methods/WegsteinTool.js")
     .then((m) => ({ default: m.WegsteinTool })));
@@ -518,8 +524,10 @@ export function MethodsWorkspace() {
             : tool === "front-end-loading" ? <FrontEndLoadingTool />
             : tool === "process-safety" ? <ProcessSafetyTool />
             : tool === "overpressure" ? <OverpressureTool />
+            : tool === "pool-fire" ? <PoolFireTool />
             : tool === "letdown" ? <LetdownTool />
             : tool === "plant-layout" ? <PlantLayoutTool />
+            : tool === "materials" ? <MaterialsTool />
             : tool === "wegstein" ? <WegsteinTool />
             : tool === "active-set-qp" ? <ActiveSetQpTool />
             : tool === "lub-scaleup" ? <LubScaleupTool />

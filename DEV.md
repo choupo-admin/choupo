@@ -907,6 +907,82 @@ accepts today, and that is a policy call.
 
 ## 4c. Commissioned by Vítor (he ASKED for this; it is not a candidate)
 
+> **C84. AN EDUTOOL: MATERIALS OF CONSTRUCTION, SEALS AND GASKETS -- THE
+> PARETO (Vítor, 2026-10-17: "Temos algum EduTools sobre materiais
+> selantes de bombas vedantes etc? ... sem aço carbono não havia engenharia
+> química ... uma forma pareto de explicar quais os materiais mais usados
+> ... e como se escolhem.  Uma secção de metalurgia seria importante").**
+> Measured: no such EduTool (registry grep); the engine already uses
+> materials in costing (`F_M`) and in the vessel wall (allowable stress,
+> `VesselMechanics.H`), from records `carbonSteel`, `SS304`, `SS316`,
+> `aluminium` in data/standards/assets -- whose own headers say their
+> numbers are UNSOURCED teaching assertions (AP6).  Outline (stated to
+> Vítor the same turn): (1) why materials decide a plant -- corrosion,
+> strength at temperature, safety, cost; (2) the Pareto: carbon steel
+> first and why, then austenitic stainless (304/316, Mo for chlorides),
+> duplex, nickel alloys, titanium, copper alloys for exchangers, aluminium
+> for cryogenic service, non-metallics (PTFE/PFA linings, FRP,
+> glass-lined), refractories; (3) a metallurgy section -- crystal
+> structure, carbon in iron, ductile-brittle transition, creep, welding
+> and heat-affected zone, passivity; (4) how to choose -- corrosion rate
+> and allowance, temperature window, the failure mechanisms that bite in
+> chemical plants (chloride SCC, pitting, hydrogen embrittlement and high
+> temperature hydrogen attack, ammonia SCC of carbon steel -- the PEQ
+> ammonia project), cost; (5) seals and gaskets -- pump mechanical seals
+> (single/double, faces, elastomer compatibility), gaskets (spiral-wound,
+> graphite, PTFE), packing; (6) what Choupo does with a material -- F_M in
+> the cost, the allowable stress in the wall, and what is still
+> unsourced.  No tables from no-grant sources (NACE/ASME/API data are cited,
+> never transcribed); no new tutorial case.  MERGED 2026-10-17: EduTool
+> `materials` (Process design & economics), 23 steps over the six parts,
+> no trade names (UNS numbers), no table transcribed; bench re-runs
+> `ammoniaReactor03_equilibriumApproach` swapping one vessel's material
+> over the four records and shows the engine's wall, F_M, F_P and C_BM.
+> FINDINGS for the engine (C85): `maxT` is read and never compared
+> (aluminium on a 700 K converter, record maxT 500 K, no warning); the
+> Theory Guide mis-states the vessel rule three ways (theoryGuide.tex
+> ~23395 F_S = 4 vs S = sigma_y in VesselMechanics.cpp:30; ~23406 a 1.2
+> head factor never applied; ~23413 weight "consumed by Turton" while the
+> cost reads V_R); the record field `sigma_y` holds an ALLOWABLE stress;
+> the wall reads pressureDesign as gauge while F_P subtracts 1 bar.
+
+> **C83. AN EDUTOOL: THE RADIATION OF A POOL FIRE AND THE DISTANCE IT
+> SETS (Vítor, 2026-10-17: "Faz essa EduTool da radiação do incêndio de
+> poça, se achares importante" -- the commander judged it important: it is
+> where the separation tables' numbers come from, the risk-based half of
+> C75's prescriptive layout).**  Outline (stated to Vítor in the same turn):
+> (1) why a distance -- radiation falls with distance, harm has thresholds;
+> (2) the pool -- mass burning rate (Burgess-Strasser-Grumer, USBM, public
+> domain), diameter, heat release; (3) the flame -- height (Thomas),
+> surface emissive power with smoke obscuration (Mudan), a cylinder; (4)
+> the receiver -- point-source vs solid-flame view factor, atmospheric
+> transmissivity; (5) thresholds and the distance to each (sources must be
+> citable and licence-clean, e.g. US EPA RMP offsite consequence guidance,
+> public domain), compared with the separation table a layout case
+> declares; (6) limits -- wind tilt, smoke, terrain, prescriptive tables vs
+> QRA.  The heat of combustion read from the engine's own catalogue
+> (formation data), never a typed constant; every correlation cited by
+> file:line where computed; no new tutorial case; no no-grant table
+> transcribed.  Status: dispatched 2026-10-17.
+
+> **C83 MERGED 2026-10-17.**  `gui/src/ui/methods/poolFire.ts` (pure) +
+> lesson (13 steps) + bench; Process safety shelf, id `pool-fire`.  The
+> heat of combustion is Hess on the catalogue records the Explorer reads
+> (methanol 676.232 kJ/mol vapour basis; the liquid basis through the
+> engine's own Watson, held to relief02's pinned 24 520.52 J/mol).  Fuels:
+> methanol and acetone only -- the two with a public-domain measurement to
+> calibrate k-beta (NIST TN 2082); no per-fuel handbook table (no-grant,
+> and NUREG-1805 copies it).  Checked against NIST TN 2083's 1 m methanol
+> fire, which the calibration never saw (16.52 vs 16.30 g/m2s; Heskestad
+> 1.10 vs 1.10 m).  Four corrections to the brief, taught as such: the two
+> receiver models do NOT converge far away (ratio -> (4/pi) chi_E/chi_r);
+> the point source over-predicts beside a tall flame and under-predicts
+> beside a squat one; Thomas is a poor primary height for these fuels
+> (Heskestad default, flagged OUTSIDE its range for wide methanol pools);
+> Mudan & Croce is stated for gasoline/kerosene/JP-4 only.  tau = 1 (no
+> transmissivity model read); wind tilt named, not computed.  `--gui`
+> 32/0 on the branch after merging C84; no engine change, no case.
+
 > **C82. THE PLOT AREA AND THE COST OF THE LAND (Vítor, 2026-10-17:
 > "Avança", on the commander's proposal after "o layout acaba por ser
 > importante para avaliar os m2 de implementação e o custo do terreno?").**

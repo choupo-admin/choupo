@@ -239,6 +239,15 @@ export const PLANT_LAYOUT_STEPS: readonly LessonStep[] = [
       + "runs says, in its own file, that its distances are round numbers "
       + "chosen for the exercise and taken from no standard.  Read them as "
       + "that, and never as guidance.",
+    //  C83, 2026-10-17: where a number in such a table can come from.
+    leadsTo: {
+      tool: "pool-fire",
+      toolLabel: "Pool-fire radiation and the distance it sets",
+      stepTitle: "What a layout case declares, beside what the fire says",
+      body: "The pool-fire page computes how far a fire's radiation reaches "
+        + "before it falls to published thresholds, and sets it beside the "
+        + "distances the acetic-acid plant declares.",
+    },
   },
 
   // ---- Part 3: the exercise -------------------------------------------------
