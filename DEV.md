@@ -952,8 +952,21 @@ accepts today, and that is a policy call.
 > appended, none moved); (b) both cases get a layoutDict produced by
 > `choupo-layout --draft`, its separation table, wind and ATEX zones
 > declared as LABELLED ASSUMPTIONS for the students to replace with their
-> own site data (never presented as the students' design).  Status: queued
-> 2026-10-17.
+> own site data (never presented as the students' design).  MERGED
+> 2026-10-17: aceticAcid02 gains a sizing-only postDict (preheater 58.3 m2,
+> reactor on a declared 3 m3, two drums by residence time; M1/M2/purge/
+> letdown not sized), re-sealed (SS316 + 10 utility records mirrored,
+> staged run reproduced the golden); both cases carry a layoutDict whose
+> distances, wind and zones are labelled student placeholders, with
+> findings left ON PURPOSE (acetic: control room downwind of three CO
+> sources; NH3: tanks 12 m vs 17 m, a substation inside a zone 2); goldens
+> APPENDED only (89 + 170 rows), none moved; `--gui` 32/0 on the
+> combination.  OPEN, the commander's (C79): (a) the lights column cannot
+> be sized -- `TrayHydraulics` takes `thermo.density(Liquid)` on a liquid
+> carrying supercritical CO: design mode refuses with a misleading "two
+> downcomers leave no active area", rating mode exits 0 printing dP -nan;
+> (b) a layout REFUSES the whole run when one placed item's sizer refused
+> -- it should announce and leave the item unplaced.
 
 > **C75. A PLANT LAYOUT IN 3D: A DICTIONARY, A TOOL AND AN EDUTOOL (Vítor,
 > 2026-10-17: "Podes fazer um EduTool com isso, criar esse dicionario e
