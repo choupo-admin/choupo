@@ -218,12 +218,33 @@ WHAT THIS CHECKS, all from fresh runs of corpus cases:
         (n4) The fixture's first law closes to 1e-6 kW: every duty is
              priced on the state its outlet publishes (the pfr's
              single-reaction path included).
-        (n5) WHAT IS LEFT IS SAID: a copy of cstr04_adiabatic at 1 atm (its
-             adiabatic balance is solved on the feed's LIQUID rung, and the
-             product at 454 K is a vapour) publishes vf = 1 and announces
-             the energy-rung mismatch once (JSON + site), naming the
-             published Q_kW.  A gate that let the mismatch go silent would
-             let an adiabatic reactor carry a heating duty unexplained.
+        (n5) THE ENERGY SOLVES ON THE PUBLISHED SURFACE (2026-10-17, DEV.md
+             4c C77; it replaced C73's "what is left is SAID").  The cstr's
+             and the pfr's adiabatic / heatExchange balances used to find
+             T_out on the FEED's phase rung: cstr04_adiabatic at 1 atm landed
+             at 454.15 K, published the product as a vapour (vf = 1) and an
+             "adiabatic" duty of +9.3569 kW -- the latent heat its balance
+             never saw -- and could only announce the mismatch.  Now the
+             enthalpy each solve balances is the outlet's own equilibrium,
+             priced by the report's rule (`reactorOutlet::pricedOutlet` /
+             `temperatureOfEnthalpy`).  SOURCE: CSTR.cpp reaches
+             `reactorOutlet::pricedOutlet`, PFR.cpp
+             `reactorOutlet::temperatureOfEnthalpy`, neither prices an
+             enthalpy on the inlet's rung (`H_stream_formation(..., vf_in,
+             ...)`), and `announceEnergyRungMismatch` exists nowhere in
+             src/.  OUTPUT, three copies at 1 atm of corpus cases whose
+             product boils there: cstr04_adiabatic and pfr04_adiabatic must
+             publish |Q_kW| <= 1e-6 kW with a TWO-PHASE outlet (0 < vf < 1:
+             the boiling inside the balance is what holds T down), and
+             cstr06_jacketed must publish Q_kW = UA (T_coolant - T_out) to
+             1e-6 kW, also two-phase; none may announce an unmatched
+             enthalpy or a rung mismatch, and each plant's first law closes
+             to 1e-6 kW.  A fourth copy, cstr05_multiplicity at 1 atm, must
+             ALSO find its three steady states: the scan's ceiling (the
+             complete-conversion temperature) is a Newton on the same
+             surface, the boiling puts a kink in it, and the first C77 cut
+             stalled there at the feed's T -- the ceiling sat below the
+             ignited branch and the run reported ONE steady state at exit 0.
   (e) flash13_acetic_ethanol_vacuum_flash keeps a LARGE duty -- the
       negative control.  Its feed is at 1 atm and it operates at 0.65 atm,
       so its 669 kW is genuine pressure-drop work; a gate that drove every
@@ -339,7 +360,35 @@ gate run, then restored by `git checkout` and rebuilt:
       ...)`).  (m3) twice and (n3) four times: one home, three reactors.
   S5  `announceEnergyRungMismatch` hollowed (`if (true) return;`).  (n5)
       twice (JSON and site); nothing else moves -- the published state and
-      duty are untouched, only the explanation goes silent.
+      duty are untouched, only the explanation goes silent.  (RETIRED with
+      the function by C77: the gap it announced is closed; see S7-S10.)
+
+SABOTAGE-VERIFIED 2026-10-17 for the C77 (n5), by hand on the engine
+source, each applied with Edit, rebuilt, the gate run, restored by `git
+checkout` of the file and rebuilt once at the end:
+  S7  the cstr's phi back on the inlet's rung (`Ftot *
+      H_stream_formation(Tk, P, vf_in, zz)`).  (n5) source once; cstr04 and
+      cstr06 at 1 atm do not run at all (the scan, bracketed on the
+      published surface, holds no root of the inlet-rung balance: "no
+      steady state found", exit 2); cstr05 reports vf = 0 and 2 steady
+      states.
+  S8  the inversion kept on ONE rung and never confirmed (the fast path
+      returns `T1` at `vfR` always -- the pre-C77 march).  Only the pfr
+      sees it, and only by OUTPUT: pfr04 at 1 atm back to vf = 1 and Q_kW =
+      9.35824911683, the base number to the last digit.  NOTE: the weaker
+      form (accept the fast path but still record the RESOLVED vf) SURVIVED
+      -- the march self-corrects one point later, because the next call
+      sees the split and brackets -- which is why the arm was not
+      weakened to a source pattern over ReactorOutlet.cpp.
+  S9  the published surface's split priced as a QUALITY BLEND (`hOfState`
+      skipped).  Every fixture's duty parts from the report's: cstr04
+      +0.0037, pfr04 -0.0714, cstr05 -0.0062 kW and cstr06 off its jacket
+      by 0.0016 kW -- and the cstr's `announceUnmatchedEnthalpy` FIRED on
+      the three cstr fixtures, the one live firing of that announcement
+      anywhere (it is otherwise reached by no fixture).
+  S10 the scan ceiling's bracket fallback disabled (`if (false && ...)`).
+      Only the multiplicity copy sees it: cstr05 at 1 atm finds ONE steady
+      state (the low branch, vf = 0) instead of three, at exit 0.
   S6  a SECOND HOME: the cstr's multi-reaction site resolving its own
       `flashState::equilibriumAt` instead of reading `outSt`.  (n1) twice;
       every OUTPUT arm PASSES, because the second copy gives the same number
@@ -363,10 +412,13 @@ WHAT THIS DOES NOT CHECK, said plainly:
   * Whether the incipient band of 1e-3 is the right number.  It is a stated
     choice, not a derived tolerance, and a stream genuinely between 1e-6 and
     1e-3 off saturation is reported by nothing.
-  * Whether a non-isothermal `cstr`'s or `pfr`'s T_out is right when its
-    outlet changes phase: the adiabatic / heatExchange balances are still
-    solved on the feed's phase rung (CLAUDE.md §6 enumerates them).  (n5)
-    checks that the mismatch is SAID, never that it is closed.
+  * Whether a non-isothermal `cstr`'s or `pfr`'s T_out is RIGHT beyond its
+    own energy balance: (n5) checks the balance closes on the published
+    surface (Q = 0, Q = UA (T_c - T_out)), not that the liquid-basis
+    kinetics mean anything in a boiling mixture.  A `pfr` heatExchange
+    march crossing a phase boundary has no fixture (source only), and a
+    PURE product on its saturation jump -- announced by both reactors
+    (`announceUnmatchedEnthalpy`) -- is reached by no fixture at all.
   * Any package with NO vapour phase: the test is vapour-liquid and skips
     those by `hasEos()`.  That skip exists because asking anyway segfaulted
     (`ThermoPackage::Kvec` dereferenced a null EoS handle); the refusal that
@@ -481,6 +533,11 @@ CONV_SRC = "tutorials/plant/ammoniaRoutes01_screening"
 OUTLET_HOME = "reactor/ReactorOutlet.cpp"
 KINETIC_REACTORS = ["reactor/CSTR.cpp", "reactor/PFR.cpp"]
 ADIABATIC_SRC = "tutorials/steady/reactors/cstr04_adiabatic"
+#  (n5) the energy solves on the published surface (C77): the adiabatic pfr
+#  and the jacketed cstr, copied to 1 atm beside cstr04
+ADIABATIC_PFR_SRC = "tutorials/steady/reactors/pfr04_adiabatic"
+JACKETED_SRC = "tutorials/steady/reactors/cstr06_jacketed"
+MULTIPLICITY_SRC = "tutorials/steady/reactors/cstr05_multiplicity"
 
 #  (j) the units that search their own OUTLET (or regime) with a flash
 OUTLET_SEARCHERS = [
@@ -1242,35 +1299,94 @@ def main() -> int:
                             f"{m.group(1) if m else None} kW): a duty is not "
                             "priced on the state its outlet publishes")
 
-        # (n5) what is left is SAID: an adiabatic balance on the feed's rung.
-        ad = tmp / "cstr04_1atm"
-        shutil.copytree(ROOT / ADIABATIC_SRC, ad)
-        for f in (ad / "0").iterdir():
-            if f.is_file():
-                f.write_text(re.sub(r"(?m)^P\s+[^;]*;", "P               "
-                                    "101325 Pa;", f.read_text()))
-        rc, alog = run(ad)
-        if rc != 0:
-            fail.append(f"(n5) the 1 atm copy of {ADIABATIC_SRC} did not run "
-                        f"(rc={rc})")
-        else:
+        # (n5) the energy solves on the published surface (C77).
+        cstr_src = strip_comments((UNITS / "reactor/CSTR.cpp").read_text())
+        if not re.search(r"\breactorOutlet::pricedOutlet\s*\(", cstr_src):
+            fail.append("(n5) CSTR.cpp does not price its T-solve's outlet "
+                        "through `reactorOutlet::pricedOutlet` -- the "
+                        "surface it is published on (C77)")
+        if not re.search(r"\breactorOutlet::temperatureOfEnthalpy\s*\(",
+                         pfr_src):
+            fail.append("(n5) PFR.cpp does not recover its marched T through "
+                        "`reactorOutlet::temperatureOfEnthalpy` -- the "
+                        "surface its outlet is published on (C77)")
+        for rel in KINETIC_REACTORS:
+            src = strip_comments((UNITS / rel).read_text())
+            if re.search(r"\bH_stream_formation\s*\([^;]*\bvf_in\b", src):
+                fail.append(f"(n5) {rel} prices an enthalpy on the INLET's "
+                            "phase rung (`H_stream_formation(..., vf_in, "
+                            "...)`) -- a T-solve on a surface its outlet is "
+                            "not published on (C77)")
+        for p in sorted((ROOT / "src").rglob("*")):
+            if p.suffix in (".cpp", ".H") and re.search(
+                    r"\bannounceEnergyRungMismatch\b",
+                    strip_comments(p.read_text(errors="replace"))):
+                fail.append(f"(n5) {p.relative_to(ROOT)} still carries "
+                            "`announceEnergyRungMismatch` -- the gap it "
+                            "announced is closed (C77)")
+        # (fixture, case, want "adiabatic" or "jacketed")
+        for tag, src_case, kind in (
+                ("cstr04_1atm", ADIABATIC_SRC, "adiabatic"),
+                ("pfr04_1atm", ADIABATIC_PFR_SRC, "adiabatic"),
+                ("cstr05_1atm", MULTIPLICITY_SRC, "adiabatic"),
+                ("cstr06_1atm", JACKETED_SRC, "jacketed")):
+            ad = tmp / tag
+            shutil.copytree(ROOT / src_case, ad,
+                            ignore=shutil.ignore_patterns("converged", "reports",
+                                                          "design", "log.*"))
+            for f in (ad / "0").iterdir():
+                if f.is_file():
+                    f.write_text(re.sub(r"(?m)^P\s+[^;]*;", "P               "
+                                        "101325 Pa;", f.read_text()))
+            rc, alog = run(ad)
+            if rc != 0:
+                fail.append(f"(n5) the 1 atm copy of {src_case} did not run "
+                            f"(rc={rc})")
+                continue
             m = re.search(r'"reactorOut":\s*\{[^}]*"vf":\s*([-0-9.eE+]+)', alog)
-            if not m or abs(float(m.group(1)) - 1.0) > 1e-9:
-                fail.append("(n5) cstr04 at 1 atm published its 454 K product "
-                            f"at vf = {m.group(1) if m else None}, expected 1 "
-                            "(its own equilibrium)")
-            n_json = len(re.findall(
-                r'"locus":\s*"cstr \'reactor\' outlet",\s*"message":\s*"the '
-                r'adiabatic energy balance that set T_out', alog))
-            if n_json != 1:
-                fail.append("(n5) the adiabatic balance's rung mismatch "
-                            f"reached the result JSON {n_json} time(s), "
-                            "expected once -- an adiabatic reactor carrying a "
-                            "heating duty must say why")
-            if not re.search(r"\[cstr\] cstr 'reactor' outlet: the adiabatic "
-                             r"energy balance that set T_out", alog):
-                fail.append("(n5) the adiabatic balance's rung mismatch was "
-                            "not said at its site (stderr)")
+            vf = float(m.group(1)) if m else None
+            if vf is None or not (1e-6 < vf < 1.0 - 1e-6):
+                fail.append(f"(n5) {tag} published its product at vf = {vf}, "
+                            "expected a two-phase outlet: at 1 atm the "
+                            "product boils, and a balance that sees the "
+                            "latent heat stops inside the boiling range")
+            kq = re.search(r'"reactor":\s*\{[^}]*"Q_kW":\s*([-0-9.eE+]+)', alog)
+            kt = re.search(r'"reactor":\s*\{[^}]*"T_out":\s*([-0-9.eE+]+)', alog)
+            q = float(kq.group(1)) if kq else None
+            if kind == "adiabatic":
+                want = 0.0
+            else:
+                ua = re.search(r"(?m)^\s*UA\s+([-0-9.eE+]+)\s*;",
+                               (ad / "system" / "flowsheetDict").read_text())
+                tc = re.search(r"(?m)^\s*T_coolant\s+([-0-9.eE+]+)\s*;",
+                               (ad / "system" / "flowsheetDict").read_text())
+                want = (float(ua.group(1)) * (float(tc.group(1))
+                        - float(kt.group(1))) / 1000.0
+                        if ua and tc and kt else None)
+            if q is None or want is None or abs(q - want) > 1e-6:
+                fail.append(f"(n5) {tag} published Q_kW = {q}, expected "
+                            f"{want} ({'adiabatic: zero' if kind == 'adiabatic' else 'the jacket: UA (T_coolant - T_out)'}"
+                            ") to 1e-6 kW -- its energy balance is not solved "
+                            "on the surface its outlet is published on")
+            if tag == "cstr05_1atm":
+                ks = re.search(r'"reactor":\s*\{[^}]*"steadyStates":\s*'
+                               r'([-0-9.eE+]+)', alog)
+                if not ks or float(ks.group(1)) != 3.0:
+                    fail.append("(n5) cstr05 at 1 atm found "
+                                f"{ks.group(1) if ks else None} steady "
+                                "state(s), expected 3 -- the scan's ceiling "
+                                "must clear the boiling plateau, or the "
+                                "ignited branch falls outside the scan")
+            if re.search(r"energy balance that set T_out|found no outlet "
+                         r"temperature at which", alog):
+                fail.append(f"(n5) {tag} announced a rung mismatch or an "
+                            "unmatched enthalpy -- a mixture's balance closes "
+                            "on the published surface")
+            m = re.search(r'"globalEnergyBoundary":\s*\{[^}]*"residual_kW":'
+                          r'\s*([-0-9.eE+]+)', alog)
+            if not m or abs(float(m.group(1))) > 1e-6:
+                fail.append(f"(n5) {tag}'s first law does not close "
+                            f"(residual {m.group(1) if m else None} kW)")
 
         # (e) the negative control: a real pressure-drop duty survives
         ctrl = tmp / "flash13"
@@ -1330,9 +1446,13 @@ def main() -> int:
           "H2 + O2 leaves as a gas from all three and from both kinetic "
           "paths, H2 + O2 burnt to water leaves as a liquid, a `phase gas;` "
           "inlet is not carried to its liquid product and the departure is "
-          "said once, first law closed on both fixtures; an ADIABATIC cstr "
-          "whose liquid-rung balance lands its product above the dew point "
-          "publishes the vapour and SAYS the rung mismatch once.  NOT "
+          "said once, first law closed on both fixtures.  THE CSTR'S AND THE "
+          "PFR'S ENERGY SOLVES ARE ON THE PUBLISHED SURFACE (C77): an "
+          "adiabatic cstr and pfr whose product boils at 1 atm publish a "
+          "two-phase outlet and |Q_kW| <= 1e-6 kW, a jacketed cstr exactly "
+          "its jacket's UA (T_c - T_out), the 1 atm multiplicity case keeps "
+          "its three steady states, with no inlet-rung enthalpy left in "
+          "either source.  NOT "
           "CHECKED: whether a NON-zero duty is right (only the identity has a "
           "closed form); the multi-condition cases' duties, which ride their "
           "goldens; whether the 1e-3 incipient band is the right number (it "
@@ -1341,10 +1461,9 @@ def main() -> int:
           "only); any vapourless package, which the test "
           "skips by hasEos(); and the IF97 saturation curve OUTSIDE its "
           "window (273.15 .. 647.096 K), where the record answers announced "
-          "-- no output arm reaches it; and whether a non-isothermal cstr's "
-          "or pfr's T_out is right when its outlet changes phase (those "
-          "balances are still solved on the feed's phase rung: the mismatch "
-          "is checked to be SAID, never to be closed).")
+          "-- no output arm reaches it; a pfr's heatExchange march by output "
+          "(source only); and a PURE product on its own saturation jump, "
+          "which the reactors announce and no fixture reaches.")
     return 0
 
 
