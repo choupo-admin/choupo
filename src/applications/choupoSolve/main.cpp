@@ -74,6 +74,7 @@ Description
 #include "thermo/utility/UtilityCatalogue.H"
 #include "outerDriver/OuterDriver.H"
 #include "io/DesignSheetWriter.H"
+#include "postProcessing/layout/PlantLayout.H"
 #include "io/InternalStateIO.H"
 #include "postProcessing/PostProcessor.H"
 #include "reporting/Report.H"
@@ -482,6 +483,9 @@ try
         "                    relative state path) and stop -- where each\n"
         "                    stream's 0//converged/ file lives, per the ONE\n"
         "                    ownership rule; works on an incomplete 0/\n"
+        "  --layout-draft    solve, then write a DRAFT system/layoutDict from the\n"
+        "                    sized items (flow order, one area per sector); never\n"
+        "                    overwrites without --force (bin/choupo-layout --draft)\n"
         "  --version, -V     print the banner (which carries version and commit)\n"
         "  --help, -h        this text\n";
 
@@ -490,6 +494,7 @@ try
 
     bool init0Mode = false, init0Force = false, lintMode = false;
     bool manifestMode = false;
+    bool layoutDraftMode = false;
     std::string caseDir = ".";
     for (int a = 1; a < argc; ++a)
     {
@@ -498,6 +503,7 @@ try
         else if (arg == "--force")                    init0Force = true;
         else if (arg == "-lint"  || arg == "--lint")  lintMode = true;
         else if (arg == "--manifest")                 manifestMode = true;
+        else if (arg == "--layout-draft")             layoutDraftMode = true;
         //  A FLAG IS NOT A FILENAME.  The catch-all this replaces turned any
         //  unrecognised argument into a case directory, so `--lnt myCase`
         //  ran the SOLVE with the lint silently dropped, at exit 0.
@@ -724,6 +730,51 @@ try
     DictPtr postDict;
     if (fs::exists("system/postDict"))
         postDict = Dictionary::fromFile("system/postDict");
+
+    //  THE PLANT LAYOUT (2026-10-17, DEV.md 4c C75).  Optional; absent, no
+    //  line of any output changes.  Read here, checked after the sizing pass
+    //  (the footprints ARE the sized items' own dimensions).  A DRAFT run
+    //  refuses BEFORE solving when a layout exists and --force was not given:
+    //  a student's layout is never overwritten by a tool's proposal.
+    DictPtr layoutDict;
+    if (fs::exists("system/layoutDict"))
+        layoutDict = Dictionary::fromFile("system/layoutDict");
+    if (layoutDraftMode && layoutDict && !init0Force)
+        throw std::runtime_error(
+            "--layout-draft: system/layoutDict already exists and is never"
+            " overwritten without --force (which carries its separation"
+            " tables, wind and hazard declarations into the new draft)");
+
+    //  Check the layout against one finished pass (after its sizing), or --
+    //  in draft mode -- write the draft first and then check THAT, so the
+    //  run proves the proposal parses and holds.
+    auto applyLayout = [&](SimulationResult& res) {
+        if (layoutDraftMode)
+        {
+            //  Nothing sized, nothing to place: refused BEFORE a file is
+            //  written, so a failed sizing pass never leaves an empty draft.
+            if (res.sizings.empty())
+                throw std::runtime_error(
+                    "--layout-draft: this run sized nothing, and a layout places"
+                    " SIZED items -- declare a sizing pass (`system/postDict`,"
+                    " `sizing { units ( ... ); }`), or read the sizing table"
+                    " above for the units that FAILED to size");
+            const std::string txt =
+                plantLayout::draft(res, init0Force ? layoutDict.get() : nullptr);
+            std::ofstream f("system/layoutDict");
+            f << txt;
+            f.close();
+            std::cout << "\n[layout] wrote a DRAFT system/layoutDict -- a"
+                         " proposal the student must own: every position in it"
+                         " is the tool's, and no size, distance, wind or zone"
+                         " was invented\n";
+            layoutDict = Dictionary::fromFile("system/layoutDict");
+        }
+        if (!layoutDict) return;
+        res.layout = plantLayout::evaluate(*layoutDict, res, verbosity);
+        dictAudit::report(dictAudit::auditTree(*layoutDict, "layoutDict"),
+                          verbosity);
+    };
 
     // controlDict `reports {... }` block: chemical-engineering
     // report objects (streamTable, massBalance, energyBalance,...) that
@@ -1225,6 +1276,12 @@ try
         if (driver->hasFinalResult())
         {
             SimulationResult& r = representative;  r = driver->finalResult();
+            applyLayout(r);
+            if (r.layout.present() && driver->emitsRepresentativeJson())
+                std::cout << "[layout] checked on the representative pass; the"
+                             " `" << driver->type() << "` driver emitted that"
+                             " pass's result block before the check, so the"
+                             " layout block is NOT in it\n";
             runReports(r);
             if (!validate0(r)) finalRc = 1;
             writeConverged(r);
@@ -1354,6 +1411,7 @@ try
             auto chain = PostProcessor::buildChain(postDict);
             for (auto& pp : chain) pp->run(result);
         }
+        applyLayout(result);
 
         //  THE POST-PROCESSING BLOCKS GET THE SAME AUDIT the units get.
         //  `dictAudit` was wired at exactly one site -- each unit's

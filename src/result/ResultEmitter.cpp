@@ -1235,6 +1235,107 @@ void emitResultJson(std::ostream& os, const SimulationResult& r)
         os << "\n    ]\n  }";
     }
 
+    // ---- layout: the plot plan the case declared, as the engine read it ---
+    //  (2026-10-17, DEV.md 4c C75).  ONLY when the case declares
+    //  `system/layoutDict`, so every other case's JSON is byte-for-byte what
+    //  it was.  EVERY LINE THAT CARRIES A NUMBER CARRIES AN `"id"`, one record
+    //  per line: the golden `layout` kind resolves a row by that id (item id,
+    //  `<kind>:<a>:<b>` for a finding, `summary`) without walking braces.
+    //  The GUI draws this block and computes no footprint and no position.
+    if (r.layout.present())
+    {
+        const auto& L = r.layout;
+        os << ",\n  \"layout\": {\n    \"items\": [";
+        for (std::size_t i = 0; i < L.items.size(); ++i)
+        {
+            const auto& it = L.items[i];
+            os << (i ? ",\n" : "\n") << "      { \"id\": " << esc(it.id)
+               << ", \"nonProcess\": " << (it.nonProcess ? "true" : "false")
+               << ", \"kind\": " << esc(it.kind)
+               << ", \"sector\": " << esc(it.sector)
+               << ", \"shape\": " << esc(it.shape)
+               << ", \"orientation\": " << esc(it.orientation)
+               << ", \"footprintFrom\": " << esc(it.footprintFrom)
+               << ", \"x\": " << num(it.x) << ", \"y\": " << num(it.y)
+               << ", \"z\": " << num(it.z)
+               << ", \"dx\": " << num(it.dx) << ", \"dy\": " << num(it.dy)
+               << ", \"dz\": " << num(it.dz);
+            if (!it.ignition.empty())
+                os << ", \"ignition\": " << esc(it.ignition);
+            if (it.release)
+            {
+                os << ", \"release\": { \"source\": " << esc(it.releaseSource)
+                   << ", \"reason\": " << esc(it.releaseReason)
+                   << ", \"zones\": [";
+                for (std::size_t z = 0; z < it.zones.size(); ++z)
+                    os << (z ? ", " : " ") << "{ \"zone\": " << it.zones[z].zone
+                       << ", \"radius\": " << num(it.zones[z].radius)
+                       << ", \"height\": " << num(it.zones[z].height) << " }";
+                os << " ] }";
+            }
+            os << " }";
+        }
+        os << "\n    ],\n    \"areas\": [";
+        for (std::size_t i = 0; i < L.areas.size(); ++i)
+        {
+            const auto& a = L.areas[i];
+            os << (i ? ",\n" : "\n") << "      { \"id\": " << esc("area:" + a.sector)
+               << ", \"sector\": " << esc(a.sector)
+               << ", \"xMin\": " << num(a.xMin) << ", \"xMax\": " << num(a.xMax)
+               << ", \"yMin\": " << num(a.yMin) << ", \"yMax\": " << num(a.yMax)
+               << " }";
+        }
+        os << (L.areas.empty() ? "]" : "\n    ]") << ",\n    \"separation\": [";
+        for (std::size_t i = 0; i < L.separation.size(); ++i)
+        {
+            const auto& t = L.separation[i];
+            os << (i ? ",\n" : "\n") << "      { \"source\": " << esc(t.source)
+               << ", \"reason\": " << esc(t.reason)
+               << ", \"measure\": " << esc(t.measure) << ", \"rules\": [";
+            for (std::size_t k = 0; k < t.rules.size(); ++k)
+                os << (k ? ", " : " ") << "{ \"a\": " << esc(t.rules[k].a)
+                   << ", \"b\": " << esc(t.rules[k].b)
+                   << ", \"distance\": " << num(t.rules[k].distance) << " }";
+            os << " ] }";
+        }
+        os << (L.separation.empty() ? "]" : "\n    ]");
+        if (L.wind.present)
+        {
+            const auto& w = L.wind;
+            os << ",\n    \"wind\": { \"id\": \"wind\", \"angleUnit\": \"deg\""
+               << ", \"from\": " << num(w.fromDeg)
+               << ", \"planNorth\": " << num(w.planNorthDeg)
+               << ", \"halfAngle\": " << num(w.halfAngleDeg)
+               << ", \"reach\": " << num(w.reach)
+               << ", \"source\": " << esc(w.source)
+               << ", \"reason\": " << esc(w.reason) << " }";
+        }
+        os << ",\n    \"findings\": [";
+        for (std::size_t i = 0; i < L.findings.size(); ++i)
+        {
+            const auto& f = L.findings[i];
+            os << (i ? ",\n" : "\n") << "      { \"id\": " << esc(f.id)
+               << ", \"kind\": " << esc(f.kind)
+               << ", \"a\": " << esc(f.a) << ", \"b\": " << esc(f.b)
+               << ", \"value\": " << num(f.value) << ", \"limit\": " << num(f.limit)
+               << ", \"message\": " << esc(f.message) << " }";
+        }
+        os << (L.findings.empty() ? "]" : "\n    ]");
+        auto list = [&](const char* key, const std::vector<std::string>& v)
+        {
+            os << ",\n    \"" << key << "\": [";
+            for (std::size_t i = 0; i < v.size(); ++i)
+                os << (i ? ", " : "") << esc(v[i]);
+            os << "]";
+        };
+        list("unplaced", L.unplaced);
+        list("internal", L.internal);
+        os << ",\n    \"summary\": { \"id\": \"summary\", \"placed\": "
+           << L.items.size() << ", \"unplaced\": " << L.unplaced.size()
+           << ", \"internal\": " << L.internal.size()
+           << ", \"findings\": " << L.findings.size() << " }\n  }";
+    }
+
     os << "\n}\n";
     os << "<<<Choupo:result-end>>>\n";
 }

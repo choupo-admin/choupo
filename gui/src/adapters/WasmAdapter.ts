@@ -73,6 +73,7 @@ import type {
   ConvergenceCurve,
   Economics,
   EnergyRecord,
+  PlantLayout,
   ExperimentalDataset,
   ValidationBlock,
   ModelBoundary,
@@ -169,7 +170,7 @@ export class WasmAdapter implements SolverAdapter {
         worker.terminate();
         const { displayLog, streams, streamAliases, convergence, profiles, txy, componentMolarMass, unitSectors, equipment, kpis,
           utilityAllocation, globalEnergyBoundary, globalMassBoundary, computed, timeline, transfers, energyLedger, advisories, divergences, modelBoundaries, recycleLoops, operationResults, thermoResolution,
-          componentCoverage, experimentalDatasets, validation, economics } =
+          componentCoverage, experimentalDatasets, validation, economics, layout } =
           extractStructured(log, caseFiles);
         const result: RunResult = { status, log: displayLog, streams, convergence };
         if (streamAliases) result.streamAliases = streamAliases;
@@ -202,6 +203,7 @@ export class WasmAdapter implements SolverAdapter {
         if (experimentalDatasets && experimentalDatasets.length > 0) result.experimentalDatasets = experimentalDatasets;
         if (validation && validation.length > 0) result.validation = validation;
         if (economics) result.economics = economics;
+        if (layout) result.layout = layout;
         if (trajectoryCsv) {
           const parsed = parseTrajectoryCsv(trajectoryCsv);
           if (parsed) result.trajectory = parsed;
@@ -400,6 +402,8 @@ export function extractStructured(log: string,
   /** Discounted-cash-flow appraisal (economics postDict): headline scalars +
    *  the year-by-year DCF table. */
   economics?: Economics;
+  /** The plot plan the case declared (system/layoutDict), as checked. */
+  layout?: PlantLayout;
 } {
   const beginIdx = log.lastIndexOf(BEGIN_MARK);
   const endIdx = log.lastIndexOf(END_MARK);
@@ -638,6 +642,63 @@ export function extractStructured(log: string,
 ...(parsed.economics && parsed.economics.present !== false
       ? { economics: shapeEconomics(parsed.economics) }
     : {}),
+...(parsed.layout ? { layout: shapeLayout(parsed.layout) } : {}),
+  };
+}
+
+//  THE PLANT LAYOUT (DEV.md 4c C75), passed through as the engine wrote it.
+//  Only the TYPES are policed here: an item whose position or extents are not
+//  finite numbers is DROPPED rather than drawn at the origin, because a box at
+//  (0, 0, 0) would read as a placement the case never made.  Nothing is
+//  computed -- no footprint, no distance, no finding.
+function shapeLayout(l: NonNullable<ResultPayload["layout"]>): PlantLayout {
+  const fin = (v: unknown): v is number => typeof v === "number" && Number.isFinite(v);
+  const str = (v: unknown): string => (typeof v === "string" ? v : "");
+  const arr = <T,>(v: T[] | undefined): T[] => (Array.isArray(v) ? v : []);
+  const items = arr(l.items)
+    .filter((i) => typeof i.id === "string"
+      && [i.x, i.y, i.z, i.dx, i.dy, i.dz].every(fin))
+    .map((i) => ({
+      id: str(i.id), nonProcess: !!i.nonProcess, kind: str(i.kind),
+      sector: str(i.sector),
+      shape: (i.shape === "box" ? "box" : "cylinder") as "box" | "cylinder",
+      orientation: (i.orientation === "alongX" || i.orientation === "alongY"
+        ? i.orientation : "vertical") as "vertical" | "alongX" | "alongY",
+      footprintFrom: (i.footprintFrom === "declared" ? "declared" : "published") as
+        "declared" | "published",
+      x: i.x as number, y: i.y as number, z: i.z as number,
+      dx: i.dx as number, dy: i.dy as number, dz: i.dz as number,
+      ...(typeof i.ignition === "string" && i.ignition ? { ignition: i.ignition } : {}),
+      ...(i.release ? { release: {
+        source: str(i.release.source), reason: str(i.release.reason),
+        zones: arr(i.release.zones).filter((z) => fin(z.radius) && fin(z.height))
+          .map((z) => ({ zone: fin(z.zone) ? z.zone : 2,
+                         radius: z.radius as number, height: z.height as number })),
+      } } : {}),
+    }));
+  const w = l.wind;
+  return {
+    items,
+    areas: arr(l.areas).filter((a) => [a.xMin, a.xMax, a.yMin, a.yMax].every(fin))
+      .map((a) => ({ sector: str(a.sector), xMin: a.xMin as number, xMax: a.xMax as number,
+                     yMin: a.yMin as number, yMax: a.yMax as number })),
+    separation: arr(l.separation).map((t) => ({
+      source: str(t.source), reason: str(t.reason), measure: str(t.measure),
+      rules: arr(t.rules).filter((r) => fin(r.distance))
+        .map((r) => ({ a: str(r.a), b: str(r.b), distance: r.distance as number })),
+    })),
+    ...(w && [w.from, w.planNorth, w.halfAngle, w.reach].every(fin)
+      ? { wind: { from: w.from as number, planNorth: w.planNorth as number,
+                  halfAngle: w.halfAngle as number, reach: w.reach as number,
+                  source: str(w.source), reason: str(w.reason) } }
+      : {}),
+    findings: arr(l.findings).map((f) => ({
+      id: str(f.id), kind: str(f.kind), a: str(f.a), b: str(f.b),
+      value: fin(f.value) ? f.value : NaN, limit: fin(f.limit) ? f.limit : NaN,
+      message: str(f.message),
+    })),
+    unplaced: arr(l.unplaced).filter((u): u is string => typeof u === "string"),
+    internal: arr(l.internal).filter((u): u is string => typeof u === "string"),
   };
 }
 
@@ -802,6 +863,23 @@ interface ResultPayload {
       nMeas?: number; nUsed?: number; nOutOfRange?: number; nNearZeroSkipped?: number;
       nNonFinite?: number; status?: string }[];
   }[];
+  layout?: {
+    items?: { id?: string; nonProcess?: boolean; kind?: string; sector?: string;
+      shape?: string; orientation?: string; footprintFrom?: string;
+      x?: number; y?: number; z?: number; dx?: number; dy?: number; dz?: number;
+      ignition?: string;
+      release?: { source?: string; reason?: string;
+        zones?: { zone?: number; radius?: number; height?: number }[] } }[];
+    areas?: { sector?: string; xMin?: number; xMax?: number; yMin?: number; yMax?: number }[];
+    separation?: { source?: string; reason?: string; measure?: string;
+      rules?: { a?: string; b?: string; distance?: number }[] }[];
+    wind?: { from?: number; planNorth?: number; halfAngle?: number; reach?: number;
+      source?: string; reason?: string };
+    findings?: { id?: string; kind?: string; a?: string; b?: string;
+      value?: number; limit?: number; message?: string }[];
+    unplaced?: string[];
+    internal?: string[];
+  };
   economics?: {
     present?: boolean;
     currency?: string;

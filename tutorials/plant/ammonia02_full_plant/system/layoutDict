@@ -1,0 +1,176 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+  ammonia02_full_plant -- the PLOT PLAN of the synthesis loop (DEV.md 4c C75)
+
+  HOW THIS FILE WAS MADE.  `bin/choupo-layout --draft` wrote a proposal: the
+  three vessels (the only items whose sizers publish a diameter and a height)
+  in flow order on one line, and the four other items listed for the author
+  to place.  It was then moved by hand into the arrangement below: the two
+  compressors in a compressor row to the south-west, the converter with its
+  feed-effluent exchanger, the water cooler with the separator, the let-down
+  drum, and a control room as a NON-PROCESS item.
+
+  WHAT IS THE ENGINE'S AND WHAT IS OURS.  The three vessels' diameters and
+  heights are their sizers' own (design/<unit>/vessel); every position below,
+  every declared footprint, every separation distance, the wind and every
+  zone extent are AUTHOR-SET ASSUMPTIONS FOR THIS EXERCISE -- round numbers
+  chosen to make the check visible, not values taken from any spacing or
+  hazardous-area standard.  Choupo ships no such table: the published ones
+  (CCPS, GAP 2.5.2, Mecklenburgh; IEC 60079-10-1, EI 15, API RP 505) grant no
+  redistribution, and inventing a citation for a round number would turn
+  "unsourced" into "falsely sourced".
+
+  ONE PAIR IS DELIBERATELY TOO CLOSE.  The let-down drum stands 1.9 m from
+  the separator, edge to edge, against the 4 m this file declares between
+  two vessels: the run ANNOUNCES it (stderr, the caveat block, the result
+  JSON) rather than refusing, because a short distance is a layout a student
+  must see and defend, while an overlap is not a layout at all.  Move
+  `letdown` to x 62 m and the announcement goes away.
+
+  Grammar and checks: docs/design/a-plant-layout-is-declared-and-checked.md
+\*---------------------------------------------------------------------------*/
+
+items
+(
+    //  The compressor row, south-west of the loop.  A compressor publishes
+    //  its power and ratio, not a size, so its plan box is DECLARED.
+    {
+        item        "makeupComp";
+        x           6 m;
+        y           -8 m;
+        z           0 m;
+        orientation alongX;
+        footprint   { length 8 m; width 4 m; height 4 m; }   // author-set
+        release
+        {
+            source  "author-set assumption for this exercise; not taken from any hazardous-area standard";
+            reason  "hydrogen-rich syngas at 25-200 bar: shaft seals and flanges are secondary-grade release points";
+            zones   ( { zone 2; radius 7.5 m; height 6 m; } );
+        }
+    }
+    {
+        item        "recycleComp";
+        x           18 m;
+        y           -8 m;
+        z           0 m;
+        orientation alongX;
+        footprint   { length 6 m; width 3.5 m; height 3.5 m; }   // author-set
+        release
+        {
+            source  "author-set assumption for this exercise; not taken from any hazardous-area standard";
+            reason  "recycle gas (H2, N2, NH3) at loop pressure across the compressor seals";
+            zones   ( { zone 2; radius 6 m; height 5 m; } );
+        }
+    }
+
+    //  The converter and its feed-effluent exchanger.  The exchanger is
+    //  RATED (an area at a declared U), so it publishes no shell diameter:
+    //  its box is declared.
+    {
+        item        "converter";        // D and H from its own sizing
+        x           40 m;
+        y           -6 m;
+        z           0 m;
+        orientation vertical;
+    }
+    {
+        item        "FEHE";
+        x           40 m;
+        y           6 m;
+        z           0 m;
+        orientation alongX;
+        footprint   { length 12 m; width 2 m; height 2.5 m; }   // author-set
+    }
+
+    //  Cooling, separation and let-down.
+    {
+        item        "waterCooler";
+        x           56 m;
+        y           6 m;
+        z           0 m;
+        orientation alongX;
+        footprint   { length 12 m; width 2 m; height 2.5 m; }   // author-set
+    }
+    {
+        item        "separator";        // D and H from its own sizing
+        x           56 m;
+        y           -6 m;
+        z           0 m;
+        orientation vertical;
+        release
+        {
+            source  "author-set assumption for this exercise; not taken from any hazardous-area standard";
+            reason  "liquid ammonia and dissolved hydrogen at 200 bar: level and drain connections";
+            zones   ( { zone 2; radius 5 m; height 10 m; } );
+        }
+    }
+    {
+        item        "letdown";          // D and H from its own sizing
+        x           59.5 m;             // DELIBERATELY too close (see the header)
+        y           -6 m;
+        z           0 m;
+        orientation vertical;
+        release
+        {
+            source  "author-set assumption for this exercise; not taken from any hazardous-area standard";
+            reason  "flash gas (H2, N2, NH3) released at the let-down pressure";
+            zones   ( { zone 1; radius 1.5 m; height 3 m; } { zone 2; radius 4.5 m; height 5 m; } );
+        }
+    }
+
+    //  The control room is not equipment the flowsheet sizes, so it is a
+    //  NON-PROCESS item: its kind and its box are declared.  It is the
+    //  ignition source of this plot plan.
+    {
+        nonProcess  "controlRoom";
+        kind        building;
+        x           -30 m;
+        y           -40 m;
+        z           0 m;
+        orientation alongX;
+        footprint   { length 15 m; width 10 m; height 4 m; }   // author-set
+        ignition    "non-hazardous-area electrical equipment and people: treated as an ignition source";
+    }
+);
+
+separation
+(
+    {
+        source  "author-set assumption for this exercise; not taken from any published spacing table";
+        reason  "round numbers chosen so that the check is visible on this plant; a real project takes its distances from the standard its client specifies, with that standard's permission";
+        measure edgeToEdge;
+        distances
+        (
+            { between ( vessel vessel );           distance 4 m;  }
+            { between ( compressor vessel );       distance 9 m;  }
+            { between ( compressor compressor );   distance 4 m;  }
+            { between ( shellTubeHX vessel );      distance 3 m;  }
+            { between ( building compressor );     distance 30 m; }
+            { between ( building vessel );         distance 30 m; }
+            { between ( building shellTubeHX );    distance 30 m; }
+        );
+    }
+);
+
+//  The prevailing wind blows FROM the south-west (true bearing 225 deg); the
+//  plot plan's +y axis points to true north.  An ignition source within
+//  +/- 30 deg of the DOWNWIND direction and within 60 m of a release source
+//  is announced.  The control room stands upwind, so nothing is.
+wind
+{
+    from        225 deg;
+    planNorth   0 deg;
+    halfAngle   30 deg;
+    reach       60 m;
+    source      "author-set assumption for this exercise; not a measured wind rose";
+    reason      "a prevailing direction lets the plot plan be read for which way a release drifts";
+}
+
+// ************************************************************************* //

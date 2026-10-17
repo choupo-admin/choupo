@@ -762,6 +762,36 @@ get_ledger() {
         }'
 }
 
+# --- pull one field out of the top-level `"layout": {...}` block (2026-10-17,
+#     DEV.md 4c C75): the plot plan the case declared, as the engine read it.
+#     EVERY RECORD IN THE BLOCK IS ONE LINE CARRYING AN `"id"` -- an item id,
+#     `<kind>:<a>:<b>` for a finding, `summary` -- so a row resolves on that
+#     line and needs no brace walk.  A WORD key (shape, orientation,
+#     footprintFrom) is compared with `exact`.  The `"x"` pattern is matched
+#     with its opening quote, so `"dx"` cannot answer it.
+get_layout() {
+    local out="$1" id="$2" key="$3"
+    printf '%s\n' "$out" | awk -v id="$id" -v k="$key" '
+        /^  "layout": \{/ { inblk = 1; next }
+        inblk && /^  \}/  { inblk = 0 }
+        !inblk { next }
+        index($0, "\"id\": \"" id "\",") == 0 { next }
+        {
+            line = $0
+            #  Cut the hazard sub-object so a zone radius cannot answer a key.
+            sub(/"release": \{.*/, "", line)
+            if (match(line, "\"" k "\": \"[^\"]*\"")) {
+                s = substr(line, RSTART, RLENGTH); sub(/^"[^"]*": "/, "", s); sub(/"$/, "", s)
+                print s; exit
+            }
+            if (match(line, "\"" k "\": *-?[0-9][0-9.eE+-]*")) {
+                s = substr(line, RSTART, RLENGTH); sub(/^"[^"]*": */, "", s)
+                print s; exit
+            }
+            exit
+        }'
+}
+
 get_any() {
     local out="$1" kind="$2" name="$3" key="$4"
     #  The CLAIM (published vs self-recorded) is a different column and does
@@ -775,6 +805,7 @@ get_any() {
     elif [ "$kind" = equipment ]; then get_equipment "$out" "$name" "$key"
     elif [ "$kind" = boundary ]; then get_boundary "$out" "$name" "$key"
     elif [ "$kind" = ledger ]; then get_ledger  "$out" "$name" "$key"
+    elif [ "$kind" = layout ]; then get_layout  "$out" "$name" "$key"
     else get_value "$out" "$name" "$key"; fi
 }
 
@@ -1382,6 +1413,41 @@ auto_generate() {
                         }
                 }
             }'
+        #  THE PLANT LAYOUT (2026-10-17, DEV.md 4c C75), when the case
+        #  declares one.  What is pinned: per placed item its position and
+        #  EXTENTS (the extents of a sized item are its sizer's own D and
+        #  length, read through the footprint rule, so a sizer or a rule that
+        #  moves them moves a row) and its shape / orientation /
+        #  footprintFrom as WORDS; per finding the measured distance and the
+        #  declared limit; and the summary COUNTS, so a finding that appears
+        #  or disappears fails even before its own row exists.  NOT pinned:
+        #  the source/reason sentences and the zone and wind declarations,
+        #  which are the case's own words echoed -- what they DECIDE is
+        #  pinned through the findings and the count.
+        printf '%s\n' "$out" | awk -v tol="$reltol" '
+            /^  "layout": \{/ { inblk = 1; next }
+            inblk && /^  \}/  { inblk = 0 }
+            !inblk { next }
+            !match($0, /"id": "[^"]*"/) { next }
+            {
+                id = substr($0, RSTART+7, RLENGTH-8)
+                line = $0
+                sub(/"release": \{.*/, "", line)
+                sub(/"message": .*/, "", line)
+                if (id == "wind" || id ~ /^area:/) next
+                nw = split("shape orientation footprintFrom", W, " ")
+                for (i = 1; i <= nw; i++)
+                    if (match(line, "\"" W[i] "\": \"[^\"]*\"")) {
+                        s = substr(line, RSTART, RLENGTH); sub(/^"[^"]*": "/, "", s); sub(/"$/, "", s)
+                        printf "layout %-20s %-16s %-18s %s\n", id, W[i], s, "exact"
+                    }
+                nn = split("x y z dx dy dz value limit placed unplaced internal findings", N, " ")
+                for (i = 1; i <= nn; i++)
+                    if (match(line, "\"" N[i] "\": *-?[0-9][0-9.eE+-]*")) {
+                        s = substr(line, RSTART, RLENGTH); sub(/^"[^"]*": */, "", s)
+                        printf "layout %-20s %-16s %-18s %s\n", id, N[i], s, tol
+                    }
+            }'
         #  the plant-boundary first law (2026-09-05).  The three TERMS are
         #  pinned at the relative tolerance; the RESIDUAL is their difference
         #  and is pinned only when it is a number and not round-off -- a
@@ -1740,7 +1806,7 @@ if [ -n "$RECORD" ]; then
                     #  is the second home for the list of kinds, and the check
                     #  loop below has no such list at all, so the two cannot
                     #  be kept honest by reading one of them.
-                    case "$gkind" in kpi|stream|diag|aad|closure|utility|verdict|equipment|boundary|ledger) ;; *) continue;; esac
+                    case "$gkind" in kpi|stream|diag|aad|closure|utility|verdict|equipment|boundary|ledger|layout) ;; *) continue;; esac
                     if ! awk -v k="$gkind" -v n="$gname" -v y="$gkey" \
                          '$1==k && $2==n && $3==y {found=1} END{exit !found}' "$exp"; then
                         printf '%-7s %-22s %-16s %-16s %s\n' \
@@ -5883,6 +5949,23 @@ if [ "$#" -eq 0 ]; then
         fail=$((fail+1))
     fi
     rm -f /tmp/econsens.$$
+
+    # Plant-layout gate (2026-10-17, DEV.md 4c C75): system/layoutDict is
+    # DECLARED, CHECKED and DRAFTED -- the witness's vessel extents equal
+    # their own design sheets, its separation shortfall recomputes and
+    # reaches stderr, the caveat block and the JSON; eleven refusals fire
+    # through the real reader; the zone, downwind, dead-rule and outside-area
+    # announcements recompute; the draft tool never overwrites without
+    # --force and its proposal checks clean; an absent layout is silent.
+    if "$ROOT/bin/curate/check_plant_layout.py" > /tmp/plantlayout.$$ 2>&1; then
+        printf "PASS  %-40s  (%s)\n" "plant-layout-gate" "$(gate_claim check_plant_layout /tmp/plantlayout.$$)"
+        pass=$((pass+1))
+    else
+        printf "FAIL  %-40s  (run bin/curate/check_plant_layout.py)\n" "plant-layout-gate"
+        cat /tmp/plantlayout.$$
+        fail=$((fail+1))
+    fi
+    rm -f /tmp/plantlayout.$$
 
     # Estimate-class gate (2026-09-25): the AACE 18R-97 classification had TWO
     # homes and they disagreed -- a hand-written table in docs/design-

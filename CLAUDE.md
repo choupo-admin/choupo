@@ -218,7 +218,8 @@ case/
 │   │                         block of time-triggered events for choupoBatch)
 │   ├── solverDict          per-unit-op solver options          [optional]
 │   ├── outerDict           outer driver (sweep / optim / PE)   [optional]
-│   └── postDict            post-processing chain (sizing, cost)[optional]
+│   ├── postDict            post-processing chain (sizing, cost)[optional]
+│   └── layoutDict          plot plan of the sized items (C75)  [optional]
 ├── constant/
 │   ├── thermoPhysPropDict  the thermophysical system (v2 grammar)
 │   └── reactions           named-reaction library             [optional]
@@ -2126,6 +2127,23 @@ diameter and 167 bar).  NAMED, not fixed: the coolers' shells are counted
 twice.  Gates: `check_cooled_pfr` · `check_converter_shell` ·
 `check_pfr_ergun`.  Record:
 [`docs/design/a-converter-is-one-shell.md`](docs/design/a-converter-is-one-shell.md).
+
+**A PLANT LAYOUT IS DECLARED, CHECKED AND DRAFTED (2026-10-17, DEV.md 4c
+C75 slice 1, on stated defaults).**  `system/layoutDict` places the SIZED
+items (identity `EquipmentSizing::itemId()`) on a plot plan; the footprint is
+the item's OWN published diameter-and-length pair or a box the case declares
+-- never invented -- and every separation, wind and hazardous-area zone is the
+CASE's, with `source`/`reason` (no spacing or zoning table is shipped: the
+published ones are no-grant).  Rule: **an overlap is not a layout and
+REFUSES; a short distance IS a layout the student must defend and is
+ANNOUNCED** (stderr + caveat block + JSON), as is an ignition source in a
+zone or downwind of a release.  ONE home for the footprint rule
+(`postProcessing/layout/PlantLayout`); `bin/choupo-layout --draft` wraps
+`choupoSolve --layout-draft`, never overwrites without `--force`, and checks
+its own draft.  Golden kind `layout`.  The GUI draws the block in 3D
+(three.js, lazy-loaded).  NOT done: pipe lengths (next slice), structures.
+Gate: `check_plant_layout`.  Record:
+[`docs/design/a-plant-layout-is-declared-and-checked.md`](docs/design/a-plant-layout-is-declared-and-checked.md).
 
 **AN ECONOMIC SENSITIVITY IS THE BASE APPRAISAL PRICED AGAIN, AND NOTHING
 ELSE (2026-10-12, DEV.md 4c C68, on a stated default).**  An opt-in
