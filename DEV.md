@@ -924,7 +924,17 @@ accepts today, and that is a policy call.
 > never overwriting without --force, the choupo-init0 posture); the GUI's
 > 3D view drawing the design/ geometry at the declared positions.  Slice 2
 > (EduTool lesson) waits on Vítor's yes to its outline.  Status: slice 1
-> dispatched 2026-10-17.
+> dispatched 2026-10-17.  LESSON OUTLINE APPROVED the same day ("Aprovo,
+> acrescenta o vento dominante e as zonas ATEX"): (1) why layout matters
+> (safety/domino, pipe cost, operation/maintenance access); (2) separation
+> distances, what they are and why Choupo ships no table; (3) guided
+> exercise from the draft; (4) the trade-offs; (5) what the model does not
+> do; PLUS prevailing wind (ignition sources upwind of release sources) and
+> ATEX hazardous-area zones (declared zone 0/1/2 envelopes per release
+> source, ignition sources outside them; no IEC 60079-10-1 / EI 15 / API RP
+> 505 extent table transcribed -- the case declares its own).  Wind and
+> zones were folded into slice 1's grammar and check; the lesson is slice 2,
+> after slice 1 merges.
 
 > **C73 + C74, AND TWO DECISIONS TAKEN (Vítor, 2026-10-17: "avança como
 > achares melhor", on the three open items after C72).**  Taken: (1)
