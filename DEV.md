@@ -933,7 +933,18 @@ accepts today, and that is a policy call.
 > graphite, PTFE), packing; (6) what Choupo does with a material -- F_M in
 > the cost, the allowable stress in the wall, and what is still
 > unsourced.  No tables from no-grant sources (NACE/ASME/API data are cited,
-> never transcribed); no new tutorial case.  Status: dispatched 2026-10-17.
+> never transcribed); no new tutorial case.  MERGED 2026-10-17: EduTool
+> `materials` (Process design & economics), 23 steps over the six parts,
+> no trade names (UNS numbers), no table transcribed; bench re-runs
+> `ammoniaReactor03_equilibriumApproach` swapping one vessel's material
+> over the four records and shows the engine's wall, F_M, F_P and C_BM.
+> FINDINGS for the engine (C85): `maxT` is read and never compared
+> (aluminium on a 700 K converter, record maxT 500 K, no warning); the
+> Theory Guide mis-states the vessel rule three ways (theoryGuide.tex
+> ~23395 F_S = 4 vs S = sigma_y in VesselMechanics.cpp:30; ~23406 a 1.2
+> head factor never applied; ~23413 weight "consumed by Turton" while the
+> cost reads V_R); the record field `sigma_y` holds an ALLOWABLE stress;
+> the wall reads pressureDesign as gauge while F_P subtracts 1 bar.
 
 > **C83. AN EDUTOOL: THE RADIATION OF A POOL FIRE AND THE DISTANCE IT
 > SETS (Vítor, 2026-10-17: "Faz essa EduTool da radiação do incêndio de
