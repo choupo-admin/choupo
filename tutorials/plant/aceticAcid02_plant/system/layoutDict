@@ -1,0 +1,162 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+  layoutDict -- the PLOT PLAN of the acetic acid plant (DEV.md 4c C76).  A
+  STARTING POINT for the groups, to copy into their own case and change.
+
+  HOW THIS FILE WAS MADE.  `bin/choupo-layout --draft` wrote a proposal: the
+  three drums and the reactor (the items whose sizers publish a diameter and
+  a height) in flow order on one line, and the preheater listed for the
+  author to place.  It was then arranged by hand: the preheater, the reactor
+  and the condenser drum in flow order along one row, west to east, the
+  degasser beyond them, and a control room as a NON-PROCESS item.
+  Re-draw from scratch with `bin/choupo-layout --draft --force .`: it keeps
+  the separation table, the wind, the declared box, the control room and the
+  zones below, and lines the process items up again.
+
+  WHAT IS ON THE PLAN AND WHAT IS NOT.  Four items: the sized items of
+  system/postDict.  The LIGHTS COLUMN is not on it, because it is not sized
+  (system/postDict says why: the tray hydraulics cannot rate its trays
+  today, and no size is invented for it).  The space east of the degasser,
+  around x = 36 m, is where this file would put it -- leave room for a tower
+  of the order of 1 m across and 12 m tall when you move things.
+
+  WHAT IS THE ENGINE'S AND WHAT IS OURS.  The three vessels' diameters and
+  heights are their sizers' own (design/<unit>/vessel).  EVERYTHING ELSE IN
+  THIS FILE IS AN AUTHOR-SET ASSUMPTION FOR THE STUDENTS TO REPLACE WITH
+  THEIR OWN SITE DATA: every position, the preheater's box, every separation
+  distance, the wind, and every hazardous-area zone extent.  They are round
+  numbers chosen so that the checks are visible on this plant, not values
+  from any spacing or hazardous-area standard.  Choupo ships no such table:
+  the published ones (CCPS, GAP 2.5.2, Mecklenburgh; IEC 60079-10-1, EI 15,
+  API RP 505) grant no redistribution, and a citation invented for a round
+  number would turn "unsourced" into "falsely sourced".  A real project
+  takes its distances and zone extents from the standard its client
+  specifies, and its wind from the site's measured wind rose.
+
+  ONE FINDING IS LEFT ON PURPOSE, three times -- the groups' first task is
+  to resolve it, and to say why their resolution is safe: the control room
+  stands DOWNWIND of the reactor, the condenser drum and the degasser (the
+  wind blows from the north-west and the control room is 47-57 m to the
+  south-east of each, inside the 60 m reach).  Carbon monoxide is toxic as
+  well as flammable, so a release drifting onto the room where the
+  operators sit is the case the check exists for.  The run ANNOUNCES it
+  (console, the caveat block, the result JSON, and Reports -> "Plant layout
+  (3D)") rather than refusing: a draft whose shortfall the student must see
+  is still a layout.  Move the control room upwind and the three go away.
+
+  Grammar and checks: docs/design/a-plant-layout-is-declared-and-checked.md
+\*---------------------------------------------------------------------------*/
+
+items
+(
+    //  The preheater is sized on A = Q/(U*LMTD) and publishes an AREA, not
+    //  a shell, so its plan box is DECLARED: 58 m2 is about 120 tubes of
+    //  25.4 mm by 6.1 m, a shell of the order of 0.5 m across -- by hand,
+    //  on saddles, with its channel heads.
+    {
+        item        "preheater";
+        x           0 m;
+        y           0 m;
+        z           0 m;
+        orientation alongX;
+        footprint   { length 7 m; width 0.8 m; height 1.2 m; }   // author-set
+        release
+        {
+            source  "author-set assumption for the students to replace with their own site data; not taken from any hazardous-area standard";
+            reason  "CO and methanol vapour at 30 bar on the tube side: the channel-cover flanges";
+            zones   ( { zone 2; radius 3 m; height 3 m; } );
+        }
+    }
+    {
+        item        "reactor";          // D and H from its own sizing
+        x           10 m;
+        y           0 m;
+        z           0 m;
+        orientation vertical;
+        release
+        {
+            source  "author-set assumption for the students to replace with their own site data; not taken from any hazardous-area standard";
+            reason  "CO and acetic acid vapour at 30 bar and 460 K: the agitator seal (if the reactor is stirred), the nozzles and the instrument connections";
+            zones   ( { zone 2; radius 6 m; height 8 m; } );
+        }
+    }
+    {
+        item        "condenser";        // the knock-out drum: D and H from its own sizing
+        x           16 m;
+        y           0 m;
+        z           0 m;
+        orientation vertical;
+        release
+        {
+            source  "author-set assumption for the students to replace with their own site data; not taken from any hazardous-area standard";
+            reason  "the CO recycle gas at 30 bar: the drum's level bridle and drain";
+            zones   ( { zone 2; radius 4.5 m; height 6 m; } );
+        }
+    }
+    {
+        item        "degasser";         // D and H from its own sizing
+        x           26 m;
+        y           0 m;
+        z           0 m;
+        orientation vertical;
+        release
+        {
+            source  "author-set assumption for the students to replace with their own site data; not taken from any hazardous-area standard";
+            reason  "the off-gas (CO and acetic acid vapour) released at 1.5 bar";
+            zones   ( { zone 1; radius 1.5 m; height 3 m; } { zone 2; radius 4.5 m; height 5 m; } );
+        }
+    }
+
+    //  The control room is not equipment the flowsheet sizes: a NON-PROCESS
+    //  item, its kind and its box declared.  It stands DOWNWIND of the
+    //  reaction area on purpose (see the header).
+    {
+        nonProcess  "controlRoom";
+        kind        building;
+        x           50 m;
+        y           -40 m;
+        z           0 m;
+        orientation alongX;
+        footprint   { length 15 m; width 10 m; height 4 m; }   // author-set
+        ignition    "non-hazardous-area electrical equipment and people: treated as an ignition source";
+    }
+);
+
+separation
+(
+    {
+        source  "author-set assumption for the students to replace with their own site data; not taken from any published spacing table";
+        reason  "round numbers chosen so that the check is visible on this plant; a real project takes its distances from the standard its client specifies, with that standard's permission";
+        measure edgeToEdge;
+        distances
+        (
+            { between ( vessel vessel );           distance 4 m;  }
+            { between ( shellTubeHX vessel );      distance 3 m;  }
+            { between ( building vessel );         distance 30 m; }
+            { between ( building shellTubeHX );    distance 30 m; }
+        );
+    }
+);
+
+//  The prevailing wind blows FROM the north-west (true bearing 315 deg); the
+//  plot plan's +y axis points to true north.  An ignition source within
+//  +/- 30 deg of the DOWNWIND direction (south-east) and within 60 m of a
+//  release source is announced -- and the control room is (see the header).
+wind
+{
+    from        315 deg;
+    planNorth   0 deg;
+    halfAngle   30 deg;
+    reach       60 m;
+    source      "author-set assumption for the students to replace with their own site data; not a measured wind rose";
+    reason      "a prevailing direction lets the plot plan be read for which way a release drifts";
+}
+
+// ************************************************************************* //

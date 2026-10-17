@@ -9327,6 +9327,7 @@ A non-isothermal CSTR can have up to THREE steady states (multiplicity). The New
 
 \end{tutnarrative}
 \tutreadme{The cstr01 reactor with no heat removal. The exothermic esterification heats its own contents until the energy balance closes: the golden lands at T\_out = 454.15 K, a 104.2 K rise from the 350 K feed, with the extent ? = 0.1384 mol/s --- essentially complete conversion (?\_max is 0.1389 mol/s) because the rate constant at 454 K is 0.889 s?$^1$, 250 times its value at 350 K.}
+\tutreadme{A liquid-phase esterification at 394-454 K must be pressurised to stay liquid: at 1 atm the engine resolves this product as vapour, so the feed is declared at 15 bar, where the product holds the liquid.}
 \tutreadme{1. Two unknowns now, solved together. The extent from the design equation and T from H\_out(T, ?) = H\_in: the dict says so in its own header, and Q\_kW in the golden is 4.7e-12 --- zero by construction, not by declaration. 2. An adiabatic CSTR can have more than one answer. Before solving, the engine $\ast$scans$\ast$ the energy balance across T (the Log line [cstr] scanning the energy balance on T in [325.0, 479.5] K for steady states) and reports how many it found --- 1 here. The scan is the van Heerden diagram; cstr05\_multiplicity is the case with three. 3. T\_guess is a declared aid, and the log says where it landed from. operation \{ T\_guess 350; \} picks the branch the Newton starts on; the result line prints landed from T\_guess = 350.00 K. With one steady state it cannot matter; with three it decides the answer, which is why it is in the dict and not hidden. 4. Read the two caveats the run prints. Acetic acid's Cp polynomial is declared to 390 K and this reactor asks it at 450 K: the enthalpy path is $\ast$extrapolated$\ast$, announced, and still returned. The 454 K answer stands with that stated --- as with adiabaticFlash01, a warned number is a defensible one. 5. "Newton 882 it" is the scan's total, not the answer's. The log now says so on the line. Every trial temperature of the scan re-enters the extent Newton; the final solve took a handful.}
 \tutreadme{Set T\_guess 460; --- same single answer, from the other side. Then run cstr06\_jacketed, where a coolant stream carries the heat away and the outlet T sits between the two extremes you have now seen.}
 \begin{tutgolden}
@@ -9370,6 +9371,8 @@ The feed enters COLD (300 K), where the rate is negligible. Nothing forces this 
 
 Choupo scans, finds them all, prints them, and reports the one nearest `T\_guess`. Change T\_guess and the reactor moves to another branch -- the same equipment, the same feed, a different answer. That is not a numerical defect; it is the physics, and it is why real reactors need a start-up procedure.
 
+A liquid-phase esterification at 394-454 K must be pressurised to stay liquid: at 1 atm the engine resolves this product as vapour, so the feed is declared at 15 bar, where the product holds the liquid.
+
 \end{tutnarrative}
 \begin{tutgolden}
 \goldrow{stream}{feed}{F}{0.000277777777778}
@@ -9409,6 +9412,8 @@ H\_out(T) = H\_in + UA (T\_coolant - T\_out)
 There is still NO dH\_rxn source: on the elements datum the heat of reaction is already inside H. What the jacket does is remove some of it, so the outlet settles BELOW the adiabatic 454.2 K of cstr04.
 
 Check it by hand from the printed KPIs: Q\_kW should equal UA (T\_c - T\_out), and it is NEGATIVE -- heat leaves the reactor. Cool harder (raise UA, lower T\_coolant) and the outlet slides down the generation curve; cool too hard and the reactor extinguishes. Nothing here is switched on by a flag; it is the same one equation in T, with one more term.
+
+A liquid-phase esterification at 394-454 K must be pressurised to stay liquid: at 1 atm the engine resolves this product as vapour, so the feed is declared at 15 bar, where the product holds the liquid.
 
 \end{tutnarrative}
 \begin{tutgolden}
@@ -9833,6 +9838,8 @@ The exothermic esterification heats its own stream, which accelerates the Arrhen
 
 `thermalMode` takes `isothermal` (default -- T imposed, duty a result), `adiabatic` (here), or `heatExchange` (a jacket: U, areaPerVolume, T\_coolant). A non-isothermal reactor needs the heat of reaction, so every reacting species must carry `standardThermochemistry` -- a fictitious toy species cannot be used.
 
+A liquid-phase esterification at 394-454 K must be pressurised to stay liquid: at 1 atm the engine resolves this product as vapour, so the feed is declared at 15 bar, where the product holds the liquid.
+
 \end{tutnarrative}
 \begin{tutgolden}
 \goldrow{stream}{feed}{F}{0.000277777777778}
@@ -9927,7 +9934,7 @@ Try a `sweep` over operation.V\_R and watch Xn, Mn and PDI climb and the Flory-S
 \goldrow{kpi}{reactor}{Xw}{106.664477667}
 \goldrow{kpi}{reactor}{p\_conversion}{0.981423770929}
 \goldrow{kpi}{reactor}{tau\_s}{5829.95951417}
-\goldmore{12}
+\goldmore{11}
 \end{tutgolden}
 
 \clearpage

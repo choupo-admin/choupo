@@ -112,3 +112,67 @@ ideal-condensable reactor and the gas-only recycle rather than of chemistry.
 3. Move the condenser temperature and watch the CO recycle composition.
 4. Put the lights back to the reactor (a second tear stream and a pump) and
    decide whether it pays — that is the variant that cost 7 min 25 s.
+
+## 6. Sizing
+
+[`system/postDict`](system/postDict) sizes the units that are pieces of
+equipment — **sizing only, no costing**: pricing the plant is part of the
+optimisation. Every design number in it is an author-set assumption declared
+on its own line with its reason, and its header says which basis each item
+rests on. The sheets land in `design/<unit>/` after a run.
+
+| unit | sized as | basis |
+|---|---|---|
+| `preheater` | shell-and-tube | A = Q/(U·LMTD): the LMTD computed from the unit's own 320 → 460 K against HP steam, U **assumed** |
+| `reactor` | vessel | a **declared volume** (3 m³), a hand calculation written out in the postDict — an equilibrium reactor has no volume of its own, and this one does not follow the run |
+| `condenser` | vessel (the knock-out drum) | vapour residence time |
+| `degasser` | vessel | vapour residence time — a liquid drum, so the volume is a **lower bound** |
+
+**Not sized:**
+
+* `lightsColumn` — **a finding, not a choice.** Its sizer takes the tower
+  diameter from the tray-hydraulics pass, and on this column that pass finds
+  no finite diameter (measured 2026-10-17: in design mode it refuses, in
+  rating mode it prints "0.0 % of flood, column dP -nan"). The likely cause
+  is the liquid density of the trays' liquid, which carries a trace of CO
+  above its critical temperature. No size is invented in its place, so the
+  column is on neither the design sheets nor the plot plan.
+* `M1`, `M2` (pipe junctions), `purgeSplit` (a tee) and `letdown` (a control
+  valve) — no vessel, no area, no driver, so no item.
+
+## 7. Plant layout
+
+[`system/layoutDict`](system/layoutDict) is the plant's **plot plan**: where
+each sized item stands (plan centre `x`, `y`, base `z`, and which way it
+lies), the separation distances the case requires between kinds of
+equipment, the prevailing wind, and the hazardous-area (ATEX) zones around
+the items that can release CO, methanol or acetic acid vapour. Every run
+checks it after the sizing pass: two items that overlap are **refused**; a
+pair closer than its declared distance, an ignition source inside a zone, or
+one downwind of a release is **announced**. Grammar and checks:
+[`docs/design/a-plant-layout-is-declared-and-checked.md`](../../../docs/design/a-plant-layout-is-declared-and-checked.md).
+
+**Every distance, zone extent, wind value and position in the file is a
+placeholder — an author-set assumption for you to replace with your own site
+data**, stated so on each line with its `source` and `reason`. None comes
+from a spacing or hazardous-area standard: Choupo ships no such table (the
+published ones grant no redistribution), so a real project takes its numbers
+from the standard its client specifies and from the site's wind rose. The
+three vessels take their size from their own design sheets; the preheater
+(sized as an area, not a shell) and the control room have DECLARED boxes.
+The lights column is not on the plan (see §6); the file leaves room for it
+east of the degasser.
+
+**Redraw it** with `bin/choupo-layout --draft --force .` from the case
+directory: it lines the sized items up in flow order again and keeps the
+separation table, wind, boxes, the control room and zones. **See it** in the
+GUI under Reports → "Plant layout (3D)", and learn to read it in the EduTool
+**"Plant layout: where each item stands, and why"** (Process design &
+economics shelf).
+
+**One finding is left for you to resolve, on purpose** (announced three
+times, once per release source): the control room stands **downwind** of the
+reactor, the condenser drum and the degasser — the wind blows from the
+north-west and the room is 47–57 m to the south-east, inside the declared
+60 m reach. CO is toxic as well as flammable. Move the room, and say why
+where you put it is safe.
