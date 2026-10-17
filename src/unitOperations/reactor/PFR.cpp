@@ -29,6 +29,7 @@ License
 #include "PFR.H"
 #include "CatalystPellet.H"
 #include "PolymerKPIs.H"
+#include "ReactorOutlet.H"
 #include "ReactionHeat.H"
 #include "core/Advisory.H"
 #include "core/Constants.H"
@@ -77,6 +78,13 @@ std::string rateStem(const ExpressionRate& ex)
     return (ex.rateOf() == "extent") ? "kmol" + per : "kmol" + ex.rateOf() + per;
 }
 
+//  The unit's name, for the outlet-state locus (the flowsheet names the dict).
+std::string unitNameOf(const DictPtr& dict)
+{
+    return !dict->name().empty() ? dict->name()
+                                 : dict->lookupWordOrDefault("name", "pfr");
+}
+
 } // namespace
 
 int PFR::solve(const DictPtr& dict,
@@ -109,9 +117,12 @@ int PFR::solve(const DictPtr& dict,
     }
     for (auto& v : z_in) v /= zsum;
 
-    // Inlet phase: a reactor is NOT a phase-change device -- the product
-    // leaves in the phase it entered (a superheated vapour feed reports a
-    // VAPOUR product, never a silent vf = 0).  An UNPINNED authored feed is
+    // Inlet phase -- the INLET's, read to price the inlet and as the rung of
+    // the non-isothermal energy march.  It is NOT the outlet's: since C73
+    // (2026-10-17) the product is published at its OWN equilibrium
+    // (`reactorOutlet::outletState`), the old "the product leaves in the
+    // phase it entered" having published a liquid feed's gas at vf = 0.
+    // An UNPINNED authored feed is
     // resolved at its own (T, P, z), single phase included (R-E2; DEV.md
     // C33/C34); a produced feed keeps its producer's answer.
     const scalar vf_in = flashState::resolvedInletVaporFraction(feedDict, T,
@@ -404,6 +415,16 @@ int PFR::solve(const DictPtr& dict,
     std::cout << "=====================================================================\n\n";
 
     // -- Produced stream --------------------------------------------------
+    //  THE OUTLET MEANS ITS OWN EQUILIBRIUM (DEV.md 4c C73, 2026-10-17): its
+    //  vapour fraction is resolved at its own (T, P, z_out) by the one home
+    //  (`reactorOutlet::outletState`, ReactorOutlet.H), no longer copied from
+    //  the inlet.  P is the feed's: this path has no bed hydraulics, and the
+    //  flowsheet fills the outlet's P = 0 with its inlet's.
+    const reactorOutlet::OutletState outSt = reactorOutlet::outletState(
+        T, feedDict->lookupScalarOrDefault("P", 101325.0), z_out,
+        feedDict->lookupScalarOrDefault("phasePinned", 0.0) > 0.5, vf_in,
+        thermo, "pfr", unitNameOf(dict));
+    reactorOutlet::printOutletState(outSt);   //  beside the result block above
     produced_.clear();
     ProcessStream out;
     out.name = "out";
@@ -411,7 +432,7 @@ int PFR::solve(const DictPtr& dict,
     out.T    = T;
     out.P    = 0.0;        // pressure not tracked (set by flowsheet)
     out.z    = z_out;
-    out.vf   = vf_in;      // inherit the inlet phase (no phase change)
+    out.vf   = outSt.vf;   // its own equilibrium (C73)
     produced_.push_back(out);
 
     // -- KPIs (published for outer drivers / post-processors) -------------
@@ -424,12 +445,12 @@ int PFR::solve(const DictPtr& dict,
     kpis_["F_out_kmol_h"] = F_out * 3600.0 / 1000.0;
 
     // -- Reactor duty on the ELEMENTS/formation datum --------------------
-    // The PFR is isothermal (T_out = T_in = T), so the heat it must exchange to
-    // hold T against the reaction enthalpy is dH_rxn(T)·ξ on the ONE datum.  The
-    // shared resolver derives dH_rxn(T) = Σ νᵢ·hᵢ(T) from the species'
-    // standardThermochemistry (and announces it); without this the PFR's reaction heat
-    // leaked out of globalEnergyBoundary (the leak CSTR/GibbsReactor already
-    // plug).  Reported only when every reacting species carries formation data.
+    // The PFR is isothermal (T_out = T_in = T); the heat it exchanges to hold T
+    // is H_out - H_in on the ONE datum (C73: on the states the streams carry,
+    // below).  The shared resolver still derives dH_rxn(T) = Σ νᵢ·hᵢ(T) from
+    // the species' standardThermochemistry (and announces it); without a duty
+    // the PFR's reaction heat leaked out of globalEnergyBoundary (the leak
+    // CSTR/GibbsReactor plug).  Reported only when every species is priceable.
     {
         std::vector<std::size_t> rcomps;
         sVector                  rnu;
@@ -443,10 +464,30 @@ int PFR::solve(const DictPtr& dict,
 
         if (heatSource == "formation")
         {
-            // Extent ξ [mol/s] from the limiting reactant's conversion.
-            const scalar xi_mol_s = (F_lim_in - F_i[iLim]) / (-nu[iLim]);
+            //  `dHrxn_kJ_per_mol` stays the REACTION's own property, on the
+            //  rung the inlet's phase names.  The DUTY is the enthalpy the two
+            //  streams carry, priced by the rule the energy report applies to
+            //  them (`flashState::priceState`) on exactly the state each one
+            //  is published at -- the outlet's own equilibrium since C73.
+            //  It was xi * dHrxn on the inlet's rung, which is that same
+            //  difference only while the product stays in the inlet's phase:
+            //  a liquid feed whose product leaves part vapour paid no latent
+            //  heat (the conversionReactor rule of 2026-09-25, and the cstr's).
             kpis_["dHrxn_kJ_per_mol"] = dHrxn / 1000.0;
-            kpis_["Q_kW"]             = xi_mol_s * dHrxn / 1000.0;  // <0 exothermic
+            try
+            {
+                const scalar P_feed =
+                    feedDict->lookupScalarOrDefault("P", 101325.0);
+                const bool pinned_in =
+                    feedDict->lookupScalarOrDefault("phasePinned", 0.0) > 0.5;
+                const scalar H_in_kW = flashState::priceState(T, P_feed, z_in,
+                    F_in_kmols, pinned_in, vf_in, thermo, "pfr inlet", nullptr);
+                const scalar H_out_kW = flashState::priceState(T, P_feed, z_out,
+                    F_out / 1000.0, false, outSt.vf, thermo, "pfr outlet",
+                    nullptr);
+                kpis_["Q_kW"] = H_out_kW - H_in_kW;          // <0 exothermic
+            }
+            catch (const std::exception&) { /* no formation datum -- no duty */ }
         }
     }
 
@@ -1080,6 +1121,14 @@ int PFR::solveMultiReaction(const DictPtr&       dict,
     sVector z_out(n, 0.0);
     if (F_out > 0.0) for (std::size_t i = 0; i < n; ++i) z_out[i] = F_i[i] / F_out;
 
+    //  Its own equilibrium at (T_out, P_out, z_out) -- C73, the single-reaction
+    //  site's comment.  The pressure is the one this outlet will carry: the
+    //  Ergun-marched one when the bed declares a drop, else the feed's (which
+    //  the flowsheet gives an outlet published at P = 0).
+    const bool pinned_in = dict->subDict("feed")
+        ->lookupScalarOrDefault("phasePinned", 0.0) > 0.5;
+    const reactorOutlet::OutletState outSt = reactorOutlet::outletState(
+        T_out, P_out, z_out, pinned_in, vf_in, thermo, "pfr", unitNameOf(dict));
     produced_.clear();
     ProcessStream out;
     out.name = "out";
@@ -1087,7 +1136,7 @@ int PFR::solveMultiReaction(const DictPtr&       dict,
     out.T  = T_out;                          // a RESULT when non-isothermal
     out.P  = hyd.ergun ? P_out : 0.0;        // 0 = set by the flowsheet (the inlet's)
     out.z  = z_out;
-    out.vf = vf_in;
+    out.vf = outSt.vf;                       // its own equilibrium (C73)
     produced_.push_back(out);
 
     // ---- KPIs ---------------------------------------------------------
@@ -1335,14 +1384,28 @@ int PFR::solveMultiReaction(const DictPtr&       dict,
     }
     try
     {
-        const scalar H_in_kW = F_in_kmols * thermo.H_stream_formation(T, P, vf_in, z_in);
+        //  Both ends priced by the rule the energy report applies to these
+        //  very streams (`flashState::priceState`: resolve the state, price
+        //  the equilibrium phases of a split), on the state each one carries
+        //  -- the outlet's own equilibrium since C73 (2026-10-17).  The
+        //  `H_stream_formation` blend this replaces agreed with the report on
+        //  every single-phase stream and parted on a two-phase one.
+        const scalar H_in_kW = flashState::priceState(T, P, z_in, F_in_kmols,
+            pinned_in, vf_in, thermo, "pfr inlet", nullptr);
         scalar H_out_kW = 0.0;
         for (const auto& s : produced_)
-            H_out_kW += s.F * thermo.H_stream_formation(s.T, hyd.ergun ? P_out : P, s.vf, s.z);
+            H_out_kW += flashState::priceState(s.T, P_out, s.z, s.F, false,
+                s.vf, thermo, "pfr outlet", nullptr);
         kpis_["Q_kW"] = H_out_kW - H_in_kW;   // ~0 for an adiabatic reactor
     }
     catch (const std::exception&) { /* a species lacks formation data */ }
+    //  The non-isothermal march above is solved on the inlet's phase rung;
+    //  when the published outlet is another phase, say so (ReactorOutlet.H).
+    if (!isoT && kpis_.count("Q_kW"))
+        reactorOutlet::announceEnergyRungMismatch("pfr", unitNameOf(dict),
+            tmode, T_out, vf_in, outSt.vf, kpis_["Q_kW"]);
 
+    if (verbosity >= 2) reactorOutlet::printOutletState(outSt);
     if (verbosity >= 2)
     {
         std::cout << "\n==================  PFR (multi-reaction) Result  ====================\n"

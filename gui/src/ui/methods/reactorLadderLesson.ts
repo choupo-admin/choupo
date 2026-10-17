@@ -91,12 +91,12 @@ export const LADDER_SECTIONS: readonly LadderSection[] = [
     title: "Rung 1 — what the atoms allow: a declared conversion",
     body: "The conversion reactor is told the stoichiometry, the limiting "
       + "reactant and a conversion $X$, and returns every outlet flow by "
-      + "arithmetic (ConversionReactor.cpp:328–346).  There is no solver.  "
+      + "arithmetic (ConversionReactor.cpp:220–238).  There is no solver.  "
       + "It is the right model for a first mass balance, and whenever $X$ "
       + "is known from a running plant, a patent or a vendor.  What it cannot "
       + "do is tell you whether $X$ is possible: the only bounds it checks are "
       + "$0 \\le X \\le 1$ and that no outlet amount goes negative "
-      + "(ConversionReactor.cpp:323–326 and 338–341).  The witness declares $X = 0.90$ "
+      + "(ConversionReactor.cpp:215–218 and 230–233).  The witness declares $X = 0.90$ "
       + "on purpose.  At 600 K that is above this feed's equilibrium, and the "
       + "rung prints it without complaint.",
     eq: String.raw`\xi = \frac{X\,n_{\mathrm{CO},0}}{-\nu_{\mathrm{CO}}}
@@ -218,7 +218,7 @@ X_\mathrm{eq} = \frac{\sqrt{K}}{1+\sqrt{K}}`,
     title: "Rung 3 — what the rate delivers: a volume",
     body: "Only now does a volume appear.  The plug-flow reactor integrates "
       + "the rate along the bed.  Its reverse term is built from the SAME "
-      + "equilibrium constant, $k_r = k_f / K$ (PFR.cpp:167–171), so the net "
+      + "equilibrium constant, $k_r = k_f / K$ (PFR.cpp:178–182), so the net "
       + "rate vanishes exactly at the limit: the profile rises toward the "
       + "rung-2 line and cannot cross it, however long the bed.  Read the "
       + "shape.  Most of the conversion arrives in the first part of the bed, "
@@ -291,7 +291,7 @@ export const LADDER_LIMITS: readonly LadderLimit[] = [
     id: "volume-is-a-shape",
     title: "The PFR's volume axis is a shape, not a size.",
     body: "This kinetic reactor prices concentrations on a LIQUID molar volume "
-      + "(PFR.cpp:603, \"liquid-basis volumetric flow\"), so on a gas at "
+      + "(PFR.cpp:644, \"liquid-basis volumetric flow\"), so on a gas at "
       + "10 bar the concentrations, and hence the volume, are not those of "
       + "the real gas.  The rate constant is pfr02's illustrative one, chosen "
       + "small for the same reason.  What the profile shows faithfully is its "

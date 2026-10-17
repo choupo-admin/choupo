@@ -84,7 +84,8 @@ namespace Choupo {
 // -- never hard-stamped and never copied from the inlet -- and the duty is
 // priced on exactly that state.  A `phase ...;` declared on the inlet is a
 // declaration about the inlet: it is not carried to the product, and a
-// departure from it is announced.  The reasons are in the .cpp (`outletState`).
+// departure from it is announced.  The rule and its reasons have ONE home,
+// ReactorOutlet.H (moved there for the cstr and the pfr, C73).
 class ConversionReactor : public UnitOperation
 {
 public:

@@ -104,6 +104,26 @@ Reversible: add `reversible true;` to a reaction entry — detailed balance
 `k_rev = k_fwd / K_eq(T)`.  Duty from the enthalpy balance (formation datum).
 Example: `tutorials/steady/reactors/cstr03_series_selectivity` (A→B→C).
 
+**THE OUTLET IS ITS OWN EQUILIBRIUM (2026-10-17, DEV.md 4c C73)** -- for the
+`cstr` and the `pfr` as for the `conversionReactor` (C72, one home:
+`src/unitOperations/reactor/ReactorOutlet.H`): the outlet's vapour fraction is
+resolved at its own (T, P, z), at the pressure the outlet carries (the feed's,
+or a `pfr`'s Ergun-marched one), and no longer copied from the feed under
+"a reactor is not a phase-change device" -- a liquid feed whose product boils
+used to leave labelled liquid.  A `phase liquid;`/`phase gas;` on the FEED is
+not carried; a departure from it is announced (`[cstr] ... the inlet DECLARES
+...`).  The isothermal duty `Q_kW` is `H_out - H_in` priced on exactly the
+states published (the `pfr` single-reaction path too since C73; it was
+`ξ·ΔH_rxn` on the feed's phase rung, which paid no latent heat when the
+product left part vapour).  **NOT yet on that surface: the `adiabatic` and
+`heatExchange` energy balances**, which still find `T_out` on the FEED's
+phase rung.  When the outlet's own equilibrium at that `T_out` is another
+phase, the run says so (`[cstr] ... the adiabatic energy balance that set
+T_out ... was solved on the INLET's phase rung`) and the published `Q_kW`
+(the report's own `H_out - H_in`) is no longer zero: it is the enthalpy of
+the phase change the balance did not see.  A reactor meant to hold its
+feed's phase is declared at a pressure where its product does.
+
 **Rate laws** (`kinetics { type ... }`, shared by `cstr` and `pfr` via `RateLaw`).
 Two families, one formula.  With `theta_i` the concentration (mol/m³) or, when
 `basis activity;`, the activity `a_i = γ_i x_i`; and `abar_i = K_i(T)·theta_i` the
@@ -148,7 +168,8 @@ activity-based equilibrium the same rate law converges to as `V_R` grows.
 operation { V_R <m^3>;  thermalMode adiabatic;  T_guess 350; }
 ```
 No `ΔH_rxn` source term: on the elements datum the reaction heat already lives inside
-`H`, so an adiabatic reactor is simply `H_out = H_in` (`Q_kW = 0` exactly).  The extents
+`H`, so an adiabatic reactor is simply `H_out = H_in` (`Q_kW = 0` exactly -- while the
+outlet stays in the feed's phase; see *THE OUTLET IS ITS OWN EQUILIBRIUM* above).  The extents
 are eliminated first — at a **fixed** `T` the design equations are monotone and Newton
 lands on the one root — leaving a single function of temperature,
 `φ(T) = H_out(T) − H_in − Q_ext(T)`.  That is the textbook *heat generated vs heat
@@ -182,7 +203,9 @@ operation { V_R <m^3>; nSteps 100;  thermalMode adiabatic; }
 The reactor marches the **total enthalpy** `H` (elements datum) beside the species and
 **recovers `T` by inverting it** — so there is **no `ΔH_rxn` source term**: on the formation
 datum the heat of reaction is already inside `H`, and an adiabatic reactor conserves it
-(`Q_kW = 0` exactly).  `T(V)` lands in the axial profile — a hot spot is something you
+(`Q_kW = 0` exactly -- while the outlet stays in the feed's phase: the march prices `H` on
+the feed's phase rung, and the outlet is published at its OWN equilibrium, C73, see `cstr`).
+`T(V)` lands in the axial profile — a hot spot is something you
 *see*.  Requires `standardThermochemistry` on every reacting species (a fictitious toy has no
 elements datum → refused, loudly).  Example: `pfr04_adiabatic` (esterification, +105 K).
 **A packed bed's geometry and pressure drop** (multi-reaction path, opt-in, C66):

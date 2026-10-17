@@ -176,10 +176,14 @@ WHAT THIS CHECKS, all from fresh runs of corpus cases:
       feed split into H2 + O2 published the gas at vf = 0 and priced it on
       the liquid rung (C68 finding iii: ammoniaRoutes01_screening runs at
       0.02 bar partly for that reason).
-        (m1) SOURCE: ConversionReactor.cpp resolves its outlet through
-             `flashState::equilibriumAt` exactly once, publishes the result
-             on BOTH paths (`.vf = outSt.vf`), and never writes the inlet's
-             vf on an outlet stream (`s.vf = vf_in` / `out.vf = vf_in`).
+        (m1) SOURCE: the rule has ONE home since C73,
+             `reactor/ReactorOutlet.cpp`, which resolves through
+             `flashState::equilibriumAt` exactly once; ConversionReactor.cpp
+             reaches it through `reactorOutlet::outletState` exactly once
+             (its wrapper), calls `equilibriumAt` itself NOWHERE (a second
+             home), publishes the result on BOTH paths (`.vf = outSt.vf`),
+             and never writes the inlet's vf on an outlet stream
+             (`s.vf = vf_in` / `out.vf = vf_in`).
         (m2) OUTPUT: a fixture on the routes screen's ideal package at
              298.15 K and 1.01325 bar: liquid water (no phase declared) split
              to H2 + 1/2 O2 must publish vf = 1; H2 + 1/2 O2 burnt to water
@@ -191,6 +195,35 @@ WHAT THIS CHECKS, all from fresh runs of corpus cases:
              and is NOT said for the two unpinned inlets.
         (m4) The fixture's first law closes to 1e-6 kW: the duty is priced
              on the state the outlet publishes.
+  (n) THE CSTR'S AND THE PFR'S OUTLETS MEAN THEIR OWN EQUILIBRIUM TOO
+      (2026-10-17, DEV.md 4c C73).  Both used to publish their inlet's vf
+      under "a reactor is not a phase-change device" (`out.vf = vf_in`, two
+      sites each), so a liquid feed whose product boils left labelled
+      liquid; the `pfr`'s single-reaction duty was `xi * dHrxn` on the
+      feed's phase rung and paid no latent heat when the product left part
+      vapour.
+        (n1) SOURCE: CSTR.cpp and PFR.cpp each call
+             `reactorOutlet::outletState` exactly twice (single- and
+             multi-reaction), publish `.vf = outSt.vf` exactly twice, never
+             write `.vf = vf_in` on an outlet, never call `equilibriumAt`
+             themselves, and PFR.cpp never assigns a `Q_kW` from `dHrxn`.
+        (n2) OUTPUT: a fixture on the routes screen's ideal package at
+             298.15 K and 1 atm, every one of the FOUR sites: liquid water
+             (no phase declared) split by a cstr and by a pfr, single- and
+             multi-reaction, must publish vf = 1; H2 + O2 DECLARED `phase
+             gas;` burnt by a cstr and by a pfr must publish vf = 0.
+        (n3) ANNOUNCED: those two departures reach the result JSON exactly
+             once each and are said at their sites; none is said for an
+             unpinned inlet.
+        (n4) The fixture's first law closes to 1e-6 kW: every duty is
+             priced on the state its outlet publishes (the pfr's
+             single-reaction path included).
+        (n5) WHAT IS LEFT IS SAID: a copy of cstr04_adiabatic at 1 atm (its
+             adiabatic balance is solved on the feed's LIQUID rung, and the
+             product at 454 K is a vapour) publishes vf = 1 and announces
+             the energy-rung mismatch once (JSON + site), naming the
+             published Q_kW.  A gate that let the mismatch go silent would
+             let an adiabatic reactor carry a heating duty unexplained.
   (e) flash13_acetic_ethanol_vacuum_flash keeps a LARGE duty -- the
       negative control.  Its feed is at 1 atm and it operates at 0.65 atm,
       so its 669 kW is genuine pressure-drop work; a gate that drove every
@@ -290,6 +323,29 @@ nothing), rebuilt, and restored from a copy and rebuilt:
       JSON half alone -- the site line is the slightly-louder form of
       silence.
 
+SABOTAGE-VERIFIED 2026-10-17 for (n) and the moved (m1), by hand on the
+engine source, each applied by asserted string replacement, rebuilt, the
+gate run, then restored by `git checkout` and rebuilt:
+  S1  the cstr's single-reaction site back to `out.vf = vf_in`.  (n1) fails
+      twice and (n2) twice (cSplit vf 0, cBurnP vf 1).  (n4) PASSES: the
+      duty prices `produced_`, so it agrees with the wrong state it
+      publishes -- closure cannot see a carried label, only (n2) can.
+  S2  the pfr's multi-reaction site back to `out.vf = vf_in`.  (n1) twice,
+      (n2) once (pSplitM vf 0).
+  S3  the pfr's single-reaction duty back to `xi * dHrxn` on the feed's
+      rung.  (n1) once and (n4) at 12.3821 kW -- the latent heat of 1 kmol/h
+      of water the old duty never paid.  Only those two arms see it.
+  S4  the one home's declared-phase departure disarmed (`if (false &&
+      ...)`).  (m3) twice and (n3) four times: one home, three reactors.
+  S5  `announceEnergyRungMismatch` hollowed (`if (true) return;`).  (n5)
+      twice (JSON and site); nothing else moves -- the published state and
+      duty are untouched, only the explanation goes silent.
+  S6  a SECOND HOME: the cstr's multi-reaction site resolving its own
+      `flashState::equilibriumAt` instead of reading `outSt`.  (n1) twice;
+      every OUTPUT arm PASSES, because the second copy gives the same number
+      today.  The arity rule is a source rule: the output cannot see a copy
+      that has not yet drifted.
+
 SABOTAGE-VERIFIED 2026-08-09: reverting the R-E1 gate (unpinned feeds no
 longer re-flashed -- the pre-slice behaviour) reproduced the original
 defect and this gate named every instance: flash19 Q = 13.4913 kW with its
@@ -307,10 +363,10 @@ WHAT THIS DOES NOT CHECK, said plainly:
   * Whether the incipient band of 1e-3 is the right number.  It is a stated
     choice, not a derived tolerance, and a stream genuinely between 1e-6 and
     1e-3 off saturation is reported by nothing.
-  * The `cstr` and `pfr` outlets: both still publish their INLET's vf
-    (`out.vf = vf_in`, two sites each, "no phase change in a reactor"),
-    the shape (m) took off the conversion reactor.  Enumerated in C72, not
-    changed -- it is a separate decision.
+  * Whether a non-isothermal `cstr`'s or `pfr`'s T_out is right when its
+    outlet changes phase: the adiabatic / heatExchange balances are still
+    solved on the feed's phase rung (CLAUDE.md §6 enumerates them).  (n5)
+    checks that the mismatch is SAID, never that it is closed.
   * Any package with NO vapour phase: the test is vapour-liquid and skips
     those by `hasEos()`.  That skip exists because asking anyway segfaulted
     (`ThermoPackage::Kvec` dereferenced a null EoS handle); the refusal that
@@ -421,6 +477,10 @@ SAT_LOW_K, SAT_HIGH_K = 372.40, 372.95
 #  O2 on the formation datum).
 CONV_REACTOR = "reactor/ConversionReactor.cpp"
 CONV_SRC = "tutorials/plant/ammoniaRoutes01_screening"
+#  (n) the ONE home of the rule since C73, and the two kinetic reactors
+OUTLET_HOME = "reactor/ReactorOutlet.cpp"
+KINETIC_REACTORS = ["reactor/CSTR.cpp", "reactor/PFR.cpp"]
+ADIABATIC_SRC = "tutorials/steady/reactors/cstr04_adiabatic"
 
 #  (j) the units that search their own OUTLET (or regime) with a flash
 OUTLET_SEARCHERS = [
@@ -958,10 +1018,18 @@ def main() -> int:
                         "outlet stream (`s.vf = vf_in` / `out.vf = vf_in`) -- "
                         "the outlet means its own "
                         "equilibrium at (T, P, z_out) (DEV.md 4c C72)")
-        if len(re.findall(r"\bflashState::equilibriumAt\s*\(", cr_src)) != 1:
-            fail.append(f"(m1) {CONV_REACTOR} does not resolve its outlet "
+        home_src = strip_comments((UNITS / OUTLET_HOME).read_text())
+        if len(re.findall(r"\bflashState::equilibriumAt\s*\(", home_src)) != 1:
+            fail.append(f"(m1) {OUTLET_HOME} does not resolve the outlet "
                         "through `flashState::equilibriumAt` exactly once "
                         "(the one equilibrium home)")
+        if re.search(r"\bequilibriumAt\s*\(", cr_src):
+            fail.append(f"(m1) {CONV_REACTOR} resolves an equilibrium itself "
+                        f"-- the outlet rule's one home is {OUTLET_HOME} "
+                        "(C73); a second copy is the arity sin")
+        if len(re.findall(r"\breactorOutlet::outletState\s*\(", cr_src)) != 1:
+            fail.append(f"(m1) {CONV_REACTOR} does not reach the one home "
+                        "(`reactorOutlet::outletState`) exactly once")
         if len(re.findall(r"\.vf\s*=\s*outSt\.vf\b", cr_src)) != 2:
             fail.append(f"(m1) {CONV_REACTOR}: both reaction paths must "
                         "publish the resolved outlet state (`.vf = outSt.vf`, "
@@ -1050,6 +1118,160 @@ def main() -> int:
                             f"{m.group(1) if m else None} kW): the duty is "
                             "not priced on the state the outlet publishes")
 
+        # (n) the cstr's and the pfr's OUTLETS are their own equilibrium (C73).
+        for rel in KINETIC_REACTORS:
+            src = strip_comments((UNITS / rel).read_text())
+            if re.search(r"\.vf\s*=\s*vf_in\b", src):
+                fail.append(f"(n1) {rel} copies the inlet's vf onto an outlet "
+                            "stream (`.vf = vf_in`) -- the outlet means its "
+                            "own equilibrium at (T, P, z_out) (DEV.md 4c C73)")
+            k = len(re.findall(r"\breactorOutlet::outletState\s*\(", src))
+            if k != 2:
+                fail.append(f"(n1) {rel} reaches the one outlet home "
+                            f"(`reactorOutlet::outletState`) {k} time(s); "
+                            "expected 2 (single- and multi-reaction paths)")
+            k = len(re.findall(r"\.vf\s*=\s*outSt\.vf\b", src))
+            if k != 2:
+                fail.append(f"(n1) {rel} publishes the resolved outlet state "
+                            f"(`.vf = outSt.vf`) {k} time(s); expected 2")
+            if re.search(r"\bequilibriumAt\s*\(", src):
+                fail.append(f"(n1) {rel} resolves an equilibrium itself -- "
+                            f"the outlet rule's one home is {OUTLET_HOME}")
+        pfr_src = strip_comments((UNITS / "reactor/PFR.cpp").read_text())
+        if re.search(r'"Q_kW"\]\s*=\s*[^;]*\bdHrxn\b', pfr_src):
+            fail.append("(n1) PFR.cpp assigns a Q_kW from `dHrxn` -- the duty "
+                        "on the feed's phase rung, which pays no latent heat "
+                        "when the product leaves in another phase (C73)")
+
+        nx = tmp / "kineticOutlet"
+        (nx / "system").mkdir(parents=True)
+        (nx / "0").mkdir()
+        shutil.copytree(cr / "constant", nx / "constant")
+        shutil.copy(cr / "system" / "controlDict", nx / "system" / "controlDict")
+        (nx / "constant" / "reactions").write_text(
+            "waterSplittingK\n{\n    limitingReactant water;\n"
+            "    stoichiometry\n    (\n"
+            "        { component water; nu -1; order 1; }\n"
+            "        { component H2; nu 1; order 0; }\n"
+            "        { component O2; nu 0.5; order 0; }\n    );\n"
+            #  Da = k tau = 50 on the liquid basis: X = 0.98, the 1.4 % water
+            #  left is below its 3.1 % saturation in H2 + O2 at 298.15 K, and
+            #  the multi-reaction Newton's absolute tolerance is met (at
+            #  Da ~ 2000 its round-off is not).
+            "    kinetics { type Arrhenius; A 2.5e-4; Ea 0; }\n}\n\n"
+            "hydrogenCombustionK\n{\n    limitingReactant H2;\n"
+            "    stoichiometry\n    (\n"
+            "        { component H2; nu -1; order 1; }\n"
+            "        { component O2; nu -0.5; order 0; }\n"
+            "        { component water; nu 1; order 0; }\n    );\n"
+            "    kinetics { type Arrhenius; A 0.1; Ea 0; }\n}\n")
+        #  Small flows: the multi-reaction Newtons judge an absolute residual
+        #  in mol/s, and 1 kmol/h keeps the fixture well inside it.
+        kwater = "componentMolarFlows\n{\n    water  1 kmol/h;\n}\n" + state
+        kknall = ("componentMolarFlows\n{\n    H2  1 kmol/h;\n"
+                  "    O2  0.5 kmol/h;\n}\n" + state)
+        # (unit, type, path, reaction, inlet, outlet, inlet text, pinned)
+        kin_units = (
+            ("cSplit",  "cstr", "single", "waterSplittingK", "w1", "g1", kwater, False),
+            ("cSplitM", "cstr", "multi",  "waterSplittingK", "w2", "g2", kwater, False),
+            ("pSplit",  "pfr",  "single", "waterSplittingK", "w3", "g3", kwater, False),
+            ("pSplitM", "pfr",  "multi",  "waterSplittingK", "w4", "g4", kwater, False),
+            ("cBurnP",  "cstr", "single", "hydrogenCombustionK", "k5", "b5",
+             kknall + "phase           gas;\n", True),
+            ("pBurnP",  "pfr",  "single", "hydrogenCombustionK", "k6", "b6",
+             kknall + "phase           gas;\n", True),
+        )
+        units = ""
+        for un, ty, path, rxn, inp, out, txt, _ in kin_units:
+            (nx / "0" / inp).write_text(txt)
+            (nx / "0" / out).write_text(kknall if pinned else kwater)
+            sel = (f"reactions ( {rxn} );" if path == "multi"
+                   else f"reaction {rxn};")
+            oper = "V_R 1; nSteps 50;" if ty == "pfr" else "V_R 1;"
+            units += ("    {\n        name " + un + ";\n"
+                      "        type " + ty + ";\n"
+                      "        in " + inp + ";\n"
+                      "        outputs ( " + out + " );\n"
+                      "        operation { " + oper + " }\n"
+                      "        " + sel + "\n    }\n")
+        (nx / "system" / "flowsheetDict").write_text(
+            "units\n(\n" + units + ");\n")
+        rc, nlog = run(nx)
+        if rc != 0:
+            fail.append(f"(n2) the kinetic-outlet fixture did not run "
+                        f"(rc={rc})")
+        else:
+            for un, ty, path, rxn, inp, out, txt, pinned in kin_units:
+                want = 0.0 if pinned else 1.0
+                m = re.search(r'"' + out + r'":\s*\{[^}]*"vf":\s*'
+                              r'([-0-9.eE+]+)', nlog)
+                if not m or abs(float(m.group(1)) - want) > 1e-9:
+                    fail.append(
+                        f"(n2) {ty} `{un}` ({path}-reaction) published "
+                        f"`{out}` at vf = {m.group(1) if m else None}, "
+                        f"expected {want}: " + (
+                            "a `phase gas;` on the inlet is a declaration "
+                            "about the INLET; its product, water at 298.15 K "
+                            "and 1 atm, is a liquid" if pinned else
+                            "H2 + 1/2 O2 at 298.15 K is a gas; the LIQUID "
+                            "inlet's vf was carried onto it"))
+                said_json = len(re.findall(
+                    r'"locus":\s*"' + ty + r" '" + un + r"' outlet\",\s*"
+                    r'"message":\s*"the inlet DECLARES `phase gas;`', nlog))
+                said_site = re.search(
+                    r"\[" + ty + r"\] " + ty + r" '" + un + r"' outlet: "
+                    r"the inlet DECLARES", nlog)
+                if pinned:
+                    if said_json != 1:
+                        fail.append(f"(n3) `{un}`'s departure from its "
+                                    "declared inlet phase reached the result "
+                                    f"JSON {said_json} time(s), expected once")
+                    if not said_site:
+                        fail.append(f"(n3) `{un}`'s departure from its "
+                                    "declared inlet phase was not said at "
+                                    "its site (stderr)")
+                elif said_json or said_site:
+                    fail.append(f"(n3) a departure was announced for `{un}`, "
+                                "whose inlet is UNPINNED -- only a declared "
+                                "phase is departed from")
+            m = re.search(r'"globalEnergyBoundary":\s*\{[^}]*"residual_kW":'
+                          r'\s*([-0-9.eE+]+)', nlog)
+            if not m or abs(float(m.group(1))) > 1e-6:
+                fail.append("(n4) the kinetic-outlet fixture's first law does "
+                            "not close (residual "
+                            f"{m.group(1) if m else None} kW): a duty is not "
+                            "priced on the state its outlet publishes")
+
+        # (n5) what is left is SAID: an adiabatic balance on the feed's rung.
+        ad = tmp / "cstr04_1atm"
+        shutil.copytree(ROOT / ADIABATIC_SRC, ad)
+        for f in (ad / "0").iterdir():
+            if f.is_file():
+                f.write_text(re.sub(r"(?m)^P\s+[^;]*;", "P               "
+                                    "101325 Pa;", f.read_text()))
+        rc, alog = run(ad)
+        if rc != 0:
+            fail.append(f"(n5) the 1 atm copy of {ADIABATIC_SRC} did not run "
+                        f"(rc={rc})")
+        else:
+            m = re.search(r'"reactorOut":\s*\{[^}]*"vf":\s*([-0-9.eE+]+)', alog)
+            if not m or abs(float(m.group(1)) - 1.0) > 1e-9:
+                fail.append("(n5) cstr04 at 1 atm published its 454 K product "
+                            f"at vf = {m.group(1) if m else None}, expected 1 "
+                            "(its own equilibrium)")
+            n_json = len(re.findall(
+                r'"locus":\s*"cstr \'reactor\' outlet",\s*"message":\s*"the '
+                r'adiabatic energy balance that set T_out', alog))
+            if n_json != 1:
+                fail.append("(n5) the adiabatic balance's rung mismatch "
+                            f"reached the result JSON {n_json} time(s), "
+                            "expected once -- an adiabatic reactor carrying a "
+                            "heating duty must say why")
+            if not re.search(r"\[cstr\] cstr 'reactor' outlet: the adiabatic "
+                             r"energy balance that set T_out", alog):
+                fail.append("(n5) the adiabatic balance's rung mismatch was "
+                            "not said at its site (stderr)")
+
         # (e) the negative control: a real pressure-drop duty survives
         ctrl = tmp / "flash13"
         shutil.copytree(ROOT / CONTROL, ctrl)
@@ -1101,11 +1323,16 @@ def main() -> int:
           "alone read a record's curve), and under condenser01's IF97 "
           f"package pure water at 1 bar is a liquid at {SAT_LOW_K} K and a "
           f"vapour at {SAT_HIGH_K} K, first law closed.  A CONVERSION "
-          "REACTOR'S OUTLET IS ITS OWN EQUILIBRIUM: resolved once through "
-          "`equilibriumAt` and published on both paths (source); liquid water "
-          "split to H2 + O2 leaves as a gas, H2 + O2 burnt to water leaves as "
-          "a liquid, a `phase gas;` inlet is not carried to its liquid "
-          "product and the departure is said once, first law closed.  NOT "
+          "REACTOR'S OUTLET IS ITS OWN EQUILIBRIUM: resolved through ONE home "
+          "(`reactor/ReactorOutlet.cpp`, one `equilibriumAt`; no reactor "
+          "resolves its own) and published on both paths of the conversion "
+          "reactor, the cstr and the pfr (source); liquid water split to "
+          "H2 + O2 leaves as a gas from all three and from both kinetic "
+          "paths, H2 + O2 burnt to water leaves as a liquid, a `phase gas;` "
+          "inlet is not carried to its liquid product and the departure is "
+          "said once, first law closed on both fixtures; an ADIABATIC cstr "
+          "whose liquid-rung balance lands its product above the dew point "
+          "publishes the vapour and SAYS the rung mismatch once.  NOT "
           "CHECKED: whether a NON-zero duty is right (only the identity has a "
           "closed form); the multi-condition cases' duties, which ride their "
           "goldens; whether the 1e-3 incipient band is the right number (it "
@@ -1114,9 +1341,10 @@ def main() -> int:
           "only); any vapourless package, which the test "
           "skips by hasEos(); and the IF97 saturation curve OUTSIDE its "
           "window (273.15 .. 647.096 K), where the record answers announced "
-          "-- no output arm reaches it; and the cstr's and pfr's outlets, "
-          "which still carry their inlet's vf (enumerated in C72, not "
-          "changed).")
+          "-- no output arm reaches it; and whether a non-isothermal cstr's "
+          "or pfr's T_out is right when its outlet changes phase (those "
+          "balances are still solved on the feed's phase rung: the mismatch "
+          "is checked to be SAID, never to be closed).")
     return 0
 
 

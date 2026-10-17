@@ -31,6 +31,7 @@ Description
 
 #include "ConversionReactor.H"
 
+#include "ReactorOutlet.H"                             // the ONE outlet-state home
 #include "unitOperations/flash/StreamEquilibrium.H"   // the ONE resolve-and-price home
 
 #include <cmath>
@@ -141,53 +142,13 @@ ReactorDuty reactorDuty(scalar               T,
 
 //  ---- THE OUTLET MEANS ITS OWN EQUILIBRIUM (DEV.md 4c C72, 2026-10-17) ---
 //
-//  THE POSTURE THIS REPLACES (ruled 2026-08-24 on finding F2 of
-//  docs/design/llm-authoring-benchmark-2026-08-23.md).  This unit used to
-//  hard-stamp vf = 1 on its outlet, which put a spurious ENERGY BALANCE
-//  FAILED banner on a liquid esterification; the fix then was to CARRY the
-//  inlet's vf, on the reading that a unit with no phase model must not
-//  invent one.  Carrying is not the absence of a phase model -- it is a
-//  second one, and it is wrong whenever the reaction moves the outlet across
-//  a phase boundary (C68 finding iii, met on `ammoniaRoutes01_screening`).
-//  Measured on a copy of that case at 1 atm with its feeds' `phase gas;`
-//  removed: the green route's feed (water + N2, vf 0.257 at its own
-//  equilibrium) carried 0.257 onto an all-gas NH3 + O2 product, which is
-//  priced at the vf it carries because it is single-phase, and the duty read
-//  300 324 kW where the gas it is costs 312 316 kW; the water splitter
-//  published H2 + 1/2 O2 at vf = 0.  The family is
-//  CLAUDE.md §6's: THE STATE A UNIT COMPUTES WITH IS NOT THE STATE ITS
-//  STREAMS CARRY -- here the outlet's vf belonged to another (T, z).
-//
-//  THE RULE.  The outlet is a stream at (T, P, zout) that nobody declared, so
-//  it MEANS its own equilibrium (CLAUDE.md §3), resolved by the one home,
-//  `flashState::equilibriumAt`, in this unit's own thermo world.  A split
-//  above every present Tc is discarded and the outlet is the one fluid
-//  phase it can be (vf = 1), as an outlet search does
-//  (`takeSupercriticalAsSinglePhase`).  The duty is priced on exactly the
-//  vf published (`reactorDuty`, through `priceState` -- the rule the energy
-//  report applies to the same stream), so unit and report cannot part.
-//
-//  A DECLARED INLET PHASE IS A DECLARATION ABOUT THE INLET.  `phase liquid;`
-//  on a feed says what the feed is at ITS (T, P, z); it says nothing about a
-//  product of another composition, and carrying it would publish a label the
-//  outlet's own equilibrium may contradict -- the impossible-label shape of
-//  F1 in docs/design/glass-box-reading-benchmark-2026-08-24.md.  So the pin
-//  is NOT carried, and when the
-//  outlet's equilibrium departs from the phase the inlet declared, the unit
-//  SAYS so (stderr + AdvisoryLog, once per process), naming the remedy: a
-//  reactor meant to hold that phase is declared at a pressure where its
-//  product does.  The first law cannot be broken by this either way: the duty
-//  and the report price the same published state.
-//
-//  When the equilibrium cannot be resolved (a package that refuses the state,
-//  a flash that does not converge), the inlet's vf is carried -- ANNOUNCED,
-//  never silent; a package with no vapour phase has nothing to split and the
-//  inlet's vf stands.
-struct OutletState
-{
-    scalar      vf = 0.0;
-    std::string origin;      //  how `vf` was arrived at, for the log
-};
+//  The outlet's vapour fraction is resolved at its own (T, P, zout) in this
+//  unit's own thermo world, and the duty above is priced on exactly that
+//  state.  The rule, its reasons and the declared-inlet announcement were
+//  written HERE for C72 and moved verbatim to `ReactorOutlet.H` the same day,
+//  when the `cstr` and the `pfr` needed the same sentence (C73): ONE home.
+using reactorOutlet::OutletState;
+using reactorOutlet::printOutletState;
 
 OutletState outletState(scalar               T,
                         scalar               P,
@@ -197,77 +158,8 @@ OutletState outletState(scalar               T,
                         const ThermoPackage& thermo,
                         const std::string&   unitName)
 {
-    OutletState o;
-    const std::string locus = "conversionReactor '" + unitName + "' outlet";
-    if (thermo.phasesOfType("vapor").empty())
-    {
-        o.vf     = vf_in;
-        o.origin = "the package has no vapour phase; the inlet's vf stands";
-        return o;
-    }
-    std::string deferred;
-    bool discarded = false;
-    const auto fs = flashState::equilibriumAt(T, P, zout, /*pinned=*/false,
-                                              vf_in, thermo, locus, "model",
-                                              &deferred, nullptr, &discarded);
-    if (fs)
-    {
-        o.vf     = flashState::vapourFractionOf(*fs);
-        o.origin = "resolved at its own (T, P, z)";
-    }
-    else if (discarded)
-    {
-        o.vf     = 1.0;
-        o.origin = "the one fluid phase above every present Tc"
-                   " (a two-phase root was discarded)";
-    }
-    else
-    {
-        o.vf     = vf_in;
-        o.origin = "the inlet's vf, CARRIED: the outlet's own equilibrium"
-                   " could not be resolved";
-        const std::string msg =
-            "the outlet's own equilibrium at (T, P, z) could not be resolved,"
-            " so it carries the inlet's vapour fraction"
-            + (deferred.empty() ? std::string() : " -- " + deferred);
-        if (AdvisoryLog::instance().addAnnouncedOnce(
-                "conversionReactor.outletUnresolved." + unitName,
-                "model", "warning", locus, msg))
-            std::cerr << "[conversionReactor] " << locus << ": " << msg << "\n";
-    }
-
-    //  The departure from a DECLARED inlet phase, said once.  Only a pinned
-    //  SINGLE phase is a declaration of a phase (a pinned pure quality is a
-    //  point on a saturation curve, and a product of another composition is
-    //  not on it).
-    const bool declaredSingle =
-        pinned_in && (vf_in <= 1.0e-9 || vf_in >= 1.0 - 1.0e-9);
-    if (declaredSingle && std::fabs(o.vf - vf_in) > 1.0e-9)
-    {
-        const std::string declared = (vf_in >= 0.5) ? "gas" : "liquid";
-        const std::string msg =
-            "the inlet DECLARES `phase " + declared + ";`, and that is a"
-            " declaration about the inlet: the outlet, at another composition,"
-            " is published at its own equilibrium at (T, P, z), which is not"
-            " all " + declared + " -- its vapour fraction is printed with the"
-            " unit.  If the reactor is meant to hold the " + declared
-            + " phase, declare a pressure at which its product does";
-        if (AdvisoryLog::instance().addAnnouncedOnce(
-                "conversionReactor.departsFromDeclaredInletPhase." + unitName,
-                "model", "info", locus, msg))
-            std::cerr << "[conversionReactor] " << locus << ": " << msg << "\n";
-    }
-    return o;
-}
-
-//  The outlet's state, one line, without leaving the stream's precision
-//  changed for whatever prints next (the next unit's banner reads it).
-void printOutletState(const OutletState& o)
-{
-    const auto prec = std::cout.precision();
-    std::cout << "  outlet vf = " << std::setprecision(6) << o.vf
-              << "  (" << o.origin << ")\n";
-    std::cout.precision(prec);
+    return reactorOutlet::outletState(T, P, zout, pinned_in, vf_in, thermo,
+                                      "conversionReactor", unitName);
 }
 
 } // namespace
