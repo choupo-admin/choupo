@@ -709,4 +709,109 @@ struct EconomicsSummary
     std::string                         sensitivityCaveat;
 };
 
+//  THE PLANT LAYOUT (2026-10-17, DEV.md 4c C75).  What the layout check
+//  concluded from `system/layoutDict` over the SIZED items of the run: where
+//  each placed item stands, the box it occupies (taken from the item's OWN
+//  published dimensions, or from a footprint the case declared where the
+//  item publishes none), and every finding the declared rules raised.  The
+//  GUI draws this block and computes nothing; `postProcessing/layout/
+//  PlantLayout.H` is the one home of the footprint rule and the geometry.
+//  EMPTY (`present()` false) unless the case declares a layoutDict, so every
+//  other result is unchanged.
+//
+//  LENGTHS IN METRES; the wind angles in DEGREES (the unit the case declares
+//  them in, published back in it so a reader compares like with like).
+//  `dx`/`dy`/`dz` are the item's extents along the plan's x, y and the
+//  vertical; `z` is its BASE elevation; (x, y) its plan centre.
+struct LayoutZone
+{
+    int    zone   = 2;       // 0 | 1 | 2  (the IEC 60079-10-1 vocabulary)
+    scalar radius = 0.0;     // [m] about the item's plan centre
+    scalar height = 0.0;     // [m] above the item's base elevation
+};
+
+struct LayoutItem
+{
+    std::string id;            // EquipmentSizing::itemId(), or a non-process name
+    bool        nonProcess = false;
+    std::string kind;          // the sheet's `equipment` word, or the declared kind
+    std::string sector;        // the item's stamp; empty on a flat case / non-process
+    std::string shape;         // cylinder | box
+    std::string orientation;   // vertical | alongX | alongY
+    std::string footprintFrom; // published | declared
+    scalar x = 0, y = 0, z = 0;
+    scalar dx = 0, dy = 0, dz = 0;
+    //  WHAT THE CASE DECLARED ABOUT ITS HAZARDS.  A release source carries
+    //  its zones (possibly none: it still counts for the wind); an ignition
+    //  source carries the case's reason.
+    bool                    release = false;
+    std::string             releaseSource;
+    std::string             releaseReason;
+    std::vector<LayoutZone> zones;
+    std::string             ignition;    // the declared reason; empty = not one
+};
+
+struct LayoutArea
+{
+    std::string sector;
+    scalar xMin = 0, xMax = 0, yMin = 0, yMax = 0;
+};
+
+struct LayoutSeparationRule
+{
+    std::string a, b;          // two equipment kinds (unordered)
+    scalar      distance = 0;  // [m]
+};
+
+struct LayoutSeparationTable
+{
+    std::string                       source;
+    std::string                       reason;
+    std::string                       measure;   // edgeToEdge | centreToCentre
+    std::vector<LayoutSeparationRule> rules;
+};
+
+struct LayoutWind
+{
+    bool        present      = false;
+    scalar      fromDeg      = 0;   // the TRUE bearing the wind blows FROM
+    scalar      planNorthDeg = 0;   // the TRUE bearing of the plan's +y axis
+    scalar      halfAngleDeg = 0;   // the declared downwind sector, +/-
+    scalar      reach        = 0;   // [m] centre to centre
+    std::string source;
+    std::string reason;
+};
+
+//  One finding.  `kind` is separation | outsideArea | ignitionInZone |
+//  ignitionDownwind | deadRule; `a`/`b` the items (b empty where one item or
+//  one rule is concerned); `value` the measured distance and `limit` the
+//  declared one, both in metres.  `id` is the finding's stable identity,
+//  `<kind>:<a>:<b>`, which the golden `layout` kind names.
+struct LayoutFinding
+{
+    std::string id;
+    std::string kind;
+    std::string a, b;
+    scalar      value = 0;
+    scalar      limit = 0;
+    std::string message;
+};
+
+struct PlantLayoutRecord
+{
+    std::vector<LayoutItem>            items;
+    std::vector<LayoutArea>            areas;
+    std::vector<LayoutSeparationTable> separation;
+    LayoutWind                         wind;
+    std::vector<LayoutFinding>         findings;
+    //  Sized items the layout does not place.  `unplaced` are placeable items
+    //  the case left out (announced); `internal` are items that live inside
+    //  or on another one (a tray stack, a catalyst charge, a relief valve) and
+    //  are never placed on their own.
+    std::vector<std::string>           unplaced;
+    std::vector<std::string>           internal;
+
+    bool present() const { return !items.empty(); }
+};
+
 } // namespace Choupo

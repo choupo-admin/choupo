@@ -273,6 +273,12 @@ const std::map<std::string, UnitSpec>& table()
         //  so the two can never mean different things.
         { "percent", UnitSpec{ 1.0e-2,      Dims::dimensionless } },
         { "kg/kg",   UnitSpec{ 1.0,         Dims::dimensionless } },   // mass ratio (e.g. dry resin per kg water)
+        //  THE DEGREE OF ARC (2026-10-17, DEV.md 4c C75).  An angle is
+        //  dimensionless and its canonical form is the radian, so `deg`
+        //  converts to radians; a layout's wind bearing is read in degrees off
+        //  a wind rose, and a reader that left the unit off would otherwise be
+        //  read in radians -- which is why the layout REQUIRES the unit.
+        { "deg",     UnitSpec{ 3.14159265358979323846 / 180.0, Dims::dimensionless } },
     };
     return t;
 }

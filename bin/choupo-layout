@@ -1,0 +1,51 @@
+#!/usr/bin/env bash
+# choupo-layout -- draft a plant layout (system/layoutDict) for a sized case.
+#
+#   choupo-layout --draft <caseDir> [--force]
+#
+# Solves the case (its sizing pass included), then writes a DRAFT
+# system/layoutDict: the sized items in flow order (the order the flowsheet
+# declares its units) along one line at grade, a clear gap between neighbours
+# equal to the larger plan extent of the two (a drafting spacing for access,
+# NOT a safety distance), every separation the case already declared kept,
+# and one area per sector.  It then checks the draft it wrote, in the same
+# run, so the proposal is proved to parse and to hold.
+#
+# It invents nothing: an item whose sizer published no diameter and length is
+# listed for the student to place with a declared footprint, and no
+# separation table, wind or hazardous-area zone is written for them.  The
+# file says, in its own header, that it is a proposal the student must own.
+#
+# An existing system/layoutDict is NEVER overwritten without --force; with
+# --force its separation tables, wind, declared footprints, non-process items
+# and hazard declarations are carried into the new draft.
+#
+# Exit 0: the draft was written and checked.  Exit 2: a refusal (its own
+# message names the rule and the fix).
+# Record: docs/design/a-plant-layout-is-declared-and-checked.md
+set -euo pipefail
+if [ "$#" -eq 0 ] || [ "${1:-}" = "-h" ] || [ "${1:-}" = "--help" ]; then
+    awk 'NR>=2 && (/^#/ || /^[[:space:]]*$/) { sub(/^# ?/,""); print; next } NR>=2 { exit }' "$0"
+    exit "$([ "$#" -eq 0 ] && echo 1 || echo 0)"
+fi
+
+draft=0; force=(); case_dir=""
+for a in "$@"; do
+    case "$a" in
+        --draft) draft=1 ;;
+        --force) force=(--force) ;;
+        -*) echo "choupo-layout: unknown option '$a' (see --help)" >&2; exit 2 ;;
+        *)  case_dir="$a" ;;
+    esac
+done
+if [ "$draft" -ne 1 ]; then
+    echo "choupo-layout: only --draft is implemented; the check itself runs on" \
+         "every solve of a case that carries system/layoutDict" >&2
+    exit 2
+fi
+[ -n "$case_dir" ] || { echo "choupo-layout: no case directory given" >&2; exit 2; }
+
+ROOT="$(cd "$(dirname "$0")/.." && pwd)"
+#  The catalogue is the checkout's own unless the caller named another.
+export CHOUPO_HOME="${CHOUPO_HOME:-$ROOT}"
+exec "$ROOT/choupoSolve" --layout-draft "${force[@]}" "$case_dir"

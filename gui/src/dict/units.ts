@@ -247,6 +247,8 @@ const TABLE: Record<string, UnitSpec> = {
   percent: { factor: 1.0e-2, affine: false },
   // mass ratio (e.g. dry resin per kg water)
   "kg/kg": { factor: 1.0, affine: false },
+  // the degree of arc -> radians (a layoutDict's wind bearing; DEV.md 4c C75)
+  deg: { factor: Math.PI / 180.0, affine: false },
 };
 
 export function lookupUnit(suffix: string): UnitSpec | null {

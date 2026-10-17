@@ -454,6 +454,9 @@ struct SimulationResult
     // table, populated by EconomicsPass.  `present` is false until the pass
     // runs.  The .ods / .csv cash-flow spreadsheet is built from this.
     EconomicsSummary                                              economics;
+    //  The plant layout check's conclusion (DEV.md 4c C75); empty unless the
+    //  case declares `system/layoutDict` (`postProcessing/layout/PlantLayout`).
+    PlantLayoutRecord                                             layout;
     bool                                                           converged = true;
 
     //  ---- Provenance seal, tri-state (forum 2026-08-02) -----------------

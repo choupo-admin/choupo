@@ -114,6 +114,7 @@ inline const char* advisoryHeading(const std::string& category)
     if (category == "validity")   return "EXTRAPOLATIONS AND VALIDITY";
     if (category == "provenance") return "UNVERIFIED DATA";
     if (category == "refusal")    return "REFUSED CALCULATIONS";
+    if (category == "layout")     return "PLANT LAYOUT";
     return "MODEL ASSUMPTIONS";
 }
 
