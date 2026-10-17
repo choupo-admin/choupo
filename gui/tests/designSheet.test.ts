@@ -117,7 +117,7 @@ outlets
         P           100000 Pa;
         F           0.079011624 kmol/s;
         mdot        1.9682245 kg/s;
-        vapourFraction 0;
+        vapourFraction 0.044133699;
     }
 }
 

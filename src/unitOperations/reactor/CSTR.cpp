@@ -28,6 +28,7 @@ License
 
 #include "CSTR.H"
 #include "CatalystPellet.H"
+#include "ReactorOutlet.H"
 #include "core/Constants.H"
 #include "thermo/reaction/ExpressionRate.H"
 #include "thermo/reaction/ReactionRate.H"
@@ -82,6 +83,13 @@ scalar cstrDutyKW(scalar                            F_in_kmols,
     return H_out_kW - H_in_kW;   // F[kmol/s]*h[kJ/kmol] = kW
 }
 
+//  The unit's name, for the outlet-state locus (the flowsheet names the dict).
+std::string unitNameOf(const DictPtr& dict)
+{
+    return !dict->name().empty() ? dict->name()
+                                 : dict->lookupWordOrDefault("name", "cstr");
+}
+
 } // namespace
 
 int CSTR::solve(const DictPtr& dict,
@@ -109,11 +117,12 @@ int CSTR::solve(const DictPtr& dict,
     }
     for (auto& v : z_in) v /= zsum;
 
-    // Inlet vapour fraction.  A reactor is NOT a phase-change device, so the
-    // product leaves in the SAME phase it entered: a gas-phase reaction fed
-    // superheated vapour must report a VAPOUR product, not a (silently
-    // liquid) vf = 0.  We inherit the inlet phase instead of asserting
-    // liquid; an isothermal continuation does not invent a phase boundary.
+    // Inlet vapour fraction -- the INLET's, read for pricing the inlet and,
+    // on the adiabatic/jacketed branch, as the rung of the energy balance.
+    // It is NOT the outlet's: since C73 (2026-10-17) the product is
+    // published at its OWN equilibrium (`reactorOutlet::outletState`), the
+    // old "a reactor is not a phase-change device, the product leaves in the
+    // phase it entered" having published a liquid feed's gas at vf = 0.
     // The flowsheet does NOT infer it before this unit runs: an UNPINNED
     // authored feed carries the default 0, so it is resolved here at its own
     // (T, P, z), single phase included (R-E2; DEV.md C33/C34).  A produced
@@ -409,6 +418,21 @@ int CSTR::solve(const DictPtr& dict,
     }
 
     // ---- Produced stream ------------------------------------------------
+    //  THE OUTLET MEANS ITS OWN EQUILIBRIUM (DEV.md 4c C73, 2026-10-17): its
+    //  vapour fraction is resolved at its own (T, P, z_out) by the one home
+    //  (`reactorOutlet::outletState`, ReactorOutlet.H) -- no longer copied
+    //  from the inlet under "a reactor is not a phase-change device", which
+    //  published a liquid feed's gaseous product at vf = 0.  P is the feed's:
+    //  the flowsheet fills this outlet's P = 0 with its inlet's, so that is
+    //  the pressure the stream will carry.  The duty below prices exactly
+    //  this published state (`cstrDutyKW` reads `produced_`).
+    const scalar P_feed = feedDict->lookupScalarOrDefault("P", 101325.0);
+    const bool   pinned_in =
+        feedDict->lookupScalarOrDefault("phasePinned", 0.0) > 0.5;
+    const reactorOutlet::OutletState outSt = reactorOutlet::outletState(
+        T_react, P_feed, z_out, pinned_in, vf_in, thermo, "cstr",
+        unitNameOf(dict));
+    if (verbosity >= 2) reactorOutlet::printOutletState(outSt);
     produced_.clear();
     ProcessStream out;
     out.name = "out";
@@ -416,7 +440,7 @@ int CSTR::solve(const DictPtr& dict,
     out.T    = T_react;
     out.P    = 0.0;                          // P not tracked here — set by flowsheet
     out.z    = z_out;
-    out.vf   = vf_in;                        // inherit the inlet phase (no phase change)
+    out.vf   = outSt.vf;                     // its own equilibrium (C73)
     produced_.push_back(out);
 
     // ---- KPIs (published for outer drivers / post-processors) ----------
@@ -449,13 +473,8 @@ int CSTR::solve(const DictPtr& dict,
     // the feed P used here matches the P the report will see.  Mirrors the
     // GibbsReactor fix; without it an isothermal reactor's heat of reaction
     // leaks out of globalEnergyBoundary.csv (the ~8.6% hole on process05).
-    {
-        const scalar P_ref = feedDict->lookupScalarOrDefault("P", 101325.0);
-        const bool   pinned_in =
-            feedDict->lookupScalarOrDefault("phasePinned", 0.0) > 0.5;
-        kpis_["Q_kW"] = cstrDutyKW(F_in_kmols, T, P_ref, pinned_in, vf_in,
-                                   z_in, produced_, thermo);
-    }
+    kpis_["Q_kW"] = cstrDutyKW(F_in_kmols, T, P_feed, pinned_in, vf_in,
+                               z_in, produced_, thermo);
 
     return r.converged ? 0 : 1;
 }
@@ -872,6 +891,12 @@ int CSTR::solveMultiReaction(const DictPtr&       dict,
     sVector z_out(n, 0.0);
     if (F_out > 0.0) for (std::size_t i = 0; i < n; ++i) z_out[i] = F_i_out[i] / F_out;
 
+    //  Its own equilibrium at (T_out, P, z_out) -- C73, the single-reaction
+    //  site's comment.  P is the feed's, which the flowsheet gives the outlet.
+    const bool pinned_in = dict->subDict("feed")
+        ->lookupScalarOrDefault("phasePinned", 0.0) > 0.5;
+    const reactorOutlet::OutletState outSt = reactorOutlet::outletState(
+        T_out, P, z_out, pinned_in, vf_in, thermo, "cstr", unitNameOf(dict));
     produced_.clear();
     ProcessStream out;
     out.name = "out";
@@ -879,7 +904,7 @@ int CSTR::solveMultiReaction(const DictPtr&       dict,
     out.T  = T_out;                          // a RESULT when non-isothermal
     out.P  = 0.0;                            // set by the flowsheet
     out.z  = z_out;
-    out.vf = vf_in;                          // no phase change in a reactor
+    out.vf = outSt.vf;                       // its own equilibrium (C73)
     produced_.push_back(out);
 
     // ---- KPIs ---------------------------------------------------------
@@ -919,13 +944,17 @@ int CSTR::solveMultiReaction(const DictPtr&       dict,
     // resolver -- never a per-reaction dH_rxn key).
     try
     {
-        const bool pinned_in = dict->subDict("feed")
-            ->lookupScalarOrDefault("phasePinned", 0.0) > 0.5;
         kpis_["Q_kW"] = cstrDutyKW(F_in_kmols, T, P, pinned_in, vf_in,
                                    z_in, produced_, thermo);
     }
     catch (const std::exception&) { /* a species lacks formation data -- no duty */ }
+    //  The non-isothermal balance above is solved on the inlet's phase rung;
+    //  when the published outlet is another phase, say so (ReactorOutlet.H).
+    if (!isoT && kpis_.count("Q_kW"))
+        reactorOutlet::announceEnergyRungMismatch("cstr", unitNameOf(dict),
+            tmode, T_out, vf_in, outSt.vf, kpis_["Q_kW"]);
 
+    if (verbosity >= 2) reactorOutlet::printOutletState(outSt);
     if (verbosity >= 2)
     {
         std::cout << "\n=================  CSTR (multi-reaction) Result  ====================\n"
