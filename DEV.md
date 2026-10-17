@@ -907,6 +907,25 @@ accepts today, and that is a policy call.
 
 ## 4c. Commissioned by Vítor (he ASKED for this; it is not a candidate)
 
+> **C75. A PLANT LAYOUT IN 3D: A DICTIONARY, A TOOL AND AN EDUTOOL (Vítor,
+> 2026-10-17: "Podes fazer um EduTool com isso, criar esse dicionario e
+> criar uma tool para gerar o layout 3D?" -- after a student of his had an
+> assistant draw her flowsheet's plant in 3D).**  The commander's reading,
+> put to him first: the 3D picture is the easy half; what a student learns
+> is PLACEMENT (separation distances, access, flow order, sectors as areas)
+> and what it costs (pipe lengths).  Slice 1 (dispatched): `system/
+> layoutDict` -- DECLARED positions/orientation per sized item, sectors as
+> areas, a separation table DECLARED by the case with its source (no
+> spacing table is shipped in `data/standards/`: the usual ones -- CCPS,
+> GAP 2.5.2, Mecklenburgh -- are no-grant, CLAUDE.md §10 licence policy);
+> an engine check that refuses overlaps and announces every pair closer
+> than its declared distance; `bin/choupo-layout --draft` writing a
+> PROPOSAL from the topology and the design/ sheets (announced as a draft,
+> never overwriting without --force, the choupo-init0 posture); the GUI's
+> 3D view drawing the design/ geometry at the declared positions.  Slice 2
+> (EduTool lesson) waits on Vítor's yes to its outline.  Status: slice 1
+> dispatched 2026-10-17.
+
 > **C73 + C74, AND TWO DECISIONS TAKEN (Vítor, 2026-10-17: "avança como
 > achares melhor", on the three open items after C72).**  Taken: (1)
 > `ammoniaRoutes01_screening` KEEPS 0.02 bar -- it is the case's own stated
