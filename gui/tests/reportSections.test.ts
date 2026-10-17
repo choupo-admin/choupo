@@ -22,10 +22,10 @@ import {
 
 const NONE: ReportFacts =
   { equipment: false, sheets: false, columns: false, exchangers: false, economics: false,
-    sensitivity: false };
+    sensitivity: false, layout: false };
 const ALL: ReportFacts =
   { equipment: true, sheets: true, columns: true, exchangers: true, economics: true,
-    sensitivity: true };
+    sensitivity: true, layout: true };
 
 describe("reportSections: which reports exist, decided once", () => {
   it("a bare converged run has exactly the three unconditional sections, in "
@@ -35,7 +35,7 @@ describe("reportSections: which reports exist, decided once", () => {
 
   it("every earned section appears when earned, in page order", () => {
     expect(reportSections(ALL).map((s) => s.id)).toEqual([
-      "equipment", "sheets", "utilities", "mass", "energy",
+      "equipment", "sheets", "layout", "utilities", "mass", "energy",
       "columns", "exchangers", "economics", "sensitivity",
     ]);
   });

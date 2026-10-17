@@ -674,6 +674,64 @@ export interface RunResult {
    *  cases without an economics report.  Feeds the Reports "Economic appraisal"
    *  section. */
   economics?: Economics;
+  /** The PLANT LAYOUT (DEV.md 4c C75): the plot plan the case declared in
+   *  `system/layoutDict`, as the engine read and checked it -- every item's
+   *  position and extents (its own sizing, or a declared footprint), the
+   *  sector areas, the separation tables, the wind, the hazardous-area zones
+   *  and the findings.  Absent unless the case declares a layout.  The GUI
+   *  draws it and computes no footprint, position or distance. */
+  layout?: PlantLayout;
+}
+
+/** One hazardous-area zone envelope: a vertical cylinder about the item's
+ *  plan centre, from its base elevation to `height` above it. */
+export interface LayoutZone { zone: number; radius: number; height: number }
+
+/** One placed item, in metres.  (x, y) is its plan centre, z its base
+ *  elevation; dx / dy / dz its extents along plan x, plan y and up. */
+export interface LayoutItem {
+  id: string;
+  nonProcess: boolean;
+  kind: string;
+  sector: string;
+  shape: "cylinder" | "box";
+  orientation: "vertical" | "alongX" | "alongY";
+  footprintFrom: "published" | "declared";
+  x: number; y: number; z: number;
+  dx: number; dy: number; dz: number;
+  /** The case's reason this item ignites; absent when it is not one. */
+  ignition?: string;
+  release?: { source: string; reason: string; zones: LayoutZone[] };
+}
+
+export interface LayoutArea {
+  sector: string; xMin: number; xMax: number; yMin: number; yMax: number;
+}
+
+export interface LayoutFinding {
+  id: string;
+  kind: string;          // separation | outsideArea | ignitionInZone | ignitionDownwind | deadRule
+  a: string; b: string;
+  value: number; limit: number;
+  message: string;
+}
+
+export interface LayoutWind {
+  /** True bearings in degrees: where the wind blows FROM, and where the
+   *  plan's +y axis points. */
+  from: number; planNorth: number; halfAngle: number; reach: number;
+  source: string; reason: string;
+}
+
+export interface PlantLayout {
+  items: LayoutItem[];
+  areas: LayoutArea[];
+  separation: { source: string; reason: string; measure: string;
+                rules: { a: string; b: string; distance: number }[] }[];
+  wind?: LayoutWind;
+  findings: LayoutFinding[];
+  unplaced: string[];
+  internal: string[];
 }
 
 /** One row of the year-by-year discounted-cash-flow table (the income / cash-

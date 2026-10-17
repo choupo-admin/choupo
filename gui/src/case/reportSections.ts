@@ -37,7 +37,7 @@
 
 export type ReportSectionId =
   | "equipment" | "sheets" | "utilities" | "mass" | "energy"
-  | "columns" | "exchangers" | "economics" | "sensitivity";
+  | "layout" | "columns" | "exchangers" | "economics" | "sensitivity";
 
 export interface ReportSection {
   id: ReportSectionId;
@@ -51,6 +51,8 @@ export interface ReportFacts {
   equipment: boolean;
   /** The run wrote at least one `design/` specification sheet. */
   sheets: boolean;
+  /** The case declared a plant layout and the engine published it. */
+  layout: boolean;
   /** At least one tray column the sizing pass sized. */
   columns: boolean;
   /** At least one heat exchanger with a computed U. */
@@ -72,6 +74,9 @@ export function reportSections(f: ReportFacts): ReportSection[] {
   if (f.sheets)
     out.push({ id: "sheets", title: "Equipment sheets",
       subtitle: "every specification sheet the run wrote — sector, unit, item" });
+  if (f.layout)
+    out.push({ id: "layout", title: "Plant layout (3D)",
+      subtitle: "the plot plan the case declared, as the engine checked it" });
   out.push({ id: "utilities", title: "Utilities",
     subtitle: "plant services sized by temperature level" });
   out.push({ id: "mass", title: "Global mass balance",
