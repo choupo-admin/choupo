@@ -1001,6 +1001,41 @@ accepts today, and that is a policy call.
 > be published and priced on the report's surface, or the plant's first law
 > cannot close.  19 flowsheets declare a mixer T.  Both: moved golden rows
 > LISTED to Vítor before any record.  Status: dispatched 2026-10-17.
+> **C73 and C74 MERGED 2026-10-17, together** (merges 4e1e64bb8 and
+> 2fceedf74 on `integ/c73-c74`, no conflict; rows d842dcbb6; cases
+> 9442a63a6).  The moved rows were MEASURED ON THE COMBINATION, on
+> current main, and matched the two lists exactly -- nothing else moved
+> beyond acetonePlant's columnFeed F, C1/C2 x_D_LK and vent F_alpha in the
+> 12th significant digit, NOT re-pinned.  Recorded (only the listed rows
+> taken from `--record`, every other golden line byte-identical):
+> pfr_polyesterification 5 (Q_kW, Q_boundary_kW, 3 cooling-water utility
+> rows), polycaprolactonePlant 5 (the same five; its Q_boundary_kW
+> -48.6297 -> -38.0202 kW is C73's +8.4650 plus C74's +2.1445), and
+> aceticAcid02_plant, acetonePlant, hda 2 each (Q_boundary_kW,
+> residual_kW).  Both residual_kW rows that went to round-off
+> (pfr_polyesterification -9.3303 -> 0, polycaprolactonePlant -10.6095 ->
+> 3.8e-8 kW) were DROPPED, by the recorder's own 1e-3 kW threshold -- a
+> fresh record would not pin them.  `check_energy_closure` KNOWN_OPEN
+> re-seeded with `--seed` (full steady corpus): pfr_polyesterification
+> 18.3420 % and polycaprolactonePlant 15.3450 % LEFT (both 0.0000 %);
+> aceticAcid02 stays out; KNOWN_OPEN_KW unchanged (userOp01, a `code/`
+> case `--seed` cannot run, kept).  Group B: cstr04/05/06 and pfr04 declare
+> `P 15 bar;` on `0/feed` and `0/reactorOut`, with one sentence in each
+> header (README for cstr04) -- all four PASS their existing goldens, NO
+> re-record, vf 0 at the outlet and no rung advisory.  One GUI test pinned
+> the old spelling (`vanHeerdenTool.test.ts` wrote a Pa value under the
+> dict's unit, producing `P 200000 bar;`): it now writes in bar
+> (f75bd6639).  GUI `file:line` citations into CSTR/PFR/ConversionReactor/
+> Mixer re-read on the combination: all still point at their lines.
+> Validated on the combination + main (C75 slice 2 merged in): the 63
+> cstr/pfr/conversionReactor/mixer cases 58/5 before the record and 5/0
+> after, `--fast` 73/0, `--gui` 32/0, check_inlet_resolution,
+> check_energy_closure, check_energy_boundary_pinned,
+> check_utility_allocation_pinned, check_mass_closure,
+> check_caveat_surface, check_design_sheet, check_plant_layout,
+> check_compile_clean, check_std_includes, check_wasm_dialect and
+> gate_manifest --check all OK (5 manifest claims refreshed).  NEXT: C77,
+> the adiabatic/heatExchange energy solves on the published surface.
 
 > **C72. A CONVERSION REACTOR'S OUTLET MEANS ITS OWN EQUILIBRIUM (Vítor,
 > 2026-10-17: "Aprovo o 2, avança" -- approving the commander's proposal to
