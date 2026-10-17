@@ -921,7 +921,22 @@ accepts today, and that is a policy call.
 > on the result JSON (rows of sensitivity.csv, its order, its caveat; only
 > when declared), 36 `sens_*_value_{low,high}` rows appended, Reports draws
 > the tornado in the engine's order; NOT yet looked at in a browser.
-> Status of C72: dispatched 2026-10-17.
+> C72 MERGED 2026-10-17: the outlet's vf is `equilibriumAt` at its own
+> (T, P, z_out) in the unit's own thermo world, the duty priced on that
+> state; a declared inlet phase is NOT carried (a statement about the
+> inlet) and a departure is announced once with its remedy.  NO golden row
+> moved (13 cases compared number by number; only chlorophenol01's
+> unpinned `crude` vf 0.397 -> 0.472).  The 2026-08-24 witness (liquid
+> esterification, 350 K) re-built in scratch: vf 0, closes 0.0000 kW.
+> Gate `check_inlet_resolution` arm (m), 4 sabotages.  Validated on top of
+> main (tornado + includes): conversionReactor cases 12/0, `--gui` 31/0,
+> `--fast` 73/0.  FINDINGS for Vítor: (a) ammoniaRoutes01 keeps 0.02 bar
+> for its own stated reason, the LHV basis -- at 1 atm water condenses
+> (HHV), a pedagogy call; (b) `cstr` and `pfr` still carry their inlet's
+> vf (`CSTR.cpp:419,882`, `PFR.cpp:414,1090`), the same shape -- next slice
+> if he extends the ruling.  Also 2026-10-17: `check_std_includes` was red
+> on main (10 borrowed headers from C66/C67/C69), fixed without moving a
+> line (59d921170).
 
 > **C71. ADD THE UPLOADED CASE `aceticAcid02_plant` (Vítor, 2026-10-14:
 > "Podes adicionar este caso ao repositorio?").**  A sealed plant case
