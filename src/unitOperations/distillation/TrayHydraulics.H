@@ -102,6 +102,30 @@ Class
       Sinnott, R.K., Coulson & Richardson's Chemical Engineering, Vol. 6,
         Chemical Engineering Design [h_d, h_ow, h_r, h_dc, h_b, u_h,min].
 
+    THE LIQUID DENSITY, AND A LIQUID THAT CARRIES A SUPERCRITICAL COMPONENT
+    (2026-10-17, DEV.md 4c C79).  A tray liquid may carry a trace of a
+    component above its critical temperature -- CO and dimethyl ether in the
+    lights column of `aceticAcid02_plant`, at 403 K and 1.5 bar.  Such a
+    component has no saturated-liquid molar volume: the Rackett closure takes
+    (1 - T/Tc)^(2/7) of a negative number and returns NaN, and the
+    mole-weighted mixture that `ThermoPackage::density` builds is NaN with
+    it.  Before this date that NaN went through every head unseen: in DESIGN
+    mode the required diameter came out NaN, `std::max(0, NaN)` kept 0, and
+    the pass refused with "two downcomers leave no active area" about a
+    column whose downcomers were 12 % of nothing; in RATING mode it printed
+    "0.0 % of flood ... dP -nan" at exit 0.
+    The density now comes from ONE door, `liquidDensity` below, which does
+    not compute a density of its own: it asks `thermo/PricedDensity` (the
+    one home of WHICH components a phase density can be asked over, the
+    valve's and the storage tank's choice too) and then asks the package
+    the same question over the components it can price, renormalised.  The
+    MASS traffic still counts every component.  What was left out travels
+    in the Result, so the caller announces it once with the unit's name.
+    When nothing is left out the question is asked of the composition itself,
+    so a column without such a component is unchanged to the bit.
+    And every hydraulic number is REQUIRED to be finite: one that is not
+    refuses by name, naming the tray and the quantity, rather than printing.
+
     NOT implemented, deliberately: the Kister & Haas (1990) entrainment-flood
     correlation.  It is the better-grounded model and it IS algebraic, but two
     of its constants could not be checked against a primary source, and a
@@ -195,7 +219,32 @@ public:
         bool   designed        = false;
         bool   lowFlowParam    = false;  // F_LV < 0.03 somewhere: fit unreliable
         bool   weepChecked     = false;
+
+        //  THE COMPONENTS THE TRAY LIQUID DENSITY LEFT OUT (C79): the union
+        //  of their names over every tray, ", "-separated, and the largest
+        //  mole fraction of the liquid they made up on any one tray.  Empty
+        //  and zero on every column whose liquid the package prices whole.
+        std::string liquidDensityDropped;
+        scalar      liquidDensityDroppedMax = 0.0;
     };
+
+    //  A liquid density as the hydraulics ask for it (see the header): the
+    //  package's own density over the components `pricedDensity::select`
+    //  keeps, and what it left out.  Throws by name when no component of the
+    //  liquid can be priced.
+    struct LiquidDensity
+    {
+        scalar      rho             = 0.0;   // kg/m3
+        scalar      droppedFraction = 0.0;   // mole fraction left out
+        std::string dropped;                 // their names, ", "-separated
+    };
+    static LiquidDensity liquidDensity(const ThermoPackage& thermo,
+                                       scalar T, scalar P, const sVector& x);
+
+    //  Merge one reading's left-out components into a running union
+    //  (names, largest fraction) -- the one place the union is formed.
+    static void noteDropped(const LiquidDensity& d, std::string& names,
+                            scalar& maxFraction);
 
     static Geometry readGeometry(const DictPtr& hyd);
 

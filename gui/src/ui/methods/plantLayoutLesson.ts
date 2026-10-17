@@ -143,13 +143,13 @@ export const PLANT_LAYOUT_STEPS: readonly LessonStep[] = [
         + "standing vessel)", unit: "m" },
     ],
     note: "The extents of a standing cylinder, as the engine sets them: "
-      + "src/postProcessing/layout/PlantLayout.cpp:370.  The pairs it reads a "
+      + "src/postProcessing/layout/PlantLayout.cpp:381.  The pairs it reads a "
       + "size from are listed at PlantLayout.cpp:198-201, keyed on the KEYS a "
       + "sizer published, never on its kind word; the items never placed on "
       + "their own at PlantLayout.cpp:209; the box declared on an item with "
-      + "its own size refused at PlantLayout.cpp:532; and an item with no size "
+      + "its own size refused at PlantLayout.cpp:559; and an item with no size "
       + "and no declared box refused, with no size invented, at "
-      + "PlantLayout.cpp:544.",
+      + "PlantLayout.cpp:571.",
   },
 
   // ---- Part 2: separation distances ---------------------------------------
@@ -185,7 +185,7 @@ export const PLANT_LAYOUT_STEPS: readonly LessonStep[] = [
     note: "The edge-to-edge distance of two standing cylinders: "
       + "src/postProcessing/layout/PlantLayout.cpp:137.  Which of the two the "
       + "check uses is read from the table's measure word at "
-      + "PlantLayout.cpp:654-656, and a table that does not declare one is "
+      + "PlantLayout.cpp:691-693, and a table that does not declare one is "
       + "refused at PlantLayout.cpp:265.",
   },
   {
@@ -216,9 +216,9 @@ export const PLANT_LAYOUT_STEPS: readonly LessonStep[] = [
       { sym: "k_b", means: "the kind of item b" },
     ],
     note: "The kind is read from the design sheet at "
-      + "src/postProcessing/layout/PlantLayout.cpp:525; a pair of kinds "
+      + "src/postProcessing/layout/PlantLayout.cpp:552; a pair of kinds "
       + "declared twice is refused at PlantLayout.cpp:308; a pair closer than "
-      + "its distance is ANNOUNCED, not refused, at PlantLayout.cpp:658.",
+      + "its distance is ANNOUNCED, not refused, at PlantLayout.cpp:695.",
   },
   {
     n: 5,
@@ -275,9 +275,9 @@ export const PLANT_LAYOUT_STEPS: readonly LessonStep[] = [
         + "plan extents", unit: "m" },
     ],
     note: "The draft's gap and position: "
-      + "src/postProcessing/layout/PlantLayout.cpp:982-983, then pushed out "
+      + "src/postProcessing/layout/PlantLayout.cpp:1019-1020, then pushed out "
       + "further by every declared separation and rounded UP to the "
-      + "centimetre the file prints (PlantLayout.cpp:998), so a printed "
+      + "centimetre the file prints (PlantLayout.cpp:1035), so a printed "
       + "position never sits closer than the rule it was placed by.",
   },
   {
@@ -314,7 +314,7 @@ export const PLANT_LAYOUT_STEPS: readonly LessonStep[] = [
       + "stream and the advisory log that the caveat block and the result "
       + "replay: src/postProcessing/layout/PlantLayout.cpp:81-82; the block's "
       + "heading is src/core/AdvisorySummary.H:117.  The overlap refusal: "
-      + "PlantLayout.cpp:585-586.  On the witness the condition puts the drum "
+      + "PlantLayout.cpp:612-613.  On the witness the condition puts the drum "
       + "at x of about 61.61 m or more; the bench's x = 62 m clears it.",
   },
   {
@@ -371,9 +371,9 @@ export const PLANT_LAYOUT_STEPS: readonly LessonStep[] = [
         + "checked (reach)", unit: "m" },
     ],
     note: "The downwind direction: src/postProcessing/layout/"
-      + "PlantLayout.cpp:742; the true bearing and the angle off downwind, "
-      + "taken on the circle between -180 and 180 deg: PlantLayout.cpp:752-755; "
-      + "the reach: PlantLayout.cpp:751.  An angle with no unit is refused at "
+      + "PlantLayout.cpp:779; the true bearing and the angle off downwind, "
+      + "taken on the circle between -180 and 180 deg: PlantLayout.cpp:789-792; "
+      + "the reach: PlantLayout.cpp:788.  An angle with no unit is refused at "
       + "PlantLayout.cpp:106, and an item's ignition declaration is read at "
       + "PlantLayout.cpp:221.  This is a SECTOR test, not a dispersion model: "
       + "it knows nothing of the gas's density, the release rate or the "
@@ -420,7 +420,7 @@ export const PLANT_LAYOUT_STEPS: readonly LessonStep[] = [
       { sym: "h_\\mathrm{z}", means: "the zone's declared height above that "
         + "base", unit: "m" },
     ],
-    note: "The envelope test: src/postProcessing/layout/PlantLayout.cpp:718-721, "
+    note: "The envelope test: src/postProcessing/layout/PlantLayout.cpp:755-758, "
       + "with the plan distance from a point to a footprint at "
       + "PlantLayout.cpp:161.  The engine does not classify anything and does "
       + "not ask whether the equipment inside a zone is certified for it: it "

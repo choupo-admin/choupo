@@ -251,6 +251,18 @@ struct EquipmentSizing
         return equipmentTag.empty() ? unitName : unitName + "/" + equipmentTag;
     }
 
+    //  WOULD `unit` HAVE MINTED `id`?  The inverse of `itemId()`, kept beside
+    //  it so the id's shape has one home: a reader holding only an id and the
+    //  name of a unit whose sizer REFUSED (so no record exists to ask) can
+    //  tell whether the id was one of that unit's items -- the unit's own
+    //  name, or `unit/<tag>` (C79, the plot plan).
+    static bool isItemOf(const std::string& id, const std::string& unit)
+    {
+        return id == unit
+            || (id.size() > unit.size() && id.compare(0, unit.size(), unit) == 0
+                && id[unit.size()] == '/');
+    }
+
     //  THE SIZE, AND THE UNIT IT IS IN.  Write through `set()`; never touch
     //  the two maps directly.
     //
@@ -783,9 +795,10 @@ struct LayoutWind
 };
 
 //  One finding.  `kind` is separation | outsideArea | ignitionInZone |
-//  ignitionDownwind | deadRule; `a`/`b` the items (b empty where one item or
-//  one rule is concerned); `value` the measured distance and `limit` the
-//  declared one, both in metres.  `id` is the finding's stable identity,
+//  ignitionDownwind | deadRule | sizingRefused; `a`/`b` the items (b empty
+//  where one item or one rule is concerned; for sizingRefused, b is the
+//  sizing entry whose sizer refused, and value/limit carry nothing); `value`
+//  the measured distance and `limit` the declared one, both in metres.  `id` is the finding's stable identity,
 //  `<kind>:<a>:<b>`, which the golden `layout` kind names.
 struct LayoutFinding
 {

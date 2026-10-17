@@ -127,16 +127,23 @@ rests on. After a run the sheets land in `design/`, one folder per unit.
 | `reactor` | vessel | a **declared volume** (3 m³), a hand calculation written out in the postDict — an equilibrium reactor has no volume of its own, and this one does not follow the run |
 | `condenser` | vessel (the knock-out drum) | vapour residence time |
 | `degasser` | vessel | vapour residence time — a liquid drum, so the volume is a **lower bound** |
+| `lightsColumn` | shell (vessel), tray stack, condenser and reboiler (shell-and-tube) | the shell's diameter is the **tray-hydraulics pass's**, in design mode (80 % of flood on the worst tray; the `hydraulics {}` block in `system/flowsheetDict`, every geometry number **assumed**); its height is 18 trays × 0.5 m plus two end spaces; the two exchangers are A = Q/(U·LMTD) on the column's own duties, U **assumed** and each LMTD a hand calculation written out in the postDict |
+
+The lights column could not be sized until 2026-10-17: the liquid on its
+trays carries a trace of CO and dimethyl ether above their critical
+temperatures, which have no liquid density, and the NaN went through every
+hydraulic number. The engine now takes that liquid's density over the other
+components — as the let-down valve already did — and **says so** in the run
+(the KPI `liquidDensityUnpricedFraction_max` is the largest share left out);
+a hydraulic number that is not finite now refuses by name instead of
+printing. Two things are left for you: the **weep check is not performed**
+(`K2` is read off a chart for your own tray, and nobody has read it), and
+the column has **no reflux drum** (its sizer needs the KPI
+`Q_condensate_m3_s`, which this column's `simultaneous` solver does not
+publish).
 
 **Not sized:**
 
-* `lightsColumn` — **a finding, not a choice.** Its sizer takes the tower
-  diameter from the tray-hydraulics pass, and on this column that pass finds
-  no finite diameter (measured 2026-10-17: in design mode it refuses, in
-  rating mode it prints "0.0 % of flood, column dP -nan"). The likely cause
-  is the liquid density of the trays' liquid, which carries a trace of CO
-  above its critical temperature. No size is invented in its place, so the
-  column is on neither the design sheets nor the plot plan.
 * `M1`, `M2` (pipe junctions), `purgeSplit` (a tee) and `letdown` (a control
   valve) — no vessel, no area, no driver, so no item.
 
@@ -158,10 +165,12 @@ data**, stated so on each line with its `source` and `reason`. None comes
 from a spacing or hazardous-area standard: Choupo ships no such table (the
 published ones grant no redistribution), so a real project takes its numbers
 from the standard its client specifies and from the site's wind rose. The
-three vessels take their size from their own design sheets; the preheater
-(sized as an area, not a shell) and the control room have DECLARED boxes.
-The lights column is not on the plan (see §6); the file leaves room for it
-east of the degasser.
+three vessels and the column's shell take their size from their own design
+sheets (the column's tray stack lives inside its shell); the preheater
+(sized as an area, not a shell), the lights column's condenser and reboiler
+(also areas) and the control room have DECLARED boxes. The column is **not** declared a release source — its zones are yours to
+declare, and declaring one adds a fourth downwind finding against the
+control room.
 
 **Redraw it** with `bin/choupo-layout --draft --force .` from the case
 directory: it lines the sized items up in flow order again and keeps the

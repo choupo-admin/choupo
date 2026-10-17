@@ -20,15 +20,20 @@
   the separation table, the wind, the declared box, the control room and the
   zones below, and lines the process items up again.
 
-  WHAT IS ON THE PLAN AND WHAT IS NOT.  Four items: the sized items of
-  system/postDict.  The LIGHTS COLUMN is not on it, because it is not sized
-  (system/postDict says why: the tray hydraulics cannot rate its trays
-  today, and no size is invented for it).  The space east of the degasser,
-  around x = 36 m, is where this file would put it -- leave room for a tower
-  of the order of 1 m across and 12 m tall when you move things.
+  WHAT IS ON THE PLAN AND WHAT IS NOT.  Seven items: the sized items of
+  system/postDict.  The LIGHTS COLUMN stands east of the degasser at
+  x = 36 m (added 2026-10-17, DEV.md 4c C79, once its trays could be
+  rated): its shell from its own sizing (a tower about 0.34 m across and
+  11.2 m tall), its condenser and reboiler as DECLARED boxes beside it (they
+  are sized as areas, not shells), and its tray stack inside the shell
+  (never placed on its own).  The column is NOT declared a release source
+  here, although it holds CO and acetic acid vapour at 1.5 bar: its zones
+  are the groups' to declare -- and declaring one adds a FOURTH downwind
+  finding against the control room, which is part of the same exercise.
 
-  WHAT IS THE ENGINE'S AND WHAT IS OURS.  The three vessels' diameters and
-  heights are their sizers' own (design/<unit>/vessel).  EVERYTHING ELSE IN
+  WHAT IS THE ENGINE'S AND WHAT IS OURS.  The four vessels' diameters and
+  heights are their sizers' own (design/<unit>/vessel, and
+  design/lightsColumn/shell).  EVERYTHING ELSE IN
   THIS FILE IS AN AUTHOR-SET ASSUMPTION FOR THE STUDENTS TO REPLACE WITH
   THEIR OWN SITE DATA: every position, the preheater's box, every separation
   distance, the wind, and every hazardous-area zone extent.  They are round
@@ -112,6 +117,37 @@ items
             reason  "the off-gas (CO and acetic acid vapour) released at 1.5 bar";
             zones   ( { zone 1; radius 1.5 m; height 3 m; } { zone 2; radius 4.5 m; height 5 m; } );
         }
+    }
+
+    //  ---- the lights column (DEV.md 4c C79) -------------------------------
+    //  The shell: D and H from its own sizing (design/lightsColumn/shell).
+    {
+        item        "lightsColumn/shell";
+        x           36 m;
+        y           0 m;
+        z           0 m;
+        orientation vertical;
+    }
+    //  The overhead condenser and the reboiler are sized as AREAS (0.77 and
+    //  2.8 m2 on the base case), so their plan boxes are DECLARED -- by hand,
+    //  a single small shell each, on saddles.  Both are placed beside the
+    //  tower at grade; a real condenser often stands on a structure near the
+    //  top of the column, which this plan does not draw.
+    {
+        item        "lightsColumn/condenser";
+        x           36 m;
+        y           5 m;
+        z           0 m;
+        orientation alongX;
+        footprint   { length 2.5 m; width 0.4 m; height 0.6 m; }   // author-set
+    }
+    {
+        item        "lightsColumn/reboiler";
+        x           40 m;
+        y           0 m;
+        z           0 m;
+        orientation alongY;
+        footprint   { length 3 m; width 0.6 m; height 0.8 m; }   // author-set
     }
 
     //  The control room is not equipment the flowsheet sizes: a NON-PROCESS

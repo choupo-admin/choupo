@@ -14,7 +14,8 @@
   optimisation, and adding one is a `costing {}` block (see
   greenAmmoniaPEQ_baseCase for the shape).
 
-  WHAT IS SIZED, AND ON WHAT BASIS.  Four of the nine units, one item each:
+  WHAT IS SIZED, AND ON WHAT BASIS.  Five of the nine units -- one item
+  each, and four for the lights column:
 
     preheater     (phaseChanger)      shellTubeHX, A = Q/(U*LMTD): Q is the
                   unit's own duty, the LMTD is COMPUTED from its own inlet
@@ -41,18 +42,19 @@
                   its volume is a LOWER BOUND, as the PEQ case's let-down
                   drums are.
 
-  THE LIGHTS COLUMN IS NOT SIZED, and that is a finding, not a choice.  Its
-  sizer exists (`type distillationColumn;`, five items) and takes the
-  tower's DIAMETER from the tray-hydraulics pass (a `hydraulics {}` block on
-  the unit).  Measured on 2026-10-17: on this column that pass finds no
-  finite diameter -- in DESIGN mode it refuses ("two downcomers leave no
-  active area"), and in RATING mode (a declared diameter) it prints "0.0 %
-  of flood, column dP -nan" at exit 0.  The likely cause is the liquid
-  density of the trays' liquid, which carries a trace of CO above its
-  critical temperature; the valve upstream prices that density without CO
-  and says so, the tray hydraulics do not.  Nothing is invented in its
-  place: the column stays off the design sheets and off the plot plan until
-  the engine can rate its trays (found during DEV.md 4c C76).
+  THE LIGHTS COLUMN (`type distillationColumn;`) yields FOUR items: the
+  shell (a vessel), the tray stack (inside it), the condenser and the
+  reboiler (shell-and-tube).  The shell's DIAMETER is the tray-hydraulics
+  pass's, in DESIGN mode (the unit's `hydraulics {}` block in
+  system/flowsheetDict).  Until 2026-10-17 that pass could not rate these
+  trays: their liquid carries a trace of CO and dimethyl ether above their
+  critical temperatures, which have no liquid density, and the NaN went
+  through every head (design mode refused with a misleading "two downcomers
+  leave no active area", rating mode printed "dP -nan" at exit 0 -- found
+  during DEV.md 4c C76).  Since DEV.md 4c C79 the trays' liquid density is
+  taken over the other components, as the let-down valve's already was, and
+  the run SAYS so; a hydraulic number that is not finite refuses by name.
+  The column has no reflux drum here (its entry says why).
 
   WHAT IS NOT SIZED, and why it is not an omission: M1 and M2 are pipe
   junctions, purgeSplit a tee and letdown a control valve -- no vessel, no
@@ -65,7 +67,7 @@
   none cites a source because none was read.  The rules they follow:
     * pressureDesign = 1.1 x the highest operating pressure the item sees,
       rounded UP to a whole bar: 33 bar on the 30 bar side, 2 bar on the
-      1.5 bar side (the degasser);
+      1.5 bar side (the degasser and the lights column);
     * MATERIAL: SS316 on every item, because every one of them touches
       acetic acid hot.  Whether SS316 resists acetic acid at 460 K is NOT
       checked here: the material records carry no corrosion data.  It is the
@@ -110,6 +112,41 @@ sizing
                         flowKey F_beta;  flowUnit kmol/s;
                         L_over_D 3;  pressureDesign 2;
                         corrosionAllow 0.003;  jointEfficiency 1.0; } }
+
+        //  ---- the lights column: shell, trays, condenser, reboiler -------
+        //  THE DIAMETER IS THE TRAY HYDRAULICS' (the unit's `hydraulics {}`
+        //  block in system/flowsheetDict, DESIGN mode); the height is the
+        //  tray count times the spacing plus the two end spaces below.
+        //  THE TWO LMTDs ARE HAND CALCULATIONS on the base case (redo them
+        //  when the plant moves): the condenser at the top-tray temperature
+        //  (KPI T_top, 400.7 K) against cooling water 298.15 -> 308.15 K,
+        //  LMTD = 10 / ln(102.5/92.5) = 97 K; the reboiler at the bottom
+        //  temperature (KPI T_bottom, 404.1 K) against MP steam at 457.2 K
+        //  (LP steam, at 400.3 K, is colder than the reboiler and cannot
+        //  serve it), LMTD = 53 K.
+        //  NO REFLUX DRUM: the drum is sized on the KPI `Q_condensate_m3_s`,
+        //  and this column's solver (`model simultaneous;`) does not publish
+        //  it -- its stage list carries the condenser as stage 0 with no
+        //  vapour, and the KPI is written from that stage's vapour (found
+        //  during DEV.md 4c C79, named there, not fixed).  A `refluxDrum {}`
+        //  block here would be announced as not built.
+        { unitName lightsColumn;  type distillationColumn;  material SS316;
+          designRules { traySpacing 0.50;       // m -- the SAME spacing as the
+                                                // unit's hydraulics block
+                        pressureDesign 2;       // 1.1 x 1.5 bar, rounded up
+                        corrosionAllow 0.003;  jointEfficiency 1.0;
+                        disengagementHeight 1.2;  // m above the top tray -- ASSUMED
+                        sumpHeight 1.5;           // m below the bottom tray -- ASSUMED
+                        trayMaterial stainlessSteel;  // the class that prices the
+                                                      // trays if a costing pass is added
+                        condenser { U 500;      // W/m2/K, condensing vapour against
+                                                // water -- ASSUMED
+                                    LMTD 97;    // K -- the hand calculation above
+                                    pressureDesign 2; }
+                        reboiler  { U 800;      // W/m2/K, boiling acid against
+                                                // condensing steam -- ASSUMED
+                                    LMTD 53;    // K -- the hand calculation above
+                                    pressureDesign 2; } } }
     );
 }
 

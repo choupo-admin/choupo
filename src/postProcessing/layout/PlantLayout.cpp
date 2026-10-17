@@ -349,6 +349,17 @@ std::vector<const EquipmentSizing*> itemsInFlowOrder(const SimulationResult& r)
     return out;
 }
 
+//  THE SIZING ENTRY WHOSE SIZER REFUSED THE ITEM `id`, or null (C79).  The
+//  id's shape is asked of `EquipmentSizing::isItemOf`, the inverse of
+//  `itemId()` beside it -- no record exists to ask, because the sizer threw.
+const std::pair<const std::string, std::string>*
+refusedSizingOf(const SimulationResult& r, const std::string& id)
+{
+    for (const auto& e : r.sizingRefusals)
+        if (EquipmentSizing::isItemOf(id, e.first)) return &e;
+    return nullptr;
+}
+
 //  The known sector names: every unit's stamp.
 std::set<std::string> sectorsOf(const SimulationResult& r)
 {
@@ -447,7 +458,9 @@ PlantLayoutRecord evaluate(const Dictionary& d, const SimulationResult& r,
 {
     PlantLayoutRecord rec;
 
-    if (r.sizings.empty())
+    //  A run whose sizing pass REFUSED every unit sized "nothing" too, but it
+    //  has already said why, unit by unit; those items are announced below.
+    if (r.sizings.empty() && r.sizingRefusals.empty())
         refuse("the case declares a layout, and a layout places SIZED items"
                " -- this run sized nothing.  Declare a sizing pass"
                " (`system/postDict`, `sizing { units ( ... ); }`), or delete"
@@ -468,6 +481,8 @@ PlantLayoutRecord evaluate(const Dictionary& d, const SimulationResult& r,
     }
 
     std::set<std::string> placed;
+    //  Placed items whose sizer REFUSED: (item, sizing entry, its refusal).
+    std::vector<std::vector<std::string>> refusedItems;
     std::size_t n = 0;
     for (const auto& e : d.lookupDictList("items"))
     {
@@ -503,6 +518,18 @@ PlantLayoutRecord evaluate(const Dictionary& d, const SimulationResult& r,
         if (isItem)
         {
             auto s = r.sizings.find(it.id);
+            //  ITS SIZER REFUSED (C79): the item is left UNPLACED and
+            //  announced below, and the run goes on.  A refused sizer is
+            //  already its own reported failure; a plot plan must not turn
+            //  one missing sheet into a missing run.
+            const auto* refusedBy = (s == r.sizings.end())
+                                  ? refusedSizingOf(r, it.id) : nullptr;
+            if (refusedBy)
+            {
+                refusedItems.push_back({ it.id, refusedBy->first,
+                                         refusedBy->second });
+                continue;
+            }
             if (s == r.sizings.end())
             {
                 std::ostringstream o;
@@ -634,6 +661,16 @@ PlantLayoutRecord evaluate(const Dictionary& d, const SimulationResult& r,
         rec.findings.push_back(f);
         announce(severity, "layout '" + a + "'", message);
     };
+
+    //  Placed items whose sizer refused: left unplaced, said by name with
+    //  the sizer's own reason, so the reader is sent to the sizing table.
+    for (const auto& ri : refusedItems)
+        addFinding("sizingRefused", ri[0], ri[1], 0.0, 0.0, "warning",
+            "`" + ri[0] + "` is declared on the plot plan, and the sizing"
+            " pass could not size `" + ri[1] + "` (its FAILED line: \""
+            + ri[2] + "\").  The item is left UNPLACED -- no size is"
+            " invented, and the run is not refused for it; fix the sizing"
+            " and it takes its declared place");
 
     //  Separation, pair by pair.
     std::map<std::pair<std::string, std::string>,
