@@ -924,7 +924,19 @@ accepts today, and that is a policy call.
 > never overwriting without --force, the choupo-init0 posture); the GUI's
 > 3D view drawing the design/ geometry at the declared positions.  Slice 2
 > (EduTool lesson) waits on Vítor's yes to its outline.  Status: slice 1
-> dispatched 2026-10-17.
+> dispatched 2026-10-17.  Scope added the same day ("acrescenta o vento
+> dominante e as zonas ATEX"): a declared prevailing wind and per-item
+> hazardous-area zones (0/1/2), ignition sources announced inside a zone or
+> downwind of a release.  Slice 1 BUILT on branch `claude/c75-plant-layout`
+> (not merged): `system/layoutDict`, the check in
+> `postProcessing/layout/PlantLayout` (refuses overlaps / unknown, duplicate
+> or internal items; announces shortfalls), `bin/choupo-layout --draft`,
+> golden kind `layout`, Reports "Plant layout (3D)" (three.js), witness
+> `ammonia02_full_plant` (78 rows appended, none moved), gate
+> `check_plant_layout` (7 sabotages), record
+> `docs/design/a-plant-layout-is-declared-and-checked.md`.  Validated: the
+> 20 sized cases 20/0, `--fast` 73/0, `--gui` 32/0; 84 cases byte-identical
+> but for the banner's commit.  NEXT slice named: pipe lengths.
 
 > **C73 + C74, AND TWO DECISIONS TAKEN (Vítor, 2026-10-17: "avança como
 > achares melhor", on the three open items after C72).**  Taken: (1)
