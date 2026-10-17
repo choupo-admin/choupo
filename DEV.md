@@ -907,6 +907,21 @@ accepts today, and that is a policy call.
 
 ## 4c. Commissioned by Vítor (he ASKED for this; it is not a candidate)
 
+> **C80 MERGED 2026-10-17.**  The engine routes every material stream
+> between placed items (nozzle at the item's top; one rack, declared as
+> `pipeRack {}` or an announced default; lanes in flowsheet order;
+> junctions -- mixer, splitter, valve -- on the rack at their neighbours'
+> mean x; battery limits at the rack ends; waypoint overrides, diagonals
+> refused) and publishes route, length, flow, T, P, vf inside `layout {}`;
+> every unrouted stream listed with its reason.  The 3D view draws the
+> tubes by phase (colour + particle shape + word) with flow at
+> 1.2 + 2.4 log10(1 + m) m/s, labels reduced to the id with screen-space
+> declutter, camera fitted on the plant (the live-site defects Vítor saw).
+> Golden `layout` rows appended 52/85/64, none moved; `--gui` 32/0,
+> `--fast` 73/0.  NAMED, not done: pressure drop and pipe cost; clash
+> check (a route crossing a tall item); multi-item units connect through
+> their first item; one rack per plant along x.
+
 > **C81. EXPORT THE LAYOUT AS A SELF-CONTAINED PAGE (Vítor, 2026-10-17:
 > "Avança!", on the commander's proposal after "No final vou ficar com um
 > layout gerado pelo Choupo que os alunos podem partilhar e é dinâmico?").**
