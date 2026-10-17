@@ -907,6 +907,43 @@ accepts today, and that is a policy call.
 
 ## 4c. Commissioned by Vítor (he ASKED for this; it is not a candidate)
 
+> **C77 MERGED 2026-10-17 (the energy solves on the published surface,
+> named in the C73/C74 decisions).**  The cstr's adiabatic/heatExchange
+> balance and the pfr's march solve on the outlet's own resolved surface
+> (`reactorOutlet::pricedOutlet` / `temperatureOfEnthalpy`, ONE
+> `equilibriumAt` in `ReactorOutlet.cpp`); the pfr resolves the phase at
+> every point of the bed (kinetics still on a liquid basis, said in code).
+> No golden row moved; at 1 atm an adiabatic reactor whose product boils
+> now publishes Q ~ 0 and a jacketed one Q = UA(Tc - Tout) (was +9 kW).
+> Found and fixed on the way: the cstr scan ceiling's Newton stalled on the
+> boiling kink and cstr05 at 1 atm found ONE steady state of three at exit
+> 0.  Cost: one flash per point -- ammoniaReactor04 3.3 -> 9.2 s,
+> greenAmmonia03 47.6 -> 65.2 s.  NAMED, not fixed: the cstr scan ceiling
+> is still a heuristic (composition at T + 1000 K); exposing P as a knob
+> in the van Heerden EduTool is a pedagogy call left open.
+
+> **C80. PIPES BETWEEN THE ITEMS, AND THE FLUID SEEN MOVING (Vítor,
+> 2026-10-17: "os meus alunos tinham as colunas implantadas com as
+> tubagens ligadas entre eles e até tinham o fluido a passar
+> estilizadamente!!!").**  The slice C75 already named as next (pipe
+> lengths), widened to what his students' drawing showed.  Stated defaults
+> (the commander's; pipes are new physics only in their LENGTH, which is
+> pedagogy already approved as "the trade-off becomes real when pipe
+> lengths exist"): ENGINE -- every stream joining two PLACED items becomes
+> a pipe, routed ONCE, deterministically, orthogonally (up from the source
+> nozzle to a declared rack elevation, along x then y, down to the target;
+> a case may override a route with declared waypoints), its length
+> published in a `pipes {}` result block with the stream's identity, flow,
+> phase (vf) and direction, a golden kind or an argued existing one, and
+> no pressure drop or cost yet (named as the next slice); COLUMNS appear
+> wherever a column is sized (C79 brings aceticAcid02's).  GUI -- the 3D
+> view draws each pipe as a tube along the published route, coloured by
+> phase in more than one channel (liquid / vapour / two-phase), with an
+> ANIMATED, stylised flow along the published direction (speed a
+> monotone function of the published flow, said in a legend; a toggle to
+> stop it; reduced-motion respected).  Nothing routed or computed in the
+> GUI.  Queued behind C79 (both touch PlantLayout.cpp).
+
 > **C78. THE 3D LAYOUT IN ITS OWN POP-OUT TAB (Vítor, 2026-10-17: "Mas
 > devia de haver um pop up para o layout 3d no Gui").**  Today the 3D view
 > lives only inside Reports -> "Plant layout (3D)" and the EduTool bench.

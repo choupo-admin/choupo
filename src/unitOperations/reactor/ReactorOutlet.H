@@ -119,25 +119,80 @@ OutletState outletState(scalar               T,
 //  changed for whatever prints next (the next unit's banner reads it).
 void printOutletState(const OutletState& o);
 
-//  WHAT THIS HOME DOES NOT FIX, said where it bites (C73).  A NON-ISOTHERMAL
-//  `cstr` or `pfr` (adiabatic, jacketed, cooled) finds its outlet T from an
-//  energy balance solved on the INLET's phase rung (`H_stream_formation` at
-//  the inlet's vf) -- one of the energy solves CLAUDE.md §6 enumerates as
-//  not yet on the one surface.  When the outlet's own equilibrium at that T
-//  is another phase, the T is not the adiabatic (or jacketed) temperature of
-//  the state published, and the duty published -- H_out - H_in of THAT
-//  state, the report's own reading -- carries the enthalpy of the phase
-//  change the balance never saw.  The published state is the true one at
-//  (T, P, z); the T is the balance's.  Said once (stderr + AdvisoryLog),
-//  with the published duty and the remedy, never hidden by publishing the
-//  inlet's phase again.  `mode` is the unit's own word for its balance.
-void announceEnergyRungMismatch(const std::string& unitType,
-                                const std::string& unitName,
-                                const std::string& mode,
-                                scalar             T_out,
-                                scalar             vf_in,
-                                scalar             vf_out,
-                                scalar             Q_published_kW);
+//  ---- THE ENERGY SOLVES ON THE PUBLISHED SURFACE (C77) ----------------------
+//
+//  A NON-ISOTHERMAL `cstr` or `pfr` (adiabatic, jacketed, cooled) finds its
+//  outlet T from an energy balance.  Until C77 (2026-10-17) that balance was
+//  solved on the INLET's phase rung (`H_stream_formation` at the inlet's vf)
+//  while the outlet was published at its own equilibrium (C73) and its duty
+//  priced on that state -- so when the product crossed a phase boundary the
+//  T was not the adiabatic (or jacketed) temperature of the state published,
+//  and an "adiabatic" reactor published a duty: the enthalpy of a phase
+//  change its balance never saw.  C73 SAID so (`announceEnergyRungMismatch`);
+//  C77 closes it, and the announcement went with the gap.
+//
+//  THE RULE: the enthalpy a T-solve balances is the enthalpy the outlet
+//  would be PRICED at if it were published at that T -- resolved by the
+//  rule `outletState` applies, priced by the rule `flashState::priceState`
+//  applies (the equilibrium phases of a split through `hOfState`, else the
+//  resolved single phase).  One flash per evaluation, silent (a trial T is
+//  not a state anybody reads).  `pricedOutlet` is that function; the unit's
+//  published `Q_kW` (priceState on the published stream) and the energy
+//  report then price the SAME number, so an adiabatic reactor publishes
+//  Q = 0 to the solve's tolerance and a jacketed one exactly its jacket's
+//  heat.  `F` in mol/s gives W; in kmol/s, kW.
+struct PricedState
+{
+    scalar H  = 0.0;   //  F x h on the elements datum
+    scalar vf = 0.0;   //  the vapour fraction the outlet would be published at
+};
+PricedState pricedOutlet(scalar               T,
+                         scalar               P,
+                         const sVector&       z,
+                         scalar               F,
+                         scalar               vf_in,
+                         const ThermoPackage& thermo);
+
+//  THE INVERSE, for a balance that marches the ENTHALPY and recovers T (the
+//  `pfr`): the T at which the published-surface molar enthalpy equals `h`
+//  [J/mol] at (P, z).  `Tguess` / `vfGuess` are the previous evaluation's
+//  answer: while the state stays in that one phase the inversion is a Newton
+//  on that phase's smooth rung, CONFIRMED by one resolution at the answer;
+//  when the resolution says another phase or a split, the inversion
+//  BRACKETS the root on the published surface itself (monotone in T: an
+//  equilibrium mixture's enthalpy rises through its boiling range) and
+//  closes it by false position.
+//
+//  A PURE fluid's enthalpy JUMPS at its saturation temperature: (T, P) do
+//  not fix its quality there (CLAUDE.md 3), so an enthalpy inside the jump
+//  has no T on this surface.  The inversion then returns the saturation T
+//  with `unmatched_J_per_mol` = what the published state cannot carry, and
+//  the caller announces it (`announceUnmatchedEnthalpy`).  No corpus case and
+//  no gate fixture reaches it: a mixture's enthalpy is continuous, and the
+//  product of a kinetic reactor is a mixture unless a reaction runs to exact
+//  completion on a stoichiometric feed (the `pfr`'s fraction-to-boundary
+//  commit can do that).  It is announced rather than left silent because
+//  silence there would be exactly the defect this slice closes.
+struct EnthalpyInversion
+{
+    scalar T  = 0.0;
+    scalar vf = 0.0;
+    scalar unmatched_J_per_mol = 0.0;   //  0 unless a pure fluid's jump
+};
+EnthalpyInversion temperatureOfEnthalpy(scalar               h,
+                                        scalar               P,
+                                        const sVector&       z,
+                                        scalar               Tguess,
+                                        scalar               vfGuess,
+                                        scalar               vf_in,
+                                        const ThermoPackage& thermo);
+
+//  Said once per unit (stderr + AdvisoryLog), with the duty it leaves.
+void announceUnmatchedEnthalpy(const std::string& unitType,
+                               const std::string& unitName,
+                               const std::string& mode,
+                               scalar             T_out,
+                               scalar             unmatched_kW);
 
 } // namespace reactorOutlet
 } // namespace Choupo

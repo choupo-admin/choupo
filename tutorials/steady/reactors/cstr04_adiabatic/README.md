@@ -8,8 +8,10 @@ conversion (ξ_max is 0.1389 mol/s) because the rate constant at 454 K is
 **0.889 s⁻¹**, 250 times its value at 350 K.
 
 A liquid-phase esterification at 394-454 K must be pressurised to stay
-liquid: at 1 atm the engine resolves this product as vapour, so the feed
-is declared at **15 bar**, where the product holds the liquid.
+liquid: at 1 atm this product boils inside the reactor (the energy
+balance, which carries the latent heat, stops near 362 K with part of
+the product vapour), so the feed is declared at **15 bar**, where the
+product holds the liquid.
 
 ## The lesson
 

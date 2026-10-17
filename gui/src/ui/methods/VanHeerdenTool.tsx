@@ -291,11 +291,11 @@ export function interpolateAt(
 //     the case to `heatExchange` would also require UA and T_coolant keys the
 //     witness does not declare — that is authoring new dict content, not
 //     turning a declared knob.
-//   * `P 101325 Pa;` in 0/feed — declared and perfectly addressable (pinned:
-//     it DOES resolve), but the witness runs a liquid-phase rate law whose
-//     concentrations come from Vliq: P never reaches the physics, and a knob
-//     that does not reach the physics is a placebo control (the Rayleigh
-//     "decorative V" precedent).
+//   * `P` in 0/feed — declared and addressable (pinned: it DOES resolve).
+//     It used to be called a placebo (P never reached the physics); since
+//     C73/C77 it does -- at 1 atm the product boils inside the energy balance
+//     and the hot branch drops from ~406 K to ~361 K -- so leaving it out is
+//     a curator's pedagogical choice, not a placebo argument (DEV.md 4c C77).
 //   * the Arrhenius `A` and `Ea` in constant/reactions — both addressable
 //     (pinned: they DO resolve), deliberately not exposed.  Two reasons: the
 //     Van Heerden construction is an OPERATING one (same equipment, same

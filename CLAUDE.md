@@ -1173,16 +1173,21 @@ stream carrying water) -- a unit that prices as the report does inherits the
 report's reading of an under-declared stream, so the case now declares
 `phase gas;`.  ENUMERATED, not fixed (none is in the flagship):
 `evaporativeDryer`, `coolingTower`, `absorber`,
-`stripper`, the `pfr`'s and the CSTR's adiabatic/heatExchange T-solves
-(both reactors' ISOTHERMAL duty is priced on the published outlet, which
-means its own equilibrium, since 2026-10-17, DEV.md 4c C73), `phaseChanger`,
+`stripper`, `phaseChanger`,
 the ADIABATIC `mixer` (its DECLARED-T form, which published no duty at
 all, closed 2026-10-17 by DEV.md 4c C74: it publishes `Q_kW = H(out) -
 SUM H(in)` through `priceState`), `adiabaticFlash` (and `evaporator`,
 taken off the list 2026-10-05;
 and `valve`, which this list had MISSED -- found by C64's letdown witness,
 38.66 kW, and closed 2026-10-11 by DEV.md 4c C65 item d, which is why an
-enumeration is a measurement to retake, not a list to trust);
+enumeration is a measurement to retake, not a list to trust;
+and the `pfr`'s and the CSTR's adiabatic/heatExchange T-solves, taken off
+2026-10-17 by DEV.md 4c C77: the outlet's enthalpy at each trial T is
+resolved and priced as it will be published, `reactorOutlet::pricedOutlet`
+/ `temperatureOfEnthalpy`, the `pfr` in local phase equilibrium at every
+point of its march -- their isothermal duty had been on the published
+outlet since C73; the time-integrated `batchReactor` and `dynamicCSTR` were
+NOT measured by that slice and are not claimed either way);
 and `src/reporting/BalanceMath.H` still holds its own
 copy of the rule `priceState` holds.  Gate: `check_energy_closure`'s UNIT ARM
 (an adiabatic dryer, an evaporator, a valve, and a cstr/conversionReactor

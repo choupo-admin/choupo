@@ -29,6 +29,7 @@ License
 #include "CSTR.H"
 #include "CatalystPellet.H"
 #include "ReactorOutlet.H"
+#include "core/Advisory.H"
 #include "core/Constants.H"
 #include "thermo/reaction/ExpressionRate.H"
 #include "thermo/reaction/ReactionRate.H"
@@ -117,8 +118,8 @@ int CSTR::solve(const DictPtr& dict,
     }
     for (auto& v : z_in) v /= zsum;
 
-    // Inlet vapour fraction -- the INLET's, read for pricing the inlet and,
-    // on the adiabatic/jacketed branch, as the rung of the energy balance.
+    // Inlet vapour fraction -- the INLET's, read for pricing the inlet (the
+    // T-solves price the outlet's own state, C77).
     // It is NOT the outlet's: since C73 (2026-10-17) the product is
     // published at its OWN equilibrium (`reactorOutlet::outletState`), the
     // old "a reactor is not a phase-change device, the product leaves in the
@@ -540,6 +541,11 @@ int CSTR::solveMultiReaction(const DictPtr&       dict,
     //  There is NO dH_rxn source term: on the ELEMENTS datum the heat of reaction
     //  already lives inside H, so the energy equation is simply
     //      H_out(T, xi) = H_in + Q_external.
+    //  H_out is the enthalpy the outlet would be PUBLISHED and PRICED at, were
+    //  it at that T (`reactorOutlet::pricedOutlet`, C77): resolved at its own
+    //  (T, P, z) and priced by the energy report's rule -- never on the
+    //  inlet's phase rung, which left the latent heat of a product that boils
+    //  (or condenses) out of the balance and in the published duty.
     //  This is where a CSTR shows MULTIPLICITY -- up to three steady states.  The
     //  Newton lands on ONE of them, chosen by `T_guess`; sweep it to find them all.
     auto operDict = dict->subDict("operation");
@@ -616,8 +622,20 @@ int CSTR::solveMultiReaction(const DictPtr&       dict,
     const scalar Q   = F_in * V_mol_in;      // m^3/s
     const scalar tau = V_R / Q;              // s
 
-    // Inlet enthalpy flow [W] on the ELEMENTS datum -- only when non-isothermal.
-    const scalar H_in_W = isoT ? 0.0 : F_in * thermo.H_stream_formation(T, P, vf_in, z_in);
+    // Inlet enthalpy flow [W] on the ELEMENTS datum -- only when non-isothermal --
+    // priced exactly as the published duty prices it (`cstrDutyKW`): the
+    // report's rule, so a two-phase feed is its equilibrium phases (C77).
+    const bool pinned_in = dict->subDict("feed")
+        ->lookupScalarOrDefault("phasePinned", 0.0) > 0.5;
+    const scalar H_in_W = isoT ? 0.0
+        : flashState::priceState(T, P, z_in, F_in, pinned_in, vf_in, thermo,
+                                 "cstr inlet", nullptr);
+    //  The outlet's enthalpy flow [W] at a trial T on the surface it will be
+    //  published on (ReactorOutlet.H, C77).  `Fmol` in mol/s.
+    auto H_outlet_W = [&](scalar Tk, scalar Fmol, const sVector& zz)
+    {
+        return reactorOutlet::pricedOutlet(Tk, P, zz, Fmol, vf_in, thermo).H;
+    };
 
     scalar lastRes = 0.0;
     bool  converged = true;
@@ -697,6 +715,14 @@ int CSTR::solveMultiReaction(const DictPtr&       dict,
         // extinguished, unstable and ignited steady states of a non-isothermal
         // CSTR.  We do not pretend otherwise: we SCAN, report every root we find,
         // and hand back the one nearest T_guess.
+        //
+        // The scan visits temperatures the answer is not at, and since C77
+        // each one resolves the outlet's phase (a flash, which may raise a
+        // validity advisory at a temperature nobody publishes).  The search
+        // is framed as a TRIAL (core/Advisory.H): what it raises is filed as
+        // the path, and the outlet state below, resolved at the steady state
+        // the run reports, is what speaks about the answer.
+        AdvisoryFrame walk("cstr energy-balance T search", /*trial=*/true);
         auto phi = [&](scalar Tk) -> scalar
         {
             bool ok = false;
@@ -706,7 +732,7 @@ int CSTR::solveMultiReaction(const DictPtr&       dict,
             for (std::size_t i = 0; i < n; ++i) Ftot += Fi[i];
             sVector zz(n, 0.0);
             if (Ftot > 0.0) for (std::size_t i = 0; i < n; ++i) zz[i] = Fi[i] / Ftot;
-            const scalar Hout = Ftot * thermo.H_stream_formation(Tk, P, vf_in, zz);
+            const scalar Hout = H_outlet_W(Tk, Ftot, zz);
             const scalar Qext = hx ? UA * (Tc - Tk) : 0.0;
             return Hout - H_in_W - Qext;
         };
@@ -736,8 +762,8 @@ int CSTR::solveMultiReaction(const DictPtr&       dict,
             for (std::size_t i = 0; i < n; ++i) Ftot += Fi[i];
             sVector zz(n, 0.0);
             if (Ftot > 0.0) for (std::size_t i = 0; i < n; ++i) zz[i] = Fi[i] / Ftot;
-            const scalar H_feedT = Ftot * thermo.H_stream_formation(T,  P, vf_in, zz);
-            const scalar H_atT   = Ftot * thermo.H_stream_formation(Tk, P, vf_in, zz);
+            const scalar H_feedT = H_outlet_W(T,  Ftot, zz);
+            const scalar H_atT   = H_outlet_W(Tk, Ftot, zz);
             const scalar Qext    = hx ? UA * (Tc - Tk) : 0.0;
             G = H_in_W - H_feedT;                 // released by reaction  [W]
             R = (H_atT - H_feedT) - Qext;         // sensible + exchanger  [W]
@@ -760,14 +786,14 @@ int CSTR::solveMultiReaction(const DictPtr&       dict,
         sVector zSat(n, 0.0);
         if (FtotSat > 0.0) for (std::size_t i = 0; i < n; ++i) zSat[i] = FiSat[i] / FtotSat;
 
+        auto fOf = [&](scalar Tt)
+        {
+            return H_outlet_W(Tt, FtotSat, zSat)
+                 - H_in_W - (hx ? UA * (Tc - Tt) : 0.0);
+        };
         scalar Tad = std::max(T, hx ? Tc : T);
         for (int it = 0; it < 80; ++it)
         {
-            auto fOf = [&](scalar Tt)
-            {
-                return FtotSat * thermo.H_stream_formation(Tt, P, vf_in, zSat)
-                     - H_in_W - (hx ? UA * (Tc - Tt) : 0.0);
-            };
             const scalar f = fOf(Tad), dT = 1.0e-3;
             const scalar df = (fOf(Tad + dT) - f) / dT;
             if (std::abs(df) < 1.0e-12) break;
@@ -776,6 +802,34 @@ int CSTR::solveMultiReaction(const DictPtr&       dict,
             if (Tad < Tlo) Tad = Tlo;
             if (Tad > 3000.0) { Tad = 3000.0; break; }
             if (std::abs(step) < 1.0e-6) break;
+        }
+        //  The Newton above assumes a smooth balance.  On the published
+        //  surface (C77) a product that boils puts a KINK in it at its bubble
+        //  point, and the Newton can stall there (measured: cstr04 at 1 atm
+        //  stopped at the feed's 350 K, and the scan's ceiling then sat below
+        //  the steady state).  The balance is monotone in T at a fixed
+        //  composition, so when the Newton's answer does not satisfy it, the
+        //  ceiling is BRACKETED upward from the start and bisected instead.
+        //  A Newton that converged is kept as it was.
+        const scalar Tstart = std::max(T, hx ? Tc : T);
+        if (std::abs(fOf(Tad)) > 1.0e-6 * std::max(1.0, std::abs(H_in_W))
+            && fOf(Tstart) < 0.0)
+        {
+            scalar a = Tstart, b = Tstart;
+            scalar fb = fOf(b);
+            while (fb < 0.0 && b < 3000.0)
+            {
+                a  = b;
+                b  = std::min(3000.0, b + 50.0);
+                fb = fOf(b);
+            }
+            if (fb >= 0.0)
+                for (int it = 0; it < 60 && b - a > 1.0e-6; ++it)
+                {
+                    const scalar m = 0.5 * (a + b);
+                    if (fOf(m) < 0.0) a = m; else b = m;
+                }
+            Tad = b;
         }
         scalar Thi = std::max(std::max(T, hx ? Tc : T), Tad) + 25.0;
         if (Thi > 3000.0) Thi = 3000.0;
@@ -857,6 +911,7 @@ int CSTR::solveMultiReaction(const DictPtr&       dict,
                           + (std::abs(roots[k] - T_out) < 1.0e-9
                              ? " (reported)" : "") });
         }
+        walk.close();                        // the search ends; the answer speaks
         bool ok = false;
         xi = extentsAt(T_out, ok);
         converged = ok && !roots.empty();
@@ -893,8 +948,6 @@ int CSTR::solveMultiReaction(const DictPtr&       dict,
 
     //  Its own equilibrium at (T_out, P, z_out) -- C73, the single-reaction
     //  site's comment.  P is the feed's, which the flowsheet gives the outlet.
-    const bool pinned_in = dict->subDict("feed")
-        ->lookupScalarOrDefault("phasePinned", 0.0) > 0.5;
     const reactorOutlet::OutletState outSt = reactorOutlet::outletState(
         T_out, P, z_out, pinned_in, vf_in, thermo, "cstr", unitNameOf(dict));
     produced_.clear();
@@ -948,11 +1001,18 @@ int CSTR::solveMultiReaction(const DictPtr&       dict,
                                    z_in, produced_, thermo);
     }
     catch (const std::exception&) { /* a species lacks formation data -- no duty */ }
-    //  The non-isothermal balance above is solved on the inlet's phase rung;
-    //  when the published outlet is another phase, say so (ReactorOutlet.H).
-    if (!isoT && kpis_.count("Q_kW"))
-        reactorOutlet::announceEnergyRungMismatch("cstr", unitNameOf(dict),
-            tmode, T_out, vf_in, outSt.vf, kpis_["Q_kW"]);
+    //  The non-isothermal balance above is solved on the surface the duty is
+    //  priced on (C77), so the duty IS the external heat: zero adiabatic, the
+    //  jacket's U A (T_c - T_out) jacketed.  A steady state that leaves more
+    //  is a pure product on its saturation jump (ReactorOutlet.H) -- said.
+    if (!isoT && kpis_.count("Q_kW") && !roots.empty())
+    {
+        const scalar Qext_kW  = hx ? UA * (Tc - T_out) / 1000.0 : 0.0;
+        const scalar gap_kW   = kpis_["Q_kW"] - Qext_kW;
+        if (std::abs(gap_kW) > 1.0e-6 * std::max(1.0, std::abs(H_in_W) / 1000.0))
+            reactorOutlet::announceUnmatchedEnthalpy("cstr", unitNameOf(dict),
+                tmode, T_out, gap_kW);
+    }
 
     if (verbosity >= 2) reactorOutlet::printOutletState(outSt);
     if (verbosity >= 2)
