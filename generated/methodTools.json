@@ -14,8 +14,8 @@
     "Process safety",
     "Flowsheeting & numerics"
   ],
-  "liveTools": 57,
-  "registryTools": 57,
+  "liveTools": 58,
+  "registryTools": 58,
   "tools": [
     {
       "id": "what-is-temperature",
@@ -394,6 +394,13 @@
       "discipline": "Process safety",
       "teaches": "Why a relief system is sized for the worst credible cause (blocked outlet, external fire, cooling or reflux failure, runaway, tube rupture, thermal expansion), the pressure ladder from operating to set, MAWP and the allowed accumulation, the devices and the back pressure behind them, the published gas, liquid and fire-case equations worked on fluid properties the engine computes -- an acetone drum in a fire, and an ammonia loop whose 50 bar version needs a relief valve about four and a half times larger -- where the relief goes after the valve, and why a runaway vent is two-phase and larger.",
       "href": "/app/?workspace=methods&tool=overpressure"
+    },
+    {
+      "id": "pool-fire",
+      "label": "Pool-fire radiation and the distance it sets",
+      "discipline": "Process safety",
+      "teaches": "How far a pool fire's radiation reaches, built from the fuel up: the heat of combustion from the catalogue's formation enthalpies, the Burgess burning rate calibrated on one public-domain NIST measurement and checked on another, the flame height by Thomas and by Heskestad against measured heights, the emissive power by energy and by Mudan and Croce's smoke correlation (and why it does not fit a methanol flame), the point-source and solid-flame models side by side -- apart near the fire, the same law far away -- and the distance to four published thresholds, set beside the separation the acetic-acid plant's layout declares.",
+      "href": "/app/?workspace=methods&tool=pool-fire"
     },
     {
       "id": "plant-layout",

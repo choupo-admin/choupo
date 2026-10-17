@@ -965,6 +965,24 @@ accepts today, and that is a policy call.
 > file:line where computed; no new tutorial case; no no-grant table
 > transcribed.  Status: dispatched 2026-10-17.
 
+> **C83 MERGED 2026-10-17.**  `gui/src/ui/methods/poolFire.ts` (pure) +
+> lesson (13 steps) + bench; Process safety shelf, id `pool-fire`.  The
+> heat of combustion is Hess on the catalogue records the Explorer reads
+> (methanol 676.232 kJ/mol vapour basis; the liquid basis through the
+> engine's own Watson, held to relief02's pinned 24 520.52 J/mol).  Fuels:
+> methanol and acetone only -- the two with a public-domain measurement to
+> calibrate k-beta (NIST TN 2082); no per-fuel handbook table (no-grant,
+> and NUREG-1805 copies it).  Checked against NIST TN 2083's 1 m methanol
+> fire, which the calibration never saw (16.52 vs 16.30 g/m2s; Heskestad
+> 1.10 vs 1.10 m).  Four corrections to the brief, taught as such: the two
+> receiver models do NOT converge far away (ratio -> (4/pi) chi_E/chi_r);
+> the point source over-predicts beside a tall flame and under-predicts
+> beside a squat one; Thomas is a poor primary height for these fuels
+> (Heskestad default, flagged OUTSIDE its range for wide methanol pools);
+> Mudan & Croce is stated for gasoline/kerosene/JP-4 only.  tau = 1 (no
+> transmissivity model read); wind tilt named, not computed.  `--gui`
+> 32/0 on the branch after merging C84; no engine change, no case.
+
 > **C82. THE PLOT AREA AND THE COST OF THE LAND (Vítor, 2026-10-17:
 > "Avança", on the commander's proposal after "o layout acaba por ser
 > importante para avaliar os m2 de implementação e o custo do terreno?").**

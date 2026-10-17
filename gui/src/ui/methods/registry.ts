@@ -71,7 +71,7 @@ export type MethodToolId =
   | "least-squares" | "element-potential" | "limiting-reactant"
   | "reaction-enthalpy" | "standard-state" | "case-assembly" | "run-log"
   | "front-end-loading" | "process-safety" | "overpressure" | "letdown"
-  | "plant-layout" | "materials";
+  | "plant-layout" | "pool-fire" | "materials";
 
 /** WHAT KIND OF TOOL THIS IS, and the field exists to keep a boundary legible
  *  rather than to switch behaviour.
@@ -1274,6 +1274,36 @@ export const METHOD_TOOLS: MethodTool[] = [
       + "the relief goes after the valve, and why a runaway vent is "
       + "two-phase and larger.",
     theory: "ch:cubic-eos",
+  },
+  //  COMMISSIONED 2026-10-17 (DEV.md 4c C83): "Faz essa EduTool da radiacao
+  //  do incendio de poca, se achares importante" -- where a separation
+  //  table's numbers come from, the risk-based half of the C75 prescriptive
+  //  layout.  A CONSTRUCTION with no engine run: every substance property is
+  //  read from the catalogue record the engine reads, and the fire is the
+  //  page's own arithmetic (poolFire.ts) on published correlations, each
+  //  with its source and licence status on the page.  ON THIS SHELF and not
+  //  on "Process design & economics" beside the layout page: the question is
+  //  what a fire does to the people and equipment around it.  `theory` is
+  //  the integral-properties section, where the formation enthalpy and the
+  //  Watson latent heat the heat of combustion is built from are derived;
+  //  the Theory Guide has no fire chapter.  First version, for Vitor's
+  //  review.
+  {
+    id: "pool-fire",
+    label: "Pool-fire radiation and the distance it sets",
+    discipline: "Process safety", kind: "construction",
+    status: "live",
+    teaches: "How far a pool fire's radiation reaches, built from the fuel "
+      + "up: the heat of combustion from the catalogue's formation "
+      + "enthalpies, the Burgess burning rate calibrated on one public-domain "
+      + "NIST measurement and checked on another, the flame height by Thomas "
+      + "and by Heskestad against measured heights, the emissive power by "
+      + "energy and by Mudan and Croce's smoke correlation (and why it does "
+      + "not fit a methanol flame), the point-source and solid-flame models "
+      + "side by side -- apart near the fire, the same law far away -- and "
+      + "the distance to four published thresholds, set beside the "
+      + "separation the acetic-acid plant's layout declares.",
+    theory: "ch:integrals",
   },
   //  COMMISSIONED 2026-10-17 (DEV.md 4c C75, slice 2): "Podes fazer um
   //  EduTool com isso, criar esse dicionario e criar uma tool para gerar o
