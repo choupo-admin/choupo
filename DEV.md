@@ -907,6 +907,16 @@ accepts today, and that is a policy call.
 
 ## 4c. Commissioned by Vítor (he ASKED for this; it is not a candidate)
 
+> **STANDING RULE (Vítor, 2026-10-17: "Não cries mais casos novos!!!!
+> Usa o que já está!").**  No new tutorial case is created -- by the
+> commander or any general -- for a witness, a fixture, a demonstration or
+> an EduTool.  A slice uses the corpus as it stands (extending an existing
+> case's dicts where the feature needs it); a gate's probe lives in a
+> temporary copy of an existing case, never committed as a case.  A brief
+> that would need a new case goes to Vítor first.  (Measured the same day:
+> no case directory was added under tutorials/ since 2026-10-14 other than
+> his own two acetic-acid rungs.)
+
 > **C77 MERGED 2026-10-17 (the energy solves on the published surface,
 > named in the C73/C74 decisions).**  The cstr's adiabatic/heatExchange
 > balance and the pfr's march solve on the outlet's own resolved surface
