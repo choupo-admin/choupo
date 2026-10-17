@@ -67,3 +67,8 @@ boundary global                 Q_boundary_kW    -1276.97587088   1e-4
 boundary global                 H_products_kW    -650.760557071   1e-4
 boundary global                 residual_kW      -341.907343001   1e-4
 utility Reactor                heating.-.unserved 1                1e-4
+kpi     Mixer                  Q_kW             341.701553412    1e-4
+utility Mixer                  heating.steamLP.duty_kW 341.701553412    1e-4
+utility Mixer                  heating.steamLP.T 330              1e-4
+utility Mixer                  heating.steamLP.kg_s 0.156313610893   1e-4
+utility Mixer                  heating.steamLP.eur_h 14.7615071074    1e-4

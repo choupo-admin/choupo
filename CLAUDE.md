@@ -1174,15 +1174,18 @@ report's reading of an under-declared stream, so the case now declares
 `phase gas;`.  ENUMERATED, not fixed (none is in the flagship):
 `evaporativeDryer`, `coolingTower`, `absorber`,
 `stripper`, `pfr`, the CSTR's adiabatic/jacketed T-solves, `phaseChanger`,
-`mixer`, `adiabaticFlash` (and `evaporator`, taken off the list 2026-10-05;
+the ADIABATIC `mixer` (its DECLARED-T form, which published no duty at
+all, closed 2026-10-17 by DEV.md 4c C74: it publishes `Q_kW = H(out) -
+SUM H(in)` through `priceState`), `adiabaticFlash` (and `evaporator`,
+taken off the list 2026-10-05;
 and `valve`, which this list had MISSED -- found by C64's letdown witness,
 38.66 kW, and closed 2026-10-11 by DEV.md 4c C65 item d, which is why an
 enumeration is a measurement to retake, not a list to trust);
 and `src/reporting/BalanceMath.H` still holds its own
 copy of the rule `priceState` holds.  Gate: `check_energy_closure`'s UNIT ARM
 (an adiabatic dryer, an evaporator, a valve, and a cstr/conversionReactor
-that publishes `Q_kW`, must leave <= 1e-4 kW unattributed; its witnesses must
-be read).  Record:
+or a declared-T mixer that publishes `Q_kW`, must leave <= 1e-4 kW
+unattributed; its witnesses must be read).  Record:
 [`docs/design/three-units-and-the-flagship-first-law.md`](docs/design/three-units-and-the-flagship-first-law.md).
 
 **AND THE COLUMN HALF OF IT IS NOW CLOSED, WITH A THIRD HOME NOBODY HAD NAMED

@@ -178,3 +178,13 @@ utility reactor                heating.hitecSalt.duty_kW 828.050932543    1e-4
 utility reactor                heating.hitecSalt.T 623              1e-4
 utility reactor                heating.hitecSalt.kg_s 4.70483484399    1e-4
 utility reactor                heating.hitecSalt.eur_h 44.7147503573    1e-4
+kpi     M1                     Q_kW             -5.93077398626   1e-4
+kpi     M2                     Q_kW             10.6069358582    1e-4
+utility M1                     cooling.coolingWater.duty_kW -5.93077398626   1e-4
+utility M1                     cooling.coolingWater.T 320              1e-4
+utility M1                     cooling.coolingWater.kg_s 0.141884545126   1e-4
+utility M1                     cooling.coolingWater.eur_h 0.00854031454021 1e-4
+utility M2                     heating.steamLP.duty_kW 10.6069358582    1e-4
+utility M2                     heating.steamLP.T 325              1e-4
+utility M2                     heating.steamLP.kg_s 0.00485221219497 1e-4
+utility M2                     heating.steamLP.eur_h 0.458219629074   1e-4

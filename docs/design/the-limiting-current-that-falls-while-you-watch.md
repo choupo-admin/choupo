@@ -246,7 +246,9 @@ is not a plant figure of merit whenever there is a recycle.**
 **A mixer priced inlets it was never going to read.**  `Mixer.cpp` summed
 `Hin_total` in its inlet loop unconditionally, and that sum feeds exactly one
 thing: `h_req`, the target of the ADIABATIC Newton in T.  An ISOTHERMAL mixer
-(`operation { T … }`) never reads it — and the mixer publishes no duty either
+(`operation { T … }`) never reads it — and the mixer published no duty either
+(it does since 2026-10-17, DEV.md 4c C74, and a term it cannot price makes
+that duty UNAVAILABLE, announced, never a refusal of the run)
 — so a case declaring its outlet temperature was being REFUSED over an
 arithmetic the run does not perform.  Found building `ed07`, whose ionic
 components carry no liquid heat capacity: the refusal is correct for the

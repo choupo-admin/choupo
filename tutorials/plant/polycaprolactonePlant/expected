@@ -57,3 +57,8 @@ utility Reactor                cooling.coolingWater.duty_kW -50.8247774967   1e-
 utility Reactor                cooling.coolingWater.T 450              1e-4
 utility Reactor                cooling.coolingWater.kg_s 1.21590376786    1e-4
 utility Reactor                cooling.coolingWater.eur_h 0.0731876795952  1e-4
+kpi     Mixer                  Q_kW             2.14451604828    1e-4
+utility Mixer                  heating.steamHP.duty_kW 2.14451604828    1e-4
+utility Mixer                  heating.steamHP.T 450              1e-4
+utility Mixer                  heating.steamHP.kg_s 0.0012511762242  1e-4
+utility Mixer                  heating.steamHP.eur_h 0.138964639929   1e-4

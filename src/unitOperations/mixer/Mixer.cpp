@@ -87,8 +87,10 @@ int Mixer::solve(const DictPtr& dict,
     //  over an arithmetic the run does not perform (found 2026-09-16 on an
     //  electrodialysis recycle loop whose ionic components carry no liquid
     //  heat capacity -- a refusal that is right for the adiabatic balance and
-    //  meaningless here).  Nothing else moves: where the pricing succeeds the
-    //  sum is still taken, and the mixer publishes no duty.
+    //  meaningless here).  The isothermal mixer DOES price its streams since
+    //  2026-10-17 (DEV.md 4c C74), for the duty its declared T implies -- and
+    //  a term it cannot price makes that duty UNAVAILABLE, said, never a
+    //  refusal of the run (see the duty block below the phase decision).
     bool   isothermal = false;
     scalar T_spec     = 0.0;
     if (dict->found("operation"))
@@ -111,6 +113,19 @@ int Mixer::solve(const DictPtr& dict,
     scalar  P_out     = std::numeric_limits<scalar>::infinity();
     scalar  T_first   = 0.0;
     bool    haveFirst = false;
+
+    //  Each inlet's state AS THE ENERGY REPORT WILL PRICE IT, kept for the
+    //  duty a declared outlet T implies (C74, below).  `vf` is the RESOLVED
+    //  reading (`resolvedInletVaporFraction`), not the dominant-phase vote
+    //  the one-phase balance may override it with.
+    struct InletState
+    {
+        std::string name;
+        scalar      F = 0.0, T = 0.0, P = 0.0, vf = 0.0;
+        bool        pinned = false;
+        sVector     z, s;
+    };
+    std::vector<InletState> inletStates;
 
     auto hInlet = [&](scalar T, scalar P, scalar vf, const sVector& z) -> scalar
     {
@@ -156,6 +171,7 @@ int Mixer::solve(const DictPtr& dict,
         const scalar vfCarried = sd->lookupScalarOrDefault("vf", 0.0);
         scalar vf = flashState::resolvedInletVaporFraction(
             sd, T, P, z, thermo, "mixer inlet '" + inName + "'");
+        const scalar vfResolved = vf;
         if (vf > 1.0e-9 && vf < 1.0 - 1.0e-9 && vf != vfCarried)
         {
             const std::string msg =
@@ -171,6 +187,7 @@ int Mixer::solve(const DictPtr& dict,
             vf = vfCarried;
         }
 
+        sVector s_in(n, 0.0);
         if (sd->found("solids"))
         {
             auto sol = sd->subDict("solids");
@@ -178,8 +195,21 @@ int Mixer::solve(const DictPtr& dict,
             {
                 auto sf = sol->subDict("solidMolarFlows");
                 for (const auto& key : sf->keys())
-                    s_out[thermo.indexOf(key)] += sf->lookupScalar(key);
+                {
+                    const std::size_t i = thermo.indexOf(key);
+                    s_in[i]  += sf->lookupScalar(key);
+                    s_out[i] += sf->lookupScalar(key);
+                }
             }
+        }
+        if (isothermal)
+        {
+            InletState st;
+            st.name   = inName;
+            st.F = F; st.T = T; st.P = P; st.vf = vfResolved;
+            st.pinned = sd->lookupScalarOrDefault("phasePinned", 0.0) > 0.5;
+            st.z = z; st.s = s_in;
+            inletStates.push_back(std::move(st));
         }
 
         if (verbosity >= 3)
@@ -237,7 +267,9 @@ int Mixer::solve(const DictPtr& dict,
 
     // ISOTHERMAL OPTION (operation.T given): the student DECLARES the mix
     // temperature and the mixer skips the adiabatic energy balance.  Honest
-    // and explicit --- the mixer ANNOUNCES it.  Use it when (a) a furnace /
+    // and explicit --- the mixer ANNOUNCES it, and since C74 PUBLISHES the
+    // duty that temperature implies (`Q_kW`, the block below the phase
+    // decision): the heat has a source, as the header asks.  Use it when (a) a furnace /
     // heater downstream fixes T anyway (e.g. the HDA reactor feed lumps its
     // furnace into operation.T 900), or (b) the adiabatic single-phase balance
     // is ill-posed: in a genuine gas+liquid mix the liquid species carry a
@@ -331,6 +363,86 @@ int Mixer::solve(const DictPtr& dict,
     const scalar      vf_out = vfFix;
     const std::string regime = gasDominant ? "vapour" : "liquid";
 
+    //  ---- THE DUTY A DECLARED OUTLET TEMPERATURE IMPLIES (DEV.md 4c C74) ----
+    //
+    //  A declared `operation { T ...; }` is legitimate -- it is a mixer and a
+    //  heater (or cooler) drawn as one box -- but the heat that takes the
+    //  merged stream to T_spec has to come from somewhere.  Until 2026-10-17
+    //  this unit published NO duty for it, so the heat came from nowhere: the
+    //  energy report priced the outlet at T_spec, found no energy item to
+    //  reconcile it against, and the plant boundary carried it as a residual.
+    //  Measured on aceticAcid02_plant, whose M1 merges a 300 K liquid, a
+    //  300 K gas and a 330 K recycle at a declared 320 K: +82.77 kW
+    //  unattributed at M1, and the plant's first law open at -79.98 kW --
+    //  the family CLAUDE.md 6 names, a unit computing with a state (T_spec)
+    //  whose energy nobody paid for.
+    //
+    //  The duty is  Q = H(outlet) - SUM H(inlets),  every term through
+    //  `flashState::priceState` (+ `priceSolids` for the crystals), the call
+    //  the energy report's own rule is: each inlet on the state it carries
+    //  (an unpinned authored inlet at its own resolved vapour fraction, the
+    //  reading the flowsheet's surface pass publishes; a produced one at its
+    //  producer's answer), the outlet unpinned at the label this unit
+    //  publishes.  So the report's remainder for this unit is zero by
+    //  construction, and `Q_kW` reaches the plant boundary and the utility
+    //  allocation exactly as a heater's does (`reporting::energyItemKpis`,
+    //  `reporting::unitHeatDuties`, served at `T_out`).
+    //
+    //  When a term has NO enthalpy route (a present species with no datum on
+    //  the elements surface -- an electrodialysis loop's ions), the duty is
+    //  UNAVAILABLE: no `Q_kW` is published and that is SAID, never a partial
+    //  sum, and the run is NOT refused -- the material mix is exact and the
+    //  report is UNAVAILABLE for the same streams anyway.  An adiabatic mixer
+    //  publishes no duty, because it has none.
+    const std::string unitName = dict->name().empty() ? type() : dict->name();
+    bool   haveDuty = false;
+    scalar Q_kW     = 0.0;
+    std::vector<std::string> dutyNotes;
+    std::string              dutyGap;
+    if (isothermal)
+    {
+        try
+        {
+            scalar H_in = 0.0;                                     // kW
+            for (const auto& st : inletStates)
+                H_in += flashState::priceState(st.T, st.P, st.z, st.F,
+                            st.pinned, st.vf, thermo,
+                            "mixer '" + unitName + "' inlet '" + st.name + "'",
+                            &dutyNotes)
+                      + flashState::priceSolids(st.s, st.T, thermo);
+            //  The outlet as this unit publishes it: unpinned (it pins
+            //  nothing), carrying the dominant label.
+            const scalar H_out =
+                  flashState::priceState(T_out, P_out, z_out, F_out,
+                      false, vf_out, thermo,
+                      "mixer '" + unitName + "' outlet", &dutyNotes)
+                + flashState::priceSolids(s_out, T_out, thermo);
+            Q_kW     = H_out - H_in;       // F[kmol/s] x h[kJ/kmol] = kW
+            haveDuty = std::isfinite(Q_kW);
+            if (!haveDuty) dutyGap = "the priced enthalpies are not finite";
+        }
+        catch (const std::exception& ex)
+        {
+            haveDuty = false;
+            dutyGap  = ex.what();
+        }
+        if (!haveDuty)
+        {
+            const std::string msg =
+                "mixer '" + unitName + "' declares its outlet temperature ("
+                + std::to_string(T_out) + " K) but the duty that temperature"
+                " implies is UNAVAILABLE: a stream it merges has no enthalpy"
+                " route on the elements datum (" + dutyGap + ").  No `Q_kW` is"
+                " published -- the material mix is exact, the energy balance"
+                " of this unit is not computed.  Curate the missing datum to"
+                " have the duty priced (DEV.md 4c C74)";
+            if (AdvisoryLog::instance().addAnnouncedOnce(
+                    "mixerDutyUnavailable:" + unitName, "model", "warning",
+                    "mixer '" + unitName + "'", msg))
+                std::cerr << "[mixer] " << msg << "\n";
+        }
+    }
+
     //  ---- "DOMINANT" IS A LABEL, AND THE READER CANNOT ACT ON THE WORD ----
     //
     //  This unit MIXES; it does not FLASH.  The outlet carries the
@@ -375,8 +487,22 @@ int Mixer::solve(const DictPtr& dict,
                   << (P_out * 1.0e-5) << "  bar  (= min of inlet pressures)\n"
                   << "  T_out:         " << std::fixed << std::setprecision(2)
                   << T_out << "  K  (" << (T_out - 273.15) << " °C)   <- "
-                  << (isothermal ? "declared (isothermal; energy balance skipped)"
-                                 : "result (adiabatic energy balance)") << "\n"
+                  << (!isothermal ? "result (adiabatic energy balance)"
+                      : haveDuty    ? "declared (isothermal; the duty below brings it there)"
+                                    : "declared (isothermal; duty UNAVAILABLE -- see above)")
+                  << "\n";
+        if (isothermal && haveDuty)
+        {
+            std::cout << "  Duty Q:        " << std::fixed << std::setprecision(4)
+                      << Q_kW << "  kW" << (Q_kW < 0.0 ? "  (removed)" : "  (added)")
+                      << "  = H(outlet) - SUM H(inlets), priced on the package's"
+                         " own surface\n"
+                         "                 -- the SAME rule the energy report"
+                         " prices these streams with\n";
+            for (const auto& note : dutyNotes)
+                std::cout << "    [state] " << note << "\n";
+        }
+        std::cout
                   << "  Phase:         " << regime << "  (dominant; vf = "
                   << std::fixed << std::setprecision(3) << vf_out << ")\n"
                   << "  Datum:         " << (useFormation ? "formation (H_stream)"
@@ -405,6 +531,9 @@ int Mixer::solve(const DictPtr& dict,
     kpis_["P_out"] = P_out;
     kpis_["vf"]    = vf_out;
     kpis_["n_in"]  = static_cast<scalar>(inputs.size());
+    //  Only an ISOTHERMAL mixer has a duty, and only a priced one is
+    //  published: an adiabatic mixer's row is byte-identical to before C74.
+    if (isothermal && haveDuty) kpis_["Q_kW"] = Q_kW;
 
     return converged ? 0 : 1;
 }
