@@ -907,6 +907,18 @@ accepts today, and that is a policy call.
 
 ## 4c. Commissioned by Vítor (he ASKED for this; it is not a candidate)
 
+> **C72. A CONVERSION REACTOR'S OUTLET MEANS ITS OWN EQUILIBRIUM (Vítor,
+> 2026-10-17: "Aprovo o 2, avança" -- approving the commander's proposal to
+> revise the 2026-08-24 F2 posture).**  `ConversionReactor.cpp:286` and
+> `:470` stamp the INLET's vf on an outlet at another T and z (C68 finding
+> iii: `ammoniaRoutes01_screening` runs at 0.02 bar to stay ideal-gas).
+> Approved: the outlet is resolved by the engine's own equilibrium home
+> (`unitOperations/flash/StreamEquilibrium.H`), never invented and never
+> hard-stamped; the duty stays priced on the state published.  Moved
+> golden rows are LISTED to Vítor before any record.  Also running: the
+> commander's GUI tornado for the C68 `sens_` KPIs (branch
+> `claude/gui-tornado`).  Status: dispatched 2026-10-17.
+
 > **C71. ADD THE UPLOADED CASE `aceticAcid02_plant` (Vítor, 2026-10-14:
 > "Podes adicionar este caso ao repositorio?").**  A sealed plant case
 > (Gibbs reactor + condenser + CO recycle/purge + degasser + lights column,
