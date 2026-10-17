@@ -1158,7 +1158,7 @@ int DistillationColumn::solve(const DictPtr& dict,
             if (sy > 0.0) for (auto& v : yAll[j]) v /= sy;
         }
         Vs[N-1] = 0.0;                    // the reboiler is not a tray
-        hydraulicsPass(operDict, thermo, P, T, x, yAll, Vs, Ls, NF, verbosity);
+        hydraulicsPass(operDict, dict->name(), thermo, P, T, x, yAll, Vs, Ls, NF, verbosity);
     }
 
     return converged ? 0 : 1;
@@ -2651,13 +2651,14 @@ int DistillationColumn::solveSimultaneous(const DictPtr& dict,
         }
         std::vector<scalar> Vs = V, Ls = L;
         Vs[N-1] = 0.0;                     // the reboiler is not a tray
-        hydraulicsPass(operDict, thermo, P, T, x, yAll, Vs, Ls, NF, verbosity);
+        hydraulicsPass(operDict, dict->name(), thermo, P, T, x, yAll, Vs, Ls, NF, verbosity);
     }
 
     return res.converged ? 0 : 1;
 }
 
 void DistillationColumn::hydraulicsPass(const DictPtr&              operDict,
+                                        const std::string&          unitName,
                                         const ThermoPackage&        thermo,
                                         scalar                      P,
                                         const std::vector<scalar>&  T,
@@ -2676,6 +2677,11 @@ void DistillationColumn::hydraulicsPass(const DictPtr&              operDict,
     if (res.stages.empty()) return;
 
     TrayHydraulics::report(res, geo, verbosity);
+
+    //  WHAT THE LIQUID DENSITIES LEFT OUT (C79), gathered over the trays here
+    //  and the overhead condensate below, and announced ONCE after both.
+    std::string dropped    = res.liquidDensityDropped;
+    scalar      droppedMax = res.liquidDensityDroppedMax;
 
     kpis_["diameter"]          = res.diameter;
     //  HOW MANY TRAYS THERE ACTUALLY ARE, from the pass that ENUMERATES them.
@@ -2744,11 +2750,19 @@ void DistillationColumn::hydraulicsPass(const DictPtr&              operDict,
         for (std::size_t i = 0; i < nc; ++i) MW_V += y[0][i] * thermo.comp(i).MW();
         try
         {
-            const scalar rho =
-                thermo.density(T[0], P, y[0], DensityPhase::Liquid);   // kg/m3
-            if (rho > 0.0)
+            //  THE SAME DOOR AS THE TRAYS' LIQUID (C79): a condensate that
+            //  carries a component above its critical temperature is priced
+            //  over the rest, renormalised, and what was left out joins the
+            //  announcement below.  Its MASS is counted whole.
+            const TrayHydraulics::LiquidDensity lq =
+                TrayHydraulics::liquidDensity(thermo, T[0], P, y[0]);
+            const scalar rho = lq.rho;                                  // kg/m3
+            if (rho > 0.0 && std::isfinite(rho))
+            {
                 //  V is kmol/s and MW kg/kmol, so the product is kg/s.
                 kpis_["Q_condensate_m3_s"] = V[0] * MW_V / rho;
+                TrayHydraulics::noteDropped(lq, dropped, droppedMax);
+            }
         }
         catch (const std::exception&)
         {
@@ -2758,6 +2772,35 @@ void DistillationColumn::hydraulicsPass(const DictPtr&              operDict,
             //  put a caveat on every column that declares hydraulics and
             //  never asks to be sized.
         }
+    }
+
+    //  THE ANNOUNCEMENT (C79).  No iterate in the sentence -- the fraction
+    //  moves with every pass of a recycle, and an advisory per digit is a
+    //  wall of lines the reader cannot rank -- so the sentence names the RULE
+    //  and the components, and the largest share left out on any tray (or in
+    //  the condensate) is the KPI it names.  Raised only when something WAS
+    //  left out, so a column whose liquid the package prices whole says
+    //  nothing new and publishes nothing new.
+    if (!dropped.empty())
+    {
+        kpis_["liquidDensityUnpricedFraction_max"] = droppedMax;
+        const std::string msg =
+            "the tray hydraulics' liquid density (every tray's, and the"
+            " overhead condensate's where one is published) is taken over the"
+            " components the package can price, renormalised: " + dropped + " ha"
+            + (dropped.find(',') != std::string::npos ? "ve" : "s")
+            + " no liquid density there -- a component above its critical"
+              " temperature has no saturated-liquid molar volume.  The MASS"
+              " traffic still counts every component, so what the"
+              " approximation touches is the density.  The largest excluded"
+              " mole fraction is the KPI `liquidDensityUnpricedFraction_max`";
+        //  ONCE PER PROCESS, AND NOT BEHIND THE VERBOSITY: a recycle runs
+        //  this column quietly on every pass but the last, so a line gated
+        //  on the pass's verbosity was raised silently and never printed.
+        if (AdvisoryLog::instance().addAnnouncedOnce(
+                "hydraulicsDensity:" + unitName, "approximation", "warning",
+                "distillationColumn '" + unitName + "' hydraulics", msg))
+            std::cerr << "  [hydraulics] " << unitName << ": " << msg << ".\n";
     }
 
     // The profile carries one row per stage; a non-tray stage (condenser,

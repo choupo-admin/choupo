@@ -50,6 +50,16 @@ The risks such a feature carries are specific, and each arm names one:
       and the non-process item, and its own check finds no shortfall.
   (f) ABSENCE IS SILENCE: the witness with its layoutDict removed publishes
       no `layout` key, prints no `[layout]` line and no PLANT LAYOUT heading.
+  (g) A PLACED ITEM WHOSE SIZER REFUSED (2026-10-17, DEV.md 4c C79, the
+      commander's decision): on a copy of the witness whose postDict makes
+      the separator's sizer refuse (a flow KPI the unit does not publish),
+      the run exits 0, the separator is NOT placed, a `sizingRefused`
+      finding names it and quotes the sizer's own FAILED line, and the
+      announcement reaches stderr, the caveat block and the JSON.  The
+      negative, on the same sabotaged sizing: an item `separatorX` (a name
+      that merely STARTS with the refused entry's) still refuses as naming
+      no sized item -- the id belongs to an entry only as the entry itself
+      or `entry/<tag>` (`EquipmentSizing::isItemOf`).
 
 NOT COVERED, said so: whether a declared distance or zone extent is SENSIBLE
 (the author's assumption, by design -- no standard is shipped), pipe lengths,
@@ -81,6 +91,16 @@ strengthened):
      first: every fixture item stood at grade, so the height half of the
      envelope had no case.  The hazard fixture now carries a panel 20 m up,
      inside two zone radii in plan and above both envelopes -> caught.
+  (C79, arm (g), 2026-10-17; each restored with `cp` of the saved file
+  and one idempotent `make all`, all CAUGHT):
+  S8 `refusedSizingOf` returns nullptr at its top (the C76 behaviour) -> (g)
+     "a layout placing an item whose sizer refused exited 2".
+  S9 `EquipmentSizing::isItemOf` loses its `id[unit.size()] == '/'` test
+     (a bare prefix match)                                          -> (g)
+     "`separatorX` beside a refused `separator` exited 0".
+  S10 `addFinding` skips `announce()` for a sizingRefused finding (the
+     finding still published in `layout.findings`)                 -> (g)
+     not on stderr, not in the caveat block, not in the advisories.
 """
 import json
 import re
@@ -464,6 +484,71 @@ def arm_absent(work):
     claims.append("a case without a layoutDict prints and publishes nothing of one")
 
 
+REFUSED_SIZER_EDIT = ("designRules { residenceTime 45.0;  flowKey F_beta;",
+                      "designRules { residenceTime 45.0;  flowKey noSuchKpi;")
+
+
+def prepare_refused_sizer(work, name, layout_edit=None):
+    d = prepare(work, name, WITNESS, layout_edit)
+    pd = d / "system" / "postDict"
+    text = pd.read_text()
+    if text.count(REFUSED_SIZER_EDIT[0]) != 1:
+        raise RuntimeError("fixture anchor not found in the witness postDict: "
+                           + REFUSED_SIZER_EDIT[0])
+    pd.write_text(text.replace(*REFUSED_SIZER_EDIT))
+    return d
+
+
+def arm_refused_sizer(work):
+    d = prepare_refused_sizer(work, "refused_sizer")
+    out, err, rc = solve(d)
+    j = result_json(out)
+    lay = (j or {}).get("layout")
+    if rc != 0 or not lay:
+        tail = [l for l in (out + err).splitlines() if l.strip()][-1:]
+        fail(f"(g) a layout placing an item whose sizer refused exited {rc} /"
+             " published no layout -- one refused sizer must not cost the run:\n    "
+             + ("\n    ".join(l for l in (out + err).splitlines() if "ERROR" in l)
+                or "\n    ".join(tail))[:400])
+        return
+    failed = re.search(r"separator  FAILED: (.*)", err)
+    if not failed:
+        fail("(g) the fixture's separator sizer did not refuse -- the probe"
+             " no longer reaches the case it is about")
+        return
+    ids = [i["id"] for i in lay["items"]]
+    if "separator" in ids:
+        fail("(g) the separator was placed although its sizer refused")
+    if len(ids) != 7:
+        fail(f"(g) {len(ids)} items placed, expected the witness's 8 less the separator")
+    f = [x for x in lay["findings"] if x["id"] == "sizingRefused:separator:separator"]
+    if len(f) != 1:
+        fail(f"(g) no sizingRefused finding for the separator; findings "
+             f"{[x['id'] for x in lay['findings']]}")
+        return
+    msg = f[0]["message"]
+    if failed.group(1).strip() not in msg or "UNPLACED" not in msg:
+        fail("(g) the finding does not quote the sizer's FAILED line and say"
+             f" UNPLACED: {msg}")
+    if "[layout] " + msg not in err:
+        fail("(g) the sizingRefused announcement is not on stderr at its site")
+    if "PLANT LAYOUT" not in out or msg not in out.split("PLANT LAYOUT", 1)[-1]:
+        fail("(g) the sizingRefused announcement is not in the caveat block")
+    if not any(a.get("category") == "layout" and a.get("message") == msg
+               for a in (j.get("advisories") or [])):
+        fail("(g) the sizingRefused announcement is not in the JSON's advisories")
+    # the negative: a name that merely starts with the refused entry's
+    d = prepare_refused_sizer(work, "refused_sizer_typo", sub(ITEMS_OPEN, ITEMS_OPEN
+        + '    { item "separatorX"; x 200 m; y 0 m; z 0 m; orientation vertical; }\n'))
+    out, err, rc = solve(d)
+    if rc != 2 or not re.search(r"item `separatorX` names no sized item", out + err):
+        fail(f"(g) `separatorX` beside a refused `separator` exited {rc}; it must"
+             " still refuse as naming no sized item")
+    claims.append("an item whose sizer refused is left unplaced and announced"
+                  " on all three surfaces quoting the sizer, the run going on;"
+                  " a name that only starts like the refused entry's still refuses")
+
+
 def main():
     argv = sys.argv[1:]
     keep = Path(argv[argv.index("--keep") + 1]).resolve() if "--keep" in argv else None
@@ -478,6 +563,7 @@ def main():
         arm_hazards(work)
         arm_draft(work)
         arm_absent(work)
+        arm_refused_sizer(work)
     finally:
         if not keep:
             shutil.rmtree(work, ignore_errors=True)

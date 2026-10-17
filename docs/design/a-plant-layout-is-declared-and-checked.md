@@ -90,8 +90,9 @@ representative pass (`postProcessing/layout/PlantLayout.{H,cpp}`, called from
 
 **REFUSED** (exit 2, by name, with the remedy): a layoutDict on a run that
 sized nothing; an entry that is neither or both of `item`/`nonProcess`; an
-item naming no sized item (the refusal lists the placeable ones); an item
-placed twice; an internal; two footprints that overlap ON THE PLAN AND IN
+item naming no sized item (the refusal lists the placeable ones) -- unless
+it is an item of a sizing entry whose sizer REFUSED, which is announced
+instead (below); an item placed twice; an internal; two footprints that overlap ON THE PLAN AND IN
 HEIGHT (stacking is not refused: two items whose height ranges do not meet
 do not collide); an area for a sector the case does not have, or areas on a
 flat case; a pair of kinds whose distance is declared twice; and every
@@ -115,7 +116,21 @@ reaches the end-of-run caveat block under PLANT LAYOUT and the result JSON):
   180 deg) and the centre distance is within `reach`; every number in that
   rule is declared;
 * a separation rule naming a kind no placed item carries (it checks nothing);
-* the sized items left unplaced.
+* the sized items left unplaced;
+* an item the layout places whose SIZER REFUSED (finding `sizingRefused`,
+  quoting the sizer's own FAILED line): the item is left UNPLACED and the
+  run goes on.  Changed 2026-10-17 (DEV.md 4c C79, the commander's
+  decision): until then such an item was "an item naming no sized item" and
+  the plot plan refused the whole run, so one sizer's failure -- already
+  printed, counted and replayed by the sizing pass -- became a missing run,
+  and `check_design_sheet`'s probes had to delete the layoutDict to test a
+  sizer refusal at all.  A refused sizer is already its own reported
+  failure; a plot plan must not turn one missing sheet into a missing run.
+  An item whose id belongs to NO sizing entry still refuses -- that is a
+  typo, not a failure somebody else reported.  The id is matched to the
+  refused entry by `EquipmentSizing::isItemOf`, the inverse of `itemId()`
+  kept beside it.  The item's declared footprint and hazards are not read
+  (there is no size to check them against).
 
 **Announce, not refuse, for every shortfall -- the argued default.**  An
 overlap is not a layout at all; a short distance IS a layout, a draft whose

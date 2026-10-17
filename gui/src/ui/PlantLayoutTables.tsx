@@ -76,8 +76,8 @@ export function PlantLayoutTables({ layout }: { layout: PlantLayout }) {
               {layout.findings.map((f) => (
                 <Table.Tr key={f.id}>
                   <Table.Td ff="monospace">{f.kind}</Table.Td>
-                  <Table.Td ta="right" ff="monospace">{f.kind === "outsideArea" || f.kind === "deadRule" ? "" : f2(f.value)}</Table.Td>
-                  <Table.Td ta="right" ff="monospace">{f.kind === "outsideArea" ? "" : f2(f.limit)}</Table.Td>
+                  <Table.Td ta="right" ff="monospace">{f.kind === "outsideArea" || f.kind === "deadRule" || f.kind === "sizingRefused" ? "" : f2(f.value)}</Table.Td>
+                  <Table.Td ta="right" ff="monospace">{f.kind === "outsideArea" || f.kind === "sizingRefused" ? "" : f2(f.limit)}</Table.Td>
                   <Table.Td>{f.message}</Table.Td>
                 </Table.Tr>
               ))}

@@ -165,6 +165,14 @@ struct SimulationResult
     //  yes and the reasons were already printed above.  The two have
     //  different remedies, so the distinction is carried rather than guessed.
     bool                                                           sizingAttempted = false;
+    //  WHICH UNITS THE SIZING PASS TRIED AND COULD NOT SIZE, each with the
+    //  refusal its sizer gave (2026-10-17, DEV.md 4c C79).  The pass has
+    //  always printed them and counted them; a reader downstream -- the plot
+    //  plan -- needs to tell "this item was refused by its sizer" from "this
+    //  item names nothing", because the first is already a reported failure
+    //  and must not cost the run, while the second is a typo.  Keyed by the
+    //  sizing entry's name (a unit, or a storage entry).
+    std::map<std::string, std::string>                             sizingRefusals;
     std::map<std::string, CostBreakdown>                           costs;
     std::vector<std::string>                                       componentNames;
     // Per-component molar mass in kg/kmol; populated by the

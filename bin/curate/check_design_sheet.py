@@ -1497,25 +1497,35 @@ def _sig_digits(tok: str) -> int:
     return max(len(m), 1)
 
 
-def _run_copy(src: Path, edit):
+def _run_copy(src: Path, edit, keep_layout=True):
     """Run a COPY of a case whose postDict `edit` rewrites, from a temp
     directory the arm owns.  The copy is the probe surface: the shipped case
     stays exactly as shipped, and `design/` is regenerated whole by the run,
     so the probe is the DECLARATION and never a sheet edited beforehand.
 
-    The copy leaves the case's `system/layoutDict` behind (DEV.md 4c C76).
-    A probe here makes ONE item refuse, and a plot plan that places that
-    item then refuses the RUN by its own contract -- an item naming no sized
-    item of this run (`postProcessing/layout/PlantLayout`, held by
-    `check_plant_layout`).  That is a second subject the probe is not about:
-    what these arms assert is that the SIZING pass refuses the item and not
-    the run, and a sized case that carries a plot plan
-    (greenAmmoniaPEQ_baseCase) would otherwise fail them for a reason that
-    is not the sizer's."""
+    The copy KEEPS the case's `system/layoutDict` (since DEV.md 4c C79).
+    Between C76 and C79 it was left behind: a probe here makes ONE item's
+    sizer refuse, and a plot plan that placed that item then refused the
+    RUN, as "an item naming no sized item".  Since C79 such an item is
+    ANNOUNCED (`sizingRefused`) and left unplaced, and the run goes on
+    (`postProcessing/layout/PlantLayout`, held by `check_plant_layout` arm
+    (g)) -- so the probes run the case as shipped, plot plan included, and
+    what they assert (the SIZING pass refuses the item and not the run) is
+    now asserted with the layout present.
+
+    `keep_layout=False` is for the two probes that change WHICH items exist
+    or what SHAPE their sizer publishes rather than making a sizer refuse:
+    (p)'s estimate twin, whose exchangers then publish an area where the
+    plot plan placed a published shell, and (q)'s `maxTankVolume` copy,
+    which changes how many tanks the store is.  A plot plan of the shipped
+    items rightly refuses those copies (an item naming no sized item, a
+    box the sizer no longer gives), and that is a second subject."""
     tmp = Path(tempfile.mkdtemp(prefix="design_sheet_n_"))
     dst = tmp / src.name
-    shutil.copytree(src, dst, ignore=shutil.ignore_patterns(
-        "design", "reports", "converged", "postProcessing", "layoutDict"))
+    ignore = ["design", "reports", "converged", "postProcessing"]
+    if not keep_layout:
+        ignore.append("layoutDict")
+    shutil.copytree(src, dst, ignore=shutil.ignore_patterns(*ignore))
     pd = dst / "system" / "postDict"
     pd.write_text(edit(pd.read_text(errors="replace")))
     proc = subprocess.run([str(ROOT / "choupoSolve"), str(dst)],
@@ -1953,7 +1963,8 @@ def check_exchanger_routes(problems, notes):
     """
     #  THE TWIN (C48): the shipped case designs; routes 2 and 3 are held on a
     #  copy with the designs taken out.  `case` is that copy from here on.
-    twin, rc, out, err = _run_copy(ROOT / HXROUTE, estimate_twin)
+    twin, rc, out, err = _run_copy(ROOT / HXROUTE, estimate_twin,
+                                   keep_layout=False)
     case = twin
     post = (case / "system" / "postDict").read_text(errors="replace")
     post_nc = re.sub(r'//[^\n]*', '', re.sub(r'/\*.*?\*/', '', post, flags=re.S))
@@ -2335,7 +2346,8 @@ def check_storage(problems, notes):
                             "refused BY NAME (/%s/)." % (what, pat))
         shutil.rmtree(dst.parent, ignore_errors=True)
     dst, rcp, outp, errp = _run_copy(case, edit_store(
-        lambda e: re.sub(r'maxTankVolume\s+[^;]*;', 'maxTankVolume 50000;', e)))
+        lambda e: re.sub(r'maxTankVolume\s+[^;]*;', 'maxTankVolume 50000;', e)),
+        keep_layout=False)
     one = [l for l in outp.splitlines() if '"item": "%s/tank' % name in l]
     vr1 = re.search(r'"V_R": *([-0-9.eE+]+)', one[0]) if len(one) == 1 else None
     if rcp != 0 or len(one) != 1 or not vr1 or \

@@ -196,6 +196,7 @@ private:
     // equations never notice.  Absent an `operation { hydraulics {} }`
     // block this does nothing at all.
     void hydraulicsPass(const DictPtr&              operDict,
+                        const std::string&          unitName,
                         const ThermoPackage&        thermo,
                         scalar                      P,
                         const std::vector<scalar>&  T,

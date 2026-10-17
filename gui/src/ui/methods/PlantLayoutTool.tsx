@@ -204,8 +204,8 @@ function LayoutBench(): JSX.Element {
                 <Table.Tr key={f.id}>
                   <Table.Td ff="monospace">{f.kind}</Table.Td>
                   <Table.Td>{f.a} · {f.b}</Table.Td>
-                  <Table.Td ta="right">{f.kind === "deadRule" || f.kind === "outsideArea" ? "" : fx(f.value)}</Table.Td>
-                  <Table.Td ta="right">{f.kind === "outsideArea" ? "" : fx(f.limit)}</Table.Td>
+                  <Table.Td ta="right">{f.kind === "deadRule" || f.kind === "outsideArea" || f.kind === "sizingRefused" ? "" : fx(f.value)}</Table.Td>
+                  <Table.Td ta="right">{f.kind === "outsideArea" || f.kind === "sizingRefused" ? "" : fx(f.limit)}</Table.Td>
                 </Table.Tr>
               ))}
             </Table.Tbody>

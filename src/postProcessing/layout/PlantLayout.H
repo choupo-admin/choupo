@@ -55,8 +55,11 @@ Description
     converter shell's `encloses` is a basket inside that shell; naming one
     is REFUSED, naming its host.
 
-    WHAT IS REFUSED (the run stops, exit 2): an entry naming no sized item,
-    an item placed twice, two footprints that overlap in plan AND in height,
+    WHAT IS REFUSED (the run stops, exit 2): an entry naming no sized item
+    (and no item of a sizing entry whose sizer refused -- such an item is
+    ANNOUNCED as `sizingRefused` and left unplaced, C79: a refused sizer is
+    already its own reported failure, and a plot plan must not turn one
+    missing sheet into a missing run), an item placed twice, two footprints that overlap in plan AND in height,
     an area for a sector the case does not have, and every malformed
     declaration.  WHAT IS ANNOUNCED (stderr + AdvisoryLog, so it reaches the
     caveat block and the result JSON): every pair closer than its declared

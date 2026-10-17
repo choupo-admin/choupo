@@ -710,7 +710,7 @@ export interface LayoutArea {
 
 export interface LayoutFinding {
   id: string;
-  kind: string;          // separation | outsideArea | ignitionInZone | ignitionDownwind | deadRule
+  kind: string;          // separation | outsideArea | ignitionInZone | ignitionDownwind | deadRule | sizingRefused
   a: string; b: string;
   value: number; limit: number;
   message: string;

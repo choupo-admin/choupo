@@ -29,12 +29,14 @@ License
 #include "TrayHydraulics.H"
 
 #include "core/Constants.H"
+#include "thermo/PricedDensity.H"
 #include "thermo/ThermoPackage.H"
 
 #include <algorithm>
 #include <cmath>
 #include <iomanip>
 #include <iostream>
+#include <sstream>
 #include <stdexcept>
 
 namespace Choupo
@@ -50,6 +52,72 @@ namespace
     {
         return 0.0105 + 8.127e-4 * std::pow(TS_mm, 0.755)
                       * std::exp(-1.463 * std::pow(F_LV, 0.842));
+    }
+
+    //  A HYDRAULIC NUMBER THAT IS NOT FINITE IS NOT PUBLISHED (C79).  It
+    //  refuses by name -- the tray, the quantity, and the state it was built
+    //  from -- because a NaN that reaches a KPI prints as "0.0 % of flood"
+    //  or "dP -nan" at exit 0, and a NaN that reaches `std::max` quietly
+    //  loses to a zero and turns into a different, misleading refusal.
+    void requireFinite(scalar v, const char* what,
+                       const TrayHydraulics::Stage& s)
+    {
+        if (std::isfinite(v)) return;
+        std::ostringstream o;
+        o << "TrayHydraulics: stage " << s.index << ": " << what
+          << " is not a finite number (" << v << ") -- it is not published."
+             "  The tray state it was built from: rho_L = " << s.rhoL
+          << " kg/m3, rho_V = " << s.rhoV << " kg/m3, sigma = " << s.sigma
+          << " N/m";
+        throw std::runtime_error(o.str());
+    }
+}
+
+
+TrayHydraulics::LiquidDensity
+TrayHydraulics::liquidDensity(const ThermoPackage& thermo, scalar T, scalar P,
+                              const sVector& x)
+{
+    //  WHICH COMPONENTS: `pricedDensity` decides, the one home.  This
+    //  function computes no density of its own.
+    const pricedDensity::Selection sel =
+        pricedDensity::select(thermo, T, P, x, DensityPhase::Liquid);
+    if (!(sel.keptFraction > 0.0))
+    {
+        std::ostringstream o;
+        o << "TrayHydraulics: no component of the liquid has a liquid density"
+             " at T = " << T << " K, P = " << P * 1.0e-5 << " bar (left out: "
+          << sel.dropped << ") -- the tray cannot be rated";
+        throw std::runtime_error(o.str());
+    }
+    LiquidDensity d;
+    d.dropped         = sel.dropped;
+    d.droppedFraction = sel.droppedFraction
+                      / (sel.keptFraction + sel.droppedFraction);
+    //  Nothing left out: the question is the one it always was, asked of
+    //  the composition itself, so the answer is unchanged to the bit.
+    d.rho = thermo.density(T, P, sel.droppedFraction > 0.0 ? sel.zPriced : x,
+                           DensityPhase::Liquid);
+    return d;
+}
+
+
+void TrayHydraulics::noteDropped(const LiquidDensity& d, std::string& names,
+                                 scalar& maxFraction)
+{
+    if (d.dropped.empty()) return;
+    maxFraction = std::max(maxFraction, d.droppedFraction);
+    std::istringstream in(d.dropped);
+    std::string name;
+    while (std::getline(in, name, ','))
+    {
+        const auto b = name.find_first_not_of(' ');
+        if (b == std::string::npos) continue;
+        name = name.substr(b);
+        const std::string have = ", " + names + ",";
+        if (have.find(", " + name + ",") != std::string::npos) continue;
+        if (!names.empty()) names += ", ";
+        names += name;
     }
 }
 
@@ -130,16 +198,26 @@ TrayHydraulics::Result TrayHydraulics::evaluate(const ThermoPackage&        ther
         try
         {
             s.rhoV = thermo.density(T[j], P, y[j], DensityPhase::Vapour);
-            s.rhoL = thermo.density(T[j], P, x[j], DensityPhase::Liquid);
+            const LiquidDensity lq = liquidDensity(thermo, T[j], P, x[j]);
+            s.rhoL = lq.rho;
+            noteDropped(lq, res.liquidDensityDropped, res.liquidDensityDroppedMax);
         }
         catch (const std::exception& e)
         {
             throw std::runtime_error(std::string("TrayHydraulics: a tray needs both phase "
                 "densities and the package cannot supply them -- ") + e.what());
         }
-        if (s.rhoV <= 0.0 || s.rhoL <= s.rhoV)
-            throw std::runtime_error("TrayHydraulics: non-physical phase densities on stage "
-                + std::to_string(s.index) + " -- the tray cannot be rated");
+        //  Written so that a NaN FAILS it: `NaN <= x` is false, and the old
+        //  form of this test let a NaN liquid density through to every head.
+        if (!(s.rhoV > 0.0) || !(s.rhoL > s.rhoV) || !std::isfinite(s.rhoL)
+            || !std::isfinite(s.rhoV))
+        {
+            std::ostringstream o;
+            o << "TrayHydraulics: non-physical phase densities on stage "
+              << s.index << " (rho_L = " << s.rhoL << ", rho_V = " << s.rhoV
+              << " kg/m3) -- the tray cannot be rated";
+            throw std::runtime_error(o.str());
+        }
 
         if (geo.sigma > 0.0) s.sigma = geo.sigma;
         else if (thermo.hasSurfaceTension()) s.sigma = thermo.surfaceTension(T[j], x[j]);
@@ -164,6 +242,12 @@ TrayHydraulics::Result TrayHydraulics::evaluate(const ThermoPackage&        ther
         const scalar At   = Anet / (1.0 - geo.downcomerFrac);
         s.diameterRequired = std::sqrt(4.0 * At / constant::pi);
 
+        requireFinite(s.sigma,            "the surface tension", s);
+        requireFinite(s.F_LV,             "the flow parameter F_LV", s);
+        requireFinite(s.C_SB,             "Fair's capacity parameter C_SB", s);
+        requireFinite(s.uFlood,           "the flooding velocity", s);
+        requireFinite(s.diameterRequired, "the required diameter", s);
+
         res.stages.push_back(s);
     }
     if (res.stages.empty()) return res;
@@ -173,6 +257,17 @@ TrayHydraulics::Result TrayHydraulics::evaluate(const ThermoPackage&        ther
     if (res.designed)
         for (const auto& s : res.stages)
             res.diameter = std::max(res.diameter, s.diameterRequired);
+    //  THE TRUE CAUSE, when there is no diameter to build on.  Every tray's
+    //  requirement is finite by now, so this fires only on a column whose
+    //  traffic asks for none -- and it says so, rather than letting a zero
+    //  diameter reach the active-area test below and be reported as a
+    //  geometry the author never declared.
+    if (!(res.diameter > 0.0) || !std::isfinite(res.diameter))
+        throw std::runtime_error("TrayHydraulics: the column has no positive"
+            " finite diameter to rate (" + std::string(res.designed
+                ? "DESIGN mode: no tray required one"
+                : "RATING mode: the declared `diameter` is not positive")
+            + ") -- the tray heads cannot be evaluated");
 
     //  THE SAME RULE, APPLIED TO EACH SECTION.  `diameterRequired` is
     //  computed for every tray above whether the pass is designing or rating,
@@ -250,6 +345,19 @@ TrayHydraulics::Result TrayHydraulics::evaluate(const ThermoPackage&        ther
             s.u_hMin = (geo.K2 - 0.90 * (25.4 - dh_mm)) / std::sqrt(s.rhoV);
             s.weeps  = (s.u_h < s.u_hMin);
         }
+
+        requireFinite(s.uVapour,       "the vapour velocity", s);
+        requireFinite(s.floodApproach, "the approach to flood", s);
+        requireFinite(s.u_h,           "the hole velocity", s);
+        requireFinite(s.h_d,           "the dry-tray head h_d", s);
+        requireFinite(s.h_ow,          "the weir crest h_ow", s);
+        requireFinite(s.h_r,           "the residual head h_r", s);
+        requireFinite(s.h_t,           "the total tray head h_t", s);
+        requireFinite(s.dP,            "the tray pressure drop", s);
+        requireFinite(s.h_dc,          "the apron loss h_dc", s);
+        requireFinite(s.h_b,           "the downcomer backup h_b", s);
+        requireFinite(s.tResidence,    "the downcomer residence time", s);
+        requireFinite(s.u_hMin,        "the weep-point hole velocity", s);
 
         res.dPColumn += s.dP;
         if (s.floodApproach > res.floodApproachMax)

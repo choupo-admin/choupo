@@ -525,6 +525,7 @@ int SizingPass::run(SimulationResult& result)
             std::cerr << "  " << uname << "  FAILED: " << e.what() << "\n";
             ++failures;
             notSized.push_back(uname);
+            result.sizingRefusals[uname] = e.what();
         }
     }
 
@@ -567,6 +568,7 @@ int SizingPass::run(SimulationResult& result)
                       << "  FAILED: " << e.what() << "\n";
             ++failures;
             notSized.push_back(sname.empty() ? std::string("(storage)") : sname);
+            result.sizingRefusals[notSized.back()] = e.what();
         }
     }
 
