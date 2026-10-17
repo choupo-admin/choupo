@@ -290,15 +290,17 @@ WHAT THIS CHECKS:
 
       SABOTAGES, by hand, 2026-10-17 (rebuilt, gate run, restored, rebuilt):
         S1  `MaterialLimits.cpp`: the maxT comparison's `>` made `<` (the
-            limit compared the wrong way)  -> caught: the aluminium copy
+            limit compared the wrong way)  -> caught twice: the aluminium copy
             prints no service-temperature line, and the shipped SS316 run
-            prints one for every vessel.
-        S2  `SizingPass.cpp`: the `materialLimits::temperature(...)` call
-            removed  -> caught: no site line, no caveat line.
-        S3  `MaterialLimits.cpp`: the `AdvisoryLog` add removed from
-            `announce` (the console line kept)  -> caught ONLY by the
-            caveat-replay half -- the site line is still printed, which is
-            the "slightly louder form of silence" this arm exists to refuse.
+            announces one (700 K "exceeding" 925 K).
+        S2  `SizingPass.cpp`: the call guarded by `false &&`  -> caught: no
+            site line.
+        S3  `MaterialLimits.cpp`: the `AdvisoryLog` add commented out (the
+            console line kept)  -> caught by the caveat-replay half, and the
+            SOURCE half SURVIVED it on first contact: it searched for the call
+            as text, and a commented-out call still contains the text.  It
+            strips comments now (prose is not a call), and on the re-run both
+            halves caught it.
         S4  an inline `if (pressureDesign > material.maxP)` restored in
             `VesselSize.cpp` beside the call  -> caught by the source half.
 
@@ -3057,7 +3059,10 @@ def check_material_limits(problems, notes):
         if re.search(r'material\.max[PT]\b', code):
             problems.append("%s: %s compares a material record limit itself -- "
                             "`sizing/MaterialLimits` is the one home" % (tag, f.name))
-    ml = (sizing / "MaterialLimits.cpp").read_text(errors="replace")
+    #  Comments STRIPPED first: a commented-out call still contains the text,
+    #  and prose is not a call (S3 SURVIVED this half until it did this).
+    ml = re.sub(r'//[^\n]*', '',
+                (sizing / "MaterialLimits.cpp").read_text(errors="replace"))
     if "AdvisoryLog::instance().add(" not in ml:
         problems.append("%s: MaterialLimits.cpp no longer records its "
                         "announcements in AdvisoryLog" % tag)
