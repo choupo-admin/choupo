@@ -1013,7 +1013,23 @@ accepts today, and that is a policy call.
 > carrying supercritical CO: design mode refuses with a misleading "two
 > downcomers leave no active area", rating mode exits 0 printing dP -nan;
 > (b) a layout REFUSES the whole run when one placed item's sizer refused
-> -- it should announce and leave the item unplaced.
+> -- it should announce and leave the item unplaced.  C79 MERGED 2026-10-17:
+> (a) the NaN was born in Rackett (`DerivedClosures.H:69`, pow of a
+> negative 1 - T/Tc for CO and DME above Tc) and slipped past two `<=`
+> guards NaN never fails; `TrayHydraulics::liquidDensity` is now the one
+> door (via `pricedDensity::select`, dropped components announced once,
+> `liquidDensityUnpricedFraction_max` published), every hydraulic number
+> must be finite or refuse by name; 24 column/plant cases byte-identical.
+> (b) a refused sizer leaves its item unplaced, announced as a
+> `sizingRefused` finding (check_plant_layout arm g).  aceticAcid02's
+> lights column sized (D 0.338 m x H 11.2 m, 18 trays, 80 % flood) and
+> placed; 69 rows appended, layout summary rows recorded by the commander
+> (placed 5 -> 8, internal 0 -> 1).  Validated: distillation 21/0, the
+> three layout plants, `--gui` 32/0, `--fast` 73/0.  NAMED, not fixed:
+> `ThermoPackage::density` returns NaN silently for a liquid holding a
+> supercritical component (`Vmix <= 0` does not catch NaN -- a shared path,
+> needs the full sweep); under `model simultaneous` no `Q_condensate_m3_s`
+> is published, so a simultaneous column's reflux drum cannot be sized.
 
 > **C75. A PLANT LAYOUT IN 3D: A DICTIONARY, A TOOL AND AN EDUTOOL (Vítor,
 > 2026-10-17: "Podes fazer um EduTool com isso, criar esse dicionario e
