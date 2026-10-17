@@ -295,6 +295,9 @@ const OverpressureTool = lazy(() =>
 const LetdownTool = lazy(() =>
   import("./methods/LetdownTool.js")
     .then((m) => ({ default: m.LetdownTool })));
+const PlantLayoutTool = lazy(() =>
+  import("./methods/PlantLayoutTool.js")
+    .then((m) => ({ default: m.PlantLayoutTool })));
 const WegsteinTool = lazy(() =>
   import("./methods/WegsteinTool.js")
     .then((m) => ({ default: m.WegsteinTool })));
@@ -516,6 +519,7 @@ export function MethodsWorkspace() {
             : tool === "process-safety" ? <ProcessSafetyTool />
             : tool === "overpressure" ? <OverpressureTool />
             : tool === "letdown" ? <LetdownTool />
+            : tool === "plant-layout" ? <PlantLayoutTool />
             : tool === "wegstein" ? <WegsteinTool />
             : tool === "active-set-qp" ? <ActiveSetQpTool />
             : tool === "lub-scaleup" ? <LubScaleupTool />

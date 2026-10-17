@@ -974,6 +974,17 @@ accepts today, and that is a policy call.
 > `docs/design/a-plant-layout-is-declared-and-checked.md`.  Validated: the
 > 20 sized cases 20/0, `--fast` 73/0, `--gui` 32/0; 84 cases byte-identical
 > but for the banner's commit.  NEXT slice named: pipe lengths.
+> SLICE 2 MERGED 2026-10-17: the EduTool `plant-layout` (Process design &
+> economics shelf), eleven steps on the approved outline incl. wind and
+> ATEX, a bench that runs `ammonia02_full_plant` in the browser with seven
+> guided moves (each run natively first), every engine claim cited
+> file:line and held by its test; `--gui` 32/0.  Said plainly on the page:
+> the draft tool is command-line only; no pipe lengths yet; the zone check
+> tests only declared ignition sources against declared envelopes.  OPEN
+> (finding): `docs/designGuide.tex` ~l.1932 quotes a ~15 m setback
+> attributed to IRI/GAP and API 521 beside "Choupo ships no spacing
+> table" -- to be reconciled (a cited indicative figure in prose, not data
+> the engine carries).
 
 > **C73 + C74, AND TWO DECISIONS TAKEN (Vítor, 2026-10-17: "avança como
 > achares melhor", on the three open items after C72).**  Taken: (1)

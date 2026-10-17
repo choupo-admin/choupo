@@ -14,8 +14,8 @@
     "Process safety",
     "Flowsheeting & numerics"
   ],
-  "liveTools": 55,
-  "registryTools": 55,
+  "liveTools": 56,
+  "registryTools": 56,
   "tools": [
     {
       "id": "what-is-temperature",
@@ -394,6 +394,13 @@
       "discipline": "Process safety",
       "teaches": "Why a relief system is sized for the worst credible cause (blocked outlet, external fire, cooling or reflux failure, runaway, tube rupture, thermal expansion), the pressure ladder from operating to set, MAWP and the allowed accumulation, the devices and the back pressure behind them, the published gas, liquid and fire-case equations worked on fluid properties the engine computes -- an acetone drum in a fire, and an ammonia loop whose 50 bar version needs a relief valve about four and a half times larger -- where the relief goes after the valve, and why a runaway vent is two-phase and larger.",
       "href": "/app/?workspace=methods&tool=overpressure"
+    },
+    {
+      "id": "plant-layout",
+      "label": "Plant layout: where each item stands, and why",
+      "discipline": "Process design & economics",
+      "teaches": "That a plot plan is a set of decisions about distance -- safety (the domino effect), pipe and access (a tube bundle must be pulled out along its own axis); what a separation distance is, why it is keyed on pairs of equipment kinds and must say whether it is measured edge to edge or centre to centre, and why Choupo ships no spacing table (the published ones grant no redistribution, so the case declares its own, with a source); a guided exercise on the ammonia loop's declared plan, checked by the engine in the browser: a short distance announced, an overlap refused; the prevailing wind (ignition sources upwind of releases) and the hazardous-area zones 0, 1 and 2 as envelopes the case declares; and what the model does not do -- pipe lengths, structures, drainage.",
+      "href": "/app/?workspace=methods&tool=plant-layout"
     },
     {
       "id": "route-screening",

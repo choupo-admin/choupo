@@ -14,8 +14,8 @@ learns is PLACEMENT -- separation distances, access, flow order, sectors as
 areas -- and later what it costs (pipe lengths).  The same day he added the
 prevailing wind and the hazardous-area (ATEX) zones: *"acrescenta o vento
 dominante e as zonas ATEX"*.  Slice 1 is the dictionary, the engine check,
-the draft tool and the GUI view; slice 2 (the EduTool lesson) waits on his
-yes to its outline.
+the draft tool and the GUI view; slice 2 is the EduTool lesson, on the
+outline he approved the same day (§10).
 
 ## 2. The grammar -- `system/layoutDict`
 
@@ -235,6 +235,26 @@ converts unsourced into falsely sourced."*
 Pipe lengths and their cost (the next slice: it needs a pipe-rack model and a
 routing rule); structures, racks and multi-level steel (elevation is declared
 but nothing checks access); rotation by an arbitrary angle; a stacking or
-support check; the EduTool lesson (slice 2, awaiting Vítor's yes to its
-outline); whether any declared distance or zone extent is SENSIBLE -- by
-design that is the author's to defend.
+support check; whether any declared distance or zone extent is SENSIBLE --
+by design that is the author's to defend.
+
+## 10. Slice 2 -- the EduTool lesson
+
+*Plant layout: where each item stands, and why* (`tool=plant-layout`, shelf
+Process design & economics; `gui/src/ui/methods/PlantLayoutTool.tsx`, its
+text in `plantLayoutLesson.ts`, its knobs in `layoutExercise.ts`), on the
+outline Vítor approved on 2026-10-17 (DEV.md 4c C75): why layout matters,
+separation distances and why none is shipped, a guided exercise, the wind
+and the zones, the trade-offs, the limits.  The exercise runs THIS witness in
+the browser with the reader's numbers written into its layoutDict -- the
+let-down drum's and the control room's positions, the wind's bearing, the
+`measure` word -- and draws only what the engine published: its `[layout]`
+lines and any refusal verbatim, the findings, and the same 3D scene as
+Reports.  The draft tool is a command-line step the browser cannot run, so
+the page describes it and starts from the witness's hand-moved file.  Every
+`file:line` the lesson cites, every number it quotes and every guided move's
+expected outcome is held to the tree by `gui/tests/plantLayoutLesson.test.ts`
+(the moves recomputed from the witness's golden sizes and declared numbers
+by the rules above).  Not taught, because the engine does not do it: pipe
+lengths and their cost (said so on the page), and any zone extent or
+distance from a standard (named bibliographically, marked NOT READ).
