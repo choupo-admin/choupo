@@ -907,6 +907,20 @@ accepts today, and that is a policy call.
 
 ## 4c. Commissioned by Vítor (he ASKED for this; it is not a candidate)
 
+> **C81. EXPORT THE LAYOUT AS A SELF-CONTAINED PAGE (Vítor, 2026-10-17:
+> "Avança!", on the commander's proposal after "No final vou ficar com um
+> layout gerado pelo Choupo que os alunos podem partilhar e é dinâmico?").**
+> A student's case lives in their own files, so its layout has no link to
+> share.  An "Export as page" button on the 3D layout (Reports section,
+> `?layout=` pop-out, EduTool bench) writes ONE self-contained HTML file
+> from the run on screen -- the published `layout {}` and `pipes {}` blocks
+> embedded as data, three.js and the scene code inlined (no network, opens
+> anywhere), the 3D view with the animated flow, the findings and the pipe
+> register, and a footer naming the case, the run fingerprint and the
+> Choupo version.  GUI only, no engine change, no new case.  The download
+> goes through the GUI's existing save path (the pop-out Blob pattern of
+> gui-credo).  Status: queued behind C80 (same scene component).
+
 > **STANDING RULE (Vítor, 2026-10-17: "Não cries mais casos novos!!!!
 > Usa o que já está!").**  No new tutorial case is created -- by the
 > commander or any general -- for a witness, a fixture, a demonstration or
