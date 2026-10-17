@@ -255,9 +255,9 @@ layout  ignitionDownwind:controlRoom:condenser value            52.4976189936   
 layout  ignitionDownwind:controlRoom:condenser limit            60               1e-4
 layout  ignitionDownwind:controlRoom:degasser value            46.6476151588    1e-4
 layout  ignitionDownwind:controlRoom:degasser limit            60               1e-4
-layout  summary                placed           5                1e-4
+layout  summary                placed           8                1e-4
 layout  summary                unplaced         0                1e-4
-layout  summary                internal         0                1e-4
+layout  summary                internal         1                1e-4
 layout  summary                findings         3                1e-4
 kpi     lightsColumn           dP_column_kPa    13.1933908187    1e-4
 kpi     lightsColumn           diameter         0.337636971143   1e-4
