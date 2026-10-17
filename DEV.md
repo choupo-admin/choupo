@@ -907,6 +907,20 @@ accepts today, and that is a policy call.
 
 ## 4c. Commissioned by Vítor (he ASKED for this; it is not a candidate)
 
+> **C76. THE LAYOUT IN THE TWO PEQ PROJECTS (Vítor, 2026-10-17: "Podes por
+> isso nos dois projetos de PEQ que estou a acompanhar?  NH3 e Ácido
+> Acético").**  Measured: NH3 = `tutorials/plant/greenAmmoniaPEQ_baseCase`
+> (has a sizing pass); acetic acid = `aceticAcid02_plant` (NO
+> `system/postDict`, so no design/ sheets and nothing a layout can place).
+> Plan, queued behind C75 slice 1 (it needs the grammar, the check and the
+> draft tool): (a) aceticAcid02 gains a sizing pass (only sizers that
+> already exist; a unit with none is listed, not invented; new rows
+> appended, none moved); (b) both cases get a layoutDict produced by
+> `choupo-layout --draft`, its separation table, wind and ATEX zones
+> declared as LABELLED ASSUMPTIONS for the students to replace with their
+> own site data (never presented as the students' design).  Status: queued
+> 2026-10-17.
+
 > **C75. A PLANT LAYOUT IN 3D: A DICTIONARY, A TOOL AND AN EDUTOOL (Vítor,
 > 2026-10-17: "Podes fazer um EduTool com isso, criar esse dicionario e
 > criar uma tool para gerar o layout 3D?" -- after a student of his had an
