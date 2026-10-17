@@ -907,6 +907,28 @@ accepts today, and that is a policy call.
 
 ## 4c. Commissioned by Vítor (he ASKED for this; it is not a candidate)
 
+> **C80. PIPES BETWEEN THE ITEMS, AND THE FLUID SEEN MOVING (Vítor,
+> 2026-10-17: "os meus alunos tinham as colunas implantadas com as
+> tubagens ligadas entre eles e até tinham o fluido a passar
+> estilizadamente!!!").**  The slice C75 already named as next (pipe
+> lengths), widened to what his students' drawing showed.  Stated defaults
+> (the commander's; pipes are new physics only in their LENGTH, which is
+> pedagogy already approved as "the trade-off becomes real when pipe
+> lengths exist"): ENGINE -- every stream joining two PLACED items becomes
+> a pipe, routed ONCE, deterministically, orthogonally (up from the source
+> nozzle to a declared rack elevation, along x then y, down to the target;
+> a case may override a route with declared waypoints), its length
+> published in a `pipes {}` result block with the stream's identity, flow,
+> phase (vf) and direction, a golden kind or an argued existing one, and
+> no pressure drop or cost yet (named as the next slice); COLUMNS appear
+> wherever a column is sized (C79 brings aceticAcid02's).  GUI -- the 3D
+> view draws each pipe as a tube along the published route, coloured by
+> phase in more than one channel (liquid / vapour / two-phase), with an
+> ANIMATED, stylised flow along the published direction (speed a
+> monotone function of the published flow, said in a legend; a toggle to
+> stop it; reduced-motion respected).  Nothing routed or computed in the
+> GUI.  Queued behind C79 (both touch PlantLayout.cpp).
+
 > **C78. THE 3D LAYOUT IN ITS OWN POP-OUT TAB (Vítor, 2026-10-17: "Mas
 > devia de haver um pop up para o layout 3d no Gui").**  Today the 3D view
 > lives only inside Reports -> "Plant layout (3D)" and the EduTool bench.
