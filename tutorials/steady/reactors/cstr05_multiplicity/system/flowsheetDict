@@ -27,6 +27,10 @@
   `T_guess`.  Change T_guess and the reactor moves to another branch -- the same
   equipment, the same feed, a different answer.  That is not a numerical defect;
   it is the physics, and it is why real reactors need a start-up procedure.
+
+  A liquid-phase esterification at 394-454 K must be pressurised to stay liquid:
+  at 1 atm the engine resolves this product as vapour, so the feed is declared
+  at 15 bar, where the product holds the liquid.
 \*---------------------------------------------------------------------------*/
 
 units

@@ -23,6 +23,10 @@
   T_coolant) and the outlet slides down the generation curve; cool too hard and
   the reactor extinguishes.  Nothing here is switched on by a flag; it is the
   same one equation in T, with one more term.
+
+  A liquid-phase esterification at 394-454 K must be pressurised to stay liquid:
+  at 1 atm the engine resolves this product as vapour, so the feed is declared
+  at 15 bar, where the product holds the liquid.
 \*---------------------------------------------------------------------------*/
 
 units

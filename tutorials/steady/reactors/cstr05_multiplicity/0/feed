@@ -17,4 +17,4 @@ componentMolarFlows
 }
 
 T               300 K;
-P               101325 Pa;
+P               15 bar;     // pressurised to hold the product liquid -- see the case header

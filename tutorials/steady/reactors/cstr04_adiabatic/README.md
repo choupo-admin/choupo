@@ -7,6 +7,10 @@ the golden lands at **T_out = 454.15 K**, a **104.2 K** rise from the
 conversion (ξ_max is 0.1389 mol/s) because the rate constant at 454 K is
 **0.889 s⁻¹**, 250 times its value at 350 K.
 
+A liquid-phase esterification at 394-454 K must be pressurised to stay
+liquid: at 1 atm the engine resolves this product as vapour, so the feed
+is declared at **15 bar**, where the product holds the liquid.
+
 ## The lesson
 
 1. **Two unknowns now, solved together.**  The extent from the design

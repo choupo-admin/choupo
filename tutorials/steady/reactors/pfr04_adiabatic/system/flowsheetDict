@@ -21,6 +21,10 @@
   `adiabatic` (here), or `heatExchange` (a jacket: U, areaPerVolume, T_coolant).
   A non-isothermal reactor needs the heat of reaction, so every reacting species
   must carry `standardThermochemistry` -- a fictitious toy species cannot be used.
+
+  A liquid-phase esterification at 394-454 K must be pressurised to stay liquid:
+  at 1 atm the engine resolves this product as vapour, so the feed is declared
+  at 15 bar, where the product holds the liquid.
 \*---------------------------------------------------------------------------*/
 
 units
