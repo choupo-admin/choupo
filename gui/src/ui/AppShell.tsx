@@ -54,6 +54,8 @@ import { Suspense, lazy, useEffect, useState } from "react";
 
 import { useStore, hasCaseOpen } from "../state/store.js";
 import { useStaleResult } from "../state/useStaleResult.js";
+import { useLayoutPopOutFollow } from "../state/useLayoutPopOut.js";
+import { layoutKeyOf } from "../case/layoutPopOut.js";
 import { RESULT_WORKSPACES } from "./workspaces.js";
 import { AgentConsole } from "./AgentConsole.js";
 import { agentRowPx } from "./panelFold.js";
@@ -121,6 +123,12 @@ const ComponentTab = lazy(() =>
 const ExploreMccabeTab = lazy(() =>
   import("./explore/ExploreMccabeTab.js").then((m) => ({ default: m.ExploreMccabeTab })),
 );
+// The 3D plant layout popped out full-window (?layout=<key>, DEV.md 4c C78):
+// lazy like the other pop-out tabs, and PlantLayout3D inside it imports
+// three.js only when it first draws.
+const LayoutPopOutTab = lazy(() =>
+  import("./LayoutPopOutTab.js").then((m) => ({ default: m.LayoutPopOutTab })),
+);
 
 export function AppShell() {
   // Derive page mode from caseFiles: props cases carry a propsDict
@@ -130,6 +138,9 @@ export function AppShell() {
   );
   const activeWorkspace = useStore((s) => s.activeWorkspace);
   const stale = useStaleResult();
+  // Keep an open ?layout= tab current with this tab's run and declared case
+  // (writes only where such a tab was opened; state/useLayoutPopOut.ts).
+  useLayoutPopOutFollow();
   const setActiveWorkspace = useStore((s) => s.setActiveWorkspace);
   const tutorialName = useStore((s) => s.tutorialName);
   // When the Assistant console is DOCKED + open it takes a grid row, so the
@@ -304,6 +315,19 @@ export function AppShell() {
     return (
       <Suspense fallback={<Box style={{ padding: 16 }}>Loading...</Box>}>
         <ExploreMccabeTab />
+      </Suspense>
+    );
+  }
+
+  // The 3D plant layout popped out full-window (?layout=<key>): a real tab
+  // that re-reads its stash, follows its parent, and refuses honestly when
+  // the stash is gone (ExpiredTabPanel kind="layout") -- no flowsheet/menu
+  // shell.  It decides its own expiry, so it sits BEFORE the bootExpired
+  // branch like the McCabe tab does.
+  if (typeof window !== "undefined" && layoutKeyOf(window.location.search) !== null) {
+    return (
+      <Suspense fallback={<Box style={{ padding: 16 }}>Loading...</Box>}>
+        <LayoutPopOutTab />
       </Suspense>
     );
   }

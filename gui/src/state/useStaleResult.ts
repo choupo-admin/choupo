@@ -37,8 +37,7 @@ License
 
 import { useMemo } from "react";
 
-import { applyScratch } from "../case/scratch.js";
-import { runInputsOf, stalenessOf, type Staleness } from "../case/staleness.js";
+import { declaredInputsOf, stalenessOf, type Staleness } from "../case/staleness.js";
 import { useStore } from "./store.js";
 
 export function useStaleResult(): Staleness {
@@ -47,8 +46,7 @@ export function useStaleResult(): Staleness {
   const runResult = useStore((s) => s.runResult);
   const runInputs = useStore((s) => s.runInputs);
   return useMemo(
-    () => stalenessOf(runInputsOf(applyScratch(caseFiles, scratchEdits), scratchEdits),
-                      runInputs, !!runResult),
+    () => stalenessOf(declaredInputsOf(caseFiles, scratchEdits), runInputs, !!runResult),
     [caseFiles, scratchEdits, runInputs, runResult],
   );
 }

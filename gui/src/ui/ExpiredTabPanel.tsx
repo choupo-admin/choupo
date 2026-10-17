@@ -27,7 +27,8 @@ License
 \*---------------------------------------------------------------------------*/
 
 /*---------------------------------------------------------------------------*\
-  Honest "expired" panel for an isolated pop-out tab (?focus= / ?internals=)
+  Honest "expired" panel for an isolated pop-out tab (?focus= / ?internals= /
+  ?explore=mccabe&key= / ?layout=)
   whose localStorage stash is gone (cleared storage, a different browser, a
   pre-stable-key build).  A pop-out tab is a REAL tab: when its source is gone
   it refuses honestly instead of silently degrading into the welcome / parent
@@ -37,8 +38,9 @@ License
 import { Alert, Box, Text } from "@mantine/core";
 import { IconClockX } from "@tabler/icons-react";
 
-export function ExpiredTabPanel({ kind }: { kind: "focus" | "internals" | "explore" }) {
-  const what = kind === "focus" ? "mini-flowsheet" : kind === "explore" ? "McCabe-Thiele" : "internals";
+export function ExpiredTabPanel({ kind }: { kind: "focus" | "internals" | "explore" | "layout" }) {
+  const what = kind === "focus" ? "mini-flowsheet" : kind === "explore" ? "McCabe-Thiele"
+    : kind === "layout" ? "3D plant layout" : "internals";
   return (
     <Box
       style={{
@@ -60,6 +62,8 @@ export function ExpiredTabPanel({ kind }: { kind: "focus" | "internals" | "explo
           Its data was stashed by the parent case and is gone (storage
           cleared, or a different browser).  {kind === "explore"
             ? "Reopen it from EduTools in the top bar — pick “Distillation (McCabe-Thiele)”, choose the two compounds, and press the pop-out button in its toolbar."
+            : kind === "layout"
+            ? "Reopen it from the parent — run the case, open Reports → “Plant layout (3D)” and press “Open in new tab” (or the same button under the EduTools plant-layout bench)."
             : "Reopen it from the parent case — double-click the unit on the flowsheet."}
         </Text>
       </Alert>

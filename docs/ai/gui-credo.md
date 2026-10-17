@@ -482,6 +482,15 @@ This bypasses Firefox's popup blocker (no `window.open(...)` with
 explicit features) and works identically across Firefox / Chrome /
 Safari.
 
+The interactive pop-outs are a second family: a full React view in a
+REAL tab that re-reads a stable, never-consumed localStorage stash
+(see *Tab citizenship* below) — `?focus=`, `?internals=`,
+`?explore=mccabe&key=`, and `?layout=` (the 3D plant layout, DEV.md
+4c C78: opened from Reports → "Plant layout (3D)" and the EduTools
+plant-layout bench; it follows its parent through the browser's
+`storage` event and dims exactly as the parent does when the case has
+moved since the run it draws).
+
 ### Stream-name lookup
 Streams cross several naming conventions in the same case:
 - `flowsheetDict` connections: `concentration/condensate1` (slashes)

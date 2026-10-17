@@ -158,7 +158,7 @@ export function MenuBar({ availableWidthPx, onRowWidth }: {
   const caseFiles = useStore((s) => s.caseFiles);
   const showIntro = useStore((s) => s.showIntro);
   const canDownloadZip = Boolean(caseFiles.rawFiles && Object.keys(caseFiles.rawFiles).length > 0);
-  // An isolated pop-out tab (?case= / ?focus= / ?internals=) is a satellite of
+  // An isolated pop-out tab (?case= / ?focus= / ?internals= / ?layout=) is a satellite of
   // its parent case: the tutorial gallery + Ctrl+O are gated away from it --
   // opening another case there would hijack a tab whose URL claims to be
   // something else (gui-credo §4 "Tab citizenship").
