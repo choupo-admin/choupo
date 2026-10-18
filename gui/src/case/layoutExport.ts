@@ -73,6 +73,7 @@ License
   createElementNS (an identifier, never fetched).
 \*---------------------------------------------------------------------------*/
 
+import type { GmpBuilding } from "../adapters/buildingPayload.js";
 import type { PlantLayout } from "../adapters/SolverAdapter.js";
 import { engineVersionLabel, type EngineVersion } from "./engineVersion.js";
 import { canPopOutLayout, type LayoutPopOutStash } from "./layoutPopOut.js";
@@ -84,6 +85,7 @@ import {
 import { layoutSection, type LayoutSectionId } from "./layoutPanels.js";
 import { phaseCss, PHASE_WORDS, QUALITY_TITLE } from "./plantLayout.js";
 import type { RunInputs, Staleness } from "./staleness.js";
+import { GMP_LEGEND } from "./gmpBuilding.js";
 
 /** The element ids the viewer script looks for (export/layoutViewer.ts). */
 export const EXPORT_IDS = {
@@ -104,6 +106,10 @@ export const EXPORT_IDS = {
   resize: "choupo-layout-resize",
   /** The toolbar and the view together: what goes full screen. */
   stage: "choupo-layout-stage",
+  /** The GMP interior (DEV.md 4c C97): its block, and the prefix of its
+   *  toggles (`-rooms`, `-personnel`, `-material`, `-waste`). */
+  building: "choupo-building-data",
+  buildingToggle: "choupo-building",
 } as const;
 
 /** The compiled viewer, and the third-party code it carries. */
@@ -119,6 +125,8 @@ export interface LayoutExportInput {
   source: LayoutPopOutStash["source"];
   caseName: string;
   layout: PlantLayout;
+  /** The GMP interior beside it (DEV.md 4c C97), drawn in the same view. */
+  building?: GmpBuilding;
   /** The stamp of the run drawn; null when the run carries none. */
   ran: RunInputs | null;
   /** The version the app's badge shows; null when the stamp is unreadable. */
@@ -290,6 +298,7 @@ export function buildLayoutExport(input: LayoutExportInput): { fileName: string;
 
   //  ---- the legend and the toolbar ---------------------------------------
   const legend = [
+    input.building ? `<p>${esc(GMP_LEGEND)}</p>` : "",
     `<p>Declared in <code>system/layoutDict</code>.  ${esc(LEGEND_SHAPES)}  Drag (one finger)`
     + " to orbit, right-drag (two fingers) to pan, wheel (pinch) to zoom; Fit frames the"
     + " plant again.</p>",
@@ -319,6 +328,13 @@ export function buildLayoutExport(input: LayoutExportInput): { fileName: string;
     + (hasPipes ? check(EXPORT_IDS.pipes, "Pipes", true) + check(EXPORT_IDS.flow, "Flow", true) : "")
     + (hasZones ? check(EXPORT_IDS.zones, "Zones", true)
                   + check(EXPORT_IDS.zoneLabels, "Zone labels", false) : "")
+    + (input.building
+      ? check(`${EXPORT_IDS.buildingToggle}-rooms`, "Rooms", true)
+        + (["personnel", "material", "waste"] as const)
+          .filter((k) => input.building!.flows.some((f) => f.kind === k))
+          .map((k) => check(`${EXPORT_IDS.buildingToggle}-${k}`,
+                            k[0]!.toUpperCase() + k.slice(1), true)).join("")
+      : "")
     + `<button type="button" id="${EXPORT_IDS.full}"`
     + ` title="Show the view on the whole screen (Esc returns)">Full screen</button>`
     + `</div>`;
@@ -475,7 +491,7 @@ ${section("items", items + notesHtml, `${layout.items.length} placed`)}
 ${footer}
 </main>
 <script type="application/json" id="${EXPORT_IDS.data}">${jsonForScript(layout)}</script>
-<script>${scriptForInline(input.viewer.script)}</script>
+${input.building ? `<script type="application/json" id="${EXPORT_IDS.building}">${jsonForScript(input.building)}</script>\n` : ""}<script>${scriptForInline(input.viewer.script)}</script>
 </body>
 </html>
 `;

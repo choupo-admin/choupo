@@ -64,6 +64,7 @@ License
   or judges anything.
 \*---------------------------------------------------------------------------*/
 
+import type { GmpBuilding } from "../adapters/buildingPayload.js";
 import type { PlantLayout, RunResult } from "../adapters/SolverAdapter.js";
 import { layoutScene } from "./plantLayout.js";
 import type { ScratchEdits } from "./scratch.js";
@@ -85,6 +86,9 @@ export interface LayoutPopOutStash {
   caseName: string;
   /** The engine's `layout {}` block, verbatim. */
   layout: PlantLayout;
+  /** The GMP interior beside it (DEV.md 4c C97), when the case declares one:
+   *  carried so "Export as page" draws it too. */
+  building?: GmpBuilding;
   /** The stamp of the run that produced `layout`; null when the run carries
    *  none (a drilled-in tab inherits its parent's result unstamped). */
   ran: RunInputs | null;
@@ -200,6 +204,7 @@ export function caseLayoutStash(view: CaseLayoutView): LayoutPopOutStash | null 
   const layout = r && r.status === "done" ? r.layout : undefined;
   if (!canPopOutLayout(layout)) return null;
   return { v: 1, source: "case", caseName: view.tutorialName, layout,
+           ...(r?.building ? { building: r.building } : {}),
            ran: view.runInputs ?? null,
            declared: declaredInputsOf(view.caseFiles, view.scratchEdits) };
 }

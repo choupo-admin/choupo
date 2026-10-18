@@ -74,6 +74,7 @@ export async function exportLayoutPage(stash: LayoutPopOutStash): Promise<string
   ]);
   const { fileName, html } = buildLayoutExport({
     source: stash.source, caseName: stash.caseName, layout: stash.layout, ran: stash.ran,
+    ...(stash.building ? { building: stash.building } : {}),
     version, date: new Date().toISOString(),
     viewer: { script: viewer.script, threeVersion: viewer.threeVersion,
               threeLicence: viewer.threeLicence },

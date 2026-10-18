@@ -73,6 +73,7 @@ import { tornadoFigure, fmtMoney, type TornadoFigure } from "../case/tornado.js"
 import { TornadoPlot } from "./plotting/TornadoPlot.js";
 import { layoutScene, type LayoutScene } from "../case/plantLayout.js";
 import { PlantLayout3D } from "./plotting/PlantLayout3D.js";
+import { GmpBuildingSection } from "./GmpBuildingSection.js";
 import { PlantLayoutLegend, PlantLayoutTables } from "./PlantLayoutTables.js";
 import { popOutCaseLayout } from "../state/useLayoutPopOut.js";
 import { useStaleResult } from "../state/useStaleResult.js";
@@ -177,7 +178,8 @@ function ReportsBody({ runResult }: { runResult: RunResult }) {
     exchangers: () => <ExchangersBody runResult={runResult} units={hxUnits} />,
     economics:  () => (econ ? <EconomicsBody econ={econ} /> : null),
     sensitivity: () => (tornado ? <SensitivityBody fig={tornado} /> : null),
-    layout:     () => (scene && layout ? <LayoutBody layout={layout} scene={scene} /> : null),
+    layout:     () => (scene && layout ? <LayoutBody layout={layout} scene={scene}
+                                                    building={runResult.building} /> : null),
   };
 
   return (
@@ -706,8 +708,10 @@ function SensitivityBody({ fig }: { fig: TornadoFigure }) {
 //  the stash is built from the store at the click (popOutCaseLayout).
 //  "Export as page" (DEV.md 4c C81) saves the same run as one self-contained
 //  HTML file; it is disabled while the result is stale (ExportLayoutButton).
-function LayoutBody({ layout, scene }: {
+function LayoutBody({ layout, scene, building }: {
   layout: NonNullable<RunResult["layout"]>; scene: LayoutScene;
+  /** The GMP interior (DEV.md 4c C97), drawn below the plot plan. */
+  building?: RunResult["building"];
 }) {
   const stale = useStaleResult();
   return (
@@ -727,6 +731,7 @@ function LayoutBody({ layout, scene }: {
       </Group>
       <PlantLayout3D scene={scene} />
       <PlantLayoutTables layout={layout} />
+      {building && <GmpBuildingSection building={building} scene={scene} />}
     </>
   );
 }

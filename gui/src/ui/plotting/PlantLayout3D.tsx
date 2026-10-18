@@ -76,7 +76,7 @@ License
   the toolbar and the lifecycle around it.
 \*---------------------------------------------------------------------------*/
 
-import { useEffect, useMemo, useRef, useState, type ChangeEvent } from "react";
+import { useEffect, useMemo, useRef, useState, type ChangeEvent, type ReactNode } from "react";
 import { Button, Checkbox, Group, SegmentedControl, Text } from "@mantine/core";
 
 import {
@@ -85,7 +85,8 @@ import {
 } from "../../case/plantLayout.js";
 import { fullscreenMode, type FullscreenMode } from "../../case/layoutPanels.js";
 import {
-  FILL_MIN_HEIGHT, mountLayoutScene, type LayoutModules, type LayoutView, type Toggles,
+  FILL_MIN_HEIGHT, mountLayoutScene, type LayoutModules, type LayoutView, type SceneExtension,
+  type Toggles,
 } from "./layoutRenderer.js";
 
 /** three.js and the addons it ships that the drawing uses, imported on
@@ -118,8 +119,12 @@ async function loadLayoutModules(): Promise<LayoutModules> {
  *  view is placed in (the `?layout=` pop-out tab, DEV.md 4c C78) and follow
  *  it when the window is resized.  Either way three.js is imported only when
  *  a layout is first shown. */
-export function PlantLayout3D({ scene, height: declaredHeight = 520 }: {
+export function PlantLayout3D({ scene, height: declaredHeight = 520, extend, toolbarExtra }: {
   scene: LayoutScene; height?: number | "fill";
+  /** Another drawing in the same scene (the GMP interior, DEV.md 4c C97). */
+  extend?: SceneExtension;
+  /** Its controls, on the same toolbar. */
+  toolbarExtra?: ReactNode;
 }) {
   const host = useRef<HTMLDivElement>(null);
   const frame = useRef<HTMLDivElement>(null);
@@ -175,7 +180,7 @@ export function PlantLayout3D({ scene, height: declaredHeight = 520 }: {
         if (disposed || !el) return;
         api.current = mountLayoutScene(modules, el, scene,
           { height, toggles: togglesRef.current, view: viewRef.current,
-            quality: qualityRef.current });
+            quality: qualityRef.current, ...(extend ? { extend } : {}) });
       } catch (e) {
         if (!disposed)
           setError(e instanceof Error ? e.message : String(e));
@@ -186,7 +191,7 @@ export function PlantLayout3D({ scene, height: declaredHeight = 520 }: {
       api.current?.dispose();
       api.current = null;
     };
-  }, [scene, height]);
+  }, [scene, height, extend]);
 
   if (error)
     return (
@@ -229,6 +234,7 @@ export function PlantLayout3D({ scene, height: declaredHeight = 520 }: {
         <Checkbox size="xs" label="Zone labels" checked={toggles.zoneLabels}
           disabled={!toggles.zones} onChange={toggle("zoneLabels")} />
       )}
+      {toolbarExtra}
       <Button size="compact-xs" variant="default" onClick={toggleFull}
         aria-pressed={full !== "off"}
         title={full === "off"
