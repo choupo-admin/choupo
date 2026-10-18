@@ -75,6 +75,7 @@ Description
 #include "outerDriver/OuterDriver.H"
 #include "io/DesignSheetWriter.H"
 #include "postProcessing/layout/PlantLayout.H"
+#include "postProcessing/layout/BuildingLayout.H"
 #include "io/InternalStateIO.H"
 #include "postProcessing/PostProcessor.H"
 #include "reporting/Report.H"
@@ -772,6 +773,9 @@ try
         }
         if (!layoutDict) return;
         res.layout = plantLayout::evaluate(*layoutDict, res, verbosity);
+        //  THE GMP INTERIOR (DEV.md 4c C97): `building {}`, checked against
+        //  the plot plan just checked; absent, an empty record and no output.
+        res.building = buildingLayout::evaluate(*layoutDict, res.layout, verbosity);
         dictAudit::report(dictAudit::auditTree(*layoutDict, "layoutDict"),
                           verbosity);
     };

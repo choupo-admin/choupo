@@ -46,6 +46,7 @@ Description
 #pragma once
 
 #include "core/Advisory.H"
+#include "core/BuildingRecords.H"     // the GMP interior (C97)
 #include "core/ProblemDivergence.H"
 #include "core/Dictionary.H"         // DictPtr (unitDicts)
 #include "core/FlatUnit.H"          // topology, not output -- see that header
@@ -465,6 +466,9 @@ struct SimulationResult
     //  The plant layout check's conclusion (DEV.md 4c C75); empty unless the
     //  case declares `system/layoutDict` (`postProcessing/layout/PlantLayout`).
     PlantLayoutRecord                                             layout;
+    //  The GMP interior (DEV.md 4c C97); empty unless `system/layoutDict`
+    //  declares `building {}` (`postProcessing/layout/BuildingLayout`).
+    BuildingRecord                                                building;
     bool                                                           converged = true;
 
     //  ---- Provenance seal, tri-state (forum 2026-08-02) -----------------

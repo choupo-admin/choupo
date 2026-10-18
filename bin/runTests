@@ -772,7 +772,7 @@ get_ledger() {
 get_layout() {
     local out="$1" id="$2" key="$3"
     printf '%s\n' "$out" | awk -v id="$id" -v k="$key" '
-        /^  "layout": \{/ { inblk = 1; next }
+        /^  "(layout|building)": \{/ { inblk = 1; next }
         inblk && /^  \}/  { inblk = 0 }
         !inblk { next }
         index($0, "\"id\": \"" id "\",") == 0 { next }
@@ -1464,6 +1464,38 @@ auto_generate() {
                         printf "layout %-20s %-16s %-18s %s\n", id, W[i], s, "exact"
                     }
                 nn = split("x y z dx dy dz value limit placed unplaced internal findings length pipes notRouted pipeLength plotArea footprintArea pavedArea distance", N, " ")
+                for (i = 1; i <= nn; i++)
+                    if (match(line, "\"" N[i] "\": *-?[0-9][0-9.eE+-]*")) {
+                        s = substr(line, RSTART, RLENGTH); sub(/^"[^"]*": */, "", s)
+                        printf "layout %-20s %-16s %-18s %s\n", id, N[i], s, tol
+                    }
+            }'
+        #  THE GMP INTERIOR (2026-10-18, DEV.md 4c C97) rides the same kind:
+        #  its own top-level `"building"` block, one record per line with an
+        #  `"id"` (`buildingSummary`, `floor:`, `room:`, `<type>:<a>:<b>` per
+        #  connection, `flow:`, `<kind>:<a>:<b>` per finding), read by
+        #  get_layout through the same regex.  Pinned: the summary COUNTS and
+        #  floor area, each room's area, resolved pressure, grade, role and
+        #  regime, each connection's dP, each flow's steps, each finding's
+        #  value and limit.  A separate pass, so the layout rows above are
+        #  byte-for-byte what they were.
+        printf '%s\n' "$out" | awk -v tol="$reltol" '
+            /^  "building": \{/ { inblk = 1; next }
+            inblk && /^  \}/  { inblk = 0 }
+            !inblk { next }
+            !match($0, /"id": "[^"]*"/) { next }
+            {
+                id = substr($0, RSTART+7, RLENGTH-8)
+                line = $0
+                sub(/"message": .*/, "", line)
+                sub(/"source": .*/, "", line)
+                nw = split("grade role regime type kind", W, " ")
+                for (i = 1; i <= nw; i++)
+                    if (match(line, "\"" W[i] "\": \"[^\"]*\"")) {
+                        s = substr(line, RSTART, RLENGTH); sub(/^"[^"]*": "/, "", s); sub(/"$/, "", s)
+                        if (s != "") printf "layout %-20s %-16s %-18s %s\n", id, W[i], s, "exact"
+                    }
+                nn = split("floors rooms connections flows findings floorArea occupancy minimumStep atexDistance elevation height area pressureToOutside dP steps value limit", N, " ")
                 for (i = 1; i <= nn; i++)
                     if (match(line, "\"" N[i] "\": *-?[0-9][0-9.eE+-]*")) {
                         s = substr(line, RSTART, RLENGTH); sub(/^"[^"]*": */, "", s)
@@ -5988,6 +6020,23 @@ if [ "$#" -eq 0 ]; then
         fail=$((fail+1))
     fi
     rm -f /tmp/plantlayout.$$
+
+    # GMP-interior gate (2026-10-18, DEV.md 4c C97 phase B): the `building {}`
+    # block of system/layoutDict -- rooms, grades, pressures, airlocks, flows
+    # -- is checked by the engine, and every finding it publishes is EQUAL to
+    # the one recomputed independently from the published JSON, on a clean
+    # probe (no finding) and twelve probes built to fire each rule; seventeen
+    # refusals through the real reader; absence is silence; the building
+    # rows are pinned by the `layout` golden kind.
+    if "$ROOT/bin/curate/check_gmp_layout.py" > /tmp/gmplayout.$$ 2>&1; then
+        printf "PASS  %-40s  (%s)\n" "gmp-layout-gate" "$(gate_claim check_gmp_layout /tmp/gmplayout.$$)"
+        pass=$((pass+1))
+    else
+        printf "FAIL  %-40s  (run bin/curate/check_gmp_layout.py)\n" "gmp-layout-gate"
+        cat /tmp/gmplayout.$$
+        fail=$((fail+1))
+    fi
+    rm -f /tmp/gmplayout.$$
 
     # Estimate-class gate (2026-09-25): the AACE 18R-97 classification had TWO
     # homes and they disagreed -- a hand-written table in docs/design-
