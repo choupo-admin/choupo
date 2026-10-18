@@ -1081,6 +1081,27 @@ accepts today, and that is a policy call.
 > in the PEQ layout with its own zone; the charging compressor said, not
 > invented.  Moved PEQ rows listed for Vitor.  Status: dispatched 2026-10-18.
 
+> **C90. THE EXPORTED LAYOUT IN COLOUR, AND ROADS AND SITE BUILDINGS
+> (Vitor, 2026-10-18, with two screenshots: "Esta mesmo fixe!  Mas o layout
+> gerado para exportar nao esta a cores!  E achas que se podem por as
+> estradas a ligar tudo?  Entrada, pavilhao de armazenamento, refeitorio,
+> balanca para pesar camioes quando faz falta?").**  (1) Measured: the
+> exported page in his browser draws a near-black scene -- the renderer
+> follows `prefers-color-scheme` (`layoutRenderer.ts:198-203`) into a NIGHT
+> palette (sky, grass, gravel, lights, :274-305, :397-440); the app showed
+> the day palette.  Rule taken: the 3D SCENE is always daylight; only the
+> page chrome follows the theme.  (2) Roads and site buildings, on the
+> existing layout grammar: declared roads (centre-line waypoints, width,
+> with source/reason), checked by the engine (a road through a footprint
+> refuses; every declared site building and the gate reached; a process
+> item with no road within a declared access distance announced), road
+> length and paved area published and inside the plot envelope; site
+> buildings as declared non-process items by kind -- gate/guardhouse,
+> warehouse, canteen, weighbridge (only where the case says trucks are
+> weighed) -- each drawn by its kind in 3D, roads as asphalt.  Witness: the
+> existing `ammonia02_full_plant` (no new case); PEQ and acetic acid after
+> C87/C89 land.  Status: dispatched 2026-10-18.
+
 > **C88. THE 3D LAYOUT MADE TO LOOK LIKE A PLANT (Vitor, 2026-10-18: "E ve
 > se pões o layout com melhor aspecto!  Eu acho que ha bibliotecas para
 > renderizar o 3d para aquilo ficar top notch!").**  Measured:
