@@ -48,29 +48,51 @@ License
 \*---------------------------------------------------------------------------*/
 
 import {
-  AmbientLight, ArrowHelper, BoxGeometry, BufferGeometry, CylinderGeometry, DirectionalLight,
-  DoubleSide, EdgesGeometry, GridHelper, Group, Line, LineBasicMaterial, LineDashedMaterial,
-  LineLoop, LineSegments, Mesh, MeshBasicMaterial, MeshStandardMaterial, OctahedronGeometry,
-  PerspectiveCamera, PlaneGeometry, Raycaster, Scene, SphereGeometry, Vector2, Vector3,
-  WebGLRenderer,
+  ACESFilmicToneMapping, ArrowHelper, BoxGeometry, BufferGeometry, CanvasTexture,
+  CylinderGeometry, DirectionalLight, DoubleSide, Fog, Group, HalfFloatType, LineSegments,
+  HemisphereLight, InstancedMesh, Line, LineBasicMaterial, LineDashedMaterial, LineLoop, Matrix4,
+  Mesh, MeshBasicMaterial, MeshLambertMaterial, MeshStandardMaterial, OctahedronGeometry,
+  PCFSoftShadowMap,
+  PerspectiveCamera, PlaneGeometry, PMREMGenerator, Quaternion, Raycaster, RepeatWrapping, Scene,
+  SphereGeometry, SRGBColorSpace, TorusGeometry, Vector2, Vector3, WebGLRenderer,
+  WebGLRenderTarget,
 } from "three";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls.js";
 import { CSS2DObject, CSS2DRenderer } from "three/examples/jsm/renderers/CSS2DRenderer.js";
+import { RoomEnvironment } from "three/examples/jsm/environments/RoomEnvironment.js";
+import { mergeGeometries } from "three/examples/jsm/utils/BufferGeometryUtils.js";
+import { EffectComposer } from "three/examples/jsm/postprocessing/EffectComposer.js";
+import { RenderPass } from "three/examples/jsm/postprocessing/RenderPass.js";
+import { GTAOPass } from "three/examples/jsm/postprocessing/GTAOPass.js";
+import { OutlinePass } from "three/examples/jsm/postprocessing/OutlinePass.js";
+import { OutputPass } from "three/examples/jsm/postprocessing/OutputPass.js";
 
 import type { PlantLayout } from "../adapters/SolverAdapter.js";
 import { EXPORT_IDS } from "../case/layoutExport.js";
-import { layoutScene, prefersReducedMotion, type ViewPreset } from "../case/plantLayout.js";
-import { mountLayoutScene, type LayoutView, type Toggles } from "../ui/plotting/layoutRenderer.js";
+import {
+  initialQuality, layoutScene, prefersReducedMotion, rememberQuality,
+  type RenderQuality, type ViewPreset,
+} from "../case/plantLayout.js";
+import {
+  mountLayoutScene, type LayoutModules, type LayoutView, type Toggles,
+} from "../ui/plotting/layoutRenderer.js";
 
 /** The app's mapping, as compiled into this bundle (for the test). */
 export const sceneOf = layoutScene;
 
-const THREE = {
-  AmbientLight, ArrowHelper, BoxGeometry, BufferGeometry, CylinderGeometry, DirectionalLight,
-  DoubleSide, EdgesGeometry, GridHelper, Group, Line, LineBasicMaterial, LineDashedMaterial,
-  LineLoop, LineSegments, Mesh, MeshBasicMaterial, MeshStandardMaterial, OctahedronGeometry,
-  PerspectiveCamera, PlaneGeometry, Raycaster, Scene, SphereGeometry, Vector2, Vector3,
-  WebGLRenderer,
+const MODULES: LayoutModules = {
+  THREE: {
+    ACESFilmicToneMapping, ArrowHelper, BoxGeometry, BufferGeometry, CanvasTexture,
+    CylinderGeometry, DirectionalLight, DoubleSide, Fog, Group, HalfFloatType, LineSegments,
+    HemisphereLight, InstancedMesh, Line, LineBasicMaterial, LineDashedMaterial, LineLoop, Matrix4,
+    Mesh, MeshBasicMaterial, MeshLambertMaterial, MeshStandardMaterial, OctahedronGeometry,
+  PCFSoftShadowMap,
+    PerspectiveCamera, PlaneGeometry, PMREMGenerator, Quaternion, Raycaster, RepeatWrapping, Scene,
+    SphereGeometry, SRGBColorSpace, TorusGeometry, Vector2, Vector3, WebGLRenderer,
+    WebGLRenderTarget,
+  },
+  OrbitControls, CSS2DRenderer, CSS2DObject, RoomEnvironment, mergeGeometries,
+  post: { EffectComposer, RenderPass, GTAOPass, OutlinePass, OutputPass },
 };
 
 function boot(): void {
@@ -109,11 +131,21 @@ function boot(): void {
       `input[name="${EXPORT_IDS.preset}"]:checked`);
     return c && (c.value === "plan" || c.value === "elevation") ? c.value : "3d";
   };
+  //  The quality the reader chose before (in this browser), else this
+  //  device's default; the page's radio group is set to it before the view
+  //  starts.
+  const qualityRadio = (q: RenderQuality) =>
+    document.getElementById(`${EXPORT_IDS.quality}-${q}`) as HTMLInputElement | null;
+  const first = initialQuality();
+  const radio = qualityRadio(first);
+  if (radio) radio.checked = true;
+  const qualityNow = (): RenderQuality =>
+    qualityRadio("fast")?.checked ? "fast" : "high";
 
   let view: LayoutView;
   try {
-    view = mountLayoutScene({ THREE, OrbitControls, CSS2DRenderer, CSS2DObject }, host, scene,
-      { height: "fill", toggles: read(), view: presetNow() });
+    view = mountLayoutScene(MODULES, host, scene,
+      { height: "fill", toggles: read(), view: presetNow(), quality: qualityNow() });
   } catch (e) {
     say(`The 3D view could not start (${e instanceof Error ? e.message : String(e)}).  It needs`
       + " WebGL; the tables below carry every position, pipe and finding the engine published.");
@@ -132,6 +164,13 @@ function boot(): void {
   for (const r of Array.from(document.querySelectorAll<HTMLInputElement>(
     `input[name="${EXPORT_IDS.preset}"]`)))
     r.addEventListener("change", () => view.fit(presetNow()));
+  for (const r of Array.from(document.querySelectorAll<HTMLInputElement>(
+    `input[name="${EXPORT_IDS.quality}"]`)))
+    r.addEventListener("change", () => {
+      const q = qualityNow();
+      rememberQuality(q);
+      view.setQuality(q);
+    });
   sync();
 }
 

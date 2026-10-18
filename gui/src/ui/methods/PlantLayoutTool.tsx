@@ -236,10 +236,12 @@ function LayoutBench(): JSX.Element {
           <PlantLayout3D scene={scene} height={420} />
           {layout && <PipeRegister layout={layout} />}
           <PanelNote>
-            Cylinders are items whose sizer published a diameter and a length; boxes
-            are footprints the case declared.  Translucent cylinders are the declared
-            zones (zone 1 wire, zone 2 faint and dashed); an item the engine named in
-            a finding is outlined and its label carries ⚠; the arrow is the wind.
+            Each item is drawn by its equipment kind on its envelope -- the diameter
+            and length its sizer published, or the box the case declared; heads,
+            skirts, saddles, ladders and platforms are drawing, not data.  Translucent
+            cylinders are the declared zones (zone 1 wire, zone 2 faint and dashed); an
+            item the engine named in a finding is painted orange and its label carries
+            ⚠; the arrow is the wind.
             The tubes are the pipes the engine routed over its rack, coloured and
             shaped by phase, the particles moving in the direction of flow (faster
             for a larger mass flow, stylised).  Hover anything for its details;

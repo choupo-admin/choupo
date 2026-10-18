@@ -48,7 +48,9 @@ License
   A KIND WITH NO DRAWING IS A LABELLED BOX (CLAUDE.md "the datasheet follows
   the equipment kind"): the engine already says which items are cylinders --
   the ones whose sizer published a diameter and a length -- and every other
-  item is the box the case declared.  Nothing here guesses a nicer shape.
+  item is the box the case declared.  Nothing here guesses a nicer shape;
+  how each KIND is drawn on that envelope (heads, saddles, ladders -- DEV.md
+  4c C88) is case/equipmentModel.ts, which reads the solid this module maps.
 
   GREYSCALE SURVIVES.  The three zones differ by OPACITY, by EDGE STYLE (solid
   / wire / dashed) and by a LABEL carrying the word, never by colour alone.
@@ -601,4 +603,56 @@ export function prefersReducedMotion(): boolean {
   } catch {
     return false;
   }
+}
+
+//  ---- how much the drawing costs (DEV.md 4c C88) ---------------------------
+
+/** "high": shadows, ambient occlusion, an outline round a flagged item and
+ *  the full pixel ratio; "fast": none of them, for a weak laptop.  The
+ *  SAME scene either way -- quality moves no item, no pipe and no word. */
+export type RenderQuality = "high" | "fast";
+
+/** What the Quality control says it changes (the app and the exported
+ *  page say the same sentence). */
+export const QUALITY_TITLE = "High: soft shadows, ambient occlusion and an outline round an"
+  + " item the engine named in a finding.  Fast: none of them, for a weak laptop.  The plant"
+  + " drawn is the same.";
+
+/** The per-viewer memory of the reader's choice (a convenience, never
+ *  state anybody else reads). */
+export const QUALITY_KEY = "choupo.layout3d.quality";
+
+/** The quality a view opens in when the reader has not chosen: "fast" on a
+ *  touch device or one that reports little memory or few cores, "high"
+ *  otherwise. */
+export function defaultQuality(sig: { coarsePointer: boolean; deviceMemory?: number;
+                                      cores?: number }): RenderQuality {
+  if (sig.coarsePointer) return "fast";
+  if (sig.deviceMemory !== undefined && sig.deviceMemory <= 4) return "fast";
+  if (sig.cores !== undefined && sig.cores <= 2) return "fast";
+  return "high";
+}
+
+/** The reader's remembered choice, else `defaultQuality` of this device. */
+export function initialQuality(): RenderQuality {
+  try {
+    const kept = window.localStorage.getItem(QUALITY_KEY);
+    if (kept === "high" || kept === "fast") return kept;
+  } catch { /* a private window or blocked storage: fall through */ }
+  try {
+    const nav = navigator as Navigator & { deviceMemory?: number };
+    return defaultQuality({
+      coarsePointer: typeof window.matchMedia === "function"
+        && window.matchMedia("(pointer: coarse)").matches,
+      deviceMemory: nav.deviceMemory,
+      cores: nav.hardwareConcurrency,
+    });
+  } catch {
+    return "high";
+  }
+}
+
+/** Remember the reader's choice in this browser. */
+export function rememberQuality(q: RenderQuality): void {
+  try { window.localStorage.setItem(QUALITY_KEY, q); } catch { /* not kept: fine */ }
 }

@@ -28,7 +28,7 @@ License
 
 /*---------------------------------------------------------------------------*\
   layoutRenderer -- the three.js drawing of a `LayoutScene`, with no React in
-  it (DEV.md 4c C75, C78, C80, C81).
+  it (DEV.md 4c C75, C78, C80, C81, C88).
 
   Moved VERBATIM out of PlantLayout3D.tsx on 2026-10-17 (C81) when a second
   caller arrived: the self-contained page "Export as page" writes
@@ -41,23 +41,44 @@ License
   three.js is handed IN (`LayoutModules`), never imported here: the app
   imports it on demand the first time a layout is shown, the exported page
   carries it bundled, and this module type-checks against both without
-  pulling three.js into the index chunk.
+  pulling three.js into the index chunk.  Everything used is three.js itself
+  or an addon it ships (`three/examples/jsm`): no other library, so the
+  exported page still opens with no network.
 
-  WHAT IS DRAWN.  Every placed item at its extents: a cylinder where the
-  engine says the item is one, a box otherwise.  Sector areas as outlined
-  rectangles on the ground.  Hazardous-area zones as translucent cylinders
-  whose zones differ by opacity AND edge style AND the word in their label
-  (zone labels OFF by default: they are the first thing to crowd a plant).
-  An item the engine named in a finding is outlined thick and its label
-  carries a warning glyph; a separation shortfall is a dashed line tagged
-  with both distances.  The wind is an arrow pointing where it blows.
+  WHAT IS DRAWN (C88: "the layout made to look like a plant").  Every placed
+  item is drawn BY ITS EQUIPMENT KIND (case/equipmentModel.ts, pure and
+  tested): a vessel with its 2:1 heads and a skirt or legs, a tall item with
+  a caged ladder and platforms, an exchanger with its channel head, flanges,
+  nozzles and saddles, a storage tank with its cone roof, a stirred tank
+  with its agitator drive, a compressor on its skid; a kind with no drawing
+  keeps the plain cylinder or box.  The BODY fills the engine's envelope and
+  nothing else; ladders, platforms, nozzles and saddles are decoration (that
+  module's header says which and why).  Materials are physically based --
+  stainless shells, painted steel, concrete -- lit by an environment map and
+  a sun with soft shadows, tone-mapped (ACES) to sRGB, with ambient
+  occlusion; on a ground of grass, the plot in gravel and each sector area a
+  concrete pad.  Hazardous-area zones are translucent cylinders whose zones
+  differ by opacity AND edge style AND the word in their label (zone labels
+  OFF by default: they are the first thing to crowd a plant).  An item the
+  engine named in a finding is painted safety orange, outlined (in "high"
+  quality) and its label carries a warning glyph; a separation shortfall is
+  a dashed line tagged with both distances.  The wind is an arrow pointing
+  where it blows.
 
-  THE PIPES (C80): each published route as a translucent tube coloured by
-  phase, the rack the engine routed on, the junctions on it, and an ANIMATED
-  stylised flow: particles moving along the route in the direction of flow,
-  SHAPED by phase (sphere liquid, octahedron vapour, the two alternating in
-  a two-phase pipe -- the channel that survives greyscale), at a speed that
-  is a stated monotone function of the published mass flow.
+  THE PIPES (C80, C88): each published route as a translucent tube coloured
+  by phase, with a BEND at every corner of the route (the route itself is the
+  engine's; the bend radius is drawing, a few pipe radii), on a steel rack
+  with portals, tier beams and longitudinal stringers; the junctions on it;
+  and an ANIMATED stylised flow: particles moving along the route in the
+  direction of flow, SHAPED by phase (sphere liquid, octahedron vapour, the
+  two alternating in a two-phase pipe -- the channel that survives
+  greyscale), at a speed that is a stated monotone function of the published
+  mass flow.
+
+  QUALITY.  "high" adds the soft shadows, the ambient occlusion and the
+  finding outline and renders at the device pixel ratio; "fast" drops all
+  three and renders at one pixel per CSS pixel, for a weak laptop.  The
+  scene is the same either way.
 
   LEGIBILITY.  A label is the item id; the rest is the hover TOOLTIP.  Labels
   that collide on screen are decluttered every frame by priority (findings,
@@ -72,10 +93,18 @@ import type { OrbitControls as OrbitControlsT } from "three/examples/jsm/control
 import type {
   CSS2DObject as CSS2DObjectT, CSS2DRenderer as CSS2DRendererT,
 } from "three/examples/jsm/renderers/CSS2DRenderer.js";
+import type { RoomEnvironment as RoomEnvironmentT } from "three/examples/jsm/environments/RoomEnvironment.js";
+import type { mergeGeometries as mergeGeometriesT } from "three/examples/jsm/utils/BufferGeometryUtils.js";
+import type { EffectComposer as EffectComposerT } from "three/examples/jsm/postprocessing/EffectComposer.js";
+import type { RenderPass as RenderPassT } from "three/examples/jsm/postprocessing/RenderPass.js";
+import type { GTAOPass as GTAOPassT } from "three/examples/jsm/postprocessing/GTAOPass.js";
+import type { OutlinePass as OutlinePassT } from "three/examples/jsm/postprocessing/OutlinePass.js";
+import type { OutputPass as OutputPassT } from "three/examples/jsm/postprocessing/OutputPass.js";
 
+import { equipmentDrawing, type Part, type PartRole } from "../../case/equipmentModel.js";
 import {
   cameraFit, declutter, LABEL_PRIORITY, PHASE_COLOURS, pointAlong,
-  type LabelBox, type LayoutScene, type Phase, type ViewPreset,
+  type LabelBox, type LayoutScene, type Phase, type RenderQuality, type Vec3, type ViewPreset,
 } from "../../case/plantLayout.js";
 
 /** The least height a "fill" view draws at, so a squeezed window still
@@ -85,15 +114,27 @@ export const FILL_MIN_HEIGHT = 240;
 export const FOV = 45;
 
 const COLOURS = {
-  process:   0x7d8fa3,
-  nonProcess: 0xc2a46b,
-  flagged:   0xd9480f,
   area:      0x5c7cfa,
   zone:      0xf08c00,
   link:      0xe03131,
   wind:      0x1c7ed6,
-  rack:      0x868e96,
-  junction:  0x495057,
+  outline:   0xff4d00,
+};
+
+/** The look of each part role (case/equipmentModel.ts): colour, metalness,
+ *  roughness.  `body` is chosen per item (process / non-process / flagged). */
+const ROLE_LOOK: Record<Exclude<PartRole, "body">, [number, number, number]> = {
+  steel:    [0x56606b, 0.7, 0.5],     // painted structural steel
+  grating:  [0x6f757c, 0.6, 0.75],
+  safety:   [0xe3ad00, 0.2, 0.45],    // handrails, ladder cages, guards
+  machine:  [0x3b6a8a, 0.35, 0.45],
+  motor:    [0x2d5ea8, 0.3, 0.4],
+  concrete: [0xb7b2a8, 0.0, 0.95],
+};
+const BODY_LOOK = {
+  process:    [0xd3d8de, 0.85, 0.3] as [number, number, number],   // stainless
+  nonProcess: [0xcbb994, 0.05, 0.85] as [number, number, number],  // a building's render
+  flagged:    [0xe8590c, 0.25, 0.45] as [number, number, number],  // safety orange
 };
 
 /** What the reader switched on. */
@@ -102,24 +143,42 @@ export interface Toggles { flow: boolean; pipes: boolean; zones: boolean; zoneLa
 /** The three.js classes the drawing uses -- named, so the exported page's
  *  bundle can leave the rest of three.js out (export/layoutViewer.ts). */
 export type ThreeUsed = Pick<typeof T3,
-  "AmbientLight" | "ArrowHelper" | "BoxGeometry" | "BufferGeometry" | "CylinderGeometry"
-  | "DirectionalLight" | "DoubleSide" | "EdgesGeometry" | "GridHelper" | "Group" | "Line"
-  | "LineBasicMaterial" | "LineDashedMaterial" | "LineLoop" | "LineSegments" | "Mesh"
-  | "MeshBasicMaterial" | "MeshStandardMaterial" | "OctahedronGeometry" | "PerspectiveCamera"
-  | "PlaneGeometry" | "Raycaster" | "Scene" | "SphereGeometry" | "Vector2" | "Vector3"
-  | "WebGLRenderer">;
+  "ACESFilmicToneMapping" | "ArrowHelper" | "BoxGeometry" | "BufferGeometry" | "CanvasTexture" | "LineSegments"
+  | "CylinderGeometry" | "DirectionalLight" | "DoubleSide" | "Fog" | "Group"
+  | "HalfFloatType" | "HemisphereLight" | "InstancedMesh" | "Line" | "LineBasicMaterial"
+  | "LineDashedMaterial" | "LineLoop" | "Matrix4" | "Mesh" | "MeshBasicMaterial" | "MeshLambertMaterial"
+  | "MeshStandardMaterial" | "OctahedronGeometry" | "PCFSoftShadowMap" | "PerspectiveCamera"
+  | "PlaneGeometry" | "PMREMGenerator" | "Quaternion" | "Raycaster" | "RepeatWrapping" | "Scene"
+  | "SphereGeometry" | "SRGBColorSpace" | "TorusGeometry" | "Vector2" | "Vector3"
+  | "WebGLRenderer" | "WebGLRenderTarget">;
 
-/** three.js and the two addons the drawing uses, handed in by the caller. */
+/** The post-processing passes "high" quality uses. */
+export interface PostModules {
+  EffectComposer: typeof EffectComposerT;
+  RenderPass: typeof RenderPassT;
+  GTAOPass: typeof GTAOPassT;
+  OutlinePass: typeof OutlinePassT;
+  OutputPass: typeof OutputPassT;
+}
+
+/** three.js and the addons the drawing uses, handed in by the caller.
+ *  `post` absent: the view renders directly (no ambient occlusion and no
+ *  outline even in "high"), and says nothing is missing because nothing
+ *  the engine published depends on it. */
 export interface LayoutModules {
   THREE: ThreeUsed;
   OrbitControls: typeof OrbitControlsT;
   CSS2DRenderer: typeof CSS2DRendererT;
   CSS2DObject: typeof CSS2DObjectT;
+  RoomEnvironment: typeof RoomEnvironmentT;
+  mergeGeometries: typeof mergeGeometriesT;
+  post?: PostModules;
 }
 
 /** A mounted view: what the toolbar drives, and how to take it down. */
 export interface LayoutView {
   setToggles(t: Toggles): void;
+  setQuality(q: RenderQuality): void;
   fit(view: ViewPreset): void;
   dispose(): void;
 }
@@ -130,6 +189,21 @@ export interface MountOptions {
   height: number | "fill";
   toggles: Toggles;
   view: ViewPreset;
+  /** Default "high". */
+  quality?: RenderQuality;
+}
+
+/** Whether the page around the view is dark (the app's own scheme, else
+ *  the system's): the sky and the exposure follow it. */
+function darkScheme(): boolean {
+  try {
+    const a = document.documentElement.getAttribute("data-mantine-color-scheme");
+    if (a === "dark" || a === "light") return a === "dark";
+    return typeof window.matchMedia === "function"
+      && window.matchMedia("(prefers-color-scheme: dark)").matches;
+  } catch {
+    return false;
+  }
 }
 
 /** Draw `scene` into `el` and return the handle.  Throws what three.js
@@ -142,10 +216,23 @@ export function mountLayoutScene(m: LayoutModules, el: HTMLDivElement, scene: La
     height === "fill" ? Math.max(el.clientHeight, FILL_MIN_HEIGHT) : height;
   const width = Math.max(el.clientWidth, 320);
   const h0 = heightOf();
-  const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
-  renderer.setPixelRatio(window.devicePixelRatio || 1);
+  let quality: RenderQuality = opts.quality ?? "high";
+  const dpr = window.devicePixelRatio || 1;
+  const pixelRatio = () => (quality === "high" ? Math.min(dpr, 2) : 1);
+  const dark = darkScheme();
+
+  const renderer = new THREE.WebGLRenderer({ antialias: true, powerPreference: "high-performance" });
+  renderer.setPixelRatio(pixelRatio());
   renderer.setSize(width, h0);
-  renderer.setClearColor(0x000000, 0);
+  renderer.toneMapping = THREE.ACESFilmicToneMapping;
+  renderer.toneMappingExposure = dark ? 0.85 : 1.0;
+  renderer.outputColorSpace = THREE.SRGBColorSpace;
+  renderer.shadowMap.enabled = quality === "high";
+  renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+  //  The plant does not move: the shadow map is drawn once and again only
+  //  when what casts a shadow changes (quality, the pipes toggle).
+  renderer.shadowMap.autoUpdate = false;
+  renderer.shadowMap.needsUpdate = true;
   if (height === "fill") {
     renderer.domElement.style.position = "absolute";
     renderer.domElement.style.top = "0";
@@ -174,11 +261,67 @@ export function mountLayoutScene(m: LayoutModules, el: HTMLDivElement, scene: La
   } as Partial<CSSStyleDeclaration>);
   el.appendChild(tip);
 
+  const disposables: { dispose(): void }[] = [];
+  const keep = <D extends { dispose(): void }>(d: D): D => { disposables.push(d); return d; };
+
+  const [x0, , z0] = scene.min;
+  const [x1, y1, z1] = scene.max;
+  const span = Math.max(x1 - x0, z1 - z0, y1, 10);
+  const cx = (x0 + x1) / 2, cz = (z0 + z1) / 2;
+
+  //  ---- sky, environment, light -----------------------------------------
   const world = new THREE.Scene();
-  world.add(new THREE.AmbientLight(0xffffff, 0.75));
-  const sun = new THREE.DirectionalLight(0xffffff, 0.9);
-  sun.position.set(1, 2, 1.5);
+  const skyTop = dark ? "#0d1626" : "#6f9fd8";
+  const skyHorizon = dark ? "#38445a" : "#dbe6ef";
+  const sky = (() => {
+    const c = document.createElement("canvas");
+    c.width = 2; c.height = 256;
+    const g = c.getContext("2d");
+    if (g) {
+      const grad = g.createLinearGradient(0, 0, 0, 256);
+      grad.addColorStop(0, skyTop);
+      grad.addColorStop(1, skyHorizon);
+      g.fillStyle = grad;
+      g.fillRect(0, 0, 2, 256);
+    }
+    const t = keep(new THREE.CanvasTexture(c));
+    t.colorSpace = THREE.SRGBColorSpace;
+    return t;
+  })();
+  world.background = sky;
+  world.fog = new THREE.Fog(skyHorizon, span * 2.5, span * 9);
+
+  //  Image-based light from three.js's own neutral room: the reflections a
+  //  metal surface needs to read as metal.
+  const pmrem = new THREE.PMREMGenerator(renderer);
+  const room = new m.RoomEnvironment();
+  const envTex = keep(pmrem.fromScene(room, 0.04).texture);
+  room.dispose();
+  pmrem.dispose();
+  world.environment = envTex;
+  world.environmentIntensity = dark ? 0.35 : 0.55;
+
+  world.add(new THREE.HemisphereLight(dark ? 0x8090b0 : 0xdfeeff, 0x5b6a48, dark ? 0.5 : 0.9));
+  const sun = new THREE.DirectionalLight(dark ? 0xc8d4ff : 0xfff1dc, dark ? 1.2 : 2.8);
+  //  From the south-east and high: the shadows fall to the north-west, beside
+  //  the items as the default camera (south-west) sees them.
+  const sunDir = new THREE.Vector3(0.55, 1.0, 0.45).normalize();
+  const reach = Math.hypot(x1 - x0, z1 - z0) / 2 + y1 + 5;
+  sun.position.set(cx + sunDir.x * reach * 2, sunDir.y * reach * 2, cz + sunDir.z * reach * 2);
+  sun.target.position.set(cx, 0, cz);
+  sun.castShadow = true;
+  sun.shadow.mapSize.set(2048, 2048);
+  sun.shadow.camera.left = -reach;
+  sun.shadow.camera.right = reach;
+  sun.shadow.camera.top = reach;
+  sun.shadow.camera.bottom = -reach;
+  sun.shadow.camera.near = 0.5;
+  sun.shadow.camera.far = reach * 4;
+  sun.shadow.bias = -0.0004;
+  sun.shadow.normalBias = 0.04 * Math.max(1, reach / 50);
+  sun.shadow.radius = 3;
   world.add(sun);
+  world.add(sun.target);
 
   //  ---- labels, decluttered by priority -----------------------------
   interface Lbl { obj: T3.Object3D; el: HTMLDivElement; priority: number;
@@ -201,87 +344,226 @@ export function mountLayoutScene(m: LayoutModules, el: HTMLDivElement, scene: La
     lbls.push({ obj: o, el: d, priority, group, w: 0, h: 0 });
   };
 
-  const [x0, , z0] = scene.min;
-  const [x1, y1, z1] = scene.max;
-  const span = Math.max(x1 - x0, z1 - z0, y1, 10);
-  const cx = (x0 + x1) / 2, cz = (z0 + z1) / 2;
+  //  ---- the ground: grass, the plot in gravel, a concrete pad per sector --
+  /** A small tiling noise texture: the grain that keeps a large flat
+   *  colour from reading as a CAD fill.  Drawing only. */
+  const noise = (base: [number, number, number], amp: number, repeat: number) => {
+    const n = 128;
+    const c = document.createElement("canvas");
+    c.width = n; c.height = n;
+    const g = c.getContext("2d");
+    if (g) {
+      const img = g.createImageData(n, n);
+      let seed = 1234567;
+      const rnd = () => ((seed = (seed * 16807) % 2147483647) / 2147483647);
+      for (let i = 0; i < n * n; i++) {
+        const k = (rnd() - 0.5) * 2 * amp;
+        img.data[4 * i] = Math.max(0, Math.min(255, base[0] + k));
+        img.data[4 * i + 1] = Math.max(0, Math.min(255, base[1] + k));
+        img.data[4 * i + 2] = Math.max(0, Math.min(255, base[2] + k));
+        img.data[4 * i + 3] = 255;
+      }
+      g.putImageData(img, 0, 0);
+    }
+    const t = keep(new THREE.CanvasTexture(c));
+    t.colorSpace = THREE.SRGBColorSpace;
+    t.wrapS = THREE.RepeatWrapping;
+    t.wrapT = THREE.RepeatWrapping;
+    t.repeat.set(repeat, repeat);
+    return t;
+  };
+  /** A ground layer; `layer` orders the coplanar layers by polygon offset
+   *  (0 on top), so no layer needs lifting off the grade.  Lambert, not
+   *  PBR: a matte ground looks the same and costs a fraction per pixel,
+   *  and the ground is most of the pixels. */
+  const groundMat = (tex: T3.Texture, layer: number) => keep(new THREE.MeshLambertMaterial({
+    map: tex,
+    polygonOffset: true, polygonOffsetFactor: layer, polygonOffsetUnits: layer,
+  }));
+  const groundPlane = (w: number, d: number, at: [number, number], mat: T3.Material) => {
+    const p = new THREE.Mesh(keep(new THREE.PlaneGeometry(w, d)), mat);
+    p.rotation.x = -Math.PI / 2;
+    p.position.set(at[0], 0, at[1]);
+    p.receiveShadow = true;
+    world.add(p);
+    return p;
+  };
+  const plotRect = scene.plot
+    ?? { x0: x0 - 5, x1: x1 + 5, z0: z0 - 5, z1: z1 + 5 };
+  {
+    //  Grass round the plot, as four strips (not one plane under it: the
+    //  ground is most of the pixels, and nothing is drawn twice).
+    const G = span * 7;
+    const grass = groundMat(noise(dark ? [52, 66, 44] : [98, 126, 70], 18, 1), 4);
+    (grass.map as T3.Texture).repeat.set(G / 2, G / 2);
+    const { x0: px0, x1: px1, z0: pz0, z1: pz1 } = plotRect;
+    const gx0 = cx - G, gx1 = cx + G, gz0 = cz - G, gz1 = cz + G;
+    const strip = (ax: number, bx: number, az: number, bz: number) => {
+      if (bx - ax <= 0 || bz - az <= 0) return;
+      const p = groundPlane(bx - ax, bz - az, [(ax + bx) / 2, (az + bz) / 2], grass);
+      //  The grain stays the same size on every strip.
+      const g = p.geometry as T3.BufferGeometry;
+      const uv = g.getAttribute("uv") as T3.BufferAttribute;
+      for (let i = 0; i < uv.count; i++)
+        uv.setXY(i, (ax + uv.getX(i) * (bx - ax) - gx0) / (2 * G),
+                    (az + (1 - uv.getY(i)) * (bz - az) - gz0) / (2 * G));
+      uv.needsUpdate = true;
+    };
+    strip(gx0, gx1, gz0, pz0);
+    strip(gx0, gx1, pz1, gz1);
+    strip(gx0, px0, pz0, pz1);
+    strip(px1, gx1, pz0, pz1);
+    const w = px1 - px0, d = pz1 - pz0;
+    const gravel = groundMat(noise(dark ? [88, 84, 78] : [150, 144, 133], 30, 1), 2);
+    (gravel.map as T3.Texture).repeat.set(w / 3, d / 3);
+    groundPlane(w, d, [(px0 + px1) / 2, (pz0 + pz1) / 2], gravel);
+  }
 
-  //  Ground grid, under everything drawn.
-  const cell = span > 200 ? 10 : span > 60 ? 5 : 1;
-  const grid = new THREE.GridHelper(Math.ceil(span * 1.2 / cell) * cell,
-    Math.ceil(span * 1.2 / cell), 0x999999, 0xcccccc);
-  grid.position.set(cx, 0, cz);
-  (grid.material as T3.Material).transparent = true;
-  (grid.material as T3.Material).opacity = 0.35;
-  world.add(grid);
+  //  Ground grid over the plot only, faint: the scale a reader measures
+  //  against (1, 5 or 10 m cells, on whole metres of the plan).
+  {
+    const cell = span > 200 ? 10 : span > 60 ? 5 : 1;
+    const pts: T3.Vector3[] = [];
+    const { x0: px0, x1: px1, z0: pz0, z1: pz1 } = plotRect;
+    for (let x = Math.ceil(px0 / cell) * cell; x <= px1; x += cell)
+      pts.push(new THREE.Vector3(x, 0.02, pz0), new THREE.Vector3(x, 0.02, pz1));
+    for (let z = Math.ceil(pz0 / cell) * cell; z <= pz1; z += cell)
+      pts.push(new THREE.Vector3(px0, 0.02, z), new THREE.Vector3(px1, 0.02, z));
+    world.add(new THREE.LineSegments(new THREE.BufferGeometry().setFromPoints(pts),
+      new THREE.LineBasicMaterial({ color: dark ? 0xb0b0b0 : 0x55524c, transparent: true,
+                                    opacity: 0.18, depthWrite: false })));
+  }
 
-  //  Sector areas: an outline on the ground and a faint fill.
+  //  Sector areas: a concrete pad and its outline.
   for (const a of scene.areas) {
     const w = a.x1 - a.x0, d = a.z1 - a.z0;
-    const plane = new THREE.Mesh(new THREE.PlaneGeometry(w, d),
-      new THREE.MeshBasicMaterial({ color: COLOURS.area, transparent: true,
-        opacity: 0.08, side: THREE.DoubleSide, depthWrite: false }));
-    plane.rotation.x = -Math.PI / 2;
-    plane.position.set((a.x0 + a.x1) / 2, 0.01, (a.z0 + a.z1) / 2);
-    world.add(plane);
+    const pad = groundMat(noise(dark ? [120, 118, 112] : [196, 193, 186], 10, 1), 0);
+    (pad.map as T3.Texture).repeat.set(w / 4, d / 4);
+    groundPlane(w, d, [(a.x0 + a.x1) / 2, (a.z0 + a.z1) / 2], pad);
     const pts = [[a.x0, a.z0], [a.x1, a.z0], [a.x1, a.z1], [a.x0, a.z1]]
-      .map(([x, z]) => new THREE.Vector3(x, 0.02, z));
+      .map(([x, z]) => new THREE.Vector3(x, 0.03, z));
     world.add(new THREE.LineLoop(new THREE.BufferGeometry().setFromPoints(pts),
-      new THREE.LineBasicMaterial({ color: COLOURS.area })));
+      new THREE.LineBasicMaterial({ color: COLOURS.area, fog: false })));
     label(a.label, [a.x0, 0.05, a.z0], LABEL_PRIORITY.other);
   }
 
   //  The plot (C82): the engine's published rectangle, a dashed outline on
-  //  the ground and its area as the label -- no fill, so the sector areas
-  //  inside it stay legible.
+  //  the ground and its area as the label.
   if (scene.plot) {
     const a = scene.plot;
     const pts = [[a.x0, a.z0], [a.x1, a.z0], [a.x1, a.z1], [a.x0, a.z1]]
-      .map(([x, z]) => new THREE.Vector3(x, 0.03, z));
+      .map(([x, z]) => new THREE.Vector3(x, 0.04, z));
     const outline = new THREE.LineLoop(new THREE.BufferGeometry().setFromPoints(pts),
-      new THREE.LineDashedMaterial({ color: COLOURS.area, dashSize: 2, gapSize: 1.5 }));
+      new THREE.LineDashedMaterial({ color: COLOURS.area, dashSize: 2, gapSize: 1.5, fog: false }));
     outline.computeLineDistances();
     world.add(outline);
     label(a.label, [a.x1, 0.05, a.z1], LABEL_PRIORITY.other);
   }
 
-  //  The items.  Each mesh carries its tooltip for the hover.
-  const pickables: T3.Object3D[] = [];
-  for (const s of scene.solids) {
-    const colour = s.flagged ? COLOURS.flagged
-      : s.nonProcess ? COLOURS.nonProcess : COLOURS.process;
-    let geom: T3.BufferGeometry;
-    if (s.shape === "cylinder") {
-      const along = s.axis === "x" ? s.size[0] : s.axis === "z" ? s.size[2] : s.size[1];
-      const across = s.axis === "x" ? s.size[1] : s.size[0];
-      geom = new THREE.CylinderGeometry(across / 2, across / 2, along, 32);
-      if (s.axis === "x") geom.rotateZ(Math.PI / 2);
-      if (s.axis === "z") geom.rotateX(Math.PI / 2);
-    } else {
-      geom = new THREE.BoxGeometry(s.size[0], s.size[1], s.size[2]);
+  //  ---- the items, by kind -----------------------------------------------
+  const std = (look: [number, number, number]) => keep(new THREE.MeshStandardMaterial({
+    color: look[0], metalness: look[1], roughness: look[2] }));
+  const roleMat = new Map<PartRole, T3.Material>();
+  for (const [role, look] of Object.entries(ROLE_LOOK)) roleMat.set(role as PartRole, std(look));
+  const bodyMat = {
+    process: std(BODY_LOOK.process),
+    nonProcess: std(BODY_LOOK.nonProcess),
+    flagged: std(BODY_LOOK.flagged),
+  };
+
+  const up = new THREE.Vector3(0, 1, 0);
+  const segs = (r: number) => (r < 0.06 ? 6 : r < 0.3 ? 12 : r < 2 ? 32 : 48);
+  /** A part (equipmentModel's description) as a three.js geometry. */
+  const geometryOf = (p: Part): T3.BufferGeometry => {
+    let g: T3.BufferGeometry;
+    const toAxis = (a: "x" | "y" | "z") => {
+      if (a === "x") g.rotateZ(-Math.PI / 2);   // +y to +x
+      else if (a === "z") g.rotateX(Math.PI / 2); // +y to +z
+    };
+    switch (p.prim) {
+      case "box":
+        g = new THREE.BoxGeometry(p.size[0], p.size[1], p.size[2]);
+        if (p.yaw) g.rotateY(p.yaw);
+        break;
+      case "cylinder": {
+        const r = Math.max(p.rStart, p.rEnd);
+        //  CylinderGeometry's theta is measured from +Z toward +X; the
+        //  model's phi from +X toward +Z: theta = pi/2 - phi.
+        g = p.arc
+          ? new THREE.CylinderGeometry(p.rEnd, p.rStart, p.length, segs(r), 1, false,
+              Math.PI / 2 - (p.arc[0] + p.arc[1]), p.arc[1])
+          : new THREE.CylinderGeometry(p.rEnd, p.rStart, p.length, segs(r), 1, false);
+        if (typeof p.axis === "string") toAxis(p.axis);
+        else g.applyQuaternion(new THREE.Quaternion().setFromUnitVectors(up,
+          new THREE.Vector3(...p.axis).normalize()));
+        break;
+      }
+      case "head":
+        g = new THREE.SphereGeometry(p.r, segs(p.r), 10, 0, 2 * Math.PI, 0, Math.PI / 2);
+        g.scale(1, p.depth / p.r, 1);
+        if (p.sign < 0) g.rotateX(Math.PI);
+        toAxis(p.axis);
+        break;
+      case "ring":
+        g = new THREE.TorusGeometry(p.R, p.r, 5, Math.max(8, Math.round(24 * p.arc[1])), p.arc[1]);
+        g.rotateX(Math.PI / 2);     // the XY ring into the XZ plane, theta = phi
+        g.rotateY(-p.arc[0]);       // start at phi = arc[0]
+        break;
     }
-    const mesh = new THREE.Mesh(geom, new THREE.MeshStandardMaterial({
-      color: colour, roughness: 0.7, metalness: 0.1 }));
-    mesh.position.set(...s.center);
-    mesh.userData.tooltip = s.tooltip;
-    world.add(mesh);
-    pickables.push(mesh);
-    const edges = new THREE.LineSegments(new THREE.EdgesGeometry(geom, 30),
-      new THREE.LineBasicMaterial({ color: s.flagged ? COLOURS.flagged : 0x333333,
-        linewidth: s.flagged ? 3 : 1 }));
-    edges.position.copy(mesh.position);
-    world.add(edges);
+    g.translate(p.at[0], p.at[1], p.at[2]);
+    return g;
+  };
+
+  const pickables: T3.Object3D[] = [];
+  const flaggedMeshes: T3.Object3D[] = [];
+  for (const s of scene.solids) {
+    const drawing = equipmentDrawing(s);
+    const tooltip = [...s.tooltip.slice(0, 2), `drawn as: ${drawing.describes}`,
+                     ...s.tooltip.slice(2)];
+    //  The material of a part: a FLAGGED item's envelope parts are safety
+    //  orange whatever they are made of (its decoration keeps its own);
+    //  otherwise the role's, `body` being the item's own.
+    const matOf = (p: Part): [string, T3.Material] => {
+      if (s.flagged && !p.decoration) return ["flagged", bodyMat.flagged];
+      if (p.role !== "body") return [p.role, roleMat.get(p.role)!];
+      return s.nonProcess ? ["nonProcess", bodyMat.nonProcess] : ["process", bodyMat.process];
+    };
+    const byMat = new Map<string, { mat: T3.Material; geoms: T3.BufferGeometry[]; envelope: boolean }>();
+    for (const p of drawing.parts) {
+      const [key, mat] = matOf(p);
+      const e = byMat.get(key) ?? { mat, geoms: [], envelope: false };
+      e.geoms.push(geometryOf(p));
+      e.envelope ||= !p.decoration;
+      byMat.set(key, e);
+    }
+    const group = new THREE.Group();
+    group.position.set(...s.center);
+    for (const { mat, geoms, envelope } of byMat.values()) {
+      //  One mesh per material: a ladder of a hundred rungs is one draw.
+      const merged = geoms.length === 1 ? geoms[0]! : m.mergeGeometries(geoms, false);
+      if (geoms.length > 1) for (const g of geoms) g.dispose();
+      if (!merged) continue;
+      keep(merged);
+      const mesh = new THREE.Mesh(merged, mat);
+      mesh.castShadow = true;
+      mesh.receiveShadow = true;
+      mesh.userData.tooltip = tooltip;
+      group.add(mesh);
+      pickables.push(mesh);
+      if (s.flagged && envelope) flaggedMeshes.push(mesh);
+    }
+    world.add(group);
     label(s.label, [s.center[0], s.center[1] + s.size[1] / 2 + 0.6, s.center[2]],
       s.flagged ? LABEL_PRIORITY.finding : LABEL_PRIORITY.item, s.flagged);
   }
 
-  //  Zones: opacity + edge style + the word (the word on demand).
+  //  ---- zones: opacity + edge style + the word (the word on demand) ------
   const zoneGroup = new THREE.Group();
   world.add(zoneGroup);
   for (const z of scene.zones) {
     const geom = new THREE.CylinderGeometry(z.radius, z.radius, z.height, 48, 1, true);
     const fill = new THREE.Mesh(geom, new THREE.MeshBasicMaterial({
-      color: COLOURS.zone, transparent: true, opacity: z.opacity,
+      color: COLOURS.zone, transparent: true, opacity: z.opacity, fog: false, toneMapped: false,
       side: THREE.DoubleSide, depthWrite: false, wireframe: z.edge === "wire" }));
     fill.position.set(...z.center);
     zoneGroup.add(fill);
@@ -294,8 +576,9 @@ export function mountLayoutScene(m: LayoutModules, el: HTMLDivElement, scene: La
       }
       const line = new THREE.Line(new THREE.BufferGeometry().setFromPoints(pts),
         z.edge === "dashed"
-          ? new THREE.LineDashedMaterial({ color: COLOURS.zone, dashSize: 0.8, gapSize: 0.6 })
-          : new THREE.LineBasicMaterial({ color: COLOURS.zone }));
+          ? new THREE.LineDashedMaterial({ color: COLOURS.zone, dashSize: 0.8, gapSize: 0.6,
+                                           fog: false, toneMapped: false })
+          : new THREE.LineBasicMaterial({ color: COLOURS.zone, fog: false, toneMapped: false }));
       line.computeLineDistances();
       zoneGroup.add(line);
     };
@@ -309,68 +592,138 @@ export function mountLayoutScene(m: LayoutModules, el: HTMLDivElement, scene: La
   for (const l of scene.links) {
     const line = new THREE.Line(new THREE.BufferGeometry().setFromPoints(
       [new THREE.Vector3(...l.from), new THREE.Vector3(...l.to)]),
-      new THREE.LineDashedMaterial({ color: COLOURS.link, dashSize: 0.4, gapSize: 0.3 }));
+      new THREE.LineDashedMaterial({ color: COLOURS.link, dashSize: 0.4, gapSize: 0.3,
+                                     fog: false, toneMapped: false }));
     line.computeLineDistances();
     world.add(line);
     label(l.label, [(l.from[0] + l.to[0]) / 2, (l.from[1] + l.to[1]) / 2 + 0.5,
                     (l.from[2] + l.to[2]) / 2], LABEL_PRIORITY.finding, true);
   }
 
-  //  ---- the pipes (C80) ---------------------------------------------
+  //  ---- the pipes (C80) and their rack -----------------------------------
   const pipeGroup = new THREE.Group();
   world.add(pipeGroup);
   if (scene.rack) {
+    //  A drawing of a rack, not a structural design: H-section portals at
+    //  the scene's portal spacing (RACK_PORTAL_SPACING) on concrete
+    //  pedestals, a beam per tier the lanes use, a stringer along each edge
+    //  of each tier.  The tiers and the width are the engine's.
     const r = scene.rack;
-    const rackMat = new THREE.MeshStandardMaterial({ color: COLOURS.rack, roughness: 0.8 });
     const top = r.tiers[r.tiers.length - 1]!;
+    const steel: T3.BufferGeometry[] = [];
+    const concrete: T3.BufferGeometry[] = [];
+    const bx = (sx: number, sy: number, sz: number, x: number, y: number, z: number,
+                into: T3.BufferGeometry[]) => {
+      const g = new THREE.BoxGeometry(sx, sy, sz);
+      g.translate(x, y, z);
+      into.push(g);
+    };
+    const w = 2 * r.halfWidth + 0.4;
     for (const x of r.portals) {
-      for (const dz of [-r.halfWidth, r.halfWidth]) {
-        const col = new THREE.Mesh(new THREE.BoxGeometry(0.2, top, 0.2), rackMat);
-        col.position.set(x, top / 2, r.zc + dz);
-        pipeGroup.add(col);
+      for (const dz of [-r.halfWidth - 0.2, r.halfWidth + 0.2]) {
+        bx(0.3, top, 0.3, x, top / 2, r.zc + dz, steel);
+        bx(0.7, 0.3, 0.7, x, 0.15, r.zc + dz, concrete);
       }
-      for (const ty of r.tiers) {
-        const beam = new THREE.Mesh(new THREE.BoxGeometry(0.2, 0.2, 2 * r.halfWidth), rackMat);
-        beam.position.set(x, ty - 0.35, r.zc);
-        pipeGroup.add(beam);
-      }
+      for (const ty of r.tiers) bx(0.25, 0.3, w, x, ty - 0.35, r.zc, steel);
+    }
+    for (const ty of r.tiers)
+      for (const dz of [-r.halfWidth - 0.2, r.halfWidth + 0.2])
+        bx(r.x1 - r.x0, 0.22, 0.18, (r.x0 + r.x1) / 2, ty - 0.35, r.zc + dz, steel);
+    for (const [geoms, role] of [[steel, "steel"], [concrete, "concrete"]] as const) {
+      const merged = m.mergeGeometries(geoms, false);
+      for (const g of geoms) g.dispose();
+      if (!merged) continue;
+      keep(merged);
+      const mesh = new THREE.Mesh(merged, roleMat.get(role)!);
+      mesh.castShadow = true;
+      mesh.receiveShadow = true;
+      pipeGroup.add(mesh);
     }
     label(r.label, [r.x0, top + 1, r.zc], LABEL_PRIORITY.other);
   }
+  const junctionMat = std([0x3f474f, 0.75, 0.4]);
   for (const j of scene.junctions) {
-    const m = new THREE.Mesh(new THREE.SphereGeometry(0.45, 16, 12),
-      new THREE.MeshStandardMaterial({ color: COLOURS.junction }));
-    m.position.set(...j.at);
-    m.userData.tooltip = [j.label, "a junction on the rack: an unsized unit the pipes pass through"];
-    pipeGroup.add(m);
-    pickables.push(m);
+    const mesh = new THREE.Mesh(keep(new THREE.SphereGeometry(0.45, 20, 14)), junctionMat);
+    mesh.position.set(...j.at);
+    mesh.castShadow = true;
+    mesh.userData.tooltip = [j.label, "a junction on the rack: an unsized unit the pipes pass through"];
+    pipeGroup.add(mesh);
+    pickables.push(mesh);
     label(j.label, [j.at[0], j.at[1] + 0.9, j.at[2]], LABEL_PRIORITY.other);
   }
+
   const tubeMat = new Map<Phase, T3.Material>();
-  const partMat = new Map<Phase, T3.Material>();
-  for (const ph of ["liquid", "vapour", "twoPhase", "unknown"] as Phase[]) {
-    tubeMat.set(ph, new THREE.MeshStandardMaterial({ color: PHASE_COLOURS[ph],
-      transparent: true, opacity: 0.5, roughness: 0.4, depthWrite: false }));
-    partMat.set(ph, new THREE.MeshStandardMaterial({ color: PHASE_COLOURS[ph],
-      emissive: PHASE_COLOURS[ph], emissiveIntensity: 0.35 }));
-  }
-  const sphereG = new THREE.SphereGeometry(0.24, 10, 8);
-  const octaG = new THREE.OctahedronGeometry(0.3);
-  const cubeG = new THREE.BoxGeometry(0.32, 0.32, 0.32);
-  const up = new THREE.Vector3(0, 1, 0);
-  interface Particle { mesh: T3.Mesh; s: number; speed: number; points: [number, number, number][] }
+  for (const ph of ["liquid", "vapour", "twoPhase", "unknown"] as Phase[])
+    tubeMat.set(ph, keep(new THREE.MeshStandardMaterial({ color: PHASE_COLOURS[ph],
+      transparent: true, opacity: 0.45, roughness: 0.2, metalness: 0.1, depthWrite: false })));
+  /** One pipe as ONE geometry: a straight run per leg of the engine's route
+   *  and a bend at each corner (radius a few pipe radii, never more than
+   *  half the shorter leg -- drawing, not routing). */
+  const pipeGeometry = (pts: Vec3[], radius: number): T3.BufferGeometry | null => {
+    const P = pts.map((q) => new THREE.Vector3(...q));
+    //  Drop repeated points (a zero-length leg has no direction).
+    const Q = P.filter((q, i) => i === 0 || q.distanceTo(P[i - 1]!) > 1e-6);
+    if (Q.length < 2) return null;
+    const parts: T3.BufferGeometry[] = [];
+    const trimStart: number[] = Q.map(() => 0);   // trim at the START of leg i
+    const trimEnd: number[] = Q.map(() => 0);     // trim at the END of leg i
+    const radial = radius < 0.2 ? 10 : 14;
+    for (let i = 1; i + 1 < Q.length; i++) {
+      const a = Q[i]!.clone().sub(Q[i - 1]!), b = Q[i + 1]!.clone().sub(Q[i]!);
+      const la = a.length(), lb = b.length();
+      a.normalize(); b.normalize();
+      const cosA = Math.max(-1, Math.min(1, a.dot(b)));
+      const alpha = Math.acos(cosA);                  // the turn
+      if (alpha < 1e-3 || alpha > Math.PI - 1e-3) continue;
+      let Rb = Math.max(4 * radius, 0.6);
+      const tmax = 0.5 * Math.min(la, lb);
+      let t = Rb * Math.tan(alpha / 2);
+      if (t > tmax) { t = tmax; Rb = t / Math.tan(alpha / 2); }
+      trimEnd[i - 1] = t;
+      trimStart[i] = t;
+      //  The torus arc from the end of the incoming leg to the start of the
+      //  outgoing one: local X = -n, local Y = a (n: toward b, normal to a).
+      const n = b.clone().sub(a.clone().multiplyScalar(cosA)).normalize();
+      const X = n.clone().negate();
+      const Z = new THREE.Vector3().crossVectors(X, a);
+      const centre = Q[i]!.clone().sub(a.clone().multiplyScalar(t)).add(n.clone().multiplyScalar(Rb));
+      const g = new THREE.TorusGeometry(Rb, radius, radial, Math.max(6, Math.round(alpha * 8)), alpha);
+      g.applyMatrix4(new THREE.Matrix4().makeBasis(X, a, Z).setPosition(centre));
+      parts.push(g);
+    }
+    for (let i = 0; i + 1 < Q.length; i++) {
+      const s = Q[i]!, e = Q[i + 1]!;
+      const d = e.clone().sub(s);
+      const len = d.length() - trimStart[i]! - trimEnd[i]!;
+      if (len < 1e-4) continue;
+      d.normalize();
+      const g = new THREE.CylinderGeometry(radius, radius, len, radial, 1, true);
+      g.applyQuaternion(new THREE.Quaternion().setFromUnitVectors(up, d));
+      const mid = s.clone().add(d.clone().multiplyScalar(trimStart[i]! + len / 2));
+      g.translate(mid.x, mid.y, mid.z);
+      parts.push(g);
+    }
+    if (parts.length === 0) return null;
+    //  Torus and open cylinder carry the same attributes; merge to one.
+    const merged = m.mergeGeometries(parts, false);
+    for (const g of parts) g.dispose();
+    return merged;
+  };
+
+  interface Particle { mesh: T3.InstancedMesh; index: number; s: number; speed: number;
+                       points: Vec3[] }
   const particles: Particle[] = [];
+  //  One instanced mesh per (phase, shape): a few draws for every particle.
+  const sphereG = keep(new THREE.SphereGeometry(0.24, 10, 8));
+  const octaG = keep(new THREE.OctahedronGeometry(0.3));
+  const cubeG = keep(new THREE.BoxGeometry(0.32, 0.32, 0.32));
+  const want = new Map<string, { geo: T3.BufferGeometry; phase: Phase; n: number }>();
+  const plan: { key: string; s: number; speed: number; points: Vec3[] }[] = [];
   for (const p of scene.pipes) {
-    const mat = tubeMat.get(p.phase)!;
-    for (let i = 1; i < p.points.length; i++) {
-      const a = new THREE.Vector3(...p.points[i - 1]!);
-      const b = new THREE.Vector3(...p.points[i]!);
-      const d = b.clone().sub(a);
-      const len = d.length();
-      if (len < 1e-6) continue;
-      const tube = new THREE.Mesh(new THREE.CylinderGeometry(p.radius, p.radius, len, 10, 1), mat);
-      tube.position.copy(a.clone().add(b).multiplyScalar(0.5));
-      tube.quaternion.setFromUnitVectors(up, d.normalize());
+    const geo = pipeGeometry(p.points, p.radius);
+    if (geo) {
+      keep(geo);
+      const tube = new THREE.Mesh(geo, tubeMat.get(p.phase)!);
       tube.userData.tooltip = p.tooltip;
       pipeGroup.add(tube);
       pickables.push(tube);
@@ -383,14 +736,34 @@ export function mountLayoutScene(m: LayoutModules, el: HTMLDivElement, scene: La
     }
     const n = Math.max(3, Math.min(60, Math.round(drawn / 2.5)));
     for (let k = 0; k < n; k++) {
-      const geo = p.phase === "liquid" ? sphereG : p.phase === "vapour" ? octaG
-        : p.phase === "twoPhase" ? (k % 2 ? sphereG : octaG) : cubeG;
-      const mesh = new THREE.Mesh(geo, partMat.get(p.phase)!);
-      const q = { mesh, s: (k * drawn) / n, speed: p.speed, points: p.points };
-      mesh.position.set(...pointAlong(q.points, q.s));
-      pipeGroup.add(mesh);
-      particles.push(q);
+      const [g, shape] = p.phase === "liquid" ? [sphereG, "s"] : p.phase === "vapour" ? [octaG, "o"]
+        : p.phase === "twoPhase" ? (k % 2 ? [sphereG, "s"] : [octaG, "o"]) : [cubeG, "c"];
+      const key = `${p.phase}:${shape}`;
+      const w = want.get(key) ?? { geo: g, phase: p.phase, n: 0 };
+      w.n += 1;
+      want.set(key, w);
+      plan.push({ key, s: (k * drawn) / n, speed: p.speed, points: p.points });
     }
+  }
+  const instanced = new Map<string, T3.InstancedMesh>();
+  const used = new Map<string, number>();
+  for (const [key, w] of want) {
+    const mat = keep(new THREE.MeshStandardMaterial({ color: PHASE_COLOURS[w.phase],
+      emissive: PHASE_COLOURS[w.phase], emissiveIntensity: 0.45, roughness: 0.35 }));
+    const im = new THREE.InstancedMesh(w.geo, mat, w.n);
+    im.userData.noAO = true;
+    instanced.set(key, im);
+    used.set(key, 0);
+    pipeGroup.add(im);
+  }
+  const mtx = new THREE.Matrix4();
+  for (const q of plan) {
+    const im = instanced.get(q.key)!;
+    const index = used.get(q.key)!;
+    used.set(q.key, index + 1);
+    const at = pointAlong(q.points, q.s);
+    im.setMatrixAt(index, mtx.makeTranslation(at[0], at[1], at[2]));
+    particles.push({ mesh: im, index, s: q.s, speed: q.speed, points: q.points });
   }
 
   //  The wind.
@@ -409,8 +782,65 @@ export function mountLayoutScene(m: LayoutModules, el: HTMLDivElement, scene: La
 
   const far = Math.max(span, scene.fitMax[0] - scene.fitMin[0],
                        scene.fitMax[2] - scene.fitMin[2]) * 50;
-  const camera = new THREE.PerspectiveCamera(FOV, width / h0, 0.1, far);
+  const camera = new THREE.PerspectiveCamera(FOV, width / h0, Math.max(0.1, span / 2000), far);
   const controls = new OrbitControls(camera, renderer.domElement);
+  //  Keep the camera above the grade: under the ground is not a view.
+  controls.maxPolarAngle = Math.PI / 2 - 0.02;
+
+  //  ---- post-processing ("high" only), built on first use -------------
+  let composer: EffectComposerT | null = null;
+  let postFailed = !m.post;
+  const buildComposer = (): EffectComposerT | null => {
+    if (postFailed || !m.post) return null;
+    try {
+      const P = m.post;
+      const w = Math.max(el.clientWidth, 320), h = heightOf();
+      const target = new THREE.WebGLRenderTarget(w * pixelRatio(), h * pixelRatio(),
+        { type: THREE.HalfFloatType, samples: 4 });
+      const c = new P.EffectComposer(renderer, target);
+      c.setPixelRatio(pixelRatio());
+      c.addPass(new P.RenderPass(world, camera));
+      const ao = new P.GTAOPass(world, camera, w, h);
+      ao.updateGtaoMaterial({ radius: 1.2, distanceExponent: 1, thickness: 1, scale: 1 });
+      ao.blendIntensity = 0.9;
+      //  What the occlusion is computed from: the solid meshes only -- not
+      //  the translucent zones and pipes, not the flow particles, not the
+      //  sky (a background is no geometry).
+      const cache = new Map<T3.Object3D, boolean>();
+      let bg: T3.Scene["background"] = null;
+      ao.overrideVisibility = () => {
+        bg = world.background;
+        world.background = null;
+        world.traverse((o) => {
+          cache.set(o, o.visible);
+          const mat = (o as T3.Mesh).material as T3.Material | T3.Material[] | undefined;
+          const see = !(o as T3.Line).isLine && !o.userData.noAO
+            && !(mat && !Array.isArray(mat) && mat.transparent);
+          if (!see) o.visible = false;
+        });
+      };
+      ao.restoreVisibility = () => {
+        world.traverse((o) => { const v = cache.get(o); if (v !== undefined) o.visible = v; });
+        cache.clear();
+        world.background = bg;
+      };
+      c.addPass(ao);
+      if (flaggedMeshes.length > 0) {
+        const o = new P.OutlinePass(new THREE.Vector2(w, h), world, camera, flaggedMeshes);
+        o.visibleEdgeColor.set(COLOURS.outline);
+        o.hiddenEdgeColor.set(0x8a2a00);
+        o.edgeStrength = 4;
+        o.edgeThickness = 1.5;
+        c.addPass(o);
+      }
+      c.addPass(new P.OutputPass());
+      c.setSize(w, h);
+      return c;
+    } catch {
+      postFailed = true;   // render directly; nothing published depends on it
+      return null;
+    }
+  };
 
   //  ---- drawing, with the labels decluttered ----------------------
   let tg: Toggles = opts.toggles;
@@ -429,12 +859,14 @@ export function mountLayoutScene(m: LayoutModules, el: HTMLDivElement, scene: La
       boxes.push({ key: String(i), priority: l.priority,
         x: ((v.x + 1) / 2) * w, y: ((1 - v.y) / 2) * h, w: l.w || 60, h: l.h || 16 });
     });
-    const keep = declutter(boxes);
+    const keepLbl = declutter(boxes);
     for (const b of boxes)
-      lbls[Number(b.key)]!.el.style.visibility = keep.has(b.key) ? "visible" : "hidden";
+      lbls[Number(b.key)]!.el.style.visibility = keepLbl.has(b.key) ? "visible" : "hidden";
   };
   const draw = () => {
-    renderer.render(world, camera);
+    if (quality === "high") composer ??= buildComposer();
+    if (quality === "high" && composer) composer.render();
+    else renderer.render(world, camera);
     labels.render(world, camera);
     declutterLabels();
   };
@@ -458,18 +890,49 @@ export function mountLayoutScene(m: LayoutModules, el: HTMLDivElement, scene: La
     last = now;
     for (const q of particles) {
       q.s += q.speed * dt;
-      q.mesh.position.set(...pointAlong(q.points, q.s));
+      const at = pointAlong(q.points, q.s);
+      q.mesh.setMatrixAt(q.index, mtx.makeTranslation(at[0], at[1], at[2]));
     }
+    for (const im of instanced.values()) im.instanceMatrix.needsUpdate = true;
     draw();
     raf = requestAnimationFrame(tick);
   };
   const apply = (t: Toggles) => {
+    const shadowsMove = !tg || tg.pipes !== t.pipes;
     tg = t;
     zoneGroup.visible = t.zones;
     pipeGroup.visible = t.pipes;
+    if (shadowsMove) renderer.shadowMap.needsUpdate = true;
     const run = t.flow && t.pipes && particles.length > 0;
     if (run && !raf) { last = 0; raf = requestAnimationFrame(tick); }
     if (!run && raf) { cancelAnimationFrame(raf); raf = 0; }
+    draw();
+  };
+
+  const resize = () => {
+    const w = Math.max(el.clientWidth, 320);
+    const h = heightOf();
+    renderer.setSize(w, h);
+    composer?.setSize(w, h);
+    labels.setSize(w, h);
+    camera.aspect = w / h;
+    camera.updateProjectionMatrix();
+  };
+
+  const setQuality = (q: RenderQuality) => {
+    if (q === quality) return;
+    quality = q;
+    renderer.setPixelRatio(pixelRatio());
+    composer?.setPixelRatio(pixelRatio());
+    renderer.shadowMap.enabled = q === "high";
+    renderer.shadowMap.needsUpdate = true;
+    //  A material compiled with (or without) shadows must be compiled again.
+    world.traverse((o) => {
+      const mat = (o as T3.Mesh).material as T3.Material | T3.Material[] | undefined;
+      if (Array.isArray(mat)) mat.forEach((x) => { x.needsUpdate = true; });
+      else if (mat) mat.needsUpdate = true;
+    });
+    resize();
     draw();
   };
 
@@ -481,7 +944,10 @@ export function mountLayoutScene(m: LayoutModules, el: HTMLDivElement, scene: La
     mouse.set(((e.clientX - r.left) / r.width) * 2 - 1, -((e.clientY - r.top) / r.height) * 2 + 1);
     ray.setFromCamera(mouse, camera);
     const hit = ray.intersectObjects(pickables, false)
-      .find((x) => x.object.visible && x.object.parent?.visible !== false);
+      .find((x) => {
+        for (let o: T3.Object3D | null = x.object; o; o = o.parent) if (!o.visible) return false;
+        return true;
+      });
     const lines = hit?.object.userData.tooltip as string[] | undefined;
     if (!lines) { tip.style.display = "none"; return; }
     tip.replaceChildren(...lines.map((t, i) => {
@@ -499,18 +965,10 @@ export function mountLayoutScene(m: LayoutModules, el: HTMLDivElement, scene: La
   renderer.domElement.addEventListener("pointermove", onMove);
   renderer.domElement.addEventListener("pointerleave", onLeave);
 
-  const ro = new ResizeObserver(() => {
-    const w = Math.max(el.clientWidth, 320);
-    const h = heightOf();
-    renderer.setSize(w, h);
-    labels.setSize(w, h);
-    camera.aspect = w / h;
-    camera.updateProjectionMatrix();
-    draw();
-  });
+  const ro = new ResizeObserver(() => { resize(); draw(); });
   ro.observe(el);
 
-    fit(opts.view);
+  fit(opts.view);
   apply(opts.toggles);
 
   const dispose = () => {
@@ -519,15 +977,17 @@ export function mountLayoutScene(m: LayoutModules, el: HTMLDivElement, scene: La
     renderer.domElement.removeEventListener("pointermove", onMove);
     renderer.domElement.removeEventListener("pointerleave", onLeave);
     controls.dispose();
+    composer?.dispose();
     world.traverse((o) => {
-      const m = o as T3.Mesh;
-      m.geometry?.dispose?.();
-      const mat = m.material as T3.Material | T3.Material[] | undefined;
+      const mesh = o as T3.Mesh;
+      mesh.geometry?.dispose?.();
+      const mat = mesh.material as T3.Material | T3.Material[] | undefined;
       if (Array.isArray(mat)) mat.forEach((x) => x.dispose()); else mat?.dispose?.();
     });
+    for (const d of disposables) d.dispose();
     renderer.dispose();
     el.replaceChildren();
   };
 
-  return { setToggles: apply, fit, dispose };
+  return { setToggles: apply, setQuality, fit, dispose };
 }

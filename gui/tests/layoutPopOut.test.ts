@@ -149,8 +149,11 @@ describe("the stable key and the ?layout= route", () => {
     for (const rel of ["gui/src/ui/LayoutPopOutTab.tsx", "gui/src/ui/AppShell.tsx",
                        "gui/src/ui/PlantLayoutTables.tsx"])
       expect(tree(rel)).not.toMatch(/^import [^;]*from "three/m);
-    //  the scene component imports three.js only at draw time.
-    expect(tree("gui/src/ui/plotting/PlantLayout3D.tsx")).toContain('await import("three")');
+    //  the scene component imports three.js (and its addons, C88) only at
+    //  draw time: a dynamic import, never a static one.
+    const scene3d = tree("gui/src/ui/plotting/PlantLayout3D.tsx");
+    expect(scene3d).toContain('import("three")');
+    expect(scene3d).not.toMatch(/^import [^;]*from "three/m);
   });
   it("the tab reuses the ONE mapping and the ONE scene component", () => {
     const tab = tree("gui/src/ui/LayoutPopOutTab.tsx");
