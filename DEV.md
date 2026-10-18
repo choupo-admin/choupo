@@ -1236,6 +1236,26 @@ accepts today, and that is a policy call.
 > (written, held back).  Proposed, not done: separate inlet/outlet nozzles
 > (moves pipe lengths in every layout case).
 
+> **C94. LAYOUT GUIDELINES IN THE GUIDES (Vitor, 2026-10-18: "Nos Guias
+> apropriados podes incluir uma parte sobre guidelines de layout?", after
+> asking where a column's reboiler and condenser go, whether columns share
+> platforms, and that the pumps' NPSH needs that information).**  Home: a
+> new `designGuide.tex` section "Plant layout" (beside Storage and Pressure
+> relief, which already points to `layoutDict`), cross-referenced from the
+> Tutorials Guide's plant chapter and the EduTools Guide's plant-layout
+> lesson.  Content: siting and wind, separation and hazardous areas
+> (principles, cited, no no-grant table transcribed), roads, fence, gates and
+> battery limits, pipe racks, tank farms (atmospheric vs pressurised vs
+> refrigerated storage), the column group (reboiler at the base, the
+> vertical order top -> condenser -> reflux drum -> pump, gravity reflux vs
+> pumped, air coolers on the rack), NPSH and the elevations it fixes (skirt
+> height, drum elevation; at the bubble point NPSHa = static head - suction
+> losses), platforms, ladders and walkways (each column self-supporting,
+> platforms at access points, walkways to neighbours), maintenance and crane
+> access; and what Choupo checks vs what it does NOT (vertical order and
+> NPSH unchecked today -- the C95 candidate).  PDF rebuilt.  Status:
+> dispatched 2026-10-18.
+
 > **C88. THE 3D LAYOUT MADE TO LOOK LIKE A PLANT (Vitor, 2026-10-18: "E ve
 > se pões o layout com melhor aspecto!  Eu acho que ha bibliotecas para
 > renderizar o 3d para aquilo ficar top notch!").**  Measured:
