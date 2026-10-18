@@ -1115,6 +1115,22 @@ accepts today, and that is a policy call.
 > optionally docked beside the view; the same in the exported page.  Handed
 > to the C90 general (same files, avoids two generals on one page).
 
+> **C92. THE FULL PLANT'S TANKS SIZED AND PLACED (Vitor, 2026-10-18: "No
+> full plant tambem faltam os tanques de armazenamento").**  Measured:
+> `ammonia02_full_plant` DECLARES two `storageTank` units (T101 on `makeup`,
+> 0.5 h; T201 on `productNH3`, 48 h) but its postDict sizes neither and its
+> layoutDict places neither, so neither is drawn, costed nor counted in the
+> plot.  Neither can be sized today: `makeup` is a GAS (300 K, 25 bar) --
+> the C89 gas store; `productNH3` is a PRESSURISED liquid (250 K, 20 bar),
+> which `StorageTankSize.cpp:84-94` refuses above 1.5 bar.  Plan, after
+> C87 (one home for the hold time), C89 (pressure store) and C90 (same
+> layoutDict) land: T101 as a pressure gas store; T201 either let down to a
+> refrigerated atmospheric tank (the PEQ precedent: a storage flash) or kept
+> as a pressurised liquid store (spheres/bullets, the C89 sizer extended to
+> a liquid) -- the commander's default is the pressurised store, which
+> leaves the process untouched; both placed with zones; moved rows to
+> Vitor.  Status: queued 2026-10-18.
+
 > **C88. THE 3D LAYOUT MADE TO LOOK LIKE A PLANT (Vitor, 2026-10-18: "E ve
 > se pões o layout com melhor aspecto!  Eu acho que ha bibliotecas para
 > renderizar o 3d para aquilo ficar top notch!").**  Measured:
