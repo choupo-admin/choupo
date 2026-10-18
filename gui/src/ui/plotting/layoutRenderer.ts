@@ -193,18 +193,30 @@ export interface MountOptions {
   quality?: RenderQuality;
 }
 
-/** Whether the page around the view is dark (the app's own scheme, else
- *  the system's): the sky and the exposure follow it. */
-function darkScheme(): boolean {
-  try {
-    const a = document.documentElement.getAttribute("data-mantine-color-scheme");
-    if (a === "dark" || a === "light") return a === "dark";
-    return typeof window.matchMedia === "function"
-      && window.matchMedia("(prefers-color-scheme: dark)").matches;
-  } catch {
-    return false;
-  }
-}
+/** THE SCENE IS ALWAYS IN DAYLIGHT (DEV.md 4c C90).  Until 2026-10-18 the
+ *  sky, the lights, the grass, the gravel and the pads followed the page's
+ *  colour scheme (the app's, else `prefers-color-scheme`) into a NIGHT
+ *  palette, so a reader whose browser is dark opened an exported page on a
+ *  near-black scene -- the export has no app scheme to read, and fell to the
+ *  system's -- while the app in its light scheme showed the day.  A plot
+ *  plan is a drawing of ground, steel and sky, and one plant is drawn one
+ *  way: only the page CHROME (labels, tooltips, panels) follows the theme,
+ *  through CSS `light-dark()`, and nothing here reads the scheme. */
+export const DAYLIGHT = {
+  exposure: 1.0,
+  skyTop: "#6f9fd8",
+  skyHorizon: "#dbe6ef",
+  environment: 0.55,
+  hemisphereSky: 0xdfeeff,
+  hemisphereGround: 0x5b6a48,
+  hemisphere: 0.9,
+  sunColour: 0xfff1dc,
+  sun: 2.8,
+  grass: [98, 126, 70] as [number, number, number],
+  gravel: [150, 144, 133] as [number, number, number],
+  grid: 0x55524c,
+  pad: [196, 193, 186] as [number, number, number],
+} as const;
 
 /** Draw `scene` into `el` and return the handle.  Throws what three.js
  *  throws (no WebGL); the caller says so in words. */
@@ -219,13 +231,12 @@ export function mountLayoutScene(m: LayoutModules, el: HTMLDivElement, scene: La
   let quality: RenderQuality = opts.quality ?? "high";
   const dpr = window.devicePixelRatio || 1;
   const pixelRatio = () => (quality === "high" ? Math.min(dpr, 2) : 1);
-  const dark = darkScheme();
 
   const renderer = new THREE.WebGLRenderer({ antialias: true, powerPreference: "high-performance" });
   renderer.setPixelRatio(pixelRatio());
   renderer.setSize(width, h0);
   renderer.toneMapping = THREE.ACESFilmicToneMapping;
-  renderer.toneMappingExposure = dark ? 0.85 : 1.0;
+  renderer.toneMappingExposure = DAYLIGHT.exposure;
   renderer.outputColorSpace = THREE.SRGBColorSpace;
   renderer.shadowMap.enabled = quality === "high";
   renderer.shadowMap.type = THREE.PCFSoftShadowMap;
@@ -271,8 +282,8 @@ export function mountLayoutScene(m: LayoutModules, el: HTMLDivElement, scene: La
 
   //  ---- sky, environment, light -----------------------------------------
   const world = new THREE.Scene();
-  const skyTop = dark ? "#0d1626" : "#6f9fd8";
-  const skyHorizon = dark ? "#38445a" : "#dbe6ef";
+  const skyTop = DAYLIGHT.skyTop;
+  const skyHorizon = DAYLIGHT.skyHorizon;
   const sky = (() => {
     const c = document.createElement("canvas");
     c.width = 2; c.height = 256;
@@ -299,10 +310,11 @@ export function mountLayoutScene(m: LayoutModules, el: HTMLDivElement, scene: La
   room.dispose();
   pmrem.dispose();
   world.environment = envTex;
-  world.environmentIntensity = dark ? 0.35 : 0.55;
+  world.environmentIntensity = DAYLIGHT.environment;
 
-  world.add(new THREE.HemisphereLight(dark ? 0x8090b0 : 0xdfeeff, 0x5b6a48, dark ? 0.5 : 0.9));
-  const sun = new THREE.DirectionalLight(dark ? 0xc8d4ff : 0xfff1dc, dark ? 1.2 : 2.8);
+  world.add(new THREE.HemisphereLight(DAYLIGHT.hemisphereSky, DAYLIGHT.hemisphereGround,
+                                      DAYLIGHT.hemisphere));
+  const sun = new THREE.DirectionalLight(DAYLIGHT.sunColour, DAYLIGHT.sun);
   //  From the south-east and high: the shadows fall to the north-west, beside
   //  the items as the default camera (south-west) sees them.
   const sunDir = new THREE.Vector3(0.55, 1.0, 0.45).normalize();
@@ -394,7 +406,7 @@ export function mountLayoutScene(m: LayoutModules, el: HTMLDivElement, scene: La
     //  Grass round the plot, as four strips (not one plane under it: the
     //  ground is most of the pixels, and nothing is drawn twice).
     const G = span * 7;
-    const grass = groundMat(noise(dark ? [52, 66, 44] : [98, 126, 70], 18, 1), 4);
+    const grass = groundMat(noise(DAYLIGHT.grass, 18, 1), 4);
     (grass.map as T3.Texture).repeat.set(G / 2, G / 2);
     const { x0: px0, x1: px1, z0: pz0, z1: pz1 } = plotRect;
     const gx0 = cx - G, gx1 = cx + G, gz0 = cz - G, gz1 = cz + G;
@@ -414,7 +426,7 @@ export function mountLayoutScene(m: LayoutModules, el: HTMLDivElement, scene: La
     strip(gx0, px0, pz0, pz1);
     strip(px1, gx1, pz0, pz1);
     const w = px1 - px0, d = pz1 - pz0;
-    const gravel = groundMat(noise(dark ? [88, 84, 78] : [150, 144, 133], 30, 1), 2);
+    const gravel = groundMat(noise(DAYLIGHT.gravel, 30, 1), 2);
     (gravel.map as T3.Texture).repeat.set(w / 3, d / 3);
     groundPlane(w, d, [(px0 + px1) / 2, (pz0 + pz1) / 2], gravel);
   }
@@ -430,14 +442,14 @@ export function mountLayoutScene(m: LayoutModules, el: HTMLDivElement, scene: La
     for (let z = Math.ceil(pz0 / cell) * cell; z <= pz1; z += cell)
       pts.push(new THREE.Vector3(px0, 0.02, z), new THREE.Vector3(px1, 0.02, z));
     world.add(new THREE.LineSegments(new THREE.BufferGeometry().setFromPoints(pts),
-      new THREE.LineBasicMaterial({ color: dark ? 0xb0b0b0 : 0x55524c, transparent: true,
+      new THREE.LineBasicMaterial({ color: DAYLIGHT.grid, transparent: true,
                                     opacity: 0.18, depthWrite: false })));
   }
 
   //  Sector areas: a concrete pad and its outline.
   for (const a of scene.areas) {
     const w = a.x1 - a.x0, d = a.z1 - a.z0;
-    const pad = groundMat(noise(dark ? [120, 118, 112] : [196, 193, 186], 10, 1), 0);
+    const pad = groundMat(noise(DAYLIGHT.pad, 10, 1), 0);
     (pad.map as T3.Texture).repeat.set(w / 4, d / 4);
     groundPlane(w, d, [(a.x0 + a.x1) / 2, (a.z0 + a.z1) / 2], pad);
     const pts = [[a.x0, a.z0], [a.x1, a.z0], [a.x1, a.z1], [a.x0, a.z1]]
