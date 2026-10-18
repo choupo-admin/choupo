@@ -27,6 +27,7 @@ License
 \*---------------------------------------------------------------------------*/
 
 #include "SprayDryerSize.H"
+#include "MaterialLimits.H"
 
 #include <cmath>
 #include <stdexcept>
@@ -63,6 +64,7 @@ std::vector<EquipmentSizing> SprayDryerSize::size(const std::string& unitName,
     d.basis          = "W_evap = water_evaporated (unit result; pass-through)";
     d.set("W_evap",         W_evap,      "kg/s");
     d.set("pressureDesign", P_des,       "bar");
+    materialLimits::pressure("sprayDryer '" + d.itemId() + "'", material, P_des);
     if (k.count("chamberDiameter")) d.set("chamberDiameter", k.at("chamberDiameter"), "m");
     if (k.count("chamberHeight"))   d.set("chamberHeight",   k.at("chamberHeight"),   "m");
 

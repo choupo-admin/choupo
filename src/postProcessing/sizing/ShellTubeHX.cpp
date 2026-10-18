@@ -27,6 +27,7 @@ License
 \*---------------------------------------------------------------------------*/
 
 #include "ShellTubeHX.H"
+#include "MaterialLimits.H"
 
 #include "thermo/utility/UtilityCatalogue.H"
 #include "thermo/ThermoPackage.H"
@@ -54,15 +55,23 @@ namespace {
 //  area was arrived at.
 EquipmentSizing exchangerRecord(const std::string& unitName,
     scalar Q_kW, scalar U, scalar LMTD, scalar A, scalar pressureDesign,
-    const Material& material, const std::string& basis)
+    const Material& material, const std::string& basis,
+    const std::string& equipmentTag = std::string())
 {
     const scalar weight = ShellTubeHX::bundleWeight(A, material);
 
     EquipmentSizing d;
     d.unitName       = unitName;
     d.equipmentType  = "shellTubeHX";
+    d.equipmentTag   = equipmentTag;
     d.material       = material.name;
     d.basis          = basis;
+    //  THE RECORD'S PRESSURE RATING (DEV.md 4c C86).  Every exchanger route
+    //  ends in this record, so the one comparison here reaches all four of
+    //  them and the column's condenser and reboiler -- which published a
+    //  `pressureDesign` and compared it with nothing until C86.
+    materialLimits::pressure("shellTubeHX '" + d.itemId() + "'", material,
+                             pressureDesign);
     d.set("Q_kW",           Q_kW,           "kW");
     //  `W/m2/K`, NOT `W/(m2.K)` -- THE ONE SPELLING THE GRAMMAR CAN CARRY.
     //  Both name the same unit in `core/Units.cpp` at the same factor 1.0, so
@@ -81,10 +90,10 @@ EquipmentSizing exchangerRecord(const std::string& unitName,
     d.set("A",              A,              "m2");
     d.set("pressureDesign", pressureDesign, "bar");
     d.set("weight",         weight,         "kg");
-    //  NO TAG HERE.  A heater realises one exchanger and leaves the tag
-    //  empty; `ColumnSize` stamps `condenser` / `reboiler` on the records it
-    //  gets back, because naming the item is the CALLER's fact and not this
-    //  rule's.
+    //  THE TAG IS THE CALLER'S.  A heater realises one exchanger and passes
+    //  none; `ColumnSize` passes `condenser` / `reboiler`, because naming the
+    //  item is the CALLER's fact and not this rule's.  It is stamped above,
+    //  not on the record handed back, so the rating line names the item.
     return d;
 }
 
@@ -527,14 +536,16 @@ scalar ShellTubeHX::bundleWeight(scalar A, const Material& material)
 EquipmentSizing ShellTubeHX::sizeFromDuty(const std::string& unitName,
     scalar                  Q_kW,
     const Material&         material,
-    const DictPtr&          designRules)
+    const DictPtr&          designRules,
+    const std::string&      equipmentTag)
 {
     const scalar U              = designRules->lookupScalar("U");        // W/(m²·K)
     const scalar LMTD           = designRules->lookupScalar("LMTD");      // K
     const scalar pressureDesign = designRules->lookupScalar("pressureDesign");
 
     return exchangerRecord(unitName, Q_kW, U, LMTD, areaFromDuty(Q_kW, U, LMTD),
-        pressureDesign, material, "A = Q/(U*LMTD) with U and LMTD author-set");
+        pressureDesign, material, "A = Q/(U*LMTD) with U and LMTD author-set",
+        equipmentTag);
 }
 
 

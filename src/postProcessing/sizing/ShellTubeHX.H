@@ -92,10 +92,14 @@ public:
     //
     //  `Q_kW` is signed as the unit published it (a condenser's duty is
     //  negative); the area uses its magnitude, exactly as `size()` does.
+    //  `equipmentTag` names the item when the unit realises more than one
+    //  (the column's `condenser` / `reboiler`); it is stamped on the record
+    //  and named by the material-rating line.
     static EquipmentSizing sizeFromDuty(const std::string& unitName,
         scalar                  Q_kW,
         const Material&         material,
-        const DictPtr&          designRules);
+        const DictPtr&          designRules,
+        const std::string&      equipmentTag = std::string());
 
     //  The exchanger WEIGHT rule (30 kg per m2 of area, scaled by the
     //  material's density), one home for every item priced as a bundle.

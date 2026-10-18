@@ -13,6 +13,7 @@
 \*---------------------------------------------------------------------------*/
 
 #include "CompressorSize.H"
+#include "MaterialLimits.H"
 #include <stdexcept>
 
 namespace Choupo {
@@ -42,8 +43,11 @@ std::vector<EquipmentSizing> CompressorSize::size(const std::string& unitName,
     if (k.count("ratio"))  d.set("ratio",  k.at("ratio"),  "-");
     if (k.count("P_out"))  d.set("P_out",  k.at("P_out"),  "Pa");
     // Carry the design pressure through (records only; compressors have F_P=1).
-    d.set("pressureDesign",
-          designRules->lookupScalarOrDefault("pressureDesign", 1.0), "bar");
+    const scalar P_des = designRules->lookupScalarOrDefault("pressureDesign", 1.0);
+    d.set("pressureDesign", P_des, "bar");
+    //  A published design pressure is compared with the casing material's
+    //  rating like every other one (DEV.md 4c C86).
+    materialLimits::pressure("compressor '" + d.itemId() + "'", material, P_des);
     //  ONE ITEM: this unit realises a single piece of equipment, so the
     //  tag is left empty and `itemId()` stays the unit's own name.
     return { d };

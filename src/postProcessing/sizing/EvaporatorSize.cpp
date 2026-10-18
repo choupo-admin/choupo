@@ -27,6 +27,7 @@ License
 \*---------------------------------------------------------------------------*/
 
 #include "EvaporatorSize.H"
+#include "MaterialLimits.H"
 
 #include <stdexcept>
 
@@ -65,6 +66,7 @@ std::vector<EquipmentSizing> EvaporatorSize::size(const std::string& unitName,
     d.set("A",              A,           "m2");   // Turton sizeKey
     d.set("A_m2",           A,           "m2");
     d.set("pressureDesign", P_des,       "bar");
+    materialLimits::pressure("evaporator '" + d.itemId() + "'", material, P_des);
     //  ONE ITEM: this unit realises a single piece of equipment, so the
     //  tag is left empty and `itemId()` stays the unit's own name.
     return { d };

@@ -289,6 +289,10 @@ EquipmentSizing CatalystBedSize::sizeMultitubular(const std::string& unitName,
     d.set("V_tubes",        multitubularVolume(k),   "m3");
     d.set("pressureDesign", pressureDesign,          "bar");
     d.set("weight",         ShellTubeHX::bundleWeight(A, material), "kg");
+    //  The bundle's shell is a pressure boundary too (DEV.md 4c C86): the
+    //  vessel branch compared its rating and this one did not.
+    materialLimits::pressure("shellTubeHX '" + d.itemId() + "'", material,
+                             pressureDesign);
     //  What the unit computed that a reader audits the bundle against: the
     //  duty the coolant takes, the hot spot, the inlet overall coefficient.
     //  Named on the sheet without a unit in the key; the unit is declared.
