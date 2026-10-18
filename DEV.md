@@ -1251,6 +1251,31 @@ accepts today, and that is a policy call.
 > segments (its comment claims the length is unchanged -- unverified); the
 > entrance road stops ~5 m short of the fence opening.
 
+> **C96. SITE LOGISTICS ON AMMONIA02: OFFICES, WEIGHBRIDGE, TRUCK
+> CIRCULATION, CAR PARK, AND WHAT GOOD PRACTICE STILL MISSES (Vitor,
+> 2026-10-18: "No Layout falta os escritorios, bança de camioes ... tem de
+> haver forma de a estrada permitir que os camioes possam entrar e sair sem
+> fazerem grandes manobras!!!  E e preciso parque de estacionamento para os
+> carros (ate podes por varios orientados de forma a poder sair
+> rapidamente).  Ve nas boas praticas de layout se faz falta mais alguma
+> coisa importante.").**  On the EXISTING case (no new case).  (1) An office
+> building near the gate, outside the hazardous zones.  (2) A weighbridge
+> on the truck route (trucks still come: catalyst, chemicals, maintenance,
+> waste -- C90 had left it out because product and feed move by pipe).  (3)
+> TRUCK CIRCULATION checked by the engine: a declared truck route from a
+> gate back to a gate through the weighbridge that needs NO reversing -- a
+> one-way loop or a turning circle of a declared diameter (source/reason);
+> corners at least a declared truck turning radius; a dead end on the route
+> ANNOUNCED.  (4) A CAR PARK near the gate, outside the fence or before the
+> process area, its bays drawn and oriented for a forward exit (drive-through
+> or reverse-in bays), its area in the plot.  (5) The good-practice items
+> still missing, chosen and justified by the general from the Design Guide
+> §21 and its sources: e.g. a second (emergency) access gate, muster points,
+> fire-water storage and pump house, a laydown / maintenance area, a
+> windsock.  Design Guide §21 updated for truck circulation, parking and
+> those items.  Moved rows to Vitor before re-recording.  Status:
+> dispatched 2026-10-18.
+
 > **C94. LAYOUT GUIDELINES IN THE GUIDES (Vitor, 2026-10-18: "Nos Guias
 > apropriados podes incluir uma parte sobre guidelines de layout?", after
 > asking where a column's reboiler and condenser go, whether columns share
