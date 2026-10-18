@@ -184,8 +184,11 @@ building** (one declared box — its interior is phase B), and **downwind**
 of them all the **solvent area** (solution tank, spray dryer, nitrogen loop,
 condenser) with the acetone tanks south of the pipe rack.  Hazardous-area
 zones are declared on everything that holds acetone; every number is an
-assumption with its reason.  One separation finding is left on purpose (the
-coating-suspension tank by the building — read the file's header).
+assumption with its reason.  Two findings are left on purpose for the
+group: a separation (the coating-suspension tank by the building — read the
+file's header), and a site with ONE entrance (`singleEntrance`: a fire
+brigade arriving while that road is blocked has no second way in — where
+would you put a second gate, and which road serves it?).
 
 **What the drawing gets wrong, and why:** the router draws EVERY material
 stream as a pipe on the rack, and puts every unsized mixer and splitter on

@@ -751,7 +751,7 @@ layout  access:gate            distance         1                1e-4
 layout  summary                placed           15               1e-4
 layout  summary                unplaced         0                1e-4
 layout  summary                internal         0                1e-4
-layout  summary                findings         1                1e-4
+layout  summary                findings         2                1e-4
 layout  summary                pipes            41               1e-4
 layout  summary                notRouted        5                1e-4
 layout  summary                pipeLength       1014.31679055    1e-4
@@ -783,3 +783,5 @@ utility blower                 power.electricity.duty_kW 1.05263157895    1e-4
 utility blower                 power.electricity.T -1               1e-4
 utility blower                 power.electricity.kg_s 0                1e-4
 utility blower                 power.electricity.eur_h 0.105347368421   1e-4
+layout  singleEntrance:gate:   value            1                1e-4
+layout  singleEntrance:gate:   limit            2                1e-4
