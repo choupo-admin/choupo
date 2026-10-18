@@ -80,7 +80,7 @@ import {
   FINDINGS_CAPTION, findingRows, itemRows, layoutNotes, LEGEND_PHASES, LEGEND_PIPES,
   LEGEND_SHAPES, PARTICLE_WORD, PIPE_REGISTER_CAPTION, pipeRegister, PLOT_CAPTION, plotSummary,
 } from "./layoutTables.js";
-import { phaseCss, PHASE_WORDS } from "./plantLayout.js";
+import { phaseCss, PHASE_WORDS, QUALITY_TITLE } from "./plantLayout.js";
 import type { RunInputs, Staleness } from "./staleness.js";
 
 /** The element ids the viewer script looks for (export/layoutViewer.ts). */
@@ -95,6 +95,8 @@ export const EXPORT_IDS = {
   flow: "choupo-layout-flow",
   zones: "choupo-layout-zones",
   zoneLabels: "choupo-layout-zone-labels",
+  /** The name of the High / Fast radio group (DEV.md 4c C88). */
+  quality: "choupo-layout-quality",
 } as const;
 
 /** The compiled viewer, and the third-party code it carries. */
@@ -277,15 +279,20 @@ export function buildLayoutExport(input: LayoutExportInput): { fileName: string;
   ].join("");
   const check = (id: string, label: string, checked: boolean) =>
     `<label><input type="checkbox" id="${id}"${checked ? " checked" : ""}> ${esc(label)}</label>`;
-  const preset = (value: string, label: string, checked: boolean) =>
-    `<input type="radio" name="${EXPORT_IDS.preset}" id="${EXPORT_IDS.preset}-${value}"`
+  const radio = (name: string, value: string, label: string, checked: boolean) =>
+    `<input type="radio" name="${name}" id="${name}-${value}"`
     + ` value="${value}"${checked ? " checked" : ""}>`
-    + `<label for="${EXPORT_IDS.preset}-${value}">${esc(label)}</label>`;
+    + `<label for="${name}-${value}">${esc(label)}</label>`;
+  const preset = (value: string, label: string, checked: boolean) =>
+    radio(EXPORT_IDS.preset, value, label, checked);
   const toolbar = `<div class="toolbar" role="toolbar" aria-label="3D view">`
     + `<button type="button" id="${EXPORT_IDS.fit}" title="Frame the plant again">Fit</button>`
     + `<span class="seg" role="radiogroup" aria-label="View">`
     + preset("3d", "3D", true) + preset("plan", "Plan", false)
     + preset("elevation", "Elevation", false) + `</span>`
+    + `<span class="seg" role="radiogroup" aria-label="Quality" title="${esc(QUALITY_TITLE)}">`
+    + radio(EXPORT_IDS.quality, "high", "High", true)
+    + radio(EXPORT_IDS.quality, "fast", "Fast", false) + `</span>`
     + (hasPipes ? check(EXPORT_IDS.pipes, "Pipes", true) + check(EXPORT_IDS.flow, "Flow", true) : "")
     + (hasZones ? check(EXPORT_IDS.zones, "Zones", true)
                   + check(EXPORT_IDS.zoneLabels, "Zone labels", false) : "")

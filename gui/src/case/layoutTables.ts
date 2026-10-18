@@ -51,8 +51,10 @@ export const PARTICLE_WORD: Record<Phase, string> = {
 /** The legend, after "Declared in system/layoutDict." (which a surface sets
  *  with the file name as code). */
 export const LEGEND_SHAPES =
-  "Cylinders are items whose sizer published a diameter and a length; boxes are footprints"
-  + " the case declared.  Translucent cylinders are the declared hazardous-area zones"
+  "Each item is drawn by its equipment kind on its envelope -- the diameter and length its"
+  + " sizer published, or the box the case declared -- with heads, skirts, saddles, ladders"
+  + " and platforms that are drawing, not data; a kind with no drawing is the plain cylinder"
+  + " or box.  Translucent cylinders are the declared hazardous-area zones"
   + " (zone 0 densest and solid-edged, zone 1 wire, zone 2 faint and dashed).  A label is"
   + " the item id (⚠ marks an item the engine named in a finding); hover an item or a pipe"
   + " for the rest.";

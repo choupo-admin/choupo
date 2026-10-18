@@ -133,7 +133,8 @@ describe("the export builder: one self-contained page", () => {
     expect(html).toContain("<code>makeup</code>: unit `T101` (storageTank) has no sized item");
     //  The toolbar the viewer wires: Fit, the three presets, the four boxes.
     for (const id of [EXPORT_IDS.fit, EXPORT_IDS.pipes, EXPORT_IDS.flow, EXPORT_IDS.zones,
-                      EXPORT_IDS.zoneLabels, `${EXPORT_IDS.preset}-plan`])
+                      EXPORT_IDS.zoneLabels, `${EXPORT_IDS.preset}-plan`,
+                      `${EXPORT_IDS.quality}-high`, `${EXPORT_IDS.quality}-fast`])
       expect(html).toContain(`id="${id}"`);
     //  Light and dark, and a phone-width rule.
     expect(html).toContain("prefers-color-scheme: dark");
