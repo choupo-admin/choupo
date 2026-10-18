@@ -41,19 +41,50 @@ License
   3D view draws so a reader without WebGL loses nothing.
 \*---------------------------------------------------------------------------*/
 
+//  SECTIONS (DEV.md 4c C91).  With `sectioned`, each table sits under a
+//  heading the reader folds and unfolds, remembered per browser
+//  (case/layoutPanels.ts, keys in state/prefs.ts); the `?layout=` tab draws
+//  them so.  Reports keeps the plain stack.
+//
 //  The words and cells come from case/layoutTables.ts (pure, since C81): the
 //  page "Export as page" writes draws the SAME rows, so what a student shares
 //  is what they saw.  This file only lays them out.
 
-import { Box, Group, ScrollArea, Table, Text } from "@mantine/core";
+import type { ReactNode } from "react";
+import { Box, Group, ScrollArea, Table, Text, UnstyledButton } from "@mantine/core";
+import { IconChevronDown, IconChevronRight } from "@tabler/icons-react";
 
 import type { PlantLayout } from "../adapters/SolverAdapter.js";
 import { phaseCss, PHASE_WORDS } from "../case/plantLayout.js";
 import {
   FINDINGS_CAPTION, findingRows, itemRows, layoutNotes, LEGEND_CONTROLS, LEGEND_PHASES,
   LEGEND_PIPES, LEGEND_SHAPES, PARTICLE_WORD, PIPE_REGISTER_CAPTION, pipeRegister,
-  PLOT_CAPTION, plotSummary,
+  PLOT_CAPTION, plotSummary, ROADS_CAPTION, roadSummary,
 } from "../case/layoutTables.js";
+import { layoutSection, type LayoutSectionId } from "../case/layoutPanels.js";
+import { useCollapsedFlag } from "./methods/methodsChrome.js";
+
+/** One collapsible section (C91): a heading the reader clicks, its fold
+ *  remembered in this browser.  A folded body is NOT rendered (not merely
+ *  hidden), so nothing in it can be tabbed into. */
+export function LayoutSectionBox({ id, children, extra }: {
+  id: LayoutSectionId; children: ReactNode; extra?: string;
+}) {
+  const s = layoutSection(id);
+  const { collapsed, toggle } = useCollapsedFlag(s.key, s.defaultCollapsed);
+  const Icon = collapsed ? IconChevronRight : IconChevronDown;
+  return (
+    <Box mt={6} data-layout-section={id}>
+      <UnstyledButton onClick={toggle} aria-expanded={!collapsed}
+        style={{ display: "flex", alignItems: "center", gap: 4 }}>
+        <Icon size={14} color="var(--mantine-color-dimmed)" />
+        <Text size="sm" fw={600}>{s.title}</Text>
+        {extra && <Text size="xs" c="dimmed">· {extra}</Text>}
+      </UnstyledButton>
+      {!collapsed && children}
+    </Box>
+  );
+}
 
 /** How to read the 3D view (shapes, zones, pipes, controls). */
 export function PlantLayoutLegend({ pipes = false }: { pipes?: boolean }) {
@@ -177,16 +208,54 @@ export function PlotArea({ layout }: { layout: PlantLayout }) {
   );
 }
 
-/** The plot, the findings, the placed items and the notes on what was not
- *  placed. */
-export function PlantLayoutTables({ layout }: { layout: PlantLayout }) {
+/** THE ROADS (DEV.md 4c C90): the engine's totals, the case's headroom and
+ *  access distance, and one row per road. */
+export function RoadNetwork({ layout }: { layout: PlantLayout }) {
+  const v = roadSummary(layout);
+  if (!v) return null;
+  return (
+    <Box mt="xs">
+      <Text size="sm">{v.headline}</Text>
+      {v.notes.map((n) => <Text key={n} size="xs" c="dimmed">{n}</Text>)}
+      <ScrollArea type="auto" mt={4}>
+        <Table striped withTableBorder fz="xs" miw={640} captionSide="top">
+          <Table.Caption style={{ textAlign: "left" }}>{ROADS_CAPTION}</Table.Caption>
+          <Table.Thead><Table.Tr>
+            <Table.Th>Road</Table.Th>
+            <Table.Th ta="right">Width (m)</Table.Th>
+            <Table.Th ta="right">Length (m)</Table.Th>
+            <Table.Th>A gate reaches it</Table.Th>
+            <Table.Th>Why (the case's)</Table.Th>
+          </Table.Tr></Table.Thead>
+          <Table.Tbody>
+            {v.rows.map((r) => (
+              <Table.Tr key={r.road}>
+                <Table.Td ff="monospace">{r.road}</Table.Td>
+                <Table.Td ta="right" ff="monospace">{r.width}</Table.Td>
+                <Table.Td ta="right" ff="monospace">{r.length}</Table.Td>
+                <Table.Td>{r.reached}</Table.Td>
+                <Table.Td>{r.reason}</Table.Td>
+              </Table.Tr>
+            ))}
+          </Table.Tbody>
+        </Table>
+      </ScrollArea>
+    </Box>
+  );
+}
+
+/** The plot, the roads, the findings, the pipe register, the placed items
+ *  and the notes on what was not placed.  `sectioned` (C91): each under a
+ *  heading the reader folds. */
+export function PlantLayoutTables({ layout, sectioned = false }: {
+  layout: PlantLayout; sectioned?: boolean;
+}) {
   const findings = findingRows(layout);
   const notes = layoutNotes(layout);
-  return (
-    <>
-      <PlotArea layout={layout} />
-      <PipeRegister layout={layout} />
-      {findings.length > 0 && (
+  const wrap = (id: LayoutSectionId, show: boolean, node: ReactNode, extra?: string) =>
+    !show ? null : sectioned ? <LayoutSectionBox id={id} extra={extra}>{node}</LayoutSectionBox>
+      : node;
+  const findingsTable = findings.length > 0 && (
         <ScrollArea type="auto" mt="xs">
           <Table striped withTableBorder fz="xs" miw={760} captionSide="top">
             <Table.Caption style={{ textAlign: "left" }}>{FINDINGS_CAPTION}</Table.Caption>
@@ -208,7 +277,9 @@ export function PlantLayoutTables({ layout }: { layout: PlantLayout }) {
             </Table.Tbody>
           </Table>
         </ScrollArea>
-      )}
+  );
+  const itemsTable = (
+    <>
       <ScrollArea type="auto" mt="xs">
         <Table striped withTableBorder fz="xs" ff="monospace" miw={760}>
           <Table.Thead><Table.Tr>
@@ -244,6 +315,20 @@ export function PlantLayoutTables({ layout }: { layout: PlantLayout }) {
         </Text>
       )}
       {notes.sources && <Text size="xs" c="dimmed" mt={4}>{notes.sources}</Text>}
+    </>
+  );
+  const nPipes = layout.pipes?.length ?? 0;
+  return (
+    <>
+      {wrap("plot", !!layout.plot, <PlotArea layout={layout} />,
+            layout.plot ? `${layout.plot.plotArea.toFixed(0)} m²` : undefined)}
+      {wrap("roads", !!layout.roadNetwork, <RoadNetwork layout={layout} />,
+            layout.roadNetwork ? `${layout.roadNetwork.length.toFixed(0)} m,`
+              + ` ${layout.roadNetwork.pavedArea.toFixed(0)} m² paved` : undefined)}
+      {wrap("findings", !!findingsTable, findingsTable, `${findings.length}`)}
+      {wrap("pipes", nPipes > 0 || (layout.notRouted?.length ?? 0) > 0,
+            <PipeRegister layout={layout} />, `${nPipes} routed`)}
+      {wrap("items", true, itemsTable, `${layout.items.length} placed`)}
     </>
   );
 }

@@ -143,13 +143,13 @@ export const PLANT_LAYOUT_STEPS: readonly LessonStep[] = [
         + "standing vessel)", unit: "m" },
     ],
     note: "The extents of a standing cylinder, as the engine sets them: "
-      + "src/postProcessing/layout/PlantLayout.cpp:381.  The pairs it reads a "
-      + "size from are listed at PlantLayout.cpp:198-201, keyed on the KEYS a "
+      + "src/postProcessing/layout/PlantLayout.cpp:382.  The pairs it reads a "
+      + "size from are listed at PlantLayout.cpp:199-202, keyed on the KEYS a "
       + "sizer published, never on its kind word; the items never placed on "
-      + "their own at PlantLayout.cpp:209; the box declared on an item with "
-      + "its own size refused at PlantLayout.cpp:1165; and an item with no size "
+      + "their own at PlantLayout.cpp:210; the box declared on an item with "
+      + "its own size refused at PlantLayout.cpp:1600; and an item with no size "
       + "and no declared box refused, with no size invented, at "
-      + "PlantLayout.cpp:1177.",
+      + "PlantLayout.cpp:1612.",
   },
 
   // ---- Part 2: separation distances ---------------------------------------
@@ -183,10 +183,10 @@ export const PLANT_LAYOUT_STEPS: readonly LessonStep[] = [
       { sym: "D_b", means: "the diameter of item b", unit: "m" },
     ],
     note: "The edge-to-edge distance of two standing cylinders: "
-      + "src/postProcessing/layout/PlantLayout.cpp:137.  Which of the two the "
+      + "src/postProcessing/layout/PlantLayout.cpp:138.  Which of the two the "
       + "check uses is read from the table's measure word at "
-      + "PlantLayout.cpp:1297-1299, and a table that does not declare one is "
-      + "refused at PlantLayout.cpp:265.",
+      + "PlantLayout.cpp:1743-1745, and a table that does not declare one is "
+      + "refused at PlantLayout.cpp:266.",
   },
   {
     n: 4,
@@ -196,7 +196,7 @@ export const PLANT_LAYOUT_STEPS: readonly LessonStep[] = [
       + "inventory that can burn for hours; a control room is full of people.  "
       + "The distance two items need depends on what each can do to the other, "
       + "so a separation table is keyed on PAIRS OF KINDS, not on items: "
-      + "vessel to vessel, compressor to vessel, building to compressor.  In "
+      + "vessel to vessel, compressor to vessel, control room to compressor.  In "
       + "Choupo the kind of a sized item is its design sheet's own equipment "
       + "word (vessel, compressor, shellTubeHX ...), never one you type, and a "
       + "non-process item -- a control room, a flare, a workshop -- declares "
@@ -216,9 +216,9 @@ export const PLANT_LAYOUT_STEPS: readonly LessonStep[] = [
       { sym: "k_b", means: "the kind of item b" },
     ],
     note: "The kind is read from the design sheet at "
-      + "src/postProcessing/layout/PlantLayout.cpp:1158; a pair of kinds "
-      + "declared twice is refused at PlantLayout.cpp:308; a pair closer than "
-      + "its distance is ANNOUNCED, not refused, at PlantLayout.cpp:1301.",
+      + "src/postProcessing/layout/PlantLayout.cpp:1593; a pair of kinds "
+      + "declared twice is refused at PlantLayout.cpp:309; a pair closer than "
+      + "its distance is ANNOUNCED, not refused, at PlantLayout.cpp:1747.",
   },
   {
     n: 5,
@@ -284,9 +284,9 @@ export const PLANT_LAYOUT_STEPS: readonly LessonStep[] = [
         + "plan extents", unit: "m" },
     ],
     note: "The draft's gap and position: "
-      + "src/postProcessing/layout/PlantLayout.cpp:1679-1680, then pushed out "
+      + "src/postProcessing/layout/PlantLayout.cpp:2156-2157, then pushed out "
       + "further by every declared separation and rounded UP to the "
-      + "centimetre the file prints (PlantLayout.cpp:1695), so a printed "
+      + "centimetre the file prints (PlantLayout.cpp:2172), so a printed "
       + "position never sits closer than the rule it was placed by.",
   },
   {
@@ -321,9 +321,9 @@ export const PLANT_LAYOUT_STEPS: readonly LessonStep[] = [
     ],
     note: "Every announcement goes to two homes in one call, the error "
       + "stream and the advisory log that the caveat block and the result "
-      + "replay: src/postProcessing/layout/PlantLayout.cpp:81-82; the block's "
+      + "replay: src/postProcessing/layout/PlantLayout.cpp:82-83; the block's "
       + "heading is src/core/AdvisorySummary.H:117.  The overlap refusal: "
-      + "PlantLayout.cpp:1218-1219.  On the witness the condition puts the drum "
+      + "PlantLayout.cpp:1664-1665.  On the witness the condition puts the drum "
       + "at x of about 61.61 m or more; the bench's x = 62 m clears it.",
   },
   {
@@ -380,11 +380,11 @@ export const PLANT_LAYOUT_STEPS: readonly LessonStep[] = [
         + "checked (reach)", unit: "m" },
     ],
     note: "The downwind direction: src/postProcessing/layout/"
-      + "PlantLayout.cpp:1385; the true bearing and the angle off downwind, "
-      + "taken on the circle between -180 and 180 deg: PlantLayout.cpp:1395-1398; "
-      + "the reach: PlantLayout.cpp:1394.  An angle with no unit is refused at "
-      + "PlantLayout.cpp:106, and an item's ignition declaration is read at "
-      + "PlantLayout.cpp:221.  This is a SECTOR test, not a dispersion model: "
+      + "PlantLayout.cpp:1831; the true bearing and the angle off downwind, "
+      + "taken on the circle between -180 and 180 deg: PlantLayout.cpp:1841-1844; "
+      + "the reach: PlantLayout.cpp:1840.  An angle with no unit is refused at "
+      + "PlantLayout.cpp:107, and an item's ignition declaration is read at "
+      + "PlantLayout.cpp:222.  This is a SECTOR test, not a dispersion model: "
       + "it knows nothing of the gas's density, the release rate or the "
       + "weather, and a real wind rose has more than one direction.",
   },
@@ -429,9 +429,9 @@ export const PLANT_LAYOUT_STEPS: readonly LessonStep[] = [
       { sym: "h_\\mathrm{z}", means: "the zone's declared height above that "
         + "base", unit: "m" },
     ],
-    note: "The envelope test: src/postProcessing/layout/PlantLayout.cpp:1361-1364, "
+    note: "The envelope test: src/postProcessing/layout/PlantLayout.cpp:1807-1810, "
       + "with the plan distance from a point to a footprint at "
-      + "PlantLayout.cpp:161.  The engine does not classify anything and does "
+      + "PlantLayout.cpp:162.  The engine does not classify anything and does "
       + "not ask whether the equipment inside a zone is certified for it: it "
       + "checks the items YOU declared as ignition sources against the "
       + "envelopes YOU declared.  A zone number that is not 0, 1 or 2 is "
@@ -470,21 +470,21 @@ export const PLANT_LAYOUT_STEPS: readonly LessonStep[] = [
       + "side of the trade-off is drawn in distances and pipe metres, not in "
       + "money.  The LAND side is on the page as an AREA: the engine publishes "
       + "the plot area -- the envelope of every placed footprint, every routed "
-      + "pipe and every declared sector area, grown by the margin the case "
-      + "declares for its roads, fence and access -- and the share of it the "
+      + "pipe, every declared road and every declared sector area, grown by "
+      + "the margin the case declares for its fence -- and the share of it the "
       + "footprints themselves cover, under the 3D view; spreading the plant "
       + "out shows there in square metres.  Where the case also declares a "
       + "land price, the economic appraisal prices that area as land (bought "
       + "at the start of construction, recovered at the end of the project), "
       + "so the same move then shows in money too.",
     note: "The route and its length: src/postProcessing/layout/PlantLayout.cpp:"
-      + "803-819 (up to the lane, along it, down to the target) and "
-      + "PlantLayout.cpp:824 (the length is the polyline's own).  "
+      + "804-820 (up to the lane, along it, down to the target) and "
+      + "PlantLayout.cpp:825 (the length is the polyline's own).  "
       + "The rack the case declares, or the engine's stated default, which it "
-      + "announces: PlantLayout.cpp:828.  The plot: the envelope grown by the "
-      + "margin and its area, PlantLayout.cpp:923-925; the footprints' own "
-      + "area, PlantLayout.cpp:928; an undeclared margin announced, "
-      + "PlantLayout.cpp:992.",
+      + "announces: PlantLayout.cpp:829.  The plot: the envelope grown by the "
+      + "margin and its area, PlantLayout.cpp:1358-1360; the footprints' own "
+      + "area, PlantLayout.cpp:1363; an undeclared margin announced, "
+      + "PlantLayout.cpp:1427.",
   },
 ];
 
@@ -507,9 +507,13 @@ export const PLANT_LAYOUT_LIMITS: readonly LessonLimit[] = [
     body: "Where a spill runs, how the ground slopes, and how a tank's bund "
       + "contains its inventory are not modelled." },
   { id: "access", title: "Access is checked only where you declare it",
-    body: "Roads, escape routes, crane positions and maintenance spaces are "
-      + "not checked unless you declare them, for example as a non-process "
-      + "box the overlap rule then keeps clear." },
+    body: "Roads are checked when you declare them (a road through an item, "
+      + "or under a rack lower than the headroom you declare, is refused; an "
+      + "item farther than your access distance from every road is announced), "
+      + "but not their turning radius or gradient.  Escape routes, crane "
+      + "positions and maintenance spaces are not checked unless you declare "
+      + "them, for example as a non-process box the overlap rule then keeps "
+      + "clear." },
   { id: "rotation", title: "Two plan axes only",
     body: "An item stands vertical or lies along x or along y; rotation by an "
       + "arbitrary angle is not in the grammar." },

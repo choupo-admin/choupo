@@ -35,6 +35,7 @@ License
 #include <algorithm>
 #include <cmath>
 #include <cstddef>
+#include <functional>
 #include <iomanip>
 #include <iostream>
 #include <map>
@@ -842,14 +843,445 @@ void routePipes(const Dictionary& d, const SimulationResult& r,
               " system/layoutDict");
 }
 
+//  ---- the roads (DEV.md 4c C90) ------------------------------------------
+
+scalar unionArea(const std::vector<LayoutArea>& rs);   // below, with the plot
+
+//  THE NON-PROCESS KINDS A ROAD RULE READS.  The kind of a non-process item
+//  is the case's own word (the separation table names it); two words carry
+//  a meaning the road check needs, and this is the ONE list of them:
+//    gate         -- an ENTRANCE: the road network is reached from it;
+//    weighbridge  -- a truck scale, DRIVABLE: a road runs OVER its deck (it
+//                    is not refused as a road through a footprint), and a
+//                    weighbridge no road crosses is announced.
+const char* const kGateKind        = "gate";
+const char* const kWeighbridgeKind = "weighbridge";
+
+//  An axis-aligned plan rectangle as a box item, so the item geometry above
+//  (`clearPlan`, `pointToFootprint`) measures it with no second copy.
+LayoutItem planBox(scalar x0, scalar x1, scalar y0, scalar y1)
+{
+    LayoutItem b;
+    b.shape = "box";
+    b.orientation = "alongX";
+    b.x  = 0.5 * (x0 + x1);
+    b.y  = 0.5 * (y0 + y1);
+    b.dx = x1 - x0;
+    b.dy = y1 - y0;
+    return b;
+}
+
+//  A road's PAVED rectangles: each segment of its centre line widened by
+//  half the width on every side, ends included -- so a corner is paved
+//  square and two roads meeting at a centre line share their junction.
+std::vector<LayoutArea> pavedRects(const LayoutRoad& rd)
+{
+    std::vector<LayoutArea> out;
+    const scalar h = 0.5 * rd.width;
+    for (std::size_t k = 0; k + 1 < rd.centreline.size(); ++k)
+    {
+        const auto& a = rd.centreline[k];
+        const auto& b = rd.centreline[k + 1];
+        out.push_back({ rd.id, std::min(a[0], b[0]) - h, std::max(a[0], b[0]) + h,
+                               std::min(a[1], b[1]) - h, std::max(a[1], b[1]) + h });
+    }
+    return out;
+}
+
+bool rectsMeet(const LayoutArea& a, const LayoutArea& b, scalar tol)
+{
+    return a.xMin <= b.xMax + tol && b.xMin <= a.xMax + tol
+        && a.yMin <= b.yMax + tol && b.yMin <= a.yMax + tol;
+}
+
+//  Two centre-line segments touch or cross (each runs along one axis, so a
+//  segment is a degenerate rectangle).
+bool segmentsMeet(const std::vector<scalar>& a0, const std::vector<scalar>& a1,
+                  const std::vector<scalar>& b0, const std::vector<scalar>& b1)
+{
+    const LayoutArea A{ "", std::min(a0[0], a1[0]), std::max(a0[0], a1[0]),
+                            std::min(a0[1], a1[1]), std::max(a0[1], a1[1]) };
+    const LayoutArea B{ "", std::min(b0[0], b1[0]), std::max(b0[0], b1[0]),
+                            std::min(b0[1], b1[1]), std::max(b0[1], b1[1]) };
+    return rectsMeet(A, B, kTol);
+}
+
+void readRoads(const Dictionary& d, PlantLayoutRecord& rec)
+{
+    LayoutRoads& R = rec.roads;
+    const auto rd = d.subDict("roads");
+    const std::string w = "roads";
+    R.present  = true;
+    R.source   = text(*rd, "source", w);
+    R.reason   = text(*rd, "reason", w);
+    R.headroom = length(*rd, "headroom", w);
+    if (R.headroom <= 0)
+        refuse(w + ": `headroom " + num(R.headroom) + " m;` -- the vehicle"
+               " clearance the network is laid out for must be positive");
+    if (!rd->found("access"))
+        refuse(w + ": `access { distance <m>; source \"...\"; reason \"...\"; }`"
+               " is not declared -- the distance within which every placed"
+               " item must have a road (fire-brigade and maintenance access)"
+               " is the case's to state, with where it comes from");
+    {
+        const auto ad = rd->subDict("access");
+        R.accessDistance = length(*ad, "distance", w + " access");
+        R.accessSource   = text(*ad, "source", w + " access");
+        R.accessReason   = text(*ad, "reason", w + " access");
+        if (R.accessDistance < 0)
+            refuse(w + " access: `distance` cannot be negative");
+    }
+    if (rd->found("noTraffic"))
+        for (scalar z : rd->lookupList("noTraffic"))
+        {
+            if (!(z == 0.0 || z == 1.0 || z == 2.0))
+                refuse(w + ": `noTraffic` -- " + registryRefusal::message(
+                       "hazardous-area zone", num(z), { "0", "1", "2" },
+                       "Accepted"));
+            R.noTraffic.push_back(int(z));
+        }
+    if (!rd->found("network"))
+        refuse(w + ": `network ( { road \"<name>\"; width <m>; reason \"...\";"
+               " waypoints ( { x; y; } ... ); } ... );` is not declared");
+    std::set<std::string> names;
+    std::size_t n = 0;
+    for (const auto& e : rd->lookupDictList("network"))
+    {
+        ++n;
+        LayoutRoad road;
+        if (!e->found("road"))
+            refuse(w + " network entry " + std::to_string(n) + ": `road"
+                   " \"<name>\";` is not declared");
+        road.id = e->lookupWord("road");
+        const std::string wr = "road `" + road.id + "`";
+        if (!names.insert(road.id).second)
+            refuse(wr + " is declared twice -- one name, one road");
+        road.width  = length(*e, "width", wr);
+        road.reason = text(*e, "reason", wr);
+        if (road.width <= 0)
+            refuse(wr + ": `width` must be positive");
+        if (!e->found("waypoints"))
+            refuse(wr + ": `waypoints ( { x <m>; y <m>; } ... );` -- its centre"
+                   " line -- is not declared");
+        std::size_t k = 0;
+        for (const auto& p : e->lookupDictList("waypoints"))
+        {
+            ++k;
+            const std::string wp = wr + " waypoint " + std::to_string(k);
+            if (p->found("z"))
+                refuse(wp + ": a road lies at grade; its waypoints are plan"
+                       " points `{ x <m>; y <m>; }` and carry no `z`");
+            road.centreline.push_back({ length(*p, "x", wp), length(*p, "y", wp) });
+        }
+        if (road.centreline.size() < 2)
+            refuse(wr + ": a centre line needs at least two waypoints");
+        for (std::size_t s = 0; s + 1 < road.centreline.size(); ++s)
+        {
+            const auto& a = road.centreline[s];
+            const auto& b = road.centreline[s + 1];
+            const bool mx = std::fabs(a[0] - b[0]) > kTol;
+            const bool my = std::fabs(a[1] - b[1]) > kTol;
+            if (mx && my)
+                refuse(wr + ": the segment from (" + num(a[0]) + ", " + num(a[1])
+                       + ") m to (" + num(b[0]) + ", " + num(b[1]) + ") m runs"
+                       " DIAGONALLY -- a road segment runs along one plan axis;"
+                       " add the corner (" + num(b[0]) + ", " + num(a[1])
+                       + ") m between them");
+            if (!mx && !my)
+                refuse(wr + ": waypoints " + std::to_string(s + 1) + " and "
+                       + std::to_string(s + 2) + " are the same point");
+            road.length += std::fabs(a[0] - b[0]) + std::fabs(a[1] - b[1]);
+        }
+        R.length += road.length;
+        R.roads.push_back(road);
+    }
+    if (R.roads.empty())
+        refuse(w + ": `network` declares no road");
+}
+
+void checkRoads(PlantLayoutRecord& rec,
+    const std::function<void(const std::string&, const std::string&,
+                             const std::string&, scalar, scalar,
+                             const std::string&, const std::string&)>& addFinding)
+{
+    LayoutRoads& R = rec.roads;
+    const auto isDrivable = [](const LayoutItem& i)
+    { return i.nonProcess && i.kind == kWeighbridgeKind; };
+
+    std::vector<std::vector<LayoutArea>> rects;
+    std::vector<LayoutArea> all;
+    for (const auto& rd : R.roads)
+    {
+        rects.push_back(pavedRects(rd));
+        all.insert(all.end(), rects.back().begin(), rects.back().end());
+    }
+    R.pavedArea = unionArea(all);
+
+    //  ---- a road through a footprint: REFUSED (as two items overlapping) --
+    for (std::size_t i = 0; i < R.roads.size(); ++i)
+        for (const auto& pr : rects[i])
+        {
+            const LayoutItem box = planBox(pr.xMin, pr.xMax, pr.yMin, pr.yMax);
+            for (const auto& it : rec.items)
+            {
+                if (isDrivable(it)) continue;
+                const scalar c = clearPlan(box, it);
+                if (c >= -kTol) continue;
+                if (verticalOverlap(0.0, R.headroom, it.z, it.dz) <= kTol)
+                    continue;   // it stands above the headroom: the road passes under
+                refuse("road `" + R.roads[i].id + "` runs THROUGH `" + it.id
+                       + "`: its paved surface (" + num(R.roads[i].width)
+                       + " m wide) and the item's footprint interpenetrate by "
+                       + num(-c) + " m on the plan, below the " + num(R.headroom)
+                       + " m headroom the network declares.  A road and an item"
+                       " cannot occupy one place -- move the road or the item");
+            }
+        }
+
+    //  ---- under the pipe rack: allowed only with the headroom -----------
+    if (!rec.pipes.empty())
+    {
+        const auto& k = rec.pipeRack;
+        const scalar hw = 0.5 * k.lanesPerTier * k.laneSpacing;
+        const LayoutArea band{ "", k.xStart, k.xEnd, k.y - hw, k.y + hw };
+        for (std::size_t i = 0; i < R.roads.size(); ++i)
+            for (const auto& pr : rects[i])
+            {
+                const scalar x0 = std::max(pr.xMin, band.xMin);
+                const scalar x1 = std::min(pr.xMax, band.xMax);
+                const scalar y0 = std::max(pr.yMin, band.yMin);
+                const scalar y1 = std::min(pr.yMax, band.yMax);
+                if (x1 - x0 <= kTol || y1 - y0 <= kTol) continue;
+                if (k.elevation < R.headroom - kTol)
+                    refuse("road `" + R.roads[i].id + "` passes UNDER the pipe"
+                           " rack, whose lowest tier is " + num(k.elevation)
+                           + " m above grade (" + (k.declared ? "declared"
+                           : "the engine's stated default") + "), below the "
+                           + num(R.headroom) + " m headroom the network declares"
+                           " -- raise the rack (`pipeRack { elevation; }`) or"
+                           " route the road round it");
+                R.rackCrossings.push_back({ R.roads[i].id, x0, x1, y0, y1,
+                                            k.elevation });
+            }
+    }
+
+    //  ---- under a pipe: every routed segment above a road must clear the
+    //  headroom (a declared waypoint route may run low) ---------------------
+    for (const auto& p : rec.pipes)
+        for (std::size_t s = 0; s + 1 < p.route.size(); ++s)
+        {
+            const auto& a = p.route[s];
+            const auto& b = p.route[s + 1];
+            const scalar zLow = std::min(a[2], b[2]);
+            if (zLow >= R.headroom - kTol) continue;
+            const LayoutArea seg{ "", std::min(a[0], b[0]), std::max(a[0], b[0]),
+                                      std::min(a[1], b[1]), std::max(a[1], b[1]) };
+            for (std::size_t i = 0; i < R.roads.size(); ++i)
+                for (const auto& pr : rects[i])
+                {
+                    //  Strictly inside the paved surface on the plan: a pipe
+                    //  riser at a nozzle beside the road does not count.
+                    if (!(seg.xMin < pr.xMax - kTol && pr.xMin < seg.xMax + kTol
+                          && seg.xMax > pr.xMin + kTol
+                          && seg.yMin < pr.yMax - kTol && seg.yMax > pr.yMin + kTol))
+                        continue;
+                    refuse("pipe `" + p.stream + "` crosses road `" + R.roads[i].id
+                           + "` " + num(zLow) + " m above grade, below the "
+                           + num(R.headroom) + " m headroom the network declares"
+                           " -- raise its route or move the road");
+                }
+        }
+
+    //  ---- connectivity: roads whose centre lines meet are one network ----
+    std::vector<int> comp(R.roads.size());
+    for (std::size_t i = 0; i < comp.size(); ++i) comp[i] = int(i);
+    std::function<int(int)> root = [&](int i)
+    { return comp[i] == i ? i : (comp[i] = root(comp[i])); };
+    for (std::size_t i = 0; i < R.roads.size(); ++i)
+        for (std::size_t j = i + 1; j < R.roads.size(); ++j)
+        {
+            bool meet = false;
+            const auto& A = R.roads[i].centreline;
+            const auto& B = R.roads[j].centreline;
+            for (std::size_t s = 0; s + 1 < A.size() && !meet; ++s)
+                for (std::size_t t = 0; t + 1 < B.size() && !meet; ++t)
+                    meet = segmentsMeet(A[s], A[s + 1], B[t], B[t + 1]);
+            if (meet) comp[root(int(i))] = root(int(j));
+        }
+    std::map<int, int> label;
+    for (std::size_t i = 0; i < R.roads.size(); ++i)
+    {
+        const int r0 = root(int(i));
+        if (!label.count(r0)) { const int nl = int(label.size()); label[r0] = nl; }
+        R.roads[i].component = label[r0];
+    }
+    R.components = int(label.size());
+
+    //  The nearest road to an item, among `allowed` components: the clear
+    //  plan distance from its footprint to the paved surface, and the
+    //  nearest point on that road's centre line.
+    struct Near { int road = -1; scalar dist = 1e300; scalar x = 0, y = 0;
+                  bool onDeck = false; };
+    auto nearest = [&](const LayoutItem& it, const std::set<int>* allowed)
+    {
+        Near best;
+        for (std::size_t i = 0; i < R.roads.size(); ++i)
+        {
+            if (allowed && !allowed->count(R.roads[i].component)) continue;
+            const auto& cl = R.roads[i].centreline;
+            for (std::size_t s = 0; s < rects[i].size(); ++s)
+            {
+                const auto& pr = rects[i][s];
+                const LayoutItem box = planBox(pr.xMin, pr.xMax, pr.yMin, pr.yMax);
+                const scalar c = std::max(0.0, clearPlan(box, it));
+                //  A weighbridge is ON the road when the centre line crosses
+                //  its deck.
+                bool deck = false;
+                if (isDrivable(it))
+                    deck = pointToFootprint(
+                        std::clamp(it.x, std::min(cl[s][0], cl[s + 1][0]),
+                                         std::max(cl[s][0], cl[s + 1][0])),
+                        std::clamp(it.y, std::min(cl[s][1], cl[s + 1][1]),
+                                         std::max(cl[s][1], cl[s + 1][1])), it)
+                           <= kTol;
+                const bool better = (deck && !best.onDeck)
+                    || (deck == best.onDeck && c < best.dist - kTol);
+                if (!better) continue;
+                best.road = int(i);
+                best.dist = c;
+                best.onDeck = deck;
+                best.x = std::clamp(it.x, std::min(cl[s][0], cl[s + 1][0]),
+                                          std::max(cl[s][0], cl[s + 1][0]));
+                best.y = std::clamp(it.y, std::min(cl[s][1], cl[s + 1][1]),
+                                          std::max(cl[s][1], cl[s + 1][1]));
+            }
+        }
+        return best;
+    };
+
+    //  ---- the entrances: every placed gate, served by a road within the
+    //  access distance ------------------------------------------------------
+    std::set<int> reached;
+    for (const auto& it : rec.items)
+    {
+        if (!(it.nonProcess && it.kind == kGateKind)) continue;
+        R.entrances.push_back(it.id);
+        const Near nb = nearest(it, nullptr);
+        if (nb.road < 0 || nb.dist > R.accessDistance + kTol)
+        {
+            addFinding("gateOffRoad", it.id, "", nb.road < 0 ? 0.0 : nb.dist,
+                R.accessDistance, "warning",
+                "gate `" + it.id + "` has no road within the " + num(R.accessDistance)
+                + " m access distance the case declares (the nearest is "
+                + (nb.road < 0 ? std::string("none") : num(nb.dist) + " m away")
+                + "): the road network has no entrance there");
+            continue;
+        }
+        reached.insert(R.roads[nb.road].component);
+    }
+    const bool anyGate = !R.entrances.empty();
+    if (!anyGate)
+        addFinding("noEntrance", "roads", "", 0.0, 0.0, "warning",
+            "the road network declares no entrance: no non-process item of kind"
+            " `gate` is placed, so whether the roads reach the site from outside"
+            " is not checked -- every road is taken as reached");
+    for (auto& rd : R.roads)
+    {
+        rd.fromEntrance = !anyGate || reached.count(rd.component) > 0;
+        if (!rd.fromEntrance)
+            addFinding("roadDisconnected", rd.id, "", 0.0, 0.0, "warning",
+                "road `" + rd.id + "` is not connected to any road a gate"
+                " reaches: its centre line meets none of theirs, so a vehicle"
+                " entering the site cannot drive onto it");
+    }
+    std::set<int> fromGate;
+    for (const auto& rd : R.roads)
+        if (rd.fromEntrance) fromGate.insert(rd.component);
+
+    //  ---- every placed item: the nearest road a gate reaches ------------
+    for (const auto& it : rec.items)
+    {
+        const Near nb = nearest(it, &fromGate);
+        LayoutAccess a;
+        a.item = it.id;
+        if (nb.road >= 0)
+        {
+            a.road = R.roads[nb.road].id;
+            a.distance = nb.dist;
+            a.x = nb.x; a.y = nb.y;
+            a.onDeck = nb.onDeck;
+        }
+        R.access.push_back(a);
+        if (it.nonProcess && it.kind == kGateKind) continue;   // said above
+        if (isDrivable(it))
+        {
+            if (!nb.onDeck)
+                addFinding("weighbridgeOffRoad", it.id, "", 0.0, 0.0, "warning",
+                    "weighbridge `" + it.id + "` lies on no road a gate reaches:"
+                    " no centre line crosses its deck, so a truck cannot drive"
+                    " onto it");
+            continue;
+        }
+        if (nb.road >= 0 && nb.dist <= R.accessDistance + kTol) continue;
+        const std::string far = nb.road < 0 ? std::string("no road a gate reaches")
+            : "the nearest road a gate reaches, `" + a.road + "`, is " + num(nb.dist)
+              + " m from its footprint";
+        if (it.nonProcess)
+            addFinding("buildingNotReached", it.id, a.road, nb.road < 0 ? 0.0 : nb.dist,
+                R.accessDistance, "warning",
+                "site building `" + it.id + "` (" + it.kind + ") is not served by"
+                " the road network: " + far + ", against the " + num(R.accessDistance)
+                + " m access distance the case declares (source: " + R.accessSource + ")");
+        else
+            addFinding("noRoadAccess", it.id, a.road, nb.road < 0 ? 0.0 : nb.dist,
+                R.accessDistance, "warning",
+                "`" + it.id + "` (" + it.kind + ") has no road within the "
+                + num(R.accessDistance) + " m access distance the case declares"
+                " for fire-brigade and maintenance access: " + far + " (source: "
+                + R.accessSource + ")");
+    }
+
+    //  ---- a road through a zone the case closes to traffic: ANNOUNCED ----
+    if (!R.noTraffic.empty())
+        for (const auto& rel : rec.items)
+        {
+            if (!rel.release) continue;
+            for (const auto& z : rel.zones)
+            {
+                if (std::find(R.noTraffic.begin(), R.noTraffic.end(), z.zone)
+                    == R.noTraffic.end()) continue;
+                if (verticalOverlap(0.0, R.headroom, rel.z, z.height) <= kTol)
+                    continue;
+                for (std::size_t i = 0; i < R.roads.size(); ++i)
+                {
+                    scalar dmin = 1e300;
+                    for (const auto& pr : rects[i])
+                        dmin = std::min(dmin, pointToFootprint(rel.x, rel.y,
+                                   planBox(pr.xMin, pr.xMax, pr.yMin, pr.yMax)));
+                    if (dmin >= z.radius - kTol) continue;
+                    addFinding("roadInZone", R.roads[i].id,
+                        rel.id + "#zone" + std::to_string(z.zone), dmin, z.radius,
+                        "warning",
+                        "road `" + R.roads[i].id + "` enters the zone "
+                        + std::to_string(z.zone) + " envelope of `" + rel.id
+                        + "`, which the case closes to traffic: its paved surface"
+                        " comes " + num(dmin) + " m from the release axis against"
+                        " a declared radius of " + num(z.radius) + " m (source: "
+                        + rel.releaseSource + ")");
+                }
+            }
+        }
+}
+
 //  ---- the plot (DEV.md 4c C82) ------------------------------------------
 
 //  THE RULE, ONE SENTENCE, published on the result so every surface quotes
 //  the engine rather than paraphrasing it.
 const char* const kPlotRule =
     "the plot is the axis-aligned envelope of every declared sector area,"
-    " every placed footprint (process and non-process) and every routed"
-    " pipe's polyline, grown on every side by the declared plot margin;"
+    " every placed footprint (process and non-process), every routed"
+    " pipe's polyline and every declared road's paved surface, grown on"
+    " every side by the declared plot margin;"
     " the footprint area is the sum of the placed items' plan areas (a"
     " vertical cylinder's disc, any other item's rectangle), each item"
     " counted once";
@@ -920,6 +1352,9 @@ void plotOf(const Dictionary& d, PlantLayoutRecord& rec)
     for (const auto& p : rec.pipes)
         for (const auto& q : p.route)
             take(q[0], q[0], q[1], q[1]);
+    for (const auto& rd : rec.roads.roads)
+        for (const auto& pr : pavedRects(rd))
+            take(pr.xMin, pr.xMax, pr.yMin, pr.yMax);
     pl.xMin = x0 - pl.margin;  pl.xMax = x1 + pl.margin;
     pl.yMin = y0 - pl.margin;  pl.yMax = y1 + pl.margin;
     pl.plotArea = (pl.xMax - pl.xMin) * (pl.yMax - pl.yMin);
@@ -1189,6 +1624,17 @@ PlantLayoutRecord evaluate(const Dictionary& d, const SimulationResult& r,
             if (!declaresFootprint)
                 refuse(where + ": a non-process item has no sizing; declare"
                        " `footprint { length <m>; width <m>; height <m>; }`");
+            //  Why it is there and where its size came from (C90): both or
+            //  neither, so a sentence never stands without its pair.
+            if (e->found("source") != e->found("reason"))
+                refuse(where + ": declare both `source \"...\";` (where its"
+                       " size and place come from) and `reason \"...\";` (why"
+                       " it is there), or neither");
+            if (e->found("source"))
+            {
+                it.source = text(*e, "source", where);
+                it.reason = text(*e, "reason", where);
+            }
         }
         if (it.shape.empty())
         {
@@ -1430,7 +1876,15 @@ PlantLayoutRecord evaluate(const Dictionary& d, const SimulationResult& r,
     //  ---- the pipes (C80) ---------------------------------------------------
     routePipes(d, r, rec);
 
-    //  ---- the plot (C82): after the pipes, which occupy ground too --------
+    //  ---- the roads (C90): after the pipes, which a road must pass under --
+    if (d.found("roads"))
+    {
+        readRoads(d, rec);
+        checkRoads(rec, addFinding);
+    }
+
+    //  ---- the plot (C82): after the pipes and the roads, which occupy
+    //  ground too -----------------------------------------------------------
     plotOf(d, rec);
 
     if (verbosity >= 2)
@@ -1465,6 +1919,23 @@ PlantLayoutRecord evaluate(const Dictionary& d, const SimulationResult& r,
         for (const auto& n : rec.notRouted)
             std::cout << "  " << std::left << std::setw(22) << n.stream
                       << "not routed: " << n.reason << "\n";
+        if (rec.roads.present)
+        {
+            const auto& R = rec.roads;
+            std::cout << "[layout] roads: " << R.roads.size() << " road(s), "
+                      << num(R.length) << " m of centre line, "
+                      << num(R.pavedArea) << " m2 paved, " << R.components
+                      << " connected network(s), " << R.rackCrossings.size()
+                      << " crossing(s) under the rack; headroom "
+                      << num(R.headroom) << " m, access within "
+                      << num(R.accessDistance) << " m\n";
+            for (const auto& rd : R.roads)
+                std::cout << "  " << std::left << std::setw(22) << rd.id
+                          << std::right << std::setw(9) << num(rd.length, 5)
+                          << " m x " << num(rd.width) << " m"
+                          << (rd.fromEntrance ? "" : "  (no gate reaches it)")
+                          << "\n";
+        }
         const auto& pl = rec.plot;
         std::cout << "[layout] plot: " << num(pl.xMax - pl.xMin) << " m x "
                   << num(pl.yMax - pl.yMin) << " m = " << num(pl.plotArea)
@@ -1521,6 +1992,7 @@ std::string draft(const SimulationResult& r, const Dictionary* previous)
     //  because they were drawn around positions the draft moves.
     LayoutPipeRack rack;
     bool hadPipeOverrides = false;
+    bool hadRoads = false;
     bool        hadPlot    = false;
     scalar      plotMargin = 0.0;
     std::string plotReason;
@@ -1529,7 +2001,7 @@ std::string draft(const SimulationResult& r, const Dictionary* previous)
     //  own, and the author's non-process items: both carried, never guessed.
     struct Box { scalar L = 0, W = 0, H = 0; std::string orientation; };
     std::map<std::string, Box> declaredBox;
-    struct NonProc { std::string name, kind; Box box; };
+    struct NonProc { std::string name, kind; Box box; std::string source, reason; };
     std::vector<NonProc> nonProc;
     auto readBox = [](const Dictionary& e, const std::string& where) {
         Box b;
@@ -1555,6 +2027,7 @@ std::string draft(const SimulationResult& r, const Dictionary* previous)
             hadPlot    = true;
         }
         hadPipeOverrides = previous->found("pipes");
+        hadRoads         = previous->found("roads");
         if (previous->found("items"))
             for (const auto& e : previous->lookupDictList("items"))
             {
@@ -1566,7 +2039,9 @@ std::string draft(const SimulationResult& r, const Dictionary* previous)
                 {
                     const Box b = readBox(*e, "`" + id + "` footprint");
                     if (isNon)
-                        nonProc.push_back({ id, e->lookupWordOrDefault("kind", "building"), b });
+                        nonProc.push_back({ id, e->lookupWordOrDefault("kind", "building"), b,
+                                            e->lookupWordOrDefault("source", ""),
+                                            e->lookupWordOrDefault("reason", "") });
                     else
                         declaredBox[id] = b;
                 }
@@ -1656,6 +2131,8 @@ std::string draft(const SimulationResult& r, const Dictionary* previous)
         dd.it.id = np.name;
         dd.it.nonProcess = true;
         dd.it.kind = np.kind;
+        dd.it.source = np.source;
+        dd.it.reason = np.reason;
         dd.it.shape = "box";
         dd.it.footprintFrom = "declared";
         dd.it.orientation = np.box.orientation;
@@ -1757,6 +2234,9 @@ std::string draft(const SimulationResult& r, const Dictionary* previous)
          "               xStart; xEnd; reason; }   (absent: the engine's stated default)\n"
          "    pipes { <stream> { waypoints ( { x; y; z; } ... ); } }   (optional)\n"
          "    plot { margin; reason; }   (absent: margin 0 m, announced -- a lower bound)\n"
+         "    roads { source; reason; headroom; access { distance; source; reason; }\n"
+         "            [noTraffic ( <zones> );] network ( { road \"<name>\"; width;\n"
+         "            reason; waypoints ( { x; y; } ... ); } ... ); }   (optional)\n"
          "    wind { from <deg>; planNorth <deg>; halfAngle <deg>; reach <m>;\n"
          "           source; reason; }\n"
          "  Record: docs/design/a-plant-layout-is-declared-and-checked.md\n"
@@ -1774,8 +2254,13 @@ std::string draft(const SimulationResult& r, const Dictionary* previous)
         {
             const auto& it = dd.it;
             if (it.nonProcess)
+            {
                 o << "    {\n        nonProcess  " << quoted(it.id) << ";\n"
                   << "        kind        " << it.kind << ";\n";
+                if (!it.source.empty())
+                    o << "        source      " << quoted(it.source) << ";\n"
+                      << "        reason      " << quoted(it.reason) << ";\n";
+            }
             else
                 o << "    {\n        item        " << quoted(it.id) << ";   // "
                   << it.kind << ", " << num(it.dx) << " x " << num(it.dy)
@@ -1922,6 +2407,30 @@ std::string draft(const SimulationResult& r, const Dictionary* previous)
     if (hadPipeOverrides)
         o << "\n//  The previous layout's `pipes { ... waypoints ... }` overrides are NOT\n"
              "//  carried: they were drawn around positions this draft has moved.\n";
+    //  ROADS ARE NOT DRAFTED (DEV.md 4c C90).  A road's centre line is drawn
+    //  round the items it serves, exactly as a declared pipe route is, and
+    //  where the gate stands is a fact about the site the run cannot know;
+    //  a skeleton proposed here would be a road network nobody chose, with
+    //  every access distance it then satisfied satisfied by construction.
+    if (hadRoads)
+        o << "\n//  The previous layout's `roads {}` network is NOT carried: its centre\n"
+             "//  lines were drawn round positions this draft has moved.  Redraw it.\n";
+    else
+        o << "\n//  ROADS: none declared, and none is written for you -- where the gate\n"
+             "//  stands and how each road runs round the items are yours to decide:\n"
+             "//  roads\n"
+             "//  {\n"
+             "//      source   \"...\";  reason \"...\";\n"
+             "//      headroom ... m;     // the vehicle clearance under a rack or a pipe\n"
+             "//      access   { distance ... m; source \"...\"; reason \"...\"; }\n"
+             "//      noTraffic ( 1 );    // optional: zones closed to vehicles (announced)\n"
+             "//      network\n"
+             "//      (\n"
+             "//          { road \"main\"; width ... m; reason \"...\";\n"
+             "//            waypoints ( { x ... m; y ... m; } { x ... m; y ... m; } ); }\n"
+             "//      );\n"
+             "//  }\n"
+             "//  and, for the entrance:  { nonProcess \"gate\"; kind gate; ... }\n";
     o << "\n// ************************************************************************* //\n";
     return o.str();
 }

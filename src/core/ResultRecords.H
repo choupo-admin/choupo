@@ -778,6 +778,10 @@ struct LayoutItem
     std::string             releaseReason;
     std::vector<LayoutZone> zones;
     std::string             ignition;    // the declared reason; empty = not one
+    //  A non-process item's own `source` and `reason` (C90: a site building
+    //  says why it is there and where its size came from); both or neither.
+    std::string             source;
+    std::string             reason;
 };
 
 struct LayoutArea
@@ -913,6 +917,65 @@ struct LayoutPlot
     std::vector<LayoutPlotSector> sectors;
 };
 
+//  THE ROADS (2026-10-18, DEV.md 4c C90).  A road network the case DECLARES
+//  in `roads {}` -- each road a centre line of plan waypoints (every segment
+//  along one plan axis) and a width -- checked by ONE set of rules in
+//  `postProcessing/layout/PlantLayout.cpp` (`checkRoads`): a road through a
+//  footprint, under a rack lower than the declared headroom or under a pipe
+//  lower than it is REFUSED; a road through a zone the case closes to traffic,
+//  a road no gate reaches, a site building no road serves, a weighbridge no
+//  road drives over, and a process item farther than the declared access
+//  distance from every road are ANNOUNCED.  Published: each road's centre
+//  line and length, the network's length and PAVED AREA (the union of the
+//  paved rectangles, counted once where roads meet), each rack crossing, and
+//  per placed item the nearest road a gate reaches.
+struct LayoutRoad
+{
+    std::string id;                                // the declared name
+    scalar      width  = 0;                        // [m]
+    std::string reason;
+    std::vector<std::vector<scalar>> centreline;   // plan (x, y) [m]
+    scalar      length = 0;                        // [m] along the centre line
+    int         component = 0;                     // connected component
+    bool        fromEntrance = false;              // a gate reaches it
+};
+
+//  A road under the pipe rack: the plan rectangle where its paved surface
+//  meets the rack's band, and the rack's lowest tier above it.
+struct LayoutRackCrossing
+{
+    std::string road;
+    scalar xMin = 0, xMax = 0, yMin = 0, yMax = 0;
+    scalar clearance = 0;    // [m] the rack's published elevation
+};
+
+//  The nearest road a gate reaches, per placed item.  `road` empty: none.
+struct LayoutAccess
+{
+    std::string item;
+    std::string road;
+    scalar      distance = 0;   // [m] footprint edge to paved edge
+    scalar      x = 0, y = 0;   // the nearest point on that road's centre line
+    bool        onDeck = false; // a weighbridge whose deck the road crosses
+};
+
+struct LayoutRoads
+{
+    bool        present = false;
+    std::string source, reason;
+    scalar      headroom = 0;          // [m] the vehicle clearance declared
+    scalar      accessDistance = 0;    // [m]
+    std::string accessSource, accessReason;
+    std::vector<int> noTraffic;        // zones closed to vehicles
+    std::vector<LayoutRoad>         roads;
+    std::vector<LayoutRackCrossing> rackCrossings;
+    std::vector<LayoutAccess>       access;
+    std::vector<std::string>        entrances;   // the placed gates
+    int    components = 0;
+    scalar length     = 0;             // [m] the centre lines summed
+    scalar pavedArea  = 0;             // [m2] the paved rectangles' union
+};
+
 struct PlantLayoutRecord
 {
     std::vector<LayoutItem>            items;
@@ -931,6 +994,7 @@ struct PlantLayoutRecord
     std::vector<std::string>           unplaced;
     std::vector<std::string>           internal;
     LayoutPlot                         plot;     // C82
+    LayoutRoads                        roads;    // C90
 
     bool present() const { return !items.empty(); }
 };

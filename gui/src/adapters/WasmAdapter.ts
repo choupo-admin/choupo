@@ -669,6 +669,8 @@ function shapeLayout(l: NonNullable<ResultPayload["layout"]>): PlantLayout {
       x: i.x as number, y: i.y as number, z: i.z as number,
       dx: i.dx as number, dy: i.dy as number, dz: i.dz as number,
       ...(typeof i.ignition === "string" && i.ignition ? { ignition: i.ignition } : {}),
+      ...(typeof i.source === "string" && i.source
+        ? { source: i.source, reason: str(i.reason) } : {}),
       ...(i.release ? { release: {
         source: str(i.release.source), reason: str(i.release.reason),
         zones: arr(i.release.zones).filter((z) => fin(z.radius) && fin(z.height))
@@ -702,6 +704,51 @@ function shapeLayout(l: NonNullable<ResultPayload["layout"]>): PlantLayout {
     ...shapePipes(l),
     ...shapeSummary(l),
     ...shapePlot(l),
+    ...shapeRoads(l),
+  };
+}
+
+//  THE ROADS (DEV.md 4c C90), passed through as the engine checked them.  A
+//  road whose width, length or any centre-line point is not a finite number
+//  is DROPPED rather than drawn through the origin; the network line, absent
+//  or not finite, leaves the whole block absent.  Nothing is measured here.
+function shapeRoads(l: NonNullable<ResultPayload["layout"]>): Partial<PlantLayout> {
+  const n = l.roadNetwork;
+  const fin = (v: unknown): v is number => typeof v === "number" && Number.isFinite(v);
+  const str = (v: unknown): string => (typeof v === "string" ? v : "");
+  if (!n || ![n.headroom, n.accessDistance, n.length, n.pavedArea].every(fin)) return {};
+  const arr = <T,>(v: T[] | undefined): T[] => (Array.isArray(v) ? v : []);
+  return {
+    roadNetwork: {
+      headroom: n.headroom as number, accessDistance: n.accessDistance as number,
+      noTraffic: arr(n.noTraffic).filter(fin),
+      entrances: arr(n.entrances).filter((e): e is string => typeof e === "string"),
+      roads: fin(n.roads) ? n.roads : 0, components: fin(n.components) ? n.components : 0,
+      length: n.length as number, pavedArea: n.pavedArea as number,
+      source: str(n.source), reason: str(n.reason),
+      accessSource: str(n.accessSource), accessReason: str(n.accessReason),
+    },
+    roads: arr(l.roads)
+      .filter((r) => typeof r.road === "string" && fin(r.width) && fin(r.length)
+        && Array.isArray(r.centreline) && r.centreline.length >= 2
+        && r.centreline.every((q) => Array.isArray(q) && q.length === 2 && q.every(fin)))
+      .map((r) => ({
+        road: str(r.road), width: r.width as number, length: r.length as number,
+        component: fin(r.component) ? r.component : 0, fromEntrance: r.fromEntrance !== false,
+        reason: str(r.reason),
+        centreline: (r.centreline as number[][]).map((q) => [q[0], q[1]] as [number, number]),
+      })),
+    rackCrossings: arr(l.rackCrossings)
+      .filter((c) => [c.xMin, c.xMax, c.yMin, c.yMax, c.clearance].every(fin))
+      .map((c) => ({ road: str(c.road), xMin: c.xMin as number, xMax: c.xMax as number,
+                     yMin: c.yMin as number, yMax: c.yMax as number,
+                     clearance: c.clearance as number })),
+    access: arr(l.access).filter((a) => typeof a.item === "string").map((a) => ({
+      item: str(a.item), road: str(a.road),
+      ...(fin(a.distance) ? { distance: a.distance } : {}),
+      ...(fin(a.roadX) && fin(a.roadY) ? { roadX: a.roadX, roadY: a.roadY } : {}),
+      ...(a.onDeck ? { onDeck: true } : {}),
+    })),
   };
 }
 
@@ -968,7 +1015,7 @@ interface ResultPayload {
     items?: { id?: string; nonProcess?: boolean; kind?: string; sector?: string;
       shape?: string; orientation?: string; footprintFrom?: string;
       x?: number; y?: number; z?: number; dx?: number; dy?: number; dz?: number;
-      ignition?: string;
+      ignition?: string; source?: string; reason?: string;
       release?: { source?: string; reason?: string;
         zones?: { zone?: number; radius?: number; height?: number }[] } }[];
     areas?: { sector?: string; xMin?: number; xMax?: number; yMin?: number; yMax?: number }[];
@@ -999,6 +1046,16 @@ interface ResultPayload {
       declaredAreasUnion?: number; declaredAreasOverlap?: number; rule?: string };
     plotSectors?: { sector?: string; from?: string; plotArea?: number;
       footprintArea?: number }[];
+    roadNetwork?: { headroom?: number; accessDistance?: number; noTraffic?: number[];
+      entrances?: string[]; roads?: number; components?: number; length?: number;
+      pavedArea?: number; source?: string; reason?: string; accessSource?: string;
+      accessReason?: string };
+    roads?: { road?: string; width?: number; length?: number; component?: number;
+      fromEntrance?: boolean; reason?: string; centreline?: number[][] }[];
+    rackCrossings?: { road?: string; xMin?: number; xMax?: number; yMin?: number;
+      yMax?: number; clearance?: number }[];
+    access?: { item?: string; road?: string; distance?: number; roadX?: number;
+      roadY?: number; onDeck?: boolean }[];
   };
   economics?: {
     present?: boolean;

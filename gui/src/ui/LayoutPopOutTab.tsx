@@ -43,6 +43,18 @@ License
   (`choupo-stale-body`), and the sentence saying so sits OUTSIDE the dimmed
   box, so the reason is readable while the numbers are not inviting.
 
+  THE WINDOW IS THE READER'S (DEV.md 4c C91; Vítor: "the window is fixed;
+  good practice is an option to show it or not and adjust it").  The 3D view
+  FILLS the window: the legend is a section folded by default, and the
+  tables are a BOTTOM PANEL under the view on the one panel contract
+  (ui/panelContract.tsx LAYOUT_TABLES_PANEL) -- folded by default to a strip
+  that says what it holds, its height dragged at the view's lower edge (or
+  with the arrow keys) and remembered; inside it each table is a section
+  the reader folds.  The view's own toolbar carries Full screen.  The pipe
+  register is NOT docked beside the view on a wide screen: the contract has
+  no right edge, and a second docking rule for one tab would be a second
+  home for "where a panel goes".
+
   Lazily loaded by AppShell, and PlantLayout3D imports three.js only when it
   first draws, so neither this route nor the main shell pulls three.js into
   the index chunk.
@@ -57,10 +69,17 @@ import {
   layoutKeyOf, layoutTabStaleness, layoutTabTitle, readLayoutStash,
 } from "../case/layoutPopOut.js";
 import { layoutScene } from "../case/plantLayout.js";
+import { LAYOUT_TABLES_SCENT } from "../case/layoutPanels.js";
+import { PANELS } from "../state/prefs.js";
 import { ExpiredTabPanel } from "./ExpiredTabPanel.js";
+import { useCollapsedFlag } from "./methods/methodsChrome.js";
+import {
+  LAYOUT_TABLES_PANEL, PanelCollapseButton, panelBoxProps, PanelReopenStrip, PanelResizeHandle,
+  usePanel,
+} from "./panelContract.js";
 import { ExportLayoutButton } from "./ExportLayoutButton.js";
 import { PlantLayout3D } from "./plotting/PlantLayout3D.js";
-import { PlantLayoutLegend, PlantLayoutTables } from "./PlantLayoutTables.js";
+import { LayoutSectionBox, PlantLayoutLegend, PlantLayoutTables } from "./PlantLayoutTables.js";
 
 function readNow(key: string | null) {
   if (!key) return null;
@@ -94,6 +113,15 @@ export function LayoutPopOutTab() {
     [layoutText]);
   const title = stash ? layoutTabTitle(stash) : null;
   useEffect(() => { if (title) document.title = title; }, [title]);
+  //  The tables panel: folded by default (the registry's own default), so
+  //  the view fills the window; its height is the reader's.
+  const fold = useCollapsedFlag(PANELS.layoutTables.collapsedKey!,
+                                PANELS.layoutTables.defaultCollapsed);
+  const tables = usePanel(LAYOUT_TABLES_PANEL, { collapsedControl: fold });
+  const reduceMotion = useMemo(() => {
+    try { return window.matchMedia("(prefers-reduced-motion: reduce)").matches; }
+    catch { return false; }
+  }, []);
 
   if (!stash || !scene) return <ExpiredTabPanel kind="layout" />;
   const stale = layoutTabStaleness(stash);
@@ -136,16 +164,32 @@ export function LayoutPopOutTab() {
             </Text>
           </Alert>
         )}
-        <Box mt={6}><PlantLayoutLegend pipes={(stash.layout.pipes?.length ?? 0) > 0} /></Box>
+        <LayoutSectionBox id="legend">
+          <Box mt={4}><PlantLayoutLegend pipes={(stash.layout.pipes?.length ?? 0) > 0} /></Box>
+        </LayoutSectionBox>
       </Box>
       <Box className={stale.stale ? "choupo-stale-body" : undefined}
         style={{ flex: 1, minHeight: 0, display: "flex", flexDirection: "column" }}>
-        <Box style={{ flex: "1 1 62%", minHeight: 240 }}>
+        <Box style={{ flex: "1 1 auto", minHeight: 240 }}>
           <PlantLayout3D scene={scene} height="fill" />
         </Box>
-        <Box px="md" pb="md" style={{ flex: "1 1 38%", minHeight: 0, overflow: "auto" }}>
-          <PlantLayoutTables layout={stash.layout} />
-        </Box>
+        <PanelResizeHandle panel={tables} />
+        {tables.collapsed
+          ? <PanelReopenStrip panel={tables} scent={LAYOUT_TABLES_SCENT} />
+          : (
+            <Box {...panelBoxProps(tables, reduceMotion)}>
+              <Box style={{ height: "100%", overflow: "auto" }} px="md" pb="md"
+                data-layout-tables>
+                <Group justify="space-between" align="center" pt={4}
+                  style={{ position: "sticky", top: 0, zIndex: 1,
+                           background: "light-dark(var(--mantine-color-gray-0), var(--mantine-color-dark-7))" }}>
+                  <Text size="xs" c="dimmed">{LAYOUT_TABLES_SCENT}</Text>
+                  <PanelCollapseButton panel={tables} />
+                </Group>
+                <PlantLayoutTables layout={stash.layout} sectioned />
+              </Box>
+            </Box>
+          )}
       </Box>
     </Box>
   );

@@ -52,6 +52,7 @@ import {
   HANDLE_HIT_PX, HANDLE_KEY_STEP_PX, HANDLE_SEAM_PX, LOG_JUMP_PANEL,
   METHOD_KNOBS_PANEL, PLOTS_NAV_PANEL, REPORTS_NAV_PANEL, STREAMS_NAV_PANEL,
   panelBoxStyle,
+  LAYOUT_TABLES_PANEL,
   autoCollapseDefault, collapseTooltip, expandTooltip, nudgeSize, shortcutHint,
   swallowsShortcut,
   type PanelChrome,
@@ -79,6 +80,9 @@ const ALL: [string, PanelChrome][] = [
   // owner asked for a width he could change.  It is the first panel that must
   // NOT fold -- see NO_FOLD below.
   ["catalogue browser", CATALOGUE_BROWSER_PANEL],
+  // The layout tab's tables joined on 2026-10-18 (DEV.md 4c C91): a bottom
+  // panel under the 3D view, folded by default so the view fills the window.
+  ["layout tables", LAYOUT_TABLES_PANEL],
 ];
 
 /** Panels that deliberately carry NO fold, with the reason.  A panel that is

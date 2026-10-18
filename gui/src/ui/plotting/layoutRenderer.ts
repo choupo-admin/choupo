@@ -75,6 +75,13 @@ License
   greyscale), at a speed that is a stated monotone function of the published
   mass flow.
 
+  THE ROADS (C90): each road the engine checked as asphalt on its centre
+  line and width, with white edge lines and a dashed centre line that stop
+  where the road meets another; the gate's barrier arm, red and white,
+  across the road at the point the engine published; the site buildings by
+  their kind (case/equipmentModel.ts SITE_MODELS).  The rack's portals give
+  way to a road that passes under it (case/plantLayout.ts rackPortals).
+
   QUALITY.  "high" adds the soft shadows, the ambient occlusion and the
   finding outline and renders at the device pixel ratio; "fast" drops all
   three and renders at one pixel per CSS pixel, for a weak laptop.  The
@@ -130,7 +137,21 @@ const ROLE_LOOK: Record<Exclude<PartRole, "body">, [number, number, number]> = {
   machine:  [0x3b6a8a, 0.35, 0.45],
   motor:    [0x2d5ea8, 0.3, 0.4],
   concrete: [0xb7b2a8, 0.0, 0.95],
+  glass:    [0x3d5a73, 0.6, 0.15],    // glazing
+  roof:     [0x7a8791, 0.6, 0.45],    // profiled steel sheet
 };
+
+/** Road surface and markings (C90). */
+const ROAD_LOOK = {
+  asphalt: [62, 64, 66] as [number, number, number],
+  edge: 0xf1f3f5,
+  centre: 0xf1f3f5,
+  barrierRed: 0xd9480f,
+  barrierWhite: 0xf8f9fa,
+};
+/** Marking width, edge-line inset from the paved edge, and the centre line's
+ *  dash and gap (m): drawing conventions, not a road standard's. */
+const MARKING = { width: 0.15, inset: 0.3, dash: 3, gap: 3 };
 const BODY_LOOK = {
   process:    [0xd3d8de, 0.85, 0.3] as [number, number, number],   // stainless
   nonProcess: [0xcbb994, 0.05, 0.85] as [number, number, number],  // a building's render
@@ -193,18 +214,30 @@ export interface MountOptions {
   quality?: RenderQuality;
 }
 
-/** Whether the page around the view is dark (the app's own scheme, else
- *  the system's): the sky and the exposure follow it. */
-function darkScheme(): boolean {
-  try {
-    const a = document.documentElement.getAttribute("data-mantine-color-scheme");
-    if (a === "dark" || a === "light") return a === "dark";
-    return typeof window.matchMedia === "function"
-      && window.matchMedia("(prefers-color-scheme: dark)").matches;
-  } catch {
-    return false;
-  }
-}
+/** THE SCENE IS ALWAYS IN DAYLIGHT (DEV.md 4c C90).  Until 2026-10-18 the
+ *  sky, the lights, the grass, the gravel and the pads followed the page's
+ *  colour scheme (the app's, else `prefers-color-scheme`) into a NIGHT
+ *  palette, so a reader whose browser is dark opened an exported page on a
+ *  near-black scene -- the export has no app scheme to read, and fell to the
+ *  system's -- while the app in its light scheme showed the day.  A plot
+ *  plan is a drawing of ground, steel and sky, and one plant is drawn one
+ *  way: only the page CHROME (labels, tooltips, panels) follows the theme,
+ *  through CSS `light-dark()`, and nothing here reads the scheme. */
+export const DAYLIGHT = {
+  exposure: 1.0,
+  skyTop: "#6f9fd8",
+  skyHorizon: "#dbe6ef",
+  environment: 0.55,
+  hemisphereSky: 0xdfeeff,
+  hemisphereGround: 0x5b6a48,
+  hemisphere: 0.9,
+  sunColour: 0xfff1dc,
+  sun: 2.8,
+  grass: [98, 126, 70] as [number, number, number],
+  gravel: [150, 144, 133] as [number, number, number],
+  grid: 0x55524c,
+  pad: [196, 193, 186] as [number, number, number],
+} as const;
 
 /** Draw `scene` into `el` and return the handle.  Throws what three.js
  *  throws (no WebGL); the caller says so in words. */
@@ -219,13 +252,12 @@ export function mountLayoutScene(m: LayoutModules, el: HTMLDivElement, scene: La
   let quality: RenderQuality = opts.quality ?? "high";
   const dpr = window.devicePixelRatio || 1;
   const pixelRatio = () => (quality === "high" ? Math.min(dpr, 2) : 1);
-  const dark = darkScheme();
 
   const renderer = new THREE.WebGLRenderer({ antialias: true, powerPreference: "high-performance" });
   renderer.setPixelRatio(pixelRatio());
   renderer.setSize(width, h0);
   renderer.toneMapping = THREE.ACESFilmicToneMapping;
-  renderer.toneMappingExposure = dark ? 0.85 : 1.0;
+  renderer.toneMappingExposure = DAYLIGHT.exposure;
   renderer.outputColorSpace = THREE.SRGBColorSpace;
   renderer.shadowMap.enabled = quality === "high";
   renderer.shadowMap.type = THREE.PCFSoftShadowMap;
@@ -271,8 +303,8 @@ export function mountLayoutScene(m: LayoutModules, el: HTMLDivElement, scene: La
 
   //  ---- sky, environment, light -----------------------------------------
   const world = new THREE.Scene();
-  const skyTop = dark ? "#0d1626" : "#6f9fd8";
-  const skyHorizon = dark ? "#38445a" : "#dbe6ef";
+  const skyTop = DAYLIGHT.skyTop;
+  const skyHorizon = DAYLIGHT.skyHorizon;
   const sky = (() => {
     const c = document.createElement("canvas");
     c.width = 2; c.height = 256;
@@ -299,10 +331,11 @@ export function mountLayoutScene(m: LayoutModules, el: HTMLDivElement, scene: La
   room.dispose();
   pmrem.dispose();
   world.environment = envTex;
-  world.environmentIntensity = dark ? 0.35 : 0.55;
+  world.environmentIntensity = DAYLIGHT.environment;
 
-  world.add(new THREE.HemisphereLight(dark ? 0x8090b0 : 0xdfeeff, 0x5b6a48, dark ? 0.5 : 0.9));
-  const sun = new THREE.DirectionalLight(dark ? 0xc8d4ff : 0xfff1dc, dark ? 1.2 : 2.8);
+  world.add(new THREE.HemisphereLight(DAYLIGHT.hemisphereSky, DAYLIGHT.hemisphereGround,
+                                      DAYLIGHT.hemisphere));
+  const sun = new THREE.DirectionalLight(DAYLIGHT.sunColour, DAYLIGHT.sun);
   //  From the south-east and high: the shadows fall to the north-west, beside
   //  the items as the default camera (south-west) sees them.
   const sunDir = new THREE.Vector3(0.55, 1.0, 0.45).normalize();
@@ -394,7 +427,7 @@ export function mountLayoutScene(m: LayoutModules, el: HTMLDivElement, scene: La
     //  Grass round the plot, as four strips (not one plane under it: the
     //  ground is most of the pixels, and nothing is drawn twice).
     const G = span * 7;
-    const grass = groundMat(noise(dark ? [52, 66, 44] : [98, 126, 70], 18, 1), 4);
+    const grass = groundMat(noise(DAYLIGHT.grass, 18, 1), 4);
     (grass.map as T3.Texture).repeat.set(G / 2, G / 2);
     const { x0: px0, x1: px1, z0: pz0, z1: pz1 } = plotRect;
     const gx0 = cx - G, gx1 = cx + G, gz0 = cz - G, gz1 = cz + G;
@@ -414,7 +447,7 @@ export function mountLayoutScene(m: LayoutModules, el: HTMLDivElement, scene: La
     strip(gx0, px0, pz0, pz1);
     strip(px1, gx1, pz0, pz1);
     const w = px1 - px0, d = pz1 - pz0;
-    const gravel = groundMat(noise(dark ? [88, 84, 78] : [150, 144, 133], 30, 1), 2);
+    const gravel = groundMat(noise(DAYLIGHT.gravel, 30, 1), 2);
     (gravel.map as T3.Texture).repeat.set(w / 3, d / 3);
     groundPlane(w, d, [(px0 + px1) / 2, (pz0 + pz1) / 2], gravel);
   }
@@ -430,14 +463,14 @@ export function mountLayoutScene(m: LayoutModules, el: HTMLDivElement, scene: La
     for (let z = Math.ceil(pz0 / cell) * cell; z <= pz1; z += cell)
       pts.push(new THREE.Vector3(px0, 0.02, z), new THREE.Vector3(px1, 0.02, z));
     world.add(new THREE.LineSegments(new THREE.BufferGeometry().setFromPoints(pts),
-      new THREE.LineBasicMaterial({ color: dark ? 0xb0b0b0 : 0x55524c, transparent: true,
+      new THREE.LineBasicMaterial({ color: DAYLIGHT.grid, transparent: true,
                                     opacity: 0.18, depthWrite: false })));
   }
 
   //  Sector areas: a concrete pad and its outline.
   for (const a of scene.areas) {
     const w = a.x1 - a.x0, d = a.z1 - a.z0;
-    const pad = groundMat(noise(dark ? [120, 118, 112] : [196, 193, 186], 10, 1), 0);
+    const pad = groundMat(noise(DAYLIGHT.pad, 10, 1), 0);
     (pad.map as T3.Texture).repeat.set(w / 4, d / 4);
     groundPlane(w, d, [(a.x0 + a.x1) / 2, (a.z0 + a.z1) / 2], pad);
     const pts = [[a.x0, a.z0], [a.x1, a.z0], [a.x1, a.z1], [a.x0, a.z1]]
@@ -509,6 +542,20 @@ export function mountLayoutScene(m: LayoutModules, el: HTMLDivElement, scene: La
         g.rotateX(Math.PI / 2);     // the XY ring into the XZ plane, theta = phi
         g.rotateY(-p.arc[0]);       // start at phi = arc[0]
         break;
+      case "prism": {
+        //  A three-sided cylinder whose first vertex points UP once its axis
+        //  is turned to plan x: apex at +1, base at -1/2, half-width
+        //  sqrt(3)/2; then moved and scaled onto the declared base, width
+        //  and rise.  Flat-shaded (non-indexed), as a roof's planes are.
+        g = new THREE.CylinderGeometry(1, 1, p.length, 3, 1, false, -Math.PI / 2);
+        g.rotateZ(-Math.PI / 2);            // +y to +x: the old -x becomes +y
+        g.translate(0, 0.5, 0);
+        g.scale(1, p.rise / 1.5, p.width / Math.sqrt(3));
+        if (p.axis === "z") g.rotateY(Math.PI / 2);
+        g = g.toNonIndexed();
+        g.computeVertexNormals();
+        break;
+      }
     }
     g.translate(p.at[0], p.at[1], p.at[2]);
     return g;
@@ -538,8 +585,13 @@ export function mountLayoutScene(m: LayoutModules, el: HTMLDivElement, scene: La
     }
     const group = new THREE.Group();
     group.position.set(...s.center);
-    for (const { mat, geoms, envelope } of byMat.values()) {
+    for (const { mat, geoms: g0, envelope } of byMat.values()) {
       //  One mesh per material: a ladder of a hundred rungs is one draw.
+      //  A roof prism is non-indexed; merging needs one kind, so a group
+      //  holding both goes non-indexed whole.
+      const geoms = g0.some((g) => !g.index) && g0.some((g) => g.index)
+        ? g0.map((g) => { if (!g.index) return g; const n = g.toNonIndexed(); g.dispose(); return n; })
+        : g0;
       const merged = geoms.length === 1 ? geoms[0]! : m.mergeGeometries(geoms, false);
       if (geoms.length > 1) for (const g of geoms) g.dispose();
       if (!merged) continue;
@@ -555,6 +607,97 @@ export function mountLayoutScene(m: LayoutModules, el: HTMLDivElement, scene: La
     world.add(group);
     label(s.label, [s.center[0], s.center[1] + s.size[1] / 2 + 0.6, s.center[2]],
       s.flagged ? LABEL_PRIORITY.finding : LABEL_PRIORITY.item, s.flagged);
+  }
+
+  //  ---- the roads (C90): asphalt, edge and centre lines, the barrier ------
+  if (scene.roads.length > 0) {
+    const asphalt = groundMat(noise(ROAD_LOOK.asphalt, 10, 1), -1);
+    (asphalt.map as T3.Texture).repeat.set(span / 4, span / 4);
+    const markings: T3.BufferGeometry[] = [];
+    /** A flat marking strip from (ax, az) to (bx, bz), `w` wide, at grade. */
+    const strip = (ax: number, az: number, bx: number, bz: number, w: number) => {
+      const len = Math.hypot(bx - ax, bz - az);
+      if (len < 1e-3) return;
+      const g = new THREE.PlaneGeometry(len, w);
+      g.rotateX(-Math.PI / 2);
+      g.rotateY(-Math.atan2(bz - az, bx - ax));
+      g.translate((ax + bx) / 2, 0.01, (az + bz) / 2);
+      markings.push(g);
+    };
+    const pavedPlane = (x0: number, x1: number, z0: number, z1: number) => {
+      const p = groundPlane(x1 - x0, z1 - z0, [(x0 + x1) / 2, (z0 + z1) / 2], asphalt);
+      //  The grain stays one size on every slab.
+      const g = p.geometry as T3.BufferGeometry;
+      const uv = g.getAttribute("uv") as T3.BufferAttribute;
+      for (let i = 0; i < uv.count; i++)
+        uv.setXY(i, (x0 + uv.getX(i) * (x1 - x0)) / span, (z0 + (1 - uv.getY(i)) * (z1 - z0)) / span);
+      uv.needsUpdate = true;
+      p.userData.tooltip = undefined;
+      return p;
+    };
+    for (const r of scene.roads) {
+      const h = r.width / 2;
+      const n = r.points.length;
+      for (let i = 0; i + 1 < n; i++) {
+        const a = r.points[i]!, b = r.points[i + 1]!;
+        const x0 = Math.min(a[0], b[0]) - h, x1 = Math.max(a[0], b[0]) + h;
+        const z0 = Math.min(a[2], b[2]) - h, z1 = Math.max(a[2], b[2]) + h;
+        const slab = pavedPlane(x0, x1, z0, z1);
+        slab.userData.tooltip = r.tooltip;
+        pickables.push(slab);
+        //  Markings stop a road-width short of a corner or a junction, and
+        //  run to a free end.
+        const dx = Math.sign(b[0] - a[0]), dz = Math.sign(b[2] - a[2]);
+        const startFree = i === 0 && r.freeStart, endFree = i + 2 === n && r.freeEnd;
+        const t0 = startFree ? 0.5 : h + 0.5, t1 = endFree ? 0.5 : h + 0.5;
+        const ax = a[0] + dx * t0, az = a[2] + dz * t0;
+        const bx = b[0] - dx * t1, bz = b[2] - dz * t1;
+        if ((bx - ax) * dx + (bz - az) * dz <= 0) continue;
+        const ox = -dz * (h - MARKING.inset), oz = dx * (h - MARKING.inset);
+        strip(ax + ox, az + oz, bx + ox, bz + oz, MARKING.width);
+        strip(ax - ox, az - oz, bx - ox, bz - oz, MARKING.width);
+        const len = Math.hypot(bx - ax, bz - az);
+        for (let s = 0; s + MARKING.dash <= len + 1e-9; s += MARKING.dash + MARKING.gap)
+          strip(ax + dx * s, az + dz * s, ax + dx * (s + MARKING.dash), az + dz * (s + MARKING.dash),
+                MARKING.width);
+      }
+      const mid = r.points[Math.floor((n - 1) / 2)]!, nxt = r.points[Math.floor((n - 1) / 2) + 1]!;
+      label(r.road, [(mid[0] + nxt[0]) / 2, 0.3, (mid[2] + nxt[2]) / 2], LABEL_PRIORITY.other,
+            r.disconnected);
+    }
+    if (markings.length) {
+      const merged = m.mergeGeometries(markings, false);
+      for (const g of markings) g.dispose();
+      if (merged) {
+        keep(merged);
+        world.add(new THREE.Mesh(merged, keep(new THREE.MeshLambertMaterial({
+          color: ROAD_LOOK.edge, polygonOffset: true, polygonOffsetFactor: -2,
+          polygonOffsetUnits: -2 }))));
+      }
+    }
+  }
+  //  A gate's barrier arm: a post and a red-and-white striped arm across
+  //  the road (drawing, at the point the engine published for the gate).
+  for (const b of scene.barriers) {
+    const [px, , pz] = b.post, [ex, ey, ez] = b.end;
+    const post = new THREE.Mesh(keep(new THREE.BoxGeometry(0.35, ey + 0.2, 0.35)),
+                                roleMat.get("steel")!);
+    post.position.set(px, (ey + 0.2) / 2, pz);
+    post.castShadow = true;
+    world.add(post);
+    const len = Math.hypot(ex - px, ez - pz);
+    const stripes = Math.max(2, Math.round(len / 0.6));
+    const red = std([ROAD_LOOK.barrierRed, 0.1, 0.5]);
+    const white = std([ROAD_LOOK.barrierWhite, 0.1, 0.5]);
+    for (let k = 0; k < stripes; k++) {
+      const t0 = k / stripes, t1 = (k + 1) / stripes;
+      const seg = new THREE.Mesh(keep(new THREE.BoxGeometry(len / stripes, 0.1, 0.1)),
+                                 k % 2 ? white : red);
+      seg.position.set(px + (ex - px) * (t0 + t1) / 2, ey, pz + (ez - pz) * (t0 + t1) / 2);
+      seg.rotation.y = -Math.atan2(ez - pz, ex - px);
+      seg.castShadow = true;
+      world.add(seg);
+    }
   }
 
   //  ---- zones: opacity + edge style + the word (the word on demand) ------

@@ -702,6 +702,10 @@ export interface LayoutItem {
   /** The case's reason this item ignites; absent when it is not one. */
   ignition?: string;
   release?: { source: string; reason: string; zones: LayoutZone[] };
+  /** A non-process item's own `source` and `reason` (DEV.md 4c C90): where
+   *  its size and place come from, and why it is there. */
+  source?: string;
+  reason?: string;
 }
 
 export interface LayoutArea {
@@ -745,6 +749,66 @@ export interface PlantLayout {
    *  engine's one rule (quoted in `rule`); absent on a result written
    *  before the engine published it.  The GUI computes no area. */
   plot?: LayoutPlot;
+  /** THE ROADS (DEV.md 4c C90): the network the case declared, as the engine
+   *  checked it; absent when the case declares no `roads {}`.  The GUI
+   *  measures nothing: lengths, the paved area and every access distance
+   *  are the engine's. */
+  roadNetwork?: LayoutRoadNetwork;
+  roads?: LayoutRoad[];
+  rackCrossings?: LayoutRackCrossing[];
+  access?: LayoutAccess[];
+}
+
+/** The road network as a whole: the headroom and access distance the case
+ *  declared, the zones it closes to traffic, the placed gates, and the
+ *  engine's totals -- centre-line length (m) and paved area (m2, the union
+ *  of the paved rectangles, counted once where roads meet). */
+export interface LayoutRoadNetwork {
+  headroom: number;
+  accessDistance: number;
+  noTraffic: number[];
+  entrances: string[];
+  roads: number;
+  components: number;
+  length: number;
+  pavedArea: number;
+  source: string;
+  reason: string;
+  accessSource: string;
+  accessReason: string;
+}
+
+/** One declared road: its centre line in plan (x, y) metres, every segment
+ *  along one plan axis; `fromEntrance` false when no gate reaches it. */
+export interface LayoutRoad {
+  road: string;
+  width: number;
+  length: number;
+  component: number;
+  fromEntrance: boolean;
+  reason: string;
+  centreline: [number, number][];
+}
+
+/** Where a road's paved surface passes under the pipe rack (plan
+ *  rectangle, m) and the rack's lowest tier above it. */
+export interface LayoutRackCrossing {
+  road: string;
+  xMin: number; xMax: number; yMin: number; yMax: number;
+  clearance: number;
+}
+
+/** Per placed item, the nearest road a gate reaches: the clear distance
+ *  (m) from its footprint to the paved edge and the nearest point on that
+ *  road's centre line; `road` empty when none.  `onDeck`: a weighbridge
+ *  whose deck the road crosses. */
+export interface LayoutAccess {
+  item: string;
+  road: string;
+  distance?: number;
+  roadX?: number;
+  roadY?: number;
+  onDeck?: boolean;
 }
 
 /** The plot the engine published: its rectangle (margin included, metres),

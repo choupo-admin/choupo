@@ -2183,8 +2183,17 @@ kind; the GUI draws the routes with a stylised flow and computes none.
 of the declared sector areas, the placed footprints and the routed pipes,
 grown by the case's `plot { margin; reason; }` -- absent, 0 m ANNOUNCED, a
 lower bound), with the footprints' own area and per-sector areas; the layout
-is checked BEFORE the economics so the economics can price that area.  NOT
-done: a pipe's pressure drop and cost (next slice), structures.
+is checked BEFORE the economics so the economics can price that area.
+**Since C90 the case DECLARES its roads and site buildings**: a road is a
+centre line and a width, REFUSED through a footprint or under a rack or a
+pipe lower than the declared `headroom`, ANNOUNCED when no `gate` reaches
+it, when it enters a zone the case closes to traffic, or when a building
+or a process item has no reached road within the declared `access`
+distance; its paved area is published and inside the plot; non-process
+kinds are drawn by kind (`gate` the entrance, `weighbridge` drivable), and
+the draft never draws a road.  The 3D scene is always DAYLIGHT; only the
+page chrome follows the theme.  NOT done: a pipe's pressure drop and cost
+(next slice), structures.
 Gate: `check_plant_layout`.  Record:
 [`docs/design/a-plant-layout-is-declared-and-checked.md`](docs/design/a-plant-layout-is-declared-and-checked.md).
 

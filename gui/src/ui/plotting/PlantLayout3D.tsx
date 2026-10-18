@@ -65,6 +65,12 @@ License
   then items, then the rest, then zone labels).  The camera opens FITTED on
   the plant; Fit returns to it, and Plan / Elevation are fitted the same way.
 
+  FULL SCREEN (DEV.md 4c C91).  A Full screen button takes the view and its
+  toolbar to the whole screen through the Fullscreen API, or, where the
+  browser does not grant it, to a fixed overlay over the window (Esc or the
+  button leaves either); case/layoutPanels.ts `fullscreenMode` decides which.
+  A fixed-height view is drawn filling while it is full screen.
+
   THE DRAWING ITSELF lives in layoutRenderer.ts (no React), since C81: the
   page "Export as page" saves draws with the same function, so this file is
   the toolbar and the lifecycle around it.
@@ -77,6 +83,7 @@ import {
   initialQuality, prefersReducedMotion, QUALITY_TITLE, rememberQuality,
   type LayoutScene, type RenderQuality, type ViewPreset,
 } from "../../case/plantLayout.js";
+import { fullscreenMode, type FullscreenMode } from "../../case/layoutPanels.js";
 import {
   FILL_MIN_HEIGHT, mountLayoutScene, type LayoutModules, type LayoutView, type Toggles,
 } from "./layoutRenderer.js";
@@ -111,10 +118,35 @@ async function loadLayoutModules(): Promise<LayoutModules> {
  *  view is placed in (the `?layout=` pop-out tab, DEV.md 4c C78) and follow
  *  it when the window is resized.  Either way three.js is imported only when
  *  a layout is first shown. */
-export function PlantLayout3D({ scene, height = 520 }: {
+export function PlantLayout3D({ scene, height: declaredHeight = 520 }: {
   scene: LayoutScene; height?: number | "fill";
 }) {
   const host = useRef<HTMLDivElement>(null);
+  const frame = useRef<HTMLDivElement>(null);
+  //  Full screen (C91): off, the browser's own, or the overlay fallback.
+  const [full, setFull] = useState<"off" | FullscreenMode>("off");
+  const height: number | "fill" = full === "off" ? declaredHeight : "fill";
+  useEffect(() => {
+    const onChange = () => {
+      if (!document.fullscreenElement) setFull((f) => (f === "api" ? "off" : f));
+    };
+    document.addEventListener("fullscreenchange", onChange);
+    return () => document.removeEventListener("fullscreenchange", onChange);
+  }, []);
+  useEffect(() => {
+    if (full !== "overlay") return;
+    const onKey = (e: KeyboardEvent) => { if (e.key === "Escape") setFull("off"); };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [full]);
+  const toggleFull = () => {
+    if (full === "api") { void document.exitFullscreen?.().catch(() => setFull("off")); return; }
+    if (full === "overlay") { setFull("off"); return; }
+    const el = frame.current;
+    if (fullscreenMode(document, el) === "api" && el) {
+      el.requestFullscreen().then(() => setFull("api"), () => setFull("overlay"));
+    } else setFull("overlay");
+  };
   const api = useRef<LayoutView | null>(null);
   const [error, setError] = useState<string | null>(null);
   const reduced = useMemo(() => prefersReducedMotion(), []);
@@ -197,23 +229,41 @@ export function PlantLayout3D({ scene, height = 520 }: {
         <Checkbox size="xs" label="Zone labels" checked={toggles.zoneLabels}
           disabled={!toggles.zones} onChange={toggle("zoneLabels")} />
       )}
+      <Button size="compact-xs" variant="default" onClick={toggleFull}
+        aria-pressed={full !== "off"}
+        title={full === "off"
+          ? "Show the view on the whole screen (Esc returns)"
+          : "Leave full screen (Esc)"}>
+        {full === "off" ? "Full screen" : "Exit full screen"}
+      </Button>
     </Group>
   );
+  //  The overlay fallback: the frame fixed over the window, on the page's
+  //  own surface (the chrome follows the theme; the scene is daylight).
+  const overlay: React.CSSProperties = full === "overlay"
+    ? { position: "fixed", inset: 0, zIndex: 400, paddingTop: 8,
+        background: "light-dark(var(--mantine-color-gray-0), var(--mantine-color-dark-7))" }
+    : {};
+  const filling: React.CSSProperties = full === "api"
+    ? { background: "light-dark(var(--mantine-color-gray-0), var(--mantine-color-dark-7))",
+        paddingTop: 8 }
+    : {};
   //  "fill": the box sizes the view; the canvas is absolutely placed inside
   //  it so the canvas itself can never push the box taller (a feedback loop
   //  with the ResizeObserver).
   if (height === "fill")
     return (
-      <div style={{ display: "flex", flexDirection: "column", height: "100%", width: "100%" }}>
+      <div ref={frame} style={{ display: "flex", flexDirection: "column", height: "100%",
+        width: "100%", ...filling, ...overlay }}>
         <div style={{ padding: "0 16px" }}>{toolbar}</div>
         <div ref={host} style={{ position: "relative", width: "100%", flex: "1 1 auto",
           minHeight: FILL_MIN_HEIGHT, overflow: "hidden" }} />
       </div>
     );
   return (
-    <>
+    <div ref={frame}>
       {toolbar}
       <div ref={host} style={{ position: "relative", width: "100%", height }} />
-    </>
+    </div>
   );
 }

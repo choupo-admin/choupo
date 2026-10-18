@@ -1434,7 +1434,11 @@ auto_generate() {
         #  sector (`plotSector:<S>`) the same two and its `from` WORD
         #  (declaredArea | footprintEnvelope); the plot's corners and its
         #  margin are what the area is computed from, and the area holds
-        #  them.  NOT pinned:
+        #  them.  THE ROADS (DEV.md 4c C90) ride it the same way: each
+        #  `road:<name>` line's `length`, the `roadNetwork` line's `length`
+        #  and `pavedArea`, and each `access:<item>` line's `distance` (the
+        #  clear distance to the nearest road a gate reaches); the centre
+        #  lines are what those are computed from.  NOT pinned:
         #  the source/reason sentences and the zone and wind declarations,
         #  which are the case's own words echoed -- what they DECIDE is
         #  pinned through the findings and the count.
@@ -1455,7 +1459,7 @@ auto_generate() {
                         s = substr(line, RSTART, RLENGTH); sub(/^"[^"]*": "/, "", s); sub(/"$/, "", s)
                         printf "layout %-20s %-16s %-18s %s\n", id, W[i], s, "exact"
                     }
-                nn = split("x y z dx dy dz value limit placed unplaced internal findings length pipes notRouted pipeLength plotArea footprintArea", N, " ")
+                nn = split("x y z dx dy dz value limit placed unplaced internal findings length pipes notRouted pipeLength plotArea footprintArea pavedArea distance", N, " ")
                 for (i = 1; i <= nn; i++)
                     if (match(line, "\"" N[i] "\": *-?[0-9][0-9.eE+-]*")) {
                         s = substr(line, RSTART, RLENGTH); sub(/^"[^"]*": */, "", s)

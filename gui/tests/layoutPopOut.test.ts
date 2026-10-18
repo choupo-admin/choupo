@@ -160,7 +160,8 @@ describe("the stable key and the ?layout= route", () => {
     expect(tab).toContain('import { layoutScene } from "../case/plantLayout.js";');
     expect(tab).toContain('import { PlantLayout3D } from "./plotting/PlantLayout3D.js";');
     expect(tab).toContain('<PlantLayout3D scene={scene} height="fill" />');
-    expect(tab).toContain("<PlantLayoutTables layout={stash.layout} />");
+    //  C91: the tables in their bottom panel, each a section the reader folds.
+    expect(tab).toContain("<PlantLayoutTables layout={stash.layout} sectioned />");
   });
 });
 

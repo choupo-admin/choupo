@@ -1004,9 +1004,12 @@ items
       footprint { length 8 m; width 4 m; height 4 m; }
       release { source "..."; reason "...";
                 zones ( { zone 2; radius 7.5 m; height 6 m; } ); } }
-    { nonProcess "controlRoom"; kind building; x -30 m; y -40 m; z 0 m;
+    { nonProcess "controlRoom"; kind controlRoom; x -30 m; y -40 m; z 0 m;
       orientation alongX; footprint { length 15 m; width 10 m; height 4 m; }
+      source "..."; reason "...";            // optional, both or neither
       ignition "why it ignites"; }
+    { nonProcess "gate"; kind gate; x -19 m; y -63 m; z 0 m; orientation alongX;
+      footprint { length 4 m; width 3 m; height 3 m; } source "..."; reason "..."; }
 );
 areas { <SECTOR> { xMin 0 m; xMax 40 m; yMin -10 m; yMax 10 m; } }   // sectored cases only
 separation ( { source "..."; reason "..."; measure edgeToEdge;
@@ -1048,7 +1051,7 @@ plot { margin 10 m; reason "..."; }   // optional; absent: 0 m, announced
   envelope of every declared sector area, every placed footprint and every
   routed pipe, grown on every side by your margin:
   ```
-  plot { margin 10 m; reason "perimeter road, fence and access"; }
+  plot { margin 5 m; reason "the fence and a clear strip inside it"; }
   ```
   Absent, the margin is 0 m and that is ANNOUNCED (the area is then a lower
   bound).  Published beside it: the footprints' own plan area and its share
@@ -1056,7 +1059,38 @@ plot { margin 10 m; reason "..."; }   // optional; absent: 0 m, announced
   footprints), and the union of the declared sector areas -- two areas that
   claim the same ground are announced.  The economics prices this plot area
   as land when it declares `land { price; ... }`.
-* Worked cases: `tutorials/plant/ammonia02_full_plant` (default rack),
+* SITE BUILDINGS AND ROADS (C90).  A non-process item's `kind` is your word;
+  the 3D view draws `controlRoom`, `warehouse`, `canteen`, `gate` (with a
+  barrier across its road) and `weighbridge` (a deck with ramps) by kind,
+  any other word as a box.  `gate` is the road network's ENTRANCE and a
+  `weighbridge` is DRIVABLE (a road runs over its deck; declare one only
+  where the case says trucks are weighed).  Roads are declared:
+  ```
+  roads
+  {
+      source "..."; reason "...";
+      headroom 5 m;                                  // vehicle clearance
+      access { distance 20 m; source "..."; reason "..."; }
+      noTraffic ( 1 );                               // optional: zones closed to vehicles
+      network
+      (
+          { road "entrance"; width 7 m; reason "...";
+            waypoints ( { x -12 m; y -66 m; } { x -12 m; y -31 m; } ); }
+      );
+  }
+  ```
+  Centre lines at grade, each segment along one plan axis.  REFUSED: a road
+  through a footprint, under a rack or a pipe lower than the headroom, a
+  diagonal segment, a waypoint with `z`, a road named twice, no `access`.
+  ANNOUNCED: a road in a closed zone, a road no gate reaches, no gate, a gate
+  or a site building no road serves within the access distance, a process
+  item beyond it (fire and maintenance access), a weighbridge no road
+  crosses.  Published: each road's length, the network's length and paved
+  area (counted once where roads meet), each crossing under the rack, and
+  per item the nearest road a gate reaches; the roads are inside the plot
+  envelope, so the land cost sees them.  The draft tool never draws roads.
+* Worked cases: `tutorials/plant/ammonia02_full_plant` (default rack, roads,
+  gate, warehouse, canteen),
   `greenAmmoniaPEQ_baseCase` and `aceticAcid02_plant` (declared racks).  The
   GUI draws the result in Reports, "Plant layout (3D)", with the pipe
   register.  Record:

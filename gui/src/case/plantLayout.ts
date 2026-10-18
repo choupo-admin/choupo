@@ -63,6 +63,16 @@ License
   mass flow (`particleSpeed`, said in the legend).  No route, length or
   junction position is computed here.
 
+  THE ROADS (DEV.md 4c C90).  The engine checks the roads the case declared
+  and publishes each centre line, its length, the paved area and, per item,
+  the nearest road a gate reaches; this module carries the centre lines into
+  three.js coordinates and works out only what is DRAWING: which end of a
+  road is free (so its markings stop at a junction), where a gate's barrier
+  arm crosses the road (at the point the engine published, across the road's
+  width), and which rack portals give way to a road passing under the rack
+  (portals are a drawing convention, RACK_PORTAL_SPACING).  No length, area
+  or distance is computed here.
+
   LEGIBILITY (Vítor, on the live site, 2026-10-17).  A label carries the item
   id ONLY; everything else an item or a pipe has to say is its hover TOOLTIP.
   Labels that collide on screen are DECLUTTERED by priority -- findings over
@@ -71,7 +81,9 @@ License
   presets fitted the same way.
 \*---------------------------------------------------------------------------*/
 
-import type { PlantLayout, LayoutItem, LayoutPipe } from "../adapters/SolverAdapter.js";
+import type {
+  PlantLayout, LayoutAccess, LayoutItem, LayoutPipe, LayoutRoad,
+} from "../adapters/SolverAdapter.js";
 
 export type Vec3 = [number, number, number];
 
@@ -174,8 +186,38 @@ export interface SceneRack {
   label: string;
 }
 
+/** One declared road, in three.js coordinates at grade (DEV.md 4c C90). */
+export interface SceneRoad {
+  id: string;
+  road: string;
+  width: number;
+  /** The engine's centre line, mapped (Y = 0). */
+  points: Vec3[];
+  /** Whether each END of the centre line is free -- not on another road --
+   *  so the markings run to it (a drawing decision only). */
+  freeStart: boolean;
+  freeEnd: boolean;
+  /** No gate reaches it (the engine said so in a finding). */
+  disconnected: boolean;
+  /** The engine's length, carried. */
+  length: number;
+  tooltip: string[];
+}
+
+/** A gate's barrier arm: from its post beside the road, across the road,
+ *  at the point on the centre line the engine published for the gate.
+ *  Drawing, said so: the engine places no barrier. */
+export interface SceneBarrier {
+  gate: string;
+  post: Vec3;
+  end: Vec3;
+}
+
 export interface LayoutScene {
   solids: SceneSolid[];
+  /** THE ROADS (DEV.md 4c C90); empty when the case declares none. */
+  roads: SceneRoad[];
+  barriers: SceneBarrier[];
   zones: SceneZone[];
   areas: SceneArea[];
   /** THE PLOT (DEV.md 4c C82): the rectangle the engine published, outlined
@@ -189,9 +231,9 @@ export interface LayoutScene {
   /** Bounding box of everything drawn, for the ground grid. */
   min: Vec3;
   max: Vec3;
-  /** Bounding box the camera FITS: the placed process items, the pipes and
-   *  the junctions (a building or a tank farm far off still lies inside it
-   *  only when the case placed it as process equipment). */
+  /** Bounding box the camera FITS: the placed process items, the pipes,
+   *  the junctions and the declared roads (a building far off still lies
+   *  inside it only when a road or the process reaches it). */
   fitMin: Vec3;
   fitMax: Vec3;
 }
@@ -364,12 +406,18 @@ export function toThree(x: number, y: number, z: number): Vec3 {
 }
 
 const FINDING_KINDS_THAT_FLAG = new Set(
-  ["separation", "outsideArea", "ignitionInZone", "ignitionDownwind"]);
+  ["separation", "outsideArea", "ignitionInZone", "ignitionDownwind",
+   //  C90: an item the road network does not serve.
+   "noRoadAccess", "buildingNotReached", "weighbridgeOffRoad", "gateOffRoad"]);
+
+/** Findings that name a ROAD (its `a`), told in the road's tooltip. */
+const ROAD_FINDINGS = new Set(["roadInZone", "roadDisconnected"]);
 
 /** The item ids a finding names.  `b` of a zone finding is
  *  `<release item>#zone<n>`; of an area finding a SECTOR (not an item). */
 function namedItems(kind: string, a: string, b: string): string[] {
-  if (kind === "outsideArea") return [a];
+  if (kind === "outsideArea" || kind === "noRoadAccess" || kind === "buildingNotReached"
+      || kind === "weighbridgeOffRoad" || kind === "gateOffRoad") return [a];
   if (kind === "ignitionInZone") return [a, b.split("#zone")[0] ?? b];
   return [a, b];
 }
@@ -379,7 +427,8 @@ function fmt(v: number): string {
   return Math.abs(v) >= 100 ? v.toFixed(0) : v.toFixed(2);
 }
 
-function solidOf(it: LayoutItem, flagged: boolean, findings: string[]): SceneSolid {
+function solidOf(it: LayoutItem, flagged: boolean, findings: string[],
+                 access?: LayoutAccess): SceneSolid {
   //  three.js extents: X = plan dx, Y = dz (up), Z = plan dy.
   const size: Vec3 = [it.dx, it.dz, it.dy];
   const center = toThree(it.x, it.y, it.z + 0.5 * it.dz);
@@ -399,6 +448,13 @@ function solidOf(it: LayoutItem, flagged: boolean, findings: string[]): SceneSol
   if (it.release)
     tooltip.push(`release source (zones ${it.release.zones.map((z) => z.zone).join(", ") || "none"})`);
   if (it.ignition) tooltip.push(`ignition source: ${it.ignition}`);
+  if (it.reason) tooltip.push(`why: ${it.reason}`);
+  if (it.source) tooltip.push(`source: ${it.source}`);
+  if (access)
+    tooltip.push(access.road
+      ? (access.onDeck ? `on road ${access.road} (it drives over the deck)`
+        : `nearest road a gate reaches: ${access.road}, ${fmt(access.distance ?? NaN)} m`)
+      : "no road a gate reaches");
   for (const f of findings) tooltip.push(`FINDING: ${f}`);
   return {
     id: it.id, kind: it.kind, sector: it.sector,
@@ -433,8 +489,9 @@ export function layoutScene(layout: PlantLayout | undefined): LayoutScene | null
         messagesOf.set(id, [...(messagesOf.get(id) ?? []), f.message]);
       }
 
+  const accessOf = new Map((layout.access ?? []).map((a) => [a.item, a]));
   const solids = layout.items.map((it) =>
-    solidOf(it, flaggedIds.has(it.id), messagesOf.get(it.id) ?? []));
+    solidOf(it, flaggedIds.has(it.id), messagesOf.get(it.id) ?? [], accessOf.get(it.id)));
   const byId = new Map(layout.items.map((it) => [it.id, it]));
 
   const zones: SceneZone[] = [];
@@ -507,9 +564,7 @@ export function layoutScene(layout: PlantLayout | undefined): LayoutScene | null
   if (k && pipes.length > 0) {
     const lanes = (layout.pipes ?? []).map((p) => p.lane).filter((l) => l >= 0);
     const nTiers = lanes.length ? Math.floor(Math.max(...lanes) / k.lanesPerTier) + 1 : 1;
-    const portals: number[] = [];
-    for (let x = k.xStart; x <= k.xEnd + 1e-9; x += RACK_PORTAL_SPACING) portals.push(x);
-    if (portals[portals.length - 1]! < k.xEnd - 1e-9) portals.push(k.xEnd);
+    const portals = rackPortals(k.xStart, k.xEnd, layout.rackCrossings ?? []);
     rack = {
       x0: k.xStart, x1: k.xEnd, zc: -k.y,
       halfWidth: 0.5 * k.lanesPerTier * k.laneSpacing,
@@ -521,6 +576,15 @@ export function layoutScene(layout: PlantLayout | undefined): LayoutScene | null
     grow([rack.x1, 0, rack.zc + rack.halfWidth]);
   }
   for (const p of pipes) for (const q of p.points) grow(q);
+
+  //  The roads (C90), as the engine checked them.
+  const roads = roadsOf(layout);
+  for (const r of roads)
+    for (const q of r.points) {
+      grow([q[0] - r.width / 2, 0, q[2] - r.width / 2]);
+      grow([q[0] + r.width / 2, 0, q[2] + r.width / 2]);
+    }
+  const barriers = barriersOf(layout);
 
   //  What the camera fits: the plant, not the ground around it.
   const fitMin: Vec3 = [Infinity, Infinity, Infinity];
@@ -538,6 +602,14 @@ export function layoutScene(layout: PlantLayout | undefined): LayoutScene | null
   }
   for (const p of pipes) for (const q of p.points) fit(q);
   for (const j of junctions) fit(j.at);
+  //  The roads (C90) join the site to the plant: a site whose roads the case
+  //  declared is framed with them, so the gate and the buildings they serve
+  //  are in the first view.
+  for (const r of roads)
+    for (const q of r.points) {
+      fit([q[0] - r.width / 2, 0, q[2] - r.width / 2]);
+      fit([q[0] + r.width / 2, 0, q[2] + r.width / 2]);
+    }
   fitMin[1] = Math.min(fitMin[1]!, 0);
 
   //  The wind arrow: the CASE's angles, drawn upwind of the plant pointing
@@ -561,8 +633,98 @@ export function layoutScene(layout: PlantLayout | undefined): LayoutScene | null
     grow(wind.tail); grow(wind.head);
   }
 
-  return { solids, zones, areas, plot, links, wind, pipes, junctions, rack, min, max,
-           fitMin, fitMax };
+  return { solids, roads, barriers, zones, areas, plot, links, wind, pipes, junctions, rack,
+           min, max, fitMin, fitMax };
+}
+
+//  ---- the roads: drawing bookkeeping only (DEV.md 4c C90) -----------------
+
+/** The plan x of each drawn rack portal: every RACK_PORTAL_SPACING from the
+ *  rack's west end, and its east end -- except where a road the engine says
+ *  passes under the rack would stand on a portal; there the portals move to
+ *  either side of the road (a drawing convention, like the spacing). */
+export function rackPortals(xStart: number, xEnd: number,
+                            crossings: { xMin: number; xMax: number }[]): number[] {
+  const clear = 0.6;    // portal post clear of the paved edge (m), drawing
+  const blocked = (x: number) =>
+    crossings.some((c) => x > c.xMin - clear + 1e-9 && x < c.xMax + clear - 1e-9);
+  const out: number[] = [];
+  for (let x = xStart; x <= xEnd + 1e-9; x += RACK_PORTAL_SPACING) if (!blocked(x)) out.push(x);
+  if (out.length === 0 || out[out.length - 1]! < xEnd - 1e-9) if (!blocked(xEnd)) out.push(xEnd);
+  for (const c of crossings)
+    for (const x of [c.xMin - clear, c.xMax + clear])
+      if (x >= xStart - 1e-9 && x <= xEnd + 1e-9 && !blocked(x)) out.push(x);
+  return [...new Set(out.map((x) => Math.round(x * 1e6) / 1e6))].sort((a, b) => a - b);
+}
+
+/** Whether plan point (x, y) lies on a road's centre line (any segment). */
+function onCentreline(x: number, y: number, r: LayoutRoad): boolean {
+  const c = r.centreline;
+  for (let i = 0; i + 1 < c.length; i++) {
+    const [ax, ay] = c[i]!, [bx, by] = c[i + 1]!;
+    if (x >= Math.min(ax, bx) - 1e-6 && x <= Math.max(ax, bx) + 1e-6
+        && y >= Math.min(ay, by) - 1e-6 && y <= Math.max(ay, by) + 1e-6) return true;
+  }
+  return false;
+}
+
+function roadsOf(layout: PlantLayout): SceneRoad[] {
+  const roads = layout.roads ?? [];
+  const told = new Map<string, string[]>();
+  for (const f of layout.findings)
+    if (ROAD_FINDINGS.has(f.kind)) told.set(f.a, [...(told.get(f.a) ?? []), f.message]);
+  return roads.map((r) => {
+    const free = (x: number, y: number) => !roads.some((o) => o !== r && onCentreline(x, y, o));
+    const [sx, sy] = r.centreline[0]!;
+    const [ex, ey] = r.centreline[r.centreline.length - 1]!;
+    const msgs = told.get(r.road) ?? [];
+    return {
+      id: `road:${r.road}`, road: r.road, width: r.width,
+      points: r.centreline.map(([x, y]) => toThree(x, y, 0)),
+      freeStart: free(sx, sy), freeEnd: free(ex, ey),
+      disconnected: !r.fromEntrance, length: r.length,
+      tooltip: [`road ${r.road}`, `${fmt(r.width)} m wide · ${fmt(r.length)} m of centre line`
+        + " (the engine's length)", ...(r.reason ? [`why: ${r.reason}`] : []),
+        ...(r.fromEntrance ? [] : ["no gate reaches it"]),
+        ...msgs.map((m) => `FINDING: ${m}`)],
+    };
+  });
+}
+
+/** Each gate's barrier arm: at the point of the road the engine published
+ *  for the gate, across that road's width, its post on the guardhouse's
+ *  side.  Absent when the engine published no road for the gate. */
+function barriersOf(layout: PlantLayout): SceneBarrier[] {
+  const out: SceneBarrier[] = [];
+  const roads = new Map((layout.roads ?? []).map((r) => [r.road, r]));
+  for (const it of layout.items) {
+    if (!it.nonProcess || it.kind !== "gate") continue;
+    const a = (layout.access ?? []).find((q) => q.item === it.id);
+    const r = a?.road ? roads.get(a.road) : undefined;
+    if (!a || !r || a.roadX === undefined || a.roadY === undefined) continue;
+    //  The segment the published point lies on gives the road's direction.
+    let dx = 0, dy = 0;
+    for (let i = 0; i + 1 < r.centreline.length; i++) {
+      const [ax, ay] = r.centreline[i]!, [bx, by] = r.centreline[i + 1]!;
+      if (a.roadX >= Math.min(ax, bx) - 1e-6 && a.roadX <= Math.max(ax, bx) + 1e-6
+          && a.roadY >= Math.min(ay, by) - 1e-6 && a.roadY <= Math.max(ay, by) + 1e-6) {
+        const L = Math.hypot(bx - ax, by - ay) || 1;
+        dx = (bx - ax) / L; dy = (by - ay) / L;
+        break;
+      }
+    }
+    if (dx === 0 && dy === 0) continue;
+    let nx = -dy, ny = dx;                         // across the road
+    if ((it.x - a.roadX) * nx + (it.y - a.roadY) * ny < 0) { nx = -nx; ny = -ny; }
+    const h = r.width / 2;
+    const ARM_HEIGHT = 1.0;                        // m, drawing
+    out.push({
+      gate: it.id,
+      post: toThree(a.roadX + nx * (h + 0.4), a.roadY + ny * (h + 0.4), ARM_HEIGHT),
+      end: toThree(a.roadX - nx * (h - 0.4), a.roadY - ny * (h - 0.4), ARM_HEIGHT),
+    });
+  }
+  return out;
 }
 
 /** The point at arc length `s` along a polyline, wrapping round its total

@@ -22,7 +22,11 @@
         never stands in for the envelope;
       * a kind with no entry, and a non-process item, keep the plain drawing;
       * ladders and platforms appear by HEIGHT, never by name;
-      * no part carries a non-finite or non-positive dimension. */
+      * no part carries a non-finite or non-positive dimension;
+      * (C90) a SITE BUILDING -- a non-process item of a kind the case
+        names controlRoom, warehouse, canteen, gate or weighbridge -- is
+        drawn by that word, its body (walls, roof, deck) filling the box
+        the case declared exactly; any other word keeps the plain box. */
 
 import { readdirSync, readFileSync } from "node:fs";
 import { join } from "node:path";
@@ -30,7 +34,7 @@ import { join } from "node:path";
 import { describe, expect, it } from "vitest";
 
 import {
-  ACCESS_FROM, boundsOf, EQUIPMENT_MODELS, equipmentDrawing, type Part,
+  ACCESS_FROM, boundsOf, EQUIPMENT_MODELS, equipmentDrawing, SITE_MODELS, type Part,
 } from "../src/case/equipmentModel.js";
 import {
   defaultQuality, layoutScene, type SceneSolid, type Vec3,
@@ -149,13 +153,57 @@ describe("the body is the engine's envelope; decoration never stands in for it",
     for (const [, s] of [...published, ...boxes])
       for (const p of equipmentDrawing(s).parts) {
         const dims = p.prim === "box" ? [...p.size] : p.prim === "cylinder"
-          ? [p.length, Math.max(p.rStart, p.rEnd)] : p.prim === "head" ? [p.r, p.depth] : [p.R, p.r];
+          ? [p.length, Math.max(p.rStart, p.rEnd)] : p.prim === "head" ? [p.r, p.depth]
+          : p.prim === "prism" ? [p.length, p.width, p.rise] : [p.R, p.r];
         for (const v of dims) {
           expect(Number.isFinite(v)).toBe(true);
           expect(v).toBeGreaterThan(0);
         }
         for (const v of p.at) expect(Number.isFinite(v)).toBe(true);
       }
+  });
+});
+
+describe("the site buildings are drawn by the case's word (C90)", () => {
+  const sites: [string, Solid][] = [
+    ["control room", declared("controlRoom", 15, 4, 10, true)],
+    ["warehouse along x", declared("warehouse", 20, 7, 12, true)],
+    ["warehouse along z", declared("warehouse", 12, 7, 20, true)],
+    ["canteen", declared("canteen", 12, 4, 8, true)],
+    ["gate", declared("gate", 4, 3, 3, true)],
+    ["weighbridge", declared("weighbridge", 18, 0.4, 3.5, true)],
+  ];
+  for (const [what, s] of sites)
+    it(`${what}: its body fills the declared box exactly`, () => {
+      const d = equipmentDrawing(s);
+      expect(d.model).toBe(s.kind);
+      expect(d.describes).toMatch(/declared box/);
+      const [lo, hi] = boundsOf(body(d.parts));
+      close(lo, envelope(s)[0]);
+      close(hi, envelope(s)[1]);
+      for (const p of d.parts) for (const v of p.at) expect(Number.isFinite(v)).toBe(true);
+    });
+
+  it("a warehouse's ridge runs along its longer plan side", () => {
+    for (const s of [declared("warehouse", 20, 7, 12, true), declared("warehouse", 12, 7, 20, true)]) {
+      const roof = equipmentDrawing(s).parts.find((p) => p.prim === "prism");
+      expect(roof?.prim).toBe("prism");
+      if (roof?.prim === "prism") expect(roof.axis).toBe(s.size[0] >= s.size[2] ? "x" : "z");
+    }
+  });
+
+  it("a weighbridge's ramps stand beyond its deck, as decoration", () => {
+    const s = declared("weighbridge", 18, 0.4, 3.5, true);
+    const ramps = equipmentDrawing(s).parts.filter((p) => p.decoration && p.role === "concrete");
+    expect(ramps.length).toBeGreaterThan(0);
+    const [lo, hi] = boundsOf(ramps);
+    expect(lo[0]).toBeLessThan(-9);
+    expect(hi[0]).toBeGreaterThan(9);
+  });
+
+  it("the words are site words only: a process item of the same kind keeps its own dispatch", () => {
+    for (const k of Object.keys(SITE_MODELS)) expect(EQUIPMENT_MODELS[k]).toBeUndefined();
+    expect(equipmentDrawing(declared("warehouse", 20, 7, 12, false)).model).toBe("plain");
   });
 });
 

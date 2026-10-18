@@ -74,6 +74,17 @@ License
   therefore looks like one, and so would any other tall vessel, which is
   true of plants.
 
+  SITE BUILDINGS (DEV.md 4c C90).  A non-process item's kind is the CASE's
+  word, and a few words name a building a plant site has: `controlRoom`,
+  `warehouse` (a portal shed with a pitched roof), `canteen` (windows all
+  round and a kitchen vent), `gate` (a guardhouse; its barrier arm across
+  the road is the renderer's, at the point the engine published), and
+  `weighbridge` (a truck scale: a deck with its ramps).  `SITE_MODELS` holds
+  one entry per word, the same posture as the equipment: the BODY (walls,
+  roof, deck) fills the box the case declared and nothing else; windows,
+  doors, a roof overhang, ramps and vents are decoration.  Any other word --
+  `building`, `substation`, a flare -- keeps the plain box.
+
   COORDINATES.  Parts are in three.js axes (Y up), relative to the CENTRE of
   the item's envelope -- the same `center`/`size` the scene carries
   (case/plantLayout.ts) -- so the renderer only translates them.
@@ -88,7 +99,9 @@ export type Axis = "x" | "y" | "z";
  *  engine named in a finding has every NON-decoration part painted the
  *  finding colour, whatever its role. */
 export type PartRole =
-  | "body" | "steel" | "grating" | "safety" | "machine" | "motor" | "concrete";
+  | "body" | "steel" | "grating" | "safety" | "machine" | "motor" | "concrete"
+  //  C90, the site buildings: glazing, and a pitched roof (`prism` parts only).
+  | "glass" | "roof";
 
 interface PartBase {
   role: PartRole;
@@ -139,7 +152,18 @@ export interface RingPart extends PartBase {
   arc: [number, number];
 }
 
-export type Part = CylinderPart | HeadPart | BoxPart | RingPart;
+/** A triangular prism lying along a plan axis -- a pitched roof: its flat
+ *  base `width` across and `length` long, centred at `at` (the base's
+ *  centre), its ridge `rise` above the base (C90). */
+export interface PrismPart extends PartBase {
+  prim: "prism";
+  axis: "x" | "z";
+  length: number;
+  width: number;
+  rise: number;
+}
+
+export type Part = CylinderPart | HeadPart | BoxPart | RingPart | PrismPart;
 
 /** One item's drawing: its parts, and which entry drew it (said in the
  *  hover tooltip, so a reader can tell a kind drawing from the fallback). */
@@ -561,6 +585,147 @@ const vessel: Recipe = (m) => {
   return verticalVessel(verticalOf(m)!, "vessel");
 };
 
+//  ---- the site buildings (C90) --------------------------------------------
+
+/** Window band and door proportions of a site building (drawing). */
+export const WINDOW_SILL = 1.0;     // m above the floor
+export const WINDOW_HEIGHT = 1.2;   // m
+export const DOOR_HEIGHT = 2.2;     // m
+
+interface Plan { dx: number; dh: number; dz: number; a: Axis; long: number; wide: number }
+const planOf = (m: ModelInput): Plan | null => {
+  if (m.shape !== "box") return null;
+  const [dx, dh, dz] = m.size;
+  const a: Axis = dx >= dz ? "x" : "z";
+  return { dx, dh, dz, a, long: Math.max(dx, dz), wide: Math.min(dx, dz) };
+};
+
+/** Panes on the four faces of a box of plan (dx, dz), from y0 to y0 + h:
+ *  `n` per metre of face, each 60 % of its share wide, standing 2 cm proud
+ *  (decoration). */
+function windowBand(dx: number, dz: number, y0: number, h: number): Part[] {
+  const parts: Part[] = [];
+  const proud = 0.02, t = 0.04;
+  for (const [len, across, alongX] of [[dx, dz, true], [dz, dx, false]] as const) {
+    const n = Math.max(1, Math.floor(len / 2.5));
+    const share = len / n;
+    for (let k = 0; k < n; k++) {
+      const s = -len / 2 + share * (k + 0.5);
+      for (const side of [-1, 1]) {
+        const w = across / 2 + proud;
+        parts.push(box("glass", true, alongX ? [s, y0 + h / 2, side * w] : [side * w, y0 + h / 2, s],
+          alongX ? [0.6 * share, h, t] : [t, h, 0.6 * share]));
+      }
+    }
+  }
+  return parts;
+}
+
+/** A flat-roofed building: walls to the declared height (body), a roof slab
+ *  overhanging 0.3 m (decoration), a window band and a door. */
+function flatBuilding(p: Plan, overhang: number, windows: boolean): Part[] {
+  const { dx, dh, dz } = p;
+  const slab = Math.min(0.25, 0.08 * dh);
+  const parts: Part[] = [
+    box("body", false, [0, 0, 0], [dx, dh, dz]),
+    box("concrete", true, [0, dh / 2 - slab / 2 + 0.05, 0], [dx + 2 * overhang, slab, dz + 2 * overhang]),
+  ];
+  const sill = Math.min(WINDOW_SILL, 0.3 * dh), wh = Math.min(WINDOW_HEIGHT, 0.4 * dh);
+  if (windows) parts.push(...windowBand(dx, dz, -dh / 2 + sill, wh));
+  //  A door on the south face (three.js +Z is plan south), off centre.
+  const door = Math.min(DOOR_HEIGHT, 0.7 * dh);
+  parts.push(box("steel", true, [0.3 * dx * 0.5, -dh / 2 + door / 2, dz / 2 + 0.03], [1.0, door, 0.04]));
+  return parts;
+}
+
+const controlRoom: Recipe = (m) => {
+  const p = planOf(m);
+  if (!p) return null;
+  return { parts: flatBuilding(p, 0.3, true), model: "controlRoom",
+           describes: "control room: walls, roof slab, window band, drawn inside the declared box" };
+};
+
+const canteen: Recipe = (m) => {
+  const p = planOf(m);
+  if (!p) return null;
+  const parts = flatBuilding(p, 0.6, true);
+  //  The kitchen's extract vent on the roof (decoration).
+  parts.push(cyl("steel", true, [0.3 * p.dx, p.dh / 2 + 0.6, -0.25 * p.dz], "y", 1.2, 0.25));
+  return { parts, model: "canteen",
+           describes: "canteen: windows all round, roof overhang, kitchen vent, drawn inside the declared box" };
+};
+
+/** A guardhouse: a small glazed hut with a wide roof.  Its barrier arm is
+ *  drawn by the renderer across the road (SceneBarrier). */
+const gate: Recipe = (m) => {
+  const p = planOf(m);
+  if (!p) return null;
+  return { parts: flatBuilding(p, 0.5, true), model: "gate",
+           describes: "guardhouse (its barrier arm across the road is drawing), inside the declared box" };
+};
+
+/** A portal-frame shed: walls to the eaves and a pitched roof whose ridge
+ *  runs along the longer plan side, the two together filling the declared
+ *  box (body); roller doors on the long faces (decoration). */
+const warehouse: Recipe = (m) => {
+  const p = planOf(m);
+  if (!p) return null;
+  const { dx, dh, dz, a, long, wide } = p;
+  const rise = Math.min(0.3 * dh, 0.25 * wide);
+  const eave = dh - rise;
+  const parts: Part[] = [
+    box("body", false, [0, -dh / 2 + eave / 2, 0], [dx, eave, dz]),
+    { prim: "prism", role: "roof", decoration: false, at: [0, -dh / 2 + eave, 0],
+      axis: a === "x" ? "x" : "z", length: long, width: wide, rise },
+  ];
+  const doorW = Math.min(4, 0.25 * long), doorH = Math.min(4.5, 0.8 * eave);
+  for (const s of [-0.25 * long, 0.25 * long])
+    for (const side of [-1, 1])
+      parts.push(box("steel", true,
+        a === "x" ? [s, -dh / 2 + doorH / 2, side * (dz / 2 + 0.03)] : [side * (dx / 2 + 0.03), -dh / 2 + doorH / 2, s],
+        a === "x" ? [doorW, doorH, 0.05] : [0.05, doorH, doorW]));
+  return { parts, model: "warehouse",
+           describes: "warehouse: portal shed, pitched roof, roller doors, drawn inside the declared box" };
+};
+
+/** A truck scale: a concrete pit with a steel deck (body, the declared box)
+ *  and a ramp at each end of the deck's long side (decoration, beyond the
+ *  box -- a ramp is where the road meets the deck). */
+const weighbridge: Recipe = (m) => {
+  const p = planOf(m);
+  if (!p) return null;
+  const { dx, dh, dz, a, long, wide } = p;
+  const plate = Math.min(0.05, 0.3 * dh);
+  const parts: Part[] = [
+    box("body", false, [0, -plate / 2, 0], [dx, dh - plate, dz]),
+    box("steel", false, [0, dh / 2 - plate / 2, 0], [dx, plate, dz]),
+  ];
+  const rampL = Math.max(1.5, 6 * dh);
+  for (const side of [-1, 1]) {
+    //  A ramp: a slab tilted by its rise over its run (a box turned about
+    //  the deck's cross axis is not a primitive here, so it is stepped).
+    const steps = 4;
+    for (let k = 0; k < steps; k++) {
+      const h = dh * (k + 1) / steps, run = rampL / steps;
+      const s = side * (long / 2 + rampL - run * (k + 0.5));
+      parts.push(box("concrete", true, along(a, s, -dh / 2 + h / 2, 0),
+        a === "x" ? [run, h, wide] : [wide, h, run]));
+    }
+  }
+  return { parts, model: "weighbridge",
+           describes: "weighbridge: steel deck on its pit (the declared box), ramps at both ends (drawing)" };
+};
+
+/** ONE entry per SITE BUILDING word a case may give a non-process item.
+ *  Any other word keeps the plain box. */
+export const SITE_MODELS: Readonly<Record<string, Recipe>> = {
+  controlRoom,
+  warehouse,
+  canteen,
+  gate,
+  weighbridge,
+};
+
 /** ONE entry per equipment kind, keyed on the registered word the sizers
  *  stamp (src/postProcessing/sizing, `equipmentType`).  A `vessel` is drawn
  *  standing or lying as the engine placed it. */
@@ -593,7 +758,7 @@ export function equipmentDrawing(s: Pick<SceneSolid, "kind" | "shape" | "axis" |
   | "center" | "nonProcess">): EquipmentDrawing {
   const m: ModelInput = { kind: s.kind, shape: s.shape, axis: s.axis, size: s.size,
                           base: s.center[1] - s.size[1] / 2 };
-  const recipe = s.nonProcess ? undefined : EQUIPMENT_MODELS[s.kind];
+  const recipe = s.nonProcess ? SITE_MODELS[s.kind] : EQUIPMENT_MODELS[s.kind];
   return recipe?.(m) ?? plainDrawing(m);
 }
 
@@ -613,6 +778,13 @@ export function partBounds(p: Part): [Vec3, Vec3] {
     }
     case "ring":
       return ext([p.R + p.r, p.r, p.R + p.r]);
+    case "prism": {
+      const lo: Vec3 = [x, y, z], hi: Vec3 = [x, y + p.rise, z];
+      const k = p.axis === "x" ? 0 : 2, c = p.axis === "x" ? 2 : 0;
+      lo[k] -= p.length / 2; hi[k] += p.length / 2;
+      lo[c] -= p.width / 2; hi[c] += p.width / 2;
+      return [lo, hi];
+    }
     case "head": {
       const lo: Vec3 = [x - p.r, y - p.r, z - p.r];
       const hi: Vec3 = [x + p.r, y + p.r, z + p.r];

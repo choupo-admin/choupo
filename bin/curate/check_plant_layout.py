@@ -102,10 +102,42 @@ The risks such a feature carries are specific, and each arm names one:
       of its own footprints, the margin grows the plot.  REFUSED, exit 2 and
       named: a negative margin, a plot block with no reason.
 
+  (k) THE ROADS (2026-10-18, DEV.md 4c C90), on the witness, which declares
+      a gate, a canteen, a warehouse and six roads: each road's published
+      length is its centre line's own and the network's is their sum (both
+      recomputed here); the PAVED AREA is recomputed here as the union of the
+      paved rectangles on the grid of their own edges -- an independent
+      implementation of the rule; the crossing under the rack is recomputed
+      from the published rack band and the published clearance is the rack's
+      elevation, at least the declared headroom; every item's ACCESS distance
+      (footprint edge to the nearest paved rectangle of a road a gate
+      reaches) is recomputed here and each is within the declared distance,
+      so the witness raises no road finding; the plot recomputed by arm (j)
+      includes the paved rectangles (this arm requires that the plot would be
+      SMALLER without them, so the roads are in the envelope); every
+      published road length, network length, paved area and access distance
+      is pinned by a golden row and every pinned one is published.  Then on
+      copies of the witness, REFUSED (exit 2, named): a road through a
+      footprint (the converter), a road under the rack with a headroom above
+      the rack's 6 m, a pipe below the headroom over a road (a waypoint
+      route), a diagonal road segment, a road declared twice, a waypoint
+      carrying a `z`, a roads block with no `access`, a non-process item with
+      a `source` and no `reason`.  ANNOUNCED (stderr, the caveat block and
+      the JSON, values recomputed here): a road in a zone the case closes to
+      traffic (the makeup compressor's zone 2 grown to reach the west road,
+      with `noTraffic ( 1 2 )`), a road no gate reaches, a site building no road
+      serves, a process item beyond the access distance, a network with no
+      gate, a weighbridge no road crosses -- and its negative: a weighbridge
+      the main road runs OVER is not refused as a road through a footprint,
+      is published `onDeck`, and raises nothing.  The forced draft says it did
+      not carry the roads and carries each site building's source and reason.
+
 NOT COVERED, said so: whether a declared distance or zone extent is SENSIBLE
 (the author's assumption, by design -- no standard is shipped), a pipe's
 pressure drop and cost (none is computed), whether a route clashes with an
-item it passes, structures, rotations other than the two plan axes, the GUI
+item it passes, structures, rotations other than the two plan axes, a road's
+turning radius or gradient, whether a declared headroom or access distance is
+sensible (the author's assumption, as every distance here), the GUI
 drawing (its pure scene mapping, phase, speed, declutter and camera fit are
 tested in gui/tests/plantLayout.test.ts), and byte-identity of the cases
 without a layout (measured once, not gated).
@@ -174,6 +206,24 @@ strengthened):
   S21 the routed pipes left out of the envelope                    -> (j)
      ammonia02's default rack reaches 5 m past the eastmost footprint and
      aceticAcid02's declared rack past its westmost: both plots short.
+  (C90, arm (k), 2026-10-18; each in PlantLayout.cpp, restored byte for
+  byte (sha256 checked) and the engine rebuilt; all CAUGHT on first run):
+  S22 the road-through-footprint refusal skipped                   -> (k) the
+      fixture still exits 2, but on the pipe riser it then meets, and the
+      arm requires the refusal to NAME the converter.
+  S23 the paved area summed per rectangle (no union)               -> (k)
+      2400 m2 against the union's 2140.75 m2, and the golden row.
+  S24 the roads left out of the plot envelope                      -> (k) the
+      plot 9535.5 m2 against 11918.5 m2 recomputed with the roads.
+  S25 the rack-crossing headroom test inverted                     -> (k) the
+      witness itself refused (6 m > 5 m now reads as too low).
+  S26 the access distance measured to the centre line, not the
+      paved edge                                                   -> (k)
+      every access distance off by half its road's width.
+  S27 connectivity taken as "every road joined"                    -> (k) the
+      island road raises no roadDisconnected.
+  S28 the roadInZone finding never raised                          -> (k) the
+      closed-zone fixture publishes none.
 """
 import json
 import re
@@ -267,8 +317,9 @@ def arm_witness(work):
         fail("(a) the witness published no `layout` block")
         return
     items = {i["id"]: i for i in lay["items"]}
-    if len(items) != 8:
-        fail(f"(a) the witness places {len(items)} items, expected 8")
+    if len(items) != 11:
+        fail(f"(a) the witness places {len(items)} items, expected 11 (seven sized,"
+             " and the control room, gate, canteen and warehouse)")
     for unit in ("converter", "separator", "letdown"):
         D = sheet_value(d, f"{unit}/vessel", "D")
         H = sheet_value(d, f"{unit}/vessel", "H")
@@ -301,7 +352,7 @@ def arm_witness(work):
     if not any(a.get("category") == "layout" and a.get("message") == msg
                for a in (j.get("advisories") or [])):
         fail("(b) the separation announcement is not in the result JSON's advisories")
-    claims.append("witness: 8 items, vessel extents = their design sheets' D/H,"
+    claims.append("witness: 11 items, vessel extents = their design sheets' D/H,"
                   " the one shortfall recomputed edge to edge and announced on"
                   " stderr, the caveat block and the JSON")
     return lay
@@ -392,21 +443,35 @@ def arm_refusals(work):
                   " naming its defect")
 
 
+ROADS_BLOCK = re.compile(r"\nroads\n\{.*?\n\}\n", re.S)
+
+
+def drop_roads(text):
+    """The witness's road network (C90), removed: a fixture that moves an
+    item where a road runs is about the item, not the road."""
+    out, n = ROADS_BLOCK.subn("\n", text)
+    if n != 1:
+        raise RuntimeError("fixture anchor not found: the witness's roads block")
+    return out
+
+
 def arm_hazards(work):
     #  The control room moved east of the let-down drum, the wind turned to
-    #  blow from the west, a rule for an absent kind added.
+    #  blow from the west, a rule for an absent kind added.  The roads go:
+    #  the room's new place is where the east road runs.
     edit = chain(
+        drop_roads,
         sub("        x           -30 m;\n        y           -40 m;",
             "        x           70 m;\n        y           -6 m;"),
         sub("from        225 deg;", "from        270 deg;"),
-        sub("{ between ( building shellTubeHX );    distance 30 m; }",
-            "{ between ( building shellTubeHX );    distance 30 m; }\n"
+        sub("{ between ( controlRoom shellTubeHX ); distance 30 m; }",
+            "{ between ( controlRoom shellTubeHX ); distance 30 m; }\n"
             "            { between ( flare vessel );            distance 60 m; }"),
         # the control room is now too close to everything at 30 m: drop
         # those rules so the arm reads the HAZARD findings alone
-        sub("{ between ( building compressor );     distance 30 m; }", ""),
-        sub("{ between ( building vessel );         distance 30 m; }", ""),
-        sub("{ between ( building shellTubeHX );    distance 30 m; }", ""),
+        sub("{ between ( compressor controlRoom );   distance 30 m; }", ""),
+        sub("{ between ( controlRoom vessel );      distance 30 m; }", ""),
+        sub("{ between ( controlRoom shellTubeHX ); distance 30 m; }", ""),
         # an ignition source on a platform ABOVE both zone envelopes it sits
         # within in plan: the envelope is a cylinder of declared HEIGHT, so it
         # must not be reported (found by sabotage S7: without this item the
@@ -534,11 +599,16 @@ def arm_draft(work):
     for needle in ('nonProcess  "controlRoom"', "footprint   { length 8.00 m",
                    "between ( vessel vessel ); distance 4.00 m", "from      225 deg",
                    "{ zone 1; radius 1.50 m; height 3.00 m; }",
-                   "margin 10.00 m;"):
+                   "margin 5.00 m;", 'kind        canteen;',
+                   'reason      "meals and rest for the shift crews',
+                   "`roads {}` network is NOT carried"):
         if needle not in text:
             fail(f"(e) the forced draft did not carry `{needle}`")
-    if len(lay.get("items", [])) != 8:
-        fail(f"(e) the forced draft places {len(lay.get('items', []))} items, expected 8")
+    if len(lay.get("items", [])) != 11:
+        fail(f"(e) the forced draft places {len(lay.get('items', []))} items, expected 11")
+    if "roadNetwork" in lay or "\nroads\n{" in text:
+        fail("(e) the forced draft wrote or ran a road network: roads are drawn round"
+             " positions the draft moves, and are never carried")
     claims.append("the draft writes a headed proposal its own run checks clean,"
                   " lists what it will not size, refuses to overwrite, and with"
                   " --force carries the author's table, boxes, hazards and"
@@ -608,8 +678,8 @@ def arm_refused_sizer(work):
     ids = [i["id"] for i in lay["items"]]
     if "separator" in ids:
         fail("(g) the separator was placed although its sizer refused")
-    if len(ids) != 7:
-        fail(f"(g) {len(ids)} items placed, expected the witness's 8 less the separator")
+    if len(ids) != 10:
+        fail(f"(g) {len(ids)} items placed, expected the witness's 11 less the separator")
     f = [x for x in lay["findings"] if x["id"] == "sizingRefused:separator:separator"]
     if len(f) != 1:
         fail(f"(g) no sizingRefused finding for the separator; findings "
@@ -823,6 +893,9 @@ def plot_recomputed(lay, margin):
         for q in p["route"]:
             xs.append(q[0])
             ys.append(q[1])
+    for rect in paved_rects(lay):
+        xs += [rect[0], rect[1]]
+        ys += [rect[2], rect[3]]
     r = (min(xs) - margin, max(xs) + margin, min(ys) - margin, max(ys) + margin)
     return r, (r[1] - r[0]) * (r[3] - r[2])
 
@@ -950,10 +1023,10 @@ def arm_plot(work):
     #  Refusals, on the witness's own plot block.
     n = 0
     for label, edit, pat in (
-            ("negative margin", sub("    margin  10 m;", "    margin  -1 m;"),
+            ("negative margin", sub("    margin  5 m;", "    margin  -1 m;"),
              r"plot: `margin -1 m;`.*cannot be negative"),
             ("no reason", lambda t: re.sub(r"\n    reason  \"author-set assumption for this"
-                                           r" exercise: a 10 m strip[^\n]*", "", t),
+                                           r" exercise: the fence and a 5 m[^\n]*", "", t),
              r"plot: `reason` is not declared")):
         d = prepare(work, "plot_refuse_" + re.sub(r"\W", "_", label), WITNESS, edit)
         out, err, rc = solve(d)
@@ -1048,6 +1121,315 @@ def arm_pipe_override(work):
                   " carrying a declared rack")
 
 
+# ------------------------------------------------------------ roads (C90) --
+def paved_rects(lay):
+    """Each road's paved rectangles, from the PUBLISHED centre line and width
+    (x0, x1, y0, y1): every segment widened by half the width on every side."""
+    out = []
+    for r in lay.get("roads", []):
+        h = r["width"] / 2
+        c = r["centreline"]
+        for a, b in zip(c, c[1:]):
+            out.append((min(a[0], b[0]) - h, max(a[0], b[0]) + h,
+                        min(a[1], b[1]) - h, max(a[1], b[1]) + h))
+    return out
+
+
+def union_area(rects):
+    """The union of axis-aligned rectangles, exactly, on the grid of their
+    own edges -- written here again, not imported, so the engine's rule has
+    an independent home."""
+    xs = sorted({v for r in rects for v in r[:2]})
+    ys = sorted({v for r in rects for v in r[2:]})
+    total = 0.0
+    for x0, x1 in zip(xs, xs[1:]):
+        for y0, y1 in zip(ys, ys[1:]):
+            cx, cy = (x0 + x1) / 2, (y0 + y1) / 2
+            if any(r[0] < cx < r[1] and r[2] < cy < r[3] for r in rects):
+                total += (x1 - x0) * (y1 - y0)
+    return total
+
+
+def clear_item_rect(i, rect):
+    """Clear plan distance from an item's footprint to a rectangle (0 if
+    they touch or overlap): a vertical cylinder is a disc, any other a box."""
+    x0, x1, y0, y1 = rect
+    if i["shape"] == "cylinder" and i["orientation"] == "vertical":
+        px = min(max(i["x"], x0), x1)
+        py = min(max(i["y"], y0), y1)
+        return max(0.0, hypot(i["x"] - px, i["y"] - py) - i["dx"] / 2)
+    gx = max(0.0, max(x0 - (i["x"] + i["dx"] / 2), (i["x"] - i["dx"] / 2) - x1))
+    gy = max(0.0, max(y0 - (i["y"] + i["dy"] / 2), (i["y"] - i["dy"] / 2) - y1))
+    return hypot(gx, gy)
+
+
+def layout_of(d, extra_ok=False):
+    out, err, rc = solve(d)
+    j = result_json(out) or {}
+    return out, err, rc, j, (j.get("layout") or {})
+
+
+def said_everywhere(msg, out, err, j):
+    caveat = out.split("PLANT LAYOUT", 1)[-1] if "PLANT LAYOUT" in out else ""
+    return ("[layout] " + msg in err and msg in caveat
+            and any(a.get("category") == "layout" and a.get("message") == msg
+                    for a in j.get("advisories") or []))
+
+
+ROAD_REFUSALS = {
+    "a road through a footprint": (
+        sub("waypoints ( { x 28 m; y -31 m; } { x 28 m; y 16 m; } );",
+            "waypoints ( { x 40 m; y -31 m; } { x 40 m; y 16 m; } );"),
+        [r"road `rackCrossing` runs THROUGH `converter`", r"interpenetrate by"]),
+    "a road under a rack below the headroom": (
+        sub("    headroom 5 m;", "    headroom 7 m;"),
+        [r"road `(east|rackCrossing)` passes UNDER the pipe rack", r"6 m above grade",
+         r"7 m headroom"]),
+    "a pipe below the headroom over a road": (
+        lambda t: t + "\npipes { unreactedGas { waypoints ( { x 56 m; y -6 m; z 3 m; }"
+                      " { x 56 m; y -31 m; z 3 m; } { x 37 m; y -31 m; z 3 m; }"
+                      " { x 37 m; y -3.14285714286 m; z 3 m; } ); } }\n",
+        [r"pipe `unreactedGas` crosses road `main` 3 m above grade"]),
+    "a diagonal road segment": (
+        sub("waypoints ( { x -8 m; y -31 m; } { x -8 m; y 16 m; } );",
+            "waypoints ( { x -8 m; y -31 m; } { x -6 m; y 16 m; } );"),
+        [r"road `west`: the segment .* runs DIAGONALLY", r"add the corner"]),
+    "a road declared twice": (
+        sub('            road      "west";', '            road      "east";'),
+        [r"road `east` is declared twice"]),
+    "a waypoint with a z": (
+        sub("{ x -8 m; y 16 m; } { x 68 m; y 16 m; }", "{ x -8 m; y 16 m; z 1 m; } { x 68 m; y 16 m; }"),
+        [r"road `north` waypoint 1: a road lies at grade"]),
+    "no access block": (
+        lambda t: re.sub(r"\n    access\n    \{.*?\n    \}\n", "\n", t, count=1, flags=re.S),
+        [r"roads: `access \{ distance <m>;", r"is not declared"]),
+    "a source with no reason": (
+        sub('        reason      "spares, catalyst drums', '        // reason      "spares, catalyst drums'),
+        [r"nonProcess `warehouse`: declare both `source"]),
+}
+
+
+def arm_roads(work):
+    d = prepare(work, "roads_witness", WITNESS)
+    out, err, rc, j, lay = layout_of(d)
+    net = lay.get("roadNetwork")
+    if rc != 0 or not net:
+        fail(f"(k) the witness exited {rc} / published no roadNetwork")
+        return
+    roads = lay.get("roads", [])
+    if len(roads) != 6 or net["roads"] != 6:
+        fail(f"(k) the witness declares six roads; published {len(roads)} / {net['roads']}")
+    total = 0.0
+    for r in roads:
+        c = r["centreline"]
+        L = sum(abs(a[0] - b[0]) + abs(a[1] - b[1]) for a, b in zip(c, c[1:]))
+        total += L
+        if not close(L, r["length"]):
+            fail(f"(k) road {r['road']}: published length {r['length']} m, its centre line's"
+                 f" own {L} m")
+        if not r["fromEntrance"]:
+            fail(f"(k) road {r['road']}: published as not reached from the gate")
+    if not close(total, net["length"]):
+        fail(f"(k) the network's length {net['length']} m, the roads summed here {total} m")
+    rects = paved_rects(lay)
+    pav = union_area(rects)
+    if not close(pav, net["pavedArea"]):
+        fail(f"(k) paved area: the engine {net['pavedArea']} m2, the union recomputed here"
+             f" {pav} m2 (the plain sum would be {sum((r[1]-r[0])*(r[3]-r[2]) for r in rects)})")
+    if net["components"] != 1 or net["entrances"] != ["gate"]:
+        fail(f"(k) the witness's network: {net['components']} component(s), entrances"
+             f" {net['entrances']}; expected one, reached from `gate`")
+    # the crossing under the rack, recomputed from the published rack band
+    k = lay["pipeRack"]
+    hw = k["lanesPerTier"] * k["laneSpacing"] / 2
+    band = (k["xStart"], k["xEnd"], k["y"] - hw, k["y"] + hw)
+    want = []
+    for r in roads:
+        h = r["width"] / 2
+        c = r["centreline"]
+        for a, b in zip(c, c[1:]):
+            x0, x1 = max(min(a[0], b[0]) - h, band[0]), min(max(a[0], b[0]) + h, band[1])
+            y0, y1 = max(min(a[1], b[1]) - h, band[2]), min(max(a[1], b[1]) + h, band[3])
+            if x1 - x0 > 1e-6 and y1 - y0 > 1e-6:
+                want.append((r["road"], x0, x1, y0, y1))
+    got = [(c["road"], c["xMin"], c["xMax"], c["yMin"], c["yMax"])
+           for c in lay.get("rackCrossings", [])]
+    if len(want) != len(got) or any(w[0] != g[0] or not all(close(a, b) for a, b in zip(w[1:], g[1:]))
+                                    for w, g in zip(want, got)):
+        fail(f"(k) rack crossings: published {got}; recomputed {want}")
+    for c in lay.get("rackCrossings", []):
+        if c["clearance"] != k["elevation"] or c["clearance"] < net["headroom"]:
+            fail(f"(k) crossing {c['road']}: clearance {c['clearance']} m, the rack's"
+                 f" elevation {k['elevation']} m, headroom {net['headroom']} m")
+    if sorted(w[0] for w in want) != ["east", "rackCrossing"]:
+        fail(f"(k) the witness's roads cross the rack at {[w[0] for w in want]};"
+             " the case declares two crossings, `rackCrossing` and `east`")
+    # access: footprint edge to the nearest paved rectangle of a reached road
+    items = {i["id"]: i for i in lay["items"]}
+    access = {a["item"]: a for a in lay.get("access", [])}
+    reached = [r for r in roads if r["fromEntrance"]]
+    for iid, it in items.items():
+        a = access.get(iid)
+        best, road = None, None
+        for r in reached:
+            for rect in paved_rects({"roads": [r]}):
+                dd = clear_item_rect(it, rect)
+                if best is None or dd < best - 1e-9:
+                    best, road = dd, r["road"]
+        if a is None or a.get("road") != road or not close(a.get("distance", -1), best, 1e-8):
+            fail(f"(k) access {iid}: published {a}; recomputed {road} at {best} m")
+        elif best > net["accessDistance"] + 1e-9:
+            fail(f"(k) access {iid}: {best} m, beyond the declared {net['accessDistance']} m,"
+                 " on the witness")
+    road_kinds = {"roadInZone", "roadDisconnected", "buildingNotReached", "noRoadAccess",
+                  "noEntrance", "weighbridgeOffRoad", "gateOffRoad"}
+    bad = [f["id"] for f in lay["findings"] if f["kind"] in road_kinds]
+    if bad:
+        fail(f"(k) the witness raises road findings {bad}; it must raise none")
+    # the roads are inside the plot: without them it would be smaller
+    margin = margin_of((WITNESS / "system" / "layoutDict").read_text())
+    _, with_roads = plot_recomputed(lay, margin)
+    _, without = plot_recomputed({**lay, "roads": []}, margin)
+    if not (without < with_roads - 1.0) or not close(with_roads, lay["plot"]["plotArea"]):
+        fail(f"(k) the plot {lay['plot']['plotArea']} m2: recomputed with the roads"
+             f" {with_roads} m2, without them {without} m2 -- the roads must be in the envelope")
+    # published <=> pinned
+    gold = {}
+    for line in (WITNESS / "expected").read_text().splitlines():
+        f = line.split()
+        if len(f) >= 5 and f[0] == "layout" and (f[1].startswith("road:") or f[1] == "roadNetwork"
+                                                 or f[1].startswith("access:")):
+            gold[(f[1], f[2])] = (f[3], f[4])
+    published = {("roadNetwork", "length"): net["length"],
+                 ("roadNetwork", "pavedArea"): net["pavedArea"]}
+    for r in roads:
+        published[("road:" + r["road"], "length")] = r["length"]
+    for a in lay.get("access", []):
+        if "distance" in a:
+            published[("access:" + a["item"], "distance")] = a["distance"]
+    for key, val in published.items():
+        g = gold.get(key)
+        if g is None:
+            fail(f"(k) {key[0]} {key[1]} is published and pinned by no golden row")
+        elif abs(float(g[0]) - val) > float(g[1]) * max(abs(val), 1e-30) + 1e-12:
+            fail(f"(k) {key[0]} {key[1]} {val} against the golden {g[0]}")
+    for key in gold:
+        if key not in published:
+            fail(f"(k) a golden row pins {key[0]} {key[1]}, which the run no longer publishes")
+    n_ok = 0
+    # ---- refusals ----------------------------------------------------------
+    for label, (edit, pats) in ROAD_REFUSALS.items():
+        d = prepare(work, "roads_refuse_" + re.sub(r"\W", "_", label), WITNESS, edit)
+        out, err, rc = solve(d)
+        if rc != 2 or not all(re.search(pt, out + err, re.S) for pt in pats):
+            fail(f"(k) refusal `{label}`: exit {rc}, expected 2 naming {pats}:\n    "
+                 + "\n    ".join(l for l in (out + err).splitlines() if "ERROR" in l)[:500])
+        else:
+            n_ok += 1
+    # ---- announcements -----------------------------------------------------
+    announced = 0
+    #  a road in a closed zone: the makeup compressor's zone 2 grown to 12 m
+    #  about (6, -8), so it reaches the west road (11 m), zone 2 closed
+    d = prepare(work, "roads_zone", WITNESS, chain(
+        sub("    noTraffic ( 1 );", "    noTraffic ( 1 2 );"),
+        sub("zones   ( { zone 2; radius 7.5 m; height 6 m; } );",
+            "zones   ( { zone 2; radius 12 m; height 6 m; } );")))
+    out, err, rc, j, lay2 = layout_of(d)
+    f = next((x for x in lay2.get("findings", []) if x["id"] == "roadInZone:west:makeupComp#zone2"), None)
+    if rc != 0 or f is None:
+        fail(f"(k) zone: exit {rc}, findings {[x['id'] for x in lay2.get('findings', [])]}")
+    else:
+        it = {i["id"]: i for i in lay2["items"]}["makeupComp"]
+        r = next(x for x in lay2["roads"] if x["road"] == "west")
+        mine = min(clear_item_rect({"shape": "cylinder", "orientation": "vertical",
+                                    "x": it["x"], "y": it["y"], "dx": 0.0}, rect)
+                   for rect in paved_rects({"roads": [r]}))
+        if not close(f["value"], mine, 1e-8) or f["limit"] != 12:
+            fail(f"(k) zone: engine {f['value']} / {f['limit']}, recomputed {mine} / 12")
+        elif not said_everywhere(f["message"], out, err, j):
+            fail("(k) the roadInZone announcement did not reach stderr, the caveat block"
+                 " and the advisories")
+        else:
+            announced += 1
+    #  a disconnected road, a building no road serves, a process item beyond
+    #  the access distance
+    d = prepare(work, "roads_reach", WITNESS, chain(
+        sub("    access\n    {\n        distance 20 m;",
+            "    access\n    {\n        distance 7 m;"),
+        sub("        x           -30 m;\n        y           -20 m;",
+            "        x           -30 m;\n        y           20 m;"),
+        lambda t: t.replace("    network\n    (\n", "    network\n    (\n"
+            '        { road "island"; width 4 m; reason "fixture";'
+            ' waypoints ( { x 100 m; y 0 m; } { x 110 m; y 0 m; } ); }\n', 1)))
+    out, err, rc, j, lay3 = layout_of(d)
+    got = {x["id"]: x for x in lay3.get("findings", [])}
+    want_ids = [next((x for x in got if x.startswith(w)), w)
+                for w in ("roadDisconnected:island:", "buildingNotReached:warehouse:")]
+    if rc != 0 or any(w not in got for w in want_ids):
+        fail(f"(k) reach: exit {rc}, findings {sorted(got)}")
+    else:
+        for w in want_ids:
+            if not said_everywhere(got[w]["message"], out, err, j):
+                fail(f"(k) {w} did not reach all three surfaces")
+        it3 = {i["id"]: i for i in lay3["items"]}
+        reached3 = [r for r in lay3["roads"] if r["fromEntrance"]]
+        for iid, it in it3.items():
+            if it["nonProcess"]:
+                continue
+            best = min(clear_item_rect(it, rect) for r in reached3
+                       for rect in paved_rects({"roads": [r]}))
+            fid = next((x for x in got if x.startswith(f"noRoadAccess:{iid}:")), None)
+            if (best > 7 + 1e-9) != (fid is not None):
+                fail(f"(k) access 7 m: {iid} at {best} m, finding {fid}")
+            elif fid and not close(got[fid]["value"], best, 1e-8):
+                fail(f"(k) {fid}: engine {got[fid]['value']} m, recomputed {best} m")
+        if not any(x.startswith("noRoadAccess:") for x in got):
+            fail("(k) the 7 m access distance raised no noRoadAccess: the fixture no longer"
+                 " reaches the case it is about")
+        isl = next(r for r in lay3["roads"] if r["road"] == "island")
+        if isl["fromEntrance"] or lay3["roadNetwork"]["components"] != 2:
+            fail(f"(k) the island road: fromEntrance {isl['fromEntrance']}, components"
+                 f" {lay3['roadNetwork']['components']}")
+        announced += 1
+    #  no gate
+    d = prepare(work, "roads_nogate", WITNESS, sub('        kind        gate;', '        kind        guardhouse;'))
+    out, err, rc, j, lay4 = layout_of(d)
+    if rc != 0 or "noEntrance:roads:" not in {x["id"] for x in lay4.get("findings", [])} \
+            or lay4.get("roadNetwork", {}).get("entrances") != []:
+        fail(f"(k) no gate: exit {rc}, findings {[x['id'] for x in lay4.get('findings', [])]}")
+    else:
+        announced += 1
+    #  a weighbridge: ON the main road (driven over, nothing raised), then off it
+    wb = ('    { nonProcess "weighbridge"; kind weighbridge; x 40 m; y -31 m; z 0 m;'
+          ' orientation alongX; footprint { length 18 m; width 3.5 m; height 0.4 m; }'
+          ' source "fixture"; reason "fixture: road tankers weighed at the gate"; }\n')
+    d = prepare(work, "roads_weighbridge_on", WITNESS, sub(ITEMS_OPEN, ITEMS_OPEN + wb))
+    out, err, rc, j, lay5 = layout_of(d)
+    acc = {a["item"]: a for a in lay5.get("access", [])}.get("weighbridge", {})
+    if rc != 0 or not acc.get("onDeck") or acc.get("road") != "main" \
+            or any(x["a"] == "weighbridge" for x in lay5.get("findings", [])):
+        fail(f"(k) a weighbridge on the main road: exit {rc}, access {acc}, findings"
+             f" {[x['id'] for x in lay5.get('findings', [])]}")
+    else:
+        announced += 1
+    d = prepare(work, "roads_weighbridge_off", WITNESS,
+                sub(ITEMS_OPEN, ITEMS_OPEN + wb.replace("y -31 m;", "y -40 m;")))
+    out, err, rc, j, lay6 = layout_of(d)
+    f6 = next((x for x in lay6.get("findings", []) if x["id"] == "weighbridgeOffRoad:weighbridge:"), None)
+    if rc != 0 or f6 is None or not said_everywhere(f6["message"], out, err, j):
+        fail(f"(k) a weighbridge off the road: exit {rc}, findings"
+             f" {[x['id'] for x in lay6.get('findings', [])]}")
+    else:
+        announced += 1
+    claims.append(f"the witness's six roads: lengths, the network's length and its paved area"
+                  f" ({net['pavedArea']:.2f} m2, the union recomputed here), the crossing under"
+                  " the rack and every item's access distance recomputed, none beyond the"
+                  " declared distance, the roads inside the plot, every road number pinned;"
+                  f" {n_ok} road refusals; {announced} road announcement fixtures (a closed"
+                  " zone, a disconnected road with an unserved building and items beyond"
+                  " the access distance, no gate, a weighbridge on and off the road)")
+
+
 def main():
     argv = sys.argv[1:]
     keep = Path(argv[argv.index("--keep") + 1]).resolve() if "--keep" in argv else None
@@ -1066,6 +1448,7 @@ def main():
         arm_pipes(work)
         arm_pipe_override(work)
         arm_plot(work)
+        arm_roads(work)
     finally:
         if not keep:
             shutil.rmtree(work, ignore_errors=True)
@@ -1078,7 +1461,9 @@ def main():
           + ".  NOT COVERED: whether a declared distance or zone is sensible"
           " (the author's assumption -- no standard is shipped), a pipe's"
           " pressure drop and cost (none is computed), whether a route clashes"
-          " with an item (not checked), structures, the GUI drawing (its scene"
+          " with an item (not checked), structures, a road's turning radius or"
+          " gradient, whether a declared headroom or access distance is sensible,"
+          " the GUI drawing (its scene"
           " mapping is a vitest), and"
           " byte-identity of cases without a layout (measured once, not gated).")
     return 0
