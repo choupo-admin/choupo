@@ -1940,6 +1940,8 @@ dispersion/QRA study. Choupo ships no spacing table; a case's
 \texttt{system/layoutDict} declares its own distances, each with its source
 and reason, and the engine announces every pair closer than declared
 (EduTool \emph{Plant layout}, witness \texttt{ammonia02\_full\_plant}).
+Siting, wind, hazardous areas and the rest of the plot plan are
+\S\ref{sec:plant-layout}.
 
 \textbf{Governing standards --- go to the source; lives depend on it.}
 This section is an orientation only; the binding requirements live in,
@@ -1955,6 +1957,555 @@ method --- \textbf{IEC 61882 (HAZOP)}; flammable liquids ---
 IEC 60079}; facility siting --- \textbf{API RP 752/753}. Size and select
 to the standard, then have it independently reviewed. See the Disclaimer
 \& scope at the front of this guide.
+
+\hypertarget{plant-layout}{%
+\section{Plant layout}\label{plant-layout}}\label{sec:plant-layout}
+
+A flowsheet says what is connected to what; a layout says \emph{where
+each item stands}, and that second question carries most of the safety,
+a good part of the piping cost and nearly all of the ease of operation
+and maintenance. It is also where several numbers the flowsheet never
+asks for are fixed: how high a column stands on its skirt, how far above
+its pump a reflux drum must sit, how long every pipe is. This section is
+a Pareto orientation for a student placing a first plant on a plot ---
+the order in which to decide, and the \emph{why} behind each rule --- not
+a siting study. Every distance that touches safety comes from the
+standard or the risk study a real project adopts (named below, and see
+\emph{Disclaimer \& scope}); this guide transcribes none of their
+tables, and neither does Choupo.
+
+\textbf{The order of decisions.} Site and wind first (where a release
+may drift), then the blocks (process, storage, utilities, loading,
+buildings) and the roads between them, then the pipe rack that ties the
+process block together, then the equipment along the rack, and only then
+the elevations inside each group --- columns, drums, pumps --- which the
+NPSH of the pumps decides. A late decision cannot repair an early one:
+no elevation trick fixes a control room placed downwind of the tank farm.
+
+\hypertarget{siting-and-the-prevailing-wind}{%
+\subsection{Siting and the prevailing
+wind}\label{siting-and-the-prevailing-wind}}
+
+\begin{itemize}
+\tightlist
+\item
+  \textbf{Read the wind rose.} A release drifts \emph{downwind}, and an
+  ignition source the cloud reaches turns a leak into a fire or an
+  explosion. So the \textbf{ignition sources} --- fired heaters, boilers,
+  the flare, a workshop, any electrical equipment not certified for a
+  hazardous area --- go \textbf{upwind or crosswind} of the likely
+  \textbf{release points} (pump seals, compressor packings, flanged
+  equipment, sample points, loading arms, relief discharges). Lay out for
+  the wind that blows most often, then check the others: a layout that
+  is safe for one direction only is a bet on the weather.
+\item
+  \textbf{Occupied buildings} --- control room, offices, canteen,
+  laboratory, workshop --- stand \textbf{upwind of the process and the
+  storage}, at the edge of the plant and \textbf{near the main gate}, so
+  visitors, contractors and the canteen\textquotesingle s deliveries
+  never cross a process area. A control room that must stand close to
+  the units it runs is designed for the blast and toxic exposure of that
+  position (the question API RP 752 and 753 answer), not merely moved a
+  few metres.
+\item
+  \textbf{The flare is two things at once}: an ignition source (keep the
+  flammable clouds from drifting onto it) and a source of radiation,
+  noise and combustion products (keep it away from people). It goes at
+  the edge of the site with its own sterile radius, set by the radiation
+  at grade (\S\ref{pressure-relief-flare--safety-basics}; the EduTool
+  \emph{Pool-fire radiation and the distance it sets} shows how a
+  radiation threshold becomes a distance).
+\item
+  \textbf{Topography and drainage.} Heavy vapours --- LPG, chlorine, a
+  cold ammonia cloud --- flow downhill and pool in hollows: keep ignition
+  sources and occupied buildings off low ground, and grade the process
+  areas so that a spill drains \emph{away} from the equipment towards an
+  impounding basin, never under the next unit.
+\end{itemize}
+
+\hypertarget{separation-distances-and-hazardous-areas}{%
+\subsection{Separation distances and hazardous
+areas}\label{separation-distances-and-hazardous-areas}}
+
+\textbf{Why a distance.} A separation does four jobs: it stops a fire or
+an explosion in one item from escalating to the next (the domino effect
+--- radiation falls with distance, and the distance to a given blast
+overpressure grows only with the cube root of the explosive mass); it
+keeps the people in occupied buildings out of the consequence zone; it
+leaves room to fight a fire and to maintain the plant; and it keeps a
+released cloud away from ignition sources. Each job gives its own
+distance, and the largest governs.
+
+\textbf{Two ways to get the number.} \emph{Prescriptive} tables give a
+minimum edge-to-edge distance between pairs of equipment classes (fired
+heater to pump, storage tank to process unit, \ldots); they are quick,
+conservative for ordinary plants and silent about unusual ones.
+\emph{Risk-based} siting computes the consequences of credible releases
+(radiation, overpressure, toxic dose) and, in a full study, their
+frequencies; it can justify a tighter plot or demand a wider one. A
+student design starts from a prescriptive table and checks its largest
+hazards by consequence. The published sources include the CCPS
+\emph{Guidelines for Siting and Layout of Facilities}; Mecklenburgh
+(ed.), \emph{Process Plant Layout} (IChemE); the insurers\textquotesingle{}
+\emph{GAP.2.5.2 Oil and Chemical Plant Layout and Spacing}; NFPA 30
+(flammable and combustible liquids, tank spacing included), NFPA 58
+(liquefied petroleum gas) and API STD 2510 (LPG installations); and, for
+occupied buildings, API RP 752 and API RP 753.
+
+\textbf{Hazardous-area classification} answers a different question:
+not ``how far apart'' but ``where may a flammable atmosphere exist, and
+what electrical equipment may stand there''. Around each \emph{source of
+release} the zone system (IEC 60079-10-1; the Energy Institute
+\emph{Model Code of Safe Practice Part 15}; API RP 505; in Europe the
+ATEX workplace directive 1999/92/EC) draws envelopes: \textbf{Zone 0},
+where a flammable atmosphere is present continuously or for long
+periods; \textbf{Zone 1}, where it is likely in normal operation;
+\textbf{Zone 2}, where it is not likely and short-lived if it occurs.
+The extent of each envelope depends on the grade of release, the release
+rate and the ventilation --- which is why flammable service prefers an
+open, well-ventilated structure to an enclosed building. Equipment inside
+a zone must be certified for it; open flames and uncertified equipment
+stay outside every envelope. (NFPA 70 and NFPA 497 carry the
+North-American Class/Division counterpart.)
+
+\textbf{What a Choupo case declares.} The spacing and zoning tables
+above grant no redistribution, so Choupo ships none (the licence policy
+of this project). A case\textquotesingle s \texttt{system/layoutDict}
+declares its own separation table between equipment kinds, each rule
+with a \texttt{source} and a \texttt{reason}; its own wind (the direction
+it blows from, the half-angle of the downwind sector, its reach); and,
+per release source, its own zone envelopes. Write as the source the table
+or study you actually read: ``author-set assumption'' is an honest
+source, a standard you have not opened is not.
+
+\hypertarget{blocks-roads-fence-and-battery-limits}{%
+\subsection{Blocks, roads, fence and battery
+limits}\label{blocks-roads-fence-and-battery-limits}}
+
+\begin{itemize}
+\tightlist
+\item
+  \textbf{Blocks.} Group the plant into blocks of similar hazard ---
+  process units, tank farm, loading, utilities, buildings --- each block
+  bounded by roads. Grouping concentrates the hazardous-area envelopes
+  and the fire protection, and the roads double as fire breaks.
+\item
+  \textbf{Roads.} A \textbf{perimeter road} and roads between the blocks
+  let a fire tender reach every block from at least two sides and a
+  mobile crane reach every heavy item; avoid dead ends. Keep heavy
+  traffic --- trucks, deliveries --- at the perimeter, off the process
+  roads.
+\item
+  \textbf{Gates and trucks.} A main gate with a guardhouse, and a second,
+  emergency exit, so that one blocked road does not trap everybody
+  inside. Where raw materials or products move by road, the
+  \textbf{weighbridge} and the loading bays sit close to the gate, so a
+  truck is weighed in, loaded and weighed out without entering the
+  process area. A plant whose feeds and products move by pipeline needs
+  neither.
+\item
+  \textbf{Fence and battery limits.} The fence is the security and legal
+  boundary of the site; the \textbf{battery limit} is where the
+  plant\textquotesingle s scope ends --- every feed, product and utility
+  crosses it at a defined point with an isolation valve, a blind and
+  usually a meter. Name what is on the other side (the adjacent
+  park\textquotesingle s pipeline, the site cooling-water return): a
+  battery limit nobody labelled is a scope nobody owns.
+\end{itemize}
+
+\hypertarget{pipe-racks}{%
+\subsection{Pipe racks}\label{pipe-racks}}
+
+Most of a process block\textquotesingle s piping runs on one
+\textbf{main rack} --- the plant\textquotesingle s spine --- with the
+equipment lined up on \textbf{both sides} of it. The rule that follows is
+simple: items joined by large or expensive lines stand \emph{close} and
+in \emph{flow order} along the rack, so most lines run straight along it.
+
+\begin{itemize}
+\tightlist
+\item
+  \textbf{Pumps} stand in a row under or just beside the rack edge, their
+  suction vessels on the outer side, their motors towards an access way.
+\item
+  \textbf{Air coolers} usually sit \textbf{on top of the rack}: they need
+  air, not plot area, and their condensate drains down to drums at the
+  rack side.
+\item
+  \textbf{Tiers.} Lines running one way on one tier and the other way on
+  another, so that a change of direction is a change of elevation and no
+  line clashes with another; hot and large lines on the side nearest the
+  columns, utility headers on their own tier; spare width for the lines a
+  later revamp will need.
+\item
+  \textbf{Headroom.} Wherever the rack (or any pipe) crosses a road it
+  must clear the largest vehicle that uses that road --- a fire tender, a
+  mobile crane --- by the owner\textquotesingle s standard. Where it
+  cannot, the road moves, not the rule.
+\end{itemize}
+
+\hypertarget{tank-farms-and-the-choice-of-storage}{%
+\subsection{Tank farms and the choice of
+storage}\label{tank-farms-and-the-choice-of-storage}}
+
+Storage holds the largest inventories on the site, so the tank farm goes
+at the edge of the plot, away from the process and the occupied
+buildings, on lower ground and downwind where the site allows, and close
+to the loading area. The tank type follows from the vapour pressure at
+the hottest storage temperature (the crossover rule of
+\S\ref{storage--intermediate-tanks}); a liquefied gas has three answers:
+
+\begin{longtable}[]{@{}>{\raggedright\arraybackslash}p{\dimexpr(\linewidth-6\tabcolsep)/3\relax}>{\raggedright\arraybackslash}p{\dimexpr(\linewidth-6\tabcolsep)/3\relax}>{\raggedright\arraybackslash}p{\dimexpr(\linewidth-6\tabcolsep)/3\relax}@{}}
+\toprule\noalign{}
+Storage & When & Why (glass-box) \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+\textbf{Pressurised} at ambient temperature (sphere, bullet, mounded
+bullet) & small to medium inventories & no refrigeration plant; the wall
+carries the vapour pressure at the hottest ambient, so the steel per
+tonne stored stays high however large the store \\
+\textbf{Semi-refrigerated} (moderate pressure, below ambient) & medium
+inventories & a modest refrigeration duty buys a lower design pressure
+and a thinner wall \\
+\textbf{Fully refrigerated} at about atmospheric pressure, at the normal
+boiling point & large inventories & a thin-walled, insulated tank of
+almost any size; the boil-off is recompressed and recondensed by a
+refrigeration unit that runs for the life of the tank \\
+\end{longtable}
+
+\textbf{Ammonia is the textbook case.} Its vapour pressure is about
+8.6 bar at 20 \textdegree{}C and close to 18 bar at 45 \textdegree{}C, so
+storage at ambient temperature needs pressure vessels designed for the
+summer. A few hundred tonnes sit comfortably in bullets or a sphere; tens
+of thousands of tonnes would need a field of spheres, so large
+inventories are stored \textbf{refrigerated at about \textminus33
+\textdegree{}C}, the normal boiling point, in insulated atmospheric tanks
+with a refrigeration unit for the boil-off. The crossover is economic,
+not physical, and is usually placed in the low thousands of tonnes, where
+either answer can be argued. Choupo carries both:
+\texttt{greenAmmoniaPEQ\_baseCase} stores its product refrigerated at
+atmospheric pressure, and \texttt{ammonia02\_full\_plant} keeps two days
+of product as a pressurised liquid in bullets.
+
+\textbf{Why gas is rarely stored.} Compressed hydrogen at 200 bar and
+25 \textdegree{}C holds about 15 kg/m\textsuperscript{3}; liquid ammonia
+about 600--680 kg/m\textsuperscript{3}. And a gas store gives back only
+the gas between its full and its emptied pressure, so a gas is
+\emph{buffered} for hours, not stored for weeks --- which is why plants
+move gases by pipeline and store liquids. The hydrogen buffer of
+\texttt{greenAmmoniaPEQ\_baseCase}, between an intermittent electrolyser
+and a steady synthesis loop, is the exception that shows the rule.
+
+\textbf{Containment.} Atmospheric tanks of flammable or toxic liquid
+stand in a \textbf{bund} (dike) that holds at least the largest
+tank\textquotesingle s contents, with the margin the applicable code
+requires; group compatible products in one bund, leave fire-fighting
+access round it, and route no process pipe through it. Refrigerated
+tanks of liquefied gas are often double- or full-containment, the outer
+wall acting as the bund. Orient bullets so their ends do not point at
+occupied buildings or other vessels: a bullet that fails in a fire
+travels along its axis. Detailed tank spacing is again a code question
+(NFPA 30, NFPA 58, API STD 2510; API STD 620 for low-pressure and
+refrigerated tanks).
+
+\hypertarget{the-distillation-column-group}{%
+\subsection{The distillation column
+group}\label{the-distillation-column-group}}
+
+A column is not one item but a \textbf{group}: the shell, its reboiler,
+the overhead condenser, the reflux drum and two pumps (reflux and
+bottoms). They are laid out together, beside the rack, and their
+elevations follow from two rules: liquid must reach every pump with
+enough NPSH, and vapour must flow without trapping liquid.
+
+\textbf{The reboiler stands at the base.}
+
+\begin{itemize}
+\tightlist
+\item
+  \textbf{Vertical thermosiphon} (the common choice for clean service):
+  bolted beside the column, close-coupled; the liquid head between the
+  column sump and the reboiler drives the circulation, so their relative
+  elevation is a design variable, not a detail.
+\item
+  \textbf{Kettle}: a horizontal exchanger at grade or on a low structure,
+  fed from the column bottom by gravity; it is itself an equilibrium
+  stage, and the bottoms product leaves from its overflow compartment ---
+  so the \emph{kettle}, not the column, is the bottoms
+  pump\textquotesingle s suction vessel, and it is the kettle that must
+  be elevated for NPSH.
+\item
+  \textbf{Forced circulation}: a pump drives the reboiler loop (viscous
+  or fouling bottoms, or too little head for a thermosiphon) --- one more
+  pump to place and to give NPSH.
+\end{itemize}
+
+\textbf{The overhead runs, from the top down: column top
+\(\rightarrow\) condenser \(\rightarrow\) reflux drum \(\rightarrow\)
+reflux pump.}
+
+\begin{itemize}
+\tightlist
+\item
+  \textbf{Pumped reflux} (the common case): the condenser sits on an
+  exchanger structure beside the column, or as an air cooler on top of
+  the rack; the reflux drum stands below it, so the condensate drains by
+  gravity; the reflux pump stands at grade below the drum and sends both
+  the reflux (back up to the top tray) and the distillate. The condenser
+  need \emph{not} be above the column top: the overhead vapour line falls
+  from the column to the condenser.
+\item
+  \textbf{Gravity reflux} (small columns): the condenser is mounted above
+  the column top, on the column or on a structure, and the reflux runs
+  back by gravity through a liquid seal --- no pump, but a heavy
+  exchanger high in the air and awkward to maintain, acceptable only when
+  it is small.
+\item
+  \textbf{The overhead vapour line} is short, large and
+  \textbf{self-draining}: it slopes continuously towards the condenser,
+  with no low point where condensate can collect and slug. The same holds
+  for every two-phase line in the group.
+\end{itemize}
+
+\hypertarget{npsh-and-the-elevations-it-fixes}{%
+\subsection{NPSH and the elevations it
+fixes}\label{npsh-and-the-elevations-it-fixes}}
+
+The NPSH rule of \S\ref{npsh-the-pump-killer} is where the layout and
+the pump meet. The net positive suction head \emph{available} is
+
+\[
+\mathrm{NPSH}_a \;=\; \frac{P_\mathrm{surface}-P_\mathrm{vap}}{\rho\,g}
+\;+\; z \;-\; h_f ,
+\]
+
+where \(P_\mathrm{surface}\) is the pressure on the liquid surface in the
+suction vessel, \(P_\mathrm{vap}\) the vapour pressure of the liquid at
+the pumping temperature, \(\rho\) its density, \(g\) the acceleration of
+gravity, \(z\) the height of the \emph{lowest} operating liquid level
+above the pump\textquotesingle s impeller centreline, and \(h_f\) the
+suction losses (pipe friction, entrance, fittings, strainer) in metres of
+the liquid pumped. The pump runs without cavitating while
+\(\mathrm{NPSH}_a\) exceeds the \(\mathrm{NPSH}_r\) its maker measured, by
+a margin (\S\ref{npsh-the-pump-killer}; ANSI/HI 9.6.1 is the guideline on
+NPSH margin).
+
+\textbf{The key observation.} A column sump, a kettle and a reflux drum
+all hold liquid at its \textbf{bubble point}: the vapour above it is in
+equilibrium with it, so \(P_\mathrm{surface} = P_\mathrm{vap}\) and the
+first term vanishes:
+
+\[
+\mathrm{NPSH}_a \;=\; z - h_f .
+\]
+
+Pure geometry: no pressure, however high, and no density enters. The
+only lever left is \emph{height} --- which is why a column stands on a
+tall skirt and a reflux drum on a structure. Subcooling the reflux adds
+the first term back (\(\Delta P_\mathrm{vap} \approx
+(\mathrm{d}P_\mathrm{vap}/\mathrm{d}T)\,\Delta T_\mathrm{sub}\)), but most
+designers take no credit for it: the liquid surface in the drum sits
+under its own vapour and re-saturates.
+
+\textbf{Worked example (illustrative numbers, not the data of any real
+pump or column).} A bottoms pump has \(\mathrm{NPSH}_r = 3.0\) m at its
+rated flow; take a margin of 1.0 m and suction losses \(h_f = 0.7\) m.
+Then \(z \ge 3.0 + 1.0 + 0.7 = 4.7\) m. With the impeller centreline
+0.6 m above grade, the low liquid level must stand at least
+\(0.6 + 4.7 = 5.3\) m above grade; if that level is 0.4 m above the
+column\textquotesingle s bottom tangent line, the tangent line stands at
+4.9 m --- a skirt of about 5 m. For the reflux pump, with
+\(\mathrm{NPSH}_r = 2.0\) m, the same 1.0 m margin and \(h_f = 0.5\) m,
+\(z \ge 3.5\) m: the drum\textquotesingle s low level stands at least
+4.0 m above grade (centreline at 0.5 m) and, that level being 0.3 m above
+the bottom of a horizontal drum, the drum bottom at 3.7 m. The drum
+therefore sits on the first floor of the exchanger structure and the
+condenser on the floor above, so the condensate still drains by gravity.
+Had subcooling been credited, 5 K of it on a liquid with
+\(\mathrm{d}P_\mathrm{vap}/\mathrm{d}T \approx 3\) kPa/K and
+\(\rho = 750\) kg/m\textsuperscript{3} would have added
+\(15\,000/(750 \times 9.81) \approx 2.0\) m --- the size of the whole
+margin, and the reason a hot pump suction is never designed on a
+subcooling that may not be there.
+
+\textbf{Levers when the elevation costs too much}: a low-NPSH pump (a
+larger eye, an inducer, a lower speed), a vertical can pump whose
+impeller sits below grade, a shorter and fatter suction line (low
+velocity, an eccentric reducer flat side up, no high point where vapour
+can gather), or a booster pump. Each lever has a price; the extra metre
+of skirt is often the cheapest.
+
+\hypertarget{platforms-ladders-and-walkways}{%
+\subsection{Platforms, ladders and
+walkways}\label{platforms-ladders-and-walkways}}
+
+\begin{itemize}
+\tightlist
+\item
+  \textbf{Each tall column is self-supporting} on its own foundation,
+  carrying its own wind and seismic loads; it is not hung from a
+  structure. Where it passes through the floors of an adjacent structure,
+  the opening leaves clearance for the different thermal growth of a hot
+  shell and cold steelwork.
+\item
+  \textbf{Platforms} go wherever somebody must stand: at every manhole,
+  at the valves and instruments that are operated or maintained, at the
+  relief valves, and at the top, usually with a davit to lift internals
+  and valves. A column therefore has a \textbf{piping side}, facing the
+  rack, where the risers run, and an \textbf{access side} with the
+  manholes and platforms.
+\item
+  \textbf{Ladders} are caged above a set height and broken by rest
+  landings at set intervals; both are fixed by the applicable regulation
+  (ISO 14122-4 for fixed ladders in Europe, OSHA 29 CFR 1910 Subpart D in
+  the United States, or the local code) --- read it rather than guess the
+  number. A long climb is often better served by a stair tower.
+\item
+  \textbf{Walkways} join adjacent columns, or a column and the exchanger
+  structure, at common platform elevations. They give every high platform
+  a \textbf{second escape route} --- a single ladder is a single way down
+  --- and let an operator move from one column to the next without
+  descending to grade.
+\end{itemize}
+
+\hypertarget{maintenance-and-crane-access}{%
+\subsection{Maintenance and crane
+access}\label{maintenance-and-crane-access}}
+
+Lay out for the day the plant is opened, not only for the day it runs:
+
+\begin{itemize}
+\tightlist
+\item
+  \textbf{Tube bundles} are pulled: leave a clear space in front of each
+  shell-and-tube exchanger\textquotesingle s channel end at least as long
+  as the bundle, on the road side, with room for the extractor.
+\item
+  \textbf{Column internals and catalyst} come out through the manholes
+  and the top: a mobile crane must reach the column, so keep its access
+  side free, \textbf{opposite the rack}, with hard standing for the crane
+  and room to lay down trays, packing or catalyst bins.
+\item
+  \textbf{Pumps and compressors} need room to pull a rotor and a motor,
+  and lifting beams or crane access over the larger machines.
+\item
+  \textbf{Removable spools} and blinds at every exchanger, vessel and
+  pump, so an item can be isolated and taken out without cutting pipe.
+\end{itemize}
+
+\hypertarget{what-choupo-checks-and-what-it-does-not}{%
+\subsection{What Choupo checks, and what it does
+not}\label{what-choupo-checks-and-what-it-does-not}}
+
+A case declares its plot plan in \texttt{system/layoutDict} (the grammar
+is in \file{docs/ai/case-layout.md}, the design record in
+\file{docs/design/a-plant-layout-is-declared-and-checked.md}); the check
+lives in \file{src/postProcessing/layout/PlantLayout.cpp}. Read against
+that code:
+
+\textbf{Checked.}
+\begin{itemize}
+\tightlist
+\item
+  Every \emph{sized} item is placed at a declared plan position (x, y)
+  and base elevation z; its footprint is the item\textquotesingle s own
+  published diameter and length, or a box the case declares where the
+  sizer published none. Two footprints that \textbf{overlap} in plan and
+  in height are \textbf{refused}, and so is a tray stack, a catalyst
+  charge or a relief valve placed on its own (the refusal names its
+  host).
+\item
+  A pair closer than its \textbf{declared separation}, an item outside
+  its sector\textquotesingle s declared area, and an ignition source
+  inside a declared \textbf{zone envelope} or \textbf{downwind} of a
+  release source are \textbf{announced}: the run continues, because a
+  short distance is a layout the student must defend, while an overlap is
+  not a layout at all.
+\item
+  Every material stream is \textbf{routed} orthogonally over one pipe
+  rack (declared, or a stated default that is announced), or listed as
+  not routed with its reason; each route\textquotesingle s length is
+  published.
+\item
+  \textbf{Roads} are checked against the footprints, the rack and the
+  pipes (a road through an item, or under a rack or pipe lower than the
+  declared headroom, is refused), and an item farther than the declared
+  access distance from a road the gate reaches is announced. The
+  \textbf{fence} is derived from the plot and opens at the gates; a road
+  that meets it anywhere else is refused, and every boundary stream
+  crosses it at a battery-limit point carrying the label the case
+  declared (an unlabelled crossing is announced).
+\item
+  The \textbf{plot area} is published (grown by a declared margin; absent
+  one, a lower bound, announced), and the economics prices it as land
+  when the case declares a land price.
+\item
+  On storage: the atmospheric tank sizer refuses a gas and a liquid above
+  1.5 bar, and prices a tank below 0 \textdegree{}C as a lower bound
+  (\file{src/postProcessing/sizing/StorageTankSize.cpp}); a gas buffer is
+  sized as pressure vessels (\texttt{gasStorage},
+  \file{src/postProcessing/sizing/GasStoreSize.cpp}) and a liquefied gas
+  as a pressurised liquid store (\texttt{liquefiedGasStorage}).
+\end{itemize}
+
+\textbf{Not checked --- yours to do by hand.}
+\begin{itemize}
+\tightlist
+\item
+  \textbf{The vertical order of a column group, and the NPSH of every
+  pump.} The column\textquotesingle s shell, condenser, reboiler and
+  reflux drum are separate sized items
+  (\file{src/postProcessing/sizing/ColumnSize.cpp}), each placed at the z
+  the case declares; nothing relates those elevations to one another or
+  to a pump, and the engine publishes no NPSH of either kind. A condenser
+  placed at grade beside its column is accepted
+  (\texttt{aceticAcid02\_plant} does exactly that, and its
+  \texttt{layoutDict} says so). Do the worked example above for your own
+  pumps.
+\item
+  \textbf{The column\textquotesingle s own piping.} A unit that realises
+  several items is piped through the first of them the case places, so
+  the overhead loop and the reboiler circuit are not drawn and their
+  lengths are not counted.
+\item
+  \textbf{The separation and zoning values themselves.} The engine tests
+  the distances and envelopes the case declares; it never says whether
+  they are right. Neither the pressure drop nor the cost of a pipe is
+  computed from its route.
+\item
+  \textbf{Occupied buildings and containment.} A control room, office or
+  canteen is tested only as a declared ignition source, never for blast
+  or toxic exposure; bunds, escape routes, crane and bundle-pulling space
+  are not modelled.
+\item
+  \textbf{Ladders and platforms are drawing, not data.} The 3D view gives
+  every vertical item taller than a fixed height a caged ladder and
+  platforms at a fixed spacing, flagged as decoration
+  (\file{gui/src/case/equipmentModel.ts}); a column shell is stamped
+  \texttt{vessel} like every drum, so the view cannot tell a tower from a
+  tall drum. No platform, ladder or walkway is placed, counted or checked
+  by the engine.
+\end{itemize}
+
+\textbf{Run it.} Open \texttt{tutorials/plant/ammonia02\_full\_plant}
+(declared rack, roads, gate, buildings, fence and labelled battery
+limits), move the control room into the downwind sector of a release
+source, and read the finding. Then open
+\texttt{tutorials/plant/aceticAcid02\_plant}, lift its
+column\textquotesingle s condenser onto a structure, and work out by hand
+the skirt and the drum elevation its pumps would need. The EduTool
+\emph{Plant layout: where each item stands, and why} walks the same
+ground with guided moves; \emph{Pump vs system curve} treats NPSH on its
+own.
+
+\textbf{Further reading.} Mecklenburgh (ed.), \emph{Process Plant
+Layout}, IChemE; CCPS, \emph{Guidelines for Siting and Layout of
+Facilities}, AIChE; Bausbacher \& Hunt, \emph{Process Plant Layout and
+Piping Design}, Prentice Hall; Kister, \emph{Distillation Operation},
+McGraw-Hill (the column group in operation); and, for anything that
+touches safety, the standards named above.
 
 \hypertarget{effluent-treatment--liquid--gaseous}{%
 \section{Effluent treatment --- liquid \&
@@ -2338,6 +2889,11 @@ guide (see \emph{Disclaimer \& scope}).
   Membranes --- Baker, \emph{Membrane Technology and Applications},
   Wiley.
 \item
+  Plant layout --- Mecklenburgh (ed.), \emph{Process Plant Layout},
+  IChemE; Bausbacher \& Hunt, \emph{Process Plant Layout and Piping
+  Design}, Prentice Hall; CCPS, \emph{Guidelines for Siting and Layout of
+  Facilities}, AIChE.
+\item
   Materials / corrosion --- \textbf{NACE/AMPP} standards; \textbf{API RP
   571} (damage mechanisms).
 \item
@@ -2364,6 +2920,11 @@ guide (see \emph{Disclaimer \& scope}).
 \item
   Flammables --- \textbf{NFPA 30}; electrical area classification ---
   \textbf{NFPA 70 / IEC 60079}.
+\item
+  Siting \& spacing --- \textbf{API RP 752 / 753} (occupied buildings);
+  \textbf{NFPA 30 / 58}, \textbf{API STD 2510} (tank and LPG spacing);
+  hazardous areas --- \textbf{IEC 60079-10-1}, \textbf{EI Model Code Part
+  15}, \textbf{API RP 505}, \textbf{NFPA 497}, \textbf{ATEX 1999/92/EC}.
 \item
   Emissions \& discharge --- the local regulator\textquotesingle s
   limits (e.g. \textbf{US EPA}, \textbf{EU IED / BAT-BREF}).
