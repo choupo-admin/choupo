@@ -1046,6 +1046,20 @@ accepts today, and that is a policy call.
 > capital must now carry.  Moved golden rows (layout area, pipe lengths)
 > listed for Vitor before re-recording.  Status: dispatched 2026-10-18.
 
+> **C87 first round (branch `claude/c87-acetic-tanks`, a5dae3700), NOT
+> merged.**  Methanol tank 14 d (1524 m3, 1077 t) + a feed pump (the
+> storage sizer refuses a liquid above 1.5 bar, so the methanol is stored at
+> 1 atm and pumped to 30 bar); acid tank 7 d (1211 m3, 992 t); tank area 30 m
+> north; plot 3388.5 -> 5617 m2; 16 rows moved, 113 appended.  Found: a
+> `storageTank` unit has NO sizer -- a tank is sized only as a postDict
+> `storage` item on a stream (C44), so the hold time was declared twice; the
+> acid is stored at its 1.5 bar bubble point (404 K).  VITOR'S RULINGS
+> (2026-10-18): (1) "Sim, e arrefece o acido" -- add a product cooler before
+> the acid tank, then show the new moved-row list; (2) "Sim, um so sitio" --
+> the storage sizing entry reads the hold time from the `storageTank` unit it
+> names, and declaring it in both places refuses.  Second round dispatched
+> 2026-10-18.
+
 > **C88. THE 3D LAYOUT MADE TO LOOK LIKE A PLANT (Vitor, 2026-10-18: "E ve
 > se pões o layout com melhor aspecto!  Eu acho que ha bibliotecas para
 > renderizar o 3d para aquilo ficar top notch!").**  Measured:
