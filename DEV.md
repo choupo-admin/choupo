@@ -1106,6 +1106,20 @@ accepts today, and that is a policy call.
 > shape), Turton printed beside it as an announced extrapolation.  Second
 > round dispatched; moved PEQ rows to Vitor after it.
 
+> **C89 MERGED 2026-10-18.**  `gasStorage ( ... )`, `GasStoreSize` +
+> `costing/SteelMassCost` (routed on `costBasis steelMass`): cost = shell
+> weight (rho pi D H t, no heads) x a REQUIRED declared installed price
+> (`steelPrice`, `steelPriceReason`; absent -> the cost refuses by name and the
+> total reads INCOMPLETE); Turton printed as `[comparison] ... EXTRAPOLATED`
+> (F_P, t/R) and kept out of every total.  PEQ: 8 EUR/kg (placeholder), 34.11 M
+> EUR for 10 vessels; FCI 41.29 -> 98.60 M EUR (the grassroots factors apply
+> on top), NPV -296.0 -> -408.6 M EUR.  18 rows re-recorded on Vitor's
+> approval (list in the commit), 433 appended.  `check_design_sheet` arm (v).
+> `--fast` 72/1 (PEQ before the re-record), `--gui` vitest 5580/5580.  Open:
+> no relief valve on the buffer (C62 could protect it); the charging
+> compressor unmodelled (announced); `StorageTankSize`'s gas refusal could
+> name `gasStorage` as the remedy.
+
 > **C90. THE EXPORTED LAYOUT IN COLOUR, AND ROADS AND SITE BUILDINGS
 > (Vitor, 2026-10-18, with two screenshots: "Esta mesmo fixe!  Mas o layout
 > gerado para exportar nao esta a cores!  E achas que se podem por as
