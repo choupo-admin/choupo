@@ -192,12 +192,48 @@ int SprayDryer::solve(const DictPtr& dict,
         if (r == "nonvolatile")                          iSolid = i;
         else if (thermo.comp(i).hasVaporPressure())      iSolv  = i;
     }
+    //  EVERY non-volatile solid the feed brings leaves in the powder
+    //  (2026-10-18, DEV.md 4c C97).  Until then the unit kept ONE solid --
+    //  the last non-volatile dissolved in the feed -- and a second one (the
+    //  polymer of an amorphous solid dispersion beside its drug, say) was
+    //  in the feed and in no outlet: mass lost at exit 0.  `iSolid` stays
+    //  the solid whose isotherm and name the moisture model reads; the
+    //  others are carried at its side, and a powder with MORE THAN ONE
+    //  solid and a sorption isotherm is refused below, because the
+    //  moisture model is per kg of ONE material.  A single-solid feed is
+    //  byte-identical: the sums below then have one term.
+    std::vector<std::size_t> solids;
+    for (std::size_t i = 0; i < n; ++i)
+        if (thermo.comp(i).role() == "nonvolatile"
+            && (zFeed[i] > 0.0 || sFeed[i] > 0.0))
+            solids.push_back(i);
+    if (iSolid == n && !solids.empty()) iSolid = solids.back();
     if (iSolv == n)
         throw std::runtime_error("SprayDryer: the feed has no volatile"
             " solvent to evaporate (need a component with vapour pressure).");
     if (iSolid == n)
         throw std::runtime_error("SprayDryer: the feed has no non-volatile"
             " solid to dry into powder (need a `role nonvolatile;` species).");
+    if (solids.size() > 1)
+    {
+        std::vector<std::string> withIsotherm;
+        for (auto i : solids)
+            if (thermo.comp(i).hasSorption()) withIsotherm.push_back(thermo.comp(i).name());
+        if (!withIsotherm.empty())
+        {
+            std::string names;
+            for (const auto& s : withIsotherm) names += (names.empty() ? "" : ", ") + s;
+            throw std::runtime_error("SprayDryer '" + (dict->name().empty() ? type() : dict->name())
+                + "': the feed carries " + std::to_string(solids.size())
+                + " non-volatile solids and " + names + " declares a `sorption {}`"
+                " isotherm.  The residual-moisture model is a moisture RATIO per kg"
+                " of ONE dry material; the isotherm of a mixed powder is not"
+                " modelled, and applying one component's isotherm to the whole"
+                " powder would be a guess.  Remedy: remove the sorption block"
+                " (the powder then leaves bone-dry, phase 1, said on the run) or"
+                " dry one solid at a time.");
+        }
+    }
 
     std::size_t iDry = n; scalar ymax = 0.0;
     for (std::size_t i = 0; i < n; ++i)
@@ -251,8 +287,27 @@ int SprayDryer::solve(const DictPtr& dict,
     //  phase-1 "dry powder" assumption).  Air carries the vapour out.
     // -------------------------------------------------------------------
     const scalar n_solv_feed = F_feed * zFeed[iSolv];                // kmol/s evaporated
-    const scalar n_solid     = F_feed * zFeed[iSolid] + sFeed[iSolid]; // dissolved + suspended
-    const scalar m_solid     = n_solid * sol.MW();                   // kg/s solid
+    //  Per solid, dissolved + suspended; summed over every solid of the feed.
+    sVector nSolidOf(n, 0.0);                                         // kmol/s
+    scalar m_solid = 0.0;                                             // kg/s
+    for (auto i : solids)
+    {
+        nSolidOf[i] = F_feed * zFeed[i] + sFeed[i];
+        m_solid += nSolidOf[i] * thermo.comp(i).MW();
+    }
+    if (solids.size() > 1)
+    {
+        std::string names;
+        for (auto i : solids) names += (names.empty() ? "" : ", ") + thermo.comp(i).name();
+        const std::string msg = "the powder carries " + std::to_string(solids.size())
+            + " solids (" + names + "): all leave in the powder, the particle density"
+              " is their mass-weighted harmonic mean (volumes additive), and no"
+              " residual moisture is modelled for a mixed powder";
+        if (AdvisoryLog::instance().add("model", "info",
+                "sprayDryer '" + (dict->name().empty() ? type() : dict->name()) + "'", msg)
+            && verbosity >= 1)
+            std::cout << "  [sprayDryer] " << msg << "\n";
+    }
 
     scalar MW_feed = 0.0;
     for (std::size_t i = 0; i < n; ++i) MW_feed += zFeed[i] * thermo.comp(i).MW();
@@ -361,7 +416,18 @@ int SprayDryer::solve(const DictPtr& dict,
     if (verbosity >= 2)
         std::cout << "  [atomiser] " << atomiser->name() << ":  " << drop.note << "\n"
                   << "  [atomiser mu_L] " << muLSource << "\n";
-    const scalar rho_solid = (sol.rho_p() > 0.0) ? sol.rho_p() : 1500.0;
+    //  The particle density of a powder of several solids is the mass-
+    //  weighted HARMONIC mean (the volumes add, an ideal-mixing assumption
+    //  printed below); one solid keeps its own density exactly.
+    auto rhoOf = [&](std::size_t i)
+    { return (thermo.comp(i).rho_p() > 0.0) ? thermo.comp(i).rho_p() : 1500.0; };
+    scalar rho_solid = rhoOf(iSolid);
+    if (solids.size() > 1 && m_solid > 0.0)
+    {
+        scalar vol = 0.0;                                   // m3 per s of solid
+        for (auto i : solids) vol += nSolidOf[i] * thermo.comp(i).MW() / rhoOf(i);
+        rho_solid = m_solid / vol;
+    }
     const scalar d_part = (x_solid_mass > 0.0)
                         ? d32 * std::cbrt(x_solid_mass * rho_L / rho_solid) : d32;
 
@@ -430,6 +496,33 @@ int SprayDryer::solve(const DictPtr& dict,
         const scalar rate_drop    = (dHv_kg > 0.0)
                                   ? h * A_drop * (T_air - T_wb) / dHv_kg : 0.0;
         tau_const = (rate_drop > 0.0) ? m_water_drop / rate_drop : 0.0;     // s
+    }
+
+    //  THE LEWIS RELATION IS AN ASSUMPTION, AND IT IS SAID WHEN IT IS FAR
+    //  FROM TRUE (2026-10-18, DEV.md 4c C97).  The wet bulb above is solved
+    //  with Le = 1, which is close for water in air (Le ~ 0.85) and not for
+    //  an organic solvent in nitrogen.  When the package can price both the
+    //  gas conductivity and the solvent diffusivity, the film Lewis number
+    //  Le = Sc/Pr is computed and, beyond +/-20 % of 1, announced -- the
+    //  number moves nothing; the wet bulb (and so the constant-rate drying
+    //  time) keeps the Le = 1 construction, and the run says so.
+    if (Pr > 0.0 && Sc > 0.0)
+    {
+        const scalar Le = Sc / Pr;
+        if (std::abs(Le - 1.0) > 0.20)
+        {
+            std::ostringstream m;
+            m << "the wet bulb (and the constant-rate drying time) is solved with the"
+                 " Lewis relation Le = 1, but this gas and solvent ("
+              << solv.name() << " in " << thermo.comp(iDry).name() << ") have Le = Sc/Pr = "
+              << std::fixed << std::setprecision(2) << Le << " at the film ("
+              << std::setprecision(1) << T_film << " K): the wet-bulb temperature carries"
+                 " that approximation";
+            if (AdvisoryLog::instance().add("model", "warning",
+                    "sprayDryer '" + (dict->name().empty() ? type() : dict->name()) + "'", m.str())
+                && verbosity >= 1)
+                std::cout << "  [sprayDryer] " << m.str() << "\n";
+        }
     }
 
     // -------------------------------------------------------------------
@@ -694,7 +787,7 @@ int SprayDryer::solve(const DictPtr& dict,
 
     //  The two outlets, exactly as they are published below (unpinned: this
     //  unit pins nothing), for an evaporation `nev` and a temperature `T`.
-    sVector sPowder(n, 0.0); sPowder[iSolid] = n_solid;
+    const sVector sPowder = nSolidOf;     // every solid of the feed (one term for one solid)
     sVector zWater(n, 0.0);  zWater[iSolv] = 1.0;
     auto exhaustFlows = [&](scalar nev)
     {
@@ -925,7 +1018,7 @@ int SprayDryer::solve(const DictPtr& dict,
     powder.F = n_water_resid;
     powder.z.assign(n, 0.0);
     if (n_water_resid > 0.0) powder.z[iSolv] = 1.0;
-    powder.s.assign(n, 0.0); powder.s[iSolid] = n_solid;
+    powder.s = nSolidOf;                 // every solid of the feed
     powder.psd.diameter = dCen;          // Rosin-Rammler spread, not a single d32
     powder.psd.massFrac = mf;
     produced_.push_back(powder);

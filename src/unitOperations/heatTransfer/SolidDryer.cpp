@@ -118,6 +118,49 @@ int SolidDryer::solve(const DictPtr& dict,
     if (iSolv == n)
         throw std::runtime_error("SolidDryer: no volatile moisture (need water with a vapour pressure).");
 
+    //  EVERY SOLID THE WET FEED CARRIES LEAVES IN THE DRY SOLID (2026-10-18,
+    //  DEV.md 4c C97).  Until then only the sorbing solid did: a second solid
+    //  in the feed (the other excipients of a coated tablet, say) was priced
+    //  into H(in) and appeared in no outlet -- mass lost at exit 0.  The
+    //  others now ride through as DRY SPECTATORS: heated to T_out, priced on
+    //  the same surface, holding no moisture.  The isotherm stays the
+    //  sorbing solid's and the moisture ratio X stays per kg of IT, which
+    //  the run says.  Two sorbing solids are refused (whose isotherm?), and
+    //  so is a non-volatile in the wet feed's LIQUID, which no outlet would
+    //  carry.  A single-solid feed is byte-identical.
+    {
+        const std::string whoS = "SolidDryer '" + (dict->name().empty() ? type() : dict->name()) + "'";
+        std::vector<std::string> sorbing, spectators;
+        for (std::size_t i = 0; i < n; ++i)
+            if (sW[i] > 0.0)
+                (thermo.comp(i).hasSorption() ? sorbing : spectators).push_back(thermo.comp(i).name());
+        if (sorbing.size() > 1)
+            throw std::runtime_error(whoS + ": the wet feed carries "
+                + std::to_string(sorbing.size()) + " solids with a `sorption {}`"
+                " isotherm (" + sorbing.front() + ", " + sorbing[1] + (sorbing.size() > 2 ? ", ..." : "")
+                + ").  The moisture model is per kg of ONE sorbing material; the"
+                " isotherm of a mixture is not modelled.  Remedy: keep the"
+                " isotherm on the one material that holds the water.");
+        for (std::size_t i = 0; i < n; ++i)
+            if (zW[i] > 0.0 && i != iSolv)
+                throw std::runtime_error(whoS + ": the wet feed's liquid carries '"
+                    + thermo.comp(i).name() + "' beside the moisture '"
+                    + thermo.comp(iSolv).name() + "'.  This dryer evaporates ONE"
+                    " volatile and has no outlet for anything else in the liquid;"
+                    " declare a dissolved non-volatile as a solid of the stream.");
+        if (!spectators.empty())
+        {
+            std::string names;
+            for (const auto& s : spectators) names += (names.empty() ? "" : ", ") + s;
+            const std::string msg = std::to_string(spectators.size()) + " solid(s) ("
+                + names + ") ride through as DRY SPECTATORS: heated to T_out and"
+                " priced, holding no moisture; the isotherm and the moisture ratio X"
+                " are " + thermo.comp(iSolid).name() + "'s, per kg of it";
+            if (AdvisoryLog::instance().add("model", "info", whoS, msg) && verbosity >= 1)
+                std::cout << "  [SolidDryer] " << msg << "\n";
+        }
+    }
+
     const Component& sol  = thermo.comp(iSolid);
     const Component& solv = thermo.comp(iSolv);
     const scalar MW_sol  = sol.MW();
@@ -197,7 +240,7 @@ int SolidDryer::solve(const DictPtr& dict,
         + flashState::priceSolids(sW, T_w, thermo)
         + flashState::priceState(T_air, P_air, yAir, F_air, pinnedAir, vfAir,
                                  thermo, who + " hot air", nullptr);        // kW
-    sVector sDry(n, 0.0); sDry[iSolid] = solid_mol;
+    const sVector sDry = sW;      // every solid of the wet feed (one term for one solid)
     sVector zWater(n, 0.0); zWater[iSolv] = 1.0;
     auto exhaustComp = [&](scalar rem, scalar& Fex)
     {
@@ -347,7 +390,7 @@ int SolidDryer::solve(const DictPtr& dict,
     dry.name = "drySolid";  dry.T = T_out;  dry.P = P;  dry.vf = 0.0;
     dry.F = water_final;
     dry.z.assign(n, 0.0);  if (water_final > 0.0) dry.z[iSolv] = 1.0;
-    dry.s.assign(n, 0.0);  dry.s[iSolid] = solid_mol;
+    dry.s = sW;                  // every solid of the wet feed
     produced_.push_back(dry);
 
     ProcessStream ex;

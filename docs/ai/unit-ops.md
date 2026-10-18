@@ -1304,6 +1304,19 @@ dryingCurve  sucroseDrying;          // -> constant/dryingKinetics
 Component must have a `sorption {}` block (typically case-local
 overlay per axiom 4) for the GAB isotherm + Xc.
 
+**Several solids** (2026-10-18, DEV.md 4c C97): every non-volatile the feed
+carries, dissolved or suspended, leaves in the powder (the polymer of an
+amorphous solid dispersion beside its drug); the particle density is their
+mass-weighted harmonic mean, announced.  A powder of several solids with a
+`sorption {}` block on any of them REFUSES (the moisture model is per kg of
+ONE material).  The wet bulb is solved with the Lewis relation Le = 1; when
+the package prices the gas conductivity and the solvent's diffusivity, the
+film Le = Sc/Pr is computed and, beyond +/-20 % of 1 (an organic solvent in
+nitrogen: acetone/N2 is about 1.6), ANNOUNCED.  The liquid viscosity and
+surface tension still default to water when neither a model nor the
+`operation` knob declares them.  Worked case:
+`tutorials/plant/apalutamide01_tablets`.
+
 ### `solidDryer`
 Polish a HYGROSCOPIC powder (sugar, food) toward the equilibrium
 moisture set by a real hot-air stream + the solid's **GAB sorption
@@ -1323,6 +1336,11 @@ limit: `solidDryer02_starved_air`.
 ```
 inputs  (wetSolid  hotAir );   outputs (drySolid  humidExhaust );
 ```
+The isotherm is ONE solid's (the one carrying `sorption {}`; two refuse) and
+the moisture ratio X is per kg of it; every other solid of the wet feed rides
+through as a DRY SPECTATOR -- heated to T_out, priced, holding no water --
+and the run says so (2026-10-18; until then it was lost from the outlet).  A
+non-volatile in the wet feed's LIQUID refuses: declare it as a solid.
 
 ### `evaporativeDryer`
 Dry a NON-sorbing solid (a crystalline inorganic — e.g. Li₂CO₃) of its
@@ -1449,6 +1467,15 @@ inputs  (s1  s2  s3 );  outputs (merged );
 operation {}                  // adiabatic: T_out is a result
 operation { T 330 K; }        // isothermal: T_out declared, its duty published as Q_kW
 ```
+
+**Powders alone** (2026-10-18): a merge whose inlets carry ONLY solids (a
+blender) is solved on the solid rung -- adiabatic, SUM H_solid(in) =
+H_solid(out) bracketed between the inlet temperatures, or at a declared `T`
+with its duty published as `Q_kW` -- and the outlet carries no fluid.  It was
+refused before ("total inlet flow is zero").  The FLUID branch still balances
+the fluid alone: crystals entering a fluid merge at another temperature are
+summed but their heat is not in the balance, so give such a merge a declared
+`T` (its duty then prices the solids) or keep the inlets at one temperature.
 
 ### `splitter`
 Single inlet → multiple outlets at user-spec'd fractions.  All
