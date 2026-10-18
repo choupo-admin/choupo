@@ -192,7 +192,11 @@ An earned section, shown only when the result carries a layout.
 coordinate bookkeeping (plan `(x, y, z-up)` to three.js `(X, Y-up, Z = -y)`)
 and the trigonometry of the declared wind angle, nothing else.
 `ui/plotting/PlantLayout3D.tsx` draws it: cylinders where the engine says
-cylinder, labelled boxes otherwise (*a labelled box beats a wrong picture*),
+cylinder, labelled boxes otherwise (*a labelled box beats a wrong picture*;
+since DEV.md 4c C88 each item is drawn BY ITS EQUIPMENT KIND on that same
+envelope -- `gui/src/case/equipmentModel.ts`, heads, skirts, saddles,
+ladders and platforms as declared decoration -- and a kind with no drawing
+keeps the plain cylinder or box),
 sector areas on the ground, zones as translucent cylinders distinguished by
 OPACITY, EDGE STYLE (solid / wire / dashed) and the WORD in their label --
 never colour alone, so a greyscale print keeps them apart -- flagged items

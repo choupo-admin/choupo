@@ -2151,7 +2151,11 @@ zone or downwind of a release.  ONE home for the footprint rule
 (`postProcessing/layout/PlantLayout`); `bin/choupo-layout --draft` wraps
 `choupoSolve --layout-draft`, never overwrites without `--force`, and checks
 its own draft.  Golden kind `layout`.  The GUI draws the block in 3D
-(three.js, lazy-loaded).  **Since C80 the engine also ROUTES THE PIPES**:
+(three.js and its own shipped addons only, lazy-loaded; since C88 each item
+BY ITS EQUIPMENT KIND on the envelope the engine published --
+`gui/src/case/equipmentModel.ts`, body = envelope, ladders/platforms/
+saddles flagged as decoration, access drawn by HEIGHT because a column
+shell is stamped `vessel` -- with a High/Fast quality toggle).  **Since C80 the engine also ROUTES THE PIPES**:
 every material stream is routed (item nozzle / junction on the rack /
 battery limit, orthogonally over a declared `pipeRack` or an announced stated
 default, `pipes { <stream> { waypoints } }` overriding one) or listed in
