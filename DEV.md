@@ -1218,6 +1218,24 @@ accepts today, and that is a policy call.
 > in 3D with the pipeline and a label at the crossing.  Handed to the C92
 > general on its branch.  Moved rows to Vitor before re-recording.
 
+> **C92 + C93 MERGED 2026-10-18 (Vitor: "Sim, integra e publica").**  T101
+> removed (syngas by pipeline from the adjacent industrial park); T201 kept
+> (7 bullets, `liquefiedGasStorage` linked by `unit T201;`, design pressure
+> >= the package's bubble pressure, new `BubblePoint::pressure`);
+> `StorageLink` is the one home of `unit <name>;` for all three stores.
+> FENCE: derived from the plot (one home), openings at gates; a road meeting
+> it away from a gate and an item across it REFUSE; every boundary stream
+> crosses it at a battery limit on the fence carrying a declared from/to
+> label (unlabelled -> ANNOUNCED); drawn in 3D with the pipeline and its
+> sign.  `notRouted` must be empty on ammonia02 (gate arm); an unrouted
+> stream elsewhere is drawn as a dashed stub with its reason.  ammonia02
+> declares its pipe rack (the default-rack witness moved to a probe copy).
+> FCI 55.42 -> 72.00 M EUR, NPV 99.37 -> 63.81 M EUR, IRR 28.9 -> 20.1 %.
+> 31 rows re-recorded and 14 T101 rows removed on Vitor's approval (list in
+> the commit); 346 appended.  NEXT, separate: the pipe/footprint clash check
+> (written, held back).  Proposed, not done: separate inlet/outlet nozzles
+> (moves pipe lengths in every layout case).
+
 > **C88. THE 3D LAYOUT MADE TO LOOK LIKE A PLANT (Vitor, 2026-10-18: "E ve
 > se pões o layout com melhor aspecto!  Eu acho que ha bibliotecas para
 > renderizar o 3d para aquilo ficar top notch!").**  Measured:
