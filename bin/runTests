@@ -1442,7 +1442,14 @@ auto_generate() {
         #  C93) rides it too: the `fence` line's `length`, and per gate
         #  opening (`fenceOpening:<gate>`) and per pipe crossing
         #  (`fenceCrossing:<stream>`) its position and its `side` WORD; the
-        #  crossing's label is the case's sentence, echoed.  NOT pinned:
+        #  crossing's label is the case's sentence, echoed.  THE TRUCKS AND
+        #  THE CAR PARKS (DEV.md 4c C96) ride it the same way: each
+        #  `truckRoute:<name>` line's `length`, its `verdict` WORD and its
+        #  `from`/`to` gates, each `routeCorner:<route>:<k>` line's position,
+        #  `radius` and `turn` WORD, the `designVehicle` line's
+        #  `turningDiameter`, each `turningArea:<name>` position and
+        #  `diameter`, each `carPark:<item>` line's `bays`, `capacity` and
+        #  `area`, and each fence opening's `approach`.  NOT pinned:
         #  the source/reason sentences and the zone and wind declarations,
         #  which are the case's own words echoed -- what they DECIDE is
         #  pinned through the findings and the count.
@@ -1457,13 +1464,13 @@ auto_generate() {
                 sub(/"release": \{.*/, "", line)
                 sub(/"message": .*/, "", line)
                 if (id == "wind" || id ~ /^area:/) next
-                nw = split("shape orientation footprintFrom from to side", W, " ")
+                nw = split("shape orientation footprintFrom from to side verdict turn", W, " ")
                 for (i = 1; i <= nw; i++)
                     if (match(line, "\"" W[i] "\": \"[^\"]*\"")) {
                         s = substr(line, RSTART, RLENGTH); sub(/^"[^"]*": "/, "", s); sub(/"$/, "", s)
                         printf "layout %-20s %-16s %-18s %s\n", id, W[i], s, "exact"
                     }
-                nn = split("x y z dx dy dz value limit placed unplaced internal findings length pipes notRouted pipeLength plotArea footprintArea pavedArea distance", N, " ")
+                nn = split("x y z dx dy dz value limit placed unplaced internal findings length pipes notRouted pipeLength plotArea footprintArea pavedArea distance radius bays capacity area approach diameter turningDiameter", N, " ")
                 for (i = 1; i <= nn; i++)
                     if (match(line, "\"" N[i] "\": *-?[0-9][0-9.eE+-]*")) {
                         s = substr(line, RSTART, RLENGTH); sub(/^"[^"]*": */, "", s)

@@ -973,6 +973,22 @@ void readRoads(const Dictionary& d, PlantLayoutRecord& rec)
         road.reason = text(*e, "reason", wr);
         if (road.width <= 0)
             refuse(wr + ": `width` must be positive");
+        //  C96: the radius of its corners, and one-way traffic.
+        if (e->found("cornerRadius"))
+        {
+            road.cornerRadius = length(*e, "cornerRadius", wr);
+            road.cornerRadiusDeclared = true;
+            if (road.cornerRadius < 0)
+                refuse(wr + ": `cornerRadius` cannot be negative");
+        }
+        if (e->found("oneWay"))
+        {
+            const std::string ow = e->lookupWord("oneWay");
+            if (ow != "yes" && ow != "no")
+                refuse(wr + ": `oneWay` -- " + registryRefusal::message(
+                       "oneWay", ow, { "yes", "no" }, "Accepted"));
+            road.oneWay = ow == "yes";
+        }
         if (!e->found("waypoints"))
             refuse(wr + ": `waypoints ( { x <m>; y <m>; } ... );` -- its centre"
                    " line -- is not declared");
@@ -1010,6 +1026,89 @@ void readRoads(const Dictionary& d, PlantLayoutRecord& rec)
     }
     if (R.roads.empty())
         refuse(w + ": `network` declares no road");
+
+    //  ---- C96: the design vehicle, the turning areas, the truck routes ----
+    if (rd->found("designVehicle"))
+    {
+        const auto dv = rd->subDict("designVehicle");
+        auto& V = R.designVehicle;
+        V.present = true;
+        V.turningDiameter = length(*dv, "turningDiameter", w + " designVehicle");
+        V.source = text(*dv, "source", w + " designVehicle");
+        V.reason = text(*dv, "reason", w + " designVehicle");
+        if (V.turningDiameter <= 0)
+            refuse(w + " designVehicle: `turningDiameter` must be positive");
+    }
+    if (rd->found("turningAreas"))
+    {
+        std::set<std::string> an;
+        std::size_t k = 0;
+        for (const auto& e : rd->lookupDictList("turningAreas"))
+        {
+            ++k;
+            LayoutTurningArea ta;
+            if (!e->found("area"))
+                refuse(w + " turningAreas entry " + std::to_string(k)
+                       + ": `area \"<name>\";` is not declared");
+            ta.id = e->lookupWord("area");
+            const std::string wa = "turning area `" + ta.id + "`";
+            if (!an.insert(ta.id).second)
+                refuse(wa + " is declared twice");
+            ta.x = length(*e, "x", wa);
+            ta.y = length(*e, "y", wa);
+            ta.diameter = length(*e, "diameter", wa);
+            ta.reason = text(*e, "reason", wa);
+            if (ta.diameter <= 0)
+                refuse(wa + ": `diameter` must be positive");
+            R.turningAreas.push_back(ta);
+        }
+    }
+    if (rd->found("truckRoutes"))
+    {
+        if (!R.designVehicle.present)
+            refuse(w + ": `truckRoutes` are declared with no `designVehicle {"
+                   " turningDiameter <m>; source \"...\"; reason \"...\"; }` --"
+                   " a route is checked against the vehicle that drives it");
+        std::set<std::string> rn, roadNames;
+        for (const auto& road : R.roads) roadNames.insert(road.id);
+        std::size_t k = 0;
+        for (const auto& e : rd->lookupDictList("truckRoutes"))
+        {
+            ++k;
+            LayoutTruckRoute T;
+            if (!e->found("route"))
+                refuse(w + " truckRoutes entry " + std::to_string(k)
+                       + ": `route \"<name>\";` is not declared");
+            T.id = e->lookupWord("route");
+            const std::string wt = "truck route `" + T.id + "`";
+            if (!rn.insert(T.id).second)
+                refuse(wt + " is declared twice");
+            for (const char* key : { "from", "to" })
+                if (!e->found(key))
+                    refuse(wt + ": `" + std::string(key) + " <gate>;` is not"
+                           " declared -- a route runs from a gate back to a gate");
+            T.from   = e->lookupWord("from");
+            T.to     = e->lookupWord("to");
+            T.reason = text(*e, "reason", wt);
+            if (!e->found("roads"))
+                refuse(wt + ": `roads ( <road> ... );` -- the roads it drives,"
+                       " in order -- is not declared");
+            T.roads = e->lookupWordList("roads");
+            if (T.roads.empty())
+                refuse(wt + ": `roads` names no road");
+            for (const auto& name : T.roads)
+                if (!roadNames.count(name))
+                    refuse(wt + ": `" + name + "` -- " + registryRefusal::message(
+                           "road", name, std::vector<std::string>(roadNames.begin(),
+                           roadNames.end()), "Declared"));
+            if (e->found("serves")) T.serves = e->lookupWordList("serves");
+            R.truckRoutes.push_back(T);
+        }
+    }
+    else if (R.designVehicle.present)
+        announce("info", "layout",
+            "a `designVehicle` is declared and no `truckRoutes`: no route is"
+            " walked, so the turning diameter checks nothing");
 }
 
 void checkRoads(PlantLayoutRecord& rec,
@@ -1028,7 +1127,49 @@ void checkRoads(PlantLayoutRecord& rec,
         rects.push_back(pavedRects(rd));
         all.insert(all.end(), rects.back().begin(), rects.back().end());
     }
+    //  C96: the approaches that carry a road on to its gate's fence opening
+    //  are paved too.
+    for (const auto& o : rec.fence.openings)
+        if (o.approach > kTol)
+            all.push_back({ o.gate, std::min(o.approachX, o.x) - (o.approachX == o.x ? 0.5 * o.width : 0.0),
+                                    std::max(o.approachX, o.x) + (o.approachX == o.x ? 0.5 * o.width : 0.0),
+                                    std::min(o.approachY, o.y) - (o.approachY == o.y ? 0.5 * o.width : 0.0),
+                                    std::max(o.approachY, o.y) + (o.approachY == o.y ? 0.5 * o.width : 0.0) });
     R.pavedArea = unionArea(all);
+
+    //  ---- C96: a turning area through a footprint is REFUSED (it is
+    //  pavement, as a road is); one that touches no road is ANNOUNCED -------
+    for (const auto& ta : R.turningAreas)
+    {
+        for (const auto& it : rec.items)
+        {
+            if (isDrivable(it)) continue;
+            if (verticalOverlap(0.0, R.headroom, it.z, it.dz) <= kTol) continue;
+            const scalar dd = pointToFootprint(ta.x, ta.y, it);
+            if (dd < 0.5 * ta.diameter - kTol)
+                refuse("turning area `" + ta.id + "` (" + num(ta.diameter)
+                       + " m across at (" + num(ta.x) + ", " + num(ta.y)
+                       + ") m) runs THROUGH `" + it.id + "`, whose footprint comes "
+                       + num(dd) + " m from its centre -- move the turning area or"
+                         " the item");
+        }
+        scalar dmin = 1e300;
+        for (const auto& rd : R.roads)
+            for (std::size_t k = 0; k + 1 < rd.centreline.size(); ++k)
+            {
+                const auto& a = rd.centreline[k];
+                const auto& b = rd.centreline[k + 1];
+                const scalar cx = std::clamp(ta.x, std::min(a[0], b[0]), std::max(a[0], b[0]));
+                const scalar cy = std::clamp(ta.y, std::min(a[1], b[1]), std::max(a[1], b[1]));
+                dmin = std::min(dmin, std::hypot(ta.x - cx, ta.y - cy));
+            }
+        if (dmin > 0.5 * ta.diameter + kTol)
+            addFinding("turningAreaOffRoad", ta.id, "", dmin, 0.5 * ta.diameter,
+                "warning",
+                "turning area `" + ta.id + "` touches no road: its centre is "
+                + num(dmin) + " m from the nearest centre line, beyond its "
+                + num(0.5 * ta.diameter) + " m radius");
+    }
 
     //  ---- a road through a footprint: REFUSED (as two items overlapping) --
     for (std::size_t i = 0; i < R.roads.size(); ++i)
@@ -1193,6 +1334,13 @@ void checkRoads(PlantLayoutRecord& rec,
         reached.insert(R.roads[nb.road].component);
     }
     const bool anyGate = !R.entrances.empty();
+    //  C96: ONE entrance is a site a blocked road closes.
+    if (R.entrances.size() == 1)
+        addFinding("singleEntrance", R.entrances.front(), "", 1.0, 2.0, "warning",
+            "the site has ONE entrance (gate `" + R.entrances.front() + "`): a"
+            " fire brigade arriving while that road is blocked -- by the fire, by"
+            " a tanker, by the evacuation leaving -- has no second way in.  Place"
+            " a second `gate`, on another side, served by the road network");
     if (!anyGate)
         addFinding("noEntrance", "roads", "", 0.0, 0.0, "warning",
             "the road network declares no entrance: no non-process item of kind"
@@ -1293,7 +1441,8 @@ void checkRoads(PlantLayoutRecord& rec,
 const char* const kPlotRule =
     "the plot is the axis-aligned envelope of every declared sector area,"
     " every placed footprint (process and non-process), every routed"
-    " pipe's polyline and every declared road's paved surface, grown on"
+    " pipe's polyline and every declared road's paved surface and turning"
+    " area, grown on"
     " every side by the declared plot margin;"
     " the footprint area is the sum of the placed items' plan areas (a"
     " vertical cylinder's disc, any other item's rectangle), each item"
@@ -1307,7 +1456,8 @@ const char* const kPlotRuleFenced =
     " every placed footprint (process and non-process), the pipe rack's plan"
     " band (which every rack route lies within, up to the legs that carry a"
     " boundary pipe on to the fence, inside the fence by construction),"
-    " every declared waypoint route and every declared road's paved surface,"
+    " every declared waypoint route and every declared road's paved surface"
+    " and turning area,"
     " grown on every side by the declared plot margin;"
     " the footprint area is the sum of the placed items' plan areas (a"
     " vertical cylinder's disc, any other item's rectangle), each item"
@@ -1400,6 +1550,9 @@ void plotOf(const Dictionary& d, PlantLayoutRecord& rec, bool withFence)
     for (const auto& rd : rec.roads.roads)
         for (const auto& pr : pavedRects(rd))
             take(pr.xMin, pr.xMax, pr.yMin, pr.yMax);
+    for (const auto& ta : rec.roads.turningAreas)   // C96
+        take(ta.x - 0.5 * ta.diameter, ta.x + 0.5 * ta.diameter,
+             ta.y - 0.5 * ta.diameter, ta.y + 0.5 * ta.diameter);
     pl.xMin = x0 - pl.margin;  pl.xMax = x1 + pl.margin;
     pl.yMin = y0 - pl.margin;  pl.yMax = y1 + pl.margin;
     pl.plotArea = (pl.xMax - pl.xMin) * (pl.yMax - pl.yMin);
@@ -1579,12 +1732,46 @@ void fenceOf(const Dictionary& d, PlantLayoutRecord& rec,
                 onSide(o.side, alongX(o.side) ? q[0] : q[1], fx, fy);
                 const scalar dd = std::hypot(q[0] - fx, q[1] - fy);
                 if (dd < dmin - kTol)
-                { dmin = dd; along = alongX(o.side) ? q[0] : q[1]; }
+                {
+                    dmin = dd; along = alongX(o.side) ? q[0] : q[1];
+                    o.approachX = q[0]; o.approachY = q[1];
+                }
             }
             o.road  = best->id;
             o.width = best->width;
         }
         onSide(o.side, along, o.x, o.y);
+        //  C96: the APPROACH -- the road carried on, perpendicular to the
+        //  fence, from that end to the opening, so a road the plot's margin
+        //  stops short still reaches its gate.  It is pavement, so it may not
+        //  run through an item.
+        if (best)
+        {
+            o.approach = std::hypot(o.x - o.approachX, o.y - o.approachY);
+            if (o.approach > kTol)
+            {
+                const scalar h = 0.5 * o.width;
+                const bool vert = std::fabs(o.x - o.approachX) < kTol;
+                const LayoutItem strip = planBox(
+                    std::min(o.x, o.approachX) - (vert ? h : 0.0),
+                    std::max(o.x, o.approachX) + (vert ? h : 0.0),
+                    std::min(o.y, o.approachY) - (vert ? 0.0 : h),
+                    std::max(o.y, o.approachY) + (vert ? 0.0 : h));
+                for (const auto& it : rec.items)
+                {
+                    if (it.nonProcess && it.kind == kWeighbridgeKind) continue;
+                    if (verticalOverlap(0.0, rec.roads.headroom, it.z, it.dz) <= kTol)
+                        continue;
+                    const scalar c = clearPlan(strip, it);
+                    if (c < -kTol)
+                        refuse("the approach from road `" + o.road + "` to gate `"
+                               + o.gate + "`'s opening in the fence runs THROUGH `"
+                               + it.id + "` (by " + num(-c) + " m on the plan): the"
+                                 " road is carried on to the fence there, so keep"
+                                 " that strip clear");
+                }
+            }
+        }
         o.gateDistance =
               o.side == "south" ? (g.y - 0.5 * g.dy) - F.yMin
             : o.side == "north" ? F.yMax - (g.y + 0.5 * g.dy)
@@ -1799,6 +1986,620 @@ void fenceOf(const Dictionary& d, PlantLayoutRecord& rec,
             refuse("fence crossing `" + s + "`: no pipe of this layout ends at a"
                    " battery limit under that name -- only a plant inlet or"
                    " outlet crosses the fence");
+    }
+}
+
+//  ---- the site logistics (DEV.md 4c C96) ---------------------------------
+
+//  THE NON-PROCESS KINDS C96 GIVES A MEANING, beside `gate` and
+//  `weighbridge` above -- the same ONE place for the kind words the layout
+//  reads:
+//    carPark        -- declares its bays in `parking {}` (`readParking`);
+//    musterPoint,
+//    firePumpHouse  -- an EMERGENCY item: where people gather, and what
+//                      pumps the fire water, when something has gone wrong.
+//                      One inside a release source's zone envelope or
+//                      downwind of it is announced (`checkExposure`), an
+//                      ignition source or not: what is at stake is that it
+//                      be usable, not that it light the cloud.
+//  Every other word (office, laydown, windsock, fireWaterTank, ...) is drawn
+//  by its kind and checked only by the rules every item meets.
+const char* const kCarParkKind = "carPark";
+
+bool isEmergencyKind(const std::string& k)
+{
+    return k == "musterPoint" || k == "firePumpHouse";
+}
+
+//  THE CAR PARK RULE (C96), one home.  The rows run along the item's LENGTH
+//  (its declared orientation axis), between two END AISLES of the declared
+//  aisle width that join them; across the width the pattern is a row, its
+//  aisle, a row (`doubleLoaded`: two rows share an aisle, a car enters and
+//  leaves a bay from the same aisle) or an aisle, a row, an aisle
+//  (`driveThrough`: a car enters from one aisle and leaves into the next,
+//  nose first).  A bay of width w and length l at angle th to its aisle
+//  occupies a DEPTH l sin th + w cos th across the aisle and a PITCH w / sin
+//  th along it, and the first bay of a row reaches l cos th + w sin th along
+//  the aisle.  So a row holds 1 + floor((L - 2 a - (l cos th + w sin th)) /
+//  pitch) bays, and the declared count must not exceed rows x that.
+void readParking(const Dictionary& e, const LayoutItem& it,
+                 const std::string& where, PlantLayoutRecord& rec)
+{
+    const bool isPark = it.nonProcess && it.kind == kCarParkKind;
+    if (!e.found("parking"))
+    {
+        if (isPark)
+            refuse(where + ": a `carPark` declares its bays -- `parking {"
+                   " bays <n>; bay { width <m>; length <m>; } aisle <m>;"
+                   " angle <deg>; arrangement doubleLoaded|driveThrough;"
+                   " entry reverse|forward; source \"...\"; reason \"...\"; }`");
+        return;
+    }
+    if (!isPark)
+        refuse(where + ": `parking {}` is declared on an item of kind `"
+               + it.kind + "` -- only a non-process item of kind `carPark`"
+               " has bays");
+    if (it.orientation == "vertical")
+        refuse(where + ": a car park lays its rows along its length -- declare"
+               " `orientation alongX;` or `orientation alongY;`");
+    const auto p = e.subDict("parking");
+    const std::string w = where + " parking";
+    LayoutCarPark c;
+    c.item = it.id;
+    if (!p->found("bays"))
+        refuse(w + ": `bays <n>;` -- the number of bays the case declares --"
+               " is not declared");
+    const scalar nb = p->lookupScalar("bays");
+    if (nb < 1.0 || std::fabs(nb - std::round(nb)) > 1e-9)
+        refuse(w + ": `bays " + num(nb) + ";` must be a whole number of at"
+               " least 1");
+    c.bays = int(std::lround(nb));
+    if (!p->found("bay"))
+        refuse(w + ": `bay { width <m>; length <m>; }` -- the size of one"
+               " bay -- is not declared");
+    const auto b = p->subDict("bay");
+    c.bayWidth  = length(*b, "width", w + " bay");
+    c.bayLength = length(*b, "length", w + " bay");
+    c.aisle     = length(*p, "aisle", w);
+    c.angleDeg  = angleDeg(*p, "angle", w);
+    if (c.bayWidth <= 0 || c.bayLength <= 0 || c.aisle <= 0)
+        refuse(w + ": the bay's width and length and the aisle must be"
+               " positive");
+    if (c.angleDeg < 30.0 - 1e-9 || c.angleDeg > 90.0 + 1e-9)
+        refuse(w + ": `angle " + num(c.angleDeg) + " deg;` -- a bay stands at"
+               " 30 to 90 deg to its aisle; a parallel bay along a kerb is not"
+               " a car-park row and is not laid out here");
+    if (!p->found("arrangement"))
+        refuse(w + ": `arrangement doubleLoaded|driveThrough;` is not declared");
+    c.arrangement = p->lookupWord("arrangement");
+    if (c.arrangement != "doubleLoaded" && c.arrangement != "driveThrough")
+        refuse(w + ": " + registryRefusal::message("arrangement", c.arrangement,
+               { "doubleLoaded", "driveThrough" }, "Accepted"));
+    if (!p->found("entry"))
+        refuse(w + ": `entry reverse|forward;` -- how a car enters its bay --"
+               " is not declared");
+    c.entry = p->lookupWord("entry");
+    if (c.entry != "reverse" && c.entry != "forward")
+        refuse(w + ": " + registryRefusal::message("entry", c.entry,
+               { "reverse", "forward" }, "Accepted"));
+    c.source = text(*p, "source", w);
+    c.reason = text(*p, "reason", w);
+    c.exitsForward = c.arrangement == "driveThrough" || c.entry == "reverse";
+
+    const scalar th = c.angleDeg * kPi / 180.0;
+    const scalar sn = std::sin(th);
+    const scalar cs = std::fabs(std::cos(th)) < 1e-12 ? 0.0 : std::cos(th);
+    const bool   ax = it.orientation == "alongX";
+    const scalar Lr = ax ? it.dx : it.dy;    // along the rows
+    const scalar Wr = ax ? it.dy : it.dx;    // across them
+    c.area   = it.dx * it.dy;
+    c.depth  = c.bayLength * sn + c.bayWidth * cs;
+    c.pitch  = c.bayWidth / sn;
+    const scalar first = c.bayLength * cs + c.bayWidth * sn;
+    c.usableLength = Lr - 2.0 * c.aisle;
+    c.perRow = c.usableLength + 1e-9 < first ? 0
+        : int(std::floor((c.usableLength - first) / c.pitch + 1e-9)) + 1;
+    //  The rows across the width: where each row band starts (local v,
+    //  from -Wr/2) and on which side its aisle lies (+1: the +v side).
+    struct Row { scalar v0; int side; };
+    std::vector<Row> rows;
+    if (c.arrangement == "doubleLoaded")
+    {
+        const scalar mod = 2.0 * c.depth + c.aisle;
+        scalar v = -0.5 * Wr;
+        while (v + mod <= 0.5 * Wr + 1e-9)
+        {
+            rows.push_back({ v, +1 });
+            rows.push_back({ v + c.depth + c.aisle, -1 });
+            v += mod;
+        }
+        if (v + c.depth + c.aisle <= 0.5 * Wr + 1e-9) rows.push_back({ v, +1 });
+    }
+    else
+    {
+        scalar v = -0.5 * Wr + c.aisle;
+        while (v + c.depth + c.aisle <= 0.5 * Wr + 1e-9)
+        {
+            rows.push_back({ v, +1 });
+            v += c.depth + c.aisle;
+        }
+    }
+    c.rows     = int(rows.size());
+    c.capacity = c.rows * c.perRow;
+    if (c.bays > c.capacity)
+        refuse(where + ": " + std::to_string(c.bays) + " bays are declared, and"
+               " the footprint holds " + std::to_string(c.capacity) + " ("
+               + std::to_string(c.rows) + " row(s) of " + std::to_string(c.perRow)
+               + ": bays " + num(c.bayWidth) + " m x " + num(c.bayLength)
+               + " m at " + num(c.angleDeg) + " deg, aisles " + num(c.aisle)
+               + " m, " + c.arrangement + ", on " + num(Lr) + " m x " + num(Wr)
+               + " m).  Bays that do not fit are not a car park -- enlarge the"
+                 " footprint or declare fewer bays");
+    //  Every declared bay, row by row: its plan centre and the direction a
+    //  car leaves it by (toward its aisle; the +v aisle for a drive-through).
+    int left = c.bays;
+    for (const auto& r : rows)
+        for (int k = 0; k < c.perRow && left > 0; ++k, --left)
+        {
+            const scalar u  = -0.5 * Lr + c.aisle + 0.5 * first + k * c.pitch;
+            const scalar v  = r.v0 + 0.5 * c.depth;
+            const scalar eu = cs, ev = sn * r.side;
+            if (ax) c.stalls.push_back({ it.x + u, it.y + v, eu, ev });
+            else    c.stalls.push_back({ it.x + v, it.y + u, ev, eu });
+        }
+    rec.carParks.push_back(c);
+}
+
+//  THE EMERGENCY ITEMS (C96): a muster point or a fire-water pump house
+//  inside a release source's declared zone envelope, or downwind of it by
+//  the declared wind, is ANNOUNCED -- the same geometry the ignition check
+//  reads, applied to what must stay usable when the release happens.
+void checkExposure(const PlantLayoutRecord& rec, const FindingSink& addFinding)
+{
+    for (const auto& em : rec.items)
+    {
+        if (!(em.nonProcess && isEmergencyKind(em.kind))) continue;
+        const std::string what = em.kind == "musterPoint"
+            ? "a muster point is where people gather when something has gone"
+              " wrong, and a cloud from this source reaches it"
+            : "the fire-water pumps must run when this source is on fire or"
+              " leaking, and a cloud from it reaches them";
+        for (const auto& rel : rec.items)
+        {
+            if (!rel.release || rel.id == em.id) continue;
+            const scalar dPlan = pointToFootprint(rel.x, rel.y, em);
+            for (const auto& z : rel.zones)
+            {
+                if (dPlan >= z.radius - kTol) continue;
+                if (verticalOverlap(rel.z, z.height, em.z, em.dz) <= kTol)
+                    continue;
+                addFinding("exposedInZone", em.id, rel.id + "#zone"
+                           + std::to_string(z.zone), dPlan, z.radius,
+                    "warning",
+                    "`" + em.id + "` (" + em.kind + ") lies inside the zone "
+                    + std::to_string(z.zone) + " envelope of `" + rel.id + "`: "
+                    + num(dPlan) + " m from its axis against a declared radius"
+                    " of " + num(z.radius) + " m -- " + what + " (source: "
+                    + rel.releaseSource + ")");
+            }
+            if (!rec.wind.present) continue;
+            const auto& w = rec.wind;
+            const scalar downwind = std::fmod(w.fromDeg + 180.0, 360.0);
+            const scalar vx = em.x - rel.x, vy = em.y - rel.y;
+            const scalar dist = std::hypot(vx, vy);
+            if (dist <= kTol || dist > w.reach + kTol) continue;
+            const scalar trueB = std::fmod(planBearing(vx, vy)
+                                           + w.planNorthDeg + 360.0, 360.0);
+            const scalar off = wrap180(trueB - downwind);
+            if (std::fabs(off) > w.halfAngleDeg + 1e-9) continue;
+            addFinding("exposedDownwind", em.id, rel.id, dist, w.reach,
+                "warning",
+                "`" + em.id + "` (" + em.kind + ") lies DOWNWIND of release"
+                " source `" + rel.id + "`: " + num(dist) + " m away on a true"
+                " bearing of " + num(trueB, 4) + " deg, " + num(std::fabs(off), 3)
+                + " deg off the downwind direction " + num(downwind, 4)
+                + " deg -- " + what + " (declared sector +/- "
+                + num(w.halfAngleDeg, 4) + " deg, reach " + num(w.reach)
+                + " m; source: " + w.source + ")");
+        }
+    }
+}
+
+//  ---- the truck routes (C96) ------------------------------------------------
+
+using Pt2 = std::vector<scalar>;   // { plan x, plan y }
+
+//  The arc length along a centre line at which the plan point lies, or -1
+//  when it lies on none of its segments.
+scalar arcOn(const std::vector<Pt2>& cl, scalar px, scalar py)
+{
+    scalar s = 0;
+    for (std::size_t k = 0; k + 1 < cl.size(); ++k)
+    {
+        const auto& a = cl[k];
+        const auto& b = cl[k + 1];
+        if (px >= std::min(a[0], b[0]) - kTol && px <= std::max(a[0], b[0]) + kTol
+            && py >= std::min(a[1], b[1]) - kTol && py <= std::max(a[1], b[1]) + kTol)
+            return s + std::fabs(px - a[0]) + std::fabs(py - a[1]);
+        s += std::fabs(b[0] - a[0]) + std::fabs(b[1] - a[1]);
+    }
+    return -1.0;
+}
+
+//  The centre line driven from arc s0 to arc s1, in either direction: the
+//  point at s0, the vertices strictly between, the point at s1.
+std::vector<Pt2> driven(const std::vector<Pt2>& cl, scalar s0, scalar s1)
+{
+    std::vector<scalar> acc{ 0.0 };
+    for (std::size_t k = 0; k + 1 < cl.size(); ++k)
+        acc.push_back(acc.back() + std::fabs(cl[k + 1][0] - cl[k][0])
+                                 + std::fabs(cl[k + 1][1] - cl[k][1]));
+    auto at = [&](scalar s)
+    {
+        for (std::size_t k = 0; k + 1 < cl.size(); ++k)
+            if (s <= acc[k + 1] + kTol || k + 2 == cl.size())
+            {
+                const scalar seg = acc[k + 1] - acc[k];
+                const scalar t = seg > 0 ? std::clamp((s - acc[k]) / seg, 0.0, 1.0) : 0.0;
+                return Pt2{ cl[k][0] + t * (cl[k + 1][0] - cl[k][0]),
+                            cl[k][1] + t * (cl[k + 1][1] - cl[k][1]) };
+            }
+        return cl.back();
+    };
+    std::vector<Pt2> out{ at(s0) };
+    if (s1 >= s0)
+    {
+        for (std::size_t k = 0; k < cl.size(); ++k)
+            if (acc[k] > s0 + kTol && acc[k] < s1 - kTol) out.push_back(cl[k]);
+    }
+    else
+    {
+        for (std::size_t k = cl.size(); k-- > 0;)
+            if (acc[k] < s0 - kTol && acc[k] > s1 + kTol) out.push_back(cl[k]);
+    }
+    out.push_back(at(s1));
+    return out;
+}
+
+//  Where two centre lines meet: every crossing point, and both ends of a
+//  stretch they share.
+std::vector<Pt2> meetings(const std::vector<Pt2>& A, const std::vector<Pt2>& B)
+{
+    std::vector<Pt2> out;
+    for (std::size_t s = 0; s + 1 < A.size(); ++s)
+        for (std::size_t t = 0; t + 1 < B.size(); ++t)
+        {
+            const scalar x0 = std::max(std::min(A[s][0], A[s + 1][0]),
+                                       std::min(B[t][0], B[t + 1][0]));
+            const scalar x1 = std::min(std::max(A[s][0], A[s + 1][0]),
+                                       std::max(B[t][0], B[t + 1][0]));
+            const scalar y0 = std::max(std::min(A[s][1], A[s + 1][1]),
+                                       std::min(B[t][1], B[t + 1][1]));
+            const scalar y1 = std::min(std::max(A[s][1], A[s + 1][1]),
+                                       std::max(B[t][1], B[t + 1][1]));
+            if (x1 < x0 - kTol || y1 < y0 - kTol) continue;
+            out.push_back({ x0, y0 });
+            if (x1 - x0 > kTol || y1 - y0 > kTol) out.push_back({ x1, y1 });
+        }
+    return out;
+}
+
+//  An axis-aligned segment meets an item's plan rectangle (or disc).
+bool segmentMeets(const Pt2& a, const Pt2& b, const LayoutItem& it)
+{
+    const scalar cx = std::clamp(it.x, std::min(a[0], b[0]), std::max(a[0], b[0]));
+    const scalar cy = std::clamp(it.y, std::min(a[1], b[1]), std::max(a[1], b[1]));
+    return pointToFootprint(cx, cy, it) <= kTol;
+}
+
+const char* const kRouteRule =
+    "a truck route is driven along its declared roads in order, from the"
+    " fence opening of its `from` gate (or that gate's point on its road, with"
+    " no fence) to the opening of its `to` gate, turning from one road onto"
+    " the next where their centre lines meet (the meeting nearest along the"
+    " road being driven; a road named twice in a row is driven to its far end"
+    " and back); a 180 deg turn is a REVERSAL and needs a declared"
+    " turning area at least the design vehicle's turning diameter across; a"
+    " 90 deg corner takes the smaller of the two roads' declared corner"
+    " radii, and the outer edge of the pavement there (that radius plus half"
+    " the narrower road) must reach half the turning diameter; two corners"
+    " closer than the sum of their radii cannot both be made";
+
+void checkTruckRoutes(PlantLayoutRecord& rec, const FindingSink& addFinding)
+{
+    LayoutRoads& R = rec.roads;
+    if (R.truckRoutes.empty()) return;
+    std::map<std::string, std::size_t> roadIx;
+    for (std::size_t i = 0; i < R.roads.size(); ++i) roadIx[R.roads[i].id] = i;
+    auto itemOf = [&](const std::string& id) -> const LayoutItem*
+    {
+        for (const auto& i : rec.items) if (i.id == id) return &i;
+        return nullptr;
+    };
+    auto accessOf = [&](const std::string& id) -> const LayoutAccess*
+    {
+        for (const auto& a : R.access) if (a.item == id) return &a;
+        return nullptr;
+    };
+    auto openingOf = [&](const std::string& gate) -> const LayoutFenceOpening*
+    {
+        if (!rec.fence.present) return nullptr;
+        for (const auto& o : rec.fence.openings)
+            if (o.gate == gate && !o.road.empty()) return &o;
+        return nullptr;
+    };
+    const scalar need = 0.5 * R.designVehicle.turningDiameter;
+    R.designVehicle.routeRule = kRouteRule;
+
+    for (auto& T : R.truckRoutes)
+    {
+        const std::string wr = "truck route `" + T.id + "`";
+        std::size_t before = rec.findings.size();
+        for (const auto& name : { T.from, T.to })
+            if (!itemOf(name))
+                refuse(wr + ": `" + name + "` is no placed item -- a route runs"
+                       " from a gate and back to a gate");
+        for (const auto& name : T.serves)
+            if (!itemOf(name))
+                refuse(wr + ": `serves` names `" + name + "`, which is no placed"
+                       " item");
+
+        //  ---- the ends: an opening's approach, or the gate's road point ---
+        std::vector<Pt2> pts;
+        std::vector<int> segRoad;
+        std::vector<bool> segApproach;
+        auto push = [&](const Pt2& q, int road, bool approach)
+        {
+            if (!pts.empty() && std::fabs(pts.back()[0] - q[0]) < kTol
+                && std::fabs(pts.back()[1] - q[1]) < kTol) return;
+            if (!pts.empty()) { segRoad.push_back(road); segApproach.push_back(approach); }
+            pts.push_back(q);
+        };
+        auto endOn = [&](const std::string& name, std::size_t road, bool start,
+                         Pt2& onRoad, const LayoutFenceOpening*& op)
+        {
+            op = nullptr;
+            const auto* o = openingOf(name);
+            if (o && o->road == R.roads[road].id)
+            {
+                op = o;
+                onRoad = { o->approachX, o->approachY };
+                return;
+            }
+            const auto* a = accessOf(name);
+            if (!a || a->road != R.roads[road].id)
+                refuse(wr + ": it " + (start ? "starts" : "ends") + " at `" + name
+                       + "`, whose road is " + (a && !a->road.empty()
+                           ? "`" + a->road + "`" : std::string("none"))
+                       + ", and its " + (start ? "first" : "last") + " road is `"
+                       + R.roads[road].id + "` -- a route " + (start ? "leaves"
+                       : "reaches") + " an item by the road that serves it");
+            onRoad = { a->x, a->y };
+        };
+        const std::size_t r0 = roadIx.at(T.roads.front());
+        const std::size_t rn = roadIx.at(T.roads.back());
+        Pt2 P, E;
+        const LayoutFenceOpening* opIn = nullptr;
+        const LayoutFenceOpening* opOut = nullptr;
+        endOn(T.from, r0, true, P, opIn);
+        endOn(T.to, rn, false, E, opOut);
+        if (opIn) push({ opIn->x, opIn->y }, int(r0), true);
+        push(P, int(r0), true);
+        for (std::size_t k = 0; k < T.roads.size(); ++k)
+        {
+            const std::size_t ri = roadIx.at(T.roads[k]);
+            const auto& cl = R.roads[ri].centreline;
+            const scalar s0 = arcOn(cl, P[0], P[1]);
+            if (s0 < 0)
+                refuse(wr + ": the point (" + num(P[0]) + ", " + num(P[1])
+                       + ") m it has reached does not lie on road `"
+                       + T.roads[k] + "`");
+            Pt2 target = E;
+            if (k + 1 < T.roads.size() && T.roads[k + 1] == T.roads[k])
+            {
+                //  A road named twice in a row is driven to its FAR end and
+                //  back: a dead end, visited -- the turn there is a reversal.
+                const scalar total = arcOn(cl, cl.back()[0], cl.back()[1]);
+                target = (s0 > 0.5 * total) ? cl.front() : cl.back();
+            }
+            else if (k + 1 < T.roads.size())
+            {
+                const auto cands = meetings(cl, R.roads[roadIx.at(T.roads[k + 1])].centreline);
+                if (cands.empty())
+                    refuse(wr + ": roads `" + T.roads[k] + "` and `" + T.roads[k + 1]
+                           + "` do not meet -- a route drives from one road onto"
+                             " the next where their centre lines meet");
+                scalar best = 1e300;
+                for (const auto& c : cands)
+                {
+                    const scalar s = arcOn(cl, c[0], c[1]);
+                    if (s >= 0 && std::fabs(s - s0) < best - kTol)
+                    { best = std::fabs(s - s0); target = c; }
+                }
+            }
+            const scalar s1 = arcOn(cl, target[0], target[1]);
+            if (s1 < 0)
+                refuse(wr + ": its end (" + num(target[0]) + ", " + num(target[1])
+                       + ") m does not lie on road `" + T.roads[k] + "`");
+            for (const auto& q : driven(cl, s0, s1)) push(q, int(ri), false);
+            P = target;
+        }
+        if (opOut) push({ opOut->x, opOut->y }, int(rn), true);
+        T.path = pts;
+
+        //  ---- the length, the corners and the reversals ------------------
+        std::vector<scalar> sAt{ 0.0 };
+        for (std::size_t i = 0; i + 1 < pts.size(); ++i)
+            sAt.push_back(sAt.back() + std::hypot(pts[i + 1][0] - pts[i][0],
+                                                  pts[i + 1][1] - pts[i][1]));
+        T.length = sAt.back();
+        struct CornerAt { std::size_t k; scalar s, r; };
+        std::vector<CornerAt> turns;
+        for (std::size_t i = 1; i + 1 < pts.size(); ++i)
+        {
+            const scalar ax = pts[i][0] - pts[i - 1][0], ay = pts[i][1] - pts[i - 1][1];
+            const scalar bx = pts[i + 1][0] - pts[i][0], by = pts[i + 1][1] - pts[i][1];
+            const scalar la = std::hypot(ax, ay), lb = std::hypot(bx, by);
+            const scalar dot = (ax * bx + ay * by) / (la * lb);
+            if (dot > 0.5) continue;                     // straight on
+            const auto& rin  = R.roads[std::size_t(segRoad[i - 1])];
+            const auto& rout = R.roads[std::size_t(segRoad[i])];
+            LayoutRouteCorner c;
+            c.x = pts[i][0]; c.y = pts[i][1];
+            c.inRoad = rin.id; c.outRoad = rout.id;
+            c.required = need;
+            const std::string where = "(" + num(c.x) + ", " + num(c.y) + ") m";
+            if (dot < -0.5)
+            {
+                c.turn = "reverse";
+                ++T.reversals;
+                const LayoutTurningArea* area = nullptr;
+                for (const auto& ta : R.turningAreas)
+                    if (std::hypot(ta.x - c.x, ta.y - c.y) <= 0.5 * ta.diameter + kTol)
+                        if (!area || ta.diameter > area->diameter) area = &ta;
+                const std::string k = std::to_string(T.corners.size());
+                if (!area)
+                {
+                    c.ok = false;
+                    addFinding("routeReverses", T.id, k, 0.0,
+                        R.designVehicle.turningDiameter, "warning",
+                        wr + " turns back on itself at " + where + " on road `"
+                        + rin.id + "`, and no declared turning area holds that"
+                        " point: the truck must REVERSE there (a turning circle"
+                        " of at least the design vehicle's " + num(2.0 * need)
+                        + " m, a loop, or a road that runs on removes the"
+                          " manoeuvre)");
+                }
+                else
+                {
+                    c.turningArea = area->id;
+                    c.radius = 0.5 * area->diameter;
+                    c.outerRadius = c.radius;
+                    if (area->diameter < 2.0 * need - kTol)
+                    {
+                        c.ok = false;
+                        addFinding("turningAreaTooSmall", T.id, k, area->diameter,
+                            2.0 * need, "warning",
+                            wr + " turns round in turning area `" + area->id
+                            + "` at " + where + ", " + num(area->diameter)
+                            + " m across, smaller than the design vehicle's "
+                            + num(2.0 * need) + " m turning circle (source: "
+                            + R.designVehicle.source + "): the truck must"
+                              " shunt to turn there");
+                    }
+                }
+                T.corners.push_back(c);
+                continue;
+            }
+            c.turn = (ax * by - ay * bx) > 0 ? "left" : "right";
+            c.radius = std::min(rin.cornerRadius, rout.cornerRadius);
+            c.outerRadius = c.radius + 0.5 * std::min(rin.width, rout.width);
+            const std::string k = std::to_string(T.corners.size());
+            if (c.outerRadius < need - kTol)
+            {
+                c.ok = false;
+                addFinding("sharpCorner", T.id, k, c.outerRadius, need, "warning",
+                    wr + " turns " + c.turn + " from road `" + rin.id + "` onto `"
+                    + rout.id + "` at " + where + " on a corner of centre-line"
+                    " radius " + num(c.radius) + " m" + ((rin.cornerRadiusDeclared
+                        && rout.cornerRadiusDeclared) ? std::string("")
+                        : std::string(" (no `cornerRadius` declared on ")
+                          + (rin.cornerRadiusDeclared ? "`" + rout.id + "`"
+                             : "`" + rin.id + "`") + ": a square corner)")
+                    + ": the pavement's outer edge there is " + num(c.outerRadius)
+                    + " m from the corner's centre, short of the " + num(need)
+                    + " m outer radius the design vehicle turns on (source: "
+                    + R.designVehicle.source + ") -- the truck runs over the"
+                      " kerb or shunts");
+            }
+            turns.push_back({ T.corners.size(), sAt[i], c.radius });
+            T.corners.push_back(c);
+        }
+        for (std::size_t q = 0; q + 1 < turns.size(); ++q)
+        {
+            const scalar gap = turns[q + 1].s - turns[q].s;
+            const scalar want = turns[q].r + turns[q + 1].r;
+            if (gap >= want - kTol) continue;
+            const auto& c0 = T.corners[turns[q].k];
+            const auto& c1 = T.corners[turns[q + 1].k];
+            addFinding("cornersTooClose", T.id, std::to_string(turns[q].k), gap,
+                want, "warning",
+                wr + ": its corners at (" + num(c0.x) + ", " + num(c0.y)
+                + ") m and (" + num(c1.x) + ", " + num(c1.y) + ") m are "
+                + num(gap) + " m apart, less than the " + num(want) + " m their"
+                " two radii take (" + num(turns[q].r) + " + " + num(turns[q + 1].r)
+                + " m): a truck cannot finish one turn before it must start the"
+                  " next");
+        }
+
+        //  ---- a one-way road driven backwards ----------------------------
+        std::set<std::string> told;
+        for (std::size_t i = 0; i + 1 < pts.size(); ++i)
+        {
+            if (segApproach[i]) continue;
+            const auto& rd = R.roads[std::size_t(segRoad[i])];
+            if (!rd.oneWay || told.count(rd.id)) continue;
+            const scalar a = arcOn(rd.centreline, pts[i][0], pts[i][1]);
+            const scalar b = arcOn(rd.centreline, pts[i + 1][0], pts[i + 1][1]);
+            if (b >= a - kTol) continue;
+            told.insert(rd.id);
+            addFinding("wrongWay", T.id, rd.id, 0.0, 0.0, "warning",
+                wr + " drives road `" + rd.id + "` AGAINST its one-way"
+                " direction (the order of its waypoints) between (" + num(pts[i][0])
+                + ", " + num(pts[i][1]) + ") m and (" + num(pts[i + 1][0]) + ", "
+                + num(pts[i + 1][1]) + ") m");
+        }
+
+        //  ---- the weighbridge --------------------------------------------
+        bool anyBridge = false;
+        for (const auto& it : rec.items)
+        {
+            if (!(it.nonProcess && it.kind == kWeighbridgeKind)) continue;
+            anyBridge = true;
+            for (std::size_t i = 0; i + 1 < pts.size() && T.weighbridge.empty(); ++i)
+                if (segmentMeets(pts[i], pts[i + 1], it)) T.weighbridge = it.id;
+        }
+        if (anyBridge && T.weighbridge.empty())
+            addFinding("routeMissesWeighbridge", T.id, "", 0.0, 0.0, "warning",
+                wr + " drives over no weighbridge, and the case places one: a"
+                " truck on it is never weighed -- route it over the deck");
+
+        //  ---- the stops it serves ----------------------------------------
+        for (const auto& name : T.serves)
+        {
+            const auto* a = accessOf(name);
+            bool on = false;
+            if (a && !a->road.empty())
+                for (std::size_t i = 0; i + 1 < pts.size() && !on; ++i)
+                {
+                    const LayoutItem pt = planBox(a->x, a->x, a->y, a->y);
+                    on = segmentMeets(pts[i], pts[i + 1], pt);
+                }
+            if (!on)
+                addFinding("routeMissesStop", T.id, name, 0.0, 0.0, "warning",
+                    wr + " does not pass `" + name + "`, a stop it declares it"
+                    " serves: " + (a && !a->road.empty()
+                        ? "its point on road `" + a->road + "` ("
+                          + num(a->x) + ", " + num(a->y) + ") m is on none of the"
+                            " roads the route drives there"
+                        : std::string("no road a gate reaches serves it")));
+        }
+
+        //  ---- leaving by a gate --------------------------------------------
+        std::set<std::string> notGate;
+        for (const auto& name : { T.from, T.to })
+        {
+            const auto* it = itemOf(name);
+            if (it->nonProcess && it->kind == kGateKind) continue;
+            if (!notGate.insert(name).second) continue;
+            addFinding("routeNoGate", T.id, name, 0.0, 0.0, "warning",
+                wr + (name == T.to ? " ends" : " starts") + " at `" + name + "` ("
+                + it->kind + "), which is not a gate: a truck there "
+                + (name == T.to ? "has not left the site, and must turn and find"
+                                  " a way out the route does not show"
+                                : "came in by no gate the route shows"));
+        }
+        T.verdict = rec.findings.size() == before ? "clear" : "announced";
     }
 }
 
@@ -2111,6 +2912,7 @@ PlantLayoutRecord evaluate(const Dictionary& d, const SimulationResult& r,
             setExtents(it, L, W, H, where);
         }
         readHazards(*e, it, where);
+        readParking(*e, it, where, rec);   // C96
         rec.items.push_back(it);
     }
 
@@ -2317,6 +3119,17 @@ PlantLayoutRecord evaluate(const Dictionary& d, const SimulationResult& r,
         }
     }
 
+    //  ---- C96: the emergency items, and the car parks' exits --------------
+    checkExposure(rec, addFinding);
+    for (const auto& c : rec.carParks)
+        if (!c.exitsForward)
+            addFinding("carParkReverseExit", c.item, "", 0.0, 0.0, "warning",
+                "car park `" + c.item + "`: its bays are entered forward and left"
+                " by REVERSING into the aisle (`arrangement " + c.arrangement
+                + "; entry forward;`) -- in an evacuation every car backs out at"
+                  " once, blind.  Reverse-in bays (`entry reverse;`) or"
+                  " drive-through bays let a car leave nose first");
+
     //  ---- sized items left out --------------------------------------------
     for (const auto& [id, s] : r.sizings)
     {
@@ -2355,6 +3168,10 @@ PlantLayoutRecord evaluate(const Dictionary& d, const SimulationResult& r,
 
     //  ---- the pipe clash (C93): every route final, the fence legs included
     checkPipeClashes(rec, addFinding);
+
+    //  ---- the truck routes (C96): every road, access point and fence
+    //  opening final ---------------------------------------------------------
+    if (rec.roads.present) checkTruckRoutes(rec, addFinding);
 
     if (verbosity >= 2)
     {
@@ -2404,6 +3221,25 @@ PlantLayoutRecord evaluate(const Dictionary& d, const SimulationResult& r,
                           << " m x " << num(rd.width) << " m"
                           << (rd.fromEntrance ? "" : "  (no gate reaches it)")
                           << "\n";
+            for (const auto& T : R.truckRoutes)
+            {
+                std::cout << "[layout] truck route " << T.id << ": " << T.from
+                          << " -> " << T.to << ", " << num(T.length, 6) << " m, "
+                          << T.corners.size() << " turn(s), " << T.reversals
+                          << " reversal(s), weighbridge "
+                          << (T.weighbridge.empty() ? std::string("none")
+                                                    : T.weighbridge)
+                          << ", " << T.verdict << " (design vehicle turning"
+                          << " circle " << num(R.designVehicle.turningDiameter)
+                          << " m)\n";
+                for (const auto& c : T.corners)
+                    std::cout << "  " << std::left << std::setw(8) << c.turn
+                              << "at (" << num(c.x) << ", " << num(c.y) << ") m, "
+                              << c.inRoad << " -> " << c.outRoad << ": radius "
+                              << num(c.radius) << " m, outer " << num(c.outerRadius)
+                              << " m against " << num(c.required) << " m"
+                              << (c.ok ? "" : "  ANNOUNCED") << "\n";
+            }
         }
         const auto& pl = rec.plot;
         std::cout << "[layout] plot: " << num(pl.xMax - pl.xMin) << " m x "
@@ -2413,6 +3249,14 @@ PlantLayoutRecord evaluate(const Dictionary& d, const SimulationResult& r,
                   << "); footprints " << num(pl.footprintArea) << " m2 = "
                   << num(100.0 * pl.footprintShare, 4)
                   << " % of the plot\n";
+        for (const auto& c : rec.carParks)
+            std::cout << "[layout] car park " << c.item << ": " << c.bays
+                      << " bays declared, " << c.capacity << " fit (" << c.rows
+                      << " row(s) of " << c.perRow << ", " << c.arrangement
+                      << ", " << num(c.angleDeg) << " deg, entry " << c.entry
+                      << ", cars leave " << (c.exitsForward ? "nose first"
+                                                            : "reversing")
+                      << "), " << num(c.area) << " m2\n";
         for (const auto& ps : pl.sectors)
             std::cout << "  " << std::left << std::setw(22) << ps.sector
                       << num(ps.plotArea) << " m2 (" << ps.from
@@ -2562,6 +3406,25 @@ std::string draft(const SimulationResult& r, const Dictionary* previous)
                         o << "            );\n";
                     }
                     o << "        }\n";
+                }
+                //  A car park's bays (C96) are the author's declaration,
+                //  carried as declared -- a carPark without them refuses.
+                if (e->found("parking"))
+                {
+                    const auto pk = e->subDict("parking");
+                    const std::string wp = "`" + id + "` parking";
+                    const auto bay = pk->subDict("bay");
+                    o << "        parking\n        {\n"
+                      << "            bays        " << pk->lookupScalar("bays") << ";\n"
+                      << "            bay         { width " << m(length(*bay, "width", wp))
+                      << "; length " << m(length(*bay, "length", wp)) << "; }\n"
+                      << "            aisle       " << m(length(*pk, "aisle", wp)) << ";\n"
+                      << "            angle       " << deg(angleDeg(*pk, "angle", wp)) << ";\n"
+                      << "            arrangement " << pk->lookupWord("arrangement") << ";\n"
+                      << "            entry       " << pk->lookupWord("entry") << ";\n"
+                      << "            source      " << quoted(text(*pk, "source", wp)) << ";\n"
+                      << "            reason      " << quoted(text(*pk, "reason", wp)) << ";\n"
+                      << "        }\n";
                 }
                 hazardText[id] = o.str();
             }
@@ -2724,7 +3587,10 @@ std::string draft(const SimulationResult& r, const Dictionary* previous)
          "              vertical|alongX|alongY; [footprint {length; width; height;}]\n"
          "              [ignition \"why\";] [release { source; reason; zones (...); }] }\n"
          "            { nonProcess \"<name>\"; kind <word>; x; y; z; orientation;\n"
-         "              footprint {...}; [ignition \"why\";] } );\n"
+         "              footprint {...}; [ignition \"why\";]\n"
+         "              [parking { bays; bay { width; length; } aisle; angle <deg>;\n"
+         "                arrangement doubleLoaded|driveThrough; entry reverse|forward;\n"
+         "                source; reason; }   (a kind carPark only)] } );\n"
          "    areas { <SECTOR> { xMin; xMax; yMin; yMax; } }\n"
          "    separation ( { source; reason; measure edgeToEdge|centreToCentre;\n"
          "                   distances ( { between ( kindA kindB ); distance; } ); } );\n"
@@ -2734,7 +3600,11 @@ std::string draft(const SimulationResult& r, const Dictionary* previous)
          "    plot { margin; reason; }   (absent: margin 0 m, announced -- a lower bound)\n"
          "    roads { source; reason; headroom; access { distance; source; reason; }\n"
          "            [noTraffic ( <zones> );] network ( { road \"<name>\"; width;\n"
-         "            reason; waypoints ( { x; y; } ... ); } ... ); }   (optional)\n"
+         "            [cornerRadius;] [oneWay yes|no;] reason; waypoints ( { x; y; }\n"
+         "            ... ); } ... ); [designVehicle { turningDiameter; source; reason; }]\n"
+         "            [turningAreas ( { area; x; y; diameter; reason; } ... );]\n"
+         "            [truckRoutes ( { route; from <gate>; to <gate>; roads ( ... );\n"
+         "            [serves ( ... );] reason; } ... );] }   (optional)\n"
          "    wind { from <deg>; planNorth <deg>; halfAngle <deg>; reach <m>;\n"
          "           source; reason; }\n"
          "  Record: docs/design/a-plant-layout-is-declared-and-checked.md\n"

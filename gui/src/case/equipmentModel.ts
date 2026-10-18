@@ -85,6 +85,15 @@ License
   doors, a roof overhang, ramps and vents are decoration.  Any other word --
   `building`, `substation`, a flare -- keeps the plain box.
 
+  THE SITE LOGISTICS (DEV.md 4c C96) add seven words: `office` (a window band
+  per storey), `carPark` (an asphalt slab -- its bays are the ENGINE's, drawn
+  on it by the renderer from the published bays), `laydown` (hard standing
+  with a few bins on it, the bins decoration), `musterPoint` (a green pad and
+  its sign), `fireWaterTank` (a red tank inscribed in the box), `firePumpHouse`
+  (a red pump house) and `windsock` (a mast on a base plate; the sock is the
+  renderer's, turned downwind by the declared wind).  The same rule: the body
+  fills the declared box, everything else is decoration.
+
   COORDINATES.  Parts are in three.js axes (Y up), relative to the CENTRE of
   the item's envelope -- the same `center`/`size` the scene carries
   (case/plantLayout.ts) -- so the renderer only translates them.
@@ -101,7 +110,9 @@ export type Axis = "x" | "y" | "z";
 export type PartRole =
   | "body" | "steel" | "grating" | "safety" | "machine" | "motor" | "concrete"
   //  C90, the site buildings: glazing, and a pitched roof (`prism` parts only).
-  | "glass" | "roof";
+  | "glass" | "roof"
+  //  C96: a car park's surface, fire-water equipment, a muster point's pad.
+  | "asphalt" | "fire" | "green";
 
 interface PartBase {
   role: PartRole;
@@ -716,6 +727,99 @@ const weighbridge: Recipe = (m) => {
            describes: "weighbridge: steel deck on its pit (the declared box), ramps at both ends (drawing)" };
 };
 
+//  ---- the site logistics (C96) ---------------------------------------------
+
+/** Storey height a window band is repeated at on an office (drawing). */
+export const STOREY = 3.5;   // m
+
+/** Offices: a flat-roofed building with a window band on every storey. */
+const office: Recipe = (m) => {
+  const p = planOf(m);
+  if (!p) return null;
+  const parts = flatBuilding(p, 0.4, false);
+  const storeys = Math.max(1, Math.floor(p.dh / STOREY));
+  const sill = Math.min(WINDOW_SILL, 0.3 * STOREY), wh = Math.min(WINDOW_HEIGHT, 0.4 * STOREY);
+  for (let k = 0; k < storeys; k++)
+    parts.push(...windowBand(p.dx, p.dz, -p.dh / 2 + k * STOREY + sill, wh));
+  //  An entrance canopy over the door (decoration).
+  parts.push(box("steel", true, [0.15 * p.dx, -p.dh / 2 + DOOR_HEIGHT + 0.6, p.dz / 2 + 0.9],
+    [3.0, 0.12, 1.8]));
+  return { parts, model: "office",
+           describes: `offices: ${storeys} storey(s), a window band each, roof slab, drawn inside the declared box` };
+};
+
+/** A car park: an asphalt slab filling the declared box.  Its bays are the
+ *  engine's (`layout.carParks`), painted on it by the renderer. */
+const carPark: Recipe = (m) => {
+  if (m.shape !== "box") return null;
+  return { parts: [box("asphalt", false, [0, 0, 0], [...m.size] as Vec3)], model: "carPark",
+           describes: "car park: asphalt slab (the declared box); the bays painted on it are the engine's" };
+};
+
+/** A laydown area: hard standing filling the box, with a few bins and a
+ *  stack of pallets on it (decoration: what a turnaround leaves there). */
+const laydown: Recipe = (m) => {
+  const p = planOf(m);
+  if (!p) return null;
+  const parts: Part[] = [box("concrete", false, [0, 0, 0], [p.dx, p.dh, p.dz])];
+  const top = p.dh / 2;
+  for (const [fx, fz, sz] of [[-0.3, -0.2, 1.2], [-0.15, 0.15, 1.0], [0.25, -0.1, 1.4]] as const)
+    parts.push(box("machine", true, [fx * p.dx, top + sz / 2, fz * p.dz], [sz, sz, sz]));
+  return { parts, model: "laydown",
+           describes: "laydown area: hard standing (the declared box), bins on it (drawing)" };
+};
+
+/** A muster point: a green pad (the declared box) and its sign board on a
+ *  post (decoration). */
+const musterPoint: Recipe = (m) => {
+  const p = planOf(m);
+  if (!p) return null;
+  const parts: Part[] = [box("green", false, [0, 0, 0], [p.dx, p.dh, p.dz])];
+  const x = -0.4 * p.dx, z = -0.4 * p.dz;
+  parts.push(box("steel", true, [x, p.dh / 2 + 1.1, z], [0.1, 2.2, 0.1]));
+  parts.push(box("green", true, [x, p.dh / 2 + 2.3, z], [1.2, 0.8, 0.05]));
+  return { parts, model: "musterPoint",
+           describes: "muster point: green pad (the declared box) and its sign (drawing)" };
+};
+
+/** A fire-water tank: the storage tank drawing inscribed in the box, its
+ *  shell red. */
+const fireWaterTank: Recipe = (m) => {
+  const d = storageTank(m);
+  if (!d) return null;
+  return { parts: d.parts.map((q) => (q.role === "body" ? { ...q, role: "fire" as PartRole } : q)),
+           model: "fireWaterTank", describes: "fire-water " + d.describes };
+};
+
+/** A fire-water pump house: a flat-roofed building, red, with a roller door. */
+const firePumpHouse: Recipe = (m) => {
+  const p = planOf(m);
+  if (!p) return null;
+  const parts = flatBuilding(p, 0.3, false).map((q) =>
+    (q.role === "body" ? { ...q, role: "fire" as PartRole } : q));
+  const doorW = Math.min(3, 0.4 * p.long), doorH = Math.min(3, 0.75 * p.dh);
+  parts.push(box("steel", true, [0, -p.dh / 2 + doorH / 2, p.dz / 2 + 0.03], [doorW, doorH, 0.05]));
+  return { parts, model: "firePumpHouse",
+           describes: "fire-water pump house: red walls, roller door, drawn inside the declared box" };
+};
+
+/** A windsock mast: a base plate filling the declared plan and a mast to the
+ *  declared height (body); the sock itself is the renderer's. */
+const windsock: Recipe = (m) => {
+  const p = planOf(m);
+  if (!p) return null;
+  const plate = Math.min(0.1, 0.05 * p.dh);
+  const r = Math.min(0.08, 0.2 * p.wide);
+  return {
+    parts: [
+      box("concrete", false, [0, -p.dh / 2 + plate / 2, 0], [p.dx, plate, p.dz]),
+      cyl("steel", false, [0, plate / 2, 0], "y", p.dh - plate, r),
+    ],
+    model: "windsock",
+    describes: "windsock: mast on its base (the declared box); the sock turned downwind by the declared wind is drawing",
+  };
+};
+
 /** ONE entry per SITE BUILDING word a case may give a non-process item.
  *  Any other word keeps the plain box. */
 export const SITE_MODELS: Readonly<Record<string, Recipe>> = {
@@ -724,6 +828,13 @@ export const SITE_MODELS: Readonly<Record<string, Recipe>> = {
   canteen,
   gate,
   weighbridge,
+  office,
+  carPark,
+  laydown,
+  musterPoint,
+  fireWaterTank,
+  firePumpHouse,
+  windsock,
 };
 
 /** ONE entry per equipment kind, keyed on the registered word the sizers

@@ -765,6 +765,93 @@ export interface PlantLayout {
   fence?: LayoutFence;
   fenceOpenings?: LayoutFenceOpening[];
   fenceCrossings?: LayoutFenceCrossing[];
+  /** THE TRUCKS (DEV.md 4c C96): the design vehicle the case declared, its
+   *  turning areas, and every truck route the engine walked -- the path, the
+   *  length, the corners with their radii and the verdict.  Absent when the
+   *  case declares none.  The GUI walks no route and measures no corner. */
+  designVehicle?: LayoutDesignVehicle;
+  turningAreas?: LayoutTurningArea[];
+  truckRoutes?: LayoutTruckRoute[];
+  routeCorners?: LayoutRouteCorner[];
+  /** THE CAR PARKS (DEV.md 4c C96): each `carPark` item's bays as the engine
+   *  laid them out; absent when none is placed. */
+  carParks?: LayoutCarPark[];
+}
+
+/** The vehicle every truck route is checked against (DEV.md 4c C96). */
+export interface LayoutDesignVehicle {
+  /** The engine's sentence for how a route is walked. */
+  rule?: string;
+  turningDiameter: number;
+  source: string;
+  reason: string;
+}
+
+/** A paved disc where a vehicle may turn round. */
+export interface LayoutTurningArea {
+  area: string;
+  x: number; y: number;
+  diameter: number;
+  reason: string;
+}
+
+/** One truck route as the engine walked it: its path in plan (x, y) metres in
+ *  the order driven (from the `from` gate's fence opening), its length and
+ *  its verdict -- `clear`, or `announced` when the walk raised a finding. */
+export interface LayoutTruckRoute {
+  route: string;
+  from: string;
+  to: string;
+  verdict: "clear" | "announced";
+  length: number;
+  turns: number;
+  reversals: number;
+  weighbridge: string;
+  reason: string;
+  roads: string[];
+  serves: string[];
+  path: [number, number][];
+}
+
+/** A turn a route makes: where, which way, the centre-line radius the case
+ *  declared, the outer radius the pavement gives (radius + half the narrower
+ *  road), the one the design vehicle needs, and whether it suffices. */
+export interface LayoutRouteCorner {
+  route: string;
+  turn: "left" | "right" | "reverse";
+  inRoad: string;
+  outRoad: string;
+  x: number; y: number;
+  radius: number;
+  outerRadius: number;
+  required: number;
+  turningArea: string;
+  ok: boolean;
+}
+
+/** A car park's bays (DEV.md 4c C96): the declared count, what the footprint
+ *  holds by the engine's rule, and each bay as [x, y, ux, uy] -- its plan
+ *  centre and the direction a car leaves it by. */
+export interface LayoutCarPark {
+  item: string;
+  bays: number;
+  capacity: number;
+  rows: number;
+  perRow: number;
+  bayWidth: number;
+  bayLength: number;
+  aisle: number;
+  angle: number;
+  arrangement: "doubleLoaded" | "driveThrough";
+  entry: "reverse" | "forward";
+  exitsForward: boolean;
+  depth: number;
+  pitch: number;
+  usableLength: number;
+  area: number;
+  source: string;
+  reason: string;
+  stalls: [number, number, number, number][];
 }
 
 /** The fence line (a rectangle, metres) and its perimeter, as the engine
@@ -789,6 +876,12 @@ export interface LayoutFenceOpening {
   width: number;
   road: string;
   gateDistance: number;
+  /** DEV.md 4c C96: the paved approach that carries the road on to the
+   *  opening, from (approachX, approachY) -- the road's end -- to (x, y);
+   *  absent on a result written before C96. */
+  approachX?: number;
+  approachY?: number;
+  approach?: number;
 }
 
 /** Where a boundary pipe crosses the fence, and the case's label for where
@@ -833,6 +926,11 @@ export interface LayoutRoad {
   fromEntrance: boolean;
   reason: string;
   centreline: [number, number][];
+  /** DEV.md 4c C96: the centre-line radius of its corners (0: none declared)
+   *  and whether traffic runs only in the order of its waypoints. */
+  cornerRadius?: number;
+  cornerRadiusDeclared?: boolean;
+  oneWay?: boolean;
 }
 
 /** Where a road's paved surface passes under the pipe rack (plan

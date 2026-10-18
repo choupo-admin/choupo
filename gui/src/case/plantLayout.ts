@@ -83,6 +83,18 @@ License
   dashed stub, UNROUTED_STUB, drawing) with the engine's reason: a missing
   pipe must never look like a finished drawing.
 
+  THE TRUCKS AND THE CAR PARKS (DEV.md 4c C96).  The engine walks every
+  truck route, publishes its path, its length, each corner with the radius
+  the case declared and its verdict, lays out every car park's bays and
+  carries each road on to its gate's fence opening (the approach); this
+  module carries those into three.js coordinates and works out only what is
+  DRAWING: the route's polyline with its corners ROUNDED to the published
+  radius (`roundedPath`), the paved fillet inside each corner
+  (`filletPolygon`), arrows along a route and a one-way road
+  (ROUTE_ARROW_SPACING), each bay's outline from its published centre and
+  exit direction, and a windsock's sock turned downwind.  No length, radius,
+  verdict or bay count is computed here.
+
   LEGIBILITY (Vítor, on the live site, 2026-10-17).  A label carries the item
   id ONLY; everything else an item or a pipe has to say is its hover TOOLTIP.
   Labels that collide on screen are DECLUTTERED by priority -- findings over
@@ -211,8 +223,53 @@ export interface SceneRoad {
   disconnected: boolean;
   /** The engine's length, carried. */
   length: number;
+  /** DEV.md 4c C96: traffic runs only in the order of its points (arrows). */
+  oneWay: boolean;
   tooltip: string[];
 }
+
+/** DEV.md 4c C96: the paved approach that carries a road on to its gate's
+ *  fence opening, as the engine published it (the road's end to the opening). */
+export interface SceneApproach {
+  gate: string;
+  from: Vec3;
+  to: Vec3;
+  width: number;
+}
+
+/** DEV.md 4c C96: a truck route as the engine walked it.  `points` is the
+ *  engine's path with its corners ROUNDED to the published radius (drawing;
+ *  the length is the engine's), lifted a hair off the grade; `fillets` the
+ *  paved inner corners; `arrows` where the direction marks stand. */
+export interface SceneTruckRoute {
+  route: string;
+  verdict: "clear" | "announced";
+  length: number;
+  points: Vec3[];
+  fillets: Vec3[][];
+  arrows: { at: Vec3; dir: [number, number] }[];
+  tooltip: string[];
+}
+
+/** DEV.md 4c C96: a car park's bays, each its centre, the plan direction a
+ *  car leaves it by (three.js X/Z), and its width and length. */
+export interface SceneCarPark {
+  item: string;
+  exitsForward: boolean;
+  bays: { at: Vec3; dir: [number, number]; w: number; l: number }[];
+  tooltip: string[];
+}
+
+/** DEV.md 4c C96: a turning area the case declared (an asphalt disc). */
+export interface SceneTurningArea { area: string; at: Vec3; radius: number; tooltip: string[] }
+
+/** DEV.md 4c C96: a windsock's sock, at the mast's top, pointing where the
+ *  declared prevailing wind goes (drawing: the engine places the mast). */
+export interface SceneWindsock { item: string; top: Vec3; dir: [number, number] }
+
+/** Spacing of the direction arrows along a truck route and a one-way road
+ *  (m): drawing, not data. */
+export const ROUTE_ARROW_SPACING = 14;
 
 /** A gate's barrier arm: from its post beside the road, across the road,
  *  at the point on the centre line the engine published for the gate.
@@ -285,6 +342,12 @@ export interface LayoutScene {
   /** THE ROADS (DEV.md 4c C90); empty when the case declares none. */
   roads: SceneRoad[];
   barriers: SceneBarrier[];
+  /** DEV.md 4c C96; each empty when the case declares none. */
+  approaches: SceneApproach[];
+  truckRoutes: SceneTruckRoute[];
+  carParks: SceneCarPark[];
+  turningAreas: SceneTurningArea[];
+  windsocks: SceneWindsock[];
   zones: SceneZone[];
   areas: SceneArea[];
   /** THE PLOT (DEV.md 4c C82): the rectangle the engine published, outlined
@@ -475,17 +538,26 @@ export function toThree(x: number, y: number, z: number): Vec3 {
 const FINDING_KINDS_THAT_FLAG = new Set(
   ["separation", "outsideArea", "ignitionInZone", "ignitionDownwind",
    //  C90: an item the road network does not serve.
-   "noRoadAccess", "buildingNotReached", "weighbridgeOffRoad", "gateOffRoad"]);
+   "noRoadAccess", "buildingNotReached", "weighbridgeOffRoad", "gateOffRoad",
+   //  C96: an emergency item exposed, a car park whose cars reverse out, a
+   //  site with one entrance.
+   "exposedInZone", "exposedDownwind", "carParkReverseExit", "singleEntrance"]);
 
 /** Findings that name a ROAD (its `a`), told in the road's tooltip. */
 const ROAD_FINDINGS = new Set(["roadInZone", "roadDisconnected"]);
+
+/** Findings that name a TRUCK ROUTE (its `a`), told in the route's tooltip
+ *  (DEV.md 4c C96). */
+const ROUTE_FINDINGS = new Set(["routeReverses", "turningAreaTooSmall", "sharpCorner",
+  "cornersTooClose", "wrongWay", "routeMissesWeighbridge", "routeMissesStop", "routeNoGate"]);
 
 /** The item ids a finding names.  `b` of a zone finding is
  *  `<release item>#zone<n>`; of an area finding a SECTOR (not an item). */
 function namedItems(kind: string, a: string, b: string): string[] {
   if (kind === "outsideArea" || kind === "noRoadAccess" || kind === "buildingNotReached"
-      || kind === "weighbridgeOffRoad" || kind === "gateOffRoad") return [a];
-  if (kind === "ignitionInZone") return [a, b.split("#zone")[0] ?? b];
+      || kind === "weighbridgeOffRoad" || kind === "gateOffRoad"
+      || kind === "carParkReverseExit" || kind === "singleEntrance") return [a];
+  if (kind === "ignitionInZone" || kind === "exposedInZone") return [a, b.split("#zone")[0] ?? b];
   return [a, b];
 }
 
@@ -588,7 +660,8 @@ export function layoutScene(layout: PlantLayout | undefined): LayoutScene | null
 
   const links: SceneLink[] = [];
   for (const f of layout.findings) {
-    if (f.kind !== "separation" && f.kind !== "ignitionDownwind") continue;
+    if (f.kind !== "separation" && f.kind !== "ignitionDownwind"
+        && f.kind !== "exposedDownwind") continue;
     const a = byId.get(f.a), b = byId.get(f.b);
     if (!a || !b) continue;
     const ha = a.z + 0.5 * a.dz, hb = b.z + 0.5 * b.dz;
@@ -652,6 +725,19 @@ export function layoutScene(layout: PlantLayout | undefined): LayoutScene | null
       grow([q[0] + r.width / 2, 0, q[2] + r.width / 2]);
     }
   const barriers = barriersOf(layout);
+  //  C96: the approaches, the truck routes, the car parks, the turning areas.
+  const approaches = approachesOf(layout);
+  for (const a of approaches) { grow(a.from); grow(a.to); }
+  const truckRoutes = truckRoutesOf(layout);
+  const carParks = carParksOf(layout);
+  const turningAreas: SceneTurningArea[] = (layout.turningAreas ?? []).map((t) => ({
+    area: t.area, at: toThree(t.x, t.y, 0), radius: t.diameter / 2,
+    tooltip: [`turning area ${t.area}: ${fmt(t.diameter)} m across`, `why: ${t.reason}`],
+  }));
+  for (const t of turningAreas) {
+    grow([t.at[0] - t.radius, 0, t.at[2] - t.radius]);
+    grow([t.at[0] + t.radius, 0, t.at[2] + t.radius]);
+  }
 
   //  The fence (C93), as the engine drew it, and the pipes that cross it.
   const fence = fenceOf(layout);
@@ -708,7 +794,9 @@ export function layoutScene(layout: PlantLayout | undefined): LayoutScene | null
     grow(wind.tail); grow(wind.head);
   }
 
-  return { solids, fence, crossings, unrouted, roads, barriers, zones, areas, plot, links, wind, pipes,
+  const windsocks = windsocksOf(layout);
+  return { solids, fence, crossings, unrouted, roads, barriers, approaches, truckRoutes, carParks,
+           turningAreas, windsocks, zones, areas, plot, links, wind, pipes,
            junctions, rack, min, max, fitMin, fitMax };
 }
 
@@ -875,9 +963,12 @@ function roadsOf(layout: PlantLayout): SceneRoad[] {
       id: `road:${r.road}`, road: r.road, width: r.width,
       points: r.centreline.map(([x, y]) => toThree(x, y, 0)),
       freeStart: free(sx, sy), freeEnd: free(ex, ey),
-      disconnected: !r.fromEntrance, length: r.length,
+      disconnected: !r.fromEntrance, length: r.length, oneWay: !!r.oneWay,
       tooltip: [`road ${r.road}`, `${fmt(r.width)} m wide · ${fmt(r.length)} m of centre line`
-        + " (the engine's length)", ...(r.reason ? [`why: ${r.reason}`] : []),
+        + " (the engine's length)"
+        + (r.oneWay ? " · ONE-WAY, in the order of its waypoints" : "")
+        + (r.cornerRadiusDeclared ? ` · corners of ${fmt(r.cornerRadius ?? 0)} m radius` : ""),
+        ...(r.reason ? [`why: ${r.reason}`] : []),
         ...(r.fromEntrance ? [] : ["no gate reaches it"]),
         ...msgs.map((m) => `FINDING: ${m}`)],
     };
@@ -916,6 +1007,166 @@ function barriersOf(layout: PlantLayout): SceneBarrier[] {
       post: toThree(a.roadX + nx * (h + 0.4), a.roadY + ny * (h + 0.4), ARM_HEIGHT),
       end: toThree(a.roadX - nx * (h - 0.4), a.roadY - ny * (h - 0.4), ARM_HEIGHT),
     });
+  }
+  return out;
+}
+
+//  ---- the trucks, the car parks, the windsocks (DEV.md 4c C96) ------------
+
+/** Each fence opening's approach the engine published, as pavement to draw. */
+function approachesOf(layout: PlantLayout): SceneApproach[] {
+  return (layout.fenceOpenings ?? [])
+    .filter((o) => (o.approach ?? 0) > 1e-6 && o.approachX !== undefined && o.approachY !== undefined)
+    .map((o) => ({ gate: o.gate, from: toThree(o.approachX!, o.approachY!, 0),
+                   to: toThree(o.x, o.y, 0), width: o.width }));
+}
+
+/** A plan polyline with each listed corner replaced by a circular arc of its
+ *  radius (tangent to both legs, `steps` chords): DRAWING of the engine's
+ *  path, its length never re-measured.  A corner whose radius does not fit
+ *  its legs is drawn as tight as they allow. */
+export function roundedPath(path: [number, number][],
+                            radiusAt: (x: number, y: number) => number,
+                            steps = 8): [number, number][] {
+  if (path.length < 3) return path.map((p) => [p[0], p[1]]);
+  const out: [number, number][] = [[path[0]![0], path[0]![1]]];
+  for (let i = 1; i + 1 < path.length; i++) {
+    const [px, py] = path[i]!, [ax, ay] = path[i - 1]!, [bx, by] = path[i + 1]!;
+    const la = Math.hypot(px - ax, py - ay), lb = Math.hypot(bx - px, by - py);
+    const dinx = (px - ax) / la, diny = (py - ay) / la;
+    const doutx = (bx - px) / lb, douty = (by - py) / lb;
+    const dot = dinx * doutx + diny * douty;
+    const r = Math.min(radiusAt(px, py), la / 2, lb / 2);
+    if (Math.abs(dot) > 0.5 || !(r > 1e-6)) { out.push([px, py]); continue; }
+    //  The arc's centre: back along the incoming leg by r, out along the
+    //  outgoing leg by r; it runs from the incoming tangent point to the
+    //  outgoing one.
+    const cx = px - dinx * r + doutx * r, cy = py - diny * r + douty * r;
+    const t0x = px - dinx * r, t0y = py - diny * r, t1x = px + doutx * r, t1y = py + douty * r;
+    const a0 = Math.atan2(t0y - cy, t0x - cx), a1 = Math.atan2(t1y - cy, t1x - cx);
+    let da = a1 - a0;
+    while (da > Math.PI) da -= 2 * Math.PI;
+    while (da < -Math.PI) da += 2 * Math.PI;
+    for (let k = 0; k <= steps; k++) {
+      const a = a0 + (da * k) / steps;
+      out.push([cx + r * Math.cos(a), cy + r * Math.sin(a)]);
+    }
+  }
+  out.push([path[path.length - 1]![0], path[path.length - 1]![1]]);
+  return out;
+}
+
+/** The paved FILLET inside a 90 deg corner of centre-line radius `r`: the
+ *  region between the two roads' inner edges and the inner kerb, an arc of
+ *  radius r - w/2 (w the narrower road), as a closed plan polygon.  Empty
+ *  when the kerb radius is not positive.  Drawing: the engine publishes the
+ *  radius and checks the outer edge, not this polygon. */
+export function filletPolygon(cx: number, cy: number, din: [number, number],
+                              dout: [number, number], wIn: number, wOut: number,
+                              r: number, steps = 10): [number, number][] {
+  const s = r - Math.min(wIn, wOut) / 2;
+  if (!(s > 1e-6)) return [];
+  //  The inner corner, where the two inner edges meet.
+  const ix = cx + dout[0] * wIn / 2 - din[0] * wOut / 2;
+  const iy = cy + dout[1] * wIn / 2 - din[1] * wOut / 2;
+  const ox = ix - din[0] * s + dout[0] * s, oy = iy - din[1] * s + dout[1] * s;   // kerb centre
+  const pA: [number, number] = [ix - din[0] * s, iy - din[1] * s];    // on the incoming inner edge
+  const pB: [number, number] = [ix + dout[0] * s, iy + dout[1] * s];  // on the outgoing inner edge
+  const a0 = Math.atan2(pA[1] - oy, pA[0] - ox), a1 = Math.atan2(pB[1] - oy, pB[0] - ox);
+  let da = a1 - a0;
+  while (da > Math.PI) da -= 2 * Math.PI;
+  while (da < -Math.PI) da += 2 * Math.PI;
+  const poly: [number, number][] = [[ix, iy]];
+  for (let k = 0; k <= steps; k++) {
+    const a = a0 + (da * k) / steps;
+    poly.push([ox + s * Math.cos(a), oy + s * Math.sin(a)]);
+  }
+  return poly;
+}
+
+function truckRoutesOf(layout: PlantLayout): SceneTruckRoute[] {
+  const widths = new Map((layout.roads ?? []).map((r) => [r.road, r.width]));
+  const told = new Map<string, string[]>();
+  for (const f of layout.findings)
+    if (ROUTE_FINDINGS.has(f.kind)) told.set(f.a, [...(told.get(f.a) ?? []), f.message]);
+  const dv = layout.designVehicle;
+  return (layout.truckRoutes ?? []).map((t) => {
+    const corners = (layout.routeCorners ?? []).filter((c) => c.route === t.route);
+    const radiusAt = (x: number, y: number) =>
+      corners.find((c) => Math.abs(c.x - x) < 1e-6 && Math.abs(c.y - y) < 1e-6
+                          && c.turn !== "reverse")?.radius ?? 0;
+    const plan = roundedPath(t.path, radiusAt);
+    const points = plan.map(([x, y]) => toThree(x, y, 0.08));
+    //  The fillets, from the engine's corners and the path's legs there.
+    const fillets: Vec3[][] = [];
+    for (let i = 1; i + 1 < t.path.length; i++) {
+      const [px, py] = t.path[i]!;
+      const c = corners.find((q) => Math.abs(q.x - px) < 1e-6 && Math.abs(q.y - py) < 1e-6);
+      if (!c || c.turn === "reverse") continue;
+      const [ax, ay] = t.path[i - 1]!, [bx, by] = t.path[i + 1]!;
+      const la = Math.hypot(px - ax, py - ay), lb = Math.hypot(bx - px, by - py);
+      const poly = filletPolygon(px, py, [(px - ax) / la, (py - ay) / la],
+        [(bx - px) / lb, (by - py) / lb], widths.get(c.inRoad) ?? 0, widths.get(c.outRoad) ?? 0,
+        c.radius);
+      if (poly.length) fillets.push(poly.map(([x, y]) => toThree(x, y, 0)));
+    }
+    //  Arrows every ROUTE_ARROW_SPACING along the drawn path.
+    const arrows: SceneTruckRoute["arrows"] = [];
+    let total = 0;
+    for (let i = 1; i < plan.length; i++)
+      total += Math.hypot(plan[i]![0] - plan[i - 1]![0], plan[i]![1] - plan[i - 1]![1]);
+    for (let s = ROUTE_ARROW_SPACING / 2; s < total; s += ROUTE_ARROW_SPACING) {
+      const a = pointAlong(points, s), b = pointAlong(points, s + 0.5);
+      const L = Math.hypot(b[0] - a[0], b[2] - a[2]);
+      if (L > 1e-6) arrows.push({ at: a, dir: [(b[0] - a[0]) / L, (b[2] - a[2]) / L] });
+    }
+    const msgs = told.get(t.route) ?? [];
+    return {
+      route: t.route, verdict: t.verdict, length: t.length, points, fillets, arrows,
+      tooltip: [
+        `truck route ${t.route}: ${t.from} -> ${t.to}, ${fmt(t.length)} m (the engine's length)`,
+        `roads, in order: ${t.roads.join(" -> ")}`,
+        `${t.turns} turn(s), ${t.reversals} reversal(s); weighbridge: ${t.weighbridge || "none"}`
+          + (t.serves.length ? `; serves ${t.serves.join(", ")}` : ""),
+        ...corners.filter((c) => c.turn !== "reverse").map((c) =>
+          `${c.turn} at (${fmt(c.x)}, ${fmt(c.y)}) m: radius ${fmt(c.radius)} m, outer edge`
+          + ` ${fmt(c.outerRadius)} m against ${fmt(c.required)} m${c.ok ? "" : " -- TOO SHARP"}`),
+        ...(dv ? [`design vehicle: ${fmt(dv.turningDiameter)} m turning circle (${dv.source})`] : []),
+        t.verdict === "clear" ? "verdict: clear -- no reversing, no corner too sharp"
+          : "verdict: ANNOUNCED", ...msgs.map((m) => `FINDING: ${m}`),
+        `why: ${t.reason}`,
+        "drawn as: the engine's path, corners rounded to the declared radius; the arrows and"
+          + " the fillets are drawing",
+      ],
+    };
+  });
+}
+
+function carParksOf(layout: PlantLayout): SceneCarPark[] {
+  return (layout.carParks ?? []).map((c) => ({
+    item: c.item, exitsForward: c.exitsForward,
+    //  Plan (ux, uy) to three.js X/Z: (ux, -uy).
+    bays: c.stalls.map(([x, y, ux, uy]) => ({ at: toThree(x, y, 0), dir: [ux, -uy] as [number, number],
+                                               w: c.bayWidth, l: c.bayLength })),
+    tooltip: [
+      `car park ${c.item}: ${c.bays} bays declared, ${c.capacity} fit (${c.rows} row(s) of`
+        + ` ${c.perRow}), ${fmt(c.area)} m²`,
+      `bays ${fmt(c.bayWidth)} × ${fmt(c.bayLength)} m at ${fmt(c.angle)}°, aisle ${fmt(c.aisle)} m,`
+        + ` ${c.arrangement}, entry ${c.entry}: cars leave ${c.exitsForward ? "nose first" : "REVERSING"}`,
+      `why: ${c.reason}`, `source: ${c.source}`,
+    ],
+  }));
+}
+
+/** A windsock's sock points where the declared prevailing wind GOES. */
+function windsocksOf(layout: PlantLayout): SceneWindsock[] {
+  const w = layout.wind;
+  const out: SceneWindsock[] = [];
+  for (const it of layout.items) {
+    if (!it.nonProcess || it.kind !== "windsock") continue;
+    const toward = w ? ((w.from + 180 - w.planNorth) * Math.PI) / 180 : 0;
+    const ux = Math.sin(toward), uy = Math.cos(toward);
+    out.push({ item: it.id, top: toThree(it.x, it.y, it.z + it.dz), dir: [ux, -uy] });
   }
   return out;
 }

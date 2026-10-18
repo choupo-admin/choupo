@@ -706,7 +706,71 @@ function shapeLayout(l: NonNullable<ResultPayload["layout"]>): PlantLayout {
     ...shapePlot(l),
     ...shapeRoads(l),
     ...shapeFence(l),
+    ...shapeSiteLogistics(l),
   };
+}
+
+//  THE TRUCKS AND THE CAR PARKS (DEV.md 4c C96), passed through as the engine
+//  walked and laid them out.  A route whose length or any path point is not
+//  finite, a corner or a bay whose position is not, is DROPPED rather than
+//  drawn at the origin.  Nothing is walked or measured here.
+function shapeSiteLogistics(l: NonNullable<ResultPayload["layout"]>): Partial<PlantLayout> {
+  const fin = (v: unknown): v is number => typeof v === "number" && Number.isFinite(v);
+  const str = (v: unknown): string => (typeof v === "string" ? v : "");
+  const arr = <T,>(v: T[] | undefined): T[] => (Array.isArray(v) ? v : []);
+  const words = (v: unknown): string[] =>
+    (Array.isArray(v) ? v.filter((x): x is string => typeof x === "string") : []);
+  const out: Partial<PlantLayout> = {};
+  const dv = l.designVehicle;
+  if (dv && fin(dv.turningDiameter))
+    out.designVehicle = { turningDiameter: dv.turningDiameter, source: str(dv.source),
+                          reason: str(dv.reason), rule: str(dv.rule) };
+  if (Array.isArray(l.turningAreas))
+    out.turningAreas = l.turningAreas.filter((t) => [t.x, t.y, t.diameter].every(fin))
+      .map((t) => ({ area: str(t.area), x: t.x as number, y: t.y as number,
+                     diameter: t.diameter as number, reason: str(t.reason) }));
+  if (Array.isArray(l.truckRoutes))
+    out.truckRoutes = l.truckRoutes
+      .filter((t) => fin(t.length) && Array.isArray(t.path) && t.path.length >= 2
+        && t.path.every((q) => Array.isArray(q) && q.length === 2 && q.every(fin)))
+      .map((t) => ({
+        route: str(t.route), from: str(t.from), to: str(t.to),
+        verdict: (t.verdict === "clear" ? "clear" : "announced") as "clear" | "announced",
+        length: t.length as number, turns: fin(t.turns) ? t.turns : 0,
+        reversals: fin(t.reversals) ? t.reversals : 0, weighbridge: str(t.weighbridge),
+        reason: str(t.reason), roads: words(t.roads), serves: words(t.serves),
+        path: (t.path as number[][]).map((q) => [q[0], q[1]] as [number, number]),
+      }));
+  if (Array.isArray(l.routeCorners))
+    out.routeCorners = l.routeCorners
+      .filter((c) => [c.x, c.y, c.radius, c.outerRadius, c.required].every(fin))
+      .map((c) => ({
+        route: str(c.route),
+        turn: (c.turn === "left" || c.turn === "reverse" ? c.turn : "right") as
+          "left" | "right" | "reverse",
+        inRoad: str(c.inRoad), outRoad: str(c.outRoad), x: c.x as number, y: c.y as number,
+        radius: c.radius as number, outerRadius: c.outerRadius as number,
+        required: c.required as number, turningArea: str(c.turningArea), ok: c.ok !== false,
+      }));
+  if (Array.isArray(l.carParks))
+    out.carParks = l.carParks
+      .filter((c) => [c.bays, c.capacity, c.bayWidth, c.bayLength, c.area].every(fin))
+      .map((c) => ({
+        item: str(c.item), bays: c.bays as number, capacity: c.capacity as number,
+        rows: fin(c.rows) ? c.rows : 0, perRow: fin(c.perRow) ? c.perRow : 0,
+        bayWidth: c.bayWidth as number, bayLength: c.bayLength as number,
+        aisle: fin(c.aisle) ? c.aisle : 0, angle: fin(c.angle) ? c.angle : 90,
+        arrangement: (c.arrangement === "driveThrough" ? "driveThrough" : "doubleLoaded") as
+          "doubleLoaded" | "driveThrough",
+        entry: (c.entry === "forward" ? "forward" : "reverse") as "reverse" | "forward",
+        exitsForward: !!c.exitsForward, depth: fin(c.depth) ? c.depth : 0,
+        pitch: fin(c.pitch) ? c.pitch : 0,
+        usableLength: fin(c.usableLength) ? c.usableLength : 0, area: c.area as number,
+        source: str(c.source), reason: str(c.reason),
+        stalls: arr(c.stalls).filter((q) => Array.isArray(q) && q.length === 4 && q.every(fin))
+          .map((q) => [q[0], q[1], q[2], q[3]] as [number, number, number, number]),
+      }));
+  return out;
 }
 
 //  THE FENCE (DEV.md 4c C93), passed through as the engine drew it.  A fence
@@ -732,7 +796,11 @@ function shapeFence(l: NonNullable<ResultPayload["layout"]>): Partial<PlantLayou
     fenceOpenings: arr(l.fenceOpenings).filter((o) => [o.x, o.y, o.width].every(fin))
       .map((o) => ({ gate: str(o.gate), side: side(o.side), x: o.x as number,
                      y: o.y as number, width: o.width as number, road: str(o.road),
-                     gateDistance: fin(o.gateDistance) ? o.gateDistance : NaN })),
+                     gateDistance: fin(o.gateDistance) ? o.gateDistance : NaN,
+                     //  C96: the approach, absent on a result written before it.
+                     ...(fin(o.approach) && fin(o.approachX) && fin(o.approachY)
+                       ? { approach: o.approach, approachX: o.approachX,
+                           approachY: o.approachY } : {}) })),
     fenceCrossings: arr(l.fenceCrossings).filter((c) => [c.x, c.y, c.z].every(fin))
       .map((c) => ({
         stream: str(c.stream), direction: (c.direction === "out" ? "out" : "in") as "in" | "out",
@@ -772,6 +840,10 @@ function shapeRoads(l: NonNullable<ResultPayload["layout"]>): Partial<PlantLayou
         road: str(r.road), width: r.width as number, length: r.length as number,
         component: fin(r.component) ? r.component : 0, fromEntrance: r.fromEntrance !== false,
         reason: str(r.reason),
+        //  C96: absent on a result written before it.
+        ...(fin(r.cornerRadius) ? { cornerRadius: r.cornerRadius,
+                                    cornerRadiusDeclared: !!r.cornerRadiusDeclared } : {}),
+        ...(typeof r.oneWay === "boolean" ? { oneWay: r.oneWay } : {}),
         centreline: (r.centreline as number[][]).map((q) => [q[0], q[1]] as [number, number]),
       })),
     rackCrossings: arr(l.rackCrossings)
@@ -1096,7 +1168,8 @@ interface ResultPayload {
       pavedArea?: number; source?: string; reason?: string; accessSource?: string;
       accessReason?: string };
     roads?: { road?: string; width?: number; length?: number; component?: number;
-      fromEntrance?: boolean; reason?: string; centreline?: number[][] }[];
+      fromEntrance?: boolean; reason?: string; centreline?: number[][];
+      cornerRadius?: number; cornerRadiusDeclared?: boolean; oneWay?: boolean }[];
     rackCrossings?: { road?: string; xMin?: number; xMax?: number; yMin?: number;
       yMax?: number; clearance?: number }[];
     access?: { item?: string; road?: string; distance?: number; roadX?: number;
@@ -1105,10 +1178,26 @@ interface ResultPayload {
       yMin?: number; yMax?: number; length?: number; source?: string; reason?: string;
       rule?: string };
     fenceOpenings?: { gate?: string; side?: string; x?: number; y?: number;
-      width?: number; road?: string; gateDistance?: number }[];
+      width?: number; road?: string; gateDistance?: number;
+      approachX?: number; approachY?: number; approach?: number }[];
     fenceCrossings?: { stream?: string; direction?: string; side?: string; x?: number;
       y?: number; z?: number; positionFrom?: string; labelDeclared?: boolean;
       label?: string }[];
+    designVehicle?: { turningDiameter?: number; source?: string; reason?: string;
+      rule?: string };
+    turningAreas?: { area?: string; x?: number; y?: number; diameter?: number;
+      reason?: string }[];
+    truckRoutes?: { route?: string; from?: string; to?: string; verdict?: string;
+      length?: number; turns?: number; reversals?: number; weighbridge?: string;
+      reason?: string; roads?: unknown; serves?: unknown; path?: number[][] }[];
+    routeCorners?: { route?: string; turn?: string; inRoad?: string; outRoad?: string;
+      x?: number; y?: number; radius?: number; outerRadius?: number; required?: number;
+      turningArea?: string; ok?: boolean }[];
+    carParks?: { item?: string; bays?: number; capacity?: number; rows?: number;
+      perRow?: number; bayWidth?: number; bayLength?: number; aisle?: number;
+      angle?: number; arrangement?: string; entry?: string; exitsForward?: boolean;
+      depth?: number; pitch?: number; usableLength?: number; area?: number;
+      source?: string; reason?: string; stalls?: number[][] }[];
   };
   economics?: {
     present?: boolean;

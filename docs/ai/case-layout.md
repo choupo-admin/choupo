@@ -1178,8 +1178,60 @@ plot { margin 10 m; reason "..."; }   // optional; absent: 0 m, announced
   chain-link fence with posts, open at the gates, and at each crossing the
   pipeline carried on outside with a sign naming where it comes from or goes
   to.
+* TRUCKS, CARS AND THE SITE (C96).  A road may declare `cornerRadius <m>;`
+  (the centre-line radius of its corners and of every junction a truck turns
+  at; absent, a square corner) and `oneWay yes;` (traffic only in the order
+  of its waypoints).  Inside `roads {}`:
+  ```
+  designVehicle { turningDiameter 25 m; source "..."; reason "..."; }
+  turningAreas ( { area "end"; x 160 m; y -31 m; diameter 26 m; reason "..."; } );   // optional
+  truckRoutes
+  (
+      { route "deliveries"; from gate; to gate;
+        roads ( entrance main yardLink yard entrance );   // in the order driven
+        serves ( warehouse laydown );                    // optional: stops it must pass
+        reason "..."; }
+  );
+  ```
+  The engine walks the route from the `from` gate's fence opening (its road
+  point with no fence) along each road to where it meets the next (the
+  nearest meeting along the road; a road named TWICE in a row is driven to
+  its far end and back -- a dead end visited) to the `to` gate, and publishes
+  the path, its length, every corner (the smaller of the two roads' radii,
+  the pavement's outer edge = radius + half the narrower road, the design
+  vehicle's half turning diameter) and a verdict word.  ANNOUNCED: a
+  reversal with no turning area holding it (`routeReverses`) or one smaller
+  than the truck turns (`turningAreaTooSmall`), a corner whose outer edge is
+  short of the vehicle's (`sharpCorner`), two corners closer than their two
+  radii (`cornersTooClose`), a one-way road driven backwards (`wrongWay`), a
+  weighbridge the route misses when one is placed, a `serves` stop it does
+  not pass, a route that starts or ends at an item that is not a gate.
+  REFUSED: routes with no `designVehicle`, an unknown road or item, two
+  consecutive roads that do not meet, a turning area through a footprint, a
+  negative radius.  Every road is carried on from its end to its gate's
+  fence opening (the APPROACH, published per opening and counted in the
+  paved area), so a road the plot margin stops short reaches its gate.
+  A non-process item of kind `carPark` declares its bays:
+  ```
+  parking { bays 22; bay { width 2.5 m; length 5 m; } aisle 6 m; angle 90 deg;
+            arrangement doubleLoaded;   // or driveThrough
+            entry reverse;              // or forward
+            source "..."; reason "..."; }
+  ```
+  The rows run along the item's length between two end aisles; a declared
+  count the footprint cannot hold is REFUSED with the capacity, and bays a
+  car leaves by reversing (`doubleLoaded` + `entry forward`) are ANNOUNCED.
+  Kinds with a meaning: `musterPoint` and `firePumpHouse` inside a release's
+  zone or downwind of it are ANNOUNCED (`exposedInZone`, `exposedDownwind`);
+  a site with ONE `gate` and a road network is ANNOUNCED (`singleEntrance`).
+  Drawn by kind: `office`, `carPark` (its bays painted on), `laydown`,
+  `musterPoint`, `fireWaterTank`, `firePumpHouse`, `windsock` (the sock
+  turned downwind).  The 3D view rounds each route corner to its radius,
+  paves the fillets and paints the direction arrows; it walks nothing.
 * Worked cases: `tutorials/plant/ammonia02_full_plant` (declared rack,
-  roads, gate, warehouse, canteen, the fence and its labelled crossings),
+  roads, two gates, offices, car park, weighbridge, the one-way truck loop,
+  laydown, muster points, fire water, windsock, warehouse, canteen, the
+  fence and its labelled crossings),
   `greenAmmoniaPEQ_baseCase` and `aceticAcid02_plant` (declared racks).  The
   stated default rack is exercised by `check_plant_layout` on a copy of
   ammonia02 with its `pipeRack` removed.  The

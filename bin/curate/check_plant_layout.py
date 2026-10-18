@@ -114,7 +114,7 @@ The risks such a feature carries are specific, and each arm names one:
       named: a negative margin, a plot block with no reason.
 
   (k) THE ROADS (2026-10-18, DEV.md 4c C90), on the witness, which declares
-      a gate, a canteen, a warehouse and seven roads: each road's published
+      two gates, a canteen, a warehouse and nine roads: each road's published
       length is its centre line's own and the network's is their sum (both
       recomputed here); the PAVED AREA is recomputed here as the union of the
       paved rectangles on the grid of their own edges -- an independent
@@ -179,12 +179,47 @@ The risks such a feature carries are specific, and each arm names one:
       converter's plan CORNER (inside the disc's bounding square, outside the
       disc) raises no clash.
 
+  (n) THE SITE LOGISTICS (2026-10-18, DEV.md 4c C96), on the witness, which
+      declares a design vehicle, a one-way truck loop, a car park, two gates,
+      muster points and the fire pumps: the truck route WALKED AGAIN here by
+      an independent implementation of the rule (from the gate's fence
+      opening along each declared road to where it meets the next, a road
+      named twice driven to its far end and back) -- its path point by
+      point, its length, every corner's turn, declared radius (the smaller of
+      the two roads'), outer edge (radius + half the narrower road) and
+      verdict; the route CLEAR (no reversal, every outer edge at least half
+      the turning diameter, consecutive corners at least their two radii
+      apart), over the placed weighbridge (the deck crossing recomputed),
+      past every `serves` stop (its road point on the path), gate to gate;
+      the car park laid out again (rows, bays per row, capacity, area) and
+      every published bay inside the footprint with a unit exit direction,
+      left nose first; the witness raises no site-logistics finding; every
+      C96 number and word pinned and every pinned one published.  ANNOUNCED
+      (exit 0, stderr, caveat block, JSON), values recomputed where they
+      have one: a sharp corner (the main road's radius 5 m: outer 8 against
+      12.5 m), two corners too close (21 m against 24), a one-way road driven
+      backwards, a route that turns back with no turning area (and so misses
+      the weighbridge), a dead end turned in a turning area big enough
+      (CLEAR, the reversal named in `tankFarmEnd`) and one too small (16
+      against 25 m), a weighbridge and a stop the route misses, a route
+      ending at a building, a muster point downwind of the separator and
+      the let-down drum (distances recomputed), the fire pumps in the
+      makeup compressor's zone 2 (distance recomputed), one entrance, bays
+      left by reversing.  REFUSED (exit 2, named): more bays than the
+      footprint holds, `parking {}` on another kind, a car park with none, a
+      bay at 20 deg, routes with no design vehicle, an unknown road, two
+      roads that do not meet, a route from no placed item, an approach
+      through an item, a turning area through an item, a negative corner
+      radius, a `oneWay` word that is no word.  The approach is held in arms
+      (k) (the paved area includes it) and (l) (recomputed per opening).
+
 NOT COVERED, said so: whether a declared distance or zone extent is SENSIBLE
 (the author's assumption, by design -- no standard is shipped), a pipe's
 pressure drop and cost (none is computed), a pipe clashing with another pipe
 or crossing a road's paved surface below the headroom outside the road
 check, structures, rotations other than the two plan axes, a road's
-turning radius or gradient, whether a declared headroom or access distance is
+gradient, a truck's swept path (only each corner's outer edge is checked),
+how a car reaches a car park's aisles, whether a declared headroom or access distance is
 sensible (the author's assumption, as every distance here), the GUI
 drawing (its pure scene mapping, phase, speed, declutter and camera fit are
 tested in gui/tests/plantLayout.test.ts), and byte-identity of the cases
@@ -301,6 +336,21 @@ strengthened):
       both probes announce nothing.
   S37 the disc taken as the circle's bounding square                -> (m)
       the corner negative publishes pipeClash:rawLiquid:converter.
+  (C96, arm (n) and the approach, 2026-10-18; in PlantLayout.cpp, run
+  against the moved rows re-recorded in a scratch copy, restored with `cp`
+  of the saved file -- byte-identical, `cmp` -- and one `make all`):
+  S38 a corner's radius the LARGER of the two roads'                -> (n)
+      the sharp-corner probe announces nothing.
+  S39 the outer edge on the WIDER road                              -> (n)
+      the witness's corners against their walk (13.5 against 13 m).
+  S40 the car park's end aisles dropped                             -> (n)
+      capacity 32 against the 22 recomputed here.
+  S41 the approach left out of the paved area                       -> (k)
+      3287.75 m2 against the union recomputed here, 3370.25.
+  S42 the one-way check disabled                                    -> (n)
+      the wrong-way probe announces nothing.
+  S43 the muster point's downwind announcement dropped              -> (n)
+      the downwind probe announces nothing.
 """
 import json
 import re
@@ -309,7 +359,7 @@ import subprocess
 import sys
 import tempfile
 import hashlib
-from math import hypot, atan2, degrees, pi
+from math import hypot, atan2, degrees, pi, sin, cos, radians, floor
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[2]
@@ -394,10 +444,11 @@ def arm_witness(work):
         fail("(a) the witness published no `layout` block")
         return
     items = {i["id"]: i for i in lay["items"]}
-    if len(items) != 18:
-        fail(f"(a) the witness places {len(items)} items, expected 18 (seven process"
-             " items and the product store's seven bullets, sized, and the control"
-             " room, gate, canteen and warehouse)")
+    if len(items) != WITNESS_ITEMS:
+        fail(f"(a) the witness places {len(items)} items, expected {WITNESS_ITEMS} (seven"
+             " process items and the product store's seven bullets, sized, and the"
+             f" {WITNESS_ITEMS - 14} site items -- control room, gates, buildings, car park,"
+             " weighbridge, laydown, muster points, fire water, windsock)")
     #  The process vessels stand; the product store's bullets (DEV.md 4c
     #  C92) LIE -- a lying cylinder's plan extents are its length along its
     #  axis and D across, and its height is D.
@@ -441,7 +492,7 @@ def arm_witness(work):
     if not any(a.get("category") == "layout" and a.get("message") == msg
                for a in (j.get("advisories") or [])):
         fail("(b) the separation announcement is not in the result JSON's advisories")
-    claims.append("witness: 18 items, vessel extents = their design sheets' D/H"
+    claims.append(f"witness: {WITNESS_ITEMS} items, vessel extents = their design sheets' D/H"
                   " (standing, and T201's bullets lying),"
                   " the one shortfall recomputed edge to edge and announced on"
                   " stderr, the caveat block and the JSON")
@@ -456,6 +507,15 @@ def sub(old, new):
     return f
 
 
+def sub_all(old, new):
+    """Every occurrence (a fixture that must reach both gates, C96)."""
+    def f(text):
+        if old not in text:
+            raise RuntimeError(f"fixture anchor not found: {old!r}")
+        return text.replace(old, new)
+    return f
+
+
 def chain(*fs):
     def f(text):
         for g in fs:
@@ -465,6 +525,9 @@ def chain(*fs):
 
 
 ITEMS_OPEN = "items\n(\n"
+#  The witness's placed items: seven process items, T201's seven bullets and
+#  (C96) fourteen site items.
+WITNESS_ITEMS = 28
 REFUSALS = {
     "unknown item": (sub(ITEMS_OPEN, ITEMS_OPEN
         + '    { item "noSuchItem"; x 200 m; y 0 m; z 0 m; orientation vertical; }\n'),
@@ -691,11 +754,13 @@ def arm_draft(work):
                    "{ zone 1; radius 1.50 m; height 3.00 m; }",
                    "margin 5.00 m;", 'kind        canteen;',
                    'reason      "meals and rest for the shift crews',
-                   "`roads {}` network is NOT carried"):
+                   "`roads {}` network is NOT carried", "arrangement doubleLoaded;",
+                   "entry       reverse;"):
         if needle not in text:
             fail(f"(e) the forced draft did not carry `{needle}`")
-    if len(lay.get("items", [])) != 18:
-        fail(f"(e) the forced draft places {len(lay.get('items', []))} items, expected 18")
+    if len(lay.get("items", [])) != WITNESS_ITEMS:
+        fail(f"(e) the forced draft places {len(lay.get('items', []))} items, expected"
+             f" {WITNESS_ITEMS}")
     if "roadNetwork" in lay or "\nroads\n{" in text:
         fail("(e) the forced draft wrote or ran a road network: roads are drawn round"
              " positions the draft moves, and are never carried")
@@ -768,8 +833,9 @@ def arm_refused_sizer(work):
     ids = [i["id"] for i in lay["items"]]
     if "separator" in ids:
         fail("(g) the separator was placed although its sizer refused")
-    if len(ids) != 17:
-        fail(f"(g) {len(ids)} items placed, expected the witness's 18 less the separator")
+    if len(ids) != WITNESS_ITEMS - 1:
+        fail(f"(g) {len(ids)} items placed, expected the witness's {WITNESS_ITEMS} less the"
+             " separator")
     f = [x for x in lay["findings"] if x["id"] == "sizingRefused:separator:separator"]
     if len(f) != 1:
         fail(f"(g) no sizingRefused finding for the separator; findings "
@@ -1327,6 +1393,22 @@ def paved_rects(lay):
     return out
 
 
+def approach_rects(lay):
+    """C96: each fence opening's APPROACH -- the published road end to the
+    published opening, widened by half the opening's width across it."""
+    out = []
+    for o in lay.get("fenceOpenings", []):
+        if o.get("approach", 0) <= 1e-9:
+            continue
+        h = o["width"] / 2
+        vert = abs(o["approachX"] - o["x"]) < 1e-9
+        out.append((min(o["approachX"], o["x"]) - (h if vert else 0),
+                    max(o["approachX"], o["x"]) + (h if vert else 0),
+                    min(o["approachY"], o["y"]) - (0 if vert else h),
+                    max(o["approachY"], o["y"]) + (0 if vert else h)))
+    return out
+
+
 def union_area(rects):
     """The union of axis-aligned rectangles, exactly, on the grid of their
     own edges -- written here again, not imported, so the engine's rule has
@@ -1412,8 +1494,8 @@ def arm_roads(work):
         fail(f"(k) the witness exited {rc} / published no roadNetwork")
         return
     roads = lay.get("roads", [])
-    if len(roads) != 7 or net["roads"] != 7:
-        fail(f"(k) the witness declares seven roads; published {len(roads)} / {net['roads']}")
+    if len(roads) != 9 or net["roads"] != 9:
+        fail(f"(k) the witness declares nine roads; published {len(roads)} / {net['roads']}")
     total = 0.0
     for r in roads:
         c = r["centreline"]
@@ -1426,14 +1508,14 @@ def arm_roads(work):
             fail(f"(k) road {r['road']}: published as not reached from the gate")
     if not close(total, net["length"]):
         fail(f"(k) the network's length {net['length']} m, the roads summed here {total} m")
-    rects = paved_rects(lay)
+    rects = paved_rects(lay) + approach_rects(lay)
     pav = union_area(rects)
     if not close(pav, net["pavedArea"]):
         fail(f"(k) paved area: the engine {net['pavedArea']} m2, the union recomputed here"
              f" {pav} m2 (the plain sum would be {sum((r[1]-r[0])*(r[3]-r[2]) for r in rects)})")
-    if net["components"] != 1 or net["entrances"] != ["gate"]:
+    if net["components"] != 1 or net["entrances"] != ["gate", "emergencyGate"]:
         fail(f"(k) the witness's network: {net['components']} component(s), entrances"
-             f" {net['entrances']}; expected one, reached from `gate`")
+             f" {net['entrances']}; expected one, reached from `gate` and `emergencyGate`")
     # the crossing under the rack, recomputed from the published rack band
     k = lay["pipeRack"]
     hw = k["lanesPerTier"] * k["laneSpacing"] / 2
@@ -1477,7 +1559,8 @@ def arm_roads(work):
             fail(f"(k) access {iid}: {best} m, beyond the declared {net['accessDistance']} m,"
                  " on the witness")
     road_kinds = {"roadInZone", "roadDisconnected", "buildingNotReached", "noRoadAccess",
-                  "noEntrance", "weighbridgeOffRoad", "gateOffRoad"}
+                  "noEntrance", "weighbridgeOffRoad", "gateOffRoad", "singleEntrance",
+                  "turningAreaOffRoad"}
     bad = [f["id"] for f in lay["findings"] if f["kind"] in road_kinds]
     if bad:
         fail(f"(k) the witness raises road findings {bad}; it must raise none")
@@ -1551,8 +1634,8 @@ def arm_roads(work):
     d = prepare(work, "roads_reach", WITNESS, chain(
         sub("    access\n    {\n        distance 20 m;",
             "    access\n    {\n        distance 7 m;"),
-        sub("        x           -30 m;\n        y           -20 m;",
-            "        x           -30 m;\n        y           20 m;"),
+        sub("        x           46 m;\n        y           -62 m;",
+            "        x           100 m;\n        y           15 m;"),
         lambda t: t.replace("    network\n    (\n", "    network\n    (\n"
             '        { road "island"; width 4 m; reason "fixture";'
             ' waypoints ( { x 100 m; y 0 m; } { x 110 m; y 0 m; } ); }\n', 1)))
@@ -1587,7 +1670,7 @@ def arm_roads(work):
                  f" {lay3['roadNetwork']['components']}")
         announced += 1
     #  no gate
-    d = prepare(work, "roads_nogate", WITNESS, sub('        kind        gate;', '        kind        guardhouse;'))
+    d = prepare(work, "roads_nogate", WITNESS, sub_all('        kind        gate;', '        kind        guardhouse;'))
     out, err, rc, j, lay4 = layout_of(d)
     if rc != 0 or "noEntrance:roads:" not in {x["id"] for x in lay4.get("findings", [])} \
             or lay4.get("roadNetwork", {}).get("entrances") != []:
@@ -1595,28 +1678,28 @@ def arm_roads(work):
     else:
         announced += 1
     #  a weighbridge: ON the main road (driven over, nothing raised), then off it
-    wb = ('    { nonProcess "weighbridge"; kind weighbridge; x 40 m; y -31 m; z 0 m;'
+    wb = ('    { nonProcess "weighbridge2"; kind weighbridge; x 40 m; y -31 m; z 0 m;'
           ' orientation alongX; footprint { length 18 m; width 3.5 m; height 0.4 m; }'
           ' source "fixture"; reason "fixture: road tankers weighed at the gate"; }\n')
     d = prepare(work, "roads_weighbridge_on", WITNESS, sub(ITEMS_OPEN, ITEMS_OPEN + wb))
     out, err, rc, j, lay5 = layout_of(d)
-    acc = {a["item"]: a for a in lay5.get("access", [])}.get("weighbridge", {})
+    acc = {a["item"]: a for a in lay5.get("access", [])}.get("weighbridge2", {})
     if rc != 0 or not acc.get("onDeck") or acc.get("road") != "main" \
-            or any(x["a"] == "weighbridge" for x in lay5.get("findings", [])):
+            or any(x["a"] == "weighbridge2" for x in lay5.get("findings", [])):
         fail(f"(k) a weighbridge on the main road: exit {rc}, access {acc}, findings"
              f" {[x['id'] for x in lay5.get('findings', [])]}")
     else:
         announced += 1
     d = prepare(work, "roads_weighbridge_off", WITNESS,
-                sub(ITEMS_OPEN, ITEMS_OPEN + wb.replace("y -31 m;", "y -40 m;")))
+                sub(ITEMS_OPEN, ITEMS_OPEN + wb.replace("x 40 m; y -31 m;", "x 90 m; y -15 m;")))
     out, err, rc, j, lay6 = layout_of(d)
-    f6 = next((x for x in lay6.get("findings", []) if x["id"] == "weighbridgeOffRoad:weighbridge:"), None)
+    f6 = next((x for x in lay6.get("findings", []) if x["id"] == "weighbridgeOffRoad:weighbridge2:"), None)
     if rc != 0 or f6 is None or not said_everywhere(f6["message"], out, err, j):
         fail(f"(k) a weighbridge off the road: exit {rc}, findings"
              f" {[x['id'] for x in lay6.get('findings', [])]}")
     else:
         announced += 1
-    claims.append(f"the witness's seven roads: lengths, the network's length and its paved area"
+    claims.append(f"the witness's nine roads: lengths, the network's length and its paved area"
                   f" ({net['pavedArea']:.2f} m2, the union recomputed here), the crossing under"
                   " the rack and every item's access distance recomputed, none beyond the"
                   " declared distance, the roads inside the plot, every road number pinned;"
@@ -1703,19 +1786,25 @@ def arm_fence(work):
                     best, road = dd, r
         along = g["x"] if along_x(side) else g["y"]
         width = g["dx"] if along_x(side) else g["dy"]
+        end = None
         if road:
             dmin = None
             for q in road["centreline"]:
                 fx, fy = on_side(side, q[0] if along_x(side) else q[1])
                 dd = hypot(q[0] - fx, q[1] - fy)
                 if dmin is None or dd < dmin - 1e-6:
-                    dmin, along = dd, (q[0] if along_x(side) else q[1])
+                    dmin, along, end = dd, (q[0] if along_x(side) else q[1]), q
             width = road["width"]
         ox, oy = on_side(side, along)
+        #  C96: the APPROACH, the road carried on from that end to the opening.
+        appr = hypot(ox - end[0], oy - end[1]) if end else 0.0
         if not o or o["side"] != side or not close(o["x"], ox) or not close(o["y"], oy) \
-                or not close(o["width"], width) or o["road"] != (road["road"] if road else ""):
+                or not close(o["width"], width) or o["road"] != (road["road"] if road else "") \
+                or not close(o.get("approach", -1.0), appr, 1e-9) \
+                or (end and (not close(o["approachX"], end[0]) or not close(o["approachY"], end[1]))):
             fail(f"(l) the opening for gate {g['id']}: published {o}; recomputed {side} side"
-                 f" at ({ox}, {oy}), {width} m, road {road['road'] if road else ''}")
+                 f" at ({ox}, {oy}), {width} m, road {road['road'] if road else ''},"
+                 f" approach {appr} m from {end}")
     # no road meets the fence outside an opening (recomputed, both ways)
     for r in lay.get("roads", []):
         for (rx0, rx1, ry0, ry1) in paved_rects({"roads": [r]}):
@@ -1776,7 +1865,7 @@ def arm_fence(work):
             gold[(f[1], f[2])] = f[3]
     pub = [("fence", "length", F["length"])]
     for o in opens.values():
-        pub += [("fenceOpening:" + o["gate"], q, o[q]) for q in ("x", "y", "side")]
+        pub += [("fenceOpening:" + o["gate"], q, o[q]) for q in ("x", "y", "side", "approach") if q in o]
     for c in cross.values():
         pub += [("fenceCrossing:" + c["stream"], q, c[q]) for q in ("x", "y", "z", "side")]
     for rid, key, v in pub:
@@ -1807,8 +1896,8 @@ def arm_fence(work):
     else:
         n_ok += 1
     # ---- the gate-closed announcement --------------------------------------
-    d = prepare(work, "fence_nogate", WITNESS, sub("        kind        gate;",
-                                                     "        kind        guardhouse;"))
+    d = prepare(work, "fence_nogate", WITNESS, sub_all("        kind        gate;",
+                                                         "        kind        guardhouse;"))
     out, err, rc, j, lay3 = layout_of(d)
     if rc != 0 or "the fence declares no way in" not in err \
             or (lay3.get("fenceOpenings") or []) != []:
@@ -1825,7 +1914,7 @@ def arm_fence(work):
             [r"road `east` meets the fence on its north side", r"no gate"]),
         "an item across the fence": (
             chain(drop_block_edit("roads"), sub(inset_line, "\n    inset   6 m;")),
-            [r"fence: `\w+` stands across or outside the fence", r"reduce the inset"]),
+            [r"fence: `[\w/]+` stands across or outside the fence", r"reduce the inset"]),
         "a negative inset": (
             sub(inset_line, "\n    inset   -1 m;"), [r"`inset -1 m;`", r"INWARD"]),
         "a crossing on no boundary stream": (
@@ -1932,8 +2021,8 @@ def clashes_recomputed(lay):
 #  pipe runs at y -4.5, 6 m up; the warehouse is 7 m tall) -- a box clash.
 CLASH_WAREHOUSE = sub('''        nonProcess  "warehouse";
         kind        warehouse;
-        x           -30 m;
-        y           -20 m;''', '''        nonProcess  "warehouse";
+        x           46 m;
+        y           -62 m;''', '''        nonProcess  "warehouse";
         kind        warehouse;
         x           -30 m;
         y           -4 m;''')
@@ -2008,6 +2097,507 @@ def arm_clash(work):
                   " column's plan corner, outside its disc, announced as nothing")
 
 
+# ------------------------------------------------------------ site logistics (C96) --
+#  An independent home for the truck-route walk and the car-park rule
+#  (PlantLayout.cpp `checkTruckRoutes`, `readParking`), written again here
+#  from the rule's sentence, never imported.
+
+def _arc_on(cl, p):
+    s = 0.0
+    for a, b in zip(cl, cl[1:]):
+        if (min(a[0], b[0]) - 1e-6 <= p[0] <= max(a[0], b[0]) + 1e-6
+                and min(a[1], b[1]) - 1e-6 <= p[1] <= max(a[1], b[1]) + 1e-6):
+            return s + abs(p[0] - a[0]) + abs(p[1] - a[1])
+        s += abs(b[0] - a[0]) + abs(b[1] - a[1])
+    return None
+
+
+def _point_at(cl, s):
+    acc = 0.0
+    for a, b in zip(cl, cl[1:]):
+        seg = abs(b[0] - a[0]) + abs(b[1] - a[1])
+        if s <= acc + seg + 1e-9:
+            t = (s - acc) / seg if seg > 0 else 0.0
+            return [a[0] + t * (b[0] - a[0]), a[1] + t * (b[1] - a[1])]
+        acc += seg
+    return list(cl[-1])
+
+
+def _driven(cl, s0, s1):
+    acc = [0.0]
+    for a, b in zip(cl, cl[1:]):
+        acc.append(acc[-1] + abs(b[0] - a[0]) + abs(b[1] - a[1]))
+    pts = [_point_at(cl, s0)]
+    idx = range(len(cl)) if s1 >= s0 else range(len(cl) - 1, -1, -1)
+    for k in idx:
+        if min(s0, s1) + 1e-6 < acc[k] < max(s0, s1) - 1e-6:
+            pts.append(list(cl[k]))
+    pts.append(_point_at(cl, s1))
+    return pts
+
+
+def _meetings(A, B):
+    out = []
+    for a0, a1 in zip(A, A[1:]):
+        for b0, b1 in zip(B, B[1:]):
+            x0 = max(min(a0[0], a1[0]), min(b0[0], b1[0]))
+            x1 = min(max(a0[0], a1[0]), max(b0[0], b1[0]))
+            y0 = max(min(a0[1], a1[1]), min(b0[1], b1[1]))
+            y1 = min(max(a0[1], a1[1]), max(b0[1], b1[1]))
+            if x1 < x0 - 1e-6 or y1 < y0 - 1e-6:
+                continue
+            out.append([x0, y0])
+            if x1 - x0 > 1e-6 or y1 - y0 > 1e-6:
+                out.append([x1, y1])
+    return out
+
+
+def walk_route(lay, t):
+    """The path the rule drives, and its corners: [(x, y, turn, radius,
+    outer, ok)] with turn left|right|reverse."""
+    roads = {r["road"]: r for r in lay["roads"]}
+    access = {a["item"]: a for a in lay.get("access", [])}
+    opens = {o["gate"]: o for o in lay.get("fenceOpenings", []) if o.get("road")}
+
+    def end_of(name, road):
+        o = opens.get(name)
+        if o and o["road"] == road:
+            return [o["approachX"], o["approachY"]], [o["x"], o["y"]]
+        a = access[name]
+        return [a["roadX"], a["roadY"]], None
+
+    pts, seg_road = [], []
+
+    def push(q, road):
+        if pts and abs(pts[-1][0] - q[0]) < 1e-6 and abs(pts[-1][1] - q[1]) < 1e-6:
+            return
+        if pts:
+            seg_road.append(road)
+        pts.append(list(q))
+
+    P, Oin = end_of(t["from"], t["roads"][0])
+    E, Oout = end_of(t["to"], t["roads"][-1])
+    if Oin:
+        push(Oin, t["roads"][0])
+    push(P, t["roads"][0])
+    for k, name in enumerate(t["roads"]):
+        cl = roads[name]["centreline"]
+        s0 = _arc_on(cl, P)
+        target = E
+        if k + 1 < len(t["roads"]) and t["roads"][k + 1] == name:
+            total = _arc_on(cl, cl[-1])
+            target = list(cl[0]) if s0 > 0.5 * total else list(cl[-1])
+        elif k + 1 < len(t["roads"]):
+            cands = _meetings(cl, roads[t["roads"][k + 1]]["centreline"])
+            target = min(cands, key=lambda c: abs(_arc_on(cl, c) - s0))
+        for q in _driven(cl, s0, _arc_on(cl, target)):
+            push(q, name)
+        P = target
+    if Oout:
+        push(Oout, t["roads"][-1])
+    need = lay["designVehicle"]["turningDiameter"] / 2
+    corners = []
+    for i in range(1, len(pts) - 1):
+        ax, ay = pts[i][0] - pts[i - 1][0], pts[i][1] - pts[i - 1][1]
+        bx, by = pts[i + 1][0] - pts[i][0], pts[i + 1][1] - pts[i][1]
+        dot = (ax * bx + ay * by) / (hypot(ax, ay) * hypot(bx, by))
+        if dot > 0.5:
+            continue
+        if dot < -0.5:
+            corners.append((pts[i][0], pts[i][1], "reverse", None, None, None))
+            continue
+        rin, rout = roads[seg_road[i - 1]], roads[seg_road[i]]
+        r = min(rin.get("cornerRadius", 0), rout.get("cornerRadius", 0))
+        outer = r + min(rin["width"], rout["width"]) / 2
+        corners.append((pts[i][0], pts[i][1], "left" if ax * by - ay * bx > 0 else "right",
+                        r, outer, outer >= need - 1e-6))
+    length = sum(hypot(b[0] - a[0], b[1] - a[1]) for a, b in zip(pts, pts[1:]))
+    return pts, corners, length
+
+
+def car_park_recomputed(it, c):
+    """(rows, perRow, capacity) by the rule, from the declared bay, aisle,
+    angle and arrangement and the item's own plan extents."""
+    th = radians(c["angle"])
+    sn, cs = sin(th), (0.0 if abs(cos(th)) < 1e-12 else cos(th))
+    along_x = it["orientation"] == "alongX"
+    L, W = (it["dx"], it["dy"]) if along_x else (it["dy"], it["dx"])
+    depth = c["bayLength"] * sn + c["bayWidth"] * cs
+    pitch = c["bayWidth"] / sn
+    first = c["bayLength"] * cs + c["bayWidth"] * sn
+    usable = L - 2 * c["aisle"]
+    per = 0 if usable + 1e-9 < first else int(floor((usable - first) / pitch + 1e-9)) + 1
+    rows = 0
+    if c["arrangement"] == "doubleLoaded":
+        mod = 2 * depth + c["aisle"]
+        v = -W / 2
+        while v + mod <= W / 2 + 1e-9:
+            rows += 2
+            v += mod
+        if v + depth + c["aisle"] <= W / 2 + 1e-9:
+            rows += 1
+    else:
+        v = -W / 2 + c["aisle"]
+        while v + depth + c["aisle"] <= W / 2 + 1e-9:
+            rows += 1
+            v += depth + c["aisle"]
+    return rows, per, rows * per
+
+
+def _deck_crossed(pts, it):
+    for a, b in zip(pts, pts[1:]):
+        cx = min(max(it["x"], min(a[0], b[0])), max(a[0], b[0]))
+        cy = min(max(it["y"], min(a[1], b[1])), max(a[1], b[1]))
+        if abs(cx - it["x"]) <= it["dx"] / 2 + 1e-6 and abs(cy - it["y"]) <= it["dy"] / 2 + 1e-6:
+            return True
+    return False
+
+
+def _on_path(pts, p):
+    return any(min(a[0], b[0]) - 1e-6 <= p[0] <= max(a[0], b[0]) + 1e-6
+               and min(a[1], b[1]) - 1e-6 <= p[1] <= max(a[1], b[1]) + 1e-6
+               for a, b in zip(pts, pts[1:]))
+
+
+ROUTE_OPEN = "    truckRoutes\n    (\n"
+
+
+def _add_route(entry):
+    return sub(ROUTE_OPEN, ROUTE_OPEN + entry)
+
+
+def _route_block(name, roads, extra=""):
+    return ('        { route "%s"; from gate; to gate; roads ( %s ); %s'
+            'reason "fixture"; }\n' % (name, roads, extra))
+
+
+#  The tank-farm road carried on to x 160 m with a turning area at its end,
+#  and a second route that drives it to the end and back (a dead end visited).
+def _tank_farm_dead_end(diameter):
+    return chain(
+        sub("waypoints ( { x 68 m; y -31 m; } { x 146 m; y -31 m; } );",
+            "waypoints ( { x 68 m; y -31 m; } { x 160 m; y -31 m; } );"),
+        sub("    network\n    (\n",
+            "    turningAreas ( { area \"tankFarmEnd\"; x 160 m; y -31 m; diameter %s m;"
+            " reason \"fixture\"; } );\n    network\n    (\n" % diameter),
+        _add_route(_route_block("tankers", "entrance main tankFarm tankFarm main entrance")))
+
+
+SITE_REFUSALS = {
+    "more bays than the footprint holds": (
+        sub("            bays        22;", "            bays        30;"),
+        [r"30 bays are declared, and the footprint holds 22", r"2 row\(s\) of 11"]),
+    "parking on a kind that is not a car park": (
+        sub("        kind        carPark;", "        kind        lorryPark;"),
+        [r"`parking \{\}` is declared on an item of kind `lorryPark`"]),
+    "a car park with no parking block": (
+        lambda t: re.sub(r"\n        parking\n        \{.*?\n        \}\n", "\n", t, count=1,
+                         flags=re.S),
+        [r"a `carPark` declares its bays"]),
+    "a bay at 20 deg": (
+        sub("            angle       90 deg;", "            angle       20 deg;"),
+        [r"`angle 20 deg;` -- a bay stands at\s+30 to 90 deg"]),
+    "truck routes with no design vehicle": (
+        lambda t: re.sub(r"\n    designVehicle\n    \{.*?\n    \}\n", "\n", t, count=1, flags=re.S),
+        [r"`truckRoutes` are declared with no `designVehicle"]),
+    "a route naming no declared road": (
+        sub("roads  ( entrance main yardLink yard entrance );",
+            "roads  ( entrance main nowhere );"),
+        [r"truck route `deliveries`: `nowhere`", r"Declared"]),
+    "two roads that do not meet": (
+        sub("roads  ( entrance main yardLink yard entrance );",
+            "roads  ( entrance tankFarm entrance );"),
+        [r"roads `entrance` and `tankFarm` do not meet"]),
+    "a route from no placed item": (
+        sub("            from   gate;", "            from   gateX;"),
+        [r"truck route `deliveries`: `gateX` is no placed item"]),
+    "an approach through an item": (
+        sub(ITEMS_OPEN, ITEMS_OPEN + '    { nonProcess "kiosk"; kind kiosk; x -12 m; y -84 m;'
+            ' z 0 m; orientation alongX; footprint { length 3 m; width 2 m; height 2 m; } }\n'),
+        [r"the approach from road `entrance` to gate `gate`'s opening in the fence runs"
+         r" THROUGH `kiosk`"]),
+    "a turning area through an item": (
+        sub("    network\n    (\n", "    turningAreas ( { area \"t\"; x 146 m; y -31 m;"
+            " diameter 25 m; reason \"fixture\"; } );\n    network\n    (\n"),
+        [r"turning area `t` .* runs THROUGH `T201/vessel7`"]),
+    "a negative corner radius": (
+        sub("            cornerRadius 10 m;\n            oneWay       yes;\n"
+            "            reason       \"the truck yard",
+            "            cornerRadius -1 m;\n            oneWay       yes;\n"
+            "            reason       \"the truck yard"),
+        [r"road `yard`: `cornerRadius` cannot be negative"]),
+    "a one-way word that is no word": (
+        sub("            oneWay       yes;\n            reason       \"the truck yard",
+            "            oneWay       maybe;\n            reason       \"the truck yard"),
+        [r"road `yard`: `oneWay`", r"Accepted.*yes.*no"]),
+}
+
+
+def arm_site(work):
+    d = prepare(work, "site_witness", WITNESS)
+    out, err, rc, j, lay = layout_of(d)
+    if rc != 0 or not lay.get("truckRoutes") or not lay.get("carParks"):
+        fail(f"(n) the witness exited {rc} / published no truck route or car park")
+        return
+    items = {i["id"]: i for i in lay["items"]}
+    # ---- the truck route, walked again here -------------------------------
+    T = lay["truckRoutes"][0]
+    pts, corners, length = walk_route(lay, T)
+    pub_c = [c for c in lay.get("routeCorners", []) if c["route"] == T["route"]]
+    if len(pts) != len(T["path"]) or any(not close(a[0], b[0]) or not close(a[1], b[1])
+                                         for a, b in zip(pts, T["path"])):
+        fail(f"(n) route {T['route']}: published path {T['path']}; walked here {pts}")
+    if not close(length, T["length"]):
+        fail(f"(n) route {T['route']}: published length {T['length']} m, walked {length} m")
+    if len(pub_c) != len(corners) or any(
+            c["turn"] != w[2] or not close(c["x"], w[0]) or not close(c["y"], w[1])
+            or (w[3] is not None and (not close(c["radius"], w[3]) or not close(c["outerRadius"], w[4])
+                                      or c["ok"] != w[5]))
+            for c, w in zip(pub_c, corners)):
+        fail(f"(n) route {T['route']}: published corners {[(c['turn'], c['x'], c['y'], c['radius'], c['outerRadius'], c['ok']) for c in pub_c]};"
+             f" walked {corners}")
+    need = lay["designVehicle"]["turningDiameter"] / 2
+    if T["verdict"] != "clear" or T["reversals"] != 0 or any(not w[5] for w in corners) \
+            or any(c["required"] != need for c in pub_c):
+        fail(f"(n) the witness's route must be CLEAR -- no reversal, every corner's outer edge"
+             f" at least {need} m: verdict {T['verdict']}, corners {corners}")
+    for a, b in zip([c for c in corners], corners[1:]):
+        gap = abs(b[0] - a[0]) + abs(b[1] - a[1])
+        if gap < a[3] + b[3] - 1e-6:
+            fail(f"(n) corners {a[:2]} and {b[:2]}: {gap} m apart, radii {a[3]} + {b[3]} m")
+    bridges = [i for i in lay["items"] if i.get("nonProcess") and i["kind"] == "weighbridge"]
+    crossed = [b["id"] for b in bridges if _deck_crossed(pts, b)]
+    if not crossed or T["weighbridge"] != crossed[0]:
+        fail(f"(n) route {T['route']}: weighbridge published `{T['weighbridge']}`, crossed"
+             f" here {crossed}")
+    access = {a["item"]: a for a in lay.get("access", [])}
+    for s in T["serves"]:
+        a = access.get(s, {})
+        if not a.get("road") or not _on_path(pts, (a["roadX"], a["roadY"])):
+            fail(f"(n) route {T['route']} serves `{s}`, whose road point {a} is not on its path")
+    gates = {i["id"] for i in lay["items"] if i.get("nonProcess") and i["kind"] == "gate"}
+    if T["from"] not in gates or T["to"] not in gates:
+        fail(f"(n) route {T['route']} runs {T['from']} -> {T['to']}: both must be gates")
+    # ---- the car park, laid out again here --------------------------------
+    for c in lay["carParks"]:
+        it = items[c["item"]]
+        rows, per, cap = car_park_recomputed(it, c)
+        if (rows, per, cap) != (c["rows"], c["perRow"], c["capacity"]) or c["bays"] > cap \
+                or len(c["stalls"]) != c["bays"] or not close(c["area"], it["dx"] * it["dy"]):
+            fail(f"(n) car park {c['item']}: published rows/perRow/capacity {c['rows']}/"
+                 f"{c['perRow']}/{c['capacity']}, {len(c['stalls'])} bays drawn of {c['bays']},"
+                 f" area {c['area']}; recomputed {rows}/{per}/{cap}, area {it['dx'] * it['dy']}")
+        for x, y, ux, uy in c["stalls"]:
+            if abs(x - it["x"]) > it["dx"] / 2 + 1e-9 or abs(y - it["y"]) > it["dy"] / 2 + 1e-9 \
+                    or not close(hypot(ux, uy), 1.0):
+                fail(f"(n) car park {c['item']}: a bay at ({x}, {y}) lies outside the footprint"
+                     " or its exit direction is not a unit vector")
+                break
+        if not c["exitsForward"] or c["entry"] != "reverse":
+            fail(f"(n) the witness's car park must let a car leave nose first (reverse-in)")
+    # ---- the witness raises no C96 finding --------------------------------
+    c96 = {"routeReverses", "turningAreaTooSmall", "sharpCorner", "cornersTooClose", "wrongWay",
+           "routeMissesWeighbridge", "routeMissesStop", "routeNoGate", "exposedInZone",
+           "exposedDownwind", "carParkReverseExit", "singleEntrance", "turningAreaOffRoad"}
+    bad = [f["id"] for f in lay["findings"] if f["kind"] in c96]
+    if bad:
+        fail(f"(n) the witness raises {bad}; it must raise no site-logistics finding")
+    # ---- published <=> pinned ---------------------------------------------
+    gold = {}
+    for line in (WITNESS / "expected").read_text().splitlines():
+        f = line.split()
+        if len(f) >= 5 and f[0] == "layout" and (f[1] == "designVehicle" or (
+                ":" in f[1] and f[1].split(":")[0] in (
+                    "truckRoute", "routeCorner", "carPark", "turningArea"))):
+            gold[(f[1], f[2])] = f[3]
+    published = {("designVehicle", "turningDiameter"): lay["designVehicle"]["turningDiameter"]}
+    for t in lay["truckRoutes"]:
+        published[("truckRoute:" + t["route"], "length")] = t["length"]
+        published[("truckRoute:" + t["route"], "verdict")] = t["verdict"]
+        published[("truckRoute:" + t["route"], "from")] = t["from"]
+        published[("truckRoute:" + t["route"], "to")] = t["to"]
+    for k, c in enumerate(pub_c):
+        for q in ("x", "y", "radius", "turn"):
+            published[(f"routeCorner:{T['route']}:{k}", q)] = c[q]
+    for c in lay["carParks"]:
+        for q in ("bays", "capacity", "area"):
+            published[("carPark:" + c["item"], q)] = c[q]
+    for key, val in published.items():
+        g = gold.get(key)
+        if g is None:
+            fail(f"(n) {key[0]} {key[1]} is published and pinned by no golden row")
+        elif isinstance(val, str):
+            if g != val:
+                fail(f"(n) {key[0]} {key[1]} `{val}` against the golden `{g}`")
+        elif not close(float(g), val, 1e-4):
+            fail(f"(n) {key[0]} {key[1]} {val} against the golden {g}")
+    for key in gold:
+        if key not in published:
+            fail(f"(n) a golden row pins {key[0]} {key[1]}, which the run no longer publishes")
+
+    # ---- announcements, each with its value recomputed where it has one ----
+    n_ann = 0
+
+    def probe(label, edit, want_ids, check=None):
+        nonlocal n_ann
+        dd = prepare(work, "site_" + re.sub(r"\W", "_", label), WITNESS, edit)
+        o2, e2, r2, j2, l2 = layout_of(dd)
+        got = {x["id"]: x for x in l2.get("findings", [])}
+        miss = [w for w in want_ids if w not in got]
+        if r2 != 0 or miss:
+            fail(f"(n) {label}: exit {r2}, missing {miss}; findings {sorted(got)}")
+            return
+        for w in want_ids:
+            if not said_everywhere(got[w]["message"], o2, e2, j2):
+                fail(f"(n) {label}: {w} did not reach stderr, the caveat block and the"
+                     " advisories")
+                return
+        if check and not check(l2, got):
+            return
+        n_ann += 1
+
+    def sharp_check(l2, got):
+        for w in ("sharpCorner:deliveries:0", "sharpCorner:deliveries:1"):
+            if not close(got[w]["value"], 5 + 3) or not close(got[w]["limit"], 12.5):
+                fail(f"(n) sharp corner: {w} {got[w]['value']} / {got[w]['limit']},"
+                     " recomputed 8 / 12.5 (radius 5 + half the 6 m main road)")
+                return False
+        t = l2["truckRoutes"][0]
+        if t["verdict"] != "announced":
+            fail(f"(n) sharp corner: the route's verdict is `{t['verdict']}`, not announced")
+            return False
+        return True
+    probe("a sharp corner",
+          sub("            cornerRadius 10 m;\n            reason       \"south of the compressor",
+              "            cornerRadius 5 m;\n            reason       \"south of the compressor"),
+          ["sharpCorner:deliveries:0", "sharpCorner:deliveries:1"], sharp_check)
+
+    def close_check(l2, got):
+        f = got["cornersTooClose:deliveries:1"]
+        if not close(f["value"], 21) or not close(f["limit"], 24):
+            fail(f"(n) corners too close: {f['value']} / {f['limit']}, recomputed 21 / 24")
+            return False
+        return True
+    probe("two corners too close",
+          chain(sub("            cornerRadius 10 m;\n            reason       \"south of the compressor",
+                    "            cornerRadius 12 m;\n            reason       \"south of the compressor"),
+                sub("            cornerRadius 10 m;\n            oneWay       yes;\n"
+                    "            reason       \"the truck yard",
+                    "            cornerRadius 12 m;\n            oneWay       yes;\n"
+                    "            reason       \"the truck yard"),
+                sub("            cornerRadius 10 m;\n            oneWay       yes;\n"
+                    "            reason       \"from the main road",
+                    "            cornerRadius 12 m;\n            oneWay       yes;\n"
+                    "            reason       \"from the main road")),
+          ["cornersTooClose:deliveries:1"], close_check)
+    probe("a one-way road driven backwards",
+          sub("waypoints    ( { x 60 m; y -52 m; } { x -12 m; y -52 m; } );",
+              "waypoints    ( { x -12 m; y -52 m; } { x 60 m; y -52 m; } );"),
+          ["wrongWay:deliveries:yard"])
+    probe("a route that turns back with no turning area",
+          _add_route(_route_block("bad", "entrance main entrance")),
+          ["routeReverses:bad:0", "routeMissesWeighbridge:bad:"])
+
+    def dead_end_ok(l2, got):
+        t = next(x for x in l2["truckRoutes"] if x["route"] == "tankers")
+        rev = [c for c in l2["routeCorners"] if c["route"] == "tankers" and c["turn"] == "reverse"]
+        if t["verdict"] != "clear" or len(rev) != 1 or rev[0]["turningArea"] != "tankFarmEnd" \
+                or not close(rev[0]["x"], 160) or t["reversals"] != 1:
+            fail(f"(n) a dead end with a 26 m turning area: verdict {t['verdict']},"
+                 f" reversals {rev}; it must turn in `tankFarmEnd` and stay clear")
+            return False
+        pts, _, length = walk_route(l2, t)
+        if not close(length, t["length"]):
+            fail(f"(n) the dead-end route: published {t['length']} m, walked {length} m")
+            return False
+        return True
+    probe("a dead end with a turning area big enough", _tank_farm_dead_end(26), [], dead_end_ok)
+
+    def small_check(l2, got):
+        f = got["turningAreaTooSmall:tankers:1"]
+        if not close(f["value"], 16) or not close(f["limit"], 25):
+            fail(f"(n) a small turning area: {f['value']} / {f['limit']}, declared 16 / 25")
+            return False
+        return True
+    probe("a turning area smaller than the truck turns", _tank_farm_dead_end(16),
+          ["turningAreaTooSmall:tankers:1"], small_check)
+    probe("a weighbridge off the route",
+          chain(sub('        nonProcess  "weighbridge";\n        kind        weighbridge;\n'
+                    '        x           9 m;',
+                    '        nonProcess  "weighbridge";\n        kind        weighbridge;\n'
+                    '        x           -27 m;')),
+          ["routeMissesWeighbridge:deliveries:"])
+    probe("a stop the route does not pass",
+          sub("serves ( warehouse laydown );", "serves ( warehouse laydown controlRoom );"),
+          ["routeMissesStop:deliveries:controlRoom"])
+    probe("a route that ends at a building",
+          chain(sub("            to     gate;", "            to     warehouse;"),
+                sub("roads  ( entrance main yardLink yard entrance );",
+                    "roads  ( entrance main yardLink yard );")),
+          ["routeNoGate:deliveries:warehouse"])
+
+    def downwind_check(l2, got):
+        it = {i["id"]: i for i in l2["items"]}
+        w = l2["wind"]
+        for rel in ("separator", "letdown"):
+            f = got[f"exposedDownwind:musterNorth:{rel}"]
+            mine = hypot(it["musterNorth"]["x"] - it[rel]["x"], it["musterNorth"]["y"] - it[rel]["y"])
+            if not close(f["value"], mine, 1e-6) or f["limit"] != w["reach"]:
+                fail(f"(n) downwind muster point: {f['id']} {f['value']} m, recomputed {mine} m")
+                return False
+        return True
+    probe("a muster point downwind of the separator",
+          sub('        nonProcess  "musterNorth";\n        kind        musterPoint;\n'
+              '        x           -20 m;\n        y           12 m;',
+              '        nonProcess  "musterNorth";\n        kind        musterPoint;\n'
+              '        x           80 m;\n        y           10 m;'),
+          ["exposedDownwind:musterNorth:separator", "exposedDownwind:musterNorth:letdown"],
+          downwind_check)
+
+    def zone_check(l2, got):
+        f = got["exposedInZone:firePumps:makeupComp#zone2"]
+        it = {i["id"]: i for i in l2["items"]}
+        mine = point_to_box(it["makeupComp"]["x"], it["makeupComp"]["y"], it["firePumps"])
+        if not close(f["value"], mine, 1e-6) or f["limit"] != 7.5:
+            fail(f"(n) fire pumps in a zone: {f['value']} / {f['limit']}, recomputed {mine} / 7.5")
+            return False
+        return True
+    probe("the fire pumps in a release's zone",
+          sub('        nonProcess  "firePumps";\n        kind        firePumpHouse;\n'
+              '        x           -32 m;\n        y           -16 m;',
+              '        nonProcess  "firePumps";\n        kind        firePumpHouse;\n'
+              '        x           6 m;\n        y           -16 m;'),
+          ["exposedInZone:firePumps:makeupComp#zone2"], zone_check)
+    probe("a site with one entrance",
+          sub('        nonProcess  "emergencyGate";\n        kind        gate;',
+              '        nonProcess  "emergencyGate";\n        kind        kiosk;'),
+          ["singleEntrance:gate:"])
+    probe("bays a car leaves by reversing",
+          sub("            entry       reverse;", "            entry       forward;"),
+          ["carParkReverseExit:carPark:"])
+    # ---- refusals ----------------------------------------------------------
+    n_ref = 0
+    for label, (edit, pats) in SITE_REFUSALS.items():
+        dd = prepare(work, "site_refuse_" + re.sub(r"\W", "_", label), WITNESS, edit)
+        o2, e2, r2 = solve(dd)
+        if r2 != 2 or not all(re.search(pt, o2 + e2, re.S) for pt in pats):
+            fail(f"(n) refusal `{label}`: exit {r2}, expected 2 naming {pats}:\n    "
+                 + "\n    ".join(l for l in (o2 + e2).splitlines() if "ERROR" in l)[:500])
+        else:
+            n_ref += 1
+    claims.append(f"the witness's truck route `{T['route']}` walked again here ({length:.1f} m,"
+                  f" {len(corners)} corners each with its declared radius, outer edge at least"
+                  f" {need} m, no reversal, over `{T['weighbridge']}`, past"
+                  f" {', '.join(T['serves'])}, gate to gate: CLEAR) and its car park laid out"
+                  f" again ({lay['carParks'][0]['capacity']} bays), every C96 number pinned;"
+                  f" {n_ann} site-logistics announcement fixtures (a sharp corner, two corners"
+                  " too close, a one-way road driven backwards, a reversal with no turning area,"
+                  " a dead end turned in a turning area big enough and one too small, a"
+                  " weighbridge and a stop the route misses, a route ending at a building, a"
+                  " muster point downwind, the fire pumps in a zone, one entrance, bays left by"
+                  f" reversing); {n_ref} refusals")
+
+
 def main():
     argv = sys.argv[1:]
     keep = Path(argv[argv.index("--keep") + 1]).resolve() if "--keep" in argv else None
@@ -2029,6 +2619,7 @@ def main():
         arm_roads(work)
         arm_fence(work)
         arm_clash(work)
+        arm_site(work)
     finally:
         if not keep:
             shutil.rmtree(work, ignore_errors=True)
@@ -2041,8 +2632,8 @@ def main():
           + ".  NOT COVERED: whether a declared distance or zone is sensible"
           " (the author's assumption -- no standard is shipped), a pipe's"
           " pressure drop and cost (none is computed), a pipe clashing with"
-          " another pipe or a road's paved surface, structures, a road's turning radius or"
-          " gradient, whether a declared headroom or access distance is sensible,"
+          " another pipe or a road's paved surface, structures, a road's gradient, a"
+          " truck's swept path (each corner's outer edge only), whether a declared headroom or access distance is sensible,"
           " the GUI drawing (its scene"
           " mapping is a vitest), and"
           " byte-identity of cases without a layout (measured once, not gated).")
