@@ -760,8 +760,33 @@ factor); a liquid stored below 0 degC is a REFRIGERATED tank that costs more,
 and the run says LOWER BOUND on every such tank.  A stream above 1.5 bar
 (pressurised storage) is refused.  This is a postDict ITEM, not the
 `storageTank` UNIT (`docs/ai/unit-ops.md`): the unit is a buffer inside the
-flowsheet that reports a holdup and is not sized or costed; the item is the
+flowsheet that reports a holdup and has no sizer of its own; the item is the
 tank the plant buys.  Worked case: `tutorials/plant/greenAmmoniaPEQ_baseCase`.
+
+**A TANK A `storageTank` UNIT HOLDS IS LINKED, AND ITS HOLD TIME HAS ONE HOME
+(2026-10-18).**  When the stream is held by a flowsheet `storageTank` unit,
+that unit already declares `residenceTime` and `fillFraction`, so the entry
+names the unit instead of repeating them:
+
+```
+storage
+(
+    { unit          methanolTank;   // the flowsheet storageTank unit
+      material      SS316;
+      maxTankVolume 30000;
+    }
+);
+```
+
+The tank is sized on the unit's published `residenceTime_s` and
+`fillFraction` KPIs and on the unit's own inlet stream, and its items are the
+unit's (`design/methanolTank/tank1`, which is how the plot plan pipes the
+unit's streams to the tank).  `storageTime`, `fillFraction`, `stream` or
+`name` declared beside `unit` each REFUSE by name, naming the line to delete;
+so does an entry WITHOUT `unit` whose `name` is a storageTank unit's (the
+implicit link a name match would make).  An entry with no `unit` -- a store no
+flowsheet unit holds, like `NH3Storage` above -- declares its own keys exactly
+as before.  Worked case: `tutorials/plant/aceticAcid02_plant`.
 
 **WHAT AN ITEM HOLDS (2026-10-07).**  A `units ( ... )` entry may declare, beside
 its `designRules {}`, the material it holds while the plant runs -- the

@@ -16,12 +16,14 @@
 #include "PhaseDensity.H"
 #include "core/Advisory.H"
 #include "core/Dimensions.H"
+#include "core/FlatUnit.H"
 
 #include <cmath>
 #include <cstdio>
 #include <iostream>
 #include <stdexcept>
 #include <string>
+#include <vector>
 
 namespace Choupo {
 
@@ -44,33 +46,146 @@ std::vector<EquipmentSizing> StorageTankSize::size(const std::string& name,
     const DictPtr&          entry) const
 {
     const std::string who = "storage '" + name + "'";
-    auto need = [&](const char* key)
+
+    //  TWO ROUTES, and an entry takes exactly one (DEV.md 4c C87, Vitor's
+    //  ruling "um so sitio": the hold time has ONE home).
+    //
+    //    LINKED -- `unit <name>;` names a flowsheet `storageTank` UNIT.  The
+    //      unit already DECLARES how long it holds the stream
+    //      (`operation { residenceTime; fillFraction; }`) and PUBLISHES both
+    //      as KPIs; the tank is sized on those published values and on the
+    //      unit's own inlet, and the entry declares only what the unit does
+    //      not know: the tank's material and its size ceiling.  Declaring
+    //      the hold time, the fill fraction, the stream or a second name
+    //      here as well REFUSES by name -- two homes for one fact agree only
+    //      until somebody edits one of them.
+    //    UNLINKED -- no `unit`: a store attached to a boundary stream that no
+    //      flowsheet unit holds (the C44 shape, `NH3Storage` on the green
+    //      ammonia plants).  The entry is the ONLY home of its hold time,
+    //      so it declares it, exactly as before.
+    std::string stream;
+    scalar      t_s  = 0.0;
+    scalar      fill = 0.0;
+    std::string linkedUnit;
+    if (entry->found("unit"))
     {
-        if (!entry->found(key))
-            throw std::runtime_error(who + ": `" + key + "` is not declared."
-                "  A storage item is sized from five declarations and the"
-                " stream's own state:\n"
-                "      stream <name>;  storageTime <n> day;  fillFraction <0..1>;"
-                "  maxTankVolume <m3>;  material <record>;\n"
-                "  None has a default -- each is a design basis somebody"
-                " chooses.");
-    };
-    need("stream");
-    need("storageTime");
-    need("fillFraction");
-    need("maxTankVolume");
+        linkedUnit = entry->lookupWord("unit");
+        const FlatUnit* fu = nullptr;
+        std::string tanks;
+        for (const auto& u : result.topology)
+        {
+            if (u.name == linkedUnit) fu = &u;
+            if (u.type == "storageTank") tanks += " " + u.name;
+        }
+        if (!fu)
+            throw std::runtime_error(who + ": `unit " + linkedUnit + ";` names"
+                " no unit of this flowsheet.  The flowsheet's storageTank"
+                " units are:" + (tanks.empty() ? std::string(" (none)") : tanks)
+                + ".  Name one of them, or drop `unit` and declare the store"
+                " on its own (stream; storageTime; fillFraction).");
+        if (fu->type != "storageTank")
+            throw std::runtime_error(who + ": `unit " + linkedUnit + ";` is a `"
+                + fu->type + "`, not a `storageTank`.  A storage entry links"
+                " only the unit that holds the stream (its residence time is"
+                " the stock the tank is sized for).  The flowsheet's"
+                " storageTank units are:" + (tanks.empty() ? std::string(" (none)")
+                : tanks) + ".");
+        //  WHAT THE UNIT OWNS, refused here by name.
+        struct Owned { const char* key; std::string remedy; };
+        const std::vector<Owned> owned = {
+            { "storageTime",  "the hold time has ONE home, the unit's `operation"
+                " { residenceTime; }` in system/flowsheetDict, and the tank is"
+                " sized on the residence time the unit publishes.  Delete"
+                " `storageTime` from this entry; to change the stock, change the"
+                " unit's `residenceTime`." },
+            { "fillFraction", "the working level has ONE home, the unit's"
+                " `operation { fillFraction; }` in system/flowsheetDict (its"
+                " holdup is computed with it), and the tank is sized on the"
+                " fill fraction the unit publishes.  Delete `fillFraction` from"
+                " this entry; to change it, change the unit's." },
+            { "stream",       "the stream a linked tank stores is the unit's own"
+                " inlet.  Delete `stream` from this entry." },
+            { "name",         "the items of a linked entry ARE the unit's ("
+                + linkedUnit + "/tank1, ...).  Delete `name` from this entry." },
+        };
+        for (const auto& o : owned)
+            if (entry->found(o.key))
+                throw std::runtime_error(who + ": `" + o.key + "` is declared"
+                    " here AND the entry names the storageTank unit '"
+                    + linkedUnit + "' (`unit " + linkedUnit + ";`) -- "
+                    + o.remedy);
+        if (fu->ins.empty())
+            throw std::runtime_error(who + ": the storageTank unit '"
+                + linkedUnit + "' has no inlet stream in the topology.");
+        stream = fu->ins.front();
+        const auto k = result.kpis.find(linkedUnit);
+        auto kpi = [&](const char* key) -> scalar
+        {
+            if (k == result.kpis.end() || !k->second.count(key))
+                throw std::runtime_error(who + ": the storageTank unit '"
+                    + linkedUnit + "' published no `" + key + "` KPI -- the"
+                    " tank is sized on what the unit publishes, and it"
+                    " published nothing to size on (did the unit solve?).");
+            return k->second.at(key);
+        };
+        t_s  = kpi("residenceTime_s");
+        fill = kpi("fillFraction");
+    }
+    else
+    {
+        //  AN ENTRY NAMED AFTER A storageTank UNIT, WITHOUT THE LINK.  Its
+        //  items would belong to that unit (the plot plan pipes a unit's
+        //  streams to the items of the same name) while it declares its own
+        //  hold time beside the unit's -- the two homes again, by a name
+        //  match nobody declared.  Refused, naming the explicit link.
+        for (const auto& u : result.topology)
+            if (u.type == "storageTank" && u.name == name)
+                throw std::runtime_error(who + ": this entry carries the name of"
+                    " the flowsheet storageTank unit '" + name + "' but does not"
+                    " link it.  Write `unit " + name + ";` in place of `name "
+                    + name + ";` and delete `stream`, `storageTime` and"
+                    " `fillFraction`: the tank is then sized on the unit's own"
+                    " inlet, residence time and fill fraction, which have ONE"
+                    " home, the unit.  (A store that no flowsheet unit holds"
+                    " takes a name of its own.)");
 
-    const std::string stream = entry->lookupWord("stream");
+        auto need = [&](const char* key)
+        {
+            if (!entry->found(key))
+                throw std::runtime_error(who + ": `" + key + "` is not declared."
+                    "  A storage item is sized from five declarations and the"
+                    " stream's own state:\n"
+                    "      stream <name>;  storageTime <n> day;  fillFraction <0..1>;"
+                    "  maxTankVolume <m3>;  material <record>;\n"
+                    "  None has a default -- each is a design basis somebody"
+                    " chooses.  (A tank that a flowsheet `storageTank` unit"
+                    " holds is linked with `unit <name>;` instead, and reads"
+                    " the unit's stream, residence time and fill fraction.)");
+        };
+        need("stream");
+        need("storageTime");
+        need("fillFraction");
 
-    //  THE UNIT IS REQUIRED ON THE STORAGE TIME (see the header): a bare
-    //  number is SI seconds to the dict grammar.
-    if (!entry->hasDimensions("storageTime"))
-        throw std::runtime_error(who + ": `storageTime` carries no unit.  A"
-            " bare number is read as SECONDS by the dict grammar, so `21`"
-            " would size a 21-second tank.  Write the unit: `storageTime 21"
-            " day;` (or `h`).");
-    const scalar t_s  = entry->lookupScalar("storageTime", Dims::time);   // s
-    const scalar fill = entry->lookupScalar("fillFraction");
+        stream = entry->lookupWord("stream");
+
+        //  THE UNIT IS REQUIRED ON THE STORAGE TIME (see the header): a bare
+        //  number is SI seconds to the dict grammar.
+        if (!entry->hasDimensions("storageTime"))
+            throw std::runtime_error(who + ": `storageTime` carries no unit.  A"
+                " bare number is read as SECONDS by the dict grammar, so `21`"
+                " would size a 21-second tank.  Write the unit: `storageTime 21"
+                " day;` (or `h`).");
+        t_s  = entry->lookupScalar("storageTime", Dims::time);   // s
+        fill = entry->lookupScalar("fillFraction");
+    }
+    if (!entry->found("maxTankVolume"))
+        throw std::runtime_error(who + ": `maxTankVolume` is not declared."
+            "  A storage item is sized from five declarations and the"
+            " stream's own state:\n"
+            "      stream <name>;  storageTime <n> day;  fillFraction <0..1>;"
+            "  maxTankVolume <m3>;  material <record>;\n"
+            "  None has a default -- each is a design basis somebody"
+            " chooses.");
     const scalar Vmax = entry->lookupScalar("maxTankVolume", Dims::volume); // m3
     if (!(t_s > 0.0))
         throw std::runtime_error(who + ": `storageTime` must be positive.");
@@ -116,11 +231,22 @@ std::vector<EquipmentSizing> StorageTankSize::size(const std::string& name,
         static_cast<double>(fill), static_cast<double>(V_tanks),
         static_cast<double>(Vmax), nTanks, static_cast<double>(V_each));
     std::cout << line;
+    if (!linkedUnit.empty())
+        std::cout << "  [basis] storage '" << name << "': the storage time,"
+                     " the fill fraction and the stream are those of the"
+                     " storageTank unit '" << linkedUnit << "' (its KPIs"
+                     " residenceTime_s and fillFraction, its inlet) -- declared"
+                     " once, on the unit\n";
 
-    std::string basis =
-        "storage V = storageTime x mdot / (rho_liquid x fillFraction), split"
-        " into equal tanks of at most maxTankVolume; costed as an atmospheric"
-        " API fixed-roof tank";
+    std::string basis = linkedUnit.empty()
+        ? std::string("storage V = storageTime x mdot / (rho_liquid x"
+              " fillFraction), split into equal tanks of at most"
+              " maxTankVolume; costed as an atmospheric API fixed-roof tank")
+        : std::string("storage V = residenceTime x mdot / (rho_liquid x"
+              " fillFraction), the residence time, the fill fraction and the"
+              " stream read from the storageTank unit '") + linkedUnit
+          + "', split into equal tanks of at most maxTankVolume; costed as an"
+            " atmospheric API fixed-roof tank";
     if (refrigerated)
     {
         basis += " -- a LOWER BOUND: the liquid is stored REFRIGERATED, and a"
