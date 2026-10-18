@@ -1236,6 +1236,21 @@ accepts today, and that is a policy call.
 > (written, held back).  Proposed, not done: separate inlet/outlet nozzles
 > (moves pipe lengths in every layout case).
 
+> **C93 follow-up MERGED 2026-10-18: the pipe/footprint clash check.**
+> `PlantLayout.cpp`, after every route is final: a pipe segment crossing a
+> placed item's footprint (disc for a vertical cylinder, rectangle
+> otherwise) between its base and top is ANNOUNCED `pipeClash` (stderr,
+> caveat block, JSON), never refused; the pipe's own end items skipped.
+> `check_plant_layout` arm (m): engine list = gate's recomputation on the
+> pipe cases, two clash probes, one corner negative, S36/S37 caught.  Clash
+> list over the six corpus layout cases: EMPTY (the warehouse "clash" was a
+> perspective illusion; the pipe is 9.5 m clear).  No golden moved.
+> `--fast` 73/0, `--gui` 32/0 on the branch.  Open, small, recorded only:
+> shared inlet/outlet nozzle at each item's top centre; T201 vessels 2-7
+> unpiped (C80 first-item rule); the route simplifier merges doubled-back
+> segments (its comment claims the length is unchanged -- unverified); the
+> entrance road stops ~5 m short of the fence opening.
+
 > **C94. LAYOUT GUIDELINES IN THE GUIDES (Vitor, 2026-10-18: "Nos Guias
 > apropriados podes incluir uma parte sobre guidelines de layout?", after
 > asking where a column's reboiler and condenser go, whether columns share
