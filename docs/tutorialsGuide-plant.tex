@@ -98,17 +98,22 @@ TOPOLOGY ONLY. Stream state lives on disk in 0/, one file per stream.
 \tutentry{aceticAcid02\_plant}{tutorials/plant/aceticAcid02\_plant}
 \begin{tutscheme}
 \begin{tikzpicture}[>={Stealth[length=2mm]}, every node/.style={font=\scriptsize}]
-  \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (M1) at (133.4,-0.0) {\textbf{M1}\\[-1pt]{\tiny mixer}};
-  \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (preheater) at (136.3,-0.0) {\textbf{preheater}\\[-1pt]{\tiny phaseChanger}};
-  \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (reactor) at (139.2,-0.0) {\textbf{reactor}\\[-1pt]{\tiny gibbsReactor}};
-  \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (condenser) at (142.1,-0.0) {\textbf{condenser}\\[-1pt]{\tiny isothermalFlash}};
-  \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (purgeSplit) at (145.0,-0.0) {\textbf{purgeSplit}\\[-1pt]{\tiny splitter}};
-  \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (M2) at (145.0,-1.7) {\textbf{M2}\\[-1pt]{\tiny mixer}};
-  \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (letdown) at (147.9,-0.0) {\textbf{letdown}\\[-1pt]{\tiny valve}};
-  \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (degasser) at (150.8,-0.0) {\textbf{degasser}\\[-1pt]{\tiny isothermalFlash}};
-  \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (lightsColumn) at (153.7,-0.0) {\textbf{lightsColumn}\\[-1pt]{\tiny distillationColumn}};
-  \draw[->] ($(M1.west)+(-1.05,-0.17)$) -- ($(M1.west)+(0,-0.17)$) node[at start, below, font=\tiny, anchor=north west] {freshMethanol};
-  \draw[->] ($(M1.west)+(-1.05,0.17)$) -- ($(M1.west)+(0,0.17)$) node[at start, above, font=\tiny, anchor=south west] {freshCO};
+  \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (methanolTank) at (0.0,-0.0) {\textbf{methanolTank}\\[-1pt]{\tiny storageTank}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (methanolPump) at (2.9,-0.0) {\textbf{methanolPump}\\[-1pt]{\tiny pump}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (M1) at (179.8,-0.0) {\textbf{M1}\\[-1pt]{\tiny mixer}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (preheater) at (182.7,-0.0) {\textbf{preheater}\\[-1pt]{\tiny phaseChanger}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (reactor) at (185.6,-0.0) {\textbf{reactor}\\[-1pt]{\tiny gibbsReactor}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (condenser) at (188.5,-0.0) {\textbf{condenser}\\[-1pt]{\tiny isothermalFlash}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (purgeSplit) at (191.4,-0.0) {\textbf{purgeSplit}\\[-1pt]{\tiny splitter}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (M2) at (191.4,-1.7) {\textbf{M2}\\[-1pt]{\tiny mixer}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (letdown) at (194.3,-0.0) {\textbf{letdown}\\[-1pt]{\tiny valve}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (degasser) at (197.2,-0.0) {\textbf{degasser}\\[-1pt]{\tiny isothermalFlash}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (lightsColumn) at (200.1,-0.0) {\textbf{lightsColumn}\\[-1pt]{\tiny distillationColumn}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (acidTank) at (203.0,-0.0) {\textbf{acidTank}\\[-1pt]{\tiny storageTank}};
+  \draw[->] ($(methanolTank.west)+(-1.05,0.00)$) -- ($(methanolTank.west)+(0,0.00)$) node[at start, above, font=\tiny, anchor=south west] {freshMethanol};
+  \draw[->] (methanolTank) -- (methanolPump) node[midway, above, font=\tiny] {methanolStored};
+  \draw[->] (methanolPump) -- (M1) node[midway, above, font=\tiny] {methanolToProcess};
+  \draw[->] ($(M1.west)+(-1.05,0.00)$) -- ($(M1.west)+(0,0.00)$) node[at start, above, font=\tiny, anchor=south west] {freshCO};
   \draw[->, dashed] (purgeSplit.south) .. controls +(0,-1.0) and +(0,-1.0) .. (M1.south) node[midway, below, font=\tiny] {coRecycle};
   \draw[->] (M1) -- (preheater) node[midway, above, font=\tiny] {mixedFeed};
   \draw[->] (preheater) -- (reactor) node[midway, above, font=\tiny] {reactorFeed};
@@ -119,29 +124,36 @@ TOPOLOGY ONLY. Stream state lives on disk in 0/, one file per stream.
   \draw[->] (M2) -- (letdown) node[midway, above, font=\tiny] {crudeAcid};
   \draw[->] (letdown) -- (degasser) node[midway, above, font=\tiny] {letdownOut};
   \draw[->] (degasser) -- (lightsColumn) node[midway, above, font=\tiny] {columnFeed};
+  \draw[->] (lightsColumn) -- (acidTank) node[midway, above, font=\tiny] {acidProduct};
   \draw[->] ($(purgeSplit.east)+(0,0.00)$) -- ($(purgeSplit.east)+(1.05,0.00)$) node[at end, above, font=\tiny, anchor=south east] {purge};
   \draw[->] ($(degasser.east)+(0,0.00)$) -- ($(degasser.east)+(1.05,0.00)$) node[at end, above, font=\tiny, anchor=south east] {offgas};
-  \draw[->] ($(lightsColumn.east)+(0,-0.17)$) -- ($(lightsColumn.east)+(1.05,-0.17)$) node[at end, below, font=\tiny, anchor=north east] {lightsOut};
-  \draw[->] ($(lightsColumn.east)+(0,0.17)$) -- ($(lightsColumn.east)+(1.05,0.17)$) node[at end, above, font=\tiny, anchor=south east] {acidProduct};
+  \draw[->] ($(lightsColumn.east)+(0,0.00)$) -- ($(lightsColumn.east)+(1.05,0.00)$) node[at end, above, font=\tiny, anchor=south east] {lightsOut};
+  \draw[->] ($(acidTank.east)+(0,0.00)$) -- ($(acidTank.east)+(1.05,0.00)$) node[at end, above, font=\tiny, anchor=south east] {acidShipped};
 \end{tikzpicture}
 \end{tutscheme}
 \tutwhat{ACETIC ACID FROM CO + METHANOL, rung 2 -- the plant around the Gibbs reactor of aceticAcid01: UNIFAC liquid instead of ideal, the reactor gas condensed, the CO recycled against a purge, a degasser, a lights column taking the light by-products (methyl acetate / water / methanol / dimethyl ether) overhead as a declared plant outlet, acetic acid as the bottoms product. One recycle (CO). Still a thermodynamic ceiling: no catalyst, no rate law.}
 \begin{tutnarrative}
 acetic acid from CO + methanol, with its plant. A BASE CASE: it runs, it is NOT optimised, and every number a student would tune is a plain key below (see README section 4).
 
-freshMethanol --+ freshCO --------+-$\to$ [M1] -$\to$ [preheater] -$\to$ [reactor] ----$\to$ liquid ---+ coRecycle ------+ \textasciicircum{} 460 K gibbsReactor | | | 460 K, 30 bar, v | | approach 10 gas | | | | | [condenser] | | 330 K, 30 bar| | | | | | coGas condensate | | | | | [purgeSplit] +-[M2] | | | | | purge coRecycle v +--------------------------------------+ [letdown valve]
+freshMethanol $\to$ [methanolTank] $\to$ [methanolPump] $\to$ methanolToProcess 1 atm 14 days to 30 bar | +-------------------------------------------------------+
+
++---------------+ (freshCO arrives by pipeline, not stored) freshCO --------+-$\to$ [M1] -$\to$ [preheater] -$\to$ [reactor] ----$\to$ liquid ---+ coRecycle ------+ \textasciicircum{} 460 K gibbsReactor | | | 460 K, 30 bar, v | | approach 10 gas | | | | | [condenser] | | 330 K, 30 bar| | | | | | coGas condensate | | | | | [purgeSplit] +-[M2] | | | | | purge coRecycle v +--------------------------------------+ [letdown valve]
 
 [lightsColumn] | | lightsOut acidProduct
 
+[acidTank] -$\to$ acidShipped
+
 ONE recycle: CO, against a 5 \% purge. The light by-products leave through the lights column's distillate (a declared outlet, not recycled -- a second recycle was built first and cost 7 min 25 s a run for a stream that is 94 \% acetic acid). The reactor is the one of aceticAcid01\_gibbsReactor.
 
+THE TANKS (DEV.md 4c C87). The methanol is BOUGHT and held in a feed tank before the process takes it; the acid is held in a product tank between shipments. Both are `storageTank` units: the outlet IS the inlet (same F, z, T, P), so they move no process number -- what they add is the holdup the plant's working capital rests on, and the equipment the plot plan and an economic analysis must carry. They are SIZED in system/postDict (a `storage` entry of the SAME name, which is how the plot plan pipes each tank to its unit). CO is NOT stored: it arrives by pipeline at the plant pressure, as a gas no atmospheric tank holds.
+
 \end{tutnarrative}
-\tutreadme{Rung 2 after aceticAcid01\_gibbsReactor. The same Gibbs reactor, now inside a plant: a condenser, a CO recycle against a purge, a degasser, a lights column. It runs (32 s), it converges, and it is deliberately NOT optimised --- every number a student would tune is a plain key in system/flowsheetDict. The optimisation is the exercise.}
+\tutreadme{Rung 2 after aceticAcid01\_gibbsReactor. The same Gibbs reactor, now inside a plant: a methanol feed tank and its pump, a condenser, a CO recycle against a purge, a degasser, a lights column, and an acetic acid product tank. It runs (32 s), it converges, and it is deliberately NOT optimised --- every number a student would tune is a plain key in system/flowsheetDict. The optimisation is the exercise.}
 \tutreadme{The case is sealed: everything it reads is in its own constant/.}
 \tutreadme{One recycle (CO), closed with Wegstein in 46 iterations. A second recycle (the lights column's distillate back to the reactor) was built first and abandoned: it cost 7 min 25 s a run, and the stream it recycled is 94 \% acetic acid. lightsOut is a declared plant outlet.}
-\tutreadme{$\ast$ Reactor: the Gibbs reactor of rung 1 --- equilibrium at 460 K, 30 bar, 10 K approach. No catalyst, no rate. Its liquid is ideal by construction (elementPotential: gas plus one ideal condensable); the 10 K barely moves the main product (see rung 1). $\ast$ Separations: UNIFAC, which is predictive --- the catalogue has no regressed pair for most of this system. Every activity coefficient is an estimate from structure. $\ast$ Vapour: ideal gas. Acetic acid is largely dimerised in real vapour. The engine models that dimer only on its REACTIVE-equilibrium path (a vapourDimerisation block on the acid's gas-liquid chemistry record; see tutorials/steady/flash/flash12\_nh3\_acetic\_ethanol\_reactive and flash13); a gamma-phi package like this one (UNIFAC liquid, ideal-gas vapour) has no vapour-association fugacity model, so this case does not use it and the condenser and degasser splits are indicative. $\ast$ CO has no UNIFAC group, so it sits outside the activity model (approximations block, announced as a $\ast$substitution$\ast$ on every run). $\ast$ Battery limits: the feeds are declared at 30 bar; no compressor or pump is modelled for them. $\ast$ Data: dimethyl ether is reviewStatus interim with a Joback formation enthalpy (see rung 1); it is nil in every stream here. $\ast$ Antoine ranges are exceeded at 460 K (dozens of announcements per run) and the column prints [distillate] WARNING lines (47 in the base case): the distillate's bubble point does not converge because CO and dimethyl ether have no real saturation curve at those temperatures, so the distillate temperature is reported at the top tray. Neither changes a flow.}
+\tutreadme{Two tanks (added 2026-10-18, DEV.md 4c C87): the methanol the plant buys is held in methanolTank before the process takes it, and the acid it makes is held in acidTank between shipments. Both are storageTank units: the outlet IS the inlet, so they move no process number; what they add is the inventory and the equipment (section 8). The CO is not stored: it arrives by pipeline at the plant pressure.}
+\tutreadme{$\ast$ Reactor: the Gibbs reactor of rung 1 --- equilibrium at 460 K, 30 bar, 10 K approach. No catalyst, no rate. Its liquid is ideal by construction (elementPotential: gas plus one ideal condensable); the 10 K barely moves the main product (see rung 1). $\ast$ Separations: UNIFAC, which is predictive --- the catalogue has no regressed pair for most of this system. Every activity coefficient is an estimate from structure. $\ast$ Vapour: ideal gas. Acetic acid is largely dimerised in real vapour. The engine models that dimer only on its REACTIVE-equilibrium path (a vapourDimerisation block on the acid's gas-liquid chemistry record; see tutorials/steady/flash/flash12\_nh3\_acetic\_ethanol\_reactive and flash13); a gamma-phi package like this one (UNIFAC liquid, ideal-gas vapour) has no vapour-association fugacity model, so this case does not use it and the condenser and degasser splits are indicative. $\ast$ CO has no UNIFAC group, so it sits outside the activity model (approximations block, announced as a $\ast$substitution$\ast$ on every run). $\ast$ Battery limits: the methanol arrives as a liquid at 1 atm into its feed tank, and methanolPump (efficiency 0.65, assumed) lifts it to 30 bar. The CO arrives by pipeline, declared at 30 bar; no CO compressor is modelled. $\ast$ The pump's own energy balance is announced as FAILED on every run (dH 1.76 kW against 5.04 kW of shaft work, 35 \% = 1 - eta). It is the engine's, not the case's: the liquid enthalpy of this package carries no pressure term (measured here -- moving 0/freshMethanol from 30 bar to 1 atm left the plant's feed enthalpy unchanged to the last digit), so the 3.28 kW of useful work v$\cdot$dP the pump puts into the liquid is invisible to the energy report, and only its 1.76 kW of dissipation shows as a temperature rise. tutorials/steady/rotating/pump01\_water shows the same 65 \% gap. $\ast$ Data: dimethyl ether is reviewStatus interim with a Joback formation enthalpy (see rung 1); it is nil in every stream here. $\ast$ Antoine ranges are exceeded at 460 K (dozens of announcements per run) and the column prints [distillate] WARNING lines (47 in the base case): the distillate's bubble point does not converge because CO and dimethyl ether have no real saturation curve at those temperatures, so the distillate temperature is reported at the top tray. Neither changes a flow.}
 \tutreadme{Decision variables (all in system/flowsheetDict unless noted):}
-\tutreadme{Objective: yours to choose. A natural one: acid product value minus CO and methanol cost minus utilities (the condenser, degasser and column duties are in reports/). Choupo's outer drivers (sweep, optimization, designSpec) are described in docs/ai/outer-drivers.md; this case ships without an outerDict on purpose.}
 \begin{tutgolden}
 \goldrow{stream}{acidProduct}{F}{0.0273313243062}
 \goldrow{stream}{acidProduct}{T}{404.142108532}
@@ -157,7 +169,7 @@ ONE recycle: CO, against a 5 \% purge. The light by-products leave through the l
 \goldrow{stream}{crudeAcid}{T}{432.199280375}
 \goldrow{stream}{freshCO}{F}{0.0291666666667}
 \goldrow{stream}{freshCO}{T}{300}
-\goldmore{244}
+\goldmore{492}
 \end{tutgolden}
 
 \clearpage
@@ -311,7 +323,7 @@ HONEST SIMPLIFICATIONS. (1) The converter is a SINGLE adiabatic bed, so it runs 
 \goldrow{stream}{productNH3}{F}{0.971862875259}
 \goldrow{stream}{purge}{F}{0.279595054967}
 \goldrow{stream}{rawLiquid}{F}{0.979365150838}
-\goldmore{345}
+\goldmore{401}
 \end{tutgolden}
 
 \clearpage

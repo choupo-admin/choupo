@@ -6,8 +6,10 @@
 |       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
 |        |     O ptimization  |                                               |
 \*-----------------------------------------------------------------------------*/
-// PLANT-BOUNDARY INLET.  Liquid methanol, 100 kmol/h, at the plant pressure.
+// PLANT-BOUNDARY INLET.  Liquid methanol, 100 kmol/h, delivered to the
+// atmospheric feed tank (methanolTank) at 1 atm; methanolPump lifts it to
+// the plant pressure.
 componentMolarFlows { methanol 100 kmol/h; }
 T               300 K;
-P               3000000 Pa;
+P               101325 Pa;
 phase           liquid;

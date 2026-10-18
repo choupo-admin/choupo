@@ -14,8 +14,9 @@
   optimisation, and adding one is a `costing {}` block (see
   greenAmmoniaPEQ_baseCase for the shape).
 
-  WHAT IS SIZED, AND ON WHAT BASIS.  Five of the nine units -- one item
-  each, and four for the lights column:
+  WHAT IS SIZED, AND ON WHAT BASIS.  Seven of the twelve units -- one item
+  each for the first four, four for the lights column, and the two tanks
+  (below):
 
     preheater     (phaseChanger)      shellTubeHX, A = Q/(U*LMTD): Q is the
                   unit's own duty, the LMTD is COMPUTED from its own inlet
@@ -56,11 +57,18 @@
   the run SAYS so; a hydraulic number that is not finite refuses by name.
   The column has no reflux drum here (its entry says why).
 
+  THE TWO TANKS (DEV.md 4c C87): the methanol feed tank and the acetic acid
+  product tank, sized by the `storage` list at the end of this file -- an
+  atmospheric fixed-roof tank on a declared storage time.  CO is not stored:
+  it arrives by pipeline.
+
   WHAT IS NOT SIZED, and why it is not an omission: M1 and M2 are pipe
   junctions, purgeSplit a tee and letdown a control valve -- no vessel, no
-  area, no driver -- so no item is invented for them.  Outside the battery
-  limit, as the README says: the feed compressor and pump (the feeds are
-  declared at 30 bar), the steam, cooling-water and refrigeration systems.
+  area, no driver -- so no item is invented for them.  The methanol pump has
+  no sizer in the engine, so it has no item either (and no place on the plot
+  plan).  Outside the battery limit, as the README says: the CO compressor
+  (the CO is declared at 30 bar), the steam, cooling-water and refrigeration
+  systems.
 
   EVERY DESIGN NUMBER BELOW IS AN AUTHOR-SET ASSUMPTION, declared with its
   reason on its line, for the students to replace with their own design;
@@ -147,6 +155,49 @@ sizing
                                                 // condensing steam -- ASSUMED
                                     LMTD 53;    // K -- the hand calculation above
                                     pressureDesign 2; } } }
+    );
+
+    //  ---- the two tanks: attached to the streams they store -------------
+    //  A tank is not reached through `units` (a flowsheet `storageTank`
+    //  carries no sizer): it is a `storage` entry attached to the stream it
+    //  holds (DEV.md 4c C44).  Each entry is NAMED AFTER its flowsheet
+    //  `storageTank` unit, so its items (`methanolTank/tank1`, ...) belong to
+    //  that unit and the plot plan pipes the unit's streams to them.
+    //  V = storageTime x mdot / (rho_liquid x fillFraction), rho from the
+    //  case's own package at the state the stream carries, split into equal
+    //  tanks of at most maxTankVolume.  EVERY NUMBER IS AN AUTHOR-SET DESIGN
+    //  ASSUMPTION, for the students to replace; none cites a source.
+    //  THE STORAGE TIME AND THE FILL FRACTION ARE DECLARED TWICE -- here and
+    //  on the unit (system/flowsheetDict) -- and the two must be kept equal:
+    //  the unit publishes the holdup, this entry sizes the tank, and neither
+    //  reads the other's declaration (DEV.md 4c C87 names it as an open
+    //  question for the engine).
+    storage
+    (
+        { name          methanolTank;
+          stream        freshMethanol;   // liquid methanol, 300 K and 1 atm
+          material      SS316;           // the one material record this sealed
+                                         // case carries; the tank cost row has
+                                         // NO material factor, and whether a
+                                         // methanol tank needs stainless is the
+                                         // students' materials question
+          storageTime   14 day;          // raw-material stock -- AUTHOR-SET
+                                         // (= methanolTank.residenceTime)
+          fillFraction  0.90;            // working level / tank volume -- AUTHOR-SET
+          maxTankVolume 30000;           // m3 per tank: the ceiling of the tank
+                                         // cost row (CAPCOST 2017), so a costing
+                                         // pass added later prices every tank
+                                         // inside its range
+        }
+        { name          acidTank;
+          stream        acidProduct;     // the column bottoms, ~404 K and 1.5 bar
+                                         // (stored HOT: see flowsheetDict)
+          material      SS316;           // acetic acid; no material factor (above)
+          storageTime   7 day;           // product stock between shipments --
+                                         // AUTHOR-SET (= acidTank.residenceTime)
+          fillFraction  0.90;            // AUTHOR-SET
+          maxTankVolume 30000;           // m3 per tank (above)
+        }
     );
 }
 

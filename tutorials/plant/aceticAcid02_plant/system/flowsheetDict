@@ -3,7 +3,11 @@
   A BASE CASE: it runs, it is NOT optimised, and every number a student would
   tune is a plain key below (see README section 4).
 
-      freshMethanol --+
+      freshMethanol -> [methanolTank] -> [methanolPump] -> methanolToProcess
+        1 atm            14 days           to 30 bar          |
+      +-------------------------------------------------------+
+      |
+      +---------------+          (freshCO arrives by pipeline, not stored)
       freshCO --------+--> [M1] --> [preheater] --> [reactor] -----> liquid ---+
       coRecycle ------+      ^        460 K        gibbsReactor        |       |
                              |                     460 K, 30 bar,      v       |
@@ -24,21 +28,62 @@
                                                                     [lightsColumn]
                                                                       |         |
                                                                   lightsOut   acidProduct
+                                                                                  |
+                                                                             [acidTank] --> acidShipped
 
   ONE recycle: CO, against a 5 % purge.  The light by-products leave through
   the lights column's distillate (a declared outlet, not recycled -- a second
   recycle was built first and cost 7 min 25 s a run for a stream that is 94 %
   acetic acid).  The reactor is the one of aceticAcid01_gibbsReactor.
+
+  THE TANKS (DEV.md 4c C87).  The methanol is BOUGHT and held in a feed tank
+  before the process takes it; the acid is held in a product tank between
+  shipments.  Both are `storageTank` units: the outlet IS the inlet (same F,
+  z, T, P), so they move no process number -- what they add is the holdup
+  the plant's working capital rests on, and the equipment the plot plan and
+  an economic analysis must carry.  They are SIZED in system/postDict (a
+  `storage` entry of the SAME name, which is how the plot plan pipes each
+  tank to its unit).  CO is NOT stored: it arrives by pipeline at the plant
+  pressure, as a gas no atmospheric tank holds.
 \*-----------------------------------------------------------------------------*/
 units
 (
+    //  ---- RAW-MATERIAL INVENTORY: the methanol feed tank -----------------
+    //  An ATMOSPHERIC tank, so `0/freshMethanol` arrives at 1 atm and a pump
+    //  lifts the stored liquid to the plant pressure (until the tanks were
+    //  added the feed was declared at 30 bar and the pump sat outside the
+    //  battery limit).  The residence time is the stock the plant holds:
+    //  14 days is an AUTHOR-SET ASSUMPTION, for the students to replace --
+    //  a delivery cycle plus a safety stock, so that one late delivery does
+    //  not stop the plant.  It is NOT taken from any source.  KEEP IT EQUAL
+    //  to `storageTime` in system/postDict's `storage` entry of the same
+    //  name: the unit publishes the holdup, the sizer sizes the tank, and
+    //  today each reads its own declaration (DEV.md 4c C87 names this).
+    {
+        name        methanolTank;
+        type        storageTank;
+        in          freshMethanol;
+        outputs     ( methanolStored );
+        operation   { residenceTime 14 day;  fillFraction 0.90; }
+    }
+    {
+        //  Lifts the stored methanol from 1 atm to the plant pressure.  The
+        //  efficiency is an AUTHOR-SET ASSUMPTION.  No sizer exists for a
+        //  pump, so it has no item and no place on the plot plan: its two
+        //  streams are listed as not routed, with that reason.
+        name        methanolPump;
+        type        pump;
+        in          methanolStored;
+        outputs     ( methanolToProcess );
+        operation   { P_out 30 bar;  eta 0.65; }
+    }
     {
         //  Fresh feeds and the CO recycle merge at a DECLARED temperature:
         //  a gas+liquid merge has no well-posed adiabatic T (see mixer), and
         //  the preheater below sets the real reactor-feed state.
         name        M1;
         type        mixer;
-        inputs      ( freshMethanol  freshCO  coRecycle );
+        inputs      ( methanolToProcess  freshCO  coRecycle );
         outputs     ( mixedFeed );
         operation   { T 320 K; }
     }
@@ -161,5 +206,22 @@ units
                 //  performed rather than borrow column09's value.
             }
         }
+    }
+
+    //  ---- PRODUCT INVENTORY: the acetic acid product tank ----------------
+    //  The acid held between shipments: 7 days is an AUTHOR-SET ASSUMPTION,
+    //  for the students to replace -- a weekly shipment plus nothing else.
+    //  It is NOT taken from any source.  KEEP IT EQUAL to `storageTime` in
+    //  system/postDict (see the methanol tank).  READ THIS: the acid is
+    //  stored AS THE COLUMN DELIVERS IT, at its bubble point at 1.5 bar
+    //  (about 404 K) -- a real plant cools its product before it reaches an
+    //  atmospheric tank, and that product cooler is the students' to add
+    //  (their tank then holds the denser, cold liquid).
+    {
+        name        acidTank;
+        type        storageTank;
+        in          acidProduct;
+        outputs     ( acidShipped );
+        operation   { residenceTime 7 day;  fillFraction 0.90; }
     }
 );

@@ -20,8 +20,11 @@
   the separation table, the wind, the declared box, the control room and the
   zones below, and lines the process items up again.
 
-  WHAT IS ON THE PLAN AND WHAT IS NOT.  Seven items: the sized items of
-  system/postDict.  The LIGHTS COLUMN stands east of the degasser at
+  WHAT IS ON THE PLAN AND WHAT IS NOT.  Nine items: the sized items of
+  system/postDict -- the two storage tanks among them (below) -- and the
+  control room.  The METHANOL PUMP is not on it: no sizer exists for a pump,
+  so it has no item to place, and its two streams are listed as not routed
+  (the run says so, with that reason).  The LIGHTS COLUMN stands east of the degasser at
   x = 36 m (added 2026-10-17, DEV.md 4c C79, once its trays could be
   rated): its shell from its own sizing (a tower about 0.34 m across and
   11.2 m tall), its condenser and reboiler as DECLARED boxes beside it (they
@@ -31,9 +34,18 @@
   are the groups' to declare -- and declaring one adds a FOURTH downwind
   finding against the control room, which is part of the same exercise.
 
+  THE TANK AREA (added 2026-10-18, DEV.md 4c C87).  The methanol feed tank
+  and the acetic acid product tank stand together 30 m north of the process
+  row, upwind of the control room, each with declared hazardous-area zones
+  (both liquids are flammable) and its own rows in the separation table.
+  The fresh methanol arrives at the rack's west end and is piped up to its
+  tank; the acid is piped from the column's bottom to its tank and from the
+  tank to the rack's east end.  CO arrives by pipeline and is not stored.
+
   WHAT IS THE ENGINE'S AND WHAT IS OURS.  The four vessels' diameters and
   heights are their sizers' own (design/<unit>/vessel, and
-  design/lightsColumn/shell).  EVERYTHING ELSE IN
+  design/lightsColumn/shell); the tanks' VOLUMES are theirs
+  (design/<unit>/tank1), their boxes ours.  EVERYTHING ELSE IN
   THIS FILE IS AN AUTHOR-SET ASSUMPTION FOR THE STUDENTS TO REPLACE WITH
   THEIR OWN SITE DATA: every position, the preheater's box, every separation
   distance, the wind, and every hazardous-area zone extent.  They are round
@@ -150,6 +162,49 @@ items
         footprint   { length 3 m; width 0.6 m; height 0.8 m; }   // author-set
     }
 
+    //  ---- the tank area, north of the process row (DEV.md 4c C87) --------
+    //  The two tanks stand together, 30 m north of the process row and
+    //  upwind of the control room.  A tank publishes its VOLUME, not a
+    //  shape, so each plan box is DECLARED as the bounding box of an upright
+    //  cylinder that holds the sized volume, the proportions an author-set
+    //  choice (the students' to change):
+    //    methanolTank/tank1  1523.64 m3: D 14 m x H 9.9 m (pi/4 x 14^2 x 9.9
+    //                        = 1524 m3);
+    //    acidTank/tank1      1210.52 m3: D 13 m x H 9.2 m (pi/4 x 13^2 x 9.2
+    //                        = 1221 m3).
+    //  Redo the boxes when the storage times or the plant move: the box does
+    //  not follow the run.  No bund (the dike that catches a spill) is
+    //  drawn; its area is ground the plot must carry and the students' to
+    //  add.
+    {
+        item        "methanolTank/tank1";
+        x           -4 m;
+        y           30 m;
+        z           0 m;
+        orientation alongX;
+        footprint   { length 14 m; width 14 m; height 9.9 m; }   // author-set
+        release
+        {
+            source  "author-set assumption for the students to replace with their own site data; not taken from any hazardous-area standard";
+            reason  "methanol vapour breathed out of the roof vents as the tank fills and as the sun warms it, and a spill inside the bund";
+            zones   ( { zone 1; radius 9 m; height 12 m; } { zone 2; radius 15 m; height 13 m; } );
+        }
+    }
+    {
+        item        "acidTank/tank1";
+        x           22 m;
+        y           30 m;
+        z           0 m;
+        orientation alongX;
+        footprint   { length 13 m; width 13 m; height 9.2 m; }   // author-set
+        release
+        {
+            source  "author-set assumption for the students to replace with their own site data; not taken from any hazardous-area standard";
+            reason  "acetic acid vapour breathed out of the roof vents -- the acid is stored hot, at the column's bubble point (see system/flowsheetDict) -- and a spill inside the bund";
+            zones   ( { zone 1; radius 9 m; height 11 m; } { zone 2; radius 14 m; height 12 m; } );
+        }
+    }
+
     //  The control room is not equipment the flowsheet sizes: a NON-PROCESS
     //  item, its kind and its box declared.  It stands DOWNWIND of the
     //  reaction area on purpose (see the header).
@@ -177,6 +232,11 @@ separation
             { between ( shellTubeHX vessel );      distance 3 m;  }
             { between ( building vessel );         distance 30 m; }
             { between ( building shellTubeHX );    distance 30 m; }
+            //  The tank area (DEV.md 4c C87), the same kind of round numbers:
+            { between ( storageTank storageTank ); distance 10 m; }
+            { between ( storageTank vessel );      distance 15 m; }
+            { between ( storageTank shellTubeHX ); distance 15 m; }
+            { between ( building storageTank );    distance 30 m; }
         );
     }
 );

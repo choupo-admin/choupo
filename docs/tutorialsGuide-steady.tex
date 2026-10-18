@@ -2477,11 +2477,11 @@ Prices (product/raw-material/labour) live in constant/economics, each dated and 
 \goldrow{stream}{liqProd}{F}{0.126899267211}
 \goldrow{stream}{reactorOut}{F}{0.138888888889}
 \goldrow{stream}{vapProd}{F}{0.011989621678}
-\goldrow{kpi}{economics}{COM\_d}{221259089.194}
-\goldrow{kpi}{economics}{FCI}{407855.018165}
-\goldrow{kpi}{economics}{NPV}{-964623359.271}
-\goldrow{kpi}{economics}{TCI}{469033.27089}
-\goldrow{kpi}{economics}{WC}{61178.2527248}
+\goldrow{kpi}{economics}{COM\_d}{221256824.865}
+\goldrow{kpi}{economics}{FCI}{395275.413492}
+\goldrow{kpi}{economics}{NPV}{-964600319.112}
+\goldrow{kpi}{economics}{TCI}{454566.725516}
+\goldrow{kpi}{economics}{WC}{59291.3120238}
 \goldrow{kpi}{economics}{revenue}{22620564.309}
 \goldrow{kpi}{heater}{F}{0.138888888889}
 \goldrow{kpi}{heater}{P}{101325}
@@ -2524,11 +2524,11 @@ Prices (product/raw-material/labour) live in constant/economics, each dated and 
 \goldrow{stream}{liqProd}{F}{0.125841050463}
 \goldrow{stream}{reactorOut}{F}{0.138888888889}
 \goldrow{stream}{vapProd}{F}{0.013047838426}
-\goldrow{kpi}{economics}{COM\_d}{221284025.781}
-\goldrow{kpi}{economics}{FCI}{460663.338135}
-\goldrow{kpi}{economics}{NPV}{-952491425.449}
-\goldrow{kpi}{economics}{TCI}{529762.838855}
-\goldrow{kpi}{economics}{WC}{69099.5007202}
+\goldrow{kpi}{economics}{COM\_d}{221281761.453}
+\goldrow{kpi}{economics}{FCI}{448083.733462}
+\goldrow{kpi}{economics}{NPV}{-952468385.29}
+\goldrow{kpi}{economics}{TCI}{515296.293481}
+\goldrow{kpi}{economics}{WC}{67212.5600193}
 \goldrow{kpi}{economics}{revenue}{25155181.8032}
 \goldrow{kpi}{heater}{F}{0.138888888889}
 \goldrow{kpi}{heater}{P}{101325}
@@ -8691,11 +8691,11 @@ So this case still demonstrates constrained SQP, shadow prices and a KKT certifi
 \goldrow{stream}{liqProd}{F}{0.126262849909}
 \goldrow{stream}{reactorOut}{F}{0.138888888889}
 \goldrow{stream}{vapProd}{F}{0.01262603898}
-\goldrow{kpi}{economics}{COM\_d}{221270142.057}
-\goldrow{kpi}{economics}{FCI}{522154.982187}
-\goldrow{kpi}{economics}{NPV}{-632938497.086}
-\goldrow{kpi}{economics}{TCI}{600478.229515}
-\goldrow{kpi}{economics}{WC}{78323.2473281}
+\goldrow{kpi}{economics}{COM\_d}{221267902.107}
+\goldrow{kpi}{economics}{FCI}{509710.813033}
+\goldrow{kpi}{economics}{NPV}{-632915704.984}
+\goldrow{kpi}{economics}{TCI}{586167.434987}
+\goldrow{kpi}{economics}{WC}{76456.6219549}
 \goldrow{kpi}{economics}{revenue}{90983516.5487}
 \goldrow{kpi}{heater}{F}{0.138888888889}
 \goldrow{kpi}{heater}{P}{101325}
@@ -9327,7 +9327,7 @@ A non-isothermal CSTR can have up to THREE steady states (multiplicity). The New
 
 \end{tutnarrative}
 \tutreadme{The cstr01 reactor with no heat removal. The exothermic esterification heats its own contents until the energy balance closes: the golden lands at T\_out = 454.15 K, a 104.2 K rise from the 350 K feed, with the extent ? = 0.1384 mol/s --- essentially complete conversion (?\_max is 0.1389 mol/s) because the rate constant at 454 K is 0.889 s?$^1$, 250 times its value at 350 K.}
-\tutreadme{A liquid-phase esterification at 394-454 K must be pressurised to stay liquid: at 1 atm the engine resolves this product as vapour, so the feed is declared at 15 bar, where the product holds the liquid.}
+\tutreadme{A liquid-phase esterification at 394-454 K must be pressurised to stay liquid: at 1 atm this product boils inside the reactor (the energy balance, which carries the latent heat, stops near 362 K with part of the product vapour), so the feed is declared at 15 bar, where the product holds the liquid.}
 \tutreadme{1. Two unknowns now, solved together. The extent from the design equation and T from H\_out(T, ?) = H\_in: the dict says so in its own header, and Q\_kW in the golden is 4.7e-12 --- zero by construction, not by declaration. 2. An adiabatic CSTR can have more than one answer. Before solving, the engine $\ast$scans$\ast$ the energy balance across T (the Log line [cstr] scanning the energy balance on T in [325.0, 479.5] K for steady states) and reports how many it found --- 1 here. The scan is the van Heerden diagram; cstr05\_multiplicity is the case with three. 3. T\_guess is a declared aid, and the log says where it landed from. operation \{ T\_guess 350; \} picks the branch the Newton starts on; the result line prints landed from T\_guess = 350.00 K. With one steady state it cannot matter; with three it decides the answer, which is why it is in the dict and not hidden. 4. Read the two caveats the run prints. Acetic acid's Cp polynomial is declared to 390 K and this reactor asks it at 450 K: the enthalpy path is $\ast$extrapolated$\ast$, announced, and still returned. The 454 K answer stands with that stated --- as with adiabaticFlash01, a warned number is a defensible one. 5. "Newton 882 it" is the scan's total, not the answer's. The log now says so on the line. Every trial temperature of the scan re-enters the extent Newton; the final solve took a handful.}
 \tutreadme{Set T\_guess 460; --- same single answer, from the other side. Then run cstr06\_jacketed, where a coolant stream carries the heat away and the outlet T sits between the two extremes you have now seen.}
 \begin{tutgolden}
@@ -9371,7 +9371,7 @@ The feed enters COLD (300 K), where the rate is negligible. Nothing forces this 
 
 Choupo scans, finds them all, prints them, and reports the one nearest `T\_guess`. Change T\_guess and the reactor moves to another branch -- the same equipment, the same feed, a different answer. That is not a numerical defect; it is the physics, and it is why real reactors need a start-up procedure.
 
-A liquid-phase esterification at 394-454 K must be pressurised to stay liquid: at 1 atm the engine resolves this product as vapour, so the feed is declared at 15 bar, where the product holds the liquid.
+A liquid-phase esterification at 394-454 K must be pressurised to stay liquid: at 1 atm this product boils inside the reactor (the ignited branch drops to \textasciitilde{}361 K, part vapour), so the feed is declared at 15 bar, where the product holds the liquid.
 
 \end{tutnarrative}
 \begin{tutgolden}
@@ -9413,7 +9413,7 @@ There is still NO dH\_rxn source: on the elements datum the heat of reaction is 
 
 Check it by hand from the printed KPIs: Q\_kW should equal UA (T\_c - T\_out), and it is NEGATIVE -- heat leaves the reactor. Cool harder (raise UA, lower T\_coolant) and the outlet slides down the generation curve; cool too hard and the reactor extinguishes. Nothing here is switched on by a flag; it is the same one equation in T, with one more term.
 
-A liquid-phase esterification at 394-454 K must be pressurised to stay liquid: at 1 atm the engine resolves this product as vapour, so the feed is declared at 15 bar, where the product holds the liquid.
+A liquid-phase esterification at 394-454 K must be pressurised to stay liquid: at 1 atm this product boils inside the reactor (the balance stops near 362 K, part vapour), so the feed is declared at 15 bar, where the product holds the liquid.
 
 \end{tutnarrative}
 \begin{tutgolden}
@@ -9838,7 +9838,7 @@ The exothermic esterification heats its own stream, which accelerates the Arrhen
 
 `thermalMode` takes `isothermal` (default -- T imposed, duty a result), `adiabatic` (here), or `heatExchange` (a jacket: U, areaPerVolume, T\_coolant). A non-isothermal reactor needs the heat of reaction, so every reacting species must carry `standardThermochemistry` -- a fictitious toy species cannot be used.
 
-A liquid-phase esterification at 394-454 K must be pressurised to stay liquid: at 1 atm the engine resolves this product as vapour, so the feed is declared at 15 bar, where the product holds the liquid.
+A liquid-phase esterification at 394-454 K must be pressurised to stay liquid: at 1 atm this product boils inside the bed (the march, which carries the latent heat, leaves near 362 K, part vapour), so the feed is declared at 15 bar, where the product holds the liquid.
 
 \end{tutnarrative}
 \begin{tutgolden}
