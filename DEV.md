@@ -1060,6 +1060,19 @@ accepts today, and that is a policy call.
 > names, and declaring it in both places refuses.  Second round dispatched
 > 2026-10-18.
 
+> **C87 MERGED 2026-10-18.**  `acidCooler` (phaseChanger, 404.14 ->
+> 313.15 K, -306.09 kW to cooling water, shellTubeHX 14.03 m2, placed between
+> the column and the tanks); the acid tank 1074 m3 for 992 t cold.  Ruling 2
+> as an EXPLICIT link: a postDict `storage` entry declaring `unit <name>;`
+> reads the storageTank unit's residence time, fill fraction and inlet
+> stream, and declaring any of them beside `unit` refuses (so does an
+> unlinked entry named after a storageTank unit); unit-less entries (the four
+> ammonia cases) byte-identical.  `check_design_sheet` arm (u).  17 rows
+> re-recorded on Vitor's approval (list in the commit), 149 appended.
+> `--fast` 73/0, `--gui` vitest 5580/5580.  Open: the pump's v.dP is not in
+> the liquid enthalpy (plant residual 6.17 kW, 0.098 %); `0/acidShipped`
+> keeps a hot seed.
+
 > **C89. TANKS ON THE AMMONIA PEQ (Vitor, 2026-10-18: "faz o mesmo no PEQ
 > do amoniaco").**  Measured before acting: `greenAmmoniaPEQ_baseCase`
 > ALREADY stores its product (postDict `storage`, NH3Storage, 21 d,
