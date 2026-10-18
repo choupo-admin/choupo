@@ -59,7 +59,7 @@ import { phaseCss, PHASE_WORDS } from "../case/plantLayout.js";
 import {
   FINDINGS_CAPTION, findingRows, itemRows, layoutNotes, LEGEND_CONTROLS, LEGEND_PHASES,
   LEGEND_PIPES, LEGEND_SHAPES, PARTICLE_WORD, PIPE_REGISTER_CAPTION, pipeRegister,
-  PLOT_CAPTION, plotSummary, ROADS_CAPTION, roadSummary,
+  FENCE_CAPTION, fenceSummary, PLOT_CAPTION, plotSummary, ROADS_CAPTION, roadSummary,
 } from "../case/layoutTables.js";
 import { layoutSection, type LayoutSectionId } from "../case/layoutPanels.js";
 import { useCollapsedFlag } from "./methods/methodsChrome.js";
@@ -208,6 +208,47 @@ export function PlotArea({ layout }: { layout: PlantLayout }) {
   );
 }
 
+/** THE FENCE (DEV.md 4c C93): the engine's line, its gate openings and one
+ *  row per pipe that crosses it, with the case's label.  Drawn under the
+ *  plot, which the fence is drawn from. */
+export function FenceTable({ layout }: { layout: PlantLayout }) {
+  const v = fenceSummary(layout);
+  if (!v) return null;
+  return (
+    <Box mt="xs">
+      <Text size="sm">{v.headline}</Text>
+      {v.notes.map((n) => <Text key={n} size="xs" c="dimmed">{n}</Text>)}
+      {v.rows.length > 0 && (
+        <ScrollArea type="auto" mt={4}>
+          <Table striped withTableBorder fz="xs" miw={760} captionSide="top">
+            <Table.Caption style={{ textAlign: "left" }}>{FENCE_CAPTION}</Table.Caption>
+            <Table.Thead><Table.Tr>
+              <Table.Th>Stream</Table.Th>
+              <Table.Th>In / out</Table.Th>
+              <Table.Th>Side</Table.Th>
+              <Table.Th ta="right">x, y, z (m)</Table.Th>
+              <Table.Th>Comes from / goes to (the case's)</Table.Th>
+              <Table.Th>Placed by</Table.Th>
+            </Table.Tr></Table.Thead>
+            <Table.Tbody>
+              {v.rows.map((r) => (
+                <Table.Tr key={r.stream}>
+                  <Table.Td ff="monospace">{r.stream}</Table.Td>
+                  <Table.Td>{r.direction}</Table.Td>
+                  <Table.Td>{r.side}</Table.Td>
+                  <Table.Td ta="right" ff="monospace">{r.position}</Table.Td>
+                  <Table.Td>{r.label}</Table.Td>
+                  <Table.Td>{r.placedBy}</Table.Td>
+                </Table.Tr>
+              ))}
+            </Table.Tbody>
+          </Table>
+        </ScrollArea>
+      )}
+    </Box>
+  );
+}
+
 /** THE ROADS (DEV.md 4c C90): the engine's totals, the case's headroom and
  *  access distance, and one row per road. */
 export function RoadNetwork({ layout }: { layout: PlantLayout }) {
@@ -320,8 +361,10 @@ export function PlantLayoutTables({ layout, sectioned = false }: {
   const nPipes = layout.pipes?.length ?? 0;
   return (
     <>
-      {wrap("plot", !!layout.plot, <PlotArea layout={layout} />,
-            layout.plot ? `${layout.plot.plotArea.toFixed(0)} m²` : undefined)}
+      {wrap("plot", !!layout.plot,
+            <><PlotArea layout={layout} /><FenceTable layout={layout} /></>,
+            layout.plot ? `${layout.plot.plotArea.toFixed(0)} m²`
+              + (layout.fence ? `, fence ${layout.fence.length.toFixed(0)} m` : "") : undefined)}
       {wrap("roads", !!layout.roadNetwork, <RoadNetwork layout={layout} />,
             layout.roadNetwork ? `${layout.roadNetwork.length.toFixed(0)} m,`
               + ` ${layout.roadNetwork.pavedArea.toFixed(0)} m² paved` : undefined)}

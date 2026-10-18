@@ -2118,7 +2118,8 @@ the liquid's bubble pressure at its storage temperature (every dissolved
 component counted, `BubblePoint::pressure`); both pressure stores LINK a
 flowsheet `storageTank` unit by `unit <name>;` (the C87 one-home rule,
 `sizing/StorageLink`).  Gate: `check_design_sheet` arm (w).  Witness
-`ammonia02_full_plant` (T101, T201).
+`ammonia02_full_plant` (T201; the gas link on a probe since C93 removed the
+syngas tank).
 
 **A RELIEF VALVE IS A SIZED ITEM OF THE UNIT IT PROTECTS (2026-10-11, DEV.md
 4c C62, on a stated default).**  `type reliefValve` in the sizing pass: one
@@ -2200,8 +2201,13 @@ or a process item has no reached road within the declared `access`
 distance; its paved area is published and inside the plot; non-process
 kinds are drawn by kind (`gate` the entrance, `weighbridge` drivable), and
 the draft never draws a road.  The 3D scene is always DAYLIGHT; only the
-page chrome follows the theme.  NOT done: a pipe's pressure drop and cost
-(next slice), structures.
+page chrome follows the theme.  **Since C93 the case may DECLARE A FENCE**,
+derived from the published plot (moved `inset` inward), never typed: a road
+meets it only at a `gate` opening (else REFUSED), every boundary pipe
+crosses it at a PUBLISHED point carrying the case's `from`/`to` label (an
+unlabelled crossing ANNOUNCED), and an unrouted stream is marked in the 3D
+view at the end the engine reached -- a missing pipe never looks finished.
+NOT done: a pipe's pressure drop and cost (next slice), structures.
 Gate: `check_plant_layout`.  Record:
 [`docs/design/a-plant-layout-is-declared-and-checked.md`](docs/design/a-plant-layout-is-declared-and-checked.md).
 

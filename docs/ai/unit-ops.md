@@ -1527,9 +1527,10 @@ priced over: 1 when every component has a molar volume on that rung, less
 when a dissolved supercritical gas does not (announced, and the holdup MASS
 still counts every component).
 
-Worked example: `tutorials/plant/ammonia02_full_plant` carries
-both a raw-material tank (T101, syngas, 0.5 h) and a product tank (T201,
-liquid ammonia, 48 h).
+Worked examples: `tutorials/plant/ammonia02_full_plant` carries a product
+tank (T201, liquid ammonia, 48 h) -- its raw-material tank (T101, syngas,
+0.5 h) was removed in DEV.md 4c C93, the syngas arriving by pipeline -- and
+`tutorials/plant/ammonia03_quench_converter` still holds both.
 
 This unit has no sizer of its own.  The tank the plant BUYS is a postDict
 `storage ( ... )` item, sized, split into tanks and costed on the CAPCOST
@@ -1540,7 +1541,9 @@ inlet -- the hold time is declared ONCE, here, and declaring it in the item
 too is refused by name (`tutorials/plant/aceticAcid02_plant`).  A unit that
 holds a GAS or a PRESSURISED LIQUID is linked the same way from a
 `gasStorage` or a `liquefiedGasStorage` item -- pressure vessels costed by
-their steel (`tutorials/plant/ammonia02_full_plant`, T101 and T201).  Both ask the
+their steel (`tutorials/plant/ammonia02_full_plant`, T201; no shipped case
+links a gas store since C93, so `check_design_sheet` arm (w) holds that link
+on a probe).  Both ask the
 package for the density over the SAME components (`thermo/PricedDensity`,
 one home).
 

@@ -743,8 +743,12 @@ void routePipes(const Dictionary& d, const SimulationResult& r,
         {
             std::string who;
             for (const auto& c : cs) who += (who.empty() ? "" : ", ") + c;
+            //  The producer's nozzle is the one end the drawing can mark:
+            //  a missing pipe must never look like a finished drawing.
+            const End a = endOf(from, true);
             rec.notRouted.push_back({ s, "consumed by " + std::to_string(cs.size())
-                                    + " units (" + who + "); a pipe has two ends" });
+                                    + " units (" + who + "); a pipe has two ends",
+                                    from, who, a.kind.empty() ? Pt{} : a.point });
             continue;
         }
         const std::string to = cs.empty() ? "" : cs.front();
@@ -757,7 +761,11 @@ void routePipes(const Dictionary& d, const SimulationResult& r,
                 refuse("pipes `" + s + "`: an override routes a pipe between"
                        " two ends the layout reaches, and this stream has"
                        " none: " + why);
-            rec.notRouted.push_back({ s, why });
+            //  The end the layout DOES reach is where the view marks the
+            //  missing pipe (empty when neither end is reachable).
+            const Pt anchor = !a.kind.empty() ? a.point
+                            : (!b.kind.empty() ? b.point : Pt{});
+            rec.notRouted.push_back({ s, why, from, to, anchor });
             continue;
         }
         LayoutPipe p;
@@ -835,8 +843,13 @@ void routePipes(const Dictionary& d, const SimulationResult& r,
             + " m, lanes " + num(rack.laneSpacing) + " m apart, "
             + std::to_string(rack.lanesPerTier) + " per tier, tiers "
             + num(rack.tierSpacing) + " m apart, from x = " + num(rack.xStart)
-            + " m (the inlets' battery limit) to x = " + num(rack.xEnd)
-            + " m (the outlets'), " + num(kRackEndMargin) + " m past the"
+            + (d.found("fence")
+               ? " m (where the inlets join it) to x = " + num(rack.xEnd)
+                 + " m (where the outlets leave it; the fence the case"
+                   " declares carries each on to its crossing), "
+               : " m (the inlets' battery limit) to x = " + num(rack.xEnd)
+                 + " m (the outlets'), ")
+            + num(kRackEndMargin) + " m past the"
               " outermost process footprint.  Drafting values, not a"
               " standard's: declare `pipeRack { y; elevation; laneSpacing;"
               " lanesPerTier; tierSpacing; xStart; xEnd; reason; }` in"
@@ -1286,6 +1299,20 @@ const char* const kPlotRule =
     " vertical cylinder's disc, any other item's rectangle), each item"
     " counted once";
 
+//  The same rule where the case declares a fence (DEV.md 4c C93): the
+//  rack-routed pipes enter as the rack's plan band, because the legs that
+//  carry them on to the fence are drawn from this very plot.
+const char* const kPlotRuleFenced =
+    "the plot is the axis-aligned envelope of every declared sector area,"
+    " every placed footprint (process and non-process), the pipe rack's plan"
+    " band (which every rack route lies within, up to the legs that carry a"
+    " boundary pipe on to the fence, inside the fence by construction),"
+    " every declared waypoint route and every declared road's paved surface,"
+    " grown on every side by the declared plot margin;"
+    " the footprint area is the sum of the placed items' plan areas (a"
+    " vertical cylinder's disc, any other item's rectangle), each item"
+    " counted once";
+
 //  The plan area one item covers.
 scalar planArea(const LayoutItem& i)
 {
@@ -1320,11 +1347,11 @@ scalar unionArea(const std::vector<LayoutArea>& rs)
     return total;
 }
 
-void plotOf(const Dictionary& d, PlantLayoutRecord& rec)
+void plotOf(const Dictionary& d, PlantLayoutRecord& rec, bool withFence)
 {
     LayoutPlot& pl = rec.plot;
     pl.present = true;
-    pl.rule    = kPlotRule;
+    pl.rule    = withFence ? kPlotRuleFenced : kPlotRule;
 
     //  ---- the margin: the case's, or 0 m announced ---------------------
     if (d.found("plot"))
@@ -1349,9 +1376,27 @@ void plotOf(const Dictionary& d, PlantLayoutRecord& rec)
         take(i.x - 0.5 * i.dx, i.x + 0.5 * i.dx, i.y - 0.5 * i.dy, i.y + 0.5 * i.dy);
     for (const auto& a : rec.areas)
         take(a.xMin, a.xMax, a.yMin, a.yMax);
+    //  WITH A FENCE (DEV.md 4c C93) a boundary pipe is carried on to the
+    //  fence, which is drawn FROM this plot -- so the rack-routed pipes enter
+    //  the envelope as the rack's own plan band (every rack route lies in the
+    //  envelope of the items it joins and that band, its battery-limit ends
+    //  included), and the legs from the rack to the fence lie inside the
+    //  fence by construction.  A declared waypoint route is the case's own
+    //  geometry and enters as itself.  Without a fence: every route, as
+    //  before.
+    bool rackBand = false;
     for (const auto& p : rec.pipes)
+    {
+        if (withFence && p.routedBy == "rack") { rackBand = true; continue; }
         for (const auto& q : p.route)
             take(q[0], q[0], q[1], q[1]);
+    }
+    if (rackBand)
+    {
+        const auto& k = rec.pipeRack;
+        const scalar hw = 0.5 * k.lanesPerTier * k.laneSpacing;
+        take(k.xStart, k.xEnd, k.y - hw, k.y + hw);
+    }
     for (const auto& rd : rec.roads.roads)
         for (const auto& pr : pavedRects(rd))
             take(pr.xMin, pr.xMax, pr.yMin, pr.yMax);
@@ -1432,6 +1477,329 @@ void plotOf(const Dictionary& d, PlantLayoutRecord& rec)
               " for its roads, its fence and its access, and how much is the"
               " case's to declare and defend (`plot { margin <m>; reason"
               " \"...\"; }` in system/layoutDict).  No margin is invented");
+}
+
+//  ---- the fence (DEV.md 4c C93) -------------------------------------------
+
+const char* const kFenceRule =
+    "the fence is the published plot's boundary moved `inset` inward (0 m"
+    " when none is declared, announced); it opens at each placed gate, on the"
+    " side nearest the gate, centred on the end of the road that serves the"
+    " gate and as wide as that road (the gate's own extent along the side"
+    " when no road serves it); a road that meets the fence anywhere else is"
+    " refused; every pipe that ends at a battery limit is carried along its"
+    " rack lane to the fence -- west for a plant inlet, east for an outlet,"
+    " or the side the case names (north or south at a declared x) -- and"
+    " crosses it there, labelled with where it comes from or goes to";
+
+using FindingSink = std::function<void(const std::string&, const std::string&,
+                                       const std::string&, scalar, scalar,
+                                       const std::string&, const std::string&)>;
+
+void fenceOf(const Dictionary& d, PlantLayoutRecord& rec,
+             const FindingSink& addFinding)
+{
+    LayoutFence& F = rec.fence;
+    const auto fd = d.subDict("fence");
+    const std::string w = "fence";
+    F.present = true;
+    F.rule    = kFenceRule;
+    F.source  = text(*fd, "source", w);
+    F.reason  = text(*fd, "reason", w);
+    if (fd->found("inset"))
+    {
+        F.inset = length(*fd, "inset", w);
+        F.insetDeclared = true;
+        if (F.inset < 0)
+            refuse("fence: `inset " + num(F.inset) + " m;` -- the fence is"
+                   " moved INWARD of the plot boundary; a negative inset would"
+                   " put it on land the plot does not count");
+    }
+    else
+        announce("info", "layout",
+            "no `inset` is declared in `fence {}`, so the fence stands ON the"
+            " plot boundary (inset 0 m): the plot's margin is then the clear"
+            " strip inside it.  Declare `inset <m>;` to say otherwise");
+    const auto& pl = rec.plot;
+    F.xMin = pl.xMin + F.inset;  F.xMax = pl.xMax - F.inset;
+    F.yMin = pl.yMin + F.inset;  F.yMax = pl.yMax - F.inset;
+    if (F.xMax - F.xMin <= kTol || F.yMax - F.yMin <= kTol)
+        refuse("fence: `inset " + num(F.inset) + " m;` leaves no ground inside"
+               " the fence (the plot is " + num(pl.xMax - pl.xMin) + " m x "
+               + num(pl.yMax - pl.yMin) + " m)");
+    F.length = 2.0 * ((F.xMax - F.xMin) + (F.yMax - F.yMin));
+
+    //  The side of the fence nearest a plan point, and a point's coordinate
+    //  ALONG a side (x on north and south, y on east and west).
+    auto nearestSide = [&](scalar px, scalar py)
+    {
+        const std::pair<scalar, std::string> c[4] = {
+            { py - F.yMin, "south" }, { F.yMax - py, "north" },
+            { px - F.xMin, "west"  }, { F.xMax - px, "east"  } };
+        int k = 0;
+        for (int i = 1; i < 4; ++i) if (c[i].first < c[k].first - kTol) k = i;
+        return c[k].second;
+    };
+    auto onSide = [&](const std::string& side, scalar along, scalar& x, scalar& y)
+    {
+        if (side == "south")      { x = along; y = F.yMin; }
+        else if (side == "north") { x = along; y = F.yMax; }
+        else if (side == "west")  { x = F.xMin; y = along; }
+        else                      { x = F.xMax; y = along; }
+    };
+    const auto alongX = [](const std::string& side)
+    { return side == "south" || side == "north"; };
+
+    //  ---- the openings: one per gate -------------------------------------
+    for (const auto& g : rec.items)
+    {
+        if (!(g.nonProcess && g.kind == kGateKind)) continue;
+        LayoutFenceOpening o;
+        o.gate = g.id;
+        o.side = nearestSide(g.x, g.y);
+        //  The road that serves the gate: the nearest paved surface.
+        const LayoutRoad* best = nullptr;
+        scalar bestD = 1e300;
+        for (const auto& rd : rec.roads.roads)
+            for (const auto& pr : pavedRects(rd))
+            {
+                const scalar c = std::max(0.0, clearPlan(
+                    planBox(pr.xMin, pr.xMax, pr.yMin, pr.yMax), g));
+                if (c < bestD - kTol) { bestD = c; best = &rd; }
+            }
+        scalar along = alongX(o.side) ? g.x : g.y;
+        o.width = alongX(o.side) ? g.dx : g.dy;
+        if (best)
+        {
+            //  Its centre-line point nearest the side: the road's END there.
+            scalar dmin = 1e300;
+            for (const auto& q : best->centreline)
+            {
+                scalar fx = 0, fy = 0;
+                onSide(o.side, alongX(o.side) ? q[0] : q[1], fx, fy);
+                const scalar dd = std::hypot(q[0] - fx, q[1] - fy);
+                if (dd < dmin - kTol)
+                { dmin = dd; along = alongX(o.side) ? q[0] : q[1]; }
+            }
+            o.road  = best->id;
+            o.width = best->width;
+        }
+        onSide(o.side, along, o.x, o.y);
+        o.gateDistance =
+              o.side == "south" ? (g.y - 0.5 * g.dy) - F.yMin
+            : o.side == "north" ? F.yMax - (g.y + 0.5 * g.dy)
+            : o.side == "west"  ? (g.x - 0.5 * g.dx) - F.xMin
+            :                     F.xMax - (g.x + 0.5 * g.dx);
+        F.openings.push_back(o);
+    }
+    if (F.openings.empty())
+        announce("warning", "layout",
+            "the fence declares no way in: no non-process item of kind `gate`"
+            " is placed, so the fence is drawn CLOSED -- nothing can enter the"
+            " site except by the boundary pipes");
+
+    //  ---- a road meets the fence only at a gate's opening: REFUSED else --
+    for (const auto& rd : rec.roads.roads)
+        for (const auto& pr : pavedRects(rd))
+        {
+            struct Cut { const char* side; bool hit; scalar a0, a1; };
+            const Cut cuts[4] = {
+                { "south", pr.yMin < F.yMin - kTol && pr.yMax > F.yMin + kTol
+                           && pr.xMax > F.xMin && pr.xMin < F.xMax,
+                  std::max(pr.xMin, F.xMin), std::min(pr.xMax, F.xMax) },
+                { "north", pr.yMin < F.yMax - kTol && pr.yMax > F.yMax + kTol
+                           && pr.xMax > F.xMin && pr.xMin < F.xMax,
+                  std::max(pr.xMin, F.xMin), std::min(pr.xMax, F.xMax) },
+                { "west",  pr.xMin < F.xMin - kTol && pr.xMax > F.xMin + kTol
+                           && pr.yMax > F.yMin && pr.yMin < F.yMax,
+                  std::max(pr.yMin, F.yMin), std::min(pr.yMax, F.yMax) },
+                { "east",  pr.xMin < F.xMax - kTol && pr.xMax > F.xMax + kTol
+                           && pr.yMax > F.yMin && pr.yMin < F.yMax,
+                  std::max(pr.yMin, F.yMin), std::min(pr.yMax, F.yMax) } };
+            for (const auto& c : cuts)
+            {
+                if (!c.hit) continue;
+                bool atGate = false;
+                for (const auto& o : F.openings)
+                {
+                    if (o.side != c.side) continue;
+                    const scalar oc = alongX(o.side) ? o.x : o.y;
+                    if (c.a0 >= oc - 0.5 * o.width - kTol
+                        && c.a1 <= oc + 0.5 * o.width + kTol) atGate = true;
+                }
+                if (!atGate)
+                    refuse("road `" + rd.id + "` meets the fence on its "
+                           + std::string(c.side) + " side (" + num(c.a0)
+                           + " .. " + num(c.a1) + " m along it) where no gate"
+                           " opens it -- a road through a fence with no gate is"
+                           " a road nobody can drive.  Place a `gate` there,"
+                           " stop the road inside the fence, or change the"
+                           " fence's inset");
+            }
+        }
+
+    //  ---- nothing stands across the fence (checked after the roads, so a
+    //  road the fence cuts is named first) ---------------------------------
+    for (const auto& i : rec.items)
+        if (i.x - 0.5 * i.dx < F.xMin - kTol || i.x + 0.5 * i.dx > F.xMax + kTol
+            || i.y - 0.5 * i.dy < F.yMin - kTol || i.y + 0.5 * i.dy > F.yMax + kTol)
+            refuse("fence: `" + i.id + "` stands across or outside the fence"
+                   " (the fence runs x " + num(F.xMin) + " .. " + num(F.xMax)
+                   + " m, y " + num(F.yMin) + " .. " + num(F.yMax) + " m, the"
+                   " plot moved " + num(F.inset) + " m inward) -- reduce the"
+                   " inset or move the item");
+
+    //  ---- the boundary pipes: carried to the fence, labelled ---------------
+    struct Declared { std::string side, word, label; scalar at = 0;
+                      bool hasAt = false, used = false; };
+    std::map<std::string, Declared> declared;
+    if (fd->found("crossings"))
+        for (const auto& cd : fd->lookupDictList("crossings"))
+        {
+            if (!cd->found("stream"))
+                refuse("fence crossings: an entry declares no `stream`");
+            const std::string s = cd->lookupWord("stream");
+            const std::string ww = "fence crossing `" + s + "`";
+            if (declared.count(s))
+                refuse(ww + " is declared twice");
+            Declared e;
+            if (cd->found("from") == cd->found("to"))
+                refuse(ww + ": declare where it comes FROM (a plant inlet,"
+                       " `from \"...\";`) or where it goes TO (an outlet,"
+                       " `to \"...\";`) -- exactly one");
+            e.word  = cd->found("from") ? "from" : "to";
+            e.label = text(*cd, e.word, ww);
+            if (cd->found("side"))
+            {
+                e.side = cd->lookupWord("side");
+                if (e.side != "north" && e.side != "south" && e.side != "east"
+                    && e.side != "west")
+                    refuse(ww + ": " + registryRefusal::message("side", e.side,
+                           { "north", "south", "east", "west" }, "Accepted"));
+            }
+            if (cd->found("at"))
+            {
+                e.at = length(*cd, "at", ww);
+                e.hasAt = true;
+            }
+            if (!e.side.empty() && alongX(e.side) && !e.hasAt)
+                refuse(ww + ": a crossing on the " + e.side + " side names where"
+                       " along it (`at <x> m;`) -- the pipe leaves its rack lane"
+                       " there");
+            if (e.hasAt && (e.side.empty() || !alongX(e.side)))
+                refuse(ww + ": `at` places a crossing along the north or south"
+                       " side only; on the west and east sides the pipe meets"
+                       " the fence where its rack lane does");
+            declared[s] = e;
+        }
+
+    const auto& k = rec.pipeRack;
+    for (auto& p : rec.pipes)
+    {
+        const bool in  = p.fromKind == "batteryLimit";
+        const bool out = p.toKind   == "batteryLimit";
+        if (!in && !out) continue;
+        LayoutFenceCrossing c;
+        c.stream    = p.stream;
+        c.direction = in ? "in" : "out";
+        auto e = declared.find(p.stream);
+        Declared* dc = e == declared.end() ? nullptr : &e->second;
+        const std::string ww = "fence crossing `" + p.stream + "`";
+        if (dc)
+        {
+            dc->used = true;
+            const std::string want = in ? "from" : "to";
+            if (dc->word != want)
+                refuse(ww + ": `" + p.stream + "` is a plant "
+                       + std::string(in ? "INLET" : "OUTLET") + ", so its label"
+                       " says where it comes " + (in ? "FROM" : "goes TO")
+                       + " (`" + want + " \"...\";`), not `" + dc->word + "`");
+        }
+        if (p.routedBy == "waypoints")
+        {
+            if (dc && !dc->side.empty())
+                refuse(ww + ": the pipe's route is DECLARED (waypoints), so its"
+                       " crossing is where that route ends; a `side` would be a"
+                       " second home for it");
+            const auto& q = in ? p.route.front() : p.route.back();
+            const bool on = (std::fabs(q[0] - F.xMin) <= kTol
+                             || std::fabs(q[0] - F.xMax) <= kTol)
+                            && q[1] >= F.yMin - kTol && q[1] <= F.yMax + kTol;
+            const bool onY = (std::fabs(q[1] - F.yMin) <= kTol
+                              || std::fabs(q[1] - F.yMax) <= kTol)
+                             && q[0] >= F.xMin - kTol && q[0] <= F.xMax + kTol;
+            if (!on && !onY)
+                refuse(ww + ": the declared route's " + (in ? "first" : "last")
+                       + " waypoint (" + num(q[0]) + ", " + num(q[1]) + ") m is"
+                       " its battery limit and does not lie on the fence (x "
+                       + num(F.xMin) + " .. " + num(F.xMax) + " m, y "
+                       + num(F.yMin) + " .. " + num(F.yMax) + " m)");
+            c.x = q[0]; c.y = q[1]; c.z = q[2];
+            c.side = nearestSide(q[0], q[1]);
+            c.positionFrom = "waypoints";
+        }
+        else
+        {
+            scalar ly = 0, lz = 0;
+            laneAt(k, p.lane, ly, lz);
+            c.side = dc && !dc->side.empty() ? dc->side : (in ? "west" : "east");
+            c.positionFrom = dc && !dc->side.empty() ? "declared" : "statedDefault";
+            std::vector<std::vector<scalar>> leg;   // in the direction of flow
+            if (alongX(c.side))
+            {
+                if (!(dc->at > F.xMin + kTol && dc->at < F.xMax - kTol))
+                    refuse(ww + ": `at " + num(dc->at) + " m;` lies outside the"
+                           " " + c.side + " side of the fence (x " + num(F.xMin)
+                           + " .. " + num(F.xMax) + " m)");
+                c.x = dc->at;
+                c.y = c.side == "south" ? F.yMin : F.yMax;
+                c.z = lz;
+                const std::vector<scalar> C{ c.x, c.y, c.z }, A{ c.x, ly, lz };
+                leg = in ? std::vector<std::vector<scalar>>{ C, A }
+                         : std::vector<std::vector<scalar>>{ A, C };
+            }
+            else
+            {
+                c.x = c.side == "west" ? F.xMin : F.xMax;
+                c.y = ly;
+                c.z = lz;
+                leg = { { c.x, c.y, c.z } };
+            }
+            //  Replace the battery-limit point (the rack end) by the leg.
+            std::vector<std::vector<scalar>> r = p.route;
+            if (in) { r.erase(r.begin()); r.insert(r.begin(), leg.begin(), leg.end()); }
+            else    { r.pop_back();       r.insert(r.end(),   leg.begin(), leg.end()); }
+            p.route = tidy(r);
+            p.length = 0;
+            for (std::size_t i = 1; i < p.route.size(); ++i)
+                p.length += segLength(p.route[i - 1], p.route[i]);
+        }
+        if (dc) { c.label = dc->label; c.labelDeclared = true; }
+        else
+            addFinding("unlabelledCrossing", p.stream, "", 0.0, 0.0, "warning",
+                "boundary stream `" + p.stream + "` crosses the fence on its "
+                + c.side + " side at (" + num(c.x) + ", " + num(c.y) + ") m"
+                " with no declared " + (in ? "origin" : "destination") + ": say"
+                " where it " + (in ? "comes from" : "goes to") + " -- `fence {"
+                " crossings ( { stream " + p.stream + "; " + (in ? "from" : "to")
+                + " \"...\"; } ); }`");
+        F.crossings.push_back(c);
+    }
+    //  A declared crossing whose stream is NOT ROUTED (an end the layout
+    //  cannot reach -- a refused sizer, an unplaced item) is not drawn: the
+    //  reason it is not routed is already published, and a plot plan must not
+    //  turn one missing pipe into a missing run (C79's rule).  A name that is
+    //  no stream of the run, or a stream with no battery-limit end, refuses.
+    for (const auto& [s, e] : declared)
+    {
+        if (e.used) continue;
+        bool unrouted = false;
+        for (const auto& n : rec.notRouted) if (n.stream == s) unrouted = true;
+        if (!unrouted)
+            refuse("fence crossing `" + s + "`: no pipe of this layout ends at a"
+                   " battery limit under that name -- only a plant inlet or"
+                   " outlet crosses the fence");
+    }
 }
 
 } // anonymous namespace
@@ -1876,16 +2244,21 @@ PlantLayoutRecord evaluate(const Dictionary& d, const SimulationResult& r,
     //  ---- the pipes (C80) ---------------------------------------------------
     routePipes(d, r, rec);
 
-    //  ---- the roads (C90): after the pipes, which a road must pass under --
-    if (d.found("roads"))
-    {
-        readRoads(d, rec);
-        checkRoads(rec, addFinding);
-    }
+    //  ---- the roads (C90): read after the pipes ---------------------------
+    if (d.found("roads")) readRoads(d, rec);
 
     //  ---- the plot (C82): after the pipes and the roads, which occupy
     //  ground too -----------------------------------------------------------
-    plotOf(d, rec);
+    const bool withFence = d.found("fence");
+    plotOf(d, rec, withFence);
+
+    //  ---- the fence (C93): drawn FROM the plot, then the boundary pipes
+    //  carried on to it --------------------------------------------------------
+    if (withFence) fenceOf(d, rec, addFinding);
+
+    //  ---- the roads checked (C90): after the pipes have their final routes,
+    //  which a road must pass under ------------------------------------------
+    if (d.found("roads")) checkRoads(rec, addFinding);
 
     if (verbosity >= 2)
     {
@@ -1948,6 +2321,33 @@ PlantLayoutRecord evaluate(const Dictionary& d, const SimulationResult& r,
             std::cout << "  " << std::left << std::setw(22) << ps.sector
                       << num(ps.plotArea) << " m2 (" << ps.from
                       << "), footprints " << num(ps.footprintArea) << " m2\n";
+        if (rec.fence.present)
+        {
+            const auto& F = rec.fence;
+            std::cout << "[layout] fence: " << num(F.length) << " m round x "
+                      << num(F.xMin) << " .. " << num(F.xMax) << " m, y "
+                      << num(F.yMin) << " .. " << num(F.yMax) << " m (the plot"
+                      << " moved " << num(F.inset) << " m inward), "
+                      << F.openings.size() << " gate opening(s), "
+                      << F.crossings.size() << " pipe crossing(s)\n";
+            for (const auto& o : F.openings)
+                std::cout << "  " << std::left << std::setw(22) << o.gate
+                          << "opening on the " << o.side << " side at ("
+                          << num(o.x) << ", " << num(o.y) << ") m, "
+                          << num(o.width) << " m wide"
+                          << (o.road.empty() ? "" : " (road `" + o.road + "`)")
+                          << ", the gate " << num(o.gateDistance)
+                          << " m inside\n";
+            for (const auto& c : F.crossings)
+                std::cout << "  " << std::left << std::setw(22) << c.stream
+                          << (c.direction == "in" ? "IN " : "OUT") << " on the "
+                          << c.side << " side at (" << num(c.x) << ", "
+                          << num(c.y) << ", " << num(c.z) << ") m ("
+                          << c.positionFrom << "): "
+                          << (c.labelDeclared ? (c.direction == "in" ? "from "
+                              : "to ") + c.label : std::string("NO LABEL"))
+                          << "\n";
+        }
     }
     return rec;
 }
@@ -1993,6 +2393,7 @@ std::string draft(const SimulationResult& r, const Dictionary* previous)
     LayoutPipeRack rack;
     bool hadPipeOverrides = false;
     bool hadRoads = false;
+    bool hadFence = false;
     bool        hadPlot    = false;
     scalar      plotMargin = 0.0;
     std::string plotReason;
@@ -2028,6 +2429,7 @@ std::string draft(const SimulationResult& r, const Dictionary* previous)
         }
         hadPipeOverrides = previous->found("pipes");
         hadRoads         = previous->found("roads");
+        hadFence         = previous->found("fence");
         if (previous->found("items"))
             for (const auto& e : previous->lookupDictList("items"))
             {
@@ -2431,6 +2833,14 @@ std::string draft(const SimulationResult& r, const Dictionary* previous)
              "//      );\n"
              "//  }\n"
              "//  and, for the entrance:  { nonProcess \"gate\"; kind gate; ... }\n";
+    //  THE FENCE IS NOT DRAFTED either (DEV.md 4c C93): its line follows the
+    //  plot by itself, but where each boundary pipe crosses it and what the
+    //  label says are facts about the site, and a declared crossing position
+    //  was chosen round positions this draft has moved.
+    if (hadFence)
+        o << "\n//  The previous layout's `fence {}` is NOT carried: its crossing\n"
+             "//  positions were chosen round positions this draft has moved.\n"
+             "//  Redeclare it.\n";
     o << "\n// ************************************************************************* //\n";
     return o.str();
 }

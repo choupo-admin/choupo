@@ -1424,7 +1424,15 @@ void emitResultJson(std::ostream& os, const SimulationResult& r)
             const auto& n = L.notRouted[i];
             os << (i ? ",\n" : "\n") << "      { \"id\": " << esc("notRouted:" + n.stream)
                << ", \"stream\": " << esc(n.stream)
-               << ", \"reason\": " << esc(n.reason) << " }";
+               << ", \"reason\": " << esc(n.reason)
+               << ", \"fromUnit\": " << esc(n.fromUnit)
+               << ", \"toUnit\": " << esc(n.toUnit);
+            //  The end the layout reaches, where the view marks the missing
+            //  pipe; an ARRAY, so the golden's layout row reads no number here.
+            if (n.anchor.size() == 3)
+                os << ", \"anchor\": [" << num(n.anchor[0]) << ", "
+                   << num(n.anchor[1]) << ", " << num(n.anchor[2]) << "]";
+            os << " }";
         }
         os << (L.notRouted.empty() ? "]" : "\n    ]");
         //  THE PLOT (DEV.md 4c C82): one line for the whole plot, one per
@@ -1527,6 +1535,51 @@ void emitResultJson(std::ostream& os, const SimulationResult& r)
                 os << " }";
             }
             os << (R.access.empty() ? "]" : "\n    ]");
+        }
+        //  THE FENCE (DEV.md 4c C93): its line (drawn from the plot), one
+        //  line per gate opening and one per pipe crossing.  Absent without a
+        //  `fence {}` declaration, so every other layout's JSON is unchanged.
+        //  The golden `layout` kind pins the fence's `length`, each
+        //  opening's and each crossing's position and each one's `side`
+        //  word; the label is the case's own sentence, echoed, not pinned.
+        if (L.fence.present)
+        {
+            const auto& F = L.fence;
+            os << ",\n    \"fence\": { \"id\": \"fence\""
+               << ", \"inset\": " << num(F.inset)
+               << ", \"insetDeclared\": " << (F.insetDeclared ? "true" : "false")
+               << ", \"xMin\": " << num(F.xMin) << ", \"xMax\": " << num(F.xMax)
+               << ", \"yMin\": " << num(F.yMin) << ", \"yMax\": " << num(F.yMax)
+               << ", \"length\": " << num(F.length)
+               << ", \"source\": " << esc(F.source)
+               << ", \"reason\": " << esc(F.reason)
+               << ", \"rule\": " << esc(F.rule) << " }";
+            os << ",\n    \"fenceOpenings\": [";
+            for (std::size_t i = 0; i < F.openings.size(); ++i)
+            {
+                const auto& o = F.openings[i];
+                os << (i ? ",\n" : "\n") << "      { \"id\": " << esc("fenceOpening:" + o.gate)
+                   << ", \"gate\": " << esc(o.gate) << ", \"side\": " << esc(o.side)
+                   << ", \"x\": " << num(o.x) << ", \"y\": " << num(o.y)
+                   << ", \"width\": " << num(o.width)
+                   << ", \"road\": " << esc(o.road)
+                   << ", \"gateDistance\": " << num(o.gateDistance) << " }";
+            }
+            os << (F.openings.empty() ? "]" : "\n    ]") << ",\n    \"fenceCrossings\": [";
+            for (std::size_t i = 0; i < F.crossings.size(); ++i)
+            {
+                const auto& c = F.crossings[i];
+                os << (i ? ",\n" : "\n") << "      { \"id\": " << esc("fenceCrossing:" + c.stream)
+                   << ", \"stream\": " << esc(c.stream)
+                   << ", \"direction\": " << esc(c.direction)
+                   << ", \"side\": " << esc(c.side)
+                   << ", \"x\": " << num(c.x) << ", \"y\": " << num(c.y)
+                   << ", \"z\": " << num(c.z)
+                   << ", \"positionFrom\": " << esc(c.positionFrom)
+                   << ", \"labelDeclared\": " << (c.labelDeclared ? "true" : "false")
+                   << ", \"label\": " << esc(c.label) << " }";
+            }
+            os << (F.crossings.empty() ? "]" : "\n    ]");
         }
         os << ",\n    \"summary\": { \"id\": \"summary\", \"placed\": "
            << L.items.size() << ", \"unplaced\": " << L.unplaced.size()

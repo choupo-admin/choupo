@@ -700,6 +700,124 @@ export function mountLayoutScene(m: LayoutModules, el: HTMLDivElement, scene: La
     }
   }
 
+  //  ---- the fence (C93): chain-link on posts, a gap at each gate ----------
+  //  Drawing on the engine's line: the mesh, its height and the post spacing
+  //  are not data (case/plantLayout.ts, FENCE_HEIGHT, FENCE_POST_SPACING).
+  if (scene.fence) {
+    const f = scene.fence;
+    const n = 64;
+    const c = document.createElement("canvas");
+    c.width = n; c.height = n;
+    const g = c.getContext("2d");
+    if (g) {
+      //  The diamond weave of a chain-link mesh, on a transparent ground.
+      g.clearRect(0, 0, n, n);
+      g.strokeStyle = "rgba(120,128,136,0.95)";
+      g.lineWidth = 3;
+      g.beginPath();
+      g.moveTo(0, 0); g.lineTo(n, n);
+      g.moveTo(n, 0); g.lineTo(0, n);
+      g.stroke();
+    }
+    const weave = keep(new THREE.CanvasTexture(c));
+    weave.colorSpace = THREE.SRGBColorSpace;
+    weave.wrapS = THREE.RepeatWrapping;
+    weave.wrapT = THREE.RepeatWrapping;
+    const meshMat = keep(new THREE.MeshLambertMaterial({
+      map: weave, transparent: true, alphaTest: 0.3, side: THREE.DoubleSide }));
+    const steel = roleMat.get("steel")!;
+    for (const [a, b] of f.runs) {
+      const len = Math.hypot(b[0] - a[0], b[2] - a[2]);
+      const geom = keep(new THREE.PlaneGeometry(len, f.height));
+      const uv = geom.getAttribute("uv") as T3.BufferAttribute;
+      for (let i = 0; i < uv.count; i++) uv.setXY(i, uv.getX(i) * len / 0.25, uv.getY(i) * f.height / 0.25);
+      uv.needsUpdate = true;
+      const panel = new THREE.Mesh(geom, meshMat);
+      panel.position.set((a[0] + b[0]) / 2, f.height / 2, (a[2] + b[2]) / 2);
+      panel.rotation.y = -Math.atan2(b[2] - a[2], b[0] - a[0]);
+      panel.userData.tooltip = f.tooltip;
+      pickables.push(panel);
+      world.add(panel);
+      //  The top rail.
+      const rail = new THREE.Mesh(keep(new THREE.CylinderGeometry(0.03, 0.03, len, 6)), steel);
+      rail.rotation.z = Math.PI / 2;
+      rail.rotation.y = -Math.atan2(b[2] - a[2], b[0] - a[0]);
+      rail.position.set((a[0] + b[0]) / 2, f.height, (a[2] + b[2]) / 2);
+      world.add(rail);
+    }
+    const postGeom = keep(new THREE.CylinderGeometry(0.04, 0.04, f.height + 0.1, 6));
+    for (const p of f.posts) {
+      const post = new THREE.Mesh(postGeom, steel);
+      post.position.set(p[0], (f.height + 0.1) / 2, p[2]);
+      post.castShadow = true;
+      world.add(post);
+    }
+  }
+  //  A pipe through the fence: the pipeline carried on outside it, and a
+  //  sign with the case's own label (drawing: the stub and the sign).
+  for (const cr of scene.crossings) {
+    const [ax, ay, az] = cr.at, [bx, , bz] = cr.outside;
+    const len = Math.hypot(bx - ax, bz - az);
+    const stubMat = std([cr.labelled ? 0x495057 : 0xd9480f, 0.4, 0.6]);
+    const stub = new THREE.Mesh(keep(new THREE.CylinderGeometry(0.22, 0.22, len, 12)), stubMat);
+    stub.rotation.z = Math.PI / 2;
+    stub.rotation.y = -Math.atan2(bz - az, bx - ax);
+    stub.position.set((ax + bx) / 2, ay, (az + bz) / 2);
+    stub.castShadow = true;
+    stub.userData.tooltip = cr.tooltip;
+    pickables.push(stub);
+    world.add(stub);
+    //  Two supports carry it outside the fence.
+    for (const t of [0.5, 1.0]) {
+      const sx = ax + (bx - ax) * t, sz = az + (bz - az) * t;
+      const sup = new THREE.Mesh(keep(new THREE.BoxGeometry(0.25, ay, 0.25)), roleMat.get("steel")!);
+      sup.position.set(sx, ay / 2, sz);
+      world.add(sup);
+    }
+    //  The sign: a post and a board, the label above it.
+    const [sx, , sz] = cr.sign;
+    const sPost = new THREE.Mesh(keep(new THREE.BoxGeometry(0.12, 1.8, 0.12)), roleMat.get("steel")!);
+    sPost.position.set(sx, 0.9, sz);
+    world.add(sPost);
+    const board = new THREE.Mesh(keep(new THREE.BoxGeometry(1.4, 0.8, 0.06)),
+      std([cr.labelled ? 0x1971c2 : 0xd9480f, 0.2, 0.6]));
+    board.position.set(sx, 1.8, sz);
+    board.rotation.y = -Math.atan2(bz - az, bx - ax) + Math.PI / 2;
+    board.userData.tooltip = cr.tooltip;
+    pickables.push(board);
+    world.add(board);
+    //  Where a pipeline comes from or goes to is what the sign is FOR, so its
+    //  words rank with the items' names, above road and plot labels.
+    label(cr.text, [sx, 2.6, sz], LABEL_PRIORITY.item, !cr.labelled);
+  }
+
+  //  A stream the engine could NOT route (C93): a dashed red stub rising from
+  //  the end it reached, a marker there and a warning label, the engine's
+  //  reason in the tooltip -- a missing pipe must never look like a finished
+  //  drawing.  One the layout reaches at neither end is still said, in words,
+  //  above the plot's south-west corner.
+  let looseRow = 0;
+  for (const u of scene.unrouted) {
+    if (u.at && u.top) {
+      const line = new THREE.Line(new THREE.BufferGeometry().setFromPoints(
+        [new THREE.Vector3(...u.at), new THREE.Vector3(...u.top)]),
+        new THREE.LineDashedMaterial({ color: COLOURS.link, dashSize: 0.4, gapSize: 0.3,
+                                       fog: false, toneMapped: false }));
+      line.computeLineDistances();
+      world.add(line);
+      const mark = new THREE.Mesh(keep(new THREE.SphereGeometry(0.45, 16, 12)),
+        new THREE.MeshBasicMaterial({ color: COLOURS.link, fog: false, toneMapped: false }));
+      mark.position.set(...u.at);
+      mark.userData.tooltip = u.tooltip;
+      pickables.push(mark);
+      world.add(mark);
+      label(u.text, u.top, LABEL_PRIORITY.finding, true);
+    } else {
+      label(u.text, [scene.min[0], 3 + 2 * looseRow++, scene.max[2]],
+            LABEL_PRIORITY.finding, true);
+    }
+  }
+
   //  ---- zones: opacity + edge style + the word (the word on demand) ------
   const zoneGroup = new THREE.Group();
   world.add(zoneGroup);

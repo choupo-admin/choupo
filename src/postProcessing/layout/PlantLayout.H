@@ -83,10 +83,13 @@ Description
         the placed items it is piped to (a junction piped only to other
         junctions takes their mean, in passes, in flowsheet order);
       * a BATTERY LIMIT -- a plant inlet arrives at the rack's west end
-        (`xStart`), a plant outlet leaves at its east end (`xEnd`).
+        (`xStart`), a plant outlet leaves at its east end (`xEnd`); with a
+        declared fence, at its crossing ON the fence (THE FENCE, below).
     Any other end (an unsized unit that is not a junction, a sized unit
     whose items are not placed, a stream consumed by two units) leaves the
-    stream NOT ROUTED, with that reason.
+    stream NOT ROUTED, with that reason, the units at its two ends and the
+    plan point of the end the layout DOES reach -- where a surface marks the
+    missing pipe, so a plant with a pipe missing never looks finished.
     THE ROUTE is deterministic and orthogonal: up (or down) from the source
     nozzle to its LANE, across to the lane, along the rack (plan x), across
     to the target, down to its nozzle.  The rack runs along plan x; the
@@ -119,6 +122,8 @@ Description
     one above another) and, per sector, the declared area or else the
     envelope of the sector's own footprints.  The economics prices this
     plot area when the case declares a land price (EconomicsPass.cpp).
+    With a declared fence, the routed pipes enter the envelope as the rack's
+    plan band: a pipe's run past the rack ends is the fence's to carry.
 
     THE ROADS (2026-10-18, DEV.md 4c C90).  A case may declare `roads {
     source; reason; headroom; access { distance; source; reason; };
@@ -138,6 +143,25 @@ Description
     road's length, the network's length and paved area (`unionArea`), each
     crossing under the rack, per item the nearest reached road; the roads
     are inside the plot (`plotOf`).  The draft draws no road.
+
+    THE FENCE (2026-10-18, DEV.md 4c C93).  A case may declare `fence {
+    source; reason; [inset <m>;] [crossings ( { stream; from|to "<label>";
+    [side north|south; at <m>;] } ... );] }`.  The line is DERIVED, never
+    typed: the published plot rectangle moved `inset` inward (absent: 0 m,
+    announced) -- one home for the boundary.  It opens at each `gate` item,
+    on the side nearest it, centred on the road serving the gate and as wide
+    as that road.  REFUSED: a road that meets the fence anywhere but at an
+    opening (a fence is a built line, as a footprint is a built volume), an
+    item across or outside the fence, a negative inset, a crossing for a
+    stream that does not cross the battery limit, a label on the wrong
+    direction, `side north|south` without `at` or `at` on west/east, an `at`
+    outside the fence, a stream declared twice.  Every boundary pipe crosses
+    at a PUBLISHED point: west for an inlet, east for an outlet, at its
+    lane's y and height (the stated default), or where `side`/`at` put it
+    (the pipe leaves its lane there), or at the end of its waypoint override,
+    which must then end on the fence.  A crossing with no label is
+    ANNOUNCED (`unlabelledCrossing`), never refused.  Published: the line,
+    its length, each opening, each crossing; the draft carries no fence.
 \*---------------------------------------------------------------------------*/
 
 #ifndef Choupo_plantLayout_PlantLayout_H

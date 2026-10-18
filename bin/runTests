@@ -1438,7 +1438,11 @@ auto_generate() {
         #  `road:<name>` line's `length`, the `roadNetwork` line's `length`
         #  and `pavedArea`, and each `access:<item>` line's `distance` (the
         #  clear distance to the nearest road a gate reaches); the centre
-        #  lines are what those are computed from.  NOT pinned:
+        #  lines are what those are computed from.  THE FENCE (DEV.md 4c
+        #  C93) rides it too: the `fence` line's `length`, and per gate
+        #  opening (`fenceOpening:<gate>`) and per pipe crossing
+        #  (`fenceCrossing:<stream>`) its position and its `side` WORD; the
+        #  crossing's label is the case's sentence, echoed.  NOT pinned:
         #  the source/reason sentences and the zone and wind declarations,
         #  which are the case's own words echoed -- what they DECIDE is
         #  pinned through the findings and the count.
@@ -1453,7 +1457,7 @@ auto_generate() {
                 sub(/"release": \{.*/, "", line)
                 sub(/"message": .*/, "", line)
                 if (id == "wind" || id ~ /^area:/) next
-                nw = split("shape orientation footprintFrom from to", W, " ")
+                nw = split("shape orientation footprintFrom from to side", W, " ")
                 for (i = 1; i <= nw; i++)
                     if (match(line, "\"" W[i] "\": \"[^\"]*\"")) {
                         s = substr(line, RSTART, RLENGTH); sub(/^"[^"]*": "/, "", s); sub(/"$/, "", s)

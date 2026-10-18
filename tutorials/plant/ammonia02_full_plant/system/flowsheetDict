@@ -89,23 +89,16 @@
 // stream state lives on disk in 0/ (per-stream files); flowsheetDict is TOPOLOGY only
 units
 (
-    //  RAW-MATERIAL INVENTORY.  The syngas the plant has bought and is
-    //  holding before the process touches it.  A storageTank changes NOTHING
-    //  about the stream -- same F, z, T, P, vf -- so mass and energy close
-    //  over it by construction; what it adds is the HOLDUP the plant's
-    //  working capital rests on, and which no unit could report until now.
-    //  Half an hour is a surge volume, not a stock: a gas at 25 bar is a poor
-    //  thing to store, and the number this tank publishes (4037 m^3 for 35 t)
-    //  is exactly why real plants buy their nitrogen and hydrogen as a
-    //  pipeline supply rather than an inventory.  That volume holds the gas
-    //  AT THE LINE STATE, and a vessel kept at the line's pressure can give
-    //  none of it back; the vessels that can are SIZED in system/postDict
-    //  (`gasStorage`, `unit T101;`, DEV.md 4c C92) on a pressure swing from
-    //  100 down to 27 bar, and they read this half hour from here -- one home.
-    { name T101;  type storageTank;  in makeup;  outputs ( makeupStored );
-      operation { residenceTime 0.5 h; } }
-
-    { name makeupComp;  type compressor;  in makeupStored;   outputs ( compMakeup );
+    //  NO RAW-MATERIAL TANK (DEV.md 4c C93, Vitor's ruling on C92).  The
+    //  syngas arrives by PIPELINE from the adjacent industrial park and goes
+    //  straight to the makeup compressor.  This case held it once in a
+    //  storageTank, T101 (half an hour, 35 t); sized as the pressure vessels
+    //  that could give that gas back -- four of them on a 100 -> 27 bar swing,
+    //  200 mm walls, about 14 MEUR of steel -- it took the NPV from about +99
+    //  to about +15 MEUR, which is why real plants buy syngas as a pipeline
+    //  supply and not as an inventory.  The pipeline crosses the plant fence
+    //  at a labelled battery limit (system/layoutDict, `fence { crossings }`).
+    { name makeupComp;  type compressor;  in makeup;   outputs ( compMakeup );
       operation { W_shaft 24000 kW;  eta 0.78; } }
 
     { name recycleComp; type compressor;  in recycle;  outputs ( compRecycle );
@@ -143,8 +136,8 @@ units
     //  dominant working-capital item on a plant like this, and the one the
     //  student is asked to value: ~2900 t of liquid ammonia in ~3870 m^3,
     //  in a vessel that must be built for ~4830 m^3 at the 0.80 working-volume
-    //  convention.  Compare it with T101 and the lesson is immediate: the same
-    //  plant holds 80x the MASS in the product tank and less volume.  The
+    //  convention.  Compare it with the half hour of syngas this case once
+    //  stored (above): 80x the MASS here, in less volume.  The
     //  liquid is held as it leaves the let-down drum, at 250 K and above its
     //  20 bar bubble pressure, so the vessel is a PRESSURE vessel: seven
     //  insulated bullets, SIZED in system/postDict (`liquefiedGasStorage`,

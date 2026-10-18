@@ -841,9 +841,11 @@ tank is (`unit T101;` in place of `name`, `stream` and `autonomy`, which then
 REFUSE by name; `reason` becomes optional): the autonomy is the unit's
 `residenceTime_s`, the stream its inlet.  The unit's own `vesselVolume_m3`
 is printed beside the store's, because it holds the gas AT THE LINE STATE --
-a volume a vessel kept at the line's pressure can give none of back.  Worked
-case: `tutorials/plant/ammonia02_full_plant` (T101, half an hour of 25 bar
-syngas on a 100 -> 27 bar swing).
+a volume a vessel kept at the line's pressure can give none of back.  No
+shipped case declares one: `ammonia02_full_plant` did (T101, half an hour of
+25 bar syngas on a 100 -> 27 bar swing, about 14 MEUR of steel) until Vitor
+ruled that the syngas arrives by pipeline (DEV.md 4c C93); the link is held by
+`check_design_sheet` arm (w) on a probe.
 
 **A PRESSURISED LIQUID IS STORED IN PRESSURE VESSELS (2026-10-18, DEV.md 4c
 C92).**  A liquid that must stay above its bubble pressure -- liquid ammonia,
@@ -1083,8 +1085,9 @@ plot { margin 10 m; reason "..."; }   // optional; absent: 0 m, announced
   length -- from the TOP of its source item (or a junction: an unsized
   mixer, splitter or valve, drawn on the rack; or the rack's west end for a
   plant inlet) up to its lane on the rack, along plan x, and down to the top
-  of its target (or the rack's east end for a plant outlet).  Declare the
-  rack, every key, or the engine uses a stated default and says so:
+  of its target (or the rack's east end for a plant outlet; with a `fence {}`,
+  on to that stream's crossing ON the fence).  Declare the rack, every key,
+  or the engine uses a stated default and says so:
   ```
   pipeRack { y -2 m; elevation 7 m; laneSpacing 0.6 m; lanesPerTier 6;
              tierSpacing 1.2 m; xStart -14 m; xEnd 100 m; reason "..."; }
@@ -1092,7 +1095,10 @@ plot { margin 10 m; reason "..."; }   // optional; absent: 0 m, announced
   ```
   A waypoint route must be orthogonal (one axis per segment).  A stream the
   layout cannot reach (an unsized tank, an unplaced item) is listed as not
-  routed, with the reason.  No pressure drop and no cost yet.
+  routed, with the reason, the units at its two ends and the point of the end
+  it does reach; the 3D view marks it there (a dashed stub and a warning), so
+  a missing pipe never looks like a finished drawing.  No pressure drop and
+  no cost yet.
 * THE PLOT (C82): the engine publishes the plot area -- the axis-aligned
   envelope of every declared sector area, every placed footprint and every
   routed pipe, grown on every side by your margin:
@@ -1135,9 +1141,45 @@ plot { margin 10 m; reason "..."; }   // optional; absent: 0 m, announced
   area (counted once where roads meet), each crossing under the rack, and
   per item the nearest road a gate reaches; the roads are inside the plot
   envelope, so the land cost sees them.  The draft tool never draws roads.
-* Worked cases: `tutorials/plant/ammonia02_full_plant` (default rack, roads,
-  gate, warehouse, canteen),
+* THE FENCE (C93).  Declared, never drawn by hand: the engine takes the plot
+  rectangle and moves it `inset` inward (absent: 0 m, announced).
+  ```
+  fence
+  {
+      source "..."; reason "...";
+      inset 0 m;                                       // optional
+      crossings
+      (
+          { stream makeup; from "adjacent industrial park: syngas pipeline"; }
+          { stream cwOut;  to "site cooling-water return"; side north; at 57 m; }
+      );
+  }
+  ```
+  With a fence, the routed pipes enter the plot envelope as the rack's plan
+  band (a pipe's run past the rack ends is the fence's job, so the plot no
+  longer grows to hold it).  The fence opens at each `gate` item, on the side
+  nearest it, centred on the road that serves it and as wide as that road.
+  REFUSED: a road that meets the fence anywhere but at a gate opening (the
+  fence is a line a road cannot pass, as a footprint is), an item standing
+  across or outside the fence, a negative inset, a crossing for a stream that
+  does not cross the battery limit, an outlet labelled `from` (or an inlet
+  `to`), `side north|south` without `at` (or `at` on west/east, where the
+  lane fixes the point), an `at` outside the fence, a stream declared twice.
+  Every boundary pipe crosses the fence at a published point: west for an
+  inlet and east for an outlet at its lane's y and height (the stated
+  default), or where `side`/`at` put it (the pipe leaves its lane there), or
+  at the end of a waypoint override, which must then end on the fence.  A
+  crossing with no `from`/`to` label is ANNOUNCED, never refused.  Published
+  and pinned by the `layout` golden kind: the fence line and its length, each
+  opening, each crossing (point, side, label).  The 3D view draws a
+  chain-link fence with posts, open at the gates, and at each crossing the
+  pipeline carried on outside with a sign naming where it comes from or goes
+  to.
+* Worked cases: `tutorials/plant/ammonia02_full_plant` (declared rack,
+  roads, gate, warehouse, canteen, the fence and its labelled crossings),
   `greenAmmoniaPEQ_baseCase` and `aceticAcid02_plant` (declared racks).  The
+  stated default rack is exercised by `check_plant_layout` on a copy of
+  ammonia02 with its `pipeRack` removed.  The
   GUI draws the result in Reports, "Plant layout (3D)", with the pipe
   register.  Record:
   `docs/design/a-plant-layout-is-declared-and-checked.md`.

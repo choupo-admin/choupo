@@ -705,6 +705,42 @@ function shapeLayout(l: NonNullable<ResultPayload["layout"]>): PlantLayout {
     ...shapeSummary(l),
     ...shapePlot(l),
     ...shapeRoads(l),
+    ...shapeFence(l),
+  };
+}
+
+//  THE FENCE (DEV.md 4c C93), passed through as the engine drew it.  A fence
+//  whose rectangle or length is not finite leaves the whole block absent; an
+//  opening or a crossing whose position is not finite is DROPPED rather than
+//  drawn at the origin.  No position is computed here.
+function shapeFence(l: NonNullable<ResultPayload["layout"]>): Partial<PlantLayout> {
+  const f = l.fence;
+  const fin = (v: unknown): v is number => typeof v === "number" && Number.isFinite(v);
+  const str = (v: unknown): string => (typeof v === "string" ? v : "");
+  const arr = <T,>(v: T[] | undefined): T[] => (Array.isArray(v) ? v : []);
+  if (!f || ![f.inset, f.xMin, f.xMax, f.yMin, f.yMax, f.length].every(fin)) return {};
+  type Side = "north" | "south" | "east" | "west";
+  const side = (s: unknown): Side =>
+    (s === "north" || s === "east" || s === "west" ? s : "south") as Side;
+  return {
+    fence: {
+      inset: f.inset as number, insetDeclared: !!f.insetDeclared,
+      xMin: f.xMin as number, xMax: f.xMax as number, yMin: f.yMin as number,
+      yMax: f.yMax as number, length: f.length as number,
+      source: str(f.source), reason: str(f.reason), rule: str(f.rule),
+    },
+    fenceOpenings: arr(l.fenceOpenings).filter((o) => [o.x, o.y, o.width].every(fin))
+      .map((o) => ({ gate: str(o.gate), side: side(o.side), x: o.x as number,
+                     y: o.y as number, width: o.width as number, road: str(o.road),
+                     gateDistance: fin(o.gateDistance) ? o.gateDistance : NaN })),
+    fenceCrossings: arr(l.fenceCrossings).filter((c) => [c.x, c.y, c.z].every(fin))
+      .map((c) => ({
+        stream: str(c.stream), direction: (c.direction === "out" ? "out" : "in") as "in" | "out",
+        side: side(c.side), x: c.x as number, y: c.y as number, z: c.z as number,
+        positionFrom: (c.positionFrom === "declared" || c.positionFrom === "waypoints"
+          ? c.positionFrom : "statedDefault") as "declared" | "statedDefault" | "waypoints",
+        labelDeclared: !!c.labelDeclared, label: str(c.label),
+      })),
   };
 }
 
@@ -819,7 +855,15 @@ function shapePipes(l: NonNullable<ResultPayload["layout"]>): Partial<PlantLayou
                      x: j.x as number, y: j.y as number, z: j.z as number })),
     pipes,
     notRouted: (Array.isArray(l.notRouted) ? l.notRouted : [])
-      .map((n) => ({ stream: str(n.stream), reason: str(n.reason) })),
+      .map((n) => {
+        const a = Array.isArray(n.anchor) && n.anchor.length === 3 && n.anchor.every(fin)
+          ? (n.anchor as [number, number, number]) : undefined;
+        return { stream: str(n.stream), reason: str(n.reason),
+                 //  Absent on a result written before C93: left absent.
+                 ...(typeof n.fromUnit === "string" ? { fromUnit: n.fromUnit } : {}),
+                 ...(typeof n.toUnit === "string" ? { toUnit: n.toUnit } : {}),
+                 ...(a ? { anchor: a } : {}) };
+      }),
   };
 }
 
@@ -1036,7 +1080,8 @@ interface ResultPayload {
       routedBy?: string; lane?: number; length?: number;
       F_mass?: number; T?: number; P?: number; vf?: number;
       route?: number[][] }[];
-    notRouted?: { stream?: string; reason?: string }[];
+    notRouted?: { stream?: string; reason?: string; fromUnit?: string; toUnit?: string;
+      anchor?: unknown[] }[];
     summary?: { placed?: number; unplaced?: number; internal?: number; findings?: number;
       pipes?: number; notRouted?: number; pipeLength?: number };
     plot?: { margin?: number; marginDeclared?: boolean; marginReason?: string;
@@ -1056,6 +1101,14 @@ interface ResultPayload {
       yMax?: number; clearance?: number }[];
     access?: { item?: string; road?: string; distance?: number; roadX?: number;
       roadY?: number; onDeck?: boolean }[];
+    fence?: { inset?: number; insetDeclared?: boolean; xMin?: number; xMax?: number;
+      yMin?: number; yMax?: number; length?: number; source?: string; reason?: string;
+      rule?: string };
+    fenceOpenings?: { gate?: string; side?: string; x?: number; y?: number;
+      width?: number; road?: string; gateDistance?: number }[];
+    fenceCrossings?: { stream?: string; direction?: string; side?: string; x?: number;
+      y?: number; z?: number; positionFrom?: string; labelDeclared?: boolean;
+      label?: string }[];
   };
   economics?: {
     present?: boolean;

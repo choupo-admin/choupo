@@ -63,30 +63,39 @@ The risks such a feature carries are specific, and each arm names one:
       or `entry/<tag>` (`EquipmentSizing::isItemOf`).
 
   (h) THE PIPES (2026-10-17, DEV.md 4c C80), on the three plants that carry
-      a layout (ammonia02_full_plant on the engine's DEFAULT rack,
-      greenAmmoniaPEQ_baseCase and aceticAcid02_plant on DECLARED ones):
+      a layout, all three on DECLARED racks (ammonia02_full_plant since C93,
+      when its tank farm dragged the stated default onto the main road; the
+      stated default is exercised on a copy of it with `pipeRack` removed):
       every stream of the stream table (one per identity: an entry marked
       `aliasOf`/`boundaryLabel` is a label, an independent home for the set)
       is routed or listed in `notRouted` with a reason, never both, never
       dropped; every route is ORTHOGONAL (each segment along one axis), its
       published length is the polyline's own (recomputed here), and its two
       ends are where the published block puts them -- an item's top centre,
-      a junction's node, the rack's xStart/xEnd for a battery limit; a rack
-      route claims no override; the default rack is published as such and
+      a junction's node, the rack's xStart/xEnd for a battery limit (with a
+      fence, the published crossing ON the fence); a rack route claims no
+      override; the default rack (the probe) is published as such and
       ANNOUNCED on stderr, the caveat block and the advisories, a declared one
       announces nothing; each pipe REPRODUCES its golden `layout` rows (from,
       to, length), every published pipe is pinned and every pinned pipe is
-      published, and the summary's pipe counts agree three ways.
+      published, and the summary's pipe counts agree three ways.  The witness
+      routes EVERY stream: its `notRouted` must be empty (Vitor, C93: "there
+      are compressors that have no inlets").
   (i) A DECLARED ROUTE: on a copy of the witness, `pipes { rawLiquid {
       waypoints (...) } }` is honoured (separator top -> two waypoints ->
       let-down top, `routedBy waypoints`, no lane) and its length recomputed;
       REFUSED, each exit 2 and naming its defect: a diagonal segment, an
       override naming no stream, an override on a stream with no routable end
-      (`makeup`, once T101's vessels are taken off the copy's plot plan: a
+      (`productNH3`, once T201's bullets are taken off the copy's plot plan: a
       sized unit none of whose items is placed), a partial `pipeRack`, a
       fractional
-      `lanesPerTier`.  The forced draft carries a declared rack as declared
-      and says it did not carry the waypoint overrides.
+      `lanesPerTier`.  THE UNROUTED MARK (C93): on the same copy with no
+      override, `productNH3` is listed with `fromUnit letdown`, `toUnit T201`
+      and an `anchor` equal to the routed pipe's first point (the let-down's
+      nozzle -- where the 3D view marks the missing pipe), and
+      `productStored`, which reaches no end, carries no anchor.  The forced
+      draft carries a declared rack as declared and says it did not carry the
+      waypoint overrides.
 
   (j) THE PLOT (2026-10-17, DEV.md 4c C82), on the same three plants and on
       two fixtures of the sectored flagship: the published plot RECOMPUTED
@@ -133,6 +142,27 @@ The risks such a feature carries are specific, and each arm names one:
       the main road runs OVER is not refused as a road through a footprint,
       is published `onDeck`, and raises nothing.  The forced draft says it did
       not carry the roads and carries each site building's source and reason.
+
+  (l) THE FENCE (2026-10-18, DEV.md 4c C93), on the witness, which declares
+      a fence with inset 0 and six crossings: the fence RECOMPUTED here from
+      the published plot (moved by the inset read from the case) and its
+      length; each gate opening recomputed (the side nearest the gate, the
+      serving road's centre-line vertex nearest that side, the road's width);
+      every road's paved rectangle meets the fence only inside an opening;
+      each crossing recomputed (its side -- west for an inlet, east for an
+      outlet, or the declared one; its point -- the pipe's lane y and height,
+      or the declared `at` on the fence line; its label and direction) and
+      the pipe's battery-limit end IS that point; the witness raises no
+      `unlabelledCrossing`; every published fence / opening / crossing number
+      and word is pinned by a golden row and every pinned one is published.
+      ANNOUNCED (stderr, caveat block, JSON, exit 0): a crossing with no label
+      (the `makeup` entry removed from a copy); a fence with no gate.
+      REFUSED (exit 2, named): a road through the fence at no gate (inset
+      6 m pulls the fence across the east road), an item across the fence
+      (no roads, inset 6 m), a negative inset, a crossing for a stream that
+      does not cross the battery limit (`mixed`), an outlet labelled `from`,
+      `side north` with no `at`, an `at` outside the fence, a stream declared
+      twice.
 
 NOT COVERED, said so: whether a declared distance or zone extent is SENSIBLE
 (the author's assumption, by design -- no standard is shipped), a pipe's
@@ -226,6 +256,28 @@ strengthened):
       island road raises no roadDisconnected.
   S28 the roadInZone finding never raised                          -> (k) the
       closed-zone fixture publishes none.
+  (S14 and S21 were caught on ammonia02's default rack; since C93 that rack
+  is declared and the default lives on the probe copy, which (h) reads.)
+  (C93, arm (l) and the unrouted mark, 2026-10-18; each in PlantLayout.cpp
+  or ResultEmitter.cpp, restored with `cp` of the saved file and one
+  idempotent `make all`; all CAUGHT on first run):
+  S29 the fence taken as the plot itself, the inset ignored         -> (l) the
+      road-through-fence and item-across-fence probes no longer refuse (both
+      depend on the 6 m inset).
+  S30 a gate opening centred on the GATE's x, not the road's        -> (l) the
+      opening against its recomputation and its golden row.
+  S31 the road-at-no-gate refusal disabled                          -> (l) the
+      probe exits 2 on a DIFFERENT message (the item it then meets), and the
+      arm requires the refusal to name the road and the side.
+  S32 the unlabelledCrossing finding never raised                   -> (l) the
+      unlabelled probe announces nothing.
+  S33 an inlet's default side taken as east                         -> (l) the
+      makeup crossing against its recomputation and its golden row.
+  S34 a default crossing placed at grade (z = 0), not the lane       -> (l) the
+      witness itself exits 2: the pipe's drop to grade runs under the road
+      headroom.
+  S35 the notRouted anchor not emitted                              -> (i) the
+      unrouted mark: productNH3 carries no anchor.
 """
 import json
 import re
@@ -319,16 +371,14 @@ def arm_witness(work):
         fail("(a) the witness published no `layout` block")
         return
     items = {i["id"]: i for i in lay["items"]}
-    if len(items) != 22:
-        fail(f"(a) the witness places {len(items)} items, expected 22 (seven process"
-             " items and the stores' eleven vessels, sized, and the control room,"
-             " gate, canteen and warehouse)")
-    #  The process vessels stand; the stores' vessels (DEV.md 4c C92) are
-    #  T101's four, standing, and T201's seven bullets, LYING -- a lying
-    #  cylinder's plan extents are its length along its axis and D across,
-    #  and its height is D.
-    stores = [(f"T101/vessel{k}", f"T101/vessel{k}", True) for k in range(1, 5)] \
-        + [(f"T201/vessel{k}", f"T201/vessel{k}", False) for k in range(1, 8)]
+    if len(items) != 18:
+        fail(f"(a) the witness places {len(items)} items, expected 18 (seven process"
+             " items and the product store's seven bullets, sized, and the control"
+             " room, gate, canteen and warehouse)")
+    #  The process vessels stand; the product store's bullets (DEV.md 4c
+    #  C92) LIE -- a lying cylinder's plan extents are its length along its
+    #  axis and D across, and its height is D.
+    stores = [(f"T201/vessel{k}", f"T201/vessel{k}", False) for k in range(1, 8)]
     for unit, sheet, standing in [(u, f"{u}/vessel", True)
                                   for u in ("converter", "separator", "letdown")] + stores:
         D = sheet_value(d, sheet, "D")
@@ -368,7 +418,7 @@ def arm_witness(work):
     if not any(a.get("category") == "layout" and a.get("message") == msg
                for a in (j.get("advisories") or [])):
         fail("(b) the separation announcement is not in the result JSON's advisories")
-    claims.append("witness: 22 items, vessel extents = their design sheets' D/H"
+    claims.append("witness: 18 items, vessel extents = their design sheets' D/H"
                   " (standing, and T201's bullets lying),"
                   " the one shortfall recomputed edge to edge and announced on"
                   " stderr, the caveat block and the JSON")
@@ -621,8 +671,8 @@ def arm_draft(work):
                    "`roads {}` network is NOT carried"):
         if needle not in text:
             fail(f"(e) the forced draft did not carry `{needle}`")
-    if len(lay.get("items", [])) != 22:
-        fail(f"(e) the forced draft places {len(lay.get('items', []))} items, expected 22")
+    if len(lay.get("items", [])) != 18:
+        fail(f"(e) the forced draft places {len(lay.get('items', []))} items, expected 18")
     if "roadNetwork" in lay or "\nroads\n{" in text:
         fail("(e) the forced draft wrote or ran a road network: roads are drawn round"
              " positions the draft moves, and are never carried")
@@ -695,8 +745,8 @@ def arm_refused_sizer(work):
     ids = [i["id"] for i in lay["items"]]
     if "separator" in ids:
         fail("(g) the separator was placed although its sizer refused")
-    if len(ids) != 21:
-        fail(f"(g) {len(ids)} items placed, expected the witness's 22 less the separator")
+    if len(ids) != 17:
+        fail(f"(g) {len(ids)} items placed, expected the witness's 18 less the separator")
     f = [x for x in lay["findings"] if x["id"] == "sizingRefused:separator:separator"]
     if len(f) != 1:
         fail(f"(g) no sizingRefused finding for the separator; findings "
@@ -743,10 +793,15 @@ def stream_identities(j):
             if not v.get("aliasOf") and not v.get("boundaryLabel")}
 
 
-def end_point(lay, kind, at, first):
+def end_point(lay, kind, at, first, stream=None):
     """Where a pipe end must lie, recomputed here from the published items,
     junctions and rack: an item's top centre, a junction's node, or (x only)
-    the rack's end for a battery limit."""
+    the rack's end for a battery limit -- or, where the case declares a fence
+    (DEV.md 4c C93), the crossing the engine published for that stream, all
+    three coordinates."""
+    if kind == "batteryLimit" and lay.get("fence"):
+        c = next((x for x in lay.get("fenceCrossings", []) if x["stream"] == stream), None)
+        return None if c is None else (c["x"], c["y"], c["z"])
     if kind == "item":
         i = next((x for x in lay["items"] if x["id"] == at), None)
         return None if i is None else (i["x"], i["y"], i["z"] + i["dz"])
@@ -780,10 +835,14 @@ def check_routes(tag, lay, require_rack_route=True):
                  f" the polyline's own {L} m")
         for first, kind, at, pt in ((True, p["fromKind"], p["from"], r[0]),
                                     (False, p["toKind"], p["to"], r[-1])):
-            want = end_point(lay, kind, at, first)
+            want = end_point(lay, kind, at, first, p["stream"])
             if want is None:
                 fail(f"(h) {tag} pipe {p['stream']}: its end `{at}` ({kind}) is nowhere"
                      " in the published block")
+            elif kind == "batteryLimit" and lay.get("fence"):
+                if any(abs(pt[k] - want[k]) > TOL for k in range(3)):
+                    fail(f"(h) {tag} pipe {p['stream']}: a battery-limit end at {pt},"
+                         f" the fence crossing the engine published is {want}")
             elif kind == "batteryLimit":
                 if p["routedBy"] == "rack" and abs(pt[0] - want[0]) > TOL:
                     fail(f"(h) {tag} pipe {p['stream']}: a battery-limit end at x ="
@@ -833,20 +892,19 @@ def arm_pipes(work):
         for nr in lay.get("notRouted", []):
             if len(nr.get("reason", "")) < 10:
                 fail(f"(h) {tag}: {nr['stream']} is not routed and says no reason")
+        # the witness routes EVERY stream (DEV.md 4c C93, Vitor: "there are
+        # compressors that have no inlets"): no unit it places stands with a
+        # port drawn to nothing
+        if case == WITNESS and listed:
+            fail(f"(h) {tag}: the witness must route every stream; not routed: {listed}")
         total += check_routes(tag, lay)
         check_plot(tag, case, lay, out, err, j)
-        # the rack: declared in two cases, the stated default (announced) in one
+        # the rack: declared in all three (ammonia02 since C93, when its tank
+        # farm dragged the stated default onto the main road); the stated
+        # default is exercised by the probe below, a copy with no pipeRack
         rack = lay["pipeRack"]
         default_said = "no `pipeRack` is declared" in err
-        caveat = out.split("PLANT LAYOUT", 1)[-1] if "PLANT LAYOUT" in out else ""
-        if tag == "ammonia02":
-            if rack["declared"] or not default_said \
-                    or "no `pipeRack` is declared" not in caveat \
-                    or not any("no `pipeRack` is declared" in (a.get("message") or "")
-                               for a in j.get("advisories") or []):
-                fail("(h) ammonia02 declares no pipeRack: the default must be published as"
-                     " such AND announced on stderr, the caveat block and the advisories")
-        elif not rack["declared"] or default_said:
+        if not rack["declared"] or default_said:
             fail(f"(h) {tag} declares its pipeRack: it must be published as declared,"
                  " with no default announced")
         # the pipes reproduce the golden rows, and every pipe is pinned
@@ -872,6 +930,23 @@ def arm_pipes(work):
             if g is None or int(float(g[0])) != val or summ.get(key) != val:
                 fail(f"(h) {tag}: summary {key} = {summ.get(key)} / golden"
                      f" {g[0] if g else 'absent'} / counted here {val}")
+    # THE STATED DEFAULT RACK, on a copy of the witness with its declared rack
+    # taken out (DEV.md 4c C93 moved this role from the shipped witness to a
+    # probe): published as the default AND announced on all three surfaces.
+    d = prepare(work, "pipes_default_rack", WITNESS, drop_block_edit("pipeRack"))
+    out, err, rc = solve(d)
+    j = result_json(out)
+    lay = (j or {}).get("layout") or {}
+    caveat = out.split("PLANT LAYOUT", 1)[-1] if "PLANT LAYOUT" in out else ""
+    if rc != 0 or lay.get("pipeRack", {}).get("declared", True) \
+            or "no `pipeRack` is declared" not in err \
+            or "no `pipeRack` is declared" not in caveat \
+            or not any("no `pipeRack` is declared" in (a.get("message") or "")
+                       for a in (j or {}).get("advisories") or []):
+        fail(f"(h) the witness with no pipeRack (exit {rc}): the default must be published"
+             " as such AND announced on stderr, the caveat block and the advisories")
+    else:
+        total += check_routes("default-rack probe", lay)
     claims.append(f"{total} pipes on three plants, every stream routed or listed with"
                   " its reason, each route orthogonal with its length its own and its"
                   " ends at the published nozzles, junctions and battery limits, each"
@@ -906,10 +981,23 @@ def plot_recomputed(lay, margin):
     for a in lay.get("areas", []):
         xs += [a["xMin"], a["xMax"]]
         ys += [a["yMin"], a["yMax"]]
+    #  With a fence (DEV.md 4c C93) the rack-routed pipes enter as the rack's
+    #  plan band (the legs that carry them on to the fence are drawn FROM this
+    #  plot); a declared waypoint route enters as itself.
+    fenced = bool(lay.get("fence"))
+    band = False
     for p in lay.get("pipes", []):
+        if fenced and p["routedBy"] == "rack":
+            band = True
+            continue
         for q in p["route"]:
             xs.append(q[0])
             ys.append(q[1])
+    if band:
+        k = lay["pipeRack"]
+        hw = k["lanesPerTier"] * k["laneSpacing"] / 2
+        xs += [k["xStart"], k["xEnd"]]
+        ys += [k["y"] - hw, k["y"] + hw]
     for rect in paved_rects(lay):
         xs += [rect[0], rect[1]]
         ys += [rect[2], rect[3]]
@@ -1058,6 +1146,24 @@ def arm_plot(work):
                   f" announced) and an undeclared sector's footprint envelope; {n} refusals")
 
 
+def drop_block(text, name):
+    """The layoutDict `text` without its top-level `name { ... }` block."""
+    m = re.search(r"^%s\s*\n\{" % re.escape(name), text, re.M)
+    if not m:
+        return text + "\n#error the probe found no `%s` block\n" % name
+    depth, i = 0, m.end() - 1
+    while i < len(text):
+        depth += {"{": 1, "}": -1}.get(text[i], 0)
+        i += 1
+        if depth == 0:
+            break
+    return text[:m.start()] + text[i:]
+
+
+def drop_block_edit(name):
+    return lambda t: drop_block(t, name)
+
+
 def drop_items(text, prefix):
     """The layoutDict `text` without every `item "<prefix>..."` entry: each
     entry is the brace block that opens on the line before its `item`."""
@@ -1108,7 +1214,27 @@ def arm_pipe_override(work):
     if abs(p["length"] - L) > 1e-9:
         fail(f"(i) the override's length {p['length']} m, recomputed here {L} m")
     check_routes("override", lay, require_rack_route=False)
+    nh3 = next((x for x in lay.get("pipes", []) if x["stream"] == "productNH3"), None)
     n = 1
+    # THE UNROUTED MARK (DEV.md 4c C93): a stream the engine cannot route is
+    # listed with the units at its ends and the plan point of the end it
+    # DOES reach, which is where the 3D view marks the missing pipe -- the
+    # letdown's nozzle, where the routed pipe started in the run above; the
+    # stream with no reachable end carries no point.
+    d = prepare(work, "pipe_unrouted_mark", WITNESS, lambda t: drop_items(t, "T201/vessel"))
+    out, err, rc = solve(d)
+    nr = {x["stream"]: x for x in
+          (((result_json(out) or {}).get("layout")) or {}).get("notRouted", [])}
+    a_ = nr.get("productNH3", {})
+    b_ = nr.get("productStored", {})
+    if rc != 0 or nh3 is None or a_.get("fromUnit") != "letdown" or a_.get("toUnit") != "T201" \
+            or len(a_.get("anchor", [])) != 3 \
+            or any(abs(u - v) > TOL for u, v in zip(a_["anchor"], nh3["route"][0])) \
+            or b_.get("fromUnit") != "T201" or b_.get("toUnit") != "" or "anchor" in b_:
+        fail(f"(i) the unrouted mark (exit {rc}): productNH3 {a_} against the routed pipe's"
+             f" first point {nh3['route'][0] if nh3 else None}; productStored {b_}")
+    else:
+        n += 1
     refusals = {
         "diagonal waypoint": (lambda t: t + OVERRIDE.replace("{ x 59.5 m; y -6 m; z 10 m; }",
                                                              "{ x 59.5 m; y -2 m; z 10 m; }"),
@@ -1116,20 +1242,20 @@ def arm_pipe_override(work):
         "unknown stream": (lambda t: t + "\npipes { noSuchStream { waypoints ( { x 0 m;"
                            " y 0 m; z 9 m; } ); } }\n",
                            [r"pipes: `noSuchStream`", r"Accepted.*rawLiquid"]),
-        #  `makeup` runs to T101, whose vessels the witness places (C92); the
-        #  copy takes them off its plot plan, so the unit is sized and NONE of
-        #  its items is placed -- a stream with no routable end again.
+        #  `productNH3` runs to T201, whose bullets the witness places (C92);
+        #  the copy takes them off its plot plan, so the unit is sized and
+        #  NONE of its items is placed -- a stream with no routable end.
         "override on an unroutable stream": (
-            lambda t: drop_items(t, "T101/vessel")
-            + "\npipes { makeup { waypoints ( { x 0 m; y 0 m; z 9 m; } ); } }\n",
-            [r"pipes `makeup`: an override routes a pipe", r"T101"]),
+            lambda t: drop_items(t, "T201/vessel")
+            + "\npipes { productNH3 { waypoints ( { x 70 m; y 0 m; z 9 m; } ); } }\n",
+            [r"pipes `productNH3`: an override routes a pipe", r"T201"]),
         "partial pipeRack": (
-            lambda t: t + "\npipeRack { y 0 m; elevation 6 m; laneSpacing 0.6 m;"
+            lambda t: drop_block(t, "pipeRack") + "\npipeRack { y 0 m; elevation 6 m; laneSpacing 0.6 m;"
                           " lanesPerTier 6; tierSpacing 1.5 m; xStart -5 m;"
                           " reason \"r\"; }\n",
             [r"pipeRack: `xEnd` is not declared"]),
         "a fractional lane count": (
-            lambda t: t + "\npipeRack { y 0 m; elevation 6 m; laneSpacing 0.6 m;"
+            lambda t: drop_block(t, "pipeRack") + "\npipeRack { y 0 m; elevation 6 m; laneSpacing 0.6 m;"
                           " lanesPerTier 2.5; tierSpacing 1.5 m; xStart -5 m; xEnd 70 m;"
                           " reason \"r\"; }\n",
             [r"lanesPerTier 2\.5", r"whole number"]),
@@ -1145,7 +1271,8 @@ def arm_pipe_override(work):
     # the draft: a declared rack is carried; none declared leaves a template
     rack = ("\npipeRack { y -1 m; elevation 7 m; laneSpacing 0.5 m; lanesPerTier 4;"
             " tierSpacing 1.25 m; xStart -6 m; xEnd 70 m; reason \"the author's own\"; }\n")
-    d = prepare(work, "pipe_draft", WITNESS, lambda t: t + rack + OVERRIDE)
+    d = prepare(work, "pipe_draft", WITNESS,
+                lambda t: drop_block(t, "pipeRack") + rack + OVERRIDE)
     out, err, rc = run([str(TOOL), "--draft", "--force", str(d)])
     text = (d / "system/layoutDict").read_text()
     lay = ((result_json(out) or {}).get("layout")) or {}
@@ -1156,7 +1283,8 @@ def arm_pipe_override(work):
              " say it dropped the waypoint overrides")
     else:
         n += 1
-    claims.append(f"a declared waypoint route honoured and measured, {n - 2} refusals"
+    claims.append(f"a declared waypoint route honoured and measured, an unrouted stream"
+                  f" marked at the end it reaches, {n - 3} refusals"
                   " (a diagonal segment, an unknown stream, an override on an unroutable"
                   " stream, a partial rack, a fractional lane count), and the draft"
                   " carrying a declared rack")
@@ -1227,12 +1355,12 @@ ROAD_REFUSALS = {
         [r"road `(east|rackCrossing)` passes UNDER the pipe rack", r"6 m above grade",
          r"7 m headroom"]),
     #  The route ends below the purge splitter's rack node, on the witness's
-    #  stated-default rack line: the mean plan y of its placed process items,
-    #  -296/18 m since the stores were placed (C92; -22/7 m before).
+    #  DECLARED rack line, y = -3 m (C93; the stated default's -22/7 m
+    #  before the tank farm).
     "a pipe below the headroom over a road": (
         lambda t: t + "\npipes { unreactedGas { waypoints ( { x 56 m; y -6 m; z 3 m; }"
                       " { x 56 m; y -31 m; z 3 m; } { x 37 m; y -31 m; z 3 m; }"
-                      " { x 37 m; y -16.4444444444444 m; z 3 m; } ); } }\n",
+                      " { x 37 m; y -3 m; z 3 m; } ); } }\n",
         [r"pipe `unreactedGas` crosses road `main` 3 m above grade"]),
     "a diagonal road segment": (
         sub("waypoints ( { x -8 m; y -31 m; } { x -8 m; y 16 m; } );",
@@ -1474,6 +1602,244 @@ def arm_roads(work):
                   " the access distance, no gate, a weighbridge on and off the road)")
 
 
+
+# ------------------------------------------------------------ the fence (C93) --
+def fence_declared(text):
+    """The witness's `fence {}` block, read here as TEXT: its inset and, per
+    crossing, (word, label, side, at) -- an independent home for what the
+    engine must have read."""
+    m = re.search(r"^fence\s*\n\{(.*?)^\}", text, re.S | re.M)
+    if not m:
+        return None
+    body = m.group(1)
+    im = re.search(r"\binset\s+([-0-9.eE+]+)\s*m\s*;", body)
+    out = {"inset": float(im.group(1)) if im else None, "crossings": {}}
+    for e in re.findall(r"\{([^{}]*)\}", body):
+        s = re.search(r"\bstream\s+(\w+)\s*;", e)
+        w = re.search(r'\b(from|to)\s+"([^"]*)"\s*;', e)
+        side = re.search(r"\bside\s+(\w+)\s*;", e)
+        at = re.search(r"\bat\s+([-0-9.eE+]+)\s*m\s*;", e)
+        if s and w:
+            out["crossings"][s.group(1)] = (w.group(1), w.group(2),
+                                            side.group(1) if side else None,
+                                            float(at.group(1)) if at else None)
+    return out
+
+
+def arm_fence(work):
+    """(l) THE FENCE -- see the module docstring."""
+    text = (WITNESS / "system" / "layoutDict").read_text()
+    dec = fence_declared(text)
+    if dec is None:
+        fail("(l) the witness declares no `fence {}` -- this arm CANNOT RUN; it must not pass")
+        return
+    d = prepare(work, "fence_witness", WITNESS)
+    out, err, rc, j, lay = layout_of(d)
+    F, plot = lay.get("fence"), lay.get("plot")
+    if rc != 0 or not F or not plot:
+        fail(f"(l) the witness exited {rc} / published no fence or no plot")
+        return
+    # the line: the published plot moved `inset` inward, its length
+    inset = dec["inset"] if dec["inset"] is not None else 0.0
+    want = (plot["xMin"] + inset, plot["xMax"] - inset, plot["yMin"] + inset, plot["yMax"] - inset)
+    got = (F["xMin"], F["xMax"], F["yMin"], F["yMax"])
+    L = 2 * ((want[1] - want[0]) + (want[3] - want[2]))
+    if not all(close(a, b) for a, b in zip(want, got)) or not close(F["length"], L) \
+            or F["inset"] != inset or F["insetDeclared"] != (dec["inset"] is not None):
+        fail(f"(l) the fence {got}, {F['length']} m (inset {F['inset']}); recomputed from"
+             f" the published plot and the declared inset {want}, {L} m")
+    x0, x1, y0, y1 = want
+
+    def nearest(px, py):
+        c = [(py - y0, "south"), (y1 - py, "north"), (px - x0, "west"), (x1 - px, "east")]
+        best = c[0]
+        for v in c[1:]:
+            if v[0] < best[0] - 1e-6:
+                best = v
+        return best[1]
+
+    def on_side(side, along):
+        return {"south": (along, y0), "north": (along, y1),
+                "west": (x0, along), "east": (x1, along)}[side]
+    along_x = lambda side: side in ("south", "north")
+    # the openings: one per gate, on its nearest side, centred on the end of
+    # the road that serves it (the nearest paved rectangle), that road's width
+    items = {i["id"]: i for i in lay["items"]}
+    gates = [i for i in lay["items"] if i.get("nonProcess") and i["kind"] == "gate"]
+    opens = {o["gate"]: o for o in lay.get("fenceOpenings", [])}
+    if len(opens) != len(gates) or not gates:
+        fail(f"(l) {len(gates)} gate(s) placed, {len(opens)} opening(s) published")
+    for g in gates:
+        o = opens.get(g["id"])
+        side = nearest(g["x"], g["y"])
+        best, road = None, None
+        for r in lay.get("roads", []):
+            for rect in paved_rects({"roads": [r]}):
+                dd = max(0.0, clear_item_rect(g, rect))
+                if best is None or dd < best - 1e-6:
+                    best, road = dd, r
+        along = g["x"] if along_x(side) else g["y"]
+        width = g["dx"] if along_x(side) else g["dy"]
+        if road:
+            dmin = None
+            for q in road["centreline"]:
+                fx, fy = on_side(side, q[0] if along_x(side) else q[1])
+                dd = hypot(q[0] - fx, q[1] - fy)
+                if dmin is None or dd < dmin - 1e-6:
+                    dmin, along = dd, (q[0] if along_x(side) else q[1])
+            width = road["width"]
+        ox, oy = on_side(side, along)
+        if not o or o["side"] != side or not close(o["x"], ox) or not close(o["y"], oy) \
+                or not close(o["width"], width) or o["road"] != (road["road"] if road else ""):
+            fail(f"(l) the opening for gate {g['id']}: published {o}; recomputed {side} side"
+                 f" at ({ox}, {oy}), {width} m, road {road['road'] if road else ''}")
+    # no road meets the fence outside an opening (recomputed, both ways)
+    for r in lay.get("roads", []):
+        for (rx0, rx1, ry0, ry1) in paved_rects({"roads": [r]}):
+            for side, hit, a0, a1 in (
+                    ("south", ry0 < y0 - 1e-6 < ry1, max(rx0, x0), min(rx1, x1)),
+                    ("north", ry0 < y1 + 1e-6 < ry1, max(rx0, x0), min(rx1, x1)),
+                    ("west", rx0 < x0 - 1e-6 < rx1, max(ry0, y0), min(ry1, y1)),
+                    ("east", rx0 < x1 + 1e-6 < rx1, max(ry0, y0), min(ry1, y1))):
+                if not hit:
+                    continue
+                ok = any(o["side"] == side and
+                         a0 >= (o["x"] if along_x(side) else o["y"]) - o["width"] / 2 - 1e-6 and
+                         a1 <= (o["x"] if along_x(side) else o["y"]) + o["width"] / 2 + 1e-6
+                         for o in opens.values())
+                if not ok:
+                    fail(f"(l) road {r['road']} meets the fence on its {side} side outside"
+                         " every gate opening, and the witness ran")
+    # every pipe with a battery-limit end crosses once, where the rule says,
+    # with the declared label; nothing else crosses
+    k = lay["pipeRack"]
+    def lane(n):
+        tier, pos = divmod(n, k["lanesPerTier"])
+        return (k["y"] + (pos - 0.5 * (k["lanesPerTier"] - 1)) * k["laneSpacing"],
+                k["elevation"] + tier * k["tierSpacing"])
+    cross = {c["stream"]: c for c in lay.get("fenceCrossings", [])}
+    boundary = [p for p in lay.get("pipes", [])
+                if "batteryLimit" in (p["fromKind"], p["toKind"])]
+    if set(cross) != {p["stream"] for p in boundary} or not boundary:
+        fail(f"(l) crossings {sorted(cross)} against the pipes with a battery-limit end"
+             f" {sorted(p['stream'] for p in boundary)}")
+    for p in boundary:
+        c = cross.get(p["stream"])
+        if c is None:
+            continue
+        inlet = p["fromKind"] == "batteryLimit"
+        w = dec["crossings"].get(p["stream"])
+        ly, lz = lane(p["lane"])
+        side = w[2] if w and w[2] else ("west" if inlet else "east")
+        if along_x(side):
+            pt = (w[3], y0 if side == "south" else y1, lz)
+        else:
+            pt = (x0 if side == "west" else x1, ly, lz)
+        if c["direction"] != ("in" if inlet else "out") or c["side"] != side \
+                or any(not close(c[q], v) for q, v in zip(("x", "y", "z"), pt)):
+            fail(f"(l) crossing {p['stream']}: published {c['direction']} {c['side']}"
+                 f" ({c['x']}, {c['y']}, {c['z']}); recomputed {side} {pt}")
+        if not w or not c["labelDeclared"] or c["label"] != w[1] \
+                or w[0] != ("from" if inlet else "to"):
+            fail(f"(l) crossing {p['stream']}: label {c['label']!r} (declared"
+                 f" {c['labelDeclared']}) against the layoutDict's {w}")
+    if any(f["kind"] == "unlabelledCrossing" for f in lay["findings"]):
+        fail("(l) the witness raises an unlabelledCrossing finding; every crossing is labelled")
+    # published <=> pinned
+    gold = {}
+    for line in (WITNESS / "expected").read_text().splitlines():
+        f = line.split()
+        if len(f) >= 5 and f[0] == "layout" and (f[1] == "fence" or f[1].startswith("fence")):
+            gold[(f[1], f[2])] = f[3]
+    pub = [("fence", "length", F["length"])]
+    for o in opens.values():
+        pub += [("fenceOpening:" + o["gate"], q, o[q]) for q in ("x", "y", "side")]
+    for c in cross.values():
+        pub += [("fenceCrossing:" + c["stream"], q, c[q]) for q in ("x", "y", "z", "side")]
+    for rid, key, v in pub:
+        g = gold.get((rid, key))
+        if g is None:
+            fail(f"(l) {rid} {key} is published and pinned by no golden row")
+        elif isinstance(v, str):
+            if g != v:
+                fail(f"(l) {rid} {key} `{v}` against the golden `{g}`")
+        elif not close(float(g), v, 1e-4):
+            fail(f"(l) {rid} {key} {v} against the golden {g}")
+    pubkeys = {(r, q) for r, q, _ in pub}
+    for key in gold:
+        if key not in pubkeys:
+            fail(f"(l) a golden row pins {key[0]} {key[1]}, which the run no longer publishes")
+
+    # ---- an unlabelled crossing is ANNOUNCED by name, never refused ----------
+    n_ok = 0
+    d = prepare(work, "fence_unlabelled", WITNESS, lambda t: re.sub(
+        r"\n\s*\{\s*stream makeup;[^{}]*\}", "", t, count=1))
+    out, err, rc, j, lay2 = layout_of(d)
+    f = next((x for x in lay2.get("findings", []) if x["id"] == "unlabelledCrossing:makeup:"), None)
+    if rc != 0 or f is None or not said_everywhere(f["message"], out, err, j) \
+            or "`makeup`" not in f["message"]:
+        fail(f"(l) the makeup crossing's label removed: exit {rc}, findings"
+             f" {[x['id'] for x in lay2.get('findings', [])]} -- it must be ANNOUNCED by"
+             " name on all three surfaces and the run must finish")
+    else:
+        n_ok += 1
+    # ---- the gate-closed announcement --------------------------------------
+    d = prepare(work, "fence_nogate", WITNESS, sub("        kind        gate;",
+                                                     "        kind        guardhouse;"))
+    out, err, rc, j, lay3 = layout_of(d)
+    if rc != 0 or "the fence declares no way in" not in err \
+            or (lay3.get("fenceOpenings") or []) != []:
+        fail(f"(l) no gate: exit {rc}; the closed fence must be announced and open nowhere")
+    else:
+        n_ok += 1
+    # ---- refusals, each exit 2 and naming its defect -------------------------
+    inset_line = re.search(r"\n    inset\s+[^;]*;", text).group(0)
+    refusals = {
+        #  6 m inward cuts the entrance road AT the gate's opening (allowed)
+        #  and the east road on the north side, where no gate opens it.
+        "a road through the fence at no gate": (
+            sub(inset_line, "\n    inset   6 m;"),
+            [r"road `east` meets the fence on its north side", r"no gate"]),
+        "an item across the fence": (
+            chain(drop_block_edit("roads"), sub(inset_line, "\n    inset   6 m;")),
+            [r"fence: `\w+` stands across or outside the fence", r"reduce the inset"]),
+        "a negative inset": (
+            sub(inset_line, "\n    inset   -1 m;"), [r"`inset -1 m;`", r"INWARD"]),
+        "a crossing on no boundary stream": (
+            sub("    crossings\n    (\n", "    crossings\n    (\n"
+                '        { stream mixed; to "nowhere"; }\n'),
+            [r"fence crossing `mixed`: no pipe of this layout ends at a battery limit"]),
+        "an outlet labelled `from`": (
+            sub('{ stream letdownGas;    to ', '{ stream letdownGas;    from '),
+            [r"`letdownGas` is a plant OUTLET", r"`to"]),
+        "a north crossing with no `at`": (
+            sub("side north;  at 37 m;", "side north;"),
+            [r"fence crossing `purge`: a crossing on the north side names where"]),
+        "an `at` off the side": (
+            sub("side north;  at 37 m;", "side north;  at 900 m;"),
+            [r"`at 900 m;` lies outside the north side"]),
+        "a crossing declared twice": (
+            sub("    crossings\n    (\n", "    crossings\n    (\n"
+                '        { stream makeup; from "again"; }\n'),
+            [r"fence crossing `makeup` is declared twice"]),
+    }
+    for label, (edit, pats) in refusals.items():
+        d = prepare(work, "fence_refuse_" + re.sub(r"\W", "_", label), WITNESS, edit)
+        o, e, r = solve(d)
+        if r != 2 or not all(re.search(pt, o + e, re.S) for pt in pats):
+            fail(f"(l) {label}: exit {r}, expected 2 naming {pats}:\n    "
+                 + "\n    ".join(l for l in (o + e).splitlines() if "ERROR" in l)[:400])
+        else:
+            n_ok += 1
+    claims.append(f"the witness's fence ({F['length']:.2f} m) recomputed from the published"
+                  f" plot and the declared inset, {len(opens)} gate opening(s) recomputed"
+                  " from the gate and its road, no road meeting it elsewhere,"
+                  f" {len(cross)} pipe crossings recomputed (side, point, lane) each with"
+                  " the declared origin or destination, every fence number pinned;"
+                  f" {n_ok} fixtures (an unlabelled crossing announced by name, a gateless"
+                  " fence announced, eight refusals)")
+
+
 def main():
     argv = sys.argv[1:]
     keep = Path(argv[argv.index("--keep") + 1]).resolve() if "--keep" in argv else None
@@ -1493,6 +1859,7 @@ def main():
         arm_pipe_override(work)
         arm_plot(work)
         arm_roads(work)
+        arm_fence(work)
     finally:
         if not keep:
             shutil.rmtree(work, ignore_errors=True)

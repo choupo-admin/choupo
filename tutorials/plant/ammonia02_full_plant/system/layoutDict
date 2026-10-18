@@ -15,10 +15,9 @@
   to place.  It was then moved by hand into the arrangement below: the two
   compressors in a compressor row to the south-west, the converter with its
   feed-effluent exchanger, the water cooler with the separator, the let-down
-  drum, and a control room as a NON-PROCESS item.  The two STORES' eleven
-  vessels (DEV.md 4c C92) were placed by hand when they were sized: T101's
-  four north of the loop, T201's seven bullets in a tank farm to the
-  south-east.
+  drum, and a control room as a NON-PROCESS item.  The product store's seven
+  bullets (DEV.md 4c C92) were placed by hand when they were sized, in a tank
+  farm to the south-east, and the FENCE (C93) was declared round the plot.
 
   WHAT IS THE ENGINE'S AND WHAT IS OURS.  Every vessel's diameter and height
   (or length) is its sizer's own (design/<unit>/vessel...); every position below,
@@ -37,7 +36,7 @@
   must see and defend, while an overlap is not a layout at all.  Move
   `letdown` to x 62 m and the announcement goes away.
 
-  THE SITE (DEV.md 4c C90).  A gate with its guardhouse on the south fence,
+  THE SITE (DEV.md 4c C90, C93).  A gate with its guardhouse on the south fence,
   a road network that rings the process area and crosses under the pipe rack
   once, and the site buildings a plant this size needs besides the control
   room: a warehouse (spares, catalyst drums, consumables) and a canteen.
@@ -45,10 +44,11 @@
   distance are AUTHOR-SET ASSUMPTIONS FOR THIS EXERCISE, said as such in each
   `source`; none is taken from a fire code or a road standard.
   THERE IS NO WEIGHBRIDGE, and that is read off the case, not chosen: the
-  product leaves the tank farm at a battery limit as a pipe (`productStored`,
+  product leaves the tank farm through the fence as a pipe (`productStored`,
   out of the T201 bullets -- a world-scale ~1400 t/day train ships by
   pipeline, rail or ship, and this case declares no loading bay), and the
-  makeup syngas ARRIVES by pipe at 25 bar from the front end (`makeup`).  No
+  makeup syngas ARRIVES by pipeline at 25 bar from the adjacent industrial
+  park (`makeup`, labelled where it crosses the fence).  No
   stream of this flowsheet moves by truck, so nothing is weighed at the
   gate; the trucks that do come (catalyst, spares) are deliveries, not
   custody transfer.  A case whose product leaves in road tankers declares
@@ -146,68 +146,13 @@ items
         }
     }
 
-    //  THE STORES (DEV.md 4c C92).  Their sizes are their sizers' own
-    //  (system/postDict, `gasStorage` and `liquefiedGasStorage`): every
-    //  vessel's D and H/L comes from design/T101/vesselN and design/T201/
-    //  vesselN.  The positions, the orientation and the zones are AUTHOR-SET
-    //  ASSUMPTIONS FOR THIS EXERCISE, like everything else in this file.
+    //  THE PRODUCT STORE (DEV.md 4c C92).  Its bullets' sizes are their
+    //  sizer's own (system/postDict, `liquefiedGasStorage`): every bullet's D
+    //  and length come from design/T201/vesselN.  The positions, the
+    //  orientation and the zones are AUTHOR-SET ASSUMPTIONS FOR THIS
+    //  EXERCISE, like everything else in this file.  (There is no syngas
+    //  store: the makeup arrives by pipeline, C93 -- see `fence` below.)
     //
-    //  T101, the syngas surge: four STANDING pressure vessels north of the
-    //  north road, beside the makeup compressor they feed.  Hydrogen-rich
-    //  gas at up to 100 bar: each vessel is a release source.
-    {
-        item        "T101/vessel1";    // D and H from its own sizing
-        x           5 m;
-        y           26 m;
-        z           0 m;
-        orientation vertical;
-        release
-        {
-            source  "author-set assumption for this exercise; not taken from any hazardous-area standard";
-            reason  "hydrogen-rich syngas stored at up to 100 bar: the vessel's flanged nozzles, drains and instrument connections are secondary-grade release points";
-            zones   ( { zone 2; radius 4.5 m; height 20 m; } );
-        }
-    }
-    {
-        item        "T101/vessel2";    // D and H from its own sizing
-        x           15 m;
-        y           26 m;
-        z           0 m;
-        orientation vertical;
-        release
-        {
-            source  "author-set assumption for this exercise; not taken from any hazardous-area standard";
-            reason  "hydrogen-rich syngas stored at up to 100 bar: the vessel's flanged nozzles, drains and instrument connections are secondary-grade release points";
-            zones   ( { zone 2; radius 4.5 m; height 20 m; } );
-        }
-    }
-    {
-        item        "T101/vessel3";    // D and H from its own sizing
-        x           25 m;
-        y           26 m;
-        z           0 m;
-        orientation vertical;
-        release
-        {
-            source  "author-set assumption for this exercise; not taken from any hazardous-area standard";
-            reason  "hydrogen-rich syngas stored at up to 100 bar: the vessel's flanged nozzles, drains and instrument connections are secondary-grade release points";
-            zones   ( { zone 2; radius 4.5 m; height 20 m; } );
-        }
-    }
-    {
-        item        "T101/vessel4";    // D and H from its own sizing
-        x           35 m;
-        y           26 m;
-        z           0 m;
-        orientation vertical;
-        release
-        {
-            source  "author-set assumption for this exercise; not taken from any hazardous-area standard";
-            reason  "hydrogen-rich syngas stored at up to 100 bar: the vessel's flanged nozzles, drains and instrument connections are secondary-grade release points";
-            zones   ( { zone 2; radius 4.5 m; height 20 m; } );
-        }
-    }
-
     //  T201, the product: seven insulated BULLETS side by side, lying
     //  north-south in a tank farm south-east of the process area along the
     //  tank-farm road -- more than 30 m from every place the EduTool's
@@ -410,13 +355,10 @@ wind
 //  and the tank-farm road carries the main road east along the product
 //  bullets (DEV.md 4c C92); two roads cross UNDER the pipe rack: one between
 //  the recycle compressor and the feed-effluent exchanger, and the east
-//  road, where the rack runs on to the tank farm (the rack is the engine's
-//  stated default, 6 m up, above the 5 m headroom declared here; it runs
-//  past the outermost process footprint, the last bullet, so the outlets'
-//  battery limit is now at the tank farm's east end and every outlet pipe
-//  runs there -- a stated default's simplification, said rather than
-//  hidden: a declared `pipeRack` would put it elsewhere).  The engine
-//  refuses a road through a
+//  road, where the rack runs on toward the tank farm (the rack is declared
+//  below, 6 m up, above the 5 m headroom declared here; every pipe that
+//  leaves the plant runs on from its lane to the fence crossing the
+//  `fence {}` block declares for it).  The engine refuses a road through a
 //  footprint or under a rack or a pipe lower than the headroom, announces a
 //  road no gate reaches, a building no road serves and a process item with
 //  no road within the access distance, and publishes the length and the
@@ -450,7 +392,7 @@ roads
         {
             road      "east";
             width     6 m;
-            reason    "past the separator, the let-down drum and the water cooler, under the rack's east end";
+            reason    "past the separator, the let-down drum and the water cooler, under the rack";
             waypoints ( { x 68 m; y -31 m; } { x 68 m; y 16 m; } );
         }
         {
@@ -493,6 +435,57 @@ plot
 {
     margin  5 m;
     reason  "author-set assumption for this exercise: the fence and a 5 m clear strip inside it; the roads are declared in `roads` and lie inside the envelope; not taken from any spacing standard";
+}
+
+//  THE PIPE RACK, DECLARED (DEV.md 4c C93).  Until the tank farm was added
+//  this case ran on the engine's STATED DEFAULT rack (the mean plan y of the
+//  placed process items).  Seven bullets 50 m south of the loop drag that
+//  mean onto the main road, so the rack is declared where the loop is: on
+//  the line the default used to give (y = -22/7 m, rounded), from the inlet
+//  end of the compressor row to 5 m past the first bullet, where the pipes
+//  to the tank farm leave it.  Lanes and tiers are the default's own
+//  drafting values.  AUTHOR-SET, like everything here.  (The stated default
+//  is still exercised: check_plant_layout runs a copy of this case with
+//  this block removed.)
+pipeRack
+{
+    y            -3 m;
+    elevation    6 m;
+    laneSpacing  0.6 m;
+    lanesPerTier 6;
+    tierSpacing  1.5 m;
+    xStart       -3 m;
+    xEnd         83 m;
+    reason       "author-set assumption for this exercise: the rack along the loop, where the stated default stood before the tank farm moved it, carried 5 m past the first bullet";
+}
+
+//  THE FENCE (DEV.md 4c C93).  The engine draws it from the PLOT above --
+//  the plot's boundary, moved `inset` inward; with inset 0 the margin is the
+//  clear strip inside it -- so its line is typed nowhere.  It opens at the
+//  gate, on the side nearest it, as wide as the entrance road; a road that
+//  met the fence anywhere else would be refused.  Every pipe that enters or
+//  leaves the plant crosses it at a published point, and each crossing says
+//  where the stream comes from or goes to.  The syngas arrives by PIPELINE
+//  from the ADJACENT INDUSTRIAL PARK (Vitor's ruling on C92: no syngas
+//  tank).  Every origin and destination below is an AUTHOR-SET ASSUMPTION
+//  FOR THIS EXERCISE, not a survey of any real site; the product's bullets
+//  hold two days before the export pipeline takes it.  The cooling water,
+//  the let-down gas and the purge leave on the north side, near the units
+//  that make them, instead of at the far end of the rack.
+fence
+{
+    source  "author-set assumption for this exercise; not taken from any site survey or fencing standard";
+    reason  "the site boundary: the land the plot prices, closed by a fence with one gate, and the point where every pipeline enters or leaves the plant";
+    inset   0 m;
+    crossings
+    (
+        { stream makeup;        from "adjacent industrial park: syngas pipeline at 25 bar"; }
+        { stream cw;            from "site cooling-water system: supply from the cooling tower outside this battery limit";  side north;  at 55 m; }
+        { stream cwOut;         to   "site cooling-water system: return to the cooling tower outside this battery limit";    side north;  at 57 m; }
+        { stream letdownGas;    to   "adjacent industrial park: fuel-gas header";                                               side north;  at 60 m; }
+        { stream purge;         to   "adjacent industrial park: hydrogen recovery from the loop purge";                         side north;  at 37 m; }
+        { stream productStored; to   "ammonia export pipeline to the terminal";                                                 side south;  at 78 m; }
+    );
 }
 
 // ************************************************************************* //

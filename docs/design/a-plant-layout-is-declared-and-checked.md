@@ -284,14 +284,21 @@ never dropped in silence.  A pipe's two ends are one of:
   flowsheet order -- deterministic, never guessed;
 * a **battery limit** -- a plant inlet (no producer) arrives at the rack's
   west end `xStart`, a plant outlet (no consumer) leaves at its east end
-  `xEnd`.
+  `xEnd`; with a declared `fence {}` (§14, C93) the battery limit is ON the
+  fence instead, at the point the engine publishes for that stream.
 
 Any other end leaves the stream not routed: an unsized unit that is not a
 junction (on `ammonia02_full_plant`, until DEV.md 4c C92 sized and placed
 them, the storage tanks T101 and T201, so `makeup`, `makeupStored`,
-`productNH3` and `productStored` were listed with that reason; every stream
-of that case is routed now), a sized unit whose items are not placed, a
-refused sizer, a stream consumed by two units.
+`productNH3` and `productStored` were listed with that reason; T101 has
+since been removed, C93, and every stream of that case is routed -- the gate
+holds its `notRouted` empty), a sized unit whose items are not placed, a
+refused sizer, a stream consumed by two units.  An unrouted stream carries
+the units at its two ends and the plan point of the end the layout DOES
+reach, and the 3D view marks it there -- a dashed stub, a marker, a warning
+label and the engine's reason in the tooltip -- because a missing pipe must
+never look like a finished drawing (Vitor, on the live view of a plant whose
+compressor had no suction pipe).
 
 **The route** is deterministic and ORTHOGONAL: up (or down, for an item
 taller than the rack) from the source nozzle to the pipe's LANE, across to
@@ -434,7 +441,9 @@ An envelope and not a union, because a plot is one parcel of land bought
 whole: ground between two sectors is still bought.  The pipes are in it
 because they occupy ground and their battery limits are where the plant
 meets the outside -- on a default rack they reach past the outermost
-footprint.  ABSENT the block, the margin is 0 m and that is ANNOUNCED
+footprint.  With a declared fence (§14) a pipe's run past the rack ends is
+the fence's to carry, so the routed pipes enter the envelope as the rack's
+plan band instead.  ABSENT the block, the margin is 0 m and that is ANNOUNCED
 (stderr, caveat block, advisories): the area is then a LOWER BOUND, and no
 margin is invented.  Published beside the area: the plan area the
 footprints themselves cover (a vertical cylinder's disc, any other item's
@@ -592,7 +601,7 @@ building's `source`/`reason`, and says it did not carry a previous network.
 **The witness.**  `ammonia02_full_plant` declares a gate on the south fence,
 a 7 m entrance road, a ring of 6 m roads round the process area (one
 crossing under the rack between the recycle compressor and the exchanger,
-the east road under its east end), a warehouse on the main road and a
+the east road under it), a warehouse on the main road and a
 canteen beside the control room, the canteen more than the 60 m wind reach
 from every release source.  THERE IS NO WEIGHBRIDGE, read off the case:
 the product leaves at a battery limit as a pipe and the makeup gas arrives
@@ -617,9 +626,75 @@ one tab would be a second home for where a panel goes.
 
 **Not here, named:** a road's turning radius, gradient and load class; a
 road's pressure on the land price beyond its area; vehicles routed on the
-network (a truck is not drawn); fences and gates as lines; an access
-distance per item kind; whether a declared headroom or access distance is
+network (a truck is not drawn); an access distance per item kind; whether a declared headroom or access distance is
 sensible -- the author's, as every distance here.  Gate:
 `check_plant_layout` arm (k); GUI: `tests/layoutRoads.test.ts`,
 `tests/equipmentModel.test.ts` (the site buildings),
 `tests/layoutDaylight.test.ts`.
+
+## 14. Slice 6 -- the fence, and the pipeline that crosses it (DEV.md 4c C93)
+
+**What was asked.**  Vitor, on C92's first round: no syngas tank -- the
+syngas arrives by pipeline -- but a FENCE round the plant, and the pipeline
+crossing it with a way to see that the feed comes from the adjacent
+industrial park.
+
+**One home for the line.**  The fence is the published PLOT rectangle moved
+`inset` inward (`fence { source; reason; [inset <m>;] crossings ( ... ); }`;
+absent inset: 0 m, announced).  Nobody types its corners: a fence typed
+beside a plot it must follow is two homes for one boundary, and the first
+plot change would leave them disagreeing.  The engine publishes the line and
+its length.  Because the plot used to grow to hold every pipe's run to the
+rack ends, a fence derived from it would have chased the pipes outward; with
+a fence declared, the routed pipes enter the envelope as the rack's plan
+band, and the run past the rack ends is the fence's to carry.
+
+**Roads cross only at a gate, and that is REFUSED, not announced.**  A road
+that meets the fence anywhere but at a gate opening is refused with the side
+and the road named.  The choice follows the existing rule rather than a new
+one: a road through a footprint is refused because it cannot be built, and a
+fence is a built line a road cannot pass without an opening.  An announcement
+would publish a plot plan that cannot exist.  The opening is derived too:
+one per `gate` item, on the fence side nearest it, centred on the road that
+serves it and as wide as that road.  An item standing across or outside the
+fence is refused for the same reason.
+
+**Every boundary pipe crosses at a published point.**  A plant inlet crosses
+the WEST side and an outlet the EAST side at its lane's y and height (the
+stated default, the old rack-end battery limit carried to the fence), or
+where the case puts it (`side north|south; at <x>;` -- the pipe leaves its
+lane at x and runs to the fence), or at the end of a waypoint override,
+which must then end on the fence.  Each crossing carries a `from` (inlet) or
+`to` (outlet) label -- where the stream comes from or goes to -- and an
+unlabelled crossing is ANNOUNCED, never refused: the label is information a
+reader wants, not a condition of a buildable plan.  A crossing declared for
+a stream that does not cross the battery limit, a label on the wrong
+direction, `at` missing on north/south or given on west/east, an `at`
+outside the fence, a stream declared twice, a negative inset: refused.
+
+**Published and pinned.**  `fence`, `fenceOpening:<gate>`,
+`fenceCrossing:<stream>` in the result JSON, read by the `layout` golden kind
+(the words `from`, `to` and `side` joined its word list).  The 3D view draws
+a chain-link fence on posts, open at each gate; at each crossing the pipe
+through the fence, carried on outside with two supports, and a sign naming
+where it comes from or goes to (orange, saying so, when no label was
+declared); the plan view and the exported page carry the fence table.
+
+**The witness moved its rack.**  The seven T201 bullets, 50 m south of the
+loop, dragged the stated default rack (the mean plan y of the placed process
+items) onto the main road.  `ammonia02_full_plant` now DECLARES its rack on
+the line the default used to give, and the stated default is exercised by
+the gate on a copy of the witness with the `pipeRack` block removed -- a role
+moved, said rather than lost.
+
+**Rejected.**  A fence typed as its own polygon (a second home for the
+plot's boundary); announcing a road through the fence (a plan that cannot be
+built); refusing an unlabelled crossing (the label informs, it does not make
+the plan buildable); a free crossing point on the west/east sides (the lane
+fixes it; a second number there would be a second home for the pipe's y).
+
+**Not here, named:** a fence that is not a rectangle; several gates on one
+side sharing a road; the pipeline's own route outside the fence (a drawn
+stub, not data); the cost of the fence (its length is published, priced by
+nobody).  Gate: `check_plant_layout` arm (l), and the unrouted mark in arm
+(i); GUI: `tests/layoutFence.test.ts`.

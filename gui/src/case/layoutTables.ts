@@ -190,6 +190,56 @@ export function plotSummary(layout: PlantLayout): PlotView | null {
   };
 }
 
+/** THE FENCE (DEV.md 4c C93) as words and cells: the engine's line and
+ *  length, whose the inset is, each gate opening, and one row per pipe that
+ *  crosses it with the case's label.  Every number is the engine's; null when
+ *  the case declares no fence. */
+export interface FenceView {
+  headline: string;
+  notes: string[];
+  rows: { stream: string; direction: string; side: string; position: string;
+          label: string; placedBy: string }[];
+}
+
+export const FENCE_CAPTION =
+  "Fence crossings: every pipe that enters or leaves the plant crosses the fence at the"
+  + " point the engine published, labelled with where it comes from or goes to (a crossing"
+  + " with no label is announced).";
+
+export function fenceSummary(layout: PlantLayout): FenceView | null {
+  const f = layout.fence;
+  if (!f) return null;
+  const openings = layout.fenceOpenings ?? [];
+  const crossings = layout.fenceCrossings ?? [];
+  const notes = [
+    `The plot's boundary moved ${f.inset.toFixed(1)} m inward`
+      + (f.insetDeclared ? ", as the case declared." : " (no inset declared).")
+      + `  Why (the case's): ${f.reason} (source: ${f.source}).`,
+    openings.length > 0
+      ? openings.map((o) => `Gate ${o.gate} opens it on the ${o.side} side, ${o.width.toFixed(1)} m`
+          + ` wide${o.road ? ` for road ${o.road}` : ""}, the gate ${o.gateDistance.toFixed(1)} m`
+          + " inside.").join("  ")
+      : "No gate: the fence is closed.",
+    `Rule (the engine's): ${f.rule}.`,
+  ];
+  return {
+    headline: `Fence ${f.length.toFixed(0)} m round (x ${f.xMin.toFixed(1)} to`
+      + ` ${f.xMax.toFixed(1)} m, y ${f.yMin.toFixed(1)} to ${f.yMax.toFixed(1)} m), drawn from`
+      + ` the plot; ${crossings.length} pipe crossing${crossings.length === 1 ? "" : "s"}.`,
+    notes,
+    rows: crossings.map((c) => ({
+      stream: c.stream,
+      direction: c.direction === "in" ? "in" : "out",
+      side: c.side,
+      position: `${c.x.toFixed(1)}, ${c.y.toFixed(1)}, ${c.z.toFixed(1)}`,
+      label: c.labelDeclared ? `${c.direction === "in" ? "from" : "to"} ${c.label}`
+        : "NOT declared (announced)",
+      placedBy: c.positionFrom === "declared" ? "the case"
+        : c.positionFrom === "waypoints" ? "the case's route" : "the engine's default",
+    })),
+  };
+}
+
 /** THE ROADS (DEV.md 4c C90) as words and cells: the engine's totals, what
  *  the case declared (headroom, access distance, closed zones) and whose it
  *  is, and one row per road.  Every number is the engine's, formatted; null

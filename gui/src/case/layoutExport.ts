@@ -79,7 +79,7 @@ import { canPopOutLayout, type LayoutPopOutStash } from "./layoutPopOut.js";
 import {
   FINDINGS_CAPTION, findingRows, itemRows, layoutNotes, LEGEND_PHASES, LEGEND_PIPES,
   LEGEND_SHAPES, PARTICLE_WORD, PIPE_REGISTER_CAPTION, pipeRegister, PLOT_CAPTION, plotSummary,
-  ROADS_CAPTION, roadSummary,
+  ROADS_CAPTION, roadSummary, FENCE_CAPTION, fenceSummary,
 } from "./layoutTables.js";
 import { layoutSection, type LayoutSectionId } from "./layoutPanels.js";
 import { phaseCss, PHASE_WORDS, QUALITY_TITLE } from "./plantLayout.js";
@@ -383,6 +383,22 @@ export function buildLayoutExport(input: LayoutExportInput): { fileName: string;
         : "")
     : "";
 
+  //  ---- the fence (C93): the same words and rows the app draws, under the
+  //  plot it is drawn from ------------------------------------------------------
+  const fenceView = fenceSummary(layout);
+  const fenceHtml = fenceView
+    ? `<p>${esc(fenceView.headline)}</p>`
+      + fenceView.notes.map((n) => `<p class="note">${esc(n)}</p>`).join("")
+      + (fenceView.rows.length > 0
+        ? table(FENCE_CAPTION, [["Stream", false], ["In / out", false], ["Side", false],
+            ["x, y, z (m)", true], ["Comes from / goes to (the case's)", false],
+            ["Placed by", false]],
+          fenceView.rows.map((r) => [[`<code>${esc(r.stream)}</code>`, false],
+            [esc(r.direction), false], [esc(r.side), false], [esc(r.position), true],
+            [esc(r.label), false], [esc(r.placedBy), false]]), 760)
+        : "")
+    : "";
+
   //  ---- the roads (C90): the same words and rows the app draws -------------
   const roadView = roadSummary(layout);
   const roadsHtml = roadView
@@ -449,7 +465,7 @@ ${toolbar}
 <p id="${EXPORT_IDS.error}" hidden></p>
 <noscript><p class="note">The 3D view needs JavaScript; the tables below carry every
 position, pipe and finding the engine published.</p></noscript>
-${plotHtml ? section("plot", plotHtml, layout.plot ? `${layout.plot.plotArea.toFixed(0)} m²` : undefined) : ""}
+${plotHtml ? section("plot", plotHtml + fenceHtml, layout.plot ? `${layout.plot.plotArea.toFixed(0)} m²` + (layout.fence ? `, fence ${layout.fence.length.toFixed(0)} m` : "") : undefined) : ""}
 ${roadsHtml ? section("roads", roadsHtml, layout.roadNetwork
   ? `${layout.roadNetwork.length.toFixed(0)} m, ${layout.roadNetwork.pavedArea.toFixed(0)} m² paved`
   : undefined) : ""}

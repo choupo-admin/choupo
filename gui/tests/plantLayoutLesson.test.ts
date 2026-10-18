@@ -315,36 +315,36 @@ describe("plant layout: the lesson text", () => {
       "PlantLayout.cpp:382": "it.dx = D; it.dy = D; it.dz = L",
       "PlantLayout.cpp:199-202": /"D",\s+"H"[\s\S]*"shellID"[\s\S]*"chamberDiameter"/,
       "PlantLayout.cpp:210": '"sieveTrays"',
-      "PlantLayout.cpp:1600": "already published its size",
-      "PlantLayout.cpp:1612": "No size is",
+      "PlantLayout.cpp:1968": "already published its size",
+      "PlantLayout.cpp:1980": "No size is",
       "PlantLayout.cpp:138": "std::hypot(a.x - b.x, a.y - b.y) - 0.5 * a.dx - 0.5 * b.dx",
-      "PlantLayout.cpp:1743-1745": /tab\.measure == "edgeToEdge"[\s\S]*clearPlan\(a, b\)[\s\S]*std::hypot/,
+      "PlantLayout.cpp:2111-2113": /tab\.measure == "edgeToEdge"[\s\S]*clearPlan\(a, b\)[\s\S]*std::hypot/,
       "PlantLayout.cpp:266": "`measure` is not declared",
-      "PlantLayout.cpp:1593": "it.kind   = s->second.equipmentType",
+      "PlantLayout.cpp:1961": "it.kind   = s->second.equipmentType",
       "PlantLayout.cpp:309": "is declared twice",
-      "PlantLayout.cpp:1747": 'addFinding("separation"',
-      "PlantLayout.cpp:2156-2157": /const scalar gap = std::max\(\{ prev\.dx, prev\.dy, it\.dx, it\.dy \}\);\s*x = prev\.x \+ 0\.5 \* prev\.dx \+ gap \+ 0\.5 \* it\.dx;/,
-      "PlantLayout.cpp:2172": "std::ceil(x * 100.0",
+      "PlantLayout.cpp:2115": 'addFinding("separation"',
+      "PlantLayout.cpp:2558-2559": /const scalar gap = std::max\(\{ prev\.dx, prev\.dy, it\.dx, it\.dy \}\);\s*x = prev\.x \+ 0\.5 \* prev\.dx \+ gap \+ 0\.5 \* it\.dx;/,
+      "PlantLayout.cpp:2574": "std::ceil(x * 100.0",
       "PlantLayout.cpp:82-83": /std::cerr << "\[layout\] "[\s\S]*AdvisoryLog::instance\(\)\.add\("layout"/,
-      "PlantLayout.cpp:1664-1665": /c < -kTol && vz > kTol[\s\S]*OVERLAP/,
-      "PlantLayout.cpp:1831": "w.fromDeg + 180.0",
-      "PlantLayout.cpp:1841-1844": /planBearing\(vx, vy\)[\s\S]*w\.planNorthDeg[\s\S]*wrap180\(trueB - downwind\)[\s\S]*w\.halfAngleDeg/,
-      "PlantLayout.cpp:1840": "dist > w.reach",
+      "PlantLayout.cpp:2032-2033": /c < -kTol && vz > kTol[\s\S]*OVERLAP/,
+      "PlantLayout.cpp:2199": "w.fromDeg + 180.0",
+      "PlantLayout.cpp:2209-2212": /planBearing\(vx, vy\)[\s\S]*w\.planNorthDeg[\s\S]*wrap180\(trueB - downwind\)[\s\S]*w\.halfAngleDeg/,
+      "PlantLayout.cpp:2208": "dist > w.reach",
       "PlantLayout.cpp:107": "carries no unit",
       "PlantLayout.cpp:222": 'lookupWord("ignition")',
-      "PlantLayout.cpp:1807-1810": /dPlan >= z\.radius[\s\S]*verticalOverlap\(rel\.z, z\.height, ig\.z, ig\.dz\)[\s\S]*ignitionInZone/,
+      "PlantLayout.cpp:2175-2178": /dPlan >= z\.radius[\s\S]*verticalOverlap\(rel\.z, z\.height, ig\.z, ig\.dz\)[\s\S]*ignitionInZone/,
       "PlantLayout.cpp:162": "scalar pointToFootprint",
       //  The pipes (C80): the rack route, the length, the default rack.
-      "PlantLayout.cpp:804-820":
+      "PlantLayout.cpp:812-828":
         /p\.routedBy = "rack";[\s\S]*pts\.push_back\(\{ a\.point\[0\], a\.point\[1\], lz \}\);[\s\S]*pts\.push_back\(\{ b\.point\[0\], ly, lz \}\);[\s\S]*pts\.push_back\(b\.point\);/,
-      "PlantLayout.cpp:825": "p.length += segLength(p.route[i - 1], p.route[i]);",
-      "PlantLayout.cpp:829": "if (!rack.declared)",
+      "PlantLayout.cpp:833": "p.length += segLength(p.route[i - 1], p.route[i]);",
+      "PlantLayout.cpp:837": "if (!rack.declared)",
       //  The plot (C82): the envelope grown by the margin, its area, the
       //  footprints' own area, the undeclared margin announced.
-      "PlantLayout.cpp:1358-1360":
+      "PlantLayout.cpp:1403-1405":
         /pl\.xMin = x0 - pl\.margin;[\s\S]*pl\.plotArea = \(pl\.xMax - pl\.xMin\) \* \(pl\.yMax - pl\.yMin\);/,
-      "PlantLayout.cpp:1363": "pl.footprintArea += planArea(i);",
-      "PlantLayout.cpp:1427": "if (!pl.marginDeclared)",
+      "PlantLayout.cpp:1408": "pl.footprintArea += planArea(i);",
+      "PlantLayout.cpp:1472": "if (!pl.marginDeclared)",
     };
     for (const c of cited) expect(CLAIMS[c], `uncovered citation ${c}`).toBeDefined();
     for (const [c, want] of Object.entries(CLAIMS)) {

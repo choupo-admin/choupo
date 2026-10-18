@@ -90,5 +90,6 @@ export const PIPED: PlantLayout = {
       length: 10, vf: 0.4,
       route: [[37, -3.14285714286, 6], [40, -3.14285714286, 6], [40, -6, 6]] },
   ],
-  notRouted: [{ stream: "makeup", reason: "unit `T101` (storageTank) has no sized item" }],
+  notRouted: [{ stream: "makeup", reason: "unit `T101` (storageTank) has no sized item",
+                fromUnit: "", toUnit: "T101" }],
 };

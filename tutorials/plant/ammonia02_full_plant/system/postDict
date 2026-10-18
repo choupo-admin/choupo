@@ -14,11 +14,11 @@
                      and the two flash DRUMS (vapour residence).  The
                      equilibrium units emit no volume of their own, which is
                      correct: an equilibrium reactor has no length scale.  The
-                     two STORES (DEV.md 4c C92): T101, the syngas surge, as
-                     pressure vessels on a pressure swing (`gasStorage`), and
-                     T201, the liquid product, as pressurised bullets
-                     (`liquefiedGasStorage`); both read their hold time off
-                     their flowsheet unit and are costed by their shell steel.
+                     PRODUCT STORE (DEV.md 4c C92): T201, the liquid ammonia,
+                     as pressurised bullets (`liquefiedGasStorage`), which
+                     read their hold time off the flowsheet unit and are
+                     costed by their shell steel.  The syngas is not stored:
+                     it arrives by pipeline (C93).
                      What is NOT sized: the mixer and the purge splitter (a
                      tee and a pipe junction -- no vessel, no area, no driver).
     2. costing    -- Guthrie/Turton purchased + bare-module cost, CEPCI-updated
@@ -74,17 +74,18 @@
   syngas generation is a separate (larger) investment.  Within the loop, every
   unit operation carries its own sizing and cost -- the doctrine Vitor set.
 
-  THE STORES MOVE THAT PICTURE, and by how much is the lesson (DEV.md 4c
-  C92; as of 2026-10-18, the golden is the authority).  Priced by their
-  shell steel at the declared 8 EUR/kg, the half hour of SYNGAS costs about
-  as much as the two days of PRODUCT and more: four 364 m3 vessels with
-  200 mm walls (about 14 MEUR) to hold 35 t of gas, against seven 690 m3
-  bullets with 43 mm walls (about 10 MEUR) for 2900 t of liquid ammonia.  The
-  grassroots factors apply on top, so the FCI rises from ~55 to ~95 MEUR and
-  the NPV falls from ~+99 to ~+15 MEUR (IRR ~12 %, discounted payback
-  ~12 yr).  A gas is a costly thing to store; that is why the flowsheet's
-  T101 comment says real plants take syngas by pipeline, and why deleting
-  T101 (and this `gasStorage` entry) is a design decision worth defending.
+  THE PRODUCT STORE MOVES THAT PICTURE (DEV.md 4c C92, C93; as of
+  2026-10-18, the golden is the authority).  Priced by their shell steel at
+  the declared 8 EUR/kg, two days of liquid ammonia -- seven 690 m3 bullets
+  with 43 mm walls for 2900 t -- cost about 10 MEUR of steel; with the
+  grassroots factors on top the FCI is ~72 MEUR and the NPV ~+64 MEUR (IRR
+  ~20 %, discounted payback ~6 yr).  The case once held half an hour of
+  SYNGAS too, in four 364 m3 vessels with 200 mm walls: about 14 MEUR of
+  steel for 35 t of gas, an FCI of ~95 MEUR and an NPV of ~+15 MEUR.  Vitor
+  ruled it out (C93): the syngas arrives by PIPELINE from the adjacent
+  industrial park, crossing the plant fence at a labelled battery limit
+  (system/layoutDict).  A gas is a costly thing to store, and that is the
+  lesson of the two numbers.
 \*---------------------------------------------------------------------------*/
 sizing
 {
@@ -118,30 +119,6 @@ sizing
         { unitName letdown;     type vessel;  material carbonSteel;
           designRules { residenceTime 60.0;  flowKey F_beta;  flowUnit kmol/s;
                         L_over_D 3.0;  pressureDesign 25.0; } }
-    );
-
-    //  THE SYNGAS SURGE (DEV.md 4c C92).  T101 holds half an hour of the
-    //  25 bar makeup (system/flowsheetDict).  A vessel kept at the line's
-    //  own pressure gives back NOTHING without falling below the line, so
-    //  the half hour is stored on a PRESSURE SWING: charged up to
-    //  maxPressure, drawn down to minPressure.  `unit T101;` reads the hold
-    //  time and the stream off the unit (one home, C87); the swing, the
-    //  vessels and the price are declared here.  How pointless a store at
-    //  the line's pressure would be is the lesson: at 30 bar the same half
-    //  hour needs about fifteen times the vessel volume it needs at 100.
-    gasStorage
-    (
-        { unit            T101;
-          material        carbonSteel;   // hydrogen service NOT checked (the record carries no limit)
-          maxPressure     100 bar;       // absolute: the carbonSteel record's maxP -- AUTHOR-SET
-          minPressure     27 bar;        // absolute: the 25 bar makeup line + 2 bar for the let-down valve -- AUTHOR-SET
-          temperature     300 K;         // the stream's own: uninsulated vessels -- AUTHOR-SET
-          reason          "half an hour of makeup at full rate rides through a trip of the front end long enough to bring the loop down in order; a longer stock of syngas is not stored but supplied by pipeline";
-          maxVesselVolume 400;           // m3 per vessel, inside the vessel cost correlation's range
-          L_over_D 3;  corrosionAllow 0.003;  jointEfficiency 1.0;   // the drums' constants
-          steelPrice      8;             // EUR per kg of SHELL steel, INSTALLED -- AUTHOR-SET
-          steelPriceReason "a round placeholder for a fabricated, installed carbon-steel pressure vessel per kg of its shell, heads, nozzles and supports folded in; not a quotation and not taken from any source (the green ammonia PEQ case uses the same figure) -- replace it with a vendor's price";
-        }
     );
 
     //  THE PRODUCT STORE (DEV.md 4c C92).  T201 holds two days of the

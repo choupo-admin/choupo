@@ -846,8 +846,9 @@ struct LayoutPipeRack
     scalar      laneSpacing  = 0;       // [m] across the rack, lane to lane
     int         lanesPerTier = 0;
     scalar      tierSpacing  = 0;       // [m] tier to tier, upward
-    scalar      xStart       = 0;       // [m] the inlet battery limit
-    scalar      xEnd         = 0;       // [m] the outlet battery limit
+    scalar      xStart       = 0;       // [m] the inlet battery limit (or, with
+                                        //     a fence, where inlets join the rack)
+    scalar      xEnd         = 0;       // [m] the outlet battery limit (idem)
     std::string reason;
 };
 
@@ -878,6 +879,13 @@ struct LayoutNotRouted
 {
     std::string stream;
     std::string reason;
+    //  The flowsheet units at its two ends ("" at a battery limit), and where
+    //  its one REACHABLE end is on the plot plan -- an item's nozzle or a
+    //  junction's node -- so a surface can mark the missing pipe there rather
+    //  than draw a plant that looks finished (DEV.md 4c C93).  Empty when
+    //  neither end is reachable.
+    std::string fromUnit, toUnit;
+    std::vector<scalar> anchor;
 };
 
 //  THE PLOT (2026-10-17, DEV.md 4c C82).  The ground the layout occupies, by
@@ -976,6 +984,50 @@ struct LayoutRoads
     scalar pavedArea  = 0;             // [m2] the paved rectangles' union
 };
 
+//  THE FENCE (2026-10-18, DEV.md 4c C93).  The perimeter a case DECLARES
+//  (`fence { source; reason; [inset <m>;] [crossings ( ... );] }`), drawn by
+//  ONE rule (`postProcessing/layout/PlantLayout.cpp`, `fenceOf`): the
+//  published PLOT's boundary moved `inset` inward -- never typed a second
+//  time.  An OPENING at each placed gate, on the side nearest it, as wide as
+//  the road that serves it; a road whose paved surface meets the fence
+//  anywhere else is REFUSED.  Every pipe that ends at a battery limit is
+//  carried on to the fence and CROSSES it at a published point, labelled with
+//  where it comes from or goes to; a crossing with no declared label is
+//  ANNOUNCED by name.
+struct LayoutFenceOpening
+{
+    std::string gate;          // the gate item that opens it
+    std::string side;          // north | south | east | west
+    scalar      x = 0, y = 0;  // [m] its centre, on the fence line
+    scalar      width = 0;     // [m] along the fence
+    std::string road;          // the road that serves the gate ("" if none)
+    scalar      gateDistance = 0;   // [m] the gate's footprint to the fence
+};
+
+struct LayoutFenceCrossing
+{
+    std::string stream;
+    std::string direction;     // in | out
+    std::string side;          // north | south | east | west
+    scalar      x = 0, y = 0, z = 0;   // [m] where the pipe meets the fence
+    std::string label;         // the declared origin (in) or destination (out)
+    bool        labelDeclared = false;
+    std::string positionFrom;  // declared | statedDefault | waypoints
+};
+
+struct LayoutFence
+{
+    bool        present = false;
+    std::string source, reason;
+    scalar      inset = 0;               // [m] inward of the plot boundary
+    bool        insetDeclared = false;
+    scalar xMin = 0, xMax = 0, yMin = 0, yMax = 0;
+    scalar      length = 0;              // [m] the perimeter
+    std::string rule;                    // the engine's sentence
+    std::vector<LayoutFenceOpening>  openings;
+    std::vector<LayoutFenceCrossing> crossings;
+};
+
 struct PlantLayoutRecord
 {
     std::vector<LayoutItem>            items;
@@ -995,6 +1047,7 @@ struct PlantLayoutRecord
     std::vector<std::string>           internal;
     LayoutPlot                         plot;     // C82
     LayoutRoads                        roads;    // C90
+    LayoutFence                        fence;    // C93
 
     bool present() const { return !items.empty(); }
 };

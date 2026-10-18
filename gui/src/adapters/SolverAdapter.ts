@@ -741,7 +741,7 @@ export interface PlantLayout {
   pipeRack?: LayoutPipeRack;
   junctions?: LayoutJunction[];
   pipes?: LayoutPipe[];
-  notRouted?: { stream: string; reason: string }[];
+  notRouted?: LayoutNotRouted[];
   /** The engine's own counts (DEV.md 4c C81 carries them to the exported
    *  page); absent on a result written before the engine published them. */
   summary?: LayoutSummary;
@@ -757,6 +757,51 @@ export interface PlantLayout {
   roads?: LayoutRoad[];
   rackCrossings?: LayoutRackCrossing[];
   access?: LayoutAccess[];
+  /** THE FENCE (DEV.md 4c C93): the perimeter the case declared, drawn by the
+   *  engine FROM the plot (the plot's boundary moved `inset` inward), its gate
+   *  openings and the point where every boundary pipe crosses it, with the
+   *  case's label for where the stream comes from or goes to.  Absent when
+   *  the case declares no `fence {}`.  The GUI computes no position. */
+  fence?: LayoutFence;
+  fenceOpenings?: LayoutFenceOpening[];
+  fenceCrossings?: LayoutFenceCrossing[];
+}
+
+/** The fence line (a rectangle, metres) and its perimeter, as the engine
+ *  drew it, with the case's source and reason and the engine's rule. */
+export interface LayoutFence {
+  inset: number;
+  insetDeclared: boolean;
+  xMin: number; xMax: number; yMin: number; yMax: number;
+  length: number;
+  source: string;
+  reason: string;
+  rule: string;
+}
+
+/** A gate's opening in the fence: its centre on the fence line, its width
+ *  along it, the road that serves the gate, and how far inside the gate
+ *  stands. */
+export interface LayoutFenceOpening {
+  gate: string;
+  side: "north" | "south" | "east" | "west";
+  x: number; y: number;
+  width: number;
+  road: string;
+  gateDistance: number;
+}
+
+/** Where a boundary pipe crosses the fence, and the case's label for where
+ *  it comes from (`direction` in) or goes to (out); `labelDeclared` false
+ *  when the case declared none (the engine announced it). */
+export interface LayoutFenceCrossing {
+  stream: string;
+  direction: "in" | "out";
+  side: "north" | "south" | "east" | "west";
+  x: number; y: number; z: number;
+  positionFrom: "declared" | "statedDefault" | "waypoints";
+  labelDeclared: boolean;
+  label: string;
 }
 
 /** The road network as a whole: the headroom and access distance the case
@@ -829,6 +874,19 @@ export interface LayoutPlot {
   /** The engine's own sentence for the rule. */
   rule: string;
   sectors: { sector: string; from: string; plotArea: number; footprintArea: number }[];
+}
+
+/** A stream the engine could NOT route (DEV.md 4c C93): why, the units at
+ *  its two ends ("" at a battery limit), and the plan point of its one
+ *  reachable end, where the 3D view marks the missing pipe -- absent when
+ *  neither end is reachable.  A missing pipe must never look like a finished
+ *  drawing. */
+export interface LayoutNotRouted {
+  stream: string;
+  reason: string;
+  fromUnit?: string;
+  toUnit?: string;
+  anchor?: [number, number, number];
 }
 
 /** What the engine counted on the layout it checked: items placed, sized but

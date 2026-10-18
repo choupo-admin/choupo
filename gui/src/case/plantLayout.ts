@@ -73,6 +73,16 @@ License
   (portals are a drawing convention, RACK_PORTAL_SPACING).  No length, area
   or distance is computed here.
 
+  THE FENCE (DEV.md 4c C93).  The engine derives the fence from the plot,
+  opens it at each gate and publishes where every boundary pipe crosses it,
+  with the case's label for where the stream comes from or goes to; this
+  module cuts the published rectangle at the published openings, spaces the
+  posts (FENCE_POST_SPACING, drawing) and carries each crossing onto a short
+  pipeline stub and a sign outside the fence (PIPELINE_STUB, drawing).  A
+  stream the engine could NOT route is marked at the end it reached (a
+  dashed stub, UNROUTED_STUB, drawing) with the engine's reason: a missing
+  pipe must never look like a finished drawing.
+
   LEGIBILITY (Vítor, on the live site, 2026-10-17).  A label carries the item
   id ONLY; everything else an item or a pipe has to say is its hover TOOLTIP.
   Labels that collide on screen are DECLUTTERED by priority -- findings over
@@ -213,8 +223,65 @@ export interface SceneBarrier {
   end: Vec3;
 }
 
+/** THE FENCE (DEV.md 4c C93), as the engine drew it: its runs at grade (the
+ *  rectangle with a gap at each gate opening), the posts along them and the
+ *  height they are drawn to.  The posts' spacing and the height are DRAWING
+ *  (FENCE_POST_SPACING, FENCE_HEIGHT): the engine publishes the line, not a
+ *  fence design. */
+export interface SceneFence {
+  runs: [Vec3, Vec3][];
+  posts: Vec3[];
+  /** Each gate's opening: its centre on the line and its width. */
+  openings: { gate: string; at: Vec3; width: number }[];
+  height: number;
+  tooltip: string[];
+}
+
+/** A boundary pipe crossing the fence: where it meets the line (at the
+ *  pipe's own height), the pipeline drawn on a short way OUTSIDE the fence
+ *  (PIPELINE_STUB, drawing), the sign beside it at grade and the words on
+ *  the sign -- the case's own label for where the stream comes from or goes
+ *  to, or that none was declared. */
+export interface SceneCrossing {
+  stream: string;
+  direction: "in" | "out";
+  at: Vec3;
+  outside: Vec3;
+  sign: Vec3;
+  text: string;
+  labelled: boolean;
+  tooltip: string[];
+}
+
+/** A stream the engine did NOT route (DEV.md 4c C93), marked where its one
+ *  reachable end is: a dashed stub rising UNROUTED_STUB from that end and a
+ *  warning label, the engine's reason in the tooltip.  `at` is null when the
+ *  engine reached neither end; the view then still says so, in words.  A
+ *  missing pipe must never look like a finished drawing. */
+export interface SceneUnrouted {
+  stream: string;
+  at: Vec3 | null;
+  top: Vec3 | null;
+  text: string;
+  tooltip: string[];
+}
+
+/** Height of the dashed stub that marks an unrouted stream (drawing). */
+export const UNROUTED_STUB = 4;
+
+/** Drawing constants of the fence and its crossings -- not data. */
+export const FENCE_HEIGHT = 2.2;          // m, a chain-link fence's usual look
+export const FENCE_POST_SPACING = 3.0;    // m
+export const PIPELINE_STUB = 12;          // m drawn outside the fence
+
 export interface LayoutScene {
   solids: SceneSolid[];
+  /** THE FENCE (DEV.md 4c C93); null when the case declares none. */
+  fence: SceneFence | null;
+  crossings: SceneCrossing[];
+  /** The streams the engine could not route, marked (C93); empty when every
+   *  stream has its pipe. */
+  unrouted: SceneUnrouted[];
   /** THE ROADS (DEV.md 4c C90); empty when the case declares none. */
   roads: SceneRoad[];
   barriers: SceneBarrier[];
@@ -586,6 +653,14 @@ export function layoutScene(layout: PlantLayout | undefined): LayoutScene | null
     }
   const barriers = barriersOf(layout);
 
+  //  The fence (C93), as the engine drew it, and the pipes that cross it.
+  const fence = fenceOf(layout);
+  const crossings = crossingsOf(layout);
+  if (fence) for (const [a, b] of fence.runs) { grow(a); grow(b); }
+  for (const c of crossings) grow(c.outside);
+  const unrouted = unroutedOf(layout);
+  for (const u of unrouted) if (u.top) grow(u.top);
+
   //  What the camera fits: the plant, not the ground around it.
   const fitMin: Vec3 = [Infinity, Infinity, Infinity];
   const fitMax: Vec3 = [-Infinity, -Infinity, -Infinity];
@@ -633,8 +708,126 @@ export function layoutScene(layout: PlantLayout | undefined): LayoutScene | null
     grow(wind.tail); grow(wind.head);
   }
 
-  return { solids, roads, barriers, zones, areas, plot, links, wind, pipes, junctions, rack,
-           min, max, fitMin, fitMax };
+  return { solids, fence, crossings, unrouted, roads, barriers, zones, areas, plot, links, wind, pipes,
+           junctions, rack, min, max, fitMin, fitMax };
+}
+
+//  ---- the fence: drawing bookkeeping only (DEV.md 4c C93) -----------------
+
+/** The fence's runs (the engine's rectangle, cut at each gate opening the
+ *  engine published), and its posts every FENCE_POST_SPACING along each run
+ *  and at both ends.  Null when the case declares no fence. */
+export function fenceOf(layout: PlantLayout): SceneFence | null {
+  const f = layout.fence;
+  if (!f) return null;
+  const openings = layout.fenceOpenings ?? [];
+  //  The four sides, each as a plan segment, counter-clockwise from the
+  //  south-west corner; the coordinate that runs ALONG each side.
+  const sides: { side: string; a: [number, number]; b: [number, number]; along: 0 | 1 }[] = [
+    { side: "south", a: [f.xMin, f.yMin], b: [f.xMax, f.yMin], along: 0 },
+    { side: "east",  a: [f.xMax, f.yMin], b: [f.xMax, f.yMax], along: 1 },
+    { side: "north", a: [f.xMin, f.yMax], b: [f.xMax, f.yMax], along: 0 },
+    { side: "west",  a: [f.xMin, f.yMin], b: [f.xMin, f.yMax], along: 1 },
+  ];
+  const runs: [Vec3, Vec3][] = [];
+  const posts: Vec3[] = [];
+  const at = (s: typeof sides[number], t: number): Vec3 => s.along === 0
+    ? toThree(t, s.a[1], 0) : toThree(s.a[0], t, 0);
+  for (const s of sides) {
+    const lo = s.a[s.along]!, hi = s.b[s.along]!;
+    const gaps = openings.filter((o) => o.side === s.side)
+      .map((o) => { const c = s.along === 0 ? o.x : o.y; return [c - o.width / 2, c + o.width / 2]; })
+      .sort((p, q) => p[0]! - q[0]!);
+    let t = lo;
+    const pieces: [number, number][] = [];
+    for (const [g0, g1] of gaps) {
+      if (g0! > t) pieces.push([t, Math.min(g0!, hi)]);
+      t = Math.max(t, g1!);
+    }
+    if (t < hi) pieces.push([t, hi]);
+    for (const [p0, p1] of pieces) {
+      if (p1 - p0 < 1e-6) continue;
+      runs.push([at(s, p0), at(s, p1)]);
+      const n = Math.max(1, Math.round((p1 - p0) / FENCE_POST_SPACING));
+      for (let k = 0; k <= n; k++) posts.push(at(s, p0 + ((p1 - p0) * k) / n));
+    }
+  }
+  //  A corner is the end of two runs: one post there.
+  const seen = new Set<string>();
+  const uniq = posts.filter((p) => {
+    const key = `${p[0].toFixed(3)},${p[2].toFixed(3)}`;
+    if (seen.has(key)) return false;
+    seen.add(key);
+    return true;
+  });
+  return {
+    runs, posts: uniq, height: FENCE_HEIGHT,
+    openings: openings.map((o) => ({ gate: o.gate, at: toThree(o.x, o.y, 0), width: o.width })),
+    tooltip: [
+      `fence · ${fmt(f.length)} m round (the engine's length)`,
+      `the plot's boundary moved ${fmt(f.inset)} m inward`
+        + (f.insetDeclared ? " (declared)" : " (none declared: on the boundary)"),
+      ...openings.map((o) => `opens for gate ${o.gate}: ${fmt(o.width)} m on the ${o.side} side`
+        + (o.road ? ` (road ${o.road})` : "")),
+      `why: ${f.reason}`, `source: ${f.source}`,
+      "drawn as: chain-link on posts, its height and post spacing drawing, not data",
+    ],
+  };
+}
+
+/** Each boundary pipe's crossing: the engine's point on the fence, the
+ *  pipeline drawn on PIPELINE_STUB outward from it, and a sign beside it at
+ *  grade with the case's label. */
+export function crossingsOf(layout: PlantLayout): SceneCrossing[] {
+  const out: Record<string, [number, number]> = {
+    south: [0, -1], north: [0, 1], west: [-1, 0], east: [1, 0] };
+  return (layout.fenceCrossings ?? []).map((c) => {
+    const [nx, ny] = out[c.side] ?? [0, -1];
+    //  The sign stands 2 m outside the fence and 1.5 m to one side of the
+    //  pipe (drawing), where a reader walking the fence would see it.
+    const tx = -ny, ty = nx;
+    const word = c.direction === "in" ? "from" : "to";
+    const text = c.labelDeclared ? `${c.stream} ${word}: ${c.label}`
+      : `${c.stream}: ${c.direction === "in" ? "origin" : "destination"} NOT declared`;
+    return {
+      stream: c.stream, direction: c.direction,
+      at: toThree(c.x, c.y, c.z),
+      outside: toThree(c.x + nx * PIPELINE_STUB, c.y + ny * PIPELINE_STUB, c.z),
+      sign: toThree(c.x + nx * 2 + tx * 1.5, c.y + ny * 2 + ty * 1.5, 0),
+      text, labelled: c.labelDeclared,
+      tooltip: [
+        `${c.stream} crosses the fence (${c.direction === "in" ? "inlet" : "outlet"}),`
+          + ` ${c.side} side, at (${fmt(c.x)}, ${fmt(c.y)}) m, ${fmt(c.z)} m up`,
+        c.labelDeclared ? `${word}: ${c.label}` : `${word}: NOT declared (the engine announced it)`,
+        c.positionFrom === "declared" ? "where the case placed the crossing"
+          : c.positionFrom === "waypoints" ? "the end of the case's declared route"
+          : "the engine's stated default: where the pipe's rack lane meets the fence",
+        `drawn as: the pipeline carried ${fmt(PIPELINE_STUB)} m outside the fence and a sign;`
+          + " the stub and the sign are drawing, not data",
+      ],
+    };
+  });
+}
+
+/** Each stream the engine left unrouted, marked at the end it reached. */
+export function unroutedOf(layout: PlantLayout): SceneUnrouted[] {
+  return (layout.notRouted ?? []).map((n) => {
+    const a = n.anchor;
+    const ends = `${n.fromUnit ? n.fromUnit : "a battery limit"} -> `
+      + `${n.toUnit ? n.toUnit : "a battery limit"}`;
+    return {
+      stream: n.stream,
+      at: a ? toThree(a[0], a[1], a[2]) : null,
+      top: a ? toThree(a[0], a[1], a[2] + UNROUTED_STUB) : null,
+      text: `\u26a0 ${n.stream}: NOT routed`,
+      tooltip: [
+        `${n.stream} (${ends}) has NO pipe: the engine could not route it`,
+        `why: ${n.reason}`,
+        a ? "marked at the end the layout reaches; the dashed stub is drawing, not a pipe"
+          : "the layout reaches neither end, so there is nowhere on the plan to mark it",
+      ],
+    };
+  });
 }
 
 //  ---- the roads: drawing bookkeeping only (DEV.md 4c C90) -----------------
