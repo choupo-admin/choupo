@@ -946,6 +946,92 @@ struct LayoutRoad
     scalar      length = 0;                        // [m] along the centre line
     int         component = 0;                     // connected component
     bool        fromEntrance = false;              // a gate reaches it
+    //  C96: the centre-line radius of the road's corners and of every
+    //  junction a truck route turns at (0: none declared -- a square corner),
+    //  and whether traffic runs only in the order of its waypoints.
+    scalar      cornerRadius = 0;                  // [m]
+    bool        cornerRadiusDeclared = false;
+    bool        oneWay = false;
+};
+
+//  THE TRUCKS (2026-10-18, DEV.md 4c C96).  A declared DESIGN VEHICLE (its
+//  kerb-to-kerb turning circle, with the case's source), optional TURNING
+//  AREAS (a paved disc where a vehicle may turn round), and the TRUCK ROUTES
+//  the case declares -- an ordered list of roads from a gate back to a gate --
+//  walked by ONE rule (`postProcessing/layout/PlantLayout.cpp`,
+//  `checkTruckRoutes`): the path is published with its length, every corner
+//  with the radius the case declared and the outer radius the vehicle needs,
+//  and every verdict the walk reached is ANNOUNCED (a reversal with no
+//  turning area big enough, a corner sharper than the vehicle turns, two
+//  corners too close to make both, a one-way road driven backwards, a
+//  weighbridge the route misses, a stop it does not pass, a route that leaves
+//  by no gate).
+struct LayoutDesignVehicle
+{
+    bool        present = false;
+    scalar      turningDiameter = 0;   // [m] kerb to kerb, outer
+    std::string routeRule;             // the engine's sentence for the walk
+    std::string source, reason;
+};
+
+struct LayoutTurningArea
+{
+    std::string id;
+    scalar      x = 0, y = 0;          // [m] centre
+    scalar      diameter = 0;          // [m]
+    std::string reason;
+};
+
+struct LayoutRouteCorner
+{
+    scalar      x = 0, y = 0;          // [m] the corner on the centre lines
+    std::string turn;                  // left | right | reverse
+    std::string inRoad, outRoad;
+    scalar      radius      = 0;       // [m] the declared centre-line radius
+    scalar      outerRadius = 0;       // [m] radius + half the narrower road
+    scalar      required    = 0;       // [m] half the design turning diameter
+    std::string turningArea;           // a reversal: the area it turns in
+    bool        ok = true;
+};
+
+struct LayoutTruckRoute
+{
+    std::string id, from, to, reason;
+    std::vector<std::string> roads;    // in the order driven
+    std::vector<std::string> serves;   // the stops it must pass
+    std::vector<std::vector<scalar>> path;   // plan (x, y) [m], in travel order
+    scalar      length = 0;            // [m] along the path
+    std::vector<LayoutRouteCorner> corners;
+    int         reversals = 0;
+    std::string weighbridge;           // the deck it drives over ("" none)
+    std::string verdict;               // clear | announced
+};
+
+//  THE CAR PARKS (2026-10-18, DEV.md 4c C96).  A non-process item of kind
+//  `carPark` declares its bays in `parking {}`; the engine lays the rows out
+//  along the item's length by ONE rule (`checkParking`), REFUSES a declared
+//  count the footprint cannot hold, publishes the capacity, the area and
+//  every bay (its plan centre and the direction a car LEAVES it by), and
+//  ANNOUNCES bays that make a car reverse out.
+struct LayoutCarPark
+{
+    std::string item;
+    int         bays = 0;              // declared
+    int         capacity = 0;          // what the footprint holds by the rule
+    int         rows = 0, perRow = 0;
+    scalar      bayWidth = 0, bayLength = 0, aisle = 0;   // [m]
+    scalar      angleDeg = 90;         // the bay to its aisle
+    std::string arrangement;           // doubleLoaded | driveThrough
+    std::string entry;                 // reverse | forward
+    bool        exitsForward = false;
+    scalar      depth = 0;             // [m] a row across its aisle
+    scalar      pitch = 0;             // [m] bay to bay along the aisle
+    scalar      usableLength = 0;      // [m] the length less the end aisles
+    scalar      area = 0;              // [m2] the footprint's plan area
+    std::string source, reason;
+    //  Every bay: plan centre (x, y) and the unit vector (ux, uy) a car
+    //  leaves the bay by, nose first when `exitsForward`.
+    std::vector<std::vector<scalar>> stalls;
 };
 
 //  A road under the pipe rack: the plan rectangle where its paved surface
@@ -982,6 +1068,11 @@ struct LayoutRoads
     int    components = 0;
     scalar length     = 0;             // [m] the centre lines summed
     scalar pavedArea  = 0;             // [m2] the paved rectangles' union
+                                       //      (C96: with the gate approaches
+                                       //      and the turning areas)
+    LayoutDesignVehicle             designVehicle;   // C96
+    std::vector<LayoutTurningArea>  turningAreas;    // C96
+    std::vector<LayoutTruckRoute>   truckRoutes;     // C96
 };
 
 //  THE FENCE (2026-10-18, DEV.md 4c C93).  The perimeter a case DECLARES
@@ -1002,6 +1093,12 @@ struct LayoutFenceOpening
     scalar      width = 0;     // [m] along the fence
     std::string road;          // the road that serves the gate ("" if none)
     scalar      gateDistance = 0;   // [m] the gate's footprint to the fence
+    //  C96: the paved APPROACH that carries the road on to the opening -- from
+    //  the road's centre-line point nearest the fence (approachX, approachY)
+    //  to (x, y) -- so a road the plot's margin stops short still reaches its
+    //  gate.  `approach` 0 with no road.
+    scalar      approachX = 0, approachY = 0;
+    scalar      approach  = 0;      // [m]
 };
 
 struct LayoutFenceCrossing
@@ -1048,6 +1145,7 @@ struct PlantLayoutRecord
     LayoutPlot                         plot;     // C82
     LayoutRoads                        roads;    // C90
     LayoutFence                        fence;    // C93
+    std::vector<LayoutCarPark>         carParks; // C96
 
     bool present() const { return !items.empty(); }
 };

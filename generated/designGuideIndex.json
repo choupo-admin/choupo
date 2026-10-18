@@ -239,6 +239,56 @@
       "subsections": []
     },
     {
+      "title": "Plant layout",
+      "label": "plant-layout",
+      "subsections": [
+        {
+          "title": "Siting and the prevailing wind",
+          "label": "siting-and-the-prevailing-wind"
+        },
+        {
+          "title": "Separation distances and hazardous areas",
+          "label": "separation-distances-and-hazardous-areas"
+        },
+        {
+          "title": "Blocks, roads, fence and battery limits",
+          "label": "blocks-roads-fence-and-battery-limits"
+        },
+        {
+          "title": "Trucks, cars and the people on site",
+          "label": "trucks-cars-and-the-people-on-site"
+        },
+        {
+          "title": "Pipe racks",
+          "label": "pipe-racks"
+        },
+        {
+          "title": "Tank farms and the choice of storage",
+          "label": "tank-farms-and-the-choice-of-storage"
+        },
+        {
+          "title": "The distillation column group",
+          "label": "the-distillation-column-group"
+        },
+        {
+          "title": "NPSH and the elevations it fixes",
+          "label": "npsh-and-the-elevations-it-fixes"
+        },
+        {
+          "title": "Platforms, ladders and walkways",
+          "label": "platforms-ladders-and-walkways"
+        },
+        {
+          "title": "Maintenance and crane access",
+          "label": "maintenance-and-crane-access"
+        },
+        {
+          "title": "What Choupo checks, and what it does not",
+          "label": "what-choupo-checks-and-what-it-does-not"
+        }
+      ]
+    },
+    {
       "title": "Effluent treatment — liquid & gaseous",
       "label": "effluent-treatment--liquid--gaseous",
       "subsections": [

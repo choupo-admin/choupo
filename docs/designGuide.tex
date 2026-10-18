@@ -2113,6 +2113,83 @@ limits}\label{blocks-roads-fence-and-battery-limits}}
   battery limit nobody labelled is a scope nobody owns.
 \end{itemize}
 
+\hypertarget{trucks-cars-and-the-people-on-site}{%
+\subsection{Trucks, cars and the people on
+site}\label{trucks-cars-and-the-people-on-site}}
+
+A plant whose feeds and products move by pipe still receives trucks:
+catalyst at every recharge, chemicals and lubricants, spares, a
+turnaround\textquotesingle s contractors and their cranes, and the waste
+it sends away. And every shift brings people in cars. Lay out for both
+before the process block is final, because both need ground and both
+must stay out of the process.
+
+\begin{itemize}
+\tightlist
+\item
+  \textbf{A one-way truck loop.} The truck comes in at the gate, is
+  weighed, drives to where it unloads, and leaves --- without reversing
+  and without turning round. A loop driven one way does that with no
+  manoeuvre at all; a dead end needs a \textbf{turning circle} at least
+  as large as the truck turns in, and every reversal near people and
+  equipment is an accident waiting. Make the yard roads one-way and
+  wide enough to pass a truck stopped at a door.
+\item
+  \textbf{The design vehicle.} Every corner on the loop must hold the
+  largest truck that may come. In the European Union the law fixes the
+  envelope: any vehicle combination in motion must turn within a swept
+  circle of outer radius 12.50~m and inner radius 5.30~m (Council
+  Directive 96/53/EC, Annex I, point 1.5). So a corner\textquotesingle s
+  pavement must reach at least 12.5~m from its centre on the outside,
+  and two corners need straight road between them --- one turn must
+  end before the next begins. A swept-path study (the trailer cutting
+  in on the inside of the turn) is the next step a real project takes.
+\item
+  \textbf{The weighbridge} sits on the loop near the gate, on a
+  straight stretch so the truck stops square on the deck, and is
+  passed by every truck the site weighs: weighed in, what a supplier
+  delivers is checked; a site that also ships by road weighs out as
+  well, and needs a second deck on the outbound leg or a deck both
+  directions cross. Cars should not use it.
+\item
+  \textbf{The car park} goes near the gate and away from the process ---
+  the first turn after the gate barrier, or outside the security line
+  altogether --- so a private car never drives a process road and never
+  meets the truck loop. Its bays are oriented so that a car leaves
+  \emph{forward}: reverse-in bays (the manoeuvre is made on arrival,
+  with time) or drive-through bays. In an evacuation every car leaves at
+  once, and a car park where all of them reverse out blind is a hazard
+  of its own. A car is also an ignition source: keep the car park out of
+  every hazardous area and out of the downwind sector of the release
+  points.
+\item
+  \textbf{Offices and the visitors\textquotesingle{} entrance} stand by
+  the main gate, upwind and outside every separation from the process,
+  so a visitor or a supplier reaches them without crossing the plant.
+\item
+  \textbf{Two ways in.} A second gate on another side, normally locked,
+  is the fire brigade\textquotesingle s way in when the main gate is
+  blocked --- by the fire, by a tanker, by the evacuation leaving.
+\item
+  \textbf{Muster points} --- where people gather and are counted --- are
+  on the upwind side and away from every release point, and there are at
+  least two, on opposite sides of the site, because the wind turns: when
+  it puts one in the cloud, the other is clear. A \textbf{windsock}, in
+  sight of the control room and of the muster points, tells people which
+  way to walk.
+\item
+  \textbf{Fire water.} The fire-water reserve and its pumps stand where
+  a fire in the plant cannot reach them --- upwind and well separated
+  from the process --- because the water is needed most when the process
+  is burning. The ring main and its hydrants follow the roads round
+  every block.
+\item
+  \textbf{A laydown area} --- hard standing beside the process block and
+  on the truck loop --- takes the catalyst bins, the exchanger bundles,
+  the scaffolding and a crane\textquotesingle s outriggers during a
+  turnaround.
+\end{itemize}
+
 \hypertarget{pipe-racks}{%
 \subsection{Pipe racks}\label{pipe-racks}}
 
@@ -2442,6 +2519,25 @@ that code:
   one, a lower bound, announced), and the economics prices it as land
   when the case declares a land price.
 \item
+  \textbf{Truck routes} are walked against a declared \textbf{design
+  vehicle} (its turning diameter, with its source): a declared route ---
+  an ordered list of roads from a gate back to a gate --- is followed from
+  one road onto the next where they meet, and the engine announces a
+  reversal with no turning area big enough, a corner whose pavement
+  (the declared corner radius plus half the narrower road) is short of
+  half the turning diameter, two corners closer than their two radii, a
+  one-way road driven backwards, a weighbridge or a declared stop the
+  route misses, and a route that starts or ends anywhere but at a gate.
+  Each road is carried on from its end to its gate\textquotesingle s
+  opening in the fence.
+\item
+  A \textbf{car park} declares its bays (size, aisle, angle, arrangement,
+  how a car enters); the engine lays the rows out, refuses a count the
+  footprint cannot hold, and announces bays a car leaves by reversing.
+  A muster point or the fire-water pump house inside a release
+  source\textquotesingle s zone or downwind of it is announced, and so is
+  a site with a single entrance.
+\item
   On storage: the atmospheric tank sizer refuses a gas and a liquid above
   1.5 bar, and prices a tank below 0 \textdegree{}C as a lower bound
   (\file{src/postProcessing/sizing/StorageTankSize.cpp}); a gas buffer is
@@ -2476,9 +2572,16 @@ that code:
   computed from its route.
 \item
   \textbf{Occupied buildings and containment.} A control room, office or
-  canteen is tested only as a declared ignition source, never for blast
-  or toxic exposure; bunds, escape routes, crane and bundle-pulling space
-  are not modelled.
+  canteen is tested only as a declared ignition source (and against the
+  separations the case declares), never for blast or toxic exposure;
+  bunds, escape routes, crane and bundle-pulling space are not modelled.
+\item
+  \textbf{What a truck sweeps.} The corner check is the outer edge only:
+  the trailer cutting in on the inside of a turn (the swept path), the
+  road\textquotesingle s gradient and load class, a truck stopped at a door
+  blocking the loop, and the fire-water ring main and its hydrants are not
+  modelled; the car-park rule lays out straight rows between end aisles
+  and does not check how a car reaches them.
 \item
   \textbf{Ladders and platforms are drawing, not data.} The 3D view gives
   every vertical item taller than a fixed height a caged ladder and
@@ -2490,9 +2593,12 @@ that code:
 \end{itemize}
 
 \textbf{Run it.} Open \texttt{tutorials/plant/ammonia02\_full\_plant}
-(declared rack, roads, gate, buildings, fence and labelled battery
-limits), move the control room into the downwind sector of a release
-source, and read the finding. Then open
+(declared rack, roads, two gates, offices, car park, weighbridge and a
+one-way truck loop, laydown, muster points, fire water, a windsock, the
+fence and labelled battery limits), move the control room into the
+downwind sector of a release source, and read the finding; then lower
+the main road\textquotesingle s \texttt{cornerRadius} to 5~m and read what
+the truck route says. Then open
 \texttt{tutorials/plant/aceticAcid02\_plant}, lift its
 column\textquotesingle s condenser onto a structure, and work out by hand
 the skirt and the drum elevation its pumps would need. The EduTool

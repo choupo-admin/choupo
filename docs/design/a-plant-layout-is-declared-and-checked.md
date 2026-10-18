@@ -603,9 +603,11 @@ a 7 m entrance road, a ring of 6 m roads round the process area (one
 crossing under the rack between the recycle compressor and the exchanger,
 the east road under it), a warehouse on the main road and a
 canteen beside the control room, the canteen more than the 60 m wind reach
-from every release source.  THERE IS NO WEIGHBRIDGE, read off the case:
+from every release source.  THERE WAS NO WEIGHBRIDGE, read off the case:
 the product leaves at a battery limit as a pipe and the makeup gas arrives
-by pipe; no stream moves by truck.  The roads stand clear of every position
+by pipe; no stream moves by truck.  (Superseded by §15, C96: trucks come for
+catalyst, chemicals, spares and waste whatever the process streams do, and
+the witness now has a weighbridge on a one-way truck loop.)  The roads stand clear of every position
 the EduTool's guided moves put the control room in.  Its plot margin fell
 from 10 m to 5 m, because the 10 m had been "for the perimeter road" and
 the roads are now declared inside the envelope.
@@ -624,9 +626,9 @@ The pure rules are `gui/src/case/layoutPanels.ts`; every key is
 wide screen: the contract has no right edge, and a second docking rule for
 one tab would be a second home for where a panel goes.
 
-**Not here, named:** a road's turning radius, gradient and load class; a
-road's pressure on the land price beyond its area; vehicles routed on the
-network (a truck is not drawn); an access distance per item kind; whether a declared headroom or access distance is
+**Not here, named:** a road's gradient and load class (its corner radius
+and the trucks routed on the network came in §15, C96); a
+road's pressure on the land price beyond its area; an access distance per item kind; whether a declared headroom or access distance is
 sensible -- the author's, as every distance here.  Gate:
 `check_plant_layout` arm (k); GUI: `tests/layoutRoads.test.ts`,
 `tests/equipmentModel.test.ts` (the site buildings),
@@ -713,3 +715,128 @@ stub, not data); the cost of the fence (its length is published, priced by
 nobody); a pipe clashing with another pipe.  Gate: `check_plant_layout`
 arm (l), the unrouted mark in arm (i), the pipe clash in arm (m); GUI:
 `tests/layoutFence.test.ts`.
+
+## 15. Slice 7 -- trucks, cars and the site's good practice (DEV.md 4c C96)
+
+**What was asked.**  Vitor, on the C93 layout: the layout lacks offices and a
+weighbridge; the roads must let trucks come in and leave without big
+manoeuvres; a car park is needed, its bays oriented so cars leave quickly;
+and whatever else good layout practice asks for that is missing.
+
+**Why trucks come to a plant that ships by pipe.**  The §13 witness said
+"there is no weighbridge" because no PROCESS stream moves by road.  That
+was a true sentence about the wrong question: trucks still come -- catalyst
+at every recharge, chemicals and lubricants, spares, a turnaround's
+contractors, the waste the plant sends off site -- and they are what the
+roads, the weighbridge and the yard are for.  The witness now says so.
+
+**A truck route is DECLARED and the engine WALKS it.**  Inside `roads {}`:
+`designVehicle { turningDiameter; source; reason; }` and `truckRoutes ( {
+route; from <gate>; to <gate>; roads ( ... ); [serves ( ... );] reason; }
+)`; per road, optional `cornerRadius` and `oneWay yes|no`; optional
+`turningAreas ( { area; x; y; diameter; reason; } )`.  The route is an
+ORDERED LIST OF ROAD NAMES, not waypoints: the geometry has one home, the
+roads' centre lines, and a route typed as coordinates would be a second home
+for it.  The walk (`checkTruckRoutes`, its rule published as the design
+vehicle's `rule`): from the `from` gate's fence opening (its road point when
+there is no fence), along each road to where its centre line meets the next
+road's -- the meeting nearest along the road being driven -- to the `to`
+gate; a road named TWICE in a row is driven to its far end and back (a dead
+end, visited).  Published: the path, its length, every corner (the smaller
+of the two roads' declared radii; the pavement's OUTER EDGE, that radius plus
+half the narrower road; the design vehicle's half turning diameter) and a
+verdict WORD, `clear` or `announced`.
+
+**What it ANNOUNCES, and why none of it refuses.**  A reversal no turning
+area holds (`routeReverses`) or one smaller than the truck turns
+(`turningAreaTooSmall`); a corner whose outer edge is short of the
+vehicle's (`sharpCorner`); two corners closer than the sum of their radii
+(`cornersTooClose` -- one turn must end before the next begins, the check
+that caught the first draft of the witness's yard, where the yard road ran
+15 m from the main road under two 10 m corners); a one-way road driven
+against the order of its waypoints (`wrongWay`); a placed weighbridge the
+route never drives over (`routeMissesWeighbridge`); a `serves` stop whose
+road point is not on the path (`routeMissesStop`); a route that starts or
+ends at an item that is not a gate (`routeNoGate`).  Each is a layout a
+truck CAN be driven through with a shunt or a detour -- a draft to defend,
+the short-distance rule -- so each is announced.  REFUSED: routes with no
+design vehicle, an unknown road or item, two consecutive roads that do not
+meet (that route cannot be driven at all), a turning area through a
+footprint (pavement, as a road is), a negative radius, a `oneWay` word that
+is neither yes nor no.
+
+**The vehicle is the law's, the corner rule is a necessary condition.**  The
+witness's `turningDiameter 25 m` is Council Directive 96/53/EC, Annex I point
+1.5 -- any vehicle combination in motion must turn within a swept circle of
+outer radius 12.50 m and inner radius 5.30 m -- read at legislation.gov.uk
+the day this slice was built, and cited by title and point in the case.
+Every other number on the site is an author-set assumption, said so.  The
+corner check asks only that the pavement's outer edge reach the vehicle's
+outer radius: a truck whose outer wheel needs 12.5 m cannot make the turn on
+less.  It is NOT a swept-path analysis -- the trailer cutting in on the
+inside, the gradient, the load class are not modelled, and the guide says so.
+
+**The approach: a road now reaches its gate.**  Every road the plot margin
+stops short of the fence (the open item C93 recorded: "the entrance road
+stops ~5 m short of the fence opening") is carried on by the engine from its
+centre-line end nearest the fence to the gate's opening -- the APPROACH,
+published per opening (`approachX`, `approachY`, `approach`), counted in the
+paved area, refused through an item, drawn as asphalt.  It is derived, never
+typed, because the opening is derived from the plot and a road typed to it
+would grow the plot that places it.
+
+**A car park is laid out by the engine.**  A non-process item of kind
+`carPark` declares `parking { bays; bay { width; length; } aisle; angle;
+arrangement doubleLoaded|driveThrough; entry reverse|forward; source;
+reason; }`.  The rule (`readParking`): rows along the item's length between
+two end aisles; a bay at angle th has depth l sin th + w cos th and pitch
+w / sin th, the first bay reaching l cos th + w sin th along the aisle;
+double-loaded rows pair across an aisle, drive-through rows each sit between
+two.  A declared count the footprint cannot hold is REFUSED with the
+capacity (bays that do not fit are not a car park); bays a car leaves by
+REVERSING (`doubleLoaded` with `entry forward`) are ANNOUNCED
+(`carParkReverseExit`) -- in an evacuation every car backs out at once.
+Published: the count, the capacity, the area and every bay (centre and exit
+direction), which the 3D view paints.
+
+**Good practice, chosen and argued.**  Added to the witness, each a
+non-process item drawn by its kind and justified in the case's text:
+offices by the main gate (upwind, held 30 m from the process by the
+separation table, ignition source); a second, EMERGENCY gate on the north
+fence (`singleEntrance` is announced for a site with one, since a blocked
+road would otherwise close it to the fire brigade); two MUSTER POINTS on
+opposite sides, neither on the downwind side; the FIRE-WATER tank and its
+pump house in the north-west corner; a LAYDOWN area on the truck loop; a
+WINDSOCK in sight of the control room and the muster points.  Two kind
+words gained a meaning: a `musterPoint` or a `firePumpHouse` inside a
+release's zone envelope or downwind of it is announced (`exposedInZone`,
+`exposedDownwind`) -- what must stay usable when the release happens, ignition
+source or not.  Considered and NOT added: the fire-water ring main and its
+hydrants (a pipe network with its own hydraulics, invented positions if
+drawn), bunds round the tank farm, escape routes inside the units, a toxic
+refuge in the control room -- each named in the case and in the guide's
+"not checked" list.
+
+**The witness.**  `ammonia02_full_plant`: the gate moved to the south
+fence's side of the car park (barrier at y = -78 m); the car park (22
+reverse-in bays at 90 deg, 40 m x 16 m) the first turn after it; the
+offices beside the gate; the truck loop entrance -> main road (over the
+weighbridge, just past the corner) -> yard link -> yard road (past the
+laydown and the warehouse, moved there from the west end of the main road,
+which was a dead end for a truck) -> entrance -> gate: 256 m, four corners
+of 10 m radius (outer edges 13 and 13.5 m against 12.5 m), no reversal,
+CLEAR.  The plot grew from 19 664 to 22 089 m2 (the admin zone south of the
+yard), so the land, the NPV, the IRR, the payback, the fence and the
+south-side crossing moved: those rows are LISTED for Vitor, not re-recorded.
+
+**Rejected.**  Waypoints for a route (a second home for the roads'
+geometry); refusing a sharp corner or a reversal (a truck can be shunted
+round either; the plan is buildable); a parking-standard bay table (no-grant
+sources; the case declares its own bay and aisle, author-set); drawing the
+hydrants (positions nobody chose).
+
+**Not here, named:** the swept path; a truck stopped at a door blocking a
+one-way loop; several routes interacting; a car park's own access road (the
+item is checked for road access as any building is); the cost of roads,
+car parks and buildings.  Gate: `check_plant_layout` arm (n), the approach in
+arms (k) and (l); GUI: `tests/layoutSiteLogistics.test.ts`.

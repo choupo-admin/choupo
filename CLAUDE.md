@@ -2208,6 +2208,17 @@ crosses it at a PUBLISHED point carrying the case's `from`/`to` label (an
 unlabelled crossing ANNOUNCED), and an unrouted stream is marked in the 3D
 view at the end the engine reached -- a missing pipe never looks finished;
 a routed pipe that runs THROUGH a placed item is ANNOUNCED (`pipeClash`).
+**Since C96 a truck route is an ORDERED LIST OF ROADS the engine WALKS**
+(never waypoints: the roads' centre lines are the one home of the
+geometry) against a DECLARED design vehicle -- a reversal no turning area
+holds, a corner whose pavement edge is short of the vehicle's turning
+radius, two corners too close, a one-way road driven backwards, a
+weighbridge or stop missed, a route ending at no gate are ANNOUNCED; every
+road is carried on to its gate's fence opening (the approach, derived); a
+`carPark` declares its bays and the engine lays them out, REFUSING a count
+the footprint cannot hold and announcing bays left by reversing; a muster
+point or fire pump house in a zone or downwind, and a site with one
+entrance, are announced.
 NOT done: a pipe's pressure drop and cost (next slice), structures.
 Gate: `check_plant_layout`.  Record:
 [`docs/design/a-plant-layout-is-declared-and-checked.md`](docs/design/a-plant-layout-is-declared-and-checked.md).

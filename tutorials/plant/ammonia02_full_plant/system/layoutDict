@@ -36,24 +36,62 @@
   must see and defend, while an overlap is not a layout at all.  Move
   `letdown` to x 62 m and the announcement goes away.
 
-  THE SITE (DEV.md 4c C90, C93).  A gate with its guardhouse on the south fence,
-  a road network that rings the process area and crosses under the pipe rack
-  once, and the site buildings a plant this size needs besides the control
-  room: a warehouse (spares, catalyst drums, consumables) and a canteen.
-  Every position, footprint, road width, the headroom and the access
-  distance are AUTHOR-SET ASSUMPTIONS FOR THIS EXERCISE, said as such in each
-  `source`; none is taken from a fire code or a road standard.
-  THERE IS NO WEIGHBRIDGE, and that is read off the case, not chosen: the
-  product leaves the tank farm through the fence as a pipe (`productStored`,
-  out of the T201 bullets -- a world-scale ~1400 t/day train ships by
-  pipeline, rail or ship, and this case declares no loading bay), and the
-  makeup syngas ARRIVES by pipeline at 25 bar from the adjacent industrial
-  park (`makeup`, labelled where it crosses the fence).  No
-  stream of this flowsheet moves by truck, so nothing is weighed at the
-  gate; the trucks that do come (catalyst, spares) are deliveries, not
-  custody transfer.  A case whose product leaves in road tankers declares
-  `{ nonProcess "weighbridge"; kind weighbridge; ... }` on a road, and the
-  engine then requires a road to run over its deck.
+  THE SITE (DEV.md 4c C90, C93, C96).  The plant is laid out in blocks, each
+  bounded by roads: the PROCESS block (the loop, inside the ring road), the
+  TANK FARM to the south-east, the ADMINISTRATION AND LOGISTICS zone to the
+  south and south-west (offices, canteen, control room, car park, the truck
+  yard with its warehouse and laydown), and the FIRE-WATER corner to the
+  north-west.  The prevailing wind blows from the south-west, so the people
+  and the fire water are upwind of every release source.  Every position,
+  footprint, road width, radius, the headroom and the access distance are
+  AUTHOR-SET ASSUMPTIONS FOR THIS EXERCISE, said as such in each `source`;
+  none is taken from a fire code or a road standard.  The ONE number that
+  comes out of a published source is the truck's turning circle (`designVehicle`).
+
+  WHY TRUCKS COME AT ALL.  The product leaves the tank farm through the fence
+  as a pipe (`productStored`, out of the T201 bullets -- a world-scale ~1400
+  t/day train ships by pipeline, rail or ship) and the makeup syngas ARRIVES
+  by pipeline from the adjacent industrial park (`makeup`): no PROCESS stream
+  moves by road.  Trucks still come, a few a week: the converter's catalyst
+  (drums, at every recharge), chemicals and lubricants, spares and the
+  contractors' equipment of a turnaround, and the waste the plant sends off
+  site.  So the site has a WEIGHBRIDGE and a ONE-WAY TRUCK LOOP: in at the
+  south gate, north on the entrance road, east on the main road over the
+  weighbridge (weighed IN: what a supplier delivers is what is checked),
+  south down the yard link, west along the yard road past the laydown area
+  and the warehouse door, and back south to the gate -- no truck reverses or
+  turns round anywhere.  Weighing OUT as well (a site that ships by road)
+  would take a second deck on the outbound leg; this case does not need it.
+  The engine walks the route against the design vehicle and announces any
+  reversal, any corner tighter than the truck turns, a weighbridge or a stop
+  the route misses and a route that leaves by no gate (none, as shipped).
+
+  CARS AND PEOPLE.  The car park is the first turn after the gate barrier,
+  east of the entrance road and south of the truck yard, so a private car
+  never drives a process road or the truck loop; it sits inside the fence
+  because this fence is the site boundary the plot prices, and before the
+  process area, more than 30 m from every process item.  Its bays are
+  REVERSE-IN at 90 deg: the manoeuvre is made on arrival, when there is time,
+  and in an evacuation every car leaves nose first with a full view of the
+  aisle.  The offices stand beside the gate, so visitors never cross the
+  plant, upwind and out of every zone, held 30 m from the process by the
+  separation table like the control room.  Two MUSTER POINTS, neither on the
+  downwind side of the prevailing wind and on opposite sides of the site (south by the
+  offices, north-west by the fire water), so whichever way the wind turns
+  one of them is clear of the cloud; the engine announces a muster point or
+  the fire-water pump house inside a release's zone or downwind of it.  A
+  WINDSOCK beside the main road shows the wind to the control room, the
+  canteen and both muster points.
+
+  FIRE.  A second, EMERGENCY gate on the north fence gives the fire brigade
+  a second way in from the north road when the south gate is blocked (the
+  engine announces a site with one entrance).  The fire-water tank and its
+  pump house stand in the north-west corner, upwind of the plant and held
+  30 m off every process item.  NOT DRAWN, said rather than invented: the
+  fire-water ring main and its hydrants (a pipe network with its own
+  hydraulics; on a real site it follows the ring road), the bunds round the
+  tank farm, the escape routes inside the units, and any toxic-gas refuge in
+  the control room.
 
   Grammar and checks: docs/design/a-plant-layout-is-declared-and-checked.md
 \*---------------------------------------------------------------------------*/
@@ -260,8 +298,13 @@ items
     //  The SITE BUILDINGS are not equipment the flowsheet sizes, so each is
     //  a NON-PROCESS item: its kind, its box, and where both come from are
     //  declared.  The kind is the word the separation table names and the
-    //  3D view draws by (controlRoom, warehouse, canteen, gate, weighbridge,
-    //  substation; any other word is a plain box).
+    //  3D view draws by (controlRoom, office, warehouse, canteen, gate,
+    //  weighbridge, carPark, laydown, musterPoint, fireWaterTank,
+    //  firePumpHouse, windsock; any other word is a plain box).  Four words
+    //  carry a meaning the engine checks: a `gate` is an entrance, a
+    //  `weighbridge` is driven over, a `carPark` declares its bays, and a
+    //  `musterPoint` or `firePumpHouse` must stay out of every release's
+    //  zone and downwind sector.
     {
         nonProcess  "controlRoom";
         kind        controlRoom;
@@ -278,12 +321,12 @@ items
         nonProcess  "gate";
         kind        gate;
         x           -19 m;
-        y           -63 m;
+        y           -78 m;
         z           0 m;
         orientation alongX;
         footprint   { length 4 m; width 3 m; height 3 m; }
         source      "author-set assumption for this exercise; not a building design";
-        reason      "the site entrance on the south fence: a guardhouse beside the entrance road and its barrier";
+        reason      "the main entrance on the south fence: a guardhouse beside the entrance road and its barrier, where every car and truck is checked in";
     }
     {
         nonProcess  "canteen";
@@ -297,16 +340,143 @@ items
         reason      "meals and rest for the shift crews, beside the control room and more than the wind reach (60 m) from every release source, so no wind the EduTool's guided moves turn puts the kitchen downwind of one";
         ignition    "a kitchen (open flames) and people: treated as an ignition source";
     }
+
+    //  THE ADMINISTRATION AND LOGISTICS ZONE (DEV.md 4c C96).
+    {
+        nonProcess  "offices";
+        kind        office;
+        x           -30 m;
+        y           -69 m;
+        z           0 m;
+        orientation alongX;
+        footprint   { length 20 m; width 10 m; height 8 m; }
+        source      "author-set assumption for this exercise; not a building design (two storeys for management, engineering, the laboratory and the visitors' reception)";
+        reason      "beside the main gate, so a visitor or a supplier reaches it without crossing the plant; upwind of every release source and held 30 m from the process by the separation table, as the control room is";
+        ignition    "non-hazardous-area electrical equipment and people: treated as an ignition source";
+    }
+    {
+        nonProcess  "carPark";
+        kind        carPark;
+        x           11.5 m;
+        y           -70.5 m;
+        z           0 m;
+        orientation alongX;
+        footprint   { length 40 m; width 16 m; height 0.2 m; }
+        source      "author-set assumption for this exercise; not a parking design";
+        reason      "the first turn after the gate barrier, east of the entrance road and south of the truck yard: a private car never drives a process road or the truck loop; inside the fence (the site boundary) and before the process area, more than 30 m from every process item";
+        ignition    "car engines, their electrics and people: treated as an ignition source";
+        parking
+        {
+            bays        22;
+            bay         { width 2.5 m; length 5 m; }
+            aisle       6 m;
+            angle       90 deg;
+            arrangement doubleLoaded;
+            entry       reverse;
+            source      "author-set assumption for this exercise: a common car bay and a two-way aisle for 90 deg bays, as round numbers; not taken from a parking standard";
+            reason      "reverse-in at 90 deg: the manoeuvre is made on arrival, when there is time, and in an evacuation every car leaves nose first with a full view of the aisle; 22 bays for a shift crew and the day staff of a plant this size (an author-set count)";
+        }
+    }
+    {
+        nonProcess  "weighbridge";
+        kind        weighbridge;
+        x           9 m;
+        y           -31 m;
+        z           0 m;
+        orientation alongX;
+        footprint   { length 18 m; width 4 m; height 0.3 m; }
+        source      "author-set assumption for this exercise: a deck long enough for an articulated truck, as a round number; not a weighbridge design";
+        reason      "on the main road just past the corner the truck loop turns onto it, so every delivery is weighed IN before it reaches the yard; the deck starts beyond the corner's 10 m radius, so the truck is straight when it stops on it";
+    }
     {
         nonProcess  "warehouse";
         kind        warehouse;
-        x           -30 m;
-        y           -20 m;
+        x           46 m;
+        y           -62 m;
         z           0 m;
         orientation alongX;
         footprint   { length 20 m; width 12 m; height 7 m; }
         source      "author-set assumption for this exercise; not a building design";
-        reason      "spares, catalyst drums for the converter's recharge and consumables, on the main road so a truck unloads at its door";
+        reason      "spares, catalyst drums for the converter's recharge and consumables, its door on the yard road so a truck unloads on the loop and drives on";
+    }
+    {
+        nonProcess  "laydown";
+        kind        laydown;
+        x           20 m;
+        y           -41.5 m;
+        z           0 m;
+        orientation alongX;
+        footprint   { length 40 m; width 11 m; height 0.3 m; }
+        source      "author-set assumption for this exercise; not a design";
+        reason      "hard standing between the yard road and the main road for a turnaround: the converter's catalyst bins, exchanger bundles, scaffolding and a mobile crane's outriggers, reached by trucks on the loop and 25 m from the process block";
+    }
+    {
+        nonProcess  "musterSouth";
+        kind        musterPoint;
+        x           -32 m;
+        y           -80 m;
+        z           0 m;
+        orientation alongX;
+        footprint   { length 6 m; width 4 m; height 0.1 m; }
+        source      "author-set assumption for this exercise; not an emergency plan";
+        reason      "the assembly point for the offices, the canteen and the control room, by the main gate: upwind of every release source for the prevailing wind, and where the fire brigade arrives";
+    }
+
+    //  THE FIRE-WATER CORNER AND THE SECOND MUSTER POINT (DEV.md 4c C96).
+    {
+        nonProcess  "fireWaterTank";
+        kind        fireWaterTank;
+        x           -34 m;
+        y           10 m;
+        z           0 m;
+        orientation alongX;
+        footprint   { length 12 m; width 12 m; height 10 m; }
+        source      "author-set assumption for this exercise: not sized from a fire-water demand or a fire code";
+        reason      "the fire-water reserve, north-west of the plant: upwind of every release source and 30 m from the process, so a fire in the loop does not reach the water meant to fight it";
+    }
+    {
+        nonProcess  "firePumps";
+        kind        firePumpHouse;
+        x           -32 m;
+        y           -16 m;
+        z           0 m;
+        orientation alongX;
+        footprint   { length 8 m; width 6 m; height 4 m; }
+        source      "author-set assumption for this exercise; not a pump-house design";
+        reason      "the fire pumps that draw from the tank and feed the ring main, beside the main road, upwind and 30 m from every process item; the engine announces it inside a release's zone or downwind of one";
+    }
+    {
+        nonProcess  "musterNorth";
+        kind        musterPoint;
+        x           -20 m;
+        y           12 m;
+        z           0 m;
+        orientation alongX;
+        footprint   { length 6 m; width 6 m; height 0.1 m; }
+        source      "author-set assumption for this exercise; not an emergency plan";
+        reason      "the second assembly point, on the other side of the plant from the first, beside the emergency gate: when the wind turns and puts one of them in a cloud, the other is clear";
+    }
+    {
+        nonProcess  "emergencyGate";
+        kind        gate;
+        x           -13 m;
+        y           17.5 m;
+        z           0 m;
+        orientation alongX;
+        footprint   { length 2 m; width 2 m; height 2.5 m; }
+        source      "author-set assumption for this exercise; not a building design";
+        reason      "the second way in, on the north fence at the end of the west road, normally locked: the fire brigade's entrance when the south gate is blocked by the fire, a tanker or the evacuation";
+    }
+    {
+        nonProcess  "windsock";
+        kind        windsock;
+        x           -20 m;
+        y           -25 m;
+        z           0 m;
+        orientation alongX;
+        footprint   { length 1 m; width 1 m; height 10 m; }
+        source      "author-set assumption for this exercise: a mast tall enough to clear the buildings round it";
+        reason      "the wind shown where people decide which way to walk: in sight of the control room, the canteen, the offices' side of the site and both muster points";
     }
 );
 
@@ -331,6 +501,18 @@ separation
             { between ( compressor warehouse );    distance 15 m; }
             { between ( vessel warehouse );        distance 15 m; }
             { between ( shellTubeHX warehouse );   distance 15 m; }
+            { between ( compressor office );       distance 30 m; }
+            { between ( office vessel );           distance 30 m; }
+            { between ( office shellTubeHX );      distance 30 m; }
+            { between ( carPark compressor );      distance 30 m; }
+            { between ( carPark vessel );          distance 30 m; }
+            { between ( carPark shellTubeHX );     distance 30 m; }
+            { between ( compressor firePumpHouse ); distance 30 m; }
+            { between ( firePumpHouse vessel );    distance 30 m; }
+            { between ( firePumpHouse shellTubeHX ); distance 30 m; }
+            { between ( compressor fireWaterTank ); distance 30 m; }
+            { between ( fireWaterTank vessel );    distance 30 m; }
+            { between ( fireWaterTank shellTubeHX ); distance 30 m; }
         );
     }
 );
@@ -349,24 +531,28 @@ wind
     reason      "a prevailing direction lets the plot plan be read for which way a release drifts";
 }
 
-//  THE ROADS (DEV.md 4c C90).  Centre lines at grade, every segment along
-//  one plan axis.  The entrance road runs north from the gate to the main
-//  road, which rings the process area with the north, east and west roads,
-//  and the tank-farm road carries the main road east along the product
-//  bullets (DEV.md 4c C92); two roads cross UNDER the pipe rack: one between
-//  the recycle compressor and the feed-effluent exchanger, and the east
-//  road, where the rack runs on toward the tank farm (the rack is declared
-//  below, 6 m up, above the 5 m headroom declared here; every pipe that
-//  leaves the plant runs on from its lane to the fence crossing the
-//  `fence {}` block declares for it).  The engine refuses a road through a
-//  footprint or under a rack or a pipe lower than the headroom, announces a
-//  road no gate reaches, a building no road serves and a process item with
-//  no road within the access distance, and publishes the length and the
-//  paved area (inside the plot below).  AUTHOR-SET ASSUMPTIONS throughout.
+//  THE ROADS (DEV.md 4c C90, C96).  Centre lines at grade.  The entrance
+//  road runs north from the main gate (its approach to the fence opening is
+//  the engine's, carried on from the road's end) to the main road, which
+//  rings the process area with the north, east and west roads; the
+//  tank-farm road carries the main road east along the product bullets
+//  (DEV.md 4c C92); two roads cross UNDER the pipe rack, between the recycle
+//  compressor and the feed-effluent exchanger and on the east road (the rack
+//  is declared below, 6 m up, above the 5 m headroom declared here).  THE
+//  TRUCK YARD (C96): the yard link runs south from the main road and the
+//  yard road west from it back to the entrance road, both ONE-WAY in the
+//  order of their waypoints, so the loop is driven one way only.  Every
+//  corner a truck turns carries a declared centre-line radius.  The engine
+//  refuses a road through a footprint or under a rack or a pipe lower than
+//  the headroom, announces a road no gate reaches, a building no road serves
+//  and a process item with no road within the access distance, walks every
+//  truck route against the design vehicle, and publishes the length and the
+//  paved area (inside the plot below).  AUTHOR-SET ASSUMPTIONS throughout,
+//  but for the design vehicle's turning circle, which is the EU's.
 roads
 {
     source   "author-set assumption for this exercise; not taken from a road or fire standard";
-    reason   "a ring road round the process area so a fire tender reaches every item from two sides, joined to the gate by the entrance road";
+    reason   "a ring road round the process area so a fire tender reaches every item from two sides, joined to the gate by the entrance road, and a one-way loop for the trucks that serve the yard";
     headroom 5 m;
     access
     {
@@ -375,19 +561,30 @@ roads
         reason   "the reach of a fire tender's hoses and of a mobile crane parked on the road, as a round number";
     }
     noTraffic ( 1 );
+    //  The vehicle every truck route is checked against.  A turning circle is
+    //  the one number about a truck a road designer needs first, and this one
+    //  is the law's, not ours.
+    designVehicle
+    {
+        turningDiameter 25 m;
+        source  "Council Directive 96/53/EC of 25 July 1996 (maximum dimensions of road vehicles in the Community), Annex I point 1.5: any motor vehicle or vehicle combination in motion must be able to turn within a swept circle of outer radius 12,50 m and inner radius 5,30 m (read at legislation.gov.uk, 2026-10-18)";
+        reason  "the largest vehicle that may come to the site, an articulated truck delivering catalyst or collecting waste, turns within that circle by law; its outer 25 m diameter is what a corner must hold";
+    }
     network
     (
         {
-            road      "entrance";
-            width     7 m;
-            reason    "the gate to the main road, past the canteen and the control room";
-            waypoints ( { x -12 m; y -66 m; } { x -12 m; y -31 m; } );
+            road         "entrance";
+            width        7 m;
+            cornerRadius 10 m;
+            reason       "the gate to the main road, past the car park, the offices, the canteen and the control room; two-way";
+            waypoints    ( { x -12 m; y -76 m; } { x -12 m; y -31 m; } );
         }
         {
-            road      "main";
-            width     6 m;
-            reason    "south of the compressor row, from the warehouse door to the east road; kept 18 m off the compressors so the EduTool's guided moves of the control room (DEV.md 4c C75 slice 2) stand clear of every road";
-            waypoints ( { x -36 m; y -31 m; } { x 68 m; y -31 m; } );
+            road         "main";
+            width        6 m;
+            cornerRadius 10 m;
+            reason       "south of the compressor row, from the fire pumps to the east road, carrying the weighbridge just past the corner the truck loop turns at; kept 18 m off the compressors so the EduTool's guided moves of the control room (DEV.md 4c C75 slice 2) stand clear of every road";
+            waypoints    ( { x -36 m; y -31 m; } { x 68 m; y -31 m; } );
         }
         {
             road      "east";
@@ -404,7 +601,7 @@ roads
         {
             road      "west";
             width     6 m;
-            reason    "beside the makeup compressor, closing the ring";
+            reason    "beside the makeup compressor, closing the ring; its north end is the emergency gate's road";
             waypoints ( { x -8 m; y -31 m; } { x -8 m; y 16 m; } );
         }
         {
@@ -418,6 +615,35 @@ roads
             width     6 m;
             reason    "the main road carried east along the product tank farm (DEV.md 4c C92), so a fire tender reaches every bullet from the road";
             waypoints ( { x 68 m; y -31 m; } { x 146 m; y -31 m; } );
+        }
+        {
+            road         "yard";
+            width        7 m;
+            cornerRadius 10 m;
+            oneWay       yes;
+            reason       "the truck yard, driven west only: past the warehouse door and the laydown area back to the entrance road, where a truck turns south for the gate";
+            waypoints    ( { x 60 m; y -52 m; } { x -12 m; y -52 m; } );
+        }
+        {
+            road         "yardLink";
+            width        7 m;
+            cornerRadius 10 m;
+            oneWay       yes;
+            reason       "from the main road down to the truck yard, driven south only; 21 m long, enough for the two 10 m corners at its ends";
+            waypoints    ( { x 60 m; y -31 m; } { x 60 m; y -52 m; } );
+        }
+    );
+    //  THE TRUCK LOOP: in at the main gate and out at it, one way round, over
+    //  the weighbridge, past the warehouse and the laydown area.
+    truckRoutes
+    (
+        {
+            route  "deliveries";
+            from   gate;
+            to     gate;
+            roads  ( entrance main yardLink yard entrance );
+            serves ( warehouse laydown );
+            reason "catalyst, chemicals, spares and turnaround equipment in, waste out: weighed in on the main road, unloaded on the yard road, out by the gate it came in by, with no reversing and no turning round";
         }
     );
 }

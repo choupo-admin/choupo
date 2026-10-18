@@ -254,7 +254,8 @@ export interface RoadView {
 export const ROADS_CAPTION =
   "Roads: declared by the case, checked by the engine (a road through a footprint, or under a"
   + " rack or a pipe lower than the headroom, is refused; a road no gate reaches, a building no"
-  + " road serves and an item beyond the access distance are announced).";
+  + " road serves and an item beyond the access distance are announced).  Truck routes are"
+  + " walked against the declared design vehicle, and car parks laid out by the engine (C96).";
 
 export function roadSummary(layout: PlantLayout): RoadView | null {
   const n = layout.roadNetwork;
@@ -273,6 +274,29 @@ export function roadSummary(layout: PlantLayout): RoadView | null {
       + ` rack (lowest tier ${crossings[0]!.clearance.toFixed(1)} m, at least the headroom): `
       + crossings.map((c) => `${c.road} at x ${c.xMin.toFixed(1)} to ${c.xMax.toFixed(1)} m`)
         .join("; ") + ".");
+  //  C96: the trucks and the car parks, as the engine walked and laid them out.
+  const dv = layout.designVehicle;
+  if (dv)
+    notes.push(`Design vehicle: a ${dv.turningDiameter.toFixed(1)} m turning circle (source:`
+      + ` ${dv.source}).`);
+  for (const t of layout.truckRoutes ?? []) {
+    const cs = (layout.routeCorners ?? []).filter((c) => c.route === t.route);
+    const turns = cs.filter((c) => c.turn !== "reverse");
+    notes.push(`Truck route ${t.route}: ${t.from} -> ${t.to} by ${t.roads.join(", ")};`
+      + ` ${t.length.toFixed(1)} m, ${t.turns} turn${t.turns === 1 ? "" : "s"}`
+      + (turns.length ? ` (outer edge ${turns.map((c) => c.outerRadius.toFixed(1)).join(", ")} m`
+        + ` against ${turns[0]!.required.toFixed(1)} m)` : "")
+      + `, ${t.reversals} reversal${t.reversals === 1 ? "" : "s"},`
+      + ` weighbridge ${t.weighbridge || "none"}`
+      + (t.serves.length ? `, serves ${t.serves.join(", ")}` : "")
+      + ` -- ${t.verdict === "clear" ? "clear" : "ANNOUNCED (see the findings)"}.`);
+  }
+  for (const c of layout.carParks ?? [])
+    notes.push(`Car park ${c.item}: ${c.bays} bays declared, ${c.capacity} fit (${c.rows}`
+      + ` row${c.rows === 1 ? "" : "s"} of ${c.perRow}; ${c.bayWidth.toFixed(1)} x`
+      + ` ${c.bayLength.toFixed(1)} m at ${c.angle.toFixed(0)} deg, aisle ${c.aisle.toFixed(1)} m,`
+      + ` ${c.arrangement}, entry ${c.entry}), ${c.area.toFixed(0)} m²; cars leave`
+      + ` ${c.exitsForward ? "nose first" : "REVERSING"}.`);
   const gates = n.entrances.length > 0 ? `reached from ${n.entrances.join(", ")}`
     : "no gate placed, so no entrance is checked";
   return {
@@ -282,7 +306,8 @@ export function roadSummary(layout: PlantLayout): RoadView | null {
     notes,
     rows: roads.map((r) => ({
       road: r.road, width: r.width.toFixed(1), length: r.length.toFixed(1),
-      reached: r.fromEntrance ? "yes" : "NO gate reaches it", reason: r.reason,
+      reached: (r.fromEntrance ? "yes" : "NO gate reaches it") + (r.oneWay ? "; one-way" : ""),
+      reason: r.reason,
     })),
   };
 }

@@ -110,7 +110,7 @@ import type { OutputPass as OutputPassT } from "three/examples/jsm/postprocessin
 
 import { equipmentDrawing, type Part, type PartRole } from "../../case/equipmentModel.js";
 import {
-  cameraFit, declutter, LABEL_PRIORITY, PHASE_COLOURS, pointAlong,
+  cameraFit, declutter, LABEL_PRIORITY, PHASE_COLOURS, pointAlong, ROUTE_ARROW_SPACING,
   type LabelBox, type LayoutScene, type Phase, type RenderQuality, type Vec3, type ViewPreset,
 } from "../../case/plantLayout.js";
 
@@ -138,6 +138,9 @@ const ROLE_LOOK: Record<Exclude<PartRole, "body">, [number, number, number]> = {
   motor:    [0x2d5ea8, 0.3, 0.4],
   concrete: [0xb7b2a8, 0.0, 0.95],
   glass:    [0x3d5a73, 0.6, 0.15],    // glazing
+  asphalt:  [0x3e4042, 0.0, 0.95],    // C96: a car park's surface
+  fire:     [0xc92a2a, 0.3, 0.5],     // C96: fire-water equipment
+  green:    [0x2b8a3e, 0.1, 0.6],     // C96: a muster point's pad and sign
   roof:     [0x7a8791, 0.6, 0.45],    // profiled steel sheet
 };
 
@@ -676,6 +679,178 @@ export function mountLayoutScene(m: LayoutModules, el: HTMLDivElement, scene: La
       }
     }
   }
+  //  ---- the trucks and the cars (C96) -------------------------------------
+  {
+    const asphaltC96 = groundMat(noise(ROAD_LOOK.asphalt, 10, 1), -1);
+    (asphaltC96.map as T3.Texture).repeat.set(span / 4, span / 4);
+    /** A flat polygon at height `y` (a triangle fan from its first point). */
+    const flat = (poly: Vec3[], y: number): T3.BufferGeometry | null => {
+      if (poly.length < 3) return null;
+      const tri: T3.Vector3[] = [];
+      for (let i = 1; i + 1 < poly.length; i++)
+        for (const q of [poly[0]!, poly[i + 1]!, poly[i]!]) tri.push(new THREE.Vector3(q[0], y, q[2]));
+      const g = new THREE.BufferGeometry().setFromPoints(tri);
+      g.computeVertexNormals();
+      return g;
+    };
+    /** A painted arrow head on the ground at `at`, pointing along `dir`. */
+    const arrowHead = (at: Vec3, dir: [number, number], len: number, half: number, y: number) => {
+      const [dx, dz] = dir, nx = -dz, nz = dx;
+      return flat([[at[0] + dx * len / 2, y, at[2] + dz * len / 2],
+                   [at[0] - dx * len / 2 + nx * half, y, at[2] - dz * len / 2 + nz * half],
+                   [at[0] - dx * len / 2 - nx * half, y, at[2] - dz * len / 2 - nz * half]], y);
+    };
+    const paint: T3.BufferGeometry[] = [];
+    const routePaint: T3.BufferGeometry[] = [];
+    //  Flat triangles (no index, no uv) merge only with their own kind.
+    const arrowPaint: T3.BufferGeometry[] = [];
+    const filletMat = keep(asphaltC96.clone());
+    filletMat.side = THREE.DoubleSide;
+    //  The approach that carries a road on to its gate's fence opening.
+    for (const a of scene.approaches) {
+      const h = a.width / 2;
+      const vert = Math.abs(a.from[0] - a.to[0]) < 1e-6;
+      const x0 = Math.min(a.from[0], a.to[0]) - (vert ? h : 0), x1 = Math.max(a.from[0], a.to[0]) + (vert ? h : 0);
+      const z0 = Math.min(a.from[2], a.to[2]) - (vert ? 0 : h), z1 = Math.max(a.from[2], a.to[2]) + (vert ? 0 : h);
+      if (x1 - x0 > 1e-3 && z1 - z0 > 1e-3)
+        groundPlane(x1 - x0, z1 - z0, [(x0 + x1) / 2, (z0 + z1) / 2], asphaltC96);
+    }
+    //  A turning area: an asphalt disc.
+    for (const t of scene.turningAreas) {
+      const disc = new THREE.Mesh(keep(new THREE.CylinderGeometry(t.radius, t.radius, 0.02, 48)), asphaltC96);
+      disc.position.set(t.at[0], 0.0, t.at[2]);
+      disc.receiveShadow = true;
+      disc.userData.tooltip = t.tooltip;
+      pickables.push(disc);
+      world.add(disc);
+      label(`turning area ${t.area}`, [t.at[0], 0.3, t.at[2]], LABEL_PRIORITY.other);
+    }
+    //  One-way roads: an arrow painted on the centre line every
+    //  ROUTE_ARROW_SPACING, in the order of the road's waypoints.
+    for (const r of scene.roads) {
+      if (!r.oneWay) continue;
+      for (let i = 0; i + 1 < r.points.length; i++) {
+        const a = r.points[i]!, b = r.points[i + 1]!;
+        const L = Math.hypot(b[0] - a[0], b[2] - a[2]);
+        if (L < 1e-6) continue;
+        const d: [number, number] = [(b[0] - a[0]) / L, (b[2] - a[2]) / L];
+        for (let s0 = ROUTE_ARROW_SPACING / 2; s0 < L - 2; s0 += ROUTE_ARROW_SPACING) {
+          const g = arrowHead([a[0] + d[0] * s0, 0, a[2] + d[1] * s0], d, 2.4, 0.9, 0.015);
+          if (g) arrowPaint.push(g);
+        }
+      }
+    }
+    //  Each truck route: its paved corner fillets, then its path (corners
+    //  rounded to the declared radius) and its direction arrows, in the
+    //  route's colour -- green when the engine's verdict is clear, orange when
+    //  it announced something (the word is in the tooltip and the label).
+    for (const t of scene.truckRoutes) {
+      for (const f of t.fillets) {
+        const g = flat(f, 0.005);
+        if (g) {
+          //  A fillet winds one way on a left turn and the other on a right
+          //  one: drawn from both faces, as the ground is seen from above.
+          const fm = new THREE.Mesh(keep(g), filletMat);
+          fm.receiveShadow = true;
+          world.add(fm);
+        }
+      }
+      const colour = t.verdict === "clear" ? 0x2b8a3e : 0xe8590c;
+      const line = new THREE.Line(keep(new THREE.BufferGeometry().setFromPoints(
+        t.points.map((q) => new THREE.Vector3(q[0], 0.06, q[2])))),
+        keep(new THREE.LineDashedMaterial({ color: colour, dashSize: 2.5, gapSize: 1.2, fog: false })));
+      line.computeLineDistances();
+      line.userData.tooltip = t.tooltip;
+      pickables.push(line);
+      world.add(line);
+      const heads: T3.BufferGeometry[] = [];
+      for (const a of t.arrows) {
+        const g = arrowHead(a.at, a.dir, 2.0, 0.75, 0.05);
+        if (g) heads.push(g);
+      }
+      if (heads.length) {
+        const merged = m.mergeGeometries(heads, false);
+        for (const g of heads) g.dispose();
+        if (merged) {
+          keep(merged);
+          const mesh = new THREE.Mesh(merged, keep(new THREE.MeshBasicMaterial({ color: colour })));
+          mesh.userData.tooltip = t.tooltip;
+          pickables.push(mesh);
+          world.add(mesh);
+        }
+      }
+      const mid = t.points[Math.floor(t.points.length / 3)];
+      if (mid) label(`truck route ${t.route}${t.verdict === "clear" ? "" : " ⚠"}`,
+                     [mid[0], 0.6, mid[2]], LABEL_PRIORITY.other, t.verdict !== "clear");
+    }
+    //  Each car park's bays: the two sides and the back of every bay painted
+    //  on the asphalt, and an arrow showing the way the car LEAVES it.
+    for (const c of scene.carParks) {
+      for (const b of c.bays) {
+        const [ux, uz] = b.dir, nx = -uz, nz = ux;
+        const hw = b.w / 2, hl = b.l / 2, y = 0.215;
+        const corner = (sl: number, sw: number): [number, number] =>
+          [b.at[0] + ux * sl * hl + nx * sw * hw, b.at[2] + uz * sl * hl + nz * sw * hw];
+        const line = (p: [number, number], q: [number, number]) => {
+          const L = Math.hypot(q[0] - p[0], q[1] - p[1]);
+          const g = new THREE.PlaneGeometry(L, 0.2);
+          g.rotateX(-Math.PI / 2);
+          g.rotateY(-Math.atan2(q[1] - p[1], q[0] - p[0]));
+          g.translate((p[0] + q[0]) / 2, y, (p[1] + q[1]) / 2);
+          paint.push(g);
+        };
+        line(corner(-1, -1), corner(1, -1));
+        line(corner(-1, 1), corner(1, 1));
+        line(corner(-1, -1), corner(-1, 1));
+        const g = arrowHead([b.at[0] + ux * hl * 0.45, 0, b.at[2] + uz * hl * 0.45], [ux, uz], 1.0, 0.45, y);
+        if (g) routePaint.push(g);
+      }
+    }
+    if (paint.length) {
+      const merged = m.mergeGeometries(paint, false);
+      for (const g of paint) g.dispose();
+      if (merged) {
+        keep(merged);
+        world.add(new THREE.Mesh(merged, keep(new THREE.MeshLambertMaterial({
+          color: ROAD_LOOK.edge, polygonOffset: true, polygonOffsetFactor: -2,
+          polygonOffsetUnits: -2 }))));
+      }
+    }
+    if (arrowPaint.length) {
+      const merged = m.mergeGeometries(arrowPaint, false);
+      for (const g of arrowPaint) g.dispose();
+      if (merged) {
+        keep(merged);
+        world.add(new THREE.Mesh(merged, keep(new THREE.MeshLambertMaterial({ color: ROAD_LOOK.edge }))));
+      }
+    }
+    if (routePaint.length) {
+      const merged = m.mergeGeometries(routePaint, false);
+      for (const g of routePaint) g.dispose();
+      if (merged) {
+        keep(merged);
+        world.add(new THREE.Mesh(merged, keep(new THREE.MeshLambertMaterial({ color: 0x2b8a3e }))));
+      }
+    }
+    //  A windsock: an orange-and-white cone at the mast's top, turned
+    //  downwind (drawing; the mast is the item).
+    for (const w of scene.windsocks) {
+      const sock = new THREE.Group();
+      const L = 2.4;
+      for (let k = 0; k < 4; k++) {
+        const r0 = 0.45 - 0.07 * k, r1 = 0.45 - 0.07 * (k + 1);
+        const seg = new THREE.Mesh(keep(new THREE.CylinderGeometry(r1, r0, L / 4, 16, 1, true)),
+          std([k % 2 ? ROAD_LOOK.barrierWhite : ROAD_LOOK.barrierRed, 0.0, 0.7]));
+        seg.position.set(0, L / 8 + (k * L) / 4, 0);
+        sock.add(seg);
+      }
+      sock.position.set(w.top[0], w.top[1] - 0.6, w.top[2]);
+      sock.quaternion.setFromUnitVectors(new THREE.Vector3(0, 1, 0),
+        new THREE.Vector3(w.dir[0], -0.25, w.dir[1]).normalize());
+      world.add(sock);
+    }
+  }
+
   //  A gate's barrier arm: a post and a red-and-white striped arm across
   //  the road (drawing, at the point the engine published for the gate).
   for (const b of scene.barriers) {

@@ -1503,6 +1503,9 @@ void emitResultJson(std::ostream& os, const SimulationResult& r)
                    << ", \"length\": " << num(rd.length)
                    << ", \"component\": " << rd.component
                    << ", \"fromEntrance\": " << (rd.fromEntrance ? "true" : "false")
+                   << ", \"cornerRadius\": " << num(rd.cornerRadius)
+                   << ", \"cornerRadiusDeclared\": " << (rd.cornerRadiusDeclared ? "true" : "false")
+                   << ", \"oneWay\": " << (rd.oneWay ? "true" : "false")
                    << ", \"reason\": " << esc(rd.reason)
                    << ", \"centreline\": [";
                 for (std::size_t q = 0; q < rd.centreline.size(); ++q)
@@ -1535,6 +1538,82 @@ void emitResultJson(std::ostream& os, const SimulationResult& r)
                 os << " }";
             }
             os << (R.access.empty() ? "]" : "\n    ]");
+            //  THE TRUCKS (DEV.md 4c C96): the design vehicle, the turning
+            //  areas, one line per truck route (its path and length, its
+            //  verdict WORD) and one per corner it turns (the declared radius,
+            //  the outer radius the pavement gives, the one the vehicle
+            //  needs).  Absent keys without the declarations, so a roads block
+            //  that declares none keeps its JSON.  The golden `layout` kind
+            //  pins each route's `length` and `verdict`, each corner's
+            //  position, `radius` and `turn`.
+            if (R.designVehicle.present)
+                os << ",\n    \"designVehicle\": { \"id\": \"designVehicle\""
+                   << ", \"turningDiameter\": " << num(R.designVehicle.turningDiameter)
+                   << ", \"source\": " << esc(R.designVehicle.source)
+                   << ", \"reason\": " << esc(R.designVehicle.reason)
+                   << ", \"rule\": " << esc(R.designVehicle.routeRule) << " }";
+            if (!R.turningAreas.empty())
+            {
+                os << ",\n    \"turningAreas\": [";
+                for (std::size_t i = 0; i < R.turningAreas.size(); ++i)
+                {
+                    const auto& ta = R.turningAreas[i];
+                    os << (i ? ",\n" : "\n") << "      { \"id\": " << esc("turningArea:" + ta.id)
+                       << ", \"area\": " << esc(ta.id)
+                       << ", \"x\": " << num(ta.x) << ", \"y\": " << num(ta.y)
+                       << ", \"diameter\": " << num(ta.diameter)
+                       << ", \"reason\": " << esc(ta.reason) << " }";
+                }
+                os << "\n    ]";
+            }
+            if (!R.truckRoutes.empty())
+            {
+                os << ",\n    \"truckRoutes\": [";
+                for (std::size_t i = 0; i < R.truckRoutes.size(); ++i)
+                {
+                    const auto& T = R.truckRoutes[i];
+                    os << (i ? ",\n" : "\n") << "      { \"id\": " << esc("truckRoute:" + T.id)
+                       << ", \"route\": " << esc(T.id)
+                       << ", \"from\": " << esc(T.from) << ", \"to\": " << esc(T.to)
+                       << ", \"verdict\": " << esc(T.verdict)
+                       << ", \"length\": " << num(T.length)
+                       << ", \"turns\": " << T.corners.size()
+                       << ", \"reversals\": " << T.reversals
+                       << ", \"weighbridge\": " << esc(T.weighbridge)
+                       << ", \"reason\": " << esc(T.reason) << ", \"roads\": [";
+                    for (std::size_t q = 0; q < T.roads.size(); ++q)
+                        os << (q ? ", " : "") << esc(T.roads[q]);
+                    os << "], \"serves\": [";
+                    for (std::size_t q = 0; q < T.serves.size(); ++q)
+                        os << (q ? ", " : "") << esc(T.serves[q]);
+                    os << "], \"path\": [";
+                    for (std::size_t q = 0; q < T.path.size(); ++q)
+                        os << (q ? ", " : "") << "[" << num(T.path[q][0]) << ", "
+                           << num(T.path[q][1]) << "]";
+                    os << "] }";
+                }
+                os << "\n    ],\n    \"routeCorners\": [";
+                bool first = true;
+                for (const auto& T : R.truckRoutes)
+                    for (std::size_t k = 0; k < T.corners.size(); ++k)
+                    {
+                        const auto& c = T.corners[k];
+                        os << (first ? "\n" : ",\n") << "      { \"id\": "
+                           << esc("routeCorner:" + T.id + ":" + std::to_string(k))
+                           << ", \"route\": " << esc(T.id)
+                           << ", \"turn\": " << esc(c.turn)
+                           << ", \"inRoad\": " << esc(c.inRoad)
+                           << ", \"outRoad\": " << esc(c.outRoad)
+                           << ", \"x\": " << num(c.x) << ", \"y\": " << num(c.y)
+                           << ", \"radius\": " << num(c.radius)
+                           << ", \"outerRadius\": " << num(c.outerRadius)
+                           << ", \"required\": " << num(c.required)
+                           << ", \"turningArea\": " << esc(c.turningArea)
+                           << ", \"ok\": " << (c.ok ? "true" : "false") << " }";
+                        first = false;
+                    }
+                os << (first ? "]" : "\n    ]");
+            }
         }
         //  THE FENCE (DEV.md 4c C93): its line (drawn from the plot), one
         //  line per gate opening and one per pipe crossing.  Absent without a
@@ -1563,7 +1642,10 @@ void emitResultJson(std::ostream& os, const SimulationResult& r)
                    << ", \"x\": " << num(o.x) << ", \"y\": " << num(o.y)
                    << ", \"width\": " << num(o.width)
                    << ", \"road\": " << esc(o.road)
-                   << ", \"gateDistance\": " << num(o.gateDistance) << " }";
+                   << ", \"gateDistance\": " << num(o.gateDistance)
+                   << ", \"approachX\": " << num(o.approachX)
+                   << ", \"approachY\": " << num(o.approachY)
+                   << ", \"approach\": " << num(o.approach) << " }";
             }
             os << (F.openings.empty() ? "]" : "\n    ]") << ",\n    \"fenceCrossings\": [";
             for (std::size_t i = 0; i < F.crossings.size(); ++i)
@@ -1580,6 +1662,42 @@ void emitResultJson(std::ostream& os, const SimulationResult& r)
                    << ", \"label\": " << esc(c.label) << " }";
             }
             os << (F.crossings.empty() ? "]" : "\n    ]");
+        }
+        //  THE CAR PARKS (DEV.md 4c C96): one line per car park -- the
+        //  declared count, what the footprint holds by the rule, the area, and
+        //  every bay as [x, y, ux, uy] (its centre and the way a car leaves
+        //  it), an ARRAY so the golden reads no number there.  Absent when no
+        //  car park is placed.  Pinned: `bays`, `capacity`, `area`.
+        if (!L.carParks.empty())
+        {
+            os << ",\n    \"carParks\": [";
+            for (std::size_t i = 0; i < L.carParks.size(); ++i)
+            {
+                const auto& c = L.carParks[i];
+                os << (i ? ",\n" : "\n") << "      { \"id\": " << esc("carPark:" + c.item)
+                   << ", \"item\": " << esc(c.item)
+                   << ", \"bays\": " << c.bays
+                   << ", \"capacity\": " << c.capacity
+                   << ", \"rows\": " << c.rows << ", \"perRow\": " << c.perRow
+                   << ", \"bayWidth\": " << num(c.bayWidth)
+                   << ", \"bayLength\": " << num(c.bayLength)
+                   << ", \"aisle\": " << num(c.aisle)
+                   << ", \"angle\": " << num(c.angleDeg)
+                   << ", \"arrangement\": " << esc(c.arrangement)
+                   << ", \"entry\": " << esc(c.entry)
+                   << ", \"exitsForward\": " << (c.exitsForward ? "true" : "false")
+                   << ", \"depth\": " << num(c.depth) << ", \"pitch\": " << num(c.pitch)
+                   << ", \"usableLength\": " << num(c.usableLength)
+                   << ", \"area\": " << num(c.area)
+                   << ", \"source\": " << esc(c.source)
+                   << ", \"reason\": " << esc(c.reason) << ", \"stalls\": [";
+                for (std::size_t q = 0; q < c.stalls.size(); ++q)
+                    os << (q ? ", " : "") << "[" << num(c.stalls[q][0]) << ", "
+                       << num(c.stalls[q][1]) << ", " << num(c.stalls[q][2]) << ", "
+                       << num(c.stalls[q][3]) << "]";
+                os << "] }";
+            }
+            os << "\n    ]";
         }
         os << ",\n    \"summary\": { \"id\": \"summary\", \"placed\": "
            << L.items.size() << ", \"unplaced\": " << L.unplaced.size()
