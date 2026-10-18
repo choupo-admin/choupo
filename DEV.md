@@ -1046,6 +1046,25 @@ accepts today, and that is a policy call.
 > capital must now carry.  Moved golden rows (layout area, pipe lengths)
 > listed for Vitor before re-recording.  Status: dispatched 2026-10-18.
 
+> **C88. THE 3D LAYOUT MADE TO LOOK LIKE A PLANT (Vitor, 2026-10-18: "E ve
+> se pões o layout com melhor aspecto!  Eu acho que ha bibliotecas para
+> renderizar o 3d para aquilo ficar top notch!").**  Measured:
+> `gui/src/ui/plotting/layoutRenderer.ts` (533 lines, the ONE drawing shared
+> by the app's pop-up and the exported viewer `gui/src/export/layoutViewer.ts`)
+> draws every item as a plain cylinder or box (:257, :261) under an ambient
+> + one directional light (:178-179), no shadows, no environment, no tone
+> mapping.  Commander's technical call: stay on three.js (already a
+> dependency, ^0.170) and its own shipped addons (RoomEnvironment, PBR
+> materials, soft shadows, ACES tone mapping, ambient occlusion / outline
+> post-processing) -- no new runtime library, so the exported viewer keeps
+> bundling with no network.  Equipment drawn by its KIND (the datasheet
+> rule: dispatch on the sheet's `equipment` word; an unknown kind keeps a
+> labelled box): vessels with heads and skirts, a column with platforms and
+> ladder, storage tanks with roofs and a bund, exchangers with channel heads
+> and saddles, pipes with elbows on a steel rack.  The engine's geometry
+> stays the truth: no dimension invented, decoration says it is decoration.
+> A quality toggle for weak laptops.  Status: dispatched 2026-10-18.
+
 > **C83. AN EDUTOOL: THE RADIATION OF A POOL FIRE AND THE DISTANCE IT
 > SETS (Vítor, 2026-10-17: "Faz essa EduTool da radiação do incêndio de
 > poça, se achares importante" -- the commander judged it important: it is
