@@ -1102,6 +1102,19 @@ accepts today, and that is a policy call.
 > existing `ammonia02_full_plant` (no new case); PEQ and acetic acid after
 > C87/C89 land.  Status: dispatched 2026-10-18.
 
+> **C91. THE LAYOUT WINDOW SIZED BY ITS READER (Vitor, 2026-10-18, with a
+> screenshot of the pop-out tab: "A window dos tubos tambem esta fixa.  Eu
+> acho que ha boas praticas como ter uma opcao de ver isso ou nao e
+> ajustar.  O que achas?").**  Measured: `LayoutPopOutTab.tsx` stacks the
+> explanatory text, the toolbar, a 3D view of fixed height
+> (`PlantLayout3D.tsx:114`, default 520 px; the tab shows it as a strip) and
+> the plot summary and pipe register below.  Agreed: the 3D view fills the
+> window and is resizable (drag handle, a fullscreen button); the
+> explanatory text, the plot summary and the pipe register become
+> collapsible panels (remembered per browser), the pipe register
+> optionally docked beside the view; the same in the exported page.  Handed
+> to the C90 general (same files, avoids two generals on one page).
+
 > **C88. THE 3D LAYOUT MADE TO LOOK LIKE A PLANT (Vitor, 2026-10-18: "E ve
 > se pões o layout com melhor aspecto!  Eu acho que ha bibliotecas para
 > renderizar o 3d para aquilo ficar top notch!").**  Measured:
