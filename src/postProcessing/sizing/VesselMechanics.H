@@ -56,8 +56,9 @@ namespace Choupo {
 namespace vesselMechanics {
 
 //  The wall a cylindrical shell of diameter `D_m` needs at `pressureDesign_bar`
-//  (GAUGE, as every `designRules { pressureDesign ...; }` in the corpus
-//  declares it), and the weight of the resulting shell of height `H_m`.
+//  (GAUGE -- the one reading every consumer takes since DEV.md 4c C86; corpus
+//  comments that derive it as 1.1 x an ABSOLUTE stream pressure carry that
+//  1 bar into the margin), and the weight of the shell of height `H_m`.
 struct Wall
 {
     scalar t_wall = 0.0;    // m

@@ -66,6 +66,8 @@ struct EquipCoeffs
     scalar S_ref     = 1.0;    // anchor size (same units as the sizeKey)
     scalar n_exp     = 0.6;    // power-law exponent
     scalar baseYear  = 2001.0; // CEPCI basis of this correlation
+    scalar P_FPunity = 0.0;    // [bar g] the polynomial F_P is 1 at or below
+                               //   this pressure (0: no sourced bound)
 };
 
 // Process Vessels (vertical/horizontal) — Turton table A.1
@@ -84,7 +86,17 @@ const EquipCoeffs hxCoeffs {
     1.63,   1.66,
     0.03881, -0.11272, 0.08183,
     10.0, 1000.0,
-    "A"
+    "A",
+    //  F_P = 1 AT OR BELOW 5 bar g (DEV.md 4c C86).  Read on 2026-10-18 from
+    //  CAPCOST 2017 (`capcost_2017_rev2.xlsm`, sha256 2747f01f...f428e4), VBA
+    //  module `exchangers`: for a fixed-tube, floating-head, bayonet or kettle
+    //  exchanger the polynomial is evaluated only `If sPressure > 5`, else
+    //  sFP = 1, on the larger of the shell and tube GAUGE pressures.  The
+    //  polynomial is anchored there (10^(C1 + C2 log 5 + C3 log^2 5) = 1.000)
+    //  and RISES below it -- 1.09 at 1 bar g, 1.71 at 0.1 bar g -- which the
+    //  program never evaluates.  The same sheet's Pmax is 140 bar g (cell
+    //  M126); nothing here checks it.
+    false, 0.0, 1.0, 0.6, 2001.0, 5.0
 };
 
 // Evaporator (long-tube / forced-circulation) — Turton 5th ed. App. A Table A.1
@@ -285,10 +297,12 @@ scalar log10Cp(const EquipCoeffs& c, scalar S)
     return c.K1 + c.K2 * logS + c.K3 * logS * logS;
 }
 
-// Polynomial pressure factor (Turton A.2 — heat exchangers, pumps, …).
+// Polynomial pressure factor (Turton A.2 — heat exchangers, pumps, …), on
+// GAUGE pressure.  F_P = 1 at or below the set's sourced lower bound
+// (`P_FPunity`), where the polynomial is not evaluated by its source.
 scalar pressureFactor_poly(const EquipCoeffs& c, scalar P_bar)
 {
-    if (P_bar <= 0.0) return 1.0;
+    if (P_bar <= 0.0 || P_bar <= c.P_FPunity) return 1.0;
     const scalar logP = std::log10(P_bar);
     const scalar fp = std::pow(10.0,
                                 c.C1 + c.C2 * logP + c.C3 * logP * logP);
@@ -644,10 +658,13 @@ CostBreakdown Turton::cost(const EquipmentSizing& dim, const Material& mat) cons
                            * (cepci_ / cepci2001_)
                            * usdToEur_;
 
-    // Pressure factor (gauge): P_gauge = P_design - 1 bar atmosphere
+    // Pressure factor on pressureDesign, which IS gauge (DEV.md 4c C86: the
+    // wall, the relief set pressure and the converter shell read it so, and
+    // so does docs/ai/case-layout.md).  Until C86 this line subtracted 1 bar,
+    // reading it as absolute.  Absent: 0 bar g.  Vacuum is priced at F_P = 1.
     const scalar P_des_bar  = dim.values.count("pressureDesign")
-        ? dim.values.at("pressureDesign") : 1.0;
-    const scalar P_gauge    = std::max(P_des_bar - 1.0, 0.0);
+        ? dim.values.at("pressureDesign") : 0.0;
+    const scalar P_gauge    = std::max(P_des_bar, 0.0);
     scalar F_P = 1.0;
     if (dim.equipmentType == "stirredTank" || dim.equipmentType == "vessel")
     {
