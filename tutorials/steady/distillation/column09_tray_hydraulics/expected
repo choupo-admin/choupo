@@ -53,8 +53,8 @@ equipment column09/condenser     values.U         500              1e-4
 equipment column09/condenser     values.pressureDesign 2                1e-4
 equipment column09/condenser     values.weight    1603.64426421    1e-4
 equipment column09/condenser     cost.purchased   36968.6421157    1e-4
-equipment column09/condenser     cost.bareModule  127363.377719    1e-4
-equipment column09/condenser     cost.totalModule 150288.785709    1e-4
+equipment column09/condenser     cost.bareModule  121626.832506    1e-4
+equipment column09/condenser     cost.totalModule 143519.662357    1e-4
 equipment column09/reboiler      basis            A_=_Q/(U*LMTD)_with_U_and_LMTD_author-set;_Q_is_the_column's_own_Q_reboiler_kW_KPI exact
 equipment column09/reboiler      values.A         47.5836818516    1e-4
 equipment column09/reboiler      values.LMTD      17               1e-4
@@ -63,8 +63,8 @@ equipment column09/reboiler      values.U         800              1e-4
 equipment column09/reboiler      values.pressureDesign 2                1e-4
 equipment column09/reboiler      values.weight    1427.51045555    1e-4
 equipment column09/reboiler      cost.purchased   35894.4254719    1e-4
-equipment column09/reboiler      cost.bareModule  123662.51525     1e-4
-equipment column09/reboiler      cost.totalModule 145921.767995    1e-4
+equipment column09/reboiler      cost.bareModule  118092.66066     1e-4
+equipment column09/reboiler      cost.totalModule 139349.339579    1e-4
 equipment column09/refluxDrum    basis            V_=_Q_condensate_*_residenceTime;_Q_condensate_is_the_overhead_vapour_condensed,_priced_at_the_LIQUID_density_of_the_top-tray_temperature;_D_and_H_from_L_over_D;_t_wall_ASME_thin-wall exact
 equipment column09/refluxDrum    values.D         0.801108904375   1e-4
 equipment column09/refluxDrum    values.H         2.40332671313    1e-4

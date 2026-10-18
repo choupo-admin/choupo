@@ -59,8 +59,8 @@ equipment heater                 values.U         600              1e-4
 equipment heater                 values.pressureDesign 2                1e-4
 equipment heater                 values.weight    2.03821656051    1e-4
 equipment heater                 cost.purchased   153419.363492    1e-4
-equipment heater                 cost.bareModule  901723.146057    1e-4
-equipment heater                 cost.totalModule 1064033.31235    1e-4
+equipment heater                 cost.bareModule  846015.738043    1e-4
+equipment heater                 cost.totalModule 998298.57089    1e-4
 equipment reactor                values.D         0.136556812651   1e-4
 equipment reactor                values.H         0.341392031628   1e-4
 equipment reactor                values.L_over_D  2.5              1e-4

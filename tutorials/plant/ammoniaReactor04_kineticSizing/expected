@@ -114,8 +114,8 @@ equipment converter/shell        values.pressureDesign 220              1e-4
 equipment converter/shell        values.t_wall    0.103520160842   1e-4
 equipment converter/shell        values.weight    20303.2797312    1e-4
 equipment converter/shell        cost.purchased   17042.9115524    1e-4
-equipment converter/shell        cost.bareModule  1587546.7808     1e-4
-equipment converter/shell        cost.totalModule 1873305.20134    1e-4
+equipment converter/shell        cost.bareModule  1595130.12416     1e-4
+equipment converter/shell        cost.totalModule 1882253.54651    1e-4
 equipment letdown                basis            drum_V_=_Q*tau   exact
 equipment letdown                values.D         0.557042536051   1e-4
 equipment letdown                values.H         1.67112760815    1e-4
@@ -126,8 +126,8 @@ equipment letdown                values.pressureDesign 25               1e-4
 equipment letdown                values.t_wall    0.00802745971165 1e-4
 equipment letdown                values.weight    184.287397729    1e-4
 equipment letdown                cost.purchased   4145.59208518    1e-4
-equipment letdown                cost.bareModule  18877.6931353    1e-4
-equipment letdown                cost.totalModule 22275.6778996    1e-4
+equipment letdown                cost.bareModule  19121.0346216    1e-4
+equipment letdown                cost.totalModule 22562.8208535    1e-4
 equipment separator              basis            drum_V_=_Q*tau   exact
 equipment separator              values.D         2.63244991833    1e-4
 equipment separator              values.H         7.897349755      1e-4
@@ -138,8 +138,8 @@ equipment separator              values.pressureDesign 220              1e-4
 equipment separator              values.t_wall    0.235026835751   1e-4
 equipment separator              values.weight    122800.123384    1e-4
 equipment separator              cost.purchased   62408.9762532    1e-4
-equipment separator              cost.bareModule  13008517.5553    1e-4
-equipment separator              cost.totalModule 15350050.7152    1e-4
+equipment separator              cost.bareModule  13072616.2267    1e-4
+equipment separator              cost.totalModule 15425687.1475    1e-4
 boundary global                 H_feeds_kW       104.859286489    1e-4
 boundary global                 Q_boundary_kW    -61651.9883008   1e-4
 boundary global                 H_products_kW    -61547.1431498   1e-4

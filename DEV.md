@@ -1022,6 +1022,15 @@ accepts today, and that is a policy call.
 > polynomial that Choupo's set carries as zeros; CompressorSize's 1.0 bar
 > default is unannounced.
 
+> **C86 item (2) MERGED 2026-10-18 on Vitor's ruling ("Sim, integra").**
+> `pressureDesign` is gauge for every reader; the exchanger F_P is 1 at or
+> below 5 bar g (CAPCOST 2017's own rule).  The 245 listed rows re-recorded
+> by editing exactly those rows (the commit names each); 15 cases 15/0,
+> `--gui` green (after `npm ci` restored three.js in the primary checkout's
+> node_modules).  The EduTool `materials` step 18 and its limit now teach
+> "read as gauge, written as absolute" and name the unchecked 140 bar g
+> ceiling.
+
 > **C83. AN EDUTOOL: THE RADIATION OF A POOL FIRE AND THE DISTANCE IT
 > SETS (Vítor, 2026-10-17: "Faz essa EduTool da radiação do incêndio de
 > poça, se achares importante" -- the commander judged it important: it is

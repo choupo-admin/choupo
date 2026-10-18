@@ -6,11 +6,11 @@ stream  hotStream              F                0.138888888889   1e-4
 stream  liqProd                F                0.125841050463   1e-4
 stream  reactorOut             F                0.138888888889   1e-4
 stream  vapProd                F                0.013047838426   1e-4
-kpi     economics              COM_d            221284025.781    1e-4
-kpi     economics              FCI              460663.338135    1e-4
-kpi     economics              NPV              -952491425.449   1e-4
-kpi     economics              TCI              529762.838855    1e-4
-kpi     economics              WC               69099.5007202    1e-4
+kpi     economics              COM_d            221281761.453    1e-4
+kpi     economics              FCI              448083.733462    1e-4
+kpi     economics              NPV              -952468385.29   1e-4
+kpi     economics              TCI              515296.293481    1e-4
+kpi     economics              WC               67212.5600193    1e-4
 kpi     economics              revenue          25155181.8032    1e-4
 kpi     heater                 F                0.138888888889   1e-4
 kpi     heater                 P                101325           1e-4
@@ -65,8 +65,8 @@ equipment heater                 values.U         600              1e-4
 equipment heater                 values.pressureDesign 2                1e-4
 equipment heater                 values.weight    382.165605096    1e-4
 equipment heater                 cost.purchased   29359.7403618    1e-4
-equipment heater                 cost.bareModule  172562.034178    1e-4
-equipment heater                 cost.totalModule 203623.20033     1e-4
+equipment heater                 cost.bareModule  161901.352251    1e-4
+equipment heater                 cost.totalModule 191043.595657     1e-4
 equipment reactor                values.D         1.59717816986    1e-4
 equipment reactor                values.H         3.99294542466    1e-4
 equipment reactor                values.L_over_D  2.5              1e-4

@@ -6,11 +6,11 @@ stream  hotStream              F                0.138888888889   1e-4
 stream  liqProd                F                0.126899267211   1e-4
 stream  reactorOut             F                0.138888888889   1e-4
 stream  vapProd                F                0.011989621678   1e-4
-kpi     economics              COM_d            221259089.194    1e-4
-kpi     economics              FCI              407855.018165    1e-4
-kpi     economics              NPV              -964623359.271   1e-4
-kpi     economics              TCI              469033.27089     1e-4
-kpi     economics              WC               61178.2527248    1e-4
+kpi     economics              COM_d            221256824.865    1e-4
+kpi     economics              FCI              395275.413492    1e-4
+kpi     economics              NPV              -964600319.112   1e-4
+kpi     economics              TCI              454566.725516     1e-4
+kpi     economics              WC               59291.3120238    1e-4
 kpi     economics              revenue          22620564.309     1e-4
 kpi     heater                 F                0.138888888889   1e-4
 kpi     heater                 P                101325           1e-4
@@ -65,8 +65,8 @@ equipment heater                 values.U         600              1e-4
 equipment heater                 values.pressureDesign 2                1e-4
 equipment heater                 values.weight    382.165605096    1e-4
 equipment heater                 cost.purchased   29359.7403618    1e-4
-equipment heater                 cost.bareModule  172562.034178    1e-4
-equipment heater                 cost.totalModule 203623.20033     1e-4
+equipment heater                 cost.bareModule  161901.352251    1e-4
+equipment heater                 cost.totalModule 191043.595657     1e-4
 equipment reactor                values.D         1.36556812651    1e-4
 equipment reactor                values.H         3.41392031628    1e-4
 equipment reactor                values.L_over_D  2.5              1e-4
