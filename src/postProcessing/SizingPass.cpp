@@ -33,6 +33,7 @@ License
 #include "sizing/MaterialLimits.H"
 #include "sizing/Inventory.H"
 #include "sizing/StorageTankSize.H"
+#include "sizing/GasStoreSize.H"
 
 #include <algorithm>
 #include <filesystem>
@@ -78,6 +79,15 @@ void reportInventory(const SimulationResult& result,
                  "=================\n";
     std::cout << "  m = V x fraction x rho x w, each phase at the state of the"
                  " stream named for it\n";
+    //  A GAS STORE (C89) holds its stream's gas at the STORE's own state, not
+    //  the stream's: said, and only where one is present.
+    for (const auto& [id, sz] : result.sizings)
+        if (sz.inventory.present() && sz.values.count("P_max"))
+        {
+            std::cout << "  (a gas store's vessels: their stream's gas at the"
+                         " store's maxPressure and temperature)\n";
+            break;
+        }
     std::cout << "  " << std::left << std::setw(22) << "item"
               << std::setw(8)  << "phase"
               << std::setw(22) << "stream"
@@ -208,7 +218,12 @@ int SizingPass::run(SimulationResult& result)
         ? sizingDict_->lookupDictList("units") : std::vector<DictPtr>{};
     const std::vector<DictPtr> stores = sizingDict_->found("storage")
         ? sizingDict_->lookupDictList("storage") : std::vector<DictPtr>{};
-    if (units.empty() && stores.empty())
+    //  A THIRD: `gasStorage ( ... )`, a gas buffer in pressure vessels
+    //  attached to a stream (DEV.md 4c C89; `GasStoreSize.H` says why it is
+    //  its own list rather than a word inside `storage`).
+    const std::vector<DictPtr> gasStores = sizingDict_->found("gasStorage")
+        ? sizingDict_->lookupDictList("gasStorage") : std::vector<DictPtr>{};
+    if (units.empty() && stores.empty() && gasStores.empty())
     {
         std::cerr << "SizingPass: 'units (...)' is empty — nothing to size.\n";
         return 0;
@@ -229,6 +244,8 @@ int SizingPass::run(SimulationResult& result)
     for (const auto& u : units)
         wName = std::max(wName, u->lookupWordOrDefault("unitName", "").size() + 2);
     for (const auto& st : stores)
+        wName = std::max(wName, st->lookupWordOrDefault("name", "").size() + 2);
+    for (const auto& st : gasStores)
         wName = std::max(wName, st->lookupWordOrDefault("name", "").size() + 2);
 
     std::cout << "\n========================  Equipment Sizing  ==========================\n";
@@ -593,6 +610,40 @@ int SizingPass::run(SimulationResult& result)
                       << "  FAILED: " << e.what() << "\n";
             ++failures;
             notSized.push_back(sname.empty() ? std::string("(storage)") : sname);
+            result.sizingRefusals[notSized.back()] = e.what();
+        }
+    }
+
+    //  ---- THE GAS STORES (C89) ---------------------------------------------
+    //  The same shape as the tanks: `GasStoreSize` constructed here, each
+    //  vessel printed by `emitItem`; its inventory (the full charge at
+    //  maxPressure) is computed by the sizer, which alone knows that state.
+    if (!gasStores.empty())
+        std::cout << "  -- gas storage (pressure vessels attached to streams)\n";
+    for (const auto& st : gasStores)
+    {
+        const std::string sname = st->lookupWordOrDefault("name", "");
+        try {
+            if (sname.empty())
+                throw std::runtime_error("a `gasStorage` entry has no `name`");
+            if (!st->found("material"))
+                throw std::runtime_error("gas store '" + sname + "': `material`"
+                    " is not declared");
+            const std::string matName = st->lookupWord("material");
+            const auto& material = MaterialRegistry::byName(matName);
+            GasStoreSize sizer;
+            for (auto& dims : sizer.size(sname, result, material, st))
+            {
+                const std::string kind = dims.equipmentType;
+                emitItem(sname, kind, matName, std::move(dims));
+            }
+        }
+        catch (const std::exception& e)
+        {
+            std::cerr << "  " << (sname.empty() ? std::string("(gasStorage)") : sname)
+                      << "  FAILED: " << e.what() << "\n";
+            ++failures;
+            notSized.push_back(sname.empty() ? std::string("(gasStorage)") : sname);
             result.sizingRefusals[notSized.back()] = e.what();
         }
     }

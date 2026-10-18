@@ -341,6 +341,17 @@ WHAT THIS CHECKS:
             count); the old `material\\.maxP` pattern would have missed the
             first.
 
+  (u) A GAS BUFFER IS SIZED FROM THE GAS IT GIVES BACK (2026-10-18, DEV.md
+      4c C89).  On `greenAmmoniaPEQ_baseCase` the H2 buffer attached to
+      `H2Feed` (`gasStorage ( ... )`) has its two SRK densities RECOMPUTED
+      from the case's records, its working gas, vessel count, volume,
+      diameter, wall and weight from the postDict's declarations, each
+      vessel's three costs on the Turton vertical vessel set and its pressure
+      factor, its inventory and the raw-material stock it adds to the working
+      capital, its sheets, its standing placement at its own D and H, and the
+      charging compressor's NOT-INCLUDED caveat; four copies refuse BY NAME.
+      Sabotages in `check_gas_store`.
+
   (l) THE GUI FIXTURE IS STILL THE ENGINE'S OWN OUTPUT.  The readers' unit
       tests run on a TRANSCRIPTION of a sheet, because arm (g) keeps `design/`
       gitignored and no committed file can be read from a test.  This arm runs
@@ -2549,7 +2560,12 @@ def check_inventory(problems, notes):
     for f in (case / "constant" / "components").glob("*.dat"):
         mw[f.stem] = _record_scalars(f, ("MW",))["MW"]
 
-    lines = [l for l in out.splitlines() if '"inventory": {' in l]
+    #  A GAS STORE's vessels hold their stream's gas at the STORE's state, not
+    #  the stream's: arm (u) recomputes them, so this arm leaves them alone.
+    gas_stores = set(re.findall(r'\bgasStorage\s*\(\s*\{[^}]*?\bname\s+(\w+)',
+                                post_nc))
+    lines = [l for l in out.splitlines() if '"inventory": {' in l
+             and re.search(r'"unit": "([^"]+)"', l).group(1) not in gas_stores]
     seen, tank_total, n_phase = set(), 0.0, 0
     for line in lines:
         item = re.search(r'"item": "([^"]+)"', line).group(1)
@@ -3211,6 +3227,234 @@ def check_material_limits(problems, notes):
                         "announcements in AdvisoryLog" % tag)
 
 
+def check_gas_store(problems, notes):
+    """(u) A GAS BUFFER IS SIZED FROM THE GAS IT GIVES BACK, ON THE CASE'S OWN
+    EQUATION OF STATE (2026-10-18, DEV.md 4c C89).  On
+    `greenAmmoniaPEQ_baseCase`, whose postDict attaches `H2Buffer` to the
+    boundary stream `H2Feed` (`gasStorage ( ... )`), everything is RECOMPUTED
+    here from the postDict's own declarations, the stream's published state
+    and the case's component records -- never read off the sheet it checks:
+
+      * rho(Pmax, T) and rho(Pmin, T): the SRK vapour root with kij = 0 (the
+        case's own package; `_srk_vapour_rho`), at the stream's composition;
+      * m_work = autonomy x F_mass; V_total = m_work / (rho_max - rho_min);
+        N = ceil(V_total / maxVesselVolume); V_R = V_total / N; D from L/D;
+        the wall t = P_g D / (2 sigma E - 1.2 P_g) + c at P_g = Pmax - 1 atm,
+        and the weight rho_steel pi D H t, from the material record;
+      * each vessel's three costs on the Turton VERTICAL vessel set this gate
+        transcribes (`VESSEL_VERTICAL`), the vessel pressure factor
+        max((t_w + 0.00315)/0.0063, 1) on the uncorroded wall, the record's
+        F_M and the costing block's index and currency;
+      * each vessel's inventory = V_R x rho_max; the economics' raw-material
+        stock = the buffer's full charge x the H2Feed purchase price (the
+        case declares 0 days of stock for every raw material);
+      * exactly N sheets `design/H2Buffer/vessel1..N` carrying V_R; every
+        vessel PLACED on the plot plan at its own D and H, standing;
+      * the charging compressor NOT INCLUDED is in the run's caveat record;
+      * four copies, each REFUSED BY NAME while the run exits 0: maxPressure
+        equal to minPressure, minPressure below the line's own 30 bar,
+        autonomy with no unit, and the store attached to the LIQUID
+        ProductNH3.
+
+    SABOTAGES, BY HAND, 2026-10-18, each restored with `cp` and the engine
+    rebuilt; the gate then returned OK:
+      S1  GasStoreSize.cpp: dRho = rhoMax (the cushion forgotten)  -> FAILED:
+          "greenAmmoniaPEQ_baseCase failed (rc=2)" -- the store shrank to 7
+          vessels and the case's plot plan, which places ten, REFUSED the run
+          ("item `H2Buffer/vessel8` names no sized item").  Caught, but by the
+          layout and not by the value arm; S2 is the one that reaches the
+          values.
+      S2  GasStoreSize.cpp: pressureDesign = Pmax * 1e-5 (ABSOLUTE)  -> FAILED
+          (50 lines): "values.pressureDesign = 100, recomputed 98.98675", the
+          wall (0.20291 against 0.20079 m), the weight and the two module
+          costs, on every vessel.
+      S3  GasStoreSize.cpp: the minPressure-below-the-line refusal disabled
+          (`false &&`)  -> FAILED: "the copy with minPressure below the line's
+          pressure failed (rc=2)" -- the copy sized a different number of
+          vessels and its plot plan refused the run, so the absent refusal
+          surfaced as a run failure, not as the missing message.
+      S4  GasStoreSize.cpp: the charging-compressor AdvisoryLog entry removed
+          (the console line kept)  -> FAILED: "the charging compressor is not
+          in the run's caveat record".
+    NOT CHECKED: whether 2 h, 100 bar, 32 bar and 400 m3 are the right design
+    basis (the case's declared assumptions), whether SRK is the TRUE density
+    of hydrogen at 100 bar, and whether Turton's vessel pressure factor --
+    linear in a 200 mm wall -- is meant to price a vessel that thick (the
+    README says what it does to the FCI)."""
+    tag = "check_design_sheet(u)"
+    case = ROOT / HXROUTE
+    post = (case / "system" / "postDict").read_text(errors="replace")
+    post_nc = re.sub(r'//[^\n]*', '', re.sub(r'/\*.*?\*/', '', post, flags=re.S))
+    m = re.search(r'\bgasStorage\s*\(\s*\{([^}]*)\}', post_nc)
+    if not m:
+        problems.append("%s: %s declares no `gasStorage ( { ... } )` entry -- "
+                        "this arm CANNOT RUN; it must not pass." % (tag, HXROUTE))
+        return
+    ent = m.group(1)
+
+    def word(k):
+        mm = re.search(r'\b%s\s+(\w+)\s*;' % k, ent)
+        return mm.group(1) if mm else None
+
+    def num(k):
+        mm = re.search(r'\b%s\s+([-0-9.eE+]+)\s*(\w*)\s*;' % k, ent)
+        return (float(mm.group(1)), mm.group(2)) if mm else (None, None)
+
+    name, stream, mat = word("name"), word("stream"), word("material")
+    aut, aut_u = num("autonomy")
+    pmax, pmax_u = num("maxPressure")
+    pmin, pmin_u = num("minPressure")
+    T, T_u = num("temperature")
+    vmax, _ = num("maxVesselVolume")
+    LD, _ = num("L_over_D")
+    ca, _ = num("corrosionAllow")
+    je, _ = num("jointEfficiency")
+    if None in (name, stream, mat, aut, pmax, pmin, T, vmax, LD, ca, je) or \
+            aut_u not in ("h", "day") or pmax_u != "bar" or pmin_u != "bar" \
+            or T_u != "K":
+        problems.append("%s: the gasStorage entry does not declare name/stream/"
+                        "material/autonomy (h or day)/maxPressure and "
+                        "minPressure (bar)/temperature (K)/maxVesselVolume/"
+                        "L_over_D/corrosionAllow/jointEfficiency -- nothing to "
+                        "recompute." % tag)
+        return
+    aut_h = aut if aut_u == "h" else aut * 24.0
+    Pmax, Pmin = pmax * 1.0e5, pmin * 1.0e5
+
+    cm = re.search(r'\bcosting\s*\{([^}]*)\}', post_nc)
+    cepci = float(re.search(r'\bcepci\s+([0-9.]+)', cm.group(1)).group(1))
+    cepci01 = float(re.search(r'\bcepci2001\s+([0-9.]+)', cm.group(1)).group(1))
+    fx = float(re.search(r'\busdToEur\s+([0-9.]+)', cm.group(1)).group(1))
+    rec = _record_scalars(ROOT / "data/standards/assets" / (mat + ".dat"),
+                          ("sigma_y", "density", "F_M"))
+
+    rc, out, err = run_case(HXROUTE)
+    if rc != 0:
+        problems.append("%s: %s failed (rc=%d)." % (tag, HXROUTE, rc))
+        return
+    sj = _stream_json(out, stream)
+    if sj is None:
+        problems.append("%s: stream %s is not in the result JSON." % (tag, stream))
+        return
+    rho_max = _srk_vapour_rho(case, sj["comp"], T, Pmax)
+    rho_min = _srk_vapour_rho(case, sj["comp"], T, Pmin)
+    m_work = aut_h * 3600.0 * sj["F_mass"]
+    V_total = m_work / (rho_max - rho_min)
+    N = max(1, math.ceil(V_total / vmax - 1e-9))
+    V_R = V_total / N
+    D = (4.0 * V_R / (math.pi * LD)) ** (1.0 / 3.0)
+    H = LD * D
+    Pg = (Pmax - 101325.0) * 1.0e-5                     # bar g
+    sig = rec["sigma_y"] * 1.0e6
+    t = Pg * 1.0e5 * D / (2.0 * sig * je - 1.2 * Pg * 1.0e5) + ca
+    weight = rec["density"] * math.pi * D * H * t
+    K1, K2, K3, B1, B2 = VESSEL_VERTICAL
+    lv = math.log10(V_R)
+    cp = 10.0 ** (K1 + K2 * lv + K3 * lv * lv) * cepci / cepci01 * fx
+    t_w = D * Pg / (2.0 * (rec["sigma_y"] * 10.0 - 0.6 * Pg))
+    FP = max((t_w + 0.00315) / 0.0063, 1.0)
+    cbm = cp * (B1 + B2 * rec.get("F_M", 1.0) * FP)
+    want = {"values.V_R": V_R, "values.V_total": V_total, "values.nVessels": N,
+            "values.D": D, "values.H": H, "values.t_wall": t,
+            "values.weight": weight, "values.pressureDesign": Pg,
+            "values.m_working": m_work, "values.rho_max": rho_max,
+            "values.rho_min": rho_min, "inventory.mass.total": V_R * rho_max,
+            "cost.purchased": cp, "cost.bareModule": cbm,
+            "cost.totalModule": 1.18 * cbm}
+
+    eq = [l for l in out.splitlines() if '"item": "%s/vessel' % name in l]
+    if len(eq) != N:
+        problems.append("%s: %s should be %d vessel(s) (V_total %.6g m3 / at "
+                        "most %.6g m3), the result carries %d."
+                        % (tag, name, N, V_total, vmax, len(eq)))
+    for line in eq:
+        item = re.search(r'"item": "([^"]+)"', line).group(1)
+        if '"type": "vessel"' not in line:
+            problems.append("%s: %s is not sized AS a `vessel`." % (tag, item))
+        for key, w in want.items():
+            sub, k = key.split(".", 1)
+            blk = re.search(r'"%s": \{([^}]*)' % sub, line)
+            g = re.search(r'"%s": *(-?[0-9.eE+]+)' % re.escape(k),
+                          blk.group(1) if blk else "")
+            if not g or not close(float(g.group(1)), w, 1e-6):
+                problems.append("%s: %s %s = %s, recomputed %.9g (%g h x "
+                                "F_mass %.9g kg/s / (rho %.9g - %.9g) kg/m3 at "
+                                "%g/%g bar, %g K; at most %g m3; L/D %g)."
+                                % (tag, item, key, g.group(1) if g else "(absent)",
+                                   w, aut_h, sj["F_mass"], rho_max, rho_min,
+                                   pmax, pmin, T, vmax, LD))
+        vtag = item.split("/", 1)[1]
+        f = case / "design" / name / vtag
+        if not f.is_file():
+            problems.append("%s: no sheet design/%s/%s." % (tag, name, vtag))
+        else:
+            sz = parse_sheet(f.read_text(errors="replace"))["sizing"]
+            if "V_R" not in sz or not close(sz["V_R"][0], V_R, 1e-6):
+                problems.append("%s: sheet design/%s/%s V_R %s against %.9g."
+                                % (tag, name, vtag, sz.get("V_R"), V_R))
+        lay = next((l for l in out.splitlines()
+                    if '"id": "%s"' % item in l and '"footprintFrom"' in l), "")
+        dx = re.search(r'"dx": *([-0-9.eE+]+)', lay)
+        dz = re.search(r'"dz": *([-0-9.eE+]+)', lay)
+        if not (lay and '"orientation": "vertical"' in lay and dx and dz
+                and close(float(dx.group(1)), D, 1e-6)
+                and close(float(dz.group(1)), H, 1e-6)):
+            problems.append("%s: %s is not placed STANDING on the plot plan at "
+                            "its own D %.6g m and H %.6g m." % (tag, item, D, H))
+
+    #  The buffer's full charge is the H2 raw-material stock, at its price.
+    econ = (case / "constant" / "economics").read_text(errors="replace")
+    pm = re.search(r'\bstream\s+%s\s*;[^}]*?\bprice\s+([0-9.eE+-]+)' % stream,
+                   re.sub(r'//[^\n]*', '', econ), re.S)
+    wc = re.search(r'"WC_rawMaterialStock": *([-0-9.eE+]+)', out)
+    if not pm or not wc or not close(float(wc.group(1)),
+                                     N * V_R * rho_max * float(pm.group(1)), 1e-6):
+        problems.append("%s: WC_rawMaterialStock = %s, and the full buffer x "
+                        "the %s price is %s." % (tag, wc.group(1) if wc else
+                        "(absent)", stream, (N * V_R * rho_max * float(
+                            pm.group(1))) if pm else "(no price)"))
+    if not re.search(r'"category": "costing"[^\n]*CHARGING COMPRESSOR', out):
+        problems.append("%s: the charging compressor is not in the run's "
+                        "caveat record -- the buffer's cost is a lower bound "
+                        "and must say so." % tag)
+
+    def edit_store(f):
+        return lambda tx: re.sub(r'(\bgasStorage\s*\(\s*\{)([^}]*)(\})',
+                                 lambda mm: mm.group(1) + f(mm.group(2)) + mm.group(3),
+                                 tx, count=1)
+    probes = (
+        ("maxPressure equal to minPressure",
+         edit_store(lambda e: re.sub(r'maxPressure\s+[^;]*;',
+                                     'maxPressure %g bar;' % pmin, e)),
+         r'is not above minPressure'),
+        ("minPressure below the line's pressure",
+         edit_store(lambda e: re.sub(r'minPressure\s+[^;]*;',
+                                     'minPressure 25 bar;', e)),
+         r'is BELOW the pressure of stream'),
+        ("autonomy with no unit",
+         edit_store(lambda e: re.sub(r'autonomy\s+[^;]*;', 'autonomy 2;', e)),
+         r'`autonomy` carries no unit'),
+        ("the store attached to the LIQUID ProductNH3",
+         edit_store(lambda e: re.sub(r'\bstream\s+\w+\s*;', 'stream ProductNH3;', e)),
+         r'is a liquid'),
+    )
+    for what, ed, pat in probes:
+        dst, rcp, outp, errp = _run_copy(case, ed)
+        if rcp != 0:
+            problems.append("%s: the copy with %s failed (rc=%d) -- a refused "
+                            "store must refuse the ITEM, never the run."
+                            % (tag, what, rcp))
+        elif not re.search(r'%s\s+FAILED:[^\n]*%s' % (name, pat), outp + errp):
+            problems.append("%s: a copy with %s is not refused BY NAME (/%s/)."
+                            % (tag, what, pat))
+        shutil.rmtree(dst.parent, ignore_errors=True)
+
+    notes.append("gas store: %s on %s, %d vessel(s) of %.1f m3 (D %.3f m, wall "
+                 "%.1f mm) recomputed from %g h x %.4g kg/s / (%.4f - %.4f) "
+                 "kg/m3 SRK; four refusals" % (name, stream, N, V_R, D,
+                 t * 1000.0, aut_h, sj["F_mass"], rho_max, rho_min))
+
+
 def main() -> int:
     problems, notes = [], []
 
@@ -3235,6 +3479,7 @@ def main() -> int:
     check_inventory(problems, notes)
     check_exchanger_design(problems, notes)
     check_material_limits(problems, notes)
+    check_gas_store(problems, notes)
 
     check_ignored(problems)
     check_refusal(problems)
@@ -3297,7 +3542,14 @@ def main() -> int:
           "and reboiler once each, replayed, while the shipped column is "
           "silent; no sizer compares a record limit outside "
           "sizing/MaterialLimits, and every sizer calls it at least as often "
-          "as it publishes a pressureDesign), each "
+          "as it publishes a pressureDesign) and on the gas-store witness "
+          "(the H2 buffer's working gas, vessel count, volume, diameter, wall, "
+          "weight, inventory and three costs RECOMPUTED from its declared "
+          "autonomy and pressures, the stream's own mass flow and SRK "
+          "densities from the case's records; its full charge priced as "
+          "raw-material stock; every vessel placed standing at its own D and "
+          "H; the charging compressor in the caveat record; four malformed "
+          "declarations refused BY NAME), each "
           "at the address its own "
           "sizing.csv row dictates (sector directory where the row names a "
           "sector, NO extra level where it does not); every `sizing {}` entry "

@@ -188,11 +188,59 @@ Two things a group should read before quoting the tanks:
   is ~12 % larger. Correcting a record is a curation act and was not done
   in this case.
 
-Not stored here, by decision: the **hydrogen buffer** and the **nitrogen
-supply** belong to the electrolyser and the air separation unit, outside
-this battery limit. Adding a store is one more entry in `storage ( ... )`;
-a *gas* is refused by name, because a gas store is a pressure vessel or a
-holder, which the tank sizer does not model.
+Not stored here, by decision: the **nitrogen supply** belongs to the air
+separation unit, outside this battery limit. A *gas* is refused by the tank
+sizer by name: a gas is stored in pressure vessels (next section).
+
+### The hydrogen buffer
+
+The electrolysers follow an intermittent renewable supply; the synthesis
+loop wants a steady feed. Between them sits a **hydrogen buffer**:
+`H2Buffer`, attached to the boundary stream `H2Feed` (`gasStorage ( ... )`
+in `system/postDict`). A pressure vessel gives back only the gas between
+its full state and the state it must keep to deliver at the pressure the
+make-up train needs, so
+
+    working gas  = autonomy × ṁ(H2Feed)
+    V_total      = working gas / (ρ(P_max, T) − ρ(P_min, T))
+
+with both densities from the case's **own** property package (SRK). The run
+prints the compressibility at both ends — hydrogen is supercritical here and
+SRK puts it a few per cent *above* the ideal gas (Z ≈ 1.05 at 100 bar), so
+the ideal gas would oversize the working gas per m³. The volume is split
+into equal **standing** vessels of at most `maxVesselVolume` (standing
+because the Turton vessel set that costs them is the vertical one), each
+wall by the ASME thin-wall rule at P_max read as gauge.
+
+Every number in the basis is a design assumption, not a datum: **2 h** of
+autonomy at full rate (a short-term buffer against a cloud or a wind lull —
+a day/night or seasonal buffer is a different store, a cavern or a
+pipeline, and the groups' question); **P_max 100 bar**, the carbon-steel
+record's own rating; **P_min 32 bar**, the 30 bar make-up suction plus 2
+bar for the let-down valve; **313.15 K**, the stream's own; at most **400
+m³** per vessel. The run gives ten vessels of about 362 m³ (D 5.36 m × H
+16.1 m) with **200 mm walls**, holding 26.6 t of hydrogen full, of which
+17.8 t is working gas and 8.8 t is cushion that never leaves.
+
+Three things to read before quoting the buffer:
+
+* **It dominates the capital.** Turton's vessel pressure factor grows with
+  the wall thickness, and a 200 mm wall gives F_P ≈ 32: each vessel costs
+  about 30 M€ installed and the buffer alone about 300 M€, several times the
+  rest of the plant. Whether that correlation is meant to price a wall that
+  thick is not checked here; that two hours of hydrogen cost more than the
+  synthesis loop is the lesson to argue with, and the hours, the pressures
+  and the vessel size are the levers.
+* **It is a lower bound.** The *charging compressor* that takes the
+  hydrogen from 30 bar to 100 bar is not in the flowsheet: neither it nor
+  its power is sized or priced, and the run says so on every run.
+* **The hours are assumed**, not derived from a renewable-power profile.
+
+The hydrogen the full buffer holds is **raw-material stock** in the working
+capital, at its purchase price. The vessels are placed on the plot plan
+south-west of the make-up train, each with its own hydrogen release zone;
+like the ammonia tanks they are not on a routed pipe, because a store is
+not a flowsheet unit.
 
 ### What each item holds
 
@@ -289,7 +337,7 @@ Instead of the usual 15 % of the fixed capital, this case **builds it up**
 
 | line | rule (this case) |
 |---|---|
-| raw-material stock | 0 days — H₂ and N₂ arrive by pipe; their buffers are outside the battery limit |
+| raw-material stock | the hydrogen the full buffer holds, at its purchase price; 0 days of nitrogen, which arrives by pipe from the ASU |
 | process inventory | what the vessels hold (above), at cost |
 | product stock | what the two tanks hold — 21 days of production — at the **cost of making it** (COM_d per kg of product), never at its sales price |
 | receivables | 30 days of sales |
@@ -304,10 +352,13 @@ per kilogram. The run prints the build-up line by line, both totals, and
 the 15 %-of-FCI figure beside them for comparison; it writes them to
 `reports/economics/workingCapital.csv`. The days are design-basis
 assumptions for this case, not data. Here the product stock and the
-receivables dominate, and the net working capital comes out several times
-larger than 15 % of the fixed capital — because the fixed capital excludes
-the electrolysers and the ASU while the raw materials and product are
-priced in full.
+receivables dominate. Before the hydrogen buffer was sized (DEV.md 4c
+C89) the net working capital came out several times larger than 15 % of
+the fixed capital — the fixed capital excludes the electrolysers and the
+ASU while the raw materials and product are priced in full; with the
+buffer's vessels in the fixed capital the two figures are of the same
+order. The hydrogen the buffer holds adds little to the working capital
+(26.6 t at 4.50 EUR/kg); what it adds to the fixed capital is the lesson.
 
 ## Plant layout
 
@@ -327,8 +378,9 @@ site data**, stated so on each line with its `source` and `reason`. None
 comes from a spacing or hazardous-area standard: Choupo ships no such table
 (the published ones grant no redistribution), so a real project takes its
 numbers from the standard its client specifies and from the site's wind
-rose. The nine cylinders (the coolers, the converter and the drums) take
-their size from their own design sheets; the compressors, the FEHE (four
+rose. The nine cylinders (the coolers, the converter and the drums) and the
+ten hydrogen-buffer vessels take their size from their own design sheets;
+the compressors, the FEHE (four
 shells), the two ammonia tanks, the control room and the electrical
 substation have DECLARED boxes, because their sizers publish no diameter
 and length — the engine will not invent one.

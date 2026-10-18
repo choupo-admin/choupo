@@ -533,8 +533,9 @@ def check_working_capital(fails):
         NEVER at the sales price;
       * process inventory = the held `mass.<c>` of every item that is not a
         product tank x its unit cost; product stock = the product tanks';
-        raw-material stock = days/365 x the purchases of each raw material
-        (no raw-material tank here);
+        raw-material stock = what a store attached to a raw-material stream
+        holds (the H2 buffer, `gasStorage`, since DEV.md 4c C89) + days/365
+        x the purchases of each raw material with no store;
       * receivables = days/365 x R, minimum cash = days/365 x COM_d,
         payables = days/365 x C_RM;
       * gross = the five assets, NET = gross - payables, and the run's `WC`
@@ -626,9 +627,21 @@ def check_working_capital(fails):
                 best[c] = (kg, pr)
     cost = lambda c: best[c][1] if c in best else c_prod
 
-    tank_stream = re.search(r'\bstorage\s*\(\s*\{[^}]*\bstream\s+(\w+)', post).group(1)
+    #  EVERY STORE ATTACHED TO A STREAM -- a `storage` tank or, since DEV.md
+    #  4c C89, a `gasStorage` buffer -- is that stream's stock: a product's
+    #  in the product stock, a raw material's in the raw-material stock (and
+    #  that raw material then carries no days of purchases).
+    store_stream = {}
+    for lst in ("storage", "gasStorage"):
+        for blk in re.findall(r'\b%s\s*\(\s*(.*?)\n\s*\);' % lst, post, re.S):
+            for body in re.findall(r'\{([^}]*)\}', blk):
+                nm = re.search(r'\bname\s+(\w+)', body)
+                st = re.search(r'\bstream\s+(\w+)', body)
+                if nm and st:
+                    store_stream[nm.group(1)] = st.group(1)
     prod_streams = {s for s, _ in prods}
-    proc, prodstock = 0.0, 0.0
+    raw_streams = {s for s, _ in raws}
+    proc, prodstock, rawstock, raw_with_store = 0.0, 0.0, 0.0, set()
     for line in out.splitlines():
         if '"inventory": {' not in line:
             continue
@@ -637,13 +650,19 @@ def check_working_capital(fails):
             r'"mass\.(\w+)": *(-?[0-9][0-9.eE+-]*)',
             re.search(r'"inventory": \{([^}]*)\}', line).group(1)))
         v = sum(kg * cost(c) for c, kg in inv.items() if c != "total")
-        if item.startswith(re.search(r'\bstorage\s*\(\s*\{[^}]*\bname\s+(\w+)',
-                                     post).group(1) + "/") and tank_stream in prod_streams:
+        st = store_stream.get(item.split("/", 1)[0]) if "/" in item else None
+        if st in prod_streams:
             prodstock += v
+        elif st in raw_streams:
+            rawstock += v
+            raw_with_store.add(st)
         else:
             proc += v
+    C_RM_nostore = sum(pr * stream(s)[0] * 3600.0 * H for s, pr in raws
+                       if s not in raw_with_store)
     want = {
-        "WC_rawMaterialStock": days["rawMaterialStock"] / 365.0 * C_RM,
+        "WC_rawMaterialStock": rawstock
+                               + days["rawMaterialStock"] / 365.0 * C_RM_nostore,
         "WC_processInventory": proc,
         "WC_productStock": prodstock,
         "WC_receivables": days["receivables"] / 365.0 * R,
@@ -659,6 +678,10 @@ def check_working_capital(fails):
         "grossMargin_RM": R - C_RM,
         "grossMargin_RM_UT": R - C_RM - e.get("C_UT", float("nan")),
     }
+    if not raw_with_store and "gasStorage" in post:
+        fails.append("(q) the case declares a `gasStorage` buffer and no item "
+                     "of it holds a priced raw material -- the raw-material "
+                     "stock half of this arm went unexercised")
     want["WC_gross"] = (want["WC_rawMaterialStock"] + proc + prodstock
                         + want["WC_receivables"] + want["WC_minimumCash"])
     want["WC_net"] = want["WC_gross"] - want["WC_payables"]

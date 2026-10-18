@@ -153,13 +153,13 @@
                       API fixed-roof tank.  A refrigerated, insulated,
                       double-containment ammonia tank costs more, so the
                       storage cost below is a LOWER BOUND, said on every run.
-                      NOT STORED HERE, by decision: the HYDROGEN buffer and
-                      the NITROGEN supply belong to the electrolyser and the
-                      ASU, outside this battery limit (the flowsheet header
-                      says so).  Adding an H2 store is one more entry in
-                      `storage ( ... )` -- but a gas is refused by name: a
-                      gas store is a pressure vessel or a holder, which this
-                      tank sizer does not model.
+                      A gas is refused by this tank sizer by name: a gas is
+                      stored in pressure vessels -- `gasStorage ( ... )`,
+                      the H2Buffer (GAS STORAGE, after the working capital
+                      below).  NOT STORED HERE, by decision: the NITROGEN
+                      supply belongs to the ASU, outside this battery limit,
+                      and so does the electrolyser that makes the hydrogen;
+                      the hydrogen BUFFER is in this battery limit.
 
   WHAT IS NOT SIZED, and why it is not an omission: LoopMix, MakeupMix and
   PurgeSplit are a tee and two pipe junctions -- no vessel, no area, no
@@ -226,10 +226,12 @@
   WORKING CAPITAL, BUILT UP instead of 15 % of FCI.  The working capital is
   the money a running plant keeps tied up in things that are not equipment.
   Its GROSS figure -- the current assets, "capital circulante" -- is:
-    raw-material stock    0 days: H2 and N2 arrive by pipe from the
-                          electrolyser and the ASU, and their buffers are
-                          outside this battery limit (the commander's
-                          decision, DEV.md C44);
+    raw-material stock    the HYDROGEN the full H2Buffer holds, at its
+                          purchase price (a store attached to a priced raw
+                          material is that raw material's stock: DEV.md
+                          C89); and 0 days of nitrogen, which arrives by pipe
+                          from the ASU, its buffer outside this battery
+                          limit (the commander's decision, DEV.md C44);
     process inventory     what the vessels hold (slice 3), at cost;
     product stock         what the two product tanks hold -- 21 days of
                           production -- at the cost of making it, never at
@@ -242,6 +244,47 @@
   WC of the cash flow.  The run prints both, line by line, beside the 15 %
   figure for comparison.  The days are the commander's decisions for this
   case (DEV.md C44), design-basis assumptions, not data.
+
+  GAS STORAGE (DEV.md 4c C89).
+    H2 buffer         H2Buffer, attached to the boundary stream H2Feed
+                      (`gasStorage ( ... )` below; DEV.md 4c C89).  WHY: the
+                      electrolysers follow an intermittent renewable supply
+                      and the synthesis loop wants a steady feed, so the
+                      hydrogen is BUFFERED.  The vessels give back only the
+                      gas between a full and an emptied state:
+                          working gas  = autonomy x mdot(H2Feed)
+                          V_total      = working gas
+                                         / (rho(Pmax, T) - rho(Pmin, T))
+                      rho from the case's OWN package (SRK; the run prints
+                      Z at both ends -- hydrogen is supercritical here and
+                      SRK puts it slightly above ideal), split into equal
+                      STANDING vessels of at most maxVesselVolume (the Turton
+                      vessel set the tree carries is the vertical one), each
+                      wall at Pmax as gauge, costed as a process vessel.
+                      Basis, all AUTHOR-SET design assumptions, none cited:
+                        * 2 h of autonomy at full rate -- a short-term buffer
+                          that rides through a cloud or a wind lull; a
+                          day/night or seasonal buffer is a different store
+                          (caverns, pipelines) and the groups' question;
+                        * Pmax 100 bar -- the carbonSteel record's own maxP
+                          ("typical pressure-vessel rating"), so the store
+                          sits inside the rating the record declares;
+                        * Pmin 32 bar -- the make-up train takes H2 at 30
+                          bar (MakeupMix), plus 2 bar for the let-down valve
+                          that controls the delivery;
+                        * 313.15 K, the stream's own temperature (the vessels
+                          are uninsulated and take what they are given);
+                        * at most 400 m3 per vessel, inside the vessel cost
+                          correlation's 0.3-520 m3 range; L/D 3, 3 mm of
+                          corrosion allowance and a fully radiographed joint,
+                          the drums' own constants.
+                      NOT INCLUDED, said on every run: the CHARGING
+                      COMPRESSOR from 30 bar to Pmax (neither the machine nor
+                      its power is sized or priced: the buffer's cost is a
+                      LOWER BOUND), and any renewable-power profile -- the 2 h
+                      are assumed, not derived.  The hydrogen the full
+                      buffer holds is RAW-MATERIAL STOCK in the working
+                      capital, at its purchase price.
 \*---------------------------------------------------------------------------*/
 sizing
 {
@@ -380,6 +423,22 @@ sizing
           storageTime   21 day;          // days of production -- AUTHOR-SET
           fillFraction  0.90;            // working level / tank volume -- AUTHOR-SET
           maxTankVolume 30000;           // m3 per tank: the correlation's ceiling
+        }
+    );
+
+    //  ---- gas storage: the H2 buffer, pressure vessels (see the header) --
+    gasStorage
+    (
+        { name            H2Buffer;
+          stream          H2Feed;        // electrolytic H2, 30 bar, 313.15 K
+          material        carbonSteel;   // hydrogen service NOT checked (the rule above)
+          autonomy        2 h;           // hours at full rate -- AUTHOR-SET
+          reason          "a short-term buffer that rides through a cloud or a wind lull of up to two hours at full rate; a day/night or seasonal buffer is a different store (caverns, pipelines) and the groups' question";
+          maxPressure     100 bar;       // absolute: the carbonSteel record's maxP -- AUTHOR-SET
+          minPressure     32 bar;        // absolute: the 30 bar make-up suction + 2 bar valve -- AUTHOR-SET
+          temperature     313.15 K;      // the stream's own -- AUTHOR-SET
+          maxVesselVolume 400;           // m3 per vessel, inside the cost correlation's range
+          L_over_D 3;  corrosionAllow 0.003;  jointEfficiency 1.0;   // the drums' constants
         }
     );
 }

@@ -57,10 +57,10 @@
   the steam system as equipment (each duty is PRICED against a utility
   record, and the converter's heat is valued as HP steam raised -- a credit
   the Converter declares; system/postDict, UTILITIES).  The equipment, the
-  product storage, the working capital and the economics ARE in
-  system/postDict, on design assumptions declared there (the converter on
-  an ASSUMED space velocity -- its true catalyst volume is still the rate
-  law's).
+  product storage, the hydrogen buffer, the working capital and the
+  economics ARE in system/postDict, on design assumptions declared there
+  (the converter on an ASSUMED space velocity -- its true catalyst volume is
+  still the rate law's).
 
   WHAT THE GROUPS SHOULD NOTICE.  The base data's 18 % per-pass conversion
   (~12 % NH3 out) is a KINETIC figure: at 460 C the equilibrium allows more,

@@ -18,14 +18,17 @@
       the water cooler and the chiller, the separator, the let-down drum and
       the storage flash;
     * the TANK FARM well to the south-east, downwind;
+    * the HYDROGEN BUFFER's ten vessels (added with DEV.md 4c C89) to the
+      south-west of the make-up train, two rows of five;
     * the CONTROL ROOM to the north-west, upwind, and an ELECTRICAL
       SUBSTATION by the compressors -- both NON-PROCESS items.
   Re-draw from scratch with `bin/choupo-layout --draft --force .`: it keeps
   the separation table, the wind, the declared boxes, the non-process items
   and the zones below, and lines the process items up again.
 
-  WHAT IS THE ENGINE'S AND WHAT IS OURS.  The nine sized cylinders take
-  their diameters and lengths from their own design sheets (design/<unit>/).
+  WHAT IS THE ENGINE'S AND WHAT IS OURS.  The nine sized cylinders and the
+  ten buffer vessels take their diameters and lengths from their own design
+  sheets (design/<unit>/).
   EVERYTHING ELSE IN THIS FILE IS AN AUTHOR-SET ASSUMPTION FOR THE STUDENTS
   TO REPLACE WITH THEIR OWN SITE DATA: every position, every declared box,
   every separation distance, the wind, and every hazardous-area zone extent.
@@ -252,6 +255,149 @@ items
             source  "author-set assumption for the students to replace with their own site data; not taken from any hazardous-area standard";
             reason  "refrigerated liquid ammonia at 1 atm: the roof vents and the relief valves";
             zones   ( { zone 2; radius 20 m; height 25 m; } );
+        }
+    }
+
+    //  ---- the hydrogen buffer, south-west of the make-up train -------------
+    //  Ten STANDING vessels (design/H2Buffer/vessel<n>, DEV.md 4c C89), each
+    //  drawn from its OWN published D and H -- standing because the Turton
+    //  vessel set that costs them is the vertical one.  Two rows of five at a
+    //  10 m pitch: 4.6 m shell to shell against the 4 m this file declares
+    //  between two vessels; 13 m from N2Boost against 9 m; 62 m from the
+    //  control room against 30 m.  West of the rack's west end, where the
+    //  hydrogen arrives, and across the wind from the substation (bearing
+    //  70-85 deg against a downwind 135 deg).  Each declares a hydrogen
+    //  release: hydrogen at up to 100 bar at the nozzles, the relief valves
+    //  and the instrument connections.  Positions, zones and the pitch are
+    //  AUTHOR-SET, like everything else in this file.
+    {
+        item        "H2Buffer/vessel1";
+        x           -60 m;
+        y           -35 m;
+        z           0 m;
+        orientation vertical;
+        release
+        {
+            source  "author-set assumption for the students to replace with their own site data; not taken from any hazardous-area standard";
+            reason  "hydrogen at up to 100 bar: the nozzles, the relief valves and the instrument connections";
+            zones   ( { zone 2; radius 6 m; height 20 m; } );
+        }
+    }
+    {
+        item        "H2Buffer/vessel2";
+        x           -50 m;
+        y           -35 m;
+        z           0 m;
+        orientation vertical;
+        release
+        {
+            source  "author-set assumption for the students to replace with their own site data; not taken from any hazardous-area standard";
+            reason  "hydrogen at up to 100 bar: the nozzles, the relief valves and the instrument connections";
+            zones   ( { zone 2; radius 6 m; height 20 m; } );
+        }
+    }
+    {
+        item        "H2Buffer/vessel3";
+        x           -40 m;
+        y           -35 m;
+        z           0 m;
+        orientation vertical;
+        release
+        {
+            source  "author-set assumption for the students to replace with their own site data; not taken from any hazardous-area standard";
+            reason  "hydrogen at up to 100 bar: the nozzles, the relief valves and the instrument connections";
+            zones   ( { zone 2; radius 6 m; height 20 m; } );
+        }
+    }
+    {
+        item        "H2Buffer/vessel4";
+        x           -30 m;
+        y           -35 m;
+        z           0 m;
+        orientation vertical;
+        release
+        {
+            source  "author-set assumption for the students to replace with their own site data; not taken from any hazardous-area standard";
+            reason  "hydrogen at up to 100 bar: the nozzles, the relief valves and the instrument connections";
+            zones   ( { zone 2; radius 6 m; height 20 m; } );
+        }
+    }
+    {
+        item        "H2Buffer/vessel5";
+        x           -20 m;
+        y           -35 m;
+        z           0 m;
+        orientation vertical;
+        release
+        {
+            source  "author-set assumption for the students to replace with their own site data; not taken from any hazardous-area standard";
+            reason  "hydrogen at up to 100 bar: the nozzles, the relief valves and the instrument connections";
+            zones   ( { zone 2; radius 6 m; height 20 m; } );
+        }
+    }
+    {
+        item        "H2Buffer/vessel6";
+        x           -60 m;
+        y           -45 m;
+        z           0 m;
+        orientation vertical;
+        release
+        {
+            source  "author-set assumption for the students to replace with their own site data; not taken from any hazardous-area standard";
+            reason  "hydrogen at up to 100 bar: the nozzles, the relief valves and the instrument connections";
+            zones   ( { zone 2; radius 6 m; height 20 m; } );
+        }
+    }
+    {
+        item        "H2Buffer/vessel7";
+        x           -50 m;
+        y           -45 m;
+        z           0 m;
+        orientation vertical;
+        release
+        {
+            source  "author-set assumption for the students to replace with their own site data; not taken from any hazardous-area standard";
+            reason  "hydrogen at up to 100 bar: the nozzles, the relief valves and the instrument connections";
+            zones   ( { zone 2; radius 6 m; height 20 m; } );
+        }
+    }
+    {
+        item        "H2Buffer/vessel8";
+        x           -40 m;
+        y           -45 m;
+        z           0 m;
+        orientation vertical;
+        release
+        {
+            source  "author-set assumption for the students to replace with their own site data; not taken from any hazardous-area standard";
+            reason  "hydrogen at up to 100 bar: the nozzles, the relief valves and the instrument connections";
+            zones   ( { zone 2; radius 6 m; height 20 m; } );
+        }
+    }
+    {
+        item        "H2Buffer/vessel9";
+        x           -30 m;
+        y           -45 m;
+        z           0 m;
+        orientation vertical;
+        release
+        {
+            source  "author-set assumption for the students to replace with their own site data; not taken from any hazardous-area standard";
+            reason  "hydrogen at up to 100 bar: the nozzles, the relief valves and the instrument connections";
+            zones   ( { zone 2; radius 6 m; height 20 m; } );
+        }
+    }
+    {
+        item        "H2Buffer/vessel10";
+        x           -20 m;
+        y           -45 m;
+        z           0 m;
+        orientation vertical;
+        release
+        {
+            source  "author-set assumption for the students to replace with their own site data; not taken from any hazardous-area standard";
+            reason  "hydrogen at up to 100 bar: the nozzles, the relief valves and the instrument connections";
+            zones   ( { zone 2; radius 6 m; height 20 m; } );
         }
     }
 
