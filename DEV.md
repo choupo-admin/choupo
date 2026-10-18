@@ -1310,7 +1310,36 @@ accepts today, and that is a policy call.
 > dispatch: phase A the case; phase B the GMP interior layout; phase C
 > (later) equipment counts from campaign occupancy.  Vitor 2026-10-18:
 > "Avanca!" -- phases A and B dispatched in parallel (B on its own engine
-> home and gate, to stay clear of C96's edits to PlantLayout).
+> home and gate, to stay clear of C96's edits to PlantLayout).  MERGED
+> 2026-10-18.  PHASE A (claude/c97a-apalutamide-case): case
+> `tutorials/plant/apalutamide01_tablets` -- acetone/HPMCAS spray drying in
+> a closed N2 loop with condenser recovery (93.5 %), the solid-dose train
+> as mass-balance placeholders, coating dryer, layout, README for the
+> group; engine prerequisites in sprayDryer (every non-volatile solid
+> leaves in the powder; Le announced), solidDryer (non-sorbing solids ride
+> through), mixer (a solids-only blend on the solid rung), ThermoPackage
+> (S_ig/Cp_ig skip z = 0) and VesselSize (a declared volume needs no
+> flow KPIs).  New golden recorded; after the C96 merge the case also
+> raises `singleEntrance`, kept as a second exercise for the group
+> (findings 1 -> 2, two rows appended).  PHASE B
+> (claude/c97b-gmp-interior): `building {}` in layoutDict, engine
+> `postProcessing/layout/BuildingLayout`, JSON `building` block, golden rows,
+> 3D cutaway + plan per floor, gate `check_gmp_layout`, Design Guide
+> section, record `docs/design/a-gmp-interior-is-declared-and-checked.md`.
+> Byte-neutral on the corpus.  Validated together: --fast 74/0 (after the
+> pin), --gui 5643 tests + 32 gates, check_gmp_layout, check_plant_layout,
+> check_design_sheet, guide freshness.  OPEN, from the phase A report:
+> Turton's particulate labour term absent (`EconomicsPass.cpp`
+> N_OL_per_shift); no declared quoted cost for an item with no correlation
+> (OSD machines, the GMP building) so FCI is the solvent section only; the
+> router draws powders as rack pipes and unsized mixers as junctions; an
+> anchorless unrouted marker drawn off the plot; the adiabatic mixer's
+> fluid branch omits entering solids' enthalpy; sprayDryer handles ONE
+> volatile and still defaults liquid viscosity/surface tension to water
+> silently; mixer bracket probes leak caveats for absent components; a
+> linked tank's working capital reads 0.  From phase B: the building does
+> not count toward the plot area (`plotOf`); the apalutamide case does not
+> yet declare its building (the WIRING step).
 
 > **C94. LAYOUT GUIDELINES IN THE GUIDES (Vitor, 2026-10-18: "Nos Guias
 > apropriados podes incluir uma parte sobre guidelines de layout?", after
