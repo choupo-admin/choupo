@@ -50,6 +50,26 @@ Description
     would print without complaint.  Every key is required -- a default
     storage time is a design basis nobody chose.
 
+    A TANK A FLOWSHEET UNIT HOLDS IS LINKED, AND ITS HOLD TIME HAS ONE HOME
+    (2026-10-18, DEV.md 4c C87, Vitor: "um so sitio").  When the stream is
+    held by a flowsheet `storageTank` UNIT, that unit already declares its
+    `residenceTime` and `fillFraction` and publishes both; declaring them
+    again here made two homes that agreed only while both were edited
+    together.  So the entry names the unit instead:
+
+        { unit methanolTank;  material SS316;  maxTankVolume 30000; }
+
+    and the tank is sized on the unit's published `residenceTime_s` and
+    `fillFraction` KPIs and on the unit's own inlet stream; its items are
+    the unit's (`methanolTank/tank1`, ...).  `storageTime`, `fillFraction`,
+    `stream` or `name` beside `unit` each REFUSE by name with the remedy, as
+    does an UNLINKED entry carrying the name of a storageTank unit (the
+    implicit link a name match would make).  The explicit key was chosen
+    over the name match because a name match is a link nobody declared: the
+    two names agree by coincidence or by care, and nothing could tell which.
+    An entry with no `unit` -- a store no flowsheet unit holds -- keeps its
+    own declarations exactly as above.
+
     ONE ITEM PER TANK, tagged `tank1` .. `tankN`, each sized and costed as
     `storageTank`: a plant with two 20 000 m3 tanks buys two tanks, and
     costing one 40 000 m3 tank would put a size outside the correlation
@@ -82,7 +102,8 @@ class StorageTankSize : public EquipmentSize
 public:
     const std::string& type() const override { return type_; }
 
-    //  `unitName` is the storage item's NAME (it is not a flowsheet unit);
+    //  `unitName` is the storage item's NAME -- the entry's `name`, or the
+    //  linked flowsheet unit's when the entry declares `unit`;
     //  `designRules` is the whole `storage ( { ... } )` entry.
     std::vector<EquipmentSizing> size(const std::string& unitName,
         const SimulationResult& result,
