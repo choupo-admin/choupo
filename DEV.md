@@ -1154,6 +1154,33 @@ accepts today, and that is a policy call.
 > optionally docked beside the view; the same in the exported page.  Handed
 > to the C90 general (same files, avoids two generals on one page).
 
+> **C90 + C91 MERGED 2026-10-18.**  (1) The 3D scene is ALWAYS daylight
+> (`DAYLIGHT` in `layoutRenderer.ts`, the one renderer app and export
+> share); only labels, tooltip and panels follow the theme
+> (`tests/layoutDaylight.test.ts`).  The cause: `darkScheme()` fell back to
+> `prefers-color-scheme` in the exported page.  (2) Roads and site
+> buildings: non-process items may carry source/reason; kinds `gate`
+> (entrance) and `weighbridge` (drivable) carry meaning (one list,
+> `PlantLayout.cpp`); `roads { headroom; access { distance; }; noTraffic;
+> network ( { road; width; reason; waypoints } ) }`, orthogonal at grade.
+> REFUSED: a road through a footprint, under a rack or pipe below the
+> headroom, a diagonal, a waypoint with z, a duplicate name, no access
+> block.  ANNOUNCED: road in a no-traffic zone, disconnected network, no
+> entrance, gate off road, building not reached, item beyond the access
+> distance, weighbridge off road.  Published: network length and paved area
+> (exact union), per-road length, rack crossings, per-item access distance;
+> roads inside `plotOf`.  `--draft` proposes no road (a network nobody
+> chose meets every distance by construction).  3D: asphalt and markings,
+> gate barrier, buildings by kind.  ammonia02: gate, warehouse, canteen,
+> 6 roads, 356 m, 2140.75 m2; no weighbridge (product and makeup by pipe,
+> said in the case); plot margin 10 -> 5 m (its reason was the perimeter
+> road, now declared).  (3) C91: the pop-out view fills the window, tables
+> in a foldable bottom panel (`LAYOUT_TABLES_PANEL`, height dragged and
+> remembered), each table a remembered section, full screen; the export
+> the same with `<details>`.  NOT done: docking the register beside the
+> view (no right-edge panel rule).  8 rows re-recorded on Vitor's approval
+> (list in the commit), 46 appended.  Gate `check_plant_layout` arm (k).
+
 > **C92. THE FULL PLANT'S TANKS SIZED AND PLACED (Vitor, 2026-10-18: "No
 > full plant tambem faltam os tanques de armazenamento").**  Measured:
 > `ammonia02_full_plant` DECLARES two `storageTank` units (T101 on `makeup`,
