@@ -188,13 +188,14 @@ function golden(unit: string, field: string): number {
 }
 /** The engine's arithmetic, recomputed: the wall and weight
  *  (VesselMechanics.cpp:29-35, E = 1 and 3 mm, the defaults this witness
- *  takes), the vessel pressure factor (Turton.cpp:309-314, on P - 1 bar,
- *  Turton.cpp:650) and the bare-module cost (Turton.cpp:689). */
+ *  takes), the vessel pressure factor (Turton.cpp:323-328, on P read as
+ *  gauge since DEV.md 4c C86, Turton.cpp:667) and the bare-module cost
+ *  (Turton.cpp:706). */
 function priced(unit: string, m: MaterialRecord, P: number) {
   const D = golden(unit, "values.D"), H = golden(unit, "values.H");
   const t = (P * 1e5 * D) / (2 * m.sigma_y! * 1e6 * 1.0 - 1.2 * P * 1e5) + 0.003;
   const weight = m.density! * Math.PI * D * H * t;
-  const Pg = Math.max(P - 1, 0);
+  const Pg = Math.max(P, 0);
   const tP = (D * Pg) / (2 * (m.sigma_y! * 10 - 0.6 * Pg));
   const F_P = Math.max((tP + 0.00315) / 0.0063, 1);
   const C_BM = golden(unit, "cost.purchased") * (2.25 + 1.82 * m.F_M! * F_P);
@@ -245,8 +246,8 @@ describe("materials: the bench's sentences, against the engine's arithmetic", ()
   });
   it("a vessel is costed on its volume, so the weight moves no euro", () => {
     const t = tree("src/postProcessing/costing/Turton.cpp").split("\n");
-    expect(t[263]).toContain('if (equipType == "vessel")       return vesselCoeffs;');
-    expect(t[77]).toContain('"V_R"');
+    expect(t[275]).toContain('if (equipType == "vessel")       return vesselCoeffs;');
+    expect(t[79]).toContain('"V_R"');
     expect(tree(`${CASE}/expected`)).toMatch(/^equipment\s+converter\s+values\.V_R/m);
   });
   it("maxT is loaded in one place and compared in one place, by the sizing pass", () => {
@@ -338,17 +339,17 @@ describe("materials: the lesson text", () => {
       "VesselMechanics.H:58-60": [`${SRC}sizing/VesselMechanics.H`, 58, 60, /GAUGE/],
       "DesignDefaults.cpp:46": [`${SRC}sizing/DesignDefaults.cpp`, 46, undefined,
         '"corrosionAllow", 0.003, "m",'],
-      "Turton.cpp:687-689": [`${SRC}costing/Turton.cpp`, 687, 689,
+      "Turton.cpp:704-706": [`${SRC}costing/Turton.cpp`, 704, 706,
         /const scalar F_M\s+= \(mat\.F_M > 0\.0\) \? mat\.F_M : 1\.0;[\s\S]*C_BM\s+= Cp_target \* \(c\.B1 \+ c\.B2 \* F_M \* F_P\);/],
-      "Turton.cpp:309-314": [`${SRC}costing/Turton.cpp`, 309, 314,
+      "Turton.cpp:323-328": [`${SRC}costing/Turton.cpp`, 323, 328,
         /denom = 2\.0 \* \(sigma_bar - 0\.6 \* P_gauge_bar\);[\s\S]*std::max\(\(t_w \+ 0\.00315\) \/ 0\.0063, 1\.0\)/],
-      "Turton.cpp:314": [`${SRC}costing/Turton.cpp`, 314, undefined,
+      "Turton.cpp:328": [`${SRC}costing/Turton.cpp`, 328, undefined,
         "return std::max((t_w + 0.00315) / 0.0063, 1.0);"],
-      "Turton.cpp:650": [`${SRC}costing/Turton.cpp`, 650, undefined,
-        "const scalar P_gauge    = std::max(P_des_bar - 1.0, 0.0);"],
-      "Turton.cpp:647-650": [`${SRC}costing/Turton.cpp`, 647, 650,
-        /P_gauge = P_design - 1 bar atmosphere[\s\S]*P_des_bar - 1\.0/],
-      "Turton.cpp:78": [`${SRC}costing/Turton.cpp`, 78, undefined, '"V_R"'],
+      "Turton.cpp:667": [`${SRC}costing/Turton.cpp`, 667, undefined,
+        "const scalar P_gauge    = std::max(P_des_bar, 0.0);"],
+      "Turton.cpp:661-667": [`${SRC}costing/Turton.cpp`, 661, 667,
+        /pressureDesign, which IS gauge[\s\S]*P_gauge\s+= std::max\(P_des_bar, 0\.0\);/],
+      "Turton.cpp:80": [`${SRC}costing/Turton.cpp`, 80, undefined, '"V_R"'],
       "MaterialLimits.cpp:41": [`${SRC}sizing/MaterialLimits.cpp`, 41, undefined,
         "if (!(pressureDesign_bar > material.maxP)) return;"],
       "MaterialLimits.cpp:56-57": [`${SRC}sizing/MaterialLimits.cpp`, 56, 57,

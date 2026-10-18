@@ -616,13 +616,13 @@ export const MATERIALS_STEPS: readonly LessonStep[] = [
     title: "Cost: the material factor, and what it multiplies",
     body: "A material is finally chosen against its price, and in a "
       + "bare-module estimate the material enters as one factor on part of "
-      + "the purchased cost (src/postProcessing/costing/Turton.cpp:687-689).  "
+      + "the purchased cost (src/postProcessing/costing/Turton.cpp:704-706).  "
       + "Two things in the form are easy to miss.  F_M multiplies only the "
       + "B_2 part: the installation that B_1 stands for -- foundations, "
       + "piping, instruments, labour -- costs the same whatever the shell is "
       + "made of.  And the material enters TWICE: through F_M, and through "
       + "the pressure factor, which for a vessel is the engine's own wall "
-      + "formula over a reference thickness (Turton.cpp:309-314), so a "
+      + "formula over a reference thickness (Turton.cpp:323-328), so a "
       + "weaker material raises F_P as well.  The cheapest material is the "
       + "one whose total cost over the plant's life is lowest, which can be "
       + "a dearer alloy installed once rather than carbon steel replaced "
@@ -642,12 +642,12 @@ export const MATERIALS_STEPS: readonly LessonStep[] = [
       { sym: "t_P", means: "the wall the pressure factor computes, without "
         + "corrosion allowance or joint efficiency", unit: "m" },
       { sym: "P_\\mathrm{g}", means: "the gauge pressure the costing uses: "
-        + "the case's pressureDesign minus 1 bar (Turton.cpp:650)",
+        + "the case's pressureDesign, read as gauge (Turton.cpp:667)",
         unit: "bar" },
     ],
     note: "0.00315 m and 0.0063 m are the reference corrosion allowance and "
       + "the reference minimum thickness of the textbook correlation, as "
-      + "the engine writes them at Turton.cpp:314; S and P_g are in the same "
+      + "the engine writes them at Turton.cpp:328; S and P_g are in the same "
       + "unit there (bar).  The wall on the design sheet and the wall inside "
       + "F_P are different numbers on purpose: one is the shell the case "
       + "declared, the other the correlation's own reference.",
@@ -749,10 +749,10 @@ export const MATERIALS_STEPS: readonly LessonStep[] = [
       + "and carbonSteel's 140 MPa is labelled as an allowable at 250 degrees "
       + "C.  The density gives the shell's weight, which the design sheet "
       + "publishes; the vessel's cost correlation, though, is sized on its "
-      + "VOLUME (the size key V_R, src/postProcessing/costing/Turton.cpp:78), "
+      + "VOLUME (the size key V_R, src/postProcessing/costing/Turton.cpp:80), "
       + "so the weight -- and the density with it -- moves no euro.  F_M "
       + "multiplies the cost "
-      + "(src/postProcessing/costing/Turton.cpp:687-689), and sigma_y "
+      + "(src/postProcessing/costing/Turton.cpp:704-706), and sigma_y "
       + "enters the cost again through F_P.  maxP is compared with the "
       + "design pressure by the vessel sizers "
       + "(src/postProcessing/sizing/MaterialLimits.cpp:41), and maxT, read "
@@ -843,14 +843,17 @@ export const MATERIALS_LIMITS: readonly LessonLimit[] = [
       + "The textbook the factors come from tabulates them by kind of "
       + "equipment and by solid versus clad construction; the records have "
       + "no field for either, and clad plate cannot be declared." },
-  { id: "two-readings",
-    title: "One pressure, read two ways",
-    body: "The wall reads the case's pressureDesign as a GAUGE pressure "
-      + "(src/postProcessing/sizing/VesselMechanics.H:58-60 and "
-      + "VesselMechanics.cpp:29), while the pressure factor treats it as "
-      + "absolute and subtracts one bar (src/postProcessing/costing/"
-      + "Turton.cpp:647-650).  At 220 bar the difference is half a per cent; "
-      + "at 2 bar it is half the pressure." },
+  { id: "gauge-margin",
+    title: "One pressure, read as gauge, written as absolute",
+    body: "The wall and the pressure factor both read the case's "
+      + "pressureDesign as a GAUGE pressure "
+      + "(src/postProcessing/sizing/VesselMechanics.H:58-60, "
+      + "VesselMechanics.cpp:29 and src/postProcessing/costing/"
+      + "Turton.cpp:661-667), but most cases derive it as 1.1 times an "
+      + "ABSOLUTE stream pressure, so one bar of their margin is the "
+      + "atmosphere.  And the exchanger pressure factor is a polynomial its "
+      + "source states up to 140 bar g; an ammonia loop's exchangers sit "
+      + "above that, and the engine evaluates it there without a word." },
   { id: "four-records",
     title: "Four records, most of them unsourced",
     body: "Only carbon steel, SS304, SS316 and aluminium are in the tree; no "
