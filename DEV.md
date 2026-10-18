@@ -1291,6 +1291,20 @@ accepts today, and that is a policy call.
 > fire-water ring main and hydrants, bunds, escape routes, swept path, a
 > fillet running through an item.
 
+> **C98. PARTICULATE LABOUR AND DECLARED QUOTED COSTS (Vitor, 2026-10-18,
+> two rulings on the C97 phase A findings).**  (1) Turton's operator count
+> is N_OL = (6.29 + 31.7 P^2 + 0.23 N_np)^0.5 and the engine drops the P
+> term (`EconomicsPass.cpp:2108`); ruling "P declarado pelo caso": a
+> declared `particulateSteps` with source/reason, absent = 0 ANNOUNCED when
+> the flowsheet holds a solids-handling unit; no existing case moves, the
+> apalutamide case declares its own.  (2) An item with no cost correlation
+> (OSD machines, the GMP building) gets no capital today, so apalutamide's
+> FCI is the solvent section only; ruling "Sim, preco declarado": a case
+> may DECLARE a quoted cost per item (value, year, source, reason), entering
+> the capital marked `declared`, with no invented module factor -- the
+> catalyst-charge `declared-unit-price` precedent.  Moved rows to Vitor
+> before re-record.  Status: dispatched 2026-10-18.
+
 > **C97. APALUTAMIDE TABLETS: A NEW CASE AND THE GMP INTERIOR LAYOUT
 > (Vitor, 2026-10-18: a pharmaceutical-industry project group produces
 > apalutamide tablets; the API is bought, everything else is made on site.
