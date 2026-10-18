@@ -27,6 +27,7 @@ License
 \*---------------------------------------------------------------------------*/
 
 #include "CrystalliserSize.H"
+#include "MaterialLimits.H"
 
 #include <stdexcept>
 
@@ -80,6 +81,7 @@ std::vector<EquipmentSizing> CrystalliserSize::size(const std::string& unitName,
     d.set("liquorFlow",     lf->second,   "kmol/s");  // the MOLAR liquor flow -- NOT a volume rate
     d.set("residenceTime",  rt->second,   "s");
     d.set("pressureDesign", P_des,        "bar");
+    materialLimits::pressure("crystalliser '" + d.itemId() + "'", material, P_des);
     //  ONE ITEM: this unit realises a single piece of equipment, so the
     //  tag is left empty and `itemId()` stays the unit's own name.
     return { d };

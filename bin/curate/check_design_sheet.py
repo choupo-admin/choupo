@@ -304,6 +304,43 @@ WHAT THIS CHECKS:
         S4  an inline `if (pressureDesign > material.maxP)` restored in
             `VesselSize.cpp` beside the call  -> caught by the source half.
 
+      EVERY PUBLISHED DESIGN PRESSURE MEETS THE RATING (2026-10-18, DEV.md 4c
+      C86).  C85 routed four sizers through `MaterialLimits` and left seven
+      publishing a `pressureDesign` that no rating met: the column's shell
+      and reflux drum, every shell-and-tube record (so the column's condenser
+      and reboiler), the multitubular bed, and the evaporator, crystalliser,
+      spray dryer, cyclone and compressor pass-throughs.  Each now calls
+      `materialLimits::pressure` beside the `set("pressureDesign", ...)` that
+      publishes it.  Two halves: a COPY of `column09_tray_hydraulics` in
+      aluminium (record maxP 50 bar) with all four `pressureDesign` lines at
+      60 bar must print exactly ONE design-pressure line for each of
+      `vessel '<col>/shell'`, `vessel '<col>/refluxDrum'`,
+      `shellTubeHX '<col>/condenser'` and `shellTubeHX '<col>/reboiler'`,
+      quoting 60.0 bar, `aluminium` and 50.0 bar, each replayed in the caveat
+      block and nothing else announced, while the shipped column is silent;
+      and a SOURCE COUNT per sizer -- at least as many
+      `materialLimits::pressure(` calls as `set("pressureDesign"` sites
+      (comments stripped), and no `.maxP`/`.maxT` outside MaterialLimits.cpp
+      under any variable name.  maxT already reached every one of these items:
+      `SizingPass` compares it per item whose `material` is a record, and
+      each of them stamps one.
+
+      SABOTAGES, by hand, 2026-10-18 (rebuilt, gate run, restored, rebuilt):
+        S5  `ColumnSize.cpp`: the shell's call deleted  -> caught twice: the
+            copy prints no `vessel 'column09/shell'` line and no replay, and
+            the source count reads 1 of 2.
+        S6  `ShellTubeHX.cpp`: the call in `exchangerRecord` deleted  ->
+            caught: no condenser or reboiler line in the copy, and the count
+            reads 0 of 1.
+        S7  `CatalystBedSize.cpp`: the multitubular bundle's call deleted
+            (the vessel branch's kept)  -> caught by the COUNT alone (1 of
+            2); a presence test passes it, which is why it counts.
+        S8  `SprayDryerSize.cpp`: `if (P_des > m.maxP)` written inline with
+            `const Material& m = material;` and the call removed  -> caught
+            twice by the source half (the widened `.maxP` pattern and the
+            count); the old `material\\.maxP` pattern would have missed the
+            first.
+
   (l) THE GUI FIXTURE IS STILL THE ENGINE'S OWN OUTPUT.  The readers' unit
       tests run on a TRANSCRIPTION of a sheet, because arm (g) keeps `design/`
       gitignored and no committed file can be read from a test.  This arm runs
@@ -3059,15 +3096,112 @@ def check_material_limits(problems, notes):
     finally:
         shutil.rmtree(dst.parent, ignore_errors=True)
 
+    # --- the column's four pressure-bearing items (DEV.md 4c C86) -----------
+    #  C85 left the shell, the reflux drum and both exchangers publishing a
+    #  `pressureDesign` that met no rating.  A COPY of the column witness in
+    #  aluminium (record maxP 50 bar) at 60 bar on every item must announce
+    #  each of the four ONCE, by its item id, and replay each in the caveat
+    #  block; the shipped case (carbon steel, 2 bar) is silent.
+    col_src = ROOT / COLUMN
+    P_PROBE = 60.0
+    m_unit = re.search(r'unitName\s+(\w+);\s*type\s+distillationColumn;',
+                       (col_src / "system" / "postDict").read_text(errors="replace"))
+    col_unit = m_unit.group(1) if m_unit else "?"
+
+    def column_overrated(text):
+        new, n = re.subn(r'(unitName\s+\w+;\s*type\s+distillationColumn;\s*'
+                         r'material\s+)\w+;', r'\1aluminium;', text)
+        if n != 1:
+            raise RuntimeError("the column's sizing entry was not found")
+        new, n = re.subn(r'(\bpressureDesign\s+)[-+0-9.eE]+;',
+                         r'\g<1>%.1f;' % P_PROBE, new)
+        if n != 4:
+            raise RuntimeError("expected 4 `pressureDesign` lines (shell, "
+                               "condenser, reboiler, drum), found %d" % n)
+        return new
+    try:
+        cdst, crc, cout, cerr = _run_copy(col_src, column_overrated)
+    except RuntimeError as e:
+        problems.append("%s: %s in %s's postDict" % (tag, e, COLUMN))
+        cdst = None
+    if cdst is not None:
+        n_before = len(problems)
+        try:
+            maxP_al = _record_scalar("aluminium", "maxP")
+            if crc != 0:
+                problems.append("%s: the over-rated column copy did not run "
+                                "(exit %d) -- an announcement must never refuse "
+                                "the run: %s" % (tag, crc, cerr.strip()[-300:]))
+            else:
+                want = {"vessel '%s/shell'" % col_unit,
+                        "vessel '%s/refluxDrum'" % col_unit,
+                        "shellTubeHX '%s/condenser'" % col_unit,
+                        "shellTubeHX '%s/reboiler'" % col_unit}
+                P_LINE = re.compile(r"^  \[rating\] WARNING: (\w+ '[^']+'): design "
+                                    r"pressure ([0-9.]+) bar EXCEEDS material "
+                                    r"'(\w+)' rating ([0-9.]+) bar", re.M)
+                said = [m for m in P_LINE.finditer(cout)]
+                who = [m.group(1) for m in said]
+                for w in sorted(want):
+                    if who.count(w) != 1:
+                        problems.append("%s: %s at %.1f bar in aluminium "
+                                        "(record maxP %.0f bar) printed %d "
+                                        "design-pressure site line(s), expected "
+                                        "exactly ONE" % (tag, w, P_PROBE,
+                                                         maxP_al, who.count(w)))
+                    if not any(l.strip().startswith("- %s: design pressure" % w)
+                               for l in cout.splitlines()):
+                        problems.append("%s: the caveat block does not replay "
+                                        "%s's design-pressure announcement"
+                                        % (tag, w))
+                extra = sorted(set(who) - want)
+                if extra:
+                    problems.append("%s: the column copy announces a design "
+                                    "pressure for items it has no reason to: %s"
+                                    % (tag, extra))
+                for m in said:
+                    if (abs(float(m.group(2)) - P_PROBE) > 0.051
+                            or m.group(3) != "aluminium"
+                            or abs(float(m.group(4)) - maxP_al) > 0.051):
+                        problems.append("%s: %s's line does not quote the "
+                                        "declared %.1f bar and the record's "
+                                        "maxP %.1f bar: %s" % (tag, m.group(1),
+                                        P_PROBE, maxP_al, m.group(0)))
+                if not [p for p in problems[n_before:]]:
+                    notes.append("column in aluminium at %.0f bar: shell, reflux "
+                                 "drum, condenser and reboiler each announced "
+                                 "once and replayed" % P_PROBE)
+        finally:
+            shutil.rmtree(cdst.parent, ignore_errors=True)
+        shipped = subprocess.run([str(ROOT / "choupoSolve"), str(col_src)],
+                                 capture_output=True, text=True)
+        if "design pressure" in shipped.stdout and "EXCEEDS material" in shipped.stdout:
+            problems.append("%s: the SHIPPED %s (carbon steel, 2 bar) announces "
+                            "a design pressure above its rating" % (tag, COLUMN))
+
     # --- source half: no sizer compares a record limit itself ---------------
     sizing = ROOT / "src" / "postProcessing" / "sizing"
     for f in sorted(sizing.glob("*.cpp")):
         if f.name == "MaterialLimits.cpp":
             continue
         code = re.sub(r'//[^\n]*', '', f.read_text(errors="replace"))
-        if re.search(r'material\.max[PT]\b', code):
+        #  ANY `.maxP` / `.maxT`, not only `material.`: a sizer that renames
+        #  its Material reference is still comparing the record's limit.
+        if re.search(r'\.max[PT]\b', code):
             problems.append("%s: %s compares a material record limit itself -- "
                             "`sizing/MaterialLimits` is the one home" % (tag, f.name))
+        #  EVERY PUBLISHED DESIGN PRESSURE MEETS THE RATING (DEV.md 4c C86):
+        #  as many `materialLimits::pressure(` calls as `set("pressureDesign"`
+        #  sites, per sizer.  A COUNT, not a presence test: CatalystBedSize
+        #  publishes two (the vessel and the multitubular bundle) and had one
+        #  call until C86 -- a presence test passed it.
+        n_pub = len(re.findall(r'\bset\(\s*"pressureDesign"', code))
+        n_cmp = len(re.findall(r'\bmaterialLimits::pressure\(', code))
+        if n_cmp < n_pub:
+            problems.append("%s: %s publishes `pressureDesign` %d time(s) and "
+                            "compares it with the material's rating %d time(s) "
+                            "-- every published design pressure calls "
+                            "`materialLimits::pressure`" % (tag, f.name, n_pub, n_cmp))
     #  Comments STRIPPED first: a commented-out call still contains the text,
     #  and prose is not a call (S3 SURVIVED this half until it did this).
     ml = re.sub(r'//[^\n]*', '',
@@ -3158,8 +3292,12 @@ def main() -> int:
           "the material-limit witness (the converter copied into aluminium "
           "announces its record maxT ONCE, at its hottest port RECOMPUTED "
           "from the run's own stream states, and the caveat block replays "
-          "it; the shipped SS316 case is silent; no sizer compares a record "
-          "limit outside sizing/MaterialLimits), each "
+          "it; the shipped SS316 case is silent; a copy of the column in "
+          "aluminium at 60 bar announces its shell, reflux drum, condenser "
+          "and reboiler once each, replayed, while the shipped column is "
+          "silent; no sizer compares a record limit outside "
+          "sizing/MaterialLimits, and every sizer calls it at least as often "
+          "as it publishes a pressureDesign), each "
           "at the address its own "
           "sizing.csv row dictates (sector directory where the row names a "
           "sector, NO extra level where it does not); every `sizing {}` entry "

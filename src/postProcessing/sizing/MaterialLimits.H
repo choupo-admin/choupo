@@ -40,6 +40,14 @@ Description
     their `pressureDesign`, and `SizingPass` calls `temperature()` once per
     item, because it is the pass, not the sizer, that has every item's ports.
 
+    EVERY PUBLISHED DESIGN PRESSURE IS COMPARED (DEV.md 4c C86).  C85 left
+    the column's shell and reflux drum, every shell-and-tube record (the
+    column's condenser and reboiler among them), the multitubular bed and the
+    pass-through sizers (evaporator, crystalliser, spray dryer, cyclone,
+    compressor) publishing a `pressureDesign` that met no rating.  Each now
+    calls `pressure()` beside the `set("pressureDesign", ...)` that publishes
+    it, and `check_design_sheet` arm (t) counts the two per sizer.
+
     WHICH TEMPERATURE.  Choupo has NO design temperature: no `designRules`
     key declares one and no sizer computes one.  The temperature compared is
     the hottest STATE the item's ports carry (`hottestPort`): the unit's

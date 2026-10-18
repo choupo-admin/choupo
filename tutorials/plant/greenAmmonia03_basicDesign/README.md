@@ -282,11 +282,12 @@ reader's.
 
 Read these before quoting them:
 
-* **Relief does not cure an under-rated shell.** The run warns that four
-  items -- the CONVERTER's shell (and its three bed baskets, sized as
-  vessels) and the Separator -- are designed at 167 bar in
-  stainless steels whose material record rates 100 bar (`[rating]
-  WARNING`). A valve set at 167 barg protects a vessel built for 167 barg;
+* **Relief does not cure an under-rated shell.** The run warns that every
+  item of the loop designed at 167 bar -- the CONVERTER's shell, its three
+  bed baskets and two interbed coolers, the Separator, the loop's other
+  exchangers and its two compressors -- is in a material whose record rates
+  100 bar (`[rating] WARNING`; the exchangers and compressors have been
+  compared since DEV.md 4c C86). A valve set at 167 barg protects a vessel built for 167 barg;
   it does nothing for one that could not be built to it. The materials are
   NOT changed here: that moves the cost goldens and is the owner's call.
 * **The coefficients are preliminary.** No `Kd`, `Kb`, `Kc`, `Kw`, `Kv` or

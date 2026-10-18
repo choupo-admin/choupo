@@ -17,6 +17,7 @@
 #include "DesignDefaults.H"
 #include "ShellTubeHX.H"
 #include "VesselMechanics.H"
+#include "MaterialLimits.H"
 #include "core/Advisory.H"
 #include "core/Constants.H"
 
@@ -228,6 +229,13 @@ std::vector<EquipmentSizing> ColumnSize::size(const std::string& unitName,
         shell.set("swageGap",     (big - sml) / big,  "-");
     }
 
+    //  THE RECORD'S PRESSURE RATING, from the one home both material limits
+    //  live in (DEV.md 4c C86): the shell published a `pressureDesign` and
+    //  compared it with nothing.  The temperature limit is `SizingPass`'s,
+    //  once per item, like every other item's.
+    materialLimits::pressure("vessel '" + shell.itemId() + "'", material,
+                             pressureDesign);
+
     items.push_back(std::move(shell));
 
     //  ---- THE TRAY STACK ----------------------------------------------
@@ -303,9 +311,9 @@ std::vector<EquipmentSizing> ColumnSize::size(const std::string& unitName,
                 + missing + ".");
             continue;
         }
+        //  The tag goes IN, so the rule's own rating line names the item.
         EquipmentSizing hx =
-            ShellTubeHX::sizeFromDuty(unitName, *Q, material, sub);
-        hx.equipmentTag = e.tag;
+            ShellTubeHX::sizeFromDuty(unitName, *Q, material, sub, e.tag);
         //  The duty's NAME matters as much as its value on a sheet with two
         //  exchangers: `Q_kW` alone cannot say which service this is.
         hx.basis = "A = Q/(U*LMTD) with U and LMTD author-set; Q is the"
@@ -371,6 +379,8 @@ std::vector<EquipmentSizing> ColumnSize::size(const std::string& unitName,
             drum.set("t_wall",         md.t_wall, "m");
             drum.set("weight",         md.weight, "kg");
             drum.set("pressureDesign", pDes,      "bar");
+            materialLimits::pressure("vessel '" + drum.itemId() + "'",
+                                     material, pDes);
             items.push_back(std::move(drum));
         }
     }

@@ -186,9 +186,10 @@
       pressures and temperatures is NOT checked here -- it is the groups'
       materials question, and moving an item to SS316 is one word.  Every
       item designed above 100 bar also exceeds the material records' maxP
-      (100 bar); the vessel sizer warns about its two (Converter,
-      Separator) on every run, and the exchanger sizer checks no rating at
-      all -- the ASME wall is still computed and priced.  For a compressor
+      (100 bar), and the run warns about every one of them -- the two
+      vessels (Converter, Separator), the exchangers and the compressors
+      (the exchangers and compressors since DEV.md 4c C86); the item is
+      still sized and priced.  For a compressor
       the material is recorded only (the correlation's F_BM 2.7 carries no
       material factor).
     * U is no longer declared: it is each exchanger's design RESULT (the
