@@ -42,6 +42,13 @@ License
   can run the COMPILED bundle and hold its mapping equal to the app's on the
   same block -- the proof that the file draws what the app drew.
 
+  THE PAGE'S PANELS (DEV.md 4c C91), wired here and decided in
+  case/layoutPanels.ts: the view fills the window below its toolbar until
+  the reader drags its lower edge (remembered in this browser), a Full
+  screen button (the Fullscreen API, else a fixed overlay; Esc leaves
+  both), and every section folds as the reader last left it.  Every store
+  access goes through state/prefs.ts, which swallows a blocked store.
+
   A reader whose system asks for reduced motion opens the page with the flow
   off (the Flow box turns it on); a browser without WebGL gets a sentence
   saying so, and the tables below the view carry everything.
@@ -69,6 +76,8 @@ import { OutputPass } from "three/examples/jsm/postprocessing/OutputPass.js";
 
 import type { PlantLayout } from "../adapters/SolverAdapter.js";
 import { EXPORT_IDS } from "../case/layoutExport.js";
+import { clampViewHeight, fillHeight, fullscreenMode } from "../case/layoutPanels.js";
+import { hasFlag, PREF_KEYS, readFlag, readRaw, writeFlag, writeRaw } from "../state/prefs.js";
 import {
   initialQuality, layoutScene, prefersReducedMotion, rememberQuality,
   type RenderQuality, type ViewPreset,
@@ -95,7 +104,89 @@ const MODULES: LayoutModules = {
   post: { EffectComposer, RenderPass, GTAOPass, OutlinePass, OutputPass },
 };
 
+/** Each <details data-section> opens as the reader last left it, and
+ *  remembers the next toggle.  Without a stored answer the markup's own
+ *  default stands. */
+function wireSections(): void {
+  for (const d of Array.from(document.querySelectorAll<HTMLDetailsElement>("details[data-section]"))) {
+    const key = d.dataset.key;
+    if (!key) continue;
+    if (hasFlag(key)) d.open = !readFlag(key);
+    d.addEventListener("toggle", () => writeFlag(key, !d.open));
+  }
+}
+
+/** The view's height: the reader's dragged one, else what fills the window
+ *  below its top; its lower edge is the drag handle (pointer, arrows,
+ *  double-click to fill again).  The renderer follows the box ("fill"). */
+function wireViewHeight(host: HTMLDivElement): void {
+  const handle = document.getElementById(EXPORT_IDS.resize);
+  const fill = () => fillHeight(host.getBoundingClientRect().top + window.scrollY, window.innerHeight);
+  const stored = Number(readRaw(PREF_KEYS.layoutExportViewHeight) ?? NaN);
+  const set = (px: number) => { host.style.height = `${px}px`; };
+  set(Number.isFinite(stored) && stored > 0 ? clampViewHeight(stored, window.innerHeight, fill())
+    : fill());
+  if (!handle) return;
+  const commit = (px: number) => {
+    const v = clampViewHeight(px, window.innerHeight, fill());
+    set(v);
+    writeRaw(PREF_KEYS.layoutExportViewHeight, String(v));
+  };
+  handle.addEventListener("pointerdown", (e) => {
+    e.preventDefault();
+    const y0 = e.clientY, h0 = host.getBoundingClientRect().height;
+    try { handle.setPointerCapture(e.pointerId); } catch { /* not supported */ }
+    const move = (ev: PointerEvent) =>
+      set(clampViewHeight(h0 + ev.clientY - y0, window.innerHeight, h0));
+    const up = (ev: PointerEvent) => {
+      handle.removeEventListener("pointermove", move);
+      handle.removeEventListener("pointerup", up);
+      handle.removeEventListener("pointercancel", up);
+      commit(h0 + ev.clientY - y0);
+    };
+    handle.addEventListener("pointermove", move);
+    handle.addEventListener("pointerup", up);
+    handle.addEventListener("pointercancel", up);
+  });
+  handle.addEventListener("keydown", (e) => {
+    const h = host.getBoundingClientRect().height;
+    if (e.key === "ArrowDown") { e.preventDefault(); commit(h + 16); }
+    else if (e.key === "ArrowUp") { e.preventDefault(); commit(h - 16); }
+    else if (e.key === "Enter" || e.key === " ") { e.preventDefault(); commit(fill()); }
+  });
+  handle.addEventListener("dblclick", () => {
+    set(fill());
+    writeRaw(PREF_KEYS.layoutExportViewHeight, "");
+  });
+}
+
+/** Full screen: the toolbar and the view together (the stage), the browser's
+ *  own where it is granted, else fixed over the window (class `max`); Esc
+ *  or the button leaves either. */
+function wireFullscreen(): void {
+  const btn = document.getElementById(EXPORT_IDS.full) as HTMLButtonElement | null;
+  const host = document.getElementById(EXPORT_IDS.stage);
+  if (!btn || !host) return;
+  const label = () => {
+    const on = !!document.fullscreenElement || host.classList.contains("max");
+    btn.textContent = on ? "Exit full screen" : "Full screen";
+    btn.setAttribute("aria-pressed", on ? "true" : "false");
+  };
+  btn.addEventListener("click", () => {
+    if (document.fullscreenElement) { void document.exitFullscreen?.(); return; }
+    if (host.classList.contains("max")) { host.classList.remove("max"); label(); return; }
+    if (fullscreenMode(document, host) === "api")
+      host.requestFullscreen().catch(() => { host.classList.add("max"); label(); });
+    else { host.classList.add("max"); label(); }
+  });
+  document.addEventListener("fullscreenchange", label);
+  window.addEventListener("keydown", (e) => {
+    if (e.key === "Escape" && host.classList.contains("max")) { host.classList.remove("max"); label(); }
+  });
+}
+
 function boot(): void {
+  wireSections();
   const data = document.getElementById(EXPORT_IDS.data);
   const host = document.getElementById(EXPORT_IDS.view) as HTMLDivElement | null;
   const error = document.getElementById(EXPORT_IDS.error);
@@ -114,6 +205,8 @@ function boot(): void {
   }
   if (!scene) { say("The embedded layout places no item, so there is nothing to draw."); return; }
 
+  wireViewHeight(host);
+  wireFullscreen();
   const box = (id: string) => document.getElementById(id) as HTMLInputElement | null;
   const flowBox = box(EXPORT_IDS.flow);
   if (flowBox && prefersReducedMotion()) {

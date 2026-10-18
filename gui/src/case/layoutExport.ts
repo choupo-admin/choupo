@@ -79,7 +79,9 @@ import { canPopOutLayout, type LayoutPopOutStash } from "./layoutPopOut.js";
 import {
   FINDINGS_CAPTION, findingRows, itemRows, layoutNotes, LEGEND_PHASES, LEGEND_PIPES,
   LEGEND_SHAPES, PARTICLE_WORD, PIPE_REGISTER_CAPTION, pipeRegister, PLOT_CAPTION, plotSummary,
+  ROADS_CAPTION, roadSummary,
 } from "./layoutTables.js";
+import { layoutSection, type LayoutSectionId } from "./layoutPanels.js";
 import { phaseCss, PHASE_WORDS, QUALITY_TITLE } from "./plantLayout.js";
 import type { RunInputs, Staleness } from "./staleness.js";
 
@@ -97,6 +99,11 @@ export const EXPORT_IDS = {
   zoneLabels: "choupo-layout-zone-labels",
   /** The name of the High / Fast radio group (DEV.md 4c C88). */
   quality: "choupo-layout-quality",
+  /** The Full screen button and the view's lower-edge drag handle (C91). */
+  full: "choupo-layout-full",
+  resize: "choupo-layout-resize",
+  /** The toolbar and the view together: what goes full screen. */
+  stage: "choupo-layout-stage",
 } as const;
 
 /** The compiled viewer, and the third-party code it carries. */
@@ -215,9 +222,24 @@ code, .mono, td.num { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas
 .toolbar .seg label:last-of-type { border-radius: 0 4px 4px 0; }
 .toolbar .seg input:checked + label { background: var(--accent); color: #fff; border-color: var(--accent); }
 .toolbar .seg input:focus-visible + label, .toolbar button:focus-visible { outline: 2px solid var(--accent); }
-.view { position: relative; width: 100%; height: min(70vh, 640px); min-height: 300px;
+.view { position: relative; width: 100%; height: calc(100vh - 120px); min-height: 240px;
   overflow: hidden; border: 1px solid var(--line); border-radius: 6px; background: var(--panel);
   touch-action: none; }
+.stage.max { position: fixed; inset: 0; z-index: 10; background: var(--bg); padding: 6px 8px;
+  display: flex; flex-direction: column; }
+.stage:fullscreen { background: var(--bg); padding: 6px 8px; display: flex; flex-direction: column; }
+.stage.max .view, .stage:fullscreen .view { flex: 1 1 auto; height: auto !important; }
+.stage.max ~ .vresize { display: none; }
+.vresize { height: 11px; margin: -5px 0 0; cursor: row-resize; position: relative; z-index: 2;
+  touch-action: none; }
+.vresize::after { content: ""; position: absolute; left: 40%; right: 40%; top: 4px; height: 3px;
+  border-radius: 2px; background: var(--line); }
+.vresize:hover::after, .vresize:focus-visible::after { background: var(--accent); }
+.vresize:focus-visible { outline: none; }
+details.sec { margin: 10px 0 0; }
+details.sec > summary { cursor: pointer; font-weight: 600; font-size: 1rem; margin: 4px 0; }
+details.sec > summary .dim { font-weight: 400; }
+details.legend > summary { font-size: 13px; color: var(--dim); }
 #${EXPORT_IDS.error} { color: #e03131; }
 .scroll { overflow-x: auto; -webkit-overflow-scrolling: touch; margin: 6px 0; }
 table { border-collapse: collapse; width: 100%; font-size: 12px; background: var(--panel); }
@@ -296,7 +318,19 @@ export function buildLayoutExport(input: LayoutExportInput): { fileName: string;
     + (hasPipes ? check(EXPORT_IDS.pipes, "Pipes", true) + check(EXPORT_IDS.flow, "Flow", true) : "")
     + (hasZones ? check(EXPORT_IDS.zones, "Zones", true)
                   + check(EXPORT_IDS.zoneLabels, "Zone labels", false) : "")
+    + `<button type="button" id="${EXPORT_IDS.full}"`
+    + ` title="Show the view on the whole screen (Esc returns)">Full screen</button>`
     + `</div>`;
+  //  A collapsible section (C91): open or folded as the reader last left it
+  //  in this browser (the viewer applies the remembered fold on load; the
+  //  markup carries the default, so the page reads right without script).
+  const section = (id: LayoutSectionId, body: string, extra?: string, cls = "sec") => {
+    const s = layoutSection(id);
+    return `<details class="${cls}" data-section="${s.id}" data-key="${esc(s.key)}"`
+      + ` data-default-collapsed="${s.defaultCollapsed ? "1" : "0"}"${s.defaultCollapsed ? "" : " open"}>`
+      + `<summary>${esc(s.title)}${extra ? ` <span class="dim">· ${esc(extra)}</span>` : ""}</summary>`
+      + `${body}</details>`;
+  };
 
   //  ---- the findings, the register, the items ------------------------------
   const findings = findingRows(layout);
@@ -324,7 +358,7 @@ export function buildLayoutExport(input: LayoutExportInput): { fileName: string;
            ["P (bar)", true], ["Flow (kg/s)", true], ["Length (m)", true]], rows, 760)
       : pipesHtml;
     if (reg.notRouted.length > 0)
-      notRoutedHtml = `<h2>Not routed (the engine's reasons)</h2><ul>`
+      notRoutedHtml = `<h3>Not routed (the engine's reasons)</h3><ul>`
         + reg.notRouted.map((n) => `<li><code>${esc(n.stream)}</code>: ${esc(n.reason)}</li>`)
           .join("") + `</ul>`;
   }
@@ -346,6 +380,17 @@ export function buildLayoutExport(input: LayoutExportInput): { fileName: string;
           plot.sectors.map((s) => [[esc(s.sector), false], [esc(s.from), false],
             [esc(s.plotArea), true], [esc(s.footprintArea), true]]), 520)
         : "")
+    : "";
+
+  //  ---- the roads (C90): the same words and rows the app draws -------------
+  const roadView = roadSummary(layout);
+  const roadsHtml = roadView
+    ? `<p>${esc(roadView.headline)}</p>`
+      + roadView.notes.map((n) => `<p class="note">${esc(n)}</p>`).join("")
+      + table(ROADS_CAPTION, [["Road", false], ["Width (m)", true], ["Length (m)", true],
+          ["A gate reaches it", false], ["Why (the case's)", false]],
+        roadView.rows.map((r) => [[`<code>${esc(r.road)}</code>`, false], [esc(r.width), true],
+          [esc(r.length), true], [esc(r.reached), false], [esc(r.reason), false]]), 640)
     : "";
 
   const notes = layoutNotes(layout);
@@ -392,22 +437,24 @@ the network.  Choupo is free software under the GNU GPL-3.0-or-later (choupo.org
 <h1>${esc(leaf)} · plant layout</h1>
 <p class="sub">${esc(who)} · ${esc(run)} · ${esc(versionShort)} · exported ${esc(input.date)}</p>
 </header>
-<section class="legend">${legend}</section>
+<section class="legend">${section("legend", legend, undefined, "sec legend")}</section>
+<div id="${EXPORT_IDS.stage}" class="stage">
 ${toolbar}
 <div id="${EXPORT_IDS.view}" class="view" aria-label="3D plant layout"></div>
+</div>
+<div id="${EXPORT_IDS.resize}" class="vresize" role="separator" aria-orientation="horizontal"
+  tabindex="0" aria-label="resize the 3D view"
+  title="Drag to resize the 3D view (arrow keys too); double-click fills the window again"></div>
 <p id="${EXPORT_IDS.error}" hidden></p>
 <noscript><p class="note">The 3D view needs JavaScript; the tables below carry every
 position, pipe and finding the engine published.</p></noscript>
-${plotHtml ? `<h2>Plot</h2>
-${plotHtml}
-` : ""}<h2>Findings</h2>
-${findingsHtml}
-<h2>Pipe register</h2>
-${pipesHtml}
-${notRoutedHtml}
-<h2>Placed items</h2>
-${items}
-${notesHtml}
+${plotHtml ? section("plot", plotHtml, layout.plot ? `${layout.plot.plotArea.toFixed(0)} m²` : undefined) : ""}
+${roadsHtml ? section("roads", roadsHtml, layout.roadNetwork
+  ? `${layout.roadNetwork.length.toFixed(0)} m, ${layout.roadNetwork.pavedArea.toFixed(0)} m² paved`
+  : undefined) : ""}
+${section("findings", findingsHtml, `${findings.length}`)}
+${section("pipes", pipesHtml + notRoutedHtml, `${layout.pipes?.length ?? 0} routed`)}
+${section("items", items + notesHtml, `${layout.items.length} placed`)}
 ${footer}
 </main>
 <script type="application/json" id="${EXPORT_IDS.data}">${jsonForScript(layout)}</script>

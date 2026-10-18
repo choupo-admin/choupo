@@ -119,6 +119,25 @@ Description
     one above another) and, per sector, the declared area or else the
     envelope of the sector's own footprints.  The economics prices this
     plot area when the case declares a land price (EconomicsPass.cpp).
+
+    THE ROADS (2026-10-18, DEV.md 4c C90).  A case may declare `roads {
+    source; reason; headroom; access { distance; source; reason; };
+    [noTraffic ( <zones> );] network ( { road "<name>"; width; reason;
+    waypoints ( { x; y; } ... ); } ... ); }`: centre lines at grade, every
+    segment along one plan axis, the PAVED surface each segment widened by
+    half the width on every side.  REFUSED: a road through a footprint below
+    the headroom; a road under the pipe rack whose published elevation is
+    below the headroom; a routed pipe below the headroom over a road; a
+    diagonal segment, a waypoint with a `z`, a road named twice.  ANNOUNCED:
+    a road in a zone the case closes to traffic; a road whose centre line
+    meets no road a gate reaches; no gate; a gate, a site building or a
+    process item with no reached road within the access distance; a
+    weighbridge no reached road crosses.  Two non-process KIND words carry a
+    meaning here and nowhere else (`kGateKind`, `kWeighbridgeKind`): a
+    `gate` is an entrance, a `weighbridge` is drivable.  Published: each
+    road's length, the network's length and paved area (`unionArea`), each
+    crossing under the rack, per item the nearest reached road; the roads
+    are inside the plot (`plotOf`).  The draft draws no road.
 \*---------------------------------------------------------------------------*/
 
 #ifndef Choupo_plantLayout_PlantLayout_H

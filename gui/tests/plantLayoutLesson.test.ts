@@ -101,7 +101,7 @@ function clear(a: Item, b: Item): number {
 }
 const KIND: Record<string, string> = { makeupComp: "compressor", recycleComp: "compressor",
   converter: "vessel", separator: "vessel", letdown: "vessel", FEHE: "shellTubeHX",
-  waterCooler: "shellTubeHX", controlRoom: "building" };
+  waterCooler: "shellTubeHX", controlRoom: "controlRoom" };
 /** The witness's separation table, read from its file. */
 function rules(text: string): Map<string, number> {
   const out = new Map<string, number>();
@@ -136,7 +136,7 @@ function findings(k: LayoutKnobs): string[] {
     let b = (Math.atan2(vx, vy) * 180) / Math.PI; if (b < 0) b += 360;
     let off = b - downwind; while (off > 180) off -= 360; while (off < -180) off += 360;
     if (d <= reach && Math.abs(off) <= halfAngle) out.push(`downwind ${rel}`);
-    //  The zone envelopes (pointToFootprint, PlantLayout.cpp:161, for a box).
+    //  The zone envelopes (pointToFootprint, PlantLayout.cpp:162, for a box).
     const body = entry(text, rel);
     for (const z of body.matchAll(/zone\s+(\d);\s*radius\s+([0-9.]+)\s*m;\s*height\s+([0-9.]+)\s*m/g)) {
       const gx = Math.max(0, Math.abs(r.x - room.x) - room.dx / 2);
@@ -312,39 +312,39 @@ describe("plant layout: the lesson text", () => {
     const span = (a: number, b: number): string => src.slice(a - 1, b).join("\n");
     const cited = new Set([...all.matchAll(/PlantLayout\.cpp:(\d+)(?:-(\d+))?/g)].map((m) => m[0]));
     const CLAIMS: Record<string, string | RegExp> = {
-      "PlantLayout.cpp:381": "it.dx = D; it.dy = D; it.dz = L",
-      "PlantLayout.cpp:198-201": /"D",\s+"H"[\s\S]*"shellID"[\s\S]*"chamberDiameter"/,
-      "PlantLayout.cpp:209": '"sieveTrays"',
-      "PlantLayout.cpp:1165": "already published its size",
-      "PlantLayout.cpp:1177": "No size is",
-      "PlantLayout.cpp:137": "std::hypot(a.x - b.x, a.y - b.y) - 0.5 * a.dx - 0.5 * b.dx",
-      "PlantLayout.cpp:1297-1299": /tab\.measure == "edgeToEdge"[\s\S]*clearPlan\(a, b\)[\s\S]*std::hypot/,
-      "PlantLayout.cpp:265": "`measure` is not declared",
-      "PlantLayout.cpp:1158": "it.kind   = s->second.equipmentType",
-      "PlantLayout.cpp:308": "is declared twice",
-      "PlantLayout.cpp:1301": 'addFinding("separation"',
-      "PlantLayout.cpp:1679-1680": /const scalar gap = std::max\(\{ prev\.dx, prev\.dy, it\.dx, it\.dy \}\);\s*x = prev\.x \+ 0\.5 \* prev\.dx \+ gap \+ 0\.5 \* it\.dx;/,
-      "PlantLayout.cpp:1695": "std::ceil(x * 100.0",
-      "PlantLayout.cpp:81-82": /std::cerr << "\[layout\] "[\s\S]*AdvisoryLog::instance\(\)\.add\("layout"/,
-      "PlantLayout.cpp:1218-1219": /c < -kTol && vz > kTol[\s\S]*OVERLAP/,
-      "PlantLayout.cpp:1385": "w.fromDeg + 180.0",
-      "PlantLayout.cpp:1395-1398": /planBearing\(vx, vy\)[\s\S]*w\.planNorthDeg[\s\S]*wrap180\(trueB - downwind\)[\s\S]*w\.halfAngleDeg/,
-      "PlantLayout.cpp:1394": "dist > w.reach",
-      "PlantLayout.cpp:106": "carries no unit",
-      "PlantLayout.cpp:221": 'lookupWord("ignition")',
-      "PlantLayout.cpp:1361-1364": /dPlan >= z\.radius[\s\S]*verticalOverlap\(rel\.z, z\.height, ig\.z, ig\.dz\)[\s\S]*ignitionInZone/,
-      "PlantLayout.cpp:161": "scalar pointToFootprint",
+      "PlantLayout.cpp:382": "it.dx = D; it.dy = D; it.dz = L",
+      "PlantLayout.cpp:199-202": /"D",\s+"H"[\s\S]*"shellID"[\s\S]*"chamberDiameter"/,
+      "PlantLayout.cpp:210": '"sieveTrays"',
+      "PlantLayout.cpp:1600": "already published its size",
+      "PlantLayout.cpp:1612": "No size is",
+      "PlantLayout.cpp:138": "std::hypot(a.x - b.x, a.y - b.y) - 0.5 * a.dx - 0.5 * b.dx",
+      "PlantLayout.cpp:1743-1745": /tab\.measure == "edgeToEdge"[\s\S]*clearPlan\(a, b\)[\s\S]*std::hypot/,
+      "PlantLayout.cpp:266": "`measure` is not declared",
+      "PlantLayout.cpp:1593": "it.kind   = s->second.equipmentType",
+      "PlantLayout.cpp:309": "is declared twice",
+      "PlantLayout.cpp:1747": 'addFinding("separation"',
+      "PlantLayout.cpp:2156-2157": /const scalar gap = std::max\(\{ prev\.dx, prev\.dy, it\.dx, it\.dy \}\);\s*x = prev\.x \+ 0\.5 \* prev\.dx \+ gap \+ 0\.5 \* it\.dx;/,
+      "PlantLayout.cpp:2172": "std::ceil(x * 100.0",
+      "PlantLayout.cpp:82-83": /std::cerr << "\[layout\] "[\s\S]*AdvisoryLog::instance\(\)\.add\("layout"/,
+      "PlantLayout.cpp:1664-1665": /c < -kTol && vz > kTol[\s\S]*OVERLAP/,
+      "PlantLayout.cpp:1831": "w.fromDeg + 180.0",
+      "PlantLayout.cpp:1841-1844": /planBearing\(vx, vy\)[\s\S]*w\.planNorthDeg[\s\S]*wrap180\(trueB - downwind\)[\s\S]*w\.halfAngleDeg/,
+      "PlantLayout.cpp:1840": "dist > w.reach",
+      "PlantLayout.cpp:107": "carries no unit",
+      "PlantLayout.cpp:222": 'lookupWord("ignition")',
+      "PlantLayout.cpp:1807-1810": /dPlan >= z\.radius[\s\S]*verticalOverlap\(rel\.z, z\.height, ig\.z, ig\.dz\)[\s\S]*ignitionInZone/,
+      "PlantLayout.cpp:162": "scalar pointToFootprint",
       //  The pipes (C80): the rack route, the length, the default rack.
-      "PlantLayout.cpp:803-819":
+      "PlantLayout.cpp:804-820":
         /p\.routedBy = "rack";[\s\S]*pts\.push_back\(\{ a\.point\[0\], a\.point\[1\], lz \}\);[\s\S]*pts\.push_back\(\{ b\.point\[0\], ly, lz \}\);[\s\S]*pts\.push_back\(b\.point\);/,
-      "PlantLayout.cpp:824": "p.length += segLength(p.route[i - 1], p.route[i]);",
-      "PlantLayout.cpp:828": "if (!rack.declared)",
+      "PlantLayout.cpp:825": "p.length += segLength(p.route[i - 1], p.route[i]);",
+      "PlantLayout.cpp:829": "if (!rack.declared)",
       //  The plot (C82): the envelope grown by the margin, its area, the
       //  footprints' own area, the undeclared margin announced.
-      "PlantLayout.cpp:923-925":
+      "PlantLayout.cpp:1358-1360":
         /pl\.xMin = x0 - pl\.margin;[\s\S]*pl\.plotArea = \(pl\.xMax - pl\.xMin\) \* \(pl\.yMax - pl\.yMin\);/,
-      "PlantLayout.cpp:928": "pl.footprintArea += planArea(i);",
-      "PlantLayout.cpp:992": "if (!pl.marginDeclared)",
+      "PlantLayout.cpp:1363": "pl.footprintArea += planArea(i);",
+      "PlantLayout.cpp:1427": "if (!pl.marginDeclared)",
     };
     for (const c of cited) expect(CLAIMS[c], `uncovered citation ${c}`).toBeDefined();
     for (const [c, want] of Object.entries(CLAIMS)) {

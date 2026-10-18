@@ -265,6 +265,18 @@ export const BOTTOM_DOCK_PANEL: PanelChrome = {
   contentMin: 0, shortcut: "]",
 };
 
+/** THE LAYOUT VIEW'S TABLES (DEV.md 4c C91), docked under the 3D view in the
+ *  `?layout=` tab.  Bottom edge, like the console, but in a different tab:
+ *  the two are never mounted together.  No shortcut (the tab has no other
+ *  panel to tell it from, and a key is advertised only where it is bound);
+ *  `contentMin: 0`, because its fold DEFAULT is the registry's own
+ *  `defaultCollapsed` (folded: the view fills the window), which the host
+ *  hands in as the controlled fold. */
+export const LAYOUT_TABLES_PANEL: PanelChrome = {
+  prefs: PANELS.layoutTables, edge: "bottom", label: "layout tables",
+  contentMin: 0,
+};
+
 // ---- geometry (rule 1) ------------------------------------------------------
 
 /** The pointer target of a resize handle, in px, straddling the border.

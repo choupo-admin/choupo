@@ -190,6 +190,53 @@ export function plotSummary(layout: PlantLayout): PlotView | null {
   };
 }
 
+/** THE ROADS (DEV.md 4c C90) as words and cells: the engine's totals, what
+ *  the case declared (headroom, access distance, closed zones) and whose it
+ *  is, and one row per road.  Every number is the engine's, formatted; null
+ *  when the case declares no road. */
+export interface RoadView {
+  /** "6 roads, 346 m of centre line, 2090 m2 paved; 1 network, reached from gate." */
+  headline: string;
+  notes: string[];
+  rows: { road: string; width: string; length: string; reached: string; reason: string }[];
+}
+
+export const ROADS_CAPTION =
+  "Roads: declared by the case, checked by the engine (a road through a footprint, or under a"
+  + " rack or a pipe lower than the headroom, is refused; a road no gate reaches, a building no"
+  + " road serves and an item beyond the access distance are announced).";
+
+export function roadSummary(layout: PlantLayout): RoadView | null {
+  const n = layout.roadNetwork;
+  if (!n) return null;
+  const roads = layout.roads ?? [];
+  const crossings = layout.rackCrossings ?? [];
+  const notes: string[] = [
+    `Headroom ${n.headroom.toFixed(1)} m and access within ${n.accessDistance.toFixed(1)} m,`
+      + ` declared by the case: ${n.accessReason} (source: ${n.accessSource}).`,
+  ];
+  if (n.noTraffic.length > 0)
+    notes.push(`Closed to traffic: zone ${n.noTraffic.join(", zone ")} (a road entering one is`
+      + " announced).");
+  if (crossings.length > 0)
+    notes.push(`${crossings.length} crossing${crossings.length === 1 ? "" : "s"} under the pipe`
+      + ` rack (lowest tier ${crossings[0]!.clearance.toFixed(1)} m, at least the headroom): `
+      + crossings.map((c) => `${c.road} at x ${c.xMin.toFixed(1)} to ${c.xMax.toFixed(1)} m`)
+        .join("; ") + ".");
+  const gates = n.entrances.length > 0 ? `reached from ${n.entrances.join(", ")}`
+    : "no gate placed, so no entrance is checked";
+  return {
+    headline: `${roads.length} road${roads.length === 1 ? "" : "s"}, ${n.length.toFixed(0)} m of`
+      + ` centre line, ${n.pavedArea.toFixed(0)} m² paved (counted once where roads meet);`
+      + ` ${n.components} connected network${n.components === 1 ? "" : "s"}, ${gates}.`,
+    notes,
+    rows: roads.map((r) => ({
+      road: r.road, width: r.width.toFixed(1), length: r.length.toFixed(1),
+      reached: r.fromEntrance ? "yes" : "NO gate reaches it", reason: r.reason,
+    })),
+  };
+}
+
 export const FINDINGS_CAPTION =
   "Findings -- announced by the engine, never refused: a layout that is too close is a"
   + " draft the student must see and defend.";

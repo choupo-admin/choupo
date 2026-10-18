@@ -34,6 +34,24 @@
   must see and defend, while an overlap is not a layout at all.  Move
   `letdown` to x 62 m and the announcement goes away.
 
+  THE SITE (DEV.md 4c C90).  A gate with its guardhouse on the south fence,
+  a road network that rings the process area and crosses under the pipe rack
+  once, and the site buildings a plant this size needs besides the control
+  room: a warehouse (spares, catalyst drums, consumables) and a canteen.
+  Every position, footprint, road width, the headroom and the access
+  distance are AUTHOR-SET ASSUMPTIONS FOR THIS EXERCISE, said as such in each
+  `source`; none is taken from a fire code or a road standard.
+  THERE IS NO WEIGHBRIDGE, and that is read off the case, not chosen: the
+  product leaves at a battery limit as a pipe (`productNH3`, the let-down
+  drum's liquid -- a world-scale ~1400 t/day train ships by pipeline, rail or
+  ship, and this case declares no product storage or loading bay), and the
+  makeup syngas ARRIVES by pipe at 25 bar from the front end (`makeup`).  No
+  stream of this flowsheet moves by truck, so nothing is weighed at the
+  gate; the trucks that do come (catalyst, spares) are deliveries, not
+  custody transfer.  A case whose product leaves in road tankers declares
+  `{ nonProcess "weighbridge"; kind weighbridge; ... }` on a road, and the
+  engine then requires a road to run over its deck.
+
   Grammar and checks: docs/design/a-plant-layout-is-declared-and-checked.md
 \*---------------------------------------------------------------------------*/
 
@@ -125,18 +143,56 @@ items
         }
     }
 
-    //  The control room is not equipment the flowsheet sizes, so it is a
-    //  NON-PROCESS item: its kind and its box are declared.  It is the
-    //  ignition source of this plot plan.
+    //  The SITE BUILDINGS are not equipment the flowsheet sizes, so each is
+    //  a NON-PROCESS item: its kind, its box, and where both come from are
+    //  declared.  The kind is the word the separation table names and the
+    //  3D view draws by (controlRoom, warehouse, canteen, gate, weighbridge,
+    //  substation; any other word is a plain box).
     {
         nonProcess  "controlRoom";
-        kind        building;
+        kind        controlRoom;
         x           -30 m;
         y           -40 m;
         z           0 m;
         orientation alongX;
-        footprint   { length 15 m; width 10 m; height 4 m; }   // author-set
+        footprint   { length 15 m; width 10 m; height 4 m; }
+        source      "author-set assumption for this exercise; not a building design";
+        reason      "the operators' room for the DCS consoles, kept upwind and out of every zone";
         ignition    "non-hazardous-area electrical equipment and people: treated as an ignition source";
+    }
+    {
+        nonProcess  "gate";
+        kind        gate;
+        x           -19 m;
+        y           -63 m;
+        z           0 m;
+        orientation alongX;
+        footprint   { length 4 m; width 3 m; height 3 m; }
+        source      "author-set assumption for this exercise; not a building design";
+        reason      "the site entrance on the south fence: a guardhouse beside the entrance road and its barrier";
+    }
+    {
+        nonProcess  "canteen";
+        kind        canteen;
+        x           -30 m;
+        y           -58 m;
+        z           0 m;
+        orientation alongX;
+        footprint   { length 12 m; width 8 m; height 4 m; }
+        source      "author-set assumption for this exercise; not a building design";
+        reason      "meals and rest for the shift crews, beside the control room and more than the wind reach (60 m) from every release source, so no wind the EduTool's guided moves turn puts the kitchen downwind of one";
+        ignition    "a kitchen (open flames) and people: treated as an ignition source";
+    }
+    {
+        nonProcess  "warehouse";
+        kind        warehouse;
+        x           -30 m;
+        y           -20 m;
+        z           0 m;
+        orientation alongX;
+        footprint   { length 20 m; width 12 m; height 7 m; }
+        source      "author-set assumption for this exercise; not a building design";
+        reason      "spares, catalyst drums for the converter's recharge and consumables, on the main road so a truck unloads at its door";
     }
 );
 
@@ -152,9 +208,15 @@ separation
             { between ( compressor vessel );       distance 9 m;  }
             { between ( compressor compressor );   distance 4 m;  }
             { between ( shellTubeHX vessel );      distance 3 m;  }
-            { between ( building compressor );     distance 30 m; }
-            { between ( building vessel );         distance 30 m; }
-            { between ( building shellTubeHX );    distance 30 m; }
+            { between ( compressor controlRoom );   distance 30 m; }
+            { between ( controlRoom vessel );      distance 30 m; }
+            { between ( controlRoom shellTubeHX ); distance 30 m; }
+            { between ( canteen compressor );      distance 30 m; }
+            { between ( canteen vessel );          distance 30 m; }
+            { between ( canteen shellTubeHX );     distance 30 m; }
+            { between ( compressor warehouse );    distance 15 m; }
+            { between ( vessel warehouse );        distance 15 m; }
+            { between ( shellTubeHX warehouse );   distance 15 m; }
         );
     }
 );
@@ -173,17 +235,83 @@ wind
     reason      "a prevailing direction lets the plot plan be read for which way a release drifts";
 }
 
+//  THE ROADS (DEV.md 4c C90).  Centre lines at grade, every segment along
+//  one plan axis.  The entrance road runs north from the gate to the main
+//  road, which rings the process area with the north, east and west roads;
+//  two roads cross UNDER the pipe rack: one between the recycle compressor
+//  and the feed-effluent exchanger, and the east road at the rack's east
+//  end (the rack is the engine's stated default, 6 m up, above the 5 m
+//  headroom declared here).  The engine refuses a road through a
+//  footprint or under a rack or a pipe lower than the headroom, announces a
+//  road no gate reaches, a building no road serves and a process item with
+//  no road within the access distance, and publishes the length and the
+//  paved area (inside the plot below).  AUTHOR-SET ASSUMPTIONS throughout.
+roads
+{
+    source   "author-set assumption for this exercise; not taken from a road or fire standard";
+    reason   "a ring road round the process area so a fire tender reaches every item from two sides, joined to the gate by the entrance road";
+    headroom 5 m;
+    access
+    {
+        distance 20 m;
+        source   "author-set assumption for this exercise; not taken from a fire code";
+        reason   "the reach of a fire tender's hoses and of a mobile crane parked on the road, as a round number";
+    }
+    noTraffic ( 1 );
+    network
+    (
+        {
+            road      "entrance";
+            width     7 m;
+            reason    "the gate to the main road, past the canteen and the control room";
+            waypoints ( { x -12 m; y -66 m; } { x -12 m; y -31 m; } );
+        }
+        {
+            road      "main";
+            width     6 m;
+            reason    "south of the compressor row, from the warehouse door to the east road; kept 18 m off the compressors so the EduTool's guided moves of the control room (DEV.md 4c C75 slice 2) stand clear of every road";
+            waypoints ( { x -36 m; y -31 m; } { x 68 m; y -31 m; } );
+        }
+        {
+            road      "east";
+            width     6 m;
+            reason    "past the separator, the let-down drum and the water cooler, under the rack's east end";
+            waypoints ( { x 68 m; y -31 m; } { x 68 m; y 16 m; } );
+        }
+        {
+            road      "north";
+            width     6 m;
+            reason    "behind the exchangers, closing the ring";
+            waypoints ( { x -8 m; y 16 m; } { x 68 m; y 16 m; } );
+        }
+        {
+            road      "west";
+            width     6 m;
+            reason    "beside the makeup compressor, closing the ring";
+            waypoints ( { x -8 m; y -31 m; } { x -8 m; y 16 m; } );
+        }
+        {
+            road      "rackCrossing";
+            width     6 m;
+            reason    "the converter's crane access: under the rack between the recycle compressor and the exchanger";
+            waypoints ( { x 28 m; y -31 m; } { x 28 m; y 16 m; } );
+        }
+    );
+}
+
 //  THE PLOT (DEV.md 4c C82).  The engine publishes the plot area as the
-//  envelope of the placed footprints and the routed pipes, grown on every
-//  side by this margin -- the ground kept clear for the roads, the fence and
-//  access.  AUTHOR-SET ASSUMPTION, a round number for this exercise, not
-//  taken from any spacing standard; the students replace it with their own
-//  site's.  The economics prices this plot area as land (system/postDict,
-//  `economics { land { ... } }`).
+//  envelope of the placed footprints, the routed pipes and the declared
+//  roads, grown on every side by this margin -- the fence and a clear strip
+//  inside it.  The roads are declared above and inside the envelope, so the
+//  margin no longer carries them (it was 10 m "for the perimeter road" before
+//  they were declared, DEV.md 4c C90).  AUTHOR-SET ASSUMPTION, a round number
+//  for this exercise, not taken from any spacing standard; the students
+//  replace it with their own site's.  The economics prices this plot area
+//  as land (system/postDict, `economics { land { ... } }`).
 plot
 {
-    margin  10 m;
-    reason  "author-set assumption for this exercise: a 10 m strip for the perimeter road, the fence and access around the plant; not taken from any spacing standard";
+    margin  5 m;
+    reason  "author-set assumption for this exercise: the fence and a 5 m clear strip inside it; the roads are declared in `roads` and lie inside the envelope; not taken from any spacing standard";
 }
 
 // ************************************************************************* //

@@ -253,7 +253,8 @@ converts unsourced into falsely sourced."*
 
 Pipe lengths were the next slice and are §11 below.  Still not here: a
 pipe's pressure drop and its cost (the slice after §11: the route and its
-length now exist for them to read); structures and multi-level steel
+length now exist for them to read); roads and site buildings arrived in
+§13; structures and multi-level steel
 (elevation is declared but nothing checks access); rotation by an arbitrary
 angle; a stacking or support check; whether any declared distance or zone
 extent is SENSIBLE -- by design that is the author's to defend.
@@ -426,7 +427,7 @@ the axis-aligned ENVELOPE of every declared sector area, every placed
 footprint (process and non-process) and every routed pipe's polyline, grown
 on every side by the case's declared margin,
 
-    plot { margin 10 m; reason "perimeter road, fence and access"; }
+    plot { margin 5 m; reason "the fence and a clear strip inside it"; }
 
 An envelope and not a union, because a plot is one parcel of land bought
 whole: ground between two sectors is still bought.  The pipes are in it
@@ -478,7 +479,8 @@ run writes, on the nine economics cases without a layout, against a build of
 the parent commit; the .ods compared on its content).
 
 WITNESSES.  `ammonia02_full_plant` and `greenAmmoniaPEQ_baseCase` declare
-`plot { margin 10 m; }` and `land { price 50; }` -- a ROUND PLACEHOLDER for
+`plot { margin 10 m; }` (ammonia02's became 5 m when its roads were
+declared, §13) and `land { price 50; }` -- a ROUND PLACEHOLDER for
 the students' site, said so in the file, not a market quotation.  Their
 NPV (and, on ammonia02, IRR and payback) MOVE with it, as they must;
 `aceticAcid02_plant` publishes its plot area only (its README makes pricing
@@ -489,3 +491,134 @@ purchase price; land bought on a schedule; the land's own taxes and fees;
 a non-rectangular plot; the economics of a plot under an outer driver
 without a declared `area`.  Gates: `check_plant_layout` arm (j),
 `check_economic_sensitivity` arms (i)-(l), `check_cost_provenance` arm (s).
+
+## 13. Slice 5 -- roads, site buildings, the scene in daylight (DEV.md 4c C90, C91)
+
+Vítor, 2026-10-18, on an exported layout: *"o layout gerado para exportar
+nao esta a cores!  E achas que se podem por as estradas a ligar tudo?
+Entrada, pavilhao de armazenamento, refeitorio, balanca para pesar camioes
+quando faz falta?"*  Then, on the `?layout=` tab: *"the window is fixed;
+good practice is an option to show it or not and adjust it"*.
+
+**The scene is always daylight (C90 part 1).**  `layoutRenderer.ts` read
+the app's colour scheme, else `prefers-color-scheme`, and drew a NIGHT
+palette -- sky, lights, grass, gravel, pads, grid -- in a dark scheme.  The
+exported page carries no app scheme, so a dark-scheme browser fell to the
+system's and opened on a near-black scene while the app (light) drew the
+day.  Rule, the commander's: ONE plant is drawn ONE way; only the page
+chrome (labels, the tooltip, panels) follows the theme, through CSS
+`light-dark()`.  The palette is one constant, `DAYLIGHT`, in the one
+renderer the app and the export share; `tests/layoutDaylight.test.ts` holds
+that the renderer reads no scheme.
+
+**Site buildings are non-process items by KIND.**  The grammar already had
+`nonProcess "<name>"; kind <word>;`.  A non-process item may now also carry
+`source "..."; reason "...";` (both or neither, refused otherwise -- a
+sentence never stands without its pair), published and shown in the
+tooltip.  The KIND stays the case's own word (the separation table names
+it); the 3D view draws five words by a drawing of their own
+(`gui/src/case/equipmentModel.ts` `SITE_MODELS`): `controlRoom`,
+`warehouse` (a portal shed, pitched roof along its longer side, roller
+doors), `canteen` (windows all round, a kitchen vent), `gate` (a glazed
+guardhouse; its barrier arm across the road is drawn by the renderer at
+the point the engine published), `weighbridge` (a steel deck on its pit,
+ramps at both ends).  The BODY fills the declared box exactly; windows,
+doors, slabs, ramps and vents are decoration, the C88 rule.  Any other word
+(`building`, `substation`) keeps the plain box.  Two words carry a meaning
+the road check needs, and `PlantLayout.cpp` holds the ONE list of them:
+`gate` is an ENTRANCE, and `weighbridge` is DRIVABLE.
+
+**Roads are declared:**
+
+    roads
+    {
+        source   "...";  reason "...";
+        headroom 5 m;                      // the vehicle clearance the network is laid out for
+        access   { distance 20 m; source "..."; reason "..."; }
+        noTraffic ( 1 );                   // optional: zones closed to vehicles
+        network
+        (
+            { road "entrance"; width 7 m; reason "...";
+              waypoints ( { x -12 m; y -66 m; } { x -12 m; y -31 m; } ); }
+            ...
+        );
+    }
+
+A centre line at grade (a waypoint carrying `z` refuses), every segment
+along ONE plan axis (a diagonal refuses, naming the corner to add -- the
+pipes' rule), a width per road.  The PAVED surface is each segment widened
+by half the width on every side, ends included, so a corner is paved square
+and two roads meeting at a centre line share their junction.
+
+**What the engine checks** (`checkRoads`, after the pipes, before the plot):
+* REFUSED, as an overlap is: a road's paved surface through a footprint
+  below the headroom (an item standing above the headroom lets the road
+  pass under); a road under the pipe rack whose published elevation is below
+  the headroom -- the rack is checked by what it CARRIES, its lowest tier,
+  the engine's default (6 m, announced as such) included; a routed pipe
+  segment below the headroom whose plan projection runs inside a paved
+  surface (a declared waypoint route may run low; the rack's own lanes
+  cannot).  A crossing that clears is PUBLISHED (`rackCrossings`, its plan
+  rectangle and the clearance).
+* ANNOUNCED (stderr, the caveat block, the JSON): a road whose paved
+  surface enters a zone the case closes to traffic (`roadInZone`); a road
+  whose centre line meets no road a gate reaches (`roadDisconnected` --
+  roads are ONE network when their centre lines touch or cross); no gate
+  placed (`noEntrance`, every road then taken as reached); a gate with no
+  road within the access distance (`gateOffRoad`); a site building with no
+  road a gate reaches within the access distance (`buildingNotReached`); a
+  process item likewise (`noRoadAccess`, fire-brigade and maintenance
+  access); a weighbridge no reached centre line crosses
+  (`weighbridgeOffRoad`) -- and a weighbridge a road DOES run over is not a
+  road through a footprint.  Every distance is the case's, with its source;
+  no spacing or fire-code table is transcribed.
+* PUBLISHED: each road's centre line and length, the network's length and
+  PAVED AREA (the union of the paved rectangles, exactly, on the grid of
+  their own edges -- `unionArea`, the plot's own), the components, the
+  entrances, and per placed item the nearest road a gate reaches (clear
+  distance footprint-to-paved-edge, the nearest centre-line point, `onDeck`
+  for a weighbridge).  The roads are inside the PLOT envelope (`plotOf`,
+  one rule, its sentence now says so), so the plot area and the land cost
+  see them.
+
+**The draft does not draw roads.**  A road's centre line is drawn round the
+items it serves exactly as a declared pipe route is, and where the gate
+stands is a fact about the site the run cannot know: a skeleton proposed
+here would be a road network nobody chose, every access distance satisfied
+by construction.  The draft writes a commented template, carries each site
+building's `source`/`reason`, and says it did not carry a previous network.
+
+**The witness.**  `ammonia02_full_plant` declares a gate on the south fence,
+a 7 m entrance road, a ring of 6 m roads round the process area (one
+crossing under the rack between the recycle compressor and the exchanger,
+the east road under its east end), a warehouse on the main road and a
+canteen beside the control room, the canteen more than the 60 m wind reach
+from every release source.  THERE IS NO WEIGHBRIDGE, read off the case:
+the product leaves at a battery limit as a pipe and the makeup gas arrives
+by pipe; no stream moves by truck.  The roads stand clear of every position
+the EduTool's guided moves put the control room in.  Its plot margin fell
+from 10 m to 5 m, because the 10 m had been "for the perimeter road" and
+the roads are now declared inside the envelope.
+
+**C91, the windows.**  The `?layout=` tab: the 3D view fills the window;
+the legend is a section folded by default; the tables are a BOTTOM PANEL on
+the one panel contract (`LAYOUT_TABLES_PANEL`, folded by default, its height
+dragged at the view's lower edge and remembered), each table a section the
+reader folds; Full screen on the view's toolbar (the Fullscreen API, else a
+fixed overlay; Esc leaves both).  The exported page: the same sections as
+`<details>` (open as the reader left them, the markup carrying the default
+so it reads without script), the view filling the window below its toolbar
+with a drag handle on its lower edge (remembered), the same Full screen.
+The pure rules are `gui/src/case/layoutPanels.ts`; every key is
+`state/prefs.ts`'s.  The pipe register is NOT docked beside the view on a
+wide screen: the contract has no right edge, and a second docking rule for
+one tab would be a second home for where a panel goes.
+
+**Not here, named:** a road's turning radius, gradient and load class; a
+road's pressure on the land price beyond its area; vehicles routed on the
+network (a truck is not drawn); fences and gates as lines; an access
+distance per item kind; whether a declared headroom or access distance is
+sensible -- the author's, as every distance here.  Gate:
+`check_plant_layout` arm (k); GUI: `tests/layoutRoads.test.ts`,
+`tests/equipmentModel.test.ts` (the site buildings),
+`tests/layoutDaylight.test.ts`.

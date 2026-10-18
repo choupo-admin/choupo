@@ -370,6 +370,19 @@ export const PANELS = {
    *  see METHODS_SETUP_COLLAPSED_KEY above.  The twelve per-tool spellings it
    *  replaces are dead; a reader who folded the McCabe setup bar keeps their
    *  answer, on every tool. */
+  /** THE LAYOUT VIEW'S TABLES (DEV.md 4c C91): the plot summary, the roads,
+   *  the pipe register, the findings and the placed items, docked under the
+   *  3D view in the `?layout=` tab.  FOLDED by default, so the view fills
+   *  the window until the reader asks for the tables (Vítor: "the window is
+   *  fixed; good practice is an option to show it or not and adjust it");
+   *  its height is the reader's once it is open. */
+  layoutTables: panel("layoutTables", {
+    sizeKey: "choupo.panel.layoutTables.size",
+    size: { min: 120, max: 1600, default: 340 },
+    collapsedKey: "choupo.panel.layoutTables.collapsed",
+    defaultCollapsed: true,
+  }),
+
   methodKnobsRail: panel("methodKnobsRail", {
     sizeKey: "choupo.panel.methodKnobsRail.size",
     size: { min: 240, max: 520, default: 300 },
@@ -379,6 +392,19 @@ export const PANELS = {
 
 export type PanelId = keyof typeof PANELS;
 
+/** THE LAYOUT VIEWS' COLLAPSIBLE SECTIONS (DEV.md 4c C91), one fold each,
+ *  shared by the `?layout=` tab and the exported page (a different origin,
+ *  so a different store, same spelling).  case/layoutPanels.ts says what
+ *  each section is and how it opens. */
+export const LAYOUT_SECTION_KEYS = {
+  legend:   "choupo.layout.section.legend.collapsed",
+  plot:     "choupo.layout.section.plot.collapsed",
+  roads:    "choupo.layout.section.roads.collapsed",
+  pipes:    "choupo.layout.section.pipes.collapsed",
+  findings: "choupo.layout.section.findings.collapsed",
+  items:    "choupo.layout.section.items.collapsed",
+} as const;
+
 /** Other reader-preference homes that are not panels.  Named here so the
  *  registry answers "what does this app store about the reader?" in one read. */
 export const PREF_KEYS = {
@@ -386,6 +412,8 @@ export const PREF_KEYS = {
   display: "choupo.displayPrefs.v1",
   /** Docked vs floating for the bottom dock — a MODE, not a fold. */
   bottomDockDocked: "choupo.panel.bottomDock.docked",
+  /** The exported layout page's dragged 3D-view height (DEV.md 4c C91). */
+  layoutExportViewHeight: "choupo.layoutExport.viewHeight",
 } as const;
 
 // ---- reading and writing a panel's preferences -----------------------------

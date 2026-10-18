@@ -1286,6 +1286,9 @@ void emitResultJson(std::ostream& os, const SimulationResult& r)
                << ", \"dz\": " << num(it.dz);
             if (!it.ignition.empty())
                 os << ", \"ignition\": " << esc(it.ignition);
+            if (!it.source.empty())
+                os << ", \"source\": " << esc(it.source)
+                   << ", \"reason\": " << esc(it.reason);
             if (it.release)
             {
                 os << ", \"release\": { \"source\": " << esc(it.releaseSource)
@@ -1455,6 +1458,75 @@ void emitResultJson(std::ostream& os, const SimulationResult& r)
                    << ", \"footprintArea\": " << num(ps.footprintArea) << " }";
             }
             os << (p.sectors.empty() ? "]" : "\n    ]");
+        }
+        //  THE ROADS (DEV.md 4c C90): the network line, one line per road
+        //  (its centre line and length), one per crossing under the rack and
+        //  one per placed item (the nearest road a gate reaches).  Absent
+        //  without a `roads {}` declaration, so every other layout's JSON is
+        //  unchanged.  The golden `layout` kind pins each road's `length`, the
+        //  network's `length` and `pavedArea`, and each access `distance`.
+        if (L.roads.present)
+        {
+            const auto& R = L.roads;
+            os << ",\n    \"roadNetwork\": { \"id\": \"roadNetwork\""
+               << ", \"headroom\": " << num(R.headroom)
+               << ", \"accessDistance\": " << num(R.accessDistance)
+               << ", \"noTraffic\": [";
+            for (std::size_t i = 0; i < R.noTraffic.size(); ++i)
+                os << (i ? ", " : "") << R.noTraffic[i];
+            os << "], \"entrances\": [";
+            for (std::size_t i = 0; i < R.entrances.size(); ++i)
+                os << (i ? ", " : "") << esc(R.entrances[i]);
+            os << "], \"roads\": " << R.roads.size()
+               << ", \"components\": " << R.components
+               << ", \"length\": " << num(R.length)
+               << ", \"pavedArea\": " << num(R.pavedArea)
+               << ", \"source\": " << esc(R.source)
+               << ", \"reason\": " << esc(R.reason)
+               << ", \"accessSource\": " << esc(R.accessSource)
+               << ", \"accessReason\": " << esc(R.accessReason) << " }";
+            os << ",\n    \"roads\": [";
+            for (std::size_t i = 0; i < R.roads.size(); ++i)
+            {
+                const auto& rd = R.roads[i];
+                os << (i ? ",\n" : "\n") << "      { \"id\": " << esc("road:" + rd.id)
+                   << ", \"road\": " << esc(rd.id)
+                   << ", \"width\": " << num(rd.width)
+                   << ", \"length\": " << num(rd.length)
+                   << ", \"component\": " << rd.component
+                   << ", \"fromEntrance\": " << (rd.fromEntrance ? "true" : "false")
+                   << ", \"reason\": " << esc(rd.reason)
+                   << ", \"centreline\": [";
+                for (std::size_t q = 0; q < rd.centreline.size(); ++q)
+                    os << (q ? ", " : "") << "[" << num(rd.centreline[q][0]) << ", "
+                       << num(rd.centreline[q][1]) << "]";
+                os << "] }";
+            }
+            os << (R.roads.empty() ? "]" : "\n    ]") << ",\n    \"rackCrossings\": [";
+            for (std::size_t i = 0; i < R.rackCrossings.size(); ++i)
+            {
+                const auto& c = R.rackCrossings[i];
+                os << (i ? ",\n" : "\n") << "      { \"id\": "
+                   << esc("rackCrossing:" + c.road + ":" + std::to_string(i))
+                   << ", \"road\": " << esc(c.road)
+                   << ", \"xMin\": " << num(c.xMin) << ", \"xMax\": " << num(c.xMax)
+                   << ", \"yMin\": " << num(c.yMin) << ", \"yMax\": " << num(c.yMax)
+                   << ", \"clearance\": " << num(c.clearance) << " }";
+            }
+            os << (R.rackCrossings.empty() ? "]" : "\n    ]") << ",\n    \"access\": [";
+            for (std::size_t i = 0; i < R.access.size(); ++i)
+            {
+                const auto& a = R.access[i];
+                os << (i ? ",\n" : "\n") << "      { \"id\": " << esc("access:" + a.item)
+                   << ", \"item\": " << esc(a.item)
+                   << ", \"road\": " << esc(a.road);
+                if (!a.road.empty())
+                    os << ", \"distance\": " << num(a.distance)
+                       << ", \"roadX\": " << num(a.x) << ", \"roadY\": " << num(a.y)
+                       << ", \"onDeck\": " << (a.onDeck ? "true" : "false");
+                os << " }";
+            }
+            os << (R.access.empty() ? "]" : "\n    ]");
         }
         os << ",\n    \"summary\": { \"id\": \"summary\", \"placed\": "
            << L.items.size() << ", \"unplaced\": " << L.unplaced.size()
