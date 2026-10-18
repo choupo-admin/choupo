@@ -1060,6 +1060,19 @@ accepts today, and that is a policy call.
 > names, and declaring it in both places refuses.  Second round dispatched
 > 2026-10-18.
 
+> **C89. TANKS ON THE AMMONIA PEQ (Vitor, 2026-10-18: "faz o mesmo no PEQ
+> do amoniaco").**  Measured before acting: `greenAmmoniaPEQ_baseCase`
+> ALREADY stores its product (postDict `storage`, NH3Storage, 21 d,
+> refrigerated at 238.15 K / 1 atm, two tanks, sized, costed, in the
+> layout).  Its inlets are GASES -- H2 from electrolysis at 30 bar, N2 from an
+> on-site unit -- and `StorageTankSize.cpp:84-87` refuses a gas ("needs a
+> pressure vessel or a gas holder, which this sizer" does not size).  So
+> "the same" has no direct analogue; the real question for GREEN ammonia is
+> an H2 BUFFER against renewable intermittency (new sizer: a pressure-vessel
+> gas store on a declared hours-of-autonomy basis), which is new capability
+> and pedagogy -- put to Vitor, not dispatched.  The C87 one-home hold-time
+> rule will reach PEQ only if its storage is ever declared as a unit.
+
 > **C88. THE 3D LAYOUT MADE TO LOOK LIKE A PLANT (Vitor, 2026-10-18: "E ve
 > se pões o layout com melhor aspecto!  Eu acho que ha bibliotecas para
 > renderizar o 3d para aquilo ficar top notch!").**  Measured:
