@@ -946,6 +946,44 @@ accepts today, and that is a policy call.
 > cost reads V_R); the record field `sigma_y` holds an ALLOWABLE stress;
 > the wall reads pressureDesign as gauge while F_P subtracts 1 bar.
 
+> **C85. THE MATERIAL'S LIMITS AND THE VESSEL RULE AS THE ENGINE RUNS IT
+> (commander, 2026-10-17, from C84's findings, inside the scope Vitor
+> authorised for C84: "what Choupo does with a material").**  (a) compare
+> and ANNOUNCE a record's `maxT`; (b) correct the Theory Guide's three
+> vessel-rule claims and rebuild the PDF; (c) MEASURE the design-pressure
+> convention, change nothing.
+
+> **C85 MERGED 2026-10-18.**  (a) ONE home for both limits,
+> `src/postProcessing/sizing/MaterialLimits.{H,cpp}`: the maxP comparison
+> had been written out four times (VesselSize, StirredTank,
+> CatalystBedSize, ConverterShellSize) and is called from there now, every
+> warning naming its remedy; `SizingPass` compares `maxT` once per item whose
+> material is a construction-material record against the HOTTEST PORT (the
+> item's unit's streams; a storage tank's stream; a sector-realised item's
+> every unit) -- a lower bound, Choupo has no design temperature.
+> Announced (`[rating]` + AdvisoryLog + caveat block), never refused.  None
+> of the 21 shipped sizing cases announces; aluminium copies of three
+> ammonia cases do, the sector path included.  No golden row moved (21/21).
+> Gate `check_design_sheet` arm (t) (4 sabotages; the source check strips
+> comments since S3 survived it).  EduTool `materials` steps 22-23 and its
+> test re-buried the "never compared" absence.  (b) Theory Guide: S is the
+> record's `sigma_y` as it stands (no F_S), m = rho pi D L t (no 1.2 factor),
+> m is published and NOT read by the cost; Developer Guide's materials
+> example corrected (path, keys, MPa).  Both PDFs rebuilt.  (c) MEASURED:
+> the wall, the relief-valve set pressure and the converter shell read
+> `pressureDesign` as GAUGE (as docs/ai/case-layout.md says); Turton F_P
+> (`Turton.cpp:647-650`) reads it ABSOLUTE and subtracts 1 bar; the corpus
+> mostly writes 1.1 x an ABSOLUTE stream pressure.  Gauge everywhere would
+> move 207 rows in 15 of 21 sizing cases (up to +2.1 % / -4.3 %); the
+> negative moves come from the F_P polynomial applied below its range,
+> non-monotone at low P.  DECISION FOR VITOR (moves goldens).  Not done:
+> the column shell, the reflux drum and the exchanger call no rating check.
+> Validation on the branch at main 4ed8fb29d: `make all`, 21 sizing cases
+> 21/0, `--fast` 73/0 (5 expected-fail), `--gui` 5558/5558 with
+> `check_doc_references` fixed and re-run alone, the sizing/cost/doc gates.
+> Open, unsourced: one temperature-independent sigma_y per record (SS304/316
+> 138 MPa to 870/925 K; carbonSteel "@250 C" to 700 K).
+
 > **C83. AN EDUTOOL: THE RADIATION OF A POOL FIRE AND THE DISTANCE IT
 > SETS (Vítor, 2026-10-17: "Faz essa EduTool da radiação do incêndio de
 > poça, se achares importante" -- the commander judged it important: it is
