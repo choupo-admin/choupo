@@ -1293,8 +1293,9 @@ accepts today, and that is a policy call.
 > press or pan coater exists; there is no interior (rooms / floors / GMP
 > grades / pressure cascade / flows) layout.  PLAN put to Vitor before
 > dispatch: phase A the case; phase B the GMP interior layout; phase C
-> (later) equipment counts from campaign occupancy.  Status: plan awaiting
-> Vitor's go.
+> (later) equipment counts from campaign occupancy.  Vitor 2026-10-18:
+> "Avanca!" -- phases A and B dispatched in parallel (B on its own engine
+> home and gate, to stay clear of C96's edits to PlantLayout).
 
 > **C94. LAYOUT GUIDELINES IN THE GUIDES (Vitor, 2026-10-18: "Nos Guias
 > apropriados podes incluir uma parte sobre guidelines de layout?", after
