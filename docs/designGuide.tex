@@ -2578,6 +2578,119 @@ else. Choupo\textquotesingle s cyclone, absorber, and combustion duties
 size the front end; the discharge limit is the spec and the local
 regulation is the law (see \emph{Standards \& further reading}).
 
+\hypertarget{pharmaceutical-facilities-the-gmp-interior}{%
+\section{Pharmaceutical facilities --- the GMP
+interior}\label{pharmaceutical-facilities-the-gmp-interior}}\label{sec:gmp-interior}
+
+A chemical plant is laid out on a plot (\emph{Plant layout} above); a
+pharmaceutical plant is laid out \emph{inside a building}, and the
+questions change. Where an item stands matters less than which
+\emph{room} it stands in, how clean that room is held, which way the air
+moves through its doors, and who and what walks through it. This section
+is the Pareto orientation for an oral-solid-dose (tablet) facility ---
+the case a student group meets first --- and it says what Choupo checks
+when the case declares the interior, and what it leaves to the student.
+
+\textbf{Cleanliness grades.} EU GMP Annex 1 (European Commission,
+EudraLex Volume 4, \emph{Manufacture of Sterile Medicinal Products},
+C(2022) 5938, para.~4.4) defines four grades: \textbf{A}, the critical
+zone for high-risk aseptic operations; \textbf{B}, the background room
+for grade A; \textbf{C} and \textbf{D}, cleanrooms for the less critical
+stages. Annex 1 is written for \emph{sterile} products. A tablet plant
+is not sterile, and its rooms are usually specified by the company's own
+risk assessment, often as ``controlled, not classified'' (CNC) or by
+analogy with grade D; the grade a case declares is therefore the
+\emph{case's} statement, with its source and reason, never a fact the
+software looks up.
+
+\textbf{The pressure cascade.} Air must move from the cleaner room to the
+less clean one, so the cleaner room is held at the higher pressure.
+Annex 1 para.~4.14 gives a guidance value: adjacent rooms of different
+grades differ by at least 10~Pa. Choupo takes the step from the case
+(\texttt{cascade \{ minimumStep; source; reason; \}}) and announces every
+door across which the cleaner side is not higher by that step.
+
+\textbf{Airlocks.} Annex 1 calls an airlock ``an enclosed space with
+interlocked doors'' (glossary) and asks for one wherever people or
+material move between different grades, separate for personnel and
+material where possible (para.~4.12). An airlock is a \emph{room} with
+its own pressure, and its pressure decides what it does:
+\begin{itemize}
+\tightlist
+\item
+  a \textbf{cascade} airlock sits between its two neighbours, a step in
+  the cascade;
+\item
+  a \textbf{bubble} airlock is higher than both, pushing air out through
+  both doors --- it keeps the dust of a contained room in \emph{and} the
+  corridor's air out;
+\item
+  a \textbf{sink} airlock is lower than both, drawing air in through
+  both doors and exhausting it.
+\end{itemize}
+A changing (gowning) room is a personnel airlock in stages of increasing
+cleanliness (para.~4.12 (i)); its final stage, at rest, is of the grade
+of the room it leads to.
+
+\textbf{Containment.} A potent or toxic powder --- the active
+ingredient while it is dispensed, sprayed or blended --- must stay in its
+room. The room is held \emph{negative} to its neighbours and reached
+through bubble or sink airlocks, Annex 1 para.~4.14's
+``positively or negatively pressurized airlocks''. This is where the
+cascade and the containment pull in opposite directions, and the airlock
+is how a design reconciles them.
+
+\textbf{Flows.} Three flows are laid out and kept apart: \emph{personnel}
+(street clothes in, gowned to the work room), \emph{material} (raw
+material in, product out --- one way, never back through a room it has
+left) and \emph{waste} (out by its own route). Where two flows must share
+a room (one clean corridor in a small plant), the design says so and why
+(closed containers, time separation by procedure).
+
+\textbf{Solvents.} An amorphous solid dispersion is often made by spray
+drying from an organic solvent. The suite is then a hazardous area (gas
+zone 0, 1 or 2; a dust zone 20, 21 or 22 where powder clouds form) and is
+kept apart from ignition sources (switchgear, non-rated motors) by a
+separation the project's own classification sets.
+
+\textbf{Escape.} Every room has a way out --- doors and stairs, not a
+lift.
+
+\hypertarget{what-choupo-checks-in-the-gmp-interior}{%
+\subsection{What Choupo checks, and what it does
+not}\label{what-choupo-checks-in-the-gmp-interior}}
+
+A case declares the interior as \texttt{building \{ ... \}} in
+\texttt{system/layoutDict} (grammar: \texttt{docs/ai/case-layout.md};
+engine: \file{src/postProcessing/layout/BuildingLayout.cpp}). The engine
+\textbf{refuses} a building that cannot exist: two rooms sharing a
+volume, a door between rooms with no common wall, an item that does not
+fit its room, a road through a room. It \textbf{announces} --- on the
+console, in the caveat block and in the result --- every door that
+breaks the cascade, every airlock whose pressures do not realise its
+declared regime, every change of grade with no airlock, a person who
+enters a graded room un-gowned, a contained room that is not negative or
+is reached directly, a flow through a wall, a material flow that goes
+back, two flows crossing where nobody declared they may, an ATEX room
+too close to an ignition room, and a room with no way out. The GUI draws
+the building in cutaway, coloured by grade, with the flows as arrows.
+
+\textbf{Not checked --- yours to do.} Air-change rates, HVAC zoning and
+the filter classes behind each grade; particle and microbial limits;
+door widths, corridor widths and travel distances to an exit; the
+interlocks themselves; and whether a declared grade, step or separation
+is right for the product --- that is the project's risk assessment.
+
+\textbf{Further reading.} European Commission, \emph{EudraLex Volume 4,
+Annex 1: Manufacture of Sterile Medicinal Products} (2022), whose
+reuse the Commission's document-reuse policy allows with acknowledgement
+of the source; ISPE, \emph{Baseline Guide Volume 2: Oral Solid Dosage
+Forms}; ISPE, \emph{Baseline Guide Volume 7: Risk-Based Manufacture of
+Pharmaceutical Products}; WHO, \emph{Good manufacturing practices:
+guidelines on heating, ventilation and air-conditioning systems for
+non-sterile pharmaceutical products}. The ISPE guides are cited by title
+only: their tables grant no redistribution and none is transcribed here.
+
 \hypertarget{cost-estimation--profitability}{%
 \section{Cost estimation \&
 profitability}\label{cost-estimation--profitability}}

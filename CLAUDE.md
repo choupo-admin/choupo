@@ -2238,6 +2238,20 @@ its purchase value at end of life (CAPCOST 2017's placement), not in TCI;
 (i)-(l), `check_cost_provenance` (s).  Gate: `check_economic_sensitivity`.  Witnesses:
 `greenAmmonia02_feasibility150bar` / `50bar`.
 
+**A GMP INTERIOR IS DECLARED AND CHECKED (2026-10-18, DEV.md 4c C97 phase
+B, on stated defaults).**  `building {}` in `system/layoutDict` declares
+floors, rooms (grade A|B|C|D|CNC, a pressure relative to a room or outside),
+airlocks AS ROOMS (`role`, `regime cascade|bubble|sink`), doors / stairs /
+lifts and the personnel, material and waste flows; rule: **a building that
+cannot exist is REFUSED, a building that breaks a GMP rule is ANNOUNCED**
+(cascade, airlock regime, grade change without an airlock, gowning,
+containment, flows, ATEX against ignition, escape), every step and grade the
+case's with its source -- no table shipped, Annex 1 paraphrased and cited,
+ISPE by title only.  Engine `postProcessing/layout/BuildingLayout`, its own
+JSON block `building`, pinned by the `layout` kind.  Gate:
+`check_gmp_layout`.  Record:
+[`docs/design/a-gmp-interior-is-declared-and-checked.md`](docs/design/a-gmp-interior-is-declared-and-checked.md).
+
 **A TOOL THAT COULD NOT LOOK REPORTED WHAT IT DID NOT SEE (2026-09-06).**
 The doctrine says a check that cannot run must not PASS; the MIRROR is just as
 bad — **it must not FAIL either, it must REFUSE.**  `bin/drive-app` filed "no
