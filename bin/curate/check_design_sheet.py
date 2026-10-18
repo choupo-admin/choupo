@@ -366,6 +366,18 @@ WHAT THIS CHECKS:
       price, no price reason) refuse its COST while it keeps its size.
       Sabotages in `check_gas_store`.
 
+  (w) THE PRESSURE STORES A FLOWSHEET UNIT HOLDS, AND THE PRESSURISED LIQUID
+      STORE (2026-10-18, DEV.md 4c C92).  On `ammonia02_full_plant`, T101's
+      gas store and T201's pressurised liquid store are LINKED to their
+      storageTank units (`unit <name>;`, the C87 one-home rule) and RECOMPUTED
+      from the units' KPIs, the case's records and the postDict: the SRK
+      swing and the anchored-Rackett liquid density, volumes (T201's equal to
+      the unit's own vesselVolume_m3), counts, diameters, walls, weights and
+      steel-mass costs, the liquid inventory, the bubble pressure (the
+      let-down drum's own P, read off the flowsheetDict), the placements
+      (standing / lying); a flowsheet-only change doubles both stores; eight
+      copies refuse by name.  Sabotages in `check_pressure_store_link`.
+
   (l) THE GUI FIXTURE IS STILL THE ENGINE'S OWN OUTPUT.  The readers' unit
       tests run on a TRANSCRIPTION of a sheet, because arm (g) keeps `design/`
       gitignored and no committed file can be read from a test.  This arm runs
@@ -3799,6 +3811,340 @@ def check_gas_store(problems, notes):
                     rho_max, rho_min, c_steel, weight, price, 1.18 * cbm, FP))
 
 
+
+PRESSURE_STORES = "tutorials/plant/ammonia02_full_plant"
+
+
+def _entry_of(post_nc, listname):
+    m = re.search(r'\b%s\s*\(\s*\{([^}]*)\}' % listname, post_nc)
+    return m.group(1) if m else None
+
+
+def _entry_num(ent, k):
+    mm = re.search(r'\b%s\s+([-0-9.eE+]+)\s*(\w*)\s*;' % k, ent)
+    return (float(mm.group(1)), mm.group(2)) if mm else (None, None)
+
+
+def _item_values(line):
+    blk = re.search(r'"values": \{([^}]*)', line)
+    return blk.group(1) if blk else ""
+
+
+def check_pressure_store_link(problems, notes):
+    """(w) THE PRESSURE STORES A FLOWSHEET UNIT HOLDS, AND THE PRESSURISED
+    LIQUID STORE (2026-10-18, DEV.md 4c C92).  On `ammonia02_full_plant`,
+    whose two `storageTank` units are sized by the two pressure stores
+    LINKED to them (`unit <name>;`, the C87 rule: one home for the hold
+    time), everything is RECOMPUTED here from the unit's published KPIs, the
+    postDict's own declarations, the case's component and material records
+    and the stream's published state -- never read off the sheet it checks:
+
+      * T101, `gasStorage { unit T101; ... }`: the entry declares none of
+        autonomy / stream / name; each vessel's autonomy is the unit's
+        residenceTime_s, its mass flow the unit's, its stream the unit's
+        inlet; rho(Pmax) and rho(Pmin) the SRK vapour root (kij 0, the case
+        declares none); V_total = tau x F_mass / (rho_max - rho_min), N, V_R,
+        D, H, the wall at Pmax - 1 atm and the weight; cost = weight x the
+        declared price;
+      * T201, `liquefiedGasStorage { unit T201; ... }`: the entry declares
+        none of storageTime / fillFraction / stream / name; each bullet's
+        storageTime, fillFraction and mass flow are the unit's KPIs; its
+        liquid density is the anchored Rackett recomputed here over the
+        components with a liquid volume (`_anchored_rackett_rho`);
+        V_total = tau x mdot / (rho x fill) EQUALS the unit's own
+        vesselVolume_m3 (one declaration, two homes that must agree); N,
+        V_R, D, L, the wall at designPressure - 1 atm, the weight, the cost;
+        the inventory V_R x fill x rho; and the BUBBLE PRESSURE equals the
+        let-down drum's own operating pressure -- the stored liquid is that
+        drum's liquid at that drum's temperature, so it is saturated exactly
+        there, a fact read off the flowsheetDict and not off the engine;
+      * every T101 vessel placed STANDING and every T201 bullet LYING on the
+        plot plan at its own D and H/L;
+      * a FLOWSHEET-ONLY change (T101 1 h, T201 96 h) doubles both stores'
+        V_total and moves nothing else in them -- the stores read the units;
+      * on copies, each REFUSED BY NAME while the run exits 0: autonomy and
+        stream beside `unit T101;`, storageTime and fillFraction beside
+        `unit T201;`, `name T101;` with its own declarations (the implicit
+        link), a liquefied store linked to the compressor, one linked to the
+        GAS T101, and a designPressure below the bubble pressure.
+
+    SABOTAGES, BY HAND, 2026-10-18, each in the engine source, rebuilt, this
+    arm run alone, restored with `cp` and rebuilt:
+      S1  GasStoreSize.cpp, linked route: t_s = 1800 s (a constant) in place
+          of the unit's KPI -> FAILED (1 line): the flowsheet-only copy's
+          T101 V_total did not double.  ONLY that probe sees it: the shipped
+          case's half hour IS 1800 s -- a guard whose only case satisfies it
+          is a guard nothing tests, which is why the copy moves the hold time.
+      S2  GasStoreSize.cpp, liquefied route: fill = 0.9 in place of the
+          unit's KPI -> FAILED (64 lines): fillFraction, V_total, V_R, D, the
+          wall, the weight and the cost on every bullet.
+      S3  the bubble-pressure refusal disabled (`false &&`) -> FAILED: the
+          copy at 18 bar is not refused BY NAME.
+      S4  StorageLink.cpp: the loop refusing the unit-owned keys disabled ->
+          FAILED: the four `... declared here AND ...` probes here, and the
+          four of arm (u).
+      S5  the liquefied wall at ABSOLUTE pressure (the bank handed Pd + 1 atm)
+          -> FAILED (28 lines): pressureDesign, t_wall, weight and the cost
+          on every bullet.
+    NOT CHECKED: whether 100/27 bar, 22 bar, 250 K, 400 and 700 m3 and
+    8 EUR/kg are the right design basis (the case's declared assumptions);
+    whether the case's SRK and Rackett are the TRUE densities; the main
+    component's Psat printed beside the bubble pressure (a print, not a
+    size); and an UNLINKED pressurised liquid store (no corpus case has
+    one -- the code path is the linked one's with the entry's own keys)."""
+    tag = "check_design_sheet(w)"
+    case = ROOT / PRESSURE_STORES
+    post_nc = _strip_comments((case / "system" / "postDict").read_text(errors="replace"))
+    gas, liq = _entry_of(post_nc, "gasStorage"), _entry_of(post_nc, "liquefiedGasStorage")
+    if gas is None or liq is None:
+        problems.append("%s: %s declares no `gasStorage` or no `liquefiedGasStorage` "
+                        "entry -- this arm CANNOT RUN; it must not pass."
+                        % (tag, PRESSURE_STORES))
+        return
+    def word(ent, k):
+        mm = re.search(r'\b%s\s+(\w+)\s*;' % k, ent)
+        return mm.group(1) if mm else None
+    gu, lu = word(gas, "unit"), word(liq, "unit")
+    for ent, u, owned in ((gas, gu, ("autonomy", "stream", "name")),
+                          (liq, lu, ("storageTime", "fillFraction", "stream", "name"))):
+        if not u:
+            problems.append("%s: a pressure store of %s is not linked (`unit <name>;`)."
+                            % (tag, PRESSURE_STORES))
+            return
+        for k in owned:
+            if re.search(r'\b%s\b' % k, ent):
+                problems.append("%s: the entry linking '%s' still declares `%s` -- the "
+                                "unit is its one home." % (tag, u, k))
+    units = _flowsheet_units(case)
+    for u in (gu, lu):
+        if u not in units or units[u][0] != "storageTank":
+            problems.append("%s: `unit %s;` is not a storageTank of %s." % (tag, u, PRESSURE_STORES))
+            return
+
+    # the case run, and the flowsheet-only copy (T101 1 h, T201 96 h), together
+    def bump(t):
+        t2, n1 = re.subn(r'(name T101;.*?operation\s*\{\s*residenceTime\s+)0\.5 h;',
+                         r'\g<1>1 h;', t, count=1, flags=re.S)
+        t3, n2 = re.subn(r'(name T201;.*?operation\s*\{\s*residenceTime\s+)48 h;',
+                         r'\g<1>96 h;', t2, count=1, flags=re.S)
+        return t3 if n1 == n2 == 1 else t + "\n#error the probe found no T101/T201\n"
+    cp = _copy_case(case, [("system/flowsheetDict", bump)])
+    procs = [subprocess.Popen([str(ROOT / "choupoSolve"), str(d)],
+                              stdout=subprocess.PIPE, stderr=subprocess.PIPE,
+                              text=True) for d in (case, cp)]
+    (out, err), (cout, cerr) = (p.communicate() for p in procs)
+    rcs = [p.returncode for p in procs]
+    shutil.rmtree(cp.parent, ignore_errors=True)
+    if rcs[0] != 0:
+        problems.append("%s: %s failed (rc=%d)." % (tag, PRESSURE_STORES, rcs[0]))
+        return
+
+    cm = re.search(r'\bcosting\s*\{([^}]*)\}', post_nc)
+    _ = cm  # the steel-mass cost uses no index: nothing from `costing` enters it
+
+    def material(ent):
+        mat = word(ent, "material")
+        rec_path = case / "constant" / "assets" / (mat + ".dat")
+        if not rec_path.is_file():
+            rec_path = ROOT / "data/standards/assets" / (mat + ".dat")
+        return _record_scalars(rec_path, ("sigma_y", "density"))
+
+    def vessels(name, V_total, vmax, LD, P_abs, ent):
+        rec = material(ent)
+        ca, _u = _entry_num(ent, "corrosionAllow")
+        je, _u = _entry_num(ent, "jointEfficiency")
+        N = max(1, math.ceil(V_total / vmax - 1e-9))
+        V_R = V_total / N
+        D = (4.0 * V_R / (math.pi * LD)) ** (1.0 / 3.0)
+        H = LD * D
+        Pg = (P_abs - 101325.0) * 1.0e-5
+        sig = rec["sigma_y"] * 1.0e6
+        t = Pg * 1.0e5 * D / (2.0 * sig * je - 1.2 * Pg * 1.0e5) + ca
+        weight = rec["density"] * math.pi * D * H * t
+        return N, V_R, D, H, Pg, t, weight
+
+    def check_items(name, N, want, standing, D, H):
+        eq = [l for l in out.splitlines()
+              if '"item": "%s/vessel' % name in l and '"values"' in l]
+        if len(eq) != N:
+            problems.append("%s: %s should be %d vessel(s), the result carries %d."
+                            % (tag, name, N, len(eq)))
+        for line in eq:
+            item = re.search(r'"item": "([^"]+)"', line).group(1)
+            for key, w in want.items():
+                sub, k = key.split(".", 1)
+                blk = re.search(r'"%s": \{([^}]*)' % sub, line)
+                g = re.search(r'"%s": *(-?[0-9.eE+]+)' % re.escape(k),
+                              blk.group(1) if blk else "")
+                if not g or not close(float(g.group(1)), w, 1e-6):
+                    problems.append("%s: %s %s = %s, recomputed %.9g."
+                                    % (tag, item, key, g.group(1) if g else "(absent)", w))
+            lay = next((l for l in out.splitlines()
+                        if '"id": "%s"' % item in l and '"footprintFrom"' in l), "")
+            o = re.search(r'"orientation": "(\w+)"', lay)
+            dims = [float(re.search(r'"%s": *([-0-9.eE+]+)' % k, lay).group(1))
+                    for k in ("dx", "dy", "dz")] if lay else []
+            ok = bool(lay and o)
+            if ok and standing:
+                ok = o.group(1) == "vertical" and close(dims[0], D, 1e-6) \
+                    and close(dims[2], H, 1e-6)
+            elif ok:
+                ok = o.group(1) in ("alongX", "alongY") and close(dims[2], D, 1e-6) \
+                    and close(max(dims[0], dims[1]), H, 1e-6)
+            if not ok:
+                problems.append("%s: %s is not placed %s on the plot plan at its own "
+                                "D %.6g m and %s %.6g m." % (tag, item, "STANDING" if
+                                standing else "LYING", D, "H" if standing else "L", H))
+        return len(eq)
+
+    # ---- T101: the gas store, on the unit's hold time --------------------
+    k = _json_line(out, '"%s": {' % gu)
+    tau, mdot_u = _num(k, "residenceTime_s"), _num(k, "massFlow_kg_s")
+    sj = _stream_json(out, units[gu][1])
+    pmax, _u1 = _entry_num(gas, "maxPressure")
+    pmin, _u2 = _entry_num(gas, "minPressure")
+    T, _u3 = _entry_num(gas, "temperature")
+    vmax, _u4 = _entry_num(gas, "maxVesselVolume")
+    LD, _u5 = _entry_num(gas, "L_over_D")
+    price, _u6 = _entry_num(gas, "steelPrice")
+    if None in (tau, mdot_u, pmax, pmin, T, vmax, LD, price) or sj is None:
+        problems.append("%s: T101's KPIs, its inlet's state or its store's "
+                        "declarations are missing -- nothing to recompute." % tag)
+        return
+    rmax = _srk_vapour_rho(case, sj["comp"], T, pmax * 1e5)
+    rmin = _srk_vapour_rho(case, sj["comp"], T, pmin * 1e5)
+    Vt = tau * sj["F_mass"] / (rmax - rmin)
+    N, V_R, D, H, Pg, t, wgt = vessels(gu, Vt, vmax, LD, pmax * 1e5, gas)
+    want = {"values.autonomy": tau / 3600.0, "values.massFlow": mdot_u,
+            "values.V_total": Vt, "values.V_R": V_R, "values.D": D, "values.H": H,
+            "values.rho_max": rmax, "values.rho_min": rmin, "values.t_wall": t,
+            "values.pressureDesign": Pg, "values.weight": wgt,
+            "cost.totalModule": wgt * price}
+    n101 = check_items(gu, N, want, True, D, H)
+    if '"%s.fraction"' % units[gu][1] not in next(
+            (l for l in out.splitlines()
+             if '"item": "%s/vessel1"' % gu in l and '"values"' in l), ""):
+        problems.append("%s: %s/vessel1 does not store the unit's inlet '%s'."
+                        % (tag, gu, units[gu][1]))
+    t101 = (N, V_R, D, t)
+
+    # ---- T201: the pressurised liquid store ------------------------------
+    k = _json_line(out, '"%s": {' % lu)
+    tau2, fill, mdot2, vv = (_num(k, key) for key in
+                             ("residenceTime_s", "fillFraction", "massFlow_kg_s",
+                              "vesselVolume_m3"))
+    sj2 = _stream_json(out, units[lu][1])
+    pd, _u7 = _entry_num(liq, "designPressure")
+    T2, _u8 = _entry_num(liq, "temperature")
+    vmax2, _u9 = _entry_num(liq, "maxVesselVolume")
+    LD2, _u10 = _entry_num(liq, "L_over_D")
+    price2, _u11 = _entry_num(liq, "steelPrice")
+    if None in (tau2, fill, mdot2, vv, pd, T2, vmax2, LD2, price2) or sj2 is None:
+        problems.append("%s: T201's KPIs, its inlet's state or its store's "
+                        "declarations are missing -- nothing to recompute." % tag)
+        return
+    rho, _excl = _anchored_rackett_rho(case, sj2["comp"], T2)
+    Vt2 = tau2 * mdot2 / (rho * fill)
+    if not close(Vt2, vv, 1e-6):
+        problems.append("%s: T201's store V_total %.9g m3 recomputed against the "
+                        "unit's own vesselVolume_m3 %.9g -- one declaration, two "
+                        "homes that disagree." % (tag, Vt2, vv))
+    N2, V_R2, D2, L2, Pg2, t2, wgt2 = vessels(lu, Vt2, vmax2, LD2, pd * 1e5, liq)
+    #  The let-down drum whose liquid T201 stores: its operating P is the
+    #  liquid's bubble pressure at the drum's T, read off the flowsheetDict.
+    #  The let-down drum whose liquid T201 stores: the isothermal flash whose
+    #  FIRST outlet (its liquid) is T201's inlet; its operating P is that
+    #  liquid's bubble pressure at the drum's T, read off the flowsheetDict.
+    fs_nc = _strip_comments((case / "system" / "flowsheetDict").read_text(errors="replace"))
+    drum = re.findall(r'\{\s*name\s+\w+\s*;\s*type\s+isothermalFlash\s*;[^{}]*?'
+                      r'outputs\s*\(\s*%s\b[^{}]*operation\s*\{[^{}]*?'
+                      r'\bP\s+([0-9.]+)\s*bar' % re.escape(units[lu][1]), fs_nc)
+    pdrum = float(drum[0]) if len(drum) == 1 else None
+    want2 = {"values.storageTime": tau2 / 86400.0, "values.fillFraction": fill,
+             "values.massFlow": mdot2, "values.rho": rho, "values.V_total": Vt2,
+             "values.V_R": V_R2, "values.D": D2, "values.H": L2,
+             "values.t_wall": t2, "values.pressureDesign": Pg2,
+             "values.weight": wgt2, "cost.totalModule": wgt2 * price2,
+             "inventory.mass.total": V_R2 * fill * rho}
+    n201 = check_items(lu, N2, want2, False, D2, L2)
+    first = next((l for l in out.splitlines()
+                  if '"item": "%s/vessel1"' % lu in l and '"values"' in l), "")
+    pb = _num(_item_values(first), "P_bubble")
+    if pdrum is None or pb is None or not close(pb, pdrum * 1e5, 1e-6):
+        problems.append("%s: T201's published bubble pressure %s Pa, and the let-down "
+                        "drum whose liquid it stores operates at %s bar -- the liquid "
+                        "is saturated there." % (tag, pb, pdrum))
+
+    # ---- the flowsheet-only copy: both stores read their units -----------
+    if rcs[1] != 0:
+        problems.append("%s: the flowsheet-only copy (T101 1 h, T201 96 h) failed "
+                        "(rc=%d)." % (tag, rcs[1]))
+    else:
+        for u, base in ((gu, Vt), (lu, Vt2)):
+            ln = next((l for l in cout.splitlines()
+                       if '"item": "%s/vessel1"' % u in l and '"values"' in l), "")
+            vt = _num(_item_values(ln), "V_total")
+            if vt is None or not close(vt, 2.0 * base, 1e-6):
+                problems.append("%s: with %s's residence time doubled in the "
+                                "flowsheetDict ONLY, its store's V_total = %s, expected "
+                                "%.9g -- the store is not sized on the unit's value."
+                                % (tag, u, vt, 2.0 * base))
+
+    # ---- refusals, each of the ITEM, never of the run ---------------------
+    def edit_list(listname, f):
+        return lambda tx: re.sub(r'(\b%s\s*\(\s*\{)([^}]*)(\})' % listname,
+                                 lambda mm: mm.group(1) + f(mm.group(2)) + mm.group(3),
+                                 tx, count=1)
+    add = lambda extra: (lambda e: e + "  " + extra + "  ")
+    probes = (
+        ("autonomy beside unit T101", "gasStorage", add("autonomy 1 h;"), gu,
+         r'`autonomy` is declared here AND', True),
+        ("stream beside unit T101", "gasStorage", add("stream makeup;"), gu,
+         r'`stream` is declared here AND', True),
+        ("storageTime beside unit T201", "liquefiedGasStorage", add("storageTime 2 day;"),
+         lu, r'`storageTime` is declared here AND', True),
+        ("fillFraction beside unit T201", "liquefiedGasStorage", add("fillFraction 0.9;"),
+         lu, r'`fillFraction` is declared here AND', True),
+        ("the unit's name without the link", "gasStorage",
+         lambda e: re.sub(r'\bunit\s+T101\s*;', 'name T101;  stream makeup;  autonomy 0.5 h;',
+                          e), gu,
+         r"carries the name of the flowsheet storageTank unit .T101. but does not link it",
+         True),
+        ("a liquefied store linked to a compressor", "liquefiedGasStorage",
+         lambda e: re.sub(r'\bunit\s+T201\s*;', 'unit makeupComp;', e), "makeupComp",
+         r'is a `compressor`, not a `storageTank`', False),
+        ("a liquefied store linked to the gas T101", "liquefiedGasStorage",
+         lambda e: re.sub(r'\bunit\s+T201\s*;', 'unit T101;', e), gu,
+         r"stream 'makeup' is a vapour", False),
+        ("a design pressure below the bubble pressure", "liquefiedGasStorage",
+         lambda e: re.sub(r'\bdesignPressure\s+[^;]*;', 'designPressure 18 bar;', e), lu,
+         r'designPressure \(18 bar\) is BELOW the bubble pressure', True),
+    )
+    n_ref = 0
+    #  `keep`: the plot plan stays (a refused store leaves its OWN items
+    #  unplaced and announced, C79) -- except where the refused entry is
+    #  named after ANOTHER unit, so T201's bullets name no sized item at all.
+    for what, listname, f, name, pat, keep in probes:
+        dst, rcp, outp, errp = _run_copy(case, edit_list(listname, f), keep_layout=keep)
+        if rcp != 0:
+            problems.append("%s: the copy with %s failed (rc=%d) -- a refused store "
+                            "must refuse the ITEM, never the run." % (tag, what, rcp))
+        elif not re.search(r'%s\s+FAILED:[^\n]*%s' % (name, pat), outp + errp):
+            problems.append("%s: a copy with %s is not refused BY NAME (/%s/)."
+                            % (tag, what, pat))
+        else:
+            n_ref += 1
+        shutil.rmtree(dst.parent, ignore_errors=True)
+
+    notes.append("pressure stores: %s linked, %d vessel(s) of %.1f m3 (D %.3f m, wall "
+                 "%.1f mm) on the unit's %g h; %s linked, %d bullet(s) of %.1f m3 (D %.3f "
+                 "m x L %.3f m, wall %.1f mm) on the unit's %g h and fill %g, V_total the "
+                 "unit's vesselVolume_m3, the bubble pressure the let-down drum's %g bar; "
+                 "a flowsheet-only change doubles both; %d refusals by name"
+                 % (gu, t101[0], t101[1], t101[2], t101[3] * 1000.0, tau / 3600.0,
+                    lu, N2, V_R2, D2, L2, t2 * 1000.0, tau2 / 3600.0, fill,
+                    pdrum or float("nan"), n_ref))
+
 def main() -> int:
     problems, notes = [], []
 
@@ -3825,6 +4171,7 @@ def main() -> int:
     check_exchanger_design(problems, notes)
     check_material_limits(problems, notes)
     check_gas_store(problems, notes)
+    check_pressure_store_link(problems, notes)
 
     check_ignored(problems)
     check_refusal(problems)
@@ -3902,7 +4249,14 @@ def main() -> int:
           "priced as raw-material stock; every vessel placed standing at its "
           "own D and H; the charging compressor in the caveat record; four "
           "malformed declarations refused BY NAME, and a missing price or "
-          "price reason refusing the COST and marking the total INCOMPLETE), "
+          "price reason refusing the COST and marking the total INCOMPLETE) "
+          "and on the pressure-store witness (a gas store and a pressurised "
+          "liquid store LINKED to their storageTank units and sized on the "
+          "units' own hold time, fill fraction and inlet -- the liquid "
+          "store's volume equal to the unit's vesselVolume_m3 and its bubble "
+          "pressure the let-down drum's own P, both recomputed; a "
+          "flowsheet-only change doubles both stores; eight malformed "
+          "declarations refused BY NAME), "
           "each "
           "at the address its own "
           "sizing.csv row dictates (sector directory where the row names a "

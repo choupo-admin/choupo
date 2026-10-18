@@ -82,7 +82,9 @@ The risks such a feature carries are specific, and each arm names one:
       let-down top, `routedBy waypoints`, no lane) and its length recomputed;
       REFUSED, each exit 2 and naming its defect: a diagonal segment, an
       override naming no stream, an override on a stream with no routable end
-      (T101, an unsized tank), a partial `pipeRack`, a fractional
+      (`makeup`, once T101's vessels are taken off the copy's plot plan: a
+      sized unit none of whose items is placed), a partial `pipeRack`, a
+      fractional
       `lanesPerTier`.  The forced draft carries a declared rack as declared
       and says it did not carry the waypoint overrides.
 
@@ -103,7 +105,7 @@ The risks such a feature carries are specific, and each arm names one:
       named: a negative margin, a plot block with no reason.
 
   (k) THE ROADS (2026-10-18, DEV.md 4c C90), on the witness, which declares
-      a gate, a canteen, a warehouse and six roads: each road's published
+      a gate, a canteen, a warehouse and seven roads: each road's published
       length is its centre line's own and the network's is their sum (both
       recomputed here); the PAVED AREA is recomputed here as the union of the
       paved rectangles on the grid of their own edges -- an independent
@@ -317,20 +319,34 @@ def arm_witness(work):
         fail("(a) the witness published no `layout` block")
         return
     items = {i["id"]: i for i in lay["items"]}
-    if len(items) != 11:
-        fail(f"(a) the witness places {len(items)} items, expected 11 (seven sized,"
-             " and the control room, gate, canteen and warehouse)")
-    for unit in ("converter", "separator", "letdown"):
-        D = sheet_value(d, f"{unit}/vessel", "D")
-        H = sheet_value(d, f"{unit}/vessel", "H")
+    if len(items) != 22:
+        fail(f"(a) the witness places {len(items)} items, expected 22 (seven process"
+             " items and the stores' eleven vessels, sized, and the control room,"
+             " gate, canteen and warehouse)")
+    #  The process vessels stand; the stores' vessels (DEV.md 4c C92) are
+    #  T101's four, standing, and T201's seven bullets, LYING -- a lying
+    #  cylinder's plan extents are its length along its axis and D across,
+    #  and its height is D.
+    stores = [(f"T101/vessel{k}", f"T101/vessel{k}", True) for k in range(1, 5)] \
+        + [(f"T201/vessel{k}", f"T201/vessel{k}", False) for k in range(1, 8)]
+    for unit, sheet, standing in [(u, f"{u}/vessel", True)
+                                  for u in ("converter", "separator", "letdown")] + stores:
+        D = sheet_value(d, sheet, "D")
+        H = sheet_value(d, sheet, "H")
         it = items.get(unit)
         if it is None or D is None or H is None:
             fail(f"(a) {unit}: not placed, or its design sheet carries no D/H")
             continue
-        if abs(it["dx"] - D) > 1e-6 * D or abs(it["dy"] - D) > 1e-6 * D \
-                or abs(it["dz"] - H) > 1e-6 * H:
+        if standing:
+            want = (D, D, H)
+        elif it.get("orientation") == "alongX":
+            want = (H, D, D)
+        else:
+            want = (D, H, D)
+        if any(abs(it[k] - w) > 1e-6 * w for k, w in zip(("dx", "dy", "dz"), want)):
             fail(f"(a) {unit}: published extents {it['dx']} x {it['dy']} x {it['dz']}"
-                 f" are not its design sheet's D = {D}, H = {H}")
+                 f" are not its design sheet's D = {D}, H = {H}"
+                 f" ({'standing' if standing else 'lying'})")
         if it["shape"] != "cylinder" or it["footprintFrom"] != "published":
             fail(f"(a) {unit}: drawn as {it['shape']}/{it['footprintFrom']}, not a"
                  " published cylinder")
@@ -352,7 +368,8 @@ def arm_witness(work):
     if not any(a.get("category") == "layout" and a.get("message") == msg
                for a in (j.get("advisories") or [])):
         fail("(b) the separation announcement is not in the result JSON's advisories")
-    claims.append("witness: 11 items, vessel extents = their design sheets' D/H,"
+    claims.append("witness: 22 items, vessel extents = their design sheets' D/H"
+                  " (standing, and T201's bullets lying),"
                   " the one shortfall recomputed edge to edge and announced on"
                   " stderr, the caveat block and the JSON")
     return lay
@@ -604,8 +621,8 @@ def arm_draft(work):
                    "`roads {}` network is NOT carried"):
         if needle not in text:
             fail(f"(e) the forced draft did not carry `{needle}`")
-    if len(lay.get("items", [])) != 11:
-        fail(f"(e) the forced draft places {len(lay.get('items', []))} items, expected 11")
+    if len(lay.get("items", [])) != 22:
+        fail(f"(e) the forced draft places {len(lay.get('items', []))} items, expected 22")
     if "roadNetwork" in lay or "\nroads\n{" in text:
         fail("(e) the forced draft wrote or ran a road network: roads are drawn round"
              " positions the draft moves, and are never carried")
@@ -678,8 +695,8 @@ def arm_refused_sizer(work):
     ids = [i["id"] for i in lay["items"]]
     if "separator" in ids:
         fail("(g) the separator was placed although its sizer refused")
-    if len(ids) != 10:
-        fail(f"(g) {len(ids)} items placed, expected the witness's 11 less the separator")
+    if len(ids) != 21:
+        fail(f"(g) {len(ids)} items placed, expected the witness's 22 less the separator")
     f = [x for x in lay["findings"] if x["id"] == "sizingRefused:separator:separator"]
     if len(f) != 1:
         fail(f"(g) no sizingRefused finding for the separator; findings "
@@ -1041,6 +1058,26 @@ def arm_plot(work):
                   f" announced) and an undeclared sector's footprint envelope; {n} refusals")
 
 
+def drop_items(text, prefix):
+    """The layoutDict `text` without every `item "<prefix>..."` entry: each
+    entry is the brace block that opens on the line before its `item`."""
+    out, i = [], 0
+    lines = text.split("\n")
+    while i < len(lines):
+        if lines[i].strip() == "{" and i + 1 < len(lines) \
+                and re.match(r'\s*item\s+"%s' % re.escape(prefix), lines[i + 1]):
+            depth = 0
+            while True:
+                depth += lines[i].count("{") - lines[i].count("}")
+                i += 1
+                if depth == 0:
+                    break
+            continue
+        out.append(lines[i])
+        i += 1
+    return "\n".join(out)
+
+
 OVERRIDE = """
 pipes
 {
@@ -1079,8 +1116,12 @@ def arm_pipe_override(work):
         "unknown stream": (lambda t: t + "\npipes { noSuchStream { waypoints ( { x 0 m;"
                            " y 0 m; z 9 m; } ); } }\n",
                            [r"pipes: `noSuchStream`", r"Accepted.*rawLiquid"]),
+        #  `makeup` runs to T101, whose vessels the witness places (C92); the
+        #  copy takes them off its plot plan, so the unit is sized and NONE of
+        #  its items is placed -- a stream with no routable end again.
         "override on an unroutable stream": (
-            lambda t: t + "\npipes { makeup { waypoints ( { x 0 m; y 0 m; z 9 m; } ); } }\n",
+            lambda t: drop_items(t, "T101/vessel")
+            + "\npipes { makeup { waypoints ( { x 0 m; y 0 m; z 9 m; } ); } }\n",
             [r"pipes `makeup`: an override routes a pipe", r"T101"]),
         "partial pipeRack": (
             lambda t: t + "\npipeRack { y 0 m; elevation 6 m; laneSpacing 0.6 m;"
@@ -1185,10 +1226,13 @@ ROAD_REFUSALS = {
         sub("    headroom 5 m;", "    headroom 7 m;"),
         [r"road `(east|rackCrossing)` passes UNDER the pipe rack", r"6 m above grade",
          r"7 m headroom"]),
+    #  The route ends below the purge splitter's rack node, on the witness's
+    #  stated-default rack line: the mean plan y of its placed process items,
+    #  -296/18 m since the stores were placed (C92; -22/7 m before).
     "a pipe below the headroom over a road": (
         lambda t: t + "\npipes { unreactedGas { waypoints ( { x 56 m; y -6 m; z 3 m; }"
                       " { x 56 m; y -31 m; z 3 m; } { x 37 m; y -31 m; z 3 m; }"
-                      " { x 37 m; y -3.14285714286 m; z 3 m; } ); } }\n",
+                      " { x 37 m; y -16.4444444444444 m; z 3 m; } ); } }\n",
         [r"pipe `unreactedGas` crosses road `main` 3 m above grade"]),
     "a diagonal road segment": (
         sub("waypoints ( { x -8 m; y -31 m; } { x -8 m; y 16 m; } );",
@@ -1217,8 +1261,8 @@ def arm_roads(work):
         fail(f"(k) the witness exited {rc} / published no roadNetwork")
         return
     roads = lay.get("roads", [])
-    if len(roads) != 6 or net["roads"] != 6:
-        fail(f"(k) the witness declares six roads; published {len(roads)} / {net['roads']}")
+    if len(roads) != 7 or net["roads"] != 7:
+        fail(f"(k) the witness declares seven roads; published {len(roads)} / {net['roads']}")
     total = 0.0
     for r in roads:
         c = r["centreline"]
@@ -1421,7 +1465,7 @@ def arm_roads(work):
              f" {[x['id'] for x in lay6.get('findings', [])]}")
     else:
         announced += 1
-    claims.append(f"the witness's six roads: lengths, the network's length and its paved area"
+    claims.append(f"the witness's seven roads: lengths, the network's length and its paved area"
                   f" ({net['pavedArea']:.2f} m2, the union recomputed here), the crossing under"
                   " the rack and every item's access distance recomputed, none beyond the"
                   " declared distance, the roads inside the plot, every road number pinned;"

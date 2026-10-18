@@ -2111,6 +2111,14 @@ pressure refuses (the gas could not flow back into the line).  The charging
 compressor and any renewable profile behind the hours are NOT included and
 are announced on every run.  One home: `sizing/GasStoreSize`.  Gate:
 `check_design_sheet` arm (v).  Witness `greenAmmoniaPEQ_baseCase` (H2Buffer).
+**A PRESSURISED LIQUID is stored the same way (2026-10-18, DEV.md 4c C92):**
+`liquefiedGasStorage ( ... )` sizes it on a hold time and a fill fraction into
+the SAME vessel bank and steel-mass cost, and REFUSES a `designPressure` below
+the liquid's bubble pressure at its storage temperature (every dissolved
+component counted, `BubblePoint::pressure`); both pressure stores LINK a
+flowsheet `storageTank` unit by `unit <name>;` (the C87 one-home rule,
+`sizing/StorageLink`).  Gate: `check_design_sheet` arm (w).  Witness
+`ammonia02_full_plant` (T101, T201).
 
 **A RELIEF VALVE IS A SIZED ITEM OF THE UNIT IT PROTECTS (2026-10-11, DEV.md
 4c C62, on a stated default).**  `type reliefValve` in the sizing pass: one

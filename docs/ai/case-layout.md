@@ -758,7 +758,7 @@ time is a design basis nobody chose.  Each tank is costed on the CAPCOST 2017
 **atmospheric API fixed-roof** row (90 to 30 000 m3, no material or pressure
 factor); a liquid stored below 0 degC is a REFRIGERATED tank that costs more,
 and the run says LOWER BOUND on every such tank.  A stream above 1.5 bar
-(pressurised storage) is refused.  This is a postDict ITEM, not the
+(pressurised storage) is refused, naming `liquefiedGasStorage` below.  This is a postDict ITEM, not the
 `storageTank` UNIT (`docs/ai/unit-ops.md`): the unit is a buffer inside the
 flowsheet that reports a holdup and has no sizer of its own; the item is the
 tank the plant buys.  Worked case: `tutorials/plant/greenAmmoniaPEQ_baseCase`.
@@ -835,6 +835,52 @@ said on every run: the charging compressor from the stream's pressure to
 `maxPressure` and its power, and any renewable-power profile behind the hours.
 Each vessel is placed on a plot plan like any vessel, from its own D and H.
 Worked case: `tutorials/plant/greenAmmoniaPEQ_baseCase`.
+
+A gas store a flowsheet `storageTank` unit holds is LINKED to it exactly as a
+tank is (`unit T101;` in place of `name`, `stream` and `autonomy`, which then
+REFUSE by name; `reason` becomes optional): the autonomy is the unit's
+`residenceTime_s`, the stream its inlet.  The unit's own `vesselVolume_m3`
+is printed beside the store's, because it holds the gas AT THE LINE STATE --
+a volume a vessel kept at the line's pressure can give none of back.  Worked
+case: `tutorials/plant/ammonia02_full_plant` (T101, half an hour of 25 bar
+syngas on a 100 -> 27 bar swing).
+
+**A PRESSURISED LIQUID IS STORED IN PRESSURE VESSELS (2026-10-18, DEV.md 4c
+C92).**  A liquid that must stay above its bubble pressure -- liquid ammonia,
+LPG -- is neither an atmospheric tank nor a gas store:
+
+```
+liquefiedGasStorage
+(
+    { unit            T201;         // or: name; stream; storageTime <n> day; fillFraction;
+      material        carbonSteel;
+      designPressure  22 bar;       // ABSOLUTE; refused below the liquid's bubble pressure
+      temperature     250 K;        // the storage temperature
+      reason          "why that pressure and temperature";
+      maxVesselVolume 700;          // m3 per vessel
+      L_over_D 6;  corrosionAllow 0.003;  jointEfficiency 1.0;  // optional, announced if absent
+      steelPrice      8;            // EUR per kg of SHELL steel, INSTALLED -- required to cost
+      steelPriceReason "why that price";
+    }
+);
+```
+
+`V_total = storageTime x mdot / (rho_liquid(T) x fillFraction)` (linked: the
+unit's hold time, fill fraction and inlet), split into the same vessel bank
+as the gas store: equal vessels, the wall at `designPressure` as GAUGE, rated
+against the material, COSTED BY THE STEEL MASS with the Turton comparison
+printed beside it.  The run computes the liquid's BUBBLE PRESSURE at `T` on
+the case's own K-values -- every dissolved component counted -- and prints the
+main component's own vapour pressure beside it; a `designPressure` below the
+bubble pressure REFUSES (the liquid would boil in the vessel).  A storage
+temperature other than the stream's is priced at the declared one and the gap
+ANNOUNCED (nothing in the flowsheet warms or cools it).  NOT INCLUDED, said on
+every run: boil-off, vapour return and relief.  The inventory is the liquid at
+its working level.  The plot plan decides the orientation: a bullet lies
+(`orientation alongX;` or `alongY;`), its length the published `H`.  Worked
+case: `tutorials/plant/ammonia02_full_plant` (T201, two days of let-down
+liquid at 250 K, whose bubble pressure is the let-down drum's 20 bar because
+of the dissolved H2, N2 and Ar -- ammonia alone would boil at 1.7 bar).
 
 **WHAT AN ITEM HOLDS (2026-10-07).**  A `units ( ... )` entry may declare, beside
 its `designRules {}`, the material it holds while the plant runs -- the

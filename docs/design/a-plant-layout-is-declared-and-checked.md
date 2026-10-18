@@ -287,10 +287,11 @@ never dropped in silence.  A pipe's two ends are one of:
   `xEnd`.
 
 Any other end leaves the stream not routed: an unsized unit that is not a
-junction (on `ammonia02_full_plant`, the storage tanks T101 and T201 nobody
-sized, so `makeup`, `makeupStored`, `productNH3` and `productStored` are
-listed with that reason), a sized unit whose items are not placed, a refused
-sizer, a stream consumed by two units.
+junction (on `ammonia02_full_plant`, until DEV.md 4c C92 sized and placed
+them, the storage tanks T101 and T201, so `makeup`, `makeupStored`,
+`productNH3` and `productStored` were listed with that reason; every stream
+of that case is routed now), a sized unit whose items are not placed, a
+refused sizer, a stream consumed by two units.
 
 **The route** is deterministic and ORTHOGONAL: up (or down, for an item
 taller than the rack) from the source nozzle to the pipe's LANE, across to

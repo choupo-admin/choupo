@@ -1537,7 +1537,10 @@ fixed-roof row (`docs/ai/case-layout.md`, "A STORAGE TANK IS ATTACHED TO A
 BOUNDARY STREAM").  An item that LINKS this unit (`unit <name>;`, since
 2026-10-18) is sized on the unit's own `residenceTime_s`, `fillFraction` and
 inlet -- the hold time is declared ONCE, here, and declaring it in the item
-too is refused by name (`tutorials/plant/aceticAcid02_plant`).  Both ask the
+too is refused by name (`tutorials/plant/aceticAcid02_plant`).  A unit that
+holds a GAS or a PRESSURISED LIQUID is linked the same way from a
+`gasStorage` or a `liquefiedGasStorage` item -- pressure vessels costed by
+their steel (`tutorials/plant/ammonia02_full_plant`, T101 and T201).  Both ask the
 package for the density over the SAME components (`thermo/PricedDensity`,
 one home).
 

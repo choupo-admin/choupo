@@ -38,9 +38,11 @@ Description
     *given* x (which does not change during the search), so the residual
     is still a one-variable function f(T).
 
-    Bubble-P  (given x and T, find P)  would be analogous and is omitted
-    here for brevity; in the Raoult limit it is simply
+    Bubble-P  (given x and T, find P) is the programmatic core `pressure`
+    (DEV.md 4c C92, the pressurised liquid store's design pressure); in the
+    Raoult limit it is simply
         P = Σ x_i γ_i(x,T) Psat_i(T)
+    and in general it iterates the incipient vapour at every trial P.
 \*---------------------------------------------------------------------------*/
 
 #pragma once
@@ -87,6 +89,29 @@ public:
                           const sVector&       x,
                           scalar               P,
                           scalar               T_init = 0.0);
+
+    //  THE BUBBLE PRESSURE (DEV.md 4c C92): given x and T, the P at which
+    //  sum_i K_i(T, P, x, y) x_i = 1, the incipient vapour y ITERATED to its
+    //  own composition at every trial pressure (y = K x / sum K x, started
+    //  from the package's ideal K -- Psat/P, or H/P for a Henry solute --
+    //  so the vapour's fugacity is never evaluated at y = x, the liquid-like
+    //  root `compute` warns about).  Bisection on ln P between 0.01 bar and
+    //  a pressure at which the sum falls below one, to 1e-10 relative.
+    //  `belowFloor` when the liquid does not boil even at 0.01 bar (P then
+    //  carries that floor); `converged` false when no pressure up to
+    //  10 kbar makes the sum fall below one.
+    struct PressureResult
+    {
+        scalar  P          = 0.0;   // bubble pressure   [Pa]
+        sVector y;                  // incipient vapour  [-]
+        bool    converged  = false;
+        bool    belowFloor = false;
+    };
+
+    static PressureResult pressure(const ThermoPackage& thermo,
+                                   const sVector&       x,
+                                   scalar               T,
+                                   scalar               P_start);
 
 private:
     inline static const std::string type_ = "bubbleT";

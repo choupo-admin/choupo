@@ -108,6 +108,55 @@ Description
     DESIGN ASSUMPTION, not derived from any renewable-power profile.  Both
     are announced (console + AdvisoryLog, so the caveat block replays them).
 
+    A STORE A FLOWSHEET UNIT HOLDS IS LINKED (DEV.md 4c C92, the C87 rule:
+    one home for the hold time).  `unit <name>;` names the flowsheet
+    `storageTank` unit that holds the stream, and the store reads the
+    unit's published `residenceTime_s` as its autonomy and the unit's inlet
+    as its stream; `autonomy`, `stream` or `name` beside `unit` REFUSE by
+    name, as does an unlinked entry carrying a storageTank unit's name
+    (`StorageLink.H`, the one home of the link).  `reason` is then optional:
+    the hold time's reason lives with the unit.  The unit's own
+    `vesselVolume_m3` is printed beside the store's -- it holds the gas AT
+    THE LINE STATE, which a vessel kept at the line's pressure cannot give
+    back, and the difference is the lesson.
+
+    A PRESSURISED LIQUID STORE (`LiquefiedGasStoreSize`, DEV.md 4c C92):
+    `liquefiedGasStorage ( ... )`, a liquid that must be held ABOVE its
+    bubble pressure -- ammonia, LPG -- in pressure vessels (bullets):
+
+        liquefiedGasStorage
+        (
+            { unit            T201;          // or: name; stream; storageTime; fillFraction;
+              material        carbonSteel;
+              designPressure  22 bar;        // ABSOLUTE, >= the bubble pressure
+              temperature     250 K;         // the storage temperature
+              reason          "...";         // why that pressure and temperature
+              maxVesselVolume 700;           // m3, one vessel at most
+              L_over_D 6;  corrosionAllow 0.003;  jointEfficiency 1.0;
+              steelPrice 8;  steelPriceReason "...";
+            }
+        );
+
+        V_stored = storageTime x mdot / rho_liquid(T)       [m3 of liquid]
+        V_total  = V_stored / fillFraction                  [m3 of vessel]
+        N, V_R, D, L, the wall at designPressure as gauge, the steel-mass
+        cost -- the SAME vessel bank as the gas store (one home in the .cpp)
+
+    rho is the stream's own liquid reading at its own temperature (the
+    selection `phaseDensity::of` makes: a dissolved supercritical gas left
+    out of the density, announced, and counted in the mass); at a different
+    declared temperature it is asked of the package at that temperature,
+    the gap between the two ANNOUNCED (what warms or cools the liquid is not
+    in the flowsheet), and a value that is not finite and positive REFUSES
+    by name.  THE BUBBLE PRESSURE of the stored liquid at that temperature
+    -- every dissolved component counted, on the case's own K-values
+    (`BubblePoint::pressure`) -- is printed beside the main component's own
+    vapour pressure, and a designPressure below it REFUSES: the liquid would
+    boil in the vessel.  The vessels' orientation is the plot plan's (a
+    bullet lies); the sizer publishes D and the length as `H`.  NOT
+    included, said on every run: boil-off, vapour return and relief.
+    Inventory: the liquid at its working level, V_R x fill x rho.
+
     NOT REGISTERED in the unit-type registry, for the reason `StorageTankSize`
     gives: it is reached from its own list and reads a STREAM.
 \*---------------------------------------------------------------------------*/
@@ -138,6 +187,25 @@ public:
 
 private:
     inline static const std::string type_ = "gasStore";
+};
+
+//  A PRESSURISED LIQUID STORE (`liquefiedGasStorage ( ... )`, DEV.md 4c
+//  C92): the same vessel bank and steel-mass cost, sized on a hold time and
+//  a fill fraction instead of a pressure swing (see the header above).
+class LiquefiedGasStoreSize : public EquipmentSize
+{
+public:
+    const std::string& type() const override { return type_; }
+
+    //  `unitName` is the store's NAME, or the linked storageTank unit's;
+    //  `designRules` is the whole `liquefiedGasStorage ( { ... } )` entry.
+    std::vector<EquipmentSizing> size(const std::string& unitName,
+        const SimulationResult& result,
+        const Material&         material,
+        const DictPtr&          designRules) const override;
+
+private:
+    inline static const std::string type_ = "liquefiedGasStore";
 };
 
 } // namespace Choupo

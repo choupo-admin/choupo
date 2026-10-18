@@ -16,7 +16,7 @@
 #include "PhaseDensity.H"
 #include "core/Advisory.H"
 #include "core/Dimensions.H"
-#include "core/FlatUnit.H"
+#include "StorageLink.H"
 
 #include <cmath>
 #include <cstdio>
@@ -69,30 +69,9 @@ std::vector<EquipmentSizing> StorageTankSize::size(const std::string& name,
     std::string linkedUnit;
     if (entry->found("unit"))
     {
-        linkedUnit = entry->lookupWord("unit");
-        const FlatUnit* fu = nullptr;
-        std::string tanks;
-        for (const auto& u : result.topology)
-        {
-            if (u.name == linkedUnit) fu = &u;
-            if (u.type == "storageTank") tanks += " " + u.name;
-        }
-        if (!fu)
-            throw std::runtime_error(who + ": `unit " + linkedUnit + ";` names"
-                " no unit of this flowsheet.  The flowsheet's storageTank"
-                " units are:" + (tanks.empty() ? std::string(" (none)") : tanks)
-                + ".  Name one of them, or drop `unit` and declare the store"
-                " on its own (stream; storageTime; fillFraction).");
-        if (fu->type != "storageTank")
-            throw std::runtime_error(who + ": `unit " + linkedUnit + ";` is a `"
-                + fu->type + "`, not a `storageTank`.  A storage entry links"
-                " only the unit that holds the stream (its residence time is"
-                " the stock the tank is sized for).  The flowsheet's"
-                " storageTank units are:" + (tanks.empty() ? std::string(" (none)")
-                : tanks) + ".");
-        //  WHAT THE UNIT OWNS, refused here by name.
-        struct Owned { const char* key; std::string remedy; };
-        const std::vector<Owned> owned = {
+        //  WHAT THE UNIT OWNS, refused by name beside `unit` (the link has
+        //  ONE home, `storageLink`, shared with the two pressure stores).
+        const std::vector<storageLink::Owned> owned = {
             { "storageTime",  "the hold time has ONE home, the unit's `operation"
                 " { residenceTime; }` in system/flowsheetDict, and the tank is"
                 " sized on the residence time the unit publishes.  Delete"
@@ -106,48 +85,22 @@ std::vector<EquipmentSizing> StorageTankSize::size(const std::string& name,
             { "stream",       "the stream a linked tank stores is the unit's own"
                 " inlet.  Delete `stream` from this entry." },
             { "name",         "the items of a linked entry ARE the unit's ("
-                + linkedUnit + "/tank1, ...).  Delete `name` from this entry." },
+                + entry->lookupWord("unit") + "/tank1, ...).  Delete `name` from"
+                " this entry." },
         };
-        for (const auto& o : owned)
-            if (entry->found(o.key))
-                throw std::runtime_error(who + ": `" + o.key + "` is declared"
-                    " here AND the entry names the storageTank unit '"
-                    + linkedUnit + "' (`unit " + linkedUnit + ";`) -- "
-                    + o.remedy);
-        if (fu->ins.empty())
-            throw std::runtime_error(who + ": the storageTank unit '"
-                + linkedUnit + "' has no inlet stream in the topology.");
-        stream = fu->ins.front();
-        const auto k = result.kpis.find(linkedUnit);
-        auto kpi = [&](const char* key) -> scalar
-        {
-            if (k == result.kpis.end() || !k->second.count(key))
-                throw std::runtime_error(who + ": the storageTank unit '"
-                    + linkedUnit + "' published no `" + key + "` KPI -- the"
-                    " tank is sized on what the unit publishes, and it"
-                    " published nothing to size on (did the unit solve?).");
-            return k->second.at(key);
-        };
-        t_s  = kpi("residenceTime_s");
-        fill = kpi("fillFraction");
+        const storageLink::Link link = storageLink::resolve(entry, result,
+            who, "tank", "(stream; storageTime; fillFraction)", owned);
+        linkedUnit = link.unit;
+        stream     = link.stream;
+        t_s        = link.residenceTime_s;
+        fill       = link.fillFraction;
     }
     else
     {
-        //  AN ENTRY NAMED AFTER A storageTank UNIT, WITHOUT THE LINK.  Its
-        //  items would belong to that unit (the plot plan pipes a unit's
-        //  streams to the items of the same name) while it declares its own
-        //  hold time beside the unit's -- the two homes again, by a name
-        //  match nobody declared.  Refused, naming the explicit link.
-        for (const auto& u : result.topology)
-            if (u.type == "storageTank" && u.name == name)
-                throw std::runtime_error(who + ": this entry carries the name of"
-                    " the flowsheet storageTank unit '" + name + "' but does not"
-                    " link it.  Write `unit " + name + ";` in place of `name "
-                    + name + ";` and delete `stream`, `storageTime` and"
-                    " `fillFraction`: the tank is then sized on the unit's own"
-                    " inlet, residence time and fill fraction, which have ONE"
-                    " home, the unit.  (A store that no flowsheet unit holds"
-                    " takes a name of its own.)");
+        storageLink::refuseUnlinkedNamesake(name, result, who,
+            "`stream`, `storageTime` and `fillFraction`",
+            "the tank is then sized on the unit's own inlet, residence time"
+            " and fill fraction");
 
         auto need = [&](const char* key)
         {
@@ -200,14 +153,16 @@ std::vector<EquipmentSizing> StorageTankSize::size(const std::string& name,
         throw std::runtime_error(who + ": stream '" + stream + "' is a "
             + d.phase + ".  A gas is not stored in an atmospheric tank --"
               " it needs a pressure vessel or a gas holder, which this sizer"
-              " does not model.");
+              " does not model.  A buffer in pressure vessels is"
+              " `gasStorage ( ... )`.");
     if (d.P > atmosphericCeiling_Pa)
         throw std::runtime_error(who + ": stream '" + stream + "' is at "
             + std::to_string(d.P * 1.0e-5) + " bar.  Pressurised liquid"
               " storage (spheres, bullets) is not an atmospheric tank, and"
               " the only tank correlation here prices an atmospheric one."
               "  Let the liquid down to atmospheric pressure first, or size"
-              " the store as a vessel.");
+              " the store as pressure vessels (`liquefiedGasStorage ("
+              " ... )`).");
     if (!(d.massFlow > 0.0))
         throw std::runtime_error(who + ": stream '" + stream + "' carries no"
             " flow -- there is nothing to store.");

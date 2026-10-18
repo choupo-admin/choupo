@@ -97,7 +97,11 @@ units
     //  Half an hour is a surge volume, not a stock: a gas at 25 bar is a poor
     //  thing to store, and the number this tank publishes (4037 m^3 for 35 t)
     //  is exactly why real plants buy their nitrogen and hydrogen as a
-    //  pipeline supply rather than an inventory.
+    //  pipeline supply rather than an inventory.  That volume holds the gas
+    //  AT THE LINE STATE, and a vessel kept at the line's pressure can give
+    //  none of it back; the vessels that can are SIZED in system/postDict
+    //  (`gasStorage`, `unit T101;`, DEV.md 4c C92) on a pressure swing from
+    //  100 down to 27 bar, and they read this half hour from here -- one home.
     { name T101;  type storageTank;  in makeup;  outputs ( makeupStored );
       operation { residenceTime 0.5 h; } }
 
@@ -140,7 +144,12 @@ units
     //  student is asked to value: ~2900 t of liquid ammonia in ~3870 m^3,
     //  in a vessel that must be built for ~4830 m^3 at the 0.80 working-volume
     //  convention.  Compare it with T101 and the lesson is immediate: the same
-    //  plant holds 80x the MASS in the product tank and less volume.
+    //  plant holds 80x the MASS in the product tank and less volume.  The
+    //  liquid is held as it leaves the let-down drum, at 250 K and above its
+    //  20 bar bubble pressure, so the vessel is a PRESSURE vessel: seven
+    //  insulated bullets, SIZED in system/postDict (`liquefiedGasStorage`,
+    //  `unit T201;`, DEV.md 4c C92), which read the 48 h and the 0.80 fill
+    //  fraction from here -- one home.
     { name T201;  type storageTank;  in productNH3;  outputs ( productStored );
       operation { residenceTime 48 h; } }
 );

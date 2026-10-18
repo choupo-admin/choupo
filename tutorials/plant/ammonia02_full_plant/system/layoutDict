@@ -15,10 +15,13 @@
   to place.  It was then moved by hand into the arrangement below: the two
   compressors in a compressor row to the south-west, the converter with its
   feed-effluent exchanger, the water cooler with the separator, the let-down
-  drum, and a control room as a NON-PROCESS item.
+  drum, and a control room as a NON-PROCESS item.  The two STORES' eleven
+  vessels (DEV.md 4c C92) were placed by hand when they were sized: T101's
+  four north of the loop, T201's seven bullets in a tank farm to the
+  south-east.
 
-  WHAT IS THE ENGINE'S AND WHAT IS OURS.  The three vessels' diameters and
-  heights are their sizers' own (design/<unit>/vessel); every position below,
+  WHAT IS THE ENGINE'S AND WHAT IS OURS.  Every vessel's diameter and height
+  (or length) is its sizer's own (design/<unit>/vessel...); every position below,
   every declared footprint, every separation distance, the wind and every
   zone extent are AUTHOR-SET ASSUMPTIONS FOR THIS EXERCISE -- round numbers
   chosen to make the check visible, not values taken from any spacing or
@@ -42,9 +45,9 @@
   distance are AUTHOR-SET ASSUMPTIONS FOR THIS EXERCISE, said as such in each
   `source`; none is taken from a fire code or a road standard.
   THERE IS NO WEIGHBRIDGE, and that is read off the case, not chosen: the
-  product leaves at a battery limit as a pipe (`productNH3`, the let-down
-  drum's liquid -- a world-scale ~1400 t/day train ships by pipeline, rail or
-  ship, and this case declares no product storage or loading bay), and the
+  product leaves the tank farm at a battery limit as a pipe (`productStored`,
+  out of the T201 bullets -- a world-scale ~1400 t/day train ships by
+  pipeline, rail or ship, and this case declares no loading bay), and the
   makeup syngas ARRIVES by pipe at 25 bar from the front end (`makeup`).  No
   stream of this flowsheet moves by truck, so nothing is weighed at the
   gate; the trucks that do come (catalyst, spares) are deliveries, not
@@ -143,6 +146,172 @@ items
         }
     }
 
+    //  THE STORES (DEV.md 4c C92).  Their sizes are their sizers' own
+    //  (system/postDict, `gasStorage` and `liquefiedGasStorage`): every
+    //  vessel's D and H/L comes from design/T101/vesselN and design/T201/
+    //  vesselN.  The positions, the orientation and the zones are AUTHOR-SET
+    //  ASSUMPTIONS FOR THIS EXERCISE, like everything else in this file.
+    //
+    //  T101, the syngas surge: four STANDING pressure vessels north of the
+    //  north road, beside the makeup compressor they feed.  Hydrogen-rich
+    //  gas at up to 100 bar: each vessel is a release source.
+    {
+        item        "T101/vessel1";    // D and H from its own sizing
+        x           5 m;
+        y           26 m;
+        z           0 m;
+        orientation vertical;
+        release
+        {
+            source  "author-set assumption for this exercise; not taken from any hazardous-area standard";
+            reason  "hydrogen-rich syngas stored at up to 100 bar: the vessel's flanged nozzles, drains and instrument connections are secondary-grade release points";
+            zones   ( { zone 2; radius 4.5 m; height 20 m; } );
+        }
+    }
+    {
+        item        "T101/vessel2";    // D and H from its own sizing
+        x           15 m;
+        y           26 m;
+        z           0 m;
+        orientation vertical;
+        release
+        {
+            source  "author-set assumption for this exercise; not taken from any hazardous-area standard";
+            reason  "hydrogen-rich syngas stored at up to 100 bar: the vessel's flanged nozzles, drains and instrument connections are secondary-grade release points";
+            zones   ( { zone 2; radius 4.5 m; height 20 m; } );
+        }
+    }
+    {
+        item        "T101/vessel3";    // D and H from its own sizing
+        x           25 m;
+        y           26 m;
+        z           0 m;
+        orientation vertical;
+        release
+        {
+            source  "author-set assumption for this exercise; not taken from any hazardous-area standard";
+            reason  "hydrogen-rich syngas stored at up to 100 bar: the vessel's flanged nozzles, drains and instrument connections are secondary-grade release points";
+            zones   ( { zone 2; radius 4.5 m; height 20 m; } );
+        }
+    }
+    {
+        item        "T101/vessel4";    // D and H from its own sizing
+        x           35 m;
+        y           26 m;
+        z           0 m;
+        orientation vertical;
+        release
+        {
+            source  "author-set assumption for this exercise; not taken from any hazardous-area standard";
+            reason  "hydrogen-rich syngas stored at up to 100 bar: the vessel's flanged nozzles, drains and instrument connections are secondary-grade release points";
+            zones   ( { zone 2; radius 4.5 m; height 20 m; } );
+        }
+    }
+
+    //  T201, the product: seven insulated BULLETS side by side, lying
+    //  north-south in a tank farm south-east of the process area along the
+    //  tank-farm road -- more than 30 m from every place the EduTool's
+    //  guided moves put the control room, and more than the wind reach
+    //  (60 m) from the canteen.
+    //  Liquid ammonia with its dissolved gases at 22 bar: each bullet is a
+    //  release source.  Ammonia is also TOXIC, and that is not what these
+    //  zones say: a hazardous-area zone is about IGNITION, and the layout
+    //  grammar carries no toxic-gas exposure distance -- the distance a
+    //  toxic release travels is a consequence study this case does not do.
+    //  vessel1, the bullet the let-down drum's pipe reaches, is nearest the
+    //  process.
+    {
+        item        "T201/vessel1";    // D and L from its own sizing
+        x           78 m;
+        y           -54 m;
+        z           0 m;
+        orientation alongY;
+        release
+        {
+            source  "author-set assumption for this exercise; not taken from any hazardous-area standard";
+            reason  "liquid ammonia under pressure with dissolved hydrogen: the bullet's nozzles, its vapour-space connections and its relief outlet";
+            zones   ( { zone 2; radius 3 m; height 8 m; } );
+        }
+    }
+    {
+        item        "T201/vessel2";    // D and L from its own sizing
+        x           88 m;
+        y           -54 m;
+        z           0 m;
+        orientation alongY;
+        release
+        {
+            source  "author-set assumption for this exercise; not taken from any hazardous-area standard";
+            reason  "liquid ammonia under pressure with dissolved hydrogen: the bullet's nozzles, its vapour-space connections and its relief outlet";
+            zones   ( { zone 2; radius 3 m; height 8 m; } );
+        }
+    }
+    {
+        item        "T201/vessel3";    // D and L from its own sizing
+        x           98 m;
+        y           -54 m;
+        z           0 m;
+        orientation alongY;
+        release
+        {
+            source  "author-set assumption for this exercise; not taken from any hazardous-area standard";
+            reason  "liquid ammonia under pressure with dissolved hydrogen: the bullet's nozzles, its vapour-space connections and its relief outlet";
+            zones   ( { zone 2; radius 3 m; height 8 m; } );
+        }
+    }
+    {
+        item        "T201/vessel4";    // D and L from its own sizing
+        x           108 m;
+        y           -54 m;
+        z           0 m;
+        orientation alongY;
+        release
+        {
+            source  "author-set assumption for this exercise; not taken from any hazardous-area standard";
+            reason  "liquid ammonia under pressure with dissolved hydrogen: the bullet's nozzles, its vapour-space connections and its relief outlet";
+            zones   ( { zone 2; radius 3 m; height 8 m; } );
+        }
+    }
+    {
+        item        "T201/vessel5";    // D and L from its own sizing
+        x           118 m;
+        y           -54 m;
+        z           0 m;
+        orientation alongY;
+        release
+        {
+            source  "author-set assumption for this exercise; not taken from any hazardous-area standard";
+            reason  "liquid ammonia under pressure with dissolved hydrogen: the bullet's nozzles, its vapour-space connections and its relief outlet";
+            zones   ( { zone 2; radius 3 m; height 8 m; } );
+        }
+    }
+    {
+        item        "T201/vessel6";    // D and L from its own sizing
+        x           128 m;
+        y           -54 m;
+        z           0 m;
+        orientation alongY;
+        release
+        {
+            source  "author-set assumption for this exercise; not taken from any hazardous-area standard";
+            reason  "liquid ammonia under pressure with dissolved hydrogen: the bullet's nozzles, its vapour-space connections and its relief outlet";
+            zones   ( { zone 2; radius 3 m; height 8 m; } );
+        }
+    }
+    {
+        item        "T201/vessel7";    // D and L from its own sizing
+        x           138 m;
+        y           -54 m;
+        z           0 m;
+        orientation alongY;
+        release
+        {
+            source  "author-set assumption for this exercise; not taken from any hazardous-area standard";
+            reason  "liquid ammonia under pressure with dissolved hydrogen: the bullet's nozzles, its vapour-space connections and its relief outlet";
+            zones   ( { zone 2; radius 3 m; height 8 m; } );
+        }
+    }
+
     //  The SITE BUILDINGS are not equipment the flowsheet sizes, so each is
     //  a NON-PROCESS item: its kind, its box, and where both come from are
     //  declared.  The kind is the word the separation table names and the
@@ -237,11 +406,17 @@ wind
 
 //  THE ROADS (DEV.md 4c C90).  Centre lines at grade, every segment along
 //  one plan axis.  The entrance road runs north from the gate to the main
-//  road, which rings the process area with the north, east and west roads;
-//  two roads cross UNDER the pipe rack: one between the recycle compressor
-//  and the feed-effluent exchanger, and the east road at the rack's east
-//  end (the rack is the engine's stated default, 6 m up, above the 5 m
-//  headroom declared here).  The engine refuses a road through a
+//  road, which rings the process area with the north, east and west roads,
+//  and the tank-farm road carries the main road east along the product
+//  bullets (DEV.md 4c C92); two roads cross UNDER the pipe rack: one between
+//  the recycle compressor and the feed-effluent exchanger, and the east
+//  road, where the rack runs on to the tank farm (the rack is the engine's
+//  stated default, 6 m up, above the 5 m headroom declared here; it runs
+//  past the outermost process footprint, the last bullet, so the outlets'
+//  battery limit is now at the tank farm's east end and every outlet pipe
+//  runs there -- a stated default's simplification, said rather than
+//  hidden: a declared `pipeRack` would put it elsewhere).  The engine
+//  refuses a road through a
 //  footprint or under a rack or a pipe lower than the headroom, announces a
 //  road no gate reaches, a building no road serves and a process item with
 //  no road within the access distance, and publishes the length and the
@@ -295,6 +470,12 @@ roads
             width     6 m;
             reason    "the converter's crane access: under the rack between the recycle compressor and the exchanger";
             waypoints ( { x 28 m; y -31 m; } { x 28 m; y 16 m; } );
+        }
+        {
+            road      "tankFarm";
+            width     6 m;
+            reason    "the main road carried east along the product tank farm (DEV.md 4c C92), so a fire tender reaches every bullet from the road";
+            waypoints ( { x 68 m; y -31 m; } { x 146 m; y -31 m; } );
         }
     );
 }

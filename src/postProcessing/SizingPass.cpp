@@ -223,7 +223,12 @@ int SizingPass::run(SimulationResult& result)
     //  its own list rather than a word inside `storage`).
     const std::vector<DictPtr> gasStores = sizingDict_->found("gasStorage")
         ? sizingDict_->lookupDictList("gasStorage") : std::vector<DictPtr>{};
-    if (units.empty() && stores.empty() && gasStores.empty())
+    //  A FOURTH: `liquefiedGasStorage ( ... )`, a pressurised liquid store
+    //  in pressure vessels (DEV.md 4c C92) -- a liquid that must be held
+    //  above its bubble pressure, which no atmospheric tank holds.
+    const std::vector<DictPtr> liqStores = sizingDict_->found("liquefiedGasStorage")
+        ? sizingDict_->lookupDictList("liquefiedGasStorage") : std::vector<DictPtr>{};
+    if (units.empty() && stores.empty() && gasStores.empty() && liqStores.empty())
     {
         std::cerr << "SizingPass: 'units (...)' is empty — nothing to size.\n";
         return 0;
@@ -246,8 +251,10 @@ int SizingPass::run(SimulationResult& result)
     for (const auto& st : stores)
         wName = std::max(wName, (st->found("unit") ? st->lookupWord("unit")
                                  : st->lookupWordOrDefault("name", "")).size() + 2);
-    for (const auto& st : gasStores)
-        wName = std::max(wName, st->lookupWordOrDefault("name", "").size() + 2);
+    for (const auto* list : { &gasStores, &liqStores })
+        for (const auto& st : *list)
+            wName = std::max(wName, (st->found("unit") ? st->lookupWord("unit")
+                                     : st->lookupWordOrDefault("name", "")).size() + 2);
 
     std::cout << "\n========================  Equipment Sizing  ==========================\n";
     std::cout << "  " << std::left
@@ -621,37 +628,64 @@ int SizingPass::run(SimulationResult& result)
         }
     }
 
-    //  ---- THE GAS STORES (C89) ---------------------------------------------
-    //  The same shape as the tanks: `GasStoreSize` constructed here, each
-    //  vessel printed by `emitItem`; its inventory (the full charge at
-    //  maxPressure) is computed by the sizer, which alone knows that state.
-    if (!gasStores.empty())
-        std::cout << "  -- gas storage (pressure vessels attached to streams)\n";
-    for (const auto& st : gasStores)
+    //  ---- THE PRESSURE STORES (C89 gas, C92 liquid) ------------------------
+    //  The same shape as the tanks: each sizer constructed here, each vessel
+    //  printed by `emitItem`; its inventory (the full charge at maxPressure,
+    //  or the liquid at its working level) is computed by the sizer, which
+    //  alone knows that state.  An entry LINKED to a storageTank unit
+    //  (`unit <name>;`) is named after that unit, as a linked tank is.
+    struct PressureList
     {
-        const std::string sname = st->lookupWordOrDefault("name", "");
-        try {
-            if (sname.empty())
-                throw std::runtime_error("a `gasStorage` entry has no `name`");
-            if (!st->found("material"))
-                throw std::runtime_error("gas store '" + sname + "': `material`"
-                    " is not declared");
-            const std::string matName = st->lookupWord("material");
-            const auto& material = MaterialRegistry::byName(matName);
-            GasStoreSize sizer;
-            for (auto& dims : sizer.size(sname, result, material, st))
-            {
-                const std::string kind = dims.equipmentType;
-                emitItem(sname, kind, matName, std::move(dims));
-            }
-        }
-        catch (const std::exception& e)
+        const std::vector<DictPtr>* entries;
+        const char* list;      // the postDict list's word
+        const char* heading;
+        const char* noun;      // in a refusal
+        bool liquid;
+    };
+    const PressureList pressureLists[] = {
+        { &gasStores, "gasStorage",
+          "  -- gas storage (pressure vessels attached to streams)\n",
+          "gas store", false },
+        { &liqStores, "liquefiedGasStorage",
+          "  -- liquefied gas storage (pressurised liquid in pressure"
+          " vessels)\n", "liquefied gas store", true },
+    };
+    for (const PressureList& pl : pressureLists)
+    {
+        if (!pl.entries->empty()) std::cout << pl.heading;
+        for (const auto& st : *pl.entries)
         {
-            std::cerr << "  " << (sname.empty() ? std::string("(gasStorage)") : sname)
-                      << "  FAILED: " << e.what() << "\n";
-            ++failures;
-            notSized.push_back(sname.empty() ? std::string("(gasStorage)") : sname);
-            result.sizingRefusals[notSized.back()] = e.what();
+            const std::string sname = st->found("unit")
+                ? st->lookupWord("unit") : st->lookupWordOrDefault("name", "");
+            const std::string label = sname.empty()
+                ? "(" + std::string(pl.list) + ")" : sname;
+            try {
+                if (sname.empty())
+                    throw std::runtime_error(std::string("a `") + pl.list
+                        + "` entry has neither `unit` (the flowsheet"
+                          " storageTank unit it sizes) nor `name` (a store no"
+                          " unit holds)");
+                if (!st->found("material"))
+                    throw std::runtime_error(std::string(pl.noun) + " '" + sname
+                        + "': `material` is not declared");
+                const std::string matName = st->lookupWord("material");
+                const auto& material = MaterialRegistry::byName(matName);
+                std::vector<EquipmentSizing> vessels = pl.liquid
+                    ? LiquefiedGasStoreSize().size(sname, result, material, st)
+                    : GasStoreSize().size(sname, result, material, st);
+                for (auto& dims : vessels)
+                {
+                    const std::string kind = dims.equipmentType;
+                    emitItem(sname, kind, matName, std::move(dims));
+                }
+            }
+            catch (const std::exception& e)
+            {
+                std::cerr << "  " << label << "  FAILED: " << e.what() << "\n";
+                ++failures;
+                notSized.push_back(label);
+                result.sizingRefusals[notSized.back()] = e.what();
+            }
         }
     }
 

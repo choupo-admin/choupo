@@ -77,8 +77,12 @@ Description
 
     A GAS IS NOT STORED HERE.  A vapour stream is refused by name: gas
     storage is a pressure vessel or a holder, and an atmospheric tank
-    correlation does not price either.  So is a stream above 1.5 bar
-    (pressurised liquid storage is spheres and bullets).
+    correlation does not price either -- `gasStorage ( ... )` sizes the
+    pressure vessels (C89).  So is a stream above 1.5 bar: pressurised liquid
+    storage is spheres and bullets, sized by `liquefiedGasStorage ( ... )`
+    (C92, `GasStoreSize.H`).  The refusals name both.  The LINK to a
+    storageTank unit (`unit <name>;`) has its one home in `StorageLink.H`,
+    shared with the two pressure stores.
 
     NOT REGISTERED in the unit-type registry, deliberately.  The sizers
     there are reached by a UNIT's `type` word and read that unit's KPIs; a

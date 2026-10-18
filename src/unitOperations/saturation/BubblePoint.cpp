@@ -98,6 +98,75 @@ BubblePoint::Result BubblePoint::compute(const ThermoPackage& thermo,
     return out;
 }
 
+// -----------------------------------------------------------------------
+//  Static helper: programmatic bubble-P evaluation, no I/O (DEV.md 4c C92).
+//
+//  S(P) = Σ K_i(T, P, x, y) x_i with y the incipient vapour iterated to its
+//  own composition; S > 1 below the bubble pressure, S < 1 above it.  The
+//  vapour starts from the ideal K (Psat/P, or H/P for a Henry solute) and
+//  never from y = x, which for a liquid-rich composition lets the EoS take a
+//  liquid-like root for the "vapour" (see the relief-valve sizer).
+// -----------------------------------------------------------------------
+BubblePoint::PressureResult BubblePoint::pressure(const ThermoPackage& thermo,
+                                                  const sVector&       x,
+                                                  scalar               T,
+                                                  scalar               P_start)
+{
+    const std::size_t n = thermo.n();
+    PressureResult out;
+    sVector y(n, 0.0);
+
+    auto sumKx = [&](scalar P) -> scalar
+    {
+        const sVector K0 = thermo.Kvec_Raoult(T, P);
+        scalar s = 0.0;
+        for (std::size_t i = 0; i < n; ++i) { y[i] = K0[i] * x[i]; s += y[i]; }
+        if (!(s > 0.0)) return 0.0;
+        for (auto& v : y) v /= s;
+        for (int it = 0; it < 200; ++it)
+        {
+            const sVector K = thermo.Kvec(T, P, x, y);
+            s = 0.0;
+            for (std::size_t i = 0; i < n; ++i) s += K[i] * x[i];
+            if (!(s > 0.0) || !std::isfinite(s)) return s;
+            scalar dy = 0.0;
+            for (std::size_t i = 0; i < n; ++i)
+            {
+                const scalar yn = K[i] * x[i] / s;
+                dy = std::max(dy, std::abs(yn - y[i]));
+                y[i] = yn;
+            }
+            if (dy < 1.0e-13) break;
+        }
+        return s;
+    };
+
+    constexpr scalar Pfloor = 1.0e3, Pceil = 1.0e9;      // 0.01 bar, 10 kbar
+    scalar Phi = (P_start > Pfloor) ? P_start : Pfloor;
+    while (sumKx(Phi) > 1.0)
+    {
+        if (Phi >= Pceil) { out.P = Phi; return out; }   // not converged
+        Phi *= 2.0;
+    }
+    scalar Plo = Pfloor;
+    if (Phi <= Pfloor || sumKx(Plo) <= 1.0)
+    {
+        out.P = Pfloor;  out.belowFloor = true;  out.converged = true;
+        sumKx(Pfloor);   out.y = y;
+        return out;
+    }
+    for (int it = 0; it < 200 && Phi / Plo > 1.0 + 1.0e-10; ++it)
+    {
+        const scalar Pm = std::sqrt(Plo * Phi);
+        if (sumKx(Pm) > 1.0) Plo = Pm; else Phi = Pm;
+    }
+    out.P = std::sqrt(Plo * Phi);
+    sumKx(out.P);
+    out.y = y;
+    out.converged = true;
+    return out;
+}
+
 int BubblePoint::solve(const DictPtr& dict,
                        const ThermoPackage& thermo,
                        int verbosity)
