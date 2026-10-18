@@ -805,6 +805,8 @@ gasStorage
       temperature     313.15 K;
       maxVesselVolume 400;          // m3 per vessel; more volume -> more vessels
       L_over_D 3;  corrosionAllow 0.003;  jointEfficiency 1.0;  // optional, announced if absent
+      steelPrice      8;            // EUR per kg of SHELL steel, INSTALLED -- required to cost
+      steelPriceReason "why that price";
     }
 );
 ```
@@ -816,8 +818,15 @@ an ideal-gas case gets an ideal-gas buffer and the run says so; a density that
 is not finite refuses, never an ideal-gas fallback).  Split into equal STANDING
 vessels of at most `maxVesselVolume` (`design/H2Buffer/vessel1`, ...), each
 wall by the ASME thin-wall rule at `maxPressure` read as GAUGE, rated against
-the material record, costed on the Turton process-vessel set (the vertical
-one); each vessel's inventory is its full charge at `maxPressure`, so a store
+the material record, and COSTED BY ITS STEEL MASS: its published `weight` (the
+cylindrical shell only, rho pi D H t -- no heads, nozzles or supports) x the
+declared `steelPrice`, with NO index, NO module factor and NO 1.18 -- so the
+price must be an INSTALLED price per kg of shell steel, the rest folded in
+(the `declared-unit-price` shape the catalyst charge uses).  The Turton vessel
+cost (the vertical set) is printed beside it as an announced EXTRAPOLATED
+comparison -- its F_P and the wall over the radius -- and enters no total.
+No `steelPrice` or no `steelPriceReason`: the vessels stay sized, their cost
+refuses by name and the total reads INCOMPLETE.  Each vessel's inventory is its full charge at `maxPressure`, so a store
 on a priced raw material is that raw material's stock in the working capital.
 Every key is required; `maxPressure <= minPressure`, a `minPressure` BELOW the
 stream's own pressure (the gas could not flow back into the line it buffers)

@@ -220,6 +220,17 @@ std::vector<EquipmentSizing> GasStoreSize::size(const std::string& name,
     proto.equipmentType = "vessel";
     proto.material      = material.name;
     proto.stream        = stream;
+    //  COSTED BY ITS STEEL MASS (Vitor's ruling on C89, 2026-10-18): the
+    //  word tells the costing model which shape prices this vessel, and it
+    //  is set whether or not a price is declared -- so a missing price is
+    //  REFUSED there (the item stays sized, the total reads INCOMPLETE) and
+    //  never falls back to the Turton vessel set.  The price and its reason
+    //  are the CASE's: carried, never defaulted.
+    proto.costWords["costBasis"] = "steelMass";
+    if (entry->found("steelPrice"))
+        proto.costInputs["steelPrice"] = entry->lookupScalar("steelPrice");
+    if (entry->found("steelPriceReason"))
+        proto.costWords["steelPriceReason"] = entry->lookupWord("steelPriceReason");
     const scalar L_over_D = designDefault::valueOr(
         entry, designDefault::vesselLoverD, "vessel", name, proto);
     const scalar corrosionAllow = designDefault::valueOr(
@@ -293,9 +304,12 @@ std::vector<EquipmentSizing> GasStoreSize::size(const std::string& name,
         "gas store V = autonomy x mdot / (rho(maxPressure, T) -"
         " rho(minPressure, T)), rho from the case's package (vapour), split"
         " into equal standing vessels of at most maxVesselVolume; wall at"
-        " maxPressure as gauge; costed as a process vessel -- NOT included:"
-        " the charging compressor and its power; the autonomy is a design"
-        " assumption, not derived from a renewable-power profile";
+        " maxPressure as gauge; costed BY ITS SHELL STEEL MASS (the"
+        " cylindrical shell only: no heads, nozzles or supports) x a"
+        " declared installed price per kg, the Turton vessel set printed"
+        " beside it as a comparison -- NOT included: the charging compressor"
+        " and its power; the autonomy is a design assumption, not derived"
+        " from a renewable-power profile";
 
     std::vector<EquipmentSizing> items;
     for (int k = 1; k <= nV; ++k)
@@ -308,6 +322,11 @@ std::vector<EquipmentSizing> GasStoreSize::size(const std::string& name,
         it.set("H",               H,                "m");
         it.set("L_over_D",        L_over_D,         "-");
         it.set("t_wall",          mech.t_wall,      "m");
+        //  The thin-wall measure: the wall over the shell's radius.  The
+        //  wall formula assumes t << R; this says how far from that it is.
+        it.set("t_over_R",        mech.t_wall / (0.5 * D), "-");
+        //  The CYLINDRICAL SHELL's steel, rho pi D H t: no heads, nozzles,
+        //  supports or internals -- the mass the declared price multiplies.
         it.set("weight",          mech.weight,      "kg");
         it.set("pressureDesign",  pressureDesign,   "bar");
         it.set("nVessels",        nV,               "-");

@@ -224,13 +224,19 @@ m³** per vessel. The run gives ten vessels of about 362 m³ (D 5.36 m × H
 
 Three things to read before quoting the buffer:
 
-* **It dominates the capital.** Turton's vessel pressure factor grows with
-  the wall thickness, and a 200 mm wall gives F_P ≈ 32: each vessel costs
-  about 30 M€ installed and the buffer alone about 300 M€, several times the
-  rest of the plant. Whether that correlation is meant to price a wall that
-  thick is not checked here; that two hours of hydrogen cost more than the
-  synthesis loop is the lesson to argue with, and the hours, the pressures
-  and the vessel size are the levers.
+* **It is priced by its steel, not by a correlation** (Vítor's ruling,
+  DEV.md 4c C89). Each vessel costs its published shell steel — the
+  cylindrical shell only, ρ π D H t, 426 t — times a **declared installed
+  price of 8 EUR/kg** (`steelPrice`, a round placeholder with heads,
+  nozzles and supports folded in; not a quotation and not from any source):
+  about 3.4 M€ per vessel and **34.1 M€ for the buffer**, with no index, no
+  module factor and no 1.18 applied, because the price is already an
+  installed one. The Turton vessel set is still printed beside each vessel
+  as an *extrapolated comparison*: its pressure factor grows with the wall,
+  and a 200 mm wall on a 5.36 m shell (t/R ≈ 0.075) gives F_P ≈ 32 and about
+  30 M€ per vessel — nine times the steel. It enters no total. The buffer
+  still more than doubles the fixed capital (41.3 → 98.6 M€); the price per
+  kg, the hours, the pressures and the vessel size are the levers.
 * **It is a lower bound.** The *charging compressor* that takes the
   hydrogen from 30 bar to 100 bar is not in the flowsheet: neither it nor
   its power is sized or priced, and the run says so on every run.
@@ -356,8 +362,8 @@ receivables dominate. Before the hydrogen buffer was sized (DEV.md 4c
 C89) the net working capital came out several times larger than 15 % of
 the fixed capital — the fixed capital excludes the electrolysers and the
 ASU while the raw materials and product are priced in full; with the
-buffer's vessels in the fixed capital the two figures are of the same
-order. The hydrogen the buffer holds adds little to the working capital
+buffer's vessels in the fixed capital the net working capital is still about
+three times the 15 % figure. The hydrogen the buffer holds adds little to the working capital
 (26.6 t at 4.50 EUR/kg); what it adds to the fixed capital is the lesson.
 
 ## Plant layout

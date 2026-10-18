@@ -260,7 +260,7 @@
                       SRK puts it slightly above ideal), split into equal
                       STANDING vessels of at most maxVesselVolume (the Turton
                       vessel set the tree carries is the vertical one), each
-                      wall at Pmax as gauge, costed as a process vessel.
+                      wall at Pmax as gauge.
                       Basis, all AUTHOR-SET design assumptions, none cited:
                         * 2 h of autonomy at full rate -- a short-term buffer
                           that rides through a cloud or a wind lull; a
@@ -277,7 +277,17 @@
                         * at most 400 m3 per vessel, inside the vessel cost
                           correlation's 0.3-520 m3 range; L/D 3, 3 mm of
                           corrosion allowance and a fully radiographed joint,
-                          the drums' own constants.
+                          the drums' own constants;
+                        * COST BY STEEL MASS (Vitor's ruling on C89): each
+                          vessel = its published shell steel (rho pi D H t,
+                          the cylindrical shell only) x 8 EUR/kg, an
+                          INSTALLED price per kg of shell with heads,
+                          nozzles and supports folded in -- a round
+                          placeholder, not a quotation and not from any
+                          source.  No index, no module factor, no 1.18 is
+                          applied to it.  The Turton vessel set is printed
+                          beside it as an EXTRAPOLATED comparison (F_P ~ 32
+                          on a 200 mm wall) and is NOT in the total.
                       NOT INCLUDED, said on every run: the CHARGING
                       COMPRESSOR from 30 bar to Pmax (neither the machine nor
                       its power is sized or priced: the buffer's cost is a
@@ -439,6 +449,8 @@ sizing
           temperature     313.15 K;      // the stream's own -- AUTHOR-SET
           maxVesselVolume 400;           // m3 per vessel, inside the cost correlation's range
           L_over_D 3;  corrosionAllow 0.003;  jointEfficiency 1.0;   // the drums' constants
+          steelPrice      8;             // EUR per kg of SHELL steel, INSTALLED -- AUTHOR-SET
+          steelPriceReason "a round placeholder for a fabricated, installed carbon-steel pressure vessel per kg of its shell, heads, nozzles and supports folded in; not a quotation and not taken from any source -- replace it with a vendor's price";
         }
     );
 }

@@ -357,10 +357,13 @@ WHAT THIS CHECKS:
       `H2Feed` (`gasStorage ( ... )`) has its two SRK densities RECOMPUTED
       from the case's records, its working gas, vessel count, volume,
       diameter, wall and weight from the postDict's declarations, each
-      vessel's three costs on the Turton vertical vessel set and its pressure
-      factor, its inventory and the raw-material stock it adds to the working
-      capital, its sheets, its standing placement at its own D and H, and the
-      charging compressor's NOT-INCLUDED caveat; four copies refuse BY NAME.
+      vessel's cost as its steel weight x the declared installed `steelPrice`
+      (Vitor's ruling: by steel mass), the Turton vessel cost RECOMPUTED as a
+      printed, announced comparison that enters no total, its inventory and
+      the raw-material stock it adds to the working capital, its sheets, its
+      standing placement at its own D and H, and the charging compressor's
+      NOT-INCLUDED caveat; four copies refuse the store BY NAME and two (no
+      price, no price reason) refuse its COST while it keeps its size.
       Sabotages in `check_gas_store`.
 
   (l) THE GUI FIXTURE IS STILL THE ENGINE'S OWN OUTPUT.  The readers' unit
@@ -3497,10 +3500,17 @@ def check_gas_store(problems, notes):
         N = ceil(V_total / maxVesselVolume); V_R = V_total / N; D from L/D;
         the wall t = P_g D / (2 sigma E - 1.2 P_g) + c at P_g = Pmax - 1 atm,
         and the weight rho_steel pi D H t, from the material record;
-      * each vessel's three costs on the Turton VERTICAL vessel set this gate
-        transcribes (`VESSEL_VERTICAL`), the vessel pressure factor
-        max((t_w + 0.00315)/0.0063, 1) on the uncorroded wall, the record's
-        F_M and the costing block's index and currency;
+      * each vessel's COST BY ITS STEEL MASS (Vitor's ruling on C89):
+        purchased = bare-module = total-module = weight x the declared
+        `steelPrice` (installed; no index, no module factor, no 1.18), on the
+        `declared-unit-price` shape, and the printed C_TM total equal to the
+        sum of the items' totalModule;
+      * the Turton COMPARISON, published as `comparison_*` factors and
+        printed as an EXTRAPOLATION with its F_P and t/R, NOT in the total:
+        the VERTICAL vessel set this gate transcribes (`VESSEL_VERTICAL`),
+        the pressure factor max((t_w + 0.00315)/0.0063, 1) on the uncorroded
+        wall, the record's F_M and the costing block's index and currency;
+        also replayed in the caveat record;
       * each vessel's inventory = V_R x rho_max; the economics' raw-material
         stock = the buffer's full charge x the H2Feed purchase price (the
         case declares 0 days of stock for every raw material);
@@ -3510,7 +3520,9 @@ def check_gas_store(problems, notes):
       * four copies, each REFUSED BY NAME while the run exits 0: maxPressure
         equal to minPressure, minPressure below the line's own 30 bar,
         autonomy with no unit, and the store attached to the LIQUID
-        ProductNH3.
+        ProductNH3; and two more that refuse the vessel's COST by name while
+        it keeps its SIZE and the total reads INCOMPLETE: no `steelPrice`,
+        and no `steelPriceReason`.
 
     SABOTAGES, BY HAND, 2026-10-18, each restored with `cp` and the engine
     rebuilt; the gate then returned OK:
@@ -3532,11 +3544,25 @@ def check_gas_store(problems, notes):
       S4  GasStoreSize.cpp: the charging-compressor AdvisoryLog entry removed
           (the console line kept)  -> FAILED: "the charging compressor is not
           in the run's caveat record".
-    NOT CHECKED: whether 2 h, 100 bar, 32 bar and 400 m3 are the right design
-    basis (the case's declared assumptions), whether SRK is the TRUE density
-    of hydrogen at 100 bar, and whether Turton's vessel pressure factor --
-    linear in a 200 mm wall -- is meant to price a vessel that thick (the
-    README says what it does to the FCI)."""
+    SECOND ROUND (the steel-mass cost), 2026-10-18, in
+    costing/SteelMassCost.cpp, each restored with `cp` and rebuilt:
+      S5  C_p = 1.18 x price x mass (a module factor applied)  -> FAILED (30
+          lines): "cost.purchased = 4025338.11, recomputed 3411303.49" and the
+          two module costs, on every vessel.
+      S6  the item's totalModule set to the Turton comparison's  -> FAILED (10
+          lines): "cost.totalModule = 30168312.13, recomputed 3411303.49".
+          The total-equals-the-items arm did NOT fire on it (the table sums
+          the very records it prints); the value arm is what catches it.
+      S7  no steelPrice -> fall back to the costing model's own price  ->
+          FAILED: "a copy with no steelPrice does not refuse the vessel's cost
+          BY NAME".
+      S8  the comparison's AdvisoryLog entry disabled (the console line kept)
+          -> FAILED: "the Turton comparison is not in the caveat record".
+    NOT CHECKED: whether 2 h, 100 bar, 32 bar, 400 m3 and 8 EUR/kg are the
+    right design basis (the case's declared assumptions), whether SRK is the
+    TRUE density of hydrogen at 100 bar, and whether a price per kg of SHELL
+    steel covers heads, nozzles and supports (the declared price must fold
+    them in; the weight is the cylindrical shell's alone)."""
     tag = "check_design_sheet(v)"
     case = ROOT / HXROUTE
     post = (case / "system" / "postDict").read_text(errors="replace")
@@ -3565,13 +3591,16 @@ def check_gas_store(problems, notes):
     LD, _ = num("L_over_D")
     ca, _ = num("corrosionAllow")
     je, _ = num("jointEfficiency")
-    if None in (name, stream, mat, aut, pmax, pmin, T, vmax, LD, ca, je) or \
+    price, _ = num("steelPrice")
+    if None in (name, stream, mat, aut, pmax, pmin, T, vmax, LD, ca, je,
+                price) or \
             aut_u not in ("h", "day") or pmax_u != "bar" or pmin_u != "bar" \
             or T_u != "K":
         problems.append("%s: the gasStorage entry does not declare name/stream/"
                         "material/autonomy (h or day)/maxPressure and "
                         "minPressure (bar)/temperature (K)/maxVesselVolume/"
-                        "L_over_D/corrosionAllow/jointEfficiency -- nothing to "
+                        "L_over_D/corrosionAllow/jointEfficiency/steelPrice -- "
+                        "nothing to "
                         "recompute." % tag)
         return
     aut_h = aut if aut_u == "h" else aut * 24.0
@@ -3610,13 +3639,21 @@ def check_gas_store(problems, notes):
     t_w = D * Pg / (2.0 * (rec["sigma_y"] * 10.0 - 0.6 * Pg))
     FP = max((t_w + 0.00315) / 0.0063, 1.0)
     cbm = cp * (B1 + B2 * rec.get("F_M", 1.0) * FP)
+    #  THE COST IS THE STEEL (Vitor's ruling on C89): weight x the declared
+    #  installed price, no index, no module factor; the Turton vessel cost is
+    #  a COMPARISON published under `comparison_*` and in no total.
+    c_steel = weight * price
     want = {"values.V_R": V_R, "values.V_total": V_total, "values.nVessels": N,
             "values.D": D, "values.H": H, "values.t_wall": t,
             "values.weight": weight, "values.pressureDesign": Pg,
             "values.m_working": m_work, "values.rho_max": rho_max,
             "values.rho_min": rho_min, "inventory.mass.total": V_R * rho_max,
-            "cost.purchased": cp, "cost.bareModule": cbm,
-            "cost.totalModule": 1.18 * cbm}
+            "values.t_over_R": t / (0.5 * D),
+            "cost.purchased": c_steel, "cost.bareModule": c_steel,
+            "cost.totalModule": c_steel, "factors.steelPrice": price,
+            "factors.comparison_C_p": cp, "factors.comparison_C_BM": cbm,
+            "factors.comparison_C_TM": 1.18 * cbm,
+            "factors.comparison_F_P": FP}
 
     eq = [l for l in out.splitlines() if '"item": "%s/vessel' % name in l]
     if len(eq) != N:
@@ -3635,10 +3672,14 @@ def check_gas_store(problems, notes):
             if not g or not close(float(g.group(1)), w, 1e-6):
                 problems.append("%s: %s %s = %s, recomputed %.9g (%g h x "
                                 "F_mass %.9g kg/s / (rho %.9g - %.9g) kg/m3 at "
-                                "%g/%g bar, %g K; at most %g m3; L/D %g)."
+                                "%g/%g bar, %g K; at most %g m3; L/D %g; "
+                                "cost = weight x %g EUR/kg)."
                                 % (tag, item, key, g.group(1) if g else "(absent)",
                                    w, aut_h, sj["F_mass"], rho_max, rho_min,
-                                   pmax, pmin, T, vmax, LD))
+                                   pmax, pmin, T, vmax, LD, price))
+        if '"correlation": "declared-unit-price"' not in line:
+            problems.append("%s: %s is not priced on the declared-unit-price "
+                            "shape." % (tag, item))
         vtag = item.split("/", 1)[1]
         f = case / "design" / name / vtag
         if not f.is_file():
@@ -3669,6 +3710,24 @@ def check_gas_store(problems, notes):
                         "the %s price is %s." % (tag, wc.group(1) if wc else
                         "(absent)", stream, (N * V_R * rho_max * float(
                             pm.group(1))) if pm else "(no price)"))
+    #  THE TOTAL IS THE DECLARED COSTS: the printed C_TM total equals the sum
+    #  of every item's totalModule, so no comparison rode into it.
+    tot = re.search(r'TOTALS \(EUR\)\s+([0-9.]+)\s+([0-9.]+)\s+([0-9.]+)', out)
+    s_tm = sum(float(x) for x in re.findall(
+        r'"cost": \{ "purchased": [-0-9.eE+]+, "bareModule": [-0-9.eE+]+, '
+        r'"totalModule": ([-0-9.eE+]+)', out))
+    if not tot or abs(float(tot.group(3)) - s_tm) > 1.0:
+        problems.append("%s: the printed C_TM total %s is not the sum of the "
+                        "items' totalModule %.0f." % (tag, tot.group(3) if tot
+                                                      else "(absent)", s_tm))
+    if not re.search(r"\[comparison\] vessel '%s/vessel1'[^\n]*EXTRAPOLATED"
+                     r"[^\n]*F_P[^\n]*t/R[^\n]*NOT in the total" % name, out):
+        problems.append("%s: the Turton comparison is not printed for %s/vessel1 "
+                        "as an EXTRAPOLATION with its F_P and t/R, not in the "
+                        "total." % (tag, name))
+    if not re.search(r'"category": "costing"[^\n]*EXTRAPOLATED[^\n]*COMPARISON', out):
+        problems.append("%s: the Turton comparison is not in the caveat record."
+                        % tag)
     if not re.search(r'"category": "costing"[^\n]*CHARGING COMPRESSOR', out):
         problems.append("%s: the charging compressor is not in the run's "
                         "caveat record -- the buffer's cost is a lower bound "
@@ -3705,10 +3764,39 @@ def check_gas_store(problems, notes):
                             % (tag, what, pat))
         shutil.rmtree(dst.parent, ignore_errors=True)
 
+    #  THE PRICE IS REQUIRED, and its absence refuses the COST, not the size:
+    #  the vessels stay sized and the total reads INCOMPLETE.
+    cost_probes = (
+        ("no steelPrice",
+         edit_store(lambda e: re.sub(r'\bsteelPrice\s+[^;]*;', '', e)),
+         r'no\s+`steelPrice` is declared'),
+        ("no steelPriceReason",
+         edit_store(lambda e: re.sub(r'\bsteelPriceReason\s+"[^"]*"\s*;', '', e)),
+         r'no `steelPriceReason`'),
+    )
+    for what, ed, pat in cost_probes:
+        dst, rcp, outp, errp = _run_copy(case, ed)
+        both = outp + errp
+        if rcp != 0:
+            problems.append("%s: the copy with %s failed (rc=%d) -- a missing "
+                            "price refuses the COST, never the run." % (tag, what, rcp))
+        elif not re.search(r'%s/vessel1\s+FAILED:[^\n]*%s' % (name, pat), both):
+            problems.append("%s: a copy with %s does not refuse the vessel's "
+                            "cost BY NAME (/%s/)." % (tag, what, pat))
+        elif "TOTALS (EUR) -- INCOMPLETE" not in both:
+            problems.append("%s: with %s the cost total does not read "
+                            "INCOMPLETE." % (tag, what))
+        elif not re.search(r'"item": "%s/vessel1"[^\n]*"values"' % name, both):
+            problems.append("%s: with %s the vessel lost its SIZE -- a missing "
+                            "price must keep it." % (tag, what))
+        shutil.rmtree(dst.parent, ignore_errors=True)
+
     notes.append("gas store: %s on %s, %d vessel(s) of %.1f m3 (D %.3f m, wall "
                  "%.1f mm) recomputed from %g h x %.4g kg/s / (%.4f - %.4f) "
-                 "kg/m3 SRK; four refusals" % (name, stream, N, V_R, D,
-                 t * 1000.0, aut_h, sj["F_mass"], rho_max, rho_min))
+                 "kg/m3 SRK, each costed %.0f EUR = %.0f kg x %g EUR/kg (Turton "
+                 "comparison %.0f EUR, F_P %.2f, not in the total); six refusals"
+                 % (name, stream, N, V_R, D, t * 1000.0, aut_h, sj["F_mass"],
+                    rho_max, rho_min, c_steel, weight, price, 1.18 * cbm, FP))
 
 
 def main() -> int:
@@ -3806,12 +3894,16 @@ def main() -> int:
           "sizing/MaterialLimits, and every sizer calls it at least as often "
           "as it publishes a pressureDesign) and on the gas-store witness "
           "(the H2 buffer's working gas, vessel count, volume, diameter, wall, "
-          "weight, inventory and three costs RECOMPUTED from its declared "
-          "autonomy and pressures, the stream's own mass flow and SRK "
-          "densities from the case's records; its full charge priced as "
-          "raw-material stock; every vessel placed standing at its own D and "
-          "H; the charging compressor in the caveat record; four malformed "
-          "declarations refused BY NAME), each "
+          "weight and inventory RECOMPUTED from its declared autonomy and "
+          "pressures, the stream's own mass flow and SRK densities from the "
+          "case's records; each vessel costed as its steel weight x the "
+          "declared installed price, the Turton cost printed beside it as an "
+          "announced extrapolation that enters no total; its full charge "
+          "priced as raw-material stock; every vessel placed standing at its "
+          "own D and H; the charging compressor in the caveat record; four "
+          "malformed declarations refused BY NAME, and a missing price or "
+          "price reason refusing the COST and marking the total INCOMPLETE), "
+          "each "
           "at the address its own "
           "sizing.csv row dictates (sector directory where the row names a "
           "sector, NO extra level where it does not); every `sizing {}` entry "

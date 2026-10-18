@@ -2101,8 +2101,12 @@ refuses a gas) -- attaches a buffer to a stream: `V = autonomy x mdot /
 (rho(Pmax, T) - rho(Pmin, T))`, both densities from the CASE'S package
 (vapour route; a non-finite density REFUSES, never an ideal-gas fallback),
 split into standing `vessel` items wall-sized at Pmax as gauge, rated by
-`MaterialLimits`, costed on the existing Turton vessel set, each holding its
-full charge as inventory.  Every key is required; Pmin below the stream's own
+`MaterialLimits`, each holding its full charge as inventory, and COSTED BY
+ITS STEEL MASS (Vitor's ruling): the shell `weight` x a DECLARED installed
+`steelPrice` (+ `steelPriceReason`), no index, no module factor, no 1.18
+(`costing/SteelMassCost`, routed by `CostingPass`); the Turton vessel cost is
+printed beside it as an announced extrapolation (F_P, t/R) and enters no
+total; no price refuses the COST by name and the total reads INCOMPLETE.  Every key is required; Pmin below the stream's own
 pressure refuses (the gas could not flow back into the line).  The charging
 compressor and any renewable profile behind the hours are NOT included and
 are announced on every run.  One home: `sizing/GasStoreSize`.  Gate:

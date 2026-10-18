@@ -44,6 +44,9 @@ Description
                   //  optional, each ANNOUNCED when the engine supplies it
                   //  (`DesignDefaults`, the vessel's own constants):
                   L_over_D 3;  corrosionAllow 0.003;  jointEfficiency 1.0;
+                  //  the COST (required by the costing pass, see below):
+                  steelPrice 8;                  // EUR per kg of shell steel, INSTALLED
+                  steelPriceReason "...";
                 }
             );
         }
@@ -79,11 +82,23 @@ Description
     THE VESSELS.  N equal STANDING vessels, each a cylinder of L/D, wall by
     the ONE home (`vesselMechanics::wall`) at maxPressure read as GAUGE
     (maxPressure - 1 atm; no margin is added above it: the declared ceiling
-    IS the design pressure), rated by `materialLimits::pressure`, costed on
-    the EXISTING Turton process-vessel set (equipment word `vessel`, whose
-    coefficients are the VERTICAL set -- which is why the vessels stand), and
-    a volume outside that set's range is announced by the costing pass as
-    for every vessel.  Each vessel's inventory is its full charge at
+    IS the design pressure), rated by `materialLimits::pressure`.  They
+    stand because the Turton process-vessel set (equipment word `vessel`)
+    is the VERTICAL one, and that set is the COMPARISON below.
+
+    THE COST, BY STEEL MASS (Vitor's ruling on C89, 2026-10-18).  Priced on
+    the Turton set, a 200 mm wall gave F_P ~ 32, about nine times the steel.
+    So each vessel is marked `costWords["costBasis"] = "steelMass"` and the
+    costing pass prices it in `costing/SteelMassCost`: its published
+    `weight` -- the CYLINDRICAL SHELL steel, rho pi D H t; no heads, nozzles,
+    supports or internals -- times the DECLARED `steelPrice`, with no index,
+    no module factor and no 1.18, so the price must be an INSTALLED price per
+    kg of shell steel, everything else folded into it.  The Turton cost is
+    printed beside it as an EXTRAPOLATED comparison (its F_P and the wall
+    over the radius) and enters no total.  Absent `steelPrice` or
+    `steelPriceReason`, the vessels stay SIZED and their COST refuses by
+    name: the total reads INCOMPLETE (the catalyst charge's rule).  Each
+    vessel's inventory is its full charge at
     maxPressure, so the working capital counts the gas a full buffer ties
     up; the cushion (rho(Pmin) x V) never leaves and is published beside it.
 
@@ -109,9 +124,9 @@ namespace Choupo {
 class GasStoreSize : public EquipmentSize
 {
 public:
-    //  The SIZER's word.  Each vessel it returns is sized and costed AS a
-    //  `vessel` (its `equipmentType`), the word the Turton set, the plot
-    //  plan's separation table and the 3D drawing already know.
+    //  The SIZER's word.  Each vessel it returns is sized AS a `vessel` (its
+    //  `equipmentType`), the word the plot plan's separation table and the
+    //  3D drawing already know; it is COSTED by its steel mass.
     const std::string& type() const override { return type_; }
 
     //  `unitName` is the store's NAME (it is not a flowsheet unit);

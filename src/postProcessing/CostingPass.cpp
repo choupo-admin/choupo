@@ -29,6 +29,7 @@ License
 #include "CostingPass.H"
 #include "core/Advisory.H"
 #include "costing/CostingModel.H"
+#include "costing/SteelMassCost.H"
 #include "materials/MaterialRegistry.H"
 
 #include <algorithm>
@@ -159,7 +160,12 @@ int CostingPass::run(SimulationResult& result)
             const auto& mat = dim.material.empty()
                             ? noMaterial
                             : MaterialRegistry::byName(dim.material);
-            auto cb         = model->cost(dim, mat);
+            //  A VESSEL PRICED BY ITS STEEL MASS (DEV.md 4c C89) takes the
+            //  case's declared price; the model's answer is printed beside
+            //  it as a comparison (`costing/SteelMassCost`).
+            auto cb         = steelMassCost::applies(dim)
+                            ? steelMassCost::cost(dim, mat, *model)
+                            : model->cost(dim, mat);
             //  THE THREE IDENTITY FIELDS COME FROM THE SIZING THAT WAS
             //  PRICED, never from the map key: the key is an item id and
             //  splitting it back apart would be the name identity this
@@ -330,7 +336,10 @@ int CostingPass::run(SimulationResult& result)
                      " the run's currency,\n"
                      "                                                          "
                      "      today's money -- NO index, NO F_M/F_P, NO 1.18;"
-                     " a catalyst charge]\n"
+                     " a catalyst charge, or a\n"
+                     "                                                          "
+                     "      gas-store vessel by its shell steel (an INSTALLED"
+                     " price)]\n"
                      //  THE FOURTH SHAPE (2026-10-05, DEV.md 4c C38 item 1):
                      //  a tray stack is bought by the tray.  Its row prints
                      //  K1..K3 for ONE tray on the area A, and F_BM, F_q
@@ -404,7 +413,9 @@ int CostingPass::run(SimulationResult& result)
                 //  from the two correlation shapes: it is the case's number,
                 //  not Turton's, and no index touched it.
                 co << "price " << std::defaultfloat << std::setprecision(6)
-                   << f("catalystPrice") << " EUR/kg, DECLARED, no index";
+                   << (cb.factors.count("steelPrice") ? f("steelPrice")
+                                                      : f("catalystPrice"))
+                   << " EUR/kg, DECLARED, no index";
             else
                 co << std::fixed << std::setprecision(4) << f("K1") << ", "
                    << f("K2") << ", " << f("K3");
