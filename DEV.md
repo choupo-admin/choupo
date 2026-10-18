@@ -1274,7 +1274,22 @@ accepts today, and that is a policy call.
 > fire-water storage and pump house, a laydown / maintenance area, a
 > windsock.  Design Guide §21 updated for truck circulation, parking and
 > those items.  Moved rows to Vitor before re-recording.  Status:
-> dispatched 2026-10-18.
+> dispatched 2026-10-18.  MERGED 2026-10-18 (branch
+> claude/c96-site-logistics): `truckRoutes`/`designVehicle`/`turningAreas`
+> walked by the engine (path, corners, outer edge vs the design vehicle's
+> 12.5 m outer radius, Council Directive 96/53/EC Annex I 1.5; reversal,
+> sharp corner, missed weighbridge... ANNOUNCED), a `carPark` kind with
+> `parking {}` (bays that do not fit REFUSED, reverse exit ANNOUNCED),
+> `musterPoint`/`firePumpHouse` with exposure checks, every road extended to
+> its fence opening (closes the C93 "5 m short" item).  ammonia02: route
+> `deliveries` 256 m CLEAR, 22 reverse-in bays, offices, emergency gate,
+> two muster points, fire water, laydown, windsock; the plot grew south.
+> Vitor approved the 20 moved rows (land 983 212 -> 1 104 450 EUR, NPV
+> -117 675 EUR, IRR 20.12 -> 20.08 %, plot 19 664 -> 22 089 m2, placed 18
+> -> 28, roads 434 -> 537 m, fence 596 -> 620 m, gate/warehouse/
+> productStored moved with the fence); 131 rows appended.  NOT done, named:
+> fire-water ring main and hydrants, bunds, escape routes, swept path, a
+> fillet running through an item.
 
 > **C97. APALUTAMIDE TABLETS: A NEW CASE AND THE GMP INTERIOR LAYOUT
 > (Vitor, 2026-10-18: a pharmaceutical-industry project group produces
