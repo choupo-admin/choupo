@@ -222,7 +222,8 @@ code, .mono, td.num { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas
 .toolbar .seg label:last-of-type { border-radius: 0 4px 4px 0; }
 .toolbar .seg input:checked + label { background: var(--accent); color: #fff; border-color: var(--accent); }
 .toolbar .seg input:focus-visible + label, .toolbar button:focus-visible { outline: 2px solid var(--accent); }
-.view { position: relative; width: 100%; height: calc(100vh - 120px); min-height: 240px;
+.view { position: relative; width: 100%; height: calc(100vh - 120px);
+  height: calc(100dvh - 120px); min-height: 240px;
   overflow: hidden; border: 1px solid var(--line); border-radius: 6px; background: var(--panel);
   touch-action: none; }
 .stage.max { position: fixed; inset: 0; z-index: 10; background: var(--bg); padding: 6px 8px;
