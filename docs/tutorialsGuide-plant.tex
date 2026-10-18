@@ -262,19 +262,17 @@ DEPARTURES FROM HIS FIGURE 1, each argued rather than absorbed
 \tutentry{ammonia02\_full\_plant}{tutorials/plant/ammonia02\_full\_plant}
 \begin{tutscheme}
 \begin{tikzpicture}[>={Stealth[length=2mm]}, every node/.style={font=\scriptsize}]
-  \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (T101) at (0.0,-0.0) {\textbf{T101}\\[-1pt]{\tiny storageTank}};
-  \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (makeupComp) at (2.9,-0.0) {\textbf{makeupComp}\\[-1pt]{\tiny compressor}};
-  \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (recycleComp) at (194.3,-0.0) {\textbf{recycleComp}\\[-1pt]{\tiny compressor}};
-  \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (mixer) at (197.2,-0.0) {\textbf{mixer}\\[-1pt]{\tiny mixer}};
-  \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (FEHE) at (200.1,-0.0) {\textbf{FEHE}\\[-1pt]{\tiny heatExchanger}};
-  \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (converter) at (203.0,-0.0) {\textbf{converter}\\[-1pt]{\tiny gibbsReactor}};
-  \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (waterCooler) at (203.0,-1.7) {\textbf{waterCooler}\\[-1pt]{\tiny heatExchanger}};
-  \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (separator) at (205.9,-0.0) {\textbf{separator}\\[-1pt]{\tiny isothermalFlash}};
-  \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (letdown) at (208.8,-0.0) {\textbf{letdown}\\[-1pt]{\tiny isothermalFlash}};
-  \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (purgeSplit) at (208.8,-1.7) {\textbf{purgeSplit}\\[-1pt]{\tiny splitter}};
-  \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (T201) at (211.7,-0.0) {\textbf{T201}\\[-1pt]{\tiny storageTank}};
-  \draw[->] ($(T101.west)+(-1.05,0.00)$) -- ($(T101.west)+(0,0.00)$) node[at start, above, font=\tiny, anchor=south west] {makeup};
-  \draw[->] (T101) -- (makeupComp) node[midway, above, font=\tiny] {makeupStored};
+  \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (makeupComp) at (0.0,-0.0) {\textbf{makeupComp}\\[-1pt]{\tiny compressor}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (recycleComp) at (176.9,-0.0) {\textbf{recycleComp}\\[-1pt]{\tiny compressor}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (mixer) at (179.8,-0.0) {\textbf{mixer}\\[-1pt]{\tiny mixer}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (FEHE) at (182.7,-0.0) {\textbf{FEHE}\\[-1pt]{\tiny heatExchanger}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (converter) at (185.6,-0.0) {\textbf{converter}\\[-1pt]{\tiny gibbsReactor}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (waterCooler) at (185.6,-1.7) {\textbf{waterCooler}\\[-1pt]{\tiny heatExchanger}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (separator) at (188.5,-0.0) {\textbf{separator}\\[-1pt]{\tiny isothermalFlash}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (letdown) at (191.4,-0.0) {\textbf{letdown}\\[-1pt]{\tiny isothermalFlash}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (purgeSplit) at (191.4,-1.7) {\textbf{purgeSplit}\\[-1pt]{\tiny splitter}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (T201) at (194.3,-0.0) {\textbf{T201}\\[-1pt]{\tiny storageTank}};
+  \draw[->] ($(makeupComp.west)+(-1.05,0.00)$) -- ($(makeupComp.west)+(0,0.00)$) node[at start, above, font=\tiny, anchor=south west] {makeup};
   \draw[->, dashed] (purgeSplit.south) .. controls +(0,-1.0) and +(0,-1.0) .. (recycleComp.south) node[midway, below, font=\tiny] {recycle};
   \draw[->] (makeupComp) -- (mixer) node[midway, above, font=\tiny] {compMakeup};
   \draw[->] (recycleComp) -- (mixer) node[midway, above, font=\tiny] {compRecycle};
@@ -325,7 +323,7 @@ HONEST SIMPLIFICATIONS. (1) The converter is a SINGLE adiabatic bed, so it runs 
 \goldrow{stream}{productNH3}{F}{0.971862875259}
 \goldrow{stream}{purge}{F}{0.279595054967}
 \goldrow{stream}{rawLiquid}{F}{0.979365150838}
-\goldmore{401}
+\goldmore{779}
 \end{tutgolden}
 
 \clearpage
