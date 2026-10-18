@@ -103,9 +103,15 @@ Description
     } }`): the route is then the source nozzle, the waypoints, the target
     nozzle (a battery limit adds no point), each segment REQUIRED to run
     along one axis.  The length published is the polyline's own.  NO
-    pressure drop and NO cost: the next slice.  Structures, clash checks of
-    a pipe against an item, rotation other than the two plan axes, and any
-    distance taken from a standard are NOT here.
+    pressure drop and NO cost: the next slice.  THE ROUTER DOES NOT STEER
+    ROUND ITEMS, so once every route is final (the fence legs included) a
+    segment whose plan path crosses a placed item's footprint (a vertical
+    cylinder's disc, any other item's rectangle) strictly between its base
+    and its top is ANNOUNCED as `pipeClash` (2026-10-18, DEV.md 4c C93),
+    once per (pipe, item), the pipe's own end items excepted -- never
+    refused: a clash is a draft to move, like a short distance.
+    Structures, a pipe against another pipe, rotation other than the two
+    plan axes, and any distance taken from a standard are NOT here.
 
     THE PLOT (2026-10-17, DEV.md 4c C82).  After the pipes, the ground the
     layout occupies is published by ONE rule (`plotOf`): the axis-aligned

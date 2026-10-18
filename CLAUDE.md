@@ -2206,7 +2206,8 @@ derived from the published plot (moved `inset` inward), never typed: a road
 meets it only at a `gate` opening (else REFUSED), every boundary pipe
 crosses it at a PUBLISHED point carrying the case's `from`/`to` label (an
 unlabelled crossing ANNOUNCED), and an unrouted stream is marked in the 3D
-view at the end the engine reached -- a missing pipe never looks finished.
+view at the end the engine reached -- a missing pipe never looks finished;
+a routed pipe that runs THROUGH a placed item is ANNOUNCED (`pipeClash`).
 NOT done: a pipe's pressure drop and cost (next slice), structures.
 Gate: `check_plant_layout`.  Record:
 [`docs/design/a-plant-layout-is-declared-and-checked.md`](docs/design/a-plant-layout-is-declared-and-checked.md).

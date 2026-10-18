@@ -398,8 +398,8 @@ and the camera opens FITTED on the plant (the placed process items and the
 pipes) with a Fit button and fitted Plan and Elevation presets.
 
 **Not here, named:** a pipe's diameter, pressure drop and cost; a clash check
-of a route against an item it passes through or over (a tower taller than
-the rack is crossed by its own lanes); the internal piping of a multi-item
+of a route against an item it passes through (BUILT since, §14: announced,
+not avoided); the internal piping of a multi-item
 unit; a rack along plan y or more than one rack; a pipe consumed by two
 units.  Gate: `check_plant_layout` arms (h) and (i).
 
@@ -693,8 +693,23 @@ built); refusing an unlabelled crossing (the label informs, it does not make
 the plan buildable); a free crossing point on the west/east sides (the lane
 fixes it; a second number there would be a second home for the pipe's y).
 
+**The pipe clash.**  The router places a pipe by its rule and does not look
+at what stands in the way, so once every route is final (the fence legs
+included) the engine checks each segment against every placed item, process
+and non-process: a plan path strictly inside the footprint (a vertical
+cylinder's disc, any other item's rectangle) at an elevation strictly
+between the item's base and top is ANNOUNCED as `pipeClash`, by name, once
+per (pipe, item); the items at the pipe's own ends are not checked (it meets
+them at their nozzle).  ANNOUNCED and not refused, for the same reason a
+short distance is: it is a draft the student moves.  Not one shipped layout
+raises one today.  Its occasion was a review of an oblique screenshot in
+which the makeup pipeline seemed to enter the warehouse: measured, it runs
+9.5 m north of the building's wall, and the camera was in front of it --
+which is exactly why the check reads coordinates and not pictures.
+
 **Not here, named:** a fence that is not a rectangle; several gates on one
 side sharing a road; the pipeline's own route outside the fence (a drawn
 stub, not data); the cost of the fence (its length is published, priced by
-nobody).  Gate: `check_plant_layout` arm (l), and the unrouted mark in arm
-(i); GUI: `tests/layoutFence.test.ts`.
+nobody); a pipe clashing with another pipe.  Gate: `check_plant_layout`
+arm (l), the unrouted mark in arm (i), the pipe clash in arm (m); GUI:
+`tests/layoutFence.test.ts`.
