@@ -1,0 +1,51 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+//  An ESTIMATE, not an input: the converged base case, so that a reader of
+//  0/ sees the plant's state.  The solver recomputes this stream.
+
+/*--- Choupo stream state.  Every DIMENSIONAL value carries its unit; the parser converts to SI.
+     componentMolarFlows is the OVERALL material (all phases); a phases{} block, when present,
+     is a decomposition that sums back to it exactly. ---*/
+
+componentMolarFlows
+{
+    apalutamide    0.001892485625 kmol/h;
+    hpmcas    0.002710588235 kmol/h;
+    microcrystallineCellulose    0.01393131571 kmol/h;
+    silicifiedMCC    0.002258823529 kmol/h;
+    croscarmelloseSodium    0.0003011764706 kmol/h;
+    colloidalSilica    0.001253147554 kmol/h;
+    magnesiumStearate    6.367259552e-05 kmol/h;
+}
+
+T               298.15 K;
+P               101325 Pa;
+
+phases
+{
+    liquid
+    {
+        componentMolarFlows
+        {
+        }
+    }
+    solid
+    {
+        componentMolarFlows
+        {
+            apalutamide    0.001892485625 kmol/h;
+            hpmcas    0.002710588235 kmol/h;
+            microcrystallineCellulose    0.01393131571 kmol/h;
+            silicifiedMCC    0.002258823529 kmol/h;
+            croscarmelloseSodium    0.0003011764706 kmol/h;
+            colloidalSilica    0.001253147554 kmol/h;
+            magnesiumStearate    6.367259552e-05 kmol/h;
+        }
+    }
+}

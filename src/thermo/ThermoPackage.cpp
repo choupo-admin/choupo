@@ -1175,7 +1175,7 @@ scalar ThermoPackage::S_ig(scalar T, scalar P_Pa, const sVector& y) const
     scalar s = 0.0;
     for (std::size_t i = 0; i < n(); ++i)
     {
-        s += y[i] * components_[i].s_pure_ig(T);
+        if (y[i] != 0.0) s += y[i] * components_[i].s_pure_ig(T);   // an ABSENT species needs no ideal-gas rung (C97)
         if (y[i] > 1.0e-30)
             s -= constant::R * y[i] * std::log(y[i]);     // mixing term
     }
@@ -1186,7 +1186,7 @@ scalar ThermoPackage::S_ig(scalar T, scalar P_Pa, const sVector& y) const
 scalar ThermoPackage::Cp_ig(scalar T, const sVector& y) const
 {
     scalar cp = 0.0;
-    for (std::size_t i = 0; i < n(); ++i)
+    for (std::size_t i = 0; i < n(); ++i) if (y[i] != 0.0)   // an ABSENT species is skipped, as in H_ig (C97)
     {
         if (!components_[i].hasCpIdealGas())
             throw std::runtime_error(

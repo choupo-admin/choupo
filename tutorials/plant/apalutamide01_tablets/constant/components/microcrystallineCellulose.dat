@@ -1,0 +1,108 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+  constant/components/microcrystallineCellulose.dat -- CASE-LOCAL record (apalutamide01_tablets)
+
+  Microcrystalline cellulose (MCC) -- filler and binder of the tablet core.
+
+  Listed among the core excipients of the US label (via RxList).
+
+  WHAT THIS RECORD IS FOR, AND WHAT IT IS NOT.  It carries what a SOLID that
+  is only MOVED, MIXED, DRIED and PRESSED needs in this plant: a molar mass,
+  a particle density, a solid heat capacity and a formation datum to price it
+  on.  It is never dissolved with a heat of solution, never melted, never
+  reacted, never vaporised (`role nonvolatile`).  EVERY NUMBER BELOW EXCEPT
+  THE MOLAR MASS OF A DEFINITE FORMULA IS AN AUTHOR-SET ASSUMPTION, said so
+  in its provenance block, chosen to be of the right order for an organic (or
+  mineral) powder and taken from no source -- because none was read.  A
+  citation invented for a round number would turn 'unsourced' into 'falsely
+  sourced'.
+\*---------------------------------------------------------------------------*/
+
+name        microcrystallineCellulose;
+formula     C6H10O5;
+role        nonvolatile;      // never enters the vapour; leaves every dryer as solid
+MW          162.14;   // kg/kmol -- of the ANHYDROGLUCOSE repeat unit C6H10O5 -- one mole of this record is one repeat unit
+
+solid
+{
+    rho_p   1550.0;      // kg/m3, particle (skeletal) density -- ASSUMED
+}
+
+volatility
+{
+    class       nonvolatile;
+    provenance  { citation "author-set: a powder handled in this plant at most at 393 K, whose vapour pressure there is taken as nil; no boiling or sublimation point was read"; status assumed; }
+}
+
+standardThermochemistry
+{
+    dHf_298         -1000000.0;   // J/mol -- PLACEHOLDER, see provenance
+    s_298           200.0;       // J/(mol K) -- PLACEHOLDER, see provenance
+    referenceState  pureSolid;
+}
+
+solidHeatCapacity
+{
+    model         polynomial;
+    coefficients  ( 210.78 );   // J/(mol K) = 1.3 J/(g K) x the molar mass -- ASSUMED, constant
+    Trange        ( 250  420 );
+}
+
+//  The SORPTION ISOTHERM (GAB) -- the moisture the coated tablet keeps after
+//  the coating dryer (system/flowsheetDict, coatingDryer) is computed as water
+//  sorbed by this cellulose at the exhaust air's water activity.  Cellulose is
+//  the hygroscopic bulk of the core; the other solids ride through dry.  The
+//  three parameters are AUTHOR-SET, of the order reported for cellulose
+//  powders, and taken from no source read: a group replaces them with a
+//  measured isotherm of THEIR core (dynamic vapour sorption).
+sorption
+{
+    Xm   0.045;     // kg water / kg dry solid, the monolayer -- ASSUMED
+    C    10.0;      // GAB C -- ASSUMED
+    K    0.75;      // GAB K -- ASSUMED
+}
+
+reviewStatus interim;      // author-set record, not read back by a curator
+
+provenance
+{
+    dHf_298
+    {
+        origin   placeholder;
+        method   "author-set round number, no source";
+        uncertainty { status unquantified; reason "the formation enthalpy is a PLACEHOLDER: no reaction in this plant converts this component, so its formation enthalpy CANCELS in every unit and moves no duty and no residual.  It is here only because the energy report prices every stream on the formation surface.  Replace it with a measured or estimated datum before reusing this record in any case that reacts, dissolves with a heat of solution, or computes an exergy"; }
+    }
+    s_298
+    {
+        origin   placeholder;
+        method   "author-set round number, no source";
+        uncertainty { status unquantified; reason "no unit or report of this plant reads an entropy"; }
+    }
+    solidHeatCapacity
+    {
+        origin   assumed;
+        method   "author-set specific heat of 1.3 J/(g K), constant, of the order of a dry organic powder near room temperature; no source read";
+        uncertainty { status unquantified; reason "moves the sensible heat of this powder in the dryers and in every adiabatic merge; replace it with a measured value"; }
+    }
+    rho_p
+    {
+        origin   assumed;
+        method   "author-set true density, no source read";
+        uncertainty { status unquantified; reason "read by the spray dryer (particle size from droplet size); replace it with a measured value"; }
+    }
+    sorption
+    {
+        origin   assumed;
+        method   "author-set GAB parameters of the order of a cellulose powder; no source read";
+        uncertainty { status unquantified; reason "sets the water the coated tablets keep (coatingDryer); replace with a measured isotherm of the core"; }
+    }
+}
+
+// ************************************************************************* //

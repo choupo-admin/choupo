@@ -1,0 +1,322 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+  apalutamide01_tablets -- a drug-product plant: apalutamide 60 mg film-coated
+  tablets.  The API is BOUGHT; everything else is made here (DEV.md 4c C97,
+  phase A).  A BASE CASE: it runs, it is NOT optimised, and every number a
+  group would change is a plain key, said to be an assumption where it is
+  declared.  The README is the narrative; this file is the topology.
+
+  THE BASIS (README section 2): 12 800 tablets per hour PRESSED, the campaign
+  rate, of a 580 mg core carrying 60 mg of apalutamide in 240 mg of a 1:3
+  apalutamide:HPMCAS spray-dried dispersion, with a 3 % film coat.  The
+  operating hours are the economics' stream factor (system/postDict), so the
+  plant is solved ONCE at its campaign rate (steady state) and the year is
+  that rate times those hours.
+
+    SOLUTION AND SPRAY DRYING (the closed nitrogen loop)
+      acetoneFeed -> [acetoneTank] -> acetoneToPrep --+
+      apiFeed (BOUGHT) -------------------------------+-> [solutionPrep] -> sprayFeed --+
+      hpmcasFeed -------------------------------------+                                  |
+                                                                                         v
+      n2Makeup --+                                                              [SD] sprayDryer
+                 +-> [n2Mix] -> [blower] -> [gasHeater] -> dryingGas ---------->  |       |
+      gasRecycle-+     ^                     393 K                               asdPowder  exhaustGas
+                       |                                                          |       |
+                       |                                              [exhaustCooler] 308 K (cooling water)
+                       |                                                          |       |
+                       |                                       [solventCondenser] 263 K (NH3 refrigeration)
+                       |                                                    |              |
+                       |                                          recoveredSolvent      condenserGas
+                       |                                                    |              |
+                       |                                          [recoveredTank]     [purgeSplit] -> purgeGas (vent)
+                       |                                            recoveredAcetone       |
+                       +--------------------------------------------------------- gasRecycle (TEAR)
+
+    DRY GRANULATION, TABLETING, COATING, PACKAGING
+      asdPowder + MCC + silicified MCC + croscarmellose + silica + MgSt
+        -> [blender] -> intraBlend -> [rollerCompactor] -> ribbons -> [mill] -> milledGranules
+                                           ^                                          |
+                                           +---------- finesRecycle (TEAR) <--- [screen] -> granules
+      granules + croscarmellose + MgSt -> [finalBlender] -> finalBlend -> [tabletPress] -> tabletCores
+                                                                                    +-> tabletRejects
+      water + PVA + PEG + talc + TiO2 + iron oxide -> [coatingSuspensionPrep] -> coatingSuspension
+      tabletCores + coatingSuspension -> [coatingPan] -> wetCoatedTablets
+      coatingAirIn -> [airHeater] 333 K -> coatingAir
+      wetCoatedTablets + coatingAir -> [coatingDryer] -> coatedTablets + coatingExhaust
+      coatedTablets -> [packagingLine] -> packagedTablets
+
+  TWO RECYCLES, both declared in system/solverDict: the drying gas
+  (gasRecycle) and the compactor fines (finesRecycle).  The recovered
+  acetone is NOT recycled in this base case: it goes to a tank, for QC and
+  reuse -- the README says why, and closing that loop is a group's question.
+
+  WHAT IS A PLACEHOLDER.  The blenders, the roller compactor, the mill, the
+  screen, the tablet press and the packaging line are FLOW PRIMITIVES (a
+  `mixer`, a `splitter`): they conserve mass and energy and model NOTHING of
+  the machine -- no blend uniformity, no ribbon density, no particle-size
+  reduction, no compaction force, no tablet hardness.  Choupo has no such
+  equipment model; none is invented here.  The coating pan is TWO boxes, a
+  `mixer` (the spray lands on the cores) and a `solidDryer` (the hot air
+  takes the water off), which is the mass and energy balance of one machine.
+\*---------------------------------------------------------------------------*/
+
+units
+(
+    //  ===================== SOLUTION AND SPRAY DRYING =====================
+
+    //  ---- the fresh-acetone tank ------------------------------------------
+    //  The solvent is bought in bulk and held before use: 14 days is an
+    //  AUTHOR-SET ASSUMPTION (a delivery cycle plus a safety stock), declared
+    //  HERE and nowhere else -- the tank in system/postDict links this unit.
+    {
+        name        acetoneTank;
+        type        storageTank;
+        in          acetoneFeed;
+        outputs     ( acetoneToPrep );
+        operation   { residenceTime 14 day;  fillFraction 0.85; }
+    }
+
+    //  ---- the solution tank -------------------------------------------------
+    //  The bought API and HPMCAS are charged into the acetone in a jacketed
+    //  tank held at 25 C (DECLARED: `operation { T ...; }`, so its duty is
+    //  published -- nil here, every inlet arrives at 25 C, because the heat
+    //  of solution is not modelled).  A `mixer` CARRIES the two powders as
+    //  solids (it never dissolves anything -- the README says what that
+    //  neglects), and the spray dryer reads dissolved and suspended solids
+    //  alike.  The solids content of the spray solution (10 wt %) is set by
+    //  the inlet flows in 0/: an AUTHOR-SET ASSUMPTION.
+    {
+        name        solutionPrep;
+        type        mixer;
+        inputs      ( apiFeed  hpmcasFeed  acetoneToPrep );
+        outputs     ( sprayFeed );
+        operation   { T 298.15 K; }
+    }
+
+    //  ---- the drying-gas loop: make-up, blower, heater --------------------
+    {
+        name        n2Mix;
+        type        mixer;
+        inputs      ( n2Makeup  gasRecycle );
+        outputs     ( loopGas );
+    }
+    {
+        //  The loop fan.  Its HARDWARE is its shaft power and efficiency (the
+        //  compressor's credo); the pressure it reaches is a RESULT.  That
+        //  pressure stands for the drop through the dryer, the cyclone and
+        //  filter, and the condenser, none of which is computed.  1 kW and
+        //  0.70 are AUTHOR-SET.
+        name        blower;
+        type        compressor;
+        in          loopGas;
+        outputs     ( blowerOut );
+        operation   { W_shaft 1000;  eta 0.70; }      // W, -
+    }
+    {
+        //  393.15 K (120 C) drying-gas inlet: an AUTHOR-SET ASSUMPTION, of the
+        //  order used to dry an organic-solvent solution with an outlet well
+        //  above the solvent's dew point.
+        name        gasHeater;
+        type        phaseChanger;
+        in          blowerOut;
+        outputs     ( dryingGas );
+        operation   { outletT 393.15 K;  P 1.10 bar; }
+    }
+
+    //  ---- the spray dryer --------------------------------------------------
+    //  Every number in `operation` is HARDWARE, and AUTHOR-SET: a rotary
+    //  atomiser and a chamber of the size of a pilot or small production
+    //  dryer, nobody's catalogue.  The powder leaves BONE-DRY (no sorption
+    //  isotherm of acetone on HPMCAS is declared -- none was found -- so the
+    //  residual-moisture model is off, said on the run): the SECONDARY drying
+    //  every real ASD needs to bring its residual solvent below its limit is
+    //  NOT modelled.  `liquidViscosity` is DECLARED because no record carries
+    //  the viscosity of a 10 wt % HPMCAS solution in acetone: 0.02 Pa s is an
+    //  AUTHOR-SET guess, twenty times the solvent's (to be measured).
+    {
+        name        SD;
+        type        sprayDryer;
+        inputs      ( sprayFeed  dryingGas );
+        outputs     ( asdPowder  exhaustGas );
+        operation
+        {
+            wheelDiameter    0.05 m;     // rotary atomiser -- ASSUMED
+            wheelSpeed       25000;      // rpm -- ASSUMED
+            chamberDiameter  1.2 m;      // drying chamber -- ASSUMED
+            chamberHeight    2.5 m;      // -> residence time is a RESULT
+            liquidViscosity  0.02;       // Pa s -- ASSUMED, see above
+        }
+    }
+
+    //  ---- solvent recovery --------------------------------------------------
+    {
+        //  Cooling water takes the exhaust from its outlet temperature to
+        //  308.15 K before the refrigerated condenser, so the refrigeration
+        //  only removes what cooling water cannot.  308.15 K: ASSUMED, a
+        //  10 K approach to the cooling-water supply.
+        name        exhaustCooler;
+        type        phaseChanger;
+        in          exhaustGas;
+        outputs     ( cooledExhaust );
+        operation   { outletT 308.15 K;  P 1.10 bar; }
+    }
+    {
+        //  The solvent condenser: the exhaust is chilled to 263.15 K (-10 C)
+        //  and the acetone condenses down to its vapour pressure there.  The
+        //  temperature is the recovery knob (README section 5): an AUTHOR-SET
+        //  ASSUMPTION, against ammonia refrigeration (239.8 K).  The condenser
+        //  is the exchanger (its duty is sized and priced); the separator
+        //  below is the drum that parts the condensate from the gas.
+        name        solventCondenser;
+        type        phaseChanger;
+        in          cooledExhaust;
+        outputs     ( chilledExhaust );
+        operation   { outletT 263.15 K;  P 1.0 bar; }
+    }
+    {
+        //  The condensate pot: a flash at the condenser's own outlet state,
+        //  so its duty is nil -- it SEPARATES, the condenser cooled.
+        name        condensatePot;
+        type        isothermalFlash;
+        in          chilledExhaust;
+        outputs     ( recoveredSolvent  condenserGas );
+        operation   { T 263.15 K;  P 1.0 bar; }
+    }
+    {
+        //  A small purge keeps the loop from accumulating what leaks in, and
+        //  the nitrogen make-up (0/n2Makeup) replaces it: at steady state the
+        //  loop holds make-up / purge fraction of nitrogen.  5 %: ASSUMED.
+        //  The purge carries acetone at the condenser's vapour pressure to a
+        //  vent treatment the plant does not model (README).
+        name        purgeSplit;
+        type        splitter;
+        in          condenserGas;
+        outputs     ( purgeGas  gasRecycle );
+        operation   { fractions ( 0.05  0.95 ); }
+    }
+    {
+        //  The recovered acetone is held for testing before reuse: 7 days,
+        //  AUTHOR-SET.  It leaves the plant as a declared OUTLET (reused or
+        //  sold back), not recycled to the solution tank -- README section 3.
+        name        recoveredTank;
+        type        storageTank;
+        in          recoveredSolvent;
+        outputs     ( recoveredAcetone );
+        operation   { residenceTime 7 day;  fillFraction 0.85; }
+    }
+
+    //  ===================== DRY GRANULATION ================================
+    //  Every unit below until the coating is a MASS-BALANCE PLACEHOLDER.
+    {
+        //  The intragranular blend.  The spray-dried dispersion leaves the
+        //  dryer warm and is HELD -- secondary drying and quality-control
+        //  release, neither modelled -- so it reaches the blender at room
+        //  temperature: the blend is DECLARED at 298.15 K, and the duty that
+        //  implies (the heat the warm powder gave the room) is published as
+        //  `Q_kW`.  No utility serves it; the run lists it as unserved.
+        name        blender;
+        type        mixer;
+        inputs      ( asdPowder  mccFeed  smccFeed  ccsIntraFeed  silicaFeed  mgstIntraFeed );
+        outputs     ( intraBlend );
+        operation   { T 298.15 K; }
+    }
+    {
+        name        rollerCompactor;            // PLACEHOLDER: blend + fines -> ribbons
+        type        mixer;
+        inputs      ( intraBlend  finesRecycle );
+        outputs     ( ribbons );
+    }
+    {
+        name        mill;                       // PLACEHOLDER: ribbons -> granules, no size model
+        type        splitter;
+        in          ribbons;
+        outputs     ( milledGranules );
+        operation   { fractions ( 1.0 ); }
+    }
+    {
+        //  PLACEHOLDER for the screen: 15 % of the milled material is FINES
+        //  returned to the compactor -- AUTHOR-SET.  A `splitter` divides a
+        //  flow without changing its composition, which is what a screen does
+        //  to a blend in this model (the composition of the fines is the
+        //  blend's).
+        name        screen;
+        type        splitter;
+        in          milledGranules;
+        outputs     ( granules  finesRecycle );
+        operation   { fractions ( 0.85  0.15 ); }
+    }
+
+    //  ===================== FINAL BLEND AND TABLETING ======================
+    {
+        name        finalBlender;               // extragranular disintegrant + lubricant
+        type        mixer;
+        inputs      ( granules  ccsExtraFeed  mgstExtraFeed );
+        outputs     ( finalBlend );
+    }
+    {
+        //  PLACEHOLDER for the press: 1 % of the tablets are REJECTED (weight,
+        //  hardness, start-up) -- AUTHOR-SET.  The rejects leave the plant
+        //  (README: whether they can be reworked is a GMP question).
+        name        tabletPress;
+        type        splitter;
+        in          finalBlend;
+        outputs     ( tabletCores  tabletRejects );
+        operation   { fractions ( 0.99  0.01 ); }
+    }
+
+    //  ===================== FILM COATING ===================================
+    {
+        //  The coating suspension: 20 wt % solids in water -- AUTHOR-SET.
+        //  The PVA and PEG are carried as solids (nothing dissolves here).
+        name        coatingSuspensionPrep;
+        type        mixer;
+        inputs      ( coatWater  pvaFeed  pegFeed  talcFeed  tio2Feed  feOxFeed );
+        outputs     ( coatingSuspension );
+        operation   { T 298.15 K; }       // a stirred tank at 25 C, as the solution tank
+    }
+    {
+        //  60 C coating air: AUTHOR-SET, of the order used for aqueous film
+        //  coating.  Heated by LP steam.
+        name        airHeater;
+        type        phaseChanger;
+        in          coatingAirIn;
+        outputs     ( coatingAir );
+        operation   { outletT 333.15 K;  P 1.01325 bar; }
+    }
+    {
+        //  The coating pan, part 1: the suspension lands on the cores.
+        name        coatingPan;
+        type        mixer;
+        inputs      ( tabletCores  coatingSuspension );
+        outputs     ( wetCoatedTablets );
+    }
+    {
+        //  The coating pan, part 2: the hot air takes the water off.  A
+        //  `solidDryer`: the moisture the tablets keep is set by a sorption
+        //  isotherm, declared on the microcrystalline cellulose (the
+        //  hygroscopic bulk of the core) in constant/components -- AUTHOR-SET
+        //  parameters; every other solid rides through dry, said on the run.
+        name        coatingDryer;
+        type        solidDryer;
+        inputs      ( wetCoatedTablets  coatingAir );
+        outputs     ( coatedTablets  coatingExhaust );
+    }
+
+    //  ===================== PACKAGING ======================================
+    {
+        name        packagingLine;              // PLACEHOLDER: bottles / blisters not modelled
+        type        splitter;
+        in          coatedTablets;
+        outputs     ( packagedTablets );
+        operation   { fractions ( 1.0 ); }
+    }
+);
+
+// ************************************************************************* //

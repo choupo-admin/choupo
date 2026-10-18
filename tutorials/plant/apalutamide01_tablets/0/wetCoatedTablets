@@ -1,0 +1,63 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+//  An ESTIMATE, not an input: the converged base case, so that a reader of
+//  0/ sees the plant's state.  The solver recomputes this stream.
+
+/*--- Choupo stream state.  Every DIMENSIONAL value carries its unit; the parser converts to SI.
+     componentMolarFlows is the OVERALL material (all phases); a phases{} block, when present,
+     is a decomposition that sums back to it exactly. ---*/
+
+componentMolarFlows
+{
+    water    0.048957602 kmol/h;
+    apalutamide    0.001592526653 kmol/h;
+    hpmcas    0.00228096 kmol/h;
+    microcrystallineCellulose    0.01172320217 kmol/h;
+    silicifiedMCC    0.0019008 kmol/h;
+    croscarmelloseSodium    0.00038016 kmol/h;
+    colloidalSilica    0.001054523667 kmol/h;
+    magnesiumStearate    0.0001071609783 kmol/h;
+    polyvinylAlcohol    0.002002068418 kmol/h;
+    polyethyleneGlycol    0.001001034209 kmol/h;
+    talcPowder    8.604370195e-05 kmol/h;
+    titaniumDioxide    0.0006681098039 kmol/h;
+    ironOxide    1.380755213e-05 kmol/h;
+}
+
+T               298.15 K;
+P               101325 Pa;
+
+phases
+{
+    liquid
+    {
+        componentMolarFlows
+        {
+            water    0.048957602 kmol/h;
+        }
+    }
+    solid
+    {
+        componentMolarFlows
+        {
+            apalutamide    0.001592526653 kmol/h;
+            hpmcas    0.00228096 kmol/h;
+            microcrystallineCellulose    0.01172320217 kmol/h;
+            silicifiedMCC    0.0019008 kmol/h;
+            croscarmelloseSodium    0.00038016 kmol/h;
+            colloidalSilica    0.001054523667 kmol/h;
+            magnesiumStearate    0.0001071609783 kmol/h;
+            polyvinylAlcohol    0.002002068418 kmol/h;
+            polyethyleneGlycol    0.001001034209 kmol/h;
+            talcPowder    8.604370195e-05 kmol/h;
+            titaniumDioxide    0.0006681098039 kmol/h;
+            ironOxide    1.380755213e-05 kmol/h;
+        }
+    }
+}

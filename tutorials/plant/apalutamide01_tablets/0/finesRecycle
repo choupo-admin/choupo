@@ -1,0 +1,51 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+//  TEAR SEED: the converged base case.  The recycle iterates from here; a
+//  changed case starts from it and converges to its own answer.
+
+/*--- Choupo stream state.  Every DIMENSIONAL value carries its unit; the parser converts to SI.
+     componentMolarFlows is the OVERALL material (all phases); a phases{} block, when present,
+     is a decomposition that sums back to it exactly. ---*/
+
+componentMolarFlows
+{
+    apalutamide    0.0002838728437 kmol/h;
+    hpmcas    0.0004065882353 kmol/h;
+    microcrystallineCellulose    0.002089697356 kmol/h;
+    silicifiedMCC    0.0003388235294 kmol/h;
+    croscarmelloseSodium    4.517647059e-05 kmol/h;
+    colloidalSilica    0.0001879721331 kmol/h;
+    magnesiumStearate    9.550889328e-06 kmol/h;
+}
+
+T               298.15 K;
+P               101325 Pa;
+
+phases
+{
+    liquid
+    {
+        componentMolarFlows
+        {
+        }
+    }
+    solid
+    {
+        componentMolarFlows
+        {
+            apalutamide    0.0002838728437 kmol/h;
+            hpmcas    0.0004065882353 kmol/h;
+            microcrystallineCellulose    0.002089697356 kmol/h;
+            silicifiedMCC    0.0003388235294 kmol/h;
+            croscarmelloseSodium    4.517647059e-05 kmol/h;
+            colloidalSilica    0.0001879721331 kmol/h;
+            magnesiumStearate    9.550889328e-06 kmol/h;
+        }
+    }
+}

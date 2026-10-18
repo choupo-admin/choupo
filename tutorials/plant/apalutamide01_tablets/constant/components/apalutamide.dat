@@ -1,0 +1,93 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+  constant/components/apalutamide.dat -- CASE-LOCAL record (apalutamide01_tablets)
+
+  Apalutamide -- the ACTIVE PHARMACEUTICAL INGREDIENT (API), BOUGHT.
+
+  Bought from an API manufacturer and NOT made here.  In this plant it is
+  dissolved with HPMCAS in the spray-drying solvent and leaves the spray
+  dryer as the drug half of an amorphous solid dispersion (ASD).  Formula
+  C21H15F4N5O2S and molar mass 477.43 g/mol: Australian Public Assessment
+  Report for Apalutamide (TGA, 2019); the molar mass is recomputed here from
+  the formula with the standard atomic weights (477.43).
+
+  WHAT THIS RECORD IS FOR, AND WHAT IT IS NOT.  It carries what a SOLID that
+  is only MOVED, MIXED, DRIED and PRESSED needs in this plant: a molar mass,
+  a particle density, a solid heat capacity and a formation datum to price it
+  on.  It is never dissolved with a heat of solution, never melted, never
+  reacted, never vaporised (`role nonvolatile`).  EVERY NUMBER BELOW EXCEPT
+  THE MOLAR MASS OF A DEFINITE FORMULA IS AN AUTHOR-SET ASSUMPTION, said so
+  in its provenance block, chosen to be of the right order for an organic (or
+  mineral) powder and taken from no source -- because none was read.  A
+  citation invented for a round number would turn 'unsourced' into 'falsely
+  sourced'.
+\*---------------------------------------------------------------------------*/
+
+name        apalutamide;
+formula     C21H15F4N5O2S;
+role        nonvolatile;      // never enters the vapour; leaves every dryer as solid
+MW          477.43;   // kg/kmol -- from the formula C21H15F4N5O2S
+
+solid
+{
+    rho_p   1350.0;      // kg/m3, particle (skeletal) density -- ASSUMED
+}
+
+volatility
+{
+    class       nonvolatile;
+    provenance  { citation "author-set: a powder handled in this plant at most at 393 K, whose vapour pressure there is taken as nil; no boiling or sublimation point was read"; status assumed; }
+}
+
+standardThermochemistry
+{
+    dHf_298         -1000000.0;   // J/mol -- PLACEHOLDER, see provenance
+    s_298           600.0;       // J/(mol K) -- PLACEHOLDER, see provenance
+    referenceState  pureSolid;
+}
+
+solidHeatCapacity
+{
+    model         polynomial;
+    coefficients  ( 572.92 );   // J/(mol K) = 1.2 J/(g K) x the molar mass -- ASSUMED, constant
+    Trange        ( 250  420 );
+}
+
+reviewStatus interim;      // author-set record, not read back by a curator
+
+provenance
+{
+    dHf_298
+    {
+        origin   placeholder;
+        method   "author-set round number, no source";
+        uncertainty { status unquantified; reason "the formation enthalpy is a PLACEHOLDER: no reaction in this plant converts this component, so its formation enthalpy CANCELS in every unit and moves no duty and no residual.  It is here only because the energy report prices every stream on the formation surface.  Replace it with a measured or estimated datum before reusing this record in any case that reacts, dissolves with a heat of solution, or computes an exergy"; }
+    }
+    s_298
+    {
+        origin   placeholder;
+        method   "author-set round number, no source";
+        uncertainty { status unquantified; reason "no unit or report of this plant reads an entropy"; }
+    }
+    solidHeatCapacity
+    {
+        origin   assumed;
+        method   "author-set specific heat of 1.2 J/(g K), constant, of the order of a dry organic powder near room temperature; no source read";
+        uncertainty { status unquantified; reason "moves the sensible heat of this powder in the dryers and in every adiabatic merge; replace it with a measured value"; }
+    }
+    rho_p
+    {
+        origin   assumed;
+        method   "author-set true density, no source read";
+        uncertainty { status unquantified; reason "read by the spray dryer (particle size from droplet size); replace it with a measured value"; }
+    }
+}
+
+// ************************************************************************* //

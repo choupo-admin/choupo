@@ -1,0 +1,170 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+  postDict -- sizing, costing and economics of the apalutamide tablet plant.
+
+  WHAT IS SIZED (and so costed, and placed on the plot plan): the equipment
+  of the SOLUTION, SPRAY-DRYING AND SOLVENT-RECOVERY section, for which the
+  engine has a sizer and the costing a correlation --
+
+    SD                 sprayDryer   sized on its evaporation (Turton's key is
+                                    the WATER evaporated; here it is acetone,
+                                    whose latent heat per kg is about a fifth
+                                    of water's -- the correlation is applied
+                                    to a solvent it was not built for, said)
+    blower             compressor   on its shaft power (1 kW: far below the
+                                    correlation's range, announced on the run)
+    gasHeater          shellTubeHX  A = Q/(U LMTD) against MP steam
+    exhaustCooler      shellTubeHX  against cooling water
+    solventCondenser   shellTubeHX  against ammonia refrigeration
+    airHeater          shellTubeHX  against LP steam (the coating air)
+    condensatePot      vessel       by vapour residence time
+    solutionPrep       vessel       on a declared volume (one shift of solution)
+    coatingSuspensionPrep  vessel   on a declared volume
+    acetoneTank / recoveredTank     storage, LINKED to their flowsheet units
+
+  WHAT IS NOT SIZED, AND WHY THE CAPITAL BELOW IS A LOWER BOUND.  The
+  blenders, the roller compactor, the mill, the screen, the tablet press,
+  the coating pan and the packaging line are MASS-BALANCE PLACEHOLDERS in
+  the flowsheet (`mixer` / `splitter` / `solidDryer`): Choupo has no sizer and
+  no cost correlation for any of them, and it does not invent one.  Neither
+  is the GMP BUILDING -- clean rooms, HVAC, the quality-control laboratory --
+  which in a drug-product plant is usually the largest single capital item.
+  So the fixed capital below is the solvent section ONLY, and every economic
+  number built on it (NPV, IRR, payback) is NOT decision-grade: the README
+  (section 6) says what a group must add, and where to get it (vendor
+  quotations; the published cost literature for oral-solid-dose plants).
+
+  EVERY DESIGN NUMBER BELOW IS AN AUTHOR-SET ASSUMPTION, said on its line,
+  for the groups to replace; none cites a source because none was read.
+  Rules followed: MATERIAL SS316 everywhere (product contact and an organic
+  solvent; whether a non-contact item could be carbon steel is the groups'
+  question); pressureDesign 2 bar (the loop runs at about 1.1 bar; a closed,
+  INERTED dryer is not designed to contain a dust explosion -- that is what
+  the nitrogen is for, and the README discusses it); vessels with a fully
+  radiographed joint, 1.5 mm corrosion allowance and L/D 1.5, declared so
+  that no engine default is used silently.
+\*---------------------------------------------------------------------------*/
+
+sizing
+{
+    units
+    (
+        //  ---- the spray dryer --------------------------------------------
+        { unitName SD;  type sprayDryer;  material SS316;
+          designRules { pressureDesign 2; } }
+
+        //  ---- the loop blower ---------------------------------------------
+        { unitName blower;  type compressor;  material SS316;
+          designRules { pressureDesign 2; } }
+
+        //  ---- the exchangers: A = Q/(U LMTD), LMTD computed against the
+        //  utility record; every U is a gas-side film against condensing
+        //  steam, water or a boiling refrigerant -- ASSUMED.
+        { unitName gasHeater;  type shellTubeHX;  material SS316;
+          designRules { utility steamMP;  U 40;  pressureDesign 2; } }
+        { unitName exhaustCooler;  type shellTubeHX;  material SS316;
+          designRules { utility coolingWater;  U 40;  pressureDesign 2; } }
+        { unitName solventCondenser;  type shellTubeHX;  material SS316;
+          designRules { utility refrigerationNH3;  U 60;  pressureDesign 2; } }
+        { unitName airHeater;  type shellTubeHX;  material SS316;
+          designRules { utility steamLP;  U 40;  pressureDesign 2; } }
+
+        //  ---- the condensate pot: 10 s of the gas it parts the condensate
+        //  from (V = Q_vapour x tau, ideal gas) -- ASSUMED; its liquid
+        //  holdup is not in this basis, so the volume is a LOWER BOUND.
+        { unitName condensatePot;  type vessel;  material SS316;
+          designRules { residenceTime 10;  flowKey F_beta;  flowUnit kmol/s;
+                        L_over_D 1.5;  pressureDesign 2;
+                        corrosionAllow 0.0015;  jointEfficiency 1.0; } }
+
+        //  ---- the two preparation tanks, on DECLARED volumes ------------
+        //  The solution tank holds one shift (8 h) of spray solution:
+        //  8 h x 30.72 kg/h / 790 kg/m3 = 0.31 m3, at a 0.6 working fill
+        //  0.52 m3 -> 0.5 m3.  A hand calculation on the base case: redo it
+        //  when the basis moves (it does not follow the run).
+        { unitName solutionPrep;  type vessel;  material SS316;
+          designRules { volume 0.5;  L_over_D 1.5;  pressureDesign 2;
+                        corrosionAllow 0.0015;  jointEfficiency 1.0; } }
+        //  The coating-suspension tank: one shift is 8.8 kg, about 8 L; it
+        //  is declared at 0.1 m3, the smallest stirred vessel a coating
+        //  suspension is usually made in -- an ASSUMPTION, not a calculation.
+        { unitName coatingSuspensionPrep;  type vessel;  material SS316;
+          designRules { volume 0.1;  L_over_D 1.5;  pressureDesign 2;
+                        corrosionAllow 0.0015;  jointEfficiency 1.0; } }
+    );
+
+    //  ---- the two acetone tanks, LINKED to their storageTank units (the
+    //  hold time has one home: system/flowsheetDict) -----------------------
+    storage
+    (
+        { unit acetoneTank;    material SS316;  maxTankVolume 30000; }
+        { unit recoveredTank;  material SS316;  maxTankVolume 30000; }
+    );
+}
+
+costing
+{
+    method    Turton;
+    year      2026;
+    cepci     820;        // a projection -- AUTHOR-SET (greenAmmoniaPEQ's)
+    cepci2001 397;        // the correlations' own basis year
+    usdToEur  0.92;
+}
+
+economics
+{
+    method              discountedCashFlow;
+    projectLife         10;          // yr -- ASSUMED (a product's market life
+                                     // after a generic launch is the groups'
+                                     // question)
+    constructionPeriod  1;
+    discountRate        0.10;        // ASSUMED
+    taxRate             0.21;        // ASSUMED (a corporate rate, no country chosen)
+    depreciation        straightLine;
+    depreciableLife     7;           // yr -- ASSUMED
+    salvageFraction     0.0;
+    //  THE OPERATING HOURS.  The plant runs in CAMPAIGNS, and this steady
+    //  case is the plant AT its campaign rate: 0.45 x 8760 h = 3942 h/yr on
+    //  stream gives 12 672 x 3942 = 49.95 million tablets a year.  An
+    //  AUTHOR-SET ASSUMPTION; the campaign plan behind it (how the line is
+    //  shared, cleaned and changed over) is the groups' question.
+    streamFactor        0.45;
+    siteFactor          0.50;
+    contingencyFee      1.18;
+    //  Non-particulate processing steps (Turton's operator count): the
+    //  blower, the four exchangers.  The PARTICULATE steps -- spray drying,
+    //  blending, compaction, milling, tableting, coating -- are NOT counted:
+    //  the engine's operator formula has no particulate term (README 6).
+    N_np                5;
+    estimateClass       5;           // concept screening: the solids train is unpriced
+    accuracyBand        ( -50 100 ); // Class 5, the wide corner -- chosen
+    refuseOnMissingPrice 1;
+
+    workingCapital
+    {
+        //  60 days of raw materials in the warehouse: quarantine, sampling
+        //  and QC release of every incoming lot before use (GMP) plus the
+        //  supply cycle -- ASSUMED.  The acetone in its tank is counted by
+        //  that tank, not here.
+        rawMaterialStock   60 day;
+        receivables        60 day;   // ASSUMED: wholesaler terms
+        payables           30 day;   // ASSUMED
+        minimumCash        15 day;
+    }
+
+    land
+    {
+        price   80;      // EUR per m2 of plot
+        source  "placeholder for the groups' site; not a market quotation";
+        reason  "a round number so that the land appears in the capital and the cash flow; replace it with the price of the site the group chooses";
+    }
+}
+
+// ************************************************************************* //

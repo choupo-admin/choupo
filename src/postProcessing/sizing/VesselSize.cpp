@@ -67,13 +67,23 @@ std::vector<EquipmentSizing> VesselSize::size(const std::string& unitName,
         return it->second;
     };
 
-    const scalar T = kpi("T");                 // K
-    const scalar P = kpi("P");                 // Pa
-
-    // --- The gas volumetric flow that drives the volume ------------------
+    //  A DECLARED VOLUME NEEDS NO FLOW (2026-10-18, DEV.md 4c C97).  The
+    //  gas flow below drives the volume only on the residence-time and
+    //  space-velocity bases; with `volume` declared it is published beside
+    //  the size (`Q_gas`) and decides nothing.  A unit that publishes no
+    //  (T, P, flow) -- a mixer standing for a preparation tank publishes
+    //  `T_out`, not `T` -- used to be refused here although its size was
+    //  declared; it is now sized on the declaration and `Q_gas` is simply
+    //  not published.  Every unit that publishes the three keeps them.
     const std::string flowKey  = designRules->lookupWordOrDefault("flowKey", "N_out_mol_s");
     const std::string flowUnit = designRules->lookupWordOrDefault("flowUnit", "mol/s");
-    scalar N_mol_s = kpi(flowKey);
+    const bool flowKnown = k.count("T") && k.count("P") && k.count(flowKey);
+    const bool flowFree  = designRules->found("volume") && !flowKnown;
+    const scalar T = flowFree ? 0.0 : kpi("T");                 // K
+    const scalar P = flowFree ? 1.0 : kpi("P");                 // Pa
+
+    // --- The gas volumetric flow that drives the volume ------------------
+    scalar N_mol_s = flowFree ? 0.0 : kpi(flowKey);
     if (flowUnit == "kmol/s")      N_mol_s *= 1000.0;
     else if (flowUnit == "kmol/h") N_mol_s *= 1000.0 / 3600.0;
     const scalar Q_m3s = N_mol_s * constant::R * T / P;     // ideal-gas m^3/s
@@ -208,7 +218,7 @@ std::vector<EquipmentSizing> VesselSize::size(const std::string& unitName,
     d.set("t_wall",         t_wall,         "m");
     d.set("weight",         weight,         "kg");
     d.set("pressureDesign", pressureDesign, "bar");
-    d.set("Q_gas",          Q_m3s,          "m3/s");
+    if (!flowFree) d.set("Q_gas", Q_m3s,    "m3/s");
     d.basis                    = basis;
     //  ONE ITEM: this unit realises a single piece of equipment, so the
     //  tag is left empty and `itemId()` stays the unit's own name.

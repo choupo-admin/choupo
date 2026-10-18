@@ -1,0 +1,32 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*--- Choupo stream state.  Every DIMENSIONAL value carries its unit; the parser converts to SI.
+     componentMassFlows is the OVERALL material (all phases); a phases{} block, when present,
+     is a decomposition that sums back to it exactly. ---*/
+
+//  Titanium dioxide: 4.2108 mg per tablet COATED (the 12 672 tablets/h the press accepts) -- AUTHOR-SET coat, see README section 2 (24.2 % of the coat).  (0.0533593 kg/h.)
+
+componentMolarFlows
+{
+    titaniumDioxide              0.0006681098039 kmol/h;
+}
+
+T               298.15 K;
+P               1.01325 bar;
+
+phases
+{
+    solid
+    {
+        componentMolarFlows
+        {
+            titaniumDioxide          0.0006681098039 kmol/h;
+        }
+    }
+}

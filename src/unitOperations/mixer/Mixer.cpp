@@ -126,6 +126,10 @@ int Mixer::solve(const DictPtr& dict,
         sVector     z, s;
     };
     std::vector<InletState> inletStates;
+    //  Every inlet's crystals and temperature, kept for a merge of SOLIDS
+    //  ONLY (below the inlet loop, DEV.md 4c C97); read by nothing else.
+    struct SolidInlet { std::string name; scalar T = 0.0, P = 0.0; sVector s; };
+    std::vector<SolidInlet> solidInlets;
 
     auto hInlet = [&](scalar T, scalar P, scalar vf, const sVector& z) -> scalar
     {
@@ -202,6 +206,7 @@ int Mixer::solve(const DictPtr& dict,
                 }
             }
         }
+        solidInlets.push_back({ inName, T, P, s_in });
         if (isothermal)
         {
             InletState st;
@@ -252,6 +257,87 @@ int Mixer::solve(const DictPtr& dict,
                      " an unresolved emulsion until a downstream unit"
                      " (settler / flash) owns the split\n";
 
+    //  ---- A MERGE OF SOLIDS ONLY (2026-10-18, DEV.md 4c C97) -------------
+    //
+    //  Powders are blended: every inlet carries its material in `s[]` and no
+    //  fluid at all.  Until then this unit refused such a merge ("total inlet
+    //  flow is zero") although its material balance is exact -- the solids
+    //  are summed -- and the only thing missing was a temperature.  It is now
+    //  solved on the SOLID rung, the leg the energy report prices crystals
+    //  on (`flashState::priceSolids`):
+    //      SUM_k H_solid(s_k, T_k) = H_solid(s_out, T_out)        (adiabatic)
+    //  or, with `operation { T ...; }`, T_out is declared and the duty
+    //  Q = H_solid(s_out, T_out) - SUM_k H_solid(s_k, T_k) is published as
+    //  `Q_kW`, exactly as the fluid branch's declared-T duty is.  A merge
+    //  that carries any fluid never reaches this block, so every case that
+    //  ran before is untouched.
+    scalar s_total = 0.0;
+    for (auto v : s_out) s_total += v;
+    if (F_out <= 0.0 && s_total > 0.0)
+    {
+        scalar H_in = 0.0;                                         // kW
+        for (const auto& si : solidInlets)
+            H_in += flashState::priceSolids(si.s, si.T, thermo);
+        scalar T_sol = isothermal ? T_spec : T_first;
+        if (!isothermal)
+        {
+            //  H_solid(s_out, T) rises with T (a positive heat capacity), so
+            //  the root is bracketed by the coldest and the hottest inlet.
+            scalar lo = 1.0e300, hi = -1.0e300;
+            for (const auto& si : solidInlets)
+            {
+                scalar m = 0.0; for (auto v : si.s) m += v;
+                if (m > 0.0) { lo = std::min(lo, si.T); hi = std::max(hi, si.T); }
+            }
+            auto g = [&](scalar T) { return flashState::priceSolids(s_out, T, thermo) - H_in; };
+            if (hi - lo < 1.0e-12) T_sol = lo;
+            else
+            {
+                scalar a = lo, b = hi, ga = g(a);
+                for (int k = 0; k < 200 && (b - a) > 1.0e-10; ++k)
+                {
+                    const scalar m = 0.5 * (a + b), gm = g(m);
+                    if ((gm > 0.0) == (ga > 0.0)) { a = m; ga = gm; } else b = m;
+                }
+                T_sol = 0.5 * (a + b);
+            }
+        }
+        const scalar Q_sol = flashState::priceSolids(s_out, T_sol, thermo) - H_in;   // kW
+        if (verbosity >= 2)
+        {
+            std::cout << "\n=========================  Mixer Result  =========================\n"
+                      << "  Inlets:        " << inputs.size() << "  (SOLIDS ONLY -- no fluid phase)\n"
+                      << "  Solids out:    " << std::fixed << std::setprecision(6)
+                      << (s_total * 3600.0) << "  kmol/h\n"
+                      << "  T_out:         " << std::fixed << std::setprecision(2) << T_sol
+                      << "  K  <- " << (isothermal
+                          ? "declared (the duty below brings the powder there)"
+                          : "result (adiabatic, on the SOLID rung: SUM H_solid(in) = H_solid(out))")
+                      << "\n";
+            if (isothermal)
+                std::cout << "  Duty Q:        " << std::fixed << std::setprecision(6) << Q_sol
+                          << "  kW  = H_solid(outlet) - SUM H_solid(inlets)\n";
+            std::cout << "==================================================================\n\n";
+        }
+        produced_.clear();
+        ProcessStream out;
+        out.name = "mixed";
+        out.F    = 0.0;
+        out.T    = T_sol;
+        out.P    = std::isfinite(P_out) ? P_out : 101325.0;
+        out.z    = sVector(n, 0.0);
+        out.vf   = 0.0;
+        out.s    = s_out;
+        produced_.push_back(out);
+        kpis_.clear();
+        kpis_["F_out"] = 0.0;
+        kpis_["T_out"] = T_sol;
+        kpis_["P_out"] = out.P;
+        kpis_["vf"]    = 0.0;
+        kpis_["n_in"]  = static_cast<scalar>(inputs.size());
+        if (isothermal) kpis_["Q_kW"] = Q_sol;
+        return 0;
+    }
     if (F_out <= 0.0)
         throw std::runtime_error("Mixer: total inlet flow is zero");
 
