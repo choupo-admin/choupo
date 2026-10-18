@@ -34,6 +34,7 @@ License
   structured arrays / tables (for the Streams + Plots tabs).
 \*---------------------------------------------------------------------------*/
 
+import type { GmpBuilding } from "./buildingPayload.js";
 import type { CaseFiles } from "../case/types.js";
 import type { DynamicInstants } from "../case/dynamicInstants.js";
 
@@ -681,6 +682,11 @@ export interface RunResult {
    *  and the findings.  Absent unless the case declares a layout.  The GUI
    *  draws it and computes no footprint, position or distance. */
   layout?: PlantLayout;
+  /** THE GMP INTERIOR (DEV.md 4c C97): the `building {}` block of the same
+   *  layoutDict, as the engine read and checked it (adapters/buildingPayload).
+   *  Absent unless the case declares one; the GUI draws it and computes
+   *  nothing. */
+  building?: GmpBuilding;
 }
 
 /** One hazardous-area zone envelope: a vertical cylinder about the item's

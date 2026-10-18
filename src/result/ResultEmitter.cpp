@@ -27,6 +27,7 @@ License
 \*---------------------------------------------------------------------------*/
 
 #include "result/ResultEmitter.H"
+#include "result/BuildingJson.H"
 #include "thermo/SealCheck.H"
 
 #include <cmath>
@@ -1707,6 +1708,10 @@ void emitResultJson(std::ostream& os, const SimulationResult& r)
            << ", \"notRouted\": " << L.notRouted.size()
            << ", \"pipeLength\": " << num(pipeLength) << " }\n  }";
     }
+
+    //  ---- building: the GMP interior (DEV.md 4c C97), its own block -------
+    //  Only when the case declares `building {}`; result/BuildingJson.cpp.
+    emitBuildingJson(os, r.building);
 
     os << "\n}\n";
     os << "<<<Choupo:result-end>>>\n";

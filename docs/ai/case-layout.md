@@ -1228,6 +1228,94 @@ plot { margin 10 m; reason "..."; }   // optional; absent: 0 m, announced
   `musterPoint`, `fireWaterTank`, `firePumpHouse`, `windsock` (the sock
   turned downwind).  The 3D view rounds each route corner to its radius,
   paves the fillets and paints the direction arrows; it walks nothing.
+* THE GMP INTERIOR (C97).  A pharmaceutical plant is a building before it is
+  a plot plan: `building {}` in the same `layoutDict` declares its floors,
+  its rooms (a box on a floor, a cleanliness `grade` -- EU GMP Annex 1's
+  `A`/`B`/`C`/`D`, or `CNC`, controlled not classified -- and a `pressure`
+  relative to a room or to `outside`), its airlocks (ROOMS with a `role` and
+  a `regime`), the openings between rooms and the flows through them.  The
+  items placed in `items ( ... )` are put in their rooms by `equipment`.
+  ```
+  building
+  {
+      name "OSD block"; source "..."; reason "...";
+      cascade { minimumStep 10 Pa; source "EU GMP Annex 1 (2022) para 4.14 (guidance value)"; reason "..."; }
+      atexSeparation { distance 6 m; source "..."; reason "..."; }   // needed when ATEX and ignition rooms both exist
+      floors ( { floor ground; elevation 0 m; height 6 m; }
+               { floor upper;  elevation 7 m; height 4 m; } );
+      rooms
+      (
+          { room corridor; floor ground; xMin 8 m; xMax 64 m; yMin 6 m; yMax 10 m;
+            grade D; pressure 25 Pa; relativeTo outside; }
+          { room gowning; floor ground; xMin 16 m; xMax 20 m; yMin 0 m; yMax 6 m;
+            grade D; role gowning; regime cascade; pressure 10 Pa; relativeTo lobby; }
+          { room sdIn; floor ground; xMin 19 m; xMax 22 m; yMin 10 m; yMax 20 m;
+            grade D; role materialAirlock; regime sink; pressure -20 Pa; relativeTo dispensing; }
+          { room sprayDrying; floor ground; xMin 22 m; xMax 34 m; yMin 10 m; yMax 20 m;
+            grade D; pressure 15 Pa; relativeTo outside; containment yes;
+            equipment ( dryer ); occupancy 1;                     // optional: height 9 m;
+            atex { zone 1; source "..."; reason "solvent evaporated here"; } }
+          { room electrical; floor upper; ...; grade CNC; pressure 0 Pa; relativeTo outside;
+            ignition "switchgear"; }
+          ...
+      );
+      connections
+      (
+          { between ( lobby outside ); type door; }     // a door: one floor, a shared wall
+          { between ( lobby electrical ); type stair; } // stair | lift: two floors, plans overlapping
+          ...
+      );
+      flows
+      (
+          { flow "product"; kind material; reason "...";
+            path ( outside warehouse MAL dispensing sdIn sprayDrying sdOut blending ... outside ); }
+          { flow "operators"; kind personnel; path ( outside lobby gowning corridor compression ); }
+          { flow "rejects"; kind waste; path ( compression corridor wasteAL wasteRoom outside ); }
+      );
+      shared ( { room corridor; flows ( personnel material ); reason "closed containers"; } );  // optional
+  }
+  ```
+  `role` is `room` (default), `personnelAirlock`, `materialAirlock` or
+  `gowning` (a changing room: a personnel airlock where garments change); an
+  airlock declares `regime cascade | bubble | sink` and a plain room may not.
+  `containment yes|no`, `atex { zone 0|1|2|20|21|22; source; reason; }`,
+  `ignition "<why>"`, `occupancy <n>`, `equipment ( <item ids> )` and a pair
+  `source`/`reason` are optional.  REFUSED: rooms sharing a volume (a room
+  may declare its own `height`, a double-height suite, and must then clear
+  the floor above), floors sharing a height, a door between rooms with no
+  shared wall or to `outside` from a room with no exterior wall, a stair or
+  lift on one floor or between rooms whose plans do not overlap, an
+  equipment item not placed, assigned twice, not fitting its room, or
+  standing in a room that does not list it, a road through a room below the
+  roads' headroom, a room across the fence, a `relativeTo` chain that closes
+  on itself, every unknown word or missing key.  ANNOUNCED (stderr, the
+  caveat block under PLANT LAYOUT, the result JSON's `building.findings`):
+  `cascade` (two connected rooms of different grade, or two across a
+  cascade airlock, whose cleaner side is not higher by the declared step),
+  `airlockRegime` (a bubble not above every neighbour by the step, a sink
+  not below, a cascade airlock not strictly between, an airlock opening on
+  fewer than two spaces), `gradeChangeWithoutAirlock`, `wrongAirlock`
+  (people through a material airlock, material or waste through a
+  personnel one, unless `shared`), `ungownedEntry` (a person entering a
+  graded room cleaner than the last gowning room passed since CNC or
+  outside), `containmentAccess` (a contained room opened directly or
+  through a cascade airlock), `containmentNotNegative` (not below a
+  neighbour by the step; a sink airlock excepted), `flowBreak` (a step with
+  no door, stair or lift), `materialRevisit`, `flowCrossing` and
+  `wasteMeetsMaterial` (a room two flows both pass THROUGH -- not their
+  first or last room -- not declared `shared`), `atexIgnition`,
+  `atexSeparationUndeclared`, `noEscape` (no way out through doors and
+  stairs; a lift is not an exit), `roomBeyondPlot` (a room outside the
+  published plot: its ground is not priced; grow the plot margin).
+  Published (top-level `building` block, pinned by the `layout` golden
+  kind): each room's area, grade, role, regime and pressure resolved to
+  outside, each connection's pressure difference, each flow's path, every
+  finding.  No grade, step or separation is shipped: they are the case's,
+  with their source.  The GUI draws it under Reports, "Plant layout (3D)":
+  rooms as translucent boxes tinted by grade, labelled with their pressure,
+  airlocks dashed, flow arrows by kind with a toggle each, and a plan per
+  floor.  Record: `docs/design/a-gmp-interior-is-declared-and-checked.md`;
+  gate `check_gmp_layout`.
 * Worked cases: `tutorials/plant/ammonia02_full_plant` (declared rack,
   roads, two gates, offices, car park, weighbridge, the one-way truck loop,
   laydown, muster points, fire water, windsock, warehouse, canteen, the

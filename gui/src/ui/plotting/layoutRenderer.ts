@@ -215,7 +215,27 @@ export interface MountOptions {
   view: ViewPreset;
   /** Default "high". */
   quality?: RenderQuality;
+  /** Another drawing in the SAME scene (the GMP interior, DEV.md 4c C97). */
+  extend?: SceneExtension;
 }
+
+/** THE ONE HOOK (DEV.md 4c C97): a module that draws something more in this
+ *  scene -- the GMP interior's rooms and flows -- without a line of it in
+ *  this file.  Called once, after the plant is drawn and before the first
+ *  frame.  It adds to `world` (the renderer disposes it with the rest),
+ *  labels through `label` (decluttered with every other label), makes a mesh
+ *  hoverable by pushing it on `pickables` with `userData.tooltip` lines, and
+ *  calls `redraw` after it changes what is visible. */
+export interface SceneExtensionContext {
+  THREE: ThreeUsed;
+  world: T3.Scene;
+  /** Returns the label's object, so its owner can hide it with its drawing. */
+  label(text: string, at: [number, number, number], priority: number,
+        strong?: boolean): T3.Object3D;
+  pickables: T3.Object3D[];
+  redraw(): void;
+}
+export type SceneExtension = (ctx: SceneExtensionContext) => void;
 
 /** THE SCENE IS ALWAYS IN DAYLIGHT (DEV.md 4c C90).  Until 2026-10-18 the
  *  sky, the lights, the grass, the gravel and the pads followed the page's
@@ -1404,6 +1424,9 @@ export function mountLayoutScene(m: LayoutModules, el: HTMLDivElement, scene: La
   const ro = new ResizeObserver(() => { resize(); draw(); });
   ro.observe(el);
 
+  opts.extend?.({ THREE, world, pickables, redraw: () => draw(),
+                  label: (t, at, p, strong) => { label(t, at, p, strong);
+                                                 return lbls[lbls.length - 1]!.obj; } });
   fit(opts.view);
   apply(opts.toggles);
 

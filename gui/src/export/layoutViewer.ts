@@ -75,6 +75,9 @@ import { OutlinePass } from "three/examples/jsm/postprocessing/OutlinePass.js";
 import { OutputPass } from "three/examples/jsm/postprocessing/OutputPass.js";
 
 import type { PlantLayout } from "../adapters/SolverAdapter.js";
+import { shapeBuilding, type FlowKind } from "../adapters/buildingPayload.js";
+import { buildingScene, FLOW_KINDS, withBuilding } from "../case/gmpBuilding.js";
+import { buildingView, type BuildingView } from "../ui/plotting/gmpBuildingRenderer.js";
 import { EXPORT_IDS } from "../case/layoutExport.js";
 import { clampViewHeight, fillHeight, fullscreenMode } from "../case/layoutPanels.js";
 import { hasFlag, PREF_KEYS, readFlag, readRaw, writeFlag, writeRaw } from "../state/prefs.js";
@@ -205,6 +208,27 @@ function boot(): void {
   }
   if (!scene) { say("The embedded layout places no item, so there is nothing to draw."); return; }
 
+  //  THE GMP INTERIOR (DEV.md 4c C97), when the page carries one: drawn in
+  //  the same view through the renderer's one hook, a toggle per flow kind.
+  let gmp: BuildingView | null = null;
+  const gmpData = document.getElementById(EXPORT_IDS.building);
+  const gmpBox = (k: string) =>
+    document.getElementById(`${EXPORT_IDS.buildingToggle}-${k}`) as HTMLInputElement | null;
+  const gmpFlows = () => Object.fromEntries(FLOW_KINDS.map((k) =>
+    [k, gmpBox(k)?.checked ?? true])) as Record<FlowKind, boolean>;
+  if (gmpData) {
+    try {
+      const b = shapeBuilding(JSON.parse(gmpData.textContent ?? ""));
+      if (b) {
+        const bs = buildingScene(b);
+        scene = withBuilding(scene, bs);
+        gmp = buildingView(bs, gmpFlows(), gmpBox("rooms")?.checked ?? true);
+      }
+    } catch (e) {
+      say(`The embedded GMP interior could not be read (${e instanceof Error ? e.message : String(e)}).`);
+    }
+  }
+
   wireViewHeight(host);
   wireFullscreen();
   const box = (id: string) => document.getElementById(id) as HTMLInputElement | null;
@@ -238,7 +262,8 @@ function boot(): void {
   let view: LayoutView;
   try {
     view = mountLayoutScene(MODULES, host, scene,
-      { height: "fill", toggles: read(), view: presetNow(), quality: qualityNow() });
+      { height: "fill", toggles: read(), view: presetNow(), quality: qualityNow(),
+        ...(gmp ? { extend: gmp.extend } : {}) });
   } catch (e) {
     say(`The 3D view could not start (${e instanceof Error ? e.message : String(e)}).  It needs`
       + " WebGL; the tables below carry every position, pipe and finding the engine published.");
@@ -264,6 +289,11 @@ function boot(): void {
       rememberQuality(q);
       view.setQuality(q);
     });
+  if (gmp) {
+    const g = gmp;
+    gmpBox("rooms")?.addEventListener("change", () => g.setRooms(gmpBox("rooms")?.checked ?? true));
+    for (const k of FLOW_KINDS) gmpBox(k)?.addEventListener("change", () => g.setFlows(gmpFlows()));
+  }
   sync();
 }
 
