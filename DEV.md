@@ -1197,6 +1197,27 @@ accepts today, and that is a policy call.
 > leaves the process untouched; both placed with zones; moved rows to
 > Vitor.  Status: queued 2026-10-18.
 
+> **C92 first round (`claude/c92-ammonia02-tanks`, c920f6596), NOT
+> merged.**  `StorageLink` (one home for `unit <name>;`, all three stores);
+> `gasStorage` linkable; new `liquefiedGasStorage` (pressurised liquid,
+> design pressure >= the package's bubble pressure, new
+> `BubblePoint::pressure`).  T201: 7 bullets of 690 m3 at 22 bar, 9.9 M EUR.
+> T101: 4 vessels, 13.7 M EUR for 35 t of syngas -- NPV 99.4 -> 14.8 M EUR.
+> FINDING (not fixed, every case's path): `flashState::equilibriumAt` reads
+> the let-down liquid as single phase down to 16.7 bar against a 20 bar
+> bubble pressure (its phase test evaluates K with y = x).
+>
+> **C93. VITOR'S RULING ON C92 AND A FENCE (2026-10-18: "Sim tira T101, mas
+> coloca uma Fence em volta da fabrica e poe a pipeline atravessar a fence
+> com uma forma de identificar que a feed vem do parque industrial
+> adjacente").**  (1) Remove T101 -- the syngas arrives by pipeline; keep
+> T201.  (2) A perimeter FENCE around the plant, declared in layoutDict and
+> checked: roads cross it only at a gate, every boundary stream crosses it
+> at a declared battery-limit point naming where it comes from / goes to
+> (the makeup syngas: a pipeline from the adjacent industrial park), drawn
+> in 3D with the pipeline and a label at the crossing.  Handed to the C92
+> general on its branch.  Moved rows to Vitor before re-recording.
+
 > **C88. THE 3D LAYOUT MADE TO LOOK LIKE A PLANT (Vitor, 2026-10-18: "E ve
 > se pões o layout com melhor aspecto!  Eu acho que ha bibliotecas para
 > renderizar o 3d para aquilo ficar top notch!").**  Measured:
