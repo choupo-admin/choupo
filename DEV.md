@@ -1339,7 +1339,12 @@ accepts today, and that is a policy call.
 > silently; mixer bracket probes leak caveats for absent components; a
 > linked tank's working capital reads 0.  From phase B: the building does
 > not count toward the plot area (`plotOf`); the apalutamide case does not
-> yet declare its building (the WIRING step).
+> yet declare its building (the WIRING step).  WIRING dispatched 2026-10-18
+> (branch claude/c97c-apalutamide-gmp-wiring): the case declares its GMP
+> building; the building's rooms count toward `plotOf`; solids-only
+> streams are not piped (notRouted, reason stated) and their unsized
+> junctions leave the rack; an anchorless unrouted marker is listed, not
+> drawn off the plot.  Moved apalutamide rows to Vitor before re-record.
 
 > **C94. LAYOUT GUIDELINES IN THE GUIDES (Vitor, 2026-10-18: "Nos Guias
 > apropriados podes incluir uma parte sobre guidelines de layout?", after
