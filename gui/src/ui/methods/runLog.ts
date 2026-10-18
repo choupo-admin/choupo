@@ -160,11 +160,11 @@ export const CITES = {
   rrNewton: { file: FLASH, line: 1268,
     contains: '"] Rachford-Rice Newton (inner):\\n"' },
   bubbleNewton: { file: "src/unitOperations/saturation/BubblePoint.cpp",
-    line: 173, contains: '"Bubble-T Newton-Raphson:\\n"' },
+    line: 242, contains: '"Bubble-T Newton-Raphson:\\n"' },
   // -- convergence -----------------------------------------------------------------
   flashResult: { file: FLASH, line: 2220, contains: "Flash Result" },
   bubbleResult: { file: "src/unitOperations/saturation/BubblePoint.cpp",
-    line: 210, contains: "Bubble-T Result" },
+    line: 279, contains: "Bubble-T Result" },
   compositionLoop: { file: FLASH, line: 1367,
     contains: '"\\nComposition outer loop (gamma/K refresh) converged after "' },
   convergenceControls: { file: CONV, line: 196,
