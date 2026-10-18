@@ -1860,6 +1860,99 @@ bool isInternal(const EquipmentSizing& s, const SimulationResult& r,
     return false;
 }
 
+// ---------------------------------------------------------------------------
+//  THE PIPE CLASH (DEV.md 4c C93).  The router places a pipe by a rule and
+//  never looks at what stands in its way, so a routed segment may run
+//  THROUGH a placed item.  Checked here, after every route is final (the
+//  fence legs included): a segment whose plan path crosses an item's
+//  footprint (a vertical cylinder's disc, any other item's rectangle) while
+//  its elevation lies between that item's base and its top is ANNOUNCED by
+//  name, once per (pipe, item) -- never refused, because a clash is a draft
+//  the student must see and move, like a short distance.  The items at the
+//  pipe's own two ends are not checked: the pipe meets them at their nozzle.
+//  A pipe AT an item's top (the nozzle height) or touching its edge is not a
+//  clash (kTol).
+// ---------------------------------------------------------------------------
+
+//  The parameter interval [t0, t1] of segment a + t (b - a), t in [0, 1],
+//  that lies strictly inside item i's plan footprint; false when none does.
+bool planInside(const LayoutItem& i, const std::vector<scalar>& a,
+                const std::vector<scalar>& b, scalar& t0, scalar& t1)
+{
+    const scalar dx = b[0] - a[0], dy = b[1] - a[1];
+    t0 = 0.0; t1 = 1.0;
+    if (isCircle(i))
+    {
+        //  |a + t d - c|^2 < (R - kTol)^2, a quadratic in t.
+        const scalar R = 0.5 * i.dx - kTol;
+        const scalar fx = a[0] - i.x, fy = a[1] - i.y;
+        const scalar A = dx * dx + dy * dy;
+        const scalar B = 2.0 * (fx * dx + fy * dy);
+        const scalar C = fx * fx + fy * fy - R * R;
+        if (A < kTol * kTol) return C < 0.0;          // a vertical segment
+        const scalar disc = B * B - 4.0 * A * C;
+        if (disc <= 0.0) return false;
+        const scalar q = std::sqrt(disc);
+        t0 = std::max(0.0, (-B - q) / (2.0 * A));
+        t1 = std::min(1.0, (-B + q) / (2.0 * A));
+        return t1 > t0;
+    }
+    //  The rectangle shrunk by kTol, clipped slab by slab (Liang-Barsky).
+    const scalar lo[2] = { i.x - 0.5 * i.dx + kTol, i.y - 0.5 * i.dy + kTol };
+    const scalar hi[2] = { i.x + 0.5 * i.dx - kTol, i.y + 0.5 * i.dy - kTol };
+    const scalar p0[2] = { a[0], a[1] }, d[2] = { dx, dy };
+    for (int k = 0; k < 2; ++k)
+    {
+        if (std::abs(d[k]) < kTol * kTol)
+        {
+            if (p0[k] <= lo[k] || p0[k] >= hi[k]) return false;
+            continue;
+        }
+        scalar u0 = (lo[k] - p0[k]) / d[k], u1 = (hi[k] - p0[k]) / d[k];
+        if (u0 > u1) std::swap(u0, u1);
+        t0 = std::max(t0, u0);
+        t1 = std::min(t1, u1);
+        if (t1 <= t0) return false;
+    }
+    return true;
+}
+
+void checkPipeClashes(PlantLayoutRecord& rec, const FindingSink& addFinding)
+{
+    for (const auto& p : rec.pipes)
+        for (const auto& it : rec.items)
+        {
+            if ((p.fromKind == "item" && p.from == it.id)
+                || (p.toKind == "item" && p.to == it.id)) continue;
+            const scalar zb = it.z + kTol, zt = it.z + it.dz - kTol;
+            for (std::size_t k = 1; k < p.route.size(); ++k)
+            {
+                const auto& a = p.route[k - 1];
+                const auto& b = p.route[k];
+                scalar t0, t1;
+                if (!planInside(it, a, b, t0, t1)) continue;
+                //  The elevation over the part of the segment inside the
+                //  footprint (a segment is level or vertical: linear in t).
+                const scalar za = a[2] + t0 * (b[2] - a[2]);
+                const scalar zz = a[2] + t1 * (b[2] - a[2]);
+                const scalar zLo = std::min(za, zz), zHi = std::max(za, zz);
+                if (zHi <= zb || zLo >= zt) continue;
+                addFinding("pipeClash", p.stream, it.id, zLo, it.z + it.dz,
+                    "warning",
+                    "pipe `" + p.stream + "` runs THROUGH `" + it.id + "`: its"
+                    " segment from (" + num(a[0]) + ", " + num(a[1]) + ", "
+                    + num(a[2]) + ") to (" + num(b[0]) + ", " + num(b[1])
+                    + ", " + num(b[2]) + ") m crosses the item's footprint at "
+                    + num(zLo) + " m, below its top at " + num(it.z + it.dz)
+                    + " m (base " + num(it.z) + " m).  The router does not"
+                    " steer round items: move the item, or route the pipe"
+                    " with `pipes { " + p.stream + " { waypoints ( ... ); } }`"
+                    " over or round it");
+                break;   // once per (pipe, item)
+            }
+        }
+}
+
 // ===========================================================================
 
 PlantLayoutRecord evaluate(const Dictionary& d, const SimulationResult& r,
@@ -2259,6 +2352,9 @@ PlantLayoutRecord evaluate(const Dictionary& d, const SimulationResult& r,
     //  ---- the roads checked (C90): after the pipes have their final routes,
     //  which a road must pass under ------------------------------------------
     if (d.found("roads")) checkRoads(rec, addFinding);
+
+    //  ---- the pipe clash (C93): every route final, the fence legs included
+    checkPipeClashes(rec, addFinding);
 
     if (verbosity >= 2)
     {

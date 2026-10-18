@@ -1097,7 +1097,10 @@ plot { margin 10 m; reason "..."; }   // optional; absent: 0 m, announced
   layout cannot reach (an unsized tank, an unplaced item) is listed as not
   routed, with the reason, the units at its two ends and the point of the end
   it does reach; the 3D view marks it there (a dashed stub and a warning), so
-  a missing pipe never looks like a finished drawing.  No pressure drop and
+  a missing pipe never looks like a finished drawing.  The router does not
+  steer round items: a pipe that runs THROUGH a placed item (its plan path
+  inside the footprint, below the item's top) is ANNOUNCED as `pipeClash`,
+  by name -- move the item or give the pipe waypoints.  No pressure drop and
   no cost yet.
 * THE PLOT (C82): the engine publishes the plot area -- the axis-aligned
   envelope of every declared sector area, every placed footprint and every

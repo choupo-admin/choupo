@@ -164,10 +164,26 @@ The risks such a feature carries are specific, and each arm names one:
       `side north` with no `at`, an `at` outside the fence, a stream declared
       twice.
 
+  (m) THE PIPE CLASH (2026-10-18, DEV.md 4c C93): on the three shipped
+      layouts, the engine's `pipeClash` findings equal the (pipe, item) pairs
+      recomputed here from the published routes and items -- a segment whose
+      plan path is strictly inside the item's footprint (a vertical
+      cylinder's disc, any other item's rectangle) while its elevation lies
+      strictly between the item's base and top, the pipe's own end items
+      excepted -- empty on all three today.  Two probes on copies of the
+      witness, each exit 0 with the clash ANNOUNCED by name on stderr, the
+      caveat block and the advisories, at the pipe's elevation and with the
+      item's top as the limit: the warehouse moved onto the makeup line (a
+      box), and rawLiquid routed by waypoints 5 m up through the converter
+      (a vertical cylinder).  The negative: rawLiquid turned 5 m up at the
+      converter's plan CORNER (inside the disc's bounding square, outside the
+      disc) raises no clash.
+
 NOT COVERED, said so: whether a declared distance or zone extent is SENSIBLE
 (the author's assumption, by design -- no standard is shipped), a pipe's
-pressure drop and cost (none is computed), whether a route clashes with an
-item it passes, structures, rotations other than the two plan axes, a road's
+pressure drop and cost (none is computed), a pipe clashing with another pipe
+or crossing a road's paved surface below the headroom outside the road
+check, structures, rotations other than the two plan axes, a road's
 turning radius or gradient, whether a declared headroom or access distance is
 sensible (the author's assumption, as every distance here), the GUI
 drawing (its pure scene mapping, phase, speed, declutter and camera fit are
@@ -278,6 +294,13 @@ strengthened):
       headroom.
   S35 the notRouted anchor not emitted                              -> (i) the
       unrouted mark: productNH3 carries no anchor.
+  (C93, arm (m), 2026-10-18; in PlantLayout.cpp, restored with `cp` of the
+  saved file and one idempotent `make all`):
+  S36 the pipe-clash check's elevation test inverted (a clash only ABOVE
+      the item)                                                     -> (m)
+      both probes announce nothing.
+  S37 the disc taken as the circle's bounding square                -> (m)
+      the corner negative publishes pipeClash:rawLiquid:converter.
 """
 import json
 import re
@@ -1840,6 +1863,151 @@ def arm_fence(work):
                   " fence announced, eight refusals)")
 
 
+# ------------------------------------------------------------ clash (C93) --
+
+def seg_inside_circle(cx, cy, r, a, b):
+    """The parameter interval of segment a->b strictly inside the disc."""
+    dx, dy = b[0] - a[0], b[1] - a[1]
+    fx, fy = a[0] - cx, a[1] - cy
+    A = dx * dx + dy * dy
+    C = fx * fx + fy * fy - r * r
+    if A < 1e-18:
+        return (0.0, 1.0) if C < 0 else None
+    B = 2 * (fx * dx + fy * dy)
+    disc = B * B - 4 * A * C
+    if disc <= 0:
+        return None
+    q = disc ** 0.5
+    t0, t1 = max(0.0, (-B - q) / (2 * A)), min(1.0, (-B + q) / (2 * A))
+    return (t0, t1) if t1 > t0 else None
+
+
+def seg_inside_rect(lo, hi, a, b):
+    """Orthogonal segments only (the router's and the gate's contract): the
+    interval along an axis-aligned segment strictly inside the rectangle."""
+    t0, t1 = 0.0, 1.0
+    for k in (0, 1):
+        d = b[k] - a[k]
+        if abs(d) < 1e-12:
+            if not (lo[k] < a[k] < hi[k]):
+                return None
+            continue
+        u0, u1 = sorted(((lo[k] - a[k]) / d, (hi[k] - a[k]) / d))
+        t0, t1 = max(t0, u0), min(t1, u1)
+        if t1 <= t0:
+            return None
+    return (t0, t1)
+
+
+def clashes_recomputed(lay):
+    """Every (pipe, item) pair whose route passes through the item's footprint
+    below its top and above its base, the pipe's own end items excepted --
+    recomputed here from the published routes and items."""
+    eps = 1e-6
+    found = set()
+    for p in lay.get("pipes", []):
+        for it in lay["items"]:
+            if it["id"] in (p["from"] if p["fromKind"] == "item" else None,
+                            p["to"] if p["toKind"] == "item" else None):
+                continue
+            circle = it.get("shape") == "cylinder" and it.get("orientation") == "vertical"
+            for a, b in zip(p["route"], p["route"][1:]):
+                if circle:
+                    iv = seg_inside_circle(it["x"], it["y"], it["dx"] / 2 - eps, a, b)
+                else:
+                    iv = seg_inside_rect((it["x"] - it["dx"] / 2 + eps, it["y"] - it["dy"] / 2 + eps),
+                                         (it["x"] + it["dx"] / 2 - eps, it["y"] + it["dy"] / 2 - eps),
+                                         a, b)
+                if iv is None:
+                    continue
+                za = a[2] + iv[0] * (b[2] - a[2])
+                zb = a[2] + iv[1] * (b[2] - a[2])
+                if max(za, zb) > it["z"] + eps and min(za, zb) < it["z"] + it["dz"] - eps:
+                    found.add((p["stream"], it["id"]))
+                    break
+    return found
+
+
+#  The probe: the warehouse moved north onto the makeup pipeline's line (the
+#  pipe runs at y -4.5, 6 m up; the warehouse is 7 m tall) -- a box clash.
+CLASH_WAREHOUSE = sub('''        nonProcess  "warehouse";
+        kind        warehouse;
+        x           -30 m;
+        y           -20 m;''', '''        nonProcess  "warehouse";
+        kind        warehouse;
+        x           -30 m;
+        y           -4 m;''')
+#  The second probe: rawLiquid routed by waypoints 5 m up through the
+#  converter -- a vertical cylinder, the disc rule.
+CLASH_CONVERTER = ("\npipes { rawLiquid { waypoints ( { x 56 m; y -6 m; z 5 m; }"
+                   " { x 40 m; y -6 m; z 5 m; } { x 40 m; y -3 m; z 5 m; }"
+                   " { x 59.5 m; y -3 m; z 5 m; } { x 59.5 m; y -6 m; z 5 m; } ); } }\n")
+
+#  The negative: rawLiquid turned at the converter's plan CORNER, 5 m up --
+#  inside the disc's bounding square, outside the disc itself (the turn sits
+#  0.95 R off the centre on both axes), so NO clash: a pipe beside a column
+#  does not run through it.
+CLASH_CORNER = ("\npipes { rawLiquid { waypoints ( { x 56 m; y -6 m; z 5 m; }"
+                " { x 56 m; y -4.989 m; z 5 m; } { x 41.011 m; y -4.989 m; z 5 m; }"
+                " { x 41.011 m; y -3 m; z 5 m; } { x 59.5 m; y -3 m; z 5 m; }"
+                " { x 59.5 m; y -6 m; z 5 m; } ); } }\n")
+
+
+def arm_clash(work):
+    n = 0
+    # the shipped layouts: the engine's clash list equals the recomputed one
+    # (empty on every one of them today)
+    for tag, case in PIPE_CASES.items():
+        d = prepare(work, "clash_" + tag, case)
+        out, err, rc, j, lay = layout_of(d)
+        pub = {(f["a"], f["b"]) for f in lay.get("findings", []) if f["kind"] == "pipeClash"}
+        rec = clashes_recomputed(lay) if lay else None
+        if rc != 0 or rec is None or pub != rec:
+            fail(f"(m) {tag}: published clashes {sorted(pub)} against {sorted(rec or [])}"
+                 " recomputed here")
+        else:
+            n += 1
+    for label, edit, want in (
+            ("the warehouse moved onto the makeup line", CLASH_WAREHOUSE,
+             ("makeup", "warehouse", 6.0, 7.0)),
+            ("rawLiquid routed through the converter", lambda t: t + CLASH_CONVERTER,
+             ("rawLiquid", "converter", 5.0, None))):
+        d = prepare(work, "clash_probe_" + re.sub(r"\W", "_", label), WITNESS, edit)
+        out, err, rc, j, lay = layout_of(d)
+        fs = {(f["a"], f["b"]): f for f in lay.get("findings", []) if f["kind"] == "pipeClash"}
+        rec = clashes_recomputed(lay) if lay else set()
+        f = fs.get(want[:2])
+        top = None
+        if lay:
+            it = next((i for i in lay["items"] if i["id"] == want[1]), None)
+            top = it["z"] + it["dz"] if it else None
+        if rc != 0 or f is None or set(fs) != rec \
+                or abs(f["value"] - want[2]) > 1e-9 or top is None \
+                or abs(f["limit"] - (want[3] if want[3] is not None else top)) > 1e-9 \
+                or not said_everywhere(f["message"], out, err, j) \
+                or f"`{want[0]}`" not in f["message"] or f"`{want[1]}`" not in f["message"]:
+            fail(f"(m) {label}: exit {rc}, clashes {sorted(fs)} (recomputed {sorted(rec)});"
+                 f" `{want[0]}` through `{want[1]}` must be ANNOUNCED by name on stderr,"
+                 " the caveat block and the advisories, at its elevation and below the"
+                 " item's top, and the run must finish")
+        else:
+            n += 1
+    d = prepare(work, "clash_probe_corner", WITNESS, lambda t: t + CLASH_CORNER)
+    out, err, rc, j, lay = layout_of(d)
+    fs = [f["id"] for f in lay.get("findings", []) if f["kind"] == "pipeClash"]
+    rec = clashes_recomputed(lay) if lay else {("no", "layout")}
+    if rc != 0 or fs or rec:
+        fail(f"(m) rawLiquid turned at the converter's plan corner (outside its disc):"
+             f" exit {rc}, clashes published {fs}, recomputed {sorted(rec)} -- none expected")
+    else:
+        n += 1
+    claims.append(f"no routed pipe runs through a placed item on the {len(PIPE_CASES)}"
+                  " shipped layouts (the engine's clash list equal to the one recomputed"
+                  f" here), {n - len(PIPE_CASES) - 1} probes (a box, a vertical cylinder)"
+                  " each announced by name on three surfaces, and a pipe turned at a"
+                  " column's plan corner, outside its disc, announced as nothing")
+
+
 def main():
     argv = sys.argv[1:]
     keep = Path(argv[argv.index("--keep") + 1]).resolve() if "--keep" in argv else None
@@ -1860,6 +2028,7 @@ def main():
         arm_plot(work)
         arm_roads(work)
         arm_fence(work)
+        arm_clash(work)
     finally:
         if not keep:
             shutil.rmtree(work, ignore_errors=True)
@@ -1871,8 +2040,8 @@ def main():
     print("check_plant_layout: OK -- " + "; ".join(claims)
           + ".  NOT COVERED: whether a declared distance or zone is sensible"
           " (the author's assumption -- no standard is shipped), a pipe's"
-          " pressure drop and cost (none is computed), whether a route clashes"
-          " with an item (not checked), structures, a road's turning radius or"
+          " pressure drop and cost (none is computed), a pipe clashing with"
+          " another pipe or a road's paved surface, structures, a road's turning radius or"
           " gradient, whether a declared headroom or access distance is sensible,"
           " the GUI drawing (its scene"
           " mapping is a vitest), and"
