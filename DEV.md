@@ -999,6 +999,29 @@ accepts today, and that is a policy call.
 > Vitor.  Nothing re-recorded, nothing merged, until he rules.  Status:
 > dispatched 2026-10-18.
 
+> **C86 item (1) MERGED 2026-10-18.**  Every sizer that publishes a
+> `pressureDesign` calls `materialLimits::pressure`, naming the item by
+> `itemId()`: column shell and reflux drum, every shell-and-tube record
+> (`exchangerRecord`, reaching the column's condenser and reboiler), and --
+> beyond the brief, because the gate's rule demands it -- the multitubular
+> bed, evaporator, crystalliser, spray dryer, cyclone and compressor.
+> `check_design_sheet` arm (t) extended (an aluminium column09 at 60 bar
+> announces four items; per-sizer call count >= `set("pressureDesign"`
+> count; S5-S8 caught, S7 only by the count).  No golden moved (21/21); the
+> ammonia cases now also announce their exchangers and compressors against
+> the records' maxP.  Item (2) is PREPARED as `2c811e3de` on
+> `claude/c86-rating-pressure` and NOT merged: gauge for every reader, and
+> F_P = 1 at or below 5 bar g on the exchanger set -- sourced from CAPCOST
+> 2017's own VBA (`If sPressure > 5`, module `exchangers`; the data sheet
+> carries Pmax 140 bar g and no Pmin).  It moves 245 rows in 15 cases (207
+> beyond 1e-4): 108 by the 1-bar subtraction removed, 16 by the low-P bump
+> removed (2 bar g exchangers F_P 1.0935 -> 1), 121 economics downstream;
+> range -6.18 % ... +2.12 %.  DECISION FOR VITOR.  Findings, open: the
+> ammonia loops' exchangers (167-220 bar) sit above CAPCOST's 140 bar g and
+> nothing announces it; CAPCOST gives the evaporator a non-zero F_P
+> polynomial that Choupo's set carries as zeros; CompressorSize's 1.0 bar
+> default is unannounced.
+
 > **C83. AN EDUTOOL: THE RADIATION OF A POOL FIRE AND THE DISTANCE IT
 > SETS (Vítor, 2026-10-17: "Faz essa EduTool da radiação do incêndio de
 > poça, se achares importante" -- the commander judged it important: it is
