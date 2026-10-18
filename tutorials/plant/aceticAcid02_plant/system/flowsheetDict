@@ -29,6 +29,10 @@
                                                                       |         |
                                                                   lightsOut   acidProduct
                                                                                   |
+                                                                            [acidCooler] 313 K
+                                                                                  |
+                                                                              coldAcid
+                                                                                  |
                                                                              [acidTank] --> acidShipped
 
   ONE recycle: CO, against a 5 % purge.  The light by-products leave through
@@ -37,14 +41,15 @@
   acetic acid).  The reactor is the one of aceticAcid01_gibbsReactor.
 
   THE TANKS (DEV.md 4c C87).  The methanol is BOUGHT and held in a feed tank
-  before the process takes it; the acid is held in a product tank between
-  shipments.  Both are `storageTank` units: the outlet IS the inlet (same F,
-  z, T, P), so they move no process number -- what they add is the holdup
-  the plant's working capital rests on, and the equipment the plot plan and
-  an economic analysis must carry.  They are SIZED in system/postDict (a
-  `storage` entry of the SAME name, which is how the plot plan pipes each
-  tank to its unit).  CO is NOT stored: it arrives by pipeline at the plant
-  pressure, as a gas no atmospheric tank holds.
+  before the process takes it; the acid is COOLED and held in a product tank
+  between shipments.  Both tanks are `storageTank` units: the outlet IS the
+  inlet (same F, z, T, P), so they move no process number -- what they add
+  is the holdup the plant's working capital rests on, and the equipment the
+  plot plan and an economic analysis must carry.  They are SIZED in
+  system/postDict, by a `storage` entry that LINKS each unit (`unit
+  methanolTank;`) and reads its residence time, fill fraction and inlet
+  from it: the stock is declared ONCE, here.  CO is NOT stored: it arrives
+  by pipeline at the plant pressure, as a gas no atmospheric tank holds.
 \*-----------------------------------------------------------------------------*/
 units
 (
@@ -55,10 +60,11 @@ units
     //  battery limit).  The residence time is the stock the plant holds:
     //  14 days is an AUTHOR-SET ASSUMPTION, for the students to replace --
     //  a delivery cycle plus a safety stock, so that one late delivery does
-    //  not stop the plant.  It is NOT taken from any source.  KEEP IT EQUAL
-    //  to `storageTime` in system/postDict's `storage` entry of the same
-    //  name: the unit publishes the holdup, the sizer sizes the tank, and
-    //  today each reads its own declaration (DEV.md 4c C87 names this).
+    //  not stop the plant.  It is NOT taken from any source.  It is declared
+    //  HERE AND NOWHERE ELSE: the unit publishes the holdup from it, and the
+    //  tank in system/postDict (`unit methanolTank;`) is sized on the
+    //  residence time and fill fraction this unit publishes -- declaring
+    //  either there as well is refused by name.
     {
         name        methanolTank;
         type        storageTank;
@@ -208,19 +214,41 @@ units
         }
     }
 
+    //  ---- the PRODUCT COOLER ----------------------------------------------
+    //  The acid leaves the column at its bubble point at 1.5 bar, about
+    //  404 K -- 13 K ABOVE its normal boiling point (391.05 K, `Tb` of
+    //  constant/components/aceticAcid.dat), so an atmospheric tank could not
+    //  hold it: it would boil off through the roof vents.  This cooler
+    //  brings it down against the plant's cooling water before it is
+    //  stored (DEV.md 4c C87, Vitor: "arrefece o acido").
+    //  313.15 K (40 degC) is an AUTHOR-SET ASSUMPTION, for the students to
+    //  replace, chosen for three reasons: (1) 78 K below the 1 atm boiling
+    //  point, so the tank breathes little acid vapour; (2) above the acid's
+    //  freezing point, about 290 K (16.6 degC -- a handbook figure, NOT read
+    //  from this case's records, which carry no melting point), with margin,
+    //  so glacial acid does not freeze in the tank or the line; (3) 15 K
+    //  above the cooling-water supply (298.15 K, constant/utilities/
+    //  coolingWater.dat), a reachable cold-end approach for that utility.
+    //  The pressure is the column's: a cooler is not a let-down.  Its duty is
+    //  a cooling-utility cost, and it is SIZED in system/postDict as a
+    //  shell-and-tube exchanger, as the preheater is.
+    {
+        name        acidCooler;
+        type        phaseChanger;
+        in          acidProduct;
+        outputs     ( coldAcid );
+        operation   { outletT 313.15 K;  P 1.5 bar; }
+    }
+
     //  ---- PRODUCT INVENTORY: the acetic acid product tank ----------------
     //  The acid held between shipments: 7 days is an AUTHOR-SET ASSUMPTION,
     //  for the students to replace -- a weekly shipment plus nothing else.
-    //  It is NOT taken from any source.  KEEP IT EQUAL to `storageTime` in
-    //  system/postDict (see the methanol tank).  READ THIS: the acid is
-    //  stored AS THE COLUMN DELIVERS IT, at its bubble point at 1.5 bar
-    //  (about 404 K) -- a real plant cools its product before it reaches an
-    //  atmospheric tank, and that product cooler is the students' to add
-    //  (their tank then holds the denser, cold liquid).
+    //  It is NOT taken from any source, and it is declared here and nowhere
+    //  else (see the methanol tank).  The tank holds the COOLED acid.
     {
         name        acidTank;
         type        storageTank;
-        in          acidProduct;
+        in          coldAcid;
         outputs     ( acidShipped );
         operation   { residenceTime 7 day;  fillFraction 0.90; }
     }

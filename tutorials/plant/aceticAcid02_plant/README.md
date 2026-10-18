@@ -2,7 +2,8 @@
 
 Rung 2 after `aceticAcid01_gibbsReactor`.  The same Gibbs reactor, now inside a
 plant: a methanol feed tank and its pump, a condenser, a CO recycle against a
-purge, a degasser, a lights column, and an acetic acid product tank.
+purge, a degasser, a lights column, a product cooler and an acetic acid
+product tank.
 **It runs (32 s), it converges, and it is deliberately NOT optimised** — every
 number a student would tune is a plain key in `system/flowsheetDict`.  The
 optimisation is the exercise.
@@ -30,6 +31,8 @@ methanolToProcess + freshCO (pipeline) + coRecycle -> [M1] -> [preheater 460 K] 
                                                                    |           |
                                                                lightsOut   acidProduct
                                                                                 |
+                                                                   [acidCooler 313.15 K] -> coldAcid
+                                                                                |
                                                                           [acidTank] -> acidShipped
 ```
 
@@ -38,12 +41,16 @@ methanolToProcess + freshCO (pipeline) + coRecycle -> [M1] -> [preheater 460 K] 
 abandoned: it cost 7 min 25 s a run, and the stream it recycled is 94 % acetic
 acid.  `lightsOut` is a declared plant outlet.
 
-**Two tanks** (added 2026-10-18, DEV.md 4c C87): the methanol the plant buys
-is held in `methanolTank` before the process takes it, and the acid it makes
-is held in `acidTank` between shipments.  Both are `storageTank` units: the
-outlet IS the inlet, so they move no process number; what they add is the
-inventory and the equipment (section 8).  The CO is **not** stored: it
-arrives by pipeline at the plant pressure.
+**Two tanks and a product cooler** (added 2026-10-18, DEV.md 4c C87): the
+methanol the plant buys is held in `methanolTank` before the process takes
+it, and the acid it makes is cooled in `acidCooler` and held in `acidTank`
+between shipments.  The tanks are `storageTank` units: the outlet IS the
+inlet, so they move no process number; what they add is the inventory and
+the equipment (section 8).  The cooler is a `phaseChanger` against the
+plant's cooling water: the acid leaves the column at its bubble point at
+1.5 bar, about 404 K -- 13 K above its normal boiling point (391.05 K) --
+and an atmospheric tank cannot hold a liquid hotter than it boils.  The CO
+is **not** stored: it arrives by pipeline at the plant pressure.
 
 ## 2. Base-case result (not optimised)
 
@@ -53,7 +60,8 @@ arrives by pipeline at the plant pressure.
 | `acidProduct` | **98.39 kmol/h**, 99.89 mol % acetic acid (methyl acetate 0.05 %, water 0.06 %) |
 | acid lost | `lightsOut` 0.89, `offgas` 0.66, `purge` 0.015 kmol/h; the rest is accounted for |
 | yield on methanol | ~98.4 % to product |
-| first-law residual of the plant | +6.17 kW, 0.10 % of the energy exchanged -- 3.28 kW of it is the methanol pump's (section 3) |
+| first-law residual of the plant | +6.17 kW, 0.10 % of the energy exchanged -- 3.28 kW of it is the methanol pump's (section 3); the product cooler closes to 1e-13 kW |
+| product cooler | 306.1 kW to cooling water, 404.14 -> 313.15 K |
 | inventory held in the two tanks | 1077 t of methanol + 992 t of acetic acid (section 8) |
 
 ## 3. What is modelled, and what is not
@@ -109,7 +117,8 @@ arrives by pipeline at the plant pressure.
 | column stages, feed stage | 20, 14 | `lightsColumn.operation` |
 | reflux ratio | 5 | `lightsColumn.operation` |
 | distillate rate | 1 kmol/h | `lightsColumn.operation` |
-| methanol stock, product stock | 14 days, 7 days | `methanolTank` / `acidTank` `residenceTime`, and the `storage` entries of `system/postDict` (keep the two equal) |
+| methanol stock, product stock | 14 days, 7 days | `methanolTank` / `acidTank` `residenceTime` (the ONE home: the tanks in `system/postDict` are sized on it) |
+| acid storage temperature | 313.15 K | `acidCooler.operation.outletT` |
 
 **Objective:** yours to choose.  A natural one: acid product value minus CO and
 methanol cost minus utilities (the condenser, degasser and column duties are in
@@ -148,10 +157,11 @@ rests on. After a run the sheets land in `design/`, one folder per unit.
 | unit | sized as | basis |
 |---|---|---|
 | `preheater` | shell-and-tube | A = Q/(U·LMTD): the LMTD computed from the unit's own 320 → 460 K against HP steam, U **assumed** |
+| `acidCooler` | shell-and-tube | A = Q/(U·LMTD): the LMTD computed from the unit's own 404.14 → 313.15 K against cooling water (298.15 → 308.15 K), 43.6 K; U = 500 W/m²/K **assumed**; 14.0 m² |
 | `reactor` | vessel | a **declared volume** (3 m³), a hand calculation written out in the postDict — an equilibrium reactor has no volume of its own, and this one does not follow the run |
 | `condenser` | vessel (the knock-out drum) | vapour residence time |
 | `degasser` | vessel | vapour residence time — a liquid drum, so the volume is a **lower bound** |
-| `methanolTank`, `acidTank` | atmospheric storage tank (`storage` list) | V = storage time × mass flow / (liquid density × fill fraction), the density the case's own at the stored state; 14 and 7 days, fill 0.90, at most 30 000 m³ per tank -- all **assumed** (section 8) |
+| `methanolTank`, `acidTank` | atmospheric storage tank (`storage` list, each entry LINKED to its unit: `unit methanolTank;`) | V = residence time × mass flow / (liquid density × fill fraction): the residence time (14 and 7 days), the fill fraction (0.90) and the stream are the **unit's own** (`system/flowsheetDict`), the density the case's own at the stored state; at most 30 000 m³ per tank -- all **assumed** (section 8) |
 | `lightsColumn` | shell (vessel), tray stack, condenser and reboiler (shell-and-tube) | the shell's diameter is the **tray-hydraulics pass's**, in design mode (80 % of flood on the worst tray; the `hydraulics {}` block in `system/flowsheetDict`, every geometry number **assumed**); its height is 18 trays × 0.5 m plus two end spaces; the two exchangers are A = Q/(U·LMTD) on the column's own duties, U **assumed** and each LMTD a hand calculation written out in the postDict |
 
 The lights column could not be sized until 2026-10-17: the liquid on its
@@ -193,7 +203,9 @@ from a spacing or hazardous-area standard: Choupo ships no such table (the
 published ones grant no redistribution), so a real project takes its numbers
 from the standard its client specifies and from the site's wind rose. The
 three vessels and the column's shell take their size from their own design
-sheets (the column's tray stack lives inside its shell); the two tanks take
+sheets (the column's tray stack lives inside its shell); the product cooler
+(an area) has a DECLARED box between the column and the tank area, 15 m from
+the acid tank; the two tanks take
 their VOLUME from theirs and stand in a **tank area** 30 m north of the
 process row, each with its own hazardous-area zones (methanol and acetic acid
 are both flammable) and its own rows in the separation table, their plan
@@ -207,9 +219,9 @@ control room.
 **Redraw it** with `bin/choupo-layout --draft --force .` from the case
 directory: it lines the sized items up in flow order again and keeps the
 separation table, wind, boxes, the control room and zones. **The pipes** are
-routed by the engine over the declared rack: 17 of the 19 streams, among
-them the fresh methanol to its tank, the acid from the column to its tank
-and from the tank to the east battery limit. The two streams through
+routed by the engine over the declared rack: 18 of the 20 streams, among
+them the fresh methanol to its tank, the acid from the column to the cooler,
+from the cooler to its tank and from the tank to the east battery limit. The two streams through
 `methanolPump` are listed as **not routed** (the pump has no item to place),
 which the run says with that reason. **The plot** is the bare envelope of
 the layout, 68.5 m × 82 m = **5617 m²** (3388.5 m² before the tanks); no
@@ -237,15 +249,18 @@ Now:
 | tank | holds | stored state | liquid | tank volume | mass |
 |---|---|---|---|---|---|
 | `methanolTank` | 14 days of `freshMethanol` | 300 K, 1 atm, 785 kg/m³ | 1371 m³ | 1524 m³ | **1077 t** of methanol |
-| `acidTank` | 7 days of `acidProduct` | 404 K, 1.5 bar, 911 kg/m³ | 1089 m³ | 1211 m³ | **992 t** (991.6 t acetic acid, 0.6 t methyl acetate, 0.2 t water) |
+| `acidTank` | 7 days of `coldAcid` | 313.15 K, 1.5 bar, 1026 kg/m³ | 967 m³ | 1074 m³ | **992 t** (991.6 t acetic acid, 0.6 t methyl acetate, 0.2 t water) |
 
 The numbers are the run's own: each `storageTank` unit publishes its holdup
 (KPIs `holdupVolume_m3`, `holdupMass_kg` and the mass per component), and the
-`storage` entry of the same name in `system/postDict` sizes the tank and
-prints its inventory in the sizing table (`design/methanolTank/tank1`, `design/acidTank/tank1`).  The two
-must say the same thing, and they do -- but each reads its OWN declaration
-of the storage time and fill fraction, so **if you change one, change the
-other**.
+`storage` entry in `system/postDict` that LINKS it (`unit methanolTank;`)
+sizes the tank on the unit's own residence time, fill fraction and inlet,
+and prints its inventory in the sizing table (`design/methanolTank/tank1`,
+`design/acidTank/tank1`).  The stock is declared in ONE place, the unit's
+`operation {}` in `system/flowsheetDict`: change it there and the holdup,
+the tank and its inventory all follow.  Declaring a `storageTime` or a
+`fillFraction` in the postDict entry as well is refused by name, because
+two homes for one number agree only until somebody edits one of them.
 
 **What your economic analysis must now carry.**  Your working capital holds
 the raw material and the product in these tanks (value each at your own
@@ -264,11 +279,14 @@ source:
   7 days of acid is a weekly shipment.  Both are yours to set from your
   supply and sales plan -- and both are decision variables of the
   optimisation, since stock costs money.
-* **The acid is stored HOT.**  It leaves the column at its bubble point at
-  1.5 bar (about 404 K) and the tank takes it as it comes.  A real plant cools
-  its product before an atmospheric tank (at 1 atm that liquid is above its
-  boiling point); add a product cooler and your tank holds the denser, cold
-  liquid -- and its duty is a utility cost.
+* **The storage temperature.**  `acidCooler` brings the acid to 313.15 K
+  (40 °C) before the tank: 78 K below its normal boiling point, so the tank
+  breathes little vapour; above its freezing point, about 290 K (16.6 °C, a
+  handbook figure -- the case's records carry no melting point), so glacial
+  acid does not freeze in the tank or the line; and 15 K above the cooling
+  water supply, a reachable approach.  The cold tank is 11 % smaller than a
+  hot one would be (1026 against 911 kg/m³), and the 306 kW go to cooling
+  water -- a utility cost.  Its U (500 W/m²/K) is assumed too.
 * **The tank's material.**  Both are SS316, the one material record this
   sealed case carries; whether a methanol tank needs stainless steel is your
   materials question (the tank cost row carries no material factor).
