@@ -984,6 +984,21 @@ accepts today, and that is a policy call.
 > Open, unsourced: one temperature-independent sigma_y per record (SS304/316
 > 138 MPa to 870/925 K; carbonSteel "@250 C" to 700 K).
 
+> **C86. THE RATING CHECK ON EVERY SIZED SHELL, AND THE PRESSURE
+> CONVENTION PREPARED FOR VITOR'S RULING (commander, 2026-10-18, closing
+> C85's two "not done" items inside its scope).**  (1) The column shell, the
+> reflux drum and the shell-and-tube exchanger call `materialLimits::
+> pressure` like the four vessel sizers (announced, no golden moves).  (2)
+> PREPARED ON THE BRANCH, NOT RE-RECORDED: `pressureDesign` read as GAUGE by
+> every reader (Turton.cpp:647-650 stops subtracting 1 bar), and the
+> polynomial F_P (`pressureFactor_poly`, Turton.cpp:289) returns 1 below its
+> correlation's lower pressure bound, IF that bound is readable from a
+> source the tree already cites (else stop and report); C85 measured that
+> below 1 bar g the polynomial returns F_P > 1 (log P < 0), the source of the
+> -4.28 % moves.  Output: the full moved-row list with a reason per row, for
+> Vitor.  Nothing re-recorded, nothing merged, until he rules.  Status:
+> dispatched 2026-10-18.
+
 > **C83. AN EDUTOOL: THE RADIATION OF A POOL FIRE AND THE DISTANCE IT
 > SETS (Vítor, 2026-10-17: "Faz essa EduTool da radiação do incêndio de
 > poça, se achares importante" -- the commander judged it important: it is
