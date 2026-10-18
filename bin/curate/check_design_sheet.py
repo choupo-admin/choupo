@@ -262,6 +262,17 @@ WHAT THIS CHECKS:
       NAME, and a larger tank ceiling makes ONE tank.  Sabotages in
       `check_storage`.
 
+  (u) A TANK A FLOWSHEET UNIT HOLDS IS SIZED ON THE UNIT'S OWN HOLD TIME
+      (2026-10-18, DEV.md 4c C87).  On `aceticAcid02_plant`, whose two
+      `storage` entries LINK their `storageTank` units (`unit <name>;`),
+      each tank's storage time, fill fraction, mass flow and stream are the
+      unit's own and its volumes are recomputed from them; a flowsheet-only
+      change of one unit's residence time and fill fraction moves its tank
+      and not the other; on copies of `economics03_startup_years`, a hold
+      time, fill fraction, stream or name declared beside `unit`, an
+      unlinked entry carrying the unit's name, and a link to a compressor
+      each refuse BY NAME.  Sabotages in `check_storage_link`.
+
   (r) WHAT EACH ITEM HOLDS IS V x FRACTION x RHO x COMPOSITION (2026-10-07,
       DEV.md 4c C44 slice 3).  On `greenAmmoniaPEQ_baseCase` every item
       publishing an `inventory` has each held phase's density RECOMPUTED from
@@ -341,7 +352,7 @@ WHAT THIS CHECKS:
             count); the old `material\\.maxP` pattern would have missed the
             first.
 
-  (u) A GAS BUFFER IS SIZED FROM THE GAS IT GIVES BACK (2026-10-18, DEV.md
+  (v) A GAS BUFFER IS SIZED FROM THE GAS IT GIVES BACK (2026-10-18, DEV.md
       4c C89).  On `greenAmmoniaPEQ_baseCase` the H2 buffer attached to
       `H2Feed` (`gasStorage ( ... )`) has its two SRK densities RECOMPUTED
       from the case's records, its working gas, vessel count, volume,
@@ -2495,6 +2506,251 @@ def _stream_json(out: str, stream: str):
             "comp": comp}
 
 
+LINKED = "tutorials/plant/aceticAcid02_plant"
+LINKPROBE = "tutorials/steady/economics/economics03_startup_years"
+
+
+def _strip_comments(t):
+    return re.sub(r'//[^\n]*', '', re.sub(r'/\*.*?\*/', '', t, flags=re.S))
+
+
+def _flowsheet_units(case: Path):
+    """name -> (type, in, operation text) for every unit of a FLAT case's
+    flowsheetDict, read from the declaration (comments stripped)."""
+    t = _strip_comments((case / "system" / "flowsheetDict").read_text(errors="replace"))
+    out = {}
+    for m in re.finditer(r'\{\s*name\s+(\w+)\s*;\s*type\s+(\w+)\s*;'
+                         r'\s*in\s+(\w+)\s*;([^{}]*?)(operation\s*\{[^{}]*\})?', t):
+        out[m.group(1)] = (m.group(2), m.group(3), m.group(5) or "")
+    return out
+
+
+def _json_line(out: str, prefix: str):
+    return next((l for l in out.splitlines() if l.strip().startswith(prefix)), "")
+
+
+def _num(blob: str, key: str):
+    g = re.search(r'"%s": *(-?[0-9.eE+]+)' % re.escape(key), blob)
+    return float(g.group(1)) if g else None
+
+
+def _copy_case(src: Path, edits):
+    """A COPY of a case with each (relative file, edit) applied; run outputs
+    left behind.  Returns the copy's directory."""
+    tmp = Path(tempfile.mkdtemp(prefix="design_sheet_u_"))
+    dst = tmp / src.name
+    shutil.copytree(src, dst, ignore=shutil.ignore_patterns(
+        "design", "reports", "converged", "postProcessing", "iterations"))
+    for rel, ed in edits:
+        f = dst / rel
+        f.write_text(ed(f.read_text(errors="replace")))
+    return dst
+
+
+def check_storage_link(problems, notes):
+    """(u) A TANK A FLOWSHEET UNIT HOLDS IS SIZED ON THE UNIT'S OWN HOLD TIME
+    -- ONE HOME (2026-10-18, DEV.md 4c C87, Vitor: "um so sitio").  A
+    `storage` entry that declares `unit <name>;` links a flowsheet
+    `storageTank` unit and is sized on that unit's published
+    `residenceTime_s` and `fillFraction` KPIs and on its inlet stream; the
+    hold time, the fill fraction, the stream or a second name declared in
+    the entry as well REFUSE by name, as does an unlinked entry that only
+    carries a storageTank unit's name.
+
+      * WITNESS `aceticAcid02_plant`, both entries linked: the postDict's
+        entries declare `unit` and none of storageTime / fillFraction /
+        stream / name; each tank's published storageTime x 86400, fill
+        fraction and mass flow ARE the unit's KPIs, its inventory names the
+        unit's declared inlet, its V_tanks equals the unit's own
+        `vesselVolume_m3` (the same V = tau x Q / fill, computed by two
+        homes from one declaration), and V_stored / V_tanks / V_R are
+        RECOMPUTED from the unit's KPIs and the published density.
+      * THE UNIT'S VALUE SIZES THE TANK: a copy whose methanolTank declares
+        28 day and fillFraction 0.80 (the flowsheet ONLY -- the postDict is
+        untouched) must size methanolTank/tank1 on exactly those, i.e.
+        V_tanks = 2 x V_stored(witness) / 0.80, while acidTank/tank1 does not
+        move.
+      * REFUSALS, on copies of `economics03_startup_years` (a storageTank
+        unit `T201` and a run of a fraction of a second) with a `storage`
+        list added to its postDict: storageTime, fillFraction, stream and
+        name each declared beside `unit T201;` are refused BY NAME; the
+        round-one implicit form (`name T201;` with its own declarations) is
+        refused naming the link; `unit makeupComp;` (a compressor) is
+        refused; and the CLEAN link `{ unit T201; ... }` reaches the sizer's
+        own pressure refusal NAMING `productNH3`, the unit's inlet -- the
+        stream came from the unit, not from the entry.  Every copy exits 0:
+        a refused store refuses the ITEM, never the run.
+      * THE UNLINKED PATH is arm (q)'s: `greenAmmoniaPEQ_baseCase`'s
+        `NH3Storage` declares no `unit` and is recomputed there from its own
+        declarations, unchanged.
+
+    SABOTAGES, by hand, 2026-10-18 (each in StorageTankSize.cpp, rebuilt,
+    this arm run alone, restored, rebuilt):
+      S1  the linked residence time replaced by a constant 14 days -> FAILED:
+          acidTank/tank1 storageTime 14 against the unit's 7 day, and the
+          28-day copy's methanolTank sized on 14.
+      S2  the linked fill fraction replaced by a constant 0.9 -> FAILED on the
+          copy only (the witness's two tanks both declare 0.90 -- a guard
+          whose only case satisfies it is a guard nothing tests, which is why
+          the copy moves the fill fraction too).
+      S3  the loop that refuses the unit-owned keys removed -> FAILED: the
+          four `... declared here AND ...` probes are not refused.
+      S4  the implicit-name refusal removed -> FAILED: the round-one form is
+          not refused.
+    NOT CHECKED: a linked unit in a SECTORED case (no corpus case has one;
+    the link matches the flattened unit name exactly, as `units` entries
+    do), and whether the inlet or the outlet is read (a storageTank's outlet
+    IS its inlet, so no output can tell them apart)."""
+    case = ROOT / LINKED
+    post = _strip_comments((case / "system" / "postDict").read_text(errors="replace"))
+    sm = re.search(r'\bstorage\s*\((.*?)\n\s*\);', post, flags=re.S)
+    if not sm:
+        problems.append("check_design_sheet(u): %s declares no `storage` list "
+                        "-- this arm CANNOT RUN; it must not pass." % LINKED)
+        return
+    entries = re.findall(r'\{([^{}]*)\}', sm.group(1))
+    linked = []
+    for e in entries:
+        um = re.search(r'\bunit\s+(\w+)\s*;', e)
+        if not um:
+            problems.append("check_design_sheet(u): a %s storage entry is not "
+                            "linked (`unit <name>;`)." % LINKED)
+            continue
+        for k in ("storageTime", "fillFraction", "stream", "name"):
+            if re.search(r'\b%s\b' % k, e):
+                problems.append("check_design_sheet(u): the %s entry linking "
+                                "'%s' still declares `%s` -- the unit is its "
+                                "one home." % (LINKED, um.group(1), k))
+        linked.append(um.group(1))
+    if not linked:
+        problems.append("check_design_sheet(u): no linked storage entry in %s "
+                        "-- nothing to hold." % LINKED)
+        return
+    units = _flowsheet_units(case)
+
+    # The witness and the 28-day copy run together (each is about a minute).
+    def bump(t):
+        t2, n = re.subn(r'(name\s+methanolTank;.*?operation\s*\{)[^{}]*\}',
+                        r'\1 residenceTime 28 day;  fillFraction 0.80; }',
+                        t, count=1, flags=re.S)
+        return t2 if n == 1 else t + "\n#error the probe found no methanolTank\n"
+    cp = _copy_case(case, [("system/flowsheetDict", bump)])
+    procs = [subprocess.Popen([str(ROOT / "choupoSolve"), str(d)],
+                              stdout=subprocess.PIPE, stderr=subprocess.PIPE,
+                              text=True) for d in (case, cp)]
+    (out, err), (cout, cerr) = (p.communicate() for p in procs)
+    rcs = [p.returncode for p in procs]
+    shutil.rmtree(cp.parent, ignore_errors=True)
+    if rcs[0] != 0:
+        problems.append("check_design_sheet(u): %s failed (rc=%d)." % (LINKED, rcs[0]))
+        return
+
+    base = {}
+    for u in linked:
+        if u not in units or units[u][0] != "storageTank":
+            problems.append("check_design_sheet(u): `unit %s;` is not a "
+                            "storageTank of %s's flowsheetDict." % (u, LINKED))
+            continue
+        k = _json_line(out, '"%s": {' % u)
+        tau, fill = _num(k, "residenceTime_s"), _num(k, "fillFraction")
+        mdot_u, vv = _num(k, "massFlow_kg_s"), _num(k, "vesselVolume_m3")
+        eq = [l for l in out.splitlines() if '"item": "%s/tank' % u in l]
+        if None in (tau, fill, mdot_u, vv) or len(eq) != 1:
+            problems.append("check_design_sheet(u): %s: unit KPIs or ONE tank "
+                            "item missing (found %d items)." % (u, len(eq)))
+            continue
+        vals = re.search(r'"values": \{([^}]*)', eq[0]).group(1)
+        got = {key: _num(vals, key) for key in
+               ("storageTime", "fillFraction", "massFlow", "rho",
+                "V_stored", "V_tanks", "V_R")}
+        want = {"storageTime": tau / 86400.0, "fillFraction": fill,
+                "massFlow": mdot_u}
+        if got["rho"]:
+            want["V_stored"] = tau * mdot_u / got["rho"]
+            want["V_tanks"] = want["V_stored"] / fill
+            want["V_R"] = want["V_tanks"]
+        for key, w in want.items():
+            if got[key] is None or not close(got[key], w):
+                problems.append("check_design_sheet(u): %s/tank1 %s = %s, but "
+                                "the unit publishes / implies %.9g (tau %g s, "
+                                "fill %g)." % (u, key, got[key], w, tau, fill))
+        if got["V_tanks"] is None or not close(got["V_tanks"], vv):
+            problems.append("check_design_sheet(u): %s/tank1 V_tanks %s against "
+                            "the unit's own vesselVolume_m3 %.9g -- one "
+                            "declaration, two homes that disagree."
+                            % (u, got["V_tanks"], vv))
+        inlet = units[u][1]
+        if '"%s.fraction"' % inlet not in eq[0]:
+            problems.append("check_design_sheet(u): %s/tank1 does not hold the "
+                            "unit's inlet '%s'." % (u, inlet))
+        base[u] = got
+
+    if rcs[1] != 0:
+        problems.append("check_design_sheet(u): the 28-day copy failed (rc=%d)."
+                        % rcs[1])
+    elif "methanolTank" in base and base["methanolTank"]["V_stored"]:
+        for u, want_vt in (("methanolTank",
+                            2.0 * base["methanolTank"]["V_stored"] / 0.80),
+                           ("acidTank", base.get("acidTank", {}).get("V_tanks"))):
+            ln = next((l for l in cout.splitlines()
+                       if '"item": "%s/tank1"' % u in l), "")
+            vt = _num(ln, "V_tanks")
+            if want_vt is None or vt is None or not close(vt, want_vt):
+                problems.append("check_design_sheet(u): with methanolTank "
+                                "declaring 28 day and fill 0.80 (flowsheet "
+                                "only), %s/tank1 V_tanks = %s, expected %s -- "
+                                "the tank is not sized on the unit's value."
+                                % (u, vt, want_vt))
+
+    # Refusals, on a fast case with a storageTank unit.
+    pcase = ROOT / LINKPROBE
+    tail = "material SS316;  maxTankVolume 30000;"
+    probes = (
+        ("storageTime beside unit",
+         "unit T201;  storageTime 48 h;  " + tail, r'`storageTime` is declared here AND'),
+        ("fillFraction beside unit",
+         "unit T201;  fillFraction 0.8;  " + tail, r'`fillFraction` is declared here AND'),
+        ("stream beside unit",
+         "unit T201;  stream productNH3;  " + tail, r'`stream` is declared here AND'),
+        ("name beside unit",
+         "unit T201;  name T201;  " + tail, r'`name` is declared here AND'),
+        ("the unit's name without the link",
+         "name T201;  stream productNH3;  storageTime 48 h;  fillFraction 0.8;  "
+         + tail, r'carries the name of the flowsheet storageTank unit .T201. but'
+                 r' does not link it.*`unit T201;`'),
+        ("a link to a compressor",
+         "unit makeupComp;  " + tail, r'is a `compressor`, not a `storageTank`'),
+        ("the clean link (it must reach the stream's own refusal)",
+         "unit T201;  " + tail, r"stream 'productNH3' is at 20"),
+    )
+    for what, ent, pat in probes:
+        def add(t, ent=ent):
+            t2, n = re.subn(r'(\n    \);\n)(\}\s*\ncosting)',
+                            r'\1    storage ( { ' + ent + r' } );\n\2', t, count=1)
+            return t2 if n == 1 else t + "\n#error the probe found no sizing block\n"
+        d = _copy_case(pcase, [("system/postDict", add)])
+        proc = subprocess.run([str(ROOT / "choupoSolve"), str(d)],
+                              capture_output=True, text=True)
+        both = proc.stdout + proc.stderr
+        name = "makeupComp" if "makeupComp" in ent else "T201"
+        if proc.returncode != 0:
+            problems.append("check_design_sheet(u): the copy with %s failed "
+                            "(rc=%d) -- a refused store must refuse the ITEM, "
+                            "never the run." % (what, proc.returncode))
+        elif not re.search(r'%s\s+FAILED:[^\n]*%s' % (name, pat), both):
+            problems.append("check_design_sheet(u): a copy with %s is not "
+                            "refused BY NAME (/%s/)." % (what, pat))
+        shutil.rmtree(d.parent, ignore_errors=True)
+
+    notes.append("storage link: %s on %s sized on the units' own residence "
+                 "time, fill fraction and inlet (and equal to the units' "
+                 "vesselVolume_m3); a flowsheet-only change of methanolTank "
+                 "to 28 day / 0.80 moved its tank and not the other; seven "
+                 "probes on %s refused by name, the clean link reaching the "
+                 "inlet's own pressure refusal"
+                 % (", ".join(linked), LINKED, LINKPROBE.split("/")[-1]))
+
+
 def check_inventory(problems, notes):
     """(r) WHAT EACH ITEM HOLDS IS ITS VOLUME x FRACTION x DENSITY x
     COMPOSITION, AND NOTHING ELSE (2026-10-07, DEV.md 4c C44 slice 3).  On
@@ -2561,7 +2817,7 @@ def check_inventory(problems, notes):
         mw[f.stem] = _record_scalars(f, ("MW",))["MW"]
 
     #  A GAS STORE's vessels hold their stream's gas at the STORE's state, not
-    #  the stream's: arm (u) recomputes them, so this arm leaves them alone.
+    #  the stream's: arm (v) recomputes them, so this arm leaves them alone.
     gas_stores = set(re.findall(r'\bgasStorage\s*\(\s*\{[^}]*?\bname\s+(\w+)',
                                 post_nc))
     lines = [l for l in out.splitlines() if '"inventory": {' in l
@@ -3228,7 +3484,7 @@ def check_material_limits(problems, notes):
 
 
 def check_gas_store(problems, notes):
-    """(u) A GAS BUFFER IS SIZED FROM THE GAS IT GIVES BACK, ON THE CASE'S OWN
+    """(v) A GAS BUFFER IS SIZED FROM THE GAS IT GIVES BACK, ON THE CASE'S OWN
     EQUATION OF STATE (2026-10-18, DEV.md 4c C89).  On
     `greenAmmoniaPEQ_baseCase`, whose postDict attaches `H2Buffer` to the
     boundary stream `H2Feed` (`gasStorage ( ... )`), everything is RECOMPUTED
@@ -3281,7 +3537,7 @@ def check_gas_store(problems, notes):
     of hydrogen at 100 bar, and whether Turton's vessel pressure factor --
     linear in a 200 mm wall -- is meant to price a vessel that thick (the
     README says what it does to the FCI)."""
-    tag = "check_design_sheet(u)"
+    tag = "check_design_sheet(v)"
     case = ROOT / HXROUTE
     post = (case / "system" / "postDict").read_text(errors="replace")
     post_nc = re.sub(r'//[^\n]*', '', re.sub(r'/\*.*?\*/', '', post, flags=re.S))
@@ -3476,6 +3732,7 @@ def main() -> int:
     check_space_velocity_basis(problems, notes)
     check_exchanger_routes(problems, notes)
     check_storage(problems, notes)
+    check_storage_link(problems, notes)
     check_inventory(problems, notes)
     check_exchanger_design(problems, notes)
     check_material_limits(problems, notes)
@@ -3529,7 +3786,12 @@ def main() -> int:
           "costs RECOMPUTED from the case's records, its declarations, the "
           "stream's own mass flow and the CAPCOST fixed-roof row; LOWER BOUND "
           "said per tank for refrigerated storage; a unitless storage time "
-          "and a vapour stream refused BY NAME) and on the inventory "
+          "and a vapour stream refused BY NAME) and on the linked-storage "
+          "witness (two tanks sized on their flowsheet units' own residence "
+          "time, fill fraction and inlet; a flowsheet-only change moves its "
+          "tank; the hold time, fill fraction, stream or name declared beside "
+          "`unit`, the unit's name without the link and a link to a "
+          "compressor refused BY NAME) and on the inventory "
           "witness (every held phase's density, mass and per-component split "
           "RECOMPUTED from the case's records and declarations, the tanks "
           "held to storageTime of production, the undeclared items listed as "

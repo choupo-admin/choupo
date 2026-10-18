@@ -14,8 +14,9 @@
   optimisation, and adding one is a `costing {}` block (see
   greenAmmoniaPEQ_baseCase for the shape).
 
-  WHAT IS SIZED, AND ON WHAT BASIS.  Five of the nine units -- one item
-  each, and four for the lights column:
+  WHAT IS SIZED, AND ON WHAT BASIS.  Eight of the thirteen units -- one
+  item each for the first four and for the product cooler, four for the
+  lights column, and the two tanks (below):
 
     preheater     (phaseChanger)      shellTubeHX, A = Q/(U*LMTD): Q is the
                   unit's own duty, the LMTD is COMPUTED from its own inlet
@@ -56,11 +57,25 @@
   the run SAYS so; a hydraulic number that is not finite refuses by name.
   The column has no reflux drum here (its entry says why).
 
+  THE PRODUCT COOLER (DEV.md 4c C87) -- `acidCooler`, a phaseChanger that
+  brings the column's bottoms from their 1.5 bar bubble point (~404 K) to
+  313.15 K before the tank: shellTubeHX, A = Q/(U*LMTD) on the preheater's
+  route, the LMTD COMPUTED from the unit's own inlet and outlet
+  temperatures against the plant's cooling water
+  (constant/utilities/coolingWater.dat, 298.15 -> 308.15 K), U DECLARED.
+
+  THE TWO TANKS (DEV.md 4c C87): the methanol feed tank and the acetic acid
+  product tank, sized by the `storage` list at the end of this file -- an
+  atmospheric fixed-roof tank on the storage time its flowsheet unit
+  declares.  CO is not stored: it arrives by pipeline.
+
   WHAT IS NOT SIZED, and why it is not an omission: M1 and M2 are pipe
   junctions, purgeSplit a tee and letdown a control valve -- no vessel, no
-  area, no driver -- so no item is invented for them.  Outside the battery
-  limit, as the README says: the feed compressor and pump (the feeds are
-  declared at 30 bar), the steam, cooling-water and refrigeration systems.
+  area, no driver -- so no item is invented for them.  The methanol pump has
+  no sizer in the engine, so it has no item either (and no place on the plot
+  plan).  Outside the battery limit, as the README says: the CO compressor
+  (the CO is declared at 30 bar), the steam, cooling-water and refrigeration
+  systems.
 
   EVERY DESIGN NUMBER BELOW IS AN AUTHOR-SET ASSUMPTION, declared with its
   reason on its line, for the students to replace with their own design;
@@ -87,6 +102,16 @@ sizing
                         U 200;                  // W/m2/K, gas film against
                                                 // condensing steam -- ASSUMED
                         pressureDesign 33; } }  // 1.1 x 30 bar
+
+        //  ---- the product cooler: ~404 -> 313.15 K against cooling water --
+        //  Liquid acid at 1.5 bar, so the design pressure is the 1.5 bar
+        //  side's 2 bar (the rule in the header).  The plan box in
+        //  system/layoutDict is drawn from the area this prints.
+        { unitName acidCooler;  type shellTubeHX;  material SS316;
+          designRules { utility coolingWater;   // 298.15 -> 308.15 K: LMTD computed
+                        U 500;                  // W/m2/K, a liquid organic against
+                                                // cooling water -- ASSUMED
+                        pressureDesign 2; } }   // 1.1 x 1.5 bar, rounded up
 
         //  ---- the reactor: a vessel on a declared volume ---------------
         //  THE HAND CALCULATION (base case, redo it when the plant moves):
@@ -147,6 +172,41 @@ sizing
                                                 // condensing steam -- ASSUMED
                                     LMTD 53;    // K -- the hand calculation above
                                     pressureDesign 2; } } }
+    );
+
+    //  ---- the two tanks: linked to the flowsheet units that hold them ----
+    //  A tank is not reached through `units` (a flowsheet `storageTank`
+    //  carries no sizer): it is a `storage` entry (DEV.md 4c C44).  Each
+    //  entry here LINKS its flowsheet `storageTank` unit (`unit <name>;`):
+    //  its items (`methanolTank/tank1`, ...) belong to that unit, the plot
+    //  plan pipes the unit's streams to them, and the tank is sized on what
+    //  the UNIT declares and publishes -- its inlet stream, its residence
+    //  time and its fill fraction (DEV.md 4c C87, "um so sitio": the stock
+    //  has ONE home, system/flowsheetDict; declaring `storageTime`,
+    //  `fillFraction`, `stream` or `name` here as well is refused by name).
+    //  V = residenceTime x mdot / (rho_liquid x fillFraction), rho from the
+    //  case's own package at the state the stream carries, split into equal
+    //  tanks of at most maxTankVolume.  The two numbers declared here are
+    //  AUTHOR-SET DESIGN ASSUMPTIONS, for the students to replace; neither
+    //  cites a source.
+    storage
+    (
+        { unit          methanolTank;    // stores freshMethanol: liquid, 300 K, 1 atm
+          material      SS316;           // the one material record this sealed
+                                         // case carries; the tank cost row has
+                                         // NO material factor, and whether a
+                                         // methanol tank needs stainless is the
+                                         // students' materials question
+          maxTankVolume 30000;           // m3 per tank: the ceiling of the tank
+                                         // cost row (CAPCOST 2017), so a costing
+                                         // pass added later prices every tank
+                                         // inside its range
+        }
+        { unit          acidTank;        // stores coldAcid: the cooled product,
+                                         // 313.15 K and 1.5 bar
+          material      SS316;           // acetic acid; no material factor (above)
+          maxTankVolume 30000;           // m3 per tank (above)
+        }
     );
 }
 

@@ -1531,12 +1531,15 @@ Worked example: `tutorials/plant/ammonia02_full_plant` carries
 both a raw-material tank (T101, syngas, 0.5 h) and a product tank (T201,
 liquid ammonia, 48 h).
 
-This unit is NOT sized or costed: it has no sizer.  The tank the plant BUYS
-is a postDict `storage ( ... )` item attached to a boundary stream, sized,
-split into tanks and costed on the CAPCOST fixed-roof row
-(`docs/ai/case-layout.md`, "A STORAGE TANK IS ATTACHED TO A BOUNDARY
-STREAM").  Both ask the package for the density over the SAME components
-(`thermo/PricedDensity`, one home).
+This unit has no sizer of its own.  The tank the plant BUYS is a postDict
+`storage ( ... )` item, sized, split into tanks and costed on the CAPCOST
+fixed-roof row (`docs/ai/case-layout.md`, "A STORAGE TANK IS ATTACHED TO A
+BOUNDARY STREAM").  An item that LINKS this unit (`unit <name>;`, since
+2026-10-18) is sized on the unit's own `residenceTime_s`, `fillFraction` and
+inlet -- the hold time is declared ONCE, here, and declaring it in the item
+too is refused by name (`tutorials/plant/aceticAcid02_plant`).  Both ask the
+package for the density over the SAME components (`thermo/PricedDensity`,
+one home).
 
 ## Hydraulics
 

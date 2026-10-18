@@ -1060,6 +1060,19 @@ accepts today, and that is a policy call.
 > names, and declaring it in both places refuses.  Second round dispatched
 > 2026-10-18.
 
+> **C87 MERGED 2026-10-18.**  `acidCooler` (phaseChanger, 404.14 ->
+> 313.15 K, -306.09 kW to cooling water, shellTubeHX 14.03 m2, placed between
+> the column and the tanks); the acid tank 1074 m3 for 992 t cold.  Ruling 2
+> as an EXPLICIT link: a postDict `storage` entry declaring `unit <name>;`
+> reads the storageTank unit's residence time, fill fraction and inlet
+> stream, and declaring any of them beside `unit` refuses (so does an
+> unlinked entry named after a storageTank unit); unit-less entries (the four
+> ammonia cases) byte-identical.  `check_design_sheet` arm (u).  17 rows
+> re-recorded on Vitor's approval (list in the commit), 149 appended.
+> `--fast` 73/0, `--gui` vitest 5580/5580.  Open: the pump's v.dP is not in
+> the liquid enthalpy (plant residual 6.17 kW, 0.098 %); `0/acidShipped`
+> keeps a hot seed.
+
 > **C89. TANKS ON THE AMMONIA PEQ (Vitor, 2026-10-18: "faz o mesmo no PEQ
 > do amoniaco").**  Measured before acting: `greenAmmoniaPEQ_baseCase`
 > ALREADY stores its product (postDict `storage`, NH3Storage, 21 d,
@@ -1080,6 +1093,68 @@ accepts today, and that is a policy call.
 > Turton vessel set, split into vessels of a declared maximum volume; placed
 > in the PEQ layout with its own zone; the charging compressor said, not
 > invented.  Moved PEQ rows listed for Vitor.  Status: dispatched 2026-10-18.
+
+> **C89 first round (`claude/c89-h2-buffer`, c1e194538), NOT merged.**
+> `gasStorage ( ... )` postDict list, `GasStoreSize.{H,cpp}`; PEQ H2Buffer 2 h,
+> 100 -> 32 bar, SRK density (Z 1.054 at 100 bar), 17.8 t working, 10
+> vessels of 362 m3, wall 201 mm.  Turton's vessel F_P (linear in the wall,
+> 31.9 here) prices it at ~302 M EUR -- FCI 41 -> 352 M EUR -- about 10x a
+> steel-mass estimate (4260 t at 5-10 EUR/kg): a thin-wall correlation far
+> outside its range.  VITOR'S RULING (2026-10-18): "Pelo peso do aco" -- the
+> gas store is costed by its vessel steel mass x a DECLARED fabricated-steel
+> price (EUR/kg, author-set, the catalyst charge's declared-unit-price
+> shape), Turton printed beside it as an announced extrapolation.  Second
+> round dispatched; moved PEQ rows to Vitor after it.
+
+> **C90. THE EXPORTED LAYOUT IN COLOUR, AND ROADS AND SITE BUILDINGS
+> (Vitor, 2026-10-18, with two screenshots: "Esta mesmo fixe!  Mas o layout
+> gerado para exportar nao esta a cores!  E achas que se podem por as
+> estradas a ligar tudo?  Entrada, pavilhao de armazenamento, refeitorio,
+> balanca para pesar camioes quando faz falta?").**  (1) Measured: the
+> exported page in his browser draws a near-black scene -- the renderer
+> follows `prefers-color-scheme` (`layoutRenderer.ts:198-203`) into a NIGHT
+> palette (sky, grass, gravel, lights, :274-305, :397-440); the app showed
+> the day palette.  Rule taken: the 3D SCENE is always daylight; only the
+> page chrome follows the theme.  (2) Roads and site buildings, on the
+> existing layout grammar: declared roads (centre-line waypoints, width,
+> with source/reason), checked by the engine (a road through a footprint
+> refuses; every declared site building and the gate reached; a process
+> item with no road within a declared access distance announced), road
+> length and paved area published and inside the plot envelope; site
+> buildings as declared non-process items by kind -- gate/guardhouse,
+> warehouse, canteen, weighbridge (only where the case says trucks are
+> weighed) -- each drawn by its kind in 3D, roads as asphalt.  Witness: the
+> existing `ammonia02_full_plant` (no new case); PEQ and acetic acid after
+> C87/C89 land.  Status: dispatched 2026-10-18.
+
+> **C91. THE LAYOUT WINDOW SIZED BY ITS READER (Vitor, 2026-10-18, with a
+> screenshot of the pop-out tab: "A window dos tubos tambem esta fixa.  Eu
+> acho que ha boas praticas como ter uma opcao de ver isso ou nao e
+> ajustar.  O que achas?").**  Measured: `LayoutPopOutTab.tsx` stacks the
+> explanatory text, the toolbar, a 3D view of fixed height
+> (`PlantLayout3D.tsx:114`, default 520 px; the tab shows it as a strip) and
+> the plot summary and pipe register below.  Agreed: the 3D view fills the
+> window and is resizable (drag handle, a fullscreen button); the
+> explanatory text, the plot summary and the pipe register become
+> collapsible panels (remembered per browser), the pipe register
+> optionally docked beside the view; the same in the exported page.  Handed
+> to the C90 general (same files, avoids two generals on one page).
+
+> **C92. THE FULL PLANT'S TANKS SIZED AND PLACED (Vitor, 2026-10-18: "No
+> full plant tambem faltam os tanques de armazenamento").**  Measured:
+> `ammonia02_full_plant` DECLARES two `storageTank` units (T101 on `makeup`,
+> 0.5 h; T201 on `productNH3`, 48 h) but its postDict sizes neither and its
+> layoutDict places neither, so neither is drawn, costed nor counted in the
+> plot.  Neither can be sized today: `makeup` is a GAS (300 K, 25 bar) --
+> the C89 gas store; `productNH3` is a PRESSURISED liquid (250 K, 20 bar),
+> which `StorageTankSize.cpp:84-94` refuses above 1.5 bar.  Plan, after
+> C87 (one home for the hold time), C89 (pressure store) and C90 (same
+> layoutDict) land: T101 as a pressure gas store; T201 either let down to a
+> refrigerated atmospheric tank (the PEQ precedent: a storage flash) or kept
+> as a pressurised liquid store (spheres/bullets, the C89 sizer extended to
+> a liquid) -- the commander's default is the pressurised store, which
+> leaves the process untouched; both placed with zones; moved rows to
+> Vitor.  Status: queued 2026-10-18.
 
 > **C88. THE 3D LAYOUT MADE TO LOOK LIKE A PLANT (Vitor, 2026-10-18: "E ve
 > se pões o layout com melhor aspecto!  Eu acho que ha bibliotecas para

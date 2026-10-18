@@ -2106,7 +2106,7 @@ full charge as inventory.  Every key is required; Pmin below the stream's own
 pressure refuses (the gas could not flow back into the line).  The charging
 compressor and any renewable profile behind the hours are NOT included and
 are announced on every run.  One home: `sizing/GasStoreSize`.  Gate:
-`check_design_sheet` arm (u).  Witness `greenAmmoniaPEQ_baseCase` (H2Buffer).
+`check_design_sheet` arm (v).  Witness `greenAmmoniaPEQ_baseCase` (H2Buffer).
 
 **A RELIEF VALVE IS A SIZED ITEM OF THE UNIT IT PROTECTS (2026-10-11, DEV.md
 4c C62, on a stated default).**  `type reliefValve` in the sizing pass: one

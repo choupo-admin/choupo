@@ -244,7 +244,8 @@ int SizingPass::run(SimulationResult& result)
     for (const auto& u : units)
         wName = std::max(wName, u->lookupWordOrDefault("unitName", "").size() + 2);
     for (const auto& st : stores)
-        wName = std::max(wName, st->lookupWordOrDefault("name", "").size() + 2);
+        wName = std::max(wName, (st->found("unit") ? st->lookupWord("unit")
+                                 : st->lookupWordOrDefault("name", "")).size() + 2);
     for (const auto& st : gasStores)
         wName = std::max(wName, st->lookupWordOrDefault("name", "").size() + 2);
 
@@ -581,10 +582,16 @@ int SizingPass::run(SimulationResult& result)
         std::cout << "  -- storage (attached to boundary streams)\n";
     for (const auto& st : stores)
     {
-        const std::string sname = st->lookupWordOrDefault("name", "");
+        //  An entry LINKED to a flowsheet storageTank unit (`unit <name>;`,
+        //  DEV.md 4c C87) is named after that unit, so its items are the
+        //  unit's; `name` beside `unit` is refused inside the sizer.
+        const std::string sname = st->found("unit")
+            ? st->lookupWord("unit") : st->lookupWordOrDefault("name", "");
         try {
             if (sname.empty())
-                throw std::runtime_error("a `storage` entry has no `name`");
+                throw std::runtime_error("a `storage` entry has neither `unit`"
+                    " (the flowsheet storageTank unit it sizes) nor `name` (a"
+                    " store no unit holds)");
             if (!st->found("material"))
                 throw std::runtime_error("storage '" + sname + "': `material`"
                     " is not declared");
