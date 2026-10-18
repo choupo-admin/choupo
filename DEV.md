@@ -1094,6 +1094,18 @@ accepts today, and that is a policy call.
 > in the PEQ layout with its own zone; the charging compressor said, not
 > invented.  Moved PEQ rows listed for Vitor.  Status: dispatched 2026-10-18.
 
+> **C89 first round (`claude/c89-h2-buffer`, c1e194538), NOT merged.**
+> `gasStorage ( ... )` postDict list, `GasStoreSize.{H,cpp}`; PEQ H2Buffer 2 h,
+> 100 -> 32 bar, SRK density (Z 1.054 at 100 bar), 17.8 t working, 10
+> vessels of 362 m3, wall 201 mm.  Turton's vessel F_P (linear in the wall,
+> 31.9 here) prices it at ~302 M EUR -- FCI 41 -> 352 M EUR -- about 10x a
+> steel-mass estimate (4260 t at 5-10 EUR/kg): a thin-wall correlation far
+> outside its range.  VITOR'S RULING (2026-10-18): "Pelo peso do aco" -- the
+> gas store is costed by its vessel steel mass x a DECLARED fabricated-steel
+> price (EUR/kg, author-set, the catalyst charge's declared-unit-price
+> shape), Turton printed beside it as an announced extrapolation.  Second
+> round dispatched; moved PEQ rows to Vitor after it.
+
 > **C90. THE EXPORTED LAYOUT IN COLOUR, AND ROADS AND SITE BUILDINGS
 > (Vitor, 2026-10-18, with two screenshots: "Esta mesmo fixe!  Mas o layout
 > gerado para exportar nao esta a cores!  E achas que se podem por as
