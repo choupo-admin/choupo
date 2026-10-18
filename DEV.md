@@ -1031,6 +1031,21 @@ accepts today, and that is a policy call.
 > "read as gauge, written as absolute" and name the unchecked 140 bar g
 > ceiling.
 
+> **C87. THE ACETIC ACID PLANT GETS ITS TANKS (Vitor, 2026-10-18: "O
+> processo do acido acetico nao tem tanques de entrada nem de saida!  E isso
+> e importante para a analise economica e para o layout").**  Measured:
+> `aceticAcid02_plant` declares no `storageTank`; its postDict is SIZING
+> ONLY by design (the README leaves pricing to the students).  Slice, on the
+> EXISTING case (standing rule: no new case), with the `storageTank` unit and
+> sizer that `ammonia02_full_plant` (T101/T201) already uses: a methanol
+> feed tank on `freshMethanol` and an acetic acid product tank on
+> `acidProduct` (CO arrives by pipeline -- said, not stored); residence times
+> author-set and declared as such; sized in the postDict; placed in
+> `layoutDict` as a tank area with the case's own declared separations and
+> zones; pipes routed; README says what inventory the students' working
+> capital must now carry.  Moved golden rows (layout area, pipe lengths)
+> listed for Vitor before re-recording.  Status: dispatched 2026-10-18.
+
 > **C83. AN EDUTOOL: THE RADIATION OF A POOL FIRE AND THE DISTANCE IT
 > SETS (Vítor, 2026-10-17: "Faz essa EduTool da radiação do incêndio de
 > poça, se achares importante" -- the commander judged it important: it is
