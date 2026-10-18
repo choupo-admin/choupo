@@ -1256,6 +1256,22 @@ accepts today, and that is a policy call.
 > NPSH unchecked today -- the C95 candidate).  PDF rebuilt.  Status:
 > dispatched 2026-10-18.
 
+> **C94 MERGED 2026-10-18.**  Design Guide §21 "Plant layout" (4 pages,
+> between Pressure relief and Effluent treatment): siting and wind;
+> separation and hazardous areas (principles and published sources by
+> title, no table transcribed); blocks, roads, fence, battery limits; pipe
+> racks; tank farms (pressurised / semi-refrigerated / fully refrigerated,
+> ammonia's crossover in the low thousands of tonnes); the column group;
+> NPSH and the elevations it fixes (illustrative worked example); platforms,
+> ladders, walkways; maintenance access; what Choupo checks and does not.
+> Tutorials Guide plant intro points to it; its generated plant part was
+> STALE on main after C92/C93 (T101 still drawn) and is regenerated.  Doc
+> gates OK.  Found, pre-existing, not fixed: `\ref{sec:column-control}` has
+> no label (prints "??"); "Equipment selection at a glance" appears twice;
+> the intro still says "eight faculty sections".  C95 note from the
+> general: NPSHr is vendor data the engine does not carry -- publish NPSHa
+> and let the case declare NPSHr with its source.
+
 > **C88. THE 3D LAYOUT MADE TO LOOK LIKE A PLANT (Vitor, 2026-10-18: "E ve
 > se pões o layout com melhor aspecto!  Eu acho que ha bibliotecas para
 > renderizar o 3d para aquilo ficar top notch!").**  Measured:
