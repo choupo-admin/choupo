@@ -1276,6 +1276,26 @@ accepts today, and that is a policy call.
 > those items.  Moved rows to Vitor before re-recording.  Status:
 > dispatched 2026-10-18.
 
+> **C97. APALUTAMIDE TABLETS: A NEW CASE AND THE GMP INTERIOR LAYOUT
+> (Vitor, 2026-10-18: a pharmaceutical-industry project group produces
+> apalutamide tablets; the API is bought, everything else is made on site.
+> Ruling: "Caso novo + layout GMP" -- an EXPLICIT EXCEPTION to the standing
+> no-new-case rule, for this project only).**  Measured before planning:
+> the reference product is a film-coated tablet whose core carries HPMCAS,
+> an amorphous solid dispersion made by SPRAY DRYING (AusPAR apalutamide
+> 2019; Materials 16 (2023) 6616 review); the solvent system is NOT
+> confirmed in any source read (the EPAR quality module 3.2.P.3 is where the
+> group must look) -- it is declared in the case as an assumption.  Choupo
+> today: `sprayDryer` takes any volatile solvent but defaults its liquid
+> surface tension/viscosity to water and uses Le ~ 1 (water-air)
+> (`SprayDryer.cpp` ~113-267), so an organic-solvent / nitrogen dryer runs
+> with stated approximations; no blender, roller compactor, mill, tablet
+> press or pan coater exists; there is no interior (rooms / floors / GMP
+> grades / pressure cascade / flows) layout.  PLAN put to Vitor before
+> dispatch: phase A the case; phase B the GMP interior layout; phase C
+> (later) equipment counts from campaign occupancy.  Status: plan awaiting
+> Vitor's go.
+
 > **C94. LAYOUT GUIDELINES IN THE GUIDES (Vitor, 2026-10-18: "Nos Guias
 > apropriados podes incluir uma parte sobre guidelines de layout?", after
 > asking where a column's reboiler and condenser go, whether columns share
