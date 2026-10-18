@@ -1065,6 +1065,26 @@ accepts today, and that is a policy call.
 > stays the truth: no dimension invented, decoration says it is decoration.
 > A quality toggle for weak laptops.  Status: dispatched 2026-10-18.
 
+> **C88 MERGED 2026-10-18.**  `gui/src/case/equipmentModel.ts` (pure, no
+> three.js) holds one drawing per registered equipment word -- vessel
+> standing (2:1 heads, skirt or legs) and lying (saddles), shellTubeHX
+> (channel, heads, flanges, saddles), storageTank (cone roof, courses,
+> ladder), stirredTank (drive), compressor (plinth, casing, motor),
+> sprayDryer (cone, legs, atomiser) -- every part flagged BODY (fills the
+> published envelope exactly) or DECORATION (never moves position, size,
+> fit or tooltip); unknown kinds and non-process items keep the plain
+> drawing; the tooltip says "drawn as".  RoomEnvironment + sky light + sun
+> with soft shadows, tone mapping, fog, AO and outline in High; grass,
+> gravel plot, concrete pads; one bent tube per pipe on a portal rack.
+> High/Fast toggle (Fast default on touch / <= 4 GB / <= 2 cores).  No new
+> dependency; exported viewer still offline (508 -> 590 kB).  `--gui` 31/1,
+> the one (`layoutPopOut.test.ts` matched a literal import) fixed and the
+> five layout files re-run 108/108; typecheck clean; `equipmentModel.test.ts`
+> 22 tests.  Not done: a COLUMN is stamped `vessel` like every drum, so the
+> ladders/platforms go on any standing item taller than 5 m (a column-kind
+> field would be an engine change); no pump drawing (no sizer stamps one);
+> no frame rate measured on a real GPU.
+
 > **C83. AN EDUTOOL: THE RADIATION OF A POOL FIRE AND THE DISTANCE IT
 > SETS (Vítor, 2026-10-17: "Faz essa EduTool da radiação do incêndio de
 > poça, se achares importante" -- the commander judged it important: it is
