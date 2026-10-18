@@ -1,0 +1,88 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+  constant/components/polyvinylAlcohol.dat -- CASE-LOCAL record (apalutamide01_tablets)
+
+  Polyvinyl alcohol (PVA) -- the film former of the coat.
+
+  Listed among the film-coat ingredients of the US label (via RxList).
+
+  WHAT THIS RECORD IS FOR, AND WHAT IT IS NOT.  It carries what a SOLID that
+  is only MOVED, MIXED, DRIED and PRESSED needs in this plant: a molar mass,
+  a particle density, a solid heat capacity and a formation datum to price it
+  on.  It is never dissolved with a heat of solution, never melted, never
+  reacted, never vaporised (`role nonvolatile`).  EVERY NUMBER BELOW EXCEPT
+  THE MOLAR MASS OF A DEFINITE FORMULA IS AN AUTHOR-SET ASSUMPTION, said so
+  in its provenance block, chosen to be of the right order for an organic (or
+  mineral) powder and taken from no source -- because none was read.  A
+  citation invented for a round number would turn 'unsourced' into 'falsely
+  sourced'.
+\*---------------------------------------------------------------------------*/
+
+name        polyvinylAlcohol;
+formula     C2H4O;
+role        nonvolatile;      // never enters the vapour; leaves every dryer as solid
+MW          44.053;   // kg/kmol -- of the REPEAT unit -CH2-CH(OH)- (C2H4O) -- one mole of this record is one repeat unit
+
+solid
+{
+    rho_p   1270.0;      // kg/m3, particle (skeletal) density -- ASSUMED
+}
+
+volatility
+{
+    class       nonvolatile;
+    provenance  { citation "author-set: a powder handled in this plant at most at 393 K, whose vapour pressure there is taken as nil; no boiling or sublimation point was read"; status assumed; }
+}
+
+standardThermochemistry
+{
+    dHf_298         -100000.0;   // J/mol -- PLACEHOLDER, see provenance
+    s_298           50.0;       // J/(mol K) -- PLACEHOLDER, see provenance
+    referenceState  pureSolid;
+}
+
+solidHeatCapacity
+{
+    model         polynomial;
+    coefficients  ( 70.48 );   // J/(mol K) = 1.6 J/(g K) x the molar mass -- ASSUMED, constant
+    Trange        ( 250  420 );
+}
+
+reviewStatus interim;      // author-set record, not read back by a curator
+
+provenance
+{
+    dHf_298
+    {
+        origin   placeholder;
+        method   "author-set round number, no source";
+        uncertainty { status unquantified; reason "the formation enthalpy is a PLACEHOLDER: no reaction in this plant converts this component, so its formation enthalpy CANCELS in every unit and moves no duty and no residual.  It is here only because the energy report prices every stream on the formation surface.  Replace it with a measured or estimated datum before reusing this record in any case that reacts, dissolves with a heat of solution, or computes an exergy"; }
+    }
+    s_298
+    {
+        origin   placeholder;
+        method   "author-set round number, no source";
+        uncertainty { status unquantified; reason "no unit or report of this plant reads an entropy"; }
+    }
+    solidHeatCapacity
+    {
+        origin   assumed;
+        method   "author-set specific heat of 1.6 J/(g K), constant, of the order of a dry organic powder near room temperature; no source read";
+        uncertainty { status unquantified; reason "moves the sensible heat of this powder in the dryers and in every adiabatic merge; replace it with a measured value"; }
+    }
+    rho_p
+    {
+        origin   assumed;
+        method   "author-set true density, no source read";
+        uncertainty { status unquantified; reason "read by the spray dryer (particle size from droplet size); replace it with a measured value"; }
+    }
+}
+
+// ************************************************************************* //

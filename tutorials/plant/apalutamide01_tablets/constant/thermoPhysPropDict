@@ -1,0 +1,86 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+  thermoPhysPropDict (v2) -- the apalutamide tablet plant.
+
+  THE FLUIDS.  acetone (the spray-drying solvent -- an ASSUMPTION, see the
+  README: no source read confirms the reference product's solvent), nitrogen
+  (the inert drying gas of the closed loop and the bulk of the coating air),
+  oxygen (the rest of the coating air) and water (the coating suspension's
+  carrier and the humidity of the coating air).  An IDEAL liquid (Raoult) and
+  an IDEAL gas: the only vapour-liquid question this plant asks is how much
+  acetone the -10 C condenser leaves in the nitrogen, and Raoult on an almost
+  pure acetone condensate is the right first answer.  N2 and O2 are far above
+  their critical temperatures; their extrapolated vapour pressures keep them
+  in the gas, and the condensate carries a trace of them.
+
+  THE SOLIDS.  The API, the polymer and every excipient are `role
+  nonvolatile;` case-local records in constant/components/: they never enter
+  the vapour, they carry no vapour pressure and no critical constants, and
+  every stream carries them in its SOLID phase.  NOTHING DISSOLVES in this
+  model: the API and the HPMCAS are carried as solids through the solution
+  tank into the spray dryer (which reads dissolved and suspended solids
+  alike), and so are the PVA and the PEG of the coating suspension.  The heat
+  of solution is therefore neglected, and the README says so.
+
+  TRANSPORT.  The spray dryer's drying kinetics need the gas viscosity
+  (Chung), conductivity (Eucken) and the solvent's diffusivity in the gas
+  (Fuller), computed from the components' own records over the GAS species
+  only.  The atomisation reads the liquid's surface tension from the property
+  layer: Brock-Bird on the volatile solvent at the feed temperature (a
+  corresponding-states estimate; acetone is not hydrogen-bonded, the case in
+  which Brock-Bird does best).  The liquid viscosity is NOT a model here: the
+  spray solution is a polymer solution whose viscosity no record carries, so
+  the dryer's `operation` DECLARES it (system/flowsheetDict).
+\*---------------------------------------------------------------------------*/
+
+recordType    thermophysicalPropertySystem;
+schemaVersion 2;
+
+components
+(
+    acetone  N2  O2  water
+    apalutamide  hpmcas
+    microcrystallineCellulose  silicifiedMCC  croscarmelloseSodium
+    colloidalSilica  magnesiumStearate
+    polyvinylAlcohol  polyethyleneGlycol  talcPowder  titaniumDioxide  ironOxide
+);
+
+equilibrium
+{
+    formulation gammaPhi;
+
+    liquid
+    {
+        activityModel ideal;            // gamma = 1 (Raoult)
+        standardState pureLiquid;
+    }
+
+    vapour
+    {
+        fugacityModel idealGas;
+    }
+}
+
+transport
+{
+    vapour
+    {
+        viscosity           { model Chung; }    // gas mu (drying h, k_c)
+        thermalConductivity { model Eucken; }   // gas k
+        diffusivity         { model Fuller; }   // solvent in the gas
+    }
+
+    interface
+    {
+        surfaceTension { model BrockBird; }     // sigma(T) of the solvent
+    }
+}
+
+// ************************************************************************* //

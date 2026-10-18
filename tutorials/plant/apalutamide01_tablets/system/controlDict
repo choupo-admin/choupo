@@ -1,0 +1,29 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+application  choupoSolve;
+
+//  AUDIENCE.  A SHOWCASE composes engineering (bin/curate/check_case_tiers):
+//  a drug-product plant -- solvent spray drying in a closed nitrogen loop with
+//  its solvent recovery, dry granulation, tableting and film coating -- is not
+//  one feature being isolated, it is the base case a pharmaceutical project
+//  group starts from (DEV.md 4c C97, phase A).
+tier         showcase;
+description  "APALUTAMIDE 60 mg FILM-COATED TABLETS, a drug-product plant (the API is BOUGHT): an amorphous solid dispersion of apalutamide in HPMCAS spray-dried from acetone in a closed nitrogen loop (blower, heater, spray dryer, exhaust cooler, -10 C solvent condenser, purge and N2 make-up), the recovered acetone to a tank for QC and reuse; dry granulation (blending, roller compaction, milling, a screen with a fines recycle), final blend, tableting with rejects, film coating (an aqueous PVA coat sprayed on and its water dried off by hot air) and packaging. Steady state at the CAMPAIGN rate (12 800 tablets/h pressed); the operating hours are a declared stream factor. Blending, compaction, milling, screening, tableting and packaging are MASS-BALANCE PLACEHOLDERS (no equipment physics). Every number a group would change is an author-set assumption, said so where it is declared (README).";
+verbosity    2;
+
+reports
+{
+    streamTable   {}
+    massBalance   {}
+    energyBalance {}
+    computed      {}
+    spreadsheet   {}
+}
+
+// ************************************************************************* //

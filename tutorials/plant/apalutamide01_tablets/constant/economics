@@ -1,0 +1,119 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+  constant/economics -- the prices this appraisal is priced at.  Currency:
+  EUR per kg of the stream named.
+
+  EVERY PRICE BELOW IS AN AUTHOR-SET ASSUMPTION and none cites a source,
+  because none was read.  They are round figures chosen so that the appraisal
+  can run, NOT market data: a group replaces each with a dated, cited figure
+  (a supplier quotation, a tender price) before quoting an NPV.  The
+  provenance block of each says so, in the words the engine carries to its
+  output.
+
+  THE TWO PRICES THAT DECIDE THE APPRAISAL:
+    * the API, BOUGHT: 10 000 EUR/kg of apalutamide.  The 60 mg in a tablet
+      then costs 0.60 EUR;
+    * the TABLET, SOLD: 1.00 EUR per tablet ex-factory.  The stream
+      `packagedTablets` carries 7.5989 kg/h for 12 672 tablets/h (0.5997 g a
+      tablet, the core, the coat and the water the coat keeps), so the price
+      per kg of that stream is 12 672 / 7.5989 = 1667.6 EUR/kg.  If the
+      formulation, the coat or the reject fraction moves, so does the tablet
+      mass: redo this division (it does not follow the run).
+
+  NOT PRICED: the purge gas (to vent treatment, not modelled), the coating
+  exhaust (to atmosphere through a filter, not modelled) and the rejected
+  tablets (their disposal is a cost the plant does not carry here).
+  The UTILITIES (steam, cooling water, ammonia refrigeration, the blower's
+  electricity) are priced from their records by the utility allocation.
+\*---------------------------------------------------------------------------*/
+products
+(
+    {
+        stream    packagedTablets;
+        price     1667.6;             // EUR/kg = 1.00 EUR/tablet, see header
+        costYear  2026;
+        provenance
+        {
+            origin  "author-set assumption (DEV.md 4c C97), not a market price";
+            method  "1.00 EUR per tablet ex-factory, a round figure; replace with a dated, cited price";
+        }
+    }
+    {
+        stream    recoveredAcetone;   // reused after QC, valued below fresh
+        price     0.80;               // EUR/kg -- AUTHOR-SET
+        costYear  2026;
+        provenance
+        {
+            origin  "author-set assumption (DEV.md 4c C97), not a market price";
+            method  "two thirds of the fresh-acetone price: recovered solvent, reused after testing";
+        }
+    }
+);
+rawMaterials
+(
+    { stream apiFeed;        price 10000;  costYear 2026;
+      provenance { origin "author-set assumption (DEV.md 4c C97), not a market price";
+                   method "round figure for a generic API; replace with a supplier quotation"; } }
+    { stream hpmcasFeed;     price 60;     costYear 2026;
+      provenance { origin "author-set assumption (DEV.md 4c C97), not a market price";
+                   method "round figure for a pharmaceutical-grade polymer"; } }
+    { stream acetoneFeed;    price 1.20;   costYear 2026;
+      provenance { origin "author-set assumption (DEV.md 4c C97), not a market price";
+                   method "round figure for pharmaceutical-grade acetone in bulk"; } }
+    { stream n2Makeup;       price 0.15;   costYear 2026;
+      provenance { origin "author-set assumption (DEV.md 4c C97), not a market price";
+                   method "round figure for liquid nitrogen delivered"; } }
+    { stream mccFeed;        price 5;      costYear 2026;
+      provenance { origin "author-set assumption (DEV.md 4c C97), not a market price";
+                   method "round figure for a pharmaceutical excipient"; } }
+    { stream smccFeed;       price 8;      costYear 2026;
+      provenance { origin "author-set assumption (DEV.md 4c C97), not a market price";
+                   method "round figure for a co-processed excipient"; } }
+    { stream ccsIntraFeed;   price 15;     costYear 2026;
+      provenance { origin "author-set assumption (DEV.md 4c C97), not a market price";
+                   method "round figure for a disintegrant"; } }
+    { stream ccsExtraFeed;   price 15;     costYear 2026;
+      provenance { origin "author-set assumption (DEV.md 4c C97), not a market price";
+                   method "the same disintegrant, extragranular"; } }
+    { stream silicaFeed;     price 20;     costYear 2026;
+      provenance { origin "author-set assumption (DEV.md 4c C97), not a market price";
+                   method "round figure for colloidal silica"; } }
+    { stream mgstIntraFeed;  price 8;      costYear 2026;
+      provenance { origin "author-set assumption (DEV.md 4c C97), not a market price";
+                   method "round figure for magnesium stearate"; } }
+    { stream mgstExtraFeed;  price 8;      costYear 2026;
+      provenance { origin "author-set assumption (DEV.md 4c C97), not a market price";
+                   method "the same lubricant, extragranular"; } }
+    { stream coatWater;      price 0.02;   costYear 2026;
+      provenance { origin "author-set assumption (DEV.md 4c C97), not a market price";
+                   method "round figure for purified water made on site"; } }
+    { stream pvaFeed;        price 10;     costYear 2026;
+      provenance { origin "author-set assumption (DEV.md 4c C97), not a market price";
+                   method "round figure; coats are often bought as a ready-mixed powder instead"; } }
+    { stream pegFeed;        price 5;      costYear 2026;
+      provenance { origin "author-set assumption (DEV.md 4c C97), not a market price";
+                   method "round figure"; } }
+    { stream talcFeed;       price 3;      costYear 2026;
+      provenance { origin "author-set assumption (DEV.md 4c C97), not a market price";
+                   method "round figure"; } }
+    { stream tio2Feed;       price 6;      costYear 2026;
+      provenance { origin "author-set assumption (DEV.md 4c C97), not a market price";
+                   method "round figure"; } }
+    { stream feOxFeed;       price 20;     costYear 2026;
+      provenance { origin "author-set assumption (DEV.md 4c C97), not a market price";
+                   method "round figure"; } }
+    { stream coatingAirIn;   price 0;      costYear 2026;
+      provenance { origin "ambient air, free";
+                   method "the coater draws it from outside; its filtration and heating are counted elsewhere (the heater's steam)"; } }
+);
+labourRate      42.0;                 // EUR/h loaded operating labour -- ASSUMED
+labourRateYear  2026;
+
+// ************************************************************************* //

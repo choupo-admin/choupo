@@ -1,0 +1,32 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*--- Choupo stream state.  Every DIMENSIONAL value carries its unit; the parser converts to SI.
+     componentMassFlows is the OVERALL material (all phases); a phases{} block, when present,
+     is a decomposition that sums back to it exactly. ---*/
+
+//  Polyvinyl alcohol: 6.96 mg per tablet COATED (the 12 672 tablets/h the press accepts) -- AUTHOR-SET coat, see README section 2 (40 % of a 17.4 mg coat, a 3 % weight gain on a 580 mg core).  (0.0881971 kg/h.)
+
+componentMolarFlows
+{
+    polyvinylAlcohol             0.002002068418 kmol/h;
+}
+
+T               298.15 K;
+P               1.01325 bar;
+
+phases
+{
+    solid
+    {
+        componentMolarFlows
+        {
+            polyvinylAlcohol         0.002002068418 kmol/h;
+        }
+    }
+}
