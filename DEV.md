@@ -1072,6 +1072,14 @@ accepts today, and that is a policy call.
 > gas store on a declared hours-of-autonomy basis), which is new capability
 > and pedagogy -- put to Vitor, not dispatched.  The C87 one-home hold-time
 > rule will reach PEQ only if its storage is ever declared as a unit.
+> VITOR 2026-10-18: "Avanca".  Slice: a GAS STORE sizer (pressure
+> vessels, a postDict item attached to a stream, the C44 shape) on a
+> DECLARED hours-of-autonomy basis between a declared maximum and minimum
+> pressure, the working gas from the case's own EoS density at both ends;
+> wall by `VesselMechanics`, rating by `MaterialLimits`, cost on the existing
+> Turton vessel set, split into vessels of a declared maximum volume; placed
+> in the PEQ layout with its own zone; the charging compressor said, not
+> invented.  Moved PEQ rows listed for Vitor.  Status: dispatched 2026-10-18.
 
 > **C88. THE 3D LAYOUT MADE TO LOOK LIKE A PLANT (Vitor, 2026-10-18: "E ve
 > se pões o layout com melhor aspecto!  Eu acho que ha bibliotecas para
