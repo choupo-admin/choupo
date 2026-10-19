@@ -1302,6 +1302,15 @@ accepts today, and that is a policy call.
 > pressure cascade, airlocks, gowning, containment, unidirectional flows,
 > solvents and ATEX, escape); Vitor 2026-10-19: "Avanca como achares
 > melhor e eu depois dou feedback no final" -- dispatched on that scope.
+> MERGED 2026-10-19 (branch claude/c101-gmp-layout-edutool): EduTool
+> `gmp-layout` ("Process design & economics", beside Plant layout, linked
+> both ways), eight parts with 18 engine-run moves on a 17-room teaching
+> building written into an in-browser copy of `sprayDryer07_design` (no new
+> case, per the standing rule), every engine claim cited by `file:line`,
+> Annex 1 and Directive 1999/92/EC read and paraphrased, ISPE and WHO named
+> only.  Feedback from Vitor awaited.  NAMED, not fixed: the plant-layout
+> bench's `layoutLines` keeps the worker's `[stderr] ` prefix, so its
+> separator announcement is dropped (one line in `layoutExercise.ts`).
 
 > **C100. THE APALUTAMIDE PROCESS EQUIPMENT GOES INSIDE THE GMP BUILDING
 > (Vitor, 2026-10-19: "quero um layout que possa ser realisticamente
