@@ -189,6 +189,34 @@ export function useMeasuredBoxWidth<T extends HTMLElement>(): {
   return { ref, width };
 }
 
+/** The live HEIGHT of a box, measured the same way as `useMeasuredBoxWidth`.
+ *  The other axis of the same question, for a panel docked above or below its
+ *  content (the Streams balances band, DEV.md 4c C105).  0 = not measured.
+ *
+ *  A CALLBACK ref, unlike the width hook's object ref: the band mounts only
+ *  once a run exists and unmounts when folded, and an effect keyed on nothing
+ *  reads an object ref once -- at a moment when the box may not exist yet. */
+export function useMeasuredBoxHeight<T extends HTMLElement>(): {
+  ref: (el: T | null) => void;
+  height: number;
+} {
+  const [el, setEl] = useState<T | null>(null);
+  const [height, setHeight] = useState(0);
+  useLayoutEffect(() => {
+    if (!el) { setHeight(0); return; }
+    const read = () => setHeight((h) => {
+      const next = Math.ceil(el.getBoundingClientRect().height);
+      return next === h ? h : next;
+    });
+    read();
+    if (typeof ResizeObserver === "undefined") return;
+    const ro = new ResizeObserver(read);
+    ro.observe(el);
+    return () => ro.disconnect();
+  }, [el]);
+  return { ref: setEl, height };
+}
+
 /** The INTRINSIC width of a shape the layout does not currently render.
  *
  *  A row that has already collapsed is narrow BECAUSE it collapsed, so asking

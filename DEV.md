@@ -1320,6 +1320,31 @@ accepts today, and that is a policy call.
 > the bottom of the grid when the assistant console is docked.  Which of
 > these is "the window at the bottom" is to be found by reproduction.
 > Status: dispatched 2026-10-19.
+>
+> **Reproduced and fixed 2026-10-19 (branch `claude/c105-streams-bottom-window`,
+> GUI only).**  Measured in Chromium on the dev GUI with each case's own
+> native result injected (apalutamide01_tablets, lithiumBrinePlant,
+> flash01_benzene_toluene; Table and Detail; console docked and not; 1280x720
+> and 1920x1080).  The window at the bottom is the STREAM TABLE (and the
+> Detail pane in the same slot): the balances band above it had no height of
+> its own (`flex: 0 1 auto`, min-height auto, no scroller), so on a plant it
+> took 445-461 of 688 px and left the table a 155 px viewport for 46 streams,
+> whose scrollbar showed only on hover; with the console docked (workspace
+> 328 px) the band alone overflowed, its own top was clipped and the
+> table/Detail pane got 0 px.  Nothing could be dragged.  The docked console
+> was not the culprit: its seam already exists and works.  Fix: the band is a
+> panel-contract TOP panel (`STREAMS_SUMMARY_PANEL`, registry
+> `PANELS.streamsSummary`; the contract gained a `top` edge whose seam is its
+> bottom edge), scrolling inside its own height, dragged or arrow-keyed at the
+> seam, folded to a `BALANCES` strip, and drawn at `shownTopPanelPx` =
+> min(reader's size, content, workspace - 260 px kept for the table) --
+> render-only.  The table's ScrollArea shows its bars always (both axes, offset
+> so they cover no row).  After: table viewport 375 px at 1280x720 (735 px at
+> 1920x1080), 187 px with the console docked; every scroller reaches its last
+> row; a three-stream flash draws the band at its content (176 px), no blank.
+> Pinned in `gui/tests/panelContract.test.ts`.  Found on the way, NOT fixed
+> (separate defect): the Detail navigator reads "No flowsheet loaded." on
+> lithiumBrinePlant, whose sectors `buildTree`/`walkChildren` does not walk.
 
 > **C104. A SECOND PHARMACEUTICAL PROJECT GROUP: DONEPEZIL (Vitor,
 > 2026-10-19: "Sabes qual e o API do meu outro grupo de projeto?" ... "e o

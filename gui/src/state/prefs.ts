@@ -339,6 +339,18 @@ export const PANELS = {
     collapsedKey: "choupo.panel.streamsRail.collapsed",
   }),
 
+  /** The Streams workspace's balances band (DEV.md 4c C105), docked ABOVE
+   *  the stream table.  It had no height of its own: on a plant its
+   *  advisories and per-component table took 445 of 688 px at 1280x720 and
+   *  left the table a 155 px window at the bottom, and with the console
+   *  docked the table got none at all.  Its size is a CEILING the host fits
+   *  render-only (`shownTopPanelPx`), so a short band leaves no blank. */
+  streamsSummary: panel("streamsSummary", {
+    sizeKey: "choupo.panel.streamsSummary.size",
+    size: { min: 64, max: 1600, default: 240 },
+    collapsedKey: "choupo.panel.streamsSummary.collapsed",
+  }),
+
   /** The Reports workspace's section map (2026-09-14).  Reports was the one
    *  content workspace with six subjects and no rail; the map lists the
    *  sections that actually rendered, never the ones a case did not earn. */

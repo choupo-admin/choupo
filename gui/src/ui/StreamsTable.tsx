@@ -390,7 +390,19 @@ export function StreamsTable() {
         </Tooltip>
       </Group>
       <Box style={{ flex: 1, minHeight: 0 }}>
-        <ScrollArea h="100%" type="hover">
+        {/* ALWAYS-visible scrollbars, on both axes (DEV.md 4c C105): with
+            `type="hover"` a 46-stream table in a short window showed no sign
+            that it continued below or to the right -- "a window you cannot
+            see to the end".  The same rule the Detail view's scrollers state:
+            the scrollbar is the affordance.  `offsetScrollbars` keeps the
+            last row and the last column out from under the bars. */}
+        <ScrollArea
+          h="100%"
+          type="always"
+          scrollbarSize={10}
+          offsetScrollbars
+          styles={{ thumb: { background: "light-dark(var(--mantine-color-gray-4), var(--mantine-color-dark-3))" } }}
+        >
           {tableJsx(true)}
         </ScrollArea>
       </Box>

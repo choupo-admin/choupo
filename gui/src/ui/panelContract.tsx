@@ -132,16 +132,18 @@ import { IconChevronDown, IconChevronLeft, IconChevronRight, IconChevronUp } fro
 
 import { fitsRow, useCollapsedFlag } from "./methods/methodsChrome.js";
 import {
-  PANELS, clampSize, loadPanelSize, savePanelSize,
+  PANELS, clampSize, fitToViewport, loadPanelSize, savePanelSize,
   type PanelSpec as PanelPrefs,
 } from "../state/prefs.js";
 
 // ---- the chrome declaration -------------------------------------------------
 
 /** Which edge of its host the panel is docked to.  `left` panels resize on the
- *  x axis and fold to a vertical strip; `bottom` panels resize on y and fold to
- *  a horizontal bar. */
-export type PanelEdge = "left" | "bottom";
+ *  x axis and fold to a vertical strip; `bottom` and `top` panels resize on y
+ *  and fold to a horizontal bar.  A `bottom` panel grows UPWARDS (its handle is
+ *  its top edge), a `top` panel DOWNWARDS (its handle is its bottom edge) --
+ *  the Streams workspace's balances band, DEV.md 4c C105, is the first. */
+export type PanelEdge = "left" | "bottom" | "top";
 
 /** What a panel declares about its CHROME.  Its storage and its size range come
  *  from `prefs` (the `state/prefs.ts` registry entry); everything here is about
@@ -277,6 +279,24 @@ export const LAYOUT_TABLES_PANEL: PanelChrome = {
   contentMin: 0,
 };
 
+/** THE STREAMS WORKSPACE'S BALANCES BAND (DEV.md 4c C105), docked above the
+ *  stream table.  Vitor, on the live site: the table was "a window at the
+ *  bottom that you cannot see to the end, nor adjust".  The band had no height
+ *  of its own, so a plant's advisories and per-component table ate the
+ *  workspace and the table was what was left -- 155 px for 46 streams at
+ *  1280x720, and 0 px with the console docked.  As a TOP panel it has a size
+ *  the reader drags, scrolls inside it, and folds to a strip.
+ *
+ *  No shortcut: `[` is the stream navigator's (mounted beside it in the Detail
+ *  view) and `]` the console's, and a key is advertised only where it is
+ *  bound.  `contentMin: 0`, because the measured default (rule 3) is a WIDTH
+ *  rule; what the table below needs is reserved by the host when it fits the
+ *  band (`shownTopPanelPx`), not by folding it. */
+export const STREAMS_SUMMARY_PANEL: PanelChrome = {
+  prefs: PANELS.streamsSummary, edge: "top", label: "balances summary",
+  contentMin: 0,
+};
+
 // ---- geometry (rule 1) ------------------------------------------------------
 
 /** The pointer target of a resize handle, in px, straddling the border.
@@ -328,8 +348,10 @@ export function autoCollapseDefault(chrome: PanelChrome, availablePx: number): b
  *  ArrowUp is the one that makes it bigger. */
 export function nudgeSize(chrome: PanelChrome, current: number, key: string): number | null {
   const spec = chrome.prefs.size;
-  const grow = chrome.edge === "left" ? "ArrowRight" : "ArrowUp";
-  const shrink = chrome.edge === "left" ? "ArrowLeft" : "ArrowDown";
+  const grow = chrome.edge === "left" ? "ArrowRight"
+             : chrome.edge === "top" ? "ArrowDown" : "ArrowUp";
+  const shrink = chrome.edge === "left" ? "ArrowLeft"
+               : chrome.edge === "top" ? "ArrowUp" : "ArrowDown";
   if (key === grow) return clampSize(current + HANDLE_KEY_STEP_PX, spec);
   if (key === shrink) return clampSize(current - HANDLE_KEY_STEP_PX, spec);
   if (key === "Home") return clampSize(spec.min, spec);
@@ -459,8 +481,9 @@ export function usePanel(
 
     const onMove = (ev: PointerEvent) => {
       // A left panel grows as the pointer moves RIGHT; a bottom panel grows as
-      // it moves UP, hence the sign.
-      const delta = onX ? ev.clientX - start : start - ev.clientY;
+      // it moves UP and a top panel as it moves DOWN, hence the signs.
+      const delta = onX ? ev.clientX - start
+                  : chrome.edge === "top" ? ev.clientY - start : start - ev.clientY;
       const next = clampSize(startSize + delta, spec);
       pending.current = next;
       if (rafRef.current === null) {
@@ -584,11 +607,18 @@ export function usePanelShortcut(panel: PanelHandle): void {
  *  It is declared HERE and not in one host because all seven panels fold the
  *  same way; the other six were never walked by the harness, so they carried
  *  the same defect unmeasured. */
-export function panelBoxStyle(panel: PanelHandle, reduceMotion: boolean): React.CSSProperties {
+export function panelBoxStyle(
+  panel: PanelHandle,
+  reduceMotion: boolean,
+  shownPx?: number,
+): React.CSSProperties {
   const axis = panel.chrome.edge === "left" ? "width" : "height";
   const cross = panel.chrome.edge === "left" ? "height" : "width";
   return {
-    [axis]: panel.collapsed ? 0 : panel.size,
+    //  `shownPx` is the size the HOST draws the panel at when it fits it into
+    //  the box it shares (render-only, `shownTopPanelPx`); absent, the panel is
+    //  drawn at its preference, as every panel before C105 is.
+    [axis]: panel.collapsed ? 0 : (shownPx ?? panel.size),
     [cross]: "100%",
     flexShrink: 0,
     overflow: "hidden",
@@ -607,8 +637,35 @@ export function panelBoxStyle(panel: PanelHandle, reduceMotion: boolean): React.
 export function panelBoxProps(
   panel: PanelHandle,
   reduceMotion: boolean,
+  shownPx?: number,
 ): { "data-panel": string; style: React.CSSProperties } {
-  return { "data-panel": panel.chrome.prefs.id, style: panelBoxStyle(panel, reduceMotion) };
+  return { "data-panel": panel.chrome.prefs.id, style: panelBoxStyle(panel, reduceMotion, shownPx) };
+}
+
+/** The height a TOP panel is DRAWN at -- render-only, never written back (the
+ *  registry's rule: a viewport bound is not a preference bound).
+ *
+ *  Three numbers, each a different question:
+ *    - `size`, the reader's preference (what the handle stores);
+ *    - `contentPx`, the panel's own content height -- a band shorter than its
+ *      preference is drawn at its content, so a three-stream flash does not
+ *      get a blank band under its two balance lines (0 = not measured yet);
+ *    - `hostPx - reservePx`, the room the host can give it while keeping
+ *      `reservePx` for what sits below (the stream table: the C105 defect was
+ *      exactly that nothing reserved it).  Never below the spec's minimum, so
+ *      a very short host still shows a scrollable sliver and the handle.
+ *  An unmeasured host (0, and the node tests, which have no layout) leaves
+ *  the preference as it is, `fitToViewport`'s own rule. */
+export function shownTopPanelPx(
+  size: number,
+  contentPx: number,
+  hostPx: number,
+  reservePx: number,
+  spec: { min: number; max: number; default: number },
+): number {
+  const room = hostPx > 0 ? Math.max(spec.min, hostPx - reservePx) : 0;
+  const fitted = fitToViewport(size, room, spec);
+  return contentPx > 0 ? Math.min(fitted, Math.ceil(contentPx)) : fitted;
 }
 
 /** THE RESIZE HANDLE (rule 1).
@@ -636,7 +693,7 @@ export function PanelResizeHandle({ panel }: { panel: PanelHandle }) {
         : { height: 0, flex: "0 0 0px", position: "relative", zIndex: 302 }}
     >
       <Tooltip label={handleTooltip(chrome)} withArrow openDelay={600}
-               position={horizontal ? "right" : "top"}>
+               position={horizontal ? "right" : chrome.edge === "top" ? "bottom" : "top"}>
         <Box
           role="separator"
           aria-orientation={horizontal ? "vertical" : "horizontal"}
@@ -684,7 +741,8 @@ export function PanelResizeHandle({ panel }: { panel: PanelHandle }) {
 /** The chevron that folds the panel, for the panel's own header. */
 export function PanelCollapseButton({ panel }: { panel: PanelHandle }) {
   const { chrome } = panel;
-  const Icon = chrome.edge === "left" ? IconChevronLeft : IconChevronDown;
+  const Icon = chrome.edge === "left" ? IconChevronLeft
+             : chrome.edge === "top" ? IconChevronUp : IconChevronDown;
   return (
     <Tooltip label={collapseTooltip(chrome)} withArrow>
       <Box
@@ -717,9 +775,11 @@ export function PanelReopenStrip({ panel, scent }: { panel: PanelHandle; scent?:
   const [hover, setHover] = useState(false);
   const { chrome } = panel;
   const horizontal = chrome.edge === "left";
-  const Icon = horizontal ? IconChevronRight : IconChevronUp;
+  const top = chrome.edge === "top";
+  const Icon = horizontal ? IconChevronRight : top ? IconChevronDown : IconChevronUp;
   return (
-    <Tooltip label={expandTooltip(chrome)} withArrow position={horizontal ? "right" : "top"}>
+    <Tooltip label={expandTooltip(chrome)} withArrow
+             position={horizontal ? "right" : top ? "bottom" : "top"}>
       <Box
         onClick={panel.toggle}
         onPointerEnter={() => setHover(true)}
@@ -739,7 +799,8 @@ export function PanelReopenStrip({ panel, scent }: { panel: PanelHandle; scent?:
                 borderRight: "1px solid light-dark(var(--mantine-color-gray-3), var(--mantine-color-dark-4))" }
             : { height: STRIP_PX, flex: `0 0 ${STRIP_PX}px`, width: "100%", paddingLeft: 12,
                 flexDirection: "row", alignItems: "center",
-                borderTop: "1px solid light-dark(var(--mantine-color-gray-3), var(--mantine-color-dark-4))" }),
+                [top ? "borderBottom" : "borderTop"]:
+                  "1px solid light-dark(var(--mantine-color-gray-3), var(--mantine-color-dark-4))" }),
           display: "flex", gap: 8, cursor: "pointer",
           background: hover
             ? "light-dark(var(--mantine-color-gray-1), var(--mantine-color-dark-6))"

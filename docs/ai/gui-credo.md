@@ -715,6 +715,20 @@ shortcut (one field derives both the hint and the binding); and collapse
 defaults by MEASUREMENT — `fitsRow(min + contentMin, measured host width)`,
 never a breakpoint and never `pointer: coarse`.
 
+**A band above its content is a TOP panel, never a box with no height
+(2026-10-19, DEV.md 4c C105).**  The Streams workspace stacked its balances
+band (advisories, model boundaries, per-component table) above the stream
+table with no height of its own, so on a plant the TABLE was what the band
+left over: 155 px for 46 streams at 1280x720 and 0 px with the console
+docked, with no seam to drag — Vítor's "a window at the bottom that you
+cannot see to the end, nor adjust".  The contract has a `top` edge now (its
+seam is its BOTTOM edge, ArrowDown grows it); the band scrolls inside its own
+height, folds to a strip, and is DRAWN at `shownTopPanelPx` = min(the
+reader's size, its content, the workspace less what the content below must
+keep) — render-only, never written back.  The rule generalises: content that
+can grow without bound must not sit in a flex column above the thing the
+reader came to read unless it has a size of its own.
+
 What the superseded paragraph got wrong is worth keeping, because it is the
 project's standing lesson about posture: it made the DEFAULT a media query.
 Breakpoints and `pointer: coarse` have each produced a wrong answer on a real
