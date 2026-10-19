@@ -712,6 +712,9 @@ export interface LayoutItem {
    *  its size and place come from, and why it is there. */
   source?: string;
   reason?: string;
+  /** The room of the declared GMP building it stands in (DEV.md 4c C100):
+   *  its base `z` is that room's floor.  Absent for an item in the open. */
+  room?: string;
 }
 
 export interface LayoutArea {
@@ -994,6 +997,11 @@ export interface LayoutNotRouted {
   /** Not a missing pipe (DEV.md 4c C97): the stream carries only solids,
    *  moved in containers or by conveyor.  No anchor; nothing is marked. */
   solids?: boolean;
+  /** An end stands inside the declared building (DEV.md 4c C100): indoor
+   *  piping is not routed.  With both ends indoors there is no anchor and
+   *  nothing is missing; with one end in the open the anchor marks that
+   *  end, whose outdoor leg the case has not declared. */
+  indoor?: boolean;
 }
 
 /** What the engine counted on the layout it checked: items placed, sized but

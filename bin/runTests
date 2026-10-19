@@ -1449,7 +1449,10 @@ auto_generate() {
         #  `radius` and `turn` WORD, the `designVehicle` line's
         #  `turningDiameter`, each `turningArea:<name>` position and
         #  `diameter`, each `carPark:<item>` line's `bays`, `capacity` and
-        #  `area`, and each fence opening's `approach`.  NOT pinned:
+        #  `area`, and each fence opening's `approach`.  AN ITEM INDOORS
+        #  (DEV.md 4c C100) carries the `room` it stands in, pinned as a WORD
+        #  (only an indoor item publishes the key, so no other row moves);
+        #  its derived base is the `z` row it always had.  NOT pinned:
         #  the source/reason sentences and the zone and wind declarations,
         #  which are the case's own words echoed -- what they DECIDE is
         #  pinned through the findings and the count.
@@ -1464,7 +1467,7 @@ auto_generate() {
                 sub(/"release": \{.*/, "", line)
                 sub(/"message": .*/, "", line)
                 if (id == "wind" || id ~ /^area:/) next
-                nw = split("shape orientation footprintFrom from to side verdict turn", W, " ")
+                nw = split("shape orientation footprintFrom room from to side verdict turn", W, " ")
                 for (i = 1; i <= nw; i++)
                     if (match(line, "\"" W[i] "\": \"[^\"]*\"")) {
                         s = substr(line, RSTART, RLENGTH); sub(/^"[^"]*": "/, "", s); sub(/"$/, "", s)

@@ -1206,7 +1206,18 @@ plot { margin 10 m; reason "..."; }   // optional; absent: 0 m, announced
   only: moved in containers or by conveyor", with `solids` set and no
   point marked, and a mixer, splitter or valve all of whose streams are
   such is not put on the rack; a slurry or a wet cake is still a pipe.
-  A `pipes` override on a solids stream is refused.  The router does not
+  A `pipes` override on a solids stream is refused.  INDOOR PIPING IS NOT
+  ROUTED (C100): a stream both of whose ends stand inside the declared
+  building (an item a room lists, or a junction piped only to such items) is
+  listed "inside the building: indoor piping is not routed", `indoor` set,
+  no point marked; a stream with ONE end indoors is drawn only where you
+  declare its outdoor leg as `pipes { <stream> { waypoints ( ... ); } }`
+  whose end on the indoor side lies ON the building's wall (the `envelope`
+  item's side face, between its base and top) -- the WALL PENETRATION, that
+  end's kind `wallPenetration` -- and otherwise is listed, `indoor`, marked
+  at its end in the open.  An override with both ends indoors, or with one
+  end indoors and no `envelope` declared, or whose penetration is off the
+  wall, is refused.  The router does not
   steer round items: a pipe that runs THROUGH a placed item (its plan path
   inside the footprint, below the item's top) is ANNOUNCED as `pipeClash`,
   by name -- move the item or give the pipe waypoints.  No pressure drop and
@@ -1344,7 +1355,17 @@ plot { margin 10 m; reason "..."; }   // optional; absent: 0 m, announced
   `A`/`B`/`C`/`D`, or `CNC`, controlled not classified -- and a `pressure`
   relative to a room or to `outside`), its airlocks (ROOMS with a `role` and
   a `regime`), the openings between rooms and the flows through them.  The
-  items placed in `items ( ... )` are put in their rooms by `equipment`.
+  items placed in `items ( ... )` are put in their rooms by `equipment`:
+  an item a room lists STANDS IN IT (C100) -- it declares no `z` (its base
+  is the room's floor, read from the building; a declared `z` is refused),
+  must fit the room in plan and height (a tall item needs a room with its
+  own `height`, a double-height suite), and is classified by its ROOM: a
+  `release` or `ignition` on it is refused -- declare the room's `atex {}`
+  or `ignition`.  On the site it is represented by its building: the
+  separation table spaces items in the open (a rule whose kind only items
+  indoors carry is a `deadRule` that says so), road access and pipe clashes
+  are the building's, and its ground is the building's footprint, not
+  counted again.
   ```
   building
   {
@@ -1406,9 +1427,10 @@ plot { margin 10 m; reason "..."; }   // optional; absent: 0 m, announced
   names the plot plan's non-process item that is the building as the SITE
   sees it (its separations, road access, ignition); the rooms are its
   interior, it is the one item a room may stand inside without listing it,
-  and the 3D view draws it as glass.  With an envelope no placed item can
-  stand inside the building -- the plot plan refuses two items that share a
-  volume -- so equipment in rooms needs a building without one (not built).
+  and the 3D view draws it as glass, with the items its rooms list standing
+  inside it on their floors.  The envelope does not clash with the items
+  its rooms list and still clashes with anything else: an item overlapping
+  it that no room lists is REFUSED, naming the `equipment` it needs.
   The rooms count toward the plot (THE PLOT, above), so a room is never
   beyond it.  ANNOUNCED (stderr, the
   caveat block under PLANT LAYOUT, the result JSON's `building.findings`):
@@ -1443,7 +1465,11 @@ plot { margin 10 m; reason "..."; }   // optional; absent: 0 m, announced
   fence and its labelled crossings),
   `greenAmmoniaPEQ_baseCase` and `aceticAcid02_plant` (declared racks),
   `apalutamide01_tablets` (a GMP building in its `productionBuilding`
-  envelope; powders and tablets not piped).  The
+  envelope with every process item in a room -- a double-height spray-drying
+  suite, the nitrogen loop's technical room, the solution and coating-
+  suspension rooms, the AHU plant -- and only the bulk-solvent tank farm
+  outdoors, its two lines declared to their wall penetrations; powders and
+  tablets not piped).  The
   stated default rack is exercised by `check_plant_layout` on a copy of
   ammonia02 with its `pipeRack` removed.  The
   GUI draws the result in Reports, "Plant layout (3D)", with the pipe

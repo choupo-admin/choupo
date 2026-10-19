@@ -302,16 +302,33 @@ export interface PlanRoom {
 }
 export interface PlanFlow { name: string; kind: FlowKind; css: string; dashed: boolean;
                             weight: number; points: [number, number][] }
+/** A placed item a room of this floor lists (DEV.md 4c C100), drawn at the
+ *  engine's own position and plan extents: a disc for a standing cylinder,
+ *  else its plan rectangle.  SVG units, y down. */
+export interface PlanItem {
+  id: string; room: string;
+  x: number; y: number; w: number; h: number;
+  circle: boolean;
+}
 export interface FloorPlan {
   floor: string; elevation: number;
   viewBox: [number, number, number, number];
   rooms: PlanRoom[];
   flows: PlanFlow[];
+  items: PlanItem[];
 }
 
-/** One plan per declared floor: its rooms, and the parts of each flow that
- *  run on it.  SVG y grows DOWN, so plan +y (north) is drawn up the page. */
-export function floorPlans(b: GmpBuilding): FloorPlan[] {
+/** What `floorPlans` reads of a placed item: the engine's published
+ *  position, extents, shape and room (a subset of the layout block's item). */
+export interface PlanItemSource {
+  id: string; room?: string; shape: string; orientation: string;
+  x: number; y: number; dx: number; dy: number;
+}
+
+/** One plan per declared floor: its rooms, the parts of each flow that run
+ *  on it and, given the plot plan's items, the ones its rooms list (C100).
+ *  SVG y grows DOWN, so plan +y (north) is drawn up the page. */
+export function floorPlans(b: GmpBuilding, items: PlanItemSource[] = []): FloorPlan[] {
   const flagged = flaggedRooms(b);
   const env = envelope(b);
   const pad = OUTSIDE_STUB + 2;
@@ -344,6 +361,13 @@ export function floorPlans(b: GmpBuilding): FloorPlan[] {
       }
       flush();
     }
-    return { floor: fl.name, elevation: fl.elevation, viewBox: vb, rooms, flows };
+    const here = new Set(b.rooms.filter((r) => r.floor === fl.name).map((r) => r.name));
+    const planItems: PlanItem[] = items.filter((i) => i.room && here.has(i.room)).map((i) => ({
+      id: i.id, room: i.room!,
+      x: i.x - i.dx / 2, y: -(i.y + i.dy / 2), w: i.dx, h: i.dy,
+      circle: i.shape === "cylinder" && i.orientation === "vertical",
+    }));
+    return { floor: fl.name, elevation: fl.elevation, viewBox: vb, rooms, flows,
+             items: planItems };
   });
 }

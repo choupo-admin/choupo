@@ -86,6 +86,16 @@ Description
     DEV.md 4c C97: the `roomBeyondPlot` finding phase B raised instead is
     retired with the gap it reported).
 
+    EQUIPMENT IN ITS ROOM (2026-10-19, DEV.md 4c C100).  A room's
+    `equipment ( <item> ... )` lists the placed items that stand in it; each
+    such item takes its base from the room's FLOOR (`indoorPlaces`, read
+    before the plot plan is checked, so an indoor item declares no `z`), must
+    fit the room in plan and in height (a tall item needs a room with a
+    declared `height` of its own, a double-height suite), may be listed by
+    one room only, and is the plot plan's concern only through its building
+    (PlantLayout.H, ITEMS INSIDE THE BUILDING).  Its hazardous area is the
+    ROOM's `atex {}` and its ignition the room's `ignition`: one home.
+
     WHAT IS ANNOUNCED (stderr + AdvisoryLog, so it reaches the caveat block
     and the result JSON), each a `<kind>:<a>:<b>` finding:
       cascade                   between two connected rooms of different
@@ -142,6 +152,7 @@ Description
 #include "core/Dictionary.H"
 #include "core/ResultRecords.H"
 
+#include <map>
 #include <string>
 #include <vector>
 
@@ -160,6 +171,24 @@ struct RoomPlan
 //- The declared rooms' plan boxes (absent block: none), read by the same
 //  reader `evaluate` uses -- for the plot rule, which runs first.
 std::vector<RoomPlan> roomPlans(const Dictionary& layoutDict);
+
+//- Where an item a room lists stands (DEV.md 4c C100): the room, its floor
+//  and the floor's elevation, which IS the item's base.
+struct IndoorPlace
+{
+    std::string room;
+    std::string floor;
+    scalar      elevation = 0;   // [m] the floor's, the item's base z
+};
+
+//- Every item the declared rooms list, by item id (absent block: none),
+//  read by the same readers `evaluate` uses -- for the plot plan, which
+//  runs first and takes an indoor item's `z` from here (one home).  Refuses
+//  an item listed in two rooms and a room on an undeclared floor.
+std::map<std::string, IndoorPlace> indoorPlaces(const Dictionary& layoutDict);
+
+//- The declared `envelope` (the shell item's id), empty when none is.
+std::string envelopeOf(const Dictionary& layoutDict);
 
 //- Read the `building {}` block of `layoutDict` (absent: an empty record),
 //  check it against the plot plan `plant` (already checked), raise every

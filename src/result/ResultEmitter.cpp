@@ -1333,6 +1333,10 @@ void emitResultJson(std::ostream& os, const SimulationResult& r)
                << ", \"z\": " << num(it.z)
                << ", \"dx\": " << num(it.dx) << ", \"dy\": " << num(it.dy)
                << ", \"dz\": " << num(it.dz);
+            //  The room it stands in (DEV.md 4c C100), only for an item
+            //  indoors, so an item in the open publishes what it always did.
+            if (!it.room.empty())
+                os << ", \"room\": " << esc(it.room);
             if (!it.ignition.empty())
                 os << ", \"ignition\": " << esc(it.ignition);
             if (!it.source.empty())
@@ -1478,6 +1482,8 @@ void emitResultJson(std::ostream& os, const SimulationResult& r)
                << ", \"toUnit\": " << esc(n.toUnit);
             //  Solids are not piped (DEV.md 4c C97): not a missing pipe.
             if (n.solids) os << ", \"solids\": true";
+            //  An end inside the declared building (DEV.md 4c C100).
+            if (n.indoor) os << ", \"indoor\": true";
             //  The end the layout reaches, where the view marks the missing
             //  pipe; an ARRAY, so the golden's layout row reads no number here.
             if (n.anchor.size() == 3)

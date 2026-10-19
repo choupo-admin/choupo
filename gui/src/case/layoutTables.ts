@@ -106,6 +106,10 @@ export interface PipeRegisterView {
   /** Streams that carry only solids: moved in containers or by conveyor,
    *  never piped -- not a missing pipe (DEV.md 4c C97). */
   solids: string[];
+  /** Streams with an end inside the building and no end the 3D view can
+   *  mark (DEV.md 4c C100): indoor piping, which the layout does not route --
+   *  each with the engine's reason. */
+  indoor: { stream: string; reason: string }[];
 }
 
 /** The pipe register: one row per pipe the engine routed, then what it did
@@ -135,9 +139,11 @@ export function pipeRegister(layout: PlantLayout): PipeRegisterView | null {
     total: pipes.length > 0
       ? { label: `${pipes.length} pipes, in all`, length: total.toFixed(1) } : null,
     rack: layout.pipeRack ? rackSentence(layout.pipeRack) : null,
-    notRouted: notRouted.filter((n) => !n.solids)
+    notRouted: notRouted.filter((n) => !n.solids && !(n.indoor && !n.anchor))
       .map((n) => ({ stream: n.stream, reason: n.reason, marked: !!n.anchor })),
     solids: notRouted.filter((n) => n.solids).map((n) => n.stream),
+    indoor: notRouted.filter((n) => n.indoor && !n.anchor)
+      .map((n) => ({ stream: n.stream, reason: n.reason })),
   };
 }
 
@@ -348,7 +354,9 @@ export interface ItemRow {
 export function itemRows(layout: PlantLayout): ItemRow[] {
   return layout.items.map((i) => ({
     id: i.id,
-    kind: i.nonProcess ? `${i.kind} (non-process)` : i.kind,
+    //  DEV.md 4c C100: an item a room lists says where it stands.
+    kind: (i.nonProcess ? `${i.kind} (non-process)` : i.kind)
+      + (i.room ? ` · indoors, room ${i.room}` : ""),
     sector: i.sector,
     shape: `${i.shape} ${i.orientation}`,
     position: `${f2(i.x)}, ${f2(i.y)}, ${f2(i.z)}`,

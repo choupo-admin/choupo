@@ -27,7 +27,7 @@
 import { describe, expect, it } from "vitest";
 
 import type { PlantLayout } from "../src/adapters/SolverAdapter.js";
-import { fenceSummary, pipeRegister } from "../src/case/layoutTables.js";
+import { fenceSummary, itemRows, pipeRegister } from "../src/case/layoutTables.js";
 import {
   crossingsOf, fenceOf, layoutScene, toThree, UNROUTED_STUB, unroutedLegend,
   unroutedListedOf, unroutedOf,
@@ -116,6 +116,38 @@ describe("the fence (C93)", () => {
     const reg = pipeRegister(FENCED)!;
     expect(reg.notRouted.map((n) => [n.stream, n.marked])).toEqual([["split", true], ["lost", false]]);
     expect(reg.solids).toEqual(["powder"]);
+    expect(reg.indoor).toEqual([]);
+  });
+
+  //  DEV.md 4c C100: piping inside the building is not routed -- not lost.
+  //  Both ends indoors: listed apart, never marked; one end in the open: a
+  //  missing outdoor leg, marked at that end like any other.
+  it("lists indoor piping apart from what is missing, and marks a missing outdoor leg", () => {
+    const L = { ...FENCED, notRouted: [
+      ...FENCED.notRouted!,
+      { stream: "loop", reason: "inside the building: indoor piping is not routed", indoor: true,
+        fromUnit: "a", toUnit: "b" },
+      { stream: "leg", reason: "one end inside the building", indoor: true,
+        fromUnit: "tank", toUnit: "c", anchor: [5, 5, 3] as [number, number, number] },
+    ] };
+    const scene = layoutScene(L)!;
+    expect(scene.unrouted.map((u) => u.stream)).toContain("leg");
+    expect(scene.unrouted.map((u) => u.stream)).not.toContain("loop");
+    const loop = scene.unroutedListed.find((u) => u.stream === "loop")!;
+    expect(loop.indoor).toBe(true);
+    const legend = unroutedLegend(scene.unroutedListed);
+    expect(legend.find((l) => l.includes("NOT routed and not marked"))).not.toContain("loop");
+    expect(legend.find((l) => l.startsWith("Piped inside the building"))).toContain("loop");
+    const reg = pipeRegister(L)!;
+    expect(reg.indoor.map((n) => n.stream)).toEqual(["loop"]);
+    expect(reg.notRouted.map((n) => n.stream)).toContain("leg");
+    expect(reg.notRouted.map((n) => n.stream)).not.toContain("loop");
+    //  The item table says where an item indoors stands, and nothing more
+    //  for an item in the open.
+    const first = FENCED.items[0]!;
+    const rows = itemRows({ ...FENCED, items: [{ ...first, room: "sprayDrying" }, ...FENCED.items.slice(1)] });
+    expect(rows[0]!.kind).toContain("indoors, room sprayDrying");
+    expect(itemRows(FENCED)[0]!.kind).not.toContain("indoors");
   });
 
   it("the fence table quotes the engine's length, openings and rule", () => {

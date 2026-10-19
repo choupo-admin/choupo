@@ -891,5 +891,102 @@ both ways); `check_gmp_layout` (a), (e), (g), (h).  GUI:
 **Not here, named:** a conveyor or a container route drawn for the solids
 (where the bins go is the GMP interior's material flow, not a pipe); a
 placed item INSIDE a building that declares an `envelope` (the overlap rule
-refuses it -- the separation, clash and overlap rules would each have to
-treat the shell as a container).
+refused it then -- built in slice 9, §17, which teaches the separation,
+clash and overlap rules to treat the shell as a container).
+
+## 17. Slice 9 -- the equipment goes inside the building (DEV.md 4c C100)
+
+**Asked.**  Vítor, on the apalutamide plant: *"Não podes pôr um processo com
+equipamentos semi-contínuos ... com equipamentos colocados na rua expostos
+aos elementos!"*  The case had placed its spray dryer, the closed nitrogen
+loop, the solution and coating-suspension tanks and the coating air heater
+OUTDOORS beside the GMP building, because the engine could not put a placed
+item inside a building that declares an `envelope`: the overlap refusal
+(slice 8 named that limit) sees the shell and the item as two items sharing
+a volume.
+
+**The rule.**  An item a room of the declared `building {}` lists in its
+`equipment ( ... )` STANDS IN THAT ROOM:
+* its base is the room's FLOOR -- read from the building by
+  `buildingLayout::indoorPlaces`, which the plot plan calls before it reads
+  `items`, using the building's own floor reader (`readFloors`, one home
+  for both); a `z` declared on such an item is REFUSED (two homes for one
+  base).  Declared-and-checked was the alternative and was rejected for that
+  reason: a declared `z` that must equal a declared elevation is a second
+  source of the same number;
+* it must fit the room in plan and height -- the building's check, as
+  before (a tall item needs a room with its own `height`);
+* the SHELL does not clash with the items its rooms list and still clashes
+  with anything else: an item overlapping the shell that no room lists is
+  REFUSED with a message naming the `equipment ( ... )` it needs;
+* indoors the ROOM is classified, not the item: a `release` or `ignition`
+  declared on an indoor item is REFUSED, naming the room's `atex {}` and
+  `ignition` (one home for a hazardous-area classification indoors, which
+  the building already checks against its ignition rooms);
+* on the site it is represented by its building: the separation table
+  spaces items in the open (a pair with an indoor item is not checked; a
+  rule whose kind only indoor items carry is a `deadRule` whose message
+  says so), road access and the pipe-clash check are the building's, it
+  does not drag the stated-default rack, and its ground is the shell's
+  footprint -- the footprint area counts it no second time and no shell /
+  indoor pair is "stacked".  The plot rule's sentence says so only where an
+  item stands indoors, so every other case publishes the sentence it
+  always did.
+
+**The pipes -- indoor piping is not routed.**  The router draws pipes in the
+open; inside a building they run in rooms, risers and ceiling voids the plot
+plan does not draw, and drawing them through rooms as if outdoors would be a
+false picture.  So: a stream both of whose ends stand indoors (an item a
+room lists, or a junction piped ONLY to such items -- `jIn`, never on the
+rack) is listed "inside the building: indoor piping is not routed", with
+`indoor` set and NO anchor (nothing is missing).  A stream with one end
+indoors and one in the open is drawn only where the case DECLARES its
+outdoor leg as waypoints whose indoor-side end lies ON the shell's wall (a
+side face, between its base and top): the WALL PENETRATION, published as
+that end's kind `wallPenetration`, the route ending (or beginning) there;
+with none declared it is listed with that remedy, `indoor`, and marked at
+its end in the open.  An override with both ends indoors, with one end
+indoors and no `envelope`, or whose penetration is off the wall, is
+REFUSED.  A stream that is unreachable for another reason (an unsized unit)
+and whose one reachable end stands indoors is listed `indoor` and marked
+nowhere -- an indoor point is no place to mark a missing pipe, because no
+indoor pipe is drawn.  The default rack's route was rejected for the outdoor
+leg: where a pipe enters a building is a fact about the building the router
+cannot know, the same reason roads and fence crossings are declared.
+
+**Byte-identity, measured.**  `ammonia02_full_plant`, `greenAmmoniaPEQ_baseCase`
+and `aceticAcid02_plant` were run on a build of the parent commit and on
+this one: stdout, stderr, the result JSON and every file written under
+`converged/`, `design/` and `reports/` identical, paths and the version
+banner's commit stamp aside.  No item of theirs is listed by a room, so no
+new key is published (`room` on an item and `indoor` on a not-routed entry
+are written only when set).
+
+**The witness.**  `apalutamide01_tablets` now places every process item in a
+room (a double-height, contained, zone-2 spray-drying suite on the north
+wall; the nitrogen loop's zone-2 technical room beside it on two outside
+walls; a contained, zone-1 solution room; a coating-preparation room; the
+coater's air heater in the AHU plant on the technical floor) and only the
+bulk-solvent tanks outdoors, in a bunded farm east of the building and
+downwind of it, the two solvent lines declared to their wall penetrations
+through the east wall.  The building raises no finding; the site keeps its
+`singleEntrance` exercise.
+
+Gate: `check_plant_layout` arm (o) (on the witness, from the published block
+alone: no pipe drawn to an indoor nozzle, every end at an indoor unit a
+`wallPenetration` on a building's wall, the indoor-to-indoor streams listed
+as indoor piping and unmarked, no separation finding or access record on an
+indoor item; without the declared legs the two solvent lines listed and
+marked at their tanks; two refusals) and arms (h), (j), (m) (the
+penetration end, the footprints and the clash recomputation read `room`);
+`check_gmp_layout` arms (d), (e), (i), (h).  GUI: the item's tooltip names
+its room, the floor plans draw the items each floor's rooms list, the pipe
+register and the legend list indoor piping apart from what is missing
+(`tests/gmpBuilding.test.ts`, `tests/layoutFence.test.ts`,
+`tests/plantLayout.test.ts`).
+
+**Not here, named:** indoor piping itself (its route, length and cost); a
+roof penetration (a penetration lies on a side wall); an item's access
+clearance inside its room; a mezzanine or plinth (an item stands on its
+room's floor); a bund as a placed item (a wall round two items would
+overlap both -- the case says it in words).

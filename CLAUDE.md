@@ -2280,8 +2280,15 @@ cannot exist is REFUSED, a building that breaks a GMP rule is ANNOUNCED**
 containment, flows, ATEX against ignition, escape), every step and grade the
 case's with its source -- no table shipped, Annex 1 paraphrased and cited,
 ISPE by title only.  Engine `postProcessing/layout/BuildingLayout`, its own
-JSON block `building`, pinned by the `layout` kind.  Gate:
-`check_gmp_layout`.  Record:
+JSON block `building`, pinned by the `layout` kind.  **Since C100 an item a
+room lists STANDS IN IT, inside the `envelope` shell:** its base is the
+room's floor (one home, `indoorPlaces`; a declared `z` refused), its hazard
+the room's `atex {}` (a `release`/`ignition` on it refused), the shell
+clashes with nothing its rooms list and with everything else, the site sees
+it through its building (separation, access, clash, footprint), and indoor
+piping is NOT routed -- a pipe with an end indoors is drawn only up to a
+declared WALL PENETRATION on the shell.  Gate:
+`check_gmp_layout` (and `check_plant_layout` arm (o)).  Record:
 [`docs/design/a-gmp-interior-is-declared-and-checked.md`](docs/design/a-gmp-interior-is-declared-and-checked.md).
 
 **A TOOL THAT COULD NOT LOOK REPORTED WHAT IT DID NOT SEE (2026-09-06).**

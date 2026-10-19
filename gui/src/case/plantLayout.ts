@@ -334,6 +334,9 @@ export interface SceneUnroutedListed {
   stream: string;
   reason: string;
   solids: boolean;
+  /** Both ends inside the building (DEV.md 4c C100): indoor piping, not
+   *  routed by the layout -- nothing is missing, nothing is marked. */
+  indoor?: boolean;
 }
 
 /** Height of the dashed stub that marks an unrouted stream (drawing). */
@@ -452,6 +455,8 @@ export function tubeRadius(massFlow: number | null | undefined): number {
 export function endName(kind: string, at: string): string {
   if (kind === "batteryLimit") return `battery limit (${at})`;
   if (kind === "junction") return `${at} (junction)`;
+  //  DEV.md 4c C100: the pipe ends where it enters the building.
+  if (kind === "wallPenetration") return `building wall (to ${at}, indoors)`;
   return at;
 }
 
@@ -599,6 +604,8 @@ function solidOf(it: LayoutItem, flagged: boolean, findings: string[],
     `${what} · ${dims} · ${sizeWord}`,
     `at (${fmt(it.x)}, ${fmt(it.y)}) m, base z ${fmt(it.z)} m`,
   ];
+  if (it.room)
+    tooltip.push(`indoors: in room ${it.room} of the GMP building, standing on its floor`);
   if (it.release)
     tooltip.push(`release source (zones ${it.release.zones.map((z) => z.zone).join(", ") || "none"})`);
   if (it.ignition) tooltip.push(`ignition source: ${it.ignition}`);
@@ -942,20 +949,25 @@ export function unroutedOf(layout: PlantLayout): SceneUnrouted[] {
  *  the layout reaches, or solids only (DEV.md 4c C97). */
 export function unroutedListedOf(layout: PlantLayout): SceneUnroutedListed[] {
   return (layout.notRouted ?? []).filter((n) => !n.anchor || n.solids)
-    .map((n) => ({ stream: n.stream, reason: n.reason, solids: !!n.solids }));
+    .map((n) => ({ stream: n.stream, reason: n.reason, solids: !!n.solids,
+                   ...(n.indoor && !n.anchor ? { indoor: true } : {}) }));
 }
 
 /** The words beside the 3D view for what it does not mark; empty when it
  *  marks everything the engine left unrouted. */
 export function unroutedLegend(listed: SceneUnroutedListed[]): string[] {
-  const lost = listed.filter((u) => !u.solids).map((u) => u.stream);
+  const lost = listed.filter((u) => !u.solids && !u.indoor).map((u) => u.stream);
   const solids = listed.filter((u) => u.solids).map((u) => u.stream);
+  //  DEV.md 4c C100: piping inside the building is not routed -- not lost.
+  const indoor = listed.filter((u) => u.indoor).map((u) => u.stream);
   const out: string[] = [];
   if (lost.length)
     out.push(`\u26a0 NOT routed and not marked (the layout reaches neither end): ${lost.join(", ")}`
       + " -- the reasons are in the pipe register");
   if (solids.length)
     out.push(`Moved as solids, not piped (in containers or by conveyor), so not drawn: ${solids.join(", ")}`);
+  if (indoor.length)
+    out.push(`Piped inside the building, which the layout does not route, so not drawn: ${indoor.join(", ")}`);
   return out;
 }
 

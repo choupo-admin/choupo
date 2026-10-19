@@ -233,13 +233,11 @@ may name the non-process item that IS its shell: every room must lie inside
 that item's box (refused otherwise), the item is the one placed item a room
 may stand inside without listing it, it must be non-process (refused
 otherwise), and the GUI draws it as glass.  Absent the key, nothing changes.
-The limit, named: with an envelope no placed item can stand inside the
-building at all, because the PLOT PLAN refuses two items that share a
-volume, before the building is read -- so the solid-dose machines could not
-be put in their rooms even if they had a size, and the case's coating tank
-cannot be moved into the coating room.  Lifting that needs the overlap, the
-separation and the pipe-clash rules each to treat a shell as a container:
-not built.
+The limit, named then: with an envelope no placed item could stand inside
+the building at all, because the PLOT PLAN refused two items that share a
+volume, before the building is read.  Lifting it needed the overlap, the
+separation and the pipe-clash rules each to treat a shell as a container --
+built on 2026-10-19, §10.
 
 **The plot.**  The rooms' plan boxes enter `plotOf` (record of the plant
 layout, slice 8); `roomBeyondPlot` is retired, its gate probe replaced by
@@ -250,3 +248,60 @@ that the published plot holds every room and says so.
 Gate: `check_gmp_layout` (g) (the envelope: a clean shelled probe, and four
 refusals) and (h) (the witness: published, shelled, zero findings
 published and zero recomputed).
+
+## 10. The equipment goes inside (DEV.md 4c C100)
+
+Vítor, on the wired case: *"quero um layout que possa ser realisticamente
+adoptado!"* -- a pharmaceutical spray-dried dispersion is made inside the
+GMP building, not on equipment standing in the rain.  The limit §9 named is
+lifted: an item a room lists stands INSIDE that room, inside the shell.
+
+**One home for the base.**  An indoor item's `z` is its room's floor
+elevation, read by `indoorPlaces` with the same floor reader `evaluate`
+uses (`readFloors`), before the plot plan reads `items`; a `z` declared on
+it is refused.  Its fit in plan and height is the existing check; a tall
+item needs a room with its own `height` (the case's spray-drying suite is
+double-height, z 0..10 m, with no technical-floor room above it).  One room
+per item (`indoorPlaces` refuses a second listing).
+
+**One home for its hazard.**  Indoors the ROOM is classified: an indoor item
+may not declare `release` zones or `ignition` (refused, naming the room's
+`atex {}` and `ignition`), so the building's ATEX-against-ignition rule is
+the one check that sees it, and the site's zone envelopes are drawn only
+round items in the open.
+
+**The shell holds what its rooms list.**  The plot plan's overlap rule skips
+the pair (shell, item a room lists) and nothing else: an item that overlaps
+the shell and that no room lists is refused, naming the `equipment` entry
+it needs.  The separation table, road access, the pipe-clash check and the
+footprint area treat an indoor item as part of its building (record of the
+plant layout, §17), and indoor piping is not routed -- a pipe with an end
+indoors is drawn only up to a declared wall penetration on the shell.
+
+**The witness rearranged** (`tutorials/plant/apalutamide01_tablets`): the
+shell grows from 50 m to 62 m east (x -70..-8 m) for a SOLVENT SUITE -- a
+contained, zone-2, double-height spray-drying suite on the north wall
+(explosion vent through it, stated as the group's question: no engine rule
+and no invented number), the nitrogen loop's zone-2 technical room beside it
+on two outside walls (held 5 Pa below outside, entered from outside), a
+contained, zone-1 solution room reached through a bubble and a sink -- with a
+coating-preparation room beside the coater and the coater's air heater in
+the AHU plant on the technical floor.  The switchgear moved to the west end
+of the technical floor and `atexSeparation` is declared (6 m, author-set);
+the east dock is gone (the dispersion goes from the suite through its sink
+straight to the blender).  Only the bulk-solvent tanks stand outdoors, in a
+bunded farm (the bund said in words: a wall round two items would overlap
+both).  Zero building findings.  Exercises: `singleEntrance` kept (still
+true -- one gate); the coating-tank separation retired with its premise (the
+tank now stands in its room) and replaced by a question the engine does not
+check, the explosion vent's reach over the north road.
+
+Gate: `check_gmp_layout` (d) (four new refusals: a `z` on a listed item, an
+item in two rooms, an ignition on an indoor item, a pipe leg with no shell),
+(e) (the probe without its building gives its items their `z` back), (i)
+(the shell HOLDING its items: rooms named, bases on the floors, the shell's
+footprint alone, a separation rule on an indoor kind a `deadRule` that says
+so, the dryer's streams listed indoor, a declared leg ending on the wall;
+two refusals) and (h) (the witness: every process item but the two tanks in
+a room, its classified rooms).  Byte-neutral on every corpus layout without
+a building (record of the plant layout, §17).

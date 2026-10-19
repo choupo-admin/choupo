@@ -215,6 +215,61 @@ void readBox(const Dictionary& e, const std::string& w, scalar& xMin,
                " `yMin`)");
 }
 
+//  The declared floors -- ONE reader, for `evaluate` and for `indoorPlaces`
+//  (the plot plan reads an indoor item's base from it, before the building
+//  is checked).  `floorIdx` maps a floor's name to its index.
+std::vector<BuildingFloor> readFloors(const Dictionary& d,
+                                      std::map<std::string, std::size_t>& floorIdx)
+{
+    std::vector<BuildingFloor> floors;
+    if (!d.found("floors") || !d.hasDictList("floors"))
+        refuse("`floors ( { floor <name>; elevation <m>; height <m>; } ... );`"
+               " is not declared");
+    for (const auto& f : d.lookupDictList("floors"))
+    {
+        BuildingFloor fl;
+        if (!f->found("floor")) refuse("floors: an entry has no `floor` name");
+        fl.name = f->lookupWord("floor");
+        const std::string w = "floor `" + fl.name + "`";
+        fl.elevation = length(*f, "elevation", w);
+        fl.height    = length(*f, "height", w);
+        if (!(fl.height > 0)) refuse(w + ": `height` must be positive");
+        if (!floorIdx.emplace(fl.name, floors.size()).second)
+            refuse(w + " is declared twice");
+        floors.push_back(fl);
+    }
+    if (floors.empty()) refuse("`floors` is empty");
+    {
+        std::vector<BuildingFloor> s = floors;
+        std::sort(s.begin(), s.end(), [](const BuildingFloor& a, const BuildingFloor& b)
+                  { return a.elevation < b.elevation; });
+        for (std::size_t i = 0; i + 1 < s.size(); ++i)
+            if (s[i].elevation + s[i].height > s[i + 1].elevation + kTol)
+                refuse("floor `" + s[i].name + "` (" + num(s[i].elevation) + " m + "
+                       + num(s[i].height) + " m) reaches into floor `"
+                       + s[i + 1].name + "` (at " + num(s[i + 1].elevation)
+                       + " m) -- two storeys cannot share a height");
+    }
+    return floors;
+}
+
+//  A room's floor, by name, refused by name when undeclared.
+std::size_t floorOf(const Dictionary& e, const std::string& w,
+                    const std::map<std::string, std::size_t>& floorIdx,
+                    const std::vector<BuildingFloor>& floors)
+{
+    if (!e.found("floor")) refuse(w + ": `floor` is not declared");
+    const std::string f = e.lookupWord("floor");
+    auto fi = floorIdx.find(f);
+    if (fi == floorIdx.end())
+    {
+        std::vector<std::string> names;
+        for (const auto& fl : floors) names.push_back(fl.name);
+        refuse(w + ": " + registryRefusal::message("floor", f, names, "Declared"));
+    }
+    return fi->second;
+}
+
 std::string joined(const std::vector<std::string>& v, const char* sep = " ")
 {
     std::string s;
@@ -239,6 +294,44 @@ std::vector<RoomPlan> roomPlans(const Dictionary& layoutDict)
         out.push_back(p);
     }
     return out;
+}
+
+std::map<std::string, IndoorPlace> indoorPlaces(const Dictionary& layoutDict)
+{
+    std::map<std::string, IndoorPlace> out;
+    if (!layoutDict.found("building")) return out;
+    const auto bd = layoutDict.subDict("building");
+    if (!bd->found("rooms") || !bd->hasDictList("rooms")) return out;   // evaluate refuses
+    const auto rooms = bd->lookupDictList("rooms");
+    bool lists = false;
+    for (const auto& e : rooms) lists = lists || e->found("equipment");
+    if (!lists) return out;
+    std::map<std::string, std::size_t> floorIdx;
+    const auto floors = readFloors(*bd, floorIdx);
+    for (const auto& e : rooms)
+    {
+        if (!e->found("equipment")) continue;
+        if (!e->found("room")) refuse("rooms: an entry has no `room` name");
+        const std::string name = e->lookupWord("room");
+        const std::string w = "room `" + name + "`";
+        const std::size_t fi = floorOf(*e, w, floorIdx, floors);
+        for (const auto& id : e->lookupWordList("equipment"))
+        {
+            const auto ins = out.emplace(id, IndoorPlace{ name, floors[fi].name,
+                                                          floors[fi].elevation });
+            if (!ins.second)
+                refuse(w + " equipment `" + id + "` is already in room `"
+                       + ins.first->second.room + "` -- one item, one room");
+        }
+    }
+    return out;
+}
+
+std::string envelopeOf(const Dictionary& layoutDict)
+{
+    if (!layoutDict.found("building")) return "";
+    const auto bd = layoutDict.subDict("building");
+    return bd->found("envelope") ? bd->lookupWord("envelope") : std::string();
 }
 
 BuildingRecord evaluate(const Dictionary& layoutDict,
@@ -306,35 +399,8 @@ BuildingRecord evaluate(const Dictionary& layoutDict,
     }
 
     //  ---- floors -----------------------------------------------------------
-    if (!d.found("floors") || !d.hasDictList("floors"))
-        refuse("`floors ( { floor <name>; elevation <m>; height <m>; } ... );`"
-               " is not declared");
     std::map<std::string, std::size_t> floorIdx;
-    for (const auto& f : d.lookupDictList("floors"))
-    {
-        BuildingFloor fl;
-        if (!f->found("floor")) refuse("floors: an entry has no `floor` name");
-        fl.name = f->lookupWord("floor");
-        const std::string w = "floor `" + fl.name + "`";
-        fl.elevation = length(*f, "elevation", w);
-        fl.height    = length(*f, "height", w);
-        if (!(fl.height > 0)) refuse(w + ": `height` must be positive");
-        if (!floorIdx.emplace(fl.name, rec.floors.size()).second)
-            refuse(w + " is declared twice");
-        rec.floors.push_back(fl);
-    }
-    if (rec.floors.empty()) refuse("`floors` is empty");
-    {
-        std::vector<BuildingFloor> s = rec.floors;
-        std::sort(s.begin(), s.end(), [](const BuildingFloor& a, const BuildingFloor& b)
-                  { return a.elevation < b.elevation; });
-        for (std::size_t i = 0; i + 1 < s.size(); ++i)
-            if (s[i].elevation + s[i].height > s[i + 1].elevation + kTol)
-                refuse("floor `" + s[i].name + "` (" + num(s[i].elevation) + " m + "
-                       + num(s[i].height) + " m) reaches into floor `"
-                       + s[i + 1].name + "` (at " + num(s[i + 1].elevation)
-                       + " m) -- two storeys cannot share a height");
-    }
+    rec.floors = readFloors(d, floorIdx);
 
     //  ---- rooms ------------------------------------------------------------
     if (!d.found("rooms") || !d.hasDictList("rooms"))
@@ -353,18 +419,10 @@ BuildingRecord evaluate(const Dictionary& layoutDict,
                    " walls; name the room something else");
         if (!roomIdx.emplace(r.name, rec.rooms.size()).second)
             refuse(w + " is declared twice");
-        if (!e->found("floor")) refuse(w + ": `floor` is not declared");
-        r.floor = e->lookupWord("floor");
-        auto fi = floorIdx.find(r.floor);
-        if (fi == floorIdx.end())
-        {
-            std::vector<std::string> names;
-            for (const auto& f : rec.floors) names.push_back(f.name);
-            refuse(w + ": " + registryRefusal::message("floor", r.floor, names,
-                                                       "Declared"));
-        }
-        r.z      = rec.floors[fi->second].elevation;
-        r.height = rec.floors[fi->second].height;
+        const std::size_t fi = floorOf(*e, w, floorIdx, rec.floors);
+        r.floor  = rec.floors[fi].name;
+        r.z      = rec.floors[fi].elevation;
+        r.height = rec.floors[fi].height;
         //  A room may rise above its floor's height (a double-height suite
         //  round a tall item); the volume check below keeps it clear of the
         //  rooms of the floor above.
@@ -598,9 +656,7 @@ BuildingRecord evaluate(const Dictionary& layoutDict,
             if (it == placedItems.end())
                 refuse(w + " is not placed on the plot plan -- list it in"
                        " `items ( ... )` (its x, y, z and orientation) first");
-            if (!assigned.emplace(id, r.name).second)
-                refuse(w + " is already in room `" + assigned[id] + "` -- one"
-                       " item, one room");
+            assigned.emplace(id, r.name);   // one room each: indoorPlaces refused a second
             const LayoutItem& i = *it->second;
             const scalar x0 = i.x - 0.5 * i.dx, x1 = i.x + 0.5 * i.dx;
             const scalar y0 = i.y - 0.5 * i.dy, y1 = i.y + 0.5 * i.dy;

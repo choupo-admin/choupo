@@ -222,6 +222,24 @@ The risks such a feature carries are specific, and each arm names one:
       through an item, a turning area through an item, a negative corner
       radius, a `oneWay` word that is no word.  The approach is held in arms
       (k) (the paved area includes it) and (l) (recomputed per opening).
+  (o) ITEMS INSIDE THE BUILDING (2026-10-19, DEV.md 4c C100), on
+      apalutamide01, whose every process item but the two bulk-solvent tanks
+      stands in a room of its GMP building, from the published block alone:
+      no pipe is drawn to the nozzle of an item indoors; every pipe end at a
+      unit whose item stands indoors is a `wallPenetration`, lying on a side
+      face of a building's box between its base and top (arm (h) checks the
+      same for every plant); every stream listed `indoor` has an end at an
+      indoor unit, and its anchor (when any) marks no item indoors; the
+      streams between two ends indoors (sprayFeed, loopGas, gasRecycle,
+      exhaustGas, coatingSuspension) are listed as indoor piping, unmarked;
+      no separation finding and no access record names an item indoors; the
+      plant's declared outdoor legs are exactly the two solvent lines through
+      the east wall.  Its layout with the `pipes {}` block removed lists both
+      lines `indoor`, each marked at the top of its tank.  REFUSED, named: a
+      wall penetration off the wall, an override on a stream both of whose
+      ends stand indoors.  Arms (h) (`on_a_wall`), (j) (an indoor item's plan
+      area left out of the footprints) and (m) (no clash with an indoor item:
+      the shell answers for it) read the item's `room`.
 
 NOT COVERED, said so: whether a declared distance or zone extent is SENSIBLE
 (the author's assumption, by design -- no standard is shipped), a pipe's
@@ -369,6 +387,19 @@ strengthened):
       it carries only solids".  CAUGHT.
   S13 the plot sentence does not name the building: arm (j) "the plot rule
       and the run disagree".  CAUGHT.
+  C100 (items inside the building), 2026-10-19, by hand, each on a rebuilt
+  engine (the sabotaged PlantLayout.cpp restored by copy and rebuilt after):
+  S44 the shell's exemption for the items its rooms list dropped        -> (o)
+      "the apalutamide plant exited 2" (`SD` OVERLAPS the building).
+  S45 an indoor item's plan area counted in the footprints again        -> (j)
+      3743.13 m2 published against the 3734.76 recomputed here.
+  S46 the wall-penetration test disarmed (the whole condition)          -> (o)
+      "a wall penetration off the wall: the run was NOT refused".
+  S47 a junction piped only to indoor items no longer stands indoors    -> (o)
+      loopGas, gasRecycle and coatingSuspension listed for an unreachable
+      junction, not as indoor piping.
+  S48 the access record no longer skips an item indoors                 -> (o)
+      "an access record for `SD`, which stands indoors" (and six more).
 """
 import json
 import re
@@ -924,6 +955,21 @@ def end_point(lay, kind, at, first, stream=None):
     return None
 
 
+def on_a_wall(lay, pt):
+    """True when the plan point lies on a side face of a placed non-process
+    box (a building's wall), its height between the box's base and top."""
+    for i in lay["items"]:
+        if not i["nonProcess"]:
+            continue
+        x0, x1 = i["x"] - i["dx"] / 2, i["x"] + i["dx"] / 2
+        y0, y1 = i["y"] - i["dy"] / 2, i["y"] + i["dy"] / 2
+        on_x = min(abs(pt[0] - x0), abs(pt[0] - x1)) < TOL and y0 - TOL <= pt[1] <= y1 + TOL
+        on_y = min(abs(pt[1] - y0), abs(pt[1] - y1)) < TOL and x0 - TOL <= pt[0] <= x1 + TOL
+        if (on_x or on_y) and i["z"] - TOL <= pt[2] <= i["z"] + i["dz"] + TOL:
+            return True
+    return False
+
+
 def check_routes(tag, lay, require_rack_route=True):
     """Every published route: each segment along ONE axis, its length the
     polyline's own, its two ends where the published items / junctions /
@@ -946,6 +992,14 @@ def check_routes(tag, lay, require_rack_route=True):
                  f" the polyline's own {L} m")
         for first, kind, at, pt in ((True, p["fromKind"], p["from"], r[0]),
                                     (False, p["toKind"], p["to"], r[-1])):
+            if kind == "wallPenetration":
+                #  DEV.md 4c C100: the pipe ends where it ENTERS the building
+                #  -- on a side face of a non-process box, between its base
+                #  and its top.
+                if not on_a_wall(lay, pt):
+                    fail(f"(h) {tag} pipe {p['stream']}: its end at {pt} enters the"
+                         f" building for `{at}` and lies on no building's wall")
+                continue
             want = end_point(lay, kind, at, first, p["stream"])
             if want is None:
                 fail(f"(h) {tag} pipe {p['stream']}: its end `{at}` ({kind}) is nowhere"
@@ -1199,7 +1253,9 @@ def check_plot(tag, case, lay, out, err, j):
     if plot["margin"] != margin or plot["marginDeclared"] != (margin != 0.0):
         fail(f"(j) {tag}: margin {plot['margin']} (declared {plot['marginDeclared']}),"
              f" the case's layoutDict says {margin}")
-    fa = sum(plan_area(i) for i in lay["items"])
+    #  An item inside the declared building (DEV.md 4c C100) is on the
+    #  building's ground: not counted again.
+    fa = sum(plan_area(i) for i in lay["items"] if not i.get("room"))
     if not close(fa, plot["footprintArea"], 1e-8) \
             or not close(fa / area, plot["footprintShare"], 1e-8):
         fail(f"(j) {tag}: footprints {plot['footprintArea']} m2 (share"
@@ -2084,6 +2140,8 @@ def clashes_recomputed(lay):
             if it["id"] in (p["from"] if p["fromKind"] == "item" else None,
                             p["to"] if p["toKind"] == "item" else None):
                 continue
+            if it.get("room"):
+                continue   # DEV.md 4c C100: the building's shell answers for it
             circle = it.get("shape") == "cylinder" and it.get("orientation") == "vertical"
             for a, b in zip(p["route"], p["route"][1:]):
                 if circle:
@@ -2683,6 +2741,137 @@ def arm_site(work):
                   f" reversing); {n_ref} refusals")
 
 
+INDOOR_SEEN = []
+
+
+def indoor_units(lay):
+    """The flowsheet units whose placed item stands in a room (DEV.md 4c
+    C100): an item's unit is its id up to the `/` of a tag."""
+    return {i["id"].split("/")[0] for i in lay["items"] if i.get("room")}
+
+
+def check_indoor(tag, j, lay):
+    """Arm (o) on one plant, from the published block alone: no pipe reaches
+    an item indoors at its nozzle (an end at an indoor unit is a
+    `wallPenetration` on a building's wall); every stream listed `indoor`
+    has an end at an indoor unit or at a junction off the rack; an anchor
+    marks only an end in the open; no separation finding and no access
+    record names an item indoors."""
+    ins = indoor_units(lay)
+    if not ins:
+        return
+    rooms = {i["id"] for i in lay["items"] if i.get("room")}
+    jr = {jn["unit"] for jn in lay.get("junctions", [])}
+    for p in lay.get("pipes", []):
+        for kind, at, unit in ((p["fromKind"], p["from"], p.get("fromUnit")),
+                               (p["toKind"], p["to"], p.get("toUnit"))):
+            if kind == "item" and at in rooms:
+                fail(f"(o) {tag} pipe {p['stream']} is drawn to the nozzle of `{at}`,"
+                     " which stands indoors")
+            if unit in ins and kind != "wallPenetration":
+                fail(f"(o) {tag} pipe {p['stream']}: its end at `{unit}` (indoors) is a"
+                     f" `{kind}`, not the wall penetration")
+    for n in lay.get("notRouted", []):
+        if not n.get("indoor"):
+            continue
+        ends = [n.get("fromUnit", "")] + n.get("toUnit", "").split(", ")
+        if not any(u in ins or (u and u not in jr and u not in
+                   {i["id"].split("/")[0] for i in lay["items"]}) for u in ends):
+            fail(f"(o) {tag} {n['stream']} is listed `indoor` with no end indoors: {ends}")
+        a = n.get("anchor")
+        if a:
+            inside = [i for i in lay["items"] if i.get("room")
+                      and abs(i["x"] - a[0]) < TOL and abs(i["y"] - a[1]) < TOL]
+            if inside:
+                fail(f"(o) {tag} {n['stream']}: its anchor {a} marks an item indoors"
+                     f" ({inside[0]['id']}); an anchor marks the end in the open")
+    for f in lay.get("findings", []):
+        if f["kind"] == "separation" and (f["a"] in rooms or f["b"] in rooms):
+            fail(f"(o) {tag}: a separation finding names an item indoors: {f['id']}")
+    for a in lay.get("access", []):
+        if a["item"] in rooms:
+            fail(f"(o) {tag}: an access record for `{a['item']}`, which stands indoors")
+    INDOOR_SEEN.append(f"{tag} ({len(rooms)} item(s) indoors)")
+
+
+INDOOR_REFUSALS = [
+    ("a wall penetration off the wall", "must lie ON the wall",
+     lambda t: sub_text(t, "{ x -8 m;   y -7 m;  z 4.5 m; } );    // the wall penetration",
+                        "{ x -7 m;   y -7 m;  z 4.5 m; } );    // off the wall")),
+    ("an override on a stream both of whose ends stand indoors",
+     "indoor piping is not routed -- remove the override",
+     lambda t: sub_text(t, "\npipes\n{\n",
+                        "\npipes\n{\n    sprayFeed { waypoints ( { x -14 m; y -11 m; z 6 m; } ); }\n")),
+]
+
+
+def sub_text(text, old, new):
+    if text.count(old) != 1:
+        raise RuntimeError(f"probe edit anchor not found once: {old!r}")
+    return text.replace(old, new, 1)
+
+
+def arm_indoor(work):
+    """(o) ITEMS INSIDE THE BUILDING (DEV.md 4c C100), on apalutamide01."""
+    d = prepare(work, "indoor", APALUTAMIDE)
+    out, err, rc = solve(d)
+    j = result_json(out)
+    lay = (j or {}).get("layout") or {}
+    if rc != 0 or not lay:
+        fail(f"(o) the apalutamide plant exited {rc}")
+        return
+    check_indoor("apalutamide01", j, lay)
+    #  Between two ends indoors -- an item and an item, an item and a
+    #  junction that stands indoors with it, two such junctions -- the
+    #  reason is indoor piping, never an end the layout could not reach.
+    nr0 = {n["stream"]: n for n in lay.get("notRouted", [])}
+    for s_ in ("sprayFeed", "loopGas", "gasRecycle", "exhaustGas", "coatingSuspension"):
+        n = nr0.get(s_)
+        if not n or not n.get("indoor") or n.get("anchor") \
+                or not n["reason"].startswith("inside the building: indoor piping is not routed"):
+            fail(f"(o) {s_} runs between two ends indoors: it must be listed `indoor`,"
+                 f" unmarked, as indoor piping; published {n}")
+    pipes = {p["stream"]: p for p in lay.get("pipes", [])}
+    legs = [s_ for s_, p in pipes.items() if "wallPenetration" in (p["fromKind"], p["toKind"])]
+    if sorted(legs) != ["acetoneToPrep", "recoveredSolvent"]:
+        fail(f"(o) the plant's declared outdoor legs: {sorted(legs)}; the two solvent"
+             " lines through the east wall")
+    #  Without its declared legs: both listed `indoor`, each marked at its tank.
+    d2 = prepare(work, "indoor_nolegs", APALUTAMIDE, drop_block_edit("pipes"))
+    out2, err2, rc2 = solve(d2)
+    lay2 = ((result_json(out2) or {}).get("layout")) or {}
+    nr = {n["stream"]: n for n in lay2.get("notRouted", [])}
+    items = {i["id"]: i for i in lay2.get("items", [])}
+    want = {"acetoneToPrep": "acetoneTank/tank1", "recoveredSolvent": "recoveredTank/tank1"}
+    for s_, tank in want.items():
+        n, t = nr.get(s_), items.get(tank)
+        if rc2 != 0 or not n or not n.get("indoor") or not t or not n.get("anchor") \
+                or any(abs(a - b) > TOL for a, b in zip(n["anchor"], (t["x"], t["y"], t["z"] + t["dz"]))):
+            fail(f"(o) with no declared legs, {s_} must be listed `indoor` and marked at"
+                 f" the top of {tank}; published {n}")
+    n_ref = 0
+    lay_text = (APALUTAMIDE / "system" / "layoutDict").read_text()
+    for k, (label, needle, edit) in enumerate(INDOOR_REFUSALS):
+        d3 = prepare(work, f"indoor_ref{k}", APALUTAMIDE, lambda _t, e=edit: e(lay_text))
+        o3, e3, rc3 = solve(d3)
+        if rc3 == 0:
+            fail(f"(o) {label}: the run was NOT refused")
+        elif needle not in o3 + e3:
+            fail(f"(o) {label}: refused without naming it ('{needle}'): {e3.strip()[-300:]}")
+        else:
+            n_ref += 1
+    if INDOOR_SEEN and n_ref == len(INDOOR_REFUSALS):
+        claims.append(f"(o) items inside the building ({', '.join(INDOOR_SEEN)}): no pipe"
+                      " drawn to an indoor nozzle, every end at an indoor unit a"
+                      " `wallPenetration` on a building's wall, every `indoor` listing"
+                      " with an end indoors and an anchor only in the open, no"
+                      " separation finding or access record on an item indoors, the"
+                      " footprints counting it in its building; without the declared"
+                      " legs the two solvent lines are listed `indoor` and marked at"
+                      f" their tanks; {n_ref}/{len(INDOOR_REFUSALS)} refusals: a"
+                      " penetration off the wall, an override on indoor piping")
+
+
 def main():
     argv = sys.argv[1:]
     keep = Path(argv[argv.index("--keep") + 1]).resolve() if "--keep" in argv else None
@@ -2705,6 +2894,7 @@ def main():
         arm_fence(work)
         arm_clash(work)
         arm_site(work)
+        arm_indoor(work)
     finally:
         if not keep:
             shutil.rmtree(work, ignore_errors=True)

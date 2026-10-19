@@ -175,6 +175,15 @@ export function PipeRegister({ layout }: { layout: PlantLayout }) {
           {reg.solids.map((s, i) => <span key={s}>{i ? ", " : ""}<code>{s}</code></span>)}.
         </Text>
       )}
+      {reg.indoor.length > 0 && (
+        <Text size="xs" c="dimmed" mt={4} component="div">
+          Inside the building (indoor piping is not routed):
+          <ul style={{ margin: "2px 0 0 18px", padding: 0 }}>
+            {reg.indoor.map((n) => (
+              <li key={n.stream}><code>{n.stream}</code>: {n.reason}</li>))}
+          </ul>
+        </Text>
+      )}
     </>
   );
 }

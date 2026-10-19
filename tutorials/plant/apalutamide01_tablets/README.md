@@ -231,59 +231,88 @@ continuous-plant factors describe a drug-product plant either.
 
 ## 7. Plant layout
 
-`system/layoutDict` places the sized items on a plot plan: the offices and
-quality-control laboratory by the gate, the warehouse, the **GMP production
-building** (one declared box on the plot plan, with its interior declared
-room by room — below), and **downwind** of them all the **solvent area** (solution tank, spray dryer, nitrogen loop,
-condenser) with the acetone tanks south of the pipe rack.  Hazardous-area
-zones are declared on everything that holds acetone; every number is an
-assumption with its reason.  Two findings are left on purpose for the
-group: a separation (the coating-suspension tank by the building — read the
-file's header), and a site with ONE entrance (`singleEntrance`: a fire
-brigade arriving while that road is blocked has no second way in — where
-would you put a second gate, and which road serves it?).
+`system/layoutDict` places the sized items on a plot plan and declares the
+GMP building they stand in (DEV.md 4c C100: a pharmaceutical process is not
+run on equipment standing in the rain).  **Every process item stands in a
+room of the GMP production building**; only the **bulk solvent** stays
+outdoors, as it does in industry:
 
-**Solids are not piped.**  A stream that carries only solids (the bought
-powders, the spray-dried dispersion, the blends, granules and tablet cores)
-is listed by the engine as not routed — "solids only: moved in containers or
-by conveyor" — and the blenders, compactor, mill, screen and press, whose
-streams are all solids, are not put on the pipe rack.  The wet and coated
-tablets carry the coat's water, so they are still streams the router tries;
-it lists them as not routed because the coating dryer has no sized item.
-The coating air is drawn from the roof, beside its heater (a declared
-`pipes` route), not through the building's wall.
+| Where | What | Why there |
+|---|---|---|
+| Spray-drying suite (ground floor, **double height** 0–10 m, north wall) | `SD`, the spray dryer | Contained (the dispersion is discharged as an open powder), hazardous area **zone 2** (acetone in a closed, inerted loop); the chamber's explosion vent is ducted out through the north wall.  Double height for the atomiser platform above the chamber (the engine's chamber is 1.2 m × 2.5 m; the room is 10 m). |
+| Nitrogen-loop technical room (ground floor, north-east corner) | `gasHeater`, `blower`, `exhaustCooler`, `solventCondenser`, `condensatePot` | Beside the suite (the gas ducts pass through the wall they share), on two outside walls, entered from outside for maintenance, **zone 2**, held 5 Pa below outside by its extract so a leak goes to the extract and not into the building. |
+| Solution-preparation room (ground floor, south-east corner) | `solutionPrep` | Contained (the API and HPMCAS are tipped into the acetone under a downflow booth), **zone 1** (the open manway), on the east wall where the acetone line comes in. |
+| Coating-preparation room (ground floor, beside coating) | `coatingSuspensionPrep` | The film-coating suspension, piped through the wall to the pan coater. |
+| AHU plant (technical floor, 5.5 m) | `airHeater` | The coil of the coater's air-handling unit, above the coating room. |
+| **Tank farm, outdoors**, east of the building and downwind of it, in one bund | `acetoneTank/tank1`, `recoveredTank/tank1` | Bulk flammable liquid is stored outside, away from the people, with its hazardous-area zones declared.  The bund is not an item (a wall round two items would overlap both): its capacity is yours to size. |
+
+The two solvent lines leave the farm on a short pipe rack, cross the east
+road on its upper tier (7.2 m, above the roads' 5 m headroom) and **enter
+the building through its east wall** at 4.5 m: the fresh acetone into the
+solution room, the condensate out of the nitrogen-loop room.  Those two
+outdoor legs are declared in `pipes {}`, each ending (or beginning) ON the
+wall — the engine draws a pipe with an end indoors only up to that **wall
+penetration**.
+
+**Pipes indoors are not drawn.**  The router draws pipes in the open only: a
+stream whose two ends stand indoors (the solution to the dryer, the whole
+nitrogen loop, the coating suspension) is listed by the engine as "inside
+the building: indoor piping is not routed".  The nitrogen make-up (from a
+supply the case does not model — a liquid-nitrogen tank and vaporiser
+outside) and the purge (to a vent treatment it does not model) have one end
+indoors and none outdoors that the layout reaches: listed with that reason.
+**Solids are not piped** either: the bought powders, the spray-dried
+dispersion, the blends, granules and tablet cores are listed as "solids
+only: moved in containers or by conveyor".
+
+**One finding is left on purpose**: the site has ONE entrance
+(`singleEntrance`: a fire brigade arriving while that road is blocked has no
+second way in — where would you put a second gate, and which road serves
+it?).  The earlier exercise (a coating-suspension tank 4 m outside the
+building) is gone: the tank now stands in its room, where it belongs.  In
+its place, **a question the engine does not check**: the spray dryer's
+explosion vent discharges through the north wall of its suite, 1 m from the
+paved edge of the north road — how large is the vent, how far do the flame
+and the pressure reach, and may that road stay where it is while the dryer
+runs?  (Vent sizing and the hazard distance are in the explosion-venting
+standards, cited by title only: EN 14491, NFPA 68.)
 
 **The GMP interior** (`building {}` at the end of `system/layoutDict`;
 grammar in `docs/ai/case-layout.md`).  Its `envelope` is the
-`productionBuilding` box, so every room must fit inside it, and the rooms
-count toward the plot.  Two floors: the production floor (0–5 m) and a
-technical floor (5.5–10 m) for the air-handling units, utilities and
-switchgear.  The engine raises **no finding** on it.
+`productionBuilding` box (62 m × 36 m × 10 m), so every room must fit inside
+it, the rooms count toward the plot, and the items the rooms list stand
+inside it — each on its room's floor (an item indoors declares no `z`) and
+classified by its room (its hazardous area is the room's `atex {}`).  Two
+floors: the production floor (0–5 m) and a technical floor (5.5–10 m) for
+the air-handling units, utilities and switchgear (the switchgear at the
+west end, away from the classified rooms).  The engine raises **no finding**
+on it.
 
 | Area | Rooms | Grade | Pressure to outside |
 |---|---|---|---|
 | Staff entrance (south) | lobby → gowning → clean corridor | CNC → D | +15 → +25 → +35 Pa |
 | Receipt and dispensing (south-west, from the warehouse) | goods-in, a sink material airlock, the dispensary (contained) with a bubble personnel airlock and a sink exit | CNC, D | +15; sinks +5/+10; dispensary +20; bubble +45 |
-| Contained train (north) | blending → roller compaction → milling → final blending → compression, a contained personnel corridor (bubble airlock from the clean corridor) and a contained return corridor for waste | D, contained | rooms +15, suite corridor +25, bubble +45 |
-| Coating and packaging (south-east) | coating → primary packaging → cascade airlock → secondary packaging → the warehouse | D → CNC | +25, +30, +20, +15 |
-| East dock | the spray-dried dispersion in, the API kits out, through sink / cascade airlocks | CNC | +15 |
+| Solvent suite (east) | the solution room and the spray-drying suite (both contained, each through a bubble personnel airlock, the solution room also through a sink for the API kits), the nitrogen-loop room (opens only to outside) | D, CNC | rooms +15, bubbles +45, sink +5; loop room −5 |
+| Contained train (north) | the dispersion through a sink into blending → roller compaction → milling → final blending → compression, a contained personnel corridor (bubble airlock from the clean corridor) and a contained return corridor for waste | D, contained | rooms +15, suite corridor +25, bubble +45 |
+| Coating and packaging (south) | coating preparation → coating → primary packaging → cascade airlock → secondary packaging → the warehouse | D → CNC | +25, +25, +30, +20, +15 |
 | Waste | return corridor → sink airlock → waste room → outside (west) | D → CNC | +15, +5, +15 |
-| Technical floor | AHU plant, utilities, electrical (an ignition source) | CNC | +5 |
+| Technical floor | AHU plant (the coater's air heater), utilities, electrical (an ignition source, at the west end) | CNC | +5 |
 
 Grades: an oral-solid-dose suite is not sterile; EU GMP Annex 1, whose A–D
 vocabulary the engine speaks, is written for sterile products, so the
 product-exposed rooms are grade D **by analogy** and the rest CNC — the
 case's statement, to replace with the company's risk assessment.  The 10 Pa
 step is Annex 1's guidance value, borrowed.  **Containment** is declared on
-every room where the API is an open powder, on the assumption that it is a
-potent compound: **its exposure band is not known — confirm it from the
-supplier's safety data sheet** (question 2 of section 9).  Coating and
-packaging are not contained (tablets, not powder).  Not modelled: air-change
-rates, HVAC sizing, door and corridor widths, travel distances.  And one
-limitation of the engine: with an `envelope` declared, no placed item may
-stand inside the building (the plot plan refuses two items sharing a
-volume), so the solid-dose machines could not be placed in their rooms even
-if they had a size.
+every room where the API is an open powder (dispensing, the solution room,
+the spray-drying suite, the granulation and compression train), on the
+assumption that it is a potent compound: **its exposure band is not known —
+confirm it from the supplier's safety data sheet** (question 2 of section
+9).  Coating and packaging are not contained (tablets, not powder).  The
+suite's powder discharge is also a combustible **dust** (a zone 22
+question): the engine's grammar carries one zone per room, so that one is
+yours.  Not modelled: air-change rates, HVAC sizing, door and corridor
+widths, travel distances, the access clearance round each item inside its
+room.
 
 ## 8. What Choupo does not model here — say it in your report
 

@@ -731,7 +731,7 @@ function LayoutBody({ layout, scene, building }: {
       </Group>
       <PlantLayout3D scene={scene} />
       <PlantLayoutTables layout={layout} />
-      {building && <GmpBuildingSection building={building} scene={scene} />}
+      {building && <GmpBuildingSection building={building} scene={scene} items={layout.items} />}
     </>
   );
 }

@@ -797,6 +797,12 @@ struct LayoutItem
     //  says why it is there and where its size came from); both or neither.
     std::string             source;
     std::string             reason;
+    //  THE ROOM IT STANDS IN (2026-10-19, DEV.md 4c C100): the room of the
+    //  declared `building {}` whose `equipment ( ... )` lists the item, or
+    //  empty for an item in the open.  An item indoors takes its base `z`
+    //  from that room's floor (BuildingLayout.H `indoorPlaces`, one home),
+    //  and the building, not the item, faces the site.
+    std::string             room;
 };
 
 struct LayoutArea
@@ -904,6 +910,11 @@ struct LayoutNotRouted
     //  Not a missing pipe: the stream carries only solids, which are moved
     //  in containers or by conveyor (DEV.md 4c C97).  No anchor is set.
     bool solids = false;
+    //  An end of it stands INSIDE the declared building (DEV.md 4c C100):
+    //  indoor piping is not routed.  With the other end in the open the
+    //  anchor marks that end, whose outdoor leg the case may declare up to
+    //  the building's wall (PlantLayout.H, THE PIPES).
+    bool indoor = false;
 };
 
 //  THE PLOT (2026-10-17, DEV.md 4c C82).  The ground the layout occupies, by
@@ -1164,6 +1175,10 @@ struct PlantLayoutRecord
     LayoutRoads                        roads;    // C90
     LayoutFence                        fence;    // C93
     std::vector<LayoutCarPark>         carParks; // C96
+    //  The non-process item that is the declared building's shell (its
+    //  `envelope`), empty when none is declared (C100: an item a room lists
+    //  stands inside it).  Read by the checks; published by the building.
+    std::string                        shell;
 
     bool present() const { return !items.empty(); }
 };

@@ -173,5 +173,27 @@ describe("the GMP interior (C97 phase B)", () => {
     //  The stair splits the waste run: its ground part is drawn on the ground plan.
     expect(plans[0]!.flows.some((f) => f.name === "upstairs")).toBe(true);
     expect(lobby.lines[1]).toBe("CNC +5 Pa");
+    //  No item given: no item drawn.
+    expect(plans.every((p) => p.items.length === 0)).toBe(true);
+  });
+
+  //  DEV.md 4c C100: the items a room lists are drawn on that room's floor,
+  //  at the engine's own position and extents, and nowhere else.
+  it("draws the items a room lists on its floor's plan, and no item in the open", () => {
+    const items = [
+      { id: "dryer", room: "corridor", shape: "cylinder", orientation: "vertical",
+        x: 30, y: 8, dx: 1.2, dy: 1.2 },
+      { id: "ahu", room: "electrical", shape: "box", orientation: "alongX",
+        x: 12, y: 3, dx: 1.5, dy: 0.4 },
+      { id: "tank", shape: "box", orientation: "alongX", x: 90, y: 0, dx: 2, dy: 2 },
+    ];
+    const plans = floorPlans(b, items);
+    expect(plans[0]!.items.map((i) => i.id)).toEqual(["dryer"]);
+    expect(plans[1]!.items.map((i) => i.id)).toEqual(["ahu"]);
+    const d = plans[0]!.items[0]!;
+    expect(d.circle).toBe(true);
+    //  Plan (x, y) to SVG: the box's corner at (x - dx/2, -(y + dy/2)).
+    expect([d.x, d.y, d.w, d.h]).toEqual([29.4, -8.6, 1.2, 1.2]);
+    expect(plans[1]!.items[0]!.circle).toBe(false);
   });
 });

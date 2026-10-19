@@ -675,6 +675,8 @@ function shapeLayout(l: NonNullable<ResultPayload["layout"]>): PlantLayout {
       x: i.x as number, y: i.y as number, z: i.z as number,
       dx: i.dx as number, dy: i.dy as number, dz: i.dz as number,
       ...(typeof i.ignition === "string" && i.ignition ? { ignition: i.ignition } : {}),
+      //  The room it stands in, only for an item indoors (DEV.md 4c C100).
+      ...(typeof i.room === "string" && i.room ? { room: i.room } : {}),
       ...(typeof i.source === "string" && i.source
         ? { source: i.source, reason: str(i.reason) } : {}),
       ...(i.release ? { release: {
@@ -941,6 +943,7 @@ function shapePipes(l: NonNullable<ResultPayload["layout"]>): Partial<PlantLayou
                  ...(typeof n.fromUnit === "string" ? { fromUnit: n.fromUnit } : {}),
                  ...(typeof n.toUnit === "string" ? { toUnit: n.toUnit } : {}),
                  ...(n.solids === true ? { solids: true } : {}),
+                 ...(n.indoor === true ? { indoor: true } : {}),
                  ...(a ? { anchor: a } : {}) };
       }),
   };
@@ -1140,7 +1143,7 @@ interface ResultPayload {
     items?: { id?: string; nonProcess?: boolean; kind?: string; sector?: string;
       shape?: string; orientation?: string; footprintFrom?: string;
       x?: number; y?: number; z?: number; dx?: number; dy?: number; dz?: number;
-      ignition?: string; source?: string; reason?: string;
+      ignition?: string; source?: string; reason?: string; room?: string;
       release?: { source?: string; reason?: string;
         zones?: { zone?: number; radius?: number; height?: number }[] } }[];
     areas?: { sector?: string; xMin?: number; xMax?: number; yMin?: number; yMax?: number }[];
@@ -1162,7 +1165,7 @@ interface ResultPayload {
       F_mass?: number; T?: number; P?: number; vf?: number;
       route?: number[][] }[];
     notRouted?: { stream?: string; reason?: string; fromUnit?: string; toUnit?: string;
-                  solids?: boolean;
+                  solids?: boolean; indoor?: boolean;
       anchor?: unknown[] }[];
     summary?: { placed?: number; unplaced?: number; internal?: number; findings?: number;
       pipes?: number; notRouted?: number; pipeLength?: number };

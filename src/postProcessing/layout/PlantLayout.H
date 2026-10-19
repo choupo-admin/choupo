@@ -70,6 +70,30 @@ Description
     all, while a short distance IS a layout -- a draft whose shortfall the
     student must see and defend.
 
+    ITEMS INSIDE THE BUILDING (2026-10-19, DEV.md 4c C100).  An item a room
+    of the declared `building {}` lists in its `equipment ( ... )` stands
+    INSIDE that room (BuildingLayout.H): its base `z` is the room's floor
+    elevation, read from the building (`buildingLayout::indoorPlaces`, one
+    home) -- a `z` declared on it is REFUSED -- and the building checks that
+    it fits its room in plan and in height.  The building's shell (its
+    `envelope`) does not clash with the items its rooms list, and still
+    clashes with anything else: an item overlapping the shell that no room
+    lists is REFUSED, naming the room it needs.  Indoors the ROOM is
+    classified, not the item: a `release` or an `ignition` declared on an
+    indoor item is REFUSED, naming the room's `atex {}` and `ignition`.  On
+    the site an indoor item is represented by its building: the separation
+    table spaces items in the open (pairs with an indoor item are not
+    checked; a rule whose kind only indoor items carry is a `deadRule` that
+    says so), the road access is the building's, a pipe clash is the shell's,
+    and its ground is the building's footprint, not counted again.  A
+    junction piped only to indoor items stands indoors with them.  INDOOR
+    PIPING IS NOT ROUTED: a stream both of whose ends stand indoors is listed
+    not routed (`indoor`), and one with an end indoors and one in the open
+    is routed only where the case DECLARES its outdoor leg as waypoints whose
+    indoor-side end lies ON the shell's wall -- the WALL PENETRATION, that
+    end's kind `wallPenetration`; with none declared it is listed not routed
+    and marked at its outdoor end.
+
     THE PIPES (2026-10-17, DEV.md 4c C80).  After placement every MATERIAL
     stream of the flowsheet is either ROUTED or listed as not routed with
     its reason -- never dropped in silence.  Its two ends:

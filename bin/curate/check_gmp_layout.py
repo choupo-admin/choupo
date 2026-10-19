@@ -80,6 +80,23 @@ under tutorials/ is touched.
       copy: its building is published in its `productionBuilding` envelope,
       contained rooms and flows of all three kinds, and the engine's findings
       and the recomputed ones are both EMPTY.
+  (i) THE SHELL HOLDS ITS ITEMS (2026-10-19, DEV.md 4c C100): the clean
+      probe, its dryer and three boxes in their rooms (no `z`: an item a room
+      lists stands on its floor), inside the same `osdBlock` shell, with a
+      separation rule on the dryer's kind -- runs clean: each item names the
+      room that lists it and stands at that room's floor elevation, the plot's
+      footprints are the shell's alone and its rule says an item indoors is
+      counted in it, no separation finding and a `deadRule` saying only items
+      inside the building carry the kind, the dryer's three fluid streams
+      listed `indoor` with "one end inside the building", and a declared
+      outdoor leg ending ON the wall at (0, 15, 3) m as a `wallPenetration`,
+      5 m long.  REFUSED, named: an item inside the shell that no room lists
+      ("OVERLAPS the building"), a penetration off the wall.  Arm (d) adds
+      four C100 refusals (a `z` on a listed item, an item two rooms list, an
+      ignition on an item indoors, a leg with no shell to enter); arm (e)
+      gives the items their `z` back before it removes the building; arm (h)
+      requires every process item of the witness but its two bulk-solvent
+      tanks to stand in a room, and a classified room.
 
 SABOTAGES, by hand (2026-10-18), each run against this gate and each caught:
   S1  `cascadeCheck` returns early for every pair (the cascade never
@@ -124,6 +141,25 @@ SABOTAGES, by hand (2026-10-18), each run against this gate and each caught:
       sticks out in z; the sabotage was redone on the `refuse` itself.
   S13 the plot sentence no longer names the building: arms (a), (b) on
       every probe.  CAUGHT (and by check_plant_layout arm (j)).
+  C100 (items inside the building), 2026-10-19, by hand, each on a rebuilt
+  engine, restored by copy and rebuilt after:
+  S14 the shell's exemption for the items its rooms list dropped: arm (i)
+      "the shell holding its items exited 2" and arm (h) "the witness exited
+      2" (`SD` OVERLAPS the building).  CAUGHT.
+  S15 an indoor item's plan area counted in the footprints again: arm (i)
+      "the footprints 1453.79 m2 must be the shell's alone".  CAUGHT.
+  S16 the wall-penetration test disarmed: arm (i) "a wall penetration off
+      the wall: the run was NOT refused".  CAUGHT.
+  S17 the separation table no longer skips an item indoors: arm (i)
+      `separation:dryer:osdBlock` published.  CAUGHT.
+  S18 the refusal of a hazard declared on an indoor item disarmed: arm (d)
+      "a hazard declared on an item indoors: the run was NOT refused".
+      CAUGHT.
+  S19 an indoor item's base taken as 0 m, not its floor: arm (h) "the
+      witness exited 2" -- the coater's air heater "does not fit its room"
+      (z 0..0.6 m against the technical floor's 5.5..10 m).  CAUGHT; the
+      clean probe alone could not have caught it (every room it lists is on
+      the ground floor), which is why the witness's AHU plant is the arm.
 """
 
 import json
@@ -152,14 +188,14 @@ def fail(msg):
 CLEAN = r'''/*--- Probe: a small oral-solid-dose block round one spray dryer (C97 B). ---*/
 items
 (
-    { item "dryer"; x 28 m; y 15 m; z 0 m; orientation vertical; }
-    { nonProcess "blender"; kind blender; x 41 m; y 15 m; z 0 m; orientation alongX;
+    { item "dryer"; x 28 m; y 15 m; orientation vertical; }
+    { nonProcess "blender"; kind blender; x 41 m; y 15 m; orientation alongX;
       footprint { length 2 m; width 2 m; height 2.5 m; }
       source "probe"; reason "a bin blender, a probe's box"; }
-    { nonProcess "press"; kind tabletPress; x 49 m; y 15 m; z 0 m; orientation alongX;
+    { nonProcess "press"; kind tabletPress; x 49 m; y 15 m; orientation alongX;
       footprint { length 2 m; width 1.5 m; height 2 m; }
       source "probe"; reason "a rotary press, a probe's box"; }
-    { nonProcess "coater"; kind panCoater; x 57 m; y 15 m; z 0 m; orientation alongX;
+    { nonProcess "coater"; kind panCoater; x 57 m; y 15 m; orientation alongX;
       footprint { length 3 m; width 2 m; height 2.5 m; }
       source "probe"; reason "a pan coater, a probe's box"; }
 );
@@ -257,6 +293,16 @@ def sub(text, old, new, count=1):
 
 def insert_before(text, anchor, add):
     return sub(text, anchor, add + anchor)
+
+
+def outdoors(text, names=("dryer", "blender", "press", "coater")):
+    """The probe's items as items IN THE OPEN: each given its `z` again (an
+    item a room lists takes its base from the room's floor and declares
+    none, DEV.md 4c C100)."""
+    xs = {"dryer": 28, "blender": 41, "press": 49, "coater": 57}
+    for n in names:
+        text = sub(text, f"x {xs[n]} m; y 15 m; orientation", f"x {xs[n]} m; y 15 m; z 0 m; orientation")
+    return text
 
 
 def prepare(work, name, layout):
@@ -696,7 +742,20 @@ REFUSALS = [
     ("an item that does not fit its room", "does not fit its room",
      lambda t: sub(t, '{ item "dryer"; x 28 m;', '{ item "dryer"; x 33.8 m;')),
     ("an unlisted item inside a room", "does not list it",
-     lambda t: sub(t, " equipment ( blender );", "")),
+     lambda t: outdoors(sub(t, " equipment ( blender );", ""), ("blender",))),
+    #  DEV.md 4c C100: an item a room lists stands on its floor -- one home.
+    ("a `z` on an item a room lists", "delete `z` from the item",
+     lambda t: outdoors(t, ("press",))),
+    ("an item listed by two rooms", "one item, one room",
+     lambda t: sub(t, " equipment ( press );", " equipment ( press coater );")),
+    ("a hazard declared on an item indoors", "the ROOM is classified",
+     lambda t: sub(t, 'source "probe"; reason "a rotary press, a probe\'s box"; }',
+                   'source "probe"; reason "a rotary press, a probe\'s box";\n'
+                   '      ignition "a probe motor"; }')),
+    ("an indoor item's pipe routed with no shell to enter", "declares no `envelope`",
+     lambda t: insert_before(t, "\nbuilding\n",
+                             "\npipes { dryingAir { waypoints ( { x 20 m; y 15 m; z 3 m; }"
+                             " { x 22 m; y 15 m; z 3 m; } ); } }\n")),
     ("an item not placed", "is not placed on the plot plan",
      lambda t: sub(t, " equipment ( blender );", " equipment ( blender ghost );")),
     ("a door with no shared wall", "share no wall",
@@ -757,7 +816,7 @@ def arm_refusals(work):
 
 
 def arm_absent(work, clean_json):
-    t = re.sub(r"\nbuilding\n\{.*\n\}\n", "\n", CLEAN, count=1, flags=re.S)
+    t = outdoors(re.sub(r"\nbuilding\n\{.*\n\}\n", "\n", CLEAN, count=1, flags=re.S))
     d = prepare(work, "absent", t)
     out, err, rc, j = solve(d)
     if rc != 0 or not j:
@@ -770,8 +829,17 @@ def arm_absent(work, clean_json):
         bad.append("a [building] line")
     lay, cl = dict(j.get("layout") or {}), dict((clean_json or {}).get("layout") or {})
     p_abs, p_cl = lay.pop("plot", None), cl.pop("plot", None)
+    #  DEV.md 4c C100: the clean probe's items stand in its rooms, so its
+    #  pipes to them, its rack's stated default and its counts differ by
+    #  construction (arm (i) holds them); the ITEMS are the same but for the
+    #  room each one names.
+    for k in ("pipes", "notRouted", "junctions", "pipeRack", "summary"):
+        lay.pop(k, None)
+        cl.pop(k, None)
+    cl["items"] = [{k: v for k, v in i.items() if k != "room"} for i in cl.get("items", [])]
     if clean_json and lay != cl:
-        bad.append("a `layout` block (the plot aside) different from the clean probe's")
+        bad.append("a `layout` block (the plot and the pipes aside, the items' rooms"
+                   " aside) different from the clean probe's")
     if clean_json and p_abs and p_cl:
         if CLAUSE in p_abs.get("rule", ""):
             bad.append("a plot rule naming a building that is not declared")
@@ -783,8 +851,9 @@ def arm_absent(work, clean_json):
     if bad:
         fail("(e) with no building block the run still printed " + ", ".join(bad))
     else:
-        claims.append("(e) with no `building` block: no key, no line, the `layout`"
-                      " block identical to the clean probe's but for the plot, which is"
+        claims.append("(e) with no `building` block (its items given their `z`): no"
+                      " key, no line, the `layout` block identical to the clean probe's"
+                      " but for the rooms its items name, the pipes and the plot, which is"
                       " smaller, inside the clean probe's, and whose rule names no"
                       " building")
 
@@ -827,14 +896,14 @@ def arm_golden(work):
 
 
 #  A SHELL (DEV.md 4c C97): the clean probe's rooms inside a non-process item
-#  that IS the building on the plot plan.  The plot plan refuses two items
-#  that share a volume, so a shelled building holds no placed item: the
-#  dryer stands outside it, the three boxes go, and no room lists equipment.
+#  that IS the building on the plot plan, holding no placed item: the dryer
+#  stands outside it, the three boxes go, and no room lists equipment.  Arm
+#  (i) is the shell WITH its items (DEV.md 4c C100).
 def shelled(text):
     for name in ("blender", "press", "coater"):
         text = re.sub(r'\n    \{ nonProcess "%s";.*?\}\n      source "probe"; reason "[^"]*"; \}' % name,
                       "", text, count=1, flags=re.S)
-    text = sub(text, '{ item "dryer"; x 28 m; y 15 m;', '{ item "dryer"; x 90 m; y 15 m;')
+    text = sub(text, '{ item "dryer"; x 28 m; y 15 m;', '{ item "dryer"; x 90 m; y 15 m; z 0 m;')
     text = re.sub(r" equipment \( [a-z]+ \);", "", text)
     text = sub(text, "\n);\nplot {",
                '\n    { nonProcess "osdBlock"; kind productionBuilding; x 36 m; y 10 m; z 0 m;'
@@ -887,6 +956,116 @@ def arm_envelope(work):
                   " unknown one, a process item, a room beyond the shell")
 
 
+#  THE SHELL HOLDS ITS ITEMS (DEV.md 4c C100): the clean probe, its items in
+#  their rooms, inside the same shell -- plus a separation rule that names
+#  the dryer's kind, which only an item indoors carries.
+def held(text):
+    text = sub(text, "\n);\nplot {",
+               '\n    { nonProcess "osdBlock"; kind productionBuilding; x 36 m; y 10 m; z 0 m;'
+               ' orientation alongX;\n      footprint { length 72 m; width 20 m; height 11 m; }\n'
+               '      source "probe"; reason "the probe building\'s shell"; }\n);\n'
+               'separation ( { source "probe"; reason "probe"; measure edgeToEdge;\n'
+               '    distances ( { between ( productionBuilding sprayDryer ); distance 20 m; } ); } );\n'
+               'plot {')
+    return sub(text, '    reason "every rule\'s clean case at once";\n',
+               '    reason "every rule\'s clean case at once";\n    envelope osdBlock;\n')
+
+
+HELD_REFUSALS = [
+    ("an item inside the shell that no room lists", "OVERLAPS the building `osdBlock`",
+     lambda t: outdoors(sub(t, " equipment ( coater );", ""), ("coater",))),
+    ("a wall penetration off the wall", "must lie ON the wall",
+     lambda t: insert_before(t, "\nbuilding\n",
+                             "\npipes { dryingAir { waypoints ( { x -5 m; y 15 m; z 3 m; }"
+                             " { x 1 m; y 15 m; z 3 m; } ); } }\n")),
+]
+
+
+def arm_held(work):
+    """(i) THE SHELL HOLDS ITS ITEMS (DEV.md 4c C100)."""
+    d = prepare(work, "held", held(CLEAN))
+    out, err, rc, j = solve(d)
+    if rc != 0 or not j:
+        fail(f"(i) the shell holding its items exited {rc}: {err.strip()[-400:]}")
+        return
+    b = compare("(i) held", j, [])
+    if b is None:
+        return
+    lay = j.get("layout") or {}
+    rooms = {r["name"]: r for r in b["rooms"]}
+    listed = {i: r["name"] for r in b["rooms"] for i in r.get("equipment", [])}
+    ok = True
+    for it in lay.get("items", []):
+        want = listed.get(it["id"])
+        if it.get("room") != want:
+            fail(f"(i) item {it['id']} names room {it.get('room')!r}; the building lists"
+                 f" it in {want!r}")
+            ok = False
+        elif want and abs(it["z"] - rooms[want]["z"]) > 1e-9:
+            fail(f"(i) item {it['id']} stands at z {it['z']} m; its room's floor is at"
+                 f" {rooms[want]['z']} m")
+            ok = False
+    #  The ground the items stand on is the shell's: counted once.
+    shell = next((i for i in lay.get("items", []) if i["id"] == "osdBlock"), None)
+    plot = lay.get("plot") or {}
+    if shell is None or abs(plot.get("footprintArea", -1) - shell["dx"] * shell["dy"]) > 1e-6 \
+            or "counted in the building's footprint" not in plot.get("rule", ""):
+        fail(f"(i) the footprints {plot.get('footprintArea')} m2 must be the shell's alone,"
+             " and the plot rule must say an item indoors is counted in it")
+        ok = False
+    #  The separation table spaces items in the open: no finding on the dryer,
+    #  and the rule whose kind only it carries says so.
+    finds = lay.get("findings", [])
+    if any(f["kind"] == "separation" for f in finds) or not any(
+            f["kind"] == "deadRule" and f["a"] == "sprayDryer"
+            and "only items inside the building" in f["message"] for f in finds):
+        fail(f"(i) separation findings {[f['id'] for f in finds]}: an item indoors is"
+             " spaced by its building, and the rule naming its kind is a deadRule that"
+             " says only items inside the building carry it")
+        ok = False
+    #  Its pipes: every stream to the dryer has an end indoors.
+    nr = {n["stream"]: n for n in lay.get("notRouted", [])}
+    for s_ in ("feed", "dryingAir", "exhaustAir"):
+        n = nr.get(s_)
+        if not n or not n.get("indoor") or "one end inside the building" not in n["reason"]:
+            fail(f"(i) {s_}: listed {n}; an end indoors is not routed, `indoor`, with that reason")
+            ok = False
+    if any(p["stream"] in ("feed", "dryingAir", "exhaustAir") for p in lay.get("pipes", [])):
+        fail("(i) a pipe to an item indoors was routed with no outdoor leg declared")
+        ok = False
+    #  The outdoor leg, declared to the wall: drawn, ending ON it.
+    d2 = prepare(work, "held_leg", insert_before(held(CLEAN), "\nbuilding\n",
+                 "\npipes { dryingAir { waypoints ( { x -5 m; y 15 m; z 3 m; }"
+                 " { x 0 m; y 15 m; z 3 m; } ); } }\n"))
+    out2, err2, rc2, j2 = solve(d2)
+    p = next((q for q in ((j2 or {}).get("layout") or {}).get("pipes", [])
+              if q["stream"] == "dryingAir"), None)
+    if rc2 != 0 or not p or p["toKind"] != "wallPenetration" or p["to"] != "dryer" \
+            or p["route"][-1] != [0, 15, 3] or abs(p["length"] - 5) > 1e-9:
+        fail(f"(i) the declared outdoor leg: exit {rc2}, published {p}; it must end ON"
+             " the wall at (0, 15, 3) m, its end `wallPenetration` to `dryer`, 5 m long")
+        ok = False
+    n = 0
+    for k, (label, needle, edit) in enumerate(HELD_REFUSALS):
+        d3 = prepare(work, f"held{k:02d}", edit(held(CLEAN)))
+        o3, e3, rc3, _ = solve(d3)
+        if rc3 == 0:
+            fail(f"(i) {label}: the run was NOT refused (exit 0)")
+        elif needle not in e3 + o3:
+            fail(f"(i) {label}: refused (exit {rc3}) without naming it ('{needle}'):"
+                 f" {e3.strip()[-300:]}")
+        else:
+            n += 1
+    if ok and n == len(HELD_REFUSALS):
+        claims.append(f"(i) a shell HOLDING its items runs clean: each item names the room"
+                      f" that lists it and stands on that room's floor, the footprints are"
+                      f" the shell's alone, a separation rule on the dryer's kind is a"
+                      f" deadRule that says only items indoors carry it, the dryer's three"
+                      f" fluid streams are listed `indoor`, a declared outdoor leg ends on"
+                      f" the wall as a `wallPenetration`; {n}/{len(HELD_REFUSALS)} refusals:"
+                      f" an unlisted item in the shell, a penetration off the wall")
+
+
 WITNESS = ROOT / "tutorials/plant/apalutamide01_tablets"
 
 
@@ -916,10 +1095,23 @@ def arm_witness(work):
     if kinds != {"personnel", "material", "waste"} or cont == 0:
         fail(f"(h) the witness's flows {sorted(kinds)}, {cont} contained rooms")
         return
+    #  DEV.md 4c C100: every process item stands in a room but the bulk
+    #  solvent tanks, which stand in the open.
+    items = (j.get("layout") or {}).get("items", [])
+    out_ = sorted(i["id"] for i in items if not i["nonProcess"] and not i.get("room"))
+    if out_ != ["acetoneTank/tank1", "recoveredTank/tank1"]:
+        fail(f"(h) the witness's process items in the open: {out_}; only the two"
+             " bulk-solvent tanks stand outdoors")
+        return
+    atex = sorted(r["name"] for r in b["rooms"] if "atexZone" in r)
+    if not atex:
+        fail("(h) the witness declares no classified room for its solvent suite")
+        return
     claims.append(f"(h) the witness `apalutamide01_tablets`: {s['rooms']} rooms on"
                   f" {s['floors']} floors in its `productionBuilding`, {cont} contained,"
-                  f" {s['flows']} flows of all three kinds; zero findings published and"
-                  " zero recomputed")
+                  f" {s['flows']} flows of all three kinds, every process item but the"
+                  f" two bulk-solvent tanks in a room, {len(atex)} classified room(s);"
+                  " zero findings published and zero recomputed")
 
 
 def main():
@@ -939,6 +1131,7 @@ def main():
         arm_golden(work)
         arm_envelope(work)
         arm_witness(work)
+        arm_held(work)
     finally:
         if not keep:
             shutil.rmtree(work, ignore_errors=True)
@@ -952,9 +1145,8 @@ def main():
           " is sensible for the product (the case's assumption -- no table is"
           " shipped), air change rates and HVAC, door widths and travel distances,"
           " a pipe or a road against a room's walls beyond a road through a room,"
-          " a placed item inside a shelled building (the plot plan refuses it as"
-          " two items sharing a volume -- not built), and the GUI drawing (a"
-          " vitest).")
+          " indoor piping (not routed, said), an item's clearance for access"
+          " inside its room, and the GUI drawing (a vitest).")
     return 0
 
 

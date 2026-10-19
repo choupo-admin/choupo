@@ -62,6 +62,17 @@ describe("layoutScene: the engine's layout, drawn and never recomputed", () => {
     expect(house.nonProcess).toBe(true);
     expect(house.tooltip.join(" ")).toContain("non-process");
     expect(house.tooltip.join(" ")).toContain("ignition source: motors");
+    //  An item in the open names no room.
+    expect(comp.tooltip.join(" ")).not.toContain("indoors");
+  });
+
+  it("an item a room lists says so, standing at the engine's own base (DEV.md 4c C100)", () => {
+    const L = { ...LAYOUT, items: LAYOUT.items.map((i) => (i.id === "makeupComp"
+      ? { ...i, z: 5.5, room: "hvacPlant" } : i)) };
+    const comp = layoutScene(L)!.solids.find((x) => x.id === "makeupComp")!;
+    expect(comp.tooltip.join(" ")).toContain("indoors: in room hvacPlant");
+    //  Its body stands on the floor the engine published: centre = z + dz/2.
+    expect(comp.center[1]).toBeCloseTo(5.5 + 4 / 2, 12);
   });
 
   it("flags exactly the items the engine named in a finding, in two channels", () => {
@@ -201,6 +212,8 @@ describe("the pipes: drawn as the engine routed them, never re-routed", () => {
     expect(endName("item", "FEHE")).toBe("FEHE");
     expect(endName("junction", "mixer")).toBe("mixer (junction)");
     expect(endName("batteryLimit", "inlet")).toBe("battery limit (inlet)");
+    //  DEV.md 4c C100: a pipe that ends where it enters the building.
+    expect(endName("wallPenetration", "SD")).toBe("building wall (to SD, indoors)");
   });
 
   it("pointAlong walks the polyline and wraps at its end", () => {

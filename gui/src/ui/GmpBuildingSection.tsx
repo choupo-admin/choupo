@@ -43,7 +43,7 @@ import { Box, Checkbox, Group, ScrollArea, SegmentedControl, Table, Text } from 
 import type { FlowKind, GmpBuilding } from "../adapters/buildingPayload.js";
 import {
   buildingScene, floorPlans, FLOW_KINDS, FLOW_LOOK, GRADE_LOOK, GRADE_ORDER, ROLE_WORD,
-  withBuilding, type FloorPlan,
+  withBuilding, type FloorPlan, type PlanItemSource,
 } from "../case/gmpBuilding.js";
 import type { LayoutScene } from "../case/plantLayout.js";
 import { buildingView } from "./plotting/gmpBuildingRenderer.js";
@@ -120,6 +120,18 @@ export function FloorPlanSvg({ plan, flows }: { plan: FloorPlan; flows: Record<F
           })()}
         </g>
       ))}
+      {plan.items.map((it) => (
+        <g key={`item-${it.id}`}>
+          <title>{`${it.id} -- in room ${it.room}`}</title>
+          {it.circle
+            ? <circle cx={it.x + it.w / 2} cy={it.y + it.h / 2} r={it.w / 2}
+                fill="#495057" fillOpacity={0.55} stroke="#212529" strokeWidth={font / 10} />
+            : <rect x={it.x} y={it.y} width={it.w} height={it.h}
+                fill="#495057" fillOpacity={0.55} stroke="#212529" strokeWidth={font / 10} />}
+          <text x={it.x + it.w / 2} y={it.y + it.h + font * 0.8} fontSize={font * 0.6}
+            textAnchor="middle" fill="currentColor">{it.id}</text>
+        </g>
+      ))}
       {plan.flows.filter((f) => flows[f.kind]).map((f, i) => (
         <polyline key={`${f.name}-${i}`} fill="none" stroke={f.css}
           strokeWidth={(font / 6) * f.weight}
@@ -131,11 +143,14 @@ export function FloorPlanSvg({ plan, flows }: { plan: FloorPlan; flows: Record<F
   );
 }
 
-export function GmpBuildingSection({ building, scene }: {
+export function GmpBuildingSection({ building, scene, items = [] }: {
   building: GmpBuilding; scene: LayoutScene;
+  /** The plot plan's placed items: the ones a room lists are drawn on its
+   *  floor's plan (DEV.md 4c C100). */
+  items?: PlanItemSource[];
 }) {
   const bs = useMemo(() => buildingScene(building), [building]);
-  const plans = useMemo(() => floorPlans(building), [building]);
+  const plans = useMemo(() => floorPlans(building, items), [building, items]);
   const shown = useMemo(() => withBuilding(scene, bs), [scene, bs]);
   const [flows, setFlows] = useState<Record<FlowKind, boolean>>(
     { personnel: true, material: true, waste: true });

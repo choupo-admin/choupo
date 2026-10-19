@@ -508,7 +508,7 @@ LayoutPipeRack readRack(const Dictionary& d, const PlantLayoutRecord& rec)
     std::size_t n = 0;
     for (const auto& i : rec.items)
     {
-        if (i.nonProcess) continue;
+        if (i.nonProcess || !i.room.empty()) continue;   // C100: indoors
         sy += i.y; ++n;
         xmin = std::min(xmin, i.x - 0.5 * i.dx);
         xmax = std::max(xmax, i.x + 0.5 * i.dx);
@@ -551,6 +551,10 @@ struct End
     std::string unit;      // flowsheet unit, empty at a battery limit
     Pt          point;     // the nozzle, the junction node; empty at a limit
     std::string why;       // why it cannot be reached (kind empty)
+    //  C100: the end stands INSIDE the declared building -- an item a room
+    //  lists (`room` its room), or a junction piped only to such items.
+    bool        indoor = false;
+    std::string room;
 };
 
 void routePipes(const Dictionary& d, const SimulationResult& r,
@@ -638,31 +642,42 @@ void routePipes(const Dictionary& d, const SimulationResult& r,
     //  line, at the rack's elevation.  A junction piped to none takes the
     //  mean x of the junctions next to it that already have one, in passes,
     //  in the flowsheet's order -- so it is deterministic and never guessed.
+    //  INDOORS (DEV.md 4c C100): only items in the open place a junction on
+    //  the rack; a junction piped to placed items ALL of which stand inside
+    //  the declared building (or, piped to none, only to junctions that
+    //  stand indoors) stands indoors with them -- `jIn`, never on the rack.
     std::map<std::string, scalar> jx;
+    std::set<std::string> jIn;
     std::vector<std::string> jOrder;
     for (const auto& u : r.topology)
         if (isJunction(u.name)) jOrder.push_back(u.name);
     for (const auto& j : jOrder)
     {
-        scalar sx = 0; std::size_t n = 0;
+        scalar sx = 0; std::size_t n = 0, nIn = 0;
         for (const auto& o : nbr[j])
         {
             auto p = placedOf.find(o);
             if (p == placedOf.end()) continue;
+            if (!p->second.front()->room.empty()) { ++nIn; continue; }
             sx += p->second.front()->x; ++n;
         }
         if (n) jx[j] = sx / scalar(n);
+        else if (nIn) jIn.insert(j);
     }
     for (std::size_t pass = 0; pass < jOrder.size(); ++pass)
     {
         bool moved = false;
         for (const auto& j : jOrder)
         {
-            if (jx.count(j)) continue;
-            scalar sx = 0; std::size_t n = 0;
+            if (jx.count(j) || jIn.count(j)) continue;
+            scalar sx = 0; std::size_t n = 0, nIn = 0;
             for (const auto& o : nbr[j])
+            {
                 if (jx.count(o)) { sx += jx[o]; ++n; }
+                else if (jIn.count(o)) ++nIn;
+            }
             if (n) { jx[j] = sx / scalar(n); moved = true; }
+            else if (nIn) { jIn.insert(j); moved = true; }
         }
         if (!moved) break;
     }
@@ -693,6 +708,15 @@ void routePipes(const Dictionary& d, const SimulationResult& r,
             e.kind  = "item";
             e.at    = i.id;
             e.point = { i.x, i.y, i.z + i.dz };
+            e.indoor = !i.room.empty();
+            e.room   = i.room;
+            return e;
+        }
+        if (jIn.count(unit))
+        {
+            e.kind   = "junction";
+            e.at     = unit;
+            e.indoor = true;
             return e;
         }
         if (jx.count(unit))
@@ -788,9 +812,14 @@ void routePipes(const Dictionary& d, const SimulationResult& r,
             //  The producer's nozzle is the one end the drawing can mark:
             //  a missing pipe must never look like a finished drawing.
             const End a = endOf(from, true);
-            rec.notRouted.push_back({ s, "consumed by " + std::to_string(cs.size())
-                                    + " units (" + who + "); a pipe has two ends",
-                                    from, who, a.kind.empty() ? Pt{} : a.point });
+            //  An end INDOORS (C100) is no place to mark: indoor piping is
+            //  not drawn, so nothing there looks finished -- the stream is
+            //  listed, `indoor`, and marked nowhere.
+            LayoutNotRouted n{ s, "consumed by " + std::to_string(cs.size())
+                               + " units (" + who + "); a pipe has two ends",
+                               from, who, a.kind.empty() || a.indoor ? Pt{} : a.point };
+            n.indoor = a.indoor;
+            rec.notRouted.push_back(n);
             continue;
         }
         const std::string to = cs.empty() ? "" : cs.front();
@@ -805,29 +834,116 @@ void routePipes(const Dictionary& d, const SimulationResult& r,
                        " none: " + why);
             //  The end the layout DOES reach is where the view marks the
             //  missing pipe (empty when neither end is reachable).
-            const Pt anchor = !a.kind.empty() ? a.point
-                            : (!b.kind.empty() ? b.point : Pt{});
-            rec.notRouted.push_back({ s, why, from, to, anchor });
+            const End* reach = !a.kind.empty() ? &a : (!b.kind.empty() ? &b : nullptr);
+            LayoutNotRouted n{ s, why, from, to,
+                               reach && !reach->indoor ? reach->point : Pt{} };
+            n.indoor = reach && reach->indoor;   // C100: marked nowhere, as above
+            rec.notRouted.push_back(n);
             continue;
+        }
+        //  ---- AN END INDOORS (DEV.md 4c C100) ---------------------------
+        //  Indoor piping is not routed: it runs in the rooms and their
+        //  service voids, which the plot plan does not draw.  A pipe between
+        //  an end indoors and one in the open is drawn only where the case
+        //  DECLARES its outdoor leg, waypoints ending (or beginning) ON THE
+        //  WALL of the building's shell, where the pipe enters -- the wall
+        //  penetration, that end's only point.
+        const auto ov = overrides.find(s);
+        if (a.indoor || b.indoor)
+        {
+            auto who = [](const End& e) {
+                return e.kind == "junction"
+                    ? "junction `" + e.at + "`"
+                    : "`" + e.at + "` (room `" + e.room + "`)";
+            };
+            LayoutNotRouted n;
+            n.stream = s;
+            n.fromUnit = from;
+            n.toUnit = to;
+            n.indoor = true;
+            if (a.indoor && b.indoor)
+            {
+                if (ov != overrides.end())
+                    refuse("pipes `" + s + "`: both its ends stand inside the"
+                           " building (" + who(a) + " and " + who(b) + "), and"
+                           " indoor piping is not routed -- remove the override");
+                n.reason = "inside the building: indoor piping is not routed ("
+                           + who(a) + " to " + who(b) + "; it runs in the rooms"
+                           " and their service voids, which the plot plan does"
+                           " not draw)";
+                rec.notRouted.push_back(n);
+                continue;
+            }
+            const End& in  = a.indoor ? a : b;
+            const End& out = a.indoor ? b : a;
+            if (ov == overrides.end() || rec.shell.empty())
+            {
+                if (ov != overrides.end())
+                    refuse("pipes `" + s + "`: one end stands inside the building"
+                           " (" + who(in) + "), and the building declares no"
+                           " `envelope` -- with no shell there is no wall for the"
+                           " outdoor leg to enter by; declare the envelope or"
+                           " remove the override");
+                n.reason = "one end inside the building (" + who(in) + "): indoor"
+                           " piping is not routed; "
+                           + (rec.shell.empty()
+                              ? std::string("the building declares no `envelope`,"
+                                            " so no wall is drawn for it to enter by")
+                              : "the case may declare its outdoor leg, `pipes { "
+                                + s + " { waypoints ( ... ); } }`, "
+                                + (a.indoor ? "beginning" : "ending")
+                                + " on the wall of `" + rec.shell
+                                + "` where it enters");
+                n.anchor = out.kind == "batteryLimit" ? Pt{} : out.point;
+                rec.notRouted.push_back(n);
+                continue;
+            }
+            //  The wall penetration: the waypoint at the indoor end lies on
+            //  the shell's boundary (a side face, between its base and top).
+            const LayoutItem* sh = nullptr;
+            for (const auto& i : rec.items) if (i.id == rec.shell) sh = &i;
+            const Pt& q = a.indoor ? ov->second.front() : ov->second.back();
+            const scalar x0 = sh->x - 0.5 * sh->dx, x1 = sh->x + 0.5 * sh->dx;
+            const scalar y0 = sh->y - 0.5 * sh->dy, y1 = sh->y + 0.5 * sh->dy;
+            const bool inX = q[0] >= x0 - kTol && q[0] <= x1 + kTol;
+            const bool inY = q[1] >= y0 - kTol && q[1] <= y1 + kTol;
+            const bool onWall =
+                ((std::abs(q[0] - x0) < kTol || std::abs(q[0] - x1) < kTol) && inY)
+             || ((std::abs(q[1] - y0) < kTol || std::abs(q[1] - y1) < kTol) && inX);
+            if (!onWall || q[2] < sh->z - kTol || q[2] > sh->z + sh->dz + kTol)
+                refuse("pipes `" + s + "`: one end stands inside the building ("
+                       + who(in) + "), so the route's " + (a.indoor ? "FIRST" : "LAST")
+                       + " waypoint is where the pipe enters it -- the wall"
+                       " penetration -- and must lie ON the wall of `" + rec.shell
+                       + "` (x = " + num(x0) + " or " + num(x1) + " m, or y = "
+                       + num(y0) + " or " + num(y1) + " m, between z = "
+                       + num(sh->z) + " and " + num(sh->z + sh->dz) + " m); it is"
+                       " at (" + num(q[0]) + ", " + num(q[1]) + ", " + num(q[2])
+                       + ") m");
         }
         LayoutPipe p;
         p.stream = s;
         auto lab = r.boundaryOutletLabelOf.find(s);
         if (lab != r.boundaryOutletLabelOf.end()) p.label = lab->second;
-        p.fromKind = a.kind; p.from = a.at; p.fromUnit = a.unit;
-        p.toKind   = b.kind; p.to   = b.at; p.toUnit   = b.unit;
+        p.fromKind = a.indoor ? "wallPenetration" : a.kind;
+        p.from = a.at; p.fromUnit = a.unit;
+        p.toKind   = b.indoor ? "wallPenetration" : b.kind;
+        p.to   = b.at; p.toUnit   = b.unit;
+        //  An end indoors (C100) has no point of its own here: the route
+        //  begins or ends at its wall penetration, the case's waypoint.
+        const Pt aPt = a.indoor ? Pt{} : a.point;
+        const Pt bPt = b.indoor ? Pt{} : b.point;
 
         std::vector<Pt> pts;
-        auto ov = overrides.find(s);
         if (ov != overrides.end())
         {
             //  A DECLARED ROUTE: the source's anchor, the waypoints, the
             //  target's anchor -- a battery limit has no anchor of its own,
             //  so there the route begins or ends at the case's own waypoint.
             p.routedBy = "waypoints";
-            if (!a.point.empty()) pts.push_back(a.point);
+            if (!aPt.empty()) pts.push_back(aPt);
             for (const auto& q : ov->second) pts.push_back(q);
-            if (!b.point.empty()) pts.push_back(b.point);
+            if (!bPt.empty()) pts.push_back(bPt);
             for (std::size_t i = 1; i < pts.size(); ++i)
                 if (axesMoved(pts[i - 1], pts[i]) > 1)
                 {
@@ -839,10 +955,10 @@ void routePipes(const Dictionary& d, const SimulationResult& r,
                          " moves along more than one axis -- a route is"
                          " ORTHOGONAL; add the corner between them (the route"
                          " begins at ";
-                    o << (a.point.empty() ? "the first waypoint"
+                    o << (aPt.empty() ? "the first waypoint"
                           : "the top of `" + a.at + "`");
                     o << " and ends at "
-                      << (b.point.empty() ? "the last waypoint"
+                      << (bPt.empty() ? "the last waypoint"
                           : "the top of `" + b.at + "`") << ")";
                     refuse(o.str());
                 }
@@ -1404,6 +1520,7 @@ void checkRoads(PlantLayoutRecord& rec,
     //  ---- every placed item: the nearest road a gate reaches ------------
     for (const auto& it : rec.items)
     {
+        if (!it.room.empty()) continue;   // C100: reached through its building
         const Near nb = nearest(it, &fromGate);
         LayoutAccess a;
         a.item = it.id;
@@ -1615,11 +1732,22 @@ void plotOf(const Dictionary& d, PlantLayoutRecord& rec, bool withFence)
     pl.plotArea = (pl.xMax - pl.xMin) * (pl.yMax - pl.yMin);
 
     //  ---- the footprints ---------------------------------------------------
-    for (const auto& i : rec.items) pl.footprintArea += planArea(i);
+    //  An item inside the declared building (C100) stands on the building's
+    //  ground, which the shell's own footprint already counts: it is not
+    //  counted again, nor stacked over the shell.
+    bool anyIndoor = false;
+    for (const auto& i : rec.items)
+    {
+        if (!i.room.empty()) { anyIndoor = true; continue; }
+        pl.footprintArea += planArea(i);
+    }
+    if (anyIndoor) pl.rule += ", an item inside the declared building counted in"
+                              " the building's footprint and not again";
     pl.footprintShare = pl.plotArea > 0 ? pl.footprintArea / pl.plotArea : 0.0;
     for (std::size_t i = 0; i < rec.items.size(); ++i)
         for (std::size_t j = i + 1; j < rec.items.size(); ++j)
-            if (clearPlan(rec.items[i], rec.items[j]) < -kTol) ++pl.stackedPairs;
+            if (rec.items[i].room.empty() && rec.items[j].room.empty()
+                && clearPlan(rec.items[i], rec.items[j]) < -kTol) ++pl.stackedPairs;
 
     //  ---- the declared sector areas: their union, and shared ground ------
     if (!rec.areas.empty())
@@ -1660,7 +1788,7 @@ void plotOf(const Dictionary& d, PlantLayoutRecord& rec, bool withFence)
         for (const auto& i : rec.items)
         {
             if (i.sector != sec) continue;
-            ps.footprintArea += planArea(i);
+            if (i.room.empty()) ps.footprintArea += planArea(i);   // C100
             a0 = std::min(a0, i.x - 0.5 * i.dx); a1 = std::max(a1, i.x + 0.5 * i.dx);
             b0 = std::min(b0, i.y - 0.5 * i.dy); b1 = std::max(b1, i.y + 0.5 * i.dy);
         }
@@ -2782,6 +2910,7 @@ void checkPipeClashes(PlantLayoutRecord& rec, const FindingSink& addFinding)
         {
             if ((p.fromKind == "item" && p.from == it.id)
                 || (p.toKind == "item" && p.to == it.id)) continue;
+            if (!it.room.empty()) continue;   // C100: the shell answers for it
             const scalar zb = it.z + kTol, zt = it.z + it.dz - kTol;
             for (std::size_t k = 1; k < p.route.size(); ++k)
             {
@@ -2840,6 +2969,12 @@ PlantLayoutRecord evaluate(const Dictionary& d, const SimulationResult& r,
         if (!isInternal(*s, r, host)) placeable.push_back(s->itemId());
     }
 
+    //  THE ITEMS INDOORS (DEV.md 4c C100): every item a room of the declared
+    //  building lists, its room, floor and floor elevation -- read by the
+    //  building's own readers, the one home of an indoor item's base.
+    const auto indoor = buildingLayout::indoorPlaces(d);
+    rec.shell = buildingLayout::envelopeOf(d);
+
     std::set<std::string> placed;
     //  Placed items whose sizer REFUSED: (item, sizing entry, its refusal).
     std::vector<std::vector<std::string>> refusedItems;
@@ -2863,7 +2998,24 @@ PlantLayoutRecord evaluate(const Dictionary& d, const SimulationResult& r,
 
         it.x = length(*e, "x", where);
         it.y = length(*e, "y", where);
-        it.z = length(*e, "z", where);
+        const auto in = indoor.find(it.id);
+        if (in != indoor.end())
+        {
+            //  An item a room lists stands ON that room's floor: its base is
+            //  the floor's elevation, read from the building, never declared
+            //  a second time here.
+            if (e->found("z"))
+                refuse(where + " stands in room `" + in->second.room + "` of the"
+                       " declared building (the room's `equipment` lists it), and"
+                       " an item indoors stands on its room's floor: its base is"
+                       " floor `" + in->second.floor + "`'s elevation, "
+                       + num(in->second.elevation) + " m, read from the building"
+                       " -- delete `z` from the item (one home for the base)");
+            it.z    = in->second.elevation;
+            it.room = in->second.room;
+        }
+        else
+            it.z = length(*e, "z", where);
         if (!e->found("orientation"))
             refuse(where + ": `orientation` is not declared (vertical,"
                    " alongX or alongY)");
@@ -2969,6 +3121,17 @@ PlantLayoutRecord evaluate(const Dictionary& d, const SimulationResult& r,
             setExtents(it, L, W, H, where);
         }
         readHazards(*e, it, where);
+        //  An item indoors is classified by its ROOM (C100): the room's
+        //  `atex { zone; source; reason; }` and `ignition` are the one home,
+        //  checked by the building against the rooms round it.
+        if (!it.room.empty() && (it.release || !it.ignition.empty()))
+            refuse(where + " stands in room `" + it.room + "` of the declared"
+                   " building, and declares " + (it.release
+                   ? std::string("a `release` (hazardous-area zones)")
+                   : std::string("an `ignition`")) + " of its own.  Indoors the"
+                   " ROOM is classified, not the item: declare the room's `atex {"
+                   " zone; source; reason; }` (or its `ignition \"...\";`) in"
+                   " `building { rooms ( ... ); }` and delete it from the item");
         readParking(*e, it, where, rec);   // C96
         rec.items.push_back(it);
     }
@@ -2979,8 +3142,26 @@ PlantLayoutRecord evaluate(const Dictionary& d, const SimulationResult& r,
         {
             const auto& a = rec.items[i];
             const auto& b = rec.items[j];
+            //  THE SHELL HOLDS WHAT ITS ROOMS LIST (C100): the building's
+            //  envelope and an item a room lists are not two items sharing a
+            //  place -- the building checks that the item fits its room.
+            const bool shellA = !rec.shell.empty() && a.id == rec.shell;
+            const bool shellB = !rec.shell.empty() && b.id == rec.shell;
+            if ((shellA && !b.room.empty()) || (shellB && !a.room.empty()))
+                continue;
             const scalar c  = clearPlan(a, b);
             const scalar vz = verticalOverlap(a.z, a.dz, b.z, b.dz);
+            if (c < -kTol && vz > kTol && (shellA || shellB))
+            {
+                const auto& o = shellA ? b : a;
+                refuse("`" + o.id + "` OVERLAPS the building `" + rec.shell
+                       + "` (the shell of the declared GMP interior) by "
+                       + num(-c) + " m on the plan, and no room of the building"
+                       " lists it.  An item inside the building stands in a room"
+                       " that lists it (`equipment ( " + o.id + " );`, its base"
+                       " then that room's floor); an item outside stands clear of"
+                       " the shell -- list it in its room or move it");
+            }
             if (c < -kTol && vz > kTol)
                 refuse("`" + a.id + "` and `" + b.id + "` OVERLAP: their"
                        " footprints interpenetrate by " + num(-c)
@@ -3055,6 +3236,10 @@ PlantLayoutRecord evaluate(const Dictionary& d, const SimulationResult& r,
         {
             const auto& a = rec.items[i];
             const auto& b = rec.items[j];
+            //  C100: the table spaces items IN THE OPEN; an item indoors is
+            //  represented on the site by its building, whose own
+            //  separations the table checks.
+            if (!a.room.empty() || !b.room.empty()) continue;
             auto it = ruleOf.find({ std::min(a.kind, b.kind),
                                     std::max(a.kind, b.kind) });
             if (it == ruleOf.end()) continue;
@@ -3075,8 +3260,9 @@ PlantLayoutRecord evaluate(const Dictionary& d, const SimulationResult& r,
 
     //  A rule naming a kind no placed item carries checks nothing.
     {
-        std::set<std::string> kinds;
-        for (const auto& i : rec.items) kinds.insert(i.kind);
+        std::set<std::string> kinds, indoorKinds;
+        for (const auto& i : rec.items)
+            (i.room.empty() ? kinds : indoorKinds).insert(i.kind);
         for (const auto& t : rec.separation)
             for (const auto& rule : t.rules)
                 for (const auto& k : { rule.a, rule.b })
@@ -3086,8 +3272,13 @@ PlantLayoutRecord evaluate(const Dictionary& d, const SimulationResult& r,
                             rule.distance, "info",
                             "the separation rule (" + rule.a + ", " + rule.b
                             + ") names the kind `" + k + "`, which no placed"
-                            " item carries -- it checks nothing in this"
-                            " layout");
+                            " item " + (indoorKinds.count(k)
+                                ? std::string("in the open carries (only items"
+                                  " inside the building do, and the table spaces"
+                                  " items in the open: indoors their building"
+                                  " stands for them)")
+                                : std::string("carries"))
+                            + " -- it checks nothing in this layout");
                         break;
                     }
     }
@@ -3243,7 +3434,9 @@ PlantLayoutRecord evaluate(const Dictionary& d, const SimulationResult& r,
                       << i.orientation << " at (" << num(i.x) << ", "
                       << num(i.y) << ", " << num(i.z) << ") m, extents "
                       << num(i.dx) << " x " << num(i.dy) << " x "
-                      << num(i.dz) << " m (" << i.footprintFrom << ")\n";
+                      << num(i.dz) << " m (" << i.footprintFrom << ")"
+                      << (i.room.empty() ? "" : ", indoors in room " + i.room)
+                      << "\n";
         scalar total = 0;
         for (const auto& p : rec.pipes) total += p.length;
         std::cout << "[layout] pipes: " << rec.pipes.size() << " routed ("
@@ -3391,6 +3584,7 @@ std::string draft(const SimulationResult& r, const Dictionary* previous)
     bool hadPipeOverrides = false;
     bool hadRoads = false;
     bool hadFence = false;
+    bool hadBuilding = false;   // C100
     bool        hadPlot    = false;
     scalar      plotMargin = 0.0;
     std::string plotReason;
@@ -3427,6 +3621,7 @@ std::string draft(const SimulationResult& r, const Dictionary* previous)
         hadPipeOverrides = previous->found("pipes");
         hadRoads         = previous->found("roads");
         hadFence         = previous->found("fence");
+        hadBuilding      = previous->found("building");
         if (previous->found("items"))
             for (const auto& e : previous->lookupDictList("items"))
             {
@@ -3864,6 +4059,15 @@ std::string draft(const SimulationResult& r, const Dictionary* previous)
         o << "\n//  The previous layout's `fence {}` is NOT carried: its crossing\n"
              "//  positions were chosen round positions this draft has moved.\n"
              "//  Redeclare it.\n";
+    //  THE BUILDING IS NOT DRAFTED (DEV.md 4c C100): its rooms and the items
+    //  they hold were placed round positions this draft has moved, so every
+    //  item is drafted in the open, and the interior is the author's again.
+    if (hadBuilding)
+        o << "\n//  The previous layout's `building {}` is NOT carried: its rooms, and\n"
+             "//  the items they held, were placed round positions this draft has\n"
+             "//  moved -- every item is drafted in the open.  Redeclare it, listing\n"
+             "//  in each room the items that stand in it (an item a room lists\n"
+             "//  takes its base from the room's floor: delete its `z`).\n";
     o << "\n// ************************************************************************* //\n";
     return o.str();
 }
