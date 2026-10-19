@@ -51,7 +51,8 @@ import {
   CONTROL_RAIL_PANEL, EXPLORE_SET_PANEL,
   HANDLE_HIT_PX, HANDLE_KEY_STEP_PX, HANDLE_SEAM_PX, LOG_JUMP_PANEL,
   METHOD_KNOBS_PANEL, PLOTS_NAV_PANEL, REPORTS_NAV_PANEL, STREAMS_NAV_PANEL,
-  panelBoxStyle,
+  STREAMS_SUMMARY_PANEL,
+  panelBoxStyle, shownTopPanelPx,
   LAYOUT_TABLES_PANEL,
   autoCollapseDefault, collapseTooltip, expandTooltip, nudgeSize, shortcutHint,
   swallowsShortcut,
@@ -83,6 +84,10 @@ const ALL: [string, PanelChrome][] = [
   // The layout tab's tables joined on 2026-10-18 (DEV.md 4c C91): a bottom
   // panel under the 3D view, folded by default so the view fills the window.
   ["layout tables", LAYOUT_TABLES_PANEL],
+  // The Streams workspace's balances band joined on 2026-10-19 (DEV.md 4c
+  // C105): the first TOP panel, docked above the stream table it used to
+  // squeeze into "a window at the bottom".
+  ["streams balances band", STREAMS_SUMMARY_PANEL],
 ];
 
 /** Panels that deliberately carry NO fold, with the reason.  A panel that is
@@ -214,6 +219,13 @@ describe("keyboard resize — a splitter only a pointer can move is half a contr
     expect(nudgeSize(BOTTOM_DOCK_PANEL, s.default, "ArrowDown")).toBe(s.default - HANDLE_KEY_STEP_PX);
   });
 
+  it("moves a TOP panel on the y keys, and DOWN means bigger (its seam is its bottom edge)", () => {
+    const s = STREAMS_SUMMARY_PANEL.prefs.size;
+    expect(nudgeSize(STREAMS_SUMMARY_PANEL, s.default, "ArrowDown")).toBe(s.default + HANDLE_KEY_STEP_PX);
+    expect(nudgeSize(STREAMS_SUMMARY_PANEL, s.default, "ArrowUp")).toBe(s.default - HANDLE_KEY_STEP_PX);
+    expect(nudgeSize(STREAMS_SUMMARY_PANEL, s.default, "ArrowLeft")).toBeNull();
+  });
+
   it("leaves the other axis's keys alone", () => {
     expect(nudgeSize(BOTTOM_DOCK_PANEL, 360, "ArrowLeft")).toBeNull();
     expect(nudgeSize(EXPLORE_SET_PANEL, 240, "ArrowUp")).toBeNull();
@@ -329,5 +341,52 @@ describe("a FOLDED panel is hidden, not merely clipped", () => {
     const st = panelBoxStyle(dock as never, false);
     expect(st.height).toBe(0);
     expect(st.visibility).toBe("hidden");
+  });
+});
+
+describe("a TOP panel is drawn at what fits -- the C105 'window at the bottom'", () => {
+  /* THE DEFECT THIS PINS, measured in Chromium 2026-10-19 on the live layout.
+   * The Streams workspace's balances band had no height of its own: on
+   * apalutamide01_tablets at 1280x720 its content was 461 px of a 688 px
+   * workspace, and the 46-stream table below it was left a 155 px viewport --
+   * Vitor's "window at the bottom that you cannot see to the end, nor
+   * adjust".  With the assistant console docked the workspace was 328 px and
+   * the table got 0.  The band now has a size the reader drags, DRAWN at
+   * min(preference, content, workspace - what the table needs). */
+  const spec = STREAMS_SUMMARY_PANEL.prefs.size;
+  const RESERVE = 260;   // StreamsWorkspace's STREAMS_PANE_RESERVE_PX
+
+  it("a tall band in a roomy workspace is drawn at the reader's size, and scrolls", () => {
+    expect(shownTopPanelPx(spec.default, 461, 688, RESERVE, spec)).toBe(spec.default);
+    expect(688 - shownTopPanelPx(spec.default, 461, 688, RESERVE, spec)).toBeGreaterThan(RESERVE);
+  });
+
+  it("a short workspace (console docked) keeps the table's room and shrinks the band", () => {
+    // 328 - 260 = 68: the band scrolls inside 68 px; the table is not zero.
+    expect(shownTopPanelPx(spec.default, 461, 328, RESERVE, spec)).toBe(68);
+  });
+
+  it("never below the spec's minimum, so the seam and a sliver stay reachable", () => {
+    expect(shownTopPanelPx(spec.default, 461, 200, RESERVE, spec)).toBe(spec.min);
+  });
+
+  it("a band shorter than the preference is drawn at its content -- no blank", () => {
+    expect(shownTopPanelPx(spec.default, 176, 688, RESERVE, spec)).toBe(176);
+    expect(shownTopPanelPx(600, 176, 1048, RESERVE, spec)).toBe(176);
+  });
+
+  it("unmeasured (no layout engine, first paint) leaves the preference alone", () => {
+    expect(shownTopPanelPx(300, 0, 0, RESERVE, spec)).toBe(300);
+  });
+
+  it("the drawn size is what the box gets; the preference is untouched", () => {
+    const panel = {
+      chrome: STREAMS_SUMMARY_PANEL, size: 240, collapsed: false,
+      toggle: () => {}, expand: () => {}, reset: () => {},
+      onPointerDown: () => {}, onKeyDown: () => {},
+    };
+    expect(panelBoxStyle(panel as never, false, 68).height).toBe(68);
+    expect(panelBoxStyle(panel as never, false).height).toBe(240);
+    expect(panelBoxStyle({ ...panel, collapsed: true } as never, false, 68).height).toBe(0);
   });
 });

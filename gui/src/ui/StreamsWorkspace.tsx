@@ -84,10 +84,11 @@ import {
 import { streamPhases } from "../case/streamPhases.js";
 import { StreamsSummary } from "./StreamsSummary.js";
 import { StreamsTable } from "./StreamsTable.js";
-import { useMeasuredBoxWidth } from "./methods/methodsChrome.js";
+import { useMeasuredBoxHeight, useMeasuredBoxWidth } from "./methods/methodsChrome.js";
 import {
-  STREAMS_NAV_PANEL, PanelCollapseButton, PanelReopenStrip, PanelResizeHandle,
-  panelBoxProps, usePanel, usePanelShortcut,
+  STREAMS_NAV_PANEL, STREAMS_SUMMARY_PANEL,
+  PanelCollapseButton, PanelReopenStrip, PanelResizeHandle,
+  panelBoxProps, shownTopPanelPx, usePanel, usePanelShortcut,
 } from "./panelContract.js";
 import {
   type PhaseKind,
@@ -95,6 +96,12 @@ import {
   phaseColor as phaseColorFor,
   classifyPhase as classify,
 } from "./plotting/palette.js";
+
+/** What the balances band leaves BELOW it when the workspace is short: the
+ *  Table/Detail toggle row (~40 px) plus room for a header and five or six
+ *  stream rows.  A declared judgement, stated as one, on RAIL_CONTENT_MIN's
+ *  pattern; the band past it scrolls inside its own height (DEV.md 4c C105). */
+const STREAMS_PANE_RESERVE_PX = 260;
 
 // ---- Tree model ------------------------------------------------------------
 
@@ -137,6 +144,16 @@ export function StreamsWorkspace() {
   const reduceMotion = useReducedMotion();
   const railBox = panelBoxProps(rail, !!reduceMotion);
 
+  /* The balances band above the table/detail pane: a TOP panel (C105).  Its
+   * drawn height is fitted render-only to its content and to the workspace,
+   * keeping STREAMS_PANE_RESERVE_PX for the toggle row and the table. */
+  const summary = usePanel(STREAMS_SUMMARY_PANEL);
+  const host = useMeasuredBoxHeight<HTMLDivElement>();
+  const summaryContent = useMeasuredBoxHeight<HTMLDivElement>();
+  const summaryBox = panelBoxProps(summary, !!reduceMotion, shownTopPanelPx(
+    summary.size, summaryContent.height, host.height,
+    STREAMS_PANE_RESERVE_PX, STREAMS_SUMMARY_PANEL.prefs.size));
+
   const tree = useMemo(() => buildTree(caseFiles), [caseFiles]);
 
   const selectedQname =
@@ -150,10 +167,40 @@ export function StreamsWorkspace() {
       : null;
 
   return (
-    <Box style={{ display: "flex", flexDirection: "column", height: "100%", minHeight: 0 }}>
+    <Box ref={host.ref}
+      style={{ display: "flex", flexDirection: "column", height: "100%", minHeight: 0 }}>
       {/* Balances + duties summary band (the global balances live HERE now,
-          not as bar charts in the Plots workspace). */}
-      {runResult && <StreamsSummary result={runResult} flow={prefs.flow} />}
+          not as bar charts in the Plots workspace).  A TOP panel of the
+          contract since C105: it scrolls inside its own height, the reader
+          drags the seam under it, and it folds to a strip -- before, it had
+          no height of its own and the stream table below was whatever it
+          left over (155 px for 46 streams at 1280x720; 0 px with the
+          console docked). */}
+      {runResult && (summary.collapsed ? (
+        <PanelReopenStrip panel={summary} scent="BALANCES" />
+      ) : (
+        <>
+          <Box
+            data-panel={summaryBox["data-panel"]}
+            style={{ ...summaryBox.style, position: "relative", flex: "0 0 auto" }}
+          >
+            <ScrollArea
+              type="always"
+              scrollbarSize={10}
+              h="100%"
+              styles={{ thumb: { background: "light-dark(var(--mantine-color-gray-4), var(--mantine-color-dark-3))" } }}
+            >
+              <Box ref={summaryContent.ref}>
+                <StreamsSummary result={runResult} flow={prefs.flow} />
+              </Box>
+            </ScrollArea>
+            <Box style={{ position: "absolute", top: 4, right: 14 }}>
+              <PanelCollapseButton panel={summary} />
+            </Box>
+          </Box>
+          <PanelResizeHandle panel={summary} />
+        </>
+      ))}
 
       {/* Table = all streams side-by-side; Detail = navigator + one stream. */}
       <Group
