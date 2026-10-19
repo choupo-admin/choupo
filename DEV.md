@@ -1291,6 +1291,27 @@ accepts today, and that is a policy call.
 > fire-water ring main and hydrants, bunds, escape routes, swept path, a
 > fillet running through an item.
 
+> **C99. THE APALUTAMIDE PLANT IS BATCH: CAMPAIGN DESIGN, NOT A STEADY RATE
+> (Vitor, 2026-10-19: "Este processo e batch ou e continuo?" ... "Faz como
+> for melhor!  Neste caso tem de ficar realista!").**  Measured: the case
+> runs `choupoSolve` at the campaign rate (12 800 tablets/h, streamFactor
+> 0.45) and sizes every item for that hourly rate; a real OSD plant runs
+> its dispensing, blending, compaction, compression, coating and packaging
+> as BATCHES released lot by lot, and its spray drying in CAMPAIGNS.
+> `choupoBatch` carries no sizing/costing/economics/layout passes
+> (`src/applications/choupoBatch/main.cpp` reads no postDict), so moving the
+> case there is an architecture change for no physics gain.  PLAN (the
+> commander's, on Vitor's "faz como for melhor"): the steady flowsheet stays
+> the MATERIAL BALANCE PER UNIT OF PRODUCT, and a new post-processing pass
+> designs the BATCH PLANT on it by the textbook method (size factors per
+> stage from the flowsheet's own stream masses and declared bulk densities,
+> batch size, number of batches per year, processing + cleaning times, the
+> limiting cycle time, parallel units in or out of phase, equipment
+> occupancy and a campaign Gantt), so each stage's equipment is sized PER
+> BATCH and the declared quotes can scale with that size.  This is phase C
+> of the C97 plan.  Moved rows to Vitor before re-record.  Status:
+> dispatched 2026-10-19.
+
 > **C98. PARTICULATE LABOUR AND DECLARED QUOTED COSTS (Vitor, 2026-10-18,
 > two rulings on the C97 phase A findings).**  (1) Turton's operator count
 > is N_OL = (6.29 + 31.7 P^2 + 0.23 N_np)^0.5 and the engine drops the P
