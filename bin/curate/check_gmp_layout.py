@@ -681,6 +681,8 @@ def arm_surfaces(work):
 
 
 REFUSALS = [
+    ("a flow name with a space", "a flow name is one word",
+     lambda t: sub(t, '{ flow "operators";', '{ flow "press operators";')),
     ("overlapping rooms", "share a volume",
      lambda t: sub(t, "{ room lobby;       floor ground; xMin 10 m; xMax 16 m;",
                    "{ room lobby;       floor ground; xMin 10 m; xMax 17 m;")),

@@ -1296,7 +1296,9 @@ plot { margin 10 m; reason "..."; }   // optional; absent: 0 m, announced
   shared wall or to `outside` from a room with no exterior wall, a stair or
   lift on one floor or between rooms whose plans do not overlap, an
   equipment item not placed, assigned twice, not fitting its room, or
-  standing in a room that does not list it, a road through a room below the
+  standing in a room that does not list it, a flow name with a space (it is
+  the flow's id in the result and the golden: write `apiToSolution` and say
+  the rest in `reason`), a road through a room below the
   roads' headroom, a room across the fence, a `relativeTo` chain that closes
   on itself, every unknown word or missing key, an `envelope` that names no
   placed non-process item, a room outside the envelope's box.  `envelope`

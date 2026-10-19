@@ -671,6 +671,14 @@ BuildingRecord evaluate(const Dictionary& layoutDict,
             if (!f->found("flow")) refuse("flows: an entry has no `flow` name");
             fl.name = f->lookupWord("flow");
             const std::string w = "flow `" + fl.name + "`";
+            //  A flow's name is its identity in the result (`flow:<name>`)
+            //  and in the golden row that pins it, whose columns are split
+            //  on whitespace: a name with a space would publish a record
+            //  no row can read, so it would arrive unpinned.
+            if (fl.name.find_first_of(" \t") != std::string::npos)
+                refuse(w + ": a flow name is one word (it is the flow's id in"
+                       " the result and in the golden); write it as one, e.g."
+                       " `apiToSolution`, and say the rest in `reason`");
             if (!flowNames.insert(fl.name).second) refuse(w + " is declared twice");
             fl.kind = word(*f, "kind", w, kinds);
             if (!f->found("path")) refuse(w + ": `path ( ... );` is not declared");

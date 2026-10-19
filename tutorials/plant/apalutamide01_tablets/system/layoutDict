@@ -619,18 +619,18 @@ building
         { flow "excipients"; kind material;
           reason "the cellulose, croscarmellose, silica and stearate kits, weighed and closed, to the blender (the extragranular kit rides the train in its own closed bin to the final blender)";
           path ( outside goodsIn malIn dispensing dispOutMAL corridor excipientMAL blending ); }
-        { flow "API to solution"; kind material;
+        { flow "apiToSolution"; kind material;
           reason "the API and the HPMCAS, weighed in the dispensary, out east in closed drums to the solution tank in the solvent area";
           path ( outside goodsIn malIn dispensing dispOutMAL corridor eastMAL eastDock outside ); }
-        { flow "dispensary staff"; kind personnel;
+        { flow "dispensaryStaff"; kind personnel;
           path ( outside lobby gowning corridor dispPAL dispensing ); }
-        { flow "granulation operators"; kind personnel;
+        { flow "granulationOperators"; kind personnel;
           path ( outside lobby gowning corridor suitePAL suiteCorridor blending ); }
-        { flow "press operators"; kind personnel;
+        { flow "pressOperators"; kind personnel;
           path ( outside lobby gowning corridor suitePAL suiteCorridor compression ); }
-        { flow "coating and packing operators"; kind personnel;
+        { flow "coatingAndPackingOperators"; kind personnel;
           path ( outside lobby gowning corridor packaging ); }
-        { flow "suite waste"; kind waste;
+        { flow "suiteWaste"; kind waste;
           reason "rejected tablets (the press's 1 % rejects) and full filter bags, double-bagged";
           path ( compression returnCorridor wasteMAL wasteRoom outside ); }
     );
