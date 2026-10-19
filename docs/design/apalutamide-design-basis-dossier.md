@@ -1,6 +1,6 @@
 # Apalutamide film-coated tablets: a sourced design-basis dossier
 
-For the project group re-basing `tutorials/plant/apalutamide01_tablets`.
+For the project group re-basing `tutorials/batch/plant/apalutamide01_tablets`.
 Research done on 2026-10-19.  Every number below carries its source, how it
 was obtained, and one confidence word:
 

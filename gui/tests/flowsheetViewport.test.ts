@@ -65,7 +65,7 @@ const byNeed = [...VIEWS].sort((a, b) => neededZoom(a.bounds) - neededZoom(b.bou
 describe("the flowsheet canvas zooms out to the whole flowsheet (C102)", () => {
   it("finds the corpus, the C102 witness among it", () => {
     expect(VIEWS.length).toBeGreaterThan(200);
-    expect(VIEWS.some((v) => v.id === "plant/apalutamide01_tablets")).toBe(true);
+    expect(VIEWS.some((v) => v.id === "batch/plant/apalutamide01_tablets")).toBe(true);
     console.log(`[C102 zoom] ${VIEWS.length} views in a ${PANE_W} x ${PANE_H} pane; the five that need the smallest fit zoom:\n`
       + byNeed.slice(0, 5).map((v) => `    ${v.id}: ${neededZoom(v.bounds).toFixed(4)}`
         + ` (${Math.round(v.bounds.width)} x ${Math.round(v.bounds.height)} px)`).join("\n"));
@@ -106,7 +106,7 @@ describe("the flowsheet canvas zooms out to the whole flowsheet (C102)", () => {
     //  below the spray-drying loop (flowsheetLayout.ts, step 6), so the
     //  fit was a map at 0.063.  The canvas below the menu bar and the case
     //  banner of a 1280 x 720 window is 1280 x 653 (measured in Chromium).
-    const apa = VIEWS.find((v) => v.id === "plant/apalutamide01_tablets")!;
+    const apa = VIEWS.find((v) => v.id === "batch/plant/apalutamide01_tablets")!;
     expect(apa.bounds.height).toBeLessThan(2000);
     const z = getViewportForBounds(apa.bounds, 1280, 653, 0, Infinity, FLOWSHEET_FIT_PADDING).zoom;
     expect(z).toBeGreaterThan(0.2);
@@ -114,6 +114,6 @@ describe("the flowsheet canvas zooms out to the whole flowsheet (C102)", () => {
 
   it("witness: under React Flow's default minZoom (0.5) the largest views would NOT fit", () => {
     const clamped = VIEWS.filter((v) => neededZoom(v.bounds) < 0.5).map((v) => v.id);
-    expect(clamped).toContain("plant/apalutamide01_tablets");
+    expect(clamped).toContain("batch/plant/apalutamide01_tablets");
   });
 });

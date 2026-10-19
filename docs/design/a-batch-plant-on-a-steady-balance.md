@@ -7,7 +7,7 @@ moved golden rows awaiting Vítor's approval.*
 
 ## 1. The finding
 
-`tutorials/plant/apalutamide01_tablets` was a steady state at the campaign
+`tutorials/batch/plant/apalutamide01_tablets` was a steady state at the campaign
 rate (12 800 tablets/h pressed, `streamFactor 0.45`), and every item was
 sized for that hourly rate.  A real oral-solid-dose plant runs dispensing,
 blending, compaction, compression, coating and packaging as LOTS released by

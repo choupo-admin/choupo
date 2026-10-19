@@ -36,3 +36,7 @@ plant/ammoniaStaged01_yield          plant/ammoniaReactor01_fixedConversion
 plant/ammoniaStaged02_equilibrium    plant/ammoniaReactor02_equilibrium
 plant/ammoniaStaged03_approach       plant/ammoniaReactor03_equilibriumApproach
 plant/ammoniaStaged04_kinetic        plant/ammoniaReactor04_kineticSizing
+
+# A PLANT RUN IN LOTS lives under batch/plant/ (Vitor, 2026-10-19, C106):
+# moved, not renamed -- the leaf name is unchanged, the discipline folder is.
+plant/apalutamide01_tablets          batch/plant/apalutamide01_tablets

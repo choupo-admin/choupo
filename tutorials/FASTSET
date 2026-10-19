@@ -106,6 +106,7 @@ tutorials/batch/crystallisation/batch13_nacl_pitzer
 tutorials/batch/drying/dryer01_sucrose_tray
 tutorials/batch/electrodialysis/edbatch01_constant_current
 tutorials/batch/membrane/diafilter01_nf_desalting
+tutorials/batch/plant/apalutamide01_tablets
 tutorials/batch/reactor/batch03_consecutive
 tutorials/batch/recipes/recipe04_charge_enthalpy
 tutorials/batch/still/still01_benzene_toluene
@@ -126,7 +127,6 @@ tutorials/plant/ammoniaReactor02_equilibrium
 tutorials/plant/ammoniaReactor03_equilibriumApproach
 tutorials/plant/ammoniaReactor04_kineticSizing
 tutorials/plant/ammoniaRoutes01_screening
-tutorials/plant/apalutamide01_tablets
 tutorials/plant/esterification2sector
 tutorials/plant/greenAmmonia02_feasibility150bar
 tutorials/plant/greenAmmonia02_feasibility50bar

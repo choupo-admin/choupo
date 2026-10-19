@@ -480,6 +480,27 @@
    "roles": [],
    "hasGolden": true
   },
+  "tutorials/batch/plant/apalutamide01_tablets": {
+   "application": "choupoSolve",
+   "unitTypes": [
+    "compressor",
+    "isothermalFlash",
+    "mixer",
+    "phaseChanger",
+    "solidDryer",
+    "splitter",
+    "sprayDryer",
+    "storageTank"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [],
+   "hasGolden": true
+  },
   "tutorials/batch/reactor/batch01_first_order": {
    "application": "choupoBatch",
    "unitTypes": [
@@ -1285,27 +1306,6 @@
    "unitTypes": [
     "conversionReactor",
     "equilibriumReactor"
-   ],
-   "thermo": {
-    "formulation": "gammaPhi",
-    "activityModels": [
-     "ideal"
-    ]
-   },
-   "roles": [],
-   "hasGolden": true
-  },
-  "tutorials/plant/apalutamide01_tablets": {
-   "application": "choupoSolve",
-   "unitTypes": [
-    "compressor",
-    "isothermalFlash",
-    "mixer",
-    "phaseChanger",
-    "solidDryer",
-    "splitter",
-    "sprayDryer",
-    "storageTank"
    ],
    "thermo": {
     "formulation": "gammaPhi",
@@ -7188,6 +7188,7 @@
     "tutorials/unsteady/unsteady04_uf_feed_and_bleed_startup"
    ],
    "choupoSolve": [
+    "tutorials/batch/plant/apalutamide01_tablets",
     "tutorials/plant/ChemicalPlantTutorial",
     "tutorials/plant/aceticAcid01_gibbsReactor",
     "tutorials/plant/aceticAcid02_plant",
@@ -7199,7 +7200,6 @@
     "tutorials/plant/ammoniaReactor03_equilibriumApproach",
     "tutorials/plant/ammoniaReactor04_kineticSizing",
     "tutorials/plant/ammoniaRoutes01_screening",
-    "tutorials/plant/apalutamide01_tablets",
     "tutorials/plant/esterification2sector",
     "tutorials/plant/greenAmmonia02_feasibility150bar",
     "tutorials/plant/greenAmmonia02_feasibility50bar",
@@ -7591,7 +7591,7 @@
     "tutorials/steady/userops/userOp02_component_splitter"
    ],
    "compressor": [
-    "tutorials/plant/apalutamide01_tablets",
+    "tutorials/batch/plant/apalutamide01_tablets",
     "tutorials/steady/power/brayton01_gas_turbine",
     "tutorials/steady/power/combined02_brayton_rankine_shaft",
     "tutorials/steady/rotating/compressor01_air",
@@ -7869,13 +7869,13 @@
     "tutorials/steady/membranes/membrane08_softened_scaling"
    ],
    "isothermalFlash": [
+    "tutorials/batch/plant/apalutamide01_tablets",
     "tutorials/plant/aceticAcid02_plant",
     "tutorials/plant/acetonePlant",
     "tutorials/plant/ammoniaReactor01_fixedConversion",
     "tutorials/plant/ammoniaReactor02_equilibrium",
     "tutorials/plant/ammoniaReactor03_equilibriumApproach",
     "tutorials/plant/ammoniaReactor04_kineticSizing",
-    "tutorials/plant/apalutamide01_tablets",
     "tutorials/plant/polycaprolactonePlant",
     "tutorials/steady/absorption/absorption01_CO2_water",
     "tutorials/steady/absorption/extraction01_waterButanol",
@@ -7936,13 +7936,13 @@
     "tutorials/steady/thermoTest/model5_nrtl_flash"
    ],
    "mixer": [
+    "tutorials/batch/plant/apalutamide01_tablets",
     "tutorials/plant/aceticAcid02_plant",
     "tutorials/plant/acetonePlant",
     "tutorials/plant/ammoniaReactor01_fixedConversion",
     "tutorials/plant/ammoniaReactor02_equilibrium",
     "tutorials/plant/ammoniaReactor03_equilibriumApproach",
     "tutorials/plant/ammoniaReactor04_kineticSizing",
-    "tutorials/plant/apalutamide01_tablets",
     "tutorials/plant/polycaprolactonePlant",
     "tutorials/steady/distillation/column12_stage_is_a_flash",
     "tutorials/steady/distillation/column13_sour_water_stage_identity",
@@ -7974,10 +7974,10 @@
     "tutorials/steady/reactors/pfr_polyesterification"
    ],
    "phaseChanger": [
+    "tutorials/batch/plant/apalutamide01_tablets",
     "tutorials/plant/aceticAcid02_plant",
     "tutorials/plant/acetonePlant",
-    "tutorials/plant/ammoniaReactor04_kineticSizing",
-    "tutorials/plant/apalutamide01_tablets"
+    "tutorials/plant/ammoniaReactor04_kineticSizing"
    ],
    "pipe": [
     "tutorials/steady/hydraulics/pipe01_water_line",
@@ -8021,7 +8021,7 @@
     "tutorials/ctrl/ctrl20_bode_cstr"
    ],
    "solidDryer": [
-    "tutorials/plant/apalutamide01_tablets",
+    "tutorials/batch/plant/apalutamide01_tablets",
     "tutorials/steady/drying/solidDryer01_sugar",
     "tutorials/steady/drying/solidDryer02_starved_air"
    ],
@@ -8050,12 +8050,12 @@
     "tutorials/unsteady/unsteady04_uf_feed_and_bleed_startup"
    ],
    "splitter": [
+    "tutorials/batch/plant/apalutamide01_tablets",
     "tutorials/plant/aceticAcid02_plant",
     "tutorials/plant/ammoniaReactor01_fixedConversion",
     "tutorials/plant/ammoniaReactor02_equilibrium",
     "tutorials/plant/ammoniaReactor03_equilibriumApproach",
     "tutorials/plant/ammoniaReactor04_kineticSizing",
-    "tutorials/plant/apalutamide01_tablets",
     "tutorials/plant/polycaprolactonePlant",
     "tutorials/steady/drying/convDryer01_sugar_curve",
     "tutorials/steady/electrodialysis/ed07_feed_and_bleed",
@@ -8075,7 +8075,7 @@
     "tutorials/unsteady/unsteady04_uf_feed_and_bleed_startup"
    ],
    "sprayDryer": [
-    "tutorials/plant/apalutamide01_tablets",
+    "tutorials/batch/plant/apalutamide01_tablets",
     "tutorials/steady/drying/sprayDryer01_sugar",
     "tutorials/steady/drying/sprayDryer02_residence_sweep",
     "tutorials/steady/drying/sprayDryer03_pressure_nozzle",
@@ -8091,8 +8091,8 @@
     "tutorials/ctrl/ctrl09_stream_disturbance"
    ],
    "storageTank": [
-    "tutorials/plant/aceticAcid02_plant",
-    "tutorials/plant/apalutamide01_tablets"
+    "tutorials/batch/plant/apalutamide01_tablets",
+    "tutorials/plant/aceticAcid02_plant"
    ],
    "stripper": [
     "tutorials/steady/absorption/stripper01_NH3_water"
@@ -8301,6 +8301,7 @@
     "tutorials/batch/electrodialysis/edbatch03_multiionic_split",
     "tutorials/batch/membrane/diafilter01_nf_desalting",
     "tutorials/batch/membrane/diafilter02_fouling_decline",
+    "tutorials/batch/plant/apalutamide01_tablets",
     "tutorials/batch/reactor/batch01_first_order",
     "tutorials/batch/reactor/batch01b_first_order_eulersi",
     "tutorials/batch/reactor/batch02_adiabatic",
@@ -8343,7 +8344,6 @@
     "tutorials/plant/ChemicalPlantTutorial",
     "tutorials/plant/aceticAcid01_gibbsReactor",
     "tutorials/plant/ammoniaRoutes01_screening",
-    "tutorials/plant/apalutamide01_tablets",
     "tutorials/plant/esterification2sector",
     "tutorials/plant/hda",
     "tutorials/plant/lithiumBrinePlant",

@@ -299,7 +299,7 @@ CATS = ["steady", "unsteady", "props", "batch", "ctrl", "plant"]
 CATTITLE = {
     "steady": "Steady-state flowsheets (choupoSolve)",
     "props":  "The property bench (choupoProps)",
-    "batch":  "Batch and time-dependent (choupoBatch)",
+    "batch":  "Batch processes (recipes, vessels, campaigns, plants run in lots)",
     "ctrl":   "Dynamics and control (choupoCtrl)",
     "unsteady": "Transient process simulation (choupoSemiContinuous, no control loop)",
     "plant":  "Multi-sector plant showcases",

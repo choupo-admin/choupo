@@ -181,7 +181,7 @@ export const CITES = {
     contains: 'std::cerr << "\\nERROR: " << e.what()' },
   guiCho: { file: "gui/src/ui/FlowCanvas.tsx", line: 456,
     contains: 'k.endsWith(".cho")' },
-  guiReadme: { file: "gui/src/cases/tutorials.ts", line: 448,
+  guiReadme: { file: "gui/src/cases/tutorials.ts", line: 452,
     contains: 'entry.readme = files["README.md"]' },
   guiNoExpected: { file: "gui/src/cases/tutorials.ts", line: 115,
     contains: '"!../../../tutorials/**/expected"' },

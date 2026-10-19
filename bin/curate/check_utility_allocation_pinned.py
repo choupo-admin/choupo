@@ -73,7 +73,7 @@ def cached_stdout(case: Path):
 
 
 def candidates():
-    """Cases that can emit an allocation: any steady/electrochem/plant case,
+    """Cases that can emit an allocation: any steady/plant (incl. batch/plant) case,
     plus (for arm b) any case whose golden already carries `utility` rows.
 
     Discovery is by RUNNING, because whether `pickForDuty` fires depends on
@@ -83,8 +83,12 @@ def candidates():
     out = {}
     for cd in sorted(ROOT.glob("tutorials/**/system/controlDict")):
         rel = cd.relative_to(ROOT).as_posix()
+        #  `tutorials/batch/plant/` is a plant run in lots (DEV.md 4c C106),
+        #  a steady flowsheet like any under `plant/` -- a folder is a
+        #  discipline, not a binary.
         if not rel.startswith(("tutorials/steady/",
-                               "tutorials/plant/")):
+                               "tutorials/plant/",
+                               "tutorials/batch/plant/")):
             continue
         out[cd.parent.parent] = True
     for exp in sorted(ROOT.glob("tutorials/**/expected")):

@@ -308,6 +308,10 @@ const SUBCLASS_LABEL: { [slug: string]: string } = {
   adsorber: "Fixed-bed adsorption",
   combustion: "Combustion",
   membrane: "Diafiltration & batch membranes",
+  //  batch/plant/ (DEV.md 4c C106): a WHOLE plant that runs in lots.  The
+  //  slug is used only under batch/ -- plant/ is a flat category -- and its
+  //  cases run whatever binary their controlDict names (choupoSolve today).
+  plant: "Plant design (run in lots)",
 };
 
 export interface SubclassGroup {

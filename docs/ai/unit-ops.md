@@ -1315,7 +1315,7 @@ film Le = Sc/Pr is computed and, beyond +/-20 % of 1 (an organic solvent in
 nitrogen: acetone/N2 is about 1.6), ANNOUNCED.  The liquid viscosity and
 surface tension still default to water when neither a model nor the
 `operation` knob declares them.  Worked case:
-`tutorials/plant/apalutamide01_tablets`.
+`tutorials/batch/plant/apalutamide01_tablets`.
 
 ### `solidDryer`
 Polish a HYGROSCOPIC powder (sugar, food) toward the equilibrium

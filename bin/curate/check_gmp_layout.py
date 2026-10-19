@@ -76,7 +76,7 @@ under tutorials/ is touched.
       listing it; REFUSED, each named: the same probe with no `envelope`
       (the shell stands inside every room), an envelope naming no placed
       item, one naming a process item, a room beyond the shell's box.
-  (h) THE CORPUS WITNESS `tutorials/plant/apalutamide01_tablets`, from a
+  (h) THE CORPUS WITNESS `tutorials/batch/plant/apalutamide01_tablets`, from a
       copy: its building is published in its `productionBuilding` envelope,
       contained rooms and flows of all three kinds, and the engine's findings
       and the recomputed ones are both EMPTY.
@@ -1066,7 +1066,7 @@ def arm_held(work):
                       f" an unlisted item in the shell, a penetration off the wall")
 
 
-WITNESS = ROOT / "tutorials/plant/apalutamide01_tablets"
+WITNESS = ROOT / "tutorials/batch/plant/apalutamide01_tablets"
 
 
 def arm_witness(work):

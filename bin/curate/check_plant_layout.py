@@ -416,7 +416,7 @@ BIN = ROOT / "choupoSolve"
 TOOL = ROOT / "bin" / "choupo-layout"
 WITNESS = ROOT / "tutorials/plant/ammonia02_full_plant"
 FLAGSHIP = ROOT / "tutorials/plant/ChemicalPlantTutorial"
-APALUTAMIDE = ROOT / "tutorials/plant/apalutamide01_tablets"
+APALUTAMIDE = ROOT / "tutorials/batch/plant/apalutamide01_tablets"
 COLUMN = ROOT / "tutorials/steady/distillation/column09_tray_hydraulics"
 ENV = {"CHOUPO_HOME": str(ROOT), "PATH": "/usr/bin:/bin"}
 

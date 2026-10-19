@@ -190,7 +190,7 @@ describe("the stable key and the ?layout= route", () => {
 
 describe("the building view of the same stash (C100)", () => {
   it("the plot plan's address is unchanged; the building view adds view=building", () => {
-    const k = layoutTabKey("case", "plant/apalutamide01_tablets");
+    const k = layoutTabKey("case", "batch/plant/apalutamide01_tablets");
     expect(layoutTabUrl("/app/", k)).toBe(layoutTabUrl("/app/", k, "plot"));
     expect(layoutTabUrl("/app/", k)).not.toContain("view=");
     const url = layoutTabUrl("/app/", k, "building");
