@@ -27,9 +27,10 @@
 import { describe, expect, it } from "vitest";
 
 import type { PlantLayout } from "../src/adapters/SolverAdapter.js";
-import { fenceSummary } from "../src/case/layoutTables.js";
+import { fenceSummary, pipeRegister } from "../src/case/layoutTables.js";
 import {
-  crossingsOf, fenceOf, layoutScene, toThree, UNROUTED_STUB, unroutedOf,
+  crossingsOf, fenceOf, layoutScene, toThree, UNROUTED_STUB, unroutedLegend,
+  unroutedListedOf, unroutedOf,
 } from "../src/case/plantLayout.js";
 import { PIPED } from "./plantLayoutFixture.js";
 
@@ -50,6 +51,8 @@ const FENCED: PlantLayout = {
     { stream: "split", reason: "consumed by 2 units (a, b); a pipe has two ends",
       fromUnit: "s1", toUnit: "a, b", anchor: [10, 5, 1] },
     { stream: "lost", reason: "unit `X` has no sized item", fromUnit: "", toUnit: "X" },
+    { stream: "powder", reason: "solids only (no fluid phase): moved in containers or by conveyor, not piped",
+      fromUnit: "dryer", toUnit: "blender", solids: true },
   ],
 };
 
@@ -80,17 +83,39 @@ describe("the fence (C93)", () => {
     expect(product!.tooltip.join(" ")).toContain("where the case placed the crossing");
   });
 
-  it("marks an unrouted stream at the end it reached, and still names one it did not", () => {
-    const [split, lost] = unroutedOf(FENCED);
-    expect(split!.at).toEqual(toThree(10, 5, 1));
-    expect(split!.top).toEqual(toThree(10, 5, 1 + UNROUTED_STUB));
-    expect(split!.text).toContain("split: NOT routed");
-    expect(split!.tooltip[1]).toBe("why: consumed by 2 units (a, b); a pipe has two ends");
-    expect(lost!.at).toBeNull();
-    expect(lost!.text).toContain("lost: NOT routed");
-    expect(lost!.tooltip.join(" ")).toContain("neither end");
-    //  The scene carries them: nothing the engine left unrouted disappears.
-    expect(layoutScene(FENCED)!.unrouted.map((u) => u.stream)).toEqual(["split", "lost"]);
+  it("marks an unrouted stream at the end it reached, and lists, never floats, one it did not", () => {
+    //  Only the stream with an anchor is DRAWN (C97: an anchorless marker
+    //  had been drawn at an arbitrary point, off the plot).
+    const marked = unroutedOf(FENCED);
+    expect(marked.map((u) => u.stream)).toEqual(["split"]);
+    const split = marked[0]!;
+    expect(split.at).toEqual(toThree(10, 5, 1));
+    expect(split.top).toEqual(toThree(10, 5, 1 + UNROUTED_STUB));
+    expect(split.text).toContain("split: NOT routed");
+    expect(split.tooltip[1]).toBe("why: consumed by 2 units (a, b); a pipe has two ends");
+    //  The other two are LISTED: nothing the engine left unrouted disappears.
+    const scene = layoutScene(FENCED)!;
+    expect(scene.unrouted.map((u) => u.stream)).toEqual(["split"]);
+    expect(scene.unroutedListed).toEqual(unroutedListedOf(FENCED));
+    expect(scene.unroutedListed.map((u) => [u.stream, u.solids]))
+      .toEqual([["lost", false], ["powder", true]]);
+    const legend = unroutedLegend(scene.unroutedListed);
+    expect(legend[0]).toContain("NOT routed and not marked");
+    expect(legend[0]).toContain("lost");
+    expect(legend[1]).toContain("Moved as solids, not piped");
+    expect(legend[1]).toContain("powder");
+    expect(unroutedLegend([])).toEqual([]);
+    //  No point of the scene belongs to an unmarked stream: the view's box
+    //  is the one a layout with the anchored stream alone would give.
+    const alone = layoutScene({ ...FENCED, notRouted: FENCED.notRouted!.slice(0, 1) })!;
+    expect(scene.min).toEqual(alone.min);
+    expect(scene.max).toEqual(alone.max);
+  });
+
+  it("the pipe register says which missing pipe is unmarked, and the solids apart", () => {
+    const reg = pipeRegister(FENCED)!;
+    expect(reg.notRouted.map((n) => [n.stream, n.marked])).toEqual([["split", true], ["lost", false]]);
+    expect(reg.solids).toEqual(["powder"]);
   });
 
   it("the fence table quotes the engine's length, openings and rule", () => {

@@ -68,6 +68,8 @@ void emitBuildingJson(std::ostream& os, const BuildingRecord& b)
        << ", \"minimumStep\": " << num(b.minimumStep);
     if (b.atexSeparationDeclared)
         os << ", \"atexDistance\": " << num(b.atexDistance);
+    if (!b.envelope.empty())
+        os << ", \"envelope\": " << esc(b.envelope);
     os << ", \"source\": " << esc(b.source) << ", \"reason\": " << esc(b.reason)
        << ", \"stepSource\": " << esc(b.stepSource)
        << ", \"stepReason\": " << esc(b.stepReason);

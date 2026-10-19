@@ -136,6 +136,31 @@ describe("the GMP interior (C97 phase B)", () => {
     expect(s.solids).toBe(plant.solids);
   });
 
+  it("draws the item the case names as the building's envelope as glass, and only it", () => {
+    //  C97 wiring: `envelope <id>;` names the plot plan's non-process item
+    //  that IS the building -- opaque, it would hide every room.
+    const shell = { id: "osdBlock", nonProcess: true, kind: "productionBuilding", sector: "",
+      shape: "box" as const, orientation: "alongX" as const, footprintFrom: "declared" as const,
+      x: 36, y: 5, z: 0, dx: 60, dy: 12, dz: 11 };
+    const plant = layoutScene({ ...PIPED, items: [...PIPED.items, shell] })!;
+    const shaped = shapeBuilding({ ...RAW, summary: { ...RAW.summary, envelope: "osdBlock" } })!;
+    expect(shaped.envelope).toBe("osdBlock");
+    //  The exported page embeds the SHAPED block and shapes it again: the
+    //  summary fields must survive that round trip.
+    const again = shapeBuilding(JSON.parse(JSON.stringify(shaped)))!;
+    expect([again.envelope, again.name, again.minimumStep])
+      .toEqual(["osdBlock", "probe OSD block", 10]);
+    const s = withBuilding(plant, buildingScene(shaped));
+    const glass = s.solids.filter((x) => x.shell);
+    expect(glass.map((x) => x.id)).toEqual(["osdBlock"]);
+    expect(glass[0]!.tooltip.join(" ")).toContain("drawn as glass");
+    //  No envelope declared: nothing is turned to glass.
+    expect(withBuilding(plant, buildingScene(b)).solids.some((x) => x.shell)).toBe(false);
+    //  A PROCESS item of that name is never the shell.
+    const proc = layoutScene({ ...PIPED, items: [...PIPED.items, { ...shell, nonProcess: false }] })!;
+    expect(withBuilding(proc, buildingScene(shaped)).solids.some((x) => x.shell)).toBe(false);
+  });
+
   it("draws one plan per floor, each with only its own rooms and flow runs", () => {
     const plans = floorPlans(b);
     expect(plans.map((p) => p.floor)).toEqual(["ground", "upper"]);

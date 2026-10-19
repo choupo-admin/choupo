@@ -162,8 +162,17 @@ export function PipeRegister({ layout }: { layout: PlantLayout }) {
         <Text size="xs" c="dimmed" mt={4} component="div">
           Not routed (the engine&apos;s reasons):
           <ul style={{ margin: "2px 0 0 18px", padding: 0 }}>
-            {reg.notRouted.map((n) => <li key={n.stream}><code>{n.stream}</code>: {n.reason}</li>)}
+            {reg.notRouted.map((n) => (
+              <li key={n.stream}><code>{n.stream}</code>: {n.reason}
+                {!n.marked && " (neither end is on the plot plan, so the 3D view marks it nowhere)"}
+              </li>))}
           </ul>
+        </Text>
+      )}
+      {reg.solids.length > 0 && (
+        <Text size="xs" c="dimmed" mt={4}>
+          Moved as solids, not piped (in containers or by conveyor):{" "}
+          {reg.solids.map((s, i) => <span key={s}>{i ? ", " : ""}<code>{s}</code></span>)}.
         </Text>
       )}
     </>

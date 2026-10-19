@@ -376,8 +376,12 @@ export function buildLayoutExport(input: LayoutExportInput): { fileName: string;
       : pipesHtml;
     if (reg.notRouted.length > 0)
       notRoutedHtml = `<h3>Not routed (the engine's reasons)</h3><ul>`
-        + reg.notRouted.map((n) => `<li><code>${esc(n.stream)}</code>: ${esc(n.reason)}</li>`)
-          .join("") + `</ul>`;
+        + reg.notRouted.map((n) => `<li><code>${esc(n.stream)}</code>: ${esc(n.reason)}`
+          + (n.marked ? "" : " (neither end is on the plot plan, so the 3D view marks it nowhere)")
+          + `</li>`).join("") + `</ul>`;
+    if (reg.solids.length > 0)
+      notRoutedHtml += `<p class="note">Moved as solids, not piped (in containers or by`
+        + ` conveyor): ${reg.solids.map((s) => `<code>${esc(s)}</code>`).join(", ")}.</p>`;
   }
 
   const items = table(null, [["Item", false], ["Kind", false], ["Sector", false], ["Shape", false],

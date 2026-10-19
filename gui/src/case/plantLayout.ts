@@ -121,6 +121,9 @@ export interface SceneSolid {
   /** Extents along three.js X, Y (up), Z. */
   size: Vec3;
   nonProcess: boolean;
+  /** The shell of a declared GMP interior (DEV.md 4c C97): drawn as glass so
+   *  the rooms inside it show.  Set by `withBuilding`, never here. */
+  shell?: boolean;
   footprintFrom: "published" | "declared";
   ignition: boolean;
   release: boolean;
@@ -312,15 +315,25 @@ export interface SceneCrossing {
 
 /** A stream the engine did NOT route (DEV.md 4c C93), marked where its one
  *  reachable end is: a dashed stub rising UNROUTED_STUB from that end and a
- *  warning label, the engine's reason in the tooltip.  `at` is null when the
- *  engine reached neither end; the view then still says so, in words.  A
- *  missing pipe must never look like a finished drawing. */
+ *  warning label, the engine's reason in the tooltip.  A missing pipe must
+ *  never look like a finished drawing. */
 export interface SceneUnrouted {
   stream: string;
-  at: Vec3 | null;
-  top: Vec3 | null;
+  at: Vec3;
+  top: Vec3;
   text: string;
   tooltip: string[];
+}
+
+/** A stream the engine did not route and the view does NOT mark (DEV.md 4c
+ *  C97): one that reaches neither end (there is no point on the plan that
+ *  belongs to it -- a label at an arbitrary point floated off the plot), or
+ *  one that carries only solids (not a missing pipe at all).  Said in words
+ *  beside the view and in the pipe register. */
+export interface SceneUnroutedListed {
+  stream: string;
+  reason: string;
+  solids: boolean;
 }
 
 /** Height of the dashed stub that marks an unrouted stream (drawing). */
@@ -339,6 +352,8 @@ export interface LayoutScene {
   /** The streams the engine could not route, marked (C93); empty when every
    *  stream has its pipe. */
   unrouted: SceneUnrouted[];
+  /** The streams not routed and not marked (C97): listed beside the view. */
+  unroutedListed: SceneUnroutedListed[];
   /** THE ROADS (DEV.md 4c C90); empty when the case declares none. */
   roads: SceneRoad[];
   barriers: SceneBarrier[];
@@ -745,7 +760,8 @@ export function layoutScene(layout: PlantLayout | undefined): LayoutScene | null
   if (fence) for (const [a, b] of fence.runs) { grow(a); grow(b); }
   for (const c of crossings) grow(c.outside);
   const unrouted = unroutedOf(layout);
-  for (const u of unrouted) if (u.top) grow(u.top);
+  for (const u of unrouted) grow(u.top);
+  const unroutedListed = unroutedListedOf(layout);
 
   //  What the camera fits: the plant, not the ground around it.
   const fitMin: Vec3 = [Infinity, Infinity, Infinity];
@@ -795,7 +811,7 @@ export function layoutScene(layout: PlantLayout | undefined): LayoutScene | null
   }
 
   const windsocks = windsocksOf(layout);
-  return { solids, fence, crossings, unrouted, roads, barriers, approaches, truckRoutes, carParks,
+  return { solids, fence, crossings, unrouted, unroutedListed, roads, barriers, approaches, truckRoutes, carParks,
            turningAreas, windsocks, zones, areas, plot, links, wind, pipes,
            junctions, rack, min, max, fitMin, fitMax };
 }
@@ -897,25 +913,50 @@ export function crossingsOf(layout: PlantLayout): SceneCrossing[] {
   });
 }
 
-/** Each stream the engine left unrouted, marked at the end it reached. */
+/** Each stream the engine left unrouted with an end the layout reached,
+ *  marked at that end.  A stream with no such end, and a stream of solids,
+ *  is not marked: `unroutedListedOf` says it in words instead. */
 export function unroutedOf(layout: PlantLayout): SceneUnrouted[] {
-  return (layout.notRouted ?? []).map((n) => {
+  const out: SceneUnrouted[] = [];
+  for (const n of layout.notRouted ?? []) {
     const a = n.anchor;
+    if (!a || n.solids) continue;
     const ends = `${n.fromUnit ? n.fromUnit : "a battery limit"} -> `
       + `${n.toUnit ? n.toUnit : "a battery limit"}`;
-    return {
+    out.push({
       stream: n.stream,
-      at: a ? toThree(a[0], a[1], a[2]) : null,
-      top: a ? toThree(a[0], a[1], a[2] + UNROUTED_STUB) : null,
+      at: toThree(a[0], a[1], a[2]),
+      top: toThree(a[0], a[1], a[2] + UNROUTED_STUB),
       text: `\u26a0 ${n.stream}: NOT routed`,
       tooltip: [
         `${n.stream} (${ends}) has NO pipe: the engine could not route it`,
         `why: ${n.reason}`,
-        a ? "marked at the end the layout reaches; the dashed stub is drawing, not a pipe"
-          : "the layout reaches neither end, so there is nowhere on the plan to mark it",
+        "marked at the end the layout reaches; the dashed stub is drawing, not a pipe",
       ],
-    };
-  });
+    });
+  }
+  return out;
+}
+
+/** The streams the engine did not route that the view does not mark: no end
+ *  the layout reaches, or solids only (DEV.md 4c C97). */
+export function unroutedListedOf(layout: PlantLayout): SceneUnroutedListed[] {
+  return (layout.notRouted ?? []).filter((n) => !n.anchor || n.solids)
+    .map((n) => ({ stream: n.stream, reason: n.reason, solids: !!n.solids }));
+}
+
+/** The words beside the 3D view for what it does not mark; empty when it
+ *  marks everything the engine left unrouted. */
+export function unroutedLegend(listed: SceneUnroutedListed[]): string[] {
+  const lost = listed.filter((u) => !u.solids).map((u) => u.stream);
+  const solids = listed.filter((u) => u.solids).map((u) => u.stream);
+  const out: string[] = [];
+  if (lost.length)
+    out.push(`\u26a0 NOT routed and not marked (the layout reaches neither end): ${lost.join(", ")}`
+      + " -- the reasons are in the pipe register");
+  if (solids.length)
+    out.push(`Moved as solids, not piped (in containers or by conveyor), so not drawn: ${solids.join(", ")}`);
+  return out;
 }
 
 //  ---- the roads: drawing bookkeeping only (DEV.md 4c C90) -----------------

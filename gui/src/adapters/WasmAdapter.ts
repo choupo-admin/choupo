@@ -940,6 +940,7 @@ function shapePipes(l: NonNullable<ResultPayload["layout"]>): Partial<PlantLayou
                  //  Absent on a result written before C93: left absent.
                  ...(typeof n.fromUnit === "string" ? { fromUnit: n.fromUnit } : {}),
                  ...(typeof n.toUnit === "string" ? { toUnit: n.toUnit } : {}),
+                 ...(n.solids === true ? { solids: true } : {}),
                  ...(a ? { anchor: a } : {}) };
       }),
   };
@@ -1161,6 +1162,7 @@ interface ResultPayload {
       F_mass?: number; T?: number; P?: number; vf?: number;
       route?: number[][] }[];
     notRouted?: { stream?: string; reason?: string; fromUnit?: string; toUnit?: string;
+                  solids?: boolean;
       anchor?: unknown[] }[];
     summary?: { placed?: number; unplaced?: number; internal?: number; findings?: number;
       pipes?: number; notRouted?: number; pipeLength?: number };

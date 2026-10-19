@@ -99,7 +99,13 @@ export interface PipeRegisterView {
   /** "N pipes, in all" and the sum of the engine's lengths; null with no pipe. */
   total: { label: string; length: string } | null;
   rack: string | null;
-  notRouted: { stream: string; reason: string }[];
+  /** Missing pipes, each with the engine's reason; `marked` is false where
+   *  the layout reaches neither end, so the 3D view marks it nowhere and
+   *  this list is where it is said (DEV.md 4c C97). */
+  notRouted: { stream: string; reason: string; marked: boolean }[];
+  /** Streams that carry only solids: moved in containers or by conveyor,
+   *  never piped -- not a missing pipe (DEV.md 4c C97). */
+  solids: string[];
 }
 
 /** The pipe register: one row per pipe the engine routed, then what it did
@@ -129,7 +135,9 @@ export function pipeRegister(layout: PlantLayout): PipeRegisterView | null {
     total: pipes.length > 0
       ? { label: `${pipes.length} pipes, in all`, length: total.toFixed(1) } : null,
     rack: layout.pipeRack ? rackSentence(layout.pipeRack) : null,
-    notRouted: notRouted.map((n) => ({ stream: n.stream, reason: n.reason })),
+    notRouted: notRouted.filter((n) => !n.solids)
+      .map((n) => ({ stream: n.stream, reason: n.reason, marked: !!n.anchor })),
+    solids: notRouted.filter((n) => n.solids).map((n) => n.stream),
   };
 }
 

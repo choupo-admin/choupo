@@ -131,6 +131,10 @@ struct BuildingRecord
     bool        atexSeparationDeclared = false;
     scalar      atexDistance = 0;      // [m]
     std::string atexSource, atexReason;
+    //  The NON-PROCESS item of the plot plan that is this building's shell
+    //  (`envelope <id>;`, optional): every room lies inside its box, and it
+    //  is the one placed item a room may stand inside without listing it.
+    std::string envelope;
     std::vector<BuildingFloor>      floors;
     std::vector<BuildingRoom>       rooms;
     std::vector<BuildingConnection> connections;

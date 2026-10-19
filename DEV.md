@@ -1362,11 +1362,19 @@ accepts today, and that is a policy call.
 > linked tank's working capital reads 0.  From phase B: the building does
 > not count toward the plot area (`plotOf`); the apalutamide case does not
 > yet declare its building (the WIRING step).  WIRING dispatched 2026-10-18
-> (branch claude/c97c-apalutamide-gmp-wiring): the case declares its GMP
-> building; the building's rooms count toward `plotOf`; solids-only
-> streams are not piped (notRouted, reason stated) and their unsized
-> junctions leave the rack; an anchorless unrouted marker is listed, not
-> drawn off the plot.  Moved apalutamide rows to Vitor before re-record.
+> (branch claude/c97c-apalutamide-gmp-wiring), MERGED 2026-10-19: the case's
+> `building {}` (35 rooms, two floors, eight flows, zero findings) in its
+> `productionBuilding` box through a new `envelope <id>;` key (a stated
+> default: the shell item is exempt from "an item inside a room that does not
+> list it", every room must fit it); the rooms in `plotOf` and
+> `roomBeyondPlot` retired; SOLIDS ARE NOT PIPED (a stream with no fluid
+> phase is listed not routed, `solids`, no anchor; a junction of solids
+> alone leaves the rack); an anchorless unrouted stream is listed beneath
+> the 3D view, not floated off the plot.  The corpus layouts are
+> byte-identical; apalutamide01's golden moves (pipes, junctions, summary)
+> and Vitor approved the rows (13 pipe lengths, pipes 41 -> 18, notRouted 5 -> 28, pipeLength 1014 -> 423 m, 87 rows of the solids pipes and junctions removed, 326 building rows appended; plot, land and NPV unchanged).  Limit named: with an
+> envelope no placed item can stand inside the building (the plot plan's
+> overlap refusal).
 
 > **C94. LAYOUT GUIDELINES IN THE GUIDES (Vitor, 2026-10-18: "Nos Guias
 > apropriados podes incluir uma parte sobre guidelines de layout?", after

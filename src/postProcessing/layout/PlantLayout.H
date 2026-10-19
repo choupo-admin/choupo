@@ -90,6 +90,14 @@ Description
     stream NOT ROUTED, with that reason, the units at its two ends and the
     plan point of the end the layout DOES reach -- where a surface marks the
     missing pipe, so a plant with a pipe missing never looks finished.
+    SOLIDS ARE NOT PIPED (2026-10-18, DEV.md 4c C97): a stream whose FLUID
+    molar flow is zero and which carries a solid (`ProcessStream::F` is the
+    fluid phases only, `ProcessStream::s` the solid -- a powder, granules,
+    tablets) is moved in containers or by conveyor, not in a pipe, so it is
+    listed as not routed with that reason and `solids` set, and no point is
+    marked for it (nothing is missing); a mixer, splitter or valve ALL of
+    whose streams are such is not a junction on the rack.  A slurry or a
+    wet cake (a fluid phase beside the solid) is still a stream to route.
     THE ROUTE is deterministic and orthogonal: up (or down) from the source
     nozzle to its LANE, across to the lane, along the rack (plan x), across
     to the target, down to its nozzle.  The rack runs along plan x; the
@@ -128,6 +136,8 @@ Description
     one above another) and, per sector, the declared area or else the
     envelope of the sector's own footprints.  The economics prices this
     plot area when the case declares a land price (EconomicsPass.cpp).
+    A declared `building {}` (BuildingLayout.H) adds every room's plan box to
+    the envelope, and the rule's published sentence says so only then.
     With a declared fence, the routed pipes enter the envelope as the rack's
     plan band: a pipe's run past the rack ends is the fence's to carry.
 

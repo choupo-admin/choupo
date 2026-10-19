@@ -71,7 +71,20 @@ Description
     item that is not placed, is assigned twice, or does not fit inside its
     room (plan and height); a placed item inside a room's volume that the
     room does not list; a road through a room below the roads' headroom; a
-    room across the fence; a flow naming an unknown room or a single room.
+    room across the fence; a flow naming an unknown room or a single room;
+    an `envelope` that names no placed non-process item, and a room outside
+    that item's box.
+
+    THE SHELL AND THE PLOT.  `envelope <id>;` (optional) names the
+    NON-PROCESS item of the plot plan that is the building as the SITE sees
+    it -- its footprint, its separations, its road access, its ignition --
+    so the rooms are its interior: each must lie inside its box, and it is
+    the one placed item a room may stand inside without listing it.  The
+    rooms' plan boxes enter the PLOT (`plotOf` in PlantLayout.cpp, through
+    `roomPlans` below, the same reader), so no room can lie beyond the
+    published plot and its ground is priced with the rest (2026-10-18,
+    DEV.md 4c C97: the `roomBeyondPlot` finding phase B raised instead is
+    retired with the gap it reported).
 
     WHAT IS ANNOUNCED (stderr + AdvisoryLog, so it reaches the caveat block
     and the result JSON), each a `<kind>:<a>:<b>` finding:
@@ -111,8 +124,6 @@ Description
       atexSeparationUndeclared  ATEX and ignition rooms with no separation;
       noEscape                  a room with no way to `outside` through
                                 doors and stairs (a lift is not an exit);
-      roomBeyondPlot            a room outside the published plot (its
-                                land is not priced).
     "Pass through" means the flow's INTERIOR rooms: its first and last are
     where it starts and ends -- the room an operator works in, the room
     where waste is produced -- and meeting there is the work itself, not a
@@ -131,10 +142,24 @@ Description
 #include "core/Dictionary.H"
 #include "core/ResultRecords.H"
 
+#include <string>
+#include <vector>
+
 namespace Choupo
 {
 namespace buildingLayout
 {
+
+//- The plan box of one declared room.
+struct RoomPlan
+{
+    std::string name;
+    scalar xMin = 0, xMax = 0, yMin = 0, yMax = 0;   // [m]
+};
+
+//- The declared rooms' plan boxes (absent block: none), read by the same
+//  reader `evaluate` uses -- for the plot rule, which runs first.
+std::vector<RoomPlan> roomPlans(const Dictionary& layoutDict);
 
 //- Read the `building {}` block of `layoutDict` (absent: an empty record),
 //  check it against the plot plan `plant` (already checked), raise every

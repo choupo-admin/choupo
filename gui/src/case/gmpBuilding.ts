@@ -138,6 +138,8 @@ export interface SceneFlow {
 
 export interface BuildingScene {
   name: string;
+  /** The plot plan's item that is the building's shell (`envelope`), if any. */
+  envelope?: string;
   rooms: SceneRoom[];
   flows: SceneFlow[];
   /** Bounding box of the rooms (three.js), for the camera's fit. */
@@ -264,7 +266,8 @@ export function buildingScene(b: GmpBuilding): BuildingScene {
     min[2] = Math.min(min[2], r.center[2] - r.size[2] / 2);
     max[2] = Math.max(max[2], r.center[2] + r.size[2] / 2);
   }
-  return { name: b.name, rooms, flows, min, max };
+  return { name: b.name, ...(b.envelope ? { envelope: b.envelope } : {}),
+           rooms, flows, min, max };
 }
 
 /** The plant scene with its boxes grown to hold the building, so the
@@ -272,8 +275,17 @@ export function buildingScene(b: GmpBuilding): BuildingScene {
 export function withBuilding(scene: LayoutScene, bs: BuildingScene): LayoutScene {
   const grow = (a: Vec3, b: Vec3, f: (x: number, y: number) => number): Vec3 =>
     [f(a[0], b[0]), f(a[1], b[1]), f(a[2], b[2])];
+  //  The shell (DEV.md 4c C97): the item the case names `envelope` is drawn
+  //  as glass, or it would hide every room it holds.
+  const solids = bs.envelope
+    ? scene.solids.map((s) => (s.nonProcess && s.id === bs.envelope
+      ? { ...s, shell: true,
+          tooltip: [...s.tooltip, "drawn as glass: the shell of the GMP interior drawn inside it"] }
+      : s))
+    : scene.solids;
   return {
     ...scene,
+    solids,
     min: grow(scene.min, bs.min, Math.min),
     max: grow(scene.max, bs.max, Math.max),
     fitMin: grow(scene.fitMin, bs.min, Math.min),

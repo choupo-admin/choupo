@@ -180,8 +180,8 @@ API.  An appraisal you can defend adds the items above.
 
 `system/layoutDict` places the sized items on a plot plan: the offices and
 quality-control laboratory by the gate, the warehouse, the **GMP production
-building** (one declared box — its interior is phase B), and **downwind**
-of them all the **solvent area** (solution tank, spray dryer, nitrogen loop,
+building** (one declared box on the plot plan, with its interior declared
+room by room — below), and **downwind** of them all the **solvent area** (solution tank, spray dryer, nitrogen loop,
 condenser) with the acetone tanks south of the pipe rack.  Hazardous-area
 zones are declared on everything that holds acetone; every number is an
 assumption with its reason.  Two findings are left on purpose for the
@@ -190,17 +190,47 @@ file's header), and a site with ONE entrance (`singleEntrance`: a fire
 brigade arriving while that road is blocked has no second way in — where
 would you put a second gate, and which road serves it?).
 
-**What the drawing gets wrong, and why:** the router draws EVERY material
-stream as a pipe on the rack, and puts every unsized mixer and splitter on
-the rack as a junction.  So the powders after the spray dryer, and the
-bought powders, appear as pipes.  In the plant they move in closed
-containers inside the building and arrive by truck.  Read those lines as
-"material goes from here to there".
+**Solids are not piped.**  A stream that carries only solids (the bought
+powders, the spray-dried dispersion, the blends, granules and tablet cores)
+is listed by the engine as not routed — "solids only: moved in containers or
+by conveyor" — and the blenders, compactor, mill, screen and press, whose
+streams are all solids, are not put on the pipe rack.  The wet and coated
+tablets carry the coat's water, so they are still streams the router tries;
+it lists them as not routed because the coating dryer has no sized item.
+The coating air is drawn from the roof, beside its heater (a declared
+`pipes` route), not through the building's wall.
 
-**Where the GMP interior plugs in (phase B):** the `productionBuilding` item.
-Rooms, cleanliness grades, the pressure cascade and the flows of people,
-material and waste will be declared for it; nothing is drawn inside it
-today.
+**The GMP interior** (`building {}` at the end of `system/layoutDict`;
+grammar in `docs/ai/case-layout.md`).  Its `envelope` is the
+`productionBuilding` box, so every room must fit inside it, and the rooms
+count toward the plot.  Two floors: the production floor (0–5 m) and a
+technical floor (5.5–10 m) for the air-handling units, utilities and
+switchgear.  The engine raises **no finding** on it.
+
+| Area | Rooms | Grade | Pressure to outside |
+|---|---|---|---|
+| Staff entrance (south) | lobby → gowning → clean corridor | CNC → D | +15 → +25 → +35 Pa |
+| Receipt and dispensing (south-west, from the warehouse) | goods-in, a sink material airlock, the dispensary (contained) with a bubble personnel airlock and a sink exit | CNC, D | +15; sinks +5/+10; dispensary +20; bubble +45 |
+| Contained train (north) | blending → roller compaction → milling → final blending → compression, a contained personnel corridor (bubble airlock from the clean corridor) and a contained return corridor for waste | D, contained | rooms +15, suite corridor +25, bubble +45 |
+| Coating and packaging (south-east) | coating → primary packaging → cascade airlock → secondary packaging → the warehouse | D → CNC | +25, +30, +20, +15 |
+| East dock | the spray-dried dispersion in, the API kits out, through sink / cascade airlocks | CNC | +15 |
+| Waste | return corridor → sink airlock → waste room → outside (west) | D → CNC | +15, +5, +15 |
+| Technical floor | AHU plant, utilities, electrical (an ignition source) | CNC | +5 |
+
+Grades: an oral-solid-dose suite is not sterile; EU GMP Annex 1, whose A–D
+vocabulary the engine speaks, is written for sterile products, so the
+product-exposed rooms are grade D **by analogy** and the rest CNC — the
+case's statement, to replace with the company's risk assessment.  The 10 Pa
+step is Annex 1's guidance value, borrowed.  **Containment** is declared on
+every room where the API is an open powder, on the assumption that it is a
+potent compound: **its exposure band is not known — confirm it from the
+supplier's safety data sheet** (question 2 of section 9).  Coating and
+packaging are not contained (tablets, not powder).  Not modelled: air-change
+rates, HVAC sizing, door and corridor widths, travel distances.  And one
+limitation of the engine: with an `envelope` declared, no placed item may
+stand inside the building (the plot plan refuses two items sharing a
+volume), so the solid-dose machines could not be placed in their rooms even
+if they had a size.
 
 ## 8. What Choupo does not model here — say it in your report
 

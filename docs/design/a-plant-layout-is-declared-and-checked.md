@@ -840,3 +840,56 @@ one-way loop; several routes interacting; a car park's own access road (the
 item is checked for road access as any building is); the cost of roads,
 car parks and buildings.  Gate: `check_plant_layout` arm (n), the approach in
 arms (k) and (l); GUI: `tests/layoutSiteLogistics.test.ts`.
+
+## 16. Slice 8 -- solids are not piped, and the building is in the plot (DEV.md 4c C97)
+
+**Asked.**  The apalutamide tablet plant (C97) is the first plant whose
+streams are mostly POWDERS and TABLETS, and the router drew every one of
+them as a pipe on the rack and every unsized blender, compactor, mill,
+screen and press as a junction there -- the case's own README had to tell
+the student to read those lines as "material goes from here to there".  The
+GMP interior (C97 phase B) did not count toward the plot.  And a stream the
+layout reaches at NEITHER end got its "NOT routed" label drawn at an
+arbitrary point, off the plot.
+
+**The rule, and the field it reads.**  A stream whose FLUID molar flow is
+zero and which carries a solid -- `ProcessStream::F` is the fluid phases
+only and `ProcessStream::s` the solid's per component
+(`src/streams/ProcessStream.H`) -- is not a pipe: it moves in closed
+containers or on a conveyor.  It is listed as not routed with the reason
+"solids only (no fluid phase): moved in containers or by conveyor, not
+piped", `solids` set and NO anchor (nothing is missing, so nothing is
+marked), and a mixer, splitter or valve all of whose streams are such is not
+a junction.  A slurry or a wet solid has a fluid phase and is still routed
+(or listed for the ordinary reason): the wet and coated tablets of the
+apalutamide coater carry the coat's water, and stay where they were.  A
+waypoint override on a solids stream is refused.  Measured on the three
+earlier layout plants: no stream of theirs is solids-only, and their stdout,
+stderr and result JSON are byte-identical (paths aside).
+
+**The plot.**  `plotOf` takes every room's plan box through
+`buildingLayout::roomPlans`, the same reader `evaluate` uses (the plot is
+computed before the building is checked), and its published sentence names
+the building's rooms only where one is declared, so a case with none
+publishes the sentence it always did.  Phase B's `roomBeyondPlot` finding --
+a room the plot did not cover -- became unreachable with the gap it
+reported and is retired; a room across the FENCE (an inset larger than the
+margin) is still refused.
+
+**The view.**  The 3D view marks an unrouted stream at the end the layout
+reaches, and only there; one that reaches neither end, and a solids stream,
+is listed in words beneath the view (`unroutedLegend`) and in the pipe
+register, which now says which missing pipe the view marks nowhere and
+lists the solids apart.  A building's `envelope` item is drawn as glass.
+
+Gate: `check_plant_layout` arm (h) (the solids rule recomputed from the
+stream table alone, on apalutamide01 added as the fourth pipe plant) and arm
+(j) (the plot recomputed with the building's rooms, the sentence checked
+both ways); `check_gmp_layout` (a), (e), (g), (h).  GUI:
+`tests/layoutFence.test.ts`, `tests/gmpBuilding.test.ts`.
+
+**Not here, named:** a conveyor or a container route drawn for the solids
+(where the bins go is the GMP interior's material flow, not a pipe); a
+placed item INSIDE a building that declares an `envelope` (the overlap rule
+refuses it -- the separation, clash and overlap rules would each have to
+treat the shell as a container).

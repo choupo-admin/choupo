@@ -78,7 +78,15 @@ The risks such a feature carries are specific, and each arm names one:
       ANNOUNCED on stderr, the caveat block and the advisories, a declared one
       announces nothing; each pipe REPRODUCES its golden `layout` rows (from,
       to, length), every published pipe is pinned and every pinned pipe is
-      published, and the summary's pipe counts agree three ways.  The witness
+      published, and the summary's pipe counts agree three ways.  SOLIDS ARE
+      NOT PIPED (DEV.md 4c C97; `apalutamide01_tablets` is the fourth pipe
+      plant for it): from the stream table alone, every stream whose fluid
+      mass is zero and solid mass is not is never routed and is listed with
+      `solids`, the reason and no anchor; nothing else is listed `solids`;
+      and no published junction is a unit every stream of which is solids
+      (each unit's streams read from the published pipe and not-routed
+      ends).  A plant with a declared `pipes` override is not required to
+      route every pipe on the rack.  The witness
       routes EVERY stream: its `notRouted` must be empty (Vitor, C93: "there
       are compressors that have no inlets").
   (i) A DECLARED ROUTE: on a copy of the witness, `pipes { rawLiquid {
@@ -97,11 +105,13 @@ The risks such a feature carries are specific, and each arm names one:
       draft carries a declared rack as declared and says it did not carry the
       waypoint overrides.
 
-  (j) THE PLOT (2026-10-17, DEV.md 4c C82), on the same three plants and on
+  (j) THE PLOT (2026-10-17, DEV.md 4c C82), on the same four plants and on
       two fixtures of the sectored flagship: the published plot RECOMPUTED
       here from the published items, areas and pipe routes by the stated
       rule (envelope + the margin read from the case's own layoutDict, 0 m
-      where it declares none), and its area; the footprint area recomputed
+      where it declares none; with a declared `building {}`, its rooms'
+      plan boxes too, and the published sentence must name them exactly
+      when a building is declared -- DEV.md 4c C97), and its area; the footprint area recomputed
       (a vertical cylinder's disc, any other item's rectangle) and its share;
       a declared margin announces nothing, an absent one is ANNOUNCED on
       stderr, the caveat block and the advisories (aceticAcid02); every
@@ -351,6 +361,14 @@ strengthened):
       the wrong-way probe announces nothing.
   S43 the muster point's downwind announcement dropped              -> (n)
       the downwind probe announces nothing.
+  C97 wiring, 2026-10-19, by hand, each on a rebuilt engine, arm (h):
+  S11 `solidsOnly` always false: "apalutamide01: solids-only stream(s)
+      routed as pipes: [apiFeed, asdPowder, ...]".  CAUGHT.
+  S12 a junction no longer asks whether its streams are all solids: six
+      "junction blender (... tabletPress) is on the rack and every stream of
+      it carries only solids".  CAUGHT.
+  S13 the plot sentence does not name the building: arm (j) "the plot rule
+      and the run disagree".  CAUGHT.
 """
 import json
 import re
@@ -367,6 +385,7 @@ BIN = ROOT / "choupoSolve"
 TOOL = ROOT / "bin" / "choupo-layout"
 WITNESS = ROOT / "tutorials/plant/ammonia02_full_plant"
 FLAGSHIP = ROOT / "tutorials/plant/ChemicalPlantTutorial"
+APALUTAMIDE = ROOT / "tutorials/plant/apalutamide01_tablets"
 COLUMN = ROOT / "tutorials/steady/distillation/column09_tray_hydraulics"
 ENV = {"CHOUPO_HOME": str(ROOT), "PATH": "/usr/bin:/bin"}
 
@@ -869,6 +888,9 @@ PIPE_CASES = {
     "ammonia02": WITNESS,
     "greenAmmoniaPEQ": ROOT / "tutorials/plant/greenAmmoniaPEQ_baseCase",
     "aceticAcid02": ROOT / "tutorials/plant/aceticAcid02_plant",
+    #  DEV.md 4c C97: the one corpus plant with powders and tablets (the
+    #  solids rule) and a declared GMP building (its rooms in the plot).
+    "apalutamide01": APALUTAMIDE,
 }
 TOL = 1e-6
 
@@ -946,6 +968,54 @@ def check_routes(tag, lay, require_rack_route=True):
     return n
 
 
+SOLIDS_SEEN = []
+
+
+def check_solids(tag, j, lay):
+    """Arm (h), SOLIDS ARE NOT PIPED (DEV.md 4c C97): from the stream table
+    alone, a stream whose fluid mass (`F_mass` - `F_solid_mass`) is zero and
+    whose solid mass is not is NOT routed, is listed with `solids` and no
+    anchor; nothing else is listed with `solids`; and no published junction
+    is a unit every stream of which is such (each unit's streams read from
+    the published ends of the pipes and of the not-routed list)."""
+    streams = j.get("streams") or {}
+
+    def solids_only(s):
+        v = streams.get(s) or {}
+        fm, sm = v.get("F_mass", 0.0), v.get("F_solid_mass", 0.0)
+        return sm > 0.0 and abs(fm - sm) <= 1e-12 * max(fm, 1e-300)
+
+    want = {s for s in stream_identities(j) if solids_only(s)}
+    routed = {p["stream"] for p in lay.get("pipes", [])}
+    listed = {n["stream"]: n for n in lay.get("notRouted", [])}
+    if want & routed:
+        fail(f"(h) {tag}: solids-only stream(s) routed as pipes: {sorted(want & routed)}")
+    for s in sorted(want - routed):
+        n = listed.get(s)
+        if not n or not n.get("solids") or n.get("anchor") or "not piped" not in n["reason"]:
+            fail(f"(h) {tag}: solids-only stream {s} must be listed not routed with"
+                 f" `solids`, no anchor and the reason; published {n}")
+    for s, n in listed.items():
+        if n.get("solids") and s not in want:
+            fail(f"(h) {tag}: {s} is listed as solids but carries a fluid phase")
+    units = {}
+    for p in lay.get("pipes", []):
+        for u in (p.get("fromUnit"), p.get("toUnit")):
+            if u:
+                units.setdefault(u, []).append(False)
+    for n in lay.get("notRouted", []):
+        for u in [n.get("fromUnit", "")] + n.get("toUnit", "").split(", "):
+            if u:
+                units.setdefault(u, []).append(n["stream"] in want)
+    for jn in lay.get("junctions", []):
+        flags = units.get(jn["unit"], [])
+        if flags and all(flags):
+            fail(f"(h) {tag}: junction {jn['unit']} is on the rack and every stream of"
+                 " it carries only solids")
+    if want:
+        SOLIDS_SEEN.append(f"{tag} {len(want)}")
+
+
 def golden_rows(case):
     rows = {}
     for line in (case / "expected").read_text().splitlines():
@@ -986,7 +1056,10 @@ def arm_pipes(work):
         # port drawn to nothing
         if case == WITNESS and listed:
             fail(f"(h) {tag}: the witness must route every stream; not routed: {listed}")
-        total += check_routes(tag, lay)
+        overrides = re.search(r"^pipes\s*\n\{", (case / "system" / "layoutDict").read_text(),
+                              re.M) is not None
+        total += check_routes(tag, lay, require_rack_route=not overrides)
+        check_solids(tag, j, lay)
         check_plot(tag, case, lay, out, err, j)
         # the rack: declared in all three (ammonia02 since C93, when its tank
         # farm dragged the stated default onto the main road); the stated
@@ -1036,11 +1109,15 @@ def arm_pipes(work):
              " as such AND announced on stderr, the caveat block and the advisories")
     else:
         total += check_routes("default-rack probe", lay)
-    claims.append(f"{total} pipes on three plants, every stream routed or listed with"
+    if not SOLIDS_SEEN:
+        fail("(h) no plant carries a solids-only stream: the solids rule went unexercised")
+    claims.append(f"{total} pipes on four plants, every stream routed or listed with"
                   " its reason, each route orthogonal with its length its own and its"
                   " ends at the published nozzles, junctions and battery limits, each"
-                  " reproducing its golden rows; the default rack announced on three"
-                  " surfaces where none is declared")
+                  " reproducing its golden rows; solids-only streams (from the stream"
+                  f" table: {', '.join(SOLIDS_SEEN)}) listed as not piped, never routed, no"
+                  " junction of solids alone on the rack; the default rack announced on"
+                  " three surfaces where none is declared")
 
 
 MARGIN_RE = re.compile(r"^plot\s*\{[^}]*?margin\s+([-0-9.eE+]+)\s*m\s*;", re.M)
@@ -1060,10 +1137,14 @@ def plan_area(i):
     return i["dx"] * i["dy"]
 
 
-def plot_recomputed(lay, margin):
+def plot_recomputed(lay, margin, building=None):
     """The stated rule, recomputed: the envelope of the declared areas, the
-    placed footprints and the routed pipes' points, grown by the margin."""
+    placed footprints, the routed pipes' points and (DEV.md 4c C97) the
+    rooms of a declared building, grown by the margin."""
     xs, ys = [], []
+    for r in (building or {}).get("rooms", []):
+        xs += [r["xMin"], r["xMax"]]
+        ys += [r["yMin"], r["yMax"]]
     for i in lay["items"]:
         xs += [i["x"] - i["dx"] / 2, i["x"] + i["dx"] / 2]
         ys += [i["y"] - i["dy"] / 2, i["y"] + i["dy"] / 2]
@@ -1106,7 +1187,11 @@ def check_plot(tag, case, lay, out, err, j):
         fail(f"(j) {tag}: the layout publishes no `plot`")
         return
     margin = margin_of((case / "system" / "layoutDict").read_text())
-    rect, area = plot_recomputed(lay, margin)
+    rect, area = plot_recomputed(lay, margin, j.get("building"))
+    clause = "every room of the declared building"
+    if (clause in plot.get("rule", "")) != bool(j.get("building")):
+        fail(f"(j) {tag}: the plot rule and the run disagree on whether a building's"
+             f" rooms are in it (building declared: {bool(j.get('building'))})")
     got = (plot["xMin"], plot["xMax"], plot["yMin"], plot["yMax"])
     if not all(close(a, b) for a, b in zip(rect, got)) or not close(area, plot["plotArea"]):
         fail(f"(j) {tag}: the plot {got} = {plot['plotArea']} m2; recomputed here"
