@@ -38,9 +38,11 @@ License
 import { Alert, Box, Text } from "@mantine/core";
 import { IconClockX } from "@tabler/icons-react";
 
-export function ExpiredTabPanel({ kind }: { kind: "focus" | "internals" | "explore" | "layout" }) {
+export function ExpiredTabPanel({ kind }: {
+  kind: "focus" | "internals" | "explore" | "layout" | "building";
+}) {
   const what = kind === "focus" ? "mini-flowsheet" : kind === "explore" ? "McCabe-Thiele"
-    : kind === "layout" ? "3D plant layout" : "internals";
+    : kind === "layout" ? "3D plant layout" : kind === "building" ? "GMP building" : "internals";
   return (
     <Box
       style={{
@@ -64,6 +66,8 @@ export function ExpiredTabPanel({ kind }: { kind: "focus" | "internals" | "explo
             ? "Reopen it from EduTools in the top bar — pick “Distillation (McCabe-Thiele)”, choose the two compounds, and press the pop-out button in its toolbar."
             : kind === "layout"
             ? "Reopen it from the parent — run the case, open Reports → “Plant layout (3D)” and press “Open in new tab” (or the same button under the EduTools plant-layout bench)."
+            : kind === "building"
+            ? "Reopen it from the parent — run the case, open Reports → “Plant layout (3D)” and press “Open in new tab” beside “GMP interior”.  A case that declares no building {} in its layoutDict has none to open."
             : "Reopen it from the parent case — double-click the unit on the flowsheet."}
         </Text>
       </Alert>

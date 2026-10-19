@@ -13,8 +13,9 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import type { PlantLayout, RunResult } from "../src/adapters/SolverAdapter.js";
 import {
   canPopOutLayout, caseLayoutStash, followedCaseStash, layoutKeyOf,
-  layoutTabKey, layoutTabStaleness, layoutTabTitle, layoutTabUrl,
-  readLayoutStash, refreshLayoutStash, writeLayoutStash, type LayoutPopOutStash,
+  layoutTabKey, layoutTabStaleness, layoutTabTitle, layoutTabUrl, layoutViewOf,
+  readLayoutStash, refreshLayoutStash, stashDrawsView, writeLayoutStash,
+  type LayoutPopOutStash,
 } from "../src/case/layoutPopOut.js";
 import { declaredInputsOf } from "../src/case/staleness.js";
 import type { CaseFiles } from "../src/case/types.js";
@@ -82,9 +83,13 @@ describe("canPopOutLayout: the button's condition", () => {
     expect(reports).toContain("layout:     () => (scene && layout ? <LayoutBody");
     const body = reports.slice(reports.indexOf("function LayoutBody"),
                                reports.indexOf("/*  ---- Equipment sheets"));
-    expect(body).toMatch(/<Button[\s\S]*?onClick=\{popOutCaseLayout\}/);
+    expect(body).toMatch(/<Button[\s\S]*?onClick=\{\(\) => popOutCaseLayout\("plot"\)\}/);
     //  and nowhere else in the workspace offers it.
-    expect(reports.split("onClick={popOutCaseLayout}").length - 1).toBe(1);
+    expect(reports.split('popOutCaseLayout("plot")').length - 1).toBe(1);
+    //  The GMP section's own button opens the SAME stash in its building
+    //  view (C100), and only where the case declares a building.
+    expect(body).toMatch(/\{building && <GmpBuildingSection[\s\S]*?onPopOut=\{\(\) => popOutCaseLayout\("building"\)\}/);
+    expect(reports.split('popOutCaseLayout("building")').length - 1).toBe(1);
   });
   it("the case stash is null unless a case is open, the run is done and its layout is drawable", () => {
     const view = { tutorialName: "plant/x", runResult: { status: "done", layout: LAYOUT } as unknown as RunResult,
@@ -157,11 +162,67 @@ describe("the stable key and the ?layout= route", () => {
   });
   it("the tab reuses the ONE mapping and the ONE scene component", () => {
     const tab = tree("gui/src/ui/LayoutPopOutTab.tsx");
-    expect(tab).toContain('import { layoutScene } from "../case/plantLayout.js";');
+    expect(tab).toContain('import { layoutScene, type LayoutScene } from "../case/plantLayout.js";');
     expect(tab).toContain('import { PlantLayout3D } from "./plotting/PlantLayout3D.js";');
-    expect(tab).toContain('<PlantLayout3D scene={scene} height="fill" />');
+    //  C100: the plot plan draws the building through the ONE overlay the
+    //  Reports view uses -- glass shell, rooms, flows, toggles.
+    expect(tab).toContain("const overlay = useBuildingOverlay(stash.building, scene);");
+    expect(tab).toMatch(/<PlantLayout3D scene=\{overlay\.shown\} height="fill" extend=\{overlay\.extend\}\s+toolbarExtra=\{overlay\.toggles\} \/>/);
+    expect(tab).not.toContain("<PlantLayout3D scene={scene}");
     //  C91: the tables in their bottom panel, each a section the reader folds.
     expect(tab).toContain("<PlantLayoutTables layout={stash.layout} sectioned />");
+  });
+  it("the building view draws the GMP section itself -- no second renderer (C100)", () => {
+    const tab = tree("gui/src/ui/LayoutPopOutTab.tsx");
+    expect(tab).toContain("<GmpBuildingSection building={building} scene={scene} items={stash.layout.items}");
+    //  no button to pop out of the pop-out
+    expect(tab).not.toContain("onPopOut=");
+    //  a stash with no building refuses the building view, never draws the plot plan under it
+    expect(tab).toContain(
+      'if (!stashDrawsView(stash, view)) return <ExpiredTabPanel kind="building" />;');
+    expect(tree("gui/src/ui/ExpiredTabPanel.tsx")).toContain('kind === "building" ? "GMP building"');
+    //  the section's 3D cutaway is the plot plan's view, extended through the one hook
+    const section = tree("gui/src/ui/GmpBuildingSection.tsx");
+    expect(section).toContain("<PlantLayout3D scene={shown} height={viewHeight} extend={extend} toolbarExtra={toggles} />");
+    expect(section).toMatch(/\{onPopOut && \([\s\S]*?onClick=\{onPopOut\}/);
+  });
+});
+
+describe("the building view of the same stash (C100)", () => {
+  it("the plot plan's address is unchanged; the building view adds view=building", () => {
+    const k = layoutTabKey("case", "plant/apalutamide01_tablets");
+    expect(layoutTabUrl("/app/", k)).toBe(layoutTabUrl("/app/", k, "plot"));
+    expect(layoutTabUrl("/app/", k)).not.toContain("view=");
+    const url = layoutTabUrl("/app/", k, "building");
+    expect(url.endsWith("&view=building")).toBe(true);
+    //  ONE key: the same route (AppShell's layoutKeyOf) opens both views.
+    expect(layoutKeyOf(url.slice(url.indexOf("?")))).toBe(k);
+    expect(layoutViewOf(url.slice(url.indexOf("?")))).toBe("building");
+  });
+  it("any address but view=building is the plot plan, so old addresses read as before", () => {
+    expect(layoutViewOf("?layout=k")).toBe("plot");
+    expect(layoutViewOf("?layout=k&view=")).toBe("plot");
+    expect(layoutViewOf("?layout=k&view=plot")).toBe("plot");
+    expect(layoutViewOf("?layout=k&view=Building")).toBe("plot");
+  });
+  it("the building view needs a building in the stash; the plot plan never does", () => {
+    const b = { name: "productionBuilding" } as unknown as LayoutPopOutStash["building"];
+    expect(stashDrawsView(stash(), "plot")).toBe(true);
+    expect(stashDrawsView(stash(), "building")).toBe(false);
+    expect(stashDrawsView(stash({ building: b }), "building")).toBe(true);
+  });
+  it("the title names the view", () => {
+    const b = { name: "productionBuilding" } as unknown as LayoutPopOutStash["building"];
+    expect(layoutTabTitle(stash({ building: b }), "building"))
+      .toBe("ammonia02_full_plant · GMP building productionBuilding · run 0badf00d");
+    expect(layoutTabTitle(stash({ building: b }))).toBe("ammonia02_full_plant · layout 3D · run 0badf00d");
+    //  no building: the title never claims one
+    expect(layoutTabTitle(stash(), "building")).toBe("ammonia02_full_plant · layout 3D · run 0badf00d");
+  });
+  it("opening refuses a view the stash cannot draw, and passes the view to the address", () => {
+    const hook = tree("gui/src/state/useLayoutPopOut.ts");
+    expect(hook).toContain("if (!stashDrawsView(stash, view)) return;");
+    expect(hook).toContain("layoutTabUrl(window.location.pathname, key, view)");
   });
 });
 

@@ -35,10 +35,19 @@ License
   rooms and flows drawn into it and a toggle per flow kind -- a 2D PLAN per
   floor in SVG (which needs no WebGL and prints), and the room schedule and
   the engine's findings as tables.  Every number is the engine's.
+
+  The SAME section opens full-window in a tab of its own (DEV.md 4c C100):
+  its "Open in new tab" writes the plot plan's own stash and opens
+  `?layout=<key>&view=building` (case/layoutPopOut.ts), and that tab draws
+  THIS component -- no second renderer.  In the tab the button is absent
+  (no `onPopOut`) and the 3D cutaway is taller (`viewHeight`).
 \*---------------------------------------------------------------------------*/
 
 import { useMemo, useState } from "react";
-import { Box, Checkbox, Group, ScrollArea, SegmentedControl, Table, Text } from "@mantine/core";
+import {
+  Box, Button, Checkbox, Group, ScrollArea, SegmentedControl, Table, Text,
+} from "@mantine/core";
+import { IconExternalLink } from "@tabler/icons-react";
 
 import type { FlowKind, GmpBuilding } from "../adapters/buildingPayload.js";
 import {
@@ -143,51 +152,88 @@ export function FloorPlanSvg({ plan, flows }: { plan: FloorPlan; flows: Record<F
   );
 }
 
-export function GmpBuildingSection({ building, scene, items = [] }: {
-  building: GmpBuilding; scene: LayoutScene;
-  /** The plot plan's placed items: the ones a room lists are drawn on its
-   *  floor's plan (DEV.md 4c C100). */
-  items?: PlanItemSource[];
+/** The toggles that drive a building drawn into a plot-plan view: the rooms
+ *  and one per flow kind the building declares.  Plain props, so a test can
+ *  render it (DEV.md 4c C100). */
+export function BuildingToggles({ building, rooms, flows, onRooms, onFlows }: {
+  building: GmpBuilding; rooms: boolean; flows: Record<FlowKind, boolean>;
+  onRooms(on: boolean): void; onFlows(next: Record<FlowKind, boolean>): void;
 }) {
-  const bs = useMemo(() => buildingScene(building), [building]);
-  const plans = useMemo(() => floorPlans(building, items), [building, items]);
-  const shown = useMemo(() => withBuilding(scene, bs), [scene, bs]);
+  const present = new Set(building.flows.map((f) => f.kind));
+  return (
+    <>
+      <Checkbox size="xs" label="Rooms" checked={rooms}
+        title="The building's interior: its rooms, tinted by grade (and the equipment they hold)"
+        onChange={(e) => onRooms(e.currentTarget.checked)} />
+      {FLOW_KINDS.filter((k) => present.has(k)).map((k) => (
+        <Checkbox key={k} size="xs" label={k[0]!.toUpperCase() + k.slice(1)} checked={flows[k]}
+          onChange={(e) => onFlows({ ...flows, [k]: e.currentTarget.checked })} />
+      ))}
+    </>
+  );
+}
+
+/** THE GMP INTERIOR IN A PLOT-PLAN VIEW -- one implementation, two callers
+ *  (DEV.md 4c C100): the main plot plan in Reports and the GMP section
+ *  below it.  Returns the scene with the building's shell drawn as GLASS
+ *  (`withBuilding`; a finding on the shell is its outline and label, never
+ *  an opaque fill -- `partMaterialKey`), the renderer's one hook drawing the
+ *  rooms and flows into it, and the toggles for its toolbar, all ON.  With
+ *  no building, the scene unchanged and no hook. */
+export function useBuildingOverlay(building: GmpBuilding | undefined, scene: LayoutScene) {
+  const bs = useMemo(() => (building ? buildingScene(building) : null), [building]);
+  const shown = useMemo(() => (bs ? withBuilding(scene, bs) : scene), [scene, bs]);
   const [flows, setFlows] = useState<Record<FlowKind, boolean>>(
     { personnel: true, material: true, waste: true });
   const [rooms, setRooms] = useState(true);
   //  One view per scene; its toggles are pushed to it, never a re-mount.
-  const view = useMemo(() => buildingView(bs, flows, rooms),
+  const view = useMemo(() => (bs ? buildingView(bs, flows, rooms) : null),
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [bs]);
+  const toggles = building && view ? (
+    <BuildingToggles building={building} rooms={rooms} flows={flows}
+      onRooms={(on) => { setRooms(on); view.setRooms(on); }}
+      onFlows={(next) => { setFlows(next); view.setFlows(next); }} />
+  ) : null;
+  return { shown, extend: view?.extend, toggles, flows };
+}
+
+export function GmpBuildingSection({ building, scene, items = [], onPopOut, viewHeight }: {
+  building: GmpBuilding; scene: LayoutScene;
+  /** The plot plan's placed items: the ones a room lists are drawn on its
+   *  floor's plan (DEV.md 4c C100). */
+  items?: PlanItemSource[];
+  /** Open this section full-window in a tab of its own; absent, no button
+   *  (the tab itself draws the section without one). */
+  onPopOut?: () => void;
+  /** The 3D cutaway's height in pixels (the view's own default when absent). */
+  viewHeight?: number;
+}) {
+  const plans = useMemo(() => floorPlans(building, items), [building, items]);
+  const { shown, extend, toggles, flows } = useBuildingOverlay(building, scene);
   const [floor, setFloor] = useState(plans[0]?.floor ?? "");
   const plan = plans.find((p) => p.floor === floor) ?? plans[0];
-  const present = new Set(building.flows.map((f) => f.kind));
-
-  const toggles = (
-    <>
-      <Checkbox size="xs" label="Rooms" checked={rooms}
-        onChange={(e) => { const on = e.currentTarget.checked; setRooms(on); view.setRooms(on); }} />
-      {FLOW_KINDS.filter((k) => present.has(k)).map((k) => (
-        <Checkbox key={k} size="xs" label={k[0]!.toUpperCase() + k.slice(1)} checked={flows[k]}
-          onChange={(e) => {
-            const next = { ...flows, [k]: e.currentTarget.checked };
-            setFlows(next);
-            view.setFlows(next);
-          }} />
-      ))}
-    </>
-  );
 
   return (
     <Box mt="md" data-gmp-building>
-      <Text size="sm" fw={600}>GMP interior -- {building.name}</Text>
+      <Group justify="space-between" align="flex-start" wrap="nowrap" gap="sm">
+        <Text size="sm" fw={600}>GMP interior -- {building.name}</Text>
+        {onPopOut && (
+          <Button size="compact-xs" variant="default" style={{ flex: "0 0 auto" }}
+            leftSection={<IconExternalLink size={13} />}
+            title="Open the GMP building (cutaway, plans per floor, room schedule, findings) full-window in a new browser tab"
+            onClick={onPopOut}>
+            Open in new tab
+          </Button>
+        )}
+      </Group>
       <Text size="xs" c="dimmed" mb={4}>
         {building.rooms.length} rooms on {building.floors.length} floor(s),{" "}
         {Number(building.floorArea.toFixed(1))} m²; {building.findings.length} finding(s).
         {" "}{building.reason}
       </Text>
       <GmpLegend building={building} />
-      <PlantLayout3D scene={shown} extend={view.extend} toolbarExtra={toggles} />
+      <PlantLayout3D scene={shown} height={viewHeight} extend={extend} toolbarExtra={toggles} />
       {plan && (
         <Box mt="sm">
           <Group gap="sm" mb={4}>

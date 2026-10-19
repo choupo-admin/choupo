@@ -264,6 +264,21 @@ export const DAYLIGHT = {
 
 /** Draw `scene` into `el` and return the handle.  Throws what three.js
  *  throws (no WebGL); the caller says so in words. */
+/** Which material a part of a solid is drawn in -- the ONE rule, pure so a
+ *  test can hold it.  A building's SHELL is glass whatever else is true of
+ *  it (DEV.md 4c C100): a finding on the shell is carried by its outline
+ *  and its label, never by an opaque safety-orange fill that would hide the
+ *  rooms and the equipment inside.  Any other flagged item's envelope parts
+ *  are safety orange (its decoration keeps its own role). */
+export function partMaterialKey(s: { shell?: boolean; flagged: boolean; nonProcess: boolean },
+                                p: { decoration: boolean; role: PartRole }):
+  "shell" | "flagged" | "nonProcess" | "process" | Exclude<PartRole, "body"> {
+  if (s.shell) return "shell";
+  if (s.flagged && !p.decoration) return "flagged";
+  if (p.role !== "body") return p.role as Exclude<PartRole, "body">;
+  return s.nonProcess ? "nonProcess" : "process";
+}
+
 export function mountLayoutScene(m: LayoutModules, el: HTMLDivElement, scene: LayoutScene,
                                  opts: MountOptions): LayoutView {
   const { THREE, OrbitControls, CSS2DRenderer, CSS2DObject } = m;
@@ -597,10 +612,10 @@ export function mountLayoutScene(m: LayoutModules, el: HTMLDivElement, scene: La
     //  orange whatever they are made of (its decoration keeps its own);
     //  otherwise the role's, `body` being the item's own.
     const matOf = (p: Part): [string, T3.Material] => {
-      if (s.shell) return ["shell", bodyMat.shell];
-      if (s.flagged && !p.decoration) return ["flagged", bodyMat.flagged];
-      if (p.role !== "body") return [p.role, roleMat.get(p.role)!];
-      return s.nonProcess ? ["nonProcess", bodyMat.nonProcess] : ["process", bodyMat.process];
+      const key = partMaterialKey(s, p);
+      if (key === "shell" || key === "flagged" || key === "nonProcess" || key === "process")
+        return [key, bodyMat[key]];
+      return [key, roleMat.get(p.role)!];
     };
     const byMat = new Map<string, { mat: T3.Material; geoms: T3.BufferGeometry[]; envelope: boolean }>();
     for (const p of drawing.parts) {

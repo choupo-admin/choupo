@@ -110,9 +110,32 @@ export function layoutTabKey(source: LayoutPopOutSource, caseName: string): stri
   return `choupo.layoutTab.${source}.${caseName}`;
 }
 
-/** The address of the tab for a stash key. */
-export function layoutTabUrl(pathname: string, key: string): string {
-  return `${pathname}?layout=${encodeURIComponent(key)}`;
+/** WHICH VIEW of the stash the tab draws (DEV.md 4c C100).  `plot` is the
+ *  plot plan (the default, the address carries nothing extra); `building`
+ *  is the GMP interior -- its 3D cutaway, the plan per floor, the room
+ *  schedule and the findings -- drawn by the SAME section Reports draws.
+ *  ONE stash and ONE key serve both: the building travels in the stash
+ *  already, so the two tabs of a case follow the same parent writes. */
+export type LayoutTabView = "plot" | "building";
+
+/** The address of the tab for a stash key, in the view asked for. */
+export function layoutTabUrl(pathname: string, key: string, view: LayoutTabView = "plot"): string {
+  const base = `${pathname}?layout=${encodeURIComponent(key)}`;
+  return view === "building" ? `${base}&view=building` : base;
+}
+
+/** The view a `?layout=` address names.  Anything but `building` is the plot
+ *  plan, so every address written before C100 reads exactly as it did. */
+export function layoutViewOf(search: string): LayoutTabView {
+  return new URLSearchParams(search).get("view") === "building" ? "building" : "plot";
+}
+
+/** Can this stash draw the view asked for?  The plot plan always (a stash
+ *  is read only when it has one); the building only when the case declares
+ *  one -- otherwise the tab refuses as expired, never draws the plot plan
+ *  under an address that names the building. */
+export function stashDrawsView(stash: LayoutPopOutStash, view: LayoutTabView): boolean {
+  return view === "plot" || !!stash.building;
 }
 
 /** The stash key a `?layout=` address names; null when the address is not a
@@ -238,11 +261,13 @@ function leafOf(caseName: string): string {
   return i < 0 ? caseName : caseName.slice(i + 1);
 }
 
-/** The browser-tab title: which case, that this is its 3D layout, and WHICH
- *  RUN is drawn -- the run's fingerprint, or the words saying it has none. */
-export function layoutTabTitle(stash: LayoutPopOutStash): string {
+/** The browser-tab title: which case, which view (its 3D layout or its GMP
+ *  building), and WHICH RUN is drawn -- the run's fingerprint, or the words saying it has none. */
+export function layoutTabTitle(stash: LayoutPopOutStash, view: LayoutTabView = "plot"): string {
   const who = stash.source === "bench"
     ? `${leafOf(stash.caseName)} (EduTools bench)` : leafOf(stash.caseName);
   const run = stash.ran ? `run ${stash.ran.fingerprint}` : "run not stamped";
-  return `${who} · layout 3D · ${run}`;
+  const what = view === "building" && stash.building
+    ? `GMP building ${stash.building.name}` : "layout 3D";
+  return `${who} · ${what} · ${run}`;
 }

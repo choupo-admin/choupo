@@ -32,11 +32,13 @@ License
   are decided in case/layoutPopOut.ts (pure, tested); this file only reads
   the store and touches the browser.
 
-    openLayoutPopOut(s)    write a stash under its STABLE key and open
-                           `?layout=<key>` (the `?internals=` mechanics,
+    openLayoutPopOut(s, v) write a stash under its STABLE key and open
+                           `?layout=<key>` (`&view=building` for the GMP
+                           building, C100) (the `?internals=` mechanics,
                            ui/unitFocus.ts).  A blocked store or popup opens
                            nothing, never a tab that would boot expired.
-    popOutCaseLayout()     the Reports button: the open case's stash, built
+    popOutCaseLayout(v)    the Reports buttons (the plot plan's, and the
+                           GMP section's with v = "building"): the open case's stash, built
                            from the store at the moment of the click.
     useLayoutPopOutFollow  mounted ONCE in the main shell: where a stash for
                            the open case exists, keep it current, so an open
@@ -50,23 +52,27 @@ import { useEffect } from "react";
 
 import {
   caseLayoutStash, followedCaseStash, layoutTabKey, layoutTabUrl,
-  readLayoutStash, refreshLayoutStash, writeLayoutStash, type LayoutPopOutStash,
+  readLayoutStash, refreshLayoutStash, stashDrawsView, writeLayoutStash,
+  type LayoutPopOutStash, type LayoutTabView,
 } from "../case/layoutPopOut.js";
 import { useStore } from "./store.js";
 
-/** Open the `?layout=` tab on a stash. */
-export function openLayoutPopOut(stash: LayoutPopOutStash): void {
+/** Open the `?layout=` tab on a stash, in the view asked for (the plot
+ *  plan, or the GMP building -- DEV.md 4c C100). */
+export function openLayoutPopOut(stash: LayoutPopOutStash, view: LayoutTabView = "plot"): void {
+  if (!stashDrawsView(stash, view)) return;
   try {
     const key = writeLayoutStash(window.localStorage, stash);
-    window.open(layoutTabUrl(window.location.pathname, key), "_blank", "noopener");
+    window.open(layoutTabUrl(window.location.pathname, key, view), "_blank", "noopener");
   } catch { /* localStorage / popup blocked -- nothing to do */ }
 }
 
-/** Pop the open case's plot plan out.  Nothing opens when the case has no
- *  drawable layout (the button is not drawn then either). */
-export function popOutCaseLayout(): void {
+/** Pop the open case's plot plan out, or its GMP building.  Nothing opens
+ *  when the case has no drawable layout, or no building for the building
+ *  view (the button is not drawn then either). */
+export function popOutCaseLayout(view: LayoutTabView = "plot"): void {
   const stash = caseLayoutStash(useStore.getState());
-  if (stash) openLayoutPopOut(stash);
+  if (stash) openLayoutPopOut(stash, view);
 }
 
 export function useLayoutPopOutFollow(): void {

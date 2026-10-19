@@ -73,7 +73,7 @@ import { tornadoFigure, fmtMoney, type TornadoFigure } from "../case/tornado.js"
 import { TornadoPlot } from "./plotting/TornadoPlot.js";
 import { layoutScene, type LayoutScene } from "../case/plantLayout.js";
 import { PlantLayout3D } from "./plotting/PlantLayout3D.js";
-import { GmpBuildingSection } from "./GmpBuildingSection.js";
+import { GmpBuildingSection, useBuildingOverlay } from "./GmpBuildingSection.js";
 import { PlantLayoutLegend, PlantLayoutTables } from "./PlantLayoutTables.js";
 import { popOutCaseLayout } from "../state/useLayoutPopOut.js";
 import { useStaleResult } from "../state/useStaleResult.js";
@@ -705,7 +705,9 @@ function SensitivityBody({ fig }: { fig: TornadoFigure }) {
 //  The SAME block, scene and tables open full-window in a tab of their own
 //  (`?layout=`, DEV.md 4c C78) from the button here; this section reaches
 //  here only when there is a scene, so the button never offers an empty tab;
-//  the stash is built from the store at the click (popOutCaseLayout).
+//  the stash is built from the store at the click (popOutCaseLayout).  The
+//  GMP section's own button opens the SAME stash in its building view
+//  (`&view=building`, DEV.md 4c C100).
 //  "Export as page" (DEV.md 4c C81) saves the same run as one self-contained
 //  HTML file; it is disabled while the result is stale (ExportLayoutButton).
 function LayoutBody({ layout, scene, building }: {
@@ -714,6 +716,10 @@ function LayoutBody({ layout, scene, building }: {
   building?: RunResult["building"];
 }) {
   const stale = useStaleResult();
+  //  The building's interior is drawn in THIS view too (DEV.md 4c C100): the
+  //  shell as glass with its rooms, flows and equipment inside, and their
+  //  toggles on the toolbar -- the same overlay the GMP section uses.
+  const overlay = useBuildingOverlay(building, scene);
   return (
     <>
       <Group justify="space-between" align="flex-start" wrap="nowrap" gap="sm">
@@ -722,16 +728,17 @@ function LayoutBody({ layout, scene, building }: {
           <Button size="compact-xs" variant="default" style={{ flex: "0 0 auto" }}
             leftSection={<IconExternalLink size={13} />}
             title="Open this plot plan full-window in a new browser tab"
-            onClick={popOutCaseLayout}>
+            onClick={() => popOutCaseLayout("plot")}>
             Open in new tab
           </Button>
           <ExportLayoutButton layout={layout} stale={stale}
             getStash={() => caseLayoutStash(useStore.getState())} />
         </Stack>
       </Group>
-      <PlantLayout3D scene={scene} />
+      <PlantLayout3D scene={overlay.shown} extend={overlay.extend} toolbarExtra={overlay.toggles} />
       <PlantLayoutTables layout={layout} />
-      {building && <GmpBuildingSection building={building} scene={scene} items={layout.items} />}
+      {building && <GmpBuildingSection building={building} scene={scene} items={layout.items}
+        onPopOut={() => popOutCaseLayout("building")} />}
     </>
   );
 }

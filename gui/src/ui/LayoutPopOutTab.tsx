@@ -55,6 +55,17 @@ License
   no right edge, and a second docking rule for one tab would be a second
   home for "where a panel goes".
 
+  THE BUILDING IS DRAWN HERE TOO, AND HAS A VIEW OF ITS OWN (DEV.md 4c
+  C100).  The plot plan draws the case's GMP building exactly as Reports
+  does -- its shell as glass, the rooms, flows and indoor equipment inside,
+  the Rooms / Personnel / Material / Waste toggles on the toolbar -- through
+  the ONE overlay (`useBuildingOverlay`).  `&view=building` on the same
+  address draws the GMP section itself (`GmpBuildingSection`: the cutaway,
+  the plan per floor, the room schedule and the findings) full-window, from
+  the SAME stash: the building already travels in it.  A stash with no
+  building refuses that view as expired rather than drawing the plot plan
+  under an address that names the building.
+
   Lazily loaded by AppShell, and PlantLayout3D imports three.js only when it
   first draws, so neither this route nor the main shell pulls three.js into
   the index chunk.
@@ -66,9 +77,10 @@ import { IconClockExclamation } from "@tabler/icons-react";
 
 import type { PlantLayout } from "../adapters/SolverAdapter.js";
 import {
-  layoutKeyOf, layoutTabStaleness, layoutTabTitle, readLayoutStash,
+  layoutKeyOf, layoutTabStaleness, layoutTabTitle, layoutViewOf, readLayoutStash,
+  stashDrawsView, type LayoutPopOutStash,
 } from "../case/layoutPopOut.js";
-import { layoutScene } from "../case/plantLayout.js";
+import { layoutScene, type LayoutScene } from "../case/plantLayout.js";
 import { LAYOUT_TABLES_SCENT } from "../case/layoutPanels.js";
 import { PANELS } from "../state/prefs.js";
 import { ExpiredTabPanel } from "./ExpiredTabPanel.js";
@@ -78,8 +90,17 @@ import {
   usePanel,
 } from "./panelContract.js";
 import { ExportLayoutButton } from "./ExportLayoutButton.js";
+import { GmpBuildingSection, useBuildingOverlay } from "./GmpBuildingSection.js";
 import { PlantLayout3D } from "./plotting/PlantLayout3D.js";
 import { LayoutSectionBox, PlantLayoutLegend, PlantLayoutTables } from "./PlantLayoutTables.js";
+
+/** The plot plan, with the building's interior drawn into it: the same
+ *  overlay the Reports view uses (DEV.md 4c C100). */
+function PlotPlanView({ stash, scene }: { stash: LayoutPopOutStash; scene: LayoutScene }) {
+  const overlay = useBuildingOverlay(stash.building, scene);
+  return <PlantLayout3D scene={overlay.shown} height="fill" extend={overlay.extend}
+    toolbarExtra={overlay.toggles} />;
+}
 
 function readNow(key: string | null) {
   if (!key) return null;
@@ -89,6 +110,8 @@ function readNow(key: string | null) {
 export function LayoutPopOutTab() {
   const key = useMemo(
     () => (typeof window === "undefined" ? null : layoutKeyOf(window.location.search)), []);
+  const view = useMemo(
+    () => (typeof window === "undefined" ? "plot" : layoutViewOf(window.location.search)), []);
   const [stash, setStash] = useState(() => readNow(key));
 
   //  Follow the parent: it rewrites this key when its run or its declared
@@ -111,7 +134,7 @@ export function LayoutPopOutTab() {
   const scene = useMemo(
     () => (layoutText ? layoutScene(JSON.parse(layoutText) as PlantLayout) : null),
     [layoutText]);
-  const title = stash ? layoutTabTitle(stash) : null;
+  const title = stash ? layoutTabTitle(stash, view) : null;
   useEffect(() => { if (title) document.title = title; }, [title]);
   //  The tables panel: folded by default (the registry's own default), so
   //  the view fills the window; its height is the reader's.
@@ -124,7 +147,9 @@ export function LayoutPopOutTab() {
   }, []);
 
   if (!stash || !scene) return <ExpiredTabPanel kind="layout" />;
+  if (!stashDrawsView(stash, view)) return <ExpiredTabPanel kind="building" />;
   const stale = layoutTabStaleness(stash);
+  const building = view === "building" ? stash.building : undefined;
 
   return (
     <Box
@@ -142,7 +167,9 @@ export function LayoutPopOutTab() {
           <Title order={5}>{title}</Title>
           <Group gap="xs" align="baseline" wrap="wrap">
             <Text size="xs" c="dimmed">
-              {stash.source === "bench"
+              {building
+                ? "Opened from Reports → Plant layout (3D) → GMP interior; it redraws when that case is run again."
+                : stash.source === "bench"
                 ? "Opened from the EduTools plant-layout bench; it redraws when the bench re-runs."
                 : "Opened from Reports → Plant layout (3D); it redraws when that case is run again."}
             </Text>
@@ -159,19 +186,30 @@ export function LayoutPopOutTab() {
               {stale.pendingEdits > 0
                 ? ` (${stale.pendingEdits} edit${stale.pendingEdits === 1 ? "" : "s"} pending)`
                 : ""}
-              , so the plot plan below is the answer to the case as it WAS.  Run the case
+              , so the {building ? "building" : "plot plan"} below is the answer to the case as it WAS.  Run the case
               again in the parent tab and this tab redraws.
             </Text>
           </Alert>
         )}
-        <LayoutSectionBox id="legend">
-          <Box mt={4}><PlantLayoutLegend pipes={(stash.layout.pipes?.length ?? 0) > 0} /></Box>
-        </LayoutSectionBox>
+        {!building && (
+          <LayoutSectionBox id="legend">
+            <Box mt={4}><PlantLayoutLegend pipes={(stash.layout.pipes?.length ?? 0) > 0} /></Box>
+          </LayoutSectionBox>
+        )}
       </Box>
+      {building ? (
+        //  The GMP section itself, scrolled in the window; its cutaway is
+        //  given most of the window's height.
+        <Box className={stale.stale ? "choupo-stale-body" : undefined}
+          style={{ flex: 1, minHeight: 0, overflow: "auto" }} px="md" pb="md" data-gmp-building-tab>
+          <GmpBuildingSection building={building} scene={scene} items={stash.layout.items}
+            viewHeight={Math.max(420, Math.round(window.innerHeight * 0.62))} />
+        </Box>
+      ) : (
       <Box className={stale.stale ? "choupo-stale-body" : undefined}
         style={{ flex: 1, minHeight: 0, display: "flex", flexDirection: "column" }}>
         <Box style={{ flex: "1 1 auto", minHeight: 240 }}>
-          <PlantLayout3D scene={scene} height="fill" />
+          <PlotPlanView stash={stash} scene={scene} />
         </Box>
         <PanelResizeHandle panel={tables} />
         {tables.collapsed
@@ -191,6 +229,7 @@ export function LayoutPopOutTab() {
             </Box>
           )}
       </Box>
+      )}
     </Box>
   );
 }

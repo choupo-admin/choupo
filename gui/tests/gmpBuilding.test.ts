@@ -31,6 +31,10 @@ License
 //  verdict.  The fixture is a transcription of four rooms of the
 //  check_gmp_layout clean probe, as the engine wrote them, plus one finding.
 
+import { readFileSync } from "node:fs";
+import { createElement } from "react";
+import { renderToStaticMarkup } from "react-dom/server";
+import { MantineProvider } from "@mantine/core";
 import { describe, expect, it } from "vitest";
 
 import { shapeBuilding } from "../src/adapters/buildingPayload.js";
@@ -39,6 +43,8 @@ import {
   withBuilding,
 } from "../src/case/gmpBuilding.js";
 import { layoutScene } from "../src/case/plantLayout.js";
+import { BuildingToggles } from "../src/ui/GmpBuildingSection.js";
+import { partMaterialKey } from "../src/ui/plotting/layoutRenderer.js";
 import { PIPED } from "./plantLayoutFixture.js";
 
 const room = (name: string, o: Record<string, unknown>) => ({
@@ -195,5 +201,77 @@ describe("the GMP interior (C97 phase B)", () => {
     //  Plan (x, y) to SVG: the box's corner at (x - dx/2, -(y + dy/2)).
     expect([d.x, d.y, d.w, d.h]).toEqual([29.4, -8.6, 1.2, 1.2]);
     expect(plans[1]!.items[0]!.circle).toBe(false);
+  });
+});
+
+//  THE BUILDING IN THE MAIN PLOT PLAN (DEV.md 4c C100): the Reports plot plan
+//  draws the building through the SAME overlay the GMP section uses, so a
+//  finding on the envelope (here a separation the shell fails) can never
+//  turn it into an opaque safety-orange box that hides the rooms.
+describe("the building drawn into the main plot plan (C100)", () => {
+  const shell = { id: "osdBlock", nonProcess: true, kind: "productionBuilding", sector: "",
+    shape: "box" as const, orientation: "alongX" as const, footprintFrom: "declared" as const,
+    x: 36, y: 5, z: 0, dx: 60, dy: 12, dz: 11 };
+  const other = PIPED.items[0]!.id;
+  const flaggedPlant = layoutScene({
+    ...PIPED, items: [...PIPED.items, shell],
+    findings: [...PIPED.findings,
+      { id: `separation:osdBlock:${other}`, kind: "separation", a: "osdBlock", b: other,
+        value: 3, limit: 15, message: "too close" }],
+  })!;
+  const shaped = shapeBuilding({ ...RAW, summary: { ...RAW.summary, envelope: "osdBlock" } })!;
+
+  it("a flagged envelope stays the shell, and keeps its finding for the outline and label", () => {
+    const raw = flaggedPlant.solids.find((s) => s.id === "osdBlock")!;
+    expect(raw.flagged).toBe(true);                        // the finding reached the item
+    const s = withBuilding(flaggedPlant, buildingScene(shaped)).solids
+      .find((x) => x.id === "osdBlock")!;
+    expect(s.shell).toBe(true);
+    expect(s.flagged).toBe(true);
+    expect(s.label.startsWith("⚠")).toBe(true);
+  });
+
+  it("partMaterialKey: the shell is glass for EVERY part, flagged or not", () => {
+    const roles = ["body", "steel", "grating", "safety", "machine", "motor", "concrete",
+                   "glass", "roof"] as const;
+    for (const role of roles)
+      for (const decoration of [false, true])
+        for (const flagged of [false, true])
+          expect(partMaterialKey({ shell: true, flagged, nonProcess: true }, { decoration, role }))
+            .toBe("shell");
+    //  Any other flagged item is still safety orange on its envelope parts,
+    //  and its decoration keeps its own role.
+    expect(partMaterialKey({ flagged: true, nonProcess: false }, { decoration: false, role: "body" }))
+      .toBe("flagged");
+    expect(partMaterialKey({ flagged: true, nonProcess: false }, { decoration: true, role: "steel" }))
+      .toBe("steel");
+    expect(partMaterialKey({ flagged: false, nonProcess: true }, { decoration: false, role: "body" }))
+      .toBe("nonProcess");
+  });
+
+  it("the toggles name the rooms and only the flow kinds the building declares", () => {
+    const html = renderToStaticMarkup(createElement(MantineProvider, null,
+      createElement(BuildingToggles, {
+        building: shaped, rooms: true, flows: { personnel: true, material: true, waste: false },
+        onRooms: () => {}, onFlows: () => {},
+      })));
+    expect(html).toContain("Rooms");
+    expect(html).toContain("Personnel");
+    expect(html).toContain("Waste");
+    expect(html).not.toContain("Material");               // RAW declares no material flow
+  });
+
+  it("Reports' plot plan and the GMP section both draw through the one overlay", () => {
+    const reports = readFileSync(new URL("../src/ui/ReportsWorkspace.tsx", import.meta.url), "utf-8");
+    const body = reports.slice(reports.indexOf("function LayoutBody"),
+                               reports.indexOf("/*  ---- Equipment sheets"));
+    expect(body).toContain("const overlay = useBuildingOverlay(building, scene);");
+    expect(body).toContain(
+      "<PlantLayout3D scene={overlay.shown} extend={overlay.extend} toolbarExtra={overlay.toggles} />");
+    expect(body).not.toContain("<PlantLayout3D scene={scene}");
+    const section = readFileSync(new URL("../src/ui/GmpBuildingSection.tsx", import.meta.url), "utf-8");
+    expect(section).toContain("useBuildingOverlay(building, scene);");
+    //  ONE renderer extension: buildingView is constructed in the overlay only.
+    expect(section.split("buildingView(").length - 1).toBe(1);
   });
 });
