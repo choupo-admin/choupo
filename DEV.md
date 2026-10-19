@@ -1291,6 +1291,22 @@ accepts today, and that is a policy call.
 > fire-water ring main and hydrants, bunds, escape routes, swept path, a
 > fillet running through an item.
 
+> **C107. OPEN A CASE ONLINE FROM ONE COMPRESSED FILE (Vitor, 2026-10-19,
+> after a class: "dava muito jeito online poder abrir diretamente um caso
+> com o folder num unico ficheiro comprimido").**  Measured: the capability
+> EXISTS but is hidden.  `gui/src/cases/loadCase.ts:81` `openCaseZip()`
+> unzips in memory with fflate (every browser) and strips ONE common top
+> folder (`stripCommonTop`, :63); it is reached only from the Welcome
+> screen's "Open case" button when no bridge is present
+> (`gui/src/ui/WelcomeScreen.tsx:192-196`).  Once a case is open, File ->
+> "Open Case..." ALWAYS opens the folder picker (`gui/src/ui/MenuBar.tsx:
+> 354-367`, 567) and the menu has no .zip entry, though "Download case
+> (.zip)" is there (:589).  Likely failures on a student's own zip, to be
+> measured: a `__MACOSX/` or `.DS_Store` beside the case folder defeats the
+> one-common-top rule; a zip whose case sits two folders deep; a zip holding
+> two cases; a non-text file decoded as UTF-8.  Status: dispatched
+> 2026-10-19.
+
 > **C106. A BATCH PLANT'S TUTORIAL LIVES UNDER `batch/plant/`, NOT
 > `plant/` (Vitor, 2026-10-19: "estes tutoriais deviam ficar num folder com
 > um nome que insinue que o processo e em batch, porque a industria
