@@ -1310,7 +1310,21 @@ accepts today, and that is a policy call.
 > occupancy and a campaign Gantt), so each stage's equipment is sized PER
 > BATCH and the declared quotes can scale with that size.  This is phase C
 > of the C97 plan.  Moved rows to Vitor before re-record.  Status:
-> dispatched 2026-10-19.
+> dispatched 2026-10-19.  BUILT on branch claude/c99-batch-campaign, NOT
+> merged: `batchPlan {}` (`postProcessing/BatchPlanPass`, registered
+> explicitly; record `docs/design/a-batch-plant-on-a-steady-balance.md`):
+> stages with a `holds` stream whose mass is READ, size factors, the lot
+> (declared on a stream or `largestEquipment`), lots a year, cycles,
+> `T_L = max t / N_op` per train, parallel units, campaigns, occupancy, the
+> first campaign's Gantt as data; an impossible plan refuses, a poor one is
+> announced.  Consumers: `volume fromBatchPlan` on a vessel, a quote's
+> `scaling {}` (the case's exponent), `streamFactor fromBatchPlan` (a
+> numeric factor beside a plan refused).  Golden kind `batch`, gate
+> `check_batch_plan`.  apalutamide01: 350 kg lots, 84 a year, spray drying
+> limited by its solution tank (53.1 h), the solid-dose suite by packaging
+> (10 h); FCI 23.06 -> 22.54 MEUR, NPV -45.5 -> -44.6 MEUR; 72 moved rows
+> await Vitor's approval, 190 `batch` rows appended.  Every other costing
+> case byte-identical.  The C97 "phase C" is this.
 
 > **C98. PARTICULATE LABOUR AND DECLARED QUOTED COSTS (Vitor, 2026-10-18,
 > two rulings on the C97 phase A findings).**  (1) Turton's operator count

@@ -27,6 +27,7 @@ License
 \*---------------------------------------------------------------------------*/
 
 #include "result/ResultEmitter.H"
+#include "result/BatchPlanJson.H"
 #include "result/BuildingJson.H"
 #include "thermo/SealCheck.H"
 
@@ -68,9 +69,10 @@ std::string esc(const std::string& s) { return escImpl_(s); }
 // we serialise them as null with no surprise.
 std::string num(scalar v) { return jsonNumber(v); }
 
-//  THE OVERALL MASS FLOW of a stream [kg/s]: the fluid AND the solid, summed
-//  over the components the run carries a molar mass for.  ONE home, read by
-//  the stream table and by the layout's pipes, so the two cannot disagree.
+} // namespace
+
+//  THE OVERALL MASS FLOW of a stream [kg/s] -- the one home, declared in
+//  ResultEmitter.H (the stream table, the layout's pipes, the batch plan).
 scalar overallMassFlow(const SimulationResult& r, const ProcessStream& s)
 {
     const auto& names = r.componentNames;
@@ -85,8 +87,6 @@ scalar overallMassFlow(const SimulationResult& r, const ProcessStream& s)
     }
     return F_mass;
 }
-
-} // namespace
 
 //  THE MACHINE CHANNEL OWNS ITS PRECISION (2026-09-03).  choupoProps wrote
 //  its diagnostics with a bare `<< val`, inheriting whatever precision and
@@ -849,6 +849,9 @@ void emitResultJson(std::ostream& os, const SimulationResult& r)
             if (!c.quoteReason.empty()) os << ", \"reason\": " << esc(c.quoteReason);
             if (!c.quoteFactorSource.empty())
                 os << ", \"bareModuleFactorSource\": " << esc(c.quoteFactorSource);
+            if (!c.quoteScaleStage.empty())
+                os << ", \"scaledWithStage\": " << esc(c.quoteScaleStage)
+                   << ", \"exponentSource\": " << esc(c.quoteExponentSource);
             os << " } }";
         }
         os << "\n  ]";
@@ -1762,6 +1765,10 @@ void emitResultJson(std::ostream& os, const SimulationResult& r)
     //  ---- building: the GMP interior (DEV.md 4c C97), its own block -------
     //  Only when the case declares `building {}`; result/BuildingJson.cpp.
     emitBuildingJson(os, r.building);
+
+    //  ---- batchPlan: the batch plant on the balance (DEV.md 4c C99) -------
+    //  Only when the postDict declares `batchPlan {}`; result/BatchPlanJson.cpp.
+    emitBatchPlanJson(os, r.batchPlan);
 
     os << "\n}\n";
     os << "<<<Choupo:result-end>>>\n";

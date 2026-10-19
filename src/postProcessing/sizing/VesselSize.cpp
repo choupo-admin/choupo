@@ -24,6 +24,8 @@
 #include <cstdio>
 #include <iostream>
 #include <stdexcept>
+#include <string>
+#include <variant>
 
 namespace Choupo {
 
@@ -90,7 +92,40 @@ std::vector<EquipmentSizing> VesselSize::size(const std::string& unitName,
 
     // --- Volume from exactly ONE design basis ----------------------------
     scalar V = 0.0;  std::string basis;
-    if (designRules->found("volume"))
+    //  `volume fromBatchPlan;` (DEV.md 4c C99): the vessel of a batch stage
+    //  is the batch plan's V = S_j B / N_ip, so its volume has ONE home and
+    //  follows the lot and the balance.  A sized item is ONE vessel, so a
+    //  stage of several parallel units is refused here (it would be costed
+    //  as one): price such a stage by a scaling quote instead.
+    if (designRules->found("volume")
+        && std::holds_alternative<std::string>(designRules->entryValue("volume")))
+    {
+        const std::string w = designRules->lookupWord("volume");
+        if (w != "fromBatchPlan")
+            throw std::runtime_error("Vessel: unit '" + unitName + "': `volume "
+                + w + ";` -- a volume in m3, or the word fromBatchPlan.");
+        if (!result.batchPlan.present)
+            throw std::runtime_error("Vessel: unit '" + unitName + "': `volume"
+                " fromBatchPlan;` and no batch plan ran before the sizing pass"
+                " -- declare `batchPlan { ... }` ABOVE `sizing { ... }` in"
+                " system/postDict (the passes run in the order written).");
+        const BatchStage* st = result.batchPlan.stageOfUnit(unitName);
+        if (!st || st->type != "batch")
+            throw std::runtime_error("Vessel: unit '" + unitName + "': `volume"
+                " fromBatchPlan;` but the unit is in no BATCH stage of the plan"
+                " -- only a batch stage has a vessel volume.");
+        if (st->unitsInstalled != 1)
+            throw std::runtime_error("Vessel: unit '" + unitName + "': `volume"
+                " fromBatchPlan;` and stage '" + st->name + "' installs "
+                + std::to_string(st->unitsInstalled) + " vessels -- a sized item"
+                " is ONE vessel and would be costed as one.  Price the stage by"
+                " a scaling quote (`costing { quotes ( { unit ...; scaling {...};"
+                " } ) }`), or plan it with one vessel.");
+        V = st->volumePerUnit;
+        basis = "volume from the batch plan (stage " + st->name
+              + ": V = S B, S = f / (rho phi))";
+    }
+    else if (designRules->found("volume"))
     { V = designRules->lookupScalar("volume"); basis = "volume (author-set)"; }
     else if (designRules->found("spaceVelocity"))
     {

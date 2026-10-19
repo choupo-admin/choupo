@@ -85,6 +85,12 @@ std::string jsonNumber(scalar v);
 // newline must never corrupt the machine stream.
 std::string jsonEscape(const std::string& s);
 
+//  THE OVERALL MASS FLOW of a stream [kg/s]: the fluid AND the solid, summed
+//  over the components the run carries a molar mass for.  ONE home, read by
+//  the stream table (`F_mass`), the layout's pipes and the batch plan
+//  (DEV.md 4c C99), so no two surfaces can disagree about a stream's mass.
+scalar overallMassFlow(const SimulationResult& r, const ProcessStream& s);
+
 // ONE emitter of the advisories JSON array (forum #77-6) -- both binaries'
 // result streams consume this; two copies of a schema is how they diverge.
 struct Advisory;   // fwd (core/Advisory.H)

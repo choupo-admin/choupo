@@ -10,7 +10,7 @@
      componentMassFlows is the OVERALL material (all phases); a phases{} block, when present,
      is a decomposition that sums back to it exactly. ---*/
 
-//  BOUGHT API: 60 mg apalutamide per tablet PRESSED (12 800 tablets/h, the campaign rate) -- AUTHOR-SET formulation, see README section 2.  (0.768 kg/h.)
+//  BOUGHT API: 60 mg apalutamide per tablet PRESSED (12 800 tablets/h, the flowsheet basis) -- AUTHOR-SET formulation, see README section 2.  (0.768 kg/h.)
 
 componentMolarFlows
 {
