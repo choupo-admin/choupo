@@ -474,11 +474,15 @@ int CostingPass::run(SimulationResult& result)
                 //  The quoted value, its year and the index-and-currency
                 //  factor that carried it to the run's money, so C_p is
                 //  redone by hand.
+                //  A quote SCALED with its stage (DEV.md 4c C99) folds the
+                //  scale into the same factor, so C_p = value x factor still
+                //  holds; the scale's own arithmetic is printed below.
                 co << std::defaultfloat << std::setprecision(10)
                    << f("quoteValue") << " (" << f("quoteYear") << ") x "
-                   << std::setprecision(6)
+                   << std::setprecision(cb.factors.count("quoteScale") ? 10 : 6)
                    << f("quoteEscalation") * f("quoteCurrencyRate")
-                   << ", DECLARED";
+                      * (cb.factors.count("quoteScale") ? f("quoteScale") : 1.0)
+                   << ", DECLARED ";   // the space: a column never runs into the next
             else
                 co << std::fixed << std::setprecision(4) << f("K1") << ", "
                    << f("K2") << ", " << f("K3");
@@ -540,6 +544,18 @@ int CostingPass::run(SimulationResult& result)
                 if (!q.quoteFactorSource.empty())
                     std::cout << "      bareModuleFactor source: "
                               << q.quoteFactorSource << "\n";
+                if (!q.quoteScaleStage.empty())
+                {
+                    const auto g = [&](const char* k) { return q.factors.at(k); };
+                    std::cout << "      scaled with batch-plan stage '"
+                              << q.quoteScaleStage << "': "
+                              << std::defaultfloat << std::setprecision(6)
+                              << g("scaleUnits") << " unit(s) x ("
+                              << g("scaleSize") << " / " << g("scaleReference")
+                              << ")^" << g("scaleExponent") << " = "
+                              << g("quoteScale") << "  (exponent source: "
+                              << q.quoteExponentSource << ")\n";
+                }
             }
         }
         if (anyTrays)

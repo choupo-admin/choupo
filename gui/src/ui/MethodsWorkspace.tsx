@@ -301,6 +301,9 @@ const LetdownTool = lazy(() =>
 const PlantLayoutTool = lazy(() =>
   import("./methods/PlantLayoutTool.js")
     .then((m) => ({ default: m.PlantLayoutTool })));
+const GmpLayoutTool = lazy(() =>
+  import("./methods/GmpLayoutTool.js")
+    .then((m) => ({ default: m.GmpLayoutTool })));
 const MaterialsTool = lazy(() =>
   import("./methods/MaterialsTool.js")
     .then((m) => ({ default: m.MaterialsTool })));
@@ -527,6 +530,7 @@ export function MethodsWorkspace() {
             : tool === "pool-fire" ? <PoolFireTool />
             : tool === "letdown" ? <LetdownTool />
             : tool === "plant-layout" ? <PlantLayoutTool />
+            : tool === "gmp-layout" ? <GmpLayoutTool />
             : tool === "materials" ? <MaterialsTool />
             : tool === "wegstein" ? <WegsteinTool />
             : tool === "active-set-qp" ? <ActiveSetQpTool />

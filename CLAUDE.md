@@ -2142,6 +2142,31 @@ home: `costing/DeclaredQuote`.  Gate: `check_cost_provenance` arms (t), (u),
 Record:
 [`docs/design/a-quote-and-a-particulate-step.md`](docs/design/a-quote-and-a-particulate-step.md).
 
+**A BATCH PLANT IS DESIGNED ON THE STEADY BALANCE, NOT BY A SECOND BINARY
+(2026-10-19, DEV.md 4c C99, on a stated default).**  A plant that runs in
+LOTS keeps its steady flowsheet as the MATERIAL BALANCE PER UNIT OF PRODUCT,
+and a `batchPlan {}` postDict pass (`postProcessing/BatchPlanPass`, declared
+ABOVE sizing/costing/economics) designs the batch plant on it by the
+single-product method: stages grouping units with a `holds` stream whose
+mass is READ (`overallMassFlow`, the one home), size factors S = f/(rho phi),
+the lot (declared on a stream, or `largestEquipment`), N = ceil(Q/B), cycles,
+T_L = max t/N_op per TRAIN (trains decoupled by intermediate stores),
+parallel units, campaigns, occupancy, the first campaign's Gantt as data.
+Every input declared with its unit (a bare number refused) and a
+source/reason per block.  Rule: **the year's production has ONE home** --
+`economics { streamFactor fromBatchPlan; }` scales the hourly flows by Q/r_P,
+and a numeric factor beside a plan REFUSES.  A rated unit (today the spray
+dryer, one list) runs at its flowsheet rate (`operatingTime fromFlowsheet`);
+a placeholder's rate is a basis.  An impossible plan refuses (a stage busier
+than its train's year, campaigns that do not fit); a poor one is announced
+(an under-used stage, an idle train, a declared time off a rated machine's
+rate).  Consumers: `volume fromBatchPlan` (one vessel per stage only), a
+quote's `scaling { referenceSize; exponent; exponentSource; }`.  NOT done:
+the intermediate store's size, multiproduct sequencing, labour following the
+plan, a GUI Gantt drawing.  Golden kind `batch`.  Gate: `check_batch_plan`.
+Record:
+[`docs/design/a-batch-plant-on-a-steady-balance.md`](docs/design/a-batch-plant-on-a-steady-balance.md).
+
 **A RELIEF VALVE IS A SIZED ITEM OF THE UNIT IT PROTECTS (2026-10-11, DEV.md
 4c C62, on a stated default).**  `type reliefValve` in the sizing pass: one
 more item (`psv`) of the PROTECTED unit, declared AFTER that unit's entry,

@@ -310,6 +310,15 @@ export function PlantLayoutTool(): JSX.Element {
             Designing for overpressure
           </Anchor>.
         </Text>
+        <Text size="sm">
+          A pharmaceutical plant is laid out mostly INSIDE a building, where the
+          questions are rooms, grades, air pressures and the ways people and
+          material walk through them.  That interior is the subject of{" "}
+          <Anchor component="button" type="button"
+            onClick={() => setActiveMethodTool("gmp-layout")}>
+            The GMP interior of a tablet plant: rooms, air and the ways through them
+          </Anchor>.
+        </Text>
         <Box>
           <Title order={5}>Sources, and how each was reached</Title>
           {LAYOUT_SOURCES.map((s) => (

@@ -162,14 +162,32 @@
   "BatchElectrodialysis": [
    "src/unitOperations/batch/BatchElectrodialysis.H"
   ],
+  "BatchFinding": [
+   "src/core/BatchPlanRecords.H"
+  ],
+  "BatchGanttRow": [
+   "src/core/BatchPlanRecords.H"
+  ],
+  "BatchPlanPass": [
+   "src/postProcessing/BatchPlanPass.H"
+  ],
+  "BatchPlanRecord": [
+   "src/core/BatchPlanRecords.H"
+  ],
   "BatchReactor": [
    "src/unitOperations/batch/BatchReactor.H"
+  ],
+  "BatchStage": [
+   "src/core/BatchPlanRecords.H"
   ],
   "BatchState": [
    "src/unitOperations/batch/BatchUnitOperation.H"
   ],
   "BatchStill": [
    "src/unitOperations/batch/BatchStill.H"
+  ],
+  "BatchTrain": [
+   "src/core/BatchPlanRecords.H"
   ],
   "BatchUnitOperation": [
    "src/unitOperations/batch/BatchUnitOperation.H"
@@ -194,6 +212,27 @@
   ],
   "BubblePoint": [
    "src/unitOperations/saturation/BubblePoint.H"
+  ],
+  "BuildingConnection": [
+   "src/core/BuildingRecords.H"
+  ],
+  "BuildingFinding": [
+   "src/core/BuildingRecords.H"
+  ],
+  "BuildingFloor": [
+   "src/core/BuildingRecords.H"
+  ],
+  "BuildingFlow": [
+   "src/core/BuildingRecords.H"
+  ],
+  "BuildingRecord": [
+   "src/core/BuildingRecords.H"
+  ],
+  "BuildingRoom": [
+   "src/core/BuildingRecords.H"
+  ],
+  "BuildingShared": [
+   "src/core/BuildingRecords.H"
   ],
   "BulkState": [
    "src/unitOperations/membrane/BulkConversion.H"
@@ -453,6 +492,9 @@
   "ENRTLSingleSalt": [
    "src/thermo/electrolyte/ENRTLSingleSalt.H"
   ],
+  "EconomicSensitivityRow": [
+   "src/core/ResultRecords.H"
+  ],
   "EconomicsPass": [
    "src/postProcessing/EconomicsPass.H"
   ],
@@ -533,6 +575,9 @@
   ],
   "EnthalpyConcentration": [
    "src/propertyOps/EnthalpyConcentration.H"
+  ],
+  "EnthalpyInversion": [
+   "src/unitOperations/reactor/ReactorOutlet.H"
   ],
   "EquationOfState": [
    "src/thermo/equationOfState/EquationOfState.H"
@@ -636,6 +681,9 @@
   "Fluxes": [
    "src/unitOperations/batch/BatchDiafilter.H"
   ],
+  "Footprint": [
+   "src/postProcessing/layout/PlantLayout.H"
+  ],
   "Formula": [
    "src/core/Formula.H"
   ],
@@ -665,6 +713,9 @@
   ],
   "GasSolidSplitter": [
    "src/unitOperations/separation/GasSolidSplitter.H"
+  ],
+  "GasStoreSize": [
+   "src/postProcessing/sizing/GasStoreSize.H"
   ],
   "GelPolarisation": [
    "src/unitOperations/membrane/transport/GelPolarisation.H"
@@ -765,6 +816,9 @@
   "HoldupUnit": [
    "src/io/InternalStateIO.H"
   ],
+  "HottestPort": [
+   "src/postProcessing/sizing/MaterialLimits.H"
+  ],
   "IEMSpec": [
    "src/unitOperations/electrochem/EDCell.H"
   ],
@@ -828,6 +882,81 @@
   "Lapple": [
    "src/unitOperations/separation/cycloneModel/Lapple.H"
   ],
+  "LayoutAccess": [
+   "src/core/ResultRecords.H"
+  ],
+  "LayoutArea": [
+   "src/core/ResultRecords.H"
+  ],
+  "LayoutCarPark": [
+   "src/core/ResultRecords.H"
+  ],
+  "LayoutDesignVehicle": [
+   "src/core/ResultRecords.H"
+  ],
+  "LayoutFence": [
+   "src/core/ResultRecords.H"
+  ],
+  "LayoutFenceCrossing": [
+   "src/core/ResultRecords.H"
+  ],
+  "LayoutFenceOpening": [
+   "src/core/ResultRecords.H"
+  ],
+  "LayoutFinding": [
+   "src/core/ResultRecords.H"
+  ],
+  "LayoutItem": [
+   "src/core/ResultRecords.H"
+  ],
+  "LayoutJunction": [
+   "src/core/ResultRecords.H"
+  ],
+  "LayoutNotRouted": [
+   "src/core/ResultRecords.H"
+  ],
+  "LayoutPipe": [
+   "src/core/ResultRecords.H"
+  ],
+  "LayoutPipeRack": [
+   "src/core/ResultRecords.H"
+  ],
+  "LayoutPlot": [
+   "src/core/ResultRecords.H"
+  ],
+  "LayoutPlotSector": [
+   "src/core/ResultRecords.H"
+  ],
+  "LayoutRackCrossing": [
+   "src/core/ResultRecords.H"
+  ],
+  "LayoutRoad": [
+   "src/core/ResultRecords.H"
+  ],
+  "LayoutRoads": [
+   "src/core/ResultRecords.H"
+  ],
+  "LayoutRouteCorner": [
+   "src/core/ResultRecords.H"
+  ],
+  "LayoutSeparationRule": [
+   "src/core/ResultRecords.H"
+  ],
+  "LayoutSeparationTable": [
+   "src/core/ResultRecords.H"
+  ],
+  "LayoutTruckRoute": [
+   "src/core/ResultRecords.H"
+  ],
+  "LayoutTurningArea": [
+   "src/core/ResultRecords.H"
+  ],
+  "LayoutWind": [
+   "src/core/ResultRecords.H"
+  ],
+  "LayoutZone": [
+   "src/core/ResultRecords.H"
+  ],
   "Ledger": [
    "src/thermo/RecordResolver.H"
   ],
@@ -843,8 +972,17 @@
   "LimitingCurrent": [
    "src/unitOperations/electrochem/EDCell.H"
   ],
+  "Link": [
+   "src/postProcessing/sizing/StorageLink.H"
+  ],
+  "LiquefiedGasStoreSize": [
+   "src/postProcessing/sizing/GasStoreSize.H"
+  ],
   "LiquidConductivityModel": [
    "src/thermo/transport/LiquidConductivityModel.H"
+  ],
+  "LiquidDensity": [
+   "src/unitOperations/distillation/TrayHydraulics.H"
   ],
   "LiquidDiffusivityModel": [
    "src/thermo/transport/LiquidDiffusivityModel.H"
@@ -1020,6 +1158,12 @@
   "OuterDriver": [
    "src/outerDriver/OuterDriver.H"
   ],
+  "OutletState": [
+   "src/unitOperations/reactor/ReactorOutlet.H"
+  ],
+  "Owned": [
+   "src/postProcessing/sizing/StorageLink.H"
+  ],
   "PCSAFT": [
    "src/thermo/equationOfState/PCSAFT.H"
   ],
@@ -1089,6 +1233,9 @@
   "PitzerSingleSalt": [
    "src/thermo/electrolyte/PitzerSingleSalt.H"
   ],
+  "PlantLayoutRecord": [
+   "src/core/ResultRecords.H"
+  ],
   "PneumaticConveyor": [
    "src/unitOperations/hydraulics/PneumaticConveyor.H"
   ],
@@ -1122,8 +1269,14 @@
   "PressureDropModel": [
    "src/unitOperations/membrane/pressureDrop/PressureDropModel.H"
   ],
+  "PressureResult": [
+   "src/unitOperations/saturation/BubblePoint.H"
+  ],
   "PressureSwirlAtomizer": [
    "src/unitOperations/heatTransfer/atomizer/PressureSwirlAtomizer.H"
+  ],
+  "PricedState": [
+   "src/unitOperations/reactor/ReactorOutlet.H"
   ],
   "ProblemDivergence": [
    "src/core/ProblemDivergence.H"
@@ -1292,6 +1445,9 @@
   ],
   "Rohsenow": [
    "src/unitOperations/heatTransfer/htc/Rohsenow.H"
+  ],
+  "RoomPlan": [
+   "src/postProcessing/layout/BuildingLayout.H"
   ],
   "Rosenbrock23": [
    "src/solver/ODE/Rosenbrock23.H"
@@ -1847,6 +2003,10 @@
    {
     "key": "economics",
     "type": "EconomicsPass"
+   },
+   {
+    "key": "batchPlan",
+    "type": "BatchPlanPass"
    },
    {
     "key": "pinchPass",
@@ -2677,6 +2837,8 @@
    "src/core/Advisory.H",
    "src/core/AdvisorySummary.H",
    "src/core/Banner.H",
+   "src/core/BatchPlanRecords.H",
+   "src/core/BuildingRecords.H",
    "src/core/Constants.H",
    "src/core/Dictionary.H",
    "src/core/Dimensions.H",
@@ -2770,6 +2932,8 @@
    "src/core/Advisory.H",
    "src/core/AdvisorySummary.H",
    "src/core/Banner.H",
+   "src/core/BatchPlanRecords.H",
+   "src/core/BuildingRecords.H",
    "src/core/Constants.H",
    "src/core/DictAudit.H",
    "src/core/DictCanonical.H",
@@ -2834,6 +2998,8 @@
    "src/core/Advisory.H",
    "src/core/AdvisorySummary.H",
    "src/core/Banner.H",
+   "src/core/BatchPlanRecords.H",
+   "src/core/BuildingRecords.H",
    "src/core/Constants.H",
    "src/core/DictAudit.H",
    "src/core/Dictionary.H",
@@ -2856,6 +3022,8 @@
    "src/materials/MaterialRegistry.H",
    "src/outerDriver/OuterDriver.H",
    "src/postProcessing/PostProcessor.H",
+   "src/postProcessing/layout/BuildingLayout.H",
+   "src/postProcessing/layout/PlantLayout.H",
    "src/reporting/Report.H",
    "src/reporting/UtilityAllocationReport.H",
    "src/result/ComponentIdentity.H",
@@ -3124,6 +3292,8 @@
    "src/core/Advisory.H",
    "src/core/AdvisorySummary.H",
    "src/core/Banner.H",
+   "src/core/BatchPlanRecords.H",
+   "src/core/BuildingRecords.H",
    "src/core/Constants.H",
    "src/core/Dictionary.H",
    "src/core/Dimensions.H",
@@ -3213,6 +3383,8 @@
   ],
   "src/io/DesignSheetWriter.cpp": [
    "src/core/Advisory.H",
+   "src/core/BatchPlanRecords.H",
+   "src/core/BuildingRecords.H",
    "src/core/Dictionary.H",
    "src/core/Dimensions.H",
    "src/core/FlatUnit.H",
@@ -3236,6 +3408,8 @@
   ],
   "src/io/InternalStateIO.cpp": [
    "src/core/Advisory.H",
+   "src/core/BatchPlanRecords.H",
+   "src/core/BuildingRecords.H",
    "src/core/Dictionary.H",
    "src/core/Dimensions.H",
    "src/core/FlatUnit.H",
@@ -3258,6 +3432,8 @@
   "src/io/SolutionWriter.cpp": [
    "src/core/Advisory.H",
    "src/core/Banner.H",
+   "src/core/BatchPlanRecords.H",
+   "src/core/BuildingRecords.H",
    "src/core/Dictionary.H",
    "src/core/Dimensions.H",
    "src/core/FlatUnit.H",
@@ -3295,6 +3471,8 @@
   ],
   "src/outerDriver/DesignSpec.cpp": [
    "src/core/Advisory.H",
+   "src/core/BatchPlanRecords.H",
+   "src/core/BuildingRecords.H",
    "src/core/Dictionary.H",
    "src/core/Dimensions.H",
    "src/core/FlatUnit.H",
@@ -3323,6 +3501,8 @@
   ],
   "src/outerDriver/GridSweepDriver.cpp": [
    "src/core/Advisory.H",
+   "src/core/BatchPlanRecords.H",
+   "src/core/BuildingRecords.H",
    "src/core/Dictionary.H",
    "src/core/Dimensions.H",
    "src/core/FlatUnit.H",
@@ -3349,6 +3529,8 @@
   ],
   "src/outerDriver/OptimizationDriver.cpp": [
    "src/core/Advisory.H",
+   "src/core/BatchPlanRecords.H",
+   "src/core/BuildingRecords.H",
    "src/core/Dictionary.H",
    "src/core/Dimensions.H",
    "src/core/FlatUnit.H",
@@ -3381,6 +3563,8 @@
   ],
   "src/outerDriver/OuterDriver.cpp": [
    "src/core/Advisory.H",
+   "src/core/BatchPlanRecords.H",
+   "src/core/BuildingRecords.H",
    "src/core/Dictionary.H",
    "src/core/Dimensions.H",
    "src/core/FlatUnit.H",
@@ -3410,6 +3594,8 @@
   ],
   "src/outerDriver/ParetoSweepDriver.cpp": [
    "src/core/Advisory.H",
+   "src/core/BatchPlanRecords.H",
+   "src/core/BuildingRecords.H",
    "src/core/Dictionary.H",
    "src/core/Dimensions.H",
    "src/core/FlatUnit.H",
@@ -3439,6 +3625,8 @@
   ],
   "src/outerDriver/ResponseExtractor.cpp": [
    "src/core/Advisory.H",
+   "src/core/BatchPlanRecords.H",
+   "src/core/BuildingRecords.H",
    "src/core/Dictionary.H",
    "src/core/Dimensions.H",
    "src/core/FlatUnit.H",
@@ -3460,6 +3648,8 @@
   ],
   "src/outerDriver/SweepDriver.cpp": [
    "src/core/Advisory.H",
+   "src/core/BatchPlanRecords.H",
+   "src/core/BuildingRecords.H",
    "src/core/Dictionary.H",
    "src/core/Dimensions.H",
    "src/core/FlatUnit.H",
@@ -3487,8 +3677,35 @@
    "src/thermo/SaturationCurves.H",
    "src/thermo/ThermoPackage.H"
   ],
+  "src/postProcessing/BatchPlanPass.cpp": [
+   "src/core/Advisory.H",
+   "src/core/BatchPlanRecords.H",
+   "src/core/BuildingRecords.H",
+   "src/core/Dictionary.H",
+   "src/core/Dimensions.H",
+   "src/core/FlatUnit.H",
+   "src/core/Identifiers.H",
+   "src/core/Origin.H",
+   "src/core/ProblemDivergence.H",
+   "src/core/ResultRecords.H",
+   "src/core/ThermoResolution.H",
+   "src/core/Types.H",
+   "src/postProcessing/BatchPlanPass.H",
+   "src/postProcessing/PostProcessor.H",
+   "src/result/ResultEmitter.H",
+   "src/result/SimulationResult.H",
+   "src/result/UnitProfile.H",
+   "src/solver/Convergence.H",
+   "src/streams/ProcessStream.H",
+   "src/thermo/Component.H",
+   "src/thermo/PackageAudit.H",
+   "src/thermo/SaturationCurves.H",
+   "src/thermo/ThermoPackage.H"
+  ],
   "src/postProcessing/CostingPass.cpp": [
    "src/core/Advisory.H",
+   "src/core/BatchPlanRecords.H",
+   "src/core/BuildingRecords.H",
    "src/core/Dictionary.H",
    "src/core/Dimensions.H",
    "src/core/FlatUnit.H",
@@ -3503,6 +3720,8 @@
    "src/postProcessing/CostingPass.H",
    "src/postProcessing/PostProcessor.H",
    "src/postProcessing/costing/CostingModel.H",
+   "src/postProcessing/costing/DeclaredQuote.H",
+   "src/postProcessing/costing/SteelMassCost.H",
    "src/result/SimulationResult.H",
    "src/result/UnitProfile.H",
    "src/solver/Convergence.H",
@@ -3514,6 +3733,8 @@
   ],
   "src/postProcessing/EconomicsPass.cpp": [
    "src/core/Advisory.H",
+   "src/core/BatchPlanRecords.H",
+   "src/core/BuildingRecords.H",
    "src/core/Dictionary.H",
    "src/core/Dimensions.H",
    "src/core/FlatUnit.H",
@@ -3521,6 +3742,7 @@
    "src/core/OdsWriter.H",
    "src/core/Origin.H",
    "src/core/ProblemDivergence.H",
+   "src/core/RegistryRefusal.H",
    "src/core/ResultRecords.H",
    "src/core/ThermoResolution.H",
    "src/core/Types.H",
@@ -3539,6 +3761,8 @@
   ],
   "src/postProcessing/PinchPass.cpp": [
    "src/core/Advisory.H",
+   "src/core/BatchPlanRecords.H",
+   "src/core/BuildingRecords.H",
    "src/core/Dictionary.H",
    "src/core/Dimensions.H",
    "src/core/FlatUnit.H",
@@ -3562,6 +3786,8 @@
   ],
   "src/postProcessing/PostProcessor.cpp": [
    "src/core/Advisory.H",
+   "src/core/BatchPlanRecords.H",
+   "src/core/BuildingRecords.H",
    "src/core/Dictionary.H",
    "src/core/Dimensions.H",
    "src/core/FlatUnit.H",
@@ -3572,6 +3798,7 @@
    "src/core/ThermoResolution.H",
    "src/core/Types.H",
    "src/materials/Material.H",
+   "src/postProcessing/BatchPlanPass.H",
    "src/postProcessing/CostingPass.H",
    "src/postProcessing/EconomicsPass.H",
    "src/postProcessing/PinchPass.H",
@@ -3590,6 +3817,8 @@
   ],
   "src/postProcessing/SizingPass.cpp": [
    "src/core/Advisory.H",
+   "src/core/BatchPlanRecords.H",
+   "src/core/BuildingRecords.H",
    "src/core/Dictionary.H",
    "src/core/Dimensions.H",
    "src/core/FlatUnit.H",
@@ -3604,7 +3833,9 @@
    "src/postProcessing/PostProcessor.H",
    "src/postProcessing/SizingPass.H",
    "src/postProcessing/sizing/EquipmentSize.H",
+   "src/postProcessing/sizing/GasStoreSize.H",
    "src/postProcessing/sizing/Inventory.H",
+   "src/postProcessing/sizing/MaterialLimits.H",
    "src/postProcessing/sizing/StorageTankSize.H",
    "src/result/SimulationResult.H",
    "src/result/UnitProfile.H",
@@ -3617,6 +3848,8 @@
   ],
   "src/postProcessing/costing/CostingModel.cpp": [
    "src/core/Advisory.H",
+   "src/core/BatchPlanRecords.H",
+   "src/core/BuildingRecords.H",
    "src/core/Dictionary.H",
    "src/core/Dimensions.H",
    "src/core/FlatUnit.H",
@@ -3630,6 +3863,56 @@
    "src/materials/Material.H",
    "src/postProcessing/costing/CostingModel.H",
    "src/postProcessing/costing/Turton.H",
+   "src/result/SimulationResult.H",
+   "src/result/UnitProfile.H",
+   "src/solver/Convergence.H",
+   "src/streams/ProcessStream.H",
+   "src/thermo/Component.H",
+   "src/thermo/PackageAudit.H",
+   "src/thermo/SaturationCurves.H",
+   "src/thermo/ThermoPackage.H"
+  ],
+  "src/postProcessing/costing/DeclaredQuote.cpp": [
+   "src/core/Advisory.H",
+   "src/core/BatchPlanRecords.H",
+   "src/core/BuildingRecords.H",
+   "src/core/Dictionary.H",
+   "src/core/Dimensions.H",
+   "src/core/FlatUnit.H",
+   "src/core/Identifiers.H",
+   "src/core/Origin.H",
+   "src/core/ProblemDivergence.H",
+   "src/core/ResultRecords.H",
+   "src/core/ThermoResolution.H",
+   "src/core/Types.H",
+   "src/materials/Material.H",
+   "src/postProcessing/costing/CostingModel.H",
+   "src/postProcessing/costing/DeclaredQuote.H",
+   "src/result/SimulationResult.H",
+   "src/result/UnitProfile.H",
+   "src/solver/Convergence.H",
+   "src/streams/ProcessStream.H",
+   "src/thermo/Component.H",
+   "src/thermo/PackageAudit.H",
+   "src/thermo/SaturationCurves.H",
+   "src/thermo/ThermoPackage.H"
+  ],
+  "src/postProcessing/costing/SteelMassCost.cpp": [
+   "src/core/Advisory.H",
+   "src/core/BatchPlanRecords.H",
+   "src/core/BuildingRecords.H",
+   "src/core/Dictionary.H",
+   "src/core/Dimensions.H",
+   "src/core/FlatUnit.H",
+   "src/core/Identifiers.H",
+   "src/core/Origin.H",
+   "src/core/ProblemDivergence.H",
+   "src/core/ResultRecords.H",
+   "src/core/ThermoResolution.H",
+   "src/core/Types.H",
+   "src/materials/Material.H",
+   "src/postProcessing/costing/CostingModel.H",
+   "src/postProcessing/costing/SteelMassCost.H",
    "src/result/SimulationResult.H",
    "src/result/UnitProfile.H",
    "src/solver/Convergence.H",
@@ -3641,6 +3924,8 @@
   ],
   "src/postProcessing/costing/Turton.cpp": [
    "src/core/Advisory.H",
+   "src/core/BatchPlanRecords.H",
+   "src/core/BuildingRecords.H",
    "src/core/Dictionary.H",
    "src/core/Dimensions.H",
    "src/core/FlatUnit.H",
@@ -3663,8 +3948,45 @@
    "src/thermo/SaturationCurves.H",
    "src/thermo/ThermoPackage.H"
   ],
+  "src/postProcessing/layout/BuildingLayout.cpp": [
+   "src/core/Advisory.H",
+   "src/core/BuildingRecords.H",
+   "src/core/Dictionary.H",
+   "src/core/Dimensions.H",
+   "src/core/RegistryRefusal.H",
+   "src/core/ResultRecords.H",
+   "src/core/Types.H",
+   "src/postProcessing/layout/BuildingLayout.H"
+  ],
+  "src/postProcessing/layout/PlantLayout.cpp": [
+   "src/core/Advisory.H",
+   "src/core/BatchPlanRecords.H",
+   "src/core/BuildingRecords.H",
+   "src/core/Dictionary.H",
+   "src/core/Dimensions.H",
+   "src/core/FlatUnit.H",
+   "src/core/Identifiers.H",
+   "src/core/Origin.H",
+   "src/core/ProblemDivergence.H",
+   "src/core/RegistryRefusal.H",
+   "src/core/ResultRecords.H",
+   "src/core/ThermoResolution.H",
+   "src/core/Types.H",
+   "src/postProcessing/layout/BuildingLayout.H",
+   "src/postProcessing/layout/PlantLayout.H",
+   "src/result/SimulationResult.H",
+   "src/result/UnitProfile.H",
+   "src/solver/Convergence.H",
+   "src/streams/ProcessStream.H",
+   "src/thermo/Component.H",
+   "src/thermo/PackageAudit.H",
+   "src/thermo/SaturationCurves.H",
+   "src/thermo/ThermoPackage.H"
+  ],
   "src/postProcessing/sizing/CatalystBedSize.cpp": [
    "src/core/Advisory.H",
+   "src/core/BatchPlanRecords.H",
+   "src/core/BuildingRecords.H",
    "src/core/Constants.H",
    "src/core/Dictionary.H",
    "src/core/Dimensions.H",
@@ -3679,6 +4001,7 @@
    "src/postProcessing/sizing/CatalystBedSize.H",
    "src/postProcessing/sizing/DesignDefaults.H",
    "src/postProcessing/sizing/EquipmentSize.H",
+   "src/postProcessing/sizing/MaterialLimits.H",
    "src/postProcessing/sizing/ShellTubeHX.H",
    "src/postProcessing/sizing/VesselMechanics.H",
    "src/result/SimulationResult.H",
@@ -3694,6 +4017,8 @@
   ],
   "src/postProcessing/sizing/ColumnSize.cpp": [
    "src/core/Advisory.H",
+   "src/core/BatchPlanRecords.H",
+   "src/core/BuildingRecords.H",
    "src/core/Constants.H",
    "src/core/Dictionary.H",
    "src/core/Dimensions.H",
@@ -3708,6 +4033,7 @@
    "src/postProcessing/sizing/ColumnSize.H",
    "src/postProcessing/sizing/DesignDefaults.H",
    "src/postProcessing/sizing/EquipmentSize.H",
+   "src/postProcessing/sizing/MaterialLimits.H",
    "src/postProcessing/sizing/ShellTubeHX.H",
    "src/postProcessing/sizing/VesselMechanics.H",
    "src/result/SimulationResult.H",
@@ -3721,6 +4047,8 @@
   ],
   "src/postProcessing/sizing/CompressorSize.cpp": [
    "src/core/Advisory.H",
+   "src/core/BatchPlanRecords.H",
+   "src/core/BuildingRecords.H",
    "src/core/Dictionary.H",
    "src/core/Dimensions.H",
    "src/core/FlatUnit.H",
@@ -3733,6 +4061,7 @@
    "src/materials/Material.H",
    "src/postProcessing/sizing/CompressorSize.H",
    "src/postProcessing/sizing/EquipmentSize.H",
+   "src/postProcessing/sizing/MaterialLimits.H",
    "src/result/SimulationResult.H",
    "src/result/UnitProfile.H",
    "src/solver/Convergence.H",
@@ -3744,6 +4073,8 @@
   ],
   "src/postProcessing/sizing/ConverterShellSize.cpp": [
    "src/core/Advisory.H",
+   "src/core/BatchPlanRecords.H",
+   "src/core/BuildingRecords.H",
    "src/core/Constants.H",
    "src/core/Dictionary.H",
    "src/core/Dimensions.H",
@@ -3759,6 +4090,7 @@
    "src/postProcessing/sizing/ConverterShellSize.H",
    "src/postProcessing/sizing/DesignDefaults.H",
    "src/postProcessing/sizing/EquipmentSize.H",
+   "src/postProcessing/sizing/MaterialLimits.H",
    "src/postProcessing/sizing/VesselMechanics.H",
    "src/result/SimulationResult.H",
    "src/result/UnitProfile.H",
@@ -3771,6 +4103,8 @@
   ],
   "src/postProcessing/sizing/CrystalliserSize.cpp": [
    "src/core/Advisory.H",
+   "src/core/BatchPlanRecords.H",
+   "src/core/BuildingRecords.H",
    "src/core/Dictionary.H",
    "src/core/Dimensions.H",
    "src/core/FlatUnit.H",
@@ -3783,6 +4117,7 @@
    "src/materials/Material.H",
    "src/postProcessing/sizing/CrystalliserSize.H",
    "src/postProcessing/sizing/EquipmentSize.H",
+   "src/postProcessing/sizing/MaterialLimits.H",
    "src/result/SimulationResult.H",
    "src/result/UnitProfile.H",
    "src/solver/Convergence.H",
@@ -3794,6 +4129,8 @@
   ],
   "src/postProcessing/sizing/CycloneSize.cpp": [
    "src/core/Advisory.H",
+   "src/core/BatchPlanRecords.H",
+   "src/core/BuildingRecords.H",
    "src/core/Dictionary.H",
    "src/core/Dimensions.H",
    "src/core/FlatUnit.H",
@@ -3806,6 +4143,7 @@
    "src/materials/Material.H",
    "src/postProcessing/sizing/CycloneSize.H",
    "src/postProcessing/sizing/EquipmentSize.H",
+   "src/postProcessing/sizing/MaterialLimits.H",
    "src/result/SimulationResult.H",
    "src/result/UnitProfile.H",
    "src/solver/Convergence.H",
@@ -3825,6 +4163,8 @@
   ],
   "src/postProcessing/sizing/EquipmentSize.cpp": [
    "src/core/Advisory.H",
+   "src/core/BatchPlanRecords.H",
+   "src/core/BuildingRecords.H",
    "src/core/Dictionary.H",
    "src/core/Dimensions.H",
    "src/core/FlatUnit.H",
@@ -3859,6 +4199,8 @@
   ],
   "src/postProcessing/sizing/EvaporatorSize.cpp": [
    "src/core/Advisory.H",
+   "src/core/BatchPlanRecords.H",
+   "src/core/BuildingRecords.H",
    "src/core/Dictionary.H",
    "src/core/Dimensions.H",
    "src/core/FlatUnit.H",
@@ -3871,6 +4213,7 @@
    "src/materials/Material.H",
    "src/postProcessing/sizing/EquipmentSize.H",
    "src/postProcessing/sizing/EvaporatorSize.H",
+   "src/postProcessing/sizing/MaterialLimits.H",
    "src/result/SimulationResult.H",
    "src/result/UnitProfile.H",
    "src/solver/Convergence.H",
@@ -3880,8 +4223,45 @@
    "src/thermo/SaturationCurves.H",
    "src/thermo/ThermoPackage.H"
   ],
+  "src/postProcessing/sizing/GasStoreSize.cpp": [
+   "src/core/Advisory.H",
+   "src/core/BatchPlanRecords.H",
+   "src/core/BuildingRecords.H",
+   "src/core/Constants.H",
+   "src/core/Dictionary.H",
+   "src/core/Dimensions.H",
+   "src/core/FlatUnit.H",
+   "src/core/Identifiers.H",
+   "src/core/Origin.H",
+   "src/core/ProblemDivergence.H",
+   "src/core/ResultRecords.H",
+   "src/core/ThermoResolution.H",
+   "src/core/Types.H",
+   "src/materials/Material.H",
+   "src/postProcessing/sizing/DesignDefaults.H",
+   "src/postProcessing/sizing/EquipmentSize.H",
+   "src/postProcessing/sizing/GasStoreSize.H",
+   "src/postProcessing/sizing/MaterialLimits.H",
+   "src/postProcessing/sizing/PhaseDensity.H",
+   "src/postProcessing/sizing/StorageLink.H",
+   "src/postProcessing/sizing/VesselMechanics.H",
+   "src/result/SimulationResult.H",
+   "src/result/UnitProfile.H",
+   "src/solver/Convergence.H",
+   "src/streams/ProcessStream.H",
+   "src/thermo/Component.H",
+   "src/thermo/PackageAudit.H",
+   "src/thermo/PricedDensity.H",
+   "src/thermo/SaturationCurves.H",
+   "src/thermo/ThermoPackage.H",
+   "src/thermo/equationOfState/EquationOfState.H",
+   "src/unitOperations/UnitOperation.H",
+   "src/unitOperations/saturation/BubblePoint.H"
+  ],
   "src/postProcessing/sizing/Inventory.cpp": [
    "src/core/Advisory.H",
+   "src/core/BatchPlanRecords.H",
+   "src/core/BuildingRecords.H",
    "src/core/Dictionary.H",
    "src/core/Dimensions.H",
    "src/core/FlatUnit.H",
@@ -3902,8 +4282,34 @@
    "src/thermo/SaturationCurves.H",
    "src/thermo/ThermoPackage.H"
   ],
+  "src/postProcessing/sizing/MaterialLimits.cpp": [
+   "src/core/Advisory.H",
+   "src/core/BatchPlanRecords.H",
+   "src/core/BuildingRecords.H",
+   "src/core/Dictionary.H",
+   "src/core/Dimensions.H",
+   "src/core/FlatUnit.H",
+   "src/core/Identifiers.H",
+   "src/core/Origin.H",
+   "src/core/ProblemDivergence.H",
+   "src/core/ResultRecords.H",
+   "src/core/ThermoResolution.H",
+   "src/core/Types.H",
+   "src/materials/Material.H",
+   "src/postProcessing/sizing/MaterialLimits.H",
+   "src/result/SimulationResult.H",
+   "src/result/UnitProfile.H",
+   "src/solver/Convergence.H",
+   "src/streams/ProcessStream.H",
+   "src/thermo/Component.H",
+   "src/thermo/PackageAudit.H",
+   "src/thermo/SaturationCurves.H",
+   "src/thermo/ThermoPackage.H"
+  ],
   "src/postProcessing/sizing/PhaseDensity.cpp": [
    "src/core/Advisory.H",
+   "src/core/BatchPlanRecords.H",
+   "src/core/BuildingRecords.H",
    "src/core/Dictionary.H",
    "src/core/Dimensions.H",
    "src/core/FlatUnit.H",
@@ -3926,6 +4332,8 @@
   ],
   "src/postProcessing/sizing/ReliefValveSize.cpp": [
    "src/core/Advisory.H",
+   "src/core/BatchPlanRecords.H",
+   "src/core/BuildingRecords.H",
    "src/core/Constants.H",
    "src/core/Dictionary.H",
    "src/core/Dimensions.H",
@@ -3959,6 +4367,8 @@
   ],
   "src/postProcessing/sizing/ShellTubeHX.cpp": [
    "src/core/Advisory.H",
+   "src/core/BatchPlanRecords.H",
+   "src/core/BuildingRecords.H",
    "src/core/Dictionary.H",
    "src/core/Dimensions.H",
    "src/core/FlatUnit.H",
@@ -3971,6 +4381,7 @@
    "src/core/Types.H",
    "src/materials/Material.H",
    "src/postProcessing/sizing/EquipmentSize.H",
+   "src/postProcessing/sizing/MaterialLimits.H",
    "src/postProcessing/sizing/ShellTubeHX.H",
    "src/result/SimulationResult.H",
    "src/result/UnitProfile.H",
@@ -3991,6 +4402,8 @@
   ],
   "src/postProcessing/sizing/SprayDryerSize.cpp": [
    "src/core/Advisory.H",
+   "src/core/BatchPlanRecords.H",
+   "src/core/BuildingRecords.H",
    "src/core/Dictionary.H",
    "src/core/Dimensions.H",
    "src/core/FlatUnit.H",
@@ -4002,6 +4415,7 @@
    "src/core/Types.H",
    "src/materials/Material.H",
    "src/postProcessing/sizing/EquipmentSize.H",
+   "src/postProcessing/sizing/MaterialLimits.H",
    "src/postProcessing/sizing/SprayDryerSize.H",
    "src/result/SimulationResult.H",
    "src/result/UnitProfile.H",
@@ -4014,6 +4428,8 @@
   ],
   "src/postProcessing/sizing/StirredTank.cpp": [
    "src/core/Advisory.H",
+   "src/core/BatchPlanRecords.H",
+   "src/core/BuildingRecords.H",
    "src/core/Constants.H",
    "src/core/Dictionary.H",
    "src/core/Dimensions.H",
@@ -4027,6 +4443,7 @@
    "src/materials/Material.H",
    "src/postProcessing/sizing/DesignDefaults.H",
    "src/postProcessing/sizing/EquipmentSize.H",
+   "src/postProcessing/sizing/MaterialLimits.H",
    "src/postProcessing/sizing/StirredTank.H",
    "src/postProcessing/sizing/VesselMechanics.H",
    "src/result/SimulationResult.H",
@@ -4038,8 +4455,33 @@
    "src/thermo/SaturationCurves.H",
    "src/thermo/ThermoPackage.H"
   ],
+  "src/postProcessing/sizing/StorageLink.cpp": [
+   "src/core/Advisory.H",
+   "src/core/BatchPlanRecords.H",
+   "src/core/BuildingRecords.H",
+   "src/core/Dictionary.H",
+   "src/core/Dimensions.H",
+   "src/core/FlatUnit.H",
+   "src/core/Identifiers.H",
+   "src/core/Origin.H",
+   "src/core/ProblemDivergence.H",
+   "src/core/ResultRecords.H",
+   "src/core/ThermoResolution.H",
+   "src/core/Types.H",
+   "src/postProcessing/sizing/StorageLink.H",
+   "src/result/SimulationResult.H",
+   "src/result/UnitProfile.H",
+   "src/solver/Convergence.H",
+   "src/streams/ProcessStream.H",
+   "src/thermo/Component.H",
+   "src/thermo/PackageAudit.H",
+   "src/thermo/SaturationCurves.H",
+   "src/thermo/ThermoPackage.H"
+  ],
   "src/postProcessing/sizing/StorageTankSize.cpp": [
    "src/core/Advisory.H",
+   "src/core/BatchPlanRecords.H",
+   "src/core/BuildingRecords.H",
    "src/core/Dictionary.H",
    "src/core/Dimensions.H",
    "src/core/FlatUnit.H",
@@ -4052,6 +4494,7 @@
    "src/materials/Material.H",
    "src/postProcessing/sizing/EquipmentSize.H",
    "src/postProcessing/sizing/PhaseDensity.H",
+   "src/postProcessing/sizing/StorageLink.H",
    "src/postProcessing/sizing/StorageTankSize.H",
    "src/result/SimulationResult.H",
    "src/result/UnitProfile.H",
@@ -4070,6 +4513,8 @@
   ],
   "src/postProcessing/sizing/VesselSize.cpp": [
    "src/core/Advisory.H",
+   "src/core/BatchPlanRecords.H",
+   "src/core/BuildingRecords.H",
    "src/core/Constants.H",
    "src/core/Dictionary.H",
    "src/core/Dimensions.H",
@@ -4084,6 +4529,7 @@
    "src/materials/Material.H",
    "src/postProcessing/sizing/DesignDefaults.H",
    "src/postProcessing/sizing/EquipmentSize.H",
+   "src/postProcessing/sizing/MaterialLimits.H",
    "src/postProcessing/sizing/VesselMechanics.H",
    "src/postProcessing/sizing/VesselSize.H",
    "src/result/SimulationResult.H",
@@ -4975,6 +5421,8 @@
   ],
   "src/reporting/ComputedReport.cpp": [
    "src/core/Advisory.H",
+   "src/core/BatchPlanRecords.H",
+   "src/core/BuildingRecords.H",
    "src/core/Dictionary.H",
    "src/core/Dimensions.H",
    "src/core/ExprEval.H",
@@ -4999,6 +5447,8 @@
   ],
   "src/reporting/DesignReport.cpp": [
    "src/core/Advisory.H",
+   "src/core/BatchPlanRecords.H",
+   "src/core/BuildingRecords.H",
    "src/core/Dictionary.H",
    "src/core/Dimensions.H",
    "src/core/FlatUnit.H",
@@ -5022,6 +5472,8 @@
   ],
   "src/reporting/EconomicsReport.cpp": [
    "src/core/Advisory.H",
+   "src/core/BatchPlanRecords.H",
+   "src/core/BuildingRecords.H",
    "src/core/Dictionary.H",
    "src/core/Dimensions.H",
    "src/core/FlatUnit.H",
@@ -5045,6 +5497,8 @@
   ],
   "src/reporting/ElementBalanceReport.cpp": [
    "src/core/Advisory.H",
+   "src/core/BatchPlanRecords.H",
+   "src/core/BuildingRecords.H",
    "src/core/Dictionary.H",
    "src/core/Dimensions.H",
    "src/core/FlatUnit.H",
@@ -5077,6 +5531,8 @@
   ],
   "src/reporting/EnergyBalanceReport.cpp": [
    "src/core/Advisory.H",
+   "src/core/BatchPlanRecords.H",
+   "src/core/BuildingRecords.H",
    "src/core/Dictionary.H",
    "src/core/Dimensions.H",
    "src/core/FlatUnit.H",
@@ -5110,6 +5566,8 @@
   ],
   "src/reporting/EnergyStreamsReport.cpp": [
    "src/core/Advisory.H",
+   "src/core/BatchPlanRecords.H",
+   "src/core/BuildingRecords.H",
    "src/core/Dictionary.H",
    "src/core/Dimensions.H",
    "src/core/FlatUnit.H",
@@ -5132,6 +5590,8 @@
   ],
   "src/reporting/MassBalanceReport.cpp": [
    "src/core/Advisory.H",
+   "src/core/BatchPlanRecords.H",
+   "src/core/BuildingRecords.H",
    "src/core/Dictionary.H",
    "src/core/Dimensions.H",
    "src/core/FlatUnit.H",
@@ -5163,6 +5623,8 @@
   ],
   "src/reporting/ModelBoundaryLedger.cpp": [
    "src/core/Advisory.H",
+   "src/core/BatchPlanRecords.H",
+   "src/core/BuildingRecords.H",
    "src/core/Dictionary.H",
    "src/core/Dimensions.H",
    "src/core/FlatUnit.H",
@@ -5197,6 +5659,8 @@
   ],
   "src/reporting/ProfilesReport.cpp": [
    "src/core/Advisory.H",
+   "src/core/BatchPlanRecords.H",
+   "src/core/BuildingRecords.H",
    "src/core/Dictionary.H",
    "src/core/Dimensions.H",
    "src/core/FlatUnit.H",
@@ -5219,6 +5683,8 @@
   ],
   "src/reporting/Report.cpp": [
    "src/core/Advisory.H",
+   "src/core/BatchPlanRecords.H",
+   "src/core/BuildingRecords.H",
    "src/core/Dictionary.H",
    "src/core/Dimensions.H",
    "src/core/FlatUnit.H",
@@ -5252,6 +5718,8 @@
   ],
   "src/reporting/SpreadsheetReport.cpp": [
    "src/core/Advisory.H",
+   "src/core/BatchPlanRecords.H",
+   "src/core/BuildingRecords.H",
    "src/core/Dictionary.H",
    "src/core/Dimensions.H",
    "src/core/FlatUnit.H",
@@ -5285,6 +5753,8 @@
   ],
   "src/reporting/StreamTableReport.cpp": [
    "src/core/Advisory.H",
+   "src/core/BatchPlanRecords.H",
+   "src/core/BuildingRecords.H",
    "src/core/Dictionary.H",
    "src/core/Dimensions.H",
    "src/core/FlatUnit.H",
@@ -5316,6 +5786,8 @@
   ],
   "src/reporting/UtilitiesReport.cpp": [
    "src/core/Advisory.H",
+   "src/core/BatchPlanRecords.H",
+   "src/core/BuildingRecords.H",
    "src/core/Dictionary.H",
    "src/core/Dimensions.H",
    "src/core/FlatUnit.H",
@@ -5340,6 +5812,8 @@
   ],
   "src/reporting/UtilityAllocationReport.cpp": [
    "src/core/Advisory.H",
+   "src/core/BatchPlanRecords.H",
+   "src/core/BuildingRecords.H",
    "src/core/Dictionary.H",
    "src/core/Dimensions.H",
    "src/core/FlatUnit.H",
@@ -5370,8 +5844,58 @@
    "src/unitOperations/flash/PureSaturationPlateau.H",
    "src/unitOperations/flash/StreamEquilibrium.H"
   ],
+  "src/result/BatchPlanJson.cpp": [
+   "src/core/Advisory.H",
+   "src/core/BatchPlanRecords.H",
+   "src/core/BuildingRecords.H",
+   "src/core/Dictionary.H",
+   "src/core/Dimensions.H",
+   "src/core/FlatUnit.H",
+   "src/core/Identifiers.H",
+   "src/core/Origin.H",
+   "src/core/ProblemDivergence.H",
+   "src/core/ResultRecords.H",
+   "src/core/ThermoResolution.H",
+   "src/core/Types.H",
+   "src/result/BatchPlanJson.H",
+   "src/result/ResultEmitter.H",
+   "src/result/SimulationResult.H",
+   "src/result/UnitProfile.H",
+   "src/solver/Convergence.H",
+   "src/streams/ProcessStream.H",
+   "src/thermo/Component.H",
+   "src/thermo/PackageAudit.H",
+   "src/thermo/SaturationCurves.H",
+   "src/thermo/ThermoPackage.H"
+  ],
+  "src/result/BuildingJson.cpp": [
+   "src/core/Advisory.H",
+   "src/core/BatchPlanRecords.H",
+   "src/core/BuildingRecords.H",
+   "src/core/Dictionary.H",
+   "src/core/Dimensions.H",
+   "src/core/FlatUnit.H",
+   "src/core/Identifiers.H",
+   "src/core/Origin.H",
+   "src/core/ProblemDivergence.H",
+   "src/core/ResultRecords.H",
+   "src/core/ThermoResolution.H",
+   "src/core/Types.H",
+   "src/result/BuildingJson.H",
+   "src/result/ResultEmitter.H",
+   "src/result/SimulationResult.H",
+   "src/result/UnitProfile.H",
+   "src/solver/Convergence.H",
+   "src/streams/ProcessStream.H",
+   "src/thermo/Component.H",
+   "src/thermo/PackageAudit.H",
+   "src/thermo/SaturationCurves.H",
+   "src/thermo/ThermoPackage.H"
+  ],
   "src/result/ComponentIdentity.cpp": [
    "src/core/Advisory.H",
+   "src/core/BatchPlanRecords.H",
+   "src/core/BuildingRecords.H",
    "src/core/Dictionary.H",
    "src/core/Dimensions.H",
    "src/core/FlatUnit.H",
@@ -5393,6 +5917,8 @@
   ],
   "src/result/ResultEmitter.cpp": [
    "src/core/Advisory.H",
+   "src/core/BatchPlanRecords.H",
+   "src/core/BuildingRecords.H",
    "src/core/Dictionary.H",
    "src/core/Dimensions.H",
    "src/core/FlatUnit.H",
@@ -5402,6 +5928,8 @@
    "src/core/ResultRecords.H",
    "src/core/ThermoResolution.H",
    "src/core/Types.H",
+   "src/result/BatchPlanJson.H",
+   "src/result/BuildingJson.H",
    "src/result/ResultEmitter.H",
    "src/result/SimulationResult.H",
    "src/result/UnitProfile.H",
@@ -6766,6 +7294,8 @@
   ],
   "src/unitOperations/batch/BatchAccumulator.cpp": [
    "src/core/Advisory.H",
+   "src/core/BatchPlanRecords.H",
+   "src/core/BuildingRecords.H",
    "src/core/Dictionary.H",
    "src/core/Dimensions.H",
    "src/core/FlatUnit.H",
@@ -6789,6 +7319,8 @@
   ],
   "src/unitOperations/batch/BatchAdsorber.cpp": [
    "src/core/Advisory.H",
+   "src/core/BatchPlanRecords.H",
+   "src/core/BuildingRecords.H",
    "src/core/Constants.H",
    "src/core/Dictionary.H",
    "src/core/Dimensions.H",
@@ -6818,6 +7350,8 @@
   ],
   "src/unitOperations/batch/BatchCrystalliser.cpp": [
    "src/core/Advisory.H",
+   "src/core/BatchPlanRecords.H",
+   "src/core/BuildingRecords.H",
    "src/core/Dictionary.H",
    "src/core/Dimensions.H",
    "src/core/FlatUnit.H",
@@ -6843,6 +7377,8 @@
   ],
   "src/unitOperations/batch/BatchDiafilter.cpp": [
    "src/core/Advisory.H",
+   "src/core/BatchPlanRecords.H",
+   "src/core/BuildingRecords.H",
    "src/core/Dictionary.H",
    "src/core/Dimensions.H",
    "src/core/FlatUnit.H",
@@ -6874,6 +7410,8 @@
   ],
   "src/unitOperations/batch/BatchDryer.cpp": [
    "src/core/Advisory.H",
+   "src/core/BatchPlanRecords.H",
+   "src/core/BuildingRecords.H",
    "src/core/Dictionary.H",
    "src/core/Dimensions.H",
    "src/core/FlatUnit.H",
@@ -6902,6 +7440,8 @@
   ],
   "src/unitOperations/batch/BatchElectrodialysis.cpp": [
    "src/core/Advisory.H",
+   "src/core/BatchPlanRecords.H",
+   "src/core/BuildingRecords.H",
    "src/core/Constants.H",
    "src/core/Dictionary.H",
    "src/core/Dimensions.H",
@@ -6941,6 +7481,8 @@
   ],
   "src/unitOperations/batch/BatchReactor.cpp": [
    "src/core/Advisory.H",
+   "src/core/BatchPlanRecords.H",
+   "src/core/BuildingRecords.H",
    "src/core/Constants.H",
    "src/core/Dictionary.H",
    "src/core/Dimensions.H",
@@ -6973,6 +7515,8 @@
   ],
   "src/unitOperations/batch/BatchStill.cpp": [
    "src/core/Advisory.H",
+   "src/core/BatchPlanRecords.H",
+   "src/core/BuildingRecords.H",
    "src/core/Dictionary.H",
    "src/core/Dimensions.H",
    "src/core/FlatUnit.H",
@@ -7000,6 +7544,8 @@
   ],
   "src/unitOperations/batch/BatchUnitOperation.cpp": [
    "src/core/Advisory.H",
+   "src/core/BatchPlanRecords.H",
+   "src/core/BuildingRecords.H",
    "src/core/Dictionary.H",
    "src/core/Dimensions.H",
    "src/core/FlatUnit.H",
@@ -7038,6 +7584,8 @@
   ],
   "src/unitOperations/batch/FixedBedAdsorber.cpp": [
    "src/core/Advisory.H",
+   "src/core/BatchPlanRecords.H",
+   "src/core/BuildingRecords.H",
    "src/core/Constants.H",
    "src/core/Dictionary.H",
    "src/core/Dimensions.H",
@@ -7178,6 +7726,7 @@
    "src/solver/Convergence.H",
    "src/thermo/Component.H",
    "src/thermo/PackageAudit.H",
+   "src/thermo/PricedDensity.H",
    "src/thermo/ThermoPackage.H",
    "src/unitOperations/distillation/TrayHydraulics.H"
   ],
@@ -7394,6 +7943,8 @@
   ],
   "src/unitOperations/flowsheet/Flowsheet.cpp": [
    "src/core/Advisory.H",
+   "src/core/BatchPlanRecords.H",
+   "src/core/BuildingRecords.H",
    "src/core/Constants.H",
    "src/core/DictAudit.H",
    "src/core/Dictionary.H",
@@ -8043,7 +8594,8 @@
    "src/unitOperations/flash/PureSaturationPlateau.H",
    "src/unitOperations/flash/StreamEquilibrium.H",
    "src/unitOperations/reactor/CSTR.H",
-   "src/unitOperations/reactor/CatalystPellet.H"
+   "src/unitOperations/reactor/CatalystPellet.H",
+   "src/unitOperations/reactor/ReactorOutlet.H"
   ],
   "src/unitOperations/reactor/CatalystPellet.cpp": [
    "src/core/Advisory.H",
@@ -8067,7 +8619,8 @@
    "src/unitOperations/flash/IsothermalFlash.H",
    "src/unitOperations/flash/PureSaturationPlateau.H",
    "src/unitOperations/flash/StreamEquilibrium.H",
-   "src/unitOperations/reactor/ConversionReactor.H"
+   "src/unitOperations/reactor/ConversionReactor.H",
+   "src/unitOperations/reactor/ReactorOutlet.H"
   ],
   "src/unitOperations/reactor/EquilibriumReactor.cpp": [
    "src/core/Advisory.H",
@@ -8141,6 +8694,7 @@
    "src/unitOperations/reactor/PFR.H",
    "src/unitOperations/reactor/PolymerKPIs.H",
    "src/unitOperations/reactor/ReactionHeat.H",
+   "src/unitOperations/reactor/ReactorOutlet.H",
    "src/unitOperations/reactor/wallHeatTransfer/BedWallHeatTransfer.H"
   ],
   "src/unitOperations/reactor/PolymerKPIs.cpp": [
@@ -8178,6 +8732,25 @@
    "src/thermo/PackageAudit.H",
    "src/thermo/ThermoPackage.H",
    "src/unitOperations/reactor/ReactionHeat.H"
+  ],
+  "src/unitOperations/reactor/ReactorOutlet.cpp": [
+   "src/core/Advisory.H",
+   "src/core/Dictionary.H",
+   "src/core/Dimensions.H",
+   "src/core/Identifiers.H",
+   "src/core/Origin.H",
+   "src/core/Types.H",
+   "src/result/UnitProfile.H",
+   "src/solver/Convergence.H",
+   "src/streams/ProcessStream.H",
+   "src/thermo/Component.H",
+   "src/thermo/PackageAudit.H",
+   "src/thermo/ThermoPackage.H",
+   "src/unitOperations/UnitOperation.H",
+   "src/unitOperations/flash/IsothermalFlash.H",
+   "src/unitOperations/flash/PureSaturationPlateau.H",
+   "src/unitOperations/flash/StreamEquilibrium.H",
+   "src/unitOperations/reactor/ReactorOutlet.H"
   ],
   "src/unitOperations/reactor/gibbsMethod/DirectMin.cpp": [
    "src/core/Advisory.H",
@@ -8762,13 +9335,18 @@
    "src/outerDriver/ParetoSweepDriver.cpp",
    "src/outerDriver/ResponseExtractor.cpp",
    "src/outerDriver/SweepDriver.cpp",
+   "src/postProcessing/BatchPlanPass.cpp",
    "src/postProcessing/CostingPass.cpp",
    "src/postProcessing/EconomicsPass.cpp",
    "src/postProcessing/PinchPass.cpp",
    "src/postProcessing/PostProcessor.cpp",
    "src/postProcessing/SizingPass.cpp",
    "src/postProcessing/costing/CostingModel.cpp",
+   "src/postProcessing/costing/DeclaredQuote.cpp",
+   "src/postProcessing/costing/SteelMassCost.cpp",
    "src/postProcessing/costing/Turton.cpp",
+   "src/postProcessing/layout/BuildingLayout.cpp",
+   "src/postProcessing/layout/PlantLayout.cpp",
    "src/postProcessing/sizing/CatalystBedSize.cpp",
    "src/postProcessing/sizing/ColumnSize.cpp",
    "src/postProcessing/sizing/CompressorSize.cpp",
@@ -8778,12 +9356,15 @@
    "src/postProcessing/sizing/DesignDefaults.cpp",
    "src/postProcessing/sizing/EquipmentSize.cpp",
    "src/postProcessing/sizing/EvaporatorSize.cpp",
+   "src/postProcessing/sizing/GasStoreSize.cpp",
    "src/postProcessing/sizing/Inventory.cpp",
+   "src/postProcessing/sizing/MaterialLimits.cpp",
    "src/postProcessing/sizing/PhaseDensity.cpp",
    "src/postProcessing/sizing/ReliefValveSize.cpp",
    "src/postProcessing/sizing/ShellTubeHX.cpp",
    "src/postProcessing/sizing/SprayDryerSize.cpp",
    "src/postProcessing/sizing/StirredTank.cpp",
+   "src/postProcessing/sizing/StorageLink.cpp",
    "src/postProcessing/sizing/StorageTankSize.cpp",
    "src/postProcessing/sizing/VesselSize.cpp",
    "src/propertyOps/ENRTLMultiSaltOp.cpp",
@@ -8816,6 +9397,8 @@
    "src/reporting/StreamTableReport.cpp",
    "src/reporting/UtilitiesReport.cpp",
    "src/reporting/UtilityAllocationReport.cpp",
+   "src/result/BatchPlanJson.cpp",
+   "src/result/BuildingJson.cpp",
    "src/result/ComponentIdentity.cpp",
    "src/result/ResultEmitter.cpp",
    "src/solver/NewtonND.cpp",
@@ -8896,6 +9479,7 @@
    "src/unitOperations/reactor/EquilibriumReactor.cpp",
    "src/unitOperations/reactor/GibbsReactor.cpp",
    "src/unitOperations/reactor/PFR.cpp",
+   "src/unitOperations/reactor/ReactorOutlet.cpp",
    "src/unitOperations/reactor/gibbsMethod/DirectMin.cpp",
    "src/unitOperations/reactor/gibbsMethod/GibbsMethod.cpp",
    "src/unitOperations/reactor/pellet/EffectiveDiffusivity.cpp",
@@ -8921,6 +9505,157 @@
    "src/io/SolutionWriter.cpp",
    "src/propertyOps/FitParameters.cpp"
   ],
+  "src/core/BatchPlanRecords.H": [
+   "src/applications/choupoBatch/main.cpp",
+   "src/applications/choupoProps/main.cpp",
+   "src/applications/choupoSolve/main.cpp",
+   "src/dynamicDriver/DynamicDriver.cpp",
+   "src/io/DesignSheetWriter.cpp",
+   "src/io/InternalStateIO.cpp",
+   "src/io/SolutionWriter.cpp",
+   "src/outerDriver/DesignSpec.cpp",
+   "src/outerDriver/GridSweepDriver.cpp",
+   "src/outerDriver/OptimizationDriver.cpp",
+   "src/outerDriver/OuterDriver.cpp",
+   "src/outerDriver/ParetoSweepDriver.cpp",
+   "src/outerDriver/ResponseExtractor.cpp",
+   "src/outerDriver/SweepDriver.cpp",
+   "src/postProcessing/BatchPlanPass.cpp",
+   "src/postProcessing/CostingPass.cpp",
+   "src/postProcessing/EconomicsPass.cpp",
+   "src/postProcessing/PinchPass.cpp",
+   "src/postProcessing/PostProcessor.cpp",
+   "src/postProcessing/SizingPass.cpp",
+   "src/postProcessing/costing/CostingModel.cpp",
+   "src/postProcessing/costing/DeclaredQuote.cpp",
+   "src/postProcessing/costing/SteelMassCost.cpp",
+   "src/postProcessing/costing/Turton.cpp",
+   "src/postProcessing/layout/PlantLayout.cpp",
+   "src/postProcessing/sizing/CatalystBedSize.cpp",
+   "src/postProcessing/sizing/ColumnSize.cpp",
+   "src/postProcessing/sizing/CompressorSize.cpp",
+   "src/postProcessing/sizing/ConverterShellSize.cpp",
+   "src/postProcessing/sizing/CrystalliserSize.cpp",
+   "src/postProcessing/sizing/CycloneSize.cpp",
+   "src/postProcessing/sizing/EquipmentSize.cpp",
+   "src/postProcessing/sizing/EvaporatorSize.cpp",
+   "src/postProcessing/sizing/GasStoreSize.cpp",
+   "src/postProcessing/sizing/Inventory.cpp",
+   "src/postProcessing/sizing/MaterialLimits.cpp",
+   "src/postProcessing/sizing/PhaseDensity.cpp",
+   "src/postProcessing/sizing/ReliefValveSize.cpp",
+   "src/postProcessing/sizing/ShellTubeHX.cpp",
+   "src/postProcessing/sizing/SprayDryerSize.cpp",
+   "src/postProcessing/sizing/StirredTank.cpp",
+   "src/postProcessing/sizing/StorageLink.cpp",
+   "src/postProcessing/sizing/StorageTankSize.cpp",
+   "src/postProcessing/sizing/VesselSize.cpp",
+   "src/reporting/ComputedReport.cpp",
+   "src/reporting/DesignReport.cpp",
+   "src/reporting/EconomicsReport.cpp",
+   "src/reporting/ElementBalanceReport.cpp",
+   "src/reporting/EnergyBalanceReport.cpp",
+   "src/reporting/EnergyStreamsReport.cpp",
+   "src/reporting/MassBalanceReport.cpp",
+   "src/reporting/ModelBoundaryLedger.cpp",
+   "src/reporting/ProfilesReport.cpp",
+   "src/reporting/Report.cpp",
+   "src/reporting/SpreadsheetReport.cpp",
+   "src/reporting/StreamTableReport.cpp",
+   "src/reporting/UtilitiesReport.cpp",
+   "src/reporting/UtilityAllocationReport.cpp",
+   "src/result/BatchPlanJson.cpp",
+   "src/result/BuildingJson.cpp",
+   "src/result/ComponentIdentity.cpp",
+   "src/result/ResultEmitter.cpp",
+   "src/unitOperations/batch/BatchAccumulator.cpp",
+   "src/unitOperations/batch/BatchAdsorber.cpp",
+   "src/unitOperations/batch/BatchCrystalliser.cpp",
+   "src/unitOperations/batch/BatchDiafilter.cpp",
+   "src/unitOperations/batch/BatchDryer.cpp",
+   "src/unitOperations/batch/BatchElectrodialysis.cpp",
+   "src/unitOperations/batch/BatchReactor.cpp",
+   "src/unitOperations/batch/BatchStill.cpp",
+   "src/unitOperations/batch/BatchUnitOperation.cpp",
+   "src/unitOperations/batch/FixedBedAdsorber.cpp",
+   "src/unitOperations/flowsheet/Flowsheet.cpp"
+  ],
+  "src/core/BuildingRecords.H": [
+   "src/applications/choupoBatch/main.cpp",
+   "src/applications/choupoProps/main.cpp",
+   "src/applications/choupoSolve/main.cpp",
+   "src/dynamicDriver/DynamicDriver.cpp",
+   "src/io/DesignSheetWriter.cpp",
+   "src/io/InternalStateIO.cpp",
+   "src/io/SolutionWriter.cpp",
+   "src/outerDriver/DesignSpec.cpp",
+   "src/outerDriver/GridSweepDriver.cpp",
+   "src/outerDriver/OptimizationDriver.cpp",
+   "src/outerDriver/OuterDriver.cpp",
+   "src/outerDriver/ParetoSweepDriver.cpp",
+   "src/outerDriver/ResponseExtractor.cpp",
+   "src/outerDriver/SweepDriver.cpp",
+   "src/postProcessing/BatchPlanPass.cpp",
+   "src/postProcessing/CostingPass.cpp",
+   "src/postProcessing/EconomicsPass.cpp",
+   "src/postProcessing/PinchPass.cpp",
+   "src/postProcessing/PostProcessor.cpp",
+   "src/postProcessing/SizingPass.cpp",
+   "src/postProcessing/costing/CostingModel.cpp",
+   "src/postProcessing/costing/DeclaredQuote.cpp",
+   "src/postProcessing/costing/SteelMassCost.cpp",
+   "src/postProcessing/costing/Turton.cpp",
+   "src/postProcessing/layout/BuildingLayout.cpp",
+   "src/postProcessing/layout/PlantLayout.cpp",
+   "src/postProcessing/sizing/CatalystBedSize.cpp",
+   "src/postProcessing/sizing/ColumnSize.cpp",
+   "src/postProcessing/sizing/CompressorSize.cpp",
+   "src/postProcessing/sizing/ConverterShellSize.cpp",
+   "src/postProcessing/sizing/CrystalliserSize.cpp",
+   "src/postProcessing/sizing/CycloneSize.cpp",
+   "src/postProcessing/sizing/EquipmentSize.cpp",
+   "src/postProcessing/sizing/EvaporatorSize.cpp",
+   "src/postProcessing/sizing/GasStoreSize.cpp",
+   "src/postProcessing/sizing/Inventory.cpp",
+   "src/postProcessing/sizing/MaterialLimits.cpp",
+   "src/postProcessing/sizing/PhaseDensity.cpp",
+   "src/postProcessing/sizing/ReliefValveSize.cpp",
+   "src/postProcessing/sizing/ShellTubeHX.cpp",
+   "src/postProcessing/sizing/SprayDryerSize.cpp",
+   "src/postProcessing/sizing/StirredTank.cpp",
+   "src/postProcessing/sizing/StorageLink.cpp",
+   "src/postProcessing/sizing/StorageTankSize.cpp",
+   "src/postProcessing/sizing/VesselSize.cpp",
+   "src/reporting/ComputedReport.cpp",
+   "src/reporting/DesignReport.cpp",
+   "src/reporting/EconomicsReport.cpp",
+   "src/reporting/ElementBalanceReport.cpp",
+   "src/reporting/EnergyBalanceReport.cpp",
+   "src/reporting/EnergyStreamsReport.cpp",
+   "src/reporting/MassBalanceReport.cpp",
+   "src/reporting/ModelBoundaryLedger.cpp",
+   "src/reporting/ProfilesReport.cpp",
+   "src/reporting/Report.cpp",
+   "src/reporting/SpreadsheetReport.cpp",
+   "src/reporting/StreamTableReport.cpp",
+   "src/reporting/UtilitiesReport.cpp",
+   "src/reporting/UtilityAllocationReport.cpp",
+   "src/result/BatchPlanJson.cpp",
+   "src/result/BuildingJson.cpp",
+   "src/result/ComponentIdentity.cpp",
+   "src/result/ResultEmitter.cpp",
+   "src/unitOperations/batch/BatchAccumulator.cpp",
+   "src/unitOperations/batch/BatchAdsorber.cpp",
+   "src/unitOperations/batch/BatchCrystalliser.cpp",
+   "src/unitOperations/batch/BatchDiafilter.cpp",
+   "src/unitOperations/batch/BatchDryer.cpp",
+   "src/unitOperations/batch/BatchElectrodialysis.cpp",
+   "src/unitOperations/batch/BatchReactor.cpp",
+   "src/unitOperations/batch/BatchStill.cpp",
+   "src/unitOperations/batch/BatchUnitOperation.cpp",
+   "src/unitOperations/batch/FixedBedAdsorber.cpp",
+   "src/unitOperations/flowsheet/Flowsheet.cpp"
+  ],
   "src/core/Constants.H": [
    "src/applications/choupoBatch/main.cpp",
    "src/applications/choupoProps/main.cpp",
@@ -8930,6 +9665,7 @@
    "src/postProcessing/sizing/CatalystBedSize.cpp",
    "src/postProcessing/sizing/ColumnSize.cpp",
    "src/postProcessing/sizing/ConverterShellSize.cpp",
+   "src/postProcessing/sizing/GasStoreSize.cpp",
    "src/postProcessing/sizing/ReliefValveSize.cpp",
    "src/postProcessing/sizing/StirredTank.cpp",
    "src/postProcessing/sizing/VesselMechanics.cpp",
@@ -9050,13 +9786,18 @@
    "src/outerDriver/ParetoSweepDriver.cpp",
    "src/outerDriver/ResponseExtractor.cpp",
    "src/outerDriver/SweepDriver.cpp",
+   "src/postProcessing/BatchPlanPass.cpp",
    "src/postProcessing/CostingPass.cpp",
    "src/postProcessing/EconomicsPass.cpp",
    "src/postProcessing/PinchPass.cpp",
    "src/postProcessing/PostProcessor.cpp",
    "src/postProcessing/SizingPass.cpp",
    "src/postProcessing/costing/CostingModel.cpp",
+   "src/postProcessing/costing/DeclaredQuote.cpp",
+   "src/postProcessing/costing/SteelMassCost.cpp",
    "src/postProcessing/costing/Turton.cpp",
+   "src/postProcessing/layout/BuildingLayout.cpp",
+   "src/postProcessing/layout/PlantLayout.cpp",
    "src/postProcessing/sizing/CatalystBedSize.cpp",
    "src/postProcessing/sizing/ColumnSize.cpp",
    "src/postProcessing/sizing/CompressorSize.cpp",
@@ -9066,12 +9807,15 @@
    "src/postProcessing/sizing/DesignDefaults.cpp",
    "src/postProcessing/sizing/EquipmentSize.cpp",
    "src/postProcessing/sizing/EvaporatorSize.cpp",
+   "src/postProcessing/sizing/GasStoreSize.cpp",
    "src/postProcessing/sizing/Inventory.cpp",
+   "src/postProcessing/sizing/MaterialLimits.cpp",
    "src/postProcessing/sizing/PhaseDensity.cpp",
    "src/postProcessing/sizing/ReliefValveSize.cpp",
    "src/postProcessing/sizing/ShellTubeHX.cpp",
    "src/postProcessing/sizing/SprayDryerSize.cpp",
    "src/postProcessing/sizing/StirredTank.cpp",
+   "src/postProcessing/sizing/StorageLink.cpp",
    "src/postProcessing/sizing/StorageTankSize.cpp",
    "src/postProcessing/sizing/VesselSize.cpp",
    "src/propertyOps/CurationDossier.cpp",
@@ -9137,6 +9881,8 @@
    "src/reporting/StreamTableReport.cpp",
    "src/reporting/UtilitiesReport.cpp",
    "src/reporting/UtilityAllocationReport.cpp",
+   "src/result/BatchPlanJson.cpp",
+   "src/result/BuildingJson.cpp",
    "src/result/ComponentIdentity.cpp",
    "src/result/ResultEmitter.cpp",
    "src/solver/StabilityTest.cpp",
@@ -9295,6 +10041,7 @@
    "src/unitOperations/reactor/PolymerKPIs.cpp",
    "src/unitOperations/reactor/PureSolidPhase.cpp",
    "src/unitOperations/reactor/ReactionHeat.cpp",
+   "src/unitOperations/reactor/ReactorOutlet.cpp",
    "src/unitOperations/reactor/gibbsMethod/DirectMin.cpp",
    "src/unitOperations/reactor/gibbsMethod/ElementPotential.cpp",
    "src/unitOperations/reactor/gibbsMethod/GibbsLog.cpp",
@@ -9367,13 +10114,18 @@
    "src/outerDriver/ParetoSweepDriver.cpp",
    "src/outerDriver/ResponseExtractor.cpp",
    "src/outerDriver/SweepDriver.cpp",
+   "src/postProcessing/BatchPlanPass.cpp",
    "src/postProcessing/CostingPass.cpp",
    "src/postProcessing/EconomicsPass.cpp",
    "src/postProcessing/PinchPass.cpp",
    "src/postProcessing/PostProcessor.cpp",
    "src/postProcessing/SizingPass.cpp",
    "src/postProcessing/costing/CostingModel.cpp",
+   "src/postProcessing/costing/DeclaredQuote.cpp",
+   "src/postProcessing/costing/SteelMassCost.cpp",
    "src/postProcessing/costing/Turton.cpp",
+   "src/postProcessing/layout/BuildingLayout.cpp",
+   "src/postProcessing/layout/PlantLayout.cpp",
    "src/postProcessing/sizing/CatalystBedSize.cpp",
    "src/postProcessing/sizing/ColumnSize.cpp",
    "src/postProcessing/sizing/CompressorSize.cpp",
@@ -9383,12 +10135,15 @@
    "src/postProcessing/sizing/DesignDefaults.cpp",
    "src/postProcessing/sizing/EquipmentSize.cpp",
    "src/postProcessing/sizing/EvaporatorSize.cpp",
+   "src/postProcessing/sizing/GasStoreSize.cpp",
    "src/postProcessing/sizing/Inventory.cpp",
+   "src/postProcessing/sizing/MaterialLimits.cpp",
    "src/postProcessing/sizing/PhaseDensity.cpp",
    "src/postProcessing/sizing/ReliefValveSize.cpp",
    "src/postProcessing/sizing/ShellTubeHX.cpp",
    "src/postProcessing/sizing/SprayDryerSize.cpp",
    "src/postProcessing/sizing/StirredTank.cpp",
+   "src/postProcessing/sizing/StorageLink.cpp",
    "src/postProcessing/sizing/StorageTankSize.cpp",
    "src/postProcessing/sizing/VesselSize.cpp",
    "src/propertyOps/CurationDossier.cpp",
@@ -9454,6 +10209,8 @@
    "src/reporting/StreamTableReport.cpp",
    "src/reporting/UtilitiesReport.cpp",
    "src/reporting/UtilityAllocationReport.cpp",
+   "src/result/BatchPlanJson.cpp",
+   "src/result/BuildingJson.cpp",
    "src/result/ComponentIdentity.cpp",
    "src/result/ResultEmitter.cpp",
    "src/solver/StabilityTest.cpp",
@@ -9612,6 +10369,7 @@
    "src/unitOperations/reactor/PolymerKPIs.cpp",
    "src/unitOperations/reactor/PureSolidPhase.cpp",
    "src/unitOperations/reactor/ReactionHeat.cpp",
+   "src/unitOperations/reactor/ReactorOutlet.cpp",
    "src/unitOperations/reactor/gibbsMethod/DirectMin.cpp",
    "src/unitOperations/reactor/gibbsMethod/ElementPotential.cpp",
    "src/unitOperations/reactor/gibbsMethod/GibbsLog.cpp",
@@ -9682,13 +10440,17 @@
    "src/outerDriver/ParetoSweepDriver.cpp",
    "src/outerDriver/ResponseExtractor.cpp",
    "src/outerDriver/SweepDriver.cpp",
+   "src/postProcessing/BatchPlanPass.cpp",
    "src/postProcessing/CostingPass.cpp",
    "src/postProcessing/EconomicsPass.cpp",
    "src/postProcessing/PinchPass.cpp",
    "src/postProcessing/PostProcessor.cpp",
    "src/postProcessing/SizingPass.cpp",
    "src/postProcessing/costing/CostingModel.cpp",
+   "src/postProcessing/costing/DeclaredQuote.cpp",
+   "src/postProcessing/costing/SteelMassCost.cpp",
    "src/postProcessing/costing/Turton.cpp",
+   "src/postProcessing/layout/PlantLayout.cpp",
    "src/postProcessing/sizing/CatalystBedSize.cpp",
    "src/postProcessing/sizing/ColumnSize.cpp",
    "src/postProcessing/sizing/CompressorSize.cpp",
@@ -9697,12 +10459,15 @@
    "src/postProcessing/sizing/CycloneSize.cpp",
    "src/postProcessing/sizing/EquipmentSize.cpp",
    "src/postProcessing/sizing/EvaporatorSize.cpp",
+   "src/postProcessing/sizing/GasStoreSize.cpp",
    "src/postProcessing/sizing/Inventory.cpp",
+   "src/postProcessing/sizing/MaterialLimits.cpp",
    "src/postProcessing/sizing/PhaseDensity.cpp",
    "src/postProcessing/sizing/ReliefValveSize.cpp",
    "src/postProcessing/sizing/ShellTubeHX.cpp",
    "src/postProcessing/sizing/SprayDryerSize.cpp",
    "src/postProcessing/sizing/StirredTank.cpp",
+   "src/postProcessing/sizing/StorageLink.cpp",
    "src/postProcessing/sizing/StorageTankSize.cpp",
    "src/postProcessing/sizing/VesselSize.cpp",
    "src/reporting/ComputedReport.cpp",
@@ -9719,6 +10484,8 @@
    "src/reporting/StreamTableReport.cpp",
    "src/reporting/UtilitiesReport.cpp",
    "src/reporting/UtilityAllocationReport.cpp",
+   "src/result/BatchPlanJson.cpp",
+   "src/result/BuildingJson.cpp",
    "src/result/ComponentIdentity.cpp",
    "src/result/ResultEmitter.cpp",
    "src/streams/UtilityCircuit.cpp",
@@ -9764,13 +10531,17 @@
    "src/outerDriver/ParetoSweepDriver.cpp",
    "src/outerDriver/ResponseExtractor.cpp",
    "src/outerDriver/SweepDriver.cpp",
+   "src/postProcessing/BatchPlanPass.cpp",
    "src/postProcessing/CostingPass.cpp",
    "src/postProcessing/EconomicsPass.cpp",
    "src/postProcessing/PinchPass.cpp",
    "src/postProcessing/PostProcessor.cpp",
    "src/postProcessing/SizingPass.cpp",
    "src/postProcessing/costing/CostingModel.cpp",
+   "src/postProcessing/costing/DeclaredQuote.cpp",
+   "src/postProcessing/costing/SteelMassCost.cpp",
    "src/postProcessing/costing/Turton.cpp",
+   "src/postProcessing/layout/PlantLayout.cpp",
    "src/postProcessing/sizing/CatalystBedSize.cpp",
    "src/postProcessing/sizing/ColumnSize.cpp",
    "src/postProcessing/sizing/CompressorSize.cpp",
@@ -9779,12 +10550,15 @@
    "src/postProcessing/sizing/CycloneSize.cpp",
    "src/postProcessing/sizing/EquipmentSize.cpp",
    "src/postProcessing/sizing/EvaporatorSize.cpp",
+   "src/postProcessing/sizing/GasStoreSize.cpp",
    "src/postProcessing/sizing/Inventory.cpp",
+   "src/postProcessing/sizing/MaterialLimits.cpp",
    "src/postProcessing/sizing/PhaseDensity.cpp",
    "src/postProcessing/sizing/ReliefValveSize.cpp",
    "src/postProcessing/sizing/ShellTubeHX.cpp",
    "src/postProcessing/sizing/SprayDryerSize.cpp",
    "src/postProcessing/sizing/StirredTank.cpp",
+   "src/postProcessing/sizing/StorageLink.cpp",
    "src/postProcessing/sizing/StorageTankSize.cpp",
    "src/postProcessing/sizing/VesselSize.cpp",
    "src/propertyOps/ENRTLMixedSolventOp.cpp",
@@ -9843,6 +10617,8 @@
    "src/reporting/StreamTableReport.cpp",
    "src/reporting/UtilitiesReport.cpp",
    "src/reporting/UtilityAllocationReport.cpp",
+   "src/result/BatchPlanJson.cpp",
+   "src/result/BuildingJson.cpp",
    "src/result/ComponentIdentity.cpp",
    "src/result/ResultEmitter.cpp",
    "src/streams/Composition.cpp",
@@ -9959,6 +10735,7 @@
    "src/unitOperations/reactor/PFR.cpp",
    "src/unitOperations/reactor/PureSolidPhase.cpp",
    "src/unitOperations/reactor/ReactionHeat.cpp",
+   "src/unitOperations/reactor/ReactorOutlet.cpp",
    "src/unitOperations/reactor/gibbsMethod/DirectMin.cpp",
    "src/unitOperations/reactor/gibbsMethod/ElementPotential.cpp",
    "src/unitOperations/reactor/gibbsMethod/GibbsLog.cpp",
@@ -10021,13 +10798,17 @@
    "src/outerDriver/ParetoSweepDriver.cpp",
    "src/outerDriver/ResponseExtractor.cpp",
    "src/outerDriver/SweepDriver.cpp",
+   "src/postProcessing/BatchPlanPass.cpp",
    "src/postProcessing/CostingPass.cpp",
    "src/postProcessing/EconomicsPass.cpp",
    "src/postProcessing/PinchPass.cpp",
    "src/postProcessing/PostProcessor.cpp",
    "src/postProcessing/SizingPass.cpp",
    "src/postProcessing/costing/CostingModel.cpp",
+   "src/postProcessing/costing/DeclaredQuote.cpp",
+   "src/postProcessing/costing/SteelMassCost.cpp",
    "src/postProcessing/costing/Turton.cpp",
+   "src/postProcessing/layout/PlantLayout.cpp",
    "src/postProcessing/sizing/CatalystBedSize.cpp",
    "src/postProcessing/sizing/ColumnSize.cpp",
    "src/postProcessing/sizing/CompressorSize.cpp",
@@ -10036,12 +10817,15 @@
    "src/postProcessing/sizing/CycloneSize.cpp",
    "src/postProcessing/sizing/EquipmentSize.cpp",
    "src/postProcessing/sizing/EvaporatorSize.cpp",
+   "src/postProcessing/sizing/GasStoreSize.cpp",
    "src/postProcessing/sizing/Inventory.cpp",
+   "src/postProcessing/sizing/MaterialLimits.cpp",
    "src/postProcessing/sizing/PhaseDensity.cpp",
    "src/postProcessing/sizing/ReliefValveSize.cpp",
    "src/postProcessing/sizing/ShellTubeHX.cpp",
    "src/postProcessing/sizing/SprayDryerSize.cpp",
    "src/postProcessing/sizing/StirredTank.cpp",
+   "src/postProcessing/sizing/StorageLink.cpp",
    "src/postProcessing/sizing/StorageTankSize.cpp",
    "src/postProcessing/sizing/VesselSize.cpp",
    "src/propertyOps/ENRTLMixedSolventOp.cpp",
@@ -10100,6 +10884,8 @@
    "src/reporting/StreamTableReport.cpp",
    "src/reporting/UtilitiesReport.cpp",
    "src/reporting/UtilityAllocationReport.cpp",
+   "src/result/BatchPlanJson.cpp",
+   "src/result/BuildingJson.cpp",
    "src/result/ComponentIdentity.cpp",
    "src/result/ResultEmitter.cpp",
    "src/streams/Composition.cpp",
@@ -10219,6 +11005,7 @@
    "src/unitOperations/reactor/PFR.cpp",
    "src/unitOperations/reactor/PureSolidPhase.cpp",
    "src/unitOperations/reactor/ReactionHeat.cpp",
+   "src/unitOperations/reactor/ReactorOutlet.cpp",
    "src/unitOperations/reactor/gibbsMethod/DirectMin.cpp",
    "src/unitOperations/reactor/gibbsMethod/ElementPotential.cpp",
    "src/unitOperations/reactor/gibbsMethod/GibbsLog.cpp",
@@ -10269,13 +11056,17 @@
    "src/outerDriver/ParetoSweepDriver.cpp",
    "src/outerDriver/ResponseExtractor.cpp",
    "src/outerDriver/SweepDriver.cpp",
+   "src/postProcessing/BatchPlanPass.cpp",
    "src/postProcessing/CostingPass.cpp",
    "src/postProcessing/EconomicsPass.cpp",
    "src/postProcessing/PinchPass.cpp",
    "src/postProcessing/PostProcessor.cpp",
    "src/postProcessing/SizingPass.cpp",
    "src/postProcessing/costing/CostingModel.cpp",
+   "src/postProcessing/costing/DeclaredQuote.cpp",
+   "src/postProcessing/costing/SteelMassCost.cpp",
    "src/postProcessing/costing/Turton.cpp",
+   "src/postProcessing/layout/PlantLayout.cpp",
    "src/postProcessing/sizing/CatalystBedSize.cpp",
    "src/postProcessing/sizing/ColumnSize.cpp",
    "src/postProcessing/sizing/CompressorSize.cpp",
@@ -10284,12 +11075,15 @@
    "src/postProcessing/sizing/CycloneSize.cpp",
    "src/postProcessing/sizing/EquipmentSize.cpp",
    "src/postProcessing/sizing/EvaporatorSize.cpp",
+   "src/postProcessing/sizing/GasStoreSize.cpp",
    "src/postProcessing/sizing/Inventory.cpp",
+   "src/postProcessing/sizing/MaterialLimits.cpp",
    "src/postProcessing/sizing/PhaseDensity.cpp",
    "src/postProcessing/sizing/ReliefValveSize.cpp",
    "src/postProcessing/sizing/ShellTubeHX.cpp",
    "src/postProcessing/sizing/SprayDryerSize.cpp",
    "src/postProcessing/sizing/StirredTank.cpp",
+   "src/postProcessing/sizing/StorageLink.cpp",
    "src/postProcessing/sizing/StorageTankSize.cpp",
    "src/postProcessing/sizing/VesselSize.cpp",
    "src/reporting/ComputedReport.cpp",
@@ -10306,6 +11100,8 @@
    "src/reporting/StreamTableReport.cpp",
    "src/reporting/UtilitiesReport.cpp",
    "src/reporting/UtilityAllocationReport.cpp",
+   "src/result/BatchPlanJson.cpp",
+   "src/result/BuildingJson.cpp",
    "src/result/ComponentIdentity.cpp",
    "src/result/ResultEmitter.cpp",
    "src/thermo/ApproximationAuthorisation.cpp",
@@ -10325,8 +11121,11 @@
   ],
   "src/core/RegistryRefusal.H": [
    "src/core/RegistryRefusal.cpp",
+   "src/postProcessing/EconomicsPass.cpp",
    "src/postProcessing/costing/CostingModel.cpp",
    "src/postProcessing/costing/Turton.cpp",
+   "src/postProcessing/layout/BuildingLayout.cpp",
+   "src/postProcessing/layout/PlantLayout.cpp",
    "src/postProcessing/sizing/ConverterShellSize.cpp",
    "src/postProcessing/sizing/ReliefValveSize.cpp",
    "src/postProcessing/sizing/ShellTubeHX.cpp",
@@ -10390,13 +11189,18 @@
    "src/outerDriver/ParetoSweepDriver.cpp",
    "src/outerDriver/ResponseExtractor.cpp",
    "src/outerDriver/SweepDriver.cpp",
+   "src/postProcessing/BatchPlanPass.cpp",
    "src/postProcessing/CostingPass.cpp",
    "src/postProcessing/EconomicsPass.cpp",
    "src/postProcessing/PinchPass.cpp",
    "src/postProcessing/PostProcessor.cpp",
    "src/postProcessing/SizingPass.cpp",
    "src/postProcessing/costing/CostingModel.cpp",
+   "src/postProcessing/costing/DeclaredQuote.cpp",
+   "src/postProcessing/costing/SteelMassCost.cpp",
    "src/postProcessing/costing/Turton.cpp",
+   "src/postProcessing/layout/BuildingLayout.cpp",
+   "src/postProcessing/layout/PlantLayout.cpp",
    "src/postProcessing/sizing/CatalystBedSize.cpp",
    "src/postProcessing/sizing/ColumnSize.cpp",
    "src/postProcessing/sizing/CompressorSize.cpp",
@@ -10406,12 +11210,15 @@
    "src/postProcessing/sizing/DesignDefaults.cpp",
    "src/postProcessing/sizing/EquipmentSize.cpp",
    "src/postProcessing/sizing/EvaporatorSize.cpp",
+   "src/postProcessing/sizing/GasStoreSize.cpp",
    "src/postProcessing/sizing/Inventory.cpp",
+   "src/postProcessing/sizing/MaterialLimits.cpp",
    "src/postProcessing/sizing/PhaseDensity.cpp",
    "src/postProcessing/sizing/ReliefValveSize.cpp",
    "src/postProcessing/sizing/ShellTubeHX.cpp",
    "src/postProcessing/sizing/SprayDryerSize.cpp",
    "src/postProcessing/sizing/StirredTank.cpp",
+   "src/postProcessing/sizing/StorageLink.cpp",
    "src/postProcessing/sizing/StorageTankSize.cpp",
    "src/postProcessing/sizing/VesselSize.cpp",
    "src/reporting/ComputedReport.cpp",
@@ -10428,6 +11235,8 @@
    "src/reporting/StreamTableReport.cpp",
    "src/reporting/UtilitiesReport.cpp",
    "src/reporting/UtilityAllocationReport.cpp",
+   "src/result/BatchPlanJson.cpp",
+   "src/result/BuildingJson.cpp",
    "src/result/ComponentIdentity.cpp",
    "src/result/ResultEmitter.cpp",
    "src/unitOperations/batch/BatchAccumulator.cpp",
@@ -10463,13 +11272,17 @@
    "src/outerDriver/ParetoSweepDriver.cpp",
    "src/outerDriver/ResponseExtractor.cpp",
    "src/outerDriver/SweepDriver.cpp",
+   "src/postProcessing/BatchPlanPass.cpp",
    "src/postProcessing/CostingPass.cpp",
    "src/postProcessing/EconomicsPass.cpp",
    "src/postProcessing/PinchPass.cpp",
    "src/postProcessing/PostProcessor.cpp",
    "src/postProcessing/SizingPass.cpp",
    "src/postProcessing/costing/CostingModel.cpp",
+   "src/postProcessing/costing/DeclaredQuote.cpp",
+   "src/postProcessing/costing/SteelMassCost.cpp",
    "src/postProcessing/costing/Turton.cpp",
+   "src/postProcessing/layout/PlantLayout.cpp",
    "src/postProcessing/sizing/CatalystBedSize.cpp",
    "src/postProcessing/sizing/ColumnSize.cpp",
    "src/postProcessing/sizing/CompressorSize.cpp",
@@ -10478,12 +11291,15 @@
    "src/postProcessing/sizing/CycloneSize.cpp",
    "src/postProcessing/sizing/EquipmentSize.cpp",
    "src/postProcessing/sizing/EvaporatorSize.cpp",
+   "src/postProcessing/sizing/GasStoreSize.cpp",
    "src/postProcessing/sizing/Inventory.cpp",
+   "src/postProcessing/sizing/MaterialLimits.cpp",
    "src/postProcessing/sizing/PhaseDensity.cpp",
    "src/postProcessing/sizing/ReliefValveSize.cpp",
    "src/postProcessing/sizing/ShellTubeHX.cpp",
    "src/postProcessing/sizing/SprayDryerSize.cpp",
    "src/postProcessing/sizing/StirredTank.cpp",
+   "src/postProcessing/sizing/StorageLink.cpp",
    "src/postProcessing/sizing/StorageTankSize.cpp",
    "src/postProcessing/sizing/VesselSize.cpp",
    "src/propertyOps/FitParameters.cpp",
@@ -10501,6 +11317,8 @@
    "src/reporting/StreamTableReport.cpp",
    "src/reporting/UtilitiesReport.cpp",
    "src/reporting/UtilityAllocationReport.cpp",
+   "src/result/BatchPlanJson.cpp",
+   "src/result/BuildingJson.cpp",
    "src/result/ComponentIdentity.cpp",
    "src/result/ResultEmitter.cpp",
    "src/thermo/ThermoPackage.cpp",
@@ -10559,13 +11377,18 @@
    "src/outerDriver/ParetoSweepDriver.cpp",
    "src/outerDriver/ResponseExtractor.cpp",
    "src/outerDriver/SweepDriver.cpp",
+   "src/postProcessing/BatchPlanPass.cpp",
    "src/postProcessing/CostingPass.cpp",
    "src/postProcessing/EconomicsPass.cpp",
    "src/postProcessing/PinchPass.cpp",
    "src/postProcessing/PostProcessor.cpp",
    "src/postProcessing/SizingPass.cpp",
    "src/postProcessing/costing/CostingModel.cpp",
+   "src/postProcessing/costing/DeclaredQuote.cpp",
+   "src/postProcessing/costing/SteelMassCost.cpp",
    "src/postProcessing/costing/Turton.cpp",
+   "src/postProcessing/layout/BuildingLayout.cpp",
+   "src/postProcessing/layout/PlantLayout.cpp",
    "src/postProcessing/sizing/CatalystBedSize.cpp",
    "src/postProcessing/sizing/ColumnSize.cpp",
    "src/postProcessing/sizing/CompressorSize.cpp",
@@ -10575,12 +11398,15 @@
    "src/postProcessing/sizing/DesignDefaults.cpp",
    "src/postProcessing/sizing/EquipmentSize.cpp",
    "src/postProcessing/sizing/EvaporatorSize.cpp",
+   "src/postProcessing/sizing/GasStoreSize.cpp",
    "src/postProcessing/sizing/Inventory.cpp",
+   "src/postProcessing/sizing/MaterialLimits.cpp",
    "src/postProcessing/sizing/PhaseDensity.cpp",
    "src/postProcessing/sizing/ReliefValveSize.cpp",
    "src/postProcessing/sizing/ShellTubeHX.cpp",
    "src/postProcessing/sizing/SprayDryerSize.cpp",
    "src/postProcessing/sizing/StirredTank.cpp",
+   "src/postProcessing/sizing/StorageLink.cpp",
    "src/postProcessing/sizing/StorageTankSize.cpp",
    "src/postProcessing/sizing/VesselMechanics.cpp",
    "src/postProcessing/sizing/VesselSize.cpp",
@@ -10647,6 +11473,8 @@
    "src/reporting/StreamTableReport.cpp",
    "src/reporting/UtilitiesReport.cpp",
    "src/reporting/UtilityAllocationReport.cpp",
+   "src/result/BatchPlanJson.cpp",
+   "src/result/BuildingJson.cpp",
    "src/result/ComponentIdentity.cpp",
    "src/result/ResultEmitter.cpp",
    "src/solver/ActiveSetQP.cpp",
@@ -10824,6 +11652,7 @@
    "src/unitOperations/reactor/PolymerKPIs.cpp",
    "src/unitOperations/reactor/PureSolidPhase.cpp",
    "src/unitOperations/reactor/ReactionHeat.cpp",
+   "src/unitOperations/reactor/ReactorOutlet.cpp",
    "src/unitOperations/reactor/gibbsMethod/DirectMin.cpp",
    "src/unitOperations/reactor/gibbsMethod/ElementPotential.cpp",
    "src/unitOperations/reactor/gibbsMethod/GibbsLog.cpp",
@@ -10944,6 +11773,8 @@
    "src/postProcessing/PostProcessor.cpp",
    "src/postProcessing/SizingPass.cpp",
    "src/postProcessing/costing/CostingModel.cpp",
+   "src/postProcessing/costing/DeclaredQuote.cpp",
+   "src/postProcessing/costing/SteelMassCost.cpp",
    "src/postProcessing/costing/Turton.cpp",
    "src/postProcessing/sizing/CatalystBedSize.cpp",
    "src/postProcessing/sizing/ColumnSize.cpp",
@@ -10953,6 +11784,8 @@
    "src/postProcessing/sizing/CycloneSize.cpp",
    "src/postProcessing/sizing/EquipmentSize.cpp",
    "src/postProcessing/sizing/EvaporatorSize.cpp",
+   "src/postProcessing/sizing/GasStoreSize.cpp",
+   "src/postProcessing/sizing/MaterialLimits.cpp",
    "src/postProcessing/sizing/ReliefValveSize.cpp",
    "src/postProcessing/sizing/ShellTubeHX.cpp",
    "src/postProcessing/sizing/SprayDryerSize.cpp",
@@ -11019,6 +11852,10 @@
    "src/outerDriver/OuterDriver.cpp",
    "src/outerDriver/SweepDriver.cpp"
   ],
+  "src/postProcessing/BatchPlanPass.H": [
+   "src/postProcessing/BatchPlanPass.cpp",
+   "src/postProcessing/PostProcessor.cpp"
+  ],
   "src/postProcessing/CostingPass.H": [
    "src/postProcessing/CostingPass.cpp",
    "src/postProcessing/PostProcessor.cpp"
@@ -11039,6 +11876,7 @@
    "src/outerDriver/DesignSpec.cpp",
    "src/outerDriver/OptimizationDriver.cpp",
    "src/outerDriver/SweepDriver.cpp",
+   "src/postProcessing/BatchPlanPass.cpp",
    "src/postProcessing/CostingPass.cpp",
    "src/postProcessing/EconomicsPass.cpp",
    "src/postProcessing/PinchPass.cpp",
@@ -11055,11 +11893,30 @@
    "src/postProcessing/CostingPass.cpp",
    "src/postProcessing/PostProcessor.cpp",
    "src/postProcessing/costing/CostingModel.cpp",
+   "src/postProcessing/costing/DeclaredQuote.cpp",
+   "src/postProcessing/costing/SteelMassCost.cpp",
    "src/postProcessing/costing/Turton.cpp"
+  ],
+  "src/postProcessing/costing/DeclaredQuote.H": [
+   "src/postProcessing/CostingPass.cpp",
+   "src/postProcessing/costing/DeclaredQuote.cpp"
+  ],
+  "src/postProcessing/costing/SteelMassCost.H": [
+   "src/postProcessing/CostingPass.cpp",
+   "src/postProcessing/costing/SteelMassCost.cpp"
   ],
   "src/postProcessing/costing/Turton.H": [
    "src/postProcessing/costing/CostingModel.cpp",
    "src/postProcessing/costing/Turton.cpp"
+  ],
+  "src/postProcessing/layout/BuildingLayout.H": [
+   "src/applications/choupoSolve/main.cpp",
+   "src/postProcessing/layout/BuildingLayout.cpp",
+   "src/postProcessing/layout/PlantLayout.cpp"
+  ],
+  "src/postProcessing/layout/PlantLayout.H": [
+   "src/applications/choupoSolve/main.cpp",
+   "src/postProcessing/layout/PlantLayout.cpp"
   ],
   "src/postProcessing/sizing/CatalystBedSize.H": [
    "src/postProcessing/sizing/CatalystBedSize.cpp",
@@ -11090,6 +11947,7 @@
    "src/postProcessing/sizing/ColumnSize.cpp",
    "src/postProcessing/sizing/ConverterShellSize.cpp",
    "src/postProcessing/sizing/DesignDefaults.cpp",
+   "src/postProcessing/sizing/GasStoreSize.cpp",
    "src/postProcessing/sizing/ReliefValveSize.cpp",
    "src/postProcessing/sizing/StirredTank.cpp",
    "src/postProcessing/sizing/VesselSize.cpp"
@@ -11105,6 +11963,7 @@
    "src/postProcessing/sizing/CycloneSize.cpp",
    "src/postProcessing/sizing/EquipmentSize.cpp",
    "src/postProcessing/sizing/EvaporatorSize.cpp",
+   "src/postProcessing/sizing/GasStoreSize.cpp",
    "src/postProcessing/sizing/ReliefValveSize.cpp",
    "src/postProcessing/sizing/ShellTubeHX.cpp",
    "src/postProcessing/sizing/SprayDryerSize.cpp",
@@ -11116,11 +11975,32 @@
    "src/postProcessing/sizing/EquipmentSize.cpp",
    "src/postProcessing/sizing/EvaporatorSize.cpp"
   ],
+  "src/postProcessing/sizing/GasStoreSize.H": [
+   "src/postProcessing/SizingPass.cpp",
+   "src/postProcessing/sizing/GasStoreSize.cpp"
+  ],
   "src/postProcessing/sizing/Inventory.H": [
    "src/postProcessing/SizingPass.cpp",
    "src/postProcessing/sizing/Inventory.cpp"
   ],
+  "src/postProcessing/sizing/MaterialLimits.H": [
+   "src/postProcessing/SizingPass.cpp",
+   "src/postProcessing/sizing/CatalystBedSize.cpp",
+   "src/postProcessing/sizing/ColumnSize.cpp",
+   "src/postProcessing/sizing/CompressorSize.cpp",
+   "src/postProcessing/sizing/ConverterShellSize.cpp",
+   "src/postProcessing/sizing/CrystalliserSize.cpp",
+   "src/postProcessing/sizing/CycloneSize.cpp",
+   "src/postProcessing/sizing/EvaporatorSize.cpp",
+   "src/postProcessing/sizing/GasStoreSize.cpp",
+   "src/postProcessing/sizing/MaterialLimits.cpp",
+   "src/postProcessing/sizing/ShellTubeHX.cpp",
+   "src/postProcessing/sizing/SprayDryerSize.cpp",
+   "src/postProcessing/sizing/StirredTank.cpp",
+   "src/postProcessing/sizing/VesselSize.cpp"
+  ],
   "src/postProcessing/sizing/PhaseDensity.H": [
+   "src/postProcessing/sizing/GasStoreSize.cpp",
    "src/postProcessing/sizing/Inventory.cpp",
    "src/postProcessing/sizing/PhaseDensity.cpp",
    "src/postProcessing/sizing/ReliefValveSize.cpp",
@@ -11147,6 +12027,11 @@
    "src/postProcessing/sizing/EquipmentSize.cpp",
    "src/postProcessing/sizing/StirredTank.cpp"
   ],
+  "src/postProcessing/sizing/StorageLink.H": [
+   "src/postProcessing/sizing/GasStoreSize.cpp",
+   "src/postProcessing/sizing/StorageLink.cpp",
+   "src/postProcessing/sizing/StorageTankSize.cpp"
+  ],
   "src/postProcessing/sizing/StorageTankSize.H": [
    "src/postProcessing/SizingPass.cpp",
    "src/postProcessing/sizing/StorageTankSize.cpp"
@@ -11155,6 +12040,7 @@
    "src/postProcessing/sizing/CatalystBedSize.cpp",
    "src/postProcessing/sizing/ColumnSize.cpp",
    "src/postProcessing/sizing/ConverterShellSize.cpp",
+   "src/postProcessing/sizing/GasStoreSize.cpp",
    "src/postProcessing/sizing/StirredTank.cpp",
    "src/postProcessing/sizing/VesselMechanics.cpp",
    "src/postProcessing/sizing/VesselSize.cpp"
@@ -11523,6 +12409,14 @@
    "src/reporting/Report.cpp",
    "src/reporting/UtilityAllocationReport.cpp"
   ],
+  "src/result/BatchPlanJson.H": [
+   "src/result/BatchPlanJson.cpp",
+   "src/result/ResultEmitter.cpp"
+  ],
+  "src/result/BuildingJson.H": [
+   "src/result/BuildingJson.cpp",
+   "src/result/ResultEmitter.cpp"
+  ],
   "src/result/ComponentIdentity.H": [
    "src/applications/choupoBatch/main.cpp",
    "src/applications/choupoSolve/main.cpp",
@@ -11537,6 +12431,9 @@
    "src/outerDriver/OptimizationDriver.cpp",
    "src/outerDriver/ParetoSweepDriver.cpp",
    "src/outerDriver/SweepDriver.cpp",
+   "src/postProcessing/BatchPlanPass.cpp",
+   "src/result/BatchPlanJson.cpp",
+   "src/result/BuildingJson.cpp",
    "src/result/ResultEmitter.cpp"
   ],
   "src/result/SimulationResult.H": [
@@ -11554,13 +12451,17 @@
    "src/outerDriver/ParetoSweepDriver.cpp",
    "src/outerDriver/ResponseExtractor.cpp",
    "src/outerDriver/SweepDriver.cpp",
+   "src/postProcessing/BatchPlanPass.cpp",
    "src/postProcessing/CostingPass.cpp",
    "src/postProcessing/EconomicsPass.cpp",
    "src/postProcessing/PinchPass.cpp",
    "src/postProcessing/PostProcessor.cpp",
    "src/postProcessing/SizingPass.cpp",
    "src/postProcessing/costing/CostingModel.cpp",
+   "src/postProcessing/costing/DeclaredQuote.cpp",
+   "src/postProcessing/costing/SteelMassCost.cpp",
    "src/postProcessing/costing/Turton.cpp",
+   "src/postProcessing/layout/PlantLayout.cpp",
    "src/postProcessing/sizing/CatalystBedSize.cpp",
    "src/postProcessing/sizing/ColumnSize.cpp",
    "src/postProcessing/sizing/CompressorSize.cpp",
@@ -11569,12 +12470,15 @@
    "src/postProcessing/sizing/CycloneSize.cpp",
    "src/postProcessing/sizing/EquipmentSize.cpp",
    "src/postProcessing/sizing/EvaporatorSize.cpp",
+   "src/postProcessing/sizing/GasStoreSize.cpp",
    "src/postProcessing/sizing/Inventory.cpp",
+   "src/postProcessing/sizing/MaterialLimits.cpp",
    "src/postProcessing/sizing/PhaseDensity.cpp",
    "src/postProcessing/sizing/ReliefValveSize.cpp",
    "src/postProcessing/sizing/ShellTubeHX.cpp",
    "src/postProcessing/sizing/SprayDryerSize.cpp",
    "src/postProcessing/sizing/StirredTank.cpp",
+   "src/postProcessing/sizing/StorageLink.cpp",
    "src/postProcessing/sizing/StorageTankSize.cpp",
    "src/postProcessing/sizing/VesselSize.cpp",
    "src/reporting/ComputedReport.cpp",
@@ -11591,6 +12495,8 @@
    "src/reporting/StreamTableReport.cpp",
    "src/reporting/UtilitiesReport.cpp",
    "src/reporting/UtilityAllocationReport.cpp",
+   "src/result/BatchPlanJson.cpp",
+   "src/result/BuildingJson.cpp",
    "src/result/ComponentIdentity.cpp",
    "src/result/ResultEmitter.cpp",
    "src/unitOperations/batch/BatchAccumulator.cpp",
@@ -11620,13 +12526,17 @@
    "src/outerDriver/ParetoSweepDriver.cpp",
    "src/outerDriver/ResponseExtractor.cpp",
    "src/outerDriver/SweepDriver.cpp",
+   "src/postProcessing/BatchPlanPass.cpp",
    "src/postProcessing/CostingPass.cpp",
    "src/postProcessing/EconomicsPass.cpp",
    "src/postProcessing/PinchPass.cpp",
    "src/postProcessing/PostProcessor.cpp",
    "src/postProcessing/SizingPass.cpp",
    "src/postProcessing/costing/CostingModel.cpp",
+   "src/postProcessing/costing/DeclaredQuote.cpp",
+   "src/postProcessing/costing/SteelMassCost.cpp",
    "src/postProcessing/costing/Turton.cpp",
+   "src/postProcessing/layout/PlantLayout.cpp",
    "src/postProcessing/sizing/CatalystBedSize.cpp",
    "src/postProcessing/sizing/ColumnSize.cpp",
    "src/postProcessing/sizing/CompressorSize.cpp",
@@ -11635,12 +12545,15 @@
    "src/postProcessing/sizing/CycloneSize.cpp",
    "src/postProcessing/sizing/EquipmentSize.cpp",
    "src/postProcessing/sizing/EvaporatorSize.cpp",
+   "src/postProcessing/sizing/GasStoreSize.cpp",
    "src/postProcessing/sizing/Inventory.cpp",
+   "src/postProcessing/sizing/MaterialLimits.cpp",
    "src/postProcessing/sizing/PhaseDensity.cpp",
    "src/postProcessing/sizing/ReliefValveSize.cpp",
    "src/postProcessing/sizing/ShellTubeHX.cpp",
    "src/postProcessing/sizing/SprayDryerSize.cpp",
    "src/postProcessing/sizing/StirredTank.cpp",
+   "src/postProcessing/sizing/StorageLink.cpp",
    "src/postProcessing/sizing/StorageTankSize.cpp",
    "src/postProcessing/sizing/VesselSize.cpp",
    "src/propertyOps/EnthalpyConcentration.cpp",
@@ -11664,6 +12577,8 @@
    "src/reporting/StreamTableReport.cpp",
    "src/reporting/UtilitiesReport.cpp",
    "src/reporting/UtilityAllocationReport.cpp",
+   "src/result/BatchPlanJson.cpp",
+   "src/result/BuildingJson.cpp",
    "src/result/ComponentIdentity.cpp",
    "src/result/ResultEmitter.cpp",
    "src/unitOperations/UnitOperation.cpp",
@@ -11707,6 +12622,7 @@
    "src/unitOperations/reactor/GibbsReactor.cpp",
    "src/unitOperations/reactor/PFR.cpp",
    "src/unitOperations/reactor/PolymerKPIs.cpp",
+   "src/unitOperations/reactor/ReactorOutlet.cpp",
    "src/unitOperations/rotating/Compressor.cpp",
    "src/unitOperations/rotating/ElectricLoad.cpp",
    "src/unitOperations/rotating/Pump.cpp",
@@ -11751,13 +12667,17 @@
    "src/outerDriver/ParetoSweepDriver.cpp",
    "src/outerDriver/ResponseExtractor.cpp",
    "src/outerDriver/SweepDriver.cpp",
+   "src/postProcessing/BatchPlanPass.cpp",
    "src/postProcessing/CostingPass.cpp",
    "src/postProcessing/EconomicsPass.cpp",
    "src/postProcessing/PinchPass.cpp",
    "src/postProcessing/PostProcessor.cpp",
    "src/postProcessing/SizingPass.cpp",
    "src/postProcessing/costing/CostingModel.cpp",
+   "src/postProcessing/costing/DeclaredQuote.cpp",
+   "src/postProcessing/costing/SteelMassCost.cpp",
    "src/postProcessing/costing/Turton.cpp",
+   "src/postProcessing/layout/PlantLayout.cpp",
    "src/postProcessing/sizing/CatalystBedSize.cpp",
    "src/postProcessing/sizing/ColumnSize.cpp",
    "src/postProcessing/sizing/CompressorSize.cpp",
@@ -11766,12 +12686,15 @@
    "src/postProcessing/sizing/CycloneSize.cpp",
    "src/postProcessing/sizing/EquipmentSize.cpp",
    "src/postProcessing/sizing/EvaporatorSize.cpp",
+   "src/postProcessing/sizing/GasStoreSize.cpp",
    "src/postProcessing/sizing/Inventory.cpp",
+   "src/postProcessing/sizing/MaterialLimits.cpp",
    "src/postProcessing/sizing/PhaseDensity.cpp",
    "src/postProcessing/sizing/ReliefValveSize.cpp",
    "src/postProcessing/sizing/ShellTubeHX.cpp",
    "src/postProcessing/sizing/SprayDryerSize.cpp",
    "src/postProcessing/sizing/StirredTank.cpp",
+   "src/postProcessing/sizing/StorageLink.cpp",
    "src/postProcessing/sizing/StorageTankSize.cpp",
    "src/postProcessing/sizing/VesselSize.cpp",
    "src/propertyOps/ElectrolytePackageActivity.cpp",
@@ -11816,6 +12739,8 @@
    "src/reporting/StreamTableReport.cpp",
    "src/reporting/UtilitiesReport.cpp",
    "src/reporting/UtilityAllocationReport.cpp",
+   "src/result/BatchPlanJson.cpp",
+   "src/result/BuildingJson.cpp",
    "src/result/ComponentIdentity.cpp",
    "src/result/ResultEmitter.cpp",
    "src/streams/Composition.cpp",
@@ -11889,6 +12814,7 @@
    "src/unitOperations/reactor/PFR.cpp",
    "src/unitOperations/reactor/PureSolidPhase.cpp",
    "src/unitOperations/reactor/ReactionHeat.cpp",
+   "src/unitOperations/reactor/ReactorOutlet.cpp",
    "src/unitOperations/reactor/gibbsMethod/DirectMin.cpp",
    "src/unitOperations/reactor/gibbsMethod/ElementPotential.cpp",
    "src/unitOperations/reactor/gibbsMethod/GibbsLog.cpp",
@@ -12055,13 +12981,17 @@
    "src/outerDriver/ParetoSweepDriver.cpp",
    "src/outerDriver/ResponseExtractor.cpp",
    "src/outerDriver/SweepDriver.cpp",
+   "src/postProcessing/BatchPlanPass.cpp",
    "src/postProcessing/CostingPass.cpp",
    "src/postProcessing/EconomicsPass.cpp",
    "src/postProcessing/PinchPass.cpp",
    "src/postProcessing/PostProcessor.cpp",
    "src/postProcessing/SizingPass.cpp",
    "src/postProcessing/costing/CostingModel.cpp",
+   "src/postProcessing/costing/DeclaredQuote.cpp",
+   "src/postProcessing/costing/SteelMassCost.cpp",
    "src/postProcessing/costing/Turton.cpp",
+   "src/postProcessing/layout/PlantLayout.cpp",
    "src/postProcessing/sizing/CatalystBedSize.cpp",
    "src/postProcessing/sizing/ColumnSize.cpp",
    "src/postProcessing/sizing/CompressorSize.cpp",
@@ -12070,12 +13000,15 @@
    "src/postProcessing/sizing/CycloneSize.cpp",
    "src/postProcessing/sizing/EquipmentSize.cpp",
    "src/postProcessing/sizing/EvaporatorSize.cpp",
+   "src/postProcessing/sizing/GasStoreSize.cpp",
    "src/postProcessing/sizing/Inventory.cpp",
+   "src/postProcessing/sizing/MaterialLimits.cpp",
    "src/postProcessing/sizing/PhaseDensity.cpp",
    "src/postProcessing/sizing/ReliefValveSize.cpp",
    "src/postProcessing/sizing/ShellTubeHX.cpp",
    "src/postProcessing/sizing/SprayDryerSize.cpp",
    "src/postProcessing/sizing/StirredTank.cpp",
+   "src/postProcessing/sizing/StorageLink.cpp",
    "src/postProcessing/sizing/StorageTankSize.cpp",
    "src/postProcessing/sizing/VesselSize.cpp",
    "src/propertyOps/EnthalpyConcentration.cpp",
@@ -12099,6 +13032,8 @@
    "src/reporting/StreamTableReport.cpp",
    "src/reporting/UtilitiesReport.cpp",
    "src/reporting/UtilityAllocationReport.cpp",
+   "src/result/BatchPlanJson.cpp",
+   "src/result/BuildingJson.cpp",
    "src/result/ComponentIdentity.cpp",
    "src/result/ResultEmitter.cpp",
    "src/streams/SpeciationBlock.cpp",
@@ -12146,6 +13081,7 @@
    "src/unitOperations/reactor/GibbsReactor.cpp",
    "src/unitOperations/reactor/PFR.cpp",
    "src/unitOperations/reactor/PolymerKPIs.cpp",
+   "src/unitOperations/reactor/ReactorOutlet.cpp",
    "src/unitOperations/rotating/Compressor.cpp",
    "src/unitOperations/rotating/ElectricLoad.cpp",
    "src/unitOperations/rotating/Pump.cpp",
@@ -12266,13 +13202,17 @@
    "src/outerDriver/ParetoSweepDriver.cpp",
    "src/outerDriver/ResponseExtractor.cpp",
    "src/outerDriver/SweepDriver.cpp",
+   "src/postProcessing/BatchPlanPass.cpp",
    "src/postProcessing/CostingPass.cpp",
    "src/postProcessing/EconomicsPass.cpp",
    "src/postProcessing/PinchPass.cpp",
    "src/postProcessing/PostProcessor.cpp",
    "src/postProcessing/SizingPass.cpp",
    "src/postProcessing/costing/CostingModel.cpp",
+   "src/postProcessing/costing/DeclaredQuote.cpp",
+   "src/postProcessing/costing/SteelMassCost.cpp",
    "src/postProcessing/costing/Turton.cpp",
+   "src/postProcessing/layout/PlantLayout.cpp",
    "src/postProcessing/sizing/CatalystBedSize.cpp",
    "src/postProcessing/sizing/ColumnSize.cpp",
    "src/postProcessing/sizing/CompressorSize.cpp",
@@ -12281,12 +13221,15 @@
    "src/postProcessing/sizing/CycloneSize.cpp",
    "src/postProcessing/sizing/EquipmentSize.cpp",
    "src/postProcessing/sizing/EvaporatorSize.cpp",
+   "src/postProcessing/sizing/GasStoreSize.cpp",
    "src/postProcessing/sizing/Inventory.cpp",
+   "src/postProcessing/sizing/MaterialLimits.cpp",
    "src/postProcessing/sizing/PhaseDensity.cpp",
    "src/postProcessing/sizing/ReliefValveSize.cpp",
    "src/postProcessing/sizing/ShellTubeHX.cpp",
    "src/postProcessing/sizing/SprayDryerSize.cpp",
    "src/postProcessing/sizing/StirredTank.cpp",
+   "src/postProcessing/sizing/StorageLink.cpp",
    "src/postProcessing/sizing/StorageTankSize.cpp",
    "src/postProcessing/sizing/VesselSize.cpp",
    "src/propertyOps/ENRTLMixedSolventOp.cpp",
@@ -12345,6 +13288,8 @@
    "src/reporting/StreamTableReport.cpp",
    "src/reporting/UtilitiesReport.cpp",
    "src/reporting/UtilityAllocationReport.cpp",
+   "src/result/BatchPlanJson.cpp",
+   "src/result/BuildingJson.cpp",
    "src/result/ComponentIdentity.cpp",
    "src/result/ResultEmitter.cpp",
    "src/streams/Composition.cpp",
@@ -12460,6 +13405,7 @@
    "src/unitOperations/reactor/PFR.cpp",
    "src/unitOperations/reactor/PureSolidPhase.cpp",
    "src/unitOperations/reactor/ReactionHeat.cpp",
+   "src/unitOperations/reactor/ReactorOutlet.cpp",
    "src/unitOperations/reactor/gibbsMethod/DirectMin.cpp",
    "src/unitOperations/reactor/gibbsMethod/ElementPotential.cpp",
    "src/unitOperations/reactor/gibbsMethod/GibbsLog.cpp",
@@ -12622,13 +13568,17 @@
    "src/outerDriver/ParetoSweepDriver.cpp",
    "src/outerDriver/ResponseExtractor.cpp",
    "src/outerDriver/SweepDriver.cpp",
+   "src/postProcessing/BatchPlanPass.cpp",
    "src/postProcessing/CostingPass.cpp",
    "src/postProcessing/EconomicsPass.cpp",
    "src/postProcessing/PinchPass.cpp",
    "src/postProcessing/PostProcessor.cpp",
    "src/postProcessing/SizingPass.cpp",
    "src/postProcessing/costing/CostingModel.cpp",
+   "src/postProcessing/costing/DeclaredQuote.cpp",
+   "src/postProcessing/costing/SteelMassCost.cpp",
    "src/postProcessing/costing/Turton.cpp",
+   "src/postProcessing/layout/PlantLayout.cpp",
    "src/postProcessing/sizing/CatalystBedSize.cpp",
    "src/postProcessing/sizing/ColumnSize.cpp",
    "src/postProcessing/sizing/CompressorSize.cpp",
@@ -12637,12 +13587,15 @@
    "src/postProcessing/sizing/CycloneSize.cpp",
    "src/postProcessing/sizing/EquipmentSize.cpp",
    "src/postProcessing/sizing/EvaporatorSize.cpp",
+   "src/postProcessing/sizing/GasStoreSize.cpp",
    "src/postProcessing/sizing/Inventory.cpp",
+   "src/postProcessing/sizing/MaterialLimits.cpp",
    "src/postProcessing/sizing/PhaseDensity.cpp",
    "src/postProcessing/sizing/ReliefValveSize.cpp",
    "src/postProcessing/sizing/ShellTubeHX.cpp",
    "src/postProcessing/sizing/SprayDryerSize.cpp",
    "src/postProcessing/sizing/StirredTank.cpp",
+   "src/postProcessing/sizing/StorageLink.cpp",
    "src/postProcessing/sizing/StorageTankSize.cpp",
    "src/postProcessing/sizing/VesselSize.cpp",
    "src/propertyOps/ElectrolytePackageActivity.cpp",
@@ -12687,6 +13640,8 @@
    "src/reporting/StreamTableReport.cpp",
    "src/reporting/UtilitiesReport.cpp",
    "src/reporting/UtilityAllocationReport.cpp",
+   "src/result/BatchPlanJson.cpp",
+   "src/result/BuildingJson.cpp",
    "src/result/ComponentIdentity.cpp",
    "src/result/ResultEmitter.cpp",
    "src/streams/Composition.cpp",
@@ -12760,6 +13715,7 @@
    "src/unitOperations/reactor/PFR.cpp",
    "src/unitOperations/reactor/PureSolidPhase.cpp",
    "src/unitOperations/reactor/ReactionHeat.cpp",
+   "src/unitOperations/reactor/ReactorOutlet.cpp",
    "src/unitOperations/reactor/gibbsMethod/DirectMin.cpp",
    "src/unitOperations/reactor/gibbsMethod/ElementPotential.cpp",
    "src/unitOperations/reactor/gibbsMethod/GibbsLog.cpp",
@@ -12796,8 +13752,10 @@
    "src/thermo/phase/LiquidPhase.cpp"
   ],
   "src/thermo/PricedDensity.H": [
+   "src/postProcessing/sizing/GasStoreSize.cpp",
    "src/postProcessing/sizing/PhaseDensity.cpp",
    "src/thermo/PricedDensity.cpp",
+   "src/unitOperations/distillation/TrayHydraulics.cpp",
    "src/unitOperations/storage/StorageTank.cpp",
    "src/unitOperations/valve/Valve.cpp"
   ],
@@ -12895,13 +13853,17 @@
    "src/outerDriver/ParetoSweepDriver.cpp",
    "src/outerDriver/ResponseExtractor.cpp",
    "src/outerDriver/SweepDriver.cpp",
+   "src/postProcessing/BatchPlanPass.cpp",
    "src/postProcessing/CostingPass.cpp",
    "src/postProcessing/EconomicsPass.cpp",
    "src/postProcessing/PinchPass.cpp",
    "src/postProcessing/PostProcessor.cpp",
    "src/postProcessing/SizingPass.cpp",
    "src/postProcessing/costing/CostingModel.cpp",
+   "src/postProcessing/costing/DeclaredQuote.cpp",
+   "src/postProcessing/costing/SteelMassCost.cpp",
    "src/postProcessing/costing/Turton.cpp",
+   "src/postProcessing/layout/PlantLayout.cpp",
    "src/postProcessing/sizing/CatalystBedSize.cpp",
    "src/postProcessing/sizing/ColumnSize.cpp",
    "src/postProcessing/sizing/CompressorSize.cpp",
@@ -12910,12 +13872,15 @@
    "src/postProcessing/sizing/CycloneSize.cpp",
    "src/postProcessing/sizing/EquipmentSize.cpp",
    "src/postProcessing/sizing/EvaporatorSize.cpp",
+   "src/postProcessing/sizing/GasStoreSize.cpp",
    "src/postProcessing/sizing/Inventory.cpp",
+   "src/postProcessing/sizing/MaterialLimits.cpp",
    "src/postProcessing/sizing/PhaseDensity.cpp",
    "src/postProcessing/sizing/ReliefValveSize.cpp",
    "src/postProcessing/sizing/ShellTubeHX.cpp",
    "src/postProcessing/sizing/SprayDryerSize.cpp",
    "src/postProcessing/sizing/StirredTank.cpp",
+   "src/postProcessing/sizing/StorageLink.cpp",
    "src/postProcessing/sizing/StorageTankSize.cpp",
    "src/postProcessing/sizing/VesselSize.cpp",
    "src/reporting/ComputedReport.cpp",
@@ -12932,6 +13897,8 @@
    "src/reporting/StreamTableReport.cpp",
    "src/reporting/UtilitiesReport.cpp",
    "src/reporting/UtilityAllocationReport.cpp",
+   "src/result/BatchPlanJson.cpp",
+   "src/result/BuildingJson.cpp",
    "src/result/ComponentIdentity.cpp",
    "src/result/ResultEmitter.cpp",
    "src/thermo/SaturationCurves.cpp",
@@ -13038,13 +14005,17 @@
    "src/outerDriver/ParetoSweepDriver.cpp",
    "src/outerDriver/ResponseExtractor.cpp",
    "src/outerDriver/SweepDriver.cpp",
+   "src/postProcessing/BatchPlanPass.cpp",
    "src/postProcessing/CostingPass.cpp",
    "src/postProcessing/EconomicsPass.cpp",
    "src/postProcessing/PinchPass.cpp",
    "src/postProcessing/PostProcessor.cpp",
    "src/postProcessing/SizingPass.cpp",
    "src/postProcessing/costing/CostingModel.cpp",
+   "src/postProcessing/costing/DeclaredQuote.cpp",
+   "src/postProcessing/costing/SteelMassCost.cpp",
    "src/postProcessing/costing/Turton.cpp",
+   "src/postProcessing/layout/PlantLayout.cpp",
    "src/postProcessing/sizing/CatalystBedSize.cpp",
    "src/postProcessing/sizing/ColumnSize.cpp",
    "src/postProcessing/sizing/CompressorSize.cpp",
@@ -13053,12 +14024,15 @@
    "src/postProcessing/sizing/CycloneSize.cpp",
    "src/postProcessing/sizing/EquipmentSize.cpp",
    "src/postProcessing/sizing/EvaporatorSize.cpp",
+   "src/postProcessing/sizing/GasStoreSize.cpp",
    "src/postProcessing/sizing/Inventory.cpp",
+   "src/postProcessing/sizing/MaterialLimits.cpp",
    "src/postProcessing/sizing/PhaseDensity.cpp",
    "src/postProcessing/sizing/ReliefValveSize.cpp",
    "src/postProcessing/sizing/ShellTubeHX.cpp",
    "src/postProcessing/sizing/SprayDryerSize.cpp",
    "src/postProcessing/sizing/StirredTank.cpp",
+   "src/postProcessing/sizing/StorageLink.cpp",
    "src/postProcessing/sizing/StorageTankSize.cpp",
    "src/postProcessing/sizing/VesselSize.cpp",
    "src/propertyOps/ElectrolytePackageActivity.cpp",
@@ -13103,6 +14077,8 @@
    "src/reporting/StreamTableReport.cpp",
    "src/reporting/UtilitiesReport.cpp",
    "src/reporting/UtilityAllocationReport.cpp",
+   "src/result/BatchPlanJson.cpp",
+   "src/result/BuildingJson.cpp",
    "src/result/ComponentIdentity.cpp",
    "src/result/ResultEmitter.cpp",
    "src/streams/Composition.cpp",
@@ -13175,6 +14151,7 @@
    "src/unitOperations/reactor/PFR.cpp",
    "src/unitOperations/reactor/PureSolidPhase.cpp",
    "src/unitOperations/reactor/ReactionHeat.cpp",
+   "src/unitOperations/reactor/ReactorOutlet.cpp",
    "src/unitOperations/reactor/gibbsMethod/DirectMin.cpp",
    "src/unitOperations/reactor/gibbsMethod/ElementPotential.cpp",
    "src/unitOperations/reactor/gibbsMethod/GibbsLog.cpp",
@@ -13583,6 +14560,7 @@
    "src/applications/choupoProps/main.cpp",
    "src/applications/choupoSolve/main.cpp",
    "src/dynamicDriver/DynamicDriver.cpp",
+   "src/postProcessing/sizing/GasStoreSize.cpp",
    "src/postProcessing/sizing/ReliefValveSize.cpp",
    "src/propertyOps/ExplainProperty.cpp",
    "src/propertyOps/MixingRules.cpp",
@@ -14089,6 +15067,7 @@
   "src/unitOperations/UnitOperation.H": [
    "src/applications/choupoSolve/main.cpp",
    "src/dynamicDriver/DynamicDriver.cpp",
+   "src/postProcessing/sizing/GasStoreSize.cpp",
    "src/postProcessing/sizing/ReliefValveSize.cpp",
    "src/postProcessing/sizing/ShellTubeHX.cpp",
    "src/propertyOps/EnthalpyConcentration.cpp",
@@ -14137,6 +15116,7 @@
    "src/unitOperations/reactor/GibbsReactor.cpp",
    "src/unitOperations/reactor/PFR.cpp",
    "src/unitOperations/reactor/PolymerKPIs.cpp",
+   "src/unitOperations/reactor/ReactorOutlet.cpp",
    "src/unitOperations/rotating/Compressor.cpp",
    "src/unitOperations/rotating/ElectricLoad.cpp",
    "src/unitOperations/rotating/Pump.cpp",
@@ -14326,6 +15306,7 @@
    "src/unitOperations/reactor/CSTR.cpp",
    "src/unitOperations/reactor/ConversionReactor.cpp",
    "src/unitOperations/reactor/PFR.cpp",
+   "src/unitOperations/reactor/ReactorOutlet.cpp",
    "src/unitOperations/separation/Extractor.cpp",
    "src/unitOperations/storage/StorageTank.cpp",
    "src/unitOperations/valve/Valve.cpp"
@@ -14359,6 +15340,7 @@
    "src/unitOperations/reactor/CSTR.cpp",
    "src/unitOperations/reactor/ConversionReactor.cpp",
    "src/unitOperations/reactor/PFR.cpp",
+   "src/unitOperations/reactor/ReactorOutlet.cpp",
    "src/unitOperations/storage/StorageTank.cpp",
    "src/unitOperations/valve/Valve.cpp"
   ],
@@ -14391,6 +15373,7 @@
    "src/unitOperations/reactor/CSTR.cpp",
    "src/unitOperations/reactor/ConversionReactor.cpp",
    "src/unitOperations/reactor/PFR.cpp",
+   "src/unitOperations/reactor/ReactorOutlet.cpp",
    "src/unitOperations/storage/StorageTank.cpp",
    "src/unitOperations/valve/Valve.cpp"
   ],
@@ -14691,6 +15674,12 @@
    "src/unitOperations/reactor/PFR.cpp",
    "src/unitOperations/reactor/ReactionHeat.cpp"
   ],
+  "src/unitOperations/reactor/ReactorOutlet.H": [
+   "src/unitOperations/reactor/CSTR.cpp",
+   "src/unitOperations/reactor/ConversionReactor.cpp",
+   "src/unitOperations/reactor/PFR.cpp",
+   "src/unitOperations/reactor/ReactorOutlet.cpp"
+  ],
   "src/unitOperations/reactor/TemperatureApproach.H": [
    "src/propertyOps/GibbsMapOp.cpp",
    "src/unitOperations/UnitOperation.cpp",
@@ -14774,6 +15763,7 @@
    "src/unitOperations/rotating/Turbine.cpp"
   ],
   "src/unitOperations/saturation/BubblePoint.H": [
+   "src/postProcessing/sizing/GasStoreSize.cpp",
    "src/postProcessing/sizing/ReliefValveSize.cpp",
    "src/propertyOps/EnthalpyConcentration.cpp",
    "src/propertyOps/FitParameters.cpp",

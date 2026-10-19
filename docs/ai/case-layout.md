@@ -472,6 +472,8 @@ sub-dict is that pass's configuration; the passes run in order after
 convergence and augment the result (they never change the solution):
 
 ```
+batchPlan { ... }                 // the batch plant on the balance (C99) --
+                                  //   ABOVE sizing/costing/economics, which may read it
 sizing    { ... }                 // equipment sizes from the converged duties
 costing   { method Turton; ... }  // cost from the sizes (case-sensitive; the former name `Guthrie` is refused, naming `Turton`)
 economics { ... }                 // cash-flow aggregation over the costed plant
@@ -1118,6 +1120,18 @@ quotes
 );
 ```
 
+**A quote may SCALE with its stage of the batch plan** (DEV.md 4c C99):
+`scaling { referenceSize 1 m3; exponent 0.6; exponentSource "..."; }` --
+`value` is then the price of ONE machine of `referenceSize` (WITH its unit: a
+volume for a batch stage, a mass rate for a semicontinuous one), and
+`C_p = value x CEPCI/cepci x rate x units x (size per unit /
+referenceSize)^exponent`, the size per unit and the number of units being the
+ones the batch plan published for the stage that groups the unit (the scale
+is the `S` column of `costs.csv` and the `quoteScale` factor).  REFUSED: no
+batch plan ran before the costing, the unit in no stage, an `item` quote, a
+reference size with no unit or of the other kind, a missing exponent or
+`exponentSource` (the six-tenths rule is a convention, never a default).
+
 `C_p = value x CEPCI/cepci x rate`; `C_BM = C_p` (installed) or
 `bareModuleFactor x C_p` (purchased: the CASE's factor -- Choupo supplies
 none); `C_TM = 1.18 C_BM`.  In the FCI the quote's C_BM is a module's
@@ -1136,6 +1150,67 @@ non-positive value, an unknown `currency`/`basis`/`kind`, another year with
 no `cepci` (or a `cepci` on the costing year), a purchased quote with no
 factor or factor source, a factor below 1, a factor beside `installed`.  A
 quote writes no specification sheet and is placed on no plot plan.  Worked
+case: `tutorials/plant/apalutamide01_tablets`.
+
+**THE BATCH PLANT, DESIGNED ON THE STEADY BALANCE (2026-10-19, DEV.md 4c
+C99).**  A plant that runs in LOTS (and some machines in CAMPAIGNS) keeps its
+steady flowsheet as the material balance PER UNIT OF PRODUCT, and a
+`batchPlan {}` pass designs the batch plant on it by the single-product
+method: size factors, the lot, lots a year, the limiting cycle of each
+train, parallel units, campaigns, occupancy.  Every time, mass, volume and
+density carries its unit (a bare number is refused: raw SI reads 3 as 3 s):
+
+```
+batchPlan
+{
+    product   packagedTablets;                 // the product stream
+    production { perYear 30000 kg; source "..."; reason "..."; }   // Q
+    lot { rule declared;  stream finalBlend;  mass 350 kg;         // B from a stream's mass,
+          // rule largestEquipment;            //   or min N_ip Vmax / S (every batch stage's maxVolume)
+          source "...";  reason "..."; }
+    lowUtilisation 0.25;                       // optional; the stated default, announced when used
+    trains
+    (
+        { train solidDose;  availableTime 3840 h;  lotsPerCampaign 6;  changeover 24 h;
+          source "...";  reason "..."; }
+    );
+    stages                                     // in RECIPE order
+    (
+        { stage blending;  train solidDose;  type batch;          // batch | semicontinuous
+          units ( blender );  holds intraBlend;                   // its mass READ from the flowsheet
+          bulkDensity 450 kg/m3;  fillFraction 0.6;               // batch: S = f / (rho phi)
+          chargeTime 1 h;  processTime 0.5 h;  dischargeTime 0.5 h;  cleanTime 1 h;
+          // feeds <stage> | none;   default the next stage of its train
+          // inPhase 1;  outOfPhase 1;   units sharing one lot / taking alternate lots
+          source "...";  reason "..."; }
+        { stage sprayDrying;  train sprayDrying;  type semicontinuous;
+          units ( SD ... );  holds asdPowder;
+          chargeTime 0 h;  operatingTime fromFlowsheet;   // the RATED unit's own rate (a spray dryer)
+          dischargeTime 0 h;  cleanTime 0 h;  ... }
+    );
+}
+```
+
+`f_j = r_holds / r_P` (the flowsheet's own masses); a batch stage's vessel is
+`V = S_j B / N_ip`, a semicontinuous stage's machine `R = f_j B / t_op / N_ip`;
+`t_j = charge + process + discharge + clean` (`dischargeTime
+throughFedStage;`: a vessel that empties through the stage it feeds is held
+for that stage's processing time); `T_L = max t_j / N_op` per train; lots a
+year `N = ceil(Q / B)`; a campaign spans the first lot's pass and then one lot
+every `T_L`, plus the changeover; occupancy = busy hours / available hours.
+Published as the result's `batchPlan` block (`batchPlan`, `train:<t>`,
+`stage:<s>`, `gantt:<train>:<stage>:<lot>` -- the first campaign's Gantt --
+and findings), `reports/batchPlan/{stages,trains,gantt}.csv`, pinned by the
+golden `batch` kind.  REFUSED: a stage busier than its train's year (remedy:
+`outOfPhase`), a train whose campaigns do not fit, and every malformed
+declaration by name.  ANNOUNCED: a stage that never limits and is busy less
+than `lowUtilisation` of the cycle, a train idle most of its year, a declared
+operating time on a rated stage more than 1 % off the machine's own rate.
+Consumers: `designRules { volume fromBatchPlan; }` on a `vessel` (one lot,
+one vessel -- a stage of several units is refused there), a scaling quote
+(above), and `economics { streamFactor fromBatchPlan; }` (the year's flows =
+hourly flows x Q / r_P; a NUMBER beside a batch plan is refused as a second
+home for the hours).  Method: `src/postProcessing/BatchPlanPass.H`.  Worked
 case: `tutorials/plant/apalutamide01_tablets`.
 
 ## `system/layoutDict` — the plot plan (DEV.md 4c C75)

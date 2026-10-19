@@ -1291,6 +1291,149 @@ accepts today, and that is a policy call.
 > fire-water ring main and hydrants, bunds, escape routes, swept path, a
 > fillet running through an item.
 
+> **C102. THE FLOWSHEET CANVAS CANNOT ZOOM OUT TO THE WHOLE FLOWSHEET
+> (Vitor, 2026-10-19, screenshot of apalutamide01 on the live site: "No
+> flowsheet o zoom out nao permite ver o flowsheet todo!  Ha uma parte em
+> cima que e dificil de aceder.").**  Measured only from the screenshot:
+> the canvas stops zooming out before the whole apalutamide flowsheet fits,
+> and units above the visible area are hard to reach.  To check: the
+> React Flow `minZoom` and the fit-view bounds in the GUI's flowsheet
+> canvas, against a large flowsheet.  Status: recorded, not dispatched
+> (Vitor's credit this week).
+
+> **C101. AN EDUTOOL ON THE PHARMACEUTICAL (GMP) LAYOUT (Vitor, 2026-10-19:
+> "Sera que podes fazer um EduTool sobre este layout de processos
+> farmaceuticos?").**  Measured: a plant-layout EduTool exists
+> (`gui/src/ui/methods/plantLayoutLesson.ts`, `PlantLayoutTool.tsx`) and
+> covers the outdoor plot plan; nothing teaches the GMP interior of C97B.
+> Pedagogical scope is Vitor's: the scope was put to him before any
+> dispatch, and the work waits behind the current phase (he asked to save
+> credit this week).  Status: scope proposed (eight lessons: grades,
+> pressure cascade, airlocks, gowning, containment, unidirectional flows,
+> solvents and ATEX, escape); Vitor 2026-10-19: "Avanca como achares
+> melhor e eu depois dou feedback no final" -- dispatched on that scope.
+> MERGED 2026-10-19 (branch claude/c101-gmp-layout-edutool): EduTool
+> `gmp-layout` ("Process design & economics", beside Plant layout, linked
+> both ways), eight parts with 18 engine-run moves on a 17-room teaching
+> building written into an in-browser copy of `sprayDryer07_design` (no new
+> case, per the standing rule), every engine claim cited by `file:line`,
+> Annex 1 and Directive 1999/92/EC read and paraphrased, ISPE and WHO named
+> only.  Feedback from Vitor awaited.  NAMED, not fixed: the plant-layout
+> bench's `layoutLines` keeps the worker's `[stderr] ` prefix, so its
+> separator announcement is dropped (one line in `layoutExercise.ts`).
+
+> **C100. THE APALUTAMIDE PROCESS EQUIPMENT GOES INSIDE THE GMP BUILDING
+> (Vitor, 2026-10-19: "quero um layout que possa ser realisticamente
+> adoptado!  Nao podes por um processo com equipamentos semi continuos ...
+> mas com equipamentos colocados na rua expostos aos elementos!!!").**
+> Measured: `system/layoutDict` places the spray dryer, its gas heater,
+> blower, exhaust cooler, solvent condenser, condensate pot, the solution
+> tank, the coating air heater and the coating-suspension tank OUTDOORS
+> (x -30..25 m, beside the building), and the engine CANNOT put a placed
+> item inside a building that declares an `envelope` (the overlap refusal;
+> named as a limit in DEV.md C97 wiring).  A pharmaceutical spray-dried
+> dispersion is made inside the GMP building (a contained, ATEX-zoned
+> solvent suite with explosion venting to an outside wall, its condenser,
+> blower and heater in an adjacent technical room); only bulk solvent
+> storage (a bunded outdoor tank farm) and utilities stay outside.  PLAN:
+> (1) engine -- a placed item may stand inside a room of a declared
+> building: it must fit the room in plan and height, its z is the room's
+> floor elevation, the envelope does not clash with the items its rooms
+> hold, and the room must list it (already a rule); (2) the case -- every
+> GMP-relevant item moves into its room (SDD suite, technical room,
+> solution and coating-suspension preparation, coating), the building
+> grows as its own rooms require, bulk acetone and recovered-acetone tanks
+> stay in an outdoor bunded farm with their pipes entering the building,
+> the separation and single-entrance exercises re-examined (kept only if
+> still true).  Moved rows to Vitor before re-record.  Status: dispatched
+> 2026-10-19.  ADDED the same day from Vitor's screenshot of the live site:
+> the main plot-plan 3D painted the building envelope as an OPAQUE orange
+> box (its separation finding's highlight), hiding every room, so the
+> interior looked absent -- the envelope must always draw as glass with its
+> rooms and indoor items, a finding shown by outline/label only, and the
+> main view gets the room/flow toggles; and ("a ideia era haver uma forma
+> de as novas vistas da planta do pavilhao poderem aparecer noutro tab")
+> the building views open full-window in a new tab -- the `?layout=`
+> pop-out draws the building, and the GMP section gets its own pop-out.
+> BUILT and STOPPED 2026-10-19 on Vitor's credit limit (branch
+> claude/c100-equipment-indoors, 3 commits, NOT merged): indoor items in
+> listed rooms (z from the room's floor, one home), wall penetrations for
+> pipes, the SDD suite + N2 technical room + solution/coating-prep rooms +
+> HVAC room indoors, only the bunded tank farm outdoors; main 3D draws the
+> envelope as glass with room/flow toggles; `?layout=` pop-out draws the
+> building and the GMP section has its own pop-out.  OPEN for the next
+> session: its apalutamide golden list (50 moved, 86 removed, 84 added;
+> /scratchpad c100/golddiff.txt, to be RECOMPUTED on top of the C99 merge)
+> needs Vitor's approval; a full `--gui` after e9f673383; the after
+> screenshots of the main view and the two pop-outs.
+
+> **C99. THE APALUTAMIDE PLANT IS BATCH: CAMPAIGN DESIGN, NOT A STEADY RATE
+> (Vitor, 2026-10-19: "Este processo e batch ou e continuo?" ... "Faz como
+> for melhor!  Neste caso tem de ficar realista!").**  Measured: the case
+> runs `choupoSolve` at the campaign rate (12 800 tablets/h, streamFactor
+> 0.45) and sizes every item for that hourly rate; a real OSD plant runs
+> its dispensing, blending, compaction, compression, coating and packaging
+> as BATCHES released lot by lot, and its spray drying in CAMPAIGNS.
+> `choupoBatch` carries no sizing/costing/economics/layout passes
+> (`src/applications/choupoBatch/main.cpp` reads no postDict), so moving the
+> case there is an architecture change for no physics gain.  PLAN (the
+> commander's, on Vitor's "faz como for melhor"): the steady flowsheet stays
+> the MATERIAL BALANCE PER UNIT OF PRODUCT, and a new post-processing pass
+> designs the BATCH PLANT on it by the textbook method (size factors per
+> stage from the flowsheet's own stream masses and declared bulk densities,
+> batch size, number of batches per year, processing + cleaning times, the
+> limiting cycle time, parallel units in or out of phase, equipment
+> occupancy and a campaign Gantt), so each stage's equipment is sized PER
+> BATCH and the declared quotes can scale with that size.  This is phase C
+> of the C97 plan.  Moved rows to Vitor before re-record.  Status:
+> dispatched 2026-10-19.  MERGED 2026-10-19 (branch claude/c99-batch-campaign): `batchPlan {}` (`postProcessing/BatchPlanPass`, registered
+> explicitly; record `docs/design/a-batch-plant-on-a-steady-balance.md`):
+> stages with a `holds` stream whose mass is READ, size factors, the lot
+> (declared on a stream or `largestEquipment`), lots a year, cycles,
+> `T_L = max t / N_op` per train, parallel units, campaigns, occupancy, the
+> first campaign's Gantt as data; an impossible plan refuses, a poor one is
+> announced.  Consumers: `volume fromBatchPlan` on a vessel, a quote's
+> `scaling {}` (the case's exponent), `streamFactor fromBatchPlan` (a
+> numeric factor beside a plan refused).  Golden kind `batch`, gate
+> `check_batch_plan`.  apalutamide01: 350 kg lots, 84 a year, spray drying
+> limited by its solution tank (53.1 h), the solid-dose suite by packaging
+> (10 h); FCI 23.06 -> 22.54 MEUR, NPV -45.5 -> -44.6 MEUR; Vitor approved
+> the 72 moved rows, 190 `batch` rows appended.  Every other costing
+> case byte-identical.  The C97 "phase C" is this.
+>   ADDENDUM, same day (Vitor: "Por amor de Deus, faz um
+> projeto que seja realista!  Eu nao tenho experiencia em industria
+> farmaceutica mas quero um projeto que nao me envergonhe!").  The case's
+> DATA is the weak half, not only its structure: a 1 EUR tablet against a
+> real list price two orders of magnitude higher, a production basis not
+> tied to real demand, a formulation and a solvent nobody read from a
+> regulatory source, equipment and building costs that are round numbers.
+> PLAN: (1) a research general builds a SOURCED design-basis dossier from
+> public documents (EMA EPAR / FDA review and label for apalutamide,
+> patents for the spray-dried dispersion, public sales for demand,
+> published OSD equipment and facility practice), each number with its
+> source and a confidence word; (2) an independent reviewer playing a
+> pharmaceutical-industry process engineer red-teams the case against that
+> dossier; (3) the case's assumptions are replaced by the dossier's, on top
+> of the C99 batch plan.  Nothing is invented: where no public source
+> exists the case says so and the README hands the number to the group.
+> DOSSIER RETURNED 2026-10-19: `docs/design/apalutamide-design-basis-dossier.md`
+> (every number with source, page, read/derived and a confidence word; a
+> red-team list ranked by severity).  Main finding: US 12,303,493 B2
+> (Janssen) publishes the Erleada 60 mg recipe ingredient for ingredient
+> (SDD 1:3 HPMCAS-LG, DCM/MeOH 40:60 at 5 wt % solids, PSD-3 pressure
+> nozzle, 46 C outlet; 700 mg core; Opadry II 3 %), contradicting the case
+> on composition, solvent, solids and outlet T; EU demand ~55 M 60-mg
+> tablets/yr; the case's 50 M is nearly all of it; no business case and,
+> as written, inside an active patent.  Vitor's rulings the same day:
+> BUSINESS CASE "Generico a perda de exclusividade" (a generic plant
+> launching at loss of exclusivity, price with 2-4 competitors, a declared
+> market share); SOLVENT "Acetona, citada da patente" (the patent's
+> acetone example at 5 wt % solids; the README says the commercial-scale
+> example uses DCM/MeOH, which Choupo's one-volatile spray dryer cannot
+> carry today).  The data slice that applies the dossier to the case waits
+> for C99 and C100 to land (it edits the same files) and for Vitor's go
+> (credit this week).
+
 > **C98. PARTICULATE LABOUR AND DECLARED QUOTED COSTS (Vitor, 2026-10-18,
 > two rulings on the C97 phase A findings).**  (1) Turton's operator count
 > is N_OL = (6.29 + 31.7 P^2 + 0.23 N_np)^0.5 and the engine drops the P

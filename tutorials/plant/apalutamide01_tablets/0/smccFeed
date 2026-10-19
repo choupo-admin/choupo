@@ -10,7 +10,7 @@
      componentMassFlows is the OVERALL material (all phases); a phases{} block, when present,
      is a decomposition that sums back to it exactly. ---*/
 
-//  Silicified microcrystalline cellulose: 150 mg per tablet PRESSED (12 800 tablets/h, the campaign rate) -- AUTHOR-SET formulation, see README section 2.  (1.92 kg/h.)
+//  Silicified microcrystalline cellulose: 150 mg per tablet PRESSED (12 800 tablets/h, the flowsheet basis) -- AUTHOR-SET formulation, see README section 2.  (1.92 kg/h.)
 
 componentMolarFlows
 {

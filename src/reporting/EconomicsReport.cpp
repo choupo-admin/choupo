@@ -154,9 +154,10 @@ void EconomicsReport::run(const DictPtr& dict, const ReportContext& ctx)
         //  the quoted value in `K1_or_CpRef`, the index at the quote's year in
         //  `K2_or_SRef` (the run's own `cepci` when the quote is in the
         //  costing year's money) and the currency rate it was converted at in
-        //  `K3_or_n`, so C_p = K1 x cepci / K2 x K3 and C_BM = C_p x B1 are
-        //  redone from the row; same header, the `correlation` column tells
-        //  the shapes apart.
+        //  `K3_or_n`, so C_p = K1 x cepci / K2 x K3 x S and C_BM = C_p x B1
+        //  are redone from the row (`S` is a scaling quote's batch-plan scale,
+        //  DEV.md 4c C99, and 1 on every other quote); same header, the
+        //  `correlation` column tells the shapes apart.
         const bool dq = (c.correlation == "declared-quote");
         //  THE OWNING UNIT, from the record; the ITEM is the column beside
         //  it.  The map key is the item id since a column realises five, and
@@ -173,7 +174,11 @@ void EconomicsReport::run(const DictPtr& dict, const ReportContext& ctx)
           << "," << c.totalModuleCost
           << "," << (c.correlation.empty() ? "(not stated)" : c.correlation)
           << "," << (c.sizeKey.empty() ? "(not stated)" : c.sizeKey)
-          << "," << std::setprecision(6) << fac("S")
+          //  A quote's S is its batch-plan scale (C99) and must carry the
+          //  digits that make C_p reproduce to the cent; every other row keeps
+          //  the six it always had.
+          << "," << std::setprecision(dq ? 10 : 6) << fac("S")
+          << std::setprecision(6)
           << "," << (dq ? fac("quoteValue")
                         : dp ? (c.factors.count("steelPrice") ? fac("steelPrice")
                                                               : fac("catalystPrice"))

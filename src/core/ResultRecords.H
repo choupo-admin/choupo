@@ -499,6 +499,11 @@ struct CostBreakdown
     std::string                                  quoteBasis;         // installed | purchased
     std::string                                  quoteKind;          // equipment | facility
     std::string                                  quoteFactorSource;  // purchased only
+    //  A quote SCALED with its stage's size from the batch plan (DEV.md 4c
+    //  C99): the stage it read and the exponent's source.  Empty on every
+    //  quote that does not scale.
+    std::string                                  quoteScaleStage;
+    std::string                                  quoteExponentSource;
 };
 
 // One row of the utility-allocation summary: a unit's heat duty (or a

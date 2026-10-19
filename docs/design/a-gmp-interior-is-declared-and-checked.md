@@ -305,3 +305,33 @@ so, the dryer's streams listed indoor, a declared leg ending on the wall;
 two refusals) and (h) (the witness: every process item but the two tanks in
 a room, its classified rooms).  Byte-neutral on every corpus layout without
 a building (record of the plant layout, §17).
+
+## 11. The EduTool (DEV.md 4c C101)
+
+*The GMP interior of a tablet plant: rooms, air and the ways through them*
+(`tool=gmp-layout`, shelf Process design & economics, beside `plant-layout`
+and linked both ways; `gui/src/ui/methods/GmpLayoutTool.tsx`, its text in
+`gmpLayoutLesson.ts`, its moves in `gmpLayoutExercise.ts`), on the eight-part
+scope Vítor approved on 2026-10-19: grades, the pressure cascade, airlocks,
+gowning, containment, the three flows, solvents and ATEX, escape, and what
+the model does not do.
+
+**No new case.**  The standing rule of 2026-10-17 (no new tutorial case for
+an EduTool) is kept the way the gate keeps it: the bench is a COPY of
+`tutorials/steady/drying/sprayDryer07_design` (one sized spray dryer) made in
+the browser, with the teaching building -- seventeen rooms on two floors,
+seeded from this gate's clean probe -- written in as its
+`system/layoutDict`.  That file is `gui/src/ui/methods/gmpTeachingBuilding.layoutDict`,
+a plain dictionary the page shows and a student can run at home; the
+tutorial on disk is not changed and no golden moves.  Its header says what
+the probe's never had to: the host dries WATER, and the suite's zone 1 is
+the teaching building's declaration, not that dryer's hazard.
+
+**Each move is an edit of the declared text** (a grade, a pressure, a
+regime, a door's type, a path), exact and required to land exactly once, and
+the page draws only what the engine published: its `[building]` lines and
+any refusal verbatim, the findings, and the floor plan.  Every move's
+finding ids are held to a NATIVE run of the exact file map the browser sends
+by `gui/tests/gmpLayoutLesson.test.ts` (the `caseAssembly` precedent), as is
+every `file:line` the lesson cites into `BuildingLayout.cpp`.
+

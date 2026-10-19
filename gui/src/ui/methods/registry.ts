@@ -71,7 +71,7 @@ export type MethodToolId =
   | "least-squares" | "element-potential" | "limiting-reactant"
   | "reaction-enthalpy" | "standard-state" | "case-assembly" | "run-log"
   | "front-end-loading" | "process-safety" | "overpressure" | "letdown"
-  | "plant-layout" | "pool-fire" | "materials";
+  | "plant-layout" | "gmp-layout" | "pool-fire" | "materials";
 
 /** WHAT KIND OF TOOL THIS IS, and the field exists to keep a boundary legible
  *  rather than to switch behaviour.
@@ -1334,6 +1334,36 @@ export const METHOD_TOOLS: MethodTool[] = [
       + "0, 1 and 2 as envelopes the case declares; and what the model does "
       + "not do -- pipe cost and pressure drop (the engine routes and measures "
       + "the pipes, and the page shows their lengths), structures, drainage.",
+    theory: "ch:size-vessel",
+  },
+  //  COMMISSIONED 2026-10-19 (DEV.md 4c C101): "Sera que podes fazer um
+  //  EduTool sobre este layout de processos farmaceuticos?", the eight-part
+  //  scope approved the same day ("Avanca como achares melhor").  A
+  //  CONSTRUCTION, beside plant-layout and linked both ways: the plot plan is
+  //  the site OUTSIDE a building, this is the GMP interior INSIDE one, and the
+  //  reader changes one declaration of a teaching building at a time while
+  //  the engine re-checks it in the browser.  `theory` is the vessel-sizing
+  //  section for the same reason as plant-layout's: the Theory Guide has no
+  //  layout chapter (the Design Guide's GMP section is the prose home, and it
+  //  names this tool).
+  {
+    id: "gmp-layout",
+    label: "The GMP interior of a tablet plant: rooms, air and the ways through them",
+    discipline: "Process design & economics", kind: "construction",
+    status: "live",
+    teaches: "That a pharmaceutical plant is laid out inside a building: the "
+      + "cleanliness grades of EU GMP Annex 1 and why an oral-solid-dose room "
+      + "is grade D by analogy or controlled not classified; the pressure "
+      + "cascade (air from clean to less clean, the case's declared step); "
+      + "cascade, bubble and sink airlocks, and why a contained room's airlock "
+      + "is a sink; gowning for the grade one enters; containment of a potent "
+      + "ingredient (negative pressure, the exposure band Choupo does not "
+      + "know); the personnel, material and waste flows, one way each and "
+      + "kept apart; the solvent suite as an ATEX zone away from ignition "
+      + "rooms; and escape (a lift is not an exit) -- each as an exercise on "
+      + "a teaching building the engine checks in the browser, a broken rule "
+      + "announced and an impossible building refused; and what the model "
+      + "does not do (air changes, doors, travel distances).",
     theory: "ch:size-vessel",
   },
   //  COMMISSIONED 2026-10-17 (DEV.md 4c C84): "Temos algum EduTools sobre

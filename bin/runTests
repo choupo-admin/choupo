@@ -95,7 +95,11 @@
 #  `"transfers"` or `"energyLedger"` array -- the two choupoBatch CAMPAIGN
 #  ledgers; `name` = the material ledger's EDGE `<from>-><to>` or the energy
 #  ledger's VESSEL, `key` = `material|energy.<kind>.<field>`; see
-#  get_ledger), `csv` (one cell of a case-emitted CSV) or
+#  get_ledger), `batch` (inside the top-level `"batchPlan"` block, the batch
+#  plant designed on the balance, DEV.md 4c C99; `name` = the record's `id`
+#  -- `batchPlan`, `train:<t>`, `stage:<s>`, `gantt:...`, a finding's id --
+#  and `key` = its field; see get_batch), `csv` (one cell of a case-emitted
+#  CSV) or
 #  `verdict` (inside an `operationResults[].curation` object, `name` = the op)
 #  -- the LAST of these compares a WORD, exactly, and its tolerance column
 #  must read `exact`; every other kind compares a number.  A `ledger` row
@@ -792,6 +796,35 @@ get_layout() {
         }'
 }
 
+# --- pull one field out of the top-level `"batchPlan": {...}` block (2026-10-19,
+#     DEV.md 4c C99): the batch plant the engine designed on the balance.
+#     The block follows the layout's shape -- EVERY RECORD IS ONE LINE
+#     CARRYING AN `"id"` (`batchPlan`, `train:<t>`, `stage:<s>`,
+#     `gantt:<train>:<stage>:<lot>`, `<kind>:<subject>` for a finding) -- so a
+#     row resolves on that line.  A WORD key (limitingStage, type, lotRule,
+#     operatingFrom, ...) is compared with `exact`.
+get_batch() {
+    local out="$1" id="$2" key="$3"
+    printf '%s\n' "$out" | awk -v id="$id" -v k="$key" '
+        /^  "batchPlan": \{/ { inblk = 1; next }
+        inblk && /^  \}/  { inblk = 0 }
+        !inblk { next }
+        index($0, "\"id\": \"" id "\",") == 0 { next }
+        {
+            line = $0
+            sub(/"message": .*/, "", line)
+            if (match(line, "\"" k "\": \"[^\"]*\"")) {
+                s = substr(line, RSTART, RLENGTH); sub(/^"[^"]*": "/, "", s); sub(/"$/, "", s)
+                print s; exit
+            }
+            if (match(line, "\"" k "\": *-?[0-9][0-9.eE+-]*")) {
+                s = substr(line, RSTART, RLENGTH); sub(/^"[^"]*": */, "", s)
+                print s; exit
+            }
+            exit
+        }'
+}
+
 get_any() {
     local out="$1" kind="$2" name="$3" key="$4"
     #  The CLAIM (published vs self-recorded) is a different column and does
@@ -806,6 +839,7 @@ get_any() {
     elif [ "$kind" = boundary ]; then get_boundary "$out" "$name" "$key"
     elif [ "$kind" = ledger ]; then get_ledger  "$out" "$name" "$key"
     elif [ "$kind" = layout ]; then get_layout  "$out" "$name" "$key"
+    elif [ "$kind" = batch  ]; then get_batch   "$out" "$name" "$key"
     else get_value "$out" "$name" "$key"; fi
 }
 
@@ -1513,6 +1547,45 @@ auto_generate() {
                         printf "layout %-20s %-16s %-18s %s\n", id, N[i], s, tol
                     }
             }'
+        #  THE BATCH PLAN (2026-10-19, DEV.md 4c C99): its own top-level
+        #  `"batchPlan"` block, one record per line with an `"id"`, read by
+        #  get_batch.  Pinned: the summary (the product rate the size factors
+        #  divide by, Q, the lot, the lots a year, the equivalent hours and
+        #  stream factor, the counts); per train its limiting stage (a WORD),
+        #  T_L, campaigns, span, required hours and occupancy; per stage its
+        #  type and size kind (WORDS), mass per lot, size factor, volume or
+        #  rate per unit, the four times and the cycle, utilisation, offset,
+        #  busy hours and occupancy; per finding its value and limit.  NOT
+        #  pinned, and said: the Gantt rows -- each is offset + (lot-1) T_L
+        #  and offset + ... + t_j, every term of which is pinned above, and
+        #  `check_batch_plan` recomputes every bar from them -- and the
+        #  declared inputs echoed (density, fill, available hours), which
+        #  the derived numbers already hold.
+        printf '%s\n' "$out" | awk -v tol="$reltol" '
+            /^  "batchPlan": \{/ { inblk = 1; next }
+            inblk && /^  \}/  { inblk = 0 }
+            !inblk { next }
+            !match($0, /"id": "[^"]*"/) { next }
+            {
+                id = substr($0, RSTART+7, RLENGTH-8)
+                if (id ~ /^gantt:/) next
+                line = $0
+                sub(/"message": .*/, "", line)
+                sub(/"units": .*/, "", line)
+                sub(/"unplannedUnits": .*/, "", line)
+                nw = split("lotRule lotLimitingStage limitingStage type sizeKind limiting operatingFrom dischargeFrom kind", W, " ")
+                for (i = 1; i <= nw; i++)
+                    if (match(line, "\"" W[i] "\": \"[^\"]*\"")) {
+                        s = substr(line, RSTART, RLENGTH); sub(/^"[^"]*": "/, "", s); sub(/"$/, "", s)
+                        if (s != "") printf "batch  %-26s %-16s %-18s %s\n", id, W[i], s, "exact"
+                    }
+                nn = split("productRate productPerYear lotSize lotsPerYear production equivalentHours streamFactor stages trains findings cycleTime campaigns campaignSpan campaignDuration requiredTime occupancy massPerLot sizeFactor volumePerUnit ratePerUnit unitsInstalled chargeTime processTime dischargeTime cleanTime effectiveCycle utilisation offset busyHours value limit", N, " ")
+                for (i = 1; i <= nn; i++)
+                    if (match(line, "\"" N[i] "\": *-?[0-9][0-9.eE+-]*")) {
+                        s = substr(line, RSTART, RLENGTH); sub(/^"[^"]*": */, "", s)
+                        printf "batch  %-26s %-16s %-18s %s\n", id, N[i], s, tol
+                    }
+            }'
         #  the plant-boundary first law (2026-09-05).  The three TERMS are
         #  pinned at the relative tolerance; the RESIDUAL is their difference
         #  and is pinned only when it is a number and not round-off -- a
@@ -1871,7 +1944,7 @@ if [ -n "$RECORD" ]; then
                     #  is the second home for the list of kinds, and the check
                     #  loop below has no such list at all, so the two cannot
                     #  be kept honest by reading one of them.
-                    case "$gkind" in kpi|stream|diag|aad|closure|utility|verdict|equipment|boundary|ledger|layout) ;; *) continue;; esac
+                    case "$gkind" in kpi|stream|diag|aad|closure|utility|verdict|equipment|boundary|ledger|layout|batch) ;; *) continue;; esac
                     if ! awk -v k="$gkind" -v n="$gname" -v y="$gkey" \
                          '$1==k && $2==n && $3==y {found=1} END{exit !found}' "$exp"; then
                         printf '%-7s %-22s %-16s %-16s %s\n' \
@@ -6048,6 +6121,24 @@ if [ "$#" -eq 0 ]; then
         fail=$((fail+1))
     fi
     rm -f /tmp/gmplayout.$$
+
+    # Batch-plan gate (2026-10-19, DEV.md 4c C99): the `batchPlan {}` pass
+    # designs the batch plant on the steady balance (size factors, the lot,
+    # lots a year, cycles, the limiting cycle per train, parallel units,
+    # campaigns, occupancy, the Gantt), and every published number
+    # RECOMPUTES from the declared postDict and the published stream masses;
+    # the vessels, scaled quotes and economics that read it follow it; the
+    # findings reach three surfaces; fourteen refusals name their defect;
+    # absence is silence; the `batch` golden kind reads the block.
+    if "$ROOT/bin/curate/check_batch_plan.py" > /tmp/batchplan.$$ 2>&1; then
+        printf "PASS  %-40s  (%s)\n" "batch-plan-gate" "$(gate_claim check_batch_plan /tmp/batchplan.$$)"
+        pass=$((pass+1))
+    else
+        printf "FAIL  %-40s  (run bin/curate/check_batch_plan.py)\n" "batch-plan-gate"
+        cat /tmp/batchplan.$$
+        fail=$((fail+1))
+    fi
+    rm -f /tmp/batchplan.$$
 
     # Estimate-class gate (2026-09-25): the AACE 18R-97 classification had TWO
     # homes and they disagreed -- a hand-written table in docs/design-

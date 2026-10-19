@@ -47,6 +47,7 @@ License
 #include <set>
 #include <sstream>
 #include <stdexcept>
+#include <variant>
 #include <vector>
 
 namespace Choupo {
@@ -1932,7 +1933,45 @@ int EconomicsPass::run(SimulationResult& result)
     else
         workingCapital = econDict_->lookupScalarOrDefault("workingCapital",
                                                           workingCapitalDefault);
-    const scalar streamFactor      = econDict_->lookupScalarOrDefault("streamFactor",         0.90);
+    //  THE HOURS ON STREAM, OR THE BATCH PLAN'S YEAR (DEV.md 4c C99).  A
+    //  number is the fraction of 8760 h the plant runs at its flowsheet
+    //  rate, as it always was.  The WORD `fromBatchPlan` says the flowsheet
+    //  is the material balance per unit of product and the year is the batch
+    //  plan's production Q: every annual flow is the hourly flow x Q / r_P,
+    //  so the factor is DERIVED (`BatchPlanPass`, `streamFactor` there) and
+    //  the year's flows have one home.  A NUMBER beside a batch plan is
+    //  REFUSED: it would be a second home for the same hours, and the two
+    //  would disagree the day either moved.
+    const bool sfFromPlan = econDict_->found("streamFactor")
+        && std::holds_alternative<std::string>(econDict_->entryValue("streamFactor"));
+    if (sfFromPlan)
+    {
+        const std::string w = econDict_->lookupWord("streamFactor");
+        if (w != "fromBatchPlan")
+            throw std::runtime_error("economics: `streamFactor " + w + ";` --"
+                " a fraction of the year (e.g. 0.90), or the word fromBatchPlan"
+                " (the year's flows from the batch plan's production).");
+        if (!result.batchPlan.present)
+            throw std::runtime_error("economics: `streamFactor fromBatchPlan;`"
+                " and no batch plan ran before this pass -- declare `batchPlan"
+                " { ... }` above `economics { ... }` in system/postDict, or"
+                " declare the stream factor as a number.");
+    }
+    else if (result.batchPlan.present && econDict_->found("streamFactor"))
+    {
+        std::ostringstream m;
+        m << "economics: `streamFactor " << econDict_->lookupScalar("streamFactor")
+          << ";` is declared beside a batch plan, which fixes the year's"
+             " production (" << result.batchPlan.productPerYear << " kg of "
+          << result.batchPlan.product << ") and so the factor ("
+          << result.batchPlan.streamFactor << ").  Two homes for the same hours"
+             " disagree the day either moves: declare `streamFactor"
+             " fromBatchPlan;`.";
+        throw std::runtime_error(m.str());
+    }
+    const scalar streamFactor = sfFromPlan
+        ? result.batchPlan.streamFactor
+        : econDict_->lookupScalarOrDefault("streamFactor",         0.90);
     const scalar siteFactor        = econDict_->lookupScalarOrDefault("siteFactor",           0.50);
     const scalar contingencyFee    = econDict_->lookupScalarOrDefault("contingencyFee",       1.18);
     const scalar N_np              = econDict_->lookupScalarOrDefault("N_np",                  7.0);
@@ -2495,9 +2534,19 @@ int EconomicsPass::run(SimulationResult& result)
     std::cout << "\n=======================  Economic Appraisal  ========================\n";
     std::cout << "  AACE Class-" << estimateClass << " estimate -- accuracy band "
               << std::setprecision(0) << acc_lo << "% / +" << acc_hi << "%\n";
-    std::cout << "  Operating hours H = streamFactor x 8760 = "
-              << std::setprecision(2) << streamFactor << " x 8760 = "
-              << std::setprecision(0) << H << " h/yr\n";
+    if (sfFromPlan)
+        std::cout << "  Equivalent hours H = Q / r_P = "
+                  << std::setprecision(2) << result.batchPlan.productPerYear
+                  << " kg/yr / " << std::setprecision(6)
+                  << result.batchPlan.productRate << " kg/h = "
+                  << std::setprecision(0) << H << " h/yr  (streamFactor "
+                  << std::setprecision(6) << streamFactor
+                  << ", from the batch plan: the flowsheet is the balance per"
+                     " unit of product)\n";
+    else
+        std::cout << "  Operating hours H = streamFactor x 8760 = "
+                  << std::setprecision(2) << streamFactor << " x 8760 = "
+                  << std::setprecision(0) << H << " h/yr\n";
 
     std::cout << "\n  -- CAPEX (Turton Eq. 7.5) ------------------------------------\n";
     std::cout << std::setprecision(0);

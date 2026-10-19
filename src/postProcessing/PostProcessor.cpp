@@ -27,6 +27,7 @@ License
 \*---------------------------------------------------------------------------*/
 
 #include "PostProcessor.H"
+#include "BatchPlanPass.H"
 #include "CostingPass.H"
 #include "EconomicsPass.H"
 #include "PinchPass.H"
@@ -105,6 +106,13 @@ void PostProcessor::registerBuiltins()
     registerType("economics",
         [](const DictPtr& d) -> std::unique_ptr<PostProcessor>
         { return std::make_unique<EconomicsPass>(d); });
+
+    //  The batch plant on the steady balance (DEV.md 4c C99).  Declared
+    //  ABOVE `sizing` and `costing` in a postDict: a vessel may take its
+    //  volume from it and a quote may scale with a stage's size.
+    registerType("batchPlan",
+        [](const DictPtr& d) -> std::unique_ptr<PostProcessor>
+        { return std::make_unique<BatchPlanPass>(d); });
 
     registerType("pinchPass",
         [](const DictPtr& d) -> std::unique_ptr<PostProcessor>
