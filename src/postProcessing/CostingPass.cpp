@@ -29,6 +29,7 @@ License
 #include "CostingPass.H"
 #include "core/Advisory.H"
 #include "costing/CostingModel.H"
+#include "costing/DeclaredQuote.H"
 #include "costing/SteelMassCost.H"
 #include "materials/MaterialRegistry.H"
 
@@ -46,7 +47,11 @@ CostingPass::CostingPass(const DictPtr& dict)
 
 int CostingPass::run(SimulationResult& result)
 {
-    if (result.sizings.empty())
+    //  A CASE THAT DECLARES ONLY QUOTES (DEV.md 4c C98) has something to
+    //  cost with nothing sized; the two refusals below are for a case that
+    //  declares neither.
+    const bool quotesDeclared = costingDict_ && costingDict_->found("quotes");
+    if (result.sizings.empty() && !quotesDeclared)
     {
         //  TWO DIFFERENT SITUATIONS, AND THE OLD MESSAGE ASKED THE WRONG ONE.
         //  "did SizingPass run first?" is a question whose answer is usually
@@ -125,6 +130,15 @@ int CostingPass::run(SimulationResult& result)
         if (dim.notCostedBecause.empty())
             wName = std::max(wName, item.size() + 2);
 
+    //  THE DECLARED QUOTES (DEV.md 4c C98), priced -- and REFUSED by name --
+    //  before anything is printed, so a malformed declaration never leaves
+    //  a half-printed table.  Empty when the case declares none, and then
+    //  nothing below differs from what it printed before.
+    const std::map<std::string, CostBreakdown> quotes =
+        declaredQuote::price(costingDict_, *model, result);
+    for (const auto& kv : quotes)
+        wName = std::max(wName, kv.first.size() + 2);
+
     std::cout << "  " << std::left
               << std::setw(int(wName)) << "unit"
               << std::setw(16) << "equipment"
@@ -199,6 +213,30 @@ int CostingPass::run(SimulationResult& result)
             ++failures;
             notCosted.push_back(item);
         }
+    }
+
+    //  THE QUOTES' ROWS, in the same columns: the equipment column says
+    //  `quote`, F_M and F_P are the ones a quote does not apply, and the
+    //  three costs are the declared price carried through the arithmetic the
+    //  provenance block below prints.
+    for (const auto& kv : quotes)
+    {
+        const CostBreakdown& q = kv.second;
+        std::cout << "  " << std::left
+                  << std::setw(int(wName)) << kv.first
+                  << std::setw(16) << "quote"
+                  << std::setw(8)  << std::fixed << std::setprecision(2)
+                  << q.factors.at("F_M")
+                  << std::setw(8)  << q.factors.at("F_P")
+                  << std::setw(14) << std::fixed << std::setprecision(0)
+                  << q.purchasedCost
+                  << std::setw(14) << q.bareModuleCost
+                  << std::setw(14) << q.totalModuleCost
+                  << "\n";
+        totalPurchased += q.purchasedCost;
+        totalBareMod   += q.bareModuleCost;
+        totalModule    += q.totalModuleCost;
+        result.costs[kv.first] = q;
     }
 
     std::cout << "  " << std::string(88 + wName - 14, '-') << "\n  "
@@ -340,6 +378,14 @@ int CostingPass::run(SimulationResult& result)
                      "                                                          "
                      "      gas-store vessel by its shell steel (an INSTALLED"
                      " price)]\n"
+                     //  THE DECLARED QUOTE (DEV.md 4c C98): the case's price
+                     //  for an item no correlation prices.
+                     "  C_p  = value x CEPCI/cepci_quote x EUR per quote"
+                     " currency     [declared-quote: the CASE's quoted price]\n"
+                     "  C_BM = C_p (basis installed) or bareModuleFactor x C_p"
+                     " (basis purchased, the CASE's factor);  C_TM = 1.18 C_BM\n"
+                     "                 (B1 reads the bare-module factor, B2 = 0;"
+                     " no Turton coefficient and no F_M/F_P is applied)\n"
                      //  THE FOURTH SHAPE (2026-10-05, DEV.md 4c C38 item 1):
                      //  a tray stack is bought by the tray.  Its row prints
                      //  K1..K3 for ONE tray on the area A, and F_BM, F_q
@@ -403,6 +449,14 @@ int CostingPass::run(SimulationResult& result)
                << f("S");
             if (cb.correlation == "tray-stack")
                 sz << ", N " << std::setprecision(0) << f("N");
+            if (cb.correlation == declaredQuote::shapeWord)
+            {
+                //  The size column of a quote holds what replaces a size:
+                //  its basis and its kind, the two words that decide how it
+                //  enters C_BM and the FCI.
+                sz.str("");
+                sz << cb.quoteBasis << ", " << cb.quoteKind;
+            }
             if (cb.correlation == "power-law")
                 //  Cp_ref runs to 1e5-1e6; four DECIMALS there is noise, so
                 //  the power-law row keeps significant digits by design.
@@ -416,6 +470,15 @@ int CostingPass::run(SimulationResult& result)
                    << (cb.factors.count("steelPrice") ? f("steelPrice")
                                                       : f("catalystPrice"))
                    << " EUR/kg, DECLARED, no index";
+            else if (cb.correlation == declaredQuote::shapeWord)
+                //  The quoted value, its year and the index-and-currency
+                //  factor that carried it to the run's money, so C_p is
+                //  redone by hand.
+                co << std::defaultfloat << std::setprecision(10)
+                   << f("quoteValue") << " (" << f("quoteYear") << ") x "
+                   << std::setprecision(6)
+                   << f("quoteEscalation") * f("quoteCurrencyRate")
+                   << ", DECLARED";
             else
                 co << std::fixed << std::setprecision(4) << f("K1") << ", "
                    << f("K2") << ", " << f("K3");
@@ -425,8 +488,11 @@ int CostingPass::run(SimulationResult& result)
             else
                 bb << std::fixed << std::setprecision(2) << f("B1") << ", "
                    << f("B2");
-            fm << std::fixed << std::setprecision(2) << f("F_M")
-               << " (" << cb.material << ")";
+            if (cb.correlation == declaredQuote::shapeWord)
+                fm << "not applied (" << cb.material << ")";
+            else
+                fm << std::fixed << std::setprecision(2) << f("F_M")
+                   << " (" << cb.material << ")";
 
             //  The unit and the ITEM, from the record, so two exchangers of
             //  one column are told apart on the row that defends their price.
@@ -454,6 +520,28 @@ int CostingPass::run(SimulationResult& result)
         bool anyTrays = false;
         for (const auto& kv : result.costs)
             if (kv.second.correlation == "tray-stack") anyTrays = true;
+        //  THE QUOTES' OWN DECLARATIONS, each beside its name: a quoted
+        //  price is defended by where it comes from and why it is this
+        //  plant's, and by how it enters the fixed capital.
+        if (!quotes.empty())
+        {
+            std::cout << "  Declared quotes -- the CASE's prices, not Turton's."
+                         "  In the FCI each C_BM enters as a module's\n"
+                         "  (contingencyFee applies to it), and the auxiliary-"
+                         "facilities term (siteFactor) multiplies it\n"
+                         "  for kind equipment, NOT for kind facility (a"
+                         " building IS a facility):\n";
+            for (const auto& kv : quotes)
+            {
+                const CostBreakdown& q = kv.second;
+                std::cout << "    " << kv.first << " (" << q.quoteBasis << ", "
+                          << q.quoteKind << ")  source: " << q.quoteSource
+                          << "\n      reason: " << q.quoteReason << "\n";
+                if (!q.quoteFactorSource.empty())
+                    std::cout << "      bareModuleFactor source: "
+                              << q.quoteFactorSource << "\n";
+            }
+        }
         if (anyTrays)
             std::cout << "  Tray stack (sieve K1-K3, F_BM by material class,"
                          " F_q): CAPCOST 2017, the program distributed\n"

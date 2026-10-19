@@ -2121,6 +2121,27 @@ flowsheet `storageTank` unit by `unit <name>;` (the C87 one-home rule,
 `ammonia02_full_plant` (T201; the gas link on a probe since C93 removed the
 syngas tank).
 
+**AN ITEM NO CORRELATION PRICES IS QUOTED BY THE CASE, AND A SOLIDS STEP IS
+COUNTED BY IT (2026-10-19, DEV.md 4c C98, Vitor's rulings).**  `costing {
+quotes ( { unit|item; value; currency; year; basis installed|purchased;
+kind equipment|facility; source; reason; } ); }` enters a declared price as
+the item's C_BM (purchased only with the CASE's own `bareModuleFactor`; no
+factor is ever supplied), C_TM = 1.18 C_BM, shape word `declared-quote`; a
+`facility` adds nothing to the siteFactor base.  Turton's operator count
+carries its particulate term, `N_OL = (6.29 + 31.7 P^2 + 0.23 N_np)^0.5`,
+with `P` DECLARED (`economics { particulateSteps { count; source; reason;
+} }`); absent, P = 0, ANNOUNCED only where the flowsheet holds a
+particulate-solids unit.  A case may DECLARE its crew in place of the
+correlation (`economics { operatingCrew { areas ( { area; operatorsPerShift;
+} ); source; reason; } }`, round 2): the same positions factor and wage
+price it, and the correlation is printed and published beside it as a
+COMPARISON that enters no total.  The labour is published
+(`kpis.economics.operatorsPerShift`, `operatingPositions`, `C_OL`).  One
+home: `costing/DeclaredQuote`.  Gate: `check_cost_provenance` arms (t), (u),
+(v).  Witness `apalutamide01_tablets`.
+Record:
+[`docs/design/a-quote-and-a-particulate-step.md`](docs/design/a-quote-and-a-particulate-step.md).
+
 **A RELIEF VALVE IS A SIZED ITEM OF THE UNIT IT PROTECTS (2026-10-11, DEV.md
 4c C62, on a stated default).**  `type reliefValve` in the sizing pass: one
 more item (`psv`) of the PROTECTED unit, declared AFTER that unit's entry,

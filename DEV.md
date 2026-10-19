@@ -1311,7 +1311,17 @@ accepts today, and that is a policy call.
 > on a campaign drug-product line: "Equipa declarada pelo caso" -- the case
 > may DECLARE its operating crew (operators per shift by area, source,
 > reason) in place of the correlation, which is printed beside it for
-> comparison.  Sent back to the same general.
+> comparison.  Sent back to the same general.  MERGED 2026-10-19: round 2
+> built `economics { operatingCrew { areas ( ... ); source; reason; } }`
+> (labour = sum of operators per shift x the one positions factor, Turton's
+> correlation printed beside it as a comparison that enters no total), and
+> published `operatorsPerShift`/`operatingPositions`/`C_OL` on every
+> appraisal (rows appended on 9 cases, none moved).  Vitor approved the 12
+> apalutamide rows: FCI 2.26 -> 23.06 M EUR, TCI 14.7 -> 36.0 M, COM_d
+> 41.4 -> 53.5 M/yr, NPV +31.3 -> -45.5 M, IRR and payback no longer
+> exist, the four WC rows, cost per kg 314 -> 405; 37 rows appended.
+> OPEN: catalyst-charge and steel-mass rows print C_TM = C_BM but the FCI
+> applies the contingency fee to their C_BM (either fix moves goldens).
 
 > **C97. APALUTAMIDE TABLETS: A NEW CASE AND THE GMP INTERIOR LAYOUT
 > (Vitor, 2026-10-18: a pharmaceutical-industry project group produces

@@ -484,6 +484,21 @@ struct CostBreakdown
     //  goes, so the cost record carries the same hierarchy the sizing does --
     //  from the same single origin, never re-derived from the unit's name.
     std::string                                  sector;
+
+    //  A DECLARED QUOTE'S WORDS (DEV.md 4c C98, `costing/DeclaredQuote`).
+    //  Empty on every record a correlation priced, so nothing that predates
+    //  the quotes reads, prints or emits them.  The numbers of a quote ride
+    //  in `factors` like every other row's; these are the declaration's
+    //  WORDS, which a reader defends the number with and which fit no map of
+    //  scalars: where the number comes from, why it is this plant's, whether
+    //  it is an installed or a purchased price, whether it is a machine or a
+    //  facility, and (purchased only) where its installation factor comes
+    //  from.
+    std::string                                  quoteSource;
+    std::string                                  quoteReason;
+    std::string                                  quoteBasis;         // installed | purchased
+    std::string                                  quoteKind;          // equipment | facility
+    std::string                                  quoteFactorSource;  // purchased only
 };
 
 // One row of the utility-allocation summary: a unit's heat duty (or a

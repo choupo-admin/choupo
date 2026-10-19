@@ -150,6 +150,14 @@ void EconomicsReport::run(const DictPtr& dict, const ReportContext& ctx)
         //  same slot -- so no column is added and every costs.csv already
         //  written keeps its header.
         const bool dp = (c.correlation == "declared-unit-price");
+        //  THE FOURTH SHAPE (DEV.md 4c C98): a `declared-quote` row carries
+        //  the quoted value in `K1_or_CpRef`, the index at the quote's year in
+        //  `K2_or_SRef` (the run's own `cepci` when the quote is in the
+        //  costing year's money) and the currency rate it was converted at in
+        //  `K3_or_n`, so C_p = K1 x cepci / K2 x K3 and C_BM = C_p x B1 are
+        //  redone from the row; same header, the `correlation` column tells
+        //  the shapes apart.
+        const bool dq = (c.correlation == "declared-quote");
         //  THE OWNING UNIT, from the record; the ITEM is the column beside
         //  it.  The map key is the item id since a column realises five, and
         //  it is never split back apart here.
@@ -166,11 +174,14 @@ void EconomicsReport::run(const DictPtr& dict, const ReportContext& ctx)
           << "," << (c.correlation.empty() ? "(not stated)" : c.correlation)
           << "," << (c.sizeKey.empty() ? "(not stated)" : c.sizeKey)
           << "," << std::setprecision(6) << fac("S")
-          << "," << (dp ? (c.factors.count("steelPrice") ? fac("steelPrice")
-                                                          : fac("catalystPrice"))
+          << "," << (dq ? fac("quoteValue")
+                        : dp ? (c.factors.count("steelPrice") ? fac("steelPrice")
+                                                              : fac("catalystPrice"))
                         : pw ? fac("Cp_ref") : fac("K1"))
-          << "," << (dp ? 0.0 : pw ? fac("S_ref")  : fac("K2"))
-          << "," << (dp ? 0.0 : pw ? fac("n_exp")  : fac("K3"))
+          << "," << (dq ? fac("quoteCepci") : dp ? 0.0
+                        : pw ? fac("S_ref")  : fac("K2"))
+          << "," << (dq ? fac("quoteCurrencyRate") : dp ? 0.0
+                        : pw ? fac("n_exp")  : fac("K3"))
           << "," << fac("B1") << "," << fac("B2")
           << "," << fac("F_M") << "," << fac("F_P")
           << "," << (c.material.empty() ? "(not stated)" : c.material)

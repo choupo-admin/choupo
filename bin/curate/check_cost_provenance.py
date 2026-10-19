@@ -148,6 +148,34 @@ that happened to agree with the model's.
       C, and TCI stays FCI + WC (the land is a separate line, not in the
       ladder).  See `check_land`.
 
+  (t) THE PARTICULATE LABOUR TERM (2026-10-19, DEV.md 4c C98).  Turton's
+      operator count N_OL = (6.29 + 31.7 P^2 + 0.23 N_np)^0.5 lost its P
+      term in the engine.  A fluid plant prints P = 0 and announces nothing;
+      a declared `particulateSteps { count; source; reason; }` recomputes
+      N_OL and C_OL from the printed line; a missing reason, a fractional
+      count and a flat scalar are refused; the solid-dose witness without
+      its declaration announces the undeclared zero at its site, in the
+      caveat block and in the JSON, naming its particulate units.  See
+      `check_particulate_labour`.
+
+  (u) A DECLARED QUOTE IS A COST THE READER CAN DEFEND (2026-10-19, DEV.md
+      4c C98).  Each quote's costing row recomputes from its provenance row;
+      the FCI recomputes from the equipment JSON (a `kind facility` quote
+      adds nothing to the siteFactor base); costs.csv reproduces each quote
+      from its own columns; escalation and currency recompute on a probe;
+      eleven malformed declarations are refused by name.  See
+      `check_declared_quotes`.
+
+  (v) A DECLARED CREW PRICES THE LABOUR (2026-10-19, DEV.md 4c C98 round
+      2).  On the solid-dose witness the crew's areas, positions and C_OL
+      recompute from the printed line and match the published KPIs; the
+      Turton comparison recomputes and enters no total (COM_d recomputes
+      from the declared C_OL); a fluid plant with no crew publishes the
+      correlation's count and no comparison; seven malformed crews are
+      refused by name; a crew beside an undeclared P says so and does not
+      announce it; the 4.5 positions factor has one home.  See
+      `check_operating_crew`.
+
   (o) A DECISION SAYS WHOSE IT IS.  `refuseOnMissingPrice` decides whether an
       appraisal REFUSES on an absent price or reports zero revenue, and it was
       a float read with a silent default.  Two probes, built here because
@@ -250,6 +278,53 @@ the constructor that assigns all four unconditionally.  Arm (k), four times,
 one per literal.  Note what this sabotage does NOT do: it changes no output at
 all, because the initialisers were dead the whole time.  Only a source arm can
 see a second home that is never read.
+
+SABOTAGE-VERIFIED 2026-10-19 (DEV.md 4c C98), twelve times, BY HAND under
+the destructive-session journal, for arms (t) and (u).  Every line OBSERVED:
+
+S18 -- the P term dropped from N_OL (`0.0 * P^2`).  Arm (t2), twice: the
+printed N_OL 2.64 against 11.5663 recomputed, and C_OL 815576 against
+3570526.
+S19 -- the undeclared-zero announcement silenced.  Arm (t4), three times:
+site, caveat block, JSON.
+S20 -- the announcement made to fire on every plant.  Arm (t1), the
+negative: a fluid plant announced it.
+S21 -- a facility quote put into the auxiliary base.  Arms (u1) (a facility
+carries a non-zero C_BM_base) and (u2) (the FCI moved by 901739 - 395275
+where the quotes predict 876739 - 395275).
+S22 -- a quote's C_TM without the 1.18.  Arm (u1) on all eight witness
+quotes, and (u2).
+S23 -- the source/reason refusal removed.  It SURVIVED its first run: the
+arm accepted any refusal whose text held the words `quotes` and `source`,
+and the parser's own generic missing-key error holds both.  The arm now
+requires the refusal's own remedy ("owes its reader"), and catches it twice.
+S24 -- the escalation ignored.  Arm (u2): the USD 2020 quote priced 92000
+where 125733 is expected, and the FCI with it.
+S25 -- costs.csv's K2 slot written from `cepci2001`.  Arm (u1), all eight
+rows "do not reproduce from their own columns".
+S26 -- EconomicsPass ignoring `C_BM_base`.  Arms (u1) (FCI 28555352 against
+23055352 recomputed from the JSON) and (u2).
+S27 -- the particulateSteps reason refusal removed.  Arm (t3) -- tightened
+the same way as S23 BEFORE it was run, on the S23 lesson.
+S28 -- the other-year cepci refusal removed.  Arm (u3) nocepci, likewise.
+
+ROUND 2 (C98, the declared crew), seven more, same protocol, none survived:
+
+S29 -- the crew ignored, the correlation prices the labour.  Arm (v1) three
+times: the crew line no longer adds up (152.5 positions for 11/shift), C_OL
+12554801 against the crew's 4074840, the published count not the crew's.
+S30 -- the comparison added INTO the total (crew + N_OL).  Arm (v1) three
+times (202 positions, C_OL 16629641).
+S31 -- the duplicate-area refusal removed.  Arm (v3) dup, rc 0.
+S32 -- the undeclared-P announcement no longer suppressed beside a crew.
+Arm (v4).
+S33 -- a second literal 4.5 for the comparison's positions.  Arm (v5) only:
+no output changes, because the two literals agree -- a SOURCE arm is the
+only one that can see a second home that is never wrong yet.
+S34 -- the published `operatorsPerShift` written from the correlation.  Arm
+(v1).
+S35 -- the whole-operator refusal turned into `&&`.  Arm (v3) twice: the
+fractional AND the zero crew both ran to exit 0.
 
 AND A DEFECT IN THIS GATE, found by running the new arms.  They were first
 inserted AFTER the `finally: shutil.rmtree(tmp)` -- so they checked for files
@@ -999,6 +1074,536 @@ def check_land(fails):
         shutil.rmtree(tmp, ignore_errors=True)
 
 
+#  ---------------------------------------------------------------------------
+#  (t) and (u): DEV.md 4c C98 -- the particulate labour term and the declared
+#  quotes.  Both run on copies: a probe built from economics01 (a fluid plant:
+#  no particulate unit, an unsized `separator` a quote may price) and the
+#  shipped apalutamide witness (a solid-dose plant that declares both).
+#  ---------------------------------------------------------------------------
+ECONCASE = ROOT / "tutorials/steady/economics/economics01_esterification_dcf"
+OSDCASE = ROOT / "tutorials/plant/apalutamide01_tablets"
+
+
+def _copy_case(src, tmp, name):
+    d = Path(tmp) / name
+    shutil.copytree(src, d, ignore=shutil.ignore_patterns(
+        "reports", "converged", "design", "iterations"))
+    return d
+
+
+def _run(d, timeout=600):
+    p = subprocess.run([str(BIN), str(d)], capture_output=True, text=True,
+                       cwd=str(ROOT), timeout=timeout)
+    return p.returncode, p.stdout + p.stderr
+
+
+def _econ_kpi(out, key):
+    m = re.search(r'^    "economics": \{[^\n]*"%s": (-?[0-9.eE+-]+)' % key, out, re.M)
+    return float(m.group(1)) if m else None
+
+
+def _insert_into_block(text, block, body):
+    """Insert `body` right after the opening brace of the top-level `block`."""
+    m = re.search(r"^%s\s*\n\{" % block, text, re.M)
+    assert m, block
+    return text[:m.end()] + "\n" + body + "\n" + text[m.end():]
+
+
+N_OL_RE = re.compile(
+    r"N_OL = sqrt\(6\.29 \+ 31\.7 x P\^2 \+ 0\.23 x N_np\) = "
+    r"sqrt\(6\.29 \+ 31\.7 x (\d+)\^2 \+ 0\.23 x ([\d.]+)\) = ([\d.]+)/shift"
+    r" -> ([\d.]+) operating positions")
+ANNOUNCE = "particulateSteps was NOT declared"
+
+
+def check_particulate_labour(fails):
+    """(t) THE PARTICULATE LABOUR TERM (DEV.md 4c C98).  Turton's operator
+    count is N_OL = (6.29 + 31.7 P^2 + 0.23 N_np)^0.5 and the engine dropped
+    P.  Checked here, each on a run:
+
+      t1  a fluid plant that declares nothing prints the P term at P = 0, its
+          N_OL recomputes from the printed numbers, and NOTHING is announced
+          (no particulate unit: the zero is not a choice anyone missed);
+      t2  `particulateSteps { count 2; ... }` declared: the printed N_OL is
+          sqrt(6.29 + 31.7 x 4 + 0.23 N_np), C_OL = 4.5 N_OL x rate x hours
+          recomputes, the declared source is printed, nothing is announced;
+      t3  a missing `reason`, a fractional count and a flat scalar each
+          REFUSE by name;
+      t4  the solid-dose witness with its declaration REMOVED announces the
+          undeclared zero on the console, in the end-of-run caveat block
+          and in the result JSON, naming its particulate units; with it
+          (as shipped) nothing is announced and P = 6 is on the line."""
+    tmp = tempfile.mkdtemp(prefix="cost_labour_")
+    try:
+        # ---- t1
+        d = _copy_case(ECONCASE, tmp, "t1")
+        rc, out = _run(d)
+        m = N_OL_RE.search(out)
+        if rc != 0 or not m:
+            fails.append("(t1) economics01 does not print the operator count"
+                         " WITH its particulate term (`N_OL = sqrt(6.29 + 31.7"
+                         " x P^2 + 0.23 x N_np) = sqrt(...)`), rc=%d" % rc)
+        else:
+            P, Nnp, nol = int(m.group(1)), float(m.group(2)), float(m.group(3))
+            if P != 0 or abs(math.sqrt(6.29 + 0.23 * Nnp) - nol) > 0.006:
+                fails.append("(t1) undeclared P must be 0 and N_OL recompute:"
+                             " P=%d N_OL=%g" % (P, nol))
+        if ANNOUNCE in out:
+            fails.append("(t1) a fluid plant with no particulate unit announced"
+                         " the undeclared particulate steps -- an announcement"
+                         " that fires on everything is read by nobody")
+
+        # ---- t2
+        d = _copy_case(ECONCASE, tmp, "t2")
+        pdp = d / "system" / "postDict"
+        pdp.write_text(_insert_into_block(pdp.read_text(), "economics",
+            '    particulateSteps { count 2; source "probe count"; '
+            'reason "two solids steps, for the gate"; }'))
+        rc, out = _run(d)
+        m = N_OL_RE.search(out)
+        if rc != 0 or not m:
+            fails.append("(t2) a declared particulateSteps run printed no"
+                         " operator line (rc=%d)" % rc)
+        else:
+            P, Nnp = int(m.group(1)), float(m.group(2))
+            nol, pos = float(m.group(3)), float(m.group(4))
+            want = math.sqrt(6.29 + 31.7 * 4 + 0.23 * Nnp)
+            if P != 2 or abs(want - nol) > 0.006 or abs(4.5 * want - pos) > 0.06:
+                fails.append("(t2) declared P = 2: the line says P=%d N_OL=%g"
+                             " positions=%g; recomputed N_OL=%g" % (P, nol, pos, want))
+            sal = re.search(r"salary/operator = ([\d.]+) EUR/h x ([\d.]+) h/yr", out)
+            col = re.search(r"C_OL \(labour\)\s+=\s+(\d+)\s+EUR/yr", out)
+            if not sal or not col:
+                fails.append("(t2) the salary or C_OL line is missing")
+            else:
+                c = 4.5 * want * float(sal.group(1)) * float(sal.group(2))
+                if abs(c - float(col.group(1))) > 1e-3 * c + 2:
+                    fails.append("(t2) C_OL %s does not recompute from the declared"
+                                 " P (%.0f)" % (col.group(1), c))
+            if "source: probe count" not in out:
+                fails.append("(t2) the declared count's source is not printed"
+                             " beside it")
+        if ANNOUNCE in out:
+            fails.append("(t2) a DECLARED particulateSteps was announced")
+
+        # ---- t3 refusals
+        for tag, body, why in (
+            ("noreason", 'particulateSteps { count 2; source "s"; }',
+             "which steps were counted"),
+            ("frac", 'particulateSteps { count 1.5; source "s"; reason "r"; }',
+             "whole number"),
+            ("flat", 'particulateSteps 2;', "must be a block"),
+        ):
+            d = _copy_case(ECONCASE, tmp, "t3" + tag)
+            pdp = d / "system" / "postDict"
+            pdp.write_text(_insert_into_block(pdp.read_text(), "economics",
+                                              "    " + body))
+            rc, out = _run(d)
+            if rc == 0 or "particulateSteps" not in out or why not in out:
+                fails.append("(t3) `%s` was not refused by name (rc=%d, '%s'"
+                             " expected in the message)" % (body, rc, why))
+
+        # ---- t4
+        if not OSDCASE.exists():
+            fails.append("(t4) %s is missing -- this arm CANNOT RUN and must"
+                         " not pass" % OSDCASE.name)
+            return
+        d = _copy_case(OSDCASE, tmp, "t4shipped")
+        rc, out = _run(d)
+        m = N_OL_RE.search(out)
+        if rc != 0 or not m or int(m.group(1)) != 6:
+            fails.append("(t4) the shipped solid-dose witness does not print P"
+                         " = 6 on its operator line (rc=%d)" % rc)
+        if ANNOUNCE in out:
+            fails.append("(t4) the shipped witness DECLARES its count and was"
+                         " announced anyway")
+        d = _copy_case(OSDCASE, tmp, "t4undeclared")
+        pdp = d / "system" / "postDict"
+        #  The crew goes too (C98 round 2): beside a declared crew the zero
+        #  prices nothing and is deliberately not announced (arm (v4)).
+        txt = re.sub(r"\n    particulateSteps\n    \{.*?\n    \}\n", "\n",
+                     pdp.read_text(), flags=re.S)
+        txt = re.sub(r"\n    operatingCrew\n    \{.*?\n    \}\n", "\n",
+                     txt, flags=re.S)
+        if "particulateSteps" in txt.split("economics", 1)[-1].replace(
+                "`particulateSteps`", ""):
+            fails.append("(t4) the probe could not remove the declaration")
+        pdp.write_text(txt)
+        rc, out = _run(d)
+        if rc != 0:
+            fails.append("(t4) the witness without its declaration exited %d" % rc)
+        else:
+            site = re.search(r"\[assumed\] economics: " + ANNOUNCE + r"[^\n]*", out)
+            if not site or "SD (sprayDryer)" not in site.group(0) \
+                    or "coatingDryer (solidDryer)" not in site.group(0):
+                fails.append("(t4) the undeclared zero is not announced at its"
+                             " site naming the particulate units (SD,"
+                             " coatingDryer)")
+            tail = out.split("ASSUMPTIONS AND CAVEATS")[-1] \
+                if "ASSUMPTIONS AND CAVEATS" in out else ""
+            if ANNOUNCE not in tail:
+                fails.append("(t4) the undeclared zero is not replayed in the"
+                             " end-of-run caveat block")
+            js = out[out.find('"advisories"'):] if '"advisories"' in out else ""
+            if ANNOUNCE not in js:
+                fails.append("(t4) the undeclared zero is not in the result"
+                             " JSON's advisories")
+            m = N_OL_RE.search(out)
+            if not m or int(m.group(1)) != 0:
+                fails.append("(t4) without the declaration P must be 0 on the"
+                             " operator line")
+    finally:
+        shutil.rmtree(tmp, ignore_errors=True)
+
+
+QUOTE_ROW_RE = re.compile(
+    r"^  (\S+)\s+declared-quote\s+(installed|purchased), (equipment|facility)\s+"
+    r"([\d.eE+]+) \(([\d.]+)\) x ([\d.eE+-]+), DECLARED\s+([\d.]+), ([\d.]+)",
+    re.M)
+
+
+def _table_row(out, name):
+    m = re.search(r"^  %s\s+quote\s+([\d.]+)\s+([\d.]+)\s+(\d+)\s+(\d+)\s+(\d+)"
+                  % re.escape(name), out, re.M)
+    return tuple(float(x) for x in m.groups()) if m else None
+
+
+def check_declared_quotes(fails):
+    """(u) A DECLARED QUOTE IS A COST THE READER CAN DEFEND (DEV.md 4c C98).
+
+      u1  on the shipped solid-dose witness every quote's provenance row
+          (value, year, index-and-currency factor, B1) RECOMPUTES its costing
+          row: C_p = value x factor, C_BM = B1 x C_p, C_TM = 1.18 C_BM; each
+          quote's source and reason are printed; the FCI KPI recomputes as
+          contingencyFee SUM C_BM + siteFactor SUM C_BM_base with a facility
+          adding NOTHING to the base (from the result JSON alone); costs.csv
+          reproduces each quote row from its own columns (K1 x cepci / K2 x
+          K3 = purchased, x B1 = bare module); every quote has an `equipment`
+          entry in the JSON carrying its source;
+      u2  on the probe (economics01 + quotes): a USD quote of another year is
+          escalated by CEPCI_run / cepci and converted by usdToEur, a
+          purchased quote takes the CASE's factor, the FCI moves by exactly
+          1.18 SUM C_BM + 0.5 SUM base of the quotes, and a run with no
+          quotes prints no `declared-quote` at all;
+      u3  REFUSED by name: no source, no reason, a negative value, a unit
+          name that is SIZED, an unknown unit, an `item` named like a unit,
+          both `unit` and `item`, a purchased quote with no factor, another
+          year with no cepci, an unknown `kind`, a duplicate."""
+    tmp = tempfile.mkdtemp(prefix="cost_quotes_")
+    try:
+        # ---- u1, the witness
+        if not OSDCASE.exists():
+            fails.append("(u1) %s is missing -- this arm CANNOT RUN and must"
+                         " not pass" % OSDCASE.name)
+        else:
+            d = _copy_case(OSDCASE, tmp, "u1")
+            add_reports(d, ["economics"])
+            rc, out = _run(d)
+            rows = QUOTE_ROW_RE.findall(out)
+            if rc != 0 or len(rows) < 2:
+                fails.append("(u1) the witness printed %d declared-quote"
+                             " provenance rows (rc=%d)" % (len(rows), rc))
+            for (name, basis, kind, val, yr, fac, b1, b2) in rows:
+                t = _table_row(out, name)
+                if not t:
+                    fails.append("(u1) quote %s has no costing-table row" % name)
+                    continue
+                Cp = float(val) * float(fac)
+                Cbm = float(b1) * Cp
+                if abs(Cp - t[2]) > 1 or abs(Cbm - t[3]) > 1 \
+                        or abs(1.18 * Cbm - t[4]) > 1:
+                    fails.append("(u1) quote %s: the printed %s x %s, B1 %s do not"
+                                 " recompute its row %s" % (name, val, fac, b1, t))
+                blk = out.split("Declared quotes --", 1)[-1]
+                if not re.search(r"^    %s \(%s, %s\)  source: \S" % (
+                        re.escape(name), basis, kind), blk, re.M):
+                    fails.append("(u1) quote %s's source is not printed beside"
+                                 " it" % name)
+            # FCI from the JSON alone
+            eq = [l for l in out.splitlines() if l.startswith('    { "unit": ')
+                  and '"cost": {' in l]
+            sbm = sb0 = 0.0
+            nfac = 0
+            for l in eq:
+                bm = float(re.search(r'"bareModule": ([-0-9.eE+]+)', l).group(1))
+                pu = float(re.search(r'"purchased": ([-0-9.eE+]+)', l).group(1))
+                sbm += bm
+                base = re.search(r'"C_BM_base": ([-0-9.eE+]+)', l)
+                b1 = re.search(r'"B1": ([-0-9.eE+]+)', l)
+                b2 = re.search(r'"B2": ([-0-9.eE+]+)', l)
+                if base:
+                    sb0 += float(base.group(1))
+                    if '"basis": "declared quote, installed, facility"' in l:
+                        nfac += 1
+                        if float(base.group(1)) != 0.0:
+                            fails.append("(u1) a facility quote carries a"
+                                         " non-zero C_BM_base")
+                    if '"source": ' not in l:
+                        fails.append("(u1) a quote's equipment entry carries"
+                                     " no source")
+                elif b1 and b2:
+                    sb0 += pu * (float(b1.group(1)) + float(b2.group(1)))
+                else:
+                    sb0 += bm
+            fci = _econ_kpi(out, "FCI")
+            want = 1.18 * sbm + 0.5 * sb0
+            if fci is None or abs(fci - want) > 1e-6 * want + 1:
+                fails.append("(u1) the FCI KPI %s is not 1.18 SUM C_BM + 0.5"
+                             " SUM C_BM_base = %.0f recomputed from the"
+                             " equipment JSON" % (fci, want))
+            if nfac < 1:
+                fails.append("(u1) the witness carries no `kind facility` quote,"
+                             " so the base rule is untested")
+            csvp = d / "reports/economics/costs.csv"
+            if csvp.exists():
+                rd = list(csv.DictReader(csvp.open()))
+                q = [r for r in rd if r.get("correlation") == "declared-quote"]
+                if len(q) != len(rows):
+                    fails.append("(u1) costs.csv carries %d quote rows, the"
+                                 " console %d" % (len(q), len(rows)))
+                pk = [k for k in rd[0] if k.startswith("purchased_")][0]
+                bk = [k for k in rd[0] if k.startswith("bareModule_")][0]
+                for r in q:
+                    cp = float(r["K1_or_CpRef"]) * float(r["cepci"]) \
+                        / float(r["K2_or_SRef"]) * float(r["K3_or_n"])
+                    if abs(cp - float(r[pk])) > 0.01 \
+                            or abs(cp * float(r["B1"]) - float(r[bk])) > 0.01:
+                        fails.append("(u1) costs.csv row %s does not reproduce"
+                                     " from its own columns" % r["unit"])
+            else:
+                fails.append("(u1) the witness wrote no costs.csv")
+
+        # ---- u2, the probe
+        d = _copy_case(ECONCASE, tmp, "u2base")
+        rc, base_out = _run(d)
+        if QUOTE_ROW_RE.search(base_out) or "Declared quotes --" in base_out \
+                or '"type": "declaredQuote"' in base_out:
+            fails.append("(u2) a case with no quotes prints a quote row")
+        fci0 = _econ_kpi(base_out, "FCI")
+        d = _copy_case(ECONCASE, tmp, "u2")
+        pdp = d / "system" / "postDict"
+        pdp.write_text(_insert_into_block(pdp.read_text(), "costing", """\
+    quotes
+    (
+        { unit separator; value 100000; currency USD; year 2020; cepci 600;
+          basis purchased; bareModuleFactor 2.0;
+          bareModuleFactorSource "probe factor"; kind equipment;
+          source "probe"; reason "the gate"; }
+        { item controlRoom; value 50000; currency EUR; year 2026;
+          basis installed; kind facility; source "probe"; reason "the gate"; }
+    );"""))
+        rc, out = _run(d)
+        t = _table_row(out, "separator")
+        f = _table_row(out, "controlRoom")
+        if rc != 0 or not t or not f:
+            fails.append("(u2) the probe's two quotes have no costing rows"
+                         " (rc=%d)" % rc)
+        else:
+            cp = 100000 * 820.0 / 600.0 * 0.92
+            if abs(t[2] - cp) > 1 or abs(t[3] - 2 * cp) > 1 \
+                    or abs(t[4] - 2.36 * cp) > 2:
+                fails.append("(u2) the USD 2020 purchased quote: row %s, expected"
+                             " C_p %.0f (x 820/600 x 0.92), C_BM = 2 C_p,"
+                             " C_TM = 1.18 C_BM" % (t, cp))
+            if abs(f[2] - 50000) > 1 or abs(f[3] - 50000) > 1:
+                fails.append("(u2) the EUR installed quote's row is %s" % (f,))
+            fci = _econ_kpi(out, "FCI")
+            want = fci0 + 1.18 * (2 * cp + 50000) + 0.5 * (2 * cp)
+            if fci is None or fci0 is None or abs(fci - want) > 2:
+                fails.append("(u2) the FCI moved from %s to %s; the quotes"
+                             " predict %.0f (a facility adds nothing to the"
+                             " base)" % (fci0, fci, want))
+            if "bareModuleFactor source: probe factor" not in out:
+                fails.append("(u2) a purchased quote's factor source is not"
+                             " printed")
+
+        # ---- u3, refusals
+        ok = ('value 1000; currency EUR; year 2026; basis installed; '
+              'kind equipment; source "s"; reason "r";')
+        cases = [
+            ("nosource", '{ unit separator; value 1000; currency EUR; year 2026;'
+             ' basis installed; kind equipment; reason "r"; }', "owes its reader"),
+            ("noreason", '{ unit separator; value 1000; currency EUR; year 2026;'
+             ' basis installed; kind equipment; source "s"; }', "owes its reader"),
+            ("negative", '{ unit separator; value -5; currency EUR; year 2026;'
+             ' basis installed; kind equipment; source "s"; reason "r"; }',
+             "positive"),
+            ("sized", "{ unit reactor; " + ok + " }", "SIZED"),
+            ("unknownunit", "{ unit nowhere; " + ok + " }", "names no unit"),
+            ("itemisunit", "{ item separator; " + ok + " }", "declare `unit"),
+            ("both", "{ unit separator; item x; " + ok + " }", "EXACTLY ONE"),
+            ("nofactor", '{ unit separator; value 1000; currency EUR; year 2026;'
+             ' basis purchased; kind equipment; source "s"; reason "r"; }',
+             "bareModuleFactor"),
+            ("nocepci", '{ unit separator; value 1000; currency EUR; year 2019;'
+             ' basis installed; kind equipment; source "s"; reason "r"; }',
+             "No index is defaulted"),
+            ("kind", '{ unit separator; value 1000; currency EUR; year 2026;'
+             ' basis installed; kind machine; source "s"; reason "r"; }',
+             "Accepted"),
+            ("duplicate", "{ unit separator; " + ok + " } { unit separator; "
+             + ok + " }", "second quote"),
+        ]
+        for tag, entry, why in cases:
+            d = _copy_case(ECONCASE, tmp, "u3" + tag)
+            pdp = d / "system" / "postDict"
+            pdp.write_text(_insert_into_block(pdp.read_text(), "costing",
+                                              "    quotes ( %s );" % entry))
+            rc, out = _run(d)
+            if rc == 0 or "quotes" not in out or why not in out:
+                fails.append("(u3) %s: not refused by name (rc=%d, '%s' expected"
+                             " in the message)" % (tag, rc, why))
+    finally:
+        shutil.rmtree(tmp, ignore_errors=True)
+
+
+CREW_RE = re.compile(r"operating crew, DECLARED: (.*?) = (\d+)/shift -> ([\d.]+)"
+                     r" operating positions \(x ([\d.]+)\)")
+CMP_RE = re.compile(r"\[comparison, enters NO total\] N_OL = sqrt\(6\.29 \+ 31\.7 x "
+                    r"P\^2 \+ 0\.23 x N_np\) = sqrt\(6\.29 \+ 31\.7 x (\d+)\^2 \+ 0\.23 x"
+                    r" ([\d.]+)\) = ([\d.]+)/shift -> ([\d.]+) operating positions")
+
+
+def check_operating_crew(fails):
+    """(v) A DECLARED CREW PRICES THE LABOUR, AND THE CORRELATION IS PRINTED
+    BESIDE IT AS A COMPARISON THAT ENTERS NO TOTAL (2026-10-19, DEV.md 4c C98
+    round 2, Vitor: "Equipa declarada pelo caso").
+
+      v1  the shipped solid-dose witness: the crew line's areas sum to its
+          operators per shift, x the printed positions factor gives its
+          positions, and C_OL = positions x rate x hours; the published KPIs
+          `operatorsPerShift`, `operatingPositions`, `C_OL` carry the SAME
+          numbers; the comparison line recomputes Turton's N_OL with the
+          declared P, `C_OL_correlation` is its labour, and COM_d recomputes
+          from the DECLARED C_OL (0.180 FCI + 2.73 C_OL + 1.23 (C_RM + C_UT))
+          -- so the comparison is in no total;
+      v2  a fluid plant with no crew publishes `operatorsPerShift` = the
+          correlation's N_OL and NO `_correlation` key, and prints no crew
+          line and no comparison label;
+      v3  REFUSED by name: a fractional, a zero operators-per-shift, a
+          missing source, a missing reason, an empty `areas`, a duplicate
+          area, a flat scalar;
+      v4  a crew beside an UNDECLARED P on a solids plant: the comparison
+          line says P was not declared, and the undeclared-zero
+          announcement does NOT fire (the zero prices nothing);
+      v5  SOURCE: the positions factor 4.5 has ONE home in EconomicsPass.cpp
+          outside comments -- the two routes may not carry two copies."""
+    tmp = tempfile.mkdtemp(prefix="cost_crew_")
+    try:
+        # ---- v1
+        if not OSDCASE.exists():
+            fails.append("(v1) %s is missing -- this arm CANNOT RUN and must not"
+                         " pass" % OSDCASE.name)
+        else:
+            d = _copy_case(OSDCASE, tmp, "v1")
+            rc, out = _run(d)
+            m = CREW_RE.search(out)
+            c = CMP_RE.search(out)
+            if rc != 0 or not m or not c:
+                fails.append("(v1) the witness prints no declared-crew line or no"
+                             " comparison line (rc=%d)" % rc)
+            else:
+                areas = [int(x) for x in re.findall(r" (\d+)(?: \+|$)", m.group(1))]
+                per, pos, fac = int(m.group(2)), float(m.group(3)), float(m.group(4))
+                if sum(areas) != per or abs(fac * per - pos) > 0.06:
+                    fails.append("(v1) the crew line does not add up: areas %s,"
+                                 " %d/shift, %g positions at x %g"
+                                 % (areas, per, pos, fac))
+                sal = re.search(r"salary/operator = ([\d.]+) EUR/h x ([\d.]+) h/yr", out)
+                rate_h = float(sal.group(1)) * float(sal.group(2)) if sal else 0.0
+                col = _econ_kpi(out, "C_OL")
+                if col is None or abs(col - fac * per * rate_h) > 1e-6 * col + 1:
+                    fails.append("(v1) C_OL %s is not the crew's %g positions x"
+                                 " the wage (%.0f)" % (col, fac * per, fac * per * rate_h))
+                if _econ_kpi(out, "operatorsPerShift") != per \
+                        or abs((_econ_kpi(out, "operatingPositions") or 0) - fac * per) > 1e-9:
+                    fails.append("(v1) the published operatorsPerShift /"
+                                 " operatingPositions are not the crew's")
+                P, Nnp, nol = int(c.group(1)), float(c.group(2)), float(c.group(3))
+                want = math.sqrt(6.29 + 31.7 * P * P + 0.23 * Nnp)
+                if abs(want - nol) > 0.006 \
+                        or abs((_econ_kpi(out, "operatorsPerShift_correlation") or 0) - want) > 1e-6:
+                    fails.append("(v1) the comparison N_OL %g (published %s) is not"
+                                 " sqrt(6.29 + 31.7 P^2 + 0.23 N_np) = %g"
+                                 % (nol, _econ_kpi(out, "operatorsPerShift_correlation"), want))
+                cc = _econ_kpi(out, "C_OL_correlation")
+                if cc is None or abs(cc - fac * want * rate_h) > 1e-6 * cc + 1:
+                    fails.append("(v1) C_OL_correlation %s is not the correlation's"
+                                 " positions x the wage (%.0f)" % (cc, fac * want * rate_h))
+                fci, com = _econ_kpi(out, "FCI"), _econ_kpi(out, "COM_d")
+                crm, cut = _econ_kpi(out, "C_RM"), _econ_kpi(out, "C_UT")
+                if None in (fci, com, crm, cut, col) or \
+                        abs(0.180 * fci + 2.73 * col + 1.23 * (crm + cut) - com) > 1e-6 * com + 1:
+                    fails.append("(v1) COM_d %s does not recompute from the DECLARED"
+                                 " C_OL -- the comparison entered a total" % com)
+
+        # ---- v2
+        d = _copy_case(ECONCASE, tmp, "v2")
+        rc, out = _run(d)
+        m = N_OL_RE.search(out)
+        if rc != 0 or not m:
+            fails.append("(v2) the fluid plant printed no correlation line")
+        else:
+            if abs((_econ_kpi(out, "operatorsPerShift") or -1) - float(m.group(3))) > 0.006:
+                fails.append("(v2) without a crew the published operatorsPerShift"
+                             " is not the correlation's N_OL")
+            if _econ_kpi(out, "operatorsPerShift_correlation") is not None \
+                    or "operating crew, DECLARED" in out or "[comparison" in out:
+                fails.append("(v2) a case with no crew carries a crew line, a"
+                             " comparison label or a `_correlation` KPI")
+
+        # ---- v3
+        good = ('{ area "a"; operatorsPerShift 2; }')
+        for tag, body, why in (
+            ("frac", 'operatingCrew { areas ( { area "a"; operatorsPerShift 1.5; } );'
+                     ' source "s"; reason "r"; }', "whole people"),
+            ("zero", 'operatingCrew { areas ( { area "a"; operatorsPerShift 0; } );'
+                     ' source "s"; reason "r"; }', "whole people"),
+            ("nosource", 'operatingCrew { areas ( %s ); reason "r"; }' % good,
+             "staffing plan"),
+            ("noreason", 'operatingCrew { areas ( %s ); source "s"; }' % good,
+             "staffing plan"),
+            ("empty", 'operatingCrew { areas ( ); source "s"; reason "r"; }',
+             "is EMPTY"),
+            ("dup", 'operatingCrew { areas ( %s %s ); source "s"; reason "r"; }'
+                    % (good, good), "declared TWICE"),
+            ("flat", 'operatingCrew 5;', "must be a block"),
+        ):
+            d = _copy_case(ECONCASE, tmp, "v3" + tag)
+            pdp = d / "system" / "postDict"
+            pdp.write_text(_insert_into_block(pdp.read_text(), "economics",
+                                              "    " + body))
+            rc, out = _run(d)
+            if rc == 0 or "operatingCrew" not in out or why not in out:
+                fails.append("(v3) %s: not refused by name (rc=%d, '%s' expected"
+                             " in the message)" % (tag, rc, why))
+
+        # ---- v4
+        if OSDCASE.exists():
+            d = _copy_case(OSDCASE, tmp, "v4")
+            pdp = d / "system" / "postDict"
+            pdp.write_text(re.sub(r"\n    particulateSteps\n    \{.*?\n    \}\n", "\n",
+                                  pdp.read_text(), flags=re.S))
+            rc, out = _run(d)
+            if rc != 0 or "(P = 0: particulateSteps NOT declared)" not in out:
+                fails.append("(v4) beside a declared crew, the comparison does not"
+                             " say P was not declared (rc=%d)" % rc)
+            if ANNOUNCE in out:
+                fails.append("(v4) the undeclared-P announcement fired beside a"
+                             " declared crew, where the zero prices nothing")
+
+        # ---- v5
+        src = strip_comments((ROOT / "src/postProcessing/EconomicsPass.cpp")
+                             .read_text(errors="replace"))
+        n = len(re.findall(r"(?<![\d.])4\.5(?![\d])", src))
+        if n != 1:
+            fails.append("(v5) the positions factor 4.5 appears %d times in"
+                         " EconomicsPass.cpp outside comments; the crew and the"
+                         " correlation must share ONE home" % n)
+    finally:
+        shutil.rmtree(tmp, ignore_errors=True)
+
+
 def main():
     if not BIN.exists():
         print("check_cost_provenance: FAIL -- choupoSolve missing; run `make all`")
@@ -1297,6 +1902,9 @@ def main():
     check_working_capital(fails)
     check_startup_years(fails)
     check_land(fails)
+    check_particulate_labour(fails)
+    check_declared_quotes(fails)
+    check_operating_crew(fails)
 
     if fails:
         print("check_cost_provenance: FAIL")
@@ -1304,7 +1912,26 @@ def main():
             print("  - " + f)
         return 1
 
-    print("check_cost_provenance: OK -- the LAND of ammonia02_full_plant "
+    print("check_cost_provenance: OK -- the PARTICULATE LABOUR TERM (C98): "
+          "the operator line prints Turton's 31.7 P^2 with the P used, a "
+          "declared `particulateSteps` recomputes N_OL and C_OL from the "
+          "printed numbers with its source beside it, a malformed declaration "
+          "is refused by name, an undeclared zero is ANNOUNCED (site, caveat "
+          "block, JSON) only where the flowsheet holds a particulate unit; "
+          "the DECLARED QUOTES (C98) of apalutamide01_tablets recompute row "
+          "by row from their printed value, index factor and B1 (C_TM = 1.18 "
+          "C_BM), the FCI KPI recomputes from the equipment JSON with a "
+          "facility adding nothing to the auxiliary base, costs.csv "
+          "reproduces each quote from its own columns, a USD quote of another "
+          "year escalates and converts as printed, and eleven malformed "
+          "quotes are refused by name; a DECLARED CREW (C98 round 2) prices "
+          "the labour (areas sum, x the one positions factor, x the wage = "
+          "the published C_OL), Turton's correlation is printed and "
+          "published beside it as a comparison that enters no total (COM_d "
+          "recomputes from the declared C_OL), a case with no crew publishes "
+          "the correlation's count and no comparison, seven malformed crews "
+          "are refused by name, and the 4.5 has one home; "
+          "the LAND of ammonia02_full_plant "
           "recomputes from its printed line (price x the plot area the layout "
           "published = its cost, its declared source printed beside it, the "
           "CSV footer the same, TCI still FCI + WC); "

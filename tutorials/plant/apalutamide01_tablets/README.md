@@ -144,37 +144,90 @@ Mass balance 100.000 %; first law closes (residual below 0.0001 kW).
 | Acetone lost in the purge | 1.79 kg/h, to a vent treatment the plant does not model |
 | Coated tablets | 7.599 kg/h = 12 672 tablets/h (0.5997 g each); they keep 0.029 kg/h of water, 0.38 % of their mass (1.49 % on the cellulose, the isotherm's basis) |
 | Coating dryer | exhaust 325.0 K; 0.853 kg/h of the coat's 0.882 kg/h of water evaporated |
-| Fixed capital (solvent section ONLY, see 6) | 2.26 MEUR |
+| Fixed capital (the solvent section + the quoted solid-dose train and building, see 6) | 23.06 MEUR (of it, 15.65 MEUR of bare-module cost is QUOTED placeholders) |
 | Land (the layout's plot, 16 056 m2 at 80 EUR/m2) | 1.28 MEUR |
-| Revenue / raw materials / COM_d | 50.0 / 31.1 / 41.4 MEUR/yr |
-| NPV (10 %, 10 yr) / IRR | 31.3 MEUR / 41 % — **not decision-grade, see 6** |
+| Operating labour (the DECLARED crew, 11 a shift, see 6) | 49.5 operating positions, 4.07 MEUR/yr (Turton's correlation, for comparison: 152.5 positions, 12.55 MEUR/yr) |
+| Revenue / raw materials / COM_d | 50.0 / 31.1 / 53.5 MEUR/yr |
+| NPV (10 %, 10 yr) / IRR | −45.5 MEUR / none (the plant never breaks even) — **not decision-grade, see 6** |
 
-## 6. Sizing, cost and economics — and why they are a LOWER BOUND
+## 6. Sizing, cost and economics — what is in the capital and the labour, and what is not
 
 Sized and costed (Turton): the spray dryer, the blower, four exchangers, the
 condensate pot, the two preparation tanks and the two acetone tanks.  The
 run announces that almost every one is **below its correlation's range**
 (the plant is small) — those costs are extrapolations.
 
-**What the capital does NOT contain**, and is in real life most of it:
-- the solid-dose machines — blenders, roller compactor, mill, tablet press,
-  coater, packaging line: Choupo has no sizer or cost correlation for them
-  and none was invented.  Get vendor quotations;
-- the **GMP building** — clean rooms, HVAC, the quality-control laboratory,
-  the warehouse.  Usually the largest single capital item of a drug-product
-  plant;
-- vent treatment for the purge, dust collection, cleaning systems.
+**Quoted, not correlated (DEV.md 4c C98).**  Choupo has no sizer and no cost
+correlation for the solid-dose machines or the GMP building, and it does not
+invent one.  So `system/postDict` DECLARES a price for each, in
+`costing { quotes ( ... ); }`:
 
-**The labour is also understated, and the reason is in the engine**: Turton's
-operator count is `N_OL = (6.29 + 31.7 P^2 + 0.23 N_np)^0.5`, where `P` counts
-the PARTICULATE-solids steps; Choupo's implements only the `N_np` term
-(`src/postProcessing/EconomicsPass.cpp`, `N_OL_per_shift`).  This plant has six
-particulate steps (spray drying, blending, compaction, milling, tableting,
-coating): with `P = 6` the formula gives about 34 operators a shift instead
-of 2.7.  Work it out by hand and put it in your appraisal.
+| item | quote (installed, 2026 EUR) | kind |
+|---|---|---|
+| `tabletPress` | 1 000 000 | equipment |
+| `packagingLine` | 1 500 000 | equipment |
+| `coatingPan` (with the `coatingDryer`, its drying half) | 800 000 | equipment |
+| `rollerCompactor` | 600 000 | equipment |
+| `blender`, `finalBlender` | 300 000 each | equipment |
+| `mill` (with the `screen`) | 150 000 | equipment |
+| `productionBuilding` (the GMP building, 50 m x 36 m) | 11 000 000 | facility |
 
-So the NPV above says only that the solvent section is cheap next to the
-API.  An appraisal you can defend adds the items above.
+**Every one of these numbers is an AUTHOR-SET PLACEHOLDER** — a round figure
+of the right order, so that the train and its building are not zero in the
+capital — and each says so in its `source` and `reason`, which the run
+prints beside it.  Replace each with a vendor's dated quotation (vendor,
+reference and date in `source`).  A quote is entered as its **installed**
+cost (`basis installed;`, so it is the bare-module cost C_BM); an ex-works
+quote is `basis purchased;` with your own `bareModuleFactor` and its
+`bareModuleFactorSource` — Choupo supplies no installation factor for an
+item it has no correlation for.  In the fixed capital each quote is a module
+like any other: `contingencyFee` (1.18) applies to it, and for a machine
+(`kind equipment;`) so does the auxiliary-facilities estimate (`siteFactor`
+x its base); the building (`kind facility;`) does NOT drive that estimate,
+because it IS a facility.  The costing table prints each quote's arithmetic;
+`reports/economics/costs.csv` carries it in the same columns as the
+correlated items.
+
+**Still NOT in the capital:** the warehouse and the offices/QC laboratory as
+priced items (the `siteFactor` term is Turton's estimate of such auxiliary
+facilities — replace it with quotes if you have them), vent treatment for
+the purge, dust collection, cleaning-in-place, validation and
+qualification.
+
+**The labour: a declared crew, and Turton's correlation beside it.**  Two
+numbers are printed, and you should be able to explain both.
+
+- **The crew that prices the labour** is DECLARED in `system/postDict`
+  (`operatingCrew`, DEV.md 4c C98): solvent section 2, dispensing 1, dry
+  granulation 2, compression 1, coating 1, packaging 3, material handling 1
+  — **11 operators a shift**, x 4.5 positions per operator-per-shift (the
+  cover for round-the-clock operation) = 49.5 positions, x 42 EUR/h x
+  1960 h = **4.07 MEUR/yr**.  Every number is an AUTHOR-SET ASSUMPTION for
+  ONE line: replace it with your own staffing plan (operators per room per
+  shift).  And ask whether the 4.5 is right for a line that runs in
+  campaigns — 45 % of the year — rather than round the clock.
+- **Turton's correlation, printed beside it as a COMPARISON that enters no
+  total**: `N_OL = (6.29 + 31.7 P^2 + 0.23 N_np)^0.5` operators per shift,
+  `P` the processing steps that handle PARTICULATE SOLIDS (declared:
+  `particulateSteps { count 6; }` — spray drying, blending, roller
+  compaction, milling and screening, tableting, coating) and `N_np` the
+  others (5).  It gives 33.9 a shift, 152.5 positions, 12.55 MEUR/yr.
+  Why it is not used: it is a regression over CONTINUOUS chemical plants,
+  and it grows with the number of steps — with `P` SQUARED — while a
+  campaign drug-product suite is staffed room by room: one press operator
+  runs one press whatever the plant around it.  The gap between the two
+  numbers is the lesson; defend the one you use.
+
+A case that declares no crew is staffed by the correlation, and one that
+does not declare `P` takes 0 — said by the run where the flowsheet holds a
+dryer, crystalliser, cyclone or filter.
+
+So the NPV is now an appraisal of the whole plant on PLACEHOLDER quotes, a
+placeholder crew and placeholder prices: none of it is decision-grade until
+the quotes, the staffing and the prices are yours.  Note where it goes
+negative: the gross margin R - C_RM is 18.9 MEUR/yr, and COM_d also carries
+Turton's 1.23 x C_RM and 2.73 x C_OL factors — check whether those
+continuous-plant factors describe a drug-product plant either.
 
 ## 7. Plant layout
 
@@ -271,8 +324,10 @@ if they had a size.
 4. **Recovery vs refrigeration.** Change the condenser temperature and the
    purge fraction; what do the recovery, the refrigeration duty and the
    vent load do?
-5. **The capital and the labour** of section 6, by hand, and the NPV with
-   them.
+5. **The capital and the labour** of section 6: replace each quoted
+   placeholder with a quotation and the declared crew with your staffing
+   plan, compare it with the correlation the run prints, and say what the
+   NPV does.
 
 ## 10. Engine notes made while building this case (DEV.md 4c C97)
 

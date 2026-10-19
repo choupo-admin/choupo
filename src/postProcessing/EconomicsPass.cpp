@@ -2021,10 +2021,32 @@ int EconomicsPass::run(SimulationResult& result)
 
         const auto fB1 = cb.factors.find("B1");
         const auto fB2 = cb.factors.find("B2");
-        if (fB1 != cb.factors.end() && fB2 != cb.factors.end())
+        //  A DECLARED QUOTE (DEV.md 4c C98) publishes its base value itself:
+        //  its C_BM for a machine, ZERO for a facility (a building IS an
+        //  auxiliary facility, so the siteFactor estimate of further ones
+        //  must not multiply it).  No other record carries the key.
+        const auto fBase = cb.factors.find("C_BM_base");
+        if (fBase != cb.factors.end())
+            sum_C_BM0 += fBase->second;
+        else if (fB1 != cb.factors.end() && fB2 != cb.factors.end())
             sum_C_BM0 += cb.purchasedCost * (fB1->second + fB2->second);
         else
             sum_C_BM0 += cb.bareModuleCost;  // no base factors: conservative
+    }
+
+    //  WHICH PART OF THE CAPITAL IS THE CASE'S OWN QUOTES (DEV.md 4c C98),
+    //  so the CAPEX lines below can say it; zero, and unprinted, on a case
+    //  that declares none.
+    scalar      quoted_C_BM  = 0.0, quoted_C_BM0 = 0.0;
+    std::size_t nQuotes      = 0;
+    for (const auto& [item, cb] : result.costs)
+    {
+        (void)item;
+        auto fBase = cb.factors.find("C_BM_base");
+        if (fBase == cb.factors.end()) continue;
+        ++nQuotes;
+        quoted_C_BM  += cb.bareModuleCost;
+        quoted_C_BM0 += fBase->second;
     }
 
     const scalar FCI = contingencyFee * sum_C_BM + siteFactor * sum_C_BM0;
@@ -2102,11 +2124,203 @@ int EconomicsPass::run(SimulationResult& result)
     }
 
     // C_OL: operating labour, Turton Eq. 8.3.
-    //   N_OL = (6.29 + 0.23*N_np)^0.5  operators per shift;
+    //   N_OL = (6.29 + 31.7*P^2 + 0.23*N_np)^0.5  operators per shift;
     //   ~4.5 shift-positions cover one operating position around the clock;
     //   labour rate (€/h) from constant/economics.
-    const scalar N_OL_per_shift = std::sqrt(6.29 + 0.23 * N_np);
-    const scalar operatorsTotal = 4.5 * N_OL_per_shift;   // operating positions
+    //
+    //  THE PARTICULATE TERM (DEV.md 4c C98, Vitor's ruling 2026-10-18: "P
+    //  declarado pelo caso").  P is the number of processing steps that
+    //  handle PARTICULATE SOLIDS -- transport, size control, particulate
+    //  removal, in Turton's own examples -- and N_np the non-particulate ones.
+    //  This line used to read sqrt(6.29 + 0.23 N_np): the P term was dropped,
+    //  so a plant that dries, blends, compacts, mills, tablets and coats was
+    //  staffed like a fluid plant.  It is not the engine's to count: a step
+    //  is a judgement about the plant (a flowsheet placeholder may be two
+    //  steps, a unit may be none), so the case DECLARES it,
+    //
+    //      particulateSteps { count 6; source "..."; reason "..."; }
+    //
+    //  and absent it P = 0 -- every case that predates the term computes
+    //  exactly what it did.  A P = 0 that was NOT declared is ANNOUNCED when
+    //  the flowsheet holds a unit whose type handles particulate solids
+    //  (`particulateUnitTypes` below), because there the zero is the engine's
+    //  choice, not the author's; a declared value announces nothing.
+    //
+    //  THE DECLARED CREW (DEV.md 4c C98 round 2, Vitor's ruling 2026-10-19:
+    //  "Equipa declarada pelo caso").  Turton's correlation is a regression
+    //  over CONTINUOUS chemical plants; a campaign suite, a batch line or a
+    //  pilot plant is staffed room by room, and its operators per shift are
+    //  a fact the case can state.  So a case may DECLARE its crew,
+    //
+    //      operatingCrew
+    //      {
+    //          areas ( { area "solvent section"; operatorsPerShift 1; } ... );
+    //          source "...";  reason "...";
+    //      }
+    //
+    //  and the labour is then SUM operatorsPerShift through the SAME
+    //  positions factor and the SAME wage arithmetic the correlation route
+    //  uses (`positionsPerOperatorPerShift`, `appraise`).  The correlation is
+    //  still computed -- with the declared or the absent P -- and PRINTED
+    //  beside it as a COMPARISON that enters no total.  `particulateSteps`
+    //  and `operatingCrew` coexist: P then drives only that comparison.
+    //  Absent the block, nothing here is read and nothing is printed.
+    struct CrewArea { std::string name; scalar operatorsPerShift = 0.0; };
+    std::vector<CrewArea> crewAreas;
+    bool        crewDeclared = false;
+    std::string crewSource, crewReason;
+    if (econDict_->found("operatingCrew"))
+    {
+        const std::string where = "economics { operatingCrew { ... } }";
+        if (!std::holds_alternative<DictPtr>(econDict_->entryValue("operatingCrew")))
+            throw std::runtime_error("economics: `operatingCrew` must be a block"
+                " -- `operatingCrew { areas ( { area \"...\"; operatorsPerShift"
+                " <n>; } ... ); source \"...\"; reason \"...\"; }`.");
+        const DictPtr cd = econDict_->subDict("operatingCrew");
+        for (const char* key : { "source", "reason" })
+            if (!cd->found(key) || cd->lookupWord(key).empty())
+                throw std::runtime_error(where + ": `" + key + " \"...\";` is"
+                    " not declared -- a declared crew is the case's staffing"
+                    " plan in place of Turton's correlation, and it owes its"
+                    " reader where the numbers come from (`source`) and why"
+                    " they are this plant's (`reason`).  Nothing is defaulted.");
+        crewSource = cd->lookupWord("source");
+        crewReason = cd->lookupWord("reason");
+        if (!cd->found("areas"))
+            throw std::runtime_error(where + ": `areas ( ... );` is not declared"
+                " -- one `{ area \"<name>\"; operatorsPerShift <n>; }` per"
+                " staffed area.");
+        //  `areas ( );` parses as an empty list of SCALARS, not of blocks, so
+        //  the empty case is told apart here before the typed read.
+        const EntryValue& av = cd->entryValue("areas");
+        const bool emptyList =
+            (std::holds_alternative<std::vector<scalar>>(av)
+                 && std::get<std::vector<scalar>>(av).empty())
+            || (std::holds_alternative<std::vector<std::string>>(av)
+                 && std::get<std::vector<std::string>>(av).empty());
+        const std::vector<DictPtr> al =
+            emptyList ? std::vector<DictPtr>{} : cd->lookupDictList("areas");
+        if (al.empty())
+            throw std::runtime_error(where + ": `areas` is EMPTY -- a crew of"
+                " nobody is not a staffing plan.  Declare at least one area, or"
+                " delete the block and the correlation is used.");
+        std::set<std::string> names;
+        for (const auto& a : al)
+        {
+            if (!a->found("area") || a->lookupWord("area").empty())
+                throw std::runtime_error(where + ": an `areas` entry has no"
+                    " `area \"<name>\";`.");
+            CrewArea ca;
+            ca.name = a->lookupWord("area");
+            if (!names.insert(ca.name).second)
+                throw std::runtime_error(where + ": area \"" + ca.name + "\" is"
+                    " declared TWICE -- one area, one crew.  Merge the two"
+                    " entries.");
+            if (!a->found("operatorsPerShift"))
+                throw std::runtime_error(where + ": area \"" + ca.name + "\" has"
+                    " no `operatorsPerShift`.");
+            ca.operatorsPerShift = a->lookupScalar("operatorsPerShift");
+            if (!(ca.operatorsPerShift > 0.0)
+                || std::fabs(ca.operatorsPerShift
+                             - std::round(ca.operatorsPerShift)) > 1e-9)
+            {
+                std::ostringstream m;
+                m << where << ": area \"" << ca.name << "\" declares `operatorsPerShift "
+                  << ca.operatorsPerShift << ";` -- operators are whole people, one"
+                     " or more (an area nobody staffs is left out).";
+                throw std::runtime_error(m.str());
+            }
+            crewAreas.push_back(ca);
+        }
+        crewDeclared = true;
+    }
+
+    scalar P_particulate = 0.0;
+    bool   P_declared    = false;
+    std::string P_source, P_reason;
+    if (econDict_->found("particulateSteps"))
+    {
+        const std::string where = "economics { particulateSteps { ... } }";
+        if (!std::holds_alternative<DictPtr>(econDict_->entryValue("particulateSteps")))
+            throw std::runtime_error("economics: `particulateSteps` must be a"
+                " block -- `particulateSteps { count <steps>; source \"...\";"
+                " reason \"...\"; }` -- because the count is an assumption the"
+                " case owes its reader a source and a reason for.");
+        const DictPtr pd = econDict_->subDict("particulateSteps");
+        if (!pd->found("count"))
+            throw std::runtime_error(where + ": `count` is not declared -- the"
+                " number of processing steps that handle particulate solids"
+                " (Turton's P in N_OL = (6.29 + 31.7 P^2 + 0.23 N_np)^0.5).");
+        P_particulate = pd->lookupScalar("count");
+        if (!(P_particulate >= 0.0)
+            || std::fabs(P_particulate - std::round(P_particulate)) > 1e-9)
+        {
+            std::ostringstream m;
+            m << where << ": `count " << P_particulate << ";` -- a number of"
+                 " processing steps is a whole number, zero or more.";
+            throw std::runtime_error(m.str());
+        }
+        for (const char* key : { "source", "reason" })
+            if (!pd->found(key) || pd->lookupWord(key).empty())
+                throw std::runtime_error(where + ": `" + key + " \"...\";` is"
+                    " not declared -- which steps were counted and where the"
+                    " count comes from (`source`), and why it is this plant's"
+                    " (`reason`).  Nothing is defaulted.");
+        P_source   = pd->lookupWord("source");
+        P_reason   = pd->lookupWord("reason");
+        P_declared = true;
+    }
+    else
+    {
+        //  The registered unit types whose model handles particulate solids
+        //  (UnitOperation.cpp registerBuiltins; each class's own header says
+        //  so): the dryers (SprayDryer.H, SolidDryer.H, ConvectiveDryer.H,
+        //  EvaporativeDryer.H), the crystalliser (Crystalliser.H -- it MAKES
+        //  the particles), pneumatic conveying (PneumaticConveyor.H), and
+        //  the gas-solid separators (Cyclone.H, BagFilter.H,
+        //  GasSolidSplitter.H).  A `mixer` or `splitter` carrying solids is
+        //  NOT listed: they are generic, and a fluid plant has dozens.
+        static const std::set<std::string> particulateUnitTypes = {
+            "sprayDryer", "solidDryer", "convectiveDryer", "evaporativeDryer",
+            "crystalliser", "pneumaticConveyor",
+            "cyclone", "bagFilter", "gasSolidSplitter" };
+        std::string seen;
+        for (const auto& fu : result.topology)
+            if (particulateUnitTypes.count(fu.type))
+                seen += (seen.empty() ? "" : ", ") + fu.name + " (" + fu.type + ")";
+        //  With a DECLARED crew, P drives only the printed comparison, and the
+        //  comparison line itself says P was not declared -- so the zero is
+        //  not the labour's and is not announced.
+        if (!seen.empty() && !crewDeclared)
+        {
+            const std::string m =
+                "particulateSteps was NOT declared, so the operator count takes"
+                " P = 0 particulate-solids processing steps (Turton Eq. 8.3,"
+                " N_OL = (6.29 + 31.7 P^2 + 0.23 N_np)^0.5) -- and this"
+                " flowsheet holds units that handle particulate solids: " + seen
+                + ".  Declare `particulateSteps { count <steps>; source \"...\";"
+                  " reason \"...\"; }` in the economics block to own the count"
+                  " (it is the case's judgement which steps count, so the"
+                  " engine does not count them).";
+            if (AdvisoryLog::instance().add("assumed", "warning", "economics", m))
+                std::cout << "  [assumed] economics: " << m << "\n";
+        }
+    }
+    const scalar N_OL_per_shift =
+        std::sqrt(6.29 + 31.7 * P_particulate * P_particulate + 0.23 * N_np);
+    //  THE ONE HOME of the positions factor: ~4.5 shift-positions cover one
+    //  operating position around the clock.  Both routes -- the correlation
+    //  and a declared crew -- go through it.
+    constexpr scalar positionsPerOperatorPerShift = 4.5;
+    scalar crewPerShift = 0.0;
+    for (const auto& a : crewAreas) crewPerShift += a.operatorsPerShift;
+    //  The operators per shift that PRICE the labour: the declared crew when
+    //  there is one, else the correlation.
+    const scalar operatorsPerShiftUsed = crewDeclared ? crewPerShift : N_OL_per_shift;
+    const scalar operatorsTotal =
+        positionsPerOperatorPerShift * operatorsPerShiftUsed;   // operating positions
+    const scalar operatorsTotalCorrelation =
+        positionsPerOperatorPerShift * N_OL_per_shift;         // the comparison
     scalar labourRate = 0.0;      // €/h
     bool   haveLabour = false;
     if (prices && prices->found("labourRate"))
@@ -2292,6 +2506,13 @@ int EconomicsPass::run(SimulationResult& result)
     std::cout << "    FCI = " << std::setprecision(2) << contingencyFee
               << "*SC_BM + " << siteFactor << "*SC_BM_base = "
               << std::setprecision(0) << std::setw(14) << FCI << " EUR\n";
+    if (nQuotes)
+        //  THE CASE'S OWN QUOTES INSIDE THE TWO SUMS (C98), printed only when
+        //  declared, so every other case's ladder reads as it did.
+        std::cout << "      of which DECLARED QUOTES (" << nQuotes << " item(s)):"
+                     " SC_BM " << quoted_C_BM << " EUR, SC_BM_base "
+                  << quoted_C_BM0 << " EUR  (a facility adds nothing to the"
+                     " base; see the costing table)\n";
     if (!wcb.present)
         std::cout << "    WC  = " << std::setprecision(2) << workingCapital
                   << "*FCI              = "
@@ -2324,15 +2545,53 @@ int EconomicsPass::run(SimulationResult& result)
 
     std::cout << "\n  -- OPEX (Turton Eq. 8.1, COM_d) ------------------------------\n";
     std::cout << "    0.180 x FCI                  = " << std::setw(14) << 0.180 * FCI << " EUR/yr\n";
-    std::cout << "    N_OL = sqrt(6.29 + 0.23 x " << std::setprecision(1) << N_np
+    //  A DECLARED CREW (C98 round 2) prices the labour; its arithmetic is
+    //  printed first, area by area, and the correlation follows it as a
+    //  COMPARISON that enters no total.  Absent a crew, the correlation line
+    //  is printed exactly as it was.
+    if (crewDeclared)
+    {
+        std::cout << "    operating crew, DECLARED:";
+        for (std::size_t i = 0; i < crewAreas.size(); ++i)
+            std::cout << (i ? " + " : " ") << crewAreas[i].name << " "
+                      << std::setprecision(0) << crewAreas[i].operatorsPerShift;
+        std::cout << " = " << std::setprecision(0) << crewPerShift
+                  << "/shift -> " << std::setprecision(1) << operatorsTotal
+                  << " operating positions (x "
+                  << positionsPerOperatorPerShift << ")\n"
+                  << "      source: " << crewSource << "\n"
+                  << "      reason: " << crewReason << "\n";
+    }
+    //  THE PARTICULATE TERM IS ON THE LINE (C98), declared or not, so the
+    //  arithmetic printed is the arithmetic done.
+    std::cout << (crewDeclared ? "    [comparison, enters NO total] " : "    ")
+              << "N_OL = sqrt(6.29 + 31.7 x P^2 + 0.23 x N_np) = sqrt(6.29 + 31.7 x "
+              << std::setprecision(0) << P_particulate << "^2 + 0.23 x "
+              << std::setprecision(1) << N_np
               << ") = " << std::setprecision(2) << N_OL_per_shift
-              << "/shift -> " << std::setprecision(1) << operatorsTotal
-              << " operating positions\n";
+              << "/shift -> " << std::setprecision(1) << operatorsTotalCorrelation
+              << " operating positions";
+    if (crewDeclared && !P_declared)
+        std::cout << "  (P = 0: particulateSteps NOT declared)";
+    std::cout << "\n";
+    if (P_declared)
+        std::cout << "      P = " << std::setprecision(0) << P_particulate
+                  << " particulate-solids steps, DECLARED -- source: " << P_source
+                  << "\n      reason: " << P_reason << "\n";
     std::cout << "    salary/operator = " << std::setprecision(0) << labourRate
               << " EUR/h x " << operatorAnnualHours << " h/yr = "
               << std::setw(0) << (labourRate * operatorAnnualHours) << " EUR/yr\n";
     std::cout << std::setprecision(0);
     std::cout << "    C_OL (labour)                = " << std::setw(14) << C_OL << " EUR/yr\n";
+    //  THE CORRELATION'S LABOUR, BESIDE A DECLARED CREW (C98 round 2): the
+    //  priced C_OL scaled by the ratio of positions, so the wage arithmetic
+    //  keeps its one home in `appraise`.  It enters no total.
+    const scalar C_OL_correlation =
+        (crewDeclared && operatorsTotal > 0.0)
+        ? C_OL * operatorsTotalCorrelation / operatorsTotal : C_OL;
+    if (crewDeclared)
+        std::cout << "      [comparison, enters NO total] C_OL by the correlation = "
+                  << std::setw(0) << C_OL_correlation << " EUR/yr\n";
     std::cout << "    2.73  x C_OL                 = " << std::setw(14) << 2.73 * C_OL << " EUR/yr\n";
     std::cout << "    C_RM (raw materials)         = " << std::setw(14) << C_RM << " EUR/yr\n";
     //  The LABEL must not assert a completeness the number does not have.
@@ -2558,6 +2817,20 @@ int EconomicsPass::run(SimulationResult& result)
     //  The raw-material bill and the two gross margins (C57): published so a
     //  golden can pin the margin a feasibility study is decided on.
     econ["C_RM"]              = C_RM;
+    //  THE LABOUR, published so a golden pins it (C98 round 2): the
+    //  operators per shift that priced it (a declared crew, or the
+    //  correlation), the operating positions and C_OL.  Beside a declared
+    //  crew the correlation's own two numbers too -- the comparison the
+    //  console prints, pinned so that it cannot drift unseen; absent a crew
+    //  they are the first two and are not repeated.
+    econ["operatorsPerShift"]  = operatorsPerShiftUsed;
+    econ["operatingPositions"] = operatorsTotal;
+    econ["C_OL"]               = C_OL;
+    if (crewDeclared)
+    {
+        econ["operatorsPerShift_correlation"] = N_OL_per_shift;
+        econ["C_OL_correlation"]              = C_OL_correlation;
+    }
     econ["grossMargin_RM"]    = grossMargin_RM;
     econ["grossMargin_RM_UT"] = grossMargin_RM_UT;
     econ["NPV"]          = NPV;
