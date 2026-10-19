@@ -1291,6 +1291,16 @@ accepts today, and that is a policy call.
 > fire-water ring main and hydrants, bunds, escape routes, swept path, a
 > fillet running through an item.
 
+> **C102. THE FLOWSHEET CANVAS CANNOT ZOOM OUT TO THE WHOLE FLOWSHEET
+> (Vitor, 2026-10-19, screenshot of apalutamide01 on the live site: "No
+> flowsheet o zoom out nao permite ver o flowsheet todo!  Ha uma parte em
+> cima que e dificil de aceder.").**  Measured only from the screenshot:
+> the canvas stops zooming out before the whole apalutamide flowsheet fits,
+> and units above the visible area are hard to reach.  To check: the
+> React Flow `minZoom` and the fit-view bounds in the GUI's flowsheet
+> canvas, against a large flowsheet.  Status: recorded, not dispatched
+> (Vitor's credit this week).
+
 > **C101. AN EDUTOOL ON THE PHARMACEUTICAL (GMP) LAYOUT (Vitor, 2026-10-19:
 > "Sera que podes fazer um EduTool sobre este layout de processos
 > farmaceuticos?").**  Measured: a plant-layout EduTool exists
