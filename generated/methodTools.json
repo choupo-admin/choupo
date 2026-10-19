@@ -14,8 +14,8 @@
     "Process safety",
     "Flowsheeting & numerics"
   ],
-  "liveTools": 58,
-  "registryTools": 58,
+  "liveTools": 59,
+  "registryTools": 59,
   "tools": [
     {
       "id": "what-is-temperature",
@@ -408,6 +408,13 @@
       "discipline": "Process design & economics",
       "teaches": "That a plot plan is a set of decisions about distance -- safety (the domino effect), pipe and access (a tube bundle must be pulled out along its own axis); what a separation distance is, why it is keyed on pairs of equipment kinds and must say whether it is measured edge to edge or centre to centre, and why Choupo ships no spacing table (the published ones grant no redistribution, so the case declares its own, with a source); a guided exercise on the ammonia loop's declared plan, checked by the engine in the browser: a short distance announced, an overlap refused; the prevailing wind (ignition sources upwind of releases) and the hazardous-area zones 0, 1 and 2 as envelopes the case declares; and what the model does not do -- pipe cost and pressure drop (the engine routes and measures the pipes, and the page shows their lengths), structures, drainage.",
       "href": "/app/?workspace=methods&tool=plant-layout"
+    },
+    {
+      "id": "gmp-layout",
+      "label": "The GMP interior of a tablet plant: rooms, air and the ways through them",
+      "discipline": "Process design & economics",
+      "teaches": "That a pharmaceutical plant is laid out inside a building: the cleanliness grades of EU GMP Annex 1 and why an oral-solid-dose room is grade D by analogy or controlled not classified; the pressure cascade (air from clean to less clean, the case's declared step); cascade, bubble and sink airlocks, and why a contained room's airlock is a sink; gowning for the grade one enters; containment of a potent ingredient (negative pressure, the exposure band Choupo does not know); the personnel, material and waste flows, one way each and kept apart; the solvent suite as an ATEX zone away from ignition rooms; and escape (a lift is not an exit) -- each as an exercise on a teaching building the engine checks in the browser, a broken rule announced and an impossible building refused; and what the model does not do (air changes, doors, travel distances).",
+      "href": "/app/?workspace=methods&tool=gmp-layout"
     },
     {
       "id": "materials",
