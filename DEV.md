@@ -1291,6 +1291,32 @@ accepts today, and that is a policy call.
 > fire-water ring main and hydrants, bunds, escape routes, swept path, a
 > fillet running through an item.
 
+> **C100. THE APALUTAMIDE PROCESS EQUIPMENT GOES INSIDE THE GMP BUILDING
+> (Vitor, 2026-10-19: "quero um layout que possa ser realisticamente
+> adoptado!  Nao podes por um processo com equipamentos semi continuos ...
+> mas com equipamentos colocados na rua expostos aos elementos!!!").**
+> Measured: `system/layoutDict` places the spray dryer, its gas heater,
+> blower, exhaust cooler, solvent condenser, condensate pot, the solution
+> tank, the coating air heater and the coating-suspension tank OUTDOORS
+> (x -30..25 m, beside the building), and the engine CANNOT put a placed
+> item inside a building that declares an `envelope` (the overlap refusal;
+> named as a limit in DEV.md C97 wiring).  A pharmaceutical spray-dried
+> dispersion is made inside the GMP building (a contained, ATEX-zoned
+> solvent suite with explosion venting to an outside wall, its condenser,
+> blower and heater in an adjacent technical room); only bulk solvent
+> storage (a bunded outdoor tank farm) and utilities stay outside.  PLAN:
+> (1) engine -- a placed item may stand inside a room of a declared
+> building: it must fit the room in plan and height, its z is the room's
+> floor elevation, the envelope does not clash with the items its rooms
+> hold, and the room must list it (already a rule); (2) the case -- every
+> GMP-relevant item moves into its room (SDD suite, technical room,
+> solution and coating-suspension preparation, coating), the building
+> grows as its own rooms require, bulk acetone and recovered-acetone tanks
+> stay in an outdoor bunded farm with their pipes entering the building,
+> the separation and single-entrance exercises re-examined (kept only if
+> still true).  Moved rows to Vitor before re-record.  Status: dispatched
+> 2026-10-19.
+
 > **C99. THE APALUTAMIDE PLANT IS BATCH: CAMPAIGN DESIGN, NOT A STEADY RATE
 > (Vitor, 2026-10-19: "Este processo e batch ou e continuo?" ... "Faz como
 > for melhor!  Neste caso tem de ficar realista!").**  Measured: the case
