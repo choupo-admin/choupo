@@ -1309,6 +1309,40 @@ accepts today, and that is a policy call.
 > only, drawing what the engine already publishes, no new physics and no
 > new dict grammar; HVAC loads, purified water and QC specifications were
 > discussed and are NOT in this slice.  Status: dispatched 2026-10-19.
+>
+> **C103 MERGED-pending (branch `claude/c103-gmp-floor-plans`, 2026-10-19).**
+> GUI only.  The GMP section's plan becomes a SET of sheets per floor,
+> chosen by two toggles (floor; Zoning | Pressure | one flow plan per kind
+> the building declares): zoning (grade fill, airlocks dashed with
+> PAL/MAL/GOW and regime, contained rooms double-lined, ATEX rooms hatched,
+> rooms a finding names outlined orange); pressure (each room shaded by its
+> published pressure to outside, an arrow across every door from the higher
+> to the lower pressure read off the published `dP` = p(a) - p(b),
+> labelled with the step; no arrow at equal pressure); flow (each flow
+> routed DOOR TO DOOR -- in through a door, a lane offset by kind, an
+> axis-aligned L inside the room, which cannot leave a rectangle -- tagged
+> P1/M1/W1 with a key; a flow the engine found not connected dashed and
+> keyed with its own `flowBreak` message; a stair change labelled).  Every
+> sheet: walls, doors as gaps, stairs/lifts as symbols, equipment to scale,
+> room labels that fit or fall back to the room's NUMBER (`<floor>.<nn>`,
+> floors from the lowest), a scale bar, a north arrow (plan +y), legend,
+> footnotes and a title block (case, building, floor, plan); ink on white
+> in either theme; "Download SVG" per sheet, the room schedule (number,
+> role, grade, regime, p to outside, declared, area, height, occupancy,
+> ATEX, equipment, notes) as a table and a CSV.  NOT PUBLISHED, so drawn
+> and said so on every sheet: a door's POSITION on its wall (drawn at the
+> midpoint of the shared wall; an outside door at the midpoint of the
+> room's outer wall nearest the building edge, the cutaway's rule) and its
+> width (1.2 m, a symbol); the swing of a door is not drawn at all.
+> Geometry in `gui/src/case/gmpPlanSheet.ts` (pure; tests
+> `gui/tests/gmpPlanSheet.test.ts`: doors on shared walls, cascade
+> direction, routes that cross walls only at doors, label fit and number
+> fallback, schedule rows = published rooms), drawing in
+> `gui/src/ui/GmpPlanSheet.tsx`; the C101 EduTool keeps its compact
+> `FloorPlanSvg`.  The 3D view is untouched.  Validation: `bin/runTests
+> --gui` PASS 32 / FAIL 0 (5720 GUI tests) on top of main f9ce67d58;
+> before/after screenshots of apalutamide01 (both floors, every plan type,
+> the schedule) taken in Chromium through the `?layout=` building tab.
 
 > **C102. THE FLOWSHEET CANVAS CANNOT ZOOM OUT TO THE WHOLE FLOWSHEET
 > (Vitor, 2026-10-19, screenshot of apalutamide01 on the live site: "No
