@@ -79,9 +79,30 @@ Description
     without its source, or beside `basis installed`.  A quote never defaults
     a word: every one of them changes the capital.
 
+    SCALED WITH THE BATCH PLAN (2026-10-19, DEV.md 4c C99).  A `unit` quote
+    may declare
+
+        scaling { referenceSize 1 m3;     // the size `value` is the price of,
+                                          //   WITH its unit: a volume for a
+                                          //   batch stage, a mass rate (kg/h)
+                                          //   for a semicontinuous one
+                  exponent 0.6;           // the case's, never defaulted
+                  exponentSource "..."; } // where the exponent comes from
+
+    and then C_p = value x escalation x fx x unitsInstalled x
+    (size per unit / referenceSize)^exponent, with the size per unit and the
+    number of units the batch plan (`postProcessing/BatchPlanPass`)
+    published for the stage that groups the unit.  REFUSED by name: no batch
+    plan ran before the costing pass, the unit is in no stage, an `item`
+    quote, a reference size with no unit or of another kind than the
+    stage's, a missing exponent or its source.  The factors `scaleSize`,
+    `scaleReference`, `scaleExponent`, `scaleUnits` and `quoteScale` ride on
+    the row so it recomputes from itself.
+
     NOT DONE, said: no quote is checked against anything (a vendor's number
-    is the vendor's), and a quote carries no size, so it writes no
-    specification sheet and is placed on no plot plan by this.
+    is the vendor's), and a quote carries no size of its own (a scaled one
+    reads its stage's), so it writes no specification sheet and is placed on
+    no plot plan by this.
 \*---------------------------------------------------------------------------*/
 
 #pragma once

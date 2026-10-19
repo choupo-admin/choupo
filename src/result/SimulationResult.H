@@ -46,6 +46,7 @@ Description
 #pragma once
 
 #include "core/Advisory.H"
+#include "core/BatchPlanRecords.H"   // the batch plant (C99)
 #include "core/BuildingRecords.H"     // the GMP interior (C97)
 #include "core/ProblemDivergence.H"
 #include "core/Dictionary.H"         // DictPtr (unitDicts)
@@ -469,6 +470,10 @@ struct SimulationResult
     //  The GMP interior (DEV.md 4c C97); empty unless `system/layoutDict`
     //  declares `building {}` (`postProcessing/layout/BuildingLayout`).
     BuildingRecord                                                building;
+    //  The batch plant designed on this material balance (DEV.md 4c C99);
+    //  empty unless the postDict declares `batchPlan {}`
+    //  (`postProcessing/BatchPlanPass`).
+    BatchPlanRecord                                               batchPlan;
     bool                                                           converged = true;
 
     //  ---- Provenance seal, tri-state (forum 2026-08-02) -----------------

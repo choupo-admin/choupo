@@ -1364,8 +1364,11 @@ def check_declared_quotes(fails):
                 pk = [k for k in rd[0] if k.startswith("purchased_")][0]
                 bk = [k for k in rd[0] if k.startswith("bareModule_")][0]
                 for r in q:
+                    #  `S` is the quote's batch-plan scale (DEV.md 4c C99),
+                    #  1 on a quote that does not scale.
                     cp = float(r["K1_or_CpRef"]) * float(r["cepci"]) \
-                        / float(r["K2_or_SRef"]) * float(r["K3_or_n"])
+                        / float(r["K2_or_SRef"]) * float(r["K3_or_n"]) \
+                        * float(r["S"])
                     if abs(cp - float(r[pk])) > 0.01 \
                             or abs(cp * float(r["B1"]) - float(r[bk])) > 0.01:
                         fails.append("(u1) costs.csv row %s does not reproduce"

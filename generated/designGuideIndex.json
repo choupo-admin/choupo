@@ -309,6 +309,10 @@
         {
           "title": "What Choupo checks, and what it does not",
           "label": "what-choupo-checks-in-the-gmp-interior"
+        },
+        {
+          "title": "Batch and campaign operation — sizing per lot",
+          "label": "batch-and-campaign-operation"
         }
       ]
     },

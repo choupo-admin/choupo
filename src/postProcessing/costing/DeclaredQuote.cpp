@@ -13,12 +13,15 @@
 \*---------------------------------------------------------------------------*/
 
 #include "DeclaredQuote.H"
+#include "core/Dimensions.H"
 
 #include <cmath>
+#include <map>
 #include <set>
 #include <sstream>
 #include <stdexcept>
 #include <string>
+#include <variant>
 
 namespace Choupo {
 namespace declaredQuote {
@@ -261,7 +264,89 @@ price(const DictPtr& costingDict, const CostingModel& model,
             cb.quoteFactorSource = q->lookupWord("bareModuleFactorSource");
         }
 
-        const scalar Cp  = value * escalation * fx;
+        //  ---- scaled with the stage's derived size (DEV.md 4c C99) --------
+        //  `scaling { referenceSize <size with its unit>; exponent <n>;
+        //  exponentSource "..."; }`: the quoted `value` is the price of ONE
+        //  machine of `referenceSize`, and the item costs
+        //      unitsInstalled x value x (size per unit / referenceSize)^n
+        //  with the size per unit and the number of units the BATCH PLAN
+        //  published for the stage that groups this unit.  The exponent is
+        //  the CASE's, with its source -- the six-tenths rule is a
+        //  convention, so no exponent is ever defaulted.
+        scalar scale = 1.0;
+        if (q->found("scaling"))
+        {
+            if (!std::holds_alternative<DictPtr>(q->entryValue("scaling")))
+                throw std::runtime_error(where + ": `scaling` must be a block --"
+                    " `scaling { referenceSize <size>; exponent <n>;"
+                    " exponentSource \"...\"; }`.");
+            const DictPtr sc = q->subDict("scaling");
+            if (!hasUnit)
+                throw std::runtime_error(where + ": a scaling quote prices a"
+                    " flowsheet UNIT whose stage the batch plan sized; `item "
+                    + name + ";` belongs to no stage.  Drop `scaling`, or"
+                    " declare `unit <name>;`.");
+            if (!result.batchPlan.present)
+                throw std::runtime_error(where + ": `scaling` reads the stage's"
+                    " size from the batch plan, and no batch plan has run before"
+                    " this costing pass.  Declare `batchPlan { ... }` ABOVE"
+                    " `costing { ... }` in system/postDict (the passes run in the"
+                    " order they are written).");
+            const BatchStage* st = result.batchPlan.stageOfUnit(name);
+            if (!st)
+                throw std::runtime_error(where + ": unit '" + name + "' is in no"
+                    " stage of the batch plan, so it has no size to scale with."
+                    "  Add it to a stage's `units`, or drop `scaling`.");
+            if (!sc->found("referenceSize") || !sc->hasDimensions("referenceSize"))
+                throw std::runtime_error(where + ": `scaling { referenceSize"
+                    " <size with its unit>; }` is not declared with a unit --"
+                    " the size the quoted value is the price of (stage '"
+                    + st->name + "' is sized by its "
+                    + (st->sizeKind == "volume" ? "volume, e.g. `1 m3`"
+                                                : "rate, e.g. `60 kg/h`")
+                    + ").");
+            const Dimensions want = (st->sizeKind == "volume") ? Dims::volume
+                                                               : Dims::massFlow;
+            if (sc->dimensionsOf("referenceSize") != want)
+                throw std::runtime_error(where + ": `referenceSize` is declared in "
+                    + sc->dimensionsOf("referenceSize").toPretty() + ", and stage '"
+                    + st->name + "' publishes its size as a "
+                    + (st->sizeKind == "volume" ? "VOLUME (m3)" : "MASS RATE (kg/h)")
+                    + " -- a quote scales only with the size kind its stage"
+                    " publishes.");
+            const scalar refSI = sc->lookupScalar("referenceSize", want);
+            if (!std::isfinite(refSI) || !(refSI > 0.0))
+                throw std::runtime_error(where + ": `referenceSize` must be"
+                    " positive.");
+            if (!sc->found("exponent"))
+                throw std::runtime_error(where + ": `scaling { exponent <n>; }` is"
+                    " not declared -- the exponent is the case's, with its"
+                    " source; none is defaulted.");
+            const scalar n_exp = sc->lookupScalar("exponent");
+            if (!std::isfinite(n_exp) || !(n_exp > 0.0))
+                throw std::runtime_error(where + ": `exponent` must be a positive"
+                    " number.");
+            if (!sc->found("exponentSource") || sc->lookupWord("exponentSource").empty())
+                throw std::runtime_error(where + ": `scaling { exponentSource"
+                    " \"...\"; }` is not declared -- where the exponent comes"
+                    " from (a cost-capacity exponent is a convention or a fit,"
+                    " never the engine's).");
+            //  The stage's size per unit in the same SI as the reference.
+            const scalar sizeSI = (st->sizeKind == "volume")
+                                ? st->volumePerUnit
+                                : st->ratePerUnit / 3600.0;
+            scale = st->unitsInstalled * std::pow(sizeSI / refSI, n_exp);
+            const scalar toShown = (st->sizeKind == "volume") ? 1.0 : 3600.0;
+            cb.factors["scaleSize"]      = sizeSI * toShown;   // m3 | kg/h
+            cb.factors["scaleReference"] = refSI * toShown;    // m3 | kg/h
+            cb.factors["scaleExponent"]  = n_exp;
+            cb.factors["scaleUnits"]     = st->unitsInstalled;
+            cb.factors["quoteScale"]     = scale;
+            cb.quoteScaleStage     = st->name;
+            cb.quoteExponentSource = sc->lookupWord("exponentSource");
+        }
+
+        const scalar Cp  = value * escalation * fx * scale;
         const scalar Cbm = Fbm * Cp;
 
         cb.unitName        = name;
@@ -278,7 +363,9 @@ price(const DictPtr& costingDict, const CostingModel& model,
         cb.factors["B1"]               = Fbm;
         cb.factors["B2"]               = 0.0;
         cb.factors["C_TM_over_C_BM"]   = contingencyAndFee;
-        cb.factors["S"]                = 1.0;
+        //  `S` carries the batch-plan scale of a scaling quote (1 otherwise),
+        //  so the `S` column of costs.csv reproduces C_p (EconomicsReport).
+        cb.factors["S"]                = scale;
         cb.factors["quoteValue"]       = value;
         cb.factors["quoteYear"]        = qYear;
         cb.factors["quoteCepci"]       = qCepci;

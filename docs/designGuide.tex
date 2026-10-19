@@ -2802,6 +2802,70 @@ guidelines on heating, ventilation and air-conditioning systems for
 non-sterile pharmaceutical products}. The ISPE guides are cited by title
 only: their tables grant no redistribution and none is transcribed here.
 
+\hypertarget{batch-and-campaign-operation}{%
+\subsection{Batch and campaign operation --- sizing per
+lot}\label{batch-and-campaign-operation}}
+
+A drug-product plant does not run at a steady rate. Its steps are done
+in \textbf{lots} --- a blend of a few hundred kilograms, released by
+quality control before the next step uses it --- and its continuous
+machines (a closed-loop spray dryer) in \textbf{campaigns} of several
+lots between full cleans. Sizing a blender for the plant's
+\emph{average} hourly flow designs a machine no lot ever fills; it must
+be sized for one lot.
+
+The classical method for a single-product batch plant works on the
+material balance \emph{per kilogram of product}, which a steady
+flowsheet gives exactly. For each step (\emph{stage}) $j$:
+\begin{itemize}
+\tightlist
+\item
+  the mass it handles per kg of product, $f_j$, from the balance; the
+  \textbf{size factor} of a vessel is $S_j = f_j / (\rho_j \varphi_j)$
+  (bulk density, fill fraction), and the vessel for a lot of $B$ kg of
+  product holds $V_j = S_j B$; a semicontinuous machine (press,
+  compactor, packaging line) is sized by its rate, $f_j B$ over its
+  operating time;
+\item
+  its \textbf{cycle} $t_j$ is charge + process + discharge + clean; a
+  vessel that empties through the step it feeds is held for that step's
+  whole run;
+\item
+  the \textbf{limiting cycle time} of a train is $T_L = \max_j t_j /
+  N_{op,j}$ --- the slowest step paces every lot, and a second unit
+  \emph{out of phase} (taking alternate lots) halves its share, while a
+  unit \emph{in phase} (sharing a lot) halves its size;
+\item
+  an \textbf{intermediate store} decouples two trains, so each keeps its
+  own cycle, campaigns and shifts (the spray dryer round the clock, the
+  tablet suite on two shifts);
+\item
+  lots a year are $N = \lceil Q / B \rceil$; a campaign takes the first
+  lot's pass through every step, then one lot every $T_L$, then the
+  changeover; a step's \textbf{occupancy} is its busy hours over its
+  train's available hours.
+\end{itemize}
+A step that never limits and is busy a small fraction of the cycle is
+oversized or could be shared (one blender for both blends); a step that
+would be busy longer than the year cannot run the plan.
+
+\textbf{In Choupo} a \texttt{batchPlan \{\}} pass in
+\texttt{system/postDict} does this on the converged flowsheet (grammar:
+\texttt{docs/ai/case-layout.md}; method:
+\file{src/postProcessing/BatchPlanPass.H}): it reads every stage's mass
+from the run, takes every time, density, fill, lot and shift pattern
+from the case with its source, refuses an impossible plan and announces
+a poor one; a vessel may take its volume from it, a quoted machine's
+price may scale with its size (the cost-capacity exponent is the
+case's), and the economics takes the year's flows from its production.
+\textbf{Not computed:} the intermediate store's size, a second product
+sharing the line, QC release times. Worked case:
+\texttt{tutorials/plant/apalutamide01\_tablets}. The method is taught in
+the batch-process chapters of design textbooks (Biegler, Grossmann \&
+Westerberg, \emph{Systematic Methods of Chemical Process Design}; Seider
+et al., \emph{Product and Process Design Principles}) --- cited by title
+only.
+
 \hypertarget{cost-estimation--profitability}{%
 \section{Cost estimation \&
 profitability}\label{cost-estimation--profitability}}

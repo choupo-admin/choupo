@@ -47,18 +47,92 @@ assumption with what you find, and cite it.
 
 | Quantity | Value | Why |
 |---|---|---|
-| Tablets a year | about **50 million** of 60 mg | a mid-sized generic line; replace with your market study |
-| Operating hours | stream factor **0.45** (3942 h/yr) | a campaign plant; the plant is solved ONCE at its campaign rate (steady state) and the year is that rate times these hours |
-| Campaign rate | **12 800 tablets/h pressed**, 12 672 accepted | 50 million / 3942 h, before the 1 % press rejects |
+| Production | **30 000 kg** of packaged tablets a year, about **50 million** of 60 mg | a mid-sized generic line; replace with your market study.  Declared ONCE, in the batch plan (`system/postDict`, `production`) |
+| Flowsheet basis | **12 800 tablets/h pressed**, 12 672 accepted | the steady flowsheet is the material balance PER UNIT OF PRODUCT; this rate is a basis, not the plant's pace (section 2a) |
+| Lot | **350 kg of final blend**, about 603 000 tablets | a commercial solid-dose lot; QC releases lot by lot (section 2a) |
 | Core, per tablet | ASD 240 mg (60 API + 180 HPMCAS, **1:3**), MCC 150, silicified MCC 150, croscarmellose 30 (20 intra- + 10 extragranular), silica 5, Mg stearate 5 (2.5 + 2.5) = **580 mg** | a plausible dry-granulation formula, nobody's product |
 | Coat | **3 % weight gain** (17.4 mg): PVA 40 %, PEG 20 %, TiO2 24.2 %, talc 14.8 %, iron oxide 1 % | of the order of a PVA-based coat |
 | Spray solution | **10 wt %** solids in acetone | an ASD spray solution must stay sprayable (viscosity) |
 | Coating suspension | **20 wt %** solids in water | |
 
 The raw-material flows in `0/` are these per-tablet masses times the
-campaign rate (each `0/` file says which).  **If you change the rate or the
+flowsheet basis rate (each `0/` file says which).  **If you change the rate or the
 formula, every `0/<feed>` file changes with it — they do not follow each
 other.**
+
+## 2a. The batch plan — how the plant actually runs (DEV.md 4c C99)
+
+A real oral-solid-dose plant does not run at a steady rate.  Dispensing,
+blending, compaction, compression, coating and packaging are done in
+**lots** (here 350 kg of final blend), each released by quality control
+before the next step uses it; the closed-loop spray dryer is started up,
+inerted and run for days in **campaigns**.  So the steady flowsheet is kept
+as what it is exactly right for — the **material balance per unit of
+product** — and the `batchPlan {}` block of `system/postDict` designs the
+batch plant on it (`src/postProcessing/BatchPlanPass.H` states the method;
+`docs/ai/case-layout.md` the grammar):
+
+- each **stage** groups the flowsheet units of one recipe step and names the
+  stream it handles (`holds`); its mass per kg of product, `f`, is READ from
+  the converged flowsheet, never typed;
+- a **batch** stage (blender, coater, tanks) is sized by its **size factor**
+  `S = f / (rho phi)` (bulk density and fill fraction declared): one vessel
+  holds `V = S B`, `B` the lot in kg of product;
+- a **semicontinuous** stage (compactor, press, packaging line, spray dryer)
+  is sized by its **rate**, the lot's mass over its operating time; the spray
+  dryer's operating time is its OWN rate (`operatingTime fromFlowsheet;`),
+  because its hardware is modelled: 145 kg of dispersion per lot at
+  3.07 kg/h is 47 h;
+- each stage's **cycle** is charge + process + discharge + clean; a tank that
+  empties through the stage it feeds is held for that stage's whole run
+  (`dischargeTime throughFedStage;`);
+- each **train** — stages between two intermediate stores — is paced by its
+  slowest stage (the **limiting cycle time**, `T_L = max t / N_op`); two
+  trains here, decoupled by the dispersion store: the spray dryer (round the
+  clock, 7 lots per campaign, 48 h changeover) and the solid-dose suite (two
+  shifts, 6 lots per campaign, 24 h changeover);
+- the **lots a year** are `ceil(Q / B)`, each train's **required hours** are
+  its campaigns (the first lot's pass through every stage, then one lot every
+  `T_L`, then the changeover), and each stage's **occupancy** is its busy
+  hours over its train's available hours.
+
+The base case (every number an assumption, said so in its `source`):
+
+| | sprayDrying train | solidDose train |
+|---|---|---|
+| Available hours | 7 920 h (330 days x 24 h) | 3 840 h (2 shifts, 5 days, 48 weeks) |
+| Limiting stage, `T_L` | the solution tank, 53.1 h (it is held while it feeds the 47.1 h dryer) | the packaging line, 10 h |
+| Campaigns, hours needed | 12 of 7 lots, 5 040 h (63.6 %) | 14 of 6 lots, 1 410 h (36.7 %) |
+
+Lot `B` = 358.2 kg of product, **84 lots a year**.  Equipment per lot: the
+solution tank 2.26 m3 and the coating-suspension tank 0.065 m3 (both SIZED
+from the plan: `volume fromBatchPlan;`), the bin blender 1.27 m3, the final
+blender 1.17 m3, the coater 0.71 m3, the compactor 80.6 kg/h, the press
+87.5 kg/h (about 150 000 tablets an hour) and the packaging line 44.8 kg/h.
+The run **announces** that the final blender is busy 22.5 % of the solid-dose
+cycle — it never limits, and in practice blending and final blending share
+one blender (with interchangeable bins): merging the two stages is your
+call.
+
+**What feeds on the plan.**  The two preparation tanks take their volume from
+it; the solid-dose machines' quotes **scale** with their stage's size (each
+`value` is the price of one machine of a declared `referenceSize`, scaled by
+the six-tenths rule — a convention, with its exponent declared); and the
+economics takes the year's flows from it (`streamFactor fromBatchPlan;`: the
+annual flows are the hourly flows x `Q / r_P` = 3 948 "equivalent hours" —
+which is also exactly the spray dryer's operating hours, the one step that
+runs at the flowsheet's rate).  The production `Q` therefore has ONE home.
+
+**What you must defend** (README section 9, question 3): every time, bulk
+density and fill fraction of every stage, the lot size (a regulatory as well
+as an equipment choice), the available hours of each train (how many shifts),
+the campaign length and changeover, and which steps are grouped in a stage.
+Try `outOfPhase 2;` on the solution tank (two tanks, one being prepared while
+the other feeds the dryer — the sizing pass then refuses one sized vessel for
+two, and tells you to price the pair by a scaling quote), or a larger lot,
+and watch the limiting stages move.  **Not modelled:** the size of the
+dispersion store between the trains, QC release times, and any second
+product sharing the line.
 
 ## 3. The flowsheet — what is physics and what is a placeholder
 
@@ -126,7 +200,7 @@ The reason for each is on its line in the file named; this is the index.
 | `airHeater`, `0/coatingAirIn` | coating air | 60 C; 10 kmol/h of dry air, 38 % RH at 25 C |
 | `constant/components/*.dat` | every property of the API, the polymer and every excipient | molar mass from the formula where there is one, a NOMINAL 1 kg/mol for the polymers with no single formula; particle density, solid heat capacity and the cellulose's sorption isotherm AUTHOR-SET; the formation enthalpies are PLACEHOLDERS that cancel (no reaction) — each record says so in its `provenance` |
 | `constant/economics` | every price | API 10 000 EUR/kg, tablet 1.00 EUR — round figures, not market data |
-| `system/postDict` | design rules, cost index, economic parameters | on their lines |
+| `system/postDict` | the batch plan (production, lot, trains, every stage's times, density and fill), design rules, cost index, economic parameters | on their lines |
 | `system/layoutDict` | every position, size, distance, zone, the wind | on their lines |
 
 ## 5. Base-case result (not optimised)
@@ -142,18 +216,20 @@ Mass balance 100.000 %; first law closes (residual below 0.0001 kW).
 | Exhaust cooler / solvent condenser | 4.27 kW (cooling water) / 8.91 kW (ammonia refrigeration) |
 | Acetone recovered | 25.86 kg/h of 27.65 (**93.5 %**), 99.8 mol % acetone |
 | Acetone lost in the purge | 1.79 kg/h, to a vent treatment the plant does not model |
-| Coated tablets | 7.599 kg/h = 12 672 tablets/h (0.5997 g each); they keep 0.029 kg/h of water, 0.38 % of their mass (1.49 % on the cellulose, the isotherm's basis) |
+| Coated tablets | 7.599 kg/h = 12 672 tablets/h at the flowsheet basis (0.5997 g each); they keep 0.029 kg/h of water, 0.38 % of their mass (1.49 % on the cellulose, the isotherm's basis) |
 | Coating dryer | exhaust 325.0 K; 0.853 kg/h of the coat's 0.882 kg/h of water evaporated |
-| Fixed capital (the solvent section + the quoted solid-dose train and building, see 6) | 23.06 MEUR (of it, 15.65 MEUR of bare-module cost is QUOTED placeholders) |
+| Batch plan (section 2a) | lot 358.2 kg of product (350 kg of blend), 84 lots a year; `T_L` 53.1 h (spray drying, the solution tank) and 10 h (solid dose, packaging) |
+| Fixed capital (the solvent section + the quoted solid-dose train, scaled with the batch plan, and the building, see 6) | 22.54 MEUR (of it, 15.31 MEUR of bare-module cost is QUOTED placeholders) |
 | Land (the layout's plot, 16 056 m2 at 80 EUR/m2) | 1.28 MEUR |
 | Operating labour (the DECLARED crew, 11 a shift, see 6) | 49.5 operating positions, 4.07 MEUR/yr (Turton's correlation, for comparison: 152.5 positions, 12.55 MEUR/yr) |
-| Revenue / raw materials / COM_d | 50.0 / 31.1 / 53.5 MEUR/yr |
-| NPV (10 %, 10 yr) / IRR | −45.5 MEUR / none (the plant never breaks even) — **not decision-grade, see 6** |
+| Revenue / raw materials / COM_d | 50.1 / 31.1 / 53.5 MEUR/yr (30 000 kg of tablets: 3 948 equivalent hours of the flowsheet) |
+| NPV (10 %, 10 yr) / IRR | −44.6 MEUR / none (the plant never breaks even) — **not decision-grade, see 6** |
 
 ## 6. Sizing, cost and economics — what is in the capital and the labour, and what is not
 
 Sized and costed (Turton): the spray dryer, the blower, four exchangers, the
-condensate pot, the two preparation tanks and the two acetone tanks.  The
+condensate pot, the two preparation tanks (their volume from the batch plan:
+one lot each) and the two acetone tanks.  The
 run announces that almost every one is **below its correlation's range**
 (the plant is small) — those costs are extrapolations.
 
@@ -162,15 +238,21 @@ correlation for the solid-dose machines or the GMP building, and it does not
 invent one.  So `system/postDict` DECLARES a price for each, in
 `costing { quotes ( ... ); }`:
 
-| item | quote (installed, 2026 EUR) | kind |
-|---|---|---|
-| `tabletPress` | 1 000 000 | equipment |
-| `packagingLine` | 1 500 000 | equipment |
-| `coatingPan` (with the `coatingDryer`, its drying half) | 800 000 | equipment |
-| `rollerCompactor` | 600 000 | equipment |
-| `blender`, `finalBlender` | 300 000 each | equipment |
-| `mill` (with the `screen`) | 150 000 | equipment |
-| `productionBuilding` (the GMP building, 50 m x 36 m) | 11 000 000 | facility |
+| item | quote (installed, 2026 EUR), at its reference size | kind | scaled to (batch plan) |
+|---|---|---|---|
+| `tabletPress` | 1 000 000 at 100 kg/h | equipment | 87.5 kg/h: 923 007 |
+| `packagingLine` | 1 500 000 at 50 kg/h | equipment | 44.8 kg/h: 1 403 991 |
+| `coatingPan` (with the `coatingDryer`, its drying half) | 800 000 at 1 m3 | equipment | 0.71 m3: 651 819 |
+| `rollerCompactor` | 600 000 at 100 kg/h | equipment | 80.6 kg/h: 527 086 |
+| `blender` / `finalBlender` | 300 000 at 1 m3 each | equipment | 1.27 m3: 345 992 / 1.17 m3: 329 071 |
+| `mill` (with the `screen`) | 150 000 at 100 kg/h | equipment | 80.6 kg/h: 131 771 |
+| `productionBuilding` (the GMP building, 50 m x 36 m) | 11 000 000 | facility | not scaled |
+
+**The machines scale with the batch plan** (`scaling { referenceSize;
+exponent; exponentSource; }` on each quote): the item costs units x value x
+(the stage's size per unit / referenceSize)^0.6, so a larger lot buys larger
+machines and the capital follows.  The 0.6 is the six-tenths rule, a
+convention (cited by title only) — declared on each quote, never defaulted.
 
 **Every one of these numbers is an AUTHOR-SET PLACEHOLDER** — a round figure
 of the right order, so that the train and its building are not zero in the
@@ -204,8 +286,10 @@ numbers are printed, and you should be able to explain both.
   cover for round-the-clock operation) = 49.5 positions, x 42 EUR/h x
   1960 h = **4.07 MEUR/yr**.  Every number is an AUTHOR-SET ASSUMPTION for
   ONE line: replace it with your own staffing plan (operators per room per
-  shift).  And ask whether the 4.5 is right for a line that runs in
-  campaigns — 45 % of the year — rather than round the clock.
+  shift).  And ask whether the 4.5 is right: the batch plan runs the
+  solid-dose suite on two shifts (36.7 % of its 3 840 h) and only the spray
+  dryer round the clock — the crew is NOT derived from the plan (the plan
+  gives you the hours; the staffing is your judgement).
 - **Turton's correlation, printed beside it as a COMPARISON that enters no
   total**: `N_OL = (6.29 + 31.7 P^2 + 0.23 N_np)^0.5` operators per shift,
   `P` the processing steps that handle PARTICULATE SOLIDS (declared:
@@ -316,11 +400,12 @@ if they had a size.
    the API as a powder (dispensing, solution preparation, the dried
    dispersion, blending, compaction, tableting)?  What containment does that
    band require, and where does it put the walls of the building?
-3. **Campaign sizing.** The plant is solved at ONE rate.  A tablet press
-   does in hours what this rate does in a day; a spray dryer of this size
-   may need a whole campaign.  For each step, how many hours a year does it
-   run, and how many machines (or shifts) does each need?  (Phase C will
-   ask Choupo the same question.)
+3. **The batch plan** (section 2a).  Defend every stage's times, bulk
+   density and fill, the lot size, the shifts of each train and the campaign
+   length.  Which stage limits each train, and what would you buy or change
+   to move it (a second solution tank out of phase, a faster packaging line,
+   one blender for both blends)?  What does each change do to the equipment
+   sizes, the capital and the hours?
 4. **Recovery vs refrigeration.** Change the condenser temperature and the
    purge fraction; what do the recovery, the refrigeration duty and the
    vent load do?

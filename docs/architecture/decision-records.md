@@ -12,7 +12,7 @@
 
 ---
 
-## 1. Why an index, when 165 records already exist
+## 1. Why an index, when 166 records already exist
 
 The decisions were recorded.  What did not exist was any way to ask **"has
 this been decided, and where?"** — and that question is the whole reason the
@@ -27,7 +27,7 @@ Three concrete costs, all observed:
 - `project-philosophy.md` §5 lists eleven CLOSED decisions and, until this
   file, could not point at the argument for any of them (correspondence C5,
   recorded UNVERIFIABLE).
-- Of 165 design records, **112 state a rejected alternative and 53 do not** —
+- Of 166 design records, **113 state a rejected alternative and 53 do not** —
   so for two in five, the reasoning that would prevent re-litigation is
   absent, and nothing said so.
 
@@ -267,6 +267,7 @@ is this index failing its own purpose; they move below with their rulings.
 | [`an-exchanger-designed-not-estimated.md`](../design/an-exchanger-designed-not-estimated.md) | ADR | no | **BUILT 2026-10-07** (DEV.md 4c C48, with the C51 addendum) -- the six exchangers of the green-ammonia case DESIGNED by the Kern method from ONE kernel shared with the two-stream unit (`htc/ShellTubeDesign`), fouling declared, U a result, the installed area costed; condensing duties on the gas film of the vapour that leaves, said.  Indexed 2026-10-10 by the C52 general, which found the record absent from this index (the gate had gone red on main); the summary is the record's own, not a re-reading |
 | [`a-duty-the-allocation-dropped.md`](../design/a-duty-the-allocation-dropped.md) | ADR | yes | **BUILT 2026-10-10** (DEV.md 4c C52) -- the utility allocation read a unit's duty only from `Q` (W) and a column's two keys, so every reactor's and crystalliser's `Q_kW` was priced by the first law and DROPPED (the green-ammonia converter's 30.6 MW).  ONE home, `reporting::unitHeatDuties`, derived from `energyItemKpis()`; the allocation reads the engine's composed unit dicts; `utility <name>;` beside `type` declares a service, held to `UtilityCatalogue::canServe` and refused by name when it cannot serve; a credit (negative cost) is declared, never auto-picked; carried rows are not unpriced duties.  The witness's converter raises HP steam as a CASE-LOCAL credit at an author-set -18 EUR/GJ.  REJECTED: a public steam-generation record, an auto-picked credit, the declaration inside `operation {}`, booking the steam as by-product revenue |
 | [`a-quote-and-a-particulate-step.md`](../design/a-quote-and-a-particulate-step.md) | ADR | yes | **BUILT 2026-10-19** -- commission C98, Vitor's two rulings on the C97 apalutamide findings.  (1) Turton's operator count N_OL = (6.29 + 31.7 P^2 + 0.23 N_np)^0.5 had lost its P term: the case now DECLARES `particulateSteps { count; source; reason; }`, absent = 0 (every existing case byte-identical in numbers) and ANNOUNCED only where the flowsheet holds a particulate-solids unit type.  (2) An item with no cost correlation had no capital: `costing { quotes ( ... ); }` declares a price per `unit` (unsized) or `item` (a building), `basis installed | purchased` (purchased only with the CASE's factor), `kind equipment | facility` (a facility adds nothing to the siteFactor base), C_TM = 1.18 C_BM, shape word `declared-quote`, pinned by the golden `equipment` kind.  REJECTED: the engine counting P from unit types; a flat count; the `declared-unit-price` shape (its C_TM = C_BM disagrees with the FCI ladder, a finding recorded, not fixed); quotes as sized items.  ROUND 2 (Vitor: "Equipa declarada pelo caso"): `operatingCrew { areas ( { area; operatorsPerShift; } ); source; reason; }` prices the labour through the same positions factor and wage, the correlation printed and published beside it as a comparison that enters no total; the labour is now published (`operatorsPerShift`, `operatingPositions`, `C_OL`).  Gate `check_cost_provenance` arms (t), (u), (v), nineteen sabotages, one survived first contact |
+| [`a-batch-plant-on-a-steady-balance.md`](../design/a-batch-plant-on-a-steady-balance.md) | ADR | yes | **BUILT 2026-10-19** -- commission C99 (Vitor: "Neste caso tem de ficar realista!").  The steady flowsheet is read as the material balance PER UNIT OF PRODUCT and a `batchPlan {}` post-processing pass designs the batch plant on it by the single-product method: stages (units grouped, `holds` a stream whose mass is READ), size factors S = f/(rho phi), the lot (declared on a stream, or `largestEquipment`), N = ceil(Q/B), cycles, T_L = max t/N_op per train (trains decoupled by intermediate stores), parallel units in/out of phase, campaigns, occupancy, the first campaign's Gantt as data.  Consumers: `volume fromBatchPlan` on a vessel, a quote's `scaling {}` (the case's exponent), `streamFactor fromBatchPlan` (a numeric factor beside a plan REFUSED: one home for the year).  An impossible plan refuses, a poor one is announced.  REJECTED: moving the case to choupoBatch (no postDict there), the engine deriving lots or times, a cross-checked numeric streamFactor, N sized vessels through the sizing pass.  Gate `check_batch_plan` (every number recomputed from the declaration, fourteen refusals, five sabotages); golden kind `batch` |
 
 ### Historical
 
@@ -319,7 +320,7 @@ is not an argument.
 
 ## 5. What this index shows that no individual record could
 
-**53 of 165 records state no rejected alternative.**  For a FORUM or a STUDY
+**53 of 166 records state no rejected alternative.**  For a FORUM or a STUDY
 that is often fine.  For an ADR it means the decision is recorded without the
 argument that would prevent it being reopened — and reopening settled
 questions is the specific failure the constitutional layer exists to stop.

@@ -13,12 +13,16 @@
   group would change is a plain key, said to be an assumption where it is
   declared.  The README is the narrative; this file is the topology.
 
-  THE BASIS (README section 2): 12 800 tablets per hour PRESSED, the campaign
-  rate, of a 580 mg core carrying 60 mg of apalutamide in 240 mg of a 1:3
-  apalutamide:HPMCAS spray-dried dispersion, with a 3 % film coat.  The
-  operating hours are the economics' stream factor (system/postDict), so the
-  plant is solved ONCE at its campaign rate (steady state) and the year is
-  that rate times those hours.
+  THE BASIS (README section 2): 12 800 tablets per hour PRESSED, the flowsheet
+  basis, of a 580 mg core carrying 60 mg of apalutamide in 240 mg of a 1:3
+  apalutamide:HPMCAS spray-dried dispersion, with a 3 % film coat.  THIS
+  STEADY FLOWSHEET IS THE MATERIAL BALANCE PER UNIT OF PRODUCT (DEV.md 4c
+  C99): the plant runs in BATCHES (lots of final blend, released one by one)
+  and its spray dryer in CAMPAIGNS, and the BATCH PLAN in system/postDict
+  sizes each step for one lot from these streams' masses, counts the lots a
+  year from the declared production, and finds the step that paces each
+  train.  The absolute rate below is a basis -- except for the spray dryer,
+  whose hardware this flowsheet models, so its rate IS the dryer's capacity.
 
     SOLUTION AND SPRAY DRYING (the closed nitrogen loop)
       acetoneFeed -> [acetoneTank] -> acetoneToPrep --+

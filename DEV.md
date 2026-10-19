@@ -1345,6 +1345,17 @@ accepts today, and that is a policy call.
 > de as novas vistas da planta do pavilhao poderem aparecer noutro tab")
 > the building views open full-window in a new tab -- the `?layout=`
 > pop-out draws the building, and the GMP section gets its own pop-out.
+> BUILT and STOPPED 2026-10-19 on Vitor's credit limit (branch
+> claude/c100-equipment-indoors, 3 commits, NOT merged): indoor items in
+> listed rooms (z from the room's floor, one home), wall penetrations for
+> pipes, the SDD suite + N2 technical room + solution/coating-prep rooms +
+> HVAC room indoors, only the bunded tank farm outdoors; main 3D draws the
+> envelope as glass with room/flow toggles; `?layout=` pop-out draws the
+> building and the GMP section has its own pop-out.  OPEN for the next
+> session: its apalutamide golden list (50 moved, 86 removed, 84 added;
+> /scratchpad c100/golddiff.txt, to be RECOMPUTED on top of the C99 merge)
+> needs Vitor's approval; a full `--gui` after e9f673383; the after
+> screenshots of the main view and the two pop-outs.
 
 > **C99. THE APALUTAMIDE PLANT IS BATCH: CAMPAIGN DESIGN, NOT A STEADY RATE
 > (Vitor, 2026-10-19: "Este processo e batch ou e continuo?" ... "Faz como
@@ -1365,7 +1376,21 @@ accepts today, and that is a policy call.
 > occupancy and a campaign Gantt), so each stage's equipment is sized PER
 > BATCH and the declared quotes can scale with that size.  This is phase C
 > of the C97 plan.  Moved rows to Vitor before re-record.  Status:
-> dispatched 2026-10-19.  ADDENDUM, same day (Vitor: "Por amor de Deus, faz um
+> dispatched 2026-10-19.  MERGED 2026-10-19 (branch claude/c99-batch-campaign): `batchPlan {}` (`postProcessing/BatchPlanPass`, registered
+> explicitly; record `docs/design/a-batch-plant-on-a-steady-balance.md`):
+> stages with a `holds` stream whose mass is READ, size factors, the lot
+> (declared on a stream or `largestEquipment`), lots a year, cycles,
+> `T_L = max t / N_op` per train, parallel units, campaigns, occupancy, the
+> first campaign's Gantt as data; an impossible plan refuses, a poor one is
+> announced.  Consumers: `volume fromBatchPlan` on a vessel, a quote's
+> `scaling {}` (the case's exponent), `streamFactor fromBatchPlan` (a
+> numeric factor beside a plan refused).  Golden kind `batch`, gate
+> `check_batch_plan`.  apalutamide01: 350 kg lots, 84 a year, spray drying
+> limited by its solution tank (53.1 h), the solid-dose suite by packaging
+> (10 h); FCI 23.06 -> 22.54 MEUR, NPV -45.5 -> -44.6 MEUR; Vitor approved
+> the 72 moved rows, 190 `batch` rows appended.  Every other costing
+> case byte-identical.  The C97 "phase C" is this.
+>   ADDENDUM, same day (Vitor: "Por amor de Deus, faz um
 > projeto que seja realista!  Eu nao tenho experiencia em industria
 > farmaceutica mas quero um projeto que nao me envergonhe!").  The case's
 > DATA is the weak half, not only its structure: a 1 EUR tablet against a
