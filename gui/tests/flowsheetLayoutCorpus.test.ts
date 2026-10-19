@@ -21,97 +21,12 @@
   Set C59_LAYOUT_REPORT=1 to print the per-view table.
 \*---------------------------------------------------------------------------*/
 
-import { existsSync, readdirSync, readFileSync, statSync } from "node:fs";
-import { join, relative } from "node:path";
-import { fileURLToPath } from "node:url";
 import { describe, expect, it } from "vitest";
 
-import { parse, toJson } from "../src/dict/index.js";
-import type { JsonDict } from "../src/dict/index.js";
-import { flowsheetToGraph, type FlowsheetGraph } from "../src/case/toGraph.js";
+import { flowsheetToGraph } from "../src/case/toGraph.js";
 import { layoutScore, measureLayout, type LayoutMetrics } from "../src/case/layoutMetrics.js";
-import type { XY } from "../src/case/flowsheetLayout.js";
-import { resolveArrangement } from "../src/case/stubDocking.js";
-import { layoutFromChoText } from "../src/state/layout.js";
+import { collectViews, curatedPositions } from "./flowsheetCorpusViews.js";
 import { legacyPositions } from "./layoutLegacy.js";
-
-const HERE = fileURLToPath(new URL(".", import.meta.url));
-const TUTORIALS = join(HERE, "..", "..", "tutorials");
-const CATEGORIES = ["steady", "unsteady", "ctrl", "batch", "props", "plant"];
-
-/** Every folder carrying a flowsheetDict, with the files toGraph reads,
- *  keyed relative to that folder (as the canvas receives them). */
-interface View { id: string; dir: string; flowsheet: JsonDict; raw: { [rel: string]: string }; cho?: string }
-
-function filesUnder(dir: string, base: string, out: { [rel: string]: string }): void {
-  for (const nm of readdirSync(dir)) {
-    const p = join(dir, nm);
-    let st;
-    try { st = statSync(p); } catch { continue; }
-    if (st.isDirectory()) {
-      if (/^(converged|design|reports|iterations|constant|docs|ai|\d.*)$/.test(nm) && nm !== "0") continue;
-      filesUnder(p, base, out);
-    } else if (nm === "flowsheetDict" || nm === "solverDict" || nm.endsWith(".cho")) {
-      out[relative(base, p)] = readFileSync(p, "utf8");
-    }
-  }
-}
-
-function flowsheetPath(dir: string): string | undefined {
-  for (const p of [join(dir, "system", "flowsheetDict"), join(dir, "flowsheetDict")])
-    if (existsSync(p)) return p;
-  return undefined;
-}
-
-function collectViews(): View[] {
-  const views: View[] = [];
-  const visit = (dir: string) => {
-    const fp = flowsheetPath(dir);
-    if (fp) {
-      let fs: JsonDict | undefined;
-      try { fs = toJson(parse(readFileSync(fp, "utf8"), { sourceName: fp })) as JsonDict; }
-      catch { fs = undefined; }
-      // A leaf (one unit in its own folder) is not a flowsheet a reader
-      // arranges; only flat lists and composites are measured.
-      if (fs && fs["type"] === undefined && (fs["units"] !== undefined || fs["sectors"] !== undefined)) {
-        const raw: { [rel: string]: string } = {};
-        filesUnder(dir, dir, raw);
-        const marker = readdirSync(dir).find((n) => n.endsWith(".cho"));
-        views.push({
-          id: relative(TUTORIALS, dir), dir, flowsheet: fs, raw,
-          cho: marker ? readFileSync(join(dir, marker), "utf8") : undefined,
-        });
-      }
-    }
-    for (const nm of readdirSync(dir)) {
-      if (/^(system|constant|0|converged|design|reports|iterations|docs|ai|curation)$/.test(nm)) continue;
-      const p = join(dir, nm);
-      try { if (statSync(p).isDirectory()) visit(p); } catch { /* skip */ }
-    }
-  };
-  for (const c of CATEGORIES) {
-    const root = join(TUTORIALS, c);
-    if (existsSync(root)) visit(root);
-  }
-  return views;
-}
-
-function curatedPositions(graph: FlowsheetGraph, cho: string): Map<string, XY> | null {
-  const saved = layoutFromChoText(cho);
-  if (Object.keys(saved.nodes).length === 0) return null;
-  const nb = new Map<string, string[]>();
-  for (const e of graph.edges) {
-    nb.set(e.source, [...(nb.get(e.source) ?? []), e.target]);
-    nb.set(e.target, [...(nb.get(e.target) ?? []), e.source]);
-  }
-  // The SAME resolution the canvas draws (case/stubDocking.ts): saved units
-  // and terminals exactly, every stub docked on its unit.
-  return resolveArrangement(
-    graph.nodes.map((n) => n.id), new Map(graph.nodes.map((n) => [n.id, n.position])), saved,
-    (id) => { const s = graph.sizes.get(id) ?? { width: 190, height: 84 }; return { w: s.width, h: s.height }; },
-    (id) => nb.get(id) ?? [],
-  );
-}
 
 interface Row { id: string; old: LayoutMetrics; neu: LayoutMetrics; curated?: LayoutMetrics; nUnits: number }
 
