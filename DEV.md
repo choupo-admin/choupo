@@ -1303,7 +1303,12 @@ accepts today, and that is a policy call.
 > `steady/gibbs/gibbs11_carbon_deposition`,
 > `steady/reactors/screen01_methanol_routes`, `plant/ammoniaRoutes01_screening`,
 > `steady/separation/psa01_h2_psa`.  Pedagogical scope is Vitor's: proposed
-> to him before any dispatch.  Status: scope proposed.
+> to him before any dispatch.  Status: scope proposed (eight parts: where
+> syngas comes from; why reforming is hot and low-pressure; carbon
+> deposition; the shift as the ratio knob; each destination's ratio;
+> cleaning the gas; the historical family and green CO2 + H2; what the
+> model does not do).  Vitor 2026-10-19: "Podes avancar" -- dispatched on
+> that scope.
 
 > **C108. A HOME-SCREEN ICON FOR THE APP (Vitor, 2026-10-19: "Sabes se
 > podemos fazer a app choupo para iPhone?" ... "Eu preferia um icon que
