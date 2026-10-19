@@ -1327,7 +1327,15 @@ accepts today, and that is a policy call.
 > stay in an outdoor bunded farm with their pipes entering the building,
 > the separation and single-entrance exercises re-examined (kept only if
 > still true).  Moved rows to Vitor before re-record.  Status: dispatched
-> 2026-10-19.
+> 2026-10-19.  ADDED the same day from Vitor's screenshot of the live site:
+> the main plot-plan 3D painted the building envelope as an OPAQUE orange
+> box (its separation finding's highlight), hiding every room, so the
+> interior looked absent -- the envelope must always draw as glass with its
+> rooms and indoor items, a finding shown by outline/label only, and the
+> main view gets the room/flow toggles; and ("a ideia era haver uma forma
+> de as novas vistas da planta do pavilhao poderem aparecer noutro tab")
+> the building views open full-window in a new tab -- the `?layout=`
+> pop-out draws the building, and the GMP section gets its own pop-out.
 
 > **C99. THE APALUTAMIDE PLANT IS BATCH: CAMPAIGN DESIGN, NOT A STEADY RATE
 > (Vitor, 2026-10-19: "Este processo e batch ou e continuo?" ... "Faz como
