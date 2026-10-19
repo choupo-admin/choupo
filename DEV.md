@@ -1310,7 +1310,22 @@ accepts today, and that is a policy call.
 > occupancy and a campaign Gantt), so each stage's equipment is sized PER
 > BATCH and the declared quotes can scale with that size.  This is phase C
 > of the C97 plan.  Moved rows to Vitor before re-record.  Status:
-> dispatched 2026-10-19.
+> dispatched 2026-10-19.  ADDENDUM, same day (Vitor: "Por amor de Deus, faz um
+> projeto que seja realista!  Eu nao tenho experiencia em industria
+> farmaceutica mas quero um projeto que nao me envergonhe!").  The case's
+> DATA is the weak half, not only its structure: a 1 EUR tablet against a
+> real list price two orders of magnitude higher, a production basis not
+> tied to real demand, a formulation and a solvent nobody read from a
+> regulatory source, equipment and building costs that are round numbers.
+> PLAN: (1) a research general builds a SOURCED design-basis dossier from
+> public documents (EMA EPAR / FDA review and label for apalutamide,
+> patents for the spray-dried dispersion, public sales for demand,
+> published OSD equipment and facility practice), each number with its
+> source and a confidence word; (2) an independent reviewer playing a
+> pharmaceutical-industry process engineer red-teams the case against that
+> dossier; (3) the case's assumptions are replaced by the dossier's, on top
+> of the C99 batch plan.  Nothing is invented: where no public source
+> exists the case says so and the README hands the number to the group.
 
 > **C98. PARTICULATE LABOUR AND DECLARED QUOTED COSTS (Vitor, 2026-10-18,
 > two rulings on the C97 phase A findings).**  (1) Turton's operator count
