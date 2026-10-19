@@ -12,7 +12,7 @@ declared.
 
 ```bash
 source etc/bashrc
-runCase tutorials/plant/apalutamide01_tablets
+runCase tutorials/batch/plant/apalutamide01_tablets
 ```
 
 The case is sealed: everything it reads is in its own `constant/`.

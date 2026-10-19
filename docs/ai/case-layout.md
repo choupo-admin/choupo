@@ -1064,7 +1064,7 @@ A declared count announces nothing.  The console line prints the P term
 either way.  A flat `particulateSteps 6;`, a fractional or negative count,
 or a missing `source`/`reason` REFUSE by name.  `P` enters SQUARED: at P = 6
 the formula staffs about 34 operators a shift.  Worked case:
-`tutorials/plant/apalutamide01_tablets`.
+`tutorials/batch/plant/apalutamide01_tablets`.
 
 **A DECLARED OPERATING CREW IN PLACE OF THE CORRELATION (2026-10-19, DEV.md
 4c C98 round 2).**  Turton's correlation is a regression over continuous
@@ -1097,7 +1097,7 @@ area, a fractional or non-positive `operatorsPerShift`, a missing
 appraisal: `kpis.economics.operatorsPerShift` (the count that priced the
 labour), `operatingPositions`, `C_OL`; beside a declared crew also
 `operatorsPerShift_correlation` and `C_OL_correlation` -- all pinned by the
-`kpi` kind.  Worked case: `tutorials/plant/apalutamide01_tablets`.
+`kpi` kind.  Worked case: `tutorials/batch/plant/apalutamide01_tablets`.
 
 **A DECLARED QUOTE FOR AN ITEM NO CORRELATION PRICES (2026-10-19, DEV.md 4c
 C98).**  In the postDict's `costing {}` block, beside the price index:
@@ -1150,7 +1150,7 @@ non-positive value, an unknown `currency`/`basis`/`kind`, another year with
 no `cepci` (or a `cepci` on the costing year), a purchased quote with no
 factor or factor source, a factor below 1, a factor beside `installed`.  A
 quote writes no specification sheet and is placed on no plot plan.  Worked
-case: `tutorials/plant/apalutamide01_tablets`.
+case: `tutorials/batch/plant/apalutamide01_tablets`.
 
 **THE BATCH PLANT, DESIGNED ON THE STEADY BALANCE (2026-10-19, DEV.md 4c
 C99).**  A plant that runs in LOTS (and some machines in CAMPAIGNS) keeps its
@@ -1211,7 +1211,7 @@ one vessel -- a stage of several units is refused there), a scaling quote
 (above), and `economics { streamFactor fromBatchPlan; }` (the year's flows =
 hourly flows x Q / r_P; a NUMBER beside a batch plan is refused as a second
 home for the hours).  Method: `src/postProcessing/BatchPlanPass.H`.  Worked
-case: `tutorials/plant/apalutamide01_tablets`.
+case: `tutorials/batch/plant/apalutamide01_tablets`.
 
 ## `system/layoutDict` — the plot plan (DEV.md 4c C75)
 

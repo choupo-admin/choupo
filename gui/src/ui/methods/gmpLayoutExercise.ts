@@ -55,7 +55,7 @@ export const GMP_LAYOUT_DICT = "system/layoutDict";
 /** Where the teaching file lives in the tree (named on the page). */
 export const GMP_TEACHING_FILE = "gui/src/ui/methods/gmpTeachingBuilding.layoutDict";
 /** The real witness the page sends the reader to at the end. */
-export const GMP_WITNESS = "plant/apalutamide01_tablets";
+export const GMP_WITNESS = "batch/plant/apalutamide01_tablets";
 
 /** The teaching building's layoutDict, as committed. */
 export const TEACHING_LAYOUT: string = TEACHING_RAW;

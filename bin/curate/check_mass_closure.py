@@ -479,7 +479,11 @@ def main() -> int:
         if not ranOk:
             unrun.append(rel)
             continue
-        if case.parent == ROOT / "tutorials" / "plant":
+        #  A PLANT is a case under `tutorials/plant/` (continuous) or
+        #  `tutorials/batch/plant/` (a plant run in lots, DEV.md 4c C106) --
+        #  the folder is a discipline, so both are plants to this arm.
+        if case.parent in (ROOT / "tutorials" / "plant",
+                           ROOT / "tutorials" / "batch" / "plant"):
             ranPlants[case] = txt
         m = CLOSURE.search(txt)
         if m is None:

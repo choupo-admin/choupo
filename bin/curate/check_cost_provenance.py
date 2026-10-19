@@ -1081,7 +1081,7 @@ def check_land(fails):
 #  shipped apalutamide witness (a solid-dose plant that declares both).
 #  ---------------------------------------------------------------------------
 ECONCASE = ROOT / "tutorials/steady/economics/economics01_esterification_dcf"
-OSDCASE = ROOT / "tutorials/plant/apalutamide01_tablets"
+OSDCASE = ROOT / "tutorials/batch/plant/apalutamide01_tablets"
 
 
 def _copy_case(src, tmp, name):

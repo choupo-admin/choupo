@@ -18,7 +18,7 @@ is arithmetic nobody checks: every arm below recomputes from the DECLARED
 postDict (parsed here, with its units) and the published stream masses, and
 never from the engine's echo of an input.
 
-The witness is a copy of `tutorials/plant/apalutamide01_tablets` under a temp
+The witness is a copy of `tutorials/batch/plant/apalutamide01_tablets` under a temp
 dir; every fixture is a text edit of that copy.  Nothing under tutorials/ is
 touched.
 
@@ -96,7 +96,7 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[2]
 BIN = ROOT / "choupoSolve"
-WITNESS = ROOT / "tutorials/plant/apalutamide01_tablets"
+WITNESS = ROOT / "tutorials/batch/plant/apalutamide01_tablets"
 ECON = ROOT / "tutorials/steady/economics/economics01_esterification_dcf"
 ENV = {"CHOUPO_HOME": str(ROOT), "PATH": "/usr/bin:/bin"}
 REL = 1e-6

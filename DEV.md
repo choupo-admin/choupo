@@ -1308,7 +1308,25 @@ accepts today, and that is a policy call.
 > flows, total area; QC summary table; utilities incl. water/air
 > purification and wastes; CAPEX, investment plan, OPEX, profitability,
 > sensitivity) is recorded here as the reference for what such a case
-> should help a group produce.  Status: dispatched 2026-10-19.
+> should help a group produce.  Status: dispatched 2026-10-19.  DONE,
+> PENDING MERGE (branch claude/c106-batch-plant-folder): the case moved
+> with `git mv`, no dict or golden value changed (the README's own
+> `runCase` line is the only in-case edit); every reader of its path
+> updated (four gates, FASTSET -- now in the batch block, family
+> `tutorials/batch/plant` -- the GUI witness id and two GUI tests, the
+> case-authoring docs, three design records that point a reader at it,
+> the catalogue row beside the batch rows); the generated views
+> regenerated with their own tools (caseManifest, the Tutorials Guide's
+> batch/plant `.tex` and its PDF).  Folder = binary was assumed in TWO
+> gates that select plants by folder -- `check_mass_closure`'s atom-scope
+> arm and `check_utility_allocation_pinned`'s candidate set -- each now
+> names `batch/plant/` beside `plant/`; the GUI gained the subclass label
+> `plant` ("Plant design (run in lots)") and the guide generator's unused
+> batch title stopped naming choupoBatch.  runTests, runCase, listCases
+> and the GUI already dispatch by `controlDict.application`.  The old
+> identifier `plant/apalutamide01_tablets` is an entry in
+> `tutorials/ALIASES`, so a shared `?case=` link or `runCase` path keeps
+> resolving and the dated C97 record keeps the name it was written with.
 
 > **C105. THE STREAMS WORKSPACE HAS A WINDOW AT THE BOTTOM THAT CANNOT BE
 > SCROLLED TO ITS END NOR RESIZED (Vitor, 2026-10-19, on the live site: "o

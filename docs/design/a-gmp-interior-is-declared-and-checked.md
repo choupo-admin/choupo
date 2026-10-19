@@ -208,7 +208,7 @@ stamp aside.
 
 ## 9. The wiring (DEV.md 4c C97, after phases A and B)
 
-**The witness.**  `tutorials/plant/apalutamide01_tablets` declares its
+**The witness.**  `tutorials/batch/plant/apalutamide01_tablets` declares its
 interior: 35 rooms on a production floor (0-5 m) and a technical floor
 (5.5-10 m), 54 openings, eight flows of all three kinds, one `shared`
 corridor, and the engine raises NO finding on it (the case's two plot-plan
@@ -278,7 +278,7 @@ footprint area treat an indoor item as part of its building (record of the
 plant layout, §17), and indoor piping is not routed -- a pipe with an end
 indoors is drawn only up to a declared wall penetration on the shell.
 
-**The witness rearranged** (`tutorials/plant/apalutamide01_tablets`): the
+**The witness rearranged** (`tutorials/batch/plant/apalutamide01_tablets`): the
 shell grows from 50 m to 62 m east (x -70..-8 m) for a SOLVENT SUITE -- a
 contained, zone-2, double-height spray-drying suite on the north wall
 (explosion vent through it, stated as the group's question: no engine rule
