@@ -1097,14 +1097,23 @@ plot { margin 10 m; reason "..."; }   // optional; absent: 0 m, announced
   layout cannot reach (an unsized tank, an unplaced item) is listed as not
   routed, with the reason, the units at its two ends and the point of the end
   it does reach; the 3D view marks it there (a dashed stub and a warning), so
-  a missing pipe never looks like a finished drawing.  The router does not
+  a missing pipe never looks like a finished drawing; one that reaches
+  neither end is not marked at all (no point of the plan is its) and is
+  listed in words beside the view and in the pipe register.
+  SOLIDS ARE NOT PIPED (C97): a stream with no fluid phase that carries a
+  solid -- a powder, granules, tablets -- is listed as not routed, "solids
+  only: moved in containers or by conveyor", with `solids` set and no
+  point marked, and a mixer, splitter or valve all of whose streams are
+  such is not put on the rack; a slurry or a wet cake is still a pipe.
+  A `pipes` override on a solids stream is refused.  The router does not
   steer round items: a pipe that runs THROUGH a placed item (its plan path
   inside the footprint, below the item's top) is ANNOUNCED as `pipeClash`,
   by name -- move the item or give the pipe waypoints.  No pressure drop and
   no cost yet.
 * THE PLOT (C82): the engine publishes the plot area -- the axis-aligned
-  envelope of every declared sector area, every placed footprint and every
-  routed pipe, grown on every side by your margin:
+  envelope of every declared sector area, every placed footprint, every
+  routed pipe and (C97) every room of a declared `building {}`, grown on
+  every side by your margin:
   ```
   plot { margin 5 m; reason "the fence and a clear strip inside it"; }
   ```
@@ -1239,6 +1248,7 @@ plot { margin 10 m; reason "..."; }   // optional; absent: 0 m, announced
   building
   {
       name "OSD block"; source "..."; reason "...";
+      envelope productionBuilding;   // optional: the non-process item that IS the building
       cascade { minimumStep 10 Pa; source "EU GMP Annex 1 (2022) para 4.14 (guidance value)"; reason "..."; }
       atexSeparation { distance 6 m; source "..."; reason "..."; }   // needed when ATEX and ignition rooms both exist
       floors ( { floor ground; elevation 0 m; height 6 m; }
@@ -1288,7 +1298,16 @@ plot { margin 10 m; reason "..."; }   // optional; absent: 0 m, announced
   equipment item not placed, assigned twice, not fitting its room, or
   standing in a room that does not list it, a road through a room below the
   roads' headroom, a room across the fence, a `relativeTo` chain that closes
-  on itself, every unknown word or missing key.  ANNOUNCED (stderr, the
+  on itself, every unknown word or missing key, an `envelope` that names no
+  placed non-process item, a room outside the envelope's box.  `envelope`
+  names the plot plan's non-process item that is the building as the SITE
+  sees it (its separations, road access, ignition); the rooms are its
+  interior, it is the one item a room may stand inside without listing it,
+  and the 3D view draws it as glass.  With an envelope no placed item can
+  stand inside the building -- the plot plan refuses two items that share a
+  volume -- so equipment in rooms needs a building without one (not built).
+  The rooms count toward the plot (THE PLOT, above), so a room is never
+  beyond it.  ANNOUNCED (stderr, the
   caveat block under PLANT LAYOUT, the result JSON's `building.findings`):
   `cascade` (two connected rooms of different grade, or two across a
   cascade airlock, whose cleaner side is not higher by the declared step),
@@ -1305,8 +1324,7 @@ plot { margin 10 m; reason "..."; }   // optional; absent: 0 m, announced
   `wasteMeetsMaterial` (a room two flows both pass THROUGH -- not their
   first or last room -- not declared `shared`), `atexIgnition`,
   `atexSeparationUndeclared`, `noEscape` (no way out through doors and
-  stairs; a lift is not an exit), `roomBeyondPlot` (a room outside the
-  published plot: its ground is not priced; grow the plot margin).
+  stairs; a lift is not an exit).
   Published (top-level `building` block, pinned by the `layout` golden
   kind): each room's area, grade, role, regime and pressure resolved to
   outside, each connection's pressure difference, each flow's path, every
@@ -1320,7 +1338,9 @@ plot { margin 10 m; reason "..."; }   // optional; absent: 0 m, announced
   roads, two gates, offices, car park, weighbridge, the one-way truck loop,
   laydown, muster points, fire water, windsock, warehouse, canteen, the
   fence and its labelled crossings),
-  `greenAmmoniaPEQ_baseCase` and `aceticAcid02_plant` (declared racks).  The
+  `greenAmmoniaPEQ_baseCase` and `aceticAcid02_plant` (declared racks),
+  `apalutamide01_tablets` (a GMP building in its `productionBuilding`
+  envelope; powders and tablets not piped).  The
   stated default rack is exercised by `check_plant_layout` on a copy of
   ammonia02 with its `pipeRack` removed.  The
   GUI draws the result in Reports, "Plant layout (3D)", with the pipe

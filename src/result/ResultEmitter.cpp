@@ -1428,6 +1428,8 @@ void emitResultJson(std::ostream& os, const SimulationResult& r)
                << ", \"reason\": " << esc(n.reason)
                << ", \"fromUnit\": " << esc(n.fromUnit)
                << ", \"toUnit\": " << esc(n.toUnit);
+            //  Solids are not piped (DEV.md 4c C97): not a missing pipe.
+            if (n.solids) os << ", \"solids\": true";
             //  The end the layout reaches, where the view marks the missing
             //  pipe; an ARRAY, so the golden's layout row reads no number here.
             if (n.anchor.size() == 3)

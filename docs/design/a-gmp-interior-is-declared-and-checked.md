@@ -122,7 +122,8 @@ ANNOUNCED (`roomBeyondPlot`): its ground is not in the plot area and not
 priced as land.  NOT done, and the next step: the building's envelope does
 not enter the plot rule (`plotOf` in `PlantLayout.cpp`) -- that is a hook in
 the plant layout's own file, deferred while C96 edits it; until then the
-case grows `plot { margin; }` and the finding says so.
+case grows `plot { margin; }` and the finding says so.  (DONE in the wiring
+step, §9: the rooms are in the plot and `roomBeyondPlot` is retired.)
 
 ## 4. The vocabulary, and the licence it rests on
 
@@ -197,10 +198,55 @@ stamp aside.
 
 ## 8. Not in this slice, named
 
-* The building envelope in the plot area (above, §3).
+* The building envelope in the plot area (above, §3) -- done in §9.
 * The `?layout=` pop-out tab does not draw the building (Reports and the
   exported page do).
 * A pipe through a room's wall, door positions, door widths, corridor
   widths, travel distances, air-change rates, HVAC, particle classes.
 * The corpus witness: the apalutamide case (phase A) is wired by the
-  commander after both phases land.
+  commander after both phases land -- done in §9.
+
+## 9. The wiring (DEV.md 4c C97, after phases A and B)
+
+**The witness.**  `tutorials/plant/apalutamide01_tablets` declares its
+interior: 35 rooms on a production floor (0-5 m) and a technical floor
+(5.5-10 m), 54 openings, eight flows of all three kinds, one `shared`
+corridor, and the engine raises NO finding on it (the case's two plot-plan
+exercises, a separation and a single entrance, stay as they were).  An
+oral-solid-dose suite: the product-exposed rooms grade D BY ANALOGY (Annex 1
+is written for sterile products, and the case says so), the rest CNC; the
+dispensary and the granulation-and-compression train CONTAINED on the
+assumption that the bought API is potent, its exposure band to be confirmed
+from the supplier's safety data sheet; a contained personnel corridor
+entered through a bubble airlock and a contained return corridor that takes
+the waste out through a sink, so waste never crosses a room the product
+does; the product one way, east to west and back south to the warehouse.
+Every value is an author-set assumption, said so in the file.
+
+**`envelope <id>;` -- a decision taken on a stated default.**  The case's
+plot plan already had the building as one non-process item, and three of
+its checks read that item (the separation exercise, the road access, the
+ignition), so removing it would have removed an exercise.  Leaving it made
+the building impossible: the item stands inside every room, and the engine
+refuses a placed item inside a room that does not list it.  So the building
+may name the non-process item that IS its shell: every room must lie inside
+that item's box (refused otherwise), the item is the one placed item a room
+may stand inside without listing it, it must be non-process (refused
+otherwise), and the GUI draws it as glass.  Absent the key, nothing changes.
+The limit, named: with an envelope no placed item can stand inside the
+building at all, because the PLOT PLAN refuses two items that share a
+volume, before the building is read -- so the solid-dose machines could not
+be put in their rooms even if they had a size, and the case's coating tank
+cannot be moved into the coating room.  Lifting that needs the overlap, the
+separation and the pipe-clash rules each to treat a shell as a container:
+not built.
+
+**The plot.**  The rooms' plan boxes enter `plotOf` (record of the plant
+layout, slice 8); `roomBeyondPlot` is retired, its gate probe replaced by
+arm (e) (without the building the plot is smaller, inside the building's,
+and its rule names no building) and by a check, on every run the gate makes,
+that the published plot holds every room and says so.
+
+Gate: `check_gmp_layout` (g) (the envelope: a clean shelled probe, and four
+refusals) and (h) (the witness: published, shelled, zero findings
+published and zero recomputed).

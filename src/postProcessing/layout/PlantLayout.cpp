@@ -27,6 +27,7 @@ License
 \*---------------------------------------------------------------------------*/
 
 #include "postProcessing/layout/PlantLayout.H"
+#include "postProcessing/layout/BuildingLayout.H"
 
 #include "core/Advisory.H"
 #include "core/Dimensions.H"
@@ -592,10 +593,33 @@ void routePipes(const Dictionary& d, const SimulationResult& r,
         }
     }
 
+    //  ---- SOLIDS ARE NOT PIPED (DEV.md 4c C97) -------------------------
+    //  A stream with NO fluid phase that carries a solid: `F` is the fluid
+    //  molar flow only and `s` the solid's, per component
+    //  (`streams/ProcessStream.H`).  A powder, granules or tablets move in
+    //  closed containers or on a conveyor, never in a pipe on the rack; a
+    //  slurry or a wet solid (a fluid beside it) is still a pipe.
+    auto solidsOnly = [&](const std::string& s) {
+        auto it = r.streams.find(s);
+        if (it == r.streams.end() || it->second.F > 0.0) return false;
+        for (const scalar si : it->second.s)
+            if (si > 0.0) return true;
+        return false;
+    };
+    //  A unit every stream of which is solids carries nothing to pipe.
+    std::map<std::string, bool> onlySolids;
+    for (const auto& u : r.topology)
+    {
+        bool all = !(u.ins.empty() && u.outs.empty());
+        for (const auto& s : u.ins)  all = all && solidsOnly(s);
+        for (const auto& s : u.outs) all = all && solidsOnly(s);
+        onlySolids[u.name] = all;
+    }
+
     //  ---- the junctions, and where each stands on the rack -------------
     auto isJunction = [&](const std::string& unit) {
         return !placedOf.count(unit) && !sizedOf.count(unit)
-            && junctionTypes().count(typeOf[unit]);
+            && junctionTypes().count(typeOf[unit]) && !onlySolids[unit];
     };
     //  Neighbours: the units at the other end of every stream it touches.
     std::map<std::string, std::vector<std::string>> nbr;
@@ -739,6 +763,24 @@ void routePipes(const Dictionary& d, const SimulationResult& r,
         auto pIt = producer.find(s);
         const std::string from = pIt == producer.end() ? "" : pIt->second;
         const auto& cs = consumers[s];
+        if (solidsOnly(s))
+        {
+            std::string to;
+            for (const auto& c : cs) to += (to.empty() ? "" : ", ") + c;
+            if (overrides.count(s))
+                refuse("pipes `" + s + "`: an override routes a pipe, and this"
+                       " stream carries only solids (no fluid phase), which"
+                       " are not piped -- remove the override");
+            LayoutNotRouted n;
+            n.stream = s;
+            n.reason = "solids only (no fluid phase): moved in containers or"
+                       " by conveyor, not piped";
+            n.fromUnit = from;
+            n.toUnit = to;
+            n.solids = true;
+            rec.notRouted.push_back(n);
+            continue;
+        }
         if (cs.size() > 1)
         {
             std::string who;
@@ -1553,6 +1595,21 @@ void plotOf(const Dictionary& d, PlantLayoutRecord& rec, bool withFence)
     for (const auto& ta : rec.roads.turningAreas)   // C96
         take(ta.x - 0.5 * ta.diameter, ta.x + 0.5 * ta.diameter,
              ta.y - 0.5 * ta.diameter, ta.y + 0.5 * ta.diameter);
+    //  THE GMP INTERIOR (DEV.md 4c C97): every room of a declared
+    //  `building {}`, its plan box read by the building's own reader -- so a
+    //  room is never beyond the plot and its ground is priced with the rest.
+    //  The rule's sentence says so only where a building is declared, so a
+    //  case with none publishes the sentence it always did.
+    const auto rooms = buildingLayout::roomPlans(d);
+    for (const auto& rm : rooms) take(rm.xMin, rm.xMax, rm.yMin, rm.yMax);
+    if (!rooms.empty())
+    {
+        const std::string at = ", grown on";
+        const auto k = pl.rule.find(at);
+        if (k != std::string::npos)
+            pl.rule.insert(k, " and every room of the declared building (its"
+                              " plan box)");
+    }
     pl.xMin = x0 - pl.margin;  pl.xMax = x1 + pl.margin;
     pl.yMin = y0 - pl.margin;  pl.yMax = y1 + pl.margin;
     pl.plotArea = (pl.xMax - pl.xMin) * (pl.yMax - pl.yMin);

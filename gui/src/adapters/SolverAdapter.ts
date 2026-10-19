@@ -991,6 +991,9 @@ export interface LayoutNotRouted {
   fromUnit?: string;
   toUnit?: string;
   anchor?: [number, number, number];
+  /** Not a missing pipe (DEV.md 4c C97): the stream carries only solids,
+   *  moved in containers or by conveyor.  No anchor; nothing is marked. */
+  solids?: boolean;
 }
 
 /** What the engine counted on the layout it checked: items placed, sized but

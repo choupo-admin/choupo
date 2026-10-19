@@ -525,6 +525,9 @@ export function mountLayoutScene(m: LayoutModules, el: HTMLDivElement, scene: La
     process: std(BODY_LOOK.process),
     nonProcess: std(BODY_LOOK.nonProcess),
     flagged: std(BODY_LOOK.flagged),
+    //  A GMP building's shell (DEV.md 4c C97): glass, so its rooms show.
+    shell: keep(new THREE.MeshStandardMaterial({ color: BODY_LOOK.nonProcess[0],
+      transparent: true, opacity: 0.12, depthWrite: false, roughness: 0.3, metalness: 0 })),
   };
 
   const up = new THREE.Vector3(0, 1, 0);
@@ -594,6 +597,7 @@ export function mountLayoutScene(m: LayoutModules, el: HTMLDivElement, scene: La
     //  orange whatever they are made of (its decoration keeps its own);
     //  otherwise the role's, `body` being the item's own.
     const matOf = (p: Part): [string, T3.Material] => {
+      if (s.shell) return ["shell", bodyMat.shell];
       if (s.flagged && !p.decoration) return ["flagged", bodyMat.flagged];
       if (p.role !== "body") return [p.role, roleMat.get(p.role)!];
       return s.nonProcess ? ["nonProcess", bodyMat.nonProcess] : ["process", bodyMat.process];
@@ -620,12 +624,27 @@ export function mountLayoutScene(m: LayoutModules, el: HTMLDivElement, scene: La
       if (!merged) continue;
       keep(merged);
       const mesh = new THREE.Mesh(merged, mat);
-      mesh.castShadow = true;
+      mesh.castShadow = !s.shell;
       mesh.receiveShadow = true;
       mesh.userData.tooltip = tooltip;
       group.add(mesh);
       pickables.push(mesh);
-      if (s.flagged && envelope) flaggedMeshes.push(mesh);
+      //  A shell's glow would fill the glass and hide the rooms: its finding
+      //  is carried by its edges (below) and its label instead.
+      if (s.flagged && envelope && !s.shell) flaggedMeshes.push(mesh);
+    }
+    if (s.shell) {
+      const [hx, hy, hz] = [s.size[0] / 2, s.size[1] / 2, s.size[2] / 2];
+      const v = (i: number, j: number, k: number) =>
+        new THREE.Vector3(i ? hx : -hx, j ? hy : -hy, k ? hz : -hz);
+      const pts: T3.Vector3[] = [];
+      for (const j of [0, 1]) for (const k of [0, 1]) pts.push(v(0, j, k), v(1, j, k));
+      for (const i of [0, 1]) for (const k of [0, 1]) pts.push(v(i, 0, k), v(i, 1, k));
+      for (const i of [0, 1]) for (const j of [0, 1]) pts.push(v(i, j, 0), v(i, j, 1));
+      const edges = new THREE.LineSegments(
+        keep(new THREE.BufferGeometry().setFromPoints(pts)),
+        keep(new THREE.LineBasicMaterial({ color: s.flagged ? 0xe8590c : 0x8a7f6a })));
+      group.add(edges);
     }
     world.add(group);
     label(s.label, [s.center[0], s.center[1] + s.size[1] / 2 + 0.6, s.center[2]],
@@ -989,11 +1008,11 @@ export function mountLayoutScene(m: LayoutModules, el: HTMLDivElement, scene: La
   //  A stream the engine could NOT route (C93): a dashed red stub rising from
   //  the end it reached, a marker there and a warning label, the engine's
   //  reason in the tooltip -- a missing pipe must never look like a finished
-  //  drawing.  One the layout reaches at neither end is still said, in words,
-  //  above the plot's south-west corner.
-  let looseRow = 0;
+  //  drawing.  One the layout reaches at neither end is NOT drawn (DEV.md 4c
+  //  C97: a label at an arbitrary point floated off the plot); it is said in
+  //  words beside the view and in the pipe register (`unroutedListed`).
   for (const u of scene.unrouted) {
-    if (u.at && u.top) {
+    {
       const line = new THREE.Line(new THREE.BufferGeometry().setFromPoints(
         [new THREE.Vector3(...u.at), new THREE.Vector3(...u.top)]),
         new THREE.LineDashedMaterial({ color: COLOURS.link, dashSize: 0.4, gapSize: 0.3,
@@ -1007,9 +1026,6 @@ export function mountLayoutScene(m: LayoutModules, el: HTMLDivElement, scene: La
       pickables.push(mark);
       world.add(mark);
       label(u.text, u.top, LABEL_PRIORITY.finding, true);
-    } else {
-      label(u.text, [scene.min[0], 3 + 2 * looseRow++, scene.max[2]],
-            LABEL_PRIORITY.finding, true);
     }
   }
 

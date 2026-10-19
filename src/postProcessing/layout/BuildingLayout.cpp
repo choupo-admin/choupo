@@ -203,6 +203,18 @@ scalar boxGap(const BuildingRoom& a, const BuildingRoom& b)
     return std::sqrt(gx * gx + gy * gy + gz * gz);
 }
 
+//  A room's plan box -- ONE reader, for `evaluate` and for `roomPlans` (the
+//  plot rule reads the boxes before the building is checked).
+void readBox(const Dictionary& e, const std::string& w, scalar& xMin,
+             scalar& xMax, scalar& yMin, scalar& yMax)
+{
+    xMin = length(e, "xMin", w);  xMax = length(e, "xMax", w);
+    yMin = length(e, "yMin", w);  yMax = length(e, "yMax", w);
+    if (!(xMax - xMin > kTol) || !(yMax - yMin > kTol))
+        refuse(w + ": the box is empty (`xMax` must exceed `xMin`, `yMax`"
+               " `yMin`)");
+}
+
 std::string joined(const std::vector<std::string>& v, const char* sep = " ")
 {
     std::string s;
@@ -211,6 +223,23 @@ std::string joined(const std::vector<std::string>& v, const char* sep = " ")
 }
 
 } // namespace
+
+std::vector<RoomPlan> roomPlans(const Dictionary& layoutDict)
+{
+    std::vector<RoomPlan> out;
+    if (!layoutDict.found("building")) return out;
+    const auto bd = layoutDict.subDict("building");
+    if (!bd->found("rooms") || !bd->hasDictList("rooms")) return out;   // evaluate refuses
+    for (const auto& e : bd->lookupDictList("rooms"))
+    {
+        RoomPlan p;
+        if (!e->found("room")) refuse("rooms: an entry has no `room` name");
+        p.name = e->lookupWord("room");
+        readBox(*e, "room `" + p.name + "`", p.xMin, p.xMax, p.yMin, p.yMax);
+        out.push_back(p);
+    }
+    return out;
+}
 
 BuildingRecord evaluate(const Dictionary& layoutDict,
                         const PlantLayoutRecord& plant, int verbosity)
@@ -225,6 +254,29 @@ BuildingRecord evaluate(const Dictionary& layoutDict,
     rec.name   = text(d, "name", W);
     rec.source = text(d, "source", W);
     rec.reason = text(d, "reason", W);
+
+    //  ---- the shell: a non-process item of the plot plan (optional) -------
+    //  The building as the SITE sees it -- its footprint in the plot, its
+    //  separations, its road access, its ignition -- is that item; the rooms
+    //  are its interior and must lie inside its box.
+    const LayoutItem* shell = nullptr;
+    if (d.found("envelope"))
+    {
+        rec.envelope = d.lookupWord("envelope");
+        std::vector<std::string> names;
+        for (const auto& it : plant.items)
+        {
+            if (it.nonProcess) names.push_back(it.id);
+            if (it.id == rec.envelope) shell = &it;
+        }
+        if (!shell)
+            refuse("`envelope " + rec.envelope + ";` -- "
+                   + registryRefusal::message("non-process item", rec.envelope,
+                                              names, "Placed"));
+        if (!shell->nonProcess)
+            refuse("`envelope " + rec.envelope + ";` names a PROCESS item; a"
+                   " building's shell is a `nonProcess` item of `items ( ... )`");
+    }
 
     //  ---- the cascade's minimum step: the case's, with its source --------
     if (!d.found("cascade"))
@@ -321,11 +373,7 @@ BuildingRecord evaluate(const Dictionary& layoutDict,
             r.height = length(*e, "height", w);
             if (!(r.height > 0)) refuse(w + ": `height` must be positive");
         }
-        r.xMin = length(*e, "xMin", w);  r.xMax = length(*e, "xMax", w);
-        r.yMin = length(*e, "yMin", w);  r.yMax = length(*e, "yMax", w);
-        if (!(r.xMax - r.xMin > kTol) || !(r.yMax - r.yMin > kTol))
-            refuse(w + ": the box is empty (`xMax` must exceed `xMin`, `yMax`"
-                   " `yMin`)");
+        readBox(*e, w, r.xMin, r.xMax, r.yMin, r.yMax);
         r.area = (r.xMax - r.xMin) * (r.yMax - r.yMin);
         r.role = e->found("role")
                ? word(*e, "role", w, { "room", "personnelAirlock",
@@ -435,6 +483,23 @@ BuildingRecord evaluate(const Dictionary& layoutDict,
                        + num(ox * oy) + " m2 of plan over " + num(oz) + " m of"
                        " height -- two rooms cannot share a volume");
         }
+
+    //  ---- the rooms inside the shell ---------------------------------------
+    if (shell)
+    {
+        const scalar x0 = shell->x - 0.5 * shell->dx, x1 = shell->x + 0.5 * shell->dx;
+        const scalar y0 = shell->y - 0.5 * shell->dy, y1 = shell->y + 0.5 * shell->dy;
+        const scalar z0 = shell->z, z1 = shell->z + shell->dz;
+        for (const auto& r : R)
+            if (r.xMin < x0 - kTol || r.xMax > x1 + kTol || r.yMin < y0 - kTol
+                || r.yMax > y1 + kTol || r.z < z0 - kTol || r.z + r.height > z1 + kTol)
+                refuse("room `" + r.name + "` (x " + num(r.xMin) + ".." + num(r.xMax)
+                       + ", y " + num(r.yMin) + ".." + num(r.yMax) + ", z "
+                       + num(r.z) + ".." + num(r.z + r.height) + " m) does not lie"
+                       " inside the building's envelope `" + rec.envelope + "` (x "
+                       + num(x0) + ".." + num(x1) + ", y " + num(y0) + ".." + num(y1)
+                       + ", z " + num(z0) + ".." + num(z1) + " m)");
+    }
 
     //  ---- connections -----------------------------------------------------
     //  The spaces: room indices, and nR for `outside`.
@@ -552,6 +617,7 @@ BuildingRecord evaluate(const Dictionary& layoutDict,
     for (const auto& i : plant.items)
     {
         if (assigned.count(i.id)) continue;
+        if (shell && i.id == rec.envelope) continue;   // the shell itself
         for (const auto& r : R)
         {
             const scalar ox = overlap1(i.x - 0.5 * i.dx, i.x + 0.5 * i.dx, r.xMin, r.xMax);
@@ -970,21 +1036,6 @@ BuildingRecord evaluate(const Dictionary& layoutDict,
                     " the declared doors and stairs (a lift is not an exit) --"
                     " every room has an escape route");
     }
-
-    //  (8) The building on the plot the engine published.
-    if (plant.plot.present)
-        for (const auto& r : R)
-        {
-            const scalar ix = std::max(0.0, overlap1(r.xMin, r.xMax, plant.plot.xMin, plant.plot.xMax));
-            const scalar iy = std::max(0.0, overlap1(r.yMin, r.yMax, plant.plot.yMin, plant.plot.yMax));
-            const scalar outside = r.area - ix * iy;
-            if (outside > kTol)
-                addFinding("roomBeyondPlot", r.name, "", outside, 0,
-                    "room `" + r.name + "` reaches " + num(outside) + " m2 beyond"
-                    " the published plot -- that ground is not in the plot area"
-                    " (nor priced as land); grow `plot { margin; }` or declare a"
-                    " non-process item that covers the building");
-        }
 
     //  ---- the glass box: what the engine read ---------------------------
     if (verbosity >= 1)

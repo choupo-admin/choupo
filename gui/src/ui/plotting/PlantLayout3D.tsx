@@ -80,7 +80,7 @@ import { useEffect, useMemo, useRef, useState, type ChangeEvent, type ReactNode 
 import { Button, Checkbox, Group, SegmentedControl, Text } from "@mantine/core";
 
 import {
-  initialQuality, prefersReducedMotion, QUALITY_TITLE, rememberQuality,
+  initialQuality, prefersReducedMotion, QUALITY_TITLE, rememberQuality, unroutedLegend,
   type LayoutScene, type RenderQuality, type ViewPreset,
 } from "../../case/plantLayout.js";
 import { fullscreenMode, type FullscreenMode } from "../../case/layoutPanels.js";
@@ -257,6 +257,9 @@ export function PlantLayout3D({ scene, height: declaredHeight = 520, extend, too
   //  "fill": the box sizes the view; the canvas is absolutely placed inside
   //  it so the canvas itself can never push the box taller (a feedback loop
   //  with the ResizeObserver).
+  //  What the view does not mark (DEV.md 4c C97), said in words beneath it.
+  const legend = unroutedLegend(scene.unroutedListed).map((l) => (
+    <Text key={l} size="xs" c="dimmed" mt={2}>{l}</Text>));
   if (height === "fill")
     return (
       <div ref={frame} style={{ display: "flex", flexDirection: "column", height: "100%",
@@ -264,12 +267,14 @@ export function PlantLayout3D({ scene, height: declaredHeight = 520, extend, too
         <div style={{ padding: "0 16px" }}>{toolbar}</div>
         <div ref={host} style={{ position: "relative", width: "100%", flex: "1 1 auto",
           minHeight: FILL_MIN_HEIGHT, overflow: "hidden" }} />
+        <div style={{ padding: "0 16px" }}>{legend}</div>
       </div>
     );
   return (
     <div ref={frame}>
       {toolbar}
       <div ref={host} style={{ position: "relative", width: "100%", height }} />
+      {legend}
     </div>
   );
 }

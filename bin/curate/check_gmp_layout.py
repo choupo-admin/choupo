@@ -42,8 +42,10 @@ under tutorials/ is touched.
       through a wall; a waste flow through the product train with one room
       declared `shared`; an ATEX room nearer an ignition room than the
       declared separation, and the separation left undeclared; a room whose
-      only way out is a lift; the plot margin removed (rooms beyond the
-      plot); a containment room behind a cascade airlock.
+      only way out is a lift; a containment room behind a cascade airlock.
+      On every probe the published PLOT holds every room's plan box and its
+      rule names the building's rooms (DEV.md 4c C97: the rooms are in
+      `plotOf`, and phase B's `roomBeyondPlot` is retired with the gap).
   (c) THE ANNOUNCEMENT REACHES ALL THREE SURFACES: stderr (`[building]`),
       the end-of-run caveat block under PLANT LAYOUT, and the result JSON
       (`advisories` and `building.findings`).
@@ -55,14 +57,29 @@ under tutorials/ is touched.
       outside from a room with no exterior wall, a stair on one floor, a
       `relativeTo` cycle, an unknown grade, a regime on a plain room, a
       flow through an unknown room, no `cascade` block, a `shared` entry
-      with one kind.
+      with one kind.  (The fence probe's inset is 35 m against the 30 m
+      margin: with the rooms in the plot, only an inset larger than the
+      margin can put a room across the fence.)
   (e) ABSENCE IS SILENCE: the clean probe with its `building` block removed
       publishes no `building` key, prints no `[building]` line, and its
-      `layout` block is byte-identical to the clean probe's.
+      `layout` block is identical to the clean probe's but for the PLOT,
+      which is smaller, lies inside the clean probe's, and whose rule names
+      no building -- the one block a building moves.
   (f) PUBLISHED => PINNED: `bin/runTests --record` on the clean probe writes
       `layout` rows for the building block (summary, rooms, connections,
       flows), `bin/runTests` passes on them, and the same check FAILS once a
       room's declared pressure moves -- the rows are read, not merely written.
+  (g) THE ENVELOPE (DEV.md 4c C97, the wiring): the clean probe with its
+      three boxes taken out, its dryer moved off the building, and a
+      non-process `osdBlock` round every room named `envelope` runs clean --
+      the shell is the one placed item a room may stand inside without
+      listing it; REFUSED, each named: the same probe with no `envelope`
+      (the shell stands inside every room), an envelope naming no placed
+      item, one naming a process item, a room beyond the shell's box.
+  (h) THE CORPUS WITNESS `tutorials/plant/apalutamide01_tablets`, from a
+      copy: its building is published in its `productionBuilding` envelope,
+      contained rooms and flows of all three kinds, and the engine's findings
+      and the recomputed ones are both EMPTY.
 
 SABOTAGES, by hand (2026-10-18), each run against this gate and each caught:
   S1  `cascadeCheck` returns early for every pair (the cascade never
@@ -94,6 +111,19 @@ SABOTAGES, by hand (2026-10-18), each run against this gate and each caught:
       requires all four families).  CAUGHT.
   (Each run on a build of the sabotaged source, restored and rebuilt after;
   the first S7 run landed on S6's binary and is discarded.)
+  C97 wiring, 2026-10-19, by hand, each on a rebuilt engine:
+  S8  `plotOf` skips the building's rooms: arm (e) -- the plot without the
+      building is no smaller than with it (6000 m2 both).  CAUGHT.
+  S9  the shell's exemption removed: arm (g) -- "item `osdBlock` stands
+      inside room `warehouse`" refuses the shelled probe -- and arm (h), the
+      witness refused the same way.  CAUGHT.
+  S10 the room-inside-the-envelope refusal disarmed: arm (g) "a room outside
+      the envelope: the run was NOT refused".  CAUGHT -- and its FIRST
+      attempt proved nothing: it prefixed `false &&` to the first clause of a
+      chain of `||`, which disarmed only that clause, and the probe's room
+      sticks out in z; the sabotage was redone on the `refuse` itself.
+  S13 the plot sentence no longer names the building: arms (a), (b) on
+      every probe.  CAUGHT (and by check_plant_layout arm (j)).
 """
 
 import json
@@ -266,7 +296,7 @@ RANK = {"A": 4, "B": 3, "C": 2, "D": 1, "CNC": 0}
 AIRLOCKS = {"personnelAirlock", "materialAirlock", "gowning"}
 
 
-def recompute(b, plot):
+def recompute(b):
     """Every finding the published building block implies, recomputed here
     from rooms, connections, flows, shared and the summary -- never read from
     `findings`.  Returns {id: (value, limit)}."""
@@ -447,13 +477,6 @@ def recompute(b, plot):
         if n not in reach:
             add("noEscape", n, "")
 
-    if plot:
-        for n, r in rooms.items():
-            ix = max(0.0, min(r["xMax"], plot["xMax"]) - max(r["xMin"], plot["xMin"]))
-            iy = max(0.0, min(r["yMax"], plot["yMax"]) - max(r["yMin"], plot["yMin"]))
-            outside = r["area"] - ix * iy
-            if outside > 1e-6:
-                add("roomBeyondPlot", n, "", outside, 0)
     return out
 
 
@@ -497,6 +520,25 @@ def published_ok(b, tag):
     return ok
 
 
+CLAUSE = "every room of the declared building"
+
+
+def plot_covers(b, plot, tag):
+    """THE BUILDING IS IN THE PLOT (DEV.md 4c C97): the published plot holds
+    every room's plan box, and its rule says so."""
+    if not plot:
+        fail(f"{tag}: no `plot` published beside the building")
+        return False
+    out = [r["name"] for r in b["rooms"]
+           if r["xMin"] < plot["xMin"] - 1e-6 or r["xMax"] > plot["xMax"] + 1e-6
+           or r["yMin"] < plot["yMin"] - 1e-6 or r["yMax"] > plot["yMax"] + 1e-6]
+    if out:
+        fail(f"{tag}: room(s) beyond the published plot: {out}")
+    if CLAUSE not in plot.get("rule", ""):
+        fail(f"{tag}: the published plot rule does not name the building's rooms")
+    return not out and CLAUSE in plot.get("rule", "")
+
+
 def compare(tag, j, want_kinds):
     """Engine findings == recomputed findings (ids, values, limits)."""
     b = j.get("building")
@@ -505,7 +547,8 @@ def compare(tag, j, want_kinds):
         return None
     published_ok(b, tag)
     plot = (j.get("layout") or {}).get("plot")
-    rec = recompute(b, plot)
+    plot_covers(b, plot, tag)
+    rec = recompute(b)
     eng = {f["id"]: f for f in b["findings"]}
     if set(eng) != set(rec):
         fail(f"{tag}: engine findings {sorted(eng)} != recomputed {sorted(rec)}")
@@ -580,8 +623,6 @@ PROBES = [
     ("a lift is not an exit", ["noEscape"],
      lambda t: sub(t, "{ between ( lobby electrical );      type stair; }",
                    "{ between ( lobby electrical );      type lift; }")),
-    ("no plot margin", ["roomBeyondPlot"],
-     lambda t: sub(t, 'plot { margin 30 m; reason "the probe\'s building lies beyond its items"; }\n', "")),
     ("containment behind a cascade airlock", ["containmentAccess", "airlockRegime"],
      lambda t: sub(t, "role materialAirlock; regime sink; pressure -20 Pa;",
                    "role materialAirlock; regime cascade; pressure -20 Pa;")),
@@ -690,7 +731,7 @@ REFUSALS = [
                              '                    waypoints ( { x -5 m; y 8 m; } { x 80 m; y 8 m; } ); } ); }\n')),
     ("a room across the fence", "across or outside the fence",
      lambda t: insert_before(t, "\nbuilding\n",
-                             '\nfence { source "probe"; reason "probe"; inset 8 m; }\n')),
+                             '\nfence { source "probe"; reason "probe"; inset 35 m; }\n')),
     ("a shared room with one kind", "DIFFERENT kinds",
      lambda t: insert_before(t, "    connections\n",
                              "    shared ( { room corridor; flows ( waste ); reason \"probe\"; } );\n\n")),
@@ -725,13 +766,25 @@ def arm_absent(work, clean_json):
         bad.append("a `building` key")
     if "[building]" in out + err:
         bad.append("a [building] line")
-    if clean_json and j.get("layout") != clean_json.get("layout"):
-        bad.append("a `layout` block different from the clean probe's")
+    lay, cl = dict(j.get("layout") or {}), dict((clean_json or {}).get("layout") or {})
+    p_abs, p_cl = lay.pop("plot", None), cl.pop("plot", None)
+    if clean_json and lay != cl:
+        bad.append("a `layout` block (the plot aside) different from the clean probe's")
+    if clean_json and p_abs and p_cl:
+        if CLAUSE in p_abs.get("rule", ""):
+            bad.append("a plot rule naming a building that is not declared")
+        if not (p_cl["plotArea"] > p_abs["plotArea"] + 1e-6
+                and p_cl["xMin"] <= p_abs["xMin"] + 1e-9 and p_cl["xMax"] >= p_abs["xMax"] - 1e-9
+                and p_cl["yMin"] <= p_abs["yMin"] + 1e-9 and p_cl["yMax"] >= p_abs["yMax"] - 1e-9):
+            bad.append(f"a plot ({p_abs['plotArea']} m2) the building does not grow"
+                       f" (with it {p_cl['plotArea']} m2)")
     if bad:
         fail("(e) with no building block the run still printed " + ", ".join(bad))
     else:
-        claims.append("(e) with no `building` block: no key, no line, and the `layout`"
-                      " block identical to the clean probe's")
+        claims.append("(e) with no `building` block: no key, no line, the `layout`"
+                      " block identical to the clean probe's but for the plot, which is"
+                      " smaller, inside the clean probe's, and whose rule names no"
+                      " building")
 
 
 def arm_golden(work):
@@ -771,6 +824,102 @@ def arm_golden(work):
                   " room's row")
 
 
+#  A SHELL (DEV.md 4c C97): the clean probe's rooms inside a non-process item
+#  that IS the building on the plot plan.  The plot plan refuses two items
+#  that share a volume, so a shelled building holds no placed item: the
+#  dryer stands outside it, the three boxes go, and no room lists equipment.
+def shelled(text):
+    for name in ("blender", "press", "coater"):
+        text = re.sub(r'\n    \{ nonProcess "%s";.*?\}\n      source "probe"; reason "[^"]*"; \}' % name,
+                      "", text, count=1, flags=re.S)
+    text = sub(text, '{ item "dryer"; x 28 m; y 15 m;', '{ item "dryer"; x 90 m; y 15 m;')
+    text = re.sub(r" equipment \( [a-z]+ \);", "", text)
+    text = sub(text, "\n);\nplot {",
+               '\n    { nonProcess "osdBlock"; kind productionBuilding; x 36 m; y 10 m; z 0 m;'
+               ' orientation alongX;\n      footprint { length 72 m; width 20 m; height 11 m; }\n'
+               '      source "probe"; reason "the probe building\'s shell"; }\n);\nplot {')
+    return sub(text, '    reason "every rule\'s clean case at once";\n',
+               '    reason "every rule\'s clean case at once";\n    envelope osdBlock;\n')
+
+
+ENVELOPE_REFUSALS = [
+    ("no envelope declared: the shell stands inside every room", "does not list it",
+     lambda t: sub(t, "    envelope osdBlock;\n", "")),
+    ("an envelope naming no placed item", "Placed",
+     lambda t: sub(t, "envelope osdBlock;", "envelope noSuchShell;")),
+    ("an envelope naming a process item", "names a PROCESS item",
+     lambda t: sub(t, "envelope osdBlock;", "envelope dryer;")),
+    ("a room outside the envelope", "does not lie inside the building's envelope",
+     lambda t: sub(t, "footprint { length 72 m; width 20 m; height 11 m; }",
+                   "footprint { length 72 m; width 20 m; height 10 m; }")),
+]
+
+
+def arm_envelope(work):
+    d = prepare(work, "shell", shelled(CLEAN))
+    out, err, rc, j = solve(d)
+    if rc != 0 or not j:
+        fail(f"(g) the shelled probe exited {rc}: {err.strip()[-400:]}")
+        return
+    b = compare("(g) shelled", j, [])
+    if b is None:
+        return
+    if b["summary"].get("envelope") != "osdBlock" or b["findings"]:
+        fail(f"(g) shelled probe: envelope {b['summary'].get('envelope')!r}, findings"
+             f" {[f['id'] for f in b['findings']]}")
+        return
+    n = 0
+    for i, (label, needle, edit) in enumerate(ENVELOPE_REFUSALS):
+        d = prepare(work, f"shell{i:02d}", edit(shelled(CLEAN)))
+        out, err, rc, j = solve(d)
+        if rc == 0:
+            fail(f"(g) {label}: the run was NOT refused (exit 0)")
+        elif needle not in err + out:
+            fail(f"(g) {label}: refused (exit {rc}) without naming it ('{needle}'):"
+                 f" {err.strip()[-300:]}")
+        else:
+            n += 1
+    claims.append(f"(g) a building whose `envelope` is a non-process item runs clean"
+                  f" (the shell standing round every room is not an unlisted item);"
+                  f" {n}/{len(ENVELOPE_REFUSALS)} refusals: no envelope declared, an"
+                  " unknown one, a process item, a room beyond the shell")
+
+
+WITNESS = ROOT / "tutorials/plant/apalutamide01_tablets"
+
+
+def arm_witness(work):
+    """(h) THE CORPUS WITNESS (DEV.md 4c C97): the apalutamide plant's own
+    building, run from a copy -- published, shelled, every finding the
+    engine raises equal to the list recomputed here, and that list empty."""
+    d = work / "witness"
+    if d.exists():
+        shutil.rmtree(d)
+    shutil.copytree(WITNESS, d, ignore=shutil.ignore_patterns(
+        "reports", "converged", "design", "iterations"))
+    out, err, rc, j = solve(d)
+    if rc != 0 or not j:
+        fail(f"(h) the witness exited {rc}: {err.strip()[-400:]}")
+        return
+    b = compare("(h) witness", j, [])
+    if b is None:
+        return
+    s = b["summary"]
+    if b["findings"] or s.get("envelope") != "productionBuilding":
+        fail(f"(h) the witness raises {[f['id'] for f in b['findings']]} with envelope"
+             f" {s.get('envelope')!r}; it ships clean, in its production building")
+        return
+    kinds = {f["kind"] for f in b["flows"]}
+    cont = sum(1 for r in b["rooms"] if r["containment"])
+    if kinds != {"personnel", "material", "waste"} or cont == 0:
+        fail(f"(h) the witness's flows {sorted(kinds)}, {cont} contained rooms")
+        return
+    claims.append(f"(h) the witness `apalutamide01_tablets`: {s['rooms']} rooms on"
+                  f" {s['floors']} floors in its `productionBuilding`, {cont} contained,"
+                  f" {s['flows']} flows of all three kinds; zero findings published and"
+                  " zero recomputed")
+
+
 def main():
     argv = sys.argv[1:]
     keep = Path(argv[argv.index("--keep") + 1]).resolve() if "--keep" in argv else None
@@ -786,6 +935,8 @@ def main():
         arm_refusals(work)
         arm_absent(work, clean)
         arm_golden(work)
+        arm_envelope(work)
+        arm_witness(work)
     finally:
         if not keep:
             shutil.rmtree(work, ignore_errors=True)
@@ -799,8 +950,9 @@ def main():
           " is sensible for the product (the case's assumption -- no table is"
           " shipped), air change rates and HVAC, door widths and travel distances,"
           " a pipe or a road against a room's walls beyond a road through a room,"
-          " the GUI drawing (a vitest), and the corpus witness (wired after C97"
-          " phase A lands).")
+          " a placed item inside a shelled building (the plot plan refuses it as"
+          " two items sharing a volume -- not built), and the GUI drawing (a"
+          " vitest).")
     return 0
 
 

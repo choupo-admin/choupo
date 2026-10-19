@@ -1482,7 +1482,8 @@ auto_generate() {
         #  `"id"` (`buildingSummary`, `floor:`, `room:`, `<type>:<a>:<b>` per
         #  connection, `flow:`, `<kind>:<a>:<b>` per finding), read by
         #  get_layout through the same regex.  Pinned: the summary COUNTS and
-        #  floor area, each room's area, resolved pressure, grade, role and
+        #  floor area (and the `envelope` item's name where one is declared),
+        #  each room's area, resolved pressure, grade, role and
         #  regime, each connection's dP, each flow's steps, each finding's
         #  value and limit.  A separate pass, so the layout rows above are
         #  byte-for-byte what they were.
@@ -1496,7 +1497,7 @@ auto_generate() {
                 line = $0
                 sub(/"message": .*/, "", line)
                 sub(/"source": .*/, "", line)
-                nw = split("grade role regime type kind", W, " ")
+                nw = split("grade role regime type kind envelope", W, " ")
                 for (i = 1; i <= nw; i++)
                     if (match(line, "\"" W[i] "\": \"[^\"]*\"")) {
                         s = substr(line, RSTART, RLENGTH); sub(/^"[^"]*": "/, "", s); sub(/"$/, "", s)

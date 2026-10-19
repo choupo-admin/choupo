@@ -87,6 +87,9 @@ export interface GmpBuilding {
   minimumStep: number;
   stepSource: string;
   atexDistance?: number;
+  /** The non-process item of the plot plan that is this building's shell
+   *  (`envelope <id>;`): the 3D view draws it as glass round the rooms. */
+  envelope?: string;
   floorArea: number;
   occupancy: number;
   floors: BuildingFloor[];
@@ -113,7 +116,10 @@ const words = (v: unknown): string[] =>
 /** The published block, typed; undefined when it carries no room. */
 export function shapeBuilding(raw: unknown): GmpBuilding | undefined {
   const b = rec(raw);
-  const s = rec(b.summary);
+  //  The engine's block keeps these in `summary`; a block shaped here and
+  //  embedded in an exported page keeps them at the top level -- read either,
+  //  or the page loses the name, the step and the envelope (DEV.md 4c C97).
+  const s = rec(b.summary ?? b);
   const rooms: BuildingRoom[] = arr(b.rooms)
     .filter((r) => typeof r.name === "string"
       && [r.xMin, r.xMax, r.yMin, r.yMax, r.z, r.height, r.area,
@@ -141,6 +147,7 @@ export function shapeBuilding(raw: unknown): GmpBuilding | undefined {
     minimumStep: fin(s.minimumStep) ? s.minimumStep : NaN,
     stepSource: str(s.stepSource),
     ...(fin(s.atexDistance) ? { atexDistance: s.atexDistance } : {}),
+    ...(typeof s.envelope === "string" && s.envelope ? { envelope: s.envelope } : {}),
     floorArea: fin(s.floorArea) ? s.floorArea : NaN,
     occupancy: fin(s.occupancy) ? s.occupancy : 0,
     floors: arr(b.floors).filter((f) => fin(f.elevation) && fin(f.height))

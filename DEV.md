@@ -1339,7 +1339,20 @@ accepts today, and that is a policy call.
 > silently; mixer bracket probes leak caveats for absent components; a
 > linked tank's working capital reads 0.  From phase B: the building does
 > not count toward the plot area (`plotOf`); the apalutamide case does not
-> yet declare its building (the WIRING step).
+> yet declare its building (the WIRING step).  WIRING dispatched 2026-10-18
+> (branch claude/c97c-apalutamide-gmp-wiring), NOT merged: the case's
+> `building {}` (35 rooms, two floors, eight flows, zero findings) in its
+> `productionBuilding` box through a new `envelope <id>;` key (a stated
+> default: the shell item is exempt from "an item inside a room that does not
+> list it", every room must fit it); the rooms in `plotOf` and
+> `roomBeyondPlot` retired; SOLIDS ARE NOT PIPED (a stream with no fluid
+> phase is listed not routed, `solids`, no anchor; a junction of solids
+> alone leaves the rack); an anchorless unrouted stream is listed beneath
+> the 3D view, not floated off the plot.  The corpus layouts are
+> byte-identical; apalutamide01's golden moves (pipes, junctions, summary)
+> and waits for Vitor's approval of the listed rows.  Limit named: with an
+> envelope no placed item can stand inside the building (the plot plan's
+> overlap refusal).
 
 > **C94. LAYOUT GUIDELINES IN THE GUIDES (Vitor, 2026-10-18: "Nos Guias
 > apropriados podes incluir uma parte sobre guidelines de layout?", after

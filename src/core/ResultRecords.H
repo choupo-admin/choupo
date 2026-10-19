@@ -886,13 +886,16 @@ struct LayoutNotRouted
     //  neither end is reachable.
     std::string fromUnit, toUnit;
     std::vector<scalar> anchor;
+    //  Not a missing pipe: the stream carries only solids, which are moved
+    //  in containers or by conveyor (DEV.md 4c C97).  No anchor is set.
+    bool solids = false;
 };
 
 //  THE PLOT (2026-10-17, DEV.md 4c C82).  The ground the layout occupies, by
 //  ONE rule (`postProcessing/layout/PlantLayout.cpp`, `plotOf`): the
 //  axis-aligned ENVELOPE of every declared sector area, every placed
-//  footprint (process and non-process) and every routed pipe's polyline,
-//  grown on every side by the case's declared `plot { margin; }` -- or by
+//  footprint (process and non-process), every routed pipe's polyline and
+//  every room of a declared `building {}` (DEV.md 4c C97), grown on every side by the case's declared `plot { margin; }` -- or by
 //  0 m, ANNOUNCED, so the area is then a lower bound.  Beside it, the plan
 //  area the footprints themselves cover (each item counted once, so items
 //  standing one above another are counted twice -- `stackedPairs` says how
