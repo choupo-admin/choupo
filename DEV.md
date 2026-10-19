@@ -1328,6 +1328,37 @@ accepts today, and that is a policy call.
 > follows its line (FlowCanvas.tsx 453 -> 456), and C100's scratchpad path
 > above was reworded (`check_doc_references` read it as a repo path).
 > Validation: `bin/runTests --gui` PASS 32 / FAIL 0.
+>
+> **C102b MERGED-pending (branch `claude/c102b-flowsheet-layout`,
+> 2026-10-19): the 5600 px gap was the LAYOUT'S y-sweeps diverging.**
+> Measured round by round: step 5 of `gui/src/case/flowsheetLayout.ts`
+> (median alignment + isotonic spreading, 8 + 3 sweeps) moved apalutamide's
+> granulation-to-packaging group ~590 px further down EVERY sweep.  The
+> order step 4 chose leaves a cycle of constraints: the long
+> coatingSuspensionPrep -> coatingPan wire is ordered ABOVE the granulation
+> train (which the spreading therefore pushes below it), the coating-air
+> wire is ordered BELOW the train, coatingDryer lines up with that wire,
+> coatingPan with the dryer, and the long wire with the pan -- so each lap
+> adds a stack height and nothing stops it.  Not a recycle, not a tear,
+> not a sector box.  Fix, general (no case named in code): a step 6,
+> `closeEmptyBands`, closes every horizontal band no box (stubs' room
+> included) reaches into that is taller than `maxEmptyBand` (120 px).  A
+> drift is a translation of a group, so it leaves exactly such a band; the
+> map is monotone in y, so crossings, wires-through-boxes, overlaps and
+> bends are unchanged over the corpus (C59 totals 63 / 17 / 0 / 2736 before
+> and after) and only the wire length falls (305 622 -> 294 780 px); the
+> recycle runs are routed after it.  The drift itself is NOT cured -- a
+> convergent coordinate step (e.g. Brandes-Kopf) would be a redesign of
+> step 5.  Measured in Chromium at 1280 x 720: apalutamide 0.063 -> 0.221
+> (now 5091 x 1695 px as laid out), screen01_methanol_routes 0.117 -> 0.260;
+> lithiumBrinePlant (it ships a `.cho`) and flash01 unchanged (0.70, 1.1).
+> The 0.25 asked for is NOT reached: apalutamide is now WIDTH-limited -- 15
+> columns, one train in series behind another -- and closing that needs a
+> decision (fold a long train into rows, a smaller column gap, or a smaller
+> side margin of the fit), put to the commander, not taken.  Tests:
+> `flowsheetLayout.test.ts` (the band step: the excess only, stubs' room,
+> monotone) and a `flowsheetViewport.test.ts` arm (apalutamide under
+> 2000 px tall, fit > 0.2 in the 1280 x 653 canvas; fails with the step off).
 
 > **C101. AN EDUTOOL ON THE PHARMACEUTICAL (GMP) LAYOUT (Vitor, 2026-10-19:
 > "Sera que podes fazer um EduTool sobre este layout de processos
