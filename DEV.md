@@ -1303,7 +1303,15 @@ accepts today, and that is a policy call.
 > may DECLARE a quoted cost per item (value, year, source, reason), entering
 > the capital marked `declared`, with no invented module factor -- the
 > catalyst-charge `declared-unit-price` precedent.  Moved rows to Vitor
-> before re-record.  Status: dispatched 2026-10-18.
+> before re-record.  Status: dispatched 2026-10-18.  First round
+> (branch claude/c98-labour-and-quotes): both built; other 20 costing cases
+> byte-identical; on apalutamide the quotes take FCI 2.26 -> 23.06 M EUR
+> (quotes alone: NPV -4.7 M, IRR 7.4 %) but Turton at P = 6 staffs ~34
+> operators a shift (12.5 M EUR/yr labour, NPV -158 M).  Vitor 2026-10-19,
+> on a campaign drug-product line: "Equipa declarada pelo caso" -- the case
+> may DECLARE its operating crew (operators per shift by area, source,
+> reason) in place of the correlation, which is printed beside it for
+> comparison.  Sent back to the same general.
 
 > **C97. APALUTAMIDE TABLETS: A NEW CASE AND THE GMP INTERIOR LAYOUT
 > (Vitor, 2026-10-18: a pharmaceutical-industry project group produces
