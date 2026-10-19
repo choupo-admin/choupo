@@ -1291,6 +1291,25 @@ accepts today, and that is a policy call.
 > fire-water ring main and hydrants, bunds, escape routes, swept path, a
 > fillet running through an item.
 
+> **C103. A 2D GMP FLOOR PLAN A STUDENT CAN HAND IN (Vitor, 2026-10-19,
+> after reading the Atozet student project, whose production area is drawn
+> as detailed 2D plans: "Eles tem plantas detalhadas do pavilhao de
+> producao.  Achas que isso se pode fazer?" ... "Faz o que for de mais bom
+> senso e que nao torne isto muito complexo.  A plantas 2D eram
+> interessantes").**  Measured: the GMP section draws one SVG per floor
+> (`gui/src/ui/GmpBuildingSection.tsx`, 298 lines, from the published
+> `building` block, `gui/src/adapters/buildingPayload.ts`); on
+> apalutamide01 its labels overlap, the three flows are thick lines across
+> walls, doors are not drawn, and there is no scale, legend or room
+> schedule.  Best practice for an oral-solid-dose plant (ISPE Baseline
+> Guide Vol. 2, cited by title only) is a SET of plans per floor -- a
+> zoning plan (grades, colour-coded), a pressure-cascade plan, and
+> personnel / material / waste flow plans -- plus a room schedule (room
+> data sheet summary).  Scope, on Vitor's "bom senso, nao complexo": GUI
+> only, drawing what the engine already publishes, no new physics and no
+> new dict grammar; HVAC loads, purified water and QC specifications were
+> discussed and are NOT in this slice.  Status: dispatched 2026-10-19.
+
 > **C102. THE FLOWSHEET CANVAS CANNOT ZOOM OUT TO THE WHOLE FLOWSHEET
 > (Vitor, 2026-10-19, screenshot of apalutamide01 on the live site: "No
 > flowsheet o zoom out nao permite ver o flowsheet todo!  Ha uma parte em
