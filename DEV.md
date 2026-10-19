@@ -1298,7 +1298,10 @@ accepts today, and that is a policy call.
 > covers the outdoor plot plan; nothing teaches the GMP interior of C97B.
 > Pedagogical scope is Vitor's: the scope was put to him before any
 > dispatch, and the work waits behind the current phase (he asked to save
-> credit this week).  Status: scope proposed, awaiting his answer.
+> credit this week).  Status: scope proposed (eight lessons: grades,
+> pressure cascade, airlocks, gowning, containment, unidirectional flows,
+> solvents and ATEX, escape); Vitor 2026-10-19: "Avanca como achares
+> melhor e eu depois dou feedback no final" -- dispatched on that scope.
 
 > **C100. THE APALUTAMIDE PROCESS EQUIPMENT GOES INSIDE THE GMP BUILDING
 > (Vitor, 2026-10-19: "quero um layout que possa ser realisticamente
