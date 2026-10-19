@@ -1291,6 +1291,20 @@ accepts today, and that is a policy call.
 > fire-water ring main and hydrants, bunds, escape routes, swept path, a
 > fillet running through an item.
 
+> **C109. AN EDUTOOL ON SYNTHESIS GAS (Vitor, 2026-10-19, after asking why
+> syngas is so widely used and which other synthesis gases are famous: "Podes
+> fazer um EduTools sobre isso?  Eu sempre senti que nunca ninguem me
+> explicou isso bem!").**  Measured: no lesson explains syngas AS A PLATFORM;
+> five lessons use reforming as the vehicle for an equilibrium METHOD
+> (approachToEquilibrium, declaredPathways, equilibriumLandscapes,
+> elementPotential, limitingReactant).  Cases that could host engine-run
+> moves as in-browser copies (no new case, the standing rule):
+> `steady/gibbs/gibbs02_steam_reforming`, `steady/reactors/equil01_reforming`,
+> `steady/gibbs/gibbs11_carbon_deposition`,
+> `steady/reactors/screen01_methanol_routes`, `plant/ammoniaRoutes01_screening`,
+> `steady/separation/psa01_h2_psa`.  Pedagogical scope is Vitor's: proposed
+> to him before any dispatch.  Status: scope proposed.
+
 > **C108. A HOME-SCREEN ICON FOR THE APP (Vitor, 2026-10-19: "Sabes se
 > podemos fazer a app choupo para iPhone?" ... "Eu preferia um icon que
 > abrisse o Firefox com o choupo!" ... "Isso e muito facil e gasta poucos
