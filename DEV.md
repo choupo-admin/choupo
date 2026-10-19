@@ -1291,6 +1291,17 @@ accepts today, and that is a policy call.
 > fire-water ring main and hydrants, bunds, escape routes, swept path, a
 > fillet running through an item.
 
+> **C105. THE STREAMS WORKSPACE HAS A WINDOW AT THE BOTTOM THAT CANNOT BE
+> SCROLLED TO ITS END NOR RESIZED (Vitor, 2026-10-19, on the live site: "o
+> painel 'stream' tem uma window ca embaixo que nao da para ver ate ao final,
+> nem para ajustar").**  Measured only from the source, not yet reproduced:
+> `gui/src/ui/StreamsWorkspace.tsx:153-265` stacks the StreamsSummary band, a
+> Table/Detail toggle and the table (`StreamsTable`, overflow hidden) in one
+> flex column; `gui/src/ui/AppShell.tsx:365-372` adds a docked console row at
+> the bottom of the grid when the assistant console is docked.  Which of
+> these is "the window at the bottom" is to be found by reproduction.
+> Status: dispatched 2026-10-19.
+
 > **C104. A SECOND PHARMACEUTICAL PROJECT GROUP: DONEPEZIL (Vitor,
 > 2026-10-19: "Sabes qual e o API do meu outro grupo de projeto?" ... "e o
 > Donepezilo").**  Recorded so it is not lost: besides the apalutamide group
