@@ -42,14 +42,14 @@
 //  Choupo does not size.  Each stands in the room that lists it below.
 items
 (
-    { item "dryer"; x 28 m; y 15 m; z 0 m; orientation vertical; }
-    { nonProcess "blender"; kind blender; x 41 m; y 15 m; z 0 m; orientation alongX;
+    { item "dryer"; x 28 m; y 15 m; orientation vertical; }
+    { nonProcess "blender"; kind blender; x 41 m; y 15 m; orientation alongX;
       footprint { length 2 m; width 2 m; height 2.5 m; }
       source "EduTool teaching building"; reason "a bin blender, a teaching box"; }
-    { nonProcess "press"; kind tabletPress; x 49 m; y 15 m; z 0 m; orientation alongX;
+    { nonProcess "press"; kind tabletPress; x 49 m; y 15 m; orientation alongX;
       footprint { length 2 m; width 1.5 m; height 2 m; }
       source "EduTool teaching building"; reason "a rotary tablet press, a teaching box"; }
-    { nonProcess "coater"; kind panCoater; x 57 m; y 15 m; z 0 m; orientation alongX;
+    { nonProcess "coater"; kind panCoater; x 57 m; y 15 m; orientation alongX;
       footprint { length 3 m; width 2 m; height 2.5 m; }
       source "EduTool teaching building"; reason "a pan coater, a teaching box"; }
 );

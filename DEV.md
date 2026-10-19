@@ -1361,11 +1361,18 @@ accepts today, and that is a policy call.
 > pipes, the SDD suite + N2 technical room + solution/coating-prep rooms +
 > HVAC room indoors, only the bunded tank farm outdoors; main 3D draws the
 > envelope as glass with room/flow toggles; `?layout=` pop-out draws the
-> building and the GMP section has its own pop-out.  OPEN for the next
-> session: its apalutamide golden list (50 moved, 86 removed, 84 added;
-> /scratchpad c100/golddiff.txt, to be RECOMPUTED on top of the C99 merge)
-> needs Vitor's approval; a full `--gui` after e9f673383; the after
-> screenshots of the main view and the two pop-outs.
+> building and the GMP section has its own pop-out.  MERGED 2026-10-19
+> (Vitor: "vamos terminar isso porque esta semana vou precisar disso para
+> os alunos"): main merged into the branch (C99, C101), the apalutamide
+> list recomputed on top of C99 -- only layout rows, 50 moved, 86 removed,
+> 84 added, no balance, cost or batch-plan row -- shown to and approved by
+> Vitor and re-recorded; the C101 lesson's `BuildingLayout.cpp` citations
+> remapped; the C101 teaching building lost the `z` its four indoor items
+> declared, which C100 now refuses (one home for the base: the room's
+> floor).  Validation: `--gui` (the one failing file re-run green after the
+> fix, 36/36), check_gmp_layout, check_plant_layout, check_batch_plan,
+> check_cost_provenance, check_design_sheet, check_decision_index,
+> check_std_includes, check_doc_references, apalutamide01 PASS.
 
 > **C99. THE APALUTAMIDE PLANT IS BATCH: CAMPAIGN DESIGN, NOT A STEADY RATE
 > (Vitor, 2026-10-19: "Este processo e batch ou e continuo?" ... "Faz como
