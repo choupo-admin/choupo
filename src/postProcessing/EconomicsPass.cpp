@@ -2021,10 +2021,32 @@ int EconomicsPass::run(SimulationResult& result)
 
         const auto fB1 = cb.factors.find("B1");
         const auto fB2 = cb.factors.find("B2");
-        if (fB1 != cb.factors.end() && fB2 != cb.factors.end())
+        //  A DECLARED QUOTE (DEV.md 4c C98) publishes its base value itself:
+        //  its C_BM for a machine, ZERO for a facility (a building IS an
+        //  auxiliary facility, so the siteFactor estimate of further ones
+        //  must not multiply it).  No other record carries the key.
+        const auto fBase = cb.factors.find("C_BM_base");
+        if (fBase != cb.factors.end())
+            sum_C_BM0 += fBase->second;
+        else if (fB1 != cb.factors.end() && fB2 != cb.factors.end())
             sum_C_BM0 += cb.purchasedCost * (fB1->second + fB2->second);
         else
             sum_C_BM0 += cb.bareModuleCost;  // no base factors: conservative
+    }
+
+    //  WHICH PART OF THE CAPITAL IS THE CASE'S OWN QUOTES (DEV.md 4c C98),
+    //  so the CAPEX lines below can say it; zero, and unprinted, on a case
+    //  that declares none.
+    scalar      quoted_C_BM  = 0.0, quoted_C_BM0 = 0.0;
+    std::size_t nQuotes      = 0;
+    for (const auto& [item, cb] : result.costs)
+    {
+        (void)item;
+        auto fBase = cb.factors.find("C_BM_base");
+        if (fBase == cb.factors.end()) continue;
+        ++nQuotes;
+        quoted_C_BM  += cb.bareModuleCost;
+        quoted_C_BM0 += fBase->second;
     }
 
     const scalar FCI = contingencyFee * sum_C_BM + siteFactor * sum_C_BM0;
@@ -2102,10 +2124,97 @@ int EconomicsPass::run(SimulationResult& result)
     }
 
     // C_OL: operating labour, Turton Eq. 8.3.
-    //   N_OL = (6.29 + 0.23*N_np)^0.5  operators per shift;
+    //   N_OL = (6.29 + 31.7*P^2 + 0.23*N_np)^0.5  operators per shift;
     //   ~4.5 shift-positions cover one operating position around the clock;
     //   labour rate (€/h) from constant/economics.
-    const scalar N_OL_per_shift = std::sqrt(6.29 + 0.23 * N_np);
+    //
+    //  THE PARTICULATE TERM (DEV.md 4c C98, Vitor's ruling 2026-10-18: "P
+    //  declarado pelo caso").  P is the number of processing steps that
+    //  handle PARTICULATE SOLIDS -- transport, size control, particulate
+    //  removal, in Turton's own examples -- and N_np the non-particulate ones.
+    //  This line used to read sqrt(6.29 + 0.23 N_np): the P term was dropped,
+    //  so a plant that dries, blends, compacts, mills, tablets and coats was
+    //  staffed like a fluid plant.  It is not the engine's to count: a step
+    //  is a judgement about the plant (a flowsheet placeholder may be two
+    //  steps, a unit may be none), so the case DECLARES it,
+    //
+    //      particulateSteps { count 6; source "..."; reason "..."; }
+    //
+    //  and absent it P = 0 -- every case that predates the term computes
+    //  exactly what it did.  A P = 0 that was NOT declared is ANNOUNCED when
+    //  the flowsheet holds a unit whose type handles particulate solids
+    //  (`particulateUnitTypes` below), because there the zero is the engine's
+    //  choice, not the author's; a declared value announces nothing.
+    scalar P_particulate = 0.0;
+    bool   P_declared    = false;
+    std::string P_source, P_reason;
+    if (econDict_->found("particulateSteps"))
+    {
+        const std::string where = "economics { particulateSteps { ... } }";
+        if (!std::holds_alternative<DictPtr>(econDict_->entryValue("particulateSteps")))
+            throw std::runtime_error("economics: `particulateSteps` must be a"
+                " block -- `particulateSteps { count <steps>; source \"...\";"
+                " reason \"...\"; }` -- because the count is an assumption the"
+                " case owes its reader a source and a reason for.");
+        const DictPtr pd = econDict_->subDict("particulateSteps");
+        if (!pd->found("count"))
+            throw std::runtime_error(where + ": `count` is not declared -- the"
+                " number of processing steps that handle particulate solids"
+                " (Turton's P in N_OL = (6.29 + 31.7 P^2 + 0.23 N_np)^0.5).");
+        P_particulate = pd->lookupScalar("count");
+        if (!(P_particulate >= 0.0)
+            || std::fabs(P_particulate - std::round(P_particulate)) > 1e-9)
+        {
+            std::ostringstream m;
+            m << where << ": `count " << P_particulate << ";` -- a number of"
+                 " processing steps is a whole number, zero or more.";
+            throw std::runtime_error(m.str());
+        }
+        for (const char* key : { "source", "reason" })
+            if (!pd->found(key) || pd->lookupWord(key).empty())
+                throw std::runtime_error(where + ": `" + key + " \"...\";` is"
+                    " not declared -- which steps were counted and where the"
+                    " count comes from (`source`), and why it is this plant's"
+                    " (`reason`).  Nothing is defaulted.");
+        P_source   = pd->lookupWord("source");
+        P_reason   = pd->lookupWord("reason");
+        P_declared = true;
+    }
+    else
+    {
+        //  The registered unit types whose model handles particulate solids
+        //  (UnitOperation.cpp registerBuiltins; each class's own header says
+        //  so): the dryers (SprayDryer.H, SolidDryer.H, ConvectiveDryer.H,
+        //  EvaporativeDryer.H), the crystalliser (Crystalliser.H -- it MAKES
+        //  the particles), pneumatic conveying (PneumaticConveyor.H), and
+        //  the gas-solid separators (Cyclone.H, BagFilter.H,
+        //  GasSolidSplitter.H).  A `mixer` or `splitter` carrying solids is
+        //  NOT listed: they are generic, and a fluid plant has dozens.
+        static const std::set<std::string> particulateUnitTypes = {
+            "sprayDryer", "solidDryer", "convectiveDryer", "evaporativeDryer",
+            "crystalliser", "pneumaticConveyor",
+            "cyclone", "bagFilter", "gasSolidSplitter" };
+        std::string seen;
+        for (const auto& fu : result.topology)
+            if (particulateUnitTypes.count(fu.type))
+                seen += (seen.empty() ? "" : ", ") + fu.name + " (" + fu.type + ")";
+        if (!seen.empty())
+        {
+            const std::string m =
+                "particulateSteps was NOT declared, so the operator count takes"
+                " P = 0 particulate-solids processing steps (Turton Eq. 8.3,"
+                " N_OL = (6.29 + 31.7 P^2 + 0.23 N_np)^0.5) -- and this"
+                " flowsheet holds units that handle particulate solids: " + seen
+                + ".  Declare `particulateSteps { count <steps>; source \"...\";"
+                  " reason \"...\"; }` in the economics block to own the count"
+                  " (it is the case's judgement which steps count, so the"
+                  " engine does not count them).";
+            if (AdvisoryLog::instance().add("assumed", "warning", "economics", m))
+                std::cout << "  [assumed] economics: " << m << "\n";
+        }
+    }
+    const scalar N_OL_per_shift =
+        std::sqrt(6.29 + 31.7 * P_particulate * P_particulate + 0.23 * N_np);
     const scalar operatorsTotal = 4.5 * N_OL_per_shift;   // operating positions
     scalar labourRate = 0.0;      // €/h
     bool   haveLabour = false;
@@ -2292,6 +2401,13 @@ int EconomicsPass::run(SimulationResult& result)
     std::cout << "    FCI = " << std::setprecision(2) << contingencyFee
               << "*SC_BM + " << siteFactor << "*SC_BM_base = "
               << std::setprecision(0) << std::setw(14) << FCI << " EUR\n";
+    if (nQuotes)
+        //  THE CASE'S OWN QUOTES INSIDE THE TWO SUMS (C98), printed only when
+        //  declared, so every other case's ladder reads as it did.
+        std::cout << "      of which DECLARED QUOTES (" << nQuotes << " item(s)):"
+                     " SC_BM " << quoted_C_BM << " EUR, SC_BM_base "
+                  << quoted_C_BM0 << " EUR  (a facility adds nothing to the"
+                     " base; see the costing table)\n";
     if (!wcb.present)
         std::cout << "    WC  = " << std::setprecision(2) << workingCapital
                   << "*FCI              = "
@@ -2324,10 +2440,18 @@ int EconomicsPass::run(SimulationResult& result)
 
     std::cout << "\n  -- OPEX (Turton Eq. 8.1, COM_d) ------------------------------\n";
     std::cout << "    0.180 x FCI                  = " << std::setw(14) << 0.180 * FCI << " EUR/yr\n";
-    std::cout << "    N_OL = sqrt(6.29 + 0.23 x " << std::setprecision(1) << N_np
+    //  THE PARTICULATE TERM IS ON THE LINE (C98), declared or not, so the
+    //  arithmetic printed is the arithmetic done.
+    std::cout << "    N_OL = sqrt(6.29 + 31.7 x P^2 + 0.23 x N_np) = sqrt(6.29 + 31.7 x "
+              << std::setprecision(0) << P_particulate << "^2 + 0.23 x "
+              << std::setprecision(1) << N_np
               << ") = " << std::setprecision(2) << N_OL_per_shift
               << "/shift -> " << std::setprecision(1) << operatorsTotal
               << " operating positions\n";
+    if (P_declared)
+        std::cout << "      P = " << std::setprecision(0) << P_particulate
+                  << " particulate-solids steps, DECLARED -- source: " << P_source
+                  << "\n      reason: " << P_reason << "\n";
     std::cout << "    salary/operator = " << std::setprecision(0) << labourRate
               << " EUR/h x " << operatorAnnualHours << " h/yr = "
               << std::setw(0) << (labourRate * operatorAnnualHours) << " EUR/yr\n";

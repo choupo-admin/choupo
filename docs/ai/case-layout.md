@@ -1037,6 +1037,74 @@ footer lines in `reports/economics/cashFlow.csv` (and the .ods),
 `tutorials/plant/ammonia02_full_plant`, `greenAmmoniaPEQ_baseCase` (a round
 placeholder price, said so).
 
+**THE PARTICULATE STEPS IN THE LABOUR (2026-10-19, DEV.md 4c C98).**  The
+operator count is Turton's `N_OL = (6.29 + 31.7 P^2 + 0.23 N_np)^0.5` per
+shift (x 4.5 positions), `N_np` the non-particulate processing steps and `P`
+the steps that handle PARTICULATE SOLIDS (transport, size control,
+particulate removal, drying a powder, tableting...).  Which steps count is
+the case's judgement, so `P` is DECLARED in the same `economics {}` block:
+
+```
+particulateSteps
+{
+    count   6;          // a whole number, 0 or more
+    source  "...";      // which steps were counted
+    reason  "...";      // why it is this plant's
+}
+```
+
+Absent, `P = 0` -- and where the flowsheet holds a unit whose type handles
+particulate solids (`sprayDryer`, `solidDryer`, `convectiveDryer`,
+`evaporativeDryer`, `crystalliser`, `pneumaticConveyor`, `cyclone`,
+`bagFilter`, `gasSolidSplitter`) the run ANNOUNCES the undeclared zero (its
+site, the caveat block, the result JSON's advisories), naming those units.
+A declared count announces nothing.  The console line prints the P term
+either way.  A flat `particulateSteps 6;`, a fractional or negative count,
+or a missing `source`/`reason` REFUSE by name.  `P` enters SQUARED: at P = 6
+the formula staffs about 34 operators a shift.  Worked case:
+`tutorials/plant/apalutamide01_tablets`.
+
+**A DECLARED QUOTE FOR AN ITEM NO CORRELATION PRICES (2026-10-19, DEV.md 4c
+C98).**  In the postDict's `costing {}` block, beside the price index:
+
+```
+quotes
+(
+    { unit tabletPress;          // a flowsheet unit with NO sized item
+      // item productionBuilding; // OR: something that is not a unit (exactly one)
+      value    1000000;          // in `currency`, money of `year`
+      currency EUR;              // EUR | USD (x the costing's usdToEur)
+      year     2026;             // the costing year: no index applied;
+      // cepci 800;              //   another year: REQUIRED, C x CEPCI/cepci
+      basis    installed;        // installed (= C_BM) | purchased
+      // bareModuleFactor 2.5;  bareModuleFactorSource "...";  // purchased only, REQUIRED there
+      kind     equipment;        // equipment | facility
+      source   "...";            // vendor, reference, date -- or "placeholder"
+      reason   "...";
+    }
+);
+```
+
+`C_p = value x CEPCI/cepci x rate`; `C_BM = C_p` (installed) or
+`bareModuleFactor x C_p` (purchased: the CASE's factor -- Choupo supplies
+none); `C_TM = 1.18 C_BM`.  In the FCI the quote's C_BM is a module's
+(`contingencyFee` applies); for `kind equipment` it also drives the
+`siteFactor` auxiliary-facilities term, for `kind facility` (a building) it
+does not.  Shape word `declared-quote`: a row in the costing table (equipment
+column `quote`), its arithmetic and its source/reason in the provenance
+block, a row of `reports/economics/costs.csv` (`K1_or_CpRef` = value,
+`K2_or_SRef` = the quote year's index, `K3_or_n` = the currency rate), and an
+entry of the result's `equipment` list (`type declaredQuote`, `cost.source`,
+`cost.reason`) pinned by the golden `equipment` kind.  REFUSED by name: a
+`unit` that is sized or whose sizer refused, a `unit` that does not exist,
+an `item` named like a unit or a sized item, both or neither of
+`unit`/`item`, a duplicate, a missing `source`/`reason`/`value`/`year`, a
+non-positive value, an unknown `currency`/`basis`/`kind`, another year with
+no `cepci` (or a `cepci` on the costing year), a purchased quote with no
+factor or factor source, a factor below 1, a factor beside `installed`.  A
+quote writes no specification sheet and is placed on no plot plan.  Worked
+case: `tutorials/plant/apalutamide01_tablets`.
+
 ## `system/layoutDict` — the plot plan (DEV.md 4c C75)
 
 Optional; absent, nothing changes.  It places the SIZED items of the run (it

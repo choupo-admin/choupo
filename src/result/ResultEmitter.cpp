@@ -728,7 +728,15 @@ void emitResultJson(std::ostream& os, const SimulationResult& r)
     //  rather than shipped as a second array keyed by name: a unit's size and
     //  its price are one row of one table to every reader, and two arrays that
     //  must be joined by name is the crossing this project keeps paying for.
-    if (!r.sizings.empty())
+    //  A DECLARED QUOTE (DEV.md 4c C98) is a costed item with NO sizing: it
+    //  joins the same list, after the sized items, so the golden `equipment`
+    //  kind pins its three costs and the GUI's equipment table draws it.  A
+    //  cost record keyed by a sizing is emitted inside that sizing's line,
+    //  as before; only a cost record no sizing owns takes a line of its own.
+    std::vector<const std::pair<const std::string, CostBreakdown>*> unsizedCosts;
+    for (const auto& kv : r.costs)
+        if (!r.sizings.count(kv.first)) unsizedCosts.push_back(&kv);
+    if (!r.sizings.empty() || !unsizedCosts.empty())
     {
         os << ",\n  \"equipment\": [";
         bool firstE = true;
@@ -802,6 +810,46 @@ void emitResultJson(std::ostream& os, const SimulationResult& r)
                 os << " } }";
             }
             os << " }";
+        }
+        //  THE QUOTES' LINES: the item and its unit (the unit's own name for a
+        //  `unit` quote, the item's for an `item` quote), `type` the word
+        //  `declaredQuote`, no size, the basis WORDS, and the cost with the
+        //  declaration's source and reason -- strings, written AFTER the
+        //  factors so no reader of the numeric keys can mistake them.
+        for (const auto* kv : unsizedCosts)
+        {
+            const CostBreakdown& c = kv->second;
+            os << (firstE ? "\n" : ",\n");
+            firstE = false;
+            os << "    { \"unit\": " << esc(c.unitName)
+               << ", \"item\": " << esc(kv->first);
+            if (!c.sector.empty()) os << ", \"sector\": " << esc(c.sector);
+            os << ", \"type\": \"declaredQuote\""
+               << ", \"material\": " << esc(c.material);
+            if (!c.quoteBasis.empty())
+                os << ", \"basis\": " << esc("declared quote, " + c.quoteBasis
+                                               + ", " + c.quoteKind);
+            os << ", \"values\": { }";
+            os << ", \"cost\": { \"purchased\": " << num(c.purchasedCost)
+               << ", \"bareModule\": " << num(c.bareModuleCost)
+               << ", \"totalModule\": " << num(c.totalModuleCost)
+               << ", \"currency\": " << esc(c.currency);
+            if (!c.sizeKey.empty())     os << ", \"sizeKey\": " << esc(c.sizeKey);
+            if (!c.correlation.empty()) os << ", \"correlation\": " << esc(c.correlation);
+            os << ", \"factors\": {";
+            bool firstF = true;
+            for (const auto& [k, v] : c.factors)
+            {
+                os << (firstF ? " " : ", ");
+                firstF = false;
+                os << esc(k) << ": " << num(v);
+            }
+            os << " }";
+            if (!c.quoteSource.empty()) os << ", \"source\": " << esc(c.quoteSource);
+            if (!c.quoteReason.empty()) os << ", \"reason\": " << esc(c.quoteReason);
+            if (!c.quoteFactorSource.empty())
+                os << ", \"bareModuleFactorSource\": " << esc(c.quoteFactorSource);
+            os << " } }";
         }
         os << "\n  ]";
     }
