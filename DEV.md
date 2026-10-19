@@ -1291,6 +1291,15 @@ accepts today, and that is a policy call.
 > fire-water ring main and hydrants, bunds, escape routes, swept path, a
 > fillet running through an item.
 
+> **C104. A SECOND PHARMACEUTICAL PROJECT GROUP: DONEPEZIL (Vitor,
+> 2026-10-19: "Sabes qual e o API do meu outro grupo de projeto?" ... "e o
+> Donepezilo").**  Recorded so it is not lost: besides the apalutamide group
+> (C97), a second design-project group works on a donepezil (hydrochloride)
+> tablet plant.  Nothing commissioned yet; whether the API is bought, the
+> dosage forms and what Choupo should provide are Vitor's to state.  No new
+> case without his explicit ruling (the standing rule; C97 was the
+> exception for apalutamide only).
+
 > **C103. A 2D GMP FLOOR PLAN A STUDENT CAN HAND IN (Vitor, 2026-10-19,
 > after reading the Atozet student project, whose production area is drawn
 > as detailed 2D plans: "Eles tem plantas detalhadas do pavilhao de
