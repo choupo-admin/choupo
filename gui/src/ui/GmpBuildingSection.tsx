@@ -32,9 +32,13 @@ License
   Shown under the plot plan when the case declares `building {}`: a legend
   (grades, airlocks, the three flow kinds), the 3D CUTAWAY -- the plot
   plan's own view (PlantLayout3D, through the renderer's one hook) with the
-  rooms and flows drawn into it and a toggle per flow kind -- a 2D PLAN per
-  floor in SVG (which needs no WebGL and prints), and the room schedule and
-  the engine's findings as tables.  Every number is the engine's.
+  rooms and flows drawn into it and a toggle per flow kind -- the 2D PLANS
+  per floor as sheets a student can hand in (GmpPlanSheet.tsx, DEV.md 4c
+  C103: zoning, pressure and one flow plan per kind, each with walls, doors,
+  scale bar, north arrow, legend and title block, downloadable as SVG), the
+  room schedule, and the engine's findings.  Every number is the engine's.
+  `FloorPlanSvg` below is the compact one-drawing plan the GMP EduTool's
+  exercises keep.
 
   The SAME section opens full-window in a tab of its own (DEV.md 4c C100):
   its "Open in new tab" writes the plot plan's own stash and opens
@@ -45,16 +49,17 @@ License
 
 import { useMemo, useState } from "react";
 import {
-  Box, Button, Checkbox, Group, ScrollArea, SegmentedControl, Table, Text,
+  Box, Button, Checkbox, Group, ScrollArea, Table, Text,
 } from "@mantine/core";
 import { IconExternalLink } from "@tabler/icons-react";
 
 import type { FlowKind, GmpBuilding } from "../adapters/buildingPayload.js";
 import {
-  buildingScene, floorPlans, FLOW_KINDS, FLOW_LOOK, GRADE_LOOK, GRADE_ORDER, ROLE_WORD,
+  buildingScene, FLOW_KINDS, FLOW_LOOK, GRADE_LOOK, GRADE_ORDER,
   withBuilding, type FloorPlan, type PlanItemSource,
 } from "../case/gmpBuilding.js";
 import type { LayoutScene } from "../case/plantLayout.js";
+import { GmpPlanSheets } from "./GmpPlanSheet.js";
 import { buildingView } from "./plotting/gmpBuildingRenderer.js";
 import { PlantLayout3D } from "./plotting/PlantLayout3D.js";
 
@@ -198,21 +203,21 @@ export function useBuildingOverlay(building: GmpBuilding | undefined, scene: Lay
   return { shown, extend: view?.extend, toggles, flows };
 }
 
-export function GmpBuildingSection({ building, scene, items = [], onPopOut, viewHeight }: {
+export function GmpBuildingSection({ building, scene, items = [], caseName = "", onPopOut,
+                                    viewHeight }: {
   building: GmpBuilding; scene: LayoutScene;
   /** The plot plan's placed items: the ones a room lists are drawn on its
    *  floor's plan (DEV.md 4c C100). */
   items?: PlanItemSource[];
+  /** The case's name, for the plans' title block (DEV.md 4c C103). */
+  caseName?: string;
   /** Open this section full-window in a tab of its own; absent, no button
    *  (the tab itself draws the section without one). */
   onPopOut?: () => void;
   /** The 3D cutaway's height in pixels (the view's own default when absent). */
   viewHeight?: number;
 }) {
-  const plans = useMemo(() => floorPlans(building, items), [building, items]);
-  const { shown, extend, toggles, flows } = useBuildingOverlay(building, scene);
-  const [floor, setFloor] = useState(plans[0]?.floor ?? "");
-  const plan = plans.find((p) => p.floor === floor) ?? plans[0];
+  const { shown, extend, toggles } = useBuildingOverlay(building, scene);
 
   return (
     <Box mt="md" data-gmp-building>
@@ -234,46 +239,11 @@ export function GmpBuildingSection({ building, scene, items = [], onPopOut, view
       </Text>
       <GmpLegend building={building} />
       <PlantLayout3D scene={shown} height={viewHeight} extend={extend} toolbarExtra={toggles} />
-      {plan && (
-        <Box mt="sm">
-          <Group gap="sm" mb={4}>
-            <Text size="sm" fw={600}>Plan</Text>
-            {plans.length > 1 && (
-              <SegmentedControl size="xs" value={plan.floor} onChange={setFloor}
-                data={plans.map((p) => ({ value: p.floor, label: `${p.floor} (${p.elevation} m)` }))} />
-            )}
-          </Group>
-          <FloorPlanSvg plan={plan} flows={flows} />
-        </Box>
-      )}
-      <Text size="sm" fw={600} mt="sm">Room schedule</Text>
-      <ScrollArea>
-        <Table striped withTableBorder fz="xs">
-          <Table.Thead>
-            <Table.Tr>
-              <Table.Th>room</Table.Th><Table.Th>floor</Table.Th><Table.Th>role</Table.Th>
-              <Table.Th>grade</Table.Th><Table.Th>p to outside [Pa]</Table.Th>
-              <Table.Th>declared</Table.Th><Table.Th>area [m²]</Table.Th>
-              <Table.Th>notes</Table.Th>
-            </Table.Tr>
-          </Table.Thead>
-          <Table.Tbody>
-            {building.rooms.map((r) => (
-              <Table.Tr key={r.name}>
-                <Table.Td>{r.name}</Table.Td><Table.Td>{r.floor}</Table.Td>
-                <Table.Td>{ROLE_WORD[r.role]}{r.regime ? ` (${r.regime})` : ""}</Table.Td>
-                <Table.Td>{r.grade}</Table.Td><Table.Td>{r.pressureToOutside}</Table.Td>
-                <Table.Td>{r.pressure} vs {r.relativeTo}</Table.Td>
-                <Table.Td>{Number(r.area.toFixed(2))}</Table.Td>
-                <Table.Td>{[r.containment ? "containment" : "",
-                            r.atexZone !== undefined ? `zone ${r.atexZone}` : "",
-                            r.ignition ? `ignition: ${r.ignition}` : "",
-                            r.equipment.join(", ")].filter(Boolean).join("; ")}</Table.Td>
-              </Table.Tr>
-            ))}
-          </Table.Tbody>
-        </Table>
-      </ScrollArea>
+      {/* The plans per floor (zoning, pressure, one per flow kind) and the
+          room schedule -- the sheets a student hands in (DEV.md 4c C103). */}
+      <Box mt="sm">
+        <GmpPlanSheets building={building} items={items} caseName={caseName} />
+      </Box>
       <Text size="sm" fw={600} mt="sm">Findings</Text>
       {building.findings.length === 0
         ? <Text size="xs" c="dimmed">The engine raised none on this building.</Text>

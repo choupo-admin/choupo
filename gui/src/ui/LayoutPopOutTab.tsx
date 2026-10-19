@@ -203,6 +203,7 @@ export function LayoutPopOutTab() {
         <Box className={stale.stale ? "choupo-stale-body" : undefined}
           style={{ flex: 1, minHeight: 0, overflow: "auto" }} px="md" pb="md" data-gmp-building-tab>
           <GmpBuildingSection building={building} scene={scene} items={stash.layout.items}
+            caseName={stash.caseName}
             viewHeight={Math.max(420, Math.round(window.innerHeight * 0.62))} />
         </Box>
       ) : (

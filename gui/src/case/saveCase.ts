@@ -175,11 +175,18 @@ export async function saveLayoutMarker(markerName: string, content: string): Pro
   triggerDownload(content, markerName, markerName);
 }
 
+/** Download a text file the GUI DREW (a plan sheet as SVG, a schedule as
+ *  CSV -- DEV.md 4c C103) under the name given, with its media type. */
+export function downloadTextFile(content: string, filename: string, mime: string): void {
+  triggerDownload(content, filename, filename, `${mime};charset=utf-8`);
+}
+
 function triggerDownload(content: string,
   _name: string,
   filename: string,
+  type = "text/plain;charset=utf-8",
 ): void {
-  const blob = new Blob([content], { type: "text/plain;charset=utf-8" });
+  const blob = new Blob([content], { type });
   const url = URL.createObjectURL(blob);
   const a = document.createElement("a");
   a.href = url;

@@ -720,6 +720,8 @@ function LayoutBody({ layout, scene, building }: {
   //  shell as glass with its rooms, flows and equipment inside, and their
   //  toggles on the toolbar -- the same overlay the GMP section uses.
   const overlay = useBuildingOverlay(building, scene);
+  //  The plans' title block names the case (DEV.md 4c C103).
+  const caseName = useStore((s) => s.tutorialName);
   return (
     <>
       <Group justify="space-between" align="flex-start" wrap="nowrap" gap="sm">
@@ -738,6 +740,7 @@ function LayoutBody({ layout, scene, building }: {
       <PlantLayout3D scene={overlay.shown} extend={overlay.extend} toolbarExtra={overlay.toggles} />
       <PlantLayoutTables layout={layout} />
       {building && <GmpBuildingSection building={building} scene={scene} items={layout.items}
+        caseName={caseName}
         onPopOut={() => popOutCaseLayout("building")} />}
     </>
   );
