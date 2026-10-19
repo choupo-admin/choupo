@@ -61,8 +61,26 @@ import type { CaseFiles } from "./types.js";
  *  self-contained: its components, pairs, reactions, and any code/ travel with
  *  it.  Pure download (a Blob) -- works on every browser, the GUI never writes. */
 export function downloadCaseZip(caseFiles: CaseFiles, tutorialName: string): void {
+  const built = buildCaseZip(caseFiles, tutorialName);
+  if (!built) return;
+  // fflate returns a Uint8Array; copy into a fresh ArrayBuffer-backed view so
+  // the Blob gets exactly these bytes (avoids a possible pooled-buffer offset).
+  const blob = new Blob([built.bytes.slice()], { type: "application/zip" });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url; a.download = built.fileName;
+  document.body.appendChild(a); a.click(); document.body.removeChild(a);
+  setTimeout(() => URL.revokeObjectURL(url), 0);
+}
+
+/** The bytes downloadCaseZip hands the browser, pure (no DOM): the case under
+ *  ONE wrapping folder named after it.  null when there is nothing to zip.
+ *  "File -> Open Case from .zip" reads this back to the same files (the
+ *  round trip is a test, DEV.md 4c C107). */
+export function buildCaseZip(caseFiles: CaseFiles, tutorialName: string,
+): { fileName: string; bytes: Uint8Array } | null {
   const raw = caseFiles.rawFiles;
-  if (!raw || Object.keys(raw).length === 0) return;
+  if (!raw || Object.keys(raw).length === 0) return null;
   const skip = (p: string) =>
     /(^|\/)\.?build\//.test(p) || /(^|\/)code\/\.build\//.test(p)
     || /(^|\/)reports\//.test(p) || /(^|\/)log\.choupo/.test(p)
@@ -73,22 +91,14 @@ export function downloadCaseZip(caseFiles: CaseFiles, tutorialName: string): voi
     if (skip(p)) continue;
     files[`${base}/${p}`] = strToU8(text);
   }
-  if (Object.keys(files).length === 0) return;
+  if (Object.keys(files).length === 0) return null;
   // Make the downloaded case "born taught" for the student's OWN local AI agent
   // (vendor-neutral, offline): add ai/choupo-authoring.md + AGENTS.md + CLAUDE.md
   // -- but only those the case does not already ship (keep any case-specific one).
   for (const [p, text] of Object.entries(caseTeachingFiles())) {
     if (raw[p] === undefined) files[`${base}/${p}`] = strToU8(text);
   }
-  const zipped = zipSync(files, { level: 6 });
-  // fflate returns a Uint8Array; copy into a fresh ArrayBuffer-backed view so
-  // the Blob gets exactly these bytes (avoids a possible pooled-buffer offset).
-  const blob = new Blob([zipped.slice()], { type: "application/zip" });
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement("a");
-  a.href = url; a.download = `${base}.zip`;
-  document.body.appendChild(a); a.click(); document.body.removeChild(a);
-  setTimeout(() => URL.revokeObjectURL(url), 0);
+  return { fileName: `${base}.zip`, bytes: zipSync(files, { level: 6 }) };
 }
 
 /** Trigger a browser download of the current (possibly edited)

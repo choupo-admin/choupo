@@ -223,7 +223,7 @@ export function AgentConsole() {
         const onLocalhost = location.hostname === "localhost" || location.hostname === "127.0.0.1";
         if (onLocalhost) {
           term.writeln("\r\n\x1b[33m[assistant] This case isn't saved on your computer yet — I can't keep our conversation.\x1b[0m");
-          term.writeln("\x1b[2m  Reopen it (File ▸ Open Case…) to save it to your cases, then the assistant runs here.\x1b[0m");
+          term.writeln("\x1b[2m  Reopen it (File ▸ Open Case folder… or Open Case from .zip…) to save it to your cases, then the assistant runs here.\x1b[0m");
           return;
         }
       } else if (tutorialName) {

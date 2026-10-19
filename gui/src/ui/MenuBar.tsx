@@ -331,6 +331,11 @@ export function MenuBar({ availableWidthPx, onRowWidth }: {
   // student never sees a path, a folder, or the word "workspace".
   const openConverging = (picked: OpenedCase | null) => {
     if (!picked) return;                       // dialog cancelled
+    // What a .zip held that is not in the case (a PDF in the folder, a README
+    // beside it) is SAID, never dropped in silence (DEV.md 4c C107).
+    for (const n of picked.notices ?? [])
+      notifications.show({ title: "Opened without some files", message: n,
+        color: "yellow", autoClose: 9000 });
     importCase(picked.name, picked.raw)
       .then(({ name, dir, caseFiles }) => {
         loadLocalCase(dir, caseFiles);
@@ -351,11 +356,15 @@ export function MenuBar({ availableWidthPx, onRowWidth }: {
         }
       });
   };
-  // Both pickers feed the SAME funnel.  A case IS a folder, so the single
-  // "Open Case…" verb ALWAYS opens the FOLDER picker -- which works in every
-  // browser now (showDirectoryPicker on Chromium, <input webkitdirectory> on
-  // Firefox/Safari).  The .zip path stays for the WelcomeScreen's open-zip
-  // listener (opening a collaborator's downloaded .zip).
+  // Both pickers feed the SAME funnel, and BOTH are File-menu items side by
+  // side: "Open Case folder…" and "Open Case from .zip…" (DEV.md 4c C107,
+  // Vitor: "No menu File open, devia ser possível abrir tanto um folder como
+  // um zip").  Two items, not one: a browser dialog picks EITHER a folder OR a
+  // file, never both, so one verb would have to choose for the student -- and
+  // it used to choose the folder, leaving a student on the hosted site with
+  // the .zip their classmate sent and no visible way to open it.  The folder
+  // picker works in every browser (showDirectoryPicker on Chromium,
+  // <input webkitdirectory> on Firefox/Safari); the .zip one too (fflate).
   const openZipCase = () => {
     openCaseZip().then(openConverging)
       .catch((e) => notifications.show({ title: "Could not open the case", message: (e as Error).message, color: "red" }));
@@ -364,7 +373,6 @@ export function MenuBar({ availableWidthPx, onRowWidth }: {
     openCaseFolder().then(openConverging)
       .catch((e) => notifications.show({ title: "Could not open the case", message: (e as Error).message, color: "red" }));
   };
-  const openCase = () => openFolderCase();
 
   // The WelcomeScreen (blank boot) fires these to drive the modals MenuBar owns,
   // so its buttons reach New Case / Open Tutorial / Open .zip without lifting the
@@ -564,8 +572,11 @@ export function MenuBar({ availableWidthPx, onRowWidth }: {
               Open Tutorial…
             </Menu.Item>
           )}
-          <Menu.Item onClick={openCase}>
-            Open Case…
+          <Menu.Item onClick={openFolderCase}>
+            Open Case folder…
+          </Menu.Item>
+          <Menu.Item onClick={openZipCase}>
+            Open Case from .zip…
           </Menu.Item>
           {reopenLabel && (
             <Menu.Item onClick={() => void reopenLastCase()}>

@@ -1305,7 +1305,43 @@ accepts today, and that is a policy call.
 > measured: a `__MACOSX/` or `.DS_Store` beside the case folder defeats the
 > one-common-top rule; a zip whose case sits two folders deep; a zip holding
 > two cases; a non-text file decoded as UTF-8.  Status: dispatched
-> 2026-10-19.
+> 2026-10-19.  DONE, PENDING MERGE (branch claude/c107-open-case-zip),
+> GUI only.  Vitor confirmed the shape the same day ("No menu File open,
+> devia ser possivel abrir tanto um folder como um zip"): the File menu
+> carries TWO adjacent items, "Open Case folder..." and "Open Case from
+> .zip..." -- two items rather than a submenu because a browser dialog picks
+> a folder OR a file, never both, and two visible verbs need no second
+> click; the Welcome screen shows both buttons ("Open case folder", "Open
+> case .zip") whatever the bridge, instead of choosing one by its presence.
+> The rule has ONE home, `gui/src/cases/caseArchive.ts`: THE CASE ROOT IS
+> THE OUTERMOST FOLDER CONTAINING `system/controlDict` -- outermost because
+> a sectored plant carries its sectors' own controlDicts (measured:
+> twoSectorDemo has three, polycaprolactonePlant two).  No root, or two
+> roots that are not nested, REFUSES naming the roots; RAR / 7z / gzip are
+> refused BY NAME from their first bytes ("save it as .zip", with the
+> Windows and macOS steps); a damaged zip refuses with a remedy.  OS junk
+> (`__MACOSX/`, `._*`, `.DS_Store`, `Thumbs.db`, `desktop.ini`) is dropped
+> by name in silence; a NON-TEXT file (a NUL byte, or not valid UTF-8 -- the
+> bytes decide, never the extension) and a file OUTSIDE the case folder are
+> dropped and NAMED in a yellow notice, because every case surface
+> (`rawFiles`, `extraFiles`, the importer's map) is text and a PDF decoded
+> as UTF-8 would be a mangled copy under the original's name.  Measured on
+> real zips built with `zip` and a macOS-shaped one (before -> now): macOS
+> failed -> opens; two-deep failed -> opens, names the file beside it;
+> contents-only and Windows wrapping opened before and still do, now
+> without the PDF and `.DS_Store` decoded as text; two cases failed with
+> "missing system/controlDict" -> refused naming both; a .rar threw
+> "invalid zip data" -> refused by name.  `buildCaseZip` was factored out of
+> "Download case (.zip)" so the round trip is a test: the download opens
+> back byte-identical, plus only its three teaching files.  Tests
+> `gui/tests/caseArchive.test.ts` (22; two by-hand sabotages -- junk skip
+> off, nesting rule off -- each failed the arms meant to catch it).  NOT
+> done: drag-and-drop of a .zip onto the app (deferred, not small: which
+> tabs accept a drop -- the tool tabs carry no case chrome -- is a GUI
+> identity call, and the credo lists drag-drop among its anti-patterns, so
+> it is put to Vitor rather than taken); the FOLDER route keeps its own
+> reader (it does not use the root rule and still reads every file as
+> text).
 
 > **C106. A BATCH PLANT'S TUTORIAL LIVES UNDER `batch/plant/`, NOT
 > `plant/` (Vitor, 2026-10-19: "estes tutoriais deviam ficar num folder com

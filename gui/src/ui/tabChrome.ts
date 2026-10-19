@@ -131,7 +131,7 @@ export interface TabChrome {
    *
    *  TRUE ON THE HUB, and that is not an oversight: the hub is where a case is
    *  OPENED from, so every File item is live there and "No case open" is the
-   *  honest counterpart of "File -> Open Case…". */
+   *  honest counterpart of "File -> Open Case folder… / from .zip…". */
   caseChrome: boolean;
   /** Which help this tab's `Help` menu and F1 answer with.
    *    "context" — the selected unit / active view, via docs/help-index.json;

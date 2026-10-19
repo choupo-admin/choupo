@@ -189,8 +189,8 @@ export function FlowCanvas({ scrubInstant }: { scrubInstant?: DynamicInstant } =
               <Text c="dimmed" fw={600}>Welcome to Choupo.</Text>
               <Text c="dimmed" size="sm" ta="center">
                 No case is open. Start one from <b>File → New Case</b>, browse the
-                bundled <b>File → Open Tutorial</b>, or <b>Open Case</b> (.zip /
-                folder). Your last case is under <b>File → Reopen last</b>.
+                bundled <b>File → Open Tutorial</b>, or open your own case with
+                <b>File → Open Case folder</b> or <b>Open Case from .zip</b>. Your last case is under <b>File → Reopen last</b>.
               </Text>
             </>
           ) : (

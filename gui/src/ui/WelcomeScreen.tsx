@@ -32,9 +32,9 @@ License
   The first thing a student sees.  The bare "No flowsheet" void read as
   intimidating; this replaces it with a calm, inviting on-ramp: the mark + a
   one-line "what is this", big clickable actions (New case / Browse tutorials /
-  Open case / Reopen last), and a few "start here" tutorial cards that open with
-  one click.  It does NOT add editing -- it is navigation, the door into the
-  runner/visualiser.
+  Open case folder / Open case .zip / Reopen last), and a few "start here"
+  tutorial cards that open with one click.  It does NOT add editing -- it is
+  navigation, the door into the runner/visualiser.
 
   Modal-backed actions (New case / browse tutorials / open .zip) are owned by
   MenuBar; we fire a CustomEvent it listens for (the same decoupling as
@@ -72,6 +72,7 @@ import {
   IconBook2,
   IconChartLine,
   IconFilePlus,
+  IconFileZip,
   IconFolderOpen,
   IconHistory,
 } from "@tabler/icons-react";
@@ -163,8 +164,11 @@ export function WelcomeScreen() {
             secondary. */}
         {/* First decision, kept small: run a tutorial (primary), create with
             the assistant (only when the bridge can actually create on disk),
-            explore properties, ONE open-case entry (folder via the bridge,
-            ZIP hosted -- both remain in the File menu regardless). */}
+            explore properties, and the TWO ways to open your own case --
+            a folder or a .zip -- both always shown, as in the File menu
+            (DEV.md 4c C107: choosing one by bridge presence hid the .zip
+            from a student whose browser could open the folder, and the
+            folder from one holding a classmate's .zip). */}
         <Group gap="sm" justify="center" style={{ minWidth: 0 }}>
           <Button leftSection={<IconBook2 size={16} />} color="accent"
             onClick={() => fire("choupo:welcome:open-tutorial")}>
@@ -189,11 +193,14 @@ export function WelcomeScreen() {
             </Button>
           ))}
           <Button leftSection={<IconFolderOpen size={16} />} variant="default"
-            title={hasBridge ? "Open a case folder from your workspace"
-                             : "Open a case packed as a .zip"}
-            onClick={() => fire(hasBridge ? "choupo:welcome:open-folder"
-                                          : "choupo:welcome:open-zip")}>
-            Open case
+            title="Open a case folder from your computer"
+            onClick={() => fire("choupo:welcome:open-folder")}>
+            Open case folder
+          </Button>
+          <Button leftSection={<IconFileZip size={16} />} variant="default"
+            title="Open a case packed as one .zip file (a folder compressed by Windows or macOS works)"
+            onClick={() => fire("choupo:welcome:open-zip")}>
+            Open case .zip
           </Button>
           {reopen && (
             <Button leftSection={<IconHistory size={16} />} variant="subtle"

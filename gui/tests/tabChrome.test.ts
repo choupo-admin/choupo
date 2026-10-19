@@ -97,7 +97,7 @@ describe("File leaves the tool tab", () => {
   });
 
   it("the hub KEEPS it -- that is where a case is opened from", () => {
-    // "No case open" beside "File -> Open Case…" is an honest pair; the tool
+    // "No case open" beside "File -> Open Case folder…" is an honest pair; the tool
     // tab's version of it reports the absence of something that is not that
     // tab's business.
     expect(tabChromeFor(HUB).caseChrome).toBe(true);

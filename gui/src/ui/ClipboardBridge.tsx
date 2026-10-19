@@ -107,7 +107,7 @@ export function ClipboardBridge({ opened, onClose }: { opened: boolean; onClose:
             1. Download the case (.zip) below.&nbsp; 2. Unzip + open the folder with your agent
             — it reads the brief and the skills in <code>ai/</code> and is ready.&nbsp;
             3. Describe what you want in plain language; then re-open the case here
-            (<strong>File → Open Case</strong>) to run it.
+            (<strong>File → Open Case folder</strong>, or <strong>Open Case from .zip</strong>) to run it.
           </Text>
           <Group>
             <Button leftSection={<IconDownload size={16} />} color="accent"

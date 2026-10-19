@@ -32,7 +32,10 @@ License
   work on the hosted site):
 
     * openCaseZip()    -- pick a .zip (the one "Download case (.zip)" produced,
-                          or a collaborator's); unzip in memory.  EVERY browser.
+                          a collaborator's, or one a student made with the
+                          OS's own "Compress"); unzip in memory and locate the
+                          ONE case in it (caseArchive.ts holds that rule).
+                          EVERY browser.
     * openCaseFolder() -- pick a real folder via the File System Access API and
                           read it (one-shot).  CHROMIUM only (Firefox/Safari
                           lack showDirectoryPicker); guarded by SUPPORTS_DIR_PICKER.
@@ -43,8 +46,7 @@ License
   over the .zip or grants the folder.
 \*---------------------------------------------------------------------------*/
 
-import { strFromU8, unzipSync } from "fflate";
-
+import { caseFromZipBytes, isGeneratedOutput } from "./caseArchive.js";
 import { filesToCaseFiles } from "./tutorials.js";
 import type { CaseFiles } from "../case/types.js";
 
@@ -53,45 +55,40 @@ export const SUPPORTS_DIR_PICKER =
   typeof window !== "undefined" &&
   typeof (window as unknown as { showDirectoryPicker?: unknown }).showDirectoryPicker === "function";
 
-const SKIP = (rel: string) =>
-  /(^|\/)\.git\//.test(rel) || /(^|\/)\.?build\//.test(rel)
-  || /(^|\/)reports\//.test(rel) || /(^|\/)node_modules\//.test(rel)
-  || /(^|\/)log\.choupo/.test(rel);
-
-/** Strip a single common top-level folder from a {path:...} map, if one wraps
- *  everything (our .zip is "<case>/system/...", so we want "system/..."). */
-function stripCommonTop(files: { [rel: string]: string }): { [rel: string]: string } {
-  const keys = Object.keys(files);
-  if (keys.length === 0) return files;
-  const firstSeg = (p: string) => p.split("/")[0];
-  const top = firstSeg(keys[0]!);
-  if (!top || !keys.every((k) => firstSeg(k) === top && k.includes("/"))) return files;
-  const out: { [rel: string]: string } = {};
-  for (const [k, v] of Object.entries(files)) out[k.slice(top.length + 1)] = v;
-  return out;
-}
+/** Run outputs and tool trees are not read (one home: caseArchive.ts). */
+const SKIP = isGeneratedOutput;
 
 /** What an open picker yields: the display name, the parsed in-memory CaseFiles,
  *  AND the pre-parse raw {relPath: rawText} source map.  The raw map is the exact
  *  source bytes the workspace importer must write to disk ("Open materialises"),
  *  so the on-disk case is byte-identical to what the student handed over. */
-export interface OpenedCase { name: string; files: CaseFiles; raw: { [rel: string]: string }; }
+export interface OpenedCase {
+  name: string; files: CaseFiles; raw: { [rel: string]: string };
+  /** Files left out that the student should be told about (a .zip's
+   *  non-text files, files outside its case folder).  Absent = none. */
+  notices?: string[];
+}
 
-/** Open a hidden file picker for a single .zip and return its parsed case. */
+/** The picker's filter: .zip by extension and by the two MIME types browsers
+ *  report for it (Windows says application/x-zip-compressed).  Other archive
+ *  formats are refused by caseFromZipBytes, naming what they are. */
+export const ZIP_ACCEPT = ".zip,application/zip,application/x-zip-compressed";
+
+/** Open a hidden file picker for a single .zip and return its parsed case.
+ *  Throws a CaseArchiveRefusal (message for the student) when the file is not
+ *  a .zip or holds no case / several cases. */
 export async function openCaseZip(): Promise<OpenedCase | null> {
-  const file = await pickFile(".zip,application/zip");
+  const file = await pickFile(ZIP_ACCEPT);
   if (!file) return null;
-  const buf = new Uint8Array(await file.arrayBuffer());
-  const entries = unzipSync(buf);
-  const raw: { [rel: string]: string } = {};
-  for (const [path, bytes] of Object.entries(entries)) {
-    if (path.endsWith("/")) continue;            // directory entry
-    if (SKIP(path)) continue;
-    raw[path] = strFromU8(bytes);
-  }
-  const flat = stripCommonTop(raw);
-  const name = file.name.replace(/\.zip$/i, "") || "uploaded-case";
-  return { name, files: filesToCaseFiles(name, flat), raw: flat };
+  return openedCaseFromZip(new Uint8Array(await file.arrayBuffer()), file.name);
+}
+
+/** A .zip's bytes -> the OpenedCase every open route feeds the same funnel.
+ *  Exported for the round-trip test. */
+export function openedCaseFromZip(bytes: Uint8Array, fileName: string): OpenedCase {
+  const c = caseFromZipBytes(bytes, fileName);
+  return { name: c.name, files: filesToCaseFiles(c.name, c.files), raw: c.files,
+    notices: c.notices.length > 0 ? c.notices : undefined };
 }
 
 /**
