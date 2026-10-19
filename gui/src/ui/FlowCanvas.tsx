@@ -44,7 +44,9 @@ import {
   Panel,
   ReactFlow,
   ReactFlowProvider,
+  useNodesInitialized,
   useReactFlow,
+  useStoreApi,
   type Edge,
   type Node,
   type NodeChange,
@@ -87,6 +89,7 @@ import {
   pressureLabel,
 } from "../state/displayUnits.js";
 import { ErrorBoundary } from "./ErrorBoundary.js";
+import { FLOWSHEET_FIT, FLOWSHEET_FIT_ANIMATED, FLOWSHEET_MIN_ZOOM } from "./flowsheetViewport.js";
 import { cardFoldOffset, CARD_BODY_W, CARD_HANDLE_W, CARD_MARGIN, selectionLeafLabel } from "./panelFold.js";
 import { PropertyPanel } from "./PropertyPanel.js";
 import { StreamTerminal } from "./StreamTerminal.js";
@@ -639,12 +642,12 @@ function CanvasInner({ flowsheet, scrubInstant }: {
       saveLayout(tutorialName, snapshotLayout(graph.nodes, {}, {}));
     else clearLayout(tutorialName);
     setLayoutEpoch((e) => e + 1);
-    window.setTimeout(() => reactFlow.fitView({ padding: 0.25, maxZoom: 1.1, duration: 200 }), 50);
+    window.setTimeout(() => reactFlow.fitView(FLOWSHEET_FIT_ANIMATED), 50);
   }, [curatedLayout, tutorialName, graph, reactFlow]);
   const restoreCaseLayout = useCallback(() => {
     clearLayout(tutorialName);
     setLayoutEpoch((e) => e + 1);
-    window.setTimeout(() => reactFlow.fitView({ padding: 0.25, maxZoom: 1.1, duration: 200 }), 50);
+    window.setTimeout(() => reactFlow.fitView(FLOWSHEET_FIT_ANIMATED), 50);
   }, [tutorialName, reactFlow]);
 
   // AN ARRANGEMENT FROM BEFORE 2026-10-11 (state/layout.ts `migrateV1`): it
@@ -657,7 +660,7 @@ function CanvasInner({ flowsheet, scrubInstant }: {
   const restoreEarlier = useCallback(() => {
     if (!restoreLegacyLayout(tutorialName)) return;
     setLayoutEpoch((e) => e + 1);
-    window.setTimeout(() => reactFlow.fitView({ padding: 0.25, maxZoom: 1.1, duration: 200 }), 50);
+    window.setTimeout(() => reactFlow.fitView(FLOWSHEET_FIT_ANIMATED), 50);
   }, [tutorialName, reactFlow]);
   const forgetEarlier = useCallback(() => {
     forgetLegacyLayout(tutorialName);
@@ -737,13 +740,29 @@ function CanvasInner({ flowsheet, scrubInstant }: {
   // off-screen ("centred but invisible").  fitView is the safe default; the
   // user can still pan/zoom freely and hit `F` to re-fit.  (Node positions,
   // edge bends and handle slots ARE still persisted -- only the camera isn't.)
+  //
+  // THE FIT WAITS FOR EVERY BOX TO BE MEASURED (C102).  It used to fire as
+  // soon as the node list existed; React Flow then fitted the few boxes it
+  // had measured and stopped at the fit's maxZoom, so on every flowsheet
+  // larger than the window the first view was not the whole flowsheet (on
+  // apalutamide01_tablets, 42 of 51 boxes off-screen).  `nodesInitialized`
+  // and the per-node check below make the fit wait for the measurement of
+  // THIS case's boxes, not a previous case's.
   const fittedFor = useRef("");
+  const nodesInitialized = useNodesInitialized();
+  const rfStore = useStoreApi();
   useEffect(() => {
     if (fittedFor.current === tutorialName) return;
-    if (nodes.length === 0) return; // wait until the graph is built
+    if (nodes.length === 0 || !nodesInitialized) return; // wait until the graph is built and measured
+    const lookup = rfStore.getState().nodeLookup;
+    const measured = nodes.every((n) => {
+      const m = lookup.get(n.id)?.measured;
+      return !!m?.width && !!m?.height;
+    });
+    if (!measured) return;
     fittedFor.current = tutorialName;
-    reactFlow.fitView({ padding: 0.25, maxZoom: 1.1, duration: 200 });
-  }, [tutorialName, reactFlow, nodes]);
+    reactFlow.fitView(FLOWSHEET_FIT_ANIMATED);
+  }, [tutorialName, reactFlow, nodes, nodesInitialized, rfStore]);
 
   // Stream selection by clicking an edge: the edge label IS the stream name
   // (see toGraph.ts).  Drives the PropertyPanel to show that stream's
@@ -1237,7 +1256,7 @@ function CanvasInner({ flowsheet, scrubInstant }: {
       if (ev.key === "Escape") {
         selectNode(null);
       } else if (ev.key === "f" || ev.key === "F") {
-        reactFlow.fitView({ padding: 0.25, maxZoom: 1.1, duration: 200 });
+        reactFlow.fitView(FLOWSHEET_FIT_ANIMATED);
       } else if (ev.key === "]" && !ev.ctrlKey && !ev.metaKey && !ev.altKey) {
         if (selectedNodeId) togglePanel("property");
       }
@@ -1302,7 +1321,10 @@ function CanvasInner({ flowsheet, scrubInstant }: {
         }}
         onPaneClick={() => selectNode(null)}
         fitView
-        fitViewOptions={{ padding: 0.25, maxZoom: 1.1 }}
+        fitViewOptions={FLOWSHEET_FIT}
+        //  React Flow's default minZoom is 0.5, which clamped both the wheel
+        //  and every fit on a large flowsheet (C102, ui/flowsheetViewport.ts).
+        minZoom={FLOWSHEET_MIN_ZOOM}
         proOptions={{ hideAttribution: true }}
         colorMode={uiScheme}
         nodesDraggable

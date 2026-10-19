@@ -1300,6 +1300,34 @@ accepts today, and that is a policy call.
 > React Flow `minZoom` and the fit-view bounds in the GUI's flowsheet
 > canvas, against a large flowsheet.  Status: recorded, not dispatched
 > (Vitor's credit this week).
+>
+> **C102 MERGED-pending (branch `claude/c102-flowsheet-zoom`, 2026-10-19).**
+> Measured in Chromium at 1280 x 720: THREE causes, not one.  (1) No
+> `minZoom` was set, so React Flow's 0.5 clamped the wheel and every fit;
+> apalutamide01 (laid out ~5100 x 7100 px) needs 0.063 to fit that window.
+> (2) The first fit fired before the boxes were MEASURED and fitted only the
+> few already measured, ending at the fit's maxZoom 1.1 -- 42 of
+> apalutamide's 51 boxes off-screen, and lithiumBrinePlant opened at 1.1
+> with 8 of 15 off-screen though it fits at 0.70 (pressing F fitted it).
+> (3) The SHOW/PHASE/WIRES legends and the Run button float over the top
+> ~120 px, and the even 10 % fit margin put the top units under them.  Fix,
+> `gui/` only: `ui/flowsheetViewport.ts` is the ONE home of the fit options
+> (`FLOWSHEET_MIN_ZOOM` 0.01 on `<ReactFlow minZoom>` and in every fit; a
+> 150 px top margin); FlowCanvas fits once every box of the case is
+> measured (`useNodesInitialized` + a per-node check of the store).  Panning
+> was never bounded (no translateExtent / nodeExtent).  Test
+> `gui/tests/flowsheetViewport.test.ts`: all 393 tutorial views (automatic
+> and `.cho`) fit a 1024 x 420 pane above twice the minimum, through React
+> Flow's own `getViewportForBounds`; sabotaged back to 0.5 it fails two
+> arms.  The corpus view collector moved to `tests/flowsheetCorpusViews.ts`,
+> shared with the C59 layout test.  NOT done, a finding for the layout
+> (C59): apalutamide's automatic layout draws two groups of units ~5600 px
+> apart, joined by long vertical wires, so its whole-plant fit is a small
+> map (0.063 at 1280 x 720) -- the zoom now reaches it; the gap is the
+> layout's.  Riding with it: the case-assembly lesson's `guiCho` citation
+> follows its line (FlowCanvas.tsx 453 -> 456), and C100's scratchpad path
+> above was reworded (`check_doc_references` read it as a repo path).
+> Validation: `bin/runTests --gui` PASS 32 / FAIL 0.
 
 > **C101. AN EDUTOOL ON THE PHARMACEUTICAL (GMP) LAYOUT (Vitor, 2026-10-19:
 > "Sera que podes fazer um EduTool sobre este layout de processos
