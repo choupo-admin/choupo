@@ -29,17 +29,20 @@
     coatingSuspensionPrep  vessel   on a declared volume
     acetoneTank / recoveredTank     storage, LINKED to their flowsheet units
 
-  WHAT IS NOT SIZED, AND WHY THE CAPITAL BELOW IS A LOWER BOUND.  The
-  blenders, the roller compactor, the mill, the screen, the tablet press,
-  the coating pan and the packaging line are MASS-BALANCE PLACEHOLDERS in
-  the flowsheet (`mixer` / `splitter` / `solidDryer`): Choupo has no sizer and
-  no cost correlation for any of them, and it does not invent one.  Neither
-  is the GMP BUILDING -- clean rooms, HVAC, the quality-control laboratory --
-  which in a drug-product plant is usually the largest single capital item.
-  So the fixed capital below is the solvent section ONLY, and every economic
-  number built on it (NPV, IRR, payback) is NOT decision-grade: the README
-  (section 6) says what a group must add, and where to get it (vendor
-  quotations; the published cost literature for oral-solid-dose plants).
+  WHAT IS NOT SIZED, AND HOW IT REACHES THE CAPITAL ANYWAY.  The blenders,
+  the roller compactor, the mill, the screen, the tablet press, the coating
+  pan and the packaging line are MASS-BALANCE PLACEHOLDERS in the flowsheet
+  (`mixer` / `splitter` / `solidDryer`): Choupo has no sizer and no cost
+  correlation for any of them, and it does not invent one.  Neither is the GMP
+  BUILDING -- clean rooms, HVAC -- which in a drug-product plant is usually
+  the largest single capital item.  They enter the capital as DECLARED
+  QUOTES (`costing { quotes ( ... ); }` below, DEV.md 4c C98): one price per
+  item, each an AUTHOR-SET PLACEHOLDER said so on its own line, for the group
+  to replace with a vendor's quotation.  NOT in the capital still: the
+  warehouse and the offices/QC laboratory as quoted items (the economics'
+  siteFactor term is Turton's estimate of such auxiliary facilities), vent
+  treatment for the purge, dust collection, cleaning systems.  The README
+  (section 6) says what is in and what is not.
 
   EVERY DESIGN NUMBER BELOW IS AN AUTHOR-SET ASSUMPTION, said on its line,
   for the groups to replace; none cites a source because none was read.
@@ -116,6 +119,54 @@ costing
     cepci     820;        // a projection -- AUTHOR-SET (greenAmmoniaPEQ's)
     cepci2001 397;        // the correlations' own basis year
     usdToEur  0.92;
+
+    //  THE DECLARED QUOTES (DEV.md 4c C98).  EVERY VALUE BELOW IS AN
+    //  AUTHOR-SET PLACEHOLDER -- a round number of the right order chosen so
+    //  that the solid-dose train and its building are not ZERO in the
+    //  capital -- and none is a vendor's price.  A group replaces each one
+    //  with a dated quotation (vendor, reference, date in `source`) and says
+    //  whether it is the installed price (`basis installed;`) or an
+    //  ex-works price (`basis purchased;` with its own `bareModuleFactor`
+    //  and `bareModuleFactorSource`).  All are in 2026 money, the costing
+    //  year, so no index is applied.  `kind equipment;` is a machine: in the
+    //  FCI it also drives the auxiliary-facilities estimate (siteFactor x
+    //  base) like any module; `kind facility;` is the building, which does
+    //  not (it IS a facility).
+    quotes
+    (
+        { unit tabletPress;  value 1000000;  currency EUR;  year 2026;
+          basis installed;  kind equipment;
+          source "author-set placeholder (DEV.md 4c C98), not a quotation";
+          reason "a rotary tablet press installed in its suite, a round figure; replace with the press vendor's quotation for the chosen model and its tooling"; }
+        { unit blender;  value 300000;  currency EUR;  year 2026;
+          basis installed;  kind equipment;
+          source "author-set placeholder (DEV.md 4c C98), not a quotation";
+          reason "the intragranular bin blender and its bins, a round figure; replace with a vendor quotation"; }
+        { unit rollerCompactor;  value 600000;  currency EUR;  year 2026;
+          basis installed;  kind equipment;
+          source "author-set placeholder (DEV.md 4c C98), not a quotation";
+          reason "a roller compactor with its feeder, a round figure; replace with a vendor quotation"; }
+        { unit mill;  value 150000;  currency EUR;  year 2026;
+          basis installed;  kind equipment;
+          source "author-set placeholder (DEV.md 4c C98), not a quotation";
+          reason "the granulating mill AND the screen below it (the flowsheet's `screen` carries no quote of its own), a round figure; replace with a vendor quotation"; }
+        { unit finalBlender;  value 300000;  currency EUR;  year 2026;
+          basis installed;  kind equipment;
+          source "author-set placeholder (DEV.md 4c C98), not a quotation";
+          reason "the extragranular (final) blender, a round figure; replace with a vendor quotation"; }
+        { unit coatingPan;  value 800000;  currency EUR;  year 2026;
+          basis installed;  kind equipment;
+          source "author-set placeholder (DEV.md 4c C98), not a quotation";
+          reason "a perforated pan coater with its spray system and its air handling -- the flowsheet's `coatingDryer` is the drying half of the same machine and carries no quote of its own -- a round figure; replace with a vendor quotation"; }
+        { unit packagingLine;  value 1500000;  currency EUR;  year 2026;
+          basis installed;  kind equipment;
+          source "author-set placeholder (DEV.md 4c C98), not a quotation";
+          reason "a bottle or blister line with serialisation, a round figure; replace with a vendor quotation"; }
+        { item productionBuilding;  value 11000000;  currency EUR;  year 2026;
+          basis installed;  kind facility;
+          source "author-set placeholder (DEV.md 4c C98), not a quotation or a building estimate";
+          reason "the GMP building of the solid-dose train, the layout's 50 m x 36 m `productionBuilding` box (1800 m2) at a round 6000 EUR per m2 of footprint for clean rooms, HVAC and services; replace with a contractor's estimate for the group's own building"; }
+    );
 }
 
 economics
@@ -139,11 +190,16 @@ economics
     siteFactor          0.50;
     contingencyFee      1.18;
     //  Non-particulate processing steps (Turton's operator count): the
-    //  blower, the four exchangers.  The PARTICULATE steps -- spray drying,
-    //  blending, compaction, milling, tableting, coating -- are NOT counted:
-    //  the engine's operator formula has no particulate term (README 6).
+    //  blower, the four exchangers.  The PARTICULATE steps are counted apart,
+    //  in `particulateSteps` below (Turton's P, DEV.md 4c C98).
     N_np                5;
-    estimateClass       5;           // concept screening: the solids train is unpriced
+    particulateSteps
+    {
+        count   6;
+        source  "the case's own count (DEV.md 4c C98): spray drying, blending, roller compaction, milling and screening, tableting, coating -- the final blend and packaging folded into their neighbours";
+        reason  "Turton's P counts the processing steps that handle particulate solids; this plant's train is six of them.  P enters SQUARED (31.7 P^2): at P = 6 the formula staffs about 34 operators a shift, a chemical-plant correlation applied to a drug-product line -- the group must defend the count, or a staffing plan of its own, against it";
+    }
+    estimateClass       5;           // concept screening: the solids train is priced on placeholders
     accuracyBand        ( -50 100 ); // Class 5, the wide corner -- chosen
     refuseOnMissingPrice 1;
 
