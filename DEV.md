@@ -1291,6 +1291,25 @@ accepts today, and that is a policy call.
 > fire-water ring main and hydrants, bunds, escape routes, swept path, a
 > fillet running through an item.
 
+> **C106. A BATCH PLANT'S TUTORIAL LIVES UNDER `batch/plant/`, NOT
+> `plant/` (Vitor, 2026-10-19: "estes tutoriais deviam ficar num folder com
+> um nome que insinue que o processo e em batch, porque a industria
+> farmaceutica trabalha por lotes! ... Por em /Plant nao me parece bem
+> porque isso e para processos de producao em continuo").**  Ruling (chosen
+> from three options put to him): `tutorials/batch/plant/` -- the design of
+> a whole plant that runs in lots, beside the batch OPERATIONS already under
+> `batch/<operation>/`; named by what the student does, not by the industry.
+> `apalutamide01_tablets` moves there (35 tracked files reference its path);
+> a donepezil case (C104), if built, joins it.  Folder is not binary: the
+> case keeps `application choupoSolve`.  CLAUDE.md section 3 updated in the
+> same commit.  His deliverables list for the pharmaceutical projects
+> (process + patents, cycle, Gantt with cleaning, mass/energy balance and
+> in/out table; equipment and alternatives; clean-area classes, layout,
+> flows, total area; QC summary table; utilities incl. water/air
+> purification and wastes; CAPEX, investment plan, OPEX, profitability,
+> sensitivity) is recorded here as the reference for what such a case
+> should help a group produce.  Status: dispatched 2026-10-19.
+
 > **C105. THE STREAMS WORKSPACE HAS A WINDOW AT THE BOTTOM THAT CANNOT BE
 > SCROLLED TO ITS END NOR RESIZED (Vitor, 2026-10-19, on the live site: "o
 > painel 'stream' tem uma window ca embaixo que nao da para ver ate ao final,

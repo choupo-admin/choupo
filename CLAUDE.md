@@ -355,9 +355,12 @@ case/
   are non-stationary, with NO control loop (`choupoSemiContinuous` since
   2026-09-20 -- the fifth problem class, §10; choupoBatch later); `ctrl/` is process control -- the design of control loops -- one
   course at IST and its own folder (choupoCtrl); `batch/` is batch
-  processes -- recipes, vessels, campaigns (choupoBatch); `props/` is
+  processes -- recipes, vessels, campaigns (choupoBatch), and since
+  2026-10-19 (Vitor's ruling, DEV.md 4c C106) `batch/plant/` holds the
+  design of a WHOLE plant that runs in lots (a pharmaceutical tablet plant
+  on a `batchPlan`, whatever binary it runs); `props/` is
   thermophysical properties and the props bench (choupoProps); `plant/` is
-  integrated plant design, the capstone.  `electrochem/` is RETIRED --
+  integrated design of a CONTINUOUS plant, the capstone.  `electrochem/` is RETIRED --
   electrochemistry is not a discipline the tutorials are organised by, and
   its seven steady electrodialysis cases live under
   `steady/electrodialysis/`, a subfolder named by OPERATION like every other
