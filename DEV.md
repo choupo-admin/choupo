@@ -1364,6 +1364,23 @@ accepts today, and that is a policy call.
 > dossier; (3) the case's assumptions are replaced by the dossier's, on top
 > of the C99 batch plan.  Nothing is invented: where no public source
 > exists the case says so and the README hands the number to the group.
+> DOSSIER RETURNED 2026-10-19: `docs/design/apalutamide-design-basis-dossier.md`
+> (every number with source, page, read/derived and a confidence word; a
+> red-team list ranked by severity).  Main finding: US 12,303,493 B2
+> (Janssen) publishes the Erleada 60 mg recipe ingredient for ingredient
+> (SDD 1:3 HPMCAS-LG, DCM/MeOH 40:60 at 5 wt % solids, PSD-3 pressure
+> nozzle, 46 C outlet; 700 mg core; Opadry II 3 %), contradicting the case
+> on composition, solvent, solids and outlet T; EU demand ~55 M 60-mg
+> tablets/yr; the case's 50 M is nearly all of it; no business case and,
+> as written, inside an active patent.  Vitor's rulings the same day:
+> BUSINESS CASE "Generico a perda de exclusividade" (a generic plant
+> launching at loss of exclusivity, price with 2-4 competitors, a declared
+> market share); SOLVENT "Acetona, citada da patente" (the patent's
+> acetone example at 5 wt % solids; the README says the commercial-scale
+> example uses DCM/MeOH, which Choupo's one-volatile spray dryer cannot
+> carry today).  The data slice that applies the dossier to the case waits
+> for C99 and C100 to land (it edits the same files) and for Vitor's go
+> (credit this week).
 
 > **C98. PARTICULATE LABOUR AND DECLARED QUOTED COSTS (Vitor, 2026-10-18,
 > two rulings on the C97 phase A findings).**  (1) Turton's operator count
