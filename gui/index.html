@@ -4,6 +4,14 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link rel="icon" type="image/png" href="/logo2-mark.png" />
+    <!-- Home-screen install (C108): a manifest and icons, NO service worker.
+         Offline support was tried and rolled back (see site/sw.js); this adds
+         only the name and the icon a phone or desktop shows when a user
+         chooses "Add to Home Screen". -->
+    <link rel="manifest" href="/manifest.webmanifest" />
+    <link rel="apple-touch-icon" href="/icons/icon-180.png" />
+    <meta name="apple-mobile-web-app-title" content="Choupo" />
+    <meta name="theme-color" content="#0b7a75" />
     <title>Choupo</title>
   </head>
   <body>

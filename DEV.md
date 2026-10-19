@@ -1291,6 +1291,21 @@ accepts today, and that is a policy call.
 > fire-water ring main and hydrants, bunds, escape routes, swept path, a
 > fillet running through an item.
 
+> **C108. A HOME-SCREEN ICON FOR THE APP (Vitor, 2026-10-19: "Sabes se
+> podemos fazer a app choupo para iPhone?" ... "Eu preferia um icon que
+> abrisse o Firefox com o choupo!" ... "Isso e muito facil e gasta poucos
+> creditos?").**  Discussed: an App Store app needs an Apple developer
+> account, a Mac, review, and a GPL/App Store licence exception every
+> copyright holder must grant (Vitor's call, not taken); offline support
+> was already tried and ROLLED BACK (`site/sw.js` self-destructs; a Chrome
+> rendering glitch).  Built, on that scope only: a web app manifest
+> (`gui/public/manifest.webmanifest`, start_url and scope `/app/`) and
+> icons (`gui/public/icons/`, the leaf mark on white, 180/192/512) linked
+> from the app's and the landing's `<head>`, so "Add to Home Screen" in
+> any browser shows the Choupo name and leaf.  NO service worker.  Which
+> browser a home-screen icon opens is the phone's decision, not ours (on
+> iOS every browser is WebKit).
+
 > **C107. OPEN A CASE ONLINE FROM ONE COMPRESSED FILE (Vitor, 2026-10-19,
 > after a class: "dava muito jeito online poder abrir diretamente um caso
 > com o folder num unico ficheiro comprimido").**  Measured: the capability
