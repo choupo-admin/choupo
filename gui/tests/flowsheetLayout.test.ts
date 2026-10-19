@@ -12,7 +12,7 @@
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
 
 import {
-  layoutFlowsheet, placeUnsavedNodes,
+  closeEmptyBands, layoutFlowsheet, placeUnsavedNodes,
   type LayoutEdge, type LayoutNode, type XY,
 } from "../src/case/flowsheetLayout.js";
 import { flowsheetToGraph } from "../src/case/toGraph.js";
@@ -115,6 +115,54 @@ describe("layoutFlowsheet", () => {
       Math.abs(portY(nodes.find((n) => n.id === id)!, l.positions.get(id!)!, p!, "out")
                - portY(nodes[2]!, m, p!, "in")) < 1);
     expect(hits.length).toBeGreaterThanOrEqual(1);
+  });
+});
+
+describe("step 6: an empty band is closed (DEV.md 4c C102)", () => {
+  //  Two stacks of boxes 3000 px apart with NOTHING in between -- the shape
+  //  step 5's drift left on apalutamide01.  The lower stack spans three
+  //  columns, so the band must be found over ALL boxes, not per column.
+  const nodes = [
+    { ...box("A"), above: 20 }, box("B"), box("C"),
+    box("D"), { ...box("E"), below: 40 }, box("F"),
+  ];
+  const at = (): Map<string, XY> => new Map([
+    ["A", { x: 0, y: 0 }], ["B", { x: 300, y: 50 }],
+    ["C", { x: 0, y: 3200 }], ["D", { x: 300, y: 3150 }],
+    ["E", { x: 600, y: 3300 }], ["F", { x: 600, y: 3500 }],
+  ]);
+
+  it("moves everything below a band taller than the limit up, by the excess only", () => {
+    const p = at();
+    closeEmptyBands(nodes, p, 120);
+    // The upper stack ends at B's bottom (134); the lower starts at D (3150).
+    expect(p.get("A")).toEqual({ x: 0, y: 0 });
+    expect(p.get("B")).toEqual({ x: 300, y: 50 });
+    expect(p.get("D")!.y).toBe(134 + 120);
+    const shift = 3150 - (134 + 120);
+    for (const id of ["C", "E", "F"]) expect(p.get(id)!.y).toBe(at().get(id)!.y - shift);
+    for (const [id, q] of p) expect(q.x).toBe(at().get(id)!.x);   // x never moves
+  });
+
+  it("keeps a band no taller than the limit, and the stubs' room counts as a box", () => {
+    // E reserves 40 px below (ends at 3424); F starts at 3500: a 76 px band, kept.
+    const p = at();
+    closeEmptyBands(nodes, p, 120);
+    expect(p.get("F")!.y - p.get("E")!.y).toBe(200);
+    // Without E's reserved room the band E -> F would be 116 px: still kept.
+    const q = at();
+    closeEmptyBands(nodes.map((n) => ({ ...n, below: 0 })), q, 100);
+    expect(q.get("F")!.y - q.get("E")!.y).toBe(200 - 16);
+  });
+
+  it("is a monotone map of y: the vertical order of every pair of boxes is kept", () => {
+    const p = at();
+    closeEmptyBands(nodes, p, 120);
+    const before = at();
+    for (const a of nodes) for (const b of nodes) {
+      const s0 = Math.sign(before.get(a.id)!.y - before.get(b.id)!.y);
+      expect(Math.sign(p.get(a.id)!.y - p.get(b.id)!.y)).toBe(s0);
+    }
   });
 });
 

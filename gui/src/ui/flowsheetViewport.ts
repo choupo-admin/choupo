@@ -60,9 +60,12 @@ License
 import type { FitViewOptions } from "@xyflow/react";
 
 /** The smallest zoom the canvas allows (React Flow's default is 0.5).  Low
- *  enough that the largest flowsheet in the corpus fits a small pane with a
- *  factor of two in hand (apalutamide01_tablets, about 5100 x 7100 px as
- *  laid out, needs 0.03 in a 1024 x 420 pane); at a zoom this low the
+ *  enough that every flowsheet in the corpus fits a small pane with a
+ *  factor of two in hand (tests/flowsheetViewport.test.ts prints the five
+ *  that need the smallest fit zoom; apalutamide01 needed 0.03 in a
+ *  1024 x 420 pane before C102b closed its layout's empty band, about 0.13
+ *  after) -- and a flowsheet the layout draws badly must still be
+ *  reachable whole; at a zoom this low the
  *  canvas draws a map of the plant, which is what zooming all the way out
  *  is for, and F brings the fit back. */
 export const FLOWSHEET_MIN_ZOOM = 0.01;

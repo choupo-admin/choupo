@@ -101,6 +101,17 @@ describe("the flowsheet canvas zooms out to the whole flowsheet (C102)", () => {
       .toBe(FLOWSHEET_FIT_MAX_ZOOM);
   });
 
+  it("C102b: apalutamide01 is drawn as ONE compact plant, legible at its fit in a 1280 x 720 window", () => {
+    //  The automatic layout used to drift its granulation train ~5600 px
+    //  below the spray-drying loop (flowsheetLayout.ts, step 6), so the
+    //  fit was a map at 0.063.  The canvas below the menu bar and the case
+    //  banner of a 1280 x 720 window is 1280 x 653 (measured in Chromium).
+    const apa = VIEWS.find((v) => v.id === "plant/apalutamide01_tablets")!;
+    expect(apa.bounds.height).toBeLessThan(2000);
+    const z = getViewportForBounds(apa.bounds, 1280, 653, 0, Infinity, FLOWSHEET_FIT_PADDING).zoom;
+    expect(z).toBeGreaterThan(0.2);
+  });
+
   it("witness: under React Flow's default minZoom (0.5) the largest views would NOT fit", () => {
     const clamped = VIEWS.filter((v) => neededZoom(v.bounds) < 0.5).map((v) => v.id);
     expect(clamped).toContain("plant/apalutamide01_tablets");

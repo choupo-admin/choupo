@@ -40,7 +40,7 @@ License
 
   This is a layered (Sugiyama) drawing, process flow left to right, written
   out here rather than imported (no dependency; a student can read every
-  step).  Five steps, each a function below:
+  step).  Six steps, each a function below:
 
     1. CYCLES.  A recycle makes the stream graph cyclic.  A DECLARED tear is
        the back edge (the author already said where the loop is cut).  Any
@@ -68,6 +68,13 @@ License
        get a horizontal RUN above or below every box their span covers
        (whichever is shorter), in their own lane, so a recycle reads as a
        recycle and never runs through the train.
+    6. EMPTY BANDS.  A horizontal band no box reaches into, taller than
+       `maxEmptyBand`, is closed (everything below moves up).  Step 5's
+       sweeps can drift one group of boxes away from another without
+       limit (DEV.md 4c C102 -- apalutamide01 was drawn as two groups
+       5600 px apart); closing the band is a monotone map of y, so it
+       changes no crossing and no order.  The recycle runs are routed on
+       the closed drawing.
 
   PURE: no React, no DOM, no clock; the same input draws the same picture.
   The sizes it is given are ESTIMATES of the rendered cards (a browser is
@@ -118,6 +125,9 @@ export interface LayoutOptions {
   xGap: number;
   /** Vertical air between two boxes of one column. */
   yGap: number;
+  /** The tallest horizontal band with no box in it that the drawing keeps
+   *  (step 6): a taller one is closed to this height. */
+  maxEmptyBand: number;
 }
 
 export const DEFAULT_LAYOUT_OPTIONS: LayoutOptions = {
@@ -125,6 +135,7 @@ export const DEFAULT_LAYOUT_OPTIONS: LayoutOptions = {
   originY: 80,
   xGap: 120,
   yGap: 46,
+  maxEmptyBand: 120,
 };
 
 export interface FlowsheetLayout {
@@ -412,6 +423,8 @@ export function layoutFlowsheet(
       y: Math.round(y.get(n.id)! + dy),
     });
   }
+  // 6
+  closeEmptyBands(nodes, positions, opt.maxEmptyBand);
 
   const nodeLayer = new Map<string, number>();
   for (const n of nodes) nodeLayer.set(n.id, layer.get(n.id)!);
@@ -646,6 +659,53 @@ function assignY(
   // Snap to whole pixels so equal ports land on exactly one line.
   for (const [k, v] of y) y.set(k, Math.round(v));
   return y;
+}
+
+/* ------------------------------------------------------------------------ */
+/*  Step 6 -- closing the empty bands                                       */
+/* ------------------------------------------------------------------------ */
+
+/**
+ * Close every horizontal band of the drawing that no box (with the room its
+ * stubs take) reaches into and that is taller than `maxBand`, by moving
+ * everything below it up.  DEV.md 4c C102.
+ *
+ * WHY.  Step 5's sweeps do not always converge.  When the ORDER of step 4
+ * leaves a cycle of "sits below" and "lines up with" -- apalutamide01: the
+ * long coating-suspension wire is ordered above the granulation train, the
+ * train is pushed below it, the coating dryer lines up with the
+ * coating-air wire that is ordered below the train, the coating pan with
+ * the dryer, and the long wire with the pan -- every round moves the whole
+ * group by the same amount (about 590 px there), and after the eleven
+ * rounds the plant was drawn as two groups 5600 px apart, a map no zoom
+ * could make legible.  Such a drift is a TRANSLATION of a group, so what it
+ * leaves behind is an empty band, and an empty band can be closed exactly.
+ *
+ * WHY IT IS SAFE.  It is a monotone map of y: every box keeps its x and
+ * the vertical order of every pair of boxes and ports is kept, so no wire
+ * gains or loses a crossing, no wire enters a box it did not, and no two
+ * boxes come to overlap -- the only things that change are the lengths of
+ * the vertical legs that ran through the band.  The recycle runs are
+ * routed AFTER this step, on the closed drawing.
+ */
+export function closeEmptyBands(nodes: LayoutNode[], positions: Map<string, XY>, maxBand: number): void {
+  const spans = nodes
+    .filter((n) => positions.has(n.id))
+    .map((n) => {
+      const p = positions.get(n.id)!;
+      return { id: n.id, top: p.y - (n.above ?? 0), bottom: p.y + n.height + (n.below ?? 0) };
+    })
+    .sort((a, b) => a.top - b.top);
+  let reach = -Infinity;   // the lowest edge seen so far, in the ORIGINAL drawing
+  let shift = 0;           // how far everything from here on moves up
+  for (const s of spans) {
+    if (Number.isFinite(reach) && s.top - reach > maxBand) shift += s.top - reach - maxBand;
+    reach = Math.max(reach, s.bottom);
+    if (shift > 0) {
+      const p = positions.get(s.id)!;
+      positions.set(s.id, { x: p.x, y: p.y - shift });
+    }
+  }
 }
 
 /* ------------------------------------------------------------------------ */
