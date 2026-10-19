@@ -197,7 +197,35 @@ economics
     {
         count   6;
         source  "the case's own count (DEV.md 4c C98): spray drying, blending, roller compaction, milling and screening, tableting, coating -- the final blend and packaging folded into their neighbours";
-        reason  "Turton's P counts the processing steps that handle particulate solids; this plant's train is six of them.  P enters SQUARED (31.7 P^2): at P = 6 the formula staffs about 34 operators a shift, a chemical-plant correlation applied to a drug-product line -- the group must defend the count, or a staffing plan of its own, against it";
+        reason  "Turton's P counts the processing steps that handle particulate solids; this plant's train is six of them.  P enters SQUARED (31.7 P^2): at P = 6 the formula staffs about 34 operators a shift.  With the crew below declared, P drives only the printed COMPARISON";
+    }
+
+    //  THE OPERATING CREW, DECLARED (DEV.md 4c C98 round 2).  The labour is
+    //  priced from THIS crew, not from Turton's correlation, which is a
+    //  regression over CONTINUOUS chemical plants: it grows with the number
+    //  of processing steps (and with P squared), while a campaign
+    //  drug-product suite is staffed ROOM BY ROOM -- one press operator runs
+    //  one press whatever the plant around it.  The run prints the
+    //  correlation beside this crew as a comparison.  EVERY NUMBER BELOW IS
+    //  AN AUTHOR-SET ASSUMPTION: replace it with the group's own staffing
+    //  plan (operators per room per shift, from the campaign hours of README
+    //  section 9, question 3).  The 4.5 positions per operator-per-shift the
+    //  engine applies assumes round-the-clock cover; a line run on fewer
+    //  shifts than that is the group's question.
+    operatingCrew
+    {
+        areas
+        (
+            { area "solvent section";   operatorsPerShift 2; }  // solution prep, spray dryer, N2 loop, recovery
+            { area "dispensing";        operatorsPerShift 1; }
+            { area "dry granulation";   operatorsPerShift 2; }  // blending, roller compaction, milling, screening
+            { area "compression";       operatorsPerShift 1; }  // the tablet press
+            { area "coating";           operatorsPerShift 1; }
+            { area "packaging";         operatorsPerShift 3; }
+            { area "material handling"; operatorsPerShift 1; }  // containers, IPC samples, warehouse runs
+        );
+        source  "author-set assumption (DEV.md 4c C98 round 2), not a staffing study";
+        reason  "a campaign oral-solid-dose suite is staffed per room and per running machine; the numbers are round figures of the right order for ONE line -- replace them with the group's staffing plan";
     }
     estimateClass       5;           // concept screening: the solids train is priced on placeholders
     accuracyBand        ( -50 100 ); // Class 5, the wide corner -- chosen

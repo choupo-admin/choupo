@@ -85,3 +85,9 @@ utility reactor                cooling.coolingWater.duty_kW -1394.14847125   1e-
 utility reactor                cooling.coolingWater.T 350              1e-4
 utility reactor                cooling.coolingWater.kg_s 33.3528342404    1e-4
 utility reactor                cooling.coolingWater.eur_h 2.0075737986     1e-4
+kpi     economics              C_OL             815575.818793    1e-4
+kpi     economics              C_RM             177789817.35     1e-4
+kpi     economics              grossMargin_RM   -152634635.547   1e-4
+kpi     economics              grossMargin_RM_UT -152872935.591   1e-4
+kpi     economics              operatingPositions 11.8888603323    1e-4
+kpi     economics              operatorsPerShift 2.64196896272    1e-4

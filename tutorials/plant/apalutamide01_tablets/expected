@@ -817,3 +817,8 @@ equipment tabletPress            basis            declared_quote,_installed,_equ
 equipment tabletPress            cost.purchased   1000000          1e-4
 equipment tabletPress            cost.bareModule  1000000          1e-4
 equipment tabletPress            cost.totalModule 1180000          1e-4
+kpi     economics              C_OL             4074840          1e-4
+kpi     economics              C_OL_correlation 12554801.2952    1e-4
+kpi     economics              operatingPositions 49.5             1e-4
+kpi     economics              operatorsPerShift 11               1e-4
+kpi     economics              operatorsPerShift_correlation 33.8915918776    1e-4

@@ -1193,3 +1193,6 @@ utility CONVERTER.InterbedCooler2 cooling.steamGenerationHP.duty_kW -13721.56572
 utility CONVERTER.InterbedCooler2 cooling.steamGenerationHP.T 683.15           1e-4
 utility CONVERTER.InterbedCooler2 cooling.steamGenerationHP.kg_s 8.00558093872    1e-4
 utility CONVERTER.InterbedCooler2 cooling.steamGenerationHP.eur_h -889.157459237   1e-4
+kpi     economics              C_OL             1156105.19836    1e-4
+kpi     economics              operatingPositions 14.0440378809    1e-4
+kpi     economics              operatorsPerShift 3.12089730687    1e-4

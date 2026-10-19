@@ -166,6 +166,16 @@ that happened to agree with the model's.
       eleven malformed declarations are refused by name.  See
       `check_declared_quotes`.
 
+  (v) A DECLARED CREW PRICES THE LABOUR (2026-10-19, DEV.md 4c C98 round
+      2).  On the solid-dose witness the crew's areas, positions and C_OL
+      recompute from the printed line and match the published KPIs; the
+      Turton comparison recomputes and enters no total (COM_d recomputes
+      from the declared C_OL); a fluid plant with no crew publishes the
+      correlation's count and no comparison; seven malformed crews are
+      refused by name; a crew beside an undeclared P says so and does not
+      announce it; the 4.5 positions factor has one home.  See
+      `check_operating_crew`.
+
   (o) A DECISION SAYS WHOSE IT IS.  `refuseOnMissingPrice` decides whether an
       appraisal REFUSES on an absent price or reports zero revenue, and it was
       a float read with a silent default.  Two probes, built here because
@@ -297,6 +307,24 @@ S26 -- EconomicsPass ignoring `C_BM_base`.  Arms (u1) (FCI 28555352 against
 S27 -- the particulateSteps reason refusal removed.  Arm (t3) -- tightened
 the same way as S23 BEFORE it was run, on the S23 lesson.
 S28 -- the other-year cepci refusal removed.  Arm (u3) nocepci, likewise.
+
+ROUND 2 (C98, the declared crew), seven more, same protocol, none survived:
+
+S29 -- the crew ignored, the correlation prices the labour.  Arm (v1) three
+times: the crew line no longer adds up (152.5 positions for 11/shift), C_OL
+12554801 against the crew's 4074840, the published count not the crew's.
+S30 -- the comparison added INTO the total (crew + N_OL).  Arm (v1) three
+times (202 positions, C_OL 16629641).
+S31 -- the duplicate-area refusal removed.  Arm (v3) dup, rc 0.
+S32 -- the undeclared-P announcement no longer suppressed beside a crew.
+Arm (v4).
+S33 -- a second literal 4.5 for the comparison's positions.  Arm (v5) only:
+no output changes, because the two literals agree -- a SOURCE arm is the
+only one that can see a second home that is never wrong yet.
+S34 -- the published `operatorsPerShift` written from the correlation.  Arm
+(v1).
+S35 -- the whole-operator refusal turned into `&&`.  Arm (v3) twice: the
+fractional AND the zero crew both ran to exit 0.
 
 AND A DEFECT IN THIS GATE, found by running the new arms.  They were first
 inserted AFTER the `finally: shutil.rmtree(tmp)` -- so they checked for files
@@ -1191,8 +1219,12 @@ def check_particulate_labour(fails):
                          " announced anyway")
         d = _copy_case(OSDCASE, tmp, "t4undeclared")
         pdp = d / "system" / "postDict"
+        #  The crew goes too (C98 round 2): beside a declared crew the zero
+        #  prices nothing and is deliberately not announced (arm (v4)).
         txt = re.sub(r"\n    particulateSteps\n    \{.*?\n    \}\n", "\n",
                      pdp.read_text(), flags=re.S)
+        txt = re.sub(r"\n    operatingCrew\n    \{.*?\n    \}\n", "\n",
+                     txt, flags=re.S)
         if "particulateSteps" in txt.split("economics", 1)[-1].replace(
                 "`particulateSteps`", ""):
             fails.append("(t4) the probe could not remove the declaration")
@@ -1421,6 +1453,153 @@ def check_declared_quotes(fails):
             if rc == 0 or "quotes" not in out or why not in out:
                 fails.append("(u3) %s: not refused by name (rc=%d, '%s' expected"
                              " in the message)" % (tag, rc, why))
+    finally:
+        shutil.rmtree(tmp, ignore_errors=True)
+
+
+CREW_RE = re.compile(r"operating crew, DECLARED: (.*?) = (\d+)/shift -> ([\d.]+)"
+                     r" operating positions \(x ([\d.]+)\)")
+CMP_RE = re.compile(r"\[comparison, enters NO total\] N_OL = sqrt\(6\.29 \+ 31\.7 x "
+                    r"P\^2 \+ 0\.23 x N_np\) = sqrt\(6\.29 \+ 31\.7 x (\d+)\^2 \+ 0\.23 x"
+                    r" ([\d.]+)\) = ([\d.]+)/shift -> ([\d.]+) operating positions")
+
+
+def check_operating_crew(fails):
+    """(v) A DECLARED CREW PRICES THE LABOUR, AND THE CORRELATION IS PRINTED
+    BESIDE IT AS A COMPARISON THAT ENTERS NO TOTAL (2026-10-19, DEV.md 4c C98
+    round 2, Vitor: "Equipa declarada pelo caso").
+
+      v1  the shipped solid-dose witness: the crew line's areas sum to its
+          operators per shift, x the printed positions factor gives its
+          positions, and C_OL = positions x rate x hours; the published KPIs
+          `operatorsPerShift`, `operatingPositions`, `C_OL` carry the SAME
+          numbers; the comparison line recomputes Turton's N_OL with the
+          declared P, `C_OL_correlation` is its labour, and COM_d recomputes
+          from the DECLARED C_OL (0.180 FCI + 2.73 C_OL + 1.23 (C_RM + C_UT))
+          -- so the comparison is in no total;
+      v2  a fluid plant with no crew publishes `operatorsPerShift` = the
+          correlation's N_OL and NO `_correlation` key, and prints no crew
+          line and no comparison label;
+      v3  REFUSED by name: a fractional, a zero operators-per-shift, a
+          missing source, a missing reason, an empty `areas`, a duplicate
+          area, a flat scalar;
+      v4  a crew beside an UNDECLARED P on a solids plant: the comparison
+          line says P was not declared, and the undeclared-zero
+          announcement does NOT fire (the zero prices nothing);
+      v5  SOURCE: the positions factor 4.5 has ONE home in EconomicsPass.cpp
+          outside comments -- the two routes may not carry two copies."""
+    tmp = tempfile.mkdtemp(prefix="cost_crew_")
+    try:
+        # ---- v1
+        if not OSDCASE.exists():
+            fails.append("(v1) %s is missing -- this arm CANNOT RUN and must not"
+                         " pass" % OSDCASE.name)
+        else:
+            d = _copy_case(OSDCASE, tmp, "v1")
+            rc, out = _run(d)
+            m = CREW_RE.search(out)
+            c = CMP_RE.search(out)
+            if rc != 0 or not m or not c:
+                fails.append("(v1) the witness prints no declared-crew line or no"
+                             " comparison line (rc=%d)" % rc)
+            else:
+                areas = [int(x) for x in re.findall(r" (\d+)(?: \+|$)", m.group(1))]
+                per, pos, fac = int(m.group(2)), float(m.group(3)), float(m.group(4))
+                if sum(areas) != per or abs(fac * per - pos) > 0.06:
+                    fails.append("(v1) the crew line does not add up: areas %s,"
+                                 " %d/shift, %g positions at x %g"
+                                 % (areas, per, pos, fac))
+                sal = re.search(r"salary/operator = ([\d.]+) EUR/h x ([\d.]+) h/yr", out)
+                rate_h = float(sal.group(1)) * float(sal.group(2)) if sal else 0.0
+                col = _econ_kpi(out, "C_OL")
+                if col is None or abs(col - fac * per * rate_h) > 1e-6 * col + 1:
+                    fails.append("(v1) C_OL %s is not the crew's %g positions x"
+                                 " the wage (%.0f)" % (col, fac * per, fac * per * rate_h))
+                if _econ_kpi(out, "operatorsPerShift") != per \
+                        or abs((_econ_kpi(out, "operatingPositions") or 0) - fac * per) > 1e-9:
+                    fails.append("(v1) the published operatorsPerShift /"
+                                 " operatingPositions are not the crew's")
+                P, Nnp, nol = int(c.group(1)), float(c.group(2)), float(c.group(3))
+                want = math.sqrt(6.29 + 31.7 * P * P + 0.23 * Nnp)
+                if abs(want - nol) > 0.006 \
+                        or abs((_econ_kpi(out, "operatorsPerShift_correlation") or 0) - want) > 1e-6:
+                    fails.append("(v1) the comparison N_OL %g (published %s) is not"
+                                 " sqrt(6.29 + 31.7 P^2 + 0.23 N_np) = %g"
+                                 % (nol, _econ_kpi(out, "operatorsPerShift_correlation"), want))
+                cc = _econ_kpi(out, "C_OL_correlation")
+                if cc is None or abs(cc - fac * want * rate_h) > 1e-6 * cc + 1:
+                    fails.append("(v1) C_OL_correlation %s is not the correlation's"
+                                 " positions x the wage (%.0f)" % (cc, fac * want * rate_h))
+                fci, com = _econ_kpi(out, "FCI"), _econ_kpi(out, "COM_d")
+                crm, cut = _econ_kpi(out, "C_RM"), _econ_kpi(out, "C_UT")
+                if None in (fci, com, crm, cut, col) or \
+                        abs(0.180 * fci + 2.73 * col + 1.23 * (crm + cut) - com) > 1e-6 * com + 1:
+                    fails.append("(v1) COM_d %s does not recompute from the DECLARED"
+                                 " C_OL -- the comparison entered a total" % com)
+
+        # ---- v2
+        d = _copy_case(ECONCASE, tmp, "v2")
+        rc, out = _run(d)
+        m = N_OL_RE.search(out)
+        if rc != 0 or not m:
+            fails.append("(v2) the fluid plant printed no correlation line")
+        else:
+            if abs((_econ_kpi(out, "operatorsPerShift") or -1) - float(m.group(3))) > 0.006:
+                fails.append("(v2) without a crew the published operatorsPerShift"
+                             " is not the correlation's N_OL")
+            if _econ_kpi(out, "operatorsPerShift_correlation") is not None \
+                    or "operating crew, DECLARED" in out or "[comparison" in out:
+                fails.append("(v2) a case with no crew carries a crew line, a"
+                             " comparison label or a `_correlation` KPI")
+
+        # ---- v3
+        good = ('{ area "a"; operatorsPerShift 2; }')
+        for tag, body, why in (
+            ("frac", 'operatingCrew { areas ( { area "a"; operatorsPerShift 1.5; } );'
+                     ' source "s"; reason "r"; }', "whole people"),
+            ("zero", 'operatingCrew { areas ( { area "a"; operatorsPerShift 0; } );'
+                     ' source "s"; reason "r"; }', "whole people"),
+            ("nosource", 'operatingCrew { areas ( %s ); reason "r"; }' % good,
+             "staffing plan"),
+            ("noreason", 'operatingCrew { areas ( %s ); source "s"; }' % good,
+             "staffing plan"),
+            ("empty", 'operatingCrew { areas ( ); source "s"; reason "r"; }',
+             "is EMPTY"),
+            ("dup", 'operatingCrew { areas ( %s %s ); source "s"; reason "r"; }'
+                    % (good, good), "declared TWICE"),
+            ("flat", 'operatingCrew 5;', "must be a block"),
+        ):
+            d = _copy_case(ECONCASE, tmp, "v3" + tag)
+            pdp = d / "system" / "postDict"
+            pdp.write_text(_insert_into_block(pdp.read_text(), "economics",
+                                              "    " + body))
+            rc, out = _run(d)
+            if rc == 0 or "operatingCrew" not in out or why not in out:
+                fails.append("(v3) %s: not refused by name (rc=%d, '%s' expected"
+                             " in the message)" % (tag, rc, why))
+
+        # ---- v4
+        if OSDCASE.exists():
+            d = _copy_case(OSDCASE, tmp, "v4")
+            pdp = d / "system" / "postDict"
+            pdp.write_text(re.sub(r"\n    particulateSteps\n    \{.*?\n    \}\n", "\n",
+                                  pdp.read_text(), flags=re.S))
+            rc, out = _run(d)
+            if rc != 0 or "(P = 0: particulateSteps NOT declared)" not in out:
+                fails.append("(v4) beside a declared crew, the comparison does not"
+                             " say P was not declared (rc=%d)" % rc)
+            if ANNOUNCE in out:
+                fails.append("(v4) the undeclared-P announcement fired beside a"
+                             " declared crew, where the zero prices nothing")
+
+        # ---- v5
+        src = strip_comments((ROOT / "src/postProcessing/EconomicsPass.cpp")
+                             .read_text(errors="replace"))
+        n = len(re.findall(r"(?<![\d.])4\.5(?![\d])", src))
+        if n != 1:
+            fails.append("(v5) the positions factor 4.5 appears %d times in"
+                         " EconomicsPass.cpp outside comments; the crew and the"
+                         " correlation must share ONE home" % n)
     finally:
         shutil.rmtree(tmp, ignore_errors=True)
 
@@ -1725,6 +1904,7 @@ def main():
     check_land(fails)
     check_particulate_labour(fails)
     check_declared_quotes(fails)
+    check_operating_crew(fails)
 
     if fails:
         print("check_cost_provenance: FAIL")
@@ -1744,7 +1924,13 @@ def main():
           "facility adding nothing to the auxiliary base, costs.csv "
           "reproduces each quote from its own columns, a USD quote of another "
           "year escalates and converts as printed, and eleven malformed "
-          "quotes are refused by name; "
+          "quotes are refused by name; a DECLARED CREW (C98 round 2) prices "
+          "the labour (areas sum, x the one positions factor, x the wage = "
+          "the published C_OL), Turton's correlation is printed and "
+          "published beside it as a comparison that enters no total (COM_d "
+          "recomputes from the declared C_OL), a case with no crew publishes "
+          "the correlation's count and no comparison, seven malformed crews "
+          "are refused by name, and the 4.5 has one home; "
           "the LAND of ammonia02_full_plant "
           "recomputes from its printed line (price x the plot area the layout "
           "published = its cost, its declared source printed beside it, the "

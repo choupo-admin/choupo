@@ -282,3 +282,6 @@ utility recycleComp            power.electricity.duty_kW 4210.52631579      1e-4
 utility recycleComp            power.electricity.T -1                 1e-4
 utility recycleComp            power.electricity.kg_s 0                  1e-4
 utility recycleComp            power.electricity.eur_h 421.389473684      1e-4
+kpi     economics              C_OL             1041193.43517    1e-4
+kpi     economics              operatingPositions 12.6481223903    1e-4
+kpi     economics              operatorsPerShift 2.81069386451    1e-4

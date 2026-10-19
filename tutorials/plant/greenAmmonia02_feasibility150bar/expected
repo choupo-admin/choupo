@@ -636,3 +636,6 @@ kpi     economics              sens_utility_hitecSalt_value_high 1.2            
 kpi     economics              sens_utility_hitecSalt_value_low 0.8              1e-4
 kpi     economics              sens_utility_steamGenerationHP_value_high 1.2              1e-4
 kpi     economics              sens_utility_steamGenerationHP_value_low 0.8              1e-4
+kpi     economics              C_OL             1114402.72437    1e-4
+kpi     economics              operatingPositions 13.5374480608    1e-4
+kpi     economics              operatorsPerShift 3.0083217913     1e-4

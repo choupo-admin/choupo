@@ -580,3 +580,6 @@ kpi     economics              sens_utility_electricity_value_high 1.2          
 kpi     economics              sens_utility_electricity_value_low 0.8              1e-4
 kpi     economics              sens_utility_steamGenerationHP_value_high 1.2              1e-4
 kpi     economics              sens_utility_steamGenerationHP_value_low 0.8              1e-4
+kpi     economics              C_OL             1085711.54872    1e-4
+kpi     economics              operatingPositions 13.1889158008    1e-4
+kpi     economics              operatorsPerShift 2.93087017795    1e-4

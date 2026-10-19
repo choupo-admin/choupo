@@ -1064,6 +1064,39 @@ or a missing `source`/`reason` REFUSE by name.  `P` enters SQUARED: at P = 6
 the formula staffs about 34 operators a shift.  Worked case:
 `tutorials/plant/apalutamide01_tablets`.
 
+**A DECLARED OPERATING CREW IN PLACE OF THE CORRELATION (2026-10-19, DEV.md
+4c C98 round 2).**  Turton's correlation is a regression over continuous
+chemical plants; a campaign suite, a batch line or a pilot plant is staffed
+room by room.  In the same `economics {}` block:
+
+```
+operatingCrew
+{
+    areas
+    (
+        { area "solvent section"; operatorsPerShift 2; }
+        { area "packaging";       operatorsPerShift 3; }
+    );
+    source  "...";      // where the numbers come from
+    reason  "...";      // why they are this plant's
+}
+```
+
+Declared, the labour is `SUM operatorsPerShift` x the same 4.5 positions per
+operator-per-shift x the same wage (`labourRate` x `operatorAnnualHours`) the
+correlation route uses; the console prints the crew area by area and then
+Turton's N_OL -- with the declared `particulateSteps`, or P = 0 said so -- as
+a COMPARISON that enters no total, with its C_OL.  `particulateSteps` and
+`operatingCrew` may coexist: P then drives only the comparison, and an
+undeclared P beside a crew is not announced (it prices nothing).  REFUSED by
+name: a flat scalar, an empty `areas`, an entry with no `area`, a duplicate
+area, a fractional or non-positive `operatorsPerShift`, a missing
+`source`/`reason`.  Absent the block, nothing changes.  Published on every
+appraisal: `kpis.economics.operatorsPerShift` (the count that priced the
+labour), `operatingPositions`, `C_OL`; beside a declared crew also
+`operatorsPerShift_correlation` and `C_OL_correlation` -- all pinned by the
+`kpi` kind.  Worked case: `tutorials/plant/apalutamide01_tablets`.
+
 **A DECLARED QUOTE FOR AN ITEM NO CORRELATION PRICES (2026-10-19, DEV.md 4c
 C98).**  In the postDict's `costing {}` block, beside the price index:
 

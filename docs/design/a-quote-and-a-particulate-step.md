@@ -1,8 +1,9 @@
 # A quote and a particulate step
 
-*DEV.md 4c C98, 2026-10-19.  Two rulings of Vítor's on the C97 phase A
-findings (the apalutamide tablet plant): "P declarado pelo caso" and "Sim,
-preço declarado".  Kind: ADR.  Status: shipped on a branch, the witness's
+*DEV.md 4c C98, 2026-10-19.  Three rulings of Vítor's on the C97 phase A
+findings (the apalutamide tablet plant): "P declarado pelo caso", "Sim,
+preço declarado" and, in round 2 on the labour finding, "Equipa declarada
+pelo caso".  Kind: ADR.  Status: shipped on a branch, the witness's
 moved golden rows awaiting Vítor's approval.*
 
 ## 1. The two absences
@@ -77,10 +78,40 @@ instead of trailing a half-printed table.
   carries it (`type declaredQuote`) so the golden `equipment` kind pins its
   three costs.
 
+## 4b. Round 2: a declared crew (Vitor, 2026-10-19: "Equipa declarada pelo caso")
+
+The first round's finding -- at P = 6 the correlation staffs about 34
+operators a shift on one campaign tablet line, and the NPV turns deeply
+negative through 2.73 C_OL -- was ruled on: the case may DECLARE its crew.
+
+* `economics { operatingCrew { areas ( { area; operatorsPerShift; } ... );
+  source; reason; } }`.  Declared, the labour is SUM operatorsPerShift
+  through the SAME positions factor (one named constant,
+  `positionsPerOperatorPerShift`, used by both routes) and the SAME wage
+  arithmetic (`appraise`).  The correlation is still computed, with the
+  declared or absent P, and printed beside the crew as a COMPARISON that
+  enters no total; its C_OL is the priced C_OL scaled by the ratio of
+  positions, so the wage arithmetic keeps one home.
+* `particulateSteps` and `operatingCrew` COEXIST: P then drives only the
+  comparison.  An undeclared P beside a crew is NOT announced -- it prices
+  nothing, and the comparison line itself says P was not declared.
+* THE LABOUR IS PUBLISHED, on every appraisal: `operatorsPerShift` (the
+  count that priced it), `operatingPositions`, `C_OL`; beside a crew also
+  `operatorsPerShift_correlation`, `C_OL_correlation`.  Until now the
+  labour was a console line only -- pinned by nothing but COM_d.  Rows were
+  APPENDED to the ten economics goldens that publish them (no row moved).
+* REJECTED: a crew per unit operation (a room runs several machines, a
+  machine is not a person); a crew that REPLACES the positions factor (the
+  ruling keeps one arithmetic, and the 4.5's round-the-clock assumption is
+  then the group's question for a campaign line, said in the witness);
+  publishing the comparison only on the console (a number nobody pins
+  drifts unseen).
+
 ## 5. Gates
 
-`check_cost_provenance` arms (t) and (u); nine by-hand sabotages, each
-caught, listed in the gate's docstring.
+`check_cost_provenance` arms (t), (u) and (v); nineteen by-hand sabotages
+(S18-S35), each caught -- one (S23) only after its arm was tightened --
+listed in the gate's docstring.
 
 ## 6. Found, not fixed
 
@@ -90,7 +121,8 @@ caught, listed in the gate's docstring.
   so the docs' "no 1.18" is true of the costing table and false of the FCI.
   Fixing either side moves goldens; RESERVED.
 * The witness's labour: at `P = 6` Turton's formula staffs about 34
-  operators a shift on a 50-million-tablet campaign line, and the NPV turns
-  deeply negative through `2.73 C_OL`.  The formula was fitted on chemical
-  plants; whether it is the right tool for a drug-product line is a
-  pedagogical question for Vítor, not a number to tune.
+  operators a shift on a 50-million-tablet campaign line.  RULED in round 2
+  (§4b): the witness declares a crew of 11 a shift and prints the
+  correlation beside it.  Its NPV is still negative on the placeholder
+  prices -- a finding about the placeholders, which the README hands to the
+  group.

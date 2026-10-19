@@ -146,9 +146,9 @@ Mass balance 100.000 %; first law closes (residual below 0.0001 kW).
 | Coating dryer | exhaust 325.0 K; 0.853 kg/h of the coat's 0.882 kg/h of water evaporated |
 | Fixed capital (the solvent section + the quoted solid-dose train and building, see 6) | 23.06 MEUR (of it, 15.65 MEUR of bare-module cost is QUOTED placeholders) |
 | Land (the layout's plot, 16 056 m2 at 80 EUR/m2) | 1.28 MEUR |
-| Operating labour (P = 6 particulate steps, see 6) | 152.5 operating positions, 12.55 MEUR/yr |
-| Revenue / raw materials / COM_d | 50.0 / 31.1 / 76.7 MEUR/yr |
-| NPV (10 %, 10 yr) / IRR | −158.5 MEUR / none (the plant never breaks even) — **not decision-grade, see 6** |
+| Operating labour (the DECLARED crew, 11 a shift, see 6) | 49.5 operating positions, 4.07 MEUR/yr (Turton's correlation, for comparison: 152.5 positions, 12.55 MEUR/yr) |
+| Revenue / raw materials / COM_d | 50.0 / 31.1 / 53.5 MEUR/yr |
+| NPV (10 %, 10 yr) / IRR | −45.5 MEUR / none (the plant never breaks even) — **not decision-grade, see 6** |
 
 ## 6. Sizing, cost and economics — what is in the capital and the labour, and what is not
 
@@ -194,26 +194,40 @@ facilities — replace it with quotes if you have them), vent treatment for
 the purge, dust collection, cleaning-in-place, validation and
 qualification.
 
-**The labour now counts the particulate steps.**  Turton's operator count is
-`N_OL = (6.29 + 31.7 P^2 + 0.23 N_np)^0.5` operators per shift, where `P`
-counts the processing steps that handle PARTICULATE SOLIDS and `N_np` the
-others.  The case declares `particulateSteps { count 6; ... }` (spray
-drying, blending, roller compaction, milling and screening, tableting,
-coating) beside `N_np 5`, and the run prints the arithmetic: 33.9 operators
-a shift, 152.5 operating positions at 4.5 per position, 12.55 MEUR/yr of
-labour — which, through Turton's 2.73 x C_OL in COM_d, is what turns the
-appraisal from positive to deeply negative.  Read that as a finding to
-argue with, not a verdict: `P` enters SQUARED, the correlation was fitted on
-chemical plants, and a drug-product line is staffed by rooms and shifts.
-Defend your count of `P` — or build a staffing plan of your own (operators
-per room per shift, the campaign hours of section 9, question 3) and
-compare it with the formula.  A case that does not declare `P` takes 0 and,
-where the flowsheet holds a dryer, crystalliser, cyclone or filter, the run
-SAYS so.
+**The labour: a declared crew, and Turton's correlation beside it.**  Two
+numbers are printed, and you should be able to explain both.
 
-So the NPV is now an appraisal of the whole plant on placeholder prices and
-a chemical-plant labour formula: neither half is decision-grade until the
-quotes are real and the staffing is yours.
+- **The crew that prices the labour** is DECLARED in `system/postDict`
+  (`operatingCrew`, DEV.md 4c C98): solvent section 2, dispensing 1, dry
+  granulation 2, compression 1, coating 1, packaging 3, material handling 1
+  — **11 operators a shift**, x 4.5 positions per operator-per-shift (the
+  cover for round-the-clock operation) = 49.5 positions, x 42 EUR/h x
+  1960 h = **4.07 MEUR/yr**.  Every number is an AUTHOR-SET ASSUMPTION for
+  ONE line: replace it with your own staffing plan (operators per room per
+  shift).  And ask whether the 4.5 is right for a line that runs in
+  campaigns — 45 % of the year — rather than round the clock.
+- **Turton's correlation, printed beside it as a COMPARISON that enters no
+  total**: `N_OL = (6.29 + 31.7 P^2 + 0.23 N_np)^0.5` operators per shift,
+  `P` the processing steps that handle PARTICULATE SOLIDS (declared:
+  `particulateSteps { count 6; }` — spray drying, blending, roller
+  compaction, milling and screening, tableting, coating) and `N_np` the
+  others (5).  It gives 33.9 a shift, 152.5 positions, 12.55 MEUR/yr.
+  Why it is not used: it is a regression over CONTINUOUS chemical plants,
+  and it grows with the number of steps — with `P` SQUARED — while a
+  campaign drug-product suite is staffed room by room: one press operator
+  runs one press whatever the plant around it.  The gap between the two
+  numbers is the lesson; defend the one you use.
+
+A case that declares no crew is staffed by the correlation, and one that
+does not declare `P` takes 0 — said by the run where the flowsheet holds a
+dryer, crystalliser, cyclone or filter.
+
+So the NPV is now an appraisal of the whole plant on PLACEHOLDER quotes, a
+placeholder crew and placeholder prices: none of it is decision-grade until
+the quotes, the staffing and the prices are yours.  Note where it goes
+negative: the gross margin R - C_RM is 18.9 MEUR/yr, and COM_d also carries
+Turton's 1.23 x C_RM and 2.73 x C_OL factors — check whether those
+continuous-plant factors describe a drug-product plant either.
 
 ## 7. Plant layout
 
@@ -281,8 +295,9 @@ today.
    purge fraction; what do the recovery, the refrigeration duty and the
    vent load do?
 5. **The capital and the labour** of section 6: replace each quoted
-   placeholder with a quotation, defend `P` (or your own staffing plan),
-   and say what the NPV does.
+   placeholder with a quotation and the declared crew with your staffing
+   plan, compare it with the correlation the run prints, and say what the
+   NPV does.
 
 ## 10. Engine notes made while building this case (DEV.md 4c C97)
 

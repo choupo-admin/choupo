@@ -1487,3 +1487,6 @@ layout  H2Buffer/vessel10      z                0                1e-4
 layout  H2Buffer/vessel10      dx               5.35758292591    1e-4
 layout  H2Buffer/vessel10      dy               5.35758292591    1e-4
 layout  H2Buffer/vessel10      dz               16.0727487777    1e-4
+kpi     economics              C_OL             1100150.6713     1e-4
+kpi     economics              operatingPositions 13.3643181644    1e-4
+kpi     economics              operatorsPerShift 2.96984848098    1e-4
