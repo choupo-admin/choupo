@@ -552,6 +552,13 @@ operations
 );
 ```
 
+A scan may also evaluate AT DECLARED CONDITIONS instead of over a grid:
+`vary { variable x[methanol]; points ( 0.1 0.25 0.5 ); }` (the values in the
+order written, canonical SI -- K, Pa, or a mole fraction).  That is how a
+residual against a measured dataset is engine-minus-measurement at the
+measured x rather than a grid interpolation; `points` beside `from/to/n` in
+one `vary {}` is refused by name.
+
 **Piece 2 — an `experimental {}` entry that OVERLAYS them.**  This is the part
 that actually puts both curves on one figure.  `models ( … )` lists the scan
 ops by name; `dataset` is OPTIONAL (add it to draw real lab points on top):

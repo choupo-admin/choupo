@@ -8,14 +8,52 @@
     "vary": {
       "type": "object",
       "title": "Scan axis",
-      "description": "Variable to sweep, its limits and the number of points (linearly spaced).",
+      "description": "Variable to sweep and WHERE to evaluate it: either a grid (`from`, `to`, `n` -- linearly spaced) or an explicit `points ( ... )` list (evaluate AT declared values, e.g. the x of a measured dataset, in the order written; canonical SI). Exactly one of the two forms; both in one block is refused by name.",
       "properties": {
-        "variable": { "type": "string", "title": "Axis variable (T, P, x[<comp>])" },
-        "from":     { "type": "number", "title": "Lower bound" },
-        "to":       { "type": "number", "title": "Upper bound" },
-        "n":        { "type": "integer", "minimum": 2, "title": "Number of points" }
+        "variable": {
+          "type": "string",
+          "title": "Axis variable (T, P, x[<comp>])"
+        },
+        "from": {
+          "type": "number",
+          "title": "Lower bound"
+        },
+        "to": {
+          "type": "number",
+          "title": "Upper bound"
+        },
+        "n": {
+          "type": "integer",
+          "minimum": 2,
+          "title": "Number of points"
+        },
+        "points": {
+          "type": "array",
+          "items": {
+            "type": "number"
+          },
+          "minItems": 1,
+          "title": "Declared points (instead of a grid)",
+          "description": "Values of the swept variable to evaluate at, in the order written, read as canonical SI (K, Pa, or mole fraction). Mutually exclusive with from/to/n."
+        }
       },
-      "required": ["variable", "from", "to", "n"]
+      "required": [
+        "variable"
+      ],
+      "anyOf": [
+        {
+          "required": [
+            "from",
+            "to",
+            "n"
+          ]
+        },
+        {
+          "required": [
+            "points"
+          ]
+        }
+      ]
     },
     "state": {
       "type": "object",
@@ -26,18 +64,29 @@
       "type": "array",
       "title": "Properties to evaluate",
       "description": "Properties to compute at each point and write to the CSV (e.g. Psat_<comp>, T_bubble, gamma_<comp>, Cp_ig, Z, v_molar, H_real, S_real).",
-      "items": { "type": "string" },
+      "items": {
+        "type": "string"
+      },
       "minItems": 1
     },
     "output": {
       "type": "object",
       "title": "Output file",
       "properties": {
-        "file": { "type": "string", "title": "CSV filename relative to the case" }
+        "file": {
+          "type": "string",
+          "title": "CSV filename relative to the case"
+        }
       },
-      "required": ["file"]
+      "required": [
+        "file"
+      ]
     }
   },
-  "required": ["vary", "properties", "output"],
+  "required": [
+    "vary",
+    "properties",
+    "output"
+  ],
   "additionalProperties": true
 }

@@ -1,0 +1,93 @@
+/*--------------------------------------------------------------------------*\
+  BINARY BUBBLE-POINT EVIDENCE, extracted from a ThermoML file by
+  bin/choupo-thermoml extract-vle.
+
+  system       methanol + water   (x is methanol's liquid mole fraction)
+  pressure     101.32 kPa   (CONSTANT across the series)
+  points       13   (2 pure-component endpoint(s) set aside -- see `selection`)
+  vapour       y joined from the companion block
+
+  ONE FILE, TWO READERS.  The column names are the ones the props
+  bench's `experimental {}` overlay draws against a propertyScan1D
+  (x[<component>], T_bubble, y_eq_<component>) AND the ones
+  fitParameters(T_bubble) reads -- so the points a pair is fitted to
+  and the points it is drawn against cannot be two transcriptions.
+
+  The role this evidence plays -- fit or held-out validation -- is NOT
+  set here.  It is declared in the operation that consumes it, before
+  any fitting runs (src/propertyOps/EvidencePartition.H).
+
+  REDISTRIBUTION.  These are measured values reported in the article
+  cited below, located through the NIST/TRC ThermoML Archive (a finding
+  aid; thirdParty/thermoml/README.md).  The article is the source; the
+  archive's arrangement is not reproduced.
+\*--------------------------------------------------------------------------*/
+
+property     binaryVLE.T_bubble;
+system       ( methanol water );
+pressure     101.32 kPa;
+
+provenance
+{
+    source       measured;
+    reviewStatus transcribedNotCheckedAgainstArticle;
+    citation     "Yang, C.; Ma, S.; Yin, X. (2011). Organic Salt Effect of Tetramethylammonium Bicarbonate on the Vapor Liquid Equilibrium of the Methanol Water System. J. Chem. Eng. Data. doi:10.1021/je200341c";
+    archiveFile  "je200341c.xml";
+    archive      "ThermoML.v2020-09-30.tgz (NIST/TRC ThermoML Archive, doi:10.18434/mds2-2422)";
+    block        2;
+    doi          "10.1021/je200341c";
+    sha256       "b88f3599ac1499ff81756c347c67a3d86f679783fceeabbf2ce1a64feb5b3b84";
+    identity
+    {
+        methanol       { cas "67-56-1"; inchiKey "OKKJLVBELUTLKV-UHFFFAOYSA-N"; }
+        water          { cas "7732-18-5"; inchiKey "XLYOFNOQVPJJNP-UHFFFAOYSA-N"; }
+        rule           "the archive's standard InChIKey matched to the catalogue record's CAS through two resolvers that agree (PubChem PUG REST and NCI CACTUS), molecular formula checked -- never by name";
+    }
+}
+
+uncertainty
+{
+    T_bubble
+    {
+        kind    expandedCombined;   // ThermoML nCombExpandUncertValue
+        level   95;            // per cent confidence
+        unit    K;
+        values  ( 0.42 0.42 0.46 0.39 0.35 0.35 0.34 0.34 0.34 0.34 0.34 0.34 0.34 );   // per point, in `data` order
+    }
+}
+
+selection
+{
+    //  A bubble point on a PURE component measures the vapour-pressure
+    //  correlation, not the pair: the pair parameters have no effect
+    //  there.  Set aside, not deleted -- the values stay here.
+    pureEndpoints
+    (
+        { x 0; T_bubble 373.15 K; }
+        { x 1; T_bubble 337.84 K; }
+    );
+}
+
+columns
+(
+    { name x[methanol];  unit -;  }
+    { name T_bubble;  unit K;  }
+    { name y_eq_methanol;  unit -;  }
+);
+
+data
+(
+      0.0050  372.02  0.0240
+      0.0230  370.18  0.1130
+      0.0380  367.85  0.1830
+      0.1040  360.15  0.4390
+      0.1520  356.57  0.5260
+      0.3390  350.12  0.6870
+      0.3920  348.75  0.7210
+      0.4830  346.6  0.7760
+      0.5910  344.58  0.8360
+      0.7320  341.72  0.8980
+      0.8330  340.31  0.9360
+      0.8940  339.29  0.9580
+      0.9690  338.45  0.9870
+);

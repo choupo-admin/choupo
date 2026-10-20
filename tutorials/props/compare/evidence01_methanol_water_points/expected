@@ -1,0 +1,21 @@
+# Reference KPIs (golden master, auto-recorded by runTests --record).
+# units: stream F is kmol/s (canonical SI, as in the result JSON); the run LOG prints kmol/h.
+# kind   name      key         expected        reltol
+diag    txy_nrtl_points        n_emptyCurves    0                  1e-4
+diag    txy_nrtl_points        n_failures       0                  1e-4
+diag    txy_nrtl_points        n_points         13                 1e-4
+diag    txy_unifac_points      n_emptyCurves    0                  1e-4
+diag    txy_unifac_points      n_failures       0                  1e-4
+diag    txy_unifac_points      n_points         13                 1e-4
+diag    txy_ideal_points       n_emptyCurves    0                  1e-4
+diag    txy_ideal_points       n_failures       0                  1e-4
+diag    txy_ideal_points       n_points         13                 1e-4
+aad     heldout_je200341c      txy_nrtl_points.T_bubble.aadAbs 0.534750769231     1e-4
+aad     heldout_je200341c      txy_nrtl_points.T_bubble.aadRelPct 0.150061454094     1e-4
+aad     heldout_je200341c      txy_nrtl_points.y_eq_methanol.aadAbs 0.0125426852538    1e-4
+aad     heldout_je200341c      txy_unifac_points.T_bubble.aadAbs 0.366152846154     1e-4
+aad     heldout_je200341c      txy_unifac_points.T_bubble.aadRelPct 0.10093737486      1e-4
+aad     heldout_je200341c      txy_unifac_points.y_eq_methanol.aadAbs 0.0115561777       1e-4
+aad     heldout_je200341c      txy_ideal_points.T_bubble.aadAbs 2.768434           1e-4
+aad     heldout_je200341c      txy_ideal_points.T_bubble.aadRelPct 0.784976912726     1e-4
+aad     heldout_je200341c      txy_ideal_points.y_eq_methanol.aadAbs 0.0391370889462    1e-4
