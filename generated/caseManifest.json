@@ -6,7 +6,7 @@
   "runtime": "not recorded; runTests does not time per case and this script does not run the corpus"
  },
  "counts": {
-  "cases": 477,
+  "cases": 478,
   "witnesses": 16,
   "validationOp": 6,
   "anchored": 12
@@ -491,6 +491,23 @@
     "splitter",
     "sprayDryer",
     "storageTank"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [],
+   "hasGolden": true
+  },
+  "tutorials/batch/plant/donepezil01_tablets": {
+   "application": "choupoSolve",
+   "unitTypes": [
+    "mixer",
+    "phaseChanger",
+    "solidDryer",
+    "splitter"
    ],
    "thermo": {
     "formulation": "gammaPhi",
@@ -7189,6 +7206,7 @@
    ],
    "choupoSolve": [
     "tutorials/batch/plant/apalutamide01_tablets",
+    "tutorials/batch/plant/donepezil01_tablets",
     "tutorials/plant/ChemicalPlantTutorial",
     "tutorials/plant/aceticAcid01_gibbsReactor",
     "tutorials/plant/aceticAcid02_plant",
@@ -7937,6 +7955,7 @@
    ],
    "mixer": [
     "tutorials/batch/plant/apalutamide01_tablets",
+    "tutorials/batch/plant/donepezil01_tablets",
     "tutorials/plant/aceticAcid02_plant",
     "tutorials/plant/acetonePlant",
     "tutorials/plant/ammoniaReactor01_fixedConversion",
@@ -7975,6 +7994,7 @@
    ],
    "phaseChanger": [
     "tutorials/batch/plant/apalutamide01_tablets",
+    "tutorials/batch/plant/donepezil01_tablets",
     "tutorials/plant/aceticAcid02_plant",
     "tutorials/plant/acetonePlant",
     "tutorials/plant/ammoniaReactor04_kineticSizing"
@@ -8022,6 +8042,7 @@
    ],
    "solidDryer": [
     "tutorials/batch/plant/apalutamide01_tablets",
+    "tutorials/batch/plant/donepezil01_tablets",
     "tutorials/steady/drying/solidDryer01_sugar",
     "tutorials/steady/drying/solidDryer02_starved_air"
    ],
@@ -8051,6 +8072,7 @@
    ],
    "splitter": [
     "tutorials/batch/plant/apalutamide01_tablets",
+    "tutorials/batch/plant/donepezil01_tablets",
     "tutorials/plant/aceticAcid02_plant",
     "tutorials/plant/ammoniaReactor01_fixedConversion",
     "tutorials/plant/ammoniaReactor02_equilibrium",
@@ -8302,6 +8324,7 @@
     "tutorials/batch/membrane/diafilter01_nf_desalting",
     "tutorials/batch/membrane/diafilter02_fouling_decline",
     "tutorials/batch/plant/apalutamide01_tablets",
+    "tutorials/batch/plant/donepezil01_tablets",
     "tutorials/batch/reactor/batch01_first_order",
     "tutorials/batch/reactor/batch01b_first_order_eulersi",
     "tutorials/batch/reactor/batch02_adiabatic",

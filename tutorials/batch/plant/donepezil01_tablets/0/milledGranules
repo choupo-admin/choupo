@@ -1,0 +1,49 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+//  An ESTIMATE, not an input: the converged base case, so that a reader of
+//  0/ sees the plant's state.  The solver recomputes this stream.
+
+/*--- Choupo stream state.  Every DIMENSIONAL value carries its unit; the parser converts to SI.
+     componentMolarFlows is the OVERALL material (all phases); a phases{} block, when present,
+     is a decomposition that sums back to it exactly. ---*/
+
+componentMolarFlows
+{
+    water    0.07333801801 kmol/h;
+    donepezilHydrochloride    0.0173094399 kmol/h;
+    lactoseMonohydrate    0.3483580897 kmol/h;
+    maizeStarch    0.2220289748 kmol/h;
+    microcrystallineCellulose    0.163724166 kmol/h;
+    hydroxypropylCellulose    0.005328 kmol/h;
+}
+
+T               316.7233607 K;
+P               101325 Pa;
+
+phases
+{
+    liquid
+    {
+        componentMolarFlows
+        {
+            water    0.07333801801 kmol/h;
+        }
+    }
+    solid
+    {
+        componentMolarFlows
+        {
+            donepezilHydrochloride    0.0173094399 kmol/h;
+            lactoseMonohydrate    0.3483580897 kmol/h;
+            maizeStarch    0.2220289748 kmol/h;
+            microcrystallineCellulose    0.163724166 kmol/h;
+            hydroxypropylCellulose    0.005328 kmol/h;
+        }
+    }
+}
