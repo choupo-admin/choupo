@@ -1352,7 +1352,12 @@ accepts today, and that is a policy call.
 >    apalutamide design-basis dossier applied (patent formula, acetone at
 >    5 wt %, generic at LoE, every room CNC; NPV -44.6 -> +128.2 MEUR).
 >    **373 golden rows MOVE, 4 are removed, 20 appended -- put to Vitor
->    2026-10-20, AWAITING HIS APPROVAL; do not --record before it.**
+>    2026-10-20 and APPROVED by him the same day ("Aprovo o re-registo das 373
+>    linhas do G1"): re-record them, remove the 4 rows of the two retired
+>    feeds and append the 20 new ones, AFTER rebuilding on the fresh machine
+>    and checking that the moved set is still exactly the one he approved
+>    (373 / 4 / 20, the kinds and reasons in the G1 report); any row outside
+>    that set goes back to him.**
 >    Regenerate the list with `bin/runTests
 >    tutorials/batch/plant/apalutamide01_tablets`.  Owed: check_energy_
 >    closure on the branch; merging with G2 (both touch
