@@ -38,6 +38,7 @@
 
 import type { DictOverride } from "../../case/methodRun.js";
 import { tutorialByName } from "../../cases/tutorials.js";
+import { engineText } from "./runLog.js";
 
 /** The witness: the ammonia synthesis loop with a declared plot plan. */
 export const LAYOUT_WITNESS = "plant/ammonia02_full_plant";
@@ -146,10 +147,14 @@ export function layoutOverrides(k: LayoutKnobs, text = witnessLayoutText()): Dic
 }
 
 /** The `[layout]` lines of a run's log and its refusal, verbatim: what the
- *  engine said about the layout, in its own words. */
+ *  engine said about the layout, in its own words.  The engine writes its
+ *  announcements to stderr, which the browser worker marks `[stderr] `; the
+ *  mark is the worker's, not the engine's, so it is removed before the
+ *  match -- with it kept, every announcement was dropped in the browser and
+ *  only the refusal (matched anywhere in the line) reached the page. */
 export function layoutLines(log: string | null): string[] {
   if (!log) return [];
-  return log.split("\n").map((l) => l.trimEnd())
+  return log.split("\n").map((l) => engineText(l.trimEnd()))
     .filter((l) => l.startsWith("[layout] ") || l.includes("layoutDict: "))
     //  The verbosity-2 summary is a count, not a finding.
     .filter((l) => !l.startsWith("[layout] system/layoutDict:"));

@@ -771,7 +771,17 @@ export interface LogLine {
   readonly from: number | null;
 }
 
-const STDERR_PREFIX = "[stderr] ";
+/** The browser worker's mark on every line the engine wrote to stderr
+ *  (public/workers/solverWorker.js); a native run's stderr carries none.
+ *  ONE home: every reader that matches an engine announcement by its own
+ *  bracket (`[layout] `, `[building] `) strips it here first, or it matches
+ *  nothing in the browser and everything in a native test. */
+export const STDERR_PREFIX = "[stderr] ";
+
+/** A log line as the engine printed it: the worker's stderr mark removed. */
+export function engineText(raw: string): string {
+  return raw.startsWith(STDERR_PREFIX) ? raw.slice(STDERR_PREFIX.length) : raw;
+}
 const APP_PREFIX = /^\[(?:adapter|worker|wasm|wasm-worker|user)\] /;
 
 /** Split a log into what the engine printed on each output.  The browser
