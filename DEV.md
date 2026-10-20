@@ -1504,6 +1504,27 @@ accepts today, and that is a policy call.
 > Lewis relation (:504-516) -- reads that one index (20 uses).  Spray-dried
 > dispersions are routinely atomised from MIXED solvents (acetone/water,
 > ethanol/water, dichloromethane/methanol).  Dispatched 2026-10-20 (G10).
+> **DONE 2026-10-20 (G10, merged 0180b8341).**  Reproduced first: acetone +
+> water on a copy of sprayDryer01 ran to exit 0 with the acetone LOST (unit
+> closure 98.0620 %, -30.0001 kg/h) and an energy row of 0.0000 kW -- the
+> lost solvent's formation enthalpy absorbed into T_out -- and which solvent
+> was kept depended on the component ORDER.  Now with several solvents the
+> OUTLET IS THE PACKAGE'S EQUILIBRIUM of the air and every solvent at T_out
+> (`flashState::equilibriumAt`; a split means the air cannot carry it all --
+> the exhaust leaves on its dew point, never a fog, the liquid on the powder
+> at the package's composition, announced by kg/h per solvent), T_out
+> closing H(out) = H(in) through `priceState` on the published streams (row
+> -0.0000 kW); the droplet KPIs on a declared, announced pseudo-solvent;
+> `langrishKockel`/`chen` and a `sorption {}` isotherm REFUSE a
+> mixed-solvent feed by name; a dissolved component with no outlet (neither
+> nonvolatile nor volatile) refuses instead of vanishing.  Every
+> single-solvent corpus case byte-identical (10 cases, parent build vs new,
+> two sweeps); no golden moved.  Gate `check_spray_dryer_solvents` (7 arms,
+> 6 sabotages caught).  Record
+> `docs/design/a-spray-dryer-with-several-solvents.md`.  Found, for Vitor:
+> `data/standards/components/ethanol.dat` has no Fuller `diffusionVolume`
+> (a Fuller case refuses ethanol, correctly); a multicomponent droplet model
+> (selective evaporation, mixture CDC) is new physics and stays RESERVED.
 
 > **C110. "RESOLVE TUDO" -- THE BACKLOG DELEGATED (Vitor, 2026-10-20, after
 > upgrading his plan: "tenho de acabar isto once and for all!" ... "Resolve

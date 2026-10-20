@@ -1147,6 +1147,16 @@ operating resolution all read it: a drum operated at 844.86 K published
 7.685 kmol/s of liquid and now publishes none (gate `check_inlet_resolution`
 arm (j); DEV.md §5, 2026-09-26).
 
+**A SPRAY DRYER FED SEVERAL SOLVENTS LOSES NONE (2026-10-20, DEV.md 4c
+C111).**  With several volatile solvents the outlet is the package's
+equilibrium of the air and every solvent at T_out (the exhaust on its dew
+point when the air cannot carry it all, announced), T_out closing
+H(out) = H(in) through `flashState::priceState`; the droplet KPIs on an
+announced pseudo-solvent; the sorption isotherm and the droplet-trajectory
+chamber models refuse a mixed-solvent feed by name.  Single-solvent
+byte-identical.  Gate `check_spray_dryer_solvents`; record
+`docs/design/a-spray-dryer-with-several-solvents.md`.
+
 **THREE MORE, AND THE FLAGSHIP'S FIRST LAW (2026-09-27).**  The flagship's
 +34.41 kW was additive, and three of its four terms were this family: the
 `sprayDryer` solved `T_out` from a hand balance (constant-Cp air, a Watson

@@ -12,7 +12,7 @@
 
 ---
 
-## 1. Why an index, when 167 records already exist
+## 1. Why an index, when 168 records already exist
 
 The decisions were recorded.  What did not exist was any way to ask **"has
 this been decided, and where?"** — and that question is the whole reason the
@@ -27,7 +27,7 @@ Three concrete costs, all observed:
 - `project-philosophy.md` §5 lists eleven CLOSED decisions and, until this
   file, could not point at the argument for any of them (correspondence C5,
   recorded UNVERIFIABLE).
-- Of 167 design records, **114 state a rejected alternative and 53 do not** —
+- Of 168 design records, **115 state a rejected alternative and 53 do not** —
   so for two in five, the reasoning that would prevent re-litigation is
   absent, and nothing said so.
 
@@ -322,7 +322,7 @@ is not an argument.
 
 ## 5. What this index shows that no individual record could
 
-**53 of 167 records state no rejected alternative.**  For a FORUM or a STUDY
+**53 of 168 records state no rejected alternative.**  For a FORUM or a STUDY
 that is often fine.  For an ADR it means the decision is recorded without the
 argument that would prevent it being reopened — and reopening settled
 questions is the specific failure the constitutional layer exists to stop.
