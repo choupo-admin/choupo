@@ -1319,7 +1319,7 @@ accepts today, and that is a policy call.
 >    lacks the donepezil row); `bin/runTests --gui`; then fast-forward main.
 >    Each branch's own report said 0 golden rows moved; the donepezil and
 >    phaseSplit01 goldens are new.
-> 2. **G6 `claude/g6-small-defects` (9935fdd60)** -- five small defects
+> 2. **DONE 2026-10-20 (see C110 G6).**  **G6 `claude/g6-small-defects` (9935fdd60)** -- five small defects
 >    (gibbsReactor refuses a feed solid; Streams navigator on sectored
 >    plants; Open Case folder through caseFromEntries; layoutLines' stderr
 >    mark; two cross-document \ref in the guides + the Design Guide's
@@ -1750,6 +1750,24 @@ accepts today, and that is a policy call.
 > of the published year).  apalutamide01 byte-identical, 0 golden rows
 > moved.  NOT built: overlapping campaigns, rotations, an order optimiser,
 > the intermediate store.
+> **G6 DONE 2026-10-20 (merged via integ/g6, validated on the fresh
+> machine: build warning-free, the 15 steady/gibbs cases PASS, gates
+> gibbs-solid-phase / guide-paths / guide-pdf-fresh / doctrine OK,
+> `--gui` 32/0).**  Five small defects, one commit each plus a rider: (1)
+> `gibbsReactor` dropped a SOLID in its feed at exit 0 (a copy of gibbs11
+> fed 0.91 kmol/h of graphite: carbon in 2.91 / out 2.00 kmol-atom/h, only
+> the element balance said so) -- it REFUSES by name now, the
+> `equilibriumReactor` posture; carrying a feed solid is a feature not taken;
+> gate `check_gibbs_solid_phase` arm (h).  (2) The Streams Detail navigator
+> said "No flowsheet loaded." on lithiumBrinePlant: members resolve through
+> `toGraph.memberFolder`, the engine's `resolveMemberBase` order.  (3) File
+> -> "Open Case folder..." reads both browser routes through
+> `caseFromEntries`, the C107 one-home rule.  (4) `layoutLines` kept the
+> worker's `[stderr] ` mark, so the browser dropped every `[layout]`
+> finding: `runLog.engineText` is the one home.  (5) Two cross-document
+> `\ref`s in the Design and User Guides, and the Design Guide's stale C106
+> path.  Rider: the inserted lines moved every `GibbsReactor.cpp:N`
+> EduTool citation >= 275, remapped and read back.  0 golden rows moved.
 
 > **C109. AN EDUTOOL ON SYNTHESIS GAS (Vitor, 2026-10-19, after asking why
 > syngas is so widely used and which other synthesis gases are famous: "Podes

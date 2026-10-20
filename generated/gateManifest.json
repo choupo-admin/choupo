@@ -478,8 +478,8 @@
     },
     "check_gibbs_solid_phase": {
       "exit": 0,
-      "claim": "gibbs-solid-phase: OK -- graphite APPEARS at S/C 0.8 (0.0690265 mol/s, a = 1) and is ABSENT at S/C 3 (a = 0.08126); a reaction-based recomputation agrees to 1e-6, C/H/O close to 1e-7, both duties recompute on the solid rung, the absent solid leaves gibbs02's answer untouched, directMin refuses by name, and the adiabatic path closes its first law.  NOT checked: two solids at once, reactiveFlash with a solid, gibbsMap, real-gas fugacity.",
-      "seconds": 0.6
+      "claim": "gibbs-solid-phase: OK -- graphite APPEARS at S/C 0.8 (0.0690265 mol/s, a = 1) and is ABSENT at S/C 3 (a = 0.08126); a reaction-based recomputation agrees to 1e-6, C/H/O close to 1e-7, both duties recompute on the solid rung, the absent solid leaves gibbs02's answer untouched, directMin refuses by name, and the adiabatic path closes its first law, and graphite fed as a solid phase or in the fluid composition refuses by name.  NOT checked: two solids at once, reactiveFlash with a solid, gibbsMap, real-gas fugacity.",
+      "seconds": 0.9
     },
     "check_git_visibility": {
       "exit": 0,
