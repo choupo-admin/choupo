@@ -1,0 +1,73 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+  phaseSplit01_freeze_water_ethanol -- THE PHASE SPLIT ALONG T (DEV.md 4c C118).
+
+  The same liquor flash21 freezes at ONE temperature (-15 C), cooled here from
+  0 to -20 C one kelvin at a time: at every grid point ONE isothermal flash,
+  the flash21 unit's own solver (IsothermalFlash::solveCore), under flash21's
+  own sealed records -- water, ethanol, the curated NRTL pair, the C3
+  `phases ( liquor liquid; ice solid crystallizing )` declaration.  Nothing
+  is re-derived; the point at 258.15 K IS flash21's answer (the gate holds it
+  to flash21's golden).
+
+  WHAT A STUDENT WATCHES.  Above the liquor's freezing point the feed is one
+  liquid and the declared ice stays subsaturated: the water activity gamma_w
+  x_w (0.917) sits BELOW the saturation value exp(-dG_fus/RT) the crystal
+  would need (1 at the triple point, falling as T falls).  Between -8 and
+  -9 C the two cross, ice APPEARS (announced, between the two grid values it
+  lies between), and from there down the liquor concentrates exactly along
+  the freezing-point-depression identity
+
+      gamma_w * x_w  =  exp(-dHfus (1 - T/Tt) / (R T))
+
+  with every quantity from the record's own data (Hfus 6008 J/mol, triple
+  point 273.16 K) -- published at every point as `a_water` beside
+  `aEq_water`, equal to round-off wherever ice is present, and recomputed
+  independently by check_phase_split_scan.  By -20 C nearly 60 % of the feed
+  is ice and the liquor is about a quarter ethanol.
+
+  NOT MODELLED, said plainly (the run says it too): nucleation and
+  supercooling -- every point is the equilibrium ceiling; an ethanol solid
+  or a eutectic -- no record declares one, so the liquor never solidifies
+  completely in this model; solute inclusion in the ice; the liquid/solid
+  heat-capacity term of dG_fus (announced by the record, |T - Tt| up to
+  20 K here).  Every sub-273 K vapour pressure is an announced extrapolation
+  of the Antoine fit (it cancels in the SLE identity: both phases share one
+  Psat), and the NRTL pair is used below its fitted window (announced).  No
+  number here is anchored to a measured freezing-point datum: a STRUCTURAL
+  witness, like flash21.
+\*---------------------------------------------------------------------------*/
+operations
+(
+    {
+        name      freeze;
+        type      phaseSplitScan;
+
+        //  The HELD axis and the feed (moles).  The swept axis lives in
+        //  `vary` only -- declaring T here too is refused by name.
+        state
+        {
+            P            1.0 atm;
+            composition  { water 0.9;  ethanol 0.1; }
+        }
+
+        //  0 -> -20 C, one kelvin per point (21 points, descending: a
+        //  cooling scan reads top-down as the freezer would run it).
+        vary
+        {
+            variable  T;
+            from      273.15 K;
+            to        253.15 K;
+            n         21;
+        }
+
+        output    { file freeze.csv; }
+    }
+);

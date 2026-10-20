@@ -1195,6 +1195,11 @@
       "exit": 0,
       "claim": "check_batch_plan: OK -- (a) the witness's 9 stages in 2 trains recompute (lot 358.2 kg, 84 lots/yr, T_L sprayDrying=53.14 h by solutionPreparation, solidDose=10 h by packaging, 58 Gantt bars, findings ['lowUtilisation:finalBlending']); (b) 2 vessel(s) sized from the plan, 7 scaled quote(s) and the economics' stream factor recompute; (c) the witness's findings reach stderr, the caveat block and the JSON; capacityMismatch and idleTrain fire on their fixtures and recompute; (d) `rule largestEquipment` and units in and out of phase recompute (with the coater's scaled quote at two units); (e) 14 refusals fire, each naming its defect; (f) a case with no batchPlan publishes no block and prints no line; (g) --record pins 190 `batch` rows on the witness, the check passes on them, and a coating time moved by 0.5 h fails it on the stage:coating row.  NOT COVERED: whether a declared time, density, fill or lot is right for the product (the case's assumption), the intermediate store's size (not computed), multiproduct sequencing (not built), and the scaled quote's exponent (the case's convention).",
       "seconds": 83.3
+    },
+    "check_phase_split_scan": {
+      "exit": 0,
+      "claim": "check_phase_split_scan: OK -- one flash home (flash21/16/19 goldens reproduced at their operating point), the freezing-point identity recomputed from water.dat at every point (12 ice points), the ice appearance announced between its grid values, a pure-water probe refused by name below Tt and continued, the Psat/dCp announcements at their first point, closure to 1e-9, 4 grammar refusals, source arm.  NOT checked: any measured freezing point; the reactive path along a sweep; `phaseSet auto` changing along a scan; `variable P` beyond the grammar.",
+      "seconds": 6.1
     }
   }
 }

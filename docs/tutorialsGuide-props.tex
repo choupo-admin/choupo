@@ -3927,6 +3927,52 @@ WHAT THIS IS AND IS NOT. The mixture is ideal BY DEFINITION (the substances are 
 \end{tutgolden}
 
 \clearpage
+\tutentry{phaseSplit01\_freeze\_water\_ethanol}{tutorials/props/thermo/phaseSplit01\_freeze\_water\_ethanol}
+\begin{tutscheme}
+\begin{tikzpicture}[>={Stealth[length=2mm]}, every node/.style={font=\scriptsize}]
+  \node[draw, rounded corners=2pt, align=center, minimum width=3.1cm, minimum height=0.8cm, fill=black!4] at (0.0,-0.0) {\textbf{freeze}\\[-1pt]{\tiny phaseSplitScan}};
+\end{tikzpicture}
+\end{tutscheme}
+\tutwhat{Freeze-concentration scan: a 10 mol\% ethanol liquor cooled from 0 to -20 C, one SLE flash per kelvin -- the ice point, the liquor concentrating along the freezing-point-depression identity}
+\begin{tutnarrative}
+THE PHASE SPLIT ALONG T (DEV.md 4c C118).
+
+The same liquor flash21 freezes at ONE temperature (-15 C), cooled here from 0 to -20 C one kelvin at a time: at every grid point ONE isothermal flash, the flash21 unit's own solver (IsothermalFlash::solveCore), under flash21's own sealed records -- water, ethanol, the curated NRTL pair, the C3 `phases ( liquor liquid; ice solid crystallizing )` declaration. Nothing is re-derived; the point at 258.15 K IS flash21's answer (the gate holds it to flash21's golden).
+
+WHAT A STUDENT WATCHES. Above the liquor's freezing point the feed is one liquid and the declared ice stays subsaturated: the water activity gamma\_w x\_w (0.917) sits BELOW the saturation value exp(-dG\_fus/RT) the crystal would need (1 at the triple point, falling as T falls). Between -8 and -9 C the two cross, ice APPEARS (announced, between the two grid values it lies between), and from there down the liquor concentrates exactly along the freezing-point-depression identity
+
+gamma\_w $\ast$ x\_w = exp(-dHfus (1 - T/Tt) / (R T))
+
+with every quantity from the record's own data (Hfus 6008 J/mol, triple point 273.16 K) -- published at every point as `a\_water` beside `aEq\_water`, equal to round-off wherever ice is present, and recomputed independently by check\_phase\_split\_scan. By -20 C nearly 60 \% of the feed is ice and the liquor is about a quarter ethanol.
+
+NOT MODELLED, said plainly (the run says it too): nucleation and supercooling -- every point is the equilibrium ceiling; an ethanol solid or a eutectic -- no record declares one, so the liquor never solidifies completely in this model; solute inclusion in the ice; the liquid/solid heat-capacity term of dG\_fus (announced by the record, |T - Tt| up to 20 K here). Every sub-273 K vapour pressure is an announced extrapolation of the Antoine fit (it cancels in the SLE identity: both phases share one Psat), and the NRTL pair is used below its fitted window (announced). No number here is anchored to a measured freezing-point datum: a STRUCTURAL witness, like flash21.
+
+\end{tutnarrative}
+\tutreadme{What this witnesses (DEV.md 4c C118 stage 1, 2026-10-20): the phaseSplitScan props operation. At a FIXED overall composition (90/10 water/ethanol, moles) it sweeps temperature at fixed pressure and, at every grid point, solves the full phase split through the ONE flash home --- IsothermalFlash::solveCore, the isothermalFlash unit's own solver, with the options the unit's own reader parses --- under the case's own sealed records. The constant/ tree is flash21's, copied verbatim: the same water, the same ethanol, the same curated NRTL pair, the same C3 phases ( liquor liquid; ice solid crystallizing ) declaration. Nothing is re-derived, which is why the point at 258.15 K is flash21's answer (check\_phase\_split\_scan arm (a) holds it to flash21's golden; its arms also hold single points on copies of flash16 and flash19 to those units' pH and V/F).}
+\tutreadme{What a student watches. One isothermal flash per kelvin, 273.15 $\to$ 253.15 K:}
+\tutreadme{Above the liquor's freezing point the feed is one liquid and the declared crystal stays subsaturated: the water activity $\gamma$\_w$\cdot$x\_w (0.917) lies BELOW the saturation value exp(-$\Delta$G\_fus/RT) the crystal would need (1 at the triple point, falling as T falls). Between 265.15 and 264.15 K the two cross and ice APPEARS --- announced by the run between the two grid values it lies between, recorded as an appeared event in the result block, pinned as diag first\_ice. From there down the liquor concentrates exactly along the freezing-point-depression identity}
+\tutreadme{$\gamma$\_w $\cdot$ x\_w = exp(-$\Delta$H\_fus (1 - T/T\_t) / (R T)), $\Delta$H\_fus = 6008 J/mol, T\_t = 273.16 K}
+\tutreadme{with every quantity from water.dat's own data --- published at every point as a\_water beside aEq\_water, equal to 1e-10 wherever ice is present, and recomputed independently by the gate from the record. By -20 $^\circ$C 63 \% of the feed is ice and the liquor is 27 mol\% ethanol.}
+\tutreadme{What is published. freeze.csv (T first, then solved, nPhases, the amount of each phase --- L1, ice --- their compositions, the flash's own a\_water / aEq\_water / solidFraction) and the top-level result block phaseSplitScans (points, the event, the record-level announcements at the first point that raised each, what is not modelled). Every number in the block is a CSV cell or a diagnostic, so the csv and diag golden kinds pin all of it: the golden carries the diagnostics and ten authored CSV cells (rows 9, 15, 20).}
+\begin{tutgolden}
+\goldrow{diag}{freeze}{first\_L1}{273.15}
+\goldrow{diag}{freeze}{first\_ice}{264.15}
+\goldrow{diag}{freeze}{last\_L1}{253.15}
+\goldrow{diag}{freeze}{last\_ice}{253.15}
+\goldrow{diag}{freeze}{n\_announcements}{4}
+\goldrow{diag}{freeze}{n\_events}{1}
+\goldrow{diag}{freeze}{n\_points}{21}
+\goldrow{diag}{freeze}{n\_refused}{0}
+\goldrow{diag}{freeze}{n\_solved}{21}
+\goldrow{diag}{freeze}{points\_L1}{21}
+\goldrow{diag}{freeze}{points\_ice}{12}
+\goldrow{csv}{freeze.csv}{9:ice}{3.2042311316e-02}
+\goldrow{csv}{freeze.csv}{9:x\_L1\_ethanol}{1.0331030082e-01}
+\goldrow{csv}{freeze.csv}{15:ice}{4.7599462325e-01}
+\goldmore{7}
+\end{tutgolden}
+
+\clearpage
 \tutentry{standardState01\_hydrogen\_enthalpy\_TP}{tutorials/props/thermo/standardState01\_hydrogen\_enthalpy\_TP}
 \begin{tutscheme}
 \begin{tikzpicture}[>={Stealth[length=2mm]}, every node/.style={font=\scriptsize}]

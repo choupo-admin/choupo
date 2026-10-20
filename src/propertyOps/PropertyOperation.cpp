@@ -48,6 +48,7 @@ License
 #include "PropertyScanTernary.H"
 #include "PropertyScanBinary.H"
 #include "PhaseEnvelope.H"
+#include "PhaseSplitScan.H"
 #include "PurePhaseDiagram.H"
 #include "ReactionCurve.H"
 #include "PsychrometricChart.H"
@@ -164,6 +165,7 @@ void PropertyOperation::registerBuiltins()
         []{ return std::make_unique<EnthalpyConcentration>(); });
     reg("purePhaseDiagram", []{ return std::make_unique<PurePhaseDiagram>(); });
     reg("phaseEnvelope",  []{ return std::make_unique<PhaseEnvelope>();  });
+    reg("phaseSplitScan", []{ return std::make_unique<PhaseSplitScan>(); });
     reg("psychrometricChart", []{ return std::make_unique<PsychrometricChart>(); });
     reg("pitzerActivity", []{ return std::make_unique<PitzerActivity>(); });
     //  The ice witness: the freezing-point curve solved THROUGH SolidPhase,

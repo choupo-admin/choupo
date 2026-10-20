@@ -1,0 +1,30 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|  flash21 -- the C3 UNIFORM phases declaration: one liquid + one             |
+|  crystallizing solid, NO vapour (the LIQUID+SOLID phase set).               |
+|                                                                             |
+|  The ice phase is water's own crystal: SolidPhase prices                    |
+|  f_solid = Psat(T) * exp(-dG_fus/RT) at water's index and ZERO at           |
+|  ethanol's (the purity claim -- solute inclusion is not modelled).          |
+|  Psat cancels between the two phases' fEffective calls, so the SLE          |
+|  identity the flash solves is exactly  gamma_w * x_w = exp(-dG_fus/RT).     |
+\*-----------------------------------------------------------------------------*/
+recordType    thermophysicalPropertySystem;
+schemaVersion 2;
+
+components ( water ethanol );
+
+equilibrium
+{
+    formulation gammaGamma;
+
+    liquid
+    {
+        activityModel { model NRTL; }   // curated standards pair ethanol-water
+    }
+
+    phases
+    (
+        { name liquor; type liquid; }
+        { name ice;    type solid;  component water;  mode crystallizing; }
+    );
+}

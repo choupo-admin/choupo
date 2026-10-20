@@ -1,0 +1,125 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://choupo.org/schemas/operations/phaseSplitScan.schema.json",
+  "title": "Phase split along T or P",
+  "description": "The full phase split of ONE fixed feed swept along temperature (at fixed pressure) or pressure (at fixed temperature): at every grid point one isothermal flash through the flash unit's own solver (IsothermalFlash::solveCore) under the case's thermophysical system -- vapour, one or two liquids, crystallising solids declared in phases ( ... ), minerals precipitating from a speciated solution. Publishes per point the amount of every phase present (V, L1, L2, each solid by name), each phase's composition, the flash's own observables (pH, solidFraction, the crystal's activity beside its saturation value), the solved species where the package speciates; announces every phase appearance / disappearance between consecutive points and every record-level extrapolation at the first point that raised it. A point the flash cannot serve is published as REFUSED by name and the scan continues (no fallback). Output: a CSV (swept variable first) and the top-level result block phaseSplitScans. Not modelled: nucleation / supercooling, a solid no record declares, solute inclusion in a crystal.",
+  "type": "object",
+  "properties": {
+    "state": {
+      "type": "object",
+      "title": "Held axis and feed",
+      "description": "`{ P ...; composition { ... } }` when T is swept, `{ T ...; composition { ... } }` when P is swept. The swept axis declared here too is refused by name. The composition is in moles and is normalised (announced when it did not sum to one).",
+      "properties": {
+        "T": {
+          "type": "number",
+          "exclusiveMinimum": 0,
+          "title": "Held temperature",
+          "description": "Required when P is swept; refused when T is swept.",
+          "unit": "K"
+        },
+        "P": {
+          "type": "number",
+          "exclusiveMinimum": 0,
+          "title": "Held pressure",
+          "description": "Required when T is swept; refused when P is swept.",
+          "unit": "Pa"
+        },
+        "composition": {
+          "type": "object",
+          "title": "Feed composition",
+          "description": "`{ <component> <moles>; ... }` -- the one feed the whole scan is about.",
+          "additionalProperties": {
+            "type": "number",
+            "minimum": 0
+          }
+        }
+      },
+      "required": [
+        "composition"
+      ]
+    },
+    "vary": {
+      "type": "object",
+      "title": "Swept axis",
+      "description": "`{ variable T|P; from ...; to ...; n ...; }` (or `step`). `from` may exceed `to`: a cooling scan is written top-down. Absent `n` and `step`, 21 points are used and announced.",
+      "properties": {
+        "variable": {
+          "type": "string",
+          "enum": [
+            "T",
+            "P"
+          ],
+          "title": "Swept variable"
+        },
+        "from": {
+          "type": "number",
+          "title": "First grid value",
+          "unit": "K or Pa"
+        },
+        "to": {
+          "type": "number",
+          "title": "Last grid value",
+          "unit": "K or Pa"
+        },
+        "n": {
+          "type": "integer",
+          "minimum": 2,
+          "title": "Number of grid points",
+          "unit": "-"
+        },
+        "step": {
+          "type": "number",
+          "exclusiveMinimum": 0,
+          "title": "Grid step (alternative to n)",
+          "unit": "K or Pa"
+        }
+      },
+      "required": [
+        "variable",
+        "from",
+        "to"
+      ]
+    },
+    "phaseSet": {
+      "type": "string",
+      "enum": [
+        "VL",
+        "LL",
+        "VLLE",
+        "auto"
+      ],
+      "title": "Phase set",
+      "description": "The isothermalFlash unit's own word, read by the unit's own reader: VL (default), LL, VLLE, or auto (decided per grid point by the tangent-plane test; a change of the answer along the scan is announced as an event)."
+    },
+    "alphaRich": {
+      "type": "string",
+      "title": "Alpha-rich component (LL/VLLE seed)",
+      "description": "The flash unit's LL seeding aid: the component biased into liquid alpha for the initial guess."
+    },
+    "betaRich": {
+      "type": "string",
+      "title": "Beta-rich component (LL/VLLE seed)",
+      "description": "The flash unit's LL seeding aid: the component biased into liquid beta for the initial guess."
+    },
+    "output": {
+      "type": "object",
+      "title": "CSV output",
+      "description": "`{ file <name>.csv; }` -- the per-point table, relative to the case directory: the swept variable, `solved`, `nPhases`, one amount column per phase, `x_<phase>_<component>`, the flash observables, `n_<species>`.",
+      "properties": {
+        "file": {
+          "type": "string",
+          "title": "CSV file name"
+        }
+      },
+      "required": [
+        "file"
+      ]
+    }
+  },
+  "required": [
+    "state",
+    "vary",
+    "output"
+  ],
+  "additionalProperties": false
+}
