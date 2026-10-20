@@ -470,7 +470,7 @@ describe("every file:line these pages cite into the engine resolves", () => {
     ["src/propertyOps/FitParameters.cpp", 1372, "curationVerdict"],
     ["src/propertyOps/CurationDossier.cpp", 59, "notClaimed"],
     ["src/propertyOps/CurationDossier.cpp", 63, "notValidated"],
-    ["src/propertyOps/PropertyOperation.H", 116, "curation() const"],
+    ["src/propertyOps/PropertyOperation.H", 118, "curation() const"],
   ];
 
   it("lands each load-bearing citation on the statement it claims", () => {
