@@ -1291,6 +1291,22 @@ accepts today, and that is a policy call.
 > fire-water ring main and hydrants, bunds, escape routes, swept path, a
 > fillet running through an item.
 
+> **C115. THE UNIT BEING SOLVED PULSES WHEN A RUN IS SLOW (Vitor,
+> 2026-10-20: "ha casos em que a simulacao fica lenta ... a operacao
+> unitaria em que esta a ser feito o calculo ficasse com a cor a pulsar (se
+> demorasse mais de 1 s)").**  Commander's verdict: agree.  Measured: the
+> worker posts every stdout line live (`gui/public/workers/solverWorker.js:
+> 186`, Emscripten `print`), and the engine prints a banner before every
+> unit it solves (`>>>  Unit [k]:  <name>   (type = <T>)`), which
+> `gui/src/ui/LogWorkspace.tsx:81` already parses -- so the GUI can know the
+> unit in progress without any engine change.  Stated defaults: the banner
+> parser becomes ONE shared helper (LogWorkspace and the canvas read it);
+> after 1 s on the same unit its node gets a PULSING OUTLINE/halo, never a
+> repaint of the phase colour (gui-credo: phase colour is semantic), with
+> the elapsed seconds; a recycle pass that revisits a unit moves the pulse;
+> prefers-reduced-motion gets a static highlight; it stops when the run
+> ends or fails.  Dispatched 2026-10-20 (G17), after G16 on shared files.
+
 > **C114. A FLOWSHEET VIEWER STUDENTS LOVE, "TIPO PARAVIEW" (Vitor,
 > 2026-10-20: "ve como podes tornar o visualizador do flowsheet mais tipo
 > 'paraview'!  Nos podemos escolher cores para T e P, mas eventualmente
