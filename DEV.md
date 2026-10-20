@@ -1291,6 +1291,18 @@ accepts today, and that is a policy call.
 > fire-water ring main and hydrants, bunds, escape routes, swept path, a
 > fillet running through an item.
 
+> **C111. A SPRAY DRYER THAT TAKES A FEED WITH SEVERAL SOLVENTS (Vitor,
+> 2026-10-20, testing: "o modelo de spray dryer nao aceita correntes com
+> varios solventes.  Eu preciso disso para o projeto de industria
+> farmaceutica").**  Measured: `src/unitOperations/heatTransfer/
+> SprayDryer.cpp:187-193` picks ONE volatile solvent (`iSolv`, the LAST
+> feed component with a vapour pressure) and every later step -- the
+> surface-tension liquid vector (:272), the mass balance "ALL feed solvent
+> -> vapour" (:286), the humidity in kg solvent / kg dry gas (:322), the
+> Lewis relation (:504-516) -- reads that one index (20 uses).  Spray-dried
+> dispersions are routinely atomised from MIXED solvents (acetone/water,
+> ethanol/water, dichloromethane/methanol).  Dispatched 2026-10-20 (G10).
+
 > **C110. "RESOLVE TUDO" -- THE BACKLOG DELEGATED (Vitor, 2026-10-20, after
 > upgrading his plan: "tenho de acabar isto once and for all!" ... "Resolve
 > tudo e delego em ti fazeres como achares melhor.  Como temos agora
