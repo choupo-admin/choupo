@@ -158,8 +158,11 @@ function CurvePlot({ series, xLog = true, yLog = true, xLabel, yLabel, yDomain, 
   const W = 720, H = height, L = 66, R = 16, T = 12, B = 42;
   const ok = (v: number, log: boolean) => Number.isFinite(v) && (!log || v > 0);
   const xs = series.flatMap((s) => s.x.filter((v) => ok(v, xLog)));
-  const ys = series.flatMap((s) => s.y.filter((v) => ok(v, yLog)));
   const [x0, x1] = xDomain ?? [Math.min(...xs), Math.max(...xs)];
+  //  The y range is taken over the points that are DRAWN, so a series that
+  //  runs past the x window does not stretch the axis.
+  const ys = series.flatMap((s) => s.y.filter((v, i) => ok(v, yLog)
+    && s.x[i]! >= x0 * (1 - 1e-12) && s.x[i]! <= x1 * (1 + 1e-12)));
   let [y0, y1] = yDomain ?? [Math.min(...ys), Math.max(...ys)];
   if (!yDomain) {
     if (yLog) { y0 /= 1.1; y1 *= 1.1; }
@@ -344,7 +347,7 @@ function Frac({ n, d }: { n: number; d: number }): JSX.Element {
   return <>{d === 1 ? String(n) : `${n}/${d}`}</>;
 }
 
-function DimensionalPage(): JSX.Element {
+export function DimensionalPage(): JSX.Element {
   const [pid, setPid] = useState<DimProblem["id"]>("friction");
   const P = PROBLEMS[pid];
   const [selBy, setSelBy] = useState<Record<string, string[]>>({
@@ -417,9 +420,9 @@ function DimensionalPage(): JSX.Element {
           </Table>
         </Box>
         <Group gap={8}>
-          <Badge variant="light">n = {vars.length} variables</Badge>
-          <Badge variant="light">rank r = {res.rank}</Badge>
-          <Badge variant="filled">N<sub>Π</sub> = n − r = {vars.length - res.rank} groups</Badge>
+          <Badge tt="none" variant="light">n = {vars.length} variables</Badge>
+          <Badge tt="none" variant="light">rank r = {res.rank}</Badge>
+          <Badge tt="none" variant="filled">N<sub>Π</sub> = n − r = {vars.length - res.rank} groups</Badge>
         </Group>
         <Box>
           <Text size="xs" c="dimmed" mb={4}>
@@ -437,7 +440,7 @@ function DimensionalPage(): JSX.Element {
           <Group gap={6} mt={6}>
             <Text size="xs" c="dimmed">presets:</Text>
             {P.alternativeCores.map((c) => (
-              <Badge key={c.join(",")} variant="outline" style={{ cursor: "pointer" }}
+              <Badge tt="none" key={c.join(",")} variant="outline" style={{ cursor: "pointer" }}
                 onClick={() => {
                   setCoreBy((s) => ({ ...s, [pid]: [...c] }));
                   setSelBy((s) => ({ ...s, [pid]: [...new Set([...s[pid]!, ...c])] }));
@@ -512,7 +515,7 @@ function DimensionalPage(): JSX.Element {
 
 // ---- Page 2: what Pi gives -------------------------------------------------------------
 
-function PiPage({ moody }: { moody: SweepTable }): JSX.Element {
+export function PiPage({ moody }: { moody: SweepTable }): JSX.Element {
   const keys = useMemo(() => keysOf(moody, "relRough"), [moody]);
   const [eps, setEps] = useState(1e-3);
   const e = keys.includes(eps) ? eps : (keys[0] ?? 0);
@@ -552,13 +555,24 @@ function PiPage({ moody }: { moody: SweepTable }): JSX.Element {
 /** A cut wherever the engine names a different regime on either side. */
 const regimeSplit = (c: Curve) => (i: number) => c.regime[i] !== c.regime[i - 1];
 
+/** The same curve with a gap where the regime changes, so a plot does not
+ *  draw a line across the switch of law the slope was not taken across. */
+function brokenAtRegimes(c: Curve, y: readonly number[]): { x: number[]; y: number[] } {
+  const out = { x: [] as number[], y: [] as number[] };
+  c.Re.forEach((Re, i) => {
+    if (i > 0 && c.regime[i] !== c.regime[i - 1]) { out.x.push(NaN); out.y.push(NaN); }
+    out.x.push(Re); out.y.push(y[i]!);
+  });
+  return out;
+}
+
 function slopeAt(c: Curve, s: readonly number[], Re: number): number {
   let best = -1, bd = Infinity;
   c.Re.forEach((r, i) => { const d = Math.abs(Math.log10(r / Re)); if (d < bd) { bd = d; best = i; } });
   return best < 0 || bd > 1e-6 ? NaN : s[best]!;
 }
 
-function AsymptotesPage({ moody }: { moody: SweepTable }): JSX.Element {
+export function AsymptotesPage({ moody }: { moody: SweepTable }): JSX.Element {
   const keys = useMemo(() => keysOf(moody, "relRough"), [moody]);
   const curves = useMemo(() => keys.map((e) => {
     const c = curveOf(moody, "relRough", e, "f_Colebrook", "in_Colebrook");
@@ -573,7 +587,7 @@ function AsymptotesPage({ moody }: { moody: SweepTable }): JSX.Element {
       {step(7)}
       {step(8)}
       <Panel title="the Moody plane, from the engine">
-        <CurvePlot xLabel="Re" yLabel="f (Darcy)" height={340}
+        <CurvePlot xLabel="Re" yLabel="f (Darcy)" height={340} yDomain={[5e-3, 1]}
           bands={[{ x0: 2300, x1: 4000, label: "transition" }]}
           series={[
             ...curves.map(({ e, c }, i) => ({ label: `Colebrook, ${label(e)}`, x: c.Re, y: c.y,
@@ -583,11 +597,12 @@ function AsymptotesPage({ moody }: { moody: SweepTable }): JSX.Element {
         <Text size="xs" c="dimmed">
           Below Re = 2300 the engine substitutes the exact laminar law for Colebrook, so every
           roughness falls on one line; the dashed line is the same law published beside
-          Churchill&apos;s expression, drawn across the whole plane.
+          Churchill&apos;s expression, continued past 2300 until it leaves the plot.
         </Text>
         <CurvePlot xLabel="Re" yLabel="local slope d ln f / d ln Re" yLog={false}
           yDomain={[-1.1, 0.1]} bands={[{ x0: 2300, x1: 4000, label: "transition" }]}
-          series={curves.map(({ e, c, s }, i) => ({ label: label(e), x: c.Re, y: s, color: slot(i) }))} />
+          series={curves.map(({ e, c, s }, i) => ({ label: label(e), ...brokenAtRegimes(c, s),
+            color: slot(i) }))} />
         <Box style={{ overflowX: "auto" }}>
           <Table withTableBorder fz="xs" style={{ width: "auto" }}>
             <Table.Thead>
@@ -623,7 +638,7 @@ function AsymptotesPage({ moody }: { moody: SweepTable }): JSX.Element {
 
 // ---- Page 4: master and slave --------------------------------------------------------------
 
-function SlavePage(): JSX.Element {
+export function SlavePage(): JSX.Element {
   const [lr, setLr] = useState(2);           // log10(gamma / eps)
   const eps = 1, gamma = 10 ** lr;
   const x0 = 0.02 * Math.sqrt(eps * gamma), tEnd = 8;
@@ -638,16 +653,16 @@ function SlavePage(): JSX.Element {
         <LabeledSlider label={<>scale ratio <Tex src="\gamma/\varepsilon" mode="inline" /></>}
           value={lr} min={0} max={3} step={0.05} onChange={setLr} show={fmtSig(gamma / eps, 3)} />
         <Group gap={8} wrap="wrap">
-          <Badge variant="light">x* = √(εγ) = {fmtSig(xs, 4)}</Badge>
-          <Badge variant="light">
+          <Badge tt="none" variant="light">x* = √(εγ) = {fmtSig(xs, 4)}</Badge>
+          <Badge tt="none" variant="light">
             eigenvalues: {ev.im[0] === 0
               ? `${fmtSig(ev.re[0]!, 4)}, ${fmtSig(ev.re[1]!, 4)}`
               : `${fmtSig(ev.re[0]!, 4)} ± ${fmtSig(ev.im[0]!, 4)} i`}
           </Badge>
-          <Badge variant="light" color={ev.im[0] === 0 ? "gray" : "red"}>
+          <Badge tt="none" variant="light" color={ev.im[0] === 0 ? "gray" : "red"}>
             {ev.im[0] === 0 ? "γ ≥ 8ε: a monotone approach" : "γ < 8ε: complex roots, the full system oscillates"}
           </Badge>
-          <Badge variant="filled">max |x − x_reduced| / x* = {fmtSig(run.maxRelErr, 3)}</Badge>
+          <Badge tt="none" variant="filled">max |x − x_reduced| / x* = {fmtSig(run.maxRelErr, 3)}</Badge>
         </Group>
         <CurvePlot xLog={false} yLog={false} xLabel="t (units of 1/ε)" yLabel="x / x*"
           series={[
@@ -677,7 +692,7 @@ function SlavePage(): JSX.Element {
 
 type FitCurveId = "colebrook" | "gnielinski";
 
-function PracticePage({ moody, nusselt }: { moody: SweepTable; nusselt: SweepTable }): JSX.Element {
+export function PracticePage({ moody, nusselt }: { moody: SweepTable; nusselt: SweepTable }): JSX.Element {
   const keys = useMemo(() => keysOf(moody, "relRough"), [moody]);
   const prs = useMemo(() => keysOf(nusselt, "Pr"), [nusselt]);
 
@@ -732,17 +747,21 @@ function PracticePage({ moody, nusselt }: { moody: SweepTable; nusselt: SweepTab
     [ch]);
   const devN = maxDev(blendN);
 
-  // ---- (c) the transition zone
+  // ---- (c) the transition zone -- its own roughness, smooth by default, so
+  //  Blasius (which carries no roughness term) is asked a question it can
+  //  answer and the spread is about the transition, not about Blasius.
+  const [epsT, setEpsT] = useState(0);
+  const eT = keys.includes(epsT) ? epsT : (keys[0] ?? 0);
   const fNames = useMemo(() => moody.cols.filter((c) => c.startsWith("f_")).map((c) => c.slice(2)), [moody]);
   const spread = useMemo(() => {
-    const fc = fNames.map((nm) => curveOf(moody, "relRough", e, `f_${nm}`, `in_${nm}`));
+    const fc = fNames.map((nm) => curveOf(moody, "relRough", eT, `f_${nm}`, `in_${nm}`));
     const nc = TUBE_NU.map((nm) => curveOf(nusselt, "Pr", pr, `Nu_${nm}`, `in_${nm}`));
     const sp = (cs: Curve[]) => cs[0]!.Re.map((_, i) => {
       const v = cs.map((c) => c.y[i]!);
       return (Math.max(...v) - Math.min(...v)) / Math.min(...v);
     });
     return { fc, nc, sf: sp(fc), sn: sp(nc) };
-  }, [moody, nusselt, fNames, e, pr]);
+  }, [moody, nusselt, fNames, eT, pr]);
   const rows = spread.fc[0]!.Re.map((Re, i) => ({ Re, i }))
     .filter(({ Re }) => Re >= 1e3 * (1 - 1e-9) && Re <= 1.6e4 && Math.abs(Math.log10(Re) * 10
       - Math.round(Math.log10(Re) * 10)) < 1e-6);
@@ -760,12 +779,12 @@ function PracticePage({ moody, nusselt }: { moody: SweepTable; nusselt: SweepTab
         <LabeledSlider label="design tolerance" value={tol} min={0.05} max={0.3} step={0.01}
           onChange={setTol} show={`±${Math.round(tol * 100)} %`} />
         <Group gap={8} wrap="wrap">
-          <Badge variant="filled">
+          <Badge tt="none" variant="filled">
             {yName} ≈ {fmtSig(fit.C, 4)} Re^{fmtSig(fit.m, 4)}
           </Badge>
-          <Badge variant="light">{fit.n} grid points</Badge>
-          <Badge variant="light">worst error inside the decade {fmtSig(100 * fit.maxRelErr, 3)} %</Badge>
-          <Badge variant="light" color="grape">
+          <Badge tt="none" variant="light">{fit.n} grid points</Badge>
+          <Badge tt="none" variant="light">worst error inside the decade {fmtSig(100 * fit.maxRelErr, 3)} %</Badge>
+          <Badge tt="none" variant="light" color="grape">
             within ±{Math.round(tol * 100)} % from Re = {fmtSig(reach.lo, 3)} to {fmtSig(reach.hi, 3)}
             {" "}({fmtSig(reach.decades, 3)} decades)
           </Badge>
@@ -812,12 +831,12 @@ function PracticePage({ moody, nusselt }: { moody: SweepTable; nusselt: SweepTab
         <LabeledSlider label={<>blending exponent <Tex src="n" mode="inline" /></>} value={n}
           min={1} max={30} step={1} onChange={setN} show={String(n)} />
         <Group gap={8} wrap="wrap">
-          <Badge variant="filled" color={dev12 < 1e-12 ? "teal" : "red"}>
+          <Badge tt="none" variant="filled" color={dev12 < 1e-12 ? "teal" : "red"}>
             at n = 12, max |blend / f_Churchill − 1| over the grid = {dev12.toExponential(2)}
           </Badge>
-          <Badge variant="light">at n = {n}: {fmtSig(100 * devN, 3)} %</Badge>
+          <Badge tt="none" variant="light">at n = {n}: {fmtSig(100 * devN, 3)} %</Badge>
         </Group>
-        <CurvePlot xLabel="Re" yLabel="f (Darcy)"
+        <CurvePlot xLabel="Re" yLabel="f (Darcy)" yDomain={[1e-3, 1]}
           series={[
             { label: "laminar asymptote 64/Re", x: ch.fL.Re, y: ch.fL.y, color: SLOT[2], dash: "4 4" },
             { label: "turbulent branch f_t", x: ch.fT.Re, y: ch.fT.y, color: SLOT[3], dash: "4 4" },
@@ -833,10 +852,11 @@ function PracticePage({ moody, nusselt }: { moody: SweepTable; nusselt: SweepTab
 
       {step(14)}
       <Panel title="where no mechanism dominates">
-        <CurvePlot xLabel="Re" yLabel="spread s" yLog={false} height={240}
+        <RoughnessPicker keys={keys} value={eT} onChange={setEpsT} />
+        <CurvePlot xLabel="Re" yLabel="spread s (0.1 = 10 %)" yLog={false} height={240}
           xDomain={[1e3, 1e5]} bands={[{ x0: 2300, x1: 4000, label: "transition" }]}
           series={[
-            { label: `friction, ε/D = ${fmtSig(e, 2)}`, x: spread.fc[0]!.Re, y: spread.sf, color: SLOT[0] },
+            { label: `friction, ε/D = ${fmtSig(eT, 2)}`, x: spread.fc[0]!.Re, y: spread.sf, color: SLOT[0] },
             { label: `Nusselt (tube-side), Pr = ${fmtSig(pr, 2)}`, x: spread.nc[0]!.Re, y: spread.sn,
               color: SLOT[1] },
           ]} />
@@ -870,9 +890,9 @@ function PracticePage({ moody, nusselt }: { moody: SweepTable; nusselt: SweepTab
         </Box>
         <Text size="xs" c="dimmed">
           † the engine flags the point as outside that correlation&apos;s own window (below
-          2300 a substituted laminar law, or an extrapolation). Relative roughness as chosen
-          above; the Nusselt spread is Gnielinski against Dittus-Boelter only -- Kern is a
-          shell-side correlation and is left out.
+          2300 a substituted laminar law, or an extrapolation; Blasius at any ε/D above zero,
+          because it has no roughness term). The Nusselt spread is Gnielinski against
+          Dittus-Boelter only -- Kern is a shell-side correlation and is left out.
         </Text>
         <EngineSource />
       </Panel>
