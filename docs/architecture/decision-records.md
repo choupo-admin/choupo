@@ -12,7 +12,7 @@
 
 ---
 
-## 1. Why an index, when 168 records already exist
+## 1. Why an index, when 169 records already exist
 
 The decisions were recorded.  What did not exist was any way to ask **"has
 this been decided, and where?"** — and that question is the whole reason the
@@ -27,7 +27,7 @@ Three concrete costs, all observed:
 - `project-philosophy.md` §5 lists eleven CLOSED decisions and, until this
   file, could not point at the argument for any of them (correspondence C5,
   recorded UNVERIFIABLE).
-- Of 168 design records, **115 state a rejected alternative and 53 do not** —
+- Of 169 design records, **115 state a rejected alternative and 54 do not** —
   so for two in five, the reasoning that would prevent re-litigation is
   absent, and nothing said so.
 
@@ -116,6 +116,7 @@ direction is an error.
 | [`model-boundary-energy-ledger.md`](../design/model-boundary-energy-ledger.md) | ADR | yes | SHIPPED 2026-08-09 — the enthalpy STEP at a per-unit `thermo {}` boundary is ACCOUNTED, not charged to the unit: three quantities (raw imbalance / declared step / remaining) kept apart on both surfaces, the verdict taken on the third, the step credited only when an INDEPENDENTLY assembled package reproduces it under `solver/Convergence.H`'s declared criteria; absorbing the step into T, pricing the report in each unit's world, and letting the report ask the auditee for its own dH are the recorded rejected alternatives |
 | [`sour-water-stripper-scope.md`](../design/sour-water-stripper-scope.md) | SCOPE | no | **S1–S3 ALL SHIPPED (S2+S3 on 2026-08-23)** — the effective stage K, the eight-tray stripper (`stripper01`, the mechanism strict across a decade of loading + the pinned free-ammonia surge), and the Edwards Table 7 anchor (`edwards02`, the vapour side as the speciate op's `vapour {}` block, 18 anchors on the paper's own predictions).  S4 (H₂S) stays the named gap, a curation slice |
 | [`curation-backlog-estimated-records.md`](../design/curation-backlog-estimated-records.md) | SCOPE | no | ONGOING |
+| [`a-phase-split-scan-along-t-or-p.md`](../design/a-phase-split-scan-along-t-or-p.md) | ADR | no | **BUILT 2026-10-20** -- commission C118 stage 1 (Vitor: freezing an aqueous formulation from 0 to -20 C and watching ice form and the pH move).  The `phaseSplitScan` props op sweeps T at fixed P or P at fixed T at ONE overall composition and calls `IsothermalFlash::solveCore` at every grid point with the unit's own `readOptions`, so it writes no equilibrium of its own; a single-point scan reproduces flash21/16/19's goldens.  Phase amounts (V, L1, L2, each named solid), compositions, pH and species where speciated, appearance / disappearance events between grid points, a refused point published by name with no fallback.  Witness `phaseSplit01_freeze_water_ethanol`.  Gate `check_phase_split_scan` |
 | [`a-spray-dryer-with-several-solvents.md`](../design/a-spray-dryer-with-several-solvents.md) | ADR | yes | **BUILT 2026-10-20** -- commission C111 (Vitor, for a pharmaceutical project).  The spray dryer kept ONE volatile solvent (the last in the component list) and a second one was in the feed and in no outlet: acetone + water ran to exit 0 with the acetone lost (unit closure 98.06 %) and the energy balance reading 0.0000 kW because the missing formation enthalpy was absorbed into the exhaust TEMPERATURE.  Now, with several solvents, the outlet is the PACKAGE'S EQUILIBRIUM of the air and every solvent at T_out (one vapour phase: all evaporated; a split: the exhaust saturated, never a fog, the liquid on the powder at the package's composition), T_out closing H(out) = H(in) through `priceState` on the published streams; the droplet KPIs on a declared pseudo-solvent; the sorption isotherm and the `langrishKockel`/`chen` trajectories REFUSE a mixed-solvent feed by name, and so does a dissolved component with no outlet.  Every single-solvent corpus case byte-identical.  REJECTED: a frozen-composition residual, per-solvent Raoult in the unit, one solvent plus a refusal, the isotherm applied to water alone.  Gate `check_spray_dryer_solvents` |
 
 ### Contract written, not built
@@ -322,7 +323,7 @@ is not an argument.
 
 ## 5. What this index shows that no individual record could
 
-**53 of 168 records state no rejected alternative.**  For a FORUM or a STUDY
+**54 of 169 records state no rejected alternative.**  For a FORUM or a STUDY
 that is often fine.  For an ADR it means the decision is recorded without the
 argument that would prevent it being reopened — and reopening settled
 questions is the specific failure the constitutional layer exists to stop.

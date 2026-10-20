@@ -6,7 +6,7 @@
   "runtime": "not recorded; runTests does not time per case and this script does not run the corpus"
  },
  "counts": {
-  "cases": 478,
+  "cases": 479,
   "witnesses": 16,
   "validationOp": 6,
   "anchored": 12
