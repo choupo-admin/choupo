@@ -163,6 +163,25 @@ def claim_of(path):
 def main() -> int:
     names = [p.stem for p in gates()]
 
+    #  AN UNKNOWN FLAG IS REFUSED, NOT IGNORED (2026-10-20, DEV.md 4c C122).
+    #  The arms below look for `--check` and `--only` and fall through to the
+    #  FULL regeneration otherwise -- so `gate_manifest.py --help` ran every
+    #  gate in the tree, an hour of work, and was paid for on 2026-10-20 by
+    #  the commander asking for the usage.  The one argument this script
+    #  takes without a flag is a gate NAME after `--only`.
+    args = sys.argv[1:]
+    if args and args[0] not in ("--check", "--only"):
+        print(__doc__.split("\n\n")[0].strip())
+        print("\ngate_manifest: unknown argument %r -- nothing was run.  The "
+              "full regeneration takes NO argument; `--check` compares names "
+              "only; `--only NAME ...` re-observes the named gates."
+              % args[0])
+        return 0 if args[0] in ("-h", "--help") else 2
+    if args[:1] == ["--check"] and len(args) > 1:
+        print("gate_manifest: --check takes no further argument (got %r); "
+              "nothing was run." % args[1:])
+        return 2
+
     if "--check" in sys.argv:
         assert_tree_undisturbed("gate_manifest --check")
         if not OUT.exists():
