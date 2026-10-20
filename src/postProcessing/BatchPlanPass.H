@@ -154,11 +154,103 @@ Description
     than 1 % (the plan asks the hardware for a rate it was not modelled at).
     `lowUtilisation` undeclared takes the stated default 0.25, announced.
 
-    WHAT IS NOT DONE, said: the intermediate store is not sized; one product
-    only (no multiproduct sequencing, no changeover matrix); every lot is
-    identical and every campaign repeats the first; no stochastic QC release
-    times; no labour or utility schedule follows the plan (the economics
-    takes the year's FLOWS from it, its labour from the declared crew).
+    SEVERAL PRODUCTS ON THE SAME STAGES (2026-10-20, DEV.md 4c C110 G2).
+    A drug-product plant makes several strengths or products in CAMPAIGNS on
+    one set of equipment, cleaning between them.  `products ( ... )` in
+    place of `production {}` (both together are refused: two homes for the
+    year's demand) declares them, and `campaignOrder` the order of their
+    campaigns -- the student's decision; the engine never chooses it:
+
+        products
+        (
+            { product strength60;  perYear 20000 kg;  source "...";  reason "..."; }
+            { product strength240; perYear  8000 kg;
+              lot { rule declared; stream finalBlend; mass 300 kg;      // optional:
+                    source "...";  reason "..."; }                      //  the plan's otherwise
+              massPerProduct { coatingSuspension 0.12; }  // optional: kg per kg of
+                                                          //  THIS product, where its
+                                                          //  balance is not the flowsheet's
+              stages                                      // optional: what differs here
+              (
+                  { stage compression;  operatingTime 3 h;
+                    changeoverTo { strength60 10 h; }      // the clean before THAT product
+                    source "...";  reason "..."; }
+              );
+              source "...";  reason "..."; }
+        );
+        campaignOrder ( strength60 strength240 );
+        stages ( { ...  cleanTime 1 h;           // between LOTS of one product
+                        productChangeover 6 h;   // between campaigns of DIFFERENT
+                   ... } );                      //  products (every stage, 0 h allowed)
+
+    A product changes at a stage only what it declares: chargeTime,
+    cleanTime, dischargeTime, and processTime / bulkDensity / fillFraction
+    (batch) or operatingTime (semicontinuous); everything else is the
+    stage's.  Its balance is the FLOWSHEET's -- the ONE steady balance, read
+    as kg per kg of product -- unless `massPerProduct` declares a stream's
+    own; it then sizes on it, and is ANNOUNCED (`ownBalance`), because the
+    economics' `streamFactor fromBatchPlan;` prices every product's raw
+    materials and utilities on the flowsheet's one balance.
+
+    THE MULTIPRODUCT METHOD -- single-product campaigns, the classical
+    flow-shop form taught beside the single-product method (same books,
+    same caveat: cited by title, not read):
+
+      f_ij  = declared, or r_holds,j / r_P;   S_ij = f_ij / (rho_ij phi_ij)
+      B_i   = M_lot,i / f_i(lotStream)  |  min_j N_ip,j Vmax_j / S_ij
+      N_i   = ceil(Q_i / B_i);  t_ij, T_L,i = max_j t_ij / N_op,j per train
+      V_j   = max_i S_ij B_i / N_ip  (R_j = max_i m_ij / t_op,ij / N_ip):
+              the equipment is sized for the product that needs the most,
+              and `sizingProduct` names it
+      c_i   = ceil(N_i / n_c) campaigns, run back to back on each train in
+              the declared order, each spanning o + (n - 1) T_L,i as above
+      after each campaign: the train's `changeover` if the product's next
+              campaign follows; after its LAST, the clean before the next
+              product in the order (the last wraps to the first):
+              C_i = max_j c_ij, c_ij = `changeoverTo { <next> }` at stage j
+              if the product declares one, else the stage's
+              `productChangeover` -- every stage cleaned at once, once the
+              campaign has left the train
+      required = SUM_i [ SUM spans + (c_i - 1) changeover + C_i ]
+      busy_j   = SUM_i [ N_i t_ij / N_op + (c_i - 1) changeover + c_ij ]
+      H_eq  = SUM_i Q_i / r_P,  streamFactor = H_eq / 8760
+
+    One product declared in `products` reproduces the single-product plan
+    (the gate holds the two to 1e-9).  The ORDER moves the year only
+    through `changeoverTo`: with cleans that depend on the stage alone, any
+    order costs the same and the order sets only the Gantt -- which is
+    the honest statement of the method, and why the clean before a given
+    product (`changeoverTo`) is what makes sequencing a decision.  A
+    declared `changeoverTo` the current order does not use is kept (the
+    student may reorder) and read; `changeoverAfter` in the result says
+    which clean each product's last campaign took.
+
+    REFUSED in addition: `production` beside `products`; `campaignOrder`
+    missing (two or more products) or not a permutation; a stage without
+    `productChangeover` (two or more products), or with one (one product);
+    a product override naming no stage, changing nothing, or changing what
+    its stage type does not have; `changeoverTo` naming no OTHER product; a
+    `massPerProduct` on the product stream, on a stream nothing reads, or
+    carrying dimensions; a product with no lot and no plan lot; a plan lot
+    every product overrides; and the same impossible year as one product
+    (a stage busier than its train's year, a train whose year does not
+    fit), with each product's share named.  ANNOUNCED in addition:
+    `ownBalance:<product>`; `capacityMismatch:<product>:<stage>`;
+    `lowUtilisation:<stage>` is a stage that limits NO product and whose
+    largest utilisation is below the threshold.
+
+    WHAT IS NOT DONE, said: the intermediate store is not sized; every lot
+    of a product is identical and every campaign repeats its first; the
+    campaigns of two products never overlap on a train (the next product
+    waits until the whole train is clean: conservative, and the line
+    clearance a GMP suite performs, but a flow shop that lets stage 1
+    start the next product while stage 5 finishes would need less); one
+    rotation a year (each product's campaigns back to back -- splitting a
+    product into several rotations, trading changeovers for inventory, is
+    not built); mixed-product campaigns; no optimiser of the order; no
+    stochastic QC release times; no labour or utility schedule follows the
+    plan (the economics takes the year's FLOWS from it, its labour from the
+    declared crew).
 \*---------------------------------------------------------------------------*/
 
 #pragma once
