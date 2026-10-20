@@ -48,6 +48,7 @@ import TEACHING_RAW from "./gmpTeachingBuilding.layoutDict?raw";
 
 import type { CaseFiles } from "../../case/types.js";
 import { filesToCaseFiles, tutorialByName } from "../../cases/tutorials.js";
+import { engineText } from "./runLog.js";
 
 /** The host: one sized spray dryer, so the plot plan has an item to place. */
 export const GMP_HOST = "steady/drying/sprayDryer07_design";
@@ -309,8 +310,6 @@ export const MOVES: { readonly [P in GmpPart]: readonly GmpMove[] } = {
   ],
 };
 
-const STDERR_PREFIX = "[stderr] ";
-
 /** The `[building]` lines of a run's log and any building refusal,
  *  verbatim: what the engine said, in its own words.  The engine writes its
  *  announcements to the ERROR stream, and the browser worker prefixes every
@@ -322,7 +321,7 @@ const STDERR_PREFIX = "[stderr] ";
 export function buildingLines(log: string | null): string[] {
   if (!log) return [];
   return log.split("\n").map((l) => l.trimEnd())
-    .map((l) => (l.startsWith(STDERR_PREFIX) ? l.slice(STDERR_PREFIX.length) : l))
+    .map(engineText)
     .filter((l) => l.startsWith("[building] ") || l.includes("layoutDict building: "))
     //  The verbosity-1 summary heads the room table; it is a count, not a
     //  finding.
