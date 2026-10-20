@@ -1312,9 +1312,17 @@ IsothermalFlash::solveCore(const FlashInput&    in,
                                  " composition: sum z / K = "
                               << std::setprecision(10) << r.S << " ("
                               << r.iterations << " iterations)\n";
-                if (r.S > 1.0 + band)
+                if (std::isfinite(r.S) && r.S > 1.0 + band && !r.K.empty())
                 {
                     splitV = true; xTrial = r.trial; KV = r.K;
+                    vapourVerdict = false;
+                }
+                else if (!std::isfinite(r.S) && splitL)
+                {
+                    //  S = +inf: a present component has K = 0 (a
+                    //  nonvolatile), so no vapour-only state exists and the
+                    //  liquid split found above stands; `r.K` is EMPTY here
+                    //  and must not seed anything.
                     vapourVerdict = false;
                 }
             }
