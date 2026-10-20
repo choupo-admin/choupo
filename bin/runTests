@@ -1560,7 +1560,16 @@ auto_generate() {
         #  and offset + ... + t_j, every term of which is pinned above, and
         #  `check_batch_plan` recomputes every bar from them -- and the
         #  declared inputs echoed (density, fill, available hours), which
-        #  the derived numbers already hold.
+        #  the derived numbers already hold.  MULTIPRODUCT (2026-10-20, DEV.md
+        #  4c C110 G2): the `product:`, `productTrain:` and `productStage:`
+        #  records carry the per-product numbers and are read by THEIR OWN key
+        #  lists below (a key such as `massPerProduct` also sits on a
+        #  one-product stage line, and pinning it there would add rows to
+        #  every one-product golden); the aggregates gain the size's product,
+        #  the clean between products, the largest utilisation, the product
+        #  changes and the changeover hours -- keys a one-product plan never
+        #  publishes, so its rows are unchanged.  The year's Gantt is not
+        #  pinned, for the reason above: every bar is a sum of pinned terms.
         printf '%s\n' "$out" | awk -v tol="$reltol" '
             /^  "batchPlan": \{/ { inblk = 1; next }
             inblk && /^  \}/  { inblk = 0 }
@@ -1573,13 +1582,20 @@ auto_generate() {
                 sub(/"message": .*/, "", line)
                 sub(/"units": .*/, "", line)
                 sub(/"unplannedUnits": .*/, "", line)
-                nw = split("lotRule lotLimitingStage limitingStage type sizeKind limiting operatingFrom dischargeFrom kind", W, " ")
+                sub(/"ownBalance": .*/, "", line)
+                sub(/"overrideSource": .*/, "", line)
+                if (id ~ /^product/) {
+                    nw = split("next lotFrom lotRule lotLimitingStage limitingStage balanceFrom operatingFrom dischargeFrom limiting", W, " ")
+                    nn = split("perYear lotSize lotsPerYear production equivalentHours cycleTime campaigns lotsLastCampaign campaignSpan start productChangeover requiredTime massPerProduct massPerLot sizeFactor volumePerUnit ratePerUnit chargeTime processTime dischargeTime cleanTime effectiveCycle utilisation offset changeoverAfter", N, " ")
+                } else {
+                    nw = split("lotRule lotLimitingStage limitingStage type sizeKind limiting operatingFrom dischargeFrom kind sizingProduct", W, " ")
+                    nn = split("productRate productPerYear lotSize lotsPerYear production equivalentHours streamFactor stages trains findings cycleTime campaigns campaignSpan campaignDuration requiredTime occupancy massPerLot sizeFactor volumePerUnit ratePerUnit unitsInstalled chargeTime processTime dischargeTime cleanTime effectiveCycle utilisation offset busyHours value limit products productChangeover maxUtilisation productChangeovers changeoverHours", N, " ")
+                }
                 for (i = 1; i <= nw; i++)
                     if (match(line, "\"" W[i] "\": \"[^\"]*\"")) {
                         s = substr(line, RSTART, RLENGTH); sub(/^"[^"]*": "/, "", s); sub(/"$/, "", s)
                         if (s != "") printf "batch  %-26s %-16s %-18s %s\n", id, W[i], s, "exact"
                     }
-                nn = split("productRate productPerYear lotSize lotsPerYear production equivalentHours streamFactor stages trains findings cycleTime campaigns campaignSpan campaignDuration requiredTime occupancy massPerLot sizeFactor volumePerUnit ratePerUnit unitsInstalled chargeTime processTime dischargeTime cleanTime effectiveCycle utilisation offset busyHours value limit", N, " ")
                 for (i = 1; i <= nn; i++)
                     if (match(line, "\"" N[i] "\": *-?[0-9][0-9.eE+-]*")) {
                         s = substr(line, RSTART, RLENGTH); sub(/^"[^"]*": */, "", s)
