@@ -1,0 +1,28 @@
+# Reference KPIs (golden master, auto-recorded by runTests --record).
+# units: stream F is kmol/s (canonical SI, as in the result JSON); the run LOG prints kmol/h.
+# kind   name      key         expected        reltol
+diag    freeze                 first_L1         273.15             1e-4
+diag    freeze                 first_ice        264.15             1e-4
+diag    freeze                 last_L1          253.15             1e-4
+diag    freeze                 last_ice         253.15             1e-4
+diag    freeze                 n_announcements  4                  1e-4
+diag    freeze                 n_events         1                  1e-4
+diag    freeze                 n_points         21                 1e-4
+diag    freeze                 n_refused        0                  1e-4
+diag    freeze                 n_solved         21                 1e-4
+diag    freeze                 points_L1        21                 1e-4
+diag    freeze                 points_ice       12                 1e-4
+# The CSV cells below are AUTHORED from the recorded run (the `csv` kind pins
+# one cell: <row>:<column>, row 0 = the first data row).  Row 9 is the first
+# point with ice (264.15 K), row 15 is flash21's own operating point (258.15 K
+# -- the same solver, the same answer), row 20 is -20 C.
+csv     freeze.csv             9:ice            3.2042311316e-02   1e-4
+csv     freeze.csv             9:x_L1_ethanol   1.0331030082e-01   1e-4
+csv     freeze.csv             15:ice           4.7599462325e-01   1e-4
+csv     freeze.csv             15:L1            5.2400537675e-01   1e-4
+csv     freeze.csv             15:x_L1_ethanol  1.9083773648e-01   1e-4
+csv     freeze.csv             15:a_water       8.5743412093e-01   1e-4
+csv     freeze.csv             15:aEq_water     8.5743412085e-01   1e-4
+csv     freeze.csv             20:ice           6.3207928390e-01   1e-4
+csv     freeze.csv             20:x_L1_ethanol  2.7179768799e-01   1e-4
+csv     freeze.csv             20:a_water       8.1131653800e-01   1e-4

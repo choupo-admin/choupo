@@ -608,6 +608,7 @@ try
                       //  top-level overlay AAD table.
                       std::map<std::string, std::string> val; };
     std::vector<OpResult> opResults;
+    std::map<std::string, std::vector<std::string>> opBlocks;
     for (std::size_t k = 0; k < opsList.size(); ++k)
     {
         const auto& opDict = opsList[k];
@@ -671,6 +672,11 @@ try
 
         opResults.push_back({ opName, opType, diags, opProv,
                               op->headline(), op->curation() });
+        //  The op's OWN top-level block, if it publishes one (2026-10-20,
+        //  PropertyOperation::resultBlock): grouped by block name, emitted
+        //  beside the validation table below.
+        if (const auto blk = op->resultBlock(); !blk.first.empty())
+            opBlocks[blk.first].push_back(blk.second);
     }
 
     // --- Experimental datasets: echo each to a CSV in the case dir -------
@@ -1121,6 +1127,18 @@ try
             }
             std::cout << " ] }";
         }
+        std::cout << "\n  ]";
+    }
+
+    //  The ops' OWN top-level blocks (PropertyOperation::resultBlock), one
+    //  array per block name, each element the op's object as it spelt it.
+    //  Absent when no op in the run publishes one -- an empty array would
+    //  read as "the block ran and found nothing".
+    for (const auto& [blockName, objects] : opBlocks)
+    {
+        std::cout << ",\n  " << jsonEscape(blockName) << ": [";
+        for (std::size_t i = 0; i < objects.size(); ++i)
+            std::cout << (i ? ",\n    " : "\n    ") << objects[i];
         std::cout << "\n  ]";
     }
 

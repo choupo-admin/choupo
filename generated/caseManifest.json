@@ -2925,6 +2925,20 @@
    "roles": [],
    "hasGolden": true
   },
+  "tutorials/props/thermo/phaseSplit01_freeze_water_ethanol": {
+   "application": "choupoProps",
+   "ops": [
+    "phaseSplitScan"
+   ],
+   "thermo": {
+    "formulation": "gammaGamma",
+    "activityModels": [
+     "NRTL"
+    ]
+   },
+   "roles": [],
+   "hasGolden": true
+  },
   "tutorials/props/thermo/standardState01_hydrogen_enthalpy_TP": {
    "application": "choupoProps",
    "thermo": {
@@ -7187,6 +7201,7 @@
     "tutorials/props/steam/steam01_if97_verification",
     "tutorials/props/steam/steam02_water_transport",
     "tutorials/props/thermo/bubble01_reaction_mass_boiling_point",
+    "tutorials/props/thermo/phaseSplit01_freeze_water_ethanol",
     "tutorials/props/thermo/standardState01_hydrogen_enthalpy_TP",
     "tutorials/props/thermo/temperature01_gas_thermometer",
     "tutorials/props/thermo/temperature02_engineers_ladder",
@@ -8170,6 +8185,7 @@
     "tutorials/props/molecular/nrtl01_ethanol_water_package",
     "tutorials/props/scan/hxy01_ethanol_water_1atm",
     "tutorials/props/scan/ternary01_audit_vlle",
+    "tutorials/props/thermo/phaseSplit01_freeze_water_ethanol",
     "tutorials/steady/absorption/extraction01_waterButanol",
     "tutorials/steady/distillation/column03_azeotrope_mesh",
     "tutorials/steady/flash/bubbleT01_ethanol_water",
@@ -8737,6 +8753,9 @@
    "phaseEnvelope": [
     "tutorials/props/molecular/envelope01_natural_gas",
     "tutorials/props/molecular/envelope02_root_jump"
+   ],
+   "phaseSplitScan": [
+    "tutorials/props/thermo/phaseSplit01_freeze_water_ethanol"
    ],
    "pitzerActivity": [
     "tutorials/props/electrolyte/archer01_nacl_cold_to_hot",

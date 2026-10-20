@@ -1200,6 +1200,11 @@
       "exit": 0,
       "claim": "check_spray_dryer_solvents: OK -- a spray dryer fed several solvents loses none; (a) acetone+water closes, T_out 402.01 K, dew sum 0.0140; (b) ethanol+water closes; (c) starved exhaust saturated at 310.88 K, residual water 68.1 % vs acetone 21.3 % of fed; (d) sorption refused; (e) langrishKockel refused; (f) no-outlet component refused; (g) one solvent keeps its route",
       "seconds": 1.7
+    },
+    "check_phase_split_scan": {
+      "exit": 0,
+      "claim": "check_phase_split_scan: OK -- one flash home (flash21/16/19 goldens reproduced at their operating point), the freezing-point identity recomputed from water.dat at every point (12 ice points), the ice appearance announced between its grid values, a pure-water probe refused by name below Tt and continued, the Psat/dCp announcements at their first point, closure to 1e-9, 4 grammar refusals, source arm.  NOT checked: any measured freezing point; the reactive path along a sweep; `phaseSet auto` changing along a scan; `variable P` beyond the grammar.",
+      "seconds": 6.1
     }
   }
 }
