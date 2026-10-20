@@ -1291,6 +1291,39 @@ accepts today, and that is a policy call.
 > fire-water ring main and hydrants, bunds, escape routes, swept path, a
 > fillet running through an item.
 
+> **C123. A BENCHMARK FOLDER: HARD CASES FROM THE OPEN-SOURCE REFERENCE
+> SIMULATOR, REPRODUCED (Vitor, 2026-10-20: "tentes ir vendo casos dificeis
+> do [simulador de referencia open-source] e ver se os reproduzes.  Sera que
+> podemos fazer uma pasta de benchmark?  Isso e legal?").**  Commander's
+> reading, put to Vitor: reproducing a published PROBLEM (its feeds, units,
+> specifications) as Choupo's own case files is not copying anyone's code
+> or data; the comparison numbers are facts; the reference simulator is
+> itself GPL-3.0 (to be READ, not remembered, before anything is relied
+> on), so even its sample files would be licence-compatible -- but they
+> carry property parameters from databanks this project already excludes
+> (the C16 rule: pair tables are not freed by their courier's licence), so
+> NO file of theirs is vendored and every number in a benchmark case comes
+> from Choupo's own catalogue or a primary source.  The one real conflict
+> is this project's own doctrine: `check_doctrine` bans competitor names
+> repo-wide (tracked files, named exemptions only), so a folder that names
+> the reference simulator needs Vitor's ruling -- a named exemption for a
+> developer-facing `benchmarks/` tree, or neutral wording ("the sample
+> library of an open-source sequential-modular simulator", the version and
+> URL in a non-shipped note).  Awaiting that ruling; not dispatched.
+
+> **C122. INTEGRATION TOOLING AND A SITE SMOKE TEST (Vitor, 2026-10-20,
+> "Avanca 1 e 2", on the commander's reflection).**  (1) `bin/integrate
+> <branch>`: merge into a fresh worktree off main, regenerate the generated
+> artefacts instead of hand-resolving their conflicts, rebuild the touched
+> guide PDFs with `make -B` and read them back, build, run the validation
+> the diff reaches (conservation gates scoped through the suite cache, which
+> the commander had been invoking wrongly), print one verdict; never pushes
+> main, never re-records.  (2) A CI smoke step after `bin/buildSite`: serve
+> the built site, open every live EduTool in headless Chromium, check the
+> app's sentinel, the page and, where it runs a witness in the browser,
+> that the run completes -- the WASM engine had never been exercised before
+> students opened it.  Dispatched (G22, G23).
+
 > **C121. AN EDUTOOL ON DATA RECONCILIATION IN PROCESS CONTROL, AND HOW
 > BAYES HELPS (Vitor, 2026-10-20: "Ha outra coisa que os meus alunos nao
 > sabem: reconciliacao de dados em controlo de processos e como Bayes pode
