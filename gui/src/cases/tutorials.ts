@@ -314,6 +314,12 @@ const SUBCLASS_LABEL: { [slug: string]: string } = {
   plant: "Plant design (run in lots)",
 };
 
+/** The label a sub-class slug is shown under ("" for none) -- read by the
+ *  Open Case search so a result names its folder as the browser does. */
+export function subclassLabel(slug: string): string {
+  return slug ? (SUBCLASS_LABEL[slug] || slug) : "";
+}
+
 export interface SubclassGroup {
   slug: string;
   label: string;
