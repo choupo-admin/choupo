@@ -1316,8 +1316,9 @@ accepts today, and that is a policy call.
 > the case; (2) side coolers/heaters and pumparounds as column FEATURES --
 > new physics in the MESH (a draw, a duty or a return temperature, a return
 > stage), Vitor's -- each realising a sized exchanger item on the same
-> route, its terminal temperatures read off the stage profile.  Not
-> dispatched.
+> route, its terminal temperatures read off the stage profile.  Item (1)
+> APPROVED 2026-10-20 ("sim a tudo") and dispatched; item (2), the side
+> exchangers and pumparounds, waits until Vitor has seen (1) working.
 
 > **C123. A BENCHMARK FOLDER: HARD CASES FROM THE OPEN-SOURCE REFERENCE
 > SIMULATOR, REPRODUCED (Vitor, 2026-10-20: "tentes ir vendo casos dificeis
@@ -1363,7 +1364,19 @@ accepts today, and that is a policy call.
 > fontes primarias.  Pedes os artigos cientificos e eu arranjo-tos": the
 > commander lists the articles (pair, full citation, DOI), Vitor obtains
 > them, and a pair stays at zero only where the list shows it can, with the
-> reason (phase 1b, G24).  Decisions 2-4 (B's case-local notValidated
+> reason (phase 1b, G24).  Phase 1b DONE: 19 verified articles, listed
+> with citations and DOIs in `benchmarks/requests/pr-kij-articles.md`.
+> DECISIONS (Vitor, 2026-10-20, "Rota P, kij a T declarada, e sim a tudo"):
+> route P -- the PPR78 / E-PPR78 group-contribution kij (Jaubert, Privat and
+> co-workers), evaluated ONCE per unit at that unit's declared T, a stated
+> default announced on the run (no kij(T) in the PR); B may use curate05's
+> notValidated NRTL pair case-locally; C may curate an LLE pair from primary
+> data if Choupo's UNIFAC does not split water/MIBK; D's outlet-temperature
+> PFR is mapped to isothermal, announced; E (steam-reforming PFR) is in;
+> the methanol pairs PPR78 lacks fall back to Choupo's own regression to
+> measured data (Brunner 1987; the ThermoML methanol-water series) through
+> a high-pressure solubility residual in `fitParameters`.  Order: B and C
+> first (no kij needed); A, D and E when Vitor has the articles.  Decisions 2-4 (B's case-local notValidated
 > pair; an LLE pair for C if UNIFAC does not split; D's outlet-temperature
 > PFR mode) put to Vitor.
 
