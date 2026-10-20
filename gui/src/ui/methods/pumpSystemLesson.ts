@@ -56,9 +56,16 @@ export const PUMP_STEPS: readonly LessonStep[] = [
       + "install the same pump on two different pipe runs and you get two "
       + "different flows.  The flow is decided by TWO curves at once — what "
       + "the pipework DEMANDS at each flow, and what the machine can DELIVER "
-      + "at each flow.  One curve rises, the other falls, so they meet at "
-      + "exactly one place, and that crossing is the operating point: the "
-      + "only flow the installation can actually run at.",
+      + "at each flow.  In THIS example one curve only rises and the other "
+      + "only falls, so they meet at exactly one place, and that crossing is "
+      + "the operating point: the only flow this installation can run at.  "
+      + "That uniqueness is a property of these two curves, not of pumps.  "
+      + "A real pump curve can droop near shut-off or carry a dip, a system "
+      + "curve can be flat or shaped by a control valve, and then the two "
+      + "may cross twice or more.  And not every crossing holds: one on the "
+      + "rising branch of a drooping pump curve, where the pump's curve climbs "
+      + "more steeply with flow than the system's, is unstable — the flow "
+      + "hunts instead of settling.",
     formula: String.raw`\Delta p_\mathrm{pump}(Q^*) = \Delta p_\mathrm{system}(Q^*) \quad \longrightarrow \quad Q^*, \text{ the operating point}`,
     where: [
       { sym: "\\Delta p_\\mathrm{pump}",
@@ -83,7 +90,13 @@ export const PUMP_STEPS: readonly LessonStep[] = [
         + "installation ends up, which is the whole lesson of the page.",
         unit: "m³/s" },
     ],
-    note: "Read the plot below as two answers to the same question.  The "
+    note: "The single crossing on this page also rests on the MODEL'S "
+      + "curve: Choupo's pump is the constant-power hyperbola of step 3, not "
+      + "a measured centrifugal H(Q), and a hyperbola can never droop.  So "
+      + "the page can show one operating point and cannot show two, or an "
+      + "unstable one: that is a limit of the model, not a reassurance about "
+      + "real machines.  Read the plot below as two answers to the same "
+      + "question.  The "
       + "sweep behind it IMPOSES a flow at each of its points and asks each "
       + "side what pressure it would want there; at every flow but one the "
       + "two answers differ, and the difference has nowhere to go.  The "
@@ -253,15 +266,26 @@ export const PUMP_STEPS: readonly LessonStep[] = [
       + "with above its own vapour pressure, and it FALLS as flow rises, "
       + "because the suction line's friction grows with flow.  The NPSH "
       + "REQUIRED is the pump's own property, measured by its maker, and it "
-      + "RISES with flow.  Where those two cross, the liquid flashes to "
-      + "vapour in the eye of the impeller and the bubbles collapse against "
-      + "the blades: the pump stops delivering the curve it was chosen on, "
-      + "it gets noisy, and it erodes.  None of that is visible in a "
-      + "pump-versus-system diagram, however good the crossing looks.",
+      + "RISES with flow over most of the range.  Read the datasheet's "
+      + "number for what it is: the NPSH required is usually NPSH3, the "
+      + "suction head at which the pump's total head has ALREADY fallen by "
+      + "3 per cent in a test.  So at NPSH3 the pump is not on the edge of "
+      + "cavitation — it is cavitating hard enough to lose head.  The first "
+      + "bubbles appear earlier, at a higher suction head called incipient "
+      + "cavitation, and between the two the pump can erode with no visible "
+      + "loss of head at all.  That is why NPSH available greater than NPSH "
+      + "required is a MINIMUM, indicative condition, never the design "
+      + "criterion: a pump is selected with a MARGIN above NPSH required, "
+      + "and how much margin depends on the liquid, the energy level of the "
+      + "pump and the service — the manufacturer states it, and the "
+      + "Hydraulic Institute's guideline on NPSH margin (ANSI/HI 9.6.1) is "
+      + "the usual reference.  None of that is visible in a pump-versus-"
+      + "system diagram, however good the crossing looks.",
     formula: String.raw`\begin{aligned}
 \mathrm{NPSH}_a &= \frac{P_\mathrm{source} - P_\mathrm{vap}}{\rho\, g} + z_\mathrm{suction} - h_\mathrm{f,suction} && \text{(falls with } Q)\\
-\mathrm{NPSH}_r &= \text{the pump's own, measured} && \text{(rises with } Q)\\[4pt]
-&\text{cavitation when}\quad \mathrm{NPSH}_a \le \mathrm{NPSH}_r
+\mathrm{NPSH}_r &= \mathrm{NPSH}_3 && \text{(usually; rises with } Q)\\
+\mathrm{NPSH}_i &> \mathrm{NPSH}_3 && \text{(the first bubbles appear before the head falls)}\\[4pt]
+\text{minimum:}\quad \mathrm{NPSH}_a &> \mathrm{NPSH}_r, \qquad \text{selection:}\quad \mathrm{NPSH}_a \ge \mathrm{NPSH}_r + \Delta\mathrm{NPSH}_\mathrm{m}
 \end{aligned}`,
     where: [
       { sym: "\\mathrm{NPSH}_a",
@@ -272,9 +296,25 @@ export const PUMP_STEPS: readonly LessonStep[] = [
         + "geometry.", unit: "m" },
       { sym: "\\mathrm{NPSH}_r",
         means: "Net positive suction head REQUIRED — the "
-        + "pump's own property, measured by its maker, rising with flow.  NOT "
-        + "COMPUTED, and could not be: it is measured machine data, and this "
-        + "model carries no measured data of any kind.", unit: "m" },
+        + "pump's own property, measured by its maker, rising with flow over "
+        + "most of the range.  NOT COMPUTED, and could not be: it is measured "
+        + "machine data, and this model carries no measured data of any "
+        + "kind.", unit: "m" },
+      { sym: "\\mathrm{NPSH}_3",
+        means: "The suction head at which the pump's total head "
+        + "has fallen by 3 per cent in a suction test at constant flow and "
+        + "speed — the usual definition behind a datasheet's NPSH required.  "
+        + "At this point the pump is already cavitating.", unit: "m" },
+      { sym: "\\mathrm{NPSH}_i",
+        means: "The INCIPIENT-cavitation NPSH: the suction head "
+        + "at which the first vapour bubbles appear.  It lies above NPSH3, "
+        + "often well above it, and is seldom on a datasheet.", unit: "m" },
+      { sym: "\\Delta\\mathrm{NPSH}_\\mathrm{m}",
+        means: "The NPSH MARGIN a selection keeps above NPSH "
+        + "required (sometimes stated as a ratio instead of a difference).  "
+        + "Its size is the manufacturer's, or the Hydraulic Institute "
+        + "guideline's for that service; this page gives no value.",
+        unit: "m" },
       { sym: "P_\\mathrm{source}",
         means: "Absolute pressure on the liquid SURFACE of the "
         + "vessel the pump draws from.  Not the pressure at the pump's "
@@ -299,8 +339,9 @@ export const PUMP_STEPS: readonly LessonStep[] = [
     note: "Choupo computes NONE of this, and the page will not pretend "
       + "otherwise: no unit in the engine publishes an NPSH of either kind, "
       + "the pump model carries no suction geometry, and it never checks its "
-      + "inlet against the liquid's vapour pressure.  The three lines above "
-      + "are a question you have to answer somewhere else.  This diagram "
+      + "inlet against the liquid's vapour pressure.  The lines above are a "
+      + "question you have to answer somewhere else, with the pump's own "
+      + "suction data and the margin its maker states.  This diagram "
       + "cannot fail you on it — which is exactly what makes it dangerous "
       + "to read on its own.",
   },

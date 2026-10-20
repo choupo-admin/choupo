@@ -270,7 +270,20 @@ export const STANDARD_STATE_STEPS: readonly LessonStep[] = [
       { sym: "h_i^{\\mathrm{R}}", means: "residual enthalpy of species i at the "
         + "stream's T and P", unit: "kJ/mol" },
     ],
-    note: "Because every species is on the one datum, a reactor's energy "
+    note: "Why nothing is subtracted at the reference: each record's "
+      + "formation enthalpy is the ideal gas's — the hypothetical ideal gas at "
+      + "298.15 K — and `h_pure_ig` refuses a record whose reference state is "
+      + "not the gas.  The residual is measured from that same ideal gas at "
+      + "the same temperature, so it vanishes at the reference by "
+      + "construction, and no residual is subtracted at the reference.  A "
+      + "datum tabulated for the REAL gas at 1 bar would need its own "
+      + "residual, h^R(298.15 K, 1 bar), taken off; for methane on SRK that "
+      + "is about −17 J/mol, small but not zero, and a program that mixes "
+      + "the two conventions is wrong by it.  The ideal-gas term does not "
+      + "depend on pressure at all, so whether a table's standard pressure is "
+      + "1 bar or 1 atm moves an entropy or a Gibbs energy, never an "
+      + "enthalpy.  "
+      + "Because every species is on the one datum, a reactor's energy "
       + "balance on these enthalpies needs no reaction enthalpy at all — the "
       + "heat of reaction is already inside the formation terms.  The "
       + "`reaction-enthalpy` page makes that point with the ammonia converter.",

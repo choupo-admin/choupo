@@ -9,7 +9,13 @@
   drifted from the engine fails here rather than on a student's desk.
 \*---------------------------------------------------------------------------*/
 
-import { readFileSync } from "node:fs";
+import { spawnSync } from "node:child_process";
+import {
+  cpSync, existsSync, mkdtempSync, readFileSync, rmSync, writeFileSync,
+} from "node:fs";
+import { tmpdir } from "node:os";
+import { dirname, join } from "node:path";
+import { fileURLToPath } from "node:url";
 
 import { describe, expect, it } from "vitest";
 
@@ -17,7 +23,8 @@ import {
   LADDER_LIMITS, LADDER_SECTIONS,
 } from "../src/ui/methods/reactorLadderLesson.js";
 import {
-  LADDER_COLUMNS, LADDER_WITNESS, ladderOverrides, T_KNOB,
+  LADDER_COLUMNS, LADDER_WITNESS, LIMIT_TOL, declaredVersusLimit,
+  ladderOverrides, T_KNOB, X_KNOB,
 } from "../src/ui/methods/ReactorLadderTool.js";
 import { applyDictOverride } from "../src/case/methodRun.js";
 import { texParses } from "../src/ui/methods/lessonTex.js";
@@ -127,5 +134,104 @@ describe("the knobs land on the slots the witness declares", () => {
       text.indexOf("name        gibbs;"));
     expect(limitBlock).toMatch(/temperatureApproach\s+0;/);
     expect(approachBlock).toMatch(/temperatureApproach\s+40;/);
+  });
+});
+
+// ---- C112 point 12: the page warns when rung 1 exceeds rung 2 ----------------
+//
+//  The page compares two numbers the engine PUBLISHES -- the conversion
+//  reactor's echoed `conversion` and the equilibrium reactor's
+//  `conversion_wgs` -- for the same feed, T and P.  The moves below are run
+//  by THIS checkout's native choupoSolve on the exact overrides the browser
+//  sends, and the comparison is taken on what that run published.
+
+const REPO = join(dirname(fileURLToPath(import.meta.url)), "..", "..");
+
+function runLadder(T: number, dT: number, X: number):
+  { kpis: { [u: string]: { [k: string]: number } } } {
+  const bin = join(REPO, "choupoSolve");
+  expect(existsSync(bin), `${bin} is absent -- run \`make all\` at the repository `
+    + "root; this test runs the native engine and must not skip").toBe(true);
+  const dir = mkdtempSync(join(tmpdir(), "choupo-c112-ladder-"));
+  try {
+    cpSync(join(REPO, "tutorials", LADDER_WITNESS), dir, { recursive: true });
+    for (const o of ladderOverrides(T, dT, X)) {
+      const f = join(dir, o.file);
+      writeFileSync(f, applyDictOverride(readFileSync(f, "utf-8"), o));
+    }
+    const r = spawnSync(bin, [dir], { cwd: REPO, encoding: "utf-8",
+      maxBuffer: 256 * 1024 * 1024 });
+    expect(r.status, r.stderr).toBe(0);
+    const m = /<<<Choupo:result-begin>>>\s*\n([\s\S]*?)\n<<<Choupo:result-end>>>/
+      .exec(r.stdout ?? "");
+    expect(m, "the run published no result block").not.toBeNull();
+    return JSON.parse(m![1]!);
+  } finally {
+    rmSync(dir, { recursive: true, force: true });
+  }
+}
+
+describe("the page warns when rung 1 declares more than rung 2 allows", () => {
+  it("compares with a round-off allowance only, far below the X knob's step", () => {
+    expect(LIMIT_TOL).toBeLessThan(X_KNOB.step / 1e6);
+    expect(declaredVersusLimit(null, 0.8)).toBeNull();
+    expect(declaredVersusLimit(0.8, Number.NaN)).toBeNull();
+    expect(declaredVersusLimit(0.84, 0.84)!.exceeds).toBe(false);
+    const c = declaredVersusLimit(0.9, 0.8414)!;
+    expect(c.exceeds).toBe(true);
+    expect(c.excess).toBeCloseTo(0.0586, 10);
+  });
+
+  it("a move that CROSSES the limit: X = 0.80 is allowed at 600 K and impossible at 700 K", () => {
+    //  Hold X and heat the reactor: the exothermic shift's limit falls through
+    //  the declared number, and the warning must appear exactly then.
+    const cold = runLadder(600, 25, 0.8);
+    const hot = runLadder(700, 25, 0.8);
+    const at = (r: typeof cold) => declaredVersusLimit(
+      r.kpis["stoich"]!["conversion"]!, r.kpis["limit"]!["conversion_wgs"]!)!;
+    const a = at(cold), b = at(hot);
+    expect(a.declared).toBeCloseTo(0.8, 12);
+    expect(b.declared).toBeCloseTo(0.8, 12);
+    //  The limits are the engine's: 0.8414 at 600 K, 0.7537 at 700 K (the
+    //  values measured in reactorLadderLesson.ts's header).
+    expect(a.limit).toBeCloseTo(0.841432775225, 6);
+    expect(b.limit).toBeCloseTo(0.753662089481, 6);
+    expect(a.exceeds).toBe(false);
+    expect(b.exceeds).toBe(true);
+    //  And the conversion reactor ran to exit 0 at 700 K all the same: the
+    //  warning is the PAGE's, the engine raised nothing.
+    expect(b.excess).toBeGreaterThan(0.04);
+  }, 60_000);
+
+  it("the shipped state (X = 0.90 at 600 K) warns, and a lower X at the same T does not", () => {
+    const shipped = runLadder(600, 25, 0.9);
+    const c = declaredVersusLimit(shipped.kpis["stoich"]!["conversion"]!,
+      shipped.kpis["limit"]!["conversion_wgs"]!)!;
+    expect(c.exceeds).toBe(true);
+    expect(c.limit).toBeCloseTo(golden("limit", "conversion_wgs"), 9);
+  }, 60_000);
+
+  it("the warning is drawn from that comparison, and the lesson says the page does it", () => {
+    const tool = readFileSync(new URL("../src/ui/methods/ReactorLadderTool.tsx",
+      import.meta.url), "utf-8");
+    expect(tool).toContain("const rungCheck = declaredVersusLimit(xDeclared, xLimit);");
+    expect(tool).toContain("Rung 1 is a hypothesis that cannot be reached here");
+    //  The warning names 10 bar; it is the witness feed's pressure, which no
+    //  knob writes.
+    expect(tool).toContain("and 10 bar, allows at most");
+    expect(FEED).toMatch(/^\s*P\s+1000000 Pa;/m);
+    expect(ladderOverrides(650, 10, 0.7).some((o) => "key" in o && o.key === "P")).toBe(false);
+    expect(tool).toContain("this page compared the two numbers the engine");
+    expect(prose(section("rung1").body)).toContain("warns, in red");
+    const lim = LADDER_LIMITS.find((l) => l.id === "no-cross-check")!;
+    expect(lim.title).toContain("this page does");
+    //  The ENGINE claim stays true: the conversion reactor checks only the
+    //  bounds of X and non-negative outlets.
+    const cr = readFileSync(new URL(
+      "../../src/unitOperations/reactor/ConversionReactor.cpp", import.meta.url),
+      "utf-8").split("\n");
+    expect(cr[214]).toContain('lookupScalar("conversion")');
+    expect(cr.slice(215, 218).join(" ")).toContain("X < 0.0 || X > 1.0");
+    expect(cr.slice(229, 233).join(" ")).toContain("went negative");
   });
 });

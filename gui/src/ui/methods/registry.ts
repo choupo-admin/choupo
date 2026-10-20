@@ -1238,8 +1238,10 @@ export const METHOD_TOOLS: MethodTool[] = [
       + "stages differently; what each stage decides, at what simulation "
       + "fidelity, with which deliverables and which AACE 18R-97 estimate "
       + "class; the range of ranges drawn as overlapping bands around your "
-      + "own point estimate; when two options whose difference lies inside "
-      + "the band are not yet decided by cost; and where Choupo stands at "
+      + "own point estimate; why separated bands are sufficient, not "
+      + "necessary, to choose between two options (correlated errors, the "
+      + "difference estimated directly, expected cost and risk); and where "
+      + "Choupo stands at "
       + "each stage, from the ammonia ladder to the green-ammonia base case.",
     //  The Theory Guide's discounted-cash-flow section: the appraisal the
     //  estimate class qualifies, and its own warning that a DCF inherits
