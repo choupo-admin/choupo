@@ -1291,6 +1291,36 @@ accepts today, and that is a policy call.
 > fire-water ring main and hydrants, bunds, escape routes, swept path, a
 > fillet running through an item.
 
+> **C110. "RESOLVE TUDO" -- THE BACKLOG DELEGATED (Vitor, 2026-10-20, after
+> upgrading his plan: "tenho de acabar isto once and for all!" ... "Resolve
+> tudo e delego em ti fazeres como achares melhor.  Como temos agora
+> bastante credito, usa os generais todos.").**  The backlog was read off
+> this file (not memory) and put to him the same turn.  Wave 1, nine
+> generals in separate worktrees on non-overlapping files:
+> G1 the apalutamide dossier data slice (A1); G2 multiproduct campaigns and
+> changeover cleaning in `batchPlan` (A2); G3 the donepezil case (C104) on
+> stated defaults -- API bought, wet granulation, production from a cited
+> source or a declared assumption; G4 debt financing and interest during
+> construction in the appraisal (opt-in); G5 the batch plan's Gantt drawn
+> in the GUI; G6 the small-defect pack (gibbsReactor drops a solid feed in
+> silence; Streams Detail navigator on sectored cases; "Open Case folder"
+> without the case-root rule; the plant-layout bench's `[stderr]` prefix;
+> the missing `sec:column-control` label); G7 the two shared-path defects
+> (the `flashState` phase test that evaluates K with y = x, C92; the
+> silent NaN liquid density with a supercritical component, C76) -- the
+> FULL regression they need is authorised by "resolve tudo", reason
+> written in their dispatch; G8 the open calls Vitor delegated: C98 (print
+> C_TM as the FCI arithmetic applies it) and C71 (measure aceticAcid02's
+> M1 gap since C74 before choosing); G9 C102b, folding a long train so the
+> whole flowsheet is legible.  Standing rules kept: a golden row that
+> MOVES is listed to Vitor before it is re-recorded; generals report their
+> DEV.md/CLAUDE.md text instead of editing those files (nine branches
+> would collide there); the RESERVED items of 4b stay his until he rules
+> on each.  Wave 2 (after wave 1 merges): room data sheets and HVAC loads;
+> purified water by RO + EDI; utility tariffs; layout extensions (pipe
+> pressure drop and cost, fire water, bunds, escape routes, nozzles).
+> Status: wave 1 dispatched 2026-10-20.
+
 > **C109. AN EDUTOOL ON SYNTHESIS GAS (Vitor, 2026-10-19, after asking why
 > syngas is so widely used and which other synthesis gases are famous: "Podes
 > fazer um EduTools sobre isso?  Eu sempre senti que nunca ninguem me
