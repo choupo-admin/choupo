@@ -65,6 +65,13 @@ export interface DisplayPrefs {
   colorScheme: ColorScheme;
   /** What the stream colour ENCODES: phase (default) | temperature | pressure. */
   colorMode: ColorMode;
+  /** The stream field `colorMode: "field"` paints: a scalar (`T`, `P`, `vf`,
+   *  `F`, `F_mass`, `H_kW`, `pH`) or a per-component one (`x:NH3`,
+   *  `w:NH3`, `n:NH3`, `m:NH3`) -- case/streamColouring.ts. */
+  colorField: string;
+  /** Linear or logarithmic colour scale (log: for traces; positive values
+   *  only, a value <= 0 takes the stated below-range colour). */
+  colorScale: "linear" | "log";
   /** Which gradient the temperature / pressure modes use (intuitive blue->red
    *  `turbo` by default; `coolwarm`; `viridis` for colour-blind safety). */
   colorMap: ColorMap;
@@ -89,6 +96,8 @@ export const DEFAULT_PREFS: DisplayPrefs = {
   concentration: "mol/kg",
   colorScheme: "default",
   colorMode: "phase",
+  colorField: "T",
+  colorScale: "linear",
   colorMap: "turbo",
   sigFigs: 3,
   pinchParetoPct: 0,   // draw EVERY stream by default; the cutoff is opt-in

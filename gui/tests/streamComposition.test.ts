@@ -56,6 +56,24 @@ describe("computePerStream -- mass basis (the fixed pop-out bug)", () => {
   });
 });
 
+describe("computePerStream -- the engine's OVERALL contract (no double count)", () => {
+  //  As the engine writes it today (ResultEmitter.cpp): F and composition
+  //  are OVERALL, the crystals included; `solids` names a PART of them.
+  it("a slurry's solid is counted once", () => {
+    const nSil = 2 / 60.084;
+    const F = 1 + nSil;
+    const slurry: StreamResult = {
+      name: "slurry", role: "intermediate", F, T: 300, P: 1e5,
+      composition: { water: 1 / F, silica: nSil / F }, solids: { silica: 2 },
+    };
+    const ps = computePerStream([slurry], MWS)["slurry"]!;
+    expect(ps.totMol).toBeCloseTo(F, 12);
+    expect(ps.totMass).toBeCloseTo(18.015 + 2, 9);
+    expect(ps.molFrac["silica"]).toBeCloseTo(nSil / F, 12);
+    expect(ps.massFrac["silica"]).toBeCloseTo(2 / (18.015 + 2), 12);
+  });
+});
+
 describe("computePerStream -- solid phase folded in", () => {
   it("solids-only stream (cyclone capturedSolids) reads its real flow, w = 1", () => {
     const solidsOnly: StreamResult = {

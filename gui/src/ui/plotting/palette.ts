@@ -38,7 +38,7 @@ License
   (persisted alongside the display-unit prefs):
 
     colorScheme : which PALETTE the phases use   (default | cvd-safe)
-    colorMode   : what the colour ENCODES        (phase | temperature | pressure)
+    colorMode   : what the colour ENCODES        (phase | temperature | pressure | field)
 
   PEDAGOGICAL CONTRACT (docs/ai/gui-credo.md): in the default `phase` mode the
   stroke / terminal-border colour is SEMANTIC -- it is the solver's phase
@@ -59,7 +59,11 @@ export type PhaseKind =
   | "solid";
 
 export type ColorScheme = "default" | "cvd-safe";
-export type ColorMode = "phase" | "temperature" | "pressure";
+/** What the stream colour ENCODES.  `temperature` / `pressure` are the
+ *  original two modes and stay valid (a persisted pref keeps working);
+ *  `field` colours by `DisplayPrefs.colorField`, any published stream field
+ *  (case/streamColouring.ts, DEV.md 4c C114). */
+export type ColorMode = "phase" | "temperature" | "pressure" | "field";
 
 /** Phase palettes.  `default` is the project cyan/orange lineup; `cvd-safe`
  *  is an Okabe-Ito-derived set chosen to stay distinct under deuteranopia /
