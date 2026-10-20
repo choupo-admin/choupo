@@ -1431,7 +1431,11 @@ MULTI_REFUSALS = [
      ["read by nothing"]),
     ("multiStageBusy", multi_edit(extra=lambda t: sub(t, "perYear  20000 kg;", "perYear  200000 kg;")),
      ["stage '", "strengthA", "lots x", "cannot be run"]),
-    ("multiTrainLong", multi_edit(extra=lambda t: sub(t, "availableTime   3840 h;", "availableTime   1250 h;")),
+    #  1100 h sits between the probe's busiest solid-dose stage (packaging,
+    #  998 h) and the train's required year (1224.75 h with its product
+    #  changeovers) on the re-based witness (C110 G1), so the TRAIN refuses
+    #  and no single stage does.
+    ("multiTrainLong", multi_edit(extra=lambda t: sub(t, "availableTime   3840 h;", "availableTime   1100 h;")),
      ["train 'solidDose' needs", "changeovers", "unreachable"]),
 ]
 
