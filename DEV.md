@@ -1392,6 +1392,33 @@ accepts today, and that is a policy call.
 > app's sentinel, the page and, where it runs a witness in the browser,
 > that the run completes -- the WASM engine had never been exercised before
 > students opened it.  Dispatched (G22, G23).
+> **Item 1 DONE 2026-10-20 (G22, main 7b3bb890e):** `bin/integrate
+> <branch>` merges into a reusable worktree off main, regenerates
+> conflicted and stale generated files from `bin/curate/
+> generated_artefacts.py` (the ONE list -- 20 entries, 39 files -- its
+> `--check` now in runTests), stops on any other conflict, rebuilds the
+> touched guides with `make -B` and reads them back, builds, runs the
+> validation the diff reaches (`bin/runTests --scope <cases>`, the correct
+> way to scope the conservation gates; the gates whose source names a
+> touched file; `--gui`/`--fast` on their triggers; a full sweep never --
+> reported as Vitor's decision), re-observes moved gate-manifest claims,
+> prints one verdict; never pushes, never re-records.  `gate_manifest.py`
+> now refuses an unknown argument (its `--help` used to start a FULL
+> regeneration).  Proof: G6 onto its merge parent, cold build 722 s, warm
+> 12 s, the commander's manifest refresh reproduced byte for byte.  Its
+> first run found main stale in three places: the props-guide operations
+> chapter (phaseSplitScan missing) and the code map (the C119 classes) --
+> both regenerated -- and the greenAmmonia03 README stage comparison,
+> regenerated on Vitor's "Avanca": every moved number traces to the vessel
+> costs (converter shell C_BM 3.67 -> 3.70 / 14.23 -> 14.32, separators
+> 4.35 -> 4.38 / 4.68 -> 4.71 M EUR), hence FCI, TCI, COM_d and the two
+> NPVs (-493.10 -> -493.23, -340.93 -> -341.24 M EUR), model fidelity
+> -39.13 -> -39.30, start-up years +10.14 -> +10.13; the README had lagged
+> the engine since the C89/C98/C99 cost changes.  NAMED, not fixed:
+> `bin/runTests --scope` on cases with no steady material boundary (props
+> cases) prints the four conservation gates as FAIL ("no case IN SCOPE
+> reported a closure") where `bin/integrate` reports NO SUBJECT -- the
+> manual route should say the same.
 
 > **C121. AN EDUTOOL ON DATA RECONCILIATION IN PROCESS CONTROL, AND HOW
 > BAYES HELPS (Vitor, 2026-10-20: "Ha outra coisa que os meus alunos nao
