@@ -1291,6 +1291,34 @@ accepts today, and that is a policy call.
 > fire-water ring main and hydrants, bunds, escape routes, swept path, a
 > fillet running through an item.
 
+> **C124. A COLUMN'S EXCHANGERS DESIGNED IN DETAIL: CONDENSER, REBOILER,
+> SIDE COOLERS AND PUMPAROUNDS (Vitor, 2026-10-20, after asking whether the
+> reference simulators' rigorous columns design the exchangers on their side
+> streams -- the commander's answer from memory: no, a side heater/cooler
+> or a pumparound enters the column as a DUTY in both, and the detailed
+> exchanger design is a separate product or a separate unit -- "regista e
+> prepara o ambito ... E os ebulidores e condensadores tipicos, nos ja
+> fazemos o design?").**  Measured on main 1cc6f1acf: the column's sizer
+> builds five items (`ColumnSize.cpp:273-330`) and sizes its CONDENSER and
+> REBOILER only by A = Q/(U*LMTD) with U, LMTD and pressureDesign DECLARED
+> by the case (`ShellTubeHX::sizeFromDuty`, route 1); the detailed design
+> route of C48 (`ShellTubeHX.cpp:426-439`, `design {}`: U computed from the
+> films, the wall and the fouling, the LMTD from the terminal temperatures)
+> exists for flowsheet exchangers but is NOT offered to the column's two;
+> the condensing and boiling film correlations exist (NusseltFilm,
+> Rohsenow, ZuberCHF, `htc/PhaseChangeHTC`) but only the `phaseChanger` unit
+> uses them (`PhaseChanger.cpp:594-711`); the column has NO side heater,
+> side cooler or pumparound (no such word in `src/unitOperations/
+> distillation/`).  Scope put to Vitor: (1) the column's condenser and
+> reboiler on the C48 detailed route, the process side priced by the phase-
+> change films already in the engine (Nusselt film condensation; Rohsenow
+> nucleate boiling with the Zuber critical-flux check), the utility from
+> the case; (2) side coolers/heaters and pumparounds as column FEATURES --
+> new physics in the MESH (a draw, a duty or a return temperature, a return
+> stage), Vitor's -- each realising a sized exchanger item on the same
+> route, its terminal temperatures read off the stage profile.  Not
+> dispatched.
+
 > **C123. A BENCHMARK FOLDER: HARD CASES FROM THE OPEN-SOURCE REFERENCE
 > SIMULATOR, REPRODUCED (Vitor, 2026-10-20: "tentes ir vendo casos dificeis
 > do [simulador de referencia open-source] e ver se os reproduzes.  Sera que
