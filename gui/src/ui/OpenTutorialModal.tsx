@@ -126,6 +126,10 @@ import {
 // `tier tutorial;` cases across every category, read off the tree (one home
 // for "start here" -- the same word bin/curate/check_case_tiers reads).
 const FIRST_PATH_CWD = "firstPath";
+
+/** The footer's fixed height: one line of name and two of description (see
+ *  the footer for why it must not change with the selection). */
+const FOOTER_PX = 68;
 type Cwd = { cat: Category | "" | typeof FIRST_PATH_CWD; sub: string | null };
 
 export interface OpenTutorialModalProps {
@@ -336,15 +340,22 @@ export function OpenTutorialModal(props: OpenTutorialModalProps) {
 
         {/* Footer */}
         <Group justify="space-between" align="flex-end">
-          <Box maw={420}>
+          {/* A FIXED HEIGHT, and that is a fix, not a style: the footer used to
+              grow when a case was selected (one dimmed line became the name
+              plus a wrapped description), the modal grew with it, and a
+              modal taller than the window re-centred -- so the SECOND click of
+              a double-click landed on the NEXT row and opened the wrong case
+              (measured 2026-10-20 in Chromium at 1280x800: double-clicking
+              analysis02 opened bubbleT01).  Two lines of description, clamped. */}
+          <Box h={FOOTER_PX} style={{ flex: "1 1 220px", minWidth: 0, maxWidth: 420, overflow: "hidden" }}>
             {searching ? (
               highlightedHit ? (
                 <>
-                  <Text size="xs" c="dimmed" ff="monospace">
+                  <Text size="xs" c="dimmed" ff="monospace" lineClamp={1}>
                     {highlightedHit.entry.name}
                   </Text>
                   {highlightedHit.entry.description && (
-                    <Text size="sm" c="var(--mantine-color-text)" mt={2}>
+                    <Text size="sm" c="var(--mantine-color-text)" mt={2} lineClamp={2}>
                       {highlightedHit.entry.description}
                     </Text>
                   )}
@@ -354,11 +365,11 @@ export function OpenTutorialModal(props: OpenTutorialModalProps) {
               )
             ) : selectedEntry ? (
               <>
-                <Text size="xs" c="dimmed" ff="monospace">
+                <Text size="xs" c="dimmed" ff="monospace" lineClamp={1}>
                   {selectedEntry.name}
                 </Text>
                 {selectedEntry.description && (
-                  <Text size="sm" c="var(--mantine-color-text)" mt={2}>
+                  <Text size="sm" c="var(--mantine-color-text)" mt={2} lineClamp={2}>
                     {selectedEntry.description}
                   </Text>
                 )}
@@ -532,7 +543,13 @@ function SearchResultRow(props: {
       px={8}
       py={5}
       onClick={onOpen}
-      onMouseEnter={onHover}
+      // MOVE, not enter: a list that re-renders under a resting pointer must
+      // not steal the highlight the arrows just set.
+      onMouseMove={(e) => {
+        // A real move only: Chromium sends a zero-movement mousemove when the
+        // list scrolls or re-renders under a resting pointer.
+        if (!highlighted && (e.movementX !== 0 || e.movementY !== 0)) onHover();
+      }}
       style={{
         cursor: "pointer",
         userSelect: "none",

@@ -164,7 +164,12 @@ export function EduHitRow(props: {
   const d = hit.doc;
   return (
     <Box id={id} role="option" aria-selected={highlighted} px={8} py={6}
-      onClick={onOpen} onMouseEnter={onHover}
+      onClick={onOpen}
+      onMouseMove={(e) => {
+        // A real move only (see OpenTutorialModal): a re-render or a scroll
+        // under a resting pointer must not steal the arrows' highlight.
+        if (!highlighted && (e.movementX !== 0 || e.movementY !== 0)) onHover();
+      }}
       style={{
         cursor: "pointer", borderRadius: 3,
         backgroundColor: highlighted
