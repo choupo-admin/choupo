@@ -15,10 +15,10 @@
 
 componentMolarFlows
 {
-    acetone    0.5840742482 kmol/h;
-    N2    10.69080742 kmol/h;
+    acetone    0.8747599649 kmol/h;
+    N2    16.0127141 kmol/h;
 }
 
-T               274.9377359 K;
-P               110539.2977 Pa;
+T               271.542872 K;
+P               106950.3537 Pa;
 phase           gas;

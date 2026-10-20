@@ -15,12 +15,12 @@
 
 componentMolarFlows
 {
-    water    0.048957602 kmol/h;
-    polyvinylAlcohol    0.002002068418 kmol/h;
-    polyethyleneGlycol    0.001001034209 kmol/h;
-    talcPowder    8.604370195e-05 kmol/h;
-    titaniumDioxide    0.0006681098039 kmol/h;
-    ironOxide    1.380755213e-05 kmol/h;
+    water    0.07212739384 kmol/h;
+    polyvinylAlcohol    0.002949572106 kmol/h;
+    polyethyleneGlycol    0.001474786053 kmol/h;
+    talcPowder    0.0001267649502 kmol/h;
+    titaniumDioxide    0.000984301048 kmol/h;
+    ironOxide    2.034214729e-05 kmol/h;
 }
 
 T               298.15 K;
@@ -32,18 +32,18 @@ phases
     {
         componentMolarFlows
         {
-            water    0.048957602 kmol/h;
+            water    0.07212739384 kmol/h;
         }
     }
     solid
     {
         componentMolarFlows
         {
-            polyvinylAlcohol    0.002002068418 kmol/h;
-            polyethyleneGlycol    0.001001034209 kmol/h;
-            talcPowder    8.604370195e-05 kmol/h;
-            titaniumDioxide    0.0006681098039 kmol/h;
-            ironOxide    1.380755213e-05 kmol/h;
+            polyvinylAlcohol    0.002949572106 kmol/h;
+            polyethyleneGlycol    0.001474786053 kmol/h;
+            talcPowder    0.0001267649502 kmol/h;
+            titaniumDioxide    0.000984301048 kmol/h;
+            ironOxide    2.034214729e-05 kmol/h;
         }
     }
 }

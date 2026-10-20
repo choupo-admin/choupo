@@ -10,11 +10,11 @@
      componentMassFlows is the OVERALL material (all phases); a phases{} block, when present,
      is a decomposition that sums back to it exactly. ---*/
 
-//  Iron oxide: 0.174 mg per tablet COATED (the 12 672 tablets/h the press accepts) -- AUTHOR-SET coat, see README section 2 (1 % of the coat).  (0.00220493 kg/h.)
+//  Iron oxide, 1 % of the coat: 0.21 mg per tablet COATED (the 15 468.75 tablets/h the press accepts) -- the patent's 21.0 mg Opadry II coat (a 3.0 % weight gain on the 700 mg core, PAT-HPMCAS Ex. 3.3, dossier section 1.4); its SPLIT among PVA / PEG / TiO2 / talc / iron oxide is the case's ESTIMATE (the shade's composition is proprietary, not found: dossier section 1.4).  (0.0032484375 kg/h.)
 
 componentMolarFlows
 {
-    ironOxide                    1.380755213e-05 kmol/h;
+    ironOxide                    2.034214729e-05 kmol/h;
 }
 
 T               298.15 K;
@@ -26,7 +26,7 @@ phases
     {
         componentMolarFlows
         {
-            ironOxide                1.380755213e-05 kmol/h;
+            ironOxide                2.034214729e-05 kmol/h;
         }
     }
 }

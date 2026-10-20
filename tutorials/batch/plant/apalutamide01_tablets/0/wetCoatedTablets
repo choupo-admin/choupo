@@ -15,19 +15,19 @@
 
 componentMolarFlows
 {
-    water    0.048957602 kmol/h;
-    apalutamide    0.001592526653 kmol/h;
-    hpmcas    0.00228096 kmol/h;
-    microcrystallineCellulose    0.01172320217 kmol/h;
-    silicifiedMCC    0.0019008 kmol/h;
-    croscarmelloseSodium    0.00038016 kmol/h;
-    colloidalSilica    0.001054523667 kmol/h;
-    magnesiumStearate    0.0001071609783 kmol/h;
-    polyvinylAlcohol    0.002002068418 kmol/h;
-    polyethyleneGlycol    0.001001034209 kmol/h;
-    talcPowder    8.604370195e-05 kmol/h;
-    titaniumDioxide    0.0006681098039 kmol/h;
-    ironOxide    1.380755213e-05 kmol/h;
+    water    0.07212739384 kmol/h;
+    apalutamide    0.001944002263 kmol/h;
+    hpmcas    0.002784375 kmol/h;
+    microcrystallineCellulose    0.02819178256 kmol/h;
+    silicifiedMCC    0.001808296875 kmol/h;
+    croscarmelloseSodium    0.00054140625 kmol/h;
+    colloidalSilica    0.00234281381 kmol/h;
+    magnesiumStearate    9.156821872e-05 kmol/h;
+    polyvinylAlcohol    0.002949572106 kmol/h;
+    polyethyleneGlycol    0.001474786053 kmol/h;
+    talcPowder    0.0001267649502 kmol/h;
+    titaniumDioxide    0.000984301048 kmol/h;
+    ironOxide    2.034214729e-05 kmol/h;
 }
 
 T               298.15 K;
@@ -39,25 +39,25 @@ phases
     {
         componentMolarFlows
         {
-            water    0.048957602 kmol/h;
+            water    0.07212739384 kmol/h;
         }
     }
     solid
     {
         componentMolarFlows
         {
-            apalutamide    0.001592526653 kmol/h;
-            hpmcas    0.00228096 kmol/h;
-            microcrystallineCellulose    0.01172320217 kmol/h;
-            silicifiedMCC    0.0019008 kmol/h;
-            croscarmelloseSodium    0.00038016 kmol/h;
-            colloidalSilica    0.001054523667 kmol/h;
-            magnesiumStearate    0.0001071609783 kmol/h;
-            polyvinylAlcohol    0.002002068418 kmol/h;
-            polyethyleneGlycol    0.001001034209 kmol/h;
-            talcPowder    8.604370195e-05 kmol/h;
-            titaniumDioxide    0.0006681098039 kmol/h;
-            ironOxide    1.380755213e-05 kmol/h;
+            apalutamide    0.001944002263 kmol/h;
+            hpmcas    0.002784375 kmol/h;
+            microcrystallineCellulose    0.02819178256 kmol/h;
+            silicifiedMCC    0.001808296875 kmol/h;
+            croscarmelloseSodium    0.00054140625 kmol/h;
+            colloidalSilica    0.00234281381 kmol/h;
+            magnesiumStearate    9.156821872e-05 kmol/h;
+            polyvinylAlcohol    0.002949572106 kmol/h;
+            polyethyleneGlycol    0.001474786053 kmol/h;
+            talcPowder    0.0001267649502 kmol/h;
+            titaniumDioxide    0.000984301048 kmol/h;
+            ironOxide    2.034214729e-05 kmol/h;
         }
     }
 }

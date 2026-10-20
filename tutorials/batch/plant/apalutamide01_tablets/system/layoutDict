@@ -382,37 +382,59 @@ plot
   docs/design/a-gmp-interior-is-declared-and-checked.md.
 
   WHAT GRADE, AND WHY.  This is an ORAL SOLID DOSE (film-coated tablet)
-  suite, not a sterile one.  EU GMP Annex 1, whose grade vocabulary A/B/C/D
-  the engine speaks, is written for STERILE products; nothing in it applies
-  to tablets by its own terms.  The rooms where product is exposed
-  (dispensing, the solution, the spray drying, the granulation-and-
-  compression train, coating and its preparation, primary packaging, the
-  corridor and airlocks that serve them, the IPC and wash rooms) are
-  declared grade D BY ANALOGY, the usual practice for an OSD plant, and
-  every other room CNC (controlled, not classified).  That is this case's
-  statement, to be replaced by the company's own risk assessment -- not a
-  value looked up.
+  suite, not a sterile one, and EU GMP Annex 1 -- the sterile annex, whose
+  A/B/C/D vocabulary the engine speaks -- does NOT apply to it; calling OSD
+  rooms "grade D" invites a reviewer's objection (the design-basis dossier,
+  docs/design/apalutamide-design-basis-dossier.md, section 2 and red-team item 10).  So EVERY room is CNC (controlled,
+  not classified), the industry's word for an oral-solid-dose suite; a
+  company may add its own ISO 14644-1 ISO 8 at-rest target (an estimate of
+  common practice, not a requirement: dossier section 2).  What DOES apply,
+  and what this building is argued from:
+    * EU GMP Part I Chapter 3: 3.6 (cross-contamination prevented by design
+      commensurate with risk), 3.12 (production areas effectively
+      ventilated), 3.13 (a separate weighing room -- the dispensary), 3.14
+      (provisions where dust is generated);
+    * EU GMP Part I Chapter 5, 5.18-5.21 (a quality-risk-management process
+      with a toxicological evaluation, the health-based exposure limit);
+    * WHO TRS 1010 (2018) Annex 8, the HVAC guideline for NON-STERILE
+      products: 4.4 (facilities positive to outside), 4.5 (the manufacturer
+      decides the cleanliness level and states whether it is as-built,
+      at-rest or operational), 7.5 (air from the corridor to the cubicle),
+      7.7 (where dust is liberated, the corridor above the rooms and the
+      rooms above atmospheric).
+  The engine's cascade rule asks a step only between rooms of DIFFERENT
+  grades (and not when the cleaner side is CNC), so with every room CNC it
+  is the AIRLOCK rules (bubble above, sink below, cascade between) and the
+  CONTAINMENT rules that check the pressures below; the corridor-to-room
+  direction of WHO 7.5/7.7 is declared by the pressures themselves.
 
-  THE CASCADE.  Every pressure is declared to outside: CNC rooms +15 Pa,
-  the clean corridor +35 Pa, gowning and the cascade airlocks between their
-  neighbours, the personnel bubbles +45 Pa, the material sinks +5/+10 Pa
-  (they draw air IN from both sides and exhaust it), the contained suite's
-  own corridor +25 Pa and its process rooms +15 Pa, so air moves INTO the
-  rooms where powder is open.  The step is Annex 1's guidance value,
-  borrowed.  The technical floor is +5 Pa; the nitrogen loop's room, which
-  opens only to outside, is held 5 Pa BELOW outside by its extract, so a
-  leak from the loop is drawn to the extract and not into the building.
+  THE CASCADE.  Every pressure is declared to outside: the dust rooms
+  +15 Pa, the clean corridor +35 Pa, gowning and the cascade airlocks
+  between their neighbours, the personnel bubbles +45 Pa, the material
+  sinks +5/+10 Pa (they draw air IN from both sides and exhaust it), the
+  contained suite's own corridor +25 Pa and its process rooms +15 Pa, so
+  air moves INTO the rooms where powder is open and everything is positive
+  to outside -- consistent with WHO TRS 1010 Annex 8, 7.7.  The 10 Pa step
+  is the case's design value: WHO 7.4-7.6 asks for an individually assessed
+  differential with no overlap of the operating ranges and gives no number
+  (dossier section 2).  The technical floor is +5 Pa; the nitrogen loop's
+  room, which opens only to outside, is held 5 Pa BELOW outside by its
+  extract, so a leak from the loop is drawn to the extract and not into the
+  building.
 
-  CONTAINMENT.  The API is BOUGHT and its occupational exposure band is NOT
-  KNOWN to this case.  Every room where the API is handled as an OPEN
-  powder -- dispensing, the solution preparation (the powder is tipped into
-  the acetone), the spray drying (the dispersion is discharged), blending,
-  roller compaction, milling and screening, final blending, compression -- is
-  declared contained, on the assumption that an anti-androgen is a potent
-  compound, until the supplier's safety data sheet says otherwise: CONFIRM
-  THE BAND (README section 9, question 2).  A contained room is reached only
-  through a bubble (people) or a sink (material, waste) airlock.  Coating
-  and packaging handle tablets, not open powder, and are not contained --
+  CONTAINMENT.  The API is BOUGHT.  Its supplier's safety data sheet
+  classifies it Repr. 1B (H360) and STOT RE 2 (H373, male reproductive
+  organs) (MedKoo Biosciences SDS rev. 11 Jun 2020, dossier section 2), and
+  NO occupational exposure limit or band is published: this case ASSUMES an
+  internal band OEB 3-4 (roughly 1-100 ug/m3, an estimate, dossier section
+  2) pending the supplier's figure.  Every room where the API is handled as
+  an OPEN powder -- dispensing, the solution preparation (the powder is
+  tipped into the acetone), the spray drying (the dispersion, 25 % API, is
+  discharged), blending, roller compaction, milling and screening, final
+  blending, compression -- is declared contained: CONFIRM THE BAND (README
+  section 9, question 2).  A contained room is reached only through a
+  bubble (people) or a sink (material, waste) airlock.  Coating and
+  packaging handle tablets, not open powder, and are not contained --
   revisit that if the band is high.
 
   HAZARDOUS AREAS, ROOM BY ROOM.  Indoors the ROOM is classified, not the
@@ -448,10 +470,11 @@ plot
   spray-drying suite's gas ducts reach the nitrogen loop's room through the
   wall they share.
 
-  EVERY POSITION, SIZE, GRADE AND PRESSURE HERE IS AN AUTHOR-SET ASSUMPTION
-  for the group to replace with its own design; the ISPE Baseline Guide
-  Volume 2 (Oral Solid Dosage Forms) is where a real OSD layout is argued,
-  cited by title only.
+  EVERY POSITION, SIZE AND PRESSURE HERE IS AN AUTHOR-SET ASSUMPTION for
+  the group to replace with its own design; the grade (CNC throughout) is
+  argued above.  The ISPE Baseline Guide Volume 2 (Oral Solid Dosage Forms,
+  3rd ed.) and the ISPE Good Practice Guide HVAC are where a real OSD layout
+  is argued, cited by title only (not open access).
 \*---------------------------------------------------------------------------*/
 building
 {
@@ -463,8 +486,8 @@ building
     cascade
     {
         minimumStep 10 Pa;
-        source "EU GMP Annex 1 (2022) para 4.14: a minimum of 10 Pa between adjacent rooms of different grades (guidance value) -- written for sterile products, borrowed here by analogy";
-        reason "the guidance value, taken as the design step of an oral-solid-dose suite";
+        source "author-set design step: WHO TRS 1010 (2018) Annex 8, 7.4-7.6, asks for an individually assessed pressure differential with no overlap of the operating ranges and gives no number (docs/design/apalutamide-design-basis-dossier.md section 2); EU GMP Annex 1 is the sterile annex and is not cited";
+        reason "10 Pa, the case's design step for an oral-solid-dose suite, for the group to defend against its own HVAC design";
     }
     atexSeparation
     {
@@ -482,41 +505,41 @@ building
     rooms
     (
         //  ---- the clean corridor and the personnel entrance (south) -------
-        { room corridor;           floor ground; xMin -66 m; xMax -14 m; yMin -1 m;  yMax 3 m;   grade D;   pressure 35 Pa; relativeTo outside; }
+        { room corridor;           floor ground; xMin -66 m; xMax -14 m; yMin -1 m;  yMax 3 m;   grade CNC; pressure 35 Pa; relativeTo outside; }
         { room lobby;              floor ground; xMin -58 m; xMax -50 m; yMin -18 m; yMax -10 m; grade CNC; pressure 15 Pa; relativeTo outside;
           source "author-set"; reason "the staff entrance from the footpath along the warehouse: street clothes off, lockers"; }
-        { room gowning;            floor ground; xMin -58 m; xMax -54 m; yMin -10 m; yMax -1 m;  grade D;   role gowning; regime cascade;
+        { room gowning;            floor ground; xMin -58 m; xMax -54 m; yMin -10 m; yMax -1 m;  grade CNC; role gowning; regime cascade;
           pressure 25 Pa; relativeTo outside;
-          source "author-set"; reason "factory garments on, a step-over bench, hands washed: CNC to grade D (Annex 1 para 4.12 (i), borrowed)"; }
+          source "author-set"; reason "factory garments on, a step-over bench, hands washed, between the street-clothes lobby and the production corridor"; }
 
         //  ---- receipt and dispensing (south-west, from the warehouse) ------
         { room goodsIn;            floor ground; xMin -70 m; xMax -58 m; yMin -18 m; yMax -10 m; grade CNC; pressure 15 Pa; relativeTo outside;
           source "author-set"; reason "released raw materials from the warehouse: outer packaging removed, containers wiped down"; }
-        { room malIn;              floor ground; xMin -70 m; xMax -66 m; yMin -10 m; yMax -1 m;  grade D;   role materialAirlock; regime sink;
+        { room malIn;              floor ground; xMin -70 m; xMax -66 m; yMin -10 m; yMax -1 m;  grade CNC; role materialAirlock; regime sink;
           pressure 5 Pa; relativeTo outside; }
-        { room dispensing;         floor ground; xMin -66 m; xMax -58 m; yMin -10 m; yMax -4 m;  grade D;   pressure 20 Pa; relativeTo outside;
+        { room dispensing;         floor ground; xMin -66 m; xMax -58 m; yMin -10 m; yMax -4 m;  grade CNC; pressure 20 Pa; relativeTo outside;
           containment yes; occupancy 2;
-          source "author-set: the API's exposure band is NOT known -- confirm it from the supplier's safety data sheet";
+          source "the API is Repr. 1B and STOT RE 2 on its supplier's SDS and NO exposure limit is published (docs/design/apalutamide-design-basis-dossier.md section 2): an internal band OEB 3-4 is ASSUMED -- confirm it from the supplier";
           reason "every raw material weighed into kits under a downflow booth; the API is open here, so the room is contained until the band says otherwise"; }
-        { room dispPAL;            floor ground; xMin -66 m; xMax -62 m; yMin -4 m;  yMax -1 m;  grade D;   role personnelAirlock; regime bubble;
+        { room dispPAL;            floor ground; xMin -66 m; xMax -62 m; yMin -4 m;  yMax -1 m;  grade CNC; role personnelAirlock; regime bubble;
           pressure 45 Pa; relativeTo outside; }
-        { room dispOutMAL;         floor ground; xMin -62 m; xMax -58 m; yMin -4 m;  yMax -1 m;  grade D;   role materialAirlock; regime sink;
+        { room dispOutMAL;         floor ground; xMin -62 m; xMax -58 m; yMin -4 m;  yMax -1 m;  grade CNC; role materialAirlock; regime sink;
           pressure 10 Pa; relativeTo outside; }
 
         //  ---- support rooms off the corridor -------------------------------
-        { room washRoom;           floor ground; xMin -54 m; xMax -49 m; yMin -10 m; yMax -1 m;  grade D;   pressure 25 Pa; relativeTo outside; occupancy 1; }
-        { room ipcLab;             floor ground; xMin -49 m; xMax -45 m; yMin -10 m; yMax -1 m;  grade D;   pressure 35 Pa; relativeTo outside; occupancy 1;
+        { room washRoom;           floor ground; xMin -54 m; xMax -49 m; yMin -10 m; yMax -1 m;  grade CNC; pressure 25 Pa; relativeTo outside; occupancy 1; }
+        { room ipcLab;             floor ground; xMin -49 m; xMax -45 m; yMin -10 m; yMax -1 m;  grade CNC; pressure 35 Pa; relativeTo outside; occupancy 1;
           source "author-set"; reason "in-process control: tablet weight, hardness, thickness and friability beside the line"; }
 
         //  ---- coating and packaging (south-east), out to the warehouse ----
-        { room coatingPrep;        floor ground; xMin -45 m; xMax -41 m; yMin -10 m; yMax -1 m;  grade D;   pressure 25 Pa; relativeTo outside; occupancy 1;
+        { room coatingPrep;        floor ground; xMin -45 m; xMax -41 m; yMin -10 m; yMax -1 m;  grade CNC; pressure 25 Pa; relativeTo outside; occupancy 1;
           equipment ( coatingSuspensionPrep );
           source "author-set"; reason "the coating suspension: the polymer, plasticiser and pigments dispersed in purified water, piped through the wall to the pan coater"; }
-        { room coating;            floor ground; xMin -41 m; xMax -36 m; yMin -10 m; yMax -1 m;  grade D;   pressure 25 Pa; relativeTo outside; occupancy 1;
+        { room coating;            floor ground; xMin -41 m; xMax -36 m; yMin -10 m; yMax -1 m;  grade CNC; pressure 25 Pa; relativeTo outside; occupancy 1;
           source "author-set"; reason "the pan coater; below the corridor so its dust does not leave; not contained: it handles tablets, not open powder"; }
-        { room packaging;          floor ground; xMin -36 m; xMax -26 m; yMin -7 m;  yMax -1 m;  grade D;   pressure 30 Pa; relativeTo outside; occupancy 3;
+        { room packaging;          floor ground; xMin -36 m; xMax -26 m; yMin -7 m;  yMax -1 m;  grade CNC; pressure 30 Pa; relativeTo outside; occupancy 3;
           source "author-set"; reason "primary packaging: the tablets into blisters"; }
-        { room packMAL;            floor ground; xMin -36 m; xMax -26 m; yMin -10 m; yMax -7 m;  grade D;   role materialAirlock; regime cascade;
+        { room packMAL;            floor ground; xMin -36 m; xMax -26 m; yMin -10 m; yMax -7 m;  grade CNC; role materialAirlock; regime cascade;
           pressure 20 Pa; relativeTo outside; }
         { room packagingMaterials; floor ground; xMin -50 m; xMax -36 m; yMin -18 m; yMax -10 m; grade CNC; pressure 15 Pa; relativeTo outside; }
         { room secondaryPackaging; floor ground; xMin -36 m; xMax -26 m; yMin -18 m; yMax -10 m; grade CNC; pressure 15 Pa; relativeTo outside; occupancy 2;
@@ -525,34 +548,34 @@ building
           source "author-set"; reason "the stair to the technical floor, its door out on the south wall"; }
 
         //  ---- the contained suite (north) ----------------------------------
-        { room suitePAL;           floor ground; xMin -54 m; xMax -50 m; yMin 3 m;   yMax 6 m;   grade D;   role personnelAirlock; regime bubble;
+        { room suitePAL;           floor ground; xMin -54 m; xMax -50 m; yMin 3 m;   yMax 6 m;   grade CNC; role personnelAirlock; regime bubble;
           pressure 45 Pa; relativeTo outside;
           source "author-set"; reason "over-garments and respiratory protection on, the bubble keeps the suite's dust in and the corridor's air out"; }
-        { room suiteCorridor;      floor ground; xMin -58 m; xMax -40 m; yMin 6 m;   yMax 8.5 m; grade D;   pressure 25 Pa; relativeTo outside; containment yes; }
-        { room compression;        floor ground; xMin -66 m; xMax -58 m; yMin 6 m;   yMax 15.5 m; grade D;  pressure 15 Pa; relativeTo outside; containment yes; occupancy 2; }
-        { room finalBlending;      floor ground; xMin -58 m; xMax -52 m; yMin 8.5 m; yMax 15.5 m; grade D;  pressure 15 Pa; relativeTo outside; containment yes; }
-        { room milling;            floor ground; xMin -52 m; xMax -46 m; yMin 8.5 m; yMax 15.5 m; grade D;  pressure 15 Pa; relativeTo outside; containment yes; }
-        { room compaction;         floor ground; xMin -46 m; xMax -40 m; yMin 8.5 m; yMax 15.5 m; grade D;  pressure 15 Pa; relativeTo outside; containment yes; occupancy 1; }
-        { room blending;           floor ground; xMin -40 m; xMax -32 m; yMin 6 m;   yMax 15.5 m; grade D;  pressure 15 Pa; relativeTo outside; containment yes; occupancy 1; }
-        { room returnCorridor;     floor ground; xMin -66 m; xMax -32 m; yMin 15.5 m; yMax 18 m; grade D;   pressure 15 Pa; relativeTo outside; containment yes;
+        { room suiteCorridor;      floor ground; xMin -58 m; xMax -40 m; yMin 6 m;   yMax 8.5 m; grade CNC; pressure 25 Pa; relativeTo outside; containment yes; }
+        { room compression;        floor ground; xMin -66 m; xMax -58 m; yMin 6 m;   yMax 15.5 m; grade CNC; pressure 15 Pa; relativeTo outside; containment yes; occupancy 2; }
+        { room finalBlending;      floor ground; xMin -58 m; xMax -52 m; yMin 8.5 m; yMax 15.5 m; grade CNC; pressure 15 Pa; relativeTo outside; containment yes; }
+        { room milling;            floor ground; xMin -52 m; xMax -46 m; yMin 8.5 m; yMax 15.5 m; grade CNC; pressure 15 Pa; relativeTo outside; containment yes; }
+        { room compaction;         floor ground; xMin -46 m; xMax -40 m; yMin 8.5 m; yMax 15.5 m; grade CNC; pressure 15 Pa; relativeTo outside; containment yes; occupancy 1; }
+        { room blending;           floor ground; xMin -40 m; xMax -32 m; yMin 6 m;   yMax 15.5 m; grade CNC; pressure 15 Pa; relativeTo outside; containment yes; occupancy 1; }
+        { room returnCorridor;     floor ground; xMin -66 m; xMax -32 m; yMin 15.5 m; yMax 18 m; grade CNC; pressure 15 Pa; relativeTo outside; containment yes;
           source "author-set"; reason "the suite's way out for waste: rejected tablets and filter bags in sealed bags, never through a room the product crosses"; }
-        { room wasteMAL;           floor ground; xMin -70 m; xMax -66 m; yMin 15.5 m; yMax 18 m; grade D;   role materialAirlock; regime sink;
+        { room wasteMAL;           floor ground; xMin -70 m; xMax -66 m; yMin 15.5 m; yMax 18 m; grade CNC; role materialAirlock; regime sink;
           pressure 5 Pa; relativeTo outside; }
         { room wasteRoom;          floor ground; xMin -70 m; xMax -66 m; yMin 3 m;   yMax 15.5 m; grade CNC; pressure 15 Pa; relativeTo outside; }
-        { room pressOutMAL;        floor ground; xMin -66 m; xMax -62 m; yMin 3 m;   yMax 6 m;   grade D;   role materialAirlock; regime sink;
+        { room pressOutMAL;        floor ground; xMin -66 m; xMax -62 m; yMin 3 m;   yMax 6 m;   grade CNC; role materialAirlock; regime sink;
           pressure 5 Pa; relativeTo outside; }
-        { room excipientMAL;       floor ground; xMin -36 m; xMax -32 m; yMin 3 m;   yMax 6 m;   grade D;   role materialAirlock; regime sink;
+        { room excipientMAL;       floor ground; xMin -36 m; xMax -32 m; yMin 3 m;   yMax 6 m;   grade CNC; role materialAirlock; regime sink;
           pressure 5 Pa; relativeTo outside; }
-        { room asdMAL;             floor ground; xMin -32 m; xMax -29 m; yMin 6 m;   yMax 18 m;  grade D;   role materialAirlock; regime sink;
+        { room asdMAL;             floor ground; xMin -32 m; xMax -29 m; yMin 6 m;   yMax 18 m;  grade CNC; role materialAirlock; regime sink;
           pressure 5 Pa; relativeTo outside;
           source "author-set"; reason "the dried dispersion, in closed drums, from the spray-drying suite to the blender"; }
 
         //  ---- THE SOLVENT SUITE (east): spray drying, its nitrogen loop and
         //  the solution preparation --------------------------------------
-        { room sprayPAL;           floor ground; xMin -29 m; xMax -26 m; yMin 3 m;   yMax 6 m;   grade D;   role personnelAirlock; regime bubble;
+        { room sprayPAL;           floor ground; xMin -29 m; xMax -26 m; yMin 3 m;   yMax 6 m;   grade CNC; role personnelAirlock; regime bubble;
           pressure 45 Pa; relativeTo outside; }
         { room sprayDrying;        floor ground; xMin -29 m; xMax -17 m; yMin 6 m;   yMax 18 m;  height 10 m;
-          grade D;   pressure 15 Pa; relativeTo outside; containment yes; occupancy 1;
+          grade CNC; pressure 15 Pa; relativeTo outside; containment yes; occupancy 1;
           equipment ( SD );
           atex { zone 2; source "author-set assumption for the group to replace; not taken from any hazardous-area standard";
                  reason "acetone vapour in nitrogen inside a CLOSED, INERTED loop: only the flanges, the atomiser seal and the powder discharge valve can release"; }
@@ -565,12 +588,12 @@ building
                  reason "the closed nitrogen loop carrying acetone vapour: flanges, the blower's shaft seal, the condensate drain"; }
           source "author-set";
           reason "the drying gas's technical room: heater, blower, exhaust cooler, refrigerated condenser and condensate pot, beside the suite whose ducts come through the wall they share; on the outside walls, entered from outside for maintenance, and held below outside by its extract"; }
-        { room solutionPAL;        floor ground; xMin -20 m; xMax -17 m; yMin -4 m;  yMax -1 m;  grade D;   role personnelAirlock; regime bubble;
+        { room solutionPAL;        floor ground; xMin -20 m; xMax -17 m; yMin -4 m;  yMax -1 m;  grade CNC; role personnelAirlock; regime bubble;
           pressure 45 Pa; relativeTo outside; }
-        { room solutionMAL;        floor ground; xMin -17 m; xMax -14 m; yMin -4 m;  yMax -1 m;  grade D;   role materialAirlock; regime sink;
+        { room solutionMAL;        floor ground; xMin -17 m; xMax -14 m; yMin -4 m;  yMax -1 m;  grade CNC; role materialAirlock; regime sink;
           pressure 5 Pa; relativeTo outside; }
         { room solutionRoom;       floor ground; xMin -20 m; xMax -8 m;  yMin -18 m; yMax -4 m;
-          grade D;   pressure 15 Pa; relativeTo outside; containment yes; occupancy 1;
+          grade CNC; pressure 15 Pa; relativeTo outside; containment yes; occupancy 1;
           equipment ( solutionPrep );
           atex { zone 1; source "author-set assumption for the group to replace; not taken from any hazardous-area standard";
                  reason "acetone at 25 C: the manway is opened to tip the API and the polymer in, the classic moment a solvent vapour and a powder cloud meet"; }

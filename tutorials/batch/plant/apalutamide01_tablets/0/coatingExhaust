@@ -17,9 +17,9 @@ componentMolarFlows
 {
     N2    7.9 kmol/h;
     O2    2.1 kmol/h;
-    water    0.1673664962 kmol/h;
+    water    0.1883011263 kmol/h;
 }
 
-T               324.994755 K;
+T               321.5500178 K;
 P               101325 Pa;
 phase           gas;

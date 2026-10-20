@@ -10,11 +10,11 @@
      componentMassFlows is the OVERALL material (all phases); a phases{} block, when present,
      is a decomposition that sums back to it exactly. ---*/
 
-//  Polyvinyl alcohol: 6.96 mg per tablet COATED (the 12 672 tablets/h the press accepts) -- AUTHOR-SET coat, see README section 2 (40 % of a 17.4 mg coat, a 3 % weight gain on a 580 mg core).  (0.0881971 kg/h.)
+//  Polyvinyl alcohol, 40 % of the coat: 8.4 mg per tablet COATED (the 15 468.75 tablets/h the press accepts) -- the patent's 21.0 mg Opadry II coat (a 3.0 % weight gain on the 700 mg core, PAT-HPMCAS Ex. 3.3, dossier section 1.4); its SPLIT among PVA / PEG / TiO2 / talc / iron oxide is the case's ESTIMATE (the shade's composition is proprietary, not found: dossier section 1.4).  (0.1299375 kg/h.)
 
 componentMolarFlows
 {
-    polyvinylAlcohol             0.002002068418 kmol/h;
+    polyvinylAlcohol             0.002949572106 kmol/h;
 }
 
 T               298.15 K;
@@ -26,7 +26,7 @@ phases
     {
         componentMolarFlows
         {
-            polyvinylAlcohol         0.002002068418 kmol/h;
+            polyvinylAlcohol         0.002949572106 kmol/h;
         }
     }
 }
