@@ -1,0 +1,92 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://choupo.org/schemas/operations/dataReconciliation.schema.json",
+  "title": "dataReconciliation operation",
+  "description": "Steady-state data reconciliation of a flow network. Mass-flow readings, each with its meter's declared standard uncertainty, are adjusted as little as their uncertainties allow until every node mass balance closes: min Sum ((x - m)/sigma)^2 subject to A x = 0, solved by the engine's one weighted least squares (the reconciler built for the aqueous laboratory analysis). With Gaussian meter noise and a flat prior this is the Bayesian posterior mode; its covariance C - V, V = C A^T (A C A^T)^-1 A C, is published. Beside the answer: each balance's residual at the readings and its standard deviation, the chi-square global test with rank(A) degrees of freedom, the measurement test (each adjustment over its own standard deviation, against a Sidak-corrected two-sided normal critical value), and, for a meter taken out of service, the balances projected onto the remaining meters and the excluded reading's offset from what the rest of the plant says. An optional diagonal Gaussian prior per flow is combined with each reading by precision weighting, which is exact. Linear mass balances only.",
+  "type": "object",
+  "properties": {
+    "network": {
+      "type": "string",
+      "title": "Network file",
+      "description": "Path, relative to the case, of the network dictionary: `unit` (the mass-flow unit every number is read and published in), `flows { <stream> { sigma <value> <unit>; } }` (a stream with a `sigma` carries a meter; an empty block is an unmetered stream), `nodes { <node> { in ( ... ); out ( ... ); } }` (one mass balance per node; the balances must be independent) and an optional `syntheticTruth { <stream> <value> <unit>; }` for an invented exercise plant."
+    },
+    "readings": {
+      "type": "string",
+      "title": "Readings file",
+      "description": "Path, relative to the case, of one snapshot: `<stream> <value> <unit>;` for every metered stream, and for nothing else. A meter with no reading is refused: a meter that was not read belongs in `exclude`."
+    },
+    "prior": {
+      "type": "string",
+      "title": "Prior file",
+      "description": "Optional. Path of a per-flow Gaussian prior, `<stream> { value <v> <unit>; sigma <s> <unit>; }` -- yesterday's estimate, a soft sensor. Each prior is independent of the others (a diagonal covariance; correlations are not represented, and the run says so). A flow with a reading and a prior enters as the precision-weighted pseudo-measurement; a flow with only a prior enters as the prior; the prior-data conflict Sum (m - x0)^2/(sigma^2 + s^2) is published with its own chi-square test."
+    },
+    "alpha": {
+      "type": "number",
+      "exclusiveMinimum": 0,
+      "exclusiveMaximum": 1,
+      "title": "Significance level",
+      "description": "Required, no default: the probability of a false alarm the tests accept. The global test's critical value is the chi-square quantile at 1 - alpha; the measurement test uses the Sidak level 1 - (1 - alpha)^(1/N) over the N redundant meters.",
+      "unit": "-"
+    },
+    "exclude": {
+      "anyOf": [
+        { "type": "string" },
+        { "type": "array", "items": { "type": "string" } }
+      ],
+      "title": "Meters out of service",
+      "description": "Optional. One metered stream, or a list of them, whose readings are not used. Their flows become unmeasured: the balances are projected onto the remaining meters (left null space of the unmeasured columns), the flows are read back from the balances with their covariance, and each excluded reading's offset from that estimate is published with its test. An unobservable set (a flow that could circulate round the excluded streams unnoticed) and a set that leaves no redundancy are refused."
+    },
+    "syntheticDrift": {
+      "type": "object",
+      "title": "Planted gross error (exercise)",
+      "description": "Optional, for an invented exercise plant only: adds a declared offset to ONE reading before anything else, announced on every run. A real case has no use for it.",
+      "properties": {
+        "meter": {
+          "type": "string",
+          "title": "Meter",
+          "description": "The metered stream whose reading is shifted."
+        },
+        "size": {
+          "type": "number",
+          "title": "Offset",
+          "description": "The signed offset added to the reading, a mass flow.",
+          "unit": "kg/s"
+        }
+      },
+      "required": [
+        "meter",
+        "size"
+      ],
+      "additionalProperties": false
+    },
+    "output": {
+      "type": "object",
+      "title": "CSV outputs",
+      "description": "Optional. The three tables the operation can write in the case directory; a path into data/standards/ is refused.",
+      "properties": {
+        "streams": {
+          "type": "string",
+          "title": "Per-stream table",
+          "description": "One row per stream: role, reading, drift, meter sigma, prior, the pseudo-measurement, the reconciled flow and its posterior sigma, the adjustment (absolute and in sigma), the measurement test, redundant/flagged flags, an excluded meter's offset and its test, the synthetic truth, and one `by_<balance>` column per balance -- the exact part of the adjustment, in sigma, that balance caused."
+        },
+        "balances": {
+          "type": "string",
+          "title": "Per-balance table",
+          "description": "One row per (projected) balance: its equation, the residual at the (pseudo-)measurements, its standard deviation and their ratio, the residual after reconciliation, the Lagrange multiplier of the balance as written (x = m - C A^T lambda) and the reconciler's sigma-space multiplier."
+        },
+        "covariance": {
+          "type": "string",
+          "title": "Posterior covariance",
+          "description": "The full posterior covariance of the reconciled flows, unmeasured flows included, one row and one column per stream."
+        }
+      },
+      "additionalProperties": false
+    }
+  },
+  "required": [
+    "network",
+    "readings",
+    "alpha"
+  ],
+  "additionalProperties": false
+}

@@ -1,0 +1,128 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+  reconcile01 -- SEVEN METERS THAT DO NOT CLOSE FOUR BALANCES (DEV.md 4c
+  C121).
+
+  An invented recycle loop (constant/plant/network: a mixer, a reactor, a
+  separator and a purge splitter, seven streams, one flow meter on each)
+  read once (constant/plant/readings).  The readings carry noise, so not
+  one node balance closes; the residuals are of the size the meters' own
+  sigmas predict.  The witness of the EduTool "Data reconciliation, and
+  how Bayes helps", which runs this case in the browser.
+
+  WHAT IS SYNTHETIC, said plainly.  The plant, its true flows, the meter
+  sigmas, the noise, the planted gross error and yesterday's prior are all
+  invented.  Nothing here is a measurement of anything.  The point is the
+  method, and an invented plant lets the page show the TRUTH beside the
+  readings and the reconciled flows -- which no real plant can.
+
+  THE FOUR OPERATIONS, one per question the page asks.
+
+    honest          the readings as they are.  Weighted least squares
+                    under the four balances: the posterior mode for
+                    Gaussian meters and a flat prior.  The objective is
+                    small against chi-square(4), and no meter's test
+                    exceeds the critical value.
+
+    drifted         the same snapshot with F3 planted to read 15 t/h high
+                    (syntheticDrift).  The global test rejects, the
+                    measurement test points at F3, and the reconciled flows
+                    show the error SMEARED over F3's neighbours.
+
+    driftedWithout  the drifted snapshot with F3's meter taken out of
+                    service (exclude).  The balances are projected onto the
+                    six remaining meters (the reactor and the separator
+                    merge into one envelope), the tests pass again, and F3
+                    is read back from the balances -- with how far the
+                    excluded meter sits from it.
+
+    yesterday       the honest readings with a prior per flow from
+                    yesterday's reconciled values (constant/plant/
+                    yesterday): each reading and its prior combine by
+                    precision weighting, exactly, before the same
+                    reconciliation; the reconciled sigmas shrink again.
+
+  The significance level is DECLARED (alpha 0.05), never defaulted: the
+  probability of a false alarm a plant accepts is a decision, not a
+  constant.
+\*---------------------------------------------------------------------------*/
+
+operations
+(
+    {
+        name      honest;
+        type      dataReconciliation;
+        network   constant/plant/network;
+        readings  constant/plant/readings;
+        alpha     0.05;
+        output
+        {
+            streams     honest_streams.csv;
+            balances    honest_balances.csv;
+            covariance  honest_covariance.csv;
+        }
+    }
+
+    {
+        name      drifted;
+        type      dataReconciliation;
+        network   constant/plant/network;
+        readings  constant/plant/readings;
+        alpha     0.05;
+        //  The exercise's gross error: F3 reads 15 t/h (5 sigma) high.
+        syntheticDrift
+        {
+            meter   F3;
+            size    15 t/h;
+        }
+        output
+        {
+            streams     drifted_streams.csv;
+            balances    drifted_balances.csv;
+            covariance  drifted_covariance.csv;
+        }
+    }
+
+    {
+        name      driftedWithout;
+        type      dataReconciliation;
+        network   constant/plant/network;
+        readings  constant/plant/readings;
+        alpha     0.05;
+        syntheticDrift
+        {
+            meter   F3;
+            size    15 t/h;
+        }
+        //  The suspect meter taken out of service: its flow is unmeasured.
+        exclude   F3;
+        output
+        {
+            streams     without_streams.csv;
+            balances    without_balances.csv;
+            covariance  without_covariance.csv;
+        }
+    }
+
+    {
+        name      yesterday;
+        type      dataReconciliation;
+        network   constant/plant/network;
+        readings  constant/plant/readings;
+        prior     constant/plant/yesterday;
+        alpha     0.05;
+        output
+        {
+            streams     prior_streams.csv;
+            balances    prior_balances.csv;
+            covariance  prior_covariance.csv;
+        }
+    }
+);

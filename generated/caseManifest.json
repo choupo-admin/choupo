@@ -6,7 +6,7 @@
   "runtime": "not recorded; runTests does not time per case and this script does not run the corpus"
  },
  "counts": {
-  "cases": 480,
+  "cases": 481,
   "witnesses": 16,
   "validationOp": 6,
   "anchored": 12
@@ -2770,6 +2770,20 @@
    "application": "choupoProps",
    "ops": [
     "thielePellet"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [],
+   "hasGolden": true
+  },
+  "tutorials/props/reconciliation/reconcile01_recycle_loop": {
+   "application": "choupoProps",
+   "ops": [
+    "dataReconciliation"
    ],
    "thermo": {
     "formulation": "gammaPhi",
@@ -7208,6 +7222,7 @@
     "tutorials/props/molecular/srk01_h2n2_density",
     "tutorials/props/reactor/thiele01_sphere_first_order",
     "tutorials/props/reactor/thiele02_prater_temperature",
+    "tutorials/props/reconciliation/reconcile01_recycle_loop",
     "tutorials/props/safety/relief01_ammonia_loop_gas",
     "tutorials/props/safety/relief02_acetone_fire_case",
     "tutorials/props/scan/binary01_lle_water_nbutanol",
@@ -8470,6 +8485,7 @@
     "tutorials/props/molecular/solubility01_hildebrand_ladder",
     "tutorials/props/reactor/thiele01_sphere_first_order",
     "tutorials/props/reactor/thiele02_prater_temperature",
+    "tutorials/props/reconciliation/reconcile01_recycle_loop",
     "tutorials/props/safety/relief02_acetone_fire_case",
     "tutorials/props/scan/phase01_water_full",
     "tutorials/props/scan/ternary02_bubbleT_benzene_toluene_water",
@@ -8681,6 +8697,9 @@
   "byOp": {
    "activityCoefficients": [
     "tutorials/props/molecular/nrtl01_ethanol_water_package"
+   ],
+   "dataReconciliation": [
+    "tutorials/props/reconciliation/reconcile01_recycle_loop"
    ],
    "electrolyteActivity": [
     "tutorials/props/electrolyte/pitzer02_nacl_package"

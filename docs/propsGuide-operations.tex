@@ -522,6 +522,26 @@ Group-contribution estimation of a component's constants — curation made visib
 \quad (and 6 more)
 \end{tutoriallink}
 
+\paragraph{\code{dataReconciliation}}
+Steady-state data reconciliation of a flow network. Mass-flow readings, each with its meter's declared standard uncertainty, are adjusted as little as their uncertainties allow until every node mass balance closes: min Sum ((x - m)/sigma)\textasciicircum{}2 subject to A x = 0, solved by the engine's one weighted least squares (the reconciler built for the aqueous laboratory analysis). With Gaussian meter noise and a flat prior this is the Bayesian posterior mode; its covariance C - V, V = C A\textasciicircum{}T (A C A\textasciicircum{}T)\textasciicircum{}-1 A C, is published. Beside the answer: each balance's residual at the readings and its standard deviation, the chi-square global test with rank(A) degrees of freedom, the measurement test (each adjustment over its own standard deviation, against a Sidak-corrected two-sided normal critical value), and, for a meter taken out of service, the balances projected onto the remaining meters and the excluded reading's offset from what the rest of the plant says. An optional diagonal Gaussian prior per flow is combined with each reading by precision weighting, which is exact. Linear mass balances only.
+
+\begin{tabular}{@{}p{0.30\linewidth}p{0.62\linewidth}@{}}
+\hline
+\code{alpha}\textbf{*} & Significance level [-] \\
+\code{exclude} & Meters out of service \\
+\code{network}\textbf{*} & Network file \\
+\code{output} & CSV outputs \\
+\code{prior} & Prior file \\
+\code{readings}\textbf{*} & Readings file \\
+\code{syntheticDrift} & Planted gross error (exercise) \\
+\hline
+\end{tabular}
+
+
+\begin{tutoriallink}
+\file{tutorials/props/reconciliation/reconcile01\_recycle\_loop}
+\end{tutoriallink}
+
 \subsection{Benches}
 
 \paragraph{\code{kinetics1D}}
@@ -664,6 +684,25 @@ The P-T phase envelope of a MIXTURE at fixed feed composition: the bubble curve 
 \begin{tutoriallink}
 \file{tutorials/props/molecular/envelope01\_natural\_gas}
 \quad (and 1 more)
+\end{tutoriallink}
+
+\paragraph{\code{phaseSplitScan}}
+The full phase split of ONE fixed feed swept along temperature (at fixed pressure) or pressure (at fixed temperature): at every grid point one isothermal flash through the flash unit's own solver (IsothermalFlash::solveCore) under the case's thermophysical system -- vapour, one or two liquids, crystallising solids declared in phases ( ... ), minerals precipitating from a speciated solution. Publishes per point the amount of every phase present (V, L1, L2, each solid by name), each phase's composition, the flash's own observables (pH, solidFraction, the crystal's activity beside its saturation value), the solved species where the package speciates; announces every phase appearance / disappearance between consecutive points and every record-level extrapolation at the first point that raised it. A point the flash cannot serve is published as REFUSED by name and the scan continues (no fallback). Output: a CSV (swept variable first) and the top-level result block phaseSplitScans. Not modelled: nucleation / supercooling, a solid no record declares, solute inclusion in a crystal.
+
+\begin{tabular}{@{}p{0.30\linewidth}p{0.62\linewidth}@{}}
+\hline
+\code{alphaRich} & Alpha-rich component (LL/VLLE seed) \\
+\code{betaRich} & Beta-rich component (LL/VLLE seed) \\
+\code{output}\textbf{*} & CSV output \\
+\code{phaseSet} & Phase set \\
+\code{state}\textbf{*} & Held axis and feed \\
+\code{vary}\textbf{*} & Swept axis \\
+\hline
+\end{tabular}
+
+
+\begin{tutoriallink}
+\file{tutorials/props/thermo/phaseSplit01\_freeze\_water\_ethanol}
 \end{tutoriallink}
 
 \paragraph{\code{polarisationIndex}}

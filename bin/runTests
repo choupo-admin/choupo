@@ -4460,6 +4460,26 @@ PYEOF
     fi
     rm -f /tmp/phsplit.$$
 
+    # Data-reconciliation gate (2026-10-20, DEV.md 4c C121): the
+    # `dataReconciliation` props op reconciles plant flow readings under the
+    # node balances through analysis::reconcileWeightedLeastSquares (the one
+    # weighted least squares) and computes the tests beside the answer.  The
+    # witness's four operations are recomputed by a stacked KKT solve over
+    # every flow (reconciled flows and the whole posterior covariance), the
+    # precision-weighted prior, the chi-square global test against its closed
+    # form and the printed tables, the Sidak measurement test, the multipliers
+    # and the attribution, the excluded meter's offset test; nine refusals by
+    # name; a source arm (no second QP).
+    if "$ROOT/bin/curate/check_data_reconciliation.py" > /tmp/datarec.$$ 2>&1; then
+        printf "PASS  %-40s  (%s)\n" "data-reconciliation-gate" "$(gate_claim check_data_reconciliation /tmp/datarec.$$)"
+        pass=$((pass+1))
+    else
+        printf "FAIL  %-40s  (run bin/curate/check_data_reconciliation.py)\n" "data-reconciliation-gate"
+        cat /tmp/datarec.$$
+        fail=$((fail+1))
+    fi
+    rm -f /tmp/datarec.$$
+
     # gate self-test (2026-08-07, ordered by Vitor).  The meta-gate: it
     # sabotages the tree on purpose and demands the covered gates exit
     # non-zero, then restores every byte.  Aimed at the failure mode found

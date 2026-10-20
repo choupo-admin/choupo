@@ -1,0 +1,25 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+  readings -- ONE SNAPSHOT OF THE SEVEN METERS, SYNTHETIC.
+
+  Invented, and said so: each reading is the network's syntheticTruth plus
+  a noise chosen by hand within about one meter sigma either way, rounded
+  to 0.1 t/h -- +0.7, -1.2, +0.5, -0.4, +1.1, -0.6 and +0.9 sigma for F1 to
+  F7.  No meter here carries a gross error; the exercise plants one, on
+  F3, through the operation's syntheticDrift and nowhere in this file.
+\*---------------------------------------------------------------------------*/
+
+F1 101.4 t/h;
+F2 146.4 t/h;
+F3 151.5 t/h;
+F4  89.3 t/h;
+F5  61.6 t/h;
+F6   9.8 t/h;
+F7  51.1 t/h;

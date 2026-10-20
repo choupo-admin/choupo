@@ -1205,6 +1205,11 @@
       "exit": 0,
       "claim": "check_phase_split_scan: OK -- one flash home (flash21/16/19 goldens reproduced at their operating point), the freezing-point identity recomputed from water.dat at every point (12 ice points), the ice appearance announced between its grid values, a pure-water probe refused by name below Tt and continued, the Psat/dCp announcements at their first point, closure to 1e-9, 4 grammar refusals, source arm.  NOT checked: any measured freezing point; the reactive path along a sweep; `phaseSet auto` changing along a scan; `variable P` beyond the grammar.",
       "seconds": 6.1
+    },
+    "check_data_reconciliation": {
+      "exit": 0,
+      "claim": "check_data_reconciliation: OK -- four operations recomputed by a stacked KKT solve over all seven flows (reconciled flows and the whole posterior covariance to 1e-9, unmeasured F3 included), the precision-weighted prior and its conflict, the chi-square global test against its closed form and the printed tables, the Sidak measurement test (flags exactly F3 on the drifted snapshot), the multipliers and the per-balance attribution, the excluded meter's test equal to its in-service test (4.8579), 9 refusals by name, source arm, the EduTool's drift range run at both ends on every meter (14 runs).  NOT checked: a composition or energy balance (not built); a correlated prior (refused by construction); any real plant's data.",
+      "seconds": 0.8
     }
   }
 }

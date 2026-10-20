@@ -27,6 +27,7 @@ License
 \*---------------------------------------------------------------------------*/
 
 #include "PropertyOperation.H"
+#include "DataReconciliation.H"
 #include "ElementCompositionOp.H"
 #include "EnthalpyConcentration.H"
 #include "EstimateComponent.H"
@@ -213,6 +214,11 @@ void PropertyOperation::registerBuiltins()
     reg("estimateComponent", []{ return std::make_unique<EstimateComponent>(); });
     reg("elementalComposition", []{ return std::make_unique<ElementCompositionOp>(); });
     reg("polarisationIndex", []{ return std::make_unique<PolarisationIndex>(); });
+    //  PLANT FLOW MEASUREMENTS RECONCILED UNDER THE NODE BALANCES, with the
+    //  global and measurement tests and the posterior covariance (DEV.md 4c
+    //  C121).  The weighted least squares itself is the one in
+    //  streams/AnalysisReconciler; this op assembles and tests around it.
+    reg("dataReconciliation", []{ return std::make_unique<DataReconciliation>(); });
 }
 
 } // namespace Choupo

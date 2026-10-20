@@ -1,0 +1,12 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+application   choupoProps;
+description   "Seven flow meters on an invented recycle loop, reconciled under four node balances: the residuals of the raw readings, the weighted least squares that is also the Bayesian posterior mode, the chi-square and measurement tests that catch a meter planted to read 15 t/h high, and a prior from yesterday -- the witness of the EduTool on data reconciliation";
+
+verbosity     2;
