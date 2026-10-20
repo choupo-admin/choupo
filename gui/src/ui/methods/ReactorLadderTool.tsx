@@ -158,6 +158,35 @@ function fmt(v: number | null | undefined, d = 4): string {
   return v === null || v === undefined || !Number.isFinite(v) ? "—" : v.toFixed(d);
 }
 
+/** RUNG 1 AGAINST RUNG 2, compared by the PAGE (C112 point 12).
+ *
+ *  The conversion reactor checks only 0 <= X <= 1 and that no outlet goes
+ *  negative (ConversionReactor.cpp:215-218, 230-233), so a declared X above the
+ *  equilibrium conversion runs to exit 0.  This page holds both numbers the
+ *  engine PUBLISHES for the same feed at the same T and P -- the `stoich`
+ *  unit's echoed `conversion` and the `limit` unit's `conversion_wgs` (the
+ *  equilibrium reactor with NO approach) -- and compares them.  No new
+ *  engine evaluation and no solver: one subtraction.  `exceeds` is true when
+ *  the declared conversion lies above the limit by more than `LIMIT_TOL`
+ *  (a round-off allowance, far below the 0.05 step of the X knob). */
+export const LIMIT_TOL = 1e-9;
+
+export interface RungCheck {
+  declared: number;
+  limit: number;
+  /** declared - limit: positive when rung 1 asks for more than is possible. */
+  excess: number;
+  exceeds: boolean;
+}
+
+export function declaredVersusLimit(xDeclared: number | null,
+  xLimit: number | null): RungCheck | null {
+  if (xDeclared === null || xLimit === null
+      || !Number.isFinite(xDeclared) || !Number.isFinite(xLimit)) return null;
+  const excess = xDeclared - xLimit;
+  return { declared: xDeclared, limit: xLimit, excess, exceeds: excess > LIMIT_TOL };
+}
+
 /** The PFR's published profile, or null. */
 export function kineticProfile(profiles: readonly UnitProfile[] | undefined):
   { V: number[]; X: number[] } | null {
@@ -325,7 +354,7 @@ export function ReactorLadderTool(): JSX.Element {
     </Table>
   );
 
-  const overLimit = xDeclared !== null && xLimit !== null && xDeclared > xLimit;
+  const rungCheck = declaredVersusLimit(xDeclared, xLimit);
   const rateBinds = xPfr !== null && xLimit !== null && xLimit - xPfr > 1e-4;
 
   return (
@@ -389,11 +418,6 @@ export function ReactorLadderTool(): JSX.Element {
               <LadderPlot prof={prof} limit={xLimit} approach={xApproach}
                 declared={xDeclared} />
               <Group gap="xs" wrap="wrap" mt={4}>
-                {overLimit && (
-                  <Badge variant="light" color="red">
-                    rung 1 declares more than thermodynamics allows
-                  </Badge>
-                )}
                 {xPfr !== null && (
                   <Badge variant="light" color={rateBinds ? "orange" : "teal"}>
                     {rateBinds
@@ -405,6 +429,32 @@ export function ReactorLadderTool(): JSX.Element {
                   T = {T} K · |ΔT| = {dT} K · X declared = {X.toFixed(2)}
                 </Badge>
               </Group>
+              {rungCheck && rungCheck.exceeds && (
+                <Alert color="red" variant="light" mt={8}
+                  title="Rung 1 is a hypothesis that cannot be reached here">
+                  <Text size="sm">
+                    Rung 1 declares X = {rungCheck.declared.toFixed(4)}.  The
+                    equilibrium reactor, fed the same feed at the same {T} K
+                    and 10 bar, allows at most{" "}
+                    {rungCheck.limit.toFixed(4)}: the declared X exceeds it by{" "}
+                    {rungCheck.excess.toFixed(4)}.  No reactor of any size,
+                    held at these conditions on this feed and removing no
+                    product, reaches the declared number, so the conversion
+                    reactor&apos;s outlet is a hypothesis, not a reachable
+                    state.  The conversion reactor itself checked
+                    nothing: this page compared the two numbers the engine
+                    published.
+                  </Text>
+                </Alert>
+              )}
+              {rungCheck && !rungCheck.exceeds && (
+                <Text size="xs" c="dimmed" mt={6}>
+                  Rung 1&apos;s X = {rungCheck.declared.toFixed(4)} is at or
+                  below the equilibrium limit {rungCheck.limit.toFixed(4)} at
+                  these conditions: thermodynamics allows it.  Whether a bed
+                  of a given size reaches it is rung 3&apos;s question.
+                </Text>
+              )}
             </Box>
           </Box>
           <Box mt={10}>{table}</Box>

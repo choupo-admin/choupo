@@ -44,9 +44,9 @@ import { describe, expect, it } from "vitest";
 import { rawRecordFor } from "../src/case/catalogue.js";
 import { tutorialByName } from "../src/cases/tutorials.js";
 import {
-  BTU_H_FT2_W_M2, CAL_S_CM2_W_M2, FUEL_PLANT, LAYOUT_CASE, MEASURED,
+  BTU_H_FT2_W_M2, CAL_S_CM2_W_M2, EPA_DOSE, FUEL_PLANT, LAYOUT_CASE, MEASURED,
   POOL_FUELS, THRESHOLDS, USBM_TABLE21, airDensity, burgessMinf, burningFlux,
-  chOAtoms, cylinderViewFactor, distanceTo, flameViewFactor, formationEnthalpy,
+  chOAtoms, cylinderViewFactor, distanceTo, epaDoseTime, flameViewFactor, formationEnthalpy,
   fuelFromRecord, gasificationHeat, heatRelease, heskestadGroup, heskestadHeight,
   HESKESTAD_RANGE,
   kBetaFromMeasurement, lhvLiquid, lhvVapour, liquidDensity, mudanSEP,
@@ -54,6 +54,7 @@ import {
   regressionToFlux, thomasHeight, watsonHvap, type Products,
 } from "../src/ui/methods/poolFire.js";
 import { POOL_LIMITS, POOL_SOURCES, POOL_STEPS } from "../src/ui/methods/poolFireLesson.js";
+import { NOT_A_BOUNDARY, exposureSentence } from "../src/ui/methods/PoolFireTool.js";
 import { PLANT_LAYOUT_STEPS } from "../src/ui/methods/plantLayoutLesson.js";
 import { texParses } from "../src/ui/methods/lessonTex.js";
 import { METHOD_TOOLS } from "../src/ui/methods/registry.js";
@@ -330,6 +331,61 @@ describe("pool fire: the two models", () => {
     const qb = THRESHOLDS.find((t) => t.id === "hud-buildings")!.q;
     expect(f.E).toBeLessThan(qb);
     expect(distanceTo(f.qSolid, qb, 2.5)).toBeNull();
+  });
+});
+
+describe("pool fire: exposure time stands beside every result (C112 point 14)", () => {
+  const TOOL = tree("gui/src/ui/methods/PoolFireTool.tsx");
+  it("every threshold says whom it is for and the exposure its source attaches", () => {
+    for (const t of THRESHOLDS) {
+      expect(["person", "building"]).toContain(t.target);
+      expect(t.exposure.length, t.id).toBeGreaterThan(10);
+      expect(t.exposure, t.id).not.toMatch(/\bsafe\b/i);
+    }
+    const by = (id: string) => THRESHOLDS.find((t) => t.id === id)!;
+    expect(by("epa-rmp").exposure).toContain("40 s");
+    expect(by("hud-people").exposure).toContain("no exposure time");
+    expect(by("hud-buildings").target).toBe("building");
+  });
+  it("the dose rule: 40 s at 5 kW/m2, and 2^(4/3) times longer at half the flux", () => {
+    expect(EPA_DOSE).toBeCloseTo(3.42e6, -4);                      // step 11's derivation
+    expect(epaDoseTime(5000)).toBeCloseTo(40, 10);
+    expect(epaDoseTime(2500) / epaDoseTime(5000)).toBeCloseTo(Math.pow(2, 4 / 3), 10);
+    expect(epaDoseTime(2500) / epaDoseTime(5000)).toBeCloseTo(2.52, 2);   // "2.5 times as long"
+    expect(prose(POOL_STEPS.find((s) => s.n === 11)!.body))
+      .toContain("halving the flux buys 2.5 times as long");
+    expect(epaDoseTime(0)).toBe(Infinity);
+  });
+  it("the receiver's exposure sentence follows the flux, so it moves with every knob", () => {
+    //  Two fires that differ only in diameter: the receiver 20 m from the
+    //  edge sees two different fluxes, and the sentence beside each gives
+    //  its own time.
+    expect(exposureSentence(5000)).toContain("after 40 s of exposure");
+    expect(exposureSentence(1000)).toContain(`after ${(epaDoseTime(1000) / 60).toFixed(1)} min`);
+    expect(exposureSentence(1e6)).toMatch(/after \d+ s/);
+    expect(exposureSentence(0)).toBe("");
+    const fire = (D: number) => poolFire({
+      fuel: acetone, products, M_air: M_AIR, D, kBeta: 5, chiR: 0.22,
+      flame: "thomas", sep: "mudan", z: 1.5, tau: 1,
+    });
+    const a = fire(5), b = fire(20);
+    const qa = a.qSolid(2.5 + 20), qb = b.qSolid(10 + 20);
+    expect(qb).toBeGreaterThan(qa);
+    expect(exposureSentence(qa)).not.toBe(exposureSentence(qb));
+    for (const q of [qa, qb]) expect(exposureSentence(q)).toContain("a person's harm is a dose");
+  });
+  it("the page never presents a threshold distance as a safe/harm boundary", () => {
+    expect(NOT_A_BOUNDARY).toContain("No distance or flux on this page is a universal safe or harm boundary");
+    //  Rendered in the bench unconditionally (not inside a knob-dependent
+    //  branch), beside the receiver's sentence; the table carries the
+    //  exposure column; the plot carries its caption.
+    expect(TOOL).toContain("{NOT_A_BOUNDARY}");
+    expect(TOOL).toContain("{d.t.target}: {d.t.exposure}");
+    expect(TOOL).toContain("for, and the exposure its source attaches");
+    expect(TOOL).toContain("where a curve crosses a line is not");
+    expect(TOOL).toContain("{exposureSentence(qHere)}");
+    const s11 = prose(POOL_STEPS.find((s) => s.n === 11)!.body);
+    expect(s11).toContain("is NOT a line between safe and harmed");
   });
 });
 

@@ -405,6 +405,13 @@ export interface Threshold {
   means: string;
   /** An id of POOL_SOURCES. */
   source: string;
+  /** WHO the threshold is for: a person's harm follows a dose (flux AND
+   *  time), a building's ignition does not on this page. */
+  target: "person" | "building";
+  /** The exposure time the source attaches to the flux, in a few words, so
+   *  it can stand BESIDE every distance and line the page draws (C112
+   *  point 14).  Never "safe": each says what the source says and no more. */
+  exposure: string;
 }
 
 /** Every threshold the page draws, lowest first.  Each value is CONVERTED
@@ -415,24 +422,41 @@ export const THRESHOLDS: readonly Threshold[] = [
     means: "the limit for outdoor, unprotected facilities or areas of "
       + "congregation near a hazard (450 Btu/(h ft2)), with no exposure time "
       + "attached",
-    source: "hud-24cfr51" },
+    source: "hud-24cfr51", target: "person",
+    exposure: "no exposure time stated by the source" },
   { id: "usbm-pain", q: 0.1 * CAL_S_CM2_W_M2,
     label: "4.18 kW/m2 USBM, pain after a short time",
     means: "humans feel pain after a short time (0.1 cal/(s cm2)); the same "
       + "Bulletin reads it as about the threshold for second-degree burns at "
       + "exposures of minutes",
-    source: "usbm-b680" },
+    source: "usbm-b680", target: "person",
+    exposure: "pain after a short time; second-degree burns over minutes" },
   { id: "epa-rmp", q: 5000,
     label: "5 kW/m2 for 40 s, EPA RMP endpoint",
     means: "the endpoint of a fire in an offsite consequence analysis: 5 kW/m2 "
       + "for 40 seconds, the dose the guidance associates with second-degree "
       + "burns, assuming a person escapes within 40 s",
-    source: "epa-rmp" },
+    source: "epa-rmp", target: "person",
+    exposure: "40 s: a dose, t q^(4/3), not a flux alone" },
   { id: "hud-buildings", q: 10000 * BTU_H_FT2_W_M2,
     label: "31.5 kW/m2 HUD, buildings",
     means: "the limit for a building near a hazard (10,000 Btu/(h ft2))",
-    source: "hud-24cfr51" },
+    source: "hud-24cfr51", target: "building",
+    exposure: "a building, not a person: no exposure time stated" },
 ];
+
+/** The EPA endpoint's dose, 40 s at 5 kW/m2, in (W/m2)^(4/3) s: step 11's
+ *  t_e q^(4/3) = 40 x 5000^(4/3). */
+export const EPA_DOSE = 40 * Math.pow(5000, 4 / 3);
+
+/** The exposure time [s] at which a constant flux q [W/m2] delivers the EPA
+ *  endpoint's dose, t = EPA_DOSE / q^(4/3) -- 40 s at 5 kW/m2, 2^(4/3) times
+ *  longer at half the flux.  The page shows it BESIDE the flux at the
+ *  receiver so a reader sees that a person's harm is a dose; it is the
+ *  guidance's dose rule, not a prediction of injury for a given person. */
+export function epaDoseTime(q: number): number {
+  return q > 0 ? EPA_DOSE / Math.pow(q, 4 / 3) : Infinity;
+}
 
 // ---- Step 1 and 12: the distance to a flux ---------------------------------------------
 

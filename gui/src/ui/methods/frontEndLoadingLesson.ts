@@ -26,6 +26,13 @@
   "cost of change" curve is quoted: the record holds none, and a number with
   no source would be a falsehood nobody could detect.
 
+  ONE EXCEPTION, NAMED (C112 point 9, 2026-10-20): step 6's argument that
+  separated bands are sufficient and not necessary -- a class range is not
+  a distribution, correlated errors cancel in a difference, a decision may
+  rest on expected cost and risk -- is statistics, not a claim about the
+  standard or about practice, and its numbers (the 0.45 sigma of the note)
+  are arithmetic recomputed by tests/frontEndLoading.test.ts.
+
   The two reactor volumes step 7 quotes are the ammonia ladder's goldens
   (ammoniaReactor03_equilibriumApproach and ammoniaReactor04_kineticSizing `expected`), held
   there by tests/frontEndLoading.test.ts; the band arithmetic of steps 3, 4
@@ -149,21 +156,44 @@ export const FEL_STEPS: readonly LessonStep[] = [
     n: 6,
     title: "When can an estimate choose between two options?",
     body: "This is the reason the front end is loaded at all.  Two options, "
-      + "A cheaper than B on their point estimates, are told apart by an "
-      + "estimate only when their bands do not overlap: the HIGH end of the "
-      + "cheaper one must lie below the LOW end of the dearer one.  "
+      + "A cheaper than B on their point estimates.  If the HIGH end of the "
+      + "cheaper one lies below the LOW end of the dearer one, the bands do "
+      + "not overlap and the range ends alone decide: wherever inside its "
+      + "band each option's true cost turns out to be, A is cheaper.  "
       + "Rearranged, the cost ratio must exceed a number that belongs to the "
       + "class alone.  At Class 4's pessimistic corner that number is "
-      + "1.5/0.7, so B must cost more than twice A before the estimate can "
-      + "say which is cheaper; at Class 3's optimistic corner it is 1.1/0.9.  "
-      + "A difference inside the band is not a decision the estimate can "
-      + "make, and spending more definition (the next stage) is what "
-      + "narrows the band.  The lesson cuts both ways.  A large difference "
-      + "is decided early and cheaply: most routes die on paper.  A small "
-      + "one needs a later class, or a different argument than cost.  Spend "
-      + "design effort where it changes a decision.",
-    formula: String.raw`C_A\,(1 + H) < C_B\,(1 + L)
-\quad\iff\quad \frac{C_B}{C_A} > \frac{1 + H}{1 + L}`,
+      + "1.5/0.7, so B must cost more than twice A before the range ends "
+      + "can say which is cheaper; at Class 3's optimistic corner it is "
+      + "1.1/0.9.  Read that test for what it is: non-overlapping ranges are "
+      + "SUFFICIENT to decide, not NECESSARY.  Overlapping bands do not make "
+      + "two options indistinguishable, for three reasons.  First, a class "
+      + "range is not a probability distribution: it states roughly where a "
+      + "confidence interval ends, and says nothing of the shape inside it, "
+      + "so two overlapping intervals can still leave A very probably the "
+      + "cheaper.  Second, the two errors are rarely independent: options "
+      + "estimated by the same team, on the same basis, with the same prices "
+      + "and the same method share much of their error, and what is shared "
+      + "cancels in the DIFFERENCE, so the difference is known better than "
+      + "either total — estimating it directly, item by item where the "
+      + "options differ, is often far more informative than comparing two "
+      + "totals.  Third, a decision guaranteed by the range ends is one that "
+      + "holds for every value in both bands; most real decisions are taken "
+      + "instead on expected cost and risk — how likely each outcome is and "
+      + "what it would cost to be wrong — and that is a legitimate decision "
+      + "while the bands still overlap.  What the class does fix is how wide "
+      + "each band is, and that follows the maturity of the definition: "
+      + "spending more definition (the next stage) is what narrows it.  The "
+      + "lesson cuts both ways.  A large difference is decided early and "
+      + "cheaply: most routes die on paper.  A small one needs a later "
+      + "class, a direct estimate of the difference, or a different argument "
+      + "than cost.  Spend design effort where it changes a decision.",
+    formula: String.raw`\begin{aligned}
+&C_A\,(1 + H) < C_B\,(1 + L)
+\quad\iff\quad \frac{C_B}{C_A} > \frac{1 + H}{1 + L}
+&&\text{(sufficient, not necessary)}\\[4pt]
+&\sigma_D^2 = \sigma_A^2 + \sigma_B^2 - 2\,\rho\,\sigma_A\,\sigma_B
+&&\text{(the difference, when the errors are correlated)}
+\end{aligned}`,
     where: [
       { sym: "C_A", means: "the point estimate of the cheaper option",
         unit: "M€" },
@@ -172,7 +202,24 @@ export const FEL_STEPS: readonly LessonStep[] = [
         unit: "M€" },
       { sym: "L", means: "the low-range fraction of the class (negative)",
         unit: "–" },
+      { sym: "\\sigma_D", means: "the standard uncertainty of the "
+        + "DIFFERENCE C_B − C_A", unit: "M€" },
+      { sym: "\\sigma_A", means: "the standard uncertainty of option "
+        + "A's total", unit: "M€" },
+      { sym: "\\sigma_B", means: "the standard uncertainty of option "
+        + "B's total", unit: "M€" },
+      { sym: "\\rho", means: "the correlation between the two estimates' "
+        + "errors: 0 when they are independent, near 1 when they share a "
+        + "basis, prices and method", unit: "–" },
     ],
+    note: "A worked number for the second reason: two totals each uncertain "
+      + "by the same σ, with their errors correlated at ρ = 0.9, have a "
+      + "difference uncertain by σ·√(2·(1 − 0.9)) ≈ 0.45 σ — known about "
+      + "twice as well as either total, while their bands, drawn "
+      + "independently, may overlap.  At ρ = 0 it is 1.41 σ, worse than "
+      + "either.  The chart and the table below draw the bands as if the "
+      + "errors were independent; they show when the range ends decide, "
+      + "never that nothing else can.",
   },
   {
     n: 7,

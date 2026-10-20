@@ -112,6 +112,67 @@ describe("what the lesson says about the table is computed from it", () => {
     expect(step(6)).toContain("1.1/0.9");
   });
 
+  it("step 6: separated bands are SUFFICIENT, not NECESSARY (C112 point 9)", () => {
+    expect(step(6)).toContain("SUFFICIENT to decide, not NECESSARY");
+    expect(step(6)).toContain("is not a probability distribution");
+    expect(step(6)).toContain("the difference is known better than either total");
+    expect(step(6)).toContain("expected cost and risk");
+    expect(step(6)).toContain("follows the maturity of the definition");
+    const f = FEL_STEPS.find((s) => s.n === 6)!.formula!;
+    expect(f).toContain(String.raw`\text{(sufficient, not necessary)}`);
+    expect(texParses(f)).toBe(true);
+  });
+
+  it("overlapping bands can still be decided: a SHARED error keeps the order", () => {
+    //  A = 100, B = 120 at Class 4's pessimistic corner: the bands overlap, so
+    //  the range-end test says nothing.  But if the error is one factor common
+    //  to both (same team, same prices, same method), every outcome inside
+    //  the band keeps B dearer -- the difference is decided while the bands
+    //  are not.
+    const c4 = AACE_CLASSES.find((r) => r.cls === 4)!;
+    const v = decide(100, 120, "pessimistic").find((x) => x.cls === 4)!;
+    expect(v.separated).toBe(false);
+    expect(v.a.hi).toBeGreaterThan(v.b.lo);
+    const band = bandOf(1, c4, "pessimistic");
+    for (let k = 0; k <= 100; ++k) {
+      const factor = band.lo + (k / 100) * (band.hi - band.lo);
+      expect(120 * factor - 100 * factor).toBeGreaterThan(0);
+    }
+  });
+
+  it("overlapping bands can still make A very probably cheaper", () => {
+    //  Read each Class 4 optimistic band of A = 100, B = 130 as the 10-90 %
+    //  interval of an independent normal (an illustration: the standard
+    //  gives no shape).  The bands overlap, and P(A < B) is still ~0.9.
+    const c4 = AACE_CLASSES.find((r) => r.cls === 4)!;
+    const a = bandOf(100, c4, "optimistic"), b = bandOf(130, c4, "optimistic");
+    expect(a.hi).toBeGreaterThan(b.lo);
+    const z90 = 1.2815515655;
+    const sA = (a.hi - a.lo) / (2 * z90), sB = (b.hi - b.lo) / (2 * z90);
+    const mA = (a.hi + a.lo) / 2, mB = (b.hi + b.lo) / 2;
+    const z = (mB - mA) / Math.hypot(sA, sB);
+    //  Phi(z) through the Abramowitz-Stegun 7.1.26 erf, ample here.
+    const erf = (x: number) => {
+      const t = 1 / (1 + 0.3275911 * Math.abs(x));
+      const y = 1 - (((((1.061405429 * t - 1.453152027) * t) + 1.421413741) * t
+        - 0.284496736) * t + 0.254829592) * t * Math.exp(-x * x);
+      return x >= 0 ? y : -y;
+    };
+    const p = 0.5 * (1 + erf(z / Math.SQRT2));
+    expect(p).toBeGreaterThan(0.85);
+    expect(p).toBeLessThan(1);
+  });
+
+  it("the correlated-difference numbers step 6's note quotes", () => {
+    const sD = (rho: number) => Math.sqrt(1 + 1 - 2 * rho);   // sigma_A = sigma_B = 1
+    expect(sD(0.9)).toBeCloseTo(0.4472, 4);
+    expect(sD(0)).toBeCloseTo(1.4142, 4);
+    expect(sD(1)).toBe(0);
+    const note = prose(FEL_STEPS.find((s) => s.n === 6)!.note!);
+    expect(note).toContain(`≈ ${sD(0.9).toFixed(2)} σ`);
+    expect(note).toContain(`it is ${sD(0).toFixed(2)} σ`);
+  });
+
   it("step 3's Class 4 fractions are the table's", () => {
     const g = FEL_STEPS.find((s) => s.n === 3)!.where!;
     expect(g.find((x) => x.sym === "L")!.means).toContain("-0.15 and -0.30");

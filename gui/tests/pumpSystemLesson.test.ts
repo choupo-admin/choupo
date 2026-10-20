@@ -161,7 +161,28 @@ describe("the consequences an engineer acts on", () => {
     expect(prose(s5.body)).toContain("RISES with flow");
     expect(s5.formula).toContain(String.raw`\mathrm{NPSH}_a`);
     expect(s5.formula).toContain(String.raw`\mathrm{NPSH}_r`);
-    expect(s5.formula).toContain(String.raw`\text{cavitation when}\quad \mathrm{NPSH}_a \le \mathrm{NPSH}_r`);
+    //  C112 point 5: NPSH required is usually NPSH3, a point where the head
+    //  has ALREADY fallen 3 %, so NPSHa > NPSHr is a minimum and a selection
+    //  keeps a margin.  The old line "cavitation when NPSHa <= NPSHr" said
+    //  the opposite (that no cavitation happens above NPSHr) and must not
+    //  come back.
+    expect(s5.formula).not.toContain(String.raw`\text{cavitation when}`);
+    expect(s5.formula).toContain(String.raw`\mathrm{NPSH}_r &= \mathrm{NPSH}_3`);
+    expect(s5.formula).toContain(String.raw`\mathrm{NPSH}_i &> \mathrm{NPSH}_3`);
+    expect(s5.formula).toContain(String.raw`\text{minimum:}\quad \mathrm{NPSH}_a &> \mathrm{NPSH}_r`);
+    expect(s5.formula).toContain(String.raw`\mathrm{NPSH}_a \ge \mathrm{NPSH}_r + \Delta\mathrm{NPSH}_\mathrm{m}`);
+    const b = prose(s5.body);
+    expect(b).toContain("has ALREADY fallen by 3 per cent");
+    expect(b).toContain("incipient cavitation");
+    expect(b).toContain("MINIMUM, indicative condition, never the design criterion");
+    expect(b).toContain("ANSI/HI 9.6.1");
+    //  Every NPSH symbol the formula uses is glossed, and the margin's gloss
+    //  gives no value (the guideline's table is not copied).
+    const syms = s5.where!.map((w) => w.sym);
+    for (const sym of ["\\mathrm{NPSH}_3", "\\mathrm{NPSH}_i",
+      "\\Delta\\mathrm{NPSH}_\\mathrm{m}"]) expect(syms).toContain(sym);
+    const margin = s5.where!.find((w) => w.sym.startsWith("\\Delta"))!.means;
+    expect(margin).not.toMatch(/\d/);
   });
 });
 
@@ -174,6 +195,61 @@ describe("the claims are true of the run the page draws", () => {
       expect(sweep.pumpDP[i]!).toBeLessThan(sweep.pumpDP[i - 1]!);
       expect(sweep.systemDP[i]!).toBeGreaterThan(sweep.systemDP[i - 1]!);
     }
+  });
+
+  it("step 1 says the single crossing is THIS example's, not a law of pumps", () => {
+    //  C112 point 8.  The page may claim one crossing only for its own pair
+    //  of curves, and must say why it cannot show two.
+    const s1 = PUMP_STEPS[0]!;
+    expect(prose(s1.body)).toContain("In THIS example one curve only rises");
+    expect(prose(s1.body)).toContain("not of pumps");
+    expect(prose(s1.body)).toContain("cross twice or more");
+    expect(prose(s1.body)).toContain("is unstable");
+    expect(prose(s1.note!)).toContain("not a measured centrifugal H(Q)");
+  });
+
+  it("a strictly falling pump curve and a strictly rising system cross at most once", () => {
+    //  The argument step 1 gives for THIS example, checked as arithmetic:
+    //  the difference of a falling and a rising function falls, so it
+    //  changes sign at most once.  The model's curve is eta W/Q, which falls
+    //  for EVERY positive eta and W -- it cannot droop.
+    const Q = Array.from({ length: 200 }, (_, i) => 0.001 + i * 0.0005);
+    for (const [eta, W] of [[0.5, 1e3], [0.8, 5e4], [0.3, 2e5]] as const) {
+      const pump = Q.map((q) => (eta * W) / q);
+      for (let i = 1; i < Q.length; ++i) expect(pump[i]!).toBeLessThan(pump[i - 1]!);
+      for (const [s0, k] of [[1e4, 1e9], [5e5, 1e8], [0, 4e9]] as const) {
+        const sys = Q.map((q) => s0 + k * q * q);
+        let changes = 0;
+        for (let i = 1; i < Q.length; ++i)
+          if ((pump[i - 1]! - sys[i - 1]!) * (pump[i]! - sys[i]!) < 0) ++changes;
+        expect(changes).toBeLessThanOrEqual(1);
+      }
+    }
+  });
+
+  it("a DROOPING pump curve can cross a flat system curve twice, and the first crossing is unstable", () => {
+    //  The counter-example step 1 names: H(Q) = H0 + a Q - b Q^2 rises from
+    //  shut-off, peaks, then falls; a nearly flat system curve above H0
+    //  meets it twice.  The tool's own finder returns ONE of the two, which
+    //  is why the page may not call a single crossing general.
+    const Q = Array.from({ length: 401 }, (_, i) => i * 0.003);        // 0..1.2, no node on a root
+    const pump = Q.map((q) => 40 + 20 * q - 30 * q * q);              // peak at Q = 1/3
+    const sys = Q.map((q) => 42 + 2 * q * q);                          // static-dominated
+    const crossings: number[] = [];
+    for (let i = 1; i < Q.length; ++i) {
+      const a = pump[i - 1]! - sys[i - 1]!, b = pump[i]! - sys[i]!;
+      if (a * b < 0) crossings.push(Q[i - 1]! + (a / (a - b)) * (Q[i]! - Q[i - 1]!));
+    }
+    expect(crossings).toHaveLength(2);
+    const op = findOperatingPoint(Q, pump, sys)!;
+    expect(op.F).toBeCloseTo(crossings[0]!, 6);                       // only the first
+    //  Stability: a point is stable when the system's slope exceeds the
+    //  pump's.  At the first crossing the pump curve is still climbing faster
+    //  than the system's, so it is NOT; at the second it is.
+    const slopePump = (q: number) => 20 - 60 * q;
+    const slopeSys = (q: number) => 4 * q;
+    expect(slopeSys(crossings[0]!)).toBeLessThan(slopePump(crossings[0]!));
+    expect(slopeSys(crossings[1]!)).toBeGreaterThan(slopePump(crossings[1]!));
   });
 
   it("they cross EXACTLY once inside the swept window", () => {

@@ -6,7 +6,13 @@
   the prose behind.
 \*---------------------------------------------------------------------------*/
 
-import { readFileSync } from "node:fs";
+import { spawnSync } from "node:child_process";
+import {
+  existsSync, mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync,
+} from "node:fs";
+import { tmpdir } from "node:os";
+import { dirname, join } from "node:path";
+import { fileURLToPath } from "node:url";
 
 import { describe, expect, it } from "vitest";
 
@@ -157,5 +163,170 @@ describe("the panel", () => {
     expect(e.kind).toBe("notes");
     expect(e.discipline).toBe("Thermodynamics");
     expect(e.theory).toBe("sec:elements-reference");
+  });
+});
+
+// ---- C112 point 13: does any residual have to be subtracted at the reference? ----
+//
+//  Step 7 writes h_i(T, P) = dHf(298.15 K) + [h_ig(T) - h_ig(298.15 K)] + h_R(T, P).
+//  The question: is the formation datum the IDEAL GAS's (then h_R is zero at
+//  the reference by construction and nothing is subtracted), or the real
+//  gas's at 1 bar (then h_R(298.15 K, 1 bar) would have to be taken off)?
+//  Read off the source: `Component::h_pure_ig` is `h_formation(T, "gas")`
+//  and refuses a record whose referenceState is not gas
+//  (Component.cpp, requireIdealGasRung) -- the datum is the ideal gas's.
+//  This test settles it NUMERICALLY and INDEPENDENTLY, on a species whose
+//  datum is not zero (methane, the catalogue record, SRK): this checkout's
+//  native choupoProps prices five states, and each of the three terms is
+//  recomputed here without the engine's arithmetic --
+//    * term 1 against the record's own dHf_298;
+//    * term 2 as the analytic integral of the record's own Cp polynomial;
+//    * term 3 as the SRK departure by QUADRATURE of (T dP/dT - P) from
+//      infinite volume (the ideal gas at the same T) to the state, with the
+//      volume found by Newton and dP/dT by finite difference -- not the
+//      closed form and not the Cardano root the engine uses.
+//  The model's parameters (Omega_a, Omega_b, the m(omega) correlation) are
+//  SRK.cpp's: they DEFINE the model under test; what is checked is the
+//  REFERENCE the departure is measured from.
+
+const REPO_ROOT = join(dirname(fileURLToPath(import.meta.url)), "..", "..");
+const R_GAS = 8.314462618;
+const CH4 = readFileSync(join(REPO_ROOT, "data/standards/components/CH4.dat"), "utf-8");
+const rec = (re: RegExp) => Number(re.exec(CH4)![1]);
+const CH4_DHF = rec(/dHf_298\s+([-0-9.eE+]+)/);
+const CH4_TC = rec(/^Tc\s+([0-9.]+)/m);
+const CH4_PC = rec(/^Pc\s+([0-9.]+)/m) * 1e5;
+const CH4_OMEGA = rec(/^omega\s+([0-9.]+)/m);
+const CH4_CP = /idealGasHeatCapacity\s*\{[^}]*coefficients\s*\(([^)]*)\)/.exec(CH4)![1]!
+  .trim().split(/\s+/).map(Number);
+
+/** The states priced, [name, T K, P Pa]. */
+const SS_STATES: ReadonlyArray<readonly [string, number, number]> = [
+  ["ref_1Pa", 298.15, 1], ["ref_1bar", 298.15, 1e5],
+  ["hot_1Pa", 600, 1], ["hot_50bar", 600, 50e5], ["mid_100bar", 450, 100e5],
+];
+
+type Diag = { [k: string]: number };
+let ssMemo: Map<string, Diag> | undefined;
+function ssRun(): Map<string, Diag> {
+  if (ssMemo) return ssMemo;
+  const bin = join(REPO_ROOT, "choupoProps");
+  expect(existsSync(bin), `${bin} is absent -- run \`make all\` at the repository `
+    + "root; this test runs the native engine and must not skip").toBe(true);
+  const dir = mkdtempSync(join(tmpdir(), "choupo-c112-ss-"));
+  try {
+    mkdirSync(join(dir, "system")); mkdirSync(join(dir, "constant"));
+    writeFileSync(join(dir, "system/controlDict"),
+      "application choupoProps;\ndescription \"C112 point 13\";\nverbosity 0;\n");
+    writeFileSync(join(dir, "system/propsDict"), "operations\n(\n"
+      + SS_STATES.map(([n, T, P]) => `    { name ${n}; type propertyPoint; state { T ${T} K; `
+        + `P ${P} Pa; composition { CH4 1.0; } } properties ( H_ig H_R H_real Z ); }`)
+        .join("\n") + "\n);\n");
+    writeFileSync(join(dir, "constant/thermoPhysPropDict"),
+      "recordType thermophysicalPropertySystem;\nschemaVersion 2;\ncomponents ( CH4 );\n"
+      + "equilibrium\n{\n    formulation phiPhi;\n    equationOfState { model SRK; }\n}\n");
+    const r = spawnSync(bin, [dir], { cwd: REPO_ROOT, encoding: "utf-8",
+      env: { ...process.env, CHOUPO_HOME: REPO_ROOT }, maxBuffer: 64 * 1024 * 1024 });
+    expect(r.status, r.stderr).toBe(0);
+    const m = /<<<Choupo:result-begin>>>\s*\n([\s\S]*?)\n<<<Choupo:result-end>>>/
+      .exec(r.stdout ?? "");
+    expect(m, "the run published no result block").not.toBeNull();
+    const json = JSON.parse(m![1]!) as
+      { operationResults: { name: string; diagnostics: Diag }[] };
+    ssMemo = new Map(json.operationResults.map((o) => [o.name, o.diagnostics]));
+    return ssMemo;
+  } finally {
+    rmSync(dir, { recursive: true, force: true });
+  }
+}
+
+/** The ideal-gas enthalpy rise, the record's Cp = a + bT + cT^2 + dT^3 integrated. */
+function cpIntegral(T0: number, T1: number): number {
+  const F = (T: number) => CH4_CP.reduce((acc, c, k) => acc + c * T ** (k + 1) / (k + 1), 0);
+  return F(T1) - F(T0);
+}
+
+/** SRK departure enthalpy by quadrature from the ideal gas (v -> infinity). */
+function srkDepartureByQuadrature(T: number, P: number): number {
+  const ac = 0.42747 * R_GAS * R_GAS * CH4_TC * CH4_TC / CH4_PC;
+  const b = 0.08664 * R_GAS * CH4_TC / CH4_PC;
+  const m = 0.48508 + 1.55171 * CH4_OMEGA - 0.15613 * CH4_OMEGA ** 2;
+  const a = (t: number) => ac * (1 + m * (1 - Math.sqrt(t / CH4_TC))) ** 2;
+  const pOf = (v: number) => R_GAS * T / (v - b) - a(T) / (v * (v + b));
+  //  The vapour volume by Newton from the ideal gas, dP/dv by difference.
+  let v = R_GAS * T / P;
+  for (let k = 0; k < 200; ++k) {
+    const h = v * 1e-7;
+    const f = pOf(v) - P, df = (pOf(v + h) - pOf(v - h)) / (2 * h);
+    const dv = f / df;
+    v -= dv;
+    if (Math.abs(dv) < 1e-15 * v) break;
+  }
+  const dT = 1e-3;
+  const ap = (a(T + dT) - a(T - dT)) / (2 * dT);
+  //  integral_inf^v (T dP/dT - P) dv' = -integral_0^{1/v} (a - T a')/(1 + b u) du
+  const g = (u: number) => (a(T) - T * ap) / (1 + b * u);
+  const N = 2000, U = 1 / v, du = U / N;
+  let simpson = g(0) + g(U);
+  for (let i = 1; i < N; ++i) simpson += (i % 2 ? 4 : 2) * g(i * du);
+  const integral = -simpson * du / 3;
+  return integral + P * v - R_GAS * T;
+}
+
+describe("C112 point 13: the formation datum is the ideal gas's -- nothing is subtracted at the reference", () => {
+  it("term 1: at 298.15 K the ideal-gas term IS the record's datum", () => {
+    expect(CH4).toMatch(/dHf_298\s+-74520\.0;\s*\/\/ J\/mol\s+-- ideal-gas reference/);
+    const d = ssRun();
+    expect(d.get("ref_1Pa")!["H_ig"]!).toBeCloseTo(CH4_DHF, 6);
+    expect(d.get("ref_1bar")!["H_ig"]!).toBeCloseTo(CH4_DHF, 6);
+  }, 60_000);
+
+  it("term 2: the ideal-gas rise is the record's Cp integral, and does not depend on P", () => {
+    const d = ssRun();
+    const rise = d.get("hot_1Pa")!["H_ig"]! - d.get("ref_1Pa")!["H_ig"]!;
+    expect(Math.abs(rise - cpIntegral(298.15, 600)) / rise).toBeLessThan(1e-9);
+    //  So the standard PRESSURE (1 bar or 1 atm) cannot move an enthalpy:
+    //  only an entropy or a Gibbs energy.
+    expect(d.get("hot_50bar")!["H_ig"]!).toBe(d.get("hot_1Pa")!["H_ig"]!);
+  }, 60_000);
+
+  it("term 3: the residual is the departure from the ideal gas at the SAME T, recomputed by quadrature", () => {
+    const d = ssRun();
+    for (const [n, T, P] of SS_STATES) {
+      const hr = d.get(n)!["H_R"]!;
+      const mine = srkDepartureByQuadrature(T, P);
+      expect(Math.abs(hr - mine), `${n}: engine ${hr}, quadrature ${mine}`)
+        .toBeLessThan(1e-6 * Math.max(1, Math.abs(mine)));
+      expect(d.get(n)!["H_real"]!).toBeCloseTo(d.get(n)!["H_ig"]! + hr, 6);
+    }
+  }, 60_000);
+
+  it("the ideal-gas limit at the reference returns the datum itself; a subtraction would not", () => {
+    const d = ssRun();
+    //  P -> 0 at 298.15 K: the state the datum is TABULATED for.  The
+    //  three-term formula gives the datum, with nothing taken off.
+    const hLimit = d.get("ref_1Pa")!["H_real"]!;
+    expect(Math.abs(d.get("ref_1Pa")!["H_R"]!)).toBeLessThan(1e-3);
+    expect(Math.abs(hLimit - CH4_DHF)).toBeLessThan(1e-3);
+    //  The real gas at 298.15 K and 1 bar is NOT the standard state: it sits
+    //  h_R(298.15 K, 1 bar) away from the datum (about -17 J/mol for methane
+    //  on SRK), and the engine says so.
+    const hr1 = d.get("ref_1bar")!["H_R"]!;
+    expect(hr1).toBeLessThan(-10);
+    expect(d.get("ref_1bar")!["H_real"]! - CH4_DHF).toBeCloseTo(hr1, 6);
+    //  The figure step 7's note quotes is this run's, rounded.
+    expect(all(7)).toContain(`about −${Math.abs(Math.round(hr1))} J/mol`);
+    //  The convention that would SUBTRACT h_R(298.15 K, 1 bar) is the one for
+    //  a datum tabulated on the REAL gas at 1 bar.  Applied here it moves
+    //  the ideal-gas limit off the tabulated value by exactly that amount --
+    //  i.e. it would contradict the record's own declaration.
+    const subtracted = hLimit - hr1;
+    expect(Math.abs(subtracted - CH4_DHF)).toBeGreaterThan(10);
+  }, 60_000);
+
+  it("step 7 says what this test confirms", () => {
+    const s = all(7);
+    expect(s).toContain("the ideal gas's");
+    expect(s).toContain("no residual is subtracted at the reference");
   });
 });

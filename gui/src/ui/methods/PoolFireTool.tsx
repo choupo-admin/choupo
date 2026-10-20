@@ -49,7 +49,7 @@ import {
   AMBIENT_T_K, FUEL_PLANT, LAYOUT_CASE, MEASURED, POOL_FUELS, THRESHOLDS,
   USBM_TABLE21, HESKESTAD_RANGE, burgessMinf, burningFlux, distanceTo, formationEnthalpy,
   fuelFromRecord, gasificationHeat, heatRelease, heskestadGroup, heskestadHeight,
-  kBetaFromMeasurement, lhvVapour, liquidDensity, perKg, poolFire,
+  epaDoseTime, kBetaFromMeasurement, lhvVapour, liquidDensity, perKg, poolFire,
   readSeparation, regressionToFlux, thomasHeight, airDensity, watsonHvap,
   type FlameHeightModel, type FuelRecord, type PoolFuel, type Products,
   type SepModel,
@@ -274,6 +274,22 @@ function FlameTable({ cat, fuel }: { cat: Catalogue; fuel: PoolFuel }): JSX.Elem
 
 type ReadModel = "point" | "solid";
 
+/** The sentence beside the receiver's flux: the exposure time at which the
+ *  EPA endpoint's dose is reached there (step 11).  Recomputed on every knob
+ *  move because it is a function of the flux the page just drew. */
+export function exposureSentence(q: number): string {
+  if (!(q > 0)) return "";
+  const t = epaDoseTime(q);
+  const span = t < 120 ? `${fx(t, 0)} s` : t < 7200 ? `${fx(t / 60, 1)} min` : `${fx(t / 3600, 1)} h`;
+  return `At this flux the EPA endpoint's dose (5 kW/m2 for 40 s) is reached after ${span} of exposure: `
+    + "a person's harm is a dose, so how long they stay matters as much as where they stand.";
+}
+
+/** Shown under the receiver's sentence whatever the knobs say. */
+export const NOT_A_BOUNDARY = "No distance or flux on this page is a universal safe or harm boundary: "
+  + "each threshold is a flux with the exposure its source states (or none), for a person or a building, "
+  + "and real harm also depends on clothing, shelter, escape and on the fire's own variation.";
+
 function Bench({ cat, fuel, onFuel }: {
   cat: Catalogue; fuel: PoolFuel; onFuel: (f: PoolFuel) => void;
 }): JSX.Element {
@@ -359,6 +375,7 @@ function Bench({ cat, fuel, onFuel }: {
   const here = qAt(sR);
   const readName = read === "point" ? "point source" : "solid flame";
   const passes = (q: number) => THRESHOLDS.filter((t) => q > t.q).map((t) => t.label);
+  const qHere = read === "point" ? here.point : here.solid;
 
   return (
     <Box>
@@ -419,6 +436,15 @@ function Bench({ cat, fuel, onFuel }: {
             useResizeHandler style={{ width: "100%", height: "100%" }} />
         </Box>
       )}
+      {plot && (
+        <Text size="xs" c="dimmed" mt={4}>
+          Each dotted line is a FLUX.  For a person, harm follows a dose -- the
+          flux AND how long it lasts -- so where a curve crosses a line is not
+          a boundary between safe and harmed; the table below gives the
+          exposure each source attaches, and the building line is not about
+          people.
+        </Text>
+      )}
       <PanTable>
         <Table.Thead>
           <Table.Tr><Table.Th>the fire</Table.Th><Table.Th>value</Table.Th><Table.Th>step</Table.Th></Table.Tr>
@@ -436,12 +462,13 @@ function Bench({ cat, fuel, onFuel }: {
       </PanTable>
       <PanTable>
         <Table.Thead>
-          <Table.Tr><Table.Th>threshold</Table.Th><Table.Th>point source: distance from the edge [m]</Table.Th><Table.Th>solid flame: distance from the edge [m]</Table.Th></Table.Tr>
+          <Table.Tr><Table.Th>threshold</Table.Th><Table.Th>for, and the exposure its source attaches</Table.Th><Table.Th>point source: distance from the edge [m]</Table.Th><Table.Th>solid flame: distance from the edge [m]</Table.Th></Table.Tr>
         </Table.Thead>
         <Table.Tbody>
           {dist.map((d) => (
             <Table.Tr key={d.t.id}>
               <Table.Td>{d.t.label}</Table.Td>
+              <Table.Td>{d.t.target}: {d.t.exposure}</Table.Td>
               <Table.Td>{edge(d.point)}</Table.Td>
               <Table.Td>{edge(d.solid)}</Table.Td>
             </Table.Tr>
@@ -453,9 +480,13 @@ function Bench({ cat, fuel, onFuel }: {
         the {readName} gives <b>{kW(read === "point" ? here.point : here.solid)} kW/m2</b> (the
         {read === "point" ? " solid flame" : " point source"} gives{" "}
         {kW(read === "point" ? here.solid : here.point)}).
-        {" "}{passes(read === "point" ? here.point : here.solid).length
-          ? `That is above: ${passes(read === "point" ? here.point : here.solid).join("; ")}.`
+        {" "}{passes(qHere).length
+          ? `That is above: ${passes(qHere).join("; ")}.`
           : "That is below every threshold on the page."}
+        {" "}{exposureSentence(qHere)}
+      </Text>
+      <Text size="xs" c="dimmed" mt={4}>
+        {NOT_A_BOUNDARY}
       </Text>
       {sepTable && pairs.length > 0 && (
         <Text size="sm" mt={6}>

@@ -627,7 +627,16 @@ export const POOL_STEPS: readonly LessonStep[] = [
       + "and NISTIR 6546 warns against reading it as permission to build "
       + "anywhere: a real smoky fire has luminous patches far brighter than "
       + "its average, and an average spread over the whole flame "
-      + "under-predicts the flux close to it.",
+      + "under-predicts the flux close to it.  So a distance to a threshold "
+      + "is NOT a line between safe and harmed.  Inside it, a person who "
+      + "turns away and leaves within seconds may be unhurt; beyond it, one "
+      + "who cannot leave may still be burned, because the dose keeps "
+      + "growing with time at any flux; clothing, shelter and the way out "
+      + "change both; and the building limit says nothing about people at "
+      + "all.  The bench therefore shows, beside every distance, the "
+      + "exposure its source attaches, and beside the flux at your receiver "
+      + "the time at which the EPA's dose would be reached there — both "
+      + "recomputed whenever you move a knob.",
     formula: String.raw`x_\mathrm{t} = \sqrt{\frac{\tau\,\chi_\mathrm{r}\,\dot{Q}}{4\pi q_\mathrm{t}} - \left(\frac{L}{2} - z\right)^2}`,
     derivation: [
       { step: "The thermal dose the EPA guidance uses for a person, and the "
@@ -637,7 +646,9 @@ export const POOL_STEPS: readonly LessonStep[] = [
     where: [
       { sym: "t_\\mathrm{e}", means: "the exposure time", unit: "s" },
     ],
-    note: "Computed at poolFire.ts:443 (distanceTo, a bisection on the flux, "
+    note: "The exposure time beside the receiver's flux is computed at "
+      + "poolFire.ts:457 (epaDoseTime, the dose rule above solved for t).  "
+      + "Computed at poolFire.ts:467 (distanceTo, a bisection on the flux, "
       + "which falls with distance outside the pool for both models).  The "
       + "thresholds and their conversions: poolFire.ts THRESHOLDS.",
   },
@@ -664,7 +675,7 @@ export const POOL_STEPS: readonly LessonStep[] = [
         + "layout case measures (edgeToEdge)", unit: "m" },
     ],
     note: "The table is read from tutorials/plant/aceticAcid02_plant/system/"
-      + "layoutDict at poolFire.ts:468 (readSeparation); nothing of it is "
+      + "layoutDict at poolFire.ts:492 (readSeparation); nothing of it is "
       + "typed on this page.",
   },
 

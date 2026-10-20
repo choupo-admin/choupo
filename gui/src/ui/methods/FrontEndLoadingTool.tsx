@@ -313,7 +313,7 @@ export function FrontEndLoadingTool(): JSX.Element {
   const first = firstSeparatingClass(costA, costB, corner, mult2);
   const decisionRows: ChartRow[] = AACE_CLASSES.map((row, i) => ({
     cls: row.cls,
-    note: verdicts[i]!.separated ? "separated" : "inside the band",
+    note: verdicts[i]!.separated ? "separated" : "bands overlap",
     options: [
       { key: "A", color: HUE_A, point: costA,
         outer: verdicts[i]!.a, inner: verdicts[i]!.a },
@@ -331,9 +331,10 @@ export function FrontEndLoadingTool(): JSX.Element {
           <Text size="sm" c="dimmed" mt={4}>
             How an owner buys a process design in stages, what each stage
             decides and at what simulation fidelity, how good the cost
-            estimate is at each gate, and why two options whose difference
-            lies inside that band are not yet decided.  Every claim on this
-            page comes from one research record,{" "}
+            estimate is at each gate, and when the bands of two options decide
+            between them -- separated bands are sufficient, not necessary.
+            Every claim about industry practice and the standard on this page
+            comes from one research record,{" "}
             <code>docs/design/how-a-process-design-is-staged.md</code>, which
             cites a retrieved source for each.
           </Text>
@@ -471,8 +472,11 @@ export function FrontEndLoadingTool(): JSX.Element {
             Give two options a point estimate each, for example two routes
             or two loop pressures.  Walk down the classes and watch where the
             two bands stop overlapping.  Then change the corner: the class at
-            which the decision becomes defensible depends on where in the
-            range of ranges the project sits.
+            which the range ends alone decide depends on where in the range
+            of ranges the project sits.  Separated bands are sufficient to
+            decide, not necessary: overlapping ones can still be decided on
+            the difference estimated directly, or on expected cost and risk
+            (step 6).
           </Text>
           <Box mt={8} style={{ display: "grid", gap: 12,
             gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))" }}>
@@ -491,7 +495,7 @@ export function FrontEndLoadingTool(): JSX.Element {
           <Group gap="xs" mt={10}>
             <Badge variant="light" color={first === null ? "red" : "teal"}>
               {first === null
-                ? "no class separates them"
+                ? "no class separates the bands"
                 : `first separated at Class ${first}`}
             </Badge>
             <Badge variant="light" color="gray">
@@ -528,8 +532,8 @@ export function FrontEndLoadingTool(): JSX.Element {
                   </Table.Td>
                   <Table.Td>
                     {v.separated
-                      ? "separated: the estimate says which is cheaper"
-                      : "inside the band: not yet decided by cost"}
+                      ? "separated: the range ends alone say which is cheaper"
+                      : "bands overlap: the range ends alone do not decide"}
                   </Table.Td>
                 </Table.Tr>
               ))}

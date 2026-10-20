@@ -98,7 +98,12 @@ export const LADDER_SECTIONS: readonly LadderSection[] = [
       + "$0 \\le X \\le 1$ and that no outlet amount goes negative "
       + "(ConversionReactor.cpp:215–218 and 230–233).  The witness declares $X = 0.90$ "
       + "on purpose.  At 600 K that is above this feed's equilibrium, and the "
-      + "rung prints it without complaint.",
+      + "rung prints it without complaint.  The page below does complain: it "
+      + "puts the declared $X$ beside the equilibrium reactor's answer for "
+      + "the same feed, temperature and pressure — two numbers the engine "
+      + "publishes — and warns, in red, whenever the first exceeds the "
+      + "second.  Above the limit, rung 1 is a hypothesis no reactor can "
+      + "reach at those conditions.",
     eq: String.raw`\xi = \frac{X\,n_{\mathrm{CO},0}}{-\nu_{\mathrm{CO}}}
 \qquad n_i = n_{i,0} + \nu_i\,\xi`,
     where: [
@@ -118,7 +123,9 @@ export const LADDER_SECTIONS: readonly LadderSection[] = [
       q: "Why does this rung accept X = 0.90 when thermodynamics forbids it?",
       a: "Because nothing on this rung knows the equilibrium constant.  It "
         + "balances atoms; whether the number is reachable is a question for "
-        + "the rung above, and nothing in the engine compares the two today.",
+        + "the rung above.  Nothing in the engine compares the two today; "
+        + "this page does, from the two numbers the engine publishes, and "
+        + "says so in red when X lies above the limit.",
     },
   },
   {
@@ -315,9 +322,15 @@ export const LADDER_LIMITS: readonly LadderLimit[] = [
   },
   {
     id: "no-cross-check",
-    title: "Nothing warns when rung 1 exceeds rung 2.",
-    body: "The engine does not compare a declared conversion with the "
-      + "equilibrium one.  The page exists so that the student makes that "
+    title: "The engine does not warn when rung 1 exceeds rung 2; this page does.",
+    body: "The conversion reactor does not compare a declared conversion "
+      + "with the equilibrium one (ConversionReactor.cpp:215–218 and 230–233 "
+      + "check only "
+      + "0 ≤ X ≤ 1 and non-negative outlets), so a flowsheet case with an "
+      + "impossible X runs to exit 0.  This page compares the declared X "
+      + "with the equilibrium reactor's conversion for the same feed, T and "
+      + "P, both published by the same run, and warns when the first is "
+      + "higher.  Outside this page, the student has to make that "
       + "comparison.",
   },
 ];
