@@ -53,9 +53,10 @@ import {
   shapeSteamCsv, steamViewKey, steamViews, type SteamMode,
 } from "./plotting/steamViews.js";
 import { CompoundBrowser } from "./explore/CompoundBrowser.js";
-import { componentsInSearch } from "./explore/selectionLink.js";
+import { componentsInSearch, lensInSearch } from "./explore/selectionLink.js";
 import { EstimateForm } from "./explore/EstimateForm.js";
 import { ComponentInspector } from "./explore/ComponentInspector.js";
+import { EvidenceLens } from "./explore/EvidenceLens.js";
 import {
   EXPLORE_SET_PANEL, PanelCollapseButton, PanelReopenStrip, PanelResizeHandle,
   panelBoxProps, usePanel, usePanelShortcut, type PanelHandle,
@@ -63,7 +64,7 @@ import {
 import { useMeasuredBoxWidth, useNarrowViewport } from "./methods/methodsChrome.js";
 import { binaryVleSpec, orderBinaryByVolatility } from "../case/methodFeeds.js";
 import { buildLocalUnifac, unifacGroupsBlock, hasUnifacGroups } from "../case/unifacGroups.js";
-import { type PlotKind, viewsFor } from "../case/exploreViews.js";
+import { PLOT_KINDS, type PlotKind, viewsFor } from "../case/exploreViews.js";
 import { LENS_SHORT, PLOT_TYPES, defaultLensFor, type PlotType } from "../case/exploreLenses.js";
 import { defaultMapMetric, gibbsMapAtoms, mapMetricCandidates, parseFormulaAtoms } from "../case/gibbsMapSpec.js";
 import { PURE_PROPS, isPureProp, scanPropertyKeys } from "../case/scanProperties.js";
@@ -218,8 +219,19 @@ export function ExploreWorkspace() {
   //  `rawRecordFor`, which resolves the SHARED catalogue only, so a name that
   //  reached this state is one CATALOGUE holds.  The merged pool is a memo
   //  declared further down anyway, and a boot decision must not wait for it.
-  const [plotType, setPlotType] = useState<PlotKind>(
-    () => defaultLensFor(boot.known, CATALOGUE, buildLocalUnifac({})));
+  //
+  //  `lens=<kind>` in the address (2026-10-20, DEV.md 4c C117) names the lens
+  //  to open on, honoured only where the strip would offer it for this set
+  //  (a pasted link must not open a lens the set cannot answer); absent, the
+  //  class default as before, so every older address boots as it did.
+  const [plotType, setPlotType] = useState<PlotKind>(() => {
+    const asked = typeof window === "undefined" ? null : lensInSearch(window.location.search);
+    const noLocal = buildLocalUnifac({});
+    if (asked && (PLOT_KINDS as readonly string[]).includes(asked)
+        && viewsFor(boot.known, CATALOGUE, noLocal).has(asked as PlotKind))
+      return asked as PlotKind;
+    return defaultLensFor(boot.known, CATALOGUE, noLocal);
+  });
   /* The resizable left-component-bar (Vítor's ask) — drag the right border,
    * double-click to reset, `[` to fold, persisted per reader.
    *
@@ -493,11 +505,11 @@ export function ExploreWorkspace() {
   // for the ACTIVE view, if the selection drifts out from under it.)
   const reasonFor = useCallback((pt: PlotType): string | null => {
     if (pt.comingSoon) return pt.comingSoon;
-    if (viewsFor(selected, catalogue, localUnifac).has(pt.id)) return null;
+    if (viewsFor(selected, catalogue, localUnifac, caseRaw).has(pt.id)) return null;
     if (selected.length < pt.min || selected.length > pt.max) return pt.why;
     // applicable count but wrong physical class -> the view's own hint says why
     return pt.why;
-  }, [selected, catalogue, localUnifac]);
+  }, [selected, catalogue, localUnifac, caseRaw]);
 
   const active = PLOT_TYPES.find((p) => p.id === plotType) ?? PLOT_TYPES[0]!;
   const activeReason = reasonFor(active);
@@ -505,8 +517,8 @@ export function ExploreWorkspace() {
   // The lenses that currently APPLY (single source: viewsFor).  Drives the
   // strip grouping, the "what unlocks next" line, and the new-lens pulse.
   const currentViews = useMemo(
-    () => viewsFor(selected, catalogue, localUnifac),
-    [selected, catalogue, localUnifac]);
+    () => viewsFor(selected, catalogue, localUnifac, caseRaw),
+    [selected, catalogue, localUnifac, caseRaw]);
 
   // New-lens PULSE — when a lens NEWLY appears in the strip (diff the previous
   // viewsFor set via a ref), give it a 600ms accent ring so the unlock is felt,
@@ -817,6 +829,13 @@ export function ExploreWorkspace() {
   const abortRef = useRef<AbortController | null>(null);
 
   const run = useCallback(async () => {
+    //  The Evidence view runs its OWN engine calls (one per candidate, inside
+    //  EvidenceLens); the generic scan run has nothing to ask for it.
+    if (plotType === "evidence") {
+      abortRef.current?.abort();
+      setCsv(null); setErr(null); setCompareInfo(null); setOpAdvisories([]);
+      setBusy(false); return;
+    }
     if (activeReason || noCurveReason) {
       abortRef.current?.abort();
       setCsv(null); setErr(noCurveReason); setCompareInfo(null); setOpAdvisories([]);
@@ -989,6 +1008,21 @@ export function ExploreWorkspace() {
   // steamMode joins the deps: saturation and isobar own DIFFERENT CSV schemas
   // (h_f/h_g/… vs h/s/v/cp), so a stale CSV must not survive the mode switch.
   useEffect(() => { setCsv(null); setErr(null); setOpAdvisories([]); }, [plotType, steamMode]);
+
+  //  THE ADDRESS NAMES THE LENS (2026-10-20).  Written in place, never pushed
+  //  (a lens change is not a navigation); the Evidence view's own keys are
+  //  dropped when another lens is shown, so a copied address never carries a
+  //  selection the screen does not show.  Every address without `lens` still
+  //  reads as before.
+  useEffect(() => {
+    if (typeof window === "undefined" || typeof window.history?.replaceState !== "function") return;
+    try {
+      const url = new URL(window.location.href);
+      url.searchParams.set("lens", plotType);
+      if (plotType !== "evidence") { url.searchParams.delete("datasets"); url.searchParams.delete("models"); }
+      window.history.replaceState(window.history.state, "", url.toString().replace(/%2C/g, ",").replace(/%40/g, "@"));
+    } catch { /* an address that cannot be written changes nothing on screen */ }
+  }, [plotType]);
 
   // Debounced so dragging a number field fires ONE run after the user pauses,
   // not one per keystroke; `run` itself aborts any prior in-flight run.
@@ -1783,7 +1817,15 @@ export function ExploreWorkspace() {
             on-plot overlays (top-left), annotating the curve ON the curve. */}
         <Box style={{ flex: 1, minWidth: 0, overflow: "hidden", padding: 16, paddingTop: 12, display: "flex", flexDirection: "column" }}>
         <Stack gap="sm" style={{ flex: 1, minHeight: 0 }}>
-          {csv ? (
+          {plotType === "evidence" && selected.length === 2 ? (
+            //  Measured datasets vs every candidate model, the engine asked AT
+            //  the measured points (DEV.md 4c C117).  Its own component: it
+            //  runs one choupoProps case per candidate and draws two figures
+            //  and a table, which the single-CSV path above cannot hold.
+            <EvidenceLens pair={[selected[0]!, selected[1]!]} catalogue={catalogue}
+              caseRaw={caseRaw} localUnifac={localUnifac}
+              componentFiles={hasLocal ? localComponentFiles : undefined} narrow={narrow} />
+          ) : csv ? (
             <Box style={{ flex: 1, minHeight: 360, position: "relative" }}>
               {/*  ON-PLOT OVERLAY.  The SET pill (load-bearing when the rail is
                   collapsed), the PURE/MIXTURE badge and the caption ride
