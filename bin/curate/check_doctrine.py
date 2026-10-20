@@ -118,6 +118,23 @@ COMPETITOR_EXEMPT = {
         "can retrieve them from git history",
 }
 
+#  A WHOLE TREE MAY BE EXEMPT, by name and with its reason, when the name IS
+#  the evidence across every file in it (Vitor, 2026-10-20, DEV.md 4c C123,
+#  option (a): "Usa a)").  `benchmarks/` reproduces hard cases from other
+#  simulators' published sample libraries and compares against their
+#  numbers; a benchmark that does not say whom it is compared with has lost
+#  half its value.  It is DEVELOPER-FACING: nothing under it is shipped to the
+#  site, bundled by the GUI or \input by a manual -- arm (t) below holds that,
+#  because an exempt tree that leaks into a user-facing surface is the ban
+#  undone through the back door.  Like a file exemption, a tree with no
+#  tracked file FAILS: an exemption nothing reads is a waiver for nothing.
+COMPETITOR_EXEMPT_TREES = {
+    "benchmarks/":
+        "reproductions of other simulators' published sample cases, compared "
+        "against the numbers each publishes; developer-facing only "
+        "(DEV.md 4c C123)",
+}
+
 #  Binary and generated files are skipped: `generated/` is rebuilt from the
 #  tree by its own producers (gateManifest carries this gate's own claim line,
 #  which quotes the ban), and a non-UTF-8 blob has no prose to scan.
@@ -285,10 +302,40 @@ def main() -> int:
                   "waiver for a file that no longer exists, and it hides the "
                   "day the real one stops being exempt.")
             return 1
+    for tree in COMPETITOR_EXEMPT_TREES:
+        if not any(r.startswith(tree) for r in rels):
+            print(f"check_doctrine: FAILED -- exempt tree '{tree}' holds no "
+                  "tracked file.  An exemption nothing reads is a waiver for "
+                  "nothing.")
+            return 1
+    #  (t) the exempt tree must not reach a user-facing surface: no manual
+    #  \inputs it, the GUI bundle does not glob it, buildSite does not copy
+    #  it.  Checked by name in the files that decide each surface.
+    leaks = []
+    for rel in rels:
+        if rel.startswith(tuple(COMPETITOR_EXEMPT_TREES)):
+            continue
+        if not (rel.startswith("docs/") and rel.endswith(".tex")
+                or rel in ("bin/buildSite", "gui/vite.config.ts")
+                or rel.startswith("gui/src/") and rel.endswith((".ts", ".tsx"))):
+            continue
+        try:
+            body = (ROOT / rel).read_text(encoding="utf-8")
+        except (UnicodeDecodeError, OSError):
+            continue
+        for tree in COMPETITOR_EXEMPT_TREES:
+            if re.search(r"\b" + re.escape(tree), body):
+                leaks.append(f"{rel} reaches the exempt tree '{tree}'")
+    if leaks:
+        print("check_doctrine: FAILED -- (t) a user-facing surface reaches a "
+              "competitor-exempt tree: " + "; ".join(leaks[:5]))
+        return 1
     scanned = 0
     pinned_seen = set()
     for rel in rels:
         if rel in COMPETITOR_EXEMPT:
+            continue
+        if rel.startswith(tuple(COMPETITOR_EXEMPT_TREES)):
             continue
         if rel.startswith(COMPETITOR_SKIP_PREFIX):
             continue
@@ -360,7 +407,10 @@ def main() -> int:
     print(f"check_doctrine: {read_surfaces} teaching surfaces clean "
           "(streams{}/thermoPackage/propertyPackage/fitBinaryPair), and the "
           f"competitor ban holds over {scanned} of {len(rels)} TRACKED files "
-          f"repo-wide -- {len(COMPETITOR_EXEMPT)} named exemptions, "
+          f"repo-wide -- {len(COMPETITOR_EXEMPT)} named exemptions and "
+          f"{len(COMPETITOR_EXEMPT_TREES)} exempt developer-facing tree(s) "
+          f"({', '.join(COMPETITOR_EXEMPT_TREES)}) that no manual, GUI source "
+          "or site build reaches, "
           f"{sum(n for n, _ in COMPETITOR_PINNED.values())} sites in "
           f"{len(COMPETITOR_PINNED)} files PINNED with a class each and "
           "RATCHETING two-sided (a debt that grows fails; one that shrinks "

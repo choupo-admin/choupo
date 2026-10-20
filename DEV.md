@@ -1309,11 +1309,18 @@ accepts today, and that is a policy call.
 > the reference simulator needs Vitor's ruling -- a named exemption for a
 > developer-facing `benchmarks/` tree, or neutral wording ("the sample
 > library of an open-source sequential-modular simulator", the version and
-> URL in a non-shipped note).  Awaiting that ruling; not dispatched.
+> URL in a non-shipped note).  RULED 2026-10-20, option (a) ("Usa a)"):
+> `benchmarks/` is a named, developer-facing tree exempt from the name ban
+> (`check_doctrine` `COMPETITOR_EXEMPT_TREES`, with an arm (t) that fails if
+> a manual, a GUI source or `bin/buildSite` reaches it; two sabotages
+> caught); `benchmarks/README.md` states the folder's rules (no file of
+> theirs copied, every property number ours or primary, reference numbers
+> cited with version, a difference is a finding).  The first cases:
+> dispatched (G24).
 
 > **C122. INTEGRATION TOOLING AND A SITE SMOKE TEST (Vitor, 2026-10-20,
-> "Avanca 1 e 2", on the commander's reflection).**  (1) `bin/integrate
-> <branch>`: merge into a fresh worktree off main, regenerate the generated
+> "Avanca 1 e 2", on the commander's reflection).**  (1) an `integrate`
+> tool under bin, taking a branch name: merge into a fresh worktree off main, regenerate the generated
 > artefacts instead of hand-resolving their conflicts, rebuild the touched
 > guide PDFs with `make -B` and read them back, build, run the validation
 > the diff reaches (conservation gates scoped through the suite cache, which
