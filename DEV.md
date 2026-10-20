@@ -1291,6 +1291,104 @@ accepts today, and that is a policy call.
 > fire-water ring main and hydrants, bunds, escape routes, swept path, a
 > fillet running through an item.
 
+> **C120. SESSION HANDOFF -- THE CONTAINER'S DISK FAILED (2026-10-20, Vitor:
+> "Sim, segue esse plano").**  The machine of the 2026-10-20 session logged
+> ~1260 kernel read errors; ~12 800 tracked files of its primary checkout
+> became unreadable and the SHARED object store's pack
+> (`pack-904c68bb...`) reads only 22.7 of 58.7 MB, so pushes from its
+> worktrees died in pack-objects.  Work was wrapped up and EVERYTHING is on
+> origin; a new session starts on a fresh machine from this list.  Order of
+> work for the next session (first item first):
+>
+> 1. **`integ/wave2` (52488de47) -- merge after validation.**  It is main +
+>    G2 (C110 multiproduct batch plan, `d427793f1`) + G3 (C104 donepezil,
+>    `7541c39ba`) + G19 (C118 stage 1 phaseSplitScan, `8a3a47f15`), the
+>    catalogue / gateManifest conflicts resolved by keeping both sides, the
+>    DEV.md notes for C104 / C110 G2 / C118 / C119 and the CLAUDE.md
+>    paragraphs written, and C114's quoted simulator names elided
+>    (check_doctrine was red on main).  NOT validated: the build never
+>    finished on the failing disk.  Owed: `make all`; the cases
+>    donepezil01_tablets, apalutamide01_tablets,
+>    props/thermo/phaseSplit01_freeze_water_ethanol,
+>    steady/flash/flash21_freeze_concentration; the gates check_batch_plan,
+>    check_phase_split_scan, check_spray_dryer_solvents,
+>    check_decision_index, check_doc_references, case_manifest --check,
+>    release_inventory, gen_tutorials_guide --check, check_guide_pdf_fresh
+>    (the tutorials guide PDF was taken from G19's side -- REBUILD it, it
+>    lacks the donepezil row); `bin/runTests --gui`; then fast-forward main.
+>    Each branch's own report said 0 golden rows moved; the donepezil and
+>    phaseSplit01 goldens are new.
+> 2. **G6 `claude/g6-small-defects` (9935fdd60)** -- five small defects
+>    (gibbsReactor refuses a feed solid; Streams navigator on sectored
+>    plants; Open Case folder through caseFromEntries; layoutLines' stderr
+>    mark; two cross-document \ref in the guides + the Design Guide's
+>    C106 path).  Owed: one `bin/runTests --gui` FAIL 0 (cut at 213/215
+>    with only two since-fixed files red); gateManifest entry of
+>    check_gibbs_solid_phase.  0 rows moved.
+> 3. **G7 `claude/g7-incipient-phase-and-density` (50f09b7a0)** -- the
+>    flash's phase test iterates the incipient phase (`IncipientPhase.H`,
+>    shared with `BubblePoint::pressure`; the C92 let-down drum now splits
+>    below its 20 bar bubble pressure) and a liquid density above Tc
+>    refuses by name (C76).  Full regression authorised and run to 320 of
+>    the corpus: 0 FAIL, 0 moved, 0 NaN.  Owed: build + validate the last
+>    WIP commit (a guard for a nonvolatile in `incipientPhase::liquid`), the
+>    unreached plant/ + props/ walks, the check_energy_closure ratchet,
+>    `--gui`.  NAMED: `BubblePoint::compute` (bubble TEMPERATURE) still
+>    evaluates K at y = x.  Five gates were measured RED ON MAIN, not on
+>    the branch: check_liquid_cp_fallback (its valve probe no longer
+>    reaches Hliquid, stale since C65), gen_ammonia_stage_comparison
+>    (greenAmmonia03 README costs stale), check_guide_paths (fixed by G6),
+>    regen-llm-docs (pfr schema section), check_origin_census
+>    (2207 -> 2208).
+> 4. **G18 `claude/c117-evidence-explorer` (409583442)** -- C117 minimal
+>    shape: data/local/evidence/, three-tier evidence + pair reading,
+>    propertyScan1D `vary { points ( ... ) }`, witness
+>    evidence01_methanol_water_points (18 new rows), gate
+>    check_evidence_records (21 legacy datasets pinned), the Explorer
+>    `evidence` lens.  Owed: typecheck and re-shoot of the last WIP commit
+>    (phone layout), `--gui`, `--fast`.  Then C116 (one Explore; G18
+>    estimates one session) and C118 stage 2 (the phase-split lens).
+> 5. **G1 `claude/c110-g1-apalutamide-dossier` (77495a2cc)** -- the
+>    apalutamide design-basis dossier applied (patent formula, acetone at
+>    5 wt %, generic at LoE, every room CNC; NPV -44.6 -> +128.2 MEUR).
+>    **373 golden rows MOVE, 4 are removed, 20 appended -- put to Vitor
+>    2026-10-20 and APPROVED by him the same day ("Aprovo o re-registo das 373
+>    linhas do G1"): re-record them, remove the 4 rows of the two retired
+>    feeds and append the 20 new ones, AFTER rebuilding on the fresh machine
+>    and checking that the moved set is still exactly the one he approved
+>    (373 / 4 / 20, the kinds and reasons in the G1 report); any row outside
+>    that set goes back to him.**
+>    Regenerate the list with `bin/runTests
+>    tutorials/batch/plant/apalutamide01_tablets`.  Owed: check_energy_
+>    closure on the branch; merging with G2 (both touch
+>    check_batch_plan's fixtures and G2's probe is built from this case).
+> 6. **G4 `claude/c110-g4-debt-financing` (484b52f54)** -- opt-in
+>    `economics { financing {} }`, the equity view beside the unchanged
+>    project view.  NEVER BUILT.  Owed (its report): build, byte identity
+>    of the twelve economics cases, the gate, the sabotages, the manifest.
+> 7. **G20 `claude/c119-correlations-edutool` (f31d62c6b)** -- C119: engine
+>    sweeps on frictionBench / heatTransferBench, witness
+>    moody02_correlation_sweeps, the maths module and the five-page lesson
+>    text.  UNVALIDATED.  Owed: the Tool component, registry + mount
+>    (`correlation-simplicity`), witness outputs, lesson test, goldens.
+> 8. **Stopped by the 15:20 rate limit and never resumed** -- each one's
+>    work is on a branch and/or `backup/g-<agentId>` (a snapshot commit of
+>    its worktree, uncommitted files included, on its own base): G5 Gantt in
+>    the GUI (`backup/g-aa0b7a24502e7bf75`); G8 C98/C71
+>    (`backup/g-a351ac66e0c704e8d`); G9 fold long trains
+>    (`backup/g-af5c1d01a52ae83b4`); G11 overpressure audit
+>    (`claude/c112-overpressure-review`); G12 pump / FEL / ladder / pool
+>    fire (`claude/c112-g12-pump-fel-ladder-ss-poolfire`); G13 gibbs07
+>    closure (`backup/g-a7ca4522633443063`); G14 let-down NH3
+>    (`claude/g14-letdown-nh3-reimport`); G15 search
+>    (`backup/g-af59dd3526f2beaea`); G16 ParaView-like viewer
+>    (`claude/c114-flowsheet-colour`); G17 pulse
+>    (`backup/g-a2f767a5e10a7820e`).  Each needs its brief re-read (DEV.md
+>    C110 / C112 / C113 / C114 / C115) and its state measured before it is
+>    continued.
+> 9. Found for Vitor (curation): `ethanol.dat` has no Fuller
+>    `diffusionVolume` (G10); the C119 / C118 stage 3 excipient records.
+
 > **C119. AN EDUTOOL ON WHY CORRELATIONS ARE SIMPLE: FROM DIMENSIONAL
 > ANALYSIS TO MASTER-SLAVE SCALES (Vitor, 2026-10-20: "o teorema Pi de
 > Buckingham ... reduz o numero de variaveis, mas ... a reducao de variaveis
