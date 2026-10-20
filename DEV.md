@@ -1291,6 +1291,30 @@ accepts today, and that is a policy call.
 > fire-water ring main and hydrants, bunds, escape routes, swept path, a
 > fillet running through an item.
 
+> **C113. FINDING A TUTORIAL OR AN EDUTOOL CHAPTER IN SECONDS (Vitor,
+> 2026-10-20, a written brief: search across ALL tutorials in the Open Case
+> window -- name, shortName, description, category, subclass, README --
+> accent/case-insensitive, several words in any order, ranked name >
+> description > README, a result count, open the hit, clearing restores the
+> folder browser; a "Find" over the EduTools -- name, discipline,
+> `teaches`, step titles, step text, equation glossaries -- results show
+> tool, chapter and an excerpt and open the tool AT the chapter, deep links
+> `?workspace=methods&tool=<id>` preserved and chapter links added if
+> possible, the index DERIVED from the lessons, the lazy loading of tools
+> preserved; a compact collapsible chapter index inside long EduTools,
+> desktop and phone; no search library, no server, no second catalogue, no
+> engine change; tests listed).  Measured: `gui/src/ui/OpenTutorialModal.
+> tsx:349-352` double-click calls `setSelected(t.name)` then `openSelected()`
+> in the same handler, so it can open the PREVIOUS selection (React state
+> is not updated yet) -- the brief's suspicion is right; `TutorialEntry`
+> carries `readme` (`gui/src/cases/tutorials.ts:207-209`); `registry.ts`
+> carries `teaches` (:164); tools are `lazy()` in `MethodsWorkspace.tsx`.
+> Vitor's standing instruction the same day: he will keep posting
+> suggestions; the commander does at once what is opportune, plans the
+> rest, and checks interference with the generals running in parallel.
+> Dispatched 2026-10-20 (G15), in his order: tutorials, EduTools, chapter
+> index.
+
 > **C112. AN EXTERNAL SCIENTIFIC AND PEDAGOGICAL AUDIT OF THE EDUTOOLS
 > (Vitor, 2026-10-20, a review by ChatGPT he asked the commander to judge:
 > "tu e que es o responsavel maximo e tens de ver se concordas").**  Twenty
