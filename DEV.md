@@ -1310,7 +1310,12 @@ accepts today, and that is a policy call.
 > prior that is not flat (yesterday's estimate, a soft sensor) and the
 > posterior covariance -- what reconciliation buys in precision; (5) the
 > dynamic case: the Kalman filter as recursive Bayes, the link to control.
-> Not dispatched.
+> APPROVED 2026-10-20 ("A) tira Kalman B) dados sinteticos C) controlo"):
+> pages 1-4, no Kalman; synthetic data from a small invented plant, said so
+> on screen; shelf "Hydraulics & control".  The arithmetic's one home is
+> the engine -- a props op on `reconcileWeightedLeastSquares`, never a
+> second WLS -- with the gross-error tests and the posterior covariance
+> beside it.  Dispatched (G21).
 
 > **C120. SESSION HANDOFF -- THE CONTAINER'S DISK FAILED (2026-10-20, Vitor:
 > "Sim, segue esse plano").**  The machine of the 2026-10-20 session logged
