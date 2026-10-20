@@ -492,6 +492,9 @@
     "sprayDryer",
     "storageTank"
    ],
+   "unitModels": [
+    "pressureNozzle"
+   ],
    "thermo": {
     "formulation": "gammaPhi",
     "activityModels": [
