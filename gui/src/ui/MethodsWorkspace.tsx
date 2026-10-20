@@ -125,7 +125,9 @@ import {
   ActionIcon, Alert, Badge, Box, Button, Code, Collapse, CopyButton,
   Group, Loader, NumberInput, Select, Stack, Text, Title, Tooltip,
 } from "@mantine/core";
-import { IconBook, IconExternalLink } from "@tabler/icons-react";
+import { IconBook, IconExternalLink, IconSearch } from "@tabler/icons-react";
+import { ChapterIndex } from "./methods/ChapterIndex.js";
+import { EduToolsFind, openEduToolsFind } from "./methods/EduToolsFind.js";
 
 import { resolveAdapter } from "../adapters/index.js";
 import {
@@ -437,6 +439,8 @@ export function MethodsWorkspace() {
   const componentFiles = useMemo(() => caseComponentFiles(caseRaw), [caseRaw]);
 
   const active = METHOD_TOOLS.find((m) => m.id === tool) ?? METHOD_TOOLS[0]!;
+  // The tool's page: the chapter index reads its headings and scrolls it.
+  const pageRef = useRef<HTMLDivElement>(null);
 
   return (
     // The active tool gets the WHOLE WIDTH of the workspace: the chooser is one
@@ -459,11 +463,14 @@ export function MethodsWorkspace() {
           would be 0 and the harness would refuse the run as vacuous.  This
           caption sits OUTSIDE that last child, which is the one control the
           other ten pages have always rested on (exposure.mjs: reach 1). */}
-      <TeachesLine tool={active} />
+      <TeachesLine tool={active} pageRef={pageRef} />
+      {/* "Find in EduTools" -- drawn once here, opened from the Find button
+          on the line above and from the tab's Tool menu (DEV.md 4c C113). */}
+      <EduToolsFind />
       {/* A bounded full-height flex column for the tool: each manages its own
           setup panel, and this container keeps it inside the workspace
           whatever the viewport does — never reached into, only sized. */}
-      <Box style={{ flex: 1, minHeight: 0, minWidth: 0, display: "flex",
+      <Box ref={pageRef} style={{ flex: 1, minHeight: 0, minWidth: 0, display: "flex",
         flexDirection: "column", overflow: "hidden" }}>
         <Suspense fallback={
           <Group justify="center" mt="xl"><Loader size="sm" /></Group>
@@ -667,7 +674,9 @@ function ToolChooser({ tool }: { tool: MethodToolId }) {
 /** The one-line "what this construction teaches" caption + the tool's Theory
  *  Guide link — rendered directly under the toolbar so the pedagogy is stated
  *  before the plot. */
-function TeachesLine({ tool }: { tool: MethodTool }) {
+function TeachesLine({ tool, pageRef }: {
+  tool: MethodTool; pageRef: React.RefObject<HTMLDivElement>;
+}) {
   /* Narrow viewports wrap to two clamped lines instead of an ellipsis that
    * would eat most of the sentence on a phone-width screen.
    *
@@ -721,6 +730,27 @@ function TeachesLine({ tool }: { tool: MethodTool }) {
           </ActionIcon>
         </Tooltip>
       )}
+      {/*  FIND AND CHAPTERS (DEV.md 4c C113).  The Find searches every
+          EduTool and opens one AT a chapter; the chapter index (shown on a
+          long page only) jumps inside this one.  Both sit at the END of the
+          line so the caption keeps the room it reads in, and both are
+          visible words on a desk -- hover is never load-bearing (§9). */}
+      <Group gap={4} wrap="nowrap" ml="auto" style={{ flexShrink: 0 }}>
+        {narrow ? (
+          <ActionIcon variant="default" size="md" onClick={openEduToolsFind}
+            aria-label="find in EduTools: every tool and chapter">
+            <IconSearch size={14} />
+          </ActionIcon>
+        ) : (
+          <Button size="compact-xs" variant="default"
+            leftSection={<IconSearch size={12} />}
+            onClick={openEduToolsFind}
+            aria-label="find in EduTools: every tool and chapter">
+            Find
+          </Button>
+        )}
+        <ChapterIndex rootRef={pageRef} tool={tool.id} />
+      </Group>
     </Group>
   );
 }

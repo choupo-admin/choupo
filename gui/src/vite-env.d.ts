@@ -49,3 +49,12 @@ declare module "virtual:layout-viewer" {
 //  for why \ce{} is this project's declaration that a token is a SUBSTANCE
 //  rather than a symbol a reader is owed a definition of.
 declare module "katex/contrib/mhchem";
+
+//  Which lesson modules each EduTool draws, and the plain-text headings its
+//  own source writes -- read off the source at build time by
+//  scripts/eduToolLessonsPlugin.ts (DEV.md 4c C113: the Find's index is
+//  DERIVED from the lessons, never a hand list).
+declare module "virtual:edutool-lessons" {
+  export const TOOL_LESSONS: Record<string, string[]>;
+  export const TOOL_HEADINGS: Record<string, string[]>;
+}
