@@ -33,6 +33,7 @@ License
 #include "solver/NewtonRaphson.H"
 #include "streams/StreamMass.H"
 #include "unitOperations/flash/StreamEquilibrium.H"   // the ONE resolve-and-price home
+#include "unitOperations/saturation/BubblePoint.H"    // the mixture's surface pressure (C111)
 
 #include <algorithm>
 #include <cmath>
@@ -184,14 +185,44 @@ int SprayDryer::solve(const DictPtr& dict,
     //  Identify, in the FEED, the volatile solvent and the non-volatile
     //  solid; in the AIR, the dominant dry-gas carrier (for diffusivity).
     // -------------------------------------------------------------------
+    //  EVERY VOLATILE SOLVENT OF THE FEED (2026-10-20, DEV.md 4c C111).
+    //  Until then the unit kept ONE solvent -- the LAST feed component with
+    //  a vapour pressure -- and every later step read that one index; a
+    //  second solvent (the acetone of an acetone/water spray-drying feed)
+    //  was in the feed and in NO outlet: mass lost at exit 0.  `solvents`
+    //  lists them all, in component order; `iSolv` stays the last of them,
+    //  so a single-solvent feed takes every line below exactly as before.
+    //  A feed with SEVERAL takes the equilibrium route of the energy
+    //  balance below (docs/design/a-spray-dryer-with-several-solvents.md).
     std::size_t iSolv = n, iSolid = n;
+    std::vector<std::size_t> solvents;
+    std::vector<char>        isSolvent(n, 0);
+    std::vector<std::string> noOutlet;          // neither a solid nor volatile
     for (std::size_t i = 0; i < n; ++i)
     {
         if (zFeed[i] <= 0.0) continue;
         const std::string& r = thermo.comp(i).role();
         if (r == "nonvolatile")                          iSolid = i;
-        else if (thermo.comp(i).hasVaporPressure())      iSolv  = i;
+        else if (thermo.comp(i).hasVaporPressure())
+        { iSolv = i; solvents.push_back(i); isSolvent[i] = 1; }
+        else noOutlet.push_back(thermo.comp(i).name());
     }
+    //  A dissolved feed component that is neither `role nonvolatile` (it
+    //  would leave in the powder) nor volatile (it would leave in the
+    //  exhaust) has no outlet in this unit: it used to vanish.  Refused.
+    if (!noOutlet.empty())
+    {
+        std::string names;
+        for (const auto& s : noOutlet) names += (names.empty() ? "" : ", ") + s;
+        throw std::runtime_error("SprayDryer '" + (dict->name().empty() ? type() : dict->name())
+            + "': the feed carries " + names + ", which is neither a non-volatile"
+              " solid (`role nonvolatile;`, it would leave in the powder) nor a"
+              " volatile solvent (a `vaporPressure` block, it would leave in the"
+              " exhaust).  The unit has no outlet for it and will not drop it."
+              "  Remedy: give the record the role or the vapour-pressure block"
+              " that says where it goes.");
+    }
+    const bool multiSolvent = solvents.size() > 1;
     //  EVERY non-volatile solid the feed brings leaves in the powder
     //  (2026-10-18, DEV.md 4c C97).  Until then the unit kept ONE solid --
     //  the last non-volatile dissolved in the feed -- and a second one (the
@@ -235,15 +266,108 @@ int SprayDryer::solve(const DictPtr& dict,
         }
     }
 
+    //  WHAT A FEED WITH SEVERAL SOLVENTS MAY NOT ASK FOR (C111).  Both
+    //  refusals name a DROPLET model that is about ONE solvent and say
+    //  what does run.
+    std::string solventNames;
+    for (auto i : solvents)
+        solventNames += (solventNames.empty() ? "" : ", ") + thermo.comp(i).name();
+    if (multiSolvent)
+    {
+        const std::string who0 = "SprayDryer '" + (dict->name().empty() ? type() : dict->name()) + "'";
+        //  (e) The residual-moisture model: a GAB isotherm is a moisture
+        //  RATIO of ONE sorbate per kg of dry solid, and the record does not
+        //  say which solvent it was measured with.  Applying it to the sum
+        //  of the solvents, or to whichever one the unit picked, would be a
+        //  guess presented as a material property.
+        std::vector<std::string> withIsotherm;
+        for (auto i : solids)
+            if (thermo.comp(i).hasSorption()) withIsotherm.push_back(thermo.comp(i).name());
+        if (!withIsotherm.empty())
+        {
+            std::string names;
+            for (const auto& s : withIsotherm) names += (names.empty() ? "" : ", ") + s;
+            throw std::runtime_error(who0 + ": the feed carries "
+                + std::to_string(solvents.size()) + " volatile solvents (" + solventNames
+                + ") and " + names + " declares a `sorption {}` isotherm.  The"
+                  " residual-moisture model is the equilibrium moisture of ONE sorbate per"
+                  " kg of dry solid; the isotherm does not say which solvent it was"
+                  " measured with, and a mixed-solvent sorption isotherm is not"
+                  " modelled.  Remedy: remove the sorption block -- every solvent then"
+                  " leaves in the exhaust unless the air cannot carry it, which is said"
+                  " on the run -- or dry from one solvent.");
+        }
+        //  (d) The droplet trajectory: the axial profile (`langrishKockel`)
+        //  and the Reaction Engineering Approach (`chen`) integrate the
+        //  moisture of a droplet of ONE solvent.  A droplet of several
+        //  evaporates them selectively (the more volatile first, as far as
+        //  its internal mixing allows), which is a multicomponent droplet
+        //  model this unit does not have.  The lumped chamber (`marshall`)
+        //  runs: its mass and energy do not depend on the droplet history.
+        if (distributed)
+            throw std::runtime_error(who0 + ": chamber model `" + dryerModel
+                + "` integrates the drying of a droplet of ONE solvent, and the feed"
+                  " carries " + std::to_string(solvents.size()) + " (" + solventNames
+                + ").  The selective evaporation of a mixed-solvent droplet is not"
+                  " modelled.  Remedy: `model marshall;` (the lumped chamber: every"
+                  " solvent leaves in the exhaust unless the air cannot carry it), or"
+                  " dry from one solvent.");
+    }
+
     std::size_t iDry = n; scalar ymax = 0.0;
     for (std::size_t i = 0; i < n; ++i)
-        if (i != iSolv && yAir[i] > ymax) { ymax = yAir[i]; iDry = i; }
+        if (!isSolvent[i] && yAir[i] > ymax) { ymax = yAir[i]; iDry = i; }
     if (iDry == n)
         throw std::runtime_error("SprayDryer: dryingAir has no carrier gas.");
 
     const Component& solv = thermo.comp(iSolv);
     const Component& sol  = thermo.comp(iSolid);
-    const scalar MW_w = solv.MW();
+
+    //  THE SOLVENT LIQUID OF THE FEED, solids left out (C111): its mole
+    //  fractions `xs` over the volatile solvents -- for one solvent the unit
+    //  vector at iSolv, exactly.  With several solvents the droplet's
+    //  PROPERTIES below (molar mass, latent heat, vapour heat capacity,
+    //  surface pressure, density, surface tension, diffusivity) are those
+    //  of this liquid at its FEED composition -- a PSEUDO-SOLVENT, the
+    //  simplification of DEV.md C111 (d), announced once below.  They set
+    //  the droplet size, the wet bulb and the drying-time KPIs; they decide
+    //  NO mass and NO energy (those go through the package's flash and
+    //  `priceState`, the equilibrium route further down).
+    sVector xs(n, 0.0);
+    {
+        scalar t = 0.0;
+        for (auto i : solvents) t += zFeed[i];
+        for (auto i : solvents) xs[i] = zFeed[i] / t;
+    }
+    scalar MW_mix = 0.0;
+    for (auto i : solvents) MW_mix += xs[i] * thermo.comp(i).MW();
+    const scalar MW_w = multiSolvent ? MW_mix : solv.MW();
+    //  Latent heat of the solvent liquid, J/mol: one solvent's own; for a
+    //  mixture the mole-fraction mean at the feed composition (the latent
+    //  heat of a liquid that evaporates WITHOUT changing composition).
+    auto hvapMol = [&](scalar T) -> scalar
+    {
+        if (!multiSolvent) return solv.Hvap_latent(T);
+        scalar h = 0.0;
+        for (auto i : solvents) h += xs[i] * thermo.comp(i).Hvap_latent(T);
+        return h;
+    };
+    if (multiSolvent)
+    {
+        std::ostringstream m;
+        m << "the feed carries " << solvents.size() << " volatile solvents (" << solventNames
+          << "): every one leaves in the exhaust unless the air cannot carry it, decided"
+             " by the package's flash of the exhaust at T_out (the outlet is that"
+             " equilibrium; no droplet model chooses which solvent stays).  The droplet's"
+             " size, wet bulb and drying-time KPIs are computed for a PSEUDO-SOLVENT -- the"
+             " solvent liquid at its feed composition (mole-fraction mean latent heat and"
+             " molar volume, the package's bubble pressure and surface tension of that"
+             " liquid); selective evaporation inside the droplet is not modelled";
+        if (AdvisoryLog::instance().add("model", "info",
+                "sprayDryer '" + (dict->name().empty() ? type() : dict->name()) + "'", m.str())
+            && verbosity >= 1)
+            std::cout << "  [sprayDryer] " << m.str() << "\n";
+    }
 
     // -------------------------------------------------------------------
     //  Surface tension of the atomising liquid -- HONEST CASCADE (glass-box):
@@ -268,12 +392,15 @@ int SprayDryer::solve(const DictPtr& dict,
     }
     else
     {
-        sVector xLiq(n, 0.0);
-        xLiq[iSolv] = 1.0;                       // surface = the volatile solvent
+        //  surface = the volatile solvent (for several, the solvent liquid
+        //  at its feed composition, through the package's mixing rule)
+        const sVector& xLiq = xs;
         try
         {
             sigma = thermo.surfaceTension(T_feed, xLiq);
-            sigmaSource = "property layer sigma(T_feed) of " + solv.name() + " (Brock-Bird: OVERPREDICTS H-bonded liquids ~50%; d32 impact modest via the ^0.6 power)";
+            sigmaSource = "property layer sigma(T_feed) of "
+                + (multiSolvent ? "the solvent liquid (" + solventNames + ")" : solv.name())
+                + " (Brock-Bird: OVERPREDICTS H-bonded liquids ~50%; d32 impact modest via the ^0.6 power)";
         }
         catch (const std::exception&)
         {
@@ -286,7 +413,9 @@ int SprayDryer::solve(const DictPtr& dict,
     //  Mass balance: solid -> powder; ALL feed solvent -> vapour (the
     //  phase-1 "dry powder" assumption).  Air carries the vapour out.
     // -------------------------------------------------------------------
-    const scalar n_solv_feed = F_feed * zFeed[iSolv];                // kmol/s evaporated
+    scalar n_solv_feed = F_feed * zFeed[iSolv];                      // kmol/s evaporated
+    if (multiSolvent)                                                // every solvent (C111)
+    { n_solv_feed = 0.0; for (auto i : solvents) n_solv_feed += F_feed * zFeed[i]; }
     //  Per solid, dissolved + suspended; summed over every solid of the feed.
     sVector nSolidOf(n, 0.0);                                         // kmol/s
     scalar m_solid = 0.0;                                             // kg/s
@@ -323,30 +452,63 @@ int SprayDryer::solve(const DictPtr& dict,
     // -------------------------------------------------------------------
     scalar MW_dry = 0.0, ydry = 0.0;
     for (std::size_t i = 0; i < n; ++i)
-        if (i != iSolv) { MW_dry += yAir[i] * thermo.comp(i).MW(); ydry += yAir[i]; }
+        if (!isSolvent[i]) { MW_dry += yAir[i] * thermo.comp(i).MW(); ydry += yAir[i]; }
     MW_dry = (ydry > 0.0) ? MW_dry / ydry : thermo.comp(iDry).MW();
 
-    const scalar yw_air = yAir[iSolv];
-    const scalar Y_air  = (yw_air < 1.0)
-                        ? (MW_w / MW_dry) * yw_air / (1.0 - yw_air) : 1.0;
+    scalar yw_air = yAir[iSolv];
+    scalar Y_air  = (yw_air < 1.0)
+                  ? (MW_w / MW_dry) * yw_air / (1.0 - yw_air) : 1.0;
+    if (multiSolvent)
+    {
+        //  kg of solvent vapour per kg of dry gas, summed over the solvents
+        //  the inlet air already carries, each at its own molar mass.
+        scalar mv = 0.0;  yw_air = 0.0;
+        for (auto i : solvents) { mv += yAir[i] * thermo.comp(i).MW(); yw_air += yAir[i]; }
+        Y_air = (yw_air < 1.0) ? mv / (MW_dry * (1.0 - yw_air)) : 1.0;
+    }
 
     scalar cp_dry_molar = 0.0;
     for (std::size_t i = 0; i < n; ++i)
-        if (i != iSolv && yAir[i] > 0.0 && ydry > 0.0)   // only species present (skip the solid)
+        if (!isSolvent[i] && yAir[i] > 0.0 && ydry > 0.0)   // only species present (skip the solid)
             cp_dry_molar += (yAir[i] / ydry) * thermo.comp(i).cpIdealGas().Cp(T_air);
     const scalar cp_dry = cp_dry_molar / (MW_dry / 1000.0);                 // J/(kg dry·K)
-    const scalar cp_vap = solv.cpIdealGas().Cp(T_air) / (MW_w / 1000.0);    // J/(kg vap·K)
+    scalar cp_vap_molar = solv.cpIdealGas().Cp(T_air);
+    if (multiSolvent)
+    { cp_vap_molar = 0.0; for (auto i : solvents) cp_vap_molar += xs[i] * thermo.comp(i).cpIdealGas().Cp(T_air); }
+    const scalar cp_vap = cp_vap_molar / (MW_w / 1000.0);                   // J/(kg vap·K)
 
-    auto Ysat = [&](scalar T) -> scalar
+    //  The saturated surface: one solvent's vapour pressure and latent heat;
+    //  for several, the package's BUBBLE pressure of the solvent liquid at
+    //  its feed composition, and the molar mass and latent heat of the
+    //  vapour that surface is in equilibrium with (the pseudo-solvent,
+    //  C111) -- so the wet bulb balances the heat against the latent heat
+    //  of what the surface actually emits.  Returns Y_sat; `dHvKg` [J/kg].
+    auto surfaceAt = [&](scalar T, scalar& dHvKg) -> scalar
     {
+        if (multiSolvent)
+        {
+            const BubblePoint::PressureResult b = BubblePoint::pressure(thermo, xs, T, P_air);
+            scalar Mv = 0.0, Hv = 0.0;
+            const bool hasY = (b.y.size() == n);
+            for (auto i : solvents)
+            {
+                const scalar yi = hasY ? b.y[i] : xs[i];
+                Mv += yi * thermo.comp(i).MW();
+                Hv += yi * thermo.comp(i).Hvap_latent(T);
+            }
+            dHvKg = Hv / (Mv / 1000.0);
+            return (b.P < 0.99 * P_air) ? (Mv / MW_dry) * b.P / (P_air - b.P) : 10.0;
+        }
+        dHvKg = hvapMol(T) / (MW_w / 1000.0);
         const scalar Pw = thermo.Psat(iSolv, T);
         return (Pw < 0.99 * P_air) ? (MW_w / MW_dry) * Pw / (P_air - Pw) : 10.0;
     };
     auto gwb = [&](scalar Twb) -> scalar
     {
-        const scalar dHv = solv.Hvap_latent(Twb) / (MW_w / 1000.0);        // J/kg
+        scalar dHv = 0.0;                                                  // J/kg
+        const scalar Ys  = surfaceAt(Twb, dHv);
         const scalar cph = cp_dry + Y_air * cp_vap;                        // J/(kg dry·K)
-        return (T_air - Twb) * cph - dHv * (Ysat(Twb) - Y_air);
+        return (T_air - Twb) * cph - dHv * (Ys - Y_air);
     };
     auto dgwb = [&](scalar T) { const scalar h = 0.01; return (gwb(T + h) - gwb(T - h)) / (2.0 * h); };
 
@@ -376,8 +538,15 @@ int SprayDryer::solve(const DictPtr& dict,
     //  the temperature it gives is now only where the search below STARTS;
     //  the published T_out closes H(out) = H(in) on the package's surface.
     // -------------------------------------------------------------------
-    const scalar cpL_w = solv.hasCpLiquid()
-                       ? solv.cpLiquid().Cp(0.5 * (T_feed + T_wb)) : 75.4;  // J/(mol·K)
+    scalar cpL_w = solv.hasCpLiquid()
+                 ? solv.cpLiquid().Cp(0.5 * (T_feed + T_wb)) : 75.4;        // J/(mol·K)
+    if (multiSolvent)                    // the seed only: a mole-fraction mean
+    {
+        cpL_w = 0.0;
+        for (auto i : solvents)
+            cpL_w += xs[i] * (thermo.comp(i).hasCpLiquid()
+                              ? thermo.comp(i).cpLiquid().Cp(0.5 * (T_feed + T_wb)) : 75.4);
+    }
     // Molar Cp of the inlet air -- summed over species ACTUALLY present, so
     // a non-volatile solid in the package (y = 0, no idealGasHeatCapacity)
     // is skipped rather than tripping ThermoPackage::Cp_ig's hard check.
@@ -385,7 +554,7 @@ int SprayDryer::solve(const DictPtr& dict,
     for (std::size_t i = 0; i < n; ++i)
         if (yAir[i] > 0.0) cp_air_molar += yAir[i] * thermo.comp(i).cpIdealGas().Cp(T_air);
     const scalar cp_air_W = std::max(1.0, F_air * 1000.0 * cp_air_molar);   // W/K
-    const scalar q_per_evap = solv.Hvap_latent(T_wb) + cpL_w * (T_wb - T_feed);  // J/mol
+    const scalar q_per_evap = hvapMol(T_wb) + cpL_w * (T_wb - T_feed);           // J/mol
     const scalar n_evap_seed_max = (q_per_evap > 0.0)
                                  ? cp_air_W * (T_air - T_wb) / (1000.0 * q_per_evap)  // kmol/s
                                  : n_solv_feed;
@@ -406,7 +575,27 @@ int SprayDryer::solve(const DictPtr& dict,
     //  shrinks to the powder particle as solvent leaves:
     //      d_p = d32 · (x_solid,mass · ρ_L / ρ_solid)^(1/3)
     // -------------------------------------------------------------------
-    const scalar rho_L = (solv.Vliq() > 0.0) ? (MW_w / 1000.0) / solv.Vliq() : 1000.0;
+    scalar rho_L = (solv.Vliq() > 0.0) ? (MW_w / 1000.0) / solv.Vliq() : 1000.0;
+    if (multiSolvent)
+    {
+        //  The solvent liquid's density at its feed composition: molar
+        //  volumes ADD (ideal mixing; the excess volume of acetone/water or
+        //  ethanol/water is a few per cent, beneath d32's cube-root
+        //  sensitivity).  A solvent with no declared Vliq keeps the water
+        //  fallback of the one-solvent line above, said.
+        scalar V = 0.0; bool all = true;
+        for (auto i : solvents)
+        {
+            if (thermo.comp(i).Vliq() > 0.0) V += xs[i] * thermo.comp(i).Vliq();
+            else all = false;
+        }
+        rho_L = (all && V > 0.0) ? (MW_w / 1000.0) / V : 1000.0;
+        if (!all)
+            AdvisoryLog::instance().add("model", "warning",
+                "sprayDryer '" + (dict->name().empty() ? type() : dict->name()) + "'",
+                "a solvent of the feed declares no liquid molar volume (Vliq): the"
+                " droplet density is taken as 1000 kg/m3");
+    }
     scalar MW_air_in = 0.0;
     for (std::size_t i = 0; i < n; ++i) MW_air_in += yAir[i] * thermo.comp(i).MW();
     const scalar rho_air_in = (T_air > 0.0) ? P_air * MW_air_in / (R * T_air) : 1.2;
@@ -472,7 +661,12 @@ int SprayDryer::solve(const DictPtr& dict,
               " the corresponding transfer coefficient is 0 -- declare the"
               " sub-block in transport { vapour { ... } } to price it");
     if (thermo.hasThermalConductivity())   k_g  = thermo.thermalConductivityGas(T_film, yAir);
-    if (thermo.hasDiffusivity())           Dab  = thermo.diffusivityGas(T_film, P_air, iSolv, iDry);
+    if (thermo.hasDiffusivity())
+    {
+        if (!multiSolvent) Dab = thermo.diffusivityGas(T_film, P_air, iSolv, iDry);
+        else  // the pseudo-solvent: the mole-fraction mean of each solvent's own
+            for (auto i : solvents) Dab += xs[i] * thermo.diffusivityGas(T_film, P_air, i, iDry);
+    }
 
     const scalar d   = (d32 > 0.0) ? d32 : d_part;          // droplet drives drying
     scalar v_t = 0.0, Re = 0.0, Pr = 0.0, Sc = 0.0;
@@ -492,7 +686,7 @@ int SprayDryer::solve(const DictPtr& dict,
         // Constant-rate drying time of one droplet (heat-limited):
         const scalar m_water_drop = (PI / 6.0) * d * d * d * rho_L * (1.0 - x_solid_mass);
         const scalar A_drop       = PI * d * d;
-        const scalar dHv_kg       = solv.Hvap_latent(T_wb) / (MW_w / 1000.0);
+        const scalar dHv_kg       = hvapMol(T_wb) / (MW_w / 1000.0);
         const scalar rate_drop    = (dHv_kg > 0.0)
                                   ? h * A_drop * (T_air - T_wb) / dHv_kg : 0.0;
         tau_const = (rate_drop > 0.0) ? m_water_drop / rate_drop : 0.0;     // s
@@ -514,7 +708,7 @@ int SprayDryer::solve(const DictPtr& dict,
             std::ostringstream m;
             m << "the wet bulb (and the constant-rate drying time) is solved with the"
                  " Lewis relation Le = 1, but this gas and solvent ("
-              << solv.name() << " in " << thermo.comp(iDry).name() << ") have Le = Sc/Pr = "
+              << (multiSolvent ? "the solvent liquid " + solventNames : solv.name()) << " in " << thermo.comp(iDry).name() << ") have Le = Sc/Pr = "
               << std::fixed << std::setprecision(2) << Le << " at the film ("
               << std::setprecision(1) << T_film << " K): the wet-bulb temperature carries"
                  " that approximation";
@@ -785,6 +979,156 @@ int SprayDryer::solve(const DictPtr& dict,
         pinnedFeed, vfFeed, thermo, who + " feed", nullptr)
         + flashState::priceSolids(sFeed, T_feed, thermo) + H_air_in;       // kW
 
+    //  What both routes hand on to the outlets and the KPIs.
+    scalar n_evap = 0.0, n_water_resid = 0.0, m_water_resid = 0.0;
+    int    nPass  = 0;
+    //  The several-solvent route publishes the flash's two phases as they
+    //  are: the residual LIQUID (kmol/s per component, it rides in the
+    //  powder) and the EXHAUST (kmol/s per component).
+    sVector liqOut(n, 0.0), exOut(n, 0.0);
+    if (multiSolvent)
+    {
+    //  ------------------------------------------------------------------
+    //  SEVERAL SOLVENTS: THE OUTLET IS THE PACKAGE'S EQUILIBRIUM AT T_out
+    //  (2026-10-20, DEV.md 4c C111).
+    //
+    //  No sorption isotherm is allowed here (refused above), so nothing
+    //  holds a solvent in the powder except a gas that cannot carry it.
+    //  Whether it can is a question about the EXHAUST, and the package
+    //  answers it: the air and every solvent the feed brings are flashed
+    //  at (T, P_air).  A single vapour phase means everything evaporated
+    //  and the exhaust is unsaturated; a split means the air cannot carry
+    //  it all -- the vapour IS the exhaust, saturated (at its own dew
+    //  point, never a fog), and the liquid is what stays on the powder, at
+    //  the composition the package's equilibrium gives it (the more
+    //  volatile solvent leaves first, by the package's K-values, never by a
+    //  per-component Raoult sum written here).  The temperature closes
+    //  H(powder) + H(exhaust) = H(feed) + H(air), every term through
+    //  `priceState` on the stream as it is published, so this unit's row
+    //  in the energy report is zero by construction (the 2026-09-27 rule).
+    //  The equilibrium H is monotone increasing in T (a positive heat
+    //  capacity, the latent heat included), so the root is bracketed.
+    //  ------------------------------------------------------------------
+    sVector nFluid(n, 0.0);                 // kmol/s: the air + every solvent
+    for (std::size_t i = 0; i < n; ++i)
+        nFluid[i] = F_air * yAir[i] + (isSolvent[i] ? F_feed * zFeed[i] : 0.0);
+    scalar Ffl = 0.0; for (auto v : nFluid) Ffl += v;
+    sVector zfl(n, 0.0);
+    for (std::size_t i = 0; i < n; ++i) zfl[i] = nFluid[i] / Ffl;
+    //  The split at T: the liquid from the flash's own x, and the exhaust
+    //  by SUBTRACTION from the material, so the two close exactly.
+    auto splitAt = [&](scalar T, sVector& liq, sVector& ex) -> void
+    {
+        std::string deferred;
+        auto fs = flashState::equilibriumAt(T, P_air, zfl, false, 1.0, thermo,
+                                            who + " exhaust", "model", &deferred);
+        if (!fs)
+            throw std::runtime_error(who + ": the feed carries several solvents ("
+                + solventNames + ") and the package could not resolve the"
+                  " equilibrium of the air and the solvents at T = "
+                + std::to_string(T) + " K -- which decides how much of each the"
+                  " exhaust can carry.  " + deferred);
+        if (fs->threePhase || fs->liquidLiquid)
+            throw std::runtime_error(who + ": the package resolves the air and the"
+                " solvents (" + solventNames + ") at T = " + std::to_string(T)
+                + " K into TWO liquids; a powder wetted by two liquid phases is not"
+                  " modelled.");
+        const scalar vf = flashState::vapourFractionOf(*fs);
+        liq.assign(n, 0.0);
+        if (vf < 1.0)
+            for (std::size_t i = 0; i < n; ++i)
+                liq[i] = std::min(nFluid[i], std::max(0.0, (1.0 - vf) * Ffl * fs->x[i]));
+        ex.assign(n, 0.0);
+        for (std::size_t i = 0; i < n; ++i) ex[i] = nFluid[i] - liq[i];
+    };
+    auto priceFlows = [&](const sVector& v, scalar T, scalar vfC, const std::string& what) -> scalar
+    {
+        scalar F = 0.0; for (auto x : v) F += x;
+        if (!(F > 0.0)) return 0.0;
+        sVector z(n, 0.0);
+        for (std::size_t i = 0; i < n; ++i) z[i] = v[i] / F;
+        return flashState::priceState(T, P_air, z, F, false, vfC, thermo, who + " " + what, nullptr);
+    };
+    auto gEq = [&](scalar T) -> scalar                                        // kW
+    {
+        sVector liq, ex;
+        splitAt(T, liq, ex);
+        ++nPass;
+        return flashState::priceSolids(nSolidOf, T, thermo)
+             + priceFlows(liq, T, 0.0, "powder") + priceFlows(ex, T, 1.0, "exhaust")
+             - H_in;
+    };
+    //  The bracket: the hot end is the air's own temperature (the solvents
+    //  evaporated and heated to it cost more than the air brought), the cold
+    //  end is searched downward from the wet bulb until the outlets carry
+    //  less enthalpy than came in.
+    scalar Thi = std::max(T_air, T_feed);
+    scalar Tlo = std::min(T_wb, T_feed);
+    while (gEq(Tlo) > 0.0)
+    {
+        Tlo -= 10.0;
+        if (Tlo < 150.0)
+            throw std::runtime_error(who + ": no exhaust temperature above 150 K"
+                " closes the adiabatic balance of the air and the solvents ("
+                + solventNames + ").");
+    }
+    if (gEq(Thi) < 0.0)
+        throw std::runtime_error(who + ": the outlets at the air inlet temperature"
+            " carry less enthalpy than came in; the adiabatic balance has no root"
+            " in [" + std::to_string(Tlo) + ", " + std::to_string(Thi) + "] K.");
+    {
+        //  Illinois on g(T): bracketed, cannot cycle; the flash's switch
+        //  from one phase to two is continuous in H, not smooth, so no
+        //  derivative is taken across it.
+        scalar a = Tlo, b = Thi, ga = gEq(a), gb = gEq(b);
+        int side = 0;
+        for (int it = 0; it < 300 && (b - a) > 1.0e-10; ++it)
+        {
+            scalar c = (ga != gb) ? (a * gb - b * ga) / (gb - ga) : 0.5 * (a + b);
+            if (!(c > a && c < b)) c = 0.5 * (a + b);
+            const scalar gc = gEq(c);
+            if (std::abs(gc) <= 1.0e-9) { a = b = c; break; }       // kW -- a microwatt
+            if (gc > 0.0) { b = c; gb = gc; if (side == -1) ga *= 0.5; side = -1; }
+            else          { a = c; ga = gc; if (side == +1) gb *= 0.5; side = +1; }
+        }
+        T_out = 0.5 * (a + b);
+        const scalar gF = gEq(T_out);
+        if (!(std::abs(gF) <= 1.0e-6))
+            throw std::runtime_error(who + ": the adiabatic balance of the air and"
+                " the solvents did not close (residual " + std::to_string(gF)
+                + " kW at T_out = " + std::to_string(T_out) + " K).");
+    }
+    splitAt(T_out, liqOut, exOut);
+    for (auto i : solvents)
+    {
+        n_water_resid += liqOut[i];
+        m_water_resid += liqOut[i] * thermo.comp(i).MW();
+    }
+    n_evap = n_solv_feed - n_water_resid;
+    energy_limited = (n_water_resid > 0.0);
+    if (energy_limited)
+    {
+        //  THE AIR CANNOT CARRY EVERY SOLVENT, and the run says so: what
+        //  stays, of which solvent, and that the exhaust leaves saturated.
+        std::ostringstream m;
+        m << "the drying gas cannot carry every solvent the feed brings: the exhaust"
+             " leaves SATURATED at T_out = " << std::fixed << std::setprecision(2) << T_out
+          << " K (the package's flash of the air and the solvents splits there), and"
+             " the liquid in equilibrium with it stays on the powder --";
+        for (auto i : solvents)
+            m << " " << thermo.comp(i).name() << " " << std::setprecision(4)
+              << (liqOut[i] * thermo.comp(i).MW() * 3600.0) << " kg/h of "
+              << (F_feed * zFeed[i] * thermo.comp(i).MW() * 3600.0) << ";";
+        m << " more air, a hotter air, or a drier air dries the powder";
+        AdvisoryLog::instance().add("drying", "warning", who, m.str());
+        if (verbosity >= 1) std::cout << "  [drying] " << m.str() << "\n";
+    }
+    //  The kinetics' own KPIs (velocities, residence time) at the exhaust the
+    //  unit publishes; no isotherm, so no residual moisture comes from them.
+    dryingAt(T_out, n_evap);
+    }
+    else
+    {
     //  The two outlets, exactly as they are published below (unpinned: this
     //  unit pins nothing), for an evaporation `nev` and a temperature `T`.
     const sVector sPowder = nSolidOf;     // every solid of the feed (one term for one solid)
@@ -872,8 +1216,7 @@ int SprayDryer::solve(const DictPtr& dict,
     {
         return (H_out(T_wb, nev) - H_in >= 0.0) ? T_wb : solveT(nev);
     };
-    scalar n_evap = nevCap;
-    int    nPass  = 0;
+    n_evap = nevCap;
     const scalar Rcap = nevKin(Tof(nevCap), nevCap) - nevCap;  ++nPass;
     if (Rcap >= 0.0)
     {
@@ -912,7 +1255,7 @@ int SprayDryer::solve(const DictPtr& dict,
     }
     //  The kinetics' own KPIs at the state the unit publishes.
     (void) nevKin(T_out, n_evap);
-    const scalar n_water_resid = n_solv_feed - n_evap;                     // kmol/s
+    n_water_resid = n_solv_feed - n_evap;                                  // kmol/s
 
     //  A DRYER CANNOT END WETTER THAN IT STARTED.  Both residual routes above
     //  are MODEL quantities: the kinetic one is `X_final * m_solid`, a moisture
@@ -957,7 +1300,8 @@ int SprayDryer::solve(const DictPtr& dict,
         if (verbosity >= 1)
             std::cout << "  [drying] " << msg.str() << "\n";
     }
-    const scalar m_water_resid   = n_water_resid * MW_w;      // kg/s held in the powder
+    m_water_resid = n_water_resid * MW_w;                    // kg/s held in the powder
+    }   // one solvent
     //  The heat the drying air gives up, on the package's surface: the air
     //  as it came in, minus the same air at the exhaust temperature.  It is
     //  what the droplets receive -- exactly the enthalpy rise of the feed
@@ -1018,6 +1362,13 @@ int SprayDryer::solve(const DictPtr& dict,
     powder.F = n_water_resid;
     powder.z.assign(n, 0.0);
     if (n_water_resid > 0.0) powder.z[iSolv] = 1.0;
+    if (multiSolvent)                    // the flash's liquid, as it is (C111)
+    {
+        scalar FL = 0.0; for (auto v : liqOut) FL += v;
+        powder.F = FL;
+        powder.z.assign(n, 0.0);
+        if (FL > 0.0) for (std::size_t i = 0; i < n; ++i) powder.z[i] = liqOut[i] / FL;
+    }
     powder.s = nSolidOf;                 // every solid of the feed
     powder.psd.diameter = dCen;          // Rosin-Rammler spread, not a single d32
     powder.psd.massFrac = mf;
@@ -1029,6 +1380,7 @@ int SprayDryer::solve(const DictPtr& dict,
     sVector nout(n, 0.0);
     for (std::size_t i = 0; i < n; ++i) nout[i] = F_air * yAir[i];
     nout[iSolv] += n_evap;             // only the EVAPORATED water (phase 2: not all of it)
+    if (multiSolvent) nout = exOut;    // the flash's vapour, by subtraction (C111)
     scalar Fout = 0.0; for (auto v : nout) Fout += v;
     exhaust.F = Fout; exhaust.z.assign(n, 0.0);
     if (Fout > 0.0) for (std::size_t i = 0; i < n; ++i) exhaust.z[i] = nout[i] / Fout;
@@ -1082,6 +1434,27 @@ int SprayDryer::solve(const DictPtr& dict,
     kpis_["v_particle"]       = v_particle;       // m/s particle fall velocity
     kpis_["wheelSpeed"]       = atomDict->lookupScalarOrDefault("wheelSpeed", 0.0);  // rpm (rotary; 0 otherwise)
     kpis_["atomiserPower"]    = drop.power;       // W  shaft estimate (see the atomiser note for the split)
+    if (multiSolvent)
+    {
+        //  SEVERAL SOLVENTS (C111): `water_evaporated` keeps its key -- the
+        //  sizer reads it as the evaporation duty -- and holds EVERY solvent
+        //  evaporated, by mass; each solvent is published on its own too.
+        scalar mEv = 0.0, mLiq = 0.0;
+        for (std::size_t i = 0; i < n; ++i) mLiq += liqOut[i] * thermo.comp(i).MW();
+        for (auto i : solvents)
+        {
+            const scalar fed = F_feed * zFeed[i] * thermo.comp(i).MW();
+            const scalar res = liqOut[i] * thermo.comp(i).MW();
+            mEv += fed - res;
+            kpis_["evaporated_" + thermo.comp(i).name()] = fed - res;   // kg/s
+            kpis_["residual_"   + thermo.comp(i).name()] = res;         // kg/s
+        }
+        kpis_["water_evaporated"] = mEv;              // kg/s, every solvent
+        kpis_["water_residual"]   = mLiq;             // kg/s, the liquid on the powder
+        kpis_["powder_flow"]      = m_solid + mLiq;
+        kpis_["solventsInFeed"]   = scalar(solvents.size());
+        kpis_["exhaustSaturated"] = energy_limited ? 1.0 : 0.0;
+    }
 
     // -------------------------------------------------------------------
     //  Profile: the powder PSD (mass fraction vs particle diameter) for
@@ -1118,16 +1491,17 @@ int SprayDryer::solve(const DictPtr& dict,
                   << std::fixed << std::setprecision(1) << (100.0 * x_solid_mass) << " wt% solid\n"
                   << "  ----  mass + energy  ----\n"
                   << "  Water evaporated = " << std::scientific << std::setprecision(3)
-                  << (n_evap * MW_w) << " kg/s   Powder (dry) = " << m_solid << " kg/s\n"
+                  << kpis_["water_evaporated"] << " kg/s   Powder (dry) = " << m_solid << " kg/s\n"
                   << "  Droplet wet-bulb T_wb = " << std::fixed << std::setprecision(1)
                   << T_wb << " K (" << (T_wb - 273.15) << " °C)\n"
                   << "  Exhaust air  T_out   = " << std::setprecision(1) << T_out
                   << " K (" << (T_out - 273.15) << " °C),  η_th = "
                   << std::setprecision(2) << eta_th << "\n"
                   << "  Energy: H(out) = H(in) on the package's enthalpy surface ("
-                  << nPass << " kinetics evaluations; hand-balance seed "
+                  << nPass << (multiSolvent ? " flash evaluations" : " kinetics evaluations") << "; hand-balance seed "
                   << std::setprecision(1) << T_out_seed << " K)"
-                  << (energy_limited ? "  -- ENERGY-LIMITED: exhaust at the wet bulb" : "")
+                  << (energy_limited ? (multiSolvent ? "  -- the exhaust leaves SATURATED (the air cannot carry every solvent)"
+                                                     : "  -- ENERGY-LIMITED: exhaust at the wet bulb") : "")
                   << "\n"
                   << "  ----  atomisation (Friedman)  ----\n"
                   << "  Surface tension sigma = " << std::scientific << std::setprecision(4)
