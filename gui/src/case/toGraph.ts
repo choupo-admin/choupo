@@ -932,10 +932,20 @@ export function readEdges(
 function memberFlowsheetText(
   rawFiles: { [relPath: string]: string } | undefined, child: string,
 ): string | undefined {
+  return resolveMemberFlowsheet(rawFiles, "", child)?.text;
+}
+
+/** The same resolution one level down: the member `child` of the flowsheet
+ *  whose FOLDER is `parentBase` ("" for the case root).  Returns the member's
+ *  dict text AND its folder, so a walk can descend into it. */
+export function resolveMemberFlowsheet(
+  rawFiles: { [relPath: string]: string } | undefined, parentBase: string, child: string,
+): { text: string; base: string } | undefined {
   if (!rawFiles) return undefined;
-  for (const base of [child, `sectors/${child}`, `unitOperations/${child}`])
+  const pfx = parentBase ? parentBase + "/" : "";
+  for (const base of [`${pfx}${child}`, `${pfx}sectors/${child}`, `${pfx}unitOperations/${child}`])
     for (const p of [`${base}/system/flowsheetDict`, `${base}/flowsheetDict`])
-      if (rawFiles[p] !== undefined) return rawFiles[p];
+      if (rawFiles[p] !== undefined) return { text: rawFiles[p]!, base };
   return undefined;
 }
 

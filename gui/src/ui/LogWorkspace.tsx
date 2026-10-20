@@ -64,6 +64,7 @@ import {
 import { IconChevronDown, IconChevronRight, IconSearch } from "@tabler/icons-react";
 
 import { useStore } from "../state/store.js";
+import { parseUnitBanners, type UnitBannerAt } from "../case/unitBanner.js";
 
 import { useMeasuredBoxWidth } from "./methods/methodsChrome.js";
 import {
@@ -71,34 +72,12 @@ import {
   panelBoxProps, usePanel, usePanelShortcut,
 } from "./panelContract.js";
 
-interface JumpEntry {
-  unitIndex: number;        // C++ "[k]" in the banner
-  qualifiedName: string;    // e.g. "CONCENTRATION.Evap1"
-  type: string;             // e.g. "evaporator"
-  line: number;             // 1-based line number where the banner starts
-}
-
-// Parse the runLog for ">>>  Unit [k]:  <name>   (type = <T>)" banners
-// the C++ engine emits per unit.  Returns one JumpEntry per match in
-// source order so the navigator's order matches the solve order.
-function parseJumps(log: string): JumpEntry[] {
-  const out: JumpEntry[] = [];
-  if (!log) return out;
-  const lines = log.split("\n");
-  const re = /^>>>\s+Unit\s+\[(\d+)\]:\s+(\S+)\s+\(type\s*=\s*(\S+)\s*\)/;
-  for (let i = 0; i < lines.length; i++) {
-    const m = re.exec(lines[i] ?? "");
-    if (m) {
-      out.push({
-        unitIndex: parseInt(m[1]!, 10),
-        qualifiedName: m[2]!,
-        type: m[3]!,
-        line: i + 1,
-      });
-    }
-  }
-  return out;
-}
+// The banner grammar has ONE home, shared with the canvas's run-progress
+// pulse (case/unitBanner.ts): `>>>  Unit [k]:  <name>   (type = <T>)`, one
+// per unit the engine solves, in solve order -- so the navigator's order
+// matches the solve order.
+type JumpEntry = UnitBannerAt;
+const parseJumps = parseUnitBanners;
 
 // Strip the namespacing prefix so the jump list reads as just
 // "Evap1" / "Cryst" rather than "CONCENTRATION.Evap1".  The full
