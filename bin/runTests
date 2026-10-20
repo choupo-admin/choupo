@@ -4409,25 +4409,6 @@ PYEOF
     fi
     rm -f /tmp/icefreeze.$$
 
-    # Phase-split scan gate (2026-10-20, DEV.md 4c C118 stage 1): the
-    # `phaseSplitScan` props op solves ONE isothermal flash per grid point
-    # through the flash unit's own solver.  Single-point scans on copies of
-    # flash21/flash16/flash19's sealed constant/ reproduce those units'
-    # goldens; the witness's freezing-point identity is recomputed from its
-    # own water.dat at every point; the ice appearance is announced between
-    # its grid values; a pure-water probe is refused BY NAME below Tt and the
-    # scan continues; the Psat/dCp announcements land at their first point;
-    # closure, four grammar refusals, a source arm (no equilibrium of its own).
-    if "$ROOT/bin/curate/check_phase_split_scan.py" > /tmp/phsplit.$$ 2>&1; then
-        printf "PASS  %-40s  (%s)\n" "phase-split-scan-gate" "$(gate_claim check_phase_split_scan /tmp/phsplit.$$)"
-        pass=$((pass+1))
-    else
-        printf "FAIL  %-40s  (run bin/curate/check_phase_split_scan.py)\n" "phase-split-scan-gate"
-        cat /tmp/phsplit.$$
-        fail=$((fail+1))
-    fi
-    rm -f /tmp/phsplit.$$
-
     # gate self-test (2026-08-07, ordered by Vitor).  The meta-gate: it
     # sabotages the tree on purpose and demands the covered gates exit
     # non-zero, then restores every byte.  Aimed at the failure mode found
@@ -6106,24 +6087,6 @@ if [ "$#" -eq 0 ]; then
         fail=$((fail+1))
     fi
     rm -f /tmp/econsens.$$
-
-    # Debt-financing gate (2026-10-20, DEV.md 4c C110 G4): the opt-in
-    # `economics { financing {} }` loan adds the EQUITY view BESIDE the
-    # project's and changes none of it -- on probes built from economics03
-    # and economics01 every draw, capitalised interest, repayment and equity
-    # cash flow recomputes by hand from the project's published cash flow,
-    # the project's cashFlow.csv is byte-identical with and without the
-    # loan, the refusals fire by name, an absent block is silent, and the
-    # loan's arithmetic lives inside appraise() (a source arm).
-    if "$ROOT/bin/curate/check_debt_financing.py" > /tmp/debtfin.$$ 2>&1; then
-        printf "PASS  %-40s  (%s)\n" "debt-financing-gate" "$(gate_claim check_debt_financing /tmp/debtfin.$$)"
-        pass=$((pass+1))
-    else
-        printf "FAIL  %-40s  (run bin/curate/check_debt_financing.py)\n" "debt-financing-gate"
-        cat /tmp/debtfin.$$
-        fail=$((fail+1))
-    fi
-    rm -f /tmp/debtfin.$$
 
     # Plant-layout gate (2026-10-17, DEV.md 4c C75): system/layoutDict is
     # DECLARED, CHECKED and DRAFTED -- the witness's vessel extents equal

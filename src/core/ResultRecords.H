@@ -698,38 +698,6 @@ struct EconomicSensitivityRow
     scalar      NPV_low = 0.0, NPV_high = 0.0;
     scalar      NPVswing = 0.0;     // |NPV_high - NPV_low|, the sort key
     std::string NPVsignFlip;        // "" | "low" | "high" | "both"
-    //  THE EQUITY NPV at each end (G4), carried only when the case declares
-    //  `financing {}`; the sort key stays the PROJECT NPV's swing.
-    scalar      equityNPV_low = 0.0, equityNPV_high = 0.0;
-};
-
-// THE LOAN AND THE EQUITY CASH FLOW, YEAR BY YEAR (2026-10-20, DEV.md 4c C110
-// G4), present only when the case declares `financing {}` in the economics
-// block.  One row per year of the PROJECT timeline (t = first..N); the
-// project rows (`CashFlowYear`) are untouched -- this is a second view of the
-// same plant, never a replacement for the first.
-//
-//   construction years (t <= 0): the loan DRAWS its share of the capital
-//     spent that year; the interest on the balance already drawn is
-//     CAPITALISED (added to the balance, no cash moves);
-//   operating years (t >= 1): the interest on the balance is PAID and is
-//     deductible, the capitalised interest is depreciated with the plant,
-//     the principal is repaid (none during the grace years).
-struct LoanYear
-{
-    int    year             = 0;
-    scalar draw             = 0.0;  // loan drawn this year (>= 0, cash in)
-    scalar interestCapitalised = 0.0; // interest during construction, added to the balance
-    scalar interestPaid     = 0.0;  // interest paid (operating years)
-    scalar principal        = 0.0;  // principal repaid
-    scalar balance          = 0.0;  // loan balance at the END of the year
-    scalar idcDepreciation  = 0.0;  // the capitalised interest, depreciated
-    scalar taxableIncome    = 0.0;  // the project's, less interest and idcDepreciation
-    scalar tax              = 0.0;  // tau x taxableIncome
-    scalar cashFlow         = 0.0;  // the EQUITY cash flow of the year
-    scalar discountFactor   = 0.0;  // 1/(1+i_e)^t
-    scalar discountedCF     = 0.0;
-    scalar cumulativeDCF    = 0.0;
 };
 
 // Headline economic appraisal scalars + the year-by-year DCF table.  Populated
@@ -788,30 +756,6 @@ struct EconomicsSummary
     //  tornado order (largest NPV swing first, a tie in declared order).
     std::vector<EconomicSensitivityRow> sensitivity;
     std::string                         sensitivityCaveat;
-    //  THE FINANCING (G4), present only when the case declares
-    //  `financing {}`.  Every number above stays the PROJECT's (unlevered);
-    //  these are the loan and the EQUITY (levered) view beside it.
-    bool                      financingPresent = false;
-    scalar                    debtFraction     = 0.0;
-    std::string               debtBasis;             // fixedCapital | totalCapital
-    scalar                    debtRate         = 0.0;
-    int                       graceYears       = 0;
-    int                       termYears        = 0;
-    std::string               repayment;             // annuity | linear
-    scalar                    equityDiscountRate = 0.0;
-    bool                      equityDiscountRateDeclared = false;
-    std::string               financingSource, financingReason;
-    scalar                    loanDrawn        = 0.0; // sum of the draws
-    scalar                    interestDuringConstruction = 0.0;
-    scalar                    loanAtStartup    = 0.0; // drawn + IDC
-    scalar                    interestPaidTotal = 0.0;
-    scalar                    equityInvested   = 0.0; // the owners' capital (> 0)
-    scalar                    equityNPV        = 0.0;
-    scalar                    equityIRR        = 0.0; // NaN if none
-    bool                      haveEquityIRR    = false;
-    bool                      equityIrrAmbiguous = false;
-    scalar                    equityDiscPayback = 0.0; // NaN if never
-    std::vector<LoanYear>     loanSchedule;
 };
 
 //  THE PLANT LAYOUT (2026-10-17, DEV.md 4c C75).  What the layout check

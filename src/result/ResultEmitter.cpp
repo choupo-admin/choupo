@@ -1281,64 +1281,7 @@ void emitResultJson(std::ostream& os, const SimulationResult& r)
                    << ", \"NPV_low\": "      << num(sr.NPV_low)
                    << ", \"NPV_high\": "     << num(sr.NPV_high)
                    << ", \"NPVswing\": "     << num(sr.NPVswing)
-                   << ", \"NPVsignFlip\": "  << esc(sr.NPVsignFlip);
-                //  The EQUITY NPV at each end (G4), only when a loan is
-                //  declared; also `sens_<input>_equityNPV_*` KPIs.
-                if (e.financingPresent)
-                    os << ", \"equityNPV_low\": "  << num(sr.equityNPV_low)
-                       << ", \"equityNPV_high\": " << num(sr.equityNPV_high);
-                os << " }";
-            }
-            os << "\n      ]\n    },\n";
-        }
-        //  THE FINANCING (2026-10-20, DEV.md 4c C110 G4), ONLY when the case
-        //  declared a loan -- every other economics case's JSON is
-        //  byte-for-byte what it was.  The PROJECT's NPV / IRR / paybacks
-        //  above are UNCHANGED (unlevered); this object is the loan and the
-        //  EQUITY view beside them.  Its every scalar is also a
-        //  `kpis.economics.debt_*` / `equity_*` KPI, which the golden `kpi`
-        //  kind pins; the schedule's rows are recomputed by
-        //  bin/curate/check_debt_financing.py.
-        if (e.financingPresent)
-        {
-            os << "    \"financing\": {\n"
-               << "      \"debtFraction\": " << num(e.debtFraction)
-               << ", \"basis\": " << esc(e.debtBasis)
-               << ", \"rate\": " << num(e.debtRate)
-               << ", \"graceYears\": " << e.graceYears
-               << ", \"termYears\": " << e.termYears
-               << ", \"repayment\": " << esc(e.repayment)
-               << ", \"equityDiscountRate\": " << num(e.equityDiscountRate)
-               << ", \"equityDiscountRateDeclared\": "
-               << (e.equityDiscountRateDeclared ? "true" : "false") << ",\n"
-               << "      \"source\": " << esc(e.financingSource)
-               << ", \"reason\": " << esc(e.financingReason) << ",\n"
-               << "      \"loanDrawn\": " << num(e.loanDrawn)
-               << ", \"interestDuringConstruction\": " << num(e.interestDuringConstruction)
-               << ", \"loanAtStartup\": " << num(e.loanAtStartup)
-               << ", \"interestPaidTotal\": " << num(e.interestPaidTotal)
-               << ", \"equityInvested\": " << num(e.equityInvested) << ",\n"
-               << "      \"equityNPV\": " << num(e.equityNPV)
-               << ", \"equityIRR\": " << (e.haveEquityIRR ? num(e.equityIRR) : std::string("null"))
-               << ", \"equityIrrAmbiguous\": " << (e.equityIrrAmbiguous ? "true" : "false")
-               << ", \"equityDiscountedPayback\": " << num(e.equityDiscPayback) << ",\n"
-               << "      \"schedule\": [";
-            for (std::size_t i = 0; i < e.loanSchedule.size(); ++i)
-            {
-                const auto& y = e.loanSchedule[i];
-                os << (i ? ",\n" : "\n") << "        { \"year\": " << y.year
-                   << ", \"draw\": " << num(y.draw)
-                   << ", \"interestCapitalised\": " << num(y.interestCapitalised)
-                   << ", \"interestPaid\": " << num(y.interestPaid)
-                   << ", \"principal\": " << num(y.principal)
-                   << ", \"balance\": " << num(y.balance)
-                   << ", \"idcDepreciation\": " << num(y.idcDepreciation)
-                   << ", \"taxableIncome\": " << num(y.taxableIncome)
-                   << ", \"tax\": " << num(y.tax)
-                   << ", \"cashFlow\": " << num(y.cashFlow)
-                   << ", \"discountFactor\": " << num(y.discountFactor)
-                   << ", \"discountedCF\": " << num(y.discountedCF)
-                   << ", \"cumulativeDCF\": " << num(y.cumulativeDCF) << " }";
+                   << ", \"NPVsignFlip\": "  << esc(sr.NPVsignFlip) << " }";
             }
             os << "\n      ]\n    },\n";
         }
