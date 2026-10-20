@@ -1291,6 +1291,30 @@ accepts today, and that is a policy call.
 > fire-water ring main and hydrants, bunds, escape routes, swept path, a
 > fillet running through an item.
 
+> **C119. AN EDUTOOL ON WHY CORRELATIONS ARE SIMPLE: FROM DIMENSIONAL
+> ANALYSIS TO MASTER-SLAVE SCALES (Vitor, 2026-10-20: "o teorema Pi de
+> Buckingham ... reduz o numero de variaveis, mas ... a reducao de variaveis
+> podia ser um artefacto que transformava um problema noutro sem grandes
+> ganhos.  No final o grande ganho vem do facto de ... se acabarem com
+> correlacoes com poucas variaveis, mas simultaneamente ... equacoes muito
+> simples que ajustam bem os dados, com um erro relativo razoavel para
+> projeto.  Esta ultima faceta nao resulta do teorema Pi ... parece resultar
+> de fenomenos multi escala em que ha efeitos Master de baixas frequencias
+> que dominam efeitos Slave de alta frequencia.  Achas que se pode fazer um
+> EduTool a explicar isto tudo, comecando pela analise dimensional?").**
+> Commander's verdict: yes, and the claim is right with one addition.  The
+> Pi theorem only REDUCES (f(Re, e/D) is still an arbitrary function);
+> simplicity comes from three named mechanisms -- asymptotic regimes where a
+> group drops out or enters as a power (Barenblatt's complete / incomplete
+> similarity, "intermediate asymptotics"), scale separation where fast modes
+> follow slow ones (Haken's slaving principle; Prandtl's boundary layer as
+> its engineering form), and a sobering third -- over one decade any smooth
+> function has a nearly constant log-slope, so part of a correlation's
+> simplicity is its narrow range and the +/-20-30 % design tolerance.  The
+> Churchill-Usagi blending of asymptotes is where the three meet in a
+> design formula.  PEDAGOGICAL SCOPE PUT TO VITOR before dispatch (page
+> list, examples, whether measured data enters); not dispatched.
+
 > **C118. A PHASE-SPLIT SCAN IN THE EXPLORER: V / L1 / L2 / S1 / S2 AND pH
 > ALONG T OR P (Vitor, 2026-10-20: "uma tool de execucao em que posso mexer
 > em T ou P, mantendo um constante.  Eu dou a composicao dos varios
