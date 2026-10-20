@@ -1292,16 +1292,18 @@ export const METHOD_TOOLS: MethodTool[] = [
     label: "Designing for overpressure: scenarios, devices and relief sizing",
     discipline: "Process safety", kind: "construction",
     status: "live",
-    teaches: "Why a relief system is sized for the worst credible cause "
+    teaches: "Why a relief device is sized for the credible cause "
       + "(blocked outlet, external fire, cooling or reflux failure, runaway, "
-      + "tube rupture, thermal expansion), the pressure ladder from operating "
-      + "to set, MAWP and the allowed accumulation, the devices and the back "
-      + "pressure behind them, the published gas, liquid and fire-case "
-      + "equations worked on fluid properties the engine computes -- an "
-      + "acetone drum in a fire, and an ammonia loop whose 50 bar version "
-      + "needs a relief valve about four and a half times larger -- where "
-      + "the relief goes after the valve, and why a runaway vent is "
-      + "two-phase and larger.",
+      + "tube rupture, thermal expansion) that needs the largest required "
+      + "relief area, not the largest flow; operating, design pressure, "
+      + "MAWP and set pressure kept apart, and the allowed accumulation; the "
+      + "devices and the back pressure behind them; the published gas, liquid "
+      + "and fire-case equations worked on fluid properties the engine "
+      + "computes, and where the liquid one stops holding -- an acetone drum "
+      + "in a fire, and an ammonia loop whose 50 bar version, on the same "
+      + "blocked-outlet hypothesis, needs a relief valve about four and a "
+      + "half times larger -- where the relief goes after the valve, and why "
+      + "a runaway vent is usually two-phase and must pass more mass.",
     theory: "ch:cubic-eos",
   },
   //  COMMISSIONED 2026-10-17 (DEV.md 4c C83): "Faz essa EduTool da radiacao
