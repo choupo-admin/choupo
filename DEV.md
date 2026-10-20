@@ -1291,6 +1291,47 @@ accepts today, and that is a policy call.
 > fire-water ring main and hydrants, bunds, escape routes, swept path, a
 > fillet running through an item.
 
+> **C112. AN EXTERNAL SCIENTIFIC AND PEDAGOGICAL AUDIT OF THE EDUTOOLS
+> (Vitor, 2026-10-20, a review by ChatGPT he asked the commander to judge:
+> "tu e que es o responsavel maximo e tens de ver se concordas").**  Twenty
+> points; the commander's verdict, given to Vitor the same turn: AGREE with
+> 1-11, 14, 15, 16, 17, 19, 20; AGREE IN PART with 12 (the ladder's warning
+> is drawn by the page from two numbers the engine already publishes --
+> the declared conversion of rung 1 and the equilibrium of rung 2 -- not a
+> new equilibrium evaluation inside `conversionReactor`) and 18 (each
+> number states its ORIGIN -- engine, page arithmetic, reference, user
+> assumption -- but no per-value provenance sheet across sixty pages);
+> VERIFY 13 (Choupo's datum is the ideal-gas formation enthalpy, one per
+> component, so no residual should be subtracted at the reference; an
+> independent test decides).  The 2026-10-12 letdown revision is not
+> repeated.  Points: (1) overpressure's governing scenario is the largest
+> REQUIRED AREA, not the largest flow; (2) operating / design / MAWP / set
+> pressure are four quantities, a +10 % heuristic gives a preliminary
+> design pressure, never a MAWP; (3) a liquid chokes when the vena
+> contracta falls below its vapour pressure (cavitation / flashing /
+> choked), coherent with the letdown page; (4) accumulated energy [J] is
+> not released power [W], W = Qr/(x lambda) is not DIERS sizing; (5) NPSHr
+> is usually NPSH3, so NPSHa > NPSHr is a minimum, a margin is needed; (6)
+> gibbs07's open energy balance (`check_energy_closure.KNOWN_OPEN`
+> 150.7280) investigated in the engine, warning kept until closed; (7) the
+> letdown witness's sealed NH3 copy (liquid density ~12-13 % high) updated
+> if the catalogue is corrected, moved rows to Vitor; (8) a pump and a
+> system meet once in THIS example, not always; (9) non-overlapping
+> estimate ranges are sufficient, not necessary, to decide; (10) a
+> disposal-capacity inequality is necessary, not sufficient; (11) the
+> blocked-outlet compressor's nominal flow is a declared hypothesis; (12)
+> as above; (14) exposure time visible beside pool-fire results; (15)
+> each EduTool result says whether the C++ engine or the page computed it,
+> and the homepage's claim is made true; (16) coherence across pages
+> teaching the same physics; (17) slider extremes show "model no longer
+> valid" rather than a fictitious curve; (19) phone-width legibility; (20)
+> absolute words checked against omitted hypotheses.  Wave A (dispatched
+> 2026-10-20): G11 overpressure (1-4, 10, 11 + coherence with letdown and
+> processSafety); G12 pump, FEL, pool fire, reactor ladder, standard state
+> (5, 8, 9, 12, 13, 14); G13 gibbs07 energy closure (6); G14 letdown
+> witness NH3 (7).  Wave B after A merges: origin labels and the homepage
+> claim (15, 18), then the sweeps (16, 17, 19, 20).
+
 > **C111. A SPRAY DRYER THAT TAKES A FEED WITH SEVERAL SOLVENTS (Vitor,
 > 2026-10-20, testing: "o modelo de spray dryer nao aceita correntes com
 > varios solventes.  Eu preciso disso para o projeto de industria
