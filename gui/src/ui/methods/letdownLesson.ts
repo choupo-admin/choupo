@@ -660,17 +660,19 @@ export const LETDOWN_LIMITS: readonly LessonLimit[] = [
       + "flow coefficient, no choke, no cavitation check, no noise.  Those "
       + "are this page's arithmetic on the engine's fluid properties." },
   { id: "density",
-    title: "The ammonia liquid density is high",
-    body: "The engine prices liquid ammonia from the record's Vliq, carried "
-      + "in temperature by Rackett.  Checked once against an open reference "
-      + "equation of state (CoolProp), the engine's density at -20 °C is "
-      + "about an eighth too high: the record's Vliq matches ammonia at its "
-      + "normal boiling point, not at 25 °C where the engine anchors it.  "
-      + "So the inlet volumetric flows here are about an eighth low and the "
-      + "volume ratios about an eighth high.  The catalogue record has since "
-      + "been corrected to the 25 °C value; the witness runs its own sealed "
-      + "copy of the record, which keeps the old value until the case is "
-      + "re-imported, so the numbers on this page still carry the error." },
+    title: "The liquid density is a saturated-liquid correlation",
+    body: "The engine prices liquid ammonia from the record's Vliq, its "
+      + "molar volume as a saturated liquid at 25 °C, carried in "
+      + "temperature by Rackett.  Checked once against an open reference "
+      + "equation of state (CoolProp), the engine's density is within half "
+      + "a per cent of the saturated liquid's at -20 °C and at -34 °C.  "
+      + "Rackett has no pressure term, so at the separator's 140 bar, where "
+      + "the liquid is compressed and denser, the first throttle's inlet "
+      + "density is about 1.5 % low and its inlet volumetric flow about "
+      + "1.5 % high.  The dissolved hydrogen, nitrogen and argon are priced "
+      + "at the density of the ammonia.  The vapour pressure the bench uses, "
+      + "the record's Antoine curve, is about 0.3 % above the same "
+      + "reference at the second throttle's inlet." },
   { id: "homogeneous",
     title: "The two phases move together",
     body: "The outlet volume is homogeneous: no slip between the vapour and "
