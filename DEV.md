@@ -1344,7 +1344,25 @@ accepts today, and that is a policy call.
 > caught); `benchmarks/README.md` states the folder's rules (no file of
 > theirs copied, every property number ours or primary, reference numbers
 > cited with version, a difference is a finding).  The first cases:
-> dispatched (G24).
+> dispatched (G24).  PHASE 1 (research) DONE 2026-10-20: the reference
+> simulator is GPL-3.0 (README + COPYING, read at its commit 1abf72d1b,
+> 2026-07-17); its bundled pure-component databank is ChemSep 6.96 under
+> Artistic-2.0, its pair tables carry no licence of their own (C16 applies);
+> its 62 sample files carry no per-file licence and EMBED those pair values,
+> so they are read as facts (the problem and the stored solved state, cited
+> by commit + sample + the BuildVersion/SavedOn inside the file) and no
+> parameter is copied.  Proposed: A Cavett as they ship it (their reading of
+> the pressures as psig, compressors and valves added -- beside our
+> cavett01), B methanol-acetone pressure-swing distillation (named
+> "extractive", no entrainer; its saved state does not close, +0.14 % mass),
+> C water/acetone/MIBK countercurrent extraction, D methanol from CO2 (a
+> full plant; findings on their side: a 184.7 K distillate for 98.9 %
+> methanol at 1 atm, a 100.004 % exchanger efficiency, one adsorption
+> constant spelled two ways), E optional steam-reforming PFR.  Decision 1
+> (Vitor): PR kij from primary sources where they exist, otherwise zero
+> with the difference measured.  Decisions 2-4 (B's case-local notValidated
+> pair; an LLE pair for C if UNIFAC does not split; D's outlet-temperature
+> PFR mode) put to Vitor.
 
 > **C122. INTEGRATION TOOLING AND A SITE SMOKE TEST (Vitor, 2026-10-20,
 > "Avanca 1 e 2", on the commander's reflection).**  (1) an `integrate`
