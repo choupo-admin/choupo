@@ -1455,7 +1455,7 @@ accepts today, and that is a policy call.
 > 2026-10-20: "ve como podes tornar o visualizador do flowsheet mais tipo
 > 'paraview'!  Nos podemos escolher cores para T e P, mas eventualmente
 > podemos por compostos quimicos ... de forma elegante e que os alunos
-> adorem!  Isso faz diferenca face aos flowsheets do DWSIM ou da Aspen" --
+> adorem!  Isso faz diferenca face aos flowsheets dos simuladores comerciais" [names elided per philosophy section 4] --
 > the competitor names are his, in conversation; they stay out of every
 > user-facing manual).  Measured: `gui/src/ui/ColoursMenu.tsx` offers
 > colour-by phase / temperature / pressure with three colormaps (turbo,
