@@ -428,6 +428,31 @@ checkout` of the file and rebuilt once at the end:
       today.  The arity rule is a source rule: the output cannot see a copy
       that has not yet drifted.
 
+SABOTAGE-VERIFIED 2026-10-20 for (o) and (p) (DEV.md 4c C110 G7), by hand
+on the engine source, each applied by asserted string replacement, rebuilt
+where the arm reads the engine, and restored by `git checkout` and rebuilt:
+  S1  the flash's incipient block disarmed (`if (false && outerIt == 0 ...`,
+      both calls left in place).  (o1) PASSES -- it reads the calls -- and
+      (o2) fails twice: the drum at 19.8 bar publishes V/F = 0 (the 2026-10-18
+      defect, reproduced) and the iterated sum is not printed.  The output
+      arm is the one that sees a disarmed call.
+  S2  BubblePoint.cpp back to its own incipient loop (source only).  (o1)
+      fails twice (no call to the one home; a `Kvec(T, P, x, y)` of its own).
+  S3  the supercritical refusal and the per-component finiteness check
+      disarmed (`if (false && ...)`) and the mixture guard back to
+      `Vmix <= 0.0`, rebuilt.  (p1) fails twice (the NaN-blind guard; no
+      finite-Vmix requirement) -- but NOT on the disarmed refusal, whose text
+      is still in the source -- and (p2) fails three ways: the pipe exits 0,
+      prints rho = -nan, and names nothing.
+  S4  the incipient test seeded from the x = y = z K (the ideal-K seed
+      disabled), rebuilt.  SURVIVED, and it is recorded rather than tuned
+      away: on this witness one substitution from the x = y = z K already
+      moves the trial vapour onto the H2/N2/Ar-rich side, so the drum still
+      splits at 19.9 bar (V/F 4.766e-06) and not at 20 bar.  The ideal-K seed
+      is kept because it is the seed `BubblePoint::pressure` has always used
+      (the two must ask the same question), not because any fixture here
+      shows it is necessary.
+
 SABOTAGE-VERIFIED 2026-08-09: reverting the R-E1 gate (unpinned feeds no
 longer re-flashed -- the pre-slice behaviour) reproduced the original
 defect and this gate named every instance: flash19 Q = 13.4913 kW with its
@@ -442,6 +467,16 @@ WHAT THIS DOES NOT CHECK, said plainly:
     multiphase at their own states, so the correct duty is not zero and
     there is no closed form to assert -- they ride their goldens.  Arms (f)
     and (g) read ammonia02 for its PHASE LABELS only, never for a duty.
+  * (o): whether the flash's split BELOW the bubble pressure is right --
+    only that it exists and that none appears above; the dew-side mirror
+    (`incipientPhase::liquid`, a vapour above its dew pressure) has no
+    output fixture.  The bubble-TEMPERATURE route (`BubblePoint::compute`,
+    the `bubblePoint` unit) still evaluates K at y = x and is NOT reached by
+    this arm -- named, not fixed (DEV.md 4c C110 G7).
+  * (p): any caller that asks `ThermoPackage::density` for a liquid over a
+    supercritical component and catches the refusal SILENTLY -- the three
+    `pricedDensity::select` callers announce; a new catcher would not be
+    seen here.
   * Whether the incipient band of 1e-3 is the right number.  It is a stated
     choice, not a derived tolerance, and a stream genuinely between 1e-6 and
     1e-3 off saturation is reported by nothing.
@@ -787,7 +822,9 @@ def arm_p(tmp: pathlib.Path, fail: list) -> str:
                      log) or "above its critical temperature" not in log:
         fail.append("(p2) the refusal does not name the supercritical "
                     "component and its critical temperature")
-    return f"pipe refused (rc={rc})"
+    m = re.search(r"no liquid molar volume for component '(\w+)'", log)
+    return (f"the pipe exits {rc} naming '{m.group(1)}'" if m
+            else f"the pipe exits {rc}")
 
 
 def main() -> int:
