@@ -13,9 +13,14 @@
   group would change is a plain key, said to be an assumption where it is
   declared.  The README is the narrative; this file is the topology.
 
-  THE BASIS (README section 2): 12 800 tablets per hour PRESSED, the flowsheet
-  basis, of a 580 mg core carrying 60 mg of apalutamide in 240 mg of a 1:3
-  apalutamide:HPMCAS spray-dried dispersion, with a 3 % film coat.  THIS
+  THE BASIS (README section 2; the design-basis dossier,
+  docs/design/apalutamide-design-basis-dossier.md): 15 625 tablets per hour
+  PRESSED, the flowsheet basis, of the originator's patent formula (US
+  12,303,493 B2, Examples 3.1-3.3): a 700 mg core carrying 60 mg of
+  apalutamide in 240 mg of a 1:3 apalutamide:HPMCAS-LG spray-dried
+  dispersion, with a 21 mg (3.0 %) film coat.  15 625 tablets/h is the
+  patent's PSD-3 dryer at its 75 kg/h of 5 wt % solution (3.75 kg/h of
+  dispersion / 240 mg).  THIS
   STEADY FLOWSHEET IS THE MATERIAL BALANCE PER UNIT OF PRODUCT (DEV.md 4c
   C99): the plant runs in BATCHES (lots of final blend, released one by one)
   and its spray dryer in CAMPAIGNS, and the BATCH PLAN in system/postDict
@@ -44,11 +49,11 @@
                        +--------------------------------------------------------- gasRecycle (TEAR)
 
     DRY GRANULATION, TABLETING, COATING, PACKAGING
-      asdPowder + MCC + silicified MCC + croscarmellose + silica + MgSt
+      asdPowder + MCC + croscarmellose + silica (the patent's intragranular half)
         -> [blender] -> intraBlend -> [rollerCompactor] -> ribbons -> [mill] -> milledGranules
                                            ^                                          |
                                            +---------- finesRecycle (TEAR) <--- [screen] -> granules
-      granules + croscarmellose + MgSt -> [finalBlender] -> finalBlend -> [tabletPress] -> tabletCores
+      granules + silicified MCC + croscarmellose + silica + MgSt -> [finalBlender] -> finalBlend -> [tabletPress] -> tabletCores
                                                                                     +-> tabletRejects
       water + PVA + PEG + talc + TiO2 + iron oxide -> [coatingSuspensionPrep] -> coatingSuspension
       tabletCores + coatingSuspension -> [coatingPan] -> wetCoatedTablets
@@ -94,8 +99,10 @@ units
     //  of solution is not modelled).  A `mixer` CARRIES the two powders as
     //  solids (it never dissolves anything -- the README says what that
     //  neglects), and the spray dryer reads dissolved and suspended solids
-    //  alike.  The solids content of the spray solution (10 wt %) is set by
-    //  the inlet flows in 0/: an AUTHOR-SET ASSUMPTION.
+    //  alike.  The solids content of the spray solution, 5 wt % (1 g of
+    //  dispersion per 19 g of acetone), is set by the inlet flows in 0/: the
+    //  patent's (PAT-HPMCAS Ex. 4.1/6.1 for acetone, Ex. 3.1 for the PSD-3;
+    //  dossier sections 1.4 and 4.2).
     {
         name        solutionPrep;
         type        mixer;
@@ -124,9 +131,10 @@ units
         operation   { W_shaft 1000;  eta 0.70; }      // W, -
     }
     {
-        //  393.15 K (120 C) drying-gas inlet: an AUTHOR-SET ASSUMPTION, of the
-        //  order used to dry an organic-solvent solution with an outlet well
-        //  above the solvent's dew point.
+        //  393.15 K (120 C) drying-gas inlet: an AUTHOR-SET ASSUMPTION (the
+        //  patent gives no inlet temperature, dossier section 4.2).  The
+        //  OUTLET is the patent's: the loop's nitrogen (0/n2Makeup) is set so
+        //  that the exhaust leaves at 46 C, PAT-HPMCAS Ex. 3.1's.
         name        gasHeater;
         type        phaseChanger;
         in          blowerOut;
@@ -135,15 +143,27 @@ units
     }
 
     //  ---- the spray dryer --------------------------------------------------
-    //  Every number in `operation` is HARDWARE, and AUTHOR-SET: a rotary
-    //  atomiser and a chamber of the size of a pilot or small production
-    //  dryer, nobody's catalogue.  The powder leaves BONE-DRY (no sorption
-    //  isotherm of acetone on HPMCAS is declared -- none was found -- so the
-    //  residual-moisture model is off, said on the run): the SECONDARY drying
-    //  every real ASD needs to bring its residual solvent below its limit is
-    //  NOT modelled.  `liquidViscosity` is DECLARED because no record carries
-    //  the viscosity of a 10 wt % HPMCAS solution in acetone: 0.02 Pa s is an
-    //  AUTHOR-SET guess, twenty times the solvent's (to be measured).
+    //  The ATOMISER is a PRESSURE NOZZLE, as in the patent's scale-up example
+    //  (PAT-HPMCAS Ex. 3.1: "Niro PSD-3, high-pressure nozzle"; dossier
+    //  section 4.2), the normal atomiser of a spray-dried dispersion.  The
+    //  atomising pressure is NOT stated there: 30 bar is an AUTHOR-SET
+    //  ASSUMPTION, declared as the `deltaP` override because the feed pump
+    //  is not a unit of this flowsheet.  The droplet size is the nozzle's
+    //  CLASS-AVERAGE design curve (d32 = 9575 dP^-1/3 um), which reads the
+    //  pressure only.  The chamber is AUTHOR-SET, nobody's catalogue: a
+    //  PSD-3's dimensions are not in any document read (dossier section
+    //  4.2).  The powder leaves BONE-DRY (no sorption isotherm of acetone on
+    //  HPMCAS is declared -- none was found -- so the residual-moisture model
+    //  is off, said on the run): the SECONDARY drying every real dispersion
+    //  needs (the patent's vacuum tray dryer with a nitrogen sweep at 40 C,
+    //  to the ICH Q3C limit for acetone, 5 000 ppm) is NOT modelled.
+    //  `liquidViscosity` is DECLARED because no record carries the viscosity
+    //  of an HPMCAS solution in acetone: 0.02 Pa s is an AUTHOR-SET guess,
+    //  made for the earlier 10 wt % solution and kept for the 5 wt % one,
+    //  which is thinner -- to be measured (dossier red team, item 5).  The
+    //  class-average curve does not read it; `correlation wangLefebvre;` in
+    //  the atomiser block does (with the nozzle's film thickness and cone
+    //  angle, which the group must then declare too) -- README question 1.
     {
         name        SD;
         type        sprayDryer;
@@ -151,8 +171,11 @@ units
         outputs     ( asdPowder  exhaustGas );
         operation
         {
-            wheelDiameter    0.05 m;     // rotary atomiser -- ASSUMED
-            wheelSpeed       25000;      // rpm -- ASSUMED
+            atomiser
+            {
+                model        pressureNozzle;   // PAT-HPMCAS Ex. 3.1
+                deltaP       30 bar;            // atomising pressure -- ASSUMED
+            }
             chamberDiameter  1.2 m;      // drying chamber -- ASSUMED
             chamberHeight    2.5 m;      // -> residence time is a RESULT
             liquidViscosity  0.02;       // Pa s -- ASSUMED, see above
@@ -227,7 +250,10 @@ units
         //  `Q_kW`.  No utility serves it; the run lists it as unserved.
         name        blender;
         type        mixer;
-        inputs      ( asdPowder  mccFeed  smccFeed  ccsIntraFeed  silicaFeed  mgstIntraFeed );
+        //  The intragranular half is the patent's (PAT-HPMCAS Ex. 3.2): the
+        //  dispersion, 10/13 of the silica, half the croscarmellose and ALL
+        //  the microcrystalline cellulose; no lubricant before the compactor.
+        inputs      ( asdPowder  mccFeed  ccsIntraFeed  silicaIntraFeed );
         outputs     ( intraBlend );
         operation   { T 298.15 K; }
     }
@@ -259,9 +285,12 @@ units
 
     //  ===================== FINAL BLEND AND TABLETING ======================
     {
-        name        finalBlender;               // extragranular disintegrant + lubricant
+        //  The extragranular half (PAT-HPMCAS Ex. 3.2): ALL the silicified
+        //  MCC, the other half of the croscarmellose, 3/13 of the silica, and
+        //  ALL the magnesium stearate (the final lubrication).
+        name        finalBlender;
         type        mixer;
-        inputs      ( granules  ccsExtraFeed  mgstExtraFeed );
+        inputs      ( granules  smccFeed  ccsExtraFeed  silicaExtraFeed  mgstExtraFeed );
         outputs     ( finalBlend );
     }
     {
@@ -277,7 +306,9 @@ units
 
     //  ===================== FILM COATING ===================================
     {
-        //  The coating suspension: 20 wt % solids in water -- AUTHOR-SET.
+        //  The coating suspension: 20 wt % solids in water, the patent's
+        //  (PAT-HPMCAS Ex. 3.3, Opadry II 85F to a 3.0 % weight gain; the
+        //  split of the coat among its five solids is the case's estimate).
         //  The PVA and PEG are carried as solids (nothing dissolves here).
         name        coatingSuspensionPrep;
         type        mixer;

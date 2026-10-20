@@ -15,9 +15,9 @@
 
 componentMolarFlows
 {
-    acetone    0.4760330579 kmol/h;
-    apalutamide    0.001608612781 kmol/h;
-    hpmcas    0.002304 kmol/h;
+    acetone    1.226756198 kmol/h;
+    apalutamide    0.001963638649 kmol/h;
+    hpmcas    0.0028125 kmol/h;
 }
 
 T               298.15 K;
@@ -29,15 +29,15 @@ phases
     {
         componentMolarFlows
         {
-            acetone    0.4760330579 kmol/h;
+            acetone    1.226756198 kmol/h;
         }
     }
     solid
     {
         componentMolarFlows
         {
-            apalutamide    0.001608612781 kmol/h;
-            hpmcas    0.002304 kmol/h;
+            apalutamide    0.001963638649 kmol/h;
+            hpmcas    0.0028125 kmol/h;
         }
     }
 }

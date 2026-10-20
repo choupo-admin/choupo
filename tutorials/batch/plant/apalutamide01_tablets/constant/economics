@@ -10,24 +10,45 @@
   constant/economics -- the prices this appraisal is priced at.  Currency:
   EUR per kg of the stream named.
 
-  EVERY PRICE BELOW IS AN AUTHOR-SET ASSUMPTION and none cites a source,
-  because none was read.  They are round figures chosen so that the appraisal
-  can run, NOT market data: a group replaces each with a dated, cited figure
-  (a supplier quotation, a tender price) before quoting an NPV.  The
-  provenance block of each says so, in the words the engine carries to its
-  output.
+  THE TWO PRICES THAT DECIDE THE APPRAISAL come from the design-basis
+  dossier (docs/design/apalutamide-design-basis-dossier.md); every other price is an AUTHOR-SET ASSUMPTION, a round
+  figure chosen so that the appraisal can run, NOT market data -- a group
+  replaces each with a dated, cited figure before quoting an NPV.  The
+  provenance block of each says which, in the words the engine carries to
+  its output.
 
-  THE TWO PRICES THAT DECIDE THE APPRAISAL:
-    * the API, BOUGHT: 10 000 EUR/kg of apalutamide.  The 60 mg in a tablet
-      then costs 0.60 EUR;
-    * the TABLET, SOLD: 1.00 EUR per tablet ex-factory.  The stream
-      `packagedTablets` carries 7.5989 kg/h for 12 672 tablets/h (0.5997 g a
-      tablet, the core, the coat and the water the coat keeps), so the price
-      per kg of that stream is 12 672 / 7.5989 = 1667.6 EUR/kg.  If the
-      formulation, the coat or the reject fraction moves, so does the tablet
-      mass: redo this division (it does not follow the run).
+    * the TABLET, SOLD: 4.0 EUR per 60 mg tablet, NET EX-FACTORY.  The
+      business case is a GENERIC ENTRANT AT LOSS OF EXCLUSIVITY (Vitor's
+      ruling, DEV.md 4c C99 addendum: a price with 2-4 competitors).  The
+      dossier (section 4.4) takes the originator's German ex-factory price,
+      about 19.13 EUR per tablet (back-calculated from the pharmacy price
+      with the statutory margins, AMPreisV), and the FDA's median generic
+      price cut at 4 competitors, 79 % (Conrad & Lutter, FDA 2019): about
+      4.0 EUR.  At 2 competitors (a 54 % cut) it is about 8.8 EUR -- the
+      other end of the ruling, run as an economic sensitivity in
+      system/postDict.  US data applied to Europe: an estimate.  The stream
+      `packagedTablets` carries 11.2219 kg/h for 15 468.75 tablets/h
+      (0.72546 g a tablet: the 700 mg core, the 21 mg coat and the
+      water the coat keeps), so the price per kg of that stream is
+      4.0 / 0.00072546 = 5513.8 EUR/kg.  If the formulation, the coat or
+      the reject fraction moves, so does the tablet mass: redo this division
+      (it does not follow the run).
+    * the API, BOUGHT: 7 776 EUR/kg of apalutamide, the only public signal
+      (dossier section 3.5): Pharmaoffer's average recorded price, 8 452 USD/kg
+      over the 12 months to 31 May 2026, x 0.92 (the case's usdToEur).  It is
+      an average of small pre-generic lots; a tonne-scale contract price was
+      NOT found -- ask two or three DMF holders for a dated quotation.  The
+      60 mg in a tablet then costs 0.47 EUR.
 
-  NOT PRICED: the purge gas (to vent treatment, not modelled), the coating
+  THE RECOVERED ACETONE IS NOT SOLD (dossier section 5, item 11): a GMP plant
+  reuses its recovered solvent in-process after validation (a raw-material
+  credit, which this base case does not take -- it does not close the loop)
+  or sends it to licensed recovery or incineration, usually at a cost.  Its
+  disposal cost was NOT found (a waste contractor's quotation), so it is NOT
+  in the operating cost either: the appraisal is optimistic by that amount.
+
+  NOT PRICED: the recovered acetone (above), the purge gas (to vent
+  treatment, not modelled), the coating
   exhaust (to atmosphere through a filter, not modelled) and the rejected
   tablets (their disposal is a cost the plant does not carry here).
   The UTILITIES (steam, cooling water, ammonia refrigeration, the blower's
@@ -37,30 +58,20 @@ products
 (
     {
         stream    packagedTablets;
-        price     1667.6;             // EUR/kg = 1.00 EUR/tablet, see header
+        price     5513.8;             // EUR/kg = 4.0 EUR/tablet, see header
         costYear  2026;
         provenance
         {
-            origin  "author-set assumption (DEV.md 4c C97), not a market price";
-            method  "1.00 EUR per tablet ex-factory, a round figure; replace with a dated, cited price";
-        }
-    }
-    {
-        stream    recoveredAcetone;   // reused after QC, valued below fresh
-        price     0.80;               // EUR/kg -- AUTHOR-SET
-        costYear  2026;
-        provenance
-        {
-            origin  "author-set assumption (DEV.md 4c C97), not a market price";
-            method  "two thirds of the fresh-acetone price: recovered solvent, reused after testing";
+            origin  "docs/design/apalutamide-design-basis-dossier.md section 4.4 (derived from estimates): a generic at loss of exclusivity with 4 competitors, the originator's German ex-factory price (about 19.13 EUR/tablet, section 3.2) less the FDA's 79 % median cut (Conrad & Lutter, FDA 2019, section 3.4)";
+            method  "4.0 EUR per 60 mg tablet, NET EX-FACTORY, divided by the run's tablet mass (header); the 2-competitor end, 8.8 EUR, is the economic sensitivity in system/postDict";
         }
     }
 );
 rawMaterials
 (
-    { stream apiFeed;        price 10000;  costYear 2026;
-      provenance { origin "author-set assumption (DEV.md 4c C97), not a market price";
-                   method "round figure for a generic API; replace with a supplier quotation"; } }
+    { stream apiFeed;        price 7776;   costYear 2026;
+      provenance { origin "docs/design/apalutamide-design-basis-dossier.md section 3.5: Pharmaoffer, Apalutamide API price and transactions, average recorded price over the 12 months to 31 May 2026, 8 452 USD/kg (an aggregator; small pre-generic lots)";
+                   method "8 452 USD/kg x 0.92 EUR/USD (the case's usdToEur); a tonne-scale DMF-holder quotation was NOT found -- replace with one"; } }
     { stream hpmcasFeed;     price 60;     costYear 2026;
       provenance { origin "author-set assumption (DEV.md 4c C97), not a market price";
                    method "round figure for a pharmaceutical-grade polymer"; } }
@@ -82,15 +93,15 @@ rawMaterials
     { stream ccsExtraFeed;   price 15;     costYear 2026;
       provenance { origin "author-set assumption (DEV.md 4c C97), not a market price";
                    method "the same disintegrant, extragranular"; } }
-    { stream silicaFeed;     price 20;     costYear 2026;
+    { stream silicaIntraFeed; price 20;    costYear 2026;
       provenance { origin "author-set assumption (DEV.md 4c C97), not a market price";
                    method "round figure for colloidal silica"; } }
-    { stream mgstIntraFeed;  price 8;      costYear 2026;
+    { stream silicaExtraFeed; price 20;    costYear 2026;
       provenance { origin "author-set assumption (DEV.md 4c C97), not a market price";
-                   method "round figure for magnesium stearate"; } }
+                   method "the same silica, extragranular"; } }
     { stream mgstExtraFeed;  price 8;      costYear 2026;
       provenance { origin "author-set assumption (DEV.md 4c C97), not a market price";
-                   method "the same lubricant, extragranular"; } }
+                   method "round figure for magnesium stearate (all of it extragranular, the patent's split)"; } }
     { stream coatWater;      price 0.02;   costYear 2026;
       provenance { origin "author-set assumption (DEV.md 4c C97), not a market price";
                    method "round figure for purified water made on site"; } }

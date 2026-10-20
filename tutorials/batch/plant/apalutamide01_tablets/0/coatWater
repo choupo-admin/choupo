@@ -10,11 +10,11 @@
      componentMassFlows is the OVERALL material (all phases); a phases{} block, when present,
      is a decomposition that sums back to it exactly. ---*/
 
-//  Purified water of the coating suspension: 69.6 mg per tablet COATED (the 12 672 tablets/h the press accepts) -- AUTHOR-SET coat, see README section 2 (a 20 wt % solids suspension).
+//  Purified water of the coating suspension: 84.0 mg per tablet COATED (the 15 468.75 tablets/h the press accepts) -- a 20.0 wt % solids suspension, the patent's (PAT-HPMCAS Ex. 3.3: 17.997 g of Opadry II in 71.988 g of water; dossier section 1.4).
 
 componentMassFlows
 {
-    water                        0.8819712 kg/h;
+    water                        1.299375 kg/h;
 }
 
 T               298.15 K;

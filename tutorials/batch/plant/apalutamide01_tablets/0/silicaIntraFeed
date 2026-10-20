@@ -10,11 +10,11 @@
      componentMassFlows is the OVERALL material (all phases); a phases{} block, when present,
      is a decomposition that sums back to it exactly. ---*/
 
-//  Magnesium stearate, INTRAgranular (for the compactor): 2.5 mg per tablet PRESSED (12 800 tablets/h, the flowsheet basis) -- AUTHOR-SET formulation, see README section 2.  (0.032 kg/h.)
+//  Colloidal anhydrous silica, INTRAgranular (10/13 of 9.1 mg): 7 mg per tablet PRESSED (15 625 tablets/h, the flowsheet basis) -- PAT-HPMCAS Ex. 3.2 (US 12,303,493 B2), dossier section 1.4.  (0.109375 kg/h.)
 
 componentMolarFlows
 {
-    magnesiumStearate            5.412170619e-05 kmol/h;
+    colloidalSilica              0.001820368151 kmol/h;
 }
 
 T               298.15 K;
@@ -26,7 +26,7 @@ phases
     {
         componentMolarFlows
         {
-            magnesiumStearate        5.412170619e-05 kmol/h;
+            colloidalSilica          0.001820368151 kmol/h;
         }
     }
 }

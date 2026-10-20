@@ -15,8 +15,8 @@
 
 componentMolarFlows
 {
-    acetone    0.5840725151 kmol/h;
-    N2    10.15531161 kmol/h;
+    acetone    0.8747616573 kmol/h;
+    N2    15.20954501 kmol/h;
 }
 
 T               263.15 K;
