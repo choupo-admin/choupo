@@ -1631,10 +1631,69 @@ export function bootTool(): MethodToolId {
   return "mccabe";
 }
 
+/** Boot chapter from the URL: `&step=<chapter key>` (DEV.md 4c C113), read
+ *  only beside a tool the boot accepted.  The key is a chapter slug
+ *  (methods/chapters.ts), `limits`, `sources`, or `limits/<slug>`. */
+export function bootChapter(): string | null {
+  if (typeof window === "undefined") return null;
+  const q = new URLSearchParams(window.location.search);
+  const step = q.get("step");
+  return step && q.get("tool") === bootTool() ? step : null;
+}
+
 // ---- The selection (one home, two readers) ---------------------------------
 
 let activeTool: MethodToolId = bootTool();
 const listeners = new Set<() => void>();
+
+/* THE CHAPTER REQUEST (DEV.md 4c C113).  A Find hit, a `&step=` deep link or
+ * a "continue to" link asks for a tool AT a chapter.  The tool is lazy and
+ * its chapters exist only once it has rendered, so the request is HELD here
+ * until the chapter index (ChapterIndex.tsx) finds the heading and takes it.
+ * A sequence number makes two requests for the same chapter two requests. */
+let chapterRequest: { tool: MethodToolId; key: string; seq: number } | null =
+  (() => { const k = bootChapter(); return k ? { tool: activeTool, key: k, seq: 0 } : null; })();
+let chapterSeq = 0;
+
+export function getMethodChapterRequest(): typeof chapterRequest {
+  return chapterRequest;
+}
+
+/** The chapter index took the request (found the heading, or gave up). */
+export function clearMethodChapterRequest(seq: number): void {
+  if (chapterRequest && chapterRequest.seq === seq) {
+    chapterRequest = null;
+    for (const fn of listeners) fn();
+  }
+}
+
+/** Write the chapter the reader is now at into the address (`&step=`), or
+ *  drop it -- so the URL stays a bookmark of what is on screen. */
+export function setMethodChapterInUrl(key: string | null): void {
+  if (typeof window === "undefined"
+    || typeof window.history?.replaceState !== "function") return;
+  try {
+    const url = new URL(window.location.href);
+    if (key) url.searchParams.set("step", key);
+    else url.searchParams.delete("step");
+    window.history.replaceState(window.history.state, "", url.toString());
+  } catch { /* opaque URL / blocked history */ }
+}
+
+/** Open a tool AT a chapter (the Find, a deep link, a "continue to"). */
+export function openMethodToolAt(id: MethodToolId, chapterKey: string | null): void {
+  setActiveMethodTool(id);
+  if (chapterKey) {
+    chapterRequest = { tool: id, key: chapterKey, seq: ++chapterSeq };
+    setMethodChapterInUrl(chapterKey);
+    for (const fn of listeners) fn();
+  }
+}
+
+/** The pending chapter request as React state. */
+export function useMethodChapterRequest(): typeof chapterRequest {
+  return useSyncExternalStore(subscribe, getMethodChapterRequest, getMethodChapterRequest);
+}
 
 export function getActiveMethodTool(): MethodToolId {
   return activeTool;
@@ -1652,6 +1711,9 @@ function subscribe(fn: () => void): () => void {
  *  out-vote `tool=` on the next boot). */
 export function setActiveMethodTool(id: MethodToolId): void {
   activeTool = id;
+  // A plain tool switch carries no chapter: a pending request for another
+  // tool is dropped, and so is a `&step=` that described the previous page.
+  if (chapterRequest && chapterRequest.tool !== id) chapterRequest = null;
   if (typeof window !== "undefined"
     && typeof window.history?.replaceState === "function") {
     try {
@@ -1659,6 +1721,7 @@ export function setActiveMethodTool(id: MethodToolId): void {
       url.searchParams.set("workspace", "methods");
       url.searchParams.set("tool", id);
       url.searchParams.delete("explore");
+      url.searchParams.delete("step");
       window.history.replaceState(window.history.state, "", url.toString());
     } catch { /* opaque URL / blocked history — the selection alone is fine */ }
   }

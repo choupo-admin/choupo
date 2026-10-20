@@ -101,7 +101,7 @@ import {
 } from "@mantine/core";
 import { useDisclosure, useHotkeys } from "@mantine/hooks";
 import { notifications } from "@mantine/notifications";
-import { IconCheck, IconChevronDown } from "@tabler/icons-react";
+import { IconCheck, IconChevronDown, IconSearch } from "@tabler/icons-react";
 
 import { useStore, reopenLastCase, lastCaseLabel, hasCaseOpen, isIsolatedTab, type WorkspaceKey } from "../state/store.js";
 import {
@@ -115,6 +115,7 @@ import {
   METHOD_DISCIPLINES, METHOD_TOOLS, setActiveMethodTool, useActiveMethodTool,
   type MethodToolId,
 } from "./methods/registry.js";
+import { openEduToolsFind } from "./methods/EduToolsFind.js";
 import { OpenTutorialModal } from "./OpenTutorialModal.js";
 import { NewCaseModal } from "./NewCaseModal.js";
 import { DuplicateCaseModal } from "./DuplicateCaseModal.js";
@@ -1024,6 +1025,14 @@ function ToolMenu({ tool, px }: { tool: MethodToolId; px: number }) {
       shrink
       rightSection={<IconChevronDown size={12} stroke={2} />}
     >
+      {/* FIND (DEV.md 4c C113): the menu does not search (see above), so
+          the search that does -- every tool AND every chapter -- is its
+          first item.  The same dialog the Find button on the page opens. */}
+      <Menu.Item leftSection={<IconSearch size={14} />} onClick={openEduToolsFind}
+        title="Search every EduTool and every chapter of its lessons">
+        Find in EduTools…
+      </Menu.Item>
+      <Menu.Divider />
       {/* GROUPED BY DISCIPLINE (owner, 2026-08-30: 23 tools had outgrown a
           flat list).  The shelf labels and their order have ONE home,
           METHOD_DISCIPLINES in the registry; an empty shelf does not

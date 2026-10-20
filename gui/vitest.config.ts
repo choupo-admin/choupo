@@ -1,9 +1,10 @@
 import { defineConfig } from "vitest/config";
 import { localCataloguePlugin } from "./scripts/localCataloguePlugin.js";
 import { layoutViewerPlugin } from "./scripts/layoutViewerPlugin.js";
+import { eduToolLessonsPlugin } from "./scripts/eduToolLessonsPlugin.js";
 
 export default defineConfig({
-  plugins: [localCataloguePlugin(), layoutViewerPlugin()],
+  plugins: [localCataloguePlugin(), layoutViewerPlugin(), eduToolLessonsPlugin()],
   test: {
     include: ["tests/**/*.test.ts"],
     environment: "node",

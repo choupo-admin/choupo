@@ -76,7 +76,8 @@
 import { Box, Text, Title } from "@mantine/core";
 
 import { renderTex, splitInlineTex } from "./lessonTex.js";
-import { setActiveMethodTool, type MethodToolId } from "./registry.js";
+import { chapterSlug } from "./chapters.js";
+import { openMethodToolAt, type MethodToolId } from "./registry.js";
 
 /** One symbol, bound to the words it stands for.
  *
@@ -255,7 +256,8 @@ export function LessonStepView({ step }: { step: LessonStep }): JSX.Element {
               onClick={(e) => {
                 e.preventDefault();
                 const lt = step.leadsTo;
-                if (lt) setActiveMethodTool(lt.tool);
+                // AT the step it names (DEV.md 4c C113), not at the top.
+                if (lt) openMethodToolAt(lt.tool, chapterSlug(lt.stepTitle));
               }}>
               {step.leadsTo.toolLabel} — “{step.leadsTo.stepTitle}”
             </Text>
@@ -284,12 +286,14 @@ export function LessonLimits(
   { limits, title = "What this does not show" }:
   { limits: readonly LessonLimit[]; title?: string },
 ): JSX.Element {
+  // `data-lesson-limits` and the per-item anchor are how a Find hit on one
+  // limit, and the chapter index's "Limits" button, land here (chapters.ts).
   return (
-    <Box>
+    <Box data-lesson-limits="">
       <Title order={5}>{title}</Title>
       <Box mt={6}>
         {limits.map((l) => (
-          <Box key={l.id} mb={8}>
+          <Box key={l.id} mb={8} data-chapter-anchor={chapterSlug(l.title)}>
             <Text size="sm" fw={600}>{l.title}</Text>
             <Text size="sm" c="dimmed">{l.body}</Text>
           </Box>
