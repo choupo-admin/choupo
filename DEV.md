@@ -1291,6 +1291,38 @@ accepts today, and that is a policy call.
 > fire-water ring main and hydrants, bunds, escape routes, swept path, a
 > fillet running through an item.
 
+> **C117. THE CURATION WORKFLOW: AN LLM AUTHORS, THE EXPLORER SHOWS, THE
+> STUDENT DECIDES (Vitor, 2026-10-20: he had planned an interactive GUI for
+> entering data and fitting models, saw it is "muito boring", and that an
+> LLM in a terminal can author the dataset and the fit; the student then
+> uses the Explorer "como uma especie de ParaView" to see the data set and
+> the fits and decide.  His question: is a dataset attached to the
+> COMPOUND or to the BINARY data?).**  Measured: the pipeline already
+> exists as text-first tools -- `bin/choupo-thermoml` (locate/extract
+> measured VLE by InChIKey), `bin/choupo-curate` (evidence -> declared
+> partition -> fit -> held-out -> dossier, promoting nothing),
+> `choupoProps fitParameters` / `vaporPressureFit` / `heatCapacityFit` /
+> `estimateComponent` / `curationDossier` / `evidencePartition` /
+> `vleConsistency`, `bin/curate/promote-from-dossier`, promoted records
+> carrying evidence + verdict (C-2026-09-03), and the Explorer's inspector
+> drawing the dossier verdict (validated / NOT TESTED / no dossier).  The
+> GAP is the HOME of the evidence: every dataset lives inside a CASE
+> (`tutorials/props/curation/*/constant/experiments/*.dat`, with
+> `source measured; reviewStatus ...; article`), so the Explorer can show
+> evidence only where some case happens to carry it, and a pair is not a
+> first-class subject there (the inspector is component-centred).
+> Commander's answer, put to Vitor: a dataset is attached to WHAT IT
+> MEASURES -- a pure-property set (Psat, Cp, rho, ...) to the component, a
+> mixture set (VLE, LLE, gamma-inf, h^E) to the PAIR, a ternary to the
+> triple -- but as EVIDENCE beside the record, never inside it (the record
+> is the fitted DERIVATIVE; it points at its evidence by id, the arity
+> rule); proposed home `data/{standards,local}/evidence/{components,pairs}/
+> <subject>/<dataset>.dat`, the same file grammar the cases already use,
+> licence-clean sets in standards, the rest local; the Explorer gains the
+> PAIR as a subject and, for component or pair, an EVIDENCE view (points,
+> model curves overlaid, competing fits side by side, held-out verdict and
+> AAD) -- it draws and never fits.  Status: under discussion.
+
 > **C116. "EXPLORE" AND "PROPERTY SURFACES" ARE TWO DOORS TO ONE ROOM
 > (Vitor, 2026-10-20, back on the thermophysical layer: "temos o 'explore' e
 > o 'Property Surfaces' que acho que fazem a mesma coisa e so se cria
