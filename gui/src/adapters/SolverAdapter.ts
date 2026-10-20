@@ -35,6 +35,7 @@ License
 \*---------------------------------------------------------------------------*/
 
 import type { GmpBuilding } from "./buildingPayload.js";
+import type { BatchPlan } from "./batchPlanPayload.js";
 import type { CaseFiles } from "../case/types.js";
 import type { DynamicInstants } from "../case/dynamicInstants.js";
 
@@ -687,6 +688,11 @@ export interface RunResult {
    *  Absent unless the case declares one; the GUI draws it and computes
    *  nothing. */
   building?: GmpBuilding;
+  /** THE BATCH PLAN (DEV.md 4c C99): the `batchPlan {}` postDict pass's
+   *  trains, stages, findings and the first campaign's Gantt as data
+   *  (adapters/batchPlanPayload).  Absent unless the case declares one; the
+   *  GUI draws it (Reports, case/batchGantt) and computes nothing. */
+  batchPlan?: BatchPlan;
 }
 
 /** One hazardous-area zone envelope: a vertical cylinder about the item's

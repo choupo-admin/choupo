@@ -186,6 +186,14 @@ export const WITNESS_OUTPUTS: readonly WitnessOutput[] = [
     file: "converged/LetdownLiquid",
     readBy: ["letdown.test.ts"],
   },
+  //  The batch plan's Gantt chart (DEV.md 4c C99, C110 G5): the plan
+  //  apalutamide01's `batchPlan {}` pass writes beside the result JSON's
+  //  block, from the same records.
+  ...["trains.csv", "stages.csv", "gantt.csv"].map((f) => ({
+    caseDir: "tutorials/batch/plant/apalutamide01_tablets",
+    file: `reports/batchPlan/${f}`,
+    readBy: ["batchGantt.test.ts"],
+  })),
 ];
 
 /** What `witnessSetup.ts` found for each declared output, keyed by

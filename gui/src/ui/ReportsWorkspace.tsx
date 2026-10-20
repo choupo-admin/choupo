@@ -74,6 +74,7 @@ import { TornadoPlot } from "./plotting/TornadoPlot.js";
 import { layoutScene, type LayoutScene } from "../case/plantLayout.js";
 import { PlantLayout3D } from "./plotting/PlantLayout3D.js";
 import { GmpBuildingSection, useBuildingOverlay } from "./GmpBuildingSection.js";
+import { BatchPlanSection } from "./BatchPlanSection.js";
 import { PlantLayoutLegend, PlantLayoutTables } from "./PlantLayoutTables.js";
 import { popOutCaseLayout } from "../state/useLayoutPopOut.js";
 import { useStaleResult } from "../state/useStaleResult.js";
@@ -152,8 +153,10 @@ function ReportsBody({ runResult }: { runResult: RunResult }) {
     economics: !!econ,
     sensitivity: tornado !== null,
     layout: scene !== null,
+    batchPlan: !!runResult.batchPlan,
   };
   const sections = reportSections(facts);
+  const caseName = useStore((s) => s.tutorialName);
 
   const railHost = useMeasuredBoxWidth<HTMLDivElement>();
   const rail = usePanel(REPORTS_NAV_PANEL, { availablePx: railHost.width });
@@ -180,6 +183,8 @@ function ReportsBody({ runResult }: { runResult: RunResult }) {
     sensitivity: () => (tornado ? <SensitivityBody fig={tornado} /> : null),
     layout:     () => (scene && layout ? <LayoutBody layout={layout} scene={scene}
                                                     building={runResult.building} /> : null),
+    batchPlan:  () => (runResult.batchPlan
+      ? <BatchPlanSection plan={runResult.batchPlan} caseName={caseName} /> : null),
   };
 
   return (
