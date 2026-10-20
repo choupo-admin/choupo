@@ -1,7 +1,11 @@
 # Evidence as a first-class object: the dataset, the fit, the Explorer
 
 **Status: PROPOSED 2026-10-20 (DEV.md 4c C117), put to Vítor before any
-code.  Local tier first; promotion to `data/standards/` stays a human act.**
+code.  Local tier first; promotion to `data/standards/` stays a human act.
+CUT DOWN THE SAME DAY on Vítor's objection ("Achas que é preciso complicar
+tanto, se o LLM consegue trabalhar com menos?  Os humanos também se
+desenrascam!"): §7 is the minimal shape that meets the acceptance test; §2-§5
+stay as the full design that §7 can grow into, nothing in them is scheduled.**
 
 ## 1. The five conditions (Vítor, 2026-10-20) and where each lands
 
@@ -123,3 +127,33 @@ and ideal, with residuals -- without opening the curation case.
 or by InChIKey; (b) `licence` required on every dataset even in local
 (proposed: required, so a promotion never discovers it missing); (c) the
 private bundle on the hosted site (proposed: yes).
+
+## 7. The minimal shape (what is actually scheduled)
+
+What exists is enough for an LLM and a human; only the SHOWING is missing.
+
+- Files: ONE flat folder `data/local/evidence/` (and a tutorial's own
+  `constant/experiments/`), the dataset grammar UNCHANGED -- it already
+  carries the system, the citation, the DOI, the sha256, the uncertainties
+  and the units.  The filename is the id; a corrected transcription is a new
+  file; `licence` is asked for at PROMOTION, not before.  No `datasetId`,
+  `revision` or folder-per-subject keys.
+- Index: none.  The dev GUI's existing plugin that aggregates
+  `data/local/components` globs `data/local/evidence/*.dat` and
+  `data/local/parameters/**/*.dat` too; the GUI reads each file's own
+  header (it parses `.dat` already).  The hosted site shows the evidence the
+  bundled tutorials carry; a student with private data runs the dev GUI
+  (`bin/runGui`).  No private-bundle loader for now.
+- Engine: nothing, unless the scan cannot be evaluated AT the measured x
+  values (`propertyScan1D` takes `from/to/n` only, PropertyScan1D.cpp:73-78)
+  -- then the one addition is an explicit `points ( ... )` list, so the
+  residual is engine-minus-measurement at the measured condition and the GUI
+  only subtracts.
+- Explorer: the PAIR as a subject and an Evidence view -- datasets found by
+  the pair's two names, every parameter record of any tier a candidate,
+  curves and values at the measured points from `choupoProps`, residuals and
+  AAD shown, the dossier verdict where one exists.  URL as in §4.
+- Gate: a dataset must parse and carry `citation` and `sha256`; no more.
+
+Two stages: (1) the plugin glob and the methanol-water witness copied from
+curate04; (2) the Explorer view.  C116 (one Explore) after.

@@ -1321,7 +1321,15 @@ accepts today, and that is a policy call.
 > licence-clean sets in standards, the rest local; the Explorer gains the
 > PAIR as a subject and, for component or pair, an EVIDENCE view (points,
 > model curves overlaid, competing fits side by side, held-out verdict and
-> AAD) -- it draws and never fits.  Status: under discussion.
+> AAD) -- it draws and never fits.  Vitor's five conditions (identity/
+> source/units/conditions/uncertainty/version; role in the dossier not the
+> dataset; human-only promotion; residuals from the engine, no frontend
+> regression; private data) taken as the contract; full design in
+> `docs/design/evidence-as-a-first-class-object.md`, CUT DOWN the same day
+> to its section 7 on his objection to the complexity: flat local folder,
+> grammar unchanged, no index, no private bundle, one plugin glob, the
+> Explorer's pair subject and Evidence view, one gate arm.  Status:
+> minimal shape proposed.
 
 > **C116. "EXPLORE" AND "PROPERTY SURFACES" ARE TWO DOORS TO ONE ROOM
 > (Vitor, 2026-10-20, back on the thermophysical layer: "temos o 'explore' e
