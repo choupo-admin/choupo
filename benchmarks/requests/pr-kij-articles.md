@@ -108,3 +108,21 @@ prediction of petroleum fluid-phase behaviour", 37th JEEP,
 doi:10.1051/jeep/201100011 (gold open access; its site blocks automated
 download -- a browser fetches it).  Whichever arrives must be READ to
 confirm it tabulates the alkane groups' interactions with CO2, N2, H2S.
+
+## Received 2026-10-20, second batch -- case A is now covered
+
+- Jaubert, Privat, Mutelet (2010), AIChE J. 56:3225-3235,
+  doi:10.1002/aic.12232: its Table 1 is the PPR78 group-interaction table
+  for 15 groups -- CH3, CH2, CH, C, CH4, C2H6, CHaro, Caro, Cfused,
+  CH2cyclic, Ccyclic, CO2, N2, H2S, SH -- every pair Cavett's 15 components
+  need.  This is case A's ONE source.
+- Privat, Jaubert (2011), JEEP, doi:10.1051/jeep/201100011: licensed CC
+  BY-NC 3.0 -- NonCommercial, excluded by this project's data policy
+  (CLAUDE.md section 10).  Kept locally as a reader's cross-check only; no
+  value is taken from it.
+
+ONE COHERENT VERSION PER CASE: the 2017 E-PPR78 table UPDATED several
+parameters of the earlier versions (e.g. CH4-CO2: A = 137.3 MPa in 2010,
+136.57 MPa in 2017), so case A takes every group parameter from the 2010
+table and case D every one from the 2017 table; the two are never blended
+within a case.
