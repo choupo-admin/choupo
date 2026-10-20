@@ -2180,6 +2180,30 @@ plan, a GUI Gantt drawing.  Golden kind `batch`.  Gate: `check_batch_plan`.
 Record:
 [`docs/design/a-batch-plant-on-a-steady-balance.md`](docs/design/a-batch-plant-on-a-steady-balance.md).
 
+**SEVERAL PRODUCTS ON THE SAME STAGES (2026-10-20, DEV.md 4c C110 G2, on
+stated defaults).**  `products ( ... )` in place of `production {}` (both
+refuse), a REQUIRED `campaignOrder` (the student's decision; no optimiser)
+and a `productChangeover` on every stage make the `batchPlan` single-product
+campaigns run back to back in the declared order; a product changes at a
+stage only what is the product's, its balance is the flowsheet's ONE
+balance unless `massPerProduct` declares a stream's own (ANNOUNCED, because
+the economics prices every product on the one balance); a stage is sized
+for the product needing the most (`sizingProduct`); the clean before the
+next product REPLACES the same-product changeover; campaigns never overlap
+on a train.  One product through `products` IS the one-product plan (gate,
+1e-9).  Gate `check_batch_plan` (h)-(l); record section 6 of
+`docs/design/a-batch-plant-on-a-steady-balance.md`.
+
+**A PHASE SPLIT SCANNED ALONG T OR P IS ONE FLASH PER POINT (2026-10-20,
+DEV.md 4c C118).**  The `phaseSplitScan` props op calls
+`IsothermalFlash::solveCore` at every grid point with the unit's own
+`readOptions` and writes no equilibrium of its own; a single-point scan
+reproduces flash21/16/19's goldens; a refused point is published by name
+and the scan continues, nothing substituted.  An op's own top-level result
+block goes through `PropertyOperation::resultBlock()`.  Gate
+`check_phase_split_scan`; record
+`docs/design/a-phase-split-scan-along-t-or-p.md`.
+
 **A RELIEF VALVE IS A SIZED ITEM OF THE UNIT IT PROTECTS (2026-10-11, DEV.md
 4c C62, on a stated default).**  `type reliefValve` in the sizing pass: one
 more item (`psv`) of the PROTECTED unit, declared AFTER that unit's entry,

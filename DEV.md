@@ -1313,7 +1313,14 @@ accepts today, and that is a policy call.
 > simplicity is its narrow range and the +/-20-30 % design tolerance.  The
 > Churchill-Usagi blending of asymptotes is where the three meet in a
 > design formula.  PEDAGOGICAL SCOPE PUT TO VITOR before dispatch (page
-> list, examples, whether measured data enters); not dispatched.
+> list, examples, whether measured data enters).  APPROVED 2026-10-20
+> ("Avanca com as cinco paginas, dados sinteticos, atrito e Nusselt"):
+> five pages (dimensional analysis; what Pi gives and does not; asymptotic
+> regimes and similarity; master/slave -- Haken's two-variable model, then
+> the boundary layer; correlations in practice -- the drifting local
+> exponent, Churchill-Usagi, the transition zone), the engine's own
+> correlations as SYNTHETIC truth said so on screen, friction and Nusselt
+> only.  Dispatched (G20).
 
 > **C118. A PHASE-SPLIT SCAN IN THE EXPLORER: V / L1 / L2 / S1 / S2 AND pH
 > ALONG T OR P (Vitor, 2026-10-20: "uma tool de execucao em que posso mexer
@@ -1345,6 +1352,19 @@ accepts today, and that is a policy call.
 > amounts and pH against T, the phase boundaries marked) AFTER G18 lands,
 > because both touch `ExploreWorkspace.tsx`; (3) excipient records by
 > curation.
+> **Stage 1 BUILT 2026-10-20 (G19, merged via integ/wave2):** `phaseSplitScan`
+> -- one `IsothermalFlash::solveCore` per T or P grid point at a fixed feed,
+> the phase set read by the unit's own `readOptions`; amounts of V / L1 / L2
+> / each named solid, compositions, pH and species where speciated,
+> appearance / disappearance events, refused points published by name with
+> no fallback; CSV + a `phaseSplitScans` block (new `PropertyOperation::
+> resultBlock()`); no new golden kind (every number is a csv cell or a
+> diag).  Witness `props/thermo/phaseSplit01_freeze_water_ethanol`
+> (flash21's records; ice appears between 265.15 and 264.15 K; the 258.15 K
+> point is flash21's answer).  Gate `check_phase_split_scan` (8 arms, 4
+> sabotages).  Record `docs/design/a-phase-split-scan-along-t-or-p.md`.
+> Stage 2 (the lens) reads the block, after G18; stage 3 (excipient
+> records) still open.
 
 > **C117. THE CURATION WORKFLOW: AN LLM AUTHORS, THE EXPLORER SHOWS, THE
 > STUDENT DECIDES (Vitor, 2026-10-20: he had planned an interactive GUI for
@@ -1579,6 +1599,23 @@ accepts today, and that is a policy call.
 > purified water by RO + EDI; utility tariffs; layout extensions (pipe
 > pressure drop and cost, fire water, bunds, escape routes, nozzles).
 > Status: wave 1 dispatched 2026-10-20.
+> **G2 DONE 2026-10-20 (merged via integ/wave2):** `products ( ... )` +
+> `campaignOrder` + per-stage `productChangeover` make `batchPlan` a
+> multiproduct plant in single-product campaigns (per product its demand,
+> lot, balance -- the flowsheet's unless `massPerProduct`, announced --
+> time / density / fill overrides and `changeoverTo { <next> }`); each stage
+> sized for the product needing the most (`sizingProduct`); the year per
+> train = campaigns back to back in the declared order, the clean before
+> the next product REPLACING the same-product changeover; an impossible year
+> refused with each product's share, a poor plan announced; the year's
+> Gantt with kinds; the `batch` kind pins every new record.  Stated
+> defaults (record section 6): one rotation a year, no overlapping
+> campaigns, the order mattering only through `changeoverTo`.  No tutorial:
+> a three-product in-gate probe (arms (h)-(l), 20 refusals, sabotages
+> S6-S11, one of which survived an arm that compared recomputations instead
+> of the published year).  apalutamide01 byte-identical, 0 golden rows
+> moved.  NOT built: overlapping campaigns, rotations, an order optimiser,
+> the intermediate store.
 
 > **C109. AN EDUTOOL ON SYNTHESIS GAS (Vitor, 2026-10-19, after asking why
 > syngas is so widely used and which other synthesis gases are famous: "Podes
@@ -1773,6 +1810,24 @@ accepts today, and that is a policy call.
 > dosage forms and what Choupo should provide are Vitor's to state.  No new
 > case without his explicit ruling (the standing rule; C97 was the
 > exception for apalutamide only).
+> **BUILT 2026-10-20 (G3, merged via integ/wave2):**
+> `tutorials/batch/plant/donepezil01_tablets`, on C110's stated defaults --
+> API bought, WET GRANULATION (aqueous HPC binder, high-shear granulator
+> placeholder, fluid-bed drying as `solidDryer` on the maize starch's GAB
+> isotherm, milling, final blend, press, aqueous HPMC coat dried by hot
+> air, packaging), the simpler sibling of apalutamide01 (no spray drying,
+> solvent, N2 loop or ATEX; nothing outdoors; two gates).  Read from the
+> reference product's UK SmPCs (ARICEPT 10 mg / 5 mg, cited by title): the
+> strengths (10 mg HCl = 9.12 mg base; 5 mg), the lactose (174.33 / 87.17 mg
+> -- dose-proportional, one blend), the excipient and coat lists; no EPAR
+> exists.  Production (150 M tablets/yr) and price (0.10 EUR/tablet) are
+> DECLARED author-set assumptions.  `batchPlan`: 300 kg lots, 143/yr,
+> granulation limited by the fluid bed and 29 % occupied (the lesson of a
+> dedicated line for one strength), tableting by packaging; NPV -18.6 MEUR
+> on placeholders, explained.  ONE product: the 5 mg strength is now
+> possible with G2's `products ( ... )` (next).  Blend content uniformity
+> stated as the group's question, not computed.  No engine change; golden
+> recorded new (862 rows, nothing moved).
 
 > **C103. A 2D GMP FLOOR PLAN A STUDENT CAN HAND IN (Vitor, 2026-10-19,
 > after reading the Atozet student project, whose production area is drawn
