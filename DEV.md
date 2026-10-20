@@ -1359,8 +1359,11 @@ accepts today, and that is a policy call.
 > full plant; findings on their side: a 184.7 K distillate for 98.9 %
 > methanol at 1 atm, a 100.004 % exchanger efficiency, one adsorption
 > constant spelled two ways), E optional steam-reforming PFR.  Decision 1
-> (Vitor): PR kij from primary sources where they exist, otherwise zero
-> with the difference measured.  Decisions 2-4 (B's case-local notValidated
+> (Vitor, clarified): PR kij from PRIMARY sources only -- "Tiramos de
+> fontes primarias.  Pedes os artigos cientificos e eu arranjo-tos": the
+> commander lists the articles (pair, full citation, DOI), Vitor obtains
+> them, and a pair stays at zero only where the list shows it can, with the
+> reason (phase 1b, G24).  Decisions 2-4 (B's case-local notValidated
 > pair; an LLE pair for C if UNIFAC does not split; D's outlet-temperature
 > PFR mode) put to Vitor.
 
