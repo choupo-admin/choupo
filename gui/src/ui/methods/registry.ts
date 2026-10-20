@@ -1144,6 +1144,10 @@ export const METHOD_TOOLS: MethodTool[] = [
       + "its neighbours until the meter is taken out of service; and finally "
       + "add yesterday's estimate as a prior and see what the posterior "
       + "covariance says the redundancy and the prior buy in precision.",
+    //  No chapter of the Theory Guide treats reconciliation yet; Help opens
+    //  the active-set QP section, the solver every answer on the page comes
+    //  from (the reconciler hands its weighted least squares to it).
+    theory: "ch:active-set-qp",
   },
   //  THE THREE NUMERICS PAGES (2026-09-12, Vitor: "falta o EduTools sobre
   //  como escolher Tear Streams.  E sobre o metodo de usar o Wegstein para
