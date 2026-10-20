@@ -31,6 +31,10 @@
     * the numbers the page's prose and the registry line state, recomputed
       from the goldens (the hand estimate of the flash, the volume ratio,
       the pressure ratio of 70, the valve closing on the report's surface);
+    * the liquid density the page states (C112 item 7): both witnesses on
+      the catalogue's 25 C Vliq, the engine's Rackett density at the
+      boiling point within half a per cent of the record's own reference
+      value, and the retired "an eighth too high" limit kept out;
     * the drawings, rendered on the shipped numbers, with no NaN and an
       aria-label each;
     * the C70 review (2026-10-12): the gas cap x_eff, step 10's choke
@@ -317,6 +321,57 @@ describe("letdown: the numbers the prose states, recomputed from the goldens", (
   });
 });
 
+describe("letdown: the liquid density the page states (C112 item 7)", () => {
+  //  Until 2026-10-20 the witnesses carried a sealed copy of the NH3 record
+  //  whose Vliq was the molar volume at the NORMAL BOILING POINT, which the
+  //  engine anchors at 25 C, so every liquid density on the page was about
+  //  an eighth high and a limit said so.  Both witnesses were re-imported
+  //  from the corrected catalogue record; these tests hold the page to the
+  //  record it now runs on, and fail the day a witness goes back to an
+  //  older copy.
+  const nh3Of = (caseDir: string): string =>
+    tutorialByName(caseDir)!.files.rawFiles!["constant/components/NH3.dat"]!;
+  const catalogue = tree("data/standards/components/NH3.dat");
+  it("both witnesses carry the catalogue record's 25 °C Vliq", () => {
+    for (const c of [LETDOWN_WITNESS, LETDOWN_PROPS])
+      expect(scalar(nh3Of(c), "Vliq"), c).toBe(scalar(catalogue, "Vliq"));
+    //  and the record's Vliq IS the 25 C saturated liquid its provenance
+    //  cites (602.96 kg/m3 from the reference equation of state)
+    const nh3 = nh3Of(LETDOWN_WITNESS);
+    const rho25 = scalar(nh3, "MW") / 1000 / scalar(nh3, "Vliq");
+    expect(nh3).toContain("602.96 kg/m3");
+    expect(rel(rho25, 602.96)).toBeLessThan(1e-4);
+  });
+  it("the engine's density at the normal boiling point is within half a per cent of the record's own reference value", () => {
+    //  The engine's rule (src/thermo/ThermoPackage.cpp, ThermoPackage::
+    //  density): V(T) = Vliq Rackett(T)/Rackett(298.15 K), Rackett with
+    //  Z_RA = 0.29056 - 0.08775 omega (src/thermo/DerivedClosures.H).  The
+    //  record's Vliq provenance note gives the reference equation of state's
+    //  681.65 kg/m3 at 239.82 K; the old boiling-point Vliq gave +12.5 %.
+    const nh3 = nh3Of(LETDOWN_WITNESS);
+    const Tc = scalar(nh3, "Tc"), w = scalar(nh3, "omega");
+    const Zra = 0.29056 - 0.08775 * w;
+    const rack = (T: number) => Zra ** ((1 - T / Tc) ** (2 / 7));
+    const rhoAt = (T: number) =>
+      scalar(nh3, "MW") / 1000 / (scalar(nh3, "Vliq") * rack(T) / rack(298.15));
+    expect(nh3).toContain("681.65 kg/m3 at 239.82 K");
+    expect(rel(rhoAt(239.82), 681.65)).toBeLessThan(0.005);
+    //  the limit says so, and no longer says the page carries an error
+    const lim = LETDOWN_LIMITS.find((l) => l.id === "density")!;
+    expect(lim.body).toContain("within half a per cent");
+    expect(lim.body).toMatch(/no pressure term/);
+    for (const l of LETDOWN_LIMITS)
+      expect(l.body, l.id).not.toMatch(/eighth|too high|old value|re-imported|still carry/);
+  });
+  it("the CoolProp source promises what the limit reports: density AND vapour pressure", () => {
+    const lim = LETDOWN_LIMITS.find((l) => l.id === "density")!.body;
+    expect(LETDOWN_SOURCES.find((s) => s.id === "coolprop")!.used)
+      .toMatch(/enters no number/);
+    expect(lim).toMatch(/density/);
+    expect(lim).toMatch(/vapour pressure/);
+  });
+});
+
 describe("letdown: the drawings render on the shipped numbers", () => {
   const svgs = [
     createElement(ValveProfileDrawing, { P1: 20e5, P2: 1.01325e5, Pvc: -0.4e5, Pv: 1.894e5 }),
@@ -329,7 +384,7 @@ describe("letdown: the drawings render on the shipped numbers", () => {
     createElement(TrimsDrawing),
     createElement(InstallationDrawing),
     createElement(SeriesDrawing),
-    createElement(RecoveryDrawing, { P_kW: 222.5, eta: 0.75 }),
+    createElement(RecoveryDrawing, { P_kW: 251.3, eta: 0.75 }),
     createElement(BubbleCollapseDrawing),
   ];
   it("eight drawings (ten renders), each an SVG with an aria-label and no NaN", () => {
@@ -342,12 +397,18 @@ describe("letdown: the drawings render on the shipped numbers", () => {
     }
   });
   it("a valve dissipates its hydraulic power, it does not make heat of it (C70)", () => {
-    //  the first throttle's Q1 (P1 - P2), from the goldens: 222 kW
+    //  the first throttle's Q1 (P1 - P2), from the goldens.  The number is
+    //  the engine's and is not written into this test: Q1 follows the
+    //  liquid density, which moved when the witness's NH3 record was
+    //  re-imported (DEV.md 4c C112 item 7: 222 kW on the boiling-point Vliq,
+    //  251 kW on the 25 C one).  What is held is that the drawing prints the
+    //  engine's power, and that it is a few hundred kilowatts.
     const P_kW = golden(LETDOWN_WITNESS, "kpi", "ValveHP", "Q_in")
       * golden(LETDOWN_WITNESS, "kpi", "ValveHP", "dP") / 1000;
-    expect(Math.round(P_kW)).toBe(222);
+    expect(P_kW).toBeGreaterThan(200);
+    expect(P_kW).toBeLessThan(300);
     const html = renderToStaticMarkup(createElement(RecoveryDrawing, { P_kW, eta: 0.75 }));
-    expect(html).toContain("222 kW hydraulic power dissipated");
+    expect(html).toContain(`${P_kW.toFixed(0)} kW hydraulic power dissipated`);
     expect(html).not.toMatch(/>heat /);
   });
 });
