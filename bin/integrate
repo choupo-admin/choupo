@@ -293,7 +293,11 @@ def prepare_worktree(repo: Path, wt: Path, slug: str, base_sha: str,
     if dirty:
         say(f"[{stamp()}] --discard: dropping uncommitted changes in {wt}")
         git(wt, "reset", "--quiet", "--hard")
-    mine = git(wt, "rev-list", "HEAD", "--not", "--remotes")
+    #  What a reset would LOSE: commits on HEAD that no remote ref, no other
+    #  local branch or tag, and not the new base still reaches.
+    own = git(wt, "rev-parse", "--abbrev-ref", "HEAD")
+    mine = git(wt, "rev-list", "HEAD", "--not", base_sha, "--remotes",
+               "--tags", f"--exclude=refs/heads/{own}", "--branches")
     foreign = []
     for c in (mine or "").split():
         msg = git(wt, "log", "-1", "--format=%B", c)
