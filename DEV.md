@@ -1291,6 +1291,81 @@ accepts today, and that is a policy call.
 > fire-water ring main and hydrants, bunds, escape routes, swept path, a
 > fillet running through an item.
 
+> **C117. THE CURATION WORKFLOW: AN LLM AUTHORS, THE EXPLORER SHOWS, THE
+> STUDENT DECIDES (Vitor, 2026-10-20: he had planned an interactive GUI for
+> entering data and fitting models, saw it is "muito boring", and that an
+> LLM in a terminal can author the dataset and the fit; the student then
+> uses the Explorer "como uma especie de ParaView" to see the data set and
+> the fits and decide.  His question: is a dataset attached to the
+> COMPOUND or to the BINARY data?).**  Measured: the pipeline already
+> exists as text-first tools -- `bin/choupo-thermoml` (locate/extract
+> measured VLE by InChIKey), `bin/choupo-curate` (evidence -> declared
+> partition -> fit -> held-out -> dossier, promoting nothing),
+> `choupoProps fitParameters` / `vaporPressureFit` / `heatCapacityFit` /
+> `estimateComponent` / `curationDossier` / `evidencePartition` /
+> `vleConsistency`, `bin/curate/promote-from-dossier`, promoted records
+> carrying evidence + verdict (C-2026-09-03), and the Explorer's inspector
+> drawing the dossier verdict (validated / NOT TESTED / no dossier).  The
+> GAP is the HOME of the evidence: every dataset lives inside a CASE
+> (`tutorials/props/curation/*/constant/experiments/*.dat`, with
+> `source measured; reviewStatus ...; article`), so the Explorer can show
+> evidence only where some case happens to carry it, and a pair is not a
+> first-class subject there (the inspector is component-centred).
+> Commander's answer, put to Vitor: a dataset is attached to WHAT IT
+> MEASURES -- a pure-property set (Psat, Cp, rho, ...) to the component, a
+> mixture set (VLE, LLE, gamma-inf, h^E) to the PAIR, a ternary to the
+> triple -- but as EVIDENCE beside the record, never inside it (the record
+> is the fitted DERIVATIVE; it points at its evidence by id, the arity
+> rule); proposed home `data/{standards,local}/evidence/{components,pairs}/
+> <subject>/<dataset>.dat`, the same file grammar the cases already use,
+> licence-clean sets in standards, the rest local; the Explorer gains the
+> PAIR as a subject and, for component or pair, an EVIDENCE view (points,
+> model curves overlaid, competing fits side by side, held-out verdict and
+> AAD) -- it draws and never fits.  Status: under discussion.
+
+> **C116. "EXPLORE" AND "PROPERTY SURFACES" ARE TWO DOORS TO ONE ROOM
+> (Vitor, 2026-10-20, back on the thermophysical layer: "temos o 'explore' e
+> o 'Property Surfaces' que acho que fazem a mesma coisa e so se cria
+> confusao por se ter dois").**  Measured: `?workspace=explore` opens
+> `gui/src/ui/CompoundCatalogue.tsx` (234 lines: `CompoundBrowser` rail +
+> `ComponentInspector` wide + `EstimateForm` + ONE button that hands the set
+> to the surfaces as a URL); `?workspace=properties` opens
+> `gui/src/ui/ExploreWorkspace.tsx` (2370 lines: the SAME `CompoundBrowser`
+> as its rail, the SAME `ComponentInspector` popped open, the SAME
+> `EstimateForm`, plus every lens -- T-x-y, gamma, Psat, LLE, ternary, Gibbs
+> maps, Bjerrum, steam, transport, pure phase diagrams).  So the catalogue
+> tab's only act the surfaces tab lacks is a wider inspector and a link; the
+> three components are mounted TWICE; and the labels are inverted against
+> the keys (label "Explore" = key `compounds`; label "Property surfaces" =
+> key `explore`), which the code's own comments record as having sent an
+> audit to the wrong URL.  The split was Vitor's ruling of 2026-09-03 (the
+> rail was the wrong shape for a family tree), so reversing it is his.
+> Commander's verdict: he is right today; proposal put to him -- ONE door,
+> "Explore", one tab with two VIEWS of one selected set (Catalogue: browse,
+> read, estimate; Surfaces: plot), switched in place, the set and the view
+> in the URL (`?workspace=explore&components=...&view=surfaces`), the
+> surfaces still reachable with an empty set (no wizard), `?workspace=
+> properties` kept as a redirect for bookmarks, the inspector mounted ONCE.
+> The in-case `Props` workspace (`PropsView.tsx`, 1531 lines: thermo
+> readiness and model-vs-lab-data comparison for THE OPEN CASE) is a
+> different question and stays.  Status: proposed, awaiting Vitor.
+
+> **C115. THE UNIT BEING SOLVED PULSES WHEN A RUN IS SLOW (Vitor,
+> 2026-10-20: "ha casos em que a simulacao fica lenta ... a operacao
+> unitaria em que esta a ser feito o calculo ficasse com a cor a pulsar (se
+> demorasse mais de 1 s)").**  Commander's verdict: agree.  Measured: the
+> worker posts every stdout line live (`gui/public/workers/solverWorker.js:
+> 186`, Emscripten `print`), and the engine prints a banner before every
+> unit it solves (`>>>  Unit [k]:  <name>   (type = <T>)`), which
+> `gui/src/ui/LogWorkspace.tsx:81` already parses -- so the GUI can know the
+> unit in progress without any engine change.  Stated defaults: the banner
+> parser becomes ONE shared helper (LogWorkspace and the canvas read it);
+> after 1 s on the same unit its node gets a PULSING OUTLINE/halo, never a
+> repaint of the phase colour (gui-credo: phase colour is semantic), with
+> the elapsed seconds; a recycle pass that revisits a unit moves the pulse;
+> prefers-reduced-motion gets a static highlight; it stops when the run
+> ends or fails.  Dispatched 2026-10-20 (G17), after G16 on shared files.
+
 > **C114. A FLOWSHEET VIEWER STUDENTS LOVE, "TIPO PARAVIEW" (Vitor,
 > 2026-10-20: "ve como podes tornar o visualizador do flowsheet mais tipo
 > 'paraview'!  Nos podemos escolher cores para T e P, mas eventualmente
@@ -1324,8 +1399,8 @@ accepts today, and that is a policy call.
 > possible, the index DERIVED from the lessons, the lazy loading of tools
 > preserved; a compact collapsible chapter index inside long EduTools,
 > desktop and phone; no search library, no server, no second catalogue, no
-> engine change; tests listed).  Measured: `gui/src/ui/OpenTutorialModal.
-> tsx:349-352` double-click calls `setSelected(t.name)` then `openSelected()`
+> engine change; tests listed).  Measured: `gui/src/ui/OpenTutorialModal.tsx:349-352`
+> double-click calls `setSelected(t.name)` then `openSelected()`
 > in the same handler, so it can open the PREVIOUS selection (React state
 > is not updated yet) -- the brief's suspicion is right; `TutorialEntry`
 > carries `readme` (`gui/src/cases/tutorials.ts:207-209`); `registry.ts`
