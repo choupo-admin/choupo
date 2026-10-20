@@ -86,3 +86,25 @@ Minimum to obtain for route P: items 1-5 (case A) and 11-13 + 16-18 (case D);
     doi:10.1006/jcat.1996.0156
 21. Methane steam reforming, methanation and water-gas shift (case E) --
     Xu, Froment (1989), AIChE J. 35(1):88-96, doi:10.1002/aic.690350109
+
+## Received 2026-10-20 (in data/local/papers/, never committed) and what they cover
+
+- Xu, Lasala, Privat, Jaubert (2017), doi:10.1016/j.ijggc.2016.11.015: its
+  Table 3 holds the E-PPR78 group-interaction parameters among CH4, CO2, N2,
+  H2S, H2O, H2, CO, Ar, SO2, O2, NO, COS, NH3, NO2/N2O4 and N2O -- case D's
+  gas and water pairs.  It does NOT carry the alkane groups (CH3, CH2, CH,
+  C, C2H6, ...), which "have already been defined ... in our previous
+  works": case A (Cavett) still needs them.
+- Vanden Bussche, Froment (1996) and Xu, Froment (1989): the kinetics of D
+  and E.
+- Brunner et al. (1987): measured VLE of H2, N2, CH4, CO, CO2 with methanol,
+  for Choupo's own regression of the methanol pairs.
+
+Still needed for case A, ONE of: Jaubert, Privat, Mutelet (2010), "Predicting
+the phase equilibria of synthetic petroleum fluids with the PPR78 approach",
+AIChE J. 56:3225-3235, doi:10.1002/aic.12232 (closed); or the open-access
+review Privat, Jaubert (2011), "PPR78, a thermodynamic model for the
+prediction of petroleum fluid-phase behaviour", 37th JEEP,
+doi:10.1051/jeep/201100011 (gold open access; its site blocks automated
+download -- a browser fetches it).  Whichever arrives must be READ to
+confirm it tabulates the alkane groups' interactions with CO2, N2, H2S.
