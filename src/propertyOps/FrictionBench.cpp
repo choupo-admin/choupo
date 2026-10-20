@@ -28,11 +28,14 @@ License
 \*---------------------------------------------------------------------------*/
 
 #include "FrictionBench.H"
+#include "ReynoldsSweep.H"
 
 #include "unitOperations/hydraulics/friction/FrictionFactorCorrelation.H"
 
 #include <algorithm>
 #include <cmath>
+#include <fstream>
+#include <memory>
 #include <iomanip>
 #include <iostream>
 #include <sstream>
@@ -164,6 +167,79 @@ int FrictionBench::run(const DictPtr& dict,
         os << "  The bench does NOT say which is right: that depends on the"
               " pipe, and\n  ranking them here would hide the choice the"
               " engineer has to make.\n";
+    }
+    // -----------------------------------------------------------------
+    //  THE SWEEP -- optional (2026-10-20, DEV.md 4c C119).
+    //
+    //  Every correlation on one logarithmic grid of Re, at each declared
+    //  relative roughness, written as one CSV row per (eps/D, Re) with each
+    //  correlation's f and whether that point lies inside its own window.
+    //  It is the engine's own answer at every point, so a page that draws a
+    //  Moody plane, a local log-slope or a power-law fit from it is drawing
+    //  the correlations the pipe unit uses, not a re-typed copy of them.
+    //
+    //  Churchill's TWO ASYMPTOTES ride beside its f (`fL_Churchill`,
+    //  `fT_Churchill`, from `churchillAsymptotes`): the single expression is
+    //  the Churchill-Usagi blend (fL^12 + fT^12)^(1/12) of them, and a reader
+    //  can only check that if both pieces are published.
+    // -----------------------------------------------------------------
+    if (dict->found("sweep"))
+    {
+        auto sw = dict->subDict("sweep");
+        const auto grid = correlationSweep::readReynoldsGrid(sw, "frictionBench");
+        const std::vector<scalar> rough = sw->lookupList("relRough");
+        if (rough.empty())
+            throw std::runtime_error("frictionBench: sweep.relRough must list at"
+                " least one relative roughness, e.g. relRough ( 0 1e-3 );");
+        for (scalar e : rough)
+            if (!(e >= 0.0))
+                throw std::runtime_error("frictionBench: sweep.relRough holds a"
+                    " negative value -- a relative roughness is eps/D >= 0.");
+
+        const auto names = FrictionFactorCorrelation::availableTypes();
+        std::vector<std::unique_ptr<FrictionFactorCorrelation>> corrs;
+        for (const auto& n : names) corrs.push_back(FrictionFactorCorrelation::New(n));
+
+        std::ofstream csv(grid.file);
+        if (!csv)
+            throw std::runtime_error("frictionBench: cannot write the sweep CSV '"
+                + grid.file + "'.");
+        csv << "relRough,Re,regime";
+        for (const auto& n : names) csv << ",f_" << n << ",in_" << n;
+        csv << ",fL_Churchill,fT_Churchill\n";
+        csv << std::setprecision(17);
+
+        std::size_t rows = 0;
+        for (scalar e : rough)
+            for (scalar Re : grid.Re)
+            {
+                FrictionContext c;
+                c.Re = Re;
+                c.relRough = e;
+                std::string regime;
+                std::ostringstream cols;
+                cols << std::setprecision(17);
+                for (const auto& corr : corrs)
+                {
+                    const auto r = corr->evaluate(c);
+                    regime = r.regime;
+                    cols << "," << r.f << "," << (r.inValidity ? 1 : 0);
+                }
+                const auto a = churchillAsymptotes(c);
+                csv << e << "," << Re << "," << regime << cols.str()
+                    << "," << a.fLaminar << "," << a.fTurbulent << "\n";
+                ++rows;
+            }
+        diag_["sweep_rows"] = scalar(rows);
+
+        os << "\n  ---- the sweep ----\n"
+           << "  " << names.size() << " correlations x " << rough.size()
+           << " roughness(es) x " << grid.Re.size() << " Reynolds numbers ("
+           << std::scientific << std::setprecision(3) << grid.Re.front()
+           << " .. " << grid.Re.back() << ") -> " << grid.file << "\n"
+           << "  Each row is the correlations' OWN answer and its window flag;"
+              " below Re = 2300\n  Blasius, Colebrook and Haaland substitute the"
+              " exact laminar law, as at the\n  comparison point.\n";
     }
     os << "=========================================\n\n";
 

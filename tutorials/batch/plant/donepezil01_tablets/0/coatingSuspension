@@ -6,27 +6,44 @@
 |       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
 |        |     O ptimization  |                                               |
 \*-----------------------------------------------------------------------------*/
-/*--- Choupo stream state.  Every DIMENSIONAL value carries its unit; the parser converts to SI.
-     componentMassFlows is the OVERALL material (all phases); a phases{} block, when present,
-     is a decomposition that sums back to it exactly. ---*/
+//  An ESTIMATE, not an input: the converged base case, so that a reader of
+//  0/ sees the plant's state.  The solver recomputes this stream.
 
-//  Colloidal anhydrous silica: 5 mg per tablet PRESSED (12 800 tablets/h, the flowsheet basis) -- AUTHOR-SET formulation, see README section 2.  (0.064 kg/h.)
+/*--- Choupo stream state.  Every DIMENSIONAL value carries its unit; the parser converts to SI.
+     componentMolarFlows is the OVERALL material (all phases); a phases{} block, when present,
+     is a decomposition that sums back to it exactly. ---*/
 
 componentMolarFlows
 {
-    colloidalSilica              0.001065175421 kmol/h;
+    water    2.437328893 kmol/h;
+    hypromellose    0.003592512 kmol/h;
+    polyethyleneGlycol    0.0101937212 kmol/h;
+    talcPowder    0.001026182108 kmol/h;
+    titaniumDioxide    0.01874262819 kmol/h;
+    yellowIronOxide    0.0006738832427 kmol/h;
 }
 
 T               298.15 K;
-P               1.01325 bar;
+P               101325 Pa;
 
 phases
 {
+    liquid
+    {
+        componentMolarFlows
+        {
+            water    2.437328893 kmol/h;
+        }
+    }
     solid
     {
         componentMolarFlows
         {
-            colloidalSilica          0.001065175421 kmol/h;
+            hypromellose    0.003592512 kmol/h;
+            polyethyleneGlycol    0.0101937212 kmol/h;
+            talcPowder    0.001026182108 kmol/h;
+            titaniumDioxide    0.01874262819 kmol/h;
+            yellowIronOxide    0.0006738832427 kmol/h;
         }
     }
 }

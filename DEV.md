@@ -1291,6 +1291,419 @@ accepts today, and that is a policy call.
 > fire-water ring main and hydrants, bunds, escape routes, swept path, a
 > fillet running through an item.
 
+> **C120. SESSION HANDOFF -- THE CONTAINER'S DISK FAILED (2026-10-20, Vitor:
+> "Sim, segue esse plano").**  The machine of the 2026-10-20 session logged
+> ~1260 kernel read errors; ~12 800 tracked files of its primary checkout
+> became unreadable and the SHARED object store's pack
+> (`pack-904c68bb...`) reads only 22.7 of 58.7 MB, so pushes from its
+> worktrees died in pack-objects.  Work was wrapped up and EVERYTHING is on
+> origin; a new session starts on a fresh machine from this list.  Order of
+> work for the next session (first item first):
+>
+> 1. **DONE 2026-10-20 on the fresh machine (main b9c034a9, published).**
+>    **`integ/wave2` (52488de47) -- merge after validation.**  It is main +
+>    G2 (C110 multiproduct batch plan, `d427793f1`) + G3 (C104 donepezil,
+>    `7541c39ba`) + G19 (C118 stage 1 phaseSplitScan, `8a3a47f15`), the
+>    catalogue / gateManifest conflicts resolved by keeping both sides, the
+>    DEV.md notes for C104 / C110 G2 / C118 / C119 and the CLAUDE.md
+>    paragraphs written, and C114's quoted simulator names elided
+>    (check_doctrine was red on main).  NOT validated: the build never
+>    finished on the failing disk.  Owed: `make all`; the cases
+>    donepezil01_tablets, apalutamide01_tablets,
+>    props/thermo/phaseSplit01_freeze_water_ethanol,
+>    steady/flash/flash21_freeze_concentration; the gates check_batch_plan,
+>    check_phase_split_scan, check_spray_dryer_solvents,
+>    check_decision_index, check_doc_references, case_manifest --check,
+>    release_inventory, gen_tutorials_guide --check, check_guide_pdf_fresh
+>    (the tutorials guide PDF was taken from G19's side -- REBUILD it, it
+>    lacks the donepezil row); `bin/runTests --gui`; then fast-forward main.
+>    Each branch's own report said 0 golden rows moved; the donepezil and
+>    phaseSplit01 goldens are new.
+> 2. **G6 `claude/g6-small-defects` (9935fdd60)** -- five small defects
+>    (gibbsReactor refuses a feed solid; Streams navigator on sectored
+>    plants; Open Case folder through caseFromEntries; layoutLines' stderr
+>    mark; two cross-document \ref in the guides + the Design Guide's
+>    C106 path).  Owed: one `bin/runTests --gui` FAIL 0 (cut at 213/215
+>    with only two since-fixed files red); gateManifest entry of
+>    check_gibbs_solid_phase.  0 rows moved.
+> 3. **G7 `claude/g7-incipient-phase-and-density` (50f09b7a0)** -- the
+>    flash's phase test iterates the incipient phase (`IncipientPhase.H`,
+>    shared with `BubblePoint::pressure`; the C92 let-down drum now splits
+>    below its 20 bar bubble pressure) and a liquid density above Tc
+>    refuses by name (C76).  Full regression authorised and run to 320 of
+>    the corpus: 0 FAIL, 0 moved, 0 NaN.  Owed: build + validate the last
+>    WIP commit (a guard for a nonvolatile in `incipientPhase::liquid`), the
+>    unreached plant/ + props/ walks, the check_energy_closure ratchet,
+>    `--gui`.  NAMED: `BubblePoint::compute` (bubble TEMPERATURE) still
+>    evaluates K at y = x.  Five gates were measured RED ON MAIN, not on
+>    the branch: check_liquid_cp_fallback (its valve probe no longer
+>    reaches Hliquid, stale since C65), gen_ammonia_stage_comparison
+>    (greenAmmonia03 README costs stale), check_guide_paths (fixed by G6),
+>    regen-llm-docs (pfr schema section), check_origin_census
+>    (2207 -> 2208).
+> 4. **G18 `claude/c117-evidence-explorer` (409583442)** -- C117 minimal
+>    shape: data/local/evidence/, three-tier evidence + pair reading,
+>    propertyScan1D `vary { points ( ... ) }`, witness
+>    evidence01_methanol_water_points (18 new rows), gate
+>    check_evidence_records (21 legacy datasets pinned), the Explorer
+>    `evidence` lens.  Owed: typecheck and re-shoot of the last WIP commit
+>    (phone layout), `--gui`, `--fast`.  Then C116 (one Explore; G18
+>    estimates one session) and C118 stage 2 (the phase-split lens).
+> 5. **DONE 2026-10-20 (main 440a5529).**  **G1 `claude/c110-g1-apalutamide-dossier` (77495a2cc)** -- the
+>    apalutamide design-basis dossier applied (patent formula, acetone at
+>    5 wt %, generic at LoE, every room CNC; NPV -44.6 -> +128.2 MEUR).
+>    **373 golden rows MOVE, 4 are removed, 20 appended -- put to Vitor
+>    2026-10-20 and APPROVED by him the same day ("Aprovo o re-registo das 373
+>    linhas do G1"): re-record them, remove the 4 rows of the two retired
+>    feeds and append the 20 new ones, AFTER rebuilding on the fresh machine
+>    and checking that the moved set is still exactly the one he approved
+>    (373 / 4 / 20, the kinds and reasons in the G1 report); any row outside
+>    that set goes back to him.**
+>    Regenerate the list with `bin/runTests
+>    tutorials/batch/plant/apalutamide01_tablets`.  Owed: check_energy_
+>    closure on the branch; merging with G2 (both touch
+>    check_batch_plan's fixtures and G2's probe is built from this case).
+> 6. **G4 `claude/c110-g4-debt-financing` (484b52f54)** -- opt-in
+>    `economics { financing {} }`, the equity view beside the unchanged
+>    project view.  NEVER BUILT.  Owed (its report): build, byte identity
+>    of the twelve economics cases, the gate, the sabotages, the manifest.
+> 7. **DONE 2026-10-20 (G20b; see C119).**  **G20 `claude/c119-correlations-edutool` (f31d62c6b)** -- C119: engine
+>    sweeps on frictionBench / heatTransferBench, witness
+>    moody02_correlation_sweeps, the maths module and the five-page lesson
+>    text.  UNVALIDATED.  Owed: the Tool component, registry + mount
+>    (`correlation-simplicity`), witness outputs, lesson test, goldens.
+> 8. **Stopped by the 15:20 rate limit and never resumed** -- each one's
+>    work is on a branch and/or `backup/g-<agentId>` (a snapshot commit of
+>    its worktree, uncommitted files included, on its own base): G5 Gantt in
+>    the GUI (`backup/g-aa0b7a24502e7bf75`); G8 C98/C71
+>    (`backup/g-a351ac66e0c704e8d`); G9 fold long trains
+>    (`backup/g-af5c1d01a52ae83b4`); G11 overpressure audit
+>    (`claude/c112-overpressure-review`); G12 pump / FEL / ladder / pool
+>    fire (`claude/c112-g12-pump-fel-ladder-ss-poolfire`); G13 gibbs07
+>    closure (`backup/g-a7ca4522633443063`); G14 let-down NH3
+>    (`claude/g14-letdown-nh3-reimport`); G15 search
+>    (`backup/g-af59dd3526f2beaea`); G16 ParaView-like viewer
+>    (`claude/c114-flowsheet-colour`); G17 pulse
+>    (`backup/g-a2f767a5e10a7820e`).  Each needs its brief re-read (DEV.md
+>    C110 / C112 / C113 / C114 / C115) and its state measured before it is
+>    continued.
+> 9. Found for Vitor (curation): `ethanol.dat` has no Fuller
+>    `diffusionVolume` (G10); the C119 / C118 stage 3 excipient records.
+> **Resumed 2026-10-20 on a fresh machine (no read errors).**  Wave 2
+> validated and merged (build warning-free; the four witnesses PASS with no
+> row moved; each branch's gates; the decision index, case manifest and
+> release inventory refreshed after the merge; the Tutorials Guide rebuilt
+> -- LaTeX had to be installed here as the CI does, `lmodern` included;
+> `--gui` 5799 tests with ONE red, a `PropertyOperation.H:116` citation
+> G19's two inserted lines moved, remapped to 118).  G1 then: the 373 rows
+> re-measured and found exactly the approved set before recording, and ONLY
+> those written (9 others drifted inside their tolerance and keep their old
+> pins); two `check_batch_plan` fixtures G2 had calibrated on the old
+> witness re-based (multiTrainLong 1250 -> 1100 h, between the busiest stage
+> and the train's year; arm (j) now READS the one product's demand from the
+> witness, the typed 30000 kg having gone stale); check_energy_closure over
+> the steady corpus OK.  A trap paid for twice: `make` does not rebuild a
+> guide PDF whose file a merge just checked out (it is newer than its
+> sources) -- rebuild with `make -B`, and read the PDF back.
+
+> **C119. AN EDUTOOL ON WHY CORRELATIONS ARE SIMPLE: FROM DIMENSIONAL
+> ANALYSIS TO MASTER-SLAVE SCALES (Vitor, 2026-10-20: "o teorema Pi de
+> Buckingham ... reduz o numero de variaveis, mas ... a reducao de variaveis
+> podia ser um artefacto que transformava um problema noutro sem grandes
+> ganhos.  No final o grande ganho vem do facto de ... se acabarem com
+> correlacoes com poucas variaveis, mas simultaneamente ... equacoes muito
+> simples que ajustam bem os dados, com um erro relativo razoavel para
+> projeto.  Esta ultima faceta nao resulta do teorema Pi ... parece resultar
+> de fenomenos multi escala em que ha efeitos Master de baixas frequencias
+> que dominam efeitos Slave de alta frequencia.  Achas que se pode fazer um
+> EduTool a explicar isto tudo, comecando pela analise dimensional?").**
+> Commander's verdict: yes, and the claim is right with one addition.  The
+> Pi theorem only REDUCES (f(Re, e/D) is still an arbitrary function);
+> simplicity comes from three named mechanisms -- asymptotic regimes where a
+> group drops out or enters as a power (Barenblatt's complete / incomplete
+> similarity, "intermediate asymptotics"), scale separation where fast modes
+> follow slow ones (Haken's slaving principle; Prandtl's boundary layer as
+> its engineering form), and a sobering third -- over one decade any smooth
+> function has a nearly constant log-slope, so part of a correlation's
+> simplicity is its narrow range and the +/-20-30 % design tolerance.  The
+> Churchill-Usagi blending of asymptotes is where the three meet in a
+> design formula.  PEDAGOGICAL SCOPE PUT TO VITOR before dispatch (page
+> list, examples, whether measured data enters).  APPROVED 2026-10-20
+> ("Avanca com as cinco paginas, dados sinteticos, atrito e Nusselt"):
+> five pages (dimensional analysis; what Pi gives and does not; asymptotic
+> regimes and similarity; master/slave -- Haken's two-variable model, then
+> the boundary layer; correlations in practice -- the drifting local
+> exponent, Churchill-Usagi, the transition zone), the engine's own
+> correlations as SYNTHETIC truth said so on screen, friction and Nusselt
+> only.  Dispatched (G20).
+> **DONE 2026-10-20 (G20 + G20b, merged via integ/c119).**  The EduTool
+> *Why engineering correlations are simple* (`correlation-simplicity`,
+> shelf "Hydraulics & control" -- OPEN for Vitor: that shelf or "Heat
+> transfer & energy").  Five pages: the dimensional matrix reduced exactly
+> with a free core (presets; a dependent or wrong-sized core refused on
+> screen); the engine's Colebrook beside an invented ripple; the Moody
+> plane and its local slopes (-1 laminar, -0.265 -> -0.126 smooth from 1e4
+> to 1e8, flattening rough); Haken's two-variable model, full vs reduced,
+> with a scale-ratio slider; a one-decade power-law fit whose exponent
+> drifts, Churchill rebuilt from its two asymptotes (n = 12 matches the
+> engine to 4e-16) and the transition spread.  Engine: an optional
+> `sweep {}` on `frictionBench` / `heatTransferBench` (one home,
+> `ReynoldsSweep.H`; `churchillAB`, `churchillAsymptotes`), byte-identical
+> on moody01, htbench01, pipe01, pipe02 and pumpSystem01 against a build of
+> main; the two bench schemas gained `sweep`.  Witness
+> `moody02_correlation_sweeps` (26 new golden rows).  No correlation is
+> retyped in TypeScript (a test bans the coefficients).  FINDING, not
+> fixed: `Blasius::evaluate` does not flag 2300 <= Re < 4000 although its
+> declared window starts at 4000 (the pipe inherits it; its own slice).
+
+> **C118. A PHASE-SPLIT SCAN IN THE EXPLORER: V / L1 / L2 / S1 / S2 AND pH
+> ALONG T OR P (Vitor, 2026-10-20: "uma tool de execucao em que posso mexer
+> em T ou P, mantendo um constante.  Eu dou a composicao dos varios
+> compostos, e ele faz-me a especiacao V L1 L2 S1 S2 ... dava imenso jeito
+> para congelamento de solucoes aquosas ou solventes com excipientes ...
+> baixava a temperatura de 0 ate -20 e via o pH a variar, gelo a formar e
+> eventualmente excipiente a solidificar").**  Commander's verdict: agree;
+> it is the freeze-concentration / lyophilisation-formulation lesson and
+> the engine already holds the physics.  Measured: `IsothermalFlash` solves
+> V / L1 / L2 and crystallising solids on ONE mechanism (`solidEq::
+> equilibrate`, the active-set complementarity), with the reactive
+> package's speciation and pH -- witnesses `flash21_freeze_concentration`
+> (ice from water/ethanol at -15 C, the freezing-point identity to 9e-11),
+> `flash19_organic_and_precipitate` (four phases at once),
+> `flash16_calcite_precipitation` (a precipitate under a speciation); the
+> props bench has `freezingPoint` (ONE salt in water, T_f(m)) and no scan
+> that runs a flash per grid point; the Explorer has no such lens.  Data
+> limit, said plainly: an excipient solidifies in the model only where its
+> record declares a solid phase -- `sucrose.dat` has NO Hfus (it decomposes
+> before melting) so it needs a solubility solid like halite's `solidPhases
+> {}`, and mannitol / glycine / trehalose / lactose are not in the catalogue
+> -- their records are the C117 curation workflow's first real job.  Plan:
+> (1) engine op `phaseSplitScan` -- one isothermal flash per grid point over
+> T (fixed P) or P (fixed T) at a fixed overall composition, publishing the
+> phase amounts, each phase's composition, pH where speciated, every
+> appearance / disappearance announced, sub-273 K extrapolations announced
+> (G19, dispatched 2026-10-20); (2) the Explorer lens (stacked phase
+> amounts and pH against T, the phase boundaries marked) AFTER G18 lands,
+> because both touch `ExploreWorkspace.tsx`; (3) excipient records by
+> curation.
+> **Stage 1 BUILT 2026-10-20 (G19, merged via integ/wave2):** `phaseSplitScan`
+> -- one `IsothermalFlash::solveCore` per T or P grid point at a fixed feed,
+> the phase set read by the unit's own `readOptions`; amounts of V / L1 / L2
+> / each named solid, compositions, pH and species where speciated,
+> appearance / disappearance events, refused points published by name with
+> no fallback; CSV + a `phaseSplitScans` block (new `PropertyOperation::
+> resultBlock()`); no new golden kind (every number is a csv cell or a
+> diag).  Witness `props/thermo/phaseSplit01_freeze_water_ethanol`
+> (flash21's records; ice appears between 265.15 and 264.15 K; the 258.15 K
+> point is flash21's answer).  Gate `check_phase_split_scan` (8 arms, 4
+> sabotages).  Record `docs/design/a-phase-split-scan-along-t-or-p.md`.
+> Stage 2 (the lens) reads the block, after G18; stage 3 (excipient
+> records) still open.
+
+> **C117. THE CURATION WORKFLOW: AN LLM AUTHORS, THE EXPLORER SHOWS, THE
+> STUDENT DECIDES (Vitor, 2026-10-20: he had planned an interactive GUI for
+> entering data and fitting models, saw it is "muito boring", and that an
+> LLM in a terminal can author the dataset and the fit; the student then
+> uses the Explorer "como uma especie de ParaView" to see the data set and
+> the fits and decide.  His question: is a dataset attached to the
+> COMPOUND or to the BINARY data?).**  Measured: the pipeline already
+> exists as text-first tools -- `bin/choupo-thermoml` (locate/extract
+> measured VLE by InChIKey), `bin/choupo-curate` (evidence -> declared
+> partition -> fit -> held-out -> dossier, promoting nothing),
+> `choupoProps fitParameters` / `vaporPressureFit` / `heatCapacityFit` /
+> `estimateComponent` / `curationDossier` / `evidencePartition` /
+> `vleConsistency`, `bin/curate/promote-from-dossier`, promoted records
+> carrying evidence + verdict (C-2026-09-03), and the Explorer's inspector
+> drawing the dossier verdict (validated / NOT TESTED / no dossier).  The
+> GAP is the HOME of the evidence: every dataset lives inside a CASE
+> (`tutorials/props/curation/*/constant/experiments/*.dat`, with
+> `source measured; reviewStatus ...; article`), so the Explorer can show
+> evidence only where some case happens to carry it, and a pair is not a
+> first-class subject there (the inspector is component-centred).
+> Commander's answer, put to Vitor: a dataset is attached to WHAT IT
+> MEASURES -- a pure-property set (Psat, Cp, rho, ...) to the component, a
+> mixture set (VLE, LLE, gamma-inf, h^E) to the PAIR, a ternary to the
+> triple -- but as EVIDENCE beside the record, never inside it (the record
+> is the fitted DERIVATIVE; it points at its evidence by id, the arity
+> rule); proposed home `data/{standards,local}/evidence/{components,pairs}/
+> <subject>/<dataset>.dat`, the same file grammar the cases already use,
+> licence-clean sets in standards, the rest local; the Explorer gains the
+> PAIR as a subject and, for component or pair, an EVIDENCE view (points,
+> model curves overlaid, competing fits side by side, held-out verdict and
+> AAD) -- it draws and never fits.  Vitor's five conditions (identity/
+> source/units/conditions/uncertainty/version; role in the dossier not the
+> dataset; human-only promotion; residuals from the engine, no frontend
+> regression; private data) taken as the contract; full design in
+> `docs/design/evidence-as-a-first-class-object.md`, CUT DOWN the same day
+> to its section 7 on his objection to the complexity: flat local folder,
+> grammar unchanged, no index, no private bundle, one plugin glob, the
+> Explorer's pair subject and Evidence view, one gate arm.  Vitor
+> 2026-10-20: "Avanca entao como achares melhor" -- dispatched (G18), the
+> two stages in one brief; C116 (one Explore) follows on the same branch
+> only if the Evidence view lands clean.
+
+> **C116. "EXPLORE" AND "PROPERTY SURFACES" ARE TWO DOORS TO ONE ROOM
+> (Vitor, 2026-10-20, back on the thermophysical layer: "temos o 'explore' e
+> o 'Property Surfaces' que acho que fazem a mesma coisa e so se cria
+> confusao por se ter dois").**  Measured: `?workspace=explore` opens
+> `gui/src/ui/CompoundCatalogue.tsx` (234 lines: `CompoundBrowser` rail +
+> `ComponentInspector` wide + `EstimateForm` + ONE button that hands the set
+> to the surfaces as a URL); `?workspace=properties` opens
+> `gui/src/ui/ExploreWorkspace.tsx` (2370 lines: the SAME `CompoundBrowser`
+> as its rail, the SAME `ComponentInspector` popped open, the SAME
+> `EstimateForm`, plus every lens -- T-x-y, gamma, Psat, LLE, ternary, Gibbs
+> maps, Bjerrum, steam, transport, pure phase diagrams).  So the catalogue
+> tab's only act the surfaces tab lacks is a wider inspector and a link; the
+> three components are mounted TWICE; and the labels are inverted against
+> the keys (label "Explore" = key `compounds`; label "Property surfaces" =
+> key `explore`), which the code's own comments record as having sent an
+> audit to the wrong URL.  The split was Vitor's ruling of 2026-09-03 (the
+> rail was the wrong shape for a family tree), so reversing it is his.
+> Commander's verdict: he is right today; proposal put to him -- ONE door,
+> "Explore", one tab with two VIEWS of one selected set (Catalogue: browse,
+> read, estimate; Surfaces: plot), switched in place, the set and the view
+> in the URL (`?workspace=explore&components=...&view=surfaces`), the
+> surfaces still reachable with an empty set (no wizard), `?workspace=
+> properties` kept as a redirect for bookmarks, the inspector mounted ONCE.
+> The in-case `Props` workspace (`PropsView.tsx`, 1531 lines: thermo
+> readiness and model-vs-lab-data comparison for THE OPEN CASE) is a
+> different question and stays.  Status: proposed, awaiting Vitor.
+
+> **C115. THE UNIT BEING SOLVED PULSES WHEN A RUN IS SLOW (Vitor,
+> 2026-10-20: "ha casos em que a simulacao fica lenta ... a operacao
+> unitaria em que esta a ser feito o calculo ficasse com a cor a pulsar (se
+> demorasse mais de 1 s)").**  Commander's verdict: agree.  Measured: the
+> worker posts every stdout line live (`gui/public/workers/solverWorker.js:
+> 186`, Emscripten `print`), and the engine prints a banner before every
+> unit it solves (`>>>  Unit [k]:  <name>   (type = <T>)`), which
+> `gui/src/ui/LogWorkspace.tsx:81` already parses -- so the GUI can know the
+> unit in progress without any engine change.  Stated defaults: the banner
+> parser becomes ONE shared helper (LogWorkspace and the canvas read it);
+> after 1 s on the same unit its node gets a PULSING OUTLINE/halo, never a
+> repaint of the phase colour (gui-credo: phase colour is semantic), with
+> the elapsed seconds; a recycle pass that revisits a unit moves the pulse;
+> prefers-reduced-motion gets a static highlight; it stops when the run
+> ends or fails.  Dispatched 2026-10-20 (G17), after G16 on shared files.
+
+> **C114. A FLOWSHEET VIEWER STUDENTS LOVE, "TIPO PARAVIEW" (Vitor,
+> 2026-10-20: "ve como podes tornar o visualizador do flowsheet mais tipo
+> 'paraview'!  Nos podemos escolher cores para T e P, mas eventualmente
+> podemos por compostos quimicos ... de forma elegante e que os alunos
+> adorem!  Isso faz diferenca face aos flowsheets dos simuladores comerciais" [names elided per philosophy section 4] --
+> the competitor names are his, in conversation; they stay out of every
+> user-facing manual).  Measured: `gui/src/ui/ColoursMenu.tsx` offers
+> colour-by phase / temperature / pressure with three colormaps (turbo,
+> coolwarm, viridis) and a scale bar; wires are already sized by
+> sqrt(mass flow) (FlowCanvas legend); the canvas holds an MW map
+> (`FlowCanvas.tsx:905`).  Design proposed to Vitor (GUI identity and
+> pedagogy are his): colour by ANY published stream field incl. a chosen
+> compound's mole/mass fraction or flow; width by a second field ("follow
+> a molecule": width by that compound's flow); range control (auto, fixed,
+> log for traces); units coloured by a unit KPI (duty, diverging at zero);
+> a threshold that dims what is outside a range; hover probe of all
+> fields; export with legend; later, scrubbing a sweep or a time series.
+> The GUI maps published numbers and computes no physics.  Status: design
+> proposed; Vitor 2026-10-20: "Avanca com 1-6, o 7 fica para depois" --
+> items 1-6 dispatched (G16); the time scrubber (7) planned for later.
+
+> **C113. FINDING A TUTORIAL OR AN EDUTOOL CHAPTER IN SECONDS (Vitor,
+> 2026-10-20, a written brief: search across ALL tutorials in the Open Case
+> window -- name, shortName, description, category, subclass, README --
+> accent/case-insensitive, several words in any order, ranked name >
+> description > README, a result count, open the hit, clearing restores the
+> folder browser; a "Find" over the EduTools -- name, discipline,
+> `teaches`, step titles, step text, equation glossaries -- results show
+> tool, chapter and an excerpt and open the tool AT the chapter, deep links
+> `?workspace=methods&tool=<id>` preserved and chapter links added if
+> possible, the index DERIVED from the lessons, the lazy loading of tools
+> preserved; a compact collapsible chapter index inside long EduTools,
+> desktop and phone; no search library, no server, no second catalogue, no
+> engine change; tests listed).  Measured: `gui/src/ui/OpenTutorialModal.tsx:349-352`
+> double-click calls `setSelected(t.name)` then `openSelected()`
+> in the same handler, so it can open the PREVIOUS selection (React state
+> is not updated yet) -- the brief's suspicion is right; `TutorialEntry`
+> carries `readme` (`gui/src/cases/tutorials.ts:207-209`); `registry.ts`
+> carries `teaches` (:164); tools are `lazy()` in `MethodsWorkspace.tsx`.
+> Vitor's standing instruction the same day: he will keep posting
+> suggestions; the commander does at once what is opportune, plans the
+> rest, and checks interference with the generals running in parallel.
+> Dispatched 2026-10-20 (G15), in his order: tutorials, EduTools, chapter
+> index.
+
+> **C112. AN EXTERNAL SCIENTIFIC AND PEDAGOGICAL AUDIT OF THE EDUTOOLS
+> (Vitor, 2026-10-20, a review by ChatGPT he asked the commander to judge:
+> "tu e que es o responsavel maximo e tens de ver se concordas").**  Twenty
+> points; the commander's verdict, given to Vitor the same turn: AGREE with
+> 1-11, 14, 15, 16, 17, 19, 20; AGREE IN PART with 12 (the ladder's warning
+> is drawn by the page from two numbers the engine already publishes --
+> the declared conversion of rung 1 and the equilibrium of rung 2 -- not a
+> new equilibrium evaluation inside `conversionReactor`) and 18 (each
+> number states its ORIGIN -- engine, page arithmetic, reference, user
+> assumption -- but no per-value provenance sheet across sixty pages);
+> VERIFY 13 (Choupo's datum is the ideal-gas formation enthalpy, one per
+> component, so no residual should be subtracted at the reference; an
+> independent test decides).  The 2026-10-12 letdown revision is not
+> repeated.  Points: (1) overpressure's governing scenario is the largest
+> REQUIRED AREA, not the largest flow; (2) operating / design / MAWP / set
+> pressure are four quantities, a +10 % heuristic gives a preliminary
+> design pressure, never a MAWP; (3) a liquid chokes when the vena
+> contracta falls below its vapour pressure (cavitation / flashing /
+> choked), coherent with the letdown page; (4) accumulated energy [J] is
+> not released power [W], W = Qr/(x lambda) is not DIERS sizing; (5) NPSHr
+> is usually NPSH3, so NPSHa > NPSHr is a minimum, a margin is needed; (6)
+> gibbs07's open energy balance (`check_energy_closure.KNOWN_OPEN`
+> 150.7280) investigated in the engine, warning kept until closed; (7) the
+> letdown witness's sealed NH3 copy (liquid density ~12-13 % high) updated
+> if the catalogue is corrected, moved rows to Vitor; (8) a pump and a
+> system meet once in THIS example, not always; (9) non-overlapping
+> estimate ranges are sufficient, not necessary, to decide; (10) a
+> disposal-capacity inequality is necessary, not sufficient; (11) the
+> blocked-outlet compressor's nominal flow is a declared hypothesis; (12)
+> as above; (14) exposure time visible beside pool-fire results; (15)
+> each EduTool result says whether the C++ engine or the page computed it,
+> and the homepage's claim is made true; (16) coherence across pages
+> teaching the same physics; (17) slider extremes show "model no longer
+> valid" rather than a fictitious curve; (19) phone-width legibility; (20)
+> absolute words checked against omitted hypotheses.  Wave A (dispatched
+> 2026-10-20): G11 overpressure (1-4, 10, 11 + coherence with letdown and
+> processSafety); G12 pump, FEL, pool fire, reactor ladder, standard state
+> (5, 8, 9, 12, 13, 14); G13 gibbs07 energy closure (6); G14 letdown
+> witness NH3 (7).  Wave B after A merges: origin labels and the homepage
+> claim (15, 18), then the sweeps (16, 17, 19, 20).
+
+> **C111. A SPRAY DRYER THAT TAKES A FEED WITH SEVERAL SOLVENTS (Vitor,
+> 2026-10-20, testing: "o modelo de spray dryer nao aceita correntes com
+> varios solventes.  Eu preciso disso para o projeto de industria
+> farmaceutica").**  Measured: `src/unitOperations/heatTransfer/
+> SprayDryer.cpp:187-193` picks ONE volatile solvent (`iSolv`, the LAST
+> feed component with a vapour pressure) and every later step -- the
+> surface-tension liquid vector (:272), the mass balance "ALL feed solvent
+> -> vapour" (:286), the humidity in kg solvent / kg dry gas (:322), the
+> Lewis relation (:504-516) -- reads that one index (20 uses).  Spray-dried
+> dispersions are routinely atomised from MIXED solvents (acetone/water,
+> ethanol/water, dichloromethane/methanol).  Dispatched 2026-10-20 (G10).
+> **DONE 2026-10-20 (G10, merged 0180b8341).**  Reproduced first: acetone +
+> water on a copy of sprayDryer01 ran to exit 0 with the acetone LOST (unit
+> closure 98.0620 %, -30.0001 kg/h) and an energy row of 0.0000 kW -- the
+> lost solvent's formation enthalpy absorbed into T_out -- and which solvent
+> was kept depended on the component ORDER.  Now with several solvents the
+> OUTLET IS THE PACKAGE'S EQUILIBRIUM of the air and every solvent at T_out
+> (`flashState::equilibriumAt`; a split means the air cannot carry it all --
+> the exhaust leaves on its dew point, never a fog, the liquid on the powder
+> at the package's composition, announced by kg/h per solvent), T_out
+> closing H(out) = H(in) through `priceState` on the published streams (row
+> -0.0000 kW); the droplet KPIs on a declared, announced pseudo-solvent;
+> `langrishKockel`/`chen` and a `sorption {}` isotherm REFUSE a
+> mixed-solvent feed by name; a dissolved component with no outlet (neither
+> nonvolatile nor volatile) refuses instead of vanishing.  Every
+> single-solvent corpus case byte-identical (10 cases, parent build vs new,
+> two sweeps); no golden moved.  Gate `check_spray_dryer_solvents` (7 arms,
+> 6 sabotages caught).  Record
+> `docs/design/a-spray-dryer-with-several-solvents.md`.  Found, for Vitor:
+> `data/standards/components/ethanol.dat` has no Fuller `diffusionVolume`
+> (a Fuller case refuses ethanol, correctly); a multicomponent droplet model
+> (selective evaporation, mixture CDC) is new physics and stays RESERVED.
+
 > **C110. "RESOLVE TUDO" -- THE BACKLOG DELEGATED (Vitor, 2026-10-20, after
 > upgrading his plan: "tenho de acabar isto once and for all!" ... "Resolve
 > tudo e delego em ti fazeres como achares melhor.  Como temos agora
@@ -1320,6 +1733,23 @@ accepts today, and that is a policy call.
 > purified water by RO + EDI; utility tariffs; layout extensions (pipe
 > pressure drop and cost, fire water, bunds, escape routes, nozzles).
 > Status: wave 1 dispatched 2026-10-20.
+> **G2 DONE 2026-10-20 (merged via integ/wave2):** `products ( ... )` +
+> `campaignOrder` + per-stage `productChangeover` make `batchPlan` a
+> multiproduct plant in single-product campaigns (per product its demand,
+> lot, balance -- the flowsheet's unless `massPerProduct`, announced --
+> time / density / fill overrides and `changeoverTo { <next> }`); each stage
+> sized for the product needing the most (`sizingProduct`); the year per
+> train = campaigns back to back in the declared order, the clean before
+> the next product REPLACING the same-product changeover; an impossible year
+> refused with each product's share, a poor plan announced; the year's
+> Gantt with kinds; the `batch` kind pins every new record.  Stated
+> defaults (record section 6): one rotation a year, no overlapping
+> campaigns, the order mattering only through `changeoverTo`.  No tutorial:
+> a three-product in-gate probe (arms (h)-(l), 20 refusals, sabotages
+> S6-S11, one of which survived an arm that compared recomputations instead
+> of the published year).  apalutamide01 byte-identical, 0 golden rows
+> moved.  NOT built: overlapping campaigns, rotations, an order optimiser,
+> the intermediate store.
 
 > **C109. AN EDUTOOL ON SYNTHESIS GAS (Vitor, 2026-10-19, after asking why
 > syngas is so widely used and which other synthesis gases are famous: "Podes
@@ -1514,6 +1944,24 @@ accepts today, and that is a policy call.
 > dosage forms and what Choupo should provide are Vitor's to state.  No new
 > case without his explicit ruling (the standing rule; C97 was the
 > exception for apalutamide only).
+> **BUILT 2026-10-20 (G3, merged via integ/wave2):**
+> `tutorials/batch/plant/donepezil01_tablets`, on C110's stated defaults --
+> API bought, WET GRANULATION (aqueous HPC binder, high-shear granulator
+> placeholder, fluid-bed drying as `solidDryer` on the maize starch's GAB
+> isotherm, milling, final blend, press, aqueous HPMC coat dried by hot
+> air, packaging), the simpler sibling of apalutamide01 (no spray drying,
+> solvent, N2 loop or ATEX; nothing outdoors; two gates).  Read from the
+> reference product's UK SmPCs (ARICEPT 10 mg / 5 mg, cited by title): the
+> strengths (10 mg HCl = 9.12 mg base; 5 mg), the lactose (174.33 / 87.17 mg
+> -- dose-proportional, one blend), the excipient and coat lists; no EPAR
+> exists.  Production (150 M tablets/yr) and price (0.10 EUR/tablet) are
+> DECLARED author-set assumptions.  `batchPlan`: 300 kg lots, 143/yr,
+> granulation limited by the fluid bed and 29 % occupied (the lesson of a
+> dedicated line for one strength), tableting by packaging; NPV -18.6 MEUR
+> on placeholders, explained.  ONE product: the 5 mg strength is now
+> possible with G2's `products ( ... )` (next).  Blend content uniformity
+> stated as the group's question, not computed.  No engine change; golden
+> recorded new (862 rows, nothing moved).
 
 > **C103. A 2D GMP FLOOR PLAN A STUDENT CAN HAND IN (Vitor, 2026-10-19,
 > after reading the Atozet student project, whose production area is drawn

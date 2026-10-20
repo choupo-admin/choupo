@@ -10,11 +10,11 @@
      componentMassFlows is the OVERALL material (all phases); a phases{} block, when present,
      is a decomposition that sums back to it exactly. ---*/
 
-//  BOUGHT API: 60 mg apalutamide per tablet PRESSED (12 800 tablets/h, the flowsheet basis) -- AUTHOR-SET formulation, see README section 2.  (0.768 kg/h.)
+//  BOUGHT API, apalutamide Form B (EPAR-2018 2.2.2), the 60 mg dose: 60 mg per tablet PRESSED (15 625 tablets/h, the flowsheet basis) -- PAT-HPMCAS Ex. 3.2 (US 12,303,493 B2), dossier section 1.4.  (0.9375 kg/h.)
 
 componentMolarFlows
 {
-    apalutamide                  0.001608612781 kmol/h;
+    apalutamide                  0.001963638649 kmol/h;
 }
 
 T               298.15 K;
@@ -26,7 +26,7 @@ phases
     {
         componentMolarFlows
         {
-            apalutamide              0.001608612781 kmol/h;
+            apalutamide              0.001963638649 kmol/h;
         }
     }
 }

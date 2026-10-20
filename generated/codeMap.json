@@ -1218,6 +1218,9 @@
   "PhaseEnvelope": [
    "src/propertyOps/PhaseEnvelope.H"
   ],
+  "PhaseSplitScan": [
+   "src/propertyOps/PhaseSplitScan.H"
+  ],
   "PinchPass": [
    "src/postProcessing/PinchPass.H"
   ],
@@ -2135,6 +2138,10 @@
    {
     "key": "phaseEnvelope",
     "type": "PhaseEnvelope"
+   },
+   {
+    "key": "phaseSplitScan",
+    "type": "PhaseSplitScan"
    },
    {
     "key": "psychrometricChart",
@@ -4951,6 +4958,30 @@
    "src/unitOperations/saturation/BubblePoint.H",
    "src/unitOperations/saturation/DewPoint.H"
   ],
+  "src/propertyOps/PhaseSplitScan.cpp": [
+   "src/core/Advisory.H",
+   "src/core/Dictionary.H",
+   "src/core/Dimensions.H",
+   "src/core/Identifiers.H",
+   "src/core/Origin.H",
+   "src/core/Types.H",
+   "src/propertyOps/PhaseSplitScan.H",
+   "src/propertyOps/PropertyOperation.H",
+   "src/result/UnitProfile.H",
+   "src/solver/Convergence.H",
+   "src/streams/ProcessStream.H",
+   "src/thermo/Component.H",
+   "src/thermo/Database.H",
+   "src/thermo/PackageAudit.H",
+   "src/thermo/RecordResolver.H",
+   "src/thermo/ThermoPackage.H",
+   "src/thermo/electrolyte/ReactiveVLE.H",
+   "src/thermo/electrolyte/SpeciationSolver.H",
+   "src/thermo/phase/Phase.H",
+   "src/thermo/phase/SolidPhase.H",
+   "src/unitOperations/UnitOperation.H",
+   "src/unitOperations/flash/IsothermalFlash.H"
+  ],
   "src/propertyOps/PitzerActivity.cpp": [
    "src/core/Advisory.H",
    "src/core/Constants.H",
@@ -5043,6 +5074,7 @@
    "src/propertyOps/MixingRules.H",
    "src/propertyOps/MolecularActivity.H",
    "src/propertyOps/PhaseEnvelope.H",
+   "src/propertyOps/PhaseSplitScan.H",
    "src/propertyOps/PitzerActivity.H",
    "src/propertyOps/PolarisationIndex.H",
    "src/propertyOps/PropertyOperation.H",
@@ -9387,6 +9419,7 @@
    "src/propertyOps/FreezingPoint.cpp",
    "src/propertyOps/GibbsMapOp.cpp",
    "src/propertyOps/PhaseEnvelope.cpp",
+   "src/propertyOps/PhaseSplitScan.cpp",
    "src/propertyOps/PitzerActivity.cpp",
    "src/propertyOps/PropertyScan1D.cpp",
    "src/propertyOps/PsychrometricChart.cpp",
@@ -9855,6 +9888,7 @@
    "src/propertyOps/MixingRules.cpp",
    "src/propertyOps/MolecularActivity.cpp",
    "src/propertyOps/PhaseEnvelope.cpp",
+   "src/propertyOps/PhaseSplitScan.cpp",
    "src/propertyOps/PitzerActivity.cpp",
    "src/propertyOps/PolarisationIndex.cpp",
    "src/propertyOps/PropertyEvaluator.cpp",
@@ -10184,6 +10218,7 @@
    "src/propertyOps/MixingRules.cpp",
    "src/propertyOps/MolecularActivity.cpp",
    "src/propertyOps/PhaseEnvelope.cpp",
+   "src/propertyOps/PhaseSplitScan.cpp",
    "src/propertyOps/PitzerActivity.cpp",
    "src/propertyOps/PolarisationIndex.cpp",
    "src/propertyOps/PropertyEvaluator.cpp",
@@ -10595,6 +10630,7 @@
    "src/propertyOps/MixingRules.cpp",
    "src/propertyOps/MolecularActivity.cpp",
    "src/propertyOps/PhaseEnvelope.cpp",
+   "src/propertyOps/PhaseSplitScan.cpp",
    "src/propertyOps/PitzerActivity.cpp",
    "src/propertyOps/PolarisationIndex.cpp",
    "src/propertyOps/PropertyEvaluator.cpp",
@@ -10862,6 +10898,7 @@
    "src/propertyOps/MixingRules.cpp",
    "src/propertyOps/MolecularActivity.cpp",
    "src/propertyOps/PhaseEnvelope.cpp",
+   "src/propertyOps/PhaseSplitScan.cpp",
    "src/propertyOps/PitzerActivity.cpp",
    "src/propertyOps/PolarisationIndex.cpp",
    "src/propertyOps/PropertyEvaluator.cpp",
@@ -11449,6 +11486,7 @@
    "src/propertyOps/MixingRules.cpp",
    "src/propertyOps/MolecularActivity.cpp",
    "src/propertyOps/PhaseEnvelope.cpp",
+   "src/propertyOps/PhaseSplitScan.cpp",
    "src/propertyOps/PitzerActivity.cpp",
    "src/propertyOps/PolarisationIndex.cpp",
    "src/propertyOps/PropertyEvaluator.cpp",
@@ -12190,6 +12228,10 @@
    "src/propertyOps/PhaseEnvelope.cpp",
    "src/propertyOps/PropertyOperation.cpp"
   ],
+  "src/propertyOps/PhaseSplitScan.H": [
+   "src/propertyOps/PhaseSplitScan.cpp",
+   "src/propertyOps/PropertyOperation.cpp"
+  ],
   "src/propertyOps/PitzerActivity.H": [
    "src/propertyOps/PitzerActivity.cpp",
    "src/propertyOps/PropertyOperation.cpp"
@@ -12227,6 +12269,7 @@
    "src/propertyOps/MixingRules.cpp",
    "src/propertyOps/MolecularActivity.cpp",
    "src/propertyOps/PhaseEnvelope.cpp",
+   "src/propertyOps/PhaseSplitScan.cpp",
    "src/propertyOps/PitzerActivity.cpp",
    "src/propertyOps/PolarisationIndex.cpp",
    "src/propertyOps/PropertyOperation.cpp",
@@ -12575,6 +12618,7 @@
    "src/propertyOps/FitParameters.cpp",
    "src/propertyOps/GibbsMapOp.cpp",
    "src/propertyOps/PhaseEnvelope.cpp",
+   "src/propertyOps/PhaseSplitScan.cpp",
    "src/propertyOps/PropertyEvaluator.cpp",
    "src/propertyOps/PropertyScanBinary.cpp",
    "src/propertyOps/PropertyScanTernary.cpp",
@@ -12724,6 +12768,7 @@
    "src/propertyOps/MixingRules.cpp",
    "src/propertyOps/MolecularActivity.cpp",
    "src/propertyOps/PhaseEnvelope.cpp",
+   "src/propertyOps/PhaseSplitScan.cpp",
    "src/propertyOps/PolarisationIndex.cpp",
    "src/propertyOps/PropertyEvaluator.cpp",
    "src/propertyOps/PropertyOperation.cpp",
@@ -13030,6 +13075,7 @@
    "src/propertyOps/FitParameters.cpp",
    "src/propertyOps/GibbsMapOp.cpp",
    "src/propertyOps/PhaseEnvelope.cpp",
+   "src/propertyOps/PhaseSplitScan.cpp",
    "src/propertyOps/PropertyEvaluator.cpp",
    "src/propertyOps/PropertyScanBinary.cpp",
    "src/propertyOps/PropertyScanTernary.cpp",
@@ -13267,6 +13313,7 @@
    "src/propertyOps/MixingRules.cpp",
    "src/propertyOps/MolecularActivity.cpp",
    "src/propertyOps/PhaseEnvelope.cpp",
+   "src/propertyOps/PhaseSplitScan.cpp",
    "src/propertyOps/PitzerActivity.cpp",
    "src/propertyOps/PolarisationIndex.cpp",
    "src/propertyOps/PropertyEvaluator.cpp",
@@ -13475,6 +13522,7 @@
    "src/propertyOps/Kinetics1D.cpp",
    "src/propertyOps/MolecularActivity.cpp",
    "src/propertyOps/PhaseEnvelope.cpp",
+   "src/propertyOps/PhaseSplitScan.cpp",
    "src/propertyOps/PitzerActivity.cpp",
    "src/propertyOps/PropertyOperation.cpp",
    "src/propertyOps/PropertyScan1D.cpp",
@@ -13625,6 +13673,7 @@
    "src/propertyOps/MixingRules.cpp",
    "src/propertyOps/MolecularActivity.cpp",
    "src/propertyOps/PhaseEnvelope.cpp",
+   "src/propertyOps/PhaseSplitScan.cpp",
    "src/propertyOps/PolarisationIndex.cpp",
    "src/propertyOps/PropertyEvaluator.cpp",
    "src/propertyOps/PropertyOperation.cpp",
@@ -13803,6 +13852,7 @@
    "src/propertyOps/Kinetics1D.cpp",
    "src/propertyOps/MolecularActivity.cpp",
    "src/propertyOps/PhaseEnvelope.cpp",
+   "src/propertyOps/PhaseSplitScan.cpp",
    "src/propertyOps/PitzerActivity.cpp",
    "src/propertyOps/PropertyScan1D.cpp",
    "src/propertyOps/PropertyScan2D.cpp",
@@ -14062,6 +14112,7 @@
    "src/propertyOps/MixingRules.cpp",
    "src/propertyOps/MolecularActivity.cpp",
    "src/propertyOps/PhaseEnvelope.cpp",
+   "src/propertyOps/PhaseSplitScan.cpp",
    "src/propertyOps/PolarisationIndex.cpp",
    "src/propertyOps/PropertyEvaluator.cpp",
    "src/propertyOps/PropertyOperation.cpp",
@@ -14478,6 +14529,7 @@
    "src/unitOperations/separation/IonExchanger.cpp"
   ],
   "src/thermo/electrolyte/ReactiveVLE.H": [
+   "src/propertyOps/PhaseSplitScan.cpp",
    "src/streams/StreamStateIO.cpp",
    "src/thermo/ThermoPackage.cpp",
    "src/thermo/ThermoPackageBuilder.cpp",
@@ -14547,6 +14599,7 @@
   ],
   "src/thermo/electrolyte/SpeciationSolver.H": [
    "src/propertyOps/Exchange.cpp",
+   "src/propertyOps/PhaseSplitScan.cpp",
    "src/propertyOps/PropertyOperation.cpp",
    "src/propertyOps/ScalingScan.cpp",
    "src/propertyOps/Speciate.cpp",
@@ -14737,6 +14790,7 @@
    "src/applications/choupoSolve/main.cpp",
    "src/dynamicDriver/DynamicDriver.cpp",
    "src/propertyOps/FreezingPoint.cpp",
+   "src/propertyOps/PhaseSplitScan.cpp",
    "src/solver/StabilityTest.cpp",
    "src/thermo/ThermoPackage.cpp",
    "src/thermo/phase/LiquidPhase.cpp",
@@ -14747,6 +14801,7 @@
   ],
   "src/thermo/phase/SolidPhase.H": [
    "src/propertyOps/FreezingPoint.cpp",
+   "src/propertyOps/PhaseSplitScan.cpp",
    "src/thermo/phase/Phase.cpp",
    "src/thermo/phase/SolidPhase.cpp",
    "src/unitOperations/flash/IsothermalFlash.cpp"
@@ -15089,6 +15144,7 @@
    "src/propertyOps/FitParameters.cpp",
    "src/propertyOps/GibbsMapOp.cpp",
    "src/propertyOps/PhaseEnvelope.cpp",
+   "src/propertyOps/PhaseSplitScan.cpp",
    "src/propertyOps/PropertyEvaluator.cpp",
    "src/propertyOps/PropertyScanBinary.cpp",
    "src/propertyOps/PropertyScanTernary.cpp",
@@ -15295,6 +15351,7 @@
   "src/unitOperations/flash/IsothermalFlash.H": [
    "src/dynamicDriver/DynamicDriver.cpp",
    "src/postProcessing/sizing/ShellTubeHX.cpp",
+   "src/propertyOps/PhaseSplitScan.cpp",
    "src/propertyOps/PropertyEvaluator.cpp",
    "src/propertyOps/PropertyScanBinary.cpp",
    "src/propertyOps/PropertyScanTernary.cpp",

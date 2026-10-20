@@ -61,6 +61,60 @@ touched.
       rows for the summary, each train and each stage; the check passes on
       them; and it FAILS once a stage's declared processing time moves.
 
+MULTIPRODUCT (2026-10-20, DEV.md 4c C110 G2).  `products ( ... )`,
+`campaignOrder ( ... )` and a stage's `productChangeover` make the plan
+several products in single-product campaigns (BatchPlanPass.H states the
+method).  NO tutorial carries the form: the witness is a PROBE built here from
+the same copy of apalutamide01 -- `production {}` replaced by three products
+(strengthA on the flowsheet's balance and the plan's lot; strengthB with its
+own lot, its own kg per kg of coating suspension, its own times, density and
+fill, and a 10 h coating clean before strengthC; strengthC one partial
+campaign on a slower packaging line), every stage given a clean between
+products (0 h on the spray-drying train, which makes the intermediate both
+share).  Every number in it is the probe's, chosen to exercise one rule each.
+
+  (h) THE PROBE: every product's lot, lots a year, production and equivalent
+      hours; every (product, stage)'s mass per product and per lot, size
+      factor, volume or rate, the four times, cycle, utilisation, offset and
+      the clean after the product's last campaign; every (product, train)'s
+      T_L, limiting stage, campaigns, lots in the last, first span, start in
+      the year, clean before the next product and required hours; every
+      stage's size (the LARGEST any product needs) and the product that sets
+      it, busy, idle, occupancy, largest utilisation; every train's
+      campaigns, product changes, changeover hours, required hours and
+      occupancy; every bar of the year's Gantt (ids, times, kinds) -- whose
+      last bar must end at the train's required time -- and the finding set,
+      all recomputed independently from the declaration and the published
+      stream masses.  The consequences follow the largest size: the vessels
+      `volume fromBatchPlan`, the scaled quotes, and the economics' stream
+      factor (sum Q / r_P x 8760).  The announcements reach stderr and the
+      advisories JSON, and the probe must still exercise what it claims
+      (a stage sized by strengthB, strengthB's changeoverTo taken, strengthC
+      in one partial campaign).
+  (i) THE ORDER IS A DECISION: the same probe in the order B A C needs
+      exactly 2 h a year less on the solid-dose train than A B C -- the
+      difference between strengthB's 10 h coating clean before strengthC and
+      the 8 h every other product change takes; both recompute.
+  (j) ONE PRODUCT THROUGH `products` IS THE ONE-PRODUCT PLAN: every lot,
+      cycle, offset, busy hour, size, finding and purchased cost to 1e-9
+      against the unmodified witness.
+  (k) REFUSALS, each named: `production` beside `products`; no
+      `campaignOrder`; an order that is not a permutation; a stage with no
+      `productChangeover`; `productChangeover` and `campaignOrder` in a
+      one-product plan; a duplicate product; `changeoverTo` naming itself;
+      a unitless `changeoverTo`; an override naming no stage, using a key its
+      stage type lacks, changing nothing, or with no source; `massPerProduct`
+      on the product stream, on a stream nothing reads, or with a unit; a
+      product with no lot anywhere; a plan lot every product overrides; a
+      stage busier than its year and a train whose year does not fit, each
+      naming the products' shares.
+  (l) PUBLISHED => PINNED: `--record` on the probe pins `batch` rows for the
+      summary, product, productTrain, productStage, stage and train records
+      (including the new keys), the check passes on them, and strengthB's
+      compression moved by 0.5 h fails it on its productStage row.
+  (a) also requires the one-product witness to publish NO multiproduct
+      record (`products`, `productStages`, `productTrains`, Gantt kinds).
+
 By-hand sabotages (2026-10-19), each run against this gate:
   S1  BatchPlanPass.cpp: `t.cycleTime = s.effectiveCycle` -> `s.cycleTime`
       (out-of-phase units ignored for T_L).  SURVIVED its first run: the
@@ -83,6 +137,31 @@ By-hand sabotages (2026-10-19), each run against this gate:
   S2 was caught by (a) and every fixture (suspensionPreparation's offset
   12.25 published against 11.75); S3 by (a) and every fixture (busy, occupancy
   and idle hours of every stage).
+
+By-hand sabotages of the multiproduct pass (2026-10-20), each run against
+arms (h)-(k) with the engine rebuilt:
+  S6  BatchPlanPass.cpp: the clean before the next product ADDED to the
+      same-product changeover (`pt.campaigns * t.changeover + pco`): caught
+      by (h), (i) and (j) -- every requiredTime and start 24 h off per
+      product, and the one-product twin no longer the one-product plan.
+  S7  BatchPlanPass.cpp: the stage sized by the LAST product instead of the
+      largest: caught by (h) and (i) (sizingProduct on nine stages, the
+      press's rate 87.5 against 100, two scaled quotes).
+  S8  BatchPlanPass.cpp: `changeoverTo` ignored, the stage's
+      productChangeover always taken: caught by (h) (strengthB's coating
+      clean 8 against 10, and everything downstream).  It SURVIVED arm (i)'s
+      first form, which compared the RECOMPUTED years of the two orders --
+      a recomputation moves with the order by construction, so the arm was
+      testing this gate's arithmetic and not the engine's; (i) now reads
+      the published years and catches it (0 h moved, 2 h recomputed).
+  S9  BatchPlanPass.cpp: the ownBalance announcement dropped: caught by (h)
+      and (i) (findings [] against ['ownBalance:strengthB']).
+  S10 BatchPlanPass.cpp: a `throughFedStage` discharge read from the STAGE's
+      default processing time instead of the PRODUCT's: caught by (h), (i)
+      and (j) (the solution tank's cycle 6 h against 53.14 h, the spray-
+      drying train's limiting stage and cycle, the one-product twin).
+  S11 BatchPlanPass.cpp: the `campaignOrder` requirement dropped (the
+      declaration order taken in silence): caught by (k) noOrder only.
 """
 
 import json
@@ -520,6 +599,433 @@ def check_consequences(tag, j, R):
     return len(vessels), nscaled
 
 
+# ------------------------------------------------- MULTIPRODUCT (C110 G2) -------
+#  The probe: a copy of the witness whose plan makes THREE products on the
+#  same trains, in a declared campaign order, each stage cleaned between
+#  products.  Every number is the probe's own, chosen to exercise one rule
+#  each (a product with its own lot, its own balance on one stream, its own
+#  times and densities, a sequence-dependent clean, a partial campaign);
+#  NOTHING here describes a real product.
+PCO = {"solutionPreparation": "0 h", "sprayDrying": "0 h", "blending": "4 h",
+       "granulation": "6 h", "finalBlending": "4 h", "compression": "8 h",
+       "suspensionPreparation": "2 h", "coating": "8 h", "packaging": "6 h"}
+
+PRODUCTS = """
+    products
+    (
+        {
+            product  strengthA;
+            perYear  20000 kg;
+            source   "probe (check_batch_plan, multiproduct arm)";
+            reason   "the high-volume strength, on the flowsheet's balance and the plan's lot";
+        }
+        {
+            product  strengthB;
+            perYear  8000 kg;
+            lot
+            {
+                rule declared;  stream finalBlend;  mass 300 kg;
+                source "probe";  reason "a smaller lot for the second strength";
+            }
+            massPerProduct { coatingSuspension 0.12; }
+            stages
+            (
+                { stage blending;  cleanTime 1.5 h;  source "probe";  reason "a stickier blend"; }
+                { stage finalBlending;  bulkDensity 550 kg/m3;  fillFraction 0.55;
+                  source "probe";  reason "a denser final blend"; }
+                { stage compression;  operatingTime 3 h;  source "probe";  reason "fewer, heavier tablets"; }
+                { stage coating;  processTime 3.5 h;  changeoverTo { strengthC 10 h; }
+                  source "probe";  reason "a darker coat, harder to clean out"; }
+                { stage packaging;  operatingTime 4 h;  source "probe";  reason "fewer tablets a lot"; }
+            );
+            source   "probe (check_batch_plan, multiproduct arm)";
+            reason   "a second strength with its own lot, coat and times";
+        }
+        {
+            product  strengthC;
+            perYear  1500 kg;
+            stages
+            (
+                { stage packaging;  operatingTime 9 h;  chargeTime 1.5 h;
+                  source "probe";  reason "a bottle line"; }
+            );
+            source   "probe (check_batch_plan, multiproduct arm)";
+            reason   "a small strength, one partial campaign";
+        }
+    );
+    campaignOrder ( ORDER );
+"""
+
+
+def multi_edit(order="strengthA strengthB strengthC", products=PRODUCTS, pco=PCO, extra=None):
+    """The witness's postDict made multiproduct: `production {}` replaced by
+    `products ( ... ); campaignOrder ( ... );`, and every stage given its
+    clean between products."""
+    def edit(t):
+        m = re.search(r"\n    production\n    \{.*?\n    \}\n", t, re.S)
+        if not m:
+            raise RuntimeError("production block not found")
+        t = t[:m.start()] + "\n" + products.replace("ORDER", order) + t[m.end():]
+        for st, v in (pco or {}).items():
+            t = stage_edit(t, st, "source ", f"productChangeover {v};\n            source ")
+        return extra(t) if extra else t
+    return edit
+
+
+def recompute_multi(case_dir, j):
+    """The multiproduct plan the DECLARATION implies (postDict + published
+    stream masses), recomputed here and independently of the engine."""
+    pd = read_dict(case_dir / "system" / "postDict")
+    bp = pd["batchPlan"]
+    streams = j["streams"]
+    rate = lambda s: streams[s]["F_mass"] * 3600.0
+    unit_type = {}
+    fs = read_dict(case_dir / "system" / "flowsheetDict")
+    for u in fs["units"]:
+        unit_type[u["name"][0]] = u["type"][0]
+    P = word(bp, "product")
+    rP = rate(P)
+    low = val(bp, "lowUtilisation") if "lowUtilisation" in bp else 0.25
+
+    trains = {}
+    for t in bp["trains"]:
+        trains[word(t, "train")] = dict(
+            avail=val(t, "availableTime"), nc=int(val(t, "lotsPerCampaign")),
+            co=val(t, "changeover"), stages=[])
+    base = {}
+    for s in bp["stages"]:
+        n = word(s, "stage")
+        b = dict(name=n, train=word(s, "train"), type=word(s, "type"),
+                 units=s["units"], holds=word(s, "holds"), feeds=word(s, "feeds"),
+                 nip=int(val(s, "inPhase")) if "inPhase" in s else 1,
+                 nop=int(val(s, "outOfPhase")) if "outOfPhase" in s else 1,
+                 d=s)
+        b["rate_fs"] = rate(b["holds"])
+        b["rated"] = [u for u in b["units"] if unit_type.get(u) == "sprayDryer"]
+        b["pco"] = val(s, "productChangeover") if "productChangeover" in s else None
+        b["vmax"] = val(s, "maxVolume") if "maxVolume" in s else None
+        base[n] = b
+        trains[b["train"]]["stages"].append(n)
+    for t in trains.values():
+        for k, n in enumerate(t["stages"]):
+            b = base[n]
+            if b["feeds"] == "none":
+                b["feeds"] = None
+            elif b["feeds"] is None and k + 1 < len(t["stages"]):
+                b["feeds"] = t["stages"][k + 1]
+
+    prods = bp["products"]
+    names = [word(p, "product") for p in prods]
+    order = bp.get("campaignOrder", names)
+    NP = len(order)
+    pdecl = {word(p, "product"): p for p in prods}
+    top_lot = bp.get("lot")
+
+    PR = {}
+    for i, pn in enumerate(order):
+        p = pdecl[pn]
+        Q = val(p, "perYear")
+        lot = p.get("lot", top_lot)
+        mpp = {k: float(v[0]) for k, v in p.get("massPerProduct", {}).items()}
+        ovr = {word(o, "stage"): o for o in p.get("stages", [])}
+        f = lambda s: mpp[s] if s in mpp else rate(s) / rP
+        nxt = order[(i + 1) % NP]
+        ps = {}
+        for n, b in base.items():
+            s, o = b["d"], ovr.get(n, {})
+            x = dict(f=f(b["holds"]))
+            x["charge"] = val(o, "chargeTime") if "chargeTime" in o else val(s, "chargeTime")
+            x["clean"] = val(o, "cleanTime") if "cleanTime" in o else val(s, "cleanTime")
+            if b["type"] == "batch":
+                x["rho"] = val(o, "bulkDensity") if "bulkDensity" in o else val(s, "bulkDensity")
+                x["phi"] = val(o, "fillFraction") if "fillFraction" in o else val(s, "fillFraction")
+                x["S"] = x["f"] / (x["rho"] * x["phi"])
+                x["proc"] = val(o, "processTime") if "processTime" in o else val(s, "processTime")
+                x["from"] = None
+            else:
+                src = o if "operatingTime" in o else s
+                if word(src, "operatingTime") == "fromFlowsheet":
+                    x["from"], x["proc"] = "flowsheet", None
+                else:
+                    x["from"], x["proc"] = "declared", val(src, "operatingTime")
+            src = o if "dischargeTime" in o else s
+            x["disch_fed"] = word(src, "dischargeTime") == "throughFedStage"
+            x["disch"] = None if x["disch_fed"] else val(src, "dischargeTime")
+            to = o.get("changeoverTo", {})
+            if NP < 2:
+                x["coAfter"] = trains[b["train"]]["co"]
+            elif nxt in to:
+                x["coAfter"] = val(to, nxt)
+            else:
+                x["coAfter"] = b["pco"]
+            ps[n] = x
+        rule = word(lot, "rule")
+        lot_lim = None
+        if rule == "declared":
+            B = val(lot, "mass") / f(word(lot, "stream"))
+        else:
+            B, lot_lim = min((base[n]["nip"] * base[n]["vmax"] / x["S"], n)
+                             for n, x in ps.items() if base[n]["type"] == "batch")
+        N = math.ceil(Q / B - 1e-9 * Q / B)
+        for n, x in ps.items():
+            b = base[n]
+            x["m"] = x["f"] * B
+            if b["type"] == "batch":
+                x["V"] = x["S"] * B
+                x["Vu"] = x["V"] / b["nip"]
+            else:
+                if x["from"] == "flowsheet":
+                    x["proc"] = x["m"] / (b["nip"] * b["rate_fs"])
+                x["R"] = x["m"] / x["proc"]
+                x["Ru"] = x["R"] / b["nip"]
+        for n, x in ps.items():
+            if x["disch_fed"]:
+                x["disch"] = ps[base[n]["feeds"]]["proc"]
+            x["t"] = x["charge"] + x["proc"] + x["disch"] + x["clean"]
+            x["teff"] = x["t"] / base[n]["nop"]
+        PR[pn] = dict(Q=Q, B=B, N=N, rule=rule, lot_lim=lot_lim, stages=ps,
+                      next=nxt, own=sorted(mpp))
+
+    gantt, findings, PT = {}, set(), {}
+    for tn, t in trains.items():
+        snames = t["stages"]
+        clock = 0.0
+        t["req"], t["camp"], t["coh"] = 0.0, 0, 0.0
+        for pn in order:
+            pr = PR[pn]
+            ps = pr["stages"]
+            TL, lim = -1.0, None
+            for n in snames:
+                if ps[n]["teff"] > TL + 1e-12:
+                    TL, lim = ps[n]["teff"], n
+            fed_by = {}
+            for n in snames:
+                if base[n]["feeds"]:
+                    fed_by.setdefault(base[n]["feeds"], []).append(n)
+            off = {}
+            for k, n in enumerate(snames):
+                if k == 0:
+                    off[n] = 0.0
+                    continue
+                starts = [off[g] + ps[g]["charge"] + ps[g]["proc"]
+                          for g in fed_by.get(n, []) if g in off]
+                if starts:
+                    off[n] = max(starts)
+            for n in reversed(snames):
+                if n in off:
+                    continue
+                if base[n]["feeds"]:
+                    tg = base[n]["feeds"]
+                    off[n] = off[tg] + ps[tg]["charge"] - ps[n]["charge"] - ps[n]["proc"]
+                else:
+                    off[n] = 0.0
+            omin = min(off.values())
+            for n in snames:
+                ps[n]["off"] = off[n] - omin
+                ps[n]["u"] = ps[n]["teff"] / TL
+                ps[n]["lim"] = (n == lim)
+            last = max(ps[n]["off"] + ps[n]["t"] for n in snames)
+            span = lambda k: last + (k - 1) * TL
+            nc, N = t["nc"], pr["N"]
+            camp = (N + nc - 1) // nc
+            full, rem = divmod(N, nc)
+            pco = max(ps[n]["coAfter"] for n in snames) if NP >= 2 else t["co"]
+            req = full * span(nc) + (span(rem) if rem else 0.0) + (camp - 1) * t["co"] + pco
+            PT[(pn, tn)] = dict(TL=TL, lim=lim, camp=camp,
+                               last_lots=rem if rem else min(nc, N),
+                               span=span(min(nc, N)), start=clock, pco=pco, req=req)
+            #  the year's Gantt on this train, from `clock`
+            c0 = clock
+            for k in range(1, camp + 1):
+                n_l = nc if k <= full else rem
+                gantt[f"gantt:{tn}:{pn}:campaign:{k}"] = (c0, c0 + span(n_l), 0, "campaign")
+                if k == 1:
+                    for n in snames:
+                        x = ps[n]
+                        for l in range(n_l):
+                            a = c0 + x["off"] + l * TL
+                            gantt[f"gantt:{tn}:{pn}:{n}:{l + 1}"] = (
+                                a, a + x["t"], (l % base[n]["nop"]) + 1, "lot")
+                c0 += span(n_l)
+                if k < camp or NP < 2:
+                    gantt[f"gantt:{tn}:{pn}:changeover:{k}"] = (c0, c0 + t["co"], 0, "changeover")
+                    c0 += t["co"]
+                else:
+                    gantt[f"gantt:{tn}:{pn}:productChangeover"] = (c0, c0 + pco, 0,
+                                                                   "productChangeover")
+                    for n in snames:
+                        gantt[f"gantt:{tn}:{pn}:{n}:clean"] = (c0, c0 + ps[n]["coAfter"], 0,
+                                                               "stageClean")
+                    c0 += pco
+            clock += req
+            t["req"] += req
+            t["camp"] += camp
+            t["coh"] += (camp - 1) * t["co"] + pco
+        t["occ"] = t["req"] / t["avail"]
+        if t["occ"] < low:
+            findings.add(f"idleTrain:{tn}")
+
+    ST = {}
+    for n, b in base.items():
+        t = trains[b["train"]]
+        busy = sum(PR[pn]["N"] * PR[pn]["stages"][n]["t"] / b["nop"]
+                   + (PT[(pn, b["train"])]["camp"] - 1) * t["co"]
+                   + PR[pn]["stages"][n]["coAfter"] for pn in order)
+        key = "Vu" if b["type"] == "batch" else "Ru"
+        best, who = -1.0, None
+        for pn in order:
+            v = PR[pn]["stages"][n][key]
+            if who is None or v > best * (1.0 + 1e-9):
+                best, who = v, pn
+        umax = max(PR[pn]["stages"][n]["u"] for pn in order)
+        lim = any(PR[pn]["stages"][n]["lim"] for pn in order)
+        ST[n] = dict(b, busy=busy, occ=busy / t["avail"], idle=t["avail"] - busy,
+                     sizing=who, umax=umax, limiting=lim,
+                     Vu=best if b["type"] == "batch" else None,
+                     Ru=best if b["type"] != "batch" else None)
+        if not lim and umax < low:
+            findings.add(f"lowUtilisation:{n}")
+        for pn in order:
+            x = PR[pn]["stages"][n]
+            if (x["from"] == "declared" and b["rated"]
+                    and abs(x["Ru"] / b["rate_fs"] - 1.0) > 0.01):
+                findings.add(f"capacityMismatch:{pn}:{n}")
+    for pn in order:
+        if PR[pn]["own"]:
+            findings.add(f"ownBalance:{pn}")
+    claimed = set(u for b in base.values() for u in b["units"])
+    unplanned = [u for u in unit_type if u not in claimed]
+    Qt = sum(PR[pn]["Q"] for pn in order)
+    return dict(rP=rP, Q=Qt, order=order, products=PR, ptrains=PT, stages=ST,
+                trains=trains, gantt=gantt, findings=findings, unplanned=unplanned,
+                N=sum(PR[pn]["N"] for pn in order),
+                prod=sum(PR[pn]["N"] * PR[pn]["B"] for pn in order),
+                Heq=Qt / rP, SF=Qt / rP / 8760.0, pd=pd)
+
+
+def compare_multi(tag, case_dir, j):
+    """Hold a multiproduct block to `recompute_multi`; return it."""
+    b = j.get("batchPlan")
+    if not b:
+        fail(f"{tag}: no `batchPlan` block in the result JSON")
+        return None
+    R = recompute_multi(case_dir, j)
+    bad = []
+
+    def chk(what, got, want):
+        if got is None or not close(float(got), float(want)):
+            bad.append(f"{what} published {got} recomputed {want:.9g}")
+
+    s = b["summary"]
+    for k, w in (("productRate", R["rP"]), ("productPerYear", R["Q"]),
+                 ("lotsPerYear", R["N"]), ("production", R["prod"]),
+                 ("equivalentHours", R["Heq"]), ("streamFactor", R["SF"]),
+                 ("products", len(R["order"]))):
+        chk(f"summary {k}", s.get(k), w)
+    if s.get("campaignOrder") != R["order"]:
+        bad.append(f"campaignOrder {s.get('campaignOrder')} != {R['order']}")
+    if sorted(s["unplannedUnits"]) != sorted(R["unplanned"]):
+        bad.append("unplannedUnits")
+    pub = {p["name"]: p for p in b.get("products", [])}
+    if list(pub) != R["order"]:
+        bad.append(f"products published {list(pub)}, the order is {R['order']}")
+    for pn, r in R["products"].items():
+        p = pub.get(pn)
+        if not p:
+            continue
+        chk(f"product {pn} lotSize", p["lotSize"], r["B"])
+        chk(f"product {pn} lotsPerYear", p["lotsPerYear"], r["N"])
+        chk(f"product {pn} production", p["production"], r["N"] * r["B"])
+        chk(f"product {pn} equivalentHours", p["equivalentHours"], r["Q"] / R["rP"])
+        if p["next"] != r["next"]:
+            bad.append(f"product {pn} next {p['next']} != {r['next']}")
+        if sorted(p["ownBalance"]) != r["own"]:
+            bad.append(f"product {pn} ownBalance {p['ownBalance']} != {r['own']}")
+        if r["lot_lim"] and p.get("lotLimitingStage") != r["lot_lim"]:
+            bad.append(f"product {pn} lotLimitingStage {p.get('lotLimitingStage')}")
+    pt = {(x["product"], x["train"]): x for x in b.get("productTrains", [])}
+    for key, r in R["ptrains"].items():
+        x = pt.get(key)
+        if not x:
+            bad.append(f"productTrain {key} missing")
+            continue
+        if x["limitingStage"] != r["lim"]:
+            bad.append(f"productTrain {key} limiting {x['limitingStage']} != {r['lim']}")
+        for k, w in (("cycleTime", "TL"), ("campaigns", "camp"),
+                     ("lotsLastCampaign", "last_lots"), ("campaignSpan", "span"),
+                     ("start", "start"), ("productChangeover", "pco"),
+                     ("requiredTime", "req")):
+            chk(f"productTrain {key} {k}", x[k], r[w])
+    pst = {(x["product"], x["stage"]): x for x in b.get("productStages", [])}
+    for pn, pr in R["products"].items():
+        for n, r in pr["stages"].items():
+            x = pst.get((pn, n))
+            if not x:
+                bad.append(f"productStage {pn}:{n} missing")
+                continue
+            pairs = [("massPerProduct", "f"), ("massPerLot", "m"), ("chargeTime", "charge"),
+                     ("processTime", "proc"), ("dischargeTime", "disch"),
+                     ("cleanTime", "clean"), ("cycleTime", "t"), ("effectiveCycle", "teff"),
+                     ("utilisation", "u"), ("offset", "off"), ("changeoverAfter", "coAfter")]
+            if R["stages"][n]["type"] == "batch":
+                pairs += [("sizeFactor", "S"), ("volume", "V"), ("volumePerUnit", "Vu")]
+            else:
+                pairs += [("rate", "R"), ("ratePerUnit", "Ru")]
+            for k, w in pairs:
+                chk(f"productStage {pn}:{n} {k}", x.get(k), r[w])
+            if (x["limiting"] == "yes") != r["lim"]:
+                bad.append(f"productStage {pn}:{n} limiting flag")
+    for st in b["stages"]:
+        r = R["stages"][st["name"]]
+        if r["type"] == "batch":
+            chk(f"stage {st['name']} volumePerUnit", st.get("volumePerUnit"), r["Vu"])
+        else:
+            chk(f"stage {st['name']} ratePerUnit", st.get("ratePerUnit"), r["Ru"])
+        for k, w in (("busyHours", "busy"), ("occupancy", "occ"), ("idleHours", "idle"),
+                     ("maxUtilisation", "umax")):
+            chk(f"stage {st['name']} {k}", st.get(k), r[w])
+        if st.get("sizingProduct") != r["sizing"]:
+            bad.append(f"stage {st['name']} sizingProduct {st.get('sizingProduct')}"
+                       f" != {r['sizing']}")
+        if (st["limiting"] == "yes") != r["limiting"]:
+            bad.append(f"stage {st['name']} limiting flag")
+        if r["pco"] is not None:
+            chk(f"stage {st['name']} productChangeover", st.get("productChangeover"), r["pco"])
+        if st["unitsInstalled"] != r["nip"] * r["nop"]:
+            bad.append(f"stage {st['name']} unitsInstalled")
+    for t in b["trains"]:
+        r = R["trains"][t["name"]]
+        for k, w in (("campaigns", "camp"), ("requiredTime", "req"), ("occupancy", "occ"),
+                     ("changeoverHours", "coh")):
+            chk(f"train {t['name']} {k}", t.get(k), r[w])
+        chk(f"train {t['name']} productChangeovers", t.get("productChangeovers"),
+            len(R["order"]) if len(R["order"]) >= 2 else 0)
+    pub_g = {g["id"]: g for g in b["gantt"]}
+    if set(pub_g) != set(R["gantt"]):
+        bad.append(f"gantt ids differ: extra {sorted(set(pub_g) - set(R['gantt']))[:3]}"
+                   f" missing {sorted(set(R['gantt']) - set(pub_g))[:3]}")
+    for gid, (a, e, u, kind) in R["gantt"].items():
+        g = pub_g.get(gid)
+        if g and (not close(g["start"], a) or not close(g["end"], e) or g["unit"] != u
+                  or g.get("kind") != kind):
+            bad.append(f"{gid} [{g['start']}, {g['end']}] u{g['unit']} {g.get('kind')}"
+                       f" recomputed [{a:.6g}, {e:.6g}] u{u} {kind}")
+    for tn, t in R["trains"].items():
+        ends = [e for gid, (a, e, u, k) in R["gantt"].items()
+                if gid.startswith(f"gantt:{tn}:") and k in ("changeover", "productChangeover")]
+        if not ends or not close(max(ends), t["req"]):
+            bad.append(f"train {tn}: the year's Gantt does not end at its required time")
+    got_f = set(f["id"] for f in b["findings"])
+    if got_f != R["findings"]:
+        bad.append(f"findings {sorted(got_f)} recomputed {sorted(R['findings'])}")
+    if s["findings"] != len(b["findings"]):
+        bad.append("summary findings count")
+    if bad:
+        fail(f"{tag}: " + "; ".join(bad[:8])
+             + (f" (+{len(bad) - 8} more)" if len(bad) > 8 else ""))
+    return R
+
+
 # ------------------------------------------------- the arms ----------------------
 def arm_witness(work):
     d = copy_witness(work, "witness")
@@ -543,6 +1049,11 @@ def arm_witness(work):
             fail(f"(c) finding {f['id']} is not in the advisories JSON")
     if not b["findings"]:
         fail("(c) the witness raises no finding, so the three surfaces are untested")
+    for k in ("products", "productStages", "productTrains"):
+        if k in b or k in b["summary"]:
+            fail(f"(f) the one-product witness publishes a multiproduct `{k}`")
+    if any(g.get("kind") or g.get("product") for g in b["gantt"]):
+        fail("(f) the one-product witness's Gantt carries multiproduct fields")
     ns = len(b["stages"])
     claims.append(f"(a) the witness's {ns} stages in {len(b['trains'])} trains"
                   f" recompute (lot {R['B']:.4g} kg, {R['N']} lots/yr, T_L "
@@ -578,7 +1089,7 @@ def arm_announcements(work):
 
 def arm_rules(work):
     def largest(t):
-        t = sub(t, "        rule     declared;\n        stream   finalBlend;\n        mass     350 kg;",
+        t = sub(t, "        rule     declared;\n        stream   finalBlend;\n        mass     400 kg;",
                 "        rule     largestEquipment;")
         for st, v in (("solutionPreparation", "3 m3"), ("blending", "1.2 m3"),
                       ("finalBlending", "1.5 m3"), ("suspensionPreparation", "0.2 m3"),
@@ -621,7 +1132,7 @@ def arm_rules(work):
 REFUSALS = [
     ("stageBusy", lambda t: sub(t, "availableTime   3840 h;", "availableTime   100 h;"),
      ["stage 'blending' is busy", "outOfPhase 2"]),
-    ("trainLong", lambda t: sub(t, "availableTime   3840 h;", "availableTime   1300 h;"),
+    ("trainLong", lambda t: sub(t, "availableTime   3840 h;", "availableTime   400 h;"),
      ["train 'solidDose' needs", "unreachable"]),
     ("bareTime", lambda t: stage_edit(t, "blending", "processTime 0.5 h;", "processTime 0.5;"),
      ["carries no unit"]),
@@ -728,6 +1239,281 @@ def arm_golden(work):
                   " stage:coating row")
 
 
+
+def arm_multiproduct(work):
+    """(h) the three-product probe recomputes, and its consequences follow
+    the LARGEST size any product needs; (i) the order moves the year."""
+    d = copy_witness(work, "multi", multi_edit())
+    out, err, rc, j = solve(d)
+    if rc != 0 or not j:
+        fail(f"(h) the multiproduct probe did not run (exit {rc}): {err[-400:]}")
+        return
+    j["_out"] = out
+    R = compare_multi("(h) multiproduct", d, j)
+    if R is None:
+        return
+    nv, nq = check_consequences("(h) multiproduct", j, R)
+    b = j["batchPlan"]
+    for f in b["findings"]:
+        if f"[batchPlan] {f['message']}" not in err:
+            fail(f"(h) finding {f['id']} is not on stderr")
+        if not any(a.get("locus") == f["id"] for a in j.get("advisories", [])):
+            fail(f"(h) finding {f['id']} is not in the advisories JSON")
+    if "ownBalance:strengthB" not in R["findings"]:
+        fail("(h) strengthB's own coat raised no ownBalance announcement")
+    # the probe must exercise what it claims to
+    sz = {n: s["sizing"] for n, s in R["stages"].items()}
+    if "strengthB" not in sz.values():
+        fail("(h) no stage is sized by strengthB -- the max-over-products rule is untested")
+    if R["products"]["strengthB"]["stages"]["coating"]["coAfter"] != 10.0:
+        fail("(h) strengthB's coating clean before strengthC is not its changeoverTo")
+    if R["ptrains"][("strengthC", "solidDose")]["camp"] != 1 or \
+            R["products"]["strengthC"]["N"] >= R["trains"]["solidDose"]["nc"]:
+        fail("(h) strengthC is no longer one partial campaign")
+    sd = R["trains"]["solidDose"]
+    lots = ", ".join("%s %d lots of %.4g kg" % (p, r["N"], r["B"])
+                     for p, r in R["products"].items())
+    claims.append(
+        f"(h) a three-product probe recomputes ({lots};"
+        f" solidDose {sd['camp']} campaigns, {sd['coh']:.4g} h of changeovers, {sd['req']:.6g} h/yr;"
+        f" {len(b['gantt'])} Gantt bars ending at each train's required time; findings"
+        f" {sorted(R['findings'])}); {nv} vessel(s) and {nq} scaled quote(s) take the"
+        " largest size any product needs, the economics sum Q / r_P")
+
+    # (i) the order is the student's decision and it moves the year
+    d2 = copy_witness(work, "multi_order", multi_edit(order="strengthB strengthA strengthC"))
+    out2, err2, rc2, j2 = solve(d2)
+    if rc2 != 0 or not j2:
+        fail(f"(i) the reordered probe did not run (exit {rc2})")
+        return
+    R2 = compare_multi("(i) reordered", d2, j2)
+    if R2 is None:
+        return
+    #  The PUBLISHED years, not the recomputed ones: the recomputation moves
+    #  with the order by construction, so comparing it would test this gate's
+    #  arithmetic and not the engine's (sabotage S8 survived this arm until
+    #  it read the result JSON).
+    pub = lambda jj: next(t["requiredTime"] for t in jj["batchPlan"]["trains"]
+                          if t["name"] == "solidDose")
+    a, c = pub(j), pub(j2)
+    # A B C: B -> C coats with the 10 h clean; B A C: every product change takes 8 h
+    if not close(a - c, 2.0, 1e-9):
+        fail(f"(i) the order A B C against B A C moved solidDose by {a - c:.9g} h,"
+             " recomputed 2 h (strengthB's 10 h coating clean before strengthC)")
+    else:
+        claims.append(f"(i) the declared order moves the year: A B C needs {a:.6g} h on"
+                      f" solidDose, B A C {c:.6g} h (the 2 h of strengthB's coating"
+                      " clean before strengthC)")
+
+
+#  The one product's demand is READ from the witness's own `production {}`,
+#  never typed here: a copy of it went stale the day the witness was re-based
+#  on its design-basis dossier (C110 G1, 30000 -> 10156 kg), and arm (j) then
+#  compared two different plants.
+ONE_PRODUCT = """
+    products
+    (
+        {
+            product  only;
+            perYear  %s;
+            source   "probe";
+            reason   "one product through the multiproduct path";
+        }
+    );
+"""
+
+
+def witness_per_year():
+    m = re.search(r"^\s*perYear\s+([^;]+);", (WITNESS / "system/postDict").read_text(), re.M)
+    if not m:
+        raise RuntimeError("the witness declares no `perYear` in its production block")
+    return m.group(1).strip()
+
+
+def arm_one_product(work):
+    """(j) one product through the multiproduct path IS the single plan."""
+    ds = copy_witness(work, "single_ref")
+    outs, errs, rcs, js = solve(ds)
+    d = copy_witness(work, "one", multi_edit(products=ONE_PRODUCT % witness_per_year(), pco=None))
+    out, err, rc, j = solve(d)
+    if rcs != 0 or rc != 0 or not js or not j:
+        fail(f"(j) the one-product probe or its single twin did not run ({rcs}, {rc})")
+        return
+    R = compare_multi("(j) one product", d, j)
+    if R is None:
+        return
+    s, m = js["batchPlan"], j["batchPlan"]
+    bad = []
+    ps = m["products"][0]
+    for k in ("lotSize", "lotsPerYear", "production", "equivalentHours"):
+        if not close(ps[k], s["summary"][k], 1e-9):
+            bad.append(f"{k} {ps[k]} != {s['summary'][k]}")
+    if not close(m["summary"]["streamFactor"], s["summary"]["streamFactor"], 1e-12):
+        bad.append("streamFactor")
+    pt = {x["train"]: x for x in m["productTrains"]}
+    for t in s["trains"]:
+        x, mt = pt[t["name"]], next(u for u in m["trains"] if u["name"] == t["name"])
+        for k in ("cycleTime", "campaigns", "campaignSpan"):
+            if not close(x[k], t[k], 1e-9):
+                bad.append(f"train {t['name']} {k} {x[k]} != {t[k]}")
+        if x["limitingStage"] != t["limitingStage"]:
+            bad.append(f"train {t['name']} limiting")
+        for k in ("requiredTime", "occupancy", "campaigns"):
+            if not close(mt[k], t[k], 1e-9):
+                bad.append(f"train {t['name']} {k} {mt[k]} != {t[k]}")
+    pst = {x["stage"]: x for x in m["productStages"]}
+    mst = {x["name"]: x for x in m["stages"]}
+    for st in s["stages"]:
+        x, ms = pst[st["name"]], mst[st["name"]]
+        for k in ("massPerLot", "processTime", "dischargeTime", "cycleTime", "offset",
+                  "utilisation"):
+            if not close(x[k], st[k], 1e-9):
+                bad.append(f"stage {st['name']} {k} {x[k]} != {st[k]}")
+        for k in ("busyHours", "occupancy", "idleHours") + (
+                ("volumePerUnit",) if st["type"] == "batch" else ("ratePerUnit",)):
+            if not close(ms[k], st[k], 1e-9):
+                bad.append(f"stage {st['name']} {k} {ms[k]} != {st[k]}")
+    if sorted(f["id"] for f in s["findings"]) != sorted(f["id"] for f in m["findings"]):
+        bad.append("findings")
+    eqs = {e["item"]: e["cost"]["purchased"] for e in js.get("equipment", [])
+           if (e.get("cost") or {}).get("purchased") is not None}
+    eqm = {e["item"]: e["cost"]["purchased"] for e in j.get("equipment", [])
+           if (e.get("cost") or {}).get("purchased") is not None}
+    for k, v in eqs.items():
+        if k not in eqm or not close(eqm[k], v, 1e-9):
+            bad.append(f"C_p {k} {eqm.get(k)} != {v}")
+    if bad:
+        fail("(j) one product through the multiproduct path is not the single plan: "
+             + "; ".join(bad[:8]))
+    else:
+        claims.append(f"(j) one product declared in `products` reproduces the single"
+                      f" plan (every lot, cycle, offset, busy hour, size, finding and"
+                      f" all {len(eqs)} purchased costs, to 1e-9)")
+
+
+MULTI_REFUSALS = [
+    ("productionBeside", multi_edit(extra=lambda t: sub(
+        t, "    products\n", "    production { perYear 1 kg; source \"x\"; reason \"y\"; }\n    products\n")),
+     ["two homes"]),
+    ("noOrder", multi_edit(extra=lambda t: re.sub(r"\n    campaignOrder \([^)]*\);", "", t)),
+     ["campaignOrder", "does not"]),
+    ("badOrder", multi_edit(order="strengthA strengthB strengthB"),
+     ["exactly once"]),
+    ("noPco", multi_edit(pco={k: v for k, v in PCO.items() if k != "coating"}),
+     ["'coating'", "productChangeover"]),
+    ("pcoSingle", lambda t: stage_edit(t, "coating", "cleanTime 1 h;",
+                                       "cleanTime 1 h;  productChangeover 4 h;"),
+     ["read by nothing"]),
+    ("orderSingle", lambda t: sub(t, "    lowUtilisation", "    campaignOrder ( x );\n    lowUtilisation"),
+     ["read by nothing"]),
+    ("dupProduct", multi_edit(extra=lambda t: sub(t, "product  strengthC;", "product  strengthA;")),
+     ["second product"]),
+    ("toSelf", multi_edit(extra=lambda t: sub(t, "changeoverTo { strengthC 10 h; }",
+                                              "changeoverTo { strengthB 10 h; }")),
+     ["ANOTHER product"]),
+    ("toUnitless", multi_edit(extra=lambda t: sub(t, "changeoverTo { strengthC 10 h; }",
+                                                  "changeoverTo { strengthC 10; }")),
+     ["carries no unit"]),
+    ("unknownStage", multi_edit(extra=lambda t: sub(t, "{ stage blending;  cleanTime 1.5 h;",
+                                                    "{ stage blendng;  cleanTime 1.5 h;")),
+     ["blendng", "names no stage"]),
+    ("wrongKey", multi_edit(extra=lambda t: sub(t, "{ stage compression;  operatingTime 3 h;",
+                                                "{ stage compression;  processTime 3 h;")),
+     ["processTime", "semicontinuous"]),
+    ("emptyOverride", multi_edit(extra=lambda t: sub(t, "{ stage blending;  cleanTime 1.5 h;",
+                                                     "{ stage blending;")),
+     ["changes nothing"]),
+    ("overrideNoSource", multi_edit(extra=lambda t: sub(
+        t, '{ stage blending;  cleanTime 1.5 h;  source "probe";', "{ stage blending;  cleanTime 1.5 h;")),
+     ["`source", "blending"]),
+    ("mppProduct", multi_edit(extra=lambda t: sub(t, "massPerProduct { coatingSuspension 0.12; }",
+                                                  "massPerProduct { packagedTablets 0.9; }")),
+     ["product stream itself"]),
+    ("mppUnread", multi_edit(extra=lambda t: sub(t, "massPerProduct { coatingSuspension 0.12; }",
+                                                 "massPerProduct { granules 0.5; }")),
+     ["granules", "read by nothing"]),
+    ("mppUnit", multi_edit(extra=lambda t: sub(t, "massPerProduct { coatingSuspension 0.12; }",
+                                               "massPerProduct { coatingSuspension 0.12 kg; }")),
+     ["RATIO"]),
+    ("noLotAnywhere", multi_edit(extra=lambda t: re.sub(
+        r"\n    lot\n    \{.*?\n    \}\n", "\n", t, count=1, flags=re.S)),
+     ["strengthA", "no `lot {}`"]),
+    ("lotUnread", multi_edit(extra=lambda t: _all_own_lots(t)),
+     ["read by nothing"]),
+    ("multiStageBusy", multi_edit(extra=lambda t: sub(t, "perYear  20000 kg;", "perYear  200000 kg;")),
+     ["stage '", "strengthA", "lots x", "cannot be run"]),
+    #  1100 h sits between the probe's busiest solid-dose stage (packaging,
+    #  998 h) and the train's required year (1224.75 h with its product
+    #  changeovers) on the re-based witness (C110 G1), so the TRAIN refuses
+    #  and no single stage does.
+    ("multiTrainLong", multi_edit(extra=lambda t: sub(t, "availableTime   3840 h;", "availableTime   1100 h;")),
+     ["train 'solidDose' needs", "changeovers", "unreachable"]),
+]
+
+
+def _all_own_lots(t):
+    own = ("            lot\n            {\n                rule declared;  stream finalBlend;"
+           "  mass 350 kg;\n                source \"probe\";  reason \"its own\";\n            }\n")
+    t = sub(t, "            perYear  20000 kg;\n", "            perYear  20000 kg;\n" + own)
+    return sub(t, "            perYear  1500 kg;\n", "            perYear  1500 kg;\n" + own)
+
+
+def arm_multi_refusals(work):
+    n = 0
+    for tag, edit, want in MULTI_REFUSALS:
+        try:
+            d = copy_witness(work, "mref_" + tag, edit)
+        except RuntimeError as e:
+            fail(f"(k) {tag}: fixture could not be built ({e})")
+            continue
+        out, err, rc, _ = solve(d)
+        text = out + err
+        if rc == 0:
+            fail(f"(k) {tag}: ran to exit 0 -- not refused")
+        elif not all(w in text for w in want):
+            tail = (err.strip().splitlines() or ["(no stderr)"])[-1][:240]
+            fail(f"(k) {tag}: refused (exit {rc}) without naming {want}: {tail}")
+        n += 1
+    claims.append(f"(k) {n} multiproduct refusals fire, each naming its defect")
+
+
+def arm_multi_golden(work):
+    d = copy_witness(work, "mgolden", multi_edit())
+    out, err, rc = run([str(ROOT / "bin/runTests"), "--record", str(d)], timeout=1200)
+    exp = d / "expected"
+    if rc != 0 or not exp.exists():
+        fail(f"(l) runTests --record on the multiproduct probe exited {rc}")
+        return
+    rows = [l for l in exp.read_text().splitlines() if l.startswith("batch ")]
+    ids = set(l.split()[1].split(":")[0] for l in rows)
+    for k in ("batchPlan", "product", "train", "stage", "productTrain", "productStage"):
+        if k not in ids:
+            fail(f"(l) the recorded golden pins no `batch` row for {k}")
+            return
+    keys = set(l.split()[2] for l in rows)
+    for k in ("changeoverAfter", "productChangeover", "changeoverHours", "sizingProduct",
+              "maxUtilisation", "lotsLastCampaign", "start", "perYear"):
+        if k not in keys:
+            fail(f"(l) the recorded golden pins no `{k}` row")
+            return
+    out, err, rc = run([str(ROOT / "bin/runTests"), str(d)], timeout=1200)
+    if rc != 0 or "FAIL 0" not in out:
+        fail(f"(l) runTests on the freshly recorded probe did not pass (exit {rc})")
+        return
+    pd = d / "system" / "postDict"
+    pd.write_text(sub(pd.read_text(), "{ stage compression;  operatingTime 3 h;",
+                      "{ stage compression;  operatingTime 3.5 h;"))
+    out, err, rc = run([str(ROOT / "bin/runTests"), str(d)], timeout=1200)
+    if rc == 0 or "productStage:strengthB:compression" not in out:
+        fail("(l) strengthB's compression time moved by 0.5 h did not fail the golden"
+             " on its productStage:strengthB:compression row")
+        return
+    claims.append(f"(l) --record pins {len(rows)} `batch` rows on the probe (summary,"
+                  " product, productTrain, productStage, stage, train), the check passes"
+                  " on them, and strengthB's compression moved by 0.5 h fails it on"
+                  " its productStage row")
+
+
 def main():
     argv = sys.argv[1:]
     keep = Path(argv[argv.index("--keep") + 1]).resolve() if "--keep" in argv else None
@@ -746,6 +1532,10 @@ def main():
         arm_refusals(work)
         arm_absent(work)
         arm_golden(work)
+        arm_multiproduct(work)
+        arm_one_product(work)
+        arm_multi_refusals(work)
+        arm_multi_golden(work)
     finally:
         if not keep:
             shutil.rmtree(work, ignore_errors=True)
@@ -757,8 +1547,11 @@ def main():
     print("check_batch_plan: OK -- " + "; ".join(claims)
           + ".  NOT COVERED: whether a declared time, density, fill or lot is"
           " right for the product (the case's assumption), the intermediate"
-          " store's size (not computed), multiproduct sequencing (not built),"
-          " and the scaled quote's exponent (the case's convention).")
+          " store's size (not computed), whether a declared campaign order is"
+          " a GOOD one (no optimiser: the student's decision), campaigns of"
+          " different products overlapping on a train (not built), several"
+          " rotations a year (not built), and the scaled quote's exponent (the"
+          " case's convention).")
     return 0
 
 

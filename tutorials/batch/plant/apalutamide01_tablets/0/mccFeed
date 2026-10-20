@@ -10,11 +10,11 @@
      componentMassFlows is the OVERALL material (all phases); a phases{} block, when present,
      is a decomposition that sums back to it exactly. ---*/
 
-//  Microcrystalline cellulose: 150 mg per tablet PRESSED (12 800 tablets/h, the flowsheet basis) -- AUTHOR-SET formulation, see README section 2.  (1.92 kg/h.)
+//  Microcrystalline cellulose, ALL intragranular: 295.5 mg per tablet PRESSED (15 625 tablets/h, the flowsheet basis) -- PAT-HPMCAS Ex. 3.2 (US 12,303,493 B2), dossier section 1.4.  (4.6171875 kg/h.)
 
 componentMolarFlows
 {
-    microcrystallineCellulose    0.01184161835 kmol/h;
+    microcrystallineCellulose    0.02847654804 kmol/h;
 }
 
 T               298.15 K;
@@ -26,7 +26,7 @@ phases
     {
         componentMolarFlows
         {
-            microcrystallineCellulose 0.01184161835 kmol/h;
+            microcrystallineCellulose 0.02847654804 kmol/h;
         }
     }
 }

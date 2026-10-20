@@ -1,0 +1,32 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*--- Choupo stream state.  Every DIMENSIONAL value carries its unit; the parser converts to SI.
+     componentMassFlows is the OVERALL material (all phases); a phases{} block, when present,
+     is a decomposition that sums back to it exactly. ---*/
+
+//  Colloidal anhydrous silica, INTRAgranular (10/13 of 9.1 mg): 7 mg per tablet PRESSED (15 625 tablets/h, the flowsheet basis) -- PAT-HPMCAS Ex. 3.2 (US 12,303,493 B2), dossier section 1.4.  (0.109375 kg/h.)
+
+componentMolarFlows
+{
+    colloidalSilica              0.001820368151 kmol/h;
+}
+
+T               298.15 K;
+P               1.01325 bar;
+
+phases
+{
+    solid
+    {
+        componentMolarFlows
+        {
+            colloidalSilica          0.001820368151 kmol/h;
+        }
+    }
+}

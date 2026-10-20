@@ -457,7 +457,7 @@ export const LS_STEPS: readonly LessonStep[] = [
     note: "One home for the rule: src/propertyOps/CurationDossier.cpp:59-63, "
       + "five lines you can read end to end. The verdict is taken ONCE in the "
       + "run (FitParameters.cpp:1372) and travels to every sink from there "
-      + "through src/propertyOps/PropertyOperation.H:116, the channel that "
+      + "through src/propertyOps/PropertyOperation.H:118, the channel that "
       + "carries the CURATION axis as words — "
       + "it used to be recomputed at three call sites, one of them inside a "
       + "verbosity test, and a verdict that depends on how loudly the run was "

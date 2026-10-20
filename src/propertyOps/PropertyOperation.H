@@ -57,6 +57,8 @@ Description
 #include <map>
 #include <memory>
 #include <string>
+#include <utility>
+#include <vector>
 
 namespace Choupo {
 
@@ -120,6 +122,20 @@ public:
     // Default empty = no ranking, every diagnostic shown equally.  Keys the
     // run did not produce are simply ignored downstream.
     virtual std::vector<std::string> headline() const { return {}; }
+
+    // A TOP-LEVEL RESULT BLOCK OF THE OP'S OWN (2026-10-20, DEV.md 4c C118).
+    // `diagnostics()` carries NUMBERS keyed by word, which is the right shape
+    // for a fit statistic and the wrong one for a scan's per-point phase
+    // table: the Explorer lens needs the points, the events and the
+    // refusals as STRUCTURE.  An op that has such a block returns
+    // {blockName, jsonObject}; main groups every op's object under
+    // `"<blockName>": [ ... ]` beside `operationResults`.  Empty name = none
+    // (the default), and empty MEANS "this op publishes no block", never
+    // "the block did not run".  PUBLISHED IMPLIES PINNED: every number in a
+    // block must have a home a golden kind reads (the op's own CSV through
+    // the `csv` kind, or a diagnostic), and the op's header says which.
+    virtual std::pair<std::string, std::string> resultBlock() const
+    { return {}; }
 
     // Optional setters used by ops that need to RE-BUILD the thermoPackage
     // each iteration (e.g. `fitParameters` mutates pair coefficients and

@@ -84,6 +84,9 @@ struct BatchStage
     std::string ratingUnit;     // the unit whose hardware rates it ("" = none)
 
     std::string sizeKind;       // volume | massRate
+    //  MULTIPRODUCT only (empty / zero for one product): the size above is
+    //  the LARGEST any product needs, and this is the product that needs it.
+    std::string sizingProduct;
     int    inPhase        = 1;  // N_ip, units sharing one lot
     int    outOfPhase     = 1;  // N_op, units taking alternate lots
     int    unitsInstalled = 1;  // N_ip x N_op
@@ -101,6 +104,11 @@ struct BatchStage
     scalar busyHours      = 0;  // [h/yr] per unit
     scalar occupancy      = 0;  // [-] busyHours / the train's available time
     scalar idleHours      = 0;  // [h/yr] per unit
+
+    //  MULTIPRODUCT only: the stage's clean between campaigns of DIFFERENT
+    //  products (declared) and its largest cycle utilisation over them.
+    scalar productChangeover = 0;  // [h]
+    scalar maxUtilisation    = 0;  // [-] max over products of t_ij / (N_op T_L,i)
 };
 
 //  One TRAIN: stages that run lot by lot together; two trains are decoupled
@@ -120,16 +128,93 @@ struct BatchTrain
     scalar campaignDuration = 0;  // [h] span + changeover
     scalar requiredTime     = 0;  // [h/yr] every campaign of the year
     scalar occupancy        = 0;  // [-] requiredTime / availableTime
+
+    //  MULTIPRODUCT only (cycleTime, limitingStage and the spans are then
+    //  per product, in BatchProductTrain):
+    int    productChangeovers = 0;  // product changes a year (one per product)
+    scalar changeoverHours    = 0;  // [h/yr] every changeover of the year
 };
 
 //  One bar of a train's FIRST campaign (every later campaign repeats it,
 //  shifted by the campaign duration; the last may hold fewer lots).
+//  MULTIPRODUCT: one bar of the train's YEAR in the declared campaign order
+//  -- every campaign and every changeover, the lots of each product's first
+//  campaign, and each stage's own clean at a product change -- timed from
+//  the start of the year's first campaign.
 struct BatchGanttRow
 {
     std::string train, stage;     // stage "changeover" for the train's clean
     int    lot   = 0;             // 1-based; 0 for the changeover
     int    unit  = 0;             // 1-based out-of-phase unit; 0 changeover
     scalar start = 0, end = 0;    // [h] from the campaign's start
+    //  multiproduct only
+    std::string product;
+    std::string kind;             // lot | campaign | changeover | productChangeover | stageClean
+    int    campaign = 0;          // 1-based campaign of `product` (campaign, changeover)
+    int    lots     = 0;          // lots in that campaign (campaign bars)
+};
+
+//  ---- MULTIPRODUCT (2026-10-20, DEV.md 4c C110 G2) -----------------------
+//  Several products made on the same stages in single-product campaigns, in
+//  a DECLARED order; `postProcessing/BatchPlanPass.H` states the method.
+//  Absent (one product), all three lists are empty and nothing above moves.
+
+//  One PRODUCT: its demand, its lot, its lots a year.
+struct BatchProduct
+{
+    std::string name;
+    std::string source, reason;
+    scalar perYear        = 0;   // [kg/yr] Q_i, declared
+    std::string lotFrom;         // plan (the plan's `lot`) | product (its own)
+    std::string lotRule;         // declared | largestEquipment
+    std::string lotStream;
+    scalar lotStreamMass  = 0;   // [kg]
+    std::string lotLimitingStage;
+    std::string lotSource, lotReason;
+    scalar lotSize        = 0;   // [kg of product] B_i
+    int    lotsPerYear    = 0;   // N_i = ceil(Q_i / B_i)
+    scalar production     = 0;   // [kg/yr] N_i B_i
+    scalar equivalentHours = 0;  // [h/yr] Q_i / r_P
+    std::vector<std::string> ownBalance;  // streams whose kg per kg it declares
+    std::string next;            // the product its last campaign hands over to
+};
+
+//  One product at one stage.
+struct BatchProductStage
+{
+    std::string product, stage;
+    std::string balanceFrom;     // flowsheet | declared
+    scalar massPerProduct = 0;   // [kg/kg] f_ij
+    scalar massPerLot     = 0;   // [kg]    f_ij B_i
+    scalar bulkDensity    = 0, fillFraction = 0;     // batch only
+    scalar sizeFactor     = 0, volume = 0, volumePerUnit = 0;
+    scalar rate           = 0, ratePerUnit = 0;      // semicontinuous only
+    std::string operatingFrom;   // declared | flowsheet (semicontinuous)
+    std::string dischargeFrom;   // declared | fedStage
+    scalar chargeTime     = 0, processTime = 0, dischargeTime = 0, cleanTime = 0;
+    scalar cycleTime      = 0;   // [h] t_ij
+    scalar effectiveCycle = 0;   // [h] t_ij / N_op
+    scalar utilisation    = 0;   // [-] t_ij / (N_op T_L,i)
+    scalar offset         = 0;   // [h] in the product's campaign
+    bool   limiting       = false;
+    scalar changeoverAfter = 0;  // [h] this stage's clean after the product's
+                                 //     last campaign, before `next`
+    std::string overrideSource, overrideReason;   // "" when not overridden
+};
+
+//  One product on one train.
+struct BatchProductTrain
+{
+    std::string product, train;
+    scalar cycleTime        = 0;  // [h] T_L,i
+    std::string limitingStage;
+    int    campaigns        = 0;  // c_i = ceil(N_i / n_c)
+    int    lotsLastCampaign = 0;
+    scalar campaignSpan     = 0;  // [h] its first campaign's makespan
+    scalar start            = 0;  // [h] its first campaign starts, in the year
+    scalar productChangeover = 0; // [h] the train's wait after its last campaign
+    scalar requiredTime     = 0;  // [h/yr] its campaigns + the changeovers after them
+    std::string next;
 };
 
 struct BatchFinding
@@ -170,6 +255,13 @@ struct BatchPlanRecord
     std::vector<BatchGanttRow> gantt;
     std::vector<BatchFinding>  findings;
     std::vector<std::string>   unplannedUnits;   // flowsheet units in no stage
+
+    //  MULTIPRODUCT (empty for one product; then `production` holds Q).
+    std::vector<std::string>       campaignOrder;
+    std::vector<BatchProduct>      products;
+    std::vector<BatchProductStage> productStages;
+    std::vector<BatchProductTrain> productTrains;
+    bool multiProduct() const { return !products.empty(); }
 
     //  The stage that groups `unit`, or nullptr.
     const BatchStage* stageOfUnit(const std::string& unit) const

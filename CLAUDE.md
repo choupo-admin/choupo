@@ -1147,6 +1147,16 @@ operating resolution all read it: a drum operated at 844.86 K published
 7.685 kmol/s of liquid and now publishes none (gate `check_inlet_resolution`
 arm (j); DEV.md §5, 2026-09-26).
 
+**A SPRAY DRYER FED SEVERAL SOLVENTS LOSES NONE (2026-10-20, DEV.md 4c
+C111).**  With several volatile solvents the outlet is the package's
+equilibrium of the air and every solvent at T_out (the exhaust on its dew
+point when the air cannot carry it all, announced), T_out closing
+H(out) = H(in) through `flashState::priceState`; the droplet KPIs on an
+announced pseudo-solvent; the sorption isotherm and the droplet-trajectory
+chamber models refuse a mixed-solvent feed by name.  Single-solvent
+byte-identical.  Gate `check_spray_dryer_solvents`; record
+`docs/design/a-spray-dryer-with-several-solvents.md`.
+
 **THREE MORE, AND THE FLAGSHIP'S FIRST LAW (2026-09-27).**  The flagship's
 +34.41 kW was additive, and three of its four terms were this family: the
 `sprayDryer` solved `T_out` from a hand balance (constant-Cp air, a Watson
@@ -2169,6 +2179,30 @@ the intermediate store's size, multiproduct sequencing, labour following the
 plan, a GUI Gantt drawing.  Golden kind `batch`.  Gate: `check_batch_plan`.
 Record:
 [`docs/design/a-batch-plant-on-a-steady-balance.md`](docs/design/a-batch-plant-on-a-steady-balance.md).
+
+**SEVERAL PRODUCTS ON THE SAME STAGES (2026-10-20, DEV.md 4c C110 G2, on
+stated defaults).**  `products ( ... )` in place of `production {}` (both
+refuse), a REQUIRED `campaignOrder` (the student's decision; no optimiser)
+and a `productChangeover` on every stage make the `batchPlan` single-product
+campaigns run back to back in the declared order; a product changes at a
+stage only what is the product's, its balance is the flowsheet's ONE
+balance unless `massPerProduct` declares a stream's own (ANNOUNCED, because
+the economics prices every product on the one balance); a stage is sized
+for the product needing the most (`sizingProduct`); the clean before the
+next product REPLACES the same-product changeover; campaigns never overlap
+on a train.  One product through `products` IS the one-product plan (gate,
+1e-9).  Gate `check_batch_plan` (h)-(l); record section 6 of
+`docs/design/a-batch-plant-on-a-steady-balance.md`.
+
+**A PHASE SPLIT SCANNED ALONG T OR P IS ONE FLASH PER POINT (2026-10-20,
+DEV.md 4c C118).**  The `phaseSplitScan` props op calls
+`IsothermalFlash::solveCore` at every grid point with the unit's own
+`readOptions` and writes no equilibrium of its own; a single-point scan
+reproduces flash21/16/19's goldens; a refused point is published by name
+and the scan continues, nothing substituted.  An op's own top-level result
+block goes through `PropertyOperation::resultBlock()`.  Gate
+`check_phase_split_scan`; record
+`docs/design/a-phase-split-scan-along-t-or-p.md`.
 
 **A RELIEF VALVE IS A SIZED ITEM OF THE UNIT IT PROTECTS (2026-10-11, DEV.md
 4c C62, on a stated default).**  `type reliefValve` in the sizing pass: one

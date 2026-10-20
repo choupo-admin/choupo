@@ -71,7 +71,8 @@ export type MethodToolId =
   | "least-squares" | "element-potential" | "limiting-reactant"
   | "reaction-enthalpy" | "standard-state" | "case-assembly" | "run-log"
   | "front-end-loading" | "process-safety" | "overpressure" | "letdown"
-  | "plant-layout" | "gmp-layout" | "pool-fire" | "materials" | "syngas";
+  | "plant-layout" | "gmp-layout" | "pool-fire" | "materials" | "syngas"
+  | "correlation-simplicity";
 
 /** WHAT KIND OF TOOL THIS IS, and the field exists to keep a boundary legible
  *  rather than to switch behaviour.
@@ -111,6 +112,20 @@ export const METHOD_DISCIPLINES = [
   //  shelf can hold it without bending its name.  It sits FIRST because it
   //  is what every page after it assumes.
   "How Choupo works",
+  //  THE SHELF FOR HOW AN ENGINEER BUILDS AND TRUSTS A MODEL (2026-10-20,
+  //  DEV.md 4c C119, Vitor's ruling -- "Ok!" to the proposal).  Dimensional
+  //  analysis, similarity, asymptotic regimes and the correlation that
+  //  carries a lab result to a plant: none of it is hydraulics or heat
+  //  transfer, though it is illustrated with both, and filing it under
+  //  either bends that shelf's name for the first page that uses the other
+  //  example.  "Transport phenomena" was considered and set aside -- the
+  //  page is about method, and the name is the one a student most dreads.
+  //  "Scale-up" is the chemical engineer's word for what the method buys
+  //  (Zlokarnik's title).  It sits BEFORE the physics shelves because every
+  //  one of them uses it.  It opened with ONE tenant, an exception to the
+  //  shelf rule taken by the owner and recorded here; its natural company is
+  //  a stirred-tank scale-up (the power number) or a pilot plant's choice.
+  "Modelling & scale-up",
   "Thermodynamics",
   "Separations & phase equilibria",
   "Heat transfer & energy",
@@ -669,6 +684,36 @@ export const METHOD_TOOLS: MethodTool[] = [
     discipline: "Hydraulics & control", kind: "construction", status: "live",
     teaches: "The operating point is an intersection: the pump model's rise falling with flow against the pipe system's demand rising with it — crossed where the engine's own columns cross.",
     theory: "ch:rotating",
+  },
+  //  COMMISSIONED 2026-10-20 (DEV.md 4c C119), Vitor: the Pi theorem only
+  //  reduces the number of variables, and the real gain -- few groups AND a
+  //  very simple equation that fits to a design tolerance -- seems to come
+  //  from multi-scale phenomena in which low-frequency master effects
+  //  dominate high-frequency slave ones.  Five pages on the scope he
+  //  approved: dimensional analysis; what Pi gives and does not; asymptotic
+  //  regimes and similarity; master and slave; correlations in practice.
+  //  Friction and Nusselt only, SYNTHETIC data: the curves are the engine's
+  //  own correlations, swept by the witness moody02_correlation_sweeps and
+  //  run in the browser.  ON THE "Modelling & scale-up" SHELF, which opened
+  //  for it (Vitor, 2026-10-20): the page is about method, and friction and
+  //  Nusselt are only its two examples.  `theory` is the Theory Guide's
+  //  transport chapter.
+  {
+    id: "correlation-simplicity",
+    label: "Why engineering correlations are simple",
+    discipline: "Modelling & scale-up", kind: "construction", status: "live",
+    teaches: "That the Buckingham Pi theorem only REDUCES the number of "
+      + "variables -- f = Phi(Re, eps/D) is still an arbitrary function -- and "
+      + "that the simplicity of a correlation comes from elsewhere: asymptotic "
+      + "regimes where a group drops out or enters as a power (laminar 64/Re, "
+      + "fully rough flow), the separation of scales in which a fast slave "
+      + "follows a slow master (Haken's two-variable model, the boundary "
+      + "layer), and the narrow range and generous tolerance a power law is "
+      + "fitted with -- the dimensional matrix reduced exactly, the Moody "
+      + "plane and its local slopes, a one-decade fit whose exponent drifts, "
+      + "and Churchill's expression rebuilt from its two asymptotes, every "
+      + "curve the engine's own.",
+    theory: "ch:why-transport",
   },
   //  COMMISSIONED 2026-10-11 (DEV.md 4c C64): "sabes como habitualmente se
   //  da a reducao de pressao de mais de 10x de uma corrente num processo
