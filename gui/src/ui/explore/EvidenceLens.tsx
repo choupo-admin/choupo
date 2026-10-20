@@ -52,6 +52,11 @@ import { Plot, PLOT_COLORS, PLOT_CONFIG, darkLayout } from "../plotting/plotly.j
 import { VerdictCell } from "./ComponentInspector.js";
 import { evidenceLink, evidenceSelectionInSearch } from "./selectionLink.js";
 
+/** The candidate palette order: the shared series colours with the two
+ *  cyans kept apart (series[0] and series[2] are both cyan, and three
+ *  candidates must be three colours a reader can tell apart). */
+const CANDIDATE_ORDER = [0, 1, 4, 5, 3, 2];
+
 /** Marker symbols for the datasets (a dataset is told by its SHAPE, a
  *  candidate by its COLOUR -- the two grammars never share an axis). */
 const DATASET_SYMBOLS = ["circle", "square", "diamond", "triangle-up", "cross", "star"];
@@ -189,7 +194,7 @@ export function EvidenceLens({ pair, catalogue, caseRaw, localUnifac, componentF
   const xComponent = chosenData.length
     ? (evidenceRunPlan(pair, chosenData, candidates[candidates.length - 1]!).xComponent) : pair[0];
   const colourOf = (c: EvidenceCandidate) =>
-    PLOT_COLORS.series[candidates.indexOf(c) % PLOT_COLORS.series.length]!;
+    PLOT_COLORS.series[CANDIDATE_ORDER[candidates.indexOf(c) % CANDIDATE_ORDER.length]!]!;
   const symbolOf = (d: EvidenceDataset) => DATASET_SYMBOLS[datasets.indexOf(d) % DATASET_SYMBOLS.length]!;
   const tLabel = temperatureLabel(tUnit);
 
@@ -233,6 +238,7 @@ export function EvidenceLens({ pair, catalogue, caseRaw, localUnifac, componentF
     const rows = chosenModels.filter((c) => results[c.id]);
     const traces: Record<string, unknown>[] = [];
     const layout: Record<string, unknown> = {};
+    const annotations: Record<string, unknown>[] = [];
     rows.forEach((c, i) => {
       const ax = i === 0 ? "" : String(i + 1);
       const r = results[c.id]!;
@@ -249,11 +255,17 @@ export function EvidenceLens({ pair, catalogue, caseRaw, localUnifac, componentF
           hovertemplate: `${c.id} − ${d.id}<br>x = %{x:.3f}<br>residual = %{y:.3f} K<extra></extra>`,
         });
       }
-      layout[`yaxis${ax}`] = { ...darkLayout.yaxis, title: { text: `${c.id}  (K)`, font: { size: 11 } },
-                               zeroline: true, zerolinewidth: 1.5, zerolinecolor: colourOf(c) };
+      //  The candidate's name rides INSIDE its own panel (top-left), not as
+      //  a y-axis title: stacked panels put three rotated titles into one
+      //  narrow column and they overprint each other.
+      annotations.push({ text: `${c.id}  (K)`, xref: "paper", yref: `y${ax} domain`, x: 0, y: 1,
+                         xanchor: "left", yanchor: "bottom", showarrow: false,
+                         font: { size: 10, color: colourOf(c) } });
+      layout[`yaxis${ax}`] = { ...darkLayout.yaxis, zeroline: true, zerolinewidth: 1.5, zerolinecolor: colourOf(c) };
       layout[`xaxis${ax}`] = { ...darkLayout.xaxis, ...(i === rows.length - 1
         ? { title: { text: `x (${xComponent}), liquid mole fraction` } } : { showticklabels: false }) };
     });
+    layout.annotations = annotations;
     return { traces, layout, n: rows.length };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [results, chosenModels, chosenData, xComponent]);
@@ -336,6 +348,34 @@ export function EvidenceLens({ pair, catalogue, caseRaw, localUnifac, componentF
   const aadTable = (() => {
     const rows = chosenModels.filter((c) => results[c.id]);
     if (rows.length === 0) return null;
+    //  On a phone a table with one column per dataset cannot be read; the
+    //  same numbers, one block per candidate.
+    if (narrow) return (
+      <Stack gap={6}>
+        {rows.map((c) => {
+          const r = results[c.id]!;
+          const doss = dossierFor(c, pair);
+          return (
+            <Box key={c.id}>
+              <Group gap={6}>
+                <Text size="xs" fw={600} style={{ color: colourOf(c) }}>{c.id}</Text>
+                {doss && <VerdictCell v={doss.verdict} />}
+              </Group>
+              {chosenData.map((d) => {
+                const b = r.byDataset.find((q) => q.datasetId === d.id);
+                return (
+                  <Text key={d.id} size="xs" c="dimmed">
+                    {d.id}: {b && b.aadK !== null
+                      ? `AAD ${b.aadK.toFixed(3)} K · ${b.aadRelPct!.toFixed(3)} % · bias ${b.biasK! >= 0 ? "+" : ""}${b.biasK!.toFixed(3)} K · ${b.nUsed}/${b.nMeasured}`
+                      : "—"}
+                  </Text>
+                );
+              })}
+            </Box>
+          );
+        })}
+      </Stack>
+    );
     return (
       <Table fz="xs" withTableBorder={false} striped highlightOnHover verticalSpacing={2} horizontalSpacing={6}>
         <Table.Thead>
@@ -386,15 +426,22 @@ export function EvidenceLens({ pair, catalogue, caseRaw, localUnifac, componentF
         </Alert>)}
       {haveAny ? (
         <>
-          <Box style={{ flex: 3, minHeight: 240, position: "relative" }}>
+          <Box style={{ flex: 3, minHeight: narrow ? 420 : 240, position: "relative" }}>
             <Plot data={mainTraces as never}
               layout={{
                 ...darkLayout, autosize: true, showlegend: true,
-                title: { text: `${pair[0]} + ${pair[1]}: bubble temperature, measured vs candidates`, font: { size: 13 } },
-                legend: { ...darkLayout.legend, x: 1, y: 1, xanchor: "right", yanchor: "top" },
+                title: { text: narrow ? "T_bubble: measured vs candidates"
+                                      : `${pair[0]} + ${pair[1]}: bubble temperature, measured vs candidates`,
+                         font: { size: narrow ? 11 : 13 } },
+                //  On a phone the legend goes UNDER the figure: inside it,
+                //  five entries cover the curves they name.
+                legend: narrow
+                  ? { ...darkLayout.legend, orientation: "h", x: 0, y: -0.28, xanchor: "left", yanchor: "top", font: { size: 10 } }
+                  : { ...darkLayout.legend, x: 1, y: 1, xanchor: "right", yanchor: "top" },
                 xaxis: { ...darkLayout.xaxis, title: { text: `x (${xComponent}), liquid mole fraction` }, range: [0, 1] },
                 yaxis: { ...darkLayout.yaxis, title: { text: `T_bubble (${tLabel})` } },
-                margin: { ...darkLayout.margin, b: 48 },
+                margin: { ...darkLayout.margin, l: narrow ? 44 : darkLayout.margin.l, r: narrow ? 8 : darkLayout.margin.r,
+                          b: narrow ? 130 : 48 },
               } as never}
               config={PLOT_CONFIG} style={{ width: "100%", height: "100%" }} useResizeHandler />
             {busy && (
@@ -404,13 +451,16 @@ export function EvidenceLens({ pair, catalogue, caseRaw, localUnifac, componentF
               </Box>)}
           </Box>
           {residual.n > 0 && (
-            <Box style={{ flex: 2, minHeight: 60 * residual.n + 60 }}>
+            <Box style={{ flex: 2, minHeight: 90 * residual.n + 70 }}>
               <Plot data={residual.traces as never}
                 layout={{
                   ...darkLayout, autosize: true, showlegend: false,
                   grid: { rows: residual.n, columns: 1, pattern: "independent", roworder: "top to bottom" },
-                  title: { text: "residual = engine − measurement at the measured x (error bars: the dataset's own uncertainty)", font: { size: 12 } },
-                  margin: { ...darkLayout.margin, b: 44, t: 32 },
+                  title: { text: narrow ? "residual = engine − measured (K)"
+                                        : "residual = engine − measurement at the measured x (error bars: the dataset's own uncertainty)",
+                           font: { size: narrow ? 11 : 12 } },
+                  margin: { ...darkLayout.margin, l: narrow ? 44 : darkLayout.margin.l, r: narrow ? 8 : darkLayout.margin.r,
+                            b: 44, t: 40 },
                   ...residual.layout,
                 } as never}
                 config={PLOT_CONFIG} style={{ width: "100%", height: "100%" }} useResizeHandler />
