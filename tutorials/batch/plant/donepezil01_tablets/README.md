@@ -5,7 +5,7 @@ built on the stated defaults of C110).  The plant makes **film-coated
 tablets of donepezil hydrochloride** by **wet granulation**: the active
 pharmaceutical ingredient (API) is **bought**, everything else is made on
 site — the granules, the tablets, the coat and the packs.
-**It runs (a second or two), its mass and energy balances close, and it is
+**It runs (in seconds), its mass and energy balances close, and it is
 deliberately NOT optimised** — every number a group would change is a plain
 key, said to be an assumption where it is declared.
 
@@ -182,7 +182,7 @@ Mass balance 100.000 %; first law closes (residual below 0.0001 kW).
 
 | | |
 |---|---|
-| Fluid-bed dryer | air in 333.15 K, exhaust **316.7 K** at a_w 0.25; 46.6 kg/h of the granulation liquid's 48.0 kg/h evaporated; the granules keep 1.32 kg/h, **0.65 %** of their mass (3.5 % on the starch, the isotherm's basis) — `isotherm-reached` |
+| Fluid-bed dryer | air in 333.15 K, exhaust **316.7 K** at a_w 0.25; 46.6 kg/h of the granulation liquid's 48.0 kg/h evaporated; the granules keep 1.32 kg/h, **0.65 %** of their mass (0.037 kg per kg of starch, the isotherm's basis) — `isotherm-reached` |
 | Coating dryer | exhaust **317.6 K**; all 43.9 kg/h of the coat's water evaporated; the tablets keep 1.31 kg/h (0.63 %) |
 | Air heaters | 72.1 kW each (LP steam), 21.6 m2 each |
 | Coated tablets | 206.88 kg/h = 712 800 tablets/h at the flowsheet basis (**0.2902 g** each) |
