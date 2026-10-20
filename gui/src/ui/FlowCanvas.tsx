@@ -103,6 +103,7 @@ import { loadLayout, saveLayout, clearLayout, snapshotLayout, layoutFromChoText,
 import { automaticStubOffsets, dockStubs, isStubId, resolveArrangement,
   stubOwnerOf } from "../case/stubDocking.js";
 import { DUTY_TIER_COLOUR } from "../case/dutySign.js";
+import { isReturnWire } from "../case/flowsheetLayout.js";
 import { runControl } from "../case/runControl.js";
 import { readFlag, writeFlag, NODE_DETAILS_KEY } from "../state/prefs.js";
 import { operationScratch } from "../case/scratch.js";
@@ -1090,6 +1091,16 @@ function CanvasInner({ flowsheet, scrubInstant }: {
      scrubOverlay, colorScheme, loops, dutyRun],
   );
 
+  //  Is a return wire of a folded drawing still drawn as one where the
+  //  arrangement puts its two boxes (a reader may have dragged the second
+  //  row out to the right, or a curated .cho never folded at all)?
+  const returnWireDrawn = useCallback((e: Edge): boolean => {
+    const s = placed.get(e.source);
+    const t = placed.get(e.target);
+    if (!s || !t) return true;
+    return isReturnWire(s.x + (graph.sizes.get(e.source)?.width ?? 190), t.x);
+  }, [placed, graph.sizes]);
+
   const styledEdges: Edge[] = useMemo(
     () =>
       graph.edges.map((e) => {
@@ -1103,6 +1114,11 @@ function CanvasInner({ flowsheet, scrubInstant }: {
         //  A back edge of a cycle nobody declared a tear for: ROUTED like a
         //  recycle (toGraph / flowsheetLayout.ts), drawn with no cut mark.
         const isBack   = (e.data as { backEdge?: boolean } | undefined)?.backEdge === true;
+        //  A RETURN WIRE of a folded drawing (flowsheetLayout.ts step 7):
+        //  the recycle's U, no cut mark -- while its target does lie back
+        //  to the left (`isReturnWire`, the one rule the metric reads too).
+        const isWrap   = (e.data as { wrap?: boolean } | undefined)?.wrap === true
+          && returnWireDrawn(e);
         const isDuty   = (e.data as { kind?: string } | undefined)?.kind === "duty";
         const isRecipe = (e.data as { kind?: string } | undefined)?.kind === "recipe";
         //  ONE evaluation of what this wire IS: it paints the stroke below
@@ -1155,7 +1171,7 @@ function CanvasInner({ flowsheet, scrubInstant }: {
           // Forward edges use the draggable-bend `waypoint` edge (topology
           // stays fixed; only the orthogonal bend slides).  Tears keep
           // their dedicated under-row router.
-          type: isTear || isBack ? "tear" : "waypoint",
+          type: isTear || isBack || isWrap ? "tear" : "waypoint",
           data: {
 ...(e.data as object),
             center: edgeCenters[e.id],
@@ -1165,7 +1181,7 @@ function CanvasInner({ flowsheet, scrubInstant }: {
             showNumbers: show.numbers,
             //  The CUT MARK on a tear is always drawn (the plan's fact); the
             //  `recycle` chip lights the LOOP instead (C42), never hides a pipe.
-            showCut: !isBack,
+            showCut: isTear,
             dashKind: dashKind !== "process"
               ? dashKind : (ps?.phase === "empty" ? "empty" : "process"),
             num: numberOf(label),   // ABSOLUTE number (overrides toGraph local)
@@ -1225,7 +1241,7 @@ function CanvasInner({ flowsheet, scrubInstant }: {
       }),
     [graph.edges, selectedStreamName, phaseOf, utilityOf, maxFlow, show,
      edgeCenters, onEdgeCenterChange, commitEdgeCenters, onEdgeCenterReset,
-     runResult, numberOf, scrubOverlay, colorScheme, loops, dutyRun],
+     runResult, numberOf, scrubOverlay, colorScheme, loops, dutyRun, returnWireDrawn],
   );
 
   //  THE DASH LEGEND.  Derived from the kind each edge was STAMPED with, so

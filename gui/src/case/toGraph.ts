@@ -49,7 +49,10 @@ import { scalarToSI } from "../dict/scalarSI.js";
 import type { FlowsheetView, StreamSpec, UnitSpec } from "./types.js";
 // The duty/work unit-type sets — SHARED with UnitNode.tsx (single source of
 // truth), so the stub node + edge here always match the handle there.
-import { layoutFlowsheet, type LayoutEdge, type LayoutNode } from "./flowsheetLayout.js";
+import {
+  DEFAULT_FOLD_OPTIONS, layoutFlowsheet, type LayoutEdge, type LayoutNode,
+} from "./flowsheetLayout.js";
+import { measureLayout } from "./layoutMetrics.js";
 import { stubNodeId } from "./stubDocking.js";
 import { DUTY_TIER_COLOUR, preRunDutyTier, type DutyTier } from "./dutySign.js";
 import { COLUMN_TYPES, HEAT_DUTY_TYPES, POWER_DRAW_TYPES, PHASE_SPLIT_TYPES, DYNAMIC_HOLDUP_TYPES } from "./dutyTypes.js";
@@ -241,6 +244,38 @@ export function flowsheetToGraph(
   flowsheet: JsonDict,
   rawFiles?: { [relPath: string]: string },
 ): FlowsheetGraph {
+  //  A drawing the layout FOLDED into two rows (flowsheetLayout.ts step 7)
+  //  is kept only if, measured with the C59 yardstick (layoutMetrics.ts) on
+  //  the wires the canvas actually draws -- energy wires and utility stubs
+  //  included, which the layout does not see -- it has no more overlapping
+  //  boxes, wires through boxes or crossings than the unfolded one; else
+  //  the next-ranked fold is tried (up to FOLD_TRIES), else no fold.  A
+  //  return wire has more corners than the wire it replaces: that is the
+  //  price of a fold, and the only one it may charge.
+  const first = buildGraph(flowsheet, rawFiles, 0);
+  if (!isFolded(first)) return first;
+  const flat = buildGraph(flowsheet, rawFiles, null);
+  const b = measureLayout(flat);
+  let g: FlowsheetGraph = first;
+  for (let rank = 0; rank < FOLD_TRIES; rank++) {
+    if (rank > 0) g = buildGraph(flowsheet, rawFiles, rank);
+    if (!isFolded(g)) break;
+    const a = measureLayout(g);
+    if (a.overlaps <= b.overlaps && a.throughNodes <= b.throughNodes && a.crossings <= b.crossings)
+      return g;
+  }
+  return flat;
+}
+
+const FOLD_TRIES = 3;
+const isFolded = (g: FlowsheetGraph) =>
+  g.edges.some((e) => (e.data as { wrap?: boolean } | undefined)?.wrap === true);
+
+function buildGraph(
+  flowsheet: JsonDict,
+  rawFiles: { [relPath: string]: string } | undefined,
+  foldRank: number | null,
+): FlowsheetGraph {
   const view = readFlowsheet(flowsheet, rawFiles);
 
   const producers = new Map<string, string>(); // stream -> unit name
@@ -418,6 +453,7 @@ export function flowsheetToGraph(
     xGap: composite ? X_GAP_COMPOSITE : X_GAP,
     originX: X_ORIGIN,
     originY: Y_ORIGIN,
+    fold: foldRank === null ? false : { ...DEFAULT_FOLD_OPTIONS, rank: foldRank },
   });
   const positions = layout.positions;
   const posOf = (id: string) => positions.get(id) ?? { x: X_ORIGIN, y: Y_ORIGIN };
@@ -611,6 +647,13 @@ export function flowsheetToGraph(
   // so React Flow lands each edge on its dedicated dot, instead of
   // bunching everything onto a single connector.
   const edges: Edge[] = [];
+  const wrapRouteOf = (eid: string) => {
+    if (!layout.wrapEdges.has(eid)) return undefined;
+    const legs = layout.routeOutset.get(eid);
+    const routeY = layout.routeY.get(eid);
+    return { ...(routeY !== undefined ? { routeY } : {}),
+             ...(legs ? { sourceOutset: legs.source, targetOutset: legs.target } : {}) };
+  };
   for (const u of view.units) {
     const ins = Array.isArray(u.in) ? u.in : [u.in];
     for (const s of ins) {
@@ -624,6 +667,7 @@ export function flowsheetToGraph(
       //  the cut mark says the solver guesses this stream, and here no
       //  solver was told to.  `routeY` is where the layout put the run.
       const back = layout.backEdges.has(eid);
+      const wraps = layout.wrapEdges.has(eid);
       const routeY = layout.routeY.get(eid);
       const legs = layout.routeOutset.get(eid);
       const route = {
@@ -646,25 +690,33 @@ export function flowsheetToGraph(
         // depth the layout chose.  Default smoothstep for same-row
         // back-edges disappears behind intermediate nodes; the custom
         // path keeps the recycle visually distinct.
-        type: isTear || back ? "tear" : "smoothstep",
+        //  A stream from the first row of a FOLDED drawing to the second
+        //  (flowsheetLayout.ts step 7) is a RETURN WIRE: TearEdge's U in
+        //  the lane the layout chose, with no cut mark (FlowCanvas).
+        type: isTear || back || wraps ? "tear" : "smoothstep",
         animated: false,
         ...(isTear
           ? { data: { kind: "tear", ...route }, zIndex: 1000 }
           : back
             ? { data: { backEdge: true, ...route }, zIndex: 1000 }
-            : {}),
+            : wraps
+              ? { data: { wrap: true, ...route } }
+              : {}),
       });
     }
     for (const o of u.outputs) {
       if (!consumers.has(o)) {
+        const eid = `e:unit:${u.name}->stream:${o}:${o}`;
+        const wrapRoute = wrapRouteOf(eid);
         edges.push({
-          id: `e:unit:${u.name}->stream:${o}:${o}`,
+          id: eid,
           source: `unit:${u.name}`,
           target: `stream:${o}`,
           sourceHandle: o,
           label: o,
-          type: "smoothstep",
+          type: wrapRoute ? "tear" : "smoothstep",
           animated: false,
+          ...(wrapRoute ? { data: { wrap: true, ...wrapRoute } } : {}),
         });
       }
     }
