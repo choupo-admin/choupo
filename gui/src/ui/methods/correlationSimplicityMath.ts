@@ -167,7 +167,7 @@ export const PROBLEMS: Record<DimProblem["id"], DimProblem> = {
     ],
     relevant: ["h", "k", "rho", "mu", "cp", "u", "D"],
     defaultCore: ["k", "rho", "mu", "D"],
-    //  The third choice is NOT a basis: c_p mu / k is itself dimensionless,
+    //  The LAST choice is NOT a basis: c_p mu / k is itself dimensionless,
     //  so those four columns are dependent and the page shows the refusal.
     alternativeCores: [["k", "rho", "mu", "D"], ["k", "rho", "u", "D"], ["rho", "cp", "u", "k"],
       ["k", "mu", "cp", "D"]],

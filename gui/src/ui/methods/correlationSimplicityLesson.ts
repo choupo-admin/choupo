@@ -375,7 +375,7 @@ export const SIMPLICITY_STEPS: readonly LessonStep[] = [
     body: "The third reason is the sobering one.  Fit a straight line to "
       + "ln y against ln Re over one decade of the engine's own curve -- "
       + "Colebrook for a smooth pipe, or Gnielinski's Nusselt number -- and "
-      + "read how well it fits: within a fraction of a percent.  Then move "
+      + "read how well it fits: to about one percent or better.  Then move "
       + "the decade and read the exponent drift.  A smooth function whose "
       + "local slope changes slowly is, over a short enough range, a power "
       + "law, whatever its physics; the error grows with the square of the "
@@ -401,8 +401,10 @@ export const SIMPLICITY_STEPS: readonly LessonStep[] = [
           + "which for small values is the relative error." },
     ],
     note: "The fit is ordinary least squares on (ln Re, ln y) over the 21 grid "
-      + "points of the decade, computed on the page; the curve fitted is the "
-      + "engine's, read from the witness's sweep.",
+      + "points of the decade -- it starts on a grid point and ends ten times "
+      + "further on -- computed on the page, and only on points inside the "
+      + "correlation's own window; the curve fitted is the engine's, read "
+      + "from the witness's sweep.",
   },
   {
     n: 13,
@@ -445,12 +447,19 @@ export const SIMPLICITY_STEPS: readonly LessonStep[] = [
       + "2300 three of them substitute the laminar law, between the two "
       + "limits they are evaluated outside the band they were fitted to "
       + "(the engine names that band at FrictionFactorCorrelation.cpp:52-53 "
-      + "and flags every such point), and Churchill's blend draws a smooth "
+      + "and flags Colebrook's and Haaland's points in it; Blasius's are not "
+      + "flagged there, although the window it declares starts at 4000, and "
+      + "the table shows the flag exactly as the engine publishes it), and "
+      + "Churchill's blend draws a smooth "
       + "line through a region where the physics offers none.  The Nusselt "
       + "correlations behave the same way: Dittus-Boelter below 1e4 is "
-      + "outside its window, and its gap to Gnielinski is widest exactly "
-      + "there.  The table reads the spread the engine's curves span at each "
-      + "point.  Where no mechanism dominates, no simple correlation is "
+      + "outside its window, and there its gap to Gnielinski opens fastest -- "
+      + "from a few percent near Re = 1e4 to tens of percent at 2000, in less "
+      + "than a decade.  (They part again at high Re, more slowly: a fixed "
+      + "exponent 0.8 cannot follow a curve whose local slope drifts, which "
+      + "is the previous step's point.)  The plot and the table read the "
+      + "spread the engine's curves span at each point.  Where no mechanism "
+      + "dominates, no simple correlation is "
       + "trustworthy, and a design that sits in the transition is one that "
       + "should be moved out of it.",
     formula: String.raw`s = \frac{y_\mathrm{max} - y_\mathrm{min}}{y_\mathrm{min}}`,

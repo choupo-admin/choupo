@@ -32,7 +32,61 @@
           "unit": "-"
         }
       },
-      "required": ["Re"],
+      "required": [
+        "Re"
+      ],
+      "additionalProperties": false
+    },
+    "sweep": {
+      "type": "object",
+      "title": "Reynolds-number sweep",
+      "description": "Optional. Evaluate every registered correlation on one logarithmic grid of Re at each declared relative roughness and write one CSV row per (eps/D, Re): each correlation's f and its own window flag, the regime the engine names, and Churchill's two asymptotes fL = 64/Re and fT, whose 12-norm is Churchill's f. The correlations' own answers, never a new number.",
+      "properties": {
+        "file": {
+          "type": "string",
+          "title": "CSV file name",
+          "description": "The CSV the sweep writes, in the case directory. A path into data/standards/ is refused."
+        },
+        "ReMin": {
+          "type": "number",
+          "exclusiveMinimum": 0,
+          "title": "Lowest Reynolds number",
+          "description": "The first grid point. Must be positive: the grid is logarithmic and every correlation divides by Re.",
+          "unit": "-"
+        },
+        "ReMax": {
+          "type": "number",
+          "exclusiveMinimum": 0,
+          "title": "Highest Reynolds number",
+          "description": "The grid runs to the last point at or below this value; must exceed ReMin.",
+          "unit": "-"
+        },
+        "pointsPerDecade": {
+          "type": "integer",
+          "minimum": 1,
+          "title": "Points per decade",
+          "description": "Re_k = ReMin 10^(k / pointsPerDecade): a whole number, so a decade that starts on a grid point ends on one.",
+          "unit": "-"
+        },
+        "relRough": {
+          "type": "array",
+          "items": {
+            "type": "number",
+            "minimum": 0
+          },
+          "minItems": 1,
+          "title": "Relative roughnesses eps/D",
+          "description": "One curve per value; at least one, each >= 0 (0 is the hydraulically smooth pipe).",
+          "unit": "-"
+        }
+      },
+      "required": [
+        "file",
+        "ReMin",
+        "ReMax",
+        "pointsPerDecade",
+        "relRough"
+      ],
       "additionalProperties": false
     }
   },

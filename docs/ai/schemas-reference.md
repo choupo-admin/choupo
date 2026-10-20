@@ -539,6 +539,7 @@ The Darcy friction factor's correlation library, in two parts. VERIFY (always): 
 |---|:-:|---|---|---|
 | `deviationTolerance` |   | number | - | Allowed relative deviation of each correlation from its own published anchor; defaults to 0.03. Exists to honour the anchors' own roundin… |
 | `compare` |   | object | — | Optional. Evaluate every registered correlation at one hydraulic state and publish the spread. Omitting the block leaves only the verific… |
+| `sweep` |   | object | — | Optional. Evaluate every registered correlation on one logarithmic grid of Re at each declared relative roughness and write one CSV row p… |
 
 ## `gasSolidSplitter`  (gasSolidSplitter operation)
 
@@ -629,6 +630,7 @@ Self-check of the heat-transfer correlation library against its own textbook wor
 |---|:-:|---|---|---|
 | `aadTolerance` |   | number | - | Allowed relative deviation from the printed textbook value; defaults to 0.05. |
 | `aadTolerancePhaseChange` |   | number | - | Separate allowance for the boiling/condensation examples, whose published inputs are chart-read. |
+| `sweep` |   | object | — | Optional. Evaluate every single-phase Nusselt correlation on one logarithmic grid of Re at each declared Prandtl number and write one CSV… |
 
 ## `heater`  (heater operation)
 
@@ -742,21 +744,25 @@ Multi-stream heat exchanger: several hot and cold streams exchanging in one bloc
 
 ## `pfr`  (pfr operation)
 
-Isothermal plug-flow reactor. The volume is integrated by RK4; nSteps controls the spatial discretisation.
+Plug-flow reactor. The volume is integrated by RK4; nSteps controls the spatial discretisation. Isothermal, adiabatic, or cooled through a wall (on the multi-reaction path a multitubular bed with a coolant of its own).
 
 | Field | Required | Type | Unit | Description |
 |---|:-:|---|---|---|
-| `V_R` | ✓ | number | m3 | Total reactor volume; RK4 integrates over the residence-time interval [0, V_R / Q_feed]. |
+| `V_R` |   | number | m3 | Total reactor volume; RK4 integrates over the residence-time interval [0, V_R / Q_feed]. Required unless `tubes.length` is declared (then… |
 | `nSteps` |   | integer | - | Axial steps along the tube; defaults to 100. |
 | `writeInterval` |   | integer | - | Write every Nth step to the axial profile; 0 (default) writes none. |
 | `thermalMode` |   | string | - | isothermal (default), adiabatic, or heatExchange — the last removing U·(a/V)·(T − T_coolant) along the tube. Any other word is REFUSED. |
-| `U` |   | number | W/m2/K | Required by `thermalMode heatExchange`. |
-| `areaPerVolume` |   | number | m2/m3 | Tube surface per unit reactor volume. Required by `thermalMode heatExchange`. |
-| `T_coolant` |   | number | K | Required by `thermalMode heatExchange`. |
+| `U` |   | number | W/m2/K | The OVERALL wall coefficient, declared. With `thermalMode heatExchange`, required unless `wallHeatTransfer` computes it (the two are excl… |
+| `areaPerVolume` |   | number | m2/m3 | Tube surface per unit reactor volume. Required by `thermalMode heatExchange` unless `tubes` gives it (4/d_i; then it is REFUSED). |
+| `T_coolant` |   | number | K | The constant coolant temperature of the legacy form. Required by `thermalMode heatExchange` unless a `coolant {}` block is declared (then… |
 | `catalystLoading` |   | number | kg/m3 | Mass of catalyst per unit reactor volume. |
 | `L_over_D` |   | number | - | Multi-reaction path only. Gives the bed a cross-section (D, L, A published as KPIs) as the straight cylinder of V_R at this ratio; the `p… |
+| `diameter` |   | number | m | Multi-reaction path only (DEV.md 4c C69). Gives the bed a cross-section of DECLARED diameter: L = V_R / (pi D^2 / 4), published with D_be… |
 | `catalyst` |   | object | — | The particle the bed is packed with, read by the Ergun `pressureDrop`. (Until 2026-10-12 a dysonSimon1968 bed's Eq 39 read it too; since … |
 | `pressureDrop` |   | object | — | Multi-reaction path only. Integrates Ergun's dP/dz = -[150 mu (1-eps)^2 u/(eps^3 dp^2) + 1.75 rho (1-eps) u^2/(eps^3 dp)] along the bed w… |
+| `tubes` |   | object | — | Multi-reaction path only (DEV.md 4c C69). The bed is N parallel tubes: area per volume 4/d_i, the cross-section N pi d_i^2/4 (Ergun runs … |
+| `wallHeatTransfer` |   | object | — | `thermalMode heatExchange` only. The bed side of U from a packed-tube correlation object at the LOCAL gas (needs `tubes`, `catalyst { par… |
+| `coolant` |   | object | — | `thermalMode heatExchange` only (DEV.md 4c C69). boiling: one temperature T_in. coCurrent / counterCurrent: a sensible coolant marched wi… |
 
 ## `phaseChanger`  (phaseChanger operation)
 

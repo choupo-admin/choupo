@@ -307,6 +307,9 @@ const GmpLayoutTool = lazy(() =>
 const SyngasTool = lazy(() =>
   import("./methods/SyngasTool.js")
     .then((m) => ({ default: m.SyngasTool })));
+const CorrelationSimplicityTool = lazy(() =>
+  import("./methods/CorrelationSimplicityTool.js")
+    .then((m) => ({ default: m.CorrelationSimplicityTool })));
 const MaterialsTool = lazy(() =>
   import("./methods/MaterialsTool.js")
     .then((m) => ({ default: m.MaterialsTool })));
@@ -536,6 +539,7 @@ export function MethodsWorkspace() {
             : tool === "gmp-layout" ? <GmpLayoutTool />
             : tool === "syngas" ? <SyngasTool />
             : tool === "materials" ? <MaterialsTool />
+            : tool === "correlation-simplicity" ? <CorrelationSimplicityTool />
             : tool === "wegstein" ? <WegsteinTool />
             : tool === "active-set-qp" ? <ActiveSetQpTool />
             : tool === "lub-scaleup" ? <LubScaleupTool />
