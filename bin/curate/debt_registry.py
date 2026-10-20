@@ -225,6 +225,13 @@ NC_COMPILATION = {
 #  REMEDY, the same for every entry: re-import the case from the corrected
 #  catalogue record (or edit the mirror's liquidViscosity block and re-seal),
 #  after the moved rows are shown; the pin then goes STALE and must leave.
+#
+#  DISCHARGED 2026-10-20 (DEV.md 4c C112 item 7): the two witnesses of the
+#  letdown EduTool, letdown01_ammonia_flashing and
+#  letdown02_valve_fluid_properties, were re-imported with bin/choupo-import
+#  and their pins left.  letdown02's re-import moved no number; letdown01's
+#  moved the twelve valve density / volumetric-flow KPIs its golden pins,
+#  listed for Vitor before any record.
 NO_GRANT_CASE_LOCAL = {
     "tutorials/plant/ammonia02_full_plant/constant/components/NH3.dat":
         "sealed NH3 mirror; Engineering Toolbox viscosity fit -- re-import.",
@@ -258,8 +265,6 @@ NO_GRANT_CASE_LOCAL = {
         "sealed NH3 mirror; Engineering Toolbox viscosity fit -- re-import.",
     "tutorials/props/gibbs/reactionEnthalpy01_haber_kirchhoff/constant/components/NH3.dat":
         "sealed NH3 mirror; Engineering Toolbox viscosity fit -- re-import.",
-    "tutorials/props/hydraulics/letdown02_valve_fluid_properties/constant/components/NH3.dat":
-        "sealed NH3 mirror; Engineering Toolbox viscosity fit -- re-import.",
     "tutorials/props/kinetics/ammoniaRate01_dyson_simon/constant/components/NH3.dat":
         "sealed NH3 mirror; Engineering Toolbox viscosity fit -- re-import.",
     "tutorials/props/safety/relief01_ammonia_loop_gas/constant/components/NH3.dat":
@@ -289,8 +294,6 @@ NO_GRANT_CASE_LOCAL = {
     "tutorials/steady/gibbs/gibbs12_element_potential_newton/constant/components/NH3.dat":
         "sealed NH3 mirror; Engineering Toolbox viscosity fit -- re-import.",
     "tutorials/steady/gibbs/gibbs13_adiabatic_approach_direction/constant/components/NH3.dat":
-        "sealed NH3 mirror; Engineering Toolbox viscosity fit -- re-import.",
-    "tutorials/steady/hydraulics/letdown01_ammonia_flashing/constant/components/NH3.dat":
         "sealed NH3 mirror; Engineering Toolbox viscosity fit -- re-import.",
     "tutorials/steady/reactors/equil03_ammonia_oxidation_declared_pathways/constant/components/NH3.dat":
         "sealed NH3 mirror; Engineering Toolbox viscosity fit -- re-import.",

@@ -21,7 +21,7 @@ propertyManifest
     sealed             true;
     sealSchema         computational;
     catalogueRelease   Choupo-2608;
-    importedAt         "2026-10-11";
+    importedAt         "2026-10-20";
     importerVersion    "3";
     records
     {
@@ -73,10 +73,10 @@ propertyManifest
         "components/NH3.dat"
         {
             type          imported;
-            sha256        "aba1485d208fe8ff12514c6073d1888a00ba5d73642b7f3f3152afbcbb4d6234";
-            computationalSha256 "a030cc619977b01bf9c28ca040b8a123efa9a07a37c3d9fbd56ff2a6dbbf0999";
+            sha256        "97af98632cf2c7f4a82a7ec5b3b3e9f769dbf772712c2d74d1c7a2743c19e744";
+            computationalSha256 "d7ea8507f8cd799be12c7c9fc1a8494efb597a9d454867957aac3b5436898b09";
             origin        "data/standards/components/NH3.dat";
-            originSha256  "1266d171a28a6d1bb02fddf65dd64c6d02350f40dc0a39b9e88ca707d080d718";
+            originSha256  "ee7dcd11777617c2e8266b0750cab8f48bf9cb9a68868bba5113888f6ef1b538";
             release       Choupo-2608;
         }
         "parameters/Henry/H2-NH3.dat"
