@@ -84,6 +84,14 @@ License
   a host this repository cannot reach from CI.  A gate that skips when it
   cannot run is a permanently-green gate exactly where it matters.  It runs
   from RELEASING.md's freeze step, which is the one moment it must.
+  THE ONE PLACE THAT REASON DOES NOT HOLD is the CI job that has just BUILT
+  the site: there the copy is on the runner's own disk and the browser is
+  the runner's own, so nothing is out of reach.  That is where `--edutools`
+  runs (.github/actions/smoke-site, called by publish-site before it pushes
+  and by site-smoke on demand) -- a CI step, still not a bin/runTests gate,
+  because a development container has neither the WASM nor a reason to have
+  it.  Where it cannot look it REFUSES (exit 2), and the CI step fails on a
+  refusal exactly as on a finding: a smoke that did not happen is not a pass.
 
   ON MIRRORS.  Chromium here may not reach the production host (proxy).
   `--mirror <url> <dir>` fetches a served copy with curl (proxy-aware) --
@@ -100,6 +108,12 @@ License
       bin/drive-app --mirror https://www.choupo.org/v2608/app/ /tmp/m --first-path
       bin/drive-app --serve /tmp/m --prefix /v2608/app/ --case ...
       bin/drive-app ... --screenshots                # PNG per view (gitignored)
+
+      THE EDUTOOLS SMOKE (DEV.md 4c C122; see the section of that name below):
+      bin/drive-app --edutools --serve site/_dist --prefix /app/   # every live tool of a built site
+      bin/drive-app --edutools ... --tool kremser --tool merkel   # only these
+      bin/drive-app --edutools ... --jobs 3 --tool-timeout 420 --slow 60 --screenshots   # the defaults
+        (report: gui/tools/driveApp/artifacts/edutools.json; a PNG per FAILED tool with --screenshots)
 \*---------------------------------------------------------------------------*/
 import { execFileSync, spawn } from "node:child_process";
 import { existsSync, mkdirSync, readFileSync, readdirSync, statSync, writeFileSync, createReadStream } from "node:fs";
@@ -118,10 +132,16 @@ const MIRROR_HOST = "frozen.test";   // any non-localhost name; resolved to 127.
 // ---- CLI -------------------------------------------------------------------
 const argv = process.argv.slice(2);
 const opt = { base: null, cases: [], firstPath: false, mirror: null, serve: null, prefix: "/",
-              shots: argv.includes("--screenshots") };
+              shots: argv.includes("--screenshots"),
+              edutools: false, tools: [], jobs: 3, toolTimeout: 420, slow: 60 };
 for (let i = 0; i < argv.length; i++) {
   const a = argv[i];
   if (a === "--base")       opt.base = argv[++i];
+  else if (a === "--edutools") opt.edutools = true;
+  else if (a === "--tool") opt.tools.push(argv[++i]);
+  else if (a === "--jobs") opt.jobs = Math.max(1, Number(argv[++i]) || 1);
+  else if (a === "--tool-timeout") opt.toolTimeout = Math.max(10, Number(argv[++i]) || 420);
+  else if (a === "--slow") opt.slow = Math.max(1, Number(argv[++i]) || 60);
   else if (a === "--case") opt.cases.push(argv[++i]);
   else if (a === "--first-path") opt.firstPath = true;
   else if (a === "--mirror") { opt.mirror = { url: argv[++i], dir: argv[++i] }; }
@@ -191,7 +211,9 @@ function mirror(url, dir) {
     const h = m[1];
     if (!/^(https?:|data:|#|mailto:)/.test(h)) queue.push(h);
   }
-  queue.push("workers/solverWorker.js", "wasm/version.json", "docs/guides.json",
+  //  methodTools.json: the EduTools list the landing renders, which
+  //  `--edutools` reads from the copy it drives (it lives at the site root).
+  queue.push("workers/solverWorker.js", "wasm/version.json", "docs/guides.json", "methodTools.json",
     ...["choupoSolve", "choupoBatch", "choupoCtrl", "choupoSemiContinuous", "choupoProps"].flatMap((b) => [`wasm/${b}.js`, `wasm/${b}.wasm`]));
 
   //  The LAZY CHUNKS: every "assets/*.js|css" literal in every JS we fetch,
@@ -210,9 +232,14 @@ function mirror(url, dir) {
 }
 
 // ---- serve: a static server for the mirror, same prefix, COOP/COEP ------------
-const MIME = { ".html": "text/html", ".js": "text/javascript", ".css": "text/css", ".json": "application/json",
-               ".wasm": "application/wasm", ".png": "image/png", ".svg": "image/svg+xml", ".pdf": "application/pdf" };
-function serve(dir) {
+const MIME = { ".html": "text/html", ".js": "text/javascript", ".mjs": "text/javascript", ".css": "text/css",
+               ".json": "application/json", ".wasm": "application/wasm", ".png": "image/png", ".svg": "image/svg+xml",
+               ".pdf": "application/pdf", ".woff2": "font/woff2", ".txt": "text/plain", ".csv": "text/csv" };
+//  `isolate` (the default, unchanged for the case drive) adds the COOP/COEP
+//  pair.  The EduTools smoke passes false: GitHub Pages, which serves
+//  www.choupo.org, sends neither header, and a smoke that served the site
+//  under headers its real host does not send would test a different page.
+function serve(dir, { isolate = true } = {}) {
   const root = resolve(dir);
   const srv = http.createServer((req, res) => {
     let p = decodeURI(req.url.split("?")[0]);
@@ -220,7 +247,7 @@ function serve(dir) {
     const f = join(root, p);
     if (!f.startsWith(root) || !existsSync(f) || statSync(f).isDirectory()) { res.writeHead(404); return res.end("nf"); }
     res.writeHead(200, { "Content-Type": MIME[extname(f)] || "application/octet-stream",
-      "Cross-Origin-Opener-Policy": "same-origin", "Cross-Origin-Embedder-Policy": "require-corp" });
+      ...(isolate ? { "Cross-Origin-Opener-Policy": "same-origin", "Cross-Origin-Embedder-Policy": "require-corp" } : {}) });
     createReadStream(f).pipe(res);
   });
   return new Promise((ok) => srv.listen(0, "127.0.0.1", () => ok({ srv, port: srv.address().port })));
@@ -368,6 +395,269 @@ async function driveCase(browser, base, id, findings) {
   await page.send("Target.closeTarget", { targetId: page.targetId }).catch(() => {});
 }
 
+// ---- the EduTools smoke (--edutools; DEV.md 4c C122) -------------------------
+//
+//  WHY.  On 2026-10-20 three EduTools were published that nobody had seen run
+//  in a browser: the development containers have no Emscripten, so the WASM
+//  engine the site serves was first exercised by a student.  The publish
+//  workflow checked that files existed and had sizes; nothing opened a page.
+//  This opens EVERY live tool, the way the landing links it, and says per tool
+//  whether it RENDERED, whether it RAN the engine and whether that run
+//  FINISHED -- or what the page said instead.
+//
+//  WHICH TOOLS.  The list is the derived artefact `methodTools.json` (one
+//  home: bin/curate/method_tools.mjs transpiles gui/src/ui/methods/registry.ts
+//  into it), read from the SITE BEING SERVED when one is served -- it is the
+//  list the landing renders, so the smoke opens what a student can click --
+//  and from generated/ otherwise.  Each tool is opened at the QUERY of its own
+//  published `href`, under whatever base is being driven.
+//
+//  WHAT IS READ, and nothing else -- three facts the app publishes about
+//  itself, never a word list about its prose:
+//    * the app's chrome (the positive sentinel, requireBootedApp above);
+//    * `data-method-tool` / `data-method-loading` / `data-method-unmounted`
+//      (MethodsWorkspace.tsx) and `data-error-boundary` (ErrorBoundary.tsx):
+//      the page asked for is the page rendered, its lazy chunk arrived, and no
+//      render error was caught;
+//    * the RUN LEDGER on <html> (gui/src/adapters/runLedger.ts): every engine
+//      run in the browser is counted where it passes -- started, done, failed,
+//      cancelled, the last failure's own line, and "engine unavailable".
+//  Plus uncaught exceptions on the page (cdp.mjs collects them).  Console
+//  errors that are not uncaught are COUNTED and reported, not judged: the
+//  engine announces through stderr by design.
+//
+//  WHAT IT CANNOT SAY.  "Ran" means a run the page started on OPEN finished
+//  (exit 0) and carried a result; it does not check the page drew the right
+//  number from it, and a tool that runs only when a control is pressed is
+//  reported as "rendered, no engine run on open" -- which is a fact, not a
+//  pass for the engine.  A run started later than the quiet window after the
+//  render is not waited for.
+//
+//  REFUSE, NEVER FAIL, WHEN IT CANNOT LOOK.  Before any tool is judged, ONE
+//  probe page must show the app's chrome AND the tool marker; absent the
+//  first, the route or the build is the problem (exit 2, the drive's own
+//  Refusal); absent the second, the build predates the marker this smoke
+//  reads, and judging 60 tools "not rendered" against it would be the
+//  2026-09-06 defect again.  Once the probe has proved the smoke can see, a
+//  tool page that does not boot IS a finding about that page.
+const QUIET_MS = 6000;      // after the render: no run started by then -> "no engine run on open"
+const SETTLE_MS = 2000;     // the ledger must read idle this long (a sweep chains runs back to back)
+//  A poll is SHORT.  An evaluate issued while the page reloads (main.tsx
+//  reloads once on a failed lazy chunk) can sit unanswered until the CDP
+//  default of 120 s; measured on the first sabotage, two of those cost a
+//  failing tool 218 s before its error boundary was read.
+const POLL = { timeoutMs: 5000 };
+const toolQuery = (t) => {
+  try { return new URL(t.href, "http://x.test").search || `?workspace=methods&tool=${encodeURIComponent(t.id)}`; }
+  catch { return `?workspace=methods&tool=${encodeURIComponent(t.id)}`; }
+};
+
+function eduToolList(serveDir) {
+  const p = serveDir ? join(resolve(serveDir), "methodTools.json") : join(ROOT, "generated/methodTools.json");
+  if (!existsSync(p))
+    throw new Refusal(`no EduTools list at ${p}`,
+      serveDir ? "bin/buildSite copies generated/methodTools.json into the site it assembles -- rebuild the site"
+               : "node bin/curate/method_tools.mjs");
+  let doc;
+  try { doc = JSON.parse(readFileSync(p, "utf8")); }
+  catch (e) { throw new Refusal(`the EduTools list ${p} is not JSON: ${e.message}`, "node bin/curate/method_tools.mjs"); }
+  const tools = Array.isArray(doc.tools) ? doc.tools.filter((t) => t && t.id) : [];
+  if (!tools.length) throw new Refusal(`the EduTools list ${p} names no tool`, "node bin/curate/method_tools.mjs");
+  return { path: p, tools };
+}
+
+const TOOL_STATE = `(() => {
+  const host = document.querySelector('[data-method-tool]');
+  const h = document.documentElement;
+  const num = (k) => Number(h.getAttribute('data-engine-' + k) || 0);
+  const boundary = document.querySelector('[data-error-boundary]');
+  return {
+    tool: host ? host.getAttribute('data-method-tool') : null,
+    loading: !!(host && host.querySelector('[data-method-loading]')),
+    unmounted: !!(host && host.querySelector('[data-method-unmounted]')),
+    boundary: boundary ? (boundary.innerText || '').replace(/\\s+/g, ' ').trim().slice(0, 300) : null,
+    runState: h.getAttribute('data-run-state'),
+    started: num('started'), done: num('done'), failed: num('failed'), cancelled: num('cancelled'),
+    failure: h.getAttribute('data-engine-failure'),
+    lastDone: h.getAttribute('data-engine-last-done'),
+    unavailable: h.getAttribute('data-engine-unavailable'),
+  };
+})()`;
+
+async function closePage(browser, page) {
+  await browser.send("Target.closeTarget", { targetId: page.targetId }).catch(() => {});
+}
+
+//  The probe: can this smoke SEE?  Raises Refusal when it cannot.
+async function probeEduTools(browser, base) {
+  const page = await browser.newPage(1400, 900);
+  const url = `${base}?workspace=methods`;
+  try {
+    await page.goto(url, 60000);
+    const chrome = await requireBootedApp(page, url);
+    for (let waited = 0; waited <= 30000; waited += 500) {
+      const s = await page.evaluate(TOOL_STATE, POLL).catch(() => null);
+      if (s && s.tool) return chrome;
+      await sleep(500);
+    }
+    throw new Refusal(
+      `the app booted at ${url} (${chrome.badge || "no version badge"}) but carries no [data-method-tool] marker after 30 s. `
+      + "This smoke reads that marker (MethodsWorkspace.tsx, DEV.md 4c C122) to know a tool page rendered; a build "
+      + "without it cannot be judged, and nothing was.",
+      "drive a build of a tree that carries the marker (C122 or later)");
+  } finally { await closePage(browser, page); }
+}
+
+async function smokeTool(browser, base, tool, timeoutS) {
+  const t0 = Date.now();
+  const r = { id: tool.id, label: tool.label, verdict: "failed", reason: "", times: {}, runs: null, consoleErrors: 0 };
+  const page = await browser.newPage(1400, 900);
+  const url = base + toolQuery(tool).replace(/^\?/, "?");
+  const deadline = t0 + timeoutS * 1000;
+  try {
+    await page.goto(url, 60000);
+    try { await requireBootedApp(page, url, 30000); }
+    catch (e) { if (e instanceof Refusal) { r.reason = `the app did not boot for this link: ${e.message}`; return r; } throw e; }
+    r.times.boot = (Date.now() - t0) / 1000;
+    // (b) the page rendered: the marker names THIS tool and its chunk arrived
+    let s = null, tRender = null;
+    while (Date.now() < deadline) {
+      s = await page.evaluate(TOOL_STATE, POLL).catch(() => null);
+      if (s && (s.boundary !== null)) break;
+      if (s && s.tool === tool.id && !s.loading) { tRender = Date.now(); break; }
+      await sleep(250);
+    }
+    if (s?.boundary !== null && s?.boundary !== undefined) { r.reason = `render error caught by the error boundary: ${s.boundary}`; return r; }
+    if (!tRender) {
+      r.reason = s?.tool && s.tool !== tool.id
+        ? `the page rendered tool '${s.tool}', not '${tool.id}' (the deep link did not select it)`
+        : `the tool's page did not finish rendering in ${timeoutS} s (${s?.tool ? "its lazy chunk never arrived" : "no [data-method-tool] on the page"})`;
+      return r;
+    }
+    if (s.unmounted) { r.reason = "the workspace says this tool is not mounted in this build"; return r; }
+    r.times.render = (tRender - t0) / 1000;
+    // (c) the engine: wait for the page's own runs to start and settle
+    let tFirstStart = null, idleSince = null, timedOut = true;
+    while (Date.now() < deadline) {
+      s = await page.evaluate(TOOL_STATE, POLL).catch(() => s);
+      if (s.boundary !== null) break;
+      if (s.unavailable) { timedOut = false; break; }
+      if (s.started > 0 && tFirstStart === null) tFirstStart = Date.now();
+      if (s.started === 0 && Date.now() - tRender >= QUIET_MS) { timedOut = false; break; }
+      if (s.started > 0 && s.runState === "idle") {
+        idleSince ??= Date.now();
+        if (Date.now() - idleSince >= SETTLE_MS) { timedOut = false; break; }
+      } else idleSince = null;
+      await sleep(250);
+    }
+    r.runs = { started: s.started, done: s.done, failed: s.failed, cancelled: s.cancelled,
+               lastDone: s.lastDone, failure: s.failure };
+    if (tFirstStart) r.times.engine = ((idleSince ?? Date.now()) - tFirstStart) / 1000;
+    const uncaught = page.consoleErrors.filter((e) => e.kind === "uncaught" && e.where === "page");
+    r.consoleErrors = page.consoleErrors.length;
+    if (s.boundary !== null) r.reason = `render error caught by the error boundary: ${s.boundary}`;
+    else if (s.unavailable) r.reason = `the engine could not be loaded: ${s.unavailable}`;
+    else if (timedOut) r.reason = `the engine was still running after ${timeoutS} s (${s.done} of ${s.started} run(s) finished)`;
+    else if (s.failed > 0) r.reason = `${s.failed} of ${s.started} engine run(s) did not finish -- ${s.failure}`;
+    else if (uncaught.length) r.reason = `uncaught exception on the page: ${uncaught[0].text}`;
+    else if (s.started > 0 && s.done === 0) r.reason = `every engine run was cancelled by the page (${s.cancelled}); none finished`;
+    else r.verdict = s.done > 0 ? "ran" : "rendered";
+    return r;
+  } catch (e) {
+    r.reason = `the smoke could not drive this page: ${e.message || e}`;
+    return r;
+  } finally {
+    r.times.total = (Date.now() - t0) / 1000;
+    if (r.verdict === "failed" && opt.shots) {
+      try {
+        mkdirSync(ARTIFACTS, { recursive: true });
+        writeFileSync(join(ARTIFACTS, `edutool-${tool.id}.png`), await page.screenshot());
+      } catch { /* a screenshot is evidence, never a verdict */ }
+    }
+    await closePage(browser, page);
+  }
+}
+
+async function smokeEduTools(browser, base, serveDir) {
+  const { path, tools: all } = eduToolList(serveDir);
+  const unknown = opt.tools.filter((id) => !all.some((t) => t.id === id));
+  if (unknown.length) throw new Refusal(`--tool names no live EduTool: ${unknown.join(", ")}`, `the list is ${path}`);
+  const tools = opt.tools.length ? all.filter((t) => opt.tools.includes(t.id)) : all;
+  log(`[edutools] ${tools.length} tool(s) from ${path}; ${opt.jobs} page(s) in parallel, ${opt.toolTimeout} s per tool`);
+  const t0 = Date.now();
+  const chrome = await probeEduTools(browser, base);
+  log(`[edutools] probe: app booted (${chrome.badge || "no version badge"}) and carries the tool marker -- judging`);
+  const results = [];
+  let next = 0;
+  const worker = async () => {
+    while (next < tools.length) {
+      const t = tools[next++];
+      const r = await smokeTool(browser, base, t, opt.toolTimeout);
+      //  SLOW IS REPORTED, NOT FAILED (a stated default, DEV.md 4c C122).
+      //  The budget above is a HANG detector; a page whose runs finish but
+      //  take longer than a student will wait is a finding about the page's
+      //  witness, and whether to shorten one is a pedagogical ruling, not a
+      //  reason to block a publish.  Measured on the first run: the
+      //  breakthrough witness (batch13, choupoBatch) takes ~260 s in the
+      //  browser, behind both `breakthrough` and `lub-scaleup`.
+      r.slow = r.verdict !== "failed" && (r.times.engine ?? 0) > opt.slow;
+      results.push(r);
+      const runs = r.runs ? `runs ${r.runs.done}/${r.runs.started}${r.runs.cancelled ? ` (+${r.runs.cancelled} superseded)` : ""}` : "";
+      const tm = `${(r.times.total ?? 0).toFixed(1).padStart(6)} s`;
+      const tail = r.verdict === "failed" ? `  -- ${r.reason}`
+        : r.slow ? `  -- SLOW: the engine took ${r.times.engine.toFixed(0)} s (> ${opt.slow} s) before the page could draw` : "";
+      log(`  ${r.verdict.toUpperCase().padEnd(8)} ${t.id.padEnd(28)} ${tm}  ${runs}${tail}`);
+    }
+  };
+  await Promise.all(Array.from({ length: Math.min(opt.jobs, tools.length) }, worker));
+  const wall = (Date.now() - t0) / 1000;
+  results.sort((a, b) => tools.findIndex((t) => t.id === a.id) - tools.findIndex((t) => t.id === b.id));
+  const n = (v) => results.filter((r) => r.verdict === v).length;
+  const slowOnes = results.filter((r) => r.slow);
+  mkdirSync(ARTIFACTS, { recursive: true });
+  const report = { base, list: path, jobs: opt.jobs, toolTimeoutS: opt.toolTimeout, slowS: opt.slow, wallS: wall,
+                   app: chrome.badge || null, ran: n("ran"), rendered: n("rendered"), failed: n("failed"),
+                   slow: slowOnes.map((r) => r.id), results };
+  writeFileSync(join(ARTIFACTS, "edutools.json"), JSON.stringify(report, null, 2) + "\n");
+  const slowest = [...results].sort((a, b) => b.times.total - a.times.total).slice(0, 5)
+    .map((r) => `${r.id} ${r.times.total.toFixed(1)} s`).join(", ");
+  log(`\n[edutools] ${tools.length} tool(s) in ${wall.toFixed(1)} s wall: ${n("ran")} ran the engine to the end, `
+    + `${n("rendered")} rendered with no engine run on open, ${n("failed")} FAILED; `
+    + `${slowOnes.length} SLOW (engine > ${opt.slow} s, reported, not failed)`);
+  log(`[edutools] slowest: ${slowest}`);
+  log(`[edutools] report: ${join(ARTIFACTS, "edutools.json")}`);
+  githubReport(report);
+  return results.filter((r) => r.verdict === "failed").map((r) => `${r.id}: ${r.reason}`);
+}
+
+//  Under GitHub Actions: an annotation per failed / slow tool, and the
+//  per-tool table in the job summary, so the verdict is read where the run is
+//  read.  Silent anywhere else -- the console lines above are the report.
+function githubReport(report) {
+  if (process.env.GITHUB_ACTIONS !== "true") return;
+  const esc = (s) => String(s).replace(/%/g, "%25").replace(/\r/g, "%0D").replace(/\n/g, "%0A");
+  for (const r of report.results) {
+    if (r.verdict === "failed") console.log(`::error title=EduTool ${r.id}::${esc(r.reason)}`);
+    else if (r.slow) console.log(`::warning title=EduTool ${r.id} is slow::the engine took ${r.times.engine.toFixed(0)} s before the page could draw`);
+  }
+  const summary = process.env.GITHUB_STEP_SUMMARY;
+  if (!summary) return;
+  const rows = report.results.map((r) =>
+    `| ${r.id} | ${r.verdict}${r.slow ? " (slow)" : ""} | ${r.runs ? `${r.runs.done}/${r.runs.started}` : "-"} `
+    + `| ${(r.times.total ?? 0).toFixed(1)} | ${r.times.engine !== undefined ? r.times.engine.toFixed(1) : "-"} `
+    + `| ${(r.verdict === "failed" ? r.reason : r.runs?.lastDone ?? "").replace(/\|/g, "/").slice(0, 160)} |`);
+  const md = [
+    `### EduTools smoke: ${report.ran} ran, ${report.rendered} rendered (no run on open), ${report.failed} failed, ${report.slow.length} slow`,
+    "",
+    `${report.results.length} tools in ${report.wallS.toFixed(0)} s wall, ${report.jobs} pages in parallel, `
+      + `${report.toolTimeoutS} s budget per tool.`,
+    "",
+    "| tool | verdict | runs done/started | total s | engine s | detail |",
+    "|---|---|---|---|---|---|",
+    ...rows, ""].join("\n");
+  try { writeFileSync(summary, md + "\n", { flag: "a" }); } catch { /* the console carries it */ }
+}
+
 // ---- main --------------------------------------------------------------------
 let server = null, mirrorSrv = null, browser = null;
 try {
@@ -375,22 +665,35 @@ try {
   let base = opt.base, extraArgs = [];
   if (opt.mirror) { opt.prefix = mirror(opt.mirror.url, opt.mirror.dir); opt.serve = opt.mirror.dir; }
   if (opt.serve) {
-    mirrorSrv = await serve(opt.serve);
+    mirrorSrv = await serve(opt.serve, { isolate: !opt.edutools });
     base = `http://${MIRROR_HOST}:${mirrorSrv.port}${opt.prefix}`;
     extraArgs = [`--host-resolver-rules=MAP ${MIRROR_HOST} 127.0.0.1`];
     log(`[serve] ${opt.serve} at ${base}`);
   }
   if (!base) { server = await ensureServer(log); base = `http://${HOST}:${PORT}/`; }
   if (!base.endsWith("/")) base += "/";
-  const cases = opt.firstPath ? firstPathCases() : opt.cases;
-  if (!cases.length) throw new Refusal("no case to drive", "pass --case <id> or --first-path");
-  const chromium = findChromium();
-  browser = await launch(chromium, extraArgs);
-  const findings = [];
-  for (const id of cases) { log(`\n== ${id}`); await driveCase(browser, base, id, findings); }
-  log(`\n${cases.length} case(s) driven at ${base}`);
-  if (findings.length) { log(`FINDINGS (${findings.length}):`); for (const f of findings) log(`  - ${f}`); process.exitCode = EXIT_FINDING; }
-  else { log("no finding: every run reached its engine inside the prefix, no view threw, no request left the app"); process.exitCode = EXIT_CLEAN; }
+  if (opt.edutools) {
+    const chromium = findChromium();
+    if (!chromium) throw new Refusal("no Chromium binary found",
+      "set CHOUPO_CHROMIUM to a Chrome/Chromium binary, or PLAYWRIGHT_BROWSERS_PATH to a Playwright browser tree");
+    //  Several pages at once: none of them may be treated as a background
+    //  tab, or its timers and rendering are throttled and a tool's run looks
+    //  slow for a reason that is not the tool's.
+    browser = await launch(chromium, [...extraArgs, "--disable-backgrounding-occluded-windows"]);
+    const findings = await smokeEduTools(browser, base, opt.serve);
+    if (findings.length) { log(`FINDINGS (${findings.length}):`); for (const f of findings) log(`  - ${f}`); process.exitCode = EXIT_FINDING; }
+    else { log("no finding: every live EduTool rendered, and every engine run a tool started on open finished"); process.exitCode = EXIT_CLEAN; }
+  } else {
+    const cases = opt.firstPath ? firstPathCases() : opt.cases;
+    if (!cases.length) throw new Refusal("no case to drive", "pass --case <id> or --first-path");
+    const chromium = findChromium();
+    browser = await launch(chromium, extraArgs);
+    const findings = [];
+    for (const id of cases) { log(`\n== ${id}`); await driveCase(browser, base, id, findings); }
+    log(`\n${cases.length} case(s) driven at ${base}`);
+    if (findings.length) { log(`FINDINGS (${findings.length}):`); for (const f of findings) log(`  - ${f}`); process.exitCode = EXIT_FINDING; }
+    else { log("no finding: every run reached its engine inside the prefix, no view threw, no request left the app"); process.exitCode = EXIT_CLEAN; }
+  }
 } catch (e) {
   if (e instanceof Refusal) { console.error(`drive-app REFUSES TO RUN: ${e.message}\nRemedy: ${e.remedy}`); process.exitCode = EXIT_REFUSED; }
   else { console.error(e); process.exitCode = EXIT_REFUSED; }

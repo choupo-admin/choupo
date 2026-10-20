@@ -287,3 +287,24 @@ notch softer, and it is stated here rather than fixed.
   freshness.
 * **The `EMPTY?` Variables view** the drive reports on `flash01` (317
   characters): observed, not judged, and not chased.
+
+## 6. Addendum (2026-10-20, DEV.md 4c C122): the same instrument, in CI, on the EduTools
+
+§1's "no gate" reason was that the copy that matters is on a host CI cannot
+reach.  It does not hold in the one job that has just **built** the site: the
+copy is on the runner's disk and the browser is the runner's own.  So
+`bin/drive-app --edutools` now runs there (`.github/actions/smoke-site`,
+called by `publish-site` after "Verify the site is publishable" and BEFORE
+the push, and by `site-smoke` on any other branch on demand).  It opens every
+live EduTool at the query of its published `href`, and reads only facts the
+app publishes about itself: the same positive sentinel as §1, then
+`data-method-tool` / `data-method-loading` / `data-method-unmounted`
+(MethodsWorkspace) and `data-error-boundary` (ErrorBoundary), then the page's
+RUN LEDGER on `<html>` (`gui/src/adapters/runLedger.ts`, written by
+`WasmAdapter.run` and `resolveAdapter`, the one place every in-browser engine
+run passes).  The §1 rule is kept in both directions: a probe page must show
+the chrome AND the tool marker before any tool is judged, or the run REFUSES
+(exit 2) -- measured against the live pre-C122 build, which it refused rather
+than filing 61 tools as "not rendered" -- and in CI a refusal fails the step
+exactly as a finding does, because a smoke that did not happen is not a pass.
+It is still not a `bin/runTests` gate: a development container has no WASM.

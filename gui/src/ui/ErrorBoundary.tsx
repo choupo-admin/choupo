@@ -116,7 +116,10 @@ export class ErrorBoundary extends Component<Props, State> {
       where = bits.length ? bits.join("  ·  ") : "(no workspace/tool in the URL)";
     } catch { where = "(could not read the address bar)"; }
     return (
-      <Stack p="md" gap="sm" style={{ height: "100%", overflow: "auto" }}>
+      // `data-error-boundary`: the site smoke (DEV.md 4c C122) finds a caught
+      // render error by this attribute, never by the wording above it.
+      <Stack data-error-boundary={this.props.scope ?? ""} p="md" gap="sm"
+        style={{ height: "100%", overflow: "auto" }}>
         <Alert color="red" icon={<IconAlertTriangle size={16} />}
           title={`Render error${this.props.scope ? ` in ${this.props.scope}` : ""}`}>
           <Text size="sm">

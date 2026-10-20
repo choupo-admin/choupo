@@ -1,0 +1,55 @@
+#  smoke-site  --  open every live EduTool of the BUILT site in headless
+#  Chrome and fail when one does not render, or when an engine run it starts
+#  on open does not finish (DEV.md 4c C122).
+#
+#  WHY.  On 2026-10-20 three EduTools were published that nobody had seen run
+#  in a browser: the development containers have no Emscripten, so the WASM
+#  engine the site serves met its first browser in a student's.  The publish
+#  checks above it assert files and sizes; nothing opened a page.  The tool
+#  and everything it reads are described in gui/tools/driveApp/driveApp.mjs
+#  (the section "the EduTools smoke"); this file only runs it where the site
+#  was just built, served LOCALLY (no external host), under /app/ exactly as
+#  www.choupo.org lays it out.
+#
+#  THE BROWSER is the runner's own Chrome (GitHub's ubuntu images carry
+#  /usr/bin/google-chrome); cdp.mjs takes it through CHOUPO_CHROMIUM, so
+#  nothing is downloaded and no dependency is added to gui/.
+#
+#  THE VERDICT.  drive-app exits 0 (every tool fine), 1 (findings) or 2
+#  (REFUSED: it could not honestly look -- no browser, the app did not boot,
+#  or a build without the markers it reads).  Both 1 and 2 fail this step:
+#  a check that cannot run must not pass, and in CI a refusal is a smoke that
+#  did not happen.  The report and a screenshot per failed tool are uploaded
+#  either way, BEFORE the verdict, so a red run carries its own evidence.
+name: smoke-site
+description: Serve site/_dist locally and open every live EduTool in headless Chrome (bin/drive-app --edutools).
+
+runs:
+  using: composite
+  steps:
+    - name: Open every live EduTool in headless Chrome
+      id: smoke
+      shell: bash
+      run: |
+        set +e
+        export CHOUPO_CHROMIUM="${CHOUPO_CHROMIUM:-$(command -v google-chrome || command -v chromium || command -v chromium-browser)}"
+        echo "browser: ${CHOUPO_CHROMIUM:-none found} ($("$CHOUPO_CHROMIUM" --version 2>/dev/null || echo '?'))"
+        bin/drive-app --edutools --serve site/_dist --prefix /app/ --jobs 3 --screenshots
+        echo "status=$?" >> "$GITHUB_OUTPUT"
+
+    - name: Keep the smoke report
+      uses: actions/upload-artifact@v4
+      with:
+        name: edutools-smoke
+        path: gui/tools/driveApp/artifacts/
+        if-no-files-found: warn
+
+    - name: Verdict of the smoke
+      shell: bash
+      run: |
+        case "${{ steps.smoke.outputs.status }}" in
+          0) echo "EduTools smoke: every live tool rendered, every engine run it started on open finished." ;;
+          1) echo "::error::EduTools smoke FOUND defects -- see the per-tool lines above and the edutools-smoke artifact."; exit 1 ;;
+          2) echo "::error::EduTools smoke REFUSED: it could not honestly look (see its message above).  Not a pass."; exit 1 ;;
+          *) echo "::error::EduTools smoke ended with status '${{ steps.smoke.outputs.status }}'."; exit 1 ;;
+        esac

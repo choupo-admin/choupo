@@ -466,10 +466,15 @@ export function MethodsWorkspace() {
       {/* A bounded full-height flex column for the tool: each manages its own
           setup panel, and this container keeps it inside the workspace
           whatever the viewport does — never reached into, only sized. */}
-      <Box style={{ flex: 1, minHeight: 0, minWidth: 0, display: "flex",
+      {/* `data-method-tool` names the tool the dispatch below renders, and
+          `data-method-loading` marks the lazy chunk still on its way: the site
+          smoke (`bin/drive-app --edutools`, DEV.md 4c C122) reads both to know
+          the page it opened is the page it asked for, rendered, before it
+          judges anything.  Read by nothing in the app. */}
+      <Box data-method-tool={tool} style={{ flex: 1, minHeight: 0, minWidth: 0, display: "flex",
         flexDirection: "column", overflow: "hidden" }}>
         <Suspense fallback={
-          <Group justify="center" mt="xl"><Loader size="sm" /></Group>
+          <Group data-method-loading="" justify="center" mt="xl"><Loader size="sm" /></Group>
         }>
           {/* THE DISPATCH REFUSES WHAT IT DOES NOT KNOW (2026-08-18).
               This chain used to END in `<BreakthroughTool/>`, so ANY tool id it
@@ -561,7 +566,7 @@ export function MethodsWorkspace() {
  *  tool's construction is offered in its place. */
 function UnmountedTool({ tool }: { tool: MethodTool }): JSX.Element {
   return (
-    <Box style={{ flex: 1, display: "flex", alignItems: "center",
+    <Box data-method-unmounted={tool.id} style={{ flex: 1, display: "flex", alignItems: "center",
       justifyContent: "center", padding: 24 }}>
       <Alert color="yellow" variant="light" maw={560}
         title={`${tool.label} is not mounted in this build`}>

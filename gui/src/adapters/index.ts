@@ -48,6 +48,7 @@ import type { CaseFiles } from "../case/types.js";
 import type { RunResult, SolverAdapter } from "./SolverAdapter.js";
 import { WasmAdapter } from "./WasmAdapter.js";
 import { probeWasm } from "./wasmModule.js";
+import { noteEngineUnavailable } from "./runLedger.js";
 
 export type AdapterKind = "wasm" | "mock" | "unavailable";
 
@@ -81,6 +82,10 @@ export async function resolveAdapter(preferred: AdapterKind = "wasm",
     return { kind: "wasm", adapter: new WasmAdapter() };
   } catch (e) {
     const reason = `The real (WebAssembly) solver could not be loaded — ${(e as Error).message}`;
+    //  Said on the page's run ledger too (runLedger.ts): a page whose hooks
+    //  take this path never call run(), so without this the site smoke would
+    //  read "the engine was never asked" where the truth is "it was missing".
+    noteEngineUnavailable(reason);
     if (import.meta.env.PROD) {
       // Hosted: refuse to run.  Never fabricate numbers with the mock.
       return {
