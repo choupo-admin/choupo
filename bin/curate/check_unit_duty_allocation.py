@@ -21,8 +21,11 @@ WHAT THIS CHECKS:
       (no `kf("Q")`, no port-key literal of its own); `unitHeatDuties` reads
       `energyItemKpis()`; the auto-pick skips a credit and filters on
       `canServe`; the economics count of unpriced duties skips a CARRIED row.
-  (b) COVERAGE.  Over the witness and five small cases (a jacketed cstr, a
-      cooled gibbsReactor, a TSA with two ported duties, a crystalliser, a
+  (b) COVERAGE.  Over the witness and five small cases (a jacketed cstr
+      cooled at 394 K, an isothermal gibbsReactor -- gibbs07, HEATED since
+      2026-10-20 (C112 point 6: its feed is two-phase at 350 K and the duty
+      prices it so; it was a 4.44 kW cooling duty only while the feed was
+      priced as a vapour) -- a TSA with two ported duties, a crystalliser, a
       cooling tower): every boundary heat duty the run publishes (|Q| >= 1 W,
       keys and ports READ from `heatDutyPorts()` in BalanceMath.H, never
       typed here) has an allocation row on its port.
@@ -84,6 +87,13 @@ SMALL = [
     "tutorials/steady/heat/coolingTower01_merkel",
 ]
 GIBBS = "tutorials/steady/gibbs/gibbs07_wgs_cooled"
+#  The COOLED duty the two temperature-and-tier probes need.  Until 2026-10-20
+#  it was gibbs07's; that duty was a feed priced as a vapour, and priced as
+#  the report prices it the reactor is HEATED (+2.25 kW, DEV.md 4c C112
+#  point 6) -- so the credit probe moved to a unit whose cooling is real at
+#  a temperature below the credit's (cstr06, 394 K), and the tier probe on
+#  gibbs07 now asks a COOLING utility to serve its heating duty.
+COOLED = "tutorials/steady/reactors/cstr06_jacketed"
 TSA = "tutorials/steady/separation/tsa01_co2_twin_bed"
 CREDIT = "steamGenerationHP"
 
@@ -294,11 +304,11 @@ def main() -> int:
         else:
             g_ok = True
         probes = [
-            ("wrong tier", GIBBS, "steamHP", r"^\s*type\s+gibbsReactor;", False,
-             ["utility allocation refused", "cannot serve", "tier is 'heating'"]),
+            ("wrong tier", GIBBS, "coolingWater", r"^\s*type\s+gibbsReactor;", False,
+             ["utility allocation refused", "cannot serve", "tier is 'cooling'"]),
             ("not in catalogue", GIBBS, "noSuchUtility", r"^\s*type\s+gibbsReactor;",
              False, ["utility allocation refused", "not in the loaded catalogue"]),
-            ("credit too cold", GIBBS, CREDIT, r"^\s*type\s+gibbsReactor;", True,
+            ("credit too cold", COOLED, CREDIT, r"^\s*type\s+cstr;", True,
              ["utility allocation refused", "cannot serve", "above the process T"]),
             ("no generic duty", TSA, "coolingWater", r"^\s*type\s+tsaTwinBed;", False,
              ["utility allocation refused", "publishes no heat duty"]),

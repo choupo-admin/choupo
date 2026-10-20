@@ -354,12 +354,14 @@ export const EP_LIMITS: readonly LessonLimit[] = [
       + "REFUSED by name.",
   },
   {
-    id: "liquid-energy-debt",
-    title: "The condensing reactor's energy balance does not close.",
-    body: "gibbs07, whose Newton and liquid search step 4 reads, is a pinned "
-      + "open debt of the plant-boundary first law "
-      + "(check_energy_closure.KNOWN_OPEN).  The page reads its equilibrium, "
-      + "which is not in question, and not its duty.",
+    id: "equilibrium-not-duty",
+    title: "The page reads the equilibrium, not the duty.",
+    body: "gibbs07's reactor publishes a duty, Q_kW = H_out − H_in, with the "
+      + "feed and both outlets priced in the state each stream carries — "
+      + "the pricing the energy report applies to the same streams — so its "
+      + "first law closes, unit by unit and at the plant boundary "
+      + "(check_energy_closure).  This page draws the element potentials and "
+      + "the phase search, not that number.",
   },
   {
     id: "ideal-gas",

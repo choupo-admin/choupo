@@ -32,7 +32,7 @@ License
 #include "core/Constants.H"
 #include "gibbsMethod/GibbsMethod.H"
 #include "solver/NewtonRaphson.H"
-
+#include "unitOperations/flash/StreamEquilibrium.H"   // the ONE resolve-and-price home
 #include <algorithm>
 #include <cmath>
 #include <iomanip>
@@ -47,22 +47,22 @@ namespace Choupo {
 scalar GibbsReactor::stateEnthalpy_W(const GibbsProblem&     prob,
                                      const GibbsEquilibrium& eq,
                                      scalar                  T)
-{
+{   //  Each PHASE priced as its published stream is (priceState, unpinned), never a blend at z.
     const ThermoPackage& thermo = *prob.thermo;
-    const std::size_t    N      = prob.N();
     scalar Ng = 0.0, Nl = 0.0;
-    for (std::size_t i = 0; i < N; ++i)
+    sVector y(thermo.n(), 0.0), x(thermo.n(), 0.0);
+    for (std::size_t i = 0; i < prob.N(); ++i)
     {
-        Ng += eq.nGas[i];
-        if (!eq.nLiq.empty()) Nl += eq.nLiq[i];
+        Ng += eq.nGas[i];                       y[prob.compIdx[i]] = eq.nGas[i];
+        if (!eq.nLiq.empty()) { Nl += eq.nLiq[i]; x[prob.compIdx[i]] = eq.nLiq[i]; }
     }
-    const scalar Ntot = Ng + Nl;
-    if (!(Ntot > 0.0)) return 0.0;
-    sVector zz(thermo.n(), 0.0);
-    for (std::size_t i = 0; i < N; ++i)
-        zz[prob.compIdx[i]] = (eq.nGas[i]
-                             + (eq.nLiq.empty() ? 0.0 : eq.nLiq[i])) / Ntot;
-    return Ntot * thermo.H_stream_formation(T, prob.P, Ng / Ntot, zz) + pureSolidEnthalpy_W(prob, eq, T);
+    for (auto& v : y) v = (Ng > 0.0) ? v / Ng : 0.0;
+    for (auto& v : x) v = (Nl > 0.0) ? v / Nl : 0.0;
+    const auto leg = [&](const sVector& z, scalar F, scalar vf, const char* where)
+    {   //  F in mol/s, so priceState's F x (J/mol) is W.
+        return F > 0.0 ? pricedOrAsPublished(T, prob.P, z, F, false, vf, thermo, where) : 0.0;
+    };
+    return leg(y, Ng, 1.0, "gibbsReactor gas") + leg(x, Nl, 0.0, "gibbsReactor condensate") + pureSolidEnthalpy_W(prob, eq, T);
 }
 
 GibbsReactor::ApproachDirection
@@ -420,13 +420,13 @@ int GibbsReactor::solve(const DictPtr& dict,
     if (mode == "adiabatic")
     {
         const scalar T_in = feedDict->lookupScalar("T", Dims::temperature);
-        //  THE INLET ON THE SAME SURFACE.  Anything else reintroduces the
-        //  defect on the other side of the equation.
-        sVector zIn(thermo.n(), 0.0);
+        //  THE INLET ON THE SAME SURFACE AND IN THE STATE IT CARRIES -- the
+        //  report's own reading of the feed (`feedEnthalpy_W`, C112 point 6);
+        //  a two-phase feed priced as a gas is short its liquid's latent heat.
         scalar  Nin = 0.0;
         for (std::size_t i = 0; i < N; ++i) Nin += nIn[i];
-        for (std::size_t i = 0; i < N; ++i)
-            zIn[compIdx[i]] = (Nin > 0.0) ? nIn[i] / Nin : 0.0;
+        //  Nin only guards an empty feed: the composition is read inside
+        //  `feedEnthalpy_W` from the problem, so both modes read ONE inlet.
         //  AT THE FEED'S OWN PRESSURE, not the reactor's.  ammonia02's
         //  preheatedFeed arrives at 232.3 bar and the converter operates at
         //  200: evaluating the inlet at the operating pressure charges the
@@ -434,7 +434,7 @@ int GibbsReactor::solve(const DictPtr& dict,
         const scalar P_in = feedDict->found("P")
                           ? feedDict->lookupScalar("P", Dims::pressure) : P;
         const scalar H_in = (Nin > 0.0)
-            ? Nin * thermo.H_stream_formation(T_in, P_in, 1.0, zIn) : 0.0;
+            ? feedEnthalpy_W(feedDict, T_in, P_in, prob) : 0.0;
         const scalar Q_J_s = Q_kJ_per_kmol * F_mol_s;
 
         //  A PENALTY INSIDE A NEWTON RESIDUAL IS A SOLVER AID, AND IT IS
@@ -654,15 +654,15 @@ int GibbsReactor::solve(const DictPtr& dict,
     // absorb the reaction enthalpy; any externally imposed `Q` is already the
     // user's spec), so it emits no boundary duty here.
     if (mode == "isothermal")
-    {
+    {   //  BOTH ENDS AS THE REPORT PRICES THEM (C112 point 6): the feed in the
+        //  state it carries, each outlet unpinned through flashState::priceState.
         const scalar T_in = feedDict->lookupScalar("T", Dims::temperature);
-        sVector zf(thermo.n(), 0.0);
-        for (std::size_t i = 0; i < N; ++i)
-            zf[compIdx[i]] = (F_mol_s > 0.0) ? nIn[i] / F_mol_s : 0.0;
-        const scalar H_in_kW = F_in_kmols * thermo.H_stream_formation(T_in, P, 1.0, zf);
+        const scalar P_in = feedDict->found("P") ? feedDict->lookupScalar("P", Dims::pressure) : P;
+        const scalar H_in_kW = feedEnthalpy_W(feedDict, T_in, P_in, prob) / 1000.0;
         scalar H_out_kW = 0.0;
-        for (const auto& s : produced_)
-            H_out_kW += s.F * thermo.H_stream_formation(s.T, s.P, s.vf, s.z);
+        for (const auto& s : produced_)   //  this unit pins nothing it publishes
+            H_out_kW += pricedOrAsPublished(s.T, s.P, s.z, s.F, false, s.vf, thermo, "gibbsReactor '"
+                + dict->lookupWordOrDefault("name", "(unnamed)") + "' outlet '" + s.name + "'");
         //  The deposit on the SOLID rung -- the report's own leg for `s[]`.
         H_out_kW += pureSolidEnthalpy_W(prob, eq, T_final) / 1000.0;
         kpis_["Q_kW"] = H_out_kW - H_in_kW;   // F[kmol/s]*h[kJ/kmol] = kW
@@ -789,6 +789,77 @@ void GibbsReactor::announceOuterNotConverged(const std::string& unitLocus,
     if (AdvisoryLog::instance().add("solver", "warning", unitLocus, m.str() + "."))
         std::cerr << "  [solver] " << unitLocus << ": " << m.str()
                   << " (announced).\n";
+}
+
+//  ---- THE FEED, IN THE STATE IT CARRIES (2026-10-20, DEV.md 4c C112 point 6)
+//
+//  Both duty sites used to price the inlet as `H_stream_formation(T_in, P,
+//  1.0, z)` -- a VAPOUR, whatever the stream was.  The energy report resolves
+//  an unpinned authored stream at its own (T, P, z) and prices the
+//  equilibrium phases, so the two parted by exactly the latent heat of the
+//  feed's liquid: gibbs07's 1 CO : 3 steam at 350 K and 1 bar is at vf =
+//  0.4315 there, the reactor charged its 0.5685 kmol/h of liquid water as
+//  vapour, and the row read dH = +2.2519 kW against a published Q =
+//  -4.4392 kW -- +6.6911 kW unattributed, 150.728 % of the plant's exchanged
+//  energy, pinned in check_energy_closure.KNOWN_OPEN with its two siblings
+//  (gibbs08 reactiveFlash, gibbs09 directMin).  The family CLAUDE.md 6 names:
+//  THE STATE A UNIT COMPUTES WITH IS NOT THE STATE ITS STREAMS CARRY.  The
+//  reading of the inlet is the one `conversionReactor` takes (a feed dict
+//  with no `vf` is a vapour, as this unit always assumed); the pricing is
+//  the report's own call.
+scalar GibbsReactor::feedEnthalpy_W(const DictPtr&      feedDict,
+                                    scalar              T_in,
+                                    scalar              P_in,
+                                    const GibbsProblem& prob)
+{
+    const ThermoPackage& thermo = *prob.thermo;
+    scalar Nin = 0.0;
+    for (auto v : prob.nIn) Nin += v;
+    if (!(Nin > 0.0)) return 0.0;
+    sVector zIn(thermo.n(), 0.0);
+    for (std::size_t i = 0; i < prob.N(); ++i)
+        zIn[prob.compIdx[i]] = prob.nIn[i] / Nin;
+    const std::string locus = "gibbsReactor inlet";
+    const bool   pinned = feedDict->lookupScalarOrDefault("phasePinned", 0.0) > 0.5;
+    const scalar vf_in  = !feedDict->found("vf") ? 1.0
+        : flashState::resolvedInletVaporFraction(feedDict, T_in, P_in, zIn,
+                                                 thermo, locus);
+    //  Nin in mol/s, so F x (J/mol) is W.
+    return pricedOrAsPublished(T_in, P_in, zIn, Nin, pinned, vf_in, thermo, locus);
+}
+
+scalar GibbsReactor::pricedOrAsPublished(scalar               T,
+                                         scalar               P,
+                                         const sVector&       z,
+                                         scalar               F,
+                                         bool                 pinned,
+                                         scalar               vf,
+                                         const ThermoPackage& thermo,
+                                         const std::string&   locus)
+{
+    try
+    {
+        return flashState::priceState(T, P, z, F, pinned, vf, thermo, locus, nullptr);
+    }
+    catch (const std::exception& ex)
+    {
+        //  The report's own reading of this state cannot be priced either
+        //  (EnergyBalanceReport.cpp catches the same throw and files the
+        //  stream as a GAP, its energy balance UNAVAILABLE), so there is no
+        //  report number to agree with.  Price the state the unit carries,
+        //  and say so -- the 2026-05-30 rule: an aid is announced, never
+        //  disguised.
+        const std::string why = ex.what();
+        const std::string msg = locus + ": the energy report's resolution of"
+            " this state cannot be priced (" + why + "), so the report's"
+            " energy balance is UNAVAILABLE for it; the duty prices the state"
+            " the unit publishes instead (vf = " + std::to_string(vf) + ").";
+        if (AdvisoryLog::instance().addAnnouncedOnce(
+                "gibbsReactor.pricedAsPublished|" + locus + "|" + why,
+                "model", "warning", locus, msg))
+            std::cerr << "  [gibbs] " << msg << "\n";
+        return F * thermo.H_stream_formation(T, P, vf, z);
+    }
 }
 
 } // namespace Choupo
