@@ -49,7 +49,7 @@ import {
   AMBIENT_T_K, FUEL_PLANT, LAYOUT_CASE, MEASURED, POOL_FUELS, THRESHOLDS,
   USBM_TABLE21, HESKESTAD_RANGE, burgessMinf, burningFlux, distanceTo, formationEnthalpy,
   fuelFromRecord, gasificationHeat, heatRelease, heskestadGroup, heskestadHeight,
-  epaDoseTime, kBetaFromMeasurement, lhvVapour, liquidDensity, perKg, poolFire,
+  NOT_A_BOUNDARY, exposureSentence, kBetaFromMeasurement, lhvVapour, liquidDensity, perKg, poolFire,
   readSeparation, regressionToFlux, thomasHeight, airDensity, watsonHvap,
   type FlameHeightModel, type FuelRecord, type PoolFuel, type Products,
   type SepModel,
@@ -273,22 +273,6 @@ function FlameTable({ cat, fuel }: { cat: Catalogue; fuel: PoolFuel }): JSX.Elem
 // ---- The bench ----------------------------------------------------------------------
 
 type ReadModel = "point" | "solid";
-
-/** The sentence beside the receiver's flux: the exposure time at which the
- *  EPA endpoint's dose is reached there (step 11).  Recomputed on every knob
- *  move because it is a function of the flux the page just drew. */
-export function exposureSentence(q: number): string {
-  if (!(q > 0)) return "";
-  const t = epaDoseTime(q);
-  const span = t < 120 ? `${fx(t, 0)} s` : t < 7200 ? `${fx(t / 60, 1)} min` : `${fx(t / 3600, 1)} h`;
-  return `At this flux the EPA endpoint's dose (5 kW/m2 for 40 s) is reached after ${span} of exposure: `
-    + "a person's harm is a dose, so how long they stay matters as much as where they stand.";
-}
-
-/** Shown under the receiver's sentence whatever the knobs say. */
-export const NOT_A_BOUNDARY = "No distance or flux on this page is a universal safe or harm boundary: "
-  + "each threshold is a flux with the exposure its source states (or none), for a person or a building, "
-  + "and real harm also depends on clothing, shelter, escape and on the fire's own variation.";
 
 function Bench({ cat, fuel, onFuel }: {
   cat: Catalogue; fuel: PoolFuel; onFuel: (f: PoolFuel) => void;

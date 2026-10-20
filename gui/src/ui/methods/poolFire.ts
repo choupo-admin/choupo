@@ -574,3 +574,21 @@ export function poolFire(i: PoolFireInput): PoolFire {
     qSolid: (x) => solidFlameFlux(i.tau, E, x, i.D, L, i.z),
   };
 }
+
+// ---- Step 11, beside the bench: exposure, never a safe/harm line (C112 point 14) ----
+
+/** The sentence beside the receiver's flux: the exposure time at which the
+ *  EPA endpoint's dose is reached there (step 11).  Recomputed on every knob
+ *  move because it is a function of the flux the page just drew. */
+export function exposureSentence(q: number): string {
+  if (!(q > 0)) return "";
+  const t = epaDoseTime(q);
+  const span = t < 120 ? `${t.toFixed(0)} s` : t < 7200 ? `${(t / 60).toFixed(1)} min` : `${(t / 3600).toFixed(1)} h`;
+  return `At this flux the EPA endpoint's dose (5 kW/m2 for 40 s) is reached after ${span} of exposure: `
+    + "a person's harm is a dose, so how long they stay matters as much as where they stand.";
+}
+
+/** Shown under the receiver's sentence whatever the knobs say. */
+export const NOT_A_BOUNDARY = "No distance or flux on this page is a universal safe or harm boundary: "
+  + "each threshold is a flux with the exposure its source states (or none), for a person or a building, "
+  + "and real harm also depends on clothing, shelter, escape and on the fire's own variation.";

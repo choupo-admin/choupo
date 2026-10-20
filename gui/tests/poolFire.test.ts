@@ -44,7 +44,7 @@ import { describe, expect, it } from "vitest";
 import { rawRecordFor } from "../src/case/catalogue.js";
 import { tutorialByName } from "../src/cases/tutorials.js";
 import {
-  BTU_H_FT2_W_M2, CAL_S_CM2_W_M2, EPA_DOSE, FUEL_PLANT, LAYOUT_CASE, MEASURED,
+  BTU_H_FT2_W_M2, CAL_S_CM2_W_M2, EPA_DOSE, FUEL_PLANT, NOT_A_BOUNDARY, exposureSentence, LAYOUT_CASE, MEASURED,
   POOL_FUELS, THRESHOLDS, USBM_TABLE21, airDensity, burgessMinf, burningFlux,
   chOAtoms, cylinderViewFactor, distanceTo, epaDoseTime, flameViewFactor, formationEnthalpy,
   fuelFromRecord, gasificationHeat, heatRelease, heskestadGroup, heskestadHeight,
@@ -54,7 +54,6 @@ import {
   regressionToFlux, thomasHeight, watsonHvap, type Products,
 } from "../src/ui/methods/poolFire.js";
 import { POOL_LIMITS, POOL_SOURCES, POOL_STEPS } from "../src/ui/methods/poolFireLesson.js";
-import { NOT_A_BOUNDARY, exposureSentence } from "../src/ui/methods/PoolFireTool.js";
 import { PLANT_LAYOUT_STEPS } from "../src/ui/methods/plantLayoutLesson.js";
 import { texParses } from "../src/ui/methods/lessonTex.js";
 import { METHOD_TOOLS } from "../src/ui/methods/registry.js";
