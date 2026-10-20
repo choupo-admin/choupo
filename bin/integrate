@@ -792,6 +792,12 @@ def run_scope(wt, cases, logdir, results, moved):
                  and "OUT OF SCOPE -- the" in b and "ran none of them" in b]
     f -= len(nosubject)
     fails = [x for x in fails if x.split()[1] not in nosubject]
+    #  Since 2026-10-20 a tree's runTests reports that third outcome itself
+    #  (`NOSUBJ <gate>`, exit 3 from the gate); the FAIL-text reading above
+    #  stays for a base that predates it.
+    nosubject += [m.group(1) for m in
+                  re.finditer(r"(?m)^NOSUBJ\s+(\w+)", out)
+                  if m.group(1) not in nosubject]
     for g in nosubject:
         results.append((f"  scoped {g}", True, "NO SUBJECT -- none of this "
                         "pass's cases is in the gate's candidate set, so it "

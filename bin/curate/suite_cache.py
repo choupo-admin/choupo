@@ -60,6 +60,34 @@ if _raw_scope is not None and not SCOPED:
 
 OUT_OF_SCOPE = object()   # distinct from None ("no cached text"): see below
 
+#  WHO DECLARED THE SCOPE DECIDES WHAT AN EMPTY SUBJECT MEANS (2026-10-20,
+#  DEV.md 4c C122).  `--fast` hands over a DECLARED set (tutorials/FASTSET)
+#  whose job is to reach every conservation gate, so a gate that finds nothing
+#  in it is a defect of the set and FAILS.  `--scope <cases>` is handed what a
+#  merge touched, and a merge of props-bench cases reaches no plant at all:
+#  that is a fact about the merge, not a failure of anything.  It is NOT a
+#  PASS either -- a check that judged nothing must not print a claim -- so it
+#  is a third outcome, NO SUBJECT, on its own exit code, which `bin/runTests`
+#  reports apart and never counts.  `runTests` exports the kind; a scope set
+#  without one is read as the declared set, the stricter of the two.
+SCOPE_KIND = (os.environ.get("CHOUPO_SUITE_SCOPE_KIND") or "fast") \
+    if SCOPED else None
+NO_SUBJECT_EXIT = 3
+
+
+def no_subject(gate: str, what: str):
+    """Under `--scope <cases>`: print the NO SUBJECT line and return its exit
+    code.  Under `--fast` (or unscoped): return None, and the caller FAILS as
+    it always has -- its remedy there is the fast set, which only it can
+    name."""
+    if SCOPE_KIND != "named":
+        return None
+    print("%s: NO SUBJECT -- %s.  The cases named to `bin/runTests --scope` "
+          "hold none this gate judges, so it judged nothing: not a PASS, and "
+          "no claim of coverage." % (gate, what))
+    return NO_SUBJECT_EXIT
+
+
 
 def stdout_of(case: Path):
     """The cached stdout of `case`, or None when the cache does not hold it.

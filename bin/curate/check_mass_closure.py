@@ -133,7 +133,7 @@ import sys
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
-from suite_cache import SCOPED, scope_sentence, stdout_of   # noqa: E402
+from suite_cache import SCOPED, scope_sentence, stdout_of, no_subject   # noqa: E402
 
 ROOT = Path(__file__).resolve().parents[2]
 
@@ -524,6 +524,10 @@ def main() -> int:
                 % (rel, scope, pct))
 
     if not checked:
+        ns = no_subject("check_mass_closure",
+                        "no case in scope reported a material closure")
+        if ns is not None:
+            return ns
         print("check_mass_closure: FAILED\n"
               + ("  no case IN SCOPE reported a closure at all.  The scope is "
                  "the caller's own case pass, so the fix is the fast set: it "

@@ -363,7 +363,7 @@ import sys
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
-from suite_cache import SCOPED, scope_sentence, stdout_of   # noqa: E402
+from suite_cache import SCOPED, scope_sentence, stdout_of, no_subject   # noqa: E402
 
 ROOT = Path(__file__).resolve().parents[2]
 
@@ -1075,6 +1075,10 @@ def main() -> int:
         return 0
 
     if not measured and not measuredKW:
+        ns = no_subject("check_energy_closure",
+                        "no case in scope published a global first law")
+        if ns is not None:
+            return ns
         print("check_energy_closure: FAILED\n"
               + ("  no case IN SCOPE published a global first law in EITHER "
                  "shape -- neither a percentage nor an absolute kW residual.  "

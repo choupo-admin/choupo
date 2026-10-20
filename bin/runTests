@@ -6633,10 +6633,23 @@ fi
 if [ -n "${FAST:-}" ] || [ -n "${SCOPE:-}" ]; then
     [ -n "$SUITE_OUT_DIR" ] && export CHOUPO_SUITE_OUTPUTS="$SUITE_OUT_DIR" \
                             && export CHOUPO_SUITE_SCOPE=1
+    #  WHO DECLARED THE SCOPE (suite_cache.SCOPE_KIND): under --scope a gate
+    #  whose subject the named cases do not reach answers NO SUBJECT (exit 3),
+    #  reported apart and counted as neither PASS nor FAIL; under --fast the
+    #  declared set must reach every gate, so the same emptiness FAILS.
+    if [ -n "${SCOPE:-}" ]; then export CHOUPO_SUITE_SCOPE_KIND=named
+    else export CHOUPO_SUITE_SCOPE_KIND=fast; fi
+    nosubject=0
     echo
     for fg in check_mass_closure check_energy_closure check_element_balance \
               check_closure_ledger_pinned check_energy_boundary_pinned; do
-        if "$ROOT/bin/curate/$fg.py" > /tmp/fastgate.$$ 2>&1; then
+        "$ROOT/bin/curate/$fg.py" > /tmp/fastgate.$$ 2>&1
+        fgrc=$?
+        if [ "$fgrc" -eq 3 ] && [ -n "${SCOPE:-}" ]; then
+            printf "NOSUBJ %-40s  (%s)\n" "${fg#check_}" \
+                "$(grep -m1 'NO SUBJECT' /tmp/fastgate.$$ | cut -c1-220)"
+            nosubject=$((nosubject+1))
+        elif [ "$fgrc" -eq 0 ]; then
             #  NOT TRUNCATED, unlike most PASS rows in this file: a scoped
             #  gate appends the sentence that says what it could NOT reach,
             #  and cutting the claim at 150 characters would drop exactly
@@ -6690,6 +6703,10 @@ if [ -n "${SCOPE:-}" ]; then
     echo '  ^ AND THIS WAS --scope: the named cases with the per-case checks of the'
     echo "    sweep, then five conservation gates SCOPED to that same pass.  It ran"
     echo "    NO other gate and says nothing about any case it was not given."
+    if [ "${nosubject:-0}" -gt 0 ]; then
+        echo "    $nosubject of those gates had NO SUBJECT in the named cases (NOSUBJ"
+        echo "    above): they judged nothing, which is neither a PASS nor a FAIL."
+    fi
 fi
 # The suite is GREEN iff nothing FAILS.  Known-broken + expected-fail are
 # tracked, visible, and non-gating -- the honest middle ground.

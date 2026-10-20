@@ -1414,11 +1414,15 @@ accepts today, and that is a policy call.
 > 4.35 -> 4.38 / 4.68 -> 4.71 M EUR), hence FCI, TCI, COM_d and the two
 > NPVs (-493.10 -> -493.23, -340.93 -> -341.24 M EUR), model fidelity
 > -39.13 -> -39.30, start-up years +10.14 -> +10.13; the README had lagged
-> the engine since the C89/C98/C99 cost changes.  NAMED, not fixed:
+> the engine since the C89/C98/C99 cost changes.  FIXED the same day:
 > `bin/runTests --scope` on cases with no steady material boundary (props
-> cases) prints the four conservation gates as FAIL ("no case IN SCOPE
-> reported a closure") where `bin/integrate` reports NO SUBJECT -- the
-> manual route should say the same.
+> cases) printed the four conservation gates as FAIL ("no case IN SCOPE
+> reported a closure") where `bin/integrate` reported NO SUBJECT.  Now a
+> third outcome with one home (`suite_cache.no_subject`, exit 3): under
+> `--scope` the gate prints NO SUBJECT and runTests reports `NOSUBJ`,
+> counted as neither PASS nor FAIL; under `--fast` (the declared set, which
+> must reach every gate) the same emptiness still FAILS.  Measured on
+> edwards01 (4 NOSUBJ, PASS 2) and flash01 (5 PASS, closure_ledger NOSUBJ).
 
 > **C121. AN EDUTOOL ON DATA RECONCILIATION IN PROCESS CONTROL, AND HOW
 > BAYES HELPS (Vitor, 2026-10-20: "Ha outra coisa que os meus alunos nao
