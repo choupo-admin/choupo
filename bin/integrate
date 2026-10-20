@@ -68,8 +68,10 @@ a human, leaving the worktree where it stopped:
     is regenerated and RE-CHECKED (still stale = STOP: the generator does not
     produce what its entry claims).  An entry with no check is regenerated
     only when it conflicted -- freshness is a contract only where a gate
-    holds it.  Engine-running generators run only when the merge touched what
-    the engine reads (src/ data/ tutorials/).
+    holds it.  Engine-running generators are checked only when the merge
+    touched what the engine reads (src/ data/ tutorials/), and a stale one is
+    NOT regenerated: it prints engine numbers into a page a reader trusts,
+    so it is listed with its diff like a moved golden (verdict NOT READY).
  4. GUIDES.  Every public guide (docs/Makefile `DOCS :=`) whose \\input
     closure the merge touched is rebuilt with `make -B -C docs <g>.pdf` --
     ALWAYS -B, because a checkout stamps every file with one mtime and plain
@@ -677,7 +679,12 @@ def reach(root: Path, base: str, files):
     for f in files:
         p = Path(f)
         t = {f}
-        if names.get(p.name, 0) <= 1 and not f.startswith("tutorials/"):
+        #  ...and is not an English word: an extensionless all-lowercase name
+        #  (`integrate`) matches prose, not references to the file.
+        plainword = "." not in p.name and p.name.isalpha() and \
+            p.name.islower()
+        if names.get(p.name, 0) <= 1 and not f.startswith("tutorials/") \
+                and not plainword:
             t.add(p.name)
         if (f.startswith("src/") or f.startswith("bin/curate/")) and \
                 len(p.stem) >= 6:
@@ -687,19 +694,29 @@ def reach(root: Path, base: str, files):
             if c:
                 t.add(Path(c).name)
         tokens[f] = t
+    #  Which gates `runTests --scope` itself runs is read from runTests (its
+    #  `for fg in ...` loop), never listed here: a second list would drift.
+    rt = (root / "bin" / "runTests").read_text(errors="ignore")
+    m = re.search(r"for fg in ((?:check_\w+\s*\\?\s*)+);\s*do", rt)
+    in_scope_run = set(re.findall(r"check_\w+", m.group(1))) if m else set()
+    pats = {t: re.compile(r"(?<![\w])" + re.escape(t) + r"(?![\w])")
+            for ts in tokens.values() for t in ts}
     gates, scoped = {}, {}
     for g in sorted((root / "bin" / "curate").glob("check_*.py")):
         src = g.read_text(errors="ignore")
-        hit = [f for f, ts in tokens.items() if any(t in src for t in ts)]
+        #  Whole-token matches only: `integrate` must not reach a gate that
+        #  says "integrates" (measured on this slice's own branch).
+        hit = [f for f, ts in tokens.items()
+               if any(pats[t].search(src) for t in ts)]
         rel = g.relative_to(root).as_posix()
         if rel in files:
             hit.insert(0, rel)
         if not hit:
             continue
-        #  A gate that reads the suite's case cache judges CASES: it runs
-        #  inside `runTests --scope`, scoped to the pass -- unless the gate
-        #  itself (or the cache module) changed, which reaches all of it.
-        if "suite_cache" in src and rel not in files and \
+        #  A conservation gate `runTests --scope` runs judges CASES: it runs
+        #  there, scoped to the pass -- unless the gate itself (or the cache
+        #  module) changed, which reaches all of it.
+        if g.stem in in_scope_run and rel not in files and \
                 "bin/curate/suite_cache.py" not in files:
             scoped[g.stem] = hit
         else:
@@ -721,7 +738,9 @@ def print_plan(plan):
         say(f"    {g:<44} <- {hit[0]}" + (f" (+{len(hit) - 1})"
                                           if len(hit) > 1 else ""))
     if plan["scoped_gates"]:
-        say("  conservation gates reached by name, judged inside --scope: "
+        say("  conservation gates reached by name, "
+            + ("judged inside --scope: " if plan["cases"] else
+               "NOT run -- no case is reached, so no balance can move: ")
             + ", ".join(plan["scoped_gates"]))
     say(f"  --gui:  {'YES -- ' + plan['gui'][0] if plan['gui'] else 'no'}")
     say(f"  --fast: {'YES -- ' + plan['fast'][0] if plan['fast'] else 'no'}")
@@ -763,6 +782,20 @@ def run_scope(wt, cases, logdir, results, moved):
         elif not line.startswith("    "):
             cur = None
     fails = [ln.strip() for ln in out.splitlines() if ln.startswith("FAIL ")]
+    #  A ledger gate whose every candidate lies outside this pass REFUSES
+    #  ("checked nothing"), which is its rule for --fast, where the declared
+    #  set must reach it.  Under --scope it means the merge reaches no case in
+    #  that gate's subject: reported as NO SUBJECT, said aloud, and not
+    #  counted as a failure -- the gate still printed no claim of coverage.
+    blocks = re.split(r"(?m)^(?=FAIL |PASS )", out)
+    nosubject = [b.split()[1] for b in blocks if b.startswith("FAIL ")
+                 and "OUT OF SCOPE -- the" in b and "ran none of them" in b]
+    f -= len(nosubject)
+    fails = [x for x in fails if x.split()[1] not in nosubject]
+    for g in nosubject:
+        results.append((f"  scoped {g}", True, "NO SUBJECT -- none of this "
+                        "pass's cases is in the gate's candidate set, so it "
+                        "judged nothing (its refusal, read as such)"))
     results.append(("runTests --scope", f == 0,
                     f"PASS {p} / FAIL {f}" + ("" if f == 0 else
                                              "\n" + "\n".join("    " + x
@@ -771,7 +804,7 @@ def run_scope(wt, cases, logdir, results, moved):
         m = re.match(r"^(PASS|FAIL)\s+(mass_closure|energy_closure|"
                      r"element_balance|closure_ledger_pinned|"
                      r"energy_boundary_pinned)\s+\((.*)\)$", line)
-        if m:
+        if m and m.group(2) not in nosubject:
             results.append((f"  scoped {m.group(2)}", m.group(1) == "PASS",
                             m.group(3)[:300]))
 
