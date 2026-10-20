@@ -150,4 +150,21 @@ private:
     static std::map<std::string, Factory>& registry();
 };
 
+//  THE TWO ASYMPTOTES CHURCHILL'S EXPRESSION BLENDS (2026-10-20, DEV.md 4c
+//  C119).  Churchill (1977) is a Churchill-Usagi blend of asymptotes,
+//
+//      f = ( f_L^12 + f_t^12 )^(1/12),   f_L = 64/Re,   f_t = 8 (A+B)^(-1/8),
+//
+//  and the turbulent branch f_t is itself a blend (exponent 16, on
+//  sqrt(8/f)) of the turbulent term A and the transition term B.  Published
+//  so `frictionBench`'s sweep can show the reader both pieces beside the f
+//  they compose; it reads the SAME A and B `Churchill::evaluate` uses, and
+//  computes nothing the correlation itself does not.
+struct ChurchillAsymptotes
+{
+    scalar fLaminar   = 0.0;   // 64/Re, the exact laminar law [-]
+    scalar fTurbulent = 0.0;   // 8 (A+B)^(-1/8), the turbulent branch [-]
+};
+ChurchillAsymptotes churchillAsymptotes(const FrictionContext& c);
+
 } // namespace Choupo

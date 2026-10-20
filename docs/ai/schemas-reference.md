@@ -539,6 +539,7 @@ The Darcy friction factor's correlation library, in two parts. VERIFY (always): 
 |---|:-:|---|---|---|
 | `deviationTolerance` |   | number | - | Allowed relative deviation of each correlation from its own published anchor; defaults to 0.03. Exists to honour the anchors' own roundin… |
 | `compare` |   | object | — | Optional. Evaluate every registered correlation at one hydraulic state and publish the spread. Omitting the block leaves only the verific… |
+| `sweep` |   | object | — | Optional. Evaluate every registered correlation on one logarithmic grid of Re at each declared relative roughness and write one CSV row p… |
 
 ## `gasSolidSplitter`  (gasSolidSplitter operation)
 
@@ -629,6 +630,7 @@ Self-check of the heat-transfer correlation library against its own textbook wor
 |---|:-:|---|---|---|
 | `aadTolerance` |   | number | - | Allowed relative deviation from the printed textbook value; defaults to 0.05. |
 | `aadTolerancePhaseChange` |   | number | - | Separate allowance for the boiling/condensation examples, whose published inputs are chart-read. |
+| `sweep` |   | object | — | Optional. Evaluate every single-phase Nusselt correlation on one logarithmic grid of Re at each declared Prandtl number and write one CSV… |
 
 ## `heater`  (heater operation)
 

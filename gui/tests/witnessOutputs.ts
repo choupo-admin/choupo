@@ -186,6 +186,14 @@ export const WITNESS_OUTPUTS: readonly WitnessOutput[] = [
     file: "converged/LetdownLiquid",
     readBy: ["letdown.test.ts"],
   },
+  //  Why correlations are simple (C119): the engine's own friction-factor
+  //  and Nusselt correlations swept over Re, which the page draws,
+  //  differentiates and fits.
+  ...["moodySweep.csv", "nusseltSweep.csv"].map((file) => ({
+    caseDir: "tutorials/props/hydraulics/moody02_correlation_sweeps",
+    file,
+    readBy: ["correlationSimplicityLesson.test.ts"],
+  })),
 ];
 
 /** What `witnessSetup.ts` found for each declared output, keyed by

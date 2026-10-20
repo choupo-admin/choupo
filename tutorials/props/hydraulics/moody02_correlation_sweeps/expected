@@ -1,0 +1,29 @@
+# Reference KPIs (golden master, auto-recorded by runTests --record).
+# units: stream F is kmol/s (canonical SI, as in the result JSON); the run LOG prints kmol/h.
+# kind   name      key         expected        reltol
+diag    moody                  allPass          1                  1e-4
+diag    moody                  dev_Blasius      0                  1e-4
+diag    moody                  dev_Churchill    1.73472347598e-16  1e-4
+diag    moody                  dev_Colebrook    1.61328517053e-05  1e-4
+diag    moody                  dev_Haaland      0.013439281758     1e-4
+diag    moody                  sweep_rows       726                1e-4
+diag    nusselt                Nu_choupo_DittusBoelter 200.475286267      1e-4
+diag    nusselt                Nu_choupo_Gnielinski 223.73353907       1e-4
+diag    nusselt                Nu_choupo_Kern   97.5646525378      1e-4
+diag    nusselt                Nu_published_DittusBoelter 205                1e-4
+diag    nusselt                Nu_published_Gnielinski 224                1e-4
+diag    nusselt                Nu_published_Kern 97.5646525378      1e-4
+diag    nusselt                allPass          1                  1e-4
+diag    nusselt                dev_DittusBoelter 0.0220717743085    1e-4
+diag    nusselt                dev_Gnielinski   0.00118955772364   1e-4
+diag    nusselt                dev_Kern         0                  1e-4
+diag    nusselt                dev_NusseltFilm  0.0245796856462    1e-4
+diag    nusselt                dev_Rohsenow     0.000270620814971  1e-4
+diag    nusselt                dev_ZuberCHF     0.000684704010394  1e-4
+diag    nusselt                h_choupo_NusseltFilm 6680.25955041      1e-4
+diag    nusselt                h_choupo_Rohsenow 462125.026817      1e-4
+diag    nusselt                h_choupo_ZuberCHF 1260862.72705      1e-4
+diag    nusselt                h_published_NusseltFilm 6520               1e-4
+diag    nusselt                h_published_Rohsenow 462000             1e-4
+diag    nusselt                h_published_ZuberCHF 1260000            1e-4
+diag    nusselt                sweep_rows       243                1e-4

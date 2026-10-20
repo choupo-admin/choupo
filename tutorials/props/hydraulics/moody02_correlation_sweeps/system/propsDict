@@ -1,0 +1,80 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+  moody02 -- THE CORRELATIONS AS CURVES, NOT AS POINTS (DEV.md 4c C119).
+
+  moody01 asks four friction correlations ONE question and publishes their
+  disagreement.  This case asks them the same question at every Reynolds
+  number from 1e2 to 1e8, and asks the Nusselt correlations the same at
+  every Reynolds number from 2e3 to 2e7, and writes the answers as two CSV
+  files.  It is the witness of the EduTool "Why engineering correlations are
+  simple", which draws, differentiates and fits these curves in the browser
+  -- so every curve on that page is the engine's own correlation, the one
+  the pipe and the heat exchanger use, never a re-typed copy.
+
+  WHAT IS SYNTHETIC, said plainly.  The CSVs hold no measurement.  They are
+  the correlations evaluated on a grid, and the EduTool treats them as the
+  "truth" a student fits a power law to -- which is the exercise, because
+  the point it teaches is how simple a curve looks over a narrow range, not
+  how well any correlation matches a laboratory.
+
+  WHAT THE TWO SWEEPS WRITE.
+
+    moodySweep.csv    one row per (eps/D, Re): every friction correlation's
+                      f and its own window flag (1 inside, 0 outside), the
+                      regime the engine names (laminar below 2300,
+                      transition to 4000, turbulent above), and Churchill's
+                      two asymptotes fL = 64/Re and fT -- the pieces its
+                      single expression blends as (fL^12 + fT^12)^(1/12).
+
+    nusseltSweep.csv  one row per (Pr, Re): every single-phase Nusselt
+                      correlation's Nu and window flag.  Each correlation is
+                      handed a unit fluid whose Re and Pr ARE the grid point;
+                      heating side.  Kern is SHELL-side and is evaluated on
+                      the same numbers -- it is not a tube correlation.
+
+  The grid is logarithmic, 20 points per decade, so every decade holds 21
+  points, its two ends included -- the EduTool's one-decade power-law fit
+  uses exactly those.  The Nusselt grid starts at 2e3 because Gnielinski's
+  expression carries (Re - 1000) and is zero at Re = 1000.
+\*---------------------------------------------------------------------------*/
+
+operations
+(
+    {
+        name     moody;
+        type     frictionBench;
+
+        //  The Moody plane: laminar through fully rough.  eps/D = 0 is the
+        //  smooth pipe; 5e-2 is near the top of the classical chart.
+        sweep
+        {
+            file             moodySweep.csv;
+            ReMin            1e2;
+            ReMax            1e8;
+            pointsPerDecade  20;
+            relRough         ( 0 1e-5 1e-4 1e-3 1e-2 5e-2 );
+        }
+    }
+
+    {
+        name     nusselt;
+        type     heatTransferBench;
+
+        //  A gas-like, a water-like and an oil-like Prandtl number.
+        sweep
+        {
+            file             nusseltSweep.csv;
+            ReMin            2e3;
+            ReMax            2e7;
+            pointsPerDecade  20;
+            Pr               ( 0.7 7 70 );
+        }
+    }
+);
