@@ -1039,6 +1039,52 @@ footer lines in `reports/economics/cashFlow.csv` (and the .ods),
 `tutorials/plant/ammonia02_full_plant`, `greenAmmoniaPEQ_baseCase` (a round
 placeholder price, said so).
 
+**DEBT FINANCING: A LOAN AND THE EQUITY VIEW (2026-10-20, DEV.md 4c C110 G4).**
+An opt-in `financing {}` block in the same `economics {}` block lends part of
+the capital; absent, nothing changes.  Every key but `equityDiscountRate` is
+REQUIRED -- each term moves the answer, so none is defaulted:
+
+```
+financing
+{
+    debtFraction  0.5;           // share of the financed capital the loan lends, in (0, 1)
+    basis         fixedCapital;  // fixedCapital (the FCI) | totalCapital (FCI + the WC at t = 0)
+    rate          0.06;          // annual interest, a FRACTION (6 % is 0.06)
+    graceYears    2;             // operating years paying interest only (0 allowed)
+    termYears     8;             // repayment years AFTER the grace
+    repayment     annuity;       // annuity (constant payment) | linear (constant principal)
+    source        "...";         // where the terms come from
+    reason        "...";         // why they are this project's
+    // equityDiscountRate 0.12;  // optional; absent = the project's discountRate, ANNOUNCED
+}
+```
+
+The loan DRAWS its share of each financed outlay when the capital schedule
+spends it (the FCI fraction at the END of each construction year; the WC at t =
+0 with `totalCapital`; the land is never financed).  Interest during
+construction ("juros intercalares") is CAPITALISED -- added to the balance, no
+cash moves -- so a ONE-year construction, which spends its capital at t = 0,
+accrues none (said on the line).  In operation the interest on the balance is
+PAID and deducted from the taxable income, the capitalised interest is
+depreciated with the plant (IAS 23 / NCRF 10), grace years repay nothing, and
+the last repayment clears the balance; `graceYears + termYears` above
+`projectLife` REFUSES (no balloon).  **The PROJECT's NPV, IRR and paybacks are
+unchanged and stay the unlevered ones: the project's merit does not depend on
+how it is financed.**  Beside them the run prints the loan schedule and the
+EQUITY (levered) cash flow -- the project's, plus the draws, less the interest
+after tax, plus the capitalised interest's tax shield, less the principal --
+with its NPV, IRR and discounted payback.  Published:
+`kpis.economics.debt_drawn` / `debt_IDC` / `debt_atStartup` /
+`debt_interestPaid` / `equity_invested` / `equity_NPV` / `equity_IRR` /
+`equity_paybackYears`, the result's `economics.financing` object (with the
+year-by-year `schedule`), `reports/economics/financing.csv` and a second sheet
+of the .ods; `cashFlow.csv` stays the project's.  `financing.rate` and
+`financing.debtFraction` are sensitivity inputs: they move the equity NPV only
+(published as `sens_<input>_equityNPV_low/_high`), the project NPV's swing is
+zero by construction.  No shipped case declares a loan yet; the gate
+`bin/curate/check_debt_financing.py` builds its probes from
+`economics03_startup_years` and `economics01_esterification_dcf`.
+
 **THE PARTICULATE STEPS IN THE LABOUR (2026-10-19, DEV.md 4c C98).**  The
 operator count is Turton's `N_OL = (6.29 + 31.7 P^2 + 0.23 N_np)^0.5` per
 shift (x 4.5 positions), `N_np` the non-particulate processing steps and `P`

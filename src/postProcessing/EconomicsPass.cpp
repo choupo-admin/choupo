@@ -473,6 +473,73 @@ void writeWorkingCapitalCsv(const EconomicsSummary& e)
 }
 
 // -------------------------------------------------------------------------
+//  THE LOAN AND THE EQUITY CASH FLOW (G4) -> reports/economics/financing.csv,
+//  written only when the case declares `financing {}`.  cashFlow.csv stays
+//  the PROJECT's cash flow, byte for byte what it is without a loan: the
+//  equity view is a second file, never a rewrite of the first.
+// -------------------------------------------------------------------------
+void writeFinancingCsv(const EconomicsSummary& e)
+{
+    const fs::path dir = fs::path("reports") / "economics";
+    fs::create_directories(dir);
+    const fs::path path = dir / "financing.csv";
+    std::ofstream f(path);
+    if (!f.is_open())
+        throw std::runtime_error("EconomicsPass: cannot open " + path.string());
+    const std::string cur = e.currency;
+    f << "# The loan and the EQUITY (levered) cash flow, currency " << cur << "\n";
+    f << "# The PROJECT (unlevered) appraisal is cashFlow.csv, unchanged by the"
+         " loan: the project's merit does not depend on how it is financed.\n";
+    f << "# construction (t <= 0): draws; interest CAPITALISED into the balance."
+         "  operation: interest paid and deducted; the capitalised interest"
+         " depreciated with the plant; principal repaid after the grace years.\n";
+    f << "# equity cash flow = project cash flow + draw - (interestPaid +"
+         " idcDepreciation) x (1 - tau) + idcDepreciation - principal\n";
+    f << "year,draw_" << cur << ",interestCapitalised_" << cur
+      << ",interestPaid_" << cur << ",principal_" << cur
+      << ",balance_" << cur << ",idcDepreciation_" << cur
+      << ",taxableIncome_" << cur << ",tax_" << cur
+      << ",equityCashFlow_" << cur << ",discountFactor"
+      << ",discountedCF_" << cur << ",cumulativeDCF_" << cur << "\n";
+    for (const auto& y : e.loanSchedule)
+        f << y.year
+          << "," << csvNum(y.draw, 2)
+          << "," << csvNum(y.interestCapitalised, 2)
+          << "," << csvNum(y.interestPaid, 2)
+          << "," << csvNum(y.principal, 2)
+          << "," << csvNum(y.balance, 2)
+          << "," << csvNum(y.idcDepreciation, 2)
+          << "," << csvNum(y.taxableIncome, 2)
+          << "," << csvNum(y.tax, 2)
+          << "," << csvNum(y.cashFlow, 2)
+          << "," << csvNum(y.discountFactor, 6)
+          << "," << csvNum(y.discountedCF, 2)
+          << "," << csvNum(y.cumulativeDCF, 2) << "\n";
+    f << "\n# --- summary ---\n";
+    f << "debtFraction,"       << csvNum(e.debtFraction, 6) << "\n";
+    f << "basis,"              << e.debtBasis << "\n";
+    f << "rate,"               << csvNum(e.debtRate, 6) << "\n";
+    f << "graceYears,"         << e.graceYears << "\n";
+    f << "termYears,"          << e.termYears << "\n";
+    f << "repayment,"          << e.repayment << "\n";
+    f << "equityDiscountRate," << csvNum(e.equityDiscountRate, 6)
+      << "," << (e.equityDiscountRateDeclared ? "declared" : "projectRate") << "\n";
+    f << "taxRate,"            << csvNum(e.taxRate, 6) << "\n";
+    f << "loanDrawn,"          << csvNum(e.loanDrawn, 2) << "\n";
+    f << "interestDuringConstruction," << csvNum(e.interestDuringConstruction, 2) << "\n";
+    f << "loanAtStartup,"      << csvNum(e.loanAtStartup, 2) << "\n";
+    f << "interestPaidTotal,"  << csvNum(e.interestPaidTotal, 2) << "\n";
+    f << "equityInvested,"     << csvNum(e.equityInvested, 2) << "\n";
+    f << "equityNPV,"          << csvNum(e.equityNPV, 2) << "\n";
+    f << "equityIRR_pct,"      << (e.haveEquityIRR ? csvNum(100.0 * e.equityIRR, 4) : "") << "\n";
+    f << "equityDiscountedPayback_yr," << csvNum(e.equityDiscPayback, 4) << "\n";
+    f << "projectNPV,"         << csvNum(e.NPV, 2) << "\n";
+    f << "projectIRR_pct,"     << (e.haveIRR ? csvNum(100.0 * e.IRR, 4) : "") << "\n";
+    f.close();
+    std::cout << "  [economics] loan and equity cash flow -> " << path.string() << "\n";
+}
+
+// -------------------------------------------------------------------------
 //  Write the same DCF table to a coloured .ods --- a Perry / Turton appraisal
 //  sheet.  Title; Header-styled column row; one numberCell row per year (the
 //  payback year, where the cumulative DCF first turns positive, flagged Good);
@@ -603,10 +670,58 @@ void writeCashFlowOds(const EconomicsSummary& e)
                      OdsWriter::Bad);
     }
 
+    //  THE EQUITY VIEW (G4), a second sheet, only when a loan is declared;
+    //  the first sheet stays the PROJECT's appraisal.
+    if (e.financingPresent)
+    {
+        ods.beginSheet("Financing (equity)");
+        ods.newRow();
+        ods.textCell("The loan and the EQUITY cash flow  [" + cur + "]  -- the"
+                     " project appraisal (first sheet) is unchanged", OdsWriter::Title);
+        ods.newRow();
+        for (const char* h : { "Year", "Draw", "Interest capitalised",
+                               "Interest paid", "Principal", "Balance (end)",
+                               "IDC depreciation", "Taxable income", "Tax",
+                               "Equity cash flow", "Discount factor",
+                               "Discounted CF", "Cumulative DCF" })
+            ods.textCell(h, OdsWriter::Header);
+        for (const auto& y : e.loanSchedule)
+        {
+            ods.newRow();
+            ods.numberCell(y.year, 0);
+            ods.numberCell(y.draw, 0);
+            ods.numberCell(y.interestCapitalised, 0);
+            ods.numberCell(y.interestPaid, 0);
+            ods.numberCell(y.principal, 0);
+            ods.numberCell(y.balance, 0);
+            ods.numberCell(y.idcDepreciation, 0);
+            ods.numberCell(y.taxableIncome, 0);
+            ods.numberCell(y.tax, 0);
+            ods.numberCell(y.cashFlow, 0);
+            ods.numberCell(y.discountFactor, 4);
+            ods.numberCell(y.discountedCF, 0);
+            ods.numberCell(y.cumulativeDCF, 0);
+        }
+        ods.newRow();
+        ods.newRow();
+        metric("Loan drawn", e.loanDrawn, 0, false);
+        metric("Interest during construction (capitalised)", e.interestDuringConstruction, 0, false);
+        metric("Loan at start-up", e.loanAtStartup, 0, false);
+        metric("Equity invested", e.equityInvested, 0, false);
+        metric("Equity NPV @ " + csvNum(100.0 * e.equityDiscountRate, 1) + "%",
+               e.equityNPV, 0, e.equityNPV > 0.0);
+        metric("Equity IRR [%]", e.haveEquityIRR ? 100.0 * e.equityIRR : std::nan(""), 2,
+               e.haveEquityIRR);
+        metric("Equity discounted payback [yr]", e.equityDiscPayback, 2,
+               std::isfinite(e.equityDiscPayback));
+        metric("PROJECT NPV (the merit; first sheet)", e.NPV, 0, e.NPV > 0.0);
+    }
+
     ods.save(path.string());
 
     std::cout << "  [economics] cash-flow spreadsheet -> " << path.string()
-              << "  (1 sheet, coloured)\n";
+              << "  (" << ods.sheetCount() << (ods.sheetCount() == 1 ? " sheet" : " sheets")
+              << ", coloured)\n";
 }
 
 //  A percentage as the standard prints it: no decimals, sign carried by the
@@ -1019,6 +1134,210 @@ LandDeclaration readLand(const DictPtr& econ, const SimulationResult& result)
 }
 
 // =========================================================================
+//  DEBT FINANCING: A LOAN, ITS INTEREST DURING CONSTRUCTION, AND THE EQUITY
+//  VIEW (2026-10-20, DEV.md 4c C110 G4).  Students' projects finance part of
+//  the investment with a bank loan, compute the interest during construction
+//  ("juros intercalares") and repay the loan in the cash flow; this pass was
+//  unlevered and had no debt.
+//
+//  OPT-IN.  A case that declares no `financing` block computes, prints,
+//  publishes and writes exactly what it did (measured on every economics
+//  case of the corpus against a build of the parent commit, not argued).
+//
+//      financing
+//      {
+//          debtFraction  0.5;           // share of the financed capital lent
+//          basis         fixedCapital;  // fixedCapital (FCI) | totalCapital (FCI + WC)
+//          rate          0.06;          // annual interest on the balance
+//          graceYears    2;             // operating years paying interest only
+//          termYears     8;             // repayment years AFTER the grace
+//          repayment     annuity;       // annuity | linear
+//          source        "...";         // where the terms come from
+//          reason        "...";         // why they are this project's
+//          // equityDiscountRate 0.12;  // optional; absent = discountRate, ANNOUNCED
+//      }
+//
+//  THE PROJECT'S MERIT DOES NOT DEPEND ON HOW IT IS FINANCED.  The NPV, IRR
+//  and paybacks this pass always published are UNLEVERED -- the plant's
+//  cash flow, whoever supplies the capital -- and they stay exactly what they
+//  were, in the same KPIs, files and lines.  The financing adds a SECOND
+//  view beside them, the EQUITY (levered) one: what the owners put in and
+//  get back once a lender has been paid.  It never replaces the first, and
+//  the printed table says so.  A plant that destroys value cannot be made
+//  good by borrowing at a rate below its return; the equity view only shows
+//  how the same value is split between owners and lender, plus the tax
+//  shield the interest buys.
+//
+//  STATED DEFAULTS (the grammar requires every key that moves the answer;
+//  what follows is the convention, said on the printed lines):
+//    * THE DRAWS FOLLOW THE CAPITAL SCHEDULE (C63).  The loan lends
+//      `debtFraction` of each capital outlay it finances, at the instant the
+//      outlay is made: the FCI fraction of construction year k at the END of
+//      that year (t = k - Nc), and, with `basis totalCapital`, the working
+//      capital at t = 0.  The land (C82) is never financed by this loan.
+//    * INTEREST DURING CONSTRUCTION IS CAPITALISED: in each construction year
+//      the interest r B on the balance already drawn is ADDED to the balance;
+//      no cash moves.  So the loan at start-up is the draws compounded to
+//      t = 0, and a ONE-year construction, which spends its whole capital at
+//      its END (t = 0), accrues none -- the timeline's own convention, said
+//      on the line when it happens.
+//    * THE CAPITALISED INTEREST IS DEPRECIATED WITH THE PLANT, straight line
+//      over `depreciableLife` from operating year 1, in the equity view only
+//      (IAS 23 "Borrowing Costs" capitalises the borrowing costs of a
+//      qualifying asset into its cost; NCRF 10 is the Portuguese standard of
+//      the same name).  The tax law of a given country may differ.
+//    * OPERATING YEARS: interest r B on the opening balance is PAID and
+//      DEDUCTED from the taxable income; a loss offsets other income (the
+//      pass's standing convention, C63).  Grace years pay interest only.
+//      Then `termYears` repayments: `annuity` (a constant payment A = P r /
+//      (1 - (1+r)^-n), principal = A - interest) or `linear` (a constant
+//      principal P/n, the interest falling with the balance).  The last
+//      repayment clears the balance exactly.  graceYears + termYears may not
+//      exceed projectLife: a loan outliving the plant is refused, not
+//      balloon-paid.
+//    * THE EQUITY CASH FLOW is the project's, plus the draws (t <= 0), less
+//      the interest after tax, plus the tax shield of the capitalised
+//      interest's depreciation, less the principal; the end-of-life
+//      recoveries (WC, salvage, land) are the project's.  It is discounted at
+//      `equityDiscountRate`, default the project's `discountRate` --
+//      ANNOUNCED, because the owners of a levered project carry more risk
+//      and usually ask more (a reader comparing the two NPVs at one rate
+//      must know it).
+// =========================================================================
+struct FinancingDeclaration
+{
+    bool        present       = false;
+    scalar      debtFraction  = 0.0;
+    std::string basis;                  // fixedCapital | totalCapital
+    scalar      rate          = 0.0;
+    int         graceYears    = 0;
+    int         termYears     = 0;
+    std::string repayment;              // annuity | linear
+    scalar      equityDiscountRate = 0.0;
+    bool        equityRateDeclared = false;
+    std::string source, reason;
+};
+
+FinancingDeclaration readFinancing(const DictPtr& econ, int projectLife,
+                                   scalar discountRate)
+{
+    FinancingDeclaration F;
+    if (!econ->found("financing")) return F;
+    const std::string where = "economics { financing { ... } }";
+    if (!std::holds_alternative<DictPtr>(econ->entryValue("financing")))
+        throw std::runtime_error("economics: `financing` must be a block --"
+            " `financing { debtFraction 0.5; basis fixedCapital; rate 0.06;"
+            " graceYears 2; termYears 8; repayment annuity; source \"...\";"
+            " reason \"...\"; }`.");
+    const DictPtr d = econ->subDict("financing");
+
+    const std::vector<std::string> known
+        { "debtFraction", "basis", "rate", "graceYears", "termYears",
+          "repayment", "source", "reason", "equityDiscountRate" };
+    for (const auto& k : d->keys())
+        if (std::find(known.begin(), known.end(), k) == known.end())
+            throw std::runtime_error("economics: "
+                + registryRefusal::message("financing key", k, known, "Accepted"));
+    for (const char* k : { "debtFraction", "basis", "rate", "graceYears",
+                           "termYears", "repayment", "source", "reason" })
+        if (!d->found(k))
+            throw std::runtime_error(where + ": `" + k + "` is not declared."
+                "  Every term of a loan moves the equity view, so none is"
+                " defaulted: declare debtFraction, basis (fixedCapital |"
+                " totalCapital), rate, graceYears, termYears, repayment"
+                " (annuity | linear), source and reason.");
+
+    F.debtFraction = d->lookupScalar("debtFraction");
+    if (!(F.debtFraction > 0.0) || !(F.debtFraction < 1.0))
+    {
+        std::ostringstream m;
+        m << where << ": `debtFraction " << F.debtFraction << ";` must lie"
+             " strictly between 0 and 1 -- the share of the financed capital"
+             " the loan lends.  0 is no loan (delete the block); 1 or more"
+             " leaves the owners nothing invested, and an equity return on"
+             " nothing has no meaning.";
+        throw std::runtime_error(m.str());
+    }
+    F.basis = d->lookupWord("basis");
+    if (F.basis != "fixedCapital" && F.basis != "totalCapital")
+        throw std::runtime_error("economics: " + registryRefusal::message(
+            "financing basis", F.basis, { "fixedCapital", "totalCapital" },
+            "Accepted") + "  fixedCapital: the loan lends its share of the FCI"
+            " as the capital schedule spends it; totalCapital: of the FCI and"
+            " of the working capital invested at start-up.");
+    F.rate = d->lookupScalar("rate");
+    if (!(F.rate >= 0.0) || !(F.rate < 1.0))
+    {
+        std::ostringstream m;
+        m << where << ": `rate " << F.rate << ";` is the annual interest as a"
+             " FRACTION, in [0, 1) -- 6 % is `rate 0.06;`.";
+        throw std::runtime_error(m.str());
+    }
+    auto wholeYears = [&](const char* key, int lo) -> int
+    {
+        const scalar v = d->lookupScalar(key);
+        if (!(v >= lo) || std::fabs(v - std::round(v)) > 1e-9)
+        {
+            std::ostringstream m;
+            m << where << ": `" << key << " " << v << ";` must be a whole number"
+                 " of years >= " << lo << ".";
+            throw std::runtime_error(m.str());
+        }
+        return static_cast<int>(std::lround(v));
+    };
+    F.graceYears = wholeYears("graceYears", 0);
+    F.termYears  = wholeYears("termYears", 1);
+    if (F.graceYears + F.termYears > projectLife)
+    {
+        std::ostringstream m;
+        m << where << ": graceYears " << F.graceYears << " + termYears "
+          << F.termYears << " = " << (F.graceYears + F.termYears)
+          << " operating years, and projectLife is " << projectLife
+          << ": the loan would outlive the plant.  A balance left at the end"
+             " of the project is not modelled (no balloon payment); shorten"
+             " the loan or lengthen the declared life.";
+        throw std::runtime_error(m.str());
+    }
+    F.repayment = d->lookupWord("repayment");
+    if (F.repayment != "annuity" && F.repayment != "linear")
+        throw std::runtime_error("economics: " + registryRefusal::message(
+            "financing repayment", F.repayment, { "annuity", "linear" },
+            "Accepted") + "  annuity: a constant payment; linear: a constant"
+            " principal.");
+    for (const char* key : { "source", "reason" })
+        if (d->lookupWord(key).empty())
+            throw std::runtime_error(where + ": `" + key + " \"...\";` is"
+                " empty -- the terms of a loan are an assumption the case owes"
+                " its reader: where they come from (`source`) and why they are"
+                " this project's (`reason`).");
+    F.source = d->lookupWord("source");
+    F.reason = d->lookupWord("reason");
+
+    if (d->found("equityDiscountRate"))
+    {
+        F.equityDiscountRate = d->lookupScalar("equityDiscountRate");
+        F.equityRateDeclared = true;
+        if (!(F.equityDiscountRate > -1.0))
+            throw std::runtime_error(where + ": `equityDiscountRate` at or"
+                " below -100 % has no present value.");
+    }
+    else
+    {
+        F.equityDiscountRate = discountRate;
+        std::ostringstream m;
+        m << "equityDiscountRate was NOT declared in the `financing {}` block,"
+             " so the EQUITY cash flow is discounted at the project's"
+             " discountRate (" << discountRate << ").  The owners of a levered"
+             " project carry more risk than the project and usually ask a"
+             " higher return; declare `equityDiscountRate` to own it.";
+        if (AdvisoryLog::instance().add("assumed", "warning", "economics", m.str()))
+            std::cout << "  [assumed] economics: " << m.str() << "\n";
+    }
+    F.present = true;
+    return F;
+}
+
+// =========================================================================
 //  ONE APPRAISAL, ONE HOME (2026-10-12, DEV.md 4c C68).
 //
 //  Everything from the annual bills to the NPV, the IRR and the paybacks is
@@ -1062,6 +1381,11 @@ struct AppraisalInputs
     bool   landPresent = false;
     scalar landPrice   = 0.0;        // currency per m2
     scalar landArea    = 0.0;        // m2
+    //  THE FINANCING (G4): absent unless the case declares `financing {}`.
+    //  A sensitivity may move `fin.rate` (`financing.rate`) and
+    //  `fin.debtFraction` (`financing.debtFraction`); they move the EQUITY
+    //  view only -- the project's cash flow does not see them.
+    FinancingDeclaration fin;
 
     //  ---- what it never moves -----------------------------------------
     scalar  projectLife            = 10.0;
@@ -1090,6 +1414,15 @@ struct AppraisalOutcome
     int    cumSignChanges = 0;
     scalar discPayback = std::nan(""), simplePayback = std::nan("");
     std::vector<CashFlowYear> cashFlowRows;
+    //  THE FINANCING (G4), filled only when `in.fin.present`: the loan and
+    //  the EQUITY view beside the project's (which the fields above are).
+    scalar loanDrawn = 0.0, IDC = 0.0, loanAtStartup = 0.0;
+    scalar interestPaidTotal = 0.0, equityInvested = 0.0;
+    scalar equityNPV = 0.0, equityIRR = std::nan("");
+    bool   haveEquityIRR = false, equityIrrAmbiguous = false;
+    int    equityCumSignChanges = 0;
+    scalar equityDiscPayback = std::nan("");
+    std::vector<LoanYear> loanRows;
 };
 
 AppraisalOutcome appraise(const AppraisalInputs& in,
@@ -1210,46 +1543,140 @@ AppraisalOutcome appraise(const AppraisalInputs& in,
     //  (`=workingCapital/10^6 + costLand/10^6`).  No appreciation is modelled.
     if (in.landPresent) cashFlow[at(Nlife)] += land;
 
-    auto npvAt = [&](scalar i) -> scalar
+    //  THE FINANCING (G4), only when declared: the loan's draws, its
+    //  capitalised interest during construction, its repayment, and the
+    //  EQUITY cash flow -- the project's cash flow above, plus the draws,
+    //  less the interest after tax, plus the tax shield of the capitalised
+    //  interest's depreciation, less the principal.  Derived FROM
+    //  `cashFlow`, so the two views can differ only by the loan.  See
+    //  `readFinancing` for every convention.  Absent, nothing below runs.
+    std::vector<scalar>   equityFlow;
+    std::vector<LoanYear> loanRows;
+    scalar loanDrawn = 0.0, IDC = 0.0, loanAtStartup = 0.0;
+    scalar interestPaidTotal = 0.0, equityInvested = 0.0;
+    if (in.fin.present)
+    {
+        const FinancingDeclaration& fin = in.fin;
+        const scalar r = fin.rate;
+        //  The draws: the loan's share of each financed outlay, at its date.
+        std::vector<scalar> draw(static_cast<std::size_t>(Nrows), 0.0);
+        for (int k = 1; k <= Nc; ++k)
+            draw[at(k - Nc)] += fin.debtFraction
+                * (timeline.capitalSchedule[static_cast<std::size_t>(k - 1)] * FCI);
+        if (fin.basis == "totalCapital") draw[at(0)] += fin.debtFraction * WC;
+
+        loanRows.resize(static_cast<std::size_t>(Nrows));
+        //  Construction: the interest on the balance already drawn is
+        //  CAPITALISED -- added to the balance, no cash moves.
+        scalar B = 0.0;
+        for (int t = tFirst; t <= 0; ++t)
+        {
+            LoanYear& y = loanRows[at(t)];
+            y.year                = t;
+            y.interestCapitalised = r * B;
+            y.draw                = draw[at(t)];
+            B                    += y.interestCapitalised + y.draw;
+            y.balance             = B;
+            IDC                  += y.interestCapitalised;
+            loanDrawn            += y.draw;
+        }
+        loanAtStartup = B;
+        const scalar P = B;
+        const int    g = fin.graceYears;
+        const int    n = fin.termYears;
+        const scalar annuity = (fin.repayment == "annuity")
+            ? (r > 0.0 ? P * r / (1.0 - std::pow(1.0 + r, -n)) : P / n)
+            : 0.0;
+        const scalar dIdc = (in.depreciableLife > 0.0) ? (IDC / in.depreciableLife) : 0.0;
+        //  Operation: the interest is PAID and deducted; grace years repay
+        //  nothing; then `n` repayments, the last clearing the balance.
+        for (int t = 1; t <= Nlife; ++t)
+        {
+            LoanYear& y = loanRows[at(t)];
+            y.year         = t;
+            y.interestPaid = r * B;
+            scalar pr = 0.0;
+            if (t > g && t <= g + n)
+                pr = (t == g + n) ? B
+                   : (fin.repayment == "annuity" ? annuity - y.interestPaid
+                                                 : P / n);
+            y.principal        = pr;
+            B                 -= pr;
+            y.balance          = B;
+            y.idcDepreciation  = (t <= Ndepr) ? dIdc : 0.0;
+            interestPaidTotal += y.interestPaid;
+        }
+
+        equityFlow.assign(static_cast<std::size_t>(Nrows), 0.0);
+        for (int t = tFirst; t <= 0; ++t)
+        {
+            equityFlow[at(t)] = cashFlow[at(t)] + draw[at(t)];
+            equityInvested   -= equityFlow[at(t)];
+        }
+        for (int t = 1; t <= Nlife; ++t)
+        {
+            LoanYear&    y   = loanRows[at(t)];
+            const scalar d_t = (t <= Ndepr) ? d_annual : 0.0;
+            y.taxableIncome  = revenueAt(t) - comAt(t) - startupAt(t) - d_t
+                             - y.interestPaid - y.idcDepreciation;
+            y.tax            = taxRate * y.taxableIncome;
+            equityFlow[at(t)] = cashFlow[at(t)]
+                              - (y.interestPaid + y.idcDepreciation) * (1.0 - taxRate)
+                              + y.idcDepreciation - y.principal;
+        }
+    }
+
+    //  The NPV, the IRR, the discounted payback and the multiple-IRR guard,
+    //  each written ONCE for any cash-flow vector over years tFirst..Nlife:
+    //  the project's always, the equity's when the case is financed.
+    auto npvOf = [&](const std::vector<scalar>& cf, scalar i) -> scalar
     {
         scalar npv = 0.0;
         for (int t = tFirst; t <= Nlife; ++t)
-            npv += cashFlow[at(t)] / std::pow(1.0 + i, t);
+            npv += cf[at(t)] / std::pow(1.0 + i, t);
         return npv;
     };
-    auto dNpvAt = [&](scalar i) -> scalar
+    auto dNpvOf = [&](const std::vector<scalar>& cf, scalar i) -> scalar
     {
         scalar d = 0.0;
         for (int t = tFirst; t <= Nlife; ++t)
         {
             if (t == 0) continue;                // the t = 0 term has no slope
-            d += -static_cast<scalar>(t) * cashFlow[at(t)] / std::pow(1.0 + i, t + 1);
+            d += -static_cast<scalar>(t) * cf[at(t)] / std::pow(1.0 + i, t + 1);
         }
         return d;
     };
 
-    const scalar NPV = npvAt(discountRate);
+    const scalar NPV = npvOf(cashFlow, discountRate);
 
     // ---- IRR -- bisection bracket on [0,1], Newton polish ---------------
     // Multiple-IRR guard: >1 sign change in the CUMULATIVE cash flow means the
     // NPV(i)=0 root may not be unique -> announce, prefer NPV.
-    int cumSignChanges = 0;
+    auto signChangesOf = [&](const std::vector<scalar>& cf) -> int
     {
+        int    changes = 0;
         scalar cum = 0.0;
         int    prevSign = 0;
         for (int t = tFirst; t <= Nlife; ++t)
         {
-            cum += cashFlow[at(t)];
+            cum += cf[at(t)];
             const int s = (cum > 0.0) ? 1 : (cum < 0.0 ? -1 : 0);
-            if (s != 0 && prevSign != 0 && s != prevSign) ++cumSignChanges;
+            if (s != 0 && prevSign != 0 && s != prevSign) ++changes;
             if (s != 0) prevSign = s;
         }
-    }
+        return changes;
+    };
+    const int  cumSignChanges = signChangesOf(cashFlow);
     const bool irrAmbiguous = (cumSignChanges > 1);
 
-    scalar IRR        = std::nan("");
-    bool   haveIRR    = false;
+    //  The root of NPV(i) = 0: `.first` the IRR (NaN if none), `.second`
+    //  whether one was found.
+    auto irrOf = [&](const std::vector<scalar>& cf) -> std::pair<scalar, bool>
     {
+        scalar IRR        = std::nan("");
+        bool   haveIRR    = false;
+        auto npvAt  = [&](scalar i) { return npvOf(cf, i); };
+        auto dNpvAt = [&](scalar i) { return dNpvOf(cf, i); };
         // Bracket by scanning [0, iScanMax] for a sign change of NPV(i).  A very
         // profitable project can have IRR well above 100 % (NPV still positive at
         // i=1), so the scan reaches 500 % -- otherwise a healthy project reports
@@ -1311,41 +1738,50 @@ AppraisalOutcome appraise(const AppraisalInputs& in,
 
             IRR     = nr.converged ? nr.x : seed;
             haveIRR = true;
-
-            // Loud scale check: an extreme IRR means the cash flow dwarfs the
-            // investment -- usually a throughput too large for the costed
-            // equipment (the appraisal is mis-scaled), not a real 1000%-return.
-            if (verbose && IRR > 2.0)
-                std::cerr << "EconomicsPass: IRR = " << (100.0 * IRR)
-                          << "% is EXTREME (>200%) -- the annual cash flow dwarfs the"
-                             " investment (FCI = " << FCI << " EUR).  Verify the project"
-                             " SCALE: a feed/product throughput too large for the costed"
-                             " equipment inflates revenue & opex against a tiny CAPEX,"
-                             " so the IRR is not physically meaningful.\n";
         }
-    }
+        return { IRR, haveIRR };
+    };
+
+    const auto   projectIrr = irrOf(cashFlow);
+    const scalar IRR        = projectIrr.first;
+    const bool   haveIRR    = projectIrr.second;
+
+    // Loud scale check: an extreme IRR means the cash flow dwarfs the
+    // investment -- usually a throughput too large for the costed
+    // equipment (the appraisal is mis-scaled), not a real 1000%-return.
+    if (haveIRR && verbose && IRR > 2.0)
+        std::cerr << "EconomicsPass: IRR = " << (100.0 * IRR)
+                  << "% is EXTREME (>200%) -- the annual cash flow dwarfs the"
+                     " investment (FCI = " << FCI << " EUR).  Verify the project"
+                     " SCALE: a feed/product throughput too large for the costed"
+                     " equipment inflates revenue & opex against a tiny CAPEX,"
+                     " so the IRR is not physically meaningful.\n";
 
     // ---- Payback --------------------------------------------------------
     // Discounted payback (DEFAULT): year the cumulative DISCOUNTED cash flow
     // first turns positive (linear interpolation within the year).  It is
     // counted in OPERATING years after start-up; a multi-year construction
     // enters through its capital, compounded to start-up (C63).
-    scalar discPayback = std::nan("");
+    auto discPaybackOf = [&](const std::vector<scalar>& cf, scalar rate) -> scalar
     {
+        scalar payback = std::nan("");
         scalar cum = 0.0, prevCum = 0.0;
         for (int t = tFirst; t <= Nlife; ++t)
         {
-            const scalar disc = cashFlow[at(t)] / std::pow(1.0 + discountRate, t);
+            const scalar disc = cf[at(t)] / std::pow(1.0 + rate, t);
             prevCum = cum;
             cum += disc;
             if (cum >= 0.0 && t > 0)
             {
                 const scalar frac = (disc != 0.0) ? (-prevCum / disc) : 0.0;
-                discPayback = (t - 1) + frac;
+                payback = (t - 1) + frac;
                 break;
             }
         }
-    }
+        return payback;
+    };
+    const scalar discPayback = discPaybackOf(cashFlow, discountRate);
+
     // Simple PBP (labelled; understates): FCI / (after-tax operating CF + d).
     //  With a RAMP-UP or a START-UP COST the operating cash flow is not one
     //  number, so the closed form would describe a plant that does not
@@ -1438,6 +1874,36 @@ AppraisalOutcome appraise(const AppraisalInputs& in,
     o.irrAmbiguous = irrAmbiguous;  o.cumSignChanges = cumSignChanges;
     o.discPayback = discPayback;  o.simplePayback = simplePayback;
     o.cashFlowRows = std::move(cashFlowRows);
+
+    //  THE EQUITY VIEW (G4): the same NPV, IRR, payback and guard, applied
+    //  to the equity cash flow at the equity discount rate.
+    if (in.fin.present)
+    {
+        const scalar ie = in.fin.equityDiscountRate;
+        o.loanDrawn         = loanDrawn;
+        o.IDC               = IDC;
+        o.loanAtStartup     = loanAtStartup;
+        o.interestPaidTotal = interestPaidTotal;
+        o.equityInvested    = equityInvested;
+        o.equityNPV         = npvOf(equityFlow, ie);
+        const auto eIrr     = irrOf(equityFlow);
+        o.equityIRR         = eIrr.first;
+        o.haveEquityIRR     = eIrr.second;
+        o.equityCumSignChanges = signChangesOf(equityFlow);
+        o.equityIrrAmbiguous   = (o.equityCumSignChanges > 1);
+        o.equityDiscPayback    = discPaybackOf(equityFlow, ie);
+        scalar cumDisc = 0.0;
+        for (int t = tFirst; t <= Nlife; ++t)
+        {
+            LoanYear& y      = loanRows[at(t)];
+            y.cashFlow       = equityFlow[at(t)];
+            y.discountFactor = 1.0 / std::pow(1.0 + ie, t);
+            y.discountedCF   = y.cashFlow * y.discountFactor;
+            cumDisc         += y.discountedCF;
+            y.cumulativeDCF  = cumDisc;
+        }
+        o.loanRows = std::move(loanRows);
+    }
     return o;
 }
 
@@ -1522,6 +1988,8 @@ scalar sensitivityValue(const AppraisalInputs& in, const std::string& key)
     if (key == "streamFactor") return in.streamFactor;
     if (key == "labourRate")   return in.labourRate;
     if (key == "land.price")   return in.landPrice;
+    if (key == "financing.rate")         return in.fin.rate;
+    if (key == "financing.debtFraction") return in.fin.debtFraction;
     if (key.rfind("price.", 0) == 0)
     {
         const std::string s = key.substr(6);
@@ -1548,6 +2016,8 @@ AppraisalInputs withSensitivityValue(AppraisalInputs in, const std::string& key,
     else if (key == "streamFactor") in.streamFactor = v;
     else if (key == "labourRate")   in.labourRate   = v;
     else if (key == "land.price")   in.landPrice    = v;
+    else if (key == "financing.rate")         in.fin.rate         = v;
+    else if (key == "financing.debtFraction") in.fin.debtFraction = v;
     else if (key.rfind("price.", 0) == 0)
     {
         const std::string s = key.substr(6);
@@ -1585,6 +2055,11 @@ std::vector<SensitivityInput> readSensitivity(const DictPtr& block,
     for (const auto& s : pricedStreams)   accepted.push_back("price." + s);
     for (const auto& u : pricedUtilities) accepted.push_back("utility." + u);
     if (base.landPresent) accepted.push_back("land.price");
+    if (base.fin.present)
+    {
+        accepted.push_back("financing.debtFraction");
+        accepted.push_back("financing.rate");
+    }
 
     auto list = [](const std::vector<std::string>& v)
     {
@@ -1611,6 +2086,11 @@ std::vector<SensitivityInput> readSensitivity(const DictPtr& block,
                     " of the land, and this economics block declares none (no"
                     " `land { price; source; reason; }`).  A sensitivity moves a"
                     " price the case DECLARES; it never invents one.");
+            if (key == "financing.rate" || key == "financing.debtFraction")
+                throw std::runtime_error(where + ": `" + key + "` moves a term"
+                    " of the loan, and this economics block declares no loan (no"
+                    " `financing { ... }`).  A sensitivity moves a term the case"
+                    " DECLARES; it never invents one.");
             if (isPrice)
                 throw std::runtime_error(where + ": `" + key + "` perturbs the"
                     " price of stream '" + key.substr(6) + "', and"
@@ -1756,6 +2236,10 @@ void resolveSensitivityEnds(SensitivityInput& s, scalar accLoPct, scalar accHiPc
         refuse("a tax rate lies in [0, 1).");
     if (s.key == "streamFactor" && !(s.lo > 0.0 && s.hi <= 1.0))
         refuse("a stream factor is a fraction of the year, in (0, 1].");
+    if (s.key == "financing.rate" && !(s.lo >= 0.0 && s.hi < 1.0))
+        refuse("a loan's interest rate is a fraction in [0, 1).");
+    if (s.key == "financing.debtFraction" && !(s.lo > 0.0 && s.hi < 1.0))
+        refuse("a debt fraction lies strictly between 0 and 1.");
 }
 
 //  The NPV swing of one input: what separates its two bars.
@@ -1814,7 +2298,8 @@ std::string fmtIRR(const AppraisalOutcome& o)
 }
 
 void printSensitivity(const std::vector<SensitivityInput>& v,
-                      const AppraisalOutcome& base, const std::string& cur)
+                      const AppraisalOutcome& base, const std::string& cur,
+                      bool equity)
 {
     std::cout << "\n==============  Economic sensitivity (one input at a time)  ==============\n";
     //  The caveat, wrapped at the table's width.
@@ -1843,7 +2328,11 @@ void printSensitivity(const std::vector<SensitivityInput>& v,
               << std::setw(14) << "low" << std::setw(14) << "high"
               << std::setw(16) << "NPV(low)" << std::setw(16) << "NPV(high)"
               << std::setw(15) << "swing" << std::setw(11) << "IRR(low)"
-              << std::setw(11) << "IRR(high)" << "  NPV sign flips\n";
+              << std::setw(11) << "IRR(high)" << "  NPV sign flips";
+    //  THE EQUITY NPV at each end (G4), only when a loan is declared.
+    if (equity)
+        std::cout << std::setw(18) << "equity NPV(low)" << std::setw(18) << "equity NPV(high)";
+    std::cout << "\n";
     for (const auto* s : tornadoOrder(v))
     {
         std::cout << "    " << std::left << std::setw(28) << s->key << std::right
@@ -1854,8 +2343,16 @@ void printSensitivity(const std::vector<SensitivityInput>& v,
                   << std::setw(15) << npvSwing(*s)
                   << std::setw(11) << fmtIRR(s->atLo) << std::setw(11) << fmtIRR(s->atHi);
         const std::string f = npvSignFlip(*s, base.NPV);
-        std::cout << "  " << (f.empty() ? "no" : "at the " + f + " end") << "\n";
+        std::cout << "  " << (f.empty() ? "no" : "at the " + f + " end");
+        if (equity)
+            std::cout << std::setprecision(0) << std::setw(18) << s->atLo.equityNPV
+                      << std::setw(18) << s->atHi.equityNPV;
+        std::cout << "\n";
     }
+    if (equity)
+        std::cout << "    `financing.*` moves the EQUITY view only: the project NPV"
+                     " does not see a loan, so its swing\n    is zero by construction"
+                     " -- the project's merit does not depend on how it is financed.\n";
     for (const auto& s : v)
         if (s.fromBand)
             std::cout << "    (FCI's ends are the declared accuracy band, "
@@ -1865,7 +2362,8 @@ void printSensitivity(const std::vector<SensitivityInput>& v,
 }
 
 void writeSensitivityCsv(const std::vector<SensitivityInput>& v,
-                         const AppraisalOutcome& base, const std::string& cur)
+                         const AppraisalOutcome& base, const std::string& cur,
+                         bool equity)
 {
     const fs::path dir = fs::path("reports") / "economics";
     fs::create_directories(dir);
@@ -1881,7 +2379,9 @@ void writeSensitivityCsv(const std::vector<SensitivityInput>& v,
     f << "input,mode,declaredLow,declaredHigh,unit,baseValue,valueLow,valueHigh,"
          "NPV_low_" << cur << ",NPV_high_" << cur << ",NPVswing_" << cur
       << ",IRR_low_pct,IRR_high_pct,discountedPayback_low_yr,"
-         "discountedPayback_high_yr,NPVsignFlip\n";
+         "discountedPayback_high_yr,NPVsignFlip";
+    if (equity) f << ",equityNPV_low_" << cur << ",equityNPV_high_" << cur;
+    f << "\n";
     auto irr = [](const AppraisalOutcome& o)
     { return (o.haveIRR && std::isfinite(o.IRR)) ? csvNum(100.0 * o.IRR, 4) : std::string(); };
     for (const auto* s : tornadoOrder(v))
@@ -1893,7 +2393,10 @@ void writeSensitivityCsv(const std::vector<SensitivityInput>& v,
           << "," << csvNum(npvSwing(*s), 0)
           << "," << irr(s->atLo) << "," << irr(s->atHi)
           << "," << csvNum(s->atLo.discPayback, 4) << "," << csvNum(s->atHi.discPayback, 4)
-          << "," << npvSignFlip(*s, base.NPV) << "\n";
+          << "," << npvSignFlip(*s, base.NPV)
+          << (equity ? "," + csvNum(s->atLo.equityNPV, 0) + "," + csvNum(s->atHi.equityNPV, 0)
+                     : std::string())
+          << "\n";
     f.close();
     std::cout << "  [economics] sensitivity table -> " << path.string() << "\n";
 }
@@ -2440,6 +2943,13 @@ int EconomicsPass::run(SimulationResult& result)
         baseIn.landArea    = landDecl.area;
     }
 
+    // ---- 5a'. THE FINANCING (G4), read and checked BEFORE any number is
+    //  printed.  Absent, nothing is read and nothing said.  See
+    //  `readFinancing` for the grammar and every convention.
+    baseIn.fin = readFinancing(econDict_, static_cast<int>(std::lround(projectLife)),
+                               discountRate);
+    const FinancingDeclaration& fin = baseIn.fin;
+
     // ---- 5b. The sensitivity block (C68), read and checked BEFORE any
     //  number is printed, so a malformed declaration refuses the appraisal
     //  instead of trailing it.  Absent, nothing is read and nothing said.
@@ -2834,6 +3344,86 @@ int EconomicsPass::run(SimulationResult& result)
                       << std::setprecision(0) << std::setw(16) << r.cumulativeDCF << "\n";
         }
     }
+    if (fin.present)
+    {
+        //  THE FINANCING (G4): the loan and the EQUITY view, BESIDE the
+        //  project's figures above, which it does not replace.  Every number
+        //  is `appraise`'s; this block only prints them.
+        const std::string cur = result.costs.empty() ? std::string("EUR")
+                              : result.costs.begin()->second.currency;
+        std::cout << "\n  -- Financing: the EQUITY view (the PROJECT figures above are unchanged) --\n"
+                     "    The NPV, IRR and paybacks above are the PROJECT's (unlevered): they say\n"
+                     "    whether the plant earns its capital, whoever lends it.  The project's\n"
+                     "    merit must not depend on how it is financed, so this view does NOT\n"
+                     "    replace them: it shows what the OWNERS put in and get back once the\n"
+                     "    lender is paid.\n";
+        std::cout << "    loan = " << std::setprecision(3) << fin.debtFraction << " x "
+                  << (fin.basis == "totalCapital"
+                        ? "the total capital (FCI as the capital schedule spends it, and the WC at t = 0)"
+                        : "the fixed capital (FCI), drawn as the capital schedule spends it")
+                  << "; the land is not financed\n";
+        std::cout << "    rate r = " << std::setprecision(4) << fin.rate
+                  << "/yr; grace " << fin.graceYears << " operating yr (interest only);"
+                     " repaid over " << fin.termYears << " yr, "
+                  << (fin.repayment == "annuity" ? "annuity (constant payment)"
+                                                 : "linear (constant principal)")
+                  << "\n";
+        std::cout << "    source: " << fin.source << "\n"
+                  << "    reason: " << fin.reason << "\n";
+        std::cout << std::setprecision(0)
+                  << "    loan drawn                   = " << std::setw(14) << base.loanDrawn << " " << cur << "\n"
+                  << "    interest during construction = " << std::setw(14) << base.IDC << " " << cur
+                  << "  (CAPITALISED: added to the balance, no cash moves)\n";
+        if (base.IDC == 0.0)
+            std::cout << "      none accrues: "
+                      << (Nc == 1 ? "a one-year construction spends its capital at its END"
+                                    " (t = 0), so nothing is owed before start-up"
+                                  : "nothing is owed before the last draw")
+                      << "\n";
+        std::cout << "    loan at start-up P           = " << std::setw(14) << base.loanAtStartup << " " << cur << "\n"
+                  << "    interest paid in operation   = " << std::setw(14) << base.interestPaidTotal << " " << cur
+                  << "  (deducted from the taxable income)\n"
+                  << "    capitalised interest depreciated with the plant, straight line over "
+                  << depreciableLife << " yr (IAS 23 / NCRF 10)\n"
+                  << "    equity invested              = " << std::setw(14) << base.equityInvested << " " << cur << "\n";
+        std::cout << "\n    year by year (" << cur << "; equity CF = project CF + draw"
+                     " - (interest + IDC depr.) x (1 - tau) + IDC depr. - principal):\n"
+                  << "    " << std::setw(4) << "t" << std::setw(15) << "draw"
+                  << std::setw(14) << "IDC capit." << std::setw(14) << "interest"
+                  << std::setw(15) << "principal" << std::setw(15) << "balance"
+                  << std::setw(13) << "IDC depr." << std::setw(14) << "tax"
+                  << std::setw(15) << "equity CF" << std::setw(11) << "1/(1+ie)^t"
+                  << std::setw(16) << "cumulative DCF" << "\n";
+        for (const auto& y : base.loanRows)
+            std::cout << "    " << std::setw(4) << y.year << std::setprecision(0)
+                      << std::setw(15) << y.draw << std::setw(14) << y.interestCapitalised
+                      << std::setw(14) << y.interestPaid << std::setw(15) << y.principal
+                      << std::setw(15) << y.balance << std::setw(13) << y.idcDepreciation
+                      << std::setw(14) << y.tax << std::setw(15) << y.cashFlow
+                      << std::setw(11) << std::setprecision(4) << y.discountFactor
+                      << std::setprecision(0) << std::setw(16) << y.cumulativeDCF << "\n";
+        std::cout << "    equity NPV(ie=" << std::setprecision(3) << fin.equityDiscountRate
+                  << (fin.equityRateDeclared ? "" : ", the project's rate -- not declared")
+                  << ") = " << std::setprecision(0) << base.equityNPV << " " << cur << "\n";
+        if (base.haveEquityIRR)
+            std::cout << "    equity IRR                   = " << std::setprecision(2)
+                      << 100.0 * base.equityIRR << " %\n";
+        else
+            std::cout << "    equity IRR                   = (no sign change of the equity NPV(i)"
+                         " -- the owners never break even)\n";
+        if (base.equityIrrAmbiguous)
+            std::cout << "    !! MULTIPLE-IRR GUARD: " << base.equityCumSignChanges
+                      << " sign changes in the cumulative equity CF -> the equity IRR"
+                         " may be non-unique; USE the equity NPV.\n";
+        if (std::isfinite(base.equityDiscPayback))
+            std::cout << "    equity discounted payback    = " << std::setprecision(2)
+                      << base.equityDiscPayback << " yr\n";
+        else
+            std::cout << "    equity discounted payback    = (never recovered within N)\n";
+        std::cout << "    project NPV " << std::setprecision(0) << NPV << " " << cur
+                  << " beside equity NPV " << base.equityNPV << " " << cur
+                  << ": the project's is the merit, the equity's is the owners' share of it\n";
+    }
     std::cout << "=====================================================================\n\n";
 
     // ---- 9b. THE SENSITIVITY (C68), only when declared: each input's two
@@ -2849,7 +3439,7 @@ int EconomicsPass::run(SimulationResult& result)
         s.atLo = appraise(withSensitivityValue(baseIn, s.key, s.lo), result, false);
         s.atHi = appraise(withSensitivityValue(baseIn, s.key, s.hi), result, false);
     }
-    if (!sensitivity.empty()) printSensitivity(sensitivity, base, sensCurrency);
+    if (!sensitivity.empty()) printSensitivity(sensitivity, base, sensCurrency, fin.present);
 
     // ---- 10.  Publish headline KPIs (the differentiator) ----------------
     auto& econ = result.kpis["economics"];
@@ -2892,6 +3482,22 @@ int EconomicsPass::run(SimulationResult& result)
         econ["land"]     = base.land;
         econ["landArea"] = landDecl.area;
     }
+    //  THE FINANCING (G4), only when declared, so every other case publishes
+    //  exactly what it did.  The PROJECT's NPV / IRR / paybackYears above are
+    //  untouched; these are the loan and the EQUITY view beside them, each a
+    //  KPI the golden `kpi` kind pins (published implies pinned).
+    if (fin.present)
+    {
+        econ["debt_drawn"]          = base.loanDrawn;
+        econ["debt_IDC"]            = base.IDC;
+        econ["debt_atStartup"]      = base.loanAtStartup;
+        econ["debt_interestPaid"]   = base.interestPaidTotal;
+        econ["equity_invested"]     = base.equityInvested;
+        econ["equity_NPV"]          = base.equityNPV;
+        econ["equity_IRR"]          = base.haveEquityIRR ? base.equityIRR : std::nan("");
+        econ["equity_paybackYears"] = std::isfinite(base.equityDiscPayback)
+                                    ? base.equityDiscPayback : std::nan("");
+    }
     //  THE BUILD-UP IS PUBLISHED LINE BY LINE (C44 slice 4) -- and only when
     //  declared, so a fraction-of-FCI case publishes exactly what it did.
     //  `WC` above is then the NET figure the cash flow uses.
@@ -2923,6 +3529,12 @@ int EconomicsPass::run(SimulationResult& result)
         //  block carries no number that no golden row reads.
         econ[k + "value_low"]    = s.lo;
         econ[k + "value_high"]   = s.hi;
+        //  The EQUITY NPV at each end (G4), only when a loan is declared.
+        if (fin.present)
+        {
+            econ[k + "equityNPV_low"]  = s.atLo.equityNPV;
+            econ[k + "equityNPV_high"] = s.atHi.equityNPV;
+        }
     }
 
     // ---- 11.  Build the year-by-year DCF table + emit the spreadsheet ----
@@ -2999,15 +3611,45 @@ int EconomicsPass::run(SimulationResult& result)
             r.NPV_high     = s->atHi.NPV;
             r.NPVswing     = npvSwing(*s);
             r.NPVsignFlip  = npvSignFlip(*s, base.NPV);
+            r.equityNPV_low  = s->atLo.equityNPV;
+            r.equityNPV_high = s->atHi.equityNPV;
             summary.sensitivity.push_back(std::move(r));
         }
+    }
+
+    //  THE FINANCING (G4) on the result, only when declared.
+    if (fin.present)
+    {
+        summary.financingPresent           = true;
+        summary.debtFraction               = fin.debtFraction;
+        summary.debtBasis                  = fin.basis;
+        summary.debtRate                   = fin.rate;
+        summary.graceYears                 = fin.graceYears;
+        summary.termYears                  = fin.termYears;
+        summary.repayment                  = fin.repayment;
+        summary.equityDiscountRate         = fin.equityDiscountRate;
+        summary.equityDiscountRateDeclared = fin.equityRateDeclared;
+        summary.financingSource            = fin.source;
+        summary.financingReason            = fin.reason;
+        summary.loanDrawn                  = base.loanDrawn;
+        summary.interestDuringConstruction = base.IDC;
+        summary.loanAtStartup              = base.loanAtStartup;
+        summary.interestPaidTotal          = base.interestPaidTotal;
+        summary.equityInvested             = base.equityInvested;
+        summary.equityNPV                  = base.equityNPV;
+        summary.equityIRR                  = base.haveEquityIRR ? base.equityIRR : std::nan("");
+        summary.haveEquityIRR              = base.haveEquityIRR;
+        summary.equityIrrAmbiguous         = base.equityIrrAmbiguous;
+        summary.equityDiscPayback          = base.equityDiscPayback;
+        summary.loanSchedule               = base.loanRows;
     }
 
     // Persist both the .csv and the coloured .ods (reports/economics/).
     writeCashFlowCsv(summary);
     writeCashFlowOds(summary);
     if (wcb.present) writeWorkingCapitalCsv(summary);
-    if (!sensitivity.empty()) writeSensitivityCsv(sensitivity, base, summary.currency);
+    if (!sensitivity.empty()) writeSensitivityCsv(sensitivity, base, summary.currency, fin.present);
+    if (fin.present) writeFinancingCsv(summary);
 
     return 0;
 }
