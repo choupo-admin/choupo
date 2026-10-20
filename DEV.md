@@ -1300,7 +1300,8 @@ accepts today, and that is a policy call.
 > origin; a new session starts on a fresh machine from this list.  Order of
 > work for the next session (first item first):
 >
-> 1. **`integ/wave2` (52488de47) -- merge after validation.**  It is main +
+> 1. **DONE 2026-10-20 on the fresh machine (main b9c034a9, published).**
+>    **`integ/wave2` (52488de47) -- merge after validation.**  It is main +
 >    G2 (C110 multiproduct batch plan, `d427793f1`) + G3 (C104 donepezil,
 >    `7541c39ba`) + G19 (C118 stage 1 phaseSplitScan, `8a3a47f15`), the
 >    catalogue / gateManifest conflicts resolved by keeping both sides, the
@@ -1348,7 +1349,7 @@ accepts today, and that is a policy call.
 >    `evidence` lens.  Owed: typecheck and re-shoot of the last WIP commit
 >    (phone layout), `--gui`, `--fast`.  Then C116 (one Explore; G18
 >    estimates one session) and C118 stage 2 (the phase-split lens).
-> 5. **G1 `claude/c110-g1-apalutamide-dossier` (77495a2cc)** -- the
+> 5. **DONE 2026-10-20 (main 440a5529).**  **G1 `claude/c110-g1-apalutamide-dossier` (77495a2cc)** -- the
 >    apalutamide design-basis dossier applied (patent formula, acetone at
 >    5 wt %, generic at LoE, every room CNC; NPV -44.6 -> +128.2 MEUR).
 >    **373 golden rows MOVE, 4 are removed, 20 appended -- put to Vitor
@@ -1366,7 +1367,7 @@ accepts today, and that is a policy call.
 >    `economics { financing {} }`, the equity view beside the unchanged
 >    project view.  NEVER BUILT.  Owed (its report): build, byte identity
 >    of the twelve economics cases, the gate, the sabotages, the manifest.
-> 7. **G20 `claude/c119-correlations-edutool` (f31d62c6b)** -- C119: engine
+> 7. **DONE 2026-10-20 (G20b; see C119).**  **G20 `claude/c119-correlations-edutool` (f31d62c6b)** -- C119: engine
 >    sweeps on frictionBench / heatTransferBench, witness
 >    moody02_correlation_sweeps, the maths module and the five-page lesson
 >    text.  UNVALIDATED.  Owed: the Tool component, registry + mount
@@ -1388,6 +1389,22 @@ accepts today, and that is a policy call.
 >    continued.
 > 9. Found for Vitor (curation): `ethanol.dat` has no Fuller
 >    `diffusionVolume` (G10); the C119 / C118 stage 3 excipient records.
+> **Resumed 2026-10-20 on a fresh machine (no read errors).**  Wave 2
+> validated and merged (build warning-free; the four witnesses PASS with no
+> row moved; each branch's gates; the decision index, case manifest and
+> release inventory refreshed after the merge; the Tutorials Guide rebuilt
+> -- LaTeX had to be installed here as the CI does, `lmodern` included;
+> `--gui` 5799 tests with ONE red, a `PropertyOperation.H:116` citation
+> G19's two inserted lines moved, remapped to 118).  G1 then: the 373 rows
+> re-measured and found exactly the approved set before recording, and ONLY
+> those written (9 others drifted inside their tolerance and keep their old
+> pins); two `check_batch_plan` fixtures G2 had calibrated on the old
+> witness re-based (multiTrainLong 1250 -> 1100 h, between the busiest stage
+> and the train's year; arm (j) now READS the one product's demand from the
+> witness, the typed 30000 kg having gone stale); check_energy_closure over
+> the steady corpus OK.  A trap paid for twice: `make` does not rebuild a
+> guide PDF whose file a merge just checked out (it is newer than its
+> sources) -- rebuild with `make -B`, and read the PDF back.
 
 > **C119. AN EDUTOOL ON WHY CORRELATIONS ARE SIMPLE: FROM DIMENSIONAL
 > ANALYSIS TO MASTER-SLAVE SCALES (Vitor, 2026-10-20: "o teorema Pi de
@@ -1419,6 +1436,25 @@ accepts today, and that is a policy call.
 > exponent, Churchill-Usagi, the transition zone), the engine's own
 > correlations as SYNTHETIC truth said so on screen, friction and Nusselt
 > only.  Dispatched (G20).
+> **DONE 2026-10-20 (G20 + G20b, merged via integ/c119).**  The EduTool
+> *Why engineering correlations are simple* (`correlation-simplicity`,
+> shelf "Hydraulics & control" -- OPEN for Vitor: that shelf or "Heat
+> transfer & energy").  Five pages: the dimensional matrix reduced exactly
+> with a free core (presets; a dependent or wrong-sized core refused on
+> screen); the engine's Colebrook beside an invented ripple; the Moody
+> plane and its local slopes (-1 laminar, -0.265 -> -0.126 smooth from 1e4
+> to 1e8, flattening rough); Haken's two-variable model, full vs reduced,
+> with a scale-ratio slider; a one-decade power-law fit whose exponent
+> drifts, Churchill rebuilt from its two asymptotes (n = 12 matches the
+> engine to 4e-16) and the transition spread.  Engine: an optional
+> `sweep {}` on `frictionBench` / `heatTransferBench` (one home,
+> `ReynoldsSweep.H`; `churchillAB`, `churchillAsymptotes`), byte-identical
+> on moody01, htbench01, pipe01, pipe02 and pumpSystem01 against a build of
+> main; the two bench schemas gained `sweep`.  Witness
+> `moody02_correlation_sweeps` (26 new golden rows).  No correlation is
+> retyped in TypeScript (a test bans the coefficients).  FINDING, not
+> fixed: `Blasius::evaluate` does not flag 2300 <= Re < 4000 although its
+> declared window starts at 4000 (the pipe inherits it; its own slice).
 
 > **C118. A PHASE-SPLIT SCAN IN THE EXPLORER: V / L1 / L2 / S1 / S2 AND pH
 > ALONG T OR P (Vitor, 2026-10-20: "uma tool de execucao em que posso mexer
