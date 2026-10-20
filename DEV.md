@@ -1291,6 +1291,27 @@ accepts today, and that is a policy call.
 > fire-water ring main and hydrants, bunds, escape routes, swept path, a
 > fillet running through an item.
 
+> **C121. AN EDUTOOL ON DATA RECONCILIATION IN PROCESS CONTROL, AND HOW
+> BAYES HELPS (Vitor, 2026-10-20: "Ha outra coisa que os meus alunos nao
+> sabem: reconciliacao de dados em controlo de processos e como Bayes pode
+> ajudar!  Achas que dava um bom EduTools?").**  Commander's verdict: yes.
+> Measured: the engine already holds the arithmetic -- `solver/ActiveSetQP`
+> and `streams/AnalysisReconciler` reconcile a laboratory water analysis by
+> weighted least squares under DECLARED laws (A2, 2026-08-09), and the
+> `active-set-qp` EduTool meets it ("each law's Lagrange multiplier IS the
+> number of standard deviations it moved each measurement"); there is no
+> FLOWSHEET reconciliation (plant flow and composition measurements under
+> the mass balances), no gross-error test and nothing Bayesian or dynamic
+> (no Kalman filter) anywhere in src/.  Proposed pages put to Vitor before
+> dispatch (pedagogy is his): (1) why measurements do not close a balance;
+> (2) reconciliation as weighted least squares under the balances = the
+> Bayesian posterior mode with Gaussian noise and a flat prior; (3) gross
+> errors -- the global chi-square test and the measurement test; (4) a
+> prior that is not flat (yesterday's estimate, a soft sensor) and the
+> posterior covariance -- what reconciliation buys in precision; (5) the
+> dynamic case: the Kalman filter as recursive Bayes, the link to control.
+> Not dispatched.
+
 > **C120. SESSION HANDOFF -- THE CONTAINER'S DISK FAILED (2026-10-20, Vitor:
 > "Sim, segue esse plano").**  The machine of the 2026-10-20 session logged
 > ~1260 kernel read errors; ~12 800 tracked files of its primary checkout

@@ -11,8 +11,24 @@ throughout.
 ## 0. Operating mandate (read first; Vítor, 2026-09-27)
 
 The assistant is responsible for Choupo's development line, not a clerk to
-it.  Six rules; the corollaries that make them concrete are in §10.
+it.  The rules below; the corollaries that make them concrete are in §10.
 
+0. **THE WORKING RHYTHM COMES FIRST (Vítor, 2026-10-20, asked to be put at
+   the head of these rules: "Nós tínhamos acordado que tu usualmente
+   mandavas trabalhar os teus generais e pelo meio refletias no Choupo e na
+   melhor forma de conseguir ultrapassar [os simuladores de referência], e
+   estavas sempre disponível para me ouvires!").**  The commander
+   DISPATCHES the work to generals (a written brief, its own worktree, at
+   most as many at once as the machine carries) and, WHILE THEY RUN,
+   REFLECTS: on Choupo itself, and on how it can surpass the breadth-first
+   simulators students meet elsewhere -- not on their ground (breadth,
+   databank size) but on Choupo's own (the glass box, customisation, the
+   pedagogy, the domains they serve poorly).  Reflection is real work and
+   is brought to Vítor as findings and proposals.  And the commander is
+   ALWAYS AVAILABLE to listen: no turn is spent blocked on a build, a suite
+   or a general when Vítor may be speaking.  Integration (merging,
+   validating, publishing) is the commander's own lane; implementing a
+   slice is a general's.  §10 *The operating model* is the long form.
 1. **Carry every authorised task through implementation, validation and
    completion.**  Routine technical steps inside the agreed scope are
    decided, not asked.  Architecture changes, pedagogical scope (what a
