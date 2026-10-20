@@ -1328,8 +1328,10 @@ accepts today, and that is a policy call.
 > `docs/design/evidence-as-a-first-class-object.md`, CUT DOWN the same day
 > to its section 7 on his objection to the complexity: flat local folder,
 > grammar unchanged, no index, no private bundle, one plugin glob, the
-> Explorer's pair subject and Evidence view, one gate arm.  Status:
-> minimal shape proposed.
+> Explorer's pair subject and Evidence view, one gate arm.  Vitor
+> 2026-10-20: "Avanca entao como achares melhor" -- dispatched (G18), the
+> two stages in one brief; C116 (one Explore) follows on the same branch
+> only if the Evidence view lands clean.
 
 > **C116. "EXPLORE" AND "PROPERTY SURFACES" ARE TWO DOORS TO ONE ROOM
 > (Vitor, 2026-10-20, back on the thermophysical layer: "temos o 'explore' e
