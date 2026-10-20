@@ -134,8 +134,9 @@ units
         //  the bed, not modelled) and the hold before release bring them to
         //  room temperature, so the blend is DECLARED at 298.15 K, and the
         //  duty that implies (the heat the warm granules gave up) is
-        //  published as `Q_kW`.  No utility serves it; the run lists it as
-        //  unserved.
+        //  published as `Q_kW` -- about 1.3 kW, which the utility allocation
+        //  files against chilled water (the only service cold enough for a
+        //  298.15 K sink); in the real plant it is the bed's cool-down air.
         name        finalBlender;
         type        mixer;
         inputs      ( milledGranules  mgstFeed );
