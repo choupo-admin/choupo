@@ -932,10 +932,27 @@ export function readEdges(
 function memberFlowsheetText(
   rawFiles: { [relPath: string]: string } | undefined, child: string,
 ): string | undefined {
+  return memberFolder(rawFiles, child)?.text;
+}
+
+/** A member's FOLDER (relative to the case root, no trailing "/") and its
+ *  flowsheetDict text, for a member declared in the flowsheet at `parentDir`
+ *  ("" = the case root; "sectors/BRINE" for a sector's own members).  The
+ *  same candidates, in the same order, as the engine's resolveMemberBase
+ *  (src/unitOperations/flowsheet/MemberFolder.H): `unitOperations/<m>/`,
+ *  `sectors/<m>/`, `<m>/`; in each, the lean `flowsheetDict` before
+ *  `system/flowsheetDict`.  Undefined when no folder carries one (an inline
+ *  member, or the file is not in `rawFiles`).  A reader that walks a nested
+ *  plant needs the DIRECTORY, not only the text: a sector's members are
+ *  resolved under the sector's folder, which may be `sectors/<name>/`. */
+export function memberFolder(
+  rawFiles: { [relPath: string]: string } | undefined, child: string, parentDir = "",
+): { dir: string; text: string } | undefined {
   if (!rawFiles) return undefined;
-  for (const base of [child, `sectors/${child}`, `unitOperations/${child}`])
-    for (const p of [`${base}/system/flowsheetDict`, `${base}/flowsheetDict`])
-      if (rawFiles[p] !== undefined) return rawFiles[p];
+  const at = parentDir ? `${parentDir}/` : "";
+  for (const base of [`${at}unitOperations/${child}`, `${at}sectors/${child}`, `${at}${child}`])
+    for (const p of [`${base}/flowsheetDict`, `${base}/system/flowsheetDict`])
+      if (rawFiles[p] !== undefined) return { dir: base, text: rawFiles[p]! };
   return undefined;
 }
 
