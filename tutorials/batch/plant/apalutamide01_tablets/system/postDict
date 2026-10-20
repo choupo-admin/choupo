@@ -44,8 +44,11 @@
   treatment for the purge, dust collection, cleaning systems.  The README
   (section 6) says what is in and what is not.
 
-  EVERY DESIGN NUMBER BELOW IS AN AUTHOR-SET ASSUMPTION, said on its line,
-  for the groups to replace; none cites a source because none was read.
+  THE DESIGN BASIS is the sourced dossier docs/design/apalutamide-design-
+  basis-dossier.md (DEV.md 4c C99 addendum, applied in C110 G1): the
+  production, the lot and the machine rates below cite its sections; every
+  number it could not find is still an AUTHOR-SET ASSUMPTION, said on its
+  line, for the groups to replace.
   Rules followed: MATERIAL SS316 everywhere (product contact and an organic
   solvent; whether a non-contact item could be carbon steel is the groups'
   question); pressureDesign 2 bar (the loop runs at about 1.1 bar; a closed,
@@ -70,29 +73,31 @@
 //  neither modelled), so the dryer runs in CAMPAIGNS round the clock and the
 //  solid-dose suite runs its own campaigns of lots on two shifts.
 //
-//  EVERY NUMBER BELOW IS AN AUTHOR-SET ASSUMPTION of the right order for a
-//  commercial oral-solid-dose line, said so in each `source`, for the group
-//  to replace with its own design basis (README section 2a).
+//  The production and the lot cite the design-basis dossier,
+//  docs/design/apalutamide-design-basis-dossier.md ("the dossier"); every time, density and
+//  fill the dossier does not give is an AUTHOR-SET ASSUMPTION of the right
+//  order for a commercial oral-solid-dose line, said so in its `source`, for
+//  the group to replace (README section 2a).
 batchPlan
 {
     product   packagedTablets;
 
     production
     {
-        perYear  30000 kg;      // of packaged tablets: 50.0 million at 0.5997 g
-        source   "author-set assumption (DEV.md 4c C99), not a market study";
-        reason   "about 50 million 60 mg tablets a year, a mid-sized generic line (README section 2)";
+        perYear  10156 kg;      // of packaged tablets: 14.0 million at 0.72546 g
+        source   "docs/design/apalutamide-design-basis-dossier.md section 4.1 (derived from an estimate): 25 % of the European volume of section 3.3 (13.9 M patient-days a year = 55 M 60 mg tablets, from J&J's 2025 Erleada sales, a 53.3 % European share of International and a 75 EUR net price per patient-day)";
+        reason   "a generic entrant to the European market at loss of exclusivity, the business case Vitor ruled (DEV.md 4c C99 addendum): 25 % share = 14.0 million 60 mg tablets sold a year (the dossier's 15 M is the capacity WITH a reject margin; the 1 % press rejects are in the flowsheet)";
     }
 
     //  The lot is counted, as an oral-solid-dose lot usually is, in kg of
-    //  FINAL BLEND: 350 kg is about 603 000 tablets.
+    //  FINAL BLEND: 400 kg is about 571 000 tablets of 700 mg.
     lot
     {
         rule     declared;
         stream   finalBlend;
-        mass     350 kg;
-        source   "author-set assumption (DEV.md 4c C99), not a validated lot size";
-        reason   "a commercial solid-dose lot of a few hundred kg of blend; the lot is what QC releases, so its size is a regulatory as well as an equipment choice";
+        mass     400 kg;
+        source   "docs/design/apalutamide-design-basis-dossier.md section 4.3 (an estimate: the commercial batch sizes are redacted in every public document, section 1.3)";
+        reason   "a 400 kg final-blend lot in a 1000-1200 L IBC blender; it carries 137 kg of dispersion, inside the dossier's 100-200 kg SDD lot (section 4.2); the lot is what QC releases, so its size is a regulatory as well as an equipment choice";
     }
 
     lowUtilisation  0.25;       // a stage below a quarter of its cycle is announced
@@ -126,7 +131,7 @@ batchPlan
         {
             stage  solutionPreparation;  train sprayDrying;  type batch;
             units  ( solutionPrep );     holds sprayFeed;
-            bulkDensity  800 kg/m3;      // 10 wt % HPMCAS + API in acetone
+            bulkDensity  800 kg/m3;      // 5 wt % HPMCAS + API in acetone
             fillFraction 0.8;
             chargeTime   2 h;  processTime 2 h;  cleanTime 2 h;
             dischargeTime throughFedStage;   // the tank feeds the dryer for its whole run
@@ -148,14 +153,14 @@ batchPlan
             units  ( blender );  holds intraBlend;
             bulkDensity  450 kg/m3;  fillFraction 0.6;    // a bin blender at 60 % fill
             chargeTime 1 h;  processTime 0.5 h;  dischargeTime 0.5 h;  cleanTime 1 h;
-            source "author-set assumption (DEV.md 4c C99), not a measured bulk density";
+            source "author-set assumption (DEV.md 4c C99), not a measured bulk density; the blender is the dossier's 1000-1200 L IBC (section 4.3), which this density and fill reproduce";
             reason "an intragranular blend in a bin blender; the bulk density is of the order of a cellulose-rich blend";
         }
         {
             stage  granulation;  train solidDose;  type semicontinuous;
             units  ( rollerCompactor mill screen );  holds ribbons;   // blend + fines
-            chargeTime 0.5 h;  operatingTime 5 h;  dischargeTime 0 h;  cleanTime 1 h;
-            source "author-set assumption (DEV.md 4c C99)";
+            chargeTime 0.5 h;  operatingTime 3 h;  dischargeTime 0 h;  cleanTime 1 h;
+            source "docs/design/apalutamide-design-basis-dossier.md section 4.3: a production compactor rated 100-400 kg/h takes the 320 kg intragranular blend of a lot in about 1-3 h (Gerteis vendor maxima); 3 h, the slow end, is the case's choice";
             reason "a roller compactor with its mill and screen run through the lot; the throughput includes the fines it recycles";
         }
         {
@@ -171,8 +176,8 @@ batchPlan
             units  ( tabletPress );  holds finalBlend;
             feeds  coating;
             chargeTime 1.5 h;  operatingTime 4 h;  dischargeTime 0 h;  cleanTime 1 h;
-            source "author-set assumption (DEV.md 4c C99)";
-            reason "a rotary press set up for the lot (tooling, weight and hardness checks) and run at about 150 000 tablets an hour";
+            source "docs/design/apalutamide-design-basis-dossier.md section 4.3 (an estimate): a mid-size rotary press with D tooling for the 17 x 9 mm oblong runs 80 000-150 000 tablets an hour, so a lot takes 4-7 h; 4 h is the fast end; the set-up and clean times are author-set";
+            reason "a rotary press set up for the lot (tooling, weight and hardness checks) and run at about 143 000 tablets an hour";
         }
         {
             stage  suspensionPreparation;  train solidDose;  type batch;
@@ -189,15 +194,15 @@ batchPlan
             units  ( coatingPan coatingDryer );  holds tabletCores;
             bulkDensity  750 kg/m3;  fillFraction 0.65;   // tablet bed in a perforated pan
             chargeTime 0.5 h;  processTime 3 h;  dischargeTime 0.5 h;  cleanTime 1 h;
-            source "author-set assumption (DEV.md 4c C99)";
-            reason "one lot of cores coated in one pan load to a 3 % weight gain";
+            source "author-set times (DEV.md 4c C99); the load is the dossier's: a perforated pan of 150-400 kg cores takes a 400 kg lot in one large load (section 4.3, an estimate)";
+            reason "one lot of cores coated in one pan load to the patent's 3 % weight gain (PAT-HPMCAS Ex. 3.3)";
         }
         {
             stage  packaging;  train solidDose;  type semicontinuous;
             units  ( packagingLine );  holds packagedTablets;
             chargeTime 1 h;  operatingTime 8 h;  dischargeTime 0 h;  cleanTime 1 h;
-            source "author-set assumption (DEV.md 4c C99)";
-            reason "a blister line set up and cleared for each lot, run at about 75 000 tablets an hour";
+            source "author-set assumption (DEV.md 4c C99): a packaging line's speed was NOT found (the dossier, section 4.3) -- ask a vendor";
+            reason "a blister line (PVC-PCTFE/Al, wallets of 4 x 28, SmPC 6.5) set up and cleared for each lot, run at about 71 000 tablets an hour";
         }
     );
 }
@@ -286,57 +291,64 @@ costing
           basis installed;  kind equipment;
           scaling { referenceSize 100 kg/h;  exponent 0.6;
                     exponentSource "the six-tenths rule, a convention (Williams, Chemical Engineering 1947, cited by title only); applied to this machine as an author-set assumption"; }
-          source "author-set placeholder (DEV.md 4c C98), not a quotation";
+          source "author-set placeholder (DEV.md 4c C98), not a quotation: the dossier found machine SIZES but no prices (docs/design/apalutamide-design-basis-dossier.md sections 4.3 and 6, question 5)";
           reason "a rotary tablet press installed in its suite, a round figure; replace with the press vendor's quotation for the chosen model and its tooling"; }
         { unit blender;  value 300000;  currency EUR;  year 2026;
           basis installed;  kind equipment;
           scaling { referenceSize 1 m3;  exponent 0.6;
                     exponentSource "the six-tenths rule, a convention (Williams, Chemical Engineering 1947, cited by title only); applied to this machine as an author-set assumption"; }
-          source "author-set placeholder (DEV.md 4c C98), not a quotation";
+          source "author-set placeholder (DEV.md 4c C98), not a quotation: the dossier found machine SIZES but no prices (docs/design/apalutamide-design-basis-dossier.md sections 4.3 and 6, question 5)";
           reason "the intragranular bin blender and its bins, a round figure; replace with a vendor quotation"; }
         { unit rollerCompactor;  value 600000;  currency EUR;  year 2026;
           basis installed;  kind equipment;
           scaling { referenceSize 100 kg/h;  exponent 0.6;
                     exponentSource "the six-tenths rule, a convention (Williams, Chemical Engineering 1947, cited by title only); applied to this machine as an author-set assumption"; }
-          source "author-set placeholder (DEV.md 4c C98), not a quotation";
+          source "author-set placeholder (DEV.md 4c C98), not a quotation: the dossier found machine SIZES but no prices (docs/design/apalutamide-design-basis-dossier.md sections 4.3 and 6, question 5)";
           reason "a roller compactor with its feeder, a round figure; replace with a vendor quotation"; }
         { unit mill;  value 150000;  currency EUR;  year 2026;
           basis installed;  kind equipment;
           scaling { referenceSize 100 kg/h;  exponent 0.6;
                     exponentSource "the six-tenths rule, a convention (Williams, Chemical Engineering 1947, cited by title only); applied to this machine as an author-set assumption"; }
-          source "author-set placeholder (DEV.md 4c C98), not a quotation";
+          source "author-set placeholder (DEV.md 4c C98), not a quotation: the dossier found machine SIZES but no prices (docs/design/apalutamide-design-basis-dossier.md sections 4.3 and 6, question 5)";
           reason "the granulating mill AND the screen below it (the flowsheet's `screen` carries no quote of its own), a round figure; replace with a vendor quotation"; }
         { unit finalBlender;  value 300000;  currency EUR;  year 2026;
           basis installed;  kind equipment;
           scaling { referenceSize 1 m3;  exponent 0.6;
                     exponentSource "the six-tenths rule, a convention (Williams, Chemical Engineering 1947, cited by title only); applied to this machine as an author-set assumption"; }
-          source "author-set placeholder (DEV.md 4c C98), not a quotation";
+          source "author-set placeholder (DEV.md 4c C98), not a quotation: the dossier found machine SIZES but no prices (docs/design/apalutamide-design-basis-dossier.md sections 4.3 and 6, question 5)";
           reason "the extragranular (final) blender, a round figure; replace with a vendor quotation"; }
         { unit coatingPan;  value 800000;  currency EUR;  year 2026;
           basis installed;  kind equipment;
           scaling { referenceSize 1 m3;  exponent 0.6;
                     exponentSource "the six-tenths rule, a convention (Williams, Chemical Engineering 1947, cited by title only); applied to this machine as an author-set assumption"; }
-          source "author-set placeholder (DEV.md 4c C98), not a quotation";
+          source "author-set placeholder (DEV.md 4c C98), not a quotation: the dossier found machine SIZES but no prices (docs/design/apalutamide-design-basis-dossier.md sections 4.3 and 6, question 5)";
           reason "a perforated pan coater with its spray system and its air handling -- the flowsheet's `coatingDryer` is the drying half of the same machine and carries no quote of its own -- a round figure; replace with a vendor quotation"; }
         { unit packagingLine;  value 1500000;  currency EUR;  year 2026;
           basis installed;  kind equipment;
           scaling { referenceSize 50 kg/h;  exponent 0.6;
                     exponentSource "the six-tenths rule, a convention (Williams, Chemical Engineering 1947, cited by title only); applied to this machine as an author-set assumption"; }
-          source "author-set placeholder (DEV.md 4c C98), not a quotation";
+          source "author-set placeholder (DEV.md 4c C98), not a quotation: the dossier found machine SIZES but no prices (docs/design/apalutamide-design-basis-dossier.md sections 4.3 and 6, question 5)";
           reason "a bottle or blister line with serialisation, a round figure; replace with a vendor quotation"; }
         { item productionBuilding;  value 11000000;  currency EUR;  year 2026;
           basis installed;  kind facility;
-          source "author-set placeholder (DEV.md 4c C98), not a quotation or a building estimate";
-          reason "the GMP building of the solid-dose train, the layout's 50 m x 36 m `productionBuilding` box (1800 m2) at a round 6000 EUR per m2 of footprint for clean rooms, HVAC and services; replace with a contractor's estimate for the group's own building"; }
+          source "author-set placeholder (DEV.md 4c C98), not a quotation or a building estimate; cross-checked against the one public benchmark the dossier found (docs/design/apalutamide-design-basis-dossier.md section 4.5): Mayne Pharma's Greenville NC oral-solid-dose plant with potent-compound containment, 80 M USD for 11 700 m2, about 6 800 USD (6 260 EUR at 0.92) per m2 ALL-IN, building AND equipment; a building-only cost per m2 was NOT found (ask an EPCM contractor)";
+          reason "the GMP building of the whole plant, the layout's 62 m x 36 m `productionBuilding` box (2232 m2 of footprint, 3710 m2 of rooms on two floors), clean rooms, HVAC and services: 11 MEUR is 4 930 EUR per m2 of footprint, below the benchmark's all-in figure as a building alone should be; replace with a contractor's estimate for the group's own building"; }
     );
 }
 
 economics
 {
     method              discountedCashFlow;
-    projectLife         10;          // yr -- ASSUMED (a product's market life
-                                     // after a generic launch is the groups'
-                                     // question)
+    //  THE BUSINESS CASE (Vitor's ruling, DEV.md 4c C99 addendum): a GENERIC
+    //  ENTRANT AT LOSS OF EXCLUSIVITY.  The 1:3 HPMCAS dispersion is claimed
+    //  by an active Janssen patent family (US 12,303,493 B2, anticipated
+    //  expiry 3 Dec 2035; the EU counterparts and SPCs NOT verified), so the
+    //  plant is built to LAUNCH when exclusivity ends: year 0 of this cash
+    //  flow is the end of construction = the launch, and the NPV is
+    //  discounted to that year, not to today (dossier section 3.6).  The
+    //  money is 2026 money throughout.
+    projectLife         10;          // yr -- ASSUMED (a generic product's
+                                     // market life is the groups' question)
     constructionPeriod  1;
     discountRate        0.10;        // ASSUMED
     taxRate             0.21;        // ASSUMED (a corporate rate, no country chosen)
@@ -388,6 +400,19 @@ economics
         );
         source  "author-set assumption (DEV.md 4c C98 round 2), not a staffing study";
         reason  "a campaign oral-solid-dose suite is staffed per room and per running machine; the numbers are round figures of the right order for ONE line -- replace them with the group's staffing plan";
+    }
+    //  THE PRICE AT 2 COMPETITORS (the other end of Vitor's "2-4
+    //  competitors"): the base case sells at the 4-competitor price, 4.0 EUR
+    //  a tablet; the high end is 8.8 EUR a tablet, the originator's ex-factory
+    //  price less the FDA's 54 % median cut at 2 generic producers
+    //  (docs/design/apalutamide-design-basis-dossier.md sections 3.4 and 4.4).
+    //  Both ends are per kg of `packagedTablets` (constant/economics says
+    //  how).  The low end is the base itself: below 4 competitors' price is
+    //  the "6+ competitors" floor, under 1 EUR, which the dossier gives only
+    //  as a bound.  A SENSITIVITY, not an uncertainty analysis.
+    sensitivity
+    {
+        price.packagedTablets   { absolute ( 5513.8 12130.3 ); }
     }
     estimateClass       5;           // concept screening: the solids train is priced on placeholders
     accuracyBand        ( -50 100 ); // Class 5, the wide corner -- chosen

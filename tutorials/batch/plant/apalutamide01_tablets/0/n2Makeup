@@ -10,11 +10,11 @@
      componentMassFlows is the OVERALL material (all phases); a phases{} block, when present,
      is a decomposition that sums back to it exactly. ---*/
 
-//  Nitrogen make-up to the drying-gas loop: 15 kg/h -- AUTHOR-SET.  With a 5 % purge the loop holds 15/0.05 = 300 kg/h of nitrogen at steady state.
+//  Nitrogen make-up to the drying-gas loop: 22.5 kg/h.  With a 5 % purge the loop holds 22.5/0.05 = 450 kg/h of nitrogen at steady state -- chosen (an AUTHOR-SET operating point) so that the dryer's exhaust leaves at 46 C, the patent's PSD-3 outlet temperature (PAT-HPMCAS Ex. 3.1; 46-49 C for its acetone examples, Ex. 4.1/6.1; docs/design/apalutamide-design-basis-dossier.md section 4.2).  The inlet temperature is NOT given in the patent: the 120 C inlet is the case's, and the gas flow is what the outlet fixes.
 
 componentMassFlows
 {
-    N2                           15 kg/h;
+    N2                           22.5 kg/h;
 }
 
 T               298.15 K;

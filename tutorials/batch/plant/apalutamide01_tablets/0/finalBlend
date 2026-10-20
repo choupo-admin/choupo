@@ -15,13 +15,13 @@
 
 componentMolarFlows
 {
-    apalutamide    0.001608612781 kmol/h;
-    hpmcas    0.002304 kmol/h;
-    microcrystallineCellulose    0.01184161835 kmol/h;
-    silicifiedMCC    0.00192 kmol/h;
-    croscarmelloseSodium    0.000384 kmol/h;
-    colloidalSilica    0.001065175421 kmol/h;
-    magnesiumStearate    0.0001082434124 kmol/h;
+    apalutamide    0.001963638649 kmol/h;
+    hpmcas    0.0028125 kmol/h;
+    microcrystallineCellulose    0.02847654804 kmol/h;
+    silicifiedMCC    0.0018265625 kmol/h;
+    croscarmelloseSodium    0.000546875 kmol/h;
+    colloidalSilica    0.002366478596 kmol/h;
+    magnesiumStearate    9.249315022e-05 kmol/h;
 }
 
 T               298.15 K;
@@ -39,13 +39,13 @@ phases
     {
         componentMolarFlows
         {
-            apalutamide    0.001608612781 kmol/h;
-            hpmcas    0.002304 kmol/h;
-            microcrystallineCellulose    0.01184161835 kmol/h;
-            silicifiedMCC    0.00192 kmol/h;
-            croscarmelloseSodium    0.000384 kmol/h;
-            colloidalSilica    0.001065175421 kmol/h;
-            magnesiumStearate    0.0001082434124 kmol/h;
+            apalutamide    0.001963638649 kmol/h;
+            hpmcas    0.0028125 kmol/h;
+            microcrystallineCellulose    0.02847654804 kmol/h;
+            silicifiedMCC    0.0018265625 kmol/h;
+            croscarmelloseSodium    0.000546875 kmol/h;
+            colloidalSilica    0.002366478596 kmol/h;
+            magnesiumStearate    9.249315022e-05 kmol/h;
         }
     }
 }

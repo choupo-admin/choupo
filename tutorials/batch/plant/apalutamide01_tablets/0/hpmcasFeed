@@ -10,11 +10,11 @@
      componentMassFlows is the OVERALL material (all phases); a phases{} block, when present,
      is a decomposition that sums back to it exactly. ---*/
 
-//  HPMCAS: 180 mg (a 1:3 drug:polymer dispersion) per tablet PRESSED (12 800 tablets/h, the flowsheet basis) -- AUTHOR-SET formulation, see README section 2.  (2.304 kg/h.)
+//  HPMCAS, grade LG (Shin-Etsu AQOAT AS-LG, the grade of PAT-HPMCAS Ex. 3.1 and claim 9), a 1:3 apalutamide:HPMCAS dispersion (claim 4): 180 mg per tablet PRESSED (15 625 tablets/h, the flowsheet basis) -- PAT-HPMCAS Ex. 3.2 (US 12,303,493 B2), dossier section 1.4.  (2.8125 kg/h.)
 
 componentMolarFlows
 {
-    hpmcas                       0.002304 kmol/h;
+    hpmcas                       0.0028125 kmol/h;
 }
 
 T               298.15 K;
@@ -26,7 +26,7 @@ phases
     {
         componentMolarFlows
         {
-            hpmcas                   0.002304 kmol/h;
+            hpmcas                   0.0028125 kmol/h;
         }
     }
 }
