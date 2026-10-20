@@ -1291,6 +1291,26 @@ accepts today, and that is a policy call.
 > fire-water ring main and hydrants, bunds, escape routes, swept path, a
 > fillet running through an item.
 
+> **C114. A FLOWSHEET VIEWER STUDENTS LOVE, "TIPO PARAVIEW" (Vitor,
+> 2026-10-20: "ve como podes tornar o visualizador do flowsheet mais tipo
+> 'paraview'!  Nos podemos escolher cores para T e P, mas eventualmente
+> podemos por compostos quimicos ... de forma elegante e que os alunos
+> adorem!  Isso faz diferenca face aos flowsheets do DWSIM ou da Aspen" --
+> the competitor names are his, in conversation; they stay out of every
+> user-facing manual).  Measured: `gui/src/ui/ColoursMenu.tsx` offers
+> colour-by phase / temperature / pressure with three colormaps (turbo,
+> coolwarm, viridis) and a scale bar; wires are already sized by
+> sqrt(mass flow) (FlowCanvas legend); the canvas holds an MW map
+> (`FlowCanvas.tsx:905`).  Design proposed to Vitor (GUI identity and
+> pedagogy are his): colour by ANY published stream field incl. a chosen
+> compound's mole/mass fraction or flow; width by a second field ("follow
+> a molecule": width by that compound's flow); range control (auto, fixed,
+> log for traces); units coloured by a unit KPI (duty, diverging at zero);
+> a threshold that dims what is outside a range; hover probe of all
+> fields; export with legend; later, scrubbing a sweep or a time series.
+> The GUI maps published numbers and computes no physics.  Status: design
+> proposed.
+
 > **C113. FINDING A TUTORIAL OR AN EDUTOOL CHAPTER IN SECONDS (Vitor,
 > 2026-10-20, a written brief: search across ALL tutorials in the Open Case
 > window -- name, shortName, description, category, subclass, README --
