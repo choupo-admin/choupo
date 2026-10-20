@@ -1900,9 +1900,9 @@ scalar ThermoPackage::density(scalar T, scalar P_Pa, const sVector& z,
             }
             const scalar Mi = components_[*i].MW() / 1000.0;   // kg/mol
             const scalar vm = m.v_molar(T, P_Pa);             // m³/mol
-            if (vm <= 0.0)
+            if (!(vm > 0.0) || !std::isfinite(vm))
                 throw std::runtime_error("ThermoPackage::density: pure-fluid"
-                    " v_molar <= 0");
+                    " v_molar is not a finite positive number");
             return Mi / vm;                                    // kg/m³
         }
 
@@ -1916,9 +1916,9 @@ scalar ThermoPackage::density(scalar T, scalar P_Pa, const sVector& z,
         sVector y(N, 0.0);
         for (std::size_t i = 0; i < N; ++i) y[i] = z[i] / zsum;
         const scalar vm = eos_->molarVolume(T, P_Pa, y);      // m³/mol
-        if (vm <= 0.0)
+        if (!(vm > 0.0) || !std::isfinite(vm))
             throw std::runtime_error("ThermoPackage::density: EoS molar volume"
-                " <= 0");
+                " is not a finite positive number");
         return Mbar / vm;                                     // kg/m³
     }
 
@@ -1964,9 +1964,11 @@ scalar ThermoPackage::density(scalar T, scalar P_Pa, const sVector& z,
         {
             const scalar Vr  = closures::rackettVliq(T, Tc, Pc_Pa, omega);
             const scalar Vr0 = closures::rackettVliq(Tref_Vliq, Tc, Pc_Pa, omega);
-            if (Vr0 <= 0.0)
+            if ((!(Vr0 > 0.0) || !std::isfinite(Vr0)) && T < Tc)
                 throw std::runtime_error("ThermoPackage::density: Rackett"
-                    " reference volume <= 0 for component '" + c.name() + "'.");
+                    " cannot anchor component '" + c.name() + "''s 25 C `Vliq`"
+                    " (its reference volume at 298.15 K is not a finite"
+                    " positive number; Tc = " + std::to_string(Tc) + " K).");
             Vi = Vdecl * (Vr / Vr0);
             if (!announcedAnchored)
             {
@@ -2008,11 +2010,42 @@ scalar ThermoPackage::density(scalar T, scalar P_Pa, const sVector& z,
                 " record or the critical constants Tc and Pc for Rackett;"
                 " it declares neither.");
 
+        //  A COMPONENT ABOVE ITS CRITICAL TEMPERATURE HAS NO LIQUID MOLAR
+        //  VOLUME HERE (DEV.md 4c C76/C79, C110 G7).  Rackett is a
+        //  SATURATED-liquid correlation: at T > Tc, (1 - T/Tc) is negative
+        //  and its 2/7 power is NaN, and a NaN fails every `<=` guard, so the
+        //  mixture's density used to come back NaN in silence (a liquid
+        //  acetic acid carrying dissolved CO: the lights column's rating
+        //  printed dP -nan at exit 0; a pipe carrying liquid ammonia with
+        //  dissolved H2, N2 and Ar printed rho = -nan).  A dissolved gas DOES
+        //  occupy volume in a liquid -- its partial molar volume at infinite
+        //  dilution, the Krichevsky-Kasarnovsky `v_inf` a Henry pair record
+        //  may carry (parameters/Henry/N2-NH3.dat does) -- but this route
+        //  does not read it, and inventing a volume for it here would be a
+        //  second, unannounced model.  So it REFUSES, by name; a caller that
+        //  can do without the component asks over the others
+        //  (`pricedDensity::select`) and says so in its own words.
+        if (hasCrit && T >= Tc)
+            throw std::runtime_error("ThermoPackage::density: no liquid molar"
+                " volume for component '" + c.name() + "' at T = "
+                + std::to_string(T) + " K: it is above its critical"
+                " temperature (Tc = " + std::to_string(Tc) + " K), where Rackett"
+                " -- a saturated-liquid correlation -- describes no liquid."
+                "  A gas dissolved in a liquid occupies its partial molar"
+                " volume, which this density route does not model (a Henry"
+                " pair's `v_inf` is that datum, read today only for the"
+                " Poynting correction).  Ask for the density over the"
+                " components that have a liquid volume, and say which were"
+                " left out.");
+        if (!(Vi > 0.0) || !std::isfinite(Vi))
+            throw std::runtime_error("ThermoPackage::density: the liquid molar"
+                " volume of component '" + c.name() + "' at T = "
+                + std::to_string(T) + " K is not a finite positive number.");
         Vmix += (z[i] / zsum) * Vi;
     }
-    if (Vmix <= 0.0)
+    if (!(Vmix > 0.0) || !std::isfinite(Vmix))
         throw std::runtime_error("ThermoPackage::density: liquid molar volume"
-            " <= 0");
+            " is not a finite positive number");
     return Mbar / Vmix;                                         // kg/m³
 }
 

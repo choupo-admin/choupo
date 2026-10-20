@@ -245,6 +245,39 @@ WHAT THIS CHECKS, all from fresh runs of corpus cases:
              surface, the boiling puts a kink in it, and the first C77 cut
              stalled there at the feed's T -- the ceiling sat below the
              ignited branch and the run reported ONE steady state at exit 0.
+  (o) A LIQUID BELOW ITS BUBBLE PRESSURE IS FOUND TWO-PHASE -- THE
+      INCIPIENT PHASE IS ITERATED (2026-10-20, DEV.md 4c C110 G7; the C92
+      finding).  The flash's phase test evaluated every K at x = y = z: the
+      would-be vapour's fugacity coefficients at the LIQUID's composition.
+      For ammonia02's let-down liquid (NH3 + dissolved H2/N2/Ar, 250 K) SRK
+      then answers with a liquid-like root, and the drum's own liquid read
+      as SUBCOOLED down to 16.7 bar against the 20 bar bubble pressure that
+      `BubblePoint::pressure` (incipient vapour iterated) finds for it.
+        (o1) SOURCE: `incipientPhase::vapour` and `::liquid` are defined once
+             (flash/IncipientPhase.H); IsothermalFlash.cpp calls both,
+             BubblePoint.cpp calls `vapour` and iterates no
+             `Kvec(T, P, x, y)` of its own (comments stripped).
+        (o2) OUTPUT: a fresh ammonia02 run's own `productNH3` and T201
+             `P_bubble`, flashed at 250 K in two drums: at 1 % BELOW the
+             bubble pressure the drum must publish V/F > 0, at 1 % ABOVE it
+             V/F = 0 exactly (the test only turns a single-phase verdict into
+             a split it can prove), and the iterated sum is printed.
+  (p) A LIQUID DENSITY THAT CANNOT BE PRICED REFUSES BY NAME (2026-10-20,
+      DEV.md 4c C76/C79, C110 G7).  Rackett at T > Tc is pow of a negative
+      number, NaN, and `Vmix <= 0` -- like every `<=` -- is false for NaN, so
+      `ThermoPackage::density` returned a silent NaN for a liquid holding a
+      dissolved supercritical gas.
+        (p1) SOURCE: the liquid branch refuses a component at T >= Tc
+             naming its critical temperature, keeps no NaN-blind `<= 0.0`
+             guard on `Vmix`, `vm` or `Vr0`, and requires a finite `Vmix`.
+        (p2) OUTPUT: letdown01's RawLiquid (NH3 + dissolved H2/N2/Ar,
+             declared liquid at 140 bar) through a pipe, whose liquid route
+             asks for the density over the WHOLE composition.  Before this
+             arm the pipe printed rho = -nan and a -nan pressure drop at exit
+             0; it must now exit non-zero naming the component and its Tc.
+             Callers that can do without the gas (`pricedDensity::select`:
+             the tray hydraulics, the storage tank, the sizing pass) catch
+             the refusal and leave the component out, announced, as before.
   (e) flash13_acetic_ethanol_vacuum_flash keeps a LARGE duty -- the
       negative control.  Its feed is at 1 atm and it operates at 0.65 atm,
       so its 669 kW is genuine pressure-drop work; a gate that drove every
@@ -595,6 +628,166 @@ def strip_comments(text: str) -> str:
     (check_sector_hierarchy arm (g) paid for that)."""
     text = re.sub(r"/\*.*?\*/", "", text, flags=re.S)
     return re.sub(r"//[^\n]*", "", text)
+
+
+#  (o) the incipient phase is iterated (DEV.md 4c C110, G7; the C92 finding)
+INCIPIENT_HOME = ROOT / "src/unitOperations/flash/IncipientPhase.H"
+BUBBLE_SRC = ROOT / "src/unitOperations/saturation/BubblePoint.cpp"
+LETDOWN_SRC = "tutorials/plant/ammonia02_full_plant"
+LETDOWN_LIQUID = "productNH3"
+LETDOWN_T = 250.0
+#  (p) a liquid density with a supercritical component refuses by name
+DENSITY_SRC = ROOT / "src/thermo/ThermoPackage.cpp"
+DISSOLVED_GAS_SRC = "tutorials/steady/hydraulics/letdown01_ammonia_flashing"
+
+
+def _flows(stream_file: pathlib.Path) -> dict:
+    """componentMolarFlows of a state file, kmol/h as written."""
+    text = stream_file.read_text()
+    m = re.search(r"componentMolarFlows\s*\{([^}]*)\}", text)
+    if not m:
+        return {}
+    return {k: float(v) for k, v in
+            re.findall(r"(\w+)\s+([-0-9.eE+]+)\s*kmol/h", m.group(1))}
+
+
+def arm_o(tmp: pathlib.Path, fail: list) -> str:
+    """(o) THE INCIPIENT PHASE IS ITERATED, BY ONE HOME."""
+    # (o1) SOURCE
+    home = strip_comments(INCIPIENT_HOME.read_text()) \
+        if INCIPIENT_HOME.is_file() else ""
+    for fn in ("vapour", "liquid"):
+        if not re.search(r"inline\s+Result\s+" + fn + r"\s*\(", home):
+            fail.append(f"(o1) `incipientPhase::{fn}` is not defined in "
+                        f"{INCIPIENT_HOME.relative_to(ROOT)}")
+    flash = strip_comments(FLASH_SRC.read_text())
+    for fn in ("vapour", "liquid"):
+        if not re.search(r"incipientPhase::" + fn + r"\s*\(", flash):
+            fail.append(f"(o1) IsothermalFlash.cpp does not call "
+                        f"`incipientPhase::{fn}` -- its phase test reads the "
+                        "single-phase verdict at x = y = z alone")
+    bub = strip_comments(BUBBLE_SRC.read_text())
+    if not re.search(r"incipientPhase::vapour\s*\(", bub):
+        fail.append("(o1) BubblePoint::pressure does not call "
+                    "`incipientPhase::vapour` -- the bubble pressure and the "
+                    "flash's phase test are two homes for one iteration")
+    if re.search(r"Kvec\s*\(\s*T\s*,\s*P\s*,\s*x\s*,\s*y\s*\)", bub):
+        fail.append("(o1) BubblePoint.cpp iterates an incipient vapour of its "
+                    "own (`Kvec(T, P, x, y)`) beside the one home")
+
+    # (o2) OUTPUT: the C92 witness's let-down liquid and its own bubble P
+    plant = tmp / "ammonia02_incipient"
+    shutil.copytree(ROOT / LETDOWN_SRC, plant)
+    rc, log = run(plant)
+    m = re.search(r'"P_bubble":\s*([-0-9.eE+]+)', log)
+    liq = plant / "converged" / LETDOWN_LIQUID
+    if rc != 0 or not m or not liq.is_file():
+        fail.append(f"(o2) {LETDOWN_SRC} did not publish its T201 bubble "
+                    f"pressure or its {LETDOWN_LIQUID} (rc={rc})")
+        return "(o2) not reached"
+    pb = float(m.group(1))
+    flows = _flows(liq)
+    if not flows:
+        fail.append(f"(o2) could not read {LETDOWN_LIQUID}'s flows")
+        return "(o2) not reached"
+    fx = tmp / "incipient_drums"
+    (fx / "system").mkdir(parents=True)
+    (fx / "0").mkdir()
+    shutil.copytree(plant / "constant", fx / "constant")
+    (fx / "incipient.cho").write_text("")
+    (fx / "system" / "controlDict").write_text(
+        'application choupoSolve;\ndescription "(o2) fixture";\n'
+        "verbosity 3;\n")
+    drums = {"lo": 0.99 * pb, "hi": 1.01 * pb}
+    units = "".join(
+        f"    {{ name drum_{k}; type isothermalFlash; in feed_{k}; "
+        f"outputs ( liq_{k} gas_{k} ); operation {{ T {LETDOWN_T} K; "
+        f"P {p:.6f} Pa; }} }}\n" for k, p in drums.items())
+    (fx / "system" / "flowsheetDict").write_text(
+        "units\n(\n" + units + ");\n")
+    body = "componentMolarFlows\n{\n" + "".join(
+        f"    {c} {v!r} kmol/h;\n" for c, v in flows.items()) + "}\n"
+    for k, p in drums.items():
+        (fx / "0" / f"feed_{k}").write_text(
+            body + f"T {LETDOWN_T} K;\nP {pb:.6f} Pa;\n")
+        for s in (f"liq_{k}", f"gas_{k}"):
+            (fx / "0" / s).write_text(body + f"T {LETDOWN_T} K;\n"
+                                      f"P {p:.6f} Pa;\n")
+    rc, flog = run(fx)
+    vf = {k: re.search(r'"drum_' + k + r'":\s*\{[^}]*"V_over_F":\s*'
+                       r'([-0-9.eE+]+)', flog) for k in drums}
+    if rc != 0 or not all(vf.values()):
+        fail.append(f"(o2) the two-drum fixture did not run (rc={rc})")
+        return "(o2) not reached"
+    lo, hi = (float(vf[k].group(1)) for k in ("lo", "hi"))
+    if not lo > 1.0e-9:
+        fail.append(f"(o2) {LETDOWN_LIQUID} flashed at 1 % BELOW its own "
+                    f"bubble pressure ({drums['lo'] / 1e5:.4f} bar against "
+                    f"{pb / 1e5:.4f} bar, BubblePoint::pressure) publishes "
+                    f"V/F = {lo:g}: the phase test read the liquid as "
+                    "subcooled -- the incipient vapour was not iterated")
+    if hi != 0.0:
+        fail.append(f"(o2) {LETDOWN_LIQUID} flashed at 1 % ABOVE its bubble "
+                    f"pressure publishes V/F = {hi:g}: a liquid above its "
+                    "bubble pressure must stay single phase (the test may "
+                    "only turn a single-phase verdict into a split it can "
+                    "prove)")
+    if "incipient vapour iterated to its own composition" not in flog:
+        fail.append("(o2) the drum's log does not show the iterated "
+                    "incipient vapour at verbosity 3")
+    return (f"P_bubble {pb / 1e5:.6f} bar; V/F {lo:.3e} at -1 %, "
+            f"{hi:g} at +1 %")
+
+
+def arm_p(tmp: pathlib.Path, fail: list) -> str:
+    """(p) A LIQUID DENSITY WITH A SUPERCRITICAL COMPONENT REFUSES BY NAME."""
+    src = DENSITY_SRC.read_text()
+    m = re.search(r"scalar ThermoPackage::density\(.*?\n\}\n", src, re.S)
+    body = strip_comments(m.group(0)) if m else ""
+    if not body:
+        fail.append("(p1) ThermoPackage::density not found")
+    else:
+        if not re.search(r"T\s*>=\s*Tc", body) or \
+           "above its critical" not in body:
+            fail.append("(p1) ThermoPackage::density's liquid branch does "
+                        "not refuse a component above its Tc by name")
+        for guard in (r"\(\s*Vmix\s*<=\s*0\.0\s*\)", r"\(\s*vm\s*<=\s*0\.0\s*\)",
+                      r"\(\s*Vr0\s*<=\s*0\.0\s*\)"):
+            if re.search(guard, body):
+                fail.append(f"(p1) ThermoPackage::density keeps a NaN-blind "
+                            f"guard `{guard}` -- NaN fails no `<=`")
+        if not re.search(r"isfinite\s*\(\s*Vmix\s*\)", body):
+            fail.append("(p1) ThermoPackage::density does not require a "
+                        "finite mixture volume")
+    # (p2) OUTPUT: letdown01's RawLiquid, NH3 with dissolved H2/N2/Ar, through
+    # a pipe -- the pipe's single-phase liquid route asks the package for
+    # the density over the WHOLE composition.  Before this arm it published
+    # rho = -nan and a -nan pressure drop at exit 0.
+    case = tmp / "pipe_dissolved_gas"
+    (case / "system").mkdir(parents=True)
+    (case / "0").mkdir()
+    srcc = ROOT / DISSOLVED_GAS_SRC
+    shutil.copytree(srcc / "constant", case / "constant")
+    shutil.copy(srcc / "system" / "controlDict", case / "system")
+    (case / "pipe.cho").write_text("")
+    (case / "system" / "flowsheetDict").write_text(
+        "units\n(\n    { name P1; type pipe; in RawLiquid; outputs ( "
+        "downstream ); operation { viscosity 1.4e-4 Pa.s; geometry { D 0.1 m; "
+        "L 50 m; roughness 4.6e-5 m; dz 0 m; } } }\n);\n")
+    shutil.copy(srcc / "0" / "RawLiquid", case / "0" / "RawLiquid")
+    shutil.copy(srcc / "0" / "RawLiquid", case / "0" / "downstream")
+    rc, log = run(case)
+    if rc == 0:
+        fail.append("(p2) a pipe carrying a liquid with dissolved H2/N2/Ar "
+                    "ran to exit 0 -- its density cannot be priced and it "
+                    "must refuse")
+    if re.search(r"rho = -?nan|\bnan\s+bar", log):
+        fail.append("(p2) the pipe printed a NaN density or pressure drop")
+    if not re.search(r"no liquid molar volume for component '(N2|H2|Ar)'",
+                     log) or "above its critical temperature" not in log:
+        fail.append("(p2) the refusal does not name the supercritical "
+                    "component and its critical temperature")
+    return f"pipe refused (rc={rc})"
 
 
 def main() -> int:
@@ -1388,6 +1581,11 @@ def main() -> int:
                 fail.append(f"(n5) {tag}'s first law does not close "
                             f"(residual {m.group(1) if m else None} kW)")
 
+        # (o) the incipient phase is iterated; (p) an unpriceable liquid
+        # density refuses by name
+        said_o = arm_o(tmp, fail)
+        said_p = arm_p(tmp, fail)
+
         # (e) the negative control: a real pressure-drop duty survives
         ctrl = tmp / "flash13"
         shutil.copytree(ROOT / CONTROL, ctrl)
@@ -1452,7 +1650,15 @@ def main() -> int:
           "two-phase outlet and |Q_kW| <= 1e-6 kW, a jacketed cstr exactly "
           "its jacket's UA (T_c - T_out), the 1 atm multiplicity case keeps "
           "its three steady states, with no inlet-rung enthalpy left in "
-          "either source.  NOT "
+          "either source.  A LIQUID BELOW ITS BUBBLE PRESSURE IS FOUND "
+          "TWO-PHASE: the flash's phase test iterates the incipient phase "
+          "through ONE home that BubblePoint::pressure also reads (source), "
+          "and ammonia02's let-down liquid flashed 1 % either side of its "
+          f"own bubble pressure splits below and not above ({said_o}).  A "
+          "LIQUID DENSITY THAT CANNOT BE PRICED REFUSES BY NAME: no NaN-blind "
+          "guard in ThermoPackage::density (source), and a pipe carrying "
+          "liquid ammonia with dissolved H2/N2/Ar names the supercritical "
+          f"component instead of printing -nan ({said_p}).  NOT "
           "CHECKED: whether a NON-zero duty is right (only the identity has a "
           "closed form); the multi-condition cases' duties, which ride their "
           "goldens; whether the 1e-3 incipient band is the right number (it "
