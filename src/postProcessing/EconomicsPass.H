@@ -99,6 +99,20 @@ Description
     entering only through `appraise`.  Not in TCI.  `land.price` is a
     sensitivity input.  Absent, nothing changes.
 
+    DEBT FINANCING (DEV.md 4c C110 G4), opt-in.  `financing { debtFraction;
+    basis fixedCapital|totalCapital; rate; graceYears; termYears; repayment
+    annuity|linear; source; reason; [equityDiscountRate;] }` lends a share
+    of the capital as the capital schedule spends it, capitalises the
+    interest during construction, deducts the interest paid in operation,
+    depreciates the capitalised interest with the plant and repays the
+    principal; it publishes the EQUITY (levered) NPV / IRR / discounted
+    payback BESIDE the project's, which stay the unlevered ones they always
+    were -- the project's merit must not depend on how it is financed.
+    Computed inside `appraise` from the project's own cash flow;
+    `financing.rate` and `financing.debtFraction` are sensitivity inputs.
+    Written to reports/economics/financing.csv and a second .ods sheet;
+    cashFlow.csv is unchanged.  Absent, nothing changes.
+
     Must run after SizingPass + CostingPass.
 \*---------------------------------------------------------------------------*/
 
