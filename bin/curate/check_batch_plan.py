@@ -137,6 +137,31 @@ By-hand sabotages (2026-10-19), each run against this gate:
   S2 was caught by (a) and every fixture (suspensionPreparation's offset
   12.25 published against 11.75); S3 by (a) and every fixture (busy, occupancy
   and idle hours of every stage).
+
+By-hand sabotages of the multiproduct pass (2026-10-20), each run against
+arms (h)-(k) with the engine rebuilt:
+  S6  BatchPlanPass.cpp: the clean before the next product ADDED to the
+      same-product changeover (`pt.campaigns * t.changeover + pco`): caught
+      by (h), (i) and (j) -- every requiredTime and start 24 h off per
+      product, and the one-product twin no longer the one-product plan.
+  S7  BatchPlanPass.cpp: the stage sized by the LAST product instead of the
+      largest: caught by (h) and (i) (sizingProduct on nine stages, the
+      press's rate 87.5 against 100, two scaled quotes).
+  S8  BatchPlanPass.cpp: `changeoverTo` ignored, the stage's
+      productChangeover always taken: caught by (h) (strengthB's coating
+      clean 8 against 10, and everything downstream).  It SURVIVED arm (i)'s
+      first form, which compared the RECOMPUTED years of the two orders --
+      a recomputation moves with the order by construction, so the arm was
+      testing this gate's arithmetic and not the engine's; (i) now reads
+      the published years and catches it (0 h moved, 2 h recomputed).
+  S9  BatchPlanPass.cpp: the ownBalance announcement dropped: caught by (h)
+      and (i) (findings [] against ['ownBalance:strengthB']).
+  S10 BatchPlanPass.cpp: a `throughFedStage` discharge read from the STAGE's
+      default processing time instead of the PRODUCT's: caught by (h), (i)
+      and (j) (the solution tank's cycle 6 h against 53.14 h, the spray-
+      drying train's limiting stage and cycle, the one-product twin).
+  S11 BatchPlanPass.cpp: the `campaignOrder` requirement dropped (the
+      declaration order taken in silence): caught by (k) noOrder only.
 """
 
 import json
