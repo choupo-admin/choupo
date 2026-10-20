@@ -1309,7 +1309,8 @@ accepts today, and that is a policy call.
 > a threshold that dims what is outside a range; hover probe of all
 > fields; export with legend; later, scrubbing a sweep or a time series.
 > The GUI maps published numbers and computes no physics.  Status: design
-> proposed.
+> proposed; Vitor 2026-10-20: "Avanca com 1-6, o 7 fica para depois" --
+> items 1-6 dispatched (G16); the time scrubber (7) planned for later.
 
 > **C113. FINDING A TUTORIAL OR AN EDUTOOL CHAPTER IN SECONDS (Vitor,
 > 2026-10-20, a written brief: search across ALL tutorials in the Open Case
