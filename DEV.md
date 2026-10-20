@@ -1399,8 +1399,8 @@ accepts today, and that is a policy call.
 > possible, the index DERIVED from the lessons, the lazy loading of tools
 > preserved; a compact collapsible chapter index inside long EduTools,
 > desktop and phone; no search library, no server, no second catalogue, no
-> engine change; tests listed).  Measured: `gui/src/ui/OpenTutorialModal.
-> tsx:349-352` double-click calls `setSelected(t.name)` then `openSelected()`
+> engine change; tests listed).  Measured: `gui/src/ui/OpenTutorialModal.tsx:349-352`
+> double-click calls `setSelected(t.name)` then `openSelected()`
 > in the same handler, so it can open the PREVIOUS selection (React state
 > is not updated yet) -- the brief's suspicion is right; `TutorialEntry`
 > carries `readme` (`gui/src/cases/tutorials.ts:207-209`); `registry.ts`
