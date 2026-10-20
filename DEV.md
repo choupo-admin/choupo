@@ -1291,6 +1291,33 @@ accepts today, and that is a policy call.
 > fire-water ring main and hydrants, bunds, escape routes, swept path, a
 > fillet running through an item.
 
+> **C116. "EXPLORE" AND "PROPERTY SURFACES" ARE TWO DOORS TO ONE ROOM
+> (Vitor, 2026-10-20, back on the thermophysical layer: "temos o 'explore' e
+> o 'Property Surfaces' que acho que fazem a mesma coisa e so se cria
+> confusao por se ter dois").**  Measured: `?workspace=explore` opens
+> `gui/src/ui/CompoundCatalogue.tsx` (234 lines: `CompoundBrowser` rail +
+> `ComponentInspector` wide + `EstimateForm` + ONE button that hands the set
+> to the surfaces as a URL); `?workspace=properties` opens
+> `gui/src/ui/ExploreWorkspace.tsx` (2370 lines: the SAME `CompoundBrowser`
+> as its rail, the SAME `ComponentInspector` popped open, the SAME
+> `EstimateForm`, plus every lens -- T-x-y, gamma, Psat, LLE, ternary, Gibbs
+> maps, Bjerrum, steam, transport, pure phase diagrams).  So the catalogue
+> tab's only act the surfaces tab lacks is a wider inspector and a link; the
+> three components are mounted TWICE; and the labels are inverted against
+> the keys (label "Explore" = key `compounds`; label "Property surfaces" =
+> key `explore`), which the code's own comments record as having sent an
+> audit to the wrong URL.  The split was Vitor's ruling of 2026-09-03 (the
+> rail was the wrong shape for a family tree), so reversing it is his.
+> Commander's verdict: he is right today; proposal put to him -- ONE door,
+> "Explore", one tab with two VIEWS of one selected set (Catalogue: browse,
+> read, estimate; Surfaces: plot), switched in place, the set and the view
+> in the URL (`?workspace=explore&components=...&view=surfaces`), the
+> surfaces still reachable with an empty set (no wizard), `?workspace=
+> properties` kept as a redirect for bookmarks, the inspector mounted ONCE.
+> The in-case `Props` workspace (`PropsView.tsx`, 1531 lines: thermo
+> readiness and model-vs-lab-data comparison for THE OPEN CASE) is a
+> different question and stays.  Status: proposed, awaiting Vitor.
+
 > **C115. THE UNIT BEING SOLVED PULSES WHEN A RUN IS SLOW (Vitor,
 > 2026-10-20: "ha casos em que a simulacao fica lenta ... a operacao
 > unitaria em que esta a ser feito o calculo ficasse com a cor a pulsar (se
