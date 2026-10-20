@@ -150,17 +150,102 @@ export function relievingPressureAbs(mawpG: number, c: DeviceCase): number {
   return maxAccumulatedGauge(mawpG, c) + P_ATM_PA;
 }
 
-/** The Design Guide's rule of thumb for the design pressure (= MAWP = set),
- *  from the operating gauge pressure [Pa g]: max(1.1 x op, op + 1.7 bar).
- *  docs/designGuide.tex, "Pressure relief, flare & safety basics". */
+/** The Design Guide's rule of thumb for a PRELIMINARY DESIGN PRESSURE, from
+ *  the operating gauge pressure [Pa g]: max(1.1 x op, op + 1.7 bar).
+ *  docs/designGuide.tex, "Pressure relief, flare & safety basics".
+ *
+ *  It gives a design pressure and NOTHING ELSE (DEV.md 4c C112, point 2).
+ *  The MAWP is a property of the BUILT vessel -- fixed by its wall, its
+ *  material and the pressure code it is built and stamped to -- and no rule
+ *  of thumb returns one.  Where this page needs a MAWP it ASSUMES one, by
+ *  `preliminaryLadder`, and says so beside the number. */
 export function designPressureGauge(opG: number): number {
   return Math.max(1.1 * opG, opG + 1.7e5);
 }
 
-/** The default relieving pressure of each loop, the one the witness ships. */
+/** The four pressures of the ladder, kept apart [Pa g]. */
+export interface PreliminaryLadder {
+  /** Where the process runs. */
+  operating: number;
+  /** The heuristic's preliminary design pressure. */
+  design: number;
+  /** ASSUMED: `mawpOverDesign` times the design pressure.  A built vessel's
+   *  MAWP is at least its design pressure (its wall is chosen to carry it);
+   *  the ratio 1 is the lowest it can be, and the conservative assumption
+   *  for a gas relief, whose area falls as the relieving pressure rises. */
+  mawp: number;
+  /** ASSUMED: the single device set AT the MAWP, the highest set the code
+   *  allows it. */
+  set: number;
+}
+
+/** The ladder this page works on, with each ASSUMPTION a parameter rather
+ *  than an identity hidden in a name.  Refuses a MAWP below the design
+ *  pressure: a vessel built to a design pressure carries at least it. */
+export function preliminaryLadder(opG: number, mawpOverDesign = 1): PreliminaryLadder {
+  if (!(mawpOverDesign >= 1))
+    throw new Error(`an assumed MAWP below the design pressure (ratio `
+      + `${mawpOverDesign}) is not a vessel built to that design pressure`);
+  const design = designPressureGauge(opG);
+  const mawp = mawpOverDesign * design;
+  return { operating: opG, design, mawp, set: mawp };
+}
+
+/** The default relieving pressure of each loop, the one the witness ships:
+ *  the single-device allowance on a MAWP ASSUMED equal to the heuristic's
+ *  preliminary design pressure (`preliminaryLadder` with ratio 1). */
 export function loopRelievingPressure(op: LoopOp): number {
   const opG = LOOP_OPERATING[op].P_Pa - P_ATM_PA;
-  return relievingPressureAbs(designPressureGauge(opG), "single");
+  return relievingPressureAbs(preliminaryLadder(opG).mawp, "single");
+}
+
+// ---- Which scenario governs -------------------------------------------------
+
+/** One credible cause, sized under ITS OWN relieving conditions: its own
+ *  relieving pressure (the fire allowance is not the blocked outlet's), its
+ *  own temperature, phase and flow regime.  `A_mm2` is null when the page
+ *  (or the engine) has no method for the case -- a two-phase or flashing
+ *  discharge -- and such a scenario is listed, never compared. */
+export interface ReliefScenario {
+  id: string;
+  W_kg_h: number;
+  A_mm2: number | null;
+  method: "vapour" | "liquid" | "twoPhase";
+}
+
+export interface Governing {
+  /** The scenario that needs the largest required area: the one the device
+   *  is sized for.  Null when no scenario was sized. */
+  byArea: string | null;
+  /** The scenario with the largest mass flow -- printed beside the
+   *  governing one so the reader can see the two need not agree. */
+  byFlow: string | null;
+  /** Scenarios needing a method this page does not carry (two-phase,
+   *  flashing): not compared, and a device sized without them is not
+   *  sized for them. */
+  unsized: string[];
+}
+
+/** THE GOVERNING SCENARIO IS THE LARGEST REQUIRED AREA, not the largest
+ *  flow.  A kilogram of liquid passes a square millimetre several times
+ *  faster than a kilogram of vapour at the same pressure, so a smaller
+ *  vapour load can need the larger valve.  The engine's `reliefValve` sizer
+ *  decides the same way (src/postProcessing/sizing/ReliefValveSize.cpp, the
+ *  `A > Agov` line, held by the test): strictly larger, the first declared
+ *  winning a tie. */
+export function governingScenario(scenarios: readonly ReliefScenario[]): Governing {
+  let byArea: string | null = null, Amax = 0;
+  let byFlow: string | null = null, Wmax = -Infinity;
+  const unsized: string[] = [];
+  for (const s of scenarios) {
+    if (s.W_kg_h > Wmax) { Wmax = s.W_kg_h; byFlow = s.id; }
+    if (s.method === "twoPhase" || s.A_mm2 === null || !Number.isFinite(s.A_mm2)) {
+      unsized.push(s.id);
+      continue;
+    }
+    if (s.A_mm2 > Amax) { Amax = s.A_mm2; byArea = s.id; }
+  }
+  return { byArea, byFlow, unsized };
 }
 
 // ---- Gas or vapour (API STD 520 Part I) ------------------------------------
@@ -254,6 +339,13 @@ export function liquidArea(l: LiquidInput): number {
     * Math.sqrt(l.G / (l.P1_kPag - l.P2_kPag));
 }
 
+/** The mass flow [kg/h] of a liquid relief of Q [L/min] at specific
+ *  gravity G (against WATER_REF_DENSITY): what a liquid scenario is
+ *  compared on beside a vapour one. */
+export function liquidMassFlow(Q_L_min: number, G: number): number {
+  return Q_L_min * G * WATER_REF_DENSITY * 60 / 1000;
+}
+
 /** Specific gravity from a liquid molar volume and a molar mass. */
 export function specificGravity(M_kg_kmol: number, v_m3_mol: number): number {
   return (M_kg_kmol / 1000) / v_m3_mol / WATER_REF_DENSITY;
@@ -283,10 +375,24 @@ export function fireVapourRate(Q_W: number, lambda_J_kg: number): number {
 
 // ---- Two-phase and thermal expansion: first principles ----------------------
 
-/** The mass a vent must pass to remove Q [W] when what leaves carries a mass
- *  fraction x of vapour: only the vapour carries the latent heat. */
+/** The mass a vent must pass to remove a POWER Q [W] when what leaves carries
+ *  a mass fraction x of vapour: only the vapour carries the latent heat.  An
+ *  ENERGY APPROXIMATION under restrictive hypotheses (the pressure held, the
+ *  mass at its boiling temperature, nothing stored, the liquid leaving with
+ *  no latent heat and no flashing in the vent, lambda and x constant) -- a
+ *  direction, not a DIERS vent size (step 13 says so). */
 export function ventMassFlow(Q_W: number, lambda_J_kg: number, x: number): number {
   return Q_W / (x * lambda_J_kg);
+}
+
+/** The ENERGY the accumulation holds [J]: what the unreacted fraction X_ac
+ *  of the n_A moles the batch receives would release if all of it reacted,
+ *  at -dH_r per mole.  An energy, NOT a power: the vent is sized on the
+ *  rate this energy is released at the relieving temperature, which is a
+ *  kinetic question the accumulation does not answer (step 14). */
+export function accumulatedEnergy(X_ac: number, n_A_mol: number,
+  minusDHr_J_mol: number): number {
+  return X_ac * n_A_mol * minusDHr_J_mol;
 }
 
 /** Blocked-in liquid heated at Phi [W]: the volume it must expel [m3/s],
