@@ -104,9 +104,9 @@ ENTRIES = [
        note="reads the compiler's -MMD .d files: only after `make all`"),
     _e("methodTools", ["generated/methodTools.json"],
        ["node", "bin/curate/method_tools.mjs"],
-       None, "node",
-       note="freshness is held by check_method_tools against the registry; "
-            "regenerated here on conflict, or when gui/ moved"),
+       [PY, "bin/curate/check_method_tools.py"], "node",
+       note="its check re-derives the registry through gui/node_modules, so "
+            "bin/integrate runs it only when gui/ moved or it conflicted"),
     _e("interimReviewDossier", ["generated/interimReviewDossier.md"],
        [PY, "bin/curate/interim_review_dossier.py", "--write"],
        None, "pre",

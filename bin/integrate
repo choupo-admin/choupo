@@ -366,6 +366,8 @@ def regenerate(wt: Path, reg, phases, conflicted, touched, logdir, note):
             continue
         stale = name in conflicted
         why = "conflicted" if stale else ""
+        if e["phase"] == "node" and not (wt / "gui" / "node_modules").is_dir():
+            npm_ci(wt, logdir)
         if not stale and e["check"]:
             rc, out = run(e["check"], wt, env=env, timeout=GATE_TIMEOUT,
                           log=logdir / f"check-{name}.log")
@@ -375,8 +377,6 @@ def regenerate(wt: Path, reg, phases, conflicted, touched, logdir, note):
             continue
         say(f"[{stamp()}] regenerate {name} ({why})")
         argv = list(e["generate"])
-        if e["phase"] == "node" and not (wt / "gui" / "node_modules").is_dir():
-            npm_ci(wt, logdir)
         rc, out = run(argv, wt, env=env, timeout=GATE_TIMEOUT,
                       log=logdir / f"generate-{name}.log")
         if rc != 0:
@@ -637,10 +637,20 @@ def reach(root: Path, base: str, files):
     #  name, or (src/ and bin/curate modules) stem.  Deliberately generous:
     #  a wrongly included gate costs seconds, a wrongly excluded one a
     #  regression nobody sees (the bin/runTests --gui reasoning).
+    #  A FILE NAME names a file only when no other tracked file shares it:
+    #  `expected`, `controlDict` or `README.md` would reach every gate that
+    #  runs any case (measured on the C119 branch: 141 gates, almost all
+    #  through `expected`).  A tutorial file is named by its CASE instead.
+    names = {}
+    for t in (git(root, "ls-files") or "").split("\n"):
+        n = t.rsplit("/", 1)[-1]
+        names[n] = names.get(n, 0) + 1
     tokens = {}
     for f in files:
         p = Path(f)
-        t = {f, p.name}
+        t = {f}
+        if names.get(p.name, 0) <= 1 and not f.startswith("tutorials/"):
+            t.add(p.name)
         if (f.startswith("src/") or f.startswith("bin/curate/")) and \
                 len(p.stem) >= 6:
             t.add(p.stem)
