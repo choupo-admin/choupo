@@ -105,7 +105,7 @@ WHAT IT NEVER DOES: push anything, re-record a golden, hand-merge a file,
 launch a full regression, or touch a worktree holding work it did not make.
 
 Exit: 0 ready, 1 a failure or a refusal, 3 blocked on a decision that is
-Vítor's (a full sweep).  Logs: <worktree>/build/integrate/.
+Vítor's (a full sweep).  Logs: <the worktree's git dir>/integrate/.
 Record: docs/design/integrating-a-branch-is-mechanical.md.
 """
 
@@ -148,7 +148,7 @@ class Stop(Exception):
         self.code = code
 
 
-LOG = []          # (section, line) for the verdict
+LOGDIR = [None]   # set once the worktree exists: <its git dir>/integrate
 T0 = time.monotonic()
 
 
@@ -959,14 +959,22 @@ def main(argv):
 
     wt = Path(o["worktree"]) if o["worktree"] else \
         repo / ".claude" / "worktrees" / f"integ-{slug}"
-    logdir = wt / "build" / "integrate"
+    #  The logs live in the worktree's GIT directory, never under build/:
+    #  check_build_fresh reads every directory of build/ as a platform build,
+    #  and the second proof run's `build/integrate/` made it ABORT the suite
+    #  ("integrate carries no .stamp-cxx-*").
+    logdir = None
     verdict = {"merged": None, "regenerated": [], "pdfs": [], "findings": [],
                "notes": [], "results": [], "moved": [], "manifest": [],
                "commits": [], "plan": None, "movedEngine": []}
     code = 0
     try:
         prepare_worktree(repo, wt, slug, base_sha, o["discard"])
-        logdir.mkdir(parents=True, exist_ok=True)
+        logdir = Path(git(wt, "rev-parse", "--absolute-git-dir")) / "integrate"
+        if logdir.exists():
+            shutil.rmtree(logdir)
+        logdir.mkdir(parents=True)
+        LOGDIR[0] = logdir
         reg = curate_module(wt, "generated_artefacts")
         resolved = merge(wt, label, br_sha, slug, reg)
         verdict["merged"] = git(wt, "rev-parse", "--short", "HEAD")
@@ -1107,11 +1115,12 @@ def print_verdict(o, label, br_sha, base_sha, wt, v, code):
                      "pushed.")
     text = "\n".join(lines)
     say(text)
-    try:
-        (wt / "build" / "integrate").mkdir(parents=True, exist_ok=True)
-        (wt / "build" / "integrate" / "verdict.txt").write_text(text + "\n")
-    except OSError:
-        pass
+    if LOGDIR[0] is not None:
+        try:
+            (LOGDIR[0] / "verdict.txt").write_text(text + "\n")
+            say(f"(logs and this verdict: {LOGDIR[0]})")
+        except OSError:
+            pass
 
 
 if __name__ == "__main__":
