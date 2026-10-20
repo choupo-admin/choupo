@@ -276,6 +276,20 @@ private:
     std::string cite_ = "Haaland, S. E. (1983), J. Fluids Eng. 105(1), 89-90";
 };
 
+//  CHURCHILL'S TWO INNER TERMS, ONE HOME (2026-10-20, DEV.md 4c C119).
+//  `Churchill::evaluate` and `churchillAsymptotes` both need A and B, and
+//  the second exists only so the EduTool on why correlations are simple can
+//  show the two asymptotes the single expression blends.  Writing A and B
+//  twice would let the published asymptotes drift from the f they are said
+//  to compose; the arithmetic below is the expression evaluate() always
+//  used, operation for operation, so every f it returns is unchanged.
+void churchillAB(const FrictionContext& c, scalar& A, scalar& B)
+{
+    const scalar a_inner = std::pow(7.0 / c.Re, 0.9) + 0.27 * c.relRough;
+    A = std::pow(-2.457 * std::log(a_inner), 16.0);
+    B = std::pow(37530.0 / c.Re, 16.0);
+}
+
 // -------------------------------------------------------------------------
 //  Churchill (1977).  One expression for ALL Re and all eps/D:
 //     f = 8 [ (8/Re)^12 + 1/(A+B)^1.5 ]^(1/12)
@@ -296,9 +310,8 @@ public:
     {
         FrictionResult r;
         r.regime = regimeOf(c.Re);
-        const scalar a_inner = std::pow(7.0 / c.Re, 0.9) + 0.27 * c.relRough;
-        const scalar A = std::pow(-2.457 * std::log(a_inner), 16.0);
-        const scalar B = std::pow(37530.0 / c.Re, 16.0);
+        scalar A = 0.0, B = 0.0;
+        churchillAB(c, A, B);
         const scalar term = std::pow(8.0 / c.Re, 12.0)
                           + 1.0 / std::pow(A + B, 1.5);
         r.f = 8.0 * std::pow(term, 1.0 / 12.0);
@@ -334,6 +347,18 @@ private:
 };
 
 } // anonymous namespace
+
+ChurchillAsymptotes churchillAsymptotes(const FrictionContext& c)
+{
+    scalar A = 0.0, B = 0.0;
+    churchillAB(c, A, B);
+    ChurchillAsymptotes a;
+    a.fLaminar   = laminar(c.Re);
+    //  f_t = 8 (A+B)^(-1/8), so that f_t^12 = 8^12 (A+B)^(-3/2) and the
+    //  Churchill f above is exactly (f_L^12 + f_t^12)^(1/12).
+    a.fTurbulent = 8.0 * std::pow(A + B, -1.0 / 8.0);
+    return a;
+}
 
 std::map<std::string, FrictionFactorCorrelation::Factory>&
 FrictionFactorCorrelation::registry()
