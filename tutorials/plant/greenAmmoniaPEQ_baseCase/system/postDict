@@ -284,8 +284,9 @@
                           INSTALLED price per kg of shell with heads,
                           nozzles and supports folded in -- a round
                           placeholder, not a quotation and not from any
-                          source.  No index, no module factor, no 1.18 is
-                          applied to it.  The Turton vessel set is printed
+                          source.  No index and no module factor are
+                          applied to it; like every item it carries the
+                          1.18 contingency and fee (C_TM = 1.18 C_BM).  The Turton vessel set is printed
                           beside it as an EXTRAPOLATED comparison (F_P ~ 32
                           on a 200 mm wall) and is NOT in the total.
                       NOT INCLUDED, said on every run: the CHARGING

@@ -50,6 +50,25 @@ Description
 
 namespace Choupo {
 
+//  TURTON'S CONTINGENCY AND FEE, C_TM = 1.18 C_BM -- ONE home (DEV.md 4c
+//  C110, G8).  Every costed item's total-module cost is its bare-module cost
+//  times this factor: the correlation rows, the tray stack, a declared quote,
+//  AND the two `declared-unit-price` rows (a catalyst charge, a vessel priced
+//  by its steel mass).  Those two printed C_TM = C_BM until 2026-10-20 while
+//  the FCI applied the contingency and fee to their C_BM anyway
+//  (`EconomicsPass.cpp`, FCI = contingencyFee SUM C_BM + siteFactor SUM
+//  C_BM0) -- a printed table that was not the arithmetic that decided.  The
+//  contingency covers what any estimate does not know and the fee is the
+//  contractor's; neither is a property of how the item's own price was
+//  reached, which is why a declared installed price carries them exactly as a
+//  declared quote does (Vitor's C98 ruling: C_TM = 1.18 C_BM on a quote).
+//  It is also the economics pass's `contingencyFee` DEFAULT, so the two can
+//  only disagree when a case declares another value -- and then the
+//  economics pass SAYS so.
+namespace costing {
+inline constexpr scalar contingencyAndFee = 1.18;
+} // namespace costing
+
 class CostingModel
 {
 public:

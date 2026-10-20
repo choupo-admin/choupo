@@ -470,7 +470,12 @@ CostBreakdown Turton::cost(const EquipmentSizing& dim, const Material& mat) cons
         out.unitName        = dim.unitName;
         out.purchasedCost   = Cp;
         out.bareModuleCost  = Cp;
-        out.totalModuleCost = Cp;
+        //  THE CONTINGENCY AND FEE ARE APPLIED (DEV.md 4c C110, G8): the FCI
+        //  has always charged them on this row's C_BM, and until 2026-10-20
+        //  the row printed C_TM = C_BM -- a table that was not the arithmetic
+        //  that decided.  No index and no module factor touch the price;
+        //  the 1.18 is a PROJECT allowance, not a property of the price.
+        out.totalModuleCost = costing::contingencyAndFee * Cp;
         //  THE FACTORS THAT ARE NOT APPLIED, STATED AS ONES.  A reader of
         //  the row sees `F_M 1.00  F_P 1.00` beside a shell at 3.05 / 36 and
         //  the provenance line names the reason; a blank would read as a
@@ -479,7 +484,7 @@ CostBreakdown Turton::cost(const EquipmentSizing& dim, const Material& mat) cons
         out.factors["F_P"]            = 1.0;
         out.factors["B1"]             = 1.0;
         out.factors["B2"]             = 0.0;
-        out.factors["C_TM_over_C_BM"] = 1.0;
+        out.factors["C_TM_over_C_BM"] = costing::contingencyAndFee;
         out.factors["S"]              = m_kg;
         out.factors["catalystPrice"]  = price;      // the DECLARED input, republished
         //  The four index constants ride along UNAPPLIED so that the header
@@ -567,7 +572,7 @@ CostBreakdown Turton::cost(const EquipmentSizing& dim, const Material& mat) cons
         const scalar Cp       = Cp_2001 * (cepci_ / cepci2001_) * usdToEur_;
         const scalar F_q      = trayQuantityFactor(N);
         const scalar C_BM     = Cp * F_BM * F_q;
-        const scalar C_TM     = 1.18 * C_BM;
+        const scalar C_TM     = costing::contingencyAndFee * C_BM;
 
         CostBreakdown out;
         out.unitName        = dim.unitName;
@@ -586,7 +591,7 @@ CostBreakdown Turton::cost(const EquipmentSizing& dim, const Material& mat) cons
         out.factors["K3"]             = t.K3;
         out.factors["S"]              = A;
         out.factors["Cp_2001"]        = Cp_2001;
-        out.factors["C_TM_over_C_BM"] = 1.18;
+        out.factors["C_TM_over_C_BM"] = costing::contingencyAndFee;
         out.factors["cepci"]          = cepci_;
         out.factors["cepci2001"]      = cepci2001_;
         out.factors["usdToEur"]       = usdToEur_;
@@ -704,7 +709,7 @@ CostBreakdown Turton::cost(const EquipmentSizing& dim, const Material& mat) cons
     const scalar F_M        = (mat.F_M > 0.0) ? mat.F_M : 1.0;
 
     const scalar C_BM       = Cp_target * (c.B1 + c.B2 * F_M * F_P);
-    const scalar C_TM       = 1.18 * C_BM;
+    const scalar C_TM       = costing::contingencyAndFee * C_BM;
 
     CostBreakdown out;
     out.unitName        = dim.unitName;
@@ -727,7 +732,7 @@ CostBreakdown Turton::cost(const EquipmentSizing& dim, const Material& mat) cons
     //  (log10 S)^2) x CEPCI/CEPCI_2001 x EUR/USD` is arithmetic a reader can
     //  redo, and without them it is an assertion.
     out.factors["S"]        = S;
-    out.factors["C_TM_over_C_BM"] = 1.18;
+    out.factors["C_TM_over_C_BM"] = costing::contingencyAndFee;
     if (c.powerLaw)
     {
         out.factors["Cp_ref"] = c.Cp_ref;

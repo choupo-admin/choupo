@@ -91,9 +91,10 @@ Description
     So each vessel is marked `costWords["costBasis"] = "steelMass"` and the
     costing pass prices it in `costing/SteelMassCost`: its published
     `weight` -- the CYLINDRICAL SHELL steel, rho pi D H t; no heads, nozzles,
-    supports or internals -- times the DECLARED `steelPrice`, with no index,
-    no module factor and no 1.18, so the price must be an INSTALLED price per
-    kg of shell steel, everything else folded into it.  The Turton cost is
+    supports or internals -- times the DECLARED `steelPrice`, with no index
+    and no module factor, so the price must be an INSTALLED price per kg of
+    shell steel, everything else folded into it (C_TM = 1.18 C_BM, the
+    contingency and fee, since DEV.md 4c C110).  The Turton cost is
     printed beside it as an EXTRAPOLATED comparison (its F_P and the wall
     over the radius) and enters no total.  Absent `steelPrice` or
     `steelPriceReason`, the vessels stay SIZED and their COST refuses by

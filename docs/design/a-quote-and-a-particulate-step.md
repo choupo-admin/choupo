@@ -69,7 +69,10 @@ instead of trailing a half-printed table.
   steel-mass rows print C_TM = C_BM, while the economics ladder applies
   `contingencyFee` to their C_BM anyway -- so their table and their FCI
   disagree on the contingency (a finding, §6).  A quote was not given that
-  shape: its C_TM is the one the FCI actually uses.
+  shape: its C_TM is the one the FCI actually uses.  **CLOSED 2026-10-20
+  (DEV.md 4c C110, G8):** the two rows now print C_TM = 1.18 C_BM too, the
+  factor's one home being `costing::contingencyAndFee`; the FCI did not
+  move.
 * **A quote always in the auxiliary-facilities base.**  Right for a machine,
   double counting for a building; the case declares which.
 * **Quotes as sized items (`result.sizings`).**  A quote has no size: it
@@ -119,7 +122,11 @@ listed in the gate's docstring.
   C_TM = C_BM ("NO 1.18"), and `EconomicsPass` builds the FCI from their
   C_BM with `contingencyFee` and the `siteFactor` base like any module's --
   so the docs' "no 1.18" is true of the costing table and false of the FCI.
-  Fixing either side moves goldens; RESERVED.
+  Fixing either side moves goldens; RESERVED.  **CLOSED 2026-10-20 (DEV.md
+  4c C110, G8, delegated by Vitor):** the table now prints C_TM = 1.18 C_BM
+  on both rows, the arithmetic the FCI applies; the FCI and every
+  appraisal number are unchanged, only the per-item C_TM and the C_TM
+  total move.  Gate `check_cost_provenance` arm (w).
 * The witness's labour: at `P = 6` Turton's formula staffs about 34
   operators a shift on a 50-million-tablet campaign line.  RULED in round 2
   (§4b): the witness declares a crew of 11 a shift and prints the

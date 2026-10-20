@@ -29,11 +29,11 @@ namespace declaredQuote {
 namespace {
 
 //  Turton's contingency and fee, C_TM = 1.18 C_BM -- the same factor every
-//  correlation row carries (`Turton.cpp`, where the model applies it).  A
-//  vendor's price carries no PROJECT contingency, so a quote's total module
-//  cost is on the same footing as its neighbours' and the share column of
-//  the equipment table compares like with like.
-constexpr scalar contingencyAndFee = 1.18;
+//  row carries; its ONE home is `costing::contingencyAndFee`
+//  (`CostingModel.H`).  A vendor's price carries no PROJECT contingency, so a
+//  quote's total module cost is on the same footing as its neighbours' and
+//  the share column of the equipment table compares like with like.
+using costing::contingencyAndFee;
 
 std::string wordList(std::initializer_list<const char*> ws)
 {

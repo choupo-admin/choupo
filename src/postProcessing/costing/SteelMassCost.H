@@ -22,15 +22,19 @@ Description
     item whose sizer marks it `costWords["costBasis"] = "steelMass"` (today:
     the gas store's vessels, `sizing/GasStoreSize`) is therefore priced as
 
-        C_p = C_BM = C_TM = steelPrice x weight      [case currency, no index]
+        C_p = C_BM = steelPrice x weight             [case currency, no index]
+        C_TM       = 1.18 x C_BM                     [contingency and fee]
 
     -- `weight` the sizer's published steel (for the gas store: the
     CYLINDRICAL SHELL only, rho pi D H t; no heads, nozzles or supports), and
     `steelPrice` the case's own DECLARED price per kg (`costInputs`), with its
-    declared reason (`costWords["steelPriceReason"]`).  NO index, NO F_M, F_P
-    or F_BM and NO 1.18 are applied -- the catalyst charge's declared-unit-price
+    declared reason (`costWords["steelPriceReason"]`).  NO index and NO F_M,
+    F_P or F_BM are applied -- the catalyst charge's declared-unit-price
     precedent -- so the declared price MUST be an INSTALLED price per kg of
-    shell steel, with everything else the vessel needs folded into it.
+    shell steel, with everything else the vessel needs folded into it.  The
+    1.18 IS applied (DEV.md 4c C110, G8): it is the project's contingency and
+    fee, which the FCI always charged on this C_BM; until 2026-10-20 the row
+    printed C_TM = C_BM, a table that was not the arithmetic that decided.
 
     THE COSTING MODEL'S OWN ANSWER IS STILL COMPUTED AND PRINTED BESIDE IT, as
     a COMPARISON: the same item handed to the model without the steel-mass

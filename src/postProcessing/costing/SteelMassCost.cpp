@@ -83,8 +83,10 @@ CostBreakdown cost(const EquipmentSizing& dim,
           << " mm, t/R " << val("t_over_R") << "; the thin-wall formula and"
              " the pressure factor both assume t << R) -- a COMPARISON, NOT in"
              " the total, which takes the declared steel price: " << price
-          << " EUR/kg x " << m_kg << " kg of shell = " << Cp << " EUR"
-             " (installed, no index, no module factor)";
+          << " EUR/kg x " << m_kg << " kg of shell = C_BM " << Cp << " EUR"
+             " (installed, no index, no module factor), C_TM "
+          << costing::contingencyAndFee * Cp << " EUR (x "
+          << costing::contingencyAndFee << ", contingency and fee)";
         std::cout << "  [comparison] " << who << ": " << m.str() << "\n";
         //  ONE caveat per unit, not per vessel: equal vessels carry the same
         //  sentence, so the entry is keyed on the UNIT and the log's own
@@ -98,14 +100,18 @@ CostBreakdown cost(const EquipmentSizing& dim,
     out.unitName        = dim.unitName;
     out.purchasedCost   = Cp;
     out.bareModuleCost  = Cp;
-    out.totalModuleCost = Cp;
+    //  THE CONTINGENCY AND FEE ARE APPLIED (DEV.md 4c C110, G8), as the FCI
+    //  always applied them to this C_BM: the price is INSTALLED, so no module
+    //  factor touches it, but the 1.18 is the project's allowance, the same
+    //  on a declared quote (C98).
+    out.totalModuleCost = costing::contingencyAndFee * Cp;
     //  THE FACTORS THAT ARE NOT APPLIED, STATED AS ONES (the catalyst row's
     //  rule): a blank would read as a factor the pass forgot.
     out.factors["F_M"]            = 1.0;
     out.factors["F_P"]            = 1.0;
     out.factors["B1"]             = 1.0;
     out.factors["B2"]             = 0.0;
-    out.factors["C_TM_over_C_BM"] = 1.0;
+    out.factors["C_TM_over_C_BM"] = costing::contingencyAndFee;
     out.factors["S"]              = m_kg;
     out.factors["steelPrice"]     = price;    // the DECLARED input, republished
     //  The comparison, published under its own prefix: never a total.

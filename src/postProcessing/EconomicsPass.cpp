@@ -28,6 +28,7 @@ License
 
 #include "EconomicsPass.H"
 #include "EstimateClass.H"
+#include "costing/CostingModel.H"
 #include "core/Advisory.H"
 #include "core/RegistryRefusal.H"
 
@@ -1973,7 +1974,28 @@ int EconomicsPass::run(SimulationResult& result)
         ? result.batchPlan.streamFactor
         : econDict_->lookupScalarOrDefault("streamFactor",         0.90);
     const scalar siteFactor        = econDict_->lookupScalarOrDefault("siteFactor",           0.50);
-    const scalar contingencyFee    = econDict_->lookupScalarOrDefault("contingencyFee",       1.18);
+    //  THE DEFAULT IS THE COSTING TABLE'S OWN FACTOR (DEV.md 4c C110, G8):
+    //  every row of that table prints C_TM = costing::contingencyAndFee x
+    //  C_BM, and this is the factor the FCI below charges on the same C_BM.
+    //  One home for the number; a case that DECLARES another value is told
+    //  that its table's C_TM column was not priced at it (announced below).
+    const scalar contingencyFee    = econDict_->lookupScalarOrDefault("contingencyFee",
+                                                                      costing::contingencyAndFee);
+    if (std::abs(contingencyFee - costing::contingencyAndFee) > 1e-12
+        && !result.costs.empty())
+    {
+        std::ostringstream m;
+        m << "the economics block declares `contingencyFee " << contingencyFee
+          << ";`, and the FCI charges it on SUM C_BM -- but the costing"
+             " table's C_TM column (and costs.csv, the design sheets and the"
+             " result JSON's totalModule) was priced at Turton's "
+          << costing::contingencyAndFee << " x C_BM.  The FCI is the number"
+             " that decides; read each item's C_TM as C_BM x "
+          << contingencyFee << " for this run.";
+        if (AdvisoryLog::instance().add("economics", "warning",
+                                        "contingencyFee", m.str()))
+            std::cout << "  [economics] " << m.str() << "\n";
+    }
     const scalar N_np              = econDict_->lookupScalarOrDefault("N_np",                  7.0);
     const int    estimateClass     = static_cast<int>(
                                       econDict_->lookupScalarOrDefault("estimateClass",       4.0));

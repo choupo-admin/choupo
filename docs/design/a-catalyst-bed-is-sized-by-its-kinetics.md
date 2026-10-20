@@ -93,6 +93,20 @@ not a ninth coefficient set.  No CEPCI rebasing (the price is not a 2001-USD
 correlation), no currency conversion (it is declared in the currency the run
 totals in), no bare-module or total-module factor and no 1.18 (those install
 a fabricated item; a charge is loaded into a vessel that carries its own).
+
+**CORRECTED 2026-10-20 (DEV.md 4c C110, G8): the 1.18 IS applied.**  The
+sentence above was true of the printed row and false of the capital: the
+economics pass has always built FCI = contingencyFee x SUM C_BM + siteFactor
+x SUM C_BM0 over EVERY row, this one included, so the table printed C_TM =
+C_BM while the money that decided carried 1.18.  And the reason given was
+the wrong one: the 1.18 is not an installation factor, it is Turton's
+contingency (what any estimate does not know) and fee (the contractor's) --
+project allowances that do not depend on how an item's own price was
+reached, which is also why a declared quote carries them (C98).  The row now
+prints C_TM = 1.18 x C_BM (`costing::contingencyAndFee`, `CostingModel.H`,
+the one home); no FCI, NPV or total of C_BM moved, only the per-item C_TM
+and the C_TM total.  The index, F_M, F_P and F_BM stay NOT applied.  The
+lines quoted below are the 2026-09-26 output and keep C_TM = C_BM.
 The printed line is where a reader must be able to tell the two shapes
 apart, so `correlation` carries its own word and the provenance row prints
 the price where the other shapes print K1..K3.  Side by side, from the
