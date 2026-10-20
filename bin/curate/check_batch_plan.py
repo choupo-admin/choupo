@@ -578,7 +578,7 @@ def arm_announcements(work):
 
 def arm_rules(work):
     def largest(t):
-        t = sub(t, "        rule     declared;\n        stream   finalBlend;\n        mass     350 kg;",
+        t = sub(t, "        rule     declared;\n        stream   finalBlend;\n        mass     400 kg;",
                 "        rule     largestEquipment;")
         for st, v in (("solutionPreparation", "3 m3"), ("blending", "1.2 m3"),
                       ("finalBlending", "1.5 m3"), ("suspensionPreparation", "0.2 m3"),
@@ -621,7 +621,7 @@ def arm_rules(work):
 REFUSALS = [
     ("stageBusy", lambda t: sub(t, "availableTime   3840 h;", "availableTime   100 h;"),
      ["stage 'blending' is busy", "outOfPhase 2"]),
-    ("trainLong", lambda t: sub(t, "availableTime   3840 h;", "availableTime   1300 h;"),
+    ("trainLong", lambda t: sub(t, "availableTime   3840 h;", "availableTime   400 h;"),
      ["train 'solidDose' needs", "unreachable"]),
     ("bareTime", lambda t: stage_edit(t, "blending", "processTime 0.5 h;", "processTime 0.5;"),
      ["carries no unit"]),
