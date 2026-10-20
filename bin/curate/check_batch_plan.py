@@ -1306,12 +1306,16 @@ def arm_multiproduct(work):
                       " clean before strengthC)")
 
 
+#  The one product's demand is READ from the witness's own `production {}`,
+#  never typed here: a copy of it went stale the day the witness was re-based
+#  on its design-basis dossier (C110 G1, 30000 -> 10156 kg), and arm (j) then
+#  compared two different plants.
 ONE_PRODUCT = """
     products
     (
         {
             product  only;
-            perYear  30000 kg;
+            perYear  %s;
             source   "probe";
             reason   "one product through the multiproduct path";
         }
@@ -1319,11 +1323,18 @@ ONE_PRODUCT = """
 """
 
 
+def witness_per_year():
+    m = re.search(r"^\s*perYear\s+([^;]+);", (WITNESS / "system/postDict").read_text(), re.M)
+    if not m:
+        raise RuntimeError("the witness declares no `perYear` in its production block")
+    return m.group(1).strip()
+
+
 def arm_one_product(work):
     """(j) one product through the multiproduct path IS the single plan."""
     ds = copy_witness(work, "single_ref")
     outs, errs, rcs, js = solve(ds)
-    d = copy_witness(work, "one", multi_edit(products=ONE_PRODUCT, pco=None))
+    d = copy_witness(work, "one", multi_edit(products=ONE_PRODUCT % witness_per_year(), pco=None))
     out, err, rc, j = solve(d)
     if rcs != 0 or rc != 0 or not js or not j:
         fail(f"(j) the one-product probe or its single twin did not run ({rcs}, {rc})")
