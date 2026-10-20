@@ -71,7 +71,7 @@ export type MethodToolId =
   | "least-squares" | "element-potential" | "limiting-reactant"
   | "reaction-enthalpy" | "standard-state" | "case-assembly" | "run-log"
   | "front-end-loading" | "process-safety" | "overpressure" | "letdown"
-  | "plant-layout" | "gmp-layout" | "pool-fire" | "materials";
+  | "plant-layout" | "gmp-layout" | "pool-fire" | "materials" | "syngas";
 
 /** WHAT KIND OF TOOL THIS IS, and the field exists to keep a boundary legible
  *  rather than to switch behaviour.
@@ -898,6 +898,35 @@ export const METHOD_TOOLS: MethodTool[] = [
       + "takes its K below T while the synthesis beside it takes its K "
       + "above.",
     theory: "sec:gibbs-maps",
+  },
+  //  COMMISSIONED 2026-10-19 (DEV.md 4c C109), after Vitor asked why syngas
+  //  is so widely used: "Eu sempre senti que nunca ninguem me explicou isso
+  //  bem!".  Syngas AS A PLATFORM, not as the vehicle for an equilibrium
+  //  method -- five pages above already use reforming that way, and this one
+  //  links to them instead of repeating them.  A NOTES page in eight parts,
+  //  seven with an exercise on an in-browser COPY of a bundled tutorial (no
+  //  new case, the standing rule): gibbs11 (reforming, carbon), screen01
+  //  (partial oxidation, autothermal), equil01 (two shift stages written in;
+  //  the reverse shift on CO2 and H2) and psa01 (pure hydrogen).  `theory`
+  //  is the Gibbs-reactor chapter: the Theory Guide has no syngas section.
+  {
+    id: "syngas",
+    label: "Synthesis gas: one gas, many products",
+    discipline: "Reaction engineering", kind: "notes", status: "live",
+    teaches: "That syngas is a PLATFORM -- carbon, hydrogen and oxygen handed "
+      + "to a catalyst as CO and H2 -- and that two numbers decide what it is "
+      + "good for: H2/CO and the module (H2 - CO2)/(CO + CO2); the four ways to "
+      + "make it (steam reforming, partial oxidation, autothermal reforming, "
+      + "gasification) and what each gives; why reforming is run hot and at "
+      + "low pressure, and why industry still compresses the feed instead; "
+      + "carbon on the catalyst at low steam-to-carbon; the water-gas shift as "
+      + "the ratio knob, and why two stages when equilibrium needs one; the "
+      + "ratio each product asks (methanol, Fischer-Tropsch, oxo, ammonia) and "
+      + "why the module is fixed by the atoms of the feed, not by the shift; "
+      + "cleaning the gas and pure hydrogen by PSA; water gas, producer gas, "
+      + "town gas, and CO2 plus green hydrogen -- each part run by the engine "
+      + "in the browser, and what the equilibrium model does not do.",
+    theory: "ch:gibbs-reactor",
   },
   {
     id: "vanheerden", label: "Ignition / extinction (Van Heerden)",

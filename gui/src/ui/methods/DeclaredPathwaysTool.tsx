@@ -321,6 +321,11 @@ export function DeclaredPathwaysTool(): JSX.Element {
           <Anchor component="button" type="button"
             onClick={() => setActiveMethodTool("equilibrium-landscapes")}>
             Equilibrium landscapes
+          </Anchor>.  Where a syngas comes from, and the ratio each product asks
+          of it, is the page{" "}
+          <Anchor component="button" type="button"
+            onClick={() => setActiveMethodTool("syngas")}>
+            Synthesis gas: one gas, many products
           </Anchor>.
         </Text>
       </Stack>

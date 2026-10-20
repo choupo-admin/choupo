@@ -304,6 +304,9 @@ const PlantLayoutTool = lazy(() =>
 const GmpLayoutTool = lazy(() =>
   import("./methods/GmpLayoutTool.js")
     .then((m) => ({ default: m.GmpLayoutTool })));
+const SyngasTool = lazy(() =>
+  import("./methods/SyngasTool.js")
+    .then((m) => ({ default: m.SyngasTool })));
 const MaterialsTool = lazy(() =>
   import("./methods/MaterialsTool.js")
     .then((m) => ({ default: m.MaterialsTool })));
@@ -531,6 +534,7 @@ export function MethodsWorkspace() {
             : tool === "letdown" ? <LetdownTool />
             : tool === "plant-layout" ? <PlantLayoutTool />
             : tool === "gmp-layout" ? <GmpLayoutTool />
+            : tool === "syngas" ? <SyngasTool />
             : tool === "materials" ? <MaterialsTool />
             : tool === "wegstein" ? <WegsteinTool />
             : tool === "active-set-qp" ? <ActiveSetQpTool />

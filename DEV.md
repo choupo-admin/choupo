@@ -1309,6 +1309,32 @@ accepts today, and that is a policy call.
 > cleaning the gas; the historical family and green CO2 + H2; what the
 > model does not do).  Vitor 2026-10-19: "Podes avancar" -- dispatched on
 > that scope.
+> DONE, PENDING MERGE (branch claude/c109-syngas-edutool): EduTool `syngas`
+> ("Synthesis gas: one gas, many products", Reaction engineering, notes),
+> the eight parts in the approved order, linked to the five method pages
+> (approach-to-equilibrium and declared-pathways link back) and to
+> limiting-reactant and route-screening.  No new case: five benches are
+> in-browser copies -- gibbs11 (steam reforming knobs T/P/S/C, pressure,
+> carbon), screen01's gibbsC made ADIABATIC (partial oxidation, autothermal
+> with O2 and steam; the engine finds the outlet T), equil01 with two shift
+> reactors written in (`reactions ( wgs );`, 650 and 480 K; one stage at
+> 480 K reproduces the two to the last digit), equil01 fed CO2 + 3 H2 with
+> the shift alone (the reverse shift, module 2.000), psa01 (P_low and
+> purge).  Every move is an exact edit landing once; 24 guided moves, each
+> quoting engine numbers held by gui/tests/syngasLesson.test.ts to a NATIVE
+> run of the exact file map the browser sends; 19 file:line citations
+> (GibbsReactor, GibbsSolidPhase, EquilibriumReactor, PSA) held to their
+> lines.  The module M = (3a + h - c - 2o)/(a + c) is derived from the
+> element balances (steam cancels, the shift cannot move it) and the engine
+> confirms it (3.000 on every steam-reforming move, 1.800 at O2/C 0.6).
+> NOT SHOWN, said on the page: gasification (no reactor carries a solid feed
+> into its equilibrium), CO2 absorption and sulfur removal (no case), any
+> kinetics.  FOUND, NOT FIXED: `gibbsReactor` silently DROPS a solid
+> declared in its feed (`phases { solid {...} }`) -- measured on a copy of
+> gibbs11 fed graphite + CH4 + water, exit 0, the element balance reporting
+> carbon off by 47.6 %; `equilibriumReactor` refuses the same feed by name
+> (EquilibriumReactor.cpp:82-86).  A refusal there is a one-line engine
+> change on a shared unit, left for a sized slice.
 
 > **C108. A HOME-SCREEN ICON FOR THE APP (Vitor, 2026-10-19: "Sabes se
 > podemos fazer a app choupo para iPhone?" ... "Eu preferia um icon que

@@ -100,13 +100,14 @@ License
 import { useMemo, useState } from "react";
 
 import {
-  Alert, Badge, Box, Group, Loader, SegmentedControl, Stack, Text, Title,
+  Alert, Anchor, Badge, Box, Group, Loader, SegmentedControl, Stack, Text, Title,
 } from "@mantine/core";
 
 import { useMethodRun, type DictOverride } from "../../case/methodRun.js";
 import { KnobSlider, PanelNote, type PanelKnob } from "./knobPanel.js";
 import { LessonLimits, lessonStepper } from "./lessonStep.js";
 import { APPROACH_LIMITS, APPROACH_STEPS } from "./approachToEquilibriumLesson.js";
+import { setActiveMethodTool } from "./registry.js";
 
 const INK = "var(--mantine-color-dimmed)";
 const GRID = "var(--mantine-color-default-border)";
@@ -528,6 +529,15 @@ export function ApproachToEquilibriumTool(): JSX.Element {
         {step(6)}
 
         <LessonLimits limits={APPROACH_LIMITS} />
+
+        <Text size="sm">
+          What the reformer on this page is FOR -- the gas it makes, the ratio each
+          product asks of it, the shift that adjusts that ratio -- is the page{" "}
+          <Anchor component="button" type="button"
+            onClick={() => setActiveMethodTool("syngas")}>
+            Synthesis gas: one gas, many products
+          </Anchor>.
+        </Text>
       </Stack>
     </Box>
   );
