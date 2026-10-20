@@ -20,7 +20,11 @@ import {
   CaseArchiveRefusal, caseFromEntries, caseFromZipBytes, findCaseRoots,
   isOsJunk, sniffArchive,
 } from "../src/cases/caseArchive.js";
-import { openedCaseFromZip } from "../src/cases/loadCase.js";
+import {
+  FOLDER_FILE_LIMIT_BYTES, openedCaseFromFolder, openedCaseFromZip, readFolderFileList,
+  readFolderHandle, type FileSystemDirectoryHandleLike, type FileSystemHandleLike,
+  type OpenedCase,
+} from "../src/cases/loadCase.js";
 import { buildCaseZip } from "../src/case/saveCase.js";
 import { caseTeachingFiles } from "../src/case/caseTeaching.js";
 
@@ -205,5 +209,100 @@ describe("round trip: Download case (.zip) opens back to the same files", () => 
     // And the parsed case is the same case.
     expect(back.files.controlDict).toEqual(opened0.files.controlDict);
     expect(back.files.flowsheet).toEqual(opened0.files.flowsheet);
+  });
+});
+
+// ---- the FOLDER route: File -> "Open Case folder..." (DEV.md 4c C110 G6) ----
+//
+// It used to keep its own reader: no case-root rule and every file decoded
+// as text.  Both browser routes are driven here with plain objects -- a
+// directory handle (showDirectoryPicker) and a webkitdirectory file list --
+// so the readers themselves are tested, not only the rule they now call.
+
+type Tree = { [name: string]: Tree | Uint8Array };
+
+/** A tree of paths -> a fake FileSystemDirectoryHandle. */
+function handleOf(name: string, files: { [p: string]: Uint8Array }): FileSystemDirectoryHandleLike {
+  const root: Tree = {};
+  for (const [p, b] of Object.entries(files)) {
+    const segs = p.split("/");
+    let node = root;
+    for (const s of segs.slice(0, -1)) node = (node[s] ??= {}) as Tree;
+    node[segs[segs.length - 1]!] = b;
+  }
+  const dirOf = (n: string, t: Tree): FileSystemDirectoryHandleLike & FileSystemHandleLike => ({
+    kind: "directory", name: n,
+    async *values() {
+      for (const [k, v] of Object.entries(t))
+        yield v instanceof Uint8Array
+          ? { kind: "file" as const, name: k, getFile: async () => new File([v as BlobPart], k) }
+          : dirOf(k, v);
+    },
+  });
+  return dirOf(name, root);
+}
+
+/** The same files as an <input webkitdirectory> list (paths carry the folder). */
+function fileListOf(name: string, files: { [p: string]: Uint8Array }): File[] {
+  return Object.entries(files).map(([p, b]) => {
+    const f = new File([b as BlobPart], p.split("/").pop()!);
+    Object.defineProperty(f, "webkitRelativePath", { value: `${name}/${p}` });
+    return f;
+  });
+}
+
+describe("Open Case folder: the same rule as the .zip", () => {
+  const routes: [string, (n: string, f: { [p: string]: Uint8Array }) => Promise<OpenedCase>][] = [
+    ["directory picker", (n, f) => readFolderHandle(handleOf(n, f))],
+    ["webkitdirectory", (n, f) => readFolderFileList(fileListOf(n, f))],
+  ];
+
+  it.each(routes)("%s: the case folder itself opens, junk dropped in silence", async (_, open) => {
+    const c = await open("flash01", { ...under("", CASE), ".DS_Store": new Uint8Array([0, 0, 1]) });
+    expect(c.name).toBe("flash01");
+    expectSameCase(c.raw);
+    expect(c.notices).toBeUndefined();
+  });
+
+  it.each(routes)("%s: a PARENT folder opens its one case and names the file beside it", async (_, open) => {
+    const c = await open("homework", { ...under("flash01/", CASE), "notes.txt": strToU8("hi") });
+    expect(c.name).toBe("flash01");
+    expectSameCase(c.raw);
+    expect(c.notices).toEqual([`Left out 1 file(s) outside the case folder “flash01”: notes.txt.`]);
+  });
+
+  it.each(routes)("%s: a PDF in the case folder is left out and NAMED, never decoded", async (_, open) => {
+    const c = await open("flash01", { ...under("", CASE), "docs/report.pdf": PDF });
+    expect(c.raw["docs/report.pdf"]).toBeUndefined();
+    expect(c.notices).toEqual([`Left out 1 file(s) that are not text (a case is read as text): docs/report.pdf.`]);
+  });
+
+  it.each(routes)("%s: a file over the size limit is left out and NAMED", async (_, open) => {
+    const big = new Uint8Array(FOLDER_FILE_LIMIT_BYTES + 1).fill(0x41);
+    const c = await open("flash01", { ...under("", CASE), "movie.txt": big });
+    expect(c.raw["movie.txt"]).toBeUndefined();
+    expect(c.notices).toEqual([`Left out 1 file(s) larger than 4 MB: movie.txt.`]);
+  });
+
+  it.each(routes)("%s: no case, or two, REFUSES naming the folder -- in folder words", async (_, open) => {
+    await expect(open("Downloads", { "a.txt": strToU8("x") }))
+      .rejects.toThrow(/“Downloads” holds no Choupo case.*pick that folder/);
+    await expect(open("group7", { ...under("caseA/", CASE), ...under("caseB/", CASE) }))
+      .rejects.toThrow(/holds 2 cases, not one: caseA, caseB.*pick one case folder/);
+    await expect(open("Downloads", { "a.txt": strToU8("x") }))
+      .rejects.not.toThrow(/compress|\.zip/);
+  });
+
+  it("a sectored plant's own sector controlDicts do not read as more cases", async () => {
+    const plant = tutorialFiles("tutorials/plant/twoSectorDemo");
+    const c = await readFolderHandle(handleOf("twoSectorDemo", under("", plant)));
+    expect(c.name).toBe("twoSectorDemo");
+    expect(Object.keys(c.raw).sort()).toEqual(Object.keys(plant).sort());
+  });
+
+  it("openedCaseFromFolder is the funnel both readers call", () => {
+    const c = openedCaseFromFolder(under("", CASE), "flash01");
+    expect(c.files.flowsheet)
+      .toEqual(openedCaseFromZip(zipSync(under("", CASE)), "flash01.zip").files.flowsheet);
   });
 });
