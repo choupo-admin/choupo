@@ -112,6 +112,20 @@ export const METHOD_DISCIPLINES = [
   //  shelf can hold it without bending its name.  It sits FIRST because it
   //  is what every page after it assumes.
   "How Choupo works",
+  //  THE SHELF FOR HOW AN ENGINEER BUILDS AND TRUSTS A MODEL (2026-10-20,
+  //  DEV.md 4c C119, Vitor's ruling -- "Ok!" to the proposal).  Dimensional
+  //  analysis, similarity, asymptotic regimes and the correlation that
+  //  carries a lab result to a plant: none of it is hydraulics or heat
+  //  transfer, though it is illustrated with both, and filing it under
+  //  either bends that shelf's name for the first page that uses the other
+  //  example.  "Transport phenomena" was considered and set aside -- the
+  //  page is about method, and the name is the one a student most dreads.
+  //  "Scale-up" is the chemical engineer's word for what the method buys
+  //  (Zlokarnik's title).  It sits BEFORE the physics shelves because every
+  //  one of them uses it.  It opened with ONE tenant, an exception to the
+  //  shelf rule taken by the owner and recorded here; its natural company is
+  //  a stirred-tank scale-up (the power number) or a pilot plant's choice.
+  "Modelling & scale-up",
   "Thermodynamics",
   "Separations & phase equilibria",
   "Heat transfer & energy",
@@ -680,13 +694,14 @@ export const METHOD_TOOLS: MethodTool[] = [
   //  regimes and similarity; master and slave; correlations in practice.
   //  Friction and Nusselt only, SYNTHETIC data: the curves are the engine's
   //  own correlations, swept by the witness moody02_correlation_sweeps and
-  //  run in the browser.  ON THIS SHELF because the friction factor is the
-  //  page's main example; the Nusselt correlations ride beside it.
-  //  `theory` is the Theory Guide's transport chapter.
+  //  run in the browser.  ON THE "Modelling & scale-up" SHELF, which opened
+  //  for it (Vitor, 2026-10-20): the page is about method, and friction and
+  //  Nusselt are only its two examples.  `theory` is the Theory Guide's
+  //  transport chapter.
   {
     id: "correlation-simplicity",
     label: "Why engineering correlations are simple",
-    discipline: "Hydraulics & control", kind: "construction", status: "live",
+    discipline: "Modelling & scale-up", kind: "construction", status: "live",
     teaches: "That the Buckingham Pi theorem only REDUCES the number of "
       + "variables -- f = Phi(Re, eps/D) is still an arbitrary function -- and "
       + "that the simplicity of a correlation comes from elsewhere: asymptotic "

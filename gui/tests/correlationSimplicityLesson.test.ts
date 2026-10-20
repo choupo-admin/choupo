@@ -47,10 +47,10 @@ const TOOL = "gui/src/ui/methods/CorrelationSimplicityTool.tsx";
 
 describe("correlation-simplicity: the shelf, the kind and the dispatch", () => {
   const t = METHOD_TOOLS.find((m) => m.id === "correlation-simplicity");
-  it("is a live construction on the Hydraulics & control shelf", () => {
+  it("is a live construction on the Modelling & scale-up shelf", () => {
     expect(t?.status).toBe("live");
     expect(t?.kind).toBe("construction");
-    expect(t?.discipline).toBe("Hydraulics & control");
+    expect(t?.discipline).toBe("Modelling & scale-up");
     expect(t?.label).toBe("Why engineering correlations are simple");
   });
   it("the workspace renders it", () => {
