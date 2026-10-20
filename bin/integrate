@@ -1,0 +1,1164 @@
+#!/usr/bin/env python3
+# =============================================================================
+#        \|/       C hemicals     | Open-source, glass-box chemical process simulator
+#       \\|//      H eat-transfer | https://choupo.org
+#      \\\|///     O perations    |
+#       \\|//      U nits         | Copyright (C) 2026 Vítor Geraldes
+#        \|/       P roperties    | Licence: GPL-3.0-or-later
+#         |        O ptimization  |
+#        /|\                      |
+# -------------------------------------------------------------------------------
+# License
+#     This file is part of Choupo.
+#
+#     Choupo is free software: you can redistribute it and/or modify it
+#     under the terms of the GNU General Public License as published
+#     by the Free Software Foundation, either version 3 of the License, or
+#     (at your option) any later version.
+#
+#     Choupo is distributed in the hope that it will be useful, but WITHOUT
+#     ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+#     FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public
+#     License for more details (https://www.gnu.org/licenses/gpl-3.0.html).
+#
+#     SPDX-License-Identifier: GPL-3.0-or-later
+#
+#     Credit and attribution: see AUTHORS
+#     Required legal notices:  see NOTICE
+# =============================================================================
+"""bin/integrate -- merge a general's branch into main's line, do the
+mechanical part, and print ONE verdict.  It never pushes main.
+
+USAGE
+    bin/integrate <branch> [options]
+    bin/integrate --plan <branch> [--base REF]
+
+    <branch>   `claude/x`, `origin/claude/x`, or any commit-ish.  A bare name
+               is looked up as `origin/<name>` first.
+
+OPTIONS
+    --base REF        what to integrate INTO (default origin/main).
+    --worktree DIR    the integration worktree (default
+                      <repo>/.claude/worktrees/integ-<slug>).  REUSED when it
+                      exists, so the C++ build is incremental: it is reset to
+                      the base first, and refused if it holds anything the
+                      tool did not put there.
+    --jobs N          make -jN (default 2 -- the machine is shared).
+    --no-validate     stop after merge, regeneration, PDFs and the build.
+    --discard         allow the reset of a reused worktree that holds
+                      UNCOMMITTED changes (what a STOPPED run leaves).  A
+                      mid-merge tree and a foreign commit are still refused.
+    --plan            print the validation the diff REACHES (cases, gates,
+                      tiers) and touch nothing: no worktree, no merge, no
+                      build.  Reads this checkout's generated maps.
+    -h, --help        this text.
+
+WHAT IT DOES, IN ORDER -- and it stops LOUDLY at the first thing that needs
+a human, leaving the worktree where it stopped:
+
+ 1. MERGE.  `git fetch origin`, a worktree on branch integ/<slug> at the base,
+    `git merge --no-ff` of the branch (author Vítor Geraldes, committer
+    Claude, trailer `Integrated-by: bin/integrate`).
+ 2. CONFLICTS.  A conflict in a GENERATED file -- the one home of that list is
+    bin/curate/generated_artefacts.py -- is resolved by taking main's side and
+    REGENERATING.  A conflict in any other file, or in a generated file whose
+    entry says `conflict human` (a generated REGION inside hand-written text),
+    STOPS the run and prints the files.
+ 3. REGENERATION.  Every registry entry with a check is checked; a stale one
+    is regenerated and RE-CHECKED (still stale = STOP: the generator does not
+    produce what its entry claims).  An entry with no check is regenerated
+    only when it conflicted -- freshness is a contract only where a gate
+    holds it.  Engine-running generators are checked only when the merge
+    touched what the engine reads (src/ data/ tutorials/), and a stale one is
+    NOT regenerated: it prints engine numbers into a page a reader trusts,
+    so it is listed with its diff like a moved golden (verdict NOT READY).
+ 4. GUIDES.  Every public guide (docs/Makefile `DOCS :=`) whose \\input
+    closure the merge touched is rebuilt with `make -B -C docs <g>.pdf` --
+    ALWAYS -B, because a checkout stamps every file with one mtime and plain
+    make then calls a stale PDF up to date -- and read back with pdftotext:
+    every case the merge ADDS must appear in the rebuilt text.
+ 5. BUILD.  `make -j<N> all`.
+ 6. VALIDATION SIZED BY REACH (CLAUDE.md section 10), derived from the
+    merge's diff against the base:
+      cases   the case directories it touches, plus every case that declares
+              a factory type (or an indexed model / op) defined in a C++ file
+              it touches, plus the cases naming a data record it touches --
+              run as `bin/runTests --scope <cases>`, which also runs the
+              conservation gates SCOPED to that pass;
+      gates   every bin/curate/check_*.py whose source names a touched file
+              (path, file name, or -- for src/ and bin/curate modules -- the
+              stem), the way `bin/runTests --gui` derives its list;
+      --gui   when gui/ moved, or when lines moved in a src/ file an EduTool
+              lesson cites by file:line;
+      --fast  when a factory REGISTRATION or the build system moved;
+      FULL    never launched.  When the diff reaches a SHARED path (a binary's
+              main, a TU that registers no type, a data record more than 150
+              cases name), the verdict says so with the reason and stops at
+              "needs Vítor's authorisation" (CLAUDE.md 0.4).
+ 7. GATE MANIFEST.  Every gate the branch changed, or whose claim moved in
+    the validation run, is re-observed with `gate_manifest.py --only` --
+    never a full regeneration.
+ 8. VERDICT.  What was merged, regenerated, rebuilt, which checks ran with
+    their claims, the golden rows that MOVED (listed, never re-recorded: the
+    decision is Vítor's), and either `ready: fast-forward main with ...` or
+    the first failure.
+
+WHAT IT NEVER DOES: push anything, re-record a golden, hand-merge a file,
+launch a full regression, or touch a worktree holding work it did not make.
+
+Exit: 0 ready, 1 a failure or a refusal, 3 blocked on a decision that is
+Vítor's (a full sweep).  Logs: <the worktree's git dir>/integrate/.
+Record: docs/design/integrating-a-branch-is-mechanical.md.
+"""
+
+import fnmatch
+import importlib.util
+import json
+import os
+import re
+import shutil
+import subprocess
+import sys
+import time
+from pathlib import Path
+
+TOOL_ROOT = Path(__file__).resolve().parents[1]
+
+AUTHOR = ("Vítor Geraldes", "talentgroundlda@gmail.com")
+COMMITTER = ("Claude", "noreply@anthropic.com")
+TRAILER = "Integrated-by: bin/integrate"
+
+#  Past this many cases a "targeted" run is the sweep in all but name, and the
+#  sweep needs a written reason and Vítor's authorisation (CLAUDE.md 0.4).
+MAX_CASES = 150
+GATE_TIMEOUT = 3600
+#  Paths the build keeps across a reused worktree's reset (all gitignored).
+KEEP = ["/build/", "/gui/node_modules/", "/choupoSolve", "/choupoBatch",
+        "/choupoCtrl", "/choupoProps", "/choupoSemiContinuous"]
+ENGINE_INPUTS = ("src/", "data/", "tutorials/")
+
+
+# --------------------------------------------------------------------------
+#  small helpers
+# --------------------------------------------------------------------------
+
+class Stop(Exception):
+    """A refusal or a failure: the run ends here, with this message."""
+
+    def __init__(self, msg, code=1):
+        super().__init__(msg)
+        self.code = code
+
+
+LOGDIR = [None]   # set once the worktree exists: <its git dir>/integrate
+T0 = time.monotonic()
+
+
+def say(msg=""):
+    print(msg, flush=True)
+
+
+def stamp():
+    return f"{time.monotonic() - T0:7.1f}s"
+
+
+def run(argv, cwd, env=None, log=None, timeout=None, check=False):
+    """Run argv; return (rc, combined output).  rc None = timed out."""
+    try:
+        r = subprocess.run(argv, cwd=str(cwd), env=env, capture_output=True,
+                           text=True, timeout=timeout)
+        out = (r.stdout or "") + (r.stderr or "")
+        rc = r.returncode
+    except subprocess.TimeoutExpired as e:
+        out = ((e.stdout or b"").decode(errors="replace")
+               if isinstance(e.stdout, bytes) else (e.stdout or ""))
+        rc = None
+    if log is not None:
+        log.parent.mkdir(parents=True, exist_ok=True)
+        log.write_text(out)
+    if check and rc != 0:
+        raise Stop(f"`{' '.join(map(str, argv))}` failed (exit {rc}):\n"
+                   + tail(out, 25))
+    return rc, out
+
+
+def tail(text, n):
+    lines = (text or "").rstrip().splitlines()
+    return "\n".join("    " + ln for ln in lines[-n:])
+
+
+def git(cwd, *args, env=None, check=True):
+    rc, out = run(["git", "-C", str(cwd)] + list(args), cwd, env=env)
+    if check and rc != 0:
+        raise Stop(f"`git {' '.join(args)}` failed in {cwd}:\n{tail(out, 15)}")
+    return out.strip() if rc == 0 else None
+
+
+def git_env():
+    env = dict(os.environ)
+    env.update(GIT_AUTHOR_NAME=AUTHOR[0], GIT_AUTHOR_EMAIL=AUTHOR[1],
+               GIT_COMMITTER_NAME=COMMITTER[0],
+               GIT_COMMITTER_EMAIL=COMMITTER[1])
+    return env
+
+
+def tree_env(wt: Path):
+    """The environment every check runs in: THIS worktree, and no scope
+    variable inherited from whoever launched the tool -- a stale
+    CHOUPO_SUITE_SCOPE is how the conservation gates swept the corpus for
+    twenty minutes each on 2026-10-20."""
+    env = dict(os.environ)
+    for k in ("CHOUPO_SUITE_OUTPUTS", "CHOUPO_SUITE_SCOPE", "CHOUPO_SUITE_TIMED",
+              "CHOUPO_WORKSPACE"):
+        env.pop(k, None)
+    env["CHOUPO_HOME"] = str(wt)
+    env["PATH"] = f"{wt / 'bin'}:{env.get('PATH', '')}:{wt}"
+    return env
+
+
+def load(name, path: Path):
+    """Import a module from an explicit file (the merged tree's own copy)."""
+    spec = importlib.util.spec_from_file_location(name, str(path))
+    mod = importlib.util.module_from_spec(spec)
+    sys.path.insert(0, str(path.parent))
+    try:
+        spec.loader.exec_module(mod)
+    finally:
+        sys.path.pop(0)
+    return mod
+
+
+def curate_module(wt: Path, stem: str):
+    """The MERGED tree's module when it has one (it describes that tree);
+    otherwise this tool's own copy, said aloud."""
+    p = wt / "bin" / "curate" / f"{stem}.py"
+    if not p.is_file():
+        p = TOOL_ROOT / "bin" / "curate" / f"{stem}.py"
+        say(f"  [note] the merged tree has no bin/curate/{stem}.py; using this "
+            "tool's own copy")
+    return load(f"integ_{stem}", p)
+
+
+# --------------------------------------------------------------------------
+#  1. merge
+# --------------------------------------------------------------------------
+
+def resolve_refs(repo: Path, branch: str, base: str):
+    say(f"[{stamp()}] fetch origin")
+    git(repo, "fetch", "--quiet", "origin")
+    cand = [branch] if branch.startswith("origin/") else \
+        [f"origin/{branch}", branch]
+    br_sha = None
+    for c in cand:
+        br_sha = git(repo, "rev-parse", "--verify", "--quiet",
+                     f"{c}^{{commit}}", check=False)
+        if br_sha:
+            label = c
+            break
+    if not br_sha:
+        raise Stop(f"cannot resolve {branch!r} (tried {cand})")
+    base_sha = git(repo, "rev-parse", "--verify", f"{base}^{{commit}}")
+    name = label[len("origin/"):] if label.startswith("origin/") else label
+    slug = re.sub(r"[^A-Za-z0-9._-]+", "-",
+                  name[len("claude/"):] if name.startswith("claude/") else name)
+    if re.fullmatch(r"[0-9a-f]{7,40}", name):
+        slug = name[:10]
+    return label, br_sha, base_sha, slug
+
+
+def prepare_worktree(repo: Path, wt: Path, slug: str, base_sha: str,
+                     discard: bool = False):
+    branch = f"integ/{slug}"
+    if not wt.exists():
+        say(f"[{stamp()}] worktree add {wt} (fresh: the first build is a full "
+            "one)")
+        git(repo, "worktree", "add", "--quiet", "-B", branch, str(wt),
+            base_sha)
+        return
+    #  A REUSED worktree is reset only if everything in it is ours to discard.
+    common = git(wt, "rev-parse", "--path-format=absolute",
+                 "--git-common-dir", check=False)
+    ours = git(repo, "rev-parse", "--path-format=absolute",
+               "--git-common-dir")
+    if common != ours:
+        raise Stop(f"{wt} exists and is not a worktree of {repo}")
+    if (Path(git(wt, "rev-parse", "--absolute-git-dir")) / "MERGE_HEAD").exists():
+        raise Stop(f"{wt} is MID-MERGE (a previous integration stopped "
+                   "there).  Finish it, or `git merge --abort` in it, then "
+                   "re-run.")
+    dirty = git(wt, "status", "--porcelain")
+    if dirty and not discard:
+        raise Stop(f"{wt} holds uncommitted work -- not the tool's to "
+                   "discard:\n" + tail(dirty, 20) + "\n  If it is what a "
+                   "STOPPED run of this tool left there, re-run with "
+                   "--discard; otherwise commit or move it first.")
+    if dirty:
+        say(f"[{stamp()}] --discard: dropping uncommitted changes in {wt}")
+        git(wt, "reset", "--quiet", "--hard")
+    #  What a reset would LOSE: commits on HEAD that no remote ref, no other
+    #  local branch or tag, and not the new base still reaches.
+    own = git(wt, "rev-parse", "--abbrev-ref", "HEAD")
+    mine = git(wt, "rev-list", "HEAD", "--not", base_sha, "--remotes",
+               "--tags", f"--exclude=refs/heads/{own}", "--branches")
+    foreign = []
+    for c in (mine or "").split():
+        msg = git(wt, "log", "-1", "--format=%B", c)
+        if TRAILER not in msg:
+            foreign.append(git(wt, "log", "-1", "--oneline", c))
+    if foreign:
+        raise Stop(f"{wt} carries commits that are on no remote and that "
+                   "this tool did not make -- resetting would destroy them:\n"
+                   + "\n".join("    " + f for f in foreign))
+    say(f"[{stamp()}] reuse worktree {wt} (reset to the base; the build stays)")
+    git(wt, "checkout", "--quiet", "-B", branch, base_sha)
+    args = ["clean", "-ffdxq"]
+    for k in KEEP:
+        args += ["-e", k]
+    git(wt, *args)
+
+
+def merge(wt: Path, label: str, br_sha: str, slug: str, reg):
+    msg = (f"Merge remote-tracking branch '{label}' into integ/{slug}"
+           if label.startswith("origin/") else
+           f"Merge {label} ({br_sha[:10]}) into integ/{slug}")
+    msg += f"\n\n{TRAILER}\n"
+    say(f"[{stamp()}] merge {label} ({br_sha[:10]})")
+    rc, out = run(["git", "-C", str(wt), "merge", "--no-ff", "--no-edit",
+                   "-m", msg, br_sha], wt, env=git_env())
+    if rc == 0:
+        return []
+    conflicts = (git(wt, "diff", "--name-only", "--diff-filter=U") or
+                 "").split()
+    if not conflicts:
+        raise Stop("the merge failed without a conflict:\n" + tail(out, 20))
+    human, gen = [], []
+    for p in conflicts:
+        e = reg.entry_for(p, wt)
+        if e is None:
+            human.append((p, "not a generated file"))
+        elif e["conflict"] != "regenerate" or not e["generate"]:
+            human.append((p, f"generated entry `{e['name']}` says conflict "
+                             f"{e['conflict']} -- {e['note']}"))
+        else:
+            gen.append((p, e))
+    if human:
+        raise Stop("MERGE CONFLICT in file(s) a human must resolve -- nothing "
+                   "was resolved:\n"
+                   + "\n".join(f"    {p}   ({why})" for p, why in human)
+                   + ("\n  (also conflicted, generated, would be regenerated: "
+                      + ", ".join(p for p, _ in gen) + ")" if gen else "")
+                   + f"\n  The worktree is left MID-MERGE at {wt}: resolve "
+                   "and commit there, or `git merge --abort`.")
+    for p, e in gen:
+        git(wt, "checkout", "--ours", "--", p)
+        git(wt, "add", "--", p)
+        say(f"    conflict in {p}: took main's side; `{e['name']}` will "
+            "regenerate it")
+    git(wt, "commit", "--no-edit", "--quiet", env=git_env())
+    return [(p, e["name"]) for p, e in gen]
+
+
+# --------------------------------------------------------------------------
+#  3. regeneration
+# --------------------------------------------------------------------------
+
+def regenerate(wt: Path, reg, phases, conflicted, touched, logdir, note,
+               moved_engine):
+    """Check every entry of the given phases; regenerate the stale and the
+    conflicted; re-check.  Returns the names regenerated; an engine artefact
+    whose numbers moved is appended to `moved_engine` instead."""
+    env = tree_env(wt)
+    done = []
+    for e in reg.ENTRIES:
+        if e["phase"] not in phases or not e["generate"]:
+            continue
+        name = e["name"]
+        if e["phase"] == "engine" and name not in conflicted and \
+                not any(f.startswith(ENGINE_INPUTS) for f in touched):
+            note.append(f"{name}: not checked -- it runs the engine and the "
+                        "merge touched nothing the engine reads")
+            continue
+        if e["phase"] == "node" and name not in conflicted and \
+                not any(f.startswith("gui/") for f in touched):
+            continue
+        stale = name in conflicted
+        why = "conflicted" if stale else ""
+        if e["phase"] == "node" and not (wt / "gui" / "node_modules").is_dir():
+            npm_ci(wt, logdir)
+        if not stale and e["check"]:
+            rc, out = run(e["check"], wt, env=env, timeout=GATE_TIMEOUT,
+                          log=logdir / f"check-{name}.log")
+            stale = rc != 0
+            why = "stale" if stale else ""
+        if not stale:
+            continue
+        #  AN ENGINE NUMBER THAT MOVED IS A MOVED GOLDEN, NOT A STALE INDEX.
+        #  An `engine` artefact prints numbers the engine computes into a
+        #  page a reader trusts; regenerating it on a clean merge would
+        #  re-record them in silence -- the blanket --record CLAUDE.md 10
+        #  forbids.  It is listed, with its check's own diff, and the
+        #  decision is Vítor's.  (Found by the first proof run: the green-
+        #  ammonia README's NPV table had moved, on main as well.)
+        if e["phase"] == "engine" and why == "stale":
+            moved_engine.append((name, " ".join(e["check"]),
+                                 tail(out, 12)))
+            say(f"[{stamp()}] {name}: engine numbers MOVED -- listed, not "
+                "regenerated")
+            continue
+        say(f"[{stamp()}] regenerate {name} ({why})")
+        argv = list(e["generate"])
+        rc, out = run(argv, wt, env=env, timeout=GATE_TIMEOUT,
+                      log=logdir / f"generate-{name}.log")
+        if rc != 0:
+            raise Stop(f"regenerating {name} failed (`{' '.join(argv)}`):\n"
+                       + tail(out, 20))
+        if e["check"]:
+            rc, out = run(e["check"], wt, env=env, timeout=GATE_TIMEOUT)
+            if rc != 0:
+                raise Stop(f"{name} is STILL stale after `{' '.join(argv)}` "
+                           "-- the generator does not produce what its "
+                           "registry entry claims, or the check holds a half "
+                           "no regeneration can fix:\n" + tail(out, 20))
+        done.append(name)
+    return done
+
+
+def npm_ci(wt: Path, logdir: Path):
+    say(f"[{stamp()}] npm ci in gui/ (the worktree has no node_modules)")
+    run(["npm", "ci", "--no-audit", "--no-fund"], wt / "gui",
+        env=tree_env(wt), log=logdir / "npm-ci.log", check=True)
+
+
+# --------------------------------------------------------------------------
+#  4. guides
+# --------------------------------------------------------------------------
+
+def guides(wt: Path, reg, base, touched, conflicted_paths, logdir, findings):
+    fresh = curate_module(wt, "check_guide_pdf_fresh")
+    tset = set(touched) | set(conflicted_paths)
+    added = added_cases(wt, base)
+    rebuilt, texts = [], {}
+    for g in reg.public_guides(wt):
+        srcs = set(fresh.sources_of(g)) | {f"docs/{g}.pdf"}
+        if not (srcs & tset):
+            continue
+        say(f"[{stamp()}] make -B -C docs {g}.pdf")
+        rc, out = run(["make", "-B", "-C", "docs", f"{g}.pdf"], wt,
+                      env=tree_env(wt), timeout=1800,
+                      log=logdir / f"pdf-{g}.log")
+        if rc != 0:
+            raise Stop(f"rebuilding docs/{g}.pdf failed:\n" + tail(out, 20))
+        rc, txt = run(["pdftotext", "-q", f"docs/{g}.pdf", "-"], wt)
+        if rc != 0 or not txt.strip():
+            raise Stop(f"pdftotext could not read docs/{g}.pdf back -- a "
+                       "check that cannot run must not pass")
+        texts[g] = txt
+        rebuilt.append(g)
+    #  The read-back: every case the merge ADDS must be findable in a guide
+    #  that was rebuilt (the Tutorials Guide lists every case).  Underscores
+    #  and line breaks are normalised away -- pdftotext may break a long name.
+    norm = {g: re.sub(r"[\s\u00ad-]+", "", t) for g, t in texts.items()}
+    for c in added:
+        key = re.sub(r"[\s-]+", "", c)
+        where = [g for g, t in norm.items() if key in t]
+        if where:
+            findings.append(f"read back: {c} appears in {', '.join(where)}")
+        else:
+            findings.append(f"READ-BACK MISSING: the added case {c} appears "
+                            "in no rebuilt guide" + (" (none was rebuilt)"
+                                                     if not texts else ""))
+    return rebuilt, added
+
+
+def added_cases(wt: Path, base: str):
+    out = git(wt, "diff", "--name-only", "--diff-filter=A", base, "HEAD",
+              "--", "tutorials") or ""
+    return sorted({Path(p).parent.parent.name for p in out.split()
+                   if p.endswith("/system/controlDict")})
+
+
+# --------------------------------------------------------------------------
+#  6. reach
+# --------------------------------------------------------------------------
+
+def case_of(root: Path, rel: str):
+    p = (root / rel).parent
+    while p != root and p != p.parent:
+        if (p / "system" / "controlDict").is_file():
+            return p.relative_to(root).as_posix()
+        p = p.parent
+    return None
+
+
+def changed_lines_move(root: Path, base: str, rel: str) -> bool:
+    """True when a hunk of `rel` adds and removes a different number of
+    lines -- every line after it then answers to a different number."""
+    out = git(root, "diff", "-U0", base, "HEAD", "--", rel, check=False) or ""
+    for m in re.finditer(r"^@@ -\d+(?:,(\d+))? \+\d+(?:,(\d+))? @@", out, re.M):
+        if int(m.group(1) or 1) != int(m.group(2) or 1):
+            return True
+    return False
+
+
+class CaseTexts:
+    """Every case's own dict text (system/ and constant/ top level), read
+    once -- the scan behind a factory key no manifest index carries and
+    behind a data record's name.  Generous by design: presence is evidence,
+    absence weak, exactly as case_manifest.py says of its own scan."""
+
+    def __init__(self, root: Path, cases):
+        self.texts = {}
+        for c in cases:
+            parts = []
+            for sub in ("system", "constant"):
+                d = root / c / sub
+                if d.is_dir():
+                    for f in sorted(d.iterdir()):
+                        if f.is_file() and f.stat().st_size < 400_000:
+                            parts.append(f.read_text(errors="ignore"))
+            self.texts[c] = "\n".join(parts)
+
+    def naming(self, *words):
+        pats = [re.compile(r"\b" + re.escape(w) + r"\b") for w in words]
+        return {c for c, t in self.texts.items()
+                if all(p.search(t) for p in pats)}
+
+
+def reach(root: Path, base: str, files):
+    """-> dict(cases, gates, scoped_gates, gui, fast, full, why)."""
+    cm = json.loads((root / "generated" / "codeMap.json").read_text())
+    man = json.loads((root / "generated" / "caseManifest.json").read_text())
+    registries = set(cm["factories"])
+    keys_of_type = {}
+    for reg_file, es in cm["factories"].items():
+        for e in es:
+            keys_of_type.setdefault(e["type"], set()).add(e["key"])
+    header_classes = {}
+    for cls, hs in cm["classes"].items():
+        for h in hs:
+            header_classes.setdefault(h, set()).add(cls)
+    index = {}
+    for idx in man["indices"].values():
+        for k, cs in idx.items():
+            index.setdefault(k, set()).update(cs)
+    all_cases = list(man["cases"])
+    texts = None
+
+    def cases_for_key(k):
+        nonlocal texts
+        if k in index:
+            return set(index[k])
+        if texts is None:
+            texts = CaseTexts(root, all_cases)
+        return texts.naming(k)
+
+    def keys_of_tu(tu):
+        stem = tu[:-len(".cpp")] if tu.endswith(".cpp") else tu[:-2]
+        ks = set()
+        for cls in header_classes.get(stem + ".H", ()):
+            ks |= keys_of_type.get(cls, set())
+            if cls in index:
+                ks.add(cls)
+            lc = cls[:1].lower() + cls[1:]
+            if lc in index:
+                ks.add(lc)
+        return ks
+
+    cases, gui, fast, full, why = set(), [], [], [], []
+    lesson_text = None
+    for f in files:
+        p = Path(f)
+        if f.startswith("tutorials/"):
+            c = case_of(root, f)
+            if c:
+                cases.add(c)
+        elif f.startswith("gui/"):
+            gui.append(f)
+        elif f in ("Makefile",) or f.startswith("make/"):
+            fast.append(f"{f} (the build system)")
+        elif f.startswith("src/"):
+            if not (root / f).exists():
+                full.append(f"{f} was DELETED -- its reach cannot be read "
+                            "from a map of the tree it left")
+                continue
+            if f in registries:
+                fast.append(f"{f} (a factory registration)")
+                continue
+            if re.match(r"src/applications/[^/]+/main\.cpp$", f):
+                full.append(f"{f} is a binary's main: it reaches every case "
+                            "of that binary")
+                continue
+            if f.endswith(".cpp"):
+                own = keys_of_tu(f)
+                hdr = f[:-4] + ".H"
+                tus = [t for t in cm["includesReverse"].get(hdr, [])
+                       if t not in registries and t != f]
+                ks = set(own)
+                orphans = []
+                for t in tus:
+                    k2 = keys_of_tu(t)
+                    ks |= k2
+                    if not k2:
+                        orphans.append(t)
+                if not own and orphans:
+                    full.append(f"{f} registers no type, and its header is "
+                                f"included by {orphans[0]}"
+                                + (f" (+{len(orphans) - 1} more)"
+                                   if len(orphans) > 1 else "")
+                                + ", which registers none either -- a shared "
+                                "path")
+                    continue
+                if not ks:
+                    full.append(f"{f} registers no type and no TU that "
+                                "registers one includes its header -- its "
+                                "reach cannot be attributed")
+                    continue
+            else:          # a header: every TU that includes it is reached
+                tus = [t for t in cm["includesReverse"].get(f, [])
+                       if t not in registries]
+                ks, orphans = set(), []
+                for t in tus:
+                    k2 = keys_of_tu(t)
+                    ks |= k2
+                    if not k2:
+                        orphans.append(t)
+                if orphans:
+                    full.append(f"{f} is included by {orphans[0]}"
+                                + (f" (+{len(orphans) - 1} more)"
+                                   if len(orphans) > 1 else "")
+                                + ", which registers no type -- a shared path")
+                    continue
+            for k in sorted(ks):
+                got = cases_for_key(k)
+                cases |= got
+                why.append(f"{f} -> `{k}` -> {len(got)} case(s)")
+            #  A lesson that cites this file by file:line moves with it.
+            if lesson_text is None:
+                lesson_text = "\n".join(
+                    q.read_text(errors="ignore")
+                    for d in ("gui/src", "gui/tests")
+                    for q in (root / d).rglob("*.ts*") if q.is_file())
+            if re.search(re.escape(p.name) + r":\d", lesson_text) and \
+                    changed_lines_move(root, base, f):
+                gui.append(f"{f} (cited by file:line in gui/, and lines "
+                           "moved)")
+        elif f.startswith("data/standards/") and f.endswith(".dat"):
+            words = [w for w in p.stem.split("-") if w]
+            if texts is None:
+                texts = CaseTexts(root, all_cases)
+            got = texts.naming(*words)
+            if len(got) > MAX_CASES:
+                full.append(f"{f} is named by {len(got)} cases (> "
+                            f"{MAX_CASES}): a shared record")
+            else:
+                cases |= got
+                why.append(f"{f} -> {len(got)} case(s) naming "
+                           f"{' + '.join(words)}")
+        elif f.startswith("data/"):
+            full.append(f"{f}: a catalogue-level file, read by every case "
+                        "that loads the catalogue")
+    if len(cases) > MAX_CASES:
+        full.append(f"the diff reaches {len(cases)} cases (> {MAX_CASES}): "
+                    "past that the targeted run is the sweep in all but name")
+    cases = sorted(c for c in cases if (root / c / "system" /
+                                       "controlDict").is_file())
+
+    #  GATES: every gate whose source names a touched file -- by path, file
+    #  name, or (src/ and bin/curate modules) stem.  Deliberately generous:
+    #  a wrongly included gate costs seconds, a wrongly excluded one a
+    #  regression nobody sees (the bin/runTests --gui reasoning).
+    #  A FILE NAME names a file only when no other tracked file shares it:
+    #  `expected`, `controlDict` or `README.md` would reach every gate that
+    #  runs any case (measured on the C119 branch: 141 gates, almost all
+    #  through `expected`).  A tutorial file is named by its CASE instead.
+    names = {}
+    for t in (git(root, "ls-files") or "").split("\n"):
+        n = t.rsplit("/", 1)[-1]
+        names[n] = names.get(n, 0) + 1
+    tokens = {}
+    for f in files:
+        p = Path(f)
+        t = {f}
+        #  ...and is not an English word: an extensionless all-lowercase name
+        #  (`integrate`) matches prose, not references to the file.
+        plainword = "." not in p.name and p.name.isalpha() and \
+            p.name.islower()
+        if names.get(p.name, 0) <= 1 and not f.startswith("tutorials/") \
+                and not plainword:
+            t.add(p.name)
+        if (f.startswith("src/") or f.startswith("bin/curate/")) and \
+                len(p.stem) >= 6:
+            t.add(p.stem)
+        if f.startswith("tutorials/"):
+            c = case_of(root, f)
+            if c:
+                t.add(Path(c).name)
+        tokens[f] = t
+    #  Which gates `runTests --scope` itself runs is read from runTests (its
+    #  `for fg in ...` loop), never listed here: a second list would drift.
+    rt = (root / "bin" / "runTests").read_text(errors="ignore")
+    m = re.search(r"for fg in ((?:check_\w+\s*\\?\s*)+);\s*do", rt)
+    in_scope_run = set(re.findall(r"check_\w+", m.group(1))) if m else set()
+    pats = {t: re.compile(r"(?<![\w])" + re.escape(t) + r"(?![\w])")
+            for ts in tokens.values() for t in ts}
+    gates, scoped = {}, {}
+    for g in sorted((root / "bin" / "curate").glob("check_*.py")):
+        src = g.read_text(errors="ignore")
+        #  Whole-token matches only: `integrate` must not reach a gate that
+        #  says "integrates" (measured on this slice's own branch).
+        hit = [f for f, ts in tokens.items()
+               if any(pats[t].search(src) for t in ts)]
+        rel = g.relative_to(root).as_posix()
+        if rel in files:
+            hit.insert(0, rel)
+        if not hit:
+            continue
+        #  A conservation gate `runTests --scope` runs judges CASES: it runs
+        #  there, scoped to the pass -- unless the gate itself (or the cache
+        #  module) changed, which reaches all of it.
+        if g.stem in in_scope_run and rel not in files and \
+                "bin/curate/suite_cache.py" not in files:
+            scoped[g.stem] = hit
+        else:
+            gates[g.stem] = hit
+    return dict(cases=cases, gates=gates, scoped_gates=scoped, gui=gui,
+                fast=fast, full=full, why=why)
+
+
+def print_plan(plan):
+    say(f"  cases ({len(plan['cases'])}):")
+    for w in plan["why"]:
+        say(f"    {w}")
+    for c in plan["cases"][:60]:
+        say(f"    {c}")
+    if len(plan["cases"]) > 60:
+        say(f"    ... {len(plan['cases']) - 60} more")
+    say(f"  gates ({len(plan['gates'])}), each standalone:")
+    for g, hit in plan["gates"].items():
+        say(f"    {g:<44} <- {hit[0]}" + (f" (+{len(hit) - 1})"
+                                          if len(hit) > 1 else ""))
+    if plan["scoped_gates"]:
+        say("  conservation gates reached by name, "
+            + ("judged inside --scope: " if plan["cases"] else
+               "NOT run -- no case is reached, so no balance can move: ")
+            + ", ".join(plan["scoped_gates"]))
+    say(f"  --gui:  {'YES -- ' + plan['gui'][0] if plan['gui'] else 'no'}")
+    say(f"  --fast: {'YES -- ' + plan['fast'][0] if plan['fast'] else 'no'}")
+    if plan["full"]:
+        say("  FULL SWEEP REACHED (not launched -- needs Vítor's "
+            "authorisation):")
+        for w in plan["full"]:
+            say(f"    {w}")
+
+
+# --------------------------------------------------------------------------
+#  6b. running the validation
+# --------------------------------------------------------------------------
+
+def run_scope(wt, cases, logdir, results, moved):
+    say(f"[{stamp()}] bin/runTests --scope ({len(cases)} case(s))")
+    rc, out = run([str(wt / "bin" / "runTests"), "--scope"] +
+                  [str(wt / c) for c in cases], wt, env=tree_env(wt),
+                  log=logdir / "runTests-scope.log")
+    tally = re.findall(r"^PASS (\d+) / FAIL (\d+)", out, re.M)
+    if not tally or "[scope]" not in out:
+        #  A CHECK THAT CANNOT RUN MUST NOT PASS: a tree whose runTests
+        #  predates --scope takes the flag for a case path and refuses.
+        results.append(("runTests --scope", None,
+                        "COULD NOT RUN -- no scoped verdict printed (does "
+                        "this tree's bin/runTests know --scope?); see "
+                        "runTests-scope.log:\n" + tail(out, 12)))
+        return
+    p, f = map(int, tally[-1])
+    #  Golden rows that moved: listed, never re-recorded.
+    cur = None
+    for line in out.splitlines():
+        m = re.match(r"^FAIL  (\S+)\s+\(KPI mismatch\)", line)
+        if m:
+            cur = m.group(1)
+            continue
+        if cur and line.startswith("    ") and ": " in line:
+            moved.append(f"{cur}  {line.strip()}")
+        elif not line.startswith("    "):
+            cur = None
+    fails = [ln.strip() for ln in out.splitlines() if ln.startswith("FAIL ")]
+    #  A ledger gate whose every candidate lies outside this pass REFUSES
+    #  ("checked nothing"), which is its rule for --fast, where the declared
+    #  set must reach it.  Under --scope it means the merge reaches no case in
+    #  that gate's subject: reported as NO SUBJECT, said aloud, and not
+    #  counted as a failure -- the gate still printed no claim of coverage.
+    blocks = re.split(r"(?m)^(?=FAIL |PASS )", out)
+    nosubject = [b.split()[1] for b in blocks if b.startswith("FAIL ")
+                 and "OUT OF SCOPE -- the" in b and "ran none of them" in b]
+    f -= len(nosubject)
+    fails = [x for x in fails if x.split()[1] not in nosubject]
+    for g in nosubject:
+        results.append((f"  scoped {g}", True, "NO SUBJECT -- none of this "
+                        "pass's cases is in the gate's candidate set, so it "
+                        "judged nothing (its refusal, read as such)"))
+    results.append(("runTests --scope", f == 0,
+                    f"PASS {p} / FAIL {f}" + ("" if f == 0 else
+                                             "\n" + "\n".join("    " + x
+                                                             for x in fails[:20]))))
+    for line in out.splitlines():
+        m = re.match(r"^(PASS|FAIL)\s+(mass_closure|energy_closure|"
+                     r"element_balance|closure_ledger_pinned|"
+                     r"energy_boundary_pinned)\s+\((.*)\)$", line)
+        if m and m.group(2) not in nosubject:
+            results.append((f"  scoped {m.group(2)}", m.group(1) == "PASS",
+                            m.group(3)[:300]))
+
+
+def run_gates(wt, gates, logdir, results, observed):
+    claim_mod = curate_module(wt, "gate_claim")
+    ds = None
+    if (wt / "bin" / "curate" / "destructive_session.py").is_file():
+        ds = curate_module(wt, "destructive_session")
+    for g in gates:
+        if ds:
+            try:
+                ds.assert_tree_undisturbed("bin/integrate")
+            except SystemExit:
+                results.append((g, None, "NOT RUN -- a destructive session "
+                                "is open in the worktree"))
+                return
+        t = time.monotonic()
+        rc, out = run([sys.executable, f"bin/curate/{g}.py"], wt,
+                      env=tree_env(wt), timeout=GATE_TIMEOUT,
+                      log=logdir / f"gate-{g}.log")
+        secs = time.monotonic() - t
+        claim = claim_mod.claim_in(out, g)
+        if rc is None:
+            results.append((g, None, f"TIMED OUT after {GATE_TIMEOUT}s -- "
+                            "run `make all` before believing anything after "
+                            "it (a killed gate may leave a sabotaged build)"))
+            continue
+        if rc == 0:
+            observed[g] = claim
+            if claim:
+                shown = claim
+            elif out.strip():
+                shown = ("(marks no claim) "
+                         + out.strip().splitlines()[0][:150])
+            else:
+                shown = "(no output)"
+            results.append((g, True, f"{shown}  [{secs:.1f}s]"))
+        else:
+            results.append((g, False, f"exit {rc}  [{secs:.1f}s]\n"
+                            + tail(out, 15)))
+
+
+def run_tier(wt, flag, logdir, results):
+    if flag == "--gui" and not (wt / "gui" / "node_modules").is_dir():
+        npm_ci(wt, logdir)
+    say(f"[{stamp()}] bin/runTests {flag}")
+    rc, out = run([str(wt / "bin" / "runTests"), flag], wt, env=tree_env(wt),
+                  log=logdir / f"runTests{flag}.log")
+    tally = re.findall(r"^PASS (\d+) / FAIL (\d+)", out, re.M)
+    if not tally:
+        results.append((f"runTests {flag}", None, "COULD NOT RUN -- no "
+                        "verdict:\n" + tail(out, 12)))
+        return
+    p, f = map(int, tally[-1])
+    fails = [ln.strip() for ln in out.splitlines()
+             if ln.startswith(("FAIL ", "REFUSED "))]
+    results.append((f"runTests {flag}", f == 0, f"PASS {p} / FAIL {f}"
+                    + ("" if f == 0 else "\n" + "\n".join(
+                        "    " + x for x in fails[:20]))))
+
+
+# --------------------------------------------------------------------------
+#  7. gate manifest
+# --------------------------------------------------------------------------
+
+def refresh_manifest(wt, base_sha, br_sha, observed, logdir, results):
+    man_p = wt / "generated" / "gateManifest.json"
+    if not man_p.is_file():
+        return []
+    have = json.loads(man_p.read_text()).get("gates", {})
+    names = sorted(p.stem for p in (wt / "bin" / "curate").glob("check_*.py"))
+    want = set()
+    #  (a) gates whose entry the BRANCH changed: if the merge conflicted in
+    #  the manifest, main's side was taken and the branch's observation lost,
+    #  so it is observed again here, in the merged tree.
+    mb = git(wt, "merge-base", base_sha, br_sha)
+
+    def entries(rev):
+        raw = git(wt, "show", f"{rev}:generated/gateManifest.json",
+                  check=False)
+        try:
+            return json.loads(raw or "{}").get("gates", {})
+        except json.JSONDecodeError:
+            return {}
+    before, theirs = entries(mb), entries(br_sha)
+    want |= {g for g in theirs if theirs[g] != before.get(g) and g in names}
+    #  (b) gates new to the tree
+    want |= {g for g in names if g not in have}
+    #  (c) gates whose claim moved in the validation run
+    want |= {g for g, c in observed.items()
+             if c and have.get(g, {}).get("claim") != c}
+    if not want:
+        return []
+    say(f"[{stamp()}] gate_manifest.py --only {' '.join(sorted(want))}")
+    rc, out = run([sys.executable, "bin/curate/gate_manifest.py", "--only"]
+                  + sorted(want), wt, env=tree_env(wt), timeout=GATE_TIMEOUT,
+                  log=logdir / "gate-manifest.log")
+    results.append(("gate_manifest --only", rc == 0, tail(out, 12).strip()))
+    return sorted(want) if rc == 0 else []
+
+
+# --------------------------------------------------------------------------
+#  main
+# --------------------------------------------------------------------------
+
+def commit(wt, paths, message):
+    paths = [p for p in paths if p]
+    if not paths:
+        return None
+    git(wt, "add", "--", *paths)
+    if not git(wt, "diff", "--cached", "--name-only"):
+        return None
+    git(wt, "commit", "--quiet", "-m", f"{message}\n\n{TRAILER}\n",
+        env=git_env())
+    return git(wt, "rev-parse", "--short", "HEAD")
+
+
+def changed_paths(wt):
+    #  -z and no stripping: `git()` strips its output, and a porcelain line
+    #  begins with a SPACE for a worktree-only change -- stripped, the first
+    #  path lost its first letter (`ocs/designGuide.pdf`, the first proof run).
+    rc, out = run(["git", "-C", str(wt), "status", "--porcelain", "-z"], wt)
+    if rc != 0:
+        raise Stop("`git status` failed in the worktree:\n" + tail(out, 10))
+    return [rec[3:] for rec in out.split("\0") if len(rec) > 3]
+
+
+def parse(argv):
+    opts = dict(branch=None, base="origin/main", worktree=None, jobs=2,
+                validate=True, plan=False, discard=False)
+    it = iter(argv)
+    for a in it:
+        if a in ("-h", "--help"):
+            print(__doc__)
+            sys.exit(0)
+        elif a == "--base":
+            opts["base"] = next(it, None)
+        elif a == "--worktree":
+            opts["worktree"] = next(it, None)
+        elif a == "--jobs":
+            opts["jobs"] = int(next(it, "2"))
+        elif a == "--no-validate":
+            opts["validate"] = False
+        elif a == "--plan":
+            opts["plan"] = True
+        elif a == "--discard":
+            opts["discard"] = True
+        elif a.startswith("-"):
+            print(f"bin/integrate: unknown option {a!r} -- nothing was done "
+                  "(see --help)")
+            sys.exit(2)
+        elif opts["branch"] is None:
+            opts["branch"] = a
+        else:
+            print(f"bin/integrate: one branch at a time (got {a!r} too)")
+            sys.exit(2)
+    if not opts["branch"] or not opts["base"]:
+        print("usage: bin/integrate <branch> [--base REF] [--worktree DIR] "
+              "[--jobs N] [--no-validate] [--plan]   (--help for more)")
+        sys.exit(2)
+    return opts
+
+
+def main(argv):
+    o = parse(argv)
+    repo = Path(git(TOOL_ROOT, "rev-parse", "--path-format=absolute",
+                    "--git-common-dir")).parent
+    label, br_sha, base_sha, slug = resolve_refs(repo, o["branch"], o["base"])
+
+    if o["plan"]:
+        mb = git(repo, "merge-base", base_sha, br_sha)
+        files = (git(repo, "diff", "--name-only", mb, br_sha) or "").split()
+        say(f"PLAN for {label} ({br_sha[:10]}) onto {o['base']} "
+            f"({base_sha[:10]}): {len(files)} file(s) the branch changes.")
+        say(f"  (maps read from {TOOL_ROOT}; the merged tree may differ)")
+        print_plan(reach(TOOL_ROOT, mb, files))
+        return 0
+
+    if git(repo, "merge-base", "--is-ancestor", br_sha, base_sha,
+           check=False) is not None:
+        say(f"{label} ({br_sha[:10]}) is already contained in {o['base']}: "
+            "nothing to integrate.")
+        return 0
+
+    wt = Path(o["worktree"]) if o["worktree"] else \
+        repo / ".claude" / "worktrees" / f"integ-{slug}"
+    #  The logs live in the worktree's GIT directory, never under build/:
+    #  check_build_fresh reads every directory of build/ as a platform build,
+    #  and the second proof run's `build/integrate/` made it ABORT the suite
+    #  ("integrate carries no .stamp-cxx-*").
+    logdir = None
+    verdict = {"merged": None, "regenerated": [], "pdfs": [], "findings": [],
+               "notes": [], "results": [], "moved": [], "manifest": [],
+               "commits": [], "plan": None, "movedEngine": []}
+    code = 0
+    try:
+        prepare_worktree(repo, wt, slug, base_sha, o["discard"])
+        logdir = Path(git(wt, "rev-parse", "--absolute-git-dir")) / "integrate"
+        if logdir.exists():
+            shutil.rmtree(logdir)
+        logdir.mkdir(parents=True)
+        LOGDIR[0] = logdir
+        reg = curate_module(wt, "generated_artefacts")
+        resolved = merge(wt, label, br_sha, slug, reg)
+        verdict["merged"] = git(wt, "rev-parse", "--short", "HEAD")
+        conflicted = {n for _, n in resolved}
+        touched = (git(wt, "diff", "--name-only", base_sha, "HEAD") or
+                   "").split()
+
+        verdict["regenerated"] += regenerate(
+            wt, reg, ("pre", "node"), conflicted, touched, logdir,
+            verdict["notes"], verdict["movedEngine"])
+
+        say(f"[{stamp()}] make -j{o['jobs']} all")
+        t = time.monotonic()
+        rc, out = run(["make", f"-j{o['jobs']}", "all"], wt,
+                      env=tree_env(wt), log=logdir / "make.log")
+        if rc != 0:
+            raise Stop("the BUILD failed:\n" + tail(out, 30))
+        verdict["notes"].append(f"build: make -j{o['jobs']} all, "
+                                f"{time.monotonic() - t:.0f}s")
+
+        verdict["regenerated"] += regenerate(
+            wt, reg, ("build", "engine"), conflicted, touched, logdir,
+            verdict["notes"], verdict["movedEngine"])
+        pdfs, added = guides(wt, reg, base_sha, touched + changed_paths(wt),
+                             [p for p, _ in resolved], logdir,
+                             verdict["findings"])
+        verdict["pdfs"] = pdfs
+        if any(f.startswith("READ-BACK MISSING") for f in verdict["findings"]):
+            raise Stop("a case the merge adds is missing from the rebuilt "
+                       "guides:\n" + "\n".join(
+                           "    " + f for f in verdict["findings"]
+                           if f.startswith("READ-BACK")))
+        sha = commit(wt, changed_paths(wt),
+                     f"integrate {label}: regenerate "
+                     f"{', '.join(verdict['regenerated']) or 'nothing'}; "
+                     f"rebuild {', '.join(p + '.pdf' for p in pdfs) or 'no guide'}")
+        if sha:
+            verdict["commits"].append(sha)
+
+        if o["validate"]:
+            files = (git(wt, "diff", "--name-only", base_sha, "HEAD") or
+                     "").split()
+            plan = reach(wt, base_sha, files)
+            verdict["plan"] = plan
+            say(f"[{stamp()}] validation sized by reach ({len(files)} "
+                "file(s) differ from the base):")
+            print_plan(plan)
+            observed = {}
+            if plan["cases"]:
+                run_scope(wt, plan["cases"], logdir, verdict["results"],
+                          verdict["moved"])
+            gates = sorted(set(plan["gates"]) | {"check_doc_references"})
+            run_gates(wt, gates, logdir, verdict["results"], observed)
+            rc, out = run([sys.executable,
+                           "bin/curate/generated_artefacts.py", "--check"],
+                          wt, env=tree_env(wt))
+            verdict["results"].append(("generated_artefacts --check",
+                                       rc == 0, out.strip()[:300]))
+            if plan["gui"]:
+                run_tier(wt, "--gui", logdir, verdict["results"])
+            if plan["fast"]:
+                run_tier(wt, "--fast", logdir, verdict["results"])
+            verdict["manifest"] = refresh_manifest(
+                wt, base_sha, br_sha, observed, logdir, verdict["results"])
+            sha = commit(wt, ["generated/gateManifest.json"]
+                         if verdict["manifest"] else [],
+                         f"integrate {label}: gate-manifest claims "
+                         f"re-observed ({', '.join(verdict['manifest'])})")
+            if sha:
+                verdict["commits"].append(sha)
+            if any(ok is not True for _, ok, _ in verdict["results"]):
+                code = 1
+            elif plan["full"]:
+                code = 3
+        if verdict["movedEngine"] and code != 1:
+            code = 1
+    except Stop as s:
+        verdict["stop"] = str(s)
+        code = s.code
+    print_verdict(o, label, br_sha, base_sha, wt, verdict, code)
+    return code
+
+
+def print_verdict(o, label, br_sha, base_sha, wt, v, code):
+    lines = ["", "=" * 76, f"INTEGRATION VERDICT  {label} ({br_sha[:10]}) "
+             f"onto {o['base']} ({base_sha[:10]})   [{stamp().strip()}]",
+             "=" * 76, f"worktree   {wt}"]
+    if v["merged"]:
+        lines.append(f"merged     integ HEAD {v['merged']}")
+    if v["regenerated"]:
+        lines.append("regenerated  " + ", ".join(v["regenerated"]))
+    if v["pdfs"]:
+        lines.append("rebuilt      " + ", ".join(p + ".pdf" for p in v["pdfs"])
+                     + "  (make -B, read back with pdftotext)")
+    for f in v["findings"]:
+        lines.append("  " + f)
+    for n in v["notes"]:
+        lines.append("note       " + n)
+    if v["commits"]:
+        lines.append("commits    " + " ".join(v["commits"])
+                     + "  (on top of the merge)")
+    if v["results"]:
+        lines.append("checks:")
+        for name, ok, text in v["results"]:
+            mark = {True: "PASS", False: "FAIL", None: "N/A "}[ok]
+            first, *rest = (text or "").split("\n")
+            lines.append(f"  {mark}  {name:<38} {first}")
+            lines += ["        " + r for r in rest]
+    if v["manifest"]:
+        lines.append("gate manifest re-observed: " + ", ".join(v["manifest"]))
+    for name, chk, diff in v["movedEngine"]:
+        lines.append(f"ENGINE NUMBERS MOVED in `{name}` (`{chk}` fails) -- "
+                     "NOT regenerated; a moved number in a page a reader "
+                     "trusts is a golden, and the decision is Vítor's:")
+        lines.append(diff)
+    if v["moved"]:
+        lines.append(f"GOLDEN ROWS THAT MOVED ({len(v['moved'])}) -- NOT "
+                     "re-recorded; the decision is Vítor's:")
+        lines += ["    " + m for m in v["moved"]]
+    plan = v.get("plan")
+    if plan and plan["full"]:
+        lines.append("FULL SWEEP REACHED -- not launched (CLAUDE.md 0.4: a "
+                     "written reason and Vítor's authorisation):")
+        lines += ["    " + w for w in plan["full"]]
+    lines.append("-" * 76)
+    if "stop" in v:
+        lines.append("STOPPED: " + v["stop"])
+    elif code == 0:
+        lines.append(f"ready: fast-forward main with `git -C {wt} push origin "
+                     "HEAD:main`" + ("" if o["validate"] else
+                                     "   (UNVALIDATED: --no-validate)"))
+    elif code == 3:
+        lines.append("BLOCKED on a decision that is Vítor's: everything the "
+                     "tool could run passed, and the diff reaches a shared "
+                     "path (above).  Nothing was pushed.")
+    else:
+        lines.append("NOT READY: the first failure is above.  Nothing was "
+                     "pushed.")
+    text = "\n".join(lines)
+    say(text)
+    if LOGDIR[0] is not None:
+        try:
+            (LOGDIR[0] / "verdict.txt").write_text(text + "\n")
+            say(f"(logs and this verdict: {LOGDIR[0]})")
+        except OSError:
+            pass
+
+
+if __name__ == "__main__":
+    try:
+        sys.exit(main(sys.argv[1:]))
+    except Stop as s:
+        print(f"bin/integrate: STOPPED -- {s}")
+        sys.exit(s.code)

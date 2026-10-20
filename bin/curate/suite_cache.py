@@ -40,6 +40,24 @@ DIR = os.environ.get("CHOUPO_SUITE_OUTPUTS") or None
 #  live exactly as they always have.
 SCOPED = DIR is not None and os.environ.get("CHOUPO_SUITE_SCOPE") == "1"
 
+#  A SCOPE SET BY HAND, WRONGLY, IS SAID ALOUD (2026-10-20, DEV.md 4c C122).
+#  `CHOUPO_SUITE_SCOPE=<a path>` -- what the commander exported that day --
+#  is neither "1" nor accompanied by a cache, so every gate quietly fell back
+#  to its standalone corpus sweep and took twenty minutes.  The right way to
+#  scope these gates to a set of cases is `bin/runTests --scope <cases>`,
+#  which fills the cache and sets both variables; anything else is announced
+#  here, once per gate process, on stderr (the claim on stdout is untouched).
+_raw_scope = os.environ.get("CHOUPO_SUITE_SCOPE")
+if _raw_scope is not None and not SCOPED:
+    import sys as _sys
+    print("[suite_cache] CHOUPO_SUITE_SCOPE=%r is NOT a scope here (%s) -- "
+          "this gate runs its cases LIVE, unscoped.  To scope the "
+          "conservation gates to a set of cases, run `bin/runTests --scope "
+          "<case>...`; it fills the cache and sets both variables."
+          % (_raw_scope, "no CHOUPO_SUITE_OUTPUTS cache was handed over"
+             if DIR is None else "the scope flag must read exactly 1"),
+          file=_sys.stderr)
+
 OUT_OF_SCOPE = object()   # distinct from None ("no cached text"): see below
 
 
@@ -66,8 +84,8 @@ def scope_sentence(considered: int, skipped: int) -> str:
     so an ordinary sweep's claim is unchanged byte for byte."""
     if not SCOPED:
         return ""
-    return ("  SCOPED to the caller's own case pass (bin/runTests --fast): "
-            "%d of %d candidate case(s) were in reach and %d were NOT RUN by "
-            "this invocation and so were not judged -- this claim covers the "
-            "fast set alone, never the corpus."
+    return ("  SCOPED to the caller's own case pass (bin/runTests --fast or "
+            "--scope): %d of %d candidate case(s) were in reach and %d were "
+            "NOT RUN by this invocation and so were not judged -- this claim "
+            "covers that pass alone, never the corpus."
             % (considered, considered + skipped, skipped))
