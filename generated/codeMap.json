@@ -831,6 +831,9 @@
   "IdealSolution": [
    "src/thermo/activityCoefficient/IdealSolution.H"
   ],
+  "IndoorPlace": [
+   "src/postProcessing/layout/BuildingLayout.H"
+  ],
   "InfeasibleTrial": [
    "src/core/InfeasibleTrial.H"
   ],
@@ -1436,6 +1439,7 @@
   "Result": [
    "src/thermo/electrolyte/AqueousVolumetric.H",
    "src/unitOperations/distillation/TrayHydraulics.H",
+   "src/unitOperations/flash/IncipientPhase.H",
    "src/unitOperations/reactor/wallHeatTransfer/BedWallHeatTransfer.H",
    "src/unitOperations/saturation/BubblePoint.H",
    "src/unitOperations/saturation/DewPoint.H"
@@ -3239,6 +3243,7 @@
    "src/core/Origin.H",
    "src/core/ThermoResolution.H"
   ],
+  "src/core/Types.H": [],
   "src/core/Units.cpp": [
    "src/core/Dimensions.H",
    "src/core/Types.H",
@@ -5004,6 +5009,11 @@
    "src/unitOperations/UnitOperation.H",
    "src/unitOperations/flash/IsothermalFlash.H",
    "src/unitOperations/saturation/BubblePoint.H"
+  ],
+  "src/propertyOps/PropertyOperation.H": [
+   "src/core/Dictionary.H",
+   "src/core/Dimensions.H",
+   "src/core/Types.H"
   ],
   "src/propertyOps/PropertyOperation.cpp": [
    "src/core/Constants.H",
@@ -7937,6 +7947,7 @@
    "src/thermo/solidEquilibrium/SolidEquilibrium.H",
    "src/thermo/vaporPressure/VaporPressureModel.H",
    "src/unitOperations/UnitOperation.H",
+   "src/unitOperations/flash/IncipientPhase.H",
    "src/unitOperations/flash/IsothermalFlash.H",
    "src/unitOperations/flash/PureSaturationPlateau.H",
    "src/unitOperations/flash/StreamEquilibrium.H"
@@ -9005,6 +9016,7 @@
    "src/thermo/PackageAudit.H",
    "src/thermo/ThermoPackage.H",
    "src/unitOperations/UnitOperation.H",
+   "src/unitOperations/flash/IncipientPhase.H",
    "src/unitOperations/saturation/BubblePoint.H"
   ],
   "src/unitOperations/saturation/DewPoint.cpp": [
@@ -9846,6 +9858,7 @@
    "src/propertyOps/PitzerActivity.cpp",
    "src/propertyOps/PolarisationIndex.cpp",
    "src/propertyOps/PropertyEvaluator.cpp",
+   "src/propertyOps/PropertyOperation.H",
    "src/propertyOps/PropertyOperation.cpp",
    "src/propertyOps/PropertyPoint.cpp",
    "src/propertyOps/PropertyScan1D.cpp",
@@ -10174,6 +10187,7 @@
    "src/propertyOps/PitzerActivity.cpp",
    "src/propertyOps/PolarisationIndex.cpp",
    "src/propertyOps/PropertyEvaluator.cpp",
+   "src/propertyOps/PropertyOperation.H",
    "src/propertyOps/PropertyOperation.cpp",
    "src/propertyOps/PropertyPoint.cpp",
    "src/propertyOps/PropertyScan1D.cpp",
@@ -11438,6 +11452,7 @@
    "src/propertyOps/PitzerActivity.cpp",
    "src/propertyOps/PolarisationIndex.cpp",
    "src/propertyOps/PropertyEvaluator.cpp",
+   "src/propertyOps/PropertyOperation.H",
    "src/propertyOps/PropertyOperation.cpp",
    "src/propertyOps/PropertyPoint.cpp",
    "src/propertyOps/PropertyScan1D.cpp",
@@ -15272,6 +15287,10 @@
   "src/unitOperations/flash/AdiabaticFlash.H": [
    "src/unitOperations/UnitOperation.cpp",
    "src/unitOperations/flash/AdiabaticFlash.cpp"
+  ],
+  "src/unitOperations/flash/IncipientPhase.H": [
+   "src/unitOperations/flash/IsothermalFlash.cpp",
+   "src/unitOperations/saturation/BubblePoint.cpp"
   ],
   "src/unitOperations/flash/IsothermalFlash.H": [
    "src/dynamicDriver/DynamicDriver.cpp",
