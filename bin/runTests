@@ -3682,6 +3682,22 @@ PYEOF
     fi
     rm -f /tmp/evapdry.$$
 
+    # spray-dryer-solvents gate (2026-10-20, DEV.md 4c C111).  A spray
+    # dryer fed several volatile solvents (acetone/water, ethanol/water)
+    # loses none: the material recomputed per component, the exhaust never
+    # above its dew point, the unit's energy row zero, and the sorption
+    # isotherm, the droplet-trajectory models and a component with no
+    # outlet each refuse by name.
+    if "$ROOT/bin/curate/check_spray_dryer_solvents.py" > /tmp/spraysolv.$$ 2>&1; then
+        printf "PASS  %-40s  (%s)\n" "spray-dryer-solvents-gate" "$(head -1 /tmp/spraysolv.$$)"
+        pass=$((pass+1))
+    else
+        printf "FAIL  %-40s  (run bin/curate/check_spray_dryer_solvents.py)\n" "spray-dryer-solvents-gate"
+        cat /tmp/spraysolv.$$
+        fail=$((fail+1))
+    fi
+    rm -f /tmp/spraysolv.$$
+
     # quasi-steady gate (2026-09-30, #185).  A steady unit inside a
     # transient: the NF feed-and-bleed start-up must END on membrane18's
     # steady answer, its mass residual must converge with deltaT, and four
