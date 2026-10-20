@@ -1291,6 +1291,37 @@ accepts today, and that is a policy call.
 > fire-water ring main and hydrants, bunds, escape routes, swept path, a
 > fillet running through an item.
 
+> **C118. A PHASE-SPLIT SCAN IN THE EXPLORER: V / L1 / L2 / S1 / S2 AND pH
+> ALONG T OR P (Vitor, 2026-10-20: "uma tool de execucao em que posso mexer
+> em T ou P, mantendo um constante.  Eu dou a composicao dos varios
+> compostos, e ele faz-me a especiacao V L1 L2 S1 S2 ... dava imenso jeito
+> para congelamento de solucoes aquosas ou solventes com excipientes ...
+> baixava a temperatura de 0 ate -20 e via o pH a variar, gelo a formar e
+> eventualmente excipiente a solidificar").**  Commander's verdict: agree;
+> it is the freeze-concentration / lyophilisation-formulation lesson and
+> the engine already holds the physics.  Measured: `IsothermalFlash` solves
+> V / L1 / L2 and crystallising solids on ONE mechanism (`solidEq::
+> equilibrate`, the active-set complementarity), with the reactive
+> package's speciation and pH -- witnesses `flash21_freeze_concentration`
+> (ice from water/ethanol at -15 C, the freezing-point identity to 9e-11),
+> `flash19_organic_and_precipitate` (four phases at once),
+> `flash16_calcite_precipitation` (a precipitate under a speciation); the
+> props bench has `freezingPoint` (ONE salt in water, T_f(m)) and no scan
+> that runs a flash per grid point; the Explorer has no such lens.  Data
+> limit, said plainly: an excipient solidifies in the model only where its
+> record declares a solid phase -- `sucrose.dat` has NO Hfus (it decomposes
+> before melting) so it needs a solubility solid like halite's `solidPhases
+> {}`, and mannitol / glycine / trehalose / lactose are not in the catalogue
+> -- their records are the C117 curation workflow's first real job.  Plan:
+> (1) engine op `phaseSplitScan` -- one isothermal flash per grid point over
+> T (fixed P) or P (fixed T) at a fixed overall composition, publishing the
+> phase amounts, each phase's composition, pH where speciated, every
+> appearance / disappearance announced, sub-273 K extrapolations announced
+> (G19, dispatched 2026-10-20); (2) the Explorer lens (stacked phase
+> amounts and pH against T, the phase boundaries marked) AFTER G18 lands,
+> because both touch `ExploreWorkspace.tsx`; (3) excipient records by
+> curation.
+
 > **C117. THE CURATION WORKFLOW: AN LLM AUTHORS, THE EXPLORER SHOWS, THE
 > STUDENT DECIDES (Vitor, 2026-10-20: he had planned an interactive GUI for
 > entering data and fitting models, saw it is "muito boring", and that an
