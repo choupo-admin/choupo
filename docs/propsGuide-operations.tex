@@ -666,6 +666,25 @@ The P-T phase envelope of a MIXTURE at fixed feed composition: the bubble curve 
 \quad (and 1 more)
 \end{tutoriallink}
 
+\paragraph{\code{phaseSplitScan}}
+The full phase split of ONE fixed feed swept along temperature (at fixed pressure) or pressure (at fixed temperature): at every grid point one isothermal flash through the flash unit's own solver (IsothermalFlash::solveCore) under the case's thermophysical system -- vapour, one or two liquids, crystallising solids declared in phases ( ... ), minerals precipitating from a speciated solution. Publishes per point the amount of every phase present (V, L1, L2, each solid by name), each phase's composition, the flash's own observables (pH, solidFraction, the crystal's activity beside its saturation value), the solved species where the package speciates; announces every phase appearance / disappearance between consecutive points and every record-level extrapolation at the first point that raised it. A point the flash cannot serve is published as REFUSED by name and the scan continues (no fallback). Output: a CSV (swept variable first) and the top-level result block phaseSplitScans. Not modelled: nucleation / supercooling, a solid no record declares, solute inclusion in a crystal.
+
+\begin{tabular}{@{}p{0.30\linewidth}p{0.62\linewidth}@{}}
+\hline
+\code{alphaRich} & Alpha-rich component (LL/VLLE seed) \\
+\code{betaRich} & Beta-rich component (LL/VLLE seed) \\
+\code{output}\textbf{*} & CSV output \\
+\code{phaseSet} & Phase set \\
+\code{state}\textbf{*} & Held axis and feed \\
+\code{vary}\textbf{*} & Swept axis \\
+\hline
+\end{tabular}
+
+
+\begin{tutoriallink}
+\file{tutorials/props/thermo/phaseSplit01\_freeze\_water\_ethanol}
+\end{tutoriallink}
+
 \paragraph{\code{polarisationIndex}}
 The PROPS BENCH of the multi-ionic concentration-polarisation model of Geraldes \& Afonso (J. Membr. Sci. 300 (2007) 20): for every row of a measured dataset (bulk and permeate concentration per ion, volume flux) it prices each ion's mass-transfer coefficient on the ion's OWN diffusivity from the declared correlation, corrects it for suction, and solves the wall concentrations coupled by ONE interface potential gradient fixed by electroneutrality -- no film thickness, no fitted parameter. Publishes per row the polarisation index Gamma\_<ion> = (C\_m - C\_b)/C\_b, xi and the wall charge residual, and per ion k\_<ion>. Witness polarisation01\_geraldes\_afonso\_table1; gate check\_polarisation\_coupling recomputes Eqs. (25)-(28) independently.
 
