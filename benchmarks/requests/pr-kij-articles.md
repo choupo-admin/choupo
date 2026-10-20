@@ -78,3 +78,11 @@ residual in `fitParameters` -- Vitor's decision.
 
 Minimum to obtain for route P: items 1-5 (case A) and 11-13 + 16-18 (case D);
 6 and 19 are open access.
+
+## Kinetics (cases D and E), verified on Crossref 2026-10-20
+
+20. Methanol synthesis + water-gas shift on Cu/ZnO/Al2O3 (case D) --
+    Vanden Bussche, Froment (1996), J. Catal. 161:1-10,
+    doi:10.1006/jcat.1996.0156
+21. Methane steam reforming, methanation and water-gas shift (case E) --
+    Xu, Froment (1989), AIChE J. 35(1):88-96, doi:10.1002/aic.690350109
