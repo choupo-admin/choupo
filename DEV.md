@@ -1323,6 +1323,18 @@ accepts today, and that is a policy call.
 > source is closed is treated as closed).  The paper's folder becomes an
 > exempt tree in `check_doctrine` (the benchmarks/ precedent) in the
 > commit that creates it.
+> **Outline APPROVED 2026-10-21 ("avanca"), with section 4 reframed on
+> Vitor's objection ("nao des tiros nos pes"):** not a list of the
+> project's defects but how each gate makes a CLASS of error unable to
+> leave in silence -- with the one sentence the history forbids left out
+> ("a basic error never ships": some reached the site before their gate
+> existed; the honest and stronger form is "when an error escapes, it
+> becomes a gate").  Nine sections: the problem, the thesis, what makes an
+> answer verifiable, the gates by class, the open-simulator comparison
+> (published only after the reference's defects are offered upstream),
+> the agent workflow (C117), pedagogy, limitations, availability.
+> Drafted by a general (G29) in `paper/whitepaper/`, every claim cited by
+> file:line or commit; Vitor, Pedro and Miguel review and answer for it.
 
 > **C124. A COLUMN'S EXCHANGERS DESIGNED IN DETAIL: CONDENSER, REBOILER,
 > SIDE COOLERS AND PUMPAROUNDS (Vitor, 2026-10-20, after asking whether the
