@@ -1885,8 +1885,9 @@ accepts today, and that is a policy call.
 > LEAK at exit 0 -- a row the colouring can separate must be
 > differentiated by colour.  Re-validated on the combination with main:
 > `--fast` 74/0, `--gui` 34/0, adsorber + combustion + batch06 + ctrl03 +
-> distillation scope 47/0.  The browser time of the two EduTools is the
-> next site smoke's number.
+> distillation scope 47/0.  ONLINE 1841da2d0: the site smoke measured
+> `breakthrough` 9.4 s and `lub-scaleup` 10.0 s in the browser (were
+> ~195 s), 0 SLOW across the 61 tools, the whole smoke 113 s (was 276 s).
 
 > **C124. A COLUMN'S EXCHANGERS DESIGNED IN DETAIL: CONDENSER, REBOILER,
 > SIDE COOLERS AND PUMPAROUNDS (Vitor, 2026-10-20, after asking whether the
