@@ -1331,7 +1331,22 @@ accepts today, and that is a policy call.
 > first (pedagogy and scope): whether the control valve becomes a
 > flowsheet UNIT (which would change the steady solve) or stays a
 > LAYOUT annotation (which the commander recommends for this slice).
-> Status: proposed; not dispatched until he answers.
+> **(4) NOTHING SITS DIRECTLY ON THE GROUND (Vitor, same night: "e
+> estranho no layout 3D da amonia haver equipamento montado diretamente
+> no chao").**  Measured: the 3D recipes already draw a skirt or legs
+> under a vertical vessel, saddles under a drum or an exchanger and a
+> skid under a compressor (`gui/src/case/equipmentModel.ts:263-282,
+> 406-468, 527-555`), but every one of them starts AT grade, and every
+> item of the green-ammonia layouts declares `z 0 m` -- so there is no
+> foundation, plinth, pier or structure anywhere, and no item is
+> elevated.  The slice: a declared or defaulted-and-announced support
+> per item kind -- a ring foundation under a skirt, concrete piers under
+> saddles, a plinth under a pump or a compressor skid, a structure where
+> the case declares an elevation (a reflux drum, an air cooler on the
+> rack) -- the support's height entering the item's base elevation, so
+> the nozzle elevations and the published pipe lengths move: a
+> measured list of moved `layout` rows goes to Vitor before any
+> re-record.  Status: proposed; not dispatched until he answers.
 
 > **C128. WHICH SOLVENT, OR WHICH SOLVENT MIXTURE, FOR A GIVEN SUBSTANCE
 > -- an EduTool, and the Explorer's delta lens made honest first (Vitor,
