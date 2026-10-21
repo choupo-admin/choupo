@@ -139,7 +139,7 @@ export const DR_STEPS: readonly LessonStep[] = [
       + "this on its own for this page: the operation assembles one row per "
       + "meter and one law per balance and hands them to the engine's single "
       + "weighted least squares, the one that reconciles a laboratory water "
-      + "analysis (DataReconciliation.cpp:672) -- one home for the method, "
+      + "analysis (DataReconciliation.cpp:673) -- one home for the method, "
       + "whatever the measurements are.",
     formula: String.raw`\hat{x} = \operatorname*{arg\,min}_{x} \sum_{j=1}^{n} \left(\frac{x_j - m_j}{\sigma_j}\right)^{2} \quad \text{subject to} \quad A\,x = 0`,
     where: [
@@ -269,7 +269,7 @@ export const DR_STEPS: readonly LessonStep[] = [
       + "are independent balances.  Choose the probability of a false alarm "
       + "you accept (alpha, declared by the case, never defaulted) and read "
       + "the critical value; above it, the snapshot is not credible as noise "
-      + "alone (DataReconciliation.cpp:739).  The honest snapshot scores "
+      + "alone (DataReconciliation.cpp:740).  The honest snapshot scores "
       + "about 3.2 against a critical 9.49; the drifted one about 26.7.  The "
       + "test says SOMETHING is wrong.  It does not say what.",
     derivation: [
@@ -295,11 +295,11 @@ export const DR_STEPS: readonly LessonStep[] = [
     body: "Each adjustment is random too, and its standard deviation is "
       + "known: it is the square root of a diagonal entry of the covariance "
       + "of the adjustments.  Divide each adjustment by it and every meter "
-      + "gets a standard-normal score (DataReconciliation.cpp:753).  Seven "
+      + "gets a standard-normal score (DataReconciliation.cpp:754).  Seven "
       + "meters are seven tests, so a 5 % false alarm on each would cry wolf "
       + "on about one snapshot in three; the critical value is therefore "
       + "taken at the level that keeps the chance of ANY false alarm at "
-      + "alpha (the Sidak correction, DataReconciliation.cpp:757), which for "
+      + "alpha (the Sidak correction, DataReconciliation.cpp:758), which for "
       + "seven meters is about 2.68 instead of 1.96.  On the drifted "
       + "snapshot F3 scores about -4.86 and is flagged; F2, its neighbour "
       + "across the reactor, scores about +2.57 -- pushed up by F3's error, "
@@ -345,7 +345,7 @@ export const DR_STEPS: readonly LessonStep[] = [
     derivation: [
       { step: "Split the balances into the measured flows and the unmeasured ones, and find combinations of balances in which the unmeasured columns cancel:",
         eq: String.raw`A\,x = A_m x_m + A_u x_u = 0, \qquad P\,A_u = 0 \;\Rightarrow\; P\,A_m\, x_m = 0` },
-      { step: "Reconcile the measured flows against P A_m, then read the unmeasured ones back from the balances (DataReconciliation.cpp:721):",
+      { step: "Reconcile the measured flows against P A_m, then read the unmeasured ones back from the balances (DataReconciliation.cpp:722):",
         eq: String.raw`\hat{x}_u = -(A_u^{T} A_u)^{-1} A_u^{T} A_m\, \hat{x}_m` },
     ],
     formula: String.raw`t_j = \frac{m_j - \hat{x}_j}{\sqrt{\sigma_j^2 + \Sigma_{jj}}}`,
@@ -374,7 +374,7 @@ export const DR_STEPS: readonly LessonStep[] = [
     body: "The reconciled flows are random -- different noise, different "
       + "answer -- and their covariance is known in closed form: the meters' "
       + "covariance minus the covariance of the adjustments "
-      + "(DataReconciliation.cpp:700).  Its diagonal gives each reconciled "
+      + "(DataReconciliation.cpp:701).  Its diagonal gives each reconciled "
       + "flow's standard deviation, and every one is SMALLER than its meter's: "
       + "the big reactor-line meters go from 3 t/h to about 1.3, because the "
       + "balances let every other meter vouch for them.  The purge meter "
@@ -409,7 +409,7 @@ export const DR_STEPS: readonly LessonStep[] = [
       + "whose PRECISION -- one over the variance -- is the sum of the two "
       + "precisions, and whose value is the precision-weighted average.  The "
       + "engine forms it this way before the reconciliation "
-      + "(DataReconciliation.cpp:523), and the step is exact, not an "
+      + "(DataReconciliation.cpp:524), and the step is exact, not an "
       + "approximation: the leftover term does not depend on the flow, so "
       + "neither the mode nor the covariance can see it.",
     derivation: [

@@ -279,13 +279,13 @@ describe("data-reconciliation: the lesson text", () => {
     };
     const cited = new Set([...all.matchAll(/([A-Za-z]+\.(?:cpp|H)):(\d+)(?:-(\d+))?/g)].map((m) => m[0]));
     const CLAIMS: Record<string, string> = {
-      "DataReconciliation.cpp:523": "f.sStar = 1.0 / std::sqrt(w);",
-      "DataReconciliation.cpp:672": "analysis::reconcileWeightedLeastSquares(req);",
-      "DataReconciliation.cpp:700": "Sx[i][j] -= V[i][j];",
-      "DataReconciliation.cpp:721": "xhat[U[i]] = u;",
-      "DataReconciliation.cpp:739": "const scalar chi2Crit = chi2UpperQuantile(nu, alpha);",
-      "DataReconciliation.cpp:753": "z[c] = out.rows[c].correction / std::sqrt(V[c][c]);",
-      "DataReconciliation.cpp:757": "1.0 - std::pow(1.0 - alpha, 1.0 / static_cast<scalar>(nRedundant))",
+      "DataReconciliation.cpp:524": "f.sStar = 1.0 / std::sqrt(w);",
+      "DataReconciliation.cpp:673": "analysis::reconcileWeightedLeastSquares(req);",
+      "DataReconciliation.cpp:701": "Sx[i][j] -= V[i][j];",
+      "DataReconciliation.cpp:722": "xhat[U[i]] = u;",
+      "DataReconciliation.cpp:740": "const scalar chi2Crit = chi2UpperQuantile(nu, alpha);",
+      "DataReconciliation.cpp:754": "z[c] = out.rows[c].correction / std::sqrt(V[c][c]);",
+      "DataReconciliation.cpp:758": "1.0 - std::pow(1.0 - alpha, 1.0 / static_cast<scalar>(nRedundant))",
       "AnalysisReconciler.cpp:248": "co.multiplierAsWritten = qr.lambdaEq[k] / rowScale[k];",
     };
     for (const c of cited) expect(CLAIMS[c], `uncovered citation ${c}`).toBeDefined();
