@@ -133,6 +133,13 @@ export const PLOT_TYPES: PlotType[] = [
   //  Offered only where a dataset for the pair exists (exploreViews).
   { id: "evidence", label: "Evidence (measured vs models)", min: 2, max: 2, vle: false,
     why: "needs exactly 2 components with a measured dataset in the catalogue, data/local or the open case" },
+  //  The phase split of ONE feed along T (fixed P) or P (fixed T): V / L1 /
+  //  L2 / every solid a record declares, pH where the package speciates
+  //  (DEV.md 4c C118; the engine op `phaseSplitScan`).  Offered where the
+  //  engine can flash the set: every component VLE-able, or the open case
+  //  declaring a thermophysical system over it (exploreViews).
+  { id: "phaseSplit", label: "Phase split along T or P (V / L / S, pH)", min: 2, max: 99, vle: false,
+    why: "needs 2+ VLE-able components, or 2+ components of the open case's own thermophysical system" },
 ];
 
 // Short lens labels for the toolbar SegmentedControl (the full label rides the
@@ -156,6 +163,7 @@ export const LENS_SHORT: Record<PlotKind, string> = {
   scaling: "scaling", steam: "steam", gibbsmap: "gibbsmap", bjerrum: "Bjerrum",
   solubility: "delta",
   evidence: "evidence",
+  phaseSplit: "phase split",
 };
 
 /** The lens a selection OPENS on.  The property scan is the honest default for

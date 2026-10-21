@@ -196,6 +196,7 @@ const DECLARED: Record<PlotKind, string | typeof PROPERTY_DISPATCH> = {
   // rung below the distribution the picture is about.
   bjerrum: "sec:bjerrum",
   evidence: "ch:fittable",    // measured data vs candidate models: what is fittable, what is not
+  phaseSplit: "ch:flash",     // one isothermal flash per grid point, the phase split along T or P
 };
 
 /** The property-scan's own dispatch, declared independently of the switch. */

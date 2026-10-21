@@ -41,7 +41,7 @@
 \*---------------------------------------------------------------------------*/
 
 import { spawnSync } from "node:child_process";
-import { existsSync, readFileSync, rmSync } from "node:fs";
+import { existsSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
 
 import type { GlobalSetupContext } from "vitest/node";
@@ -98,6 +98,9 @@ export default function setup({ provide }: GlobalSetupContext): void {
     const r = spawnSync(join(REPO, app), [caseAbs],
       { cwd: REPO, encoding: "utf-8", maxBuffer: 256 * 1024 * 1024 });
     const seconds = (Date.now() - t0) / 1000;
+    //  A stdout witness: the run's own console IS the output (its result
+    //  block lives only there), written where the list says, on exit 0 only.
+    if (w.stdout && !r.error && r.status === 0) writeFileSync(out, r.stdout ?? "");
     if (r.error || r.status !== 0 || !existsSync(out)) {
       const why = r.error ? `${app} could not start (${r.error.message})`
         : r.status !== 0 ? `${app} exited ${r.status ?? r.signal}`

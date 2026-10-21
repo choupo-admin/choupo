@@ -60,6 +60,7 @@ import { guideUrl } from "../help/guideLinks.js";
 import { EstimateForm } from "./explore/EstimateForm.js";
 import { ComponentInspector } from "./explore/ComponentInspector.js";
 import { EvidenceLens } from "./explore/EvidenceLens.js";
+import { PhaseSplitLens } from "./explore/PhaseSplitLens.js";
 import {
   CATALOGUE_BROWSER_PANEL, EXPLORE_SET_PANEL, PanelCollapseButton, PanelReopenStrip, PanelResizeHandle,
   panelBoxProps, usePanel, usePanelShortcut, type PanelHandle,
@@ -862,7 +863,9 @@ export function ExploreWorkspace() {
   const run = useCallback(async () => {
     //  The Evidence view runs its OWN engine calls (one per candidate, inside
     //  EvidenceLens); the generic scan run has nothing to ask for it.
-    if (plotType === "evidence") {
+    //  So does the phase-split lens (one phaseSplitScan, inside
+    //  PhaseSplitLens, DEV.md 4c C118).
+    if (plotType === "evidence" || plotType === "phaseSplit") {
       abortRef.current?.abort();
       setCsv(null); setErr(null); setCompareInfo(null); setOpAdvisories([]);
       setBusy(false); return;
@@ -1107,7 +1110,9 @@ export function ExploreWorkspace() {
   //  `bjerrum` joins `scaling` in the exemption for the same reason: neither
   //  lens reads the scan property at all, so listing the compounds that have no
   //  vapour pressure would be a warning about a curve nobody asked for.
-  const skipped = (!isVle && plotType !== "scaling" && plotType !== "bjerrum")
+  //  `phaseSplit` too (C118): it asks for no curve, and the engine names a
+  //  component it cannot flash in its own refusal, inside the lens.
+  const skipped = (!isVle && plotType !== "scaling" && plotType !== "bjerrum" && plotType !== "phaseSplit")
     ? scanKeys.skipped : [];
 
   // Scaling validity surface: the ionic strength at the scan end-points, read
@@ -1908,7 +1913,9 @@ export function ExploreWorkspace() {
 
           {/* resolution / performance knobs in the ⚙ overflow — not the
               physics, so they don't clutter the row.  size md → fits 44px. */}
-          <Popover position="bottom-end" withArrow shadow="md">
+{/* The phase-split lens carries its own points (inside the lens). */}
+          {plotType !== "phaseSplit" && (
+                    <Popover position="bottom-end" withArrow shadow="md">
             <Popover.Target>
               <Tooltip label="resolution & display options" withArrow>
                 <ActionIcon variant="default" size="md" aria-label="options">
@@ -1932,6 +1939,7 @@ export function ExploreWorkspace() {
               </Stack>
             </Popover.Dropdown>
           </Popover>
+          )}
 
           {/* No Plot button — the view recomputes live on any change. */}
           {/* On a phone the row has no room for it, and the plot below says
@@ -1963,7 +1971,14 @@ export function ExploreWorkspace() {
             on-plot overlays (top-left), annotating the curve ON the curve. */}
         <Box style={{ flex: 1, minWidth: 0, overflow: "hidden", padding: 16, paddingTop: 12, display: "flex", flexDirection: "column" }}>
         <Stack gap="sm" style={{ flex: 1, minHeight: 0 }}>
-          {plotType === "evidence" && selected.length === 2 ? (
+          {plotType === "phaseSplit" && !activeReason ? (
+            //  The phase split of one feed along T or P (DEV.md 4c C118):
+            //  its own component, one choupoProps run of one phaseSplitScan,
+            //  three figures and the engine's sentences.
+            <PhaseSplitLens components={selected} catalogue={catalogue}
+              caseRaw={caseRaw} localUnifac={localUnifac}
+              componentFiles={hasLocal ? localComponentFiles : undefined} narrow={narrow} />
+          ) : plotType === "evidence" && selected.length === 2 ? (
             //  Measured datasets vs every candidate model, the engine asked AT
             //  the measured points (DEV.md 4c C117).  Its own component: it
             //  runs one choupoProps case per candidate and draws two figures

@@ -56,6 +56,7 @@ License
 \*---------------------------------------------------------------------------*/
 
 import { shapeBuilding, type GmpBuilding } from "./buildingPayload.js";
+import { shapePhaseSplitScans, type PhaseSplitScanBlock } from "./phaseSplitPayload.js";
 import { readEdges } from "../case/toGraph.js";
 import { fromJson, serialize } from "../dict/index.js";
 import { parseDynamicInstants } from "../case/dynamicInstants.js";
@@ -181,7 +182,7 @@ export class WasmAdapter implements SolverAdapter {
         worker.terminate();
         const { displayLog, streams, streamAliases, convergence, profiles, txy, componentMolarMass, unitSectors, equipment, kpis,
           utilityAllocation, globalEnergyBoundary, globalMassBoundary, computed, timeline, transfers, energyLedger, advisories, divergences, modelBoundaries, recycleLoops, operationResults, thermoResolution,
-          componentCoverage, experimentalDatasets, validation, economics, layout, building } =
+          componentCoverage, experimentalDatasets, validation, economics, layout, building, phaseSplitScans } =
           extractStructured(log, caseFiles);
         const result: RunResult = { status, log: displayLog, streams, convergence };
         if (streamAliases) result.streamAliases = streamAliases;
@@ -216,6 +217,7 @@ export class WasmAdapter implements SolverAdapter {
         if (economics) result.economics = economics;
         if (layout) result.layout = layout;
         if (building) result.building = building;
+        if (phaseSplitScans && phaseSplitScans.length > 0) result.phaseSplitScans = phaseSplitScans;
         if (trajectoryCsv) {
           const parsed = parseTrajectoryCsv(trajectoryCsv);
           if (parsed) result.trajectory = parsed;
@@ -433,6 +435,8 @@ export function extractStructured(log: string,
   layout?: PlantLayout;
   /** The GMP interior (`building {}`, DEV.md 4c C97), as checked. */
   building?: GmpBuilding;
+  /** The phase-split scans a choupoProps run published (DEV.md 4c C118). */
+  phaseSplitScans?: PhaseSplitScanBlock[];
 } {
   const beginIdx = log.lastIndexOf(BEGIN_MARK);
   const endIdx = log.lastIndexOf(END_MARK);
@@ -674,6 +678,10 @@ export function extractStructured(log: string,
 ...(parsed.layout ? { layout: shapeLayout(parsed.layout) } : {}),
 ...(parsed.building && shapeBuilding(parsed.building)
       ? { building: shapeBuilding(parsed.building) } : {}),
+//  The phase-split scans (choupoProps `phaseSplitScan`, DEV.md 4c C118):
+//  the TYPES policed by the lens's own module, nothing computed.
+...(shapePhaseSplitScans(parsed.phaseSplitScans).length > 0
+      ? { phaseSplitScans: shapePhaseSplitScans(parsed.phaseSplitScans) } : {}),
   };
 }
 
@@ -1122,6 +1130,8 @@ function shapeSensitivity(
 interface ResultPayload {
   /** The GMP interior (DEV.md 4c C97), shaped by adapters/buildingPayload. */
   building?: unknown;
+  /** The phase-split scans (DEV.md 4c C118), shaped by case/phaseSplitScan. */
+  phaseSplitScans?: unknown;
   version: number;
   converged: boolean;
   components: string[];
