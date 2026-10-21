@@ -907,6 +907,50 @@ accepts today, and that is a policy call.
 
 ## 4c. Commissioned by Vítor (he ASKED for this; it is not a candidate)
 
+> **SESSION HANDOFF 2026-10-21 (Vitor stopped the session at 92 % of his
+> weekly usage; every general checkpointed to its branch).  START HERE.**
+> Nothing below is on main and nothing is re-recorded.
+> 1. **G30 + G32 (integ branch `integ/g30g32`, local commit `fddac7e8e` in
+>    worktree integ-g6; branch pushed to origin -- redo the merge from the two branches
+>    if the worktree is gone).**  The authorised full regression ran (719+
+>    results seen).  FAIL: extract01/02, extraction01, vlle01, ternary03,
+>    lithiumBrinePlant (G30's LL Newton -- golden rows to LIST TO VITOR
+>    before any re-record); solid-service-gate arm A9a pins vlle01's split
+>    literal (moves with the vlle01 rows); type-coverage (G32's `ppr78Kij`
+>    op has no case -- needs a witness); internal-states and mass-closure
+>    gates (not yet diagnosed); sealed-corpus (moody02, on main: unsealed);
+>    doc-reference (stale DEV.md note on the integ base, fixed on main);
+>    liquid-cp-fallback (red on main before).  Owed: one combined
+>    moved-rows list for G28 (column, 239 rows, branch
+>    `claude/c123-column-findings`), G30 and G32, shown to Vitor first.
+> 2. **G34 / C134 bunds (`claude/c134-bunds`, 7ed5fa0c5):** engine, GUI,
+>    Design Guide 21.7, witnesses on greenAmmoniaPEQ and ammonia02, arm (p)
+>    sabotage-verified.  Owed: `--gui` (one red: re-point the runLog
+>    lesson's `WasmAdapter.ts:290` citation to 291); moved rows for Vitor
+>    (greenAmmoniaPEQ plot/land 31 436 -> 38 142.6 m2, NPV -408.63 ->
+>    -408.92 MEUR; aceticAcid02 findings 3 -> 5; apalutamide01 1 -> 3).
+>    Sweep top items: flare radiation distance, drainage / fire-water
+>    run-off, bundle-pulling and crane access, toxic reach and refuge.
+> 3. **G33 / C128 slice 2 Hansen mixtures (`claude/c128-solvent-mixture`,
+>    0447cc0a6 WIP on d0ba7c6c2):** validated before its rebase; redo the
+>    build, codeMap, props/tutorials guide PDFs, gate manifest, the three
+>    solvent witnesses, `--gui`, `--fast`.  Its own commit `eaf8b6a42`
+>    fixes the SAME missing ln-gamma term in `StabilityTest.cpp` as G30 --
+>    merge one, drop the other.
+> 4. **G35 / C118 stage 2 phase-split lens (`claude/c118-phase-split-lens`,
+>    bcf993f6c):** built; `--gui` never finished, page never seen in a
+>    browser.  For Vitor: crystal boxes start unticked; the ice phase is
+>    named `solid_<component>`.
+> 5. **G36 / C126 GUI figures (`claude/c126-gui-figures`, ccc0b4e37 WIP):**
+>    the capture script only, never run end to end.  The commander's brief
+>    was wrong twice: the main window has no left case tree (it lives in
+>    the Case view), and greenAmmoniaPEQ_baseCase has no sectors -- so
+>    Figure A on greenAmmonia03_basicDesign zoomed to the synthesis loop,
+>    Figure B (3D) on greenAmmoniaPEQ_baseCase.  Also stale:
+>    gui-credo.md "Color By ... Not yet" (ColoursMenu.tsx ships it).
+> 6. Open for Vitor from G32: the compressor computes a two-phase feed as
+>    vapour in silence; the adiabatic mixer on benchmark case A.
+
 > **C84. AN EDUTOOL: MATERIALS OF CONSTRUCTION, SEALS AND GASKETS -- THE
 > PARETO (Vítor, 2026-10-17: "Temos algum EduTools sobre materiais
 > selantes de bombas vedantes etc? ... sem aço carbono não havia engenharia
