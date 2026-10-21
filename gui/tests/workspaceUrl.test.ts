@@ -17,57 +17,70 @@ import { readFileSync } from "node:fs";
 import { describe, expect, it } from "vitest";
 
 import { literatureLink, literatureSeed, resolveWorkspaceSearch } from "../src/state/workspaceUrl.js";
-import { propertiesLink } from "../src/ui/explore/selectionLink.js";
+import { exploreLink, exploreViewInSearch } from "../src/ui/explore/selectionLink.js";
 import { MODE_TABS } from "../src/ui/workspaces.js";
 
 describe("resolveWorkspaceSearch: one URL word per screen", () => {
-  it("?workspace=properties is the plots, already canonical", () => {
-    expect(resolveWorkspaceSearch("?workspace=properties"))
+  //  ONE EXPLORE SINCE 2026-10-21 (DEV.md 4c C116): the catalogue and the
+  //  property surfaces are two VIEWS of one tab, keyed `explore` and labelled
+  //  "Explore"; the view is the screen's own reading of `view=`.
+  it("?workspace=explore is Explore, already canonical, with or without a set", () => {
+    expect(resolveWorkspaceSearch("?workspace=explore"))
+      .toEqual({ key: "explore", canonical: null });
+    expect(resolveWorkspaceSearch("?workspace=explore&components=water,ethanol"))
+      .toEqual({ key: "explore", canonical: null });
+    expect(resolveWorkspaceSearch("?workspace=explore&view=catalogue"))
       .toEqual({ key: "explore", canonical: null });
   });
 
-  it("?workspace=explore with NO set is the catalogue, already canonical", () => {
-    expect(resolveWorkspaceSearch("?workspace=explore"))
-      .toEqual({ key: "compounds", canonical: null });
-  });
-
-  it("THE DEFECT: ?workspace=explore WITH a set still opens the plots -- and "
-     + "is rewritten so the word matches the screen", () => {
-    const r = resolveWorkspaceSearch("?workspace=explore&components=water,ethanol");
+  it("the retired `properties` is a REDIRECT to the surfaces view, set kept", () => {
+    const r = resolveWorkspaceSearch("?workspace=properties&components=water,ethanol");
     expect(r.key).toBe("explore");
-    expect(r.canonical).toBe("?workspace=properties&components=water,ethanol");
+    expect(r.canonical).toBe("?workspace=explore&components=water,ethanol&view=surfaces");
+    expect(exploreViewInSearch(r.canonical!)).toBe("surfaces");
+    //  and with no set: the surfaces still, never the catalogue (no wizard)
+    const e = resolveWorkspaceSearch("?workspace=properties");
+    expect(e.canonical).toBe("?workspace=explore&view=surfaces");
+    expect(exploreViewInSearch(e.canonical!)).toBe("surfaces");
   });
 
-  it("the rewrite spells the set exactly as propertiesLink publishes it", () => {
+  it("the retired `compounds` is a REDIRECT to the catalogue view", () => {
+    const r = resolveWorkspaceSearch("?workspace=compounds");
+    expect(r).toEqual({ key: "explore", canonical: "?workspace=explore&view=catalogue" });
+    expect(exploreViewInSearch(r.canonical!)).toBe("catalogue");
+  });
+
+  it("a redirect reads as the address the screen itself publishes", () => {
     //  Two spellings of one address is how a reader concludes they are two
-    //  addresses.  The rewritten bar must be byte-for-byte the link the
-    //  catalogue itself hands out for the same set.
-    const r = resolveWorkspaceSearch("?workspace=explore&components=water,ethanol");
-    expect(r.canonical).toBe(propertiesLink(["water", "ethanol"]));
+    //  addresses: the redirected bar opens the view exploreLink names.
+    for (const v of ["surfaces", "catalogue"] as const) {
+      const legacy = v === "surfaces" ? "?workspace=properties&components=water"
+                                      : "?workspace=compounds&components=water";
+      const r = resolveWorkspaceSearch(legacy);
+      expect(exploreViewInSearch(r.canonical!)).toBe(exploreViewInSearch(exploreLink(["water"], v)));
+    }
   });
 
-  it("the rewrite keeps every OTHER parameter: data travels untouched", () => {
-    const r = resolveWorkspaceSearch("?foo=1&workspace=explore&components=a,b&bar=2");
+  it("a redirect keeps every OTHER parameter, and a view already named wins", () => {
+    const r = resolveWorkspaceSearch("?foo=1&workspace=properties&components=a,b&bar=2&lens=gamma");
     const p = new URLSearchParams(r.canonical!);
-    expect(p.get("workspace")).toBe("properties");
+    expect(p.get("workspace")).toBe("explore");
+    expect(p.get("view")).toBe("surfaces");
     expect(p.get("components")).toBe("a,b");
+    expect(p.get("lens")).toBe("gamma");
     expect(p.get("foo")).toBe("1");
     expect(p.get("bar")).toBe("2");
+    expect(new URLSearchParams(resolveWorkspaceSearch(
+      "?workspace=compounds&view=surfaces").canonical!).get("view")).toBe("surfaces");
   });
 
-  it("`component=` (singular, a record tab) is NOT a set and does not bend "
-     + "the catalogue into the plots", () => {
+  it("`component=` (singular, a record tab) is NOT a set", () => {
     //  componentTab.test.ts pins `?workspace=explore&component=water` as a
-    //  record tab on the landing.  A plural/singular slip here would send
-    //  every such tab to the plots with an empty set.
+    //  record tab; AppShell routes it before the workspace.  A plural/singular
+    //  slip would read it as a set and open the surfaces.
     expect(resolveWorkspaceSearch("?workspace=explore&component=water"))
-      .toEqual({ key: "compounds", canonical: null });
-  });
-
-  it("the internal key `compounds` is honoured as a link and rewritten to the "
-     + "landing's published word", () => {
-    expect(resolveWorkspaceSearch("?workspace=compounds"))
-      .toEqual({ key: "compounds", canonical: "?workspace=explore" });
+      .toEqual({ key: "explore", canonical: null });
+    expect(exploreViewInSearch("?workspace=explore&component=water")).toBe("catalogue");
   });
 
   it("methods, the McCabe legacy, control, and nothing", () => {
@@ -89,7 +102,8 @@ describe("resolveWorkspaceSearch: one URL word per screen", () => {
     //  This is the property that makes 'one word per screen' true rather
     //  than asserted: after one translation the address stops moving.
     for (const legacy of [
-      "?workspace=explore&components=water,ethanol",
+      "?workspace=properties&components=water,ethanol",
+      "?workspace=properties",
       "?workspace=compounds",
       "?workspace=compounds&component=water",
     ]) {

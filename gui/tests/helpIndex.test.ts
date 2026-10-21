@@ -29,6 +29,7 @@ const TEX: Record<string, string> = {
   user: "userGuide.tex",
   props: "propsGuide.tex",
   developer: "developerGuide.tex",
+  explorer: "explorerGuide.tex",
 };
 
 // Load each guide's source once; tolerate a missing .tex (gitignored build

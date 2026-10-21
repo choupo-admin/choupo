@@ -38,7 +38,9 @@ License
 
 import { describe, expect, it } from "vitest";
 
-import { componentsInSearch, propertiesLink } from "../src/ui/explore/selectionLink.js";
+import {
+  componentsInSearch, exploreLink, exploreViewInSearch,
+} from "../src/ui/explore/selectionLink.js";
 
 describe("the compound SET travels in the URL", () => {
   it("reads the names an Explore URL carries, in order", () => {
@@ -55,8 +57,23 @@ describe("the compound SET travels in the URL", () => {
     //  THE DOOR IS NOT A GATE.  The Explore tab must open with an empty SET:
     //  if it could only be reached through the catalogue, the pair would be
     //  the STEP-1/STEP-2 setup wizard docs/ai/gui-credo.md §5 forbids.
-    expect(componentsInSearch("?workspace=properties")).toEqual([]);
-    expect(propertiesLink([])).toBe("?workspace=properties");
+    expect(componentsInSearch("?workspace=explore&view=surfaces")).toEqual([]);
+    expect(exploreLink([])).toBe("?workspace=explore&view=surfaces");
+    expect(exploreLink([], "catalogue")).toBe("?workspace=explore&view=catalogue");
+  });
+
+  it("THE VIEW (C116): named wins; absent, a set opens the surfaces and no set "
+     + "the catalogue; an unknown word reads as absent", () => {
+    expect(exploreViewInSearch("?workspace=explore&view=catalogue&components=water")).toBe("catalogue");
+    expect(exploreViewInSearch("?workspace=explore&view=surfaces")).toBe("surfaces");
+    //  every set-carrying Explore link opened the plots before the views were
+    //  one tab, and a bookmark must keep meaning what it meant
+    expect(exploreViewInSearch("?workspace=explore&components=water,ethanol")).toBe("surfaces");
+    expect(exploreViewInSearch("?workspace=explore")).toBe("catalogue");
+    expect(exploreViewInSearch("?workspace=explore&components=")).toBe("catalogue");
+    expect(exploreViewInSearch("?workspace=explore&view=plots&components=water")).toBe("surfaces");
+    for (const v of ["catalogue", "surfaces"] as const)
+      expect(exploreViewInSearch(exploreLink(["water"], v))).toBe(v);
   });
 
   it("passes names through verbatim -- the catalogue resolves them EXACTLY", () => {
@@ -72,12 +89,12 @@ describe("the compound SET travels in the URL", () => {
 
   it("round-trips: what the button writes is what the plot tab reads", () => {
     for (const set of [["water"], ["water", "ethanol"], ["1-butanol", "n-hexane"]]) {
-      expect(componentsInSearch(propertiesLink(set))).toEqual(set);
+      expect(componentsInSearch(exploreLink(set))).toEqual(set);
     }
   });
 
   it("encodes a name that would otherwise break the query string", () => {
-    const link = propertiesLink(["ethyl acetate", "a&b"]);
+    const link = exploreLink(["ethyl acetate", "a&b"]);
     expect(link).toContain("ethyl%20acetate");
     expect(componentsInSearch(link)).toEqual(["ethyl acetate", "a&b"]);
   });

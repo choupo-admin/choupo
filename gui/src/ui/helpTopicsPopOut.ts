@@ -49,6 +49,7 @@ const GUIDE_LABEL: Record<string, string> = {
   user: "User Guide",
   props: "Props Guide",
   developer: "Developer Guide",
+  explorer: "Explorer Guide",
 };
 
 /** Render the indexed help topics as a deep-linking table of contents in a

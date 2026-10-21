@@ -35,7 +35,7 @@ import {
 } from "@mantine/core";
 import { useReducedMotion } from "@mantine/hooks";
 import {
-  IconAdjustmentsHorizontal, IconBook, IconChevronDown,
+  IconAdjustmentsHorizontal, IconBook, IconChartLine, IconChevronDown, IconListDetails,
 } from "@tabler/icons-react";
 
 import { resolveAdapter } from "../adapters/index.js";
@@ -53,12 +53,15 @@ import {
   shapeSteamCsv, steamViewKey, steamViews, type SteamMode,
 } from "./plotting/steamViews.js";
 import { CompoundBrowser } from "./explore/CompoundBrowser.js";
-import { componentsInSearch, lensInSearch } from "./explore/selectionLink.js";
+import {
+  EXPLORER_GUIDE_CATALOGUE, componentsInSearch, exploreViewInSearch, lensInSearch, type ExploreView,
+} from "./explore/selectionLink.js";
+import { guideUrl } from "../help/guideLinks.js";
 import { EstimateForm } from "./explore/EstimateForm.js";
 import { ComponentInspector } from "./explore/ComponentInspector.js";
 import { EvidenceLens } from "./explore/EvidenceLens.js";
 import {
-  EXPLORE_SET_PANEL, PanelCollapseButton, PanelReopenStrip, PanelResizeHandle,
+  CATALOGUE_BROWSER_PANEL, EXPLORE_SET_PANEL, PanelCollapseButton, PanelReopenStrip, PanelResizeHandle,
   panelBoxProps, usePanel, usePanelShortcut, type PanelHandle,
 } from "./panelContract.js";
 import { useMeasuredBoxWidth, useNarrowViewport } from "./methods/methodsChrome.js";
@@ -207,6 +210,19 @@ export function ExploreWorkspace() {
   }, []);
   const [selected, setSelected] = useState<string[]>(boot.known);
   const [linkRefused] = useState<string[]>(boot.missing);
+  //  THE VIEW (2026-10-21, DEV.md 4c C116).  Explore is ONE tab with two
+  //  views of this one set: the CATALOGUE (browse the substances, read a
+  //  record, estimate a missing one) and the SURFACES (every lens).  They
+  //  used to be two tabs -- "Explore" and "Property surfaces" -- labelled
+  //  against their internal keys, and the catalogue's only act the surfaces
+  //  lacked was a wider inspector and a link.  The view is switched IN PLACE
+  //  and written to the address with the set, so the picture a professor
+  //  pastes is the one a student gets; absent from the address, the set
+  //  decides (selectionLink `exploreViewInSearch`).
+  const [view, setView] = useState<ExploreView>(() =>
+    (typeof window === "undefined"
+      ? (boot.known.length ? "surfaces" : "catalogue")
+      : exploreViewInSearch(window.location.search)));
   //  D1 (2026-09-21): the boot lens is a DECISION, not a literal.  Every
   //  selection used to open on the property scan, whose own boot property is
   //  Psat -- so `?components=water,NaCl` opened on the engine refusing
@@ -244,6 +260,11 @@ export function ExploreWorkspace() {
   const host = useMeasuredBoxWidth<HTMLDivElement>();
   const rail = usePanel(EXPLORE_SET_PANEL, { availablePx: host.width });
   usePanelShortcut(rail);
+  //  The CATALOGUE view's browser: the same CompoundBrowser, on the wider
+  //  panel the catalogue tab had (`contentMin: 0`, no shortcut -- a catalogue
+  //  you cannot pick from is a different screen, so nothing folds it).  Two
+  //  handles because the two views want two widths, each remembered.
+  const catRail = usePanel(CATALOGUE_BROWSER_PANEL);
   //  The phone posture, read from its ONE home (methodsChrome).  It decides
   //  one thing here: whether the lens's controls sit inline in the toolbar or
   //  fold behind a single menu-button (ToolbarFold).
@@ -446,8 +467,18 @@ export function ExploreWorkspace() {
   // NAME, at open time: a case-local file shadows the catalogue exactly as the
   // engine resolves it, so the inspector cannot show a record the solver would
   // not use.
-  const [inspecting, setInspecting] = useState<string | null>(null);
+  //  On the CATALOGUE view an address that carries a set opens on the record
+  //  of its LAST compound (the panel follows the reading, and a pasted
+  //  `view=catalogue&components=a,b` is a reading somebody wants to share);
+  //  the surfaces open with the inspector closed, as they always did.
+  const [inspecting, setInspecting] = useState<string | null>(
+    () => (view === "catalogue" && boot.known.length ? boot.known[boot.known.length - 1]! : null));
   const openInspector = useCallback((nm: string) => setInspecting(nm), []);
+  //  In the CATALOGUE view a click both adds the compound to the set and
+  //  shows its record: the panel follows the reading (a student walking a
+  //  family reads one record after another).  The surfaces keep the record
+  //  behind a double click, as before -- their subject is the plot.
+  const addAndRead = useCallback((nm: string) => { addComp(nm); setInspecting(nm); }, [addComp]);
   const inspected = useMemo(() => {
     if (!inspecting) return null;
     const local = localComponentFiles[`constant/components/${inspecting}.dat`];
@@ -1009,20 +1040,28 @@ export function ExploreWorkspace() {
   // (h_f/h_g/… vs h/s/v/cp), so a stale CSV must not survive the mode switch.
   useEffect(() => { setCsv(null); setErr(null); setOpAdvisories([]); }, [plotType, steamMode]);
 
-  //  THE ADDRESS NAMES THE LENS (2026-10-20).  Written in place, never pushed
-  //  (a lens change is not a navigation); the Evidence view's own keys are
-  //  dropped when another lens is shown, so a copied address never carries a
-  //  selection the screen does not show.  Every address without `lens` still
-  //  reads as before.
+  //  THE ADDRESS NAMES THE VIEW, THE SET AND THE LENS (2026-10-20 the lens,
+  //  2026-10-21 the view and the set, C116).  Written in place, never pushed
+  //  (a change of view, set or lens is not a navigation); the lens and the
+  //  Evidence view's own keys are dropped when the screen does not show
+  //  them, so a copied address never carries a selection the screen does not
+  //  show.  The one word for this screen is `explore` (state/workspaceUrl.ts).
   useEffect(() => {
     if (typeof window === "undefined" || typeof window.history?.replaceState !== "function") return;
     try {
       const url = new URL(window.location.href);
-      url.searchParams.set("lens", plotType);
-      if (plotType !== "evidence") { url.searchParams.delete("datasets"); url.searchParams.delete("models"); }
+      url.searchParams.set("workspace", "explore");
+      url.searchParams.set("view", view);
+      if (selected.length) url.searchParams.set("components", selected.join(","));
+      else url.searchParams.delete("components");
+      if (view === "surfaces") url.searchParams.set("lens", plotType);
+      else url.searchParams.delete("lens");
+      if (view !== "surfaces" || plotType !== "evidence") {
+        url.searchParams.delete("datasets"); url.searchParams.delete("models");
+      }
       window.history.replaceState(window.history.state, "", url.toString().replace(/%2C/g, ",").replace(/%40/g, "@"));
     } catch { /* an address that cannot be written changes nothing on screen */ }
-  }, [plotType]);
+  }, [plotType, view, selected]);
 
   // Debounced so dragging a number field fires ONE run after the user pauses,
   // not one per keystroke; `run` itself aborts any prior in-flight run.
@@ -1047,7 +1086,12 @@ export function ExploreWorkspace() {
   // and nothing bound it there, because the binding lived in this file and
   // belonged to this rail.  A shortcut declared beside the panel it folds
   // cannot go missing from another panel that claims it.
-  const helpUrl = theoryUrl(plotType, property);
+  //  The CATALOGUE view answers with the Explorer Guide's section on the
+  //  catalogue (how to read a record, what a dossier verdict means); the
+  //  SURFACES answer with the Theory Guide section of the active lens.
+  const helpUrl = view === "catalogue"
+    ? guideUrl("explorerGuide", EXPLORER_GUIDE_CATALOGUE)
+    : theoryUrl(plotType, property);
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
       if (e.key === "F1") { e.preventDefault(); window.open(helpUrl, "_blank"); }
@@ -1176,25 +1220,28 @@ export function ExploreWorkspace() {
           : ""
       }`
     : plotType === "solubility"
-    //  WHAT THE PICTURE CLAIMS, and the one thing it must say out loud.
-    //  A close pair here is a CANDIDATE, never a verdict: Hildebrand compresses
-    //  dispersion, polarity and hydrogen bonding into one scalar, so it cannot
-    //  separate a polar solvent from a hydrogen-bonding one of the same
-    //  cohesive energy density.  Water is where that compression costs
-    //  everything -- it sits 22 MPa^0.5 from ethanol, and the two are miscible
-    //  in all proportions.  Saying so on the caption rather than only in the
-    //  engine log is the difference between a warning delivered and one
-    //  received.
-    ? `delta = sqrt((dHvap(T) - RT)/V_m) at ${fixedT.toFixed(2)} K, MPa^0.5 -- `
-      + `DERIVED per component from HvapTb, Tc and Vliq, never stored.  `
-      + `\`published\` is an independently computed value carried as an ANCHOR: `
-      + `it checks the derivation and is never an input to it, and an empty cell `
-      + `means nothing checks that row.  The smaller |delta_i - delta_j|, the `
-      + `more likely two liquids mix -- but ONE NUMBER CARRIES NO HYDROGEN `
-      + `BONDING, so a close pair is a candidate and not a verdict (water sits `
-      + `22 MPa^0.5 from ethanol and the two are miscible in all proportions).  `
-      + `Hansen's three-parameter split is what that needs; it is not `
-      + `implemented -- its parameters are a dataset this project does not hold.`
+    //  WHAT THE PICTURE CLAIMS (rewritten 2026-10-21, DEV.md 4c C128 slice
+    //  1, after a second opinion Vitor consulted found it "ainda confuso"
+    //  with methanol + water selected).  Three things, in this order: each
+    //  bar is ONE PURE liquid at the stated T, and a larger value is NOT a
+    //  larger dissolving power -- no mixture property is computed here; the
+    //  cohesive energy INCLUDES hydrogen bonding (the old line said it
+    //  carried none), what the single parameter cannot do is separate it
+    //  from dispersion and polarity, so a close pair is a candidate and
+    //  never a verdict (water sits 22 MPa^0.5 from ethanol and the two are
+    //  miscible in all proportions); and the sources and limits live in
+    //  the Details below, not on the figure.  The old caption also said
+    //  Hansen "is not implemented", false on the engine and true on the
+    //  data: SolubilityParameter.cpp:168 reads `hansen { dD; dP; dH; }`,
+    //  :315-410 draws the Teas coordinates with a sum-rule check (gate
+    //  check_hansen_teas), and no standards record carries the block.
+    ? `Cohesion of the pure liquids -- Hildebrand parameter delta at ${fixedT.toFixed(2)} K.  `
+      + `Each bar is ONE PURE liquid at that T: a larger delta is NOT a larger dissolving `
+      + `power, and no mixture property is computed here.  The cohesive energy it measures `
+      + `INCLUDES hydrogen bonding; the single parameter does not separate it from dispersion `
+      + `and polarity, so two close values make a pair a candidate, never a verdict (water sits `
+      + `22 MPa^0.5 from ethanol and the two are miscible in all proportions).  Sources and `
+      + `limits: Details, below.`
     : plotType === "bjerrum"
     // WHAT THE PICTURE CLAIMS.  The one thing this lens must say is that its
     // x-axis is an INPUT: `pH` carries two meanings and the `speciate` op's own
@@ -1263,6 +1310,99 @@ export function ExploreWorkspace() {
             ? `Equimolar mixture (xᵢ = 1/${selected.length}) — ${property} vs ${axisLabel}`
             : `${property} vs ${axisLabel}`;
 
+  // ---- the CATALOGUE view (C116): browse, read, estimate ----
+  //  The same CompoundBrowser, ComponentInspector (through InspectorPanel)
+  //  and EstimateForm the surfaces use -- ONE mount of each per render, in
+  //  this one component -- laid out for reading: the browser wide on the
+  //  left (stacked over the record on a phone), the record of the compound
+  //  last touched filling the rest.
+  if (view === "catalogue") {
+    const evidenceOffered = currentViews.has("evidence");
+    return (
+      <Box ref={host.ref} style={{ position: "absolute", inset: 0, display: "flex", minHeight: 0,
+        flexDirection: narrow ? "column" : "row" }}>
+        <EstimateForm opened={estimateOpen} onClose={() => setEstimateOpen(false)} prefillName={estimatePrefill} />
+        {narrow ? (
+          <Box style={{ flex: "0 0 45%", minHeight: 0, width: "100%", padding: 10,
+            borderBottom: "1px solid var(--mantine-color-default-border)" }}>
+            <CompoundBrowser selected={selected} onAdd={addAndRead} onRemove={removeComp}
+              caseComponents={caseList} onEstimate={openEstimate} onInspect={openInspector} />
+          </Box>
+        ) : (
+          <>
+            <LeftRail selected={selected} onAdd={addAndRead} onRemove={removeComp} caseComponents={caseList}
+              onEstimate={openEstimate} onInspect={openInspector} rail={catRail} title="CATALOGUE" setFirst={false} />
+            <PanelResizeHandle panel={catRail} />
+            {catRail.collapsed && <PanelReopenStrip panel={catRail} scent={`CATALOGUE · ${selected.length}`} />}
+          </>
+        )}
+        <Box style={{ flex: 1, minWidth: 0, minHeight: 0, display: "flex", flexDirection: "column" }}>
+          <Group gap={8} wrap={narrow ? "wrap" : "nowrap"} align="center"
+            style={{ flexShrink: 0, padding: "6px 12px", minHeight: 44,
+              borderBottom: "1px solid var(--mantine-color-default-border)" }}>
+            <ExploreViewSwitch view={view} onChange={setView} />
+            {/*  THE ACTION SITS WITH THE SET: the set is chosen in the
+                 browser, and what it is for is the surfaces -- in place now,
+                 not a new browser tab.  Enabled with an empty set: the
+                 surfaces are a door, not the second step of a wizard. */}
+            <Button size="compact-sm" color="accent" variant="light"
+              leftSection={<IconChartLine size={14} />} onClick={() => setView("surfaces")}>
+              {selected.length === 0
+                ? "Plot properties"
+                : `Plot ${selected.length} compound${selected.length === 1 ? "" : "s"}`}
+            </Button>
+            {evidenceOffered && (
+              <Tooltip label="Measured data for this pair against every candidate model" withArrow>
+                <Button size="compact-sm" variant="subtle" color="accent"
+                  onClick={() => { setPlotType("evidence"); setView("surfaces"); }}>
+                  Evidence for this pair
+                </Button>
+              </Tooltip>
+            )}
+            <Box style={{ flex: 1, minWidth: 8 }} />
+            <Tooltip label="Open the Explorer Guide at the catalogue (or press F1)" withArrow>
+              <ActionIcon component="a" href={helpUrl} target="_blank" rel="noopener noreferrer"
+                variant="subtle" size="md" color="gray" aria-label="open the Explorer Guide">
+                <IconBook size={16} />
+              </ActionIcon>
+            </Tooltip>
+          </Group>
+          {inspecting ? (
+            <InspectorPanel record={inspected} name={inspecting} onClose={() => setInspecting(null)} wide />
+          ) : (
+            <Box style={{ flex: 1, minHeight: 0, overflow: "auto", padding: 16 }}>
+              <Stack gap={6} maw={600}>
+                <Text fw={600}>The compound catalogue</Text>
+                <Text size="sm" c="dimmed">
+                  Every substance the shared catalogue carries, grouped by the
+                  family its own record declares — the UNIFAC groups it decomposes
+                  into where it has them, its elemental formula otherwise — after
+                  the two classes a substance is named by its STATE: the gases at
+                  25 °C and the salts &amp; minerals.  Click one to add it to the
+                  set and read its record: identity, how each value was produced,
+                  the curation dossier's verdict, and the warnings that come with it.
+                </Text>
+                <Text size="sm" c="dimmed">
+                  The set gathers in the browser.  <b>Surfaces</b> (above) plots it —
+                  a scan, T-x-y, γ(x), the measured data for a pair against every
+                  candidate model — in this same tab; it opens with or without a
+                  set.
+                </Text>
+                {linkRefused.length > 0 && (
+                  <Alert color="orange" variant="light" p="xs">
+                    <Text size="xs">
+                      Not in the catalogue, so not in the set: {linkRefused.join(", ")}.
+                    </Text>
+                  </Alert>
+                )}
+              </Stack>
+            </Box>
+          )}
+        </Box>
+      </Box>
+    );
+  }
+
   // ---- empty state (T3): no compounds picked yet ----
   if (selected.length === 0) {
     return (
@@ -1275,12 +1415,14 @@ export function ExploreWorkspace() {
         <Box style={{ flex: 1, minWidth: 0, height: "100%", display: "flex",
           alignItems: "center", justifyContent: "center", padding: 24 }}>
           <Stack gap="xs" align="center" maw={420} style={{ textAlign: "center" }}>
-            <Text fw={600} size="lg">Property Explorer</Text>
+            <ExploreViewSwitch view={view} onChange={setView} />
+            <Text fw={600} size="lg">Property surfaces</Text>
             <Text size="sm" c="dimmed">
               Pick one or more compounds from the browser on the left to compare
               their <b>pure-component</b> properties (Psat, Cp, …) or a
               <b> mixture</b> scalar (Z, v_molar, …).  Pick exactly two VLE-able
-              compounds for a binary <b>T-x-y</b> diagram.
+              compounds for a binary <b>T-x-y</b> diagram.  The <b>Catalogue</b>{" "}
+              view reads each compound's record first.
             </Text>
             <Text size="xs" c="dimmed">Tip: try benzene + toluene, or ethanol + water.</Text>
           </Stack>
@@ -1336,6 +1478,10 @@ export function ExploreWorkspace() {
           borderBottom: "1px solid light-dark(var(--mantine-color-gray-3), var(--mantine-color-dark-4))",
         }}>
         <Group gap="sm" wrap="nowrap" align="center" style={{ minWidth: "fit-content" }}>
+          {/* the VIEW switch leads the toolbar (C116): Catalogue | Surfaces,
+              in place.  It is the one control that leaves the plot, so it
+              sits first, before the lenses that move it. */}
+          <ExploreViewSwitch view={view} onChange={setView} />
           {/* lens picker — SegmentedControl (same idiom as McCabe's
               Construction|Sensitivity).  Gating UNCHANGED: only the views that
               APPLY are shown; the active view stays even if it just became
@@ -2100,6 +2246,25 @@ export function ExploreWorkspace() {
                a red banner and an empty plot, describing behaviour the engine
                no longer had.  The run does not ask any more (scanProperties.ts)
                and the note says exactly that. */}
+          //  The delta lens's SOURCES AND LIMITS (C128 slice 1): what the
+          //  number is derived from, what the `published` column is, and the
+          //  measured state of the Hansen split -- read by the engine,
+          //  absent from every shipped record.
+          if (plotType === "solubility") notes.push(
+            <Text key="delta" size="xs" c="dimmed">
+              delta = sqrt((dH_vap(T) − RT)/V_m), MPa^0.5 — DERIVED per component from the record's
+              HvapTb, Tc and Vliq (Watson for dH_vap at T), never stored.  `published` is an
+              independently reported value carried as an ANCHOR: it checks the derivation and is never
+              an input to it; an empty cell means nothing checks that row.
+            </Text>,
+            <Text key="hansen" size="xs" c="dimmed">
+              Hansen's three-parameter split (dD, dP, dH) is what tells a polar liquid from a
+              hydrogen-bonding one of the same cohesive energy.  The engine READS it from a
+              `hansen {"{"} dD; dP; dH; {"}"}` block on the component record and draws the Teas
+              coordinates with a sum-rule check, but no record in the shipped catalogue carries the
+              block yet: the split is unavailable for want of licence-clean data, not of code, and
+              none is invented.
+            </Text>);
           if (skipped.length > 0) notes.push(
             <Text key="skip" size="xs" c="dimmed">
               No vapour pressure in the record, so no curve was asked for: {skipped.join(", ")}
@@ -2189,6 +2354,7 @@ export function ExploreWorkspace() {
  *  now derived from the same field that binds the key. */
 function LeftRail({
   selected, onAdd, onRemove, vleContext = false, caseComponents, onEstimate, onInspect, rail, unlockLine,
+  title = "SET", setFirst = true,
 }: {
   selected: string[];
   onAdd: (n: string) => void;
@@ -2199,6 +2365,12 @@ function LeftRail({
   onInspect: (name: string) => void;
   rail: PanelHandle;
   unlockLine?: string | null;
+  /** The rail's heading: `SET` on the surfaces (its subject is the set being
+   *  plotted), `CATALOGUE` on the catalogue view (its subject is the tree). */
+  title?: string;
+  /** Draw the set above the catalogue (the surfaces) or the catalogue first
+   *  (the catalogue view).  See CompoundBrowser's prop doc. */
+  setFirst?: boolean;
 }) {
   const collapsed = rail.collapsed;
   // Animate WIDTH (not translateX — a transform would slide the rail OVER the
@@ -2233,7 +2405,7 @@ function LeftRail({
              word at the top and its subject out of sight.  The browser now
              draws the set directly beneath this header, so the label finally
              names what is under it. */}
-        <Text size="xs" fw={700} c="dimmed" style={{ letterSpacing: 0.5 }}>SET</Text>
+        <Text size="xs" fw={700} c="dimmed" style={{ letterSpacing: 0.5 }}>{title}</Text>
         <PanelCollapseButton panel={rail} />
       </Group>
       <Box style={{ height: "calc(100% - 28px)" }}>
@@ -2241,9 +2413,33 @@ function LeftRail({
              catalogue.  See CompoundBrowser's prop doc -- the tab is reached
              from the catalogue with the set already chosen, and it used to
              re-present the whole tree with that set at the bottom. */}
-        <CompoundBrowser selected={selected} onAdd={onAdd} onRemove={onRemove} vleContext={vleContext} caseComponents={caseComponents} onEstimate={onEstimate} onInspect={onInspect} unlockLine={unlockLine} setFirst />
+        <CompoundBrowser selected={selected} onAdd={onAdd} onRemove={onRemove} vleContext={vleContext} caseComponents={caseComponents} onEstimate={onEstimate} onInspect={onInspect} unlockLine={unlockLine} setFirst={setFirst} />
       </Box>
     </Box>
+  );
+}
+
+/** Catalogue | Surfaces -- the Explore tab's two views of one set (C116).
+ *  The same control in both views, so the way back is where the way in was.
+ *  Icons carry the words on a phone, where the toolbar has no room for both. */
+function ExploreViewSwitch({ view, onChange }: {
+  view: ExploreView;
+  onChange: (v: ExploreView) => void;
+}) {
+  const narrow = useNarrowViewport();
+  const item = (v: ExploreView, word: string, icon: React.ReactNode) => ({
+    value: v,
+    label: narrow
+      ? <Tooltip label={word} withArrow><Box aria-label={word} style={{ display: "flex" }}>{icon}</Box></Tooltip>
+      : <Group gap={4} wrap="nowrap">{icon}<span>{word}</span></Group>,
+  });
+  return (
+    <SegmentedControl size="xs" value={view} aria-label="Explore view"
+      onChange={(v) => onChange(v as ExploreView)} style={{ flexShrink: 0 }}
+      data={[
+        item("catalogue", "Catalogue", <IconListDetails size={14} />),
+        item("surfaces", "Surfaces", <IconChartLine size={14} />),
+      ]} />
   );
 }
 
@@ -2254,14 +2450,19 @@ function LeftRail({
  *  a stated refusal naming the component, not an empty shell -- an inspector
  *  that renders blank sections for a record it could not read is claiming the
  *  record is empty, which is a different (and false) statement. */
-function InspectorPanel({ record, name, onClose }: {
+function InspectorPanel({ record, name, onClose, wide = false }: {
   record: ReturnType<typeof readComponentRecord>;
   name: string | null;
   onClose: () => void;
+  /** The CATALOGUE view's form: the record IS the view, so it fills the
+   *  column and scrolls, instead of a 460-px panel beside a plot. */
+  wide?: boolean;
 }) {
   if (!name) return null;
   return (
-    <Box style={{
+    <Box style={wide
+      ? { flex: 1, minHeight: 0, minWidth: 0, padding: 16, overflow: "auto" }
+      : {
       width: 460, flexShrink: 0, height: "100%", padding: 12, overflow: "hidden",
       borderLeft: "1px solid light-dark(var(--mantine-color-gray-3), var(--mantine-color-dark-4))",
       order: 3,

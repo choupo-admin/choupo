@@ -37,9 +37,26 @@
   THE RULE.  Every address a user can see or copy carries exactly one word per
   screen:
 
-      ?workspace=explore      the catalogue   (the explorer's LANDING)
-      ?workspace=properties   the plots       (the property surfaces)
+      ?workspace=explore      Explore: ONE tab, two VIEWS of one set
+                                &view=catalogue   browse, read, estimate
+                                &view=surfaces    every lens (T-x-y, gamma, ...)
       ?workspace=methods      EduTools
+
+  ONE DOOR SINCE 2026-10-21 (DEV.md 4c C116, Vitor: "temos o 'explore' e o
+  'Property Surfaces' que acho que fazem a mesma coisa e so se cria confusao
+  por se ter dois").  The 2026-09-03 split had given the catalogue and the
+  plots two tabs whose LABELS were inverted against their internal keys
+  (label "Explore" = key `compounds`, label "Property surfaces" = key
+  `explore`), and the catalogue's only act the plots lacked was a wider
+  inspector and a link.  Now there is one key, `explore`, one label,
+  "Explore", and the VIEW is a URL word read by the screen itself
+  (`explore/selectionLink.ts` `exploreViewInSearch`) -- the division
+  `?workspace=methods&tool=<id>` already draws: the router decides the
+  SCREEN, the screen reads its own data.  The two retired words are
+  REDIRECTS, never errors (a caption is not a reason to break a bookmark):
+
+      ?workspace=properties   -> ?workspace=explore&view=surfaces
+      ?workspace=compounds    -> ?workspace=explore&view=catalogue
 
   A legacy spelling is still HONOURED -- a caption is not a reason to break a
   bookmark (the precedent is `?explore=mccabe`, which still opens Methods) --
@@ -69,9 +86,12 @@ export interface WorkspaceBoot {
 /** Rewrite `?workspace=` to `word`, keeping every other parameter exactly as
  *  it came -- `components=`, `component=`, `case=`, whatever else the link
  *  carried is DATA and travels untouched. */
-function withWorkspace(params: URLSearchParams, word: string): string {
+function withWorkspace(params: URLSearchParams, word: string, view?: string): string {
   const out = new URLSearchParams(params);
   out.set("workspace", word);
+  //  A retired word names a VIEW as well as the screen; a view the address
+  //  already carries wins (the screen itself wrote it).
+  if (view && !out.has("view")) out.set("view", view);
   //  `URLSearchParams.toString()` spells a comma as `%2C`; `propertiesLink`
   //  -- the home that already knows how to spell the plots address -- joins
   //  a set with a LITERAL comma.  Both parse identically, but the rewritten
@@ -100,25 +120,20 @@ export function resolveWorkspaceSearch(search: string): WorkspaceBoot {
   const params = new URLSearchParams(search);
   const w = params.get("workspace");
 
-  //  THE PLOTS.  Their canonical word since 2026-09-03.
-  if (w === "properties") return { key: "explore", canonical: null };
+  //  EXPLORE -- one screen.  Which of its two views opens is the screen's
+  //  own reading of `view` (absent: the surfaces when the address carries a
+  //  set, the catalogue otherwise -- so the first build's
+  //  `?workspace=explore&components=...` still opens the plots it opened).
+  //  `component=` (singular) is a record TAB, routed before this by AppShell.
+  if (w === "explore") return { key: "explore", canonical: null };
 
-  //  THE CATALOGUE -- and the one legacy bend.  `explore` WITH a set is the
-  //  first build's address for the plots; it still opens them, and the bar is
-  //  rewritten so the word matches the screen.  Note `components` (plural,
-  //  the set) and not `component` (singular, a record tab): the latter is a
-  //  different thing carried by the same landing and must not be mistaken
-  //  for a set.
-  if (w === "explore") {
-    return params.has("components")
-      ? { key: "explore", canonical: withWorkspace(params, "properties") }
-      : { key: "compounds", canonical: null };
-  }
-
-  //  `compounds` is the INTERNAL key of the catalogue, never a published
-  //  address; a link carrying it is honoured and rewritten to the landing's
-  //  own word, so the internal name stops leaking into bookmarks.
-  if (w === "compounds") return { key: "compounds", canonical: withWorkspace(params, "explore") };
+  //  THE TWO RETIRED WORDS (2026-10-21, C116): honoured, and rewritten once
+  //  to the one word, naming the view each used to open.  Every other
+  //  parameter travels untouched.
+  if (w === "properties")
+    return { key: "explore", canonical: withWorkspace(params, "explore", "surfaces") };
+  if (w === "compounds")
+    return { key: "explore", canonical: withWorkspace(params, "explore", "catalogue") };
 
   //  The Methods workspace (2026-08-15) deep-links as
   //  ?workspace=methods&tool=<id>; the tool id is read by MethodsWorkspace.

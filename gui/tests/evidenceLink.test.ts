@@ -41,7 +41,7 @@ import { evidenceForPair } from "../src/case/evidence.js";
 import { viewsFor } from "../src/case/exploreViews.js";
 import { buildLocalUnifac } from "../src/case/unifacGroups.js";
 import {
-  componentsInSearch, evidenceLink, evidenceSelectionInSearch, lensInSearch, propertiesLink,
+  componentsInSearch, evidenceLink, evidenceSelectionInSearch, exploreLink, exploreViewInSearch, lensInSearch,
 } from "../src/ui/explore/selectionLink.js";
 
 describe("the Evidence address round-trips", () => {
@@ -49,11 +49,12 @@ describe("the Evidence address round-trips", () => {
     const link = evidenceLink(["methanol", "water"],
       ["methanol-water-bubble-je200341c", "methanol-water-bubble-j.jct.2009.11.020"],
       ["NRTL@standards", "UNIFAC", "ideal"]);
-    expect(link).toBe("?workspace=properties&components=methanol,water&lens=evidence"
+    expect(link).toBe("?workspace=explore&view=surfaces&components=methanol,water&lens=evidence"
       + "&datasets=methanol-water-bubble-je200341c,methanol-water-bubble-j.jct.2009.11.020"
       + "&models=NRTL@standards,UNIFAC,ideal");
     expect(componentsInSearch(link)).toEqual(["methanol", "water"]);
     expect(lensInSearch(link)).toBe("evidence");
+    expect(exploreViewInSearch(link)).toBe("surfaces");
     expect(evidenceSelectionInSearch(link)).toEqual({
       datasets: ["methanol-water-bubble-je200341c", "methanol-water-bubble-j.jct.2009.11.020"],
       models: ["NRTL@standards", "UNIFAC", "ideal"],
@@ -68,7 +69,7 @@ describe("the Evidence address round-trips", () => {
   });
 
   it("every older address still reads as it did: no lens, no selection", () => {
-    const old = propertiesLink(["water", "ethanol"]);
+    const old = exploreLink(["water", "ethanol"]);
     expect(lensInSearch(old)).toBeNull();
     expect(evidenceSelectionInSearch(old)).toEqual({ datasets: null, models: null });
     expect(componentsInSearch(old)).toEqual(["water", "ethanol"]);
