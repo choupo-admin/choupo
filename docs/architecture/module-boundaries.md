@@ -252,7 +252,7 @@ in §4.
 
 | cycle | sites |
 |---|---|
-| `solver` ↔ `thermo` | `solver/StabilityTest.H:67` -> `thermo/phase/Phase.H`; `thermo/SaturationCurves.cpp`, `thermo/electrolyte/ReactiveVLE.cpp`, `thermo/electrolyte/SpeciationSolver.cpp` -> `solver/` |
+| `solver` ↔ `thermo` | `solver/StabilityTest.H:75` -> `thermo/phase/Phase.H`; `thermo/SaturationCurves.cpp`, `thermo/electrolyte/ReactiveVLE.cpp`, `thermo/electrolyte/SpeciationSolver.cpp` -> `solver/` |
 | `unitOperations` ↔ `propertyOps` | `unitOperations/separation/IonExchanger.cpp:32` -> `propertyOps/Exchange.H`; 9 edges back |
 | `reporting` ↔ `postProcessing` | `reporting/{Economics,Design}Report.cpp:30` -> `postProcessing/PostProcessor.H`; `postProcessing/EconomicsPass.cpp:32` -> `reporting/OdsWriter.H` |
 

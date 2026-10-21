@@ -35,6 +35,7 @@ License
 #include <limits>
 #include <iostream>
 #include <map>
+#include <sstream>
 #include <stdexcept>
 
 namespace Choupo {
@@ -55,6 +56,13 @@ struct StageSplit
     sVector xExtract;       // extract mole fractions  (Sigma = 1)
     sVector xRaffinate;     // raffinate mole fractions
     bool    split = false;  // true if a genuine two-phase split was found
+    //  The flash could not answer this stage: the stability test proved the
+    //  stage's mixture splits and no split was found (IsothermalFlash.cpp,
+    //  the LL branch).  The stage is NOT "one liquid" then, and the caller
+    //  refuses rather than send the whole inlet down as raffinate.
+    bool        failed = false;
+    std::string why;
+    sVector     K;      // x_beta / x_alpha of the split: the next sweep's warm start
 };
 
 // Sum two component-molar vectors.
@@ -81,7 +89,8 @@ StageSplit equilibrateStage(const sVector& inMol,
                             scalar T, scalar P,
                             const ThermoPackage& thermo,
                             std::size_t alphaRich,
-                            std::size_t betaRich)
+                            std::size_t betaRich,
+                            const sVector& warmK = sVector{})
 {
     const std::size_t n = thermo.n();
     StageSplit out;
@@ -109,6 +118,7 @@ StageSplit equilibrateStage(const sVector& inMol,
     opts.llAlphaRichComp = alphaRich;
     opts.llBetaRichComp  = betaRich;
     opts.accelerator     = OuterAccelerator::DirectSubstitution;
+    opts.llWarmK         = warmK;   // this stage's split on the previous sweep
 
     // READ-ONLY call into the shared LL-flash kernel (Gibbs minimisation).
     const FlashSolution sol =
@@ -117,6 +127,15 @@ StageSplit equilibrateStage(const sVector& inMol,
     // LL convention of solveCore:  beta = V_over_F is the fraction in
     // phase beta; x = phase alpha; y = phase beta;
     //   z_i = (1 - beta) x_alpha_i + beta x_beta_i.
+    if (!sol.converged)
+    {
+        out.failed = true;
+        out.why    = sol.regime;
+        out.xRaffinate = in.z;
+        out.xExtract.assign(n, 0.0);
+        return out;
+    }
+
     const scalar beta = sol.V_over_F;
     const bool twoPhase =
         sol.converged && beta > 1.0e-6 && beta < 1.0 - 1.0e-6
@@ -124,7 +143,8 @@ StageSplit equilibrateStage(const sVector& inMol,
 
     if (!twoPhase)
     {
-        // No split at this stage: the whole inlet leaves as raffinate
+        // No split at this stage (the stability test found the stage's
+        // mixture STABLE as one liquid): the whole inlet leaves as raffinate
         // (the feed-side phase) so the cascade mass balance stays exact.
         out.split        = false;
         out.raffinateMol = inMol;
@@ -156,6 +176,9 @@ StageSplit equilibrateStage(const sVector& inMol,
         out.raffinateMol = alphaMol;  out.xRaffinate = sol.x;
     }
     out.split = true;
+    out.K.assign(n, 1.0);
+    for (std::size_t i = 0; i < n; ++i)
+        if (sol.x[i] > 0.0) out.K[i] = sol.y[i] / sol.x[i];
     return out;
 }
 
@@ -539,17 +562,33 @@ int Extractor::solve(const DictPtr& dict,
     const scalar relax = 0.5;
     // The cascade is judged on its OVERALL MASS CLOSURE --- the only
     // physically meaningful convergence metric here.  Each per-stage
-    // Gibbs-min flash (Nelder-Mead, tolX 1e-5 on compositions) splits its
+    // Gibbs-min flash (Nelder-Mead, then a Newton on equal activities) splits its
     // inlet exactly, but under-relaxed Gauss-Seidel leaves a small
     // inter-stage imbalance that the sweeps grind down; the per-step
     // |Delta F| residual limit-cycles on the flash-noise floor and is a
     // poor proxy, so we stop when the column balance closes (or stalls).
+    //
+    // 1e-8, NOT the 1e-4 it was (DEV.md 4c C123, finding 4).  1e-4 was
+    // the Nelder-Mead noise floor; the stage flash now finishes on a Newton
+    // to equal activities (llSplit::polishEqualActivity), so the floor is
+    // gone -- and what 1e-4 cost was the FIRST LAW: an isothermal cascade
+    // with no excess-enthalpy model has H(out) = H(in) exactly once its
+    // material closes, so the plant boundary residual was the tolerated
+    // imbalance priced at the formation datum (extract01 -0.88 kW,
+    // extract02 -1.03 kW at closures of 7.2e-5 and 5.4e-5; both 1e-4 kW
+    // at 1e-8).
     const scalar throughput = F_feed + F_solv;
-    const scalar closeTol   = 1.0e-4;                // relative mass-closure target
+    const scalar closeTol   = 1.0e-8;                // relative mass-closure target
     const int    stallLimit = 60;                    // sweeps without closure improvement
     int    iters       = 0;
     scalar dMax        = 0.0;
     int    splitStages = 0;
+    std::vector<int> oneLiquidStages;      // last sweep: stages that did not split
+    //  Each stage's split on the previous sweep, handed to its flash as a
+    //  warm start (FlashOptions::llWarmK): the flash accepts it only when
+    //  both liquids it reaches are stable, so it changes the cost of a sweep
+    //  and never its answer.
+    std::vector<sVector> warmK(N);
     scalar bestClose   = std::numeric_limits<scalar>::infinity();
     int    stall       = 0;
     bool   converged   = false;
@@ -564,6 +603,7 @@ int Extractor::solve(const DictPtr& dict,
     {
         dMax        = 0.0;
         splitStages = 0;
+        oneLiquidStages.clear();
 
         // Gauss-Seidel sweep, stage 1 -> N (uses freshest neighbours).
         for (int j = 0; j < N; ++j)
@@ -573,8 +613,23 @@ int Extractor::solve(const DictPtr& dict,
             const sVector  inMol         = addMol(raffFromAbove, extrFromBelow);
 
             const StageSplit ss = equilibrateStage(
-                inMol, iSolvent, T, P, thermo, iSolvent, iCarrier);
-            if (ss.split) ++splitStages;
+                inMol, iSolvent, T, P, thermo, iSolvent, iCarrier, warmK[j]);
+            warmK[j] = ss.split ? ss.K : sVector{};
+            if (ss.failed)
+            {
+                std::ostringstream m;
+                m << "Extractor: stage " << (j + 1) << " of " << N
+                  << " (sweep " << (iters + 1) << ") has no answer -- " << ss.why
+                  << ".\n  The stage's mixture:";
+                const scalar Fst = totalOf(inMol);
+                for (std::size_t i = 0; i < n; ++i)
+                    m << "  " << thermo.comp(i).name() << " "
+                      << std::setprecision(4) << (Fst > 0.0 ? inMol[i] / Fst : 0.0);
+                m << "\n  A stage the flash cannot split is not a stage that"
+                     " does not split, so the cascade is not published.";
+                throw std::runtime_error(m.str());
+            }
+            if (ss.split) ++splitStages; else oneLiquidStages.push_back(j + 1);
 
             // Under-relaxed update of the two leaving streams.
             for (std::size_t i = 0; i < n; ++i)
@@ -601,7 +656,11 @@ int Extractor::solve(const DictPtr& dict,
         // best state, but only call it CONVERGED if the closure it
         // reached is acceptable (otherwise the `converged` KPI stays 0
         // and the report warns --- numerical honesty over a green light).
-        if (close < bestClose - 1.0e-3 * bestClose) { bestClose = close; stall = 0; }
+        //  (Multiplied, not subtracted: `bestClose` starts at infinity and
+        //  inf - 1e-3 inf is NaN, which no closure is below -- so the best
+        //  closure never moved, every sweep counted as a stall, and the
+        //  "stall limit" was a silent 60-sweep cap.  DEV.md 4c C123, finding 4.)
+        if (close < bestClose * (1.0 - 1.0e-3)) { bestClose = close; stall = 0; }
         else                                        { ++stall; }
         if (stall >= stallLimit)
         { ++iters; converged = (close < 10.0 * closeTol); break; }
@@ -731,10 +790,44 @@ int Extractor::solve(const DictPtr& dict,
                   << "======================================================================\n\n";
     }
 
+    //  A CASCADE THAT DID NOT CONVERGE IS NOT AN ANSWER (DEV.md 4c C123,
+    //  finding 4).  This used to be a warning with exit 0: a column that
+    //  created or lost a quarter of its throughput was published, and
+    //  `converged/` written, beside a `converged 0` KPI nobody reads.  The
+    //  rule is the recycle's (a non-converged recycle exits 1 and writes no
+    //  `converged/`) and the Mixer's posture on how: THROW with the
+    //  diagnosis, because the flowsheet turns a non-zero return into a
+    //  generic sentence and the detail would be lost where it is needed.
     if (!converged)
-        std::cerr << "Warning: Extractor cascade hit the iteration cap ("
-                  << maxIt << " sweeps) with |Delta F| = " << dMax
-                  << " --- result may be under-converged.\n";
+    {
+        std::ostringstream m;
+        m << "Extractor: the counter-current cascade did not converge -- after "
+          << iters << " Gauss-Seidel sweeps its column mass balance is off by "
+          << std::scientific << std::setprecision(3) << closure_err
+          << " of the throughput (target " << closeTol << "; best reached "
+          << bestClose << "), with " << splitStages << " of " << N
+          << " stages two-phase on the last sweep";
+        if (!oneLiquidStages.empty())
+        {
+            m << " (one liquid at stage";
+            if (oneLiquidStages.size() > 1) m << "s";
+            for (std::size_t k = 0; k < oneLiquidStages.size(); ++k)
+                m << (k ? ", " : " ") << oneLiquidStages[k];
+            m << ": the stability test found the mixture there STABLE, so all"
+                 " of it went down as raffinate and no extract went up)";
+        }
+        m << ".\n"
+             "  The cascade is NOT published: its outlets would not conserve"
+             " the material fed to it.\n"
+             "  What to check: that the feed + solvent mixture splits at all"
+             " under this thermophysical system at " << std::fixed
+          << std::setprecision(2) << T << " K (an isothermalFlash with phaseSet"
+             " LL on the mixed inlets answers it); the solvent-to-feed ratio"
+             " (a cascade fed outside the two-liquid region has no counter-"
+             "current solution); or declare a stageProfile seed in"
+             " 0/internalStates/<SECTOR>/<unit> nearer the answer.";
+        throw std::runtime_error(m.str());
+    }
     if (closure_err > 1.0e-4)
         std::cerr << "Warning: Extractor mass closure off by " << closure_err
                   << " (rel.) --- check the stage balances.\n";

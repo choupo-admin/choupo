@@ -106,9 +106,12 @@ RATCHET = 0.002
 #  percentage points.  Reseed with --seed; do not hand-edit a number.
 KNOWN_OPEN = {
     "tutorials/steady/membranes/membrane08_softened_scaling": 99.9881,
-    "tutorials/steady/absorption/extract02_declared_interior": 0.0130,
-    "tutorials/steady/absorption/extract01_ethanol_water_benzene": 0.0121,
 }
+#  PAID 2026-10-21 (DEV.md 4c C123, finding 4): extract01 (0.0121 pp) and
+#  extract02 (0.0130 pp) left -- both 100.0000 % on every element.  Their
+#  "leak" was the extractor's cascade stopping at a 1e-4 mass closure, the
+#  Nelder-Mead noise floor of its stage flash; the flash now finishes on a
+#  Newton and the cascade closes to 1e-8.
 
 #  The one entry that is NOT a leak, with the reason, so a reader of the
 #  ledger is not misled into counting it as one.

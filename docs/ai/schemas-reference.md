@@ -818,8 +818,8 @@ The full phase split of ONE fixed feed swept along temperature (at fixed pressur
 | `state` | ✓ | object | — | `{ P ...; composition { ... } }` when T is swept, `{ T ...; composition { ... } }` when P is swept. The swept axis declared here too is r… |
 | `vary` | ✓ | object | — | `{ variable T\|P; from ...; to ...; n ...; }` (or `step`). `from` may exceed `to`: a cooling scan is written top-down. Absent `n` and `st… |
 | `phaseSet` |   | string | — | The isothermalFlash unit's own word, read by the unit's own reader: VL (default), LL, VLLE, or auto (decided per grid point by the tangen… |
-| `alphaRich` |   | string | — | The flash unit's LL seeding aid: the component biased into liquid alpha for the initial guess. |
-| `betaRich` |   | string | — | The flash unit's LL seeding aid: the component biased into liquid beta for the initial guess. |
+| `alphaRich` |   | string | — | Names liquid alpha: on an LL flash the liquid richer in this component (relative to betaRich) is reported as alpha -- a label on the answ… |
+| `betaRich` |   | string | — | Names liquid beta: the counterpart of alphaRich (a label on an LL answer, a seed on a VLLE search). |
 | `output` | ✓ | object | — | `{ file <name>.csv; }` -- the per-point table, relative to the case directory: the swept variable, `solved`, `nPhases`, one amount column… |
 
 ## `pipe`  (pipe operation)

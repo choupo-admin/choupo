@@ -154,11 +154,25 @@ struct FlashOptions
     int              maxOuterIter   = 100;
     PhaseSet         phaseSet       = PhaseSet::VL;
 
-    // LL-only: which component is biased into phase α (or β) for the
-    // initial guess.  Breaks the trivial K=1 fixed point at x_α=x_β=z.
-    // SIZE_MAX = use first / last component by default.
+    // LL/VLLE: which component liquid α (or β) is RICH in.  On the LL path
+    // it NAMES the two liquids of the answer -- α is the one richer in
+    // llAlphaRichComp relative to llBetaRichComp -- and never chooses them:
+    // the minimisation's starts are built from the PAIR in index order, so
+    // swapping the two hints swaps the labels and nothing else (DEV.md 4c
+    // C123, finding 3; llSplit::labelByHints).  On the VLLE path it still
+    // biases the starts.  SIZE_MAX = first / last component by default.
     std::size_t      llAlphaRichComp = static_cast<std::size_t>(-1);
     std::size_t      llBetaRichComp  = static_cast<std::size_t>(-1);
+
+    // LL only: a WARM START -- a previous answer near this feed (an
+    // extractor's previous sweep of the same stage), as K_i = x_beta_i /
+    // x_alpha_i.  Tried before the minimisation: Rachford-Rice and the
+    // equal-activity Newton from it, accepted only when the answer converges
+    // AND both liquids pass the stability test -- the tangent-plane
+    // condition that makes a two-liquid answer the stable one (Michelsen
+    // 1982), so a warm start can never return what a cold one would not.
+    // Empty = cold.  It names no phase, so the hints still label the answer.
+    sVector          llWarmK;
 
     // Optional sink for the per-iteration composition residual |Δx|.
     // The unit-op layer wires this to UnitOperation::recordResidual so

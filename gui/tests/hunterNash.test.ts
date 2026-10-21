@@ -246,9 +246,13 @@ describe("readTernaryScan — over the engine's own generated phase map", () => 
     if (!r.ok) return;
     // Counts as the witness's run writes them (tieStride 4, grid n 16).
     // They move if the witness is re-run with different settings — which is a
-    // change worth noticing, not a flake.
+    // change worth noticing, not a flake.  Noticed 2026-10-21 (DEV.md 4c
+    // C123, finding 3): 18 -> 21 tie-lines, because 15 of the 105 nodes
+    // used to come back as ONE liquid from a flash whose own stability test
+    // had found them unstable (the minimiser's starts could not reach the
+    // split); they split now, seeded by the incipient phase.
     expect(r.read.nodes.length).toBe(105);
-    expect(r.read.ties.length).toBe(18);
+    expect(r.read.ties.length).toBe(21);
     expect(r.read.skippedRows).toBe(0);
     expect(r.read.unpairedTies).toBe(0);
   });
@@ -265,12 +269,15 @@ describe("readTernaryScan — over the engine's own generated phase map", () => 
   it("reports the shallowest published split rather than filtering on it", () => {
     const r = readTernaryScan(mapCsv());
     if (!r.ok) throw new Error(r.why);
-    // A pure minimum over the engine's own beta columns.  On this map it is
-    // 1e-4 at six two-liquid nodes: splits that shallow are all but
-    // single-phase, and the tool QUOTES that rather than dropping them.
+    // A pure minimum over the engine's own beta columns.  On this map it was
+    // 1e-4 at six two-liquid nodes -- which was the Nelder-Mead box FLOOR
+    // (lo = 1e-4 on every liquid-alpha mole fraction), not a split: since
+    // the flash finishes on a Newton to equal activities (2026-10-21, DEV.md
+    // 4c C123) the shallowest real split on this map is ~1.4e-3, and the
+    // tool still QUOTES it rather than dropping it.
     expect(r.read.minorBetaMin).not.toBeNull();
     expect(r.read.minorBetaMin!).toBeGreaterThan(0);
-    expect(r.read.minorBetaMin!).toBeLessThan(1e-3);
+    expect(r.read.minorBetaMin!).toBeLessThan(1e-2);
     expect(r.read.minorBetaMinCount).toBeGreaterThanOrEqual(1);
     // and nothing was dropped for being shallow
     expect(r.read.nodes.filter((n) => n.region === "LL").length).toBeGreaterThan(
