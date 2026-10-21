@@ -1645,6 +1645,33 @@ accepts today, and that is a policy call.
 > both quoted verbatim in the brief; COCO is closed-source freeware and
 > is NOT named; the reference simulator is GPL-3.0 at the recorded
 > commit, its sample folder under no licence of its own.
+> **v2 DRAFTED 2026-10-21 (G31, `claude/c126-white-paper-v2b` b53267b05,
+> integrated):** `paper/whitepaper/whitepaper.{tex,pdf}` redrafted on the
+> decided frame -- title "Choupo: an open-source chemical process
+> simulator for education and research"; glass-box defined in the
+> abstract by six observables; the AI response in the introduction
+> (positive opportunity, effect a goal to evaluate, the student still
+> formulates/chooses/designs/decides); a scope table from generated/
+> (c402561ad); the OpenFOAM mapping table with OpenCFD's three required
+> statements (policy re-read that day); the curation chain and the worked
+> user/agent/engine/interface/student example on curate05 (fits its own
+> study to 0.10 K, misses the held-out study by 0.316 K against a
+> 0.155 K band declared before the fit -> notValidated; UNIFAC the mirror
+> image), the figure from the run's own CSVs under
+> `paper/whitepaper/data/`; "gate" defined at first use and each gate's
+> concrete reach; the inventory to Appendix A; examples flash01 (log and
+> Duhem refusal regenerated), cavett01 (Newton 7 iterations; its first
+> law OPEN at 88 % and pinned -- shown, not hidden), SDEM/NF270 and ed04
+> with exactly what the gates hold, the open-simulator comparison with
+> the UNIFAC column and cited-version / in-integration / future kept
+> apart.  16 pages, DRAFT on, TODOs commented at the top of the source.
+> Gates green; a closed simulator's name in the paper still fails
+> check_doctrine (sabotage observed).  Tool gap found: the engine prints
+> held-out AADs but no per-point held-out residuals (the figure
+> interpolates the scans; the C117 Evidence view needs them from the
+> engine).  Owed to Vitor: his read; whether cavett01 (open first law
+> shown) or hda (closes) is the recycle example in print; the release to
+> cite.
 
 > **C125. WHY THE BREAKTHROUGH PAGES ARE SLOW (Vitor, 2026-10-21: "Porque
 > isto e tao lento? breakthrough e do lub-scaleup").**  Measured by the
