@@ -6,7 +6,7 @@
   "runtime": "not recorded; runTests does not time per case and this script does not run the corpus"
  },
  "counts": {
-  "cases": 480,
+  "cases": 481,
   "witnesses": 16,
   "validationOp": 6,
   "anchored": 12
@@ -3641,6 +3641,20 @@
    "hasGolden": true
   },
   "tutorials/steady/distillation/column16_declared_interior": {
+   "application": "choupoSolve",
+   "unitTypes": [
+    "distillationColumn"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [],
+   "hasGolden": true
+  },
+  "tutorials/steady/distillation/column18_partial_condenser": {
    "application": "choupoSolve",
    "unitTypes": [
     "distillationColumn"
@@ -7303,6 +7317,7 @@
     "tutorials/steady/distillation/column14_klemola_c4_splitter",
     "tutorials/steady/distillation/column15_klemola_ideal_trays",
     "tutorials/steady/distillation/column16_declared_interior",
+    "tutorials/steady/distillation/column18_partial_condenser",
     "tutorials/steady/distillation/shortcut01_benzene_toluene",
     "tutorials/steady/distillation/stripper01_sour_water",
     "tutorials/steady/distillation/stripper02_sour_water_h2s",
@@ -7742,6 +7757,7 @@
     "tutorials/steady/distillation/column14_klemola_c4_splitter",
     "tutorials/steady/distillation/column15_klemola_ideal_trays",
     "tutorials/steady/distillation/column16_declared_interior",
+    "tutorials/steady/distillation/column18_partial_condenser",
     "tutorials/steady/distillation/stripper01_sour_water",
     "tutorials/steady/distillation/stripper02_sour_water_h2s",
     "tutorials/steady/flowsheets/process05_isomerization_recycle",
@@ -8497,6 +8513,7 @@
     "tutorials/steady/distillation/column11_murphree",
     "tutorials/steady/distillation/column12_stage_is_a_flash",
     "tutorials/steady/distillation/column16_declared_interior",
+    "tutorials/steady/distillation/column18_partial_condenser",
     "tutorials/steady/distillation/shortcut01_benzene_toluene",
     "tutorials/steady/drying/convDryer01_sugar_curve",
     "tutorials/steady/drying/evapDryer01_nacl",

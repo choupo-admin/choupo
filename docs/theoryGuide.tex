@@ -22102,10 +22102,17 @@ residual the CMO never carried:
    \label{eq:fullmesh-energy}
 \end{equation}
 The internal flows now follow the \emph{real} latent heats instead of being
-assumed equimolal.  The end stages carry flow specifications instead of an
-energy residual: a total condenser fixes $V_1=0$ and $L_1=R\,D$, the reboiler
-fixes $L_N=B$, and their energy balances yield $Q_{\text{cond}}$ and
-$Q_{\text{reb}}$ as \emph{results}.  Validated stage-by-stage against the
+assumed equimolal.  What stage~1 is follows from the declared condenser
+type (\code{condenser \{ type total|partial; \}}, default \code{total}):
+under a \textbf{total} condenser stage~1 is the top tray and carries the
+same energy balance, the reflux $R\,D$ entering it as the condensate of its
+own vapour at the bubble point of $y_1$ and $V_1 = (R+1)\,D$ leaving it to
+the condenser, which is not an equilibrium stage and is not counted; under
+a \textbf{partial} condenser stage~1 \emph{is} the condenser, an
+equilibrium stage whose rows fix $V_1=0$ and $L_1=R\,D$ in place of an
+energy residual.  The reboiler fixes $L_N=B$.  The condenser and reboiler
+duties are \emph{results}: $Q_{\text{cond}}$ from the condenser's own
+envelope, $Q_{\text{reb}}$ from the reboiler's.  Validated stage-by-stage against the
 original Naphtali \& Sandholm (1971) Problem~2 in
 \file{column07\_naphtaliSandholm} ($T$ profile within $\le1.8$~K over 20 stages);
 \file{column06\_fullMESH} shows it agreeing with CMO on benzene/toluene (close
@@ -26406,12 +26413,13 @@ it never asks the handle a question.
 \subsection*{Worked: the two criteria disagree}
 
 Take the benzene/toluene column of
-\code{tutorials/steady/distillation/column02\_simultaneous} --- 15 stages
-(stage 1 the condenser, stage 15 the reboiler), feed on stage 8,
+\code{tutorials/steady/distillation/column02\_simultaneous} --- 15
+equilibrium stages (stage 1 the top tray below a total condenser, which is
+not counted; stage 15 the reboiler), feed on stage 8,
 $R = 2.0$, $D = 50$\,kmol/h, rigorous MESH.  Its solved profile runs from
 354.21\,K at the top to 382.89\,K in the reboiler.  Restricting attention
-to the stages that are trays (neither the condenser nor the reboiler can
-carry a tray thermocouple):
+to the stages that are trays (the reboiler cannot carry a tray
+thermocouple):
 
 \begin{center}
 \begin{tabular}{lll}

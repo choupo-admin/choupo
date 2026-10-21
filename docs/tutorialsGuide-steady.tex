@@ -1125,7 +1125,7 @@ Expected --- close to, but NOT equal to, column02 (the gap IS the energy-balance
 \tutreadme{The same benzene/toluene column as column02\_simultaneous, but solved by the full MESH (model fullMESH) instead of the bubble-point/CMO reduction.}
 \tutreadme{The simultaneous method is a bubble-point-reduced MESH: it assumes constant molal overflow (CMO --- equimolal latent heats), so the internal vapour/liquid flows V\_j, L\_j are fixed by a mass march and only the compositions x\_j and stage temperatures T\_j are solved.}
 \tutreadme{The full MESH (Naphtali--Sandholm) promotes V\_j and L\_j to unknowns and adds, per stage, the total-mass balance and the energy balance --- so the flows follow the $\ast$real$\ast$ latent heats instead of assuming them equal. The extra per-stage energy equation is the enthalpy residual the CMO never carried:}
-\tutreadme{Total condenser: V\_0 = 0, L\_0 = R$\cdot$D; reboiler: L\_\{N-1\} = B; their energy balances give Q\_cond / Q\_reb as results.}
+\tutreadme{What stage 1 is follows from the declared condenser type (condenser \{ type total|partial; \}, default total). Under a TOTAL condenser stage 1 is the top tray and carries the same energy balance: the reflux R$\cdot$D enters it as the condensate of its own vapour, at the bubble point of y\_1, and V\_1 = (R+1)$\cdot$D leaves it to a condenser that is not an equilibrium stage and is not counted. Under a PARTIAL condenser stage 1 IS the condenser, and its rows fix V\_1 = 0, L\_1 = R$\cdot$D in place of an energy residual. The reboiler fixes L\_N = B. Q\_cond (the condenser's own envelope) and Q\_reb (the reboiler's) are results.}
 \tutreadme{The full-MESH is seeded from the converged CMO profile --- the cheap model launches the rigorous one. Here it converges in \textasciitilde{}4 Newton iterations from that seed (it would be far harder from a cold start).}
 \tutreadme{Benzene ($\Delta$h\_vap $\approx$ 30.8 kJ/mol) and toluene ($\approx$ 33.2 kJ/mol) have similar latent heats, so CMO is a good approximation and the two answers nearly coincide --- the \textasciitilde{}0.002 / \textasciitilde{}0.1 K gap IS the energy-balance correction the full-MESH makes and the CMO drops. On a wide-boiling column (a depropaniser) the gap is much larger; that is where the full-MESH earns its cost.}
 \begin{tutgolden}
@@ -1812,6 +1812,49 @@ WHAT THE STUDENT SHOULD DO WITH IT. Run the case and read the `iterations` KPI; 
 \goldrow{kpi}{column16}{R}{2}
 \goldrow{kpi}{column16}{T\_bottom}{381.514099427}
 \goldmore{19}
+\end{tutgolden}
+
+\clearpage
+\tutentry{column18\_partial\_condenser}{tutorials/steady/distillation/column18\_partial\_condenser}
+\begin{tutscheme}
+\begin{tikzpicture}[>={Stealth[length=2mm]}, every node/.style={font=\scriptsize}]
+  \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (column18) at (0.0,-0.0) {\textbf{column18}\\[-1pt]{\tiny distillationColumn}};
+  \draw[->] ($(column18.west)+(-1.05,0.00)$) -- ($(column18.west)+(0,0.00)$) node[at start, above, font=\tiny, anchor=south west] {feed};
+  \draw[->] ($(column18.east)+(0,-0.17)$) -- ($(column18.east)+(1.05,-0.17)$) node[at end, below, font=\tiny, anchor=north east] {distillate};
+  \draw[->] ($(column18.east)+(0,0.17)$) -- ($(column18.east)+(1.05,0.17)$) node[at end, above, font=\tiny, anchor=south east] {bottoms};
+\end{tikzpicture}
+\end{tutscheme}
+\tutwhat{Benzene/toluene column with a PARTIAL condenser (Wang-Henke)}
+\begin{tutnarrative}
+column01's benzene/toluene column under a PARTIAL condenser (`condenser \{ type partial; \}`).
+
+WHAT IT DEMONSTRATES. The condenser TYPE is a declared choice, and it decides what stage 1 IS. Here stage 1 is the condenser itself, an equilibrium stage: the reflux is its liquid x\_1, and the distillate leaves as a saturated VAPOUR y\_1 = K\_1 x\_1 at T\_1 (published `vf 1`, pinned). Compared with column01 (the same column, `type total` by default): the distillate composition is the SAME -- both types write the same material balance on stage 1 (x\_D = y\_1 = K\_1 x\_1 under a total condenser is the condensate of that vapour; here it is the vapour itself); the distillate PHASE differs: vapour at T\_1 = 355.69 K here, liquid at its bubble point 354.25 K there; the condenser duty is the stage's OWN envelope, Q = -[ V\_2 h\_V(y\_2,T\_2) - L\_1 h\_L(x\_1,T\_1) - D h\_V(y\_1,T\_1) ], about two thirds of the total condenser's (R+1) D latent duty, because D leaves uncondensed; the reboiler duty rises by the enthalpy the vapour distillate carries away; stage 1 is NOT a tray: the hydraulics pass drops it (V\_1 = 0), where under a total condenser it is the top tray and is rated.
+
+THE STAGE COUNT. `nStages` counts EQUILIBRIUM stages, top to bottom, the reboiler included. A partial condenser is one of them, so the 15 stages here are 1 condenser + 13 trays + 1 reboiler; column01's 15 are 14 trays + 1 reboiler under a total condenser that is not counted. A source that counts its TOTAL condenser as "stage 1" describes nStages - 1 here.
+
+\end{tutnarrative}
+\tutreadme{column01\_benzene\_toluene's 15-stage benzene/toluene column (feed on stage 8, R = 2, D = 50 kmol/h, Raoult, Wang--Henke) with ONE line added:}
+\tutreadme{The condenser TYPE is a declared choice (default total, announced when it is taken), and it decides what stage 1 IS.}
+\tutreadme{Stage 1 is the condenser itself, an equilibrium stage. The vapour from stage 2 enters it, part of it is condensed and returned as the reflux --- the stage's liquid x\_1 --- and the rest leaves as the distillate, a saturated VAPOUR y\_1 = K\_1 x\_1 at T\_1. Under a total condenser (column01) ALL of the vapour leaving stage 1 is condensed and reflux and distillate leave as one liquid of that vapour's composition, at its bubble point; stage 1 is then the top tray, and the condenser above it is not an equilibrium stage and is not counted.}
+\tutreadme{Both types write the same material balance on stage 1, so the two cases share their composition profile and their distillate composition exactly (x\_D = 0.9510 benzene, both). What differs:}
+\tutreadme{and the reboiler duty closes the column, as always. The plant first law closes at 0 kW in both cases: the split between the two duties moves, the sum does not.}
+\tutreadme{nStages counts EQUILIBRIUM stages, top to bottom, the reboiler included. A partial condenser is one of them: the 15 stages here are 1 condenser + 13 trays + 1 reboiler. column01's 15 are 14 trays + 1 reboiler, under a total condenser that is not counted. So a source that counts its TOTAL condenser as "stage 1" (many textbooks and simulators do) describes a column of nStages - 1 here, and one that counts a partial condenser as stage 1 maps one to one.}
+\begin{tutgolden}
+\goldrow{stream}{bottoms}{F}{0.0138888888889}
+\goldrow{stream}{bottoms}{T}{381.514100345}
+\goldrow{stream}{distillate}{F}{0.0138888888889}
+\goldrow{stream}{distillate}{T}{355.689111404}
+\goldrow{stream}{feed}{F}{0.0277777777778}
+\goldrow{stream}{feed}{T}{370}
+\goldrow{kpi}{column18}{B}{0.0138888888889}
+\goldrow{kpi}{column18}{D}{0.0138888888889}
+\goldrow{kpi}{column18}{L\_rect}{0.0277777777778}
+\goldrow{kpi}{column18}{L\_strip}{0.0361877253979}
+\goldrow{kpi}{column18}{Q\_condenser\_kW}{-870.344500525}
+\goldrow{kpi}{column18}{Q\_reboiler\_kW}{672.996461619}
+\goldrow{kpi}{column18}{R}{2}
+\goldrow{kpi}{column18}{T\_bottom}{381.514100345}
+\goldmore{18}
 \end{tutgolden}
 
 \clearpage

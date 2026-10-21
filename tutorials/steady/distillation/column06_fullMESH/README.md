@@ -19,8 +19,15 @@ carried:
   L_{j-1} h_L(x_{j-1},T_{j-1}) + V_{j+1} h_V(y_{j+1},T_{j+1}) + F_j h_F
       − L_j h_L(x_j,T_j) − V_j h_V(y_j,T_j)  =  0      (interior stage)
 ```
-Total condenser: `V_0 = 0`, `L_0 = R·D`; reboiler: `L_{N−1} = B`; their energy
-balances give `Q_cond` / `Q_reb` as results.
+What stage 1 is follows from the declared condenser type
+(`condenser { type total|partial; }`, default `total`).  Under a TOTAL
+condenser stage 1 is the top tray and carries the same energy balance: the
+reflux `R·D` enters it as the condensate of its own vapour, at the bubble
+point of `y_1`, and `V_1 = (R+1)·D` leaves it to a condenser that is not an
+equilibrium stage and is not counted.  Under a PARTIAL condenser stage 1 IS
+the condenser, and its rows fix `V_1 = 0`, `L_1 = R·D` in place of an energy
+residual.  The reboiler fixes `L_N = B`.  `Q_cond` (the condenser's own
+envelope) and `Q_reb` (the reboiler's) are results.
 
 ## The CMO bootstraps the full-MESH (the robustness trick)
 
