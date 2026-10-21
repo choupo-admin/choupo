@@ -1343,6 +1343,19 @@ accepts today, and that is a policy call.
 > case directory and dictionaries, five binaries, explicit factories,
 > state directories, the WASM front-end, the visible Newton log).  Sent
 > to G29.
+> **And a READER FORUM before it goes out (Vitor, same day: "deve ter um
+> forum representativo de alunos, engenheiros e professores a lerem o
+> paper, como se nunca tivesse ouvido falar dele, e a verem se entendem e
+> ficam entusiasmados para terem vontade de ir conhecer").**  On the
+> draft PDF, cold readers who have never heard of Choupo: two students
+> (undergraduate, PhD), two industrial process engineers (a daily user of
+> commercial simulators; one at an SME with no licence budget), two
+> professors (process simulation; one sceptical of AI in teaching) and an
+> OpenFOAM user.  Each reports, quoting the sentences that stopped them:
+> did the thesis land, where they got lost, what excited and what made
+> them distrust, and whether they would open choupo.org and why.  A
+> synthesis separates consensus from taste and proposes edits; Vitor
+> chooses which go in.
 
 > **C124. A COLUMN'S EXCHANGERS DESIGNED IN DETAIL: CONDENSER, REBOILER,
 > SIDE COOLERS AND PUMPAROUNDS (Vitor, 2026-10-20, after asking whether the
