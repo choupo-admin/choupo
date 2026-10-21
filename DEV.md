@@ -1673,6 +1673,24 @@ accepts today, and that is a policy call.
 > read back, committed) and gives each new view an F1/Help anchor that
 > lands on the right section, with the gates that hold those links green;
 > it is in every brief, and an integration without it is not done.
+> **And the student's OWN data, in the same EduTool (Vitor, 2026-10-21:
+> "Uau!!! Isso devia de ser posto tambem no EduTool do explorer!").**
+> Measured: the hosted site already opens a user's case folder or .zip
+> (File -> "Open Case folder..." / "Open Case from .zip...", one rule in
+> `gui/src/cases/caseArchive.ts`); the Evidence view reads the OPEN
+> case's `constant/experiments/*.dat` as its first tier
+> (`gui/src/case/evidence.ts:302-309`) and the Explorer the case's
+> `constant/components/*.dat` (`ExploreWorkspace.tsx:410-484`);
+> `data/local/evidence/` reaches the dev GUI only (the site cannot read a
+> disk).  So C127's EduTool gains a last page: "now with your own
+> mixture" -- a minimal self-contained case (a controlDict, the two
+> component records if they are not in the catalogue, the measured
+> series under constant/experiments/ with their citation) downloadable as
+> a template, opened back in the site, drawn by the Evidence view.
+> First step before writing it: an end-to-end test on the live site
+> (a zip with one pair and its data, opened, drawn), the gaps it finds
+> fixed; the Explorer Guide says how.  Not built, named: opening a data
+> folder WITHOUT a case, or dropping .dat files on the view.
 
 > **C126. A WHITE PAPER IN THE REPOSITORY (Vitor, 2026-10-21: "Achas que
 > e bom pegarmos nesta dica, e fazemos um white paper que vamos
