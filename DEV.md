@@ -1387,6 +1387,23 @@ accepts today, and that is a policy call.
 > them distrust, and whether they would open choupo.org and why.  A
 > synthesis separates consensus from taste and proposes edits; Vitor
 > chooses which go in.
+> **DRAFTED 2026-10-21 (G29, `claude/c126-white-paper` de41c0d3e,
+> integrated):** `paper/whitepaper/whitepaper.{tex,pdf}`, 12 pages, a DRAFT
+> watermark behind one switch (`\drafttrue`), the approved sections plus
+> the architecture section and the OpenFOAM paragraph (non-affiliation in
+> the text and the acknowledgements, NOTICE's wording; the holder's own
+> requested wording not found online -- a TODO).  Every engine claim
+> cited by file:line, gate or commit in LaTeX comments; counts only from
+> generated/; the two run listings are real runs.  Section 6 names the
+> open reference simulator only, and waits on `upstream-issue-draft.md`
+> being posted by Vitor.  `check_doctrine` gains `COMPETITOR_NAMED_TREES`
+> (`paper/whitepaper/` -> that one name only; any other banned word still
+> fails there, also on a line that carries the allowed one) and arm (t)
+> now reads `docs/ai/*.md`; three sabotages observed.  Found on the way
+> and fixed on integration: `check_doctrine` was RED on main from the
+> commander's own C123 note naming the benchmark folder's subpath.
+> TODOs for Vitor are listed at the top of the source.  Next: the
+> cold-reader forum on the PDF.
 
 > **C125. WHY THE BREAKTHROUGH PAGES ARE SLOW (Vitor, 2026-10-21: "Porque
 > isto e tao lento? breakthrough e do lub-scaleup").**  Measured by the
@@ -1493,7 +1510,7 @@ accepts today, and that is a policy call.
 > pair; an LLE pair for C if UNIFAC does not split; D's outlet-temperature
 > PFR mode) put to Vitor.
 > **B and C BUILT 2026-10-21 (G26, `claude/c123-benchmarks-bc` 33e277ca2).**
-> `benchmarks/dwsim/read_sample.py` reads the facts of a sample the user
+> The benchmark's `read_sample.py` reads the facts of a sample the user
 > holds (no parameter read, no file copied); `compare.py` runs every case
 > in a scratch copy.  **B** (methanol-acetone pressure swing; the sample
 > calls it extractive, it has no entrainer) runs on curate05's
