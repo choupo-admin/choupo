@@ -950,6 +950,18 @@ accepts today, and that is a policy call.
 >    gui-credo.md "Color By ... Not yet" (ColoursMenu.tsx ships it).
 > 6. Open for Vitor from G32: the compressor computes a two-phase feed as
 >    vapour in silence; the adiabatic mixer on benchmark case A.
+> **APPROVED 2026-10-21 (Vitor, after the list was shown: "sim eu dei-te a
+> autoridade para assumires responsabilidade!"):** re-record G28's 239
+> column rows (25 cases; 204 the total condenser's duty to the
+> distillate's bubble point, 35 the declared condenser type / stage-1
+> rule) and G30's LL rows (extract01, extract02, extraction01, vlle01,
+> ternary03, lithiumBrinePlant; solid-service A9a's vlle01 literal and
+> internal-states (v)/(s) move with them) -- each set RE-MEASURED first,
+> and any row outside it goes back to him.  Then integrate G28, then
+> G30 + G32 (with a `ppr78Kij` witness), the GUI figures, section 6 of the
+> paper on main, and the PDF for his review.  userOp03's 133 % mass
+> closure is NOT from these branches (none touches the CSTR) -- to
+> diagnose separately.
 
 > **C84. AN EDUTOOL: MATERIALS OF CONSTRUCTION, SEALS AND GASKETS -- THE
 > PARETO (Vítor, 2026-10-17: "Temos algum EduTools sobre materiais
