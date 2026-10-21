@@ -962,6 +962,34 @@ accepts today, and that is a policy call.
 > paper on main, and the PDF for his review.  userOp03's 133 % mass
 > closure is NOT from these branches (none touches the CSTR) -- to
 > diagnose separately.
+> **THE TWO OPEN DECISIONS, DELEGATED (Vitor, 2026-10-21: "Nao me pecas
+> nada e decide tu de forma sensata").  Commander's decisions:**
+> (a) **Compressor with liquid in its suction: REFUSE by name**, quoting the
+> resolved vapour fraction and two remedies (a knock-out drum upstream, or
+> a pump if the stream is a liquid).  Reason: a compressor is a vapour
+> machine and liquid in the suction is a design fault in practice;
+> computing on the vapour root of the overall composition in silence is
+> the "state a unit computes with is not the state its streams carry"
+> family; wet compression is new physics nobody asked for.  Case D gets a
+> knock-out drum before C5, stated in its README as a departure from the
+> sample (whose compressor ignores the phase).
+> (b) **The adiabatic mixer: FIX it** -- the outlet is the state of equal
+> enthalpy resolved on the surface the report prices (`flashState::
+> priceState` with the split resolved, as C77 did for the cstr / pfr),
+> published with its vapour fraction; "a mixer does not flash" stays true
+> of the DECLARED-T mixer only.  It is an enumerated member of CLAUDE.md
+> 6's family, and case A's as-built variant shows it creating 49.97 MW.
+> Moved rows are recorded by the commander (delegated) and listed in the
+> commit.  Both AFTER G37's integration lands, on the new main.
+> **INTEGRATED 2026-10-21, step 1 (G28 on main).**  The 239 approved rows
+> re-measured first: exactly that set moved, every new value within 1e-6 of
+> the list; the list spans 26 cases, not 25.  Recorded with them: 218 rows
+> that moved inside their tolerance in the same cases (largest 8.1e-5,
+> column08 T_top) and column18_partial_condenser.  NOT pinned, for Vitor: a
+> row `--record` ADDED, aceticAcid02_plant `kpi lightsColumn
+> Q_condensate_m3_s` (1.0548e-4 m3/s), which main's golden never carried.
+> The operation schemas gained `condenser { type total|partial; }` (column18
+> uses it; check_schema_coverage refused it).
 
 > **C84. AN EDUTOOL: MATERIALS OF CONSTRUCTION, SEALS AND GASKETS -- THE
 > PARETO (Vítor, 2026-10-17: "Temos algum EduTools sobre materiais
@@ -1413,6 +1441,25 @@ accepts today, and that is a policy call.
 > final; }` layout draws what the steady flowsheet and the sizing pass
 > already hold.
 
+> **C135. A kij THAT VARIES WITH T, REGRESSED AND READ PER UNIT (Vitor,
+> 2026-10-21: "Nos conseguimos fazer melhor e arranjar kij que variem com
+> T?" -- then "Ok" to the plan below).**  Measured: on C123 case D every
+> gas-methanol pair (H2, CO, CO2) failed its held-out isotherm (AAD 20-31 %
+> against a 5 % band) because the residual changes SIGN between isotherms
+> -- one constant kij is a compromise; the data want kij(T).  Plan, inside
+> Vitor's own ruling of 2026-10-20 ("Rota P, kij a T declarada": every kij
+> a unit runs on is a constant in a file, evaluated at the unit's declared
+> T): (1) a pair record may carry a kij(T) form, e.g. kij = a + b(1/T -
+> 1/Tref), with its evidence, band and verdict; (2) `fitParameters`
+> regresses the two parameters on the fitting isotherms and judges the
+> held-out one; (3) the per-unit kij file is evaluated at each unit's
+> declared T and announced (case D: the 360 K separator and the 510 K
+> reactor get different kij, both visible).  No promise the gas pairs pass
+> the band -- the held-out isotherm decides.  Not chosen: PPR78 for
+> methanol (whether the published group tables cover it is UNVERIFIED) and
+> a gE mixing rule (PSRK / MHV2: an architecture change, his).  ORDER: after
+> the white paper's first draft (C126).
+
 > **C134. SECONDARY CONTAINMENT (BUNDS / RETENTION BASINS) IN THE PLANT
 > LAYOUT, AND A SWEEP FOR WHAT ELSE A LAYOUT ROUTINELY CARRIES (Vitor,
 > 2026-10-21, from a colleague: "no layout faltam as bacias de retencao
@@ -1451,6 +1498,19 @@ accepts today, and that is a policy call.
 > pulling space), tank-to-tank spacing, cooling-tower drift.  Status:
 > dispatched (G34); the sweep's list comes back to Vitor before anything
 > else is built.
+> **LANDED 2026-10-21** (merge `7a35f9646`, rows `d40aabd86`, fix
+> `a9f46a8c8`).  Re-recorded on the commander's authority, re-measured
+> first: greenAmmoniaPEQ_baseCase plotArea / landArea 31 436.02 -> 38 142.56
+> m2, land 1.5718 -> 1.9071 MEUR, NPV -408.635 -> -408.924 MEUR (arm (j)'s
+> published <=> pinned row is that plotArea); aceticAcid02_plant findings
+> 3 -> 5 and apalutamide01_tablets 1 -> 3, each with its four new
+> `unbundedLiquid` rows.  NOT recorded, outside the families: nine
+> apalutamide01 rows drifting within tolerance (loopGas T 264.70728 ->
+> 264.70957 K and the SD / blower / condensatePot / n2Mix rows after it)
+> and aceticAcid02's new `kpi lightsColumn Q_condensate_m3_s` (G28).
+> Found on landing by check_design_sheet (q)/(w): a bund listing a tank
+> whose sizer REFUSED refused the run, against C79; it is now published
+> with verdict `notChecked` and `bundNotChecked` announced.
 
 > **C133. THE DELIVERABLE DRAWINGS: THE PFD WITH ITS STREAM TABLE, AND
 > THE SPECIFICATION SHEETS, AS PDFS IN THE SECTOR/UNIT HIERARCHY (Vitor,

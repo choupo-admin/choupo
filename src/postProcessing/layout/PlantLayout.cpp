@@ -1727,6 +1727,24 @@ void plotOf(const Dictionary& d, PlantLayoutRecord& rec, bool withFence)
             pl.rule.insert(k, " and every room of the declared building (its"
                               " plan box)");
     }
+    //  SECONDARY CONTAINMENT (DEV.md 4c C134): every declared bund's or
+    //  impounding area's wall outline and its pit occupy ground too.  The
+    //  sentence names them only where one is declared.
+    for (const auto& b : rec.bunds)
+    {
+        for (const auto& q : b.outline) take(q[0], q[0], q[1], q[1]);
+        if (b.hasPit)
+            take(b.pitX - 0.5 * b.pitLength, b.pitX + 0.5 * b.pitLength,
+                 b.pitY - 0.5 * b.pitWidth,  b.pitY + 0.5 * b.pitWidth);
+    }
+    if (!rec.bunds.empty())
+    {
+        const std::string at = ", grown on";
+        const auto k = pl.rule.find(at);
+        if (k != std::string::npos)
+            pl.rule.insert(k, " and every declared secondary containment (its"
+                              " wall's outline and an impounding area's pit)");
+    }
     pl.xMin = x0 - pl.margin;  pl.xMax = x1 + pl.margin;
     pl.yMin = y0 - pl.margin;  pl.yMax = y1 + pl.margin;
     pl.plotArea = (pl.xMax - pl.xMin) * (pl.yMax - pl.yMin);
@@ -2788,6 +2806,739 @@ void checkTruckRoutes(PlantLayoutRecord& rec, const FindingSink& addFinding)
     }
 }
 
+//  ---- secondary containment (DEV.md 4c C134) -----------------------------
+//
+//  A BUND or an IMPOUNDING AREA is a DECLARED REGION round the items it
+//  encloses, not a placed item: the overlap rule does not apply to it.  The
+//  rule, all of it in this section and published as one sentence:
+//    * every listed item stands INSIDE the region (its footprint within the
+//      wall), every placed item inside the region is LISTED, and no wall runs
+//      through a footprint -- a wall that cannot be built is REFUSED;
+//    * a BUND holds its area x its wall height, less the volume each enclosed
+//      footprint occupies below the wall's top (the floor at grade);
+//    * an IMPOUNDING AREA is a kerbed catch area sloped to a REMOTE pit, and
+//      holds the pit's volume (length x width x depth, open, below grade);
+//    * the REQUIRED volume is the largest of the case's declared terms (a
+//      fraction of the largest, or of the total, volume the enclosed items
+//      that hold LIQUID count on the declared basis) plus its allowances (a
+//      volume, or a depth over the catch area: rain);
+//    * short of it is ANNOUNCED (a containment the student must defend);
+//      every placed item in the open that holds liquid and that no
+//      containment encloses is ANNOUNCED; so are a road or a pipe through a
+//      wall (a pipe below the wall's top), an open drain to the sewer, and a
+//      pit that is not remote.  No standard's table is shipped: every number
+//      is the case's, with its source.
+
+const char* const kBundRule =
+    "a bund holds its area x its wall height less the volume each enclosed"
+    " footprint occupies below the wall's top (a vertical cylinder's disc, a"
+    " lying cylinder's circular segment, any other item's rectangle, the floor"
+    " at grade); an impounding area holds its remote pit's volume (length x"
+    " width x depth); the required volume is the largest of the case's"
+    " declared terms -- a fraction of the largest, or of the total, volume the"
+    " enclosed items that hold liquid count on the declared basis (vesselVolume:"
+    " the item's sized V_R; heldLiquid: the liquid its inventory holds) -- plus"
+    " the declared allowances (a volume, or a depth over the catch area and"
+    " the pit)";
+
+using P2 = std::pair<scalar, scalar>;
+
+//  Twice the signed area (counter-clockwise positive).
+scalar shoelace(const std::vector<P2>& p)
+{
+    scalar a = 0;
+    for (std::size_t i = 0; i < p.size(); ++i)
+    {
+        const auto& u = p[i];
+        const auto& v = p[(i + 1) % p.size()];
+        a += u.first * v.second - v.first * u.second;
+    }
+    return a;
+}
+
+scalar pointSegDist(scalar px, scalar py, const P2& a, const P2& b)
+{
+    const scalar vx = b.first - a.first, vy = b.second - a.second;
+    const scalar L2 = vx * vx + vy * vy;
+    scalar t = L2 > 0 ? ((px - a.first) * vx + (py - a.second) * vy) / L2 : 0.0;
+    t = std::max(0.0, std::min(1.0, t));
+    return std::hypot(px - (a.first + t * vx), py - (a.second + t * vy));
+}
+
+scalar distToOutline(scalar px, scalar py, const std::vector<P2>& p)
+{
+    scalar d = 1e300;
+    for (std::size_t i = 0; i < p.size(); ++i)
+        d = std::min(d, pointSegDist(px, py, p[i], p[(i + 1) % p.size()]));
+    return d;
+}
+
+//  Strictly inside (ray casting); a point on the outline is not.
+bool strictlyInside(scalar px, scalar py, const std::vector<P2>& p)
+{
+    if (distToOutline(px, py, p) <= kTol) return false;
+    bool in = false;
+    for (std::size_t i = 0, j = p.size() - 1; i < p.size(); j = i++)
+    {
+        const auto& a = p[i];
+        const auto& b = p[j];
+        if ((a.second > py) != (b.second > py)
+            && px < (b.first - a.first) * (py - a.second) / (b.second - a.second)
+                    + a.first)
+            in = !in;
+    }
+    return in;
+}
+
+//  Two segments cross at a point interior to both (touching and collinear
+//  overlaps are not a crossing).
+bool segmentsCross(const P2& a, const P2& b, const P2& c, const P2& d)
+{
+    auto orient = [](const P2& p, const P2& q, const P2& r)
+    {
+        return (q.first - p.first) * (r.second - p.second)
+             - (q.second - p.second) * (r.first - p.first);
+    };
+    const scalar o1 = orient(a, b, c), o2 = orient(a, b, d);
+    const scalar o3 = orient(c, d, a), o4 = orient(c, d, b);
+    const scalar e = kTol * (1.0 + std::hypot(b.first - a.first, b.second - a.second)
+                                 + std::hypot(d.first - c.first, d.second - c.second));
+    return ((o1 > e && o2 < -e) || (o1 < -e && o2 > e))
+        && ((o3 > e && o4 < -e) || (o3 < -e && o4 > e));
+}
+
+//  A segment passes through the OPEN rectangle (Liang-Barsky on the rectangle
+//  shrunk by the tolerance).
+bool segmentThroughRect(const P2& a, const P2& b, scalar x0, scalar x1,
+                        scalar y0, scalar y1)
+{
+    x0 += kTol; x1 -= kTol; y0 += kTol; y1 -= kTol;
+    if (x1 <= x0 || y1 <= y0) return false;
+    scalar t0 = 0, t1 = 1;
+    const scalar dx = b.first - a.first, dy = b.second - a.second;
+    const scalar p[4] = { -dx, dx, -dy, dy };
+    const scalar q[4] = { a.first - x0, x1 - a.first, a.second - y0, y1 - a.second };
+    for (int k = 0; k < 4; ++k)
+    {
+        if (std::fabs(p[k]) < 1e-15) { if (q[k] < 0) return false; continue; }
+        const scalar t = q[k] / p[k];
+        if (p[k] < 0) t0 = std::max(t0, t);
+        else          t1 = std::min(t1, t);
+        if (t0 > t1) return false;
+    }
+    return t1 - t0 > 1e-12;
+}
+
+//  Where an item's footprint stands against the outline: 1 inside (the wall
+//  round it), -1 outside, 0 across the wall.
+int footprintSide(const LayoutItem& i, const std::vector<P2>& p)
+{
+    if (isCircle(i))
+    {
+        const scalar r = 0.5 * i.dx;
+        if (distToOutline(i.x, i.y, p) < r - kTol) return 0;
+        return strictlyInside(i.x, i.y, p) ? 1 : -1;
+    }
+    const scalar x0 = i.x - 0.5 * i.dx, x1 = i.x + 0.5 * i.dx;
+    const scalar y0 = i.y - 0.5 * i.dy, y1 = i.y + 0.5 * i.dy;
+    for (std::size_t k = 0; k < p.size(); ++k)
+        if (segmentThroughRect(p[k], p[(k + 1) % p.size()], x0, x1, y0, y1))
+            return 0;
+    //  No wall runs through the box: it is wholly on one side, and its
+    //  centre says which.
+    if (strictlyInside(i.x, i.y, p)) return 1;
+    return distToOutline(i.x, i.y, p) <= kTol ? 0 : -1;
+}
+
+//  The volume an item occupies between grade and the wall's top `h`.
+scalar displacedBelow(const LayoutItem& i, scalar h)
+{
+    const scalar lo = std::max(0.0, i.z), hi = std::min(h, i.z + i.dz);
+    if (hi <= lo) return 0.0;
+    if (isCircle(i)) return 0.25 * kPi * i.dx * i.dx * (hi - lo);
+    if (i.shape == "cylinder")
+    {
+        //  A lying cylinder: the circular segment below the level, times its
+        //  length.  R its radius, its bottom at z.
+        const scalar D = i.dz, R = 0.5 * D;
+        const scalar Lax = i.orientation == "alongX" ? i.dx : i.dy;
+        auto seg = [&](scalar t)   // the circle's area below t above its bottom
+        {
+            t = std::max(0.0, std::min(D, t));
+            return R * R * std::acos((R - t) / R)
+                 - (R - t) * std::sqrt(std::max(0.0, 2.0 * R * t - t * t));
+        };
+        return Lax * (seg(hi - i.z) - seg(lo - i.z));
+    }
+    return i.dx * i.dy * (hi - lo);
+}
+
+//  The liquid an item holds by its sizing's inventory [m3]: the sum of its
+//  liquid phases' V x fraction.  0 when it holds none, or declares none.
+scalar heldLiquidOf(const SimulationResult& r, const std::string& id)
+{
+    const auto s = r.sizings.find(id);
+    if (s == r.sizings.end()) return 0.0;
+    scalar v = 0;
+    for (const auto& h : s->second.inventory.phases)
+        if (h.phase == "liquid") v += h.volume;
+    return v;
+}
+
+std::vector<P2> outlineOf(const LayoutBund& b)
+{
+    std::vector<P2> p;
+    for (const auto& q : b.outline) p.emplace_back(q[0], q[1]);
+    return p;
+}
+
+const LayoutItem& placedItem(const PlantLayoutRecord& rec, const std::string& id)
+{
+    return *std::find_if(rec.items.begin(), rec.items.end(),
+        [&](const LayoutItem& q) { return q.id == id; });
+}
+
+void readBunds(const Dictionary& d, const SimulationResult& r,
+               PlantLayoutRecord& rec, const FindingSink& addFinding)
+{
+    rec.bundRule = kBundRule;
+    std::set<std::string> names;
+    std::map<std::string, std::string> bundOf;   // item -> its containment
+    std::size_t n = 0;
+    for (const auto& e : d.lookupDictList("bunds"))
+    {
+        ++n;
+        LayoutBund b;
+        if (!e->found("name"))
+            refuse("bunds entry " + std::to_string(n) + ": `name \"<name>\";` is"
+                   " not declared");
+        b.id = e->lookupWord("name");
+        const std::string w = "bund `" + b.id + "`";
+        if (!names.insert(b.id).second)
+            refuse(w + " is declared twice -- one name, one containment");
+        if (!e->found("kind"))
+            refuse(w + ": `kind` is not declared -- `bund` (a wall round the"
+                   " items: the spill is held where it falls) or `impounding` (a"
+                   " kerbed catch area sloped to a remote pit: the spill is led"
+                   " AWAY from the items), and the case says which and why");
+        b.kind = e->lookupWord("kind");
+        if (b.kind != "bund" && b.kind != "impounding")
+            refuse(w + ": " + registryRefusal::message("containment kind",
+                   b.kind, { "bund", "impounding" }, "Accepted"));
+        b.source = text(*e, "source", w);
+        b.reason = text(*e, "reason", w);
+
+        //  ---- the region: a rectangle or a polygon, exactly one -------------
+        const bool rect = e->found("region"), poly = e->found("polygon");
+        if (rect == poly)
+            refuse(w + ": declare exactly one of `region { xMin; xMax; yMin;"
+                   " yMax; }` (a rectangular wall) or `polygon ( { x; y; } ...);`"
+                   " (the wall's plan outline, corner by corner)");
+        std::vector<P2> p;
+        if (rect)
+        {
+            const auto rd = e->subDict("region");
+            const std::string wr = w + " region";
+            const scalar x0 = length(*rd, "xMin", wr), x1 = length(*rd, "xMax", wr);
+            const scalar y0 = length(*rd, "yMin", wr), y1 = length(*rd, "yMax", wr);
+            if (x1 <= x0 || y1 <= y0)
+                refuse(wr + ": a region needs xMin < xMax and yMin < yMax");
+            p = { { x0, y0 }, { x1, y0 }, { x1, y1 }, { x0, y1 } };
+            b.regionFrom = "rectangle";
+        }
+        else
+        {
+            std::size_t k = 0;
+            for (const auto& v : e->lookupDictList("polygon"))
+            {
+                ++k;
+                const std::string wv = w + " polygon corner " + std::to_string(k);
+                if (v->found("z"))
+                    refuse(wv + ": a corner is a plan point -- the wall stands on"
+                           " grade and its height is `wall { height; }`; delete `z`");
+                p.emplace_back(length(*v, "x", wv), length(*v, "y", wv));
+            }
+            if (p.size() < 3)
+                refuse(w + ": a polygon needs at least three corners");
+            for (std::size_t i = 0; i < p.size(); ++i)
+                for (std::size_t j = i + 1; j < p.size(); ++j)
+                {
+                    const bool adjacent = j == i + 1
+                                       || (i == 0 && j == p.size() - 1);
+                    if (adjacent) continue;
+                    if (segmentsCross(p[i], p[(i + 1) % p.size()],
+                                      p[j], p[(j + 1) % p.size()]))
+                        refuse(w + ": the polygon's sides " + std::to_string(i + 1)
+                               + " and " + std::to_string(j + 1) + " cross --"
+                               " a wall's outline must not cross itself");
+                }
+            b.regionFrom = "polygon";
+        }
+        b.area = 0.5 * std::fabs(shoelace(p));
+        if (b.area <= kTol)
+            refuse(w + ": the region encloses no area");
+        for (const auto& q : p) b.outline.push_back({ q.first, q.second });
+
+        //  ---- the wall (a bund's wall, an impounding area's kerb) ----------
+        if (!e->found("wall"))
+            refuse(w + ": `wall { height <m>; }` is not declared -- "
+                   + (b.kind == "bund"
+                      ? std::string("a bund's wall height is half of what it holds")
+                      : std::string("the kerb round the catch area keeps the spill"
+                                    " running to the pit")));
+        b.wallHeight = length(*e->subDict("wall"), "height", w + " wall");
+        if (b.wallHeight <= 0)
+            refuse(w + ": the wall `height` must be positive");
+
+        //  ---- the pit (an impounding area's own, a bund's never) -----------
+        if (b.kind == "impounding")
+        {
+            if (!e->found("pit"))
+                refuse(w + ": an impounding area leads the spill to a REMOTE pit"
+                       " -- declare it, `pit { x <m>; y <m>; length <m>; width"
+                       " <m>; depth <m>; }` (length along plan x, width along"
+                       " plan y, open and below grade)");
+            const auto pd = e->subDict("pit");
+            const std::string wp = w + " pit";
+            b.hasPit    = true;
+            b.pitX      = length(*pd, "x", wp);
+            b.pitY      = length(*pd, "y", wp);
+            b.pitLength = length(*pd, "length", wp);
+            b.pitWidth  = length(*pd, "width", wp);
+            b.pitDepth  = length(*pd, "depth", wp);
+            if (b.pitLength <= 0 || b.pitWidth <= 0 || b.pitDepth <= 0)
+                refuse(wp + ": `length`, `width` and `depth` must be positive");
+        }
+        else if (e->found("pit"))
+            refuse(w + ": a `pit` is an impounding area's; a bund holds the"
+                   " spill inside its own wall.  Declare `kind impounding;` or"
+                   " delete the pit");
+
+        //  ---- the drain ------------------------------------------------------
+        if (!e->found("drain"))
+            refuse(w + ": `drain` is not declared -- how rainwater leaves the "
+                   + (b.kind == "bund" ? std::string("bund") : std::string("pit"))
+                   + ": closedValve (opened by hand once the water is seen to be"
+                     " clean), sumpPump, or openToSewer");
+        b.drain = e->lookupWord("drain");
+        if (b.drain != "closedValve" && b.drain != "sumpPump"
+            && b.drain != "openToSewer")
+            refuse(w + ": " + registryRefusal::message("drain", b.drain,
+                   { "closedValve", "sumpPump", "openToSewer" }, "Accepted"));
+
+        //  ---- the items -----------------------------------------------------
+        if (!e->found("items"))
+            refuse(w + ": `items ( ... );` is not declared -- a containment is"
+                   " declared round the items it holds");
+        b.items = e->lookupWordList("items");
+        if (b.items.empty())
+            refuse(w + ": `items` is empty");
+        std::set<std::string> listed;
+        //  A listed item whose SIZER refused is left unplaced and announced
+        //  (`sizingRefused`, DEV.md 4c C79): the run goes on, so the
+        //  containment that lists it must not refuse the run either.  Its
+        //  wall is still the case's declaration and is published; what it
+        //  must HOLD cannot be known without that item's size, so its
+        //  capacity is NOT CHECKED, said by name -- no volume is invented.
+        std::vector<std::string> unsized;
+        for (const auto& id : b.items)
+        {
+            if (!listed.insert(id).second)
+                refuse(w + ": `" + id + "` is listed twice");
+            const auto it = std::find_if(rec.items.begin(), rec.items.end(),
+                [&](const LayoutItem& i) { return i.id == id; });
+            const bool sizerRefused = std::any_of(rec.findings.begin(),
+                rec.findings.end(), [&](const LayoutFinding& f)
+                { return f.kind == "sizingRefused" && f.a == id; });
+            if (it == rec.items.end() && sizerRefused)
+            {
+                unsized.push_back(id);
+                bundOf[id] = b.id;
+                continue;
+            }
+            if (it == rec.items.end())
+            {
+                std::ostringstream o;
+                o << w << " lists `" << id << "`, which is not placed on this"
+                     " plot plan.  Placed items:";
+                for (const auto& i : rec.items) o << " " << i.id;
+                refuse(o.str());
+            }
+            if (!it->room.empty())
+                refuse(w + " lists `" + id + "`, which stands in room `" + it->room
+                       + "` of the declared building: indoors the ROOM holds a"
+                         " spill (its floor, its drains, its sills), and the"
+                         " site's containment is for items in the open");
+            const auto prev = bundOf.find(id);
+            if (prev != bundOf.end())
+                refuse(w + " lists `" + id + "`, which bund `" + prev->second
+                       + "` already holds -- one item, one containment");
+            bundOf[id] = b.id;
+        }
+
+        //  ---- every listed item inside, every item inside listed ---------
+        for (const auto& i : rec.items)
+        {
+            const int side = footprintSide(i, p);
+            const bool isListed = listed.count(i.id) > 0;
+            if (side == 0)
+                refuse(w + ": its wall runs THROUGH the footprint of `" + i.id
+                       + "` -- a wall cannot be built through an item.  Move the"
+                         " wall round it, or the item clear of it");
+            if (isListed && side < 0)
+                refuse(w + " lists `" + i.id + "`, and `" + i.id + "` stands"
+                       " OUTSIDE its wall (its footprint centred at x " + num(i.x)
+                       + ", y " + num(i.y) + " m) -- a containment holds only"
+                         " what stands inside it.  Move the wall or the item, or"
+                         " take it off the list");
+            if (!isListed && side > 0)
+                refuse(w + ": `" + i.id + "` stands INSIDE its wall and is not"
+                       " in its `items` -- what stands in a basin takes up its"
+                       " volume, so the list says everything that is there."
+                       "  Add it, or move it out");
+        }
+
+        //  ---- what the containment holds --------------------------------
+        if (b.kind == "bund")
+        {
+            b.grossVolume = b.area * b.wallHeight;
+            for (const auto& id : b.items)
+                if (std::find(unsized.begin(), unsized.end(), id) == unsized.end())
+                    b.displacedVolume += displacedBelow(placedItem(rec, id), b.wallHeight);
+            b.netVolume = b.grossVolume - b.displacedVolume;
+        }
+        else
+        {
+            b.grossVolume = b.pitLength * b.pitWidth * b.pitDepth;
+            b.netVolume   = b.grossVolume;
+        }
+
+        //  ---- the rule: the case's own ------------------------------------
+        if (!e->found("capacityRule"))
+            refuse(w + ": `capacityRule { basis vesselVolume|heldLiquid; terms ("
+                   " { fraction <->; of largest|total; } ... ); [allowances ("
+                   " { name; volume <m3>; | depth <m>; reason; } ... );] source"
+                   " \"...\"; reason \"...\"; }` is not declared -- how much a"
+                   " containment must hold is the case's to state, with the"
+                   " guideline or code it reads it from.  No standard's table is"
+                   " shipped");
+        const auto cr = e->subDict("capacityRule");
+        const std::string wc = w + " capacityRule";
+        b.ruleSource = text(*cr, "source", wc);
+        b.ruleReason = text(*cr, "reason", wc);
+        if (!cr->found("basis"))
+            refuse(wc + ": `basis` is not declared -- `vesselVolume` (each item's"
+                   " sized volume, V_R: what spills if it is full) or `heldLiquid`"
+                   " (the liquid its inventory holds at its working level)");
+        b.basis = cr->lookupWord("basis");
+        if (b.basis != "vesselVolume" && b.basis != "heldLiquid")
+            refuse(wc + ": " + registryRefusal::message("basis", b.basis,
+                   { "vesselVolume", "heldLiquid" }, "Accepted"));
+        if (!cr->found("terms"))
+            refuse(wc + ": `terms ( { fraction <->; of largest|total; } ... );` is"
+                   " not declared (the largest of them governs)");
+        for (const auto& t : cr->lookupDictList("terms"))
+        {
+            LayoutBundTerm term;
+            if (!t->found("fraction") || !t->found("of"))
+                refuse(wc + ": a term declares `fraction` and `of`");
+            term.fraction = t->lookupScalar("fraction", Dims::dimensionless);
+            term.of = t->lookupWord("of");
+            if (term.of != "largest" && term.of != "total")
+                refuse(wc + ": " + registryRefusal::message("term `of`", term.of,
+                       { "largest", "total" }, "Accepted"));
+            if (term.fraction <= 0)
+                refuse(wc + ": a term's `fraction` must be positive");
+            b.terms.push_back(term);
+        }
+        if (b.terms.empty())
+            refuse(wc + ": `terms` is empty");
+        if (cr->found("allowances"))
+            for (const auto& a : cr->lookupDictList("allowances"))
+            {
+                LayoutBundAllowance al;
+                if (!a->found("name"))
+                    refuse(wc + ": an allowance declares its `name`");
+                al.name = a->lookupWord("name");
+                const std::string wa = wc + " allowance `" + al.name + "`";
+                al.reason = text(*a, "reason", wa);
+                const bool vol = a->found("volume"), dep = a->found("depth");
+                if (vol == dep)
+                    refuse(wa + ": declare exactly one of `volume <m3>;` or"
+                           " `depth <m>;` (a depth over the catch area, e.g. a"
+                           " design rainfall)");
+                if (vol)
+                {
+                    al.from   = "volume";
+                    al.volume = a->lookupScalar("volume", Dims::volume);
+                }
+                else
+                {
+                    al.from  = "depth";
+                    al.depth = length(*a, "depth", wa);
+                    //  Rain falls on the catch area, and on an impounding
+                    //  area's open pit too.
+                    al.volume = al.depth * (b.area + (b.hasPit
+                                ? b.pitLength * b.pitWidth : 0.0));
+                }
+                if (al.volume < 0)
+                    refuse(wa + ": an allowance cannot be negative");
+                b.allowances.push_back(al);
+            }
+
+        //  ---- the enclosed items that hold liquid ------------------------
+        for (const auto& id : b.items)
+        {
+            if (std::find(unsized.begin(), unsized.end(), id) != unsized.end())
+                continue;
+            const scalar liquid = heldLiquidOf(r, id);
+            if (liquid <= 0) continue;
+            LayoutBundHeld h;
+            h.item = id;
+            if (b.basis == "heldLiquid")
+                h.volume = liquid;
+            else
+            {
+                const auto s = r.sizings.find(id);
+                if (s == r.sizings.end() || !s->second.values.count("V_R"))
+                    refuse(wc + ": `basis vesselVolume;`, and `" + id + "` holds"
+                           " liquid but its sizer publishes no volume (V_R) -- use"
+                           " `basis heldLiquid;`");
+                h.volume = s->second.values.at("V_R");
+            }
+            if (b.kind == "bund")
+                h.displaced = displacedBelow(placedItem(rec, id), b.wallHeight);
+            b.largestHeld = std::max(b.largestHeld, h.volume);
+            b.totalHeld  += h.volume;
+            b.held.push_back(h);
+        }
+        scalar governingVolume = -1;
+        for (auto& t : b.terms)
+        {
+            t.volume = t.fraction * (t.of == "largest" ? b.largestHeld : b.totalHeld);
+            if (t.volume > governingVolume)
+            {
+                governingVolume = t.volume;
+                b.governing = t.of;
+            }
+        }
+        scalar allow = 0;
+        for (const auto& a : b.allowances) allow += a.volume;
+        b.requiredVolume = std::max(0.0, governingVolume) + allow;
+
+        if (!unsized.empty())
+        {
+            b.verdict = "notChecked";
+            std::string names;
+            for (const auto& u : unsized) names += (names.empty() ? "`" : ", `") + u + "`";
+            addFinding("bundNotChecked", b.id, unsized.front(), b.netVolume, 0.0,
+                "warning",
+                w + " lists " + names + ", which the sizing pass could not size"
+                " (announced `sizingRefused`), so " + (unsized.size() == 1
+                ? std::string("it is") : std::string("they are")) + " not placed"
+                " -- its wall is published as declared, and its CAPACITY IS NOT"
+                " CHECKED: what it must hold depends on the size of what it"
+                " holds, and no size is invented.  Fix the sizing and the"
+                " containment is checked against its rule");
+        }
+        else if (b.held.empty())
+        {
+            b.verdict = "holdsNothing";
+            addFinding("bundHoldsNothing", b.id, "", b.netVolume, b.requiredVolume,
+                "info",
+                w + " encloses no item that holds liquid by the run's own"
+                " inventory (" + std::to_string(b.items.size()) + " item(s)"
+                " listed, none with a liquid phase in its sizing's inventory)"
+                " -- its capacity rule has nothing to hold it to");
+        }
+        else if (b.netVolume + 1e-9 * std::max(1.0, b.requiredVolume)
+                 >= b.requiredVolume)
+            b.verdict = "adequate";
+        else
+        {
+            b.verdict = "inadequate";
+            addFinding("bundCapacity", b.id, "", b.netVolume, b.requiredVolume,
+                "warning",
+                w + " (" + b.kind + ") holds " + num(b.netVolume) + " m3 ("
+                + (b.kind == "bund"
+                   ? num(b.area) + " m2 x " + num(b.wallHeight) + " m less "
+                     + num(b.displacedVolume) + " m3 the enclosed footprints"
+                       " displace"
+                   : std::string("its pit, ") + num(b.pitLength) + " x "
+                     + num(b.pitWidth) + " x " + num(b.pitDepth) + " m")
+                + "), short of the " + num(b.requiredVolume) + " m3 its declared"
+                  " rule requires (source: " + b.ruleSource + ")");
+        }
+        if (b.drain == "openToSewer")
+            addFinding("bundDrainOpen", b.id, "", 0.0, 0.0, "warning",
+                w + " drains OPEN to the sewer (`drain openToSewer;`): a spill"
+                " leaves by the drain as fast as it arrives, and the "
+                + std::string(b.kind == "bund" ? "bund" : "pit")
+                + " holds nothing while the drain is open -- a containment's"
+                  " drain is the case's to defend");
+        if (b.hasPit)
+        {
+            const scalar px0 = b.pitX - 0.5 * b.pitLength, px1 = b.pitX + 0.5 * b.pitLength;
+            const scalar py0 = b.pitY - 0.5 * b.pitWidth,  py1 = b.pitY + 0.5 * b.pitWidth;
+            LayoutItem pit;
+            pit.shape = "box"; pit.orientation = "alongX";
+            pit.x = b.pitX; pit.y = b.pitY; pit.dx = b.pitLength; pit.dy = b.pitWidth;
+            for (const auto& i : rec.items)
+                if (clearPlan(i, pit) < -kTol)
+                    refuse(w + ": its pit (x " + num(px0) + " .. " + num(px1)
+                           + " m, y " + num(py0) + " .. " + num(py1) + " m) lies"
+                             " under `" + i.id + "` -- an item cannot stand over"
+                             " an open pit; move one of them");
+            for (const auto& rd : rec.roads.roads)
+                for (const auto& pr : pavedRects(rd))
+                {
+                    const scalar wx = std::min(px1, pr.xMax) - std::max(px0, pr.xMin);
+                    const scalar wy = std::min(py1, pr.yMax) - std::max(py0, pr.yMin);
+                    if (wx > kTol && wy > kTol)
+                        refuse(w + ": its pit lies under road `" + rd.id + "` -- a"
+                               " road cannot run over an open pit; move one of"
+                               " them");
+                }
+            //  REMOTE: the pit is where the pool forms, so it is meant to
+            //  stand AWAY from the items whose spill it takes.
+            bool meets = strictlyInside(b.pitX, b.pitY, p);
+            for (std::size_t k = 0; k < p.size() && !meets; ++k)
+                if (segmentThroughRect(p[k], p[(k + 1) % p.size()], px0, px1, py0, py1))
+                    meets = true;
+            if (meets)
+                addFinding("pitNotRemote", b.id, "", 0.0, 0.0, "warning",
+                    w + " is an impounding area, and its pit lies INSIDE its own"
+                    " catch area: the pool then forms under the items it is meant"
+                    " to lead the spill away from -- a remote pit stands outside"
+                    " the catch area");
+        }
+        rec.bunds.push_back(b);
+    }
+
+    //  ---- two containments claiming the same ground -----------------------
+    auto someInside = [](const std::vector<P2>& u, const std::vector<P2>& v)
+    {
+        for (std::size_t k = 0; k < u.size(); ++k)
+        {
+            const auto& s = u[k];
+            const auto& t = u[(k + 1) % u.size()];
+            if (strictlyInside(s.first, s.second, v)
+                || strictlyInside(0.5 * (s.first + t.first),
+                                  0.5 * (s.second + t.second), v))
+                return true;
+        }
+        return false;
+    };
+    for (std::size_t i = 0; i < rec.bunds.size(); ++i)
+        for (std::size_t j = i + 1; j < rec.bunds.size(); ++j)
+        {
+            const auto a = outlineOf(rec.bunds[i]), b = outlineOf(rec.bunds[j]);
+            bool overlap = false;
+            for (std::size_t k = 0; k < a.size() && !overlap; ++k)
+                for (std::size_t m = 0; m < b.size() && !overlap; ++m)
+                    if (segmentsCross(a[k], a[(k + 1) % a.size()],
+                                      b[m], b[(m + 1) % b.size()]))
+                        overlap = true;
+            if (overlap || someInside(a, b) || someInside(b, a))
+                refuse("bunds `" + rec.bunds[i].id + "` and `" + rec.bunds[j].id
+                       + "` claim the same ground -- two containments may share a"
+                         " wall, never a floor");
+        }
+}
+
+//  A liquid in the open that nothing contains.  Run on EVERY layout (a case
+//  with no `bunds` included): a layout with an unbunded tank is a layout the
+//  student must defend.
+void announceUnbunded(const SimulationResult& r, const PlantLayoutRecord& rec,
+                      const FindingSink& addFinding)
+{
+    std::set<std::string> held;
+    for (const auto& b : rec.bunds)
+        for (const auto& id : b.items) held.insert(id);
+    for (const auto& i : rec.items)
+    {
+        if (!i.room.empty() || held.count(i.id)) continue;
+        const scalar liquid = heldLiquidOf(r, i.id);
+        if (liquid <= 0) continue;
+        addFinding("unbundedLiquid", i.id, "", liquid, 0.0, "warning",
+            "`" + i.id + "` holds " + num(liquid) + " m3 of liquid by the run's"
+            " own inventory, and no bund or impounding area of this layout"
+            " encloses it: a leak runs where the ground takes it.  Declare its"
+            " secondary containment (`bunds ( { name; kind bund|impounding;"
+            " items ( " + i.id + " ); ... } );` in system/layoutDict), or"
+            " defend its absence");
+    }
+}
+
+//  Roads and pipes through a wall, and a containment across the fence: run
+//  once every road, pipe and the fence are final.
+void checkBundCrossings(PlantLayoutRecord& rec, const FindingSink& addFinding)
+{
+    for (const auto& b : rec.bunds)
+    {
+        const auto p = outlineOf(b);
+        const std::string w = "bund `" + b.id + "`";
+        for (const auto& rd : rec.roads.roads)
+        {
+            bool crosses = false;
+            for (const auto& pr : pavedRects(rd))
+                for (std::size_t k = 0; k < p.size() && !crosses; ++k)
+                    if (segmentThroughRect(p[k], p[(k + 1) % p.size()],
+                                           pr.xMin, pr.xMax, pr.yMin, pr.yMax))
+                        crosses = true;
+            if (crosses)
+                addFinding("roadCrossesBund", rd.id, b.id, 0.0, b.wallHeight,
+                    "warning",
+                    "road `" + rd.id + "` crosses the " + num(b.wallHeight)
+                    + " m wall of " + w + ": a vehicle needs a ramp over it, and"
+                      " a gap in it is a way out for the spill -- the crossing is"
+                      " the case's to defend");
+        }
+        for (const auto& pp : rec.pipes)
+        {
+            bool through = false;
+            for (std::size_t s = 0; s + 1 < pp.route.size() && !through; ++s)
+            {
+                const auto& u = pp.route[s];
+                const auto& v = pp.route[s + 1];
+                if (std::fabs(u[2] - v[2]) > kTol) continue;   // a riser
+                if (u[2] >= b.wallHeight - kTol) continue;     // over the wall
+                const P2 a { u[0], u[1] }, c { v[0], v[1] };
+                for (std::size_t k = 0; k < p.size() && !through; ++k)
+                    if (segmentsCross(a, c, p[k], p[(k + 1) % p.size()]))
+                        through = true;
+            }
+            if (through)
+                addFinding("pipeThroughBund", pp.stream, b.id, 0.0, b.wallHeight,
+                    "warning",
+                    "pipe `" + pp.stream + "` passes THROUGH the wall of " + w
+                    + ", below its " + num(b.wallHeight) + " m top: a penetration"
+                      " the spill can leave by unless it is sealed -- a pipe is"
+                      " usually carried over the wall");
+        }
+        if (rec.fence.present)
+        {
+            const auto& F = rec.fence;
+            bool out = false;
+            for (const auto& q : p)
+                if (q.first < F.xMin - kTol || q.first > F.xMax + kTol
+                    || q.second < F.yMin - kTol || q.second > F.yMax + kTol)
+                    out = true;
+            if (b.hasPit
+                && (b.pitX - 0.5 * b.pitLength < F.xMin - kTol
+                    || b.pitX + 0.5 * b.pitLength > F.xMax + kTol
+                    || b.pitY - 0.5 * b.pitWidth < F.yMin - kTol
+                    || b.pitY + 0.5 * b.pitWidth > F.yMax + kTol))
+                out = true;
+            if (out)
+                refuse("fence: " + w + " stands across or outside the fence (the"
+                       " fence runs x " + num(F.xMin) + " .. " + num(F.xMax)
+                       + " m, y " + num(F.yMin) + " .. " + num(F.yMax) + " m) --"
+                         " reduce the inset or move the containment");
+        }
+    }
+}
+
 } // anonymous namespace
 
 // ===========================================================================
@@ -3401,6 +4152,11 @@ PlantLayoutRecord evaluate(const Dictionary& d, const SimulationResult& r,
     //  ---- the roads (C90): read after the pipes ---------------------------
     if (d.found("roads")) readRoads(d, rec);
 
+    //  ---- secondary containment (C134): read after the roads (a pit must
+    //  not lie under one) and before the plot, which holds its ground ------
+    if (d.found("bunds")) readBunds(d, r, rec, addFinding);
+    announceUnbunded(r, rec, addFinding);
+
     //  ---- the plot (C82): after the pipes and the roads, which occupy
     //  ground too -----------------------------------------------------------
     const bool withFence = d.found("fence");
@@ -3420,6 +4176,10 @@ PlantLayoutRecord evaluate(const Dictionary& d, const SimulationResult& r,
     //  ---- the truck routes (C96): every road, access point and fence
     //  opening final ---------------------------------------------------------
     if (rec.roads.present) checkTruckRoutes(rec, addFinding);
+
+    //  ---- roads and pipes through a containment's wall (C134): every road,
+    //  route and the fence final ------------------------------------------
+    checkBundCrossings(rec, addFinding);
 
     if (verbosity >= 2)
     {
@@ -3507,6 +4267,25 @@ PlantLayoutRecord evaluate(const Dictionary& d, const SimulationResult& r,
                       << ", cars leave " << (c.exitsForward ? "nose first"
                                                             : "reversing")
                       << "), " << num(c.area) << " m2\n";
+        for (const auto& b : rec.bunds)
+        {
+            std::cout << "[layout] " << (b.kind == "bund" ? "bund " : "impounding area ")
+                      << b.id << ": " << b.items.size() << " item(s), "
+                      << num(b.area) << " m2 inside a " << num(b.wallHeight)
+                      << " m " << (b.kind == "bund" ? "wall" : "kerb") << "; holds "
+                      << num(b.netVolume) << " m3 (";
+            if (b.kind == "bund")
+                std::cout << num(b.grossVolume) << " m3 less " << num(b.displacedVolume)
+                          << " m3 displaced";
+            else
+                std::cout << "its remote pit " << num(b.pitLength) << " x "
+                          << num(b.pitWidth) << " x " << num(b.pitDepth) << " m";
+            std::cout << ") against " << num(b.requiredVolume) << " m3 required ("
+                      << b.governing << " term on " << b.basis;
+            for (const auto& a : b.allowances)
+                std::cout << " + " << a.name << " " << num(a.volume) << " m3";
+            std::cout << "): " << b.verdict << "; drain " << b.drain << "\n";
+        }
         for (const auto& ps : pl.sectors)
             std::cout << "  " << std::left << std::setw(22) << ps.sector
                       << num(ps.plotArea) << " m2 (" << ps.from
@@ -3584,6 +4363,7 @@ std::string draft(const SimulationResult& r, const Dictionary* previous)
     bool hadPipeOverrides = false;
     bool hadRoads = false;
     bool hadFence = false;
+    bool hadBunds = false;
     bool hadBuilding = false;   // C100
     bool        hadPlot    = false;
     scalar      plotMargin = 0.0;
@@ -3621,6 +4401,7 @@ std::string draft(const SimulationResult& r, const Dictionary* previous)
         hadPipeOverrides = previous->found("pipes");
         hadRoads         = previous->found("roads");
         hadFence         = previous->found("fence");
+        hadBunds         = previous->found("bunds");
         hadBuilding      = previous->found("building");
         if (previous->found("items"))
             for (const auto& e : previous->lookupDictList("items"))
@@ -4059,6 +4840,25 @@ std::string draft(const SimulationResult& r, const Dictionary* previous)
         o << "\n//  The previous layout's `fence {}` is NOT carried: its crossing\n"
              "//  positions were chosen round positions this draft has moved.\n"
              "//  Redeclare it.\n";
+    //  SECONDARY CONTAINMENT IS NOT DRAFTED (DEV.md 4c C134): a wall is drawn
+    //  round the items it holds, at positions this draft has moved, and how
+    //  much it must hold is a rule the case reads from its own guideline.
+    if (hadBunds)
+        o << "\n//  The previous layout's `bunds ( ... )` are NOT carried: each wall was\n"
+             "//  drawn round positions this draft has moved.  Redeclare them.\n";
+    else
+        o << "\n//  SECONDARY CONTAINMENT: none declared, and none is written for you.  An\n"
+             "//  item in the open that holds liquid and that no bund encloses is\n"
+             "//  announced.  Declare, round the items that hold liquid:\n"
+             "//  bunds\n"
+             "//  (\n"
+             "//      { name \"...\"; kind bund;     // or impounding, with a remote pit { x; y; length; width; depth; }\n"
+             "//        items ( ... ); region { xMin ... m; xMax ... m; yMin ... m; yMax ... m; }\n"
+             "//        wall { height ... m; } drain closedValve;\n"
+             "//        capacityRule { basis vesselVolume; terms ( { fraction ...; of largest; } );\n"
+             "//                       source \"...\"; reason \"...\"; }\n"
+             "//        source \"...\"; reason \"...\"; }\n"
+             "//  );\n";
     //  THE BUILDING IS NOT DRAFTED (DEV.md 4c C100): its rooms and the items
     //  they hold were placed round positions this draft has moved, so every
     //  item is drafted in the open, and the interior is the author's again.

@@ -893,10 +893,10 @@ THE DISTILLATE RATE IS HIS, 5.88 kmol/h, and that matters here in a way it did n
 \goldrow{stream}{waterProduct}{F}{0.00963336111111}
 \goldrow{kpi}{C2}{B}{0.00963336111111}
 \goldrow{kpi}{C2}{D}{0.00163333333333}
-\goldrow{kpi}{C2}{Q\_condenser\_kW}{-120.936005804}
-\goldrow{kpi}{C2}{Q\_reboiler\_kW}{127.025516935}
+\goldrow{kpi}{C2}{Q\_condenser\_kW}{-120.954436671}
+\goldrow{kpi}{C2}{Q\_reboiler\_kW}{127.043947802}
 \goldrow{kpi}{C2}{R}{0.849}
-\goldrow{kpi}{C2}{T\_bottom}{366.174785539}
+\goldrow{kpi}{C2}{T\_bottom}{366.17478554}
 \goldrow{kpi}{C2}{T\_top}{355.876498071}
 \goldrow{kpi}{C2}{feedStage}{16}
 \goldrow{kpi}{C2}{nFeeds}{1}
@@ -924,20 +924,20 @@ Benzene/toluene distillation --- classical textbook problem with Raoult, no azeo
 \tutreadme{1. The specification is the column, not the split. Compare with shortcut01: there you declared the recoveries and got N; here you declare N, the feed stage, R and D --- and the purity is the $\ast$answer$\ast$. Both cases separate the same feed; only the question differs. 2. Watch it converge. The Log tab prints Pass max balance/F T\_top T\_bottom for the 41 bubble-point passes. The step and the balance fall by the same factor, about 0.65, every pass: that is what linear convergence looks like. The column stops on the balance, not the step --- when every stage balance and the balance over its ports close to 1e-9 of the feed (here 7.4e-10, with a last step of 2.3e-9). A small step alone is not a closed balance: a column that contracts slowly takes small steps while still far from its answer. column02\_simultaneous solves the identical column by a Newton on all the MESH equations in a handful of iterations --- run both and count. 3. The profile is printed stage by stage. T and x for every tray, the feed tray marked, the reboiler last: 355.69 K and 88.3 \% benzene in the liquid on tray 1 (the vapour leaving it, the distillate, is 95.1 \%), 381.51 K and 95.1 \% toluene in the reboiler. That table is the McCabe--Thiele diagram in numbers. 4. Two duties, two utilities, priced from the catalogue. The reboiler is served by low-pressure steam (0.296 kg/s, 27.96 ?/h at the catalogue price) and the condenser by cooling water (30.69 kg/s, 1.85 ?/h) --- the same picker every steady report uses, and the ?/h is a catalogue number, not a market one. 5. Read the caveats. Both Antoine fits are asked slightly outside their declared windows on the way to the answer (benzene at 370 K, toluene at 380.7 K), announced and still returned.}
 \tutreadme{Raise refluxRatio to 3: purities climb, both duties climb with them --- the trade-off every column design turns on. Then try feedStage 4: the same reflux buys less separation when the feed lands in the wrong place.}
 \begin{tutgolden}
-\goldrow{kpi}{column01}{T\_top}{355.689113032}
-\goldrow{kpi}{column01}{T\_bottom}{381.514101}
-\goldrow{kpi}{column01}{x\_D\_LK}{0.951017281058}
-\goldrow{kpi}{column01}{x\_B\_HK}{0.951017331313}
-\goldrow{utility}{column01}{heating.steamLP.duty\_kW}{647.138073182}
-\goldrow{utility}{column01}{heating.steamLP.T}{381.514101}
-\goldrow{utility}{column01}{heating.steamLP.kg\_s}{0.296037544914}
-\goldrow{utility}{column01}{heating.steamLP.eur\_h}{27.9563647615}
-\goldrow{utility}{column01}{cooling.coolingWater.duty\_kW}{-1282.91541137}
-\goldrow{utility}{column01}{cooling.coolingWater.T}{355.689113032}
-\goldrow{utility}{column01}{cooling.coolingWater.kg\_s}{30.6917562528}
-\goldrow{utility}{column01}{cooling.coolingWater.eur\_h}{1.84739819237}
+\goldrow{kpi}{column01}{T\_top}{355.689111404}
+\goldrow{kpi}{column01}{T\_bottom}{381.514100345}
+\goldrow{kpi}{column01}{x\_D\_LK}{0.951017315221}
+\goldrow{kpi}{column01}{x\_B\_HK}{0.951017316705}
+\goldrow{utility}{column01}{heating.steamLP.duty\_kW}{655.332465336}
+\goldrow{utility}{column01}{heating.steamLP.T}{381.514100345}
+\goldrow{utility}{column01}{heating.steamLP.kg\_s}{0.29978612321}
+\goldrow{utility}{column01}{heating.steamLP.eur\_h}{28.3103625025}
+\goldrow{utility}{column01}{cooling.coolingWater.duty\_kW}{-1291.10978215}
+\goldrow{utility}{column01}{cooling.coolingWater.T}{355.689111404}
+\goldrow{utility}{column01}{cooling.coolingWater.kg\_s}{30.8877938313}
+\goldrow{utility}{column01}{cooling.coolingWater.eur\_h}{1.8591980863}
 \goldrow{stream}{bottoms}{F}{0.0138888888889}
-\goldrow{stream}{bottoms}{T}{381.514101}
+\goldrow{stream}{bottoms}{T}{381.514100345}
 \goldmore{19}
 \end{tutgolden}
 
@@ -973,7 +973,7 @@ Expected (identical to column01): T\_top $\approx$ 354.2 K, T\_bottom $\approx$ 
 \goldrow{kpi}{column01}{nStages}{15}
 \goldrow{kpi}{column01}{x\_B\_HK}{0.981245125322}
 \goldrow{kpi}{column01}{x\_D\_LK}{0.981245125322}
-\goldrow{utility}{column01}{heating.steamLP.duty\_kW}{1298.51486835}
+\goldrow{utility}{column01}{heating.steamLP.duty\_kW}{1301.80147759}
 \goldrow{utility}{column01}{heating.steamLP.T}{382.893527916}
 \goldmore{17}
 \end{tutgolden}
@@ -1011,14 +1011,14 @@ NOTE: asking for a distillate ABOVE the azeotrope (x\_eth > 0.894) is physically
 \goldrow{kpi}{column}{B}{0.0208333333333}
 \goldrow{kpi}{column}{D}{0.00694444444444}
 \goldrow{kpi}{column}{R}{2.5}
-\goldrow{kpi}{column}{T\_bottom}{357.713408957}
+\goldrow{kpi}{column}{T\_bottom}{357.713408954}
 \goldrow{kpi}{column}{T\_top}{351.388958309}
 \goldrow{kpi}{column}{feedStage}{8}
 \goldrow{kpi}{column}{nStages}{16}
-\goldrow{kpi}{column}{x\_B\_HK}{0.868205515093}
-\goldrow{kpi}{column}{x\_D\_LK}{0.804616545279}
-\goldrow{utility}{column}{heating.steamLP.duty\_kW}{956.239962761}
-\goldrow{utility}{column}{heating.steamLP.T}{357.713408957}
+\goldrow{kpi}{column}{x\_B\_HK}{0.868205515068}
+\goldrow{kpi}{column}{x\_D\_LK}{0.804616545214}
+\goldrow{utility}{column}{heating.steamLP.duty\_kW}{956.364267611}
+\goldrow{utility}{column}{heating.steamLP.T}{357.713408954}
 \goldmore{17}
 \end{tutgolden}
 
@@ -1052,11 +1052,11 @@ Multiple feeds as FLOWSHEET STREAMS (`inputs ( feed feed2 )`) + a liquid side dr
 \goldrow{stream}{intermediateCut}{F}{0.00416666666667}
 \goldrow{kpi}{radfracLite}{B}{0.0286111111111}
 \goldrow{kpi}{radfracLite}{D}{0.0116666666667}
-\goldrow{kpi}{radfracLite}{Q\_condenser\_kW}{-1435.80274013}
-\goldrow{kpi}{radfracLite}{Q\_reboiler\_kW}{1514.4966161}
+\goldrow{kpi}{radfracLite}{Q\_condenser\_kW}{-1442.38285669}
+\goldrow{kpi}{radfracLite}{Q\_reboiler\_kW}{1521.07673268}
 \goldrow{kpi}{radfracLite}{R}{3}
-\goldrow{kpi}{radfracLite}{T\_bottom}{395.926996928}
-\goldrow{kpi}{radfracLite}{T\_top}{354.978489481}
+\goldrow{kpi}{radfracLite}{T\_bottom}{395.926996925}
+\goldrow{kpi}{radfracLite}{T\_top}{354.978489498}
 \goldrow{kpi}{radfracLite}{feedStage}{5}
 \goldrow{kpi}{radfracLite}{nFeeds}{2}
 \goldrow{kpi}{radfracLite}{nSideDraws}{1}
@@ -1091,8 +1091,8 @@ Both feeds are FLOWSHEET STREAMS (`inputs ( feed acidFeed )`) -- so the plant-bo
 \goldrow{stream}{feed}{F}{8.94444444444e-06}
 \goldrow{kpi}{rdColumn}{B}{9.13888888889e-06}
 \goldrow{kpi}{rdColumn}{D}{8.36111111111e-06}
-\goldrow{kpi}{rdColumn}{Q\_condenser\_kW}{-0.790521316742}
-\goldrow{kpi}{rdColumn}{Q\_reboiler\_kW}{0.626731120425}
+\goldrow{kpi}{rdColumn}{Q\_condenser\_kW}{-0.790777588229}
+\goldrow{kpi}{rdColumn}{Q\_reboiler\_kW}{0.626987391912}
 \goldrow{kpi}{rdColumn}{R}{2.1}
 \goldrow{kpi}{rdColumn}{T\_bottom}{363.229492539}
 \goldrow{kpi}{rdColumn}{T\_top}{330.062558898}
@@ -1125,7 +1125,7 @@ Expected --- close to, but NOT equal to, column02 (the gap IS the energy-balance
 \tutreadme{The same benzene/toluene column as column02\_simultaneous, but solved by the full MESH (model fullMESH) instead of the bubble-point/CMO reduction.}
 \tutreadme{The simultaneous method is a bubble-point-reduced MESH: it assumes constant molal overflow (CMO --- equimolal latent heats), so the internal vapour/liquid flows V\_j, L\_j are fixed by a mass march and only the compositions x\_j and stage temperatures T\_j are solved.}
 \tutreadme{The full MESH (Naphtali--Sandholm) promotes V\_j and L\_j to unknowns and adds, per stage, the total-mass balance and the energy balance --- so the flows follow the $\ast$real$\ast$ latent heats instead of assuming them equal. The extra per-stage energy equation is the enthalpy residual the CMO never carried:}
-\tutreadme{Total condenser: V\_0 = 0, L\_0 = R$\cdot$D; reboiler: L\_\{N-1\} = B; their energy balances give Q\_cond / Q\_reb as results.}
+\tutreadme{What stage 1 is follows from the declared condenser type (condenser \{ type total|partial; \}, default total). Under a TOTAL condenser stage 1 is the top tray and carries the same energy balance: the reflux R$\cdot$D enters it as the condensate of its own vapour, at the bubble point of y\_1, and V\_1 = (R+1)$\cdot$D leaves it to a condenser that is not an equilibrium stage and is not counted. Under a PARTIAL condenser stage 1 IS the condenser, and its rows fix V\_1 = 0, L\_1 = R$\cdot$D in place of an energy residual. The reboiler fixes L\_N = B. Q\_cond (the condenser's own envelope) and Q\_reb (the reboiler's) are results.}
 \tutreadme{The full-MESH is seeded from the converged CMO profile --- the cheap model launches the rigorous one. Here it converges in \textasciitilde{}4 Newton iterations from that seed (it would be far harder from a cold start).}
 \tutreadme{Benzene ($\Delta$h\_vap $\approx$ 30.8 kJ/mol) and toluene ($\approx$ 33.2 kJ/mol) have similar latent heats, so CMO is a good approximation and the two answers nearly coincide --- the \textasciitilde{}0.002 / \textasciitilde{}0.1 K gap IS the energy-balance correction the full-MESH makes and the CMO drops. On a wide-boiling column (a depropaniser) the gap is much larger; that is where the full-MESH earns its cost.}
 \begin{tutgolden}
@@ -1134,11 +1134,11 @@ Expected --- close to, but NOT equal to, column02 (the gap IS the energy-balance
 \goldrow{stream}{feed}{F}{0.0277777777778}
 \goldrow{kpi}{column06}{B}{0.0138888888889}
 \goldrow{kpi}{column06}{D}{0.0138888888889}
-\goldrow{kpi}{column06}{Q\_condenser\_kW}{-1281.19539111}
-\goldrow{kpi}{column06}{Q\_reboiler\_kW}{1298.48426282}
+\goldrow{kpi}{column06}{Q\_condenser\_kW}{-1284.97879743}
+\goldrow{kpi}{column06}{Q\_reboiler\_kW}{1302.24803968}
 \goldrow{kpi}{column06}{R}{2}
-\goldrow{kpi}{column06}{T\_bottom}{382.774927808}
-\goldrow{kpi}{column06}{T\_top}{354.339103085}
+\goldrow{kpi}{column06}{T\_bottom}{382.762148261}
+\goldrow{kpi}{column06}{T\_top}{354.352905317}
 \goldrow{kpi}{column06}{feedStage}{8}
 \goldrow{kpi}{column06}{nFeeds}{1}
 \goldrow{kpi}{column06}{nSideDraws}{0}
@@ -1209,11 +1209,11 @@ Expected --- close to, but NOT equal to, column02 (the gap IS the energy-balance
 \goldrow{stream}{feed2}{F}{0.0277777777778}
 \goldrow{kpi}{radfrac}{B}{0.0125}
 \goldrow{kpi}{radfrac}{D}{0.0125}
-\goldrow{kpi}{radfrac}{Q\_condenser\_kW}{-804.58622364}
-\goldrow{kpi}{radfrac}{Q\_reboiler\_kW}{1696.56628407}
+\goldrow{kpi}{radfrac}{Q\_condenser\_kW}{-815.362352311}
+\goldrow{kpi}{radfrac}{Q\_reboiler\_kW}{1707.19432211}
 \goldrow{kpi}{radfrac}{R}{4}
-\goldrow{kpi}{radfrac}{T\_bottom}{454.498489397}
-\goldrow{kpi}{radfrac}{T\_top}{321.647346922}
+\goldrow{kpi}{radfrac}{T\_bottom}{454.467895121}
+\goldrow{kpi}{radfrac}{T\_top}{321.673483428}
 \goldrow{kpi}{radfrac}{feedStage}{10}
 \goldmore{23}
 \end{tutgolden}
@@ -1253,11 +1253,11 @@ Read the printed table. The feed is a saturated liquid, so it joins the liquid t
 \goldrow{kpi}{column09}{D}{0.0138888888889}
 \goldrow{kpi}{column09}{L\_rect}{0.0277777777778}
 \goldrow{kpi}{column09}{L\_strip}{0.0361877253979}
-\goldrow{kpi}{column09}{Q\_condenser\_kW}{-1282.91541137}
-\goldrow{kpi}{column09}{Q\_reboiler\_kW}{647.138073182}
+\goldrow{kpi}{column09}{Q\_condenser\_kW}{-1291.10978215}
+\goldrow{kpi}{column09}{Q\_reboiler\_kW}{655.332465336}
 \goldrow{kpi}{column09}{R}{2}
-\goldrow{kpi}{column09}{T\_bottom}{381.514101}
-\goldrow{kpi}{column09}{T\_top}{355.689113032}
+\goldrow{kpi}{column09}{T\_bottom}{381.514100345}
+\goldrow{kpi}{column09}{T\_top}{355.689111404}
 \goldrow{kpi}{column09}{V\_rect}{0.0416666666667}
 \goldrow{kpi}{column09}{V\_strip}{0.022298836509}
 \goldmore{87}
@@ -1294,11 +1294,11 @@ Note the downcomer, too: the backup reaches 268.5 mm against a 275 mm limit. Nar
 \goldrow{kpi}{column10}{D}{0.0138888888889}
 \goldrow{kpi}{column10}{L\_rect}{0.0277777777778}
 \goldrow{kpi}{column10}{L\_strip}{0.0361877253979}
-\goldrow{kpi}{column10}{Q\_condenser\_kW}{-1282.91541137}
-\goldrow{kpi}{column10}{Q\_reboiler\_kW}{647.138073182}
+\goldrow{kpi}{column10}{Q\_condenser\_kW}{-1291.10978215}
+\goldrow{kpi}{column10}{Q\_reboiler\_kW}{655.332465336}
 \goldrow{kpi}{column10}{R}{2}
-\goldrow{kpi}{column10}{T\_bottom}{381.514101}
-\goldrow{kpi}{column10}{T\_top}{355.689113032}
+\goldrow{kpi}{column10}{T\_bottom}{381.514100345}
+\goldrow{kpi}{column10}{T\_top}{355.689111404}
 \goldrow{kpi}{column10}{V\_rect}{0.0416666666667}
 \goldrow{kpi}{column10}{V\_strip}{0.022298836509}
 \goldmore{31}
@@ -1347,11 +1347,11 @@ NOTE: the efficiency is folded into an effective K, with the vapour from the tra
 \goldrow{kpi}{column11}{D}{0.0138888888889}
 \goldrow{kpi}{column11}{L\_rect}{0.0277777777778}
 \goldrow{kpi}{column11}{L\_strip}{0.0361877253979}
-\goldrow{kpi}{column11}{Q\_condenser\_kW}{-1287.17773259}
-\goldrow{kpi}{column11}{Q\_reboiler\_kW}{649.299667779}
+\goldrow{kpi}{column11}{Q\_condenser\_kW}{-1295.31121469}
+\goldrow{kpi}{column11}{Q\_reboiler\_kW}{657.4331811}
 \goldrow{kpi}{column11}{R}{2}
-\goldrow{kpi}{column11}{T\_bottom}{380.054235151}
-\goldrow{kpi}{column11}{T\_top}{356.362522942}
+\goldrow{kpi}{column11}{T\_bottom}{380.054233859}
+\goldrow{kpi}{column11}{T\_top}{356.362521335}
 \goldrow{kpi}{column11}{V\_rect}{0.0416666666667}
 \goldrow{kpi}{column11}{V\_strip}{0.022298836509}
 \goldmore{32}
@@ -1682,11 +1682,11 @@ That shape is worth more than a single number. At 74 trays and R = 11.4 this col
 \goldrow{kpi}{splitter}{D}{0.0394509877778}
 \goldrow{kpi}{splitter}{L\_rect}{0.45133097767}
 \goldrow{kpi}{splitter}{L\_strip}{0.565397368633}
-\goldrow{kpi}{splitter}{Q\_condenser\_kW}{-8654.33073633}
-\goldrow{kpi}{splitter}{Q\_reboiler\_kW}{8458.51946812}
+\goldrow{kpi}{splitter}{Q\_condenser\_kW}{-8798.32666242}
+\goldrow{kpi}{splitter}{Q\_reboiler\_kW}{8602.51537589}
 \goldrow{kpi}{splitter}{R}{11.440296}
-\goldrow{kpi}{splitter}{T\_bottom}{329.436820919}
-\goldrow{kpi}{splitter}{T\_top}{314.249966433}
+\goldrow{kpi}{splitter}{T\_bottom}{329.436819763}
+\goldrow{kpi}{splitter}{T\_top}{314.249966091}
 \goldrow{kpi}{splitter}{V\_rect}{0.490781965448}
 \goldrow{kpi}{splitter}{V\_strip}{0.479095312799}
 \goldmore{20}
@@ -1749,11 +1749,11 @@ ONE MORE OBSERVATION, and it is about the ENGINE rather than the column. These t
 \goldrow{kpi}{splitter}{D}{0.0394509877778}
 \goldrow{kpi}{splitter}{L\_rect}{0.45133097767}
 \goldrow{kpi}{splitter}{L\_strip}{0.565397368633}
-\goldrow{kpi}{splitter}{Q\_condenser\_kW}{-8659.56425253}
-\goldrow{kpi}{splitter}{Q\_reboiler\_kW}{8463.75005209}
+\goldrow{kpi}{splitter}{Q\_condenser\_kW}{-8793.93104869}
+\goldrow{kpi}{splitter}{Q\_reboiler\_kW}{8598.11682012}
 \goldrow{kpi}{splitter}{R}{11.440296}
-\goldrow{kpi}{splitter}{T\_bottom}{329.435279168}
-\goldrow{kpi}{splitter}{T\_top}{314.116313789}
+\goldrow{kpi}{splitter}{T\_bottom}{329.435277335}
+\goldrow{kpi}{splitter}{T\_top}{314.116313405}
 \goldrow{kpi}{splitter}{V\_rect}{0.490781965448}
 \goldrow{kpi}{splitter}{V\_strip}{0.479095312799}
 \goldmore{19}
@@ -1798,20 +1798,63 @@ WHAT THE STUDENT SHOULD DO WITH IT. Run the case and read the `iterations` KPI; 
 \tutreadme{What $\ast$is$\ast$ checked is that the declaration describes this column: the stage count against nStages, the component set against the case's, every value finite. A mismatch refuses by name and says how to fix it. A seed silently ignored would be exactly the silence this case exists to end.}
 \begin{tutgolden}
 \goldrow{stream}{bottoms}{F}{0.0138888888889}
-\goldrow{stream}{bottoms}{T}{381.514099427}
+\goldrow{stream}{bottoms}{T}{381.514100298}
 \goldrow{stream}{distillate}{F}{0.0138888888889}
-\goldrow{stream}{distillate}{T}{354.247898707}
+\goldrow{stream}{distillate}{T}{354.247899301}
 \goldrow{stream}{feed}{F}{0.0277777777778}
 \goldrow{stream}{feed}{T}{370}
 \goldrow{kpi}{column16}{B}{0.0138888888889}
 \goldrow{kpi}{column16}{D}{0.0138888888889}
 \goldrow{kpi}{column16}{L\_rect}{0.0277777777778}
 \goldrow{kpi}{column16}{L\_strip}{0.0361877253979}
-\goldrow{kpi}{column16}{Q\_condenser\_kW}{-1282.91540714}
-\goldrow{kpi}{column16}{Q\_reboiler\_kW}{647.138109131}
+\goldrow{kpi}{column16}{Q\_condenser\_kW}{-1291.10978162}
+\goldrow{kpi}{column16}{Q\_reboiler\_kW}{655.332466319}
 \goldrow{kpi}{column16}{R}{2}
-\goldrow{kpi}{column16}{T\_bottom}{381.514099427}
+\goldrow{kpi}{column16}{T\_bottom}{381.514100298}
 \goldmore{19}
+\end{tutgolden}
+
+\clearpage
+\tutentry{column18\_partial\_condenser}{tutorials/steady/distillation/column18\_partial\_condenser}
+\begin{tutscheme}
+\begin{tikzpicture}[>={Stealth[length=2mm]}, every node/.style={font=\scriptsize}]
+  \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (column18) at (0.0,-0.0) {\textbf{column18}\\[-1pt]{\tiny distillationColumn}};
+  \draw[->] ($(column18.west)+(-1.05,0.00)$) -- ($(column18.west)+(0,0.00)$) node[at start, above, font=\tiny, anchor=south west] {feed};
+  \draw[->] ($(column18.east)+(0,-0.17)$) -- ($(column18.east)+(1.05,-0.17)$) node[at end, below, font=\tiny, anchor=north east] {distillate};
+  \draw[->] ($(column18.east)+(0,0.17)$) -- ($(column18.east)+(1.05,0.17)$) node[at end, above, font=\tiny, anchor=south east] {bottoms};
+\end{tikzpicture}
+\end{tutscheme}
+\tutwhat{Benzene/toluene column with a PARTIAL condenser (Wang-Henke)}
+\begin{tutnarrative}
+column01's benzene/toluene column under a PARTIAL condenser (`condenser \{ type partial; \}`).
+
+WHAT IT DEMONSTRATES. The condenser TYPE is a declared choice, and it decides what stage 1 IS. Here stage 1 is the condenser itself, an equilibrium stage: the reflux is its liquid x\_1, and the distillate leaves as a saturated VAPOUR y\_1 = K\_1 x\_1 at T\_1 (published `vf 1`, pinned). Compared with column01 (the same column, `type total` by default): the distillate composition is the SAME -- both types write the same material balance on stage 1 (x\_D = y\_1 = K\_1 x\_1 under a total condenser is the condensate of that vapour; here it is the vapour itself); the distillate PHASE differs: vapour at T\_1 = 355.69 K here, liquid at its bubble point 354.25 K there; the condenser duty is the stage's OWN envelope, Q = -[ V\_2 h\_V(y\_2,T\_2) - L\_1 h\_L(x\_1,T\_1) - D h\_V(y\_1,T\_1) ], about two thirds of the total condenser's (R+1) D latent duty, because D leaves uncondensed; the reboiler duty rises by the enthalpy the vapour distillate carries away; stage 1 is NOT a tray: the hydraulics pass drops it (V\_1 = 0), where under a total condenser it is the top tray and is rated.
+
+THE STAGE COUNT. `nStages` counts EQUILIBRIUM stages, top to bottom, the reboiler included. A partial condenser is one of them, so the 15 stages here are 1 condenser + 13 trays + 1 reboiler; column01's 15 are 14 trays + 1 reboiler under a total condenser that is not counted. A source that counts its TOTAL condenser as "stage 1" describes nStages - 1 here.
+
+\end{tutnarrative}
+\tutreadme{column01\_benzene\_toluene's 15-stage benzene/toluene column (feed on stage 8, R = 2, D = 50 kmol/h, Raoult, Wang--Henke) with ONE line added:}
+\tutreadme{The condenser TYPE is a declared choice (default total, announced when it is taken), and it decides what stage 1 IS.}
+\tutreadme{Stage 1 is the condenser itself, an equilibrium stage. The vapour from stage 2 enters it, part of it is condensed and returned as the reflux --- the stage's liquid x\_1 --- and the rest leaves as the distillate, a saturated VAPOUR y\_1 = K\_1 x\_1 at T\_1. Under a total condenser (column01) ALL of the vapour leaving stage 1 is condensed and reflux and distillate leave as one liquid of that vapour's composition, at its bubble point; stage 1 is then the top tray, and the condenser above it is not an equilibrium stage and is not counted.}
+\tutreadme{Both types write the same material balance on stage 1, so the two cases share their composition profile and their distillate composition exactly (x\_D = 0.9510 benzene, both). What differs:}
+\tutreadme{and the reboiler duty closes the column, as always. The plant first law closes at 0 kW in both cases: the split between the two duties moves, the sum does not.}
+\tutreadme{nStages counts EQUILIBRIUM stages, top to bottom, the reboiler included. A partial condenser is one of them: the 15 stages here are 1 condenser + 13 trays + 1 reboiler. column01's 15 are 14 trays + 1 reboiler, under a total condenser that is not counted. So a source that counts its TOTAL condenser as "stage 1" (many textbooks and simulators do) describes a column of nStages - 1 here, and one that counts a partial condenser as stage 1 maps one to one.}
+\begin{tutgolden}
+\goldrow{stream}{bottoms}{F}{0.0138888888889}
+\goldrow{stream}{bottoms}{T}{381.514100345}
+\goldrow{stream}{distillate}{F}{0.0138888888889}
+\goldrow{stream}{distillate}{T}{355.689111404}
+\goldrow{stream}{feed}{F}{0.0277777777778}
+\goldrow{stream}{feed}{T}{370}
+\goldrow{kpi}{column18}{B}{0.0138888888889}
+\goldrow{kpi}{column18}{D}{0.0138888888889}
+\goldrow{kpi}{column18}{L\_rect}{0.0277777777778}
+\goldrow{kpi}{column18}{L\_strip}{0.0361877253979}
+\goldrow{kpi}{column18}{Q\_condenser\_kW}{-870.344500525}
+\goldrow{kpi}{column18}{Q\_reboiler\_kW}{672.996461619}
+\goldrow{kpi}{column18}{R}{2}
+\goldrow{kpi}{column18}{T\_bottom}{381.514100345}
+\goldmore{18}
 \end{tutgolden}
 
 \clearpage
@@ -6949,11 +6992,11 @@ The preheater is heated by the column's rejected condenser duty (\textasciitilde
 \goldrow{kpi}{column01}{D}{0.0138888888889}
 \goldrow{kpi}{column01}{L\_rect}{0.0277777777778}
 \goldrow{kpi}{column01}{L\_strip}{0.0361877253979}
-\goldrow{kpi}{column01}{Q\_condenser\_kW}{-1282.91541137}
-\goldrow{kpi}{column01}{Q\_reboiler\_kW}{647.138073182}
+\goldrow{kpi}{column01}{Q\_condenser\_kW}{-1291.10978215}
+\goldrow{kpi}{column01}{Q\_reboiler\_kW}{655.332465336}
 \goldrow{kpi}{column01}{R}{2}
-\goldrow{kpi}{column01}{T\_bottom}{381.514101}
-\goldrow{kpi}{column01}{T\_top}{355.689113032}
+\goldrow{kpi}{column01}{T\_bottom}{381.514100345}
+\goldrow{kpi}{column01}{T\_top}{355.689111404}
 \goldmore{30}
 \end{tutgolden}
 
@@ -6987,11 +7030,11 @@ The preheater (UPSTREAM of the column) is heated by the column's CONDENSER duty 
 \goldrow{kpi}{column01}{D}{0.0138888888889}
 \goldrow{kpi}{column01}{L\_rect}{0.0208333333333}
 \goldrow{kpi}{column01}{L\_strip}{0.298611111111}
-\goldrow{kpi}{column01}{Q\_condenser\_kW}{-1067.88365467}
-\goldrow{kpi}{column01}{Q\_reboiler\_kW}{1844.9395063}
+\goldrow{kpi}{column01}{Q\_condenser\_kW}{-1071.60063279}
+\goldrow{kpi}{column01}{Q\_reboiler\_kW}{1844.93950415}
 \goldrow{kpi}{column01}{R}{1.5}
-\goldrow{kpi}{column01}{T\_bottom}{365.99791143}
-\goldrow{kpi}{column01}{T\_top}{354.558892551}
+\goldrow{kpi}{column01}{T\_bottom}{365.997911437}
+\goldrow{kpi}{column01}{T\_top}{354.558892554}
 \goldrow{kpi}{column01}{V\_rect}{0.0347222222222}
 \goldmore{28}
 \end{tutgolden}
@@ -8523,8 +8566,8 @@ Benzene/toluene distillation, used by the optimisation driver. Same column as se
 \goldrow{kpi}{column01}{L\_rect}{0.0416666666667}
 \goldrow{kpi}{column01}{L\_strip}{0.0500766142867}
 \goldrow{kpi}{column01}{R}{3}
-\goldrow{kpi}{column01}{T\_bottom}{383.044566338}
-\goldrow{kpi}{column01}{T\_top}{354.047336848}
+\goldrow{kpi}{column01}{T\_bottom}{383.044555298}
+\goldrow{kpi}{column01}{T\_top}{354.047300008}
 \goldrow{kpi}{column01}{V\_rect}{0.0555555555556}
 \goldrow{kpi}{column01}{V\_strip}{0.0361877253979}
 \goldrow{kpi}{column01}{feedStage}{9}
@@ -8724,15 +8767,15 @@ sensitivity01\_column\_reflux -- the column01 benzene/toluene column (classical 
 \goldrow{stream}{feed}{F}{0.0277777777778}
 \goldrow{kpi}{column01}{B}{0.0138888888889}
 \goldrow{kpi}{column01}{D}{0.0138888888889}
-\goldrow{kpi}{column01}{L\_rect}{0.0402695960533}
-\goldrow{kpi}{column01}{L\_strip}{0.0486795436734}
-\goldrow{kpi}{column01}{Q\_condenser\_kW}{-1665.20088835}
-\goldrow{kpi}{column01}{Q\_reboiler\_kW}{1031.41618351}
-\goldrow{kpi}{column01}{R}{2.89941091584}
-\goldrow{kpi}{column01}{T\_bottom}{382.835807084}
-\goldrow{kpi}{column01}{T\_top}{354.273377176}
-\goldrow{kpi}{column01}{V\_rect}{0.0541584849422}
-\goldrow{kpi}{column01}{V\_strip}{0.0347906547845}
+\goldrow{kpi}{column01}{L\_rect}{0.0402689234701}
+\goldrow{kpi}{column01}{L\_strip}{0.0486788710901}
+\goldrow{kpi}{column01}{Q\_condenser\_kW}{-1669.72709249}
+\goldrow{kpi}{column01}{Q\_reboiler\_kW}{1035.94285397}
+\goldrow{kpi}{column01}{R}{2.89936248984}
+\goldrow{kpi}{column01}{T\_bottom}{382.835751971}
+\goldrow{kpi}{column01}{T\_top}{354.273376618}
+\goldrow{kpi}{column01}{V\_rect}{0.0541578123589}
+\goldrow{kpi}{column01}{V\_strip}{0.0347899822012}
 \goldmore{18}
 \end{tutgolden}
 
@@ -8759,8 +8802,8 @@ sensitivity01\_column\_reflux -- the column01 benzene/toluene column (classical 
 \goldrow{kpi}{column01}{D}{0.0138888888889}
 \goldrow{kpi}{column01}{L\_rect}{0.0618441580991}
 \goldrow{kpi}{column01}{L\_strip}{0.0702541057191}
-\goldrow{kpi}{column01}{Q\_condenser\_kW}{-2327.074681}
-\goldrow{kpi}{column01}{Q\_reboiler\_kW}{1694.3065187}
+\goldrow{kpi}{column01}{Q\_condenser\_kW}{-2329.02413207}
+\goldrow{kpi}{column01}{Q\_reboiler\_kW}{1696.25596977}
 \goldrow{kpi}{column01}{R}{4.45277938313}
 \goldrow{kpi}{column01}{T\_bottom}{383.4896836}
 \goldrow{kpi}{column01}{T\_top}{353.562993958}
@@ -8792,11 +8835,11 @@ the column01 benzene/toluene column (classical Raoult textbook problem, no azeot
 \goldrow{kpi}{column01}{D}{0.0138888888889}
 \goldrow{kpi}{column01}{L\_rect}{0.0424382716049}
 \goldrow{kpi}{column01}{L\_strip}{0.050848219225}
-\goldrow{kpi}{column01}{Q\_condenser\_kW}{-1731.32761546}
-\goldrow{kpi}{column01}{Q\_reboiler\_kW}{1098.04453341}
+\goldrow{kpi}{column01}{Q\_condenser\_kW}{-1734.44094848}
+\goldrow{kpi}{column01}{Q\_reboiler\_kW}{1101.15850609}
 \goldrow{kpi}{column01}{R}{3.05555555556}
-\goldrow{kpi}{column01}{T\_bottom}{383.160271067}
-\goldrow{kpi}{column01}{T\_top}{353.921786829}
+\goldrow{kpi}{column01}{T\_bottom}{383.160243614}
+\goldrow{kpi}{column01}{T\_top}{353.921741298}
 \goldrow{kpi}{column01}{V\_rect}{0.0563271604938}
 \goldrow{kpi}{column01}{V\_strip}{0.0369593303361}
 \goldmore{15}
@@ -8825,11 +8868,11 @@ sensitivity01\_column\_reflux -- the column01 benzene/toluene column (classical 
 \goldrow{kpi}{column01}{D}{0.0138888888889}
 \goldrow{kpi}{column01}{L\_rect}{0.0424382716049}
 \goldrow{kpi}{column01}{L\_strip}{0.050848219225}
-\goldrow{kpi}{column01}{Q\_condenser\_kW}{-1731.32761546}
-\goldrow{kpi}{column01}{Q\_reboiler\_kW}{1098.04453341}
+\goldrow{kpi}{column01}{Q\_condenser\_kW}{-1734.44094848}
+\goldrow{kpi}{column01}{Q\_reboiler\_kW}{1101.15850609}
 \goldrow{kpi}{column01}{R}{3.05555555556}
-\goldrow{kpi}{column01}{T\_bottom}{383.160271067}
-\goldrow{kpi}{column01}{T\_top}{353.921786829}
+\goldrow{kpi}{column01}{T\_bottom}{383.160243614}
+\goldrow{kpi}{column01}{T\_top}{353.921741298}
 \goldrow{kpi}{column01}{V\_rect}{0.0563271604938}
 \goldrow{kpi}{column01}{V\_strip}{0.0369593303361}
 \goldmore{18}

@@ -928,3 +928,10 @@ layout  carPark:carPark        area             640              1e-4
 kpi     economics              C_OL             1041193.43517    1e-4
 kpi     economics              operatingPositions 12.6481223903    1e-4
 kpi     economics              operatorsPerShift 2.81069386451    1e-4
+layout  bund:tankFarm          verdict          adequate         exact
+layout  bund:tankFarm          containment      impounding       exact
+layout  bund:tankFarm          area             2450             1e-4
+layout  bund:tankFarm          wallHeight       0.3              1e-4
+layout  bund:tankFarm          displacedVolume  0                1e-4
+layout  bund:tankFarm          netVolume        756              1e-4
+layout  bund:tankFarm          requiredVolume   685.624657615    1e-4
