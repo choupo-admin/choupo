@@ -155,7 +155,13 @@ export function EvidenceLens({ pair, catalogue, caseRaw, localUnifac, componentF
     setSkipped(plans[0]?.skipped ?? []);
     if (import.meta.env.DEV && typeof window !== "undefined")
       window.__choupoEvidencePlans = Object.fromEntries(plans.map((p) => [p.candidate.id, p.files]));
-    if (plans.length === 0 || chosenData.length === 0) {
+    //  NOTHING TO ASK (2026-10-21, found on the live site): when no chosen
+    //  dataset can be evaluated (no T_bubble column, no pressure) the plan
+    //  has no operation, and an empty `operations ( );` is a list the engine
+    //  cannot type -- every candidate then "failed" with the same parser
+    //  error, which named the wrong culprit.  The reasons are the `skipped`
+    //  list, drawn below; no run is started.
+    if (plans.length === 0 || chosenData.length === 0 || plans[0]!.ops.length === 0) {
       setResults({}); setErrors({}); setBusy(false); return;
     }
     setBusy(true);

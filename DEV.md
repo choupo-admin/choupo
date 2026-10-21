@@ -1357,6 +1357,45 @@ accepts today, and that is a policy call.
 > final; }` layout draws what the steady flowsheet and the sizing pass
 > already hold.
 
+> **C134. SECONDARY CONTAINMENT (BUNDS / RETENTION BASINS) IN THE PLANT
+> LAYOUT, AND A SWEEP FOR WHAT ELSE A LAYOUT ROUTINELY CARRIES (Vitor,
+> 2026-10-21, from a colleague: "no layout faltam as bacias de retencao
+> nas zonas onde as boas praticas e as normas mandam por! Ve se ha mais
+> alguma coisa que e muito habitual fazer que nos escapou.  Podes
+> aproveitar e por as bacias de retencao no caso que falta da Amonia").**
+> Measured: bunds were CONSIDERED AND NOT ADDED in C96 ("a bund as a
+> placed item -- a wall round two items would overlap both -- the case
+> says it in words", docs/design/a-plant-layout-is-declared-and-checked.md
+> ~816 and ~991); the 3D drawing invents none (equipmentModel.ts:473).
+> Named there as not built, beside it: the fire-water ring main and
+> hydrants, escape routes inside the units, a toxic refuge in the control
+> room; and plinths / foundations (C129 item 4).  The liquid-ammonia
+> stores: `ammonia02_full_plant` (T201, seven vessels) and
+> `greenAmmoniaPEQ_baseCase` (NH3Storage, two tanks; its layout carries
+> no site elements at all).  Slice: a bund is a DECLARED REGION, not a
+> placed item (it encloses items, so the overlap rule does not apply to
+> it): `bunds ( { name; items ( ... ); wall { height; } | polygon;
+> capacityRule <the case's>; drain <valve>; source; reason; } )`; the
+> engine CHECKS it -- the net volume (area x height minus what the
+> enclosed footprints displace) against the case's declared capacity rule
+> (e.g. 110 % of the largest tank, or 100 % plus a rain/fire-water
+> allowance -- the rule and its source are the case's, no standard's table
+> is shipped), every declared item inside, an item holding liquid
+> inventory that no bund encloses ANNOUNCED, a road or pipe crossing the
+> wall announced; published (area, net volume, the rule, the verdict) and
+> pinned by the `layout` kind; the GUI draws the wall.  Pressurised liquid
+> ammonia is usually held in an impounding / catch area sloped to a
+> remote pit rather than a full-height bund -- the case states which it
+> is.  Plus a SWEEP (report, not build): what a plot plan routinely
+> carries that the layout lacks, each with the standard practice it comes
+> from, measured against the grammar -- e.g. flare/vent stack and its
+> radiation distance, drainage and fire-water run-off retention, the
+> fire-water ring main and hydrants, emergency showers/eyewash, a
+> substation/MCC, analyser houses, maintenance access (crane, tube-bundle
+> pulling space), tank-to-tank spacing, cooling-tower drift.  Status:
+> dispatched (G34); the sweep's list comes back to Vitor before anything
+> else is built.
+
 > **C133. THE DELIVERABLE DRAWINGS: THE PFD WITH ITS STREAM TABLE, AND
 > THE SPECIFICATION SHEETS, AS PDFS IN THE SECTOR/UNIT HIERARCHY (Vitor,
 > 2026-10-21: "Nos Reports devia de haver o diagrama PFD, com a tabela de
@@ -1673,6 +1712,24 @@ accepts today, and that is a policy call.
 > read back, committed) and gives each new view an F1/Help anchor that
 > lands on the right section, with the gates that hold those links green;
 > it is in every brief, and an integration without it is not done.
+> **And the student's OWN data, in the same EduTool (Vitor, 2026-10-21:
+> "Uau!!! Isso devia de ser posto tambem no EduTool do explorer!").**
+> Measured: the hosted site already opens a user's case folder or .zip
+> (File -> "Open Case folder..." / "Open Case from .zip...", one rule in
+> `gui/src/cases/caseArchive.ts`); the Evidence view reads the OPEN
+> case's `constant/experiments/*.dat` as its first tier
+> (`gui/src/case/evidence.ts:302-309`) and the Explorer the case's
+> `constant/components/*.dat` (`ExploreWorkspace.tsx:410-484`);
+> `data/local/evidence/` reaches the dev GUI only (the site cannot read a
+> disk).  So C127's EduTool gains a last page: "now with your own
+> mixture" -- a minimal self-contained case (a controlDict, the two
+> component records if they are not in the catalogue, the measured
+> series under constant/experiments/ with their citation) downloadable as
+> a template, opened back in the site, drawn by the Evidence view.
+> First step before writing it: an end-to-end test on the live site
+> (a zip with one pair and its data, opened, drawn), the gaps it finds
+> fixed; the Explorer Guide says how.  Not built, named: opening a data
+> folder WITHOUT a case, or dropping .dat files on the view.
 
 > **C126. A WHITE PAPER IN THE REPOSITORY (Vitor, 2026-10-21: "Achas que
 > e bom pegarmos nesta dica, e fazemos um white paper que vamos
@@ -2102,6 +2159,54 @@ accepts today, and that is a policy call.
 > vapour distillate at 355.69 K, Q_cond -870.34 vs -1291.11 kW, first
 > law 0 in both), 32 new rows recorded on the new case only.  The branch
 > is ready; it lands the day Vitor approves the 239 rows.
+> **LL HALF (3)-(5) DONE 2026-10-21 (G30, `claude/c123-ll-flash-findings`
+> cb1bd674e; moved rows NOT recorded).**  (5) ROOT-CAUSED, and it is the
+> root of (3): `michelsenTPD`'s tm omitted ln gamma_i(y)
+> (`StabilityTest.cpp`, and the header's own formula), so it read
+> -g^E/RT at the trivial point and every liquid with g^E > 1e-3 RT was
+> "unstable"; restored -- extract01's 340 "TPD-unstable" warnings are 0.
+> (3) FIXED: starts from the hint pair in index order + two seeded by the
+> TPD's incipient phase; the hints only LABEL (`llSplit::labelByHints`);
+> every split finished by a Newton on equal activities to 1e-12
+> (`flash/LiquidLiquidSplit.H`; the minimiser had stopped at 4e-4 ... 4e-3
+> in ln activity); a TPD-unstable feed the box-bounded minimiser cannot
+> split takes Michelsen's route from the incipient phase, and if that
+> fails the flash is NOT converged and the unit refuses naming the feed --
+> never "single liquid" at exit 0.  (4) FIXED: a non-converged extractor
+> throws (exit 1, no `converged/`); its stall test compared inf with inf
+> (a silent 60-sweep cap); closeTol 1e-8 (1e-4 WAS extract01/02's
+> first-law residual and atom leak; both pins paid).  Case C converges:
+> extract 984.05 / raffinate 293.29 mol/s / recovery 1.0000 vs 911.32 /
+> 366.01 / 0.9991 (a different model, an adiabatic reference); the
+> extractor and the hand-written 4-flash cascade agree to 1e-6.  Moved
+> rows in six cases (extract01/02, extraction01, vlle01,
+> lithiumBrinePlant, ternary03), listed in the hand-back.
+> **A, D AND E RUN 2026-10-21 (G32, `claude/c123-benchmarks-ade`
+> fd295f740).**  Engine: PR is PR78 (three corpus PR cases
+> byte-identical); the kij SET record and the `ppr78Kij` op (route P);
+> inline kij only under regression (`variedBy`); `fitParameters`
+> `P_bubble` and an identifiability Jacobian that no longer reads a branch
+> jump as a slope; `compressor` `P_out`; `BubblePoint::pressure` no longer
+> reads a one-root floor as "does not boil"; the phaseChanger vf search no
+> longer centred on a supercritical component's Antoine T; a regressed
+> pair's verdict announced on every run that uses it.  Gate
+> `check_ppr78_route` (a)-(i), 12 sabotages.  A: products within 0.5 %,
+> valves +1.5...7.9 K (measured: the cubic and its parameters), first law
+> -67.31 kW all attributed; D: loop at the sample's 73 bar, three gas pairs
+> regressed by Choupo notValidated (20-31 % against 5 %), methanol-water
+> validated, methanol product -1.7 %, reactor +8.4 % explained by the
+> sample's bed sitting 16.6 % from equilibrium; E: conversion -0.56 %.
+> Findings on the reference side stated neutrally in each README.  OPEN,
+> Choupo side: a compressor computes a two-phase feed as vapour in
+> silence (24.93 kW, all of D's residual -- the "state a unit computes
+> with" family, NOT on its enumerated list; Vitor's: wet compression or a
+> refusal); the adiabatic mixer (49.9 MW as built in A); shortcutColumn
+> publishes both products at the feed bubble point; the multi-reaction
+> pfr console prints F_out 1000x small and tau 0.00 s.
+> **ONE FULL REGRESSION ASKED OF VITOR for G30 + G32 together**: both
+> touch shared paths (`michelsenTPD` and the LL branch of solveCore;
+> `BubblePoint::pressure`), reached by cases nobody enumerated; one sweep
+> over an integration branch carrying both, then one moved-rows list.
 
 
 > **C122. INTEGRATION TOOLING AND A SITE SMOKE TEST (Vitor, 2026-10-20,

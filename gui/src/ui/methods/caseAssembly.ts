@@ -158,7 +158,7 @@ export const CITES = {
   unitUnknown: { file: DICT, line: 459,
     contains: ": unknown unit suffix '" },
   unitToSI: { file: DICT, line: 465, contains: "v *= spec->factor;" },
-  dimsCheck: { file: DICT, line: 925,
+  dimsCheck: { file: DICT, line: 931,
     contains: "it->second != expectedDims" },
   unitBar: { file: "src/core/Units.cpp", line: 54,
     contains: '{ "bar",     UnitSpec{ bar_to_Pa,   Dims::pressure } }' },

@@ -860,6 +860,12 @@ std::vector<DictPtr> Dictionary::lookupDictList(const std::string& key) const
             "': missing dict-list entry '" + key + "'");
     if (std::holds_alternative<std::vector<DictPtr>>(it->second))
         return std::get<std::vector<DictPtr>>(it->second);
+    // An empty `( );` list parses as an empty scalar list (its element type
+    // cannot be read off nothing) -- accept it as an empty dictionary list,
+    // as lookupWordList does for words.
+    if (std::holds_alternative<std::vector<scalar>>(it->second)
+        && std::get<std::vector<scalar>>(it->second).empty())
+        return {};
     throw std::runtime_error("Dictionary '" + name_ +
         "': entry '" + key + "' is not a list of dictionaries");
 }
