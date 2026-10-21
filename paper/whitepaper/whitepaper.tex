@@ -44,9 +44,17 @@
 %      two listings and the three figures from that release's binaries.
 %   3. Section 6.4 (the open-simulator comparison) goes public only after
 %      the reference's findings have been offered upstream
-%      (paper/whitepaper/upstream-issue-draft.md) and the benchmark cases are
-%      on main; cite the tag then.  Today the cases are on branch
-%      claude/c123-benchmarks-bc (33e277ca2).
+%      (paper/whitepaper/upstream-issue-draft.md -- it covers case B only
+%      today; cases A, C, D and E have reference-side findings of their own
+%      in their READMEs) and the five benchmark cases and the engine
+%      corrections of Table tab:benchdefects are on main; cite the tag then.
+%      Being integrated as this draft is written: the cases from
+%      origin/claude/c123-benchmarks-ade (fd295f740), the LL flash from
+%      origin/claude/c123-ll-flash-findings (cb1bd674e), the column from
+%      origin/claude/c123-column-findings (3d0e37d78).  Re-measure case B on
+%      main after the column corrections (its table is the 2026-10-20 run)
+%      and take case C's numbers from its README once it is rewritten from
+%      BLOCKED.
 %   4. Zenodo and arXiv deposits (Section 8 says "to be deposited").
 %   5. Acknowledgements: funding (none?) and institutional support, if any.
 %   6. Every entry in whitepaper.bib to be checked against the item itself.
@@ -72,6 +80,8 @@
 \usepackage[numbers,sort&compress]{natbib}
 \usepackage{xcolor}
 \usepackage{listings}
+\usepackage{graphicx}
+\graphicspath{{figures/}}
 \usepackage{tikz}
 \usetikzlibrary{positioning,fit,arrows.meta,calc}
 \usepackage{pgfplots}
@@ -665,7 +675,8 @@ section that derives it.
 % check_doctrine's ban list (bin/curate/check_doctrine.py:67-68).
 
 What it shows, in the version cited here: the flowsheet, with each stream
-coloured by the phase the engine resolved for it; the run log, streamed
+coloured by the phase the engine resolved for it or, as a display mode the
+reader chooses, by its temperature or pressure; the run log, streamed
 live while the engine runs; the three global balances -- mass, atoms,
 energy -- drawn from the engine's own reports and never recomputed (the
 rule since the day the front-end's own first-law sum was found to disagree
@@ -707,6 +718,113 @@ from which \code{choupoCtrl} runs the same case with its control loops.
 % envelope).  The P&ID: DEV.md 4c C130 on origin/main (f8d09d205, Vitor:
 % the P&ID "deve ser usado para correr o choupoCtrl"; proposed and
 % measured, NOT in the cited version).
+
+Figures~\ref{fig:gui-flow} and~\ref{fig:gui-layout} show two cases of the
+green-ammonia sequence as a reader sees them, each run in the page by the
+WebAssembly build of the engine.  The ParaView pattern shows in three
+places, each adapted rather than copied.  A stream is coloured by a
+variable the engine published -- its phase by default, its temperature or
+pressure on request -- on a continuous scale with its legend on the
+canvas, which is ParaView's colour-by-field selector applied to a
+flowsheet.  The case's files sit in an on-demand Case view rather than a
+permanently docked pipeline browser, because a chemical-process case is a
+directory of dictionaries and not a chain of filters.  And a second view
+opens as a browser tab rather than as a split of one window: the plant
+layout of Figure~\ref{fig:gui-layout} is the Reports view's plot plan
+popped out, and it redraws when its case is run again.  In both figures
+every number and every shape drawn is one the engine published; the
+front-end computes no equilibrium, balance, size or route.
+% The captures: paper/whitepaper/figures/capture_gui.mjs (Playwright's
+% Chromium, driven by the repository's own CDP client
+% gui/tools/checkGui/cdp.mjs), run 2026-10-21 on branch
+% claude/c126-gui-figures over origin/main 94ee21ac8 (gui/ and src/
+% identical to afe31114c, at which `make wasm-gui` built the engines with
+% emscripten 3.1.6; then `npm --prefix gui run build`), deviceScaleFactor 2:
+%   node paper/whitepaper/figures/capture_gui.mjs
+% Colour by: gui/src/ui/ColoursMenu.tsx:57-61 (phase / temperature /
+% pressure), :63-67 (the gradients), :100 ("Colour by"); the scale is taken
+% over the run's own streams that carry flow, from the run result's T and P
+% (gui/src/ui/FlowCanvas.tsx:838-857); "wire thickness ∝ √(mass flow)"
+% (FlowCanvas.tsx:1662).  The Case view instead of a docked tree:
+% docs/ai/gui-credo.md:61-63 and :247; run outputs merged for display only,
+% never into the authored files (gui/src/ui/CaseWorkspace.tsx:247-252).  Pop-
+% outs instead of a multi-view split: docs/ai/gui-credo.md:250;
+% gui/src/state/useLayoutPopOut.ts:66 (window.open of the ?layout= tab);
+% gui/src/ui/LayoutPopOutTab.tsx:30-40 (the same scene the Reports section
+% draws; it follows its parent).  The engine computes, the front-end
+% draws: docs/ai/gui-credo.md:7-28; CLAUDE.md sec 6 "A PLANT LAYOUT IS
+% DECLARED, CHECKED AND DRAFTED" (C80: "the GUI draws the routes ... and
+% computes none").
+
+\begin{figure}[tbp]
+\centering
+\includegraphics[width=\textwidth]{gui_flowsheet.png}\\[2pt]
+{\small (a)}\\[4pt]
+\includegraphics[width=0.56\textwidth]{gui_casetree.png}\\[2pt]
+{\small (b)}
+\caption{The browser front-end on a sectored plant,
+\code{tutorials/plant/greenAmmonia03_basicDesign}, run in the page.
+(a)~The Flowsheet view framed on the synthesis loop.  Each stream is
+coloured by its temperature on a continuous scale over the run's own range
+(238--788~K) and drawn with a width proportional to the square root of its
+mass flow -- the colour-by-field control of ParaView, applied to a
+flowsheet; the dark boxes under the units are the utility duties each unit
+published; the slashed wires are the recycle streams the case tears.
+\code{CONVERTER} is a sector: three catalyst beds and two interbed coolers
+drawn as one box, which a double click opens as a case of its own.
+(b)~The Case view, which does the work of ParaView's pipeline browser on
+demand instead of docked: the case's file tree, every unit and the sector
+in a folder of its own, and the sector's own \code{flowsheetDict} as the
+engine reads it; \code{converged/} and \code{design/} are the run's
+outputs and are marked as such.  Every temperature, duty and size on these
+screens is a number the engine published; none is computed in the
+browser.}
+\label{fig:gui-flow}
+\end{figure}
+% Panel (a): legend "TEMPERATURE 238 513 788 K" read off the capture;
+% CONVERTER "Sector" (tutorials/plant/greenAmmonia03_basicDesign/CONVERTER/
+% system/flowsheetDict: units Bed1 InterbedCooler1 Bed2 InterbedCooler2
+% Bed3); tears: the case's system/solverDict (two tears, its
+% flowsheetDict header: "the second tear in system/solverDict"); a sector
+% opened as a case of its own: gui/src/ui/FlowCanvas.tsx:1293 (onNodeDoubleClick) and the
+% canvas hint "double-click: drill in" (FlowCanvas.tsx:1424).  Run outputs
+% badged: gui/src/ui/caseTree.ts:117-139 (isRunOutput).  The run took
+% 255 s in the page (the case's outerDict solves the three bed volumes and
+% the converter diameter in one Newton).
+
+\begin{figure}[tbp]
+\centering
+\includegraphics[width=\textwidth]{gui_layout3d.png}
+\caption{The plot plan of \code{tutorials/plant/greenAmmoniaPEQ_baseCase},
+popped out of the Reports view into a browser tab of its own -- where
+ParaView would split the window, Choupo opens a tab that redraws when its
+case is run again.  Each item stands where the case's
+\code{system/layoutDict} places it and is drawn by its equipment kind on
+the envelope the engine's sizing pass published: the hydrogen buffer
+vessels, the two ammonia storage tanks, the compressors, the converter and
+the exchangers on the pipe rack, over which the engine routed the pipes.
+The haloes are the hazardous-area zones the case declares, the arrow its
+declared wind, and the plot area is the engine's number; a warning glyph
+marks an item the engine named in a layout finding.  The scene is drawn
+from the layout block of the run's result and computes nothing.}
+\label{fig:gui-layout}
+\end{figure}
+% Drawn by kind on the published envelope: gui/src/case/equipmentModel.ts:
+% 28-56 (BODY parts fill exactly the envelope the engine published;
+% DECORATION is a drafting convention).  Positions: the case's
+% system/layoutDict; routing, the plot area and the findings: CLAUDE.md
+% sec 6 "A PLANT LAYOUT IS DECLARED, CHECKED AND DRAFTED" (C75, C80, C82;
+% src/postProcessing/layout/PlantLayout.H:149, plotOf).  The warning glyph:
+% gui/src/case/plantLayout.ts:624-628 (a flagged item's label "carries a
+% warning GLYPH beside its id"; the finding is in its tooltip).  Daylight
+% scene: gui/src/ui/plotting/layoutRenderer.ts:240-249.  View controls (3D
+% / Plan / Elevation, High / Fast): gui/src/ui/plotting/PlantLayout3D.tsx:
+% 214-224.  The capture opened the tab with prefers-reduced-motion, so the
+% flow animation is off (PlantLayout3D.tsx:157-159, `flow: !reduced`), and
+% dollied the camera in from the view's own Fit; its pixels were checked
+% non-blank before saving (capture_gui.mjs).  Another general is adding
+% retention bunds to this case's layout (DEV.md 4c C134); rerun the script
+% after that lands.
 
 \subsection{What Choupo takes from \OF, and where it differs}
 \label{sec:openfoam}
@@ -1078,7 +1196,8 @@ gate holds every promoted pair to one liquid across its span.
 % Azeotrope from the 100 kPa scans (txy_nrtl.csv, txy_unifac.csv: T minimum
 % and y = x crossing between x = 0.77 and 0.78 for both models; measured
 % here from the CSVs).  The 6 atm extrapolation: benchmark case B README
-% (branch claude/c123-benchmarks-bc 33e277ca2: "about 50-56 K above the
+% (benchmarks/dwsim/distillation01_methanol_acetone_pressure_swing/
+% README.md at fd295f740: "about 50-56 K above the
 % pair's evidence ... Every run announces the extrapolations ([pair-span],
 % [psat], [cp])"); CLAUDE.md sec 6 (C35 item 5: [pair-span] announced).
 % Ethanol + cyclohexane: tutorials/props/curation/
@@ -1480,39 +1599,130 @@ paper's own reported 9~\%).
 \label{sec:ex-comparison}
 
 We compared Choupo with DWSIM \citep{dwsim}, an open-source process
-simulator licensed under the GPL-3.0, on a sample from the library it
+simulator licensed under the GPL-3.0, on five samples from the library it
 ships.  It is named because it is open: its licence and source were read
 before anything was relied on, and its maintainers can reproduce every
 number below.  Simulators whose source is closed are not compared, because
-their models cannot be inspected.  The benchmark cases are being integrated
-into the development line; this section describes them as they stand on
-their branch, and the findings about the reference below are being offered
-to its maintainers before this section is made public.
-% DEV.md 4c C123 (phase 1: GPL-3.0, README + COPYING read at its commit
-% 1abf72d1b, 2026-07-17; "a tool is named only after its licence is
-% verified"); C126 (Vitor's ruling: open references may be named, closed
-% ones not; each defect offered upstream first; the benchmark cases on branch
-% claude/c123-benchmarks-bc 33e277ca2, not yet on main at feb112a00);
-% paper/whitepaper/upstream-issue-draft.md (not posted).
+their models cannot be inspected.  The five benchmark cases are in the
+repository under \code{benchmarks/dwsim/}, each with a README that carries
+its comparison table and the findings on both sides; one script runs them
+all and prints each beside the reference.  The tree is developer-facing:
+it is not part of the regression suite, and no gate holds its numbers,
+because two of the reference's stored states do not close and a gate
+would pin their defects together with Choupo's.
+% benchmarks/README.md (origin/claude/c123-benchmarks-ade fd295f740, being
+% integrated onto main): the five cases, rules 1-4, "Not in the regression
+% suite, and no gate holds the comparison" (stated default 2026-10-20,
+% C123); compare.py. DEV.md 4c C123 (phase 1: GPL-3.0, README + COPYING
+% read at its commit 1abf72d1b, 2026-07-17; "a tool is named only after its
+% licence is verified"); C126 (Vitor's ruling: open references may be
+% named, closed ones not; each finding offered upstream first -- TODO item
+% 3 at the top of this file; paper/whitepaper/upstream-issue-draft.md, not
+% posted).
 
-\paragraph{Method.}  The sample was rewritten as a Choupo case from its
+\paragraph{Method.}  Each sample was rewritten as a Choupo case from its
 published problem -- feeds, units, specifications -- and no file or
 parameter of the sample was copied: the samples embed pair parameters from
-databanks this project excludes, so every property number in the benchmark
-is Choupo's own or comes from a primary source.  The reference numbers are
-the stored solved state inside the sample file, cited by repository commit
-and by the build version the file records (8.8.0.0, saved 2024-07-09).
-Every workaround is stated in the case: the sample specifies both columns
-by bottoms flow and the two bottoms specifications admit no steady state,
-so Choupo specifies distillate rates that take what the feed brings; the
-sample returns the recycle to the condenser stage and Choupo returns it to
-stage~2 (finding C1 below); a letdown valve is written out between the
-6~atm distillate and the 1~atm column.
-% benchmarks/README.md on main (rules 1-4); case B README on 33e277ca2
-% ("Three things the case does differently"); DEV.md 4c C123.
+databanks this project excludes, so every property number in a benchmark
+is Choupo's own or comes from a primary source cited per value.  The
+reference numbers are the stored solved state inside each sample file,
+read at one repository commit and cited by the build version the file
+records.  Where the two programs cannot pose the same problem, the case
+states the workaround where it acts (a specification Choupo does not take,
+a unit it does not have).  A difference is reported as a finding, measured
+on its own numbers, and stated neutrally on both sides.  Table~\ref{tab:bench}
+summarises the five cases.
+% benchmarks/README.md rules 1-4; each case README "How this case is built"
+% (fd295f740).  Sample commit: 1abf72d1b6b41d3e9a8cc770d3cc4e8fc76e5766
+% (2026-07-17) for all five; build versions per README: A 8.8.0.0 (saved
+% 2024-07-09), B 8.8.0.0 (2024-07-09), C 8.8.0.0 (2024-07-09), D 6.5.2.0
+% (2021-05-28), E 5.3.6858.20432 (2018-10-11).
 
-\paragraph{The case: methanol--acetone pressure-swing distillation.}  A
-40-stage column at 1~atm and a 20-stage column at 6~atm, the high-pressure
+\begin{table}[htbp]
+\centering\scriptsize
+\caption{The five benchmark cases: what each reproduces, Choupo's
+thermodynamics, and the headline comparison against the reference's
+stored state.  Each row is the case README's own measurement.}
+\label{tab:bench}
+\begin{tabularx}{\textwidth}{@{}p{2.7cm}p{3.6cm}X@{}}
+\toprule
+\textbf{case} & \textbf{Choupo's model} & \textbf{headline comparison (Choupo against the reference)} \\
+\midrule
+A. Cavett's four-flash recycle train, with compressors and valves
+  & PR78; PPR78 $k_{ij}$ evaluated at each separator's temperature
+  & gas product 2744.72 against 2731.88~mol/s ($+0.47$~\%); liquid product
+    3163.49 against 3176.34~mol/s ($-0.40$~\%); largest compressor
+    10\,971 against 10\,937~kW ($+0.31$~\%) \\
+B. Methanol--acetone pressure-swing distillation (1 and 6~atm)
+  & NRTL (Choupo's own regressed pair) and, separately, UNIFAC
+  & four column duties within $-0.9$ to $+1.5$~\%; distillate compositions
+    0.017 and 0.022 lower (Table~\ref{tab:caseB}) \\
+C. Acetone extraction from water with MIBK, four stages
+  & NRTL liquid--liquid set curated from \citet{choi1986}
+  & extract 984.05 against 911.32~mol/s; raffinate 293.29 against
+    366.01~mol/s; acetone recovery 1.0000 against 0.9991 \\
+D. Methanol from CO$_2$ hydrogenation, the full plant
+  & PR78; E-PPR78 gas pairs; methanol pairs regressed by Choupo
+  & methanol product 1.2098 against 1.2304~mol/s ($-1.7$~\%) at 99.87 against
+    99.80~\% methanol; condenser duty $-200.15$ against $-205.75$~kW \\
+E. Methane steam reforming in an isothermal plug-flow reactor
+  & Xu--Froment kinetics as published; PR78 with E-PPR78
+  & CH$_4$ conversion 0.7490 against 0.7532; H$_2$ fraction 0.6684 against
+    0.6687; duty 460.13 against 1221.81~kW (finding E2) \\
+\bottomrule
+\end{tabularx}
+\end{table}
+% A: recycle01_cavett_as_shipped/README.md (fd295f740), the comparison
+% table measured 2026-10-21 (s8 F 2731.8759 / 2744.7181; s18 F 3176.3360 /
+% 3163.4938; C0 1.0937e+04 / 1.0971e+04 kW) and "Findings on Choupo's side".
+% B: distillation01_methanol_acetone_pressure_swing/README.md (fd295f740),
+% measured 2026-10-20.  C: extraction01_water_acetone_mibk/README.md
+% (fd295f740) for the reference (extract 911.3171, raffinate 366.0142,
+% recovery 0.9991) and the curated set; Choupo's numbers from the run
+% reported in commit cb1bd674e (origin/claude/c123-ll-flash-findings, the
+% LL-flash correction): "extract 984.05 mol/s, raffinate 293.29 mol/s,
+% acetone recovery 1.0000 (reference 911.32 / 366.01 / 0.9991; different
+% activity model, adiabatic reference)".  D: methanol01_co2_hydrogenation/
+% README.md (fd295f740), measured 2026-10-21 (METHANOL PRODUCT F 1.2304 /
+% 1.2098, x_methanol 0.9980 / 0.9987; PC45 -205.7461 / -200.1540 kW).
+% E: reforming01_methane_steam_pfr/README.md (fd295f740), measured
+% 2026-10-21 (CH4 conversion 0.7532 / 0.7490; x_H2 0.6687 / 0.6684; duty
+% 1221.8095 / 460.1334 kW).
+
+\paragraph{A. Cavett's recycle train.}  The products agree to half a per
+cent and every compressor outlet temperature to 0.35~K.  The programs part
+at the three letdown valves, whose outlets are 7.87, 4.16 and 1.52~K warmer
+in Choupo, and the cause was measured rather than argued: the reference's
+own stored separator liquid, let down through Choupo's valve on this case's
+thermodynamics, lands at 288.61~K against the reference's 281.65~K, and at
+293.22~K with every $k_{ij}$ set to zero -- so the gap is the cubic equation
+of state and its parameters (Choupo's catalogue critical constants and
+group-contribution $k_{ij}$ against the reference's own databank), not the
+valve.  A warmer valve outlet turns one separator's duty from the
+reference's $+534$~kW to $-3643$~kW.  Choupo's plant first law closes to
+$-67.31$~kW over 54.6~MW exchanged (0.12~\%), all of it attributed by the
+engine's own report to declared model-boundary steps and to the
+compressors' outlet-temperature tolerance.  On the reference's side: the
+stored feed is not the primary specification's (15 compounds and no
+$n$-undecane; a total flow that matches neither reading of the primary's
+units); the primary's absolute pressures were entered as gauge pressures;
+each recycle block reports convergence after one iteration, and one of them
+passes on a state that differs from its source's (vapour fraction 0.38562
+against 0.38906, 20.39~kW apart); one separator stores its vapour and its
+liquid at temperatures 0.97~K apart; its stored state closes its first law
+to $+17.49$~kW.
+% recycle01_cavett_as_shipped/README.md (fd295f740): "Findings on Choupo's
+% side" (V0/V1/V2 +7.87/+4.16/+1.52 K; stream 9 let down: 288.61 K vf 0.462
+% vs 281.65 K vf 0.389; kij = 0: 293.22 K; SEP2 duty +534 -> -3643 kW;
+% first law -67.31 kW over 54.6 MW, +68.35 kW model-boundary steps at
+% SEP1-3, -1.04 kW compressors) and "Findings on the reference side" (15
+% compounds, n-decane 0.0741; 5908.21 mol/s vs 3444.9 and 7594.6 mol/s;
+% psig for psia, (800/270/49/13 + 14.7) psi; streams "10" and "1" vf
+% 0.38562 / 0.38906, -55 676.26 / -55 655.88 kW; SEP-001 310.920 / 309.954
+% K; first law +17.489 kW).
+
+\paragraph{B. Methanol--acetone pressure-swing distillation.}  A 40-stage
+column at 1~atm and a 20-stage column at 6~atm, the high-pressure
 distillate recycled to the first.  Choupo ran it twice: with the
 acetone--methanol NRTL pair of Section~\ref{sec:worked} -- not validated,
 used case-locally and announced as such, and 50~K beyond its evidence in
@@ -1521,30 +1731,37 @@ UNIFAC.  Table~\ref{tab:caseB} gives the results beside the reference.
 The two Choupo variants agree with each other to 0.006 in every distillate
 composition and 1.5~kW in every duty; they part only on the 6~atm
 azeotrope ($x_\mathrm{MeOH}$ 0.465 against 0.524), which no stream of this
-plant reaches.  The duties agree with the reference to between $-0.9$ and
-$+1.5$~\%; the distillate compositions differ by 0.017 and 0.022 (7~\%
-relative), and both follow from the flows rather than from an azeotrope:
-the sample stores no azeotrope, neither column top is pinched at these
-specifications, and the reference's own flows do not close by more than
-these differences (findings R1 and R2).  The acetone product leaves the
-6~atm column pure, so its temperature involves no activity model: the
-$-2.05$~K is the difference between the two programs' vapour-pressure
-correlations at that pressure.  Agreement in this one case is evidence for
-this exercise only; two independent implementations with different
-vapour-pressure correlations and different pair evidence that agreed to the
-last digit would suggest one had been tuned to the other.
-% Case B README on 33e277ca2, the comparison table (measured 2026-10-20) and
-% "What agrees, what does not, and why"; the UNIFAC column and the model
-% azeotropes from the same table; DEV.md 4c C123 (Vitor: "Se desse o mesmo
-% ate parecia ajuste forcado").
+plant reaches.  The distillate compositions differ from the reference by
+0.017 and 0.022, and both follow from the flows rather than from an
+azeotrope: the sample stores no azeotrope, neither column top is pinched at
+these specifications, and the reference's own flows do not close by more
+than these differences (its two bottoms specifications admit no steady
+state, $+0.14$~\% on the plant; its recycle stream carries 1.47~\% more than
+the stream it copies, while the recycle block reports convergence after
+one iteration; its distillate is stored 1.98~K below its own condenser
+stage).  The acetone product leaves the 6~atm column pure, so its
+temperature involves no activity model: the $-2.05$~K is the difference
+between the two programs' vapour-pressure correlations at that pressure.
+Choupo specifies distillate rates where the sample specifies bottoms flows,
+and returns the recycle to stage~2 where the sample returns it to the
+condenser (defect 1 below).  The table was measured before the two column
+corrections listed below; it is re-measured on the development line before
+this section is made public.
+% distillation01_methanol_acetone_pressure_swing/README.md (fd295f740):
+% "Three things the case does differently", the comparison (measured
+% 2026-10-20), "What agrees, what does not, and why", R1 (+0.140 %), R2
+% (1.889121 vs 1.861749 mol/s = +1.47 %), R3 (326.584 vs 328.564 K).  The
+% re-measurement: TODO item 3 at the top of this file; the column
+% corrections are on origin/claude/c123-column-findings (3d0e37d78).
 
 \begin{table}[htbp]
 \centering\scriptsize
-\caption{Methanol--acetone pressure swing: the reference's stored state
-against two Choupo runs (its own regressed NRTL pair; predictive UNIFAC).
-The reference's stored state closes its material balance to $+0.14$~\% and
-its first law to $+1.47$~kW of about 4640~kW exchanged; both Choupo runs
-close every unit's mass balance and the plant first law to $+0.079$~kW.}
+\caption{Case B, methanol--acetone pressure swing: the reference's stored
+state against two Choupo runs (its own regressed NRTL pair; predictive
+UNIFAC).  The reference's stored state closes its material balance to
+$+0.14$~\% and its first law to $+1.47$~kW of about 4640~kW exchanged; both
+Choupo runs close every unit's mass balance and the plant first law to
+$+0.079$~kW.}
 \label{tab:caseB}
 \begin{tabular}{lrrrr}
 \toprule
@@ -1563,53 +1780,195 @@ methanol product $T$ [K] (pure, 1 atm) & 337.90 & 337.70 & 337.70 & $-0.20$ K \\
 \bottomrule
 \end{tabular}
 \end{table}
-% Numbers: the comparison table of the case README on 33e277ca2 (measured
+% Numbers: the comparison table of the case README (fd295f740; measured
 % 2026-10-20 by benchmarks/dwsim/compare.py); relative differences computed
 % here from its columns (e.g. 37.5008/2563.3239 = +1.46 %; -0.0169/0.2412 =
 % -7.0 %).  Closures: the same README (R1 +0.140 %; R4 +1.466 kW; "~4640 kW
 % exchanged"; Choupo "+0.079 kW (0.0009 % of the energy exchanged; UNIFAC
-% +0.079 kW)").  Not re-run for this draft: the cases are not on main.
+% +0.079 kW)").
 
-\paragraph{What was found on each side, with the version it refers to.}
-On the reference side, read from one stored file (build 8.8.0.0, repository
-commit \code{1abf72d1b}): the two bottoms specifications admit no steady
-state (two products of 0.5~mol/s from a feed of 0.9986~mol/s, $+0.14$~\%);
-the recycle stream as attached carries 1.47~\% more than the stream it
-copies while the recycle block reports convergence after one iteration;
-the distillate stream is stored 1.98~K below its own condenser stage.
-These are facts about one stored file, measured on its own numbers; they
-bound how finely the comparison can resolve, and they are being offered to
-the maintainers as an issue.  On Choupo's side, in the engine version cited
-here (development line, \code{feb112a00}): (C1) the multi-feed column
-accepts a feed on its condenser stage and then omits it from that stage's
-balance -- the default mass-balance report flagged the plant at 109~\%
-closure, but the run exited normally when it should have refused; (C2) the
-column's ``total condenser'' publishes the vapour in equilibrium with the
-reflux, which is one more equilibrium contact than a total condenser, and
-Table~\ref{tab:caseB}'s HP distillate composition depends on it (0.085 in
-$x$ at the top of the HP profile).  The correction of C1 is in integration
-on a development branch and is not in the cited version; C2 is being
-analysed against the column's formulation, and any change to it will be
-shown with every result it moves before anything is re-recorded.  A second
-sample, a four-stage water/acetone/MIBK extraction, is not yet reproduced:
-Choupo's predictive UNIFAC did not describe the water--MIBK miscibility gap,
-a liquid--liquid NRTL set was curated from the measured tie lines of
-\citet{choi1986}, and with it Choupo's liquid--liquid flash returned one
-liquid on feeds its own stability test had found unstable, while its
-extractor published a non-converged cascade with a warning instead of
-refusing.  Both are engine defects; correcting them is scheduled after the
-column work, and until then that comparison is future work.  Even then it
-will have a limit: the reference's column is adiabatic and cools by 13~K,
-while Choupo's extractor is isothermal by construction.
-% Case B README (33e277ca2) findings R1-R3, C1 (DistillationColumn.cpp:
-% 1515-1517, :1941-1942, :2257-2258; 109.27 % at exit 0), C2 (:2315-2320;
-% "its top differs by 0.085 in x because of C2"); case C README ("Status:
-% BLOCKED on the engine"; IsothermalFlash.cpp:693-696, :744; the extractor's
-% 0.229 mass closure at exit 0; adiabatic 13.4 K); DEV.md 4c C123 (the
-% commander's decision: (1), (3), (4) fixed; (2) analysed, moved rows shown
-% first; column half dispatched G28, LL half after G7b).  No branch with the
-% column fix is on origin at feb112a00: "in integration on a development
-% branch" is the status, not a claim of a gate.
+\paragraph{C. Acetone extraction with MIBK.}  Choupo's predictive UNIFAC
+did not describe the water--MIBK miscibility gap well enough to start from
+(its water-rich branch sits at the flash's composition floor, against a
+measured 0.0038), so a liquid--liquid NRTL set was curated from the
+measured tie lines of \citet{choi1986}, converted from the article's table
+by arithmetic only.  It returns the authors' own calculated tie lines to
+within 0.0034 mole fraction on nine of ten; the tenth, nearest the plait
+point, does not satisfy equal activities under the authors' printed
+parameters.  It misses the binary edge, as the authors' own calculated line
+does (water in MIBK 0.013 against 0.118 measured).  Choupo's extractor
+returns an extract of 984.05~mol/s and a raffinate of 293.29~mol/s against
+the reference's 911.32 and 366.01, both recovering essentially all the
+acetone (1.0000 against 0.9991).  The two are not the same model: the
+reference uses a modified UNIFAC, a different group model from Choupo's,
+and its column is adiabatic and cools by 13.4~K (its raffinate leaves at
+284.70~K), while Choupo's extractor is isothermal by construction; flows and
+recoveries are the comparable quantities, stage temperatures are not.  The
+reference also stores two extractor specifications whose stored calculated
+values do not match them; in that mode they are not used.  Before the
+liquid--liquid correction listed below, Choupo produced no answer at all
+for this case.
+% extraction01_water_acetone_mibk/README.md (fd295f740): "Properties"
+% (UNIFAC water-rich branch at the 1e-4 floor vs 0.0038 measured, organic
+% 0.204 vs 0.1177; Choi & Rhim 1986 Table 3; transcription check 0.0034 on
+% lines 1-9, line 10 ln-activity residual 0.07; water in MIBK 0.013 vs
+% 0.118), "Findings on the reference side" R1 (adiabatic, 296.54 ... 284.70
+% K; first law -0.54 kW), R2, R3 (modified (Dortmund) UNIFAC), "Status:
+% BLOCKED on the engine" at fd295f740.  Choupo's converged numbers: commit
+% cb1bd674e message (origin/claude/c123-ll-flash-findings).
+
+\paragraph{D. Methanol from CO$_2$.}  The whole plant -- four-stage CO$_2$
+compression, a 20~m$^3$ packed reactor on the kinetics of Vanden Bussche
+and Froment as the article prints them, a feed/effluent exchanger, a
+separator at 73~bar, purge and recycle, letdown and two shortcut columns --
+on PR78 with group-contribution gas pairs, and three methanol--gas pairs
+regressed by Choupo to measured bubble pressures.  All three of those
+missed their held-out band (20 to 31~\% against 5~\%: the residual changes
+sign between isotherms, so one constant $k_{ij}$ is a compromise) and are
+used case-locally and announced as unvalidated; the methanol--water pair
+passed (0.21~\% of $T$ against 0.55~\%).  The plant agrees to a few per cent
+where both programs solve the same problem.  Choupo's reactor outlet
+carries 8.4~\% more methanol, and the cause was measured: on the article's
+own equilibrium constant, the reference's stored outlet is 16.6~\% from
+methanol-synthesis equilibrium and Choupo's 0.08~\%.  Choupo's separator
+runs 7~K hotter because the condenser is specified by vapour fraction and
+the richer effluent reaches it at a higher temperature, so more methanol
+leaves in the purge and the product is 1.7~\% lower although the reactor
+makes more.  The second column's minimum stage count disagrees by a factor
+of two (9.24 against 4.55), and the measurement sides with Choupo: the
+reference's value implies a mean methanol/water volatility of 7.35, where
+a measured series at 1~atm gives 2.43 at the composition concerned.  On
+the reference's side: a 98.9~\% methanol distillate stored at 184.69~K;
+two exchanger efficiencies stored above 100~\%; one adsorption
+constant carried with two values in two rate expressions; three further
+departures of its kinetics from the article; a compressor with negative
+work; and a stored plant flow balance that does not close ($-17.0$~\%).
+% methanol01_co2_hydrogenation/README.md (fd295f740): "How this case is
+% built" (the verdicts table: held-out AAD 30.82 / 21.37 / 20.04 % vs 5 %
+% band, notValidated; methanol-water 0.21 % vs 0.55 %, validated), the
+% comparison (measured 2026-10-21), "Findings on Choupo's side" (reactor
+% outlet x_methanol 0.0706 vs 0.0651, +8.4 %; 1 - Q/K 0.166 vs 0.0008;
+% separator 367.20 vs 360.24 K; COL78 N_min 9.2356 vs 4.5542; alpha 7.35
+% vs 2.43 at x 0.969) and "Findings on the reference side" (MSTR-070
+% 184.69 K; ThermalEfficiency 100.004 / 100.002 / 99.9994 %; 3453.38 vs
+% 3454.38; exponents 40000 vs 36696, -98084 vs -94765, a parenthesis;
+% COMP-054 -0.00122 kW; feeds 18.363472 vs products 15.238568 mol/s,
+% -17.0170 %).
+
+\paragraph{E. Methane steam reforming.}  One isothermal plug-flow reactor
+at 1000~K and 1~atm on the three rates of Xu and Froment, written as the
+article prints them; the article prints no equilibrium constants, so
+Choupo's come from its own formation data.  The outlet agrees to a few per
+cent and the methane conversion to half a per cent, and the gas residence
+time to $10^{-4}$, which checks the volume, the flow and the catalyst basis
+both programs integrate over.  Both beds are rate-limited (steam reforming
+leaves both outlets about a third short of equilibrium), so every
+difference in the rate expressions shows.  On the reference's side: its
+rates read partial pressures in atm where the article's are in bar; two of
+its three rates truncate the article's shared adsorption denominator; its
+third equilibrium constant is not the product of the first two, although
+the third reaction is the sum of the first two (19.65 against 40.54 at
+1000~K); and (E2) its stored duty, 1221.81~kW, is 2.6 times the heat of
+reaction of its own stored conversion (463.3~kW on Choupo's formation data),
+where Choupo's 460.13~kW closes the reactor's first law and is the heat of
+reaction of its conversion.  Setting every $k_{ij}$ to zero changes
+Choupo's outlet in no printed digit: at 1~atm the equation of state is
+worth tens of watts here.
+% reforming01_methane_steam_pfr/README.md (fd295f740): "How this case is
+% built", the comparison (measured 2026-10-21; tau 2.1826 vs 2.1828 s),
+% "Findings on Choupo's side" (1 - Q/K1 0.35 / 0.38; kij = 0: 460.119 vs
+% 460.133 kW; 2.0806 mol/s x 225.21 kJ/mol - 0.2436 x 34.80 = 460.08 kW)
+% and "Findings on the reference side" (concUnit atm; truncated
+% denominators; K1 28.23, K2 1.436, K3 19.65 vs K1 K2 40.54 on the bar
+% basis; 1221.81 kW vs 463.3 kW).
+
+\paragraph{What the comparison found in Choupo, and what happens now.}
+The comparison was run to find defects, and it found them on Choupo's side
+as well; Table~\ref{tab:benchdefects} lists each one with the case that
+exposed it and its status in the development line.  Five were silent: a
+result was published, at exit zero, that the engine should have refused or
+computed otherwise.  Each of those now refuses by name or is fixed, and
+the corrections that moved golden rows of the tutorial corpus listed them
+for review before anything was re-recorded.
+Four further defects are named in the case READMEs and not yet fixed; two
+of them are caught by the engine's own energy report, which is how they
+were found.  The findings about the reference are facts about stored
+files, measured on their own numbers; they bound how finely each
+comparison can resolve, and they are being offered to its maintainers
+before this section is made public.
+% Statuses: commits 92385aeeb, 82291a7dd, fc9518a72, 3d0e37d78
+% (origin/claude/c123-column-findings, "GOLDEN ROWS THAT MOVE ... NOT
+% re-recorded -- the list goes to Vitor first"); cb1bd674e
+% (origin/claude/c123-ll-flash-findings, "Moved golden rows, NOT
+% recorded"); 96ddef383 (origin/claude/c123-benchmarks-ade, four defects
+% "each fixed where it lives and held by bin/curate/check_ppr78_route.py");
+% DEV.md 4c (94ee21ac8): "Vitor approves the G28 column and G30 LL golden
+% rows; the integration order recorded".  Not fixed: case READMEs A
+% ("THE ADIABATIC MIXER CREATES ENERGY ... not fixed here"), D ("Choupo's
+% compressor ignores a two-phase feed ... NOT fixed here"; shortcut
+% product temperatures; "Named, not fixed: the multi-reaction pfr summary
+% prints F_out 1000 times too small").
+
+\begin{table}[htbp]
+\centering\scriptsize
+\caption{Defects in Choupo that the comparison exposed, and what the engine
+does now.  ``Silent'' means the run published a result at exit zero.}
+\label{tab:benchdefects}
+\begin{tabularx}{\textwidth}{@{}p{0.6cm}X p{4.6cm}@{}}
+\toprule
+\textbf{case} & \textbf{defect} & \textbf{now} \\
+\midrule
+B & A multi-feed column accepted a feed on stage~1 and left it out of
+    that stage's balance; the column published 109~\% mass closure and the
+    run exited normally (silent).
+  & Refused by name: a feed or side draw on stage~1. \\
+B & The ``total condenser'' published the vapour in equilibrium with the
+    reflux, one more equilibrium contact than a total condenser.
+  & The condenser type is declared (total or partial); the stage count is
+    the equilibrium stages, and the condenser duty condenses to the state
+    the distillate is published in. \\
+C & The liquid--liquid flash returned one liquid on feeds its own stability
+    test had found unstable; the stability test omitted the activity term
+    and called every non-ideal liquid unstable (silent).
+  & Fixed: the stability test carries $\ln\gamma$; every split is finished
+    by a Newton on equal activities; a feed proven unstable that cannot be
+    split refuses. \\
+C & The extractor published a non-converged cascade with 0.229 mass
+    closure and a warning (silent).
+  & Refused, with the closure and the stages that did not split. \\
+D & The vapour-fraction search of the phase changer was centred on the
+    dominant component's saturation temperature, which for a
+    hydrogen-rich effluent does not exist; regression identifiability read
+    a branch jump as a slope; a one-root cubic was read as ``does not
+    boil'' (silent in the last two).
+  & Fixed, each held by a gate arm; an unvalidated pair record is now
+    announced by every run that uses it. \\
+A & The adiabatic mixer, merging a hot vapour into a liquid, creates
+    energy (9\,684.66 and 40\,203.76~kW in this case).
+  & Named, not fixed; the energy report shows it, and the case declares
+    each mixer's temperature instead. \\
+D & The compressor treats a two-phase feed as vapour without saying so.
+  & Named, not fixed; the energy report finds the 24.93~kW. \\
+D & The shortcut column publishes both products at the feed's bubble
+    point; the plug-flow reactor's printed summary gives the outlet flow
+    1000 times too small (its KPI is right).
+  & Named, not fixed. \\
+\bottomrule
+\end{tabularx}
+\end{table}
+% Rows: B1 = case B README C1 (DistillationColumn.cpp:1515-1517 at
+% fd295f740; 109.27 % at exit 0) -> commit 92385aeeb; B2 = case B README
+% C2 -> 82291a7dd + fc9518a72; C rows = case C README C1-C3 -> cb1bd674e
+% ("Finding 5 (root cause, and the root of 3): solver::michelsenTPD's tm
+% omitted the ln gamma_i(y) term"; "a non-converged cascade throws with
+% its closure, best closure, the one-liquid stages and three remedies
+% (exit 1, no converged/)"); D fixed rows = 96ddef383 (check_ppr78_route
+% arms g, h, i); A row = case A README (M0 9684.66 kW, M1 40203.76 kW,
+% plant -49 965 kW, variants/adiabaticMixers); D compressor = case D
+% README (24.93 kW; src/unitOperations/rotating/Compressor.cpp "gas-phase
+% by construction"); D shortcut and pfr summary = case D README
+% (ShortcutColumn.cpp "dist.T = Tref; bot.T = Tref"; PFR.cpp "multiplies
+% mol/s by 3.6/1000").
 
 \FloatBarrier
 %===============================================================================
@@ -1644,7 +2003,9 @@ error becomes a permanent check.  The limitations we know of are these.
 \item \emph{A gate's reach is its scope.}  The benchmark cases are outside
   the regression suite, and a gate sees only the cases it walks: the
   stage-1 feed of Section~\ref{sec:ex-comparison} was flagged by the
-  default report but not refused, because no tutorial exercised it.
+  default report but not refused, because no tutorial exercised it (it is
+  refused now; Table~\ref{tab:benchdefects}).  Defects the comparison
+  named but did not fix remain open there.
 \item \emph{Curated data are mostly unreviewed.}  The regressed pairs carry
   \code{reviewStatus interim}: their measurements were transcribed from the
   archive and have not been read back against the articles, and every run
@@ -1655,9 +2016,10 @@ error becomes a permanent check.  The limitations we know of are these.
   % check_source_licence claim ("4 pinned violations awaiting curation").
 \item \emph{Known numerical limits} are documented beside the feature they
   bound: bubble-point distillation through an azeotrope is unstable and the
-  simultaneous method is the documented escape; the liquid--liquid flash of
-  Section~\ref{sec:ex-comparison} is being corrected.
-  % CLAUDE.md sec 9.
+  simultaneous method is the documented escape; the liquid--liquid flash
+  that missed the splits of case~C of Section~\ref{sec:ex-comparison} was
+  corrected after the comparison found it.
+  % CLAUDE.md sec 9; commit cb1bd674e (origin/claude/c123-ll-flash-findings).
 \item \emph{The pedagogical claim is untested}, as Section~\ref{sec:motivation}
   says.
 \end{itemize}
