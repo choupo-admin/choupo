@@ -1,0 +1,129 @@
+/*---------------------------------------------------------------------------*\
+  Benchmark D -- THE THREE METHANOL PAIRS, regressed by Choupo to measured
+  solubilities (DEV.md 4c C123, Vitor: "sim a tudo").  Run from this folder:
+
+      choupoProps benchmarks/dwsim/methanol01_co2_hydrogenation/kijFits
+
+  WHY A FIT.  PPR78 has no methanol group (the 2017 E-PPR78 article scopes
+  itself to 15 CCS species), so the H2-, CO- and CO2-methanol kij of the
+  loop's PR78 cannot come from a group table.  Brunner, Hultenschmidt &
+  Schlichtharle (1987) measured each binary's bubble pressures on several
+  isotherms (../constant/experiments/); a CONSTANT kij per pair is
+  regressed to them with the `P_bubble` residual (relative, built for this).
+
+  THE PARTITION, DECLARED BEFORE ANY FIT RAN.  For every gas the 373.15 K
+  isotherm is HELD OUT and every other isotherm inside the window is
+  fitted.  373.15 K is the isotherm nearest the loop separator's 360 K --
+  the temperature the plant actually uses the pair at -- and is measured
+  on all three gases, so the three fits are judged by one rule.
+
+  THE WINDOW, declared before the fit: bubble points with p <= 20 MPa (the
+  loop runs at 7.3-7.8 MPa; the dataset files set the rest aside under
+  `selection`, visible, not deleted).
+
+  THE BAND, declared before the fit: maxAAD 5 % of the bubble pressure.
+  Origin: the authors' stated composition uncertainty is <= 2 % of x_gas
+  (p. 276), and on a bubble point at fixed x that is 2 % of p where p is
+  proportional to x (the dilute end, which every isotherm here starts
+  from), plus the 0.2 % pressure error (p. 276) -- 2.2 % per point; a
+  held-out comparison of a one-parameter model across isotherms is granted
+  twice that, 4.4 %, rounded UP to one figure.  Whatever the verdict, the
+  pair is used CASE-LOCALLY in the plant and the verdict is announced
+  (the curate05 precedent, Vitor's ruling for this case).
+
+  THE OUTPUT: one `recordType eosBinaryInteraction` record per pair under
+  ../constant/parameters/PengRobinson/, carrying the evidence, the band and
+  the verdict; the plant's thermoPhysPropDict declares them by `source`.
+\*---------------------------------------------------------------------------*/
+
+operations
+(
+    {
+        name        fit_H2_methanol;
+        type        fitParameters;
+        parameters
+        (
+            { path equilibrium.equationOfState.binaryInteractions.H2-methanol.kij;  initial 0.0;  min -0.5;  max 0.5; }
+        );
+        evidence
+        (
+            { dataset "../constant/experiments/brunner1987-H2-methanol-298K.dat";  role fit; }
+            { dataset "../constant/experiments/brunner1987-H2-methanol-323K.dat";  role fit; }
+            { dataset "../constant/experiments/brunner1987-H2-methanol-373K.dat";  role validation; }
+        );
+        acceptance
+        {
+            maxAAD  5 percent;
+            origin  "declared before the fit, one rule for the three gases: the authors' stated composition uncertainty (<= 2 % of x_gas, p. 276) is 2 % of p on a bubble point at fixed x in the dilute regime, plus the 0.2 % pressure error (p. 276) = 2.2 % per point; a held-out comparison across isotherms of a ONE-parameter model is granted twice that, 4.4 %, rounded up to one figure";
+        }
+        residual    { kind P_bubble;  components ( H2 methanol ); }
+        options     { maxIter 60;  tolerance 1.0e-8;  fdStep 1.0e-4;  lambda0 1.0e-3; }
+        output
+        {
+            fit_log    fit_H2_methanol.csv;
+            parity     parity_H2_methanol.csv;
+            proposal   "../constant/parameters/PengRobinson/H2-methanol.dat";
+        }
+    }
+    {
+        name        fit_CO_methanol;
+        type        fitParameters;
+        parameters
+        (
+            { path equilibrium.equationOfState.binaryInteractions.CO-methanol.kij;  initial 0.0;  min -0.5;  max 0.5; }
+        );
+        evidence
+        (
+            { dataset "../constant/experiments/brunner1987-CO-methanol-298K.dat";  role fit; }
+            { dataset "../constant/experiments/brunner1987-CO-methanol-323K.dat";  role fit; }
+            { dataset "../constant/experiments/brunner1987-CO-methanol-373K.dat";  role validation; }
+            { dataset "../constant/experiments/brunner1987-CO-methanol-398K.dat";  role fit; }
+            { dataset "../constant/experiments/brunner1987-CO-methanol-423K.dat";  role fit; }
+            { dataset "../constant/experiments/brunner1987-CO-methanol-448K.dat";  role fit; }
+            { dataset "../constant/experiments/brunner1987-CO-methanol-473K.dat";  role fit; }
+            { dataset "../constant/experiments/brunner1987-CO-methanol-499K.dat";  role fit; }
+        );
+        acceptance
+        {
+            maxAAD  5 percent;
+            origin  "declared before the fit, one rule for the three gases: the authors' stated composition uncertainty (<= 2 % of x_gas, p. 276) is 2 % of p on a bubble point at fixed x in the dilute regime, plus the 0.2 % pressure error (p. 276) = 2.2 % per point; a held-out comparison across isotherms of a ONE-parameter model is granted twice that, 4.4 %, rounded up to one figure";
+        }
+        residual    { kind P_bubble;  components ( CO methanol ); }
+        options     { maxIter 60;  tolerance 1.0e-8;  fdStep 1.0e-4;  lambda0 1.0e-3; }
+        output
+        {
+            fit_log    fit_CO_methanol.csv;
+            parity     parity_CO_methanol.csv;
+            proposal   "../constant/parameters/PengRobinson/CO-methanol.dat";
+        }
+    }
+    {
+        name        fit_CO2_methanol;
+        type        fitParameters;
+        parameters
+        (
+            { path equilibrium.equationOfState.binaryInteractions.CO2-methanol.kij;  initial 0.0;  min -0.5;  max 0.5; }
+        );
+        evidence
+        (
+            { dataset "../constant/experiments/brunner1987-CO2-methanol-298K.dat";  role fit; }
+            { dataset "../constant/experiments/brunner1987-CO2-methanol-323K.dat";  role fit; }
+            { dataset "../constant/experiments/brunner1987-CO2-methanol-373K.dat";  role validation; }
+            { dataset "../constant/experiments/brunner1987-CO2-methanol-423K.dat";  role fit; }
+            { dataset "../constant/experiments/brunner1987-CO2-methanol-473K.dat";  role fit; }
+        );
+        acceptance
+        {
+            maxAAD  5 percent;
+            origin  "declared before the fit, one rule for the three gases: the authors' stated composition uncertainty (<= 2 % of x_gas, p. 276) is 2 % of p on a bubble point at fixed x in the dilute regime, plus the 0.2 % pressure error (p. 276) = 2.2 % per point; a held-out comparison across isotherms of a ONE-parameter model is granted twice that, 4.4 %, rounded up to one figure";
+        }
+        residual    { kind P_bubble;  components ( CO2 methanol ); }
+        options     { maxIter 60;  tolerance 1.0e-8;  fdStep 1.0e-4;  lambda0 1.0e-3; }
+        output
+        {
+            fit_log    fit_CO2_methanol.csv;
+            parity     parity_CO2_methanol.csv;
+            proposal   "../constant/parameters/PengRobinson/CO2-methanol.dat";
+        }
+    }
+);

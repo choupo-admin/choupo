@@ -1,0 +1,186 @@
+/*---------------------------------------------------------------------------*\
+  Benchmark A -- topology: Cavett's recycle train as the reference sample
+  wires it.  Stream names are the sample's own numbers with an `s` prefix;
+  unit names are the sample's tags with the hyphenated numbers shortened
+  (SEP-000 -> SEP0, COMP-001 -> C1, VALV-002 -> V2, MIST-000 -> M0).
+
+      feed s2 ─► M0 ─► s4 ─► SEP0 (322.03 K, 19.63 bar)
+       s1 ▲ s3 ▲             │ s5 (vapour)          │ s6 (liquid)
+          │    │             ▼                       ▼
+          │    │            C0 (to 56.17 bar)       V1 (to 4.392 bar)
+          │    │             │ s7                    │ s11
+          │    │             ▼                       ▼
+          │    │          SEP1 (310.92 K)      M1 ◄── s20 ──┐
+          │    │           │ s8 = GAS PRODUCT   │ s12       │
+          │    │           │ s9 (liquid)        ▼           │
+          │    │           ▼                 SEP2 (308.7 K) │
+          └────┼───────── V0 (to 19.63 bar)   │ s13 (vap)   │ s14 (liq)
+               │          = s1                ▼             ▼
+               │                             C1 (to 19.63) V2 (to 1.910 bar)
+               └──────────────────────────── s3    s16 ─► SEP3 (302.6 K)
+                                                            │ s17 (vap) ─► C2 (to 4.392 bar) = s20
+                                                            │ s18 = LIQUID PRODUCT
+
+  THE SAMPLE'S READING OF THE PRIMARY (Rosen 2005: 800 / 270 / 49 / 13 psia).
+  Its stored pressures are 5617161 / 1962938 / 439196 / 190985 Pa, which are
+  (800 / 270 / 49 / 13 + 14.7) psi x 6894.757 Pa/psi to the pascal: the
+  sample read the primary's psia as PSIG.  Reproduced here AS SHIPPED, in
+  pascals, because the comparison is with the sample.  Its temperatures
+  322.03 / 310.92 / 308.7 / 302.6 K are its own roundings of 120 / 100 /
+  96 / 85 F (322.039 / 310.928 / 308.706 / 302.594 K); kept as shipped.
+
+  COMPRESSORS AND VALVES.  The primary flowsheet connects the stages by
+  pressure alone; the sample closes each recycle with a compressor (the
+  vapour climbing to the stage above, 75 % isentropic efficiency, discharge
+  pressure the stage's) and lets each liquid down with a valve.  Choupo's
+  compressor takes `P_out` since 2026-10-21 (DEV.md 4c C123, built for this
+  case): the shaft power is the RESULT and is compared with the sample's.
+
+  TEARS.  The sample has three recycle blocks (s1, s3, s20).  Here the two
+  MIXER OUTLETS (s4, s12) are the declared tears -- cavett01's choice, two
+  cuts that make every stream computable in the declared order below, which
+  the sequential-plan contract validates.  Newton on the tears (solverDict).
+
+  THERMODYNAMICS: phi-phi PR78 (constant/thermoPhysPropDict), the PPR78 kij
+  SET evaluated at 322.03 K for the package every unit inherits, and a
+  per-unit set at each of the other three separators' declared T
+  (`thermo {}` overrides below; the sets are in
+  constant/parameters/PengRobinson/, written by kijTables/).  Stated
+  default: a compressor, valve or mixer declares no temperature and reads
+  the inherited 322.03 K set.
+
+  THE FEED (0/s2) is the sample's stored stream "2": 5908.21 mol/s at
+  322.03889 K and 19.63 bar with ITS mole fractions, which carry no undecane
+  (README: findings on the reference side).
+\*---------------------------------------------------------------------------*/
+
+units
+(
+    {
+        name        SEP0;
+        type        isothermalFlash;
+        in          s4;
+        outputs     ( s6  s5 );
+        operation   { T 322.03 K;  P 1962938.20167 Pa; }     // (270 + 14.7) psi
+    }
+    {
+        name        C0;
+        type        compressor;
+        in          s5;
+        outputs     ( s7 );
+        operation   { P_out 5617161.00166 Pa;  eta 0.75; }   // (800 + 14.7) psi
+    }
+    {
+        name        SEP1;
+        type        isothermalFlash;
+        in          s7;
+        outputs     ( s9  s8 );
+        operation   { T 310.92 K;  P 5617161.00166 Pa; }
+        thermo
+        {
+            equilibrium
+            {
+                equationOfState
+                {
+                    model      PengRobinson;
+                    mixingRule vanDerWaalsOneFluid;
+                    binaryInteractions
+                    {
+                        ppr78 { source "constant/parameters/PengRobinson/ppr78_SEP1_310.92K.dat"; }
+                    }
+                }
+            }
+        }
+    }
+    {
+        name        V0;
+        type        valve;
+        in          s9;
+        outputs     ( s1 );
+        operation   { P 1962938.20167 Pa; }
+    }
+    {
+        name        V1;
+        type        valve;
+        in          s6;
+        outputs     ( s11 );
+        operation   { P 439196.24668 Pa; }                    // (49 + 14.7) psi
+    }
+    {
+        name        SEP2;
+        type        isothermalFlash;
+        in          s12;
+        outputs     ( s14  s13 );
+        operation   { T 308.7 K;  P 439196.24668 Pa; }
+        thermo
+        {
+            equilibrium
+            {
+                equationOfState
+                {
+                    model      PengRobinson;
+                    mixingRule vanDerWaalsOneFluid;
+                    binaryInteractions
+                    {
+                        ppr78 { source "constant/parameters/PengRobinson/ppr78_SEP2_308.7K.dat"; }
+                    }
+                }
+            }
+        }
+    }
+    {
+        name        C1;
+        type        compressor;
+        in          s13;
+        outputs     ( s3 );
+        operation   { P_out 1962938.24168 Pa;  eta 0.75; }
+    }
+    {
+        name        V2;
+        type        valve;
+        in          s14;
+        outputs     ( s16 );
+        operation   { P 190984.88168 Pa; }                    // (13 + 14.7) psi
+    }
+    {
+        name        SEP3;
+        type        isothermalFlash;
+        in          s16;
+        outputs     ( s18  s17 );
+        operation   { T 302.6 K;  P 190984.88168 Pa; }
+        thermo
+        {
+            equilibrium
+            {
+                equationOfState
+                {
+                    model      PengRobinson;
+                    mixingRule vanDerWaalsOneFluid;
+                    binaryInteractions
+                    {
+                        ppr78 { source "constant/parameters/PengRobinson/ppr78_SEP3_302.6K.dat"; }
+                    }
+                }
+            }
+        }
+    }
+    {
+        name        C2;
+        type        compressor;
+        in          s17;
+        outputs     ( s20 );
+        operation   { P_out 439196.24668 Pa;  eta 0.75; }
+    }
+    {
+        name        M1;
+        type        mixer;
+        inputs      ( s11  s20 );
+        outputs     ( s12 );
+    }
+    {
+        name        M0;
+        type        mixer;
+        inputs      ( s2  s1  s3 );
+        outputs     ( s4 );
+    }
+);

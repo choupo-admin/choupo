@@ -439,9 +439,286 @@ def tie_line_check(case, work, csvname, tag, title):
     print('  largest |table - Choupo| over the split lines: %.4f mole fraction' % worst)
 
 
+# ================================================================= helpers shared by A, D, E
+def kp(res, unit, *keys):
+    """The first of `keys` the unit publishes, else None."""
+    if not res or unit not in res.get('kpis', {}):
+        return None
+    for k in keys:
+        if k in res['kpis'][unit]:
+            return res['kpis'][unit][k]
+    return None
+
+
+def stv(res, name, key):
+    """A stream's T [K], P [Pa], F [mol/s], vf or x_<component>."""
+    if not res or name not in res.get('streams', {}):
+        return None
+    s = res['streams'][name]
+    if key == 'F':
+        return s['F'] * 1000.0
+    if key.startswith('x_'):
+        return s['composition'].get(key[2:])
+    return s.get(key)
+
+
+def regenerate(copy, subcase, binary, outputs, ignore=(r'^\s*(Written|fitDate|generated)\b',), label=''):
+    """Re-run a generator props case inside the scratch copy and REFUSE if what
+    it writes differs from the committed file (lines matching `ignore` -- the
+    date the file was written -- excepted).  The committed records are the
+    ones the case runs on; a generator that no longer reproduces them means
+    the engine or the table moved and the case is running on a stale number."""
+    before = {o: open(os.path.join(copy, o)).read() if os.path.exists(os.path.join(copy, o)) else None
+              for o in outputs}
+    r = subprocess.run([binary, os.path.join(copy, subcase) if subcase else copy],
+                       cwd=ROOT, capture_output=True, text=True)
+    with open(os.path.join(copy, (subcase or 'case').replace('/', '_') + '.regen.log'), 'w') as f:
+        f.write(r.stdout + r.stderr)
+    if r.returncode != 0:
+        sys.exit('compare: %s did not run (exit %d):\n%s' % (label or subcase, r.returncode,
+                 (r.stdout + r.stderr)[-3000:]))
+    pat = re.compile('|'.join(ignore))
+    for o in outputs:
+        p = os.path.join(copy, o)
+        if not os.path.exists(p):
+            sys.exit('compare: %s wrote no %s' % (label or subcase, o))
+        new = [l for l in open(p).read().splitlines() if not pat.search(l)]
+        old = [l for l in (before[o] or '').splitlines() if not pat.search(l)]
+        if before[o] is None:
+            sys.exit('compare: %s is not committed; the generator wrote it -- commit it (the case '
+                     'runs on the committed file)' % o)
+        if new != old:
+            import difflib
+            diff = '\n'.join(list(difflib.unified_diff(old, new, 'committed', 'regenerated', lineterm=''))[:40])
+            sys.exit('compare: the committed %s is NOT what %s writes today -- the engine or its '
+                     'table moved; regenerate and commit, or say why the committed one differs:\n%s'
+                     % (o, label or subcase, diff))
+    print('[%s] regenerated %d file(s), identical to the committed ones' % (label or subcase, len(outputs)))
+    return r.stdout + r.stderr
+
+
+def plant_lines(res, label):
+    geb = res.get('globalEnergyBoundary', {}) if res else {}
+    print('  %s: first-law residual %s kW (%s); converged %s'
+          % (label, fmt(geb.get('residual_kW')), geb.get('residual_basis', '--'),
+             res.get('converged') if res else None))
+
+
+# ================================================================= case A
+def case_A(case, work):
+    ref = parse_dict(open(os.path.join(case, 'reference')).read())
+    S, U, E = ref['streams'], ref['units'], ref['energyStreams']
+    cp = scratch_copy(case, None, work)
+    sets = ['constant/parameters/PengRobinson/ppr78_%s.dat' % t
+            for t in ('SEP0_322.03K', 'SEP1_310.92K', 'SEP2_308.7K', 'SEP3_302.6K')]
+    regenerate(cp, 'kijTables', PROPS, sets, label='A kij sets (PPR78 at the four separators)')
+    subprocess.run([INIT0, cp], cwd=ROOT, capture_output=True, text=True)
+    code, res, _ = run(SOLVE, cp)
+    print('[Choupo] exit %d, converged %s, NaN-free %s' % (code, res and res.get('converged'), nan_free(res)))
+
+    cols = ['reference', 'Choupo', 'Choupo - ref', 'rel %']
+    rows = []
+
+    def add(label, refv, v):
+        d = None if refv is None or v is None else v - refv
+        rows.append([label, refv, v, d, rel(v, refv)])
+
+    # products and the loop streams, as stored vs as solved
+    for sid, what in (('8', 'GAS PRODUCT s8'), ('18', 'LIQUID PRODUCT s18'), ('5', 'SEP0 vapour s5'),
+                      ('6', 'SEP0 liquid s6'), ('1', 'recycle s1 (V0 out)'), ('3', 'recycle s3 (C1 out)'),
+                      ('20', 'recycle s20 (C2 out)'), ('4', 'tear s4 (M0 out)'), ('12', 'tear s12 (M1 out)')):
+        r = S[sid]
+        name = 's' + sid
+        add(what + '  F [mol/s]', r['F'], stv(res, name, 'F'))
+        add(what + '  T [K]', r['T'], stv(res, name, 'T'))
+        if sid in ('8', '18', '4', '12'):
+            for c in ('methane', 'ethane', 'propane', 'nButane', 'nDecane'):
+                cc = {'methane': 'CH4'}.get(c, c)
+                add(what + '  x_' + cc, r['x'].get(c), stv(res, name, 'x_' + cc))
+        if 'vaporFraction' in r:
+            add(what + '  vapour fraction', r['vaporFraction'], stv(res, name, 'vf'))
+    # duties
+    add('SEP0 duty [kW]', E['eSTR003'], kp(res, 'SEP0', 'Q_kW'))
+    add('SEP1 duty [kW]', E['eSTR005'], kp(res, 'SEP1', 'Q_kW'))
+    add('SEP2 duty [kW]', E['eSTR006'], kp(res, 'SEP2', 'Q_kW'))
+    add('SEP3 duty [kW]', E['eSTR004'], kp(res, 'SEP3', 'Q_kW'))
+    add('C0 shaft power [kW]', E['e1'], kp(res, 'C0', 'W_shaft_kW'))
+    add('C1 shaft power [kW]', E['e2'], kp(res, 'C1', 'W_shaft_kW'))
+    add('C2 shaft power [kW]', E['e3'], kp(res, 'C2', 'W_shaft_kW'))
+    add('C0 outlet T [K]', S['7']['T'], stv(res, 's7', 'T'))
+    add('C1 outlet T [K]', S['15']['T'], stv(res, 's3', 'T'))
+    add('C2 outlet T [K]', S['19']['T'], stv(res, 's20', 'T'))
+    add('V0 outlet T [K]', S['10']['T'], stv(res, 's1', 'T'))
+    add('V1 outlet T [K]', S['11']['T'], stv(res, 's11', 'T'))
+    add('V2 outlet T [K]', S['16']['T'], stv(res, 's16', 'T'))
+    table('Benchmark A -- Cavett as the reference sample ships it (psig, compressors, valves; PR78 + PPR78)',
+          cols, rows, 'Duties: + heating, - cooling, both sides.  Every reference number is the sample\'s stored state.')
+
+    feed = S['2']
+    ref_out = S['8']['F'] + S['18']['F']
+    worst = max(abs(feed['F'] * feed['x'][c] - S['8']['F'] * S['8']['x'][c] - S['18']['F'] * S['18']['x'][c])
+                for c in feed['x'])
+    ref_e = (feed['H_kW'] + E['eSTR003'] + E['eSTR005'] + E['eSTR006'] + E['eSTR004'] + E['e1'] + E['e2'] + E['e3']
+             - S['8']['H_kW'] - S['18']['H_kW'])
+    print('\nPlant balances (each side on its own stored numbers)')
+    print('  reference: feed %.4f mol/s, products %.4f mol/s (%+.4f %%); worst component imbalance %.4f mol/s'
+          % (feed['F'], ref_out, 100 * (ref_out - feed['F']) / feed['F'], worst))
+    print('             first law  H_feed + sum(duties) + sum(W) - H_products = %+.3f kW' % ref_e)
+    for r in ('rEC000', 'rEC001', 'rEC002'):
+        print('             recycle block %s: converged %s after %s iteration(s)'
+              % (r, U[r]['converged'], U[r]['iterationsTaken']))
+    plant_lines(res, 'Choupo')
+
+
+# ================================================================= case D
+def case_D(case, work):
+    ref = parse_dict(open(os.path.join(case, 'reference')).read())
+    S, U, E = ref['streams'], ref['units'], ref['energyStreams']
+    cp = scratch_copy(case, None, work)
+    regenerate(cp, 'kijTables', PROPS, ['constant/parameters/PengRobinson/eppr78_510.15K.dat'],
+               label='D kij set (E-PPR78 at 510.15 K)')
+    fitlog = regenerate(cp, 'kijFits', PROPS,
+                        ['constant/parameters/PengRobinson/%s-methanol.dat' % g for g in ('H2', 'CO', 'CO2')],
+                        label='D methanol pairs (fitParameters P_bubble, Brunner 1987)')
+    for m in re.finditer(r'VERDICT\n\s+(\w+)', fitlog):
+        pass
+    verdicts = re.findall(r'proposal written to: (\S+)\s+\(verdict (\w+)', fitlog)
+    for path, v in verdicts:
+        print('  fit %s: verdict %s' % (os.path.basename(path), v))
+    subprocess.run([INIT0, cp], cwd=ROOT, capture_output=True, text=True)
+    code, res, _ = run(SOLVE, cp)
+    print('[Choupo] exit %d, converged %s, NaN-free %s' % (code, res and res.get('converged'), nan_free(res)))
+
+    cols = ['reference', 'Choupo', 'Choupo - ref', 'rel %']
+    rows = []
+
+    def add(label, refv, v):
+        d = None if refv is None or v is None else v - refv
+        rows.append([label, refv, v, d, rel(v, refv)])
+
+    comp = {'methanol': 'methanol', 'water': 'water', 'hydrogen': 'H2', 'carbonDioxide': 'CO2',
+            'carbonMonoxide': 'CO', 'argon': 'Ar'}
+    pairs = (('mSTR006', 's6', 'H2 compressed s6'), ('mSTR031', 's31', 'CO2 compressed s31'),
+             ('mSTR033', 's33', 'make-up s33'), ('mSTR040', 's40', 'reactor feed s40'),
+             ('outletPFR', 'sPFR', 'reactor outlet'), ('mSTR042', 's42', 'after feed/effluent HX s42'),
+             ('mSTR046', 's46', 'condenser outlet s46'), ('mSTR052', 's55', 'HP separator vapour'),
+             ('mSTR053', 's53', 'HP separator liquid'), ('purgeGases', 'purge', 'purge'),
+             ('mSTR043', 's43', 'recycle s43'), ('mSTR044', 's44', 'recycle heated s44'),
+             ('vent', 'vent', 'vent'), ('mSTR064', 's64', 'column feed liquid s64'),
+             ('mSTR070', 's70', 'COL85 distillate s70'), ('waterProduct', 'waterProduct', 'water product'),
+             ('methanolProduct', 'methanolProduct', 'METHANOL PRODUCT'), ('mSTR080', 's80', 'COL78 bottoms s80'))
+    for rk, ck, what in pairs:
+        r = S[rk]
+        add(what + '  F [mol/s]', r['F'], stv(res, ck, 'F'))
+        add(what + '  T [K]', r['T'], stv(res, ck, 'T'))
+        if 'vaporFraction' in r:
+            add(what + '  vapour fraction', r['vaporFraction'], stv(res, ck, 'vf'))
+        if rk in ('outletPFR', 'mSTR053', 'purgeGases', 'methanolProduct', 'waterProduct', 'vent', 'mSTR064'):
+            for rc, cc in comp.items():
+                add(what + '  x_' + cc, r['x'].get(rc), stv(res, ck, 'x_' + cc))
+    add('C5 H2 compressor [kW]', E['eSTR007'], kp(res, 'C5', 'W_shaft_kW'))
+    add('C10 [kW]', E['eSTR009'], kp(res, 'C10', 'W_shaft_kW'))
+    add('C16 [kW]', E['eSTR018'], kp(res, 'C16', 'W_shaft_kW'))
+    add('C23 [kW]', E['eSTR025'], kp(res, 'C23', 'W_shaft_kW'))
+    add('C27 [kW]', E['eSTR032'], kp(res, 'C27', 'W_shaft_kW'))
+    add('HX12 duty [kW]', U['hE012']['q'], kp(res, 'HX12', 'Q_kW'))
+    add('HX19 duty [kW]', U['hE019']['q'], kp(res, 'HX19', 'Q_kW'))
+    add('HX26 duty [kW]', U['hE026']['q'], kp(res, 'HX26', 'Q_kW'))
+    add('HX41 feed/effluent duty [kW]', U['hE041']['q'], kp(res, 'HX41', 'Q_kW'))
+    add('condenser PC45 duty [kW] (ref HE-045)', -abs(U['hE045']['q']) if U['hE045'].get('q') else None,
+        kp(res, 'PC45', 'Q_kW'))
+    mixQ = kp(res, 'M39', 'Q_kW')
+    pfrQ = kp(res, 'PFR', 'Q_kW')
+    add('reactor duty [kW] (ref: outlet-T mode; Choupo: M39 heat + isothermal PFR)', E['eSTR036'],
+        None if mixQ is None or pfrQ is None else mixQ + pfrQ)
+    rows.append(['   of which M39 (489 -> 510.15 K)', None, mixQ, None, None])
+    rows.append(['   of which PFR (isothermal)', None, pfrQ, None, None])
+    add('pump P66 [kW]', E['eSTR068'], kp(res, 'P66', 'W_shaft_kW', 'W_kW'))
+    add('COL85 N (shortcut)', U['sC085']['m_N'], kp(res, 'COL85', 'N', 'N_stages'))
+    add('COL85 N_min', U['sC085']['m_Nmin'], kp(res, 'COL85', 'N_min'))
+    add('COL85 R_min', U['sC085']['m_Rmin'], kp(res, 'COL85', 'R_min'))
+    add('COL78 N (shortcut)', U['sC078']['m_N'], kp(res, 'COL78', 'N', 'N_stages'))
+    add('COL78 N_min', U['sC078']['m_Nmin'], kp(res, 'COL78', 'N_min'))
+    add('COL78 R_min', U['sC078']['m_Rmin'], kp(res, 'COL78', 'R_min'))
+    table('Benchmark D -- methanol from CO2, the plant as the reference sample ships it (PR78 + E-PPR78 + fitted methanol pairs)',
+          cols, rows, 'Every reference number is the sample\'s stored state; its reactor runs in outlet-T mode (489 -> 510.15 K).')
+
+    fin = S['hYDROGEN']['F'] + S['cO2']['F']
+    fout = S['purgeGases']['F'] + S['vent']['F'] + S['waterProduct']['F'] + S['methanolProduct']['F'] + S['mSTR080']['F']
+    print('\nPlant balances (each side on its own stored numbers)')
+    print('  reference: feeds %.6f mol/s, products %.6f mol/s (%+.4f %%) -- a flow balance only; the sample'
+          ' stores no enthalpy per stream' % (fin, fout, 100 * (fout - fin) / fin))
+    for r in ('rEC050', 'rEC059'):
+        print('             recycle block %s: converged %s after %s iteration(s)'
+              % (r, U[r]['converged'], U[r]['iterationsTaken']))
+    plant_lines(res, 'Choupo')
+
+
+# ================================================================= case E
+def case_E(case, work):
+    ref = parse_dict(open(os.path.join(case, 'reference')).read())
+    S, U, E = ref['streams'], ref['units'], ref['energyStreams']
+    cp = scratch_copy(case, None, work)
+    regenerate(cp, 'kijTables', PROPS, ['constant/parameters/PengRobinson/eppr78_1000K.dat'],
+               label='E kij set (E-PPR78 at 1000 K)')
+    # the lnK table pasted into constant/reactions must be what reactionGibbs writes today
+    r = subprocess.run([PROPS, cp], cwd=ROOT, capture_output=True, text=True)
+    if r.returncode != 0:
+        sys.exit('compare: E reactionGibbs did not run:\n' + (r.stdout + r.stderr)[-2000:])
+    csv = os.path.join(cp, 'reactionGibbs.csv')
+    lnk = {}
+    for line in open(csv).read().splitlines()[1:]:
+        f = line.split(',')
+        if len(f) >= 6:
+            lnk.setdefault(f[0], []).append((float(f[1]), float(f[5])))
+    rx = open(os.path.join(cp, 'constant', 'reactions')).read()
+    for rname, col in (('steamReforming', 'lnK1'), ('waterGasShift', 'lnK2'), ('overallReforming', 'lnK3')):
+        m = re.search(col + r'\s*\(([^)]*)\)', rx)
+        pasted = [float(t) for t in m.group(1).split()] if m else []
+        fresh = [v for _, v in lnk.get(rname, [])]
+        if len(pasted) != len(fresh) or any(abs(a - b) > 1e-6 for a, b in zip(pasted, fresh)):
+            sys.exit('compare: the %s table pasted in constant/reactions is not what reactionGibbs writes today '
+                     '(%s vs %s) -- re-run the op and paste the CSV' % (col, pasted[:3], fresh[:3]))
+    print('[E lnK tables] the three pasted tables reproduce reactionGibbs today (%d points each)' % len(fresh))
+    subprocess.run([INIT0, cp], cwd=ROOT, capture_output=True, text=True)
+    code, res, _ = run(SOLVE, cp)
+    print('[Choupo] exit %d, converged %s, NaN-free %s' % (code, res and res.get('converged'), nan_free(res)))
+
+    cols = ['reference', 'Choupo', 'Choupo - ref', 'rel %']
+    rows = []
+
+    def add(label, refv, v):
+        d = None if refv is None or v is None else v - refv
+        rows.append([label, refv, v, d, rel(v, refv)])
+
+    p = S['mSTR001']
+    add('product F [mol/s]', p['F'], stv(res, 'product', 'F'))
+    add('product T [K]', p['T'], stv(res, 'product', 'T'))
+    add('product P [Pa]', p['P'], stv(res, 'product', 'P'))
+    for rc, cc in (('methane', 'CH4'), ('hydrogen', 'H2'), ('water', 'water'), ('carbonDioxide', 'CO2'),
+                   ('carbonMonoxide', 'CO')):
+        add('product x_' + cc, p['x'].get(rc), stv(res, 'product', 'x_' + cc))
+    feedCH4 = S['mSTR000']['F'] * S['mSTR000']['x']['methane']
+    add('CH4 conversion', 1 - p['F'] * p['x']['methane'] / feedCH4,
+        None if res is None else 1 - stv(res, 'product', 'F') * stv(res, 'product', 'x_CH4') / feedCH4)
+    add('reactor duty [kW] (isothermal, + endothermic)', E['eSTR000'], kp(res, 'PFR', 'Q_kW'))
+    table('Benchmark E -- methane steam reforming PFR, 1000 K, 1 atm (Xu & Froment 1989; PR78 + E-PPR78)',
+          cols, rows, 'The sample\'s own equilibrium correlations and its atm pressures are findings (README).')
+    print('\n  reference PFR: pressure drop %s Pa (not reproduced), stored residence time %s s'
+          % (U['pFR000']['deltaP'], U['pFR000']['residenceTime']))
+    plant_lines(res, 'Choupo')
+    prof = res.get('profiles', {}).get('PFR', {}).get('columns', {}) if res else {}
+    if 'T' in prof:
+        print('  Choupo T profile: %.2f K at the inlet, %.2f K at the outlet (isothermal by construction)'
+              % (prof['T'][0], prof['T'][-1]))
+
+
 CASES = {
     'distillation01_methanol_acetone_pressure_swing': case_B,
     'extraction01_water_acetone_mibk': case_C,
+    'recycle01_cavett_as_shipped': case_A,
+    'methanol01_co2_hydrogenation': case_D,
+    'reforming01_methane_steam_pfr': case_E,
 }
 
 

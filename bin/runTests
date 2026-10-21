@@ -4210,6 +4210,22 @@ PYEOF
         cat /tmp/envelope.$$
         fail=$((fail+1))
     fi
+
+    # Route P (DEV.md 4c C123, 2026-10-21): the PPR78 / E-PPR78 kij evaluated
+    # ONCE at a declared T and WRITTEN into the case (ppr78Kij), read by the
+    # phi-phi builder as a kij SET and said on the run (extrapolations
+    # repeated), an inline kij accepted only under regression, the P_bubble
+    # fit recovering a planted kij, and the compressor's P_out form.  Probes
+    # only: no corpus case declares any of them (the benchmarks are outside
+    # this suite by C123's stated default).
+    if "$ROOT/bin/curate/check_ppr78_route.py" > /tmp/ppr78.$$ 2>&1; then
+        printf "PASS  %-40s  (%s)\n" "ppr78-route-gate" "$(tail -1 /tmp/ppr78.$$)"
+        pass=$((pass+1))
+    else
+        printf "FAIL  %-40s  (run bin/curate/check_ppr78_route.py)\n" "ppr78-route-gate"
+        cat /tmp/ppr78.$$
+        fail=$((fail+1))
+    fi
     rm -f /tmp/envelope.$$
 
     # component-name-hint gate (2026-08-27).  Found by using Choupo as a

@@ -1,0 +1,11 @@
+/*---------------------------------------------------------------------------*\
+  Benchmark A -- the two mixer outlets are the tears (cavett01's choice on
+  the primary spec: two cuts, every stream computable in the declared
+  order).  Newton on the tears; cavett01 measured Wegstein limit-cycling on
+  this train and that measurement is not repeated here.
+\*---------------------------------------------------------------------------*/
+
+tearStreams      ( s4  s12 );
+recycleSolver    Newton;
+recycleTol       1e-6;
+recycleMaxIter   300;

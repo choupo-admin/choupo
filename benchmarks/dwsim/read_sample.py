@@ -6,16 +6,24 @@
 #  Developer-facing (benchmarks/README.md).  The sample file is NOT in this
 #  tree and is never copied into it (rule 1): give the path of your own copy,
 #  e.g. from a sparse clone of github.com/DanWBR/dwsim at the commit the
-#  benchmark cites, PlatformFiles/Common/samples/<sample>.dwxmz.
+#  benchmark cites, PlatformFiles/Common/samples/<sample>.dwxmz (a zip holding
+#  one XML document) or <sample>.dwxml (the XML document itself).
 #
 #  What it reads: the file's own GeneralInfo (BuildVersion, SavedOn), every
 #  material stream's stored overall state (T, P, molar flow, mole fractions),
-#  every energy stream, each column's declared specification and stored
-#  stage results (T, x, y, L, V per stage), the pump and the recycle block.
+#  every energy stream, each unit's CONNECTIONS (which streams enter and
+#  leave it) and its declared operating specification and stored results --
+#  a column's specs and stage results, a vessel's temperature/pressure
+#  override, a compressor's or valve's pressure mode, a splitter's ratios, an
+#  exchanger's mode and duty, a shortcut column's keys and reflux, a PFR's
+#  volume, catalyst loading and mode, the pump and the recycle blocks -- and
+#  the REACTIONS a reactor runs (stoichiometry, basis, units and the rate
+#  expression as the sample writes it: that expression is the PROBLEM, cited
+#  back to its article in each case's README).
 #  What it NEVER reads: the property packages' parameters (the pair tables
 #  this project excludes, DEV.md 4c C16).  It names the package TYPE only.
 #
-#      python3 -I benchmarks/dwsim/read_sample.py <sample.dwxmz> [--commit <sha>]
+#      python3 -I benchmarks/dwsim/read_sample.py <sample> [--commit <sha>]
 #
 #  prints a `reference` dictionary on stdout.  The committed `reference`
 #  files were written by this script and then annotated by hand (the
@@ -58,20 +66,51 @@ def braced_list(s):
     return [float(v) for v in s.split(';') if v.strip()]
 
 
+#  The keys each unit kind DECLARES (its specification) or STORES (its
+#  result), printed as `key value;` lines.  Nothing here is a property
+#  parameter; every entry is an operating spec or a solved number.
+UNIT_KEYS = {
+    'Vessel':         ('OverrideT', 'OverrideP', 'FlashTemperature', 'FlashPressure',
+                       'PressureCalculation', 'DeltaQ'),
+    'Compressor':     ('CalcMode', 'POut', 'DeltaP', 'AdiabaticEfficiency',
+                       'PolytropicEfficiency', 'OutletTemperature', 'DeltaQ'),
+    'Valve':          ('CalcMode', 'OutletPressure', 'DeltaP', 'OutletTemperature'),
+    'Mixer':          ('PressureCalculation',),
+    'Splitter':       ('OperationMode', 'Ratios'),
+    'HeatExchanger':  ('CalculationMode', 'FlowDir', 'DefinedTemperature',
+                       'OverallCoefficient', 'Area', 'Q', 'ThermalEfficiency',
+                       'MaxHeatExchange', 'HotSideOutletTemperature',
+                       'ColdSideOutletTemperature', 'OutletVaporFraction1'),
+    'ShortcutColumn': ('m_lightkey', 'm_heavykey', 'm_lightkeymolarfrac',
+                       'm_heavykeymolarfrac', 'm_refluxratio', 'm_boilerpressure',
+                       'm_condenserpressure', 'condtype', 'm_N', 'm_Nmin', 'm_Rmin',
+                       'm_Qc', 'm_Qb'),
+    'Reactor_PFR':    ('ReactorOperationMode', 'OutletTemperature', 'Volume',
+                       'Length', 'dV', 'CatalystLoading', 'CatalystVoidFraction',
+                       'CatalystParticleDiameter', 'ResidenceTime', 'DeltaP',
+                       'DeltaT', 'DeltaQ'),
+    'Pump':           ('Pout', 'Eficiencia', 'DeltaQ', 'OutletTemperature'),
+}
+
+
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument('sample')
     ap.add_argument('--commit', default='<commit>')
     a = ap.parse_args()
 
-    with zipfile.ZipFile(a.sample) as z:
-        xmls = [n for n in z.namelist() if n.endswith('.xml')]
-        if len(xmls) != 1:
-            sys.exit('read_sample: expected one XML document in the sample, found %d' % len(xmls))
-        root = ET.fromstring(z.read(xmls[0]))
+    if a.sample.endswith('.dwxmz'):
+        with zipfile.ZipFile(a.sample) as z:
+            xmls = [n for n in z.namelist() if n.endswith('.xml')]
+            if len(xmls) != 1:
+                sys.exit('read_sample: expected one XML document in the sample, found %d' % len(xmls))
+            root = ET.fromstring(z.read(xmls[0]))
+    else:
+        root = ET.parse(a.sample).getroot()
 
     gi = root.find('GeneralInfo')
-    tags = {g.findtext('Name'): g.findtext('Tag') for g in root.find('GraphicObjects')}
+    gobjs = {g.findtext('Name'): g for g in root.find('GraphicObjects')}
+    tags = {n: g.findtext('Tag') for n, g in gobjs.items()}
     sample = a.sample.rsplit('/', 1)[-1]
 
     out = []
@@ -127,12 +166,40 @@ def main():
     w('}')
     w('')
 
+    def connections(name):
+        g = gobjs.get(name)
+        ins, outs = [], []
+        if g is None:
+            return ins, outs
+        for c in (g.find('InputConnectors') or []):
+            if c.get('IsAttached') == 'true' and c.get('AttachedFromEnergyConn') != 'True':
+                ins.append(tags.get(c.get('AttachedFromObjID'), c.get('AttachedFromObjID')))
+        for c in (g.find('OutputConnectors') or []):
+            if c.get('IsAttached') == 'true' and c.get('AttachedToEnergyConn') != 'True':
+                outs.append(tags.get(c.get('AttachedToObjID'), c.get('AttachedToObjID')))
+        return ins, outs
+
+    rsets = {}
+    if root.find('ReactionSets') is not None:
+        for rs in root.find('ReactionSets'):
+            rsets[rs.findtext('ID')] = rs.findtext('Name')
+
     w('units')
     w('{')
     for label, typ, s in units:
         kind = typ.rsplit('.', 1)[-1]
         w('    %s   // "%s", %s' % (ident(label), label, kind))
         w('    {')
+        ins, outs = connections(text(s, 'ComponentName'))
+        if ins or outs:
+            w('        inputs ( %s );  outputs ( %s );'
+              % (' '.join('"%s"' % t for t in ins), ' '.join('"%s"' % t for t in outs)))
+        for key in UNIT_KEYS.get(kind, ()):
+            if text(s, key) is not None:
+                w('        %s %s;' % (key[0].lower() + key[1:] if not key.startswith('m_') else key, text(s, key)))
+        if kind == 'Reactor_PFR' and text(s, 'ReactionSetID') is not None:
+            rid = text(s, 'ReactionSetID')
+            w('        reactionSet "%s";' % rsets.get(rid, rid))
         if kind in ('DistillationColumn', 'AbsorptionColumn'):
             w('        nStages %s;  method "%s";' % (text(s, 'NumberOfStages'), text(s, 'SolvingMethodName')))
             if kind == 'AbsorptionColumn':
@@ -161,20 +228,43 @@ def main():
             for key in ('CondenserDuty', 'ReboilerDuty', 'RefluxRatio'):
                 if text(s, key) is not None:
                     w('        %s %s;' % (key[0].lower() + key[1:], text(s, key)))
-        elif kind == 'Pump':
-            for key in ('Pout', 'Eficiencia', 'DeltaQ', 'OutletTemperature'):
-                w('        %s %s;' % (key[0].lower() + key[1:], text(s, key)))
         elif kind == 'Recycle':
             w('        converged %s;  iterationsTaken %s;' % (text(s, 'Converged'), text(s, 'IterationsTaken')))
             for blk in ('Errors', 'Values'):
                 items = s.find(blk)
-                w('        %s { %s }' % (blk[0].lower() + blk[1:], '  '.join(
-                    '%s %s;' % (it.get('Key'), it.get('Value')) for it in items)))
+                if items is not None:
+                    w('        %s { %s }' % (blk[0].lower() + blk[1:], '  '.join(
+                        '%s %s;' % (it.get('Key'), it.get('Value')) for it in items)))
             cp = s.find('ConvergenceParameters')
-            w('        tolerances { %s }' % '  '.join(
-                '%s %s;' % (c.tag, c.text) for c in cp if c.tag != 'Type'))
+            if cp is not None:
+                w('        tolerances { %s }' % '  '.join(
+                    '%s %s;' % (c.tag, c.text) for c in cp if c.tag != 'Type'))
         w('    }')
     w('}')
+
+    rx = root.find('Reactions')
+    if rx is not None and len(rx):
+        w('')
+        w('reactions   // as the sample writes them: the PROBLEM, cited to its article in the README')
+        w('{')
+        for r in rx:
+            w('    %s   // "%s"' % (ident(r.findtext('Name')), r.findtext('Name')))
+            w('    {')
+            w('        type %s;  phase %s;  basis %s;' % (text(r, 'ReactionType'), text(r, 'ReactionPhase'),
+                                                        text(r, 'ReactionBasis')))
+            w('        equation "%s";' % text(r, 'Equation'))
+            comps = r.find('Compounds')
+            if comps is not None:
+                w('        stoichiometry ( %s );' % '  '.join(
+                    '{ compound "%s"; nu %s; }' % (c.get('Name'), c.get('StoichCoeff')) for c in comps))
+            for key in ('ReactionHeat', 'VelUnit', 'ConcUnit', 'KExprType', 'ReactionKinetics'):
+                if text(r, key) is not None:
+                    w('        %s %s;' % (key[0].lower() + key[1:], text(r, key)))
+            for key in ('RateEquationNumerator', 'RateEquationDenominator'):
+                if text(r, key):
+                    w('        %s "%s";' % (key[0].lower() + key[1:], text(r, key)))
+            w('    }')
+        w('}')
     print('\n'.join(out))
 
 

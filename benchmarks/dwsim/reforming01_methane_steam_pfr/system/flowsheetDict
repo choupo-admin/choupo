@@ -1,0 +1,40 @@
+/*---------------------------------------------------------------------------*\
+  Benchmark E -- one unit: the sample's isothermal plug-flow reformer.
+
+      feed (1000 K, 1 atm; CH4 : H2O : H2 = 1 : 1 : 0.01) ─► PFR (1 m3) ─► product
+
+  AS THE SAMPLE SHIPS IT: volume 1 m3, "catalyst loading" 0.386 kg/m3 (the
+  sample's own number, read as the mass of catalyst per cubic metre of
+  reactor on which its kmol/(kg h) rates are scaled -- a bed of 0.386 kg
+  per m3 is not a packed bed, and the README says so), isothermal mode,
+  the outlet at the inlet's 1000 K.  Choupo's `pfr` takes its isothermal
+  temperature from its feed, which is the sample's 1000 K.  The sample's
+  Ergun pressure drop (584 Pa over 1 atm, 0.58 %) is NOT reproduced: a
+  stated omission (it needs a declared particle and a transport model, and
+  moves the outlet by less than the comparison can see).
+
+  THE KINETICS: constant/reactions -- Xu & Froment (1989), reactions I, II
+  and III sharing one adsorption denominator, at the article's REFERENCE
+  activity (the partially deactivated catalyst its Tables 5-6 describe; the
+  fresh-catalyst factor 2.246 is NOT applied, which is also the sample's
+  choice).  The three equilibrium constants the article does not print come
+  from Choupo's own formation data (system/propsDict).
+\*---------------------------------------------------------------------------*/
+
+units
+(
+    {
+        name        PFR;
+        type        pfr;
+        in          feed;
+        outputs     ( product );
+        operation
+        {
+            V_R              1 m3;           // the sample's reactor volume
+            nSteps           400;
+            thermalMode      isothermal;     // at the feed's 1000 K
+            catalystLoading  0.386;          // kg/m3, the sample's value (README)
+        }
+        reactions   ( steamReforming  waterGasShift  overallReforming );
+    }
+);

@@ -706,16 +706,17 @@ operation
 ## Rotating equipment
 
 ### `compressor`
-Credo: hardware = `W_shaft` + `eta`.  Outer Newton-1D on P_out
-matching isentropic enthalpy; P_out / T_out are RESULTS.
+Credo: hardware = `eta` plus **exactly one** of `W_shaft` (the motor;
+P_out / T_out are RESULTS, an outer Newton-1D on P_out matching the
+isentropic enthalpy) and `P_out` (the header it discharges into; W_shaft is
+the RESULT -- the isentropic path to that pressure is ONE inner solve and
+the work follows, the pump's precedent; since 2026-10-21, DEV.md 4c C123).
 
 ```
-operation
-{
-    W_shaft  <W>;     // positive (energy in)
-    eta      0.75;    // isentropic efficiency
-}
+operation { W_shaft  <W>;    eta 0.75; }   // motor given -> P_out, T_out results
+operation { P_out    30 bar; eta 0.75; }   // header given -> W_shaft, T_out results
 ```
+Both or neither refuses; `P_out <= P_in` refuses (a let-down is a `valve`).
 
 ### `turbine`
 Mirror of compressor.  `W_shaft` is NEGATIVE (energy out).  Same

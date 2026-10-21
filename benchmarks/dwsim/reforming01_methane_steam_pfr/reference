@@ -1,0 +1,92 @@
+source
+{
+    repository   "https://github.com/DanWBR/dwsim";
+    commit       1abf72d1b6b41d3e9a8cc770d3cc4e8fc76e5766;
+    sample       "PlatformFiles/Common/samples/Hydrogen production through Methane Catalytic Steam Reforming.dwxml";
+    buildVersion "5.3.6858.20432";
+    savedOn      "2018-10-11T13:01:59.0699709-04:00";
+}
+
+propertyPackage ( PengRobinsonPropertyPackage );   // the TYPE only; no parameter is read
+
+streams     // stored overall state: T [K], P [Pa], F [mol/s], mole fractions,
+            // H_kW = the stream's stored TotalEnergyFlow (its own enthalpy datum)
+{
+    mSTR000   // "MSTR-000"
+    {
+        T 1000;  P 101325;  F 5.58333333333333;  H_kW None;
+        vaporFraction 1;
+        x { methane 0.4975124378;  hydrogen 0.004975124378;  water 0.4975124378;  carbonDioxide 0;  carbonMonoxide 0; }
+    }
+    mSTR001   // "MSTR-001"
+    {
+        T 1000;  P 100740.564590468;  F 9.76768961675279;  H_kW None;
+        vaporFraction 1;
+        x { methane 0.07019056328;  hydrogen 0.668727405;  water 0.04688827417;  carbonDioxide 0.02330228913;  carbonMonoxide 0.1908914684; }
+    }
+}
+
+energyStreams   // stored, kW
+{
+    eSTR000 1221.80951271173;   // "ESTR-000"
+}
+
+units
+{
+    pFR000   // "PFR-000", Reactor_PFR
+    {
+        reactorOperationMode Isothermic;
+        outletTemperature 298.15;
+        volume 1;
+        length 1;
+        dV 0.05;
+        catalystLoading 0.386;
+        catalystVoidFraction 0.4;
+        catalystParticleDiameter 2;
+        residenceTime 2.18277079629982;
+        deltaP 584.435409531521;
+        deltaT 0;
+        deltaQ 1221.80951271173;
+        reactionSet "Default Set";
+    }
+}
+
+reactions   // as the sample writes them: the PROBLEM, cited to its article in the README
+{
+    overallReaction   // "Overall Reaction"
+    {
+        type Heterogeneous_Catalytic;  phase Vapor;  basis PartialPress;
+        equation "CH4 + 2HOH <--> 4H2 + OCO ";
+        stoichiometry ( { compound "Methane"; nu -1; }  { compound "Hydrogen"; nu 4; }  { compound "Water"; nu -2; }  { compound "Carbon dioxide"; nu 1; } );
+        reactionHeat 164638;
+        velUnit kmol/[kg.h];
+        concUnit atm;
+        kExprType Gibbs;
+        rateEquationNumerator "1.02E+15*exp(-243900/8.314/T)/P1^3.5*(R1*R2^2-P1^4*P2/(exp(34.218-31266/T)))";
+        rateEquationDenominator "(1+6.65E-4*exp(38280/8.314/T)*R1+1.77E+5*exp(-88680/8.314/T)*R2/P1+6.12E-9*exp(82900/8.314/T)*P1)^2";
+    }
+    steamReforming   // "Steam Reforming"
+    {
+        type Heterogeneous_Catalytic;  phase Vapor;  basis PartialPress;
+        equation "CH4 + HOH <--> 3H2 + CO ";
+        stoichiometry ( { compound "Methane"; nu -1; }  { compound "Hydrogen"; nu 3; }  { compound "Water"; nu -1; }  { compound "Carbon monoxide"; nu 1; } );
+        reactionHeat 205804;
+        velUnit kmol/[kg.h];
+        concUnit atm;
+        kExprType Gibbs;
+        rateEquationNumerator "4.22E+15*exp(-240100/8.314/T)/P1^2.5*(R1*R2-P1^3*P2/(exp(30.42-27106/T)))";
+        rateEquationDenominator "(1+8.23E-5*exp(70650/8.314/T)*P2+6.65E-4*exp(38280/8.314/T)*R1+1.77E+5*exp(-88680/8.314/T)*R2/P1+6.12E-9*exp(82900/8.314/T)*P1)^2";
+    }
+    waterGasShift   // "Water Gas Shift"
+    {
+        type Heterogeneous_Catalytic;  phase Vapor;  basis PartialPress;
+        equation "HOH + CO <--> H2 + OCO ";
+        stoichiometry ( { compound "Hydrogen"; nu 1; }  { compound "Water"; nu -1; }  { compound "Carbon dioxide"; nu 1; }  { compound "Carbon monoxide"; nu -1; } );
+        reactionHeat -41166;
+        velUnit kmol/[kg.h];
+        concUnit atm;
+        kExprType Gibbs;
+        rateEquationNumerator "1.96E+6*exp(-67130/8.314/T)/P1*(R1*R2-P1*P2/(exp(-3.798+4160/T)))";
+        rateEquationDenominator "(1+1.77E+5*exp(-88680/8.314/T)*R1/P1+6.12E-9*exp(82900/8.314/T)*P1+8.23E-5*exp(70650/8.314/T)*R2)^2";
+    }
+}

@@ -1,0 +1,114 @@
+/*---------------------------------------------------------------------------*\
+  E-PPR78 GROUP-INTERACTION PARAMETERS -- the CCS-gas subset case D needs.
+
+  SOURCE (primary, cited per value): Xiaochun Xu, Silvia Lasala, Romain
+  Privat, Jean-Noel Jaubert, "E-PPR78: A proper cubic EoS for modelling
+  fluids involved in the design and operation of carbon dioxide capture and
+  storage (CCS) processes", International Journal of Greenhouse Gas Control
+  56 (2017) 126-154, DOI 10.1016/j.ijggc.2016.11.015 -- Table 3 (p. 132),
+  "(A_kl = A_lk)/MPa and (B_kl = B_lk)/MPa"; Eqs. 1-2 (PR78, p. 127), Eq. 4
+  (k_ij, p. 128); Table 2 (pp. 130-131), the T and P ranges of the binary
+  data each pair's parameters were fitted on.  Group numbering of the
+  article: CH4 5, CO2 12, N2 13, H2O 16, H2 21, CO 22, Ar 24.
+
+  TRANSCRIPTION: read from the page image at 400-600 dpi by two readers
+  independently (2026-10-21); 42 of 42 values agreed, every minus sign
+  confirmed on the image, all 21 Table 2 rows agreed digit for digit.  The
+  private transcription and its check are in data/local/curation/c123/
+  (gitignored; the article is not redistributed).  `reviewStatus interim`:
+  Vitor has not read the values back against the article himself.
+
+  TWO PRINTING FACTS, reported as printed and not corrected:
+    * the H2/H2O cell prints BOTH its lines labelled "A21-16" (830.76 and
+      -137.94); every other cell of the table prints A on line 1 and B on
+      line 2, so -137.94 is read as B by the table's layout -- a reading,
+      flagged, not a printed label;
+    * the Ar/H2 cell is printed to ONE decimal (128.2 / 102.9) where every
+      other value has two; whether the parameter is 128.20 or was rounded
+      cannot be read from this article.
+
+  METHANOL IS NOT A GROUP of this model (the article scopes it to 15 CCS
+  species and says nothing about alcohols), so no methanol pair comes from
+  here: case D regresses them to measured solubilities (Brunner et al.
+  1987, kijFits/).  The decompositions are trivial -- every molecule here
+  IS one group, as the table's header names them.
+
+  THE DATA WINDOWS matter: a methanol synthesis loop runs near 500 K, and
+  15 of these 21 pairs were fitted on data that stop below 360 K (H2+CO to
+  125 K, H2+CO2 to 303 K).  Evaluating Eq. 4 there is an EXTRAPOLATION in
+  T; the `ppr78Kij` op writes `extrapolated yes` with the window into every
+  such pair of the set it generates, and each run that reads the set says so.
+\*---------------------------------------------------------------------------*/
+
+recordType     ppr78GroupTable;
+schemaVersion  1;
+method         E-PPR78;
+eos            PengRobinson;        // defined on PR78's a_i, b_i (Eq. 4 carries them)
+units          MPa;
+Tref           298.15 K;
+source         "Xu, Lasala, Privat & Jaubert, Int. J. Greenh. Gas Control 56 (2017) 126-154, DOI 10.1016/j.ijggc.2016.11.015, Table 3 (p. 132); Eqs. 1-2, 4; Table 2 (pp. 130-131) for the data windows";
+reviewStatus   interim;
+licence        primaryCitation;
+
+groups ( CO2 H2 CO H2O N2 Ar CH4 );
+
+interactions   // A_kl = A_lk, B_kl = B_lk, MPa; each pair once
+(
+    { k CO2; l CH4;  A 136.57;  B 214.81;  }
+    { k N2;  l CH4;  A 30.88;   B 37.06;   }
+    { k N2;  l CO2;  A 113.92;  B 212.41;  }
+    { k H2O; l CH4;  A 2277.12; B 4719.63; }
+    { k H2O; l CO2;  A 559.33;  B 277.95;  }
+    { k H2O; l N2;   A 2573.59; B 5490.33; }
+    { k H2;  l CH4;  A 156.13;  B 92.99;   }
+    { k H2;  l CO2;  A 261.13;  B 300.94;  }
+    { k H2;  l N2;   A 65.20;   B 70.10;   }
+    { k H2;  l H2O;  A 830.76;  B -137.94; }   // line 2 printed "A21-16"; read as B by layout (header)
+    { k CO;  l CH4;  A 14.43;   B 20.92;   }
+    { k CO;  l CO2;  A 87.85;   B 190.79;  }
+    { k CO;  l N2;   A 23.33;   B -25.40;  }
+    { k CO;  l H2O;  A 715.12;  B -89.90;  }
+    { k CO;  l H2;   A 75.84;   B 74.81;   }
+    { k Ar;  l CH4;  A 15.97;   B 24.48;   }
+    { k Ar;  l CO2;  A 177.75;  B 86.82;   }
+    { k Ar;  l N2;   A 6.49;    B 8.77;    }
+    { k Ar;  l H2O;  A 1197.24; B 1211.30; }
+    { k Ar;  l H2;   A 128.2;   B 102.9;   }   // printed to one decimal (header)
+    { k Ar;  l CO;   A 4.04;    B 8.18;    }
+);
+
+decompositions   // every molecule here is its own group
+{
+    CO2    { CO2 1; }
+    H2     { H2 1; }
+    CO     { CO 1; }
+    water  { H2O 1; }
+    N2     { N2 1; }
+    Ar     { Ar 1; }
+    CH4    { CH4 1; }
+}
+
+dataWindows   // Table 2: the T range (K) of the binary data each pair was fitted on
+(
+    { k CO2; l CH4;  T ( 143.31 353.15 ); }
+    { k N2;  l CO2;  T ( 208.53 353.15 ); }
+    { k H2;  l CO2;  T ( 218.16 303.15 ); }
+    { k CO;  l CO2;  T ( 223.15 343.14 ); }
+    { k Ar;  l CO2;  T ( 223.07 300.35 ); }
+    { k H2O; l CO2;  T ( 251.9  698.2  ); }
+    { k H2O; l CH4;  T ( 253.15 651.70 ); }
+    { k H2O; l N2;   T ( 257.44 698.20 ); }
+    { k H2;  l H2O;  T ( 273.15 699.20 ); }
+    { k CO;  l H2O;  T ( 302.59 477.59 ); }
+    { k Ar;  l H2O;  T ( 273.35 699.00 ); }
+    { k N2;  l CH4;  T ( 78.37  313.15 ); }
+    { k H2;  l N2;   T ( 25.1   298.0  ); }
+    { k CO;  l N2;   T ( 68.09  130.00 ); }
+    { k Ar;  l N2;   T ( 77.61  298.00 ); }
+    { k H2;  l CH4;  T ( 66.89  298.00 ); }
+    { k CO;  l CH4;  T ( 90.67  185.93 ); }
+    { k Ar;  l CH4;  T ( 90.67  298.00 ); }
+    { k CO;  l H2;   T ( 57.21  125.0  ); }
+    { k Ar;  l H2;   T ( 83.09  293.00 ); }
+    { k Ar;  l CO;   T ( 83.8   137.1  ); }
+);

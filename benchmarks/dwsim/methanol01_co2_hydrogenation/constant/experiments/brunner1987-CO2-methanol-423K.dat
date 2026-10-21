@@ -1,0 +1,64 @@
+/*--------------------------------------------------------------------------*\
+  BINARY BUBBLE-POINT EVIDENCE (ISOTHERMAL): CO2 + methanol at 423.15 K.
+
+  SOURCE: E. Brunner, W. Hultenschmidt, G. Schlichtharle, "Fluid mixtures
+  at high pressures. IV. Isothermal phase equilibria in binary mixtures
+  consisting of (methanol + hydrogen or nitrogen or methane or carbon
+  monoxide or carbon dioxide)", J. Chem. Thermodynamics 19 (1987) 273-291;
+  Table 1, p. 283 (PDF p. 11).  DOI not printed in the article; the PII on the PDF is
+  0021-9614(87)90135-2.  The liquid-branch rows (bubble points, the
+  authors' synthetic method in an optical cell): x is the GAS's liquid mole
+  fraction, p the bubble pressure, as printed (p in MPa, kept).  Rows with
+  p > 20.0 MPa are set aside under `selection` -- the window declared BEFORE
+  the fit (the plant's loop runs at 7.3-7.8 MPa).
+
+  TRANSCRIPTION: read from the page image at 400 dpi and checked by an
+  independent reader at 500-600 dpi (2026-10-21): all 301 rows of Table 1
+  agreed, hence `reviewStatus checked`.  The private transcription is in
+  data/local/curation/c123/ (gitignored); the article is not redistributed.
+
+  STATED UNCERTAINTY (pp. 276, 278): pressure < 0.2 % (strain-gauge
+  transducers against a free-piston gauge); composition <= 0.02 x_gas or
+  0.02 (1 - x), whichever is less; temperature <= 0.2 K below 373 K, 0.3 K
+  to 473 K, 0.5 K above.
+\*--------------------------------------------------------------------------*/
+
+property     binaryVLE.P_bubble;
+system       ( CO2 methanol );
+T            423.15 K;      // the held constant of this isotherm
+
+provenance
+{
+    source       measured;
+    reviewStatus checked;
+    citation     "Brunner, E.; Hultenschmidt, W.; Schlichtharle, G. (1987). Fluid mixtures at high pressures. IV. Isothermal phase equilibria in binary mixtures consisting of (methanol + hydrogen or nitrogen or methane or carbon monoxide or carbon dioxide). J. Chem. Thermodynamics 19, 273-291. Table 1, p. 283 (PDF p. 11)";
+    pii          "0021-9614(87)90135-2";
+}
+
+selection
+{
+    //  Bubble points above the declared window, set aside (not deleted).
+    abovePressureWindow
+    (
+    );
+}
+
+columns
+(
+    { name x[CO2];  unit -;  }
+    { name p;  unit MPa;  }
+);
+
+data
+(
+    0.046      3.67    
+    0.0942     5.89    
+    0.1192     6.95    
+    0.2033     10.45   
+    0.2386     11.62   
+    0.2748     12.8    
+    0.3529     14.8    
+    0.3753     15.13   
+    0.4353     15.97   
+    0.475      16.08   
+);

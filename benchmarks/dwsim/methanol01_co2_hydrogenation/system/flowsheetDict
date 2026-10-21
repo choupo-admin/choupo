@@ -1,0 +1,246 @@
+/*---------------------------------------------------------------------------*\
+  Benchmark D -- topology: methanol from CO2, the plant as the reference
+  sample wires it.  Stream names are the sample's "MSTR-0nn" numbers with
+  an `s` prefix (s40 = MSTR-040); the named streams keep their names
+  (hydrogen, co2Feed, cw1..cw3, purge, vent, waterProduct, methanolProduct).
+  Unit names are the sample's tags shortened (COMP-005 -> C5, HE-012 ->
+  HX12, SEP-051 -> SEP51, SC-085 -> COL85, VALV-058 -> V58, PUMP-066 -> P66,
+  MIX-037 -> M37, SPLT-057 -> SPLIT57).
+
+   hydrogen ─► C5 (to 78 bar) ─► s6 ─┐
+   co2Feed ─► C10 (3 bar) ─► HX12 ─► C16 (8.8 bar) ─► HX19 ─► C23 (26.3 bar) ─► HX26 ─► C27 (78 bar) ─► s31 ─┤
+                 cw1 ─┘ s14         cw2 ─┘ s21           cw3 ─┘ s30                                 M37 ─► s33 ─┐
+                                                                                                               │
+          ┌───────────────────── s44 (recycle, heated) ──────────────────────────────────────────────── M39 ◄──┘
+          │                                                                                        (510.15 K)  │ s40
+          │  HX41 cold ◄── s43 ◄── SPLIT57 (0.56) ◄── s55 ◄── SEP51 (vapour) ◄── s46 ◄── PC45 (vf 0.9) ◄── s42 ◄── HX41 hot ◄── sPFR ◄── PFR (20 m3, 510.15 K)
+          └──────────────────────┘              │ purge (0.44)          │ s53 (liquid)
+                                                                        ▼
+                                  V58 (10 bar) ─► s61 ─► V59 (1 atm) ─► s62 ─► SEP62 ─► vent (vapour)
+                                                                                 │ s64 (liquid)
+                                                                                 ▼
+                                   P66 (to 2 bar) ─► s67 ─► V67 (to 1 atm) ─► s67a ─► COL85 ─► waterProduct (bottoms)
+                                                                                         │ s70 (distillate)
+                                                                                         ▼
+                                                                                 COL78 ─► methanolProduct (distillate), s80 (bottoms)
+
+  THE WORKAROUNDS, each stated (README has the list with its reason):
+    1. The sample's PFR runs in its "outlet temperature" mode (489.0 K in,
+       510.15 K out, -96.3 kW).  Vitor's decision (DEV.md 4c C123): the
+       reactor is ISOTHERMAL at that outlet temperature.  Choupo's `pfr`
+       takes its isothermal T from its FEED, so the reactor-feed mixer M39
+       DECLARES 510.15 K and publishes the duty that implies (the mixer's
+       isothermal form, docs/ai/unit-ops.md); the reactor's own duty is the
+       isothermal heat of reaction.  Their sum is compared with the sample's
+       -96.3 kW.
+    2. The sample's HE-045 condenses the effluent to a vapour fraction of
+       0.9 against cooling water (its U is computed from that spec).
+       Choupo's `phaseChanger` with `outletQuality 0.9` lands the same
+       outlet; the cooling-water side is not in this flowsheet and the duty
+       is compared as a number (the sample's CW4 outlet is in `reference`).
+    3. The sample's COMP-054 (7299999.99996 Pa -> 7300000 Pa, stored work
+       -0.00122 kW) is a no-op and is omitted.
+    4. The sample's VALV-083 (101325 Pa -> 101325 Pa) is a no-op and is
+       omitted: COL78 reads COL85's distillate directly.
+    5. Choupo's `shortcutColumn` runs at its FEED's pressure; the sample's
+       pump discharges at 2 bar into a column at 1 atm.  A let-down valve
+       V67 to 1 atm sits between pump and column.
+    6. The sample fixes each shortcut column by the light key's mole
+       fraction in the bottoms and the heavy key's in the distillate (0.01 /
+       0.01; 0.1 / 0.001); Choupo's takes RECOVERIES.  The recoveries below
+       are the sample's own stored product balances: COL85 LK 0.986955, HK
+       0.007702; COL78 LK 0.998967, HK 0.098992 (README shows the arithmetic).
+    7. The sample's hydrogen feed is stored two-phase (vapour fraction
+       0.9656 at 298 K, 10.75 bar: its 3.7 % water condenses) and its
+       compressor is set to ignore the phase.  Choupo's compressor prices
+       the feed on the vapour root of the overall composition, which is the
+       same reading; stated, not refused.
+
+  THERMODYNAMICS: constant/thermoPhysPropDict (PR78, the E-PPR78 set at
+  510.15 K, the three regressed methanol pairs).  Every unit inherits it.
+\*---------------------------------------------------------------------------*/
+
+units
+(
+    // ---- hydrogen compression ----------------------------------------------
+    {
+        name        C5;
+        type        compressor;
+        in          hydrogen;
+        outputs     ( s6 );
+        operation   { P_out 7800000 Pa;  eta 0.75; }
+    }
+
+    // ---- CO2 compression train, three water intercoolers ------------------
+    {
+        name        C10;
+        type        compressor;
+        in          co2Feed;
+        outputs     ( s11 );
+        operation   { P_out 300000 Pa;  eta 0.75; }
+    }
+    {
+        name        HX12;
+        type        heatExchanger;
+        inputs      ( s11  cw1 );
+        outputs     ( s15  s14 );
+        operation   { area 1 m2;  U 1000 W/m2/K;  flow counter; }
+    }
+    {
+        name        C16;
+        type        compressor;
+        in          s15;
+        outputs     ( s17 );
+        operation   { P_out 880000 Pa;  eta 0.75; }
+    }
+    {
+        name        HX19;
+        type        heatExchanger;
+        inputs      ( s17  cw2 );
+        outputs     ( s22  s21 );
+        operation   { area 1 m2;  U 1000 W/m2/K;  flow counter; }
+    }
+    {
+        name        C23;
+        type        compressor;
+        in          s22;
+        outputs     ( s24 );
+        operation   { P_out 2630000 Pa;  eta 0.75; }
+    }
+    {
+        name        HX26;
+        type        heatExchanger;
+        inputs      ( s24  cw3 );
+        outputs     ( s28  s30 );
+        operation   { area 1 m2;  U 1000 W/m2/K;  flow counter; }
+    }
+    {
+        name        C27;
+        type        compressor;
+        in          s28;
+        outputs     ( s31 );
+        operation   { P_out 7800000 Pa;  eta 0.75; }
+    }
+    {
+        name        M37;
+        type        mixer;
+        inputs      ( s31  s6 );
+        outputs     ( s33 );
+    }
+
+    // ---- the synthesis loop (tears: s40, s43) ------------------------------
+    {
+        name        PFR;
+        type        pfr;
+        in          s40;
+        outputs     ( sPFR );
+        operation
+        {
+            V_R              20 m3;          // the sample's reactor volume
+            nSteps           200;
+            thermalMode      isothermal;     // at the feed's 510.15 K (workaround 1)
+            catalystLoading  1153.87;        // kg/m3, the sample's value (= VBF Table 3's 1775 kg/m3 pellets at 0.35 bed voidage)
+        }
+        reactions   ( methanolSynthesis  rwgs );   // constant/reactions: Vanden Bussche & Froment 1996
+    }
+    {
+        name        HX41;
+        type        heatExchanger;
+        inputs      ( sPFR  s43 );
+        outputs     ( s42  s44 );
+        operation   { area 1 m2;  U 1000 W/m2/K;  flow counter; }
+    }
+    {
+        name        PC45;
+        type        phaseChanger;
+        in          s42;
+        outputs     ( s46 );
+        operation   { outletQuality 0.9; }   // workaround 2: the sample's hot-side spec
+    }
+    {
+        name        SEP51;
+        type        isothermalFlash;
+        in          s46;
+        outputs     ( s53  s55 );
+        operation   { }                      // separates the feed at its own (T, P)
+    }
+    {
+        name        SPLIT57;
+        type        splitter;
+        in          s55;
+        outputs     ( purge  s43 );
+        operation   { fractions ( 0.44  0.56 ); }   // the sample's split ratios
+    }
+    {
+        name        M39;
+        type        mixer;
+        inputs      ( s33  s44 );
+        outputs     ( s40 );
+        operation   { T 510.15 K; }          // workaround 1: the reactor's isothermal T is its feed's
+    }
+
+    // ---- let-down, vent flash, pump, the two columns -------------------------
+    {
+        name        V58;
+        type        valve;
+        in          s53;
+        outputs     ( s61 );
+        operation   { P 1000000 Pa; }
+    }
+    {
+        name        V59;
+        type        valve;
+        in          s61;
+        outputs     ( s62 );
+        operation   { P 101325 Pa; }
+    }
+    {
+        name        SEP62;
+        type        isothermalFlash;
+        in          s62;
+        outputs     ( s64  vent );
+        operation   { }
+    }
+    {
+        name        P66;
+        type        pump;
+        in          s64;
+        outputs     ( s67 );
+        operation   { eta 0.75;  P_out 200000 Pa; }
+    }
+    {
+        name        V67;
+        type        valve;
+        in          s67;
+        outputs     ( s67a );
+        operation   { P 101325 Pa; }         // workaround 5: the column runs at its feed's P
+    }
+    {
+        name        COL85;
+        type        shortcutColumn;
+        in          s67a;
+        outputs     ( s70  waterProduct );
+        operation
+        {
+            lightKey      methanol;
+            heavyKey      water;
+            recoveryLK    0.986955;          // workaround 6: the sample's own balance
+            recoveryHK    0.007702;
+            refluxRatio   1.5;
+        }
+    }
+    {
+        name        COL78;
+        type        shortcutColumn;
+        in          s70;
+        outputs     ( methanolProduct  s80 );
+        operation
+        {
+            lightKey      methanol;
+            heavyKey      water;
+            recoveryLK    0.998967;
+            recoveryHK    0.098992;
+            refluxRatio   1.5;
+        }
+    }
+);

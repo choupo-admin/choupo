@@ -1,0 +1,64 @@
+/*---------------------------------------------------------------------------*\
+  Benchmark D -- the thermophysical system: phi-phi PR78 (Choupo's
+  `PengRobinson`, the 1978 two-branch slope -- methanol, omega 0.565, IS on
+  the 1978 branch here and the run says so) over the sample's eight
+  components, with:
+
+    * the GAS PAIRS (H2, CO2, CO, water, N2, Ar: 15 pairs) from E-PPR78,
+      Xu, Lasala, Privat & Jaubert (2017), evaluated ONCE at 510.15 K --
+      the one temperature any unit of this plant DECLARES (the reactor's)
+      -- by the `ppr78Kij` op in kijTables/ and written as a kij SET record
+      (route P, DEV.md 4c C123).  STATED DEFAULT: every unit reads this
+      set; no other unit declares a temperature (the separators, exchangers
+      and compressors inherit theirs).  Thirteen of the fifteen pairs are
+      EXTRAPOLATED in T from the data their parameters were fitted on (the
+      set record names each window; the run repeats it);
+    * the METHANOL PAIRS with H2, CO and CO2 from Choupo's OWN regression
+      to Brunner, Hultenschmidt & Schlichtharle (1987) in kijFits/ -- one
+      isotherm held out per gas, the band declared before the fit, the
+      verdict in each record and announced on the run.  PPR78 has no
+      methanol group;
+    * EVERY OTHER PAIR AT kij = 0, announced by the builder as undeclared:
+      methanol-water, methanol-N2, methanol-Ar, methanol-O2 and the six O2
+      pairs.  No primary source for them was read (Brunner 1987 carries no
+      water and its N2 isotherms were not transcribed; the 2017 table's O2
+      pairs were outside the transcription's scope).  O2 is 1e-4 of the CO2
+      feed; methanol-water is the one pair of these that reaches a product
+      (the columns), and its absence is a stated gap, not a judgement.
+
+  The reference sample runs its own Peng-Robinson package with the pair
+  parameters it embeds; none is read.
+\*---------------------------------------------------------------------------*/
+
+recordType    thermophysicalPropertySystem;
+schemaVersion 2;
+
+components ( methanol water H2 CO2 CO N2 O2 Ar );
+
+equilibrium
+{
+    formulation phiPhi;
+
+    equationOfState
+    {
+        model      PengRobinson;
+        mixingRule vanDerWaalsOneFluid;
+        binaryInteractions
+        {
+            eppr78       { source "constant/parameters/PengRobinson/eppr78_510.15K.dat"; }
+            H2-methanol  { source "constant/parameters/PengRobinson/H2-methanol.dat"; }
+            CO-methanol  { source "constant/parameters/PengRobinson/CO-methanol.dat"; }
+            CO2-methanol { source "constant/parameters/PengRobinson/CO2-methanol.dat"; }
+        }
+    }
+
+    liquid { fugacityRoute equationOfState; root liquid; }
+    vapour { fugacityRoute equationOfState; root vapour; }
+}
+
+caloric
+{
+    energyBasis elementsDatum;
+    liquid { departureRoute equilibriumEquationOfState; root liquid; }
+    vapour { departureRoute equilibriumEquationOfState; root vapour; }
+}
