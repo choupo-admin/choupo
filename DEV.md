@@ -1357,6 +1357,49 @@ accepts today, and that is a policy call.
 > final; }` layout draws what the steady flowsheet and the sizing pass
 > already hold.
 
+> **C132. DIAGNOSING A FAULT FROM A PLANT HISTORIAN -- AN EDUTOOL, AND
+> THE FAULTS AND INSTRUMENTS IT NEEDS (Vitor, 2026-10-21, after a
+> LinkedIn post of a historian dataset for root-cause analysis of a
+> steam-heated agitated tank: "Esse EduTool e muito bom!  ... Faz como
+> dizes").**  The commander's reading, accepted: a published dataset
+> hides its answer; Choupo can publish the SIMULATOR that made it, so the
+> student can TEST a diagnosis instead of guessing it.  The Tennessee
+> Eastman Process (Downs & Vogel, Eastman Chemical / Kodak, Comput.
+> Chem. Eng. 1993) is cited as the reference the field knows, NOT used
+> as the base: its chemistry was disguised on purpose (components A-H,
+> altered kinetics and properties), so first-principles diagnosis is
+> impossible on it, and the licences of its circulating datasets are
+> unread.  Measured: choupoCtrl's controllers are ideal and its
+> measurements perfect -- `src/control/` has no measurement noise, no
+> sensor drift, no missing readings, no declared fault (grep, 2026-10-21);
+> the PRBS / signal family exists (ctrl08, ctrl17).  PROPOSED SCOPE, put
+> to Vitor for the pedagogy: (1) ENGINE: `instruments {}` (per tag:
+> noise sigma, drift rate, dropout, quantisation, a DECLARED random seed
+> so a run stays a function of its inputs) and `faults {}` (start, end,
+> mechanism -- steam-side fouling resistance rising, valve stiction or a
+> stuck valve, a failed-open steam trap, a feed temperature or
+> composition step, a sensor drift, an agitator stop) on a choupoCtrl
+> case, plus operator setpoint changes; the run writes a HISTORIAN (CSV,
+> tag per column, the 1-minute and the compressed form) and NOTHING of
+> the answer; tags from the C130 P&ID when it exists, declared otherwise;
+> (2) THE WITNESS: the steam-heated agitated tank with temperature and
+> level control, a 14-day normal baseline, then non-overlapping faults
+> each diagnosable from first principles (mass and energy balances, the
+> steam side, the valve characteristic, control-loop behaviour -- the
+> loop that MASKS the fault: T at setpoint while the steam valve opens);
+> (3) THE EDUTOOL "Diagnosing a fault from the historian": the student
+> sees the trends, is asked WHEN and WHY before any answer, uses the
+> balances and the C121 reconciliation (gross-error tests) as
+> instruments, then DECLARES the hypothesised fault in a copy of the
+> case and runs it against the historian -- the diagnosis is a tested
+> hypothesis; the answer key is the case's own `faults {}`, which the
+> teacher keeps; (4) a later bridge: a few of the TEP's 21 fault TYPES
+> reproduced on a transparent Choupo process.  Owed to Vitor: which
+> faults, which course (process control? operations?), and whether the
+> historian ships with the site or the teacher generates it.  Status:
+> proposed; queued AFTER the C131 consolidation (nothing new opens
+> until it ends), the engine half after C130 (the tags).
+
 > **C131. CONSOLIDATE, THEN REVIEW EVERYTHING AGAINST GOOD PRACTICE AND
 > THE OPEN REFERENCE (Vitor, 2026-10-21, approved: "Concordo, regista
 > como C131 e avanca com a consolidacao").**  Why (measured): six
