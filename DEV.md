@@ -1387,7 +1387,16 @@ accepts today, and that is a policy call.
 > file:line on both sides; every confirmed defect becomes a witness and
 > a gate; a defect on the reference side is documented and offered
 > upstream.  One family at a time, the machine kept free for the suites;
-> Vitor consulted only on physics or pedagogy decisions.
+> **(g) EVERY EDUTOOL (Vitor, minutes later: "E verifica tambem os
+> EduTools todos!")** -- the 61 live tools, in pairs as above, each read
+> as a student would AND against the engine it cites: every formula and
+> symbol definition against the textbook and the engine's file:line
+> (the 2026-08-31 method, which found 43 defects in one night); every
+> number on the page traced to the witness run; the Help/F1 anchor
+> landing on the right guide section; the page legible at phone width;
+> the witness's run time (the C122 smoke's SLOW list); what the page
+> claims the engine does, checked against what it does.  Defects fixed
+> in the same pass where small, listed where not.
 
 > **C130. THE INSTRUMENTED FLOWSHEET -- A P&ID LAYER OVER THE PFD (Vitor,
 > 2026-10-21, same night, "isto tambem devia de poder ser feito").**
