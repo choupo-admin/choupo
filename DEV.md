@@ -2301,6 +2301,29 @@ accepts today, and that is a policy call.
 > the engine -- a props op on `reconcileWeightedLeastSquares`, never a
 > second WLS -- with the gross-error tests and the posterior covariance
 > beside it.  Dispatched (G21).
+> **BUILT AND INTEGRATED 2026-10-21 (G21, `claude/c121-data-
+> reconciliation` 44b0c4839).**  A `dataReconciliation` props op
+> reconciles plant flow readings under the node balances through the ONE
+> WLS home (`analysis::reconcileWeightedLeastSquares`) and computes beside
+> the answer, in closed form, the balance residuals and their sigmas, the
+> chi-square global test (nu = independent balances), the Sidak
+> measurement test, the posterior covariance C - V, the multipliers and
+> the exact per-balance attribution; an exact (completed-square) diagonal
+> prior; a meter out of service by PROJECTION; the Gaussian statistics
+> refused when non-negativity binds.  Found and fixed in the one home: a
+> NEGATIVE reading left the reconciler's own bound violated in silence
+> (the QP needs a feasible start) -- analysis01/02 byte-identical.
+> Witness `props/reconciliation/reconcile01_recycle_loop` (synthetic; new
+> golden); gate `check_data_reconciliation` (5 sabotages); EduTool
+> `data-reconciliation`, four pages on the approved scope, shelf
+> "Hydraulics & control".  On integration: `DataReconciliation.cpp`
+> used std::map without `<map>` (check_std_includes -- emscripten's libc++
+> lends nothing), and the include then shifted the lesson's seven
+> file:line citations, both fixed and read back.  Validated on the
+> combination with main: witness + analysis01/02 PASS 3/0, the gates the
+> diff reaches, `--fast` 75/0, `--gui` 35/0.  NOT done: bilinear
+> (component / energy) balances, a correlated prior, several gross errors
+> at once, a Theory Guide chapter.
 
 > **C120. SESSION HANDOFF -- THE CONTAINER'S DISK FAILED (2026-10-20, Vitor:
 > "Sim, segue esse plano").**  The machine of the 2026-10-20 session logged
