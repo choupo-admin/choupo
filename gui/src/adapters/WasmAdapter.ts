@@ -92,6 +92,7 @@ import type {
 } from "./SolverAdapter.js";
 import { WASM_WORKER_URL } from "./wasmModule.js";
 import { countRunCase } from "../analytics.js";
+import { noteRunSettled, noteRunStarted } from "./runLedger.js";
 
 // The markers the WASM solver wraps its structured-result JSON in.  Exported
 // for tests; the C++ side prints these around the ResultEmitter JSON block.
@@ -162,6 +163,14 @@ export class WasmAdapter implements SolverAdapter {
       emit("[adapter] spawning worker at " + workerUrl);
       const worker = new Worker(workerUrl, { type: "module" });
       emit("[adapter] worker constructed; posting run message");
+      //  THE PAGE'S RUN LEDGER (runLedger.ts): every engine run in the
+      //  browser passes through here, so it is counted here and nowhere else
+      //  -- the site smoke reads it to tell "ran and finished" from "failed"
+      //  from "never asked".  `cancelled` keeps a run the page superseded
+      //  (a newer knob value) apart from a run the engine could not finish.
+      noteRunStarted();
+      let cancelled = false;
+      let ledgerBinary = "engine";
       let settled = false;
 
       const settle = (status: "done" | "error") => {
@@ -231,10 +240,24 @@ export class WasmAdapter implements SolverAdapter {
         if (proposals && Object.keys(proposals).length > 0) {
           result.proposals = proposals;
         }
+        if (cancelled) noteRunSettled("cancelled", ledgerBinary);
+        else if (status === "done") {
+          const carried = (Object.keys(result) as (keyof RunResult)[])
+            .filter((k) => k !== "status" && k !== "log" && k !== "streams"
+              && k !== "convergence" && result[k] !== undefined);
+          noteRunSettled("done",
+            `${ledgerBinary}: ${carried.join(" ") || "(no result block beyond the log)"}`);
+        } else {
+          const last = displayLog.split("\n").map((l) => l.trim()).reverse()
+            .find((l) => /(?:error|fatal|refused|failed|exited with code)/i.test(l));
+          noteRunSettled("failed",
+            `${ledgerBinary}: ${last ?? "did not finish (no error line in its log)"}`);
+        }
         resolve(result);
       };
 
       const onAbort = () => {
+        cancelled = true;
         emit("\n[user] cancelled — terminating solver");
         settle("error");
       };
@@ -281,6 +304,7 @@ export class WasmAdapter implements SolverAdapter {
       // controlDict.application field (binaryOverride wins for the Props view).
       const app = binaryOverride ?? caseFiles.controlDict["application"];
       const binary = selectBinary(app);
+      ledgerBinary = binary;
       emit(`[adapter] dispatching to ${binary} WASM`);
 
       countRunCase();

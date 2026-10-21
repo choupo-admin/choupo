@@ -61,6 +61,12 @@ import WebSocket from "ws";
 /** Candidate Chromium binaries, in preference order.  The headless shell is
  *  smaller and always headless; full chrome is the fallback. */
 export function findChromium() {
+  //  An EXPLICIT binary wins when it exists: a CI runner carries its own
+  //  Chrome (/usr/bin/google-chrome on GitHub's ubuntu images) and no
+  //  Playwright tree, and installing one to find a browser that is already
+  //  there would be a download for nothing (DEV.md 4c C122, the site smoke).
+  const explicit = process.env.CHOUPO_CHROMIUM;
+  if (explicit && existsSync(explicit)) return explicit;
   const root = process.env.PLAYWRIGHT_BROWSERS_PATH || "/opt/pw-browsers";
   const globs = [
     "chromium_headless_shell-*/chrome-linux/headless_shell",

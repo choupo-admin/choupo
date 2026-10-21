@@ -1,0 +1,75 @@
+#  build-site  --  the toolchain and the build of the site, in ONE home.
+#
+#  Two workflows build the site: `publish-site` (main, then pushed to
+#  www.choupo.org) and `site-smoke` (any other branch, never published).  The
+#  steps lived inside publish-site alone; a second workflow carrying its own
+#  copy would be a second home for the build recipe, and the day the two
+#  disagreed the smoke would test a site nobody publishes.  The assembler
+#  itself was already one script (`bin/buildSite`, see its header); this is
+#  the same rule one layer out: the TOOLCHAIN that feeds it is one file too.
+#
+#  The comments on each step are the ones publish-site carried, moved verbatim.
+#  The caller checks the repository out first (a local action is read from it).
+name: build-site
+description: Install the toolchain, build the WASM engines and the app, and assemble site/_dist with bin/buildSite.
+
+runs:
+  using: composite
+  steps:
+    #  ---- the toolchain: a C++ compiler for the native binaries the
+    #       curation scripts run, Emscripten for the WASM, node for the app,
+    #       and LaTeX for the guides the app links to.
+    - name: Emscripten
+      uses: mymindstorm/setup-emsdk@v14
+      with:
+        version: 3.1.6          # pinned: docs/gui-internals.md documents this
+        actions-cache-folder: emsdk-cache
+
+    - uses: actions/setup-node@v4
+      with:
+        node-version: '22'
+        cache: npm
+        cache-dependency-path: gui/package-lock.json
+
+    #  poppler-utils is NOT optional tooling.  bin/buildSite verifies the
+    #  title page of every guide it is about to publish, and without
+    #  pdftotext that check cannot run.  It used to WARN-and-continue, and
+    #  on 2026-08-05 it did exactly that in this workflow -- the gate
+    #  written to stop a stale guide reaching choupo.org was itself absent
+    #  from the only place that publishes.  buildSite now REFUSES when it
+    #  cannot verify, so this install is load-bearing: drop it and the
+    #  publish fails loudly instead of shipping an unchecked artefact.
+    - name: pdftotext (buildSite verifies the published guide versions)
+      shell: bash
+      run: sudo apt-get update -qq && sudo apt-get install -y -qq poppler-utils
+
+    #  `lmodern` is load-bearing and NOT pulled by --no-install-recommends:
+    #  docs/preamble.tex line 8 loads it, so without the deb every guide
+    #  compile dies on its first package and buildSite's docs step never
+    #  built anything here -- it fell to the warn branch and published the
+    #  committed PDFs on every run.  Found 2026-08-30 when theoryGuide.tex
+    #  had been uncompilable for three days (a \SI with no siunitx in the
+    #  tree) and the served guide was stale behind its own source with the
+    #  suite green.  buildSite now REFUSES on a failed docs build, so this
+    #  list must actually compile the guides.
+    - name: LaTeX (the guides the app's Help links serve)
+      shell: bash
+      run: |
+        sudo apt-get update -qq
+        sudo apt-get install -y --no-install-recommends \
+          texlive-latex-recommended texlive-latex-extra texlive-pictures \
+          texlive-fonts-recommended lmodern
+
+    #  ---- the SAME chain proven locally, in the same order ---------------
+    - name: Build the WASM the app runs
+      shell: bash
+      run: make wasm-gui
+
+    - name: Install the app's dependencies
+      shell: bash
+      run: npm ci --no-audit --no-fund
+      working-directory: gui
+
+    - name: Assemble the site
+      shell: bash
+      run: bin/buildSite

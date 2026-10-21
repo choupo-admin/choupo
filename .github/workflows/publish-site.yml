@@ -68,58 +68,12 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      #  ---- the toolchain: a C++ compiler for the native binaries the
-      #       curation scripts run, Emscripten for the WASM, node for the app,
-      #       and LaTeX for the guides the app links to.
-      - name: Emscripten
-        uses: mymindstorm/setup-emsdk@v14
-        with:
-          version: 3.1.6          # pinned: docs/gui-internals.md documents this
-          actions-cache-folder: emsdk-cache
-
-      - uses: actions/setup-node@v4
-        with:
-          node-version: '22'
-          cache: npm
-          cache-dependency-path: gui/package-lock.json
-
-      #  poppler-utils is NOT optional tooling.  bin/buildSite verifies the
-      #  title page of every guide it is about to publish, and without
-      #  pdftotext that check cannot run.  It used to WARN-and-continue, and
-      #  on 2026-08-05 it did exactly that in this workflow -- the gate
-      #  written to stop a stale guide reaching choupo.org was itself absent
-      #  from the only place that publishes.  buildSite now REFUSES when it
-      #  cannot verify, so this install is load-bearing: drop it and the
-      #  publish fails loudly instead of shipping an unchecked artefact.
-      - name: pdftotext (buildSite verifies the published guide versions)
-        run: sudo apt-get update -qq && sudo apt-get install -y -qq poppler-utils
-
-      #  `lmodern` is load-bearing and NOT pulled by --no-install-recommends:
-      #  docs/preamble.tex line 8 loads it, so without the deb every guide
-      #  compile dies on its first package and buildSite's docs step never
-      #  built anything here -- it fell to the warn branch and published the
-      #  committed PDFs on every run.  Found 2026-08-30 when theoryGuide.tex
-      #  had been uncompilable for three days (a \SI with no siunitx in the
-      #  tree) and the served guide was stale behind its own source with the
-      #  suite green.  buildSite now REFUSES on a failed docs build, so this
-      #  list must actually compile the guides.
-      - name: LaTeX (the guides the app's Help links serve)
-        run: |
-          sudo apt-get update -qq
-          sudo apt-get install -y --no-install-recommends \
-            texlive-latex-recommended texlive-latex-extra texlive-pictures \
-            texlive-fonts-recommended lmodern
-
-      #  ---- the SAME chain proven locally, in the same order ---------------
-      - name: Build the WASM the app runs
-        run: make wasm-gui
-
-      - name: Install the app's dependencies
-        run: npm ci --no-audit --no-fund
-        working-directory: gui
-
-      - name: Assemble the site
-        run: bin/buildSite
+      #  ---- the toolchain and the build: ONE home, shared with site-smoke.yml
+      #       (.github/actions/build-site -- every step and its reason moved
+      #       there verbatim; a second copy in a second workflow would be a
+      #       second home for the build recipe).  Ends with bin/buildSite.
+      - name: Build the site
+        uses: ./.github/actions/build-site
 
       #  A published site that cannot solve is worse than none: it looks like
       #  the simulator and is not.  Assert the pieces a visitor actually
@@ -192,6 +146,19 @@ jobs:
           [ "$wsz" -gt 500000 ] \
             || { echo "pdf.worker.min.mjs is $wsz B -- not the real worker"; exit 1; }
           echo "site OK: $(du -sh $d | cut -f1)"
+
+      #  ---- OPEN THE PAGES, not only the files (DEV.md 4c C122) ------------
+      #
+      #  The step above proves every piece a visitor fetches EXISTS.  On
+      #  2026-10-20 three EduTools were published that nobody had seen run in a
+      #  browser -- the development containers have no Emscripten, so the WASM
+      #  engine met its first browser in a student's.  This serves site/_dist
+      #  LOCALLY and opens every live EduTool in headless Chrome; a tool that
+      #  does not render, or whose engine run on open does not finish, FAILS
+      #  the run here, before anything is pushed.  What it checks and what it
+      #  cannot: .github/actions/smoke-site and gui/tools/driveApp/driveApp.mjs.
+      - name: Smoke every live EduTool in a browser
+        uses: ./.github/actions/smoke-site
 
       #  ---- publish: push into the SITE repository -------------------------
       #
