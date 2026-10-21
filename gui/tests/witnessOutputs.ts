@@ -194,6 +194,15 @@ export const WITNESS_OUTPUTS: readonly WitnessOutput[] = [
     file,
     readBy: ["correlationSimplicityLesson.test.ts"],
   })),
+  //  Data reconciliation, and how Bayes helps (C121): the engine's
+  //  reconciliation of an invented recycle loop, its tests and its posterior
+  //  covariance, which the page reads through its own CSV readers.
+  ...["honest", "drifted", "without", "prior"].flatMap((op) =>
+    ["streams", "balances", "covariance"].map((t) => `${op}_${t}.csv`)).map((file) => ({
+    caseDir: "tutorials/props/reconciliation/reconcile01_recycle_loop",
+    file,
+    readBy: ["dataReconciliationLesson.test.ts"],
+  })),
 ];
 
 /** What `witnessSetup.ts` found for each declared output, keyed by

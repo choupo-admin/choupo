@@ -159,6 +159,33 @@ reconcileWeightedLeastSquares(const ReconciliationRequest& req)
         qp.bineq[r]    = -req.rows[r].measured / req.rows[r].sigma;
     }
 
+    //  A NEGATIVE MEASURED VALUE (2026-10-20, DEV.md 4c C121).  The
+    //  active-set solver starts from the step d = 0, i.e. from the
+    //  measurement itself, and an active-set method needs a FEASIBLE start:
+    //  a row measured below zero violates its own non-negativity bound there,
+    //  and the first plant-flow caller found the solver then returning an
+    //  answer that left the bound violated (a flow reconciled to -18 t/h)
+    //  with nothing flagged.  So the problem is shifted, ONLY when some row
+    //  is negative: u = v + u0 with u0_r = -m_r/sigma_r on those rows, which
+    //  puts the start on the bound.  The objective 1/2 |v + u0|^2 has
+    //  gradient v + u0 = u, so the KKT identity the attribution below rests
+    //  on is unchanged; with every measurement >= 0, u0 = 0 and the problem
+    //  handed to the solver is the one it always was.
+    sVector u0(n, 0.0);
+    bool shifted = false;
+    for (std::size_t r = 0; r < n; ++r)
+        if (req.rows[r].measured < 0.0)
+        {
+            u0[r] = -req.rows[r].measured / req.rows[r].sigma;
+            shifted = true;
+        }
+    if (shifted)
+    {
+        qp.g = u0;
+        for (std::size_t k = 0; k < m; ++k) qp.beq[k] += dot(qp.Aeq[k], u0);
+        for (std::size_t r = 0; r < n; ++r) qp.bineq[r] -= u0[r];
+    }
+
     solver::QPResult qr;
     try
     {
@@ -184,7 +211,7 @@ reconcileWeightedLeastSquares(const ReconciliationRequest& req)
 
     for (std::size_t r = 0; r < n; ++r)
     {
-        const scalar u = qr.d[r];
+        const scalar u = qr.d[r] + u0[r];
         auto& o = out.rows[r];
         o.correctionSigma = u;
         o.correction      = u * req.rows[r].sigma;
@@ -216,7 +243,9 @@ reconcileWeightedLeastSquares(const ReconciliationRequest& req)
         }
         co.residualBefore = rb;
         co.residualAfter  = ra;
-        (void)rowScale[k];
+        //  x_r - m_r = sigma_r u_r = - Sum_k (lambda_k / rowScale_k)
+        //  sigma_r^2 coeff_kr: the multiplier of the row as declared.
+        co.multiplierAsWritten = qr.lambdaEq[k] / rowScale[k];
         out.constraints.push_back(co);
     }
 

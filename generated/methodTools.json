@@ -15,8 +15,8 @@
     "Process safety",
     "Flowsheeting & numerics"
   ],
-  "liveTools": 61,
-  "registryTools": 61,
+  "liveTools": 62,
+  "registryTools": 62,
   "tools": [
     {
       "id": "what-is-temperature",
@@ -339,6 +339,13 @@
       "discipline": "Hydraulics & control",
       "teaches": "Whether a loop will be stable BEFORE it is switched on, and how much room is left: the engine sweeps a real tank one frequency per run and publishes the measured amplitude ratio and phase lag, the first-order closed form is laid over those points as the test, and then gain, lag, integrator, dead time and the PID terms are stacked into an open loop whose two crossover frequencies give the gain and phase margins.  The page states which half Choupo computes and which half it does not.",
       "href": "/app/?workspace=methods&tool=bode"
+    },
+    {
+      "id": "data-reconciliation",
+      "label": "Data reconciliation, and how Bayes helps",
+      "discipline": "Hydraulics & control",
+      "teaches": "Why plant meters never close a mass balance, and what to believe instead: reconciliation moves each reading as little as its meter's uncertainty allows until every balance closes -- weighted least squares, and at the same time the Bayesian posterior mode with Gaussian meters and a flat prior.  Then plant a gross error on any meter and watch the chi-square global test reject the snapshot, the measurement test point at the meter, and the error smear over its neighbours until the meter is taken out of service; and finally add yesterday's estimate as a prior and see what the posterior covariance says the redundancy and the prior buy in precision.",
+      "href": "/app/?workspace=methods&tool=data-reconciliation"
     },
     {
       "id": "tear-streams",
