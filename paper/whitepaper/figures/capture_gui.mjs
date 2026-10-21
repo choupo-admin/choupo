@@ -41,14 +41,19 @@ License
        anything, presses Run, and waits on the RUN LEDGER the app writes on
        <html> (gui/src/adapters/runLedger.ts) -- the engine is the WASM
        build of the same C++ in gui/dist/wasm, run in the page's worker;
-    3. Figure A: switches the stream colouring to Temperature (the Colours
-       menu, gui/src/ui/ColoursMenu.tsx), waits for the canvas to settle and
-       saves the window at deviceScaleFactor --dpr;
-    4. Figure B: opens the Reports view's plant layout in its own tab (the
-       "Open in new tab" pop-out, the ?layout=<key> route), waits for the
-       three.js canvas, verifies it is NOT BLANK by sampling its pixels, and
-       only then saves it.  A 3D view it cannot see is a REFUSAL (exit 2),
+    3. Figure A (--flow-case): switches the stream colouring to Temperature
+       (the Colours menu, gui/src/ui/ColoursMenu.tsx), frames the units named
+       by --zoom-units (the synthesis loop by default) with the wheel and a
+       drag of the bare canvas -- a reader's two gestures -- and saves the
+       window (gui_flowsheet.png); then opens the Case view, the case's file
+       tree beside the dictionary it shows, and saves it (gui_casetree.png);
+    4. Figure B (--layout-case): runs that case, opens the Reports view's
+       plant layout in its own tab (the "Open in new tab" pop-out, the
+       ?layout=<key> route), waits for the three.js canvas, verifies it is
+       NOT BLANK by sampling its pixels, and only then saves it
+       (gui_layout3d.png).  A 3D view it cannot see is a REFUSAL (exit 2),
        never a blank figure.
+  Every PNG is the window at deviceScaleFactor --dpr (2 by default).
 
   Prerequisites (the script refuses, naming them, when absent):
       make wasm-gui                      # the five engines -> gui/public/wasm
@@ -59,11 +64,13 @@ License
 
   Usage (from the repository root):
       node paper/whitepaper/figures/capture_gui.mjs
-      node paper/whitepaper/figures/capture_gui.mjs --case plant/greenAmmoniaPEQ_baseCase \
-           --dpr 2 --out paper/whitepaper/figures
+      node paper/whitepaper/figures/capture_gui.mjs \
+           --flow-case plant/greenAmmonia03_basicDesign \
+           --layout-case plant/greenAmmoniaPEQ_baseCase --dpr 2 --out paper/whitepaper/figures
+      node paper/whitepaper/figures/capture_gui.mjs --only A        # or --only B
       node paper/whitepaper/figures/capture_gui.mjs --debug <dir>   # a PNG per step
 
-  Exit codes: 0 both figures saved · 2 refused (could not honestly capture).
+  Exit codes: 0 every figure asked for saved · 2 refused (could not honestly capture).
 \*---------------------------------------------------------------------------*/
 import { createReadStream, existsSync, mkdirSync, statSync, writeFileSync } from "node:fs";
 import http from "node:http";
@@ -78,16 +85,27 @@ const HOST = "choupo.test";
 
 // ---- CLI -------------------------------------------------------------------
 const opt = {
-  case: "plant/greenAmmoniaPEQ_baseCase",
-  out: HERE, dpr: 2, debug: null,
-  flowW: 1600, flowH: 1000,            // CSS pixels of Figure A's window
-  layoutW: 1500, layoutH: 950,          // CSS pixels of Figure B's tab
-  runTimeout: 900,                      // s, the engine run in the browser
+  flowCase: "plant/greenAmmonia03_basicDesign",
+  layoutCase: "plant/greenAmmoniaPEQ_baseCase",
+  zoomUnits: ["LoopMix", "RecycleComp", "FEHE", "CONVERTER", "WaterCooler", "Chiller",
+              "Separator", "PurgeSplit", "LetdownHP"],
+  layoutZoom: 22,                       // wheel notches into the 3D view after its Fit
+  only: null, out: HERE, dpr: 2, debug: null,
+  treeOpen: ["CONVERTER/", "0/"],       // Case-tree folders left open
+  flowW: 1500, flowH: 660,              // CSS pixels of Figure A's window
+  treeW: 1500, treeH: 1000,             // CSS pixels of the Case-view window
+  treeClipW: 1050,                      // ... of which the panel keeps the left part
+  layoutW: 1500, layoutH: 800,          // CSS pixels of Figure B's tab
+  runTimeout: 1800,                     // s, one engine run in the browser
 };
 const argv = process.argv.slice(2);
 for (let i = 0; i < argv.length; i++) {
   const a = argv[i];
-  if (a === "--case") opt.case = argv[++i];
+  if (a === "--flow-case") opt.flowCase = argv[++i];
+  else if (a === "--layout-case") opt.layoutCase = argv[++i];
+  else if (a === "--zoom-units") opt.zoomUnits = argv[++i].split(",").filter(Boolean);
+  else if (a === "--only") opt.only = argv[++i];
+  else if (a === "--layout-zoom") opt.layoutZoom = Number(argv[++i]);
   else if (a === "--out") opt.out = resolve(argv[++i]);
   else if (a === "--dpr") opt.dpr = Number(argv[++i]);
   else if (a === "--debug") opt.debug = resolve(argv[++i]);
@@ -210,6 +228,221 @@ async function pixelStats(page, png) {
 }
 
 // ---- the drive ---------------------------------------------------------------
+/** Open a case at ?case=<id>, require the app's chrome, press Run and wait
+ *  on the run ledger until the engine run has finished. */
+async function openAndRun(browser, base, id, w, h, tag) {
+  const page = await browser.newPage(w, h);
+  await page.setViewport(w, h, { dpr: opt.dpr });
+  const url = `${base}?case=${encodeURIComponent(id)}`;
+  log(`[open] ${url}`);
+  await page.goto(url, 90000);
+  const chrome = await requireSentinel(page, `opening ${id}`, (c) => c && c.mounted && c.wordmark);
+  log(`    sentinel: #root mounted, CHOUPO wordmark present; title "${chrome.title}"`);
+  await sleep(3000);
+  await debugShot(page, `${tag}-01-opened`);
+  const before = await page.evaluate(LEDGER);
+  await click(page, "button", "/^Run\\b/i", "the run control");
+  log("[run] pressed Run; waiting on the run ledger (data-engine-* on <html>)");
+  const t0 = Date.now();
+  let led = before;
+  for (;;) {
+    await sleep(3000);
+    led = await page.evaluate(LEDGER, { timeoutMs: 60000 }).catch(() => led);
+    if (led.unavailable) throw new Refusal(`engine unavailable: ${led.unavailable}`);
+    if (led.failed > before.failed) throw new Refusal(`the run of ${id} failed: ${led.failure}`);
+    if (led.done > before.done && led.state === "idle") break;
+    if ((Date.now() - t0) / 1000 > opt.runTimeout) throw new Refusal(`the run of ${id} did not finish in ${opt.runTimeout} s`);
+  }
+  log(`    run finished in ${((Date.now() - t0) / 1000).toFixed(0)} s: ${led.last}`);
+  await sleep(3000);
+  await debugShot(page, `${tag}-02-ran`);
+  return page;
+}
+
+/** The union of the screen boxes of the named React Flow nodes (a sector's
+ *  composite node is matched by its own name too). */
+const NODE_BOX = (ids) => `(() => {
+  const want = new Set(${JSON.stringify(ids)});
+  const rs = [...document.querySelectorAll('.react-flow__node')]
+    .filter((n) => { const id = (n.getAttribute('data-id') || '').replace(/^unit:/, '');
+      return want.has(id) || want.has(id.split('.').pop()); })
+    .map((n) => n.getBoundingClientRect());
+  const pane = document.querySelector('.react-flow')?.getBoundingClientRect();
+  if (!rs.length || !pane) return null;
+  const x0 = Math.min(...rs.map((r) => r.left)), x1 = Math.max(...rs.map((r) => r.right));
+  const y0 = Math.min(...rs.map((r) => r.top)), y1 = Math.max(...rs.map((r) => r.bottom));
+  return { n: rs.length, x0, x1, y0, y1, pane: { x: pane.x, y: pane.y, w: pane.width, h: pane.height } };
+})()`;
+const NODE_IDS = `[...document.querySelectorAll('.react-flow__node')].map((n) => n.getAttribute('data-id'))`;
+
+/** A point on the bare pane (no node, no panel) near (x, y), for a drag. */
+const BARE_POINT = (x, y) => `(() => {
+  for (let r = 0; r < 400; r += 12) for (const [dx, dy] of [[0,0],[r,0],[-r,0],[0,r],[0,-r],[r,r],[-r,-r],[r,-r],[-r,r]]) {
+    const e = document.elementFromPoint(${x} + dx, ${y} + dy);
+    if (e && e.classList && e.classList.contains('react-flow__pane')) return { x: ${x} + dx, y: ${y} + dy };
+  }
+  return null;
+})()`;
+
+async function mouse(page, type, x, y, extra = {}) {
+  await page.send("Input.dispatchMouseEvent", { type, x, y, button: "left", clickCount: 1, ...extra });
+}
+
+/** Frame the named units: zoom with the wheel at their centre until they
+ *  span the canvas, then drag the bare pane so their centre is the canvas
+ *  centre -- the same two gestures a reader uses.  TOP is the band the
+ *  canvas's own SHOW/legend panels occupy, kept clear. */
+const TOP = 150;
+async function frameUnits(page, ids) {
+  let box = await page.evaluate(NODE_BOX(ids));
+  if (!box) throw new Refusal(`Figure A: none of the units ${ids.join(", ")} is on the canvas `
+    + `(nodes: ${JSON.stringify(await page.evaluate(NODE_IDS))})`);
+  log(`    framing ${box.n} of ${ids.length} named units`);
+  const target = 0.94;
+  for (let k = 0; k < 60; k++) {
+    const f = Math.max((box.x1 - box.x0) / box.pane.w, (box.y1 - box.y0) / (box.pane.h - TOP - 40));
+    if (f >= target * 0.96) break;
+    const cx = (box.x0 + box.x1) / 2, cy = (box.y0 + box.y1) / 2;
+    const step = Math.min(100, Math.max(8, 400 * Math.log2(target / f)));
+    await page.send("Input.dispatchMouseEvent", { type: "mouseWheel", x: cx, y: cy, deltaX: 0, deltaY: -step });
+    await sleep(300);
+    box = await page.evaluate(NODE_BOX(ids));
+  }
+  for (let k = 0; k < 4; k++) {
+    const cx = (box.x0 + box.x1) / 2, cy = (box.y0 + box.y1) / 2;
+    const tx = box.pane.x + box.pane.w / 2, ty = box.pane.y + TOP + (box.pane.h - TOP) / 2;
+    if (Math.abs(tx - cx) < 4 && Math.abs(ty - cy) < 4) break;
+    const p0 = await page.evaluate(BARE_POINT(Math.round(box.pane.x + box.pane.w / 2), Math.round(box.pane.y + box.pane.h - 40)));
+    if (!p0) throw new Refusal("Figure A: no bare point on the pane to drag");
+    await mouse(page, "mousePressed", p0.x, p0.y);
+    for (let s = 1; s <= 10; s++)
+      await mouse(page, "mouseMoved", p0.x + (tx - cx) * s / 10, p0.y + (ty - cy) * s / 10, { buttons: 1 });
+    await mouse(page, "mouseReleased", p0.x + (tx - cx), p0.y + (ty - cy));
+    await sleep(500);
+    box = await page.evaluate(NODE_BOX(ids));
+  }
+}
+
+/** Fold the Case view's file tree: every top-level folder not named in
+ *  `open`, and below it every folder except a sector's own `system/`.  One
+ *  click per pass, then a pause, because React re-renders the tree
+ *  asynchronously and a second click on a stale DOM would undo the first. */
+const FOLD_TREE = (open) => `(async () => {
+  const KEEP0 = new Set(${JSON.stringify(open)});
+  let clicks = 0;
+  for (let guard = 0; guard < 200; guard++) {
+    const rows = [...document.querySelectorAll('p')].filter((e) => (e.textContent || '').trim().endsWith('/'));
+    let acted = false;
+    for (const p of rows) {
+      const group = p.closest('div');
+      const depth = Math.round((parseInt(group.style.paddingLeft || '4', 10) - 4) / 12);
+      const label = p.textContent.trim();
+      const keep = depth === 0 ? KEEP0.has(label) : depth === 1 ? label === 'system/' : false;
+      const expanded = group.parentElement && group.parentElement.children.length > 1;
+      if (!keep && expanded) { group.click(); clicks++; acted = true; break; }
+    }
+    if (!acted) break;
+    await new Promise((r) => setTimeout(r, 120));
+  }
+  return clicks;
+})()`;
+
+async function figureA(browser, base) {
+  const page = await openAndRun(browser, base, opt.flowCase, opt.flowW, opt.flowH, "A");
+  await click(page, "button", "/^Flowsheet$/", "the Flowsheet view");
+  await click(page, "button", "/^Stream colours/", "the Colours menu");
+  await click(page, "[role=menuitem]", "/^Temperature/", "Colour by > Temperature");
+  await page.send("Input.dispatchKeyEvent", { type: "keyDown", key: "Escape", code: "Escape", windowsVirtualKeyCode: 27 });
+  await page.send("Input.dispatchKeyEvent", { type: "keyUp", key: "Escape", code: "Escape", windowsVirtualKeyCode: 27 });
+  await sleep(1500);
+  const legend = await page.evaluate("/temperature/i.test(document.body.innerText)");
+  if (!legend) throw new Refusal("Figure A: no temperature legend on the canvas after Colour by > Temperature");
+  await frameUnits(page, opt.zoomUnits);
+  await mouse(page, "mouseMoved", 5, opt.flowH - 5);       // no hover card over the drawing
+  await sleep(1500);
+  const figA = join(opt.out, "gui_flowsheet.png");
+  await shot(page, figA);
+  log(`[figure A, panel a] ${figA}`);
+
+  //  The Case view: the file tree (the case IS text) beside a dictionary.
+  await page.setViewport(opt.treeW, opt.treeH, { dpr: opt.dpr });
+  await click(page, "button", "/^Case$/", "the Case view");
+  await sleep(2500);
+  const tree = await page.evaluate("/flowsheetDict/.test(document.body.innerText) && /constant\\//.test(document.body.innerText)");
+  if (!tree) throw new Refusal("Figure A: the Case view shows no file tree");
+  //  Fold every folder but --tree-open (the sector and the initial state),
+  //  as a reader would, so the whole case fits the window; then open the
+  //  sector's own flowsheetDict, the one file left in view under that name.
+  const folds = await page.evaluate(FOLD_TREE(opt.treeOpen), { awaitPromise: true, timeoutMs: 120000 });
+  log(`    folded ${folds} folder(s) of the Case tree`);
+  await click(page, "p", "/^flowsheetDict$/", "the sector's flowsheetDict");
+  await sleep(1500);
+  const figT = join(opt.out, "gui_casetree.png");
+  await shot(page, figT, { x: 0, y: 0, width: opt.treeClipW, height: opt.treeH });
+  log(`[figure A, panel b] ${figT}`);
+  await page.send("Target.closeTarget", { targetId: page.targetId }).catch(() => {});
+}
+
+async function figureB(browser, base) {
+  const page = await openAndRun(browser, base, opt.layoutCase, 1500, 900, "B");
+  await click(page, "button", "/^Reports$/", "the Reports view");
+  await sleep(2500);
+  await debugShot(page, "B-03-reports");
+  //  The pop-out calls window.open; capture the address it asks for and
+  //  open it as a page of our own in the SAME browser context, so it reads
+  //  the same localStorage stash the parent just wrote.
+  await page.evaluate("window.__opened = []; window.open = (u) => { window.__opened.push(String(u)); return null; }");
+  await click(page, "button", "/^Open in new tab$/", "the layout's 'Open in new tab'");
+  const opened = await page.evaluate("window.__opened");
+  if (!opened || !opened.length) throw new Refusal("the layout pop-out asked for no address");
+  const popUrl = new URL(opened[0], base).toString();
+  log(`[pop-out] ${popUrl}`);
+  //  The parent has written its stash (localStorage, shared by the context);
+  //  close it so its own copy of the 3D view stops competing for the CPU.
+  await page.send("Target.closeTarget", { targetId: page.targetId }).catch(() => {});
+  const tab = await browser.newPage(opt.layoutW, opt.layoutH);
+  await tab.setViewport(opt.layoutW, opt.layoutH, { dpr: opt.dpr });
+  //  Reduced motion: the view then starts with its flow animation OFF
+  //  (PlantLayout3D.tsx, `flow: !reduced`), so the scene is drawn when it
+  //  changes rather than every frame -- a software WebGL renderer redrawing
+  //  a print-resolution canvas every frame starves the page's main thread
+  //  (measured: a 120 s Runtime.evaluate timeout).  A still figure loses
+  //  nothing by it.
+  await tab.send("Emulation.setEmulatedMedia", { features: [{ name: "prefers-reduced-motion", value: "reduce" }] });
+  await tab.goto(popUrl, 90000);
+  await requireSentinel(tab, "the layout tab", (c) => c && c.mounted && c.head.length > 0);
+  //  The canvas: present, sized, and then NOT BLANK.
+  let rect = null;
+  for (let t = 0; t < 120 && !rect; t++) {
+    await sleep(1000);
+    rect = await tab.evaluate(`(() => { const c = [...document.querySelectorAll('canvas')]
+      .map((x) => x.getBoundingClientRect()).filter((r) => r.width > 200 && r.height > 200)
+      .sort((a, b) => b.width * b.height - a.width * a.height)[0];
+      return c ? { x: c.x, y: c.y, width: c.width, height: c.height } : null; })()`);
+  }
+  if (!rect) throw new Refusal("the layout tab drew no WebGL canvas within 120 s");
+  await sleep(8000);                         // let the scene settle
+  //  The view's Fit frames the whole plot with its margin; a print figure
+  //  wants the plant larger, so dolly in with the wheel (the reader's own
+  //  gesture) by --layout-zoom notches at the canvas centre.
+  for (let k = 0; k < opt.layoutZoom; k++) {
+    await tab.send("Input.dispatchMouseEvent", { type: "mouseWheel",
+      x: rect.x + rect.width / 2, y: rect.y + rect.height / 2, deltaX: 0, deltaY: -100 }, 120000);
+    await sleep(400);
+  }
+  await sleep(6000);
+  await debugShot(tab, "B-04-layout-tab");
+  const canvasPng = await shot(tab, null, rect);
+  const st = await pixelStats(tab, canvasPng);
+  log(`    canvas ${st.w}x${st.h} px: ${st.colours} colours, luminance sd ${st.lumStd.toFixed(1)}, `
+    + `${(100 * st.nonBackground).toFixed(1)} % off the dominant colour`);
+  if (st.colours < 40 || st.lumStd < 8 || st.nonBackground < 0.10)
+    throw new Refusal("Figure B: the 3D canvas is BLANK or near-blank by its own pixels -- nothing saved");
+  const figB = join(opt.out, "gui_layout3d.png");
+  await shot(tab, figB);
+  log(`[figure B] ${figB}`);
+}
+
 async function main() {
   requireBuilt();
   const { srv, port } = await serve(DIST);
@@ -222,87 +455,8 @@ async function main() {
     "--use-gl=angle", "--use-angle=swiftshader", "--enable-unsafe-swiftshader", "--ignore-gpu-blocklist",
   ]);
   try {
-    // ---- the case, run in the browser ----------------------------------------
-    const page = await browser.newPage(opt.flowW, opt.flowH);
-    await page.setViewport(opt.flowW, opt.flowH, { dpr: opt.dpr });
-    const url = `${base}?case=${encodeURIComponent(opt.case)}`;
-    log(`[open] ${url}`);
-    await page.goto(url, 90000);
-    const chrome = await requireSentinel(page, `opening ${opt.case}`, (c) => c && c.mounted && c.wordmark);
-    log(`    sentinel: #root mounted, CHOUPO wordmark present; title "${chrome.title}"`);
-    await sleep(3000);
-    await debugShot(page, "01-opened");
-
-    const before = await page.evaluate(LEDGER);
-    await click(page, "button", "/^Run\\b/i", "the run control");
-    log("[run] pressed Run; waiting on the run ledger (data-engine-* on <html>)");
-    const t0 = Date.now();
-    let led = before;
-    for (;;) {
-      await sleep(2000);
-      led = await page.evaluate(LEDGER, { timeoutMs: 60000 }).catch(() => led);
-      if (led.unavailable) throw new Refusal(`engine unavailable: ${led.unavailable}`);
-      if (led.failed > before.failed) throw new Refusal(`the run failed: ${led.failure}`);
-      if (led.done > before.done && led.state === "idle") break;
-      if ((Date.now() - t0) / 1000 > opt.runTimeout) throw new Refusal(`the run did not finish in ${opt.runTimeout} s`);
-    }
-    log(`    run finished in ${((Date.now() - t0) / 1000).toFixed(0)} s: ${led.last}`);
-    await sleep(3000);
-    await debugShot(page, "02-ran");
-
-    // ---- Figure A: the flowsheet coloured by temperature -----------------------
-    await click(page, "button", "/^Flowsheet$/", "the Flowsheet view");
-    await click(page, "button", "/^Stream colours/", "the Colours menu");
-    await click(page, "[role=menuitem]", "/^Temperature/", "Colour by > Temperature");
-    await page.evaluate("document.activeElement && document.activeElement.blur()");
-    await page.send("Input.dispatchKeyEvent", { type: "keyDown", key: "Escape", code: "Escape", windowsVirtualKeyCode: 27 });
-    await page.send("Input.dispatchKeyEvent", { type: "keyUp", key: "Escape", code: "Escape", windowsVirtualKeyCode: 27 });
-    await sleep(2500);
-    const legend = await page.evaluate("/temperature/i.test(document.body.innerText)");
-    if (!legend) throw new Refusal("Figure A: no temperature legend on the canvas after Colour by > Temperature");
-    const figA = join(opt.out, "gui_flowsheet.png");
-    await shot(page, figA);
-    log(`[figure A] ${figA}`);
-
-    // ---- Figure B: the plant layout, popped out into its own tab ---------------
-    await click(page, "button", "/^Reports$/", "the Reports view");
-    await sleep(2000);
-    await debugShot(page, "03-reports");
-    //  The pop-out calls window.open; capture the address it asks for and
-    //  open it as a page of our own in the SAME browser context, so it reads
-    //  the same localStorage stash the parent just wrote.
-    await page.evaluate("window.__opened = []; window.open = (u) => { window.__opened.push(String(u)); return null; }");
-    await click(page, "button", "/^Open in new tab$/", "the layout's 'Open in new tab'");
-    const opened = await page.evaluate("window.__opened");
-    if (!opened || !opened.length) throw new Refusal("the layout pop-out asked for no address");
-    const popUrl = new URL(opened[0], base).toString();
-    log(`[pop-out] ${popUrl}`);
-    const tab = await browser.newPage(opt.layoutW, opt.layoutH);
-    await tab.setViewport(opt.layoutW, opt.layoutH, { dpr: opt.dpr });
-    await tab.goto(popUrl, 90000);
-    await requireSentinel(tab, "the layout tab", (c) => c && c.mounted && /layout|plot plan/i.test(c.title + c.head));
-    //  The canvas: present, sized, and then NOT BLANK.
-    let rect = null;
-    for (let t = 0; t < 120 && !rect; t++) {
-      await sleep(1000);
-      rect = await tab.evaluate(`(() => { const c = [...document.querySelectorAll('canvas')]
-        .map((x) => x.getBoundingClientRect()).filter((r) => r.width > 200 && r.height > 200)
-        .sort((a, b) => b.width * b.height - a.width * a.height)[0];
-        return c ? { x: c.x, y: c.y, width: c.width, height: c.height } : null; })()`);
-    }
-    if (!rect) throw new Refusal("the layout tab drew no WebGL canvas within 120 s");
-    await click(tab, "label, button, [role=radio]", "/^High$/", "Quality > High").catch(() => {});
-    await sleep(8000);                         // let the scene settle (flow animation keeps rendering)
-    await debugShot(tab, "04-layout-tab");
-    const canvasPng = await shot(tab, null, rect);
-    const st = await pixelStats(tab, canvasPng);
-    log(`    canvas ${st.w}x${st.h} px: ${st.colours} colours, luminance sd ${st.lumStd.toFixed(1)}, `
-      + `${(100 * st.nonBackground).toFixed(1)} % off the dominant colour`);
-    if (st.colours < 40 || st.lumStd < 8 || st.nonBackground < 0.10)
-      throw new Refusal("Figure B: the 3D canvas is BLANK or near-blank by its own pixels -- nothing saved");
-    const figB = join(opt.out, "gui_layout3d.png");
-    await shot(tab, figB);
-    log(`[figure B] ${figB}`);
+    if (opt.only !== "B") await figureA(browser, base);
+    if (opt.only !== "A") await figureB(browser, base);
   } finally {
     await browser.close();
     srv.close();

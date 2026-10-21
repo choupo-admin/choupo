@@ -249,7 +249,7 @@ chemical-process simulation is not CFD; some adaptations are needed.
 | **View modes** | Render View / Spreadsheet / Plot / etc. swap on the central canvas | **On-demand workspaces** opened from the top menu (context-dependent lineup — see §2.5; `MenuBar.tsx` is the authority); each toggles over the canvas, Esc returns | Done in Fase A/B (2026-05-27).  The earlier bottom-tab strip was removed; workspaces are the canvas-view-mode pattern this row once flagged for "Layer 2". |
 | **Multi-view split** | Yes (4-up layout) | **No — pop-outs (new tab) instead** | Pop-outs let the user multi-monitor or window-tile, with the same outcome and far less code.  Browser tabs are persistent and survive a Choupo crash. |
 | **Time controls** | Timeline + slider for transient runs | Not yet — `choupoBatch` / `choupoCtrl` / `choupoSemiContinuous` trajectories have static plots | Layer 2 work. |
-| **Color By field selector** | Yes | Not yet | Layer 2 work — colour streams by T / dominant component / phase. |
+| **Color By field selector** | Yes | **Yes — the Colours menu** (`gui/src/ui/ColoursMenu.tsx`): colour by phase (the default, from the engine's vapour fraction), temperature or pressure, with a continuous legend on the canvas and a choice of gradient | Phase colour stays the semantic default; a property gradient is a deliberate display MODE the reader picks, never a repaint on interaction.  Colouring by dominant component is not offered. |
 
 ### The Property Explorer (interactive visualiser scratchpad) — adaptation, 2026-06-05
 

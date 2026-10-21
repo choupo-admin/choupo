@@ -176,6 +176,9 @@ Screenshot*.png
 *.png
 !docs/**/*.png
 !gui/public/**/*.png
+#  The white paper's front-end figures, written by
+#  paper/whitepaper/figures/capture_gui.mjs and \includegraphics'd by it.
+!paper/whitepaper/figures/*.png
 tutorials/*/*/code/.build/
 
 # Copyrighted reference papers --- never commit to the public repo
