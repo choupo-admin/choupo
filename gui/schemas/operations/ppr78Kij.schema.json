@@ -1,0 +1,50 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://choupo.org/schemas/operations/ppr78Kij.schema.json",
+  "title": "ppr78Kij operation",
+  "description": "The PPR78 / E-PPR78 group-contribution binary interaction parameters of the PR78 equation of state (Jaubert, Privat & Mutelet, AIChE J. 56 (2010) 3225, Eq. 7; Xu, Lasala, Privat & Jaubert, Int. J. Greenh. Gas Control 56 (2017) 126, Eq. 4), EVALUATED ONCE at a declared temperature and WRITTEN INTO THE CASE as a kij SET record (`recordType eosBinaryInteractionSet`) that the phi-phi package then declares beside its cited pair records (DEV.md 4c C123, route P: the kij a unit runs on are constants in a file the student can read, evaluated at the temperature the unit declares, never a hidden kij(T) inside the cubic). k_ij = [E_ij - (delta_i - delta_j)^2] / (2 delta_i delta_j) with delta_i = sqrt(a_i(T))/b_i taken from Choupo's own PR78 (one home) and E_ij the double sum over the molecules' DECLARED group decompositions on the table's A_kl, B_kl (MPa). A pair whose group interaction the table lacks REFUSES by name (never zero); a pair evaluated outside the T range its parameters were fitted on is written `extrapolated yes;` with the window, and every run that reads the set repeats it.",
+  "type": "object",
+  "properties": {
+    "groupTable": {
+      "type": "string",
+      "title": "Group-interaction table record",
+      "description": "Path, relative to the case, of a `recordType ppr78GroupTable;` record: `method`, `eos PengRobinson`, `source` (the article), `Tref 298.15 K`, `groups ( ... )`, `interactions ( { k; l; A; B; } ... )` in MPa, `decompositions { <component> { <group> <count>; } }` declared by the curator (the articles print none), and optionally `dataWindows ( { k; l; T ( lo hi ); } ... )`."
+    },
+    "T": {
+      "type": "number",
+      "exclusiveMinimum": 0,
+      "title": "Evaluation temperature",
+      "unit": "K",
+      "description": "The ONE temperature every kij of the set is evaluated at -- the declared temperature of the unit that will read the set."
+    },
+    "components": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "minItems": 2,
+      "title": "Components",
+      "description": "The components whose pairs are written; absent, every component of the case's system."
+    },
+    "output": {
+      "type": "object",
+      "title": "The set record written",
+      "description": "`{ record \"constant/parameters/PengRobinson/<name>.dat\"; }` -- inside the case (data/standards/ is refused). Each pair carries kij and the three terms of the quotient in MPa.",
+      "properties": {
+        "record": {
+          "type": "string",
+          "title": "Record path"
+        }
+      },
+      "required": [
+        "record"
+      ]
+    }
+  },
+  "required": [
+    "groupTable",
+    "T",
+    "output"
+  ],
+  "additionalProperties": false
+}

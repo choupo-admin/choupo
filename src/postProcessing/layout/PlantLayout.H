@@ -202,6 +202,40 @@ Description
     which must then end on the fence.  A crossing with no label is
     ANNOUNCED (`unlabelledCrossing`), never refused.  Published: the line,
     its length, each opening, each crossing; the draft carries no fence.
+
+    SECONDARY CONTAINMENT (2026-10-21, DEV.md 4c C134).  A case may declare
+    `bunds ( { name; kind bund|impounding; items ( ... ); region { xMin;
+    xMax; yMin; yMax; } | polygon ( { x; y; } ... ); wall { height; };
+    [pit { x; y; length; width; depth; }] capacityRule { basis
+    vesselVolume|heldLiquid; terms ( { fraction; of largest|total; } ... );
+    [allowances ( { name; volume|depth; reason; } ... );] source; reason; }
+    drain closedValve|sumpPump|openToSewer; source; reason; } )`.  A bund or
+    an impounding area is a DECLARED REGION round the items it holds, not a
+    placed item, so the overlap rule does not apply to it.  REFUSED: a
+    listed item outside the wall, a placed item inside it and not listed, a
+    wall through a footprint, an item indoors, an item in two containments,
+    two containments sharing a floor, a pit under an item or a road, a
+    containment across the fence, a missing capacity rule, and every
+    malformed declaration.  THE NET VOLUME: a bund's area x its wall height
+    less what the enclosed footprints occupy below the wall's top (the floor
+    at grade); an impounding area's REMOTE pit.  THE REQUIRED VOLUME: the
+    largest of the case's terms -- a fraction of the largest, or of the
+    total, volume the enclosed items that hold LIQUID (by their sizing's own
+    inventory) count on the declared basis -- plus the declared allowances
+    (a volume, or a depth over the catch area: rain).  No standard's table is
+    shipped (the usual ones grant no redistribution): every number is the
+    case's, with its source.  ANNOUNCED: a containment short of its rule
+    (`bundCapacity`), one that holds no liquid (`bundHoldsNothing`), an open
+    drain to the sewer (`bundDrainOpen`), an impounding pit inside its own
+    catch area (`pitNotRemote`), a road through a wall (`roadCrossesBund`), a
+    pipe through one below its top (`pipeThroughBund`), and -- on EVERY
+    layout -- an item in the open that holds liquid and that no containment
+    encloses (`unbundedLiquid`); a containment listing an item whose SIZER
+    refused (C79: left unplaced, `sizingRefused`) is published as declared
+    and its capacity NOT CHECKED (`bundNotChecked`, verdict `notChecked`),
+    never refusing the run.  Published: each containment's area, wall,
+    gross / displaced / net / required volumes, the governing term, the
+    verdict; the outline and the pit enter the plot.  The draft carries none.
 \*---------------------------------------------------------------------------*/
 
 #ifndef Choupo_plantLayout_PlantLayout_H

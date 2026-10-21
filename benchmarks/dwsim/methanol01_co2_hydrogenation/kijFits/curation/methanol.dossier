@@ -1,0 +1,81 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+  CURATION DOSSIER -- a scientific work record, NOT runtime property data.
+
+  NOTHING IN THIS FILE IS VISIBLE TO THE SOLVER.  Record resolution looks only
+  in <case>/constant/, data/standards/ and data/local/, so a file here is out
+  of its reach BY CONSTRUCTION -- not by convention.
+
+  Nothing here has been promoted.  Curation state belongs to the evidence
+  process; runtime trust belongs to the numerical record actually admitted
+  to data/standards/, and only an explicit human promotion moves one there
+  (bin/curate/promote-from-dossier).
+
+  MATURITY IS PER PROPERTY, not per component: the properties below may hold
+  different verdicts, and any whole-component summary is DERIVED from them
+  rather than stored beside them.
+
+  Regenerated on every run.  Hand edits are lost.
+\*-----------------------------------------------------------------------------*/
+
+component      methanol;
+reviewStatus   unreviewed;
+
+properties
+(
+{
+    property       binaryVLE.T_bubble;
+    operation      fit_methanol_water;   // type fitParameters
+    model          "NRTL binary pair, bubble-T residual at fixed P";
+    verdict        validated;
+
+    fittedParameters
+    {
+        equilibrium.equationOfState.binaryInteractions.methanol-water.kij  -0.0759553817929;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "ab9a08d03cc76473";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "../constant/experiments/methanol-water-bubble-j.jct.2009.11.020.dat";
+            doi       "10.1016/j.jct.2009.11.020";
+            sha256    "6a858b6788994573a11e01315b96cb3eeb42603a2e20fc7b234ddb4d04c7bbaf";
+            provenance measured;
+            archiveFile "j.jct.2009.11.020.xml";
+            system    "methanol + water";
+        }
+        {
+            role      validation;
+            dataset   "../constant/experiments/methanol-water-bubble-je200341c.dat";
+            doi       "10.1021/je200341c";
+            sha256    "b88f3599ac1499ff81756c347c67a3d86f679783fceeabbf2ce1a64feb5b3b84";
+            provenance measured;
+            archiveFile "je200341c.xml";
+            system    "methanol + water";
+            pressure  "101320.000000 Pa";
+        }
+        );
+
+        domain
+        {
+            coordinate  x1;
+            fit         { min 0.1; max 0.9; n 54; }
+            validation  { min 0.005; max 0.969; n 13; }
+        }
+    }
+
+    metrics
+    {
+        //  r2InSample: not computed by this operation (it reports chi-square).
+        //  rmsHeldOut: not computed by this operation (see aadHeldOutPct).
+        aadHeldOutPct     0.2137181113;
+        acceptanceMaxAADPct 0.55;   // DECLARED BEFORE the fit; part of the fingerprint
+        acceptanceOrigin  "declared before the fit, by curate04's rule on the same held-out set: its largest stated U95 (0.46 K) plus PR78's own pure-endpoint error at 101.325 kPa measured with no pair (water +1.47 K, the larger; methanol +0.45 K), as a percentage of the held-out mean T 352.05 K = 0.549 %, rounded up to two significant figures";
+    }
+}
+
+);

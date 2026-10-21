@@ -1,0 +1,61 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|        |     O ptimization  |  Licence:  GPL-3.0-or-later                   |
+\*-----------------------------------------------------------------------------*/
+/*  A kij FROM GROUPS, AT A DECLARED TEMPERATURE.  A cubic needs one binary
+    correction kij per pair, and a measured one exists for few pairs.  PPR78
+    (Jaubert & Mutelet) predicts it from the GROUPS each molecule is made of:
+
+        k_ij(T) = [ E_ij(T) - (delta_i - delta_j)^2 ] / ( 2 delta_i delta_j )
+        delta_i = sqrt(a_i(T)) / b_i                (Choupo's own PR78)
+        E_ij(T) = -1/2 SUM_k SUM_l (alpha_ik - alpha_jk)(alpha_il - alpha_jl)
+                       A_kl (298.15 / T)^(B_kl / A_kl - 1)
+
+    so kij DEPENDS ON T.  The `ppr78Kij` op evaluates it ONCE, at the
+    temperature it is told, and writes the matrix to a FILE -- a kij SET
+    record (`recordType eosBinaryInteractionSet;`) that a phi-phi package
+    then declares -- with the three terms of the quotient beside every
+    value, so the division can be redone by hand.
+
+    WHAT THIS CASE SHOWS.  The same three pairs at two temperatures:
+      * 280 K: every pair (CH4-CO2, CH4-H2, CO2-H2) lies inside the T range
+        of the binary data its group parameters were fitted on (Xu et al.
+        2017, Table 2) -- nothing is marked;
+      * 500 K: every pair lies above that range, and the set writes
+        `extrapolated yes;` with the window on each of them.
+    The components are each their own group, so alpha is 1 or 0 and E_ij
+    is the single group-pair term.
+
+    THE GROUP TABLE is constant/parameters/PPR78/xu2017.dat, the E-PPR78
+    subset (Xu, Lasala, Privat & Jaubert, Int. J. Greenh. Gas Control 56
+    (2017) 126-154, Table 3); its own header explains its transcription
+    and that it is `reviewStatus interim`.
+
+    WHAT IS NOT VALIDATED.  Nothing here is compared with a measurement:
+    the numbers are Eq. 4 evaluated on the cited table and the engine's own
+    PR78 a_i(T), b_i.  Whether those kij reproduce a phase diagram is not
+    asked here.
+
+    THE TWO SET FILES are run outputs: they carry the date they were
+    written, so they are named `*.proposal.dat`, which git ignores.
+*/
+
+operations
+(
+    {
+        name        kij_280K;
+        type        ppr78Kij;
+        groupTable  "constant/parameters/PPR78/xu2017.dat";
+        T           280 K;
+        components  ( CH4 CO2 H2 );
+        output      { record "constant/parameters/PengRobinson/ppr78_280K.proposal.dat"; }
+    }
+    {
+        name        kij_500K;
+        type        ppr78Kij;
+        groupTable  "constant/parameters/PPR78/xu2017.dat";
+        T           500 K;
+        components  ( CH4 CO2 H2 );
+        output      { record "constant/parameters/PengRobinson/ppr78_500K.proposal.dat"; }
+    }
+);

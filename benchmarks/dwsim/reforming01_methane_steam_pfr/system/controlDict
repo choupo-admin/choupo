@@ -1,0 +1,16 @@
+/*---------------------------------------------------------------------------*\
+  Benchmark E (developer-facing; benchmarks/README.md): the reference
+  simulator's "Hydrogen production through Methane Catalytic Steam
+  Reforming" sample -- ONE isothermal plug-flow reactor at 1000 K and 1 atm,
+  1 m3, on Xu & Froment's (1989) three-reaction intrinsic kinetics --
+  reproduced as a Choupo case on PR78 with E-PPR78 kij at the bed's declared
+  temperature, the three rates written in constant/reactions with every
+  parameter cited, and the equilibrium constants the article does not print
+  taken from Choupo's own formation data (system/propsDict, reactionGibbs).
+  See README and `reference`.
+\*---------------------------------------------------------------------------*/
+
+application   choupoSolve;
+description   "Benchmark E: methane steam reforming in an isothermal PFR at 1000 K, 1 atm -- Xu & Froment 1989 kinetics, PR78 + E-PPR78 kij at 1000 K";
+
+verbosity     2;

@@ -17,7 +17,7 @@ person.  For prose, groupings and worked examples instead of an
 alphabetical dump, read [`unit-ops.md`](unit-ops.md) beside it; to be
 taught rather than to look something up, read the User Guide.
 
-*98 of 98 registered operations carry a schema and are documented below.*
+*99 of 99 registered operations carry a schema and are documented below.*
 
 ## `FUG`  (FUG operation)
 
@@ -181,15 +181,17 @@ Multistage distillation column with constant molar overflow. Solved by the seque
 | `feeds` |   | array[object] | — | Maps each input stream to a stage — REQUIRED once the column has more than one input, since positional binding cannot say which stream en… |
 | `sideDraws` |   | array[object] | — | Product withdrawn between the ends. A draw's phase decides which internal traffic it removes, so it is a separation decision, not just a … |
 | `murphreeEfficiency` |   | number | - | Fraction of the equilibrium change each tray actually achieves; defaults to 1 (equilibrium stages). Any value other than 1 makes the stag… |
+| `condenser` |   | object | — | The condenser's own block. `type` decides what stage 1 IS, the same in every method: `total` (the default, announced when used) -- nStage… |
 | `hydraulics` |   | object | — | Present = run a hydraulic RATING on the converged profile, which the stage equations never do: can the trays pass the traffic? Give `diam… |
 
 ## `compressor`  (compressor operation)
 
-Gas-phase compressor. Given the shaft power and isentropic efficiency, the discharge pressure, discharge temperature and compression ratio follow from the isentropic-then-efficiency energy balance.
+Gas-phase compressor. Given the isentropic efficiency and EITHER the shaft power (the discharge pressure is then the result) OR the discharge pressure (the shaft power is then the result, from the isentropic path to that pressure divided by eta -- one inner solve, nothing searched for; since 2026-10-21, DEV.md 4c C123), the discharge temperature and compression ratio follow from the isentropic-then-efficiency energy balance. Exactly one of W_shaft and P_out is accepted.
 
 | Field | Required | Type | Unit | Description |
 |---|:-:|---|---|---|
 | `W_shaft` |   | number | W | Mechanical power delivered to the gas (positive). It may also arrive over an ENERGY WIRE instead of being written here: a consumer declar… |
+| `P_out` |   | number | Pa | The header the machine discharges into; must exceed the inlet pressure (a let-down is a valve, an expansion a turbine). The shaft power i… |
 | `eta` | ✓ | number | - | Isentropic efficiency w_isentropic / w_real (0 < eta <= 1). Lower eta dissipates more shaft work as heat. |
 
 ## `condenser`  (condenser operation)
@@ -325,6 +327,7 @@ Multistage distillation column with constant molar overflow. Solved by the seque
 | `feeds` |   | array[object] | — | Maps each input stream to a stage — REQUIRED once the column has more than one input, since positional binding cannot say which stream en… |
 | `sideDraws` |   | array[object] | — | Product withdrawn between the ends. A draw's phase decides which internal traffic it removes, so it is a separation decision, not just a … |
 | `murphreeEfficiency` |   | number | - | Fraction of the equilibrium change each tray actually achieves; defaults to 1 (equilibrium stages). Any value other than 1 makes the stag… |
+| `condenser` |   | object | — | The condenser's own block. `type` decides what stage 1 IS, the same in every method: `total` (the default, announced when used) -- nStage… |
 | `hydraulics` |   | object | — | Present = run a hydraulic RATING on the converged profile, which the stage equations never do: can the trays pass the traffic? Give `diam… |
 
 ## `electricLoad`  (electricLoad operation)
@@ -816,8 +819,8 @@ The full phase split of ONE fixed feed swept along temperature (at fixed pressur
 | `state` | ✓ | object | — | `{ P ...; composition { ... } }` when T is swept, `{ T ...; composition { ... } }` when P is swept. The swept axis declared here too is r… |
 | `vary` | ✓ | object | — | `{ variable T\|P; from ...; to ...; n ...; }` (or `step`). `from` may exceed `to`: a cooling scan is written top-down. Absent `n` and `st… |
 | `phaseSet` |   | string | — | The isothermalFlash unit's own word, read by the unit's own reader: VL (default), LL, VLLE, or auto (decided per grid point by the tangen… |
-| `alphaRich` |   | string | — | The flash unit's LL seeding aid: the component biased into liquid alpha for the initial guess. |
-| `betaRich` |   | string | — | The flash unit's LL seeding aid: the component biased into liquid beta for the initial guess. |
+| `alphaRich` |   | string | — | Names liquid alpha: on an LL flash the liquid richer in this component (relative to betaRich) is reported as alpha -- a label on the answ… |
+| `betaRich` |   | string | — | Names liquid beta: the counterpart of alphaRich (a label on an LL answer, a seed on a VLLE search). |
 | `output` | ✓ | object | — | `{ file <name>.csv; }` -- the per-point table, relative to the case directory: the swept variable, `solved`, `nPhases`, one amount column… |
 
 ## `pipe`  (pipe operation)
@@ -864,6 +867,17 @@ The PROPS BENCH of the multi-ionic concentration-polarisation model of Geraldes 
 | `ions` | ✓ | array[string] | — | Components with an aqueous bridge; charge and D0 come from their species records (an ion whose record carries no D0 refuses by name, nami… |
 | `closeBy` |   | string | — | That ion's bulk AND permeate concentrations are derived from the others by electroneutrality (as a table that reports only the measured i… |
 | `dataset` | ✓ | string | — | Path to a dataset in the experiments grammar: `columns ( { name C_b_<ion>; unit mol/m3; } ... { name C_p_<ion>; unit mol/m3; } { name J_v… |
+
+## `ppr78Kij`  (ppr78Kij operation)
+
+The PPR78 / E-PPR78 group-contribution binary interaction parameters of the PR78 equation of state (Jaubert, Privat & Mutelet, AIChE J. 56 (2010) 3225, Eq. 7; Xu, Lasala, Privat & Jaubert, Int. J. Greenh. Gas Control 56 (2017) 126, Eq. 4), EVALUATED ONCE at a declared temperature and WRITTEN INTO THE CASE as a kij SET record (`recordType eosBinaryInteractionSet`) that the phi-phi package then declares beside its cited pair records (DEV.md 4c C123, route P: the kij a unit runs on are constants in a file the student can read, evaluated at the temperature the unit declares, never a hidden kij(T) inside the cubic). k_ij = [E_ij - (delta_i - delta_j)^2] / (2 delta_i delta_j) with delta_i = sqrt(a_i(T))/b_i taken from Choupo's own PR78 (one home) and E_ij the double sum over the molecules' DECLARED group decompositions on the table's A_kl, B_kl (MPa). A pair whose group interaction the table lacks REFUSES by name (never zero); a pair evaluated outside the T range its parameters were fitted on is written `extrapolated yes;` with the window, and every run that reads the set repeats it.
+
+| Field | Required | Type | Unit | Description |
+|---|:-:|---|---|---|
+| `groupTable` | ✓ | string | — | Path, relative to the case, of a `recordType ppr78GroupTable;` record: `method`, `eos PengRobinson`, `source` (the article), `Tref 298.15… |
+| `T` | ✓ | number | K | The ONE temperature every kij of the set is evaluated at -- the declared temperature of the unit that will read the set. |
+| `components` |   | array[string] | — | The components whose pairs are written; absent, every component of the case's system. |
+| `output` | ✓ | object | — | `{ record "constant/parameters/PengRobinson/<name>.dat"; }` -- inside the case (data/standards/ is refused). Each pair carries kij and th… |
 
 ## `propertyPoint`  (propertyPoint operation)
 

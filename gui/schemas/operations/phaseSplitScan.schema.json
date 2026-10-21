@@ -94,12 +94,12 @@
     "alphaRich": {
       "type": "string",
       "title": "Alpha-rich component (LL/VLLE seed)",
-      "description": "The flash unit's LL seeding aid: the component biased into liquid alpha for the initial guess."
+      "description": "Names liquid alpha: on an LL flash the liquid richer in this component (relative to betaRich) is reported as alpha -- a label on the answer, never a bias on the search; on a VLLE flash it still seeds the starts."
     },
     "betaRich": {
       "type": "string",
       "title": "Beta-rich component (LL/VLLE seed)",
-      "description": "The flash unit's LL seeding aid: the component biased into liquid beta for the initial guess."
+      "description": "Names liquid beta: the counterpart of alphaRich (a label on an LL answer, a seed on a VLLE search)."
     },
     "output": {
       "type": "object",

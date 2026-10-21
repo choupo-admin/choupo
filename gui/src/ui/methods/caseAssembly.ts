@@ -138,9 +138,9 @@ export const CITES = {
   solverMergeYields: { file: "src/unitOperations/flowsheet/UnitInputs.cpp",
     line: 129, contains: "if (!out->found(key))" },
   flashModelWord: { file: "src/unitOperations/flash/IsothermalFlash.cpp",
-    line: 1718, contains: 'declaredModel != "rachfordRice"' },
+    line: 1846, contains: 'declaredModel != "rachfordRice"' },
   flashPressureDims: { file: "src/unitOperations/flash/IsothermalFlash.cpp",
-    line: 1626, contains: 'lookupScalar("P", Dims::pressure)' },
+    line: 1754, contains: 'lookupScalar("P", Dims::pressure)' },
   stateT: { file: STATE_IO, line: 3119,
     contains: 'lookupScalarOrDefault("T", 0.0, Dims::temperature)' },
   stateP: { file: STATE_IO, line: 3129,
@@ -185,7 +185,7 @@ export const CITES = {
     contains: 'entry.readme = files["README.md"]' },
   guiNoExpected: { file: "gui/src/cases/tutorials.ts", line: 115,
     contains: '"!../../../tutorials/**/expected"' },
-  guiVerbatim: { file: "gui/src/adapters/WasmAdapter.ts", line: 357,
+  guiVerbatim: { file: "gui/src/adapters/WasmAdapter.ts", line: 358,
     contains: "if (caseFiles.extraFiles) {" },
 } as const satisfies { [name: string]: Cite };
 

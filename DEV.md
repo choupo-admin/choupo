@@ -907,6 +907,150 @@ accepts today, and that is a policy call.
 
 ## 4c. Commissioned by Vítor (he ASKED for this; it is not a candidate)
 
+> **SESSION HANDOFF 2026-10-21 (Vitor stopped the session at 92 % of his
+> weekly usage; every general checkpointed to its branch).  START HERE.**
+> Nothing below is on main and nothing is re-recorded.
+> 1. **G30 + G32 (integ branch `integ/g30g32`, local commit `fddac7e8e` in
+>    worktree integ-g6; branch pushed to origin -- redo the merge from the two branches
+>    if the worktree is gone).**  The authorised full regression ran (719+
+>    results seen).  FAIL: extract01/02, extraction01, vlle01, ternary03,
+>    lithiumBrinePlant (G30's LL Newton -- golden rows to LIST TO VITOR
+>    before any re-record); solid-service-gate arm A9a pins vlle01's split
+>    literal (moves with the vlle01 rows); type-coverage (G32's `ppr78Kij`
+>    op has no case -- needs a witness); internal-states and mass-closure
+>    gates (not yet diagnosed); sealed-corpus (moody02, on main: unsealed);
+>    doc-reference (stale DEV.md note on the integ base, fixed on main);
+>    liquid-cp-fallback (red on main before).  Owed: one combined
+>    moved-rows list for G28 (column, 239 rows, branch
+>    `claude/c123-column-findings`), G30 and G32, shown to Vitor first.
+> 2. **G34 / C134 bunds (`claude/c134-bunds`, 7ed5fa0c5):** engine, GUI,
+>    Design Guide 21.7, witnesses on greenAmmoniaPEQ and ammonia02, arm (p)
+>    sabotage-verified.  Owed: `--gui` (one red: re-point the runLog
+>    lesson's `WasmAdapter.ts:290` citation to 291); moved rows for Vitor
+>    (greenAmmoniaPEQ plot/land 31 436 -> 38 142.6 m2, NPV -408.63 ->
+>    -408.92 MEUR; aceticAcid02 findings 3 -> 5; apalutamide01 1 -> 3).
+>    Sweep top items: flare radiation distance, drainage / fire-water
+>    run-off, bundle-pulling and crane access, toxic reach and refuge.
+> 3. **G33 / C128 slice 2 Hansen mixtures (`claude/c128-solvent-mixture`,
+>    0447cc0a6 WIP on d0ba7c6c2):** validated before its rebase; redo the
+>    build, codeMap, props/tutorials guide PDFs, gate manifest, the three
+>    solvent witnesses, `--gui`, `--fast`.  Its own commit `eaf8b6a42`
+>    fixes the SAME missing ln-gamma term in `StabilityTest.cpp` as G30 --
+>    merge one, drop the other.
+> 4. **G35 / C118 stage 2 phase-split lens (`claude/c118-phase-split-lens`,
+>    bcf993f6c):** built; `--gui` never finished, page never seen in a
+>    browser.  For Vitor: crystal boxes start unticked; the ice phase is
+>    named `solid_<component>`.
+> 5. **G36 / C126 GUI figures (`claude/c126-gui-figures`, ccc0b4e37 WIP):**
+>    the capture script only, never run end to end.  The commander's brief
+>    was wrong twice: the main window has no left case tree (it lives in
+>    the Case view), and greenAmmoniaPEQ_baseCase has no sectors -- so
+>    Figure A on greenAmmonia03_basicDesign zoomed to the synthesis loop,
+>    Figure B (3D) on greenAmmoniaPEQ_baseCase.  Also stale:
+>    gui-credo.md "Color By ... Not yet" (ColoursMenu.tsx ships it).
+> 6. Open for Vitor from G32: the compressor computes a two-phase feed as
+>    vapour in silence; the adiabatic mixer on benchmark case A.
+> **APPROVED 2026-10-21 (Vitor, after the list was shown: "sim eu dei-te a
+> autoridade para assumires responsabilidade!"):** re-record G28's 239
+> column rows (25 cases; 204 the total condenser's duty to the
+> distillate's bubble point, 35 the declared condenser type / stage-1
+> rule) and G30's LL rows (extract01, extract02, extraction01, vlle01,
+> ternary03, lithiumBrinePlant; solid-service A9a's vlle01 literal and
+> internal-states (v)/(s) move with them) -- each set RE-MEASURED first,
+> and any row outside it goes back to him.  Then integrate G28, then
+> G30 + G32 (with a `ppr78Kij` witness), the GUI figures, section 6 of the
+> paper on main, and the PDF for his review.  userOp03's 133 % mass
+> closure is NOT from these branches (none touches the CSTR) -- to
+> diagnose separately.
+> **END OF SESSION 2026-10-21 (Vitor at 2 % usage).**  On main: G28 (the
+> column) and C134 (bunds, 5fdec2479).  G30 + G32: see G37's branch / main
+> log -- if main has no benchmark cases for the open reference simulator, redo step 2 from the APPROVED
+> paragraph above.  Papers, each on its own branch, all DRAFT:
+> `claude/c126-gui-figures` (white paper v2.3, 21 pp, browser figures with
+> the bunds, section 6.4 on five cases), `claude/c126-joss-paper`
+> (paper/joss/, 1622 words, the open reference simulator named), `claude/c126-cace-paper`
+> (paper/cace/, Computers & Chemical Engineering, 29 pp; the guide for
+> authors could not be read -- every journal assumption is a TODO at the
+> top of main.tex).  Merge the three paper branches onto main after G30 +
+> G32 land and the 6.4 numbers are re-read against main.  Still to
+> trace: nine apalutamide01 rows drifting within tolerance after G28, and
+> aceticAcid02's new unpinned `Q_condensate_m3_s` KPI.  Then the compressor
+> refusal and the adiabatic-mixer fix (decided above), then C135.
+> **SATURDAY (Vitor, 2026-10-21): revise the second article from the
+> external review** kept at `paper/cace/reviews/2026-10-21-external-review.md`
+> on branch `claude/c126-cace-paper` (e323f0447): major revision; the
+> recommended order is (1) freeze a version and fix the central cases --
+> Cavett's 88 % mixer imbalance is the adiabatic-mixer fix decided above,
+> and convergence / physical consistency / acceptance told apart; (2) redo
+> the benchmark as two controlled exercises (same models vs different
+> models), the sample-file audit to a supplement; (3) nanofiltration with
+> equations and a data figure, curation's acceptance rule argued
+> statistically; (4) rewrite the introduction against the state of the art
+> property by property, less internal vocabulary, fix "hand-written C++"
+> and the incomplete references.
+> **G30 + G32 LANDED (G37, main ff5c40d12; G28 at 6f4faf2c5)**, each step
+> validated before push (build clean, `--gui` and `--fast` green, 118
+> cases in reach: exactly the six approved LL cases moved, 35 rows).  Left
+> unpinned for Vitor: aceticAcid02's new `Q_condensate_m3_s` KPI, and 70
+> KPI rows lithiumBrinePlant never carried.  userOp03's 133 % mass
+> closure is on the step-1 build too (not from these branches; the gate
+> sees it only when the case's `code/` was built).  **THE SITE IS NOT
+> PUBLISHING:** publish-site runs 974, 975, 977, 978 failed at the publish
+> step with "Disk quota exceeded" (build, verify and the EduTool smoke
+> passed) -- first thing next session.  JOSS paper revised from its
+> external review (`claude/c126-joss-paper`, cbb354786, 1594 words);
+> JOSS eligibility needs more than six months of public development --
+> likely not before January 2027, to be confirmed by Vitor.
+> **ALSO SATURDAY: the JOSS paper's three-reader review**, kept at
+> `paper/joss/reviews/2026-10-21-reader-review.md` (5db97a66a): reorganise
+> around three capabilities, each with one demonstrated example -- study a
+> process (the green-ammonia design chain), investigate a model (batch
+> electrodialysis), teach with AI (the exercise is Vitor's to choose:
+> the reviewer's five steps or one of his own).
+> **THE TWO OPEN DECISIONS, DELEGATED (Vitor, 2026-10-21: "Nao me pecas
+> nada e decide tu de forma sensata").  Commander's decisions:**
+> (a) **Compressor with liquid in its suction: REFUSE by name**, quoting the
+> resolved vapour fraction and two remedies (a knock-out drum upstream, or
+> a pump if the stream is a liquid).  Reason: a compressor is a vapour
+> machine and liquid in the suction is a design fault in practice;
+> computing on the vapour root of the overall composition in silence is
+> the "state a unit computes with is not the state its streams carry"
+> family; wet compression is new physics nobody asked for.  Case D gets a
+> knock-out drum before C5, stated in its README as a departure from the
+> sample (whose compressor ignores the phase).
+> (b) **The adiabatic mixer: FIX it** -- the outlet is the state of equal
+> enthalpy resolved on the surface the report prices (`flashState::
+> priceState` with the split resolved, as C77 did for the cstr / pfr),
+> published with its vapour fraction; "a mixer does not flash" stays true
+> of the DECLARED-T mixer only.  It is an enumerated member of CLAUDE.md
+> 6's family, and case A's as-built variant shows it creating 49.97 MW.
+> Moved rows are recorded by the commander (delegated) and listed in the
+> commit.  Both AFTER G37's integration lands, on the new main.
+> **INTEGRATED 2026-10-21, step 1 (G28 on main).**  The 239 approved rows
+> re-measured first: exactly that set moved, every new value within 1e-6 of
+> the list; the list spans 26 cases, not 25.  Recorded with them: 218 rows
+> that moved inside their tolerance in the same cases (largest 8.1e-5,
+> column08 T_top) and column18_partial_condenser.  NOT pinned, for Vitor: a
+> row `--record` ADDED, aceticAcid02_plant `kpi lightsColumn
+> Q_condensate_m3_s` (1.0548e-4 m3/s), which main's golden never carried.
+> The operation schemas gained `condenser { type total|partial; }` (column18
+> uses it; check_schema_coverage refused it).
+> **INTEGRATED 2026-10-21, step 2 (G30 + G32 on main).**  Re-measured over
+> 118 cases in reach (LL/VLLE, extractors, activity models, PR, compressor,
+> phaseChanger, bubble point, the G28 columns): exactly the six approved
+> cases moved, 35 rows, all recorded; `--record` also ADDED 70 kpi rows to
+> lithiumBrinePlant that its golden never carried -- taken out, NOT pinned.
+> Solid-service A9a's literal is now 0.98297949.  `ppr78Kij` has a witness,
+> `tutorials/props/molecular/ppr78Kij01_ch4_co2_h2`.  moody02 and
+> reconcile01 (both unsealed on main) sealed with bin/choupo-import, each
+> reproducing its golden.  userOp03's 133.333 % closure measured on a build
+> of step-1 main too: not from these branches.  check_mass_closure sees it
+> only when the case's `code/` has been built (a fresh tree leaves it
+> "unrun"), which is why the integ sweep saw it and a gate run alone does
+> not.  publish-site has failed at its PUBLISH step since run 974 (before
+> this integration): `fatal: unable to write loose object file: Disk quota
+> exceeded` -- build, verify and the EduTool smoke all pass.
+
 > **C84. AN EDUTOOL: MATERIALS OF CONSTRUCTION, SEALS AND GASKETS -- THE
 > PARETO (Vítor, 2026-10-17: "Temos algum EduTools sobre materiais
 > selantes de bombas vedantes etc? ... sem aço carbono não havia engenharia
@@ -1357,6 +1501,25 @@ accepts today, and that is a policy call.
 > final; }` layout draws what the steady flowsheet and the sizing pass
 > already hold.
 
+> **C135. A kij THAT VARIES WITH T, REGRESSED AND READ PER UNIT (Vitor,
+> 2026-10-21: "Nos conseguimos fazer melhor e arranjar kij que variem com
+> T?" -- then "Ok" to the plan below).**  Measured: on C123 case D every
+> gas-methanol pair (H2, CO, CO2) failed its held-out isotherm (AAD 20-31 %
+> against a 5 % band) because the residual changes SIGN between isotherms
+> -- one constant kij is a compromise; the data want kij(T).  Plan, inside
+> Vitor's own ruling of 2026-10-20 ("Rota P, kij a T declarada": every kij
+> a unit runs on is a constant in a file, evaluated at the unit's declared
+> T): (1) a pair record may carry a kij(T) form, e.g. kij = a + b(1/T -
+> 1/Tref), with its evidence, band and verdict; (2) `fitParameters`
+> regresses the two parameters on the fitting isotherms and judges the
+> held-out one; (3) the per-unit kij file is evaluated at each unit's
+> declared T and announced (case D: the 360 K separator and the 510 K
+> reactor get different kij, both visible).  No promise the gas pairs pass
+> the band -- the held-out isotherm decides.  Not chosen: PPR78 for
+> methanol (whether the published group tables cover it is UNVERIFIED) and
+> a gE mixing rule (PSRK / MHV2: an architecture change, his).  ORDER: after
+> the white paper's first draft (C126).
+
 > **C134. SECONDARY CONTAINMENT (BUNDS / RETENTION BASINS) IN THE PLANT
 > LAYOUT, AND A SWEEP FOR WHAT ELSE A LAYOUT ROUTINELY CARRIES (Vitor,
 > 2026-10-21, from a colleague: "no layout faltam as bacias de retencao
@@ -1395,6 +1558,19 @@ accepts today, and that is a policy call.
 > pulling space), tank-to-tank spacing, cooling-tower drift.  Status:
 > dispatched (G34); the sweep's list comes back to Vitor before anything
 > else is built.
+> **LANDED 2026-10-21** (merge `7a35f9646`, rows `d40aabd86`, fix
+> `a9f46a8c8`).  Re-recorded on the commander's authority, re-measured
+> first: greenAmmoniaPEQ_baseCase plotArea / landArea 31 436.02 -> 38 142.56
+> m2, land 1.5718 -> 1.9071 MEUR, NPV -408.635 -> -408.924 MEUR (arm (j)'s
+> published <=> pinned row is that plotArea); aceticAcid02_plant findings
+> 3 -> 5 and apalutamide01_tablets 1 -> 3, each with its four new
+> `unbundedLiquid` rows.  NOT recorded, outside the families: nine
+> apalutamide01 rows drifting within tolerance (loopGas T 264.70728 ->
+> 264.70957 K and the SD / blower / condensatePot / n2Mix rows after it)
+> and aceticAcid02's new `kpi lightsColumn Q_condensate_m3_s` (G28).
+> Found on landing by check_design_sheet (q)/(w): a bund listing a tank
+> whose sizer REFUSED refused the run, against C79; it is now published
+> with verdict `notChecked` and `bundNotChecked` announced.
 
 > **C133. THE DELIVERABLE DRAWINGS: THE PFD WITH ITS STREAM TABLE, AND
 > THE SPECIFICATION SHEETS, AS PDFS IN THE SECTOR/UNIT HIERARCHY (Vitor,
@@ -1916,6 +2092,16 @@ accepts today, and that is a policy call.
 > `assumed ( ... )` (ColumnSize.H) and the unit on every value, not the
 > `declared / fromUnit / fromRecord` marks (they exist on the exchanger
 > sheet, C124; to widen in the next read).
+> **GUI figures (Vitor, 2026-10-21, after reading v2.1: "O paper esta
+> fixe! Mas faltam umas imagens de layout (por exemplo da amonia verde) e
+> do flowsheet para mostrar as features que o tornam semelhante ao
+> paraview").**  Commander: agree -- the visualiser subsection is text
+> only.  Two figures captured from the browser on a real run: (A) the
+> flowsheet view of a sectored plant (case tree, streams coloured by a
+> variable, the boundary balance, the stream table) and (B) the green
+> ammonia 3D layout; a reproducible capture script, so the figures are
+> regenerated from the cited release (TODO item 2) and pick up C134's
+> bunds then.  Dispatched to G36 (`claude/c126-gui-figures`).
 
 > **C125. WHY THE BREAKTHROUGH PAGES ARE SLOW (Vitor, 2026-10-21: "Porque
 > isto e tao lento? breakthrough e do lub-scaleup").**  Measured by the
@@ -2553,6 +2739,10 @@ accepts today, and that is a policy call.
 > sabotages).  Record `docs/design/a-phase-split-scan-along-t-or-p.md`.
 > Stage 2 (the lens) reads the block, after G18; stage 3 (excipient
 > records) still open.
+> **Stage 2 DISPATCHED 2026-10-21 (G35, `claude/c118-phase-split-lens`)**
+> after Vitor asked whether the Explorer already had the T/P excursion at
+> constant overall composition (it did not: the op is on main, the lens
+> was queued behind C116, now online).
 
 > **C117. THE CURATION WORKFLOW: AN LLM AUTHORS, THE EXPLORER SHOWS, THE
 > STUDENT DECIDES (Vitor, 2026-10-20: he had planned an interactive GUI for

@@ -1,0 +1,46 @@
+/*---------------------------------------------------------------------------*\
+  Benchmark D -- the system the three METHANOL-PAIR FITS run on: phi-phi
+  PR78 over the four components the fits need, with the three methanol kij
+  -- and, added after the plant's first run, methanol-water -- as INLINE
+  values under regression (the one inline form the builder
+  accepts, the varying operation named by `variedBy`; it is announced on every build).  The three
+  gas-gas pairs are not declared: each fit prices a BINARY (x_gas, x_methanol,
+  everything else zero), so they enter no residual.
+
+  kijFits/system/propsDict varies each kij per iteration and writes the
+  fitted pair as a record under ../constant/parameters/PengRobinson/, which
+  the plant case declares by `source`.  Nothing here is read by the plant.
+\*---------------------------------------------------------------------------*/
+
+recordType    thermophysicalPropertySystem;
+schemaVersion 2;
+
+components ( methanol H2 CO CO2 water );
+
+equilibrium
+{
+    formulation phiPhi;
+
+    equationOfState
+    {
+        model      PengRobinson;
+        mixingRule vanDerWaalsOneFluid;
+        binaryInteractions
+        {
+            H2-methanol  { i H2;  j methanol;  kij 0.0;  variedBy fitParameters; }
+            CO-methanol  { i CO;  j methanol;  kij 0.0;  variedBy fitParameters; }
+            CO2-methanol { i CO2; j methanol;  kij 0.0;  variedBy fitParameters; }
+            methanol-water { i methanol; j water;  kij 0.0;  variedBy fitParameters; }
+        }
+    }
+
+    liquid { fugacityRoute equationOfState; root liquid; }
+    vapour { fugacityRoute equationOfState; root vapour; }
+}
+
+caloric
+{
+    energyBasis elementsDatum;
+    liquid { departureRoute equilibriumEquationOfState; root liquid; }
+    vapour { departureRoute equilibriumEquationOfState; root vapour; }
+}

@@ -46,14 +46,27 @@ struct ProbeOutcome
     bool     ok;
 };
 
-// Helper: evaluate tm at a given Y (raw mole-number vector).
-scalar evalTm(const sVector& Y, const sVector& h)
+// The modified tangent-plane distance at a raw mole-number vector Y, with
+// lnGamma = ln gamma_i(y) at its composition y = Y / sum Y:
+//
+//     tm(Y) = 1 + sum_i Y_i ( ln Y_i + ln gamma_i(y) - h_i - 1 )
+//
+// THE ln gamma TERM IS THE TEST (DEV.md 4c C123, finding 5).  This helper
+// used to omit it, which made `tm` equal -g^E(y)/RT at the trivial point
+// Y = z and -(sum Y_i ln gamma_i) off it: any liquid with a positive excess
+// Gibbs energy above 1e-3 RT was declared UNSTABLE, so the LL flash ran its
+// minimisation on stable feeds and the advisory on the converged phases
+// fired "tm = -0.18 ... -0.33" on phases that reproduce measured tie lines
+// -- the phases' own -g^E/RT.  A point with the true tm < 0 is a PROOF that
+// splitting off a little of y lowers the Gibbs energy; a point of the old
+// function proved nothing.
+scalar evalTm(const sVector& Y, const sVector& lnGamma, const sVector& h)
 {
     scalar tm = 1.0;
     for (std::size_t i = 0; i < Y.size(); ++i)
     {
         const scalar Yi = std::max(Y[i], 1.0e-30);
-        tm += Yi * (std::log(Yi) - 1.0) - Yi * h[i];
+        tm += Yi * (std::log(Yi) + lnGamma[i] - h[i] - 1.0);
     }
     return tm;
 }
@@ -81,35 +94,48 @@ ProbeOutcome runProbe(const Phase&    phase,
     //  binary and ternary LLE cases the simulator currently targets.
     // -----------------------------------------------------------------
     sVector bestY   = Y0;
-    scalar  bestTm  = evalTm(Y0, h);
+    scalar  bestTm  = std::numeric_limits<scalar>::infinity();
 
-    sVector y(n);
-    int it = 0;
-    for (; it < maxIter; ++it)
+    //  ln gamma at the composition of a raw Y, and tm there (the trajectory
+    //  minimum is taken over every Y visited, the start and the last
+    //  iterate included -- each evaluated with ITS OWN ln gamma).
+    sVector y(n), lnG(n);
+    auto lnGammaAt = [&](const sVector& Yv) -> bool
     {
         scalar sumY = 0.0;
-        for (auto v : Y) sumY += v;
-        if (sumY <= 0.0) break;
-        for (std::size_t i = 0; i < n; ++i) y[i] = Y[i] / sumY;
+        for (auto v : Yv) sumY += v;
+        if (!(sumY > 0.0)) return false;
+        for (std::size_t i = 0; i < n; ++i) y[i] = Yv[i] / sumY;
+        const auto gamma_y = phase.activityCoefficients(T, y);
+        for (std::size_t i = 0; i < n; ++i)
+            lnG[i] = (gamma_y[i] > 0.0) ? std::log(gamma_y[i]) : 0.0;
+        return true;
+    };
+    auto visit = [&](const sVector& Yv)
+    {
+        const scalar tm = evalTm(Yv, lnG, h);
+        if (tm < bestTm) { bestTm = tm; bestY = Yv; }
+    };
 
-        auto gamma_y = phase.activityCoefficients(T, y);
+    int it = 0;
+    bool haveGamma = lnGammaAt(Y);
+    for (; haveGamma && it < maxIter; ++it)
+    {
+        visit(Y);
 
         sVector Y_new(n);
         scalar delta = 0.0;
         for (std::size_t i = 0; i < n; ++i)
         {
-            const scalar lnGamma = (gamma_y[i] > 0.0) ? std::log(gamma_y[i]) : 0.0;
-            Y_new[i] = std::exp(h[i] - lnGamma);
+            Y_new[i] = std::exp(h[i] - lnG[i]);
             delta   += std::abs(Y_new[i] - Y[i]);
         }
 
-        // Trajectory minimum of tm.
-        const scalar tmNew = evalTm(Y_new, h);
-        if (tmNew < bestTm) { bestTm = tmNew; bestY = Y_new; }
-
         Y = Y_new;
+        haveGamma = lnGammaAt(Y);
         if (delta < ssTol) { ++it; break; }
     }
+    if (haveGamma) visit(Y);       // the last iterate, with its own ln gamma
 
     // Final composition + tm taken from the best point seen.
     scalar sumY = 0.0;

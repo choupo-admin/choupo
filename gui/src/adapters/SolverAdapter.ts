@@ -791,6 +791,44 @@ export interface PlantLayout {
   /** THE CAR PARKS (DEV.md 4c C96): each `carPark` item's bays as the engine
    *  laid them out; absent when none is placed. */
   carParks?: LayoutCarPark[];
+  /** SECONDARY CONTAINMENT (DEV.md 4c C134): every bund or impounding area the
+   *  case declared, as the engine checked it -- its outline, its wall, the
+   *  volumes it holds and needs, and the verdict -- with the engine's rule in
+   *  `bundRule`.  Absent when the case declares none.  The GUI computes no
+   *  volume. */
+  bunds?: LayoutBund[];
+  bundRule?: string;
+}
+
+/** A bund (a wall round the items) or an impounding area (a kerbed catch
+ *  area sloped to a remote pit), as the engine checked it (DEV.md 4c C134).
+ *  Volumes in m3, lengths in m; `outline` the wall's plan corners. */
+export interface LayoutBund {
+  bund: string;
+  containment: "bund" | "impounding";
+  verdict: string;          // adequate | inadequate | holdsNothing | notChecked
+  regionFrom: string;       // rectangle | polygon
+  area: number;
+  wallHeight: number;
+  grossVolume: number;
+  displacedVolume: number;
+  netVolume: number;
+  requiredVolume: number;
+  largestHeld: number;
+  totalHeld: number;
+  basis: string;            // vesselVolume | heldLiquid
+  governing: string;        // largest | total
+  drain: string;
+  pit?: { x: number; y: number; length: number; width: number; depth: number };
+  items: string[];
+  outline: [number, number][];
+  held: { item: string; volume: number; displaced: number }[];
+  terms: { fraction: number; of: string; volume: number }[];
+  allowances: { name: string; from: string; depth: number; volume: number; reason: string }[];
+  ruleSource: string;
+  ruleReason: string;
+  source: string;
+  reason: string;
 }
 
 /** The vehicle every truck route is checked against (DEV.md 4c C96). */

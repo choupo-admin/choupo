@@ -813,7 +813,8 @@ release's zone envelope or downwind of it is announced (`exposedInZone`,
 `exposedDownwind`) -- what must stay usable when the release happens, ignition
 source or not.  Considered and NOT added: the fire-water ring main and its
 hydrants (a pipe network with its own hydraulics, invented positions if
-drawn), bunds round the tank farm, escape routes inside the units, a toxic
+drawn), bunds round the tank farm (BUILT since, §18, as a declared region
+rather than a placed item), escape routes inside the units, a toxic
 refuge in the control room -- each named in the case and in the guide's
 "not checked" list.
 
@@ -989,4 +990,122 @@ register and the legend list indoor piping apart from what is missing
 roof penetration (a penetration lies on a side wall); an item's access
 clearance inside its room; a mezzanine or plinth (an item stands on its
 room's floor); a bund as a placed item (a wall round two items would
-overlap both -- the case says it in words).
+overlap both -- so a bund is NOT an item: since §18 it is a declared
+REGION round the items it holds, to which the overlap rule does not
+apply).
+
+## 18. Slice 10 -- secondary containment: bunds and impounding areas (DEV.md 4c C134)
+
+**Asked.**  Vítor, 2026-10-21, from a colleague: *"no layout faltam as
+bacias de retenção nas zonas onde as boas práticas e as normas mandam pôr!
+Vê se há mais alguma coisa que é muito habitual fazer que nos escapou.
+Podes aproveitar e pôr as bacias de retenção no caso que falta da Amónia"*.
+§15 had considered a bund and not added it, for the reason §17 repeats: a
+wall round two items, placed as an item, overlaps both.
+
+**A bund is a REGION, not an item.**  `bunds ( { name; kind bund|impounding;
+items ( ... ); region { xMin; xMax; yMin; yMax; } | polygon ( { x; y; } ...
+); wall { height; } [pit { x; y; length; width; depth; }] capacityRule {
+basis vesselVolume|heldLiquid; terms ( { fraction; of largest|total; } ...
+); [allowances ( { name; volume | depth; reason; } ... );] source; reason; }
+drain closedValve|sumpPump|openToSewer; source; reason; } )`.  The overlap
+rule never sees it.  The geometry it must satisfy is the WALL's: every
+listed item stands inside it, every placed item inside it is listed (what
+stands in a basin takes up its volume, so the list says everything that is
+there), no wall runs through a footprint -- each REFUSED, because a wall
+that cannot be built is not a layout (the road-through-an-item rule).
+Also refused: an item indoors (the ROOM holds an indoor spill), an item in
+two containments, two containments sharing a floor (sharing a wall is
+allowed), a pit under an item or a road, a containment across the fence,
+a bund with a pit, an impounding area without one, and a missing capacity
+rule.
+
+**Two kinds, because the practice has two answers.**  A BUND holds the
+spill where it falls: its net volume is its area times its wall height less
+what the enclosed footprints occupy below the wall's top -- a vertical
+cylinder's disc, a lying cylinder's CIRCULAR SEGMENT (a bullet in a bund
+displaces far less than its bounding box), any other item's rectangle, the
+floor at grade.  An IMPOUNDING area is a kerbed catch area that leads the
+spill AWAY to a remote pit, open and below grade, whose volume is what it
+holds; it is the answer for a pressurised liquefied gas, whose spill
+flashes in part and pools cold and must not lie under the vessels.  The
+case says which, and why.
+
+**The rule is the case's.**  No code's table is shipped (they grant no
+redistribution, C16).  The REQUIRED volume is the largest of the case's
+terms -- a fraction of the LARGEST, or of the TOTAL, volume the enclosed
+items count on the declared basis -- plus the allowances.  The basis is
+read, never typed: `vesselVolume` is each item's sized `V_R` (what spills
+if it is full), `heldLiquid` is the liquid its sizing's inventory holds
+(`ItemInventory`, the sum of its liquid phases' `V x fraction`).  Only the
+enclosed items that hold liquid by that inventory count; a containment
+round none says so (`bundHoldsNothing`).  A `depth` allowance is a design
+rainfall over the catch area and, for an impounding area, the open pit.
+The rule is published as one sentence (`layout.bundRule`).
+
+**Announced, the run going on** (stderr, the caveat block, the JSON): a
+containment short of its rule (`bundCapacity`, value the net and limit the
+required volume), an open drain to the sewer (`bundDrainOpen`), an
+impounding pit inside its own catch area (`pitNotRemote`), a road whose
+paved surface crosses a wall (`roadCrossesBund`), a pipe whose horizontal
+run crosses a wall BELOW its top (`pipeThroughBund`; a pipe carried over
+the wall, as the rack routes do, is not one) -- and, on EVERY layout, an
+item in the open that holds liquid by the run's own inventory and that no
+containment encloses (`unbundedLiquid`).  A containment that lists an item
+whose sizer REFUSED keeps the C79 rule rather than refusing the run: the
+item is left unplaced (`sizingRefused`), the wall is published as declared,
+and its capacity is NOT CHECKED (`bundNotChecked`, verdict `notChecked`) --
+what it must hold depends on a size nobody computed, and none is invented
+(found when `check_design_sheet`'s refused-store probes met the first
+witness with a bund).  Short of the rule is ANNOUNCED
+and not refused for the reason a short distance is: it is a draft the
+student must see and defend.  The last one is the colleague's point: a
+plant whose tanks stand on open ground now says so.
+
+**The plot.**  Each wall's outline and each pit enter the plot envelope
+(`plotOf`; the sentence names them only where one is declared), so the
+ground a bund takes is priced with the rest.
+
+**Published and pinned.**  `layout.bunds`, one line per containment
+(`"id": "bund:<name>"`), read by the `layout` golden kind: the
+`containment` and `verdict` WORDS, `area`, `wallHeight`,
+`displacedVolume`, `netVolume`, `requiredVolume` -- keys no earlier line
+carries, so no earlier row moved.
+
+**The view.**  The 3D view draws a low concrete wall on the engine's
+outline at the engine's height (its thickness drawing, said so) and an
+impounding pit as a dark recess; a SHORT containment is drawn in the
+flagged look AND labelled SHORT in words.  The plot section of Reports and
+the exported page carry a containment table (what it holds, what its rule
+requires, the verdict, the drain) with a link to the Design Guide's new
+section.  Nothing is measured in the GUI.
+
+**The witnesses.**  `greenAmmoniaPEQ_baseCase`: a 4 m bund round the two
+refrigerated tanks (their DECLARED 34 m boxes displace 9 248 m3 -- an
+honest box costs wall height), 110 % of the larger tank's `V_R` plus
+100 mm of rain, 20 672 m3 against 20 435 m3; and a 0.2 m-kerbed impounding
+slab under the loop's three liquid vessels draining to a remote pit,
+18 m3 against 16.76 m3.  `ammonia02_full_plant`: an impounding area under
+the seven bullets draining to a 24 x 9 x 3.5 m pit south of the farm,
+inside the old envelope (nothing of that case moved), 756 m3 against
+686 m3.  Every number author-set and said so.  `aceticAcid02_plant` and
+`apalutamide01_tablets` declare none, and their tanks are now announced:
+their texts said a bund was "not drawn" and "not an item (a wall round two
+items would overlap both)"; both now say it is the students' to declare.
+
+**Rejected.**  A bund as a placed item (the overlap rule); a capacity rule
+shipped as a default (a no-grant table, and an undeclared rule is
+precisely what a student must state and cite); refusing a short
+containment (a draft to defend); counting an unlisted item inside the wall
+silently (two homes for what stands there); a pipe over the wall
+announced (that is the practice the announcement teaches).
+
+**Not here, named:** the floor's slope and impermeability, the wall's
+strength and thickness, intermediate walls inside a farm, the pool that
+would evaporate or burn (the pool-fire EduTool takes a diameter the
+student chooses), a tank-to-tank spacing rule relative to a diameter (the
+separation table holds absolute distances only), and whether a declared
+margin or rainfall is the right one.  The draft carries no containment
+(each wall was drawn round positions the draft moves) and says so.  Gate:
+`check_plant_layout` arm (p) (sabotages S49-S54) and arms (e), (i), (j);
+GUI: `tests/layoutBunds.test.ts`.

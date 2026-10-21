@@ -1,0 +1,31 @@
+/*--- Choupo stream state.  Every DIMENSIONAL value carries its unit; the parser converts to SI.
+
+     THE SAMPLE'S FEED, stream "2" of the reference file (benchmarks/dwsim/
+     read_sample.py, `reference`): 5908.21191569715 mol/s at 322.03889 K and
+     1962938.20167 Pa, with ITS stored mole fractions (sum 1.00000000002).
+     Each flow below is x_i x F.  The sample carries 15 compounds and no
+     n-undecane; its n-decane fraction, 0.0741, is within 0.0007 of the
+     primary's n-decane + n-undecane (0.0304 + 0.0444) -- README, findings on
+     the reference side.  No phase is declared: (T, P) resolve the split. ---*/
+
+componentMolarFlows
+{
+    N2            0.0775175126 kmol/s;
+    CO2           1.0752100871 kmol/s;
+    H2S           0.0733756716 kmol/s;
+    CH4           0.6485590466 kmol/s;
+    ethane        0.5194460292 kmol/s;
+    propane       0.4958848709 kmol/s;
+    isoButane     0.1307638369 kmol/s;
+    nButane       0.3331223538 kmol/s;
+    isopentane    0.1709988637 kmol/s;
+    nPentane      0.2443686184 kmol/s;
+    nHexane       0.3786826047 kmol/s;
+    nHeptane      0.5621069914 kmol/s;
+    nOctane       0.3988001181 kmol/s;
+    nNonane       0.3615235492 kmol/s;
+    nDecane       0.4378517617 kmol/s;
+}
+
+T               322.03889 K;
+P               1962938.20167 Pa;

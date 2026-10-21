@@ -1759,6 +1759,71 @@ void emitResultJson(std::ostream& os, const SimulationResult& r)
             }
             os << "\n    ]";
         }
+        //  SECONDARY CONTAINMENT (DEV.md 4c C134): one line per bund or
+        //  impounding area -- its kind and verdict WORDS, its area, wall,
+        //  gross / displaced / net / required volumes, its rule's terms and
+        //  allowances, the items it holds and the outline as ARRAYS (so the
+        //  golden reads no number there).  Absent when none is declared, so
+        //  every other layout's JSON is unchanged.  The golden `layout` kind
+        //  pins `containment`, `verdict`, `area`, `wallHeight`,
+        //  `displacedVolume`, `netVolume` and `requiredVolume`.
+        if (!L.bunds.empty())
+        {
+            os << ",\n    \"bunds\": [";
+            for (std::size_t i = 0; i < L.bunds.size(); ++i)
+            {
+                const auto& b = L.bunds[i];
+                os << (i ? ",\n" : "\n") << "      { \"id\": " << esc("bund:" + b.id)
+                   << ", \"bund\": " << esc(b.id)
+                   << ", \"containment\": " << esc(b.kind)
+                   << ", \"verdict\": " << esc(b.verdict)
+                   << ", \"regionFrom\": " << esc(b.regionFrom)
+                   << ", \"area\": " << num(b.area)
+                   << ", \"wallHeight\": " << num(b.wallHeight)
+                   << ", \"grossVolume\": " << num(b.grossVolume)
+                   << ", \"displacedVolume\": " << num(b.displacedVolume)
+                   << ", \"netVolume\": " << num(b.netVolume)
+                   << ", \"requiredVolume\": " << num(b.requiredVolume)
+                   << ", \"largestHeld\": " << num(b.largestHeld)
+                   << ", \"totalHeld\": " << num(b.totalHeld)
+                   << ", \"basis\": " << esc(b.basis)
+                   << ", \"governing\": " << esc(b.governing)
+                   << ", \"drain\": " << esc(b.drain);
+                if (b.hasPit)
+                    os << ", \"pitX\": " << num(b.pitX) << ", \"pitY\": " << num(b.pitY)
+                       << ", \"pitLength\": " << num(b.pitLength)
+                       << ", \"pitWidth\": " << num(b.pitWidth)
+                       << ", \"pitDepth\": " << num(b.pitDepth);
+                os << ", \"items\": [";
+                for (std::size_t q = 0; q < b.items.size(); ++q)
+                    os << (q ? ", " : "") << esc(b.items[q]);
+                os << "], \"outline\": [";
+                for (std::size_t q = 0; q < b.outline.size(); ++q)
+                    os << (q ? ", " : "") << "[" << num(b.outline[q][0]) << ", "
+                       << num(b.outline[q][1]) << "]";
+                os << "], \"held\": [";
+                for (std::size_t q = 0; q < b.held.size(); ++q)
+                    os << (q ? ", " : "") << "[" << esc(b.held[q].item) << ", "
+                       << num(b.held[q].volume) << ", " << num(b.held[q].displaced) << "]";
+                os << "], \"terms\": [";
+                for (std::size_t q = 0; q < b.terms.size(); ++q)
+                    os << (q ? ", " : "") << "[" << num(b.terms[q].fraction) << ", "
+                       << esc(b.terms[q].of) << ", " << num(b.terms[q].volume) << "]";
+                os << "], \"allowances\": [";
+                for (std::size_t q = 0; q < b.allowances.size(); ++q)
+                {
+                    const auto& a = b.allowances[q];
+                    os << (q ? ", " : "") << "[" << esc(a.name) << ", " << esc(a.from)
+                       << ", " << num(a.depth) << ", " << num(a.volume) << ", "
+                       << esc(a.reason) << "]";
+                }
+                os << "], \"ruleSource\": " << esc(b.ruleSource)
+                   << ", \"ruleReason\": " << esc(b.ruleReason)
+                   << ", \"source\": " << esc(b.source)
+                   << ", \"reason\": " << esc(b.reason) << " }";
+            }
+            os << "\n    ],\n    \"bundRule\": " << esc(L.bundRule);
+        }
         os << ",\n    \"summary\": { \"id\": \"summary\", \"placed\": "
            << L.items.size() << ", \"unplaced\": " << L.unplaced.size()
            << ", \"internal\": " << L.internal.size()

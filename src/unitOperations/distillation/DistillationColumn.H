@@ -33,28 +33,25 @@ Description
     (Wang-Henke), Constant Molar Overflow (CMO) assumption — no energy
     balance per stage, no Murphree efficiency.
 
-    Stage numbering (1-based from top):
-        stage 1     = top tray (vapour goes up to a total condenser)
-        stage NF    = feed stage (feed enters here)
-        stage N     = partial reboiler (equilibrium stage)
+    Stage numbering (1-based from top).  `nStages` counts the EQUILIBRIUM
+    stages, and the condenser TYPE (`operation { condenser { type
+    total|partial; } }`, default total, announced) says whether the
+    condenser is one of them:
+        total    stage 1 = top tray; the total condenser above it is NOT an
+                 equilibrium stage and is NOT counted.  Reflux and distillate
+                 leave it as one liquid of the vapour's composition,
+                 x_D,i = y_1,i = K_{1,i}·x_{1,i}, at the bubble point of x_D.
+        partial  stage 1 = the condenser, an equilibrium stage; the reflux is
+                 its liquid x_1 and the distillate its vapour y_1 at T_1.
+        stage NF = feed stage (feed enters here)
+        stage N  = partial reboiler (equilibrium stage)
+    Both types write the same material equations (the tray-1 balance with
+    the reflux at x_D reduces to the partial condenser's row), and Σ x_D = 1
+    is enforced by the bubble point at stage 1.  A source that counts a TOTAL
+    condenser as its "stage 1" describes nStages - 1 equilibrium stages here.
 
-    With total condenser, x_D,i = y_1,i = K_{1,i}·x_{1,i}, and Σ x_D = 1
-    is automatically enforced by the bubble-point at stage 1.
-
-    THE DISTILLATE'S REPORTED TEMPERATURE IS T[0], AND THAT IS THE WRONG
-    END OF ITS OWN TWO-PHASE BAND --- stated here rather than fixed, because
-    correcting it moves every column golden in the corpus and is the owner's
-    call.  Stage 1 equilibrium makes T[0] simultaneously the bubble point of
-    x_1 and the DEW point of y_1; since x_D = y_1, the stream is published at
-    its own dew point while `vf = 0` declares it a saturated LIQUID.  A total
-    condenser with no subcooling delivers it at its own BUBBLE point, which is
-    lower.  MEASURED on column01 (benzene/toluene, 1 atm, 98.1 mol% benzene
-    distillate): reported 354.2109 K against a bubble point of 353.6301 K, so
-    0.58 K too hot.  The gap closes as the split sharpens (a pure product has
-    one temperature) and widens with the boiling range, and anything
-    downstream that prices this stream inherits it.  The engine already has
-    everything needed to correct it --- the `bubbleT` unit is one call --- so
-    this is a decision, not a limitation.
+    The distillate leaves a total condenser at its own BUBBLE point (since
+    2026-09-12, `makeDistillate`), not at T_1, which is its dew point.
 
     Inputs (per stage are NOT user-specified; the user gives the column
     skeleton):
@@ -86,7 +83,8 @@ Description
               the step alone is not a balance (DEV.md §5 A7 item (5)).
 
     Outputs:
-        Distillate: F = D,  z = x_D,  T = T_1
+        Distillate: F = D,  z = x_D,  total: liquid at its bubble point;
+                                      partial: vapour at T_1
         Bottoms   : F = B,  z = x_N,  T = T_N
 \*---------------------------------------------------------------------------*/
 

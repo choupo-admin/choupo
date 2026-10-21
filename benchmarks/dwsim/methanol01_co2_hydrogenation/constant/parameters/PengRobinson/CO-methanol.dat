@@ -1,0 +1,109 @@
+/*---------------------------------------------------------------------------*\
+  fitParameters proposal -- pair CO-methanol -- model PengRobinson
+  generated 2026-10-21 by choupoProps fitParameters
+
+  VERDICT: notValidated
+  !! The held-out test was PERFORMED and the declared criterion was MISSED.
+  !! This is a completed experiment with a negative result.  Promoting these
+  !! parameters ships a pair known not to meet its own acceptance band.
+
+  Promote by:
+      mv ../constant/parameters/PengRobinson/CO-methanol.dat  constant/parameters/PengRobinson/CO-methanol.dat
+\*---------------------------------------------------------------------------*/
+
+recordType  eosBinaryInteraction;
+schemaVersion 1;
+i           CO;
+j           methanol;
+kij         -0.17445833;
+eos         PengRobinson;
+
+provenance
+{
+    origin        fitted;
+    method        "fitParameters(P_bubble), Levenberg-Marquardt";
+    methodVersion "choupoProps Choupo-dev";
+    fitDate       "2026-10-21";
+
+    evidence
+    (
+        {
+            role      fit;
+            dataset   "../constant/experiments/brunner1987-CO-methanol-298K.dat";
+            identity  none;    // declares no DOI or hash -- it cannot take part in the cross-role identity check
+            provenance measured;
+            system    "CO + methanol";
+        }
+        {
+            role      fit;
+            dataset   "../constant/experiments/brunner1987-CO-methanol-323K.dat";
+            identity  none;    // declares no DOI or hash -- it cannot take part in the cross-role identity check
+            provenance measured;
+            system    "CO + methanol";
+        }
+        {
+            role      fit;
+            dataset   "../constant/experiments/brunner1987-CO-methanol-398K.dat";
+            identity  none;    // declares no DOI or hash -- it cannot take part in the cross-role identity check
+            provenance measured;
+            system    "CO + methanol";
+        }
+        {
+            role      fit;
+            dataset   "../constant/experiments/brunner1987-CO-methanol-423K.dat";
+            identity  none;    // declares no DOI or hash -- it cannot take part in the cross-role identity check
+            provenance measured;
+            system    "CO + methanol";
+        }
+        {
+            role      fit;
+            dataset   "../constant/experiments/brunner1987-CO-methanol-448K.dat";
+            identity  none;    // declares no DOI or hash -- it cannot take part in the cross-role identity check
+            provenance measured;
+            system    "CO + methanol";
+        }
+        {
+            role      validation;
+            dataset   "../constant/experiments/brunner1987-CO-methanol-373K.dat";
+            identity  none;    // declares no DOI or hash -- it cannot take part in the cross-role identity check
+            provenance measured;
+            system    "CO + methanol";
+        }
+    );
+    fingerprint "ebe89bcecb34bc95";   // of the declaration, frozen before the fit
+
+    //  IN-SAMPLE: the model reproducing the very points it was
+    //  fitted to.  It is NOT a validation; see the block below.
+    weighting     equal;   // chi2 is sum ((P_model - P_exp)/P_exp)^2, dimensionless
+    chi2          0.46148435;
+    rms_rel       0.17540132;
+    nDataPoints   15;
+    identifiable  true;
+    maxAbsCorr    0.00000000;
+
+    validity
+    {
+        temperature { min 298.15 K; max 448.15 K; }
+        pressure    { min 2282000 Pa; max 18470000 Pa; }
+        note        "the span of the FIT evidence; outside it the pair is an extrapolation";
+    }
+}
+
+validation
+{
+    verdict     notValidated;
+
+    heldOut
+    {
+        points      8;
+        aad_pct     21.374155;
+        aad_rel     0.213742;
+        domain_x1   ( 0.007148 0.073740 );
+    }
+
+    acceptance
+    {
+        maxAAD      5.000000;   // per cent
+        origin      "declared before the fit, one rule for the three gases: the authors' stated composition uncertainty (<= 2 % of x_gas, p. 276) is 2 % of p on a bubble point at fixed x in the dilute regime, plus the 0.2 % pressure error (p. 276) = 2.2 % per point; a held-out comparison across isotherms of a ONE-parameter model is granted twice that, 4.4 %, rounded up to one figure";
+    }
+}

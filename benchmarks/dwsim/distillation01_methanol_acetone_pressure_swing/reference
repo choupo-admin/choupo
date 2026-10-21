@@ -1,0 +1,142 @@
+/*---------------------------------------------------------------------------*\
+  Benchmark B -- THE REFERENCE NUMBERS: what the reference simulator's
+  sample stores as its solved state.  FACTS to compare against, never
+  inputs; no property parameter of the sample is read or reproduced (the
+  sample embeds pair tables this project excludes -- DEV.md 4c C16; the
+  reader below names the package TYPE only).
+
+  Written by benchmarks/dwsim/read_sample.py from the sample file at the
+  commit named in `source` (rerun it on your own copy to check any number):
+      python3 -I benchmarks/dwsim/read_sample.py \
+          "<clone>/PlatformFiles/Common/samples/Extractive Distillation.dwxmz" \
+          --commit 1abf72d1b6b41d3e9a8cc770d3cc4e8fc76e5766
+
+  READ WITH THE README.  This stored state is NOT a solution of its own
+  problem: products 1.000000 mol/s out of a feed of 0.998602 mol/s, and the
+  recycle attached to the LP column (1.889121 mol/s) is not the stream its
+  source column produces (1.861749 mol/s at the same composition and the
+  same mass flow).  The sample's name says "extractive"; there is no
+  entrainer -- it is a pressure-swing distillation.
+\*---------------------------------------------------------------------------*/
+
+source
+{
+    repository   "https://github.com/DanWBR/dwsim";
+    commit       1abf72d1b6b41d3e9a8cc770d3cc4e8fc76e5766;
+    sample       "PlatformFiles/Common/samples/Extractive Distillation.dwxmz";
+    buildVersion "8.8.0.0";
+    savedOn      "2024-07-09T11:06:09.0567442-03:00";
+}
+
+propertyPackage ( NRTLPropertyPackage );   // the TYPE only; no parameter is read
+
+streams     // stored overall state: T [K], P [Pa], F [mol/s], mole fractions,
+            // H_kW = the stream's stored TotalEnergyFlow (its own enthalpy datum)
+{
+    equimolarFeed   // "Equimolar Feed"
+    {
+        T 300;  P 101325;  F 0.998601895208717;  H_kW -241.855523894046;
+        x { methanol 0.5;  acetone 0.5; }
+    }
+    lPAzeotrope   // "LP Azeotrope"
+    {
+        T 326.584318116972;  P 101325;  F 2.36174883755261;  H_kW -569.339177842418;
+        vaporFraction 3.05977465586693E-13;
+        x { methanol 0.2411712976;  acetone 0.7588287024; }
+    }
+    methanol   // "Methanol"
+    {
+        T 337.900677232148;  P 101325;  F 0.5;  H_kW -117.257071176319;
+        x { methanol 1;  acetone 3.05216296e-11; }
+    }
+    recycledHPAzeotrope   // "Recycled HP Azeotrope"
+    {
+        T 388.267600579137;  P 607950;  F 1.88912056253898;  H_kW -431.16156370049;
+        vaporFraction 1.70461168029978E-05;
+        x { methanol 0.306649716;  acetone 0.693350284; }
+    }
+    hPFeed   // "HP Feed"
+    {
+        T 326.672170989061;  P 607950.057;  F 2.36174883755261;  H_kW -569.229810940948;
+        x { methanol 0.2411712976;  acetone 0.7588287024; }
+    }
+    hPAzeotrope   // "HP Azeotrope"
+    {
+        T 388.267600579137;  P 607950;  F 1.86174883745261;  H_kW -431.076837558653;
+        vaporFraction 2.32138122349748E-05;
+        x { methanol 0.306649716;  acetone 0.693350284; }
+    }
+    acetoneRichProduct   // "Acetone Rich Product"
+    {
+        T 394.94750802933;  P 607950;  F 0.5;  H_kW -116.267769180096;
+        x { methanol 6.508475188e-05;  acetone 0.9999349152; }
+    }
+}
+
+energyStreams   // stored, kW
+{
+    condenserDuty 2575.50161175325;   // "Condenser Duty"
+    reboilerDuty 2563.32391869637;   // "Reboiler Duty"
+    pE1 0.109362829230568;   // "PE-1"
+    condenserDuty2 2054.65706602978;   // "Condenser Duty (2)"
+    reboilerDuty2 2076.52229790258;   // "Reboiler Duty (2)"
+}
+
+units
+{
+    methanolColumn1Atm   // "Methanol Column (1 atm)", DistillationColumn
+    {
+        nStages 40;  method "Wang-Henke (Bubble Point)";
+        port { stream "LP Azeotrope"; behaviour Distillate; stage "0"; }
+        port { stream "Methanol"; behaviour BottomsLiquid; stage "0"; }
+        port { stream "Recycled HP Azeotrope"; behaviour Feed; stage "Condensador"; }
+        port { stream "Equimolar Feed"; behaviour Feed; stage "Estágio_15"; }
+        spec { kind Stream_Ratio; value 35; unit ""; calculated 35; }
+        spec { kind Product_Molar_Flow_Rate; value 0.5; unit "mol/s"; calculated 0.5; }
+        stageNames ( "Condensador" "Estágio_1" "Estágio_2" "Estágio_3" "Estágio_4" "Estágio_5" "Estágio_6" "Estágio_7" "Estágio_8" "Estágio_9" "Estágio_10" "Estágio_11" "Estágio_12" "Estágio_13" "Estágio_14" "Estágio_15" "Estágio_16" "Estágio_17" "Estágio_18" "Estágio_19" "Estágio_20" "Estágio_21" "Estágio_22" "Estágio_23" "Estágio_24" "Estágio_25" "Estágio_26" "Estágio_27" "Estágio_28" "Estágio_29" "Estágio_30" "Estágio_31" "Estágio_32" "Estágio_33" "Estágio_34" "Estágio_35" "Estágio_36" "Estágio_37" "Estágio_10" "Refervedor" );
+        Tf ( 328.564 328.559 328.555 328.554 328.562 328.588 328.648 328.769 329 329.424 330.162 331.34 332.94 334.637 336 336.861 337.41 337.676 337.8 337.866 337.892 337.897 337.899 337.899 337.9 337.9 337.9 337.9 337.901 337.901 337.901 337.901 337.901 337.901 337.901 337.901 337.901 337.901 337.901 337.901 );
+        Lf ( 82.6612 82.6208 82.5305 82.3729 82.1255 81.758 81.2297 80.4891 79.4813 78.1758 76.6226 75.0151 73.6541 72.7537 72.2837 73.0909 72.9693 72.9189 72.8974 72.8914 72.889 72.8864 72.8852 72.8847 72.8845 72.8844 72.8844 72.8844 72.8845 72.8845 72.8845 72.8845 72.8845 72.8845 72.8845 72.8845 72.8845 72.8845 72.8845 0.5 );
+        Vf ( 0 83.1598 83.1194 83.0291 82.8715 82.6241 82.2566 81.7283 80.9877 79.9799 78.6744 77.1212 75.5137 74.1527 73.2523 72.7823 72.5909 72.4693 72.4189 72.3974 72.3914 72.389 72.3864 72.3852 72.3847 72.3845 72.3844 72.3844 72.3844 72.3845 72.3845 72.3845 72.3845 72.3845 72.3845 72.3845 72.3845 72.3845 72.3845 72.3845 );
+        xf_methanol ( 0.241171 0.2442 0.250598 0.261479 0.278266 0.302817 0.337618 0.385855 0.451162 0.536327 0.639937 0.751249 0.849965 0.919424 0.959184 0.979007 0.990797 0.996022 0.998291 0.999268 0.999687 0.999866 0.999943 0.999975 0.99999 0.999996 0.999998 0.999999 1 1 1 1 1 1 1 1 1 1 1 1 );
+        xf_acetone ( 0.758829 0.7558 0.749402 0.738521 0.721734 0.697183 0.662382 0.614145 0.548838 0.463673 0.360063 0.248751 0.150035 0.0805758 0.0408162 0.020993 0.00920265 0.00397818 0.00170918 0.00073238 0.000313445 0.000134087 5.73479e-05 2.45252e-05 1.0488e-05 4.48503e-06 1.91796e-06 8.2019e-07 3.50744e-07 1.49991e-07 6.4142e-08 2.74295e-08 1.17298e-08 5.01604e-09 2.14496e-09 9.17179e-10 3.92131e-10 1.67601e-10 7.15827e-11 3.05216e-11 );
+        yf_methanol ( 0.234269 0.236611 0.241531 0.249813 0.262395 0.28042 0.305346 0.339056 0.384036 0.443631 0.522007 0.621814 0.735511 0.839367 0.911973 0.952797 0.97877 0.990716 0.995991 0.998279 0.999263 0.999684 0.999865 0.999942 0.999975 0.999989 0.999995 0.999998 0.999999 1 1 1 1 1 1 1 1 1 1 1 );
+        yf_acetone ( 0.765731 0.763389 0.758469 0.750187 0.737605 0.71958 0.694654 0.660944 0.615964 0.556369 0.477993 0.378186 0.264489 0.160633 0.088027 0.0472032 0.0212299 0.0092842 0.00400911 0.00172105 0.000737465 0.00031562 0.000135017 5.77458e-05 2.46953e-05 1.05607e-05 4.51614e-06 1.93126e-06 8.25878e-07 3.53176e-07 1.51031e-07 6.45866e-08 2.76195e-08 1.1811e-08 5.05061e-09 2.15963e-09 9.23328e-10 3.94639e-10 1.68551e-10 7.18674e-11 );
+        condenserDuty 2575.50161175325;
+        reboilerDuty -2563.32391869637;
+        refluxRatio 35;
+    }
+    pump   // "Pump", Pump
+    {
+        pout 607950.057;
+        eficiencia 75;
+        deltaQ 0.109362829230568;
+        outletTemperature 326.672170989061;
+    }
+    acetoneColumn6Atm   // "Acetone Column (6 atm)", DistillationColumn
+    {
+        nStages 20;  method "Wang-Henke (Bubble Point)";
+        port { stream "HP Azeotrope"; behaviour Distillate; stage "0"; }
+        port { stream "Acetone Rich Product"; behaviour BottomsLiquid; stage "0"; }
+        port { stream "HP Feed"; behaviour Feed; stage "Estágio_10"; }
+        spec { kind Stream_Ratio; value 40; unit ""; calculated 40; }
+        spec { kind Product_Molar_Flow_Rate; value 0.5; unit "mol/s"; calculated 0.5; }
+        stageNames ( "Condensador" "Estágio_1" "Estágio_2" "Estágio_3" "Estágio_4" "Estágio_5" "Estágio_6" "Estágio_7" "Estágio_8" "Estágio_9" "Estágio_10" "Estágio_11" "Estágio_12" "Estágio_13" "Estágio_14" "Estágio_15" "Estágio_16" "Estágio_17" "Estágio_10" "Refervedor" );
+        Tf ( 388.271 389.039 390.048 391.172 392.222 393.062 393.656 394.042 394.278 394.418 394.499 394.69 394.801 394.865 394.901 394.945 394.946 394.947 394.947 394.948 );
+        Lf ( 74.47 75.5586 76.6871 77.7364 78.6037 79.2468 79.6822 79.9575 80.1239 80.2215 83.6478 83.7857 83.8655 83.911 83.9295 83.9611 83.9649 83.967 83.9682 0.5 );
+        Vf ( 1e-10 76.3317 77.4203 78.5488 79.5981 80.4654 81.1086 81.5439 81.8193 81.9856 82.0833 83.1478 83.2857 83.3655 83.411 83.4295 83.4611 83.4649 83.467 83.4682 );
+        xf_methanol ( 0.30665 0.241885 0.178451 0.123786 0.0821242 0.0534675 0.0351808 0.0240784 0.0175433 0.0137672 0.0116087 0.00658038 0.00370973 0.00208481 0.00116949 0.0006593 0.000370699 0.000207995 0.000116479 6.50848e-05 );
+        xf_acetone ( 0.69335 0.758115 0.821549 0.876214 0.917876 0.946533 0.964819 0.975922 0.982457 0.986233 0.988391 0.99342 0.99629 0.997915 0.998831 0.999341 0.999629 0.999792 0.999884 0.999935 );
+        yf_methanol ( 0.364339 0.30665 0.243443 0.18149 0.128063 0.0873193 0.059279 0.0413789 0.0305082 0.0241084 0.0204102 0.0116789 0.00661993 0.00373183 0.00209706 0.00117618 0.000662886 0.000372538 0.000208853 0.000116787 );
+        yf_acetone ( 0.635661 0.69335 0.756557 0.81851 0.871937 0.912681 0.940721 0.958621 0.969492 0.975892 0.97959 0.988321 0.99338 0.996268 0.997903 0.998824 0.999337 0.999627 0.999791 0.999883 );
+        condenserDuty 2054.65706602978;
+        reboilerDuty -2076.52229790258;
+        refluxRatio 39.9999999978515;
+    }
+    recycleOp   // "Recycle Op", Recycle
+    {
+        converged true;  iterationsTaken 1;
+        errors { Temperature 388.267600579137;  Pressure 607950;  MassFlow 0.0932651545385091;  Enthalpy -406.627401987403; }
+        values { Temperature 388.006738323725;  Pressure 607950;  MassFlow 0.0919828469137571;  Enthalpy -418.341548692915; }
+        tolerances { Temperatura 1;  Pressao 1;  VazaoMassica 0.01;  FracaoVapor 0.01;  Entalpia 1;  Entropia 0.01;  Composicao 0.001; }
+    }
+}

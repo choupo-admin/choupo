@@ -1,0 +1,30 @@
+/*---------------------------------------------------------------------------*\
+  Benchmark B, VARIANT "unifac": the same plant on Choupo's own predictive
+  UNIFAC (src/thermo/activityCoefficient/UNIFAC.H, the original VLE
+  parameterisation) in place of the regressed NRTL pair.  The comparison
+  script copies the case, replaces constant/thermoPhysPropDict with this
+  file, removes the NRTL pair record and runs it, so the table carries a
+  predictive column beside the regressed one.  Nothing in UNIFAC was fitted
+  to this pair, at either pressure.
+\*---------------------------------------------------------------------------*/
+
+recordType    thermophysicalPropertySystem;
+schemaVersion 2;
+
+components ( methanol acetone );
+
+equilibrium
+{
+    formulation gammaPhi;
+
+    liquid
+    {
+        activityModel { model UNIFAC; }
+        standardState pureLiquid;
+    }
+
+    vapour
+    {
+        fugacityModel idealGas;
+    }
+}

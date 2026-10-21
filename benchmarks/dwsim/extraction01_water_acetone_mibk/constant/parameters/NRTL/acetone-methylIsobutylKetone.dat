@@ -1,0 +1,52 @@
+/*---------------------------------------------------------------------------*\
+  NRTL binary interaction parameters --- acetone(i) + methylIsobutylKetone(j)
+
+  ONE OF A SET OF THREE: the ternary fit of Choi & Rhim (1986) -- see
+  methylIsobutylKetone-water.dat beside this file for the source, the table
+  row as printed and the convention.  Valid only together with the other two
+  records, for liquid-liquid equilibrium, at 298.15 K.
+
+  CONVERSION (MIBK = 1, acetone = 3 in the article; R = 1.987204259
+  cal/(mol K)):
+      b(acetone->MIBK) = (g13 - g11)/R = -646/R = -325.0798 K
+      b(MIBK->acetone) = (g13 - g33)/R =  -34/R =  -17.1095 K
+      alpha13 = 0.246
+\*---------------------------------------------------------------------------*/
+
+recordType binaryInteractionParameters;
+schemaVersion 1;
+
+components  ( acetone  methylIsobutylKetone );
+model       NRTL;
+
+pair { i acetone; j methylIsobutylKetone; }
+
+parameters
+{
+    i           acetone;
+    j           methylIsobutylKetone;
+    a_ij        0.0;
+    b_ij        -325.0798;         // K
+    a_ji        0.0;
+    b_ji        -17.1095;          // K
+    alpha       0.246;
+}
+
+provenance
+{
+    origin        literature;
+    citation      "Choi, J. S.; Rhim, J. N. Hwahak Konghak 24(3) (1986) 185-194, Table 3 (NRTL, MIBK(1)-water(2)-acetone(3), 25 C), regressed by the authors to their own tie lines (Table 5)";
+    method        "authors' least-squares fit of the ternary NRTL to measured tie lines (Hooke-Jeeves); converted here by b = (g_ij - g_jj)/R";
+    fitData       "<the authors' Table 5; not refit>";
+    fitDate       "<literature, 1986>";
+    chi2          "<not reported; RMSD 1.410 mol % over the ternary tie lines>";
+    nDataPoints   10;
+    reviewStatus  interim;
+    reviewReason  "transcribed from the article's page images by an assistant and read back once against the scan; not yet reviewed by a curator";
+    validity
+    {
+        temperature { min 298.15 K; max 298.15 K; }
+        note        "one isotherm, 25 C, liquid-liquid only; valid as a SET with methylIsobutylKetone-water and acetone-water from the same table";
+    }
+    author        "transcribed for benchmarks/ (DEV.md 4c C123), 2026-10-20";
+}

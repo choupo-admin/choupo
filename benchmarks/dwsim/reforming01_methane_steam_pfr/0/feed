@@ -1,0 +1,17 @@
+/*--- Choupo stream state.  Every DIMENSIONAL value carries its unit; the parser converts to SI.
+     THE SAMPLE'S STREAM "MSTR-000" (benchmarks/dwsim/read_sample.py, `reference`): 5.58333333333333 mol/s at
+     1000.0 K and 101325 Pa with its stored mole fractions; each flow is x_i x F.
+     1000 K and 1 atm: steam and methane 1:1 with 1 % hydrogen (the rate law is
+     singular at p_H2 = 0; the sample feeds that 1 %). ---*/
+
+componentMolarFlows
+{
+    CH4        0.002777777778 kmol/s;
+    H2         2.777777778e-05 kmol/s;
+    water      0.002777777778 kmol/s;
+}
+
+T               1000.0 K;
+P               101325 Pa;
+
+phase           gas;

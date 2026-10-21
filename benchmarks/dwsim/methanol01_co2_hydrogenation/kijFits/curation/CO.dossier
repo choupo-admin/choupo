@@ -1,0 +1,104 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+  CURATION DOSSIER -- a scientific work record, NOT runtime property data.
+
+  NOTHING IN THIS FILE IS VISIBLE TO THE SOLVER.  Record resolution looks only
+  in <case>/constant/, data/standards/ and data/local/, so a file here is out
+  of its reach BY CONSTRUCTION -- not by convention.
+
+  Nothing here has been promoted.  Curation state belongs to the evidence
+  process; runtime trust belongs to the numerical record actually admitted
+  to data/standards/, and only an explicit human promotion moves one there
+  (bin/curate/promote-from-dossier).
+
+  MATURITY IS PER PROPERTY, not per component: the properties below may hold
+  different verdicts, and any whole-component summary is DERIVED from them
+  rather than stored beside them.
+
+  Regenerated on every run.  Hand edits are lost.
+\*-----------------------------------------------------------------------------*/
+
+component      CO;
+reviewStatus   unreviewed;
+
+properties
+(
+{
+    property       binaryVLE.P_bubble;
+    operation      fit_CO_methanol;   // type fitParameters
+    model          "binary pair, relative bubble-P residual at fixed T";
+    verdict        notValidated;
+
+    fittedParameters
+    {
+        equilibrium.equationOfState.binaryInteractions.CO-methanol.kij  -0.17445833289;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "ebe89bcecb34bc95";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "../constant/experiments/brunner1987-CO-methanol-298K.dat";
+            identity  none;    // declares no DOI or hash -- it cannot take part in the cross-role identity check
+            provenance measured;
+            system    "CO + methanol";
+        }
+        {
+            role      fit;
+            dataset   "../constant/experiments/brunner1987-CO-methanol-323K.dat";
+            identity  none;    // declares no DOI or hash -- it cannot take part in the cross-role identity check
+            provenance measured;
+            system    "CO + methanol";
+        }
+        {
+            role      fit;
+            dataset   "../constant/experiments/brunner1987-CO-methanol-398K.dat";
+            identity  none;    // declares no DOI or hash -- it cannot take part in the cross-role identity check
+            provenance measured;
+            system    "CO + methanol";
+        }
+        {
+            role      fit;
+            dataset   "../constant/experiments/brunner1987-CO-methanol-423K.dat";
+            identity  none;    // declares no DOI or hash -- it cannot take part in the cross-role identity check
+            provenance measured;
+            system    "CO + methanol";
+        }
+        {
+            role      fit;
+            dataset   "../constant/experiments/brunner1987-CO-methanol-448K.dat";
+            identity  none;    // declares no DOI or hash -- it cannot take part in the cross-role identity check
+            provenance measured;
+            system    "CO + methanol";
+        }
+        {
+            role      validation;
+            dataset   "../constant/experiments/brunner1987-CO-methanol-373K.dat";
+            identity  none;    // declares no DOI or hash -- it cannot take part in the cross-role identity check
+            provenance measured;
+            system    "CO + methanol";
+        }
+        );
+
+        domain
+        {
+            coordinate  x1;
+            fit         { min 0.00822; max 0.09868; n 15; }
+            validation  { min 0.007148; max 0.07374; n 8; }
+        }
+    }
+
+    metrics
+    {
+        //  r2InSample: not computed by this operation (it reports chi-square).
+        //  rmsHeldOut: not computed by this operation (see aadHeldOutPct).
+        aadHeldOutPct     21.3741554969;
+        acceptanceMaxAADPct 5;   // DECLARED BEFORE the fit; part of the fingerprint
+        acceptanceOrigin  "declared before the fit, one rule for the three gases: the authors' stated composition uncertainty (<= 2 % of x_gas, p. 276) is 2 % of p on a bubble point at fixed x in the dilute regime, plus the 0.2 % pressure error (p. 276) = 2.2 % per point; a held-out comparison across isotherms of a ONE-parameter model is granted twice that, 4.4 %, rounded up to one figure";
+    }
+}
+
+);

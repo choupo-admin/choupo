@@ -6,7 +6,7 @@
   "runtime": "not recorded; runTests does not time per case and this script does not run the corpus"
  },
  "counts": {
-  "cases": 482,
+  "cases": 484,
   "witnesses": 16,
   "validationOp": 6,
   "anchored": 12
@@ -2742,6 +2742,17 @@
    "roles": [],
    "hasGolden": true
   },
+  "tutorials/props/molecular/ppr78Kij01_ch4_co2_h2": {
+   "application": "choupoProps",
+   "ops": [
+    "ppr78Kij"
+   ],
+   "thermo": {
+    "formulation": "phiPhi"
+   },
+   "roles": [],
+   "hasGolden": true
+  },
   "tutorials/props/molecular/solubility01_hildebrand_ladder": {
    "application": "choupoProps",
    "ops": [
@@ -3670,6 +3681,20 @@
    "hasGolden": true
   },
   "tutorials/steady/distillation/column16_declared_interior": {
+   "application": "choupoSolve",
+   "unitTypes": [
+    "distillationColumn"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [],
+   "hasGolden": true
+  },
+  "tutorials/steady/distillation/column18_partial_condenser": {
    "application": "choupoSolve",
    "unitTypes": [
     "distillationColumn"
@@ -7234,6 +7259,7 @@
     "tutorials/props/molecular/pcsaft01_pure_nhexane",
     "tutorials/props/molecular/pcsaft02_states_crosscheck",
     "tutorials/props/molecular/pcsaft03_association_pure",
+    "tutorials/props/molecular/ppr78Kij01_ch4_co2_h2",
     "tutorials/props/molecular/solubility01_hildebrand_ladder",
     "tutorials/props/molecular/srk01_h2n2_density",
     "tutorials/props/reactor/thiele01_sphere_first_order",
@@ -7334,6 +7360,7 @@
     "tutorials/steady/distillation/column14_klemola_c4_splitter",
     "tutorials/steady/distillation/column15_klemola_ideal_trays",
     "tutorials/steady/distillation/column16_declared_interior",
+    "tutorials/steady/distillation/column18_partial_condenser",
     "tutorials/steady/distillation/shortcut01_benzene_toluene",
     "tutorials/steady/distillation/stripper01_sour_water",
     "tutorials/steady/distillation/stripper02_sour_water_h2s",
@@ -7773,6 +7800,7 @@
     "tutorials/steady/distillation/column14_klemola_c4_splitter",
     "tutorials/steady/distillation/column15_klemola_ideal_trays",
     "tutorials/steady/distillation/column16_declared_interior",
+    "tutorials/steady/distillation/column18_partial_condenser",
     "tutorials/steady/distillation/stripper01_sour_water",
     "tutorials/steady/distillation/stripper02_sour_water_h2s",
     "tutorials/steady/flowsheets/process05_isomerization_recycle",
@@ -8531,6 +8559,7 @@
     "tutorials/steady/distillation/column11_murphree",
     "tutorials/steady/distillation/column12_stage_is_a_flash",
     "tutorials/steady/distillation/column16_declared_interior",
+    "tutorials/steady/distillation/column18_partial_condenser",
     "tutorials/steady/distillation/shortcut01_benzene_toluene",
     "tutorials/steady/drying/convDryer01_sugar_curve",
     "tutorials/steady/drying/evapDryer01_nacl",
@@ -8827,6 +8856,9 @@
    ],
    "polarisationIndex": [
     "tutorials/props/membrane/polarisation01_geraldes_afonso_table1"
+   ],
+   "ppr78Kij": [
+    "tutorials/props/molecular/ppr78Kij01_ch4_co2_h2"
    ],
    "propertyPoint": [
     "tutorials/props/compare/acetone01_ipa_water_azeotrope",

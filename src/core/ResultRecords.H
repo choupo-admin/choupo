@@ -1159,6 +1159,72 @@ struct LayoutFence
     std::vector<LayoutFenceCrossing> crossings;
 };
 
+//  SECONDARY CONTAINMENT (2026-10-21, DEV.md 4c C134).  A bund (a walled
+//  basin round the items it encloses) or an impounding area (a kerbed catch
+//  area under them, sloped to a REMOTE pit) is a DECLARED REGION, not a placed
+//  item: it encloses items, so the overlap rule does not apply to it.  Checked
+//  by ONE rule (`postProcessing/layout/PlantLayout.cpp`, `checkBunds`): every
+//  listed item stands inside the region, every placed item inside it is
+//  listed, no wall runs through a footprint; the NET volume -- for a bund, its
+//  area x its wall height less what the enclosed footprints displace below
+//  the wall's top; for an impounding area, its pit's volume -- is held against
+//  the case's own declared capacity rule (the largest of its terms, plus its
+//  allowances), and the verdict is published.  Every number in the rule is
+//  the case's, with its source: no standard's table is shipped.
+struct LayoutBundTerm
+{
+    scalar      fraction = 0;          // of the basis volume [-]
+    std::string of;                    // largest | total
+    scalar      volume   = 0;          // [m3] fraction x that basis volume
+};
+
+struct LayoutBundAllowance
+{
+    std::string name;
+    std::string from;                  // volume | depth
+    scalar      depth  = 0;            // [m] a depth over the catch area (rain)
+    scalar      volume = 0;            // [m3]
+    std::string reason;
+};
+
+struct LayoutBundHeld
+{
+    std::string item;
+    scalar      volume = 0;            // [m3] the basis volume this item counts
+    scalar      displaced = 0;         // [m3] below the wall's top (a bund)
+};
+
+struct LayoutBund
+{
+    std::string id;                    // the declared name
+    std::string kind;                  // bund | impounding
+    std::vector<std::string> items;    // as declared
+    std::vector<std::vector<scalar>> outline;   // plan (x, y) [m], closed
+    std::string regionFrom;            // rectangle | polygon
+    scalar      area       = 0;        // [m2] inside the wall (the catch area)
+    scalar      wallHeight = 0;        // [m] the bund wall, or the catch area's kerb
+    //  An impounding area's remote pit (open, below grade): its plan centre
+    //  and box, its depth and volume.  Zero for a bund.
+    bool        hasPit = false;
+    scalar      pitX = 0, pitY = 0, pitLength = 0, pitWidth = 0, pitDepth = 0;
+    scalar      grossVolume     = 0;   // [m3] area x wall height, or the pit's
+    scalar      displacedVolume = 0;   // [m3] the enclosed footprints below the
+                                       //      wall's top (0 for an impounding area)
+    scalar      netVolume       = 0;   // [m3] what the containment holds
+    //  THE RULE, the case's own.
+    std::string basis;                 // vesselVolume | heldLiquid
+    std::vector<LayoutBundTerm>      terms;
+    std::vector<LayoutBundAllowance> allowances;
+    std::vector<LayoutBundHeld>      held;     // the enclosed items that hold liquid
+    scalar      largestHeld = 0, totalHeld = 0;   // [m3] on the declared basis
+    std::string governing;             // the term that governs ("largest" | "total")
+    scalar      requiredVolume  = 0;   // [m3] the largest term + the allowances
+    std::string verdict;               // adequate | inadequate | holdsNothing | notChecked
+    std::string drain;                 // closedValve | sumpPump | openToSewer
+    std::string ruleSource, ruleReason;
+    std::string source, reason;
+};
+
 struct PlantLayoutRecord
 {
     std::vector<LayoutItem>            items;
@@ -1180,6 +1246,8 @@ struct PlantLayoutRecord
     LayoutRoads                        roads;    // C90
     LayoutFence                        fence;    // C93
     std::vector<LayoutCarPark>         carParks; // C96
+    std::vector<LayoutBund>            bunds;    // C134
+    std::string                        bundRule; // C134: the engine's sentence
     //  The non-process item that is the declared building's shell (its
     //  `envelope`), empty when none is declared (C100: an item a room lists
     //  stands inside it).  Read by the checks; published by the building.

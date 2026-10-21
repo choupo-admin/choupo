@@ -121,11 +121,18 @@ BubblePoint::PressureResult BubblePoint::pressure(const ThermoPackage& thermo,
     //  `incipientPhase::vapour` -- the same iteration the isothermal flash's
     //  phase test runs (DEV.md 4c C110, G7), so this bubble pressure and the
     //  flash cannot disagree about one liquid again.
+    //  `trivial` is set when every present K came back 1 to 1e-9: the cubic
+    //  had ONE root at that (T, P), so the "liquid" and the "vapour" are the
+    //  same phase and S = sum x = 1 says nothing about boiling.
+    bool trivial = false;
     auto sumKx = [&](scalar P) -> scalar
     {
         const auto r = incipientPhase::vapour(thermo, T, P, x,
                                               thermo.Kvec_Raoult(T, P));
         y = r.trial;
+        trivial = !r.K.empty();
+        for (std::size_t i = 0; i < n && trivial; ++i)
+            if (x[i] != 0.0 && std::abs(r.K[i] - 1.0) > 1.0e-9) trivial = false;
         return r.S;
     };
 
@@ -139,9 +146,43 @@ BubblePoint::PressureResult BubblePoint::pressure(const ThermoPackage& thermo,
     scalar Plo = Pfloor;
     if (Phi <= Pfloor || sumKx(Plo) <= 1.0)
     {
-        out.P = Pfloor;  out.belowFloor = true;  out.converged = true;
-        sumKx(Pfloor);   out.y = y;
-        return out;
+        //  THE FLOOR ANSWERED WITH ONE ROOT (2026-10-21, DEV.md 4c C123).
+        //  A cubic at 0.01 bar and a temperature near or above a solvent's
+        //  critical point (methanol at 473 K: 0.92 Tc) has no liquid root;
+        //  K = 1 for every component and S = 1, which the test above used to
+        //  read as "this liquid does not boil even at 0.01 bar" -- a bubble
+        //  pressure of 1 kPa, `converged`, returned for a CO2-in-methanol
+        //  liquid whose measured bubble pressure is 7.5 MPa (Brunner 1987),
+        //  and a store sizer's "the liquid would boil in the vessel" disarmed
+        //  for every such liquid.  So: when the floor's answer is TRIVIAL,
+        //  look for a pressure that boils by halving down from Phi; a
+        //  non-trivial S <= 1 keeps halving, a trivial one ends the search,
+        //  and finding none is `converged false` -- no bubble pressure found
+        //  -- never `belowFloor`.  A floor answer that is not trivial takes
+        //  the path it always took, bit for bit.
+        if (Phi > Pfloor && trivial)
+        {
+            bool found = false;
+            Plo = Phi;
+            while (Plo > Pfloor)
+            {
+                Plo = std::max(0.5 * Plo, Pfloor);
+                const scalar S = sumKx(Plo);
+                if (trivial) break;
+                if (S > 1.0) { found = true; break; }
+            }
+            if (!found)
+            {
+                out.P = Plo;  out.converged = false;
+                return out;
+            }
+        }
+        else
+        {
+            out.P = Pfloor;  out.belowFloor = true;  out.converged = true;
+            sumKx(Pfloor);   out.y = y;
+            return out;
+        }
     }
     for (int it = 0; it < 200 && Phi / Plo > 1.0 + 1.0e-10; ++it)
     {

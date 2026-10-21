@@ -76,6 +76,7 @@ import type {
   Economics,
   EnergyRecord,
   PlantLayout,
+  LayoutBund,
   ExperimentalDataset,
   ValidationBlock,
   ModelBoundary,
@@ -747,7 +748,57 @@ function shapeLayout(l: NonNullable<ResultPayload["layout"]>): PlantLayout {
     ...shapeRoads(l),
     ...shapeFence(l),
     ...shapeSiteLogistics(l),
+    ...shapeBunds(l),
   };
+}
+
+//  SECONDARY CONTAINMENT (DEV.md 4c C134), passed through as the engine
+//  checked it.  A containment whose outline or volumes are not finite is
+//  DROPPED rather than drawn at the origin.  No volume is computed here.
+function shapeBunds(l: NonNullable<ResultPayload["layout"]>): Partial<PlantLayout> {
+  const fin = (v: unknown): v is number => typeof v === "number" && Number.isFinite(v);
+  const str = (v: unknown): string => (typeof v === "string" ? v : "");
+  const words = (v: unknown): string[] =>
+    (Array.isArray(v) ? v.filter((x): x is string => typeof x === "string") : []);
+  if (!Array.isArray(l.bunds)) return {};
+  const bunds: LayoutBund[] = l.bunds
+    .filter((b) => [b.area, b.wallHeight, b.grossVolume, b.netVolume, b.requiredVolume].every(fin)
+      && Array.isArray(b.outline) && b.outline.length >= 3
+      && b.outline.every((q) => Array.isArray(q) && q.length === 2 && q.every(fin)))
+    .map((b) => {
+      const pit = [b.pitX, b.pitY, b.pitLength, b.pitWidth, b.pitDepth].every(fin)
+        ? { x: b.pitX as number, y: b.pitY as number, length: b.pitLength as number,
+            width: b.pitWidth as number, depth: b.pitDepth as number }
+        : undefined;
+      const rows = (v: unknown[][] | undefined) => (Array.isArray(v) ? v.filter(Array.isArray) : []);
+      return {
+        bund: str(b.bund),
+        containment: (b.containment === "impounding" ? "impounding" : "bund") as
+          "bund" | "impounding",
+        verdict: str(b.verdict),
+        regionFrom: str(b.regionFrom),
+        area: b.area as number, wallHeight: b.wallHeight as number,
+        grossVolume: b.grossVolume as number,
+        displacedVolume: fin(b.displacedVolume) ? b.displacedVolume : 0,
+        netVolume: b.netVolume as number, requiredVolume: b.requiredVolume as number,
+        largestHeld: fin(b.largestHeld) ? b.largestHeld : 0,
+        totalHeld: fin(b.totalHeld) ? b.totalHeld : 0,
+        basis: str(b.basis), governing: str(b.governing), drain: str(b.drain),
+        ...(pit ? { pit } : {}),
+        items: words(b.items),
+        outline: (b.outline as number[][]).map((q) => [q[0], q[1]] as [number, number]),
+        held: rows(b.held).filter((h) => h.length === 3 && fin(h[1]) && fin(h[2]))
+          .map((h) => ({ item: str(h[0]), volume: h[1] as number, displaced: h[2] as number })),
+        terms: rows(b.terms).filter((t) => t.length === 3 && fin(t[0]) && fin(t[2]))
+          .map((t) => ({ fraction: t[0] as number, of: str(t[1]), volume: t[2] as number })),
+        allowances: rows(b.allowances).filter((a) => a.length === 5 && fin(a[3]))
+          .map((a) => ({ name: str(a[0]), from: str(a[1]), depth: fin(a[2]) ? a[2] : 0,
+                         volume: a[3] as number, reason: str(a[4]) })),
+        ruleSource: str(b.ruleSource), ruleReason: str(b.ruleReason),
+        source: str(b.source), reason: str(b.reason),
+      };
+    });
+  return { bunds, ...(typeof l.bundRule === "string" ? { bundRule: l.bundRule } : {}) };
 }
 
 //  THE TRUCKS AND THE CAR PARKS (DEV.md 4c C96), passed through as the engine
@@ -1245,6 +1296,15 @@ interface ResultPayload {
       angle?: number; arrangement?: string; entry?: string; exitsForward?: boolean;
       depth?: number; pitch?: number; usableLength?: number; area?: number;
       source?: string; reason?: string; stalls?: number[][] }[];
+    bunds?: { bund?: string; containment?: string; verdict?: string; regionFrom?: string;
+      area?: number; wallHeight?: number; grossVolume?: number; displacedVolume?: number;
+      netVolume?: number; requiredVolume?: number; largestHeld?: number; totalHeld?: number;
+      basis?: string; governing?: string; drain?: string; pitX?: number; pitY?: number;
+      pitLength?: number; pitWidth?: number; pitDepth?: number; items?: unknown;
+      outline?: number[][]; held?: unknown[][]; terms?: unknown[][];
+      allowances?: unknown[][]; ruleSource?: string; ruleReason?: string;
+      source?: string; reason?: string }[];
+    bundRule?: string;
   };
   economics?: {
     present?: boolean;

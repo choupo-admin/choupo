@@ -1,0 +1,85 @@
+/*---------------------------------------------------------------------------*\
+  fitParameters proposal -- pair methanol-water -- model PengRobinson
+  generated 2026-10-21 by choupoProps fitParameters
+
+  VERDICT: validated
+  The fitted pair reproduced held-out evidence within an acceptance band
+  declared BEFORE the fit.  See the validation block below.
+
+  Promote by:
+      mv ../constant/parameters/PengRobinson/methanol-water.dat  constant/parameters/PengRobinson/methanol-water.dat
+\*---------------------------------------------------------------------------*/
+
+recordType  eosBinaryInteraction;
+schemaVersion 1;
+i           methanol;
+j           water;
+kij         -0.07595538;
+eos         PengRobinson;
+
+provenance
+{
+    origin        fitted;
+    method        "fitParameters(T_bubble), Levenberg-Marquardt";
+    methodVersion "choupoProps Choupo-dev";
+    fitDate       "2026-10-21";
+
+    evidence
+    (
+        {
+            role      fit;
+            dataset   "../constant/experiments/methanol-water-bubble-j.jct.2009.11.020.dat";
+            doi       "10.1016/j.jct.2009.11.020";
+            sha256    "6a858b6788994573a11e01315b96cb3eeb42603a2e20fc7b234ddb4d04c7bbaf";
+            provenance measured;
+            archiveFile "j.jct.2009.11.020.xml";
+            system    "methanol + water";
+        }
+        {
+            role      validation;
+            dataset   "../constant/experiments/methanol-water-bubble-je200341c.dat";
+            doi       "10.1021/je200341c";
+            sha256    "b88f3599ac1499ff81756c347c67a3d86f679783fceeabbf2ce1a64feb5b3b84";
+            provenance measured;
+            archiveFile "je200341c.xml";
+            system    "methanol + water";
+            pressure  "101320.000000 Pa";
+        }
+    );
+    fingerprint "ab9a08d03cc76473";   // of the declaration, frozen before the fit
+
+    //  IN-SAMPLE: the model reproducing the very points it was
+    //  fitted to.  It is NOT a validation; see the block below.
+    weighting     uncertainty;   // chi2 is sum ((T_model - T_exp)/U)^2, dimensionless
+    chi2          3784.85061109;
+    rms_K         1.56258840;
+    nDataPoints   54;
+    identifiable  true;
+    maxAbsCorr    0.00000000;
+
+    validity
+    {
+        temperature { min 297.40 K; max 361.20 K; }
+        pressure    { min 15190 Pa; max 95300 Pa; }
+        note        "the span of the FIT evidence; outside it the pair is an extrapolation";
+    }
+}
+
+validation
+{
+    verdict     validated;
+
+    heldOut
+    {
+        points      13;
+        aad_pct     0.213718;
+        aad_K       0.753428;
+        domain_x1   ( 0.005000 0.969000 );
+    }
+
+    acceptance
+    {
+        maxAAD      0.550000;   // per cent
+        origin      "declared before the fit, by curate04's rule on the same held-out set: its largest stated U95 (0.46 K) plus PR78's own pure-endpoint error at 101.325 kPa measured with no pair (water +1.47 K, the larger; methanol +0.45 K), as a percentage of the held-out mean T 352.05 K = 0.549 %, rounded up to two significant figures";
+    }
+}

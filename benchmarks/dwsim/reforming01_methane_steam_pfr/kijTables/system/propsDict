@@ -1,0 +1,19 @@
+/*---------------------------------------------------------------------------*\
+  Benchmark E -- THE kij SET at the bed's declared 1000 K (route P).
+
+      choupoProps benchmarks/dwsim/reforming01_methane_steam_pfr/kijTables
+
+  E-PPR78 (Xu et al. 2017) for the five components; ten pairs, most of them
+  extrapolated far above their fitted data and marked so in the set.
+\*---------------------------------------------------------------------------*/
+
+operations
+(
+    {
+        name        kij_bed;
+        type        ppr78Kij;
+        groupTable  "../constant/parameters/PPR78/xu2017.dat";
+        T           1000 K;
+        output      { record "../constant/parameters/PengRobinson/eppr78_1000K.dat"; }
+    }
+);

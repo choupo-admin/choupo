@@ -49,8 +49,13 @@ Description
     LL flash solved by Newton / successive-substitution on the K = 1
     residual collapses onto the trivial x_alpha = x_beta saddle.  The
     shared kernel sidesteps this by minimising the Gibbs energy of mixing
-    directly (Nelder-Mead, multi-start) --- so the Extractor inherits a
-    robust per-stage split for free.
+    directly (Nelder-Mead, multi-start), then finishes on a Newton to
+    equal activities --- so the Extractor inherits a robust per-stage split
+    for free.  A stage the flash proves unstable and cannot split, and a
+    cascade that does not converge, REFUSE (the run exits non-zero and
+    `converged/` is not written): neither is an answer (DEV.md 4c C123).
+    Each stage's split on the previous sweep is handed to its flash as a
+    warm start, accepted only when both liquids it reaches are stable.
 
     The cascade itself is solved by SUCCESSIVE SUBSTITUTION (Gauss-Seidel
     stage sweeps with under-relaxation), mirroring the bubble-point loop
