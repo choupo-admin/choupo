@@ -976,6 +976,18 @@ accepts today, and that is a policy call.
 > trace: nine apalutamide01 rows drifting within tolerance after G28, and
 > aceticAcid02's new unpinned `Q_condensate_m3_s` KPI.  Then the compressor
 > refusal and the adiabatic-mixer fix (decided above), then C135.
+> **SATURDAY (Vitor, 2026-10-21): revise the second article from the
+> external review** kept at `paper/cace/reviews/2026-10-21-external-review.md`
+> on branch `claude/c126-cace-paper` (e323f0447): major revision; the
+> recommended order is (1) freeze a version and fix the central cases --
+> Cavett's 88 % mixer imbalance is the adiabatic-mixer fix decided above,
+> and convergence / physical consistency / acceptance told apart; (2) redo
+> the benchmark as two controlled exercises (same models vs different
+> models), the sample-file audit to a supplement; (3) nanofiltration with
+> equations and a data figure, curation's acceptance rule argued
+> statistically; (4) rewrite the introduction against the state of the art
+> property by property, less internal vocabulary, fix "hand-written C++"
+> and the incomplete references.
 > **THE TWO OPEN DECISIONS, DELEGATED (Vitor, 2026-10-21: "Nao me pecas
 > nada e decide tu de forma sensata").  Commander's decisions:**
 > (a) **Compressor with liquid in its suction: REFUSE by name**, quoting the
