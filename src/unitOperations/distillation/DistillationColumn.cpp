@@ -49,6 +49,7 @@ License
 #include <limits>
 #include <map>
 #include <optional>
+#include <set>
 #include <sstream>
 #include <stdexcept>
 #include <vector>
@@ -91,6 +92,137 @@ const char* const kStageOneDrawRemedy =
     "Draw it from stage 2, or split it off the distillate downstream with a"
     " `splitter`.";
 
+//  THE CONDENSER IS A DECLARED CHOICE, AND THE STAGE COUNT FOLLOWS FROM IT
+//  (C123, 2026-10-21).  `nStages` counts the column's EQUILIBRIUM stages, top
+//  to bottom; the partial reboiler is always the last of them.
+//
+//    total   (the default)  The condenser condenses ALL of the vapour leaving
+//            stage 1 and is NOT an equilibrium stage, so it is not counted:
+//            stage 1 is the TOP TRAY.  Reflux and distillate leave the drum as
+//            one saturated liquid of the vapour's composition,
+//                 x_D = y_1 = K_1 x_1,   at the bubble point of x_D,
+//            and the reflux R D returns to stage 1 with that composition.  The
+//            tray-1 balance  R D x_D + V_2 y_2 = L_1 x_1 + (R+1) D y_1  is the
+//            same equation as  L_1 x_1 + D y_1 - V_2 y_2 = 0,  which is the row
+//            every method writes -- so x_D = y_1 is not a mislabel.
+//    partial  The condenser IS stage 1, an equilibrium stage: it returns its
+//            liquid x_1 as the reflux (L_1 = R D) and sends the distillate as a
+//            saturated VAPOUR  y_D = K_1 x_1  at T_1, its dew point.
+//
+//  The two have THE SAME material equations and differ in what stage 1 is,
+//  the distillate's phase, the condenser duty, whether stage 1 is a tray, and
+//  -- under `fullMESH` -- whether stage 1 carries an energy balance (a tray
+//  does; a partial condenser's duty is free).  A source that counts a TOTAL
+//  condenser as "stage 1" describes a column of N-1 equilibrium stages, which
+//  is nStages N-1 here.
+//
+//  Why this was written down: the corpus held BOTH readings at once.  The
+//  header, the Wang-Henke hydraulics and the tray count said "stage 1 is the
+//  top tray"; the MESH hydraulics (V_0 = 0), the full-MESH stage-1 rows (no
+//  energy balance, L_1 = R D), `docs/ai/unit-ops.md` and the Theory Guide
+//  said "stage 1 is the total condenser" -- so one declaration gave a column
+//  one more tray under Wang-Henke than under the MESH.  Declared in the
+//  condenser's own block, beside its utility:
+//      operation { condenser { type total|partial;  utility coolingWater; } }
+enum class CondenserType { total, partial };
+
+CondenserType readCondenserType(const DictPtr&     operDict,
+                                const std::string& unit,
+                                int                verbosity)
+{
+    std::string word = "total";
+    bool declared = false;
+    if (operDict->found("condenser"))
+    {
+        DictPtr cd;
+        try { cd = operDict->subDict("condenser"); }
+        catch (const std::exception&)
+        {
+            throw std::runtime_error("DistillationColumn '" + unit + "': "
+                "`condenser` is the condenser's own block -- write"
+                " `condenser { type total; }` or `condenser { type partial; }`"
+                " (the same block that names its utility).");
+        }
+        if (cd && cd->found("type"))
+        {
+            word = cd->lookupWord("type");
+            declared = true;
+        }
+    }
+    if (word != "total" && word != "partial")
+        throw std::runtime_error("DistillationColumn '" + unit + "': "
+            + registryRefusal::message("condenser type", word,
+                {"total", "partial"}, "Accepted"));
+
+    //  A DEFAULT THAT IS USED IS ANNOUNCED, once per column per process (a
+    //  recycle or a sweep solves the column many times); a declared type
+    //  announces nothing, so silence keeps meaning "nothing was assumed".
+    if (!declared && verbosity >= 1)
+    {
+        static std::mutex lock;
+        static std::set<std::string> said;
+        std::lock_guard<std::mutex> g(lock);
+        if (said.insert(unit).second)
+            std::cout << "  [column] " << unit << ": condenser TOTAL (the"
+                         " default; declare `condenser { type total|partial; }`)"
+                         " -- nStages counts the EQUILIBRIUM stages, stage 1 is"
+                         " the top tray and the last the reboiler; the total"
+                         " condenser above stage 1 is not one of them, and the"
+                         " reflux and the distillate leave it at x_D = y_1.\n";
+    }
+    return word == "partial" ? CondenserType::partial : CondenserType::total;
+}
+
+//  THE CONDENSER DUTY HAS ONE HOME FOR EVERY METHOD (C123), because the
+//  column's two solver paths each wrote it out for themselves and it is the
+//  condenser TYPE that decides what it is.  [kW; negative = heat removed]
+//
+//    total    the condenser takes the vapour leaving stage 1, V_top of y_1 at
+//             T_1, and returns all of it as a liquid of the same composition
+//             at T_cond:
+//                 Q = -V_top [ h_V(y_1, T_1) - h_L(y_1, T_cond) ]
+//             (one composition on both sides, so the enthalpy datum cancels).
+//    partial  stage 1 IS the condenser, and its duty closes ITS OWN envelope:
+//             the vapour V_in of y_2 rising from stage 2 in, the reflux L_1
+//             of x_1 and the vapour distillate D of y_1 out, both at T_1:
+//                 Q = -[ V_in h_V(y_2, T_2) - L_1 h_L(x_1, T_1) - D h_V(y_1, T_1) ]
+//             (the component flows balance across it, so the datum cancels).
+//
+//  Q_reboiler is then the plug that closes the column, as it always was.
+struct CondenserTop
+{
+    scalar  D     = 0.0;   // distillate [kmol/s]
+    sVector yD;            // its composition, y_1 normalised
+    scalar  T1    = 0.0;   // stage 1 temperature [K]
+    scalar  Tcond = 0.0;   // total: the temperature the condensate leaves at
+    scalar  Vtop  = 0.0;   // total: the vapour into the condenser
+    scalar  Vin   = 0.0;   // partial: the vapour rising into stage 1
+    sVector y2;            // partial: its composition
+    scalar  T2    = 0.0;   // partial: stage 2 temperature
+    scalar  L1    = 0.0;   // partial: the reflux, the liquid leaving stage 1
+    sVector x1;            // partial: its composition
+};
+
+scalar condenserDuty(const ThermoPackage& thermo, CondenserType condenser,
+                     const CondenserTop& t)
+{
+    if (condenser == CondenserType::partial)
+        return -( t.Vin * thermo.Hvapour(t.T2, t.y2)
+                - t.L1  * thermo.Hliquid(t.T1, t.x1)
+                - t.D   * thermo.Hvapour(t.T1, t.yD));
+    return -t.Vtop * (thermo.Hvapour(t.T1, t.yD) - thermo.Hliquid(t.Tcond, t.yD));
+}
+
+//  y = K x at a stage, normalised -- the composition a duty is priced at.
+sVector normalisedVapour(const sVector& K, const sVector& x)
+{
+    sVector y(x.size(), 0.0);
+    scalar s = 0.0;
+    for (std::size_t i = 0; i < x.size(); ++i) { y[i] = K[i] * x[i]; s += y[i]; }
+    if (s > 0.0) for (auto& v : y) v /= s;
+    return y;
+}
+
 //  THE DISTILLATE LEAVES AT ITS OWN BUBBLE POINT, not at the top tray's
 //  temperature -- and this lives in ONE function because the column has TWO
 //  solver paths (Wang-Henke and the simultaneous MESH) that each used to build
@@ -112,7 +244,8 @@ ProcessStream makeDistillate(const ThermoPackage& thermo,
                              const sVector&       xD,
                              scalar               D,
                              scalar               P,
-                             scalar               T_topTray)
+                             scalar               T_topTray,
+                             CondenserType        condenser)
 {
     ProcessStream d;
     d.name = "distillate";
@@ -120,6 +253,18 @@ ProcessStream makeDistillate(const ThermoPackage& thermo,
     d.P    = P;
     d.z    = xD;
     d.vf   = 0.0;                       // a total condenser: already condensed
+
+    //  A PARTIAL CONDENSER SENDS A SATURATED VAPOUR: stage 1 is that
+    //  condenser, its T_1 is the bubble point of x_1 and therefore the DEW
+    //  point of y_1 = x_D, so the vapour leaves at T_1 exactly.  That is a
+    //  declaration of the stream's phase, as the total condenser's liquid is.
+    if (condenser == CondenserType::partial)
+    {
+        d.T           = T_topTray;
+        d.vf          = 1.0;
+        d.phasePinned = true;
+        return d;
+    }
 
     //  WHERE THE PACKAGE RESOLVES CHEMISTRY, THIS CORRECTION DOES NOT APPLY,
     //  and pretending otherwise is worse than the defect it fixes.
@@ -649,6 +794,15 @@ int DistillationColumn::solve(const DictPtr& dict,
             + " (strictly above the bottom stage; nStages = "
             + std::to_string(Nint) + ").  Raise nStages or lower feedStage.");
 
+    const CondenserType condenser = readCondenserType(operDict, dict->name(), verbosity);
+    const bool partialCond = (condenser == CondenserType::partial);
+    if (partialCond && NFint == 1)
+        throw std::runtime_error("DistillationColumn '" + dict->name()
+            + "': `feedStage 1` with `condenser { type partial; }` puts the feed"
+            " INTO the partial condenser, which this column does not model (its"
+            " duty would have to price the feed).  Feed stage 2, or declare a"
+            " total condenser, under which stage 1 is the top tray.");
+
     const scalar B  = F - D;
     if (B <= 0.0)
         throw InfeasibleTrial("DistillationColumn: bottoms B = F - D <= 0 (infeasible trial)");
@@ -864,7 +1018,9 @@ int DistillationColumn::solve(const DictPtr& dict,
         //     carries the Murphree relation without changing a single equation below.
         Keff = K;
         if (Emv != 1.0)
-            for (std::size_t j = 0; j + 1 < N; ++j)       // the reboiler is not a tray
+            //  The reboiler is not a tray, and neither is a PARTIAL condenser:
+            //  both are equilibrium stages by definition, so E_MV = 1 there.
+            for (std::size_t j = partialCond ? 1 : 0; j + 1 < N; ++j)
                 for (std::size_t i = 0; i < n; ++i)
                 {
                     const scalar xj = x[j][i];
@@ -1059,7 +1215,7 @@ int DistillationColumn::solve(const DictPtr& dict,
 
     // ---- Produced streams (order: distillate, bottoms) ----------------
     produced_.clear();
-    ProcessStream dStream = makeDistillate(thermo, xD, D, P, T[0]);
+    ProcessStream dStream = makeDistillate(thermo, xD, D, P, T[0], condenser);
     produced_.push_back(dStream);
 
     ProcessStream bStream;
@@ -1099,17 +1255,29 @@ int DistillationColumn::solve(const DictPtr& dict,
     //  silent: that is the ideal-stage default, and an absent key means it.
     if (Emv != 1.0) kpis_["murphreeEfficiency"] = Emv;
 
-    // Energy items [kW].  Q_condenser is the heat removed to condense the
-    // overhead vapour V1=(R+1)D (latent at the top); Q_reboiler then CLOSES
-    // the column energy balance, Q_reb = dH_streams - Q_cond, so the two
-    // reconcile with the stream enthalpy change (this is how a column duty is
-    // reported).  Signed as energy added to the process: condenser negative
-    // (removed), reboiler positive (supplied).  dH is datum-independent for a
-    // non-reacting unit, so the sensible datum here matches the report.
+    // Energy items [kW].  Q_condenser is the condenser's own duty
+    // (`condenserDuty`; its type decides which envelope); Q_reboiler then
+    // CLOSES the column energy balance, Q_reb = dH_streams - Q_cond, so the
+    // two reconcile with the stream enthalpy change (this is how a column
+    // duty is reported).  Signed as energy added to the process: condenser
+    // negative (removed), reboiler positive (supplied).  dH is
+    // datum-independent for a non-reacting unit, so the sensible datum here
+    // matches the report.
     {
-        const scalar V1     = (R + 1.0) * D;                              // overhead vapour [kmol/s]
-        const scalar lamTop = thermo.Hvapour(T[0], xD) - thermo.Hliquid(T[0], xD);
-        const scalar Q_cond = -V1 * lamTop;                              // removed (latent, datum-independent)
+        CondenserTop top;
+        top.D = D;  top.yD = xD;  top.T1 = T[0];
+        top.Tcond = T[0];                       // CMO: the latent at the top
+        top.Vtop  = (R + 1.0) * D;              // overhead vapour [kmol/s]
+        if (partialCond)
+        {
+            top.Vin = Vl;                       // NF >= 2 under a partial condenser
+            top.y2  = normalisedVapour((Emv != 1.0) ? Keff[1]
+                          : thermo.stageK(T[1], P, x[1], x[1], x[1]), x[1]);
+            top.T2  = T[1];
+            top.L1  = Ll;
+            top.x1  = x[0];
+        }
+        const scalar Q_cond = condenserDuty(thermo, condenser, top);
         // Stream enthalpies on the report's datum (elements first --- so dH
         // matches the balance sheet; sensible fallback if Hf is missing).
         bool elem = true;
@@ -1151,7 +1319,8 @@ int DistillationColumn::solve(const DictPtr& dict,
         }
         auto H = [&](scalar Fx, scalar Tx, scalar vfx, const sVector& zx) {
             return elem ? Fx * thermo.H_stream_formation(Tx, P, vfx, zx)
-                      : Fx * thermo.Hliquid(Tx, zx);
+                      : Fx * (vfx >= 1.0 ? thermo.Hvapour(Tx, zx)
+                                         : thermo.Hliquid(Tx, zx));
         };
         //  THE DUTY PRICES THE STATES THE STREAMS CARRY (2026-09-12).
         //  Two of these three terms used to price a state this unit does not
@@ -1166,7 +1335,7 @@ int DistillationColumn::solve(const DictPtr& dict,
         //  `dStream` is built above, so its temperature is the one this
         //  column actually hands downstream.  Nobody recomputes it here: a
         //  second bubble point would be a second home for the same answer.
-        const scalar dH = (H(D, dStream.T, 0.0, xD) + H(B, T[N-1], 0.0, x[N-1]))
+        const scalar dH = (H(D, dStream.T, dStream.vf, xD) + H(B, T[N-1], 0.0, x[N-1]))
                         -  feedEnthalpy(feedState, F, Tf, P, z, thermo, elem);
         kpis_["Q_condenser_kW"] = Q_cond;
         kpis_["Q_reboiler_kW"]  = dH - Q_cond;                          // closes the balance
@@ -1174,9 +1343,9 @@ int DistillationColumn::solve(const DictPtr& dict,
 
     // ---- Optional sieve-tray hydraulics ------------------------------
     //  Under CMO the traffic is constant within each section, so V and L are
-    //  section step-functions.  Stage N-1 is the reboiler; the condenser is
-    //  external to this method's stage list, so every stage above the reboiler
-    //  is a tray.
+    //  section step-functions.  Stage N-1 is the reboiler; a TOTAL condenser
+    //  is external to the stage list, so every stage above the reboiler is a
+    //  tray -- and a PARTIAL condenser is stage 1, which is not.
     {
         std::vector<scalar> Vs(N, 0.0), Ls(N, 0.0);
         std::vector<sVector> yAll(N, sVector(n, 0.0));
@@ -1191,6 +1360,7 @@ int DistillationColumn::solve(const DictPtr& dict,
             if (sy > 0.0) for (auto& v : yAll[j]) v /= sy;
         }
         Vs[N-1] = 0.0;                    // the reboiler is not a tray
+        if (partialCond) Vs[0] = 0.0;     // nor is a partial condenser (stage 1)
         hydraulicsPass(operDict, dict->name(), thermo, P, T, x, yAll, Vs, Ls, NF, verbosity);
     }
 
@@ -1257,6 +1427,9 @@ int DistillationColumn::solveForRecovery(const DictPtr& dict,
     const int nFd = static_cast<int>(operDict->lookupScalar("feedStage"));
     const scalar RR = operDict->lookupScalar("refluxRatio");
     const scalar Pc = operDict->lookupScalarOrDefault("P", 0.0, Dims::pressure);
+    //  The condenser type too: read (and refused, if misspelled) here on the
+    //  case's own dict, for the same reason as the geometry above.
+    (void)readCondenserType(operDict, dict->name(), verbosity);
     if (nFd < 2 || nFd > nSt)
         throw std::runtime_error("DistillationColumn: feedStage " +
             std::to_string(nFd) + " is outside 2.." + std::to_string(nSt) +
@@ -1495,6 +1668,8 @@ int DistillationColumn::solveSimultaneous(const DictPtr& dict,
     const std::size_t N  = static_cast<std::size_t>(operDict->lookupScalar("nStages"));
     const scalar R = operDict->lookupScalar("refluxRatio");
     const scalar D = operDict->lookupScalar("distillateRate", Dims::molarFlow);
+    const CondenserType condenser = readCondenserType(operDict, dict->name(), verbosity);
+    const bool partialCond = (condenser == CondenserType::partial);
 
     // ---- per-stage feed / side-draw maps -------------------------------
     //  General RadFrac-style staircase: any stage may receive a feed and/or
@@ -1677,7 +1852,15 @@ int DistillationColumn::solveSimultaneous(const DictPtr& dict,
     std::vector<scalar> L(N, 0.0), V(N, 0.0);
     L[0] = R * D;                                  // reflux
     for (std::size_t j = 1; j < N; ++j) L[j] = L[j-1] + qfeed[j]*Ffeed[j] - Udraw[j];
-    if (N > 1) V[1] = (R + 1.0) * D;               // vapour into the total condenser
+    if (N > 1) V[1] = (R + 1.0) * D;               // vapour rising into stage 1
+    //  V[0] is the vapour LEAVING stage 1.  Under a TOTAL condenser stage 1 is
+    //  the top tray and sends (R+1) D up to the condenser, which returns R D as
+    //  reflux; the stage-1 rows below carry that as their net, D y_1, so V[0]
+    //  enters no balance -- but it is the tray's traffic, which the
+    //  hydraulics rate and the full MESH solves.  Under a PARTIAL condenser
+    //  stage 1 IS the condenser: no vapour rises out of it, and its vapour
+    //  product is the distillate.
+    V[0] = partialCond ? 0.0 : (R + 1.0) * D;
     for (std::size_t j = 1; j + 1 < N; ++j) V[j+1] = V[j] - (1.0 - qfeed[j])*Ffeed[j] + Wdraw[j];
 
     scalar totFeed = 0.0, totDraw = 0.0;
@@ -1982,7 +2165,7 @@ int DistillationColumn::solveSimultaneous(const DictPtr& dict,
             }
             for (std::size_t i = 0; i + 1 < n; ++i) {       // M_{j,i}  (out − in − generation)
                 scalar m;
-                if (j == 0)                                  // total condenser
+                if (j == 0)                                  // stage 1 (see readCondenserType)
                     m = L[0]*x[0][i] + D*y[0][i] - V[1]*y[1][i];
                 else if (j == N-1)                           // partial reboiler
                     m = V[N-1]*y[N-1][i] + Bf*x[N-1][i]
@@ -2231,9 +2414,12 @@ int DistillationColumn::solveSimultaneous(const DictPtr& dict,
     // mass + ENERGY balances, SEEDED from the converged CMO profile (the cheap
     // bubble-point model bootstraps the rigorous one -- Vitor's idea).  The energy
     // balance lets V_j, L_j follow the REAL latent heats instead of assuming
-    // equimolal overflow -> the enthalpy residual the CMO never carried.  Total
-    // condenser: V_0=0, L_0=R*D; reboiler: L_{N-1}=B; their energy balances give
-    // Q post-hoc.  Reactive full-MESH is not wired yet (keeps the CMO profile).
+    // equimolal overflow -> the enthalpy residual the CMO never carried.  Stage
+    // 1 by condenser type (`readCondenserType`): TOTAL -- the top tray, with an
+    // energy balance like any tray, the reflux R D entering it at its own
+    // bubble point and V_1 = (R+1) D leaving it; PARTIAL -- the condenser
+    // itself, V_1 = 0 and L_1 = R D, its duty free.  Reboiler: L_{N-1} = B.
+    // The free duties are computed post hoc.  Reactive full-MESH is not wired yet (keeps the CMO profile).
     const std::string fmModel = dict->lookupWordOrDefault(
         "model", operDict->lookupWordOrDefault("method", "WangHenke"));
     if ((fmModel == "fullMESH" || fmModel == "MESH"
@@ -2311,16 +2497,34 @@ int DistillationColumn::solveSimultaneous(const DictPtr& dict,
                 }
                 scalar sy = 0.0; for (std::size_t i = 0; i < n; ++i) sy += ys[j][i];
                 g[j*mv + (n-1)] = sy - 1.0;                       // summation
-                if (j == 0)                                       // total mass / condenser V_0=0
-                    g[j*mv + n] = Vs[0] * balanceScale;
+                if (j == 0)                                       // stage 1: its vapour
+                    g[j*mv + n] = (partialCond ? Vs[0]            // partial: none rises
+                                   : Vs[0] - (R + 1.0)*D)         // total: to the condenser
+                                  * balanceScale;
                 else if (j == N-1)
                     g[j*mv + n] = (Vs[N-1] + Ls[N-1] + Udraw[N-1] + Wdraw[N-1]
                                 - Ls[N-2] - Ffeed[N-1]) * balanceScale;
                 else
                     g[j*mv + n] = (Ls[j] + Vs[j] + Udraw[j] + Wdraw[j]
                                 - Ls[j-1] - Vs[j+1] - Ffeed[j]) * balanceScale;
-                if (j == 0)                                        // energy / flow specs
-                    g[j*mv + n+1] = (Ls[0] - R*D) * balanceScale;  // reflux spec
+                if (j == 0 && partialCond)                         // energy / flow specs
+                    g[j*mv + n+1] = (Ls[0] - R*D) * balanceScale;  // reflux = condenser liquid
+                else if (j == 0)
+                {
+                    //  TOTAL CONDENSER: stage 1 is the TOP TRAY and balances its
+                    //  enthalpy like any tray.  The reflux R D enters it as the
+                    //  condensate of its own vapour, a saturated liquid at the
+                    //  bubble point of y_1 -- the state the distillate leaves
+                    //  in -- and (R+1) D leaves it as vapour; the liquid L_1 it
+                    //  sends down is what the balance makes it, not R D.
+                    sVector yD = ys[0];
+                    { scalar sy0 = 0.0; for (auto v : yD) sy0 += v;
+                      if (sy0 > 0.0) for (auto& v : yD) v /= sy0; }
+                    const scalar Treflux = bubbleT(thermo, yD, P, Ts[0], 1.0e-12);
+                    g[j*mv + n+1] = energyScale * (
+                          R*D*hL(yD, Treflux) + Vs[1]*hV(ys[1], Ts[1])
+                        - Ls[0]*hL(xs[0], Ts[0]) - Vs[0]*hV(ys[0], Ts[0]));
+                }
                 else if (j == N-1)
                     g[j*mv + n+1] = (Ls[N-1] - Bf) * balanceScale; // bottoms spec
                 else {                                             // ENERGY balance (enthalpy residual)
@@ -2356,7 +2560,8 @@ int DistillationColumn::solveSimultaneous(const DictPtr& dict,
     }
     // ========================================================================
 
-    // Distillate (total condenser): x_D = K_1·x_1, normalised.
+    // Distillate: x_D = y_1 = K_1·x_1, normalised -- the condensate of stage
+    // 1's vapour under a total condenser, the vapour product of a partial one.
     //  THE SEARCH IS OVER.  Everything from here re-prices the stages at the
     //  CONVERGED profile, so its advisories are about the answer and are
     //  reported in full.  The reset must sit BELOW the full-MESH refinement
@@ -2423,7 +2628,7 @@ int DistillationColumn::solveSimultaneous(const DictPtr& dict,
     }
 
     produced_.clear();
-    ProcessStream dStream = makeDistillate(thermo, xD, D, P, T[0]);
+    ProcessStream dStream = makeDistillate(thermo, xD, D, P, T[0], condenser);
     produced_.push_back(dStream);
     ProcessStream bStream;
     bStream.name = "bottoms"; bStream.F = Bf; bStream.T = T[N-1]; bStream.P = P;
@@ -2500,12 +2705,28 @@ int DistillationColumn::solveSimultaneous(const DictPtr& dict,
                       << ", " << nRx << " reactive stages)\n";
     }
 
-    // Energy items [kW] (see the Wang-Henke path): condenser from the overhead
-    // latent, reboiler closes the column energy balance.
+    // Energy items [kW] (see the Wang-Henke path): the condenser's own duty,
+    // the reboiler closes the column energy balance.
     {
-        const scalar V1     = (R + 1.0) * D;
-        const scalar lamTop = thermo.Hvapour(T[0], xD) - thermo.Hliquid(T[0], xD);
-        const scalar Q_cond = -V1 * lamTop;
+        //  Under the full MESH the traffic V, L is the solver's own and a TOTAL
+        //  condenser's reflux entered stage 1 at the condensate's bubble
+        //  point, so the duty is that envelope exactly and Q_reboiler then
+        //  equals the reboiler's own balance.  Under CMO, the latent at T_1.
+        const bool fullMesh = (fmModel == "fullMESH" || fmModel == "MESH"
+                               || fmModel == "NaphtaliSandholm") && !reactive;
+        CondenserTop top;
+        top.D = D;  top.yD = xD;  top.T1 = T[0];
+        top.Tcond = fullMesh ? dStream.T : T[0];
+        top.Vtop  = fullMesh ? V[0] : (R + 1.0) * D;
+        if (partialCond)
+        {
+            top.Vin = V[1];
+            top.y2  = normalisedVapour(thermo.stageK(T[1], P, x[1], x[1], x[1]), x[1]);
+            top.T2  = T[1];
+            top.L1  = L[0];
+            top.x1  = x[0];
+        }
+        const scalar Q_cond = condenserDuty(thermo, condenser, top);
         bool elem = true;
         try { thermo.H_stream_formation(Tf, P, 1.0 - q, z);
               thermo.H_stream_formation(T[0], P, 0.0, xD);
@@ -2545,7 +2766,8 @@ int DistillationColumn::solveSimultaneous(const DictPtr& dict,
         }
         auto H = [&](scalar Fx, scalar Tx, scalar vfx, const sVector& zx) {
             return elem ? Fx * thermo.H_stream_formation(Tx, P, vfx, zx)
-                      : Fx * thermo.Hliquid(Tx, zx);
+                      : Fx * (vfx >= 1.0 ? thermo.Hvapour(Tx, zx)
+                                         : thermo.Hliquid(Tx, zx));
         };
         // products out (distillate + bottoms + every side draw) minus feeds in.
         //  The DISTILLATE at the temperature this column PUBLISHES it at --
@@ -2553,7 +2775,7 @@ int DistillationColumn::solveSimultaneous(const DictPtr& dict,
         //  the twin comment on the Wang-Henke duty block; one defect, two
         //  transcriptions, and a fix applied to either alone would have been
         //  right on half the corpus.
-        scalar Hout = H(D, dStream.T, 0.0, xD) + H(Bf, T[N-1], 0.0, x[N-1]);
+        scalar Hout = H(D, dStream.T, dStream.vf, xD) + H(Bf, T[N-1], 0.0, x[N-1]);
         for (std::size_t j = 0; j < N; ++j)
         {
             if (Udraw[j] > 0.0) Hout += H(Udraw[j], T[j], 0.0, x[j]);
@@ -2682,8 +2904,10 @@ int DistillationColumn::solveSimultaneous(const DictPtr& dict,
 
     // ---- Optional sieve-tray hydraulics ------------------------------
     //  Here V[j] and L[j] are the solver's own per-stage traffic.  V[0] = 0
-    //  identifies the total condenser; the reboiler is the last stage.  Both
-    //  drop out of the tray list on their own.
+    //  identifies a PARTIAL condenser (stage 1 is the condenser); under a
+    //  total condenser V[0] = (R+1) D and stage 1 is the top tray, as on the
+    //  Wang-Henke path.  The reboiler is the last stage.  The non-trays drop
+    //  out of the tray list on their own.
     {
         std::vector<sVector> yAll(N, sVector(n, 0.0));
         for (std::size_t j = 0; j < N; ++j)

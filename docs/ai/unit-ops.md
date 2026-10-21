@@ -783,11 +783,17 @@ Naphtali & Sandholm, *AIChE J.* 17 (1971) 148.
 ```
 operation
 {
-    nStages          12;           // (NOT `stages`).  nStages counts ALL
-                                   // equilibrium stages INCLUDING the total
-                                   // condenser (stage 1) and the reboiler
-                                   // (stage nStages): "12 pratos" = nStages 12,
-                                   // profile.csv has 12 rows
+    nStages          12;           // (NOT `stages`).  nStages counts the
+                                   // EQUILIBRIUM stages, top to bottom, the
+                                   // reboiler (stage nStages) included.  A
+                                   // TOTAL condenser (the default) is NOT an
+                                   // equilibrium stage and is NOT counted:
+                                   // stage 1 is the top tray, so 11 trays +
+                                   // reboiler = nStages 12.  A PARTIAL
+                                   // condenser IS stage 1.  profile.csv has
+                                   // 12 rows.  A source that counts its
+                                   // total condenser as "stage 1" means
+                                   // nStages one LESS here.
     feedStage         6;
     refluxRatio      2.5;          // refluxRatio is REQUIRED; beside it give
     distillateRate 50 kmol/h;      // distillateRate XOR distillateRecovery
@@ -797,6 +803,19 @@ operation
     P              1.01325 bar;
 }
 ```
+
+**The condenser type** (`operation { condenser { type total|partial; } }`,
+the same block that names its utility; default `total`, announced).  Both
+types solve the same material equations; they differ in what stage 1 IS.
+`total`: stage 1 is the top tray, the condenser above it condenses all of
+its vapour, and reflux and distillate leave as ONE saturated liquid of that
+vapour's composition, `x_D = y_1 = K_1 x_1`, at its bubble point
+(`Q_condenser` condenses `(R+1)D` of it).  `partial`: stage 1 is the
+condenser, an equilibrium stage; the reflux is its liquid `x_1` and the
+distillate leaves as a saturated VAPOUR `y_1` at `T_1` (`Q_condenser` closes
+that stage's own envelope; stage 1 is not a tray in the hydraulics).  Under
+`fullMESH` a total condenser's stage 1 balances its enthalpy like any tray,
+with the reflux entering at the condensate's bubble point.
 
 **A distillate specified by RECOVERY instead of a rate.**  `distillateRate` is a
 number, and a number stops being a specification the moment the column sits
@@ -865,7 +884,8 @@ methods).  The MESH equations contain no diameter — a column of any width conv
 the same distillate, and a flooded one converges just as prettily.  This is a **rating
 pass on the converged profile**, never a coupled unknown (the reported ΔP is NOT fed back
 into the stage temperatures).  A stage with no vapour traffic identifies itself as
-not-a-tray, so the condenser and reboiler drop out on their own.
+not-a-tray, so a partial condenser and the reboiler drop out on their own
+(under a total condenser stage 1 is the top tray and is rated).
 
 ```
 hydraulics
