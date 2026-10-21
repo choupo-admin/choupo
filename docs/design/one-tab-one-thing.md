@@ -303,6 +303,42 @@ Two doors stay on the hub — **Explore** (the landing) and **Property
 surfaces** — so §8.2 survives the move: neither is reachable only through the
 other.
 
+### 8.8 THE TWO DOORS BECAME ONE (2026-10-21, DEV.md 4c C116)
+
+Vítor, 2026-10-20, on the live site: *"temos o 'explore' e o 'Property
+Surfaces' que acho que fazem a mesma coisa e só se cria confusão por se ter
+dois"*.  Measured before anything moved: the catalogue tab's only act the
+surfaces lacked was a wider inspector and a link; the same `CompoundBrowser`,
+`ComponentInspector` and `EstimateForm` were mounted twice; and the hub's
+labels had been inverted against the keys (label "Explore" = key
+`compounds`, label "Property surfaces" = key `explore`) since §8.7 — the
+code's own comments recorded that it had sent an audit to the wrong URL.
+
+So §8.1's table is superseded.  Explore is ONE tab, labelled "Explore",
+keyed `explore`, with two VIEWS of one selected set, switched in place by a
+Catalogue | Surfaces control at the top left of each:
+
+| address | opens |
+|---|---|
+| `?workspace=explore` | Explore, the Catalogue view (no set named) |
+| `?workspace=explore&components=…` | Explore, the Surfaces view (a set names what it wants plotted — §8.7's reading, kept) |
+| `?workspace=explore&view=catalogue\|surfaces[&components=…]` | the view named |
+| `?workspace=properties[&components=…]` | REDIRECT → `…&view=surfaces` |
+| `?workspace=compounds` | REDIRECT → `…&view=catalogue` |
+
+What §8.2 was protecting survives, structurally: the Surfaces open with an
+EMPTY set (`&view=surfaces`, and the retired `?workspace=properties` lands
+there), so the Catalogue is a door and not step 1; the hub lists Explore
+once, beside EduTools.  §8.3's rule is kept and extended: the VIEW travels
+in the address with the set (`exploreLink`, `exploreViewInSearch` in
+`selectionLink.ts`), written in place as either changes, so a pasted link is
+the picture.  F1 on the Catalogue view opens the Explorer Guide's catalogue
+section (`sec:explorer-catalogue`); on the Surfaces, the active lens's
+Theory Guide section, as before.  `CompoundCatalogue.tsx` is deleted; the
+three components are mounted by `ExploreWorkspace.tsx` alone, which
+`gui/tests/exploreView.test.ts` (the successor of `compoundsTab.test.ts`)
+holds.
+
 ### 8.8 The instrument's OTHER half, and a false alarm it cost
 
 Half a rule is not a rule.  "Count the elements past the viewport edge" caught

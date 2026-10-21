@@ -30,24 +30,30 @@ License
 /*---------------------------------------------------------------------------*\
   selectionLink -- the compound SET as an ADDRESS, one home for both sides.
 
-  WHY IT EXISTS.  The Compounds tab picks components; the Explore tab plots
-  them.  Two tabs, and `one tab, one thing` (docs/design/one-tab-one-thing.md,
-  Vítor 2026-08-17) is explicit that a tab must not depend on state its own
-  address does not name -- that is the rule that decoupled the EduTools from
-  the flowsheet, for the reason that a teaching surface whose answer depends on
-  what happens to be open elsewhere is not stable.  So the SET travels in the
-  URL, not in a shared store and not in localStorage:
+  WHY IT EXISTS.  The Explore tab picks components (its Catalogue view) and
+  plots them (its Surfaces view).  `one tab, one thing` (docs/design/
+  one-tab-one-thing.md, Vítor 2026-08-17) is explicit that a tab must not
+  depend on state its own address does not name -- that is the rule that
+  decoupled the EduTools from the flowsheet, for the reason that a teaching
+  surface whose answer depends on what happens to be open elsewhere is not
+  stable.  So the SET and the VIEW travel in the URL, not in a shared store
+  and not in localStorage:
 
-      ?workspace=properties&components=water,ethanol
+      ?workspace=explore&view=surfaces&components=water,ethanol
 
   Three things fall out, and the third is the one that matters to a class:
-  the Explore tab is still reachable with NO components (the catalogue is a
-  door, not a gate -- the setup-wizard the credo §5 forbids); a reload keeps
-  the exploration; and a professor can paste the link.
+  the surfaces are reachable with NO components (the catalogue is a door, not
+  a gate -- the setup-wizard the credo §5 forbids); a reload keeps the
+  exploration; and a professor can paste the link.
 
-  ONE HOME, TWO CALLERS: the writer (the Compounds tab's button) and the
-  reader (ExploreWorkspace's seed) share this file rather than each spelling
-  the parameter out.  A second spelling of a wire format is the arity sin with
+  ONE TAB SINCE 2026-10-21 (DEV.md 4c C116).  Until then the catalogue and the
+  surfaces were two tabs and this file carried the hand-over between them;
+  they are two VIEWS of one tab now, switched in place, and the address is
+  rewritten in place as the set or the view changes.
+
+  ONE HOME, TWO CALLERS: the writer (`exploreLink`, and the screen's own
+  in-place rewrite) and the reader (ExploreWorkspace's seed) share this file
+  rather than each spelling the parameter out.  A second spelling of a wire format is the arity sin with
   a deadline -- the day one side adds a name-encoding rule the other does not.
 
   Names are passed through VERBATIM: the catalogue resolves `components/<name>.dat`
@@ -83,26 +89,46 @@ export function componentsInSearch(search: string): string[] {
   return raw ? cleanNames(raw.split(",")) : [];
 }
 
-/** The address of the property surfaces for this SET.  With no names it is
- *  the bare surfaces tab, which is exactly right: the door, opened empty.
- *
- *  `?workspace=properties`, not `?workspace=explore`: since 2026-09-03 the
- *  latter is the explorer's LANDING (where compounds are chosen), on the
- *  owner's clarification.  `?workspace=explore&components=…` still reaches the
- *  surfaces -- state/workspaceUrl.ts honours it and rewrites the address bar
- *  to this word -- so the links this file emitted before the change keep
- *  working, and no longer leave a stale word in the bar. */
-export function propertiesLink(names: readonly string[]): string {
+/** The Explore tab's two views, the view an address names, and the address
+ *  of a view with a set (2026-10-21, C116).  `?workspace=properties`, the
+ *  surfaces' own word from 2026-09-03 until then, is a redirect in
+ *  state/workspaceUrl.ts, so every link this file emitted before keeps
+ *  working and the bar is rewritten to the one word. */
+/** The two views of the Explore tab. */
+export type ExploreView = "catalogue" | "surfaces";
+
+/** The Explorer Guide section F1 opens on the CATALOGUE view (a real
+ *  `\label` in docs/explorerGuide.tex; tests/exploreView.test.ts holds the
+ *  two together).  The SURFACES answer with the active lens's Theory Guide
+ *  section instead (case/exploreTheory.ts). */
+export const EXPLORER_GUIDE_CATALOGUE = "sec:explorer-catalogue";
+
+/** The view an Explore address asks for.  ABSENT, it is decided by the set:
+ *  an address carrying `components=` opens the SURFACES (that is what every
+ *  set-carrying Explore link opened before the views were one tab, and a
+ *  bookmark must keep meaning what it meant), an address without one opens
+ *  the CATALOGUE (where a student who does not yet know what to plot starts).
+ *  An unknown word reads as absent rather than as an error: the router has
+ *  already chosen the screen, and a typo in a view must not cost the set. */
+export function exploreViewInSearch(search: string): ExploreView {
+  const q = new URLSearchParams(search);
+  const raw = q.get("view");
+  if (raw === "catalogue" || raw === "surfaces") return raw;
+  return q.has("components") && componentsInSearch(search).length > 0 ? "surfaces" : "catalogue";
+}
+
+/** The address of the Explore tab on `view` with this set.  An empty set is
+ *  a legitimate address on either view (the door, not the gate). */
+export function exploreLink(names: readonly string[], view: ExploreView = "surfaces"): string {
   const clean = cleanNames(names);
-  return clean.length
-    ? `?workspace=properties&components=${clean.map(encodeURIComponent).join(",")}`
-    : "?workspace=properties";
+  const set = clean.length ? `&components=${clean.map(encodeURIComponent).join(",")}` : "";
+  return `?workspace=explore&view=${view}${set}`;
 }
 
 // ---- the LENS and the Evidence view's selection, in the same address -------
 //
-//  `?workspace=properties&components=methanol,water&lens=evidence
-//   &datasets=<id>,<id>&models=<candidateId>,...`  (DEV.md 4c C117)
+//  `?workspace=explore&view=surfaces&components=methanol,water&lens=evidence
+//   &datasets=<id>,<id>&models=<candidateId>,...`  (DEV.md 4c C117, C116)
 //
 //  A professor pastes it; a student lands on the SAME picture.  `lens` names
 //  a PlotKind and is honoured only where the view applies to the set (the
@@ -139,7 +165,8 @@ export function evidenceLink(names: readonly string[],
                              datasets: readonly string[],
                              models: readonly string[]): string {
   const q = new URLSearchParams();
-  q.set("workspace", "properties");
+  q.set("workspace", "explore");
+  q.set("view", "surfaces");
   q.set("components", cleanNames(names).join(","));
   q.set("lens", "evidence");
   q.set("datasets", cleanNames(datasets).join(","));

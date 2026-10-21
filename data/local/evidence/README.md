@@ -35,7 +35,7 @@ Record: `docs/design/evidence-as-a-first-class-object.md` section 7
 
 ## Where it shows up
 
-The Property Explorer's **Evidence** view (`?workspace=properties&
+The Property Explorer's **Evidence** view (`?workspace=explore&view=surfaces&
 components=methanol,water&lens=evidence`) lists every dataset whose
 subject is the selected pair, from three tiers: this folder (the dev GUI,
 `bin/runGui`, bundles it through `gui/scripts/localCataloguePlugin.ts`;

@@ -122,7 +122,9 @@ export const PLOT_TYPES: PlotType[] = [
   //  and no VLE: delta is derived per component from HvapTb, Tc and Vliq, so
   //  any two substances that carry those three can be compared -- which is
   //  what makes this the one study that works across the whole catalogue.
-  { id: "solubility", label: "Solubility parameter (Hildebrand)", min: 2, max: 12, vle: false,
+  //  TITLED FOR WHAT IT IS (2026-10-21, DEV.md 4c C128 slice 1): the cohesion
+  //  of each PURE liquid, never a solubility -- the old label read as one.
+  { id: "solubility", label: "Cohesion of the pure liquids (Hildebrand parameter)", min: 2, max: 12, vle: false,
     why: "pick 2+ liquids that carry HvapTb, Tc and Vliq — delta is derived from those three" },
   //  Measured datasets for a PAIR against every candidate model (DEV.md 4c
   //  C117): the studies the tutorials, data/local or the open case carry for

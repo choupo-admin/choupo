@@ -144,6 +144,12 @@ ALLOWED_PATHS = {
     "docs/theoryGuide-STIFF-METHODS.pdf":
         "DELETED 2026-09-03 (sourceless render, doctrine breach); DEV.md\n"
         "                          records the withdrawal and must name it",
+    # DELETED 2026-10-21 (DEV.md 4c C116): the catalogue's own tab became
+    # the Catalogue VIEW of ExploreWorkspace.tsx.  C116's entry MEASURED the
+    # file (its line count, what it mounted) before the merge was decided,
+    # and a record of why two tabs became one has to name the tab that went.
+    "gui/src/ui/CompoundCatalogue.tsx":
+        "DELETED 2026-10-21, DEV.md 4c C116 -- named in the dated record",
     # Build outputs: created by a build, absent from a fresh clone.  The doc
     # is DESCRIBING where a build lands, which is exactly a path that is
     # absent by design until `make wasm-gui` runs.  (Found 2026-08-22: the

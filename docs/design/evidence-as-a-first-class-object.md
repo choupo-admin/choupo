@@ -114,7 +114,8 @@ its file.
 1. Engine: tiered `dataset` resolution; per-point residuals in the overlay.
 2. GUI plumbing: the virtual modules, `indexEvidence`, the private bundle.
 3. Explorer: the PAIR as a subject; the Evidence view.
-4. C116: one Explore (`?workspace=properties` kept as a redirect).
+4. C116: one Explore (`?workspace=properties` kept as a redirect) -- DONE
+   2026-10-21, `docs/design/one-tab-one-thing.md` §8.8.
 
 Acceptance (Vítor's test): open the Explorer, pick methanol + water, see the
 two studies (doi 10.1016/j.jct.2009.11.020 and 10.1021/je200341c) against
@@ -190,7 +191,7 @@ installed, ideal) as checkboxes; ONE choupoProps run per candidate, the
 candidate's parameters inline, a `points` op per (dataset, isobar) and a grid
 curve per isobar; residual = engine minus measurement, AAD = the mean of the
 residuals drawn, the dossier verdict beside a candidate whose record names the
-case the dossier belongs to.  URL `?workspace=properties&components=a,b&lens=
+case the dossier belongs to.  URL `?workspace=explore&view=surfaces&components=a,b&lens=
 evidence&datasets=...&models=...` (absent lists mean all; every older address
 unchanged).  On a phone the two lists fold behind one button.
 

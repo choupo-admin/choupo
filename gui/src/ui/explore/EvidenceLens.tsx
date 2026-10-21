@@ -18,7 +18,7 @@
   residuals on screen.  No interpolation, no fit, no γ in TypeScript.  "The
   GUI fits nothing" is the whole contract, and the student decides.
 
-  THE ADDRESS.  `?workspace=properties&components=methanol,water
+  THE ADDRESS.  `?workspace=explore&view=surfaces&components=methanol,water
   &lens=evidence&datasets=<id>,<id>&models=<candidateId>,...` -- read at
   boot, rewritten in place (replaceState) on every change, so the picture a
   professor pastes is the picture a student gets.  Absent lists mean "all".
