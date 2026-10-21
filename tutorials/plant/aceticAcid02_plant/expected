@@ -258,7 +258,7 @@ layout  ignitionDownwind:controlRoom:degasser limit            60               
 layout  summary                placed           11               1e-4
 layout  summary                unplaced         0                1e-4
 layout  summary                internal         1                1e-4
-layout  summary                findings         3                1e-4
+layout  summary                findings         5                1e-4
 kpi     lightsColumn           dP_column_kPa    13.8524109116    1e-4
 kpi     lightsColumn           diameter         0.337636971143   1e-4
 kpi     lightsColumn           diameterDesigned 1                1e-4
@@ -543,3 +543,7 @@ utility methanolPump           power.electricity.duty_kW 5.30706578947    1e-4
 utility methanolPump           power.electricity.T -1               1e-4
 utility methanolPump           power.electricity.kg_s 0                1e-4
 utility methanolPump           power.electricity.eur_h 0.531131144211   1e-4
+layout  unbundedLiquid:methanolTank/tank1: value            1371.27550566    1e-4
+layout  unbundedLiquid:methanolTank/tank1: limit            0                1e-4
+layout  unbundedLiquid:acidTank/tank1: value            966.763412675    1e-4
+layout  unbundedLiquid:acidTank/tank1: limit            0                1e-4

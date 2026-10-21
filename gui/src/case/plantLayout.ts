@@ -339,6 +339,28 @@ export interface SceneUnroutedListed {
   indoor?: boolean;
 }
 
+/** SECONDARY CONTAINMENT (DEV.md 4c C134), as the engine checked it: the
+ *  wall's runs on the engine's outline at the engine's height (a bund's wall,
+ *  an impounding area's kerb), an impounding area's remote pit (its plan
+ *  centre, its x and z extents and its depth below grade), the label and the
+ *  numbers for the tooltip.  The wall's THICKNESS is drawing (BUND_WALL_
+ *  THICKNESS), not data: the engine publishes the line and the height. */
+export interface SceneBund {
+  bund: string;
+  containment: "bund" | "impounding";
+  runs: [Vec3, Vec3][];
+  height: number;
+  pit: { at: Vec3; sizeX: number; sizeZ: number; depth: number } | null;
+  /** Short, for the label: name, kind and the verdict word. */
+  label: string;
+  /** The engine's verdict is a shortfall (drawn and labelled as a FINDING). */
+  flagged: boolean;
+  tooltip: string[];
+}
+
+/** A bund wall's thickness as drawn (m) -- drawing, not data. */
+export const BUND_WALL_THICKNESS = 0.3;
+
 /** Height of the dashed stub that marks an unrouted stream (drawing). */
 export const UNROUTED_STUB = 4;
 
@@ -351,6 +373,8 @@ export interface LayoutScene {
   solids: SceneSolid[];
   /** THE FENCE (DEV.md 4c C93); null when the case declares none. */
   fence: SceneFence | null;
+  /** SECONDARY CONTAINMENT (DEV.md 4c C134); empty when none is declared. */
+  bunds: SceneBund[];
   crossings: SceneCrossing[];
   /** The streams the engine could not route, marked (C93); empty when every
    *  stream has its pipe. */
@@ -561,7 +585,10 @@ const FINDING_KINDS_THAT_FLAG = new Set(
    "noRoadAccess", "buildingNotReached", "weighbridgeOffRoad", "gateOffRoad",
    //  C96: an emergency item exposed, a car park whose cars reverse out, a
    //  site with one entrance.
-   "exposedInZone", "exposedDownwind", "carParkReverseExit", "singleEntrance"]);
+   "exposedInZone", "exposedDownwind", "carParkReverseExit", "singleEntrance",
+   //  C134: an item in the open that holds liquid and that no containment
+   //  encloses.
+   "unbundedLiquid"]);
 
 /** Findings that name a ROAD (its `a`), told in the road's tooltip. */
 const ROAD_FINDINGS = new Set(["roadInZone", "roadDisconnected"]);
@@ -576,7 +603,8 @@ const ROUTE_FINDINGS = new Set(["routeReverses", "turningAreaTooSmall", "sharpCo
 function namedItems(kind: string, a: string, b: string): string[] {
   if (kind === "outsideArea" || kind === "noRoadAccess" || kind === "buildingNotReached"
       || kind === "weighbridgeOffRoad" || kind === "gateOffRoad"
-      || kind === "carParkReverseExit" || kind === "singleEntrance") return [a];
+      || kind === "carParkReverseExit" || kind === "singleEntrance"
+      || kind === "unbundedLiquid") return [a];
   if (kind === "ignitionInZone" || kind === "exposedInZone") return [a, b.split("#zone")[0] ?? b];
   return [a, b];
 }
@@ -768,6 +796,15 @@ export function layoutScene(layout: PlantLayout | undefined): LayoutScene | null
   for (const c of crossings) grow(c.outside);
   const unrouted = unroutedOf(layout);
   for (const u of unrouted) grow(u.top);
+  //  Secondary containment (C134), as the engine checked it.
+  const bunds = bundsOf(layout);
+  for (const b of bunds) {
+    for (const [a, c] of b.runs) { grow(a); grow([c[0], b.height, c[2]]); }
+    if (b.pit) {
+      grow([b.pit.at[0] - b.pit.sizeX / 2, -b.pit.depth, b.pit.at[2] - b.pit.sizeZ / 2]);
+      grow([b.pit.at[0] + b.pit.sizeX / 2, 0, b.pit.at[2] + b.pit.sizeZ / 2]);
+    }
+  }
   const unroutedListed = unroutedListedOf(layout);
 
   //  What the camera fits: the plant, not the ground around it.
@@ -818,9 +855,48 @@ export function layoutScene(layout: PlantLayout | undefined): LayoutScene | null
   }
 
   const windsocks = windsocksOf(layout);
-  return { solids, fence, crossings, unrouted, unroutedListed, roads, barriers, approaches, truckRoutes, carParks,
+  return { solids, fence, bunds, crossings, unrouted, unroutedListed, roads, barriers, approaches, truckRoutes, carParks,
            turningAreas, windsocks, zones, areas, plot, links, wind, pipes,
            junctions, rack, min, max, fitMin, fitMax };
+}
+
+//  ---- secondary containment: drawing bookkeeping only (DEV.md 4c C134) ----
+
+/** Each declared bund or impounding area: the wall's runs on the engine's
+ *  outline, its height, the pit, and the engine's numbers in words.  Nothing
+ *  is measured here: every volume is the engine's. */
+export function bundsOf(layout: PlantLayout): SceneBund[] {
+  return (layout.bunds ?? []).map((b) => {
+    const pts = b.outline.map(([x, y]) => toThree(x, y, 0));
+    const runs: [Vec3, Vec3][] = pts.map((p, k) => [p, pts[(k + 1) % pts.length]!]);
+    const pit = b.pit
+      ? { at: toThree(b.pit.x, b.pit.y, 0), sizeX: b.pit.length, sizeZ: b.pit.width,
+          depth: b.pit.depth }
+      : null;
+    const what = b.containment === "bund" ? "bund" : "impounding area";
+    const flagged = b.verdict === "inadequate";
+    const holds = b.containment === "bund"
+      ? `holds ${fmt(b.netVolume)} m³ = ${fmt(b.area)} m² × ${fmt(b.wallHeight)} m − `
+        + `${fmt(b.displacedVolume)} m³ the enclosed footprints displace`
+      : `holds ${fmt(b.netVolume)} m³ in its remote pit `
+        + (b.pit ? `(${fmt(b.pit.length)} × ${fmt(b.pit.width)} × ${fmt(b.pit.depth)} m)` : "");
+    return {
+      bund: b.bund, containment: b.containment, runs, height: b.wallHeight, pit,
+      label: `${what} ${b.bund}${flagged ? " — SHORT" : ""}`,
+      flagged,
+      tooltip: [
+        `${what} ${b.bund} · ${b.verdict} (the engine's verdict)`,
+        holds,
+        `requires ${fmt(b.requiredVolume)} m³: the ${b.governing} term on ${b.basis}`
+          + b.allowances.map((a) => ` + ${a.name} ${fmt(a.volume)} m³`).join(""),
+        `encloses ${b.items.join(", ")}`,
+        `${b.containment === "bund" ? "wall" : "kerb"} ${fmt(b.wallHeight)} m; drain ${b.drain}`,
+        `rule: ${b.ruleReason}`, `rule source: ${b.ruleSource}`,
+        `why: ${b.reason}`, `source: ${b.source}`,
+        `drawn as: a wall ${fmt(BUND_WALL_THICKNESS)} m thick on the engine's outline (the thickness is drawing)`,
+      ],
+    };
+  });
 }
 
 //  ---- the fence: drawing bookkeeping only (DEV.md 4c C93) -----------------

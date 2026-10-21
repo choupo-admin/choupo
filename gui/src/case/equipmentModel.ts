@@ -470,7 +470,9 @@ const shellTubeHX: Recipe = (m) => {
 
 /** An atmospheric storage tank: flat bottom, cone roof, plating courses,
  *  a foundation ring, a roof handrail and a caged ladder when tall.  No
- *  bund wall: the layout declares none, and this view invents none. */
+ *  bund wall here: a bund the case DECLARES is drawn by the renderer from
+ *  the engine's `layout.bunds` (DEV.md 4c C134), and this recipe invents
+ *  none. */
 const storageTank: Recipe = (m) => {
   const v = verticalOf(m);
   if (!v) return null;

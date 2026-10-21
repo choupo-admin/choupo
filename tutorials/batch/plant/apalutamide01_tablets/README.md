@@ -424,7 +424,7 @@ outdoors, as it does in industry:
 | Solution-preparation room (ground floor, south-east corner) | `solutionPrep` | Contained (the API and HPMCAS are tipped into the acetone under a downflow booth), **zone 1** (the open manway), on the east wall where the acetone line comes in. |
 | Coating-preparation room (ground floor, beside coating) | `coatingSuspensionPrep` | The film-coating suspension, piped through the wall to the pan coater. |
 | AHU plant (technical floor, 5.5 m) | `airHeater` | The coil of the coater's air-handling unit, above the coating room. |
-| **Tank farm, outdoors**, east of the building and downwind of it, in one bund | `acetoneTank/tank1`, `recoveredTank/tank1` | Bulk flammable liquid is stored outside, away from the people, with its hazardous-area zones declared.  The bund is not an item (a wall round two items would overlap both): its capacity is yours to size. |
+| **Tank farm, outdoors**, east of the building and downwind of it, in one bund | `acetoneTank/tank1`, `recoveredTank/tank1` | Bulk flammable liquid is stored outside, away from the people, with its hazardous-area zones declared.  The bund is not declared yet: since DEV.md 4c C134 a bund is a declared region of `system/layoutDict` (`bunds ( ... )`, held to a capacity rule you state and cite), and until you declare it the run announces both tanks as liquid stores no containment encloses (`unbundedLiquid`).  Its wall, its rule and its capacity are yours to size. |
 
 The two solvent lines leave the farm on a short pipe rack, cross the east
 road on its upper tier (7.2 m, above the roads' 5 m headroom) and **enter

@@ -1509,7 +1509,12 @@ auto_generate() {
         #  `area`, and each fence opening's `approach`.  AN ITEM INDOORS
         #  (DEV.md 4c C100) carries the `room` it stands in, pinned as a WORD
         #  (only an indoor item publishes the key, so no other row moves);
-        #  its derived base is the `z` row it always had.  NOT pinned:
+        #  its derived base is the `z` row it always had.  SECONDARY
+        #  CONTAINMENT (DEV.md 4c C134) rides it the same way: each
+        #  `bund:<name>` line's `containment` (bund | impounding) and
+        #  `verdict` WORDS, its `area`, `wallHeight`, `displacedVolume`,
+        #  `netVolume` and `requiredVolume` (keys no earlier line carries, so
+        #  no earlier row moves).  NOT pinned:
         #  the source/reason sentences and the zone and wind declarations,
         #  which are the case's own words echoed -- what they DECIDE is
         #  pinned through the findings and the count.
@@ -1524,13 +1529,13 @@ auto_generate() {
                 sub(/"release": \{.*/, "", line)
                 sub(/"message": .*/, "", line)
                 if (id == "wind" || id ~ /^area:/) next
-                nw = split("shape orientation footprintFrom room from to side verdict turn", W, " ")
+                nw = split("shape orientation footprintFrom room from to side verdict turn containment", W, " ")
                 for (i = 1; i <= nw; i++)
                     if (match(line, "\"" W[i] "\": \"[^\"]*\"")) {
                         s = substr(line, RSTART, RLENGTH); sub(/^"[^"]*": "/, "", s); sub(/"$/, "", s)
                         printf "layout %-20s %-16s %-18s %s\n", id, W[i], s, "exact"
                     }
-                nn = split("x y z dx dy dz value limit placed unplaced internal findings length pipes notRouted pipeLength plotArea footprintArea pavedArea distance radius bays capacity area approach diameter turningDiameter", N, " ")
+                nn = split("x y z dx dy dz value limit placed unplaced internal findings length pipes notRouted pipeLength plotArea footprintArea pavedArea distance radius bays capacity area approach diameter turningDiameter wallHeight displacedVolume netVolume requiredVolume", N, " ")
                 for (i = 1; i <= nn; i++)
                     if (match(line, "\"" N[i] "\": *-?[0-9][0-9.eE+-]*")) {
                         s = substr(line, RSTART, RLENGTH); sub(/^"[^"]*": */, "", s)
