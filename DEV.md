@@ -1404,6 +1404,20 @@ accepts today, and that is a policy call.
 > priority against C129/C130 (the sheet shows nozzles and the P&ID's tags
 > when they exist).  Status: proposed; queued after the C131
 > consolidation.
+> **Vitor, 2026-10-21: "Faz como achares mais sensato e de acordo com as
+> boas praticas"** -- the commander's decisions, as stated defaults:
+> (1) CONVENTION: the flow-diagram conventions of ISO 10628 (equipment
+> and stream representation on a PFD) and the title-block fields of ISO
+> 7200 (title, identifier, revision, date, author, sheet size, sheet
+> n of N), followed as CONVENTIONS -- Choupo draws its OWN symbols and
+> cites the standards by number; no figure or table of a standard is
+> copied (they are no-grant texts, the C16 rule); one symbol per
+> equipment kind, the same registry the 3D and datasheet drawings key on,
+> so a kind is drawn the same way in every view; (2) PRIORITY: C133 goes
+> FIRST after the consolidation, before C129/C130 -- the drawings
+> deliver now, and the nozzle schedule, manways and P&ID tags are fields
+> that C129/C130 fill later; until then each such field reads "not yet
+> declared", never an invented value.
 
 > **C132. DIAGNOSING A FAULT FROM A PLANT HISTORIAN -- AN EDUTOOL, AND
 > THE FAULTS AND INSTRUMENTS IT NEEDS (Vitor, 2026-10-21, after a
