@@ -1379,6 +1379,43 @@ accepts today, and that is a policy call.
 > first (no kij needed); A, D and E when Vitor has the articles.  Decisions 2-4 (B's case-local notValidated
 > pair; an LLE pair for C if UNIFAC does not split; D's outlet-temperature
 > PFR mode) put to Vitor.
+> **B and C BUILT 2026-10-21 (G26, `claude/c123-benchmarks-bc` 33e277ca2).**
+> `benchmarks/dwsim/read_sample.py` reads the facts of a sample the user
+> holds (no parameter read, no file copied); `compare.py` runs every case
+> in a scratch copy.  **B** (methanol-acetone pressure swing; the sample
+> calls it extractive, it has no entrainer) runs on curate05's
+> notValidated NRTL pair, case-local and held byte-identical to its home,
+> and on UNIFAC: duties -0.9...+1.5 %, distillates 0.017 and 0.022 apart
+> (set by the specifications' material balance, not by an azeotrope --
+> the sample stores none), the 6 atm column 50 K past the pair's evidence
+> and announced.  The reference's stored state does not close (+0.14 %
+> on flows, a recycle 1.47 % off the stream it copies, "converged" after
+> one iteration, two bottoms specs with no steady state).  Three stated
+> workarounds (distillate-rate specs, the recycle on stage 2, a letdown
+> valve).  Vitor 2026-10-21: "No B, as diferencas sao pequenas!  Se desse
+> o mesmo ate parecia ajuste forcado!"  **C** (water/acetone/MIBK
+> extraction) is BLOCKED by the engine: an LLE NRTL set curated from Choi
+> & Rhim, Hwahak Konghak 24(3) (1986) 185-194, Table 3 (three interim
+> case-local pair records, checked against the authors' calculated tie
+> lines within 0.0034 on lines 1-9); the reference column is adiabatic,
+> Choupo's extractor isothermal.  ENGINE FINDINGS, put to Vitor, who
+> answered "No resto tens de analisar tu e usar as boas praticas de
+> simulacao": (1) a multi-feed column accepts a stage-1 feed and drops it
+> from the condenser balance (109.27 % mass closure at exit 0;
+> `DistillationColumn.cpp:1515`, `:1941`, `:2257`); (2) the "total
+> condenser" publishes x_D = K_1 x_1 (`:2315-2320`), the vapour in
+> equilibrium with the reflux -- a total condenser has x_D = x_1;
+> (3) the LL flash returns one liquid against its own TPD verdict,
+> depending on the alpha/beta hints (`IsothermalFlash.cpp:693-696`,
+> `:744`); (4) the extractor publishes a non-converged cascade at exit 0
+> (23-50 % mass closure, a warning); (5) the LL TPD advisory fires on
+> correct answers.  Commander's decision under that delegation: (1), (3),
+> (4) are defects and are fixed (refuse by name / exit 1 / find the split
+> the TPD says exists); (5) is root-caused; (2) is analysed against the
+> MESH formulation and good practice, and the moved golden rows are shown
+> to Vitor BEFORE any re-record.  Column half (1)+(2) dispatched (G28);
+> LL half (3)-(5) after G7b lands (it changes the same flash).
+
 
 > **C122. INTEGRATION TOOLING AND A SITE SMOKE TEST (Vitor, 2026-10-20,
 > "Avanca 1 e 2", on the commander's reflection).**  (1) an `integrate`
