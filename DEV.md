@@ -988,6 +988,19 @@ accepts today, and that is a policy call.
 > statistically; (4) rewrite the introduction against the state of the art
 > property by property, less internal vocabulary, fix "hand-written C++"
 > and the incomplete references.
+> **G30 + G32 LANDED (G37, main ff5c40d12; G28 at 6f4faf2c5)**, each step
+> validated before push (build clean, `--gui` and `--fast` green, 118
+> cases in reach: exactly the six approved LL cases moved, 35 rows).  Left
+> unpinned for Vitor: aceticAcid02's new `Q_condensate_m3_s` KPI, and 70
+> KPI rows lithiumBrinePlant never carried.  userOp03's 133 % mass
+> closure is on the step-1 build too (not from these branches; the gate
+> sees it only when the case's `code/` was built).  **THE SITE IS NOT
+> PUBLISHING:** publish-site runs 974, 975, 977, 978 failed at the publish
+> step with "Disk quota exceeded" (build, verify and the EduTool smoke
+> passed) -- first thing next session.  JOSS paper revised from its
+> external review (`claude/c126-joss-paper`, cbb354786, 1594 words);
+> JOSS eligibility needs more than six months of public development --
+> likely not before January 2027, to be confirmed by Vitor.
 > **THE TWO OPEN DECISIONS, DELEGATED (Vitor, 2026-10-21: "Nao me pecas
 > nada e decide tu de forma sensata").  Commander's decisions:**
 > (a) **Compressor with liquid in its suction: REFUSE by name**, quoting the
