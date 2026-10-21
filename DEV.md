@@ -1683,7 +1683,19 @@ accepts today, and that is a policy call.
 > and models (a case's `code/` + `registerUserTypes()`, the userops
 > tutorials, an expression rate law, a per-case thermo override -- the
 > local installation's privilege; the hosted site runs the shipped
-> engine only).  Sent to G31 as v2.1.
+> engine only).  And "faz uma visita ao Choupo todo e ve se eu me
+> esqueci de alguma coisa": the commander scanned the v2 text against
+> the tree and found ten omissions, each sent as one sentence or row:
+> the SEALED self-contained case (choupo-import, the computational
+> seal), AGENTS.md / docs/ai / llmctx, the Explorer (and the Evidence
+> view in integration), the model-boundary ledger and the advisory /
+> divergence surface, the specification sheets, the numerics named
+> (Newton, Wegstein, Nelder-Mead, Michelsen, Rosenbrock23, the normalised
+> residual), the time-integrated classes' ledgers and the quasi-steady
+> adapter, plant economics (NPV, sensitivity, land, quotes, crew), the
+> 3D layout's declared-and-checked features by name, and the zero
+> dependencies build (g++ + make, ~370 TUs) with its pedagogical reason.
+> Sent to G31 as v2.1.
 
 > **C125. WHY THE BREAKTHROUGH PAGES ARE SLOW (Vitor, 2026-10-21: "Porque
 > isto e tao lento? breakthrough e do lub-scaleup").**  Measured by the
