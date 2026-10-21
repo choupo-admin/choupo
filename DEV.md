@@ -1291,6 +1291,28 @@ accepts today, and that is a policy call.
 > fire-water ring main and hydrants, bunds, escape routes, swept path, a
 > fillet running through an item.
 
+> **C126. A WHITE PAPER IN THE REPOSITORY (Vitor, 2026-10-21: "Achas que
+> e bom pegarmos nesta dica, e fazemos um white paper que vamos
+> disponibilizar online no repo?").**  The tip: as language models learn
+> to write a 500-page design in minutes, what keeps its value is a
+> simulator whose answers can be VERIFIED -- conservation gates, refusals
+> by name, primary-sourced data, validation against measurements -- and
+> that an agent calls instead of computing from memory.  Measured: `paper/`
+> already holds a JOSS draft (`paper.md`) and a full companion article
+> (`paper.tex`), both written against the withdrawn 2607 and owed a
+> re-read.  Commander's recommendation, put to Vitor: yes, as a DIFFERENT
+> artefact from the companion article -- its thesis is verifiable
+> simulation for students working with AI agents, its evidence the
+> failures this project caught at exit 0 and the C123 benchmarks; kept in
+> the repo (CC BY-SA, like the guides) AND deposited on arXiv and Zenodo
+> (a DOI makes it citable and findable, by people and by future models);
+> NOT instead of JOSS, whose light public review is what gives an
+> academic reader a reason to trust it.  Owed to Vitor before drafting:
+> the author list, and whether it may name the reference simulator (the
+> doctrine bans that in user-facing documents; benchmarks/ is exempt).
+> Outline first, for his approval: the pedagogy and the public claims are
+> his.
+
 > **C124. A COLUMN'S EXCHANGERS DESIGNED IN DETAIL: CONDENSER, REBOILER,
 > SIDE COOLERS AND PUMPAROUNDS (Vitor, 2026-10-20, after asking whether the
 > reference simulators' rigorous columns design the exchangers on their side
