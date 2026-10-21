@@ -1313,7 +1313,7 @@ accepts today, and that is a policy call.
 > Outline first, for his approval: the pedagogy and the public claims are
 > his.
 > **Vitor's answers, 2026-10-21:** authors Vitor Geraldes, Pedro Mendes
-> and Miguel (full name owed); the comparison MAY name the open reference
+> and Miguel Rodrigues; the comparison MAY name the open reference
 > simulators "se nao houver problemas eticos", the closed commercial ones
 > not at all ("nem sequer sabemos que porcaria anda la dentro").  Taken
 > with it, as practice: same inputs, every workaround stated, the
