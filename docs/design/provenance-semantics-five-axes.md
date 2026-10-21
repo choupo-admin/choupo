@@ -317,21 +317,21 @@ blocks nested one level deeper —
 value it derives, and the form the Explorer's component inspector was taught to
 read on 2026-09-03.  Recounted at both depths:
 
-**census: 30 direct + 2207 per-value = 2237 across 493 files**
+**census: 30 direct + 2208 per-value = 2238 across 493 files**
 
 against the "~95 values across 72 files" above.  Two of the four numbers the
 first correction got right stayed right (`assumed` 16, `standard` 3); the
 population it was written to find was one level further in.
 
 **THE LARGEST WORD IS THE ONE THE CONTRACT SAYS IS NOT AN ORIGIN.**
-`literature` accounts for 1786 of the 2207, and §3.1 rules it off this axis
+`literature` accounts for 1784 of the 2208, and §3.1 rules it off this axis
 entirely — it answers *where the value came from*, which is `provenance`'s
 question.  So the biggest population is not a rename but a restructuring, on
 records that are ChemSep imports carrying their own licence notes.  "Bounded
 and mechanical" does not describe it.
 
 **AND THE FIVE WORDS AND THE ENGINE DISAGREE.**  §3.1 offers `predicted` for
-what the tree spells `predictive` (356) *and* `estimated` (40).  `core/Origin.H`
+what the tree spells `predictive` (356) *and* `estimated` (54).  `core/Origin.H`
 holds those as two enum values, and `CLAUDE.md` records the separation as
 deliberate — forum #67, "a distinct class; collapsing it into `estimated`
 contradicted the resolution-priority ladder".  Collapsing them is therefore a

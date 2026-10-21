@@ -1291,6 +1291,72 @@ accepts today, and that is a policy call.
 > fire-water ring main and hydrants, bunds, escape routes, swept path, a
 > fillet running through an item.
 
+> **C126. A WHITE PAPER IN THE REPOSITORY (Vitor, 2026-10-21: "Achas que
+> e bom pegarmos nesta dica, e fazemos um white paper que vamos
+> disponibilizar online no repo?").**  The tip: as language models learn
+> to write a 500-page design in minutes, what keeps its value is a
+> simulator whose answers can be VERIFIED -- conservation gates, refusals
+> by name, primary-sourced data, validation against measurements -- and
+> that an agent calls instead of computing from memory.  Measured: `paper/`
+> already holds a JOSS draft (`paper.md`) and a full companion article
+> (`paper.tex`), both written against the withdrawn 2607 and owed a
+> re-read.  Commander's recommendation, put to Vitor: yes, as a DIFFERENT
+> artefact from the companion article -- its thesis is verifiable
+> simulation for students working with AI agents, its evidence the
+> failures this project caught at exit 0 and the C123 benchmarks; kept in
+> the repo (CC BY-SA, like the guides) AND deposited on arXiv and Zenodo
+> (a DOI makes it citable and findable, by people and by future models);
+> NOT instead of JOSS, whose light public review is what gives an
+> academic reader a reason to trust it.  Owed to Vitor before drafting:
+> the author list, and whether it may name the reference simulator (the
+> doctrine bans that in user-facing documents; benchmarks/ is exempt).
+> Outline first, for his approval: the pedagogy and the public claims are
+> his.
+> **Vitor's answers, 2026-10-21:** authors Vitor Geraldes, Pedro Mendes
+> and Miguel Rodrigues; the comparison MAY name the open reference
+> simulators "se nao houver problemas eticos", the closed commercial ones
+> not at all ("nem sequer sabemos que porcaria anda la dentro").  Taken
+> with it, as practice: same inputs, every workaround stated, the
+> reference's own defects reported neutrally with version and commit, and
+> each one OFFERED to its maintainers (an upstream issue) before the paper
+> is public; a tool is named only after its licence is verified (one whose
+> source is closed is treated as closed).  The paper's folder becomes an
+> exempt tree in `check_doctrine` (the benchmarks/ precedent) in the
+> commit that creates it.
+> **Outline APPROVED 2026-10-21 ("avanca"), with section 4 reframed on
+> Vitor's objection ("nao des tiros nos pes"):** not a list of the
+> project's defects but how each gate makes a CLASS of error unable to
+> leave in silence -- with the one sentence the history forbids left out
+> ("a basic error never ships": some reached the site before their gate
+> existed; the honest and stronger form is "when an error escapes, it
+> becomes a gate").  Nine sections: the problem, the thesis, what makes an
+> answer verifiable, the gates by class, the open-simulator comparison
+> (published only after the reference's defects are offered upstream),
+> the agent workflow (C117), pedagogy, limitations, availability.
+> Drafted by a general (G29) in `paper/whitepaper/`, every claim cited by
+> file:line or commit; Vitor, Pedro and Miguel review and answer for it.
+> **Added by Vitor the same day:** the OpenFOAM analogy (one of the most
+> elegant simulators ever built, C++ with transparent dictionaries) with
+> an explicit statement that Choupo is NOT part of it, nor affiliated
+> with or endorsed by its owners (the trade mark named); and a section
+> presenting the architecture and how Choupo works (three layers, the
+> case directory and dictionaries, five binaries, explicit factories,
+> state directories, the WASM front-end, the visible Newton log).  Sent
+> to G29.
+> **And a READER FORUM before it goes out (Vitor, same day: "deve ter um
+> forum representativo de alunos, engenheiros e professores a lerem o
+> paper, como se nunca tivesse ouvido falar dele, e a verem se entendem e
+> ficam entusiasmados para terem vontade de ir conhecer").**  On the
+> draft PDF, cold readers who have never heard of Choupo: two students
+> (undergraduate, PhD), two industrial process engineers (a daily user of
+> commercial simulators; one at an SME with no licence budget), two
+> professors (process simulation; one sceptical of AI in teaching) and an
+> OpenFOAM user.  Each reports, quoting the sentences that stopped them:
+> did the thesis land, where they got lost, what excited and what made
+> them distrust, and whether they would open choupo.org and why.  A
+> synthesis separates consensus from taste and proposes edits; Vitor
+> chooses which go in.
+
 > **C124. A COLUMN'S EXCHANGERS DESIGNED IN DETAIL: CONDENSER, REBOILER,
 > SIDE COOLERS AND PUMPAROUNDS (Vitor, 2026-10-20, after asking whether the
 > reference simulators' rigorous columns design the exchangers on their side
@@ -1379,6 +1445,43 @@ accepts today, and that is a policy call.
 > first (no kij needed); A, D and E when Vitor has the articles.  Decisions 2-4 (B's case-local notValidated
 > pair; an LLE pair for C if UNIFAC does not split; D's outlet-temperature
 > PFR mode) put to Vitor.
+> **B and C BUILT 2026-10-21 (G26, `claude/c123-benchmarks-bc` 33e277ca2).**
+> `benchmarks/dwsim/read_sample.py` reads the facts of a sample the user
+> holds (no parameter read, no file copied); `compare.py` runs every case
+> in a scratch copy.  **B** (methanol-acetone pressure swing; the sample
+> calls it extractive, it has no entrainer) runs on curate05's
+> notValidated NRTL pair, case-local and held byte-identical to its home,
+> and on UNIFAC: duties -0.9...+1.5 %, distillates 0.017 and 0.022 apart
+> (set by the specifications' material balance, not by an azeotrope --
+> the sample stores none), the 6 atm column 50 K past the pair's evidence
+> and announced.  The reference's stored state does not close (+0.14 %
+> on flows, a recycle 1.47 % off the stream it copies, "converged" after
+> one iteration, two bottoms specs with no steady state).  Three stated
+> workarounds (distillate-rate specs, the recycle on stage 2, a letdown
+> valve).  Vitor 2026-10-21: "No B, as diferencas sao pequenas!  Se desse
+> o mesmo ate parecia ajuste forcado!"  **C** (water/acetone/MIBK
+> extraction) is BLOCKED by the engine: an LLE NRTL set curated from Choi
+> & Rhim, Hwahak Konghak 24(3) (1986) 185-194, Table 3 (three interim
+> case-local pair records, checked against the authors' calculated tie
+> lines within 0.0034 on lines 1-9); the reference column is adiabatic,
+> Choupo's extractor isothermal.  ENGINE FINDINGS, put to Vitor, who
+> answered "No resto tens de analisar tu e usar as boas praticas de
+> simulacao": (1) a multi-feed column accepts a stage-1 feed and drops it
+> from the condenser balance (109.27 % mass closure at exit 0;
+> `DistillationColumn.cpp:1515`, `:1941`, `:2257`); (2) the "total
+> condenser" publishes x_D = K_1 x_1 (`:2315-2320`), the vapour in
+> equilibrium with the reflux -- a total condenser has x_D = x_1;
+> (3) the LL flash returns one liquid against its own TPD verdict,
+> depending on the alpha/beta hints (`IsothermalFlash.cpp:693-696`,
+> `:744`); (4) the extractor publishes a non-converged cascade at exit 0
+> (23-50 % mass closure, a warning); (5) the LL TPD advisory fires on
+> correct answers.  Commander's decision under that delegation: (1), (3),
+> (4) are defects and are fixed (refuse by name / exit 1 / find the split
+> the TPD says exists); (5) is root-caused; (2) is analysed against the
+> MESH formulation and good practice, and the moved golden rows are shown
+> to Vitor BEFORE any re-record.  Column half (1)+(2) dispatched (G28);
+> LL half (3)-(5) after G7b lands (it changes the same flash).
+
 
 > **C122. INTEGRATION TOOLING AND A SITE SMOKE TEST (Vitor, 2026-10-20,
 > "Avanca 1 e 2", on the commander's reflection).**  (1) an `integrate`
@@ -1750,6 +1853,12 @@ accepts today, and that is a policy call.
 > The in-case `Props` workspace (`PropsView.tsx`, 1531 lines: thermo
 > readiness and model-vs-lab-data comparison for THE OPEN CASE) is a
 > different question and stays.  Status: proposed, awaiting Vitor.
+> **APPROVED 2026-10-21** -- Vitor on the live site (Choupo-dev 9eea053e):
+> "ainda vejo: explorer e property surfaces!!!!!!!!".  The proposal had
+> sat as "awaiting Vitor" while the commander's own notes already planned
+> it after C117: a proposal nobody puts back to its owner is a request
+> dropped.  Dispatched to G18b, on top of its C117 head (the Evidence view
+> lives in the same tab), as soon as C117 is handed back.
 
 > **C115. THE UNIT BEING SOLVED PULSES WHEN A RUN IS SLOW (Vitor,
 > 2026-10-20: "ha casos em que a simulacao fica lenta ... a operacao
