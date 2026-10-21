@@ -53,7 +53,9 @@ Description
 
         Y_i^{m+1}    = exp(h_i - ln γ_i(y^{m}) )
         y^{m+1}      = Y^{m+1} / Σ Y^{m+1}
-        tm           = 1 + Σ Y_i (ln Y_i - 1 ) - Σ Y_i · h_i
+        tm           = 1 + Σ Y_i (ln Y_i + ln γ_i(y) - h_i - 1)
+                       (exactly 0 at the trivial point Y = z; the
+                        ln γ_i(y) term was missing until 2026-10-21)
 
         converged → check  ΣY > 1  (or tm < 0  for stability decision)
 

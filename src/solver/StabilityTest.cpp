@@ -46,14 +46,29 @@ struct ProbeOutcome
     bool     ok;
 };
 
-// Helper: evaluate tm at a given Y (raw mole-number vector).
-scalar evalTm(const sVector& Y, const sVector& h)
+// Helper: Michelsen's modified tangent-plane distance at a raw mole-number
+// vector Y, with gamma_y the activity coefficients AT y = Y / sum(Y):
+//
+//     tm(Y) = 1 + sum_i Y_i ( ln Y_i + ln gamma_i(y) - h_i - 1 )
+//
+// THE ln gamma_i(y) TERM WAS MISSING until 2026-10-21 (DEV.md 4c C128).
+// Without it the trivial point Y = z gave tm = -sum z_i ln gamma_i(z) =
+// -G^E/RT instead of exactly 0, so EVERY positive-deviation mixture with
+// G^E/RT above the 1e-3 tolerance read "unstable": n-hexane + acetone at
+// 25 C, gamma 1.52 / 1.56, a miscible pair, printed tm = -0.42.  The flash's
+// LL pre-check, its converged-phase advisory and `phaseSet auto` all erred
+// toward "split" and handed the decision to the Gibbs minimisation, which is
+// why the defect was masked there (PropertyEvaluator.cpp recorded the
+// symptom as "TPD is a permissive screen that over-triggers").  With the
+// term, tm(z) = 0 exactly and a negative tm means what it says.
+scalar evalTm(const sVector& Y, const sVector& gamma_y, const sVector& h)
 {
     scalar tm = 1.0;
     for (std::size_t i = 0; i < Y.size(); ++i)
     {
         const scalar Yi = std::max(Y[i], 1.0e-30);
-        tm += Yi * (std::log(Yi) - 1.0) - Yi * h[i];
+        const scalar lnG = (gamma_y[i] > 0.0) ? std::log(gamma_y[i]) : 0.0;
+        tm += Yi * (std::log(Yi) + lnG - h[i] - 1.0);
     }
     return tm;
 }
@@ -80,8 +95,12 @@ ProbeOutcome runProbe(const Phase&    phase,
     //  the full Michelsen 2nd-order Newton on TPD, sufficient for the
     //  binary and ternary LLE cases the simulator currently targets.
     // -----------------------------------------------------------------
+    //  The trajectory minimum is taken over the ITERATES Y, each priced
+    //  with the gamma the step computes at y = Y/sum(Y) anyway -- so tm is
+    //  evaluated at the composition its gamma belongs to, at no extra
+    //  activity call.  The last iterate is priced after the loop.
     sVector bestY   = Y0;
-    scalar  bestTm  = evalTm(Y0, h);
+    scalar  bestTm  = std::numeric_limits<scalar>::infinity();
 
     sVector y(n);
     int it = 0;
@@ -94,6 +113,10 @@ ProbeOutcome runProbe(const Phase&    phase,
 
         auto gamma_y = phase.activityCoefficients(T, y);
 
+        //  Trajectory minimum of tm, at the current iterate.
+        const scalar tmHere = evalTm(Y, gamma_y, h);
+        if (tmHere < bestTm) { bestTm = tmHere; bestY = Y; }
+
         sVector Y_new(n);
         scalar delta = 0.0;
         for (std::size_t i = 0; i < n; ++i)
@@ -103,12 +126,19 @@ ProbeOutcome runProbe(const Phase&    phase,
             delta   += std::abs(Y_new[i] - Y[i]);
         }
 
-        // Trajectory minimum of tm.
-        const scalar tmNew = evalTm(Y_new, h);
-        if (tmNew < bestTm) { bestTm = tmNew; bestY = Y_new; }
-
         Y = Y_new;
         if (delta < ssTol) { ++it; break; }
+    }
+    //  Price the last iterate too (the loop priced each Y before stepping).
+    {
+        scalar sumY = 0.0;
+        for (auto v : Y) sumY += v;
+        if (sumY > 0.0)
+        {
+            for (std::size_t i = 0; i < n; ++i) y[i] = Y[i] / sumY;
+            const scalar tmLast = evalTm(Y, phase.activityCoefficients(T, y), h);
+            if (tmLast < bestTm) { bestTm = tmLast; bestY = Y; }
+        }
     }
 
     // Final composition + tm taken from the best point seen.

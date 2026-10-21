@@ -302,9 +302,13 @@ scalar evaluateProperty(const std::string& propKey,
     // this is what lets the GUI mark the gap instead of drawing through it.
     if (propKey == "liquid_stable")
     {
-        // A reliable liquid-liquid verdict needs the FLASH, not the bare TPD
-        // (Michelsen TPD is a permissive screen that over-triggers — the flash
-        // confirms).  Run the LL Gibbs-min at xLiquid at the bubble-T and report
+        // A reliable liquid-liquid verdict needs the FLASH, not the bare TPD:
+        // the TPD is a screen (successive substitution from a few starts can
+        // miss a well), and the flash's Gibbs minimisation confirms.  (This
+        // comment used to say the TPD "over-triggers" -- it did, because its
+        // tm omitted the ln gamma(y) term and read -G^E/RT at the trivial
+        // point; fixed 2026-10-21, StabilityTest.cpp evalTm, DEV.md 4c C128.)
+        // Run the LL Gibbs-min at xLiquid at the bubble-T and report
         // a split only when the two liquids are genuinely distinct.  Same
         // criterion PropertyScanBinary uses for its binodal.
         auto r = BubblePoint::compute(thermo, xLiquid, P_Pa);
