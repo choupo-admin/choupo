@@ -3898,6 +3898,22 @@ PYEOF
         cat /tmp/blocktri.$$
         fail=$((fail+1))
     fi
+
+    # ODE block-structure gate (2026-10-21, C125).  The fixed bed declares
+    # its Rosenbrock23 Jacobian block-tridiagonal with a ledger border; the
+    # declaration is audited on the first step, the colored evaluation
+    # count must equal the CPR formula recomputed by the gate, false
+    # declarations refuse by name, dense and structured agree, and the
+    # chunk warm start rejects at most 5 % of its steps.
+    if "$ROOT/bin/curate/check_ode_block_structure.py" > /tmp/odeblk.$$ 2>&1; then
+        printf "PASS  %-40s  (%s)\n" "ode-block-structure-gate" "$(head -1 /tmp/odeblk.$$)"
+        pass=$((pass+1))
+    else
+        printf "FAIL  %-40s  (run bin/curate/check_ode_block_structure.py)\n" "ode-block-structure-gate"
+        cat /tmp/odeblk.$$
+        fail=$((fail+1))
+    fi
+    rm -f /tmp/odeblk.$$
     rm -f /tmp/blocktri.$$
 
     # held-out-pressure gate (2026-08-25).  A bubble-point fit prices every

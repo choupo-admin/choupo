@@ -44,6 +44,7 @@ Description
 #pragma once
 
 #include "ODEIntegrator.H"
+#include "solver/BlockTridiagonal.H"
 #include "core/Types.H"
 
 #include <vector>
@@ -57,6 +58,30 @@ std::vector<sVector> fdJacobianODE(const DerivFn&  f,
                                    const sVector&  y,
                                    const sVector&  f0,
                                    const sVector&  typ);
+
+//- The COLORED (Curtis-Powell-Reid) forward-difference Jacobian of a
+//  DECLARED block-tridiagonal structure, returned as the three block bands
+//  in block order, plus the entries of every NARROW border row (one that
+//  reads at most three consecutive blocks, so each colored pass perturbs at
+//  most one of its columns): narrowR[i][(b - first)*nv + k] is
+//  d g_row / d y(block b, slot k) for narrow[i].  A WIDE border row sees the
+//  SUM of a pass's perturbations and is not returned (the integrator closes
+//  it by a directional difference).
+struct ColoredODEJacobian
+{
+    BlockBands           bands;
+    std::vector<sVector> narrowR;
+    long                 evals = 0;   // f evaluations (nv * min(3, nBlocks))
+};
+
+ColoredODEJacobian fdJacobianODEColored(
+    const DerivFn&                                   f,
+    scalar                                           t,
+    const sVector&                                   y,
+    const sVector&                                   f0,
+    const sVector&                                   typ,
+    const ODEBlockStructure&                         s,
+    const std::vector<ODEBlockStructure::BorderRead>& narrow);
 
 // df/dt by a forward difference (zero for an autonomous f).
 sVector fdDfDt(const DerivFn& f, scalar t, const sVector& y,

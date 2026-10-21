@@ -32,9 +32,9 @@
 
   THE ENGINE IS THE JUDGE, NOT THE SOURCE.  The fixed-bed unit publishes its
   OWN stoichiometric time (`t_stoichiometric_<i>`, analytic, announced
-  BEFORE the run -- src/unitOperations/batch/FixedBedAdsorber.cpp:703-704)
+  BEFORE the run -- src/unitOperations/batch/FixedBedAdsorber.cpp:712-713)
   and its OWN retention factor (`retention_factor_<i>`, the isotherm's
-  q*(c_in) folded in -- FixedBedAdsorber.cpp:2411-2414).  The tool draws the
+  q*(c_in) folded in -- FixedBedAdsorber.cpp:2519-2522).  The tool draws the
   hand method's numbers BESIDE those two, and a disagreement is a finding
   about the curve (a cut tail, a bed not at equilibrium, a coarse mesh),
   never a moved answer.  Nothing here reaches an isotherm, a rate law or a
@@ -240,7 +240,7 @@ export function loadingFromCurve(
 }
 
 /** q*(c_in) from the ENGINE's own retention factor, its definition
- *  R_f = eps + rho_b q*(c_in)/c_in (FixedBedAdsorber.cpp:814) solved for q*. */
+ *  R_f = eps + rho_b q*(c_in)/c_in (FixedBedAdsorber.cpp:823) solved for q*. */
 export function loadingFromRetention(
   rF: number, eps: number, cIn: number, rhoB: number,
 ): number {
@@ -253,7 +253,7 @@ export interface LabColumn {
   /** The `units[]` entry whose name matched the KPI unit, if any. */
   unitFound: boolean;
   /** Bed length, superficial velocity, void fraction: operation.{L,u,eps}
-   *  (FixedBedAdsorber.cpp:146-149), converted to SI. */
+   *  (FixedBedAdsorber.cpp:155-158), converted to SI. */
   L: number | null;
   u: number | null;
   eps: number | null;

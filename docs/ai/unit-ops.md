@@ -1702,6 +1702,18 @@ announces its carrier-fabrication residual.  Examples: `batch16_ergun_profile`
 (closed-form pressure profile), `batch17_dilute_ergun_limit`, and
 `batch18_ergun_conservation`.
 
+Integration (`timeStepping adaptive;`) is the unit's own Rosenbrock23,
+configured in a per-unit `solver {}` block:
+```
+solver { samplingInterval 0.5; rtol 1e-6; jacobian blockTridiagonal; }
+```
+`jacobian blockTridiagonal` (the stated default) declares the bed's
+structure -- one block per cell, the ledger rows as a border -- so the
+Jacobian costs 3*nv evaluations instead of one per state row; the run
+AUDITS that declaration on its first step and prints `Jacobian structure
+VERIFIED`.  `jacobian dense;` integrates the same problem dense (to compare;
+it is many times slower on a 100-cell bed).
+
 ### `batchStill`
 Rayleigh batch distillation; constant offtake `F_vap` per step;
 bubble-T re-solved each step.  Optional `dischargeTo  receiver;`
