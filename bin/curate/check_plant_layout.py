@@ -48,7 +48,9 @@ The risks such a feature carries are specific, and each arm names one:
       REFUSES and leaves the file byte-identical; with --force on the witness
       it carries the separation table, the declared footprints, the hazards,
       the non-process item and (C82) the plot margin, and its own check
-      finds no shortfall.
+      finds no shortfall (C134: it says it did NOT carry the `bunds`, and
+      the liquid stores it lines up are announced unbunded -- the only
+      findings it may raise).
   (f) ABSENCE IS SILENCE: the witness with its layoutDict removed publishes
       no `layout` key, prints no `[layout]` line and no PLANT LAYOUT heading.
   (g) A PLACED ITEM WHOSE SIZER REFUSED (2026-10-17, DEV.md 4c C79, the
@@ -240,6 +242,36 @@ The risks such a feature carries are specific, and each arm names one:
       ends stand indoors.  Arms (h) (`on_a_wall`), (j) (an indoor item's plan
       area left out of the footprints) and (m) (no clash with an indoor item:
       the shell answers for it) read the item's `room`.
+  (p) SECONDARY CONTAINMENT (2026-10-21, DEV.md 4c C134), on the two
+      witnesses: greenAmmoniaPEQ_baseCase (a BUND round its two refrigerated
+      tanks, declared boxes, and a kerbed IMPOUNDING slab under the loop's
+      three liquid vessels) and ammonia02_full_plant (an IMPOUNDING area
+      under the seven T201 bullets, its pit remote).  For every published
+      containment, recomputed HERE: the area (the outline's shoelace), the
+      volume the enclosed footprints displace below the wall's top (disc,
+      lying cylinder's circular segment, box -- an independent
+      implementation), the net volume, the required volume -- each term on
+      the declared basis read off the DESIGN SHEETS as text (`V_R` for
+      `vesselVolume`, the liquid phases' `volume` of the sheet's `inventory`
+      for `heldLiquid`), a `depth` allowance over the catch area and the pit
+      -- and the verdict word; every published number and word pinned by a
+      `layout` golden row; each witness adequate, no item of it unbunded, an
+      impounding pit outside its catch area.  The green witness with its
+      `bunds` removed publishes no `bunds` and announces EXACTLY the five
+      items whose sheets hold liquid, each on stderr, the caveat block and
+      the advisories, with its sheet's volume.  ANNOUNCED, the run going on:
+      the tank bund with a 2 m wall (SHORT, its finding's value and limit the
+      published net and required, those recomputed); an open drain; a pit
+      moved into its catch area; the catch area's kerb moved across a road;
+      a declared pipe route at 0.1 m through the kerb.  The bullets in a 2 m
+      BUND displace their circular segments (recomputed, and less than 90 %
+      of their bounding boxes).  REFUSED, exit 2 and named: a listed item
+      outside the wall, an unlisted item inside it, a wall through a
+      footprint, no capacity rule, an unknown kind, a bund with a pit, an
+      unknown basis, an impounding area with no pit, a pit under an item, an
+      item in two containments, two containments sharing a floor.  Arm (j)
+      recomputes the plot WITH the walls' outlines and the pits, and holds
+      the plot sentence to name a containment exactly when one is declared.
 
 NOT COVERED, said so: whether a declared distance or zone extent is SENSIBLE
 (the author's assumption, by design -- no standard is shipped), a pipe's
@@ -796,8 +828,13 @@ def arm_draft(work):
     if rc != 0 or not lay:
         fail(f"(e) --force on the witness exited {rc}")
         return
-    if lay.get("findings"):
-        fail(f"(e) the forced draft has findings {[f['id'] for f in lay['findings']]}"
+    #  C134: the draft carries no containment (each wall was drawn round
+    #  positions it moves), so every liquid store it lines up is announced
+    #  unbunded -- that is the engine telling the student to redeclare them,
+    #  and no shortfall of the draft's own.
+    drafted = [f for f in lay.get("findings", []) if f["kind"] != "unbundedLiquid"]
+    if drafted:
+        fail(f"(e) the forced draft has findings {[f['id'] for f in drafted]}"
              " -- it must honour every declared separation")
     for needle in ('nonProcess  "controlRoom"', "footprint   { length 8.00 m",
                    "between ( vessel vessel ); distance 4.00 m", "from      225 deg",
@@ -805,6 +842,7 @@ def arm_draft(work):
                    "margin 5.00 m;", 'kind        canteen;',
                    'reason      "meals and rest for the shift crews',
                    "`roads {}` network is NOT carried", "arrangement doubleLoaded;",
+                   "`bunds ( ... )` are NOT carried",
                    "entry       reverse;"):
         if needle not in text:
             fail(f"(e) the forced draft did not carry `{needle}`")
@@ -1225,6 +1263,15 @@ def plot_recomputed(lay, margin, building=None):
     for rect in paved_rects(lay):
         xs += [rect[0], rect[1]]
         ys += [rect[2], rect[3]]
+    #  SECONDARY CONTAINMENT (DEV.md 4c C134): every wall's outline and every
+    #  impounding area's pit.
+    for b in lay.get("bunds", []):
+        for q in b["outline"]:
+            xs.append(q[0])
+            ys.append(q[1])
+        if "pitX" in b:
+            xs += [b["pitX"] - b["pitLength"] / 2, b["pitX"] + b["pitLength"] / 2]
+            ys += [b["pitY"] - b["pitWidth"] / 2, b["pitY"] + b["pitWidth"] / 2]
     r = (min(xs) - margin, max(xs) + margin, min(ys) - margin, max(ys) + margin)
     return r, (r[1] - r[0]) * (r[3] - r[2])
 
@@ -1246,6 +1293,10 @@ def check_plot(tag, case, lay, out, err, j):
     if (clause in plot.get("rule", "")) != bool(j.get("building")):
         fail(f"(j) {tag}: the plot rule and the run disagree on whether a building's"
              f" rooms are in it (building declared: {bool(j.get('building'))})")
+    clause = "every declared secondary containment"
+    if (clause in plot.get("rule", "")) != bool(lay.get("bunds")):
+        fail(f"(j) {tag}: the plot rule and the run disagree on whether a declared"
+             f" containment is in it (bunds declared: {bool(lay.get('bunds'))})")
     got = (plot["xMin"], plot["xMax"], plot["yMin"], plot["yMax"])
     if not all(close(a, b) for a, b in zip(rect, got)) or not close(area, plot["plotArea"]):
         fail(f"(j) {tag}: the plot {got} = {plot['plotArea']} m2; recomputed here"
@@ -1451,7 +1502,8 @@ def arm_pipe_override(work):
     # DOES reach, which is where the 3D view marks the missing pipe -- the
     # letdown's nozzle, where the routed pipe started in the run above; the
     # stream with no reachable end carries no point.
-    d = prepare(work, "pipe_unrouted_mark", WITNESS, lambda t: drop_items(t, "T201/vessel"))
+    d = prepare(work, "pipe_unrouted_mark", WITNESS,
+                lambda t: drop_bunds(drop_items(t, "T201/vessel")))
     out, err, rc = solve(d)
     nr = {x["stream"]: x for x in
           (((result_json(out) or {}).get("layout")) or {}).get("notRouted", [])}
@@ -1476,7 +1528,7 @@ def arm_pipe_override(work):
         #  the copy takes them off its plot plan, so the unit is sized and
         #  NONE of its items is placed -- a stream with no routable end.
         "override on an unroutable stream": (
-            lambda t: drop_items(t, "T201/vessel")
+            lambda t: drop_bunds(drop_items(t, "T201/vessel"))
             + "\npipes { productNH3 { waypoints ( { x 70 m; y 0 m; z 9 m; } ); } }\n",
             [r"pipes `productNH3`: an override routes a pipe", r"T201"]),
         "partial pipeRack": (
@@ -2872,6 +2924,326 @@ def arm_indoor(work):
                       " penetration off the wall, an override on indoor piping")
 
 
+# ------------------------------------------------------- containment (C134) --
+GREEN = ROOT / "tutorials/plant/greenAmmoniaPEQ_baseCase"
+
+
+def shoelace_area(pts):
+    a = 0.0
+    for k, p in enumerate(pts):
+        q = pts[(k + 1) % len(pts)]
+        a += p[0] * q[1] - q[0] * p[1]
+    return abs(a) / 2.0
+
+
+def displaced_below(i, h):
+    """The volume an item's footprint occupies between grade and h, by the
+    stated rule: a vertical cylinder's disc, a lying cylinder's circular
+    segment, any other item's rectangle -- an independent implementation."""
+    lo, hi = max(0.0, i["z"]), min(h, i["z"] + i["dz"])
+    if hi <= lo:
+        return 0.0
+    if i["shape"] == "cylinder" and i["orientation"] == "vertical":
+        return pi * i["dx"] ** 2 / 4.0 * (hi - lo)
+    if i["shape"] == "cylinder":
+        D = i["dz"]
+        R = D / 2.0
+        L = i["dx"] if i["orientation"] == "alongX" else i["dy"]
+
+        def seg(t):
+            from math import acos, sqrt
+            t = max(0.0, min(D, t))
+            return R * R * acos((R - t) / R) - (R - t) * sqrt(max(0.0, 2 * R * t - t * t))
+        return L * (seg(hi - i["z"]) - seg(lo - i["z"]))
+    return i["dx"] * i["dy"] * (hi - lo)
+
+
+def sheet_rel(lay, item):
+    """An item's design sheet: `<unit>/<tag>` where a unit realises several
+    items, `<unit>/<its equipment word>` where it realises one."""
+    if "/" in item:
+        return item
+    kind = next((i["kind"] for i in lay["items"] if i["id"] == item), "")
+    return item + "/" + kind
+
+
+def sheet_liquid(d, item):
+    """The liquid an item holds, read off its design sheet as TEXT: the sum
+    of the `volume` of every `liquid` phase in its `inventory` block -- an
+    independent home for what `heldLiquid` counts."""
+    p = d / "design" / item
+    if not p.is_file():
+        return 0.0
+    t = p.read_text()
+    if "\ninventory" not in t:
+        return 0.0
+    blk = t[t.index("\ninventory"):]
+    total = 0.0
+    for m in re.finditer(r"phase\s+liquid;(.*?)\}", blk, re.S):
+        v = re.search(r"\bvolume\s+([-0-9.eE+]+)", m.group(1))
+        if v:
+            total += float(v.group(1))
+    return total
+
+
+def check_bund(tag, d, lay, b, case):
+    """One published containment, recomputed here from the published items
+    and outline and the design sheets."""
+    items = {i["id"]: i for i in lay["items"]}
+    area = shoelace_area(b["outline"])
+    h = b["wallHeight"]
+    if not close(area, b["area"]):
+        fail(f"(p) {tag} {b['bund']}: area {b['area']} m2; the outline gives {area}")
+    if b["containment"] == "bund":
+        disp = sum(displaced_below(items[x], h) for x in b["items"])
+        gross = area * h
+    else:
+        disp = 0.0
+        gross = b["pitLength"] * b["pitWidth"] * b["pitDepth"]
+    net = gross - disp
+    if not close(disp, b["displacedVolume"], 1e-8) or not close(net, b["netVolume"], 1e-8):
+        fail(f"(p) {tag} {b['bund']}: displaced/net {b['displacedVolume']}/{b['netVolume']}"
+             f" m3; recomputed {disp}/{net}")
+    held = []
+    for x in b["items"]:
+        liq = sheet_liquid(d, sheet_rel(lay, x))
+        if liq <= 0:
+            continue
+        if b["basis"] == "vesselVolume":
+            held.append(sheet_value(d, sheet_rel(lay, x), "V_R"))
+        else:
+            held.append(liq)
+    if not held:
+        fail(f"(p) {tag} {b['bund']}: no enclosed item holds liquid by its design sheet")
+        return
+    terms = [t[0] * (max(held) if t[1] == "largest" else sum(held)) for t in b["terms"]]
+    pit_area = b["pitLength"] * b["pitWidth"] if "pitX" in b else 0.0
+    allow = sum(a[3] if a[1] == "volume" else a[2] * (area + pit_area) for a in b["allowances"])
+    for a in b["allowances"]:
+        if a[1] == "depth" and not close(a[3], a[2] * (area + pit_area), 1e-8):
+            fail(f"(p) {tag} {b['bund']}: allowance {a[0]} {a[3]} m3; {a[2]} m over"
+                 f" {area + pit_area} m2 gives {a[2] * (area + pit_area)}")
+    req = max(terms) + allow
+    #  The V_R read off the sheet is printed to 8 significant figures.
+    if not close(req, b["requiredVolume"], 1e-7):
+        fail(f"(p) {tag} {b['bund']}: required {b['requiredVolume']} m3; recomputed {req}"
+             f" (terms {terms}, allowances {allow})")
+    verdict = "adequate" if net >= req * (1 - 1e-9) else "inadequate"
+    if b["verdict"] != verdict:
+        fail(f"(p) {tag} {b['bund']}: verdict {b['verdict']}; recomputed {verdict}")
+    if case is None:          # a fixture: no golden of its own
+        return net, req
+    # published <=> pinned
+    gold = {}
+    for line in (case / "expected").read_text().splitlines():
+        f = line.split()
+        if len(f) >= 5 and f[0] == "layout" and f[1] == "bund:" + b["bund"]:
+            gold[f[2]] = (f[3], f[4])
+    for k in ("area", "wallHeight", "displacedVolume", "netVolume", "requiredVolume"):
+        g = gold.get(k)
+        if g is None:
+            fail(f"(p) {tag}: bund:{b['bund']} {k} is published and pinned by no golden row")
+        elif abs(float(g[0]) - b[k]) > float(g[1]) * max(abs(b[k]), 1e-30):
+            fail(f"(p) {tag}: bund:{b['bund']} {k} {b[k]} against the golden {g[0]}")
+    for k in ("containment", "verdict"):
+        g = gold.get(k)
+        if g is None or g[0] != b[k]:
+            fail(f"(p) {tag}: bund:{b['bund']} {k} `{b[k]}` against the golden {g}")
+    return net, req
+
+
+def drop_bunds(text):
+    """The layoutDict `text` without its top-level `bunds ( ... );` list."""
+    m = re.search(r"^bunds\s*\n\(", text, re.M)
+    if not m:
+        return text + "\n#error the probe found no `bunds` list\n"
+    depth, i = 0, m.end() - 1
+    while i < len(text):
+        depth += {"(": 1, ")": -1}.get(text[i], 0)
+        i += 1
+        if depth == 0:
+            break
+    if text[i:i + 1] == ";":
+        i += 1
+    return text[:m.start()] + text[i:]
+
+
+def finding(lay, kind, a=None):
+    return [f for f in lay.get("findings", []) if f["kind"] == kind
+            and (a is None or f["a"] == a)]
+
+
+BUND_REFUSALS = [
+    #  (label, needle, edit on the green witness's layoutDict)
+    ("a listed item outside the wall", "stands OUTSIDE its wall",
+     sub('items       ( "NH3Storage/tank1" "NH3Storage/tank2" );',
+         'items       ( "NH3Storage/tank1" "NH3Storage/tank2" "Separator" );')),
+    ("an unlisted item inside the wall", "stands INSIDE its wall and is not in its `items`",
+     sub('items       ( "NH3Storage/tank1" "NH3Storage/tank2" );', 'items       ( "NH3Storage/tank1" );')),
+    ("a wall through a footprint", "its wall runs THROUGH the footprint of `NH3Storage/tank2`",
+     sub("xMax 213 m;", "xMax 190 m;")),
+    ("no capacity rule", "`capacityRule { basis vesselVolume|heldLiquid;",
+     lambda t: re.sub(r"\n        capacityRule\n        \{.*?\n        \}\n", "\n", t,
+                      count=1, flags=re.S)),
+    ("an unknown containment kind", "containment kind",
+     sub("kind        bund;", "kind        dike;")),
+    ("a bund with a pit", "a `pit` is an impounding area's",
+     sub("drain       closedValve;",
+         "drain       closedValve; pit { x 160 m; y -90 m; length 5 m; width 5 m; depth 2 m; }")),
+    ("a basis no rule knows", "unknown basis 'tankVolume'",
+     sub("basis   vesselVolume;", "basis   tankVolume;")),
+    ("an impounding area with no pit", "an impounding area leads the spill to a REMOTE pit",
+     sub("        pit         { x 70 m; y 24 m; length 4 m; width 3 m; depth 1.5 m; }\n", "")),
+    ("a pit under an item", "lies under `Chiller`",
+     sub("pit         { x 70 m; y 24 m;", "pit         { x 62 m; y 5 m;")),
+    ("an item in two containments", "which bund `tankFarm` already holds",
+     sub('items       ( "Separator" "LetdownHP" "StorageFlash" );',
+         'items       ( "Separator" "LetdownHP" "StorageFlash" "NH3Storage/tank1" );')),
+    ("two containments sharing a floor", "claim the same ground",
+     sub("region      { xMin 103 m; xMax 213 m; yMin -69 m; yMax -1 m; }",
+         "region      { xMin 80 m; xMax 213 m; yMin -69 m; yMax 12 m; }")),
+]
+
+
+def arm_bunds(work):
+    """(p) SECONDARY CONTAINMENT (DEV.md 4c C134)."""
+    n_checked = []
+    # ---- the two witnesses, recomputed ----------------------------------
+    for tag, case, kinds in (("greenAmmoniaPEQ", GREEN, {"bund", "impounding"}),
+                             ("ammonia02", WITNESS, {"impounding"})):
+        d = prepare(work, "bund_" + tag, case)
+        out, err, rc, j, lay = layout_of(d)
+        bs = lay.get("bunds") or []
+        if rc != 0 or not bs:
+            fail(f"(p) {tag} exited {rc} / published no `bunds`")
+            continue
+        if {b["containment"] for b in bs} != kinds:
+            fail(f"(p) {tag}: containments {[(b['bund'], b['containment']) for b in bs]};"
+                 f" the witness declares {sorted(kinds)}")
+        for b in bs:
+            r = check_bund(tag, d, lay, b, case)
+            if r:
+                n_checked.append(f"{tag} {b['bund']} {r[0]:.0f}/{r[1]:.0f} m3")
+            if b["verdict"] != "adequate":
+                fail(f"(p) {tag}: the witness's {b['bund']} must hold its own rule")
+        if finding(lay, "unbundedLiquid"):
+            fail(f"(p) {tag}: the witness leaves liquid unbunded:"
+                 f" {[f['a'] for f in finding(lay, 'unbundedLiquid')]}")
+        for b in [x for x in bs if "pitX" in x]:
+            # the pit is REMOTE: outside the catch area
+            xs = [q[0] for q in b["outline"]]
+            ys = [q[1] for q in b["outline"]]
+            inside = (min(xs) < b["pitX"] < max(xs) and min(ys) < b["pitY"] < max(ys))
+            if inside or finding(lay, "pitNotRemote"):
+                fail(f"(p) {tag}: the pit of {b['bund']} must stand outside its catch area")
+    # ---- unbunded liquid: the green witness with no bunds ---------------
+    d = prepare(work, "bund_none", GREEN, drop_bunds)
+    out, err, rc, j, lay = layout_of(d)
+    tanks = [i["id"] for i in lay.get("items", [])
+             if sheet_liquid(d, sheet_rel(lay, i["id"])) > 0]
+    if rc != 0 or "bunds" in lay or "bundRule" in lay or len(tanks) != 5:
+        fail(f"(p) the green witness without bunds: exit {rc}, `bunds` published"
+             f" {'bunds' in lay}, liquid holders by their sheets {tanks} (the two tanks"
+             " and the loop's three vessels)")
+    for t in tanks:
+        f = finding(lay, "unbundedLiquid", t)
+        liq = sheet_liquid(d, sheet_rel(lay, t))
+        if not f or not close(f[0]["value"], liq, 1e-7) \
+                or not said_everywhere(f[0]["message"], out, err, j):
+            fail(f"(p) without bunds, {t} (holding {liq} m3 by its sheet) must be announced"
+                 f" `unbundedLiquid` on stderr, the caveat block and the advisories: {f}")
+    if any(f["a"] not in tanks for f in finding(lay, "unbundedLiquid")):
+        fail(f"(p) an item holding no liquid by its sheet was announced unbunded:"
+             f" {[f['a'] for f in finding(lay, 'unbundedLiquid')]}")
+    # ---- a bund too small for its rule: announced, never refused --------
+    d = prepare(work, "bund_small", GREEN, sub("wall        { height 4 m; }",
+                                                "wall        { height 2 m; }"))
+    out, err, rc, j, lay = layout_of(d)
+    bs = lay.get("bunds") or []
+    f = finding(lay, "bundCapacity")
+    if rc != 0 or not bs or bs[0]["verdict"] != "inadequate" or not f \
+            or not close(f[0]["value"], bs[0]["netVolume"]) \
+            or not close(f[0]["limit"], bs[0]["requiredVolume"]) \
+            or not said_everywhere(f[0]["message"], out, err, j):
+        fail(f"(p) a 2 m wall round the tanks must leave the bund SHORT, announced on the"
+             f" three surfaces, the run going on: exit {rc}, {bs[:1]}, {f}")
+    else:
+        #  The shortfall's numbers are the rule's, recomputed (the verdict
+        #  word must follow the arithmetic, not a flag).
+        check_bund("green, 2 m wall", d, lay, bs[0], None)
+    # ---- a bund round LYING cylinders: the circular segment ---------------
+    #  The witness's bullets (D 5.27 m, lying along y) in a 2 m bund: each
+    #  displaces the segment of its circle below 2 m times its length -- the
+    #  one shape the green witness's boxes cannot reach.
+    d = prepare(work, "bund_lying", WITNESS, chain(
+        sub("kind        impounding;", "kind        bund;"),
+        sub("        pit         { x 108 m; y -77 m; length 24 m; width 9 m; depth 3.5 m; }\n", ""),
+        sub("wall        { height 0.3 m; }", "wall        { height 2 m; }")))
+    out, err, rc, j, lay = layout_of(d)
+    bs = lay.get("bunds") or []
+    if rc != 0 or not bs or bs[0]["containment"] != "bund" \
+            or not bs[0]["displacedVolume"] > 0:
+        fail(f"(p) the bullets in a 2 m bund: exit {rc}, {bs[:1]}")
+    else:
+        check_bund("ammonia02 as a 2 m bund", d, lay, bs[0], None)
+        box = sum(i["dx"] * i["dy"] * 2.0 for i in lay["items"] if i["id"] in bs[0]["items"])
+        if not bs[0]["displacedVolume"] < 0.9 * box:
+            fail(f"(p) lying bullets displaced {bs[0]['displacedVolume']} m3 below 2 m; their"
+                 f" bounding boxes would give {box} -- the segment is not being taken")
+    # ---- the open drain, the pit inside its catch area, a road and a pipe
+    #      through a wall: announced ----------------------------------------
+    d = prepare(work, "bund_drain", GREEN, sub("drain       closedValve;",
+                                                "drain       openToSewer;"))
+    out, err, rc, j, lay = layout_of(d)
+    if rc != 0 or not finding(lay, "bundDrainOpen"):
+        fail(f"(p) a drain open to the sewer must be announced: exit {rc}")
+    d = prepare(work, "bund_pit", WITNESS, sub(
+        "pit         { x 108 m; y -77 m; length 24 m; width 9 m;",
+        "pit         { x 103 m; y -45 m; length 3 m; width 3 m;"))
+    out, err, rc, j, lay = layout_of(d)
+    if rc != 0 or not finding(lay, "pitNotRemote"):
+        fail(f"(p) a pit inside its own catch area must be announced `pitNotRemote`: exit {rc}")
+    d = prepare(work, "bund_road", WITNESS, sub("yMax -36 m;", "yMax -30 m;"))
+    out, err, rc, j, lay = layout_of(d)
+    if rc != 0 or not finding(lay, "roadCrossesBund", "tankFarm"):
+        fail(f"(p) a road through the catch area's kerb must be announced"
+             f" `roadCrossesBund`: exit {rc}; {[x['kind'] for x in lay.get('findings', [])]}")
+    #  The let-down liquid to the first bullet, declared to run at 0.1 m into
+    #  the farm: it crosses the catch area's west kerb (x = 73 m) BELOW its
+    #  0.3 m top.  Every point inside the published plot, so nothing else moves.
+    d = prepare(work, "bund_pipe", WITNESS, lambda t: t + (
+        "\npipes { productNH3 { waypoints ( { x 59.5 m; y -6 m; z 9 m; }"
+        " { x 70 m; y -6 m; z 9 m; } { x 70 m; y -60 m; z 9 m; }"
+        " { x 70 m; y -60 m; z 0.1 m; } { x 78 m; y -60 m; z 0.1 m; }"
+        " { x 78 m; y -54 m; z 0.1 m; } ); } }\n"))
+    out, err, rc, j, lay = layout_of(d)
+    if rc != 0 or not finding(lay, "pipeThroughBund", "productNH3"):
+        fail(f"(p) a pipe below the kerb's top through it must be announced"
+             f" `pipeThroughBund`: exit {rc}; {err.strip()[-300:]}")
+    # ---- refusals ----------------------------------------------------------
+    n_ref = 0
+    text = (GREEN / "system" / "layoutDict").read_text()
+    for k, (label, needle, edit) in enumerate(BUND_REFUSALS):
+        d = prepare(work, f"bund_ref{k}", GREEN, lambda _t, e=edit: e(text))
+        o, e, rc = solve(d)
+        if rc != 2:
+            fail(f"(p) {label}: exit {rc}, not refused")
+        elif needle not in o + e:
+            fail(f"(p) {label}: refused without naming it ('{needle}'): {e.strip()[-300:]}")
+        else:
+            n_ref += 1
+    if len(n_checked) >= 2 and n_ref == len(BUND_REFUSALS):
+        claims.append("(p) secondary containment: on both witnesses (" + "; ".join(n_checked)
+                      + " net/required) the area, the displaced and net volumes, the"
+                      " required volume (terms on the basis read off the DESIGN SHEETS,"
+                      " allowances) and the verdict recomputed here, every published"
+                      " number pinned; the impounding pit remote; without bunds every"
+                      " liquid store announced unbunded on the three surfaces with its"
+                      " sheet's volume, nothing else; a 2 m wall SHORT and announced, its numbers recomputed; the bullets in a 2 m bund displacing their circular segments; an"
+                      " open drain, a pit in its catch area, a road and a low pipe through"
+                      " a wall announced; " + str(n_ref) + " refusals named")
+
+
 def main():
     argv = sys.argv[1:]
     keep = Path(argv[argv.index("--keep") + 1]).resolve() if "--keep" in argv else None
@@ -2895,6 +3267,7 @@ def main():
         arm_clash(work)
         arm_site(work)
         arm_indoor(work)
+        arm_bunds(work)
     finally:
         if not keep:
             shutil.rmtree(work, ignore_errors=True)
@@ -2909,6 +3282,7 @@ def main():
           " pressure drop and cost (none is computed), a pipe clashing with"
           " another pipe or a road's paved surface, structures, a road's gradient, a"
           " truck's swept path (each corner's outer edge only), whether a declared headroom or access distance is sensible,"
+          " a containment's floor slope, wall strength and pool evaporation, whether a declared capacity rule is the right one,"
           " the GUI drawing (its scene"
           " mapping is a vitest), and"
           " byte-identity of cases without a layout (measured once, not gated).")
