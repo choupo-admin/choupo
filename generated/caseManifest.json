@@ -6,7 +6,7 @@
   "runtime": "not recorded; runTests does not time per case and this script does not run the corpus"
  },
  "counts": {
-  "cases": 482,
+  "cases": 485,
   "witnesses": 16,
   "validationOp": 6,
   "anchored": 12
@@ -2924,6 +2924,48 @@
     "formulation": "gammaGamma",
     "activityModels": [
      "UNIFAC"
+    ]
+   },
+   "roles": [],
+   "hasGolden": true
+  },
+  "tutorials/props/solvents/solvent01_synthetic_mixture": {
+   "application": "choupoProps",
+   "ops": [
+    "hansenMixture"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [],
+   "hasGolden": true
+  },
+  "tutorials/props/solvents/solvent02_polystyrene_hexane_blends": {
+   "application": "choupoProps",
+   "ops": [
+    "hansenMixture"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "UNIFAC"
+    ]
+   },
+   "roles": [],
+   "hasGolden": true
+  },
+  "tutorials/props/solvents/solvent03_polystyrene_observed": {
+   "application": "choupoProps",
+   "ops": [
+    "hansenMixture"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
     ]
    },
    "roles": [],
@@ -7248,6 +7290,9 @@
     "tutorials/props/scan/ternary01_audit_vlle",
     "tutorials/props/scan/ternary02_bubbleT_benzene_toluene_water",
     "tutorials/props/scan/ternary03_lle_water_ethanol_benzene",
+    "tutorials/props/solvents/solvent01_synthetic_mixture",
+    "tutorials/props/solvents/solvent02_polystyrene_hexane_blends",
+    "tutorials/props/solvents/solvent03_polystyrene_observed",
     "tutorials/props/steam/steam01_if97_verification",
     "tutorials/props/steam/steam02_water_transport",
     "tutorials/props/thermo/bubble01_reaction_mass_boiling_point",
@@ -8273,6 +8318,7 @@
     "tutorials/props/compare/acetone01_ipa_water_azeotrope",
     "tutorials/props/compare/acetone04_acetone_water_vle",
     "tutorials/props/scan/ternary03_lle_water_ethanol_benzene",
+    "tutorials/props/solvents/solvent02_polystyrene_hexane_blends",
     "tutorials/steady/absorption/extract01_ethanol_water_benzene",
     "tutorials/steady/absorption/extract02_declared_interior",
     "tutorials/steady/distillation/acetone06_luyben_column_C1",
@@ -8507,6 +8553,8 @@
     "tutorials/props/safety/relief02_acetone_fire_case",
     "tutorials/props/scan/phase01_water_full",
     "tutorials/props/scan/ternary02_bubbleT_benzene_toluene_water",
+    "tutorials/props/solvents/solvent01_synthetic_mixture",
+    "tutorials/props/solvents/solvent03_polystyrene_observed",
     "tutorials/props/steam/steam01_if97_verification",
     "tutorials/props/steam/steam02_water_transport",
     "tutorials/props/thermo/bubble01_reaction_mass_boiling_point",
@@ -8789,6 +8837,11 @@
    ],
    "hConsistency": [
     "tutorials/props/thermoTest/h_surface_identity"
+   ],
+   "hansenMixture": [
+    "tutorials/props/solvents/solvent01_synthetic_mixture",
+    "tutorials/props/solvents/solvent02_polystyrene_hexane_blends",
+    "tutorials/props/solvents/solvent03_polystyrene_observed"
    ],
    "heatCapacityFit": [
     "tutorials/props/fit/cp01_polynomial_recovery"
