@@ -1,0 +1,11 @@
+/*---------------------------------------------------------------------------*\
+  Benchmark (developer-facing; benchmarks/README.md): the reference
+  simulator's "Liquid-Liquid Extraction" sample, reproduced as a Choupo case.
+  The problem is theirs (feeds, stage count); every property number is
+  Choupo's own.  See README and `reference`.
+\*---------------------------------------------------------------------------*/
+
+application   choupoSolve;
+description   "Benchmark C: counter-current extraction of acetone from water with MIBK, 4 stages";
+
+verbosity     2;

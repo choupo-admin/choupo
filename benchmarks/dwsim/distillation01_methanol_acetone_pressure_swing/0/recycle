@@ -1,0 +1,15 @@
+/*--- Benchmark B: TEAR SEED for the recycle (the HP azeotrope after the
+      letdown).  A round guess at the HP distillate rate the column is given
+      (1.862 mol/s), carrying about all the feed's methanol -- replaced by
+      the recycle.  A seed carrying MORE methanol than the LP bottoms can
+      take makes the LP column's distillate specification infeasible on the
+      first pass (measured: 0.56 mol/s of methanol here fails it). ---*/
+
+componentMolarFlows
+{
+    methanol   0.499 mol/s;
+    acetone    1.363 mol/s;
+}
+
+T               330 K;
+P               101325 Pa;
