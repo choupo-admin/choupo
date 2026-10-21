@@ -1219,7 +1219,7 @@ struct LayoutBund
     scalar      largestHeld = 0, totalHeld = 0;   // [m3] on the declared basis
     std::string governing;             // the term that governs ("largest" | "total")
     scalar      requiredVolume  = 0;   // [m3] the largest term + the allowances
-    std::string verdict;               // adequate | inadequate | holdsNothing
+    std::string verdict;               // adequate | inadequate | holdsNothing | notChecked
     std::string drain;                 // closedValve | sumpPump | openToSewer
     std::string ruleSource, ruleReason;
     std::string source, reason;

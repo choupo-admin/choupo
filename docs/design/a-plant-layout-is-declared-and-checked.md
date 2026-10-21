@@ -1051,7 +1051,13 @@ paved surface crosses a wall (`roadCrossesBund`), a pipe whose horizontal
 run crosses a wall BELOW its top (`pipeThroughBund`; a pipe carried over
 the wall, as the rack routes do, is not one) -- and, on EVERY layout, an
 item in the open that holds liquid by the run's own inventory and that no
-containment encloses (`unbundedLiquid`).  Short of the rule is ANNOUNCED
+containment encloses (`unbundedLiquid`).  A containment that lists an item
+whose sizer REFUSED keeps the C79 rule rather than refusing the run: the
+item is left unplaced (`sizingRefused`), the wall is published as declared,
+and its capacity is NOT CHECKED (`bundNotChecked`, verdict `notChecked`) --
+what it must hold depends on a size nobody computed, and none is invented
+(found when `check_design_sheet`'s refused-store probes met the first
+witness with a bund).  Short of the rule is ANNOUNCED
 and not refused for the reason a short distance is: it is a draft the
 student must see and defend.  The last one is the colleague's point: a
 plant whose tanks stand on open ground now says so.

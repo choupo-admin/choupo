@@ -800,7 +800,7 @@ export interface PlantLayout {
 export interface LayoutBund {
   bund: string;
   containment: "bund" | "impounding";
-  verdict: string;          // adequate | inadequate | holdsNothing
+  verdict: string;          // adequate | inadequate | holdsNothing | notChecked
   regionFrom: string;       // rectangle | polygon
   area: number;
   wallHeight: number;

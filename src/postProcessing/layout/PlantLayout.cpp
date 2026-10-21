@@ -3134,12 +3134,28 @@ void readBunds(const Dictionary& d, const SimulationResult& r,
         if (b.items.empty())
             refuse(w + ": `items` is empty");
         std::set<std::string> listed;
+        //  A listed item whose SIZER refused is left unplaced and announced
+        //  (`sizingRefused`, DEV.md 4c C79): the run goes on, so the
+        //  containment that lists it must not refuse the run either.  Its
+        //  wall is still the case's declaration and is published; what it
+        //  must HOLD cannot be known without that item's size, so its
+        //  capacity is NOT CHECKED, said by name -- no volume is invented.
+        std::vector<std::string> unsized;
         for (const auto& id : b.items)
         {
             if (!listed.insert(id).second)
                 refuse(w + ": `" + id + "` is listed twice");
             const auto it = std::find_if(rec.items.begin(), rec.items.end(),
                 [&](const LayoutItem& i) { return i.id == id; });
+            const bool sizerRefused = std::any_of(rec.findings.begin(),
+                rec.findings.end(), [&](const LayoutFinding& f)
+                { return f.kind == "sizingRefused" && f.a == id; });
+            if (it == rec.items.end() && sizerRefused)
+            {
+                unsized.push_back(id);
+                bundOf[id] = b.id;
+                continue;
+            }
             if (it == rec.items.end())
             {
                 std::ostringstream o;
@@ -3187,7 +3203,8 @@ void readBunds(const Dictionary& d, const SimulationResult& r,
         {
             b.grossVolume = b.area * b.wallHeight;
             for (const auto& id : b.items)
-                b.displacedVolume += displacedBelow(placedItem(rec, id), b.wallHeight);
+                if (std::find(unsized.begin(), unsized.end(), id) == unsized.end())
+                    b.displacedVolume += displacedBelow(placedItem(rec, id), b.wallHeight);
             b.netVolume = b.grossVolume - b.displacedVolume;
         }
         else
@@ -3272,6 +3289,8 @@ void readBunds(const Dictionary& d, const SimulationResult& r,
         //  ---- the enclosed items that hold liquid ------------------------
         for (const auto& id : b.items)
         {
+            if (std::find(unsized.begin(), unsized.end(), id) != unsized.end())
+                continue;
             const scalar liquid = heldLiquidOf(r, id);
             if (liquid <= 0) continue;
             LayoutBundHeld h;
@@ -3307,7 +3326,22 @@ void readBunds(const Dictionary& d, const SimulationResult& r,
         for (const auto& a : b.allowances) allow += a.volume;
         b.requiredVolume = std::max(0.0, governingVolume) + allow;
 
-        if (b.held.empty())
+        if (!unsized.empty())
+        {
+            b.verdict = "notChecked";
+            std::string names;
+            for (const auto& u : unsized) names += (names.empty() ? "`" : ", `") + u + "`";
+            addFinding("bundNotChecked", b.id, unsized.front(), b.netVolume, 0.0,
+                "warning",
+                w + " lists " + names + ", which the sizing pass could not size"
+                " (announced `sizingRefused`), so " + (unsized.size() == 1
+                ? std::string("it is") : std::string("they are")) + " not placed"
+                " -- its wall is published as declared, and its CAPACITY IS NOT"
+                " CHECKED: what it must hold depends on the size of what it"
+                " holds, and no size is invented.  Fix the sizing and the"
+                " containment is checked against its rule");
+        }
+        else if (b.held.empty())
         {
             b.verdict = "holdsNothing";
             addFinding("bundHoldsNothing", b.id, "", b.netVolume, b.requiredVolume,

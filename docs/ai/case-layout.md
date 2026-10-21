@@ -1460,7 +1460,9 @@ plot { margin 10 m; reason "..."; }   // optional; absent: 0 m, announced
   `bundHoldsNothing`, `bundDrainOpen`, `pitNotRemote`, `roadCrossesBund`,
   `pipeThroughBund` (a pipe below the wall's top), and on EVERY layout
   `unbundedLiquid` (an item in the open holding liquid that no containment
-  encloses).  Published in `layout.bunds` and pinned by the `layout` golden
+  encloses), and `bundNotChecked` (a listed item whose sizer refused is
+  left unplaced as C79 rules; the wall is published, its verdict is
+  `notChecked` and no volume is invented).  Published in `layout.bunds` and pinned by the `layout` golden
   kind (`containment`, `verdict`, `area`, `wallHeight`, `displacedVolume`,
   `netVolume`, `requiredVolume`); the outline and the pit enter the plot.
   The draft carries none.  The 3D view draws the wall on the outline (its

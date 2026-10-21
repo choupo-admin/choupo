@@ -230,7 +230,10 @@ Description
     catch area (`pitNotRemote`), a road through a wall (`roadCrossesBund`), a
     pipe through one below its top (`pipeThroughBund`), and -- on EVERY
     layout -- an item in the open that holds liquid and that no containment
-    encloses (`unbundedLiquid`).  Published: each containment's area, wall,
+    encloses (`unbundedLiquid`); a containment listing an item whose SIZER
+    refused (C79: left unplaced, `sizingRefused`) is published as declared
+    and its capacity NOT CHECKED (`bundNotChecked`, verdict `notChecked`),
+    never refusing the run.  Published: each containment's area, wall,
     gross / displaced / net / required volumes, the governing term, the
     verdict; the outline and the pit enter the plot.  The draft carries none.
 \*---------------------------------------------------------------------------*/
