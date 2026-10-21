@@ -179,6 +179,10 @@ Screenshot*.png
 #  The white paper's front-end figures, written by
 #  paper/whitepaper/figures/capture_gui.mjs and \includegraphics'd by it.
 !paper/whitepaper/figures/*.png
+#  The JOSS paper's two figures (paper/joss/paper.md): the front-end capture
+#  copied from the white paper, and architecture.png rendered from
+#  paper/joss/architecture.tex.
+!paper/joss/*.png
 tutorials/*/*/code/.build/
 
 # Copyrighted reference papers --- never commit to the public repo
