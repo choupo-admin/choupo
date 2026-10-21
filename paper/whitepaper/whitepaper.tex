@@ -64,7 +64,7 @@
 \usepackage[utf8]{inputenc}
 \usepackage{lmodern}
 \usepackage[english]{babel}
-\usepackage[margin=2.2cm]{geometry}
+\usepackage[margin=2.1cm]{geometry}
 \usepackage{microtype}
 \usepackage{booktabs}
 \usepackage{tabularx}
@@ -152,9 +152,13 @@ with their conservation balances -- all readable in plain-text files and in
 the run log, none hidden behind a default.  This paper presents the project:
 its motivation, including its response to the arrival of AI agents that can
 prepare and run a simulation on a student's behalf; what it models today;
-its architecture (a case is a directory of dictionaries, the engine has three
-layers, every model is registered explicitly, the same C++ runs in the
-browser); how its thermophysical data are curated, with a worked example of
+its architecture (a case is a directory of dictionaries in which every
+dimensional value carries a unit, the engine has three layers, every model
+is registered explicitly, and the browser front-end is a visualiser on the
+ParaView pattern -- the case is always text, written in an editor or with
+an agent, the engine computes natively or in WebAssembly from the same C++,
+and the interface shows what was computed and computes nothing itself); how
+its thermophysical data are curated, with a worked example of
 a binary-pair regression in which a candidate fits its training data well
 and fails its held-out test; what its verification and validation can and
 cannot conclude; four representative examples, among them a comparison with
@@ -204,7 +208,18 @@ through to a default.  A solver aid -- an initial guess, a tear estimate, a
 bound -- is declared in the case and the solver reports aloud when it uses
 one.  And a number the engine cannot justify is not printed: an energy
 balance that lacks a formation enthalpy says so and names the missing datum
-instead of printing a zero.
+instead of printing a zero.  And nothing announced is announced once only:
+every extrapolation, estimate, unreviewed record and default the run used
+rides an advisory log into the result file and is replayed, grouped, at the
+end of the run, under a separate banner that says whether the problem
+solved is the problem posed -- a declared approximation is recorded there,
+an unauthorised one is refused.
+% src/core/AdvisorySummary.H:177 (the replay block "ASSUMPTIONS AND
+% CAVEATS -- what this run announced along the way"); src/core/
+% ProblemDivergence.H:100 (class ProblemDivergence; the banner
+% DivergenceSummary.H:80); CLAUDE.md sec 6 "A DURABLE CAVEAT SURFACE" and
+% "THE PROBLEM SOLVED IS NOT ALWAYS THE PROBLEM POSED"; gates
+% check_caveat_surface, check_problem_divergence.
 % CLAUDE.md sec 10 "No silent crutch" (decided 2026-05-30); sec 6 "THE ENGINE
 % PROMISED TO REFUSE OR ANNOUNCE" (registryRefusal::message, the one home);
 % src/core/RegistryRefusal.H:41 (closest-name suggestion decided once);
@@ -224,8 +239,16 @@ inspection, reproduction and discussion: the agent's case files are plain
 text the student reads; the data the agent found carry their source,
 licence and uncertainty; the fit the agent ran declares its acceptance band
 before it runs and reports a verdict the student can see fail; the engine's
-log shows what was computed and what was assumed.  The student is not
-reduced to an auditor of the agent's work.  The student still formulates,
+log shows what was computed and what was assumed.  The repository carries
+an entry point for agents (\code{AGENTS.md}) that points into short
+reference files under \code{docs/ai/} -- the dictionary grammar, the case
+layout, the thermodynamics, the unit operations, the components, patterns
+and pitfalls -- which \code{bin/llmctx} concatenates into one context an
+assistant is handed before it authors a case.  The student is not
+reduced to an auditor of the agent's work.
+% AGENTS.md (root; the table of docs/ai files; bin/llmctx --core);
+% docs/ai/{overview,dict-syntax,case-layout,thermo,unit-ops,components,
+% patterns,pitfalls}.md exist at feb112a00 (19 files in docs/ai/).  The student still formulates,
 chooses, designs and decides; the agent takes the clerical part, and the
 engine makes everything either of them did checkable by the other.
 
@@ -258,13 +281,13 @@ commit that regenerated it is named in the source.
 % sizing/EquipmentSize.cpp, src/propertyOps/PropertyOperation.cpp (all read
 % at feb112a00).
 
-\begin{table}[t]
-\centering\footnotesize
+\begin{table}[!t]
+\centering\scriptsize
 \caption{What Choupo models today (development line; counts from
 \texttt{generated/releaseInventory.json}, regenerated at commit
 \texttt{c402561ad}).  The latest release is \texttt{Choupo-2608}.}
 \label{tab:scope}
-\renewcommand{\arraystretch}{1.18}
+\renewcommand{\arraystretch}{1.12}
 \begin{tabularx}{\linewidth}{>{\raggedright\arraybackslash}p{3.1cm}
                              >{\raggedright\arraybackslash}X}
 \toprule
@@ -306,12 +329,18 @@ commit that regenerated it is named in the source.
   validated), sectored plants with a thermodynamic model per sector,
   energy wires between units, utilities, outer drivers (parameter sweeps,
   design specifications, optimisation by Nelder--Mead or SQP, parameter
-  estimation), post-processing (equipment sizing, Turton costing, cash-flow
-  economics with sensitivity, pinch targets, plant layout and pipe
-  routing, GMP interiors). \\
+  estimation), post-processing (equipment sizing, Turton bare-module costing, FCI/TCI,
+  an NPV cash flow with a construction schedule and start-up years,
+  economic sensitivity bars, land priced from the layout's plot area,
+  declared quotes and operating crew, pinch targets, plant layout and
+  pipe routing, GMP interiors). \\
 \textbf{Corpus} & 480 runnable tutorial cases, 463 of them with a
-  recorded reference answer; 61 interactive EduTool lessons in the browser
-  across ten disciplines. \\
+  recorded reference answer, indexed in \code{docs/tutorials-catalogue.md};
+  61 interactive EduTool lessons in the browser across ten disciplines (how
+  Choupo works; modelling and scale-up; thermodynamics; separations and
+  phase equilibria; heat transfer and energy; reaction engineering;
+  hydraulics and control; process design and economics; process safety;
+  flowsheeting and numerics). \\
 \textbf{Intended for} & Undergraduate and graduate process simulation and
   design; research on membranes, electrodialysis, electrolytes and solids;
   any use where the computation must be inspectable -- not for breadth
@@ -328,7 +357,26 @@ commit that regenerated it is named in the source.
 % designSpec); post-processing: PostProcessor.cpp (sizing costing economics
 % batchPlan pinchPass) and CLAUDE.md sec 6 (plant layout C75, GMP C97).
 % EduTools: generated/methodTools.json at 668b7dff5 (liveTools 61,
-% disciplines 10).
+% disciplines 10, named as in that file); docs/tutorials-catalogue.md
+% exists at feb112a00.  Economics: src/postProcessing/EconomicsPass.cpp:416
+% (NPV), :421-425 (capitalSchedule, rampUp -- C63), :308 (sensitivity, C68),
+% :385-407 (land, C82); src/postProcessing/costing/DeclaredQuote.H (quotes,
+% operating crew -- C98); CLAUDE.md sec 6 (C63, C68, C82, C98 paragraphs).
+% The design sheets: CLAUDE.md sec 6 "THE SPECIFICATION SHEET A PROJECT IS
+% AUDITED FROM" (design/<SECTOR>/<unit>/<equipmentTag>, regenerated whole
+% every run, EquipmentSizing::set(key, value, unit)), "A DEFAULT NOBODY
+% DECLARED" (`assumed ( ... )` on the sheet, src/postProcessing/sizing/
+% ColumnSize.H:62), "THE DATASHEET FOLLOWS THE EQUIPMENT KIND"
+% (gui/src/case/equipmentSchematic.ts).  The Explorer lenses: DEV.md 4c
+% C116 (T-x-y, gamma, Psat, LLE, ternary, Gibbs maps, Bjerrum, steam,
+% transport, pure phase diagrams), gui/src/ui/ExploreWorkspace.tsx:53-79,
+% :555, :1146 (Hildebrand); the Evidence view: DEV.md 4c C117 (G18,
+% branch claude/c117-evidence-explorer, in integration -- not on main at
+% feb112a00).  The 3D layout: CLAUDE.md sec 6 "A PLANT LAYOUT IS DECLARED,
+% CHECKED AND DRAFTED" (C75, C80 pipes, C82 plot area, C88 kinds, C90
+% roads, C93 fence, C96 truck route, C97 GMP); src/postProcessing/layout/
+% PlantLayout.H; foundations and the final piping detail: DEV.md 4c C129
+% on origin/main (proposed, future).
 
 %===============================================================================
 \section{Architecture}
@@ -342,14 +390,31 @@ topology, solver options, the outer driver, post-processing);
 case-local data); \code{0/} holds the complete initial state, one file per
 stream.  The flowsheet dictionary carries topology only; a stream's values
 live in its own file, and a missing or orphan stream file is a fatal error.
-Every dimensional scalar carries its unit (\code{P 1 bar;}, or a bracket
-dimension set) and is converted to SI and dimension-checked on reading.
 % CLAUDE.md sec 3 (case directory layout; stream state in 0/<stream>);
 % docs/architecture/stream-state-architecture.md (0/ complete, N streams ==
-% N files, missing/orphan FATAL); CLAUDE.md sec 5 "Scalar values carry
-% units" (named unit, bracket dimensions, raw SI).
+% N files, missing/orphan FATAL).
 Listing~\ref{lst:case} is the whole topology and the feed of the first
 tutorial, an isothermal flash of benzene and toluene.
+
+\paragraph{Units are mandatory.}  Every dimensional scalar in a dictionary
+carries a named unit -- \code{P 1 bar;}, \code{F 100 kmol/h;},
+\code{T 25 degC;} -- or a bracket dimension set followed by the SI value,
+\code{A_w [-1 2 1 0 0] 1.5e-12;}, for a quantity with no short unit name.
+The parser converts every value to SI on reading and records its
+dimensions; an unknown unit suffix is refused where it is read, and a
+value whose declared dimensions are not the ones the reader expects (a
+pressure where a temperature is required) is refused by name with both
+dimension sets printed.  A number with no unit never reaches a model.
+% CLAUDE.md sec 5 "Scalar values carry units" (named unit, bracket
+% dimensions, raw SI; cross-checked with a clear error on mismatch);
+% src/core/Dictionary.cpp:436-454 (the named-unit suffix looked up in
+% units::lookupUnit, factor and dimensions recorded; an unknown suffix
+% throws "unknown unit suffix ... Known units listed in core/Units.H"),
+% :296-332 (the bracket form, five exponents [M L T Theta N]),
+% :895-931 (declared vs expected dimensions: "expected dimensions
+% [...] (...)" refusal); src/core/Units.cpp:171 ("a dim-checked
+% dimensionless lookup will refuse it loudly"), :325 (fromSI refuses an
+% unknown unit); docs/ai/dict-syntax.md:223 (the bracket example).
 
 \Needspace{16\baselineskip}
 \begin{lstlisting}[caption={The first tutorial's topology,
@@ -448,7 +513,30 @@ design specifications, optimisation, parameter estimation.  An optional
 sizing, costing, plant layout and reports.  Five binaries partition the
 problem classes (Table~\ref{tab:scope}); numerical strategies coexist inside
 each binary and are selected in the case files, so there is no binary per
-algorithm.
+algorithm.  The whole engine builds with \code{g++} and GNU make alone --
+369 translation units, no external library -- so that a student can read
+every line that computes: the Newton solvers (one- and $n$-dimensional),
+Wegstein on declared tear streams, Nelder--Mead, Michelsen's stability test,
+RK4 and a Rosenbrock23 integrator for stiff dynamics are all in
+\code{src/solver/}, every iteration printed at the default verbosity, and
+convergence is decided by one normalised residual with an \OF-shaped
+(\code{tolerance}, \code{relTol}, \code{maxIter}) triple declared per
+solver.  The time-integrated classes share one driver: \code{choupoBatch}
+adds a recipe of timed events and two campaign ledgers (material and
+energy, every integral an exact state difference), \code{choupoSemiContinuous}
+a quasi-steady adapter that re-solves any steady unit inside a transient,
+and \code{choupoCtrl} PID, schedule and signal controllers with a balance
+ledger on the integrator's accepted steps.
+% make/compiler.mk:35-40 (CXX g++, -std=c++17); `find src -name '*.cpp' |
+% wc -l` = 369 at feb112a00; CLAUDE.md sec 2 ("Zero external dependencies")
+% and sec 10 "No external libs"; src/solver/ (NewtonRaphson, NewtonND,
+% Wegstein, NelderMead, StabilityTest, ODE/RK4, ODE/Rosenbrock23);
+% src/solver/Convergence.H (the triple, the normalisation); CLAUDE.md sec 6
+% "Batch campaign LEDGERS" (TransferRecord, EnergyRecord, exact state
+% differences), sec 10 "THE QUASI-STEADY SEAM (#185)" (src/dynamicDriver/
+% DynamicDriver.cpp:350-384 `quasiSteady`), src/control/ (PIDController,
+% ScheduleController, SignalController), DynamicDriver.cpp:885-925 (the
+% accepted-step trapezoid ledger), gate check_ctrl_balance.
 % CLAUDE.md sec 4 ("Architecture: 3 layers"); the pure function is
 % runSimulation, src/applications/choupoSolve/main.cpp:145, called by the
 % direct path (:1222) and by every outer driver's functor (:894); CLAUDE.md
@@ -463,16 +551,42 @@ built-in type is registered by one line inside a \code{registerBuiltins()}
 function that \code{main()} calls explicitly.  There are no
 self-registration macros and no static initialisers, so ``where does this
 model come from?'' is answered by reading one function.  The cost is
-stated: a new built-in needs one registration line and a rebuild.  A case
-may also ship its own \code{code/} directory, compiled against the engine
-by \code{bin/buildCode} and registered through \code{registerUserTypes()},
-for a unit operation or a rate law that belongs to one case.
+stated: a new built-in needs one registration line and a rebuild.
 % CLAUDE.md sec 5 "Factory pattern -- always explicit"; the calls in
-% src/applications/choupoSolve/main.cpp:443-465 (registerUserTypes at :465);
-% the flash's registration line src/unitOperations/UnitOperation.cpp:157;
-% the factory signature src/unitOperations/UnitOperation.H:228-237;
-% docs/ai/case-layout.md:41-43 (case/code/, registerUserTypes.cpp);
-% witnesses tutorials/steady/userops/userOp01..03.
+% src/applications/choupoSolve/main.cpp:443-465; the flash's registration
+% line src/unitOperations/UnitOperation.cpp:157; the factory signature
+% src/unitOperations/UnitOperation.H:228-237.
+
+\paragraph{A user can write their own unit operations and models.}  On a
+local installation, a case may ship its own \code{code/} directory: a
+class and one registration line in \code{registerUserTypes()}, the hook
+\code{main()} calls right after the built-ins are registered, compiled
+against the engine by \code{bin/buildCode} with a plain, printed
+\code{g++} command and linked into a per-case binary.  It is the same
+mechanism the project uses to add a built-in -- the same factory, the same
+explicit line -- so a student's unit operation is not a second-class
+plug-in.  Two tutorials do exactly this: \code{userOp01_yield_reactor}
+registers a unit operation, \code{userOp03_case_rate_law} a rate law,
+which it also writes a second way, as an \emph{expression} in the case's
+own \code{constant/reactions} over declared parameters with units,
+compiled by the engine's formula evaluator with no C++ at all; and any unit
+may carry a \code{thermo {}} block that replaces the global
+thermodynamic models for that unit alone.  The hosted site runs the shipped
+engine only -- there is no compiler in the browser -- so the \code{code/}
+route is the local installation's privilege; the expression route and the
+per-unit override work in both.
+% src/applications/choupoSolve/main.cpp:134-138 (the stub) and :465
+% (registerUserTypes() called after the builtins); bin/buildCode:88, :173-178
+% ("plain build-time g++, nothing hidden, no runtime dlopen");
+% tutorials/steady/userops/userOp01_yield_reactor/code/registerUserTypes.cpp:19
+% (UnitOperation::registerType) and userOp03_case_rate_law/code/
+% registerUserTypes.cpp:20 (ReactionRate::registerType; its header: "the
+% same explicit factory the built-ins use --- no macro self-registration");
+% userOp03's constant/reactions:47 (`type expression;`); CLAUDE.md sec 5
+% "Adding a new unit operation" (CLAUDE.md:517) and "Per-unit `thermo {}`
+% override"; CLAUDE.md sec 6 "A CASE CARRIES ITS OWN KINETICS" (C67: "or a
+% law a case's `code/` registers (local only: the site has no compiler)",
+% CLAUDE.md:2107).
 
 \paragraph{State directories are restartable snapshots.}  The steady
 solution is written to \code{converged/} in the same layout as \code{0/},
@@ -483,7 +597,19 @@ a crystal size distribution) is written beside the streams under
 \code{0/} restarts the case from its answer.  The time-integrated binaries
 write a time directory at every write interval in the same layout.
 \code{iterations/} keeps the numerical history when asked for, and is never
-physical time.
+physical time.  A case can also be \emph{sealed}: \code{bin/choupo-import}
+copies the full closure of property records the case consumes into its own
+\code{constant/} under a manifest with a checksum per record, and a sealed
+case runs with the installation catalogue forbidden to it, so a tutorial
+answers the same on any machine; the seal is computational -- it compares
+parsed content, not bytes, so a comment moved is cosmetic and a value moved
+is a refusal -- and every tutorial in the corpus is sealed.
+% CLAUDE.md sec 6 "General heterogeneous-thermo solver" (SEALED
+% constant/propertyManifest, per-record sha256, "the runtime is FORBIDDEN
+% the installation catalogue when sealed") and "The seal is COMPUTATIONAL
+% since 2026-08-03" (sealSchema computational; gate check_seal_schema);
+% src/thermo/SealCheck.cpp:127; src/thermo/RecordResolver.H:337; the
+% flash01 case carries constant/propertyManifest (ls, feb112a00).
 % src/applications/choupoSolve/main.cpp:1077-1078 (writeConverged returns
 % unless result.converged); CLAUDE.md sec 3 (state views hold both halves;
 % time-integrated classes write <t>/ by default; record docs/design/
@@ -497,24 +623,90 @@ and \code{constant/}; the engine flattens the tree to one flat problem with
 qualified names, and a sector may declare its own thermodynamic model.  The
 reference case runs five sectors across four thermodynamic models (an
 electrolyte Pitzer brine, an NRTL liquid--liquid split, a Gibbs reactor and
-a molecular section) and closes its atom balance on every element.
+a molecular section) and closes its atom balance on every element; a
+stream crossing from one model to the next is re-priced there, and the
+enthalpy step is \emph{accounted} in a model-boundary ledger of its own
+rather than charged to the unit that received it.
+% CLAUDE.md sec 6 "THE MODEL-BOUNDARY STEP IS ACCOUNTED, NOT CHARGED TO THE
+% UNIT" (raw imbalance, declared step, what remains); src/reporting/
+% ModelBoundaryLedger.H:141 (modelBoundaryClosure); gate
+% check_model_boundary_ledger; record docs/design/
+% model-boundary-energy-ledger.md.
 % src/unitOperations/flowsheet/Flowsheet.cpp:256 (flattenNode); CLAUDE.md
 % sec 3 (a plant and its sectors); sec 6 "General heterogeneous-thermo
 % solver" (tutorials/plant/lithiumBrinePlant: 5 sectors, 4 worlds, mass
 % closes on every element).
 
-\paragraph{The browser runs the same engine.}  A web front-end runs the
-same C++ compiled to WebAssembly.  It is deliberately a \emph{runner and
-visualiser}, not an editor: it loads the dictionaries, draws the flowsheet,
-runs the solver, streams the log and plots the results, and every balance
-it shows is one the engine published -- it never recomputes one.  Pressing
-F1 on a view opens the guide at the section that derives it.
-% make/wasm.mk:25-39 (all five binaries to gui/public/wasm/); CLAUDE.md
-% sec 12 (the GUI credo: runner and visualiser, NOT an editor);
-% docs/ai/gui-credo.md; docs/design/
-% a-first-law-the-gui-computed-for-itself.md (the first law is DRAWN, never
-% computed, by the GUI); gui/src/ui/AppShell.tsx:234-245 (F1 opens the guide
-% at the section the tab is about).
+\subsection{The browser front-end is a visualiser, on the ParaView pattern}
+\label{sec:gui}
+
+In the usual process-simulator workflow the user \emph{builds} the case in
+the graphical interface.  Choupo does the opposite, on the pattern of
+\OF\ and ParaView: \OF\ computes, and ParaView shows what was computed.
+Choupo computes -- natively, or in WebAssembly from the same C++ -- and the
+browser front-end shows the case so that the user understands it.  The
+case is always text dictionaries, authored in an editor or with an agent;
+the front-end loads them, draws them, runs the engine on them and shows
+what the engine published, and nothing it shows is computed by the
+front-end itself.  That stance was settled before the first screen was
+drawn and is the front-end's design rule: it is a viewer, not a block
+editor and not an IDE.  Pressing F1 on any view opens the guide at the
+section that derives it.
+% CLAUDE.md sec 12 (CLAUDE.md:4088-4094: "Design stance (settled
+% 2026-05-16, codified as a Credo): the GUI is a runner and visualiser, NOT
+% an editor -- cases are authored as plain-text dicts on disk ... ParaView-
+% inspired but with its OWN identity"); docs/ai/gui-credo.md:7-28 (informed
+% by "ParaView's separation of authoring (offline) from viewing (in the
+% GUI)"; "The Choupo GUI is a viewer for a Choupo case directory"; not a
+% block editor, not a literal ParaView clone, not an IDE; "The GUI shows
+% what is on disk; it does not write back silently"); make/wasm.mk:25-39
+% (all five binaries to gui/public/wasm/); gui/src/ui/AppShell.tsx:234-245
+% (F1).  ParaView is Kitware's open-source visualiser; its name is not on
+% check_doctrine's ban list (bin/curate/check_doctrine.py:67-68).
+
+What it shows, in the version cited here: the flowsheet, with each stream
+coloured by the phase the engine resolved for it; the run log, streamed
+live while the engine runs; the three global balances -- mass, atoms,
+energy -- drawn from the engine's own reports and never recomputed (the
+rule since the day the front-end's own first-law sum was found to disagree
+with the engine's by an order of magnitude); a plant and its sectors, each
+sector openable as a case of its own; the stream table and each unit's
+results and profiles; the specification sheets under \code{design/} -- one
+dictionary per sized item, regenerated every run, each value with its unit
+and its design basis and an \code{assumed} line naming what the case did
+not declare -- drawn as a datasheet by equipment kind; the Explorer -- the
+compound catalogue, an inspector with provenance marks, an estimate form,
+and property surfaces ($T$-$x$-$y$, $\gamma$, $P^\mathrm{sat}$, LLE, ternary,
+Gibbs maps, Bjerrum, steam tables, transport, phase envelopes, Hildebrand
+parameters), with an Evidence view that draws measured points against
+candidate models being merged; the EduTools; and the plant layout in 3D --
+the plot plan with the case's declared separations and zones, pipes routed
+orthogonally on a rack, the plot area, roads and site buildings, a fence
+with gates, a truck route walked against a declared vehicle, the GMP
+building interior -- all declared by the case, checked by the engine and
+drawn by the front-end, each item by its equipment kind on the envelope
+the engine published and, today, sitting at grade (foundations and the
+final piping detail are future work).  The next step on the development line, in
+the sense of Section~\ref{sec:limits}'s evolution paragraph and not of the
+cited version, is the instrumented flowsheet: a P\&ID layer declared over
+the PFD -- loops, transmitters, control valves, ISA tags -- validated by
+the engine, drawn by the front-end as a second view, and used as the input
+from which \code{choupoCtrl} runs the same case with its control loops.
+% gui/src/ui/FlowCanvas.tsx:138-145 (stream colour from the engine's vapour
+% fraction, "vf is the AUTHORITATIVE phase signal"); LogWorkspace.tsx:171
+% (follow live output while solving); ReportsWorkspace.tsx and
+% StreamsSummary.tsx (globalEnergyBoundary read, not computed) and
+% docs/design/a-first-law-the-gui-computed-for-itself.md (372.5 kW vs the
+% engine's 34.4 kW, 2026-09-05); CaseWorkspace.tsx:333-344 (a sector opened
+% as a case of its own); StreamsTable.tsx, UnitStreamsTable.tsx,
+% PlotsWorkspace.tsx; ReportsWorkspace.tsx:37-54 (design/ "exactly as the
+% engine wrote them"); ExploreWorkspace.tsx, CompoundCatalogue.tsx;
+% MethodsWorkspace.tsx (EduTools); LayoutPopOutTab.tsx:69 (PlantLayout3D,
+% three.js) and CLAUDE.md sec 6 "A PLANT LAYOUT IS DECLARED, CHECKED AND
+% DRAFTED" (C75, C88: each item by its equipment kind on the published
+% envelope).  The P&ID: DEV.md 4c C130 on origin/main (f8d09d205, Vitor:
+% the P&ID "deve ser usado para correr o choupoCtrl"; proposed and
+% measured, NOT in the cited version).
 
 \subsection{What Choupo takes from \OF, and where it differs}
 \label{sec:openfoam}
@@ -544,10 +736,10 @@ and OpenCFD\textsuperscript{\textregistered} trade marks.}
 % docs/developerGuide.tex:55-64.
 
 \begin{table}[htbp]
-\centering\footnotesize
+\centering\scriptsize
 \caption{\OF\ concepts and their Choupo equivalents.}
 \label{tab:openfoam}
-\renewcommand{\arraystretch}{1.15}
+\renewcommand{\arraystretch}{1.1}
 \begin{tabularx}{\linewidth}{>{\raggedright\arraybackslash}p{3.3cm}
                              >{\raggedright\arraybackslash}p{3.6cm}
                              >{\raggedright\arraybackslash}X}
@@ -590,6 +782,10 @@ Residual normalisation (\code{normFactor}) &
   of cells & Same structure and intent; the header states the three places
   where the analogy stops (a single-equation system degenerates and falls
   back to the raw residual, announced). \\
+\OF\ computes; ParaView shows what was computed &
+  the engine computes; the browser front-end shows the case and the result &
+  Same pattern (Section~\ref{sec:gui}): the case is text, the viewer
+  computes nothing. \\
 Compiled utilities (\code{blockMesh}, \code{foamDictionary}, \ldots) &
   small scripts and tools in \code{bin/} (\code{runCase},
   \code{choupo-init0}, \code{choupo-lint}, \ldots) & Differs: Choupo's
@@ -767,7 +963,7 @@ division of responsibilities is the point.
                    vertical sep=0.55cm, x descriptions at=edge bottom},
                   width=7.4cm]
   % --- top left: fit study, 101.3 kPa
-  \nextgroupplot[height=4.9cm, ylabel={$T_\mathrm{bubble}$ [K]},
+  \nextgroupplot[height=4.6cm, ylabel={$T_\mathrm{bubble}$ [K]},
                  title={\textbf{Fit study}, 101.3 kPa, 32 points},
                  ymin=327, ymax=338.5, xmin=0, xmax=1,
                  legend style={at={(0.97,0.97)}, anchor=north east, font=\tiny,
@@ -785,7 +981,7 @@ division of responsibilities is the point.
       table[col sep=comma, x index=0, y index=1] {data/exp_fitset_acetone_methanol.csv};
     \addlegendentry{measured, FIT set}
   % --- top right: held-out study, 100 kPa
-  \nextgroupplot[height=4.9cm,
+  \nextgroupplot[height=4.6cm,
                  title={\textbf{Held-out study}, 100 kPa, 30 points},
                  ymin=327, ymax=338.5, xmin=0, xmax=1,
                  legend style={at={(0.97,0.97)}, anchor=north east, font=\tiny,
@@ -1075,7 +1271,7 @@ heat, so there is no scale to divide by.
 % residual_basis "UNAVAILABLE -- this plant declares no duty and carries no
 % boundary heat"); src/core/DivergenceSummary.H:80; AdvisorySummary.H:177.
 
-\Needspace{26\baselineskip}
+\Needspace{18\baselineskip}
 \begin{lstlisting}[caption={Excerpt of the run log of the flash
   (\texttt{verbosity 3}); elided lines marked \texttt{[...]}.},label=lst:log,
   breaklines=true, breakindent=0pt]
@@ -1343,7 +1539,7 @@ last digit would suggest one had been tuned to the other.
 % ate parecia ajuste forcado").
 
 \begin{table}[htbp]
-\centering\footnotesize
+\centering\scriptsize
 \caption{Methanol--acetone pressure swing: the reference's stored state
 against two Choupo runs (its own regressed NRTL pair; predictive UNIFAC).
 The reference's stored state closes its material balance to $+0.14$~\% and
@@ -1527,6 +1723,11 @@ content.  Copyright in Choupo belongs to its named human contributors.
 % CLAUDE.md sec 1 (assistance under human curation; copyright to the named
 % human contributors); sec 10 (no model identifier in the tree).
 
+\renewcommand{\bibfont}{\footnotesize}
+\setlength{\bibsep}{2pt}
+\bibliographystyle{unsrtnat}
+\bibliography{../paper,whitepaper}
+
 %===============================================================================
 \appendix
 \section{Gate inventory: the classes behind the examples}
@@ -1596,9 +1797,5 @@ Code that builds natively and not for the browser &
 \end{tabularx}
 \end{table}
 
-\renewcommand{\bibfont}{\footnotesize}
-\setlength{\bibsep}{2pt}
-\bibliographystyle{unsrtnat}
-\bibliography{../paper,whitepaper}
 
 \end{document}
