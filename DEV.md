@@ -1546,7 +1546,10 @@ accepts today, and that is a policy call.
 > "frequentist" anywhere in the lesson, and a visual of the posterior
 > narrowing.  Scope is pedagogy, so the brief goes to Vitor before
 > dispatch; the engine op already publishes every number the three
-> panels need (the `honest`, `drifted` and `driftedWithout` runs).
+> panels need (`system/propsDict`: the `honest` run is the classical
+> AND the flat-prior panel -- same flows, its `sigmaReconciled_*` the
+> posterior widths -- and the `yesterday` run is the informative one;
+> `drifted`/`driftedWithout` are the gross-error runs).
 > Order on Saturday: with C136, after the C124 validation (C131 note).
 
 > **C136. AN EDUTOOL ON SECONDARY CONTAINMENT -- BUND DESIGN IN A CHEMICAL
