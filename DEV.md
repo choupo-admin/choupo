@@ -1432,6 +1432,28 @@ accepts today, and that is a policy call.
 > redone once Vitor decides the frame (he is consulting a second
 > opinion).  The forum already launched on the draft runs to completion
 > as evidence on whether the frame works.
+> **The forum (7 cold readers, all "thesis landed: partly")** agreed:
+> replace the gate inventory with a worked, reproducible example; say what
+> Choupo models today; the readers' favourite parts were the visible
+> Newton log and the Duhem refusal -- Choupo itself, not the AI frame.
+> **FRAME DECIDED (Vitor, with a second opinion):** title "Choupo: an
+> open-source chemical process simulator for education and research";
+> glass-box defined in the abstract by observable properties; the AI
+> response IN the introduction as part of the philosophy (with the
+> positive opportunity, its pedagogical effect a goal to evaluate, and
+> never "auditing is what remains to the student"); sections: motivation
+> and philosophy, current scope, architecture (OpenFOAM as a mapping
+> table + non-affiliation), thermophysical data, verification and
+> validation (each gate's concrete reach; the inventory to an appendix),
+> representative examples (simple, integrated with recycle, research),
+> discussion, availability; the centrepiece a property-curation example
+> showing who does what (user, agent, engine, interface), including a
+> candidate that fits the training data and fails the test; three
+> figures from real runs.  The open-simulator comparison STAYS (Vitor:
+> "vai ficar porque nos vamos resolver os problemas que viste") with
+> cited-version / in-integration / future kept apart.  Two coordinated
+> documents (JOSS short + this full article), both tied to a version.
+> Sent to G29 (v2).
 
 > **C125. WHY THE BREAKTHROUGH PAGES ARE SLOW (Vitor, 2026-10-21: "Porque
 > isto e tao lento? breakthrough e do lub-scaleup").**  Measured by the
