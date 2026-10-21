@@ -1954,7 +1954,14 @@ accepts today, and that is a policy call.
 > (case, row, old, new, rel, commit), put to Vitor.  Three sabotages
 > caught.  Still on the branch (G28): the README / Theory Guide
 > sentences naming V_0 = 0 as the total condenser, and a
-> partial-condenser witness (column18).
+> partial-condenser witness (column18) -- BOTH DONE the same morning
+> (3d0e37d78): the README, the Theory Guide's full-MESH section and its
+> sensor worked example say the condenser-type rule, the tutorials guide
+> regenerated, both PDFs rebuilt and read back; `column18_partial_
+> condenser` is column01 under `condenser { type partial; }` (x_D equal,
+> vapour distillate at 355.69 K, Q_cond -870.34 vs -1291.11 kW, first
+> law 0 in both), 32 new rows recorded on the new case only.  The branch
+> is ready; it lands the day Vitor approves the 239 rows.
 
 
 > **C122. INTEGRATION TOOLING AND A SITE SMOKE TEST (Vitor, 2026-10-20,
