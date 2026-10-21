@@ -81,6 +81,13 @@ export interface WitnessOutput {
   readonly file: string;
   /** Which test files read it -- documentation for the reader of a refusal. */
   readonly readBy: readonly string[];
+  /** The run's STDOUT is the output (written to `file` by the setup), for a
+   *  result the engine publishes only there -- the structured result block
+   *  between its `<<<Choupo:result-...>>>` markers, which no binary writes
+   *  to disk.  `file` must then be a `log.choupo<App>` name: gitignored by
+   *  the root `.gitignore`'s `log.choupo*` rule under tutorials/ and kept out
+   *  of the GUI bundle by the glob's `log.*` exclusion, like every run log. */
+  readonly stdout?: true;
 }
 
 /** THE list.  Add an entry here, not a `readFileSync` in a test. */
@@ -203,6 +210,20 @@ export const WITNESS_OUTPUTS: readonly WitnessOutput[] = [
     file,
     readBy: ["dataReconciliationLesson.test.ts"],
   })),
+  //  The Explorer's phase-split lens (C118 stage 2): the scan's CSV and the
+  //  run's stdout, whose result block (`phaseSplitScans`) the adapter reads
+  //  -- the test holds the block's shaping to the CSV of the same run.
+  {
+    caseDir: "tutorials/props/thermo/phaseSplit01_freeze_water_ethanol",
+    file: "freeze.csv",
+    readBy: ["phaseSplitScan.test.ts"],
+  },
+  {
+    caseDir: "tutorials/props/thermo/phaseSplit01_freeze_water_ethanol",
+    file: "log.choupoProps",
+    readBy: ["phaseSplitScan.test.ts"],
+    stdout: true,
+  },
 ];
 
 /** What `witnessSetup.ts` found for each declared output, keyed by

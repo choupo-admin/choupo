@@ -346,6 +346,75 @@ opens the Theory Guide's section on what is fittable and what is not
 residual here is evidence about; the view's own \emph{How to read this
 view} link opens this section.
 
+\subsection{Phase split along $T$ or $P$ ($V$ / $L$ / $S$, pH)}\label{sec:explorer-phase-split}
+% Verified against gui/src/case/phaseSplitScan.ts (the plan: one
+% phaseSplitScan op; the synthesised package, gammaPhi without a crystal,
+% the C3 `phases ( )` declaration with one; the open case's constant/
+% verbatim; the composition sent as typed; the series readers: a refused
+% point is null, an absent phase 0), gui/src/adapters/phaseSplitPayload.ts
+% (the block's types), gui/src/case/exploreViews.ts (offered for 2+
+% VLE-able components or 2+ components of the open case's system),
+% gui/src/case/exploreTheory.ts (F1 -> ch:flash), gui/src/ui/explore/
+% PhaseSplitLens.tsx, src/propertyOps/PhaseSplitScan.{H,cpp} (the op, its
+% block, its events, its normalisation sentence) and the witness
+% tutorials/props/thermo/phaseSplit01_freeze_water_ethanol.
+Pick two or more components the engine can flash --- every one carrying a
+vapour pressure, or all of them components of the open case's own
+thermophysical system --- and the \textbf{phase split} lens appears.  It
+answers \emph{``what exists at this temperature, and how much?''} for ONE
+feed: you give the overall composition in moles, hold $P$ (or $T$) and move
+$T$ (or $P$) over a range, and at every grid point the engine solves the
+whole phase split through the flash unit's own solver --- vapour, one or two
+liquids, every crystallising solid a record declares, minerals precipitating
+where the package speciates.  The overall composition stays fixed; what
+moves is how it is shared between the phases.  Cooling a water--ethanol
+liquor from $0$ to $-20\,^\circ\mathrm{C}$ shows the freeze-concentration
+lesson: one liquid, then ice appearing between $-8$ and $-9\,^\circ\mathrm{C}$ (a 90/10 molar feed under the curated NRTL pair), then the
+liquor growing richer in ethanol as more water leaves as ice.
+
+On the left: the \textbf{thermophysical system}.  \emph{Built here} is a
+molecular package over the set --- the liquid's activity model (ideal, NRTL,
+Wilson, UNIFAC; under NRTL and Wilson the panel says which pairs a curated
+record covers) and, for each component whose record declares an enthalpy of
+fusion and a fusion temperature, a box to let its pure solid crystallise.
+With a crystal ticked the engine solves liquid $+$ solid with no vapour (a
+solid beside a vapour is not solved yet), so the phase set is not offered.
+\emph{The open case's} sends the open case's \code{constant/} tree as
+written, its chemistry included --- the route by which pH and precipitates
+reach the lens, since the package built here does not speciate.  Below: the
+\textbf{feed} in moles (sent as typed; the engine normalises it to one mole
+and says so in its own words), the swept variable with its held value, the
+range and the number of points, and the flash unit's own phase-set word
+(\code{VL}, \code{LL}, \code{VLLE}, \code{auto}); for the last three the
+package built here declares two liquids sharing the one activity model, since
+the flash refuses to split a liquid it was given only one of.
+
+On the right: the amount of every phase in mol per mol of feed as
+\textbf{stacked bars at the grid points} --- the engine's amounts placed on
+top of each other, summing to one at every solved point; nothing is drawn
+between two grid points.  A phase that \textbf{appears or disappears} is
+marked by a shaded band spanning the two grid values the engine says the
+change lies between: the boundary is somewhere inside that band, and the
+view does not claim to know where.  Below: \textbf{pH} in its own panel where
+the engine published one (otherwise a sentence saying it did not), and the
+\textbf{composition} of a chosen phase, with a gap where that phase is
+absent.  Then the engine's own sentences: the events, every
+\textbf{refused point} with its reason (a gap in every figure, never a
+neighbour's value), the record-level announcements at the first point that
+raised each (a vapour pressure extrapolated below its fitted window, a pair
+used outside its span), and what the scan does not model.
+
+\emph{What it computes: nothing physical.}  One \code{choupoProps} run of
+one \code{phaseSplitScan} operation; every number on screen is a number of
+its \code{phaseSplitScans} result block.  \emph{What it cannot show:} a
+solid no record declares.  An excipient solidifies here only where its
+record carries the crystal's data --- \code{sucrose.dat} has no enthalpy of
+fusion, so sucrose never crystallises in this view --- and nucleation and
+supercooling are not modelled (every point is the equilibrium state).
+\textbf{F1} (or the book icon) opens the Theory Guide's isothermal flash
+(\code{ch:flash}), the calculation solved at every point; the view's own
+\emph{How to read this view} link opens this section.
+
 \section{Provenance and honesty rules}
 
 The Explorer inherits the project's credo:

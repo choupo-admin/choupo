@@ -10,6 +10,7 @@
 
 import { metaByName, type ComponentMeta } from "./catalogue.js";
 import { evidenceForPair } from "./evidence.js";
+import { caseRouteApplies } from "./phaseSplitScan.js";
 import { gibbsMapApplies } from "./gibbsMapSpec.js";
 import { buildLocalUnifac, hasUnifacGroups } from "./unifacGroups.js";
 
@@ -46,10 +47,15 @@ import { buildLocalUnifac, hasUnifacGroups } from "./unifacGroups.js";
 // what each model says it is), offered only where some tier -- a bundled
 // tutorial, data/local, the open case -- actually carries a dataset for the
 // pair; a lens whose only possible outcome is "no evidence" is not offered.
+//
+// "phaseSplit" JOINED 2026-10-21 (DEV.md 4c C118 stage 2): the phase split of
+// ONE feed swept along T or P -- what EXISTS at each state, and how much.  A
+// property surface by the same criterion (what a system IS at a state), and
+// not a method construction: the student draws nothing on it.
 export const PLOT_KINDS = [
   "scan", "txy", "yx", "gamma", "binaryLle", "ternary",
   "ternaryLle", "phase", "scaling", "steam", "gibbsmap", "bjerrum",
-  "solubility", "evidence",
+  "solubility", "evidence", "phaseSplit",
 ] as const;
 export type PlotKind = (typeof PLOT_KINDS)[number];
 
@@ -118,6 +124,11 @@ export function viewsFor(sel: string[], cat: ComponentMeta[],
   //  data delta is derived from -- which is why it reaches parts of the
   //  catalogue every other multi-component study cannot.
   if (n >= 2 && metas.every((m) => m?.deltaAble ?? false)) out.add("solubility");
+  //  Phase split: the engine flashes the set -- every component VLE-able (the
+  //  lens builds a molecular package, and a crystal only where a record
+  //  declares one), or the open case declaring a thermophysical system over
+  //  the whole set (its chemistry, pH and precipitates included).
+  if (n >= 2 && (allVle || caseRouteApplies(sel, caseRaw))) out.add("phaseSplit");
   if (n === 2 && allUnifac) out.add("binaryLle");            // immiscibility instrument
   if (n === 3 && vleMix && allVle) out.add("ternary");
   if (n === 3 && vleMix && allVle && allUnifac) out.add("ternaryLle");

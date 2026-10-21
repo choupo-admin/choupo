@@ -35,6 +35,7 @@ License
 \*---------------------------------------------------------------------------*/
 
 import type { GmpBuilding } from "./buildingPayload.js";
+import type { PhaseSplitScanBlock } from "./phaseSplitPayload.js";
 import type { CaseFiles } from "../case/types.js";
 import type { DynamicInstants } from "../case/dynamicInstants.js";
 
@@ -687,6 +688,11 @@ export interface RunResult {
    *  Absent unless the case declares one; the GUI draws it and computes
    *  nothing. */
   building?: GmpBuilding;
+  /** The phase splits a choupoProps `phaseSplitScan` published (DEV.md 4c
+   *  C118): per point the amount and composition of every phase, pH where the
+   *  package speciates, refused points by name, the appearance events.  Read
+   *  by the Explorer's phase-split lens; absent when no such op ran. */
+  phaseSplitScans?: PhaseSplitScanBlock[];
 }
 
 /** One hazardous-area zone envelope: a vertical cylinder about the item's

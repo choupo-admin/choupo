@@ -74,6 +74,7 @@ export function theoryAnchor(plotType: PlotKind, property: string): string {
     //  in-simulator regression) is the one that says what a residual here
     //  is evidence about.
     case "evidence": return "ch:fittable";
+    case "phaseSplit": return "ch:flash";   // one isothermal flash per grid point
     case "scan":                             // the property IS the subject here
     default:
       if (property === "Psat") return "ch:vap";
