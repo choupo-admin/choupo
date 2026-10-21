@@ -1587,7 +1587,16 @@ accepts today, and that is a policy call.
 > (Choupo's `PR` with the 1978 m(omega) branch at omega > 0.491, which
 > the engine must state it has, or gain), kij from the 2010 table at each
 > unit's declared T (route P); the corpus `cavett01` stays SRK and
-> untouched.  A, D and E dispatched (G32).
+> untouched.  A, D and E dispatched (G32).  **And the 1978 branch is the
+> PR model, not an option (Vitor, same hour: "Nao e melhor fazer o ramo
+> de 1978 para omega > 0.491?!").**  Measured before answering: the
+> corpus declares PR in three cases (scan2d01, envelope01, envelope02)
+> and every component in them has omega < 0.4911, so making the
+> two-branch m(omega) of Robinson & Peng 1978 the model moves no golden;
+> the branch is announced per component it applies to; the Theory Guide's
+> cubic-EoS chapter, docs/ai and the lesson citations into PR.cpp follow
+> in the same slice (the guides-and-F1 rule), with a gate arm that
+> recomputes kappa above 0.491.  Sent to G32.
 > pair; an LLE pair for C if UNIFAC does not split; D's outlet-temperature
 > PFR mode) put to Vitor.
 > **B and C BUILT 2026-10-21 (G26, `claude/c123-benchmarks-bc` 33e277ca2).**
