@@ -1853,6 +1853,12 @@ accepts today, and that is a policy call.
 > The in-case `Props` workspace (`PropsView.tsx`, 1531 lines: thermo
 > readiness and model-vs-lab-data comparison for THE OPEN CASE) is a
 > different question and stays.  Status: proposed, awaiting Vitor.
+> **APPROVED 2026-10-21** -- Vitor on the live site (Choupo-dev 9eea053e):
+> "ainda vejo: explorer e property surfaces!!!!!!!!".  The proposal had
+> sat as "awaiting Vitor" while the commander's own notes already planned
+> it after C117: a proposal nobody puts back to its owner is a request
+> dropped.  Dispatched to G18b, on top of its C117 head (the Evidence view
+> lives in the same tab), as soon as C117 is handed back.
 
 > **C115. THE UNIT BEING SOLVED PULSES WHEN A RUN IS SLOW (Vitor,
 > 2026-10-20: "ha casos em que a simulacao fica lenta ... a operacao
