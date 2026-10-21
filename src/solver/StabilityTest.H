@@ -53,9 +53,17 @@ Description
 
         Y_i^{m+1}    = exp(h_i - ln γ_i(y^{m}) )
         y^{m+1}      = Y^{m+1} / Σ Y^{m+1}
-        tm           = 1 + Σ Y_i (ln Y_i - 1 ) - Σ Y_i · h_i
+        tm(Y)        = 1 + Σ Y_i (ln Y_i + ln γ_i(y) - h_i - 1)
 
         converged → check  ΣY > 1  (or tm < 0  for stability decision)
+
+    The ln γ_i(y) term is the test: without it tm is -g^E(y)/RT at the
+    trivial point Y = z, and every liquid with a positive excess Gibbs
+    energy reads "unstable" (DEV.md 4c C123, finding 5 -- this formula
+    was written here, and computed, without it).  The trajectory minimum
+    of the TRUE tm is kept over every iterate visited: a Y with tm < 0 is
+    a proof of instability whether or not the iteration then drifts back
+    to the trivial point.
 
     For multi-component, runs one probe per pure-component starting
     point and keeps the most stable (lowest tm) one.

@@ -35,6 +35,7 @@ License
 #include "solver/NewtonND.H"
 #include "solver/NewtonRaphson.H"
 #include "solver/StabilityTest.H"
+#include "unitOperations/flash/LiquidLiquidSplit.H"
 #include "unitOperations/flash/IncipientPhase.H"
 #include "solver/Wegstein.H"
 
@@ -43,6 +44,7 @@ License
 #include <iostream>
 #include <limits>
 #include <memory>
+#include <sstream>
 #include <stdexcept>
 #include "streams/SpeciationBlock.H"
 #include "unitOperations/flash/StreamEquilibrium.H"
@@ -654,10 +656,9 @@ IsothermalFlash::solveCore(const FlashInput&    in,
             return G;
         };
 
-        // Reference: Gibbs of staying in a single phase at the feed.
-        // If the multi-start NM cannot find anything below this, we
-        // declare the feed stable (TPD said unstable, but the basin
-        // it pointed to may have collapsed by direct minimisation).
+        // Reference: Gibbs of staying in a single phase at the feed.  The
+        // TPD has PROVED a state below it exists; a minimisation that finds
+        // nothing below it has failed (see the refusal after the starts).
         scalar gFeed = INFEASIBLE_PENALTY;
         {
             auto gZ = thermo.phase(phaseAlpha).activityCoefficients(in.T, in.z);
@@ -670,8 +671,43 @@ IsothermalFlash::solveCore(const FlashInput&    in,
             }
         }
 
-        // Multi-start: 4 simplexes that bracket the symmetric LL
-        // landscape from different basins.
+        // A WARM START (FlashOptions::llWarmK), accepted only when both
+        // liquids it reaches pass the stability test -- then it IS the stable
+        // two-liquid answer and the minimisation would add nothing.
+        if (opts.llWarmK.size() == n)
+        {
+            auto warm = llSplit::splitFromK(thermo.phase(phaseAlpha),
+                                            thermo.phase(phaseBeta), in.T, in.z,
+                                            act, opts.llWarmK, gFeed);
+            if (warm.accepted
+                && !solver::michelsenTPD(thermo.phase(phaseAlpha), in.T, in.P, warm.xA).unstable
+                && !solver::michelsenTPD(thermo.phase(phaseAlpha), in.T, in.P, warm.xB).unstable)
+            {
+                llSplit::labelByHints(iA, iB, warm.beta, warm.xA, warm.xB);
+                sol.regime       = "two-phase liquid (LL from the previous answer, both liquids stable)";
+                sol.liquidLiquid = true;
+                sol.V_over_F     = warm.beta;
+                sol.x            = warm.xA;
+                sol.y            = warm.xB;
+                sol.K            = thermo.Kvec_phases(phaseAlpha, phaseBeta,
+                                                      in.T, in.P, warm.xA, warm.xB);
+                sol.iterations   = warm.iterations;
+                sol.residual     = warm.residual;
+                sol.converged    = true;
+                return sol;
+            }
+        }
+
+        // Multi-start.  THE STARTS DO NOT DEPEND ON WHICH HINT IS WHICH
+        // (DEV.md 4c C123, finding 3).  Three of the four used to be biased
+        // toward `alphaRich` alone, so the same feed split with one hint
+        // order and returned ONE liquid with the other.  The starts are now
+        // built from the PAIR of hinted components in INDEX order (the same
+        // four as before when alphaRich precedes betaRich), plus two seeded
+        // by the stability test's own incipient phase -- Michelsen's
+        // practice: the TPD minimum IS the second liquid's first estimate.
+        // The hints decide only which of the two liquids is called alpha,
+        // on the answer (llSplit::labelByHints, below).
         std::vector<sVector> starts;
         auto pushStart = [&](scalar betaG, std::size_t richPos) {
             sVector s(nA, 0.0);
@@ -688,13 +724,47 @@ IsothermalFlash::solveCore(const FlashInput&    in,
             }
             starts.push_back(s);
         };
+        const std::size_t iLo = std::min(iA, iB), iHi = std::max(iA, iB);
+        pushStart(0.50, posInAct(iLo));
+        pushStart(0.50, posInAct(iHi));
+        pushStart(0.25, posInAct(iLo));
+        pushStart(0.75, posInAct(iLo));
 
-        // Pure-iA and pure-iB biased starts at β = 0.5, plus their
-        // β = 0.25 and β = 0.75 variants (rich component -> its active slot).
-        pushStart(0.50, posInAct(iA));
-        pushStart(0.50, posInAct(iB));
-        pushStart(0.25, posInAct(iA));
-        pushStart(0.75, posInAct(iA));
+        //  The incipient phase w as liquid beta, the other from the mass
+        //  balance -- at a beta small enough that the start already lies
+        //  below the feed's Gibbs energy (tm < 0 guarantees it for beta -> 0)
+        //  and at half the largest admissible beta.
+        {
+            sVector w(n, 0.0);
+            scalar sw = 0.0;
+            for (std::size_t i : act)
+                if (i < stab.trialY.size()) { w[i] = std::max<scalar>(stab.trialY[i], 1.0e-9); sw += w[i]; }
+            if (sw > 0.0)
+            {
+                for (std::size_t i : act) w[i] /= sw;
+                scalar betaMax = 1.0;
+                for (std::size_t i : act)
+                    if (w[i] > in.z[i]) betaMax = std::min(betaMax, in.z[i] / w[i]);
+                for (scalar frac : { 0.5, 0.02 })
+                {
+                    const scalar b = frac * betaMax;
+                    if (!(b > 1.0e-6 && b < 1.0 - 1.0e-6)) continue;
+                    sVector other(n, 0.0);
+                    bool ok = true;
+                    for (std::size_t i : act)
+                    {
+                        other[i] = (in.z[i] - b * w[i]) / (1.0 - b);
+                        if (!(other[i] > 1.0e-6)) ok = false;
+                    }
+                    if (!ok) continue;
+                    sVector sB(nA, 0.0);
+                    sB[0] = b;           // w is liquid beta
+                    for (std::size_t a = 0; a < nA - 1; ++a)
+                        sB[1 + a] = other[act[a]];
+                    starts.push_back(sB);
+                }
+            }
+        }
 
         // Bounds
         sVector lo(nA, 1.0e-4), hi(nA, 1.0 - 1.0e-4);
@@ -736,23 +806,75 @@ IsothermalFlash::solveCore(const FlashInput&    in,
                       << "  ΔG = G_LL − G_z: " << (bestG - gFeed) << "\n\n";
         }
 
-        // If the best LL configuration has G higher than feed, the
-        // TPD detected a weak instability that the Gibbs landscape
-        // does not actually realise (numerical or model artifact);
-        // fall back to single-phase.
+        // THE TPD SAID UNSTABLE, so a two-liquid state below the feed's
+        // Gibbs energy EXISTS (tm < 0 is a proof, not a hint).  A minimiser
+        // that finds none has FAILED to find it -- it has not found that the
+        // feed is stable.  Its box keeps every liquid-alpha mole fraction
+        // above 1e-4, so a feed with a component below that may have no
+        // admissible split near its answer; Michelsen's own route from the
+        // incipient phase has no box (llSplit::splitFromIncipientPhase).
+        // If that fails too, the answer is NOT converged.  This used to
+        // return "single liquid" with converged = true, which every caller
+        // published as the answer (DEV.md 4c C123, finding 3).
+        llSplit::Polished viaTpd;
         if (!(bestG < gFeed - 1.0e-10))
         {
-            sol.regime    = "single liquid (Gibbs min finds no improvement over feed)";
+            sVector w(n, 0.0);
+            for (std::size_t i : act)
+                if (i < stab.trialY.size()) w[i] = stab.trialY[i];
+            viaTpd = llSplit::splitFromIncipientPhase(
+                thermo.phase(phaseAlpha), thermo.phase(phaseBeta), in.T, in.z,
+                act, w, gFeed);
+            if (opts.verbosity >= 3)
+                std::cout << "  the minimisation found nothing below the feed;"
+                             " Michelsen's route from the incipient phase: "
+                          << (viaTpd.accepted ? std::string("split found")
+                                              : "no split -- " + viaTpd.reason)
+                          << "\n";
+        }
+        if (!(bestG < gFeed - 1.0e-10) && !viaTpd.accepted)
+        {
+            std::ostringstream m;
+            m << "LL flash: the stability test found this feed UNSTABLE as one"
+                 " liquid (tm = " << std::scientific << std::setprecision(3)
+              << stab.tmMin << ") and the Gibbs minimisation found no two-liquid"
+                 " state below it -- the split was NOT found, so no answer is"
+                 " published as one";
+            sol.regime    = m.str();
             sol.V_over_F  = 0.0;
             sol.x         = in.z;
             sol.y.assign(n, 0.0);
             sol.K.assign(n, 1.0);
-            sol.converged = true;
+            sol.converged = false;
+            if (opts.verbosity >= 1) std::cerr << "WARNING: " << m.str() << ".\n";
             return sol;
         }
 
         scalar betaFinal; sVector xA, xB;
-        unpack(bestV, betaFinal, xA, xB);
+        if (!viaTpd.accepted) unpack(bestV, betaFinal, xA, xB);
+
+        // GIBBS DECIDED, THE NEWTON SOLVES: equal activities from the
+        // minimisation's basin to 1e-12 (llSplit::polishEqualActivity).
+        const auto pol = viaTpd.accepted ? viaTpd
+            : llSplit::polishEqualActivity(
+                thermo.phase(phaseAlpha), thermo.phase(phaseBeta), in.T, in.z,
+                act, betaFinal, xA, xB, bestG);
+        if (pol.accepted)
+        {
+            betaFinal = pol.beta; xA = pol.xA; xB = pol.xB;
+        }
+        if (opts.verbosity >= 3)
+            std::cout << "  equal-activity Newton: "
+                      << (pol.accepted ? "converged" : "NOT accepted -- " + pol.reason
+                                         + "; the minimisation's answer stands")
+                      << " (max |ln a_alpha - ln a_beta| " << std::scientific
+                      << std::setprecision(3) << pol.residual0
+                      << " where the minimisation stopped, " << pol.residual
+                      << " after " << pol.iterations << " Newton iterations)\n"
+                      << std::defaultfloat;
+
+        // The hints NAME the two liquids; they never choose them.
+        llSplit::labelByHints(iA, iB, betaFinal, xA, xB);
 
         // ---- TPD on the CONVERGED phases (advisory, 2026-07-25) ----------
         //  Multi-start minimisation reduces the local-minimum risk but does
@@ -776,7 +898,9 @@ IsothermalFlash::solveCore(const FlashInput&    in,
         tpdAdvisory("L-alpha", xA);
         tpdAdvisory("L-beta",  xB);
 
-        sol.regime     = "two-phase liquid (LL via Gibbs minimisation)";
+        sol.regime     = viaTpd.accepted
+            ? "two-phase liquid (LL via the stability test's incipient phase)"
+            : "two-phase liquid (LL via Gibbs minimisation)";
         sol.liquidLiquid = true;
         sol.V_over_F   = betaFinal;
         sol.x          = xA;
@@ -784,8 +908,12 @@ IsothermalFlash::solveCore(const FlashInput&    in,
         sol.K          = thermo.Kvec_phases(phaseAlpha, phaseBeta,
                                             in.T, in.P, xA, xB);
         sol.iterations = totalEvals;
-        sol.residual   = bestG;
-        sol.converged  = bestConv;
+        sol.residual   = pol.accepted ? pol.residual : bestG;
+        sol.converged  = pol.accepted || bestConv;
+        if (!sol.converged)
+            sol.regime = "two-phase liquid (LL), NOT converged: the Gibbs"
+                         " minimisation stopped at its iteration cap and the"
+                         " equal-activity Newton was not accepted (" + pol.reason + ")";
         return sol;
     }
 
@@ -1759,6 +1887,20 @@ int IsothermalFlash::solve(const DictPtr& dict,
     }
 
     auto sol = solveCore(in, thermo, opts);
+    //  AN LL FLASH WITH NO ANSWER SAYS WHY (DEV.md 4c C123, finding 3) --
+    //  the flowsheet turns a non-zero return into "failed to converge" and
+    //  a recycle's quiet passes print nothing, so the reason would be lost
+    //  exactly where it is needed (the Mixer's posture).
+    if (opts.phaseSet == PhaseSet::LL && !sol.converged)
+    {
+        std::ostringstream m;
+        m << "isothermalFlash (phaseSet LL) at T = " << in.T << " K: "
+          << sol.regime << ".\n  Feed:";
+        for (std::size_t i = 0; i < thermo.n(); ++i)
+            m << "  " << thermo.comp(i).name() << " " << std::setprecision(6)
+              << in.z[i];
+        throw std::runtime_error(m.str());
+    }
     //  THE OPERATING RESOLUTION READS THE SAME RULE AS THE FEED'S (C34).  A
     //  drum OPERATED above every present component's Tc would otherwise
     //  publish a liquid product that cannot exist (DEV.md §5, 2026-09-26,
