@@ -432,6 +432,22 @@ strengthened):
       junction, not as indoor piping.
   S48 the access record no longer skips an item indoors                 -> (o)
       "an access record for `SD`, which stands indoors" (and six more).
+  C134 (secondary containment), 2026-10-21, by hand, each on a rebuilt
+  engine (PlantLayout.cpp restored by copy and rebuilt after), arm (p):
+  S49 the displaced volume dropped (net = gross)                        -> (p)
+      "displaced/net 9248/29920 m3; recomputed 9248.0/20672.0" (and the two
+      fixtures).
+  S50 the unbunded announcement disarmed                                -> (p)
+      each of the five liquid holders "must be announced `unbundedLiquid`".
+  S51 a listed item outside the wall no longer refused                  -> (p)
+      the run is refused for another reason that does not NAME the outside
+      item -- caught by the needle, not by the exit code.
+  S52 a lying cylinder displaces its bounding box                       -> (p)
+      2334.47 m3 against the segments' 1681.47 recomputed here.
+  S53 a pipe through a wall tested ABOVE its top                        -> (p)
+      the 0.1 m route through the kerb announces nothing.
+  S54 a depth allowance over the catch area only (the pit dropped)      -> (p)
+      "allowance rain 9.6 m3; 0.05 m over 204.0 m2 gives 10.2".
 """
 import json
 import re

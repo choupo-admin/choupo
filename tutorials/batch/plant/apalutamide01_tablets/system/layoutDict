@@ -47,11 +47,15 @@
   and insurance spacing guides) grant no redistribution, and a citation
   invented for a round number would turn "unsourced" into "falsely sourced".
 
-  THE BUND.  The two tanks stand in one bund -- a low wall round the farm
-  that holds a spill.  The plot plan has no bund item (a wall round two
-  items would overlap both), so it is said here and in the tanks' reasons:
-  its capacity (at least the larger tank, plus rainwater) is the group's to
-  size.
+  THE BUND.  The two tanks are meant to stand in one bund -- a low wall
+  round the farm that holds a spill.  A bund is a DECLARED REGION of this
+  file since DEV.md 4c C134 (`bunds ( { name; kind bund; items ( ... );
+  region { ... } wall { height; } capacityRule { ... } drain; ... } )`,
+  held by the engine to the capacity rule the case states and cites), and
+  none is declared here: the run ANNOUNCES both tanks as liquid stores no
+  containment encloses (`unbundedLiquid`).  Declaring it -- its wall, its
+  rule (at least the larger tank, plus rainwater) and its source -- is the
+  group's.
 
   ONE FINDING IS LEFT ON PURPOSE: the site has ONE entrance (`singleEntrance`,
   read the README, section 7).  And one question the engine does NOT check,

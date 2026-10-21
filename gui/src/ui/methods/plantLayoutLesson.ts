@@ -147,9 +147,9 @@ export const PLANT_LAYOUT_STEPS: readonly LessonStep[] = [
       + "size from are listed at PlantLayout.cpp:200-203, keyed on the KEYS a "
       + "sizer published, never on its kind word; the items never placed on "
       + "their own at PlantLayout.cpp:211; the box declared on an item with "
-      + "its own size refused at PlantLayout.cpp:3071; and an item with no size "
+      + "its own size refused at PlantLayout.cpp:3788; and an item with no size "
       + "and no declared box refused, with no size invented, at "
-      + "PlantLayout.cpp:3083.",
+      + "PlantLayout.cpp:3800.",
   },
 
   // ---- Part 2: separation distances ---------------------------------------
@@ -185,7 +185,7 @@ export const PLANT_LAYOUT_STEPS: readonly LessonStep[] = [
     note: "The edge-to-edge distance of two standing cylinders: "
       + "src/postProcessing/layout/PlantLayout.cpp:139.  Which of the two the "
       + "check uses is read from the table's measure word at "
-      + "PlantLayout.cpp:3248-3250, and a table that does not declare one is "
+      + "PlantLayout.cpp:3965-3967, and a table that does not declare one is "
       + "refused at PlantLayout.cpp:267.",
   },
   {
@@ -216,9 +216,9 @@ export const PLANT_LAYOUT_STEPS: readonly LessonStep[] = [
       { sym: "k_b", means: "the kind of item b" },
     ],
     note: "The kind is read from the design sheet at "
-      + "src/postProcessing/layout/PlantLayout.cpp:3064; a pair of kinds "
+      + "src/postProcessing/layout/PlantLayout.cpp:3781; a pair of kinds "
       + "declared twice is refused at PlantLayout.cpp:310; a pair closer than "
-      + "its distance is ANNOUNCED, not refused, at PlantLayout.cpp:3252.",
+      + "its distance is ANNOUNCED, not refused, at PlantLayout.cpp:3969.",
   },
   {
     n: 5,
@@ -284,9 +284,9 @@ export const PLANT_LAYOUT_STEPS: readonly LessonStep[] = [
         + "plan extents", unit: "m" },
     ],
     note: "The draft's gap and position: "
-      + "src/postProcessing/layout/PlantLayout.cpp:3769-3770, then pushed out "
+      + "src/postProcessing/layout/PlantLayout.cpp:4516-4517, then pushed out "
       + "further by every declared separation and rounded UP to the "
-      + "centimetre the file prints (PlantLayout.cpp:3785), so a printed "
+      + "centimetre the file prints (PlantLayout.cpp:4532), so a printed "
       + "position never sits closer than the rule it was placed by.",
   },
   {
@@ -323,7 +323,7 @@ export const PLANT_LAYOUT_STEPS: readonly LessonStep[] = [
       + "stream and the advisory log that the caveat block and the result "
       + "replay: src/postProcessing/layout/PlantLayout.cpp:83-84; the block's "
       + "heading is src/core/AdvisorySummary.H:117.  The overlap refusal: "
-      + "PlantLayout.cpp:3165-3166.  On the witness the condition puts the drum "
+      + "PlantLayout.cpp:3882-3883.  On the witness the condition puts the drum "
       + "at x of about 61.61 m or more; the bench's x = 62 m clears it.",
   },
   {
@@ -380,9 +380,9 @@ export const PLANT_LAYOUT_STEPS: readonly LessonStep[] = [
         + "checked (reach)", unit: "m" },
     ],
     note: "The downwind direction: src/postProcessing/layout/"
-      + "PlantLayout.cpp:3342; the true bearing and the angle off downwind, "
-      + "taken on the circle between -180 and 180 deg: PlantLayout.cpp:3352-3355; "
-      + "the reach: PlantLayout.cpp:3351.  An angle with no unit is refused at "
+      + "PlantLayout.cpp:4059; the true bearing and the angle off downwind, "
+      + "taken on the circle between -180 and 180 deg: PlantLayout.cpp:4069-4072; "
+      + "the reach: PlantLayout.cpp:4068.  An angle with no unit is refused at "
       + "PlantLayout.cpp:108, and an item's ignition declaration is read at "
       + "PlantLayout.cpp:223.  This is a SECTOR test, not a dispersion model: "
       + "it knows nothing of the gas's density, the release rate or the "
@@ -429,7 +429,7 @@ export const PLANT_LAYOUT_STEPS: readonly LessonStep[] = [
       { sym: "h_\\mathrm{z}", means: "the zone's declared height above that "
         + "base", unit: "m" },
     ],
-    note: "The envelope test: src/postProcessing/layout/PlantLayout.cpp:3318-3321, "
+    note: "The envelope test: src/postProcessing/layout/PlantLayout.cpp:4035-4038, "
       + "with the plan distance from a point to a footprint at "
       + "PlantLayout.cpp:163.  The engine does not classify anything and does "
       + "not ask whether the equipment inside a zone is certified for it: it "
@@ -482,9 +482,9 @@ export const PLANT_LAYOUT_STEPS: readonly LessonStep[] = [
       + "PlantLayout.cpp:991 (the length is the polyline's own).  "
       + "The rack the case declares, or the engine's stated default, which it "
       + "announces: PlantLayout.cpp:995.  The plot: the envelope grown by the "
-      + "margin and its area, PlantLayout.cpp:1730-1732; the footprints' own "
-      + "area, PlantLayout.cpp:1742; an undeclared margin announced, "
-      + "PlantLayout.cpp:1810.",
+      + "margin and its area, PlantLayout.cpp:1748-1750; the footprints' own "
+      + "area, PlantLayout.cpp:1760; an undeclared margin announced, "
+      + "PlantLayout.cpp:1828.",
   },
 ];
 
@@ -503,9 +503,15 @@ export const PLANT_LAYOUT_LIMITS: readonly LessonLimit[] = [
       + "models a steel structure, a floor of a multi-level unit or whether an "
       + "item is supported; the pipe rack is a routing line at a declared "
       + "height, not a structure." },
-  { id: "drainage", title: "No drainage, kerbs or bunds",
-    body: "Where a spill runs, how the ground slopes, and how a tank's bund "
-      + "contains its inventory are not modelled." },
+  { id: "drainage", title: "Bunds are checked for volume, not for drainage",
+    body: "A bund or an impounding area you declare is held to the capacity "
+      + "rule you state (its net volume, the enclosed footprints taken off, "
+      + "against the largest of your terms plus your rain and fire-water "
+      + "allowances), and a liquid store no containment encloses is "
+      + "announced (src/postProcessing/layout/PlantLayout.cpp, readBunds).  "
+      + "Where a spill runs on open ground, how the ground slopes to a drain "
+      + "or a pit, whether the floor is impermeable and how much of the pool "
+      + "evaporates are not modelled." },
   { id: "access", title: "Access is checked only where you declare it",
     body: "Roads are checked when you declare them (a road through an item, "
       + "or under a rack lower than the headroom you declare, is refused; an "
