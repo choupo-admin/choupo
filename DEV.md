@@ -1737,6 +1737,15 @@ accepts today, and that is a policy call.
 > 3D layout's declared-and-checked features by name, and the zero
 > dependencies build (g++ + make, ~370 TUs) with its pedagogical reason.
 > Sent to G31 as v2.1.
+> **v2.1 DRAFTED AND INTEGRATED 2026-10-21 (G31, 97e654f9c):** the four
+> points and the ten omissions in, every added sentence cited by
+> file:line in the source (ParaView named -- Kitware's open-source
+> visualiser, not on the ban list); 16 pages kept by margins and table
+> sizes, no content cut; gates green.  One claim narrowed to what could
+> be cited: the design-sheet provenance words -- the general found
+> `assumed ( ... )` (ColumnSize.H) and the unit on every value, not the
+> `declared / fromUnit / fromRecord` marks (they exist on the exchanger
+> sheet, C124; to widen in the next read).
 
 > **C125. WHY THE BREAKTHROUGH PAGES ARE SLOW (Vitor, 2026-10-21: "Porque
 > isto e tao lento? breakthrough e do lub-scaleup").**  Measured by the
