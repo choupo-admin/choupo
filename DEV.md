@@ -1501,6 +1501,54 @@ accepts today, and that is a policy call.
 > final; }` layout draws what the steady flowsheet and the sizing pass
 > already hold.
 
+> **C137. THE RECONCILIATION EDUTOOL MUST MAKE BAYES VISIBLE AND CENTRAL
+> (Vitor, 2026-10-21, for SATURDAY, a follow-up on C121: "Na realidade,
+> Bayes quase nao se ve na primeira parte do EduTool!  E isso e uma
+> fraqueza pedagogica que eu corrigiria.").**  The point to make
+> central, in his words: "Bayes nao e apenas uma maneira diferente de
+> calcular o mesmo resultado.  E uma maneira de representar e atualizar
+> aquilo que sabemos sobre o estado de um processo."  What he asks:
+> (1) name the three ingredients where the student meets them -- PRIOR
+> (what was known before), LIKELIHOOD (what the meters say), POSTERIOR
+> (what is believed now), p(x|m) proportional to p(m|x) p(x), always
+> under the exact balances; with a flat prior on the admissible flows the
+> MAP estimate IS the weighted least squares sum (m_j - x_j)^2/sigma_j^2.
+> (2) the result is a DISTRIBUTION, not a set of flows: his example, F1
+> read 101.40 +- 2.00 t/h, reconciled 99.53 +- 1.18 t/h (1 sigma, seven
+> meters, four exact balances) -- narrower because the other six meters
+> inform F1 through the balances.  (3) the informative prior: yesterday's
+> estimate with its uncertainty, today's readings and the exact balances
+> combined, the prior widened by an explicit process-evolution
+> uncertainty (a plant that may have moved overnight makes the prior less
+> informative).  (4) say plainly that the global chi-square and the
+> measurement tests are FREQUENTIST, not Bayesian; a Bayesian version
+> would compute P(meter faulty | m) from prior failure probabilities and
+> separate error models for healthy and faulty meters -- NOT required,
+> but the two methods must be told apart.  (5) show THREE results side by
+> side: classical reconciliation (the flows minimising the weighted
+> squares); Bayes with a flat prior (the SAME flows, now with their
+> posterior uncertainties); Bayes with an informative prior (flows and
+> uncertainties both move) -- and make that difference visual.
+> MEASURED against the live tool before recording (main d82dbeed2): his
+> F1 numbers are the engine's own (`reconcile01_recycle_loop/expected`:
+> `reconciled_F1 99.5264184542`, `sigmaReconciled_F1 1.17574378534`;
+> reading `F1 101.4 t/h`).  Much of the CONTENT already exists, which
+> is why the defect is one of PLACEMENT and EMPHASIS, not of physics:
+> the flat-prior/MAP bridge is one step on page 2
+> (`gui/src/ui/methods/dataReconciliationLesson.ts:155`, "The same
+> answer, read as Bayes"), the posterior covariance is page 4 (:373),
+> the non-flat prior and the prior-data conflict are pages 4-5 (:401,
+> :436), with yesterday's prior at 2 % per flow standing for the
+> overnight drift (`constant/plant/yesterday`, its header says the
+> width is a judgement, and that the prior is DIAGONAL by the
+> operation's rule).  ABSENT: the three-way side-by-side comparison, the
+> prior/likelihood/posterior framing at the start, the word
+> "frequentist" anywhere in the lesson, and a visual of the posterior
+> narrowing.  Scope is pedagogy, so the brief goes to Vitor before
+> dispatch; the engine op already publishes every number the three
+> panels need (the `honest`, `drifted` and `driftedWithout` runs).
+> Order on Saturday: with C136, after the C124 validation (C131 note).
+
 > **C136. AN EDUTOOL ON SECONDARY CONTAINMENT -- BUND DESIGN IN A CHEMICAL
 > PLANT (Vitor, 2026-10-21, for SATURDAY: "Regista isto para fazer no
 > Sabado porque e muito importante").**  The lesson, in his words: "Uma
