@@ -1335,6 +1335,14 @@ accepts today, and that is a policy call.
 > the agent workflow (C117), pedagogy, limitations, availability.
 > Drafted by a general (G29) in `paper/whitepaper/`, every claim cited by
 > file:line or commit; Vitor, Pedro and Miguel review and answer for it.
+> **Added by Vitor the same day:** the OpenFOAM analogy (one of the most
+> elegant simulators ever built, C++ with transparent dictionaries) with
+> an explicit statement that Choupo is NOT part of it, nor affiliated
+> with or endorsed by its owners (the trade mark named); and a section
+> presenting the architecture and how Choupo works (three layers, the
+> case directory and dictionaries, five binaries, explicit factories,
+> state directories, the WASM front-end, the visible Newton log).  Sent
+> to G29.
 
 > **C124. A COLUMN'S EXCHANGERS DESIGNED IN DETAIL: CONDENSER, REBOILER,
 > SIDE COOLERS AND PUMPAROUNDS (Vitor, 2026-10-20, after asking whether the
