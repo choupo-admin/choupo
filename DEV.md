@@ -1357,6 +1357,38 @@ accepts today, and that is a policy call.
 > final; }` layout draws what the steady flowsheet and the sizing pass
 > already hold.
 
+> **C131. CONSOLIDATE, THEN REVIEW EVERYTHING AGAINST GOOD PRACTICE AND
+> THE OPEN REFERENCE (Vitor, 2026-10-21, approved: "Concordo, regista
+> como C131 e avanca com a consolidacao").**  Why (measured): six
+> branches await integration (C121 reconciliation, C124 column
+> exchangers, C117 Evidence view, C123 benchmarks B/C, the column and
+> LL-flash fixes), three slices are mid-flight (C123 A/D/E, C128
+> solvent, C116 one Explore), the C125 speed-up is building, and the
+> open-simulator comparison has already found four defects no gate saw
+> (every one exited 0), while 17 first-law pins stay open (cavett01 at
+> 88 %).  PHASE 1, CONSOLIDATE (today and tomorrow): integrate the six,
+> finish the three, land C125, close C129/C130 only on Vitor's scope
+> answers; nothing new opened.  PHASE 2, REVIEW (the rest of the week),
+> one family at a time, a PAIR of generals per family -- one analyses,
+> one refutes -- comparing Choupo's formulation, numerics, limit cases
+> and announcements with the textbooks/articles (the standard of good
+> practice) and with the open reference simulator (a second pair of
+> eyes, cited by commit, nothing copied): (a) thermodynamics -- VLE/LL/
+> VLLE flash, stability, bubble/dew, cubic EoS (PR78, SRK), activity
+> models (NRTL, UNIQUAC, Wilson, UNIFAC), electrolytes; (b) separations
+> -- the column (Wang-Henke, simultaneous MESH, condenser, feeds),
+> absorber/stripper, extractor, crystalliser, membranes; (c) reactors --
+> CSTR, PFR, Gibbs, equilibrium; rate-law reading and units; (d)
+> recycles and convergence -- tears, Wegstein, Newton, stopping
+> criteria, what is published on non-convergence; (e) sizing, costing,
+> economics -- correlations, factors, the cash flow; (f) time-integrated
+> and control -- integrators, ledgers, controllers.  Each pair delivers
+> a short report: same / different and why / wrong / missing, with
+> file:line on both sides; every confirmed defect becomes a witness and
+> a gate; a defect on the reference side is documented and offered
+> upstream.  One family at a time, the machine kept free for the suites;
+> Vitor consulted only on physics or pedagogy decisions.
+
 > **C130. THE INSTRUMENTED FLOWSHEET -- A P&ID LAYER OVER THE PFD (Vitor,
 > 2026-10-21, same night, "isto tambem devia de poder ser feito").**
 > Measured: the control layer exists only in the time-integrated class
