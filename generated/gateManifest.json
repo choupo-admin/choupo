@@ -1215,6 +1215,11 @@
       "exit": 0,
       "claim": "check_ode_block_structure: OK -- the probe (30 cells of 3, ledgers between the cell rows) integrates dense and structured to 3.6e-11 apart, its audit measured exactly 0 outside the structure and between colored and dense bands, 11394 colored evaluations for 1266 Jacobians = the CPR formula, and four false declarations refused by name; batch13 declares 100 blocks of 2, VERIFIED at 0, 89424 evaluations for 14904 Jacobians = the formula, 0 rejected against 14904 accepted steps (warm start from hNext); `jacobian banana;` refused; batch22 (60 s) dense vs structured agree on all 56 KPIs within max(1e-7 rel, 1e-12 abs) (worst at 0.10 of that band).  NOT covered: wall-clock speed, the adsorber goldens (the suite's per-case check), Rosenbrock23 users that declare no structure (dense, untouched).",
       "seconds": 20.7
+    },
+    "check_data_reconciliation": {
+      "exit": 0,
+      "claim": "check_data_reconciliation: OK -- four operations recomputed by a stacked KKT solve over all seven flows (reconciled flows and the whole posterior covariance to 1e-9, unmeasured F3 included), the precision-weighted prior and its conflict, the chi-square global test against its closed form and the printed tables, the Sidak measurement test (flags exactly F3 on the drifted snapshot), the multipliers and the per-balance attribution, the excluded meter's test equal to its in-service test (4.8579), 9 refusals by name, source arm, the EduTool's drift range run at both ends on every meter (14 runs).  NOT checked: a composition or energy balance (not built); a correlated prior (refused by construction); any real plant's data.",
+      "seconds": 0.6
     }
   }
 }
