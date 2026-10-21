@@ -962,6 +962,20 @@ accepts today, and that is a policy call.
 > paper on main, and the PDF for his review.  userOp03's 133 % mass
 > closure is NOT from these branches (none touches the CSTR) -- to
 > diagnose separately.
+> **END OF SESSION 2026-10-21 (Vitor at 2 % usage).**  On main: G28 (the
+> column) and C134 (bunds, 5fdec2479).  G30 + G32: see G37's branch / main
+> log -- if main has no `benchmarks/dwsim/`, redo step 2 from the APPROVED
+> paragraph above.  Papers, each on its own branch, all DRAFT:
+> `claude/c126-gui-figures` (white paper v2.3, 21 pp, browser figures with
+> the bunds, section 6.4 on five cases), `claude/c126-joss-paper`
+> (paper/joss/, 1622 words, DWSIM named), `claude/c126-cace-paper`
+> (paper/cace/, Computers & Chemical Engineering, 29 pp; the guide for
+> authors could not be read -- every journal assumption is a TODO at the
+> top of main.tex).  Merge the three paper branches onto main after G30 +
+> G32 land and the 6.4 numbers are re-read against main.  Still to
+> trace: nine apalutamide01 rows drifting within tolerance after G28, and
+> aceticAcid02's new unpinned `Q_condensate_m3_s` KPI.  Then the compressor
+> refusal and the adiabatic-mixer fix (decided above), then C135.
 > **THE TWO OPEN DECISIONS, DELEGATED (Vitor, 2026-10-21: "Nao me pecas
 > nada e decide tu de forma sensata").  Commander's decisions:**
 > (a) **Compressor with liquid in its suction: REFUSE by name**, quoting the
