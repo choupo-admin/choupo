@@ -1357,6 +1357,45 @@ accepts today, and that is a policy call.
 > final; }` layout draws what the steady flowsheet and the sizing pass
 > already hold.
 
+> **C134. SECONDARY CONTAINMENT (BUNDS / RETENTION BASINS) IN THE PLANT
+> LAYOUT, AND A SWEEP FOR WHAT ELSE A LAYOUT ROUTINELY CARRIES (Vitor,
+> 2026-10-21, from a colleague: "no layout faltam as bacias de retencao
+> nas zonas onde as boas praticas e as normas mandam por! Ve se ha mais
+> alguma coisa que e muito habitual fazer que nos escapou.  Podes
+> aproveitar e por as bacias de retencao no caso que falta da Amonia").**
+> Measured: bunds were CONSIDERED AND NOT ADDED in C96 ("a bund as a
+> placed item -- a wall round two items would overlap both -- the case
+> says it in words", docs/design/a-plant-layout-is-declared-and-checked.md
+> ~816 and ~991); the 3D drawing invents none (equipmentModel.ts:473).
+> Named there as not built, beside it: the fire-water ring main and
+> hydrants, escape routes inside the units, a toxic refuge in the control
+> room; and plinths / foundations (C129 item 4).  The liquid-ammonia
+> stores: `ammonia02_full_plant` (T201, seven vessels) and
+> `greenAmmoniaPEQ_baseCase` (NH3Storage, two tanks; its layout carries
+> no site elements at all).  Slice: a bund is a DECLARED REGION, not a
+> placed item (it encloses items, so the overlap rule does not apply to
+> it): `bunds ( { name; items ( ... ); wall { height; } | polygon;
+> capacityRule <the case's>; drain <valve>; source; reason; } )`; the
+> engine CHECKS it -- the net volume (area x height minus what the
+> enclosed footprints displace) against the case's declared capacity rule
+> (e.g. 110 % of the largest tank, or 100 % plus a rain/fire-water
+> allowance -- the rule and its source are the case's, no standard's table
+> is shipped), every declared item inside, an item holding liquid
+> inventory that no bund encloses ANNOUNCED, a road or pipe crossing the
+> wall announced; published (area, net volume, the rule, the verdict) and
+> pinned by the `layout` kind; the GUI draws the wall.  Pressurised liquid
+> ammonia is usually held in an impounding / catch area sloped to a
+> remote pit rather than a full-height bund -- the case states which it
+> is.  Plus a SWEEP (report, not build): what a plot plan routinely
+> carries that the layout lacks, each with the standard practice it comes
+> from, measured against the grammar -- e.g. flare/vent stack and its
+> radiation distance, drainage and fire-water run-off retention, the
+> fire-water ring main and hydrants, emergency showers/eyewash, a
+> substation/MCC, analyser houses, maintenance access (crane, tube-bundle
+> pulling space), tank-to-tank spacing, cooling-tower drift.  Status:
+> dispatched (G34); the sweep's list comes back to Vitor before anything
+> else is built.
+
 > **C133. THE DELIVERABLE DRAWINGS: THE PFD WITH ITS STREAM TABLE, AND
 > THE SPECIFICATION SHEETS, AS PDFS IN THE SECTOR/UNIT HIERARCHY (Vitor,
 > 2026-10-21: "Nos Reports devia de haver o diagrama PFD, com a tabela de
