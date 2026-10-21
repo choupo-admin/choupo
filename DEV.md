@@ -1498,6 +1498,19 @@ accepts today, and that is a policy call.
 > pulling space), tank-to-tank spacing, cooling-tower drift.  Status:
 > dispatched (G34); the sweep's list comes back to Vitor before anything
 > else is built.
+> **LANDED 2026-10-21** (merge `7a35f9646`, rows `d40aabd86`, fix
+> `a9f46a8c8`).  Re-recorded on the commander's authority, re-measured
+> first: greenAmmoniaPEQ_baseCase plotArea / landArea 31 436.02 -> 38 142.56
+> m2, land 1.5718 -> 1.9071 MEUR, NPV -408.635 -> -408.924 MEUR (arm (j)'s
+> published <=> pinned row is that plotArea); aceticAcid02_plant findings
+> 3 -> 5 and apalutamide01_tablets 1 -> 3, each with its four new
+> `unbundedLiquid` rows.  NOT recorded, outside the families: nine
+> apalutamide01 rows drifting within tolerance (loopGas T 264.70728 ->
+> 264.70957 K and the SD / blower / condensatePot / n2Mix rows after it)
+> and aceticAcid02's new `kpi lightsColumn Q_condensate_m3_s` (G28).
+> Found on landing by check_design_sheet (q)/(w): a bund listing a tank
+> whose sizer REFUSED refused the run, against C79; it is now published
+> with verdict `notChecked` and `bundNotChecked` announced.
 
 > **C133. THE DELIVERABLE DRAWINGS: THE PFD WITH ITS STREAM TABLE, AND
 > THE SPECIFICATION SHEETS, AS PDFS IN THE SECTOR/UNIT HIERARCHY (Vitor,
