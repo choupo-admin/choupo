@@ -135,6 +135,23 @@ COMPETITOR_EXEMPT_TREES = {
         "(DEV.md 4c C123)",
 }
 
+#  A TREE MAY BE EXEMPT FOR NAMED WORDS ONLY (Vitor, 2026-10-21, DEV.md 4c
+#  C126).  The white paper compares Choupo with ONE open reference simulator
+#  (GPL-3.0, its licence read before it was named) and may name it; the
+#  closed commercial simulators are not named there at all ("nem sequer
+#  sabemos que porcaria anda la dentro").  So the exemption is narrower than
+#  the benchmarks/ one: it lifts the ban for the words listed and NO OTHER --
+#  any other word on the ban list inside the tree still fails, line by line,
+#  exactly as it does anywhere else.  Like the whole-tree exemption it must
+#  hold a tracked file, and arm (t) keeps it off every user-facing surface.
+COMPETITOR_NAMED_TREES = {
+    "paper/whitepaper/": (
+        {"dwsim"},
+        "the white paper's comparison with the open (GPL-3.0) reference "
+        "simulator of benchmarks/, named by Vitor's decision; every closed "
+        "simulator stays banned there (DEV.md 4c C126)"),
+}
+
 #  Binary and generated files are skipped: `generated/` is rebuilt from the
 #  tree by its own producers (gateManifest carries this gate's own claim line,
 #  which quotes the ban), and a non-UTF-8 blob has no prose to scan.
@@ -302,7 +319,8 @@ def main() -> int:
                   "waiver for a file that no longer exists, and it hides the "
                   "day the real one stops being exempt.")
             return 1
-    for tree in COMPETITOR_EXEMPT_TREES:
+    all_trees = tuple(COMPETITOR_EXEMPT_TREES) + tuple(COMPETITOR_NAMED_TREES)
+    for tree in all_trees:
         if not any(r.startswith(tree) for r in rels):
             print(f"check_doctrine: FAILED -- exempt tree '{tree}' holds no "
                   "tracked file.  An exemption nothing reads is a waiver for "
@@ -310,12 +328,19 @@ def main() -> int:
             return 1
     #  (t) the exempt tree must not reach a user-facing surface: no manual
     #  \inputs it, the GUI bundle does not glob it, buildSite does not copy
-    #  it.  Checked by name in the files that decide each surface.
+    #  it.  Checked by name in the files that decide each surface -- and,
+    #  since the white paper's tree joined (C126), in docs/ai/*.md too: the
+    #  GUI bundle inlines those files (gui/src/agent/authoringGuide.ts) and
+    #  bin/llmctx hands them to an assistant authoring a student's case, so a
+    #  pointer there is a pointer from a user-facing surface.  BOTH kinds of
+    #  exempt tree are held: a name-limited exemption leaking is still the
+    #  ban undone through the back door.
     leaks = []
     for rel in rels:
-        if rel.startswith(tuple(COMPETITOR_EXEMPT_TREES)):
+        if rel.startswith(all_trees):
             continue
         if not (rel.startswith("docs/") and rel.endswith(".tex")
+                or rel.startswith("docs/ai/") and rel.endswith(".md")
                 or rel in ("bin/buildSite", "gui/vite.config.ts")
                 or rel.startswith("gui/src/") and rel.endswith((".ts", ".tsx"))):
             continue
@@ -323,7 +348,7 @@ def main() -> int:
             body = (ROOT / rel).read_text(encoding="utf-8")
         except (UnicodeDecodeError, OSError):
             continue
-        for tree in COMPETITOR_EXEMPT_TREES:
+        for tree in all_trees:
             if re.search(r"\b" + re.escape(tree), body):
                 leaks.append(f"{rel} reaches the exempt tree '{tree}'")
     if leaks:
@@ -347,9 +372,16 @@ def main() -> int:
         except (UnicodeDecodeError, OSError):
             continue
         scanned += 1
+        allowed = next((words for tree, (words, _) in
+                        COMPETITOR_NAMED_TREES.items()
+                        if rel.startswith(tree)), set())
+        #  In a name-limited tree a line fails if ANY banned word on it is
+        #  outside that tree's allowed set; elsewhere the set is empty and
+        #  this is the plain search it always was.
         hits = [(i + 1, line)
                 for i, line in enumerate(blank_comparison(rel, text.splitlines()))
-                if COMPETITOR.search(line)]
+                if any(m.lower() not in allowed
+                       for m in COMPETITOR.findall(line))]
         pin = COMPETITOR_PINNED.get(rel)
         if pin is None:
             for line_no, line in hits:
@@ -409,8 +441,12 @@ def main() -> int:
           f"competitor ban holds over {scanned} of {len(rels)} TRACKED files "
           f"repo-wide -- {len(COMPETITOR_EXEMPT)} named exemptions and "
           f"{len(COMPETITOR_EXEMPT_TREES)} exempt developer-facing tree(s) "
-          f"({', '.join(COMPETITOR_EXEMPT_TREES)}) that no manual, GUI source "
-          "or site build reaches, "
+          f"({', '.join(COMPETITOR_EXEMPT_TREES)}) and "
+          f"{len(COMPETITOR_NAMED_TREES)} tree(s) exempt for NAMED words only ("
+          + ", ".join(f"{t} -> {'/'.join(sorted(w))}"
+                      for t, (w, _) in COMPETITOR_NAMED_TREES.items())
+          + ", every other banned word still failing inside it) that no "
+          "manual, docs/ai/ file, GUI source or site build reaches, "
           f"{sum(n for n, _ in COMPETITOR_PINNED.values())} sites in "
           f"{len(COMPETITOR_PINNED)} files PINNED with a class each and "
           "RATCHETING two-sided (a debt that grows fails; one that shrinks "
