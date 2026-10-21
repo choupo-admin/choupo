@@ -1336,6 +1336,27 @@ accepts today, and that is a policy call.
 > formality.  Status: proposed; dispatch when a slot frees (the machine is
 > at its limit), slice 2 as a general of its own, slice 1 in the Explore
 > queue.
+> **APPROVED 2026-10-21 (Vitor: "avanca", with his ruling on the data:
+> "Isso ja e um modelo muito velho e nao sejas mais papista que o Papa"
+> -- Hansen's parameters are decades-old published numbers; cite the
+> primary source per value as always, but a licence reading is not a
+> gate on this slice; what stays out is a wholesale copy of a
+> compilation's ARRANGEMENT).**  Four adjustments from the second
+> opinion, taken: (1) reading the block is not the mixture arithmetic --
+> the engine work is real; (2) START with a synthetic example (two
+> fictitious solvents A and B, a fictitious polymer between them, the
+> minimum at 50:50, labelled "didactic example with synthetic
+> parameters"), then a real documented one, then a confrontation with
+> measured dissolution; (3) the two-phase rule precisely: refuse to
+> REPRESENT the pair as one homogeneous solvent, and show three outcomes
+> -- one phase predicted (the homogeneous approximation applies, with its
+> assumptions), two phases predicted (no single average), data or model
+> insufficient (homogeneity not verified); (4) T is not decorative: the
+> parameters' reference T is stated, and the tool says whether a
+> correction is applied or the values are held constant as an
+> approximation.  Pedagogy (his): the student PREDICTS the best
+> composition before the curve is revealed, then sees the measurements.
+> Sequence: synthetic -> real -> experiment.  Dispatched (G33).
 
 > **C127. ONE WORKED EXAMPLE, FROM A SENTENCE TO A STUDENT'S DECISION
 > (Vitor, 2026-10-21, passing on a second opinion he asked for: "Mostra-me
