@@ -1718,6 +1718,24 @@ accepts today, and that is a policy call.
 > claims the engine does, checked against what it does.  Defects fixed
 > in the same pass where small, listed where not.
 
+
+> **C131 PHASE 1 -- TWO SLICES ON `main` UNVALIDATED (Vitor, 2026-10-21:
+> "Podes fazer push sem validar e no sabado validamos?").**  Merged
+> without running any suite, by his order, so that `main` carries the
+> whole day's work: C124 item 1 (a column's condenser and reboiler
+> designed in detail -- `ShellTubeHX.cpp`, `ColumnSize.cpp`,
+> `core/Units.cpp`, `core/Dimensions.H`; it reaches every case that sizes
+> a `shellTubeHX` item) and the C126 white-paper figure that shows the
+> C134 retention bunds (paper only).  The two generated files that
+> conflicted were regenerated (`case_manifest.py`,
+> `release_inventory.py`); nothing else was run, not even the build.
+> OWED ON SATURDAY, before anything else lands: `make all`, the cases
+> that size an exchanger or a column, `check_design_sheet`,
+> `check_equipment_pinned`, `check_cost_provenance`, `--gui` (the
+> lesson citations into the files C124 moved), the guides and `--fast`;
+> any golden row that moves goes to Vitor as a list first.  Until then a
+> red check on `main` is presumed to be this, and the revert is one
+> merge commit (`git revert -m 1`).
 > **C130. THE INSTRUMENTED FLOWSHEET -- A P&ID LAYER OVER THE PFD (Vitor,
 > 2026-10-21, same night, "isto tambem devia de poder ser feito").**
 > Measured: the control layer exists only in the time-integrated class
