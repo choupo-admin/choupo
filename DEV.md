@@ -1312,6 +1312,17 @@ accepts today, and that is a policy call.
 > doctrine bans that in user-facing documents; benchmarks/ is exempt).
 > Outline first, for his approval: the pedagogy and the public claims are
 > his.
+> **Vitor's answers, 2026-10-21:** authors Vitor Geraldes, Pedro Mendes
+> and Miguel (full name owed); the comparison MAY name the open reference
+> simulators "se nao houver problemas eticos", the closed commercial ones
+> not at all ("nem sequer sabemos que porcaria anda la dentro").  Taken
+> with it, as practice: same inputs, every workaround stated, the
+> reference's own defects reported neutrally with version and commit, and
+> each one OFFERED to its maintainers (an upstream issue) before the paper
+> is public; a tool is named only after its licence is verified (one whose
+> source is closed is treated as closed).  The paper's folder becomes an
+> exempt tree in `check_doctrine` (the benchmarks/ precedent) in the
+> commit that creates it.
 
 > **C124. A COLUMN'S EXCHANGERS DESIGNED IN DETAIL: CONDENSER, REBOILER,
 > SIDE COOLERS AND PUMPAROUNDS (Vitor, 2026-10-20, after asking whether the
