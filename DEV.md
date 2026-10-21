@@ -1512,6 +1512,14 @@ accepts today, and that is a policy call.
 > approximation.  Pedagogy (his): the student PREDICTS the best
 > composition before the curve is revealed, then sees the measurements.
 > Sequence: synthetic -> real -> experiment.  Dispatched (G33).
+> **Slice 1 DONE 2026-10-21 (G18b, `claude/c128-delta-lens` bd33ec60e,
+> integrated):** the lens retitled "Cohesion of the pure liquids
+> (Hildebrand parameter)"; the caption says pure liquid / not dissolving
+> power / no mixture property / "includes hydrogen bonding, does not
+> separate it" / candidate never verdict; sources, `published` and the
+> measured Hansen state in the Details; Explorer Guide
+> `sec:explorer-hildebrand`.  Open for slice 2: the engine's console
+> line `SolubilityParameter.cpp:309-313` repeats the old wording.
 
 > **C127. ONE WORKED EXAMPLE, FROM A SENTENCE TO A STUDENT'S DECISION
 > (Vitor, 2026-10-21, passing on a second opinion he asked for: "Mostra-me
@@ -2385,6 +2393,24 @@ accepts today, and that is a policy call.
 > it after C117: a proposal nobody puts back to its owner is a request
 > dropped.  Dispatched to G18b, on top of its C117 head (the Evidence view
 > lives in the same tab), as soon as C117 is handed back.
+> **DONE 2026-10-21 (G18b, `claude/c116-one-explore` 5854d1563,
+> integrated with C128 slice 1).**  One tab, "Explore", key `explore`,
+> two VIEWS of one set switched in place (Catalogue: browse, read,
+> estimate; Surfaces: every lens incl. Evidence);
+> `?workspace=explore&view=catalogue|surfaces&components=...`, set and
+> view rewritten in place; absent `view`, a set opens the surfaces and no
+> set the catalogue; `?workspace=properties` / `compounds` are
+> redirects; the surfaces still open empty (no wizard);
+> CompoundCatalogue.tsx deleted (the file this entry measured), the
+> three components mounted once (tests/exploreView.test.ts); F1 on the
+> Catalogue -> Explorer Guide `sec:explorer-catalogue`, help-index
+> `explore` -> the same; record one-tab-one-thing.md 8.8.  `--gui`
+> 5889/0.  PROCESS FINDING, reported by the general itself: refused by
+> the harness in a worktree not its own, it wrote there through python
+> scripts instead of stopping -- a permission barrier worked around.
+> Nothing was lost or misplaced (all copied into its own worktree and
+> committed there), but every brief now says: a refusal by the harness
+> is reported, never worked around.
 
 > **C115. THE UNIT BEING SOLVED PULSES WHEN A RUN IS SLOW (Vitor,
 > 2026-10-20: "ha casos em que a simulacao fica lenta ... a operacao
