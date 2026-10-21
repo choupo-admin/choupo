@@ -184,20 +184,16 @@ jobs:
           chmod 600 ~/.ssh/id_ed25519
           ssh-keyscan github.com >> ~/.ssh/known_hosts 2>/dev/null
 
-          #  The runner's disk is full by now (the emsdk, the native and WASM
-          #  builds, node_modules, the browser), and the site checkout is
-          #  ~19 000 files: from 2026-10-21 every publish died here with
-          #  "unable to write loose object file: Disk quota exceeded" AFTER a
-          #  green build and smoke.  Toolchains this job never uses are
-          #  removed first; the free space is printed both sides so the next
-          #  failure of this kind reads itself.
-          df -h / /tmp | sed 's/^/[disk before] /'
-          sudo rm -rf /usr/share/dotnet /usr/local/lib/android /opt/ghc \
-                      /usr/local/.ghcup /opt/hostedtoolcache/CodeQL || true
-          sudo docker image prune -af >/dev/null 2>&1 || true
-          df -h / /tmp | sed 's/^/[disk after]  /'
+          #  NOT /tmp: on the runner /tmp is a RAM-backed tmpfs of ~8 GB, and
+          #  the site checkout plus the loose objects `git add -A` writes for a
+          #  new build no longer fit in it.  From 2026-10-21 every publish
+          #  built and smoked green and then died here with "unable to write
+          #  loose object file: Disk quota exceeded" while / had 83 GB free
+          #  (measured in run 990, which printed both).  $RUNNER_TEMP is on /.
+          SITE_DIR="$RUNNER_TEMP/site"
+          df -h / /tmp "$RUNNER_TEMP" | sed 's/^/[disk] /'
 
-          git clone --depth 1 "$SITE_REPO" /tmp/site
+          git clone --depth 1 "$SITE_REPO" "$SITE_DIR"
 
           #  The two exclusions and the protect filter are LOAD-BEARING,
           #  not tidiness:
@@ -215,17 +211,17 @@ jobs:
           #           still copied in; stale NON-asset files are still deleted.
           rsync -a --delete --exclude='.git' --exclude='CNAME' --exclude='v*/' \
                 --filter='P assets/**' \
-                site/_dist/ /tmp/site/
+                site/_dist/ "$SITE_DIR"/
 
           #  Prove all three survived before committing, not after pushing.
-          grep -q 'www.choupo.org' /tmp/site/CNAME \
+          grep -q 'www.choupo.org' "$SITE_DIR"/CNAME \
             || { echo "CNAME lost -- refusing to publish"; exit 1; }
-          ls -d /tmp/site/v[0-9]*/app >/dev/null 2>&1 \
+          ls -d "$SITE_DIR"/v[0-9]*/app >/dev/null 2>&1 \
             || { echo "frozen release apps lost -- refusing to publish"; exit 1; }
-          ls /tmp/site/assets/*.js >/dev/null 2>&1 \
+          ls "$SITE_DIR"/assets/*.js >/dev/null 2>&1 \
             || { echo "no assets published -- refusing"; exit 1; }
 
-          cd /tmp/site
+          cd "$SITE_DIR"
           git config user.name  "Vítor Geraldes"
           git config user.email "talentgroundlda@gmail.com"
 
@@ -255,7 +251,7 @@ jobs:
 
           printf '{\n  "commit": "%s",\n  "builtAt": "%s",\n  "ref": "%s"\n}\n' \
             "${GITHUB_SHA}" "$(date -u +%Y-%m-%dT%H:%M:%SZ)" "${GITHUB_REF_NAME}" \
-            > /tmp/site/buildinfo.json
+            > "$SITE_DIR"/buildinfo.json
           git add buildinfo.json
           git commit -q -m "site: dev refresh — ${GITHUB_SHA:0:8}" \
                         -m "Built from choupo-admin/choupo@${GITHUB_SHA}."
