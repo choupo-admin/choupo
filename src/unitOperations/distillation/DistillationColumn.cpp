@@ -1266,7 +1266,7 @@ int DistillationColumn::solve(const DictPtr& dict,
     {
         CondenserTop top;
         top.D = D;  top.yD = xD;  top.T1 = T[0];
-        top.Tcond = T[0];                       // CMO: the latent at the top
+        top.Tcond = dStream.T;                  // the condensate's bubble point
         top.Vtop  = (R + 1.0) * D;              // overhead vapour [kmol/s]
         if (partialCond)
         {
@@ -2711,12 +2711,13 @@ int DistillationColumn::solveSimultaneous(const DictPtr& dict,
         //  Under the full MESH the traffic V, L is the solver's own and a TOTAL
         //  condenser's reflux entered stage 1 at the condensate's bubble
         //  point, so the duty is that envelope exactly and Q_reboiler then
-        //  equals the reboiler's own balance.  Under CMO, the latent at T_1.
+        //  equals the reboiler's own balance.  Under CMO the traffic is
+        //  (R+1) D, and the condensate leaves at the same bubble point.
         const bool fullMesh = (fmModel == "fullMESH" || fmModel == "MESH"
                                || fmModel == "NaphtaliSandholm") && !reactive;
         CondenserTop top;
         top.D = D;  top.yD = xD;  top.T1 = T[0];
-        top.Tcond = fullMesh ? dStream.T : T[0];
+        top.Tcond = dStream.T;                  // the condensate's bubble point
         top.Vtop  = fullMesh ? V[0] : (R + 1.0) * D;
         if (partialCond)
         {
