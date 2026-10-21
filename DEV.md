@@ -1762,6 +1762,32 @@ accepts today, and that is a policy call.
 > controller's proposed step across chunks.  Dispatched (G27, branch
 > `claude/c125-adsorber-speed`).  Vitor's, not taken: a coarser mesh for
 > the pages alone (faster, but a more diffuse front than the reference).
+> **DONE 2026-10-21 (G27, `claude/c125-adsorber-speed` bcd6a90b0,
+> integrated).**  Both causes measured on the parent build first (batch13:
+> 202 derivative evaluations per dense Jacobian; 14865 accepted / 5274
+> rejected steps, one rejection per chunk).  On the MESH precedent the
+> unit now DECLARES its structure (`ODEControls::structure`: a block per
+> cell through a row map, ledger rows as a border that says what it
+> reads); Rosenbrock23 builds a Curtis-Powell-Reid coloured Jacobian (6
+> evaluations instead of 202), factors W by block-Thomas (moved verbatim
+> out of NewtonND.cpp into `solver/BlockTridiagonal`, the one home; every
+> MESH column byte-identical), closes a NARROW ledger row from its own
+> coloured entries and a wide one by a directional difference, and
+> AUDITS the declaration against a dense Jacobian on the first step,
+> refusing a false one by name; `ODEStats::hNext` carries the
+> controller's proposal across chunks.  batch13 132 s -> 8 s wall
+> natively (CPU 20x), 0 rejected; the other adsorber witnesses 5-27x;
+> no golden re-recorded (worst physical move 6e-7 against 1e-4); every
+> other Rosenbrock23 user byte-identical.  `solver { jacobian
+> blockTridiagonal | dense; }`.  Gate `check_ode_block_structure` (six
+> sabotages; the column-grouping one caught ONLY by the evaluation-count
+> arms).  Trap paid for in the slice: closing every border row by a
+> directional difference turned a round-off mass closure into a 3.8e-6
+> LEAK at exit 0 -- a row the colouring can separate must be
+> differentiated by colour.  Re-validated on the combination with main:
+> `--fast` 74/0, `--gui` 34/0, adsorber + combustion + batch06 + ctrl03 +
+> distillation scope 47/0.  The browser time of the two EduTools is the
+> next site smoke's number.
 
 > **C124. A COLUMN'S EXCHANGERS DESIGNED IN DETAIL: CONDENSER, REBOILER,
 > SIDE COOLERS AND PUMPAROUNDS (Vitor, 2026-10-20, after asking whether the

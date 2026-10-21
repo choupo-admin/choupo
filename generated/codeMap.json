@@ -210,6 +210,12 @@
   "BinaryTxy": [
    "src/thermo/SaturationCurves.H"
   ],
+  "BlockBands": [
+   "src/solver/BlockTridiagonal.H"
+  ],
+  "BlockThomasLU": [
+   "src/solver/BlockTridiagonal.H"
+  ],
   "BlockTri": [
    "src/solver/NewtonND.H"
   ],
@@ -287,6 +293,9 @@
   ],
   "ClosureInputs": [
    "src/reporting/ModelBoundaryLedger.H"
+  ],
+  "ColoredODEJacobian": [
+   "src/solver/ODE/Jacobian.H"
   ],
   "ColumnSize": [
    "src/postProcessing/sizing/ColumnSize.H"
@@ -1136,6 +1145,9 @@
   ],
   "NusseltFilm": [
    "src/unitOperations/heatTransfer/htc/NusseltFilm.H"
+  ],
+  "ODEBlockStructure": [
+   "src/solver/ODE/ODEIntegrator.H"
   ],
   "ODEControls": [
    "src/solver/ODE/ODEIntegrator.H"
@@ -6009,6 +6021,11 @@
    "src/solver/ActiveSetQP.H",
    "src/solver/NewtonND.H"
   ],
+  "src/solver/BlockTridiagonal.cpp": [
+   "src/core/Types.H",
+   "src/solver/BlockTridiagonal.H",
+   "src/solver/LU.H"
+  ],
   "src/solver/LU.cpp": [
    "src/core/Types.H",
    "src/solver/LU.H"
@@ -6021,6 +6038,7 @@
    "src/core/Advisory.H",
    "src/core/InfeasibleTrial.H",
    "src/core/Types.H",
+   "src/solver/BlockTridiagonal.H",
    "src/solver/LU.H",
    "src/solver/NewtonND.H"
   ],
@@ -6030,6 +6048,7 @@
   ],
   "src/solver/ODE/EulerSI.cpp": [
    "src/core/Types.H",
+   "src/solver/BlockTridiagonal.H",
    "src/solver/ODE/../LU.H",
    "src/solver/ODE/EulerSI.H",
    "src/solver/ODE/Jacobian.H",
@@ -6037,6 +6056,7 @@
   ],
   "src/solver/ODE/Jacobian.cpp": [
    "src/core/Types.H",
+   "src/solver/BlockTridiagonal.H",
    "src/solver/ODE/Jacobian.H",
    "src/solver/ODE/ODEIntegrator.H"
   ],
@@ -6055,6 +6075,7 @@
   ],
   "src/solver/ODE/Rosenbrock23.cpp": [
    "src/core/Types.H",
+   "src/solver/BlockTridiagonal.H",
    "src/solver/ODE/../LU.H",
    "src/solver/ODE/Jacobian.H",
    "src/solver/ODE/ODEIntegrator.H",
@@ -7621,6 +7642,7 @@
    "src/result/SimulationResult.H",
    "src/result/UnitProfile.H",
    "src/solver/Convergence.H",
+   "src/solver/ODE/ODEIntegrator.H",
    "src/streams/ProcessStream.H",
    "src/thermo/Component.H",
    "src/thermo/PackageAudit.H",
@@ -7657,6 +7679,7 @@
    "src/core/Origin.H",
    "src/core/PortRoles.H",
    "src/core/ProblemDivergence.H",
+   "src/core/RegistryRefusal.H",
    "src/core/ResultRecords.H",
    "src/core/ThermoResolution.H",
    "src/core/Types.H",
@@ -11220,6 +11243,7 @@
    "src/unitOperations/batch/BatchElectrodialysis.cpp",
    "src/unitOperations/batch/BatchReactor.cpp",
    "src/unitOperations/batch/BatchStill.cpp",
+   "src/unitOperations/batch/FixedBedAdsorber.cpp",
    "src/unitOperations/crystallisation/Crystalliser.cpp",
    "src/unitOperations/distillation/DistillationColumn.cpp",
    "src/unitOperations/dynamic/DynamicCSTR.cpp",
@@ -11554,6 +11578,7 @@
    "src/result/ComponentIdentity.cpp",
    "src/result/ResultEmitter.cpp",
    "src/solver/ActiveSetQP.cpp",
+   "src/solver/BlockTridiagonal.cpp",
    "src/solver/LU.cpp",
    "src/solver/NelderMead.cpp",
    "src/solver/NewtonND.cpp",
@@ -12733,6 +12758,13 @@
    "src/solver/SQP.cpp",
    "src/streams/AnalysisReconciler.cpp"
   ],
+  "src/solver/BlockTridiagonal.H": [
+   "src/solver/BlockTridiagonal.cpp",
+   "src/solver/NewtonND.cpp",
+   "src/solver/ODE/EulerSI.cpp",
+   "src/solver/ODE/Jacobian.cpp",
+   "src/solver/ODE/Rosenbrock23.cpp"
+  ],
   "src/solver/Convergence.H": [
    "src/applications/choupoBatch/main.cpp",
    "src/applications/choupoCtrl/main.cpp",
@@ -12929,6 +12961,7 @@
    "src/unitOperations/valve/Valve.cpp"
   ],
   "src/solver/LU.H": [
+   "src/solver/BlockTridiagonal.cpp",
    "src/solver/LU.cpp",
    "src/solver/NewtonND.cpp"
   ],
@@ -13011,6 +13044,7 @@
    "src/solver/ODE/Rosenbrock23.cpp",
    "src/unitOperations/batch/BatchAdsorber.cpp",
    "src/unitOperations/batch/BatchReactor.cpp",
+   "src/unitOperations/batch/BatchUnitOperation.cpp",
    "src/unitOperations/batch/FixedBedAdsorber.cpp"
   ],
   "src/solver/ODE/RK4.H": [
