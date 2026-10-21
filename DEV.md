@@ -981,6 +981,15 @@ accepts today, and that is a policy call.
 > 6's family, and case A's as-built variant shows it creating 49.97 MW.
 > Moved rows are recorded by the commander (delegated) and listed in the
 > commit.  Both AFTER G37's integration lands, on the new main.
+> **INTEGRATED 2026-10-21, step 1 (G28 on main).**  The 239 approved rows
+> re-measured first: exactly that set moved, every new value within 1e-6 of
+> the list; the list spans 26 cases, not 25.  Recorded with them: 218 rows
+> that moved inside their tolerance in the same cases (largest 8.1e-5,
+> column08 T_top) and column18_partial_condenser.  NOT pinned, for Vitor: a
+> row `--record` ADDED, aceticAcid02_plant `kpi lightsColumn
+> Q_condensate_m3_s` (1.0548e-4 m3/s), which main's golden never carried.
+> The operation schemas gained `condenser { type total|partial; }` (column18
+> uses it; check_schema_coverage refused it).
 
 > **C84. AN EDUTOOL: MATERIALS OF CONSTRUCTION, SEALS AND GASKETS -- THE
 > PARETO (Vítor, 2026-10-17: "Temos algum EduTools sobre materiais

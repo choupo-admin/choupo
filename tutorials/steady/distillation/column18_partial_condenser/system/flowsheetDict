@@ -1,0 +1,61 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+  column18_partial_condenser -- column01's benzene/toluene column under a
+  PARTIAL condenser (`condenser { type partial; }`).
+
+  WHAT IT DEMONSTRATES.  The condenser TYPE is a declared choice, and it
+  decides what stage 1 IS.  Here stage 1 is the condenser itself, an
+  equilibrium stage: the reflux is its liquid x_1, and the distillate leaves
+  as a saturated VAPOUR y_1 = K_1 x_1 at T_1 (published `vf 1`, pinned).
+  Compared with column01 (the same column, `type total` by default):
+    * the distillate composition is the SAME -- both types write the same
+      material balance on stage 1 (x_D = y_1 = K_1 x_1 under a total condenser
+      is the condensate of that vapour; here it is the vapour itself);
+    * the distillate PHASE differs: vapour at T_1 = 355.69 K here, liquid at
+      its bubble point 354.25 K there;
+    * the condenser duty is the stage's OWN envelope,
+          Q = -[ V_2 h_V(y_2,T_2) - L_1 h_L(x_1,T_1) - D h_V(y_1,T_1) ],
+      about two thirds of the total condenser's (R+1) D latent duty, because
+      D leaves uncondensed; the reboiler duty rises by the enthalpy the
+      vapour distillate carries away;
+    * stage 1 is NOT a tray: the hydraulics pass drops it (V_1 = 0), where
+      under a total condenser it is the top tray and is rated.
+
+  THE STAGE COUNT.  `nStages` counts EQUILIBRIUM stages, top to bottom, the
+  reboiler included.  A partial condenser is one of them, so the 15 stages
+  here are 1 condenser + 13 trays + 1 reboiler; column01's 15 are 14 trays +
+  1 reboiler under a total condenser that is not counted.  A source that
+  counts its TOTAL condenser as "stage 1" describes nStages - 1 here.
+\*---------------------------------------------------------------------------*/
+
+// stream state lives on disk in 0/ (per-stream files); flowsheetDict is TOPOLOGY only
+
+units
+(
+    {
+        name        column18;
+        type        distillationColumn;
+        in          feed;
+        outputs     ( distillate  bottoms );
+
+        operation
+        {
+            nStages        15;
+            feedStage      8;
+            refluxRatio    2.0;
+            distillateRate 50.0 kmol/h;
+            P              1.01325 bar;
+            condenser      { type partial; }   // stage 1 IS the condenser
+        }
+
+        compositionTol   1e-7;
+        maxOuterIter     200;
+    }
+);

@@ -181,6 +181,7 @@ Multistage distillation column with constant molar overflow. Solved by the seque
 | `feeds` |   | array[object] | — | Maps each input stream to a stage — REQUIRED once the column has more than one input, since positional binding cannot say which stream en… |
 | `sideDraws` |   | array[object] | — | Product withdrawn between the ends. A draw's phase decides which internal traffic it removes, so it is a separation decision, not just a … |
 | `murphreeEfficiency` |   | number | - | Fraction of the equilibrium change each tray actually achieves; defaults to 1 (equilibrium stages). Any value other than 1 makes the stag… |
+| `condenser` |   | object | — | The condenser's own block. `type` decides what stage 1 IS, the same in every method: `total` (the default, announced when used) -- nStage… |
 | `hydraulics` |   | object | — | Present = run a hydraulic RATING on the converged profile, which the stage equations never do: can the trays pass the traffic? Give `diam… |
 
 ## `compressor`  (compressor operation)
@@ -325,6 +326,7 @@ Multistage distillation column with constant molar overflow. Solved by the seque
 | `feeds` |   | array[object] | — | Maps each input stream to a stage — REQUIRED once the column has more than one input, since positional binding cannot say which stream en… |
 | `sideDraws` |   | array[object] | — | Product withdrawn between the ends. A draw's phase decides which internal traffic it removes, so it is a separation decision, not just a … |
 | `murphreeEfficiency` |   | number | - | Fraction of the equilibrium change each tray actually achieves; defaults to 1 (equilibrium stages). Any value other than 1 makes the stag… |
+| `condenser` |   | object | — | The condenser's own block. `type` decides what stage 1 IS, the same in every method: `total` (the default, announced when used) -- nStage… |
 | `hydraulics` |   | object | — | Present = run a hydraulic RATING on the converged profile, which the stage equations never do: can the trays pass the traffic? Give `diam… |
 
 ## `electricLoad`  (electricLoad operation)
