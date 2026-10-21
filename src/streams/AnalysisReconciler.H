@@ -201,6 +201,16 @@ struct ConstraintOutcome
     scalar      residualBefore = 0.0;   // Sum coeff*measured - target
     scalar      residualAfter  = 0.0;   // Sum coeff*adjusted - target
     scalar      multiplier     = 0.0;   // the sigma-space Lagrange multiplier
+    //  The SAME multiplier for the law AS WRITTEN, in the caller's units
+    //  (2026-10-20, DEV.md 4c C121).  The solver works on rows scaled to
+    //  sigma space and normalised to unit length, so `multiplier` above is
+    //  the multiplier of that scaled row; dividing by the norm it was scaled
+    //  by gives the one of the textbook statement
+    //      x = m - C A^T lambda,   C = diag(sigma^2),
+    //  in which A is the coefficient matrix exactly as the caller declared
+    //  it.  Published so a caller can show that statement without knowing
+    //  how the rows were scaled inside this file.
+    scalar      multiplierAsWritten = 0.0;
     bool        binding        = false; // it moved something
 };
 

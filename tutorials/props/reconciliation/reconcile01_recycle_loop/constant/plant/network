@@ -1,0 +1,66 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+  network -- AN INVENTED PLANT: four nodes, seven streams, seven flow meters.
+
+                 F1             F2             F3              F4
+     fresh feed ----> [mixer] ----> [reactor] ----> [separator] ----> product
+                         ^                               |
+                         |  F7                           | F5
+                         +--------- [splitter] <---------+
+                                        |
+                                        +----> purge  F6
+
+  Every stream carries a mass-flow meter, and the meter's standard
+  uncertainty is declared beside the stream it measures: sigma is a
+  property of the INSTRUMENT, not of a day's reading.  The two big meters
+  on the reactor line read to 3 t/h either way; the purge meter, on a
+  small line, to 0.4 t/h.
+
+  Each node's mass balance is Sum in - Sum out = 0 at steady state.  The
+  four are independent (the plant's overall balance F1 = F4 + F6 is their
+  sum, and is NOT declared again -- the operation refuses a balance that
+  repeats the others).
+
+  syntheticTruth is the flow the invented plant was run at.  A real plant
+  has no such block; this one does so that the EduTool can show how far
+  the readings, and the reconciled flows, sit from the truth.
+\*---------------------------------------------------------------------------*/
+
+unit    t/h;            // every number the operation reads and publishes
+
+flows
+{
+    F1 { sigma 2.0 t/h; }   // fresh feed
+    F2 { sigma 3.0 t/h; }   // reactor feed
+    F3 { sigma 3.0 t/h; }   // reactor effluent
+    F4 { sigma 1.8 t/h; }   // product
+    F5 { sigma 1.5 t/h; }   // separator overhead to the splitter
+    F6 { sigma 0.4 t/h; }   // purge
+    F7 { sigma 1.2 t/h; }   // recycle
+}
+
+nodes
+{
+    mixer     { in ( F1 F7 ); out ( F2 );    }
+    reactor   { in ( F2 );    out ( F3 );    }
+    separator { in ( F3 );    out ( F4 F5 ); }
+    splitter  { in ( F5 );    out ( F6 F7 ); }
+}
+
+syntheticTruth
+{
+    F1 100 t/h;
+    F2 150 t/h;
+    F3 150 t/h;
+    F4  90 t/h;
+    F5  60 t/h;
+    F6  10 t/h;
+    F7  50 t/h;
+}

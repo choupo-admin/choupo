@@ -72,7 +72,7 @@ export type MethodToolId =
   | "reaction-enthalpy" | "standard-state" | "case-assembly" | "run-log"
   | "front-end-loading" | "process-safety" | "overpressure" | "letdown"
   | "plant-layout" | "gmp-layout" | "pool-fire" | "materials" | "syngas"
-  | "correlation-simplicity";
+  | "correlation-simplicity" | "data-reconciliation";
 
 /** WHAT KIND OF TOOL THIS IS, and the field exists to keep a boundary legible
  *  rather than to switch behaviour.
@@ -1122,6 +1122,32 @@ export const METHOD_TOOLS: MethodTool[] = [
       + "phase margins.  The page states which half Choupo computes and which "
       + "half it does not.",
     theory: "ch:pid",
+  },
+  {
+    //  DATA RECONCILIATION, AND HOW BAYES HELPS (2026-10-20, DEV.md 4c C121,
+    //  Vitor: "Ha outra coisa que os meus alunos nao sabem: reconciliacao de
+    //  dados em controlo de processos e como Bayes pode ajudar!").  Four
+    //  pages on his approved scope; SYNTHETIC data, said on screen.  The
+    //  witness reconcile01_recycle_loop runs in the browser and every number
+    //  is the engine's `dataReconciliation` op, which hands its weighted least
+    //  squares to the one home the active-set page already teaches.
+    id: "data-reconciliation",
+    label: "Data reconciliation, and how Bayes helps",
+    discipline: "Hydraulics & control", kind: "construction", status: "live",
+    teaches: "Why plant meters never close a mass balance, and what to "
+      + "believe instead: reconciliation moves each reading as little as its "
+      + "meter's uncertainty allows until every balance closes -- weighted "
+      + "least squares, and at the same time the Bayesian posterior mode "
+      + "with Gaussian meters and a flat prior.  Then plant a gross error on "
+      + "any meter and watch the chi-square global test reject the snapshot, "
+      + "the measurement test point at the meter, and the error smear over "
+      + "its neighbours until the meter is taken out of service; and finally "
+      + "add yesterday's estimate as a prior and see what the posterior "
+      + "covariance says the redundancy and the prior buy in precision.",
+    //  No chapter of the Theory Guide treats reconciliation yet; Help opens
+    //  the active-set QP section, the solver every answer on the page comes
+    //  from (the reconciler hands its weighted least squares to it).
+    theory: "ch:active-set-qp",
   },
   //  THE THREE NUMERICS PAGES (2026-09-12, Vitor: "falta o EduTools sobre
   //  como escolher Tear Streams.  E sobre o metodo de usar o Wegstein para

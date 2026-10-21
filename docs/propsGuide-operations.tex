@@ -522,6 +522,26 @@ Group-contribution estimation of a component's constants — curation made visib
 \quad (and 6 more)
 \end{tutoriallink}
 
+\paragraph{\code{dataReconciliation}}
+Steady-state data reconciliation of a flow network. Mass-flow readings, each with its meter's declared standard uncertainty, are adjusted as little as their uncertainties allow until every node mass balance closes: min Sum ((x - m)/sigma)\textasciicircum{}2 subject to A x = 0, solved by the engine's one weighted least squares (the reconciler built for the aqueous laboratory analysis). With Gaussian meter noise and a flat prior this is the Bayesian posterior mode; its covariance C - V, V = C A\textasciicircum{}T (A C A\textasciicircum{}T)\textasciicircum{}-1 A C, is published. Beside the answer: each balance's residual at the readings and its standard deviation, the chi-square global test with rank(A) degrees of freedom, the measurement test (each adjustment over its own standard deviation, against a Sidak-corrected two-sided normal critical value), and, for a meter taken out of service, the balances projected onto the remaining meters and the excluded reading's offset from what the rest of the plant says. An optional diagonal Gaussian prior per flow is combined with each reading by precision weighting, which is exact. Linear mass balances only.
+
+\begin{tabular}{@{}p{0.30\linewidth}p{0.62\linewidth}@{}}
+\hline
+\code{alpha}\textbf{*} & Significance level [-] \\
+\code{exclude} & Meters out of service \\
+\code{network}\textbf{*} & Network file \\
+\code{output} & CSV outputs \\
+\code{prior} & Prior file \\
+\code{readings}\textbf{*} & Readings file \\
+\code{syntheticDrift} & Planted gross error (exercise) \\
+\hline
+\end{tabular}
+
+
+\begin{tutoriallink}
+\file{tutorials/props/reconciliation/reconcile01\_recycle\_loop}
+\end{tutoriallink}
+
 \subsection{Benches}
 
 \paragraph{\code{kinetics1D}}

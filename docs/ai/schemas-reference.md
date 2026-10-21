@@ -17,7 +17,7 @@ person.  For prose, groupings and worked examples instead of an
 alphabetical dump, read [`unit-ops.md`](unit-ops.md) beside it; to be
 taught rather than to look something up, read the User Guide.
 
-*97 of 97 registered operations carry a schema and are documented below.*
+*98 of 98 registered operations carry a schema and are documented below.*
 
 ## `FUG`  (FUG operation)
 
@@ -285,6 +285,20 @@ Gas-solid cyclone separator. Computes the cut diameter d50, the grade-efficiency
 | `alpha` |   | number | - | Tangential-velocity factor v_θ = α·v_i on the control surface (Barth model). |
 | `heightFactor` |   | number | - | Control-surface height H_cs/D_c for the Barth model. |
 | `cLimit` |   | number | - | Limit solids loading c_lim for the Muschelknautz mass-loading effect; surplus solids above it are separated near 100 %. |
+
+## `dataReconciliation`  (dataReconciliation operation)
+
+Steady-state data reconciliation of a flow network. Mass-flow readings, each with its meter's declared standard uncertainty, are adjusted as little as their uncertainties allow until every node mass balance closes: min Sum ((x - m)/sigma)^2 subject to A x = 0, solved by the engine's one weighted least squares (the reconciler built for the aqueous laboratory analysis). With Gaussian meter noise and a flat prior this is the Bayesian posterior mode; its covariance C - V, V = C A^T (A C A^T)^-1 A C, is published. Beside the answer: each balance's residual at the readings and its standard deviation, the chi-square global test with rank(A) degrees of freedom, the measurement test (each adjustment over its own standard deviation, against a Sidak-corrected two-sided normal critical value), and, for a meter taken out of service, the balances projected onto the remaining meters and the excluded reading's offset from what the rest of the plant says. An optional diagonal Gaussian prior per flow is combined with each reading by precision weighting, which is exact. Linear mass balances only.
+
+| Field | Required | Type | Unit | Description |
+|---|:-:|---|---|---|
+| `network` | ✓ | string | — | Path, relative to the case, of the network dictionary: `unit` (the mass-flow unit every number is read and published in), `flows { <strea… |
+| `readings` | ✓ | string | — | Path, relative to the case, of one snapshot: `<stream> <value> <unit>;` for every metered stream, and for nothing else. A meter with no r… |
+| `prior` |   | string | — | Optional. Path of a per-flow Gaussian prior, `<stream> { value <v> <unit>; sigma <s> <unit>; }` -- yesterday's estimate, a soft sensor. E… |
+| `alpha` | ✓ | number | - | Required, no default: the probability of a false alarm the tests accept. The global test's critical value is the chi-square quantile at 1… |
+| `exclude` |   | ? | — | Optional. One metered stream, or a list of them, whose readings are not used. Their flows become unmeasured: the balances are projected o… |
+| `syntheticDrift` |   | object | — | Optional, for an invented exercise plant only: adds a declared offset to ONE reading before anything else, announced on every run. A real… |
+| `output` |   | object | — | Optional. The three tables the operation can write in the case directory; a path into data/standards/ is refused. |
 
 ## `dewT`  (dewT operation)
 

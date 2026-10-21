@@ -27,7 +27,7 @@
   and explicitly NOT a port of any code.  It has three real callers: the inner
   QP of every SQP iteration (src/solver/SQP.cpp:247), the constrained
   optimisation driver (src/outerDriver/OptimizationDriver.cpp:484), and the
-  laboratory-analysis reconciliation (src/streams/AnalysisReconciler.cpp:165).
+  laboratory-analysis reconciliation (src/streams/AnalysisReconciler.cpp:192).
 
   WHY THE TRANSCRIPTION EXISTS, and it is the same argument as the Wegstein
   page's.  The thing worth teaching is not the answer — it is the WORKING SET:
@@ -394,7 +394,7 @@ export function activeSetQP(
  *  satisfies electroneutrality and an elemental-conservation redundancy, with
  *  every corrected value kept non-negative.  That IS a convex QP, and the
  *  engine hands it to the same `activeSetQP` the SQP driver uses
- *  (src/streams/AnalysisReconciler.cpp:165).
+ *  (src/streams/AnalysisReconciler.cpp:192).
  *
  *  It is the right witness because the QP is not an abstraction in it.  The
  *  objective is a chi-squared over analytical measurements; the constraints

@@ -310,6 +310,9 @@ const SyngasTool = lazy(() =>
 const CorrelationSimplicityTool = lazy(() =>
   import("./methods/CorrelationSimplicityTool.js")
     .then((m) => ({ default: m.CorrelationSimplicityTool })));
+const DataReconciliationTool = lazy(() =>
+  import("./methods/DataReconciliationTool.js")
+    .then((m) => ({ default: m.DataReconciliationTool })));
 const MaterialsTool = lazy(() =>
   import("./methods/MaterialsTool.js")
     .then((m) => ({ default: m.MaterialsTool })));
@@ -545,6 +548,7 @@ export function MethodsWorkspace() {
             : tool === "syngas" ? <SyngasTool />
             : tool === "materials" ? <MaterialsTool />
             : tool === "correlation-simplicity" ? <CorrelationSimplicityTool />
+            : tool === "data-reconciliation" ? <DataReconciliationTool />
             : tool === "wegstein" ? <WegsteinTool />
             : tool === "active-set-qp" ? <ActiveSetQpTool />
             : tool === "lub-scaleup" ? <LubScaleupTool />
