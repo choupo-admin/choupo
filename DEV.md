@@ -1321,6 +1321,16 @@ accepts today, and that is a policy call.
 > screenshots -- as a short guide chapter or tutorial README; (b) the
 > Evidence view gains points 1-3 (after C117 and C116 land).  Status:
 > proposed to Vitor.
+> **Vitor, the same day: "devias fazer um EduTool sobre isso das
+> propriedades!  O aluno via logo como tinha de fazer!"** -- (a) takes the
+> form of an EduTool (the worked example walked page by page: the request,
+> the data and their sources, the fit with its declared band, the
+> held-out test, the verdict in context, the decision), built on the
+> methanol-water witness and on the Evidence view, so it is dispatched
+> after C117 and C116 land, then (b).  Queue on that screen, one general
+> at a time to avoid conflicts: C117 -> C116 -> C118 stage 2 (the T/P
+> excursion lens, whose engine op `phaseSplitScan` already shipped) ->
+> C127.
 
 > **C126. A WHITE PAPER IN THE REPOSITORY (Vitor, 2026-10-21: "Achas que
 > e bom pegarmos nesta dica, e fazemos um white paper que vamos
