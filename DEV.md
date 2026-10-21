@@ -2102,6 +2102,54 @@ accepts today, and that is a policy call.
 > vapour distillate at 355.69 K, Q_cond -870.34 vs -1291.11 kW, first
 > law 0 in both), 32 new rows recorded on the new case only.  The branch
 > is ready; it lands the day Vitor approves the 239 rows.
+> **LL HALF (3)-(5) DONE 2026-10-21 (G30, `claude/c123-ll-flash-findings`
+> cb1bd674e; moved rows NOT recorded).**  (5) ROOT-CAUSED, and it is the
+> root of (3): `michelsenTPD`'s tm omitted ln gamma_i(y)
+> (`StabilityTest.cpp`, and the header's own formula), so it read
+> -g^E/RT at the trivial point and every liquid with g^E > 1e-3 RT was
+> "unstable"; restored -- extract01's 340 "TPD-unstable" warnings are 0.
+> (3) FIXED: starts from the hint pair in index order + two seeded by the
+> TPD's incipient phase; the hints only LABEL (`llSplit::labelByHints`);
+> every split finished by a Newton on equal activities to 1e-12
+> (`flash/LiquidLiquidSplit.H`; the minimiser had stopped at 4e-4 ... 4e-3
+> in ln activity); a TPD-unstable feed the box-bounded minimiser cannot
+> split takes Michelsen's route from the incipient phase, and if that
+> fails the flash is NOT converged and the unit refuses naming the feed --
+> never "single liquid" at exit 0.  (4) FIXED: a non-converged extractor
+> throws (exit 1, no `converged/`); its stall test compared inf with inf
+> (a silent 60-sweep cap); closeTol 1e-8 (1e-4 WAS extract01/02's
+> first-law residual and atom leak; both pins paid).  Case C converges:
+> extract 984.05 / raffinate 293.29 mol/s / recovery 1.0000 vs 911.32 /
+> 366.01 / 0.9991 (a different model, an adiabatic reference); the
+> extractor and the hand-written 4-flash cascade agree to 1e-6.  Moved
+> rows in six cases (extract01/02, extraction01, vlle01,
+> lithiumBrinePlant, ternary03), listed in the hand-back.
+> **A, D AND E RUN 2026-10-21 (G32, `claude/c123-benchmarks-ade`
+> fd295f740).**  Engine: PR is PR78 (three corpus PR cases
+> byte-identical); the kij SET record and the `ppr78Kij` op (route P);
+> inline kij only under regression (`variedBy`); `fitParameters`
+> `P_bubble` and an identifiability Jacobian that no longer reads a branch
+> jump as a slope; `compressor` `P_out`; `BubblePoint::pressure` no longer
+> reads a one-root floor as "does not boil"; the phaseChanger vf search no
+> longer centred on a supercritical component's Antoine T; a regressed
+> pair's verdict announced on every run that uses it.  Gate
+> `check_ppr78_route` (a)-(i), 12 sabotages.  A: products within 0.5 %,
+> valves +1.5...7.9 K (measured: the cubic and its parameters), first law
+> -67.31 kW all attributed; D: loop at the sample's 73 bar, three gas pairs
+> regressed by Choupo notValidated (20-31 % against 5 %), methanol-water
+> validated, methanol product -1.7 %, reactor +8.4 % explained by the
+> sample's bed sitting 16.6 % from equilibrium; E: conversion -0.56 %.
+> Findings on the reference side stated neutrally in each README.  OPEN,
+> Choupo side: a compressor computes a two-phase feed as vapour in
+> silence (24.93 kW, all of D's residual -- the "state a unit computes
+> with" family, NOT on its enumerated list; Vitor's: wet compression or a
+> refusal); the adiabatic mixer (49.9 MW as built in A); shortcutColumn
+> publishes both products at the feed bubble point; the multi-reaction
+> pfr console prints F_out 1000x small and tau 0.00 s.
+> **ONE FULL REGRESSION ASKED OF VITOR for G30 + G32 together**: both
+> touch shared paths (`michelsenTPD` and the LL branch of solveCore;
+> `BubblePoint::pressure`), reached by cases nobody enumerated; one sweep
+> over an integration branch carrying both, then one moved-rows list.
 
 
 > **C122. INTEGRATION TOOLING AND A SITE SMOKE TEST (Vitor, 2026-10-20,
