@@ -964,11 +964,11 @@ accepts today, and that is a policy call.
 > diagnose separately.
 > **END OF SESSION 2026-10-21 (Vitor at 2 % usage).**  On main: G28 (the
 > column) and C134 (bunds, 5fdec2479).  G30 + G32: see G37's branch / main
-> log -- if main has no `benchmarks/dwsim/`, redo step 2 from the APPROVED
+> log -- if main has no benchmark cases for the open reference simulator, redo step 2 from the APPROVED
 > paragraph above.  Papers, each on its own branch, all DRAFT:
 > `claude/c126-gui-figures` (white paper v2.3, 21 pp, browser figures with
 > the bunds, section 6.4 on five cases), `claude/c126-joss-paper`
-> (paper/joss/, 1622 words, DWSIM named), `claude/c126-cace-paper`
+> (paper/joss/, 1622 words, the open reference simulator named), `claude/c126-cace-paper`
 > (paper/cace/, Computers & Chemical Engineering, 29 pp; the guide for
 > authors could not be read -- every journal assumption is a TODO at the
 > top of main.tex).  Merge the three paper branches onto main after G30 +
