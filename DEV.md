@@ -1672,6 +1672,13 @@ accepts today, and that is a policy call.
 > engine).  Owed to Vitor: his read; whether cavett01 (open first law
 > shown) or hda (closes) is the recycle example in print; the release to
 > cite.
+> **Vitor's first read (same night): three things missing** -- the GUI
+> is a VISUALISER on the ParaView pattern (OpenFOAM computes, ParaView
+> shows; the user does NOT build the case in the GUI, the opposite of
+> the usual simulator workflow); UNITS are mandatory in the dictionaries;
+> and WHAT the GUI shows (streams coloured, global balances, the
+> per-sector view, the 3D layout, and the P&ID to come, "nos vamos
+> garantir que vai fazer").  Sent to G31 as v2.1.
 
 > **C125. WHY THE BREAKTHROUGH PAGES ARE SLOW (Vitor, 2026-10-21: "Porque
 > isto e tao lento? breakthrough e do lub-scaleup").**  Measured by the
