@@ -1291,6 +1291,37 @@ accepts today, and that is a policy call.
 > fire-water ring main and hydrants, bunds, escape routes, swept path, a
 > fillet running through an item.
 
+> **C127. ONE WORKED EXAMPLE, FROM A SENTENCE TO A STUDENT'S DECISION
+> (Vitor, 2026-10-21, passing on a second opinion he asked for: "Mostra-me
+> um exemplo completo, de uma instrucao em linguagem natural ate ao ecra
+> em que um aluno consegue explicar por que aceita ou rejeita o modelo";
+> he said he is himself still confused by the evidence workflow).**  The
+> review's four points, measured against the tree: (1) "validated" is
+> already contextual in the RECORD -- `validation { verdict; heldOut {
+> points; aad_pct; aad_K; domain_x1 }; acceptance { maxAAD; origin } }`
+> and `validity {}` (e.g. `data/standards/parameters/NRTL/
+> 1Propanol-water.dat`) -- but no screen says "meets the criterion for
+> THIS test set, THIS range, THIS property"; (2) the fit/held-out roles
+> and their independence level are in the dossier (`evidencePartition`
+> announces identity-level independence, `EvidencePartition.cpp:465`)
+> and must be DRAWN, fit points and held-out points distinct, "another
+> study" vs "a split of one study" said; (3) the Evidence view should
+> open on the SELECTED model with the others addable, residuals per point
+> against the condition, and an error measure with its unit (one AAD can
+> hide a badly represented region); (4) the property-data pipeline does
+> NOT reconcile measurements today (C121's reconciliation is plant
+> flows); if it ever transforms data the originals stay readable and the
+> change is shown.  The agent may choose and run, recording the
+> instruction, the assumptions and the decisions; local acceptance and
+> public promotion stay two separate acts (they are: promotion is
+> Vitor's).  Proposed: (a) the worked example on methanol-water, a
+> transcript from one natural-language request through
+> `bin/choupo-thermoml`, the evidence files, `fitParameters` with a
+> declared partition and band, the dossier, to the Explorer screens, with
+> screenshots -- as a short guide chapter or tutorial README; (b) the
+> Evidence view gains points 1-3 (after C117 and C116 land).  Status:
+> proposed to Vitor.
+
 > **C126. A WHITE PAPER IN THE REPOSITORY (Vitor, 2026-10-21: "Achas que
 > e bom pegarmos nesta dica, e fazemos um white paper que vamos
 > disponibilizar online no repo?").**  The tip: as language models learn
