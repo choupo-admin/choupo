@@ -56,7 +56,12 @@
         "kind": {
           "type": "string",
           "title": "Residual kind",
-          "description": "e.g. T_bubble for VLE, isotherm for adsorption."
+          "description": "T_bubble (isobaric VLE: the bubble temperature at a fixed P, residual in K), P_bubble (isothermal VLE: the bubble PRESSURE at a fixed T, residual RELATIVE -- for a cubic's kij against high-pressure solubilities; since 2026-10-21, DEV.md 4c C123), isotherm (adsorption)."
+        },
+        "T": {
+          "type": "number",
+          "title": "Temperature, when the residual is isothermal (P_bubble)",
+          "unit": "K"
         },
         "components": {
           "type": "array",

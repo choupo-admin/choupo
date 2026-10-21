@@ -172,6 +172,22 @@
       "description": "Fraction of the equilibrium change each tray actually achieves; defaults to 1 (equilibrium stages). Any value other than 1 makes the stages REAL trays and is announced. Values ABOVE 1 are admitted and are physical on a large cross-flow tray whose liquid is not well mixed — the vapour meets liquid richer than the tray outlet — and are measured on industrial columns (Klemola & Ilme, IECR 35 (1996) 4579: 119.1 %). No upper bound is imposed: the plug-flow ceiling needs the point efficiency and mV/L, neither of which a declared efficiency carries.",
       "unit": "-"
     },
+    "condenser": {
+      "type": "object",
+      "title": "Condenser",
+      "description": "The condenser's own block. `type` decides what stage 1 IS, the same in every method: `total` (the default, announced when used) -- nStages counts the equilibrium stages, stage 1 is the top tray, the total condenser above it is not one of them, and reflux and distillate leave it at x_D = y_1; `partial` -- stage 1 IS the condenser, an equilibrium stage whose vapour is the distillate, so nStages counts it.",
+      "properties": {
+        "type": {
+          "type": "string",
+          "enum": [
+            "total",
+            "partial"
+          ],
+          "title": "Condenser type"
+        }
+      },
+      "additionalProperties": false
+    },
     "hydraulics": {
       "type": "object",
       "title": "Tray hydraulics (rating pass)",

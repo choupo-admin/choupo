@@ -291,7 +291,10 @@ of the technical floor and `atexSeparation` is declared (6 m, author-set);
 the east dock is gone (the dispersion goes from the suite through its sink
 straight to the blender).  Only the bulk-solvent tanks stand outdoors, in a
 bunded farm (the bund said in words: a wall round two items would overlap
-both).  Zero building findings.  Exercises: `singleEntrance` kept (still
+both -- superseded by DEV.md 4c C134, which made a bund a DECLARED REGION
+of the layout; this case declares none yet, so its two tanks are announced
+`unbundedLiquid` and the bund is the group's to declare).  Zero building
+findings.  Exercises: `singleEntrance` kept (still
 true -- one gate); the coating-tank separation retired with its premise (the
 tank now stands in its room) and replaced by a question the engine does not
 check, the explosion vent's reach over the north road.

@@ -1,0 +1,170 @@
+/*---------------------------------------------------------------------------*\
+  reactions -- METHANOL SYNTHESIS AND THE REVERSE WATER-GAS SHIFT ON A
+  Cu/ZnO/Al2O3 CATALYST, the steady-state kinetic model of
+
+      K. M. Vanden Bussche and G. F. Froment, "A Steady-State Kinetic Model
+      for Methanol Synthesis and the Water Gas Shift Reaction on a Commercial
+      Cu/ZnO/Al2O3 Catalyst", J. Catal. 161 (1996) 1-10, Article No. 0156
+      (the article prints no DOI).
+
+  WRITTEN HERE, every number of it (DEV.md 4c C67: a case carries its own
+  kinetics).  The two rates are eq. [3] (p. 6):
+
+      r_MeOH = kM p_CO2 p_H2 [ 1 - (1/K1*) p_H2O p_MeOH / (p_H2^3 p_CO2) ] / D^3
+      r_RWGS = k1' p_CO2 [ 1 - K3* p_H2O p_CO / (p_CO2 p_H2) ] / D
+      D      = 1 + (K_H2O/(K8 K9 K_H2)) p_H2O/p_H2 + sqrt(K_H2 p_H2) + K_H2O p_H2O
+
+  with every pressure in BAR and the rates in mol/(kg_cat s) (the units line
+  printed under eq. [3]).  CO2 is the carbon source of the methanol; CO
+  enters only through the shift (p. 9).  Parameters: Table 2 (p. 6), the
+  A exp(B/(R T)) form -- NOTE THE SIGN, exp(+B/RT): B is -E_a for the rate
+  constant k1' and -dH_ads for an adsorption constant (p. 7 resolves the
+  wording of p. 5).  The unit of B is not printed; J/mol with R = 8.314
+  reproduces Table 1's reparametrised values and the p. 7 adsorption
+  entropies (-R ln 0.499^2 = 11.56 J/mol/K), which is how it was settled.
+  Equilibrium constants: Graaf et al. (1986) as the article prints them
+  (p. 5): log10 K1* = 3066/T - 10.592 (bar^-2), log10 (1/K3*) = -2073/T +
+  2.029; K3* is the FORWARD water-gas shift constant, so the RWGS bracket
+  carries K3* as printed.  The denominator group K_H2O/(K8 K9 K_H2) is
+  temperature-independent in the final model (Table 1 prints no B for it).
+
+  TRANSCRIPTION: read from the page image by two readers (2026-10-21);
+  120 values, 116 agreed, the 4 disagreements being page citations and
+  wording, no number (data/local/curation/c123/, gitignored).
+
+  THE WINDOW the model was fitted in: 180-280 C, 15-51 bar, p_CO/p_CO2 0 to
+  4.1, ICI 51-2 catalyst (p. 5).  This plant's reactor (510 K, 73 bar) sits
+  inside the T window and ABOVE the pressure window: declared below and
+  ANNOUNCED on every run, never refused.
+
+  THE SAME LAW AS THE SAMPLE SHIPS IT?  Not quite, and the differences are
+  the sample's (README, findings on the reference side): the sample's
+  methanol numerator uses exp(40000/RT) where Table 2 prints B = 36696; its
+  RWGS rate constant uses exp(-98084/RT), the LOWER 95 % bound of Table 1,
+  where Table 2 prints -94765; its two denominators spell the ratio group
+  3453.38 and 3454.38; and its methanol denominator closes a parenthesis
+  before sqrt(p_H2) -- (1 + ... + sqrt(K_H2)) sqrt(p_H2) + ... -- where
+  eq. [3] has 1 + ... + sqrt(K_H2 p_H2) + ....  This file follows the
+  article.
+
+  PRESSURES IN BAR: p[i] is Pa; `bar` below is the unit, and p[i]/bar is
+  the dimensionless partial pressure the parameters were fitted on, so
+  every rate constant's bar^-n is absorbed and its declared unit is the
+  basis's own, kmol/(kg s) (= 1e-3 x the article's mol/(kg s)).
+\*---------------------------------------------------------------------------*/
+
+methanolSynthesis
+{
+    stoichiometry
+    (
+        { component CO2;       nu -1; }
+        { component H2;        nu -3; }
+        { component methanol;  nu  1; }
+        { component water;     nu  1; }
+    );
+
+    kinetics
+    {
+        type     expression;
+        source   "Vanden Bussche & Froment, J. Catal. 161 (1996) 1-10: eq. [3] (p. 6), Table 2 (p. 6, A exp(B/RT) form), K1* after Graaf et al. 1986 as printed on p. 5";
+        basis    catalystMass;       // mol/(kg_cat s) in the article; kmol/(kg s) here
+        rateOf   extent;
+
+        parameters
+        {
+            kM0      1.07e-3   kmol/kg/s;   // k5a' K2' K3 K4 K_H2: 1.07 mol/(kg s bar^2), Table 2
+            BM       36696     J/mol;       // its B, Table 2 (exp(+B/RT))
+            sqrtKH2_0  0.499   -;           // sqrt(K_H2): 0.499 bar^-0.5, Table 2
+            BH2      17197     J/mol;       // its B
+            KH2O_0   6.62e-11  -;           // K_H2O: 6.62e-11 bar^-1, Table 2
+            BH2O     124119    J/mol;       // its B
+            Kratio   3453.38   -;           // K_H2O/(K8 K9 K_H2), T-independent, Table 2
+            R_VBF    [1 2 -2 -1 -1] 8.314;    // J/(mol K): the R that reproduces Table 1 from Table 2 (bracket form: no named unit spells it)
+            Kelvin   1         K;
+            bar      1         bar;
+        }
+
+        definitions
+        {
+            TK       "T / Kelvin";
+            pCO2     "p[CO2] / bar";
+            pH2      "p[H2] / bar";
+            pH2O     "p[water] / bar";
+            pMeOH    "p[methanol] / bar";
+            kM       "kM0 * exp(BM / (R_VBF * T))";
+            sqrtKH2  "sqrtKH2_0 * exp(BH2 / (R_VBF * T))";
+            KH2O     "KH2O_0 * exp(BH2O / (R_VBF * T))";
+            K1star   "10^(3066 / TK - 10.592)";                 // bar^-2, Graaf 1986 (p. 5)
+            D        "1 + Kratio * pH2O / pH2 + sqrtKH2 * sqrt(pH2) + KH2O * pH2O";
+            drive    "1 - pH2O * pMeOH / (K1star * pH2^3 * pCO2)";
+        }
+
+        rate  "kM * pCO2 * pH2 * drive / D^3";
+
+        rateConstant { name kM;  unit kmol/kg/s; }
+
+        validity
+        {
+            T  { min 453.15 K;  max 553.15 K;  outside announce;  unit K;   }   // 180-280 C, p. 5
+            P  { min 15 bar;    max 51 bar;    outside announce;  unit bar; }   // 15-51 bar, p. 5
+        }
+    }
+}
+
+rwgs
+{
+    stoichiometry
+    (
+        { component CO2;    nu -1; }
+        { component H2;     nu -1; }
+        { component CO;     nu  1; }
+        { component water;  nu  1; }
+    );
+
+    kinetics
+    {
+        type     expression;
+        source   "Vanden Bussche & Froment, J. Catal. 161 (1996) 1-10: eq. [3] (p. 6), Table 2 (p. 6), K3* after Graaf et al. 1986 as printed on p. 5 (the FORWARD shift constant)";
+        basis    catalystMass;
+        rateOf   extent;
+
+        parameters
+        {
+            k1_0     1.22e7    kmol/kg/s;   // k1': 1.22e10 mol/(kg s bar), Table 2
+            B1       -94765    J/mol;       // its B = -E_a, Table 2
+            sqrtKH2_0  0.499   -;
+            BH2      17197     J/mol;
+            KH2O_0   6.62e-11  -;
+            BH2O     124119    J/mol;
+            Kratio   3453.38   -;
+            R_VBF    [1 2 -2 -1 -1] 8.314;
+            Kelvin   1         K;
+            bar      1         bar;
+        }
+
+        definitions
+        {
+            TK       "T / Kelvin";
+            pCO2     "p[CO2] / bar";
+            pH2      "p[H2] / bar";
+            pH2O     "p[water] / bar";
+            pCO      "p[CO] / bar";
+            k1       "k1_0 * exp(B1 / (R_VBF * T))";
+            sqrtKH2  "sqrtKH2_0 * exp(BH2 / (R_VBF * T))";
+            KH2O     "KH2O_0 * exp(BH2O / (R_VBF * T))";
+            K3star   "1 / 10^(-2073 / TK + 2.029)";             // log10(1/K3*) = -2073/T + 2.029 (p. 5)
+            D        "1 + Kratio * pH2O / pH2 + sqrtKH2 * sqrt(pH2) + KH2O * pH2O";
+            drive    "1 - K3star * pH2O * pCO / (pCO2 * pH2)";
+        }
+
+        rate  "k1 * pCO2 * drive / D";
+
+        rateConstant { name k1;  unit kmol/kg/s; }
+
+        validity
+        {
+            T  { min 453.15 K;  max 553.15 K;  outside announce;  unit K;   }
+            P  { min 15 bar;    max 51 bar;    outside announce;  unit bar; }
+        }
+    }
+}

@@ -110,7 +110,7 @@ import type { OutputPass as OutputPassT } from "three/examples/jsm/postprocessin
 
 import { equipmentDrawing, type Part, type PartRole } from "../../case/equipmentModel.js";
 import {
-  cameraFit, declutter, LABEL_PRIORITY, PHASE_COLOURS, pointAlong, ROUTE_ARROW_SPACING,
+  BUND_WALL_THICKNESS, cameraFit, declutter, LABEL_PRIORITY, PHASE_COLOURS, pointAlong, ROUTE_ARROW_SPACING,
   type LabelBox, type LayoutScene, type Phase, type RenderQuality, type Vec3, type ViewPreset,
 } from "../../case/plantLayout.js";
 
@@ -982,6 +982,42 @@ export function mountLayoutScene(m: LayoutModules, el: HTMLDivElement, scene: La
       world.add(post);
     }
   }
+  //  ---- secondary containment (C134): a low wall on the engine's outline,
+  //  at the engine's height; an impounding area's pit as a dark recess below
+  //  grade.  The thickness is drawing (BUND_WALL_THICKNESS); a containment the
+  //  engine found SHORT of its rule is drawn in the flagged look AND labelled
+  //  so in words (never colour alone).
+  for (const b of scene.bunds) {
+    const wallMat = b.flagged ? bodyMat.flagged : roleMat.get("concrete")!;
+    for (const [a, c] of b.runs) {
+      const len = Math.hypot(c[0] - a[0], c[2] - a[2]);
+      if (len < 1e-6) continue;
+      const wall = new THREE.Mesh(keep(new THREE.BoxGeometry(len + BUND_WALL_THICKNESS,
+        b.height, BUND_WALL_THICKNESS)), wallMat);
+      wall.position.set((a[0] + c[0]) / 2, b.height / 2, (a[2] + c[2]) / 2);
+      wall.rotation.y = -Math.atan2(c[2] - a[2], c[0] - a[0]);
+      wall.castShadow = true;
+      wall.receiveShadow = true;
+      wall.userData.tooltip = b.tooltip;
+      pickables.push(wall);
+      world.add(wall);
+    }
+    if (b.pit) {
+      const pit = new THREE.Mesh(keep(new THREE.BoxGeometry(b.pit.sizeX, b.pit.depth, b.pit.sizeZ)),
+        keep(new THREE.MeshStandardMaterial({ color: 0x3a3f44, roughness: 0.95, metalness: 0,
+                                              transparent: true, opacity: 0.85 })));
+      pit.position.set(b.pit.at[0], -b.pit.depth / 2 + 0.01, b.pit.at[2]);
+      pit.userData.tooltip = b.tooltip;
+      pickables.push(pit);
+      world.add(pit);
+      label(`pit of ${b.bund}`, [b.pit.at[0], 0.3, b.pit.at[2]], LABEL_PRIORITY.other);
+    }
+    const first = b.runs[0];
+    if (first)
+      label(b.label, [first[0][0], b.height + 0.4, first[0][2]],
+            b.flagged ? LABEL_PRIORITY.finding : LABEL_PRIORITY.other, b.flagged);
+  }
+
   //  A pipe through the fence: the pipeline carried on outside it, and a
   //  sign with the case's own label (drawing: the stub and the sign).
   for (const cr of scene.crossings) {

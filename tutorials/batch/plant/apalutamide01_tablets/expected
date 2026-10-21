@@ -593,7 +593,7 @@ layout  access:gate            distance         1                1e-4
 layout  summary                placed           15               1e-4
 layout  summary                unplaced         0                1e-4
 layout  summary                internal         0                1e-4
-layout  summary                findings         1                1e-4
+layout  summary                findings         3                1e-4
 layout  summary                pipes            4                1e-4
 layout  summary                notRouted        42               1e-4
 layout  summary                pipeLength       126              1e-4
@@ -1269,3 +1269,7 @@ batch   idleTrain:sprayDrying  limit            0.25             1e-4
 batch   idleTrain:solidDose    kind             idleTrain        exact
 batch   idleTrain:solidDose    value            0.115559895833   1e-4
 batch   idleTrain:solidDose    limit            0.25             1e-4
+layout  unbundedLiquid:acetoneTank/tank1: value            30.2959710744    1e-4
+layout  unbundedLiquid:acetoneTank/tank1: limit            0                1e-4
+layout  unbundedLiquid:recoveredTank/tank1: value            13.9301597352    1e-4
+layout  unbundedLiquid:recoveredTank/tank1: limit            0                1e-4

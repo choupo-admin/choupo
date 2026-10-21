@@ -226,8 +226,11 @@ from the cooler to its tank and from the tank to the east battery limit. The two
 which the run says with that reason. **The plot** is the bare envelope of
 the layout, 68.5 m × 82 m = **5617 m²** (3388.5 m² before the tanks); no
 `plot { margin; }` is declared, so that is a lower bound, and the tanks'
-bunds -- the dikes that catch a spill -- are not drawn: both are ground the
-plot must still carry, and yours to add. **See it** in the
+bunds -- the dikes that catch a spill -- are not declared: the run announces
+both tanks as liquid stores no containment encloses (`unbundedLiquid`, two
+of the five findings), and the bund -- its wall, its capacity rule with its
+source (`bunds ( ... )` in `system/layoutDict`, DEV.md 4c C134) and the
+ground the plot must carry for it -- is yours to add. **See it** in the
 GUI under Reports → "Plant layout (3D)", and learn to read it in the EduTool
 **"Plant layout: where each item stands, and why"** (Process design &
 economics shelf).

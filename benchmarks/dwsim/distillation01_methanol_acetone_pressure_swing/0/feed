@@ -1,0 +1,13 @@
+/*--- Benchmark B: the fresh feed, equimolar methanol + acetone at 300 K and
+      1 atm.  The reference sample declares it by MASS (0.044998 kg/s); its
+      molar flow is 0.998602 mol/s, 0.499301 mol/s of each component (the
+      sample's own stored component flows). ---*/
+
+componentMolarFlows
+{
+    methanol   0.499301 mol/s;
+    acetone    0.499301 mol/s;
+}
+
+T               300 K;
+P               101325 Pa;

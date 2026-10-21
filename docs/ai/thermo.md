@@ -216,12 +216,22 @@ equilibrium
 
     equationOfState
     {
-        model      SRK;                        // or PR
+        model      SRK;                        // or PengRobinson (the phi-phi word; PR78 since 2026-10-21)
         mixingRule vanDerWaalsOneFluid;
         binaryInteractions
         {
             // Knapp et al., DECHEMA Chemistry Data Series VI (1982)
             N2-CH4 { source "data/standards/parameters/SRK/N2-CH4.dat"; }
+            // a kij SET: every pair of a mixture, the PPR78 / E-PPR78 group
+            // contribution evaluated ONCE at a declared T by the `ppr78Kij`
+            // props op and written into the case (recordType
+            // eosBinaryInteractionSet; DEV.md 4c C123, route P)
+            ppr78 { source "constant/parameters/PengRobinson/ppr78_322K.dat"; }
+            // an INLINE value is accepted ONLY under regression, the varying operation named
+            // (fitParameters varies it per iteration); a finished fit is a record
+            // (recordType eosBinaryInteraction) carrying its verdict -- a record
+            // whose verdict is not `validated` is ANNOUNCED by every run that uses it
+            CO2-methanol { i CO2; j methanol; kij 0.0; variedBy fitParameters; }
         }
     }
 

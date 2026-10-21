@@ -1,5 +1,12 @@
 # paper/ — the JOSS submission draft
 
+> **Superseded for submission (2026-10-21, DEV.md 4c C126):** the JOSS paper
+> is now `paper/joss/paper.md` + `paper/joss/paper.bib`, adapted from the
+> white paper `paper/whitepaper/whitepaper.tex` to the current JOSS format
+> (750–1750 words; Summary, Statement of need, State of the field, Software
+> design, Research impact statement, AI usage disclosure).  The files below
+> are the earlier draft written against the withdrawn 2607.
+
 This folder holds the draft paper for the *Journal of Open Source Software*
 (https://joss.theoj.org): `paper.md` (JOSS Markdown + YAML front matter) and
 `paper.bib` (the references).

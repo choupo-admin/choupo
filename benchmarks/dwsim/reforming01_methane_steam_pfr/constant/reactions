@@ -1,0 +1,273 @@
+/*---------------------------------------------------------------------------*\
+  reactions -- METHANE STEAM REFORMING, WATER-GAS SHIFT AND THE OVERALL
+  REFORMING on Ni/MgAl2O4, the intrinsic kinetics of
+
+      J. Xu and G. F. Froment, "Methane Steam Reforming, Methanation and
+      Water-Gas Shift: I. Intrinsic Kinetics", AIChE Journal 35(1) (1989)
+      88-96 (DOI 10.1002/aic.690350109, embedded in the PDF, not printed).
+
+  WRITTEN HERE, every number of it (DEV.md 4c C67).  Eq. 3 (p. 92):
+
+      r1 = (k1 / p_H2^2.5) (p_CH4 p_H2O   - p_H2^3 p_CO  / K1) / DEN^2   (I:   CH4 + H2O  = CO  + 3 H2)
+      r2 = (k2 / p_H2    ) (p_CO  p_H2O   - p_H2   p_CO2 / K2) / DEN^2   (II:  CO  + H2O  = CO2 +   H2)
+      r3 = (k3 / p_H2^3.5) (p_CH4 p_H2O^2 - p_H2^4 p_CO2 / K3) / DEN^2   (III: CH4 + 2H2O = CO2 + 4 H2)
+      DEN = 1 + K_CO p_CO + K_H2 p_H2 + K_CH4 p_CH4 + K_H2O p_H2O / p_H2
+
+  UNITS, as the Notation prints them (p. 95): pressures in BAR, rates in
+  kmol/(kg_cat h), k1 and k3 in kmol bar^0.5/(kg_cat h), k2 in
+  kmol/(kg_cat h bar), K_CO, K_H2, K_CH4 in bar^-1, K_H2O dimensionless,
+  K1 and K3 in bar^2, K2 dimensionless.  THE TRAP, settled by the
+  transcription's checker: the time base is HOURS, not seconds, and the
+  bar^0.5 of k1, k3 is absorbed here by making every partial pressure
+  dimensionless in bar (p[i]/bar), so each k carries kmol/(kg h) only.
+  The engine converts the declared kmol/kg/h to its kmol/(kg s) basis.
+
+  PARAMETERS: the Arrhenius / van 't Hoff form, A from Table 6 ("for the
+  final model, reference activity", p. 94) with E and dH from Table 5
+  (p. 94): k_i = A exp(-E_i/RT), K_j = A exp(-dH_j/RT), R = 8.314 J/(mol K)
+  -- the R the article prints as "kJ/kmol" without its kelvin, and the one
+  that reproduces Table 6 from Table 5's reference-temperature values to
+  within 1.5 %.  Two printed facts, reported not corrected: Table 6 prints
+  A(K_H2) = 6.12e-9 where the text on the same page prints 6.13e-9 (Table 6,
+  "for final model", is used); Table 5 and Table 6 are two homes of one set
+  that do not coincide exactly (A(k1) 1.3 %, A(k3) 1.5 % apart, within the
+  rounding of E to 0.1 kJ/mol).  dH_H2O is POSITIVE (+88.68 kJ/mol) as
+  printed, with the authors' own note that it does not follow van 't Hoff.
+  No K_CO2 term: none was statistically significant (p. 93).
+
+  ACTIVITY: the article's REFERENCE activity -- the partially deactivated
+  catalyst of its measurements.  Fresh catalyst is 2.246 x every k_i
+  (p. 94); NOT applied (the sample does not apply it either).
+
+  THE EQUILIBRIUM CONSTANTS: not in the article (it prints only their
+  units).  The `lnK` table below is Choupo's own formation data on the
+  ideal-gas standard state at 1 bar, written by the `reactionGibbs` op in
+  system/propsDict (its CSV is what is pasted here; compare.py re-runs it
+  and refuses a moved table).  With pressures in bar that IS the K1, K3 in
+  bar^2 and K2 dimensionless the Notation means.
+
+  TRANSCRIPTION: read from the page image by two readers (2026-10-21);
+  251 values, 246 agreed (every number agreed; the five disagreements are
+  labels and a printed formula's subscript), data/local/curation/c123/.
+
+  THE WINDOW: steam reforming 773-848 K, 3-15 bar (Table 1); this bed runs
+  at 1000 K and 1 atm -- an extrapolation in T, declared and ANNOUNCED.
+  The sample's own expressions carry A(k1) = 4.22e15, A(k2) = 1.96e6 and
+  their own K correlations; README, findings.
+\*---------------------------------------------------------------------------*/
+
+steamReforming      // reaction I
+{
+    stoichiometry
+    (
+        { component CH4;    nu -1; }
+        { component water;  nu -1; }
+        { component CO;     nu  1; }
+        { component H2;     nu  3; }
+    );
+
+    kinetics
+    {
+        type     expression;
+        source   "Xu & Froment, AIChE J. 35 (1989) 88-96: Eq. 3 (p. 92) r1 and DEN; A from Table 6 (p. 94, reference activity), E1 and dH from Table 5 (p. 94); K1 from Choupo's formation data (system/propsDict)";
+        basis    catalystMass;
+        rateOf   extent;
+
+        parameters
+        {
+            A_k1     4.225e15  kmol/kg/h;   // Table 6 (kmol bar^0.5 / (kg h); bar absorbed below)
+            E1       240.1     kJ/mol;      // Table 5
+            A_KCO    8.23e-5   -;           // Table 6, bar^-1
+            dH_CO    -70.65    kJ/mol;      // Table 5
+            A_KH2    6.12e-9   -;           // Table 6, bar^-1 (text: 6.13e-9)
+            dH_H2    -82.90    kJ/mol;
+            A_KCH4   6.65e-4   -;           // Table 6, bar^-1
+            dH_CH4   -38.28    kJ/mol;
+            A_KH2O   1.77e5    -;           // Table 6, dimensionless
+            dH_H2O   88.68     kJ/mol;      // positive as printed
+            R_XF     [1 2 -2 -1 -1] 8.314;   // J/(mol K), bracket form
+            bar      1         bar;
+        }
+
+        tables
+        {
+            //  ln K on the 1 bar ideal-gas standard state, Choupo's own
+            //  formation data (reactionGibbs, system/propsDict); linear
+            //  between the points, refused outside them.
+            lnK
+            {
+                x      ( 950 960 970 980 990 1000 1010 1020 1030 1040 1050 );   xUnit K;
+                lnK1   ( 1.85402606e+00 2.15034118e+00 2.44070528e+00 2.72529403e+00 3.00427626e+00 3.27781424e+00 3.54606402e+00 3.80917574e+00 4.06729392e+00 4.32055769e+00 4.56910108e+00 );
+                yUnit  -;
+            }
+        }
+
+        definitions
+        {
+            pCH4   "p[CH4] / bar";
+            pH2O   "p[water] / bar";
+            pCO    "p[CO] / bar";
+            pCO2   "p[CO2] / bar";
+            pH2    "p[H2] / bar";
+            k1     "A_k1 * exp(-E1 / (R_XF * T))";
+            KCO    "A_KCO * exp(-dH_CO / (R_XF * T))";
+            KH2    "A_KH2 * exp(-dH_H2 / (R_XF * T))";
+            KCH4   "A_KCH4 * exp(-dH_CH4 / (R_XF * T))";
+            KH2O   "A_KH2O * exp(-dH_H2O / (R_XF * T))";
+            DEN    "1 + KCO * pCO + KH2 * pH2 + KCH4 * pCH4 + KH2O * pH2O / pH2";
+            K1     "exp(lnK1(T))";
+        }
+
+        rate  "k1 / pH2^2.5 * (pCH4 * pH2O - pH2^3 * pCO / K1) / DEN^2";
+
+        rateConstant { name k1;  unit kmol/kg/h; }
+
+        validity
+        {
+            T  { min 773 K;  max 848 K;  outside announce;  unit K;   }   // Table 1, steam reforming
+            P  { min 3 bar;  max 15 bar; outside announce;  unit bar; }
+        }
+    }
+}
+
+waterGasShift       // reaction II
+{
+    stoichiometry
+    (
+        { component CO;     nu -1; }
+        { component water;  nu -1; }
+        { component CO2;    nu  1; }
+        { component H2;     nu  1; }
+    );
+
+    kinetics
+    {
+        type     expression;
+        source   "Xu & Froment, AIChE J. 35 (1989) 88-96: Eq. 3 (p. 92) r2 and DEN; A from Table 6, E2 and dH from Table 5; K2 from Choupo's formation data";
+        basis    catalystMass;
+        rateOf   extent;
+
+        parameters
+        {
+            A_k2     1.955e6   kmol/kg/h;   // Table 6 (kmol / (kg h bar); bar absorbed below)
+            E2       67.13     kJ/mol;      // Table 5
+            A_KCO    8.23e-5   -;
+            dH_CO    -70.65    kJ/mol;
+            A_KH2    6.12e-9   -;
+            dH_H2    -82.90    kJ/mol;
+            A_KCH4   6.65e-4   -;
+            dH_CH4   -38.28    kJ/mol;
+            A_KH2O   1.77e5    -;
+            dH_H2O   88.68     kJ/mol;
+            R_XF     [1 2 -2 -1 -1] 8.314;   // J/(mol K), bracket form
+            bar      1         bar;
+        }
+
+        tables
+        {
+            lnK
+            {
+                x      ( 950 960 970 980 990 1000 1010 1020 1030 1040 1050 );   xUnit K;
+                lnK2   ( 5.75081628e-01 5.28582399e-01 4.83175052e-01 4.38824744e-01 3.95498094e-01 3.53163118e-01 3.11789152e-01 2.71346797e-01 2.31807853e-01 1.93145267e-01 1.55333072e-01 );
+                yUnit  -;
+            }
+        }
+
+        definitions
+        {
+            pCH4   "p[CH4] / bar";
+            pH2O   "p[water] / bar";
+            pCO    "p[CO] / bar";
+            pCO2   "p[CO2] / bar";
+            pH2    "p[H2] / bar";
+            k2     "A_k2 * exp(-E2 / (R_XF * T))";
+            KCO    "A_KCO * exp(-dH_CO / (R_XF * T))";
+            KH2    "A_KH2 * exp(-dH_H2 / (R_XF * T))";
+            KCH4   "A_KCH4 * exp(-dH_CH4 / (R_XF * T))";
+            KH2O   "A_KH2O * exp(-dH_H2O / (R_XF * T))";
+            DEN    "1 + KCO * pCO + KH2 * pH2 + KCH4 * pCH4 + KH2O * pH2O / pH2";
+            K2     "exp(lnK2(T))";
+        }
+
+        rate  "k2 / pH2 * (pCO * pH2O - pH2 * pCO2 / K2) / DEN^2";
+
+        rateConstant { name k2;  unit kmol/kg/h; }
+
+        validity
+        {
+            T  { min 773 K;  max 848 K;  outside announce;  unit K;   }
+            P  { min 3 bar;  max 15 bar; outside announce;  unit bar; }
+        }
+    }
+}
+
+overallReforming    // reaction III
+{
+    stoichiometry
+    (
+        { component CH4;    nu -1; }
+        { component water;  nu -2; }
+        { component CO2;    nu  1; }
+        { component H2;     nu  4; }
+    );
+
+    kinetics
+    {
+        type     expression;
+        source   "Xu & Froment, AIChE J. 35 (1989) 88-96: Eq. 3 (p. 92) r3 and DEN; A from Table 6, E3 and dH from Table 5; K3 from Choupo's formation data";
+        basis    catalystMass;
+        rateOf   extent;
+
+        parameters
+        {
+            A_k3     1.020e15  kmol/kg/h;   // Table 6 (kmol bar^0.5 / (kg h); bar absorbed below)
+            E3       243.9     kJ/mol;      // Table 5
+            A_KCO    8.23e-5   -;
+            dH_CO    -70.65    kJ/mol;
+            A_KH2    6.12e-9   -;
+            dH_H2    -82.90    kJ/mol;
+            A_KCH4   6.65e-4   -;
+            dH_CH4   -38.28    kJ/mol;
+            A_KH2O   1.77e5    -;
+            dH_H2O   88.68     kJ/mol;
+            R_XF     [1 2 -2 -1 -1] 8.314;   // J/(mol K), bracket form
+            bar      1         bar;
+        }
+
+        tables
+        {
+            lnK
+            {
+                x      ( 950 960 970 980 990 1000 1010 1020 1030 1040 1050 );   xUnit K;
+                lnK3   ( 2.42910769e+00 2.67892358e+00 2.92388033e+00 3.16411878e+00 3.39977436e+00 3.63097735e+00 3.85785317e+00 4.08052254e+00 4.29910178e+00 4.51370296e+00 4.72443415e+00 );
+                yUnit  -;
+            }
+        }
+
+        definitions
+        {
+            pCH4   "p[CH4] / bar";
+            pH2O   "p[water] / bar";
+            pCO    "p[CO] / bar";
+            pCO2   "p[CO2] / bar";
+            pH2    "p[H2] / bar";
+            k3     "A_k3 * exp(-E3 / (R_XF * T))";
+            KCO    "A_KCO * exp(-dH_CO / (R_XF * T))";
+            KH2    "A_KH2 * exp(-dH_H2 / (R_XF * T))";
+            KCH4   "A_KCH4 * exp(-dH_CH4 / (R_XF * T))";
+            KH2O   "A_KH2O * exp(-dH_H2O / (R_XF * T))";
+            DEN    "1 + KCO * pCO + KH2 * pH2 + KCH4 * pCH4 + KH2O * pH2O / pH2";
+            K3     "exp(lnK3(T))";
+        }
+
+        rate  "k3 / pH2^3.5 * (pCH4 * pH2O^2 - pH2^4 * pCO2 / K3) / DEN^2";
+
+        rateConstant { name k3;  unit kmol/kg/h; }
+
+        validity
+        {
+            T  { min 773 K;  max 848 K;  outside announce;  unit K;   }
+            P  { min 3 bar;  max 15 bar; outside announce;  unit bar; }
+        }
+    }
+}

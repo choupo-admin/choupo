@@ -1,0 +1,11 @@
+/*--- Benchmark C: the aqueous feed, 1000 mol/s at 40 % acetone (the
+      reference sample's FEED stream, 298.15 K, 101325 Pa). ---*/
+
+componentMolarFlows
+{
+    water     600 mol/s;
+    acetone   400 mol/s;
+}
+
+T               298.15 K;
+P               101325 Pa;

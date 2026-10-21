@@ -6,25 +6,25 @@ stream  ipaRecycle             F                0.00163333333333 1e-4
 stream  waterProduct           F                0.00963336111111 1e-4
 kpi     C2                     B                0.00963336111111 1e-4
 kpi     C2                     D                0.00163333333333 1e-4
-kpi     C2                     Q_condenser_kW   -120.936005804   1e-4
-kpi     C2                     Q_reboiler_kW    127.025516935    1e-4
+kpi     C2                     Q_condenser_kW   -120.954436671   1e-4
+kpi     C2                     Q_reboiler_kW    127.043947802    1e-4
 kpi     C2                     R                0.849            1e-4
-kpi     C2                     T_bottom         366.174785539    1e-4
+kpi     C2                     T_bottom         366.17478554     1e-4
 kpi     C2                     T_top            355.876498071    1e-4
 kpi     C2                     feedStage        16               1e-4
 kpi     C2                     nFeeds           1                1e-4
 kpi     C2                     nSideDraws       0                1e-4
 kpi     C2                     nStages          19               1e-4
-kpi     C2                     x_B_HK           0.987071195419   1e-4
-kpi     C2                     x_D_LK           0.579745774059   1e-4
-utility C2                     heating.steamLP.duty_kW 127.025516935    1e-4
-utility C2                     heating.steamLP.T 366.174785539    1e-4
-utility C2                     heating.steamLP.kg_s 0.0581086536755  1e-4
-utility C2                     heating.steamLP.eur_h 5.48750233158    1e-4
-utility C2                     cooling.coolingWater.duty_kW -120.936005804   1e-4
+kpi     C2                     x_B_HK           0.987071195421   1e-4
+kpi     C2                     x_D_LK           0.579745774066   1e-4
+utility C2                     heating.steamLP.duty_kW 127.043947802    1e-4
+utility C2                     heating.steamLP.T 366.17478554     1e-4
+utility C2                     heating.steamLP.kg_s 0.0581170849964  1e-4
+utility C2                     heating.steamLP.eur_h 5.48829854505    1e-4
+utility C2                     cooling.coolingWater.duty_kW -120.954436671   1e-4
 utility C2                     cooling.coolingWater.T 355.876498071    1e-4
-utility C2                     cooling.coolingWater.kg_s 2.89320588047    1e-4
-utility C2                     cooling.coolingWater.eur_h 0.174147848357   1e-4
+utility C2                     cooling.coolingWater.kg_s 2.89364681032    1e-4
+utility C2                     cooling.coolingWater.eur_h 0.174174388807   1e-4
 #
 # --- THE NUMBERS THIS CASE EXISTS FOR, added by hand -----------------------
 #
@@ -36,13 +36,13 @@ utility C2                     cooling.coolingWater.eur_h 0.174147848357   1e-4
 #
 # The claim is REGRESSION.  0.5797 DISAGREES with Luyben's 0.6500 and is meant
 # to: it sits against the azeotrope acetone01 measured.
-stream  ipaRecycle             isopropanol      0.579745774059   1e-4
-stream  ipaRecycle             water            0.419568067301   1e-4
-stream  waterProduct           isopropanol      0.0129281878815  1e-4
-stream  waterProduct           water            0.987071195419   1e-4
+stream  ipaRecycle             isopropanol      0.579745774066   1e-4
+stream  ipaRecycle             water            0.419568067294   1e-4
+stream  waterProduct           isopropanol      0.0129281878798  1e-4
+stream  waterProduct           water            0.987071195421   1e-4
 stream  B1                     T                357.46           1e-4
 stream  ipaRecycle             T                355.832266988    1e-4
-stream  waterProduct           T                366.174785539    1e-4
+stream  waterProduct           T                366.17478554     1e-4
 boundary global                 H_feeds_kW       -3191.00835706   1e-4
 boundary global                 Q_boundary_kW    6.08951113089    1e-4
 boundary global                 H_products_kW    -3184.91884593   1e-4

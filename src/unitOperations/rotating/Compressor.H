@@ -88,12 +88,24 @@ Description
             }
         }
 
-    "I need P_out = 10 bar" is a DESIGN question, not a unit-op spec.
-    Wrap the case in a DesignSpec that manipulates `$W_shaft` with a
-    target on `compressor01.P_out`.
+    or, since 2026-10-21 (DEV.md 4c C123, on the pump's precedent), eta
+    plus the DISCHARGE PRESSURE the machine must reach -- the way a
+    flowsheet names most of its compressors (the header it feeds):
 
-    Limitation: requires `equationOfState idealGas;` OR `SRK;`.  PR /
-    cubic-EoS for polar species will land in a later milestone.
+            operation
+            {
+                P_out       10 bar;        // the header -> W_shaft is the RESULT
+                eta         0.72;
+            }
+
+    With P_out given the isentropic path is ONE inner solve,
+    S_real(T_s, P_out, y) = s_in, w_isen = H_real(T_s, P_out) - h_in,
+    w_real = w_isen / eta, and T_out from (c): nothing is searched for.
+    Exactly one of W_shaft and P_out is accepted (both or neither
+    refuses).  A DesignSpec on $W_shaft targeting `compressor01.P_out`
+    still works and solves the same equations from the outside.
+
+    Limitation: requires a gas-phase EoS (idealGas, SRK, PengRobinson).
 \*---------------------------------------------------------------------------*/
 
 #pragma once

@@ -1,0 +1,3 @@
+application   choupoProps;
+description   "Benchmark E: the E-PPR78 kij set at the bed's declared 1000 K";
+verbosity     3;

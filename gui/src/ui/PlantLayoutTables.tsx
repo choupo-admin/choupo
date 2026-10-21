@@ -51,7 +51,8 @@ License
 //  is what they saw.  This file only lays them out.
 
 import type { ReactNode } from "react";
-import { Box, Group, ScrollArea, Table, Text, UnstyledButton } from "@mantine/core";
+import { Anchor, Box, Group, ScrollArea, Table, Text, UnstyledButton } from "@mantine/core";
+import { guideUrl, openGuide } from "../help/guideLinks.js";
 import { IconChevronDown, IconChevronRight } from "@tabler/icons-react";
 
 import type { PlantLayout } from "../adapters/SolverAdapter.js";
@@ -60,6 +61,7 @@ import {
   FINDINGS_CAPTION, findingRows, itemRows, layoutNotes, LEGEND_CONTROLS, LEGEND_PHASES,
   LEGEND_PIPES, LEGEND_SHAPES, PARTICLE_WORD, PIPE_REGISTER_CAPTION, pipeRegister,
   FENCE_CAPTION, fenceSummary, PLOT_CAPTION, plotSummary, ROADS_CAPTION, roadSummary,
+  BUNDS_CAPTION, bundSummary, DESIGN_GUIDE_CONTAINMENT,
 } from "../case/layoutTables.js";
 import { layoutSection, type LayoutSectionId } from "../case/layoutPanels.js";
 import { useCollapsedFlag } from "./methods/methodsChrome.js";
@@ -267,6 +269,53 @@ export function FenceTable({ layout }: { layout: PlantLayout }) {
   );
 }
 
+/** SECONDARY CONTAINMENT (DEV.md 4c C134): one row per bund or impounding
+ *  area, the engine's volumes and verdict.  Drawn under the plot, which
+ *  holds their ground. */
+export function BundTable({ layout }: { layout: PlantLayout }) {
+  const v = bundSummary(layout);
+  if (!v) return null;
+  return (
+    <Box mt="xs">
+      <Text size="sm">{v.headline}</Text>
+      {v.notes.map((n) => <Text key={n} size="xs" c="dimmed">{n}</Text>)}
+      <Text size="xs">
+        <Anchor size="xs" onClick={() =>
+          openGuide(guideUrl("designGuide", DESIGN_GUIDE_CONTAINMENT))}>
+          Design Guide: secondary containment, bunds and impounding areas
+        </Anchor>
+      </Text>
+      <ScrollArea type="auto" mt={4}>
+        <Table striped withTableBorder fz="xs" miw={760} captionSide="top">
+          <Table.Caption style={{ textAlign: "left" }}>{BUNDS_CAPTION}</Table.Caption>
+          <Table.Thead><Table.Tr>
+            <Table.Th>Containment</Table.Th>
+            <Table.Th>Kind</Table.Th>
+            <Table.Th>Encloses</Table.Th>
+            <Table.Th ta="right">Holds (m³)</Table.Th>
+            <Table.Th ta="right">Requires (m³)</Table.Th>
+            <Table.Th>Verdict (the engine's)</Table.Th>
+            <Table.Th>Drain</Table.Th>
+          </Table.Tr></Table.Thead>
+          <Table.Tbody>
+            {v.rows.map((r) => (
+              <Table.Tr key={r.bund}>
+                <Table.Td ff="monospace">{r.bund}</Table.Td>
+                <Table.Td>{r.kind}</Table.Td>
+                <Table.Td>{r.items}</Table.Td>
+                <Table.Td ta="right" ff="monospace">{r.holds}</Table.Td>
+                <Table.Td ta="right" ff="monospace">{r.requires}</Table.Td>
+                <Table.Td>{r.verdict}</Table.Td>
+                <Table.Td>{r.drain}</Table.Td>
+              </Table.Tr>
+            ))}
+          </Table.Tbody>
+        </Table>
+      </ScrollArea>
+    </Box>
+  );
+}
+
 /** THE ROADS (DEV.md 4c C90): the engine's totals, the case's headroom and
  *  access distance, and one row per road. */
 export function RoadNetwork({ layout }: { layout: PlantLayout }) {
@@ -380,7 +429,8 @@ export function PlantLayoutTables({ layout, sectioned = false }: {
   return (
     <>
       {wrap("plot", !!layout.plot,
-            <><PlotArea layout={layout} /><FenceTable layout={layout} /></>,
+            <><PlotArea layout={layout} /><FenceTable layout={layout} />
+              <BundTable layout={layout} /></>,
             layout.plot ? `${layout.plot.plotArea.toFixed(0)} m²`
               + (layout.fence ? `, fence ${layout.fence.length.toFixed(0)} m` : "") : undefined)}
       {wrap("roads", !!layout.roadNetwork, <RoadNetwork layout={layout} />,

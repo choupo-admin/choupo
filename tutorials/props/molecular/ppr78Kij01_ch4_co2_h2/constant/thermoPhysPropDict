@@ -1,0 +1,25 @@
+/*---------------------------------------------------------------------------*\
+  The case's components, phi-phi PR78 with NO kij declared: this system
+  exists so `ppr78Kij` can read PR78's a_i(T) and b_i -- the kij it computes
+  are written to a file, never applied here.
+\*---------------------------------------------------------------------------*/
+
+recordType    thermophysicalPropertySystem;
+schemaVersion 2;
+
+components ( CH4 CO2 H2 );
+
+equilibrium
+{
+    formulation phiPhi;
+    equationOfState { model PengRobinson;  mixingRule vanDerWaalsOneFluid; }
+    liquid { fugacityRoute equationOfState; root liquid; }
+    vapour { fugacityRoute equationOfState; root vapour; }
+}
+
+caloric
+{
+    energyBasis elementsDatum;
+    liquid { departureRoute equilibriumEquationOfState; root liquid; }
+    vapour { departureRoute equilibriumEquationOfState; root vapour; }
+}

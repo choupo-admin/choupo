@@ -92,7 +92,7 @@ export const LS_STEPS: readonly LessonStep[] = [
     ],
     note: "One notational warning, because you will meet both. Choupo's "
       + "`chi2` diagnostic is the plain sum of squares (src/propertyOps/"
-      + "FitParameters.cpp:128), while the Theory Guide's chapter writes it "
+      + "FitParameters.cpp:130), while the Theory Guide's chapter writes it "
       + "with a factor of one half in front. The minimiser is the same point "
       + "either way; only the number printed differs, by a factor of two.",
   },
@@ -215,7 +215,7 @@ export const LS_STEPS: readonly LessonStep[] = [
     where: [
       { sym: "\\lambda", means: "the DAMPING. Zero is Gauss-Newton; large is "
         + "a short step down the gradient. It is declared in the operation's "
-        + "dict as `lambda0` (read at FitParameters.cpp:565) and then moved "
+        + "dict as `lambda0` (read at FitParameters.cpp:625) and then moved "
         + "by the engine every iteration" },
       { sym: "I", means: "the identity matrix — Levenberg's unscaled damping, "
         + "shown for contrast and NOT what Choupo does" },
@@ -232,8 +232,8 @@ export const LS_STEPS: readonly LessonStep[] = [
       + "diag(J'J) makes the penalty carry the units of each parameter's own "
       + "sensitivity, so the same lambda means the same thing for all four. "
       + "Choupo writes the equation out at src/propertyOps/"
-      + "FitParameters.cpp:232 and applies the damping at "
-      + "FitParameters.cpp:253.",
+      + "FitParameters.cpp:256 and applies the damping at "
+      + "FitParameters.cpp:277.",
   },
   {
     n: 5,
@@ -248,14 +248,14 @@ export const LS_STEPS: readonly LessonStep[] = [
       + "two factors is deliberate: it relaxes gently and tightens hard.",
     derivation: [
       { step: "Accepted step — the objective fell. Loosen the damping by a "
-          + "factor a little under one (FitParameters.cpp:924).",
+          + "factor a little under one (FitParameters.cpp:990).",
         eq: String.raw`\lambda \leftarrow 0.7\,\lambda` },
       { step: "Rejected step — the objective did not fall. The parameters do "
           + "not move at all; only the damping does, and it moves further "
-          + "(FitParameters.cpp:931).",
+          + "(FitParameters.cpp:997).",
         eq: String.raw`\lambda \leftarrow 2.5\,\lambda` },
       { step: "Singular normal matrix — the solve itself failed. Damp by a "
-          + "whole order of magnitude and retry (FitParameters.cpp:901).",
+          + "whole order of magnitude and retry (FitParameters.cpp:967).",
         eq: String.raw`\lambda \leftarrow 10\,\lambda` },
       { step: "And a ceiling, because a lambda that keeps climbing is a "
           + "message. Past it the engine stops and says the initial guess is "
@@ -271,7 +271,7 @@ export const LS_STEPS: readonly LessonStep[] = [
     ],
     note: "Two more things happen to a step before it is judged. It is "
       + "CLAMPED to the bounds each parameter declares in the dict "
-      + "(FitParameters.cpp:906), and the run publishes `params_at_bound` so "
+      + "(FitParameters.cpp:972), and the run publishes `params_at_bound` so "
       + "that a parameter pressed against a limit you invented is visible "
       + "rather than silent. And convergence is declared on the RELATIVE fall "
       + "in the objective, against the `tolerance` the dict declares — not on "
@@ -297,12 +297,12 @@ export const LS_STEPS: readonly LessonStep[] = [
       + "on screen to say so.",
     derivation: [
       { step: "The forward difference Choupo takes, one parameter at a time "
-          + "(FitParameters.cpp:894).",
+          + "(FitParameters.cpp:960).",
         eq: String.raw`J_{ij} \approx \frac{r_i(p + h\,e_j) - r_i(p)}{h}` },
       { step: "The step is RELATIVE where the parameter is large and absolute "
           + "where it is small, so one declared setting serves a coefficient "
           + "searched over plus or minus 15 and one searched over plus or "
-          + "minus 5000 alike (FitParameters.cpp:888).",
+          + "minus 5000 alike (FitParameters.cpp:954).",
         eq: String.raw`h = \mathrm{fdStep} \cdot \max\left( \lvert p_j \rvert, 1 \right)` },
       { step: "And the price of the shortcut: a forward difference carries a "
           + "truncation error that falls with h and a round-off error that "
@@ -382,7 +382,7 @@ export const LS_STEPS: readonly LessonStep[] = [
       + "a rule somebody could edit away.",
     derivation: [
       { step: "The declaration is read and frozen first "
-          + "(FitParameters.cpp:444), and `role` has no default — a dataset "
+          + "(FitParameters.cpp:493), and `role` has no default — a dataset "
           + "that does not declare one is refused by name." },
       { step: "The fitter reads `part.fit()`; the held-out evidence sits in "
           + "`part.validation()` and is never passed to it "
@@ -456,7 +456,7 @@ export const LS_STEPS: readonly LessonStep[] = [
     ],
     note: "One home for the rule: src/propertyOps/CurationDossier.cpp:59-63, "
       + "five lines you can read end to end. The verdict is taken ONCE in the "
-      + "run (FitParameters.cpp:1372) and travels to every sink from there "
+      + "run (FitParameters.cpp:1529) and travels to every sink from there "
       + "through src/propertyOps/PropertyOperation.H:118, the channel that "
       + "carries the CURATION axis as words — "
       + "it used to be recomputed at three call sites, one of them inside a "
@@ -487,7 +487,7 @@ export const LS_STEPS: readonly LessonStep[] = [
       { step: "The 95 % interval uses Student's t at the degrees of freedom "
           + "you actually have. With four of them t is 2.776, not 1.96, and "
           + "the interval is some 40 % wider than the normal one "
-          + "(FitParameters.cpp:218).",
+          + "(FitParameters.cpp:242).",
         eq: String.raw`p_j \pm t_{95}(\nu)\, \sqrt{C_{jj}}` },
       { step: "And the pairwise correlation, which is the one that catches "
           + "the trade-off an interval alone can miss.",
@@ -515,7 +515,7 @@ export const LS_STEPS: readonly LessonStep[] = [
     note: "Choupo calls a fit identifiable only when the normal matrix "
       + "inverted, there are degrees of freedom left, the condition number is "
       + "below 1e8, AND no pair is correlated past 0.999 "
-      + "(FitParameters.cpp:1075). The naive test — did it invert? — passes "
+      + "(FitParameters.cpp:1193). The naive test — did it invert? — passes "
       + "on exactly this case, which is why it is not the test.",
   },
   {

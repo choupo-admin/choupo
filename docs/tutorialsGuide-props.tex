@@ -3449,6 +3449,44 @@ The two ops publish the standard vapour-root family (Z, v\_molar) plus the label
 \end{tutgolden}
 
 \clearpage
+\tutentry{ppr78Kij01\_ch4\_co2\_h2}{tutorials/props/molecular/ppr78Kij01\_ch4\_co2\_h2}
+\begin{tutscheme}
+\begin{tikzpicture}[>={Stealth[length=2mm]}, every node/.style={font=\scriptsize}]
+  \node[draw, rounded corners=2pt, align=center, minimum width=3.1cm, minimum height=0.8cm, fill=black!4] at (0.0,-0.0) {\textbf{kij\_280K}\\[-1pt]{\tiny ppr78Kij}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=3.1cm, minimum height=0.8cm, fill=black!4] at (3.6,-0.0) {\textbf{kij\_500K}\\[-1pt]{\tiny ppr78Kij}};
+\end{tikzpicture}
+\end{tutscheme}
+\tutwhat{The E-PPR78 group-contribution kij of a CH4/CO2/H2 gas, evaluated once at a declared temperature and written as a kij SET record a phi-phi package reads: at 280 K every pair lies inside the T window of the data its group parameters were fitted on, at 500 K every pair is an extrapolation and the set says so pair by pair}
+\begin{tutnarrative}
+A kij FROM GROUPS, AT A DECLARED TEMPERATURE. A cubic needs one binary correction kij per pair, and a measured one exists for few pairs. PPR78 (Jaubert \& Mutelet) predicts it from the GROUPS each molecule is made of:
+
+k\_ij(T) = [ E\_ij(T) - (delta\_i - delta\_j)\textasciicircum{}2 ] / ( 2 delta\_i delta\_j ) delta\_i = sqrt(a\_i(T)) / b\_i (Choupo's own PR78) E\_ij(T) = -1/2 SUM\_k SUM\_l (alpha\_ik - alpha\_jk)(alpha\_il - alpha\_jl) A\_kl (298.15 / T)\textasciicircum{}(B\_kl / A\_kl - 1)
+
+so kij DEPENDS ON T. The `ppr78Kij` op evaluates it ONCE, at the temperature it is told, and writes the matrix to a FILE -- a kij SET record (`recordType eosBinaryInteractionSet;`) that a phi-phi package then declares -- with the three terms of the quotient beside every value, so the division can be redone by hand.
+
+WHAT THIS CASE SHOWS. The same three pairs at two temperatures: 280 K: every pair (CH4-CO2, CH4-H2, CO2-H2) lies inside the T range of the binary data its group parameters were fitted on (Xu et al. 2017, Table 2) -- nothing is marked; 500 K: every pair lies above that range, and the set writes `extrapolated yes;` with the window on each of them. The components are each their own group, so alpha is 1 or 0 and E\_ij is the single group-pair term.
+
+THE GROUP TABLE is constant/parameters/PPR78/xu2017.dat, the E-PPR78 subset (Xu, Lasala, Privat \& Jaubert, Int. J. Greenh. Gas Control 56 (2017) 126-154, Table 3); its own header explains its transcription and that it is `reviewStatus interim`.
+
+WHAT IS NOT VALIDATED. Nothing here is compared with a measurement: the numbers are Eq. 4 evaluated on the cited table and the engine's own PR78 a\_i(T), b\_i. Whether those kij reproduce a phase diagram is not asked here.
+
+THE TWO SET FILES are run outputs: they carry the date they were written, so they are named `$\ast$.proposal.dat`, which git ignores.
+
+\end{tutnarrative}
+\begin{tutgolden}
+\goldrow{diag}{kij\_280K}{T\_K}{280}
+\goldrow{diag}{kij\_280K}{kij\_CH4\_CO2}{0.108020158785}
+\goldrow{diag}{kij\_280K}{kij\_CH4\_H2}{0.29190260859}
+\goldrow{diag}{kij\_280K}{kij\_CO2\_H2}{0.0990306279107}
+\goldrow{diag}{kij\_280K}{nPairs}{3}
+\goldrow{diag}{kij\_500K}{T\_K}{500}
+\goldrow{diag}{kij\_500K}{kij\_CH4\_CO2}{0.147492367254}
+\goldrow{diag}{kij\_500K}{kij\_CH4\_H2}{0.644015046404}
+\goldrow{diag}{kij\_500K}{kij\_CO2\_H2}{0.424699449845}
+\goldrow{diag}{kij\_500K}{nPairs}{3}
+\end{tutgolden}
+
+\clearpage
 \tutentry{solubility01\_hildebrand\_ladder}{tutorials/props/molecular/solubility01\_hildebrand\_ladder}
 \tutwhat{Hildebrand: one number for like-dissolves-like, and where it stops}
 \tutreadme{Seven liquids on a ladder of cohesive energy density, from hexane to water.}
@@ -3929,10 +3967,10 @@ Ternary LIQUID-LIQUID solubility map (water / ethanol / benzene) --- the classic
 \end{tutnarrative}
 \begin{tutgolden}
 \goldrow{diag}{lle}{failures}{0}
-\goldrow{diag}{lle}{n\_ll}{69}
+\goldrow{diag}{lle}{n\_ll}{84}
 \goldrow{diag}{lle}{n\_nodes}{105}
-\goldrow{diag}{lle}{n\_onephase}{36}
-\goldrow{diag}{lle}{n\_tielines}{18}
+\goldrow{diag}{lle}{n\_onephase}{21}
+\goldrow{diag}{lle}{n\_tielines}{21}
 \goldrow{diag}{lle}{n\_vl}{0}
 \goldrow{diag}{lle}{n\_vlle}{0}
 \end{tutgolden}

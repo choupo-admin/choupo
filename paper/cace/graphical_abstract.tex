@@ -1,0 +1,33 @@
+% paper/cace/graphical_abstract.tex -- the graphical abstract, built as a
+% separate file (graphical_abstract.pdf) as Elsevier asks (TODO A4 in
+% main.tex: check the guide's minimum size; Elsevier's usual figure is
+% landscape, readable at about 5 x 13 cm).  A composite of the architecture
+% figure (figures/architecture.tex, shared with main.tex) and the browser
+% front-end on a real run (../whitepaper/figures/gui_flowsheet.png, captured
+% by ../whitepaper/figures/capture_gui.mjs).  Prose: CC BY-SA 4.0.
+\documentclass[border=6pt]{standalone}
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage{lmodern}
+\usepackage{graphicx}
+\graphicspath{{../whitepaper/figures/}}
+\usepackage{tikz}
+\usetikzlibrary{positioning,fit,arrows.meta,calc}
+\definecolor{linkink}{RGB}{20,60,110}
+\begin{document}
+\begin{tikzpicture}
+  \node[anchor=north west, inner sep=0] (arch) at (0,0)
+    {\resizebox{15cm}{!}{\input{figures/architecture.tex}}};
+  \node[anchor=north west, inner sep=0, right=0.6cm of arch.north east,
+        anchor=north west] (gui)
+    {\includegraphics[width=15cm]{gui_flowsheet.png}};
+  \node[anchor=south west, font=\Large\bfseries, text=linkink]
+    at ($(arch.north west)+(0,0.25)$)
+    {Choupo: the case is text, the engine computes, the browser draws};
+  \node[anchor=north, font=\large, align=center, text width=31cm]
+    at ($(current bounding box.south)+(0,-0.35)$)
+    {Every iteration visible \,·\, units on every value \,·\,
+     data with source and licence \,·\, balances from the engine's own
+     reports \,·\, unknown inputs refused by name};
+\end{tikzpicture}
+\end{document}

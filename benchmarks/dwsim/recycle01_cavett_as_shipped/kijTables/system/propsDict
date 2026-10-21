@@ -1,0 +1,47 @@
+/*---------------------------------------------------------------------------*\
+  Benchmark A -- THE kij TABLES, written by the engine (route P, DEV.md 4c
+  C123).  Run from this folder:
+
+      choupoProps benchmarks/dwsim/recycle01_cavett_as_shipped/kijTables
+
+  Each operation evaluates the PPR78 kij of every pair ONCE at one
+  separator's declared temperature, on Choupo's own PR78 a_i(T) and b_i, and
+  writes the SET record the flowsheet declares (../constant/parameters/
+  PengRobinson/).  compare.py regenerates them in its scratch copy and
+  refuses if the committed sets differ (the written date excepted).
+
+  This folder's own thermoPhysPropDict declares NO binaryInteractions: it
+  exists so the op can run BEFORE the sets it writes exist.
+\*---------------------------------------------------------------------------*/
+
+operations
+(
+    {
+        name        kij_SEP0;
+        type        ppr78Kij;
+        groupTable  "../constant/parameters/PPR78/jaubert2010.dat";
+        T           322.03 K;
+        output      { record "../constant/parameters/PengRobinson/ppr78_SEP0_322.03K.dat"; }
+    }
+    {
+        name        kij_SEP1;
+        type        ppr78Kij;
+        groupTable  "../constant/parameters/PPR78/jaubert2010.dat";
+        T           310.92 K;
+        output      { record "../constant/parameters/PengRobinson/ppr78_SEP1_310.92K.dat"; }
+    }
+    {
+        name        kij_SEP2;
+        type        ppr78Kij;
+        groupTable  "../constant/parameters/PPR78/jaubert2010.dat";
+        T           308.7 K;
+        output      { record "../constant/parameters/PengRobinson/ppr78_SEP2_308.7K.dat"; }
+    }
+    {
+        name        kij_SEP3;
+        type        ppr78Kij;
+        groupTable  "../constant/parameters/PPR78/jaubert2010.dat";
+        T           302.6 K;
+        output      { record "../constant/parameters/PengRobinson/ppr78_SEP3_302.6K.dat"; }
+    }
+);

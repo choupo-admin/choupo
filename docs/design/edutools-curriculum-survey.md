@@ -286,7 +286,12 @@ phaseSet VLLE.`  The posture is deliberate (advisory since 2026-07-25,
 it.  Every tie-line the diagram draws is one of those answers, so the tool
 counts them and prints the engine's first line verbatim.  Whether a
 water/ethanol/benzene LL flash at 298 K *should* be flagged unstable is a
-question for the curator; this records that it is.
+question for the curator; this records that it is.  **Answered 2026-10-21
+(DEV.md 4c C123, finding 5): it should not.**  The stability test's `tm`
+omitted the ln gamma term, so it read -g^E/RT of every phase it was asked
+about -- the "tm = -0.57" above is the phase's own excess Gibbs energy, not a
+tangent-plane distance.  With the term restored the 340 warnings on the
+cascade are 0.
 
 ### A3. MSMPR crystal size distribution
 

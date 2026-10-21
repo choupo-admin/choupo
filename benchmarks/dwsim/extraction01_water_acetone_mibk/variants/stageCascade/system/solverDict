@@ -1,0 +1,10 @@
+/*---------------------------------------------------------------------------*\
+  Benchmark C -- the recycle.  The three backward edges of the cascade (the
+  extract leaving stages 2, 3 and 4) are the tears; each starts from the
+  rough seed in its own 0/ file.
+\*---------------------------------------------------------------------------*/
+
+tearStreams      ( E2  E3  E4 );
+recycleSolver    Wegstein;
+recycleTol       1e-8;
+recycleMaxIter   300;

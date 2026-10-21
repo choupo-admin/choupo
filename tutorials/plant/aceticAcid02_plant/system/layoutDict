@@ -194,8 +194,10 @@ items
     //                        = 1074 m3) -- the COOLED acid, 1026 kg/m3.
     //  Redo the boxes when the storage times or the plant move: the box does
     //  not follow the run.  No bund (the dike that catches a spill) is
-    //  drawn; its area is ground the plot must carry and the students' to
-    //  add.
+    //  declared, so the run ANNOUNCES both tanks as liquid stores no
+    //  containment encloses (`unbundedLiquid`, DEV.md 4c C134): the bund --
+    //  its wall, its capacity rule with its source, and the ground the plot
+    //  must carry for it -- is the students' to add (`bunds ( ... )`).
     {
         item        "methanolTank/tank1";
         x           -4 m;

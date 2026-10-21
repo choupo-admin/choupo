@@ -1,0 +1,10 @@
+/*---------------------------------------------------------------------------*\
+  Benchmark B -- the recycle.  The HP azeotrope returning to the LP column
+  (after the letdown) is the one backward edge, so it is the tear; it starts
+  from the round seed in 0/recycle.
+\*---------------------------------------------------------------------------*/
+
+tearStreams      ( recycle );
+recycleSolver    Wegstein;
+recycleTol       1e-8;
+recycleMaxIter   200;

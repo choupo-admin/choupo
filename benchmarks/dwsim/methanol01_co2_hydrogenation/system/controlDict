@@ -1,0 +1,18 @@
+/*---------------------------------------------------------------------------*\
+  Benchmark D (developer-facing; benchmarks/README.md): the reference
+  simulator's "Methanol Synthesis by CO2 Hydrogenation" sample -- a full
+  plant: a four-stage CO2 compression train with water intercoolers, a
+  hydrogen compressor, the synthesis loop (feed/effluent exchanger, cooled
+  isothermal PFR on Vanden Bussche & Froment's kinetics, partial condenser,
+  high-pressure separator, purge, recycle), a two-stage let-down with a
+  vent flash, and two shortcut columns -- reproduced as a Choupo case on
+  PR78 with E-PPR78 kij for the gas pairs and Choupo's own regression to
+  Brunner (1987) for the methanol pairs.  The problem is theirs; every
+  property number is Choupo's own or a cited primary.  See README,
+  `reference`, kijTables/ and kijFits/.
+\*---------------------------------------------------------------------------*/
+
+application   choupoSolve;
+description   "Benchmark D: methanol from CO2, the full plant as the reference sample ships it -- PR78, E-PPR78 gas pairs at 510.15 K, methanol pairs regressed to Brunner 1987, VBF 1996 kinetics";
+
+verbosity     2;

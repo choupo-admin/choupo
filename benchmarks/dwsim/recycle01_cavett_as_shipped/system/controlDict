@@ -1,0 +1,18 @@
+/*---------------------------------------------------------------------------*\
+  Benchmark A (developer-facing; benchmarks/README.md): the reference
+  simulator's "Cavett's Problem" sample -- Cavett's four-flash recycle train
+  AS THAT SAMPLE SHIPS IT: its reading of the stage pressures as psig, its
+  feed (15 components, no undecane), its three compressors and three valves
+  closing the recycles -- reproduced as a Choupo case on PR78 with the PPR78
+  group-contribution kij evaluated at each separator's declared temperature.
+  The problem is theirs; every property number is Choupo's own or a cited
+  primary (constant/parameters/PPR78/jaubert2010.dat).  See README and
+  `reference`.  The corpus case on the PRIMARY specification,
+  tutorials/steady/flowsheets/cavett01_recycle_train (SRK, kij = 0, psia),
+  is untouched and is NOT this case.
+\*---------------------------------------------------------------------------*/
+
+application   choupoSolve;
+description   "Benchmark A: Cavett's recycle train as the reference sample ships it -- psig pressures, compressors and valves, PR78 + PPR78 kij at each separator's T";
+
+verbosity     2;

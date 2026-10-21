@@ -1,0 +1,107 @@
+/*---------------------------------------------------------------------------*\
+  Benchmark B -- topology: pressure-swing distillation of methanol + acetone.
+
+      feed --> [LP column, 1 atm, 40 stages] --> methanol (bottoms)
+                  ^ stage 2     | distillate (the 1-atm azeotrope)
+                  |             v
+               [letdown] <-- [HP column, 6 atm, 20 stages] <-- [pump]
+                 recycle        |
+                                v
+                              acetone (bottoms)
+
+  The two azeotropes sit at different compositions (the pressure moves the
+  azeotrope), so the LP column takes methanol out of the bottom and sends
+  its azeotrope to the HP column, which takes acetone out of the bottom and
+  returns its own azeotrope to the LP column.
+
+  STAGES, counted as Choupo counts them -- condenser = stage 1, reboiler =
+  stage nStages -- and as the reference sample's own stage list does
+  (Condensador, Estagio_1 ... Estagio_N-2, Refervedor):
+      LP: 40 stages; fresh feed on "Estagio_15" = stage 16.
+      HP: 20 stages; feed on "Estagio_10" = stage 11.
+  ONE DEVIATION, stated: the sample attaches the recycle to the LP
+  CONDENSER (stage 1); here it enters stage 2, the top tray.  Measured
+  2026-10-20: Choupo's MESH column ACCEPTS a feed on stage 1 in its
+  multi-feed form and then leaves that feed's composition out of the
+  condenser's component balance (DistillationColumn.cpp, the `j == 0` row
+  of the component residual), so the LP column published a 109.27 % mass
+  closure at exit 0.  README, "Findings on Choupo's side".
+
+  SPECIFICATIONS.  The sample fixes each column by its reflux ratio (LP 35,
+  HP 40) and its BOTTOMS molar flow (0.5 mol/s each).  Choupo's column takes
+  a reflux ratio and a DISTILLATE rate (docs/ai/unit-ops.md).  The sample's
+  two bottoms specifications have NO steady state: the fresh feed is
+  0.998602 mol/s (0.499301 of each component), and 0.5 mol/s of nearly pure
+  acetone cannot leave a plant fed 0.499301 mol/s of acetone (README,
+  "Findings on the reference side").  So each product here takes what the
+  feed brings, 0.499301 mol/s:
+      LP distillate = 2.361749 mol/s (the sample's stored LP distillate),
+      HP distillate = 2.361749 - 0.499301 = 1.862448 mol/s,
+  which leaves 0.499301 mol/s at the bottom of each column.
+
+  ONE UNIT ADDED, stated: the letdown valve.  The sample sends the 6-atm HP
+  distillate straight into the 1-atm LP column; a Choupo column reads a
+  PRODUCED feed by the state its producer published (a saturated liquid at
+  6 atm), so the throttle that physically sits there is written out: it
+  flashes the recycle isenthalpically to the LP column's pressure and the
+  column reads the two-phase state it arrives in.  The recycle (its outlet)
+  is the declared tear (system/solverDict).
+
+  MODEL: `fullMESH` -- the MESH Newton with per-stage energy balances (the
+  sample's column carries them too: its liquid traffic falls from 82.7 to
+  72.9 mol/s down the LP column, which constant molar overflow cannot do).
+\*---------------------------------------------------------------------------*/
+
+units
+(
+    {
+        name        LP;
+        type        distillationColumn;
+        model       fullMESH;
+        inputs      ( feed  recycle );
+        outputs     ( lpDistillate  methanol );
+
+        operation
+        {
+            nStages        40;
+            refluxRatio    35;
+            distillateRate 2.361749 mol/s;
+            P              1 atm;
+            feeds
+            (
+                { stream feed;     stage 16; }
+                { stream recycle;  stage 2;  }   // the sample: stage 1 (header)
+            );
+        }
+    }
+    {
+        name        pump;
+        type        pump;
+        in          lpDistillate;
+        outputs     ( hpFeed );
+        operation   { eta 0.75;  P_out 6 atm; }
+    }
+    {
+        name        HP;
+        type        distillationColumn;
+        model       fullMESH;
+        in          hpFeed;
+        outputs     ( hpDistillate  acetone );
+
+        operation
+        {
+            nStages        20;
+            feedStage      11;
+            refluxRatio    40;
+            distillateRate 1.862448 mol/s;
+            P              6 atm;
+        }
+    }
+    {
+        name        letdown;
+        type        valve;
+        in          hpDistillate;
+        outputs     ( recycle );
+        operation   { P 1 atm; }
+    }
+);

@@ -197,10 +197,10 @@ def main() -> int:
             log = logf.read_text() if logf.exists() else ""
             if "UNIFORM" not in log:
                 fail.append("A9a: the uniform-phases announce did not fire")
-            if '"water": 0.98299754' not in log:
+            if '"water": 0.98297949' not in log:
                 fail.append("A9a: the uniform two-liquid case does not "
                             "reproduce vlle01's split (waterRich x_water "
-                            "0.98299754...) -- the grammar changed physics")
+                            "0.98297949...) -- the grammar changed physics")
             # (b) refused by shape (solid beside vapour + two liquids = S4c)
             tp.write_text(s0[:m.start()] + uni + solid_row + "    );"
                           + s0[m.end():])

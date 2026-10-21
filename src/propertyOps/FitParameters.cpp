@@ -87,6 +87,8 @@ struct PairProposal
     std::string ci, cj;
     scalar      alpha = 0.30;
     scalar      a_ij = 0.0, b_ij = 0.0, a_ji = 0.0, b_ji = 0.0;
+    bool        eosPair = false;    // a cubic's kij (binaryInteractions path), not an activity pair
+    scalar      kij  = 0.0;
     scalar      chi2 = 0.0;
     scalar      rmsK = 0.0;
     std::size_t nFit = 0;
@@ -126,10 +128,17 @@ std::string isoDateUtc()
 // (nFailed) and reported so they don't masquerade as a clean fit.
 //
 // chi2 = Σ residual_i^2.
+//  THE RESIDUAL KIND OF THE RUNNING OP.  `P_bubble` swaps the roles of the
+//  two coordinates (run() says how); the residual routine below reads this
+//  flag instead of taking a ninth argument through every one of its call
+//  sites.  One operation runs at a time; run() sets it before the first
+//  evaluation and the flag describes nothing else.
+bool s_bubbleP = false;
+
 scalar computeResiduals(const ThermoPackage& thermo,
-                        const sVector& pData_Pa,
+                        const sVector& pData_Pa,     // FIXED coordinate: P [Pa], or T [K] under P_bubble
                         const sVector& xData_first,
-                        const sVector& tData_exp,
+                        const sVector& tData_exp,    // MEASURED: T [K], or P [Pa] under P_bubble
                         sVector& residualsOut,
                         int* nFailed = nullptr,
                         std::size_t i1 = 0,        // component carrying x
@@ -147,9 +156,24 @@ scalar computeResiduals(const ThermoPackage& thermo,
         x[i1] = xData_first[k];
         x[i2] = 1.0 - xData_first[k];
 
-        auto r = BubblePoint::compute(thermo, x, pData_Pa[k]);
-        scalar res = r.converged ? (r.T - tData_exp[k]) * (weights ? (*weights)[k] : 1.0) : 1.0e3;
-        if (!r.converged && nFailed) ++(*nFailed);
+        scalar res;
+        bool ok;
+        if (s_bubbleP)
+        {
+            //  the bubble PRESSURE at the fixed T, started from the measured
+            //  value (a start, never an answer: the solver brackets and
+            //  bisects from it); the residual is RELATIVE
+            auto r = BubblePoint::pressure(thermo, x, pData_Pa[k], tData_exp[k]);
+            ok  = r.converged && !r.belowFloor;
+            res = ok ? (r.P - tData_exp[k]) / tData_exp[k] : 1.0e3;
+        }
+        else
+        {
+            auto r = BubblePoint::compute(thermo, x, pData_Pa[k]);
+            ok  = r.converged;
+            res = ok ? (r.T - tData_exp[k]) * (weights ? (*weights)[k] : 1.0) : 1.0e3;
+        }
+        if (!ok && nFailed) ++(*nFailed);
         residualsOut[k] = res;
         chi2 += res * res;
     }
@@ -338,13 +362,34 @@ int FitParameters::run(const DictPtr& dict,
     // -- residual block ----------------------------------------------------
     auto resDict = dict->subDict("residual");
     const std::string kind = resDict->lookupWord("kind");
-    if (kind != "T_bubble")
-        throw std::runtime_error("fitParameters: only kind=T_bubble is "
-                                 "supported  (got '" + kind + "')");
-    //  `residual.P` is now CONDITIONAL: it is the pressure when the evidence
-    //  does not carry one per point, and it is REFUSED beside evidence that
-    //  does (see the arity rule below).  Read lazily, after the evidence.
-    const bool hasScalarP = resDict->found("P");
+    if (kind != "T_bubble" && kind != "P_bubble")
+        throw std::runtime_error("fitParameters: kind must be T_bubble,"
+                                 " P_bubble or isotherm  (got '" + kind + "')");
+    //  THE TWO BUBBLE-POINT KINDS ARE ONE ENGINE WITH THE ROLES SWAPPED
+    //  (P_bubble since 2026-10-21, DEV.md 4c C123).  A binary bubble point is
+    //  (x, P, T); the experimenter fixes one coordinate and measures the
+    //  other.  An isobaric study (ThermoML's commonest) fixes P and reports
+    //  T_bubble -- `T_bubble`, the residual in kelvin.  A high-pressure
+    //  solubility study (Brunner et al. 1987: a gas in methanol to 110 MPa)
+    //  fixes T and reports the bubble PRESSURE -- `P_bubble`, the residual
+    //  RELATIVE, (P_model - P_exp)/P_exp, because one isotherm spans two
+    //  orders of magnitude in P and a kelvin-like absolute residual would
+    //  let the 1000-bar points outvote the 5-bar ones a loop actually runs
+    //  at.  Below, `pExp` holds the FIXED coordinate (P or T) and `tExp` the
+    //  MEASURED one (T or P); the names are the T_bubble engine's, and the
+    //  swap is said once here rather than renamed in a thousand lines.
+    const bool  kindP    = (kind == "P_bubble");
+    s_bubbleP = kindP;
+    const char* fixedKey = kindP ? "T" : "P";
+    const std::string yUnit = kindP ? "rel" : "K";     // the residual's unit
+    //  `residual.P` (or `residual.T` for P_bubble) is CONDITIONAL: it is the
+    //  held coordinate when the evidence does not carry one per point, and
+    //  it is REFUSED beside evidence that does (the arity rule below).
+    const bool hasScalarP = resDict->found(fixedKey);
+    if (kindP && resDict->found("weighting"))
+        throw std::runtime_error("fitParameters(P_bubble): `weighting` is not"
+            " read by this kind -- its residual is already RELATIVE, and a"
+            " per-point 1/U on top of it would weight twice.");
 
     // -- explicit components (forum #63-3).  T_bubble historically assumed
     //  indices 0/1 -- an ORDER-DEPENDENT silent default.  evaluate REQUIRES
@@ -428,10 +473,14 @@ int FitParameters::run(const DictPtr& dict,
     //  a measured file is exactly what must not become routine.
     std::vector<std::string> xNames{"x1", "x", "liquidMoleFraction"};
     if (!comp1Name.empty()) { xNames.push_back("x_" + comp1Name); xNames.push_back("x[" + comp1Name + "]"); }
-    const std::vector<std::string> yNames{
+    const std::vector<std::string> tNames{
         "T", "Tbubble", "T_bubble", "temperature",
         "Boiling_temperature_at_pressure_P"};   // ThermoML's own property name
-    const std::vector<std::string> zNames{"P", "Pressure", "pressure"};
+    const std::vector<std::string> pNames{"P", "Pressure", "pressure", "p",
+                                          "P_bubble", "bubblePressure"};
+    //  y = the MEASURED coordinate, z = the FIXED one (see kindP above).
+    const std::vector<std::string>& yNames = kindP ? pNames : tNames;
+    const std::vector<std::string>& zNames = kindP ? tNames : pNames;
 
     std::unique_ptr<EvidencePartition> partPtr;
     sVector xExp, tExp, pExp;
@@ -510,12 +559,16 @@ int FitParameters::run(const DictPtr& dict,
     if (!evidenceCarriesP)
     {
         if (!hasScalarP)
-            throw std::runtime_error("fitParameters(T_bubble): no pressure."
-                "  A bubble temperature is meaningless without one.  Declare"
-                " `residual.P <value> <unit>;`, or give the evidence a column"
-                " named P / Pressure so each point carries the pressure it was"
-                " measured at.");
-        const scalar Pscalar = resDict->lookupScalar("P", Dims::pressure);
+            throw std::runtime_error("fitParameters(" + kind + "): no "
+                + std::string(kindP ? "temperature" : "pressure")
+                + ".  A bubble " + (kindP ? "pressure" : "temperature")
+                + " is meaningless without one.  Declare `residual."
+                + fixedKey + " <value> <unit>;`, or give the evidence a"
+                  " column named " + (kindP ? "T" : "P / Pressure")
+                + " so each point carries the value it was measured at.");
+        const scalar Pscalar = kindP
+            ? resDict->lookupScalar("T", Dims::temperature)
+            : resDict->lookupScalar("P", Dims::pressure);
         pExp.assign(N, Pscalar);
     }
     //  The span, for the header and for the identifiability note below.  A
@@ -545,6 +598,13 @@ int FitParameters::run(const DictPtr& dict,
     auto pressureSpan = [&]() {
         std::ostringstream os;
         os << std::fixed << std::setprecision(4);
+        if (kindP)
+        {
+            if (nIsobars <= 1) { os << "at T = " << pLo << " K"; return os.str(); }
+            os << "across " << nIsobars << " isotherms, T = " << pLo
+               << " .. " << pHi << " K";
+            return os.str();
+        }
         if (nIsobars <= 1) { os << "at P = " << (pLo/1.0e5) << " bar"; return os.str(); }
         os << "across " << nIsobars << " isobars, P = " << (pLo/1.0e5)
            << " .. " << (pHi/1.0e5) << " bar";
@@ -622,7 +682,7 @@ int FitParameters::run(const DictPtr& dict,
     {
         std::cout << "\n==========================  FitParameters  ==========================\n"
                   << "  Kind:        " << kind << "\n"
-                  << "  Data:        " << N << " (x_1, T_exp) pairs "
+                  << "  Data:        " << N << (kindP ? " (x_1, P_exp) pairs " : " (x_1, T_exp) pairs ")
                   << pressureSpan() << "\n"
                   << "  Parameters:  " << P << "\n";
         for (const auto& ps : params)
@@ -726,22 +786,27 @@ int FitParameters::run(const DictPtr& dict,
             ++nGood;
         }
         if (nGood == 0)
-            throw std::runtime_error("fitParameters(evaluate): EVERY bubble-T "
-                "point failed to converge -- nothing to score (check P, the "
-                "component pair, and the model parameters)");
+            throw std::runtime_error("fitParameters(evaluate): EVERY "
+                + std::string(kindP ? "bubble-P" : "bubble-T")
+                + " point failed to converge -- nothing to score (check "
+                + std::string(kindP ? "T" : "P") + ", the component pair, and"
+                  " the model parameters)");
         const scalar rms = std::sqrt(sse / scalar(nGood));
         aad /= scalar(nGood);
 
         if (!parityPath.empty())
         {
             std::ofstream pcsv(parityPath);
-            pcsv << "x_1,T_exp,T_model,residual,status\n";
+            pcsv << (kindP ? "x_1,P_exp_Pa,P_model_Pa,residual_rel,status\n"
+                           : "x_1,T_exp,T_model,residual,status\n");
             for (std::size_t k = 0; k < N; ++k)
             {
                 const bool bad = std::abs(r[k]) >= 9.99e2;
                 pcsv << xExp[k] << "," << tExp[k] << ",";
                 if (bad) pcsv << ",,nonconverged\n";
-                else pcsv << (tExp[k] + r[k]) << "," << r[k] << ",ok\n";
+                //  the model value: T_exp + dT, or P_exp (1 + dP/P) under P_bubble
+                else pcsv << (kindP ? tExp[k] * (1.0 + r[k]) : tExp[k] + r[k])
+                          << "," << r[k] << ",ok\n";
             }
         }
 
@@ -787,15 +852,16 @@ int FitParameters::run(const DictPtr& dict,
                     std::cout << "   " << std::fixed << std::setprecision(4) << xExp[k]
                               << "   " << std::setprecision(2) << std::setw(8) << tExp[k];
                     if (std::abs(r[k]) >= 9.99e2) std::cout << "   nonconverged\n";
-                    else std::cout << "   " << std::setw(8) << (tExp[k]+r[k])
+                    else std::cout << "   " << std::setw(8)
+                                   << (kindP ? tExp[k] * (1.0 + r[k]) : tExp[k] + r[k])
                                    << "   " << std::showpos << r[k] << std::noshowpos << "\n";
                 }
             }
             std::cout << "  --------------------------------------------------\n"
                       << "  sse = " << std::scientific << std::setprecision(4) << sse
-                      << " K^2   rms = " << std::fixed << std::setprecision(4) << rms
-                      << " K   aad = " << aad << " K\n"
-                      << "  max|resid| = " << maxAbs << " K  (at x_1 = "
+                      << " " << yUnit << "^2   rms = " << std::fixed << std::setprecision(4) << rms
+                      << " " << yUnit << "   aad = " << aad << " " << yUnit << "\n"
+                      << "  max|resid| = " << maxAbs << " " << yUnit << "  (at x_1 = "
                       << xExp[maxIdx] << ")   n_data = " << N
                       << "   feasible = " << nGood << "\n";
             if (nFailed > 0)
@@ -953,11 +1019,20 @@ int FitParameters::run(const DictPtr& dict,
         //  P_Pa is a COLUMN and not a header note: a parity plot of a fit
         //  spanning three isobars is unreadable without it -- the same x with
         //  two different T's is not scatter, it is two experiments.
-        pcsv << "x_1,P_Pa,T_exp,T_model,residual\n";
+        pcsv << (kindP ? "x_1,T_K,P_exp_Pa,P_model_Pa,residual_rel\n"
+                       : "x_1,P_Pa,T_exp,T_model,residual\n");
         for (std::size_t k = 0; k < N; ++k)
         {
             sVector x(thermo.n(), 0.0);
             x[iF1] = xExp[k]; x[iF2] = 1.0 - xExp[k];
+            if (kindP)
+            {
+                auto br = BubblePoint::pressure(thermo, x, pExp[k], tExp[k]);
+                const scalar Pm = (br.converged && !br.belowFloor) ? br.P : std::nan("");
+                pcsv << xExp[k] << "," << pExp[k] << "," << tExp[k] << "," << Pm
+                     << "," << ((Pm - tExp[k]) / tExp[k]) << "\n";
+                continue;
+            }
             auto br = BubblePoint::compute(thermo, x, pExp[k]);
             const scalar Tm = br.converged ? br.T : std::nan("");
             pcsv << xExp[k] << "," << pExp[k] << "," << tExp[k] << "," << Tm
@@ -1000,7 +1075,28 @@ int FitParameters::run(const DictPtr& dict,
         sVector r_final;
         computeResiduals(thermo, pExp, xExp, tExp, r_final, &nFailed, iF1, iF2, wPtr);
         sVector r_kelvin; if (wPtr) computeResiduals(thermo, pExp, xExp, tExp, r_kelvin, nullptr, iF1, iF2); else r_kelvin = r_final;   // rms/max stay in K
+        // A PENALTY RESIDUAL IS NOT A DERIVATIVE, AND NEITHER IS A JUMP
+        // (C123, found on the Brunner CO- and CO2-methanol fits).  One FD
+        // step away from the answer a single row's bubble pressure moved from
+        // 4.19 to 22.7 MPa (CO2, 298.15 K, x = 0.3323): the search took
+        // another sign change of S(P), a second branch, and the row entered J
+        // as 4.5/1e-4 = 4.5e4, so J^T J was dominated by the jump and the
+        // standard error printed 0.0000 -- infinite precision.  The penalty
+        // sentinel does the same thing by another route.  So the slope of a
+        // row is taken from the side that STAYS ON THE ANSWER'S BRANCH:
+        //   - a row penalised AT the answer carries no slope (it is already
+        //     out of chi2);
+        //   - the forward difference stands, bit for bit as before, unless
+        //     it is a penalty or disagrees with the BACKWARD difference by
+        //     more than half the larger of the two -- on a smooth residual
+        //     the two agree to O(h);
+        //   - then the smaller-magnitude side is taken (the jump is the
+        //     large one), a penalised side is never taken, and a row with
+        //     no usable side carries no slope;
+        // and the count of each is said beside the statistics.
+        auto isPenalty = [](scalar v) { return std::abs(v) >= 9.99e2; };
         std::vector<sVector> Jf(N, sVector(P, 0.0));
+        int nBackward = 0, nNoSlope = 0;
         for (std::size_t j = 0; j < P; ++j)
         {
             scalar p0 = params[j].value;
@@ -1009,9 +1105,31 @@ int FitParameters::run(const DictPtr& dict,
             ThermoPackage thH = buildThermo(params);
             sVector rh;
             computeResiduals(thH, pExp, xExp, tExp, rh, nullptr, iF1, iF2, wPtr);
-            for (std::size_t k = 0; k < N; ++k) Jf[k][j] = (rh[k] - r_final[k]) / h;
+            params[j].value = p0 - h;
+            ThermoPackage thM = buildThermo(params);
+            sVector rmh;
+            computeResiduals(thM, pExp, xExp, tExp, rmh, nullptr, iF1, iF2, wPtr);
+            for (std::size_t k = 0; k < N; ++k)
+            {
+                if (isPenalty(r_final[k])) { Jf[k][j] = 0.0; continue; }
+                const bool fOk = !isPenalty(rh[k]), bOk = !isPenalty(rmh[k]);
+                const scalar fwd = (rh[k] - r_final[k]) / h;
+                const scalar bwd = (r_final[k] - rmh[k]) / h;
+                if (fOk && bOk
+                    && std::abs(fwd - bwd) <= 0.5 * std::max(std::abs(fwd), std::abs(bwd)))
+                { Jf[k][j] = fwd; continue; }
+                if (fOk && !bOk) { Jf[k][j] = fwd; continue; }
+                if (bOk && (!fOk || std::abs(bwd) < std::abs(fwd)))
+                { Jf[k][j] = bwd; ++nBackward; continue; }
+                if (fOk) { Jf[k][j] = fwd; ++nBackward; continue; }   // the jump was backward
+                Jf[k][j] = 0.0; ++nNoSlope;
+            }
             params[j].value = p0;
         }
+        //  Published only when non-zero, so a fit whose every row is smooth
+        //  publishes exactly the keys it always did.
+        if (nBackward > 0) diag_["fd_one_side_rows"] = static_cast<scalar>(nBackward);
+        if (nNoSlope > 0)  diag_["fd_no_slope_rows"] = static_cast<scalar>(nNoSlope);
         // Restore the converged thermo (the FD probes mutated `work`).
         thermo = buildThermo(params);
 
@@ -1149,7 +1267,19 @@ int FitParameters::run(const DictPtr& dict,
                 std::cout << "    (correlation matrix not computed -- J^T J singular)\n";
             if (nFailed > 0)
                 std::cout << "    " << nFailed << " data point(s) hit the "
-                             "bubble-T penalty (non-converged)\n";
+                          << (kindP ? "bubble-P" : "bubble-T")
+                          << " penalty (non-converged: the model has no bubble"
+                             " point there)\n";
+            if (nBackward > 0)
+                std::cout << "    " << nBackward << " row slope(s) taken from ONE side"
+                             " only: one FD step the other way the "
+                          << (kindP ? "bubble pressure" : "bubble temperature")
+                          << " left the answer's branch or has none (a jump is not"
+                             " a derivative)\n";
+            if (nNoSlope > 0)
+                std::cout << "    " << nNoSlope << " row slope(s) set to ZERO: the"
+                             " point is infeasible one FD step either way, so it"
+                             " informs no standard error\n";
             std::cout << "=====================================================================\n\n";
         }
 
@@ -1169,11 +1299,27 @@ int FitParameters::run(const DictPtr& dict,
             //              .<i>-<j>.<coef>                     (order-stable)
             int pairIdx = -1; bool singlePair = true;
             std::string v2PairKey;
-            std::map<std::string, scalar> coef;   // a_ij/b_ij/a_ji/b_ji -> value
+            bool eosKey = false;                  // the key is under equationOfState.binaryInteractions
+            std::map<std::string, scalar> coef;   // a_ij/b_ij/a_ji/b_ji (or kij) -> value
             for (const auto& ps : params)
             {
                 auto dot = ps.path.rfind('.');
                 if (dot == std::string::npos) { singlePair = false; break; }
+                //  THE CUBIC's PAIR (2026-10-21): the same named-key grammar
+                //  one block over, `equilibrium.equationOfState
+                //  .binaryInteractions.<i>-<j>.kij` -- the inline form the
+                //  builder accepts only under regression.
+                if (ps.path.find(".binaryInteractions.") != std::string::npos)
+                {
+                    auto pdot = ps.path.rfind('.', dot - 1);
+                    if (pdot == std::string::npos) { singlePair = false; break; }
+                    const std::string key =
+                        ps.path.substr(pdot + 1, dot - pdot - 1);
+                    if (v2PairKey.empty()) { v2PairKey = key; eosKey = true; }
+                    else if (v2PairKey != key || !eosKey) { singlePair = false; break; }
+                    coef[ps.path.substr(dot + 1)] = ps.value;
+                    continue;
+                }
                 if (ps.path.find(".binaryParameters.") != std::string::npos)
                 {
                     auto pdot = ps.path.rfind('.', dot - 1);
@@ -1199,7 +1345,14 @@ int FitParameters::run(const DictPtr& dict,
 
             DictPtr pd;                            // the fitted pair's block
             std::string model = "NRTL";
-            if (singlePair && !v2PairKey.empty())
+            if (singlePair && eosKey)
+            {
+                auto eo = work->subDict("equilibrium")->subDict("equationOfState");
+                model = eo->lookupWordOrDefault("model", "PengRobinson");
+                auto bi = eo->subDict("binaryInteractions");
+                if (bi->found(v2PairKey)) pd = bi->subDict(v2PairKey);
+            }
+            else if (singlePair && !v2PairKey.empty())
             {
                 auto am = work->subDict("equilibrium")->subDict("liquid")
                               ->subDict("activityModel");
@@ -1233,6 +1386,8 @@ int FitParameters::run(const DictPtr& dict,
                 proposal.b_ij         = co("b_ij");
                 proposal.a_ji         = co("a_ji");
                 proposal.b_ji         = co("b_ji");
+                proposal.eosPair      = eosKey;
+                proposal.kij          = co("kij");
                 proposal.chi2         = chi2;
                 proposal.rmsK         = wPtr ? ((nGood > 0) ? std::sqrt(sseKelvin / static_cast<scalar>(nGood)) : 0.0) : std::sqrt(chi2 / static_cast<scalar>(N));
                 proposal.nFit         = N;
@@ -1332,7 +1487,9 @@ int FitParameters::run(const DictPtr& dict,
             computeResiduals(thV, pVal, xVal, tVal, rV, nullptr, iF1, iF2);
             for (std::size_t k = 0; k < rV.size(); ++k)
             {
-                aadHeldOut   += std::fabs(rV[k]) / tVal[k];
+                //  per cent of the measured value: |dT|/T, or |dP|/P --
+                //  which under P_bubble the residual already IS
+                aadHeldOut   += kindP ? std::fabs(rV[k]) : std::fabs(rV[k]) / tVal[k];
                 aadHeldOutK_ += std::fabs(rV[k]);
             }
             aadHeldOut   = 100.0 * aadHeldOut / static_cast<scalar>(rV.size());
@@ -1401,7 +1558,7 @@ int FitParameters::run(const DictPtr& dict,
                           << "    AAD         " << std::fixed
                           << std::setprecision(4) << aadHeldOut << " %"
                           << "   (" << std::setprecision(4) << aadHeldOutK_
-                          << " K)\n";
+                          << " " << yUnit << ")\n";
 
             std::cout << "\n  ACCEPTANCE CRITERION\n";
             if (part.hasAcceptance())
@@ -1444,10 +1601,11 @@ int FitParameters::run(const DictPtr& dict,
     {
         const EvidencePartition& part = *partPtr;
         CurationDossier::PropertyRecord rec;
-        rec.property   = "binaryVLE.T_bubble";
+        rec.property   = kindP ? "binaryVLE.P_bubble" : "binaryVLE.T_bubble";
         rec.opName     = dict->lookupWordOrDefault("name", "fitParameters");
         rec.opType     = "fitParameters";
-        rec.model      = "NRTL binary pair, bubble-T residual at fixed P";
+        rec.model      = kindP ? "binary pair, relative bubble-P residual at fixed T"
+                               : "NRTL binary pair, bubble-T residual at fixed P";
         for (const auto& ps : params)
             rec.parameters.push_back({ps.path, ps.value});
         rec.engaged     = true;
@@ -1463,7 +1621,7 @@ int FitParameters::run(const DictPtr& dict,
         {
             rec.nValidation   = nHeldOut;
             rec.aadHeldOutPct = aadHeldOut;
-            rec.rmsUnit       = "K";
+            rec.rmsUnit       = yUnit;
             //  The held-out DOMAIN, not left at its 0.0 default: a dossier
             //  reporting `validation { min 0; max 0; }` states that three
             //  points were tested at a composition none of them has.
@@ -1556,19 +1714,34 @@ int FitParameters::run(const DictPtr& dict,
             f << "\n  Promote by:\n"
               << "      mv " << proposal.outPath << "  constant/parameters/"
               << proposal.model << "/" << proposal.pairName << ".dat\n"
-              << "\\*---------------------------------------------------------------------------*/\n\n"
-              << "components  ( " << proposal.ci << "  " << proposal.cj << " );\n"
-              << "model       " << proposal.model << ";\n\n"
-              << "parameters\n{\n"
-              << "    i           " << proposal.ci << ";\n"
-              << "    j           " << proposal.cj << ";\n"
-              << std::fixed << std::setprecision(8)
-              << "    a_ij        " << proposal.a_ij << ";\n"
-              << "    b_ij        " << proposal.b_ij << ";\n"
-              << "    a_ji        " << proposal.a_ji << ";\n"
-              << "    b_ji        " << proposal.b_ji << ";\n"
-              << "    alpha       " << proposal.alpha << ";\n"
-              << "}\n\n"
+              << "\\*---------------------------------------------------------------------------*/\n\n";
+            if (proposal.eosPair)
+                //  THE CUBIC's PAIR RECORD, in the shape the phi-phi builder
+                //  reads (`recordType eosBinaryInteraction; i; j; kij; eos;`,
+                //  data/standards/parameters/SRK/N2-CH4.dat is the model) --
+                //  the provenance and validation blocks below are the same
+                //  five axes the activity record carries.
+                f << "recordType  eosBinaryInteraction;\n"
+                  << "schemaVersion 1;\n"
+                  << "i           " << proposal.ci << ";\n"
+                  << "j           " << proposal.cj << ";\n"
+                  << std::fixed << std::setprecision(8)
+                  << "kij         " << proposal.kij << ";\n"
+                  << "eos         " << proposal.model << ";\n\n";
+            else
+                f << "components  ( " << proposal.ci << "  " << proposal.cj << " );\n"
+                  << "model       " << proposal.model << ";\n\n"
+                  << "parameters\n{\n"
+                  << "    i           " << proposal.ci << ";\n"
+                  << "    j           " << proposal.cj << ";\n"
+                  << std::fixed << std::setprecision(8)
+                  << "    a_ij        " << proposal.a_ij << ";\n"
+                  << "    b_ij        " << proposal.b_ij << ";\n"
+                  << "    a_ji        " << proposal.a_ji << ";\n"
+                  << "    b_ji        " << proposal.b_ji << ";\n"
+                  << "    alpha       " << proposal.alpha << ";\n"
+                  << "}\n\n";
+            f << std::fixed << std::setprecision(8)
               << "provenance\n{\n"
               //  AXIS 1 -- HOW.  One typed word, and it is `fitted` whatever
               //  the verdict: a fit that missed its band is still a fit.
@@ -1605,10 +1778,11 @@ int FitParameters::run(const DictPtr& dict,
             f << "\n    //  IN-SAMPLE: the model reproducing the very points it was\n"
                  "    //  fitted to.  It is NOT a validation; see the block below.\n"
               << "    weighting     " << (wPtr ? "uncertainty" : "equal") << ";"
-              << (wPtr ? "   // chi2 is sum ((T_model - T_exp)/U)^2, dimensionless\n"
-                       : "   // chi2 is sum (T_model - T_exp)^2, K^2\n")
+              << (kindP ? "   // chi2 is sum ((P_model - P_exp)/P_exp)^2, dimensionless\n"
+                 : wPtr ? "   // chi2 is sum ((T_model - T_exp)/U)^2, dimensionless\n"
+                        : "   // chi2 is sum (T_model - T_exp)^2, K^2\n")
               << "    chi2          " << std::setprecision(8) << proposal.chi2 << ";\n"
-              << "    rms_K         " << proposal.rmsK << ";\n"
+              << (kindP ? "    rms_rel       " : "    rms_K         ") << proposal.rmsK << ";\n"
               << "    nDataPoints   " << proposal.nFit << ";\n"
               << "    identifiable  " << (proposal.identifiable ? "true" : "false") << ";\n";
             if (proposal.corrComputed)
@@ -1621,13 +1795,18 @@ int FitParameters::run(const DictPtr& dict,
             //  invites use anywhere.  The FIT set only: that is what the
             //  coefficients were adjusted to; the held-out domain is under
             //  `validation`.
+            //  Under P_bubble the roles are swapped: the FIXED coordinate
+            //  (pExp, pLo..pHi) is T and the MEASURED one (tExp) is P.
+            const sVector& tSpan = kindP ? pExp : tExp;
+            const scalar   pMin  = kindP ? *std::min_element(tExp.begin(), tExp.end()) : pLo;
+            const scalar   pMax  = kindP ? *std::max_element(tExp.begin(), tExp.end()) : pHi;
             if (!tExp.empty())
                 f << "\n    validity\n    {\n"
                   << std::setprecision(2)
-                  << "        temperature { min " << *std::min_element(tExp.begin(), tExp.end())
-                  << " K; max " << *std::max_element(tExp.begin(), tExp.end()) << " K; }\n"
+                  << "        temperature { min " << *std::min_element(tSpan.begin(), tSpan.end())
+                  << " K; max " << *std::max_element(tSpan.begin(), tSpan.end()) << " K; }\n"
                   << std::setprecision(0)
-                  << "        pressure    { min " << pLo << " Pa; max " << pHi << " Pa; }\n"
+                  << "        pressure    { min " << pMin << " Pa; max " << pMax << " Pa; }\n"
                   << "        note        \"the span of the FIT evidence; outside it"
                      " the pair is an extrapolation\";\n"
                   << "    }\n"
@@ -1642,7 +1821,8 @@ int FitParameters::run(const DictPtr& dict,
                 f << "\n    heldOut\n    {\n"
                   << "        points      " << nHeldOut << ";\n"
                   << "        aad_pct     " << std::setprecision(6) << aadHeldOut << ";\n"
-                  << "        aad_K       " << std::setprecision(6) << aadHeldOutK_ << ";\n"
+                  << (kindP ? "        aad_rel     " : "        aad_K       ")
+                  << std::setprecision(6) << aadHeldOutK_ << ";\n"
                   << "        domain_x1   ( " << heldOutXmin << " " << heldOutXmax << " );\n"
                   << "    }\n";
             else if (engaged)
@@ -1680,7 +1860,8 @@ int FitParameters::run(const DictPtr& dict,
     diag_["chi2_in_sample"] = chi2;   // the same number, named for what it is
     diag_["n_heldout"] = static_cast<scalar>(nHeldOut);
     if (nHeldOut > 0) diag_["aad_heldout_pct"] = aadHeldOut;
-    if (nHeldOut > 0) diag_["aad_heldout_K"]   = aadHeldOutK_;
+    if (nHeldOut > 0 && !kindP) diag_["aad_heldout_K"] = aadHeldOutK_;
+    if (nHeldOut > 0 &&  kindP) diag_["aad_heldout_rel"] = aadHeldOutK_;
     diag_["converged"] = converged ? 1.0 : 0.0;
     for (const auto& ps : params)
         diag_[ps.path] = ps.value;

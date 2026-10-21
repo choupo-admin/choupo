@@ -1,0 +1,21 @@
+/*--- Choupo stream state.  Every DIMENSIONAL value carries its unit; the parser converts to SI.
+     THE SAMPLE'S STREAM "HYDROGEN" (benchmarks/dwsim/read_sample.py, `reference`): 16.3218131429473 mol/s at
+     298.15 K and 1075000 Pa with its stored mole fractions; each flow is x_i x F.
+     The sample stores this stream TWO-PHASE (vapour fraction 0.9656: 3.7 % water in
+     hydrogen at 10.75 bar and 298 K condenses) and its compressor is set to ignore
+     the phase (README).  No phase is declared here: (T, P) resolve it. ---*/
+
+componentMolarFlows
+{
+    methanol   1.095498378e-06 kmol/s;
+    water      0.0006025241082 kmol/s;
+    H2         0.01453189798 kmol/s;
+    CO2        0.0005298976673 kmol/s;
+    CO         0.0005337020708 kmol/s;
+    N2         1.095498378e-06 kmol/s;
+    O2         1.095498378e-06 kmol/s;
+    Ar         0.0001205048216 kmol/s;
+}
+
+T               298.15 K;
+P               1075000 Pa;

@@ -1,0 +1,26 @@
+/*---------------------------------------------------------------------------*\
+  Benchmark D -- THE GAS-PAIR kij SET, written by the engine (route P).
+  Run from this folder:
+
+      choupoProps benchmarks/dwsim/methanol01_co2_hydrogenation/kijTables
+
+  E-PPR78 (Xu et al. 2017) for the six CCS gases of the plant, evaluated
+  ONCE at 510.15 K, the reactor's declared temperature -- the one T any
+  unit of this plant declares (stated default; constant/thermoPhysPropDict).
+  Methanol is not a group of the model and is left out; O2 pairs were not
+  transcribed and are left out (both announced by the builder as kij = 0).
+  The op marks every pair evaluated outside its fitted T range as
+  extrapolated; the plant's run repeats that.
+\*---------------------------------------------------------------------------*/
+
+operations
+(
+    {
+        name        kij_loop;
+        type        ppr78Kij;
+        groupTable  "../constant/parameters/PPR78/xu2017.dat";
+        T           510.15 K;
+        components  ( H2 CO2 CO water N2 Ar );
+        output      { record "../constant/parameters/PengRobinson/eppr78_510.15K.dat"; }
+    }
+);
