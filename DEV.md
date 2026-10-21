@@ -1916,6 +1916,16 @@ accepts today, and that is a policy call.
 > `assumed ( ... )` (ColumnSize.H) and the unit on every value, not the
 > `declared / fromUnit / fromRecord` marks (they exist on the exchanger
 > sheet, C124; to widen in the next read).
+> **GUI figures (Vitor, 2026-10-21, after reading v2.1: "O paper esta
+> fixe! Mas faltam umas imagens de layout (por exemplo da amonia verde) e
+> do flowsheet para mostrar as features que o tornam semelhante ao
+> paraview").**  Commander: agree -- the visualiser subsection is text
+> only.  Two figures captured from the browser on a real run: (A) the
+> flowsheet view of a sectored plant (case tree, streams coloured by a
+> variable, the boundary balance, the stream table) and (B) the green
+> ammonia 3D layout; a reproducible capture script, so the figures are
+> regenerated from the cited release (TODO item 2) and pick up C134's
+> bunds then.  Dispatched to G36 (`claude/c126-gui-figures`).
 
 > **C125. WHY THE BREAKTHROUGH PAGES ARE SLOW (Vitor, 2026-10-21: "Porque
 > isto e tao lento? breakthrough e do lub-scaleup").**  Measured by the
@@ -2553,6 +2563,10 @@ accepts today, and that is a policy call.
 > sabotages).  Record `docs/design/a-phase-split-scan-along-t-or-p.md`.
 > Stage 2 (the lens) reads the block, after G18; stage 3 (excipient
 > records) still open.
+> **Stage 2 DISPATCHED 2026-10-21 (G35, `claude/c118-phase-split-lens`)**
+> after Vitor asked whether the Explorer already had the T/P excursion at
+> constant overall composition (it did not: the op is on main, the lens
+> was queued behind C116, now online).
 
 > **C117. THE CURATION WORKFLOW: AN LLM AUTHORS, THE EXPLORER SHOWS, THE
 > STUDENT DECIDES (Vitor, 2026-10-20: he had planned an interactive GUI for
