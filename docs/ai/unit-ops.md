@@ -772,7 +772,9 @@ differ only in the numerical strategy:
   required choice for **non-ideal / azeotropic** systems (NRTL ethanol/water:
   Wang-Henke fails, `simultaneous` finds the physical sub-azeotrope cut and
   refuses to invent a "past the azeotrope" answer).  Restriction:
-  `feedStage` must be 2..nStages (no feed on the top stage).
+  no feed and no side draw on stage 1 -- `feedStage`, every `feeds` entry
+  and every `sideDraws` entry take 2..nStages; stage 1 is refused by name
+  (its balance carries no feed term, so the feed would be lost).
 
 See theory: §Distillation (Wang-Henke) and §Rigorous MESH Newton.
 Reference: Wang & Henke, *Hydrocarbon Process.* 45 (1966) 155;

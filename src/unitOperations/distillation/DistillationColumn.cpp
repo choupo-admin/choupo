@@ -58,6 +58,39 @@ namespace Choupo {
 
 namespace {
 
+//  A FEED OR A SIDE DRAW ON STAGE 1 IS REFUSED BY THE MESH METHODS, IN ONE
+//  SENTENCE (C123, 2026-10-21).  The simultaneous MESH -- CMO and full --
+//  writes stage 1's balances with NO feed and NO draw term (the `j == 0` rows
+//  of `residual` and `residualF` in `solveSimultaneous`), while the bottoms
+//  come from the TOTAL feed (`Bf = sum F - D - sum draws`).  So a stage-1
+//  feed was ACCEPTED and then LOST: a pressure-swing benchmark with its
+//  recycle on stage 1 published a 109.27 % mass closure and an element
+//  balance 50 % off, "converged", at exit 0.  The single-feed form had always
+//  refused `feedStage 1`; the multi-feed list, the legacy inline feeds and
+//  the side draws did not.  Every one of those sites calls this function, so
+//  the refusal cannot be worded four ways.  (Wang-Henke, single feed only,
+//  DOES carry a feed on stage 1 -- its tridiagonal has the term -- and keeps
+//  it under a total condenser, where stage 1 is the top tray.)
+[[noreturn]] void refuseStageOneTerm(const std::string& unit,
+                                     const std::string& what,
+                                     const std::string& remedy)
+{
+    throw std::runtime_error("DistillationColumn(simultaneous) '" + unit
+        + "': " + what + " is declared on stage 1, and this method refuses it."
+        "  Stage 1 is the top of the column, where the reflux returns, and the"
+        " MESH writes its balances there with no feed and no draw term -- so it"
+        " would be accepted and then LOST from the column's balance (the"
+        " bottoms are computed from the total feed).  " + remedy);
+}
+
+const char* const kStageOneFeedRemedy =
+    "Put the feed on stage 2, the stage below, or mix it into another feed"
+    " upstream with a `mixer`.  (A SINGLE feed on stage 1 is carried by"
+    " `model WangHenke;`.)";
+const char* const kStageOneDrawRemedy =
+    "Draw it from stage 2, or split it off the distillate downstream with a"
+    " `splitter`.";
+
 //  THE DISTILLATE LEAVES AT ITS OWN BUBBLE POINT, not at the top tray's
 //  temperature -- and this lives in ONE function because the column has TWO
 //  solver paths (Wang-Henke and the simultaneous MESH) that each used to build
@@ -1515,6 +1548,9 @@ int DistillationColumn::solveSimultaneous(const DictPtr& dict,
             const std::size_t st = static_cast<std::size_t>(fe->lookupScalar("stage"));
             if (st < 1 || st > N)
                 throw std::runtime_error("DistillationColumn: a feed `stage` is out of range.");
+            if (st == 1)
+                refuseStageOneTerm(dict->name(), "feed '" + sName + "'",
+                                   kStageOneFeedRemedy);
             auto it = byName.find(sName);
             if (it == byName.end())
                 throw std::runtime_error("DistillationColumn: feed stream '" + sName
@@ -1558,9 +1594,12 @@ int DistillationColumn::solveSimultaneous(const DictPtr& dict,
     {
         Tf = feedDict->lookupScalar("T", Dims::temperature);
         NF = static_cast<std::size_t>(operDict->lookupScalar("feedStage"));
-        if (NF < 2 || NF > N)
+        if (NF < 1 || NF > N)
             throw std::runtime_error("DistillationColumn(simultaneous): feedStage "
-                "must be 2..nStages (feed at the top not supported by this method)");
+                "must be 2..nStages");
+        if (NF == 1)
+            refuseStageOneTerm(dict->name(), "the feed (`feedStage 1`)",
+                               kStageOneFeedRemedy);
         z = readComp(compDict);
         //  SAME RULE AS WANG-HENKE, and the same one home reached from both --
         //  this branch used to read `feedQuality` with its own default, which
@@ -1581,6 +1620,9 @@ int DistillationColumn::solveSimultaneous(const DictPtr& dict,
                 const std::size_t st = static_cast<std::size_t>(fe->lookupScalar("stage"));
                 if (st < 1 || st > N)
                     throw std::runtime_error("DistillationColumn: a feed `stage` is out of range.");
+                if (st == 1)
+                    refuseStageOneTerm(dict->name(), "an inline `feeds` entry",
+                                       kStageOneFeedRemedy);
                 const scalar Ff = fe->lookupScalar("F", Dims::molarFlow);
                 const scalar qf = fe->lookupScalarOrDefault("quality", 1.0);
                 const scalar Tfe = fe->lookupScalarOrDefault("T", Tf, Dims::temperature);
@@ -1602,6 +1644,8 @@ int DistillationColumn::solveSimultaneous(const DictPtr& dict,
             const std::size_t st = static_cast<std::size_t>(dr->lookupScalar("stage"));
             if (st < 1 || st > N)
                 throw std::runtime_error("DistillationColumn: a sideDraw `stage` is out of range.");
+            if (st == 1)
+                refuseStageOneTerm(dict->name(), "a side draw", kStageOneDrawRemedy);
             const scalar rate = dr->lookupScalar("rate", Dims::molarFlow);
             //  Same rule as the `model` slot above (2026-09-07): the else was
             //  a catch-all, so `phase vapou;` drew LIQUID -- byte-identical to
