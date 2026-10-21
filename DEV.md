@@ -1001,6 +1001,12 @@ accepts today, and that is a policy call.
 > external review (`claude/c126-joss-paper`, cbb354786, 1594 words);
 > JOSS eligibility needs more than six months of public development --
 > likely not before January 2027, to be confirmed by Vitor.
+> **ALSO SATURDAY: the JOSS paper's three-reader review**, kept at
+> `paper/joss/reviews/2026-10-21-reader-review.md` (5db97a66a): reorganise
+> around three capabilities, each with one demonstrated example -- study a
+> process (the green-ammonia design chain), investigate a model (batch
+> electrodialysis), teach with AI (the exercise is Vitor's to choose:
+> the reviewer's five steps or one of his own).
 > **THE TWO OPEN DECISIONS, DELEGATED (Vitor, 2026-10-21: "Nao me pecas
 > nada e decide tu de forma sensata").  Commander's decisions:**
 > (a) **Compressor with liquid in its suction: REFUSE by name**, quoting the
