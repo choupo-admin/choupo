@@ -69,6 +69,11 @@ export function theoryAnchor(plotType: PlotKind, property: string): string {
     //  regular-solution theory makes the enthalpy of mixing non-negative by
     //  construction and therefore cannot represent water and ethanol at all.
     case "solubility": return "ch:solubility-parameter";
+    //  Measured data against candidate models: the chapter on WHERE a
+    //  parameter comes from (literature curation, a literature pair, an
+    //  in-simulator regression) is the one that says what a residual here
+    //  is evidence about.
+    case "evidence": return "ch:fittable";
     case "scan":                             // the property IS the subject here
     default:
       if (property === "Psat") return "ch:vap";

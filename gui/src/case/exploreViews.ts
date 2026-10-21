@@ -9,6 +9,7 @@
 \*---------------------------------------------------------------------------*/
 
 import { metaByName, type ComponentMeta } from "./catalogue.js";
+import { evidenceForPair } from "./evidence.js";
 import { gibbsMapApplies } from "./gibbsMapSpec.js";
 import { buildLocalUnifac, hasUnifacGroups } from "./unifacGroups.js";
 
@@ -38,10 +39,17 @@ import { buildLocalUnifac, hasUnifacGroups } from "./unifacGroups.js";
 // for itself — a fourth chrome home, inside the plot, which the lens strip
 // never showed.  It is the most familiar diagram in VLE and Vitor reported it
 // missing three times.
+//
+// "evidence" JOINED 2026-10-20 (DEV.md 4c C117): MEASURED datasets for a PAIR
+// against every candidate model, residuals at the measured conditions.  A
+// property surface by the same criterion (what a system IS, measured, beside
+// what each model says it is), offered only where some tier -- a bundled
+// tutorial, data/local, the open case -- actually carries a dataset for the
+// pair; a lens whose only possible outcome is "no evidence" is not offered.
 export const PLOT_KINDS = [
   "scan", "txy", "yx", "gamma", "binaryLle", "ternary",
   "ternaryLle", "phase", "scaling", "steam", "gibbsmap", "bjerrum",
-  "solubility",
+  "solubility", "evidence",
 ] as const;
 export type PlotKind = (typeof PLOT_KINDS)[number];
 
@@ -67,7 +75,11 @@ export function classifySelection(sel: string[], cat: ComponentMeta[]): SelClass
 /** The views that PHYSICALLY apply to a selection (length + vleAble + UNIFAC
  *  sub-gates folded in).  reasonFor() is null iff the view is in here. */
 export function viewsFor(sel: string[], cat: ComponentMeta[],
-                         localUnifac: ReturnType<typeof buildLocalUnifac>): Set<PlotKind> {
+                         localUnifac: ReturnType<typeof buildLocalUnifac>,
+                         //  the open case's files, so a dataset it carries
+                         //  under constant/experiments/ offers the Evidence
+                         //  view too; absent, the bundled tiers alone decide
+                         caseRaw?: { [relPath: string]: string }): Set<PlotKind> {
   const out = new Set<PlotKind>(["scan"]);                   // a property scan always applies
   const n = sel.length;
   //  The equilibrium map is offered only where it is a question that CAN be
@@ -98,6 +110,10 @@ export function viewsFor(sel: string[], cat: ComponentMeta[],
   //  reports.  (The binary FLASH shared this front door until 2026-09-21; it
   //  is a method construction and lives in EduTools.)
   if (n === 2 && vleMix && allVle) { out.add("txy"); out.add("yx"); out.add("gamma"); }
+  //  Evidence: a MEASURED dataset for this pair exists in some tier.  Read
+  //  from the files, never assumed from the class -- a pair with VLE-able
+  //  components and no study is a pair the view would have nothing to show.
+  if (n === 2 && evidenceForPair(sel[0]!, sel[1]!, caseRaw).length > 0) out.add("evidence");
   //  Solvent selection: needs no pair parameters and no VLE, only the three
   //  data delta is derived from -- which is why it reaches parts of the
   //  catalogue every other multi-component study cannot.

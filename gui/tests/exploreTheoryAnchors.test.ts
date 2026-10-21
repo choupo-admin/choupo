@@ -195,6 +195,7 @@ const DECLARED: Record<PlotKind, string | typeof PROPERTY_DISPATCH> = {
   // ch:electrolytes: that chapter is the activity model the network calls, one
   // rung below the distribution the picture is about.
   bjerrum: "sec:bjerrum",
+  evidence: "ch:fittable",    // measured data vs candidate models: what is fittable, what is not
 };
 
 /** The property-scan's own dispatch, declared independently of the switch. */

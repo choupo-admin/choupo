@@ -98,3 +98,54 @@ export function propertiesLink(names: readonly string[]): string {
     ? `?workspace=properties&components=${clean.map(encodeURIComponent).join(",")}`
     : "?workspace=properties";
 }
+
+// ---- the LENS and the Evidence view's selection, in the same address -------
+//
+//  `?workspace=properties&components=methanol,water&lens=evidence
+//   &datasets=<id>,<id>&models=<candidateId>,...`  (DEV.md 4c C117)
+//
+//  A professor pastes it; a student lands on the SAME picture.  `lens` names
+//  a PlotKind and is honoured only where the view applies to the set (the
+//  reader decides that, as it decides whether a component resolves); the two
+//  lists are the Evidence view's checkboxes, ids verbatim (a dataset's
+//  filename stem; a candidate's `model@tier` id).  Absent lists mean "all"
+//  -- the view's own default -- so the short form of the link is the
+//  common one.  Every address written BEFORE these keys existed still reads
+//  exactly as it did: an absent `lens` boots the class default.
+
+/** The lens an Explore URL asks for, or null. */
+export function lensInSearch(search: string): string | null {
+  const raw = new URLSearchParams(search).get("lens");
+  return raw && raw.trim() ? raw.trim() : null;
+}
+
+/** The Evidence view's selected datasets and candidate models, as the URL
+ *  spells them: `null` for a key that is absent ("all"), `[]` for one that is
+ *  present and empty ("none") -- the two are different requests. */
+export function evidenceSelectionInSearch(search: string): {
+  datasets: string[] | null; models: string[] | null;
+} {
+  const q = new URLSearchParams(search);
+  const read = (key: string): string[] | null => {
+    const raw = q.get(key);
+    return raw === null ? null : cleanNames(raw.split(","));
+  };
+  return { datasets: read("datasets"), models: read("models") };
+}
+
+/** The Evidence view's address for this set and selection.  Lists are
+ *  written as given (an empty list writes an empty key, meaning "none"). */
+export function evidenceLink(names: readonly string[],
+                             datasets: readonly string[],
+                             models: readonly string[]): string {
+  const q = new URLSearchParams();
+  q.set("workspace", "properties");
+  q.set("components", cleanNames(names).join(","));
+  q.set("lens", "evidence");
+  q.set("datasets", cleanNames(datasets).join(","));
+  q.set("models", cleanNames(models).join(","));
+  //  URLSearchParams spells a comma as %2C and the candidate ids' `@` as %40;
+  //  both are legal raw in a query string, the names carry neither, and a
+  //  readable link is the point of writing one.
+  return `?${q.toString().replace(/%2C/g, ",").replace(/%40/g, "@")}`;
+}

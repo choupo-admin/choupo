@@ -311,6 +311,11 @@ bin/dwsim-runner/
 /data/local/*
 !/data/local/README.md
 !/data/local/.gitkeep
+# data/local/evidence/ -- the private EVIDENCE tier (DEV.md 4c C117): its
+# README is tracked like the parent's; every dataset in it stays private.
+!/data/local/evidence/
+/data/local/evidence/*
+!/data/local/evidence/README.md
 generated/gitVersion.H
 
 # Local session / coordination scratch files (Vítor's working notes + the

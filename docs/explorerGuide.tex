@@ -238,6 +238,65 @@ different sentences.  It is a \emph{reading list, never a value}: no number
 is copied into a case or a record, and the only outbound action is opening
 the article.  Read it and cite it --- never this index.
 
+\subsection{Evidence (measured points against every candidate)}\label{sec:explorer-evidence}
+% Verified against gui/src/case/evidence.ts (the three tiers, allEvidence
+% merging one measurement by its sha256, nearest tier first, 320-337;
+% evidenceForPair 353-356; the how-to-read anchor 350), gui/src/case/evidenceSynth.ts (header 1-38:
+% candidates, one choupoProps run per candidate, residual = engine minus
+% measurement; evidenceCandidates 96-126: every pair record of every tier,
+% UNIFAC where both carry groups, COSMO-SAC only where a profile is
+% INSTALLED, ideal; the plan asks AT the measured x through `vary { points
+% }`, 162-230; the only arithmetic, means of residuals, 366-369),
+% gui/src/case/exploreLenses.ts:132-133 (exactly two components),
+% gui/src/case/exploreViews.ts:116 (offered only where a dataset exists),
+% gui/src/case/exploreTheory.ts:76 (F1 on this lens -> ch:fittable),
+% gui/src/ui/explore/EvidenceLens.tsx (header 1-30, the address; the AAD
+% caption), data/local/evidence/README.md, and the witness
+% tutorials/props/compare/evidence01_methanol_water_points.
+Pick exactly two components that some measured study is about --- methanol
+and water is the worked example --- and the \textbf{evidence} lens appears
+(it is not offered where no dataset for the pair exists).  It is the
+Explorer's answer to \emph{``which model should I trust for this pair?''},
+and it answers by showing, never by deciding.
+
+On the left: the \textbf{measured datasets} for the pair, gathered from
+three places --- the bundled tutorials' \code{constant/experiments/}, your
+private \code{data/local/evidence/} folder (the development GUI only; the
+public site never sees it) and the open case --- each with its citation,
+DOI, number of points, pressure and review status.  One measurement is one
+dataset however many places carry a copy: copies are merged by the checksum
+of their data block, and the list says where else it lives.  Below them, the
+\textbf{candidate models}: every parameter record for the pair in any tier
+(each a separate candidate, labelled by where it came from), UNIFAC where
+both components carry groups, COSMO-SAC only where a sigma profile is
+actually installed, and ideal mixing.  Tick and untick both lists; on a
+phone they fold behind one button.
+
+On the right: the measured bubble temperatures (with the dataset's own
+uncertainty bars) under one curve per candidate; one \textbf{residual} panel
+per candidate (engine minus measurement); and a table of the mean absolute
+deviation, its relative form and the bias.  A dataset is told by its marker
+shape, a candidate by its colour.  Where a dossier cites a candidate --- a
+pair Choupo regressed in a curation tutorial --- its verdict and held-out
+AAD sit beside it.
+
+\emph{What it computes: nothing physical.}  Each candidate is one
+\code{choupoProps} run, its parameters written inline, asked \emph{at the
+measured liquid compositions} (\code{vary \{ points ( \dots ); \}}), never
+read off a curve between two grid points.  The view subtracts and averages
+those answers and fits nothing; fitting and promoting a pair stay with the
+curation tools.  The address carries the selection
+(\code{\&lens=evidence\&datasets=\dots\&models=\dots}), so the picture a
+professor pastes is the picture a student gets.  Two lessons are waiting in
+the methanol--water example: the fitted pair is inside the band declared
+before its fit and still not closer than the predictive model on the
+held-out study, and part of every residual is the vapour-pressure record's,
+not the activity model's.  \textbf{F1} (or the book icon) on this view
+opens the Theory Guide's section on what is fittable and what is not
+(\code{ch:fittable}) --- where a parameter comes from, which is what a
+residual here is evidence about; the view's own \emph{How to read this
+view} link opens this section.
+
 \section{Provenance and honesty rules}
 
 The Explorer inherits the project's credo:

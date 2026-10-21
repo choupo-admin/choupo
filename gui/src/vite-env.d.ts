@@ -33,6 +33,18 @@ declare module "virtual:local-component-catalogue" {
   export default bodies;
 }
 
+//  The private tier's EVIDENCE and PAIR PARAMETERS (DEV.md 4c C117): the same
+//  plugin, two more directories, `{ file, body }` because the filename is the
+//  dataset's id and the pair's model folder.  scripts/localCataloguePlugin.ts.
+declare module "virtual:local-evidence" {
+  const entries: { file: string; body: string }[];
+  export default entries;
+}
+declare module "virtual:local-pair-parameters" {
+  const entries: { file: string; body: string }[];
+  export default entries;
+}
+
 //  The exported layout page's viewer (DEV.md 4c C81): three.js and Choupo's
 //  own drawing compiled into one script by scripts/layoutViewerPlugin.ts,
 //  with three.js's version and its MIT licence text.

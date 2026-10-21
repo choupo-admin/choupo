@@ -654,3 +654,88 @@ ORIGIN_WORDS_DEBT = {
                "that the engine enum and the five-axes contract already "
                "disagree, and no gate may settle that.",
 }
+
+
+#  THE DATASETS UNDER `constant/experiments/` THAT PREDATE THE EVIDENCE GRAMMAR
+#  (2026-10-20, DEV.md 4c C117).
+#
+#  The Property Explorer's Evidence view reads a measured dataset from its OWN
+#  header -- the grammar `bin/choupo-thermoml extract-vle` writes: a subject
+#  (`system ( a b )` or `component x;`), a `columns ( { name; unit; } )` +
+#  `data ( )` grid, and a `provenance {}` naming its `citation` and the
+#  `sha256` a dossier cites it by.  `check_evidence_records` holds every file
+#  under a tutorial's `constant/experiments/` to that.  MEASURED on the day:
+#  19 of 40 comply; these 21 do not, each lacking exactly the words recorded
+#  beside it (the gate recomputes them: a debt that grows or shrinks fails).
+#  They are the corpus's older shapes -- flat two-column kinetics and
+#  electrolyte tables read by their own ops, curation fixtures generated from
+#  the correlation they test, ThermoML extracts that name the article by `doi`
+#  and `archiveFile` and never wrote a `citation` line -- and every one of them
+#  RUNS: nothing here is a defect in a case, it is a file the Explorer cannot
+#  yet show as evidence.  NOT fixed here, because writing a citation into a
+#  record this slice did not read against its source would convert
+#  "uncited" into "falsely cited" (the 2026-08-05 rule).
+EVIDENCE_LEGACY_DATASETS = {
+    "tutorials/props/compare/acetone01_ipa_water_azeotrope/constant/experiments/luyben2011_ipa_water.dat":
+        "sha256,subject",
+    "tutorials/props/compare/compare_kinetics_order/constant/experiments/rate-batch.dat":
+        "grid,sha256,subject",
+    "tutorials/props/compare/compare_vle_etoh_water/constant/experiments/etoh_water_vle_1atm.dat":
+        "sha256,subject",
+    "tutorials/props/curation/curate01_water_evidence_partition/constant/experiments/psat-water-highT.dat":
+        "citation,sha256,subject",
+    "tutorials/props/curation/curate01_water_evidence_partition/constant/experiments/psat-water-lowT.dat":
+        "citation,sha256,subject",
+    "tutorials/props/curation/curate02_vle_heldout_ethanol_water/constant/experiments/etoh-water-101kPa-fit.dat":
+        "citation,sha256,subject",
+    "tutorials/props/curation/curate02_vle_heldout_ethanol_water/constant/experiments/etoh-water-101kPa-heldout.dat":
+        "citation,sha256,subject",
+    "tutorials/props/curation/curate03_thermoml_fixture_bubble/constant/experiments/ethanol-water-bubble-binary-bubble-fixture-heldout.dat":
+        "citation",
+    "tutorials/props/curation/curate03_thermoml_fixture_bubble/constant/experiments/ethanol-water-bubble-binary-bubble-fixture.dat":
+        "citation",
+    "tutorials/props/electrolyte/archer01_nacl_cold_to_hot/constant/experiments/archer92_tables9_10.dat":
+        "grid,provenance,subject",
+    "tutorials/props/electrolyte/enthalpy_naoh_water/constant/experiments/phiL_25C_parker1965.dat":
+        "citation,grid,sha256,subject",
+    "tutorials/props/electrolyte/fpd01_nacl_freezing/constant/experiments/fpd_nacl_interim.dat":
+        "grid,provenance,subject",
+    "tutorials/props/electrolyte/pitzer01_nacl/constant/experiments/phiL_25C_parker1965.dat":
+        "citation,grid,sha256,subject",
+    "tutorials/props/electrolyte/pitzer_gamma_hamer_wu/constant/experiments/hamer_wu_1972.dat":
+        "grid,provenance,subject",
+    "tutorials/props/electrolyte/pitzer_nacl_sp77_hot/constant/experiments/sp77_tableV.dat":
+        "grid,provenance,subject",
+    "tutorials/props/fit/cp01_polynomial_recovery/constant/experiments/cp-dce-liquid-synthetic.dat":
+        "provenance,subject",
+    "tutorials/props/fit/psat01_antoine_recovery/constant/experiments/psat-water-synthetic.dat":
+        "provenance,subject",
+    "tutorials/props/kinetics/rate01_arrhenius_recovery/constant/experiments/rate-secondorder-synthetic.dat":
+        "provenance,subject",
+    "tutorials/props/molecular/srk01_h2n2_density/constant/experiments/N2-H2-density-jced-7b00694.dat":
+        "provenance",
+    "tutorials/steady/optimisation/fitNRTL02_thermoml_isobars/constant/experiments/ethanol-water-bubble-j.fluid.2011.06.009.dat":
+        "citation",
+    "tutorials/steady/optimisation/fitNRTL02_thermoml_isobars/constant/experiments/ethanol-water-bubble-je2008704.dat":
+        "citation",
+}
+
+EVIDENCE_LEGACY_DEBT = {
+    "why": "These measured (or generated) datasets sit in a case's "
+           "constant/experiments/ in an older shape: no declared subject, no "
+           "self-describing column grid, or a provenance block without a "
+           "citation or a sha256.  Each case runs; the Explorer's Evidence "
+           "view cannot list them for a pair, and a dossier cannot cite them "
+           "by hash.",
+    "remedy": "Per file: declare the subject (`system ( a b );` or "
+              "`component x;`), restate the grid as `columns ( { name; unit; "
+              "} ) data ( )` where the consuming op reads that form, and add "
+              "the `citation` (read against the source, never inferred from "
+              "a doi) and the `sha256` of the source file -- then delete the "
+              "pin; the gate fails until the pin goes.",
+    "blocked": "Each citation must be read against its article; the "
+               "generated fixtures (curate01/02/03) are synthetic BY DESIGN "
+               "and may need a declared `source synthetic;` exemption word "
+               "instead of a citation -- a decision for the curator, not a "
+               "mechanical edit.",
+}

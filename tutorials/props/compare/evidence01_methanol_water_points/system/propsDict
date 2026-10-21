@@ -1,0 +1,103 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+  evidence01_methanol_water_points -- A MODEL EVALUATED AT THE MEASURED
+  CONDITIONS, NOT ON A GRID (DEV.md 4c C117).
+
+  THE QUESTION.  A measured dataset is a list of CONDITIONS somebody set and
+  the value they read there.  To compare a model with it, the honest residual
+  is  model(x_measured) - measurement  -- the engine asked at the measured x,
+  never a value read off a smooth curve between two grid neighbours.  The
+  `experimental {}` overlay's AAD interpolates the model CSV at the measured
+  x; here the CSV HOLDS the measured x, so that interpolation is exact.
+
+  THE GRAMMAR.  `vary { variable x[methanol]; points ( ... ); }` -- the 13
+  interior liquid mole fractions of the held-out study, in its own order,
+  instead of `from / to / n`.  Both in one `vary {}` is refused by name.  The
+  values are canonical SI (a mole fraction here; K or Pa for T or P).
+
+  THE EVIDENCE.  constant/experiments/methanol-water-bubble-je200341c.dat:
+  Yang, Ma & Yin, J. Chem. Eng. Data (2011), doi 10.1021/je200341c, 13
+  interior points at 101.32 kPa, the HELD-OUT set of the curate04 regression
+  (tutorials/props/curation/curate04_nrtl_methanol_water), kept here as this
+  case's own copy -- a self-contained tutorial keeps its own copy.  Its
+  `reviewStatus transcribedNotCheckedAgainstArticle` is announced by the run.
+
+  THE THREE CANDIDATES.  The catalogue NRTL pair (regressed by Choupo in
+  curate04 on ANOTHER study, so this set is a validation of it), UNIFAC
+  (predictive, from the components' groups) and ideal mixing.  What the
+  curate04 case found holds here to the digit: UNIFAC is closer than the
+  fitted pair on this set, and the fitted pair is `validated` -- inside its
+  declared band, never better than every alternative.
+
+  WHAT IS NOT CLAIMED.  Nothing is fitted here.  Part of every residual is
+  the catalogue water Antoine record's own 0.70 K at 101.32 kPa, which no
+  pair can remove.  This is the engine witness of the Property Explorer's
+  Evidence view, which synthesises exactly these operations (one choupoProps
+  run per candidate) and only subtracts.
+\*---------------------------------------------------------------------------*/
+
+operations
+(
+    {
+        name        txy_nrtl_points;
+        type        propertyScan1D;
+        //  the 13 measured interior x of the held-out study, in its own order
+        vary        { variable x[methanol];
+                      points ( 0.0050 0.0230 0.0380 0.1040 0.1520 0.3390 0.3920
+                               0.4830 0.5910 0.7320 0.8330 0.8940 0.9690 ); }
+        state       { P 101.32 kPa;  composition { methanol 0.5;  water 0.5; } }
+        thermo
+        {
+            equilibrium { liquid { activityModel { model NRTL; /* the catalogue record, by name */ } } }
+        }
+        properties  ( T_bubble  y_eq_methanol );
+        output      { file txy_nrtl_points.csv; }
+    }
+    {
+        name        txy_unifac_points;
+        type        propertyScan1D;
+        vary        { variable x[methanol];
+                      points ( 0.0050 0.0230 0.0380 0.1040 0.1520 0.3390 0.3920
+                               0.4830 0.5910 0.7320 0.8330 0.8940 0.9690 ); }
+        state       { P 101.32 kPa;  composition { methanol 0.5;  water 0.5; } }
+        thermo
+        {
+            equilibrium { liquid { activityModel { model UNIFAC; } } }
+        }
+        properties  ( T_bubble  y_eq_methanol );
+        output      { file txy_unifac_points.csv; }
+    }
+    {
+        name        txy_ideal_points;
+        type        propertyScan1D;
+        vary        { variable x[methanol];
+                      points ( 0.0050 0.0230 0.0380 0.1040 0.1520 0.3390 0.3920
+                               0.4830 0.5910 0.7320 0.8330 0.8940 0.9690 ); }
+        state       { P 101.32 kPa;  composition { methanol 0.5;  water 0.5; } }
+        thermo
+        {
+            equilibrium { liquid { activityModel { model ideal; } } }
+        }
+        properties  ( T_bubble  y_eq_methanol );
+        output      { file txy_ideal_points.csv; }
+    }
+);
+
+experimental
+(
+    {
+        name      heldout_je200341c;
+        component methanol;
+        kind      txy;
+        models    ( txy_nrtl_points  txy_unifac_points  txy_ideal_points );
+        dataset   "constant/experiments/methanol-water-bubble-je200341c.dat";
+        source    "held out of the curate04 regression: doi 10.1021/je200341c";
+    }
+);
