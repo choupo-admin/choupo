@@ -1501,6 +1501,76 @@ accepts today, and that is a policy call.
 > final; }` layout draws what the steady flowsheet and the sizing pass
 > already hold.
 
+> **C136. AN EDUTOOL ON SECONDARY CONTAINMENT -- BUND DESIGN IN A CHEMICAL
+> PLANT (Vitor, 2026-10-21, for SATURDAY: "Regista isto para fazer no
+> Sabado porque e muito importante").**  The lesson, in his words: "Uma
+> instalacao quimica nao deve ser concebida apenas para funcionar
+> corretamente, mas tambem para limitar as consequencias quando alguma
+> coisa corre mal."  A bund is a PASSIVE barrier (no power, no
+> instrument, no operator); the student must understand the physics and
+> the engineering decisions, "nao apenas que introduza numeros numa
+> calculadora".  Scope as he wrote it (his message is the specification;
+> this is its index):
+> (1) why bunds exist, how they are built, how they are sized, what a leak
+> or a rupture does, how the geometry decides safety, why a badly
+> conceived bund can RAISE some risks, local containment vs remote
+> collection.  (2) ONE SVG section view, the house style: two or three
+> vertical tanks of different volumes in a bund -- impermeable floor,
+> perimeter walls, wall height, spilled-liquid level, low collection
+> point, controlled drain; normal operation visibly distinct from the
+> accident; a rupture filling the bund progressively, the level rising and
+> OVERTOPPING when the useful capacity is exceeded.  (3) sizing: the
+> USEFUL capacity from the area, the wall height, the volume the tanks and
+> other items displace below the liquid level, an optional floor slope,
+> a safety margin and rain where it applies; GEOMETRIC capacity kept
+> rigorously apart from USEFUL capacity.  V >= max(1.10 V_largest; 0.25
+> V_total) is shown as a TEACHING EXAMPLE only -- its origin, conditions
+> and limits traced to a source, never presented as a universal
+> obligation (it depends on country, product and regulatory frame).
+> (4) four scenarios with EXPLICIT mass conservation: A catastrophic
+> rupture (contained or not); B a progressive leak, constant or varying
+> flow, with the leak possibly stopped; C rain taking capacity before a
+> later spill; D a drain or valve left open, the bund no longer a
+> barrier.  (5) flammable liquids, QUALITATIVE only: the bund that stops
+> the spread also makes a large pool -- evaporation surface, flammable
+> vapour, pool fire; local vs remote containment; NO fire or dispersion
+> model that is not properly founded ("nao produzir uma ferramenta
+> certificada de analise de riscos").  (6) construction: reinforced
+> concrete, impermeable linings and their chemical resistance, joints and
+> pipe penetrations, compatibility, inspection and maintenance -- why a
+> bund fit for water or some hydrocarbons may not be for an acid, a base
+> or a given solvent; NO invented compatibility table.  (7) prevention /
+> detection / isolation / secondary containment / mitigation, and the
+> bund's place in the layers of protection: it does not prevent the
+> initiating event, it stops or limits its propagation.  (8) exercise:
+> tanks of 20, 15 and 10 m3; the student sizes the bund under a selected
+> criterion with the volume the structures occupy; the tool ruptures the
+> largest and shows the margin; area and height explorable, keeping the
+> physical meaning; a second exercise adds rain and shows a design that
+> was adequate stop being so.  (9) sources: CIRIA C736, UK HSE, the
+> European guidance on storage of dangerous substances and accident
+> prevention, Portuguese regulation where it can be identified; legal
+> requirement, technical standard and example of good practice told
+> apart; NOTHING normative or bibliographic invented.  (10) inspect the
+> existing EduTools first (pages, SVG components, navigation, tests) and
+> reuse them; self-contained in the browser; transparent model, visible
+> equations, explicit hypotheses, verifiable results; NOT a case editor;
+> tests for volume conservation, geometric capacity, tank displacement,
+> overtopping and limit cases; every relevant gate, no test weakened.
+> (11) closing reflection, verbatim: "A process flowsheet shows how a
+> chemical plant is intended to operate. Secondary containment shows how
+> engineers prepare for the possibility that it will not."
+> Measured beside it, to be READ before the brief is written: C134 put
+> bunds into the plant layout as a declared region the engine CHECKS
+> (net volume = area x height minus the displaced footprints, against the
+> case's own capacity rule) -- so the capacity arithmetic has an engine
+> home, and on the relief-valve precedent (C62) the EduTool's TypeScript
+> and the engine's C++ must be ONE procedure held to each other's pinned
+> examples by a gate, not two that may drift.  Order on Saturday: after
+> the validation owed by C124 (C131 note) and the site publish, before
+> anything new opens.  Status: commissioned, scope given by Vitor in
+> full; the brief carries file:line for every engine fact it uses.
+
 > **C135. A kij THAT VARIES WITH T, REGRESSED AND READ PER UNIT (Vitor,
 > 2026-10-21: "Nos conseguimos fazer melhor e arranjar kij que variem com
 > T?" -- then "Ok" to the plan below).**  Measured: on C123 case D every
