@@ -37,12 +37,20 @@ License
   anything: the local tier is asserted only to be a list.
 \*---------------------------------------------------------------------------*/
 
+import { readFileSync } from "node:fs";
 import { describe, expect, it } from "vitest";
 
 import {
-  allEvidence, caseEvidence, columnIndex, evidenceCorpusSize, evidenceForPair,
+  allEvidence, caseEvidence, columnIndex, evidenceCorpusSize, evidenceForPair, EXPLORER_GUIDE_EVIDENCE,
   localEvidence, readEvidence, rowPressurePa, tutorialEvidence, xColumn,
 } from "../src/case/evidence.js";
+
+describe("the view's 'how to read this' link lands on its own guide section", () => {
+  it("EXPLORER_GUIDE_EVIDENCE is a \\label of docs/explorerGuide.tex", () => {
+    const tex = readFileSync(new URL("../../docs/explorerGuide.tex", import.meta.url), "utf-8");
+    expect(tex).toContain(`\\label{${EXPLORER_GUIDE_EVIDENCE}}`);
+  });
+});
 
 const JCT = "10.1016/j.jct.2009.11.020";
 const JE = "10.1021/je200341c";
@@ -127,7 +135,11 @@ describe("the three tiers merge by sha256, nearest tier first", () => {
   it("the local tier is a list, possibly empty -- never a requirement", () => {
     expect(Array.isArray(localEvidence())).toBe(true);
     expect(caseEvidence(undefined)).toEqual([]);
-    expect(allEvidence().length).toBeGreaterThanOrEqual(tutorialEvidence().length);
+    //  Two tutorials may carry the SAME measured file (evidence01 copies
+    //  curate04's je200341c set): one measurement is one dataset, so the
+    //  merged list holds every DISTINCT tutorial dataset, not every copy.
+    const distinct = new Set(tutorialEvidence().map((d, i) => d.provenance.sha256 || `#${i}`));
+    expect(allEvidence().length).toBeGreaterThanOrEqual(distinct.size);
   });
 });
 

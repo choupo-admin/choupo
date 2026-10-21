@@ -33,14 +33,17 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import {
   Alert, Anchor, Badge, Box, Button, Checkbox, Collapse, Group, Loader, ScrollArea, Stack, Table, Text,
-  Tooltip,
+  useComputedColorScheme,
 } from "@mantine/core";
 import { IconChevronDown, IconChevronRight } from "@tabler/icons-react";
 
 import { resolveAdapter } from "../../adapters/index.js";
 import type { ComponentMeta } from "../../case/catalogue.js";
 import { dossiersFor, type DossierProperty } from "../../case/dossier.js";
-import { evidenceForPair, type EvidenceDataset, type EvidenceTier } from "../../case/evidence.js";
+import {
+  EXPLORER_GUIDE_EVIDENCE, evidenceForPair, type EvidenceDataset, type EvidenceTier,
+} from "../../case/evidence.js";
+import { guideUrl, openGuide } from "../../help/guideLinks.js";
 import {
   evidenceCandidates, evidenceResults, evidenceRunPlan,
   type EvidenceCandidate, type EvidenceResult,
@@ -48,14 +51,25 @@ import {
 import type { UnifacGroup } from "../../case/unifacGroups.js";
 import { kToDisplay, temperatureLabel } from "../../state/displayUnits.js";
 import { useStore } from "../../state/store.js";
-import { Plot, PLOT_COLORS, PLOT_CONFIG, darkLayout } from "../plotting/plotly.js";
+import { Plot, PLOT_CONFIG, darkLayout } from "../plotting/plotly.js";
 import { VerdictCell } from "./ComponentInspector.js";
 import { evidenceLink, evidenceSelectionInSearch } from "./selectionLink.js";
 
-/** The candidate palette order: the shared series colours with the two
- *  cyans kept apart (series[0] and series[2] are both cyan, and three
- *  candidates must be three colours a reader can tell apart). */
-const CANDIDATE_ORDER = [0, 1, 4, 5, 3, 2];
+/** The candidate colours.  NOT the shared `PLOT_COLORS.series`: that set is
+ *  pastel, tuned for the dark plot background, and on the light one its green
+ *  all but vanished (the 2026-10-21 re-shoot: the `ideal` residuals read as a
+ *  faint smudge; the first shoot had drawn NRTL and ideal in near-identical
+ *  cyan).  Six mid-tone hues, each at least 3:1 against BOTH plot backgrounds
+ *  (#ffffff and #1f1f1f) -- the graphical-object contrast floor -- the first
+ *  three blue, orange and green. */
+const CANDIDATE_COLOURS = ["#1e88e5", "#ef6c00", "#43a047", "#ab47bc", "#e53935", "#8d6e63"];
+
+/** The ink of the MEASURED points and of every uncertainty bar: the plot's
+ *  own text colour in each scheme, so a measurement is the darkest mark on a
+ *  light page and the brightest on a dark one (the shared dark-theme text grey
+ *  was a light grey on white). */
+const INK = { light: "#343a40", dark: "#c9c9c9" } as const;
+const WHISKER = { light: "#868e96", dark: "#828282" } as const;
 
 /** Marker symbols for the datasets (a dataset is told by its SHAPE, a
  *  candidate by its COLOUR -- the two grammars never share an axis). */
@@ -92,6 +106,9 @@ export function EvidenceLens({ pair, catalogue, caseRaw, localUnifac, componentF
   narrow: boolean;
 }) {
   const prefs = useStore((s) => s.displayPrefs);
+  const scheme = useComputedColorScheme("light");
+  const ink = INK[scheme];
+  const whisker = WHISKER[scheme];
   const tUnit = prefs.temperature;
   const datasets = useMemo(() => evidenceForPair(pair[0], pair[1], caseRaw), [pair, caseRaw]);
   const candidates = useMemo(
@@ -194,7 +211,7 @@ export function EvidenceLens({ pair, catalogue, caseRaw, localUnifac, componentF
   const xComponent = chosenData.length
     ? (evidenceRunPlan(pair, chosenData, candidates[candidates.length - 1]!).xComponent) : pair[0];
   const colourOf = (c: EvidenceCandidate) =>
-    PLOT_COLORS.series[CANDIDATE_ORDER[candidates.indexOf(c) % CANDIDATE_ORDER.length]!]!;
+    CANDIDATE_COLOURS[candidates.indexOf(c) % CANDIDATE_COLOURS.length]!;
   const symbolOf = (d: EvidenceDataset) => DATASET_SYMBOLS[datasets.indexOf(d) % DATASET_SYMBOLS.length]!;
   const tLabel = temperatureLabel(tUnit);
 
@@ -219,19 +236,19 @@ export function EvidenceLens({ pair, catalogue, caseRaw, localUnifac, componentF
       if (!dr) continue;
       const hasU = dr.points.some((p) => p.uncertaintyK !== null);
       out.push({
-        type: "scattergl", mode: "markers", name: `measured: ${d.id}`,
+        type: "scattergl", mode: "markers", name: `measured · ${d.id}`,
         x: dr.points.map((p) => p.x), y: dr.points.map((p) => kToDisplay(p.measuredK, tUnit)),
-        marker: { symbol: symbolOf(d), size: 7, color: "rgba(0,0,0,0)",
-                  line: { color: PLOT_COLORS.text, width: 1.4 } },
+        marker: { symbol: symbolOf(d), size: 8, color: "rgba(0,0,0,0)",
+                  line: { color: ink, width: 1.6 } },
         ...(hasU ? { error_y: { type: "data", array: dr.points.map((p) => p.uncertaintyK ?? 0),
-                                visible: true, color: PLOT_COLORS.axis, thickness: 1, width: 3 } } : {}),
+                                visible: true, color: whisker, thickness: 1, width: 3 } } : {}),
         hovertemplate: `${d.id}<br>x = %{x:.3f}<br>T = %{y:.2f} ${tLabel} at %{customdata:.2f} kPa<extra></extra>`,
         customdata: dr.points.map((p) => p.P / 1000),
       });
     }
     return out;
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [results, chosenModels, chosenData, tUnit]);
+  }, [results, chosenModels, chosenData, tUnit, ink, whisker]);
 
   // ---- the residual panels: one row per candidate -------------------------
   const residual = useMemo(() => {
@@ -251,7 +268,7 @@ export function EvidenceLens({ pair, catalogue, caseRaw, localUnifac, componentF
           x: dr.points.map((p) => p.x), y: dr.points.map((p) => p.residualK),
           marker: { symbol: symbolOf(d), size: 6, color: colourOf(c) },
           error_y: { type: "data", array: dr.points.map((p) => p.uncertaintyK ?? 0), visible: true,
-                     color: PLOT_COLORS.axis, thickness: 1, width: 2 },
+                     color: whisker, thickness: 1, width: 2 },
           hovertemplate: `${c.id} − ${d.id}<br>x = %{x:.3f}<br>residual = %{y:.3f} K<extra></extra>`,
         });
       }
@@ -268,10 +285,18 @@ export function EvidenceLens({ pair, catalogue, caseRaw, localUnifac, componentF
     layout.annotations = annotations;
     return { traces, layout, n: rows.length };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [results, chosenModels, chosenData, xComponent]);
+  }, [results, chosenModels, chosenData, xComponent, whisker]);
 
   const lists = (
     <Stack gap="sm">
+      <Text size="xs" c="dimmed">
+        A dataset is told by its marker shape, a candidate by its colour.{" "}
+        {/* F1 here opens the THEORY of where a parameter comes from
+            (exploreTheory: ch:fittable); this is the HOW-TO-READ section. */}
+        <Anchor size="xs" onClick={() => openGuide(guideUrl("explorerGuide", EXPLORER_GUIDE_EVIDENCE))}>
+          How to read this view (Explorer Guide)
+        </Anchor>
+      </Text>
       <Box>
         <Text size="xs" fw={600} c="dimmed" tt="uppercase">Measured datasets ({datasets.length})</Text>
         <Stack gap={6} mt={4}>
@@ -284,9 +309,9 @@ export function EvidenceLens({ pair, catalogue, caseRaw, localUnifac, componentF
               }}
               label={(
                 <Stack gap={0}>
-                  <Group gap={6} wrap="nowrap">
-                    <Text size="xs" fw={500} style={{ fontFamily: "monospace" }}>{d.id}</Text>
-                    <Badge size="xs" variant="outline" color="gray" tt="none">{tierWord(d.tier)}</Badge>
+                  <Group gap={6} wrap="wrap">
+                    <Text size="xs" fw={500} style={{ fontFamily: "monospace", wordBreak: "break-all" }}>{d.id}</Text>
+                    <Badge size="xs" variant="outline" color="gray" tt="none" style={{ flexShrink: 0 }}>{tierWord(d.tier)}</Badge>
                   </Group>
                   <Text size="xs" c="dimmed" lineClamp={2}>{d.provenance.citation || "(no citation)"}</Text>
                   <Group gap={6} wrap="wrap">
@@ -299,7 +324,9 @@ export function EvidenceLens({ pair, catalogue, caseRaw, localUnifac, componentF
                       {d.heldPressurePa !== null ? ` · ${(d.heldPressurePa / 1000).toFixed(2)} kPa` : " · P per point"}
                       {d.provenance.reviewStatus ? ` · ${d.provenance.reviewStatus}` : ""}
                       {d.caseName && d.tier !== "case" ? ` · ${d.caseName}` : ""}
-                      {d.alsoIn.length ? ` · also in ${d.alsoIn.map(tierWord).join(", ")}` : ""}
+                      {/* a copy in the SAME tier (two tutorials carrying one
+                          study) is "another tutorial", not the tier it is in */}
+                      {d.alsoIn.length ? ` · also in ${d.alsoIn.map((t) => (t === d.tier ? `another ${tierWord(t)}` : tierWord(t))).join(", ")}` : ""}
                     </Text>
                   </Group>
                 </Stack>
@@ -402,7 +429,7 @@ export function EvidenceLens({ pair, catalogue, caseRaw, localUnifac, componentF
                     </Table.Td>
                   );
                 })}
-                <Table.Td>{doss ? <VerdictCell v={doss.verdict} /> : <Text size="xs" c="dimmed">none cites it</Text>}</Table.Td>
+                <Table.Td style={{ whiteSpace: "nowrap" }}>{doss ? <VerdictCell v={doss.verdict} /> : <Text size="xs" c="dimmed">none cites it</Text>}</Table.Td>
               </Table.Tr>
             );
           })}
@@ -412,6 +439,9 @@ export function EvidenceLens({ pair, catalogue, caseRaw, localUnifac, componentF
   })();
 
   const errorLines = Object.entries(errors);
+  //  On a phone the mode bar sat ON both titles; the figures stay zoomable by
+  //  touch, and the PNG export is a desktop act.
+  const plotConfig = narrow ? { ...PLOT_CONFIG, displayModeBar: false } : PLOT_CONFIG;
   const haveAny = chosenModels.some((c) => results[c.id] && results[c.id]!.byDataset.length > 0);
 
   const figures = (
@@ -426,24 +456,25 @@ export function EvidenceLens({ pair, catalogue, caseRaw, localUnifac, componentF
         </Alert>)}
       {haveAny ? (
         <>
-          <Box style={{ flex: 3, minHeight: narrow ? 420 : 240, position: "relative" }}>
+          <Box style={{ flex: 3, flexShrink: 0, minHeight: narrow ? 480 : 400, position: "relative" }}>
             <Plot data={mainTraces as never}
               layout={{
                 ...darkLayout, autosize: true, showlegend: true,
+                //  The title sits LEFT: the mode bar owns the top right, and
+                //  a centred title ran under its icons.
                 title: { text: narrow ? "T_bubble: measured vs candidates"
                                       : `${pair[0]} + ${pair[1]}: bubble temperature, measured vs candidates`,
-                         font: { size: narrow ? 11 : 13 } },
-                //  On a phone the legend goes UNDER the figure: inside it,
-                //  five entries cover the curves they name.
-                legend: narrow
-                  ? { ...darkLayout.legend, orientation: "h", x: 0, y: -0.28, xanchor: "left", yanchor: "top", font: { size: 10 } }
-                  : { ...darkLayout.legend, x: 1, y: 1, xanchor: "right", yanchor: "top" },
+                         x: 0.01, xanchor: "left", font: { size: narrow ? 11 : 13 } },
+                //  The legend goes UNDER the figure on every width: inside it,
+                //  five entries covered the curves they name (both re-shoots).
+                legend: { ...darkLayout.legend, orientation: "h", x: 0, y: narrow ? -0.28 : -0.2,
+                          xanchor: "left", yanchor: "top", font: { size: narrow ? 10 : 11 } },
                 xaxis: { ...darkLayout.xaxis, title: { text: `x (${xComponent}), liquid mole fraction` }, range: [0, 1] },
                 yaxis: { ...darkLayout.yaxis, title: { text: `T_bubble (${tLabel})` } },
                 margin: { ...darkLayout.margin, l: narrow ? 44 : darkLayout.margin.l, r: narrow ? 8 : darkLayout.margin.r,
-                          b: narrow ? 130 : 48 },
+                          b: narrow ? 130 : 100 },
               } as never}
-              config={PLOT_CONFIG} style={{ width: "100%", height: "100%" }} useResizeHandler />
+              config={plotConfig} style={{ width: "100%", height: "100%" }} useResizeHandler />
             {busy && (
               <Box style={{ position: "absolute", inset: 0, display: "flex", alignItems: "center",
                 justifyContent: "center", background: "light-dark(rgba(255,255,255,0.45), rgba(0,0,0,0.45))" }}>
@@ -451,22 +482,25 @@ export function EvidenceLens({ pair, catalogue, caseRaw, localUnifac, componentF
               </Box>)}
           </Box>
           {residual.n > 0 && (
-            <Box style={{ flex: 2, minHeight: 90 * residual.n + 70 }}>
+            <Box style={{ flex: 2, flexShrink: 0, minHeight: 110 * residual.n + 80 }}>
               <Plot data={residual.traces as never}
                 layout={{
                   ...darkLayout, autosize: true, showlegend: false,
                   grid: { rows: residual.n, columns: 1, pattern: "independent", roworder: "top to bottom" },
                   title: { text: narrow ? "residual = engine − measured (K)"
-                                        : "residual = engine − measurement at the measured x (error bars: the dataset's own uncertainty)",
-                           font: { size: narrow ? 11 : 12 } },
+                                        : "residual = engine − measured at the measured x (K); bars: the dataset's own uncertainty",
+                           x: 0.01, xanchor: "left", font: { size: narrow ? 11 : 12 } },
                   margin: { ...darkLayout.margin, l: narrow ? 44 : darkLayout.margin.l, r: narrow ? 8 : darkLayout.margin.r,
                             b: 44, t: 40 },
                   ...residual.layout,
                 } as never}
-                config={PLOT_CONFIG} style={{ width: "100%", height: "100%" }} useResizeHandler />
+                config={plotConfig} style={{ width: "100%", height: "100%" }} useResizeHandler />
             </Box>)}
-          <ScrollArea.Autosize mah={160} type="auto">{aadTable}</ScrollArea.Autosize>
-          <Text size="xs" c="dimmed">
+          {/*  The AAD table is NOT capped in a scroll area of its own: the
+               figures already scroll, and a nested 160 px box hid the third
+               candidate on a desktop and collapsed to nothing on a phone. */}
+          <Box style={{ flexShrink: 0 }}>{aadTable}</Box>
+          <Text size="xs" c="dimmed" style={{ flexShrink: 0 }}>
             AAD = mean |engine − measurement| over the points the engine answered; rel % = mean |residual| / T_measured.
             Every value is the engine's at the measured x and P; the GUI subtracts and averages, and fits nothing.
           </Text>
@@ -510,11 +544,7 @@ export function EvidenceLens({ pair, catalogue, caseRaw, localUnifac, componentF
     </Stack>
   ) : (
     <Group gap="md" align="stretch" wrap="nowrap" style={{ flex: 1, minHeight: 0, minWidth: 0 }}>
-      <ScrollArea style={{ width: 300, flexShrink: 0 }} type="auto">
-        <Tooltip label="A dataset is drawn by its marker shape, a candidate by its colour." withArrow>
-          <Box>{lists}</Box>
-        </Tooltip>
-      </ScrollArea>
+      <ScrollArea style={{ width: 300, flexShrink: 0 }} type="auto">{lists}</ScrollArea>
       <Box style={{ flex: 1, minWidth: 0, display: "flex", flexDirection: "column", overflowY: "auto" }}>{figures}</Box>
     </Group>
   );

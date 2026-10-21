@@ -343,6 +343,12 @@ export function isAboutPair(d: EvidenceDataset, a: string, b: string): boolean {
   return (p === a && q === b) || (p === b && q === a);
 }
 
+/** The Explorer Guide section that explains the Evidence view (a real
+ *  `\label` in docs/explorerGuide.tex; tests/evidence.test.ts holds the two
+ *  together, so a renamed label cannot strand the view's "how to read this"
+ *  link on the guide's cover). */
+export const EXPLORER_GUIDE_EVIDENCE = "sec:explorer-evidence";
+
 /** Every dataset whose subject is the pair {a, b}, in any tier. */
 export function evidenceForPair(a: string, b: string,
                                 rawFiles?: { [relPath: string]: string }): EvidenceDataset[] {

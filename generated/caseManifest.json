@@ -6,7 +6,7 @@
   "runtime": "not recorded; runTests does not time per case and this script does not run the corpus"
  },
  "counts": {
-  "cases": 480,
+  "cases": 481,
   "witnesses": 16,
   "validationOp": 6,
   "anchored": 12
@@ -1656,6 +1656,21 @@
    "thermo": {
     "formulation": "gammaPhi",
     "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [],
+   "hasGolden": true
+  },
+  "tutorials/props/compare/evidence01_methanol_water_points": {
+   "application": "choupoProps",
+   "ops": [
+    "propertyScan1D"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "NRTL",
      "ideal"
     ]
    },
@@ -7122,6 +7137,7 @@
     "tutorials/props/compare/compare_visc_liquid_ammonia",
     "tutorials/props/compare/compare_visc_liquid_water",
     "tutorials/props/compare/compare_vle_etoh_water",
+    "tutorials/props/compare/evidence01_methanol_water_points",
     "tutorials/props/curation/curate01_water_evidence_partition",
     "tutorials/props/curation/curate02_vle_heldout_ethanol_water",
     "tutorials/props/curation/curate03_thermoml_fixture_bubble",
@@ -8188,6 +8204,7 @@
    "NRTL": [
     "tutorials/batch/still/still02_ethanol_water_azeo",
     "tutorials/plant/twoSectorDemo",
+    "tutorials/props/compare/evidence01_methanol_water_points",
     "tutorials/props/curation/curate02_vle_heldout_ethanol_water",
     "tutorials/props/curation/curate03_thermoml_fixture_bubble",
     "tutorials/props/curation/curate04_nrtl_methanol_water",
@@ -8420,6 +8437,7 @@
     "tutorials/props/compare/compare_visc_liquid_ammonia",
     "tutorials/props/compare/compare_visc_liquid_water",
     "tutorials/props/compare/compare_vle_etoh_water",
+    "tutorials/props/compare/evidence01_methanol_water_points",
     "tutorials/props/curation/curate01_water_evidence_partition",
     "tutorials/props/curation/curate04_nrtl_methanol_water",
     "tutorials/props/curation/curate05_nrtl_acetone_methanol",
@@ -8817,6 +8835,7 @@
     "tutorials/props/compare/compare_visc_liquid_ammonia",
     "tutorials/props/compare/compare_visc_liquid_water",
     "tutorials/props/compare/compare_vle_etoh_water",
+    "tutorials/props/compare/evidence01_methanol_water_points",
     "tutorials/props/curation/curate04_nrtl_methanol_water",
     "tutorials/props/curation/curate05_nrtl_acetone_methanol",
     "tutorials/props/curation/curate06_nrtl_isopropanol_water",
