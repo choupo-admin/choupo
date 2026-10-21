@@ -194,6 +194,13 @@ values given back), since no shipped case exercises those routes any more.
 
 * No boiling film correlation; the Chiller's shell side is typed.
 * No condensation film model (the condensing duties are on the gas film).
+  (Both for a FLOWSHEET exchanger.  Since 2026-10-20 (C124) a distillation
+  column's condenser and reboiler reach this route with a phase-change
+  process film -- Nusselt film condensation, Rohsenow nucleate boiling held
+  under the Zuber critical heat flux -- see
+  `a-column-condenses-and-boils-on-a-designed-bundle.md`.  A flowsheet
+  exchanger's condensing or boiling process side is still as described
+  above.)
 * No dense-gas transport correction.
 * N is not proven MINIMAL by the gate (only A ≥ A_required).
 * The unit applies no dP to its outlets (unchanged), and the sizer's dPs

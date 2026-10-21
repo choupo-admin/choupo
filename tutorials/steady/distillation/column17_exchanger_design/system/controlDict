@@ -1,0 +1,21 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+application   choupoSolve;
+description   "The column's condenser and reboiler designed: Nusselt film condensation and Rohsenow boiling under the critical heat flux";
+verbosity     3;
+
+//  THE DELIVERABLE.  `system/postDict` sizes and costs this column's FIVE
+//  physical items; these two report objects SERIALISE what that chain
+//  produced -- they size and cost nothing themselves.  The mass, element and
+//  energy balances run by default and are not listed here.
+reports
+{
+    design         { }     // serialises the sizing from system/postDict
+    economics      { }     // serialises the costing from system/postDict
+}

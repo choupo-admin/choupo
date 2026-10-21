@@ -221,6 +221,17 @@ const std::map<std::string, UnitSpec>& table()
         //   not survive the tokenizer (`(` is not a word character).
         { "W/m/K",      UnitSpec{ 1.0,      Dims::thermalCond } },
 
+        // ----- the phase-change films of a designed column exchanger -----
+        //   (2026-10-20, DEV.md 4c C124): a condensing or boiling film's
+        //   latent heat per kg, the liquid's mass heat capacity, the surface
+        //   tension a nucleate-boiling and a critical-heat-flux correlation
+        //   read, and the heat flux a reboiler is held to.  Spellings made of
+        //   tokenizer word characters only, like the two above.
+        { "J/kg",       UnitSpec{ 1.0,      Dims::specificEnergy } },
+        { "J/kg/K",     UnitSpec{ 1.0,      Dims::heatCapacity } },
+        { "N/m",        UnitSpec{ 1.0,      Dims::surfaceTension } },
+        { "W/m2",       UnitSpec{ 1.0,      Dims::heatFlux } },
+
         // ----- molar mass → kg/kmol -------------------------------------
         { "kg/kmol", UnitSpec{ 1.0,         Dims::molarMass } },
         { "g/mol",   UnitSpec{ 1.0,         Dims::molarMass } },   // numerically equal

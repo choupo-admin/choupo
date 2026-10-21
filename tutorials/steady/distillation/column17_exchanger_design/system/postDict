@@ -1,0 +1,153 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+  column17_exchanger_design -- post-processing chain: column09's five items,
+  with the CONDENSER and the REBOILER DESIGNED.
+
+  The shell, the trays and the reflux drum are declared exactly as column09
+  declares them.  The two exchangers carry a `design {}` block instead of a
+  typed U and LMTD, and that is the whole difference.  Open
+  design/column17/condenser and design/column17/reboiler after a run.
+
+  WHAT A DESIGN DECLARES AND WHAT IT COMPUTES.  The author chooses the
+  HARDWARE and the SERVICE: the tubes (diameters, length, pitch, layout,
+  passes), the baffle spacing, the fouling allowance on each side, which side
+  the process is on, the film model and the utility.  The engine computes
+  everything else: the number of tubes, the shell, both film coefficients,
+  U, the LMTD and its correction F, the utility flow, the area.  The sheet's
+  `exchanger {}` block lists which `sizing {}` keys were DECLARED, which were
+  read from the column and which from a data record; every other number is
+  the engine's.  Declaring `U` or `LMTD` beside `design {}` is refused: the
+  design computes both, and a typed copy would be a second home.
+
+  THE CONDENSER.  The overhead (nearly pure benzene) condenses on the OUTSIDE
+  of horizontal tubes; cooling water runs inside them, 25 -> 35 C from its
+  record.  The condensate film is Nusselt's, and the condensate of one tube
+  falls on the tube below, so a vertical tier of N tubes condenses as
+  h_1 N^-1/4 -- evaluated at the bundle's deepest tier, which errs on the
+  safe side.  The film's coefficient depends on the temperature drop across
+  it, which depends on every other resistance; the run finds the one film
+  temperature difference where the film and the rest carry the same flux,
+  and prints it.
+
+  THE REBOILER, AND WHY IT HAS A CEILING.  The bottoms (nearly pure toluene)
+  boil as a pool around a bundle of U-tubes -- a kettle -- with LP steam
+  condensing inside.  Rohsenow's nucleate flux grows as the CUBE of the wall
+  superheat, so more temperature difference buys a lot more heat flux -- until
+  the bubbles leaving the surface merge into a vapour blanket.  That is the
+  CRITICAL HEAT FLUX (Zuber): above it the liquid can no longer reach the
+  wall, the wall temperature jumps and the kettle stops being a reboiler.
+  The sheet prints the design flux, the critical flux and their ratio; a
+  design at or above the ceiling is REFUSED.  Notice what does NOT help: the
+  flux is U F LMTD, set by the temperatures and the resistances, so adding
+  tubes lowers the TOTAL duty per tube but not the flux through each one.
+  The remedy for a reboiler near its ceiling is a colder steam level.
+
+  WHAT THIS FILE DECLARES THAT IS NOT A DESIGN CHOICE, AND WHERE IT IS FROM.
+    * Rohsenow's surface-fluid constant C_sf 0.0101 with s 1.7 is the
+      benzene-on-chromium pair of Incropera & DeWitt, Fundamentals of Heat
+      and Mass Transfer, Table 10.1 -- a SURROGATE: a toluene pool on carbon
+      steel is not in that table, and C_sf is surface-finish laboratory data
+      (the flux goes as C_sf^-3, so it is +/-100 %).  It was transcribed from
+      memory of that table, not read back from a copy in this tree: check it
+      before relying on it.
+    * The steam's condensing film inside the tubes, 8000 W/m2/K, is an
+      author-set value with no correlation behind it (a condensing UTILITY is
+      declared on every design route, see the ammonia plant's chiller).
+    * The fouling allowances are typical orders of magnitude for each
+      service; no TEMA table was read.
+\*---------------------------------------------------------------------------*/
+
+sizing
+{
+    units
+    (
+        {
+            unitName    column17;
+            type        distillationColumn;
+            material    carbonSteel;
+            designRules
+            {
+                traySpacing     0.50;       // m -- the hydraulics' own
+                pressureDesign  2.0;        // bar (atmospheric column, x2 margin)
+                corrosionAllow  0.003;      // m
+                jointEfficiency 1.0;
+                trayMaterial    carbonSteel;
+
+                condenser
+                {
+                    utility         coolingWater;   // 25 -> 35 C, its record
+                    pressureDesign  2.0;            // bar
+                    design
+                    {
+                        method          Kern;
+                        processSide     shell;              // the vapour condenses outside the tubes
+                        tubeOD          19.05 mm;           // 3/4 in
+                        tubeID          15.75 mm;           // 1.65 mm wall
+                        tubeLength      4.877 m;            // 16 ft
+                        tubePitch       23.81 mm;           // 1.25 x OD
+                        tubePattern     triangular;
+                        tubePasses      2;
+                        baffleSpacingRatio 1.0;             // tube supports: the shell film is a condensate film
+                        tubeSide        { model Gnielinski; }   // the cooling water
+                        condensation    { model NusseltFilm; orientation horizontalTube; }
+                        fouling         { tubeSide 0.00035 m2.K/W;     // treated tower water
+                                          shellSide 0.0001 m2.K/W; }   // a clean organic vapour
+                    }
+                }
+
+                reboiler
+                {
+                    utility         steamLP;        // 2.5 bar, 127 C, condensing
+                    pressureDesign  4.0;            // bar -- the steam side sets it
+                    design
+                    {
+                        method          Kern;
+                        processSide     shell;              // a kettle: the pool around the bundle
+                        tubeOD          25.4 mm;            // 1 in
+                        tubeID          21.18 mm;           // 2.11 mm wall
+                        tubeLength      4.877 m;            // 16 ft
+                        tubePitch       31.75 mm;           // 1.25 x OD
+                        tubePattern     square;             // lanes for the vapour to leave
+                        tubePasses      2;                  // U-tubes
+                        baffleSpacingRatio 1.0;             // tube supports only
+                        utilitySideFilm 8000 W/m2/K;        // condensing steam -- AUTHOR-SET, see header
+                        boiling
+                        {
+                            model    Rohsenow;
+                            Csf      0.0101;                // benzene-chromium, a surrogate -- see header
+                            s        1.7;                   // Rohsenow's exponent for fluids other than water
+                            citation "Incropera & DeWitt, Fundamentals of Heat and Mass Transfer, Table 10.1, benzene-chromium (a surrogate for toluene on carbon steel; transcribed, not checked against the table)";
+                        }
+                        fouling         { tubeSide 0.0001 m2.K/W;      // steam condensate
+                                          shellSide 0.0002 m2.K/W; }   // an organic bottoms
+                    }
+                }
+
+                refluxDrum
+                {
+                    residenceTime   300.0;      // s -- 5 minutes of condensate
+                    pressureDesign  2.0;        // bar
+                    L_over_D        3.0;
+                    corrosionAllow  0.003;      // m
+                    jointEfficiency 1.0;
+                }
+            }
+        }
+    );
+}
+
+costing
+{
+    method      Turton;
+    year        2026;
+    cepci       820;        // target-year CEPCI
+    cepci2001   397;        // Turton base-year basis
+    usdToEur    0.92;
+}

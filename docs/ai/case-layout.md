@@ -534,6 +534,46 @@ trays are often a different metal from the shell.  Without it the trays refuse
 by name and the capital total reads `TOTALS (EUR) -- INCOMPLETE`.  Worked case:
 `tutorials/steady/distillation/column09_tray_hydraulics`.
 
+**THE CONDENSER AND THE REBOILER CAN BE DESIGNED, NOT ONLY ESTIMATED
+(2026-10-20).**  Put a `design {}` block (the shell-and-tube grammar below)
+in the column's `condenser {}` or `reboiler {}` with `utility <name>;` and
+`pressureDesign` beside it, and the item is DESIGNED on the same route a
+flowsheet exchanger has -- U and the LMTD become results, and typing them
+beside `design {}` is refused.  The PROCESS side is read off the column (the
+condenser works from the top tray's T to the distillate's bubble point, the
+reboiler at the bottoms' bubble point; pressure and composition the product's)
+and priced by a PHASE-CHANGE film in place of `tubeSide {}`/`shellSide {}`:
+
+```
+condenser
+{
+    utility coolingWater;  pressureDesign 2.0;
+    design { method Kern;  processSide shell;  /* bundle, passes, baffles */
+             tubeSide { model Gnielinski; }                      // the water
+             condensation { model NusseltFilm; orientation horizontalTube; }  // or verticalTube
+             fouling { tubeSide 0.00035 m2.K/W;  shellSide 0.0001 m2.K/W; } }
+}
+reboiler
+{
+    utility steamLP;  pressureDesign 4.0;
+    design { method Kern;  processSide shell;  /* a kettle: the pool outside */
+             utilitySideFilm 8000 W/m2/K;                        // condensing steam
+             boiling { model Rohsenow;  Csf 0.0101;  s 1.7;  citation "..."; }
+             fouling { tubeSide 0.0001 m2.K/W;  shellSide 0.0002 m2.K/W; } }
+}
+```
+
+Nusselt condenses on the outside of horizontal tubes (a tier of N tubes as
+h_1 N^-1/4 at the bundle's deepest tier) or on vertical tubes; condensing
+inside horizontal tubes, and boiling inside any tube, are refused by name.
+Rohsenow's `Csf`, `s` and `citation` have no default.  The reboiler's flux is
+held under the Zuber critical heat flux: a design at or above it is refused
+(the remedy is a colder steam level -- the flux is U F LMTD and adding tubes
+does not lower it).  The package must declare liquid `viscosity` and
+`thermalConductivity` and, for the reboiler, a `surfaceTension` in its
+`transport {}`, or the item refuses by name.  Worked case:
+`tutorials/steady/distillation/column17_exchanger_design`.
+
 **A PLUG-FLOW CATALYST BED IS A SHELL AND A CATALYST CHARGE (2026-09-26).**
 `type pfr` sizes the unit's OWN `V_R` -- the volume the PFR integrated, which
 is the outer driver's answer when a `designSpec` solves it -- and never

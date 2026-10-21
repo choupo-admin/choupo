@@ -1,0 +1,60 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+  thermoPhysPropDict (v2) -- column09's package, plus the LIQUID transport the
+  exchanger films need.  The near-ideal benzene/toluene pair (Raoult), and
+  three transport models:
+
+    * surfaceTension BrockBird -- column09's own, for the tray flooding; the
+      reboiler's nucleate-boiling flux and its critical heat flux read it too.
+    * liquid viscosity Andrade -- ln(mu) = A + B/T, the coefficients each
+      component record carries (`liquidViscosity { andrade {...} }`).
+    * liquid thermal conductivity SatoRiedel -- a corresponding-states
+      estimate from Tb, Tc and the molar mass, no fitted parameter.
+
+  The condensate film (Nusselt) is k^3 rho^2 g h_fg / (mu L dT), to the 1/4:
+  without a liquid viscosity and conductivity there is no film coefficient,
+  and the design refuses by name rather than borrow one.  The two estimates
+  are what this case can stand on; neither is checked here against measured
+  benzene or toluene data.
+\*---------------------------------------------------------------------------*/
+
+recordType    thermophysicalPropertySystem;
+schemaVersion 2;
+
+components ( benzene toluene );
+
+equilibrium
+{
+    formulation gammaPhi;
+
+    liquid
+    {
+        activityModel ideal;            // gamma = 1 identically (Raoult)
+        standardState pureLiquid;
+    }
+
+    vapour
+    {
+        fugacityModel idealGas;
+    }
+}
+
+transport
+{
+    liquid
+    {
+        viscosity           { model Andrade; }      // the condensate and the boiling pool
+        thermalConductivity { model SatoRiedel; }
+    }
+    interface
+    {
+        surfaceTension { model BrockBird; }   // flooding, nucleate boiling, critical heat flux
+    }
+}

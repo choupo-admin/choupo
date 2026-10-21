@@ -156,6 +156,8 @@ struct ExchangerSide
     std::string outlet;        //   ... and leaving it (empty for a utility)
     std::string utility;       // the utility record (empty for a process side)
     std::string regime;        // gas | liquid | condensing | boils | condenses
+                               // | filmCondensation | nucleateBoiling (a
+                               // column's condenser / reboiler, C124)
     std::string film;          // computed | declared
     std::string correlation;   // the film correlation's word, empty if declared
     scalar      Tin  = -1.0;   // [K] a UTILITY side's supply, from its record;

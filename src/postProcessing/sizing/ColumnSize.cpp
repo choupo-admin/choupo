@@ -23,6 +23,7 @@
 
 #include <algorithm>
 #include <cmath>
+#include <cstdio>
 #include <iostream>
 #include <map>
 #include <sstream>
@@ -64,6 +65,78 @@ std::string missingKeys(const DictPtr& d, const std::vector<std::string>& keys)
     for (const auto& k : keys)
         if (!d || !d->found(k)) out += (out.empty() ? "" : ", ") + k;
     return out;
+}
+
+//  WHAT THE CONDENSER AND THE REBOILER WORK ACROSS, READ OFF THE COLUMN
+//  (2026-10-20, DEV.md 4c C124).  The detailed design needs the process
+//  side's temperatures, pressure and composition, and none of them is the
+//  author's to type: the column has already decided all four.
+//
+//    condenser  the overhead vapour enters at the TOP TRAY's temperature
+//               (`T_top`: with a total condenser the vapour leaving the top
+//               tray has the distillate's composition and is at its DEW
+//               point) and leaves as the distillate at ITS bubble point (the
+//               distillate stream's own T, `makeDistillate`); pressure and
+//               composition the distillate's.
+//    reboiler   a pool at the bottoms' bubble point -- the stage list's last
+//               stage IS the reboiler, so the bottoms stream's T, P and
+//               composition are the pool's; T_in = T_out (a kettle's pool is
+//               well mixed at its outlet state; the sensible heating of the
+//               liquid arriving from the last tray is not separated out).
+//
+//  The column's products are its first two outputs (`outputs ( distillate
+//  bottoms ... )`; side draws follow them).  Throws a sentence naming what
+//  is missing; the caller turns it into a named, not-built item.
+ShellTubeHX::PhaseChangeProcess columnProcessSide(const std::string& unitName,
+    const std::string& tag, const SimulationResult& result,
+    const std::map<std::string, scalar>& k)
+{
+    const FlatUnit* fu = nullptr;
+    for (const auto& u : result.topology) if (u.name == unitName) fu = &u;
+    if (!fu || fu->outs.size() < 2)
+        throw std::runtime_error("the solved topology does not give the"
+            " column's distillate and bottoms streams, so its process side"
+            " cannot be read.");
+    const bool reb = (tag == "reboiler");
+    const std::string& sName = reb ? fu->outs[1] : fu->outs[0];
+    auto sIt = result.streams.find(sName);
+    if (sIt == result.streams.end())
+        throw std::runtime_error("the column's " + std::string(reb ? "bottoms"
+            : "distillate") + " stream '" + sName + "' is not in the solved"
+            " flowsheet.");
+    const ProcessStream& s = sIt->second;
+
+    ShellTubeHX::PhaseChangeProcess p;
+    p.boiling = reb;
+    p.P = s.P;
+    p.z = s.z;
+    char b[400];
+    if (reb)
+    {
+        p.label = "the bottoms pool";
+        p.T_in = p.T_out = s.T;
+        std::snprintf(b, sizeof(b), "the pool's T, P and composition are the"
+            " column's bottoms stream '%s' (%.2f K, its bubble point)",
+            sName.c_str(), static_cast<double>(s.T));
+    }
+    else
+    {
+        auto tIt = k.find("T_top");
+        if (tIt == k.end())
+            throw std::runtime_error("the column publishes no 'T_top' KPI, so"
+                " the temperature at which its overhead vapour enters the"
+                " condenser is unknown.");
+        p.label = "the overhead vapour";
+        p.T_in  = tIt->second;
+        p.T_out = s.T;
+        std::snprintf(b, sizeof(b), "T_in is the column's T_top KPI (%.2f K,"
+            " the top tray: the overhead's dew point), T_out its distillate"
+            " stream '%s' (%.2f K, its bubble point), P and composition the"
+            " distillate's", static_cast<double>(p.T_in), sName.c_str(),
+            static_cast<double>(s.T));
+    }
+    p.source = b;
+    return p;
 }
 
 } // namespace
@@ -303,6 +376,35 @@ std::vector<EquipmentSizing> ColumnSize::size(const std::string& unitName,
             continue;
         }
         auto sub = designRules->subDict(e.block);
+
+        //  THE DETAILED DESIGN (C124): the SAME route 4 a flowsheet exchanger
+        //  reaches, its process side read off this column and priced by a
+        //  phase-change film.  U and LMTD are then RESULTS -- typed beside it
+        //  they are refused, by the one sentence route 4 refuses them with.
+        if (sub->found("design"))
+        {
+            const std::string missingD =
+                missingKeys(sub, { "utility", "pressureDesign" });
+            if (!missingD.empty())
+            {
+                itemNotBuilt(unitName, e.tag,
+                    "its `" + std::string(e.block) + " {}` block carries a"
+                    " `design {}` and declares no " + missingD + ".");
+                continue;
+            }
+            try
+            {
+                const auto proc = columnProcessSide(unitName, e.tag, result, k);
+                items.push_back(ShellTubeHX::designPhaseChange(unitName, *Q,
+                    proc, result, material, sub, e.tag));
+            }
+            catch (const std::exception& ex)
+            {
+                itemNotBuilt(unitName, e.tag, ex.what());
+            }
+            continue;
+        }
+
         const std::string missing = missingKeys(sub, { "U", "LMTD", "pressureDesign" });
         if (!missing.empty())
         {

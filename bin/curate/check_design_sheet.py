@@ -379,6 +379,36 @@ WHAT THIS CHECKS:
       (lying); a flowsheet-only change doubles both stores; eight
       copies refuse by name.  Sabotages in `check_pressure_store_link`.
 
+  (x) THE COLUMN'S CONDENSER AND REBOILER, DESIGNED (2026-10-20, DEV.md 4c
+      C124).  `column17_exchanger_design` puts both exchangers on route 4 with
+      a PHASE-CHANGE process film (Nusselt condensation on a horizontal tier,
+      Rohsenow boiling in a kettle under the Zuber critical heat flux).  Every
+      number of both sheets is RECOMPUTED with the correlations written out
+      again here: the process temperatures held to the run's own T_top KPI
+      and distillate/bottoms stream temperatures (never to the sheet), the
+      LMTD and F, the film from its published inputs, THE ROOT (the film's
+      flux = U F LMTD), U from its resistances, A >= A_required, the shell,
+      both flows, h_fg against the column's V_rect x the distillate's molar
+      mass (at 3 %: the column prices its condenser on the Watson latent,
+      1.96 % off -- a measured finding, the record's section 5), and the
+      `exchanger {}` provenance.  Five probe copies refuse the ITEM by name
+      and keep the shell's sheet.
+
+      SABOTAGES, by hand, 2026-10-20 (landed on the sheet BETWEEN the run and
+      the check, `run_case` wrapped for the duration; S8 on the probe's
+      output), all CAUGHT:
+        S1  condenser h_shell +1 %  -> the Nusselt recomputation and R_film.
+        S2  condenser dT_film +2 %, h kept  -> Nusselt, Re_film, q_flux.
+        S3  reboiler q_CHF +3 %  -> the Zuber recomputation.
+        S4  condenser T_process_in = T_process_out (the column's T_top not
+            read)  -> the T_top hold, T_sat, the LMTD.
+        S5  the tier correction dropped (h_shell = h_1)  -> Nusselt, R_film.
+        S6  the reboiler's root broken CONSISTENTLY (dT_excess +5 % with the
+            flux, h, R_film, U_clean, U and T_wall all recomputed from it)
+            -> ONLY the root and A_required, which is why the root arm exists.
+        S7  `fromUnit` dropped from the condenser's `exchanger {}`  -> caught.
+        S8  the CHF probe's `[not sized]` line suppressed  -> the probe arm.
+
   (l) THE GUI FIXTURE IS STILL THE ENGINE'S OWN OUTPUT.  The readers' unit
       tests run on a TRANSCRIPTION of a sheet, because arm (g) keeps `design/`
       gitignored and no committed file can be read from a test.  This arm runs
@@ -3283,6 +3313,392 @@ def check_exchanger_design_on(case, out, entries, problems, notes):
                  "refused by name" % (checked, len(probes)))
 
 
+#  ---- arm (x): THE COLUMN'S CONDENSER AND REBOILER DESIGNED (2026-10-20,
+#  DEV.md 4c C124) -----------------------------------------------------------
+#  The witness: column09's column with its two exchangers on route 4, the
+#  process side of each priced by a PHASE-CHANGE film.
+COLX = "tutorials/steady/distillation/column17_exchanger_design"
+COLX_UNIT = "column17"
+G = 9.81
+
+
+def _colx_rules(post_nc, block):
+    """The `<block> {}` of the column's designRules: utility, pressureDesign
+    and the `design {}` declarations this arm needs, read from the CASE."""
+    rules = _block_body(post_nc, post_nc.index("designRules"))
+    m = re.search(r'\b%s\s*\{' % block, rules)
+    if not m:
+        return None
+    body = _block_body(rules, m.start())
+    e = {}
+    ut = re.search(r'\butility\s+(\w+)\s*;', body)
+    e["utility"] = ut.group(1) if ut else None
+    dm = re.search(r'\bdesign\s*\{', body)
+    if not dm:
+        return None
+    d = _block_body(body, dm.start())
+    for k in ("tubeOD", "tubeID", "tubeLength", "tubePitch"):
+        mm = re.search(r'\b%s\s+([0-9.eE+-]+)\s*(mm|cm|m)\s*;' % k, d)
+        e[k] = _len_m(mm.group(1), mm.group(2)) if mm else None
+    mm = re.search(r'\btubePasses\s+([0-9.eE+-]+)\s*;', d)
+    e["tubePasses"] = float(mm.group(1)) if mm else None
+    mm = re.search(r'\btubePattern\s+(\w+)\s*;', d)
+    e["tubePattern"] = mm.group(1) if mm else None
+    fb = re.search(r'\bfouling\s*\{([^}]*)\}', d)
+    for side in ("tubeSide", "shellSide"):
+        mm = re.search(r'\b%s\s+([0-9.eE+-]+)\s*m2\.K/W\s*;' % side,
+                       fb.group(1)) if fb else None
+        e["foul_" + side] = float(mm.group(1)) if mm else None
+    mm = re.search(r'\butilitySideFilm\s+([0-9.eE+-]+)\s*W/m2/K\s*;', d)
+    e["utilitySideFilm"] = float(mm.group(1)) if mm else None
+    mm = re.search(r'\borientation\s+(\w+)\s*;', d)
+    e["orientation"] = mm.group(1) if mm else None
+    for k in ("Csf", "s"):
+        mm = re.search(r'\b%s\s+([0-9.eE+-]+)\s*;' % k, d)
+        e[k] = float(mm.group(1)) if mm else None
+    return e
+
+
+def _stream_line(out, name):
+    for line in out.splitlines():
+        if re.match(r'\s*"%s": \{ "F":' % re.escape(name), line):
+            return line
+    return ""
+
+
+def check_column_exchanger_design(problems, notes):
+    """(x) -- THE COLUMN'S CONDENSER AND REBOILER, DESIGNED (C124).
+
+    The column's two exchangers reach route 4 with a PHASE-CHANGE process
+    film, and every number of the film is RECOMPUTED here, with the
+    correlations written out AGAIN in this file from their sources, from the
+    inputs the sheet itself publishes, the case's declarations, the material
+    and utility RECORDS and the run's own KPIs and product streams:
+
+      * the process temperatures are the COLUMN's: the condenser's
+        T_process_in is the run's T_top KPI and its T_process_out the
+        distillate stream's T; the reboiler's pool is the bottoms stream's T
+        -- read from the run, never from the sheet;
+      * the LMTD from those and the utility record, F from Bowman (the steam
+        side isothermal: F = 1);
+      * the condensing film: Nusselt, h_1 = 0.729 [k^3 rho_l (rho_l - rho_v)
+        g h_fg' / (mu D dT)]^1/4 with h_fg' = h_fg + 0.68 cp dT, times
+        N_rows^-1/4, N_rows = round(D_b / (sqrt(3) p)) for the triangular
+        layout (square: p), D_b = shell ID - 12 mm; Re_film = 4 h_1 D dT /
+        (mu h_fg');
+      * the boiling film: Rohsenow, q = mu h_fg sqrt(g (rho_l - rho_v)/sigma)
+        [cp dT_e / (C_sf h_fg Pr^s)]^3, h = q / dT_e, with C_sf and s the
+        CASE's; Zuber, q_CHF = 0.149 h_fg rho_v^1/2 [sigma g (rho_l -
+        rho_v)]^1/4, and the flux strictly below it;
+      * THE ROOT: the film's flux equals U F LMTD (the one wall temperature
+        where the film and everything in series with it carry the same
+        heat), and T_wall = T_sat -/+ dT;
+      * U from the five resistances, A = pi d_o L N, A >= A_required =
+        |Q| / (U F LMTD), the shell from Sinnott, the utility flow from the
+        record's dutyPerKg, the process flow |Q| / h_fg;
+      * h_fg against the COLUMN's own vapour traffic: |Q_condenser| / h_fg
+        is the overhead the condenser condenses, and the column's V_rect KPI
+        times the distillate's molar mass is the same vapour counted by the
+        MESH -- the one check here of a property the package supplied.
+
+    Probes, each a COPY refusing ONE item BY NAME while the column's other
+    items are still sized (the run exits 0): `U` beside `design {}`; a
+    reboiler at the critical heat flux; no liquid viscosity model in the
+    package; boiling inside the tubes; condensing inside horizontal tubes.
+
+    SABOTAGES, BY HAND, 2026-10-20 (landed BETWEEN the run and the check:
+    the run regenerates design/ whole, so `run_case` was wrapped for the
+    duration and the sheet edited after it):  see the module docstring under
+    (x) for what each produced.
+
+    NOT CHECKED: that the liquid properties (rho_l, mu_l, lambda_l, cp_l,
+    rho_v, sigma) are right -- they are the package's, taken as published;
+    that C_sf is the right constant (it is the case's declaration, and is
+    +/-100 % by nature); and the mixture corrections the engine itself says
+    it does not credit.
+    """
+    case = ROOT / COLX
+    post = (case / "system" / "postDict").read_text(errors="replace")
+    post_nc = re.sub(r'//[^\n]*', '', re.sub(r'/\*.*?\*/', '', post, flags=re.S))
+    rc, out, err = run_case(COLX)
+    if rc != 0:
+        problems.append("check_design_sheet(x): %s failed (rc=%d).\n    %s"
+                        % (COLX, rc, err.strip()[:300]))
+        return
+    check_column_exchanger_design_on(case, post_nc, out, problems, notes)
+
+    #  ---- probes: copies, each refusing ONE item BY NAME ------------------
+    def edit_block(block, f):
+        def ed(t):
+            k = t.index("designRules")
+            m = re.search(r'\b%s\s*\{' % block, t[k:])
+            start = k + m.start()
+            body_start = t.index("{", start)
+            body = _block_body(t, start)
+            end = body_start + 1 + len(body)
+            return t[:body_start + 1] + f(body) + t[end:]
+        return ed
+
+    def drop_liquid_viscosity(dst):
+        tp = dst / "constant" / "thermoPhysPropDict"
+        t = tp.read_text(errors="replace")
+        tp.write_text(re.sub(r'viscosity\s*\{\s*model\s+Andrade\s*;\s*\}', '', t))
+
+    probes = [
+        ("`U` beside `design {}` on the condenser",
+         edit_block("condenser", lambda b: " U 500; " + b), None,
+         "condenser", r'design \{\}` block AND `U`'),
+        ("a reboiler held to a steam level whose flux reaches the critical"
+         " heat flux (steamHP, a clean 1e5 W/m2/K steam film, no fouling)",
+         edit_block("reboiler", lambda b: re.sub(
+             r'\butilitySideFilm\s+[^;]*;', 'utilitySideFilm 100000 W/m2/K;',
+             re.sub(r'\bfouling\s*\{[^}]*\}',
+                    'fouling { tubeSide 0 m2.K/W; shellSide 0 m2.K/W; }',
+                    re.sub(r'\butility\s+steamLP\s*;', 'utility steamHP;', b)))),
+         None, "reboiler", r'critical\s+heat flux.*BURNOUT'),
+        ("no liquid viscosity model in the package",
+         lambda t: t, drop_liquid_viscosity, "condenser", r'viscosity'),
+        ("`processSide tube;` on the kettle",
+         edit_block("reboiler", lambda b: re.sub(
+             r'\bprocessSide\s+shell\s*;', 'processSide tube;', b)),
+         None, "reboiler", r'flow boiling'),
+        ("condensation inside horizontal tubes (the water moved to the shell)",
+         edit_block("condenser", lambda b: re.sub(
+             r'\btubeSide\s*\{\s*model\s+Gnielinski\s*;\s*\}',
+             'shellSide { model Kern; }', re.sub(
+                 r'\bprocessSide\s+shell\s*;', 'processSide tube;', b))),
+         None, "condenser", r'INSIDE\s+horizontal tubes'),
+    ]
+    for what, ed, extra, item, pat in probes:
+        tmp = Path(tempfile.mkdtemp(prefix="design_sheet_x_"))
+        dst = tmp / case.name
+        shutil.copytree(case, dst, ignore=shutil.ignore_patterns(
+            "design", "reports", "converged", "postProcessing"))
+        pd = dst / "system" / "postDict"
+        pd.write_text(ed(pd.read_text(errors="replace")))
+        if extra:
+            extra(dst)
+        p = subprocess.run([str(ROOT / "choupoSolve"), str(dst)],
+                           capture_output=True, text=True)
+        both = p.stdout + p.stderr
+        line = re.search(r'\[not sized\] the %s of column \'%s\' was NOT sized:'
+                         r'[^\n]*' % (item, COLX_UNIT), both)
+        if p.returncode != 0:
+            problems.append("check_design_sheet(x): the copy with %s failed "
+                            "(rc=%d) -- a refused exchanger must refuse the "
+                            "ITEM, never the column." % (what, p.returncode))
+        elif not line or not re.search(pat, both[line.start():line.start() + 900],
+                                       re.S):
+            problems.append("check_design_sheet(x): a copy with %s is not "
+                            "refused BY NAME (no `[not sized] the %s of column "
+                            "'%s'` line matching /%s/)." % (what, item,
+                                                            COLX_UNIT, pat))
+        elif not (dst / "design" / COLX_UNIT / "shell").is_file():
+            problems.append("check_design_sheet(x): the copy with %s refused "
+                            "the %s and lost the column's shell sheet with it."
+                            % (what, item))
+        shutil.rmtree(tmp, ignore_errors=True)
+    notes.append("column exchanger designs: %d probes refused by name"
+                 % len(probes))
+
+
+def check_column_exchanger_design_on(case, post_nc, out, problems, notes):
+    kline = ""
+    for line in out.splitlines():
+        if ('"%s": {' % COLX_UNIT) in line and '"Q_condenser_kW"' in line:
+            kline = line
+            break
+    if not kline:
+        problems.append("check_design_sheet(x): the run emits no KPI object "
+                        "for %s." % COLX_UNIT)
+        return
+
+    def kpi(key):
+        m = re.search(r'"%s": *(-?[0-9][0-9.eE+-]*)' % key, kline)
+        return float(m.group(1)) if m else None
+
+    def stream(name, key):
+        m = re.search(r'"%s": *(-?[0-9][0-9.eE+-]*)' % key, _stream_line(out, name))
+        return float(m.group(1)) if m else None
+
+    checked = 0
+    for item, qkey in (("condenser", "Q_condenser_kW"), ("reboiler", "Q_reboiler_kW")):
+        e = _colx_rules(post_nc, item)
+        if e is None:
+            problems.append("check_design_sheet(x): %s declares no `%s { design "
+                            "{} }` -- this arm CANNOT RUN; it must not pass."
+                            % (COLX, item))
+            continue
+        f = case / "design" / COLX_UNIT / item
+        if not f.is_file():
+            problems.append("check_design_sheet(x): no sheet design/%s/%s was "
+                            "written." % (COLX_UNIT, item))
+            continue
+        text = f.read_text(errors="replace")
+        sh = parse_sheet(text)["sizing"]
+        v = lambda k: sh[k][0] if k in sh else None
+        boil = (item == "reboiler")
+        need = ["A", "U", "U_clean", "LMTD", "F", "Q_kW", "nTubes", "tubePasses",
+                "shellID", "tubeOD", "tubeID", "tubeLength", "R_film_tube",
+                "R_wall", "R_film_shell", "R_foul_tube", "R_foul_shell",
+                "h_tube", "h_shell", "wallK", "A_required", "mdot_shell",
+                "mdot_utility", "T_process_in", "T_process_out", "T_sat",
+                "h_fg", "rho_l", "mu_l", "lambda_l", "cp_l", "rho_v", "q_flux",
+                "T_wall", "T_shell_props"]
+        need += (["dT_excess", "sigma", "Csf", "s_Prandtl", "q_CHF",
+                  "fluxOverCHF"] if boil else ["dT_film", "Re_film", "N_rows"])
+        miss = [k for k in need if v(k) is None]
+        if miss:
+            problems.append("check_design_sheet(x): the %s's sheet carries no %s."
+                            % (item, ", ".join(miss)))
+            continue
+
+        def hold(what, got, want, tol=TOL):
+            if want is None or got is None or not close(got, want, tol):
+                problems.append("check_design_sheet(x): the %s's sheet says %s"
+                                " = %s, but %s is recomputed."
+                                % (item, what, got, want))
+
+        #  the declarations reach the sheet
+        for k in ("tubeOD", "tubeID", "tubeLength", "tubePasses"):
+            hold(k + " (declared)", v(k), e[k])
+        hold("R_foul_tube (declared)", v("R_foul_tube"), e["foul_tubeSide"])
+        hold("R_foul_shell (declared)", v("R_foul_shell"), e["foul_shellSide"])
+        hold("wallK (the carbonSteel record)", v("wallK"), _material_k("carbonSteel"))
+        #  the process temperatures are the COLUMN's, read from the run
+        Q = kpi(qkey)
+        hold("Q_kW (the column's %s)" % qkey, v("Q_kW"), Q)
+        if boil:
+            Tb = stream("bottoms", "T")
+            hold("T_process_in (the bottoms stream's T)", v("T_process_in"), Tb)
+            hold("T_process_out (the bottoms stream's T)", v("T_process_out"), Tb)
+            hold("T_sat (the pool's T)", v("T_sat"), Tb)
+        else:
+            hold("T_process_in (the column's T_top KPI)", v("T_process_in"),
+                 kpi("T_top"))
+            hold("T_process_out (the distillate stream's T)", v("T_process_out"),
+                 stream("distillate", "T"))
+            hold("T_sat (the mean condensing T)", v("T_sat"),
+                 0.5 * (v("T_process_in") + v("T_process_out")))
+        #  the bundle and the shell
+        N, OD, ID, L = v("nTubes"), v("tubeOD"), v("tubeID"), v("tubeLength")
+        hold("A = pi d_o L N", v("A"), math.pi * OD * L * N)
+        K1, n1 = SINNOTT[(e["tubePattern"], int(v("tubePasses")))]
+        Ds = OD * (N / K1) ** (1.0 / n1) + SHELL_CLEARANCE
+        hold("shellID (Sinnott + 12 mm)", v("shellID"), Ds)
+        #  the temperatures: LMTD and F, from the run and the utility record
+        t_in, t_out, dpk, mech = _utility_record(e["utility"])
+        Ti, To = v("T_process_in"), v("T_process_out")
+        if Q < 0:
+            d1, d2, T1, T2, t1, t2 = Ti - t_out, To - t_in, Ti, To, t_in, t_out
+        else:
+            d1, d2, T1, T2, t1, t2 = t_out - Ti, t_in - To, t_in, t_out, Ti, To
+        lm = d1 if abs(d1 - d2) < 1e-9 * max(d1, d2) else (d1 - d2) / math.log(d1 / d2)
+        hold("LMTD (counter-current, terminal)", v("LMTD"), lm)
+        F = 1.0 if int(v("tubePasses")) == 1 else bowman_F(T1, T2, t1, t2)
+        hold("F (Bowman-Mueller-Nagle 1-2; 1 for an isothermal side)", v("F"), F)
+        hold("mdot_utility = |Q|/dutyPerKg", v("mdot_utility"), abs(Q) * 1000.0 / dpk)
+        hold("mdot_shell = |Q|/h_fg (the mass that changes phase)",
+             v("mdot_shell"), abs(Q) * 1000.0 / v("h_fg"))
+        #  the phase-change film, from its published inputs
+        rl, rv, mu, k, cp, hfg = (v("rho_l"), v("rho_v"), v("mu_l"),
+                                  v("lambda_l"), v("cp_l"), v("h_fg"))
+        if boil:
+            dT, sig, Csf, s = v("dT_excess"), v("sigma"), v("Csf"), v("s_Prandtl")
+            hold("Csf (declared)", Csf, e["Csf"])
+            hold("s_Prandtl (declared)", s, e["s"])
+            Pr = cp * mu / k
+            q = (mu * hfg * math.sqrt(G * (rl - rv) / sig)
+                 * (cp * dT / (Csf * hfg * Pr ** s)) ** 3)
+            hold("q_flux (Rohsenow)", v("q_flux"), q)
+            hold("h_shell = q / dT_excess", v("h_shell"), q / dT)
+            qchf = 0.149 * hfg * math.sqrt(rv) * (sig * G * (rl - rv)) ** 0.25
+            hold("q_CHF (Zuber)", v("q_CHF"), qchf)
+            hold("fluxOverCHF", v("fluxOverCHF"), q / qchf)
+            if not q < qchf:
+                problems.append("check_design_sheet(x): the reboiler's flux %.6g "
+                                "W/m2 is not below its critical heat flux %.6g "
+                                "and the design was not refused." % (q, qchf))
+            hold("T_wall = T_sat + dT_excess", v("T_wall"), v("T_sat") + dT)
+            hold("T_shell_props = T_sat (saturated liquid)", v("T_shell_props"),
+                 v("T_sat"))
+            hold("h_tube (declared utilitySideFilm)", v("h_tube"),
+                 e["utilitySideFilm"])
+        else:
+            dT = v("dT_film")
+            hfgp = hfg + 0.68 * cp * dT
+            C = 0.729 if e["orientation"] == "horizontalTube" else 0.943
+            Lc = OD if e["orientation"] == "horizontalTube" else L
+            h1 = C * (k ** 3 * rl * (rl - rv) * G * hfgp / (mu * Lc * dT)) ** 0.25
+            rows = 1
+            if e["orientation"] == "horizontalTube":
+                pv = (math.sqrt(3.0) if e["tubePattern"] == "triangular" else 1.0) \
+                    * e["tubePitch"]
+                rows = max(1, int(math.floor((Ds - SHELL_CLEARANCE) / pv + 0.5)))
+                hold("N_rows = round(D_b / vertical pitch)", v("N_rows"), rows)
+            h = h1 * rows ** -0.25
+            hold("h_shell (Nusselt, h_1 N_rows^-1/4)", v("h_shell"), h)
+            hold("Re_film = 4 h_1 D dT/(mu h_fg')", v("Re_film"),
+                 4.0 * h1 * Lc * dT / (mu * hfgp))
+            q = h * dT
+            hold("q_flux = h dT_film", v("q_flux"), q)
+            hold("T_wall = T_sat - dT_film", v("T_wall"), v("T_sat") - dT)
+            hold("T_shell_props = T_sat - dT_film/2", v("T_shell_props"),
+                 v("T_sat") - 0.5 * dT)
+            #  h_fg against the column's own vapour traffic
+            Vr = kpi("V_rect")
+            Fd, Fm = stream("distillate", "F"), stream("distillate", "F_mass")
+            if Vr and Fd and Fm:
+                #  3 %, NOT 1e-6, and the reason is a measured finding: the
+                #  column prices Q_condenser_kW on V1 (Hvapour - Hliquid) at
+                #  T_top -- the Watson rung -- while h_fg here is the latent
+                #  heat on the surface the streams are priced on; the two
+                #  differ by 1.96 % on this witness (C124 record, section 5).
+                #  What this holds is the class of error a typed or mis-based
+                #  h_fg makes: a molar/mass mix-up is a factor of ~80.
+                hold("mdot_shell against V_rect x M_distillate (the column's "
+                     "own overhead)", v("mdot_shell"), Vr * Fm / Fd, tol=3e-2)
+            else:
+                problems.append("check_design_sheet(x): V_rect or the distillate's"
+                                " flows are not in the run, so h_fg is held to"
+                                " nothing.")
+        #  the resistances, U, the ROOT, and the area
+        hold("R_film_shell = 1/h_shell", v("R_film_shell"), 1.0 / v("h_shell"))
+        hold("R_film_tube = (d_o/d_i)/h_tube", v("R_film_tube"), (OD / ID) / v("h_tube"))
+        hold("R_wall = (d_o/2) ln(d_o/d_i)/k_w", v("R_wall"),
+             0.5 * OD * math.log(OD / ID) / v("wallK"))
+        Rclean = v("R_film_tube") + v("R_wall") + v("R_film_shell")
+        hold("U_clean", v("U_clean"), 1.0 / Rclean)
+        U = 1.0 / (Rclean + v("R_foul_shell") + v("R_foul_tube") * OD / ID)
+        hold("U = 1/(... + R_foul_shell + R_foul_tube d_o/d_i)", v("U"), U)
+        hold("THE ROOT: the film's flux = U F LMTD (one wall temperature)",
+             q, U * F * lm, tol=1e-6)
+        Areq = abs(Q) * 1000.0 / (U * F * lm)
+        hold("A_required = |Q|/(U F LMTD)", v("A_required"), Areq)
+        if v("A") < Areq * (1 - 1e-9):
+            problems.append("check_design_sheet(x): the %s installs %.6g m2 < "
+                            "the %.6g m2 it requires -- UNDERSIZED."
+                            % (item, v("A"), Areq))
+        #  the sheet says which numbers the CASE declared, and which the column gave
+        xb = re.search(r'^exchanger\s*\{(.*?)^\}', text, re.S | re.M)
+        xt = xb.group(1) if xb else ""
+        rword = "nucleateBoiling" if boil else "filmCondensation"
+        if not re.search(r'role\s+process\s*;\s*regime\s+%s\s*;' % rword, xt):
+            problems.append("check_design_sheet(x): the %s's `exchanger {}` block "
+                            "does not say the process side's regime is `%s` (NOT"
+                            " C48's `condensing`, the partial condenser on a gas"
+                            " film)." % (item, rword))
+        if not re.search(r'fromUnit\s*\(\s*Q_kW\s+T_process_in\s+T_process_out\s*\)', xt):
+            problems.append("check_design_sheet(x): the %s's `exchanger {}` block "
+                            "does not say Q_kW and the process temperatures were "
+                            "read from the column." % item)
+        if boil and not re.search(r'declared\s*\([^)]*\bCsf\b', xt):
+            problems.append("check_design_sheet(x): the reboiler's `exchanger {}` "
+                            "block does not list Csf as DECLARED.")
+        checked += 1
+    notes.append("column exchanger designs: %d sheet(s) recomputed" % checked)
+
+
 MATERIAL_WITNESS = "tutorials/plant/ammoniaReactor03_equilibriumApproach"
 
 
@@ -4199,6 +4615,7 @@ def main() -> int:
     check_storage_link(problems, notes)
     check_inventory(problems, notes)
     check_exchanger_design(problems, notes)
+    check_column_exchanger_design(problems, notes)
     check_material_limits(problems, notes)
     check_gas_store(problems, notes)
     check_pressure_store_link(problems, notes)
@@ -4288,6 +4705,13 @@ def main() -> int:
           "pressure the let-down drum's own P, both recomputed; a "
           "flowsheet-only change doubles both stores; eight malformed "
           "declarations refused BY NAME), "
+          "and on the column-exchanger witness (a column's condenser and "
+          "reboiler DESIGNED with phase-change films: Nusselt with its tier "
+          "correction, Rohsenow and the Zuber critical heat flux, the "
+          "one-wall-temperature root, U, the area, the shell, the flows and "
+          "the column's own process temperatures RECOMPUTED, h_fg held to the "
+          "column's vapour traffic at 3 %%; five copies refuse the ITEM by "
+          "name), "
           "each "
           "at the address its own "
           "sizing.csv row dictates (sector directory where the row names a "
