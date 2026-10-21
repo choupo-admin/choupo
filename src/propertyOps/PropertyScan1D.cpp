@@ -70,32 +70,100 @@ int PropertyScan1D::run(const DictPtr& dict,
         throw std::runtime_error("PropertyScan1D: 'variable' must be T, P, "
                                  "or x[<componentName>]; got '" + variable + "'");
 
-    const scalar from_val = varyDict->lookupScalar("from", varDims);
-    const scalar to_val   = varyDict->lookupScalar("to",   varDims);
+    //  TWO WAYS TO SAY WHERE THE SCAN EVALUATES, and a scan says exactly one.
+    //
+    //  A GRID (`from / to / n` or `step`) draws a curve.  A DECLARED LIST
+    //  (`points ( ... )`, 2026-10-20, DEV.md 4c C117) evaluates the property AT
+    //  the conditions somebody MEASURED, so that a residual against a dataset
+    //  is engine-minus-measurement at the measured x -- not a value
+    //  interpolated off a grid between two neighbours, which is what the
+    //  `experimental {}` overlay's AAD does and what the Evidence view of the
+    //  Property Explorer must not do (the GUI only subtracts).  The list is
+    //  taken IN THE ORDER WRITTEN, duplicates included: it is the dataset's
+    //  order, and the reader joins row to row.  Values are read as the swept
+    //  variable's canonical SI (K, Pa, or a mole fraction) -- a scalar list
+    //  carries no unit suffix in this grammar, and the announcement says so.
+    //  Both forms in one `vary {}` REFUSE by name: a case that declares a grid
+    //  and a list has not said which curve it is asking for.
+    const bool hasPoints = varyDict->found("points");
+    const bool hasGrid   = varyDict->found("from") || varyDict->found("to")
+                        || varyDict->found("n")    || varyDict->found("step");
+    if (hasPoints && hasGrid)
+        throw std::runtime_error("PropertyScan1D: `vary {}` declares BOTH a"
+            " `points ( ... )` list and a grid (`from`/`to`/`n`/`step`) -- the"
+            " two are different questions (evaluate AT declared conditions vs"
+            " draw a curve over a range), and one `vary {}` asks one of them."
+            "  Delete the grid keys to evaluate at the declared points, or"
+            " delete `points` to scan the range.");
 
-    std::size_t nPoints = 0;
-    if (varyDict->found("n"))
-        nPoints = static_cast<std::size_t>(varyDict->lookupScalar("n"));
-    else if (varyDict->found("step"))
+    std::vector<scalar> grid;
+    scalar from_val = 0.0, to_val = 0.0;   // reported in the banner (grid form)
+    if (hasPoints)
     {
-        const scalar step = varyDict->lookupScalar("step", varDims);
-        nPoints = static_cast<std::size_t>(std::abs((to_val - from_val) / step)) + 1;
+        //  `points 25;` (a scalar) is the shape `temperature01` once wrote and
+        //  nothing read; lookupList refuses it as "not a list of scalars".
+        //  Say what the grammar is instead of leaving that sentence alone.
+        try { grid = varyDict->lookupList("points"); }
+        catch (const std::exception&)
+        {
+            throw std::runtime_error("PropertyScan1D: `vary.points` must be a"
+                " LIST of values of the swept variable, `points ( 0.1 0.25"
+                " 0.5 );` -- a single number is not a list of points (to set"
+                " the resolution of a grid, write `n <count>;`).");
+        }
+        if (grid.empty())
+            throw std::runtime_error("PropertyScan1D: `vary.points` is an"
+                " empty list -- declare at least one value of '" + variable
+                + "' to evaluate at.");
+        for (const scalar v : grid)
+            if (!std::isfinite(v))
+                throw std::runtime_error("PropertyScan1D: `vary.points`"
+                    " carries a non-finite value.");
+        from_val = *std::min_element(grid.begin(), grid.end());
+        to_val   = *std::max_element(grid.begin(), grid.end());
+        if (verbosity >= 1)
+            std::cout << "  [scan] evaluating at " << grid.size()
+                      << " DECLARED point(s) of " << variable
+                      << " (read as canonical SI: K / Pa / mole fraction),"
+                         " in the order written -- not a grid.\n";
     }
     else
     {
-        //  A DEFAULT THAT DECIDES THE RESOLUTION OF A PUBLISHED CURVE MUST SAY
-        //  SO.  21 is a reasonable number and a silent one is still a choice
-        //  the author did not make; `temperature01` reached it by writing
-        //  `points 25;`, which nothing reads, and no line of output
-        //  distinguished that from a case that meant 21.
-        nPoints = 21;
-        if (verbosity >= 1)
-            std::cout << "  [scan] neither `n` nor `step` declared -- using the"
-                         " default of " << nPoints << " points.\n";
-    }
+        from_val = varyDict->lookupScalar("from", varDims);
+        to_val   = varyDict->lookupScalar("to",   varDims);
 
-    if (nPoints < 2)
-        throw std::runtime_error("PropertyScan1D: need n >= 2 points");
+        std::size_t nPoints = 0;
+        if (varyDict->found("n"))
+            nPoints = static_cast<std::size_t>(varyDict->lookupScalar("n"));
+        else if (varyDict->found("step"))
+        {
+            const scalar step = varyDict->lookupScalar("step", varDims);
+            nPoints = static_cast<std::size_t>(std::abs((to_val - from_val) / step)) + 1;
+        }
+        else
+        {
+            //  A DEFAULT THAT DECIDES THE RESOLUTION OF A PUBLISHED CURVE MUST
+            //  SAY SO.  21 is a reasonable number and a silent one is still a
+            //  choice the author did not make; `temperature01` reached it by
+            //  writing `points 25;`, which nothing read, and no line of output
+            //  distinguished that from a case that meant 21.
+            nPoints = 21;
+            if (verbosity >= 1)
+                std::cout << "  [scan] neither `n` nor `step` declared -- using the"
+                             " default of " << nPoints << " points.\n";
+        }
+
+        if (nPoints < 2)
+            throw std::runtime_error("PropertyScan1D: need n >= 2 points");
+
+        grid.reserve(nPoints);
+        for (std::size_t k = 0; k < nPoints; ++k)
+        {
+            const scalar t = static_cast<scalar>(k) / static_cast<scalar>(nPoints - 1);
+            grid.push_back(from_val + t * (to_val - from_val));
+        }
+    }
+    const std::size_t nPoints = grid.size();
 
     // -- state block -------------------------------------------------------
     auto stateDict = dict->subDict("state");
@@ -167,8 +235,10 @@ int PropertyScan1D::run(const DictPtr& dict,
     {
         std::cout << "\n=========================  PropertyScan1D  =========================\n"
                   << "  Sweep:   " << variable
-                  << "  from " << from_val << "  to " << to_val
-                  << "  ( " << nPoints << " points )\n"
+                  << (hasPoints ? "  at " : "  from ") << from_val
+                  << (hasPoints ? " .. " : "  to ") << to_val
+                  << "  ( " << nPoints << (hasPoints ? " declared points )\n"
+                                                     : " points )\n")
                   << "  Output:  " << outFile << "\n"
                   << "  Properties:";
         for (const auto& p : propWords) std::cout << "  " << p;
@@ -186,10 +256,7 @@ int PropertyScan1D::run(const DictPtr& dict,
     std::vector<std::string> reasons;   // distinct failure messages, for an honest note
     for (std::size_t k = 0; k < nPoints; ++k)
     {
-        const scalar t = (nPoints == 1)
-            ? 0.0
-          : static_cast<scalar>(k) / static_cast<scalar>(nPoints - 1);
-        const scalar varVal = from_val + t * (to_val - from_val);
+        const scalar varVal = grid[k];
 
         scalar T = T_ref, P_Pa = P_ref;
         sVector x = x_ref;

@@ -310,16 +310,26 @@ the landing's wider default against "a chosen-set list" that was also a family
 tree of several hundred names: a distinction that did not exist in code.
 **Both are true now** (the surfaces rail leads with the SET and mounts no
 catalogue nodes at all when it arrives with one — measured 0 group nodes
-against 22), but they were written before they were true.  The catalogue is now
+against 22), but they were written before they were true.  The catalogue became
 THE EXPLORER'S LANDING (`?workspace=explore` — the owner's own name for that
 screen), with the record of the focused compound filling its right half, and
 the property surfaces moved to `?workspace=properties`, their own door on the
-hub.  The surfaces keep a compound rail of their own and open with an empty
-set, and the hand-over is a link
-(`?workspace=properties&components=…`) rather than shared state — the two are
-DOORS, not a step 1 and a step 2, which is the difference between this pair and
-the setup wizard §5 forbids.  Record + the amendment that keeps it true:
-`docs/design/one-tab-one-thing.md` §8.
+hub.  **AND THEN THE TWO DOORS BECAME ONE (2026-10-21, DEV.md 4c C116, Vítor:
+"temos o 'explore' e o 'Property Surfaces' que acho que fazem a mesma coisa
+e só se cria confusão por se ter dois").**  Measured before it was merged:
+the catalogue tab's only act the surfaces lacked was a wider inspector and a
+link, the same three components were mounted twice, and the hub's labels
+were inverted against the keys (label "Explore" = key `compounds`, label
+"Property surfaces" = key `explore`).  Explore is ONE tab now, labelled
+"Explore", keyed `explore`, with two VIEWS of one set switched in place —
+Catalogue (browse, read, estimate) and Surfaces (every lens) — the set and
+the view in the address (`?workspace=explore&view=surfaces&components=…`),
+the three components mounted once.  What survives the merge is the part
+that mattered: the surfaces are reachable with an EMPTY set
+(`&view=surfaces`), so the catalogue is a door and not step 1 of the wizard
+§5 forbids; and `?workspace=properties` / `?workspace=compounds` are
+REDIRECTS to the view each used to open, never errors.  Record:
+`docs/design/one-tab-one-thing.md` §8 (the split) and §8.8 (the merge).
 
 **THE LANDING'S THREE CORRECTIONS (2026-09-03, Vítor, on the built screen).**
 (1) **The compound browser's width is the reader's.**  It shipped at a fixed

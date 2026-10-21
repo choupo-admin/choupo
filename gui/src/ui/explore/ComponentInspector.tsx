@@ -39,7 +39,7 @@ import { literatureLink } from "../../state/workspaceUrl.js";
  *  fitted everything you had, so nothing tested it" is the most valuable thing
  *  a student can read here, and it is exactly what a friendlier scheme would
  *  round off into "fitted". */
-const VERDICT: Record<CurationVerdict, { label: string; color: string; help: string }> = {
+export const VERDICT: Record<CurationVerdict, { label: string; color: string; help: string }> = {
   validated: { label: "VALIDATED", color: "green",
     help: "fitted on declared evidence and tested against held-out points it never saw; the held-out error met the acceptance band declared BEFORE the fit" },
   notValidated: { label: "NOT VALIDATED", color: "red",
@@ -52,7 +52,10 @@ const VERDICT: Record<CurationVerdict, { label: string; color: string; help: str
     help: "no curation dossier is attached to this property, so no scientific claim has been made about it. The datum may be perfectly good — nobody has declared evidence for it" },
 };
 
-function VerdictCell({ v }: { v: CurationVerdict }) {
+//  Exported since 2026-10-20: the Evidence view (EvidenceLens.tsx) draws the
+//  same verdict beside a candidate a dossier cites -- ONE home for the colour
+//  and the sentence, so the two surfaces cannot describe one verdict apart.
+export function VerdictCell({ v }: { v: CurationVerdict }) {
   const s = VERDICT[v];
   return (
     <Tooltip label={s.help} withArrow multiline w={300}>

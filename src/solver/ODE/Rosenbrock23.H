@@ -43,6 +43,15 @@ Class
     no Newton iteration, no BDF history.  Second-order accurate, third-order
     error estimate -> adaptive step.  Per-component error scaling, per-row
     positivity step-rejection, and a printed stiffness verdict (verbosity>=3).
+
+    The Jacobian is DENSE by default (n derivative evaluations, a dense LU).
+    A caller whose model is a chain of cells may DECLARE a block-tridiagonal
+    structure with a quadrature border (ODEControls::structure, see
+    ODEBlockStructure): the Jacobian is then COLORED (3*nv evaluations), W
+    is factored by block-Thomas, each border row is closed directly, and the
+    declaration is audited against a dense Jacobian on the first step and
+    refused by name if false.  ODEStats::hNext carries the controller's
+    proposal for the next interval (see ODEIntegrator.H).
 \*---------------------------------------------------------------------------*/
 
 #pragma once

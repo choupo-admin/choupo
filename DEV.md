@@ -1357,6 +1357,111 @@ accepts today, and that is a policy call.
 > final; }` layout draws what the steady flowsheet and the sizing pass
 > already hold.
 
+> **C133. THE DELIVERABLE DRAWINGS: THE PFD WITH ITS STREAM TABLE, AND
+> THE SPECIFICATION SHEETS, AS PDFS IN THE SECTOR/UNIT HIERARCHY (Vitor,
+> 2026-10-21: "Nos Reports devia de haver o diagrama PFD, com a tabela de
+> correntes, de acordo com as boas praticas.  Aquilo deve gerar A4 A3 A2
+> A1 (formato pdf) de acordo com o tamanho do PFD.  Se houver sectores,
+> cada um tem o seu PFD ... tambem devia gerar o PDF A4 das folhas de
+> especificacao com o esquema da operacao unitaria no centro, entradas e
+> saidas de corrente, energia e calor trocado, materiais, porta de homem,
+> flanges ... deve ficar uma hierarquia de acordo com os sectores e
+> operacoes unitarias").**  Measured: the GUI draws the PFD on a canvas
+> (`@xyflow/react`, laid out by `gui/src/case/flowsheetLayout.ts` /
+> `toGraph.ts`, streams numbered by `streamNumbering.ts`); the stream
+> table, the per-sector view and the specification sheets (`design/<SECTOR>/
+> <unit>/<item>`, drawn by equipment kind) exist; THREE datasheets already
+> print through the browser (`window.print()` -- hxDatasheet.ts:752,
+> ColumnDatasheet.tsx:341, HeatExchangerDatasheet.tsx:313), so a sheet
+> prints today only for the kinds that carry a button, at the browser's
+> page size, one at a time.  Nothing produces a PFD drawing as a
+> document, sized to its content, or a deliverable set.  Commander's
+> reading, to be put to Vitor as a scope: (1) THE PFD SHEET by good
+> practice -- the flowsheet drawn with equipment tags and stream numbers,
+> the stream table below or beside it (number, phase, T, P, flows,
+> composition, the case's units), a title block (case, sector, revision =
+> the run's commit, date, the author), the sheet size CHOSEN from the
+> drawing's extent (A4 -> A3 -> A2 -> A1, the smallest that keeps the
+> text legible), one sheet per sector plus a plant overview sheet whose
+> sectors are boxes; (2) THE SPECIFICATION SHEET as an A4 per sized item
+> -- the unit's schematic at the centre with its ports, the inlets and
+> outlets with their states, duties and work, materials, the nozzle
+> schedule, manways (C129 supplies nozzles/manways: until then the sheet
+> says "not yet declared"), the design basis and the `assumed` line;
+> (3) THE HIERARCHY: `reports/drawings/<SECTOR>/PFD-<SECTOR>.pdf` and
+> `reports/drawings/<SECTOR>/<unit>/<item>.pdf`, mirroring `design/`,
+> plus a single bound PDF with a contents page, downloadable from Reports
+> in one click.  HOW (the one decision that matters): the engine already
+> publishes everything a sheet shows; the LAYOUT (positions) lives in the
+> GUI, so the drawing is made where the layout is -- a print-ready SVG
+> per sheet assembled in the browser (no new dependency; the PDF by the
+> browser's print with an `@page` size per sheet, or by a small
+> SVG-to-PDF writer of our own), never re-computing a number; a headless
+> `bin/` route for the same sheets (the CI site smoke's Chrome) so a
+> case can produce its drawing set without a person at the screen.
+> Owed to Vitor: whether the sheets follow a named convention (title
+> block fields, symbol set -- ISO 10628 / the course's own), and the
+> priority against C129/C130 (the sheet shows nozzles and the P&ID's tags
+> when they exist).  Status: proposed; queued after the C131
+> consolidation.
+> **Vitor, 2026-10-21: "Faz como achares mais sensato e de acordo com as
+> boas praticas"** -- the commander's decisions, as stated defaults:
+> (1) CONVENTION: the flow-diagram conventions of ISO 10628 (equipment
+> and stream representation on a PFD) and the title-block fields of ISO
+> 7200 (title, identifier, revision, date, author, sheet size, sheet
+> n of N), followed as CONVENTIONS -- Choupo draws its OWN symbols and
+> cites the standards by number; no figure or table of a standard is
+> copied (they are no-grant texts, the C16 rule); one symbol per
+> equipment kind, the same registry the 3D and datasheet drawings key on,
+> so a kind is drawn the same way in every view; (2) PRIORITY: C133 goes
+> FIRST after the consolidation, before C129/C130 -- the drawings
+> deliver now, and the nozzle schedule, manways and P&ID tags are fields
+> that C129/C130 fill later; until then each such field reads "not yet
+> declared", never an invented value.
+
+> **C132. DIAGNOSING A FAULT FROM A PLANT HISTORIAN -- AN EDUTOOL, AND
+> THE FAULTS AND INSTRUMENTS IT NEEDS (Vitor, 2026-10-21, after a
+> LinkedIn post of a historian dataset for root-cause analysis of a
+> steam-heated agitated tank: "Esse EduTool e muito bom!  ... Faz como
+> dizes").**  The commander's reading, accepted: a published dataset
+> hides its answer; Choupo can publish the SIMULATOR that made it, so the
+> student can TEST a diagnosis instead of guessing it.  The Tennessee
+> Eastman Process (Downs & Vogel, Eastman Chemical / Kodak, Comput.
+> Chem. Eng. 1993) is cited as the reference the field knows, NOT used
+> as the base: its chemistry was disguised on purpose (components A-H,
+> altered kinetics and properties), so first-principles diagnosis is
+> impossible on it, and the licences of its circulating datasets are
+> unread.  Measured: choupoCtrl's controllers are ideal and its
+> measurements perfect -- `src/control/` has no measurement noise, no
+> sensor drift, no missing readings, no declared fault (grep, 2026-10-21);
+> the PRBS / signal family exists (ctrl08, ctrl17).  PROPOSED SCOPE, put
+> to Vitor for the pedagogy: (1) ENGINE: `instruments {}` (per tag:
+> noise sigma, drift rate, dropout, quantisation, a DECLARED random seed
+> so a run stays a function of its inputs) and `faults {}` (start, end,
+> mechanism -- steam-side fouling resistance rising, valve stiction or a
+> stuck valve, a failed-open steam trap, a feed temperature or
+> composition step, a sensor drift, an agitator stop) on a choupoCtrl
+> case, plus operator setpoint changes; the run writes a HISTORIAN (CSV,
+> tag per column, the 1-minute and the compressed form) and NOTHING of
+> the answer; tags from the C130 P&ID when it exists, declared otherwise;
+> (2) THE WITNESS: the steam-heated agitated tank with temperature and
+> level control, a 14-day normal baseline, then non-overlapping faults
+> each diagnosable from first principles (mass and energy balances, the
+> steam side, the valve characteristic, control-loop behaviour -- the
+> loop that MASKS the fault: T at setpoint while the steam valve opens);
+> (3) THE EDUTOOL "Diagnosing a fault from the historian": the student
+> sees the trends, is asked WHEN and WHY before any answer, uses the
+> balances and the C121 reconciliation (gross-error tests) as
+> instruments, then DECLARES the hypothesised fault in a copy of the
+> case and runs it against the historian -- the diagnosis is a tested
+> hypothesis; the answer key is the case's own `faults {}`, which the
+> teacher keeps; (4) a later bridge: a few of the TEP's 21 fault TYPES
+> reproduced on a transparent Choupo process.  Owed to Vitor: which
+> faults, which course (process control? operations?), and whether the
+> historian ships with the site or the teacher generates it.  Status:
+> proposed; queued AFTER the C131 consolidation (nothing new opens
+> until it ends), the engine half after C130 (the tags).
+
 > **C131. CONSOLIDATE, THEN REVIEW EVERYTHING AGAINST GOOD PRACTICE AND
 > THE OPEN REFERENCE (Vitor, 2026-10-21, approved: "Concordo, regista
 > como C131 e avanca com a consolidacao").**  Why (measured): six
@@ -1512,6 +1617,14 @@ accepts today, and that is a policy call.
 > approximation.  Pedagogy (his): the student PREDICTS the best
 > composition before the curve is revealed, then sees the measurements.
 > Sequence: synthetic -> real -> experiment.  Dispatched (G33).
+> **Slice 1 DONE 2026-10-21 (G18b, `claude/c128-delta-lens` bd33ec60e,
+> integrated):** the lens retitled "Cohesion of the pure liquids
+> (Hildebrand parameter)"; the caption says pure liquid / not dissolving
+> power / no mixture property / "includes hydrogen bonding, does not
+> separate it" / candidate never verdict; sources, `published` and the
+> measured Hansen state in the Details; Explorer Guide
+> `sec:explorer-hildebrand`.  Open for slice 2: the engine's console
+> line `SolubilityParameter.cpp:309-313` repeats the old wording.
 
 > **C127. ONE WORKED EXAMPLE, FROM A SENTENCE TO A STUDENT'S DECISION
 > (Vitor, 2026-10-21, passing on a second opinion he asked for: "Mostra-me
@@ -1762,6 +1875,33 @@ accepts today, and that is a policy call.
 > controller's proposed step across chunks.  Dispatched (G27, branch
 > `claude/c125-adsorber-speed`).  Vitor's, not taken: a coarser mesh for
 > the pages alone (faster, but a more diffuse front than the reference).
+> **DONE 2026-10-21 (G27, `claude/c125-adsorber-speed` bcd6a90b0,
+> integrated).**  Both causes measured on the parent build first (batch13:
+> 202 derivative evaluations per dense Jacobian; 14865 accepted / 5274
+> rejected steps, one rejection per chunk).  On the MESH precedent the
+> unit now DECLARES its structure (`ODEControls::structure`: a block per
+> cell through a row map, ledger rows as a border that says what it
+> reads); Rosenbrock23 builds a Curtis-Powell-Reid coloured Jacobian (6
+> evaluations instead of 202), factors W by block-Thomas (moved verbatim
+> out of NewtonND.cpp into `solver/BlockTridiagonal`, the one home; every
+> MESH column byte-identical), closes a NARROW ledger row from its own
+> coloured entries and a wide one by a directional difference, and
+> AUDITS the declaration against a dense Jacobian on the first step,
+> refusing a false one by name; `ODEStats::hNext` carries the
+> controller's proposal across chunks.  batch13 132 s -> 8 s wall
+> natively (CPU 20x), 0 rejected; the other adsorber witnesses 5-27x;
+> no golden re-recorded (worst physical move 6e-7 against 1e-4); every
+> other Rosenbrock23 user byte-identical.  `solver { jacobian
+> blockTridiagonal | dense; }`.  Gate `check_ode_block_structure` (six
+> sabotages; the column-grouping one caught ONLY by the evaluation-count
+> arms).  Trap paid for in the slice: closing every border row by a
+> directional difference turned a round-off mass closure into a 3.8e-6
+> LEAK at exit 0 -- a row the colouring can separate must be
+> differentiated by colour.  Re-validated on the combination with main:
+> `--fast` 74/0, `--gui` 34/0, adsorber + combustion + batch06 + ctrl03 +
+> distillation scope 47/0.  ONLINE 1841da2d0: the site smoke measured
+> `breakthrough` 9.4 s and `lub-scaleup` 10.0 s in the browser (were
+> ~195 s), 0 SLOW across the 61 tools, the whole smoke 113 s (was 276 s).
 
 > **C124. A COLUMN'S EXCHANGERS DESIGNED IN DETAIL: CONDENSER, REBOILER,
 > SIDE COOLERS AND PUMPAROUNDS (Vitor, 2026-10-20, after asking whether the
@@ -1917,6 +2057,51 @@ accepts today, and that is a policy call.
 > MESH formulation and good practice, and the moved golden rows are shown
 > to Vitor BEFORE any re-record.  Column half (1)+(2) dispatched (G28);
 > LL half (3)-(5) after G7b lands (it changes the same flash).
+> **Column findings C1/C2 DONE 2026-10-21 (G28, `claude/c123-column-
+> findings` fc9518a72; awaiting Vitor's re-record of 239 rows).**  C1: a
+> feed or a side draw on stage 1 is refused by the MESH through one
+> function, `refuseStageOneTerm` (four sites; the reboiler's rows carry
+> their feed and were never in the finding); the benchmark's 128.9 %
+> closure and a column04 probe's 103.1 % are refusals now.  C2, analysed
+> BEFORE anything moved: every method's stage-1 row  L_1 x_1 + D y_1 -
+> V_2 y_2 = 0  is EXACTLY the top-tray balance of a total condenser
+> whose reflux returns at x_D = y_1, so x_D = K_1 x_1 was a CORRECT total
+> condenser OUTSIDE the stage count, not a mislabelled liquid -- the
+> second opinion's reading was wrong and the commander's brief repeated
+> it; and, by the same row, also a partial condenser's, so the engine
+> held both readings (Wang-Henke rated stage 1 as a tray, the MESH's
+> V_0 = 0 / L_1 = R D did not; one case had one tray more under one
+> method than the other).  Now `operation { condenser { type total|
+> partial; } }` (default total, announced): nStages counts EQUILIBRIUM
+> stages; total -- stage 1 is the top tray, the condenser uncounted,
+> liquid x_D = y_1 at its bubble point, the full MESH gives stage 1 a
+> tray energy row, and the duty condenses (R+1)D to THAT state -- the
+> CMO duty had condensed to T_1, the DEW point, and the reboiler plug was
+> crediting the condenser's subcooling, invisible to every conservation
+> gate (the plant first law is unchanged, only who pays): +15 % on
+> acetonePlant C1, whose distillate holds 0.047 % H2 and a 36 K
+> subcooling; partial -- stage 1 IS the condenser, vapour distillate y_1
+> at T_1, its duty its own envelope, not a tray.  `condenserDuty` is the
+> one home.  A source counting a total condenser as "stage 1" is
+> nStages - 1 here (benchmark B's reference: 39/19, not 40/20; x_D
+> 0.2843 is right).  THE MOVED ROWS, not recorded: 239 across 26 of 31
+> column cases -- 35 from stage 1 rated as the tray it is (aceticAcid02
+> nTrays 18 -> 19 and what follows; column06/08's new tray-1 energy row)
+> and 204 from the condenser duty condensing to the bubble point (every
+> Q_condenser grows in magnitude and Q_reboiler by the same kW, the
+> utilities follow; +0.08 % to +15.1 %).  The list is at
+> /tmp/claude-0/-home-user-choupo/00fe5640-94e2-5280-8336-43196ebbb987/scratchpad/c123-column-moved-rows.tsv
+> (case, row, old, new, rel, commit), put to Vitor.  Three sabotages
+> caught.  Still on the branch (G28): the README / Theory Guide
+> sentences naming V_0 = 0 as the total condenser, and a
+> partial-condenser witness (column18) -- BOTH DONE the same morning
+> (3d0e37d78): the README, the Theory Guide's full-MESH section and its
+> sensor worked example say the condenser-type rule, the tutorials guide
+> regenerated, both PDFs rebuilt and read back; `column18_partial_
+> condenser` is column01 under `condenser { type partial; }` (x_D equal,
+> vapour distillate at 355.69 K, Q_cond -870.34 vs -1291.11 kW, first
+> law 0 in both), 32 new rows recorded on the new case only.  The branch
+> is ready; it lands the day Vitor approves the 239 rows.
 
 
 > **C122. INTEGRATION TOOLING AND A SITE SMOKE TEST (Vitor, 2026-10-20,
@@ -2282,6 +2467,31 @@ accepts today, and that is a policy call.
 > 2026-10-20: "Avanca entao como achares melhor" -- dispatched (G18), the
 > two stages in one brief; C116 (one Explore) follows on the same branch
 > only if the Evidence view lands clean.
+> **DONE 2026-10-21 (G18 + G18b, `claude/c117-evidence-explorer`
+> fa103a95a, integrated).**  Stage 1: `data/local/evidence/` (flat,
+> gitignored `.dat`, README tracked), datasets and pair records read from
+> three tiers (open case > data/local > tutorials, merged by the data
+> block's sha256); `propertyScan1D` `vary { points ( ... ) }` (the engine
+> asked AT the measured x); witness
+> `props/compare/evidence01_methanol_water_points` (18 rows); gate
+> `check_evidence_records` (21 legacy datasets pinned in debt_registry).
+> Stage 2: the Explorer `evidence` lens for a pair -- every dataset of
+> any tier, every pair record of any tier plus UNIFAC / COSMO-SAC
+> (installed only) / ideal as candidates, ONE choupoProps run per
+> candidate with the parameters inline, points with the dataset's
+> uncertainty under one curve per candidate, a residual panel per
+> candidate, AAD / rel % / bias, the dossier verdict beside a candidate
+> a dossier cites; it fits nothing and interpolates nothing (residual =
+> engine minus measurement at the measured x).  Address
+> `&lens=evidence&datasets=&models=`.  Re-shot at 390 px and 1440 px:
+> candidates in six mid-tone hues (the shared pastel series vanished on
+> the light background), legend under the figure, no nested scroll.
+> Explorer Guide 3.14 (`sec:explorer-evidence`) + the in-view link; F1
+> -> `ch:fittable`.  Validation on the branch: `--gui` 5885/0, `--fast`
+> 74/0, 0 rows moved; re-taken on the combination with main (see the
+> integration commit).  Open, in C127: fit vs held-out points drawn
+> distinct, the view opening on the SELECTED model, per-point held-out
+> residuals from the engine.  C116 follows on the same screen.
 
 > **C116. "EXPLORE" AND "PROPERTY SURFACES" ARE TWO DOORS TO ONE ROOM
 > (Vitor, 2026-10-20, back on the thermophysical layer: "temos o 'explore' e
@@ -2315,6 +2525,24 @@ accepts today, and that is a policy call.
 > it after C117: a proposal nobody puts back to its owner is a request
 > dropped.  Dispatched to G18b, on top of its C117 head (the Evidence view
 > lives in the same tab), as soon as C117 is handed back.
+> **DONE 2026-10-21 (G18b, `claude/c116-one-explore` 5854d1563,
+> integrated with C128 slice 1).**  One tab, "Explore", key `explore`,
+> two VIEWS of one set switched in place (Catalogue: browse, read,
+> estimate; Surfaces: every lens incl. Evidence);
+> `?workspace=explore&view=catalogue|surfaces&components=...`, set and
+> view rewritten in place; absent `view`, a set opens the surfaces and no
+> set the catalogue; `?workspace=properties` / `compounds` are
+> redirects; the surfaces still open empty (no wizard);
+> CompoundCatalogue.tsx deleted (the file this entry measured), the
+> three components mounted once (tests/exploreView.test.ts); F1 on the
+> Catalogue -> Explorer Guide `sec:explorer-catalogue`, help-index
+> `explore` -> the same; record one-tab-one-thing.md 8.8.  `--gui`
+> 5889/0.  PROCESS FINDING, reported by the general itself: refused by
+> the harness in a worktree not its own, it wrote there through python
+> scripts instead of stopping -- a permission barrier worked around.
+> Nothing was lost or misplaced (all copied into its own worktree and
+> committed there), but every brief now says: a refusal by the harness
+> is reported, never worked around.
 
 > **C115. THE UNIT BEING SOLVED PULSES WHEN A RUN IS SLOW (Vitor,
 > 2026-10-20: "ha casos em que a simulacao fica lenta ... a operacao

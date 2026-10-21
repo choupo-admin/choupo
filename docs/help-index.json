@@ -1,11 +1,12 @@
 {
-  "$comment": "Choupo Help index --- the tracked topic -> guide-section map. The GUI Help (gui/src/help/helpMap.ts) parses this to deep-link F1 / 'Help on current view' / the Help-topics panel into the correct PDF named destination. Every 'anchor' below is a REAL \\label{...} in the named guide's .tex (the preamble sets destlabel=true, so each \\label becomes a PDF named destination reachable via <guide>.pdf#nameddest=<anchor>). Keep this file in sync with the .tex labels; the GUI never invents an anchor the guide does not define. Guides: theory=theoryGuide.pdf, props=propsGuide.pdf, user=userGuide.pdf, developer=developerGuide.pdf.",
+  "$comment": "Choupo Help index --- the tracked topic -> guide-section map. The GUI Help (gui/src/help/helpMap.ts) parses this to deep-link F1 / 'Help on current view' / the Help-topics panel into the correct PDF named destination. Every 'anchor' below is a REAL \\label{...} in the named guide's .tex (the preamble sets destlabel=true, so each \\label becomes a PDF named destination reachable via <guide>.pdf#nameddest=<anchor>). Keep this file in sync with the .tex labels; the GUI never invents an anchor the guide does not define. Guides: theory=theoryGuide.pdf, props=propsGuide.pdf, user=userGuide.pdf, developer=developerGuide.pdf, explorer=explorerGuide.pdf.",
   "version": 1,
   "guides": {
     "theory": "theoryGuide.pdf",
     "props": "propsGuide.pdf",
     "user": "userGuide.pdf",
-    "developer": "developerGuide.pdf"
+    "developer": "developerGuide.pdf",
+    "explorer": "explorerGuide.pdf"
   },
   "default": { "guide": "user", "anchor": "sec:gui", "title": "Using the Choupo GUI" },
   "units": {
@@ -67,7 +68,7 @@
     "isothermEval":     { "guide": "theory", "anchor": "ch:adsorption",    "title": "Adsorption isotherm bench (Henry / Langmuir gates)" }
   },
   "workspaces": {
-    "explore":   { "guide": "theory", "anchor": "ch:criticals",        "title": "Property explorer" },
+    "explore":   { "guide": "explorer", "anchor": "sec:explorer-catalogue", "title": "Explore (catalogue and property surfaces)" },
     "props":     { "guide": "props",  "anchor": "ch:consistency-props", "title": "Property workflow (estimate / fit / consistency)" },
     "pinch":     { "guide": "theory", "anchor": "ch:heat",             "title": "Pinch / heat integration" },
     "streams":   { "guide": "theory", "anchor": "ch:stream-as-state",  "title": "Streams (the process stream as state)" },

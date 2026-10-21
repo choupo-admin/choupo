@@ -1206,10 +1206,15 @@
       "claim": "check_phase_split_scan: OK -- one flash home (flash21/16/19 goldens reproduced at their operating point), the freezing-point identity recomputed from water.dat at every point (12 ice points), the ice appearance announced between its grid values, a pure-water probe refused by name below Tt and continued, the Psat/dCp announcements at their first point, closure to 1e-9, 4 grammar refusals, source arm.  NOT checked: any measured freezing point; the reactive path along a sweep; `phaseSet auto` changing along a scan; `variable P` beyond the grammar.",
       "seconds": 6.1
     },
-    "check_data_reconciliation": {
+    "check_evidence_records": {
       "exit": 0,
-      "claim": "check_data_reconciliation: OK -- four operations recomputed by a stacked KKT solve over all seven flows (reconciled flows and the whole posterior covariance to 1e-9, unmeasured F3 included), the precision-weighted prior and its conflict, the chi-square global test against its closed form and the printed tables, the Sidak measurement test (flags exactly F3 on the drifted snapshot), the multipliers and the per-balance attribution, the excluded meter's test equal to its in-service test (4.8579), 9 refusals by name, source arm, the EduTool's drift range run at both ends on every meter (14 runs).  NOT checked: a composition or energy balance (not built); a correlated prior (refused by construction); any real plant's data.",
-      "seconds": 0.8
+      "claim": "check_evidence_records: OK -- 19 of 40 dataset(s) under constant/experiments parse, name their subject, cite and carry a sha256; the other 21 are the MEASURED legacy set pinned in debt_registry.EVIDENCE_LEGACY_DATASETS, each lacking exactly what its pin says (a pin that grows or shrinks fails); none declares a `role`; data/local/evidence README tracked and .dat ignored; the witness evaluates at its 13 declared points (3 ops, CSV = dataset x to 1e-12, announced, n_points 13); 3 probes refuse by name.  NOT checked: any value against its article; the sha256 against the data block.",
+      "seconds": 0.9
+    },
+    "check_ode_block_structure": {
+      "exit": 0,
+      "claim": "check_ode_block_structure: OK -- the probe (30 cells of 3, ledgers between the cell rows) integrates dense and structured to 3.6e-11 apart, its audit measured exactly 0 outside the structure and between colored and dense bands, 11394 colored evaluations for 1266 Jacobians = the CPR formula, and four false declarations refused by name; batch13 declares 100 blocks of 2, VERIFIED at 0, 89424 evaluations for 14904 Jacobians = the formula, 0 rejected against 14904 accepted steps (warm start from hNext); `jacobian banana;` refused; batch22 (60 s) dense vs structured agree on all 56 KPIs within max(1e-7 rel, 1e-12 abs) (worst at 0.10 of that band).  NOT covered: wall-clock speed, the adsorber goldens (the suite's per-case check), Rosenbrock23 users that declare no structure (dense, untouched).",
+      "seconds": 20.7
     }
   }
 }

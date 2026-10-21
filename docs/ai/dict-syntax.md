@@ -894,7 +894,7 @@ explicit; what must NOT exist is a solver option ignored in silence):
 | `system/solverDict` | steady FLOWSHEET numerics (choupoSolve only) | per-unit-TYPE subdicts merged into each unit; `tearStreams (…)`; recycle-driver scalars (`recycleSolver`, tolerances) |
 | unit `solver {}` (inside its flowsheetDict entry) | per-UNIT integrator choice (batch vessel units) | `integrator`, `rtol`, per-unit `verbosity` |
 | `controlDict` `timeStepping` / `timeSteppingControl {}` | TIME control of the transient binaries (choupoBatch/choupoSemiContinuous/choupoCtrl) | `adaptive;` + `rtol/atol/deltaT0/deltaTmax/maxGrowth` |
-| `fixedBedAdsorber` sub-stepping | that unit's own inner discretisation | reads BOTH its `solver{rtol}` and controlDict timing |
+| `fixedBedAdsorber` sub-stepping | that unit's own inner discretisation | reads BOTH its `solver{rtol, samplingInterval, jacobian}` and controlDict timing |
 
 The anti-silence contract (gate `check_solverdict_lint`, all four
 binaries): a `system/solverDict` in a batch/ctrl/props case is announced

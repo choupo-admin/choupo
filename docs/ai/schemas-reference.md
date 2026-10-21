@@ -880,7 +880,7 @@ One-dimensional property sweep: varies one state variable (T, P or a mole fracti
 
 | Field | Required | Type | Unit | Description |
 |---|:-:|---|---|---|
-| `vary` | ✓ | object | — | Variable to sweep, its limits and the number of points (linearly spaced). |
+| `vary` | ✓ | object | — | Variable to sweep and WHERE to evaluate it: either a grid (`from`, `to`, `n` -- linearly spaced) or an explicit `points ( ... )` list (ev… |
 | `state` |   | object | — | The (T, P, composition) values held fixed (all but the swept variable). |
 | `properties` | ✓ | array[string] | — | Properties to compute at each point and write to the CSV (e.g. Psat_<comp>, T_bubble, gamma_<comp>, Cp_ig, Z, v_molar, H_real, S_real). |
 | `output` | ✓ | object | — |  |

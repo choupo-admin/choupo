@@ -114,7 +114,8 @@ its file.
 1. Engine: tiered `dataset` resolution; per-point residuals in the overlay.
 2. GUI plumbing: the virtual modules, `indexEvidence`, the private bundle.
 3. Explorer: the PAIR as a subject; the Evidence view.
-4. C116: one Explore (`?workspace=properties` kept as a redirect).
+4. C116: one Explore (`?workspace=properties` kept as a redirect) -- DONE
+   2026-10-21, `docs/design/one-tab-one-thing.md` §8.8.
 
 Acceptance (Vítor's test): open the Explorer, pick methanol + water, see the
 two studies (doi 10.1016/j.jct.2009.11.020 and 10.1021/je200341c) against
@@ -157,3 +158,44 @@ What exists is enough for an LLM and a human; only the SHOWING is missing.
 
 Two stages: (1) the plugin glob and the methanol-water witness copied from
 curate04; (2) the Explorer view.  C116 (one Explore) after.
+
+## 8. Built (2026-10-20, G18) -- what §7 became in the tree
+
+Stage 1, plumbing.  `data/local/evidence/` exists as the private tier's home
+(README tracked, every `.dat` gitignored); `gui/scripts/localCataloguePlugin.ts`
+bundles it and `data/local/parameters/**` as two more virtual modules beside
+the component one; `gui/src/case/evidence.ts` reads every dataset's OWN header
+(the grammar unchanged, converted to SI by the declared units) from three
+tiers -- `data/local`, the bundled tutorials' `constant/experiments/`, the
+open case -- merged by `sha256`, the subject read from `system ( a b )` /
+`component x;` and matched order-free; `gui/src/case/pairsCatalogue.ts`
+carries the three tiers of pair records as DISTINCT entries with the
+`parameters {}` block verbatim and a provenance label.  Gate
+`check_evidence_records`: every dataset parses, cites and carries a sha256,
+declares no `role`; the local home is tracked and ignored.
+
+Engine.  `propertyScan1D` takes `vary { points ( ... ) }` beside the grid
+form (`src/propertyOps/PropertyScan1D.cpp`, ONE home for the grid): the
+values in the order written, canonical SI, announced (`[scan] evaluating at N
+DECLARED point(s)`), refused by name beside `from/to/n/step`, as a scalar, or
+empty.  Witness `tutorials/props/compare/evidence01_methanol_water_points`
+(the held-out study at its 13 x, NRTL / UNIFAC / ideal); the gate's arms (d)
+and (e) hold the CSV to the dataset's x and the three refusals.
+
+Stage 2, the view.  `gui/src/ui/explore/EvidenceLens.tsx`, offered as the
+lens `evidence` when a dataset for the pair exists in some tier
+(`exploreViews.viewsFor`, now taking the open case's files): the datasets and
+the candidate models (`gui/src/case/evidenceSynth.ts`: every pair record of
+every tier, UNIFAC where both carry groups, COSMO-SAC only where a profile is
+installed, ideal) as checkboxes; ONE choupoProps run per candidate, the
+candidate's parameters inline, a `points` op per (dataset, isobar) and a grid
+curve per isobar; residual = engine minus measurement, AAD = the mean of the
+residuals drawn, the dossier verdict beside a candidate whose record names the
+case the dossier belongs to.  URL `?workspace=explore&view=surfaces&components=a,b&lens=
+evidence&datasets=...&models=...` (absent lists mean all; every older address
+unchanged).  On a phone the two lists fold behind one button.
+
+Not built, as §7 said: no index, no private bundle, no `datasetId`/`revision`/
+`licence` keys, no `data/standards/evidence/` yet (the gate reads it the day
+it exists), no per-point residual in the engine's `experimental {}` overlay
+(the GUI reads the engine's values at the points instead).  C116 after.

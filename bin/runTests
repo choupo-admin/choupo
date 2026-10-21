@@ -3898,6 +3898,22 @@ PYEOF
         cat /tmp/blocktri.$$
         fail=$((fail+1))
     fi
+
+    # ODE block-structure gate (2026-10-21, C125).  The fixed bed declares
+    # its Rosenbrock23 Jacobian block-tridiagonal with a ledger border; the
+    # declaration is audited on the first step, the colored evaluation
+    # count must equal the CPR formula recomputed by the gate, false
+    # declarations refuse by name, dense and structured agree, and the
+    # chunk warm start rejects at most 5 % of its steps.
+    if "$ROOT/bin/curate/check_ode_block_structure.py" > /tmp/odeblk.$$ 2>&1; then
+        printf "PASS  %-40s  (%s)\n" "ode-block-structure-gate" "$(head -1 /tmp/odeblk.$$)"
+        pass=$((pass+1))
+    else
+        printf "FAIL  %-40s  (run bin/curate/check_ode_block_structure.py)\n" "ode-block-structure-gate"
+        cat /tmp/odeblk.$$
+        fail=$((fail+1))
+    fi
+    rm -f /tmp/odeblk.$$
     rm -f /tmp/blocktri.$$
 
     # held-out-pressure gate (2026-08-25).  A bubble-point fit prices every
@@ -3952,6 +3968,26 @@ PYEOF
         fail=$((fail+1))
     fi
     rm -f /tmp/regpairs.$$
+
+    # evidence-records gate (2026-10-20, DEV.md 4c C117).  Every measured
+    # DATASET the tree ships (tutorials/**/constant/experiments/*.dat, and
+    # data/standards/evidence/ when it exists) parses, cites its source and
+    # carries a sha256, and declares no `role` (fit / held-out is the
+    # consuming operation's declaration, never the file's); the private
+    # tier's home data/local/evidence/ has its README tracked and its .dat
+    # ignored; and the engine evaluates a propertyScan1D AT DECLARED POINTS
+    # (`vary { points ( ... ) }`, the Explorer's Evidence view) -- the
+    # witness's CSVs carry the dataset's x exactly, announced, and the three
+    # built probes (both forms, a scalar, an empty list) refuse by name.
+    if "$ROOT/bin/curate/check_evidence_records.py" > /tmp/evrec.$$ 2>&1; then
+        printf "PASS  %-40s  (%s)\n" "evidence-records-gate" "$(head -1 /tmp/evrec.$$)"
+        pass=$((pass+1))
+    else
+        printf "FAIL  %-40s  (run bin/curate/check_evidence_records.py)\n" "evidence-records-gate"
+        cat /tmp/evrec.$$
+        fail=$((fail+1))
+    fi
+    rm -f /tmp/evrec.$$
 
     # solubility-parameter gate (2026-08-26).  delta is DERIVED from HvapTb,
     # Tc and Vliq -- the tree stores no derivative -- and 63 records carry an

@@ -210,6 +210,12 @@
   "BinaryTxy": [
    "src/thermo/SaturationCurves.H"
   ],
+  "BlockBands": [
+   "src/solver/BlockTridiagonal.H"
+  ],
+  "BlockThomasLU": [
+   "src/solver/BlockTridiagonal.H"
+  ],
   "BlockTri": [
    "src/solver/NewtonND.H"
   ],
@@ -287,6 +293,9 @@
   ],
   "ClosureInputs": [
    "src/reporting/ModelBoundaryLedger.H"
+  ],
+  "ColoredODEJacobian": [
+   "src/solver/ODE/Jacobian.H"
   ],
   "ColumnSize": [
    "src/postProcessing/sizing/ColumnSize.H"
@@ -404,9 +413,6 @@
   ],
   "DSPM_DE": [
    "src/unitOperations/membrane/transport/DSPM_DE.H"
-  ],
-  "DataReconciliation": [
-   "src/propertyOps/DataReconciliation.H"
   ],
   "Database": [
    "src/thermo/Database.H"
@@ -1139,6 +1145,9 @@
   ],
   "NusseltFilm": [
    "src/unitOperations/heatTransfer/htc/NusseltFilm.H"
+  ],
+  "ODEBlockStructure": [
+   "src/solver/ODE/ODEIntegrator.H"
   ],
   "ODEControls": [
    "src/solver/ODE/ODEIntegrator.H"
@@ -2280,10 +2289,6 @@
    {
     "key": "polarisationIndex",
     "type": "PolarisationIndex"
-   },
-   {
-    "key": "dataReconciliation",
-    "type": "DataReconciliation"
    }
   ],
   "src/reporting/Report.cpp": [
@@ -4588,21 +4593,6 @@
    "src/propertyOps/CurationDossier.H",
    "src/propertyOps/EvidencePartition.H"
   ],
-  "src/propertyOps/DataReconciliation.cpp": [
-   "src/core/Dictionary.H",
-   "src/core/Dimensions.H",
-   "src/core/Identifiers.H",
-   "src/core/Origin.H",
-   "src/core/Types.H",
-   "src/core/Units.H",
-   "src/propertyOps/DataReconciliation.H",
-   "src/propertyOps/PropertyOperation.H",
-   "src/solver/LU.H",
-   "src/streams/AnalysisReconciler.H",
-   "src/thermo/Component.H",
-   "src/thermo/Database.H",
-   "src/thermo/RecordResolver.H"
-  ],
   "src/propertyOps/ENRTLMixedSolventOp.cpp": [
    "src/core/Dictionary.H",
    "src/core/Dimensions.H",
@@ -5096,7 +5086,6 @@
    "src/core/Identifiers.H",
    "src/core/Origin.H",
    "src/core/Types.H",
-   "src/propertyOps/DataReconciliation.H",
    "src/propertyOps/ENRTLMixedSolventOp.H",
    "src/propertyOps/ENRTLMultiSaltOp.H",
    "src/propertyOps/ElectrolytePackageActivity.H",
@@ -6032,6 +6021,11 @@
    "src/solver/ActiveSetQP.H",
    "src/solver/NewtonND.H"
   ],
+  "src/solver/BlockTridiagonal.cpp": [
+   "src/core/Types.H",
+   "src/solver/BlockTridiagonal.H",
+   "src/solver/LU.H"
+  ],
   "src/solver/LU.cpp": [
    "src/core/Types.H",
    "src/solver/LU.H"
@@ -6044,6 +6038,7 @@
    "src/core/Advisory.H",
    "src/core/InfeasibleTrial.H",
    "src/core/Types.H",
+   "src/solver/BlockTridiagonal.H",
    "src/solver/LU.H",
    "src/solver/NewtonND.H"
   ],
@@ -6053,6 +6048,7 @@
   ],
   "src/solver/ODE/EulerSI.cpp": [
    "src/core/Types.H",
+   "src/solver/BlockTridiagonal.H",
    "src/solver/ODE/../LU.H",
    "src/solver/ODE/EulerSI.H",
    "src/solver/ODE/Jacobian.H",
@@ -6060,6 +6056,7 @@
   ],
   "src/solver/ODE/Jacobian.cpp": [
    "src/core/Types.H",
+   "src/solver/BlockTridiagonal.H",
    "src/solver/ODE/Jacobian.H",
    "src/solver/ODE/ODEIntegrator.H"
   ],
@@ -6078,6 +6075,7 @@
   ],
   "src/solver/ODE/Rosenbrock23.cpp": [
    "src/core/Types.H",
+   "src/solver/BlockTridiagonal.H",
    "src/solver/ODE/../LU.H",
    "src/solver/ODE/Jacobian.H",
    "src/solver/ODE/ODEIntegrator.H",
@@ -7644,6 +7642,7 @@
    "src/result/SimulationResult.H",
    "src/result/UnitProfile.H",
    "src/solver/Convergence.H",
+   "src/solver/ODE/ODEIntegrator.H",
    "src/streams/ProcessStream.H",
    "src/thermo/Component.H",
    "src/thermo/PackageAudit.H",
@@ -7680,6 +7679,7 @@
    "src/core/Origin.H",
    "src/core/PortRoles.H",
    "src/core/ProblemDivergence.H",
+   "src/core/RegistryRefusal.H",
    "src/core/ResultRecords.H",
    "src/core/ThermoResolution.H",
    "src/core/Types.H",
@@ -9909,7 +9909,6 @@
    "src/postProcessing/sizing/StorageTankSize.cpp",
    "src/postProcessing/sizing/VesselSize.cpp",
    "src/propertyOps/CurationDossier.cpp",
-   "src/propertyOps/DataReconciliation.cpp",
    "src/propertyOps/ENRTLMixedSolventOp.cpp",
    "src/propertyOps/ENRTLMultiSaltOp.cpp",
    "src/propertyOps/ElectrolytePackageActivity.cpp",
@@ -10239,7 +10238,6 @@
    "src/postProcessing/sizing/StorageTankSize.cpp",
    "src/postProcessing/sizing/VesselSize.cpp",
    "src/propertyOps/CurationDossier.cpp",
-   "src/propertyOps/DataReconciliation.cpp",
    "src/propertyOps/ENRTLMixedSolventOp.cpp",
    "src/propertyOps/ENRTLMultiSaltOp.cpp",
    "src/propertyOps/ElectrolytePackageActivity.cpp",
@@ -10655,7 +10653,6 @@
    "src/postProcessing/sizing/StorageLink.cpp",
    "src/postProcessing/sizing/StorageTankSize.cpp",
    "src/postProcessing/sizing/VesselSize.cpp",
-   "src/propertyOps/DataReconciliation.cpp",
    "src/propertyOps/ENRTLMixedSolventOp.cpp",
    "src/propertyOps/ENRTLMultiSaltOp.cpp",
    "src/propertyOps/ElectrolytePackageActivity.cpp",
@@ -10926,7 +10923,6 @@
    "src/postProcessing/sizing/StorageLink.cpp",
    "src/postProcessing/sizing/StorageTankSize.cpp",
    "src/postProcessing/sizing/VesselSize.cpp",
-   "src/propertyOps/DataReconciliation.cpp",
    "src/propertyOps/ENRTLMixedSolventOp.cpp",
    "src/propertyOps/ENRTLMultiSaltOp.cpp",
    "src/propertyOps/ElectrolytePackageActivity.cpp",
@@ -11247,6 +11243,7 @@
    "src/unitOperations/batch/BatchElectrodialysis.cpp",
    "src/unitOperations/batch/BatchReactor.cpp",
    "src/unitOperations/batch/BatchStill.cpp",
+   "src/unitOperations/batch/FixedBedAdsorber.cpp",
    "src/unitOperations/crystallisation/Crystalliser.cpp",
    "src/unitOperations/distillation/DistillationColumn.cpp",
    "src/unitOperations/dynamic/DynamicCSTR.cpp",
@@ -11513,7 +11510,6 @@
    "src/postProcessing/sizing/VesselMechanics.cpp",
    "src/postProcessing/sizing/VesselSize.cpp",
    "src/propertyOps/CurationDossier.cpp",
-   "src/propertyOps/DataReconciliation.cpp",
    "src/propertyOps/ENRTLMixedSolventOp.cpp",
    "src/propertyOps/ENRTLMultiSaltOp.cpp",
    "src/propertyOps/ElectrolytePackageActivity.cpp",
@@ -11582,6 +11578,7 @@
    "src/result/ComponentIdentity.cpp",
    "src/result/ResultEmitter.cpp",
    "src/solver/ActiveSetQP.cpp",
+   "src/solver/BlockTridiagonal.cpp",
    "src/solver/LU.cpp",
    "src/solver/NelderMead.cpp",
    "src/solver/NewtonND.cpp",
@@ -11799,7 +11796,6 @@
    "src/core/DisplayUnits.cpp",
    "src/core/Units.cpp",
    "src/postProcessing/PinchPass.cpp",
-   "src/propertyOps/DataReconciliation.cpp",
    "src/propertyOps/EvidencePartition.cpp",
    "src/propertyOps/FitParameters.cpp",
    "src/propertyOps/HeatCapacityFit.cpp",
@@ -12176,10 +12172,6 @@
    "src/propertyOps/HeatCapacityFit.cpp",
    "src/propertyOps/VaporPressureFit.cpp"
   ],
-  "src/propertyOps/DataReconciliation.H": [
-   "src/propertyOps/DataReconciliation.cpp",
-   "src/propertyOps/PropertyOperation.cpp"
-  ],
   "src/propertyOps/ENRTLMixedSolventOp.H": [
    "src/propertyOps/ENRTLMixedSolventOp.cpp",
    "src/propertyOps/PropertyOperation.cpp"
@@ -12304,7 +12296,6 @@
   ],
   "src/propertyOps/PropertyOperation.H": [
    "src/applications/choupoProps/main.cpp",
-   "src/propertyOps/DataReconciliation.cpp",
    "src/propertyOps/ENRTLMixedSolventOp.cpp",
    "src/propertyOps/ENRTLMultiSaltOp.cpp",
    "src/propertyOps/ElectrolytePackageActivity.cpp",
@@ -12767,6 +12758,13 @@
    "src/solver/SQP.cpp",
    "src/streams/AnalysisReconciler.cpp"
   ],
+  "src/solver/BlockTridiagonal.H": [
+   "src/solver/BlockTridiagonal.cpp",
+   "src/solver/NewtonND.cpp",
+   "src/solver/ODE/EulerSI.cpp",
+   "src/solver/ODE/Jacobian.cpp",
+   "src/solver/ODE/Rosenbrock23.cpp"
+  ],
   "src/solver/Convergence.H": [
    "src/applications/choupoBatch/main.cpp",
    "src/applications/choupoCtrl/main.cpp",
@@ -12963,7 +12961,7 @@
    "src/unitOperations/valve/Valve.cpp"
   ],
   "src/solver/LU.H": [
-   "src/propertyOps/DataReconciliation.cpp",
+   "src/solver/BlockTridiagonal.cpp",
    "src/solver/LU.cpp",
    "src/solver/NewtonND.cpp"
   ],
@@ -13046,6 +13044,7 @@
    "src/solver/ODE/Rosenbrock23.cpp",
    "src/unitOperations/batch/BatchAdsorber.cpp",
    "src/unitOperations/batch/BatchReactor.cpp",
+   "src/unitOperations/batch/BatchUnitOperation.cpp",
    "src/unitOperations/batch/FixedBedAdsorber.cpp"
   ],
   "src/solver/ODE/RK4.H": [
@@ -13070,7 +13069,6 @@
    "src/unitOperations/flowsheet/Flowsheet.cpp"
   ],
   "src/streams/AnalysisReconciler.H": [
-   "src/propertyOps/DataReconciliation.cpp",
    "src/streams/AnalysisReconciler.cpp",
    "src/streams/StreamStateIO.cpp"
   ],
@@ -13356,7 +13354,6 @@
    "src/postProcessing/sizing/StorageLink.cpp",
    "src/postProcessing/sizing/StorageTankSize.cpp",
    "src/postProcessing/sizing/VesselSize.cpp",
-   "src/propertyOps/DataReconciliation.cpp",
    "src/propertyOps/ENRTLMixedSolventOp.cpp",
    "src/propertyOps/ENRTLMultiSaltOp.cpp",
    "src/propertyOps/ElectrolytePackageActivity.cpp",
@@ -13573,7 +13570,6 @@
    "src/outerDriver/OptimizationDriver.cpp",
    "src/outerDriver/ParetoSweepDriver.cpp",
    "src/outerDriver/SweepDriver.cpp",
-   "src/propertyOps/DataReconciliation.cpp",
    "src/propertyOps/ENRTLMixedSolventOp.cpp",
    "src/propertyOps/ENRTLMultiSaltOp.cpp",
    "src/propertyOps/ElectrolytePackageActivity.cpp",
@@ -13907,7 +13903,6 @@
    "src/outerDriver/OptimizationDriver.cpp",
    "src/outerDriver/ParetoSweepDriver.cpp",
    "src/outerDriver/SweepDriver.cpp",
-   "src/propertyOps/DataReconciliation.cpp",
    "src/propertyOps/ENRTLMixedSolventOp.cpp",
    "src/propertyOps/ENRTLMultiSaltOp.cpp",
    "src/propertyOps/ElectrolytePackageActivity.cpp",
