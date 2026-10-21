@@ -101,6 +101,45 @@ public:
         const DictPtr&          designRules,
         const std::string&      equipmentTag = std::string());
 
+    //  THE DETAILED DESIGN (route 4), REACHABLE BY A UNIT THAT HAS NO PORTS
+    //  FOR ITS EXCHANGER (2026-10-20, DEV.md 4c C124).
+    //
+    //  A distillation column's condenser and reboiler are exchangers with no
+    //  flowsheet streams of their own: the overhead vapour and the boiling
+    //  pool are INSIDE the unit.  So the column states its process side as
+    //  data -- what changes phase, between which temperatures, at which
+    //  pressure and composition, read off its own KPIs and products -- and
+    //  hands it to the SAME design route a flowsheet exchanger reaches
+    //  through `size()`: the same bundle, the same fouling, the same utility
+    //  side, the same tube-count search, the same record.  The process film
+    //  is a PHASE-CHANGE film (`htc/PhaseChangeHTC`): Nusselt film
+    //  condensation for the condenser, Rohsenow nucleate boiling held under
+    //  the Zuber critical heat flux for the reboiler.  See ShellTubeHX.cpp,
+    //  "ROUTE 4" and "THE PHASE-CHANGE PROCESS SIDE".
+    struct PhaseChangeProcess
+    {
+        bool        boiling = false;  // false: the process CONDENSES
+        std::string label;            // what the sheet calls it
+        scalar      T_in  = 0.0;      // [K] the process side's entry
+        scalar      T_out = 0.0;      // [K] ... and exit (== T_in for a pool)
+        scalar      P     = 0.0;      // [Pa]
+        sVector     z;                // condensate / pool composition
+        std::string source;           // the sentence saying where they were read
+    };
+    static EquipmentSizing designPhaseChange(const std::string& unitName,
+        scalar                    Q_kW,
+        const PhaseChangeProcess& process,
+        const SimulationResult&   result,
+        const Material&           material,
+        const DictPtr&            designRules,
+        const std::string&        equipmentTag);
+
+    //  THE ONE SENTENCE refusing a typed `U`/`LMTD` beside a `design {}`
+    //  block -- for a flowsheet exchanger AND a column's two (C124).  Empty
+    //  when the designRules are coherent.
+    static std::string typedBesideDesign(const std::string& who,
+                                         const DictPtr& designRules);
+
     //  The exchanger WEIGHT rule (30 kg per m2 of area, scaled by the
     //  material's density), one home for every item priced as a bundle.
     static scalar bundleWeight(scalar A, const Material& material);

@@ -226,6 +226,14 @@ const TABLE: Record<string, UnitSpec> = {
   "m2.K/W": { factor: 1.0, affine: false },
   "W/m/K":  { factor: 1.0, affine: false },
 
+  // the phase-change films of a designed column exchanger (DEV.md 4c C124):
+  // latent heat J/kg, liquid heat capacity J/(kg.K), surface tension N/m and
+  // heat flux W/m2 -- mirrors src/core/Units.cpp, added in the same commit.
+  "J/kg":   { factor: 1.0, affine: false },
+  "J/kg/K": { factor: 1.0, affine: false },
+  "N/m":    { factor: 1.0, affine: false },
+  "W/m2":   { factor: 1.0, affine: false },
+
   // molar mass → kg/kmol
   "kg/kmol": { factor: 1.0, affine: false },
   "g/mol": { factor: 1.0, affine: false },

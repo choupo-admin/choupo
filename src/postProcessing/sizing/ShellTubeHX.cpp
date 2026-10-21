@@ -35,6 +35,7 @@ License
 #include "core/RegistryRefusal.H"
 #include "unitOperations/heatTransfer/htc/HeatTransferCorrelation.H"
 #include "unitOperations/heatTransfer/htc/ShellTubeDesign.H"
+#include "unitOperations/heatTransfer/htc/PhaseChangeHTC.H"
 #include "unitOperations/flash/StreamEquilibrium.H"
 
 #include <algorithm>
@@ -366,7 +367,9 @@ std::unique_ptr<HeatTransferCorrelation> correlation(const DictPtr& dg,
 
 std::vector<EquipmentSizing> run(const std::string& unitName, scalar Q_kW,
     const SimulationResult& result, const Material& material,
-    const DictPtr& designRules);
+    const DictPtr& designRules,
+    const ShellTubeHX::PhaseChangeProcess* phaseChange = nullptr,
+    const std::string& equipmentTag = std::string());
 
 } // namespace design
 
@@ -427,15 +430,9 @@ std::vector<EquipmentSizing> ShellTubeHX::size(const std::string& unitName,
     //  ---- route 4: the DETAILED design (C48) -- U is a RESULT ------------
     if (designRules->found("design"))
     {
-        if (hasU || hasLMTD)
-            throw std::runtime_error("ShellTubeHX: unit '" + unitName
-                + "' declares a `design {}` block AND `"
-                + std::string(hasU ? "U" : "LMTD") + "`.\n"
-                "  The design COMPUTES the overall coefficient from the films,"
-                " the wall and the fouling, and the LMTD from the terminal\n"
-                "  temperatures; a typed value beside it is a second home for"
-                " the same number.  Delete `U`/`LMTD`, or delete `design {}`\n"
-                "  to size on the declared coefficient (A = Q/(U*LMTD)).");
+        const std::string twoHomes = typedBesideDesign(
+            "ShellTubeHX: unit '" + unitName + "'", designRules);
+        if (!twoHomes.empty()) throw std::runtime_error(twoHomes);
         return design::run(unitName, Q_kW, result, material, designRules);
     }
 
@@ -524,6 +521,41 @@ std::vector<EquipmentSizing> ShellTubeHX::size(const std::string& unitName,
 }
 
 
+//  THE ONE SENTENCE for a typed U/LMTD beside a design (C48; shared with the
+//  column's condenser and reboiler since C124).  `who` names the item.
+std::string ShellTubeHX::typedBesideDesign(const std::string& who,
+                                           const DictPtr& designRules)
+{
+    const bool hasU = designRules->found("U");
+    const bool hasLMTD = designRules->found("LMTD");
+    if (!designRules->found("design") || !(hasU || hasLMTD)) return {};
+    return who + " declares a `design {}` block AND `"
+        + std::string(hasU ? "U" : "LMTD") + "`.\n"
+        "  The design COMPUTES the overall coefficient from the films,"
+        " the wall and the fouling, and the LMTD from the terminal\n"
+        "  temperatures; a typed value beside it is a second home for"
+        " the same number.  Delete `U`/`LMTD`, or delete `design {}`\n"
+        "  to size on the declared coefficient (A = Q/(U*LMTD)).";
+}
+
+//  THE COLUMN'S DOOR ONTO ROUTE 4 (C124): the same `design::run`, handed the
+//  process side as data because the column has no ports for it.
+EquipmentSizing ShellTubeHX::designPhaseChange(const std::string& unitName,
+    scalar                    Q_kW,
+    const PhaseChangeProcess& process,
+    const SimulationResult&   result,
+    const Material&           material,
+    const DictPtr&            designRules,
+    const std::string&        equipmentTag)
+{
+    const std::string twoHomes = typedBesideDesign(
+        "ShellTubeHX: column '" + unitName + "' " + equipmentTag, designRules);
+    if (!twoHomes.empty()) throw std::runtime_error(twoHomes);
+    auto items = design::run(unitName, Q_kW, result, material, designRules,
+                             &process, equipmentTag);
+    return std::move(items.front());
+}
+
 //  THE ONE HOME of the exchanger weight rule, reachable by a sizer that
 //  realises a tube bundle without being a heater (the multitubular reactor,
 //  C69): empirical weight ~ 30 kg per m2 (TEMA shell + tubes mid-range), the
@@ -560,9 +592,86 @@ using shellTubeDesign::Resistances;
 using shellTubeDesign::TubeSideState;
 using shellTubeDesign::ShellSideState;
 
+// ---------------------------------------------------------------------------
+//  THE PHASE-CHANGE PROCESS SIDE (2026-10-20, DEV.md 4c C124)
+// ---------------------------------------------------------------------------
+//
+//  A column's condenser CONDENSES its process side and its reboiler BOILS
+//  it, and neither is a single-phase film: the coefficient of a condensate
+//  film or of a nucleate-boiling surface depends on the temperature
+//  difference ACROSS THAT FILM, which depends on every other resistance in
+//  series with it.  So the film is not a number evaluated once; it is the
+//  root of one equation per tube count N, at the exchanger's MEAN flux:
+//
+//      q_film(dT) / (A_film/A_o)  =  (F LMTD - dT) * U_rest
+//
+//  U_rest the overall coefficient of everything BUT the phase-change film
+//  (the other side's film, the wall, both foulings), on the outside area;
+//  q_film(dT) the film's own flux at a film temperature difference dT --
+//  increasing in dT (Nusselt: as dT^3/4; Rohsenow: as dT^3) while the right
+//  side decreases, so the root is unique and is BRACKETED in (0, F LMTD).
+//  That is the one wall temperature of the whole exchanger, the same
+//  mean-condition posture as every Kern film here: no local integration.
+//
+//    * CONDENSATION: Nusselt (1916) laminar film (`htc/NusseltFilm`), on a
+//      vertical tube (height = the tube length, either side) or on the
+//      OUTSIDE of horizontal tubes, where the condensate of one tube falls
+//      on the next: Nusselt's own result for a vertical tier of N tubes,
+//      h_N = h_1 N^-1/4 (Incropera & DeWitt Ch. 10), evaluated at the
+//      DEEPEST tier of the bundle (D_b / vertical pitch) -- the shorter outer
+//      tiers condense better, so the design errs on the SAFE side.  Film
+//      properties at T_film = T_sat - dT/2 from the case's package; h_fg the
+//      package's own enthalpy difference between the vapour that enters and
+//      the liquid that leaves, per kg.  Condensation INSIDE horizontal tubes
+//      is a stratified/annular two-phase flow, not a falling film, and is
+//      refused by name.
+//    * BOILING: Rohsenow (1952) nucleate POOL boiling (`htc/Rohsenow`) on
+//      the outside of the bundle -- a kettle -- with the case's surface-fluid
+//      C_sf, Prandtl exponent s and their citation (no default: C_sf is
+//      surface-finish laboratory data and the flux is +/-100 %), properties
+//      of the saturated liquid at the pool temperature.  The resulting flux
+//      is HELD UNDER the Zuber (1959) critical heat flux (`htc/ZuberCHF`):
+//      above it the surface blankets in vapour, the wall temperature jumps
+//      and the exchanger is not a reboiler any more, so a design there is
+//      REFUSED, not announced.  In-tube boiling is flow boiling, a different
+//      correlation, and is refused by name.
+struct PcFilm
+{
+    bool                             boiling = false;
+    std::unique_ptr<PhaseChangeHTC>  model;          // NusseltFilm | Rohsenow
+    std::unique_ptr<PhaseChangeHTC>  chf;            // ZuberCHF (boiling)
+    const ThermoPackage*             tp = nullptr;
+    std::string                      who;
+    std::string                      orientation;    // condensation only
+    scalar                           Tsat = 0.0;     // [K] condensing mean / pool T
+    scalar                           P = 0.0;        // [Pa]
+    sVector                          z;
+    scalar                           hfg = 0.0;      // [J/kg]
+    scalar                           rho_v = 0.0;    // [kg/m3]
+    scalar                           sigma = 0.0;    // [N/m] (boiling)
+    SideFluid                        sat;            // saturated liquid (boiling)
+    scalar                           Csf = 0.0, sExp = 0.0;
+    std::string                      citation;
+};
+
+//  The film at one temperature difference: its coefficient, its flux on its
+//  OWN surface, and what produced them.
+struct PcState
+{
+    scalar            dT = 0.0;      // dT_film (condensing) / dT_excess (boiling)
+    scalar            h = 0.0;       // [W/m2/K] on the film's own surface
+    scalar            q = 0.0;       // [W/m2]   on the film's own surface
+    scalar            Tfilm = 0.0;   // [K] where the liquid was priced
+    int               rows = 1;      // tubes per vertical tier (horizontal)
+    SideFluid         liq;           // the liquid properties used
+    PhaseChangeResult r;
+};
+
 //  One side of the bundle: either a FILM the kernel computes from a fluid
 //  and a correlation, or a coefficient the case DECLARED (a boiling or
-//  condensing utility), which has no correlation and no pressure drop here.
+//  condensing utility), which has no correlation and no pressure drop here,
+//  or -- a column's condenser or reboiler (C124) -- a PHASE-CHANGE film,
+//  which has no single-phase correlation and no pressure drop here either.
 struct Side
 {
     std::string  name;                 // "process", "utility <name>", stream
@@ -572,13 +681,83 @@ struct Side
     SideFluid    hydraulic;            // the state the dP is evaluated on
     scalar       Tprops = 0.0;         // the film state's temperature [K]
     std::unique_ptr<HeatTransferCorrelation> corr;
+    std::unique_ptr<PcFilm>                  pc;   // a phase-change film (C124)
 };
+
+//  A single-phase film the kernel computes (neither declared nor a phase
+//  change): the sides that have a correlation, a velocity and a dP.
+bool singlePhase(const Side& s) { return !s.declaredFilm && !s.pc; }
+
+//  The phase-change film at one dT, on its own surface.
+PcState phaseChangeAt(const PcFilm& f, const TubeBundle& b, int rows, scalar dT)
+{
+    PcState s;
+    s.dT = dT;
+    s.rows = rows;
+    PhaseChangeContext c;
+    c.gravity = 9.81;
+    c.h_fg  = f.hfg;
+    c.rho_v = f.rho_v;
+    if (f.boiling)
+    {
+        s.Tfilm = f.Tsat;
+        s.liq = f.sat;
+        c.rho_l = f.sat.rho;  c.mu_l = f.sat.mu;  c.lambda_l = f.sat.lambda;
+        c.cp_l = f.sat.cp;    c.sigma = f.sigma;
+        c.dT_excess = dT;     c.C_sf = f.Csf;   c.n_exp = f.sExp;
+        s.r = f.model->evaluate(c);
+        s.q = s.r.q_flux;
+        s.h = s.q / dT;
+        return s;
+    }
+    //  the condensate film's liquid, at the film temperature
+    FluidState fl;
+    fl.label = "condensate film";
+    fl.T = f.Tsat - 0.5 * dT;  fl.P = f.P;  fl.z = f.z;  fl.vapour = false;
+    s.Tfilm = fl.T;
+    s.liq = price(*f.tp, fl, false, f.who);
+    c.rho_l = s.liq.rho;  c.mu_l = s.liq.mu;  c.lambda_l = s.liq.lambda;
+    c.cp_l = s.liq.cp;    c.dT_film = dT;
+    c.orientation = f.orientation;
+    c.charLength = (f.orientation == "horizontalTube") ? b.tubeOD : b.tubeLength;
+    s.r = f.model->evaluate(c);
+    s.h = s.r.h * std::pow(static_cast<scalar>(rows), -0.25);
+    s.q = s.h * dT;
+    return s;
+}
+
+//  The root of q_film(dT)/ratio = (dTm - dT) U_rest, bracketed in (0, dTm).
+PcState solvePhaseChange(const PcFilm& f, const TubeBundle& b, bool inTubes,
+                         scalar shellID, scalar Urest, scalar dTm)
+{
+    int rows = 1;
+    if (!f.boiling && f.orientation == "horizontalTube")
+    {
+        const scalar Db = shellID - shellTubeDesign::shellClearance;
+        const scalar pv = b.triangular ? std::sqrt(3.0) * b.pitch : b.pitch;
+        rows = std::max(1, static_cast<int>(std::lround(Db / pv)));
+    }
+    const scalar ratio = inTubes ? b.tubeOD / b.tubeID : 1.0;   // A_o / A_film
+    auto g = [&](scalar dT)
+    { return phaseChangeAt(f, b, rows, dT).q / ratio - (dTm - dT) * Urest; };
+    scalar lo = 0.0, hi = dTm;
+    for (int it = 0; it < 200 && hi - lo > 1.0e-12 * dTm; ++it)
+    {
+        const scalar mid = 0.5 * (lo + hi);
+        (g(mid) > 0.0 ? hi : lo) = mid;
+    }
+    return phaseChangeAt(f, b, rows, 0.5 * (lo + hi));
+}
 
 std::vector<EquipmentSizing> run(const std::string& unitName, scalar Q_kW,
     const SimulationResult& result, const Material& material,
-    const DictPtr& designRules)
+    const DictPtr& designRules,
+    const ShellTubeHX::PhaseChangeProcess* pcp,
+    const std::string& equipmentTag)
 {
-    const std::string who = "ShellTubeHX: unit '" + unitName + "' (design)";
+    const std::string who = pcp
+        ? "ShellTubeHX: column '" + unitName + "' " + equipmentTag + " (design)"
+        : "ShellTubeHX: unit '" + unitName + "' (design)";
     auto dg = designRules->subDict("design");
 
     //  ---- the method: a closed set, and an unknown word refuses ---------
@@ -597,10 +776,12 @@ std::vector<EquipmentSizing> run(const std::string& unitName, scalar Q_kW,
             " built for post-processing.");
     const ThermoPackage& tp = *pkg;
 
+    //  A column's exchanger (C124) has no ports of its own: its process side
+    //  arrives as data, and the topology is not consulted.
     const FlatUnit* fu = nullptr;
     for (const auto& u : result.topology) if (u.name == unitName) fu = &u;
-    if (!fu || fu->ins.empty() || fu->ins.size() != fu->outs.size()
-        || fu->ins.size() > 2)
+    if (!pcp && (!fu || fu->ins.empty() || fu->ins.size() != fu->outs.size()
+        || fu->ins.size() > 2))
         throw std::runtime_error(who + ": the design route needs the unit's"
             " ports -- one inlet and one outlet (a heater/cooler against a"
             " utility) or two of each (a two-stream exchanger) -- and the"
@@ -698,6 +879,185 @@ std::vector<EquipmentSizing> run(const std::string& unitName, scalar Q_kW,
 
     auto requireCorr = [&](Side& s, const char* block)
     { s.corr = correlation(dg, block, who); };
+    //  The process side's film is a phase-change film (C124): a single-phase
+    //  correlation declared for it would be evaluated nowhere.
+    auto refusePhaseChangeCorr = [&](const char* block)
+    {
+        if (dg->found(block))
+            throw std::runtime_error(who + ": `" + block + " {}` is declared"
+                " for the process side, whose film is a PHASE-CHANGE film ("
+                + std::string(pcp && pcp->boiling ? "`boiling {}`"
+                                                  : "`condensation {}`")
+                + ") -- no single-phase correlation is evaluated there.  Delete"
+                  " `" + block + " {}`.");
+    };
+    //  THE PHASE-CHANGE PROCESS SIDE of a column's exchanger (C124): its film
+    //  model, its properties from the case's package, and the sentences the
+    //  sheet carries.  Everything else -- the bundle, the fouling, the
+    //  utility, the search, the record -- is this route's own.
+    auto phaseChangeSide = [&](Side& P, ExchangerSide& XP, bool inTubes)
+    {
+        const bool boil = pcp->boiling;
+        const char* block = boil ? "boiling" : "condensation";
+        refusePhaseChangeCorr(inTubes ? "tubeSide" : "shellSide");
+        if (boil && inTubes)
+            throw std::runtime_error(who + ": `processSide tube;` on a"
+                " reboiler -- boiling INSIDE tubes is flow boiling (two-phase"
+                " convection), which this route does not model.  A kettle"
+                " boils its pool on the OUTSIDE of the bundle: declare"
+                " `processSide shell;`.");
+        if (!dg->found(block))
+            throw std::runtime_error(who + ": the process side "
+                + std::string(boil ? "BOILS" : "CONDENSES") + ", and `design {}`"
+                " declares no `" + block + " { model "
+                + (boil ? "Rohsenow; Csf <C_sf>; s <exponent>; citation \"...\";"
+                        : "NusseltFilm; orientation verticalTube|horizontalTube;")
+                + " }` -- the film model of that side is the designer's choice"
+                  " and is not defaulted.");
+        auto bd = dg->subDict(block);
+        const std::string model = bd->lookupWord("model");
+        const std::string accepted = boil ? "Rohsenow" : "NusseltFilm";
+        if (model != accepted)
+            throw std::runtime_error(who + ": " + registryRefusal::message(
+                std::string(boil ? "nucleate-boiling" : "film-condensation")
+                + " model", model, {accepted}, "Accepted"));
+        PhaseChangeHTC::registerBuiltins();     // idempotent
+        auto f = std::make_unique<PcFilm>();
+        f->boiling = boil;
+        f->model = PhaseChangeHTC::New(model);
+        f->model->readParameters(bd);
+        f->tp = &tp;
+        f->who = who;
+        f->P = pcp->P;
+        f->z = pcp->z;
+        if (boil)
+        {
+            for (const char* k : {"Csf", "s", "citation"})
+                if (!bd->found(k))
+                    throw std::runtime_error(who + ": `boiling {}` declares no `"
+                        + std::string(k) + "`.  Rohsenow's surface-fluid C_sf is"
+                          " surface-finish laboratory data (the flux goes as"
+                          " C_sf^-3, so it is +/-100 %), s is its Prandtl"
+                          " exponent (1.0 for water, 1.7 for other fluids),"
+                          " and the source of both must be stated: `Csf <x>;"
+                          " s <y>; citation \"...\";`.  None is defaulted.");
+            f->Csf = bd->lookupScalar("Csf");
+            f->sExp = bd->lookupScalar("s");
+            f->citation = bd->lookupWord("citation");
+            if (!(f->Csf > 0.0) || !(f->sExp > 0.0))
+                throw std::runtime_error(who + ": `Csf` and `s` must be > 0.");
+            f->chf = PhaseChangeHTC::New("ZuberCHF");
+        }
+        else
+        {
+            f->orientation = bd->lookupWord("orientation");
+            if (f->orientation != "verticalTube"
+                && f->orientation != "horizontalTube")
+                throw std::runtime_error(who + ": " + registryRefusal::message(
+                    "condensing surface orientation", f->orientation,
+                    {"verticalTube", "horizontalTube"}, "Accepted"));
+            if (f->orientation == "horizontalTube" && inTubes)
+                throw std::runtime_error(who + ": condensation INSIDE"
+                    " horizontal tubes is a stratified or annular two-phase"
+                    " flow, not a falling film, and Nusselt's film does not"
+                    " describe it.  Condense on the OUTSIDE of horizontal"
+                    " tubes (`processSide shell;`) or in VERTICAL tubes"
+                    " (`orientation verticalTube;`).");
+        }
+        //  THE TEMPERATURES ARE THE COLUMN'S: a condensate film between the
+        //  vapour's dew point and the liquid's bubble point (their mean is
+        //  where the film is driven from), a pool at its bubble point.
+        //  h_fg is the LATENT heat at T_sat, at the condensate's (the
+        //  pool's) composition -- the package's vapour-minus-liquid enthalpy
+        //  there, the quantity the two correlations are written in (Nusselt
+        //  adds the condensate's subcooling himself, 0.68 cp dT_film).
+        f->Tsat = boil ? pcp->T_in : 0.5 * (pcp->T_in + pcp->T_out);
+        const scalar M = meanMolarMass(tp, pcp->z) / 1000.0;     // kg/mol
+        const scalar hV = tp.H_stream_formation(f->Tsat, pcp->P, 1.0, pcp->z);
+        const scalar hL = tp.H_stream_formation(f->Tsat, pcp->P, 0.0, pcp->z);
+        f->hfg = (hV - hL) / M;                                  // J/kg
+        if (!std::isfinite(f->hfg) || !(f->hfg > 0.0))
+            throw std::runtime_error(who + ": the package gives no positive"
+                " latent heat at " + std::to_string(f->Tsat) + " K -- the film"
+                " cannot be formed without one.");
+        f->rho_v = tp.density(f->Tsat, pcp->P, pcp->z, DensityPhase::Vapour);
+        if (!std::isfinite(f->rho_v) || !(f->rho_v > 0.0))
+            throw std::runtime_error(who + ": the package gives no vapour"
+                " density at " + std::to_string(f->Tsat) + " K.");
+        if (boil)
+        {
+            FluidState s;
+            s.label = "boiling pool (saturated liquid)";
+            s.T = f->Tsat;  s.P = pcp->P;  s.z = pcp->z;  s.vapour = false;
+            f->sat = price(tp, s, true, who);
+            if (!tp.hasSurfaceTension() && tp.pureFluidSelections().empty())
+                throw std::runtime_error(who + ": nucleate boiling and its"
+                    " critical heat flux both need the liquid's SURFACE"
+                    " TENSION, and the case's package declares no model for it"
+                    " -- add `transport { interface { surfaceTension { model"
+                    " BrockBird; } } }` to constant/thermoPhysPropDict.");
+            f->sigma = tp.surfaceTension(f->Tsat, pcp->z);
+            if (!std::isfinite(f->sigma) || !(f->sigma > 0.0))
+                throw std::runtime_error(who + ": the package's surface tension"
+                    " at " + std::to_string(f->Tsat) + " K is not positive.");
+        }
+        P.film.mdot = Qw / f->hfg;           // the mass that changes phase
+        P.Tprops = f->Tsat;
+        //  NOT the C48 word `condensing`, which means a PARTIAL condenser
+        //  designed on the gas film of the vapour that leaves -- a reader
+        //  keyed on it (the GUI datasheet is) would draw this film as that.
+        XP.regime = boil ? "nucleateBoiling" : "filmCondensation";
+        XP.film = "computed";
+        XP.correlation = model;
+
+        //  the sentence the basis carries
+        char nb[2048];
+        if (boil)
+            std::snprintf(nb, sizeof(nb),
+                "process side (%s) BOILS as a POOL on the outside of the bundle"
+                " (a kettle) at %.2f K: Rohsenow nucleate flux with C_sf %.4g,"
+                " s %.3g (%s) -- INDICATIVE, +/-100 %% -- at the one wall"
+                " superheat where it equals U_rest (F LMTD - dT_excess); held"
+                " under the Zuber critical heat flux (a flat-plate ceiling: a"
+                " tube bundle's is lower and is not modelled); h_fg %.5g J/kg"
+                " the package's vapour-minus-liquid enthalpy at the pool's T"
+                " and composition, %.4g kg/s boiled = |Q|/h_fg; the flux is U F"
+                " LMTD -- set by the temperatures and the resistances, NOT by"
+                " the area; the kettle's enlarged vapour shell is not sized"
+                " (the shell is the bundle's); %s",
+                pcp->label.c_str(), static_cast<double>(f->Tsat),
+                static_cast<double>(f->Csf), static_cast<double>(f->sExp),
+                f->citation.c_str(), static_cast<double>(f->hfg),
+                static_cast<double>(P.film.mdot), pcp->source.c_str());
+        else
+            std::snprintf(nb, sizeof(nb),
+                "process side (%s) CONDENSES %.2f -> %.2f K: Nusselt laminar"
+                " film on %s at the one film temperature difference where it"
+                " equals U_rest (F LMTD - dT_film), film properties at T_film"
+                " = T_sat - dT_film/2 (T_sat the mean %.2f K) from the case's"
+                " package%s; h_fg %.5g J/kg the package's vapour-minus-liquid"
+                " enthalpy at T_sat and the condensate's composition, %.4g kg/s"
+                " condensed = |Q|/h_fg; a MIXTURE's vapour-side resistance"
+                " (sensible cooling and diffusion through the vapour) is NOT"
+                " credited; %s",
+                pcp->label.c_str(), static_cast<double>(pcp->T_in),
+                static_cast<double>(pcp->T_out),
+                f->orientation == "horizontalTube"
+                    ? "the OUTSIDE of horizontal tubes"
+                    : "vertical tubes (height = tubeLength)",
+                static_cast<double>(f->Tsat),
+                f->orientation == "horizontalTube"
+                    ? "; a vertical tier of N_rows tubes as Nusselt's h_1"
+                      " N^-1/4 at the DEEPEST tier (D_b over the vertical"
+                      " pitch, sqrt(3) x the pitch for a triangular layout)"
+                      " -- the shorter tiers condense better, so this errs"
+                      " on the SAFE side"
+                    : "",
+                static_cast<double>(f->hfg), static_cast<double>(P.film.mdot),
+                pcp->source.c_str());
+        notes.push_back(nb);
+        P.pc = std::move(f);
+    };
     auto refuseUnusedCorr = [&](const char* block)
     {
         if (dg->found(block))
@@ -707,7 +1067,7 @@ std::vector<EquipmentSizing> run(const std::string& unitName, scalar Q_kW,
                 " two.");
     };
 
-    if (fu->ins.size() == 1)
+    if (pcp || fu->ins.size() == 1)
     {
         //  ================== a cooler / heater against a utility ==========
         if (!designRules->found("utility"))
@@ -721,10 +1081,23 @@ std::vector<EquipmentSizing> run(const std::string& unitName, scalar Q_kW,
             throw std::runtime_error(who + ": " + registryRefusal::message(
                 "process side", where, {"tube", "shell"}, "Accepted"));
         const bool processInTubes = (where == "tube");
-        const ProcessStream& in  = streamOf(fu->ins[0]);
-        const ProcessStream& out = streamOf(fu->outs[0]);
         const bool cooling = Q_kW < 0.0;
-        const scalar Tpi = in.T, Tpo = out.T;
+        scalar Tpi = 0.0, Tpo = 0.0;
+        if (pcp)
+        {
+            if (pcp->boiling == cooling)
+                throw std::runtime_error(who + ": the process side is declared"
+                    " to " + std::string(pcp->boiling ? "BOIL" : "CONDENSE")
+                    + " but the duty is " + (cooling ? "a cooling" : "a heating")
+                    + " one -- the column published a duty of the wrong sign"
+                      " for this item.");
+            Tpi = pcp->T_in;  Tpo = pcp->T_out;
+        }
+        else
+        {
+            Tpi = streamOf(fu->ins[0]).T;
+            Tpo = streamOf(fu->outs[0]).T;
+        }
         const scalar dT1 = cooling ? Tpi - ut.T_out : ut.T_out - Tpi;
         const scalar dT2 = cooling ? Tpo - ut.T_in  : ut.T_in  - Tpo;
         if (dT1 <= 0.0 || dT2 <= 0.0)
@@ -734,21 +1107,28 @@ std::vector<EquipmentSizing> run(const std::string& unitName, scalar Q_kW,
         else         { Thi = ut.T_in; Tho = ut.T_out; tci = Tpi; tco = Tpo; }
 
         //  the process side
-        ProcessSide ps = processSide(tp, in, out, cooling, "process side", who);
-        condensing = ps.condensing;
         Side& P = processInTubes ? tube : shell;
         P.name = "process";
-        P.film      = price(tp, ps.film,      !cooling, who);
-        P.hydraulic = price(tp, ps.hydraulic, !cooling, who);
-        P.Tprops    = ps.film.T;
-        requireCorr(P, processInTubes ? "tubeSide" : "shellSide");
-        notes.push_back(ps.note);
         ExchangerSide& XP = processInTubes ? xTube : xShell;
         XP.role   = "process";
-        XP.inlet  = fu->ins[0];
-        XP.outlet = fu->outs[0];
-        XP.regime = ps.condensing ? "condensing"
-                  : (ps.film.vapour ? "gas" : "liquid");
+        if (pcp)
+            phaseChangeSide(P, XP, processInTubes);
+        else
+        {
+            const ProcessStream& in  = streamOf(fu->ins[0]);
+            const ProcessStream& out = streamOf(fu->outs[0]);
+            ProcessSide ps = processSide(tp, in, out, cooling, "process side", who);
+            condensing = ps.condensing;
+            P.film      = price(tp, ps.film,      !cooling, who);
+            P.hydraulic = price(tp, ps.hydraulic, !cooling, who);
+            P.Tprops    = ps.film.T;
+            requireCorr(P, processInTubes ? "tubeSide" : "shellSide");
+            notes.push_back(ps.note);
+            XP.inlet  = fu->ins[0];
+            XP.outlet = fu->outs[0];
+            XP.regime = ps.condensing ? "condensing"
+                      : (ps.film.vapour ? "gas" : "liquid");
+        }
 
         //  the utility side
         if (!(ut.dutyPerKg > 0.0))
@@ -849,7 +1229,13 @@ std::vector<EquipmentSizing> run(const std::string& unitName, scalar Q_kW,
             throw std::runtime_error(who + ": utility '" + uName + "' has"
                 " mechanism '" + ut.mechanism + "', which no exchanger film"
                 " describes.");
-        basisFluids = "process on the " + where + " side, priced by the case's"
+        basisFluids = pcp
+          ? "process on the " + where + " side, a PHASE-CHANGE film whose"
+            " liquid is priced by the case's package (density on its liquid"
+            " route, heat capacity the derivative of its liquid enthalpy,"
+            " viscosity and conductivity from its declared LIQUID transport"
+            " models)"
+          : "process on the " + where + " side, priced by the case's"
             " package (density on its phase route, heat capacity the"
             " derivative of its enthalpy, DILUTE-gas viscosity and"
             " conductivity from its declared transport models -- no"
@@ -959,6 +1345,7 @@ std::vector<EquipmentSizing> run(const std::string& unitName, scalar Q_kW,
         TubeSideState  t;
         ShellSideState s;
         Resistances    r;
+        PcState        pc;           // the phase-change film, when one (C124)
     };
     auto evaluate = [&](int N) -> Eval
     {
@@ -966,17 +1353,30 @@ std::vector<EquipmentSizing> run(const std::string& unitName, scalar Q_kW,
         e.N  = N;
         e.Ds = shellTubeDesign::shellFromTubes(b, N);
         e.B  = baffleRatio * e.Ds;
-        if (tube.declaredFilm) e.h_t = tube.hDeclared;
+        if (tube.pc) {}
+        else if (tube.declaredFilm) e.h_t = tube.hDeclared;
         else
         {
             e.t = shellTubeDesign::tubeSide(b, N, tube.film, *tube.corr);
             e.h_t = e.t.film.h;
         }
-        if (shell.declaredFilm) e.h_s = shell.hDeclared;
+        if (shell.pc) {}
+        else if (shell.declaredFilm) e.h_s = shell.hDeclared;
         else
         {
             e.s = shellTubeDesign::shellSide(b, e.Ds, e.B, shell.film, *shell.corr);
             e.h_s = e.s.film.h;
+        }
+        if (tube.pc || shell.pc)
+        {
+            //  everything but the phase-change film, then its root (C124)
+            const scalar inf = 1.0e300;
+            const Resistances rest = shellTubeDesign::overall(b,
+                tube.pc ? inf : e.h_t, shell.pc ? inf : e.h_s, RfTube, RfShell);
+            const bool inTubes = static_cast<bool>(tube.pc);
+            e.pc = solvePhaseChange(inTubes ? *tube.pc : *shell.pc, b, inTubes,
+                                    e.Ds, rest.U, F * LMTD);
+            (inTubes ? e.h_t : e.h_s) = e.pc.h;
         }
         e.r = shellTubeDesign::overall(b, e.h_t, e.h_s, RfTube, RfShell);
         e.A = nShells * shellTubeDesign::outsideArea(b, N);   // all shells
@@ -1003,7 +1403,7 @@ std::vector<EquipmentSizing> run(const std::string& unitName, scalar Q_kW,
     shellTubeDesign::TubePressureDrop  tdp;
     shellTubeDesign::ShellPressureDrop sdp;
     scalar ReTubeHyd = 0.0, ReShellHyd = 0.0;
-    if (!tube.declaredFilm)
+    if (singlePhase(tube))
     {
         const TubeSideState th = shellTubeDesign::tubeSide(
             b, e.N, tube.hydraulic, *tube.corr);
@@ -1013,7 +1413,7 @@ std::vector<EquipmentSizing> run(const std::string& unitName, scalar Q_kW,
         ReTubeHyd = th.film.Re;
         haveTubeDP = true;
     }
-    if (!shell.declaredFilm)
+    if (singlePhase(shell))
     {
         const ShellSideState sh = shellTubeDesign::shellSide(
             b, e.Ds, e.B, shell.hydraulic, *shell.corr);
@@ -1032,16 +1432,17 @@ std::vector<EquipmentSizing> run(const std::string& unitName, scalar Q_kW,
         warnings.push_back(m);
         AdvisoryLog::instance().add("design", "warning",
             "sizing '" + unitName + "'", m);
-        std::cout << "  [validity] shellTubeHX '" << unitName << "': " << m
-                  << "\n";
+        std::cout << "  [validity] shellTubeHX '" << (equipmentTag.empty()
+                      ? unitName : unitName + "/" + equipmentTag)
+                  << "': " << m << "\n";
     };
     auto fmt = [](const char* f, double v)
     { char b2[256]; std::snprintf(b2, sizeof(b2), f, v); return std::string(b2); };
-    if (!tube.declaredFilm && !e.t.film.inValidity)
+    if (singlePhase(tube) && !e.t.film.inValidity)
         warn("tube-side " + tube.corr->type() + " outside its window ("
              + tube.corr->validityWindow() + "): " + e.t.film.validityNote
              + fmt(", Re = %.0f", e.t.film.Re));
-    if (!shell.declaredFilm && !e.s.film.inValidity)
+    if (singlePhase(shell) && !e.s.film.inValidity)
         warn("shell-side " + shell.corr->type() + " outside its window ("
              + shell.corr->validityWindow() + "): " + e.s.film.validityNote
              + fmt(", Re = %.0f", e.s.film.Re));
@@ -1057,6 +1458,49 @@ std::vector<EquipmentSizing> run(const std::string& unitName, scalar Q_kW,
     if (baffleRatio < 0.2 || baffleRatio > 1.0)
         warn(fmt("baffle spacing %.2f x the shell ID is outside the customary"
                  " 0.2-1.0 range", baffleRatio));
+    //  ---- the phase-change film: its window, and the reboiler's ceiling ----
+    const PcFilm* pcf = tube.pc ? tube.pc.get() : shell.pc.get();
+    scalar qCHF = 0.0;
+    if (pcf)
+    {
+        int nComp = 0;
+        for (scalar zi : pcf->z) if (zi > 1.0e-6) ++nComp;
+        if (!pcf->boiling && !e.pc.r.valid)
+            warn("condensing film: " + e.pc.r.validityNote);
+        if (nComp > 1)
+            warn(std::string(pcf->boiling
+                ? "the boiling pool is a MIXTURE: Rohsenow is a pure-fluid"
+                  " correlation, and a mixture's nucleate flux is LOWER"
+                  " (the more volatile component is depleted at the surface)"
+                  " -- not credited, so this design is NOT on the safe side"
+                : "the condensing vapour is a MIXTURE: its vapour-side"
+                  " resistance (sensible cooling and diffusion) is not"
+                  " credited, so this design is NOT on the safe side")
+                + fmt(" (%.0f components above 1e-6)", nComp));
+        if (pcf->boiling)
+        {
+            PhaseChangeContext c;
+            c.h_fg = pcf->hfg;  c.rho_v = pcf->rho_v;  c.rho_l = pcf->sat.rho;
+            c.sigma = pcf->sigma;  c.gravity = 9.81;
+            qCHF = pcf->chf->evaluate(c).q_CHF;
+            AdvisoryLog::instance().add("design", "info",
+                "sizing '" + unitName + "/" + equipmentTag + "'",
+                "the reboiler's nucleate flux is Rohsenow's, INDICATIVE"
+                " +/-100 % (C_sf is surface-finish laboratory data); the"
+                " reliable figure is its distance from the Zuber critical heat"
+                " flux");
+            if (!(e.pc.q < qCHF))
+                throw std::runtime_error(who + fmt(": the design flux"
+                    " %.4g W/m2", e.pc.q) + fmt(" is at or above the Zuber"
+                    " critical heat flux %.4g W/m2", qCHF)
+                    + fmt(" (%.3f x)", e.pc.q / qCHF) + " -- BURNOUT: above it"
+                    " the surface blankets in vapour, the wall temperature jumps"
+                    " and the kettle is not a reboiler.  The flux is U F LMTD,"
+                    " set by the TEMPERATURES and the resistances and NOT by the"
+                    " area, so adding tubes does not lower it: name a colder"
+                    " heating utility (a lower steam level).");
+        }
+    }
     if (condensing)
         AdvisoryLog::instance().add("design", "info", "sizing '" + unitName + "'",
             "a condensing duty designed on the gas film of the vapour that"
@@ -1064,16 +1508,19 @@ std::vector<EquipmentSizing> run(const std::string& unitName, scalar Q_kW,
             " safe side, and the pressure drop is a single-phase estimate");
 
     //  ---- the record ---------------------------------------------------------
+    auto filmWord = [](const Side& s)
+    {
+        return s.pc ? s.pc->model->type()
+             : s.declaredFilm ? std::string("DECLARED") : s.corr->type();
+    };
     std::ostringstream basis;
     basis << "Kern shell-and-tube DESIGN (" << nShells
           << (nShells == 1 ? " shell, " : " shells in counter-current series, ")
           << b.passes
           << " tube pass" << (b.passes == 1 ? "" : "es") << ", " << pattern
           << " pitch): the smallest N with U F LMTD n_shells pi d_o L N >= |Q|, U on"
-             " the outside area from the " << (tube.declaredFilm
-                 ? std::string("DECLARED") : tube.corr->type())
-          << " tube film, the " << (shell.declaredFilm
-                 ? std::string("DECLARED") : shell.corr->type())
+             " the outside area from the " << filmWord(tube)
+          << " tube film, the " << filmWord(shell)
           << " shell film, the wall and the DECLARED fouling; "
           << (b.passes < 2 ? "F = 1 (one tube pass, counter-current)"
               : (Fc.R == 0.0 && Fc.S == 0.0)
@@ -1082,7 +1529,9 @@ std::vector<EquipmentSizing> run(const std::string& unitName, scalar Q_kW,
                 : "F of one 1-2 shell (Bowman-Mueller-Nagle 1940)")
           << "; shell ID = Sinnott bundle + "
           << shellTubeDesign::shellClearance * 1000.0
-          << " mm; Kern pressure drops; " << basisFluids;
+          << (pcf ? " mm; the Kern pressure drop of the single-phase side"
+                    " only (a two-phase pressure drop is not modelled); "
+                  : " mm; Kern pressure drops; ") << basisFluids;
     for (const auto& n : notes) basis << "; " << n;
     if (A_rated > 0.0)
         basis << "; COSTED on the DESIGNED area A, not on the unit's own rated"
@@ -1097,7 +1546,8 @@ std::vector<EquipmentSizing> run(const std::string& unitName, scalar Q_kW,
 
     const scalar pressureDesign = designRules->lookupScalar("pressureDesign");
     EquipmentSizing d = exchangerRecord(unitName, Q_kW, U, LMTD, e.A,
-                                        pressureDesign, material, basis.str());
+                                        pressureDesign, material, basis.str(),
+                                        equipmentTag);
     //  the bundle
     d.set("tubeOD",         b.tubeOD,          "m");
     d.set("tubeID",         b.tubeID,          "m");
@@ -1115,9 +1565,9 @@ std::vector<EquipmentSizing> run(const std::string& unitName, scalar Q_kW,
     d.set("wallK",          b.wallK,           "W/m/K");
     //  the films
     d.set("mdot_tube",      tube.declaredFilm ? mdotUtility : tube.film.mdot, "kg/s");
-    d.set("T_tube_props",   tube.Tprops,       "K");
+    d.set("T_tube_props",   tube.pc ? e.pc.Tfilm : tube.Tprops, "K");
     d.set("h_tube",         e.h_t,             "W/m2/K");
-    if (!tube.declaredFilm)
+    if (singlePhase(tube))
     {
         d.set("u_tube",  e.t.u,        "m/s");
         d.set("Re_tube", e.t.film.Re,  "-");
@@ -1125,9 +1575,9 @@ std::vector<EquipmentSizing> run(const std::string& unitName, scalar Q_kW,
         d.set("Nu_tube", e.t.film.Nu,  "-");
     }
     d.set("mdot_shell",     shell.declaredFilm ? mdotUtility : shell.film.mdot, "kg/s");
-    d.set("T_shell_props",  shell.Tprops,      "K");
+    d.set("T_shell_props",  shell.pc ? e.pc.Tfilm : shell.Tprops, "K");
     d.set("h_shell",        e.h_s,             "W/m2/K");
-    if (!shell.declaredFilm)
+    if (singlePhase(shell))
     {
         d.set("u_shell",  e.s.u,       "m/s");
         d.set("Re_shell", e.s.film.Re, "-");
@@ -1151,6 +1601,39 @@ std::vector<EquipmentSizing> run(const std::string& unitName, scalar Q_kW,
     if (haveShellDP) d.set("dP_shell", sdp.dP / 1000.0, "kPa");
     if (A_rated > 0.0) d.set("A_rated", A_rated, "m2");
     if (U_rated > 0.0) d.set("U_rated", U_rated, "W/m2/K");
+    //  the phase-change film (C124): every input a reader needs to recompute
+    //  the film coefficient, and the flux it carries
+    if (pcf)
+    {
+        d.set("T_process_in",  pcp->T_in,       "K");
+        d.set("T_process_out", pcp->T_out,      "K");
+        d.set("T_sat",         pcf->Tsat,       "K");
+        d.set("h_fg",          pcf->hfg,        "J/kg");
+        d.set("rho_l",         e.pc.liq.rho,    "kg/m3");
+        d.set("mu_l",          e.pc.liq.mu,     "Pa.s");
+        d.set("lambda_l",      e.pc.liq.lambda, "W/m/K");
+        d.set("cp_l",          e.pc.liq.cp,     "J/kg/K");
+        d.set("rho_v",         pcf->rho_v,      "kg/m3");
+        d.set("q_flux",        e.pc.q,          "W/m2");
+        if (pcf->boiling)
+        {
+            d.set("dT_excess",   e.pc.dT,          "K");
+            d.set("T_wall",      pcf->Tsat + e.pc.dT, "K");
+            d.set("sigma",       pcf->sigma,       "N/m");
+            d.set("Csf",         pcf->Csf,         "-");
+            d.set("s_Prandtl",   pcf->sExp,        "-");
+            d.set("q_CHF",       qCHF,             "W/m2");
+            d.set("fluxOverCHF", e.pc.q / qCHF,    "-");
+        }
+        else
+        {
+            d.set("dT_film",     e.pc.dT,          "K");
+            d.set("T_wall",      pcf->Tsat - e.pc.dT, "K");
+            d.set("Re_film",     e.pc.r.Re_film,   "-");
+            if (pcf->orientation == "horizontalTube")
+                d.set("N_rows",  e.pc.rows,        "-");
+        }
+    }
 
     //  ---- what flows where, and who chose each key (C51) -----------------
     //  The sheet's `exchanger {}` block: the decisions above, stated as data
@@ -1173,7 +1656,14 @@ std::vector<EquipmentSizing> run(const std::string& unitName, scalar Q_kW,
         d.exchanger.declared.push_back("shellsInSeries");
     if (tube.declaredFilm)  d.exchanger.declared.push_back("h_tube");
     if (shell.declaredFilm) d.exchanger.declared.push_back("h_shell");
+    if (pcf && pcf->boiling)
+    {
+        d.exchanger.declared.push_back("Csf");
+        d.exchanger.declared.push_back("s_Prandtl");
+    }
     d.exchanger.fromRecord = { "wallK" };
+    if (pcp)    // read off the column's own KPIs and products, never typed
+        d.exchanger.fromUnit = { "Q_kW", "T_process_in", "T_process_out" };
     if (A_rated > 0.0) d.exchanger.fromUnit.push_back("A_rated");
     if (U_rated > 0.0) d.exchanger.fromUnit.push_back("U_rated");
 
@@ -1183,7 +1673,7 @@ std::vector<EquipmentSizing> run(const std::string& unitName, scalar Q_kW,
         " %.3f m, h_tube %.0f, h_shell %.0f, U %.1f W/m2/K (clean %.1f),"
         " F %.3f, LMTD %.2f K -> A required %.1f m2, installed %.1f m2"
         " (+%.1f %%)%s\n",
-        unitName.c_str(), nShells, e.N, perPass, b.passes, static_cast<double>(e.Ds),
+        d.itemId().c_str(), nShells, e.N, perPass, b.passes, static_cast<double>(e.Ds),
         static_cast<double>(e.h_t), static_cast<double>(e.h_s),
         static_cast<double>(U), static_cast<double>(e.r.U_clean),
         static_cast<double>(F), static_cast<double>(LMTD),
