@@ -1917,6 +1917,44 @@ accepts today, and that is a policy call.
 > MESH formulation and good practice, and the moved golden rows are shown
 > to Vitor BEFORE any re-record.  Column half (1)+(2) dispatched (G28);
 > LL half (3)-(5) after G7b lands (it changes the same flash).
+> **Column findings C1/C2 DONE 2026-10-21 (G28, `claude/c123-column-
+> findings` fc9518a72; awaiting Vitor's re-record of 239 rows).**  C1: a
+> feed or a side draw on stage 1 is refused by the MESH through one
+> function, `refuseStageOneTerm` (four sites; the reboiler's rows carry
+> their feed and were never in the finding); the benchmark's 128.9 %
+> closure and a column04 probe's 103.1 % are refusals now.  C2, analysed
+> BEFORE anything moved: every method's stage-1 row  L_1 x_1 + D y_1 -
+> V_2 y_2 = 0  is EXACTLY the top-tray balance of a total condenser
+> whose reflux returns at x_D = y_1, so x_D = K_1 x_1 was a CORRECT total
+> condenser OUTSIDE the stage count, not a mislabelled liquid -- the
+> second opinion's reading was wrong and the commander's brief repeated
+> it; and, by the same row, also a partial condenser's, so the engine
+> held both readings (Wang-Henke rated stage 1 as a tray, the MESH's
+> V_0 = 0 / L_1 = R D did not; one case had one tray more under one
+> method than the other).  Now `operation { condenser { type total|
+> partial; } }` (default total, announced): nStages counts EQUILIBRIUM
+> stages; total -- stage 1 is the top tray, the condenser uncounted,
+> liquid x_D = y_1 at its bubble point, the full MESH gives stage 1 a
+> tray energy row, and the duty condenses (R+1)D to THAT state -- the
+> CMO duty had condensed to T_1, the DEW point, and the reboiler plug was
+> crediting the condenser's subcooling, invisible to every conservation
+> gate (the plant first law is unchanged, only who pays): +15 % on
+> acetonePlant C1, whose distillate holds 0.047 % H2 and a 36 K
+> subcooling; partial -- stage 1 IS the condenser, vapour distillate y_1
+> at T_1, its duty its own envelope, not a tray.  `condenserDuty` is the
+> one home.  A source counting a total condenser as "stage 1" is
+> nStages - 1 here (benchmark B's reference: 39/19, not 40/20; x_D
+> 0.2843 is right).  THE MOVED ROWS, not recorded: 239 across 26 of 31
+> column cases -- 35 from stage 1 rated as the tray it is (aceticAcid02
+> nTrays 18 -> 19 and what follows; column06/08's new tray-1 energy row)
+> and 204 from the condenser duty condensing to the bubble point (every
+> Q_condenser grows in magnitude and Q_reboiler by the same kW, the
+> utilities follow; +0.08 % to +15.1 %).  The list is at
+> /tmp/claude-0/-home-user-choupo/00fe5640-94e2-5280-8336-43196ebbb987/scratchpad/c123-column-moved-rows.tsv
+> (case, row, old, new, rel, commit), put to Vitor.  Three sabotages
+> caught.  Still on the branch (G28): the README / Theory Guide
+> sentences naming V_0 = 0 as the total condenser, and a
+> partial-condenser witness (column18).
 
 
 > **C122. INTEGRATION TOOLING AND A SITE SMOKE TEST (Vitor, 2026-10-20,
