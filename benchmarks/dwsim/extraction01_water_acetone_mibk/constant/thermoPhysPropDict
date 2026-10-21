@@ -1,0 +1,42 @@
+/*---------------------------------------------------------------------------*\
+  Benchmark C -- the thermophysical system, Choupo's own.
+
+  Two liquid phases on ONE NRTL surface: the ternary set of Choi & Rhim,
+  Hwahak Konghak 24(3) (1986) 185-194, Table 3 -- fitted by the authors to
+  their own measured water + acetone + MIBK tie lines at 25 C -- carried as
+  three case-local pair records in constant/parameters/NRTL/ (each says
+  where its numbers come from and how they were converted).  The NRTL reads
+  them from there by the pair's name.  The transcription is checked by
+  benchmarks/dwsim/compare.py against the authors' own calculated tie
+  lines (measurements/choiRhim1986_table6_mibk_nrtl.csv).
+
+  WHY NOT UNIFAC ALONE (measured 2026-10-20, README): Choupo's UNIFAC (the
+  VLE parameterisation, UNIFAC.H) does predict a water/MIBK gap at 25 C,
+  but puts its water-rich branch at the LL flash's 1e-4 simplex floor and
+  its organic branch at 20 mol % water, where Choi & Rhim measured 0.38 mol %
+  MIBK and 11.8 mol % water (their Table 5).  Vitor approved curating an LLE
+  set from primary measurements in that case (DEV.md 4c C123).  The UNIFAC
+  system is kept as variants/unifac/constant/thermoPhysPropDict and run by
+  the comparison script beside this one.
+
+  The reference sample uses neither: its package is a modified (Dortmund)
+  UNIFAC; no parameter of theirs is used here.
+\*---------------------------------------------------------------------------*/
+
+recordType    thermophysicalPropertySystem;
+schemaVersion 2;
+
+components ( water acetone methylIsobutylKetone );
+
+equilibrium
+{
+    formulation gammaGamma;
+
+    liquid { activityModel { model NRTL; } }   // pairs: constant/parameters/NRTL/
+
+    liquidPhases
+    (
+        { name raffinate; }
+        { name extract; }
+    );
+}

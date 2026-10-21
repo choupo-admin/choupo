@@ -1,0 +1,50 @@
+/*---------------------------------------------------------------------------*\
+  Benchmark B -- the thermophysical system, Choupo's own.
+
+  gamma-phi at low pressure: ideal-gas vapour, the catalogue's Antoine
+  records, NRTL liquid.  The acetone-methanol pair is Choupo's OWN
+  regression (tutorials/props/curation/curate05_nrtl_acetone_methanol), used
+  here CASE-LOCALLY as Vitor ruled (DEV.md 4c C123):
+  constant/parameters/NRTL/acetone-methanol.dat is a BYTE COPY of that
+  case's record, and the comparison script refuses to run if the two differ.
+
+  WHAT THAT PAIR IS, from its own record: fitted to bubble temperatures at
+  101.3 kPa between 327.96 and 337.05 K (je5007373), held out on another
+  study (je0603170) and verdict notValidated -- the held-out AAD 0.096 %
+  against a declared band of 0.047 %.  So:
+    * the LP column (1 atm, 326-338 K) runs INSIDE the pair's evidence span;
+    * the HP column (6 atm, ~388-395 K) runs ~50 K ABOVE it -- the pair is
+      EXTRAPOLATED there (announced on every run as [pair-span]), and so is
+      methanol's Antoine record (Trange 288-356 K) and both liquid heat
+      capacities; and the ideal-gas vapour is a stated approximation at
+      6 atm.  The HP column's numbers are therefore a PREDICTION of this
+      model outside the evidence it was fitted on, and the 6-atm azeotrope
+      is the most sensitive number in the comparison.  README says how far
+      it moves.
+
+  The reference sample runs its own NRTL package with parameters this
+  project does not ship (DEV.md 4c C16); none of them is used here.
+  The second column of the comparison, Choupo's own predictive UNIFAC, is
+  variants/unifac/constant/thermoPhysPropDict.
+\*---------------------------------------------------------------------------*/
+
+recordType    thermophysicalPropertySystem;
+schemaVersion 2;
+
+components ( methanol acetone );
+
+equilibrium
+{
+    formulation gammaPhi;
+
+    liquid
+    {
+        activityModel { model NRTL; }   // pair: constant/parameters/NRTL/acetone-methanol.dat
+        standardState pureLiquid;
+    }
+
+    vapour
+    {
+        fugacityModel idealGas;
+    }
+}

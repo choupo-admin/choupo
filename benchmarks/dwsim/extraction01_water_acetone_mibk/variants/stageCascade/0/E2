@@ -1,0 +1,12 @@
+/*--- Benchmark C: TEAR SEED for the extract leaving stage 2 (a round guess:
+      the solvent carrying some acetone and water; the recycle replaces it). ---*/
+
+componentMolarFlows
+{
+    water                   40 mol/s;
+    acetone                100 mol/s;
+    methylIsobutylKetone   280 mol/s;
+}
+
+T               298.15 K;
+P               101325 Pa;

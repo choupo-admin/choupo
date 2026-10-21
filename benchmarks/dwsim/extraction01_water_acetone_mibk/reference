@@ -1,0 +1,89 @@
+/*---------------------------------------------------------------------------*\
+  Benchmark C -- THE REFERENCE NUMBERS: what the reference simulator's
+  sample stores as its solved state.  FACTS to compare against, never
+  inputs; no property parameter of the sample is read or reproduced (the
+  reader below names the package TYPE only: a modified UNIFAC).
+
+  Written by benchmarks/dwsim/read_sample.py from the sample file at the
+  commit named in `source` (rerun it on your own copy to check any number):
+      python3 -I benchmarks/dwsim/read_sample.py \
+          "<clone>/PlatformFiles/Common/samples/Liquid-Liquid Extraction.dwxmz" \
+          --commit 1abf72d1b6b41d3e9a8cc770d3cc4e8fc76e5766
+
+  The column is the simulator's absorber in "Extractor" mode, solved by a
+  sum-rates method with its energy balance: ADIABATIC, which is why its
+  stages leave at 296.54 / 295.82 / 290.79 / 284.70 K from 298.15 K feeds.
+  Its two `spec` entries are not used in that mode (their stored
+  "calculated" values do not equal the specified ones).  Stage0 is where
+  the feed enters and the extract leaves; Stage3 the solvent and raffinate.
+  In `xf_*` the first liquid is the water-rich raffinate phase, `yf_*` the
+  MIBK-rich extract phase.
+\*---------------------------------------------------------------------------*/
+
+source
+{
+    repository   "https://github.com/DanWBR/dwsim";
+    commit       1abf72d1b6b41d3e9a8cc770d3cc4e8fc76e5766;
+    sample       "PlatformFiles/Common/samples/Liquid-Liquid Extraction.dwxmz";
+    buildVersion "8.8.0.0";
+    savedOn      "2024-07-09T11:06:56.6770545-03:00";
+}
+
+propertyPackage ( NISTMFACPropertyPackage );   // the TYPE only; no parameter is read
+
+streams     // stored overall state: T [K], P [Pa], F [mol/s], mole fractions,
+            // H_kW = the stream's stored TotalEnergyFlow (its own enthalpy datum)
+{
+    fEED   // "FEED"
+    {
+        T 298.15;  P 101325;  F 1000;  H_kW -232106.931534864;
+        x { water 0.6;  acetone 0.4;  methylIsobutylKetone 0; }
+    }
+    sOLVENT   // "SOLVENT"
+    {
+        T 298.15;  P 101325;  F 277.331274425952;  H_kW -79867.8739650792;
+        x { water 0;  acetone 0;  methylIsobutylKetone 1; }
+    }
+    eXTRACTEDPRODUCT   // "EXTRACTED PRODUCT"
+    {
+        T 296.542764749176;  P 101325;  F 911.31710487069;  H_kW -222222.22102264;
+        x { water 0.2591244837;  acetone 0.4385522017;  methylIsobutylKetone 0.3023233146; }
+    }
+    bOTTOMS   // "BOTTOMS"
+    {
+        T 284.700333600241;  P 101325;  F 366.014169555262;  H_kW -89752.0437868011;
+        x { water 0.9941238692;  acetone 0.0009376046387;  methylIsobutylKetone 0.004938526151; }
+    }
+}
+
+energyStreams   // stored, kW
+{
+}
+
+units
+{
+    aBS002   // "ABS-002", AbsorptionColumn
+    {
+        nStages 4;  method "Burningham-Otto (Sum Rates)";
+        operationMode Extractor;
+        port { stream "BOTTOMS"; behaviour BottomsLiquid; stage ""; }
+        port { stream "EXTRACTED PRODUCT"; behaviour OverheadVapor; stage ""; }
+        port { stream "FEED"; behaviour Feed; stage "Stage0"; }
+        port { stream "SOLVENT"; behaviour Feed; stage "Stage3"; }
+        spec { kind Stream_Ratio; value 5; unit ""; calculated 0.857526702100215; }
+        spec { kind Product_Molar_Flow_Rate; value 29.376340295526; unit "mol/s"; calculated 6.04180942213127; }
+        stageNames ( "Stage0" "Stage1" "Stage2" "Stage3" );
+        Tf ( 296.543 295.815 290.789 284.7 );
+        Lf ( 509.633 427.643 411.824 366.014 );
+        Vf ( 911.317 420.95 338.961 323.142 );
+        xf_water ( 0.851856 0.965546 0.989552 0.994124 );
+        xf_acetone ( 0.136042 0.0286452 0.00548562 0.000937605 );
+        xf_methylIsobutylKetone ( 0.0121021 0.00580852 0.00496279 0.00493853 );
+        yf_water ( 0.259124 0.166941 0.144698 0.135105 );
+        yf_acetone ( 0.438552 0.16389 0.0351274 0.0059291 );
+        yf_methylIsobutylKetone ( 0.302323 0.669169 0.820175 0.858965 );
+        condenserDuty 0;
+        reboilerDuty 0;
+        refluxRatio 0.559226740308647;
+    }
+}

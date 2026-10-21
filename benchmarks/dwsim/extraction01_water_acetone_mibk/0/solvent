@@ -1,0 +1,11 @@
+/*--- Benchmark C: the fresh solvent, pure MIBK.  The reference sample
+      declares it by MASS (27.777778 kg/s = 100 t/h); 277.331274 mol/s is
+      the molar flow it stores for that mass.  298.15 K, 101325 Pa. ---*/
+
+componentMolarFlows
+{
+    methylIsobutylKetone   277.331274 mol/s;
+}
+
+T               298.15 K;
+P               101325 Pa;

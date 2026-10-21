@@ -1,0 +1,26 @@
+/*---------------------------------------------------------------------------*\
+  Benchmark C, VARIANT "unifac": the same case on Choupo's own UNIFAC
+  (src/thermo/activityCoefficient/UNIFAC.H -- the original VLE
+  parameterisation), no pair record.  The comparison script copies the case,
+  replaces constant/thermoPhysPropDict with this file, removes the NRTL pair
+  records and runs it, so the table carries a predictive column beside the
+  curated one.  Measured 2026-10-20 (README): this UNIFAC splits water/MIBK at
+  25 C, but puts the water-rich branch at the flash's 1e-4 simplex floor and
+  the organic branch at 20 mol % water.
+\*---------------------------------------------------------------------------*/
+
+recordType    thermophysicalPropertySystem;
+schemaVersion 2;
+
+components ( water acetone methylIsobutylKetone );
+
+equilibrium
+{
+    formulation gammaGamma;
+
+    liquidPhases
+    (
+        { name raffinate; activityModel { model UNIFAC; } }
+        { name extract;   activityModel { model UNIFAC; } }
+    );
+}

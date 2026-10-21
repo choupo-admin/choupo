@@ -1,0 +1,12 @@
+/*---------------------------------------------------------------------------*\
+  Benchmark (developer-facing; benchmarks/README.md): the reference
+  simulator's "Extractive Distillation" sample -- which has no entrainer: it
+  is a PRESSURE-SWING distillation of methanol + acetone -- reproduced as a
+  Choupo case.  The problem is theirs (feeds, columns, specifications); every
+  property number is Choupo's own.  See README and `reference`.
+\*---------------------------------------------------------------------------*/
+
+application   choupoSolve;
+description   "Benchmark B: methanol-acetone pressure-swing distillation, 1 atm + 6 atm, one recycle";
+
+verbosity     2;
