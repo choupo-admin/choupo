@@ -41,9 +41,8 @@ commit for each.  Re-read every number against the release this paper cites
 before submission.
 
 NAMING.  check_doctrine bans the names of other process simulators outside
-its exempt trees; paper/whitepaper/ may name the one open reference
-simulator, paper/joss/ may not (yet).  The State of the field therefore
-describes that simulator without naming it; see the TODO there.
+its exempt trees; paper/whitepaper/ and paper/joss/ may name the one open
+reference simulator (DWSIM), every closed one stays banned.
 
 Build:  pandoc paper.md --citeproc --pdf-engine=pdflatex -o paper.pdf
 (or the JOSS preview, the openjournals/inara image).
@@ -101,14 +100,10 @@ Open-source tools cover parts of this space. Equation-oriented frameworks
 such as IDAES [@lee2021] build process models for optimisation on an
 algebraic modelling layer; property and kinetics libraries such as CoolProp
 [@bell2014] and Cantera [@cantera] serve as components inside other
-programs. Open-source flowsheet simulators with a graphical editor offer a
-broad unit-operation and property catalogue in which the user builds the
-case on a canvas.
-<!-- TODO (authors): name and cite here the open-source (GPL-3.0) reference
-simulator that the white paper (Section 6.4) compares with, once
-check_doctrine admits paper/joss/ for that one name, as it does
-paper/whitepaper/ (the one-line change is proposed in the C126 report).
-Its bibliography entry is in paper/whitepaper/whitepaper.bib. -->
+programs. Open-source flowsheet simulators with a graphical editor, such as
+DWSIM [@dwsim], offer a broad unit-operation and property catalogue in which
+the user builds the case on a canvas; the white paper compares Choupo with
+DWSIM on five of its distributed samples.
 
 Choupo does not seek breadth parity. It differs in five design decisions.
 (i) Every equation and iteration is visible, in source a student can read
