@@ -1346,7 +1346,53 @@ accepts today, and that is a policy call.
 > rack) -- the support's height entering the item's base elevation, so
 > the nozzle elevations and the published pipe lengths move: a
 > measured list of moved `layout` rows goes to Vitor before any
-> re-record.  Status: proposed; not dispatched until he answers.
+> re-record.  **ANSWERED by Vitor the same night: "a valvula fica no
+> flowsheet final que tem a instrumentacao e controlo!  Alias, isto
+> tambem devia de poder ser feito."**  So the control valve is not a
+> layout annotation and not a steady unit: it belongs to a FINAL,
+> INSTRUMENTED flowsheet -- a P&ID layer over the PFD -- which is C130.
+> C129 (pumps, relief valves, nozzles, manways, foundations) is
+> dispatched when a slot frees; its control valves are READ from C130's
+> declaration once that exists, and until then a `detail { level
+> final; }` layout draws what the steady flowsheet and the sizing pass
+> already hold.
+
+> **C130. THE INSTRUMENTED FLOWSHEET -- A P&ID LAYER OVER THE PFD (Vitor,
+> 2026-10-21, same night, "isto tambem devia de poder ser feito").**
+> Measured: the control layer exists only in the time-integrated class
+> (`src/control/`: PID, schedule and signal controllers with measured and
+> manipulated variables, choupoCtrl's `controllers` block); a steady case
+> carries no instrumentation at all; the EduTool `column-control`
+> teaches control STRUCTURE and instruments for a column
+> (`registry.ts:1090`, theory `sec:column-control`); `valve` is a
+> letdown unit; the relief valve is a sized item of the unit it
+> protects (C62).  Commander's reading, to be put to Vitor in the
+> morning: a DECLARED `system/instrumentationDict` on a steady case --
+> loops (`FIC-101 { measured { stream F; } controller { type PI; action
+> reverse; } finalElement { controlValve { stream; } } }`, ISA-style
+> tags declared by the case, never invented), indicators and
+> transmitters (PT, TT, LT, FT on a stream or a unit's interior), the
+> relief valves it already sizes, and interlocks named as text; the
+> ENGINE validates it (a measured variable the flowsheet has, a final
+> element on a stream that exists, one controller per manipulated
+> variable, a control valve's steady sizing from the converged run's
+> own flow and the dP the case declares for it -- Cv published, a
+> declared `Cv` compared), and publishes a `pid` block the GUI draws
+> over the PFD as a second view (tags on the lines, bubbles by ISA
+> convention, the loop's dashed signal line) -- the engine decides, the
+> GUI draws; the steady answer is UNCHANGED (the valve's steady dP is
+> the pressure the flowsheet already carries through its `valve` or a
+> declared drop).  THE DYNAMIC TWIN: a loop declared here can be
+> EXPORTED as a choupoCtrl `controllers` block (tuning left to the
+> student), the bridge between the design course and the control
+> course -- Vitor's pedagogy.  Witness: greenAmmonia03 (his request for
+> C129 names it), the synthesis loop's pressure and the separator
+> level.  NOT in scope, named: a control-valve sizing standard's tables
+> (no-grant; the case declares the Cv or the equation's coefficients
+> with source), alarm rationalisation, SIL, any vendor instrument.
+> Status: proposed, awaiting Vitor's morning answer on scope (which
+> instruments a student should see first) before dispatch.
+
 
 > **C128. WHICH SOLVENT, OR WHICH SOLVENT MIXTURE, FOR A GIVEN SUBSTANCE
 > -- an EduTool, and the Explorer's delta lens made honest first (Vitor,
