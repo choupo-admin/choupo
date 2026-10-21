@@ -1490,3 +1490,17 @@ layout  H2Buffer/vessel10      dz               16.0727487777    1e-4
 kpi     economics              C_OL             1100150.6713     1e-4
 kpi     economics              operatingPositions 13.3643181644    1e-4
 kpi     economics              operatorsPerShift 2.96984848098    1e-4
+layout  bund:tankFarm          verdict          adequate         exact
+layout  bund:tankFarm          containment      bund             exact
+layout  bund:tankFarm          area             7480             1e-4
+layout  bund:tankFarm          wallHeight       4                1e-4
+layout  bund:tankFarm          displacedVolume  9248             1e-4
+layout  bund:tankFarm          netVolume        20672            1e-4
+layout  bund:tankFarm          requiredVolume   20435.3628498    1e-4
+layout  bund:loopKerb          verdict          adequate         exact
+layout  bund:loopKerb          containment      impounding       exact
+layout  bund:loopKerb          area             192              1e-4
+layout  bund:loopKerb          wallHeight       0.2              1e-4
+layout  bund:loopKerb          displacedVolume  0                1e-4
+layout  bund:loopKerb          netVolume        18               1e-4
+layout  bund:loopKerb          requiredVolume   16.7600747356    1e-4

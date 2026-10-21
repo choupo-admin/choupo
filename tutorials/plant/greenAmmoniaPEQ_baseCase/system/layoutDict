@@ -21,7 +21,9 @@
     * the HYDROGEN BUFFER's ten vessels (added with DEV.md 4c C89) to the
       south-west of the make-up train, two rows of five;
     * the CONTROL ROOM to the north-west, upwind, and an ELECTRICAL
-      SUBSTATION by the compressors -- both NON-PROCESS items.
+      SUBSTATION by the compressors -- both NON-PROCESS items;
+    * a BUND round the tank farm and a kerbed slab under the loop's liquid
+      vessels draining to a remote pit (DEV.md 4c C134, `bunds` below).
   Re-draw from scratch with `bin/choupo-layout --draft --force .`: it keeps
   the separation table, the wind, the declared boxes, the non-process items
   and the zones below, and lines the process items up again.
@@ -504,5 +506,82 @@ plot
     margin  10 m;
     reason  "author-set assumption for this exercise: a 10 m strip for the perimeter road, the fence and access around the plant; not taken from any spacing standard";
 }
+
+//  SECONDARY CONTAINMENT (DEV.md 4c C134).  Every item in the open that holds
+//  liquid by the run's own inventory (system/postDict) must have a
+//  containment round it, or the run ANNOUNCES it.  Here there are two:
+//
+//    * tankFarm -- a BUND round the two refrigerated ammonia tanks.  A spill
+//      is held where it falls; a high wall keeps the cold pool small and
+//      close (less evaporation, a smaller cloud), at the cost of access.
+//      Rule: 110 % of the LARGEST tank's volume (the largest tank fails, not
+//      both), plus 100 mm of rain over the bund's floor.  The engine takes
+//      off the volume the tanks occupy below the wall's top -- here the
+//      DECLARED 34 m boxes, which overstate a 34 m round tank's 908 m2 of
+//      floor: an honest declaration costs wall height.  With a 4 m wall the
+//      bund holds 20 672 m3 against the 20 435 m3 its rule requires.  A
+//      lower wall needs a much larger floor (try 2 m: the run announces the
+//      shortfall), and a FULL-CONTAINMENT tank, whose outer wall is the bund,
+//      is the answer most large refrigerated stores take -- the groups'
+//      call.
+//    * loopKerb -- the loop's three liquid vessels (the separator, the
+//      let-down drum and the storage flash, whose liquid holdups the postDict
+//      declares) on a kerbed slab that drains to a REMOTE pit north of the
+//      loop: an IMPOUNDING area, so a leak runs away from the vessels.  Rule:
+//      100 % of the largest liquid holdup plus 50 mm of rain over the slab
+//      and the pit.
+//
+//  The 110 % and 100 % margins and the rainfall depths are AUTHOR-SET
+//  ASSUMPTIONS for this exercise.  They are the case's reading of the usual
+//  form of a bund rule, NOT a transcription of any code: the margin, the
+//  allowances and the design rainfall belong to the code the project's
+//  client specifies, read and cited by the groups.  Choupo ships no such
+//  table (the published ones grant no redistribution).
+bunds
+(
+    {
+        name        "tankFarm";
+        kind        bund;
+        items       ( "NH3Storage/tank1" "NH3Storage/tank2" );
+        region      { xMin 103 m; xMax 213 m; yMin -69 m; yMax -1 m; }
+        wall        { height 4 m; }
+        drain       closedValve;
+        capacityRule
+        {
+            basis   vesselVolume;
+            terms   ( { fraction 1.1; of largest; } );
+            allowances
+            (
+                { name rain; depth 100 mm; reason "a design storm falling on the bund floor, as a round author-set number; the site's own rainfall statistics replace it"; }
+            );
+            source  "author-set assumption for this exercise: the case's reading of the usual form of a bund rule (a margin over the largest tank, plus rain); not a transcription of any code";
+            reason  "the largest tank fails, not both; the margin covers surge and foam, the allowance the rain that collects in the bund";
+        }
+        source      "author-set assumption for this exercise; not a civil design";
+        reason      "the two refrigerated ammonia tanks share one bund: compatible contents, one drain kept closed and opened by hand only once the water is seen to be clean";
+    }
+    {
+        name        "loopKerb";
+        kind        impounding;
+        items       ( "Separator" "LetdownHP" "StorageFlash" );
+        region      { xMin 58 m; xMax 82 m; yMin 10 m; yMax 18 m; }
+        wall        { height 0.2 m; }
+        pit         { x 70 m; y 24 m; length 4 m; width 3 m; depth 1.5 m; }
+        drain       sumpPump;
+        capacityRule
+        {
+            basis   heldLiquid;
+            terms   ( { fraction 1; of largest; } );
+            allowances
+            (
+                { name rain; depth 50 mm; reason "a design storm on the slab and the open pit, as a round author-set number"; }
+            );
+            source  "author-set assumption for this exercise: the case's reading of a kerbed process area draining to a remote pit; not a transcription of any code";
+            reason  "a leak from the loop's liquid ammonia vessels is led away from them to the pit, which holds the largest holdup";
+        }
+        source      "author-set assumption for this exercise; not a civil design";
+        reason      "the loop's three liquid vessels stand on one kerbed slab, sloped to a pit 6 m north of it, outside the slab";
+    }
+);
 
 // ************************************************************************* //
