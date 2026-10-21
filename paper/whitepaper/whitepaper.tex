@@ -1,0 +1,1059 @@
+%-------------------------------------------------------------------------------
+% paper/whitepaper/whitepaper.tex -- "Answers you can check" (DEV.md 4c C126).
+%
+% A WHITE PAPER, a different artefact from the companion article
+% (../paper.tex) and the JOSS draft (../paper.md).  Prose: CC BY-SA 4.0.
+% Code excerpts and case files quoted in it: GPL-3.0-or-later.
+%
+% Build (from this directory):  make        -- or by hand:
+%   pdflatex whitepaper && bibtex whitepaper && pdflatex whitepaper \
+%     && pdflatex whitepaper
+%
+% EVIDENCE RULE (C126): every factual claim about the engine carries, in a
+% LaTeX comment beside it, the file:line, the gate, or the commit it was READ
+% at.  Line numbers are those of origin/main at 7b6d69d36 (2026-10-21) unless
+% another commit is named.  Counts are never typed from memory: each is read
+% from a generated file (generated/releaseInventory.json,
+% generated/gateManifest.json, generated/methodTools.json) and the commit
+% that last regenerated it is named.
+%
+% THE DRAFT SWITCH: \drafttrue prints a DRAFT watermark on every page and the
+% visible TODO boxes; \draftfalse removes the watermark (one line).
+%-------------------------------------------------------------------------------
+\newif\ifdraft
+\drafttrue
+
+\documentclass[11pt,a4paper]{article}
+
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage{lmodern}
+\usepackage[english]{babel}
+\usepackage[margin=2.5cm]{geometry}
+\usepackage{microtype}
+\usepackage{booktabs}
+\usepackage{tabularx}
+\usepackage{array}
+\usepackage[numbers,sort&compress]{natbib}
+\usepackage{xcolor}
+\usepackage{listings}
+\usepackage{tikz}
+\usetikzlibrary{positioning,fit,arrows.meta}
+\usepackage{enumitem}
+\setlist{itemsep=2pt,topsep=4pt}
+\definecolor{linkink}{RGB}{20,60,110}
+\definecolor{todoink}{RGB}{170,20,20}
+\usepackage[colorlinks=true, linkcolor=linkink,
+            citecolor=linkink, urlcolor=linkink]{hyperref}
+
+\ifdraft
+  \usepackage{draftwatermark}
+  \DraftwatermarkOptions{text=DRAFT, angle=45, fontsize=3cm,
+                         color={gray!18}}
+\fi
+
+\newcommand{\code}[1]{\texttt{\detokenize{#1}}}
+% A file or gate name that may break at a hyphen or an underscore (tables).
+\makeatletter
+\g@addto@macro\UrlBreaks{\do\-\do\_}
+\makeatother
+\newcommand{\brk}[1]{\nolinkurl{#1}}
+% A visible TODO for the authors.  It prints in the draft and in the final
+% build alike, on purpose: a TODO that vanishes with the watermark is a TODO
+% that can ship.  Remove each one by resolving it.
+\newcommand{\vtodo}[1]{\par\smallskip\noindent\fcolorbox{todoink}{todoink!6}{%
+  \parbox{\dimexpr\linewidth-2\fboxsep-2\fboxrule}{\small
+  \textcolor{todoink}{\textbf{TODO (authors):}} #1}}\par\smallskip}
+
+\lstset{basicstyle=\ttfamily\scriptsize, columns=fullflexible,
+        keepspaces=true, frame=single, rulecolor=\color{gray!50},
+        xleftmargin=4pt, xrightmargin=4pt, aboveskip=6pt, belowskip=6pt,
+        upquote=true,
+        literate={γ}{{$\gamma$}}1 {φ}{{$\varphi$}}1 {Δ}{{$\Delta$}}1
+                 {→}{{$\rightarrow$}}2 {·}{{$\cdot$}}1}
+
+\title{\textbf{Answers you can check:}\\[2pt]
+  a glass-box process simulator for engineering students\\
+  working with AI agents}
+
+\author{Vítor Geraldes\textsuperscript{1} \and
+        Pedro Mendes\textsuperscript{2} \and
+        Miguel Rodrigues\textsuperscript{3}\\[6pt]
+  \small\textcolor{todoink}{TODO (Vítor): affiliations 1--3, ORCIDs and the
+  corresponding author.}}
+
+\date{White paper \,·\, development line \texttt{Choupo-dev}
+  \,·\, \ifdraft DRAFT of 21 October 2026\else\today\fi}
+
+\begin{document}
+\maketitle
+\thispagestyle{empty}
+
+\begin{center}
+\begin{minipage}{0.86\linewidth}\small
+\noindent\textbf{Licence.}  The prose and figures of this white paper are
+licensed under the Creative Commons Attribution-ShareAlike 4.0 International
+licence (CC~BY-SA~4.0).  Code excerpts and Choupo case files quoted in it
+remain under the GNU General Public License, version~3 or later
+(GPL-3.0-or-later), the licence of the software they come from.
+\emph{Choupo} is a registered trademark of TalentGround Lda.; the
+trademark is not licensed by either licence.
+% CLAUDE.md sec 1 and sec 10 (docs licence paragraph: prose CC BY-SA 4.0,
+% code excerpts and case files GPL-3.0-or-later); TRADEMARKS.md.
+\end{minipage}
+\end{center}
+
+\begin{abstract}
+\noindent
+A language model can now write a plausible five-hundred-page process design
+in minutes.  Plausible is not verified, and a student handed such a design
+has no way to tell which of its numbers were computed and which were
+remembered.  We argue that the value of a process simulator in teaching is
+moving from \emph{producing} a design to \emph{proving} one, and that an AI
+agent should not compute engineering answers from memory but call a
+deterministic, open and auditable tool and show what it did.  We describe
+Choupo, an open-source (GPL-3.0-or-later), dependency-free C++17 process
+simulator built around that idea: it refuses by name rather than default in
+silence, closes mass, atoms and energy on every converged steady run by
+default, carries a source and a licence for every curated value, and keeps a
+small named subset of cases anchored to published measurements.  Its
+development is organised so that each class of error, once found, gets a
+gate that makes it unable to leave in silence.  We compare it on a published
+sample case with an open-source simulator, describe how a student works with
+an agent around it, and state plainly what it does not do.
+\end{abstract}
+
+%===============================================================================
+\section{The problem: plausible is not verified}
+\label{sec:problem}
+
+An engineering student today can ask an AI agent for the design of a
+distillation train, an ammonia loop or a crystalliser, and receive within
+minutes a document that has every outward mark of competence: a flowsheet,
+stream tables, duties, equipment sizes, a cost estimate, a page of
+assumptions.  Some of its numbers will be right.  Some will be the kind of
+error a reviewer spends a career learning to spot: an energy balance that
+does not close, a vapour pressure extrapolated eighty kelvin past its fit, a
+heat of reaction with the wrong reference state, a column fed a liquid that
+is in fact two-phase, a cost on a volume computed in kilomoles.  None of
+these errors announces itself.  A language model produces text that is
+statistically likely; an energy balance is not a matter of likelihood.
+
+For a course this changes the question.  Producing a design is becoming
+cheap.  What remains expensive, and what a graduate will be paid for, is
+knowing \emph{which numbers in a design can be trusted, and how one would
+know}.  A design that cannot be checked is not worth much more than the
+time it took to generate, however long it is.
+
+The usual answer is ``run it through a simulator''.  But most simulators a
+student meets were built for a different reader: an expert who already knows
+what the program does when a parameter is missing, a model is used out of
+range, or an iteration stops short.  The student sees converged numbers.
+Whether a missing interaction parameter was silently set to zero, whether a
+recycle converged or merely stopped, whether the enthalpy reference of the
+reactor agrees with that of the stream table, is not on the screen.  Handing
+an agent such a tool moves the opacity from the agent to the tool; it does
+not remove it.
+
+This paper describes a tool designed for the other reader: one who must be
+able to check every answer, and who increasingly works through an agent.
+
+%===============================================================================
+\section{The thesis: the agent calls the tool, the tool shows its work}
+\label{sec:thesis}
+
+Our thesis has two halves.
+
+\emph{First, an agent should not compute engineering answers from memory.}
+It should call a deterministic, open and auditable program and report what
+that program did: which models it assembled, which data it read and from
+where, which iterations it took, which balances closed and which did not.
+The agent's strengths --- reading documentation, drafting case files, fitting
+a parameter, explaining an equation --- are real, and they are best used to
+\emph{prepare} a computation that something else performs and checks.
+
+\emph{Second, the value of a design moves from who wrote it to what proves it
+right.}  If an agent writes the case files and the simulator solves them,
+the student's contribution is no longer typing; it is judgement.  That
+judgement needs evidence on the screen: a refusal that names what is missing,
+a conservation report that says how far a plant is from closing, a caveat
+that says which property was extrapolated.  A simulator built for this reader
+must therefore be \emph{glass-box} in a strong sense: not only open source,
+but explicit at run time about every assumption it makes.
+
+Choupo is itself developed under this thesis.  Substantial parts of its
+code, documentation and tutorial corpus were drafted by AI agents working
+under written briefs, reviewed and curated by the human maintainers; a change
+is integrated only after the validation its reach requires has passed, and
+the engine's checks, not the author's confidence, decide whether an answer
+has moved.
+% CLAUDE.md sec 1 (provenance: assistance under human curation); sec 0 rule 4
+% and sec 10 "VALIDATION IS SIZED BY WHAT THE CHANGE CAN REACH" and "a commit
+% lands only on FAIL 0 of the validation its slice requires"; DEV.md:9870
+% (the command doctrine: one commander, written briefs to generals).
+The rest of this paper argues that this is a workable arrangement only
+because the checks were designed first.
+
+%===============================================================================
+\section{How Choupo works}
+\label{sec:architecture}
+
+Choupo is a steady-state and dynamic process simulator written in C++17 with
+no external libraries: the Newton solvers, the linear algebra, the
+integrators, the optimisers and the dictionary parser are all hand-written,
+readable, and part of the source a student can open.
+% CLAUDE.md sec 2 ("Zero external dependencies -- only a C++17 compiler and
+% GNU make") and sec 10 "No external libs" (CLAUDE.md:3836); src/solver/
+% (NewtonRaphson, NewtonND, LU, Wegstein, NelderMead, SQP, ActiveSetQP,
+% StabilityTest, ODE/).
+
+\subsection{Three layers}
+
+The engine has three layers (Figure~\ref{fig:arch}).  The \emph{simulator
+core} turns one flowsheet into one solution --- streams, unit results and key
+performance indicators --- as a pure function of its inputs.  An optional
+\emph{outer driver} calls that function repeatedly: parameter sweeps, design
+specifications, optimisation, parameter estimation.  An optional
+\emph{post-processor} chain augments a converged solution with equipment
+sizing, costing and reports.
+% CLAUDE.md:399 (sec 4, "Architecture: 3 layers"); the pure function is
+% runSimulation, src/applications/choupoSolve/main.cpp:145, called by the
+% direct path (:1222) and by every outer driver's functor (:894);
+% src/outerDriver/OuterDriver.H:73; src/postProcessing/PostProcessor.H:67.
+Five binaries partition the problem classes:
+\code{choupoSolve} (steady state, $F(x)=0$, with recycles solved by Newton on
+the tear streams), \code{choupoBatch} (batch campaigns driven by a recipe),
+\code{choupoSemiContinuous} (a time-integrated flowsheet without control
+loops: start-up, fed-batch, feed-and-bleed), \code{choupoCtrl} (the same
+integration with a control layer) and \code{choupoProps} (a property
+workbench: evaluations, consistency tests, parameter fitting).
+% ls src/applications/ -> choupoBatch choupoCtrl choupoProps
+% choupoSemiContinuous choupoSolve; CLAUDE.md:3866 (the fifth class, ruled
+% 2026-09-20); src/dynamicDriver/ is the one home both dynamic binaries
+% share.  generated/releaseInventory.json (c402561ad): "engines": 5.
+Numerical strategies coexist inside each binary and are selected in the case
+files; there is no binary per algorithm.
+% CLAUDE.md sec 10 "One binary per problem class".
+
+\begin{figure}[t]
+\centering
+\begin{tikzpicture}[
+    box/.style={draw, rounded corners=2pt, align=center, font=\small,
+                minimum width=5.6cm, minimum height=0.95cm, inner xsep=4pt},
+    opt/.style={box, dashed},
+    arr/.style={-{Stealth[length=2mm]}, thick},
+    node distance=0.45cm]
+  \node[opt] (outer) {\textbf{Outer driver} \scriptsize(optional)\\[-1pt]
+        \scriptsize sweep · design spec · optimisation · fitting};
+  \node[box, below=of outer, fill=linkink!7] (core)
+        {\textbf{Simulator core}\\[-1pt]
+         \scriptsize one flowsheet $\rightarrow$ one solution (pure function)};
+  \node[opt, below=of core] (post) {\textbf{Post-processor} \scriptsize(optional)\\[-1pt]
+        \scriptsize sizing · costing · reports};
+  \draw[arr] (outer) -- node[right, font=\scriptsize]{calls, repeatedly} (core);
+  \draw[arr] (core) -- node[right, font=\scriptsize]{converged result} (post);
+
+  \node[draw, rounded corners=2pt, right=0.9cm of core, anchor=west,
+        align=left, font=\scriptsize\ttfamily, inner sep=5pt] (case) {%
+    case/\\
+    \ \ system/\ \ \ \ \ \ \ \ \textrm{\itshape how: control, topology, solvers}\\
+    \ \ constant/\ \ \ \ \ \ \textrm{\itshape with what: thermodynamics, data}\\
+    \ \ 0/\ \ \ \ \ \ \ \ \ \ \ \ \ \textrm{\itshape the complete initial state}\\
+    \ \ converged/\ \ \ \ \ \textrm{\itshape the steady solution}\\
+    \ \ iterations/\ \ \ \ \textrm{\itshape numerical history (opt-in)}\\
+    \ \ 0.5/\ 1/\ ...\ \ \ \textrm{\itshape time directories (dynamic)}\\
+    \ \ design/\ \ \ \ \ \ \ \ \textrm{\itshape one sheet per sized item}};
+  \draw[arr, gray] (case.west) -- ++(-0.6,0) |- (core.east);
+  \node[font=\scriptsize, align=center, below=0.25cm of case] (who)
+    {plain-text dictionaries, read by the engine,\\
+     written by a person or an agent with any editor};
+\end{tikzpicture}
+\caption{The three layers of the engine and the case directory they read
+and write.  Dashed layers are optional.  The browser front-end runs the
+same compiled engine and draws its outputs; it computes no physics of its
+own.}
+\label{fig:arch}
+\end{figure}
+
+\subsection{The case is a directory of plain-text dictionaries}
+
+A case is a directory.  \code{system/} says \emph{how} (control,
+flowsheet topology, solver options, the outer driver, post-processing),
+\code{constant/} says \emph{with what} (the thermophysical system, reactions,
+case-local data), and \code{0/} holds the complete initial state, one file per
+stream.  The flowsheet dictionary carries topology only; a stream's values
+live in its own file, and a missing or orphan stream file is a fatal error.
+% CLAUDE.md:226 (sec 3, case directory layout) and the stream-state contract
+% docs/architecture/stream-state-architecture.md (0/ complete, N streams ==
+% N files, missing/orphan FATAL).
+Listing~\ref{lst:case} is the whole topology and the feed of the first
+tutorial, an isothermal flash.  Every dimensional scalar carries its unit and
+is converted to SI and dimension-checked on reading.
+% CLAUDE.md sec 5 "Scalar values carry units".
+
+\begin{lstlisting}[caption={The first tutorial's topology,
+  \texttt{system/flowsheetDict}, and its feed, \texttt{0/feed} (case files,
+  GPL-3.0-or-later; banners omitted).},label=lst:case]
+units
+(
+    {
+        name        flash01;
+        type        isothermalFlash;
+        model       rachfordRice;      // the machine, NAMED (type -> model -> operation)
+        in          feed;
+        outputs     ( liquid  vapor );
+        operation   { T 370.0 K;  P 1.0 bar; }
+    }
+);
+-------------------------------------------- 0/feed
+componentMolarFlows { benzene 40 kmol/h;  toluene 60 kmol/h; }
+T               370 K;
+P               100000 Pa;
+\end{lstlisting}
+% tutorials/steady/flash/flash01_benzene_toluene/system/flowsheetDict
+% (the units block, one blank line removed) and .../0/feed (the
+% componentMolarFlows block joined onto one line).
+
+\paragraph{Explicit factories.}  Every extensible base class --- unit
+operations, activity models, equations of state, outer drivers,
+post-processors and the rest --- has a factory, and every built-in type is
+registered by one line inside a \code{registerBuiltins()} function that
+\code{main()} calls explicitly.  There are no self-registration macros and
+no static initialisers, so ``where does this model come from?'' is answered
+by reading one function.
+% CLAUDE.md:495 (sec 5 "Factory pattern -- always explicit"); the calls in
+% src/applications/choupoSolve/main.cpp:443-468; the registration line for
+% the flash, src/unitOperations/UnitOperation.cpp:144 and :157; the factory
+% signature src/unitOperations/UnitOperation.H:228-237.
+
+\paragraph{State directories are restartable snapshots.}  The steady solution
+is written to \code{converged/} in the same layout as \code{0/}, and only
+when the run converged: the directory's name is a contract.  Each unit's
+internal state (a column's stage profile, a reactor's axial profile, a
+crystal size distribution) is written beside the streams under
+\code{internalStates/}, so a converged directory renamed \code{0/} restarts
+the case.  The time-integrated binaries write a time directory at every
+write interval in the same layout.  \code{iterations/} keeps the numerical
+history when asked for, never physical time.
+% src/applications/choupoSolve/main.cpp:1077-1083 (writeConverged returns
+% unless result.converged, removes the stale directory, writes the state);
+% CLAUDE.md sec 3 (state views hold both halves; time-integrated classes
+% write <t>/ by default, record docs/design/
+% a-state-directory-is-a-restartable-snapshot.md sec 9-11);
+% src/io/SolutionWriter.cpp:524 (iterations/); src/dynamicDriver/
+% DynamicDriver.cpp:499 (writeInterval).
+
+\paragraph{A plant and its sectors.}  A large flowsheet may be organised as a
+plant and its sectors, each sector a folder; the engine flattens the tree to
+one flat problem with qualified names, and a sector may carry its own
+thermodynamic model.  A stream's file lives at the lowest level of the case
+whose subtree contains both of its ends.
+% src/unitOperations/flowsheet/Flowsheet.cpp:256 (flattenNode); CLAUDE.md
+% sec 3 (sectored case; two levels) and sec 6 "A STREAM BELONGS TO THE GRAPH
+% THAT CONTAINS BOTH ITS ENDS"; reference case tutorials/plant/
+% lithiumBrinePlant (sectors/, four thermodynamic worlds).
+
+\paragraph{The browser runs the same engine.}  A web front-end runs the same
+C++ compiled to WebAssembly.  It is deliberately a \emph{runner and
+visualiser}, not an editor: it loads the dictionaries, draws the flowsheet,
+runs the solver, streams the log and plots the results, and every balance it
+shows is one the engine published.
+% make/wasm.mk:25-31 (all five binaries to gui/public/wasm/); CLAUDE.md:4090
+% (sec 12, the GUI credo: runner and visualiser, NOT an editor);
+% docs/ai/gui-credo.md:22-27 (no block editor, no IDE); the first law is
+% drawn, never computed, by the GUI: docs/design/
+% a-first-law-the-gui-computed-for-itself.md.
+
+\paragraph{The run log shows the computation.}  At the default verbosity the
+log prints each unit as it is solved, the model it uses and where its
+thermodynamics came from, every Newton iteration, and every extrapolation at
+the place it happens.  It ends with two blocks: whether the problem solved is
+the problem posed, and every assumption and caveat raised during the run,
+repeated because a warning a thousand lines above the answer has been
+delivered but not received.  Listing~\ref{lst:log} is an excerpt from the
+flash of Listing~\ref{lst:case}; note that it says, unprompted, that
+benzene's vapour pressure was evaluated outside the temperature range of its
+correlation.
+% tutorials/.../flash01_benzene_toluene/system/controlDict:17 (verbosity 3);
+% CLAUDE.md sec 5 "controlDict entries" (level 3 = Newton iterations
+% visible); src/core/DivergenceSummary.H:80 ("PROBLEM SOLVED == PROBLEM
+% POSED"); src/core/AdvisorySummary.H:135 (the caveat block).
+% The excerpt was produced on 2026-10-21 by running the case, copied to a
+% scratch directory, with a native build at commit 4185a97a9 (a branch that
+% had merged origin/main on 2026-10-21); lines elided are marked [...].
+\vtodo{Regenerate Listing~\ref{lst:log} from a build of the release this
+paper will cite (the excerpt was taken from a development build, commit
+\texttt{4185a97a9}).}
+
+\begin{lstlisting}[caption={Excerpt of the run log of the flash
+  (\texttt{verbosity 3}); elided lines marked \texttt{[...]}.},label=lst:log]
+>>>  Unit [0]:  flash01   (type = isothermalFlash)
+>>>  thermo: inherited (global package)
+  [flash] model rachfordRice  (declared)
+[psat] component 'benzene': Antoine evaluated at T = 370 K, OUTSIDE its declared Trange (287.7 354.07).
+K-values  (γ = ideal,  φ = idealGas,  evaluated at x = z initially):
+  benzene       Psat = 1.6514 bar    K = 1.6514
+  toluene       Psat = 0.6735 bar    K = 0.6735
+  [outer 0] Rachford-Rice Newton (inner):
+    it          V           g(V)         dg/dV         ΔV
+    0     0.50000000   -3.75806e-02   -1.87920e-01   -1.99981e-01
+    1     0.30001863   7.81978e-04    -1.97366e-01   3.96206e-03
+    2     0.30398070   5.66359e-07    -1.97081e-01   2.87374e-06
+    3     0.30398357   2.94959e-13    -1.97081e-01   0.00000e+00
+[...]
+  [report] massBalance       (global closure 100.000 %)
+  [report] globalEnergyBoundary  (residual -0.0000 kW; NO EXCHANGED-ENERGY SCALE [...])
+  [report] elementBalance    (worst element closure off by 0.0000 %)
+[...]
+PROBLEM SOLVED == PROBLEM POSED.  No divergence declared or imposed.
+ASSUMPTIONS AND CAVEATS -- what this run announced along the way
+  EXTRAPOLATIONS AND VALIDITY  (3)
+    - component 'benzene': vapour pressure evaluated at T = 370 K, OUTSIDE its declared Trange [...]
+\end{lstlisting}
+
+\paragraph{What Choupo takes from OpenFOAM, and where it departs.}
+Choupo's case organisation is inspired by OpenFOAM \citep{weller1998}, an
+open-source (GPL) C++ toolbox for computational fluid dynamics whose
+transparent, plain-text dictionaries we regard as one of the most elegant
+designs in scientific software.  From it Choupo takes: hierarchical
+plain-text dictionaries; the case directory as the unit of work, with
+\code{system/}, \code{constant/}, \code{0/} and state or time directories;
+one application per problem class; utilities as small programs in
+\code{bin/}; and a release model in which the default branch is the
+development line and each release is an immutable versioned tag.  Where an
+analogy is used it is stated with its limits: Choupo's normalised residual
+follows OpenFOAM's normalisation factor with equations in place of cells,
+and its source states three reasons why it is not the same theorem.
+% CLAUDE.md sec 2 "Branches & tags" (CLAUDE.md:170: the default branch IS
+% the development line, a release is an immutable tag; the OpenFOAM-dev
+% comparison is written there); sec 3, sec 4, sec 5 dictionaries;
+% src/solver/Convergence.H:84-105 ("It is NOT the same theorem.  Three
+% honest limits"); docs/design/normalized-residual-convergence.md.
+It departs deliberately in three places.  Model selection uses the explicit
+\code{registerBuiltins()} factories above instead of run-time-selection
+macros; the domain is process simulation --- streams, unit operations,
+phase equilibria --- not continuum mechanics; and there are no external
+dependencies at all.
+% CLAUDE.md:495 (no auto-registration via macros/static initialisers) and
+% CLAUDE.md:3860; NOTICE:128-140 (the provenance review: dictionary parser,
+% factories, Rosenbrock23 integrator and time-directory writer are
+% independent implementations; no OpenFOAM source code adapted or reused).
+\textbf{Choupo is an independent project.  It is not part of, affiliated
+with, endorsed by, or sponsored by the OpenFOAM Foundation or OpenCFD Ltd},
+and no OpenFOAM source code was adapted or reused in it.
+% NOTICE:128-140 carries the same statement; docs/developerGuide.tex:53-57.
+
+%===============================================================================
+\section{What makes an answer verifiable}
+\label{sec:verifiable}
+
+``Open source'' is necessary and far from sufficient.  A program whose
+source can be read but whose run does not say what it assumed is checkable
+only by someone prepared to read the source for every run.  Six properties
+make a Choupo answer checkable by a student, and by the agent working with
+one.
+
+\paragraph{Refusal by name instead of a silent default.}  When a case is
+missing something a model needs, or declares a word the engine does not
+know, the run stops and says what is missing and what would fix it, naming the valid alternatives and, where one is close, the nearest.  A model name with a typing slip does not fall
+through to a default model; a binary pair used outside the temperature span of
+its evidence is announced; an approximation the author did not authorise is
+refused, and one the author did authorise is printed above the results as a
+divergence between the problem posed and the problem solved.
+% src/core/RegistryRefusal.H:25-56 (the one home of a refusal by name; the
+% closest-name suggestion; the if-chain whose else was a catch-all);
+% gate check_model_default_registered (claim in generated/gateManifest.json,
+% 25941a479); src/thermo/PairAudit.H (the [pair-span] / [unreviewed]
+% announcements, :88); gate check_problem_divergence and
+% docs/design/problem-divergence-contract.md.
+The same rule binds the solver's own aids: an initial guess, a tear estimate
+or a bound is declared in the case, and the solver reports aloud when it
+uses one.
+% CLAUDE.md:3909 ("No silent crutch", decided 2026-05-30).
+
+\paragraph{Conservation, owned by the engine and on by default.}  Every
+converged steady run writes three balances --- total mass, atoms per element
+and energy --- whether or not the case asked for them, because conservation is
+the curriculum.  A case may opt out explicitly; it cannot opt out by
+forgetting.  Where an energy balance cannot be priced (a species without a
+formation enthalpy), the default report says so and names the missing datum
+rather than printing a zero.  The browser draws these balances; it never
+recomputes them.
+% src/applications/choupoSolve/main.cpp:940-1014 ("THE THREE BALANCES ARE
+% DEFAULT DIAGNOSTICS of every converged steady run"; the elementBalance
+% default at :1012-1014); gate check_default_reports (claim in
+% gateManifest); docs/design/a-first-law-the-gui-computed-for-itself.md.
+These balances matter because a regression test cannot see what they see.
+A golden-master test pins what a run prints; a plant that loses two percent
+of its energy, stably, passes its golden for ever.  Only a gate that reads
+the balance and refuses can catch it (Section~\ref{sec:gates}).
+% CLAUDE.md:1008 ("A SUITE'S PASS COVERS WHAT ITS GATES ASSERT, AND NOTHING
+% ELSE"); docs/design/what-a-passing-suite-does-not-say.md.
+
+\paragraph{A source and a licence for every value.}  The curated catalogue
+cites the primary source per value, never the aggregator's arrangement;
+each record says where its numbers came from and how they were obtained
+(measured, regressed, estimated), and a record that has not been reviewed,
+or comes from a private local tier, is announced as such when a run reads
+it.  A dataset with no licence statement, or a NonCommercial one, is kept
+out of the public tree, and a pair table does not acquire its courier's
+licence by being redistributed inside another package.  The engine refuses
+to write into the curated catalogue: new data enters it by a human act of
+curation.
+% CLAUDE.md sec 10 licence policy (CODE vs DOCS vs DATA; cite the PRIMARY
+% source per value) and CLAUDE.md:3552 (two data tiers; [local] UNVERIFIED);
+% src/thermo/Database.cpp:605 ("[unreviewed] component"); gate
+% check_source_licence (claim in gateManifest: an encumbered source standing
+% as the authority for a value fails; NonCommercial compilations pinned);
+% docs/design/the-licence-of-a-sigma-profile.md; docs/design/
+% binary-pairs-from-open-measurements.md (a pair table is not freed by its
+% courier's licence); records::refuseStandardsWrite,
+% src/thermo/RecordResolver.H:236, gate check_standards_write_guard,
+% docs/design/a-rule-enforced-in-one-place.md.
+
+\paragraph{A named validation subset.}  Most of Choupo's regression corpus
+compares each case with an answer an earlier Choupo run recorded.  A pass
+proves the answer has not moved; it says nothing about whether it was ever
+right.  The project therefore separates \emph{verification} from
+\emph{validation} \citep{nasa7009} and keeps a small, named subset of cases
+anchored to independent published results: the Williams--Otto reactor and
+its published steady state \citep{williams1960}, the IAPWS-IF97 verification
+tables \citep{wagner2000}, the Hamer--Wu activity coefficients of uni-univalent
+salts \citep{hamer1972}, a measured calcite pH \citep{plummer1982}, and
+others.  Where an anchor is the model's own training data the case says so
+and is not counted as validation.
+% docs/architecture/verification-and-validation.md sec 1 (a PASS proves the
+% answer has not moved), sec 2 (the five classes), sec 3 (the subset, with
+% each row's independence; ctrl12_williams_otto, steam01_if97_verification,
+% pitzer_gamma_hamer_wu, pb82_calcite_open_co2; the fit-consistency rows
+% labelled as such); gate check_validation_subset (claim in gateManifest).
+The subset is small, and Section~\ref{sec:limits} says so.
+
+\paragraph{A check that cannot run must not pass.}  A gate whose input has
+disappeared, or whose tool is not installed, or whose harness died, must
+refuse, never report success; and a tool that could not look must not
+report what it did not see.  This sounds obvious and is the property most
+easily lost, because a permanently green check looks exactly like a healthy
+one.  Each gate is verified by sabotage: the defect it exists to catch is
+introduced on purpose and the gate is observed to fail.
+% bin/curate/runtests_verdict.py:1-40 ("A CHECK THAT CANNOT RUN MUST NOT
+% PASS -- AND MUST NOT FAIL WITH A FALSE REASON EITHER");
+% bin/curate/check_doctrine.py:286-291 (refuses when `git ls-files` cannot
+% run); docs/design/a-tool-that-reported-what-it-could-not-see.md; gate
+% check_gate_selftest (claim: "every sabotage below was OBSERVED failing its
+% gate, not assumed to"); docs/design/destructive-gate-contamination.md.
+
+\paragraph{A re-recorded answer is a claim.}  When an engine change moves a
+recorded answer, the moved rows are listed, each with the physical or
+numerical reason it moved, and shown to the maintainer before anything is
+re-recorded.  A row that moves for a reason nobody can state is treated as a
+regression until proven otherwise.
+% CLAUDE.md:4007 ("A GOLDEN RE-RECORD IS A CLAIM, AND THE CLAIM IS THE
+% LIST").
+
+%===============================================================================
+\section{How a class of error becomes unable to leave in silence}
+\label{sec:gates}
+
+Every simulator has errors; this one has had its share, and some reached
+users before the check that now catches them existed.  What distinguishes a
+verifiable tool is not the absence of errors but what its architecture does
+with them.  In Choupo the rule is: \emph{when an error escapes, it becomes a
+gate} --- an executable check that rules out not the one instance found but
+the whole class it belongs to, wired into the regression suite, verified by
+sabotage, and documented in a design record that tells how the class was
+found.  The generated gate manifest lists 239 gates, each with the claim
+its own output makes; Table~\ref{tab:gates} shows ten classes and the gate
+that removes each.
+% generated/gateManifest.json (regenerated at 25941a479, 2026-10-20): 239
+% entries under "gates"; each "claim" is captured from the gate's own output
+% by bin/curate/gate_claim.py, never transcribed (docs/design/
+% which-line-is-a-gates-claim.md).  bin/curate/ holds 239 check_*.py at
+% 7b6d69d36.
+
+\begin{table}[t]
+\centering\footnotesize
+\caption{Ten classes of error and the gate that keeps each from leaving a
+run in silence.  Each gate's claim is the line its own output marks as one
+(\texttt{generated/gateManifest.json}); each record, under
+\texttt{docs/design/}, tells how the class was found.}
+\label{tab:gates}
+\renewcommand{\arraystretch}{1.15}
+\begin{tabularx}{\linewidth}{>{\raggedright\arraybackslash}X
+                             >{\raggedright\arraybackslash}p{3.9cm}
+                             >{\raggedright\arraybackslash}p{4.9cm}}
+\toprule
+\textbf{The class this gate removes} & \textbf{Gate} & \textbf{Record} \\
+\midrule
+A plant that does not conserve mass, read from the engine's own report on
+every steady case & \brk{check_mass_closure} &
+\brk{a-dryer-that-ended-wetter-than-it-started.md} \\
+A plant whose atoms do not close, element by element &
+\brk{check_element_balance}, \brk{check_default_reports} &
+\brk{what-a-passing-suite-does-not-say.md} \\
+A first law that does not close, or an open one that grows &
+\brk{check_energy_closure} (ratchet) &
+\brk{what-a-passing-suite-does-not-say.md} \\
+A unit computing with a state its streams do not carry &
+\brk{check_feed_thermal_state} & \brk{the-state-a-unit-computes-with.md} \\
+A declared word the engine does not know, silently taken as the default &
+\brk{check_model_default_registered} & \brk{three-silences-at-exit-zero.md} \\
+An approximation nobody authorised & \brk{check_problem_divergence} &
+\brk{problem-divergence-contract.md} \\
+An equipment size that cannot be recomputed from the declaration &
+\brk{check_design_sheet} &
+\brk{a-basis-nobody-stated-and-a-volume-in-kilomoles.md} \\
+A value whose licence does not allow redistribution & \brk{check_source_licence}
+& \brk{the-licence-of-a-sigma-profile.md} \\
+A write into the curated catalogue by a computation &
+\brk{check_standards_write_guard} & \brk{a-rule-enforced-in-one-place.md} \\
+A check that passes because it could not run & \brk{runtests_verdict.py},
+\brk{check_gate_selftest} & \brk{destructive-gate-contamination.md} \\
+\bottomrule
+\end{tabularx}
+\end{table}
+% Every record named in the table exists under docs/design/ at 7b6d69d36
+% (checked with test -f).  Every gate exists under bin/curate/.
+
+Four of these deserve a sentence more, because each illustrates a different
+way a class is closed.
+
+\paragraph{Conservation, measured by the engine, on every case.}  The mass
+gate reads the engine's own mass-balance report for every steady case in the
+corpus and refuses a plant that misses closure by more than half a percent;
+it never recomputes the balance itself, so the gate and the student read the
+same number.  The class it removes was found when a spray dryer's moisture
+model produced more water than its feed carried, while the case's golden
+master passed: nothing had been looking at closure.
+% gate check_mass_closure: its claim in generated/gateManifest.json
+% (25941a479) -- "close their plant-boundary mass balance within 0.5 % of
+% 100, read from the engine's own massBalance report and never recomputed
+% here"; docs/design/a-dryer-that-ended-wetter-than-it-started.md.
+
+\paragraph{The first law, with a ratchet.}  The energy gate reads each
+plant's boundary first law from the engine's own report and requires it to
+close within one percent of the energy the plant exchanges.  Plants that do
+not yet close are not hidden: they are \emph{pinned} by name with their
+measured residual, and the pin ratchets in both directions.  A pinned debt
+that grows fails; one that starts to close also fails, asking for its pin
+to be tightened, so the ledger always describes the engine as it is.
+% gate check_energy_closure: claim in generated/gateManifest.json
+% (25941a479) ("within 1.0 % of the energy the plant exchanges ... PINNED in
+% KNOWN_OPEN ... ledgers of plants that do NOT conserve energy, not
+% exemptions"); bin/curate/check_energy_closure.py:321 ("THE RATCHET IS
+% TWO-SIDED") and :381 (RATCHET = 0.2 percentage points); CLAUDE.md sec 6
+% (the ratchet: a debt that grows fails, one that starts closing fails
+% asking for its pin back).
+The denominator matters and was argued, not chosen: a residual divided by the
+enthalpy throughput, most of which is the formation datum passing through,
+looks small when the plant is wrong; divided by the energy exchanged, it
+does not.
+% CLAUDE.md sec 6 (2026-09-25 correction: "normalise by THE TERMS THE
+% EQUATION BALANCES"; normalising by throughput hid a real gap).
+
+\paragraph{An unknown word is refused.}  Where a unit chose its sub-model
+through a chain of comparisons ending in a catch-all, a one-character slip
+in the model name silently selected the default --- in one case with every
+published indicator byte-identical, so no golden master could ever see it.
+Every such site now refuses through one shared function that names the
+accepted words and the closest one, and the gate counts the sites rather than
+trusting a list.
+% src/core/RegistryRefusal.H:46-56 (the catch-all else; "MSMRP" on a
+% crystalliser); gate check_model_default_registered arm (d)
+% (bin/curate/check_model_default_registered.py:49, :56-59: sprayDryer04
+% with `langrishKocke` ran "exit 0 and" every KPI identical);
+% docs/design/three-silences-at-exit-zero.md.
+
+\paragraph{A size is recomputed from the declaration.}  A specification
+sheet is generated for every sized item, and the gate recomputes sizes from
+what the case declared rather than from what the run printed.  The class was
+found when a crystalliser had been costed on a volume computed from a molar
+flow --- an order of magnitude off, at exit zero, pinned to four decimals by
+its own golden master.  A golden master pins what a run prints; only a
+recomputation from the declaration can see a size that is wrong.
+% gate check_design_sheet arm (j): bin/curate/check_design_sheet.py:1076-1099
+% (V_magma must equal the declared operation.volume);
+% docs/design/a-basis-nobody-stated-and-a-volume-in-kilomoles.md;
+% CLAUDE.md sec 6 "EVERY SIZER STATES ITS BASIS".
+
+\medskip
+A further gate illustrates that the class need not be physical.
+\code{check_wasm_dialect} parses every source file with a second compiler
+that refuses the language extensions the WebAssembly toolchain refuses,
+because code that builds natively and not for the browser once left the
+public site serving a stale engine while the native suite was green.
+% gate check_wasm_dialect (claim in gateManifest: "the probe (a lambda
+% capturing a structured binding, the construct that broke the site on
+% 2026-08-27) is still rejected"); CLAUDE.md sec 6 (THE WASM BUILD DIED
+% WHERE THE NATIVE ONE PASSED: publish-site failed on three pushes while the
+% site served a bundle three commits old).
+None of this makes the engine error-free.  It makes each class of error,
+once seen, unable to return without a gate failing --- and it makes the
+remaining open debts a list with names and numbers rather than a hope.
+
+%===============================================================================
+\section{A comparison with an open-source simulator}
+\label{sec:comparison}
+
+\vtodo{Publish this section only after the reference's defects listed
+below have been offered to its maintainers as an upstream issue (draft:
+\texttt{paper/whitepaper/upstream-issue-draft.md}).  The benchmark cases
+are on branch \texttt{claude/c123-benchmarks-bc} (commit
+\texttt{33e277ca2}) and not yet on \texttt{main}; update the citation when
+they land.}
+% DEV.md:1294-1340 (C126: the reference's defects offered upstream before
+% the paper is public; a tool is named only after its licence is verified).
+
+We compared Choupo with DWSIM \citep{dwsim}, an open-source process simulator
+licensed under the GPL-3.0, on samples from the library it ships.  We name
+it because it is open: its licence and source could be read before anything
+was relied on, and its maintainers can reproduce everything below.
+Commercial simulators are not compared, because their models cannot be
+inspected.
+% DEV.md:1394 (C123 phase 1: the reference simulator is GPL-3.0, README +
+% COPYING read at its commit 1abf72d1b, 2026-07-17); DEV.md:1294 (C126:
+% Vitor's ruling -- open references may be named, closed ones not at all).
+
+\paragraph{Method.}  Each sample was rewritten as a Choupo case from its
+published problem --- feeds, units, specifications --- and no file or
+parameter of the sample was copied: the samples embed pair parameters from
+databanks this project excludes, so every property number in a benchmark
+case is Choupo's own or comes from a primary source.  The reference numbers
+are read from the stored solved state inside the sample file, cited by the
+repository commit and by the build version the file records; every
+workaround is stated in the case.
+% benchmarks/README.md on main (rules 1-4); DEV.md:1394-1402 (the samples
+% embed pair values; no parameter copied; cited by commit + sample +
+% BuildVersion/SavedOn); branch claude/c123-benchmarks-bc 33e277ca2:
+% benchmarks/dwsim/read_sample.py reads facts, never parameters.
+
+\paragraph{Case B: methanol--acetone pressure-swing distillation.}  The
+sample (its file calls it extractive; it has no entrainer) couples a
+40-stage column at 1~atm and a 20-stage column at 6~atm, with the
+high-pressure distillate recycled.  The sample file records
+BuildVersion~8.8.0.0, saved 2024-07-09, read at repository commit
+\texttt{1abf72d1b}.  Choupo ran it with an acetone--methanol NRTL pair it
+regressed itself from measured bubble temperatures --- a pair whose held-out
+verdict was \emph{not validated}, used case-locally and announced as such ---
+and, as a second variant, with predictive UNIFAC.
+% branch claude/c123-benchmarks-bc 33e277ca2,
+% benchmarks/dwsim/distillation01_methanol_acetone_pressure_swing/README.md
+% (sample identity, BuildVersion 8.8.0.0, SavedOn 2024-07-09T11:06:09-03:00;
+% the pair from tutorials/props/curation/curate05_nrtl_acetone_methanol,
+% verdict notValidated); DEV.md:1427-1441.
+
+\begin{table}[t]
+\centering\small
+\caption{Case B: selected results against the reference's stored state
+(Choupo with its own regressed NRTL pair).  The reference's own stored
+state closes its material balance to $+0.14\,\%$ and its first law to
+$+1.47$~kW of about 4640~kW exchanged; Choupo closes every unit's mass
+balance and its plant first law to $+0.079$~kW.}
+\label{tab:caseB}
+\begin{tabular}{lrrr}
+\toprule
+ & \textbf{reference} & \textbf{Choupo} & \textbf{difference} \\
+\midrule
+LP condenser duty [kW]            & 2575.5 & 2609.9 & $+1.3\,\%$ \\
+LP reboiler duty [kW]             & 2563.3 & 2600.8 & $+1.5\,\%$ \\
+HP condenser duty [kW]            & 2054.7 & 2041.6 & $-0.6\,\%$ \\
+HP reboiler duty [kW]             & 2076.5 & 2058.0 & $-0.9\,\%$ \\
+LP distillate $x_\mathrm{MeOH}$   & 0.2412 & 0.2243 & $-0.017$ \\
+HP distillate $x_\mathrm{MeOH}$   & 0.3066 & 0.2844 & $-0.022$ \\
+acetone product $T$ [K] (pure, 6 atm) & 394.95 & 392.89 & $-2.05$ K \\
+methanol product $T$ [K] (pure, 1 atm) & 337.90 & 337.70 & $-0.20$ K \\
+\bottomrule
+\end{tabular}
+\end{table}
+% Numbers: the comparison table of the case README on 33e277ca2 (measured
+% 2026-10-20 by benchmarks/dwsim/compare.py); percentages computed here from
+% its columns (e.g. 37.5008/2563.3239 = +1.46 %).  Closures: the same README
+% ("close every unit's mass balance and the plant first law to +0.079 kW";
+% R1 +0.140 %; R4 +1.466 kW; "~4640 kW exchanged").  Not re-run for this
+% draft: a native build is needed (benchmarks/README.md) -- TODO before
+% publication.
+
+The duties agree to between $-0.9$ and $+1.5\,\%$ (Table~\ref{tab:caseB}).
+The differences are explained by the property models, and the case shows
+which: the acetone product leaves the high-pressure column as pure acetone,
+where no activity model is involved, and its temperature differs by
+$2.05$~K --- the difference between the two programs' vapour-pressure
+correlations at 6~atm, and nothing else.  The distillate compositions
+follow from the material balances rather than from an azeotrope, since
+neither column's top is pinched at these specifications.  We would not
+expect agreement to the last digit: two independent implementations with
+different vapour-pressure correlations and different pair evidence that
+agreed exactly would suggest one had been tuned to the other.
+% Case README (33e277ca2), "What agrees, what does not, and why": the HP
+% bottoms T on PURE acetone "is the two vapour-pressure correlations,
+% nothing else"; "The sample stores no azeotrope"; distillates "set by the
+% material balance".  DEV.md:1440 (Vitor: "Se desse o mesmo ate parecia
+% ajuste forcado").
+
+\paragraph{What the comparison found on each side.}  The reference's stored
+state does not close: its two bottoms specifications admit no steady state
+(two products of 0.5~mol/s from a feed of 0.9986~mol/s, $+0.14\,\%$), and the
+recycle stream it carries differs by $1.47\,\%$ from the stream it copies
+while the recycle block reports convergence after one iteration.  These are
+facts about one stored file, measured on its own numbers; they bound how
+finely the comparison can resolve and are being offered to the maintainers.
+% Case README (33e277ca2), findings R1 (0.998602 mol/s fed; +0.140 %), R2
+% (1.889121 vs 1.861749 mol/s; converged after one iteration with stored
+% errors equal to the full values), R3-R5; DEV.md:1436-1438.
+The comparison also found two issues on Choupo's side, and they are the more
+useful half.  A multi-feed column accepted a feed on its condenser stage and
+then omitted it from that stage's balance --- the default mass-balance report
+flagged the plant at $109\,\%$ closure, but the run exited normally when it
+should have refused; and the column's ``total condenser'' publishes the
+vapour in equilibrium with the reflux, which is an extra equilibrium stage
+rather than a total condenser.  The first is being corrected in the engine;
+the second is being analysed against the column's formulation, and any
+change to it will be shown with every result it moves before anything is
+re-recorded.
+% Case README (33e277ca2), findings C1 (DistillationColumn.cpp:1515-1517,
+% :1941-1942, :2257-2258; "109.27 % mass closure and an element balance off
+% by 50 %, converged, at exit 0 (the plant's balance reports warned)") and C2
+% (:2315-2320, x_D = K_1 x_1); DEV.md:1446-1458 (the commander's decision:
+% (1) fixed, refuse by name; (2) analysed against the MESH formulation, the
+% moved golden rows shown to Vitor BEFORE any re-record; dispatched as G28).
+\vtodo{When the column fixes land on \texttt{main}, cite their commits and
+the gate that holds each; until then do not claim a gate exists.}
+
+\paragraph{Case C, an open item.}  The second sample, a four-stage
+counter-current extraction of acetone from water with methyl isobutyl
+ketone, is not yet reproduced.  Choupo's predictive UNIFAC did not describe
+the water--MIBK miscibility gap well enough, so a liquid--liquid NRTL set was
+curated from the measured tie lines of \citet{choi1986}; with it, Choupo's
+liquid--liquid flash still returned a single liquid on feeds its own
+stability test had found unstable, and its extractor published a
+non-converged cascade with a warning instead of refusing.  Both are engine
+defects, and correcting them is scheduled work.  The comparison will also
+have a limit even then: the reference's column is adiabatic and cools by
+13~K, while Choupo's extractor is isothermal by construction, so flows and
+recoveries will be comparable and stage temperatures will not.
+% branch claude/c123-benchmarks-bc 33e277ca2,
+% benchmarks/dwsim/extraction01_water_acetone_mibk/README.md ("Status:
+% BLOCKED on the engine"; UNIFAC water-rich branch at the flash's simplex
+% floor; Choi & Rhim Table 3 set; C1 IsothermalFlash.cpp:693-696, :744; C2
+% the extractor's 0.229 mass closure at exit 0; R1 adiabatic, 13.4 K;
+% Extractor.H "EXPLICIT ASSUMPTIONS" isothermal); DEV.md:1442-1458.
+
+%===============================================================================
+\section{Working with an agent}
+\label{sec:agent}
+
+Choupo is written for a workflow in which an agent prepares and a student
+decides.
+
+\paragraph{The agent reads what Choupo writes for it.}  The repository carries
+an entry point for AI agents (\code{AGENTS.md}) and a library of short
+reference files under \code{docs/ai/}: the dictionary grammar, the case
+layout, the unit-operation catalogue, patterns, pitfalls, and a curation
+protocol whose first rule is that an agent never invents a number.
+\code{bin/llmctx} concatenates the library, or a core subset of it, into
+one context an agent can be handed.
+% AGENTS.md:1-40 (two audiences; the table of docs/ai files;
+% curation-protocol.md "NEVER invent numbers", AGENTS.md:25;
+% bin/llmctx --core, AGENTS.md:35).
+
+\paragraph{Refusals tell the agent what to fix.}  An agent writing case
+files makes the same slips a student makes: a model name misspelt, a stream
+specified by three variables when two fix it, a tear stream not declared.
+Because Choupo refuses these by name, quoting the rule and the
+remedy, an agent can correct its own case in the next turn instead of
+reporting a plausible wrong answer.  Listing~\ref{lst:refusal} is what the
+first tutorial returns when its feed is given a vapour fraction beside its
+temperature and pressure: the run stops with a non-zero exit status, before
+any computation, and the message is written to be acted on.  The refusal is
+the interface.
+% Produced on 2026-10-21: flash01 copied to a scratch directory, the line
+% `vaporFraction 0.3;` appended to 0/feed, run with the build at commit
+% 4185a97a9 -> exit status 2 and the message below (one line in the log,
+% wrapped here; one clause elided as [...]).  The rule: CLAUDE.md:316; gate
+% check_overspecified_stream.
+
+\begin{lstlisting}[caption={A refusal by name (the first tutorial with
+  \texttt{vaporFraction 0.3;} added to its feed); exit status 2.},
+  label=lst:refusal, breaklines=true, breakindent=0pt]
+ERROR: stream state 'feed': OVER-SPECIFIED -- declares T = 370 K, P = 100000 Pa AND vaporFraction = 0.3 for a MIXTURE of 2 components (benzene, toluene).  A stream of known component flows is fixed by TWO intensive variables (Duhem's theorem); for a mixture (T, P) already fix the vapour fraction, so a third value beside them is redundant when it agrees with the (T, P) flash and a contradiction when it does not.  Remedies: (1) delete the `vaporFraction` line and let (T, P) resolve the split -- an unpinned stream MEANS its own equilibrium at (T, P, z), and the stream table and result JSON show the vapour fraction that resolution gives; (2) if the QUALITY is the specification, the state is (P, q) or (T, q) and the other variable must be SOLVED from it -- this engine does not do that today [...], so declare the T that gives your q, or use a phaseChanger to produce the state.  A PURE component keeps `vaporFraction q;`: on its saturation curve (T, P) do not fix the split.
+\end{lstlisting}
+% src/core/RegistryRefusal.H:36-44 (names, order, closest-name suggestion);
+% CLAUDE.md sec 3 "A STREAM IS FIXED BY TWO VARIABLES" (CLAUDE.md:316: an
+% over-specified stream refuses by name, quoting the rule and two remedies;
+% gate check_overspecified_stream); CLAUDE.md sec 6 "Sequential-plan
+% contract" (seven named refusals, MISSING TEAR with the cycle chain;
+% Flowsheet.cpp:4317 validateSequentialPlan).
+
+\paragraph{Data and fits: the agent prepares, the student decides.}  When a
+model needs data the catalogue lacks, the agent can locate measurements in
+the open ThermoML archive, extract them into a dataset with its source, fit
+the model's parameters on one study and hold them out on another, against a
+tolerance band declared before the fit.  The fit produces a dossier and a
+verdict --- validated, not validated, not tested --- and promotes nothing:
+promotion into the curated catalogue is a human act.  The browser's
+explorer shows the verdict beside each record.
+% bin/choupo-thermoml (locate/extract by InChIKey; CLAUDE.md sec 6 "ONE
+% THERMOML TOOLCHAIN"); bin/choupo-curate; choupoProps fitParameters;
+% bin/curate/promote-from-dossier; CLAUDE.md sec 6 "A PAIR CHOUPO REGRESSES
+% IS A RECORD THAT NAMES ITS CASE" (held out on ANOTHER study, band declared
+% before the fit); gui/src/ui/explore/ComponentInspector.tsx:49-51 (the
+% dossier verdicts drawn: "NOT TESTED", "no dossier"); DEV.md:1767-1804
+% (C117: an LLM authors, the Explorer shows, the student decides).
+An evidence view that draws every measured point against every candidate
+model, for a component or a binary pair, is being built: the student, not
+the agent, chooses the model, with the evidence on the screen.
+% DEV.md:1767-1804 (C117 dispatched as G18, branch
+% claude/c117-evidence-explorer; NOT on main at 7b6d69d36).
+\vtodo{Update this paragraph when the C117 evidence view lands on
+\texttt{main}.}
+
+The engine is not the only authority in this arrangement, and should not
+be: a model fitted honestly can still be the wrong model.  But every claim
+the agent makes about a number can be traced to a run that printed it, a
+record that sourced it, and a gate that would have failed had it not
+conserved.
+
+%===============================================================================
+\section{Pedagogy: auditing a design is the competence}
+\label{sec:pedagogy}
+
+A simulation course has traditionally taught students to \emph{set up} a
+simulation: choose a property method, specify a column, converge a recycle.
+When an agent can do the setting up, the competence that remains is
+\emph{auditing}: reading a design and finding where it is wrong.  That is
+exactly what a glass-box simulator exercises.  A student who sees that a
+vapour pressure was extrapolated asks whether the answer depends on it; a
+student who sees a plant's first law miss by three percent looks for the
+unit that carries the gap; a student who sees a refusal learns what the
+model needed.
+
+Choupo supports this in three ways.  The source is meant to be read: small
+classes, explicit factories, hand-written numerics.  The run log shows the
+computation at the level of detail a lecture would: the $K$-values, the
+Rachford--Rice iterations, the composition loop.  And a set of
+\emph{EduTools} --- short, interactive pages in the browser, each built
+around one idea and running the real engine where a computation is
+involved --- covers ten disciplines from thermodynamics and separations to
+process safety and economics; the site's generated catalogue lists 61 of
+them live.
+% generated/methodTools.json (last regenerated at 668b7dff5): liveTools 61,
+% registryTools 61, ten "disciplines" (How Choupo works, Modelling &
+% scale-up, Thermodynamics, Separations & phase equilibria, Heat transfer &
+% energy, Reaction engineering, Hydraulics & control, Process design &
+% economics, Process safety, Flowsheeting & numerics); DEV.md C122 item 2
+% (the first CI smoke run opened 61 tools in a browser, 49 ran the engine).
+Each lesson page defines every symbol it uses and was drafted against the
+engine's source, cited by file and line; we note that the definitions are
+held by a gate, the citations are an authoring discipline and are not.
+% gate check_lesson_symbols (every symbol in a formula is defined in a
+% `where` list); CLAUDE.md sec 6 "A CITATION REQUIREMENT CHANGED WHAT THE
+% READERS READ" (the citation half is enforced nowhere; do not claim a gate
+% stands behind it).
+
+A design produced by an agent and audited by a student against a tool like
+this is, we suggest, a better exercise than a design typed by the student
+into a tool that does not explain itself.  Whether it is in fact better is
+an empirical question for the classroom, and one we have not yet answered.
+\vtodo{Vítor: any classroom use to report (course, year, number of
+students, what was observed)?  If none, keep the sentence above as it is.}
+
+%===============================================================================
+\section{Limitations}
+\label{sec:limits}
+
+Nothing in this paper should be read as a claim of breadth.  Choupo does not
+aim at parity with industrial simulators: its component catalogue is curated
+rather than encyclopaedic, and it has no equation-oriented solver; its
+models cover what its tutorials exercise.
+% CLAUDE.md sec 1 ("not aiming for breadth or thermo-curation parity");
+% sec 10 (the equation-oriented dream deferred);
+% generated/releaseInventory.json (c402561ad) for the current counts
+% (components 604; unit operations 52; runnable cases 480).
+
+\begin{itemize}
+\item \emph{A regression pass is not validation.}  Most of the corpus is
+  compared with answers Choupo itself recorded; a pass proves the answer has
+  not moved, not that it is right.  The validation subset anchored to
+  published measurements is small, and only some of its claims are checked
+  by machine rather than stated in prose.
+  % docs/architecture/verification-and-validation.md sec 1 and sec 3 ("Every
+  % other row here is still a claim in prose").
+\item \emph{Open first-law debts are pinned, not closed.}  The energy gate
+  holds named plants that do not yet close their first law within one
+  percent; they are listed with their residuals rather than hidden, and they
+  are open.
+  % gate check_energy_closure claim (25941a479): 9 cases PINNED in KNOWN_OPEN
+  % and 8 in KNOWN_OPEN_KW, "ledgers of plants that do NOT conserve energy".
+\item \emph{Some balances have not been measured.}  The first law of the
+  time-integrated batch reactor and dynamic CSTR has not been measured by
+  the slice that closed it for their steady counterparts, and is claimed
+  neither way.
+  % CLAUDE.md sec 6 (C77: "the time-integrated batchReactor and dynamicCSTR
+  % were NOT measured by that slice and are not claimed either way").
+\item \emph{A gate's reach is its scope.}  The benchmark cases are outside
+  the regression suite, and a gate sees only the cases it walks.  The
+  stage-1 feed of Section~\ref{sec:comparison} was flagged by the default
+  report but not refused, because no tutorial exercised it.
+  % benchmarks/README.md (not in the regression suite; no gate holds the
+  % comparison); case B README C1 (33e277ca2).
+\item \emph{Known numerical limits} are documented beside the feature they
+  bound: bubble-point distillation through an azeotrope is unstable and the
+  simultaneous method is the documented escape; the liquid--liquid flash of
+  Section~\ref{sec:comparison} is being corrected.
+  % CLAUDE.md sec 9 (Known limitations); case C README (33e277ca2).
+\item \emph{The pedagogical claim is untested.}  We have argued that auditing
+  an agent's design is the competence a simulation course should teach; we
+  have not measured whether students learn it better this way.
+\end{itemize}
+
+%===============================================================================
+\section{Availability}
+\label{sec:availability}
+
+Choupo is free software under the GNU General Public License, version 3 or
+later.  The source, the tutorials, the guides and the browser application
+are at \url{https://github.com/choupo-admin/choupo} and
+\url{https://www.choupo.org}; the latest release is \texttt{Choupo-2608},
+and the default branch carries the development line.  \code{CITATION.cff}
+in the repository gives the preferred citation.  The guides are licensed
+under CC~BY-SA~4.0.
+% LICENSE; CLAUDE.md sec 1, sec 2 (Branches & tags); generated/
+% releaseInventory.json (c402561ad): latestRelease Choupo-2608, released
+% 2026-09-02; CITATION.cff; paper/paper.tex Availability (repository URL).
+\vtodo{Zenodo DOI for this white paper and for the release it cites; arXiv
+identifier; confirm the repository URL.}
+
+%===============================================================================
+\section*{Statement on the use of AI assistance}
+
+Substantial parts of Choupo's implementation, documentation and tutorial
+corpus, and the first draft of this paper, were produced with the assistance
+of AI coding agents (Anthropic's Claude Code), working under written briefs.
+The project is human-curated: every part of it has been reviewed, corrected
+and accepted by its maintainers, and the authors have checked this paper's
+claims against the software and answer for its content.  Copyright in
+Choupo belongs to its named human contributors.
+% CLAUDE.md sec 1 (initial implementation, documentation and tutorials
+% "produced with assistance from Anthropic Claude Code"; human-curated,
+% reviewed, corrected, maintained; copyright to the named human
+% contributors); CLAUDE.md sec 10 (no model identifier in the tree).
+
+\section*{Acknowledgements and trademarks}
+
+\vtodo{Acknowledgements (funding: none / institutional support, if any).}
+\noindent\emph{Choupo} is a registered trademark of TalentGround Lda.
+OPENFOAM is a registered trade mark of OpenCFD Ltd; Choupo is not part of,
+affiliated with, endorsed by, or sponsored by OpenCFD Ltd or the OpenFOAM
+Foundation.  DWSIM is named only as the open-source software compared in
+Section~\ref{sec:comparison}; no endorsement by its authors is implied.
+% NOTICE:128-133 (the OpenFOAM independence statement and trade-mark line);
+% TRADEMARKS.md; CLAUDE.md sec 10 (INPI PT 769805 MNA).
+\vtodo{Verify the exact attribution wording OpenCFD Ltd requests for
+third-party mentions of OPENFOAM (not found on openfoam.com or openfoam.org
+on 2026-10-21); the line above is the conservative statement already in
+\texttt{NOTICE}.}
+
+\bibliographystyle{unsrtnat}
+\bibliography{../paper,whitepaper}
+
+\end{document}
