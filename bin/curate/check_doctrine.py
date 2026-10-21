@@ -156,6 +156,12 @@ COMPETITOR_NAMED_TREES = {
         "reference simulator the white paper compares with, by Vitor's "
         "decision for the papers; every closed simulator stays banned there "
         "(DEV.md 4c C126)"),
+    "paper/cace/": (
+        {"dwsim"},
+        "the Computers & Chemical Engineering article reports the white "
+        "paper's comparison with the same open (GPL-3.0) reference simulator, "
+        "by Vitor's decision for the papers; every closed simulator stays "
+        "banned there (DEV.md 4c C126)"),
 }
 
 #  Binary and generated files are skipped: `generated/` is rebuilt from the
