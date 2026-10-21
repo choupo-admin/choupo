@@ -1331,6 +1331,13 @@ accepts today, and that is a policy call.
 > at a time to avoid conflicts: C117 -> C116 -> C118 stage 2 (the T/P
 > excursion lens, whose engine op `phaseSplitScan` already shipped) ->
 > C127.
+> **Standing requirement (Vitor, same day): "nao te esquecas de ir
+> fazendo update dos Guides e de ter os links corretos para o aluno fazer
+> F1 onde precisa".**  Every user-facing slice in this queue (and after)
+> updates the guide sections that describe it (rebuilt with `make -B`,
+> read back, committed) and gives each new view an F1/Help anchor that
+> lands on the right section, with the gates that hold those links green;
+> it is in every brief, and an integration without it is not done.
 
 > **C126. A WHITE PAPER IN THE REPOSITORY (Vitor, 2026-10-21: "Achas que
 > e bom pegarmos nesta dica, e fazemos um white paper que vamos
