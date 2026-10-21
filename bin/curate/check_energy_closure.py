@@ -528,10 +528,15 @@ KNOWN_OPEN = {
 #  prices both ends through `flashState::priceState`.  Measured after:
 #  letdown01 +0.0001 kW (the two drums' -6.2e-5 and -1.5e-5 kW), credo01
 #  -0.0000 kW (0.000 %).  PAID, not waived; the valve joined the unit arm.
+#  ONE MORE LEFT 2026-10-21 (DEV.md 4c C123, finding 4):
+#  extract02_declared_interior (-1.0263 kW) closes at +0.0001 kW, and
+#  extract01 (-0.8814 kW, just inside the band) at -0.0001 kW.  An isothermal
+#  extractor with no excess-enthalpy model has H(out) = H(in) once its material
+#  closes, so the residual was the cascade's 1e-4 tolerated mass imbalance
+#  priced at the formation datum; the cascade now closes to 1e-8.  PAID.
 KNOWN_OPEN_KW = {
     "tutorials/steady/absorption/absorber01_NH3_water": -27.9838,
     "tutorials/steady/absorption/acetone05_luyben_absorber": 3.1179,
-    "tutorials/steady/absorption/extract02_declared_interior": -1.0263,
     "tutorials/steady/absorption/stripper01_NH3_water": 19.8710,
     "tutorials/steady/distillation/shortcut01_benzene_toluene": -1.0804,
     "tutorials/steady/flash/flash20_ethanol_water_pcsaft": 42.8610,
