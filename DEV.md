@@ -2208,6 +2208,31 @@ accepts today, and that is a policy call.
 > 2026-10-20: "Avanca entao como achares melhor" -- dispatched (G18), the
 > two stages in one brief; C116 (one Explore) follows on the same branch
 > only if the Evidence view lands clean.
+> **DONE 2026-10-21 (G18 + G18b, `claude/c117-evidence-explorer`
+> fa103a95a, integrated).**  Stage 1: `data/local/evidence/` (flat,
+> gitignored `.dat`, README tracked), datasets and pair records read from
+> three tiers (open case > data/local > tutorials, merged by the data
+> block's sha256); `propertyScan1D` `vary { points ( ... ) }` (the engine
+> asked AT the measured x); witness
+> `props/compare/evidence01_methanol_water_points` (18 rows); gate
+> `check_evidence_records` (21 legacy datasets pinned in debt_registry).
+> Stage 2: the Explorer `evidence` lens for a pair -- every dataset of
+> any tier, every pair record of any tier plus UNIFAC / COSMO-SAC
+> (installed only) / ideal as candidates, ONE choupoProps run per
+> candidate with the parameters inline, points with the dataset's
+> uncertainty under one curve per candidate, a residual panel per
+> candidate, AAD / rel % / bias, the dossier verdict beside a candidate
+> a dossier cites; it fits nothing and interpolates nothing (residual =
+> engine minus measurement at the measured x).  Address
+> `&lens=evidence&datasets=&models=`.  Re-shot at 390 px and 1440 px:
+> candidates in six mid-tone hues (the shared pastel series vanished on
+> the light background), legend under the figure, no nested scroll.
+> Explorer Guide 3.14 (`sec:explorer-evidence`) + the in-view link; F1
+> -> `ch:fittable`.  Validation on the branch: `--gui` 5885/0, `--fast`
+> 74/0, 0 rows moved; re-taken on the combination with main (see the
+> integration commit).  Open, in C127: fit vs held-out points drawn
+> distinct, the view opening on the SELECTED model, per-point held-out
+> residuals from the engine.  C116 follows on the same screen.
 
 > **C116. "EXPLORE" AND "PROPERTY SURFACES" ARE TWO DOORS TO ONE ROOM
 > (Vitor, 2026-10-20, back on the thermophysical layer: "temos o 'explore' e
