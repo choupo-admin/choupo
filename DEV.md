@@ -1357,6 +1357,54 @@ accepts today, and that is a policy call.
 > final; }` layout draws what the steady flowsheet and the sizing pass
 > already hold.
 
+> **C133. THE DELIVERABLE DRAWINGS: THE PFD WITH ITS STREAM TABLE, AND
+> THE SPECIFICATION SHEETS, AS PDFS IN THE SECTOR/UNIT HIERARCHY (Vitor,
+> 2026-10-21: "Nos Reports devia de haver o diagrama PFD, com a tabela de
+> correntes, de acordo com as boas praticas.  Aquilo deve gerar A4 A3 A2
+> A1 (formato pdf) de acordo com o tamanho do PFD.  Se houver sectores,
+> cada um tem o seu PFD ... tambem devia gerar o PDF A4 das folhas de
+> especificacao com o esquema da operacao unitaria no centro, entradas e
+> saidas de corrente, energia e calor trocado, materiais, porta de homem,
+> flanges ... deve ficar uma hierarquia de acordo com os sectores e
+> operacoes unitarias").**  Measured: the GUI draws the PFD on a canvas
+> (`@xyflow/react`, laid out by `gui/src/case/flowsheetLayout.ts` /
+> `toGraph.ts`, streams numbered by `streamNumbering.ts`); the stream
+> table, the per-sector view and the specification sheets (`design/<SECTOR>/
+> <unit>/<item>`, drawn by equipment kind) exist; THREE datasheets already
+> print through the browser (`window.print()` -- hxDatasheet.ts:752,
+> ColumnDatasheet.tsx:341, HeatExchangerDatasheet.tsx:313), so a sheet
+> prints today only for the kinds that carry a button, at the browser's
+> page size, one at a time.  Nothing produces a PFD drawing as a
+> document, sized to its content, or a deliverable set.  Commander's
+> reading, to be put to Vitor as a scope: (1) THE PFD SHEET by good
+> practice -- the flowsheet drawn with equipment tags and stream numbers,
+> the stream table below or beside it (number, phase, T, P, flows,
+> composition, the case's units), a title block (case, sector, revision =
+> the run's commit, date, the author), the sheet size CHOSEN from the
+> drawing's extent (A4 -> A3 -> A2 -> A1, the smallest that keeps the
+> text legible), one sheet per sector plus a plant overview sheet whose
+> sectors are boxes; (2) THE SPECIFICATION SHEET as an A4 per sized item
+> -- the unit's schematic at the centre with its ports, the inlets and
+> outlets with their states, duties and work, materials, the nozzle
+> schedule, manways (C129 supplies nozzles/manways: until then the sheet
+> says "not yet declared"), the design basis and the `assumed` line;
+> (3) THE HIERARCHY: `reports/drawings/<SECTOR>/PFD-<SECTOR>.pdf` and
+> `reports/drawings/<SECTOR>/<unit>/<item>.pdf`, mirroring `design/`,
+> plus a single bound PDF with a contents page, downloadable from Reports
+> in one click.  HOW (the one decision that matters): the engine already
+> publishes everything a sheet shows; the LAYOUT (positions) lives in the
+> GUI, so the drawing is made where the layout is -- a print-ready SVG
+> per sheet assembled in the browser (no new dependency; the PDF by the
+> browser's print with an `@page` size per sheet, or by a small
+> SVG-to-PDF writer of our own), never re-computing a number; a headless
+> `bin/` route for the same sheets (the CI site smoke's Chrome) so a
+> case can produce its drawing set without a person at the screen.
+> Owed to Vitor: whether the sheets follow a named convention (title
+> block fields, symbol set -- ISO 10628 / the course's own), and the
+> priority against C129/C130 (the sheet shows nozzles and the P&ID's tags
+> when they exist).  Status: proposed; queued after the C131
+> consolidation.
+
 > **C132. DIAGNOSING A FAULT FROM A PLANT HISTORIAN -- AN EDUTOOL, AND
 > THE FAULTS AND INSTRUMENTS IT NEEDS (Vitor, 2026-10-21, after a
 > LinkedIn post of a historian dataset for root-cause analysis of a
