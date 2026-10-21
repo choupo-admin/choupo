@@ -1583,6 +1583,11 @@ accepts today, and that is a policy call.
 > CCS species), and several H2/CO pairs were fitted only far below loop
 > temperature (H2+CO2 to 303 K, H2+CO to 125 K): using them in the loop
 > extrapolates Eq. (4) in T, to be announced.
+> **Vitor, 2026-10-21: "Usa o PR78"** -- benchmark case A runs on PR78
+> (Choupo's `PR` with the 1978 m(omega) branch at omega > 0.491, which
+> the engine must state it has, or gain), kij from the 2010 table at each
+> unit's declared T (route P); the corpus `cavett01` stays SRK and
+> untouched.  A, D and E dispatched (G32).
 > pair; an LLE pair for C if UNIFAC does not split; D's outlet-temperature
 > PFR mode) put to Vitor.
 > **B and C BUILT 2026-10-21 (G26, `claude/c123-benchmarks-bc` 33e277ca2).**
