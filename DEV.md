@@ -1291,6 +1291,48 @@ accepts today, and that is a policy call.
 > fire-water ring main and hydrants, bunds, escape routes, swept path, a
 > fillet running through an item.
 
+> **C129. A FINAL-DETAIL PHASE OF THE 3D LAYOUT: PUMPS, CONTROL VALVES,
+> RELIEF VALVES ON THE LINES, AND MANWAYS AND FLANGED NOZZLES ON THE
+> EQUIPMENT THAT MERITS THEM (Vitor, 2026-10-21, before going to bed:
+> "deve haver uma fase em que e possivel adicionar bombas e valvulas de
+> regulacao de caudal e de pressao e valvulas de alivio de pressao, para
+> fazer o layout 3D final ... os equipamentos que merecem tem de ter
+> porta de homem e flanges de ligacao apropriadas ... numa opcao de
+> detalhe final?  Podes por na amonia verde?").**  Commander's reading,
+> to be put to him in the morning: yes, reasonable, as an OPT-IN
+> `detail { level final; }` (or a `piping {}` block) in `layoutDict`
+> that adds nothing until declared -- every existing layout
+> byte-identical.  Measured: the flowsheet already has `pump` and
+> `valve` units (`UnitOperation.cpp:178,182`) and a `reliefValve` sized
+> item (C62, a psv OF the protected unit, set pressure read from its
+> `pressureDesign`); the router already places a nozzle per item end
+> (`PlantLayout.H:126-136`) but as a point, not a flanged connection; a
+> control valve is NOT a unit today (a `valve` is a letdown with a
+> declared outlet P).  The slice, as a proposal: (1) IN-LINE ITEMS on a
+> routed pipe -- a pump drawn where the flowsheet's `pump` sits (its own
+> footprint, suction and discharge nozzles), a control valve DECLARED on
+> a stream with its controlled variable (flow or pressure) and placed at
+> a declared or defaulted fraction of the route, a relief valve drawn
+> at the protected item's nozzle and its discharge routed to a declared
+> header or vent -- each a sized item with a datasheet row, nothing
+> invented (a valve with no declared Cv/size is a labelled box); (2)
+> NOZZLES AND MANWAYS on the equipment that merits them: a nozzle
+> schedule per vessel/column/exchanger (service, nominal size from the
+> routed pipe's own size, rating from the item's `pressureDesign` by a
+> DECLARED flange-class table -- ASME B16.5 classes are a no-grant
+> standard, so the case declares the class or the sheet says "class not
+> declared"; orientation and elevation declared or defaulted and
+> announced), a manway where the item's diameter admits one (a declared
+> minimum, announced), drawn in the 3D view by kind on the C88 envelope;
+> (3) the witness is greenAmmonia03 (the green-ammonia basic design),
+> gaining the block and a before/after pair of screenshots.  What stays
+> out and is named: pipe stress, support design, instrument loops beyond
+> the valve's declared variable, any vendor catalogue.  Owed to Vitor
+> first (pedagogy and scope): whether the control valve becomes a
+> flowsheet UNIT (which would change the steady solve) or stays a
+> LAYOUT annotation (which the commander recommends for this slice).
+> Status: proposed; not dispatched until he answers.
+
 > **C128. WHICH SOLVENT, OR WHICH SOLVENT MIXTURE, FOR A GIVEN SUBSTANCE
 > -- an EduTool, and the Explorer's delta lens made honest first (Vitor,
 > 2026-10-21, with a second opinion he consulted on the lens with
