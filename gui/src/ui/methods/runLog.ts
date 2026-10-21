@@ -244,9 +244,9 @@ export const CITES = {
   daviesLogged: { file: "src/thermo/electrolyte/SpeciationSolver.cpp",
     line: 2402,
     contains: 'AdvisoryLog::instance().add("model", "warning", "speciation", msg.str())' },
-  unmarked: { file: "src/thermo/Database.cpp", line: 635,
+  unmarked: { file: "src/thermo/Database.cpp", line: 642,
     contains: "std::cerr << \"[unmarked] component '\" << name" },
-  unmarkedOnce: { file: "src/thermo/Database.cpp", line: 633,
+  unmarkedOnce: { file: "src/thermo/Database.cpp", line: 640,
     contains: 'if (announceOnce("unmarked:" + name))' },
   // -- a refusal, and the exit codes ---------------------------------------------------
   error: { file: MAIN, line: 1519,
