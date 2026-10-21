@@ -1453,7 +1453,17 @@ accepts today, and that is a policy call.
 > "vai ficar porque nos vamos resolver os problemas que viste") with
 > cited-version / in-integration / future kept apart.  Two coordinated
 > documents (JOSS short + this full article), both tied to a version.
-> Sent to G29 (v2).
+> Sent to G29 (v2); then REASSIGNED the same hour on Vitor's instruction
+> ("Refaz o draft agora com o Fable") to a fresh general on the model he
+> named (G31, branch `claude/c126-white-paper-v2`); G29 stopped with
+> nothing pushed, leaving one reusable measurement (curate05: in-sample
+> rms 0.13 K, held-out AAD 0.316 K against a 0.047 % band declared before
+> the fit -> notValidated; UNIFAC the mirror image).  The research
+> team's licence findings feed it: OpenCFD's Trade Mark Policy (read
+> 2026-10-21) asks for an Acknowledgement line and a Disclaimer line,
+> both quoted verbatim in the brief; COCO is closed-source freeware and
+> is NOT named; the reference simulator is GPL-3.0 at the recorded
+> commit, its sample folder under no licence of its own.
 
 > **C125. WHY THE BREAKTHROUGH PAGES ARE SLOW (Vitor, 2026-10-21: "Porque
 > isto e tao lento? breakthrough e do lub-scaleup").**  Measured by the
@@ -1557,6 +1567,22 @@ accepts today, and that is a policy call.
 > measured data (Brunner 1987; the ThermoML methanol-water series) through
 > a high-pressure solubility residual in `fitParameters`.  Order: B and C
 > first (no kij needed); A, D and E when Vitor has the articles.  Decisions 2-4 (B's case-local notValidated
+> **THE ARTICLES READ, DOUBLE-ENTRY (2026-10-21, a five-pair team, one
+> transcriber and one independent checker per article, private output in
+> `data/local/curation/c123/`):** PPR78 2010 (86 values, 86 agreed; the
+> minus signs the text layer drops re-read on the page image), E-PPR78
+> 2017 (90/89 -- one printed-label ambiguity, H2-H2O's second parameter
+> both lines labelled A), Vanden Bussche & Froment 1996 (120/116, every
+> number right, four location/wording notes), Xu & Froment 1989
+> (251/246, no wrong value), Brunner 1987 (917/917, all 301 Table 1
+> rows).  TWO FACTS the briefs had wrong: (1) **`cavett01` declares SRK
+> with every kij = 0, not Peng-Robinson**, and PPR78's kij are defined
+> for PR78 (Eq. 7 carries PR78's a_i and b_i; the 2010 article gives no
+> SRK route) -- case A must switch to PR78 or cite an SRK route, Vitor's
+> call; (2) methanol is NOT a group of E-PPR78 (the 2017 paper scopes 15
+> CCS species), and several H2/CO pairs were fitted only far below loop
+> temperature (H2+CO2 to 303 K, H2+CO to 125 K): using them in the loop
+> extrapolates Eq. (4) in T, to be announced.
 > pair; an LLE pair for C if UNIFAC does not split; D's outlet-temperature
 > PFR mode) put to Vitor.
 > **B and C BUILT 2026-10-21 (G26, `claude/c123-benchmarks-bc` 33e277ca2).**
