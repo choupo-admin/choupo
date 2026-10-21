@@ -1,0 +1,13 @@
+# A benchmark is a case like any other: running it in place leaves the same
+# generated tree a tutorial does.  The comparison scripts run each case in a
+# scratch copy, so these only catch a by-hand run.
+converged/
+reports/
+iterations/
+design/
+economics/
+postProcessing/
+*.csv
+!**/measurements/*.csv
+*.log
+residuals.dat

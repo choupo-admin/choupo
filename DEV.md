@@ -990,6 +990,21 @@ accepts today, and that is a policy call.
 > Q_condensate_m3_s` (1.0548e-4 m3/s), which main's golden never carried.
 > The operation schemas gained `condenser { type total|partial; }` (column18
 > uses it; check_schema_coverage refused it).
+> **INTEGRATED 2026-10-21, step 2 (G30 + G32 on main).**  Re-measured over
+> 118 cases in reach (LL/VLLE, extractors, activity models, PR, compressor,
+> phaseChanger, bubble point, the G28 columns): exactly the six approved
+> cases moved, 35 rows, all recorded; `--record` also ADDED 70 kpi rows to
+> lithiumBrinePlant that its golden never carried -- taken out, NOT pinned.
+> Solid-service A9a's literal is now 0.98297949.  `ppr78Kij` has a witness,
+> `tutorials/props/molecular/ppr78Kij01_ch4_co2_h2`.  moody02 and
+> reconcile01 (both unsealed on main) sealed with bin/choupo-import, each
+> reproducing its golden.  userOp03's 133.333 % closure measured on a build
+> of step-1 main too: not from these branches.  check_mass_closure sees it
+> only when the case's `code/` has been built (a fresh tree leaves it
+> "unrun"), which is why the integ sweep saw it and a gate run alone does
+> not.  publish-site has failed at its PUBLISH step since run 974 (before
+> this integration): `fatal: unable to write loose object file: Disk quota
+> exceeded` -- build, verify and the EduTool smoke all pass.
 
 > **C84. AN EDUTOOL: MATERIALS OF CONSTRUCTION, SEALS AND GASKETS -- THE
 > PARETO (Vítor, 2026-10-17: "Temos algum EduTools sobre materiais

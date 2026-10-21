@@ -57,6 +57,15 @@ WHAT THIS GATE CHECKS.
       Checked by reading the source, because two implementations that both
       converge produce two slightly different curves and nothing says which.
 
+  (h) THE PR SLOPE IS PR78's (2026-10-21, DEV.md 4c C123).  Both witnesses'
+      K-values come from Choupo's PR, which by ruling is the 1978 form: the
+      1976 polynomial up to omega = 0.491, the Robinson & Peng (1978) cubic
+      above it.  Every component in the witnesses is below the break, so a
+      PROBE with methanol (omega 0.565) is run; the engine's own
+      announcement is read, both slopes are recomputed HERE from the printed
+      omega, and the arm fails if the engine returned the 1976 value.  A
+      source arm holds the four cubic coefficients and the break constant.
+
 WHAT THIS GATE DOES **NOT** COVER, stated so its green line cannot imply it.
 No number in either witness is checked against a MEASURED envelope -- the
 feeds are plausible, not sampled, and the K-values come from Peng-Robinson
@@ -250,6 +259,71 @@ def main() -> int:
                      " algorithm -- otherwise a reader tries to tune it")
     else:
         notes.append("the unclosed nose names Michelsen (1980)")
+
+    # ---- (h) the PR slope is PR78's, recomputed from the printed omega --
+    #  The K-values both witnesses draw come from Choupo's PR, and since
+    #  2026-10-21 (DEV.md 4c C123) that PR IS PR78: the 1976 polynomial up to
+    #  omega = 0.491 and the Robinson & Peng (1978) cubic above it.  Every
+    #  component of the two witnesses sits below the break, so no envelope
+    #  can see which branch the engine took -- which is exactly why this arm
+    #  runs a PROBE with a component above it (methanol, omega 0.565), reads
+    #  the omega the engine PRINTS, recomputes both slopes from it here, and
+    #  fails if the engine returned the 1976 value.  A source arm beside it
+    #  holds the coefficients and the break: an output arm alone would pass
+    #  a branch whose constant drifted to 0.49 on a component at 0.565.
+    pr_src = (ROOT / "src" / "thermo" / "equationOfState" / "PR.cpp").read_text()
+    for needle in ("0.379642", "1.48503", "0.164423", "0.016666", "PR78_BREAK = 0.491"):
+        if needle not in pr_src:
+            fails.append(f"PR.cpp no longer carries the PR78 slope constant"
+                         f" '{needle}' (Robinson & Peng 1978, as PPR78 2010"
+                         f" Eq. 2 prints it) -- the model is PR78 by ruling,"
+                         f" not an option")
+    import tempfile
+    with tempfile.TemporaryDirectory(prefix="choupo-pr78-") as td:
+        probe = Path(td) / "pr78probe"
+        (probe / "system").mkdir(parents=True)
+        (probe / "constant").mkdir()
+        (probe / "system" / "controlDict").write_text(
+            "application choupoProps;\ndescription \"PR78 probe\";\nverbosity 3;\n")
+        (probe / "constant" / "thermoPhysPropDict").write_text(
+            "recordType thermophysicalPropertySystem;\nschemaVersion 2;\n"
+            "components ( methanol water );\n"
+            "equilibrium\n{\n    formulation gammaPhi;\n"
+            "    liquid { activityModel ideal; standardState pureLiquid; }\n"
+            "    vapour { fugacityModel PengRobinson; }\n}\n")
+        (probe / "system" / "propsDict").write_text(
+            "operations\n(\n    {\n        name pt;\n        type propertyPoint;\n"
+            "        state { T 400 K;  P 10 bar;  composition { methanol 0.5;  water 0.5; } }\n"
+            "        properties ( Z );\n    }\n);\n")
+        rc, out = run(probe)
+        m = re.search(r"\[PR78\] methanol omega = ([0-9.]+) > 0\.491: the 1978"
+                      r" branch applies, m = ([0-9.]+) \(the 1976 polynomial would"
+                      r" give ([0-9.]+)\)", out)
+        if rc != 0:
+            fails.append(f"the PR78 probe (methanol + water on a PengRobinson"
+                         f" vapour) did not run (exit {rc}): {out[-400:]}")
+        elif not m:
+            fails.append("the PR78 probe ran and the engine did not announce"
+                         " methanol (omega 0.565 > 0.491) with the slope it"
+                         " received -- a component on the 1978 branch is"
+                         " announced, by ruling")
+        else:
+            w = float(m.group(1)); m_print = float(m.group(2)); m76_print = float(m.group(3))
+            m78 = 0.379642 + 1.48503 * w - 0.164423 * w**2 + 0.016666 * w**3
+            m76 = 0.37464 + 1.54226 * w - 0.26992 * w**2
+            if abs(m_print - m78) > 2e-5:
+                fails.append(f"PR78 probe: the engine prints m = {m_print} for"
+                             f" omega = {w}; the 1978 cubic gives {m78:.5f}"
+                             + (" -- that is the 1976 polynomial"
+                                if abs(m_print - m76) < 2e-5 else ""))
+            elif abs(m76_print - m76) > 2e-5:
+                fails.append(f"PR78 probe: the 1976 value printed beside the"
+                             f" slope ({m76_print}) is not the 1976 polynomial"
+                             f" at omega = {w} ({m76:.5f})")
+            else:
+                notes.append(f"PR78: methanol (omega {w}) gets the 1978 slope"
+                             f" {m78:.5f}, recomputed here, not the 1976"
+                             f" {m76:.5f}")
 
     if fails:
         print("check_phase_envelope: FAILED")

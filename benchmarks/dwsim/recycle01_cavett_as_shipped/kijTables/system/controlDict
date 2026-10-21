@@ -1,0 +1,3 @@
+application   choupoProps;
+description   "Benchmark A: the PPR78 kij sets at the four separators' declared temperatures";
+verbosity     3;

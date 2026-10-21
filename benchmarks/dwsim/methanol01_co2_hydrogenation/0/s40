@@ -1,0 +1,23 @@
+/*--- Choupo stream state.  Every DIMENSIONAL value carries its unit; the parser converts to SI.
+     A TEAR SEED, authored (DEV.md 4c C123): the reactor feed, guessed as TWICE the make-up
+     (a recycle equal to the make-up) at the reactor's 510.15 K.
+     The composition is the FRESH make-up's (hydrogen + co2Feed, summed from
+     0/hydrogen and 0/co2Feed), never the sample's converged loop; the flow and
+     T are round guesses.  `choupo-init0`'s propagated seed was 90 % water
+     at 307 K and 1 atm, on which the feed/effluent exchanger refused; the solver overwrites this file's values. ---*/
+
+componentMolarFlows
+{
+    methanol   2.599328582e-06 kmol/s;
+    water      0.001205456548 kmol/s;
+    H2         0.02926796187 kmol/s;
+    CO2        0.004324816615 kmol/s;
+    CO         0.001230736872 kmol/s;
+    N2         2.599328582e-06 kmol/s;
+    O2         2.599328582e-06 kmol/s;
+    Ar         0.0006901746518 kmol/s;
+}
+
+T               510.15 K;
+P               7300000 Pa;
+phase           gas;

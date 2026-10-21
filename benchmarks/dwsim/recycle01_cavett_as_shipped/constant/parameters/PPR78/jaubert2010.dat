@@ -1,0 +1,99 @@
+/*---------------------------------------------------------------------------*\
+  PPR78 GROUP-INTERACTION PARAMETERS -- the subset case A needs.
+
+  SOURCE (primary, cited per value): J.-N. Jaubert, R. Privat, F. Mutelet,
+  "Predicting the Phase Equilibria of Synthetic Petroleum Fluids with the
+  PPR78 Approach", AIChE Journal 56(12) (2010) 3225-3235,
+  DOI 10.1002/aic.12232 -- Table 1 (p. 3228), "(A_kl = A_lk)/MPa and
+  (B_kl = B_lk)/MPa"; Eqs. 1-2 (PR78, p. 3226), Eq. 5 (E_ij, p. 3226), Eq. 7
+  (k_ij, p. 3227).  Group numbering of the article: 1 CH3, 2 CH2, 3 CH,
+  5 CH4, 6 C2H6, 12 CO2, 13 N2, 14 H2S (groups 4, 7-11, 15 are not needed
+  here: no component of this case has a quaternary carbon, an aromatic, a
+  cyclic or an SH group).
+
+  TRANSCRIPTION: read from the page image at 300-400 dpi by two readers
+  independently (2026-10-21; the PDF's text layer DROPS minus signs -- it
+  prints B15 = 35.00 where the page prints -35.00 -- so no value here comes
+  from the text layer).  86 values transcribed, 86 agreed.  The private
+  transcription and its check are in data/local/curation/c123/ (gitignored;
+  the article is not redistributed).  `reviewStatus interim`: Vitor has not
+  read the values back against the article himself.
+
+  THE DECOMPOSITIONS ARE DECLARED, NOT PRINTED.  The article prints no
+  per-molecule group count; the fractions alpha_ik follow from its
+  definition (p. 3227: occurrences of group k in molecule i over the total
+  number of groups in i) and the molecules' structures.  Methane and ethane
+  are whole-molecule groups by the article's own naming (its Conclusion
+  calls group 5 "(methane)" and group 6 "(ethane)"); every other alkane is
+  CH3/CH2/CH.  Identity by CAS: isoButane 75-28-5 (2-methylpropane),
+  isopentane 78-78-4 (2-methylbutane).  Both readers derived them and agree.
+
+  HOW THEY ARE USED: the `ppr78Kij` props op (system/propsDict) evaluates
+  Eq. 7 ONCE at each unit's declared temperature on Choupo's own PR78 a_i(T)
+  and b_i and writes a kij SET record per unit under
+  constant/parameters/PengRobinson/; the flowsheet declares those sets.
+  Nothing reads this table at run time.
+\*---------------------------------------------------------------------------*/
+
+recordType     ppr78GroupTable;
+schemaVersion  1;
+method         PPR78;
+eos            PengRobinson;        // the kij are defined on PR78's a_i, b_i (Eq. 7)
+units          MPa;                 // A_kl and B_kl, as printed
+Tref           298.15 K;            // Eq. 5
+source         "Jaubert, Privat & Mutelet, AIChE J. 56 (2010) 3225-3235, DOI 10.1002/aic.12232, Table 1 (p. 3228); Eqs. 1-2, 5, 7";
+reviewStatus   interim;
+licence        primaryCitation;     // values transcribed from the article and cited to it; no databank
+
+groups ( CH3 CH2 CH CH4 C2H6 CO2 N2 H2S );
+
+interactions   // A_kl = A_lk, B_kl = B_lk, MPa; each pair once
+(
+    { k CH3;  l CH2;   A 74.81;  B 165.7;  }
+    { k CH3;  l CH;    A 261.5;  B 388.8;  }
+    { k CH2;  l CH;    A 51.47;  B 79.61;  }
+    { k CH3;  l CH4;   A 32.94;  B -35.00; }   // the minus is on the page, not in the text layer
+    { k CH2;  l CH4;   A 36.72;  B 108.4;  }
+    { k CH;   l CH4;   A 145.2;  B 301.6;  }
+    { k CH3;  l C2H6;  A 8.579;  B -29.51; }   // idem
+    { k CH2;  l C2H6;  A 31.23;  B 84.76;  }
+    { k CH;   l C2H6;  A 174.3;  B 352.1;  }
+    { k CH4;  l C2H6;  A 13.04;  B 6.863;  }
+    { k CH3;  l CO2;   A 164.0;  B 269.0;  }
+    { k CH2;  l CO2;   A 136.9;  B 254.6;  }
+    { k CH;   l CO2;   A 184.3;  B 762.1;  }
+    { k CH4;  l CO2;   A 137.3;  B 194.2;  }
+    { k C2H6; l CO2;   A 135.5;  B 239.5;  }
+    { k CH3;  l N2;    A 52.74;  B 87.19;  }
+    { k CH2;  l N2;    A 82.28;  B 202.8;  }
+    { k CH;   l N2;    A 365.4;  B 521.9;  }
+    { k CH4;  l N2;    A 37.90;  B 37.20;  }
+    { k C2H6; l N2;    A 61.59;  B 84.92;  }
+    { k CO2;  l N2;    A 98.42;  B 221.4;  }
+    { k CH3;  l H2S;   A 158.4;  B 241.2;  }
+    { k CH2;  l H2S;   A 134.6;  B 138.3;  }
+    { k CH;   l H2S;   A 193.9;  B 307.8;  }
+    { k CH4;  l H2S;   A 181.2;  B 288.9;  }
+    { k C2H6; l H2S;   A 157.2;  B 217.1;  }
+    { k CO2;  l H2S;   A 134.9;  B 201.4;  }
+    { k N2;   l H2S;   A 319.5;  B 550.1;  }
+);
+
+decompositions   // group counts per molecule (alpha_ik = count / total)
+{
+    N2          { N2 1; }
+    CO2         { CO2 1; }
+    H2S         { H2S 1; }
+    CH4         { CH4 1; }
+    ethane      { C2H6 1; }
+    propane     { CH3 2;  CH2 1; }
+    isoButane   { CH3 3;  CH 1; }
+    nButane     { CH3 2;  CH2 2; }
+    isopentane  { CH3 3;  CH2 1;  CH 1; }
+    nPentane    { CH3 2;  CH2 3; }
+    nHexane     { CH3 2;  CH2 4; }
+    nHeptane    { CH3 2;  CH2 5; }
+    nOctane     { CH3 2;  CH2 6; }
+    nNonane     { CH3 2;  CH2 7; }
+    nDecane     { CH3 2;  CH2 8; }
+}

@@ -1,0 +1,88 @@
+/*---------------------------------------------------------------------------*\
+  fitParameters proposal -- pair H2-methanol -- model PengRobinson
+  generated 2026-10-21 by choupoProps fitParameters
+
+  VERDICT: notValidated
+  !! The held-out test was PERFORMED and the declared criterion was MISSED.
+  !! This is a completed experiment with a negative result.  Promoting these
+  !! parameters ships a pair known not to meet its own acceptance band.
+
+  Promote by:
+      mv ../constant/parameters/PengRobinson/H2-methanol.dat  constant/parameters/PengRobinson/H2-methanol.dat
+\*---------------------------------------------------------------------------*/
+
+recordType  eosBinaryInteraction;
+schemaVersion 1;
+i           H2;
+j           methanol;
+kij         -0.20455596;
+eos         PengRobinson;
+
+provenance
+{
+    origin        fitted;
+    method        "fitParameters(P_bubble), Levenberg-Marquardt";
+    methodVersion "choupoProps Choupo-dev";
+    fitDate       "2026-10-21";
+
+    evidence
+    (
+        {
+            role      fit;
+            dataset   "../constant/experiments/brunner1987-H2-methanol-298K.dat";
+            identity  none;    // declares no DOI or hash -- it cannot take part in the cross-role identity check
+            provenance measured;
+            system    "H2 + methanol";
+        }
+        {
+            role      fit;
+            dataset   "../constant/experiments/brunner1987-H2-methanol-323K.dat";
+            identity  none;    // declares no DOI or hash -- it cannot take part in the cross-role identity check
+            provenance measured;
+            system    "H2 + methanol";
+        }
+        {
+            role      validation;
+            dataset   "../constant/experiments/brunner1987-H2-methanol-373K.dat";
+            identity  none;    // declares no DOI or hash -- it cannot take part in the cross-role identity check
+            provenance measured;
+            system    "H2 + methanol";
+        }
+    );
+    fingerprint "8bc919c232e4abb6";   // of the declaration, frozen before the fit
+
+    //  IN-SAMPLE: the model reproducing the very points it was
+    //  fitted to.  It is NOT a validation; see the block below.
+    weighting     equal;   // chi2 is sum ((P_model - P_exp)/P_exp)^2, dimensionless
+    chi2          0.06885762;
+    rms_rel       0.10712736;
+    nDataPoints   6;
+    identifiable  true;
+    maxAbsCorr    0.00000000;
+
+    validity
+    {
+        temperature { min 298.15 K; max 323.15 K; }
+        pressure    { min 4400000 Pa; max 17700000 Pa; }
+        note        "the span of the FIT evidence; outside it the pair is an extrapolation";
+    }
+}
+
+validation
+{
+    verdict     notValidated;
+
+    heldOut
+    {
+        points      5;
+        aad_pct     30.816477;
+        aad_rel     0.308165;
+        domain_x1   ( 0.007200 0.042280 );
+    }
+
+    acceptance
+    {
+        maxAAD      5.000000;   // per cent
+        origin      "declared before the fit, one rule for the three gases: the authors' stated composition uncertainty (<= 2 % of x_gas, p. 276) is 2 % of p on a bubble point at fixed x in the dilute regime, plus the 0.2 % pressure error (p. 276) = 2.2 % per point; a held-out comparison across isotherms of a ONE-parameter model is granted twice that, 4.4 %, rounded up to one figure";
+    }
+}

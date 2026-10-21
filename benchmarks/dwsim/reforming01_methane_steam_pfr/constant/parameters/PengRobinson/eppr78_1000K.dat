@@ -1,0 +1,52 @@
+/*---------------------------------------------------------------------------*\
+  kij SET -- E-PPR78 group-contribution binary interaction parameters
+  of the PR78 equation of state, EVALUATED ONCE at T = 1000.000 K and written here as the CONSTANTS
+  the phi-phi package reads (DEV.md 4c C123, route P: "kij a T declarada").
+
+  Written 2026-10-21 by choupoProps ppr78Kij(kij_bed).  RE-RUN THAT OP
+  to regenerate; do not edit a number here by hand.
+
+  SOURCE of every A_kl, B_kl and decomposition: ../constant/parameters/PPR78/xu2017.dat
+      Xu, Lasala, Privat & Jaubert, Int. J. Greenh. Gas Control 56 (2017) 126-154, DOI 10.1016/j.ijggc.2016.11.015, Table 3 (p. 132); Eqs. 1-2, 4; Table 2 (pp. 130-131) for the data windows
+  EQUATION: k_ij = [E_ij - (delta_i - delta_j)^2] / (2 delta_i delta_j),
+      delta_i = sqrt(a_i(T))/b_i on Choupo's own PR78 (PR::mixingLedger),
+      E_ij = -1/2 SUM_k SUM_l (alpha_ik - alpha_jk)(alpha_il - alpha_jl)
+             A_kl (298.15/T)^(B_kl/A_kl - 1),  A, B in MPa.
+  The columns beside each kij are the three terms of that quotient, in MPa,
+  so a reader can redo the division.
+
+  EXTRAPOLATED IN T (their parameters were fitted on data whose range the
+  table record declares; this T lies outside it): CH4-H2 (66.89-298.00 K), CH4-water (253.15-651.70 K), CH4-CO2 (143.31-353.15 K), CH4-CO (90.67-185.93 K), H2-water (273.15-699.20 K), H2-CO2 (218.16-303.15 K), H2-CO (57.21-125.00 K), water-CO2 (251.90-698.20 K), water-CO (302.59-477.59 K), CO2-CO (223.15-343.14 K)
+\*---------------------------------------------------------------------------*/
+
+recordType     eosBinaryInteractionSet;
+schemaVersion  1;
+eos            PengRobinson;
+method         E-PPR78;
+T              1000.000000 K;
+groupTable     "../constant/parameters/PPR78/xu2017.dat";
+reviewStatus   interim;
+licence        primaryCitation;
+
+decompositions   // alpha_ik = count / total, per molecule
+{
+    CH4            "1 CH4";
+    H2             "1 H2";
+    water          "1 H2O";
+    CO2            "1 CO2";
+    CO             "1 CO";
+}
+
+pairs   // i  j  kij  |  E_ij [MPa]  (delta_i - delta_j)^2 [MPa]  2 delta_i delta_j [MPa]
+(
+    { i CH4;         j H2;          kij   1.5409411658;  E_MPa   254.6997;  deltaTerm_MPa     0.0651;  denominator_MPa   165.2461;  dataWindow "66.89-298.00 K";  extrapolated yes; }
+    { i CH4;         j water;       kij   0.1620457466;  E_MPa   621.7965;  deltaTerm_MPa   525.7541;  denominator_MPa   592.6871;  dataWindow "253.15-651.70 K";  extrapolated yes; }
+    { i CH4;         j CO2;         kij   0.3662054386;  E_MPa    68.2752;  deltaTerm_MPa     0.6394;  denominator_MPa   184.6935;  dataWindow "143.31-353.15 K";  extrapolated yes; }
+    { i CH4;         j CO;          kij  -0.3277945529;  E_MPa     8.3732;  deltaTerm_MPa    30.6337;  denominator_MPa    67.9100;  dataWindow "90.67-185.93 K";  extrapolated yes; }
+    { i H2;          j water;       kij   4.9784303786;  E_MPa  3406.4812;  deltaTerm_MPa   537.5234;  denominator_MPa   576.2776;  dataWindow "273.15-699.20 K";  extrapolated yes; }
+    { i H2;          j CO2;         kij   1.2029395286;  E_MPa   217.1365;  deltaTerm_MPa     1.1127;  denominator_MPa   179.5800;  dataWindow "218.16-303.15 K";  extrapolated yes; }
+    { i H2;          j CO;          kij   0.7454691408;  E_MPa    77.0968;  deltaTerm_MPa    27.8736;  denominator_MPa    66.0298;  dataWindow "57.21-125.00 K";  extrapolated yes; }
+    { i water;       j CO2;         kij   0.8359580722;  E_MPa  1028.1635;  deltaTerm_MPa   489.7243;  denominator_MPa   644.0983;  dataWindow "251.90-698.20 K";  extrapolated yes; }
+    { i water;       j CO;          kij   8.3707534084;  E_MPa  2792.6376;  deltaTerm_MPa   810.2049;  denominator_MPa   236.8285;  dataWindow "302.59-477.59 K";  extrapolated yes; }
+    { i CO2;         j CO;          kij  -0.2553893380;  E_MPa    21.2765;  deltaTerm_MPa    40.1244;  denominator_MPa    73.8006;  dataWindow "223.15-343.14 K";  extrapolated yes; }
+);

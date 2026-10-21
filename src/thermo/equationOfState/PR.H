@@ -29,8 +29,9 @@ Class
     Choupo::PR
 
 Description
-    Peng-Robinson (1976) cubic equation of state, vapour root --- the sibling
-    of Choupo::SRK.  Generalised cubic with ε = 1 − √2, σ = 1 + √2:
+    Peng-Robinson cubic equation of state in its 1978 form (PR78), vapour
+    root --- the sibling of Choupo::SRK.  Generalised cubic with
+    ε = 1 − √2, σ = 1 + √2:
 
         P = R·T / (v − b) − a(T) / [ (v + ε·b)(v + σ·b) ]
 
@@ -39,8 +40,17 @@ Description
         a_c,i = 0.45724 · R² · Tc_i² / Pc_i
         b_i   = 0.07780 · R · Tc_i  / Pc_i
         α_i(T) = [ 1 + κ_i · (1 − √(T/Tc_i)) ]²
-        κ_i    = 0.37464 + 1.54226·ω_i − 0.26992·ω_i²      (PR76)
+        κ_i    = 0.37464  + 1.54226·ω_i − 0.26992·ω_i²                  (ω_i ≤ 0.491)
+        κ_i    = 0.379642 + 1.48503·ω_i − 0.164423·ω_i² + 0.016666·ω_i³ (ω_i > 0.491)
         a_i(T) = a_c,i · α_i(T)
+
+    The two-branch slope is Robinson & Peng (1978), GPA RR-28, as the
+    PPR78 literature restates it (Jaubert, Privat & Mutelet, AIChE J. 56
+    (2010) 3225, Eq. 2).  Since 2026-10-21 (DEV.md 4c C123) the model IS
+    PR78: a component whose ω exceeds 0.491 is announced on the run with
+    the slope it received and the 1976 value it would have had.  Below the
+    break the two forms are the same polynomial, so a mixture of light
+    components is unchanged to the last bit.
 
     Van der Waals one-fluid mixing rule (same as SRK):
 
@@ -70,8 +80,10 @@ Description
             + (da_mix/dT) / (2√2·b_mix)
               · ln[ (Z + (1+√2)B) / (Z + (1−√2)B) ]
 
-    Note: the PR76 κ-correlation above is used for all ω; the PR78 high-ω
-    refinement (ω > 0.49) is not applied.  Dictionary form mirrors SRK:
+    Dictionary form mirrors SRK (the phi-phi grammar spells the model
+    `PengRobinson`; a kij comes from a cited pair record, a kij SET record
+    evaluated at a declared temperature, or -- under regression only -- an
+    inline value that names its origin; see ThermoPackageBuilder):
 
         equationOfState
         {
@@ -129,7 +141,7 @@ private:
     {
         scalar a_c;          // 0.45724 R² Tc² / Pc   [Pa·m^6/mol²]
         scalar b;            // 0.07780 R Tc / Pc      [m³/mol]
-        scalar kappa;        // PR76 κ(ω)
+        scalar kappa;        // PR78 κ(ω), two branches at ω = 0.491
         scalar Tc;           // [K]
     };
 

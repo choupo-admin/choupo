@@ -86,6 +86,24 @@ Description
                        (T_bubble_model - T_exp).  Drives NRTL / Wilson
                        binary pair regression.
 
+      * P_bubble  --  the same engine with the roles swapped (2026-10-21,
+                       DEV.md 4c C123): for each (x_1, P_exp) row at a FIXED
+                       T (a `T` column, or the dataset's held-constant
+                       `T 298.15 K;`, or `residual.T`), compute the bubble
+                       PRESSURE and return the RELATIVE residual
+                       (P_model - P_exp)/P_exp -- relative because one
+                       isotherm of a gas in a liquid spans 5 to 1100 bar and
+                       an absolute residual would let the high-pressure end
+                       outvote the pressures a plant runs at.  Built for the
+                       kij of a cubic (the path `equilibrium.equationOfState
+                       .binaryInteractions.<i>-<j>.kij`, whose inline form the
+                       builder accepts only under regression, `origin`
+                       named); the proposal it writes is a `recordType
+                       eosBinaryInteraction` record the phi-phi package
+                       declares by `source`.  `weighting` is refused (the
+                       residual is already relative).  The held-out AAD is
+                       in per cent of P, the same band grammar as T_bubble.
+
       * isotherm  --  adsorption-isotherm regression (A1b, contract section
                        2/5): fit the van't Hoff Langmuir surface
                        q = q_max b(T) p / (1 + b(T) p),

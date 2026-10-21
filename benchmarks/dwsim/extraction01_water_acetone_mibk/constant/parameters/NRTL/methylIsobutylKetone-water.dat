@@ -1,0 +1,67 @@
+/*---------------------------------------------------------------------------*\
+  NRTL binary interaction parameters --- methylIsobutylKetone(i) + water(j)
+
+  ONE OF A SET OF THREE.  Choi & Rhim (1986) regressed the nine NRTL
+  parameters of the TERNARY methyl isobutyl ketone(1) + water(2) + acetone(3)
+  at 25 C to their OWN measured tie lines (their Table 5) and to nothing
+  else; the three pair records of this case (this one,
+  acetone-methylIsobutylKetone.dat, acetone-water.dat) are that one fit and
+  are valid only together, for liquid-liquid equilibrium, at 298.15 K.  They
+  are NOT a vapour-liquid pair: no VLE entered the fit.
+
+  SOURCE (primary, read on the article's own page images):
+      J. S. Choi, J. N. Rhim, "Liquid-Liquid Equilibria for Ternary Systems
+      with Solvent - Water - Acetone", Hwahak Konghak (J. Korean Inst. Chem.
+      Eng.) 24(3) (1986) 185-194, Table 3, row "Methylisobutyl ketone":
+          g11 1000  g22 1482  g33 388  g12 3262  g13 354  g23 1523  [cal/g-mol]
+          alpha12 0.245  alpha13 0.246  alpha23 0.497   (RMSD 1.410 mol %)
+      (no DOI is assigned; the journal's page is
+      https://www.kiche.or.kr/journal/kcer/view/all/24/3/185).
+
+  CONVERSION, the arithmetic and nothing else.  The article writes
+  tau_ji = (g_ji - g_ii)/RT with g_ij = g_ji (its Eqs. 4-6), which is the
+  convention src/thermo/activityCoefficient/NRTL.cpp computes
+  (tau_ij = a_ij + b_ij/T, direction i->j as Renon & Prausnitz).  So
+  a = 0 and b = (g_ij - g_jj)/R with R = 8.314462618/4.184 =
+  1.987204259 cal/(mol K):
+      b(MIBK->water) = (g12 - g22)/R = 1780/R =  895.7308 K
+      b(water->MIBK) = (g12 - g11)/R = 2262/R = 1138.2826 K
+\*---------------------------------------------------------------------------*/
+
+recordType binaryInteractionParameters;
+schemaVersion 1;
+
+components  ( methylIsobutylKetone  water );
+model       NRTL;
+
+pair { i methylIsobutylKetone; j water; }
+
+parameters
+{
+    i           methylIsobutylKetone;
+    j           water;
+    a_ij        0.0;
+    b_ij        895.7308;          // K
+    a_ji        0.0;
+    b_ji        1138.2826;         // K
+    alpha       0.245;
+}
+
+provenance
+{
+    origin        literature;
+    citation      "Choi, J. S.; Rhim, J. N. Hwahak Konghak 24(3) (1986) 185-194, Table 3 (NRTL, MIBK(1)-water(2)-acetone(3), 25 C), regressed by the authors to their own tie lines (Table 5)";
+    method        "authors' least-squares fit of the ternary NRTL to measured tie lines (Hooke-Jeeves); converted here by b = (g_ij - g_jj)/R";
+    fitData       "<the authors' Table 5; not refit>";
+    fitDate       "<literature, 1986>";
+    chi2          "<not reported; RMSD 1.410 mol % over the ternary tie lines>";
+    nDataPoints   10;
+    reviewStatus  interim;
+    reviewReason  "transcribed from the article's page images by an assistant and read back once against the scan; not yet reviewed by a curator";
+    validity
+    {
+        temperature { min 298.15 K; max 298.15 K; }
+        note        "one isotherm, 25 C, liquid-liquid only; valid as a SET with acetone-methylIsobutylKetone and acetone-water from the same table";
+    }
+    author        "transcribed for benchmarks/ (DEV.md 4c C123), 2026-10-20";
+}

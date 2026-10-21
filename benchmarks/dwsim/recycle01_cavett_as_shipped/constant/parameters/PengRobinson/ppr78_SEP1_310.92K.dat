@@ -1,0 +1,154 @@
+/*---------------------------------------------------------------------------*\
+  kij SET -- PPR78 group-contribution binary interaction parameters
+  of the PR78 equation of state, EVALUATED ONCE at T = 310.920 K and written here as the CONSTANTS
+  the phi-phi package reads (DEV.md 4c C123, route P: "kij a T declarada").
+
+  Written 2026-10-21 by choupoProps ppr78Kij(kij_SEP1).  RE-RUN THAT OP
+  to regenerate; do not edit a number here by hand.
+
+  SOURCE of every A_kl, B_kl and decomposition: ../constant/parameters/PPR78/jaubert2010.dat
+      Jaubert, Privat & Mutelet, AIChE J. 56 (2010) 3225-3235, DOI 10.1002/aic.12232, Table 1 (p. 3228); Eqs. 1-2, 5, 7
+  EQUATION: k_ij = [E_ij - (delta_i - delta_j)^2] / (2 delta_i delta_j),
+      delta_i = sqrt(a_i(T))/b_i on Choupo's own PR78 (PR::mixingLedger),
+      E_ij = -1/2 SUM_k SUM_l (alpha_ik - alpha_jk)(alpha_il - alpha_jl)
+             A_kl (298.15/T)^(B_kl/A_kl - 1),  A, B in MPa.
+  The columns beside each kij are the three terms of that quotient, in MPa,
+  so a reader can redo the division.
+\*---------------------------------------------------------------------------*/
+
+recordType     eosBinaryInteractionSet;
+schemaVersion  1;
+eos            PengRobinson;
+method         PPR78;
+T              310.920000 K;
+groupTable     "../constant/parameters/PPR78/jaubert2010.dat";
+reviewStatus   interim;
+licence        primaryCitation;
+
+decompositions   // alpha_ik = count / total, per molecule
+{
+    N2             "1 N2";
+    CO2            "1 CO2";
+    H2S            "1 H2S";
+    CH4            "1 CH4";
+    ethane         "1 C2H6";
+    propane        "2 CH3 + 1 CH2";
+    isoButane      "3 CH3 + 1 CH";
+    nButane        "2 CH3 + 2 CH2";
+    isopentane     "3 CH3 + 1 CH2 + 1 CH";
+    nPentane       "2 CH3 + 3 CH2";
+    nHexane        "2 CH3 + 4 CH2";
+    nHeptane       "2 CH3 + 5 CH2";
+    nOctane        "2 CH3 + 6 CH2";
+    nNonane        "2 CH3 + 7 CH2";
+    nDecane        "2 CH3 + 8 CH2";
+}
+
+pairs   // i  j  kij  |  E_ij [MPa]  (delta_i - delta_j)^2 [MPa]  2 delta_i delta_j [MPa]
+(
+    { i N2;          j CO2;         kij  -0.0636344104;  E_MPa    93.3952;  deltaTerm_MPa   129.3498;  denominator_MPa   565.0189; }
+    { i N2;          j H2S;         kij   0.1237718551;  E_MPa   309.9738;  deltaTerm_MPa   228.8354;  denominator_MPa   655.5477; }
+    { i N2;          j CH4;         kij   0.0428250000;  E_MPa    37.9294;  deltaTerm_MPa    20.7711;  denominator_MPa   400.6612; }
+    { i N2;          j ethane;      kij   0.0241671249;  E_MPa    60.6193;  deltaTerm_MPa    49.4926;  denominator_MPa   460.4069; }
+    { i N2;          j propane;     kij  -0.0031056182;  E_MPa    44.2038;  deltaTerm_MPa    45.6126;  denominator_MPa   453.6214; }
+    { i N2;          j isoButane;   kij   0.1060065503;  E_MPa    80.1695;  deltaTerm_MPa    34.3623;  denominator_MPa   432.1167; }
+    { i N2;          j nButane;     kij   0.0089205990;  E_MPa    46.5728;  deltaTerm_MPa    42.5754;  denominator_MPa   448.1058; }
+    { i N2;          j isopentane;  kij   0.0954784090;  E_MPa    76.7542;  deltaTerm_MPa    35.3113;  denominator_MPa   434.0553; }
+    { i N2;          j nPentane;    kij   0.0287718598;  E_MPa    49.8900;  deltaTerm_MPa    37.2876;  denominator_MPa   438.0108; }
+    { i N2;          j nHexane;     kij   0.0465705878;  E_MPa    52.8914;  deltaTerm_MPa    32.9083;  denominator_MPa   429.0936; }
+    { i N2;          j nHeptane;    kij   0.0594066628;  E_MPa    55.4222;  deltaTerm_MPa    30.2678;  denominator_MPa   423.4276; }
+    { i N2;          j nOctane;     kij   0.0784001159;  E_MPa    57.5319;  deltaTerm_MPa    25.2385;  denominator_MPa   411.9050; }
+    { i N2;          j nNonane;     kij   0.0913297862;  E_MPa    59.2981;  deltaTerm_MPa    22.3348;  denominator_MPa   404.7232; }
+    { i N2;          j nDecane;     kij   0.1034064184;  E_MPa    60.7901;  deltaTerm_MPa    19.6657;  denominator_MPa   397.6969; }
+    { i CO2;         j H2S;         kij   0.0926653317;  E_MPa   132.1397;  deltaTerm_MPa    14.0933;  denominator_MPa  1273.9005; }
+    { i CO2;         j CH4;         kij   0.1136424598;  E_MPa   134.9343;  deltaTerm_MPa    46.4535;  denominator_MPa   778.5894; }
+    { i CO2;         j ethane;      kij   0.1256172455;  E_MPa   131.2078;  deltaTerm_MPa    18.8192;  denominator_MPa   894.6910; }
+    { i CO2;         j propane;     kij   0.1285478803;  E_MPa   134.6553;  deltaTerm_MPa    21.3397;  denominator_MPa   881.5049; }
+    { i CO2;         j isoButane;   kij   0.0973247682;  E_MPa   112.0992;  deltaTerm_MPa    30.3741;  denominator_MPa   839.7156; }
+    { i CO2;         j nButane;     kij   0.1200922386;  E_MPa   128.0800;  deltaTerm_MPa    23.5052;  denominator_MPa   870.7866; }
+    { i CO2;         j isopentane;  kij   0.0992769423;  E_MPa   113.2328;  deltaTerm_MPa    29.4944;  denominator_MPa   843.4829; }
+    { i CO2;         j nPentane;    kij   0.1154774875;  E_MPa   126.0306;  deltaTerm_MPa    27.7397;  denominator_MPa   851.1694; }
+    { i CO2;         j nHexane;     kij   0.1123507257;  E_MPa   125.4542;  deltaTerm_MPa    31.7716;  denominator_MPa   833.8409; }
+    { i CO2;         j nHeptane;    kij   0.1105378476;  E_MPa   125.4295;  deltaTerm_MPa    34.4756;  denominator_MPa   822.8305; }
+    { i CO2;         j nOctane;     kij   0.1065757764;  E_MPa   125.6225;  deltaTerm_MPa    40.3151;  denominator_MPa   800.4390; }
+    { i CO2;         j nNonane;     kij   0.1038958154;  E_MPa   125.8980;  deltaTerm_MPa    44.1857;  denominator_MPa   786.4830; }
+    { i CO2;         j nDecane;     kij   0.1009966671;  E_MPa   126.1974;  deltaTerm_MPa    48.1442;  denominator_MPa   772.8289; }
+    { i H2S;         j CH4;         kij   0.0719761763;  E_MPa   176.7390;  deltaTerm_MPa   111.7203;  denominator_MPa   903.3371; }
+    { i H2S;         j ethane;      kij   0.0859541887;  E_MPa   154.7078;  deltaTerm_MPa    65.4839;  denominator_MPa  1038.0407; }
+    { i H2S;         j propane;     kij   0.0608261151;  E_MPa   132.3265;  deltaTerm_MPa    70.1171;  denominator_MPa  1022.7420; }
+    { i H2S;         j isoButane;   kij   0.0304148663;  E_MPa   115.4789;  deltaTerm_MPa    85.8470;  denominator_MPa   974.2570; }
+    { i H2S;         j nButane;     kij   0.0523917604;  E_MPa   126.9317;  deltaTerm_MPa    73.9999;  denominator_MPa  1010.3064; }
+    { i H2S;         j isopentane;  kij   0.0327514460;  E_MPa   116.4152;  deltaTerm_MPa    84.3637;  denominator_MPa   978.6280; }
+    { i H2S;         j nPentane;    kij   0.0447706687;  E_MPa   125.5906;  deltaTerm_MPa    81.3775;  denominator_MPa   987.5461; }
+    { i H2S;         j nHexane;     kij   0.0385559320;  E_MPa   125.4864;  deltaTerm_MPa    88.1858;  denominator_MPa   967.4411; }
+    { i H2S;         j nHeptane;    kij   0.0347189670;  E_MPa   125.7990;  deltaTerm_MPa    92.6539;  denominator_MPa   954.6666; }
+    { i H2S;         j nOctane;     kij   0.0260193940;  E_MPa   126.2449;  deltaTerm_MPa   102.0811;  denominator_MPa   928.6875; }
+    { i H2S;         j nNonane;     kij   0.0203063378;  E_MPa   126.7172;  deltaTerm_MPa   108.1878;  denominator_MPa   912.4954; }
+    { i H2S;         j nDecane;     kij   0.0143199200;  E_MPa   127.1740;  deltaTerm_MPa   114.3340;  denominator_MPa   896.6537; }
+    { i CH4;         j ethane;      kij   0.0112908208;  E_MPa    13.3016;  deltaTerm_MPa     6.1384;  denominator_MPa   634.4354; }
+    { i CH4;         j propane;     kij   0.0233571103;  E_MPa    19.4234;  deltaTerm_MPa     4.8232;  denominator_MPa   625.0850; }
+    { i CH4;         j isoButane;   kij   0.0199713276;  E_MPa    13.5935;  deltaTerm_MPa     1.7015;  denominator_MPa   595.4517; }
+    { i CH4;         j nButane;     kij   0.0214265786;  E_MPa    17.1015;  deltaTerm_MPa     3.8709;  denominator_MPa   617.4845; }
+    { i CH4;         j isopentane;  kij   0.0215120892;  E_MPa    14.7846;  deltaTerm_MPa     1.9177;  denominator_MPa   598.1232; }
+    { i CH4;         j nPentane;    kij   0.0251920548;  E_MPa    17.6042;  deltaTerm_MPa     2.3989;  denominator_MPa   603.5738; }
+    { i CH4;         j nHexane;     kij   0.0293242924;  E_MPa    18.7292;  deltaTerm_MPa     1.3902;  denominator_MPa   591.2859; }
+    { i CH4;         j nHeptane;    kij   0.0326120102;  E_MPa    19.9197;  deltaTerm_MPa     0.8913;  denominator_MPa   583.4783; }
+    { i CH4;         j nOctane;     kij   0.0366574409;  E_MPa    21.0242;  deltaTerm_MPa     0.2174;  denominator_MPa   567.6003; }
+    { i CH4;         j nNonane;     kij   0.0394119882;  E_MPa    22.0086;  deltaTerm_MPa     0.0284;  denominator_MPa   557.7039; }
+    { i CH4;         j nDecane;     kij   0.0417136970;  E_MPa    22.8751;  deltaTerm_MPa     0.0151;  denominator_MPa   548.0216; }
+    { i ethane;      j propane;     kij   0.0009745805;  E_MPa     0.7792;  deltaTerm_MPa     0.0792;  denominator_MPa   718.2963; }
+    { i ethane;      j isoButane;   kij   0.0001235909;  E_MPa     1.4609;  deltaTerm_MPa     1.3763;  denominator_MPa   684.2441; }
+    { i ethane;      j nButane;     kij   0.0023474717;  E_MPa     1.9259;  deltaTerm_MPa     0.2602;  denominator_MPa   709.5625; }
+    { i ethane;      j isopentane;  kij   0.0042635689;  E_MPa     4.1245;  deltaTerm_MPa     1.1941;  denominator_MPa   687.3140; }
+    { i ethane;      j nPentane;    kij   0.0052585009;  E_MPa     4.5097;  deltaTerm_MPa     0.8625;  denominator_MPa   693.5773; }
+    { i ethane;      j nHexane;     kij   0.0078534121;  E_MPa     7.0222;  deltaTerm_MPa     1.6862;  denominator_MPa   679.4571; }
+    { i ethane;      j nHeptane;    kij   0.0102197482;  E_MPa     9.2038;  deltaTerm_MPa     2.3516;  denominator_MPa   670.4853; }
+    { i ethane;      j nOctane;     kij   0.0107416682;  E_MPa    11.0515;  deltaTerm_MPa     4.0454;  denominator_MPa   652.2396; }
+    { i ethane;      j nNonane;     kij   0.0113626600;  E_MPa    12.6140;  deltaTerm_MPa     5.3321;  denominator_MPa   640.8674; }
+    { i ethane;      j nDecane;     kij   0.0114021978;  E_MPa    13.9430;  deltaTerm_MPa     6.7626;  denominator_MPa   629.7414; }
+    { i propane;     j isoButane;   kij   0.0000499700;  E_MPa     0.8289;  deltaTerm_MPa     0.7953;  denominator_MPa   674.1597; }
+    { i propane;     j nButane;     kij   0.0027499576;  E_MPa     1.9748;  deltaTerm_MPa     0.0523;  denominator_MPa   699.1049; }
+    { i propane;     j isopentane;  kij   0.0051202431;  E_MPa     4.1257;  deltaTerm_MPa     0.6583;  denominator_MPa   677.1843; }
+    { i propane;     j nPentane;    kij   0.0067848851;  E_MPa     5.0555;  deltaTerm_MPa     0.4191;  denominator_MPa   683.3553; }
+    { i propane;     j nHexane;     kij   0.0102543893;  E_MPa     7.8993;  deltaTerm_MPa     1.0346;  denominator_MPa   669.4432; }
+    { i propane;     j nHeptane;    kij   0.0132450194;  E_MPa    10.3174;  deltaTerm_MPa     1.5677;  denominator_MPa   660.6036; }
+    { i propane;     j nOctane;     kij   0.0145496972;  E_MPa    12.3426;  deltaTerm_MPa     2.9926;  denominator_MPa   642.6268; }
+    { i propane;     j nNonane;     kij   0.0157287313;  E_MPa    14.0432;  deltaTerm_MPa     4.1117;  denominator_MPa   631.4223; }
+    { i propane;     j nDecane;     kij   0.0162852420;  E_MPa    15.4826;  deltaTerm_MPa     5.3783;  denominator_MPa   620.4602; }
+    { i isoButane;   j nButane;     kij  -0.0019197358;  E_MPa    -0.8388;  deltaTerm_MPa     0.4396;  denominator_MPa   665.9625; }
+    { i isoButane;   j isopentane;  kij   0.0010971710;  E_MPa     0.7142;  deltaTerm_MPa     0.0065;  denominator_MPa   645.0811; }
+    { i isoButane;   j nPentane;    kij  -0.0000052595;  E_MPa     0.0563;  deltaTerm_MPa     0.0597;  denominator_MPa   650.9596; }
+    { i isoButane;   j nHexane;     kij   0.0022381826;  E_MPa     1.4430;  deltaTerm_MPa     0.0157;  denominator_MPa   637.7071; }
+    { i isoButane;   j nHeptane;    kij   0.0042756276;  E_MPa     2.8204;  deltaTerm_MPa     0.1298;  denominator_MPa   629.2865; }
+    { i isoButane;   j nOctane;     kij   0.0054929531;  E_MPa     4.0651;  deltaTerm_MPa     0.7025;  denominator_MPa   612.1619; }
+    { i isoButane;   j nNonane;     kij   0.0064308648;  E_MPa     5.1585;  deltaTerm_MPa     1.2904;  denominator_MPa   601.4886; }
+    { i isoButane;   j nDecane;     kij   0.0068944864;  E_MPa     6.1123;  deltaTerm_MPa     2.0373;  denominator_MPa   591.0462; }
+    { i nButane;     j isopentane;  kij  -0.0004675746;  E_MPa     0.0267;  deltaTerm_MPa     0.3395;  denominator_MPa   668.9503; }
+    { i nButane;     j nPentane;    kij   0.0007935601;  E_MPa     0.7109;  deltaTerm_MPa     0.1752;  denominator_MPa   675.0464; }
+    { i nButane;     j nHexane;     kij   0.0020463121;  E_MPa     1.9748;  deltaTerm_MPa     0.6216;  denominator_MPa   661.3034; }
+    { i nButane;     j nHeptane;    kij   0.0033976676;  E_MPa     3.2645;  deltaTerm_MPa     1.0473;  denominator_MPa   652.5713; }
+    { i nButane;     j nOctane;     kij   0.0034494665;  E_MPa     4.4434;  deltaTerm_MPa     2.2536;  denominator_MPa   634.8130; }
+    { i nButane;     j nNonane;     kij   0.0036059210;  E_MPa     5.4856;  deltaTerm_MPa     3.2364;  denominator_MPa   623.7448; }
+    { i nButane;     j nDecane;     kij   0.0033099424;  E_MPa     6.3984;  deltaTerm_MPa     4.3697;  denominator_MPa   612.9160; }
+    { i isopentane;  j nPentane;    kij  -0.0008621818;  E_MPa    -0.5369;  deltaTerm_MPa     0.0269;  denominator_MPa   653.8801; }
+    { i isopentane;  j nHexane;     kij  -0.0002575380;  E_MPa    -0.1226;  deltaTerm_MPa     0.0423;  denominator_MPa   640.5681; }
+    { i isopentane;  j nHeptane;    kij   0.0005788757;  E_MPa     0.5601;  deltaTerm_MPa     0.1942;  denominator_MPa   632.1098; }
+    { i isopentane;  j nOctane;     kij   0.0007157090;  E_MPa     1.2838;  deltaTerm_MPa     0.8437;  denominator_MPa   614.9083; }
+    { i isopentane;  j nNonane;     kij   0.0008151869;  E_MPa     1.9721;  deltaTerm_MPa     1.4795;  denominator_MPa   604.1871; }
+    { i isopentane;  j nDecane;     kij   0.0005531177;  E_MPa     2.6016;  deltaTerm_MPa     2.2733;  denominator_MPa   593.6979; }
+    { i nPentane;    j nHexane;     kij   0.0002772726;  E_MPa     0.3160;  deltaTerm_MPa     0.1367;  denominator_MPa   646.4055; }
+    { i nPentane;    j nHeptane;    kij   0.0008823967;  E_MPa     0.9286;  deltaTerm_MPa     0.3657;  denominator_MPa   637.8701; }
+    { i nPentane;    j nOctane;     kij   0.0006891865;  E_MPa     1.5996;  deltaTerm_MPa     1.1720;  denominator_MPa   620.5119; }
+    { i nPentane;    j nNonane;     kij   0.0005600185;  E_MPa     2.2469;  deltaTerm_MPa     1.9055;  denominator_MPa   609.6930; }
+    { i nPentane;    j nDecane;     kij   0.0000817241;  E_MPa     2.8437;  deltaTerm_MPa     2.7948;  denominator_MPa   599.1082; }
+    { i nHexane;     j nHeptane;    kij   0.0001696385;  E_MPa     0.1612;  deltaTerm_MPa     0.0552;  denominator_MPa   624.8840; }
+    { i nHexane;     j nOctane;     kij  -0.0000236176;  E_MPa     0.4937;  deltaTerm_MPa     0.5081;  denominator_MPa   607.8792; }
+    { i nHexane;     j nNonane;     kij  -0.0002404538;  E_MPa     0.8777;  deltaTerm_MPa     1.0213;  denominator_MPa   597.2805; }
+    { i nHexane;     j nDecane;     kij  -0.0007347842;  E_MPa     1.2639;  deltaTerm_MPa     1.6951;  denominator_MPa   586.9112; }
+    { i nHeptane;    j nOctane;     kij  -0.0002294516;  E_MPa     0.0907;  deltaTerm_MPa     0.2283;  denominator_MPa   599.8525; }
+    { i nHeptane;    j nNonane;     kij  -0.0005344940;  E_MPa     0.2866;  deltaTerm_MPa     0.6016;  denominator_MPa   589.3938; }
+    { i nHeptane;    j nDecane;     kij  -0.0010639585;  E_MPa     0.5223;  deltaTerm_MPa     1.1385;  denominator_MPa   579.1614; }
+    { i nOctane;     j nNonane;     kij  -0.0000590195;  E_MPa     0.0549;  deltaTerm_MPa     0.0887;  denominator_MPa   573.3548; }
+    { i nOctane;     j nDecane;     kij  -0.0003006940;  E_MPa     0.1777;  deltaTerm_MPa     0.3471;  denominator_MPa   563.4008; }
+    { i nNonane;     j nDecane;     kij  -0.0000899425;  E_MPa     0.0351;  deltaTerm_MPa     0.0849;  denominator_MPa   553.5776; }
+);

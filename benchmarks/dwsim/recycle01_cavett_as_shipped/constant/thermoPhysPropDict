@@ -1,0 +1,52 @@
+/*---------------------------------------------------------------------------*\
+  Benchmark A -- the thermophysical system: phi-phi PR78 (Choupo's
+  `PengRobinson`, the 1978 two-branch slope since 2026-10-21) with the PPR78
+  group-contribution kij of Jaubert, Privat & Mutelet (2010), evaluated ONCE
+  at 322.03 K -- the first separator's declared temperature -- and written
+  as a kij SET record by the `ppr78Kij` op in kijTables/ (route P, DEV.md 4c
+  C123: "kij a T declarada").  The three other separators carry their own
+  set at their own T through a `thermo {}` override in system/flowsheetDict.
+
+  No component of this case has omega > 0.491 (nDecane, the heaviest, is
+  0.4884), so the 1978 branch is not exercised here; the corpus cavett01,
+  which carries nUndecane (0.539), stays SRK and is not this case.
+
+  The reference sample runs its own Peng-Robinson package with the pair
+  parameters it embeds, none of which is read (benchmarks/README.md rule 1).
+  Its Tc, Pc and omega are its databank's; Choupo's are the catalogue's
+  (data/standards/components/), which is the first place the two kij
+  matrices part (a kij from Eq. 7 moves with the critical constants it is
+  evaluated on; the 2010 article says so of its own).
+\*---------------------------------------------------------------------------*/
+
+recordType    thermophysicalPropertySystem;
+schemaVersion 2;
+
+components ( N2 CO2 H2S CH4 ethane propane isoButane nButane
+             isopentane nPentane nHexane nHeptane nOctane nNonane nDecane );
+
+equilibrium
+{
+    formulation phiPhi;
+
+    equationOfState
+    {
+        model      PengRobinson;
+        mixingRule vanDerWaalsOneFluid;
+        binaryInteractions
+        {
+            // 105 pairs, PPR78 at 322.03 K -- kijTables/system/propsDict wrote it
+            ppr78 { source "constant/parameters/PengRobinson/ppr78_SEP0_322.03K.dat"; }
+        }
+    }
+
+    liquid { fugacityRoute equationOfState; root liquid; }
+    vapour { fugacityRoute equationOfState; root vapour; }
+}
+
+caloric
+{
+    energyBasis elementsDatum;
+    liquid { departureRoute equilibriumEquationOfState; root liquid; }
+    vapour { departureRoute equilibriumEquationOfState; root vapour; }
+}

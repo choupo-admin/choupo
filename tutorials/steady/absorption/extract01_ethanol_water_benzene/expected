@@ -1,25 +1,25 @@
 # Reference KPIs (golden master, auto-recorded by runTests --record).
 # kind   name      key         expected        reltol
-stream  extract                F                0.0359293973028  1e-4
+stream  extract                F                0.0359317152957  1e-4
 stream  feed                   F                0.0277777777778  1e-4
-stream  raffinate              F                0.0251772962492  1e-4
+stream  raffinate              F                0.0251793952707  1e-4
 stream  solvent                F                0.0333333333333  1e-4
-kpi     extractor01            F_extract        0.0359293973028  1e-4
+kpi     extractor01            F_extract        0.0359317152957  1e-4
 kpi     extractor01            F_feed           0.0277777777778  1e-4
-kpi     extractor01            F_raffinate      0.0251772962492  1e-4
+kpi     extractor01            F_raffinate      0.0251793952707  1e-4
 kpi     extractor01            F_solvent        0.0333333333333  1e-4
 kpi     extractor01            P                101325           1e-4
 kpi     extractor01            T                298.15           1e-4
 kpi     extractor01            converged        1                1e-4
-kpi     extractor01            distribution_benzene 295.27509389     1e-4
-kpi     extractor01            distribution_ethanol 0.555106921422   1e-4
-kpi     extractor01            distribution_water 0.00706545462823 1e-4
-kpi     extractor01            massClosure      7.22873301891e-05 1e-4
-kpi     extractor01            recovery_benzene 0.997600676297   1e-4
-kpi     extractor01            recovery_ethanol 0.441759080105   1e-4
-kpi     extractor01            recovery_water   0.00998209415577 1e-4
-kpi     extractor01            soluteDistribution 0.555106921422   1e-4
-kpi     extractor01            soluteRecovery   0.441759080105   1e-4
+kpi     extractor01            distribution_benzene 295.380144934    1e-4
+kpi     extractor01            distribution_ethanol 0.555183850838   1e-4
+kpi     extractor01            distribution_water 0.00705390428172 1e-4
+kpi     extractor01            massClosure      8.91290632208e-09 1e-4
+kpi     extractor01            recovery_benzene 0.997633221739   1e-4
+kpi     extractor01            recovery_ethanol 0.442046200437   1e-4
+kpi     extractor01            recovery_water   0.00996580558985 1e-4
+kpi     extractor01            soluteDistribution 0.555183850838   1e-4
+kpi     extractor01            soluteRecovery   0.442046200437   1e-4
 kpi     extractor01            solventToFeed    1.2              1e-4
 kpi     extractor01            splitStages      5                1e-4
 kpi     extractor01            stages           5                1e-4
@@ -29,5 +29,5 @@ stream  raffinate              T                298.15           1e-4
 stream  solvent                T                298.15           1e-4
 boundary global                 H_feeds_kW       -6263.31488417   1e-4
 boundary global                 Q_boundary_kW    0                1e-4
-boundary global                 H_products_kW    -6262.43343965   1e-4
-boundary global                 residual_kW      -0.881444521125  1e-4
+boundary global                 H_products_kW    -6263.31476957   1e-4
+boundary global                 residual_kW      -0.000114599647532 1e-4

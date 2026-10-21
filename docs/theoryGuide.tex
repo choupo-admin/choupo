@@ -7861,7 +7861,9 @@ $\Omega_a$             & $0.42747$    & $0.45724$ \\
 $\Omega_b$             & $0.08664$    & $0.07780$ \\
 $m(\omega)$ / $\kappa(\omega)$
                        & $0.48508 + 1.55171\omega - 0.15613\omega^2$
-                       & $0.37464 + 1.54226\omega - 0.26992\omega^2$ \\
+                       & $0.37464 + 1.54226\omega - 0.26992\omega^2$ \quad ($\omega \le 0.491$) \\
+                       &
+                       & $0.379642 + 1.48503\omega - 0.164423\omega^2 + 0.016666\omega^3$ \quad ($\omega > 0.491$) \\
 attractive term        & $a/[v(v+b)]$ & $a/[v^2 + 2bv - b^2]$ \\
 $\ln$ factor           & $\ln\!\dfrac{Z+B}{Z}$
                        & $\dfrac{1}{2\sqrt2}\ln\!\dfrac{Z+(1+\sqrt2)B}{Z+(1-\sqrt2)B}$ \\
@@ -7876,9 +7878,16 @@ $Z_c = 0.307$ versus SRK's $0.333$ --- both above the true $Z_c
 \approx 0.27$ of most fluids, but PR's is closer, which is why PR
 gives better \emph{liquid} densities.  SRK is often marginally better
 for light-gas \emph{vapour} fugacities.  Choupo ships both; the case
-picks one with a single keyword.\footnote{Choupo uses the original
-1976 PR slope $\kappa(\omega)$; the 1978 high-$\omega$ refinement is
-not applied (see the comment in \file{PR.cpp}).}
+picks one with a single keyword.\footnote{Choupo's PR is the 1978 form
+(PR78): the slope $\kappa(\omega)$ has the two branches in the table,
+the 1976 polynomial up to $\omega = 0.491$ and the cubic of Robinson
+\& Peng (1978, GPA RR-28) above it, as the PPR78 literature restates
+them (Jaubert, Privat \& Mutelet, \emph{AIChE J.} 56 (2010) 3225,
+Eq.~2).  Below the break the two coincide, so a light mixture is
+unchanged; a component above it (methanol, $\omega = 0.565$; the
+C$_{11+}$ fractions of a crude) is announced on the run with the slope
+it received (\file{PR.cpp}).  The PPR78 group-contribution $k_{ij}$ are
+defined on this slope, which is why the model is not an option.}
 
 \begin{example}[SRK $a, b$ for CO$_2$ at 320~K]
 With $T_c = 304.13$~K, $P_c = 73.77$~bar $= 7.377\times10^6$~Pa,

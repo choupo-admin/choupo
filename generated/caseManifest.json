@@ -6,7 +6,7 @@
   "runtime": "not recorded; runTests does not time per case and this script does not run the corpus"
  },
  "counts": {
-  "cases": 483,
+  "cases": 484,
   "witnesses": 16,
   "validationOp": 6,
   "anchored": 12
@@ -2735,6 +2735,17 @@
    "application": "choupoProps",
    "ops": [
     "propertyPoint"
+   ],
+   "thermo": {
+    "formulation": "phiPhi"
+   },
+   "roles": [],
+   "hasGolden": true
+  },
+  "tutorials/props/molecular/ppr78Kij01_ch4_co2_h2": {
+   "application": "choupoProps",
+   "ops": [
+    "ppr78Kij"
    ],
    "thermo": {
     "formulation": "phiPhi"
@@ -7248,6 +7259,7 @@
     "tutorials/props/molecular/pcsaft01_pure_nhexane",
     "tutorials/props/molecular/pcsaft02_states_crosscheck",
     "tutorials/props/molecular/pcsaft03_association_pure",
+    "tutorials/props/molecular/ppr78Kij01_ch4_co2_h2",
     "tutorials/props/molecular/solubility01_hildebrand_ladder",
     "tutorials/props/molecular/srk01_h2n2_density",
     "tutorials/props/reactor/thiele01_sphere_first_order",
@@ -8844,6 +8856,9 @@
    ],
    "polarisationIndex": [
     "tutorials/props/membrane/polarisation01_geraldes_afonso_table1"
+   ],
+   "ppr78Kij": [
+    "tutorials/props/molecular/ppr78Kij01_ch4_co2_h2"
    ],
    "propertyPoint": [
     "tutorials/props/compare/acetone01_ipa_water_azeotrope",

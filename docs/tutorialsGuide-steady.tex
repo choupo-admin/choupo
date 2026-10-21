@@ -167,20 +167,20 @@ KPIs to watch: recovery\_ethanol (fraction of ethanol leaving in the extract), d
 
 \end{tutnarrative}
 \begin{tutgolden}
-\goldrow{stream}{extract}{F}{0.0359293973028}
+\goldrow{stream}{extract}{F}{0.0359317152957}
 \goldrow{stream}{feed}{F}{0.0277777777778}
-\goldrow{stream}{raffinate}{F}{0.0251772962492}
+\goldrow{stream}{raffinate}{F}{0.0251793952707}
 \goldrow{stream}{solvent}{F}{0.0333333333333}
-\goldrow{kpi}{extractor01}{F\_extract}{0.0359293973028}
+\goldrow{kpi}{extractor01}{F\_extract}{0.0359317152957}
 \goldrow{kpi}{extractor01}{F\_feed}{0.0277777777778}
-\goldrow{kpi}{extractor01}{F\_raffinate}{0.0251772962492}
+\goldrow{kpi}{extractor01}{F\_raffinate}{0.0251793952707}
 \goldrow{kpi}{extractor01}{F\_solvent}{0.0333333333333}
 \goldrow{kpi}{extractor01}{P}{101325}
 \goldrow{kpi}{extractor01}{T}{298.15}
 \goldrow{kpi}{extractor01}{converged}{1}
-\goldrow{kpi}{extractor01}{distribution\_benzene}{295.27509389}
-\goldrow{kpi}{extractor01}{distribution\_ethanol}{0.555106921422}
-\goldrow{kpi}{extractor01}{distribution\_water}{0.00706545462823}
+\goldrow{kpi}{extractor01}{distribution\_benzene}{295.380144934}
+\goldrow{kpi}{extractor01}{distribution\_ethanol}{0.555183850838}
+\goldrow{kpi}{extractor01}{distribution\_water}{0.00705390428172}
 \goldmore{17}
 \end{tutgolden}
 
@@ -225,17 +225,17 @@ Record: docs/design/a-state-directory-is-a-restartable-snapshot.md
 \tutreadme{The extractor's unknowns are its stage profile. The sweep starts by putting something on every stage and grinding the counter-current balance down; until this slice that something was written in code --- $\ast$"every stage's extract = the fresh solvent, every stage's raffinate = the feed"$\ast$ --- honest, built from the streams the case declares, and undeclared, unseen, unowned. That is the one thing the 2026-05-30 rule forbids: every solver aid is explicit in a dict, and the solver announces what it does to converge.}
 \tutreadme{Nothing checks this file against the stage equilibria. The sweeps do, and they move off any profile that is wrong. Edit a stage's extract flow by half and the cascade still converges to the same recovery --- it simply has further to travel.}
 \begin{tutgolden}
-\goldrow{stream}{extract}{F}{0.0359300646331}
+\goldrow{stream}{extract}{F}{0.0359317155144}
 \goldrow{stream}{extract}{T}{298.15}
 \goldrow{stream}{feed}{F}{0.0277777777778}
 \goldrow{stream}{feed}{T}{298.15}
-\goldrow{stream}{raffinate}{F}{0.0251777466298}
+\goldrow{stream}{raffinate}{F}{0.0251793960966}
 \goldrow{stream}{raffinate}{T}{298.15}
 \goldrow{stream}{solvent}{F}{0.0333333333333}
 \goldrow{stream}{solvent}{T}{298.15}
-\goldrow{kpi}{extractor01}{F\_extract}{0.0359300646331}
+\goldrow{kpi}{extractor01}{F\_extract}{0.0359317155144}
 \goldrow{kpi}{extractor01}{F\_feed}{0.0277777777778}
-\goldrow{kpi}{extractor01}{F\_raffinate}{0.0251777466298}
+\goldrow{kpi}{extractor01}{F\_raffinate}{0.0251793960966}
 \goldrow{kpi}{extractor01}{F\_solvent}{0.0333333333333}
 \goldrow{kpi}{extractor01}{P}{101325}
 \goldrow{kpi}{extractor01}{T}{298.15}
@@ -265,15 +265,15 @@ Demonstrates: `phases (...)` syntax with TWO liquid phases `phaseSet LL` in the 
 \tutreadme{- phases (...) syntax with TWO liquid phases; - phaseSet LL in the IsothermalFlash; - the Michelsen TPD stability test as the initial-guess generator.}
 \tutreadme{- The LL flash reuses the VL solver's printout, so the two liquids are shown under Vapor flow V / Liquid flow L headings (and x/y/K labels). Read them as phase-$\alpha$ (organic) and phase-$\beta$ (aqueous), not as a vapour and a liquid. - The decanter is isothermal and adiabatic in reality (an enthalpy hand-check gives H\_in $\approx$ H\_out), so the physically correct duty is $\approx$ 0. The KPI Q and any utility/cost the run reports for this LL split are a known artifact of the shared flash duty path --- do not cost this unit from them.}
 \begin{tutgolden}
-\goldrow{stream}{aqueous}{F}{0.0140665296362}
+\goldrow{stream}{aqueous}{F}{0.0140642365954}
 \goldrow{stream}{feed}{F}{0.0277777777778}
-\goldrow{stream}{organic}{F}{0.0137112481416}
-\goldrow{kpi}{decanter01}{F\_alpha}{0.0140665296362}
-\goldrow{kpi}{decanter01}{F\_beta}{0.0137112481416}
+\goldrow{stream}{organic}{F}{0.0137135411824}
+\goldrow{kpi}{decanter01}{F\_alpha}{0.0140642365954}
+\goldrow{kpi}{decanter01}{F\_beta}{0.0137135411824}
 \goldrow{kpi}{decanter01}{F\_in}{0.0277777777778}
 \goldrow{kpi}{decanter01}{P}{101325}
 \goldrow{kpi}{decanter01}{T}{298.15}
-\goldrow{kpi}{decanter01}{betaFraction}{0.493604933098}
+\goldrow{kpi}{decanter01}{betaFraction}{0.493687482565}
 \goldrow{kpi}{decanter01}{phaseSet}{1}
 \goldrow{stream}{aqueous}{T}{298.15}
 \goldrow{stream}{feed}{T}{298.15}
@@ -4908,15 +4908,15 @@ HISTORICAL NOTE: an earlier version of this case carried only a DECHEMA VLE-fit 
 \tutreadme{constant/thermoPhysPropDict carries the LLE-specific UNIQUAC for water/1-butanol, cited per value:}
 \tutreadme{- Primary source: J.G.M. Winkelman, G.N. Kraai, H.J. Heeres, $\ast$"Binary, ternary and quaternary liquid-liquid equilibria in 1-butanol, oleic acid, water and n-heptane mixtures"$\ast$, Fluid Phase Equilibria 284 (2009) 71--79, doi:10.1016/j.fluid.2009.06.013. - Binary interaction parameters --- their Table 2 (p.73), binary 1-butanol(1)/water(3), valid 273--363 K, with the quadratic temperature correlation A\_ij(T) = a\_ij + b\_ij$\cdot$T + c\_ij$\cdot$T$^2$ (their Eq. 10) and $\tau$\_ij = exp(-A\_ij/T) (their Eq. 7): - A\_1,3 (butanol$\to$water): a = 155.31, b = 1.0822, 10?$\cdot$c = -43.711 - A\_3,1 (water$\to$butanol): a = -579.36, b = 2.7517, 10?$\cdot$c = -6.7700 - Structural r, q --- their Table 1 (p.72) (value Magnussen et al.): 1-butanol r = 3.9243, q = 3.668; water r = 0.9200, q = 1.400.}
 \begin{tutgolden}
-\goldrow{stream}{butanolRich}{F}{0.0114431411907}
+\goldrow{stream}{butanolRich}{F}{0.0114525507776}
 \goldrow{stream}{feed}{F}{0.0277777777778}
-\goldrow{stream}{waterRich}{F}{0.016334636587}
-\goldrow{kpi}{decanter01}{F\_alpha}{0.016334636587}
-\goldrow{kpi}{decanter01}{F\_beta}{0.0114431411907}
+\goldrow{stream}{waterRich}{F}{0.0163252270002}
+\goldrow{kpi}{decanter01}{F\_alpha}{0.0163252270002}
+\goldrow{kpi}{decanter01}{F\_beta}{0.0114525507776}
 \goldrow{kpi}{decanter01}{F\_in}{0.0277777777778}
 \goldrow{kpi}{decanter01}{P}{101300}
 \goldrow{kpi}{decanter01}{T}{320}
-\goldrow{kpi}{decanter01}{betaFraction}{0.411953082867}
+\goldrow{kpi}{decanter01}{betaFraction}{0.412291827994}
 \goldrow{kpi}{decanter01}{phaseSet}{1}
 \goldrow{stream}{butanolRich}{T}{320}
 \goldrow{stream}{feed}{T}{320}

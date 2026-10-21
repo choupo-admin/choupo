@@ -2,15 +2,22 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://choupo.org/schemas/operations/compressor.schema.json",
   "title": "compressor operation",
-  "description": "Gas-phase compressor. Given the shaft power and isentropic efficiency, the discharge pressure, discharge temperature and compression ratio follow from the isentropic-then-efficiency energy balance.",
+  "description": "Gas-phase compressor. Given the isentropic efficiency and EITHER the shaft power (the discharge pressure is then the result) OR the discharge pressure (the shaft power is then the result, from the isentropic path to that pressure divided by eta -- one inner solve, nothing searched for; since 2026-10-21, DEV.md 4c C123), the discharge temperature and compression ratio follow from the isentropic-then-efficiency energy balance. Exactly one of W_shaft and P_out is accepted.",
   "type": "object",
   "properties": {
     "W_shaft": {
       "type": "number",
       "exclusiveMinimum": 0,
       "title": "Shaft power",
-      "description": "Mechanical power delivered to the gas (positive). It may also arrive over an ENERGY WIRE instead of being written here: a consumer declaring `energyInputs ( { from <unit>.<port>; kind <work|heat>; target <key>; } )` has the value written into its operation block before solve, and the unit reads it exactly as if the author had typed it.  That is why this key is not marked required — the schema describes what an AUTHOR writes, and a wired value is not authored.",
+      "description": "Mechanical power delivered to the gas (positive). It may also arrive over an ENERGY WIRE instead of being written here: a consumer declaring `energyInputs ( { from <unit>.<port>; kind <work|heat>; target <key>; } )` has the value written into its operation block before solve, and the unit reads it exactly as if the author had typed it.  That is why this key is not marked required — the schema describes what an AUTHOR writes, and a wired value is not authored.  Mutually exclusive with P_out.",
       "unit": "W"
+    },
+    "P_out": {
+      "type": "number",
+      "exclusiveMinimum": 0,
+      "title": "Discharge pressure",
+      "description": "The header the machine discharges into; must exceed the inlet pressure (a let-down is a valve, an expansion a turbine). The shaft power is then the RESULT. Mutually exclusive with W_shaft.",
+      "unit": "Pa"
     },
     "eta": {
       "type": "number",

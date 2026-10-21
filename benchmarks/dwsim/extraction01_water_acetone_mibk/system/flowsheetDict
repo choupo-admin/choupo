@@ -1,0 +1,38 @@
+/*---------------------------------------------------------------------------*\
+  Benchmark C -- topology.  One counter-current extractor of 4 equilibrium
+  stages: the aqueous feed enters stage 1, the MIBK solvent stage 4; the
+  extract leaves stage 1, the raffinate stage 4 -- the same arrangement as
+  the reference sample (feed on its Stage0, solvent on its Stage3, extract
+  overhead, raffinate as bottoms).
+
+  THIS RUN IS NOT AN ANSWER TODAY.  Measured 2026-10-20: the `extractor`
+  publishes `converged 0` with its mass closure off by 23 % (NRTL) and 50 %
+  (UNIFAC), at exit 0 -- its per-stage liquid-liquid flash returns one
+  liquid on feeds an independent stability test finds strongly unstable
+  (README, "Findings on Choupo's side").  The case is kept as the problem
+  POSED, so the comparison shows the answer the day the engine gives one;
+  variants/stageCascade is the same cascade written out as four flashes
+  and four mixers, which fails the same way.
+
+  ONE DIFFERENCE IN THE PROBLEM, stated: Choupo's `extractor` is ISOTHERMAL
+  (src/unitOperations/separation/Extractor.H, "EXPLICIT ASSUMPTIONS"); the
+  reference column is adiabatic and its stages cool from 296.54 K to
+  284.70 K.  The column here runs at the feeds' 298.15 K.
+\*---------------------------------------------------------------------------*/
+
+units
+(
+    {
+        name        extractor;
+        type        extractor;
+        inputs      ( feed  solvent );        // feed at stage 1, solvent at stage N
+        outputs     ( extract  raffinate );   // extract leaves stage 1, raffinate stage N
+
+        operation
+        {
+            stages       4;
+            solvent      methylIsobutylKetone;   // defines the extract phase
+            temperature  298.15 K;               // the feeds' temperature (isothermal model)
+        }
+    }
+);
