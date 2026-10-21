@@ -254,6 +254,61 @@ export function fenceSummary(layout: PlantLayout): FenceView | null {
   };
 }
 
+/** SECONDARY CONTAINMENT (DEV.md 4c C134) as words and cells: the engine's
+ *  rule, and one row per bund or impounding area -- what it holds, what its
+ *  declared rule requires, the verdict.  Every number is the engine's; null
+ *  when the case declares none. */
+export interface BundView {
+  headline: string;
+  notes: string[];
+  rows: { bund: string; kind: string; items: string; holds: string; requires: string;
+          verdict: string; drain: string }[];
+}
+
+/** The Design Guide section the containment table links to (a real
+ *  `\label` in docs/designGuide.tex; tests/layoutBunds.test.ts holds it). */
+export const DESIGN_GUIDE_CONTAINMENT = "secondary-containment-bunds-and-impounding";
+
+export const BUNDS_CAPTION =
+  "Secondary containment: each bund or impounding area the case declared, the volume it"
+  + " holds (a bund's area x its wall less what the enclosed footprints displace; an"
+  + " impounding area's remote pit) against the volume its OWN declared rule requires.  A"
+  + " shortfall is announced, never refused; an item in the open that holds liquid and that"
+  + " no containment encloses is announced too.";
+
+export function bundSummary(layout: PlantLayout): BundView | null {
+  const bs = layout.bunds ?? [];
+  if (bs.length === 0) return null;
+  const short = bs.filter((b) => b.verdict === "inadequate").length;
+  const notes = bs.map((b) => `${b.bund}: rule (the case's) -- ${b.terms.map((t) =>
+      `${(100 * t.fraction).toFixed(0)} % of the ${t.of} (${t.volume.toFixed(1)} m³)`).join(" or ")}`
+    + ` on ${b.basis}, the ${b.governing} governing`
+    + b.allowances.map((a) => `, + ${a.name} ${a.volume.toFixed(1)} m³`
+      + (a.from === "depth" ? ` (${(1000 * a.depth).toFixed(0)} mm over the catch area)` : ""))
+      .join("")
+    + `.  Why: ${b.ruleReason} (source: ${b.ruleSource}).`);
+  if (layout.bundRule) notes.push(`Rule (the engine's): ${layout.bundRule}.`);
+  return {
+    headline: `${bs.length} containment${bs.length === 1 ? "" : "s"} declared`
+      + (short ? `; ${short} SHORT of its rule (announced).` : ", each holding what its rule requires."),
+    notes,
+    rows: bs.map((b) => ({
+      bund: b.bund,
+      kind: b.containment === "bund" ? `bund, wall ${b.wallHeight.toFixed(2)} m`
+        : `impounding, kerb ${b.wallHeight.toFixed(2)} m`,
+      items: b.items.join(", "),
+      holds: b.containment === "bund"
+        ? `${b.netVolume.toFixed(1)} (${b.area.toFixed(0)} m² x ${b.wallHeight.toFixed(2)} m`
+          + ` - ${b.displacedVolume.toFixed(1)})`
+        : `${b.netVolume.toFixed(1)} (pit${b.pit ? ` ${b.pit.length.toFixed(1)} x`
+          + ` ${b.pit.width.toFixed(1)} x ${b.pit.depth.toFixed(2)} m` : ""})`,
+      requires: b.requiredVolume.toFixed(1),
+      verdict: b.verdict === "inadequate" ? "SHORT (announced)" : b.verdict,
+      drain: b.drain,
+    })),
+  };
+}
+
 /** THE ROADS (DEV.md 4c C90) as words and cells: the engine's totals, what
  *  the case declared (headroom, access distance, closed zones) and whose it
  *  is, and one row per road.  Every number is the engine's, formatted; null

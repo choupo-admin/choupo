@@ -2289,6 +2289,94 @@ travels along its axis. Detailed tank spacing is again a code question
 (NFPA 30, NFPA 58, API STD 2510; API STD 620 for low-pressure and
 refrigerated tanks).
 
+\hypertarget{secondary-containment-bunds-and-impounding}{%
+\subsection{Secondary containment: bunds and impounding
+areas}\label{secondary-containment-bunds-and-impounding}}
+
+Every vessel that holds a liquid will one day leak: a flange, a drain
+left open, a tank overfilled, a shell that fails. \textbf{Secondary
+containment} decides where that liquid goes. It is the layout
+decision that limits three things at once: how far the liquid
+spreads (into the drains, the soil, the river), how large a pool
+evaporates (the size of the toxic or flammable cloud follows the
+pool's surface), and how large a fire can burn (a pool fire's
+radiation scales with the pool, the EduTool \emph{Pool-fire
+radiation and the distance it sets}).
+
+\begin{itemize}
+\tightlist
+\item
+  \textbf{A bund} (dike, retention basin) is a wall round the tanks,
+  on an impermeable floor: the spill is held \emph{where it falls}.
+  Its \textbf{net capacity} is its floor area times its wall height,
+  less the volume the tanks and their foundations occupy below the
+  wall's top --- a low wall round tall tanks loses a large share of its
+  volume to them. The usual form of the capacity rule is a margin over
+  the \textbf{largest} tank (the largest tank fails, not all of them at
+  once), sometimes with a second term on the \textbf{total} that governs
+  when it is larger, plus an \textbf{allowance} for the rain the bund
+  collects and the fire water poured into it during a fire. Which
+  margin, which allowance and which design rainfall is the applicable
+  code's or guideline's: read it and cite it.
+\item
+  \textbf{Low or high wall.} A low wall spreads the pool over a large
+  floor (more evaporation, a larger fire, but fire-fighting reaches over
+  it); a high wall keeps the pool small and under the tanks, and makes
+  access and escape harder. Ramps or stairs over the wall, never a gap
+  in it; pipes carried \emph{over} the wall, never through it (a
+  penetration the spill can leave by).
+\item
+  \textbf{The drain.} Rain collects in every bund; it leaves through a
+  valve that is kept \textbf{closed} and opened by hand only when the
+  water is seen to be clean, or by a sump pump. A drain left open to
+  the sewer empties the bund on the day it is needed.
+\item
+  \textbf{Impounding} (a remote catch basin) is the other answer: a
+  kerbed, sloped catch area under the vessels leads the spill
+  \emph{away} to a pit at a distance, so the pool --- and any fire on it
+  --- forms clear of the vessels, and its small surface limits
+  evaporation. It suits liquefied gases stored under pressure, where a
+  spill flashes in part and the rest pools cold: the liquid must not be
+  allowed to lie under the bullets. Refrigerated tanks are often
+  double- or full-containment, the outer wall acting as the bund.
+\item
+  \textbf{Compatibility and grouping.} Liquids that react together
+  never share a bund; a large tank farm is divided by intermediate
+  walls so that one spill does not cover every tank.
+\end{itemize}
+
+\textbf{In a Choupo case.} A bund or an impounding area is a
+\emph{declared region} in \texttt{system/layoutDict} (\texttt{bunds (
+\{ name; kind bund|impounding; items ( ... ); region \{ ... \} or
+polygon ( ... ); wall \{ height; \} [pit \{ x; y; length; width; depth;
+\}] capacityRule \{ basis vesselVolume|heldLiquid; terms ( \{
+fraction; of largest|total; \} ... ); [allowances ( ... );] source;
+reason; \} drain; source; reason; \} );}), not a placed item, so the
+overlap rule does not apply to it. The engine
+(\file{src/postProcessing/layout/PlantLayout.cpp}, \texttt{readBunds})
+\textbf{refuses} a wall that cannot be built --- a listed item outside
+it, an unlisted item inside it, a wall through a footprint, a pit
+under an item or a road, two containments sharing a floor, one across
+the fence --- and a containment that declares no capacity rule: Choupo
+ships no code's table, so the rule, its terms and its source are the
+case's. It computes the net volume (the displaced volume of a vertical
+cylinder, a lying cylinder's circular segment, a box), the required
+volume (the largest of the declared terms on the declared basis, plus
+the allowances; a \texttt{depth} allowance is a rainfall over the catch
+area and the pit) and publishes the verdict. It \textbf{announces} a
+containment short of its rule, a drain open to the sewer, an impounding
+pit inside its own catch area, a road through a wall, a pipe through
+one below its top --- and, on every layout, an item in the open that
+holds liquid by the run's own inventory and that no containment
+encloses. The witnesses: \texttt{greenAmmoniaPEQ\_baseCase} (a 4~m
+bund round the two refrigerated tanks, and a kerbed slab under the
+loop's three liquid vessels draining to a remote pit; lower the bund's
+wall to 2~m and read the shortfall) and \texttt{ammonia02\_full\_plant}
+(an impounding area under the seven bullets, its pit remote). Not
+checked: the floor's slope and its impermeability, the wall's strength
+and thickness, intermediate walls, the evaporation from the pool, and
+whether a declared margin or rainfall is the right one.
+
 \hypertarget{the-distillation-column-group}{%
 \subsection{The distillation column
 group}\label{the-distillation-column-group}}
@@ -2540,6 +2628,13 @@ that code:
   source\textquotesingle s zone or downwind of it is announced, and so is
   a site with a single entrance.
 \item
+  \textbf{Secondary containment}: a declared \textbf{bund} or
+  \textbf{impounding area} is held to its own declared capacity rule
+  (net volume against the required one, the verdict published), a wall
+  that cannot be built is refused, and an item in the open that holds
+  liquid with no containment round it is announced
+  (\S\ref{secondary-containment-bunds-and-impounding}).
+\item
   On storage: the atmospheric tank sizer refuses a gas and a liquid above
   1.5 bar, and prices a tank below 0 \textdegree{}C as a lower bound
   (\file{src/postProcessing/sizing/StorageTankSize.cpp}); a gas buffer is
@@ -2576,7 +2671,11 @@ that code:
   \textbf{Occupied buildings and containment.} A control room, office or
   canteen is tested only as a declared ignition source (and against the
   separations the case declares), never for blast or toxic exposure;
-  bunds, escape routes, crane and bundle-pulling space are not modelled.
+  escape routes, crane and bundle-pulling space are not modelled.
+  Bunds and impounding areas \emph{are} checked
+  (\S\ref{secondary-containment-bunds-and-impounding}), but only their
+  volume and their geometry: not the floor's slope, the wall's strength,
+  nor the pool that would evaporate.
 \item
   \textbf{What a truck sweeps.} The corner check is the outer edge only:
   the trailer cutting in on the inside of a turn (the swept path), the

@@ -80,7 +80,7 @@ import { canPopOutLayout, type LayoutPopOutStash } from "./layoutPopOut.js";
 import {
   FINDINGS_CAPTION, findingRows, itemRows, layoutNotes, LEGEND_PHASES, LEGEND_PIPES,
   LEGEND_SHAPES, PARTICLE_WORD, PIPE_REGISTER_CAPTION, pipeRegister, PLOT_CAPTION, plotSummary,
-  ROADS_CAPTION, roadSummary, FENCE_CAPTION, fenceSummary,
+  ROADS_CAPTION, roadSummary, FENCE_CAPTION, fenceSummary, BUNDS_CAPTION, bundSummary,
 } from "./layoutTables.js";
 import { layoutSection, type LayoutSectionId } from "./layoutPanels.js";
 import { phaseCss, PHASE_WORDS, QUALITY_TITLE } from "./plantLayout.js";
@@ -423,6 +423,19 @@ export function buildLayoutExport(input: LayoutExportInput): { fileName: string;
         : "")
     : "";
 
+  //  ---- secondary containment (C134): the same words and rows the app draws
+  const bundView = bundSummary(layout);
+  const bundHtml = bundView
+    ? `<p>${esc(bundView.headline)}</p>`
+      + bundView.notes.map((n) => `<p class="note">${esc(n)}</p>`).join("")
+      + table(BUNDS_CAPTION, [["Containment", false], ["Kind", false], ["Encloses", false],
+          ["Holds (m³)", true], ["Requires (m³)", true], ["Verdict (the engine's)", false],
+          ["Drain", false]],
+        bundView.rows.map((r) => [[`<code>${esc(r.bund)}</code>`, false], [esc(r.kind), false],
+          [esc(r.items), false], [esc(r.holds), true], [esc(r.requires), true],
+          [esc(r.verdict), false], [esc(r.drain), false]]), 760)
+    : "";
+
   //  ---- the roads (C90): the same words and rows the app draws -------------
   const roadView = roadSummary(layout);
   const roadsHtml = roadView
@@ -489,7 +502,7 @@ ${toolbar}
 <p id="${EXPORT_IDS.error}" hidden></p>
 <noscript><p class="note">The 3D view needs JavaScript; the tables below carry every
 position, pipe and finding the engine published.</p></noscript>
-${plotHtml ? section("plot", plotHtml + fenceHtml, layout.plot ? `${layout.plot.plotArea.toFixed(0)} m²` + (layout.fence ? `, fence ${layout.fence.length.toFixed(0)} m` : "") : undefined) : ""}
+${plotHtml ? section("plot", plotHtml + fenceHtml + bundHtml, layout.plot ? `${layout.plot.plotArea.toFixed(0)} m²` + (layout.fence ? `, fence ${layout.fence.length.toFixed(0)} m` : "") : undefined) : ""}
 ${roadsHtml ? section("roads", roadsHtml, layout.roadNetwork
   ? `${layout.roadNetwork.length.toFixed(0)} m, ${layout.roadNetwork.pavedArea.toFixed(0)} m² paved`
   : undefined) : ""}

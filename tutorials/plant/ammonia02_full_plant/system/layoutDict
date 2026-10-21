@@ -89,9 +89,10 @@
   pump house stand in the north-west corner, upwind of the plant and held
   30 m off every process item.  NOT DRAWN, said rather than invented: the
   fire-water ring main and its hydrants (a pipe network with its own
-  hydraulics; on a real site it follows the ring road), the bunds round the
-  tank farm, the escape routes inside the units, and any toxic-gas refuge in
-  the control room.
+  hydraulics; on a real site it follows the ring road), the escape routes
+  inside the units, and any toxic-gas refuge in the control room.  The
+  tank farm's SECONDARY CONTAINMENT is declared (DEV.md 4c C134, `bunds`
+  below): an impounding area under the bullets, draining to a remote pit.
 
   Grammar and checks: docs/design/a-plant-layout-is-declared-and-checked.md
 \*---------------------------------------------------------------------------*/
@@ -657,6 +658,50 @@ roads
 //  for this exercise, not taken from any spacing standard; the students
 //  replace it with their own site's.  The economics prices this plot area
 //  as land (system/postDict, `economics { land { ... } }`).
+//  SECONDARY CONTAINMENT (DEV.md 4c C134).  The seven T201 bullets hold
+//  liquid ammonia at about 22 bar.  A spill from a pressurised store flashes
+//  in part and the rest pools COLD; it must not lie under the bullets, where
+//  a fire on it would heat the vessels that feed it.  So the bullets stand on
+//  a kerbed, sloped CATCH AREA that leads a spill to a REMOTE impounding pit
+//  south of the farm, outside the catch area -- an IMPOUNDING area, not a
+//  bund round the vessels.  Rule: 100 % of the liquid the largest bullet
+//  holds at its working level (552 m3, the run's own inventory), plus 50 mm
+//  of rain over the catch area and the open pit.  The pit, 24 m x 9 m x
+//  3.5 m, holds 756 m3 against the 686 m3 the rule requires.  Every number
+//  here is an AUTHOR-SET ASSUMPTION for this exercise: the case's reading of
+//  the usual form of an impounding rule for a pressurised liquefied gas, NOT
+//  a transcription of any code (the code the client specifies sets the
+//  margin, the allowances and how far the pit must stand from the vessels;
+//  Choupo ships no such table).  The product pipe and the let-down line run
+//  OVER the 0.3 m kerb on the rack's height; a pipe through it below its top
+//  would be announced.
+bunds
+(
+    {
+        name        "tankFarm";
+        kind        impounding;
+        items       ( "T201/vessel1" "T201/vessel2" "T201/vessel3" "T201/vessel4"
+                      "T201/vessel5" "T201/vessel6" "T201/vessel7" );
+        region      { xMin 73 m; xMax 143 m; yMin -71 m; yMax -36 m; }
+        wall        { height 0.3 m; }
+        pit         { x 108 m; y -77 m; length 24 m; width 9 m; depth 3.5 m; }
+        drain       sumpPump;
+        capacityRule
+        {
+            basis   heldLiquid;
+            terms   ( { fraction 1; of largest; } );
+            allowances
+            (
+                { name rain; depth 50 mm; reason "a design storm on the catch area and the open pit, as a round author-set number; the site's own rainfall statistics replace it"; }
+            );
+            source  "author-set assumption for this exercise: the case's reading of the usual form of an impounding rule for a pressurised liquefied gas (the largest vessel's liquid, plus rain); not a transcription of any code";
+            reason  "one bullet fails, not seven; the liquid it holds at its working level is what can run to the pit";
+        }
+        source      "author-set assumption for this exercise; not a civil design";
+        reason      "the bullets stand on a 0.3 m-kerbed slab sloped south to a pit outside it, between the tank farm and the south fence, clear of every road";
+    }
+);
+
 plot
 {
     margin  5 m;

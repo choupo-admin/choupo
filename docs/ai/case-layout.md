@@ -1424,6 +1424,47 @@ plot { margin 10 m; reason "..."; }   // optional; absent: 0 m, announced
   `musterPoint`, `fireWaterTank`, `firePumpHouse`, `windsock` (the sock
   turned downwind).  The 3D view rounds each route corner to its radius,
   paves the fillets and paints the direction arrows; it walks nothing.
+* SECONDARY CONTAINMENT (C134).  A bund or an impounding area is a DECLARED
+  REGION round the items it holds, not a placed item (the overlap rule does
+  not apply to it):
+  ```
+  bunds
+  (
+      { name "tankFarm"; kind bund;          // bund | impounding
+        items ( "NH3Storage/tank1" "NH3Storage/tank2" );
+        region { xMin 100 m; xMax 216 m; yMin -72 m; yMax 0 m; }   // or polygon ( { x; y; } ... );
+        wall { height 3 m; }                 // impounding: the catch area's kerb
+        // pit { x; y; length; width; depth; }   impounding only: the REMOTE pit
+        capacityRule
+        {
+            basis  vesselVolume;             // vesselVolume (sized V_R) | heldLiquid (inventory)
+            terms  ( { fraction 1.1; of largest; } );   // the largest term governs
+            allowances ( { name rain; depth 100 mm; reason "..."; } );   // or volume <m3>
+            source "..."; reason "...";      // the guideline YOU read, by title
+        }
+        drain  closedValve;                  // closedValve | sumpPump | openToSewer
+        source "..."; reason "..."; }
+  );
+  ```
+  NET VOLUME: a bund's area x wall height less what the enclosed footprints
+  occupy below the wall's top (floor at grade; a lying cylinder's circular
+  segment); an impounding area's pit, length x width x depth.  REQUIRED:
+  the largest declared term (a fraction of the largest or of the total
+  basis volume of the enclosed items that hold LIQUID by their sizing's own
+  inventory) plus the allowances (a `depth` falls on the catch area and the
+  pit).  REFUSED: a listed item outside the wall, a placed item inside it
+  and not listed, a wall through a footprint, an item indoors, an item in
+  two containments, two containments sharing a floor, a pit under an item
+  or a road, a containment across the fence, no `capacityRule` (no code's
+  table is shipped).  ANNOUNCED: `bundCapacity` (short of the rule),
+  `bundHoldsNothing`, `bundDrainOpen`, `pitNotRemote`, `roadCrossesBund`,
+  `pipeThroughBund` (a pipe below the wall's top), and on EVERY layout
+  `unbundedLiquid` (an item in the open holding liquid that no containment
+  encloses).  Published in `layout.bunds` and pinned by the `layout` golden
+  kind (`containment`, `verdict`, `area`, `wallHeight`, `displacedVolume`,
+  `netVolume`, `requiredVolume`); the outline and the pit enter the plot.
+  The draft carries none.  The 3D view draws the wall on the outline (its
+  thickness drawing) and the pit as a recess.
 * THE GMP INTERIOR (C97).  A pharmaceutical plant is a building before it is
   a plot plan: `building {}` in the same `layoutDict` declares its floors,
   its rooms (a box on a floor, a cleanliness `grade` -- EU GMP Annex 1's
