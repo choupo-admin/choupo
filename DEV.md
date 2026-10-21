@@ -2168,7 +2168,7 @@ accepts today, and that is a policy call.
 > (3) FIXED: starts from the hint pair in index order + two seeded by the
 > TPD's incipient phase; the hints only LABEL (`llSplit::labelByHints`);
 > every split finished by a Newton on equal activities to 1e-12
-> (`flash/LiquidLiquidSplit.H`; the minimiser had stopped at 4e-4 ... 4e-3
+> (a new `LiquidLiquidSplit.H` header beside the flash, on the G30 branch; the minimiser had stopped at 4e-4 ... 4e-3
 > in ln activity); a TPD-unstable feed the box-bounded minimiser cannot
 > split takes Michelsen's route from the incipient phase, and if that
 > fails the flash is NOT converged and the unit refuses naming the feed --
