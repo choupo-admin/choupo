@@ -570,7 +570,7 @@ registers a unit operation, \code{userOp03_case_rate_law} a rate law,
 which it also writes a second way, as an \emph{expression} in the case's
 own \code{constant/reactions} over declared parameters with units,
 compiled by the engine's formula evaluator with no C++ at all; and any unit
-may carry a \code{thermo \{\}} block that replaces the global
+may carry a \code{thermo {}} block that replaces the global
 thermodynamic models for that unit alone.  The hosted site runs the shipped
 engine only -- there is no compiler in the browser -- so the \code{code/}
 route is the local installation's privilege; the expression route and the
