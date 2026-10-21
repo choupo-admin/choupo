@@ -169,7 +169,7 @@ export const SOLVENT_STEPS: readonly LessonStep[] = [
       + "is stable as one liquid, through Michelsen's tangent-plane test -- "
       + "the same test the flash's phaseSet auto runs "
       + "(HansenMixture.cpp:407-409; a negative minimum tangent-plane "
-      + "distance means a second liquid, StabilityTest.cpp:225) -- and "
+      + "distance means a second liquid, StabilityTest.cpp:221) -- and "
       + "publishes a word.  HOMOGENEOUS: one liquid, the rule applies with "
       + "its assumptions.  TWO-PHASE: a second liquid; the engine REFUSES to "
       + "represent the pair as one homogeneous solvent there -- no averaged "

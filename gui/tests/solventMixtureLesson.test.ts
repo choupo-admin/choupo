@@ -249,7 +249,7 @@ describe("solvent-mixture: the lesson text", () => {
       "HansenMixture.cpp:431": 'const scalar n0 = basis == "mass" ? f0 / solvents[0].MW : f0;',
       "HansenMixture.cpp:501": "if (p.hasRa && (!best || p.Ra < best->Ra)) best = &p;",
       "HansenMixture.cpp:546": "Ra IS AN AFFINITY, NOT A SOLUBILITY",
-      "StabilityTest.cpp:225": "best.unstable = (best.tmMin < tmTol);",
+      "StabilityTest.cpp:221": "best.unstable = (best.tmMin < tmTol);",
     };
     for (const c of cited) expect(CLAIMS[c], `uncovered citation ${c}`).toBeDefined();
     for (const [c, want] of Object.entries(CLAIMS)) {
