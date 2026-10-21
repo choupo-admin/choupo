@@ -67,6 +67,8 @@ License
       node paper/whitepaper/figures/capture_gui.mjs \
            --flow-case plant/greenAmmonia03_basicDesign \
            --layout-case plant/greenAmmoniaPEQ_baseCase --dpr 2 --out paper/whitepaper/figures
+      node paper/whitepaper/figures/capture_gui.mjs --only B \
+           --layout-orbit DX,DY --layout-pan DX,DY --layout-zoom N   # the 3D camera
       node paper/whitepaper/figures/capture_gui.mjs --only A        # or --only B
       node paper/whitepaper/figures/capture_gui.mjs --debug <dir>   # a PNG per step
 
@@ -89,7 +91,13 @@ const opt = {
   layoutCase: "plant/greenAmmoniaPEQ_baseCase",
   zoomUnits: ["LoopMix", "RecycleComp", "FEHE", "CONVERTER", "WaterCooler", "Chiller",
               "Separator", "PurgeSplit", "LetdownHP"],
-  layoutZoom: 22,                       // wheel notches into the 3D view after its Fit
+  //  The 3D camera (C134): the bunds round the ammonia tanks are what the
+  //  figure must show, with the whole plant still in frame -- chosen by
+  //  looking at the PNG at the default --dpr 2, not computed (the same
+  //  notches frame differently at --dpr 1: re-look if either changes).
+  layoutZoom: 27,                       // wheel notches into the 3D view after its Fit
+  layoutPan: [20, -30],                 // CSS px, a right-drag (pan) before the zoom
+  layoutOrbit: [0, 0],                  // CSS px, a left-drag (orbit) before the pan
   only: null, out: HERE, dpr: 2, debug: null,
   treeOpen: ["CONVERTER/", "0/"],       // Case-tree folders left open
   flowW: 1500, flowH: 660,              // CSS pixels of Figure A's window
@@ -106,6 +114,8 @@ for (let i = 0; i < argv.length; i++) {
   else if (a === "--zoom-units") opt.zoomUnits = argv[++i].split(",").filter(Boolean);
   else if (a === "--only") opt.only = argv[++i];
   else if (a === "--layout-zoom") opt.layoutZoom = Number(argv[++i]);
+  else if (a === "--layout-pan") opt.layoutPan = argv[++i].split(",").map(Number);
+  else if (a === "--layout-orbit") opt.layoutOrbit = argv[++i].split(",").map(Number);
   else if (a === "--out") opt.out = resolve(argv[++i]);
   else if (a === "--dpr") opt.dpr = Number(argv[++i]);
   else if (a === "--debug") opt.debug = resolve(argv[++i]);
@@ -422,6 +432,26 @@ async function figureB(browser, base) {
   }
   if (!rect) throw new Refusal("the layout tab drew no WebGL canvas within 120 s");
   await sleep(8000);                         // let the scene settle
+  //  The camera, by the reader's own gestures on the view's orbit controls
+  //  (gui/src/ui/plotting/layoutRenderer.ts, OrbitControls): a left-drag
+  //  orbits, a right-drag pans -- so a figure can bring one part of the plot
+  //  plan (the bunds round the ammonia tanks) to the centre the wheel zooms
+  //  towards.  Each is a drag of --layout-orbit / --layout-pan CSS pixels.
+  const drag = async (button, buttons, [dx, dy]) => {
+    if (!dx && !dy) return;
+    const x0 = rect.x + rect.width / 2, y0 = rect.y + rect.height / 2;
+    const ev = (type, x, y, extra = {}) => tab.send("Input.dispatchMouseEvent",
+      { type, x, y, button, clickCount: 1, ...extra }, 120000);
+    await ev("mousePressed", x0, y0);
+    for (let s = 1; s <= 20; s++) {
+      await ev("mouseMoved", x0 + dx * s / 20, y0 + dy * s / 20, { buttons });
+      await sleep(60);
+    }
+    await ev("mouseReleased", x0 + dx, y0 + dy);
+    await sleep(1500);
+  };
+  await drag("left", 1, opt.layoutOrbit);
+  await drag("right", 2, opt.layoutPan);
   //  The view's Fit frames the whole plot with its margin; a print figure
   //  wants the plant larger, so dolly in with the wheel (the reader's own
   //  gesture) by --layout-zoom notches at the canvas centre.
