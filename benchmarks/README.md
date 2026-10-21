@@ -70,7 +70,7 @@ copy (`compare.py` already refuses that one).  Vitor can reverse this.
 | `dwsim/distillation01_methanol_acetone_pressure_swing` | "Extractive Distillation" (no entrainer: pressure-swing, 1 + 6 atm) | runs; compared; findings on both sides |
 | `dwsim/extraction01_water_acetone_mibk` | "Liquid-Liquid Extraction" (water/acetone/MIBK, 4 stages) | BLOCKED: Choupo's LL flash misses the splits it needs |
 | `dwsim/recycle01_cavett_as_shipped` | "Cavett's Problem" (psig pressures, 3 compressors, 3 valves, 15 components) | runs on PR78 + PPR78 kij at each separator's T; compared; findings on both sides |
-| `dwsim/methanol01_co2_hydrogenation` | "Methanol Synthesis by CO2 Hydrogenation" (the full plant) | runs on PR78 + E-PPR78 gas pairs + methanol pairs regressed to Brunner 1987; compared; findings on both sides |
+| `dwsim/methanol01_co2_hydrogenation` | "Methanol Synthesis by CO2 Hydrogenation" (the full plant) | runs on PR78 + E-PPR78 gas pairs + methanol pairs regressed by Choupo (Brunner 1987; methanol-water to curate04's series); compared; findings on both sides |
 | `dwsim/reforming01_methane_steam_pfr` | "Hydrogen production through Methane Catalytic Steam Reforming" (one isothermal PFR) | runs on Xu & Froment 1989 as written; compared; findings on both sides |
 
 Each case's README carries its comparison table, what agrees, what does not

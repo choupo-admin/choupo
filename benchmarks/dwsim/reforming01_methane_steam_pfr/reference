@@ -1,3 +1,22 @@
+/*---------------------------------------------------------------------------*\
+  Benchmark E -- THE REFERENCE NUMBERS: what the reference simulator's
+  sample stores as its solved state.  FACTS to compare against, never
+  inputs; no property parameter of the sample is read or reproduced (the
+  reader below names the package TYPE only).  The `reactions` block is the
+  sample's PROBLEM as it writes it, cited to its article in the README;
+  the case's own rate laws are written from the article, not from here.
+
+  Written by benchmarks/dwsim/read_sample.py from the sample file at the
+  commit named in `source` (rerun it on your own copy to check any number):
+      python3 -I benchmarks/dwsim/read_sample.py \
+          "<clone>/PlatformFiles/Common/samples/Hydrogen production through Methane Catalytic Steam Reforming.dwxml" \
+          --commit 1abf72d1b6b41d3e9a8cc770d3cc4e8fc76e5766
+
+  READ WITH THE README.  Its rates read atm, two of its three denominators
+  are truncated, its K3 is not K1 K2, and its stored duty is 2.6 times the
+  heat of reaction of the conversion it stores.
+\*---------------------------------------------------------------------------*/
+
 source
 {
     repository   "https://github.com/DanWBR/dwsim";

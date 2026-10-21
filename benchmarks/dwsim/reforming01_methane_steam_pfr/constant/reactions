@@ -85,7 +85,7 @@ steamReforming      // reaction I
             dH_CH4   -38.28    kJ/mol;
             A_KH2O   1.77e5    -;           // Table 6, dimensionless
             dH_H2O   88.68     kJ/mol;      // positive as printed
-            R_XF     8.314     J/mol/K;
+            R_XF     [1 2 -2 -1 -1] 8.314;   // J/(mol K), bracket form
             bar      1         bar;
         }
 
@@ -96,8 +96,8 @@ steamReforming      // reaction I
             //  between the points, refused outside them.
             lnK
             {
-                x      ( LNK_T_ROWS );   xUnit K;
-                lnK1   ( LNK1_ROWS );
+                x      ( 950 960 970 980 990 1000 1010 1020 1030 1040 1050 );   xUnit K;
+                lnK1   ( 1.85402606e+00 2.15034118e+00 2.44070528e+00 2.72529403e+00 3.00427626e+00 3.27781424e+00 3.54606402e+00 3.80917574e+00 4.06729392e+00 4.32055769e+00 4.56910108e+00 );
                 yUnit  -;
             }
         }
@@ -159,7 +159,7 @@ waterGasShift       // reaction II
             dH_CH4   -38.28    kJ/mol;
             A_KH2O   1.77e5    -;
             dH_H2O   88.68     kJ/mol;
-            R_XF     8.314     J/mol/K;
+            R_XF     [1 2 -2 -1 -1] 8.314;   // J/(mol K), bracket form
             bar      1         bar;
         }
 
@@ -167,8 +167,8 @@ waterGasShift       // reaction II
         {
             lnK
             {
-                x      ( LNK_T_ROWS );   xUnit K;
-                lnK2   ( LNK2_ROWS );
+                x      ( 950 960 970 980 990 1000 1010 1020 1030 1040 1050 );   xUnit K;
+                lnK2   ( 5.75081628e-01 5.28582399e-01 4.83175052e-01 4.38824744e-01 3.95498094e-01 3.53163118e-01 3.11789152e-01 2.71346797e-01 2.31807853e-01 1.93145267e-01 1.55333072e-01 );
                 yUnit  -;
             }
         }
@@ -230,7 +230,7 @@ overallReforming    // reaction III
             dH_CH4   -38.28    kJ/mol;
             A_KH2O   1.77e5    -;
             dH_H2O   88.68     kJ/mol;
-            R_XF     8.314     J/mol/K;
+            R_XF     [1 2 -2 -1 -1] 8.314;   // J/(mol K), bracket form
             bar      1         bar;
         }
 
@@ -238,8 +238,8 @@ overallReforming    // reaction III
         {
             lnK
             {
-                x      ( LNK_T_ROWS );   xUnit K;
-                lnK3   ( LNK3_ROWS );
+                x      ( 950 960 970 980 990 1000 1010 1020 1030 1040 1050 );   xUnit K;
+                lnK3   ( 2.42910769e+00 2.67892358e+00 2.92388033e+00 3.16411878e+00 3.39977436e+00 3.63097735e+00 3.85785317e+00 4.08052254e+00 4.29910178e+00 4.51370296e+00 4.72443415e+00 );
                 yUnit  -;
             }
         }

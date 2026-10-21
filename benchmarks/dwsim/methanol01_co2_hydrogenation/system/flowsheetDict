@@ -13,7 +13,7 @@
                                                                                                                │
           ┌───────────────────── s44 (recycle, heated) ──────────────────────────────────────────────── M39 ◄──┘
           │                                                                                        (510.15 K)  │ s40
-          │  HX41 cold ◄── s43 ◄── SPLIT57 (0.56) ◄── s55 ◄── SEP51 (vapour) ◄── s46 ◄── PC45 (vf 0.9) ◄── s42 ◄── HX41 hot ◄── sPFR ◄── PFR (20 m3, 510.15 K)
+          │  HX41 cold ◄── s43 ◄── SPLIT57 (0.56) ◄── s55 ◄── V54 (73 bar) ◄── s52 ◄── SEP51 (vapour) ◄── s46 ◄── PC45 (vf 0.9) ◄── s42 ◄── HX41 hot ◄── sPFR ◄── PFR (20 m3, 510.15 K)
           └──────────────────────┘              │ purge (0.44)          │ s53 (liquid)
                                                                         ▼
                                   V58 (10 bar) ─► s61 ─► V59 (1 atm) ─► s62 ─► SEP62 ─► vent (vapour)
@@ -38,8 +38,17 @@
        Choupo's `phaseChanger` with `outletQuality 0.9` lands the same
        outlet; the cooling-water side is not in this flowsheet and the duty
        is compared as a number (the sample's CW4 outlet is in `reference`).
-    3. The sample's COMP-054 (7299999.99996 Pa -> 7300000 Pa, stored work
-       -0.00122 kW) is a no-op and is omitted.
+    3. The sample's recycle compressor COMP-054 (7299999.99996 Pa ->
+       7300000 Pa, stored work -0.00122 kW) does no work, but it is NOT a
+       no-op: its 73 bar outlet FIXES THE LOOP PRESSURE, because the
+       sample's mixers take the minimum inlet pressure and the 78 bar
+       make-up meets the 73 bar recycle in MIX-039.  (A first mapping that
+       omitted it ran the loop at the make-up's 78 bar; measured, that
+       moved the reactor outlet's methanol by +14 %.)  A Choupo compressor
+       refuses P_out <= P_in, so a VALVE V54 to 73 bar stands in its place:
+       at convergence it drops nothing, and Choupo's mixer takes the
+       minimum inlet pressure too, so the loop runs at 73 bar as the
+       sample's does.
     4. The sample's VALV-083 (101325 Pa -> 101325 Pa) is a no-op and is
        omitted: COL78 reads COL85's distillate directly.
     5. Choupo's `shortcutColumn` runs at its FEED's pressure; the sample's
@@ -52,9 +61,11 @@
        0.007702; COL78 LK 0.998967, HK 0.098992 (README shows the arithmetic).
     7. The sample's hydrogen feed is stored two-phase (vapour fraction
        0.9656 at 298 K, 10.75 bar: its 3.7 % water condenses) and its
-       compressor is set to ignore the phase.  Choupo's compressor prices
-       the feed on the vapour root of the overall composition, which is the
-       same reading; stated, not refused.
+       compressor is set to ignore the phase.  Choupo's compressor computes
+       on the vapour root of the overall composition and says nothing; the
+       energy report, which resolves the feed, then finds 24.93 kW at C5
+       that no term accounts for -- a Choupo finding (README), not the same
+       reading as the sample's, which was the first draft of this note.
 
   THERMODYNAMICS: constant/thermoPhysPropDict (PR78, the E-PPR78 set at
   510.15 K, the three regressed methanol pairs).  Every unit inherits it.
@@ -137,7 +148,7 @@ units
         operation
         {
             V_R              20 m3;          // the sample's reactor volume
-            nSteps           200;
+            nSteps           5000;           // RK4 steps: 200 overshot CO2 to zero near the inlet on the first pass (the rate law then has no value); a numerical aid, stated
             thermalMode      isothermal;     // at the feed's 510.15 K (workaround 1)
             catalystLoading  1153.87;        // kg/m3, the sample's value (= VBF Table 3's 1775 kg/m3 pellets at 0.35 bed voidage)
         }
@@ -161,8 +172,15 @@ units
         name        SEP51;
         type        isothermalFlash;
         in          s46;
-        outputs     ( s53  s55 );
+        outputs     ( s53  s52 );
         operation   { }                      // separates the feed at its own (T, P)
+    }
+    {
+        name        V54;
+        type        valve;
+        in          s52;
+        outputs     ( s55 );
+        operation   { P 7300000 Pa; }        // workaround 3: COMP-054's outlet, the loop pressure
     }
     {
         name        SPLIT57;

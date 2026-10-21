@@ -3,10 +3,11 @@
   five components, every one of the ten pairs from E-PPR78 (Xu, Lasala,
   Privat & Jaubert 2017) evaluated ONCE at 1000 K, the bed's declared
   temperature, by the `ppr78Kij` op in kijTables/ (route P).  At 1000 K
-  every pair but the water pairs is far above the data its parameters were
-  fitted on (the set record names each window; the run repeats it) -- and
-  at 1 atm a cubic's kij barely moves a vapour fugacity, which the
-  comparison will show.  The sample runs its own Peng-Robinson package;
+  every one of the ten pairs is above the data its parameters were fitted
+  on -- the water pairs' data stop near 700 K, the others far lower (the
+  set record names each window; the run repeats it) -- and at 1 atm a
+  cubic's kij barely moves a vapour fugacity: measured, the same bed with
+  every kij 0 changes its duty by 0.015 kW and its outlet by nothing.  The sample runs its own Peng-Robinson package;
   none of its parameters is read.
 \*---------------------------------------------------------------------------*/
 

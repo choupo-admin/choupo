@@ -79,7 +79,7 @@ methanolSynthesis
             KH2O_0   6.62e-11  -;           // K_H2O: 6.62e-11 bar^-1, Table 2
             BH2O     124119    J/mol;       // its B
             Kratio   3453.38   -;           // K_H2O/(K8 K9 K_H2), T-independent, Table 2
-            R_VBF    8.314     J/mol/K;     // the R that reproduces Table 1 from Table 2
+            R_VBF    [1 2 -2 -1 -1] 8.314;    // J/(mol K): the R that reproduces Table 1 from Table 2 (bracket form: no named unit spells it)
             Kelvin   1         K;
             bar      1         bar;
         }
@@ -137,7 +137,7 @@ rwgs
             KH2O_0   6.62e-11  -;
             BH2O     124119    J/mol;
             Kratio   3453.38   -;
-            R_VBF    8.314     J/mol/K;
+            R_VBF    [1 2 -2 -1 -1] 8.314;
             Kelvin   1         K;
             bar      1         bar;
         }

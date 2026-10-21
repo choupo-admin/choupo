@@ -36,6 +36,21 @@
   compressor takes `P_out` since 2026-10-21 (DEV.md 4c C123, built for this
   case): the shaft power is the RESULT and is compared with the sample's.
 
+  THE MIXERS ARE DECLARED AT THEIR SEPARATOR'S TEMPERATURE -- a workaround,
+  and the reason is an engine finding (README).  The sample mixes
+  adiabatically and then holds each vessel at a declared T, which is
+  energetically the same as holding the vessel at that T with every inlet
+  fed to it: only the intermediate stream (s4, s12) differs, and the vessel
+  duty the sample stores is compared here with Q(mixer) + Q(separator).
+  Run AS BUILT, with adiabatic mixers (variants/adiabaticMixers, which
+  compare.py also runs), Choupo's adiabatic `mixer` merges each compressor's
+  hot vapour into a liquid-dominant stream on its liquid sensible datum and
+  publishes the outlet as vf = 0, and the plant's own energy report finds
+  the two mixers CREATING 9 684.66 kW (M0) and 40 203.76 kW (M1), measured
+  2026-10-21 -- the adiabatic mixer is a member CLAUDE.md 6 lists as
+  "enumerated, not fixed".  The declared-T mixer prices its duty through the
+  report's own surface (DEV.md 4c C74), so the workaround closes.
+
   TEARS.  The sample has three recycle blocks (s1, s3, s20).  Here the two
   MIXER OUTLETS (s4, s12) are the declared tears -- cavett01's choice, two
   cuts that make every stream computable in the declared order below, which
@@ -176,11 +191,13 @@ units
         type        mixer;
         inputs      ( s11  s20 );
         outputs     ( s12 );
+        operation   { T 308.7 K; }       // SEP2's T: workaround, header
     }
     {
         name        M0;
         type        mixer;
         inputs      ( s2  s1  s3 );
         outputs     ( s4 );
+        operation   { T 322.03 K; }      // SEP0's T: workaround, header
     }
 );

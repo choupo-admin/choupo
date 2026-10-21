@@ -1,3 +1,21 @@
+/*---------------------------------------------------------------------------*\
+  Benchmark A -- THE REFERENCE NUMBERS: what the reference simulator's
+  sample stores as its solved state.  FACTS to compare against, never
+  inputs; no property parameter of the sample is read or reproduced (the
+  reader below names the package TYPE only).
+
+  Written by benchmarks/dwsim/read_sample.py from the sample file at the
+  commit named in `source` (rerun it on your own copy to check any number):
+      python3 -I benchmarks/dwsim/read_sample.py \
+          "<clone>/PlatformFiles/Common/samples/Cavett's Problem.dwxmz" \
+          --commit 1abf72d1b6b41d3e9a8cc770d3cc4e8fc76e5766
+
+  READ WITH THE README.  The pressures are the primary's psia read as psig;
+  the feed carries no n-undecane; each recycle block stopped after one
+  iteration, and stream "1" (the block's outlet) is not the state of
+  stream "10" (its source) -- 20.39 kW apart.
+\*---------------------------------------------------------------------------*/
+
 source
 {
     repository   "https://github.com/DanWBR/dwsim";

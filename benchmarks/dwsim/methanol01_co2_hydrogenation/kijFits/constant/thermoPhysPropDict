@@ -1,8 +1,9 @@
 /*---------------------------------------------------------------------------*\
   Benchmark D -- the system the three METHANOL-PAIR FITS run on: phi-phi
   PR78 over the four components the fits need, with the three methanol kij
-  as INLINE values under regression (the one inline form the builder
-  accepts, origin named; it is announced on every build).  The three
+  -- and, added after the plant's first run, methanol-water -- as INLINE
+  values under regression (the one inline form the builder
+  accepts, the varying operation named by `variedBy`; it is announced on every build).  The three
   gas-gas pairs are not declared: each fit prices a BINARY (x_gas, x_methanol,
   everything else zero), so they enter no residual.
 
@@ -14,7 +15,7 @@
 recordType    thermophysicalPropertySystem;
 schemaVersion 2;
 
-components ( methanol H2 CO CO2 );
+components ( methanol H2 CO CO2 water );
 
 equilibrium
 {
@@ -26,9 +27,10 @@ equilibrium
         mixingRule vanDerWaalsOneFluid;
         binaryInteractions
         {
-            H2-methanol  { i H2;  j methanol;  kij 0.0;  origin fitParameters; }
-            CO-methanol  { i CO;  j methanol;  kij 0.0;  origin fitParameters; }
-            CO2-methanol { i CO2; j methanol;  kij 0.0;  origin fitParameters; }
+            H2-methanol  { i H2;  j methanol;  kij 0.0;  variedBy fitParameters; }
+            CO-methanol  { i CO;  j methanol;  kij 0.0;  variedBy fitParameters; }
+            CO2-methanol { i CO2; j methanol;  kij 0.0;  variedBy fitParameters; }
+            methanol-water { i methanol; j water;  kij 0.0;  variedBy fitParameters; }
         }
     }
 

@@ -8,9 +8,18 @@
   Table 1, pp. 281-282 (PDF pp. 9-10).  DOI not printed in the article; the PII on the PDF is
   0021-9614(87)90135-2.  The liquid-branch rows (bubble points, the
   authors' synthetic method in an optical cell): x is the GAS's liquid mole
-  fraction, p the bubble pressure, as printed (p in MPa, kept).  Rows with
-  p > 20.0 MPa are set aside under `selection` -- the window declared BEFORE
-  the fit (the plant's loop runs at 7.3-7.8 MPa).
+  fraction, p the bubble pressure, as printed (p in MPa, kept).
+
+  THE WINDOW (rule W2; rows outside it are set aside under `selection`, each
+  with its reason, never deleted): T <= 0.9 Tc(methanol) = 461.4 K; the
+  methanol-rich branch x_gas <= 0.5 (the plant's liquids carry <= 1.2 % of
+  any gas); p <= 0.75 x the isotherm's measured mixture critical pressure
+  where the authors print one; p <= 20.0 MPa.  W2 REVISES the first
+  window (p <= 20 MPa alone) AFTER a first run, on a STRUCTURAL fact and not
+  on a residual: near methanol's critical temperature and near a mixture's
+  critical point PR78 with a near-zero kij has no bubble pressure at all, and
+  the fit's flat penalty for "no bubble point" froze the regression there
+  (kijFits/system/propsDict records the first run's results).
 
   TRANSCRIPTION: read from the page image at 400 dpi and checked by an
   independent reader at 500-600 dpi (2026-10-21): all 301 rows of Table 1
@@ -37,14 +46,14 @@ provenance
 
 selection
 {
-    //  Bubble points above the declared window, set aside (not deleted).
-    abovePressureWindow
+    //  Bubble points outside window W2, set aside (not deleted).
+    outsideWindowW2
     (
-        { x 0.1064; p 28.65 MPa; }
-        { x 0.14; p 37.9 MPa; }
-        { x 0.19; p 53.05 MPa; }
-        { x 0.2599; p 73.8 MPa; }
-        { x 0.3132; p 89.3 MPa; }
+        { x 0.1064; p 28.65 MPa; reason "above 20 MPa"; }
+        { x 0.14; p 37.9 MPa; reason "above 20 MPa"; }
+        { x 0.19; p 53.05 MPa; reason "above 20 MPa"; }
+        { x 0.2599; p 73.8 MPa; reason "above 20 MPa"; }
+        { x 0.3132; p 89.3 MPa; reason "above 20 MPa"; }
     );
 }
 

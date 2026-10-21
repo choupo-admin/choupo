@@ -537,10 +537,13 @@ def case_A(case, work):
                 add(what + '  x_' + cc, r['x'].get(c), stv(res, name, 'x_' + cc))
         if 'vaporFraction' in r:
             add(what + '  vapour fraction', r['vaporFraction'], stv(res, name, 'vf'))
-    # duties
-    add('SEP0 duty [kW]', E['eSTR003'], kp(res, 'SEP0', 'Q_kW'))
+    # duties: the sample's vessel = Choupo's declared-T mixer + separator (README)
+    def qsum(*units):
+        vals = [kp(res, u, 'Q_kW') for u in units]
+        return None if any(v is None for v in vals) else sum(vals)
+    add('SEP0 duty [kW] (Choupo: M0 + SEP0)', E['eSTR003'], qsum('M0', 'SEP0'))
     add('SEP1 duty [kW]', E['eSTR005'], kp(res, 'SEP1', 'Q_kW'))
-    add('SEP2 duty [kW]', E['eSTR006'], kp(res, 'SEP2', 'Q_kW'))
+    add('SEP2 duty [kW] (Choupo: M1 + SEP2)', E['eSTR006'], qsum('M1', 'SEP2'))
     add('SEP3 duty [kW]', E['eSTR004'], kp(res, 'SEP3', 'Q_kW'))
     add('C0 shaft power [kW]', E['e1'], kp(res, 'C0', 'W_shaft_kW'))
     add('C1 shaft power [kW]', E['e2'], kp(res, 'C1', 'W_shaft_kW'))
@@ -569,6 +572,22 @@ def case_A(case, work):
               % (r, U[r]['converged'], U[r]['iterationsTaken']))
     plant_lines(res, 'Choupo')
 
+    # THE FINDING, kept on screen: the same plant with ADIABATIC mixers, as built
+    cpv = scratch_copy(case, 'adiabaticMixers', work)
+    codev, resv, _ = run(SOLVE, cpv)
+    print('\nVariant adiabaticMixers (the mixers as the sample has them): exit %d, converged %s'
+          % (codev, resv and resv.get('converged')))
+    plant_lines(resv, 'Choupo, adiabatic mixers')
+    by = os.path.join(cpv, 'reports', 'balances', 'energyBalance_byUnit.csv')
+    if os.path.exists(by):
+        lines = open(by).read().split('\n\n')[0].splitlines()
+        hdr = lines[0].split(',')
+        for l in lines[1:]:
+            f = l.split(',')
+            if f and f[0] in ('M0', 'M1'):
+                print('  %s: H_in %s kW, H_out %s kW, remaining imbalance %s kW (the engine\'s own report)'
+                      % (f[0], f[hdr.index('H_in_kW')], f[hdr.index('H_out_kW')], f[hdr.index('remaining_kW')]))
+
 
 # ================================================================= case D
 def case_D(case, work):
@@ -578,7 +597,8 @@ def case_D(case, work):
     regenerate(cp, 'kijTables', PROPS, ['constant/parameters/PengRobinson/eppr78_510.15K.dat'],
                label='D kij set (E-PPR78 at 510.15 K)')
     fitlog = regenerate(cp, 'kijFits', PROPS,
-                        ['constant/parameters/PengRobinson/%s-methanol.dat' % g for g in ('H2', 'CO', 'CO2')],
+                        ['constant/parameters/PengRobinson/%s-methanol.dat' % g for g in ('H2', 'CO', 'CO2')]
+                        + ['constant/parameters/PengRobinson/methanol-water.dat'],
                         label='D methanol pairs (fitParameters P_bubble, Brunner 1987)')
     for m in re.finditer(r'VERDICT\n\s+(\w+)', fitlog):
         pass
@@ -601,7 +621,8 @@ def case_D(case, work):
     pairs = (('mSTR006', 's6', 'H2 compressed s6'), ('mSTR031', 's31', 'CO2 compressed s31'),
              ('mSTR033', 's33', 'make-up s33'), ('mSTR040', 's40', 'reactor feed s40'),
              ('outletPFR', 'sPFR', 'reactor outlet'), ('mSTR042', 's42', 'after feed/effluent HX s42'),
-             ('mSTR046', 's46', 'condenser outlet s46'), ('mSTR052', 's55', 'HP separator vapour'),
+             ('mSTR046', 's46', 'condenser outlet s46'), ('mSTR052', 's52', 'HP separator vapour'),
+             ('mSTR055', 's55', 'after V54 (COMP-054) s55'),
              ('mSTR053', 's53', 'HP separator liquid'), ('purgeGases', 'purge', 'purge'),
              ('mSTR043', 's43', 'recycle s43'), ('mSTR044', 's44', 'recycle heated s44'),
              ('vent', 'vent', 'vent'), ('mSTR064', 's64', 'column feed liquid s64'),
@@ -634,10 +655,10 @@ def case_D(case, work):
     rows.append(['   of which M39 (489 -> 510.15 K)', None, mixQ, None, None])
     rows.append(['   of which PFR (isothermal)', None, pfrQ, None, None])
     add('pump P66 [kW]', E['eSTR068'], kp(res, 'P66', 'W_shaft_kW', 'W_kW'))
-    add('COL85 N (shortcut)', U['sC085']['m_N'], kp(res, 'COL85', 'N', 'N_stages'))
+    add('COL85 N (shortcut)', U['sC085']['m_N'], kp(res, 'COL85', 'N_theoretical'))
     add('COL85 N_min', U['sC085']['m_Nmin'], kp(res, 'COL85', 'N_min'))
     add('COL85 R_min', U['sC085']['m_Rmin'], kp(res, 'COL85', 'R_min'))
-    add('COL78 N (shortcut)', U['sC078']['m_N'], kp(res, 'COL78', 'N', 'N_stages'))
+    add('COL78 N (shortcut)', U['sC078']['m_N'], kp(res, 'COL78', 'N_theoretical'))
     add('COL78 N_min', U['sC078']['m_Nmin'], kp(res, 'COL78', 'N_min'))
     add('COL78 R_min', U['sC078']['m_Rmin'], kp(res, 'COL78', 'R_min'))
     table('Benchmark D -- methanol from CO2, the plant as the reference sample ships it (PR78 + E-PPR78 + fitted methanol pairs)',
@@ -680,6 +701,24 @@ def case_E(case, work):
             sys.exit('compare: the %s table pasted in constant/reactions is not what reactionGibbs writes today '
                      '(%s vs %s) -- re-run the op and paste the CSV' % (col, pasted[:3], fresh[:3]))
     print('[E lnK tables] the three pasted tables reproduce reactionGibbs today (%d points each)' % len(fresh))
+    # the sample's own K correlations (read from the numerators `reference` stores) beside
+    # Choupo's formation-data K at 1000 K, both on the bar basis (theirs are in atm: K1, K3 x 1.01325^2)
+    rxs = ref.get('reactions', {})
+    corr = {}
+    for v in rxs.values():
+        num = v.get('rateEquationNumerator', '') if isinstance(v, dict) else ''
+        m = re.search(r'exp\(([-+0-9.]+)([-+][0-9.]+)/T\)\)\)\s*$', num.strip('"'))
+        if m:
+            corr[num] = (float(m.group(1)), float(m.group(2)))
+    at = dict((r, dict(lnk[r])) for r in lnk)
+    print('  equilibrium constants at 1000 K, bar basis (the sample\'s correlation / Choupo\'s formation data):')
+    for rname, a_b, atm2 in (('steamReforming', (30.42, -27106.0), True), ('waterGasShift', (-3.798, 4160.0), False),
+                             ('overallReforming', (34.218, -31266.0), True)):
+        found = [k for k, ab in corr.items() if ab == a_b]
+        Ks = math.exp(a_b[0] + a_b[1] / 1000.0) * (1.01325 ** 2 if atm2 else 1.0)
+        Kc = math.exp(at[rname][1000.0])
+        print('    %-17s sample %.4g  Choupo %.4g  (ratio %.4f)%s'
+              % (rname, Ks, Kc, Ks / Kc, '' if found else '   [correlation NOT found in reference -- re-read]'))
     subprocess.run([INIT0, cp], cwd=ROOT, capture_output=True, text=True)
     code, res, _ = run(SOLVE, cp)
     print('[Choupo] exit %d, converged %s, NaN-free %s' % (code, res and res.get('converged'), nan_free(res)))

@@ -1,3 +1,21 @@
+/*---------------------------------------------------------------------------*\
+  Benchmark D -- THE REFERENCE NUMBERS: what the reference simulator's
+  sample stores as its solved state.  FACTS to compare against, never
+  inputs; no property parameter of the sample is read or reproduced (the
+  reader below names the package TYPES only).
+
+  Written by benchmarks/dwsim/read_sample.py from the sample file at the
+  commit named in `source` (rerun it on your own copy to check any number):
+      python3 -I benchmarks/dwsim/read_sample.py \
+          "<clone>/PlatformFiles/Common/samples/Methanol Synthesis by CO2 Hydrogenation.dwxmz" \
+          --commit 1abf72d1b6b41d3e9a8cc770d3cc4e8fc76e5766
+
+  READ WITH THE README.  The loop runs at 73 bar (COMP-054's outlet, through
+  the mixers' minimum-pressure rule); the reactor runs in outlet-T mode and
+  its stored outlet is not at equilibrium; MSTR-070 is stored at 184.69 K;
+  the sample's kinetics differ from the article in four places.
+\*---------------------------------------------------------------------------*/
+
 source
 {
     repository   "https://github.com/DanWBR/dwsim";
