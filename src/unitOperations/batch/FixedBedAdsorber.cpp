@@ -29,6 +29,7 @@ License
 #include "FixedBedAdsorber.H"
 
 #include "core/Constants.H"
+#include "core/RegistryRefusal.H"
 #include "io/SolutionWriter.H"
 #include "solver/ODE/ODEIntegrator.H"
 #include "thermo/ThermoAnnounce.H"
@@ -117,6 +118,14 @@ void FixedBedAdsorber::initialise(const DictPtr&       unitDict,
             throw std::runtime_error("fixedBedAdsorber '" + name_
                 + "': solver.samplingInterval must be > 0 s (it is the"
                 " declared breakthrough-sampler resolution)");
+        //  The Jacobian structure the unit declares to Rosenbrock23 -- a
+        //  solver aid, so the student may switch it off and compare.
+        jacobianDeclared_ = solverDict->found("jacobian");
+        jacobian_ = solverDict->lookupWordOrDefault("jacobian", jacobian_);
+        if (jacobian_ != "blockTridiagonal" && jacobian_ != "dense")
+            throw std::runtime_error("fixedBedAdsorber '" + name_ + "': "
+                + registryRefusal::message("solver.jacobian structure",
+                      jacobian_, {"blockTridiagonal", "dense"}, "Accepted"));
     }
 
     auto opDict = unitDict->subDict("operation");
@@ -860,6 +869,35 @@ void FixedBedAdsorber::initialise(const DictPtr&       unitDict,
                       << ", atol per row (1e-9 c_in | 1e-9 q_ref | 1e-6"
                          " ledger scale).  The Gershgorin bound above is a"
                          " stiffness DIAGNOSTIC here, not a limit.\n";
+        if (adaptive_)
+        {
+            if (jacobian_ == "blockTridiagonal")
+            {
+                buildOdeStructure_();
+                const std::size_t nv = odeStructure_.blockSize;
+                std::cout << "  [fixedBedAdsorber '" << name_ << "'] Jacobian:"
+                             " solver.jacobian blockTridiagonal ("
+                          << (jacobianDeclared_ ? "declared"
+                                                : "stated default")
+                          << ") -- each cell couples only to its two"
+                             " neighbors, so the unit DECLARES " << N_
+                          << " blocks of " << nv << " unknowns (one per"
+                             " cell) and " << y_.size() - N_ * nv
+                          << " border ledger rows; colored finite"
+                             " differences cost " << nv * std::min<std::size_t>(3, N_)
+                          << " derivative evaluations per Jacobian against "
+                          << y_.size() << " dense, and W is factored by"
+                             " block-Thomas.  The declaration is AUDITED"
+                             " against a dense Jacobian on the first step"
+                             " and refused if false.  `solver { jacobian"
+                             " dense; }` integrates it dense.\n";
+            }
+            else
+                std::cout << "  [fixedBedAdsorber '" << name_ << "'] Jacobian:"
+                             " solver.jacobian dense (declared) -- "
+                          << y_.size() << " derivative evaluations per"
+                             " Jacobian and a dense LU of W.\n";
+        }
         std::cout << "  [fixedBedAdsorber '" << name_ << "'] axial profiles:"
                      " <t>/" << name_ << ".profile every writeInterval = "
                   << writeInterval_ << " s (columns z, c_i, q_i)\n";
@@ -915,6 +953,46 @@ void FixedBedAdsorber::initialise(const DictPtr&       unitDict,
             throw std::runtime_error(os.str());
         }
     }
+}
+
+// -----------------------------------------------------------------------
+//  The declared Jacobian structure (ODEBlockStructure).  Block j holds the
+//  rows of CELL j: every integrated gas concentration, every loading, and
+//  in thermal mode the cell temperature -- exactly what rhs_ reads from
+//  cells j-1, j and j+1 to compute cell j.  Everything else (M_in, M_out,
+//  Q_wall) is a LEDGER row: it reads the cells and nothing reads it, which
+//  is the border the integrator closes directly.  The integrator audits
+//  this claim against a dense Jacobian and refuses it if false.
+// -----------------------------------------------------------------------
+void FixedBedAdsorber::buildOdeStructure_()
+{
+    const std::size_t nFlow = ergun_ ? compNames_.size() : adsIdx_.size();
+    const std::size_t nAds  = adsIdx_.size();
+    const std::size_t nv    = nFlow + nAds + (thermal_ ? 1 : 0);
+    odeStructure_ = solver::ODEBlockStructure{};
+    odeStructure_.nBlocks   = N_;
+    odeStructure_.blockSize = nv;
+    odeStructure_.blockRows.assign(N_ * nv, 0);
+    for (std::size_t j = 0; j < N_; ++j)
+    {
+        std::size_t k = 0;
+        for (std::size_t i = 0; i < nFlow; ++i)
+            odeStructure_.blockRows[j * nv + k++] = i * N_ + j;
+        for (std::size_t a = 0; a < nAds; ++a)
+            odeStructure_.blockRows[j * nv + k++] = qOffset_() + a * N_ + j;
+        if (thermal_)
+            odeStructure_.blockRows[j * nv + k++] = tOffset_() + j;
+    }
+    //  The ledger rows say what they read: M_in integrates the IMPOSED
+    //  inlet flux (no cell), M_out the outlet face flux (the last cell).
+    //  Q_wall sums every cell and is left undeclared (wide).
+    const long last = long(N_) - 1;
+    for (std::size_t i = 0; i < nFlow; ++i)
+    {
+        odeStructure_.borderReads.push_back({inOffset_() + i, 0, -1});
+        odeStructure_.borderReads.push_back({outOffset_() + i, last, last});
+    }
+    structureAnnounced_ = false;
 }
 
 // -----------------------------------------------------------------------
@@ -1471,6 +1549,11 @@ void FixedBedAdsorber::step(scalar t, scalar dt)
         ctrl.hInit     = (hCarry_ > 0.0) ? std::min(hCarry_, sub) : 0.0;
         ctrl.nPositive = (ergun_ ? compNames_.size() + nAds : 2 * nAds) * N_;
         ctrl.verbosity = 0;               // the unit prints its own summary
+        if (jacobian_ == "blockTridiagonal")
+        {
+            if (!odeStructure_.declared()) buildOdeStructure_();
+            ctrl.structure = &odeStructure_;
+        }
         const auto st = integ->integrate(y_, tl, tl + sub, f, ctrl);
         if (!st.ok)
         {
@@ -1481,9 +1564,34 @@ void FixedBedAdsorber::step(scalar t, scalar dt)
                   " samplingInterval";
             throw std::runtime_error(os.str());
         }
-        hCarry_ = st.hLast;
+        //  Warm-start the next chunk from the step the controller PROPOSED,
+        //  not from the one it grew out of the step shortened to land on
+        //  the chunk end (that one overshoots, and the first step of every
+        //  chunk was rejected for it: 5274 of 20139 steps, each paying a
+        //  full Jacobian, measured on batch13 before the change).
+        hCarry_ = (st.hNext > 0.0) ? st.hNext : st.hLast;
         acc += st.accepted;
         rej += st.rejected;
+        if (ctrl.structure && odeStructure_.audited && !structureAnnounced_)
+        {
+            structureAnnounced_ = true;
+            std::ostringstream os;   // its own stream: cout's format stays
+            os << "  [fixedBedAdsorber '" << name_ << "'] Jacobian"
+                  " structure VERIFIED on the first step ("
+               << odeStructure_.nBlocks << " blocks of "
+               << odeStructure_.blockSize << ", "
+               << y_.size() - odeStructure_.nBlocks
+                              * odeStructure_.blockSize
+               << " border rows): max |J| outside it = "
+               << std::scientific << std::setprecision(2)
+               << odeStructure_.offStructureMax
+               << " against " << odeStructure_.inStructureMax
+               << " inside; colored vs dense in the bands = "
+               << odeStructure_.coloredMismatch
+               << " (audit: " << odeStructure_.auditEvals
+               << " dense evaluations, once)\n";
+            if (verbosity_ >= 1) std::cout << os.str();
+        }
         tl  += sub;
         commit_(y_);
         sample_(tl);
@@ -1492,7 +1600,16 @@ void FixedBedAdsorber::step(scalar t, scalar dt)
         std::cout << "  [fixedBedAdsorber '" << name_ << "'] t = "
                   << std::setprecision(6) << tEnd << " s: Rosenbrock23 "
                   << acc << " accepted, " << rej << " rejected sub-steps,"
-                     " h_last = " << hCarry_ << " s\n";
+                     " h_next = " << hCarry_ << " s"
+                  << (odeStructure_.audited && jacobian_ == "blockTridiagonal"
+                      ? "; cumulative: " + std::to_string(odeStructure_.jacobians)
+                        + " colored Jacobians, "
+                        + std::to_string(odeStructure_.jacobianEvals)
+                        + " evaluations, "
+                        + std::to_string(odeStructure_.borderEvals)
+                        + " border products"
+                      : std::string())
+                  << "\n";
 }
 
 // -----------------------------------------------------------------------

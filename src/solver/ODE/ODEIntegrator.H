@@ -41,7 +41,9 @@ Description
         EulerSI       semi-implicit (linearly-implicit) Euler -- the readable
                       "hello, stiffness" stepping stone.
         Rosenbrock23  L-stable linearly-implicit embedded 2(3) pair (ode23s):
-                      one Jacobian + one LU factorisation per step, adaptive.
+                      one Jacobian + one LU factorisation per step, adaptive
+                      (dense, or block-tridiagonal when the caller DECLARES
+                      that structure -- ODEBlockStructure below).
 
     WHY a stiff method at all: detailed chemistry spans timescales from the
     radical lifetime (~1e-8 s) to the heat-release time (~1e-3 s).  An explicit
@@ -60,12 +62,77 @@ Description
 #include <map>
 #include <memory>
 #include <string>
+#include <vector>
 
 namespace Choupo::solver
 {
 
 // f(t, y) -> dy/dt, same packing as y.
 using DerivFn = std::function<sVector(scalar t, const sVector& y)>;
+
+//- A DECLARED structure for the stiff integrator's Jacobian (opt-in; the
+//  MESH's NDOptions::blockTri is the precedent, 2026-08-25).
+//
+//  A method-of-lines model -- a fixed bed cut into N finite-volume cells --
+//  couples each cell only to its two neighbors (upwind advection, central
+//  dispersion) plus purely LOCAL terms (the LDF source).  Gathered cell by
+//  cell its Jacobian is BLOCK-TRIDIAGONAL: N blocks of nv unknowns (c, q, T
+//  of one cell).  The state vector need not be stored in that order, so the
+//  declaration carries the map: blockRows[b*nv + k] is the index in y of
+//  slot k of block b.
+//
+//  Every row NOT in a block is a BORDER (quadrature) row: an integrated
+//  quantity dy_d/dt = g(y) that may read every block (a boundary flux, a
+//  wall duty summed over all cells) but that NO row reads back -- its
+//  column of the Jacobian is zero.  Then W = I - h d J is lower
+//  block-triangular, [[B, 0], [-h d R, I]], and a border row of W x = r is
+//  closed directly: x_d = r_d + h d (R x_b).  How R x_b is formed depends on
+//  what the row READS (borderReads):
+//    - a NARROW row, reading at most three consecutive blocks (an outlet
+//      flux reads the last cell; an imposed inlet flux reads none), takes
+//      its entries of R from the colored passes themselves -- each pass
+//      perturbs at most one of its columns -- so it is differentiated by
+//      the SAME perturbations as the block rows, and a linear invariant
+//      that runs through it (a mass ledger: cell inventory + M_out - M_in)
+//      is kept to round-off exactly as the dense path keeps it;
+//    - a WIDE row (a wall duty summed over every cell) is closed by ONE
+//      directional difference per back-solve: exact for a row LINEAR in
+//      the blocks, first-order in the difference step otherwise.
+//
+//  Declaring it buys the colored (Curtis-Powell-Reid) Jacobian -- 3*nv
+//  derivative evaluations independent of N, against n dense -- and the
+//  block-Thomas solve.  THE DECLARATION IS A CLAIM, AND A CLAIM IS
+//  MEASURED: the first Jacobian the integrator builds under it is also
+//  built DENSE, the largest entry outside the declared structure is
+//  recorded here, and a materially false declaration is REFUSED by name.
+//  The audit and the counts are written back into this object (the owner
+//  keeps it across integrate() calls) so the CALLER can announce them --
+//  the integrator itself prints nothing at the verbosity callers use.
+struct ODEBlockStructure
+{
+    std::size_t              nBlocks   = 0;
+    std::size_t              blockSize = 0;
+    std::vector<std::size_t> blockRows;     // [b*blockSize + k] -> index in y
+
+    //  What a border row reads: blocks [first, last] (first > last: none).
+    //  A border row not listed here is taken to read EVERY block (wide).
+    struct BorderRead { std::size_t row; long first; long last; };
+    std::vector<BorderRead>  borderReads;
+
+    bool declared() const { return nBlocks > 1 && blockSize > 0; }
+
+    // ---- written by the integrator --------------------------------------
+    bool   audited        = false;   // the first-Jacobian measurement ran
+    scalar offStructureMax = 0.0;    // max |J| outside the declaration
+    scalar inStructureMax  = 0.0;    // max |J| inside the three block bands
+    scalar coloredMismatch = 0.0;    // max |J_colored - J_dense| in the bands
+    long   auditEvals      = 0;      // f evaluations of the dense audit (n)
+    long   jacobians       = 0;      // colored Jacobians built
+    long   jacobianEvals   = 0;      // f evaluations spent on them
+    long   borderEvals     = 0;      // directional products (wide rows)
+    long   narrowBorderRows = 0;     // border rows differentiated by color
+    long   wideBorderRows   = 0;     // border rows closed by direction
+};
 
 // Integration controls.  `atol` is PER-COMPONENT: the state is unit-mixed
 // (species in kmol/s next to a temperature in K, trace radicals at 1e-10 next
@@ -99,6 +166,11 @@ struct ODEControls
     // would see the units' stale, pre-commit state).  Empty by default.
     std::function<void(scalar tEnd, scalar hTaken, const sVector& yAccepted)>
         onAcceptState;
+
+    // OPT-IN declared Jacobian structure (Rosenbrock23 only; see
+    // ODEBlockStructure).  Not owned; nullptr => the dense path, untouched.
+    // Methods that build no Jacobian ignore it.
+    ODEBlockStructure* structure = nullptr;
 };
 
 struct ODEStats
@@ -107,6 +179,15 @@ struct ODEStats
     std::size_t accepted = 0;
     std::size_t rejected = 0;
     scalar      hLast    = 0.0;
+    //  The step the CONTROLLER proposes for the next interval.  It differs
+    //  from hLast when the last accepted step was SHORTENED to land on t1:
+    //  growing from that shortened step (hLast does) overshoots what the
+    //  error estimate supports, and a caller that warm-starts its next
+    //  interval from hLast pays a rejected step for it.  hNext grows from
+    //  the step the controller WANTED before the shortening, bounded by
+    //  what the shortened step's own error allows.  (Rosenbrock23 sets it;
+    //  0 => not provided, use hLast.)
+    scalar      hNext    = 0.0;
     scalar      hMinUsed = 0.0;
     scalar      stiffness = 0.0;   // |lambda_max| * h_explicit-bound estimate
     bool        ok       = true;   // false if it gave up (maxSteps / hMin)

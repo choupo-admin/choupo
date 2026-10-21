@@ -52,7 +52,7 @@ License
   THE LAB COLUMN'S PARAMETERS come from surfaces the case or the run
   publishes, and from nowhere else: L, u, eps from the case's flowsheetDict
   operation {} block (the same scalars the engine reads at
-  FixedBedAdsorber.cpp:146-149), rho_b from the adsorbent record the case
+  FixedBedAdsorber.cpp:155-158), rho_b from the adsorbent record the case
   vendors (`rho_bulk`, Adsorbent.cpp:42), c_in from the run's own anchor
   (the late plateau over the c_out_over_cin_final_<i> KPI, decided by
   decideNormalisation).  A parameter that is on none of them is NAMED as

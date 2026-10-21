@@ -168,6 +168,7 @@ Description
 #pragma once
 
 #include "BatchUnitOperation.H"
+#include "solver/ODE/ODEIntegrator.H"
 
 #include <map>
 #include <string>
@@ -347,6 +348,17 @@ private:
                                        // (spec 2.5 default; solver{rtol})
     sVector atol_;                     // per-row (spec section 2.5)
     scalar hCarry_          = 0.0;     // warm-restart step across chunks
+                                       // (the controller's PROPOSAL, hNext)
+    //  The Jacobian structure this unit DECLARES to Rosenbrock23
+    //  (solver { jacobian blockTridiagonal | dense; }, default the first):
+    //  one block per cell holding that cell's c, q (and T) rows, the
+    //  M_in/M_out (and Q_wall) ledger rows as the border.  Kept across the
+    //  samplingInterval chunks so the integrator audits it ONCE per run.
+    std::string                jacobian_ = "blockTridiagonal";
+    bool                       jacobianDeclared_ = false;
+    solver::ODEBlockStructure  odeStructure_;
+    bool                       structureAnnounced_ = false;
+    void buildOdeStructure_();
     scalar startTime_       = 0.0;
     scalar endTime_         = 0.0;
     scalar writeInterval_   = 0.0;

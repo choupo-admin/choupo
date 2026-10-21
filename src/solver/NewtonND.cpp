@@ -30,6 +30,7 @@ License
 #include "core/InfeasibleTrial.H"
 #include "NewtonND.H"
 #include "LU.H"
+#include "BlockTridiagonal.H"
 
 #include <algorithm>
 #include <array>
@@ -142,25 +143,10 @@ std::vector<sVector> fdJacobian(const std::function<sVector(const sVector&)>& F,
 
 
 // ---------------------------------------------------------------------------
-//  Block-tridiagonal machinery (declared structure; see NewtonND.H).
-//
-//  Bands[b] holds, for block row b, the three nv x nv blocks (sub, diag,
-//  sup); sub of the first row and sup of the last are unused and stay zero.
+//  Block-tridiagonal machinery (declared structure; see NewtonND.H).  The
+//  bands and the block-Thomas solve live in BlockTridiagonal.{H,cpp}, the
+//  one home this Newton shares with the stiff integrator.
 // ---------------------------------------------------------------------------
-struct BlockBands
-{
-    std::size_t N = 0, nv = 0;
-    // [row][which(0=sub,1=diag,2=sup)][i][j]
-    std::vector<std::array<std::vector<sVector>, 3>> b;
-
-    BlockBands(std::size_t N_, std::size_t nv_) : N(N_), nv(nv_)
-    {
-        b.resize(N);
-        for (auto& row : b)
-            for (auto& blk : row)
-                blk.assign(nv, sVector(nv, 0.0));
-    }
-};
 
 //  The Curtis-Powell-Reid colored Jacobian.  Three colors: perturbing one
 //  variable slot in EVERY THIRD block touches disjoint residual rows (a
@@ -263,92 +249,6 @@ ColoredResult fdJacobianColoredBT(
             }
         }
     return out;
-}
-
-//  Block-Thomas: LU of the block-tridiagonal system in marching form, each
-//  pivot block factored by the shared dense luFactor (partial pivoting
-//  INSIDE the block).  O(N * nv^3) where dense Gauss is O((N*nv)^3).
-sVector blockThomasSolve(const BlockBands& A, sVector rhs)
-{
-    const std::size_t N = A.N, nv = A.nv;
-    //  working copies (the elimination overwrites)
-    auto diag = A.b; // full copy of bands
-    std::vector<sVector> y(N, sVector(nv, 0.0));
-    for (std::size_t bidx = 0; bidx < N; ++bidx)
-        for (std::size_t i = 0; i < nv; ++i)
-            y[bidx][i] = rhs[bidx * nv + i];
-
-    //  forward: for b>0, L = sub_b * inv(D_{b-1}); D_b -= L * sup_{b-1};
-    //  y_b -= L * y_{b-1}.  inv() applied as luSolve on columns.
-    std::vector<std::vector<sVector>> Dfac(N);
-    std::vector<std::vector<std::size_t>> Dpiv(N);
-    for (std::size_t bidx = 0; bidx < N; ++bidx)
-    {
-        if (bidx > 0)
-        {
-            const auto& sub = diag[bidx][0];
-            //  L = sub * inv(D_{b-1}):  solve D^T? -- compute via columns:
-            //  for each row r of sub, l_r = solveT?  Simpler: L*D = sub =>
-            //  L = sub * inv(D).  Column c of inv(D) = luSolve(D, e_c).
-            std::vector<sVector> Dinv(nv, sVector(nv, 0.0));
-            for (std::size_t cix = 0; cix < nv; ++cix)
-            {
-                sVector e(nv, 0.0); e[cix] = 1.0;
-                sVector col = luSolve(Dfac[bidx-1], Dpiv[bidx-1], std::move(e));
-                for (std::size_t i = 0; i < nv; ++i) Dinv[i][cix] = col[i];
-            }
-            std::vector<sVector> L(nv, sVector(nv, 0.0));
-            for (std::size_t i = 0; i < nv; ++i)
-                for (std::size_t jx = 0; jx < nv; ++jx)
-                {
-                    scalar acc = 0.0;
-                    for (std::size_t kx = 0; kx < nv; ++kx)
-                        acc += sub[i][kx] * Dinv[kx][jx];
-                    L[i][jx] = acc;
-                }
-            const auto& supPrev = diag[bidx-1][2];
-            for (std::size_t i = 0; i < nv; ++i)
-                for (std::size_t jx = 0; jx < nv; ++jx)
-                {
-                    scalar acc = 0.0;
-                    for (std::size_t kx = 0; kx < nv; ++kx)
-                        acc += L[i][kx] * supPrev[kx][jx];
-                    diag[bidx][1][i][jx] -= acc;
-                }
-            for (std::size_t i = 0; i < nv; ++i)
-            {
-                scalar acc = 0.0;
-                for (std::size_t kx = 0; kx < nv; ++kx)
-                    acc += L[i][kx] * y[bidx-1][kx];
-                y[bidx][i] -= acc;
-            }
-        }
-        Dfac[bidx] = diag[bidx][1];
-        luFactor(Dfac[bidx], Dpiv[bidx]);
-    }
-
-    //  back substitution: x_N-1 = D^-1 y; x_b = D^-1 (y_b - sup_b x_{b+1})
-    sVector xsol(N * nv, 0.0);
-    for (long bidx = long(N) - 1; bidx >= 0; --bidx)
-    {
-        sVector r = y[std::size_t(bidx)];
-        if (bidx + 1 < long(N))
-        {
-            const auto& sup = diag[std::size_t(bidx)][2];
-            for (std::size_t i = 0; i < nv; ++i)
-            {
-                scalar acc = 0.0;
-                for (std::size_t kx = 0; kx < nv; ++kx)
-                    acc += sup[i][kx] * xsol[std::size_t(bidx+1) * nv + kx];
-                r[i] -= acc;
-            }
-        }
-        sVector xb = luSolve(Dfac[std::size_t(bidx)], Dpiv[std::size_t(bidx)],
-                             std::move(r));
-        for (std::size_t i = 0; i < nv; ++i)
-            xsol[std::size_t(bidx) * nv + i] = xb[i];
-    }
-    return xsol;
 }
 
 } // anonymous namespace
