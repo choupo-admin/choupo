@@ -1291,6 +1291,52 @@ accepts today, and that is a policy call.
 > fire-water ring main and hydrants, bunds, escape routes, swept path, a
 > fillet running through an item.
 
+> **C128. WHICH SOLVENT, OR WHICH SOLVENT MIXTURE, FOR A GIVEN SUBSTANCE
+> -- an EduTool, and the Explorer's delta lens made honest first (Vitor,
+> 2026-10-21, with a second opinion he consulted on the lens with
+> methanol + water selected: "Isso no explorer ainda esta confuso").**
+> Measured against the tree: `solubilityParameter` computes the
+> Hildebrand delta of each PURE component (Watson Hvap, the record's
+> Vliq; `SolubilityParameter.cpp:126`); it READS `hansen { dD; dP; dH; }`
+> and computes the Teas coordinates with a sum-rule check (`:315-410`,
+> `Component.H:112-140`, gate `check_hansen_teas`), but NO standards
+> record carries a `hansen {}` block today (grep: 0) -- so the lens's
+> caption "Hansen ... is not implemented" (`ExploreWorkspace.tsx:1162`)
+> is false on the engine and true on the data, and its "ONE NUMBER
+> CARRIES NO HYDROGEN BONDING" (`:1159`) is imprecise (the cohesive
+> energy includes it; the single parameter does not separate it from
+> dispersion and polarity).  Two slices, in order.  (1) THE LENS, with
+> the Explore queue (G18b owns that file): title "Cohesion of the pure
+> liquids -- Hildebrand parameter"; the first sentence says each bar is a
+> pure liquid at the stated T, that a larger value is not a larger
+> dissolving power and that no mixture property is computed; the two
+> sentences corrected; sources and limits moved to the details.  (2) THE
+> ENGINE AND THE EDUTOOL: a `hansenMixture` route (or an extension of the
+> op) over DECLARED solvents, a composition with its declared basis
+> (volume / mass / mole), a T, and a TARGET (solute or polymer with its
+> own `hansen {}` and, where measured, an interaction radius R0): the
+> usual volume-fraction rule delta_k,mix = sum phi_i delta_k,i (k = D, P,
+> H), the Hansen distance Ra^2 = 4(dD - dD,t)^2 + (dP - dP,t)^2 + (dH -
+> dH,t)^2 along a composition sweep, RED = Ra/R0 ONLY where R0 is
+> declared (no invented universal cut-off), the approximation, the basis
+> and the parameters' reference T stated on the run; a mixture the
+> package finds two-phase at that composition is REFUSED as a solvent,
+> never averaged; affinity (Ra) kept apart from solubility (g/L), which
+> this route does not give.  The EduTool: "Choosing a solvent, or a
+> solvent mixture" -- the student declares the target and the solvents,
+> sees Ra against composition with the pure solvents at the ends and the
+> minimum marked, the Teas diagram beside it as a complement, every
+> parameter with its source, and the sentence that a small Ra is a
+> compatibility indicator in this approach and not a saturation
+> concentration.  THE DATA IS THE GATE: Hansen's own compilations (the
+> Handbook, HSPiP) are no-grant; parameters may enter standards only
+> from primary articles with a licence read first (the 2026-09-01 rule),
+> or case-locally for a witness with the citation per value -- the
+> licence reading is the slice's first step and a finding, not a
+> formality.  Status: proposed; dispatch when a slot frees (the machine is
+> at its limit), slice 2 as a general of its own, slice 1 in the Explore
+> queue.
+
 > **C127. ONE WORKED EXAMPLE, FROM A SENTENCE TO A STUDENT'S DECISION
 > (Vitor, 2026-10-21, passing on a second opinion he asked for: "Mostra-me
 > um exemplo completo, de uma instrucao em linguagem natural ate ao ecra
