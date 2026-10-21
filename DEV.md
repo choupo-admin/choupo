@@ -1413,6 +1413,25 @@ accepts today, and that is a policy call.
 > final; }` layout draws what the steady flowsheet and the sizing pass
 > already hold.
 
+> **C135. A kij THAT VARIES WITH T, REGRESSED AND READ PER UNIT (Vitor,
+> 2026-10-21: "Nos conseguimos fazer melhor e arranjar kij que variem com
+> T?" -- then "Ok" to the plan below).**  Measured: on C123 case D every
+> gas-methanol pair (H2, CO, CO2) failed its held-out isotherm (AAD 20-31 %
+> against a 5 % band) because the residual changes SIGN between isotherms
+> -- one constant kij is a compromise; the data want kij(T).  Plan, inside
+> Vitor's own ruling of 2026-10-20 ("Rota P, kij a T declarada": every kij
+> a unit runs on is a constant in a file, evaluated at the unit's declared
+> T): (1) a pair record may carry a kij(T) form, e.g. kij = a + b(1/T -
+> 1/Tref), with its evidence, band and verdict; (2) `fitParameters`
+> regresses the two parameters on the fitting isotherms and judges the
+> held-out one; (3) the per-unit kij file is evaluated at each unit's
+> declared T and announced (case D: the 360 K separator and the 510 K
+> reactor get different kij, both visible).  No promise the gas pairs pass
+> the band -- the held-out isotherm decides.  Not chosen: PPR78 for
+> methanol (whether the published group tables cover it is UNVERIFIED) and
+> a gE mixing rule (PSRK / MHV2: an architecture change, his).  ORDER: after
+> the white paper's first draft (C126).
+
 > **C134. SECONDARY CONTAINMENT (BUNDS / RETENTION BASINS) IN THE PLANT
 > LAYOUT, AND A SWEEP FOR WHAT ELSE A LAYOUT ROUTINELY CARRIES (Vitor,
 > 2026-10-21, from a colleague: "no layout faltam as bacias de retencao
