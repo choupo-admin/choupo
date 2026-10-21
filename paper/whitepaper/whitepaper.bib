@@ -1,7 +1,7 @@
 % paper/whitepaper/whitepaper.bib -- references used by the white paper and
 % not already in ../paper.bib (which the white paper also reads).
 % TODO(Vitor): every entry below to be checked against the item itself
-% before the paper is made public.
+% before the paper is made public (TODO item 6 in whitepaper.tex).
 
 @article{weller1998,
   author  = {Weller, H. G. and Tabor, G. and Jasak, H. and Fureby, C.},
@@ -79,4 +79,83 @@
   institution = {NASA},
   number      = {NASA-STD-7009},
   year        = {2008}
+}
+
+% --- the worked example (Section 4.3): the two studies the pair was fitted
+% to and held out on.  Citations as the evidence files carry them
+% (tutorials/props/curation/curate05_nrtl_acetone_methanol/constant/
+% experiments/*.dat); the archive located them, the articles are the source.
+@article{chen2015,
+  author  = {Chen, X. and Yang, B. and Abdeltawab, A. A. and Al-Deyab, S. and
+             Yu, G. and Yong, X.},
+  title   = {Isobaric Vapor--Liquid Equilibrium for Acetone + Methanol +
+             Phosphate Ionic Liquids},
+  journal = {Journal of Chemical \& Engineering Data},
+  year    = {2015},
+  doi     = {10.1021/je5007373}
+}
+
+@article{orchilles2007,
+  author  = {Orchill{\'e}s, A. V. and Miguel, P. J. and Vercher, E. and
+             Mart{\'i}nez-Andreu, A.},
+  title   = {Ionic Liquids as Entrainers in Extractive Distillation: Isobaric
+             Vapor--Liquid Equilibria for Acetone + Methanol +
+             1-Ethyl-3-methylimidazolium Trifluoromethanesulfonate},
+  journal = {Journal of Chemical \& Engineering Data},
+  year    = {2007},
+  doi     = {10.1021/je0603170}
+}
+
+% --- the research example (Section 6.3)
+@article{fdl2021,
+  author  = {Fern{\'a}ndez de Labastida, Marc and Yaroshchuk, Andriy},
+  title   = {Nanofiltration of Multi-Ion Solutions: Quantitative Control of
+             Concentration Polarization and Interpretation by
+             Solution-Diffusion-Electro-Migration Model},
+  journal = {Membranes},
+  volume  = {11},
+  number  = {4},
+  pages   = {272},
+  year    = {2021},
+  doi     = {10.3390/membranes11040272},
+  note    = {CC BY 4.0}
+}
+
+@article{geraldes2010,
+  author  = {Geraldes, V{\'i}tor and Afonso, Maria Diná},
+  title   = {Limiting current density in the electrodialysis of multi-ionic
+             solutions},
+  journal = {Journal of Membrane Science},
+  volume  = {360},
+  number  = {1--2},
+  pages   = {499--508},
+  year    = {2010},
+  doi     = {10.1016/j.memsci.2010.05.054}
+}
+
+% --- the recycle example (Section 6.2), as the case header cites them
+@inproceedings{cavett1963,
+  author    = {Cavett, R. H.},
+  title     = {Application of Numerical Methods to the Convergence of
+               Simulated Processes Involving Recycle Loops},
+  booktitle = {Proceedings of the American Petroleum Institute},
+  volume    = {43},
+  pages     = {57},
+  year      = {1963}
+}
+
+@misc{rosen1977,
+  author       = {Rosen, E. M. and Pauls, A. C.},
+  howpublished = {Computers \& Chemical Engineering, 1 (1977) 11 -- the
+                  {FLOWTRAN} solutions of the {Cavett} problem, as cited in
+                  the Choupo case header},
+  year         = {1977}
+}
+
+@misc{rosen2005,
+  author       = {Rosen, E. M.},
+  title        = {Revisiting the {Cavett} problem},
+  howpublished = {CACHE News, Fall 2005 (the article's full title also names
+                  a commercial simulator; shortened here)},
+  year         = {2005}
 }
