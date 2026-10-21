@@ -29,7 +29,54 @@ or `\input` by a manual, and `check_doctrine` holds that (its arm (t)).
 ## Layout
 
 ```
-benchmarks/<simulator>/<case>/    one reproduced sample
+benchmarks/<simulator>/<case>/              one reproduced sample
+benchmarks/<simulator>/<case>/variants/<v>/  only the files a variant changes
+benchmarks/<simulator>/<case>/kijTables/    a props case that WRITES the case's kij set records
+                                            (the ppr78Kij op at each declared T; route P)
+benchmarks/<simulator>/<case>/kijFits/      a props case that REGRESSES a case-local pair to
+                                            measured data (fitParameters, verdict in the record)
+benchmarks/<simulator>/read_sample.py       reads the FACTS out of a sample file you hold
+benchmarks/<simulator>/compare.py           runs the cases, prints them beside `reference`
+benchmarks/requests/                        articles to obtain before a case can be built
 ```
 
-Status: the folder exists; the first cases are being chosen (DEV.md 4c C123).
+`compare.py` re-runs every generator (`kijTables/`, `kijFits/`, a case's
+`reactionGibbs` table) in the scratch copy and REFUSES if what the engine
+writes today differs from the committed record the case runs on (the
+written date excepted): a case must not run on a number its own generator
+no longer reproduces.
+
+`compare.py` runs every case in a scratch copy (a temporary directory, so
+the tree is never written) and needs a native build of this tree
+(`make all`).  `read_sample.py` reads a sample file from wherever your own
+copy lives -- the file is never copied here (rule 1).
+
+## Not in the regression suite, and no gate holds the comparison
+
+`bin/runTests` walks `tutorials/`, not this tree, so a benchmark is never a
+PASS or a FAIL of the suite.  **Stated default (2026-10-20, C123): no gate
+holds a benchmark's numbers either.**  A benchmark compares Choupo with
+another program's stored state, which may not close (case B's does not), and
+the first two cases expose engine defects (case C produces no answer at all
+today): a gate pinning those numbers would pin the defects.  What is worth
+gating, once case C converges, is that every case here runs to exit 0
+without NaN and that a case-local copy of a catalogue record is still a byte
+copy (`compare.py` already refuses that one).  Vitor can reverse this.
+
+## Cases
+
+| case | sample | status |
+|---|---|---|
+| `dwsim/distillation01_methanol_acetone_pressure_swing` | "Extractive Distillation" (no entrainer: pressure-swing, 1 + 6 atm) | runs; compared; findings on both sides |
+| `dwsim/extraction01_water_acetone_mibk` | "Liquid-Liquid Extraction" (water/acetone/MIBK, 4 stages) | BLOCKED: Choupo's LL flash misses the splits it needs |
+| `dwsim/recycle01_cavett_as_shipped` | "Cavett's Problem" (psig pressures, 3 compressors, 3 valves, 15 components) | runs on PR78 + PPR78 kij at each separator's T; compared; findings on both sides |
+| `dwsim/methanol01_co2_hydrogenation` | "Methanol Synthesis by CO2 Hydrogenation" (the full plant) | runs on PR78 + E-PPR78 gas pairs + methanol pairs regressed by Choupo (Brunner 1987; methanol-water to curate04's series); compared; findings on both sides |
+| `dwsim/reforming01_methane_steam_pfr` | "Hydrogen production through Methane Catalytic Steam Reforming" (one isothermal PFR) | runs on Xu & Froment 1989 as written; compared; findings on both sides |
+
+Each case's README carries its comparison table, what agrees, what does not
+and why, and the findings on each side.  The PR kij of the last three come
+from the primary articles listed in `requests/pr-kij-articles.md` (DEV.md 4c
+C123: PPR78 / E-PPR78 group contributions evaluated ONCE at each unit's
+declared temperature and written into the case -- route P -- and, where
+those tables have no group, Choupo's own regression to measured
+solubilities).

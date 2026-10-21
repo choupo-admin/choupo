@@ -1,0 +1,297 @@
+/*---------------------------------------------------------------------------*\
+  Benchmark A -- THE REFERENCE NUMBERS: what the reference simulator's
+  sample stores as its solved state.  FACTS to compare against, never
+  inputs; no property parameter of the sample is read or reproduced (the
+  reader below names the package TYPE only).
+
+  Written by benchmarks/dwsim/read_sample.py from the sample file at the
+  commit named in `source` (rerun it on your own copy to check any number):
+      python3 -I benchmarks/dwsim/read_sample.py \
+          "<clone>/PlatformFiles/Common/samples/Cavett's Problem.dwxmz" \
+          --commit 1abf72d1b6b41d3e9a8cc770d3cc4e8fc76e5766
+
+  READ WITH THE README.  The pressures are the primary's psia read as psig;
+  the feed carries no n-undecane; each recycle block stopped after one
+  iteration, and stream "1" (the block's outlet) is not the state of
+  stream "10" (its source) -- 20.39 kW apart.
+\*---------------------------------------------------------------------------*/
+
+source
+{
+    repository   "https://github.com/DanWBR/dwsim";
+    commit       1abf72d1b6b41d3e9a8cc770d3cc4e8fc76e5766;
+    sample       "PlatformFiles/Common/samples/Cavett's Problem.dwxmz";
+    buildVersion "8.8.0.0";
+    savedOn      "2024-07-09T10:38:09.7072587-03:00";
+}
+
+propertyPackage ( PengRobinsonPropertyPackage );   // the TYPE only; no parameter is read
+
+streams     // stored overall state: T [K], P [Pa], F [mol/s], mole fractions,
+            // H_kW = the stream's stored TotalEnergyFlow (its own enthalpy datum)
+{
+    4   // "4"
+    {
+        T 331.157108642078;  P 1962938.20167;  F 7580.41587564798;  H_kW -1528987.59623022;
+        vaporFraction 0.432790557403188;
+        x { nDecane 0.05784092949;  nNonane 0.04785382847;  nOctane 0.05306227544;  nHeptane 0.07573233799;  nHexane 0.05261772651;  nPentane 0.03700152422;  isopentane 0.02660884512;  nButane 0.0605119379;  isobutane 0.02541662108;  propane 0.1176106142;  hydrogenSulfide 0.01738996907;  ethane 0.1139936098;  methane 0.1012237378;  nitrogen 0.01109767786;  carbonDioxide 0.2020383651; }
+    }
+    18   // "18"
+    {
+        T 302.599938897394;  P 190984.88168;  F 3176.33601619148;  H_kW -686622.841321341;
+        vaporFraction 7.38051466671384E-07;
+        x { nDecane 0.1378373662;  nNonane 0.1137965622;  nOctane 0.1254615705;  nHeptane 0.1764125971;  nHexane 0.1178418795;  nPentane 0.07315440317;  isopentane 0.05027210546;  nButane 0.08654449156;  isobutane 0.03136964116;  propane 0.06921200481;  hydrogenSulfide 0.003304500681;  ethane 0.01010081173;  methane 0.0001382685408;  nitrogen 1.282490846e-06;  carbonDioxide 0.004552514946; }
+    }
+    7   // "7"
+    {
+        T 403.951995095615;  P 5617161.00166;  F 3022.05772662113;  H_kW -593103.025733605;
+        vaporFraction 1;
+        x { nDecane 0.0001332563698;  nNonane 0.0002559205082;  nOctane 0.0006972234937;  nHeptane 0.002419015175;  nHexane 0.004020534805;  nPentane 0.007385489133;  isopentane 0.006400096976;  nButane 0.02756365514;  isobutane 0.01406163295;  propane 0.1107519193;  hydrogenSulfide 0.02348611547;  ethane 0.178299313;  methane 0.2228711168;  nitrogen 0.02618166979;  carbonDioxide 0.375473041; }
+    }
+    20   // "20"
+    {
+        T 341.359791541093;  P 439196.24668;  F 328.300089853962;  H_kW -48087.1086604025;
+        vaporFraction 1;
+        x { nDecane 0.0002366128619;  nNonane 0.0005742352177;  nOctane 0.001898151785;  nHeptane 0.007930721391;  nHexane 0.01609785185;  nPentane 0.03413300908;  isopentane 0.03006298352;  nButane 0.1281398181;  isobutane 0.06249882521;  propane 0.3454939016;  hydrogenSulfide 0.03737757425;  ethane 0.1737618871;  methane 0.01432153465;  nitrogen 0.0003325863646;  carbonDioxide 0.147140307; }
+    }
+    19   // "19"
+    {
+        T 341.359791541093;  P 439196.24668;  F 328.300089853961;  H_kW -48087.1086604027;
+        vaporFraction 1;
+        x { nDecane 0.0002366128619;  nNonane 0.0005742352177;  nOctane 0.001898151785;  nHeptane 0.007930721391;  nHexane 0.01609785185;  nPentane 0.03413300908;  isopentane 0.03006298352;  nButane 0.1281398181;  isobutane 0.06249882521;  propane 0.3454939016;  hydrogenSulfide 0.03737757425;  ethane 0.1737618871;  methane 0.01432153465;  nitrogen 0.0003325863646;  carbonDioxide 0.147140307; }
+    }
+    17   // "17"
+    {
+        T 302.603295912694;  P 190984.88168;  F 328.300089853961;  H_kW -49011.944567784;
+        vaporFraction 0.999992520939637;
+        x { nDecane 0.0002366128619;  nNonane 0.0005742352177;  nOctane 0.001898151785;  nHeptane 0.007930721391;  nHexane 0.01609785185;  nPentane 0.03413300908;  isopentane 0.03006298352;  nButane 0.1281398181;  isobutane 0.06249882521;  propane 0.3454939016;  hydrogenSulfide 0.03737757425;  ethane 0.1737618871;  methane 0.01432153465;  nitrogen 0.0003325863646;  carbonDioxide 0.147140307; }
+    }
+    15   // "15"
+    {
+        T 395.800893846455;  P 1962938.24168;  F 1382.02213283537;  H_kW -241098.701124643;
+        vaporFraction 1;
+        x { nDecane 0.000161331041;  nNonane 0.0003691375605;  nOctane 0.001161698467;  nHeptane 0.004636439476;  nHexane 0.008969483782;  nPentane 0.01866606093;  isopentane 0.01640949528;  nButane 0.07272209516;  isobutane 0.03656229968;  propane 0.2438424;  hydrogenSulfide 0.03643365142;  ethane 0.2121681454;  methane 0.06756870539;  nitrogen 0.00361961894;  carbonDioxide 0.2767094375; }
+    }
+    5   // "5"
+    {
+        T 322.031089485428;  P 1962938.20167;  F 3022.05772662113;  H_kW -604039.828226111;
+        vaporFraction 0.999997479643534;
+        x { nDecane 0.0001332563698;  nNonane 0.0002559205082;  nOctane 0.0006972234937;  nHeptane 0.002419015175;  nHexane 0.004020534805;  nPentane 0.007385489133;  isopentane 0.006400096976;  nButane 0.02756365514;  isobutane 0.01406163295;  propane 0.1107519193;  hydrogenSulfide 0.02348611547;  ethane 0.178299313;  methane 0.2228711168;  nitrogen 0.02618166979;  carbonDioxide 0.375473041; }
+    }
+    11   // "11"
+    {
+        T 305.895492348562;  P 439196.24168;  F 4558.35814902685;  H_kW -937363.908748001;
+        vaporFraction 0.238320254359326;
+        x { nDecane 0.09609608905;  nNonane 0.07940709453;  nOctane 0.08777574264;  nHeptane 0.1243326837;  nHexane 0.08483343063;  nPentane 0.05663437523;  isopentane 0.04000548447;  nButane 0.08235377879;  isobutane 0.03294398893;  propane 0.1221573313;  hydrogenSulfide 0.01334875513;  ethane 0.07136453107;  methane 0.02058212385;  nitrogen 0.001098305378;  carbonDioxide 0.08706628532; }
+    }
+    10   // "10"
+    {
+        T 281.648687398458;  P 1962938.20167;  F 290.181827115462;  H_kW -55676.2646741843;
+        vaporFraction 0.385624619686415;
+        x { nDecane 0.001321844976;  nNonane 0.002475053549;  nOctane 0.006301235621;  nHeptane 0.01918784484;  nHexane 0.02683014173;  nPentane 0.03556878134;  isopentane 0.02766872996;  nButane 0.08642772736;  isobutane 0.03919891799;  propane 0.2021384414;  hydrogenSulfide 0.02789772703;  ethane 0.177309061;  methane 0.08745391092;  nitrogen 0.0055313848;  carbonDioxide 0.2546891975; }
+    }
+    2   // "2"
+    {
+        T 322.03889;  P 1962938.20167;  F 5908.21191569715;  H_kW -1232233.01726776;
+        vaporFraction 0.325036355637595;
+        x { nDecane 0.07410901436;  nNonane 0.06119001051;  nOctane 0.06749929146;  nHeptane 0.09513995087;  nHexane 0.06409428269;  nPentane 0.0413608418;  isopentane 0.02894257453;  nButane 0.0563829393;  isobutane 0.02213255699;  propane 0.08393146318;  hydrogenSulfide 0.01241926874;  ethane 0.08791932933;  methane 0.1097724753;  nitrogen 0.01312029996;  carbonDioxide 0.181985701; }
+    }
+    16   // "16"
+    {
+        T 301.652991229123;  P 190984.88168;  F 3504.63610604545;  H_kW -736520.080117706;
+        vaporFraction 0.0900607661185832;
+        x { nDecane 0.1249473963;  nNonane 0.1031902802;  nOctane 0.1138865703;  nHeptane 0.1606297888;  nHexane 0.1083108455;  nPentane 0.06949901188;  isopentane 0.04837898375;  nButane 0.09044100008;  isobutane 0.03428571709;  propane 0.09509315188;  hydrogenSulfide 0.00649635016;  ethane 0.02543202384;  methane 0.001466908602;  nitrogen 3.231790931e-05;  carbonDioxide 0.01790965365; }
+    }
+    13   // "13"
+    {
+        T 308.703617547816;  P 439196.24168;  F 1382.02213283537;  H_kW -248396.509418291;
+        vaporFraction 0.999992417469788;
+        x { nDecane 0.000161331041;  nNonane 0.0003691375605;  nOctane 0.001161698467;  nHeptane 0.004636439476;  nHexane 0.008969483782;  nPentane 0.01866606093;  isopentane 0.01640949528;  nButane 0.07272209516;  isobutane 0.03656229968;  propane 0.2438424;  hydrogenSulfide 0.03643365142;  ethane 0.2121681454;  methane 0.06756870539;  nitrogen 0.00361961894;  carbonDioxide 0.2767094375; }
+    }
+    12   // "12"
+    {
+        T 308.235930573497;  P 439196.24168;  F 4886.65823888081;  H_kW -985451.017406752;
+        vaporFraction 0.280893626209043;
+        x { nDecane 0.08965596717;  nNonane 0.07411087091;  nOctane 0.08200623321;  nHeptane 0.1165124571;  nHexane 0.08021557205;  nPentane 0.05512266719;  isopentane 0.03933751798;  nButane 0.08542981974;  isobutane 0.03492956986;  propane 0.1371617397;  hydrogenSulfide 0.01496308195;  ethane 0.07824388697;  methane 0.02016151903;  nitrogen 0.00104686212;  carbonDioxide 0.09110223499; }
+    }
+    3   // "3"
+    {
+        T 395.800893846455;  P 1962938.24168;  F 1382.02213283537;  H_kW -241098.701124643;
+        vaporFraction 1;
+        x { nDecane 0.000161331041;  nNonane 0.0003691375605;  nOctane 0.001161698467;  nHeptane 0.004636439476;  nHexane 0.008969483782;  nPentane 0.01866606093;  isopentane 0.01640949528;  nButane 0.07272209516;  isobutane 0.03656229968;  propane 0.2438424;  hydrogenSulfide 0.03643365142;  ethane 0.2121681454;  methane 0.06756870539;  nitrogen 0.00361961894;  carbonDioxide 0.2767094375; }
+    }
+    6   // "6"
+    {
+        T 322.03;  P 1962938.20167;  F 4558.35814902685;  H_kW -937363.909878449;
+        x { nDecane 0.09609608905;  nNonane 0.07940709453;  nOctane 0.08777574264;  nHeptane 0.1243326837;  nHexane 0.08483343063;  nPentane 0.05663437523;  isopentane 0.04000548447;  nButane 0.08235377879;  isobutane 0.03294398893;  propane 0.1221573313;  hydrogenSulfide 0.01334875513;  ethane 0.07136453107;  methane 0.02058212385;  nitrogen 0.001098305378;  carbonDioxide 0.08706628532; }
+    }
+    1   // "1"
+    {
+        T 281.648687398458;  P 1962938.20167;  F 290.181827115462;  H_kW -55655.8778601112;
+        vaporFraction 0.389060729940006;
+        x { nDecane 0.001321844976;  nNonane 0.002475053549;  nOctane 0.006301235621;  nHeptane 0.01918784484;  nHexane 0.02683014173;  nPentane 0.03556878134;  isopentane 0.02766872996;  nButane 0.08642772736;  isobutane 0.03919891799;  propane 0.2021384414;  hydrogenSulfide 0.02789772703;  ethane 0.177309061;  methane 0.08745391092;  nitrogen 0.0055313848;  carbonDioxide 0.2546891975; }
+    }
+    14   // "14"
+    {
+        T 308.69957925005;  P 439196.24168;  F 3504.63610604545;  H_kW -736520.055345812;
+        vaporFraction 6.16867133567295E-06;
+        x { nDecane 0.1249473963;  nNonane 0.1031902802;  nOctane 0.1138865703;  nHeptane 0.1606297888;  nHexane 0.1083108455;  nPentane 0.06949901188;  isopentane 0.04837898375;  nButane 0.09044100008;  isobutane 0.03428571709;  propane 0.09509315188;  hydrogenSulfide 0.00649635016;  ethane 0.02543202384;  methane 0.001466908602;  nitrogen 3.231790931e-05;  carbonDioxide 0.01790965365; }
+    }
+    8   // "8"
+    {
+        T 310.920278018332;  P 5617161.00166;  F 2731.87589950566;  H_kW -559227.48769421;
+        vaporFraction 0.999997113956483;
+        x { nDecane 6.998085448e-06;  nNonane 2.019224276e-05;  nOctane 0.0001019351384;  nHeptane 0.000637739759;  nHexane 0.001597575489;  nPentane 0.004391708019;  isopentane 0.004140828211;  nButane 0.0213107963;  isobutane 0.01139141513;  propane 0.1010443507;  hydrogenSulfide 0.02301749033;  ethane 0.1784045029;  methane 0.2372558618;  nitrogen 0.0283752543;  carbonDioxide 0.3883033515; }
+    }
+    9   // "9"
+    {
+        T 309.953965972554;  P 5617161.00166;  F 290.181827115462;  H_kW -55676.2646709846;
+        x { nDecane 0.001321844976;  nNonane 0.002475053549;  nOctane 0.006301235621;  nHeptane 0.01918784484;  nHexane 0.02683014173;  nPentane 0.03556878134;  isopentane 0.02766872996;  nButane 0.08642772736;  isobutane 0.03919891799;  propane 0.2021384414;  hydrogenSulfide 0.02789772703;  ethane 0.177309061;  methane 0.08745391092;  nitrogen 0.0055313848;  carbonDioxide 0.2546891975; }
+    }
+}
+
+energyStreams   // stored, kW
+{
+    eSTR006 534.47522134849;   // "ESTR-006"
+    e1 10936.8024686276;   // "e1"
+    e2 7297.80670567632;   // "e2"
+    eSTR004 885.411180887255;   // "ESTR-004"
+    eSTR003 -12414.8377492916;   // "ESTR-003"
+    e3 924.835761102486;   // "e3"
+    eSTR005 -21764.3160474083;   // "ESTR-005"
+}
+
+units
+{
+    sEP000   // "SEP-000", Vessel
+    {
+        inputs ( "4" );  outputs ( "5" "6" );
+        overrideT true;
+        overrideP false;
+        flashTemperature 322.03;
+        flashPressure 0;
+        pressureCalculation Average;
+        deltaQ -12414.8377492916;
+    }
+    cOMP001   // "COMP-001", Compressor
+    {
+        inputs ( "13" );  outputs ( "15" );
+        calcMode Delta_P;
+        pOut 1962938.24168;
+        deltaP 1523742;
+        adiabaticEfficiency 75;
+        polytropicEfficiency 77.3492457123176;
+        outletTemperature 395.800893846455;
+        deltaQ 7297.80670567632;
+    }
+    rEC001   // "REC-001", Recycle
+    {
+        inputs ( "15" );  outputs ( "3" );
+        converged true;  iterationsTaken 1;
+        errors { Temperature 5.6843418860808E-14;  Pressure 0;  MassFlow -3.03992941930176E-14;  Enthalpy 2.8421709430404E-14; }
+        values { Temperature 395.800893846455;  Pressure 1962938.24168;  MassFlow 58.1278641553027;  Enthalpy 133.380062282919; }
+        tolerances { Temperatura 0.1;  Pressao 0.1;  VazaoMassica 0.01;  FracaoVapor 0.01;  Entalpia 1;  Entropia 0.01;  Composicao 0.001; }
+    }
+    mIST000   // "MIST-000", Mixer
+    {
+        inputs ( "1" "2" "3" );  outputs ( "4" );
+        pressureCalculation Minimum;
+    }
+    cOMP002   // "COMP-002", Compressor
+    {
+        inputs ( "17" );  outputs ( "19" );
+        calcMode Delta_P;
+        pOut 439196.24668;
+        deltaP 248211.365;
+        adiabaticEfficiency 75;
+        polytropicEfficiency 76.1242928227892;
+        outletTemperature 341.359791541093;
+        deltaQ 924.835761102486;
+    }
+    sEP002   // "SEP-002", Vessel
+    {
+        inputs ( "12" );  outputs ( "13" "14" );
+        overrideT true;
+        overrideP false;
+        flashTemperature 308.7;
+        flashPressure 0;
+        pressureCalculation Average;
+        deltaQ 534.47522134849;
+    }
+    vALV001   // "VALV-001", Valve
+    {
+        inputs ( "6" );  outputs ( "11" );
+        calcMode DeltaP;
+        outletPressure 439196.24168;
+        deltaP 1523741.95999;
+        outletTemperature 305.895492348562;
+    }
+    mIST001   // "MIST-001", Mixer
+    {
+        inputs ( "11" "20" );  outputs ( "12" );
+        pressureCalculation Minimum;
+    }
+    cOMP000   // "COMP-000", Compressor
+    {
+        inputs ( "5" );  outputs ( "7" );
+        calcMode Delta_P;
+        pOut 5617161.00166;
+        deltaP 3654222.79999;
+        adiabaticEfficiency 75;
+        polytropicEfficiency 77.1643715738983;
+        outletTemperature 403.951995095615;
+        deltaQ 10936.8024686276;
+    }
+    vALV000   // "VALV-000", Valve
+    {
+        inputs ( "9" );  outputs ( "10" );
+        calcMode DeltaP;
+        outletPressure 1962938.20167;
+        deltaP 3654222.79999;
+        outletTemperature 281.648687398458;
+    }
+    rEC000   // "REC-000", Recycle
+    {
+        inputs ( "10" );  outputs ( "1" );
+        converged true;  iterationsTaken 1;
+        errors { Temperature 0.351635085089129;  Pressure 0;  MassFlow 1.64451785522601E-14;  Enthalpy 1.55134728280086; }
+        values { Temperature 282.000322483098;  Pressure 1962938.20167;  MassFlow 13.1413606257593;  Enthalpy -276.736468831426; }
+        tolerances { Temperatura 1;  Pressao 0.1;  VazaoMassica 0.01;  FracaoVapor 0.01;  Entalpia 1;  Entropia 0.01;  Composicao 0.001; }
+    }
+    sEP003   // "SEP-003", Vessel
+    {
+        inputs ( "16" );  outputs ( "17" "18" );
+        overrideT true;
+        overrideP false;
+        flashTemperature 302.6;
+        flashPressure 0;
+        pressureCalculation Average;
+        deltaQ 885.411180887255;
+    }
+    sEP001   // "SEP-001", Vessel
+    {
+        inputs ( "7" );  outputs ( "8" "9" );
+        overrideT true;
+        overrideP false;
+        flashTemperature 310.92;
+        flashPressure 0;
+        pressureCalculation Average;
+        deltaQ -21764.3160474083;
+    }
+    vALV002   // "VALV-002", Valve
+    {
+        inputs ( "14" );  outputs ( "16" );
+        calcMode DeltaP;
+        outletPressure 190984.88168;
+        deltaP 248211.36;
+        outletTemperature 301.652991229123;
+    }
+    rEC002   // "REC-002", Recycle
+    {
+        inputs ( "19" );  outputs ( "20" );
+        converged true;  iterationsTaken 1;
+        errors { Temperature 1.70530256582424E-13;  Pressure 0;  MassFlow 9.30523019748719E-14;  Enthalpy 3.48165940522449E-13; }
+        values { Temperature 341.359791541093;  Pressure 439196.24668;  MassFlow 15.3205084438389;  Enthalpy 63.1114899950089; }
+        tolerances { Temperatura 0.1;  Pressao 0.1;  VazaoMassica 0.01;  FracaoVapor 0.01;  Entalpia 1;  Entropia 0.01;  Composicao 0.001; }
+    }
+}

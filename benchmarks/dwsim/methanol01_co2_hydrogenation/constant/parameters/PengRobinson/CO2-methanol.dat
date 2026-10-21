@@ -1,0 +1,95 @@
+/*---------------------------------------------------------------------------*\
+  fitParameters proposal -- pair CO2-methanol -- model PengRobinson
+  generated 2026-10-21 by choupoProps fitParameters
+
+  VERDICT: notValidated
+  !! The held-out test was PERFORMED and the declared criterion was MISSED.
+  !! This is a completed experiment with a negative result.  Promoting these
+  !! parameters ships a pair known not to meet its own acceptance band.
+
+  Promote by:
+      mv ../constant/parameters/PengRobinson/CO2-methanol.dat  constant/parameters/PengRobinson/CO2-methanol.dat
+\*---------------------------------------------------------------------------*/
+
+recordType  eosBinaryInteraction;
+schemaVersion 1;
+i           CO2;
+j           methanol;
+kij         0.06010294;
+eos         PengRobinson;
+
+provenance
+{
+    origin        fitted;
+    method        "fitParameters(P_bubble), Levenberg-Marquardt";
+    methodVersion "choupoProps Choupo-dev";
+    fitDate       "2026-10-21";
+
+    evidence
+    (
+        {
+            role      fit;
+            dataset   "../constant/experiments/brunner1987-CO2-methanol-298K.dat";
+            identity  none;    // declares no DOI or hash -- it cannot take part in the cross-role identity check
+            provenance measured;
+            system    "CO2 + methanol";
+        }
+        {
+            role      fit;
+            dataset   "../constant/experiments/brunner1987-CO2-methanol-323K.dat";
+            identity  none;    // declares no DOI or hash -- it cannot take part in the cross-role identity check
+            provenance measured;
+            system    "CO2 + methanol";
+        }
+        {
+            role      fit;
+            dataset   "../constant/experiments/brunner1987-CO2-methanol-423K.dat";
+            identity  none;    // declares no DOI or hash -- it cannot take part in the cross-role identity check
+            provenance measured;
+            system    "CO2 + methanol";
+        }
+        {
+            role      validation;
+            dataset   "../constant/experiments/brunner1987-CO2-methanol-373K.dat";
+            identity  none;    // declares no DOI or hash -- it cannot take part in the cross-role identity check
+            provenance measured;
+            system    "CO2 + methanol";
+        }
+    );
+    fingerprint "e05b24d563ba4a95";   // of the declaration, frozen before the fit
+
+    //  IN-SAMPLE: the model reproducing the very points it was
+    //  fitted to.  It is NOT a validation; see the block below.
+    weighting     equal;   // chi2 is sum ((P_model - P_exp)/P_exp)^2, dimensionless
+    chi2          0.19441297;
+    rms_rel       0.09621726;
+    nDataPoints   21;
+    identifiable  true;
+    maxAbsCorr    0.00000000;
+
+    validity
+    {
+        temperature { min 298.15 K; max 423.15 K; }
+        pressure    { min 990000 Pa; max 11620000 Pa; }
+        note        "the span of the FIT evidence; outside it the pair is an extrapolation";
+    }
+}
+
+validation
+{
+    verdict     notValidated;
+
+    heldOut
+    {
+        points      6;
+        aad_pct     20.040331;
+        aad_rel     0.200403;
+        domain_x1   ( 0.039200 0.245600 );
+    }
+
+    acceptance
+    {
+        maxAAD      5.000000;   // per cent
+        origin      "declared before the fit, one rule for the three gases: the authors' stated composition uncertainty (<= 2 % of x_gas, p. 276) is 2 % of p on a bubble point at fixed x in the dilute regime, plus the 0.2 % pressure error (p. 276) = 2.2 % per point; a held-out comparison across isotherms of a ONE-parameter model is granted twice that, 4.4 %, rounded up to one figure";
+    }
+}

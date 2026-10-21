@@ -1,0 +1,13 @@
+/*--- Choupo stream state.  Every DIMENSIONAL value carries its unit; the parser converts to SI.
+     THE SAMPLE'S STREAM "CW3" (benchmarks/dwsim/read_sample.py, `reference`): 55.5092978073827 mol/s at
+     308.15 K and 101325 Pa with its stored mole fractions; each flow is x_i x F. ---*/
+
+componentMolarFlows
+{
+    water      0.05550929781 kmol/s;
+}
+
+T               308.15 K;
+P               101325 Pa;
+
+phase           liquid;

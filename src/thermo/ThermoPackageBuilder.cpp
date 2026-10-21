@@ -2769,28 +2769,139 @@ static ThermoPackage buildV2Dispatch(const DictPtr& v2, const Database& db,
         const fs::path repoRoot = fs::path(Database::currentRoot()).parent_path();
         auto bi = eos->subDict("binaryInteractions");
         std::vector<DictPtr> pairDicts;
-        for (const auto& key : bi->keys())
+        //  THREE SHAPES an entry may take (2026-10-21, DEV.md 4c C123):
+        //
+        //    { source "<pair record>"; }    recordType eosBinaryInteraction,
+        //                                   ONE pair, as before;
+        //    { source "<set record>"; }     recordType eosBinaryInteractionSet,
+        //                                   EVERY pair of a mixture at ONE
+        //                                   stated temperature -- the PPR78 /
+        //                                   E-PPR78 group-contribution kij the
+        //                                   `ppr78Kij` props op writes into
+        //                                   the case (Vitor's route P: "kij a
+        //                                   T declarada"), so the numbers a
+        //                                   unit runs on are in a file the
+        //                                   student can read, never a hidden
+        //                                   runtime evaluation;
+        //    { i <c>; j <c>; kij <v>; variedBy <operation>; }
+        //                                   an INLINE value, accepted ONLY
+        //                                   with its `origin` named, because
+        //                                   the one legitimate inline kij is
+        //                                   the one `fitParameters` is varying
+        //                                   in this very case (it mutates
+        //                                   this path per iteration and
+        //                                   rebuilds).  A finished fit is
+        //                                   written to a pair record and
+        //                                   declared by `source`; an inline
+        //                                   number with no origin is still an
+        //                                   invented one and still refuses.
+        auto verifyEos = [&](const DictPtr& rec, const std::string& what)
         {
-            auto decl = bi->subDict(key);
-            if (!decl->found("source"))
-                throw std::runtime_error("thermophysicalPropertySystem: phiPhi"
-                    " binaryInteractions." + key + " needs `source \"<pair"
-                    " record>\";` (the cited kij record; never an invented"
-                    " inline number).");
-            auto rec = loadRec(resolveDeclared(repoRoot, decl->lookupWord("source")),
-                               "kij pair " + key);
             const std::string recEos = rec->lookupWordOrDefault("eos", "");
             if (recEos.empty() && thermoAnnounce())
-                std::cout << "[builder] kij pair " << key << ": record"
+                std::cout << "[builder] " << what << ": record"
                              " carries NO eos field -- cannot verify it was"
                              " regressed for " << model << "; using it"
                              " UNVERIFIED.\n";
             if (!recEos.empty() && recEos != model)
-                throw std::runtime_error("propertyPackage: kij pair " + key
+                throw std::runtime_error("propertyPackage: " + what
                     + " was regressed for eos " + recEos
                     + " but this package declares " + model
                     + " -- kij values are NOT transferable between models;"
-                    " provide a " + model + "-regressed pair record.");
+                    " provide a " + model + "-regressed record.");
+        };
+        for (const auto& key : bi->keys())
+        {
+            auto decl = bi->subDict(key);
+            if (!decl->found("source"))
+            {
+                const bool inlineForm = decl->found("i") && decl->found("j")
+                                     && decl->found("kij");
+                if (!inlineForm || !decl->found("variedBy"))
+                    throw std::runtime_error("thermophysicalPropertySystem: phiPhi"
+                        " binaryInteractions." + key + " needs `source \"<pair"
+                        " or set record>\";` (the cited kij record; never an"
+                        " invented inline number).  The ONE inline form,"
+                        " `{ i <c>; j <c>; kij <v>; variedBy <operation>; }`, is for a"
+                        " value under regression in this case (variedBy names"
+                        " the operation varying it) and is announced as such.");
+                auto p = std::make_shared<Dictionary>(key);
+                p->insert("i",   decl->entryValue("i"));
+                p->insert("j",   decl->entryValue("j"));
+                p->insert("kij", decl->entryValue("kij"));
+                pairDicts.push_back(p);
+                const std::string msg = "kij pair " + decl->lookupWord("i")
+                    + "-" + decl->lookupWord("j") + " is an INLINE value (varied by "
+                    + decl->lookupWord("variedBy") + ") -- a number under"
+                      " regression in this case, not a cited record; a run that"
+                      " is not that regression should declare the written pair"
+                      " record instead";
+                if (thermoAnnounce()
+                    && AdvisoryLog::instance().add("thermo", "warning",
+                           "inline kij " + key, msg))
+                    std::cout << "[builder] " << msg << "\n";
+                continue;
+            }
+            auto rec = loadRec(resolveDeclared(repoRoot, decl->lookupWord("source")),
+                               "kij pair " + key);
+            const std::string recType = rec->lookupWordOrDefault("recordType", "");
+            if (recType == "eosBinaryInteractionSet")
+            {
+                verifyEos(rec, "kij set " + key);
+                if (!rec->found("T") || !rec->found("pairs"))
+                    throw std::runtime_error("propertyPackage: kij set " + key
+                        + " (" + decl->lookupWord("source") + ") must carry"
+                          " `T <value> <unit>;` -- the ONE temperature every"
+                          " kij of the set was evaluated at -- and a `pairs ("
+                          " { i; j; kij; } ... )` list.");
+                const scalar Tset = rec->lookupScalar("T", Dims::temperature);
+                std::size_t nSet = 0;
+                std::string extrap;
+                for (const auto& pe : rec->lookupDictList("pairs"))
+                {
+                    auto p = std::make_shared<Dictionary>(key + "." + std::to_string(nSet));
+                    p->insert("i",   pe->entryValue("i"));
+                    p->insert("j",   pe->entryValue("j"));
+                    p->insert("kij", pe->entryValue("kij"));
+                    pairDicts.push_back(p);
+                    ++nSet;
+                    //  A pair the set's own source fitted far from this T is
+                    //  an EXTRAPOLATION of the group correlation in T (the
+                    //  2017 CCS table's H2 pairs stop at 125-303 K and a
+                    //  methanol loop runs at 500 K): the set record says so
+                    //  per pair and the run repeats it, with the window.
+                    if (pe->lookupWordOrDefault("extrapolated", "no") == "yes")
+                        extrap += (extrap.empty() ? "" : ", ")
+                                + pe->lookupWord("i") + "-" + pe->lookupWord("j")
+                                + " (fitted " + pe->lookupWordOrDefault("dataWindow", "?")
+                                + ")";
+                }
+                std::ostringstream msg;
+                msg << std::fixed << std::setprecision(3)
+                    << "kij set " << key << ": " << nSet << " pair(s) from "
+                    << rec->lookupWordOrDefault("method", "a declared table")
+                    << " evaluated ONCE at T = " << Tset << " K and held CONSTANT"
+                       " in this package (a stated default: the cubic reads no"
+                       " kij(T)) --- " << decl->lookupWord("source");
+                if (thermoAnnounce()
+                    && AdvisoryLog::instance().add("thermo", "info",
+                           "kij set " + key, msg.str()))
+                    std::cout << "[builder] " << msg.str() << "\n";
+                if (!extrap.empty())
+                {
+                    const std::string em = "kij set " + key + ": the group"
+                        " correlation is EXTRAPOLATED in T for " + extrap
+                        + " -- their parameters were fitted on data that stop"
+                          " below " + std::to_string(Tset) + " K (the set"
+                          " record names each window)";
+                    if (thermoAnnounce()
+                        && AdvisoryLog::instance().add("thermo", "warning",
+                               "kij set extrapolation " + key, em))
+                        std::cout << "[builder] " << em << "\n";
+                }
+                continue;
+            }
+            verifyEos(rec, "kij pair " + key);
             auto p = std::make_shared<Dictionary>(key);
             p->insert("i",   rec->entryValue("i"));
             p->insert("j",   rec->entryValue("j"));
@@ -2800,6 +2911,39 @@ static ThermoPackage buildV2Dispatch(const DictPtr& v2, const Database& db,
                 std::cout << "[builder] kij pair " << rec->lookupWord("i") << "-"
                           << rec->lookupWord("j")
                           << "  --- " << decl->lookupWord("source") << "\n";
+            //  A REGRESSED PAIR CARRIES ITS OWN VERDICT, AND A RUN THAT USES
+            //  IT SAYS WHICH (DEV.md 4c C123, "sim a tudo": a pair whose
+            //  held-out test missed its band is still USED case-locally, and
+            //  announced).  `fitParameters` writes `validation { verdict;
+            //  heldOut { aad_pct; } acceptance { maxAAD; } }` into the record;
+            //  any verdict but `validated` is said here and enters the caveat
+            //  block.  A record with no validation block says nothing new.
+            if (rec->found("validation"))
+            {
+                auto val = rec->subDict("validation");
+                const std::string verdict = val->lookupWordOrDefault("verdict", "");
+                if (!verdict.empty() && verdict != "validated")
+                {
+                    std::ostringstream vm;
+                    vm << "kij pair " << rec->lookupWord("i") << "-"
+                       << rec->lookupWord("j") << " is a REGRESSED record whose"
+                          " verdict is `" << verdict << "`";
+                    if (val->found("heldOut") && val->subDict("heldOut")->found("aad_pct")
+                        && val->found("acceptance")
+                        && val->subDict("acceptance")->found("maxAAD"))
+                        vm << std::fixed << std::setprecision(2) << " (held-out AAD "
+                           << val->subDict("heldOut")->lookupScalar("aad_pct")
+                           << " % against a band of "
+                           << val->subDict("acceptance")->lookupScalar("maxAAD")
+                           << " % declared before the fit)";
+                    vm << " -- used as declared, not as a validated pair ("
+                       << decl->lookupWord("source") << ")";
+                    if (thermoAnnounce()
+                        && AdvisoryLog::instance().add("thermo", "warning",
+                               "kij pair verdict " + key, vm.str()))
+                        std::cout << "[builder] " << vm.str() << "\n";
+                }
+            }
         }
         eosDict->insert("binaryInteractions", EntryValue(pairDicts));
     }

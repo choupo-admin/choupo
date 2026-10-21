@@ -33,6 +33,7 @@ License
 
 #include <algorithm>
 #include <cmath>
+#include <iomanip>
 #include <iostream>
 #include <memory>
 #include <set>
@@ -53,10 +54,32 @@ namespace {
     const scalar SIG   = 1.0 + SQRT2;       // ≈  2.41421
     const scalar SmE   = SIG - EPS;         // = 2√2
 
+    //  THE SLOPE m(omega) IS PR78's TWO-BRANCH FORM (2026-10-21, DEV.md 4c
+    //  C123, Vitor: the 1978 branch is the correct form, not an option).
+    //  Robinson & Peng, "The characterization of the heptanes and heavier
+    //  fractions for the GPA Peng-Robinson programs", GPA Research Report
+    //  RR-28 (1978), as the PPR78 literature restates it (Jaubert, Privat &
+    //  Mutelet, AIChE J. 56 (2010) 3225, Eq. 2; Xu, Lasala, Privat &
+    //  Jaubert, Int. J. Greenh. Gas Control 56 (2017) 126, Eq. 2):
+    //
+    //      omega <= 0.491 :  0.37464  + 1.54226 w - 0.26992 w^2
+    //      omega >  0.491 :  0.379642 + 1.48503 w - 0.164423 w^2 + 0.016666 w^3
+    //
+    //  The break is at omega = 0.491 as printed (`<=` on the 1976 branch).
+    //  Below it the two branches differ by ~1e-3 in m; above it the 1976
+    //  polynomial turns over (its maximum is at w = 2.86) while the cubic
+    //  keeps rising, which is why the heavier fractions needed it.  Every
+    //  PPR78 / E-PPR78 kij is DEFINED on this m (their Eq. 7 carries a_i(T)),
+    //  so a kij from those tables used with the 1976 slope above 0.491 would
+    //  be a number under another model's name.
+    constexpr scalar PR78_BREAK = 0.491;
+
     scalar pr_kappa(scalar omega)
     {
-        // Peng-Robinson (1976).  (PR78 high-ω refinement not applied.)
-        return 0.37464 + 1.54226 * omega - 0.26992 * omega * omega;
+        if (omega <= PR78_BREAK)
+            return 0.37464 + 1.54226 * omega - 0.26992 * omega * omega;
+        return 0.379642 + 1.48503 * omega - 0.164423 * omega * omega
+             + 0.016666 * omega * omega * omega;
     }
 
     scalar cbrt_signed(scalar x)
@@ -85,6 +108,24 @@ PR::PR(const std::vector<Component>& comps,
         p.b     = OMEGA_B * constant::R * Tc / Pc_Pa;
         p.kappa = pr_kappa(omega);
         pure_.push_back(p);
+
+        //  A component above the break is ANNOUNCED with the slope it got,
+        //  once per process (the package is rebuilt per phase, per unit and
+        //  per fit iteration; AdvisoryLog dedupes on the key).  The 1976
+        //  value is printed beside it so a reader sees what the branch moved.
+        if (omega > PR78_BREAK)
+        {
+            const scalar m76 = 0.37464 + 1.54226 * omega - 0.26992 * omega * omega;
+            std::ostringstream msg;
+            msg << std::fixed << std::setprecision(5)
+                << "[PR78] " << c.name() << " omega = " << omega
+                << " > 0.491: the 1978 branch applies, m = " << p.kappa
+                << " (the 1976 polynomial would give " << m76 << ")";
+            if (thermoAnnounce()
+                && AdvisoryLog::instance().add("thermo", "info",
+                       "PR78 " + c.name(), msg.str()))
+                std::cout << msg.str() << "\n";
+        }
     }
 
     if (kij.empty())

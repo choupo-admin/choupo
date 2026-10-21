@@ -1,0 +1,639 @@
+/*---------------------------------------------------------------------------*\
+  Benchmark D -- THE REFERENCE NUMBERS: what the reference simulator's
+  sample stores as its solved state.  FACTS to compare against, never
+  inputs; no property parameter of the sample is read or reproduced (the
+  reader below names the package TYPES only).
+
+  Written by benchmarks/dwsim/read_sample.py from the sample file at the
+  commit named in `source` (rerun it on your own copy to check any number):
+      python3 -I benchmarks/dwsim/read_sample.py \
+          "<clone>/PlatformFiles/Common/samples/Methanol Synthesis by CO2 Hydrogenation.dwxmz" \
+          --commit 1abf72d1b6b41d3e9a8cc770d3cc4e8fc76e5766
+
+  READ WITH THE README.  The loop runs at 73 bar (COMP-054's outlet, through
+  the mixers' minimum-pressure rule); the reactor runs in outlet-T mode and
+  its stored outlet is not at equilibrium; MSTR-070 is stored at 184.69 K;
+  the sample's kinetics differ from the article in four places.
+\*---------------------------------------------------------------------------*/
+
+source
+{
+    repository   "https://github.com/DanWBR/dwsim";
+    commit       1abf72d1b6b41d3e9a8cc770d3cc4e8fc76e5766;
+    sample       "PlatformFiles/Common/samples/Methanol Synthesis by CO2 Hydrogenation.dwxmz";
+    buildVersion "6.5.2.0";
+    savedOn      "2021-05-28T09:49:22.0703414-04:00";
+}
+
+propertyPackage ( PengRobinsonPropertyPackage RaoultPropertyPackage );   // the TYPE only; no parameter is read
+
+streams     // stored overall state: T [K], P [Pa], F [mol/s], mole fractions,
+            // H_kW = the stream's stored TotalEnergyFlow (its own enthalpy datum)
+{
+    waterProduct   // "Water Product"
+    {
+        T 369.5383492804;  P 101325;  F 1.6175202795466;  H_kW None;
+        x { methanol 0.01;  water 0.9900453974;  hydrogen 1.748606089e-36;  carbonDioxide 9.306370781e-22;  carbonMonoxide 1.482546839e-38;  nitrogen 3.00197868e-39;  oxygen 2.537679145e-35;  argon 6.4942992e-33; }
+    }
+    mSTR070   // "MSTR-070"
+    {
+        T 184.691965784078;  P 101325;  F 1.2429475740516;  H_kW None;
+        x { methanol 0.9890071068;  water 0.01;  hydrogen 3.025017469e-06;  carbonDioxide 0.0009294076984;  carbonMonoxide 3.201341081e-08;  nitrogen 6.832921151e-10;  oxygen 5.088905491e-09;  argon 1.347881981e-06; }
+    }
+    outletPFR   // "outlet_PFR"
+    {
+        T 510.149999999998;  P 7299999.99996321;  F 30.5937682702025;  H_kW None;
+        vaporFraction 1;
+        x { methanol 0.06509451908;  water 0.06059109498;  hydrogen 0.7636233466;  carbonDioxide 0.07607166871;  carbonMonoxide 0.008828136349;  nitrogen 9.649364609e-05;  oxygen 9.640863763e-05;  argon 0.02559833204; }
+    }
+    mSTR006   // "MSTR-006"
+    {
+        T 512.878215320295;  P 7800000;  F 16.3218131429473;  H_kW None;
+        vaporFraction 1;
+        x { methanol 6.711866928e-05;  water 0.03691526811;  hydrogen 0.8903360094;  carbonDioxide 0.0324656129;  carbonMonoxide 0.03269869996;  nitrogen 6.711866928e-05;  oxygen 6.711866928e-05;  argon 0.007383053621; }
+    }
+    hYDROGEN   // "HYDROGEN"
+    {
+        T 298.15;  P 1075000;  F 16.3218131429473;  H_kW None;
+        vaporFraction 0.965601599789218;
+        x { methanol 6.711866928e-05;  water 0.03691526811;  hydrogen 0.8903360094;  carbonDioxide 0.0324656129;  carbonMonoxide 0.03269869996;  nitrogen 6.711866928e-05;  oxygen 6.711866928e-05;  argon 0.007383053621; }
+    }
+    cO2   // "CO2"
+    {
+        T 314.75;  P 101325;  F 2.04165913008615;  H_kW None;
+        vaporFraction 1;
+        x { methanol 0.0001;  water 0.0001;  hydrogen 0.05;  carbonDioxide 0.7996;  carbonMonoxide 0.04;  nitrogen 0.0001;  oxygen 0.0001;  argon 0.11; }
+    }
+    mSTR011   // "MSTR-011"
+    {
+        T 431.297866511184;  P 300000;  F 2.04165913008615;  H_kW None;
+        vaporFraction 1;
+        x { methanol 0.0001;  water 0.0001;  hydrogen 0.05;  carbonDioxide 0.7996;  carbonMonoxide 0.04;  nitrogen 0.0001;  oxygen 0.0001;  argon 0.11; }
+    }
+    cW1   // "CW1"
+    {
+        T 308.15;  P 101325;  F 55.5092978073827;  H_kW None;
+        x { methanol 0;  water 1;  hydrogen 0;  carbonDioxide 0;  carbonMonoxide 0;  nitrogen 0;  oxygen 0;  argon 0; }
+    }
+    mSTR014   // "MSTR-014"
+    {
+        T 310.226144274928;  P 101325;  F 55.5092978073827;  H_kW None;
+        x { methanol 0;  water 1;  hydrogen 0;  carbonDioxide 0;  carbonMonoxide 0;  nitrogen 0;  oxygen 0;  argon 0; }
+    }
+    mSTR015   // "MSTR-015"
+    {
+        T 308.144463071166;  P 300000;  F 2.04165913008615;  H_kW None;
+        vaporFraction 1;
+        x { methanol 0.0001;  water 0.0001;  hydrogen 0.05;  carbonDioxide 0.7996;  carbonMonoxide 0.04;  nitrogen 0.0001;  oxygen 0.0001;  argon 0.11; }
+    }
+    mSTR017   // "MSTR-017"
+    {
+        T 422.312019843255;  P 880000;  F 2.04165913008615;  H_kW None;
+        vaporFraction 1;
+        x { methanol 0.0001;  water 0.0001;  hydrogen 0.05;  carbonDioxide 0.7996;  carbonMonoxide 0.04;  nitrogen 0.0001;  oxygen 0.0001;  argon 0.11; }
+    }
+    cW2   // "CW2"
+    {
+        T 308.15;  P 101325;  F 55.5092978073827;  H_kW None;
+        x { methanol 0;  water 1;  hydrogen 0;  carbonDioxide 0;  carbonMonoxide 0;  nitrogen 0;  oxygen 0;  argon 0; }
+    }
+    mSTR021   // "MSTR-021"
+    {
+        T 310.103274541646;  P 101325;  F 55.5092978073827;  H_kW None;
+        x { methanol 0;  water 1;  hydrogen 0;  carbonDioxide 0;  carbonMonoxide 0;  nitrogen 0;  oxygen 0;  argon 0; }
+    }
+    mSTR022   // "MSTR-022"
+    {
+        T 308.148147976159;  P 880000;  F 2.04165913008615;  H_kW None;
+        vaporFraction 1;
+        x { methanol 0.0001;  water 0.0001;  hydrogen 0.05;  carbonDioxide 0.7996;  carbonMonoxide 0.04;  nitrogen 0.0001;  oxygen 0.0001;  argon 0.11; }
+    }
+    mSTR024   // "MSTR-024"
+    {
+        T 425.222867958367;  P 2630000;  F 2.04165913008615;  H_kW None;
+        vaporFraction 1;
+        x { methanol 0.0001;  water 0.0001;  hydrogen 0.05;  carbonDioxide 0.7996;  carbonMonoxide 0.04;  nitrogen 0.0001;  oxygen 0.0001;  argon 0.11; }
+    }
+    mSTR028   // "MSTR-028"
+    {
+        T 308.150716845775;  P 2630000;  F 2.04165913008615;  H_kW None;
+        vaporFraction 1;
+        x { methanol 0.0001;  water 0.0001;  hydrogen 0.05;  carbonDioxide 0.7996;  carbonMonoxide 0.04;  nitrogen 0.0001;  oxygen 0.0001;  argon 0.11; }
+    }
+    cW3   // "CW3"
+    {
+        T 308.15;  P 101325;  F 55.5092978073827;  H_kW None;
+        x { methanol 0;  water 1;  hydrogen 0;  carbonDioxide 0;  carbonMonoxide 0;  nitrogen 0;  oxygen 0;  argon 0; }
+    }
+    mSTR030   // "MSTR-030"
+    {
+        T 310.278634511151;  P 101325;  F 55.5092978073827;  H_kW None;
+        x { methanol 0;  water 1;  hydrogen 0;  carbonDioxide 0;  carbonMonoxide 0;  nitrogen 0;  oxygen 0;  argon 0; }
+    }
+    mSTR031   // "MSTR-031"
+    {
+        T 425.563238816881;  P 7800000;  F 2.04165913008615;  H_kW None;
+        vaporFraction 1;
+        x { methanol 0.0001;  water 0.0001;  hydrogen 0.05;  carbonDioxide 0.7996;  carbonMonoxide 0.04;  nitrogen 0.0001;  oxygen 0.0001;  argon 0.11; }
+    }
+    mSTR033   // "MSTR-033"
+    {
+        T 498.067985393328;  P 7800000;  F 18.3634722730335;  H_kW None;
+        vaporFraction 1;
+        x { methanol 7.077443046e-05;  water 0.03282212999;  hydrogen 0.7969070729;  carbonDioxide 0.1177559601;  carbonMonoxide 0.03351046179;  nitrogen 7.077443046e-05;  oxygen 7.077443046e-05;  argon 0.018792052; }
+    }
+    mSTR040   // "MSTR-040"
+    {
+        T 489.007812705858;  P 7300000;  F 33.8640243920871;  H_kW None;
+        vaporFraction 1;
+        x { methanol 0.01052321978;  water 0.02117492144;  hydrogen 0.8200151693;  carbonDioxide 0.1022902898;  carbonMonoxide 0.02269583044;  nitrogen 8.717523392e-05;  oxygen 8.709843475e-05;  argon 0.0231262956; }
+    }
+    mSTR042   // "MSTR-042"
+    {
+        T 454.268243713061;  P 7299999.99996321;  F 30.5937682702025;  H_kW None;
+        vaporFraction 1;
+        x { methanol 0.06509451908;  water 0.06059109498;  hydrogen 0.7636233466;  carbonDioxide 0.07607166871;  carbonMonoxide 0.008828136349;  nitrogen 9.649364609e-05;  oxygen 9.640863763e-05;  argon 0.02559833204; }
+    }
+    mSTR043   // "MSTR-043"
+    {
+        T 360.300428700027;  P 7300000;  F 15.5011999943655;  H_kW None;
+        vaporFraction 0.999998952057619;
+        x { methanol 0.02286757523;  water 0.007361593632;  hydrogen 0.8474260664;  carbonDioxide 0.08398358697;  carbonMonoxide 0.009888245881;  nitrogen 0.0001066008078;  oxygen 0.0001064330498;  argon 0.02825989806; }
+    }
+    mSTR044   // "MSTR-044"
+    {
+        T 478.29623436003;  P 7300000;  F 15.5011999943655;  H_kW None;
+        vaporFraction 1;
+        x { methanol 0.02286757523;  water 0.007361593632;  hydrogen 0.8474260664;  carbonDioxide 0.08398358697;  carbonMonoxide 0.009888245881;  nitrogen 0.0001066008078;  oxygen 0.0001064330498;  argon 0.02825989806; }
+    }
+    mSTR046   // "MSTR-046"
+    {
+        T 360.237584693807;  P 7299999.99996321;  F 30.5937682702025;  H_kW None;
+        vaporFraction 0.900007502769981;
+        x { methanol 0.06509451908;  water 0.06059109498;  hydrogen 0.7636233466;  carbonDioxide 0.07607166871;  carbonMonoxide 0.008828136349;  nitrogen 9.649364609e-05;  oxygen 9.640863763e-05;  argon 0.02559833204; }
+    }
+    cW4   // "CW4"
+    {
+        T 293.15;  P 101325;  F 154.192493909397;  H_kW None;
+        x { methanol 0;  water 1;  hydrogen 0;  carbonDioxide 0;  carbonMonoxide 0;  nitrogen 0;  oxygen 0;  argon 0; }
+    }
+    mSTR048   // "MSTR-048"
+    {
+        T 309.58823287504;  P 101325;  F 154.192493909397;  H_kW None;
+        x { methanol 0;  water 1;  hydrogen 0;  carbonDioxide 0;  carbonMonoxide 0;  nitrogen 0;  oxygen 0;  argon 0; }
+    }
+    mSTR0442   // "MSTR-044 (2)"
+    {
+        T 478.29623436003;  P 7300000;  F 15.5011999943655;  H_kW None;
+        vaporFraction 1;
+        x { methanol 0.02286757523;  water 0.007361593632;  hydrogen 0.8474260664;  carbonDioxide 0.08398358697;  carbonMonoxide 0.009888245881;  nitrogen 0.0001066008078;  oxygen 0.0001064330498;  argon 0.02825989806; }
+    }
+    mSTR052   // "MSTR-052"
+    {
+        T 360.237584693807;  P 7299999.99996321;  F 27.5346209811885;  H_kW None;
+        vaporFraction 1;
+        x { methanol 0.0227966887;  water 0.007345533354;  hydrogen 0.8481597338;  carbonDioxide 0.08326976554;  carbonMonoxide 0.009805674144;  nitrogen 0.0001071646264;  oxygen 0.0001069924671;  argon 0.02840844737; }
+    }
+    mSTR053   // "MSTR-053"
+    {
+        T 360.237584693807;  P 7299999.99996321;  F 3.05914728901407;  H_kW None;
+        x { methanol 0.4457743684;  water 0.539800364;  hydrogen 0.002797108679;  carbonDioxide 0.01128890347;  carbonMonoxide 3.031061099e-05;  nitrogen 4.549809766e-07;  oxygen 1.154328147e-06;  argon 0.0003073354854; }
+    }
+    mSTR055   // "MSTR-055"
+    {
+        T 360.237387312511;  P 7300000;  F 27.5346209811885;  H_kW None;
+        vaporFraction 0.999998941760041;
+        x { methanol 0.0227966887;  water 0.007345533354;  hydrogen 0.8481597338;  carbonDioxide 0.08326976554;  carbonMonoxide 0.009805674144;  nitrogen 0.0001071646264;  oxygen 0.0001069924671;  argon 0.02840844737; }
+    }
+    mSTR0552   // "MSTR-055 (2)"
+    {
+        T 360.237387312511;  P 7300000;  F 27.5346209811885;  H_kW None;
+        vaporFraction 0.999998941760041;
+        x { methanol 0.0227966887;  water 0.007345533354;  hydrogen 0.8481597338;  carbonDioxide 0.08326976554;  carbonMonoxide 0.009805674144;  nitrogen 0.0001071646264;  oxygen 0.0001069924671;  argon 0.02840844737; }
+    }
+    purgeGases   // "Purge gases"
+    {
+        T 360.300428700027;  P 7300000;  F 12.1795142812872;  H_kW None;
+        vaporFraction 0.999998952057619;
+        x { methanol 0.02286757523;  water 0.007361593632;  hydrogen 0.8474260664;  carbonDioxide 0.08398358697;  carbonMonoxide 0.009888245881;  nitrogen 0.0001066008078;  oxygen 0.0001064330498;  argon 0.02825989806; }
+    }
+    mSTR061   // "MSTR-061"
+    {
+        T 361.418539247507;  P 1000000;  F 3.05914728901407;  H_kW None;
+        vaporFraction 0.00685612249436005;
+        x { methanol 0.4457743684;  water 0.539800364;  hydrogen 0.002797108679;  carbonDioxide 0.01128890347;  carbonMonoxide 3.031061099e-05;  nitrogen 4.549809766e-07;  oxygen 1.154328147e-06;  argon 0.0003073354854; }
+    }
+    mSTR062   // "MSTR-062"
+    {
+        T 342.070044376372;  P 101325;  F 3.05914728901407;  H_kW None;
+        vaporFraction 0.0649220143465646;
+        x { methanol 0.4457743684;  water 0.539800364;  hydrogen 0.002797108679;  carbonDioxide 0.01128890347;  carbonMonoxide 3.031061099e-05;  nitrogen 4.549809766e-07;  oxygen 1.154328147e-06;  argon 0.0003073354854; }
+    }
+    vent   // "Vent"
+    {
+        T 342.070044376372;  P 101325;  F 0.198606004185626;  H_kW None;
+        vaporFraction 1;
+        x { methanol 0.5949374592;  water 0.1887097913;  hydrogen 0.04306589556;  carbonDioxide 0.1680698587;  carbonMonoxide 0.0004666844171;  nitrogen 7.003952122e-06;  oxygen 1.774866351e-05;  argon 0.004725558194; }
+    }
+    mSTR064   // "MSTR-064"
+    {
+        T 342.070044376372;  P 101325;  F 2.86054128482845;  H_kW None;
+        x { methanol 0.4354182258;  water 0.5641759924;  hydrogen 1.314492567e-06;  carbonDioxide 0.0004038652746;  carbonMonoxide 1.391112315e-08;  nitrogen 2.96918089e-10;  oxygen 2.211335475e-09;  argon 5.857092933e-07; }
+    }
+    mSTR067   // "MSTR-067"
+    {
+        T 342.085945013051;  P 200000;  F 2.86054128482845;  H_kW None;
+        x { methanol 0.4354182258;  water 0.5641759924;  hydrogen 1.314492567e-06;  carbonDioxide 0.0004038652746;  carbonMonoxide 1.391112315e-08;  nitrogen 2.96918089e-10;  oxygen 2.211335475e-09;  argon 5.857092933e-07; }
+    }
+    mSTR084   // "MSTR-084"
+    {
+        T 184.691965776532;  P 101325;  F 1.2429475740516;  H_kW None;
+        x { methanol 0.9890071068;  water 0.01;  hydrogen 3.025017469e-06;  carbonDioxide 0.0009294076984;  carbonMonoxide 3.201341081e-08;  nitrogen 6.832921151e-10;  oxygen 5.088905491e-09;  argon 1.347881981e-06; }
+    }
+    methanolProduct   // "Methanol Product"
+    {
+        T 332.812335324542;  P 101325;  F 1.23042482582691;  H_kW None;
+        vaporFraction 7.48089350369531E-09;
+        x { methanol 0.998040564;  water 0.001;  hydrogen 3.055755542e-06;  carbonDioxide 0.0009388516777;  carbonMonoxide 3.233870829e-08;  nitrogen 6.902352431e-10;  oxygen 5.140615325e-09;  argon 1.361578198e-06; }
+    }
+    mSTR080   // "MSTR-080"
+    {
+        T 360.356832608901;  P 101325;  F 0.0125029026328278;  H_kW None;
+        vaporFraction 0.000148503437089064;
+        x { methanol 0.1;  water 0.8957144911;  hydrogen 4.775959761e-57;  carbonDioxide 1.086933079e-33;  carbonMonoxide 3.135392181e-55;  nitrogen 3.249833762e-53;  oxygen 3.252995521e-51;  argon 4.080004611e-49; }
+    }
+}
+
+energyStreams   // stored, kW
+{
+    eSTR073 119.098404914643;   // "ESTR-073"
+    eSTR072 99.828247069639;   // "ESTR-072"
+    eSTR036 -96.2825625040632;   // "ESTR-036"
+    eSTR007 129.739762137806;   // "ESTR-007"
+    eSTR009 8.75675089393163;   // "ESTR-009"
+    eSTR018 8.43238394807515;   // "ESTR-018"
+    eSTR025 8.41379773194816;   // "ESTR-025"
+    eSTR032 7.82065827178836;   // "ESTR-032"
+    eSTR056 -0.00122138660982684;   // "ESTR-056"
+    eSTR065 None;   // "ESTR-065"
+    eSTR068 0.0105426578522369;   // "ESTR-068"
+    eSTR081 117.762359975716;   // "ESTR-081"
+    eSTR082 138.238760537821;   // "ESTR-082"
+}
+
+units
+{
+    sC085   // "SC-085", ShortcutColumn
+    {
+        inputs ( "MSTR-067" );  outputs ( "MSTR-070" "Water Product" );
+        m_lightkey Methanol;
+        m_heavykey Water;
+        m_lightkeymolarfrac 0.01;
+        m_heavykeymolarfrac 0.01;
+        m_refluxratio 1.5;
+        m_boilerpressure 101325;
+        m_condenserpressure 101325;
+        condtype TotalCond;
+        m_N 10.586986516527574;
+        m_Nmin 6.4598084010110757;
+        m_Rmin 0.69770363039753391;
+        m_Qc 119.09840491464294;
+        m_Qb 99.828247069639048;
+    }
+    cOMP005   // "COMP-005", Compressor
+    {
+        inputs ( "HYDROGEN" );  outputs ( "MSTR-006" );
+        calcMode OutletPressure;
+        pOut 7800000;
+        deltaP 6725000;
+        adiabaticEfficiency 75;
+        polytropicEfficiency 80.7015040041212;
+        outletTemperature 512.878215320295;
+        deltaQ 129.739762137806;
+    }
+    pFR   // "PFR", Reactor_PFR
+    {
+        inputs ( "MSTR-040" );  outputs ( "outlet_PFR" );
+        reactorOperationMode OutletTemperature;
+        outletTemperature 510.15;
+        volume 20;
+        length 0.0015;
+        dV 0.01;
+        catalystLoading 1153.87;
+        catalystVoidFraction 0.5;
+        catalystParticleDiameter 0.0005;
+        residenceTime 1046.41086671532;
+        deltaP 3.67918983101845E-05;
+        deltaT 21.1421872941419;
+        deltaQ -96.2825625040632;
+        reactionSet "Original set";
+    }
+    cOMP010   // "COMP-010", Compressor
+    {
+        inputs ( "CO2" );  outputs ( "MSTR-011" );
+        calcMode OutletPressure;
+        pOut 300000;
+        deltaP 198675;
+        adiabaticEfficiency 75;
+        polytropicEfficiency 77.700831216554;
+        outletTemperature 431.297866511184;
+        deltaQ 8.75675089393163;
+    }
+    hE012   // "HE-012", HeatExchanger
+    {
+        inputs ( "MSTR-011" "CW1" );  outputs ( "MSTR-015" "MSTR-014" );
+        calculationMode CalcBothTemp_UA;
+        flowDir CounterCurrent;
+        definedTemperature Cold_Fluid;
+        overallCoefficient 1000;
+        area 1;
+        q 9.35403577065387;
+        thermalEfficiency 100.004267414072;
+        maxHeatExchange 9.35363661224883;
+        hotSideOutletTemperature 308.144463071166;
+        coldSideOutletTemperature 310.226140321142;
+        outletVaporFraction1 0;
+    }
+    cOMP016   // "COMP-016", Compressor
+    {
+        inputs ( "MSTR-015" );  outputs ( "MSTR-017" );
+        calcMode OutletPressure;
+        pOut 880000;
+        deltaP 580000;
+        adiabaticEfficiency 75;
+        polytropicEfficiency 77.7227152283664;
+        outletTemperature 422.312019843255;
+        deltaQ 8.43238394807515;
+    }
+    hE019   // "HE-019", HeatExchanger
+    {
+        inputs ( "MSTR-017" "CW2" );  outputs ( "MSTR-022" "MSTR-021" );
+        calculationMode CalcBothTemp_UA;
+        flowDir CounterCurrent;
+        definedTemperature Cold_Fluid;
+        overallCoefficient 1000;
+        area 1;
+        q 8.80043182068975;
+        thermalEfficiency 100.001560845981;
+        maxHeatExchange 8.80029446164737;
+        hotSideOutletTemperature 308.148147976159;
+        coldSideOutletTemperature 310.103270697697;
+        outletVaporFraction1 0;
+    }
+    cOMP023   // "COMP-023", Compressor
+    {
+        inputs ( "MSTR-022" );  outputs ( "MSTR-024" );
+        calcMode OutletPressure;
+        pOut 2630000;
+        deltaP 1750000;
+        adiabaticEfficiency 75;
+        polytropicEfficiency 77.8278029931084;
+        outletTemperature 425.222867958367;
+        deltaQ 8.41379773194816;
+    }
+    hE026   // "HE-026", HeatExchanger
+    {
+        inputs ( "MSTR-024" "CW3" );  outputs ( "MSTR-028" "MSTR-030" );
+        calculationMode CalcBothTemp_UA;
+        flowDir CounterCurrent;
+        definedTemperature Cold_Fluid;
+        overallCoefficient 1000;
+        area 1;
+        q 9.59053739917756;
+        thermalEfficiency 99.9993871792926;
+        maxHeatExchange 9.59059617233687;
+        hotSideOutletTemperature 308.150716845775;
+        coldSideOutletTemperature 310.278630510287;
+        outletVaporFraction1 0;
+    }
+    cOMP027   // "COMP-027", Compressor
+    {
+        inputs ( "MSTR-028" );  outputs ( "MSTR-031" );
+        calcMode OutletPressure;
+        pOut 7800000;
+        deltaP 5170000;
+        adiabaticEfficiency 75;
+        polytropicEfficiency 77.9127966182673;
+        outletTemperature 425.563238816881;
+        deltaQ 7.82065827178836;
+    }
+    mIX037   // "MIX-037", Mixer
+    {
+        inputs ( "MSTR-031" "MSTR-006" );  outputs ( "MSTR-033" );
+        pressureCalculation Minimum;
+    }
+    mIX039   // "MIX-039", Mixer
+    {
+        inputs ( "MSTR-033" "MSTR-044" );  outputs ( "MSTR-040" );
+        pressureCalculation Minimum;
+    }
+    hE041   // "HE-041", HeatExchanger
+    {
+        inputs ( "outlet_PFR" "MSTR-043" );  outputs ( "MSTR-042" "MSTR-044 (2)" );
+        calculationMode CalcBothTemp_UA;
+        flowDir CounterCurrent;
+        definedTemperature Cold_Fluid;
+        overallCoefficient 1000;
+        area 1;
+        q 57.4173225858993;
+        thermalEfficiency 78.606517217391;
+        maxHeatExchange 73.0439722028496;
+        hotSideOutletTemperature 454.268243713061;
+        coldSideOutletTemperature 478.29623436003;
+        outletVaporFraction1 0;
+    }
+    hE045   // "HE-045", HeatExchanger
+    {
+        inputs ( "MSTR-042" "CW4" );  outputs ( "MSTR-046" "MSTR-048" );
+        calculationMode OutletVaporFraction1;
+        flowDir CounterCurrent;
+        definedTemperature Cold_Fluid;
+        overallCoefficient 406.168717988225;
+        area 10;
+        q 205.746076172718;
+        thermalEfficiency 65.5567946365881;
+        maxHeatExchange 313.844014664329;
+        hotSideOutletTemperature 360.24355252288;
+        coldSideOutletTemperature 309.588229485747;
+        outletVaporFraction1 0.9;
+    }
+    rEC050   // "REC-050", Recycle
+    {
+        inputs ( "MSTR-044 (2)" );  outputs ( "MSTR-044" );
+        converged true;  iterationsTaken 10;
+        errors { Temperature -0.565942951479371;  Pressure 0;  MassFlow -4.67919428345875E-05;  Enthalpy -7.69458881266405; }
+        values { Temperature 478.390519459773;  Pressure 7300000;  MassFlow 0.119085982006895;  Enthalpy 704.901986691714; }
+        tolerances { Temperatura 0.1;  Pressao 0.1;  VazaoMassica 0.01;  FracaoVapor 0.01;  Entalpia 1;  Entropia 0.01;  Composicao 0.001; }
+    }
+    sEP051   // "SEP-051", Vessel
+    {
+        inputs ( "MSTR-046" );  outputs ( "MSTR-052" "MSTR-053" );
+        overrideT false;
+        overrideP false;
+        flashTemperature 298.15;
+        flashPressure 101325;
+        pressureCalculation Minimum;
+        deltaQ 0;
+    }
+    cOMP054   // "COMP-054", Compressor
+    {
+        inputs ( "MSTR-052" );  outputs ( "MSTR-055 (2)" );
+        calcMode OutletPressure;
+        pOut 7300000;
+        deltaP 3.67918983101845E-05;
+        adiabaticEfficiency 75;
+        polytropicEfficiency 74.9999786007706;
+        outletTemperature 360.237387312511;
+        deltaQ -0.00122138660982684;
+    }
+    sPLT057   // "SPLT-057", Splitter
+    {
+        inputs ( "MSTR-055" );  outputs ( "Purge gases" "MSTR-043" );
+        operationMode SplitRatios;
+        ratios 0.44,0.56,0;
+    }
+    rEC059   // "REC-059", Recycle
+    {
+        inputs ( "MSTR-055 (2)" );  outputs ( "MSTR-055" );
+        converged true;  iterationsTaken 1;
+        errors { Temperature 0.115805256650503;  Pressure 0;  MassFlow -0.00912319186414038;  Enthalpy -0.464764740593381; }
+        values { Temperature 360.300428700027;  Pressure 7300000;  MassFlow 0.212643665735943;  Enthalpy 222.396123861069; }
+        tolerances { Temperatura 0.1;  Pressao 0.1;  VazaoMassica 0.01;  FracaoVapor 0.01;  Entalpia 1;  Entropia 0.01;  Composicao 0.001; }
+    }
+    vALV058   // "VALV-058", Valve
+    {
+        inputs ( "MSTR-053" );  outputs ( "MSTR-061" );
+        calcMode OutletPressure;
+        outletPressure 1000000;
+        deltaP 6299999.99996321;
+        outletTemperature 361.418539247507;
+    }
+    vALV059   // "VALV-059", Valve
+    {
+        inputs ( "MSTR-061" );  outputs ( "MSTR-062" );
+        calcMode OutletPressure;
+        outletPressure 101325;
+        deltaP 898675;
+        outletTemperature 342.070044376372;
+    }
+    sEP062   // "SEP-062", Vessel
+    {
+        inputs ( "MSTR-062" );  outputs ( "Vent" "MSTR-064" );
+        overrideT false;
+        overrideP false;
+        flashTemperature 298.15;
+        flashPressure 101325;
+        pressureCalculation Minimum;
+        deltaQ 0;
+    }
+    pUMP066   // "PUMP-066", Pump
+    {
+        inputs ( "MSTR-064" );  outputs ( "MSTR-067" );
+        pout 200000;
+        eficiencia 75;
+        deltaQ 0.0105426578522369;
+        outletTemperature 342.085945013051;
+    }
+    vALV083   // "VALV-083", Valve
+    {
+        inputs ( "MSTR-070" );  outputs ( "MSTR-084" );
+        calcMode DeltaP;
+        outletPressure 101325;
+        outletTemperature 184.691965776532;
+    }
+    sC078   // "SC-078", ShortcutColumn
+    {
+        inputs ( "MSTR-084" );  outputs ( "Methanol Product" "MSTR-080" );
+        m_lightkey Methanol;
+        m_heavykey Water;
+        m_lightkeymolarfrac 0.1;
+        m_heavykeymolarfrac 0.001;
+        m_refluxratio 1.5;
+        m_boilerpressure 101325;
+        m_condenserpressure 101325;
+        condtype TotalCond;
+        m_N 5.9498939892584017;
+        m_Nmin 4.5541803207267835;
+        m_Rmin 0.057412641864109881;
+        m_Qc 117.76235997571607;
+        m_Qb 138.23876053782053;
+    }
+}
+
+reactions   // as the sample writes them: the PROBLEM, cited to its article in the README
+{
+    methanolSynthesis   // "Methanol synthesis"
+    {
+        type Heterogeneous_Catalytic;  phase Mixture;  basis PartialPress;
+        equation "3H2 + OCO <--> CH3OH + HOH ";
+        stoichiometry ( { compound "Methanol"; nu 1; }  { compound "Water"; nu 1; }  { compound "Hydrogen"; nu -3; }  { compound "Carbon dioxide"; nu -1; } );
+        reactionHeat -49243.9999999994;
+        velUnit mol/[kg.s];
+        concUnit bar;
+        kExprType Gibbs;
+        reactionKinetics Expression;
+        rateEquationNumerator "(1.07*exp(40000/8.314/T)*R2*R1*(1-1/(10^(3066/T-10.592))*P2*P1/(R1^3*R2)))";
+        rateEquationDenominator "((1+3453.38*P2/R1+0.499*exp(17197/8.314/T))*R1^(0.5)+6.62E-11*exp(124119/8.314/T)*P2)^3";
+    }
+    reverseWaterGasShift   // "Reverse water gas shift"
+    {
+        type Heterogeneous_Catalytic;  phase Mixture;  basis PartialPress;
+        equation "H2 + OCO <--> HOH + CO ";
+        stoichiometry ( { compound "Water"; nu 1; }  { compound "Hydrogen"; nu -1; }  { compound "Carbon dioxide"; nu -1; }  { compound "Carbon monoxide"; nu 1; } );
+        reactionHeat 41166.0000000007;
+        velUnit mol/[kg.s];
+        concUnit bar;
+        kExprType Gibbs;
+        reactionKinetics Expression;
+        rateEquationNumerator "(1.22E+10)*exp(-98084/8.314/T)*R2*(1-1/(10^(-2073/T+2.029))*P1*P2/(R1*R2))";
+        rateEquationDenominator "(1+3454.38*P1/R1+0.499*exp(17197/8.314/T)*R1^(0.5)+(6.62E-11)*exp(124119/8.314/T)*P1)";
+    }
+    meoHSynthAspen   // "MeoH synth (Aspen)"
+    {
+        type Heterogeneous_Catalytic;  phase Mixture;  basis PartialPress;
+        equation "3H2 + OCO <--> CH3OH + HOH ";
+        stoichiometry ( { compound "Methanol"; nu 1; }  { compound "Water"; nu 1; }  { compound "Hydrogen"; nu -3; }  { compound "Carbon dioxide"; nu -1; } );
+        reactionHeat -49243.9999999994;
+        velUnit kmol/[kg.s];
+        concUnit Pa;
+        kExprType Gibbs;
+        reactionKinetics Expression;
+        rateEquationNumerator "exp(-29.87+4811.2/T)*R2*R1-exp(17.55-2249.8/T)*P2*P1*R1^(-2)";
+        rateEquationDenominator "(1+exp(8.147)*P2*R1^(-1)+exp(-6.452+2068.4/T)*R1^(0.5)+exp(-34.95+14928.9/T)*P2)^3";
+    }
+    rWGSAspen   // "RWGS (Aspen)"
+    {
+        type Heterogeneous_Catalytic;  phase Mixture;  basis PartialPress;
+        equation "H2 + OCO <--> HOH + CO ";
+        stoichiometry ( { compound "Water"; nu 1; }  { compound "Hydrogen"; nu -1; }  { compound "Carbon dioxide"; nu -1; }  { compound "Carbon monoxide"; nu 1; } );
+        reactionHeat 41166.0000000007;
+        velUnit kmol/[kg.s];
+        concUnit Pa;
+        kExprType Gibbs;
+        reactionKinetics Expression;
+        rateEquationNumerator "exp(4.804-11797.5/T)*R2-exp(0.1310-7023.5/T)*P1*P2*R1^(-1)";
+        rateEquationDenominator "1+exp(8.147)*P1*R1^(-1)+exp(-6.452+2068.4/T)*R1^(0.5)+exp(-34.95+14928.5/T)*P1";
+    }
+    meOHSynthesisEquil   // "MeOH synthesis equil"
+    {
+        type Equilibrium;  phase Vapor;  basis Activity;
+        equation "3H2 + OCO <--> CH3OH + HOH ";
+        stoichiometry ( { compound "Methanol"; nu 1; }  { compound "Water"; nu 1; }  { compound "Hydrogen"; nu -3; }  { compound "Carbon dioxide"; nu -1; } );
+        reactionHeat -49243.9999999994;
+        velUnit ;
+        concUnit ;
+        kExprType Gibbs;
+        reactionKinetics Expression;
+    }
+    reverseWGSEquil   // "Reverse WGS equil"
+    {
+        type Equilibrium;  phase Vapor;  basis Activity;
+        equation "H2 + OCO <--> HOH + CO ";
+        stoichiometry ( { compound "Water"; nu 1; }  { compound "Hydrogen"; nu -1; }  { compound "Carbon dioxide"; nu -1; }  { compound "Carbon monoxide"; nu 1; } );
+        reactionHeat 41166.0000000007;
+        velUnit ;
+        concUnit ;
+        kExprType Gibbs;
+        reactionKinetics Expression;
+    }
+}

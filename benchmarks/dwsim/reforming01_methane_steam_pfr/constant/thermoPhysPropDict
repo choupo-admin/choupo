@@ -1,0 +1,42 @@
+/*---------------------------------------------------------------------------*\
+  Benchmark E -- the thermophysical system: phi-phi PR78 over the sample's
+  five components, every one of the ten pairs from E-PPR78 (Xu, Lasala,
+  Privat & Jaubert 2017) evaluated ONCE at 1000 K, the bed's declared
+  temperature, by the `ppr78Kij` op in kijTables/ (route P).  At 1000 K
+  every one of the ten pairs is above the data its parameters were fitted
+  on -- the water pairs' data stop near 700 K, the others far lower (the
+  set record names each window; the run repeats it) -- and at 1 atm a
+  cubic's kij barely moves a vapour fugacity: measured, the same bed with
+  every kij 0 changes its duty by 0.015 kW and its outlet by nothing.  The sample runs its own Peng-Robinson package;
+  none of its parameters is read.
+\*---------------------------------------------------------------------------*/
+
+recordType    thermophysicalPropertySystem;
+schemaVersion 2;
+
+components ( CH4 H2 water CO2 CO );
+
+equilibrium
+{
+    formulation phiPhi;
+
+    equationOfState
+    {
+        model      PengRobinson;
+        mixingRule vanDerWaalsOneFluid;
+        binaryInteractions
+        {
+            eppr78 { source "constant/parameters/PengRobinson/eppr78_1000K.dat"; }
+        }
+    }
+
+    liquid { fugacityRoute equationOfState; root liquid; }
+    vapour { fugacityRoute equationOfState; root vapour; }
+}
+
+caloric
+{
+    energyBasis elementsDatum;
+    liquid { departureRoute equilibriumEquationOfState; root liquid; }
+    vapour { departureRoute equilibriumEquationOfState; root vapour; }
+}

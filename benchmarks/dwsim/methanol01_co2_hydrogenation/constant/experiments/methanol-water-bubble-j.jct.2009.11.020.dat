@@ -1,0 +1,143 @@
+/*--------------------------------------------------------------------------*\
+  BINARY BUBBLE-POINT EVIDENCE, extracted from a ThermoML file by
+  bin/choupo-thermoml extract-vle.
+
+  system       methanol + water   (x is methanol's liquid mole fraction)
+  pressure     6 isobars, 15.19 .. 95.3 kPa   (a COLUMN: each point at its own)
+  points       54   (12 pure-component endpoint(s) set aside -- see `selection`)
+  vapour       none -- the series varies its pressure; no vapour column is joined
+
+  ONE FILE, TWO READERS.  The column names are the ones the props
+  bench's `experimental {}` overlay draws against a propertyScan1D
+  (x[<component>], T_bubble, y_eq_<component>) AND the ones
+  fitParameters(T_bubble) reads -- so the points a pair is fitted to
+  and the points it is drawn against cannot be two transcriptions.
+
+  The role this evidence plays -- fit or held-out validation -- is NOT
+  set here.  It is declared in the operation that consumes it, before
+  any fitting runs (src/propertyOps/EvidencePartition.H).
+
+  REDISTRIBUTION.  These are measured values reported in the article
+  cited below, located through the NIST/TRC ThermoML Archive (a finding
+  aid; thirdParty/thermoml/README.md).  The article is the source; the
+  archive's arrangement is not reproduced.
+\*--------------------------------------------------------------------------*/
+
+property     binaryVLE.T_bubble;
+system       ( methanol water );
+
+provenance
+{
+    source       measured;
+    reviewStatus transcribedNotCheckedAgainstArticle;
+    citation     "Soujanya, J.; satyavathi, B.; Vittal Prasad, T. E. (2010). Experimental (vapour + liquid) equilibrium data of (methanol + water), (water + glycerol) and (methanol + glycerol) systems at atmospheric and sub-atmospheric pressures. J. Chem. Thermodyn.. doi:10.1016/j.jct.2009.11.020";
+    archiveFile  "j.jct.2009.11.020.xml";
+    archive      "ThermoML.v2020-09-30.tgz (NIST/TRC ThermoML Archive, doi:10.18434/mds2-2422)";
+    block        6;
+    doi          "10.1016/j.jct.2009.11.020";
+    sha256       "6a858b6788994573a11e01315b96cb3eeb42603a2e20fc7b234ddb4d04c7bbaf";
+    identity
+    {
+        methanol       { cas "67-56-1"; inchiKey "OKKJLVBELUTLKV-UHFFFAOYSA-N"; }
+        water          { cas "7732-18-5"; inchiKey "XLYOFNOQVPJJNP-UHFFFAOYSA-N"; }
+        rule           "the archive's standard InChIKey matched to the catalogue record's CAS through two resolvers that agree (PubChem PUG REST and NCI CACTUS), molecular formula checked -- never by name";
+    }
+}
+
+uncertainty
+{
+    T_bubble
+    {
+        kind    expandedCombined;   // ThermoML nCombExpandUncertValue
+        level   95;            // per cent confidence
+        unit    K;
+        values  ( 0.16 0.2 0.2 0.16 0.14 0.2 0.2 1 0.2 0.16 0.2 0.18 0.17 0.19 0.17 0.2 0.15 0.2 0.2 0.2 0.2 0.2 0.14 0.2 0.2 0.2 0.2 0.2 0.2 0.17 0.2 0.18 0.2 0.2 0.2 0.17 0.2 0.2 0.2 0.2 0.2 0.16 0.2 0.2 0.16 0.2 0.14 0.16 0.2 0.2 0.2 0.2 0.2 0.16 );   // per point, in `data` order
+    }
+}
+
+selection
+{
+    //  A bubble point on a PURE component measures the vapour-pressure
+    //  correlation, not the pair: the pair parameters have no effect
+    //  there.  Set aside, not deleted -- the values stay here.
+    pureEndpoints
+    (
+        { x 0; T_bubble 327.4 K; }
+        { x 0; T_bubble 341.75 K; }
+        { x 0; T_bubble 350.6 K; }
+        { x 0; T_bubble 357.35 K; }
+        { x 0; T_bubble 362.1 K; }
+        { x 0; T_bubble 371.45 K; }
+        { x 1; T_bubble 296.1 K; }
+        { x 1; T_bubble 309.2 K; }
+        { x 1; T_bubble 317.15 K; }
+        { x 1; T_bubble 323.35 K; }
+        { x 1; T_bubble 327.65 K; }
+        { x 1; T_bubble 336.1 K; }
+    );
+}
+
+columns
+(
+    { name x[methanol];  unit -;  }
+    { name Pressure;  unit kPa; }
+    { name T_bubble;  unit K;  }
+);
+
+data
+(
+      0.1000     15.1900  318.05
+      0.1000     29.3800  329.5
+      0.1000     42.6600  340.4
+      0.1000     56.0300  347.25
+      0.1000     67.3800  351.35
+      0.1000     95.3000  361.2
+      0.2000     15.1900  312.4
+      0.2000     29.3800  324
+      0.2000     42.6600  334.3
+      0.2000     56.0300  341.05
+      0.2000     67.3800  344.9
+      0.2000     95.3000  354.85
+      0.3000     15.1900  308.55
+      0.3000     29.3800  320.75
+      0.3000     42.6600  330.15
+      0.3000     56.0300  336.8
+      0.3000     67.3800  340.65
+      0.3000     95.3000  350.4
+      0.4000     15.1900  305.7
+      0.4000     29.3800  318.4
+      0.4000     42.6600  327.1
+      0.4000     56.0300  333.7
+      0.4000     67.3800  337.55
+      0.4000     95.3000  347.1
+      0.5000     15.1900  303.5
+      0.5000     29.3800  316.5
+      0.5000     42.6600  324.8
+      0.5000     56.0300  331.3
+      0.5000     67.3800  335.2
+      0.5000     95.3000  344.55
+      0.6000     15.1900  301.7
+      0.6000     29.3800  314.85
+      0.6000     42.6600  322.9
+      0.6000     56.0300  329.3
+      0.6000     67.3800  333.3
+      0.6000     95.3000  342.45
+      0.7000     15.1900  300.1
+      0.7000     29.3800  313.3
+      0.7000     42.6600  321.3
+      0.7000     56.0300  327.6
+      0.7000     67.3800  331.7
+      0.7000     95.3000  340.65
+      0.8000     15.1900  298.7
+      0.8000     29.3800  311.9
+      0.8000     42.6600  319.85
+      0.8000     56.0300  326.1
+      0.8000     67.3800  330.25
+      0.8000     95.3000  339.05
+      0.9000     15.1900  297.4
+      0.9000     29.3800  310.5
+      0.9000     42.6600  318.5
+      0.9000     56.0300  324.7
+      0.9000     67.3800  328.9
+      0.9000     95.3000  337.55
+);

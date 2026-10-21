@@ -1,0 +1,56 @@
+/*---------------------------------------------------------------------------*\
+  Benchmark C -- topology: a counter-current cascade of FOUR equilibrium
+  stages, written out stage by stage.
+
+      feed --> [M1]-S1-[F1] --R1--> [M2]-S2-[F2] --R2--> [M3]-S3-[F3] --R3--> [M4]-S4-[F4] --> raffinate
+      extract <--E1--     <--E2--         <--E3--         <--E4--            <-- solvent
+
+  Stage j is a mixer M_j (the raffinate from above + the extract from
+  below) and an isothermal liquid-liquid flash F_j at 298.15 K and 1 atm
+  that splits its inlet into a water-rich raffinate R_j (alpha) and an
+  MIBK-rich extract E_j (beta).  The feed enters stage 1 and the solvent
+  stage 4; the extract leaves stage 1 and the raffinate stage 4 -- the
+  reference sample's arrangement (feed on its Stage0, solvent on its
+  Stage3, extract overhead, raffinate as bottoms).  The three backward
+  edges E2, E3, E4 are the declared tears (system/solverDict).
+
+  VARIANT "stageCascade" of benchmarks/dwsim/extraction01_water_acetone_mibk
+  (the comparison script overlays this file, solverDict and the three tear
+  seeds on a copy of the case).  It was written because the `extractor`
+  unit, which is exactly this cascade, does not converge on this system --
+  and measured 2026-10-20 it does not converge either (Wegstein: the tear
+  flows grow to ~7e4 kmol/h; Newton: |r| stalls at 0.58, exit 1), for the
+  same reason: the per-stage liquid-liquid flash returns one liquid on
+  feeds an independent stability test finds strongly unstable (README,
+  "Findings on Choupo's side").  Here every flash is given the hints
+  alphaRich water / betaRich MIBK, the order under which the flash split the
+  stage-4 seed composition; it still misses on compositions the iteration
+  visits.
+
+  Every stage here is ISOTHERMAL at the feeds' 298.15 K, as the `extractor`
+  is; the reference column is adiabatic.
+\*---------------------------------------------------------------------------*/
+
+units
+(
+    { name M1;  type mixer;  inputs ( feed  E2 );  outputs ( S1 ); }
+    {
+        name F1;  type isothermalFlash;  in S1;  outputs ( R1  E1 );
+        operation { T 298.15 K;  P 1 atm;  phaseSet LL;  alphaRich water;  betaRich methylIsobutylKetone; }
+    }
+    { name M2;  type mixer;  inputs ( R1  E3 );  outputs ( S2 ); }
+    {
+        name F2;  type isothermalFlash;  in S2;  outputs ( R2  E2 );
+        operation { T 298.15 K;  P 1 atm;  phaseSet LL;  alphaRich water;  betaRich methylIsobutylKetone; }
+    }
+    { name M3;  type mixer;  inputs ( R2  E4 );  outputs ( S3 ); }
+    {
+        name F3;  type isothermalFlash;  in S3;  outputs ( R3  E3 );
+        operation { T 298.15 K;  P 1 atm;  phaseSet LL;  alphaRich water;  betaRich methylIsobutylKetone; }
+    }
+    { name M4;  type mixer;  inputs ( R3  solvent );  outputs ( S4 ); }
+    {
+        name F4;  type isothermalFlash;  in S4;  outputs ( raffinate  E4 );
+        operation { T 298.15 K;  P 1 atm;  phaseSet LL;  alphaRich water;  betaRich methylIsobutylKetone; }
+    }
+);

@@ -1,0 +1,11 @@
+/*---------------------------------------------------------------------------*\
+  Benchmark D -- ONE loop, two cuts: the reactor feed (s40, the isothermal
+  mixer's outlet) and the recycle gas before the feed/effluent exchanger's
+  cold side (s43, the splitter's recycle branch).  The sample closes the
+  same loop with two recycle blocks at the same two places.
+\*---------------------------------------------------------------------------*/
+
+tearStreams      ( s40  s43 );
+recycleSolver    Newton;
+recycleTol       1e-6;
+recycleMaxIter   200;

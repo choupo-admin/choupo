@@ -1,0 +1,3 @@
+application   choupoProps;
+description   "Benchmark D: the three methanol-pair PR78 kij regressed to Brunner (1987) bubble pressures, one isotherm held out per gas";
+verbosity     2;

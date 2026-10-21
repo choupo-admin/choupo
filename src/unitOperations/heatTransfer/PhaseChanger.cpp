@@ -39,6 +39,7 @@ License
 #include <cmath>
 #include <iomanip>
 #include <iostream>
+#include <sstream>
 #include <stdexcept>
 #include "thermo/pureFluid/PureFluidModel.H"
 #include "thermo/vaporPressure/VaporPressureModel.H"
@@ -399,10 +400,45 @@ int PhaseChanger::solve(const DictPtr& dict,
             };
 
             const scalar Tc = saturationT(thermo, P_out, z);   // dome centre
+            scalar scanLo = Tc - 120.0, scanHi = Tc + 120.0;
+            //  A DOMINANT COMPONENT THAT IS A GAS HAS NO DOME CENTRE (C123).
+            //  The centre above is the DOMINANT component's Antoine
+            //  saturation T at P_out.  When that lands above the component's
+            //  own critical temperature, no saturation curve exists there and
+            //  the number is an extrapolation of a fit -- a methanol-loop
+            //  effluent at 78 bar is 73 % H2, whose "dome centre" came out at
+            //  675 K, 450 K above every temperature at which anything in the
+            //  stream condenses; the scan around it met no real crossing and
+            //  the Newton failed.  Then the window is the feed temperature
+            //  and the 300 K below it (floored), scanned upward as before:
+            //  the first crossing of vf(T) = target from below is the one.
+            //  Said once.  A subcritical dominant component takes the old
+            //  window, bit for bit.
+            const scalar TcDom = thermo.comp(domIdx).Tc();
+            if (TcDom > 0.0 && Tc > TcDom)
+            {
+                scanHi = T_in;
+                scanLo = std::max(T_floor, T_in - 300.0);
+                const std::string un = !dict->name().empty() ? dict->name()
+                                     : dict->lookupWordOrDefault("name", "phaseChanger");
+                std::ostringstream m;
+                m << std::fixed << std::setprecision(2)
+                  << "the dominant component " << thermo.comp(domIdx).name()
+                  << " is above its critical temperature (" << TcDom
+                  << " K) wherever the outlet can be, so its saturation T at "
+                  << (P_out / 1.0e5) << " bar (" << Tc << " K, an Antoine "
+                     "extrapolation) is no dome centre; the vapour-fraction "
+                     "target is searched between " << scanLo << " K and the "
+                     "feed's " << scanHi << " K instead (DEV.md 4c C123)";
+                if (AdvisoryLog::instance().addAnnouncedOnce(
+                        "phaseChangerGasDominant:" + un, "numerics", "info",
+                        "phaseChanger '" + un + "'", m.str()))
+                    std::cerr << "[phaseChanger] " << m.str() << "\n";
+            }
             scalar lo = -1.0, hi = -1.0;
-            scalar Tprev = Tc - 120.0, fprev = fvf(Tprev);
+            scalar Tprev = scanLo, fprev = fvf(Tprev);
             const scalar dT_scan = 2.0;
-            for (scalar T = Tprev + dT_scan; T <= Tc + 120.0; T += dT_scan)
+            for (scalar T = Tprev + dT_scan; T <= scanHi; T += dT_scan)
             {
                 const scalar fcur = fvf(T);
                 if (fprev * fcur <= 0.0) { lo = Tprev; hi = T; break; }

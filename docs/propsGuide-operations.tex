@@ -704,6 +704,21 @@ The PROPS BENCH of the multi-ionic concentration-polarisation model of Geraldes 
 \file{tutorials/props/membrane/polarisation01\_geraldes\_afonso\_table1}
 \end{tutoriallink}
 
+\paragraph{\code{ppr78Kij}}
+The PPR78 / E-PPR78 group-contribution binary interaction parameters of the PR78 equation of state (Jaubert, Privat \& Mutelet, AIChE J. 56 (2010) 3225, Eq. 7; Xu, Lasala, Privat \& Jaubert, Int. J. Greenh. Gas Control 56 (2017) 126, Eq. 4), EVALUATED ONCE at a declared temperature and WRITTEN INTO THE CASE as a kij SET record (\code{recordType eosBinaryInteractionSet}) that the phi-phi package then declares beside its cited pair records (DEV.md 4c C123, route P: the kij a unit runs on are constants in a file the student can read, evaluated at the temperature the unit declares, never a hidden kij(T) inside the cubic). k\_ij = [E\_ij - (delta\_i - delta\_j)\textasciicircum{}2] / (2 delta\_i delta\_j) with delta\_i = sqrt(a\_i(T))/b\_i taken from Choupo's own PR78 (one home) and E\_ij the double sum over the molecules' DECLARED group decompositions on the table's A\_kl, B\_kl (MPa). A pair whose group interaction the table lacks REFUSES by name (never zero); a pair evaluated outside the T range its parameters were fitted on is written \code{extrapolated yes;} with the window, and every run that reads the set repeats it.
+
+\begin{tabular}{@{}p{0.30\linewidth}p{0.62\linewidth}@{}}
+\hline
+\code{T}\textbf{*} & Evaluation temperature [K] \\
+\code{components} & Components \\
+\code{groupTable}\textbf{*} & Group-interaction table record \\
+\code{output}\textbf{*} & The set record written \\
+\hline
+\end{tabular}
+
+
+\emph{No tutorial case declares this operation yet.}
+
 \paragraph{\code{rateLawBench}}
 A rate law written in the case, on the bench, without a reactor around it. The law is the case's own: \code{reaction <name>;} names a reaction of constant/reactions whose kinetics are \code{type expression;}, and the bench prints it back as the engine PARSED it, every number with its unit. LOCUS (optional): sweep temperature at fixed conversions of a key reactant, walked from a base mixture along the reaction's own stoichiometry, and locate the temperature of the greatest value of a reported quantity -- for a reversible exothermic reaction the locus DESCENDS, the curve a quench converter zigzags about. POINTS (optional): the law at states the case declares. What is published is the case's choice (\code{report}). The bench holds no anchors of its own: a law's checks are a gate's (bin/curate/check\_ammonia\_rate.py for the ammonia law). It replaced the ammonia-only \code{ammoniaRateBench} on 2026-10-12 (DEV.md 4c C67), when the Dyson \& Simon law left the engine for the case.
 

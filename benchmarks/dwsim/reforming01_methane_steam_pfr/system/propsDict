@@ -1,0 +1,35 @@
+/*---------------------------------------------------------------------------*\
+  Benchmark E -- THE EQUILIBRIUM CONSTANTS Xu & Froment (1989) do not print.
+
+      choupoProps benchmarks/dwsim/reforming01_methane_steam_pfr
+
+  The article gives only their units (K1, K3 in bar^2; K2 dimensionless,
+  p. 95) -- the three constants of reactions I, II, III are "thermodynamic"
+  and must come from somewhere else.  Here they come from Choupo's OWN
+  formation data on the ideal-gas standard state at 1 bar
+  (`reactionGibbs`: dG0(T) = SUM nu_i g_i(T), ln K = -dG0/RT, every species
+  priced on its declared rung), tabulated from 950 to 1050 K around the
+  bed's 1000 K and PASTED into constant/reactions as the `lnK` table the
+  three rates read -- a glass box: this op is how the numbers were made,
+  the CSV it writes is what was pasted, and compare.py re-runs it and
+  refuses if the pasted table has moved.  With pressures in bar in the
+  rate law, ln K on the 1 bar standard state is exactly the K1 and K3 in
+  bar^2 the article's units line means.
+
+  The sample carries its own K correlations in its rate expressions
+  (K1 = exp(30.42 - 27106/T), K2 = exp(-3.798 + 4160/T), K3 = exp(34.218 -
+  31266/T)); they are not the article's and are not read -- the README
+  compares them with this table as a finding.
+\*---------------------------------------------------------------------------*/
+
+operations
+(
+    {
+        name          lnK;
+        type          reactionGibbs;
+        reactions     ( steamReforming  waterGasShift  overallReforming );
+        phases        { CH4 idealGas;  water idealGas;  CO idealGas;  CO2 idealGas;  H2 idealGas; }
+        temperatures  ( 950 960 970 980 990 1000 1010 1020 1030 1040 1050 );
+        output        { file reactionGibbs.csv; }
+    }
+);

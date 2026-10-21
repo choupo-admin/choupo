@@ -60,38 +60,90 @@ int Compressor::solve(const DictPtr& dict,
     for (auto& v : y) v /= zsum;
 
     // ---- Hardware --------------------------------------------------------
-    const scalar W_shaft = operDict->lookupScalar("W_shaft", Dims::power);
+    //  eta plus EXACTLY ONE of W_shaft (the motor) and P_out (the header the
+    //  machine discharges into).  The second form landed 2026-10-21 (DEV.md
+    //  4c C123, on the pump's precedent): a flowsheet specifies most of its
+    //  compressors by the pressure they must reach, and an outer DesignSpec
+    //  per machine to find the W_shaft that lands there is an outer loop
+    //  around a closed-form inversion.  With P_out given the isentropic
+    //  path is ONE inner solve, S_real(T_s, P_out, y) = s_in, and the work
+    //  follows; nothing is searched for.
     const scalar eta     = operDict->lookupScalar("eta");
     if (eta <= 0.0 || eta > 1.0)
         throw std::runtime_error(
             "Compressor: eta must satisfy 0 < eta <= 1 (got "
             + std::to_string(eta) + ")");
-    if (W_shaft <= 0.0)
+    const bool hasW = operDict->found("W_shaft");
+    const bool hasP = operDict->found("P_out");
+    if (hasW == hasP)
         throw std::runtime_error(
-            "Compressor: W_shaft must be positive (use a turbine block for "
-            "expansion).  Got " + std::to_string(W_shaft) + " W");
+            "Compressor: give eta plus EXACTLY ONE of `W_shaft` (the motor"
+            " power; P_out is then the result) and `P_out` (the discharge"
+            " pressure; W_shaft is then the result).  Got "
+            + std::string(hasW ? "both" : "neither") + ".");
 
     // ---- Inlet thermo state ---------------------------------------------
     const scalar F_mol_s = F * 1000.0;                  // mol/s
     const scalar h_in    = thermo.H_real(T_in, P_in, y);
     const scalar s_in    = thermo.S_real(T_in, P_in, y);
 
-    const scalar w_real_per_mol = W_shaft / F_mol_s;    // J/mol
-    // Compressor convention: eta = w_isen / w_real  =>  w_isen = eta*w_real.
-    const scalar w_isen_per_mol = eta * w_real_per_mol;
+    scalar W_shaft = 0.0, P_out = 0.0, T_out = 0.0, T_out_isen = 0.0;
+    int    outerIter = 0;
+    if (hasW)
+    {
+        W_shaft = operDict->lookupScalar("W_shaft", Dims::power);
+        if (W_shaft <= 0.0)
+            throw std::runtime_error(
+                "Compressor: W_shaft must be positive (use a turbine block for "
+                "expansion).  Got " + std::to_string(W_shaft) + " W");
 
-    // ---- Discharge solve (shared core) ----------------------------------
-    auto disc = rotating::solveDischarge(thermo, T_in, P_in, y, h_in, s_in,
-        w_real_per_mol, w_isen_per_mol,
-        /*expansion=*/false, verbosity);
-    if (!disc.converged)
-        throw std::runtime_error(
-            "Compressor: discharge solve did not converge");
+        const scalar w_real_per_mol = W_shaft / F_mol_s;    // J/mol
+        // Compressor convention: eta = w_isen / w_real  =>  w_isen = eta*w_real.
+        const scalar w_isen_per_mol = eta * w_real_per_mol;
 
-    const scalar P_out      = disc.P_out;
-    const scalar T_out      = disc.T_out;
-    const scalar T_out_isen = disc.T_out_isen;
-    const int    outerIter  = disc.outerIters;
+        // ---- Discharge solve (shared core) ------------------------------
+        auto disc = rotating::solveDischarge(thermo, T_in, P_in, y, h_in, s_in,
+            w_real_per_mol, w_isen_per_mol,
+            /*expansion=*/false, verbosity);
+        if (!disc.converged)
+            throw std::runtime_error(
+                "Compressor: discharge solve did not converge");
+        P_out      = disc.P_out;
+        T_out      = disc.T_out;
+        T_out_isen = disc.T_out_isen;
+        outerIter  = disc.outerIters;
+    }
+    else
+    {
+        P_out = operDict->lookupScalar("P_out", Dims::pressure);
+        if (P_out <= P_in)
+            throw std::runtime_error(
+                "Compressor: P_out must exceed the inlet pressure (got P_out "
+                + std::to_string(P_out / 1.0e5) + " bar against P_in "
+                + std::to_string(P_in / 1.0e5) + " bar; a let-down is a valve,"
+                " an expansion a turbine).");
+        //  The isentropic discharge: the same inner solve the W_shaft form
+        //  runs inside its outer Newton, seeded from the ideal-gas
+        //  isentrope with k = 1.3 (a seed, never an answer).
+        const scalar T_seed = T_in * std::pow(P_out / P_in, 0.3 / 1.3);
+        T_out_isen = rotating::solveT_for_S(thermo, s_in, P_out, y, T_seed);
+        const scalar h_isen = thermo.H_real(T_out_isen, P_out, y);
+        const scalar w_isen_per_mol = h_isen - h_in;
+        if (w_isen_per_mol <= 0.0)
+            throw std::runtime_error(
+                "Compressor: the isentropic work to P_out came out non-positive"
+                " (" + std::to_string(w_isen_per_mol) + " J/mol) -- the inlet"
+                " state or the EoS is not what the spec assumes.");
+        const scalar w_real_per_mol = w_isen_per_mol / eta;
+        W_shaft = w_real_per_mol * F_mol_s;
+        T_out   = rotating::solveT_for_H(thermo, h_in + w_real_per_mol, P_out,
+                                         y, T_out_isen);
+        if (verbosity >= 2)
+            std::cout << "  [compressor] P_out DECLARED (" << std::fixed
+                      << std::setprecision(3) << (P_out / 1.0e5)
+                      << " bar): the shaft power is the RESULT of the"
+                         " isentropic path to that pressure, divided by eta\n";
+    }
     recordResidual(0.0);    // mark a converged pass for the GUI
 
     // ---- Diagnostics -----------------------------------------------------

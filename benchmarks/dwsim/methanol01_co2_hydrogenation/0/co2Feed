@@ -1,0 +1,18 @@
+/*--- Choupo stream state.  Every DIMENSIONAL value carries its unit; the parser converts to SI.
+     THE SAMPLE'S STREAM "CO2" (benchmarks/dwsim/read_sample.py, `reference`): 2.04165913008615 mol/s at
+     314.75 K and 101325 Pa with its stored mole fractions; each flow is x_i x F. ---*/
+
+componentMolarFlows
+{
+    methanol   2.04165913e-07 kmol/s;
+    water      2.04165913e-07 kmol/s;
+    H2         0.0001020829565 kmol/s;
+    CO2        0.00163251064 kmol/s;
+    CO         8.16663652e-05 kmol/s;
+    N2         2.04165913e-07 kmol/s;
+    O2         2.04165913e-07 kmol/s;
+    Ar         0.0002245825043 kmol/s;
+}
+
+T               314.75 K;
+P               101325 Pa;
