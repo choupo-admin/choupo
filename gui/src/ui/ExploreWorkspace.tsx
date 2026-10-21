@@ -1220,25 +1220,28 @@ export function ExploreWorkspace() {
           : ""
       }`
     : plotType === "solubility"
-    //  WHAT THE PICTURE CLAIMS, and the one thing it must say out loud.
-    //  A close pair here is a CANDIDATE, never a verdict: Hildebrand compresses
-    //  dispersion, polarity and hydrogen bonding into one scalar, so it cannot
-    //  separate a polar solvent from a hydrogen-bonding one of the same
-    //  cohesive energy density.  Water is where that compression costs
-    //  everything -- it sits 22 MPa^0.5 from ethanol, and the two are miscible
-    //  in all proportions.  Saying so on the caption rather than only in the
-    //  engine log is the difference between a warning delivered and one
-    //  received.
-    ? `delta = sqrt((dHvap(T) - RT)/V_m) at ${fixedT.toFixed(2)} K, MPa^0.5 -- `
-      + `DERIVED per component from HvapTb, Tc and Vliq, never stored.  `
-      + `\`published\` is an independently computed value carried as an ANCHOR: `
-      + `it checks the derivation and is never an input to it, and an empty cell `
-      + `means nothing checks that row.  The smaller |delta_i - delta_j|, the `
-      + `more likely two liquids mix -- but ONE NUMBER CARRIES NO HYDROGEN `
-      + `BONDING, so a close pair is a candidate and not a verdict (water sits `
-      + `22 MPa^0.5 from ethanol and the two are miscible in all proportions).  `
-      + `Hansen's three-parameter split is what that needs; it is not `
-      + `implemented -- its parameters are a dataset this project does not hold.`
+    //  WHAT THE PICTURE CLAIMS (rewritten 2026-10-21, DEV.md 4c C128 slice
+    //  1, after a second opinion Vitor consulted found it "ainda confuso"
+    //  with methanol + water selected).  Three things, in this order: each
+    //  bar is ONE PURE liquid at the stated T, and a larger value is NOT a
+    //  larger dissolving power -- no mixture property is computed here; the
+    //  cohesive energy INCLUDES hydrogen bonding (the old line said it
+    //  carried none), what the single parameter cannot do is separate it
+    //  from dispersion and polarity, so a close pair is a candidate and
+    //  never a verdict (water sits 22 MPa^0.5 from ethanol and the two are
+    //  miscible in all proportions); and the sources and limits live in
+    //  the Details below, not on the figure.  The old caption also said
+    //  Hansen "is not implemented", false on the engine and true on the
+    //  data: SolubilityParameter.cpp:168 reads `hansen { dD; dP; dH; }`,
+    //  :315-410 draws the Teas coordinates with a sum-rule check (gate
+    //  check_hansen_teas), and no standards record carries the block.
+    ? `Cohesion of the pure liquids -- Hildebrand parameter delta at ${fixedT.toFixed(2)} K.  `
+      + `Each bar is ONE PURE liquid at that T: a larger delta is NOT a larger dissolving `
+      + `power, and no mixture property is computed here.  The cohesive energy it measures `
+      + `INCLUDES hydrogen bonding; the single parameter does not separate it from dispersion `
+      + `and polarity, so two close values make a pair a candidate, never a verdict (water sits `
+      + `22 MPa^0.5 from ethanol and the two are miscible in all proportions).  Sources and `
+      + `limits: Details, below.`
     : plotType === "bjerrum"
     // WHAT THE PICTURE CLAIMS.  The one thing this lens must say is that its
     // x-axis is an INPUT: `pH` carries two meanings and the `speciate` op's own
@@ -2243,6 +2246,25 @@ export function ExploreWorkspace() {
                a red banner and an empty plot, describing behaviour the engine
                no longer had.  The run does not ask any more (scanProperties.ts)
                and the note says exactly that. */}
+          //  The delta lens's SOURCES AND LIMITS (C128 slice 1): what the
+          //  number is derived from, what the `published` column is, and the
+          //  measured state of the Hansen split -- read by the engine,
+          //  absent from every shipped record.
+          if (plotType === "solubility") notes.push(
+            <Text key="delta" size="xs" c="dimmed">
+              delta = sqrt((dH_vap(T) − RT)/V_m), MPa^0.5 — DERIVED per component from the record's
+              HvapTb, Tc and Vliq (Watson for dH_vap at T), never stored.  `published` is an
+              independently reported value carried as an ANCHOR: it checks the derivation and is never
+              an input to it; an empty cell means nothing checks that row.
+            </Text>,
+            <Text key="hansen" size="xs" c="dimmed">
+              Hansen's three-parameter split (dD, dP, dH) is what tells a polar liquid from a
+              hydrogen-bonding one of the same cohesive energy.  The engine READS it from a
+              `hansen {"{"} dD; dP; dH; {"}"}` block on the component record and draws the Teas
+              coordinates with a sum-rule check, but no record in the shipped catalogue carries the
+              block yet: the split is unavailable for want of licence-clean data, not of code, and
+              none is invented.
+            </Text>);
           if (skipped.length > 0) notes.push(
             <Text key="skip" size="xs" c="dimmed">
               No vapour pressure in the record, so no curve was asked for: {skipped.join(", ")}

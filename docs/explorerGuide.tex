@@ -179,6 +179,34 @@ $\mathrm{SI} = 0$ (the precipitation line).  The Davies-vs-Pitzer method
 switch is the lesson: at high ionic strength the two activity models give
 DIFFERENT scaling verdicts, and choosing one is an engineering decision.
 
+\subsection{Cohesion of the pure liquids (Hildebrand parameter)}\label{sec:explorer-hildebrand}
+% Rewritten 2026-10-21 (DEV.md 4c C128 slice 1).  Verified against
+% gui/src/case/exploreLenses.ts (the lens: 2-12 liquids carrying HvapTb, Tc
+% and Vliq), gui/src/ui/ExploreWorkspace.tsx (the caption and the Details
+% notes, `plotType === "solubility"`), src/propertyOps/SolubilityParameter.cpp
+% :160-172 (delta and the hansen triple read off the record), :315-410 (the
+% Teas fractions and the sum-rule check; gate bin/curate/check_hansen_teas.py),
+% :338-351 (the absence named on every run), and `grep -rl hansen
+% data/standards` = 0 records (2026-10-21).
+One bar per \emph{pure} liquid at the stated temperature:
+$\delta = \sqrt{(\Delta H_{\mathrm{vap}}(T) - RT)/V_m}$, derived from each
+record's own $\Delta H_{\mathrm{vap}}$, $T_c$ and $V_{\mathrm{liq}}$ and never
+stored.  A larger value is a more cohesive liquid, \emph{not} a larger
+dissolving power, and no mixture property is computed in this view.  The
+cohesive energy includes hydrogen bonding; what the single parameter cannot
+do is separate it from dispersion and polarity, so two close values make a
+pair a \emph{candidate}, never a verdict --- water and ethanol sit
+$22~\mathrm{MPa}^{1/2}$ apart and mix in all proportions.  The
+three-parameter Hansen split is what that needs: the engine reads it from a
+\code{hansen \{ dD; dP; dH; \}} block on the component record and draws the
+Teas coordinates, but no shipped record carries one yet, so what is missing
+is licence-clean \emph{data}, not code --- the view and the run say so
+rather than inventing a triple.  The \code{published} column is an
+independently reported value carried as an anchor that checks the derivation
+and never feeds it.  \textbf{F1} opens the Theory Guide's chapter on the
+solubility parameter (\code{ch:solubility-parameter}), which derives the
+number and the Teas triangle and states both limits.
+
 \subsection{Equilibrium map (Gibbs)}
 The chemical-reaction view: pick two or more gas-phase species (with plain
 formulas --- the atom matrix is derived from them, glass-box) and a feed,
