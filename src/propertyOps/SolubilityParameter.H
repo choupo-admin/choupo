@@ -64,14 +64,18 @@ Description
     guessed, and a delta computed from two of them plus an invention is a
     number that looks exactly like a measurement.
 
-    WHAT IT IS NOT.  This is Hildebrand -- ONE number per substance, and it
-    cannot express hydrogen bonding.  It will happily tell you that ethanol
+    WHAT IT IS NOT.  This is Hildebrand -- ONE number per substance.  Its
+    cohesive energy INCLUDES hydrogen bonding; one number cannot separate
+    that part from dispersion and polarity.  It will happily tell you that ethanol
     and nitromethane are a good match; a formulator knows they are not.  The
     three-parameter Hansen split (dispersion / polar / hydrogen-bonding) is
-    what the coatings industry uses for exactly that reason, and it is NOT
-    implemented: its parameters are a separate dataset this repository does
-    not have and may not redistribute.  The op says so in its own output
-    rather than letting a single number imply more than it carries.
+    what the coatings industry uses for exactly that reason.  This op READS
+    a declared split and audits it against the derived delta; the DISTANCE
+    of a solvent or a blend from a target is the `hansenMixture` op's
+    (2026-10-21, DEV.md 4c C128).  The catalogue carries no split -- it is a
+    separate dataset, and the witnesses carry theirs case-locally with a
+    citation per value -- and this op says so in its own output rather than
+    letting a single number imply more than it carries.
 
 SourceFiles
     SolubilityParameter.cpp

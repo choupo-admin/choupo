@@ -267,9 +267,9 @@ export const POOL_STEPS: readonly LessonStep[] = [
     ],
     note: "Computed at gui/src/ui/methods/poolFire.ts:242 (lhvVapour), "
       + "poolFire.ts:250 (watsonHvap) and poolFire.ts:258 (lhvLiquid).  The "
-      + "rules are the engine's: Watson at src/thermo/Component.cpp:1286-1294 "
+      + "rules are the engine's: Watson at src/thermo/Component.cpp:1334-1342 "
       + "(Component::Hvap_latent), and the gas-to-liquid crossing at "
-      + "Component.cpp:1133-1134.  The page's Watson reproduces the "
+      + "Component.cpp:1181-1182.  The page's Watson reproduces the "
       + "24 520.52 J/mol the engine prints for acetone at 394.11 K in the "
       + "relief02 witness's pinned golden, to the last digit.",
   },

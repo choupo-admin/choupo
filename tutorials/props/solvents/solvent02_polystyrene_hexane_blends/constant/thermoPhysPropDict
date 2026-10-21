@@ -1,0 +1,38 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+  UNIFAC on the three solvents, PREDICTIVE: the phase check asks this
+  liquid's gamma(T, x) whether each blend is one liquid (Michelsen's
+  tangent-plane distance), and UNIFAC needs no fitted pair -- hexane (2 CH3
+  + 4 CH2), acetone (CH3 + CH3CO) and nitromethane (CH3NO2, a group its
+  catalogue record lacks and the case-local overlay declares) are built from
+  their groups.  No UNIFAC parameter was fitted to any of these three pairs
+  in this tree, so what the check says about hexane/nitromethane is a
+  PREDICTION from the group table, and the case's README says what is and
+  is not measured.  Polystyrene is not a component: it is the op's target.
+\*---------------------------------------------------------------------------*/
+recordType    thermophysicalPropertySystem;
+schemaVersion 2;
+components ( nHexane acetone nitromethane );
+equilibrium
+{
+    formulation gammaPhi;
+    liquid
+    {
+        activityModel
+        {
+            model UNIFAC;
+        }
+        standardState pureLiquid;
+    }
+    vapour
+    {
+        fugacityModel idealGas;
+    }
+}

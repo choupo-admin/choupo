@@ -54,6 +54,17 @@ public:
 
     Component loadComponent(const std::string& name) const;
 
+    //  THE RESOLVED RECORD, as a dictionary, before a Component is built
+    //  from it (2026-10-21, DEV.md 4c C128).  Same resolution, same
+    //  overlay merge, same announcements as loadComponent -- it IS
+    //  loadComponent minus the last two lines.  It exists for a reader that
+    //  needs a record the Component grammar cannot hold: the hansenMixture
+    //  op's TARGET is a polymer or resin record carrying a `hansen {}` block
+    //  and no MW, Tc or vapour pressure, which `readFromDict` would refuse
+    //  for the right reason (a flash could not use it) and which this op
+    //  never puts in a package.  One resolver, two readers.
+    DictPtr componentDict(const std::string& name) const;
+
     // Resolve a token to its CANONICAL component stem.  Exact-name ALWAYS wins
     // (returns the token unchanged if components/<token>.dat exists -- O(1) path
     // concat, the index untouched); only on a miss is the generated ALIASES index

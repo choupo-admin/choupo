@@ -1,0 +1,50 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+  solvent03 -- THE CONFRONTATION WITH EXPERIMENT (DEV.md 4c C128,
+  adjustment 2, step three).
+
+  No `composition {}`: the op SCREENS each declared solvent pure -- one row
+  each, Ra and RED against polystyrene's sphere (Hansen 1967, Table 4.1,
+  solute G).  Beside the run, constant/experimental/
+  hansen1967_table23_polystyrene.csv holds what the same thesis OBSERVED for
+  each of these thirteen solvents (Table 2.3, column G, the 1-6 scale of
+  page 20: 1 soluble ... 6 no visible effect), with the citation on every
+  row.  The op does not read that file: the prediction and the observation
+  stay two tables, joined by the reader (the README does it by hand, the
+  EduTool draws them side by side, the gate counts the agreement).
+
+  WHAT THE CONFRONTATION IS, said plainly.  Hansen's sphere for this
+  polymer was DRAWN THROUGH these very observations (Section 4.4: "the
+  centers of the volumes of solubility ... have been determined" from the
+  solvents that dissolve each solute), so agreement here shows that the
+  transcription and the distance arithmetic reproduce his placement -- it
+  is a check of the method on its own training set, not an independent
+  prediction.  The thesis itself states the residual: about 2.5 % of the
+  solvents beyond R0 + 0.5 dissolve, and about 2.5 % within R0 - 0.5 do
+  not (page 39).  Nitroethane (RED 1.39, rated 2 "almost soluble") and
+  cyclohexane (RED 1.06, rated 1 "soluble") are that residual, in this set.
+
+  The package is `ideal` because no mixture is asked for: every row is one
+  pure solvent and the phase word is `pure`.
+\*---------------------------------------------------------------------------*/
+
+operations
+(
+    {
+        name       screen;
+        type       hansenMixture;
+        target     polystyrene;
+        solvents   ( nHexane cyclohexane benzene toluene diethylEther
+                     ethylAcetate methylEthylKetone acetone nitroethane
+                     nitromethane nButanol ethanol methanol );
+        T          298.15 K;
+        output     { file "hansen_screen.csv"; }
+    }
+);

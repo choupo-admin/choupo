@@ -154,6 +154,10 @@ def build_probe(tmp: Path, mags: dict, break_unit=None, partial=None) -> Path:
                 f"hansen\n{{\n    dD  {vals[0]:.8g};\n    dP  {vals[1]:.8g};\n")
         if partial != nm:
             body += f"    dH  {vals[2]:.8g};\n"
+        #  Tref is REQUIRED beside the trio since 2026-10-21 (C128): a probe
+        #  without it would be refused for the right reason and prove nothing
+        #  about the sum rule.
+        body += "    Tref  298.15 K;\n"
         body += "}\n"
         (case / "constant" / "components" / f"{nm}.dat").write_text(
             (STD / f"{nm}.dat").read_text() + body)
@@ -168,7 +172,7 @@ def main() -> int:
         rc, out = run(CASE)
         if rc != 0:
             fails.append(f"the shipped ladder case did not run (exit {rc})")
-        elif "no component" not in out or "hansen { dD; dP; dH; }" not in out:
+        elif "no component" not in out or "hansen { dD; dP; dH; Tref; }" not in out:
             fails.append("with no triple declared, the run does not say that"
                          " the DATA is missing while naming the block it would"
                          " read -- a capability reported as unimplemented sends"

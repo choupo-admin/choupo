@@ -203,6 +203,24 @@ export const WITNESS_OUTPUTS: readonly WitnessOutput[] = [
     file,
     readBy: ["dataReconciliationLesson.test.ts"],
   })),
+  //  The solvent-selection EduTool (C128): the hansenMixture CSVs of its
+  //  three witnesses -- the synthetic pair, polystyrene's two hexane blends,
+  //  and the thirteen-solvent screen the thesis's ratings are drawn beside.
+  {
+    caseDir: "tutorials/props/solvents/solvent01_synthetic_mixture",
+    file: "hansenMixture.csv",
+    readBy: ["solventMixtureLesson.test.ts"],
+  },
+  ...["hansen_hexane_acetone.csv", "hansen_hexane_nitromethane.csv"].map((file) => ({
+    caseDir: "tutorials/props/solvents/solvent02_polystyrene_hexane_blends",
+    file,
+    readBy: ["solventMixtureLesson.test.ts"],
+  })),
+  {
+    caseDir: "tutorials/props/solvents/solvent03_polystyrene_observed",
+    file: "hansen_screen.csv",
+    readBy: ["solventMixtureLesson.test.ts"],
+  },
 ];
 
 /** What `witnessSetup.ts` found for each declared output, keyed by

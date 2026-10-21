@@ -49,8 +49,10 @@ nitromethane (~25.1) sit almost on top of each other and behave differently
 for the same reason.
 
 The run states this on every call, not only when a pair looks close.  The
-three-parameter Hansen split is what that needs; it is not implemented, its
-parameters being a separate dataset this repository does not hold.
+three-parameter Hansen split is what that needs.  The engine reads it from a
+`hansen {}` block and the `hansenMixture` op measures a solvent's or a blend's
+distance from a target with it (`tutorials/props/solvents/`); the catalogue
+itself carries no split, it being a separate dataset.
 
 ## Not established
 

@@ -139,6 +139,13 @@ Database::applyCaseOverlay(const std::string& name, DictPtr baseDict,
 
 Component Database::loadComponent(const std::string& name) const
 {
+    Component c;
+    c.readFromDict(componentDict(name));
+    return c;
+}
+
+DictPtr Database::componentDict(const std::string& name) const
+{
     // Resolution order (OVERLAY semantics):
     //   1.  $CHOUPO_HOME/data/standards/components/<name>.dat  (base)
     //   2.  <case>/constant/components/<name>.dat               (overlay)
@@ -641,9 +648,7 @@ Component Database::loadComponent(const std::string& name) const
                          " its header already names.\n";
         }
 
-    Component c;
-    c.readFromDict(dict);
-    return c;
+    return dict;
 }
 
 std::string Database::canonicalName(const std::string& token) const

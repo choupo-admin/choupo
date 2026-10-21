@@ -1,0 +1,38 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Case-local PARTIAL overlay of the standard ethylAcetate record: the HANSEN
+  TRIPLE, which no catalogue record carries (DEV.md 4c C128).
+  `overlayOf ethylAcetate;` declares this a DELTA -- the reader deep-merges it over
+  data/standards/components/ethylAcetate.dat, so MW, Vliq, the vapour pressure and
+  everything else keep coming from the standard.
+
+  SOURCE, per value: Hansen, C. M., The Three Dimensional Solubility Parameter and Solvent Diffusion Coefficient: Their Importance in Surface Coating Formulation, doctoral dissertation, Danish Technical Press, Copenhagen (1967), Table 2.1 (pages 18-19), row 35
+  "Ethyl acetate", the REVISED placements: delta_d = 7.44, delta_p = 2.6,
+  delta_h = 4.5 (cal/cm3)^0.5.  Converted to Pa^0.5 by sqrt(4.184e6) =
+  2045.4828; the thesis's own digits are the ones in the comments.
+  Tref: the thesis prints no temperature beside Table 2.1; its placements
+  were checked against solubility tests at room temperature, and 25 C is the
+  reference every later compilation of these values states.  Adopted as
+  298.15 K, flagged interim.  reviewStatus interim: transcribed from the
+  page image (not the OCR text, whose columns are scrambled) and not yet
+  read back by a second person.
+\*---------------------------------------------------------------------------*/
+overlayOf ethylAcetate;
+
+hansen
+{
+    dD    15218.4;        // Pa^0.5   = 7.44 (cal/cm3)^0.5, thesis Table 2.1 row 35
+    dP    5318.3;        // Pa^0.5   = 2.6
+    dH    9204.7;        // Pa^0.5   = 4.5
+    Tref  298.15 K;       // adopted (see the header); no correction exists in the engine
+}
+
+provenance
+{
+    hansen
+    {
+        origin        literature;
+        method        "Hansen 1967 thesis, Table 2.1 row 35 (Ethyl acetate), revised placements; (cal/cm3)^0.5 x 2045.4828 -> Pa^0.5";
+        reviewStatus  interim;
+        notes         "transcribed from the page image 2026-10-21; Tref 298.15 K adopted, the thesis states no temperature beside the table";
+    }
+}

@@ -313,6 +313,9 @@ const CorrelationSimplicityTool = lazy(() =>
 const DataReconciliationTool = lazy(() =>
   import("./methods/DataReconciliationTool.js")
     .then((m) => ({ default: m.DataReconciliationTool })));
+const SolventMixtureTool = lazy(() =>
+  import("./methods/SolventMixtureTool.js")
+    .then((m) => ({ default: m.SolventMixtureTool })));
 const MaterialsTool = lazy(() =>
   import("./methods/MaterialsTool.js")
     .then((m) => ({ default: m.MaterialsTool })));
@@ -549,6 +552,7 @@ export function MethodsWorkspace() {
             : tool === "materials" ? <MaterialsTool />
             : tool === "correlation-simplicity" ? <CorrelationSimplicityTool />
             : tool === "data-reconciliation" ? <DataReconciliationTool />
+            : tool === "solvent-mixture" ? <SolventMixtureTool />
             : tool === "wegstein" ? <WegsteinTool />
             : tool === "active-set-qp" ? <ActiveSetQpTool />
             : tool === "lub-scaleup" ? <LubScaleupTool />

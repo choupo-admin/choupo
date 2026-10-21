@@ -1,0 +1,86 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://choupo.org/schemas/operations/hansenMixture.schema.json",
+  "title": "Which solvent, or which mixture: the Hansen distance",
+  "description": "The Hansen distance Ra^2 = 4(dD - dD,t)^2 + (dP - dP,t)^2 + (dH - dH,t)^2 of DECLARED solvents from a DECLARED target (a solute, polymer or resin record carrying `hansen { dD; dP; dH; Tref; [R0]; }`), pure one by one (a screen: no `composition {}`) or blended two at a time along a composition sweep in a declared basis (volume | mass | mole; mass and mole are converted to volume fractions through the records' Vliq and MW, printed per point). The blend's triple is the volume-fraction average of the solvents' -- stated on every run as an approximation (no excess volume, each solvent keeps its own split). RED = Ra/R0 is published only where the target declares R0; no cut-off is invented. Every `hansen {}` block carries its reference temperature Tref, the parameters are HELD CONSTANT at it (no correction exists), and the declared T decides the phase check alone: at every blend point the case's activity model is asked, by Michelsen's tangent-plane test, whether the pair is one liquid, and a WORD is published per point -- `homogeneous` (the rule applies), `twoPhase` (the op REFUSES to represent the pair as one solvent: no average, no Ra, no RED for that point), `notVerified` (an ideal liquid or an authorised ideal default cannot decide); a pure solvent is `pure`. Ra is a compatibility indicator in this approach, never a saturation concentration, and the run says so. Output: one CSV row per point (composition in both bases, the mixed triple, the Teas fractions, Ra, RED, the phase word, the TPD tm), the minimum and the pure ends as diagnostics, and the top-level result block `hansenMixtures`. Refuses by name: no target, a target or solvent with no `hansen {}`, a block with no Tref, a solvent not in the thermophysical system or without Vliq, other than two solvents under a sweep, an unknown basis word.",
+  "type": "object",
+  "properties": {
+    "target": {
+      "type": "string",
+      "title": "Target record",
+      "description": "The substance to be dissolved: a record (case-local constant/components/<name>.dat or catalogue) carrying `hansen { dD; dP; dH; Tref; [R0]; }`. Resolved by the Database's own reader; it need not be -- and a polymer cannot be -- a component of the thermophysical system."
+    },
+    "solvents": {
+      "type": "array",
+      "title": "Solvents",
+      "description": "Components of the case's thermophysical system, each carrying a `hansen {}` block and a Vliq. Exactly two under a `composition {}` sweep; any number for a pure screen.",
+      "items": {
+        "type": "string"
+      },
+      "minItems": 1
+    },
+    "composition": {
+      "type": "object",
+      "title": "Composition sweep",
+      "description": "`{ basis volume|mass|mole; n ...; }` -- n points from pure first solvent to pure second, the fraction of the SECOND solvent written in the declared basis. Absent: each solvent is evaluated pure (a screen).",
+      "properties": {
+        "basis": {
+          "type": "string",
+          "enum": [
+            "volume",
+            "mass",
+            "mole"
+          ],
+          "title": "Basis of the declared fraction"
+        },
+        "n": {
+          "type": "integer",
+          "minimum": 2,
+          "title": "Number of points",
+          "description": "Defaults to 21.",
+          "unit": "-"
+        }
+      },
+      "required": [
+        "basis"
+      ],
+      "additionalProperties": false
+    },
+    "T": {
+      "type": "number",
+      "exclusiveMinimum": 0,
+      "title": "Temperature",
+      "description": "Required. Stated beside every record's Tref; the parameters are held at Tref (no correction exists) and T decides the phase check only. A T away from any Tref is announced into the caveat block.",
+      "unit": "K"
+    },
+    "P": {
+      "type": "number",
+      "exclusiveMinimum": 0,
+      "title": "Pressure of the phase check",
+      "description": "Defaults to 1 atm, announced; a liquid activity model barely sees it.",
+      "unit": "Pa"
+    },
+    "output": {
+      "type": "object",
+      "title": "CSV output",
+      "description": "Required. One row per point: point, label, s_declared, basis, phi_<solvent>..., dD/dP/dH_mix_MPa05, fd, fp, fh, Ra_MPa05, RED (empty without R0), phase, tm.",
+      "properties": {
+        "file": {
+          "type": "string",
+          "title": "File name"
+        }
+      },
+      "required": [
+        "file"
+      ],
+      "additionalProperties": false
+    }
+  },
+  "required": [
+    "target",
+    "solvents",
+    "T",
+    "output"
+  ],
+  "additionalProperties": false
+}

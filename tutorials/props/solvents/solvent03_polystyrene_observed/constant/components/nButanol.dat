@@ -1,0 +1,38 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Case-local PARTIAL overlay of the standard nButanol record: the HANSEN
+  TRIPLE, which no catalogue record carries (DEV.md 4c C128).
+  `overlayOf nButanol;` declares this a DELTA -- the reader deep-merges it over
+  data/standards/components/nButanol.dat, so MW, Vliq, the vapour pressure and
+  everything else keep coming from the standard.
+
+  SOURCE, per value: Hansen, C. M., The Three Dimensional Solubility Parameter and Solvent Diffusion Coefficient: Their Importance in Surface Coating Formulation, doctoral dissertation, Danish Technical Press, Copenhagen (1967), Table 2.1 (pages 18-19), row 5
+  "n-Butanol", the REVISED placements: delta_d = 7.81, delta_p = 2.8,
+  delta_h = 7.7 (cal/cm3)^0.5.  Converted to Pa^0.5 by sqrt(4.184e6) =
+  2045.4828; the thesis's own digits are the ones in the comments.
+  Tref: the thesis prints no temperature beside Table 2.1; its placements
+  were checked against solubility tests at room temperature, and 25 C is the
+  reference every later compilation of these values states.  Adopted as
+  298.15 K, flagged interim.  reviewStatus interim: transcribed from the
+  page image (not the OCR text, whose columns are scrambled) and not yet
+  read back by a second person.
+\*---------------------------------------------------------------------------*/
+overlayOf nButanol;
+
+hansen
+{
+    dD    15975.2;        // Pa^0.5   = 7.81 (cal/cm3)^0.5, thesis Table 2.1 row 5
+    dP    5727.4;        // Pa^0.5   = 2.8
+    dH    15750.2;        // Pa^0.5   = 7.7
+    Tref  298.15 K;       // adopted (see the header); no correction exists in the engine
+}
+
+provenance
+{
+    hansen
+    {
+        origin        literature;
+        method        "Hansen 1967 thesis, Table 2.1 row 5 (n-Butanol), revised placements; (cal/cm3)^0.5 x 2045.4828 -> Pa^0.5";
+        reviewStatus  interim;
+        notes         "transcribed from the page image 2026-10-21; Tref 298.15 K adopted, the thesis states no temperature beside the table";
+    }
+}

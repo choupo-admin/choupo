@@ -792,6 +792,12 @@
   "HConsistency": [
    "src/propertyOps/HConsistency.H"
   ],
+  "HansenBlock": [
+   "src/thermo/Component.H"
+  ],
+  "HansenMixture": [
+   "src/propertyOps/HansenMixture.H"
+  ],
   "HeatCapacityFit": [
    "src/propertyOps/HeatCapacityFit.H"
   ],
@@ -2280,6 +2286,10 @@
    {
     "key": "solubilityParameter",
     "type": "SolubilityParameter"
+   },
+   {
+    "key": "hansenMixture",
+    "type": "HansenMixture"
    },
    {
     "key": "estimateComponent",
@@ -4890,6 +4900,26 @@
    "src/thermo/ThermoPackage.H",
    "src/thermo/heatCapacity/HeatCapacityModel.H"
   ],
+  "src/propertyOps/HansenMixture.cpp": [
+   "src/core/Advisory.H",
+   "src/core/Dictionary.H",
+   "src/core/Dimensions.H",
+   "src/core/Identifiers.H",
+   "src/core/Origin.H",
+   "src/core/Types.H",
+   "src/propertyOps/HansenMixture.H",
+   "src/propertyOps/PropertyOperation.H",
+   "src/solver/Convergence.H",
+   "src/solver/StabilityTest.H",
+   "src/thermo/ApproximationAuthorisation.H",
+   "src/thermo/Component.H",
+   "src/thermo/Database.H",
+   "src/thermo/PackageAudit.H",
+   "src/thermo/RecordResolver.H",
+   "src/thermo/ThermoPackage.H",
+   "src/thermo/activityCoefficient/ActivityModel.H",
+   "src/thermo/phase/Phase.H"
+  ],
   "src/propertyOps/HeatCapacityFit.cpp": [
    "src/core/Dictionary.H",
    "src/core/Dimensions.H",
@@ -5123,6 +5153,7 @@
    "src/propertyOps/FrictionBench.H",
    "src/propertyOps/GibbsMapOp.H",
    "src/propertyOps/HConsistency.H",
+   "src/propertyOps/HansenMixture.H",
    "src/propertyOps/HeatCapacityFit.H",
    "src/propertyOps/HeatTransferBench.H",
    "src/propertyOps/IsothermEval.H",
@@ -9486,6 +9517,7 @@
    "src/propertyOps/FitParameters.cpp",
    "src/propertyOps/FreezingPoint.cpp",
    "src/propertyOps/GibbsMapOp.cpp",
+   "src/propertyOps/HansenMixture.cpp",
    "src/propertyOps/PhaseEnvelope.cpp",
    "src/propertyOps/PhaseSplitScan.cpp",
    "src/propertyOps/PitzerActivity.cpp",
@@ -9949,6 +9981,7 @@
    "src/propertyOps/FrictionBench.cpp",
    "src/propertyOps/GibbsMapOp.cpp",
    "src/propertyOps/HConsistency.cpp",
+   "src/propertyOps/HansenMixture.cpp",
    "src/propertyOps/HeatCapacityFit.cpp",
    "src/propertyOps/HeatTransferBench.cpp",
    "src/propertyOps/IsothermEval.cpp",
@@ -10279,6 +10312,7 @@
    "src/propertyOps/FrictionBench.cpp",
    "src/propertyOps/GibbsMapOp.cpp",
    "src/propertyOps/HConsistency.cpp",
+   "src/propertyOps/HansenMixture.cpp",
    "src/propertyOps/HeatCapacityFit.cpp",
    "src/propertyOps/HeatTransferBench.cpp",
    "src/propertyOps/IsothermEval.cpp",
@@ -10693,6 +10727,7 @@
    "src/propertyOps/FrictionBench.cpp",
    "src/propertyOps/GibbsMapOp.cpp",
    "src/propertyOps/HConsistency.cpp",
+   "src/propertyOps/HansenMixture.cpp",
    "src/propertyOps/HeatCapacityFit.cpp",
    "src/propertyOps/HeatTransferBench.cpp",
    "src/propertyOps/IsothermEval.cpp",
@@ -10964,6 +10999,7 @@
    "src/propertyOps/FrictionBench.cpp",
    "src/propertyOps/GibbsMapOp.cpp",
    "src/propertyOps/HConsistency.cpp",
+   "src/propertyOps/HansenMixture.cpp",
    "src/propertyOps/HeatCapacityFit.cpp",
    "src/propertyOps/HeatTransferBench.cpp",
    "src/propertyOps/IsothermEval.cpp",
@@ -11554,6 +11590,7 @@
    "src/propertyOps/FrictionBench.cpp",
    "src/propertyOps/GibbsMapOp.cpp",
    "src/propertyOps/HConsistency.cpp",
+   "src/propertyOps/HansenMixture.cpp",
    "src/propertyOps/HeatCapacityFit.cpp",
    "src/propertyOps/HeatTransferBench.cpp",
    "src/propertyOps/IsothermEval.cpp",
@@ -12277,6 +12314,10 @@
    "src/propertyOps/HConsistency.cpp",
    "src/propertyOps/PropertyOperation.cpp"
   ],
+  "src/propertyOps/HansenMixture.H": [
+   "src/propertyOps/HansenMixture.cpp",
+   "src/propertyOps/PropertyOperation.cpp"
+  ],
   "src/propertyOps/HeatCapacityFit.H": [
    "src/propertyOps/HeatCapacityFit.cpp",
    "src/propertyOps/PropertyOperation.cpp"
@@ -12344,6 +12385,7 @@
    "src/propertyOps/FrictionBench.cpp",
    "src/propertyOps/GibbsMapOp.cpp",
    "src/propertyOps/HConsistency.cpp",
+   "src/propertyOps/HansenMixture.cpp",
    "src/propertyOps/HeatCapacityFit.cpp",
    "src/propertyOps/HeatTransferBench.cpp",
    "src/propertyOps/IsothermEval.cpp",
@@ -12857,6 +12899,7 @@
    "src/propertyOps/FitParameters.cpp",
    "src/propertyOps/GibbsMapOp.cpp",
    "src/propertyOps/HConsistency.cpp",
+   "src/propertyOps/HansenMixture.cpp",
    "src/propertyOps/HeatCapacityFit.cpp",
    "src/propertyOps/MixingRules.cpp",
    "src/propertyOps/MolecularActivity.cpp",
@@ -13095,6 +13138,7 @@
    "src/solver/SQP.cpp"
   ],
   "src/solver/StabilityTest.H": [
+   "src/propertyOps/HansenMixture.cpp",
    "src/solver/StabilityTest.cpp",
    "src/unitOperations/flash/IsothermalFlash.cpp"
   ],
@@ -13313,6 +13357,7 @@
    "src/unitOperations/flowsheet/Flowsheet.cpp"
   ],
   "src/thermo/ApproximationAuthorisation.H": [
+   "src/propertyOps/HansenMixture.cpp",
    "src/thermo/ApproximationAuthorisation.cpp",
    "src/thermo/ThermoPackageBuilder.cpp",
    "src/thermo/activityCoefficient/NRTL.cpp",
@@ -13405,6 +13450,7 @@
    "src/propertyOps/FrictionBench.cpp",
    "src/propertyOps/GibbsMapOp.cpp",
    "src/propertyOps/HConsistency.cpp",
+   "src/propertyOps/HansenMixture.cpp",
    "src/propertyOps/HeatCapacityFit.cpp",
    "src/propertyOps/HeatTransferBench.cpp",
    "src/propertyOps/IsothermEval.cpp",
@@ -13618,6 +13664,7 @@
    "src/propertyOps/FreezingPoint.cpp",
    "src/propertyOps/FrictionBench.cpp",
    "src/propertyOps/GibbsMapOp.cpp",
+   "src/propertyOps/HansenMixture.cpp",
    "src/propertyOps/HeatCapacityFit.cpp",
    "src/propertyOps/HeatTransferBench.cpp",
    "src/propertyOps/IsothermEval.cpp",
@@ -13772,6 +13819,7 @@
    "src/propertyOps/FitParameters.cpp",
    "src/propertyOps/GibbsMapOp.cpp",
    "src/propertyOps/HConsistency.cpp",
+   "src/propertyOps/HansenMixture.cpp",
    "src/propertyOps/HeatCapacityFit.cpp",
    "src/propertyOps/MixingRules.cpp",
    "src/propertyOps/MolecularActivity.cpp",
@@ -13952,6 +14000,7 @@
    "src/propertyOps/FreezingPoint.cpp",
    "src/propertyOps/FrictionBench.cpp",
    "src/propertyOps/GibbsMapOp.cpp",
+   "src/propertyOps/HansenMixture.cpp",
    "src/propertyOps/HeatCapacityFit.cpp",
    "src/propertyOps/HeatTransferBench.cpp",
    "src/propertyOps/IsothermEval.cpp",
@@ -14214,6 +14263,7 @@
    "src/propertyOps/FitParameters.cpp",
    "src/propertyOps/GibbsMapOp.cpp",
    "src/propertyOps/HConsistency.cpp",
+   "src/propertyOps/HansenMixture.cpp",
    "src/propertyOps/HeatCapacityFit.cpp",
    "src/propertyOps/MixingRules.cpp",
    "src/propertyOps/MolecularActivity.cpp",
@@ -14368,6 +14418,7 @@
    "src/applications/choupoSolve/main.cpp",
    "src/dynamicDriver/DynamicDriver.cpp",
    "src/propertyOps/EnthalpyConcentration.cpp",
+   "src/propertyOps/HansenMixture.cpp",
    "src/propertyOps/MolecularActivity.cpp",
    "src/propertyOps/PropertyEvaluator.cpp",
    "src/propertyOps/PropertyOperation.cpp",
@@ -14896,6 +14947,7 @@
    "src/applications/choupoSolve/main.cpp",
    "src/dynamicDriver/DynamicDriver.cpp",
    "src/propertyOps/FreezingPoint.cpp",
+   "src/propertyOps/HansenMixture.cpp",
    "src/propertyOps/PhaseSplitScan.cpp",
    "src/solver/StabilityTest.cpp",
    "src/thermo/ThermoPackage.cpp",

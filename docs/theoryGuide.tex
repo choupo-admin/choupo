@@ -5589,12 +5589,16 @@ that still look like Teas coordinates, still order the solvents plausibly,
 and are wrong; they do not sum to one.
 
 \paragraph{What Choupo does and does not have.}  The engine reads the split
-from a \code{hansen \{ dD; dP; dH; \}} block on the component record, in
-$\mathrm{Pa}^{1/2}$, and prints the Teas fractions from it.  \emph{No
-component in the shipped catalogue carries one.}  Hansen parameters are a
-separate curated dataset this project does not hold, and none is invented ---
-a triple typed from memory would produce a Teas point that looks entirely
-reasonable and is fiction.  A run with no triple says so, naming the block it
+from a \code{hansen \{ dD; dP; dH; Tref; \}} block on the component record, in
+$\mathrm{Pa}^{1/2}$ with the temperature the placement was made at, and prints
+the Teas fractions from it.  \emph{No component in the shipped catalogue
+carries one.}  Hansen parameters are a separate curated dataset this project
+does not hold in its catalogue, and none is invented --- a triple typed from
+memory would produce a Teas point that looks entirely reasonable and is
+fiction.  What the tree does carry, since the solvent-selection lesson of
+\S\ref{ch:hansen-mixture}, is a handful of \emph{case-local} records
+transcribed from Hansen's 1967 thesis \cite{Hansen1967}, one citation per
+value and marked interim.  A run with no triple says so, naming the block it
 would read, so that the absence is legible as missing \emph{data} and not as
 a missing capability.
 
@@ -5607,6 +5611,104 @@ enthalpy of vaporisation.  The limit of that audit is worth stating in the
 same breath: it constrains the \emph{length} of the vector and says nothing
 about where it points, so a triple wrong in direction but right in magnitude
 passes it untouched.
+
+\subsection{Choosing a solvent, or a solvent mixture: $R_a$ and RED}
+\label{ch:hansen-mixture}
+
+\declaredanchor{ch:hansen-mixture}
+
+The question a formulator actually asks is not ``what is this solvent's
+triple'' but ``which solvent, or which blend, for \emph{this} substance''.
+Hansen's answer \cite{Hansen1967} is geometric.  A solute --- a polymer, a
+resin, a dye --- is placed in the same three-dimensional space as the
+solvents, at the centre $(\delta_{d0}, \delta_{p0}, \delta_{h0})$ of the
+cloud of solvents observed to dissolve it, and the cloud's radius $R_0$ is
+recorded with it.  The thesis found those clouds to be spheres only when the
+dispersion axis is drawn at twice the scale of the other two, which is where
+the factor $4$ in the distance comes from (its Eq.~8.2):
+\begin{equation}
+   R_a^2 \;=\; 4\,(\delta_d - \delta_{d0})^2 \;+\; (\delta_p - \delta_{p0})^2
+          \;+\; (\delta_h - \delta_{h0})^2 ,
+   \qquad
+   \mathrm{RED} \;=\; \frac{R_a}{R_0}.
+   \label{eq:hansen-ra}
+\end{equation}
+A solvent with $\mathrm{RED} < 1$ lies inside the sphere; one with
+$\mathrm{RED} > 1$ outside.  The ratio is defined only where a record
+declares $R_0$: Choupo publishes $R_a$ alone otherwise, because a cut-off the
+record did not measure would be an invented one.
+
+\paragraph{The mixture rule.}  A blend of solvents is placed by the
+volume-fraction average of each parameter,
+\begin{equation}
+   \delta_{k,\mathrm{mix}} \;=\; \sum_i \phi_i\, \delta_{k,i},
+   \qquad k = d,\, p,\, h ,
+   \label{eq:hansen-mix}
+\end{equation}
+which assumes that each solvent keeps its own split of cohesive energy when
+mixed and that the mixture's volume is the sum of the parts.  It is a rule
+of thumb, not a theorem --- but it is the rule Hansen checked his placements
+against: two \emph{non}-solvents lying on opposite sides of a solute's sphere
+give a blend that lies inside it, and ``this has always been found to be the
+case, with the exception of a very few boundary region cases'' (thesis,
+\S2.5).  A composition declared by mass or by mole is converted to volume
+fractions through each solvent's molar volume (the record's $V_{\mathrm{liq}}$
+at 25\,$^\circ$C, which carries that approximation too), and Choupo prints
+the conversion beside every point.
+
+\paragraph{The temperature is not decorative.}  Every \code{hansen \{\}}
+block carries \code{Tref}, the temperature its triple was placed at, and the
+engine applies \emph{no} correction to move it elsewhere: the parameters are
+held constant at \code{Tref} as an approximation, and the run says so.  The
+declared $T$ of a \code{hansenMixture} operation decides one thing only ---
+the phase check below.
+
+\paragraph{The phase check: three outcomes.}  The mixture rule describes
+\emph{one} liquid.  At every blend composition Choupo asks the case's own
+activity model whether the solvent pair is stable as one liquid, through
+Michelsen's tangent-plane test (\S\ref{ch:lle-gibbs}; the same test the
+flash's \code{phaseSet auto} runs), and publishes a word per point:
+\begin{itemize}[leftmargin=*,nosep,topsep=2pt]
+  \item \textbf{homogeneous} --- one liquid; the mixture rule applies, with
+        its assumptions stated;
+  \item \textbf{twoPhase} --- a second liquid.  Choupo \emph{refuses} to
+        represent the pair as one homogeneous solvent there: no averaged
+        triple, no $R_a$, no RED is published for the point.  A two-phase
+        pair is not useless --- it may serve an extraction --- it is only not
+        one solvent;
+  \item \textbf{notVerified} --- nothing in the case can decide.  An
+        \code{ideal} liquid ($\gamma = 1$) has no excess Gibbs energy and can
+        never demix, so its ``stable'' would be said of every pair; a pair
+        running on the authorised ideal default is in the same position.  The
+        rule is applied and the point is marked.
+\end{itemize}
+
+\begin{tcolorbox}[colback=red!4!white, colframe=red!55!black,
+                  title=Affinity is not solubility]
+$R_a$ is a distance in a space fitted to dissolves / does-not-dissolve
+observations.  A small $R_a$, or a RED below one, says the solvent lies in
+the region where the substance was \emph{observed} to dissolve or swell --- a
+compatibility indicator in this approach.  No saturation concentration in
+g/L follows from it, and Choupo publishes none.  The thesis also states the
+method's own residual: about 2.5\,\% of the solvents beyond $R_0 + 0.5$
+dissolve, and about 2.5\,\% within $R_0 - 0.5$ do not (in its original
+$(\mathrm{cal/cm^3})^{1/2}$ units).
+\end{tcolorbox}
+
+\paragraph{Where the numbers come from.}  Hansen's parameters are
+decades-old published placements, and Choupo takes them only from a primary
+source with the citation on each value.  The witnesses of this section carry
+case-local records transcribed from the thesis's Tables~2.1 and~4.1 ---
+thirteen solvents and polystyrene (its solute~G) --- in
+\file{tutorials/props/solvents/}: a synthetic pair whose minimum sits at 50:50
+by construction (\code{solvent01}), hexane blended with acetone and with
+nitromethane against polystyrene (\code{solvent02}; UNIFAC finds the
+nitromethane pair two liquids exactly where the mixture rule would have
+liked it best), and a screen of the thirteen pure solvents beside the
+thesis's own dissolution ratings of Table~2.3 (\code{solvent03}).  The
+EduTool \emph{Choosing a solvent, or a solvent mixture} draws them; the
+\code{hansenMixture} operation computes them (its grammar is in the
+Properties Guide's operations reference).
 
 \subsection{How Choupo evaluates it}
 
@@ -23858,8 +23960,21 @@ Choupo's \code{formulation consistent;}.
 \bibitem{Teas1968} Teas, J. P., ``Graphic Analysis of Resin Solubilities'',
 \emph{J. Paint Technol.}, 40 (516), 19--25 (1968).  The origin of the
 fractional-parameter ternary plot of Eq.~\eqref{eq:teas}.  Cited for the
-CONSTRUCTION only: this project holds no Hansen parameter values, from this
-paper or from anywhere else, and none is reproduced here.
+CONSTRUCTION only: no Hansen parameter value is taken from this paper.  (The
+catalogue holds none; the few the tree carries are case-local and come from
+\cite{Hansen1967}, with the citation on each value.)
+
+\bibitem{Hansen1967} Hansen, C. M., \emph{The Three Dimensional Solubility
+Parameter and Solvent Diffusion Coefficient: Their Importance in Surface
+Coating Formulation}, doctoral dissertation, Danish Technical Press,
+Copenhagen (1967).  The origin of the three-parameter split, of the
+distance of Eq.~\eqref{eq:hansen-ra} with its factor 4 (its Eq.~8.2), of the
+volume-fraction mixture rule as a checked observation (\S2.5), and of the
+solvent placements (Table~2.1), solute centres and radii (Table~4.1) and
+dissolution ratings (Table~2.3) that the \code{tutorials/props/solvents/}
+witnesses transcribe, one citation per value, in the thesis's own
+$(\mathrm{cal/cm^3})^{1/2}$ converted to $\mathrm{Pa}^{1/2}$ by
+$\sqrt{4.184\times10^{6}}$.
 
 \bibitem{HMW1984} Harvie, C. E., M\o ller, N., \& Weare, J. H., ``The
 prediction of mineral solubilities in natural waters: The

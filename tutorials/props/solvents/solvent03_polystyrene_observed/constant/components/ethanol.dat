@@ -1,0 +1,38 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Case-local PARTIAL overlay of the standard ethanol record: the HANSEN
+  TRIPLE, which no catalogue record carries (DEV.md 4c C128).
+  `overlayOf ethanol;` declares this a DELTA -- the reader deep-merges it over
+  data/standards/components/ethanol.dat, so MW, Vliq, the vapour pressure and
+  everything else keep coming from the standard.
+
+  SOURCE, per value: Hansen, C. M., The Three Dimensional Solubility Parameter and Solvent Diffusion Coefficient: Their Importance in Surface Coating Formulation, doctoral dissertation, Danish Technical Press, Copenhagen (1967), Table 2.1 (pages 18-19), row 3
+  "Ethanol 99.9%", the REVISED placements: delta_d = 7.73, delta_p = 4.3,
+  delta_h = 9.5 (cal/cm3)^0.5.  Converted to Pa^0.5 by sqrt(4.184e6) =
+  2045.4828; the thesis's own digits are the ones in the comments.
+  Tref: the thesis prints no temperature beside Table 2.1; its placements
+  were checked against solubility tests at room temperature, and 25 C is the
+  reference every later compilation of these values states.  Adopted as
+  298.15 K, flagged interim.  reviewStatus interim: transcribed from the
+  page image (not the OCR text, whose columns are scrambled) and not yet
+  read back by a second person.
+\*---------------------------------------------------------------------------*/
+overlayOf ethanol;
+
+hansen
+{
+    dD    15811.6;        // Pa^0.5   = 7.73 (cal/cm3)^0.5, thesis Table 2.1 row 3
+    dP    8795.6;        // Pa^0.5   = 4.3
+    dH    19432.1;        // Pa^0.5   = 9.5
+    Tref  298.15 K;       // adopted (see the header); no correction exists in the engine
+}
+
+provenance
+{
+    hansen
+    {
+        origin        literature;
+        method        "Hansen 1967 thesis, Table 2.1 row 3 (Ethanol 99.9%), revised placements; (cal/cm3)^0.5 x 2045.4828 -> Pa^0.5";
+        reviewStatus  interim;
+        notes         "transcribed from the page image 2026-10-21; Tref 298.15 K adopted, the thesis states no temperature beside the table";
+    }
+}

@@ -32,9 +32,12 @@ THE ARMS
       shipped witness satisfies all three guards, so a guard tested only
       against it is a guard nothing tests.
 
-  (d) THE LIMIT IS ALWAYS STATED.  Hildebrand carries no hydrogen bonding,
-      and the run must say so on EVERY call -- not only when a pair looks
-      close.  A single-parameter theory that is right most of the time is
+  (d) THE LIMIT IS ALWAYS STATED.  Hildebrand's cohesive energy INCLUDES
+      hydrogen bonding, and one number cannot separate it from dispersion and
+      polarity; the run must say so on EVERY call -- not only when a pair
+      looks close.  (Until 2026-10-21 the run and this arm said Hildebrand
+      "carries no hydrogen bonding", which is false -- DEV.md 4c C128; the
+      arm now requires BOTH halves, so the old sentence cannot come back.)  A single-parameter theory that is right most of the time is
       exactly the kind that gets trusted where it is wrong.
 
 WHAT THIS DOES NOT COVER, said so the OK line cannot imply it: agreement with
@@ -157,10 +160,17 @@ def main():
     shutil.rmtree(ROOT / "generated/probes/solubility", ignore_errors=True)
 
     # ---- (d) the limit is stated, always ----------------------------------
-    if "carries no hydrogen bonding" not in out:
-        fails.append("the run does not state that Hildebrand carries no"
-                     " hydrogen bonding -- one number implying more than it"
-                     " holds is this tool's whole failure mode")
+    flat = " ".join(out.split())
+    if ("INCLUDES hydrogen bonding" not in flat
+            or "separate it from dispersion and polarity" not in flat):
+        fails.append("the run does not state that the cohesive energy"
+                     " INCLUDES hydrogen bonding and that one number cannot"
+                     " separate it from dispersion and polarity -- one number"
+                     " implying more than it holds is this tool's whole"
+                     " failure mode")
+    if "carries no hydrogen bonding" in flat:
+        fails.append("the run says Hildebrand carries no hydrogen bonding --"
+                     " false: the cohesive energy includes it (C128)")
     if "Hansen" not in out:
         fails.append("the run does not name Hansen as what the missing"
                      " capability is called")
@@ -179,8 +189,8 @@ def main():
           f" value moves no derived delta, so the anchor cannot be feeding the"
           f" derivation; {len(PROBES)} built probe(s) refuse by name (no Vliq,"
           f" no HvapTb, T above Tc); and the run states on every call that"
-          f" Hildebrand carries no hydrogen bonding and names Hansen as what"
-          f" would.  NOT CHECKED: that any MISCIBILITY prediction matches"
+          f" the cohesive energy includes hydrogen bonding and one number"
+          f" cannot separate it, and names Hansen as what would.  NOT CHECKED: that any MISCIBILITY prediction matches"
           f" experiment -- the corpus holds no such data, and agreement with"
           f" one compilation establishes the arithmetic, not the chemistry.")
     return 0

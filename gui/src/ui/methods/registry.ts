@@ -72,7 +72,7 @@ export type MethodToolId =
   | "reaction-enthalpy" | "standard-state" | "case-assembly" | "run-log"
   | "front-end-loading" | "process-safety" | "overpressure" | "letdown"
   | "plant-layout" | "gmp-layout" | "pool-fire" | "materials" | "syngas"
-  | "correlation-simplicity" | "data-reconciliation";
+  | "correlation-simplicity" | "data-reconciliation" | "solvent-mixture";
 
 /** WHAT KIND OF TOOL THIS IS, and the field exists to keep a boundary legible
  *  rather than to switch behaviour.
@@ -1529,6 +1529,35 @@ export const METHOD_TOOLS: MethodTool[] = [
       + "Control, Throughput) need no rate constant; and that the rate law "
       + "is bought last, for the one route that survives.",
     theory: "ch:gibbs-reactor",
+  },
+  //  WHICH SOLVENT, OR WHICH SOLVENT MIXTURE (2026-10-21, DEV.md 4c C128,
+  //  Vitor: the student PREDICTS the best composition before the curve is
+  //  revealed, then sees the measurements; synthetic -> real -> experiment).
+  //  A SELECTION by the registry's own criterion: the page helps a reader
+  //  choose between solvents and blends, each defensible; the curve it draws
+  //  is the engine's, not a construction the reader performs.  On the
+  //  Thermodynamics shelf because a cohesive-energy density is what the
+  //  three parameters are, beside the Hildebrand lesson.  `theory` is the
+  //  Theory Guide subsection written for it.
+  {
+    id: "solvent-mixture",
+    label: "Choosing a solvent, or a solvent mixture",
+    discipline: "Thermodynamics", kind: "selection", status: "live",
+    teaches: "Which solvent, or which blend of two, for a given substance: "
+      + "Hansen's three parameters with the temperature they were placed "
+      + "at, the distance of a solvent from the solute's sphere and the "
+      + "relative energy difference where a radius was measured, the "
+      + "volume-fraction mixture rule as a checked rule of thumb, and the "
+      + "phase check that refuses to average a pair the activity model "
+      + "finds two-phase -- the student predicts the best composition "
+      + "before the engine's curve is shown, on a synthetic pair whose "
+      + "minimum sits at 50:50 by construction, then meets Hansen's own "
+      + "polystyrene with hexane + acetone (better than either) and hexane "
+      + "+ nitromethane (the rule likes it, UNIFAC refuses it), beside the "
+      + "dissolution ratings he recorded; and the sentence that a small "
+      + "distance is a compatibility indicator, never a saturation "
+      + "concentration.",
+    theory: "ch:hansen-mixture",
   },
 ];
 

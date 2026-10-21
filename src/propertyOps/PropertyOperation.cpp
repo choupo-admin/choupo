@@ -38,6 +38,7 @@ License
 #include "FrictionBench.H"
 #include "TransportBench.H"
 #include "SolubilityParameter.H"
+#include "HansenMixture.H"
 #include "HeatTransferBench.H"
 #include "Kinetics1D.H"
 #include "Exergy.H"
@@ -211,6 +212,10 @@ void PropertyOperation::registerBuiltins()
     reg("rateLawBench",     []{ return std::make_unique<RateLawBench>(); });
     reg("transportBench", []{ return std::make_unique<TransportBench>(); });
     reg("solubilityParameter", []{ return std::make_unique<SolubilityParameter>(); });
+    //  WHICH SOLVENT, OR WHICH MIXTURE, for a declared target (DEV.md 4c
+    //  C128): the Hansen distance along a composition sweep, with the
+    //  pair's phase checked by the case's own activity model.
+    reg("hansenMixture",   []{ return std::make_unique<HansenMixture>();   });
     reg("estimateComponent", []{ return std::make_unique<EstimateComponent>(); });
     reg("elementalComposition", []{ return std::make_unique<ElementCompositionOp>(); });
     reg("polarisationIndex", []{ return std::make_unique<PolarisationIndex>(); });

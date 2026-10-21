@@ -1,0 +1,55 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  DIDACTIC EXAMPLE WITH SYNTHETIC PARAMETERS -- solventA is NOT a real
+  substance.  Every number here is invented so that the hansenMixture
+  arithmetic is checkable by hand (system/propsDict has the working):
+  Hansen triple (16, 2, 4) MPa^0.5, the same Vliq as solventB so every
+  composition basis coincides, and a bland set of bulk constants so that an
+  ideal gamma-phi package can be built around it.  `provenance { source
+  synthetic; }` makes the engine say so on every run (the compA precedent).
+\*---------------------------------------------------------------------------*/
+name        solventA;
+formula     A;
+CAS         00-00-0;
+
+MW          100.0;         // kg/kmol, synthetic
+Tc          500.0;         // K, synthetic
+Pc          40.0;          // bar, synthetic
+omega       0.30;          // synthetic
+Tb          350.0;         // K, synthetic
+HvapTb      30000;         // J/mol, synthetic
+Vliq        1.0e-4;        // m3/mol, synthetic -- equal to solventB's on purpose
+
+hansen
+{
+    dD    16000;           // Pa^0.5 = 16 MPa^0.5, SYNTHETIC
+    dP     2000;           // Pa^0.5 =  2 MPa^0.5, SYNTHETIC
+    dH     4000;           // Pa^0.5 =  4 MPa^0.5, SYNTHETIC
+    Tref  298.15 K;        // the temperature these invented numbers are declared at
+}
+
+vaporPressure
+{
+    model         Antoine;
+    coefficients  (5.0057   1500.0   -50.0);   // log10 P_bar; Psat(350 K) = 1.013 bar
+    Trange        (300  450);
+}
+
+idealGasHeatCapacity
+{
+    model         polynomial;
+    coefficients  (100.0   0.0   0.0   0.0);
+    Trange        (200  600);
+}
+
+liquidHeatCapacity
+{
+    model         polynomial;
+    coefficients  (150.0);
+    Trange        (280  400);
+}
+
+provenance
+{
+    source  synthetic;
+    reason  "DIDACTIC EXAMPLE WITH SYNTHETIC PARAMETERS (solvent01): a fictitious solvent whose Hansen triple is chosen so the A/B blend's minimum sits at 50:50";
+}

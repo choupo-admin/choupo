@@ -136,10 +136,42 @@ public:
     //  ALL THREE OR NONE.  A partial triple refuses at load: dD alone is not
     //  "some information about the split", it is a number that will be read
     //  as a coordinate and plotted somewhere wrong.
+    //
+    //  THE BLOCK CARRIES ITS REFERENCE TEMPERATURE (2026-10-21, DEV.md 4c
+    //  C128: "T is not decorative").  A Hansen triple is a placement made
+    //  from solubility tests at ONE temperature and the engine has no
+    //  correction to move it to another, so `Tref` is REQUIRED and a block
+    //  without one refuses by name -- a triple with no temperature beside it
+    //  is a number from an unstated state, exactly the table of unrelated
+    //  deltas the solubilityParameter op refuses to print.  `R0`, the
+    //  interaction radius of a SOLUTE (polymer, resin, dye) in Pa^0.5, is
+    //  OPTIONAL: a solvent has none, and where a solute's record declares
+    //  none the hansenMixture op publishes the distance Ra alone and no RED,
+    //  because a cut-off the record did not measure would be invented.
+    //
+    //  ONE READER.  `readHansenBlock` parses the block for this class AND
+    //  for the hansenMixture op's TARGET, which is a solute record that is
+    //  not a loadable Component (a polymer has no MW a flash could use); a
+    //  second parse in the op would be the arity sin on the grammar itself.
+    struct HansenBlock
+    {
+        scalar dD = 0, dP = 0, dH = 0;   // Pa^0.5
+        scalar Tref = 0;                 // K, the placement's temperature
+        scalar R0 = 0;                   // Pa^0.5, 0 = the record declares none
+        bool   hasR0 = false;
+    };
+    //  `owner` names the record in every refusal.  Throws on a partial
+    //  triple, a negative component, a missing Tref, a non-positive R0.
+    static HansenBlock readHansenBlock(const DictPtr& block,
+                                       const std::string& owner);
+
     bool   hasHansen()  const { return hansenSet_; }
     scalar hansenD()    const { return hansenD_; }   // Pa^0.5, dispersion
     scalar hansenP()    const { return hansenP_; }   // Pa^0.5, polar
     scalar hansenH()    const { return hansenH_; }   // Pa^0.5, H-bonding
+    scalar hansenTref() const { return hansenTref_; } // K
+    bool   hasHansenR0() const { return hansenR0_ > 0; }
+    scalar hansenR0()   const { return hansenR0_; }   // Pa^0.5
 
     // ---- Standard-state thermo (Gibbs reactor & related) -------------------
     // Standard enthalpy of formation at 298.15 K, ideal-gas reference [J/mol].
@@ -720,6 +752,8 @@ private:
     std::string reviewStatus_;        // interim | reviewed | (absent = unmarked)
     bool   hansenSet_ = false;        // the `hansen {}` trio, all or none
     scalar hansenD_ = 0, hansenP_ = 0, hansenH_ = 0;   // Pa^0.5
+    scalar hansenTref_ = 0;           // K, required beside the trio
+    scalar hansenR0_ = 0;             // Pa^0.5, a solute's radius; 0 = none
     std::string reviewReason_;
     scalar      Vliq_    = 0.0;
     scalar      solPar_  = 0.0;   // published Hildebrand delta [Pa^0.5]

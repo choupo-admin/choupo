@@ -1,0 +1,39 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  TARGET record: polystyrene (Hansen's solute G, "Polystyrene LG, Badische
+  Anilin- und Soda Fabrik", thesis Table 2.2).  A SOLUTE, not a component of
+  any thermophysical system: it carries a Hansen triple and an interaction
+  radius and nothing a flash could use (no MW -- a polymer's is a
+  distribution).  Read by the hansenMixture op through the Database's own
+  record resolver (`target polystyrene;`), never listed in `components ( )`.
+
+  SOURCE, per value: Hansen, C. M., The Three Dimensional Solubility Parameter and Solvent Diffusion Coefficient: Their Importance in Surface Coating Formulation, doctoral dissertation, Danish Technical Press, Copenhagen (1967), Table 4.1 (page 40), row G: delta_d0 = 8.6,
+  delta_p0 = 3.0, delta_h0 = 2.0, R_A0 = 3.5 (cal/cm3)^0.5 -- the centre and
+  radius of the volume of solubility that encloses the solvents found to
+  dissolve it (Table 2.3, column G; Section 4.4).  Converted to Pa^0.5 by
+  sqrt(4.184e6) = 2045.4828.  Tref as for the solvents (see any overlay
+  record beside this file): adopted 298.15 K, the thesis states none.
+  reviewStatus interim: transcribed from the page image, not yet read back.
+\*---------------------------------------------------------------------------*/
+name          polystyrene;
+reviewStatus  interim;
+reviewReason  "Hansen 1967 Table 4.1 transcribed from the page image; a second reading pending";
+
+hansen
+{
+    dD    17591.2;        // Pa^0.5   = 8.6 (cal/cm3)^0.5, thesis Table 4.1 row G
+    dP    6136.4;        // Pa^0.5   = 3.0
+    dH    4091.0;        // Pa^0.5   = 2.0
+    R0    7159.2;        // Pa^0.5   = 3.5  the interaction radius R_A0
+    Tref  298.15 K;       // adopted; the thesis prints no temperature beside the table
+}
+
+provenance
+{
+    hansen
+    {
+        origin        literature;
+        method        "Hansen 1967 thesis, Table 4.1 row G (Polystyrene LG, BASF): centre and radius of the solubility volume; (cal/cm3)^0.5 x 2045.4828 -> Pa^0.5";
+        reviewStatus  interim;
+        notes         "transcribed from the page image 2026-10-21";
+    }
+}

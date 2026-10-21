@@ -1111,18 +1111,23 @@ that is right until the day it is not.
 
 \subsection{Where one number stops}
 
-\textbf{Hildebrand carries no hydrogen bonding.}  Ethanol
-($\delta \approx 26~\mathrm{MPa}^{1/2}$) and nitromethane
-($\approx 25.1$) sit almost on top of each other, and a formulator
-knows they behave differently --- one donates hydrogen bonds and the
-other does not.  The theory cannot express the difference, because it
-compressed every kind of intermolecular force into one scalar.
+\textbf{Hildebrand cannot separate the hydrogen bonding it contains.}
+The cohesive energy it measures \emph{includes} the hydrogen bonds broken
+on boiling; what one number cannot do is tell that part from dispersion
+and polarity.  Ethanol ($\delta \approx 26~\mathrm{MPa}^{1/2}$) and
+nitromethane ($\approx 25.1$) sit almost on top of each other, and a
+formulator knows they behave differently --- one donates hydrogen bonds
+and the other does not.  The theory cannot express the difference,
+because it compressed every kind of intermolecular force into one scalar.
 
 That is why the coatings industry uses Hansen's three-way split:
 dispersion, polar and hydrogen-bonding contributions, with miscibility
-judged by a distance in that space rather than on a line.  Choupo does
-\emph{not} implement it, and the run says so every time: Hansen's
-parameters are a separate dataset this project does not hold.
+judged by a distance in that space rather than on a line.  Choupo reads
+the split from a \code{hansen \{\}} block on a record and measures that
+distance with the \code{hansenMixture} operation --- the EduTool
+\emph{Choosing a solvent, or a solvent mixture} draws it; the catalogue
+carries no split itself, and the witnesses carry theirs case-locally
+with a citation per value.
 
 So the honest reading of a close pair is \emph{candidate}, never
 \emph{verdict} --- and the run prints exactly that sentence, on every
@@ -1451,6 +1456,21 @@ For every entry below, what is missing is the same three things:
   \item a \textbf{worked ``what to vary, what to watch''} sequence, tried
         on the tool rather than inferred from its knobs.
 \end{itemize}
+
+\subsection*{Choosing a solvent, or a solvent mixture \quad(\code{tool=solvent-mixture})}
+Which solvent, or which blend of two, for a given substance: Hansen's three
+parameters with the temperature they were placed at, the distance of a
+solvent from the solute's sphere and the relative energy difference where a
+radius was measured, the volume-fraction mixture rule as a checked rule of
+thumb, and a phase check that \emph{refuses} to average a pair the activity
+model finds two-phase.  The student predicts the best composition before
+the engine's curve is shown (a synthetic pair whose minimum sits at 50:50 by
+construction), then meets Hansen's own polystyrene with hexane\,+\,acetone
+and hexane\,+\,nitromethane beside the dissolution ratings he recorded.
+Every number is the \code{hansenMixture} operation's, read from the three
+witnesses under \file{tutorials/props/solvents/}; the theory and the
+approximations are in the Theory Guide's section on $R_a$ and RED.
+\declaredanchor{ch:hansen-mixture}
 
 \subsection*{Psychrometric chart \quad(\code{tool=psychro})}
 The humid-gas state map: saturation, relative-humidity lines,

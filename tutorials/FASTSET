@@ -151,6 +151,7 @@ tutorials/props/molecular/nrtl01_ethanol_water_package
 tutorials/props/reactor/thiele01_sphere_first_order
 tutorials/props/reconciliation/reconcile01_recycle_loop
 tutorials/props/safety/relief02_acetone_fire_case
+tutorials/props/solvents/solvent01_synthetic_mixture
 tutorials/props/scan/binary01_lle_water_nbutanol
 tutorials/props/steam/steam01_if97_verification
 tutorials/props/thermo/temperature01_gas_thermometer

@@ -3937,6 +3937,143 @@ Ternary LIQUID-LIQUID solubility map (water / ethanol / benzene) --- the classic
 \goldrow{diag}{lle}{n\_vlle}{0}
 \end{tutgolden}
 
+\subsection{solvents}
+\grouptheory{solvents}
+\clearpage
+\tutentry{solvent01\_synthetic\_mixture}{tutorials/props/solvents/solvent01\_synthetic\_mixture}
+\begin{tutscheme}
+\begin{tikzpicture}[>={Stealth[length=2mm]}, every node/.style={font=\scriptsize}]
+  \node[draw, rounded corners=2pt, align=center, minimum width=3.1cm, minimum height=0.8cm, fill=black!4] at (0.0,-0.0) {\textbf{blend}\\[-1pt]{\tiny hansenMixture}};
+\end{tikzpicture}
+\end{tutscheme}
+\tutwhat{DIDACTIC EXAMPLE WITH SYNTHETIC PARAMETERS: two fictitious solvents A and B, a fictitious polymer P between them -- the Hansen distance along the A/B line has its minimum at 50:50 by volume, hand-checkable}
+\begin{tutnarrative}
+solvent01 -- DIDACTIC EXAMPLE WITH SYNTHETIC PARAMETERS (DEV.md 4c C128, adjustment 2: start with a synthetic case, then a real one, then the confrontation with measurements).
+
+THE ARITHMETIC, by hand (MPa\textasciicircum{}0.5):
+
+solventA dD 16 dP 2 dH 4 solventB dD 16 dP 10 dH 12 polymerP dD 17 dP 6 dH 8 R0 4
+
+Along the A/B line at volume fraction s of B the mixture rule gives (16, 2 + 8 s, 4 + 8 s), so
+
+Ra\textasciicircum{}2 = 4 (16 - 17)\textasciicircum{}2 + (8 s - 4)\textasciicircum{}2 + (8 s - 4)\textasciicircum{}2 = 4 + 2 (8 s - 4)\textasciicircum{}2
+
+which is 36 at either pure end (Ra = 6.000, RED = 1.5) and 4 at s = 0.5 (Ra = 2.000, RED = 0.5): the minimum sits at 50:50 BY CONSTRUCTION, and the dispersion offset of 1 keeps it from being a degenerate zero. The two solvents have equal Vliq, so the volume, mole and mass bases coincide here -- the basis conversion is exercised on the real case instead.
+
+THE PHASE WORD IS `notVerified`, honestly: the package declares an ideal liquid (gamma = 1), which has no excess Gibbs energy and can never demix, so a stability test on it would say "homogeneous" about every pair ever asked. The op marks every blend point rather than claim a verification the model cannot give.
+
+\end{tutnarrative}
+\tutreadme{Two fictitious solvents A and B and a fictitious polymer P between them, so the Hansen distance along the A/B line has its minimum at 50:50 by volume --- by construction, and checkable by hand. Nothing here is a real substance; the engine says so on every run ([synthetic] component 'solventA' is NOT a real substance), and the records carry provenance \{ source synthetic; \}.}
+\tutreadme{All values in MPa\textasciicircum{}0.5 (the records store Pa\textasciicircum{}0.5, 1000 times larger):}
+\tutreadme{Hansen's distance, with the factor 4 on the dispersion term (his 1967 thesis, Eq. 8.2), along the line at volume fraction s of B:}
+\tutreadme{so Ra = 6.000 at either pure end (RED = 1.5, outside the sphere) and Ra = 2.000 at s = 0.5 (RED = 0.5, inside). The dispersion offset of 1 keeps the minimum from being a degenerate zero. The two solvents have the same molar volume, so the volume, mole and mass bases coincide here; the conversion is exercised on the real case (solvent02).}
+\tutreadme{The package declares an ideal liquid, and gamma = 1 has no excess Gibbs energy: it can never demix, so a stability test on it would say "one liquid" about every pair ever asked. The op marks every blend point notVerified rather than claim a verification the model cannot give --- the honest third outcome of the phase check (the other two, homogeneous and twoPhase, are live on solvent02 under UNIFAC). The pure ends carry pure: one component, nothing to split.}
+\tutreadme{$\ast$ the mixture rule is the volume-fraction average of each parameter --- an approximation (no excess volume; each solvent keeps its own split); $\ast$ the parameters are held constant at their reference temperature (Tref 298.15 K on every record); no correction exists in the engine, and the declared T decides the phase check alone; $\ast$ Ra is an affinity, not a solubility: no saturation concentration is published.}
+\begin{tutgolden}
+\goldrow{diag}{blend}{R0\_MPa05}{4}
+\goldrow{diag}{blend}{RED\_min}{0.5}
+\goldrow{diag}{blend}{Ra\_min\_MPa05}{2}
+\goldrow{diag}{blend}{Ra\_pure\_solventA}{6}
+\goldrow{diag}{blend}{Ra\_pure\_solventB}{6}
+\goldrow{diag}{blend}{T\_K}{298.15}
+\goldrow{diag}{blend}{Tref\_target\_K}{298.15}
+\goldrow{diag}{blend}{n\_homogeneous}{0}
+\goldrow{diag}{blend}{n\_notVerified}{19}
+\goldrow{diag}{blend}{n\_points}{21}
+\goldrow{diag}{blend}{n\_pure}{2}
+\goldrow{diag}{blend}{n\_twoPhase}{0}
+\goldrow{diag}{blend}{phiB\_at\_min}{0.5}
+\goldrow{diag}{blend}{s\_at\_min}{0.5}
+\goldmore{35}
+\end{tutgolden}
+
+\clearpage
+\tutentry{solvent02\_polystyrene\_hexane\_blends}{tutorials/props/solvents/solvent02\_polystyrene\_hexane\_blends}
+\begin{tutscheme}
+\begin{tikzpicture}[>={Stealth[length=2mm]}, every node/.style={font=\scriptsize}]
+  \node[draw, rounded corners=2pt, align=center, minimum width=3.1cm, minimum height=0.8cm, fill=black!4] at (0.0,-0.0) {\textbf{hexaneAcetone}\\[-1pt]{\tiny hansenMixture}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=3.1cm, minimum height=0.8cm, fill=black!4] at (3.6,-0.0) {\textbf{hexaneNitromethane}\\[-1pt]{\tiny hansenMixture}};
+\end{tikzpicture}
+\end{tutscheme}
+\tutwhat{Polystyrene (Hansen 1967, solute G) against two hexane blends: hexane + acetone, two solvents each short of the polymer that meet it between them, and hexane + nitromethane, whose blend the mixture rule likes exactly where UNIFAC finds two liquids}
+\begin{tutnarrative}
+solvent02 -- THE REAL CASE (DEV.md 4c C128, adjustment 2, step two).
+
+The target is polystyrene as Hansen placed it in his 1967 thesis (solute G, Table 4.1: centre (8.6, 3.0, 2.0) (cal/cm3)\textasciicircum{}0.5, radius 3.5); the solvents are three of his Table 2.1 placements, read from the page images and converted to Pa\textasciicircum{}0.5 in constant/components/$\ast$.dat, one citation per value. Two blends, two lessons:
+
+1. hexane + acetone, by VOLUME. In the engine's MPa\textasciicircum{}0.5 (the thesis's (cal/cm3)\textasciicircum{}0.5 times 2.0455) polystyrene's radius is R0 = 7.159; pure hexane lies outside the sphere (Ra 9.238, RED 1.290) and pure acetone just inside its edge (Ra 6.638, RED 0.927 -- and rated 3, "strongly swollen, slight solubility", in the thesis's own test, Table 2.3). The blend dips well inside: the minimum is Ra 4.724 (RED 0.660) at 65 \% acetone by volume, and 50:50 gives 4.992 (RED 0.697). The mixture rule lets two solvents on opposite sides of the target meet it between them, which is the observation Hansen checked his placements against (Section 2.5: "mixtures of non-solvents ... should ... dissolve the solute. This has always been found to be the case"). UNIFAC is asked whether the pair is one liquid at every point.
+
+2. hexane + nitromethane, by MOLE (the basis conversion exercised: mole fractions become volume fractions through the records' Vliq, and the run prints both). Both ends are far outside the sphere (RED 1.290 and 1.850); the mixture rule puts the middle of the line inside (Ra 5.399, RED 0.754 at x = 0.6, which is 38 \% nitromethane by volume). But hexane and nitromethane are an immiscible pair at 25 C, and the case's UNIFAC is asked: where the Michelsen test finds a second liquid the op REFUSES to represent the pair as one solvent -- no averaged triple, no Ra, the point marked `twoPhase` -- and the minimum is taken over the points that survive. Measured: 17 of 19 blends (x = 0.05 to 0.85) are two-phase, every one where the rule would have put the blend inside the sphere among them, and the survivors all lie outside it -- the minimum over survivors is pure hexane, RED 1.290. The averaged number would have been the best on the line, and it describes a solvent that does not exist. (A two-phase pair is not useless -- it may serve an extraction; it is only not one solvent.)
+
+T = 298.15 K is also every record's Tref, so no parameter is used away from the temperature it was placed at; the run says so either way.
+
+\end{tutnarrative}
+\tutreadme{The real case of the solvent-selection lesson (DEV.md 4c C128). The target is polystyrene as Hansen placed it in his 1967 thesis (solute G, Table 4.1: centre (8.6, 3.0, 2.0), radius 3.5 in (cal/cm$^3$)\textasciicircum{}0.5 --- R0 = 7.159 MPa\textasciicircum{}0.5 in the engine's unit); the solvents are three of his Table 2.1 placements, transcribed from the page images into case-local overlay records (constant/components/$\ast$.dat) with the thesis page and row beside each value, converted to Pa\textasciicircum{}0.5 by sqrt(4.184e6) = 2045.48, and marked interim. The reference temperature is adopted as 25 $^\circ$C (the thesis prints none beside its tables); the run is at 25 $^\circ$C so nothing is moved away from it.}
+\tutreadme{Pure hexane lies outside the sphere and pure acetone just inside its edge (in the thesis's own test both were rated 3, "strongly swollen, slight solubility"); the blend dips well inside near 65 \% acetone. That is the observation Hansen checked his placements against: $\ast$two non-solvents on opposite sides of a solute's sphere give a blend that dissolves it$\ast$ (thesis, ?2.5, "this has always been found to be the case"). UNIFAC --- the case's activity model, predictive from the records' groups --- finds the pair one liquid at every point, so the word is homogeneous all along, which is what makes the blend a candidate at all.}
+\tutreadme{The composition is declared by MOLE, so the run converts it to volume fractions through the records' Vliq (54.1 cm$^3$/mol for nitromethane against 131.6 for hexane: equal moles is 29 \% nitromethane by volume) and prints both. Both ends are far outside the sphere (RED 1.290 and 1.850), and the mixture rule puts the middle of the line inside it --- on paper, a better blend than the first (Ra 5.399, RED 0.754 at x = 0.6).}
+\tutreadme{But hexane and nitromethane are an immiscible pair at room temperature, and the case's UNIFAC says so: where Michelsen's tangent-plane test finds a second liquid the op refuses to represent the pair as one solvent --- no averaged triple, no Ra, no RED for that point, the row marked twoPhase with its negative tm --- and the minimum is taken over the points that survive. The averaged number would have been the best on the line, and it describes a solvent that does not exist. A two-phase pair is not useless (it may serve an extraction); it is only not one solvent.}
+\tutreadme{What UNIFAC answered, measured: 17 of the 19 blends are two-phase, from x = 0.05 to 0.85 (tm between -0.10 and -0.40), and only the two nitromethane-rich blends (x = 0.90 and 0.95) are one liquid --- both outside the sphere (RED 1.340 and 1.572). Every composition where the mixture rule would have put the blend inside the sphere (roughly x = 0.3 to 0.8, RED down to 0.754) is refused, so the minimum over the points that survive is pure hexane, RED 1.290: no blend of these two is a solvent for polystyrene. The counts are pinned in expected (n\_twoPhase, n\_homogeneous).}
+\tutreadme{This case also found an engine defect, fixed in the same slice. Its first run reported hexane + acetone two-phase at EVERY composition (tm down to -0.43), for a pair whose UNIFAC activity coefficients at 50:50 are 1.52 and 1.56 and which is miscible. The Michelsen tangent-plane distance in src/solver/StabilityTest.cpp omitted the ln $\gamma$$_i$(y) term, so at the trivial point it read -G\textasciicircum{}E/RT instead of 0 and called every positive-deviation mixture unstable. With the term restored the pair is one liquid (tm at round-off) and the 38 corpus cases that reach the test kept every golden.}
+\begin{tutgolden}
+\goldrow{diag}{hexaneAcetone}{R0\_MPa05}{7.1592}
+\goldrow{diag}{hexaneAcetone}{RED\_min}{0.659789277374}
+\goldrow{diag}{hexaneAcetone}{Ra\_min\_MPa05}{4.72356339458}
+\goldrow{diag}{hexaneAcetone}{Ra\_pure\_acetone}{6.63812052919}
+\goldrow{diag}{hexaneAcetone}{Ra\_pure\_nHexane}{9.23837412102}
+\goldrow{diag}{hexaneAcetone}{T\_K}{298.15}
+\goldrow{diag}{hexaneAcetone}{Tref\_target\_K}{298.15}
+\goldrow{diag}{hexaneAcetone}{n\_homogeneous}{19}
+\goldrow{diag}{hexaneAcetone}{n\_notVerified}{0}
+\goldrow{diag}{hexaneAcetone}{n\_points}{21}
+\goldrow{diag}{hexaneAcetone}{n\_pure}{2}
+\goldrow{diag}{hexaneAcetone}{n\_twoPhase}{0}
+\goldrow{diag}{hexaneAcetone}{phiB\_at\_min}{0.65}
+\goldrow{diag}{hexaneAcetone}{s\_at\_min}{0.65}
+\goldmore{67}
+\end{tutgolden}
+
+\clearpage
+\tutentry{solvent03\_polystyrene\_observed}{tutorials/props/solvents/solvent03\_polystyrene\_observed}
+\begin{tutscheme}
+\begin{tikzpicture}[>={Stealth[length=2mm]}, every node/.style={font=\scriptsize}]
+  \node[draw, rounded corners=2pt, align=center, minimum width=3.1cm, minimum height=0.8cm, fill=black!4] at (0.0,-0.0) {\textbf{screen}\\[-1pt]{\tiny hansenMixture}};
+\end{tikzpicture}
+\end{tutscheme}
+\tutwhat{Polystyrene (Hansen 1967, solute G) screened against thirteen pure solvents of the same thesis, beside the thesis's own dissolution ratings (Table 2.3) kept in constant/experimental/ -- the confrontation of Ra and RED with what was observed}
+\begin{tutnarrative}
+solvent03 -- THE CONFRONTATION WITH EXPERIMENT (DEV.md 4c C128, adjustment 2, step three).
+
+No `composition \{\}`: the op SCREENS each declared solvent pure -- one row each, Ra and RED against polystyrene's sphere (Hansen 1967, Table 4.1, solute G). Beside the run, constant/experimental/ hansen1967\_table23\_polystyrene.csv holds what the same thesis OBSERVED for each of these thirteen solvents (Table 2.3, column G, the 1-6 scale of page 20: 1 soluble ... 6 no visible effect), with the citation on every row. The op does not read that file: the prediction and the observation stay two tables, joined by the reader (the README does it by hand, the EduTool draws them side by side, the gate counts the agreement).
+
+WHAT THE CONFRONTATION IS, said plainly. Hansen's sphere for this polymer was DRAWN THROUGH these very observations (Section 4.4: "the centers of the volumes of solubility ... have been determined" from the solvents that dissolve each solute), so agreement here shows that the transcription and the distance arithmetic reproduce his placement -- it is a check of the method on its own training set, not an independent prediction. The thesis itself states the residual: about 2.5 \% of the solvents beyond R0 + 0.5 dissolve, and about 2.5 \% within R0 - 0.5 do not (page 39). Nitroethane (RED 1.39, rated 2 "almost soluble") and cyclohexane (RED 1.06, rated 1 "soluble") are that residual, in this set.
+
+The package is `ideal` because no mixture is asked for: every row is one pure solvent and the phase word is `pure`.
+
+\end{tutnarrative}
+\tutreadme{The confrontation with experiment of the solvent-selection lesson (DEV.md 4c C128). No composition \{\}: the hansenMixture op screens each declared solvent PURE against polystyrene (Hansen 1967, solute G) --- one row each, the phase word pure --- and constant/experimental/hansen1967\_table23\_polystyrene.csv holds what the same thesis observed for each solvent (Table 2.3, column G, the 1--6 scale of its page 20: 1 soluble, 2 almost soluble, 3 strongly swollen with slight solubility, 4 swollen, 5 slight effect, 6 no visible effect), with the citation on every row. The op does not read that file; the two tables are joined here, by the EduTool, and by the gate.}
+\tutreadme{Ra in MPa\textasciicircum{}0.5 against R0 = 7.159 (the thesis's 3.5 (cal/cm$^3$)\textasciicircum{}0.5); RED = Ra/R0.}
+\tutreadme{Every solvent the thesis rated 6 lies outside the sphere; every solvent it rated 1 lies inside or --- cyclohexane, RED 1.058 --- within the $\pm$0.5 (cal/cm$^3$)\textasciicircum{}0.5 band the thesis states for its own radii. The residual, read across the line RED = 1: nitroethane (RED 1.39, rated 2) and cyclohexane (RED 1.06, rated 1) dissolve from outside; acetone (RED 0.93, rated 3) does not quite from inside. Three of thirteen, where the thesis itself expects about one solvent in forty on each side beyond $\pm$0.5 of the radius (page 39) --- this set is small and its residual sits on the boundary, as the thesis says the deviations do.}
+\tutreadme{Hansen's sphere for this polymer was drawn through these very observations (thesis ?4.4: the centres were determined from the solvents that dissolve each solute). Agreement here therefore shows that the transcription and the distance arithmetic reproduce his placement --- a check of the method on its own training set, not an independent prediction of a solvent he never tried. No blend was dissolved by anyone: the thesis tabulates pure solvents only, and a measured point along a mixture line is what this corpus does not have.}
+\tutreadme{The package is ideal because no mixture is asked for. Every parameter is a case-local overlay record with the thesis page and row beside the value, reviewStatus interim (transcribed from the page images, not the OCR text, whose columns are scrambled; a second reading pending).}
+\tutreadme{expected pins each solvent's Ra\_pure\_<name> and the CSV cells of the screen; check\_hansen\_mixture rebuilds them from the records and prints the residual above as a measurement, failing only on a rated-6 solvent inside the sphere or a rated-1 solvent beyond the thesis's own band.}
+\begin{tutgolden}
+\goldrow{diag}{screen}{R0\_MPa05}{7.1592}
+\goldrow{diag}{screen}{RED\_min}{0.636685199779}
+\goldrow{diag}{screen}{Ra\_min\_MPa05}{4.55815668226}
+\goldrow{diag}{screen}{Ra\_pure\_acetone}{6.63812052919}
+\goldrow{diag}{screen}{Ra\_pure\_benzene}{5.6906984791}
+\goldrow{diag}{screen}{Ra\_pure\_cyclohexane}{7.57262071677}
+\goldrow{diag}{screen}{Ra\_pure\_diethylEther}{7.20865879204}
+\goldrow{diag}{screen}{Ra\_pure\_ethanol}{15.9714933081}
+\goldrow{diag}{screen}{Ra\_pure\_ethylAcetate}{7.0242390805}
+\goldrow{diag}{screen}{Ra\_pure\_methanol}{19.8084619809}
+\goldrow{diag}{screen}{Ra\_pure\_methylEthylKetone}{4.55815668226}
+\goldrow{diag}{screen}{Ra\_pure\_nButanol}{12.1057857919}
+\goldrow{diag}{screen}{Ra\_pure\_nHexane}{9.23837412102}
+\goldrow{diag}{screen}{Ra\_pure\_nitroethane}{9.97063233401}
+\goldmore{48}
+\end{tutgolden}
+
 \subsection{steam}
 \grouptheory{steam}
 \clearpage

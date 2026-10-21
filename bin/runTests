@@ -4209,6 +4209,24 @@ PYEOF
     fi
     rm -f /tmp/hansen.$$
 
+    # hansen-mixture gate (2026-10-21, DEV.md 4c C128 slice 2).  Which
+    # solvent, or which blend of two, for a declared target: the Hansen
+    # distance with its factor 4, the volume-fraction mixture rule, the mole
+    # basis converted through Vliq, every cell rebuilt from the records; the
+    # three phase words each on a witness (an ideal liquid cannot verify, a
+    # UNIFAC pair that is one liquid, a pair UNIFAC finds two-phase and the
+    # op REFUSES to average); the synthetic minimum at 50:50; eight refusals
+    # by name; the thesis's ratings confronted and the residual counted.
+    if "$ROOT/bin/curate/check_hansen_mixture.py" > /tmp/hansenmix.$$ 2>&1; then
+        printf "PASS  %-40s  (%s)\n" "hansen-mixture-gate" "$(gate_claim check_hansen_mixture /tmp/hansenmix.$$)"
+        pass=$((pass+1))
+    else
+        printf "FAIL  %-40s  (run bin/curate/check_hansen_mixture.py)\n" "hansen-mixture-gate"
+        cat /tmp/hansenmix.$$
+        fail=$((fail+1))
+    fi
+    rm -f /tmp/hansenmix.$$
+
     # unifac-gaps gate (2026-08-27).  UNIFAC reads a_mn from the published
     # table and falls back to 0.0 when a main-group pair is absent -- a = 0 is
     # Psi = 1, the ATHERMAL contribution, so part of the mixture was priced as

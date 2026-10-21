@@ -1,0 +1,80 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+  solvent02 -- THE REAL CASE (DEV.md 4c C128, adjustment 2, step two).
+
+  The target is polystyrene as Hansen placed it in his 1967 thesis (solute
+  G, Table 4.1: centre (8.6, 3.0, 2.0) (cal/cm3)^0.5, radius 3.5); the
+  solvents are three of his Table 2.1 placements, read from the page images
+  and converted to Pa^0.5 in constant/components/*.dat, one citation per
+  value.  Two blends, two lessons:
+
+  1.  hexane + acetone, by VOLUME.  In the engine's MPa^0.5 (the thesis's
+      (cal/cm3)^0.5 times 2.0455) polystyrene's radius is R0 = 7.159; pure
+      hexane lies outside the sphere (Ra 9.238, RED 1.290) and pure acetone
+      just inside its edge (Ra 6.638, RED 0.927 -- and rated 3, "strongly
+      swollen, slight solubility", in the thesis's own test, Table 2.3).
+      The blend dips well inside: the minimum is Ra 4.724 (RED 0.660) at
+      65 % acetone by volume, and 50:50 gives 4.992 (RED 0.697).  The
+      mixture rule lets two solvents on opposite sides of the target meet it
+      between them, which is the observation Hansen checked his placements
+      against (Section 2.5: "mixtures of non-solvents ... should ...
+      dissolve the solute.  This has always been found to be the case").
+      UNIFAC is asked whether the pair is one liquid at every point.
+
+  2.  hexane + nitromethane, by MOLE (the basis conversion exercised: mole
+      fractions become volume fractions through the records' Vliq, and the
+      run prints both).  Both ends are far outside the sphere (RED 1.290
+      and 1.850); the mixture rule puts the middle of the line inside (Ra
+      5.399, RED 0.754 at x = 0.6, which is 38 % nitromethane by volume).
+      But hexane and nitromethane are an immiscible pair at 25 C, and the
+      case's UNIFAC is asked: where the Michelsen test finds a second liquid
+      the op REFUSES to represent the pair as one solvent -- no averaged
+      triple, no Ra, the point marked `twoPhase` -- and the minimum is taken
+      over the points that survive.  Measured: 17 of 19 blends (x = 0.05 to
+      0.85) are two-phase, every one where the rule would have put the blend
+      inside the sphere among them, and the survivors all lie outside it --
+      the minimum over survivors is pure hexane, RED 1.290.  The averaged
+      number would have been the best on the line, and it describes a solvent
+      that does not exist.  (A two-phase pair is not useless -- it may serve
+      an extraction; it is only not one solvent.)
+
+  T = 298.15 K is also every record's Tref, so no parameter is used away
+  from the temperature it was placed at; the run says so either way.
+\*---------------------------------------------------------------------------*/
+
+operations
+(
+    {
+        name       hexaneAcetone;
+        type       hansenMixture;
+        target     polystyrene;
+        solvents   ( nHexane acetone );
+        composition
+        {
+            basis  volume;
+            n      21;
+        }
+        T          298.15 K;
+        output     { file "hansen_hexane_acetone.csv"; }
+    }
+    {
+        name       hexaneNitromethane;
+        type       hansenMixture;
+        target     polystyrene;
+        solvents   ( nHexane nitromethane );
+        composition
+        {
+            basis  mole;                     // converted to volume through Vliq, printed
+            n      21;
+        }
+        T          298.15 K;
+        output     { file "hansen_hexane_nitromethane.csv"; }
+    }
+);

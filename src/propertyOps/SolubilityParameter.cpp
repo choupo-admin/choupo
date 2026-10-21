@@ -306,11 +306,21 @@ int SolubilityParameter::run(const DictPtr& dict,
     //  that is right most of the time is exactly the kind that gets trusted
     //  where it is wrong, and the failure is silent: two liquids with equal
     //  delta that do not mix produce a confident, wrong recommendation.
-    std::cout << "\n  HILDEBRAND IS ONE NUMBER, and it carries no hydrogen"
-                 " bonding.  It cannot tell a\n"
-                 "  polar solvent from a hydrogen-bonding one of the same"
-                 " cohesive energy density,\n"
-                 "  so a close pair here is a CANDIDATE and never a verdict.\n";
+    //
+    //  WORDED PRECISELY (2026-10-21, DEV.md 4c C128).  This line used to say
+    //  Hildebrand "carries no hydrogen bonding", which is false: the energy
+    //  of vaporisation it is the root of INCLUDES the hydrogen bonds broken on
+    //  boiling.  What one number cannot do is SEPARATE that part from
+    //  dispersion and polarity -- the Explorer lens says the same since C128
+    //  slice 1, and the two must not disagree.
+    std::cout << "\n  HILDEBRAND IS ONE NUMBER.  The cohesive energy it"
+                 " measures INCLUDES hydrogen bonding;\n"
+                 "  what one number cannot do is separate it from dispersion"
+                 " and polarity, so it cannot\n"
+                 "  tell a polar solvent from a hydrogen-bonding one of the"
+                 " same cohesive energy density,\n"
+                 "  and a close pair here is a CANDIDATE and never a"
+                 " verdict.\n";
 
     // ---- THE HANSEN SPLIT, and the Teas coordinates it is plotted in ------
     //
@@ -341,12 +351,14 @@ int SolubilityParameter::run(const DictPtr& dict,
         std::cout << "\n  THE THREE-PARAMETER HANSEN SPLIT IS WHAT A CLOSE"
                      " PAIR NEEDS, and no component\n"
                      "  in this run declares one.  The engine reads it from a"
-                     " `hansen { dD; dP; dH; }`\n"
-                     "  block on the component record, in Pa^0.5, and plots"
-                     " the Teas fractions from it;\n"
+                     " `hansen { dD; dP; dH; Tref; }`\n"
+                     "  block on the component record, in Pa^0.5, plots"
+                     " the Teas fractions from it, and\n"
+                     "  measures a solvent's or a blend's distance from a"
+                     " target with it (`hansenMixture`);\n"
                      "  what is absent is the DATA, not the capability."
                      "  Hansen parameters are a\n"
-                     "  separate dataset this repository does not hold, and"
+                     "  separate dataset this catalogue does not hold, and"
                      " none is invented here.\n";
         diag_["n_hansen"] = 0;
     }

@@ -24,8 +24,8 @@
   boiling point, the liquid molar volume, the liquid heat capacity and the
   ideal-gas formation enthalpy.  Nothing about a fuel is typed here.  Two
   closed forms are applied to those numbers and both are the ENGINE'S OWN:
-  the Watson latent heat (src/thermo/Component.cpp:1286-1294) and the
-  gas-to-liquid crossing at 298.15 K (Component.cpp:1133-1134); the test
+  the Watson latent heat (src/thermo/Component.cpp:1334-1342) and the
+  gas-to-liquid crossing at 298.15 K (Component.cpp:1181-1182); the test
   holds the first to a number the engine prints in a pinned golden.  What
   this file computes beyond that is the pool-fire PROCEDURE -- the burning
   rate, the flame, the emissive power, the view factor -- which is a
@@ -53,7 +53,7 @@ export const AMBIENT_P_PA = 101325;
 export const R_GAS = 8.314462618;
 /** Standard gravity [m/s2]. */
 export const G_STD = 9.80665;
-/** The Watson exponent, as the engine applies it (Component.cpp:1294). */
+/** The Watson exponent, as the engine applies it (Component.cpp:1342). */
 export const WATSON_EXPONENT = 0.38;
 /** The Burgess-Strasser-Grumer constant of m''_inf = C dHc/dHg [kg/(m2 s)],
  *  as the EPA guidance (Appendix D, Eq. D-23) and Shokri & Beyler (Eq. 5)
@@ -254,7 +254,7 @@ export function watsonHvap(f: Pick<FuelRecord, "Tb" | "Tc" | "HvapTb">, T: numbe
 
 /** Lower heating value of the LIQUID at 298.15 K [J/mol]: the vapour's,
  *  less the latent heat at 298.15 K -- the crossing the engine takes when
- *  it prices a gas-datum species as a liquid (Component.cpp:1133-1134). */
+ *  it prices a gas-datum species as a liquid (Component.cpp:1181-1182). */
 export function lhvLiquid(f: FuelRecord, p: Products): number {
   return lhvVapour(f, p) - watsonHvap(f, AMBIENT_T_K);
 }

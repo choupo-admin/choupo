@@ -1,0 +1,53 @@
+# Reference KPIs (golden master, auto-recorded by runTests --record).
+# units: stream F is kmol/s (canonical SI, as in the result JSON); the run LOG prints kmol/h.
+# kind   name      key         expected        reltol
+diag    blend                  R0_MPa05         4                  1e-4
+diag    blend                  RED_min          0.5                1e-4
+diag    blend                  Ra_min_MPa05     2                  1e-4
+diag    blend                  Ra_pure_solventA 6                  1e-4
+diag    blend                  Ra_pure_solventB 6                  1e-4
+diag    blend                  T_K              298.15             1e-4
+diag    blend                  Tref_target_K    298.15             1e-4
+diag    blend                  n_homogeneous    0                  1e-4
+diag    blend                  n_notVerified    19                 1e-4
+diag    blend                  n_points         21                 1e-4
+diag    blend                  n_pure           2                  1e-4
+diag    blend                  n_twoPhase       0                  1e-4
+diag    blend                  phiB_at_min      0.5                1e-4
+diag    blend                  s_at_min         0.5                1e-4
+# csv rows: cells of the op's own CSV (published implies pinned; appended by hand from the run, words exact)
+csv     hansenMixture.csv              0:phi_solventB       0                    1e-6
+csv     hansenMixture.csv              0:dP_mix_MPa05       2                    1e-6
+csv     hansenMixture.csv              0:dH_mix_MPa05       4                    1e-6
+csv     hansenMixture.csv              0:Ra_MPa05           6                    1e-6
+csv     hansenMixture.csv              0:RED                1.5                  1e-6
+csv     hansenMixture.csv              0:fd                 0.7272727273         1e-6
+csv     hansenMixture.csv              0:phase              pure                 exact
+csv     hansenMixture.csv              5:phi_solventB       0.25                 1e-6
+csv     hansenMixture.csv              5:dP_mix_MPa05       4                    1e-6
+csv     hansenMixture.csv              5:dH_mix_MPa05       6                    1e-6
+csv     hansenMixture.csv              5:Ra_MPa05           3.464101615          1e-6
+csv     hansenMixture.csv              5:RED                0.8660254038         1e-6
+csv     hansenMixture.csv              5:fd                 0.6153846154         1e-6
+csv     hansenMixture.csv              5:phase              notVerified          exact
+csv     hansenMixture.csv              10:phi_solventB       0.5                  1e-6
+csv     hansenMixture.csv              10:dP_mix_MPa05       6                    1e-6
+csv     hansenMixture.csv              10:dH_mix_MPa05       8                    1e-6
+csv     hansenMixture.csv              10:Ra_MPa05           2                    1e-6
+csv     hansenMixture.csv              10:RED                0.5                  1e-6
+csv     hansenMixture.csv              10:fd                 0.5333333333         1e-6
+csv     hansenMixture.csv              10:phase              notVerified          exact
+csv     hansenMixture.csv              15:phi_solventB       0.75                 1e-6
+csv     hansenMixture.csv              15:dP_mix_MPa05       8                    1e-6
+csv     hansenMixture.csv              15:dH_mix_MPa05       10                   1e-6
+csv     hansenMixture.csv              15:Ra_MPa05           3.464101615          1e-6
+csv     hansenMixture.csv              15:RED                0.8660254038         1e-6
+csv     hansenMixture.csv              15:fd                 0.4705882353         1e-6
+csv     hansenMixture.csv              15:phase              notVerified          exact
+csv     hansenMixture.csv              20:phi_solventB       1                    1e-6
+csv     hansenMixture.csv              20:dP_mix_MPa05       10                   1e-6
+csv     hansenMixture.csv              20:dH_mix_MPa05       12                   1e-6
+csv     hansenMixture.csv              20:Ra_MPa05           6                    1e-6
+csv     hansenMixture.csv              20:RED                1.5                  1e-6
+csv     hansenMixture.csv              20:fd                 0.4210526316         1e-6
+csv     hansenMixture.csv              20:phase              pure                 exact

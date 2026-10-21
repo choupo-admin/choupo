@@ -1,0 +1,34 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+  Thirteen of Hansen's 1967 solvents on an IDEAL liquid: this case screens
+  each solvent PURE against polystyrene, asks no mixture question, and so
+  needs no activity model -- `ideal` is declared rather than defaulted, and
+  the hansenMixture op's phase word for every row is `pure`.  Each record's
+  Hansen triple is a case-local overlay (constant/components/<name>.dat,
+  one citation per value); MW, Vliq and the rest come from the catalogue.
+\*---------------------------------------------------------------------------*/
+recordType    thermophysicalPropertySystem;
+schemaVersion 2;
+components ( nHexane cyclohexane benzene toluene diethylEther ethylAcetate
+             methylEthylKetone acetone nitroethane nitromethane nButanol
+             ethanol methanol );
+equilibrium
+{
+    formulation gammaPhi;
+    liquid
+    {
+        activityModel ideal;
+        standardState pureLiquid;
+    }
+    vapour
+    {
+        fugacityModel idealGas;
+    }
+}

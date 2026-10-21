@@ -207,6 +207,65 @@ void Component::readAqueousMapping(const DictPtr& d)
     }
 }
 
+Component::HansenBlock Component::readHansenBlock(const DictPtr& h,
+                                                  const std::string& owner)
+{
+    //  THE HANSEN BLOCK, all-or-nothing.  A partial trio is refused rather
+    //  than half-read: a lone dD is not partial information about the split,
+    //  it is a coordinate that will be plotted somewhere wrong.  Same posture
+    //  as the pcsaft association trio.
+    const bool hasD = h->found("dD"), hasP = h->found("dP"),
+               hasH = h->found("dH");
+    if (!(hasD && hasP && hasH))
+        throw std::runtime_error("component '" + owner + "': the `hansen {}`"
+            " block must declare ALL THREE of dD, dP and dH (Pa^0.5)."
+            "  A partial triple is not partial information about the"
+            " cohesive-energy split -- it is a coordinate that would be"
+            " plotted somewhere wrong.  Declare the three, or remove the"
+            " block and keep the honest absence.");
+    HansenBlock out;
+    out.dD = h->lookupScalar("dD");
+    out.dP = h->lookupScalar("dP");
+    out.dH = h->lookupScalar("dH");
+    if (out.dD < 0 || out.dP < 0 || out.dH < 0)
+        throw std::runtime_error("component '" + owner + "': a `hansen {}`"
+            " component is negative.  Each is the square root of a"
+            " non-negative energy density and cannot be.");
+    //  THE TEMPERATURE IS PART OF THE PLACEMENT, not a detail (DEV.md 4c
+    //  C128, adjustment 4).  Refused rather than defaulted: a default of
+    //  25 C would be right for most compilations and silently wrong for the
+    //  first record placed at another temperature, with nothing on any
+    //  surface to say so.
+    if (!h->found("Tref"))
+        throw std::runtime_error("component '" + owner + "': the `hansen {}`"
+            " block declares no `Tref` -- the temperature its dD/dP/dH were"
+            " placed at.  The engine applies NO temperature correction to a"
+            " Hansen triple, so every run states this temperature beside the"
+            " values; a triple with no temperature is a number from an"
+            " unstated state.  Declare `Tref 298.15 K;` (or whatever the"
+            " source states) inside the block.");
+    out.Tref = h->lookupScalar("Tref");
+    if (!(out.Tref > 0))
+        throw std::runtime_error("component '" + owner + "': `hansen.Tref`"
+            " must be a positive absolute temperature.");
+    //  R0 is a SOLUTE's measured interaction radius.  Optional, because a
+    //  solvent has none; refused when declared non-positive, because a
+    //  zero radius would turn every RED into a division by zero that still
+    //  reads as a number.
+    if (h->found("R0"))
+    {
+        out.R0 = h->lookupScalar("R0");
+        if (!(out.R0 > 0))
+            throw std::runtime_error("component '" + owner + "': `hansen.R0`"
+                " must be positive (Pa^0.5) -- it is the radius of the"
+                " solute's solubility sphere.  Omit it when the record"
+                " declares none; the hansenMixture op then publishes Ra"
+                " alone and no RED.");
+        out.hasR0 = true;
+    }
+    return out;
+}
+
 void Component::readFromDict(const DictPtr& d)
 {
     // The component grammar is FLAT (name; MW; Tc; ...; the named model
@@ -239,24 +298,13 @@ void Component::readFromDict(const DictPtr& d)
     //  as the pcsaft association trio one block down.
     if (d->found("hansen"))
     {
-        auto h = d->subDict("hansen");
-        const bool hasD = h->found("dD"), hasP = h->found("dP"),
-                   hasH = h->found("dH");
-        if (!(hasD && hasP && hasH))
-            throw std::runtime_error("component '" + name_ + "': the `hansen {}`"
-                " block must declare ALL THREE of dD, dP and dH (Pa^0.5)."
-                "  A partial triple is not partial information about the"
-                " cohesive-energy split -- it is a coordinate that would be"
-                " plotted somewhere wrong.  Declare the three, or remove the"
-                " block and keep the honest absence.");
-        hansenD_ = h->lookupScalar("dD");
-        hansenP_ = h->lookupScalar("dP");
-        hansenH_ = h->lookupScalar("dH");
-        if (hansenD_ < 0 || hansenP_ < 0 || hansenH_ < 0)
-            throw std::runtime_error("component '" + name_ + "': a `hansen {}`"
-                " component is negative.  Each is the square root of a"
-                " non-negative energy density and cannot be.");
-        hansenSet_ = true;
+        const HansenBlock h = readHansenBlock(d->subDict("hansen"), name_);
+        hansenD_    = h.dD;
+        hansenP_    = h.dP;
+        hansenH_    = h.dH;
+        hansenTref_ = h.Tref;
+        hansenR0_   = h.hasR0 ? h.R0 : 0.0;
+        hansenSet_  = true;
     }
     diffusionVolume_ = d->lookupScalarOrDefault("diffusionVolume", 0.0);
 

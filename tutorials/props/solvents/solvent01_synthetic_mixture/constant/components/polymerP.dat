@@ -1,0 +1,25 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  DIDACTIC EXAMPLE WITH SYNTHETIC PARAMETERS -- polymerP is NOT a real
+  substance.  It is the hansenMixture op's TARGET: a record carrying a
+  Hansen triple (17, 6, 8) MPa^0.5 and an interaction radius R0 = 4 MPa^0.5,
+  and nothing else -- a polymer has no MW a flash could use, and this
+  record is never listed in `components ( )`.  dP and dH sit exactly between
+  solventA's and solventB's; dD is 1 MPa^0.5 above both, so the minimum of
+  Ra along the A/B line is 2.000 MPa^0.5 (RED 0.5) and not a degenerate 0.
+\*---------------------------------------------------------------------------*/
+name          polymerP;
+
+hansen
+{
+    dD    17000;           // Pa^0.5 = 17 MPa^0.5, SYNTHETIC
+    dP     6000;           // Pa^0.5 =  6 MPa^0.5, SYNTHETIC
+    dH     8000;           // Pa^0.5 =  8 MPa^0.5, SYNTHETIC
+    R0     4000;           // Pa^0.5 =  4 MPa^0.5, SYNTHETIC interaction radius
+    Tref  298.15 K;        // the temperature these invented numbers are declared at
+}
+
+provenance
+{
+    source  synthetic;
+    reason  "DIDACTIC EXAMPLE WITH SYNTHETIC PARAMETERS (solvent01): a fictitious polymer placed between solventA and solventB";
+}

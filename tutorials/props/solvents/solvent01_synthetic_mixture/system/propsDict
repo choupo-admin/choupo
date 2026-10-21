@@ -1,0 +1,53 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+  solvent01 -- DIDACTIC EXAMPLE WITH SYNTHETIC PARAMETERS (DEV.md 4c C128,
+  adjustment 2: start with a synthetic case, then a real one, then the
+  confrontation with measurements).
+
+  THE ARITHMETIC, by hand (MPa^0.5):
+
+      solventA   dD 16   dP  2   dH  4
+      solventB   dD 16   dP 10   dH 12
+      polymerP   dD 17   dP  6   dH  8     R0 4
+
+  Along the A/B line at volume fraction s of B the mixture rule gives
+  (16, 2 + 8 s, 4 + 8 s), so
+
+      Ra^2 = 4 (16 - 17)^2 + (8 s - 4)^2 + (8 s - 4)^2 = 4 + 2 (8 s - 4)^2
+
+  which is 36 at either pure end (Ra = 6.000, RED = 1.5) and 4 at s = 0.5
+  (Ra = 2.000, RED = 0.5): the minimum sits at 50:50 BY CONSTRUCTION, and
+  the dispersion offset of 1 keeps it from being a degenerate zero.  The two
+  solvents have equal Vliq, so the volume, mole and mass bases coincide
+  here -- the basis conversion is exercised on the real case instead.
+
+  THE PHASE WORD IS `notVerified`, honestly: the package declares an ideal
+  liquid (gamma = 1), which has no excess Gibbs energy and can never demix,
+  so a stability test on it would say "homogeneous" about every pair ever
+  asked.  The op marks every blend point rather than claim a verification
+  the model cannot give.
+\*---------------------------------------------------------------------------*/
+
+operations
+(
+    {
+        name       blend;
+        type       hansenMixture;
+        target     polymerP;                 // a record carrying hansen { ... R0 }
+        solvents   ( solventA solventB );
+        composition
+        {
+            basis  volume;                   // the fraction of solventB, in volume
+            n      21;                       // pure A ... pure B, 0.05 apart
+        }
+        T          298.15 K;                 // the parameters' Tref; used for the phase check
+        output     { file "hansenMixture.csv"; }
+    }
+);

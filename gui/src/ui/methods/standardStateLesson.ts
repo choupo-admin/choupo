@@ -248,7 +248,7 @@ export const STANDARD_STATE_STEPS: readonly LessonStep[] = [
       + "298.15 K, plus the ideal-gas enthalpy rise from 298.15 K to the "
       + "stream's temperature, plus the equation of state's residual at the "
       + "stream's temperature and pressure.  In the source, the first two terms "
-      + "are one function (`Component::h_pure_ig`, src/thermo/Component.cpp:1429, "
+      + "are one function (`Component::h_pure_ig`, src/thermo/Component.cpp:1477, "
       + "\"ONE implementation of the standard-state enthalpy, not two\"), the "
       + "residual is added in `ThermoPackage::H_real` "
       + "(src/thermo/ThermoPackage.cpp:1200), and the `propertyPoint` operation "
