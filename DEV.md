@@ -1357,6 +1357,22 @@ accepts today, and that is a policy call.
 > synthesis separates consensus from taste and proposes edits; Vitor
 > chooses which go in.
 
+> **C125. WHY THE BREAKTHROUGH PAGES ARE SLOW (Vitor, 2026-10-21: "Porque
+> isto e tao lento? breakthrough e do lub-scaleup").**  Measured by the
+> commander: both EduTools run `batch13_breakthrough_co2` on open (85 s
+> native at load ~5, ~195 s in the CI browser).  Two numerical causes, no
+> physical one: `Rosenbrock23.cpp:119` builds a DENSE finite-difference
+> Jacobian and a dense LU every step on ~200 rows of a banded FV system;
+> and `FixedBedAdsorber.cpp` seeds each 0.5 s sampling chunk with the
+> CLIPPED last step, so every chunk throws one step away (400 accepted /
+> 200 rejected per 100 s).  Taken on the commander's mandate (numerics,
+> no physics, no golden expected to move): an OPT-IN declared Jacobian
+> structure for Rosenbrock23 on the `blockTri` precedent (announced,
+> audited against a dense Jacobian, refused when false) and carrying the
+> controller's proposed step across chunks.  Dispatched (G27, branch
+> `claude/c125-adsorber-speed`).  Vitor's, not taken: a coarser mesh for
+> the pages alone (faster, but a more diffuse front than the reference).
+
 > **C124. A COLUMN'S EXCHANGERS DESIGNED IN DETAIL: CONDENSER, REBOILER,
 > SIDE COOLERS AND PUMPAROUNDS (Vitor, 2026-10-20, after asking whether the
 > reference simulators' rigorous columns design the exchangers on their side
@@ -1611,6 +1627,26 @@ accepts today, and that is a policy call.
 >    C106 path).  Owed: one `bin/runTests --gui` FAIL 0 (cut at 213/215
 >    with only two since-fixed files red); gateManifest entry of
 >    check_gibbs_solid_phase.  0 rows moved.
+> 3. **DONE 2026-10-21 (G7b; integrated by the commander).**  G7's slice
+>    finished on `claude/g7-incipient-phase-and-density` 4c74a649a: the WIP
+>    guard (a K = 0 nonvolatile in `incipientPhase::liquid`: its S = inf
+>    and empty K no longer seed Rachford-Rice; a liquid split already found
+>    stands) built without warnings; `check_inlet_resolution` every arm
+>    (drum V/F 9.557e-06 at -1 % of the 20 bar bubble pressure, 0 at +1 %;
+>    the pipe refuses naming N2); nine IsothermalFlash.cpp lesson citations
+>    remapped (+8) and read back.  Full `bin/runTests` (authorised, C110)
+>    on main 668b7dff5 + G7: PASS 714 / FAIL 9, every case green, the 9
+>    gates red on main too (code-map, props-ops-reference and the ammonia
+>    stage comparison since regenerated on main; std-include for
+>    PhaseSplitScan.cpp and the origin census fixed by the commander;
+>    liquid-cp-fallback, check_guide_paths, sealed-corpus for moody02 and
+>    mass-closure for userOp03's MW 30 -> 50 reaction still open).  0
+>    golden rows moved.  Re-taken on the combination with current main
+>    (main had moved GibbsReactor.cpp and the GUI): the flash, evaporation
+>    and gibbs cases PASS / FAIL 0 under `--scope`, the 17 gates the diff
+>    reaches green but liquid-cp-fallback (identical on main), `--gui`
+>    PASS 33 / FAIL 0.  Still NAMED: `BubblePoint::compute` (bubble
+>    TEMPERATURE, `BubblePoint.cpp:65`) evaluates K at y = x.
 > 3. **G7 `claude/g7-incipient-phase-and-density` (50f09b7a0)** -- the
 >    flash's phase test iterates the incipient phase (`IncipientPhase.H`,
 >    shared with `BubblePoint::pressure`; the C92 let-down drum now splits
