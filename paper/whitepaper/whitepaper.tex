@@ -803,28 +803,45 @@ case is run again.  Each item stands where the case's
 the envelope the engine's sizing pass published: the hydrogen buffer
 vessels, the two ammonia storage tanks, the compressors, the converter and
 the exchangers on the pipe rack, over which the engine routed the pipes.
-The haloes are the hazardous-area zones the case declares, the arrow its
-declared wind, and the plot area is the engine's number; a warning glyph
+The low wall round the two tanks is the case's declared \emph{bund}
+\code{tankFarm}: a 4\,m wall on 7480\,m$^2$, which the engine checks
+holds 20\,672\,m$^3$ net of what the tanks displace against the
+20\,435\,m$^3$ the case's own rule requires (110\,\% of the larger tank
+plus a rain allowance) and publishes as adequate; the loop's liquid vessels
+stand in a second, \emph{impounding} area, \code{loopKerb}, whose
+0.2\,m kerb leads a spill to a remote pit and is too low to read at this
+scale.  The haloes are the hazardous-area zones the case declares, the
+arrow its declared wind, and the plot area is the engine's number -- the
+walls are part of the ground it encloses; a warning glyph
 marks an item the engine named in a layout finding.  The scene is drawn
 from the layout block of the run's result and computes nothing.}
 \label{fig:gui-layout}
 \end{figure}
 % Drawn by kind on the published envelope: gui/src/case/equipmentModel.ts:
-% 28-56 (BODY parts fill exactly the envelope the engine published;
+% 46-60 (BODY parts fill exactly the envelope the engine published;
 % DECORATION is a drafting convention).  Positions: the case's
 % system/layoutDict; routing, the plot area and the findings: CLAUDE.md
 % sec 6 "A PLANT LAYOUT IS DECLARED, CHECKED AND DRAFTED" (C75, C80, C82;
 % src/postProcessing/layout/PlantLayout.H:149, plotOf).  The warning glyph:
-% gui/src/case/plantLayout.ts:624-628 (a flagged item's label "carries a
+% gui/src/case/plantLayout.ts:653-656 (a flagged item's label "carries a
 % warning GLYPH beside its id"; the finding is in its tooltip).  Daylight
 % scene: gui/src/ui/plotting/layoutRenderer.ts:240-249.  View controls (3D
 % / Plan / Elevation, High / Fast): gui/src/ui/plotting/PlantLayout3D.tsx:
 % 214-224.  The capture opened the tab with prefers-reduced-motion, so the
 % flow animation is off (PlantLayout3D.tsx:157-159, `flow: !reduced`), and
 % dollied the camera in from the view's own Fit; its pixels were checked
-% non-blank before saving (capture_gui.mjs).  Another general is adding
-% retention bunds to this case's layout (DEV.md 4c C134); rerun the script
-% after that lands.
+% non-blank before saving (capture_gui.mjs).  The secondary containment
+% (DEV.md 4c C134): declared in tutorials/plant/greenAmmoniaPEQ_baseCase/
+% system/layoutDict:540-585, checked by readBunds
+% (src/postProcessing/layout/PlantLayout.cpp:3001), published as the run's
+% `layout.bunds` (src/result/ResultEmitter.cpp:1770-1775) and pinned by the
+% case's golden (`layout bund:tankFarm ...` area 7480, wallHeight 4,
+% netVolume 20672, requiredVolume 20435.36, verdict adequate;
+% bund:loopKerb impounding, wallHeight 0.2, netVolume 18); drawn by
+% gui/src/case/plantLayout.ts:865-895 (bundsOf) and
+% gui/src/ui/plotting/layoutRenderer.ts:990 (a wall on the engine's outline
+% at its height).  Its walls enter the plot: 38 143 m2 (31 436 before).
+% Camera: capture_gui.mjs --layout-pan 20,-30 --layout-zoom 27 (defaults).
 
 \subsection{What Choupo takes from \OF, and where it differs}
 \label{sec:openfoam}
