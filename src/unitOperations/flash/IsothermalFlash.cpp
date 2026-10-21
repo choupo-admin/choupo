@@ -35,6 +35,7 @@ License
 #include "solver/NewtonND.H"
 #include "solver/NewtonRaphson.H"
 #include "solver/StabilityTest.H"
+#include "unitOperations/flash/IncipientPhase.H"
 #include "solver/Wegstein.H"
 
 #include <cmath>
@@ -1229,7 +1230,127 @@ IsothermalFlash::solveCore(const FlashInput&    in,
                       << "    g(V=1) = " << g_at_1 << "\n\n";
         }
 
-        if (g_at_0 <= 0.0)
+        //  ---- THE INCIPIENT PHASE, ITERATED (DEV.md 4c C110, G7) ---------
+        //
+        //  The test above evaluates every K at x = y = z: the would-be
+        //  vapour's fugacity at the LIQUID's composition (and, the mirror,
+        //  the would-be liquid's activity at the VAPOUR's).  Where K depends
+        //  on the trial phase that is not the question.  ammonia02's let-down
+        //  liquid (NH3 with dissolved H2, N2, Ar, 250 K) read as SUBCOOLED
+        //  down to 16.7 bar against the 20 bar bubble pressure of the drum it
+        //  left, because SRK was asked for the vapour root of a dense NH3
+        //  liquid; the vapour that forms is rich in the dissolved gases.
+        //
+        //  So on the FIRST iteration, and only where the x = y = z test says
+        //  "single phase", the single-phase verdict must survive the trial
+        //  phase iterated to its own composition (`incipientPhase`, the one
+        //  home BubblePoint::pressure also reads, so the bubble pressure and
+        //  this test cannot disagree).  The test can only turn a
+        //  single-phase verdict into a split -- never the reverse -- and in
+        //  an ideal world (K independent of composition) it is not run.  A
+        //  sum within the flash's own tolerance of 1 is ON the saturation
+        //  curve, which the single-phase verdict already describes.
+        bool liquidVerdict = (g_at_0 <= 0.0);
+        bool vapourVerdict = (!liquidVerdict && g_at_1 >= 0.0);
+        if (outerIt == 0 && opts.phaseSet == PhaseSet::VL && !isIdeal
+            && (liquidVerdict || vapourVerdict))
+        {
+            //  The seed is the package's IDEAL K (Psat/P, or H/P for a Henry
+            //  solute), never the x = y = z one; in a phi-phi world the
+            //  Wilson estimate the trivial-K seed above uses.  A component
+            //  either seed cannot price keeps the K already computed.
+            sVector K0 = sol.K;
+            if (thermo.vleWorld() == "phiPhi")
+            {
+                for (std::size_t i = 0; i < n; ++i)
+                {
+                    const auto& c = thermo.comp(i);
+                    if (c.Tc() > 0.0 && c.Pc() > 0.0)
+                        K0[i] = (c.Pc() * 1.0e5 / in.P)
+                              * std::exp(5.373 * (1.0 + c.omega())
+                                         * (1.0 - c.Tc() / in.T));
+                }
+            }
+            else
+            {
+                try
+                {
+                    const sVector Kr = thermo.Kvec_Raoult(in.T, in.P);
+                    for (std::size_t i = 0; i < n; ++i)
+                        if (std::isfinite(Kr[i]) && Kr[i] > 0.0) K0[i] = Kr[i];
+                }
+                catch (const std::exception&) { /* keep sol.K as the seed */ }
+            }
+            const scalar band = opts.tolerance;
+            bool    splitL = false, splitV = false;
+            sVector yTrial = in.z, xTrial = in.z;
+            sVector KL, KV;
+            if (liquidVerdict)
+            {
+                const auto r = incipientPhase::vapour(thermo, in.T, in.P,
+                                                      in.z, K0);
+                if (opts.verbosity >= 3)
+                    std::cout << "  incipient vapour iterated to its own"
+                                 " composition: sum K z = "
+                              << std::setprecision(10) << r.S << " ("
+                              << r.iterations << " iterations)\n";
+                if (r.S > 1.0 + band && std::isfinite(r.S))
+                {
+                    splitL = true; yTrial = r.trial; KL = r.K;
+                    liquidVerdict = false;
+                    //  Below its bubble pressure the feed may still be
+                    //  above its dew pressure: ask the mirror question.
+                    vapourVerdict = true;
+                }
+            }
+            if (vapourVerdict)
+            {
+                const auto r = incipientPhase::liquid(thermo, in.T, in.P,
+                                                      in.z, K0);
+                if (opts.verbosity >= 3)
+                    std::cout << "  incipient liquid iterated to its own"
+                                 " composition: sum z / K = "
+                              << std::setprecision(10) << r.S << " ("
+                              << r.iterations << " iterations)\n";
+                if (std::isfinite(r.S) && r.S > 1.0 + band && !r.K.empty())
+                {
+                    splitV = true; xTrial = r.trial; KV = r.K;
+                    vapourVerdict = false;
+                }
+                else if (!std::isfinite(r.S) && splitL)
+                {
+                    //  S = +inf: a present component has K = 0 (a
+                    //  nonvolatile), so no vapour-only state exists and the
+                    //  liquid split found above stands; `r.K` is EMPTY here
+                    //  and must not seed anything.
+                    vapourVerdict = false;
+                }
+            }
+            if (splitL || splitV)
+            {
+                if (splitL && splitV) sol.K = computeK(xTrial, yTrial);
+                else                  sol.K = splitL ? KL : KV;
+                x = xTrial;
+                y = yTrial;
+                g_at_0 = 0.0; g_at_1 = 0.0;
+                for (std::size_t i = 0; i < n; ++i)
+                {
+                    if (in.z[i] == 0.0) continue;
+                    g_at_0 += in.z[i] * (sol.K[i] - 1.0);
+                    g_at_1 += in.z[i] * (sol.K[i] - 1.0) / sol.K[i];
+                }
+                if (opts.verbosity >= 3)
+                    std::cout << "  the x = y = z test's single-phase verdict"
+                                 " is overturned: the "
+                              << (splitL ? "liquid" : "vapour")
+                              << " is unstable; the split starts from the"
+                                 " incipient phase (g(V=0) = "
+                              << std::scientific << std::setprecision(4)
+                              << g_at_0 << ", g(V=1) = " << g_at_1 << ")\n\n";
+            }
+        }
+
+        if (liquidVerdict)
         {
             sol.regime    = "subcooled liquid";
             sol.V_over_F  = 0.0;
@@ -1239,7 +1360,7 @@ IsothermalFlash::solveCore(const FlashInput&    in,
             phaseTrivial  = true;
             break;
         }
-        if (g_at_1 >= 0.0)
+        if (vapourVerdict)
         {
             sol.regime    = "superheated vapor";
             sol.V_over_F  = 1.0;

@@ -27,6 +27,7 @@ License
 \*---------------------------------------------------------------------------*/
 
 #include "BubblePoint.H"
+#include "unitOperations/flash/IncipientPhase.H"
 #include "solver/NewtonRaphson.H"
 
 #include <algorithm>
@@ -116,29 +117,16 @@ BubblePoint::PressureResult BubblePoint::pressure(const ThermoPackage& thermo,
     PressureResult out;
     sVector y(n, 0.0);
 
+    //  The incipient vapour at each trial P has ONE home,
+    //  `incipientPhase::vapour` -- the same iteration the isothermal flash's
+    //  phase test runs (DEV.md 4c C110, G7), so this bubble pressure and the
+    //  flash cannot disagree about one liquid again.
     auto sumKx = [&](scalar P) -> scalar
     {
-        const sVector K0 = thermo.Kvec_Raoult(T, P);
-        scalar s = 0.0;
-        for (std::size_t i = 0; i < n; ++i) { y[i] = K0[i] * x[i]; s += y[i]; }
-        if (!(s > 0.0)) return 0.0;
-        for (auto& v : y) v /= s;
-        for (int it = 0; it < 200; ++it)
-        {
-            const sVector K = thermo.Kvec(T, P, x, y);
-            s = 0.0;
-            for (std::size_t i = 0; i < n; ++i) s += K[i] * x[i];
-            if (!(s > 0.0) || !std::isfinite(s)) return s;
-            scalar dy = 0.0;
-            for (std::size_t i = 0; i < n; ++i)
-            {
-                const scalar yn = K[i] * x[i] / s;
-                dy = std::max(dy, std::abs(yn - y[i]));
-                y[i] = yn;
-            }
-            if (dy < 1.0e-13) break;
-        }
-        return s;
+        const auto r = incipientPhase::vapour(thermo, T, P, x,
+                                              thermo.Kvec_Raoult(T, P));
+        y = r.trial;
+        return r.S;
     };
 
     constexpr scalar Pfloor = 1.0e3, Pceil = 1.0e9;      // 0.01 bar, 10 kbar
