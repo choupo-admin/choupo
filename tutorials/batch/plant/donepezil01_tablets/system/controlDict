@@ -1,0 +1,29 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+application  choupoSolve;
+
+//  AUDIENCE.  A SHOWCASE composes engineering (bin/curate/check_case_tiers):
+//  a drug-product plant -- wet granulation with a fluid-bed dryer, tableting,
+//  an aqueous film coat dried by hot air, a batch plan, quoted equipment, a
+//  GMP building -- is not one feature being isolated, it is the base case a
+//  pharmaceutical project group starts from (DEV.md 4c C104, C110).
+tier         showcase;
+description  "DONEPEZIL HYDROCHLORIDE 10 mg FILM-COATED TABLETS, a drug-product plant (the API is BOUGHT): WET GRANULATION -- the API, lactose monohydrate, maize starch and microcrystalline cellulose wetted in a high-shear granulator with an aqueous hydroxypropyl-cellulose binder solution and dried in a fluid bed (`solidDryer`, hot air, the starch's sorption isotherm) -- milling, a final blend with magnesium stearate, tableting with rejects, an aqueous hypromellose film coat dried off by hot air, and packaging. The excipients are the reference product's (ARICEPT SmPC section 6.1) and the 174.33 mg of lactose per 10 mg tablet is its section 2; every other quantity is an author-set assumption. The steady flowsheet is the material balance per unit of product (720 000 tablets/h pressed, the fluid bed's own drying rate, is a basis); a BATCH PLAN (system/postDict) sizes each step for a 300 kg lot, counts the lots a year for 150 million tablets, and finds the pace of the granulation and tableting trains. Blending, granulation, milling, tableting and packaging are MASS-BALANCE PLACEHOLDERS (no equipment physics). No organic solvent, no spray drying, no hazardous area. One strength (10 mg) for now; the two-strength campaign waits for a multiproduct batch plan (README).";
+verbosity    2;
+
+reports
+{
+    streamTable   {}
+    massBalance   {}
+    energyBalance {}
+    computed      {}
+    spreadsheet   {}
+}
+
+// ************************************************************************* //

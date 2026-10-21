@@ -6,7 +6,7 @@
   "runtime": "not recorded; runTests does not time per case and this script does not run the corpus"
  },
  "counts": {
-  "cases": 477,
+  "cases": 480,
   "witnesses": 16,
   "validationOp": 6,
   "anchored": 12
@@ -491,6 +491,26 @@
     "splitter",
     "sprayDryer",
     "storageTank"
+   ],
+   "unitModels": [
+    "pressureNozzle"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [],
+   "hasGolden": true
+  },
+  "tutorials/batch/plant/donepezil01_tablets": {
+   "application": "choupoSolve",
+   "unitTypes": [
+    "mixer",
+    "phaseChanger",
+    "solidDryer",
+    "splitter"
    ],
    "thermo": {
     "formulation": "gammaPhi",
@@ -2485,6 +2505,21 @@
    "roles": [],
    "hasGolden": true
   },
+  "tutorials/props/hydraulics/moody02_correlation_sweeps": {
+   "application": "choupoProps",
+   "ops": [
+    "frictionBench",
+    "heatTransferBench"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [],
+   "hasGolden": true
+  },
   "tutorials/props/kinetics/ammoniaRate01_dyson_simon": {
    "application": "choupoProps",
    "ops": [
@@ -2903,6 +2938,20 @@
     "formulation": "gammaPhi",
     "activityModels": [
      "ideal"
+    ]
+   },
+   "roles": [],
+   "hasGolden": true
+  },
+  "tutorials/props/thermo/phaseSplit01_freeze_water_ethanol": {
+   "application": "choupoProps",
+   "ops": [
+    "phaseSplitScan"
+   ],
+   "thermo": {
+    "formulation": "gammaGamma",
+    "activityModels": [
+     "NRTL"
     ]
    },
    "roles": [],
@@ -7138,6 +7187,7 @@
     "tutorials/props/heat/psychro02_air_water",
     "tutorials/props/hydraulics/letdown02_valve_fluid_properties",
     "tutorials/props/hydraulics/moody01_friction_correlations",
+    "tutorials/props/hydraulics/moody02_correlation_sweeps",
     "tutorials/props/kinetics/ammoniaRate01_dyson_simon",
     "tutorials/props/kinetics/rate01_arrhenius_recovery",
     "tutorials/props/membrane/polarisation01_geraldes_afonso_table1",
@@ -7170,6 +7220,7 @@
     "tutorials/props/steam/steam01_if97_verification",
     "tutorials/props/steam/steam02_water_transport",
     "tutorials/props/thermo/bubble01_reaction_mass_boiling_point",
+    "tutorials/props/thermo/phaseSplit01_freeze_water_ethanol",
     "tutorials/props/thermo/standardState01_hydrogen_enthalpy_TP",
     "tutorials/props/thermo/temperature01_gas_thermometer",
     "tutorials/props/thermo/temperature02_engineers_ladder",
@@ -7189,6 +7240,7 @@
    ],
    "choupoSolve": [
     "tutorials/batch/plant/apalutamide01_tablets",
+    "tutorials/batch/plant/donepezil01_tablets",
     "tutorials/plant/ChemicalPlantTutorial",
     "tutorials/plant/aceticAcid01_gibbsReactor",
     "tutorials/plant/aceticAcid02_plant",
@@ -7937,6 +7989,7 @@
    ],
    "mixer": [
     "tutorials/batch/plant/apalutamide01_tablets",
+    "tutorials/batch/plant/donepezil01_tablets",
     "tutorials/plant/aceticAcid02_plant",
     "tutorials/plant/acetonePlant",
     "tutorials/plant/ammoniaReactor01_fixedConversion",
@@ -7975,6 +8028,7 @@
    ],
    "phaseChanger": [
     "tutorials/batch/plant/apalutamide01_tablets",
+    "tutorials/batch/plant/donepezil01_tablets",
     "tutorials/plant/aceticAcid02_plant",
     "tutorials/plant/acetonePlant",
     "tutorials/plant/ammoniaReactor04_kineticSizing"
@@ -8022,6 +8076,7 @@
    ],
    "solidDryer": [
     "tutorials/batch/plant/apalutamide01_tablets",
+    "tutorials/batch/plant/donepezil01_tablets",
     "tutorials/steady/drying/solidDryer01_sugar",
     "tutorials/steady/drying/solidDryer02_starved_air"
    ],
@@ -8051,6 +8106,7 @@
    ],
    "splitter": [
     "tutorials/batch/plant/apalutamide01_tablets",
+    "tutorials/batch/plant/donepezil01_tablets",
     "tutorials/plant/aceticAcid02_plant",
     "tutorials/plant/ammoniaReactor01_fixedConversion",
     "tutorials/plant/ammoniaReactor02_equilibrium",
@@ -8148,6 +8204,7 @@
     "tutorials/props/molecular/nrtl01_ethanol_water_package",
     "tutorials/props/scan/hxy01_ethanol_water_1atm",
     "tutorials/props/scan/ternary01_audit_vlle",
+    "tutorials/props/thermo/phaseSplit01_freeze_water_ethanol",
     "tutorials/steady/absorption/extraction01_waterButanol",
     "tutorials/steady/distillation/column03_azeotrope_mesh",
     "tutorials/steady/flash/bubbleT01_ethanol_water",
@@ -8302,6 +8359,7 @@
     "tutorials/batch/membrane/diafilter01_nf_desalting",
     "tutorials/batch/membrane/diafilter02_fouling_decline",
     "tutorials/batch/plant/apalutamide01_tablets",
+    "tutorials/batch/plant/donepezil01_tablets",
     "tutorials/batch/reactor/batch01_first_order",
     "tutorials/batch/reactor/batch01b_first_order_eulersi",
     "tutorials/batch/reactor/batch02_adiabatic",
@@ -8402,6 +8460,7 @@
     "tutorials/props/heat/psychro01_n2_water",
     "tutorials/props/heat/psychro02_air_water",
     "tutorials/props/hydraulics/moody01_friction_correlations",
+    "tutorials/props/hydraulics/moody02_correlation_sweeps",
     "tutorials/props/kinetics/ammoniaRate01_dyson_simon",
     "tutorials/props/kinetics/rate01_arrhenius_recovery",
     "tutorials/props/membrane/polarisation01_geraldes_afonso_table1",
@@ -8679,7 +8738,8 @@
     "tutorials/props/electrolyte/fpd01_nacl_freezing"
    ],
    "frictionBench": [
-    "tutorials/props/hydraulics/moody01_friction_correlations"
+    "tutorials/props/hydraulics/moody01_friction_correlations",
+    "tutorials/props/hydraulics/moody02_correlation_sweeps"
    ],
    "gibbsMap": [
     "tutorials/props/gibbs/landscape01_ammonia_synthesis",
@@ -8697,7 +8757,8 @@
     "tutorials/props/fit/cp01_polynomial_recovery"
    ],
    "heatTransferBench": [
-    "tutorials/props/heat/htbench01_correlations"
+    "tutorials/props/heat/htbench01_correlations",
+    "tutorials/props/hydraulics/moody02_correlation_sweeps"
    ],
    "isothermEval": [
     "tutorials/props/adsorption/isotherm01_eval_13x_co2"
@@ -8714,6 +8775,9 @@
    "phaseEnvelope": [
     "tutorials/props/molecular/envelope01_natural_gas",
     "tutorials/props/molecular/envelope02_root_jump"
+   ],
+   "phaseSplitScan": [
+    "tutorials/props/thermo/phaseSplit01_freeze_water_ethanol"
    ],
    "pitzerActivity": [
     "tutorials/props/electrolyte/archer01_nacl_cold_to_hot",

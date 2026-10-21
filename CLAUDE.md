@@ -11,8 +11,24 @@ throughout.
 ## 0. Operating mandate (read first; Vítor, 2026-09-27)
 
 The assistant is responsible for Choupo's development line, not a clerk to
-it.  Six rules; the corollaries that make them concrete are in §10.
+it.  The rules below; the corollaries that make them concrete are in §10.
 
+0. **THE WORKING RHYTHM COMES FIRST (Vítor, 2026-10-20, asked to be put at
+   the head of these rules: "Nós tínhamos acordado que tu usualmente
+   mandavas trabalhar os teus generais e pelo meio refletias no Choupo e na
+   melhor forma de conseguir ultrapassar [os simuladores de referência], e
+   estavas sempre disponível para me ouvires!").**  The commander
+   DISPATCHES the work to generals (a written brief, its own worktree, at
+   most as many at once as the machine carries) and, WHILE THEY RUN,
+   REFLECTS: on Choupo itself, and on how it can surpass the breadth-first
+   simulators students meet elsewhere -- not on their ground (breadth,
+   databank size) but on Choupo's own (the glass box, customisation, the
+   pedagogy, the domains they serve poorly).  Reflection is real work and
+   is brought to Vítor as findings and proposals.  And the commander is
+   ALWAYS AVAILABLE to listen: no turn is spent blocked on a build, a suite
+   or a general when Vítor may be speaking.  Integration (merging,
+   validating, publishing) is the commander's own lane; implementing a
+   slice is a general's.  §10 *The operating model* is the long form.
 1. **Carry every authorised task through implementation, validation and
    completion.**  Routine technical steps inside the agreed scope are
    decided, not asked.  Architecture changes, pedagogical scope (what a
@@ -1147,6 +1163,16 @@ operating resolution all read it: a drum operated at 844.86 K published
 7.685 kmol/s of liquid and now publishes none (gate `check_inlet_resolution`
 arm (j); DEV.md §5, 2026-09-26).
 
+**A SPRAY DRYER FED SEVERAL SOLVENTS LOSES NONE (2026-10-20, DEV.md 4c
+C111).**  With several volatile solvents the outlet is the package's
+equilibrium of the air and every solvent at T_out (the exhaust on its dew
+point when the air cannot carry it all, announced), T_out closing
+H(out) = H(in) through `flashState::priceState`; the droplet KPIs on an
+announced pseudo-solvent; the sorption isotherm and the droplet-trajectory
+chamber models refuse a mixed-solvent feed by name.  Single-solvent
+byte-identical.  Gate `check_spray_dryer_solvents`; record
+`docs/design/a-spray-dryer-with-several-solvents.md`.
+
 **THREE MORE, AND THE FLAGSHIP'S FIRST LAW (2026-09-27).**  The flagship's
 +34.41 kW was additive, and three of its four terms were this family: the
 `sprayDryer` solved `T_out` from a hand balance (constant-Cp air, a Watson
@@ -2169,6 +2195,30 @@ the intermediate store's size, multiproduct sequencing, labour following the
 plan, a GUI Gantt drawing.  Golden kind `batch`.  Gate: `check_batch_plan`.
 Record:
 [`docs/design/a-batch-plant-on-a-steady-balance.md`](docs/design/a-batch-plant-on-a-steady-balance.md).
+
+**SEVERAL PRODUCTS ON THE SAME STAGES (2026-10-20, DEV.md 4c C110 G2, on
+stated defaults).**  `products ( ... )` in place of `production {}` (both
+refuse), a REQUIRED `campaignOrder` (the student's decision; no optimiser)
+and a `productChangeover` on every stage make the `batchPlan` single-product
+campaigns run back to back in the declared order; a product changes at a
+stage only what is the product's, its balance is the flowsheet's ONE
+balance unless `massPerProduct` declares a stream's own (ANNOUNCED, because
+the economics prices every product on the one balance); a stage is sized
+for the product needing the most (`sizingProduct`); the clean before the
+next product REPLACES the same-product changeover; campaigns never overlap
+on a train.  One product through `products` IS the one-product plan (gate,
+1e-9).  Gate `check_batch_plan` (h)-(l); record section 6 of
+`docs/design/a-batch-plant-on-a-steady-balance.md`.
+
+**A PHASE SPLIT SCANNED ALONG T OR P IS ONE FLASH PER POINT (2026-10-20,
+DEV.md 4c C118).**  The `phaseSplitScan` props op calls
+`IsothermalFlash::solveCore` at every grid point with the unit's own
+`readOptions` and writes no equilibrium of its own; a single-point scan
+reproduces flash21/16/19's goldens; a refused point is published by name
+and the scan continues, nothing substituted.  An op's own top-level result
+block goes through `PropertyOperation::resultBlock()`.  Gate
+`check_phase_split_scan`; record
+`docs/design/a-phase-split-scan-along-t-or-p.md`.
 
 **A RELIEF VALVE IS A SIZED ITEM OF THE UNIT IT PROTECTS (2026-10-11, DEV.md
 4c C62, on a stated default).**  `type reliefValve` in the sizing pass: one
@@ -4023,6 +4073,7 @@ domains like membranes).
 | "Has any FAMILY of the corpus gone dark?" | `bin/runTests --fast` — one representative case per tutorial FAMILY (`tutorials/FASTSET`, a DECLARED list whose COMPLETENESS is gated by `check_fastset`) with the sweep's own per-case checks, then four CONSERVATION gates SCOPED to that same pass — conservation is the class of defect no golden can see, because a golden pins what a run PRINTS.  Seconds, not minutes.  It is the rung BETWEEN `--witnesses` (one case per EXECUTION CLASS) and the sweep, because 12 architectural classes do not cover the corpus's shape: an adsorber, psychrometrics or hydraulics change passes `--witnesses` untouched.  It authorises NO commit and says so in its own verdict line |
 | Where the suite's wall clock goes | `build/suiteTimings.csv` — written by every check-mode `bin/runTests` (item, kind, seconds); the ten slowest are printed after the tally.  A measurement, not a gate: the item's seconds are the gap since the previous result line |
 | A change confined to `gui/` | `bin/runTests --gui` — the app's tests + typecheck + every gate that READS `gui/` (list DERIVED from the gate sources, never hand-kept).  ~3 min against ~30: no corpus case is CHECKED and no C++ is compiled, so it says nothing about the solver.  It does need a native build of this tree (gate zero aborts without one): the GUI test files listed in `gui/tests/witnessOutputs.ts` read engine run outputs (gitignored, never committed) that `npm test`'s globalSetup generates by running their witnesses, and a test that cannot get one REFUSES by name with the remedy rather than fail like a regression.  A commit that also touches `src/`, `tutorials/` or `data/` adds the cases that exercise what it touched; the full sweep only when it changes a path every case goes through (§10) |
+| Integrate a general's branch | `bin/integrate <branch>` — merge into a reusable worktree off `origin/main`; a conflict in a GENERATED file (the one list: `bin/curate/generated_artefacts.py`) is resolved by regeneration and any other conflict stops the run; touched guides are rebuilt with `make -B` and read back; build; the validation the diff reaches (`bin/runTests --scope <cases>`, i.e. the cases plus the conservation gates scoped to that pass; the gates whose source names a touched file; `--gui`/`--fast` on their triggers; a full sweep never, reported as Vítor's decision); moved gate-manifest claims re-observed with `--only`; one verdict.  Never pushes main, never re-records.  `--plan` prints the reach alone |
 | Materialise a case's `0/` | `bin/choupo-init0 <case>` (propagates from authored inlets + tear seeds; `--force` regenerates estimates; refuses $variable streams{}) |
 | Validate a case WITHOUT solving | `bin/choupo-lint <case>` (read-only: load+compose+0/-completeness+unit-type/duplicate checks + topology-inferred stream roles; bails at the same `Flowsheet::solve` seam as `-init0`) |
 | Build / debug / clean | `make all` / `make MODE=debug` / `make clean` (current) · `make distclean` (all) |

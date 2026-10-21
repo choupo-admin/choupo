@@ -211,6 +211,18 @@ describe("plant layout: the knobs and the overrides", () => {
       "ERROR: layoutDict: `a` and `b` OVERLAP: x"]);
     expect(layoutLines(null)).toEqual([]);
   });
+  it("reads the browser's log too, where the worker marks every stderr line", () => {
+    //  The engine's `[layout]` announcements go to stderr (PlantLayout.cpp's
+    //  announce), and public/workers/solverWorker.js prefixes each such line
+    //  with `[stderr] `.  With the mark kept, the separator finding was
+    //  dropped and only the refusal reached the page.
+    const log = "header\n[stderr] [layout] `a` (vessel) and `b` (vessel) stand 1 m apart\n"
+      + "[layout] system/layoutDict: 8 item(s) placed\n"
+      + "[stderr] ERROR: layoutDict: `a` and `b` OVERLAP: x\n";
+    expect(layoutLines(log)).toEqual([
+      "[layout] `a` (vessel) and `b` (vessel) stand 1 m apart",
+      "ERROR: layoutDict: `a` and `b` OVERLAP: x"]);
+  });
 });
 
 // ---- the guided moves -------------------------------------------------------------

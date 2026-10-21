@@ -1,0 +1,115 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+  constant/components/maizeStarch.dat -- CASE-LOCAL record (donepezil01_tablets)
+
+  Maize starch -- filler and disintegrant of the tablet core.
+
+  Listed among the core excipients of the UK Summary of Product Characteristics of ARICEPT 10 mg film coated
+  tablets (Eisai Ltd, PL 10555/0007, emc, revised 13/12/2022), section 6.1.  One
+  mole of this record is one ANHYDROGLUCOSE repeat unit, C6H10O5.
+
+  It is the record that carries the SORPTION ISOTHERM of the core (below):
+  starch is the most hygroscopic of the core's solids, so the moisture the
+  dried granules and the coated tablets keep is computed as water sorbed by
+  the starch.  The other solids ride through the dryers dry, said on the
+  run -- the real lactose, cellulose and binder hold some water too.
+
+  WHAT THIS RECORD IS FOR, AND WHAT IT IS NOT.  It carries what a SOLID that
+  is only MOVED, MIXED, WETTED, DRIED and PRESSED needs in this plant: a
+  molar mass, a particle density, a solid heat capacity and a formation
+  datum to price it on.  It is never dissolved with a heat of solution,
+  never melted, never reacted, never vaporised (`role nonvolatile`).  EVERY
+  NUMBER BELOW EXCEPT THE MOLAR MASS OF A DEFINITE FORMULA IS AN AUTHOR-SET
+  ASSUMPTION, said so in its provenance block, chosen to be of the right
+  order for an organic (or mineral) powder and taken from no source --
+  because none was read.  A citation invented for a round number would turn
+  'unsourced' into 'falsely sourced'.
+\*---------------------------------------------------------------------------*/
+
+name        maizeStarch;
+formula     C6H10O5;
+role        nonvolatile;      // never enters the vapour; leaves every dryer as solid
+MW          162.141;   // kg/kmol -- recomputed from the formula C6H10O5 with the standard atomic weights
+
+solid
+{
+    rho_p   1500.0;      // kg/m3, particle (skeletal) density -- ASSUMED
+}
+
+volatility
+{
+    class       nonvolatile;
+    provenance  { citation "author-set: a powder handled in this plant at most at 333 K, whose vapour pressure there is taken as nil; no boiling or sublimation point was read"; status assumed; }
+}
+
+standardThermochemistry
+{
+    dHf_298         -1000000.0;   // J/mol -- PLACEHOLDER, see provenance
+    s_298           200.0;       // J/(mol K) -- PLACEHOLDER, see provenance
+    referenceState  pureSolid;
+}
+
+solidHeatCapacity
+{
+    model         polynomial;
+    coefficients  ( 210.78 );   // J/(mol K) = 1.3 J/(g K) x the molar mass -- ASSUMED, constant
+    Trange        ( 250  420 );
+}
+
+//  The SORPTION ISOTHERM (GAB) -- the moisture the dried granules (fluid-bed
+//  dryer) and the coated tablets (coating dryer) keep is computed as water
+//  sorbed by this starch at the exhaust air's water activity.  The three
+//  parameters are AUTHOR-SET, of the order reported for native starches,
+//  and taken from no source read: a group replaces them with a measured
+//  isotherm of THEIR granules (dynamic vapour sorption).
+sorption
+{
+    Xm   0.1;      // kg water / kg dry solid, the monolayer -- ASSUMED
+    C    12.0;      // GAB C -- ASSUMED
+    K    0.72;      // GAB K -- ASSUMED
+}
+
+reviewStatus interim;      // author-set record, not read back by a curator
+
+provenance
+{
+    dHf_298
+    {
+        origin   placeholder;
+        method   "author-set round number, no source";
+        uncertainty { status unquantified; reason "the formation enthalpy is a PLACEHOLDER: no reaction in this plant converts this component, so its formation enthalpy CANCELS in every unit and moves no duty and no residual.  It is here only because the energy report prices every stream on the formation surface.  Replace it with a measured or estimated datum before reusing this record in any case that reacts, dissolves with a heat of solution, or computes an exergy"; }
+    }
+    s_298
+    {
+        origin   placeholder;
+        method   "author-set round number, no source";
+        uncertainty { status unquantified; reason "no unit or report of this plant reads an entropy"; }
+    }
+    solidHeatCapacity
+    {
+        origin   assumed;
+        method   "author-set specific heat of 1.3 J/(g K), constant, of the order of a dry powder near room temperature; no source read";
+        uncertainty { status unquantified; reason "moves the sensible heat of this powder in the two dryers and in every adiabatic merge; replace it with a measured value"; }
+    }
+    rho_p
+    {
+        origin   assumed;
+        method   "author-set true density, no source read";
+        uncertainty { status unquantified; reason "no unit of this plant reads it (there is no spray dryer); kept so that the record is complete for a case that does -- replace it with a measured value before that"; }
+    }
+    sorption
+    {
+        origin   assumed;
+        method   "author-set GAB parameters of the order of a native starch; no source read";
+        uncertainty { status unquantified; reason "sets the water the dried granules and the coated tablets keep (fluidBedDryer, coatingDryer); replace with a measured isotherm of the granules"; }
+    }
+}
+
+// ************************************************************************* //

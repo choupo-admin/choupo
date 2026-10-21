@@ -153,3 +153,17 @@ redacted the same way: each product name became a neutral description of
 what it was, with the dates and the argument unchanged.  What stays pinned is
 the importer's source-exclusion list alone (functional code, where the name
 IS the licence evidence; permanent).  DEV.md C7 carries the measurements.
+
+## 8. A developer-facing benchmark tree (2026-10-20)
+
+Vítor, DEV.md 4c C123, option (a): `benchmarks/` reproduces hard cases from
+other simulators' published sample libraries and compares against the numbers
+each publishes, and it may NAME them, because there the name is the evidence
+-- a comparison that does not say with what is half a comparison.  The
+exemption is a TREE, declared with its reason in `COMPETITOR_EXEMPT_TREES`,
+and it is held to two conditions: it must hold a tracked file (a waiver for
+nothing fails), and no user-facing surface may reach it -- arm (t) fails if a
+manual's `.tex`, a GUI source or `bin/buildSite` mentions the tree.  The ban
+everywhere else is unchanged.  Two by-hand sabotages, both caught: a `.tex`
+`\input`ing a file under the tree (the first form of arm (t) missed it, its
+pattern refused a `/` before the tree name), and a name in a file outside it.

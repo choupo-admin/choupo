@@ -478,8 +478,8 @@
     },
     "check_gibbs_solid_phase": {
       "exit": 0,
-      "claim": "gibbs-solid-phase: OK -- graphite APPEARS at S/C 0.8 (0.0690265 mol/s, a = 1) and is ABSENT at S/C 3 (a = 0.08126); a reaction-based recomputation agrees to 1e-6, C/H/O close to 1e-7, both duties recompute on the solid rung, the absent solid leaves gibbs02's answer untouched, directMin refuses by name, and the adiabatic path closes its first law.  NOT checked: two solids at once, reactiveFlash with a solid, gibbsMap, real-gas fugacity.",
-      "seconds": 0.6
+      "claim": "gibbs-solid-phase: OK -- graphite APPEARS at S/C 0.8 (0.0690265 mol/s, a = 1) and is ABSENT at S/C 3 (a = 0.08126); a reaction-based recomputation agrees to 1e-6, C/H/O close to 1e-7, both duties recompute on the solid rung, the absent solid leaves gibbs02's answer untouched, directMin refuses by name, and the adiabatic path closes its first law, and graphite fed as a solid phase or in the fluid composition refuses by name.  NOT checked: two solids at once, reactiveFlash with a solid, gibbsMap, real-gas fugacity.",
+      "seconds": 0.9
     },
     "check_git_visibility": {
       "exit": 0,
@@ -1196,10 +1196,15 @@
       "claim": "check_batch_plan: OK -- (a) the witness's 9 stages in 2 trains recompute (lot 358.2 kg, 84 lots/yr, T_L sprayDrying=53.14 h by solutionPreparation, solidDose=10 h by packaging, 58 Gantt bars, findings ['lowUtilisation:finalBlending']); (b) 2 vessel(s) sized from the plan, 7 scaled quote(s) and the economics' stream factor recompute; (c) the witness's findings reach stderr, the caveat block and the JSON; capacityMismatch and idleTrain fire on their fixtures and recompute; (d) `rule largestEquipment` and units in and out of phase recompute (with the coater's scaled quote at two units); (e) 14 refusals fire, each naming its defect; (f) a case with no batchPlan publishes no block and prints no line; (g) --record pins 190 `batch` rows on the witness, the check passes on them, and a coating time moved by 0.5 h fails it on the stage:coating row.  NOT COVERED: whether a declared time, density, fill or lot is right for the product (the case's assumption), the intermediate store's size (not computed), multiproduct sequencing (not built), and the scaled quote's exponent (the case's convention).",
       "seconds": 83.3
     },
-    "check_evidence_records": {
+    "check_spray_dryer_solvents": {
       "exit": 0,
-      "claim": "check_evidence_records: OK -- 19 of 40 dataset(s) under constant/experiments parse, name their subject, cite and carry a sha256; the other 21 are the MEASURED legacy set pinned in debt_registry.EVIDENCE_LEGACY_DATASETS, each lacking exactly what its pin says (a pin that grows or shrinks fails); none declares a `role`; data/local/evidence README tracked and .dat ignored; the witness evaluates at its 13 declared points (3 ops, CSV = dataset x to 1e-12, announced, n_points 13); 3 probes refuse by name.  NOT checked: any value against its article; the sha256 against the data block.",
-      "seconds": 4.0
+      "claim": "check_spray_dryer_solvents: OK -- a spray dryer fed several solvents loses none; (a) acetone+water closes, T_out 402.01 K, dew sum 0.0140; (b) ethanol+water closes; (c) starved exhaust saturated at 310.88 K, residual water 68.1 % vs acetone 21.3 % of fed; (d) sorption refused; (e) langrishKockel refused; (f) no-outlet component refused; (g) one solvent keeps its route",
+      "seconds": 1.7
+    },
+    "check_phase_split_scan": {
+      "exit": 0,
+      "claim": "check_phase_split_scan: OK -- one flash home (flash21/16/19 goldens reproduced at their operating point), the freezing-point identity recomputed from water.dat at every point (12 ice points), the ice appearance announced between its grid values, a pure-water probe refused by name below Tt and continued, the Psat/dCp announcements at their first point, closure to 1e-9, 4 grammar refusals, source arm.  NOT checked: any measured freezing point; the reactive path along a sweep; `phaseSet auto` changing along a scan; `variable P` beyond the grammar.",
+      "seconds": 6.1
     }
   }
 }

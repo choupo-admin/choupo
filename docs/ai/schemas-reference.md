@@ -17,7 +17,7 @@ person.  For prose, groupings and worked examples instead of an
 alphabetical dump, read [`unit-ops.md`](unit-ops.md) beside it; to be
 taught rather than to look something up, read the User Guide.
 
-*96 of 96 registered operations carry a schema and are documented below.*
+*97 of 97 registered operations carry a schema and are documented below.*
 
 ## `FUG`  (FUG operation)
 
@@ -539,6 +539,7 @@ The Darcy friction factor's correlation library, in two parts. VERIFY (always): 
 |---|:-:|---|---|---|
 | `deviationTolerance` |   | number | - | Allowed relative deviation of each correlation from its own published anchor; defaults to 0.03. Exists to honour the anchors' own roundin… |
 | `compare` |   | object | — | Optional. Evaluate every registered correlation at one hydraulic state and publish the spread. Omitting the block leaves only the verific… |
+| `sweep` |   | object | — | Optional. Evaluate every registered correlation on one logarithmic grid of Re at each declared relative roughness and write one CSV row p… |
 
 ## `gasSolidSplitter`  (gasSolidSplitter operation)
 
@@ -629,6 +630,7 @@ Self-check of the heat-transfer correlation library against its own textbook wor
 |---|:-:|---|---|---|
 | `aadTolerance` |   | number | - | Allowed relative deviation from the printed textbook value; defaults to 0.05. |
 | `aadTolerancePhaseChange` |   | number | - | Separate allowance for the boiling/condensation examples, whose published inputs are chart-read. |
+| `sweep` |   | object | — | Optional. Evaluate every single-phase Nusselt correlation on one logarithmic grid of Re at each declared Prandtl number and write one CSV… |
 
 ## `heater`  (heater operation)
 
@@ -790,6 +792,19 @@ The P-T phase envelope of a MIXTURE at fixed feed composition: the bubble curve 
 | `composition` | ✓ | object | — | The feed this envelope belongs to, one entry per component. An envelope is a curve for ONE composition and there is no default to fall ba… |
 | `pressure` | ✓ | object | — | The pressures at which each branch is solved. The march is in PRESSURE, and that choice bounds the answer: T_bubble(P) is single-valued t… |
 | `output` |   | object | — | Optional. One row per traced point: P_Pa, T_K, and `curve` in { bubble, dew }. Only points that survived the continuity test are written … |
+
+## `phaseSplitScan`  (Phase split along T or P)
+
+The full phase split of ONE fixed feed swept along temperature (at fixed pressure) or pressure (at fixed temperature): at every grid point one isothermal flash through the flash unit's own solver (IsothermalFlash::solveCore) under the case's thermophysical system -- vapour, one or two liquids, crystallising solids declared in phases ( ... ), minerals precipitating from a speciated solution. Publishes per point the amount of every phase present (V, L1, L2, each solid by name), each phase's composition, the flash's own observables (pH, solidFraction, the crystal's activity beside its saturation value), the solved species where the package speciates; announces every phase appearance / disappearance between consecutive points and every record-level extrapolation at the first point that raised it. A point the flash cannot serve is published as REFUSED by name and the scan continues (no fallback). Output: a CSV (swept variable first) and the top-level result block phaseSplitScans. Not modelled: nucleation / supercooling, a solid no record declares, solute inclusion in a crystal.
+
+| Field | Required | Type | Unit | Description |
+|---|:-:|---|---|---|
+| `state` | ✓ | object | — | `{ P ...; composition { ... } }` when T is swept, `{ T ...; composition { ... } }` when P is swept. The swept axis declared here too is r… |
+| `vary` | ✓ | object | — | `{ variable T\|P; from ...; to ...; n ...; }` (or `step`). `from` may exceed `to`: a cooling scan is written top-down. Absent `n` and `st… |
+| `phaseSet` |   | string | — | The isothermalFlash unit's own word, read by the unit's own reader: VL (default), LL, VLLE, or auto (decided per grid point by the tangen… |
+| `alphaRich` |   | string | — | The flash unit's LL seeding aid: the component biased into liquid alpha for the initial guess. |
+| `betaRich` |   | string | — | The flash unit's LL seeding aid: the component biased into liquid beta for the initial guess. |
+| `output` | ✓ | object | — | `{ file <name>.csv; }` -- the per-point table, relative to the case directory: the swept variable, `solved`, `nPhases`, one amount column… |
 
 ## `pipe`  (pipe operation)
 

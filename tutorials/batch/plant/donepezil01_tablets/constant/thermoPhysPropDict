@@ -1,0 +1,62 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+  thermoPhysPropDict (v2) -- the donepezil tablet plant.
+
+  THE FLUIDS.  Water (the granulation liquid, the coating suspension's
+  carrier and the humidity of the drying air), nitrogen and oxygen (the
+  air).  An IDEAL liquid (Raoult) and an IDEAL gas: the only vapour-liquid
+  question this plant asks is how much water the drying air carries away,
+  and for water into air at one atmosphere that is the right first answer.
+  There is NO ORGANIC SOLVENT in this plant (wet granulation with an
+  aqueous binder, an aqueous film coat), so no solvent record, no solvent
+  recovery and no hazardous-area question of a solvent vapour.
+
+  THE SOLIDS.  The API and every excipient are `role nonvolatile;`
+  case-local records in constant/components/: they never enter the vapour,
+  they carry no vapour pressure and no critical constants, and every stream
+  carries them in its SOLID phase.  NOTHING DISSOLVES in this model: the
+  hydroxypropyl cellulose is carried as a solid through the binder tank, and
+  the hypromellose and the macrogol through the coating-suspension tank.
+  The heat of solution is therefore neglected, and the README says so.
+
+  No transport block: no unit of this plant reads a viscosity, a
+  conductivity or a diffusivity (the two dryers dry to their sorption
+  equilibrium; there is no spray dryer).
+\*---------------------------------------------------------------------------*/
+
+recordType    thermophysicalPropertySystem;
+schemaVersion 2;
+
+components
+(
+    water  N2  O2
+    donepezilHydrochloride
+    lactoseMonohydrate  maizeStarch  microcrystallineCellulose
+    hydroxypropylCellulose  magnesiumStearate
+    hypromellose  polyethyleneGlycol  talcPowder  titaniumDioxide  yellowIronOxide
+);
+
+equilibrium
+{
+    formulation gammaPhi;
+
+    liquid
+    {
+        activityModel ideal;            // gamma = 1 (Raoult)
+        standardState pureLiquid;
+    }
+
+    vapour
+    {
+        fugacityModel idealGas;
+    }
+}
+
+// ************************************************************************* //

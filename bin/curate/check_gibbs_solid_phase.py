@@ -56,6 +56,14 @@ WHAT IS CHECKED, on the witness tutorials/steady/gibbs/gibbs11_carbon_deposition
       report's plant residual must be zero (1e-6 kW) and the deposit must
       still be at activity 1.
 
+  (h) A SOLID IN THE FEED REFUSES BY NAME (DEV.md 4c C110 G6).  reformerLow
+      fed 0.91 kmol/h of graphite beside its methane, twice: as the feed's
+      SOLID phase (`phases { solid { ... } }`) and in its fluid
+      composition.  Each must exit non-zero naming the unit and graphite.
+      Before, the solid phase reached the unit as a `solids {}` block that
+      nothing read, and the run closed carbon 47.6 % short at exit 0 --
+      `equilibriumReactor` had refused the same feed by name all along.
+
 WHAT THIS DOES NOT CHECK, said plainly: more than one pure solid present at
 once (refused by the engine, not exercised here); the `reactiveFlash` path
 with a solid (it publishes element potentials and is accepted, but no case
@@ -426,6 +434,35 @@ def main() -> int:
                              f" (n = {k4.get('n_solid_graphite_mol_s')}, a = "
                              f"{k4.get('activity_graphite')})")
 
+        # (h) a solid in the FEED refuses by name -------------------------
+        for label, as_phase in (("solid phase", True), ("fluid composition", False)):
+            probe = Path(td) / f"feedSolid_{'phase' if as_phase else 'fluid'}"
+            shutil.copytree(CASE, probe, ignore=shutil.ignore_patterns(
+                "converged", "reports", "design", "iterations"))
+            fl = probe / "0/feedLow"
+            t = fl.read_text()
+            t2 = t.replace("    water    0.8 kmol/h;\n",
+                           "    water    0.8 kmol/h;\n    graphite 0.91 kmol/h;\n", 1)
+            if as_phase:
+                #  The decomposition must sum back to the overall material
+                #  (StreamStateIO), so the fluid is named beside the solid.
+                t2 += ("\nphases\n{\n    vapour\n    {\n        componentMolarFlows\n"
+                       "        {\n            CH4 1 kmol/h;\n            water 0.8 kmol/h;\n"
+                       "        }\n    }\n    solid\n    {\n        componentMolarFlows\n"
+                       "        {\n            graphite 0.91 kmol/h;\n        }\n"
+                       "    }\n}\n")
+            fl.write_text(t2)
+            rc5, out5, js5 = run(probe)
+            want = ("the feed carries a SOLID phase (graphite)" if as_phase else
+                    "the feed carries pure solid 'graphite' in its fluid composition")
+            if t2 == t:
+                fails.append(f"(h) {label}: the probe could not add graphite to"
+                             " the feed (feedLow's text moved)")
+            elif rc5 == 0 or f"gibbsReactor reformerLow: {want}" not in out5:
+                fails.append(f"(h) graphite fed in the {label} did not refuse by"
+                             f" name (exit {rc5}) -- a solid the unit does not"
+                             " read is dropped with its atoms at exit 0")
+
     if fails:
         print("gibbs-solid-phase: FAILED")
         for f in fails:
@@ -437,7 +474,9 @@ def main() -> int:
           " recomputation agrees to 1e-6, C/H/O close to 1e-7, both duties"
           " recompute on the solid rung, the absent solid leaves gibbs02's"
           " answer untouched, directMin refuses by name, and the adiabatic"
-          " path closes its first law.  NOT checked: two solids at once,"
+          " path closes its first law, and graphite fed as a solid phase or"
+          " in the fluid composition refuses by name.  NOT checked: two"
+          " solids at once,"
           " reactiveFlash with a solid, gibbsMap, real-gas fugacity.")
     return 0
 

@@ -84,7 +84,7 @@ export const CITES = {
     contains: 'FAILED (exit $rc) -- last 20 lines of log:' },
   resultJson: { file: MAIN, line: 1506,
     contains: "emitResultJson(std::cout, result);" },
-  displayLogCut: { file: ADAPTER, line: 427,
+  displayLogCut: { file: ADAPTER, line: 451,
     contains: "const displayLog = log.slice(0, cutStart) + log.slice(cutEnd);" },
   verbosityRead: { file: MAIN, line: 585,
     contains: 'lookupScalarOrDefault("verbosity", 3)' },
@@ -257,13 +257,13 @@ export const CITES = {
   exit1Recount: { file: MAIN, line: 1477,
     contains: "if (!validate0(result)) finalRc = 1;" },
   // -- this app's own lines -------------------------------------------------------------
-  adapterSpawn: { file: ADAPTER, line: 162,
+  adapterSpawn: { file: ADAPTER, line: 163,
     contains: 'emit("[adapter] spawning worker at " + workerUrl);' },
-  adapterConstructed: { file: ADAPTER, line: 164,
+  adapterConstructed: { file: ADAPTER, line: 165,
     contains: 'emit("[adapter] worker constructed; posting run message");' },
-  adapterDispatch: { file: ADAPTER, line: 284,
+  adapterDispatch: { file: ADAPTER, line: 308,
     contains: "emit(`[adapter] dispatching to ${binary} WASM`);" },
-  wasmExit: { file: ADAPTER, line: 267,
+  wasmExit: { file: ADAPTER, line: 290,
     contains: "if (msg.rc !== 0) emit(`\\n[wasm] exited with code ${msg.rc}`);" },
   workerLog: { file: WORKER, line: 145,
     contains: 'const log = (s) => self.postMessage({ type: "log", line: s });' },
@@ -771,7 +771,17 @@ export interface LogLine {
   readonly from: number | null;
 }
 
-const STDERR_PREFIX = "[stderr] ";
+/** The browser worker's mark on every line the engine wrote to stderr
+ *  (public/workers/solverWorker.js); a native run's stderr carries none.
+ *  ONE home: every reader that matches an engine announcement by its own
+ *  bracket (`[layout] `, `[building] `) strips it here first, or it matches
+ *  nothing in the browser and everything in a native test. */
+export const STDERR_PREFIX = "[stderr] ";
+
+/** A log line as the engine printed it: the worker's stderr mark removed. */
+export function engineText(raw: string): string {
+  return raw.startsWith(STDERR_PREFIX) ? raw.slice(STDERR_PREFIX.length) : raw;
+}
 const APP_PREFIX = /^\[(?:adapter|worker|wasm|wasm-worker|user)\] /;
 
 /** Split a log into what the engine printed on each output.  The browser

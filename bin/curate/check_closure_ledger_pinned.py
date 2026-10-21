@@ -66,7 +66,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parent))
 #  suite's own case pass; standalone it runs live; anything absent runs live.
 #  Under CHOUPO_SUITE_SCOPE (--fast) the cache is the SCOPE instead -- see
 #  bin/curate/suite_cache.py, which is the one home for both rules.
-from suite_cache import SCOPED, scope_sentence, stdout_of   # noqa: E402
+from suite_cache import SCOPED, scope_sentence, stdout_of, no_subject   # noqa: E402
 
 ROOT = Path(__file__).resolve().parents[2]
 FIELDS = ("raw_kW", "step_kW", "remaining_kW")
@@ -187,6 +187,12 @@ def main() -> int:
     #  print a claim shaped like coverage.  Unscoped this cannot happen --
     #  candidates() already refuses an empty discovery above.
     if SCOPED and nskipped == len(cases):
+        ns = no_subject("check_closure_ledger_pinned",
+                        "none of the %d candidate case(s) (a per-unit "
+                        "`thermo {}` override or pinned `closure` rows) is "
+                        "in scope" % len(cases))
+        if ns is not None:
+            return ns
         print("check_closure_ledger_pinned: FAILED\n"
               "  every one of the %d candidate case(s) is OUT OF SCOPE -- the "
               "caller ran none of them, so this gate checked nothing.  Remedy: "

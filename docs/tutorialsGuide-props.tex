@@ -2846,6 +2846,49 @@ WHAT THIS CASE DOES NOT DO. It does not say which correlation is right. That dep
 \goldrow{diag}{moody}{spread\_pct}{25.7358}
 \end{tutgolden}
 
+\clearpage
+\tutentry{moody02\_correlation\_sweeps}{tutorials/props/hydraulics/moody02\_correlation\_sweeps}
+\begin{tutscheme}
+\begin{tikzpicture}[>={Stealth[length=2mm]}, every node/.style={font=\scriptsize}]
+  \node[draw, rounded corners=2pt, align=center, minimum width=3.1cm, minimum height=0.8cm, fill=black!4] at (0.0,-0.0) {\textbf{moody}\\[-1pt]{\tiny frictionBench}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=3.1cm, minimum height=0.8cm, fill=black!4] at (3.6,-0.0) {\textbf{nusselt}\\[-1pt]{\tiny heatTransferBench}};
+\end{tikzpicture}
+\end{tutscheme}
+\tutwhat{The friction-factor and Nusselt correlations swept across five decades of Reynolds number -- the engine's own curves, which the EduTool on why correlations are simple draws, differentiates and fits}
+\begin{tutnarrative}
+moody02 -- THE CORRELATIONS AS CURVES, NOT AS POINTS (DEV.md 4c C119).
+
+moody01 asks four friction correlations ONE question and publishes their disagreement. This case asks them the same question at every Reynolds number from 1e2 to 1e8, and asks the Nusselt correlations the same at every Reynolds number from 2e3 to 2e7, and writes the answers as two CSV files. It is the witness of the EduTool "Why engineering correlations are simple", which draws, differentiates and fits these curves in the browser -- so every curve on that page is the engine's own correlation, the one the pipe and the heat exchanger use, never a re-typed copy.
+
+WHAT IS SYNTHETIC, said plainly. The CSVs hold no measurement. They are the correlations evaluated on a grid, and the EduTool treats them as the "truth" a student fits a power law to -- which is the exercise, because the point it teaches is how simple a curve looks over a narrow range, not how well any correlation matches a laboratory.
+
+WHAT THE TWO SWEEPS WRITE.
+
+moodySweep.csv one row per (eps/D, Re): every friction correlation's f and its own window flag (1 inside, 0 outside), the regime the engine names (laminar below 2300, transition to 4000, turbulent above), and Churchill's two asymptotes fL = 64/Re and fT -- the pieces its single expression blends as (fL\textasciicircum{}12 + fT\textasciicircum{}12)\textasciicircum{}(1/12).
+
+nusseltSweep.csv one row per (Pr, Re): every single-phase Nusselt correlation's Nu and window flag. Each correlation is handed a unit fluid whose Re and Pr ARE the grid point; heating side. Kern is SHELL-side and is evaluated on the same numbers -- it is not a tube correlation.
+
+The grid is logarithmic, 20 points per decade, so every decade holds 21 points, its two ends included -- the EduTool's one-decade power-law fit uses exactly those. The Nusselt grid starts at 2e3 because Gnielinski's expression carries (Re - 1000) and is zero at Re = 1000.
+
+\end{tutnarrative}
+\begin{tutgolden}
+\goldrow{diag}{moody}{allPass}{1}
+\goldrow{diag}{moody}{dev\_Blasius}{0}
+\goldrow{diag}{moody}{dev\_Churchill}{1.73472347598e-16}
+\goldrow{diag}{moody}{dev\_Colebrook}{1.61328517053e-05}
+\goldrow{diag}{moody}{dev\_Haaland}{0.013439281758}
+\goldrow{diag}{moody}{sweep\_rows}{726}
+\goldrow{diag}{nusselt}{Nu\_choupo\_DittusBoelter}{200.475286267}
+\goldrow{diag}{nusselt}{Nu\_choupo\_Gnielinski}{223.73353907}
+\goldrow{diag}{nusselt}{Nu\_choupo\_Kern}{97.5646525378}
+\goldrow{diag}{nusselt}{Nu\_published\_DittusBoelter}{205}
+\goldrow{diag}{nusselt}{Nu\_published\_Gnielinski}{224}
+\goldrow{diag}{nusselt}{Nu\_published\_Kern}{97.5646525378}
+\goldrow{diag}{nusselt}{allPass}{1}
+\goldrow{diag}{nusselt}{dev\_DittusBoelter}{0.0220717743085}
+\goldmore{12}
+\end{tutgolden}
+
 \subsection{kinetics}
 \grouptheory{kinetics}
 \clearpage
@@ -3924,6 +3967,52 @@ WHAT THIS IS AND IS NOT. The mixture is ideal BY DEFINITION (the substances are 
 \goldrow{diag}{reactionMassBubblePoint}{Z}{1}
 \goldrow{diag}{reactionMassBubblePoint}{gamma}{1.07888124878}
 \goldrow{diag}{reactionMassBubblePoint}{v\_molar}{0.0270856136618}
+\end{tutgolden}
+
+\clearpage
+\tutentry{phaseSplit01\_freeze\_water\_ethanol}{tutorials/props/thermo/phaseSplit01\_freeze\_water\_ethanol}
+\begin{tutscheme}
+\begin{tikzpicture}[>={Stealth[length=2mm]}, every node/.style={font=\scriptsize}]
+  \node[draw, rounded corners=2pt, align=center, minimum width=3.1cm, minimum height=0.8cm, fill=black!4] at (0.0,-0.0) {\textbf{freeze}\\[-1pt]{\tiny phaseSplitScan}};
+\end{tikzpicture}
+\end{tutscheme}
+\tutwhat{Freeze-concentration scan: a 10 mol\% ethanol liquor cooled from 0 to -20 C, one SLE flash per kelvin -- the ice point, the liquor concentrating along the freezing-point-depression identity}
+\begin{tutnarrative}
+THE PHASE SPLIT ALONG T (DEV.md 4c C118).
+
+The same liquor flash21 freezes at ONE temperature (-15 C), cooled here from 0 to -20 C one kelvin at a time: at every grid point ONE isothermal flash, the flash21 unit's own solver (IsothermalFlash::solveCore), under flash21's own sealed records -- water, ethanol, the curated NRTL pair, the C3 `phases ( liquor liquid; ice solid crystallizing )` declaration. Nothing is re-derived; the point at 258.15 K IS flash21's answer (the gate holds it to flash21's golden).
+
+WHAT A STUDENT WATCHES. Above the liquor's freezing point the feed is one liquid and the declared ice stays subsaturated: the water activity gamma\_w x\_w (0.917) sits BELOW the saturation value exp(-dG\_fus/RT) the crystal would need (1 at the triple point, falling as T falls). Between -8 and -9 C the two cross, ice APPEARS (announced, between the two grid values it lies between), and from there down the liquor concentrates exactly along the freezing-point-depression identity
+
+gamma\_w $\ast$ x\_w = exp(-dHfus (1 - T/Tt) / (R T))
+
+with every quantity from the record's own data (Hfus 6008 J/mol, triple point 273.16 K) -- published at every point as `a\_water` beside `aEq\_water`, equal to round-off wherever ice is present, and recomputed independently by check\_phase\_split\_scan. By -20 C nearly 60 \% of the feed is ice and the liquor is about a quarter ethanol.
+
+NOT MODELLED, said plainly (the run says it too): nucleation and supercooling -- every point is the equilibrium ceiling; an ethanol solid or a eutectic -- no record declares one, so the liquor never solidifies completely in this model; solute inclusion in the ice; the liquid/solid heat-capacity term of dG\_fus (announced by the record, |T - Tt| up to 20 K here). Every sub-273 K vapour pressure is an announced extrapolation of the Antoine fit (it cancels in the SLE identity: both phases share one Psat), and the NRTL pair is used below its fitted window (announced). No number here is anchored to a measured freezing-point datum: a STRUCTURAL witness, like flash21.
+
+\end{tutnarrative}
+\tutreadme{What this witnesses (DEV.md 4c C118 stage 1, 2026-10-20): the phaseSplitScan props operation. At a FIXED overall composition (90/10 water/ethanol, moles) it sweeps temperature at fixed pressure and, at every grid point, solves the full phase split through the ONE flash home --- IsothermalFlash::solveCore, the isothermalFlash unit's own solver, with the options the unit's own reader parses --- under the case's own sealed records. The constant/ tree is flash21's, copied verbatim: the same water, the same ethanol, the same curated NRTL pair, the same C3 phases ( liquor liquid; ice solid crystallizing ) declaration. Nothing is re-derived, which is why the point at 258.15 K is flash21's answer (check\_phase\_split\_scan arm (a) holds it to flash21's golden; its arms also hold single points on copies of flash16 and flash19 to those units' pH and V/F).}
+\tutreadme{What a student watches. One isothermal flash per kelvin, 273.15 $\to$ 253.15 K:}
+\tutreadme{Above the liquor's freezing point the feed is one liquid and the declared crystal stays subsaturated: the water activity $\gamma$\_w$\cdot$x\_w (0.917) lies BELOW the saturation value exp(-$\Delta$G\_fus/RT) the crystal would need (1 at the triple point, falling as T falls). Between 265.15 and 264.15 K the two cross and ice APPEARS --- announced by the run between the two grid values it lies between, recorded as an appeared event in the result block, pinned as diag first\_ice. From there down the liquor concentrates exactly along the freezing-point-depression identity}
+\tutreadme{$\gamma$\_w $\cdot$ x\_w = exp(-$\Delta$H\_fus (1 - T/T\_t) / (R T)), $\Delta$H\_fus = 6008 J/mol, T\_t = 273.16 K}
+\tutreadme{with every quantity from water.dat's own data --- published at every point as a\_water beside aEq\_water, equal to 1e-10 wherever ice is present, and recomputed independently by the gate from the record. By -20 $^\circ$C 63 \% of the feed is ice and the liquor is 27 mol\% ethanol.}
+\tutreadme{What is published. freeze.csv (T first, then solved, nPhases, the amount of each phase --- L1, ice --- their compositions, the flash's own a\_water / aEq\_water / solidFraction) and the top-level result block phaseSplitScans (points, the event, the record-level announcements at the first point that raised each, what is not modelled). Every number in the block is a CSV cell or a diagnostic, so the csv and diag golden kinds pin all of it: the golden carries the diagnostics and ten authored CSV cells (rows 9, 15, 20).}
+\begin{tutgolden}
+\goldrow{diag}{freeze}{first\_L1}{273.15}
+\goldrow{diag}{freeze}{first\_ice}{264.15}
+\goldrow{diag}{freeze}{last\_L1}{253.15}
+\goldrow{diag}{freeze}{last\_ice}{253.15}
+\goldrow{diag}{freeze}{n\_announcements}{4}
+\goldrow{diag}{freeze}{n\_events}{1}
+\goldrow{diag}{freeze}{n\_points}{21}
+\goldrow{diag}{freeze}{n\_refused}{0}
+\goldrow{diag}{freeze}{n\_solved}{21}
+\goldrow{diag}{freeze}{points\_L1}{21}
+\goldrow{diag}{freeze}{points\_ice}{12}
+\goldrow{csv}{freeze.csv}{9:ice}{3.2042311316e-02}
+\goldrow{csv}{freeze.csv}{9:x\_L1\_ethanol}{1.0331030082e-01}
+\goldrow{csv}{freeze.csv}{15:ice}{4.7599462325e-01}
+\goldmore{7}
 \end{tutgolden}
 
 \clearpage

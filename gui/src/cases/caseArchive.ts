@@ -27,8 +27,11 @@ License
 \*---------------------------------------------------------------------------*/
 
 /*---------------------------------------------------------------------------*\
-  caseArchive -- find the ONE case inside a .zip a student made, pure.
-  (DEV.md 4c C107.)
+  caseArchive -- find the ONE case inside a .zip a student made, or a
+  folder a student picked, pure.  (DEV.md 4c C107; the folder route joined
+  in DEV.md 4c C110 G6, so File -> "Open Case folder..." and "Open Case from
+  .zip..." apply ONE rule -- the folder route had kept its own reader, with
+  no case-root rule and every file read as text.)
 
   The zips students actually produce are not the one "Download case (.zip)"
   writes.  macOS "Compress" adds a `__MACOSX/` tree of `._*` resource forks
@@ -137,12 +140,20 @@ export function decodeText(bytes: Uint8Array): string | null {
   }
 }
 
-/** Locate the one case in a set of unzipped entries.  Pure; throws a
- *  CaseArchiveRefusal with a message for the student. */
+/** Where a set of entries came from: a .zip, or a folder the student
+ *  picked.  It changes the WORDS of a refusal (a folder is not compressed,
+ *  and is called a folder), never the rule. */
+export type CaseSource = "zip" | "folder";
+
+/** Locate the one case in a set of unzipped entries (or a picked folder's
+ *  files, paths relative to that folder).  Pure; throws a CaseArchiveRefusal
+ *  with a message for the student. */
 export function caseFromEntries(
   entries: { [path: string]: Uint8Array },
   archiveName: string,
+  source: CaseSource = "zip",
 ): UnpackedCase {
+  const isZip = source === "zip";
   const kept: { [path: string]: Uint8Array } = {};
   for (const [raw, bytes] of Object.entries(entries)) {
     const p = normalisePath(raw);
@@ -155,13 +166,17 @@ export function caseFromEntries(
     throw new CaseArchiveRefusal(
       `“${archiveName}” holds no Choupo case: no folder in it contains `
       + `system/controlDict.  A case is a folder with system/, constant/ and 0/ `
-      + `inside -- compress that folder (or its contents) and open the .zip.`);
+      + (isZip
+        ? `inside -- compress that folder (or its contents) and open the .zip.`
+        : `inside -- pick that folder (or a folder that holds it).`));
   }
   if (roots.length > 1) {
-    const named = roots.map((r) => (r === "" ? "(the top of the .zip)" : r));
+    const named = roots.map((r) =>
+      (r === "" ? (isZip ? "(the top of the .zip)" : "(the folder itself)") : r));
     throw new CaseArchiveRefusal(
       `“${archiveName}” holds ${roots.length} cases, not one: ${named.join(", ")}.  `
-      + `Choupo opens one case at a time -- compress each case folder on its own.`);
+      + `Choupo opens one case at a time -- `
+      + (isZip ? `compress each case folder on its own.` : `pick one case folder.`));
   }
   const root = roots[0]!;
   const prefix = root === "" ? "" : root + "/";
@@ -184,7 +199,8 @@ export function caseFromEntries(
     notices.push(`Left out ${outside.length} file(s) outside the case folder `
       + `“${root}”: ${outside.sort().join(", ")}.`);
   const leaf = root.split("/").pop() || "";
-  const name = leaf || archiveName.replace(/\.zip$/i, "") || "uploaded-case";
+  const name = leaf || (isZip ? archiveName.replace(/\.zip$/i, "") : archiveName)
+    || (isZip ? "uploaded-case" : "opened-folder");
   return { name, root, files, notices };
 }
 

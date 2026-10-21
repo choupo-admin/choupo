@@ -1,0 +1,203 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+  donepezil01_tablets -- a drug-product plant: donepezil hydrochloride 10 mg
+  film-coated tablets.  The API is BOUGHT; everything else is made here
+  (DEV.md 4c C104, built on the stated defaults of C110).  A BASE CASE: it
+  runs, it is NOT optimised, and every number a group would change is a
+  plain key, said to be an assumption where it is declared.  The README is
+  the narrative; this file is the topology.
+
+  THE BASIS (README section 2): 720 000 tablets per hour PRESSED, the
+  flowsheet basis, of a 280 mg core carrying 10 mg of donepezil
+  hydrochloride and 174.33 mg of lactose monohydrate (the reference
+  product's own figures), with a 3 % film coat.  THIS STEADY FLOWSHEET IS
+  THE MATERIAL BALANCE PER UNIT OF PRODUCT (DEV.md 4c C99): the plant runs
+  in BATCHES (lots released one by one), and the BATCH PLAN in
+  system/postDict sizes each step for one lot from these streams' masses,
+  counts the lots a year from the declared production, and finds the step
+  that paces each train.  The absolute rate is chosen as the fluid bed's own
+  DRYING rate (one 300 kg lot dried in 1.5 h), so the fluid bed's air heater
+  is sized for the duty it really has; the coater's heater is then sized at
+  that same rate, which is about twice the coater's own -- README section 6.
+
+    WET GRANULATION
+      granWater + hpcFeed -> [binderPrep] -> binderSolution --+
+      apiFeed (BOUGHT) + lactose + starch + MCC --------------+-> [granulator] -> wetMass
+      fbdAirIn -> [fbdAirHeater] 333 K -> fbdAir                                    |
+      wetMass + fbdAir -> [fluidBedDryer] -> driedGranules + fbdExhaust
+      driedGranules -> [mill] -> milledGranules
+
+    FINAL BLEND, TABLETING, COATING, PACKAGING
+      milledGranules + mgstFeed -> [finalBlender] -> finalBlend -> [tabletPress] -> tabletCores
+                                                                              +-> tabletRejects
+      coatWater + HPMC + macrogol + talc + TiO2 + yellow iron oxide -> [coatingSuspensionPrep]
+      tabletCores + coatingSuspension -> [coatingPan] -> wetCoatedTablets
+      coatingAirIn -> [coatingAirHeater] 333 K -> coatingAir
+      wetCoatedTablets + coatingAir -> [coatingDryer] -> coatedTablets + coatingExhaust
+      coatedTablets -> [packagingLine] -> packagedTablets
+
+  NO RECYCLE, NO SOLVENT.  Unlike apalutamide01_tablets there is no spray
+  dryer, no organic solvent, no nitrogen loop, no solvent recovery and no
+  hazardous area: an aqueous wet granulation and an aqueous coat.
+
+  WHAT IS A PLACEHOLDER.  The high-shear granulator, the mill, the final
+  blender, the tablet press and the packaging line are FLOW PRIMITIVES (a
+  `mixer`, a `splitter`): they conserve mass and energy and model NOTHING of
+  the machine -- no granule growth, no granule size, no blend uniformity
+  (THE critical quality question of a low-dose tablet, README section 8),
+  no compaction force, no tablet hardness.  Choupo has no such equipment
+  model; none is invented here.  The two DRYERS are physics: `solidDryer`
+  dries to the starch's sorption isotherm at the exhaust air's humidity,
+  with the energy balance on the package's enthalpy.  The coating pan is TWO
+  boxes, a `mixer` (the spray lands on the cores) and a `solidDryer` (the
+  hot air takes the water off), which is the mass and energy balance of one
+  machine.
+\*---------------------------------------------------------------------------*/
+
+units
+(
+    //  ========================= WET GRANULATION ============================
+
+    //  ---- the binder solution ---------------------------------------------
+    //  Hydroxypropyl cellulose dispersed in purified water in a stirred tank
+    //  at 25 C (DECLARED: `operation { T ...; }`, so its duty is published --
+    //  nil here, every inlet arrives at 25 C, because the heat of solution is
+    //  not modelled).  A `mixer` CARRIES the polymer as a solid (it never
+    //  dissolves anything).  10 wt % HPC: an AUTHOR-SET ASSUMPTION, set by
+    //  the inlet flows in 0/.
+    {
+        name        binderPrep;
+        type        mixer;
+        inputs      ( granWater  hpcFeed );
+        outputs     ( binderSolution );
+        operation   { T 298.15 K; }
+    }
+
+    //  ---- the high-shear granulator: PLACEHOLDER -------------------------
+    //  The dispensed powders are dry-mixed and then wetted with the binder
+    //  solution and massed.  A `mixer`: the wet mass is the sum of what went
+    //  in -- no granule growth, no endpoint (impeller power), no granule
+    //  size.  The impeller's work, which warms a real wet mass by a few
+    //  kelvin, is not modelled.
+    {
+        name        granulator;
+        type        mixer;
+        inputs      ( apiFeed  lactoseFeed  starchFeed  mccFeed  binderSolution );
+        outputs     ( wetMass );
+    }
+
+    //  ---- the fluid-bed dryer and its air heater -------------------------
+    {
+        //  60 C inlet air: AUTHOR-SET, of the order used to dry a lactose /
+        //  starch granule without melting or degrading anything.  Heated by
+        //  LP steam.
+        name        fbdAirHeater;
+        type        phaseChanger;
+        in          fbdAirIn;
+        outputs     ( fbdAir );
+        operation   { outletT 333.15 K;  P 1.01325 bar; }
+    }
+    {
+        //  The fluid-bed dryer.  A `solidDryer`: the hot air takes the
+        //  granulation water off the wet mass down to the moisture the
+        //  granules hold in equilibrium with the exhaust air -- the sorption
+        //  isotherm declared on the maize starch (constant/components,
+        //  AUTHOR-SET parameters); every other solid rides through dry, said
+        //  on the run.  The exhaust temperature closes the energy balance.
+        //  What it does NOT model: the drying KINETICS (enough residence is
+        //  assumed), the fluidisation (air velocity, bed expansion), the
+        //  attrition of the granules, the end-point (loss on drying) control.
+        name        fluidBedDryer;
+        type        solidDryer;
+        inputs      ( wetMass  fbdAir );
+        outputs     ( driedGranules  fbdExhaust );
+    }
+    {
+        name        mill;                       // PLACEHOLDER: dried granules sized through a screen mill, no size model
+        type        splitter;
+        in          driedGranules;
+        outputs     ( milledGranules );
+        operation   { fractions ( 1.0 ); }
+    }
+
+    //  ===================== FINAL BLEND AND TABLETING ======================
+    {
+        //  The extragranular lubricant blended in.  The granules leave the
+        //  fluid bed warm; the dryer's COOL-DOWN step (ambient air through
+        //  the bed, not modelled) and the hold before release bring them to
+        //  room temperature, so the blend is DECLARED at 298.15 K, and the
+        //  duty that implies (the heat the warm granules gave up) is
+        //  published as `Q_kW` -- about 1.3 kW, which the utility allocation
+        //  files against chilled water (the only service cold enough for a
+        //  298.15 K sink); in the real plant it is the bed's cool-down air.
+        name        finalBlender;
+        type        mixer;
+        inputs      ( milledGranules  mgstFeed );
+        outputs     ( finalBlend );
+        operation   { T 298.15 K; }
+    }
+    {
+        //  PLACEHOLDER for the press: 1 % of the tablets are REJECTED
+        //  (weight, hardness, start-up) -- AUTHOR-SET.  The rejects leave the
+        //  plant (README: whether they can be reworked is a GMP question).
+        name        tabletPress;
+        type        splitter;
+        in          finalBlend;
+        outputs     ( tabletCores  tabletRejects );
+        operation   { fractions ( 0.99  0.01 ); }
+    }
+
+    //  ===================== FILM COATING ===================================
+    {
+        //  The coating suspension: 12 wt % solids in water -- AUTHOR-SET (a
+        //  hypromellose suspension is sprayed thinner than a PVA one).  The
+        //  HPMC and the macrogol are carried as solids (nothing dissolves).
+        name        coatingSuspensionPrep;
+        type        mixer;
+        inputs      ( coatWater  hpmcFeed  pegFeed  talcFeed  tio2Feed  feOxFeed );
+        outputs     ( coatingSuspension );
+        operation   { T 298.15 K; }       // a stirred tank at 25 C
+    }
+    {
+        //  60 C coating air: AUTHOR-SET, of the order used for aqueous film
+        //  coating.  Heated by LP steam.
+        name        coatingAirHeater;
+        type        phaseChanger;
+        in          coatingAirIn;
+        outputs     ( coatingAir );
+        operation   { outletT 333.15 K;  P 1.01325 bar; }
+    }
+    {
+        //  The coating pan, part 1: the suspension lands on the cores.
+        name        coatingPan;
+        type        mixer;
+        inputs      ( tabletCores  coatingSuspension );
+        outputs     ( wetCoatedTablets );
+    }
+    {
+        //  The coating pan, part 2: the hot air takes the water off, down to
+        //  the starch's isotherm at the exhaust air's humidity.
+        name        coatingDryer;
+        type        solidDryer;
+        inputs      ( wetCoatedTablets  coatingAir );
+        outputs     ( coatedTablets  coatingExhaust );
+    }
+
+    //  ===================== PACKAGING ======================================
+    {
+        name        packagingLine;              // PLACEHOLDER: PVC/aluminium blisters not modelled
+        type        splitter;
+        in          coatedTablets;
+        outputs     ( packagedTablets );
+        operation   { fractions ( 1.0 ); }
+    }
+);
+
+// ************************************************************************* //

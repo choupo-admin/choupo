@@ -161,7 +161,7 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 #  The single-pass cache, and (under --fast) the SCOPE it becomes.  One home:
 #  bin/curate/suite_cache.py.
-from suite_cache import SCOPED, scope_sentence, stdout_of   # noqa: E402
+from suite_cache import SCOPED, scope_sentence, stdout_of, no_subject   # noqa: E402
 
 ROOT = Path(__file__).resolve().parents[2]
 TERMS = ("H_feeds_kW", "Q_boundary_kW", "H_products_kW")
@@ -453,6 +453,10 @@ def main() -> int:
             else:
                 npin += 1
     if SCOPED and ncase == 0 and not problems:
+        ns = no_subject("check_energy_boundary_pinned",
+                        "no case in scope publishes a globalEnergyBoundary")
+        if ns is not None:
+            return ns
         print("check_energy_boundary_pinned: FAILED\n"
               "  no case IN SCOPE publishes a globalEnergyBoundary -- the "
               "caller ran none that does, so this gate checked nothing.  "

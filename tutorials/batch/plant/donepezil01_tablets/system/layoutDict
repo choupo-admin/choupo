@@ -1,0 +1,457 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+  layoutDict -- the PLOT PLAN and the GMP INTERIOR of the donepezil tablet
+  plant (DEV.md 4c C104, C110).  A STARTING POINT for the group, to copy and
+  change.
+
+  WHAT STANDS WHERE, AND WHY.  An oral-solid-dose plant is a building
+  before it is a plot plan: every process item stands in a ROOM of the
+  `building {}` at the end of this file (each room's `equipment ( ... )`
+  lists it; its base is the room's floor, so no item indoors declares a
+  `z`):
+    * the binder-solution tank, in the GRANULATION room beside the
+      high-shear granulator it feeds;
+    * the coating-suspension tank, in a COATING-PREPARATION room beside the
+      coater;
+    * the two air heaters -- the fluid bed's and the coater's -- in the
+      air-handling plant on the technical floor, above the rooms they serve.
+  NOTHING STANDS OUTDOORS.  Unlike apalutamide01_tablets there is no
+  organic solvent, so there is no tank farm, no pipe rack, no bund and no
+  hazardous area anywhere on this site: purified water is made in the
+  building (its plant is not modelled), the air is drawn from outside, and
+  every powder arrives in drums or bags through the warehouse.  Beside the
+  production building stand the site buildings as NON-PROCESS items: the
+  offices and quality-control laboratory by the main gate, the warehouse,
+  and a second (emergency) gate on the north side.
+
+  WHAT IS THE ENGINE'S AND WHAT IS OURS.  The two tanks' diameters and
+  heights are their sizers' own; the air heaters publish an AREA, not a
+  shape, so their plan boxes are DECLARED below (each with the arithmetic).
+  EVERYTHING ELSE IS AN AUTHOR-SET ASSUMPTION FOR THE GROUP TO REPLACE WITH
+  ITS OWN SITE DATA: every position, every building's size, every road and
+  the access distance.  They are round numbers, not values from any spacing
+  or fire standard (the published ones grant no redistribution, and a
+  citation invented for a round number would turn "unsourced" into
+  "falsely sourced").
+
+  PIPES INDOORS ARE NOT DRAWN.  The router draws pipes in the open only: a
+  stream whose ends stand indoors is listed as "inside the building: indoor
+  piping is not routed"; the two purified-water feeds and the two air
+  intakes come from supplies this case does not model and are listed with
+  that reason; SOLIDS ARE NOT PIPED -- the powders, the wet mass, the
+  granules, the blend and the tablets are listed as "solids only, moved in
+  containers or by conveyor".  See the README (section 7).
+
+  Grammar and checks: docs/design/a-plant-layout-is-declared-and-checked.md
+\*---------------------------------------------------------------------------*/
+
+items
+(
+    //  ================= INSIDE THE GMP BUILDING =========================
+    //  Each listed by its room below; no `z`: the base is the room's floor.
+    {
+        item        "binderPrep";        // D and H from its own sizing
+        x           -32.5 m;             // the granulation room
+        y           13 m;
+        orientation vertical;
+    }
+    {
+        item        "coatingSuspensionPrep";   // D and H from its own sizing
+        x           -44 m;               // the coating-preparation room
+        y           -5.5 m;
+        orientation vertical;
+    }
+    //  The fluid bed's air heater: a steam coil in the dryer's air-handling
+    //  unit, on the technical floor above the drying room.  Its area is
+    //  design/fbdAirHeater's (21.6 m2); the box is a coil of that order
+    //  in its casing -- by hand.
+    {
+        item        "fbdAirHeater";
+        x           -42 m;
+        y           12 m;
+        orientation alongX;
+        footprint   { length 3.0 m; width 1.0 m; height 1.2 m; }   // author-set
+    }
+    //  The coater's air heater, in the coater's air-handling unit above the
+    //  coating-preparation and coating rooms -- by hand, as above.
+    {
+        item        "coatingAirHeater";
+        x           -44 m;
+        y           -5 m;
+        orientation alongX;
+        footprint   { length 3.0 m; width 1.0 m; height 1.2 m; }   // author-set
+    }
+
+    //  ======================== THE SITE BUILDINGS ======================
+    {
+        nonProcess  "productionBuilding";
+        kind        productionBuilding;
+        x           -48 m;
+        y           0 m;
+        z           0 m;
+        orientation alongX;
+        footprint   { length 44 m; width 36 m; height 10 m; }
+        source      "author-set assumption for the group to replace; not a building design";
+        reason      "the GMP building: dispensing, wet granulation and fluid-bed drying, milling, blending, compression, coating and packaging; its interior is the `building {}` block at the end of this file";
+        ignition    "general-purpose electrical equipment, presses, coaters and people: treated as an ignition source";
+    }
+    {
+        nonProcess  "warehouse";
+        kind        warehouse;
+        x           -45 m;
+        y           -40 m;
+        z           0 m;
+        orientation alongX;
+        footprint   { length 40 m; width 20 m; height 10 m; }
+        source      "author-set assumption for the group to replace; not a building design";
+        reason      "raw materials in quarantine and released, the packed product awaiting release; on the site road so trucks unload at its doors";
+        ignition    "forklift trucks and people: treated as an ignition source";
+    }
+    {
+        nonProcess  "officesAndQC";
+        kind        officesAndLaboratory;
+        x           -90 m;
+        y           -5 m;
+        z           0 m;
+        orientation alongY;
+        footprint   { length 30 m; width 16 m; height 8 m; }
+        source      "author-set assumption for the group to replace; not a building design";
+        reason      "offices and the quality-control laboratory that releases every lot (blend uniformity, assay, dissolution); beside the main gate";
+        ignition    "a laboratory (hot plates, ovens) and people: treated as an ignition source";
+    }
+    {
+        nonProcess  "gate";
+        kind        gate;
+        x           -106 m;
+        y           -54 m;
+        z           0 m;
+        orientation alongX;
+        footprint   { length 4 m; width 3 m; height 3 m; }
+        source      "author-set assumption for the group to replace; not a building design";
+        reason      "the main entrance: a guardhouse beside the site road and its barrier";
+    }
+    {
+        nonProcess  "northGate";
+        kind        gate;
+        x           -14 m;
+        y           32 m;
+        z           0 m;
+        orientation alongX;
+        footprint   { length 4 m; width 3 m; height 3 m; }
+        source      "author-set assumption for the group to replace; not a building design";
+        reason      "a second entrance on the north side, normally locked: a fire brigade reaches the site when the main gate is blocked";
+    }
+);
+
+roads
+{
+    source   "author-set assumption for the group to replace; not taken from a road or fire standard";
+    reason   "one site road from the main gate past the offices and the warehouse, a loop round the production building, and its east road on to the north gate";
+    headroom 5 m;
+    access
+    {
+        distance 25 m;
+        source   "author-set assumption for the group to replace; not taken from a fire code";
+        reason   "the reach of a fire tender's hoses from the road, as a round number";
+    }
+    network
+    (
+        {
+            road      "site";
+            width     7 m;
+            reason    "the main gate to the east end of the site, past the warehouse doors";
+            waypoints ( { x -110 m; y -60 m; } { x -20 m; y -60 m; } );
+        }
+        {
+            road      "offices";
+            width     6 m;
+            reason    "to the offices and laboratory, and up the west side of the production building";
+            waypoints ( { x -78 m; y -60 m; } { x -78 m; y 22 m; } );
+        }
+        {
+            road      "buildingNorth";
+            width     6 m;
+            reason    "north of the production building: its waste door";
+            waypoints ( { x -78 m; y 22 m; } { x -20 m; y 22 m; } );
+        }
+        {
+            road      "buildingEast";
+            width     6 m;
+            reason    "east of the production building, from the site road to the north gate";
+            waypoints ( { x -20 m; y -60 m; } { x -20 m; y 34 m; } );
+        }
+    );
+}
+
+plot
+{
+    margin  5 m;
+    reason  "author-set assumption for the group to replace: a fence and a clear strip inside it; not taken from any spacing standard";
+}
+
+/*---------------------------------------------------------------------------*\
+  THE GMP INTERIOR of the production building.  The plot plan above sees the
+  building as ONE box, the `productionBuilding` item; `envelope
+  productionBuilding;` makes that box the SHELL of the rooms below, so every
+  room must lie inside it (x -70..-26 m, y -18..18 m, z 0..10 m), and the
+  items the rooms list stand inside it.  Grammar and checks:
+  docs/ai/case-layout.md, "THE GMP INTERIOR"; record
+  docs/design/a-gmp-interior-is-declared-and-checked.md.
+
+  WHAT GRADE, AND WHY.  This is an ORAL SOLID DOSE (film-coated tablet)
+  suite, not a sterile one.  EU GMP Annex 1, whose grade vocabulary A/B/C/D
+  the engine speaks, is written for STERILE products; nothing in it applies
+  to tablets by its own terms.  The rooms where product is exposed
+  (dispensing, granulation, drying, milling, blending, compression, coating
+  and its preparation, primary packaging, the corridors and airlocks that
+  serve them, the IPC and wash rooms) are declared grade D BY ANALOGY, the
+  usual practice for an OSD plant, and every other room CNC (controlled,
+  not classified).  That is this case's statement, to be replaced by the
+  company's own risk assessment -- not a value looked up.
+
+  THE CASCADE.  Every pressure is declared to outside, as in
+  apalutamide01_tablets: CNC rooms +15 Pa, the clean corridor +35 Pa,
+  gowning and the cascade airlock between their neighbours, the personnel
+  bubbles +45 Pa, the material sinks +5/+10 Pa, the contained suite's own
+  corridor +25 Pa and its process rooms +15 Pa, so air moves INTO the rooms
+  where powder is open.  The step is Annex 1's guidance value, borrowed.
+
+  CONTAINMENT.  The API is BOUGHT and its occupational exposure band is NOT
+  KNOWN to this case.  Every room where the API is handled as an OPEN
+  powder -- dispensing, granulation, drying, milling, final blending,
+  compression -- is declared contained, as a PRECAUTION until the
+  supplier's safety data sheet gives the band: CONFIRM THE BAND (README
+  section 9).  A drug dosed at 10 mg a day is pharmacologically active at
+  milligram doses, and that is the whole argument for the precaution; if
+  the band turns out low, the bubbles and sinks may become cascades and the
+  suite shrinks.  Coating and packaging handle tablets, not open powder,
+  and are not contained.
+
+  NO HAZARDOUS AREA.  There is no flammable solvent anywhere in the plant
+  (an aqueous binder, an aqueous coat), so no room carries an `atex {}`
+  zone.  The fine organic powders (lactose, starch, the API) are
+  COMBUSTIBLE DUSTS: whether the fluid bed, the mill and the blenders need
+  a dust zone (20/21/22) and explosion protection is the group's to assess
+  (README section 9) -- the engine's grammar carries it, the case declares
+  none because nobody has done that assessment.
+
+  THE FLOWS (one way each; nothing goes back through a room it left):
+    * material in from the WAREHOUSE (south) to goods-in and the dispensary;
+      the dispensed kits go in closed containers along the clean corridor
+      and through a sink into the GRANULATION room, the coating powders to
+      the coating-preparation room;
+    * the PRODUCT goes granulation -> drying -> milling -> final blending ->
+      compression, out of the suite through a sink into the clean corridor,
+      then coating -> packaging -> secondary packaging -> back SOUTH to the
+      warehouse;
+    * PEOPLE come in at the south lobby (street clothes), gown, and reach
+      the work rooms from the clean corridor -- the contained suite through
+      a bubble airlock;
+    * WASTE (press rejects, dust bags) leaves the contained suite by its
+      north return corridor and a sink airlock to the waste room, never
+      through a room the product crosses.
+  The clean corridor carries people and closed containers of material both:
+  declared `shared` below, with the reason.
+
+  EVERY POSITION, SIZE, GRADE AND PRESSURE HERE IS AN AUTHOR-SET ASSUMPTION
+  for the group to replace with its own design; the ISPE Baseline Guide
+  Volume 2 (Oral Solid Dosage Forms) is where a real OSD layout is argued,
+  cited by title only.
+\*---------------------------------------------------------------------------*/
+building
+{
+    name     "donepezil OSD building";
+    source   "author-set assumption for the group to replace with its own design; not a building design";
+    reason   "the interior of the production building: where the tablets are dispensed, granulated, dried, blended, pressed, coated and packed";
+    envelope productionBuilding;
+
+    cascade
+    {
+        minimumStep 10 Pa;
+        source "EU GMP Annex 1 (2022) para 4.14: a minimum of 10 Pa between adjacent rooms of different grades (guidance value) -- written for sterile products, borrowed here by analogy";
+        reason "the guidance value, taken as the design step of an oral-solid-dose suite";
+    }
+
+    floors
+    (
+        { floor ground;    elevation 0 m;   height 5 m;   }
+        { floor technical; elevation 5.5 m; height 4.5 m; }   // AHUs, utilities, switchgear
+    );
+
+    rooms
+    (
+        //  ---- the clean corridor and the personnel entrance (south) -------
+        { room corridor;           floor ground; xMin -66 m; xMax -30 m; yMin -1 m;  yMax 3 m;   grade D;   pressure 35 Pa; relativeTo outside; }
+        { room lobby;              floor ground; xMin -58 m; xMax -50 m; yMin -18 m; yMax -10 m; grade CNC; pressure 15 Pa; relativeTo outside;
+          source "author-set"; reason "the staff entrance from the footpath along the warehouse: street clothes off, lockers"; }
+        { room gowning;            floor ground; xMin -58 m; xMax -54 m; yMin -10 m; yMax -1 m;  grade D;   role gowning; regime cascade;
+          pressure 25 Pa; relativeTo outside;
+          source "author-set"; reason "factory garments on, a step-over bench, hands washed: CNC to grade D (Annex 1 para 4.12 (i), borrowed)"; }
+
+        //  ---- receipt and dispensing (south-west, from the warehouse) ------
+        { room goodsIn;            floor ground; xMin -70 m; xMax -58 m; yMin -18 m; yMax -10 m; grade CNC; pressure 15 Pa; relativeTo outside;
+          source "author-set"; reason "released raw materials from the warehouse: outer packaging removed, containers wiped down"; }
+        { room malIn;              floor ground; xMin -70 m; xMax -66 m; yMin -10 m; yMax -1 m;  grade D;   role materialAirlock; regime sink;
+          pressure 5 Pa; relativeTo outside; }
+        { room dispensing;         floor ground; xMin -66 m; xMax -58 m; yMin -10 m; yMax -4 m;  grade D;   pressure 20 Pa; relativeTo outside;
+          containment yes; occupancy 2;
+          source "author-set: the API's exposure band is NOT known -- confirm it from the supplier's safety data sheet";
+          reason "every raw material weighed into kits under a downflow booth; the API is open here, so the room is contained until the band says otherwise"; }
+        { room dispPAL;            floor ground; xMin -66 m; xMax -62 m; yMin -4 m;  yMax -1 m;  grade D;   role personnelAirlock; regime bubble;
+          pressure 45 Pa; relativeTo outside; }
+        { room dispOutMAL;         floor ground; xMin -62 m; xMax -58 m; yMin -4 m;  yMax -1 m;  grade D;   role materialAirlock; regime sink;
+          pressure 10 Pa; relativeTo outside; }
+
+        //  ---- support rooms off the corridor -------------------------------
+        { room washRoom;           floor ground; xMin -54 m; xMax -50 m; yMin -10 m; yMax -1 m;  grade D;   pressure 25 Pa; relativeTo outside; occupancy 1; }
+        { room ipcLab;             floor ground; xMin -50 m; xMax -46 m; yMin -10 m; yMax -1 m;  grade D;   pressure 35 Pa; relativeTo outside; occupancy 1;
+          source "author-set"; reason "in-process control: loss on drying of the granules, tablet weight, hardness, thickness and friability beside the line"; }
+
+        //  ---- coating and packaging (south-east), out to the warehouse ----
+        { room coatingPrep;        floor ground; xMin -46 m; xMax -42 m; yMin -10 m; yMax -1 m;  grade D;   pressure 25 Pa; relativeTo outside; occupancy 1;
+          equipment ( coatingSuspensionPrep );
+          source "author-set"; reason "the coating suspension: hypromellose, macrogol and pigments dispersed in purified water, piped through the wall to the pan coater"; }
+        { room coating;            floor ground; xMin -42 m; xMax -38 m; yMin -10 m; yMax -1 m;  grade D;   pressure 25 Pa; relativeTo outside; occupancy 1;
+          source "author-set"; reason "the pan coater; below the corridor so its dust does not leave; not contained: it handles tablets, not open powder"; }
+        { room packaging;          floor ground; xMin -38 m; xMax -30 m; yMin -7 m;  yMax -1 m;  grade D;   pressure 30 Pa; relativeTo outside; occupancy 3;
+          source "author-set"; reason "primary packaging: the tablets into PVC/aluminium blisters"; }
+        { room packMAL;            floor ground; xMin -38 m; xMax -30 m; yMin -10 m; yMax -7 m;  grade D;   role materialAirlock; regime cascade;
+          pressure 20 Pa; relativeTo outside; }
+        { room packagingMaterials; floor ground; xMin -50 m; xMax -38 m; yMin -18 m; yMax -10 m; grade CNC; pressure 15 Pa; relativeTo outside; }
+        { room secondaryPackaging; floor ground; xMin -38 m; xMax -30 m; yMin -18 m; yMax -10 m; grade CNC; pressure 15 Pa; relativeTo outside; occupancy 2;
+          source "author-set"; reason "blisters into cartons and cases, then back to the warehouse to await release"; }
+        { room stairHall;          floor ground; xMin -30 m; xMax -26 m; yMin -18 m; yMax -1 m;  grade CNC; pressure 15 Pa; relativeTo outside;
+          source "author-set"; reason "the stair to the technical floor, its door out on the east wall"; }
+
+        //  ---- the contained suite (north) ----------------------------------
+        { room suitePAL;           floor ground; xMin -54 m; xMax -50 m; yMin 3 m;   yMax 6 m;   grade D;   role personnelAirlock; regime bubble;
+          pressure 45 Pa; relativeTo outside;
+          source "author-set"; reason "over-garments and respiratory protection on, the bubble keeps the suite's dust in and the corridor's air out"; }
+        { room suiteCorridor;      floor ground; xMin -58 m; xMax -38 m; yMin 6 m;   yMax 8.5 m; grade D;   pressure 25 Pa; relativeTo outside; containment yes; }
+        { room compression;        floor ground; xMin -66 m; xMax -58 m; yMin 6 m;   yMax 15.5 m; grade D;  pressure 15 Pa; relativeTo outside; containment yes; occupancy 2; }
+        { room finalBlending;      floor ground; xMin -58 m; xMax -52 m; yMin 8.5 m; yMax 15.5 m; grade D;  pressure 15 Pa; relativeTo outside; containment yes; }
+        { room milling;            floor ground; xMin -52 m; xMax -46 m; yMin 8.5 m; yMax 15.5 m; grade D;  pressure 15 Pa; relativeTo outside; containment yes; }
+        { room drying;             floor ground; xMin -46 m; xMax -38 m; yMin 8.5 m; yMax 15.5 m; grade D;  pressure 15 Pa; relativeTo outside; containment yes; occupancy 1;
+          source "author-set"; reason "the fluid-bed dryer, its product bowl charged straight from the granulator next door; its air handling is on the technical floor above"; }
+        { room granulation;        floor ground; xMin -38 m; xMax -30 m; yMin 6 m;   yMax 15.5 m; grade D;  pressure 15 Pa; relativeTo outside; containment yes; occupancy 1;
+          equipment ( binderPrep );
+          source "author-set"; reason "the high-shear granulator and the binder-solution tank that feeds it; the dispensed kits come in through the sink from the corridor"; }
+        { room returnCorridor;     floor ground; xMin -66 m; xMax -30 m; yMin 15.5 m; yMax 18 m; grade D;   pressure 15 Pa; relativeTo outside; containment yes;
+          source "author-set"; reason "the suite's way out for waste: rejected tablets and filter bags in sealed bags, never through a room the product crosses"; }
+        { room wasteMAL;           floor ground; xMin -70 m; xMax -66 m; yMin 15.5 m; yMax 18 m; grade D;   role materialAirlock; regime sink;
+          pressure 5 Pa; relativeTo outside; }
+        { room wasteRoom;          floor ground; xMin -70 m; xMax -66 m; yMin 3 m;   yMax 15.5 m; grade CNC; pressure 15 Pa; relativeTo outside; }
+        { room pressOutMAL;        floor ground; xMin -66 m; xMax -62 m; yMin 3 m;   yMax 6 m;   grade D;   role materialAirlock; regime sink;
+          pressure 5 Pa; relativeTo outside; }
+        { room kitMAL;             floor ground; xMin -34 m; xMax -30 m; yMin 3 m;   yMax 6 m;   grade D;   role materialAirlock; regime sink;
+          pressure 5 Pa; relativeTo outside;
+          source "author-set"; reason "the dispensed kits (the API, the fillers, the binder), in closed containers, from the corridor to the granulator"; }
+
+        //  ---- the technical floor -----------------------------------------
+        { room techLanding;        floor technical; xMin -38 m; xMax -26 m; yMin -10 m; yMax 3 m;  grade CNC; pressure 5 Pa; relativeTo outside; }
+        { room hvacPlant;          floor technical; xMin -70 m; xMax -38 m; yMin -10 m; yMax 18 m; grade CNC; pressure 5 Pa; relativeTo outside;
+          equipment ( fbdAirHeater coatingAirHeater );
+          source "author-set"; reason "the air-handling units of every zone of the cascade, the fluid bed's and the coater's among them (their air heaters), and the suite's extract filters"; }
+        { room utilities;          floor technical; xMin -56 m; xMax -26 m; yMin -18 m; yMax -10 m; grade CNC; pressure 5 Pa; relativeTo outside;
+          source "author-set"; reason "compressed air, process vacuum, the purified-water plant and the dust collectors of the local exhaust"; }
+        { room electrical;         floor technical; xMin -70 m; xMax -56 m; yMin -18 m; yMax -10 m; grade CNC; pressure 5 Pa; relativeTo outside;
+          ignition "switchgear and motor control centres";
+          source "author-set"; reason "the switchgear, at the west end of the technical floor"; }
+    );
+
+    connections
+    (
+        { between ( lobby outside );                  type door; }
+        { between ( lobby gowning );                  type door; }
+        { between ( gowning corridor );               type door; }
+        { between ( goodsIn outside );                type door; }
+        { between ( goodsIn malIn );                  type door; }
+        { between ( malIn dispensing );               type door; }
+        { between ( dispensing dispPAL );             type door; }
+        { between ( dispPAL corridor );               type door; }
+        { between ( dispensing dispOutMAL );          type door; }
+        { between ( dispOutMAL corridor );            type door; }
+        { between ( washRoom corridor );              type door; }
+        { between ( ipcLab corridor );                type door; }
+        { between ( coatingPrep corridor );           type door; }
+        { between ( coatingPrep coating );            type door; }
+        { between ( coating corridor );               type door; }
+        { between ( coating packaging );              type door; }
+        { between ( packaging corridor );             type door; }
+        { between ( packaging packMAL );              type door; }
+        { between ( packMAL secondaryPackaging );     type door; }
+        { between ( secondaryPackaging outside );     type door; }
+        { between ( packagingMaterials outside );     type door; }
+        { between ( packagingMaterials secondaryPackaging ); type door; }
+        { between ( stairHall outside );              type door; }
+        { between ( stairHall secondaryPackaging );   type door; }
+        { between ( suitePAL corridor );              type door; }
+        { between ( suitePAL suiteCorridor );         type door; }
+        { between ( suiteCorridor compression );      type door; }
+        { between ( suiteCorridor finalBlending );    type door; }
+        { between ( suiteCorridor milling );          type door; }
+        { between ( suiteCorridor drying );           type door; }
+        { between ( suiteCorridor granulation );      type door; }
+        { between ( granulation drying );             type door; }
+        { between ( drying milling );                 type door; }
+        { between ( milling finalBlending );          type door; }
+        { between ( finalBlending compression );      type door; }
+        { between ( returnCorridor compression );     type door; }
+        { between ( returnCorridor finalBlending );   type door; }
+        { between ( returnCorridor milling );         type door; }
+        { between ( returnCorridor drying );          type door; }
+        { between ( returnCorridor granulation );     type door; }
+        { between ( returnCorridor wasteMAL );        type door; }
+        { between ( wasteMAL wasteRoom );             type door; }
+        { between ( wasteRoom outside );              type door; }
+        { between ( compression pressOutMAL );        type door; }
+        { between ( pressOutMAL corridor );           type door; }
+        { between ( corridor kitMAL );                type door; }
+        { between ( kitMAL granulation );             type door; }
+        { between ( stairHall techLanding );          type stair; }
+        { between ( techLanding hvacPlant );          type door; }
+        { between ( hvacPlant utilities );            type door; }
+        { between ( techLanding utilities );          type door; }
+        { between ( utilities electrical );           type door; }
+    );
+
+    flows
+    (
+        { flow "product"; kind material;
+          reason "the granulated lot through the contained suite, pressed, coated, packed, and out to the warehouse";
+          path ( granulation drying milling finalBlending compression pressOutMAL
+                 corridor coating packaging packMAL secondaryPackaging outside ); }
+        { flow "granulationKits"; kind material;
+          reason "the API, the fillers and the binder, weighed in the dispensary and closed, to the granulation room (the lubricant kit rides the train in its own closed bin to the final blender)";
+          path ( outside goodsIn malIn dispensing dispOutMAL corridor kitMAL granulation ); }
+        { flow "coatingPowders"; kind material;
+          reason "the film-coating powder kit, weighed and closed, to the coating-preparation room";
+          path ( outside goodsIn malIn dispensing dispOutMAL corridor coatingPrep ); }
+        { flow "dispensaryStaff"; kind personnel;
+          path ( outside lobby gowning corridor dispPAL dispensing ); }
+        { flow "granulationOperators"; kind personnel;
+          path ( outside lobby gowning corridor suitePAL suiteCorridor granulation ); }
+        { flow "pressOperators"; kind personnel;
+          path ( outside lobby gowning corridor suitePAL suiteCorridor compression ); }
+        { flow "coatingAndPackingOperators"; kind personnel;
+          path ( outside lobby gowning corridor packaging ); }
+        { flow "suiteWaste"; kind waste;
+          reason "rejected tablets (the press's 1 % rejects) and full filter bags, double-bagged";
+          path ( compression returnCorridor wasteMAL wasteRoom outside ); }
+    );
+
+    shared
+    (
+        { room corridor; flows ( personnel material );
+          reason "one clean corridor in a small plant: material crosses it only in closed containers (bins, drums) and is never open there"; }
+    );
+}
+
+// ************************************************************************* //

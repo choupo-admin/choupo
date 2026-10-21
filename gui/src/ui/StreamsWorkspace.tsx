@@ -47,7 +47,6 @@ License
   default).  Workspaces don't duplicate each other's purpose.
 \*---------------------------------------------------------------------------*/
 
-import { compositeMembers, topologyFeedNames } from "../case/toGraph.js";
 import { useMemo, useState } from "react";
 import { useReducedMotion } from "@mantine/hooks";
 import {
@@ -73,9 +72,9 @@ import {
   temperatureLabel,
 } from "../state/displayUnits.js";
 import { useStore } from "../state/store.js";
-import { parse, toJson, type JsonDict, type JsonValue } from "../dict/index.js";
 import type { StreamResult } from "../adapters/SolverAdapter.js";
 import { findRunStream } from "./streamPopOut.js";
+import { buildTree, leafName, type TreeNode } from "./streamsNavigatorTree.js";
 import {
   aqueousMolalityBasis,
   declaredAqueousSolvent,
@@ -102,27 +101,6 @@ import {
  *  stream rows.  A declared judgement, stated as one, on RAIL_CONTENT_MIN's
  *  pattern; the band past it scrolls inside its own height (DEV.md 4c C105). */
 const STREAMS_PANE_RESERVE_PX = 260;
-
-// ---- Tree model ------------------------------------------------------------
-
-interface TreeStream {
-  kind: "stream";
-  /** Qualified name suitable for findRunStream() lookup, dot-separated. */
-  qname: string;
-  /** Display label (leaf port name). */
-  label: string;
-  /** Role hint for the icon. */
-  role: "feed" | "product" | "internal";
-}
-
-interface TreeGroup {
-  kind: "group";
-  /** Section label (sector name, unit name, "Feeds", "Products"). */
-  label: string;
-  children: TreeNode[];
-}
-
-type TreeNode = TreeGroup | TreeStream;
 
 // ---- Component -------------------------------------------------------------
 
@@ -975,143 +953,4 @@ function CompositionTable({
       </Table>
     </Stack>
   );
-}
-
-function leafName(qname: string): string {
-  const i = Math.max(qname.lastIndexOf("."), qname.lastIndexOf("/"));
-  return i < 0 ? qname : qname.slice(i + 1);
-}
-
-// ---- Tree builder ----------------------------------------------------------
-
-function buildTree(caseFiles: import("../case/types.js").CaseFiles): TreeNode[] {
-  const out: TreeNode[] = [];
-  const fs = caseFiles.flowsheet;
-  if (!fs) return out;
-
-  // Flat case: just a units list at top level.
-  if (Array.isArray(fs["units"])) {
-    addUnitsGroup(out, "Units", fs["units"] as JsonValue[], "");
-
-    // Plus any explicit feed streams at the top level.
-    const feeds = collectFeedNames(fs);
-    if (feeds.length > 0) {
-      out.unshift({
-        kind: "group",
-        label: "Feeds",
-        children: feeds.map((f) => streamLeaf(f, "feed")),
-      });
-    }
-    return out;
-  }
-
-  // Composite case: walk children recursively using rawFiles.
-  const rawFiles = caseFiles.rawFiles ?? {};
-  const inlets = (((fs["boundary"] ?? {}) as JsonDict)["inlets"] ?? []) as JsonValue[];
-  const outlets = (((fs["boundary"] ?? {}) as JsonDict)["outlets"] ?? []) as JsonValue[];
-
-  if (inlets.length > 0) {
-    out.push({
-      kind: "group",
-      label: "Feeds (plant)",
-      children: inlets.map((v) => streamLeaf(String(v), "feed")),
-    });
-  }
-
-  walkChildren(out, fs, "", 0, rawFiles);
-
-  if (outlets.length > 0) {
-    out.push({
-      kind: "group",
-      label: "Products (plant)",
-      children: outlets.map((v) => streamLeaf(String(v), "product")),
-    });
-  }
-
-  return out;
-}
-
-function walkChildren(
-  out: TreeNode[],
-  fs: JsonDict,
-  prefix: string,
-  depth: number,
-  rawFiles: Record<string, string>,
-): void {
-  const children = compositeMembers(fs);
-  if (!Array.isArray(children)) return;
-  for (const cv of children as JsonValue[]) {
-    const childName = String(cv);
-    const childPrefix = prefix ? `${prefix}.${childName}` : childName;
-    const childFs = readChildFlowsheet(rawFiles, prefix ? prefix.replaceAll(".", "/") + "/" + childName : childName);
-    if (!childFs) continue;
-
-    if (compositeMembers(childFs).length > 0) {
-      // Sector group
-      const group: TreeGroup = { kind: "group", label: childName, children: [] };
-      walkChildren(group.children, childFs, childPrefix, depth + 1, rawFiles);
-      out.push(group);
-    } else if (typeof childFs["type"] === "string") {
-      // Leaf unit
-      const outlets = (((childFs["boundary"] ?? {}) as JsonDict)["outlets"] ?? []) as JsonValue[];
-      const unitGroup: TreeGroup = {
-        kind: "group",
-        label: childName,
-        children: outlets.map((v) => {
-          const port = String(v);
-          return streamLeaf(`${childPrefix}.${port}`, "internal", port);
-        }),
-      };
-      out.push(unitGroup);
-    }
-  }
-}
-
-function addUnitsGroup(out: TreeNode[], label: string, units: JsonValue[], prefix: string) {
-  const group: TreeGroup = { kind: "group", label, children: [] };
-  for (const uv of units) {
-    if (!uv || typeof uv !== "object" || Array.isArray(uv)) continue;
-    const u = uv as JsonDict;
-    const name = String(u["name"]);
-    const outputs = (u["outputs"] ?? []) as JsonValue[];
-    const unitGroup: TreeGroup = {
-      kind: "group",
-      label: name,
-      children: outputs.map((v) => {
-        const port = String(v);
-        return streamLeaf(prefix ? `${prefix}.${port}` : port, "internal", port);
-      }),
-    };
-    group.children.push(unitGroup);
-  }
-  out.push(group);
-}
-
-function collectFeedNames(fs: JsonDict): string[] {
-  // Stream role is inferred from TOPOLOGY (the stream-state architecture):
-  // a feed is consumed by a unit and produced by none.
-  return topologyFeedNames(fs);
-}
-
-function readChildFlowsheet(
-  rawFiles: Record<string, string>,
-  childPrefix: string,
-): JsonDict | null {
-  const path = `${childPrefix}/system/flowsheetDict`;
-  const text = rawFiles[path];
-  if (!text) return null;
-  try {
-    return toJson(parse(text, { sourceName: path })) as JsonDict;
-  } catch {
-    return null;
-  }
-}
-
-function streamLeaf(qname: string, role: TreeStream["role"], label?: string): TreeStream {
-  return {
-    kind: "stream",
-    qname,
-    role,
-    label: label ?? leafName(qname),
-  };
 }

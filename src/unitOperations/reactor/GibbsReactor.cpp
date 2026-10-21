@@ -272,6 +272,50 @@ int GibbsReactor::solve(const DictPtr& dict,
     sVector nIn(N, 0.0);
     for (std::size_t i = 0; i < N; ++i) nIn[i] = z[compIdx[i]] * F_mol_s;
 
+    //  A SOLID IN THE FEED IS NOT CARRIED, SO IT REFUSES BY NAME (DEV.md 4c
+    //  C110 G6), on `equilibriumReactor`'s posture (EquilibriumReactor.cpp,
+    //  "a solid in the feed is not implemented").  The pure-solid phase here
+    //  is only what the equilibrium DEPOSITS (C14).  A feed's solid phase
+    //  `s[]` reaches this unit as a `solids {}` block that nothing below
+    //  reads, so it was dropped at exit 0 -- MEASURED on a copy of gibbs11
+    //  whose feedLow carried 0.91 kmol/h of graphite as its solid phase: the
+    //  run converged, the plant's carbon came in at 2.91 and left at 2.00
+    //  kmol-atom/h, and only the element-balance report said so.  A pure
+    //  solid in the FLUID composition is refused here too, by name: it enters
+    //  the element totals, and the run then died pricing the inlet enthalpy
+    //  on the ideal-gas rung (the reference-rung refusal, after the solve) --
+    //  a refusal that names a Cp block it tells the reader not to add, not
+    //  the solid in the feed.  Carrying a feed solid is a feature (its atoms
+    //  into `b`, its enthalpy on the solid rung on both duty paths), not a
+    //  guard to relax.
+    {
+        const std::string unitName = dict->name().empty()
+            ? dict->lookupWordOrDefault("name", "(unnamed)") : dict->name();
+        if (dict->found("solids"))
+        {
+            std::string names;
+            auto sd = dict->subDict("solids");
+            if (sd->found("solidMolarFlows"))
+                for (const auto& key : sd->subDict("solidMolarFlows")->keys())
+                    names += (names.empty() ? "" : ", ") + key;
+            throw std::runtime_error("gibbsReactor " + unitName
+                + ": the feed carries a SOLID phase"
+                + (names.empty() ? std::string() : " (" + names + ")")
+                + " -- a solid in the feed is not implemented (the unit reads"
+                " the fluid composition only, and would drop the solid, its"
+                " atoms and its enthalpy).  The solid phase here is only what"
+                " the equilibrium deposits.");
+        }
+        for (std::size_t k = 0; k < thermo.n(); ++k)
+            if (z[k] > 0.0 && pureSolidPhase::isPureSolid(thermo.comp(k)))
+                throw std::runtime_error("gibbsReactor " + unitName
+                    + ": the feed carries pure solid '" + thermo.comp(k).name()
+                    + "' in its fluid composition -- a solid in the feed is not"
+                    " implemented; the solid phase here is only what the"
+                    " equilibrium deposits.  Remove it from the feed, or feed the"
+                    " fluid alone.");
+    }
+
     sVector b(M, 0.0);
     for (std::size_t j = 0; j < M; ++j)
         for (std::size_t i = 0; i < N; ++i) b[j] += A[j][i] * nIn[i];

@@ -5,6 +5,7 @@
   "blurb": "Classical graphical methods, constructed over curves the engine computes — the method's answer beside the engine's.  Property surfaces (T-x-y, γ, Psat) live in Explore; the split criterion: method-construction → EduTools, property-surface → Explore.",
   "disciplines": [
     "How Choupo works",
+    "Modelling & scale-up",
     "Thermodynamics",
     "Separations & phase equilibria",
     "Heat transfer & energy",
@@ -14,8 +15,8 @@
     "Process safety",
     "Flowsheeting & numerics"
   ],
-  "liveTools": 60,
-  "registryTools": 60,
+  "liveTools": 61,
+  "registryTools": 61,
   "tools": [
     {
       "id": "what-is-temperature",
@@ -184,6 +185,13 @@
       "discipline": "Hydraulics & control",
       "teaches": "The operating point is an intersection: the pump model's rise falling with flow against the pipe system's demand rising with it — crossed where the engine's own columns cross.",
       "href": "/app/?workspace=methods&tool=pump-system"
+    },
+    {
+      "id": "correlation-simplicity",
+      "label": "Why engineering correlations are simple",
+      "discipline": "Modelling & scale-up",
+      "teaches": "That the Buckingham Pi theorem only REDUCES the number of variables -- f = Phi(Re, eps/D) is still an arbitrary function -- and that the simplicity of a correlation comes from elsewhere: asymptotic regimes where a group drops out or enters as a power (laminar 64/Re, fully rough flow), the separation of scales in which a fast slave follows a slow master (Haken's two-variable model, the boundary layer), and the narrow range and generous tolerance a power law is fitted with -- the dimensional matrix reduced exactly, the Moody plane and its local slopes, a one-decade fit whose exponent drifts, and Churchill's expression rebuilt from its two asymptotes, every curve the engine's own.",
+      "href": "/app/?workspace=methods&tool=correlation-simplicity"
     },
     {
       "id": "letdown",

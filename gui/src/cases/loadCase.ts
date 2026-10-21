@@ -36,17 +36,24 @@ License
                           OS's own "Compress"); unzip in memory and locate the
                           ONE case in it (caseArchive.ts holds that rule).
                           EVERY browser.
-    * openCaseFolder() -- pick a real folder via the File System Access API and
-                          read it (one-shot).  CHROMIUM only (Firefox/Safari
-                          lack showDirectoryPicker); guarded by SUPPORTS_DIR_PICKER.
+    * openCaseFolder() -- pick a real folder via the File System Access API
+                          (Chromium) or `<input webkitdirectory>` (Firefox,
+                          Safari) and read it (one-shot).
 
-  Both build the in-memory CaseFiles through the SAME `filesToCaseFiles` contract
-  the bundled tutorials use, then the caller hands it to `loadExternalCase`.
+  Both locate the case through the SAME rule (`caseFromEntries` in
+  caseArchive.ts: the case root is the outermost folder holding
+  `system/controlDict`; OS junk dropped; a non-text file or a file outside
+  the case folder left out and NAMED), and build the in-memory CaseFiles
+  through the SAME `filesToCaseFiles` contract the bundled tutorials use, then
+  the caller hands it to `loadExternalCase`.  The folder route used to keep
+  its own reader: no root rule (a parent folder opened as a broken case) and
+  every file decoded as text (a PDF beside the dicts became a mangled copy
+  under its own name) -- DEV.md 4c C110 G6.
   The browser never reaches the disk on its own -- the user explicitly hands
   over the .zip or grants the folder.
 \*---------------------------------------------------------------------------*/
 
-import { caseFromZipBytes, isGeneratedOutput } from "./caseArchive.js";
+import { caseFromEntries, caseFromZipBytes, isGeneratedOutput } from "./caseArchive.js";
 import { filesToCaseFiles } from "./tutorials.js";
 import type { CaseFiles } from "../case/types.js";
 
@@ -57,6 +64,11 @@ export const SUPPORTS_DIR_PICKER =
 
 /** Run outputs and tool trees are not read (one home: caseArchive.ts). */
 const SKIP = isGeneratedOutput;
+
+/** A file larger than this is not read from a picked folder: no dict comes
+ *  near it, and a video kept in the folder would otherwise be loaded whole
+ *  into the page.  It is left out and NAMED, never silently. */
+export const FOLDER_FILE_LIMIT_BYTES = 4 * 1024 * 1024;
 
 /** What an open picker yields: the display name, the parsed in-memory CaseFiles,
  *  AND the pre-parse raw {relPath: rawText} source map.  The raw map is the exact
@@ -109,10 +121,31 @@ export async function openCaseFolder(): Promise<OpenedCase | null> {
     if (e instanceof DOMException && e.name === "AbortError") return null;  // user cancelled
     throw e;
   }
-  const raw: { [rel: string]: string } = {};
-  await readDir(dir, "", raw);
-  const name = dir.name || "opened-folder";
-  return { name, files: filesToCaseFiles(name, raw), raw };
+  return readFolderHandle(dir);
+}
+
+/** Read a picked folder handle into a case, through the one rule.  Exported
+ *  so a test can hand it a folder made of plain objects. */
+export async function readFolderHandle(dir: FileSystemDirectoryHandleLike): Promise<OpenedCase> {
+  const entries: { [rel: string]: Uint8Array } = {};
+  const tooLarge: string[] = [];
+  await readDir(dir, "", entries, tooLarge);
+  return openedCaseFromFolder(entries, dir.name || "opened-folder", tooLarge);
+}
+
+/** A picked folder's files (paths relative to that folder, as bytes) -> the
+ *  OpenedCase every open route feeds the same funnel.  Pure; throws a
+ *  CaseArchiveRefusal naming the folder when it holds no case or several. */
+export function openedCaseFromFolder(
+  entries: { [rel: string]: Uint8Array }, folderName: string, tooLarge: readonly string[] = [],
+): OpenedCase {
+  const c = caseFromEntries(entries, folderName, "folder");
+  const notices = [...c.notices];
+  if (tooLarge.length > 0)
+    notices.push(`Left out ${tooLarge.length} file(s) larger than `
+      + `${FOLDER_FILE_LIMIT_BYTES / (1024 * 1024)} MB: ${[...tooLarge].sort().join(", ")}.`);
+  return { name: c.name, files: filesToCaseFiles(c.name, c.files), raw: c.files,
+    notices: notices.length > 0 ? notices : undefined };
 }
 
 /**
@@ -124,17 +157,27 @@ export async function openCaseFolder(): Promise<OpenedCase | null> {
 async function openCaseFolderInput(): Promise<OpenedCase | null> {
   const list = await pickFolder();
   if (!list || list.length === 0) return null;
-  const raw: { [rel: string]: string } = {};
+  return readFolderFileList(Array.from(list));
+}
+
+/** The `<input webkitdirectory>` file list -> a case, through the one rule.
+ *  Each file's `webkitRelativePath` starts with the picked folder's own name,
+ *  which is stripped so the paths match the directory-picker route.
+ *  Exported for the test. */
+export async function readFolderFileList(list: readonly File[]): Promise<OpenedCase> {
+  const entries: { [rel: string]: Uint8Array } = {};
+  const tooLarge: string[] = [];
   let root = "";
-  for (const f of Array.from(list)) {
+  for (const f of list) {
     const rel = (f as File & { webkitRelativePath?: string }).webkitRelativePath || f.name;
     const slash = rel.indexOf("/");
     if (!root && slash > 0) root = rel.slice(0, slash);
     const sub = slash >= 0 ? rel.slice(slash + 1) : rel;
-    raw[sub] = await f.text();
+    if (SKIP(sub)) continue;
+    if (f.size > FOLDER_FILE_LIMIT_BYTES) { tooLarge.push(sub); continue; }
+    entries[sub] = new Uint8Array(await f.arrayBuffer());
   }
-  const name = root || "opened-folder";
-  return { name, files: filesToCaseFiles(name, raw), raw };
+  return openedCaseFromFolder(entries, root || "opened-folder", tooLarge);
 }
 
 // --- helpers ----------------------------------------------------------------
@@ -176,28 +219,30 @@ function pickFolder(): Promise<FileList | null> {
 }
 
 /** Minimal structural type for the FS Access API (TS lib may lack it). */
-interface FileSystemDirectoryHandleLike {
+export interface FileSystemDirectoryHandleLike {
   name: string;
   values(): AsyncIterable<FileSystemHandleLike>;
 }
-interface FileSystemHandleLike {
+export interface FileSystemHandleLike {
   kind: "file" | "directory";
   name: string;
   getFile?: () => Promise<File>;
   values?: () => AsyncIterable<FileSystemHandleLike>;
 }
 
+/** Read a folder's files as BYTES: whether a file is text is decided by
+ *  the bytes, in caseFromEntries, never here. */
 async function readDir(dir: FileSystemDirectoryHandleLike, prefix: string,
-  out: { [rel: string]: string }): Promise<void> {
+  out: { [rel: string]: Uint8Array }, tooLarge: string[]): Promise<void> {
   for await (const entry of dir.values()) {
     const rel = prefix ? `${prefix}/${entry.name}` : entry.name;
     if (SKIP(rel)) continue;
     if (entry.kind === "directory" && entry.values) {
-      await readDir(entry as unknown as FileSystemDirectoryHandleLike, rel, out);
+      await readDir(entry as unknown as FileSystemDirectoryHandleLike, rel, out, tooLarge);
     } else if (entry.kind === "file" && entry.getFile) {
       const f = await entry.getFile();
-      // Read text only; dicts are text. Skip obvious binaries by size guard.
-      if (f.size <= 4 * 1024 * 1024) out[rel] = await f.text();
+      if (f.size > FOLDER_FILE_LIMIT_BYTES) { tooLarge.push(rel); continue; }
+      out[rel] = new Uint8Array(await f.arrayBuffer());
     }
   }
 }

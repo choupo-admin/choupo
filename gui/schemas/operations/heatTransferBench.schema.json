@@ -18,6 +18,58 @@
       "title": "Phase-change tolerance",
       "description": "Separate allowance for the boiling/condensation examples, whose published inputs are chart-read.",
       "unit": "-"
+    },
+    "sweep": {
+      "type": "object",
+      "title": "Reynolds-number sweep",
+      "description": "Optional. Evaluate every single-phase Nusselt correlation on one logarithmic grid of Re at each declared Prandtl number and write one CSV row per (Pr, Re): each correlation's Nu and its own window flag. Each correlation is handed a unit fluid whose Re and Pr are the grid point, heating side; Kern is shell-side and is evaluated on the same numbers.",
+      "properties": {
+        "file": {
+          "type": "string",
+          "title": "CSV file name",
+          "description": "The CSV the sweep writes, in the case directory. A path into data/standards/ is refused."
+        },
+        "ReMin": {
+          "type": "number",
+          "exclusiveMinimum": 0,
+          "title": "Lowest Reynolds number",
+          "description": "The first grid point. Must be positive: the grid is logarithmic and every correlation divides by Re.",
+          "unit": "-"
+        },
+        "ReMax": {
+          "type": "number",
+          "exclusiveMinimum": 0,
+          "title": "Highest Reynolds number",
+          "description": "The grid runs to the last point at or below this value; must exceed ReMin.",
+          "unit": "-"
+        },
+        "pointsPerDecade": {
+          "type": "integer",
+          "minimum": 1,
+          "title": "Points per decade",
+          "description": "Re_k = ReMin 10^(k / pointsPerDecade): a whole number, so a decade that starts on a grid point ends on one.",
+          "unit": "-"
+        },
+        "Pr": {
+          "type": "array",
+          "items": {
+            "type": "number",
+            "exclusiveMinimum": 0
+          },
+          "minItems": 1,
+          "title": "Prandtl numbers",
+          "description": "One curve per value; at least one, each > 0.",
+          "unit": "-"
+        }
+      },
+      "required": [
+        "file",
+        "ReMin",
+        "ReMax",
+        "pointsPerDecade",
+        "Pr"
+      ],
+      "additionalProperties": false
     }
   },
   "required": [],

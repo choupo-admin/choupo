@@ -1,0 +1,57 @@
+# =============================================================================
+#  site-smoke  --  build the site from a BRANCH and open every live EduTool in
+#                  a browser.  It never publishes: there is no publish step in
+#                  this file, no secret is read, and the token is read-only.
+#
+#  WHY IT EXISTS BESIDE publish-site (DEV.md 4c C122).  publish-site runs the
+#  same smoke on main, immediately before it pushes to www.choupo.org, and a
+#  failure there stops the publish -- but by then the work is already on
+#  main.  This is the same build and the same smoke on any other branch, so a
+#  general (who has no Emscripten in a development container) can see its
+#  EduTool run in a real browser BEFORE integration:
+#      * on demand:  Actions -> site-smoke -> Run workflow -> pick the branch
+#        (or `gh workflow run site-smoke --ref <branch>`);
+#      * on its own: a push to a non-main branch that touches the smoke's own
+#        machinery, so a change to the smoke is proven by the smoke.
+#  Deliberately NOT on every branch push: each run links five Emscripten
+#  binaries from scratch, and generals push branches all day.
+#
+#  ONE HOME for each part: the toolchain and the build are
+#  .github/actions/build-site (shared with publish-site), the smoke is
+#  .github/actions/smoke-site, and what it checks is the "EduTools smoke"
+#  section of gui/tools/driveApp/driveApp.mjs.
+# =============================================================================
+name: site-smoke
+
+on:
+  workflow_dispatch:
+  push:
+    branches-ignore: [main]       # main is smoked by publish-site, before it publishes
+    paths:
+      - '.github/workflows/site-smoke.yml'
+      - '.github/actions/build-site/**'
+      - '.github/actions/smoke-site/**'
+      - 'gui/tools/driveApp/**'
+      - 'gui/tools/checkGui/cdp.mjs'
+      - 'gui/src/adapters/runLedger.ts'
+
+concurrency:
+  #  Per branch: a newer push to the same branch supersedes an older smoke;
+  #  different branches never cancel each other, and never cancel a publish.
+  group: site-smoke-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  smoke:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Build the site
+        uses: ./.github/actions/build-site
+
+      - name: Smoke every live EduTool in a browser
+        uses: ./.github/actions/smoke-site

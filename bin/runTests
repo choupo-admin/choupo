@@ -1016,6 +1016,29 @@ if [ "${1:-}" = "--fast" ]; then
     set -- "${FLIST[@]}"
 fi
 
+#  --scope <case|dir>...: the named cases, with the per-case checks of the
+#  sweep, then the same conservation gates as --fast SCOPED to exactly that
+#  pass (2026-10-20, DEV.md 4c C122).  It is --fast with the case list given
+#  instead of declared: the rung `bin/integrate` sizes from a diff.
+#
+#  WHY IT HAD TO EXIST.  The conservation gates read the suite's single-pass
+#  cache only when CHOUPO_SUITE_OUTPUTS names it AND CHOUPO_SUITE_SCOPE=1, and
+#  an explicit case list filled no cache at all -- so there was no way to ask
+#  "do the cases this merge reaches still conserve mass and energy?" without
+#  either the fast set (the wrong cases) or the gates' standalone corpus sweep
+#  (222 s for check_mass_closure alone).  Setting CHOUPO_SUITE_SCOPE to a
+#  PATH by hand, which is what the commander did on 2026-10-20, satisfies
+#  neither half: the gates saw no cache, ran the whole corpus live, and took
+#  twenty minutes each.  The two variables have ONE writer now -- this file --
+#  and one reader, bin/curate/suite_cache.py.
+if [ "${1:-}" = "--scope" ]; then
+    shift
+    [ "$#" -gt 0 ] || { echo "usage: runTests --scope <case|dir>...  (the named cases ARE the scope)"; exit 2; }
+    [ -z "$RECORD" ] || { echo "ERROR: --record and --scope are not combinable -- --scope is a CHECK tier.  Record a case by name: runTests --record <case>"; exit 2; }
+    SCOPE=1
+    echo "[scope] $# argument(s); the conservation gates will judge this pass and nothing else"
+fi
+
 #  report_gui_tests <log> <tail-lines> -- ONE home for how a failed `npm test`
 #  is reported, used by the --gui path and by the full sweep alike.
 #
@@ -1256,7 +1279,7 @@ SUITE_OUT_DIR=""
 #  the pass this run made and nothing else, or check_mass_closure alone would
 #  run the 200-odd steady cases the tier deliberately skipped -- 222 s,
 #  measured, against a tier whose whole budget is under 20 s.
-if { [ "$#" -eq 0 ] || [ -n "${FAST:-}" ]; } && [ -z "$RECORD" ]; then
+if { [ "$#" -eq 0 ] || [ -n "${FAST:-}" ] || [ -n "${SCOPE:-}" ]; } && [ -z "$RECORD" ]; then
     SUITE_OUT_DIR="$ROOT/build/suiteOutputs"
     rm -rf "$SUITE_OUT_DIR"; mkdir -p "$SUITE_OUT_DIR"
 fi
@@ -1560,7 +1583,16 @@ auto_generate() {
         #  and offset + ... + t_j, every term of which is pinned above, and
         #  `check_batch_plan` recomputes every bar from them -- and the
         #  declared inputs echoed (density, fill, available hours), which
-        #  the derived numbers already hold.
+        #  the derived numbers already hold.  MULTIPRODUCT (2026-10-20, DEV.md
+        #  4c C110 G2): the `product:`, `productTrain:` and `productStage:`
+        #  records carry the per-product numbers and are read by THEIR OWN key
+        #  lists below (a key such as `massPerProduct` also sits on a
+        #  one-product stage line, and pinning it there would add rows to
+        #  every one-product golden); the aggregates gain the size's product,
+        #  the clean between products, the largest utilisation, the product
+        #  changes and the changeover hours -- keys a one-product plan never
+        #  publishes, so its rows are unchanged.  The year's Gantt is not
+        #  pinned, for the reason above: every bar is a sum of pinned terms.
         printf '%s\n' "$out" | awk -v tol="$reltol" '
             /^  "batchPlan": \{/ { inblk = 1; next }
             inblk && /^  \}/  { inblk = 0 }
@@ -1573,13 +1605,20 @@ auto_generate() {
                 sub(/"message": .*/, "", line)
                 sub(/"units": .*/, "", line)
                 sub(/"unplannedUnits": .*/, "", line)
-                nw = split("lotRule lotLimitingStage limitingStage type sizeKind limiting operatingFrom dischargeFrom kind", W, " ")
+                sub(/"ownBalance": .*/, "", line)
+                sub(/"overrideSource": .*/, "", line)
+                if (id ~ /^product/) {
+                    nw = split("next lotFrom lotRule lotLimitingStage limitingStage balanceFrom operatingFrom dischargeFrom limiting", W, " ")
+                    nn = split("perYear lotSize lotsPerYear production equivalentHours cycleTime campaigns lotsLastCampaign campaignSpan start productChangeover requiredTime massPerProduct massPerLot sizeFactor volumePerUnit ratePerUnit chargeTime processTime dischargeTime cleanTime effectiveCycle utilisation offset changeoverAfter", N, " ")
+                } else {
+                    nw = split("lotRule lotLimitingStage limitingStage type sizeKind limiting operatingFrom dischargeFrom kind sizingProduct", W, " ")
+                    nn = split("productRate productPerYear lotSize lotsPerYear production equivalentHours streamFactor stages trains findings cycleTime campaigns campaignSpan campaignDuration requiredTime occupancy massPerLot sizeFactor volumePerUnit ratePerUnit unitsInstalled chargeTime processTime dischargeTime cleanTime effectiveCycle utilisation offset busyHours value limit products productChangeover maxUtilisation productChangeovers changeoverHours", N, " ")
+                }
                 for (i = 1; i <= nw; i++)
                     if (match(line, "\"" W[i] "\": \"[^\"]*\"")) {
                         s = substr(line, RSTART, RLENGTH); sub(/^"[^"]*": "/, "", s); sub(/"$/, "", s)
                         if (s != "") printf "batch  %-26s %-16s %-18s %s\n", id, W[i], s, "exact"
                     }
-                nn = split("productRate productPerYear lotSize lotsPerYear production equivalentHours streamFactor stages trains findings cycleTime campaigns campaignSpan campaignDuration requiredTime occupancy massPerLot sizeFactor volumePerUnit ratePerUnit unitsInstalled chargeTime processTime dischargeTime cleanTime effectiveCycle utilisation offset busyHours value limit", N, " ")
                 for (i = 1; i <= nn; i++)
                     if (match(line, "\"" N[i] "\": *-?[0-9][0-9.eE+-]*")) {
                         s = substr(line, RSTART, RLENGTH); sub(/^"[^"]*": */, "", s)
@@ -2078,10 +2117,13 @@ if [ "$#" -eq 0 ]; then
     #  map sends the impact brief to the wrong blast radius with confidence,
     #  which is worse than no map.  The fourth arm is the equilibriumState
     #  cross-reference (same day's ruling): a reference must never outlive
-    #  the canonical state it names.
+    #  the canonical state it names.  generated_artefacts.py --check (2026-10-20,
+    #  C122) keeps the ONE list of generated files -- the list bin/integrate
+    #  resolves conflicts from -- covering every file that declares itself one.
     for om_gate in "ownership-index-gate check_ownership_index.py" \
                    "code-map-gate code_map.py --check" \
                    "case-manifest-gate case_manifest.py --check" \
+                   "generated-artefacts-gate generated_artefacts.py --check" \
                    "equilibrium-state-ref-gate check_equilibrium_state_ref.py" \
                    "aqueous-qualifier-gate check_aqueous_qualifier.py" \
                    "derived-density-gate check_derived_density.py" \
@@ -3682,6 +3724,22 @@ PYEOF
     fi
     rm -f /tmp/evapdry.$$
 
+    # spray-dryer-solvents gate (2026-10-20, DEV.md 4c C111).  A spray
+    # dryer fed several volatile solvents (acetone/water, ethanol/water)
+    # loses none: the material recomputed per component, the exhaust never
+    # above its dew point, the unit's energy row zero, and the sorption
+    # isotherm, the droplet-trajectory models and a component with no
+    # outlet each refuse by name.
+    if "$ROOT/bin/curate/check_spray_dryer_solvents.py" > /tmp/spraysolv.$$ 2>&1; then
+        printf "PASS  %-40s  (%s)\n" "spray-dryer-solvents-gate" "$(head -1 /tmp/spraysolv.$$)"
+        pass=$((pass+1))
+    else
+        printf "FAIL  %-40s  (run bin/curate/check_spray_dryer_solvents.py)\n" "spray-dryer-solvents-gate"
+        cat /tmp/spraysolv.$$
+        fail=$((fail+1))
+    fi
+    rm -f /tmp/spraysolv.$$
+
     # quasi-steady gate (2026-09-30, #185).  A steady unit inside a
     # transient: the NF feed-and-bleed start-up must END on membrane18's
     # steady answer, its mass residual must converge with deltaT, and four
@@ -4428,6 +4486,25 @@ PYEOF
         fail=$((fail+1))
     fi
     rm -f /tmp/icefreeze.$$
+
+    # Phase-split scan gate (2026-10-20, DEV.md 4c C118 stage 1): the
+    # `phaseSplitScan` props op solves ONE isothermal flash per grid point
+    # through the flash unit's own solver.  Single-point scans on copies of
+    # flash21/flash16/flash19's sealed constant/ reproduce those units'
+    # goldens; the witness's freezing-point identity is recomputed from its
+    # own water.dat at every point; the ice appearance is announced between
+    # its grid values; a pure-water probe is refused BY NAME below Tt and the
+    # scan continues; the Psat/dCp announcements land at their first point;
+    # closure, four grammar refusals, a source arm (no equilibrium of its own).
+    if "$ROOT/bin/curate/check_phase_split_scan.py" > /tmp/phsplit.$$ 2>&1; then
+        printf "PASS  %-40s  (%s)\n" "phase-split-scan-gate" "$(gate_claim check_phase_split_scan /tmp/phsplit.$$)"
+        pass=$((pass+1))
+    else
+        printf "FAIL  %-40s  (run bin/curate/check_phase_split_scan.py)\n" "phase-split-scan-gate"
+        cat /tmp/phsplit.$$
+        fail=$((fail+1))
+    fi
+    rm -f /tmp/phsplit.$$
 
     # gate self-test (2026-08-07, ordered by Vitor).  The meta-gate: it
     # sabotages the tree on purpose and demands the covered gates exit
@@ -6571,14 +6648,28 @@ fi
 #  says a case the cache does not hold was NOT RUN by this invocation and is
 #  out of reach: each gate skips it, COUNTS it, and appends a sentence to its
 #  own claim saying so, so a scoped claim can never read as corpus coverage.
-#  One home for both rules: bin/curate/suite_cache.py.
-if [ -n "${FAST:-}" ]; then
+#  One home for both rules: bin/curate/suite_cache.py.  `--scope` hands over
+#  its own case pass the same way (see its header above).
+if [ -n "${FAST:-}" ] || [ -n "${SCOPE:-}" ]; then
     [ -n "$SUITE_OUT_DIR" ] && export CHOUPO_SUITE_OUTPUTS="$SUITE_OUT_DIR" \
                             && export CHOUPO_SUITE_SCOPE=1
+    #  WHO DECLARED THE SCOPE (suite_cache.SCOPE_KIND): under --scope a gate
+    #  whose subject the named cases do not reach answers NO SUBJECT (exit 3),
+    #  reported apart and counted as neither PASS nor FAIL; under --fast the
+    #  declared set must reach every gate, so the same emptiness FAILS.
+    if [ -n "${SCOPE:-}" ]; then export CHOUPO_SUITE_SCOPE_KIND=named
+    else export CHOUPO_SUITE_SCOPE_KIND=fast; fi
+    nosubject=0
     echo
     for fg in check_mass_closure check_energy_closure check_element_balance \
               check_closure_ledger_pinned check_energy_boundary_pinned; do
-        if "$ROOT/bin/curate/$fg.py" > /tmp/fastgate.$$ 2>&1; then
+        "$ROOT/bin/curate/$fg.py" > /tmp/fastgate.$$ 2>&1
+        fgrc=$?
+        if [ "$fgrc" -eq 3 ] && [ -n "${SCOPE:-}" ]; then
+            printf "NOSUBJ %-40s  (%s)\n" "${fg#check_}" \
+                "$(grep -m1 'NO SUBJECT' /tmp/fastgate.$$ | cut -c1-220)"
+            nosubject=$((nosubject+1))
+        elif [ "$fgrc" -eq 0 ]; then
             #  NOT TRUNCATED, unlike most PASS rows in this file: a scoped
             #  gate appends the sentence that says what it could NOT reach,
             #  and cutting the claim at 150 characters would drop exactly
@@ -6627,6 +6718,15 @@ if [ -n "${FAST:-}" ]; then
     echo "    It ran NO other gate, no golden-manifest check, no build-freshness"
     echo "    check and no --record anything, and it says nothing whatever about"
     echo "    the cases it did not run.  Campaign closure is bin/runTests -- not this."
+fi
+if [ -n "${SCOPE:-}" ]; then
+    echo '  ^ AND THIS WAS --scope: the named cases with the per-case checks of the'
+    echo "    sweep, then five conservation gates SCOPED to that same pass.  It ran"
+    echo "    NO other gate and says nothing about any case it was not given."
+    if [ "${nosubject:-0}" -gt 0 ]; then
+        echo "    $nosubject of those gates had NO SUBJECT in the named cases (NOSUBJ"
+        echo "    above): they judged nothing, which is neither a PASS nor a FAIL."
+    fi
 fi
 # The suite is GREEN iff nothing FAILS.  Known-broken + expected-fail are
 # tracked, visible, and non-gating -- the honest middle ground.

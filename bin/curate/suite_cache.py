@@ -40,7 +40,53 @@ DIR = os.environ.get("CHOUPO_SUITE_OUTPUTS") or None
 #  live exactly as they always have.
 SCOPED = DIR is not None and os.environ.get("CHOUPO_SUITE_SCOPE") == "1"
 
+#  A SCOPE SET BY HAND, WRONGLY, IS SAID ALOUD (2026-10-20, DEV.md 4c C122).
+#  `CHOUPO_SUITE_SCOPE=<a path>` -- what the commander exported that day --
+#  is neither "1" nor accompanied by a cache, so every gate quietly fell back
+#  to its standalone corpus sweep and took twenty minutes.  The right way to
+#  scope these gates to a set of cases is `bin/runTests --scope <cases>`,
+#  which fills the cache and sets both variables; anything else is announced
+#  here, once per gate process, on stderr (the claim on stdout is untouched).
+_raw_scope = os.environ.get("CHOUPO_SUITE_SCOPE")
+if _raw_scope is not None and not SCOPED:
+    import sys as _sys
+    print("[suite_cache] CHOUPO_SUITE_SCOPE=%r is NOT a scope here (%s) -- "
+          "this gate runs its cases LIVE, unscoped.  To scope the "
+          "conservation gates to a set of cases, run `bin/runTests --scope "
+          "<case>...`; it fills the cache and sets both variables."
+          % (_raw_scope, "no CHOUPO_SUITE_OUTPUTS cache was handed over"
+             if DIR is None else "the scope flag must read exactly 1"),
+          file=_sys.stderr)
+
 OUT_OF_SCOPE = object()   # distinct from None ("no cached text"): see below
+
+#  WHO DECLARED THE SCOPE DECIDES WHAT AN EMPTY SUBJECT MEANS (2026-10-20,
+#  DEV.md 4c C122).  `--fast` hands over a DECLARED set (tutorials/FASTSET)
+#  whose job is to reach every conservation gate, so a gate that finds nothing
+#  in it is a defect of the set and FAILS.  `--scope <cases>` is handed what a
+#  merge touched, and a merge of props-bench cases reaches no plant at all:
+#  that is a fact about the merge, not a failure of anything.  It is NOT a
+#  PASS either -- a check that judged nothing must not print a claim -- so it
+#  is a third outcome, NO SUBJECT, on its own exit code, which `bin/runTests`
+#  reports apart and never counts.  `runTests` exports the kind; a scope set
+#  without one is read as the declared set, the stricter of the two.
+SCOPE_KIND = (os.environ.get("CHOUPO_SUITE_SCOPE_KIND") or "fast") \
+    if SCOPED else None
+NO_SUBJECT_EXIT = 3
+
+
+def no_subject(gate: str, what: str):
+    """Under `--scope <cases>`: print the NO SUBJECT line and return its exit
+    code.  Under `--fast` (or unscoped): return None, and the caller FAILS as
+    it always has -- its remedy there is the fast set, which only it can
+    name."""
+    if SCOPE_KIND != "named":
+        return None
+    print("%s: NO SUBJECT -- %s.  The cases named to `bin/runTests --scope` "
+          "hold none this gate judges, so it judged nothing: not a PASS, and "
+          "no claim of coverage." % (gate, what))
+    return NO_SUBJECT_EXIT
+
 
 
 def stdout_of(case: Path):
@@ -66,8 +112,8 @@ def scope_sentence(considered: int, skipped: int) -> str:
     so an ordinary sweep's claim is unchanged byte for byte."""
     if not SCOPED:
         return ""
-    return ("  SCOPED to the caller's own case pass (bin/runTests --fast): "
-            "%d of %d candidate case(s) were in reach and %d were NOT RUN by "
-            "this invocation and so were not judged -- this claim covers the "
-            "fast set alone, never the corpus."
+    return ("  SCOPED to the caller's own case pass (bin/runTests --fast or "
+            "--scope): %d of %d candidate case(s) were in reach and %d were "
+            "NOT RUN by this invocation and so were not judged -- this claim "
+            "covers that pass alone, never the corpus."
             % (considered, considered + skipped, skipped))

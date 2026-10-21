@@ -1,0 +1,22 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*--- Choupo stream state.  Every DIMENSIONAL value carries its unit; the parser converts to SI.
+     componentMolarFlows is the OVERALL material (all phases); a phases{} block, when present,
+     is a decomposition that sums back to it exactly. ---*/
+
+//  Purified water of the coating suspension: 61.60 mg per tablet COATED (a 12 wt % solids suspension of the 8.40 mg coat) -- AUTHOR-SET, see README section 2.  Basis: the 712 800 tablets/h the press accepts.  (43.9085 kg/h.)
+
+componentMassFlows
+{
+    water                        43.90848 kg/h;
+}
+
+T               298.15 K;
+P               1.01325 bar;
+phase           liquid;

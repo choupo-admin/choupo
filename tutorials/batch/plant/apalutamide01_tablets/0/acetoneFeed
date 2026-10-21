@@ -10,11 +10,11 @@
      componentMassFlows is the OVERALL material (all phases); a phases{} block, when present,
      is a decomposition that sums back to it exactly. ---*/
 
-//  Fresh acetone: the solvent of a 10 wt % solids spray solution (3.072 kg/h of API + HPMCAS) -- AUTHOR-SET; the solvent itself is an ASSUMPTION (README section 3).
+//  Fresh acetone: the solvent of a 5 wt % solids spray solution (3.75 kg/h of API + HPMCAS, 1 g of solids per 19 g of acetone) -- PAT-HPMCAS Ex. 4.1 and 6.1 (acetone alone, 5 wt %, a laboratory dryer, HPMCAS-LF); the patent's scale-up example (Ex. 3.1, PSD-3) uses DCM/methanol 40:60, also at 5 wt %, which Choupo's one-volatile spray dryer cannot carry (dossier sections 1.4 and 4.2; Vitor's ruling, DEV.md 4c C99 addendum).  The commercial solvent is NOT public (dossier 4.2).  Feed = 75 kg/h, the PSD-3 rate of Ex. 3.1.
 
 componentMassFlows
 {
-    acetone                      27.648 kg/h;
+    acetone                      71.25 kg/h;
 }
 
 T               298.15 K;

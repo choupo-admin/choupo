@@ -6,27 +6,36 @@
 |       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
 |        |     O ptimization  |                                               |
 \*-----------------------------------------------------------------------------*/
-/*--- Choupo stream state.  Every DIMENSIONAL value carries its unit; the parser converts to SI.
-     componentMassFlows is the OVERALL material (all phases); a phases{} block, when present,
-     is a decomposition that sums back to it exactly. ---*/
+//  An ESTIMATE, not an input: the converged base case, so that a reader of
+//  0/ sees the plant's state.  The solver recomputes this stream.
 
-//  Magnesium stearate, INTRAgranular (for the compactor): 2.5 mg per tablet PRESSED (12 800 tablets/h, the flowsheet basis) -- AUTHOR-SET formulation, see README section 2.  (0.032 kg/h.)
+/*--- Choupo stream state.  Every DIMENSIONAL value carries its unit; the parser converts to SI.
+     componentMolarFlows is the OVERALL material (all phases); a phases{} block, when present,
+     is a decomposition that sums back to it exactly. ---*/
 
 componentMolarFlows
 {
-    magnesiumStearate            5.412170619e-05 kmol/h;
+    water    2.661781848 kmol/h;
+    hydroxypropylCellulose    0.005328 kmol/h;
 }
 
 T               298.15 K;
-P               1.01325 bar;
+P               101325 Pa;
 
 phases
 {
+    liquid
+    {
+        componentMolarFlows
+        {
+            water    2.661781848 kmol/h;
+        }
+    }
     solid
     {
         componentMolarFlows
         {
-            magnesiumStearate        5.412170619e-05 kmol/h;
+            hydroxypropylCellulose    0.005328 kmol/h;
         }
     }
 }

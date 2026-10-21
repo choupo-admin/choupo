@@ -113,8 +113,9 @@ is an author-set assumption for the group (README section 2a).
 
 ## 5. Not done
 
-The intermediate store between trains is not sized; one product only (no
-multiproduct sequencing or changeover matrix); no QC release times; the
+The intermediate store between trains is not sized; several products are
+made in single-product campaigns since section 6 (no overlapping campaigns,
+no rotations, no optimiser of the order); no QC release times; the
 labour and the utility schedule do not follow the plan (the economics takes
 the year's FLOWS from it, its labour from the declared crew); no GUI drawing
 of the Gantt (the data is published in the JSON and
@@ -123,3 +124,108 @@ of the Gantt (the data is published in the JSON and
 Gate: `bin/curate/check_batch_plan.py` (recomputes every published number
 from the declared postDict and the published stream masses; fourteen
 refusals; five by-hand sabotages in its docstring).  Golden kind `batch`.
+
+## 6. Several products on the same stages (DEV.md 4c C110, G2)
+
+*2026-10-20.  Vítor delegated the backlog ("Resolve tudo e delego em ti fazeres
+como achares melhor"); item A2 of it.  Status: shipped on a branch, on the
+stated default below; NO case moves -- every one-product plan is byte-identical,
+and no tutorial uses the multiproduct form yet (the donepezil case, C104, is
+being built to).*
+
+**The finding.**  A drug-product plant makes several products -- one API at
+four strengths, a 5 mg and a 10 mg tablet -- in CAMPAIGNS on one set of
+equipment, and cleans between them: a short clean between two lots of one
+product, a long one (cleaning validation, line clearance) between two
+products.  Section 5 said the pass made one product only.
+
+**The decision, and the default it rests on.**  `products ( ... )` in place of
+`production {}` (both together are refused -- two homes for the year's demand),
+`campaignOrder ( ... )` declaring the order of the campaigns, and on every
+stage a `productChangeover` beside its `cleanTime`.  The method is the
+classical one for a multiproduct plant run in SINGLE-PRODUCT CAMPAIGNS, taught
+beside the single-product method in the same chapters (cited by title only, as
+in section 3): each product has its own size factors, lot, lots a year and
+limiting cycle; each stage is sized for the product that needs the most
+(`V_j = max_i S_ij B_i`, published with the product's name as
+`sizingProduct`); the year is the sum of each product's campaigns and of the
+cleans between them.  The arithmetic is in `BatchPlanPass.H`.  The stated
+defaults, each one Vítor may reverse:
+
+* **A product's balance is the flowsheet's** -- the ONE steady balance, read
+  per kg of product -- because the commonest case is a dose-proportional
+  family of strengths, where the kg of each intermediate per kg of tablets is
+  the same and only the demand, the lot and the times differ.  Where it is
+  not, `massPerProduct { <stream> <kg/kg>; }` declares a stream's own, and the
+  plan ANNOUNCES it (`ownBalance`): the economics' `streamFactor
+  fromBatchPlan;` prices every product's raw materials and utilities on the
+  flowsheet's one balance, and saying so is the honest alternative to a
+  second flowsheet the binary cannot run.
+* **What a product may change at a stage is what is the product's**: its
+  charge, process (or operating), discharge and between-lot clean times, and
+  a batch stage's bulk density and fill.  The equipment -- units, `holds`,
+  `feeds`, in/out of phase, the train -- is the stage's, shared.
+* **Campaigns are back to back, one rotation a year, in the declared
+  order** (the last product wraps to the first): after each campaign the
+  train's `changeover` when the same product follows; after a product's LAST
+  campaign, the clean before the NEXT product -- and that clean REPLACES the
+  same-product changeover, it is not added to it.
+* **The campaigns of two products never overlap on a train.**  Every stage
+  is cleaned at once once the campaign has left the train, so the train waits
+  `max_j c_j`, and each stage is charged its OWN `c_j` in its busy hours.  It
+  is conservative, it is the line clearance a GMP suite performs, and it is
+  the same non-overlapping shape the one-product plan has always used for its
+  `changeover` -- so one product declared through `products` reproduces the
+  one-product plan, which the gate holds to 1e-9.
+* **The order matters only through `changeoverTo`.**  With a clean that
+  depends on the stage alone, every cyclic order costs the same; a clean that
+  depends on which product comes NEXT (`changeoverTo { <product> <time>; }`
+  inside a product's stage block -- low to high potency, light to dark coat)
+  is what makes the order a decision, and the gate proves the year moves with
+  it.  A `changeoverTo` the current order does not use is kept and read (the
+  student may reorder); `changeoverAfter` in the result says which clean each
+  product's last campaign took.  No optimiser: the order is the student's.
+
+**The Gantt.**  For one product it is unchanged (the first campaign).  For
+several it is the YEAR of each train in the declared order: every campaign
+(kind `campaign`), every changeover (`changeover`, `productChangeover`),
+each stage's own clean at a product change (`stageClean`), and the lots of
+each product's first campaign (`lot`), timed from the start of the year;
+the last bar of each train ends at its required time.
+
+**Rejected.**
+
+* *Overlapping campaigns* (stage 1 starts the next product while stage 5
+  finishes the last) -- a shorter year, and a schedule a flow-shop algorithm
+  must build; not a default to take silently.  Named, not built.
+* *Several rotations a year* (A B A B ...) -- trades changeovers for
+  inventory, a real lesson; it needs the inventory it trades against, which
+  nothing sizes.  Named, not built.
+* *A full changeover matrix at the plan level* -- `changeoverTo` inside the
+  product's own stage block is the same matrix, kept beside everything else
+  that product changes at that stage.
+* *Deriving each product's times from a rate the engine does not have* (a
+  press in tablets per hour, a tablet mass per strength) -- the times are
+  declared, as for one product.
+
+**What it found.**  The probe in the gate -- a copy of the witness making
+three strengths (20 000, 8 000 and 1 500 kg a year; the second with its own
+300 kg lot, its own coat and faster press and blister times, the third on a
+slower bottle line) -- makes 56, 27 and 5 lots (88 against the one-product
+plan's 84 for 29 500 kg against 30 000), and the solid-dose suite needs
+1 394 h a year against the one-product plan's 1 410.5 h: the second strength's
+shorter cycle pays for 338 h of changeovers -- 312 h between campaigns of one
+product (the train's 24 h) and 26 h for the three product changes, 8 + 10 +
+8 h, the 10 h because the second strength's dark coat needs it at the coater
+before the third.  Its press and its blister line are SIZED by the second
+strength (it asks them for the highest rate), and the scaled quotes follow.  In the order B A C the same
+year is 1 392 h: the two hours the coat costs when it is followed by the
+third strength.  That is the whole lesson of sequencing in this method, and
+it is only visible because the clean depends on what comes next.
+
+Gate: `check_batch_plan` arms (h)-(l) -- a three-product probe built in the
+gate from a copy of the witness (no new tutorial), recomputed independently
+(per product, per (product, stage), per (product, train), the aggregates, the
+year's Gantt, the findings); the declared order moving the year by exactly the
+clean `changeoverTo` adds; one product through `products` against the
+one-product plan; twenty refusals; the golden rows of every new record.

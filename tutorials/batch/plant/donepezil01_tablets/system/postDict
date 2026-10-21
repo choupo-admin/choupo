@@ -1,0 +1,354 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+  postDict -- batch plan, sizing, costing and economics of the donepezil
+  tablet plant.
+
+  WHAT IS SIZED (and so costed, and placed on the plot plan): the items for
+  which the engine has a sizer and the costing a correlation --
+
+    binderPrep              vessel       on the batch plan's volume (one lot of binder solution)
+    coatingSuspensionPrep   vessel       on the batch plan's volume (one lot of suspension)
+    fbdAirHeater            shellTubeHX  A = Q/(U LMTD) against LP steam (the fluid bed's air)
+    coatingAirHeater        shellTubeHX  against LP steam (the coater's air)
+
+  WHAT IS NOT SIZED, AND HOW IT REACHES THE CAPITAL ANYWAY.  The high-shear
+  granulator, the fluid-bed dryer, the mill, the final blender, the tablet
+  press, the coating pan and the packaging line are MASS-BALANCE
+  PLACEHOLDERS (or, for the two dryers, a `solidDryer` with no sizer):
+  Choupo has no sizer and no cost correlation for any of them, and it does
+  not invent one.  Neither is the GMP BUILDING.  They enter the capital as
+  DECLARED QUOTES (`costing { quotes ( ... ); }` below, DEV.md 4c C98): one
+  price per item, each an AUTHOR-SET PLACEHOLDER said so on its own line,
+  for the group to replace with a vendor's quotation.  NOT in the capital
+  still: the warehouse and the offices/QC laboratory as quoted items (the
+  economics' siteFactor term is Turton's estimate of such auxiliary
+  facilities), the purified-water plant, dust collection, cleaning systems.
+
+  EVERY DESIGN NUMBER BELOW IS AN AUTHOR-SET ASSUMPTION, said on its line,
+  for the group to replace; none cites a source because none was read.
+  MATERIAL SS316 everywhere (product contact); pressureDesign 2 bar
+  (atmospheric tanks and air heaters); vessels with a fully radiographed
+  joint, 1.5 mm corrosion allowance and L/D 1.5, declared so that no engine
+  default is used silently.
+\*---------------------------------------------------------------------------*/
+
+//  ======================== THE BATCH PLAN (DEV.md 4c C99) ==================
+//  The flowsheet is the MATERIAL BALANCE PER UNIT OF PRODUCT; this block
+//  designs the BATCH PLANT on it (src/postProcessing/BatchPlanPass.H states
+//  the method): each step's equipment is sized for ONE LOT from the
+//  flowsheet's own stream masses, the lots a year follow from the
+//  production, and the slowest step paces each train.  Declared ABOVE
+//  `sizing` and `costing`: the two preparation tanks take their volume from
+//  it and the machines' quotes scale with the sizes it derives.
+//
+//  TWO TRAINS, decoupled by the FINAL-BLEND store: the final blend is HELD
+//  in closed bins (IBCs) for quality-control release before it is pressed,
+//  so the granulation suite (dispensing to final blend) and the tableting
+//  suite (compression, coating, packaging) each run their own campaigns.
+//
+//  ONE PRODUCT.  Only the 10 mg tablet is planned here.  The 5 mg tablet
+//  (the same excipients, half the lactose, a white coat) would share both
+//  trains in campaigns with a cleaning between products: that plan waits
+//  for the multiproduct batch plan (DEV.md 4c C110, A2) -- README section 2a.
+//
+//  EVERY NUMBER BELOW IS AN AUTHOR-SET ASSUMPTION of the right order for a
+//  commercial oral-solid-dose line, said so in each `source`, for the group
+//  to replace with its own design basis (README section 2a).
+batchPlan
+{
+    product   packagedTablets;
+
+    production
+    {
+        perYear  43535 kg;      // of packaged tablets: 150 million of 10 mg at 0.29023 g
+        source   "author-set assumption (DEV.md 4c C110), not a market study";
+        reason   "150 million 10 mg tablets a year, one product on one line (README section 2); the market share the group can win is its own study";
+    }
+
+    //  The lot is counted, as an oral-solid-dose lot usually is, in kg of
+    //  FINAL BLEND: 300 kg is about 1.07 million cores of 280 mg.
+    lot
+    {
+        rule     declared;
+        stream   finalBlend;
+        mass     300 kg;
+        source   "author-set assumption (DEV.md 4c C110), not a validated lot size";
+        reason   "a commercial wet-granulation lot of a few hundred kg of blend, granulated and dried in one load; the lot is what QC releases, so its size is a regulatory as well as an equipment choice";
+    }
+
+    lowUtilisation  0.25;       // a stage below a quarter of its cycle is announced
+
+    trains
+    (
+        {
+            train           granulation;
+            availableTime   3840 h;     // 2 shifts x 8 h x 5 days x 48 weeks
+            lotsPerCampaign 8;
+            changeover      24 h;       // a full clean of the suite and its line clearance
+            source  "author-set assumption (DEV.md 4c C110)";
+            reason  "a wet-granulation suite on two day shifts, a product campaign of eight lots between full cleans";
+        }
+        {
+            train           tableting;
+            availableTime   3840 h;     // 2 shifts x 8 h x 5 days x 48 weeks
+            lotsPerCampaign 8;
+            changeover      24 h;
+            source  "author-set assumption (DEV.md 4c C110)";
+            reason  "compression, coating and packaging on two day shifts, campaigns of eight lots between full cleans";
+        }
+    );
+
+    //  In RECIPE order; each stage feeds the next of its train unless it
+    //  says otherwise.  `holds` names the stream whose flowsheet mass the
+    //  stage handles per lot -- the mass is READ, never typed here.
+    stages
+    (
+        //  ---- train granulation ----------------------------------------
+        {
+            stage  binderPreparation;  train granulation;  type batch;
+            units  ( binderPrep );     holds binderSolution;
+            bulkDensity  1020 kg/m3;   // a 10 wt % HPC solution in water
+            fillFraction 0.8;
+            chargeTime   0.5 h;  processTime 1 h;  cleanTime 1 h;
+            dischargeTime throughFedStage;   // pumped into the granulator while it granulates
+            source "author-set assumption (DEV.md 4c C110); the density is water's, rounded up for the polymer";
+            reason "one tank of binder solution per lot, held until the granulator has taken it";
+        }
+        {
+            stage  granulation;  train granulation;  type batch;
+            units  ( granulator );  holds wetMass;
+            bulkDensity  550 kg/m3;  fillFraction 0.6;   // a high-shear bowl at 60 % of its volume
+            chargeTime 0.5 h;  processTime 0.5 h;  dischargeTime 0.25 h;  cleanTime 1.5 h;
+            source "author-set assumption (DEV.md 4c C110), not a measured bulk density";
+            reason "dry mixing, binder addition and wet massing in one load; discharged wet straight into the fluid-bed bowl";
+        }
+        {
+            stage  drying;  train granulation;  type batch;
+            units  ( fluidBedDryer fbdAirHeater );  holds wetMass;
+            bulkDensity  550 kg/m3;  fillFraction 0.5;   // the bowl, with room for the bed to expand
+            chargeTime 0.25 h;  processTime 1.5 h;  dischargeTime 0.5 h;  cleanTime 2 h;
+            source "author-set assumption (DEV.md 4c C110); the 1.5 h is the drying time the flowsheet basis is built on (system/flowsheetDict)";
+            reason "the wet mass dried in one load to its end-point moisture, then cooled with ambient air and discharged";
+        }
+        {
+            stage  milling;  train granulation;  type semicontinuous;
+            units  ( mill );  holds driedGranules;
+            chargeTime 0.25 h;  operatingTime 2 h;  dischargeTime 0 h;  cleanTime 1 h;
+            source "author-set assumption (DEV.md 4c C110)";
+            reason "the dried granules sized through a screen mill into the blending bin";
+        }
+        {
+            stage  finalBlending;  train granulation;  type batch;
+            units  ( finalBlender );  holds finalBlend;
+            bulkDensity  500 kg/m3;  fillFraction 0.6;
+            chargeTime 0.5 h;  processTime 0.25 h;  dischargeTime 0.5 h;  cleanTime 1 h;
+            source "author-set assumption (DEV.md 4c C110)";
+            reason "the lubricant blended in for a few minutes in a bin blender; the bin is the lot's store until release";
+        }
+
+        //  ---- train tableting ----------------------------------------------
+        {
+            stage  compression;  train tableting;  type semicontinuous;
+            units  ( tabletPress );  holds finalBlend;
+            feeds  coating;
+            chargeTime 1.5 h;  operatingTime 7 h;  dischargeTime 0 h;  cleanTime 1.5 h;
+            source "author-set assumption (DEV.md 4c C110)";
+            reason "a rotary press set up for the lot (tooling, weight and hardness checks) and run at about 150 000 tablets an hour";
+        }
+        {
+            stage  suspensionPreparation;  train tableting;  type batch;
+            units  ( coatingSuspensionPrep );  holds coatingSuspension;
+            feeds  coating;
+            bulkDensity  1050 kg/m3;  fillFraction 0.7;
+            chargeTime 0.5 h;  processTime 1.5 h;  cleanTime 0.5 h;
+            dischargeTime throughFedStage;   // sprayed onto the cores through the coating
+            source "author-set assumption (DEV.md 4c C110); the density is of the order of a 12 wt % pigmented HPMC suspension";
+            reason "the coating suspension is made for each lot and sprayed while the pan coats";
+        }
+        {
+            stage  coating;  train tableting;  type batch;
+            units  ( coatingPan coatingDryer coatingAirHeater );  holds tabletCores;
+            bulkDensity  750 kg/m3;  fillFraction 0.65;   // tablet bed in a perforated pan
+            chargeTime 0.5 h;  processTime 4 h;  dischargeTime 0.5 h;  cleanTime 1.5 h;
+            source "author-set assumption (DEV.md 4c C110)";
+            reason "one lot of cores coated in one pan load to a 3 % weight gain";
+        }
+        {
+            stage  packaging;  train tableting;  type semicontinuous;
+            units  ( packagingLine );  holds packagedTablets;
+            chargeTime 1 h;  operatingTime 9 h;  dischargeTime 0 h;  cleanTime 1 h;
+            source "author-set assumption (DEV.md 4c C110)";
+            reason "a PVC/aluminium blister line (the reference product's pack, SmPC section 6.5) set up and cleared for each lot, run at about 120 000 tablets an hour";
+        }
+    );
+}
+
+sizing
+{
+    units
+    (
+        //  ---- the two air heaters: A = Q/(U LMTD), LMTD computed against
+        //  the utility record; U is a gas-side film against condensing
+        //  steam -- ASSUMED.
+        { unitName fbdAirHeater;  type shellTubeHX;  material SS316;
+          designRules { utility steamLP;  U 40;  pressureDesign 2; } }
+        { unitName coatingAirHeater;  type shellTubeHX;  material SS316;
+          designRules { utility steamLP;  U 40;  pressureDesign 2; } }
+
+        //  ---- the two preparation tanks, sized by the BATCH PLAN ---------
+        //  `volume fromBatchPlan;`: each holds one lot of its liquid, V = S B.
+        { unitName binderPrep;  type vessel;  material SS316;
+          designRules { volume fromBatchPlan;  L_over_D 1.5;  pressureDesign 2;
+                        corrosionAllow 0.0015;  jointEfficiency 1.0; } }
+        { unitName coatingSuspensionPrep;  type vessel;  material SS316;
+          designRules { volume fromBatchPlan;  L_over_D 1.5;  pressureDesign 2;
+                        corrosionAllow 0.0015;  jointEfficiency 1.0; } }
+    );
+}
+
+costing
+{
+    method    Turton;
+    year      2026;
+    cepci     820;        // a projection -- AUTHOR-SET (apalutamide01's)
+    cepci2001 397;        // the correlations' own basis year
+    usdToEur  0.92;
+
+    //  THE DECLARED QUOTES (DEV.md 4c C98).  EVERY VALUE BELOW IS AN
+    //  AUTHOR-SET PLACEHOLDER -- a round number of the right order chosen so
+    //  that the solid-dose machines and their building are not ZERO in the
+    //  capital -- and none is a vendor's price.  A group replaces each one
+    //  with a dated quotation (vendor, reference, date in `source`).  THE
+    //  MACHINES SCALE WITH THE BATCH PLAN (DEV.md 4c C99): each `value` is the
+    //  price of ONE machine of its `referenceSize`, and the item costs
+    //  units x value x (the stage's size per unit / referenceSize)^0.6.  The
+    //  building does not scale.  All are in 2026 money, the costing year.
+    quotes
+    (
+        { unit granulator;  value 700000;  currency EUR;  year 2026;
+          basis installed;  kind equipment;
+          scaling { referenceSize 1 m3;  exponent 0.6;
+                    exponentSource "the six-tenths rule, a convention (Williams, Chemical Engineering 1947, cited by title only); applied to this machine as an author-set assumption"; }
+          source "author-set placeholder (DEV.md 4c C98, C110), not a quotation";
+          reason "a high-shear granulator with its binder-dosing pump and wet mill, installed, a round figure; replace with a vendor quotation"; }
+        { unit fluidBedDryer;  value 900000;  currency EUR;  year 2026;
+          basis installed;  kind equipment;
+          scaling { referenceSize 1 m3;  exponent 0.6;
+                    exponentSource "the six-tenths rule, a convention (Williams, Chemical Engineering 1947, cited by title only); applied to this machine as an author-set assumption"; }
+          source "author-set placeholder (DEV.md 4c C98, C110), not a quotation";
+          reason "a fluid-bed dryer with its air-handling unit, filters and explosion protection -- the flowsheet's `fbdAirHeater` is sized and costed apart -- a round figure; replace with a vendor quotation"; }
+        { unit mill;  value 150000;  currency EUR;  year 2026;
+          basis installed;  kind equipment;
+          scaling { referenceSize 100 kg/h;  exponent 0.6;
+                    exponentSource "the six-tenths rule, a convention (Williams, Chemical Engineering 1947, cited by title only); applied to this machine as an author-set assumption"; }
+          source "author-set placeholder (DEV.md 4c C98, C110), not a quotation";
+          reason "a conical screen mill, a round figure; replace with a vendor quotation"; }
+        { unit finalBlender;  value 300000;  currency EUR;  year 2026;
+          basis installed;  kind equipment;
+          scaling { referenceSize 1 m3;  exponent 0.6;
+                    exponentSource "the six-tenths rule, a convention (Williams, Chemical Engineering 1947, cited by title only); applied to this machine as an author-set assumption"; }
+          source "author-set placeholder (DEV.md 4c C98, C110), not a quotation";
+          reason "a bin blender and its bins, a round figure; replace with a vendor quotation"; }
+        { unit tabletPress;  value 1000000;  currency EUR;  year 2026;
+          basis installed;  kind equipment;
+          scaling { referenceSize 100 kg/h;  exponent 0.6;
+                    exponentSource "the six-tenths rule, a convention (Williams, Chemical Engineering 1947, cited by title only); applied to this machine as an author-set assumption"; }
+          source "author-set placeholder (DEV.md 4c C98, C110), not a quotation";
+          reason "a rotary tablet press installed in its suite, a round figure; replace with the press vendor's quotation for the chosen model and its tooling"; }
+        { unit coatingPan;  value 800000;  currency EUR;  year 2026;
+          basis installed;  kind equipment;
+          scaling { referenceSize 1 m3;  exponent 0.6;
+                    exponentSource "the six-tenths rule, a convention (Williams, Chemical Engineering 1947, cited by title only); applied to this machine as an author-set assumption"; }
+          source "author-set placeholder (DEV.md 4c C98, C110), not a quotation";
+          reason "a perforated pan coater with its spray system -- the flowsheet's `coatingDryer` is the drying half of the same machine and carries no quote of its own, and its air heater is sized and costed apart -- a round figure; replace with a vendor quotation"; }
+        { unit packagingLine;  value 1500000;  currency EUR;  year 2026;
+          basis installed;  kind equipment;
+          scaling { referenceSize 50 kg/h;  exponent 0.6;
+                    exponentSource "the six-tenths rule, a convention (Williams, Chemical Engineering 1947, cited by title only); applied to this machine as an author-set assumption"; }
+          source "author-set placeholder (DEV.md 4c C98, C110), not a quotation";
+          reason "a blister line with cartoning and serialisation, a round figure; replace with a vendor quotation"; }
+        { item productionBuilding;  value 9500000;  currency EUR;  year 2026;
+          basis installed;  kind facility;
+          source "author-set placeholder (DEV.md 4c C98, C110), not a quotation or a building estimate";
+          reason "the GMP building, the layout's 44 m x 36 m `productionBuilding` box (1584 m2) at a round 6000 EUR per m2 of footprint for clean rooms, HVAC and services; replace with a contractor's estimate for the group's own building"; }
+    );
+}
+
+economics
+{
+    method              discountedCashFlow;
+    projectLife         10;          // yr -- ASSUMED
+    constructionPeriod  1;
+    discountRate        0.10;        // ASSUMED
+    taxRate             0.21;        // ASSUMED (a corporate rate, no country chosen)
+    depreciation        straightLine;
+    depreciableLife     7;           // yr -- ASSUMED
+    salvageFraction     0.0;
+    //  THE YEAR'S FLOWS COME FROM THE BATCH PLAN (DEV.md 4c C99): every
+    //  annual flow is the hourly flow x Q / r_P (the "equivalent hours").
+    streamFactor        fromBatchPlan;
+    siteFactor          0.50;
+    contingencyFee      1.18;
+    //  Non-particulate processing steps (Turton's operator count): the two
+    //  air heaters.  The PARTICULATE steps are counted apart, below.
+    N_np                2;
+    particulateSteps
+    {
+        count   6;
+        source  "the case's own count (DEV.md 4c C98, C110): granulation, fluid-bed drying, milling, final blending, tableting, coating -- packaging folded into its neighbour";
+        reason  "Turton's P counts the processing steps that handle particulate solids; this plant's train is six of them.  With the crew below declared, P drives only the printed COMPARISON";
+    }
+
+    //  THE OPERATING CREW, DECLARED (DEV.md 4c C98 round 2).  The labour is
+    //  priced from THIS crew, not from Turton's correlation (a regression
+    //  over CONTINUOUS chemical plants).  EVERY NUMBER BELOW IS AN
+    //  AUTHOR-SET ASSUMPTION: replace it with the group's own staffing plan.
+    //  The 4.5 positions per operator-per-shift the engine applies assumes
+    //  round-the-clock cover; both trains here run TWO shifts -- the
+    //  group's question (README section 6).
+    operatingCrew
+    {
+        areas
+        (
+            { area "dispensing";             operatorsPerShift 1; }
+            { area "granulation and drying"; operatorsPerShift 2; }  // binder, high-shear granulator, fluid bed
+            { area "milling and blending";   operatorsPerShift 1; }
+            { area "compression";            operatorsPerShift 1; }
+            { area "coating";                operatorsPerShift 1; }
+            { area "packaging";              operatorsPerShift 3; }
+            { area "material handling";      operatorsPerShift 1; }  // bins, IPC samples, warehouse runs
+        );
+        source  "author-set assumption (DEV.md 4c C110), not a staffing study";
+        reason  "a campaign oral-solid-dose suite is staffed per room and per running machine; round figures of the right order for ONE line -- replace them with the group's staffing plan";
+    }
+    estimateClass       5;           // concept screening: the solids train is priced on placeholders
+    accuracyBand        ( -50 100 ); // Class 5, the wide corner -- chosen
+    refuseOnMissingPrice 1;
+
+    workingCapital
+    {
+        //  60 days of raw materials in the warehouse: quarantine, sampling
+        //  and QC release of every incoming lot before use (GMP) plus the
+        //  supply cycle -- ASSUMED.
+        rawMaterialStock   60 day;
+        receivables        60 day;   // ASSUMED: wholesaler terms
+        payables           30 day;   // ASSUMED
+        minimumCash        15 day;
+    }
+
+    land
+    {
+        price   80;      // EUR per m2 of plot
+        source  "placeholder for the groups' site; not a market quotation";
+        reason  "a round number so that the land appears in the capital and the cash flow; replace it with the price of the site the group chooses";
+    }
+}
+
+// ************************************************************************* //
