@@ -682,7 +682,7 @@ int FitParameters::run(const DictPtr& dict,
     {
         std::cout << "\n==========================  FitParameters  ==========================\n"
                   << "  Kind:        " << kind << "\n"
-                  << "  Data:        " << N << " (x_1, T_exp) pairs "
+                  << "  Data:        " << N << (kindP ? " (x_1, P_exp) pairs " : " (x_1, T_exp) pairs ")
                   << pressureSpan() << "\n"
                   << "  Parameters:  " << P << "\n";
         for (const auto& ps : params)
@@ -786,9 +786,11 @@ int FitParameters::run(const DictPtr& dict,
             ++nGood;
         }
         if (nGood == 0)
-            throw std::runtime_error("fitParameters(evaluate): EVERY bubble-T "
-                "point failed to converge -- nothing to score (check P, the "
-                "component pair, and the model parameters)");
+            throw std::runtime_error("fitParameters(evaluate): EVERY "
+                + std::string(kindP ? "bubble-P" : "bubble-T")
+                + " point failed to converge -- nothing to score (check "
+                + std::string(kindP ? "T" : "P") + ", the component pair, and"
+                  " the model parameters)");
         const scalar rms = std::sqrt(sse / scalar(nGood));
         aad /= scalar(nGood);
 
@@ -1073,7 +1075,28 @@ int FitParameters::run(const DictPtr& dict,
         sVector r_final;
         computeResiduals(thermo, pExp, xExp, tExp, r_final, &nFailed, iF1, iF2, wPtr);
         sVector r_kelvin; if (wPtr) computeResiduals(thermo, pExp, xExp, tExp, r_kelvin, nullptr, iF1, iF2); else r_kelvin = r_final;   // rms/max stay in K
+        // A PENALTY RESIDUAL IS NOT A DERIVATIVE, AND NEITHER IS A JUMP
+        // (C123, found on the Brunner CO- and CO2-methanol fits).  One FD
+        // step away from the answer a single row's bubble pressure moved from
+        // 4.19 to 22.7 MPa (CO2, 298.15 K, x = 0.3323): the search took
+        // another sign change of S(P), a second branch, and the row entered J
+        // as 4.5/1e-4 = 4.5e4, so J^T J was dominated by the jump and the
+        // standard error printed 0.0000 -- infinite precision.  The penalty
+        // sentinel does the same thing by another route.  So the slope of a
+        // row is taken from the side that STAYS ON THE ANSWER'S BRANCH:
+        //   - a row penalised AT the answer carries no slope (it is already
+        //     out of chi2);
+        //   - the forward difference stands, bit for bit as before, unless
+        //     it is a penalty or disagrees with the BACKWARD difference by
+        //     more than half the larger of the two -- on a smooth residual
+        //     the two agree to O(h);
+        //   - then the smaller-magnitude side is taken (the jump is the
+        //     large one), a penalised side is never taken, and a row with
+        //     no usable side carries no slope;
+        // and the count of each is said beside the statistics.
+        auto isPenalty = [](scalar v) { return std::abs(v) >= 9.99e2; };
         std::vector<sVector> Jf(N, sVector(P, 0.0));
+        int nBackward = 0, nNoSlope = 0;
         for (std::size_t j = 0; j < P; ++j)
         {
             scalar p0 = params[j].value;
@@ -1082,9 +1105,31 @@ int FitParameters::run(const DictPtr& dict,
             ThermoPackage thH = buildThermo(params);
             sVector rh;
             computeResiduals(thH, pExp, xExp, tExp, rh, nullptr, iF1, iF2, wPtr);
-            for (std::size_t k = 0; k < N; ++k) Jf[k][j] = (rh[k] - r_final[k]) / h;
+            params[j].value = p0 - h;
+            ThermoPackage thM = buildThermo(params);
+            sVector rmh;
+            computeResiduals(thM, pExp, xExp, tExp, rmh, nullptr, iF1, iF2, wPtr);
+            for (std::size_t k = 0; k < N; ++k)
+            {
+                if (isPenalty(r_final[k])) { Jf[k][j] = 0.0; continue; }
+                const bool fOk = !isPenalty(rh[k]), bOk = !isPenalty(rmh[k]);
+                const scalar fwd = (rh[k] - r_final[k]) / h;
+                const scalar bwd = (r_final[k] - rmh[k]) / h;
+                if (fOk && bOk
+                    && std::abs(fwd - bwd) <= 0.5 * std::max(std::abs(fwd), std::abs(bwd)))
+                { Jf[k][j] = fwd; continue; }
+                if (fOk && !bOk) { Jf[k][j] = fwd; continue; }
+                if (bOk && (!fOk || std::abs(bwd) < std::abs(fwd)))
+                { Jf[k][j] = bwd; ++nBackward; continue; }
+                if (fOk) { Jf[k][j] = fwd; ++nBackward; continue; }   // the jump was backward
+                Jf[k][j] = 0.0; ++nNoSlope;
+            }
             params[j].value = p0;
         }
+        //  Published only when non-zero, so a fit whose every row is smooth
+        //  publishes exactly the keys it always did.
+        if (nBackward > 0) diag_["fd_one_side_rows"] = static_cast<scalar>(nBackward);
+        if (nNoSlope > 0)  diag_["fd_no_slope_rows"] = static_cast<scalar>(nNoSlope);
         // Restore the converged thermo (the FD probes mutated `work`).
         thermo = buildThermo(params);
 
@@ -1222,7 +1267,19 @@ int FitParameters::run(const DictPtr& dict,
                 std::cout << "    (correlation matrix not computed -- J^T J singular)\n";
             if (nFailed > 0)
                 std::cout << "    " << nFailed << " data point(s) hit the "
-                             "bubble-T penalty (non-converged)\n";
+                          << (kindP ? "bubble-P" : "bubble-T")
+                          << " penalty (non-converged: the model has no bubble"
+                             " point there)\n";
+            if (nBackward > 0)
+                std::cout << "    " << nBackward << " row slope(s) taken from ONE side"
+                             " only: one FD step the other way the "
+                          << (kindP ? "bubble pressure" : "bubble temperature")
+                          << " left the answer's branch or has none (a jump is not"
+                             " a derivative)\n";
+            if (nNoSlope > 0)
+                std::cout << "    " << nNoSlope << " row slope(s) set to ZERO: the"
+                             " point is infeasible one FD step either way, so it"
+                             " informs no standard error\n";
             std::cout << "=====================================================================\n\n";
         }
 

@@ -2783,7 +2783,7 @@ static ThermoPackage buildV2Dispatch(const DictPtr& v2, const Database& db,
         //                                   unit runs on are in a file the
         //                                   student can read, never a hidden
         //                                   runtime evaluation;
-        //    { i <c>; j <c>; kij <v>; origin <word>; }
+        //    { i <c>; j <c>; kij <v>; variedBy <operation>; }
         //                                   an INLINE value, accepted ONLY
         //                                   with its `origin` named, because
         //                                   the one legitimate inline kij is
@@ -2817,13 +2817,13 @@ static ThermoPackage buildV2Dispatch(const DictPtr& v2, const Database& db,
             {
                 const bool inlineForm = decl->found("i") && decl->found("j")
                                      && decl->found("kij");
-                if (!inlineForm || !decl->found("origin"))
+                if (!inlineForm || !decl->found("variedBy"))
                     throw std::runtime_error("thermophysicalPropertySystem: phiPhi"
                         " binaryInteractions." + key + " needs `source \"<pair"
                         " or set record>\";` (the cited kij record; never an"
                         " invented inline number).  The ONE inline form,"
-                        " `{ i <c>; j <c>; kij <v>; origin <word>; }`, is for a"
-                        " value under regression in this case (origin names"
+                        " `{ i <c>; j <c>; kij <v>; variedBy <operation>; }`, is for a"
+                        " value under regression in this case (variedBy names"
                         " the operation varying it) and is announced as such.");
                 auto p = std::make_shared<Dictionary>(key);
                 p->insert("i",   decl->entryValue("i"));
@@ -2831,8 +2831,8 @@ static ThermoPackage buildV2Dispatch(const DictPtr& v2, const Database& db,
                 p->insert("kij", decl->entryValue("kij"));
                 pairDicts.push_back(p);
                 const std::string msg = "kij pair " + decl->lookupWord("i")
-                    + "-" + decl->lookupWord("j") + " is an INLINE value (origin "
-                    + decl->lookupWord("origin") + ") -- a number under"
+                    + "-" + decl->lookupWord("j") + " is an INLINE value (varied by "
+                    + decl->lookupWord("variedBy") + ") -- a number under"
                       " regression in this case, not a cited record; a run that"
                       " is not that regression should declare the written pair"
                       " record instead";
@@ -2911,6 +2911,39 @@ static ThermoPackage buildV2Dispatch(const DictPtr& v2, const Database& db,
                 std::cout << "[builder] kij pair " << rec->lookupWord("i") << "-"
                           << rec->lookupWord("j")
                           << "  --- " << decl->lookupWord("source") << "\n";
+            //  A REGRESSED PAIR CARRIES ITS OWN VERDICT, AND A RUN THAT USES
+            //  IT SAYS WHICH (DEV.md 4c C123, "sim a tudo": a pair whose
+            //  held-out test missed its band is still USED case-locally, and
+            //  announced).  `fitParameters` writes `validation { verdict;
+            //  heldOut { aad_pct; } acceptance { maxAAD; } }` into the record;
+            //  any verdict but `validated` is said here and enters the caveat
+            //  block.  A record with no validation block says nothing new.
+            if (rec->found("validation"))
+            {
+                auto val = rec->subDict("validation");
+                const std::string verdict = val->lookupWordOrDefault("verdict", "");
+                if (!verdict.empty() && verdict != "validated")
+                {
+                    std::ostringstream vm;
+                    vm << "kij pair " << rec->lookupWord("i") << "-"
+                       << rec->lookupWord("j") << " is a REGRESSED record whose"
+                          " verdict is `" << verdict << "`";
+                    if (val->found("heldOut") && val->subDict("heldOut")->found("aad_pct")
+                        && val->found("acceptance")
+                        && val->subDict("acceptance")->found("maxAAD"))
+                        vm << std::fixed << std::setprecision(2) << " (held-out AAD "
+                           << val->subDict("heldOut")->lookupScalar("aad_pct")
+                           << " % against a band of "
+                           << val->subDict("acceptance")->lookupScalar("maxAAD")
+                           << " % declared before the fit)";
+                    vm << " -- used as declared, not as a validated pair ("
+                       << decl->lookupWord("source") << ")";
+                    if (thermoAnnounce()
+                        && AdvisoryLog::instance().add("thermo", "warning",
+                               "kij pair verdict " + key, vm.str()))
+                        std::cout << "[builder] " << vm.str() << "\n";
+                }
+            }
         }
         eosDict->insert("binaryInteractions", EntryValue(pairDicts));
     }

@@ -338,7 +338,7 @@ int Ppr78Kij::run(const DictPtr& dict,
     {
         f << "    { i " << std::left << std::setw(12) << (r.i + ";")
           << " j " << std::setw(12) << (r.j + ";")
-          << " kij " << std::right << std::fixed << std::setprecision(6) << std::setw(10) << r.kij << ";"
+          << " kij " << std::right << std::fixed << std::setprecision(10) << std::setw(14) << r.kij << ";"
           << "  E_MPa " << std::setw(10) << std::setprecision(4) << r.E_MPa << ";"
           << "  deltaTerm_MPa " << std::setw(10) << r.dterm_MPa << ";"
           << "  denominator_MPa " << std::setw(10) << r.denom_MPa << ";";

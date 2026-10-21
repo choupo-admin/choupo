@@ -684,7 +684,7 @@
     "check_origin_vocabulary": {
       "exit": 0,
       "claim": "check_origin_vocabulary: OK -- 101 `origin <word>;` forms in 51 prose files all use a KNOWN word (15 words imported from check_origin_census, never copied), or one of 2 word(s) pinned in debt_registry with a stated exit (citedHeuristic, teachingSurrogate), or one of 6 sites exempt BY NAME (5 deliberate quotations, 1 English sentence).  SCANNED: docs, src, bin, gui/src, gui/schemas and the root *.md, every text file, read as one string so a line-wrapped form is seen.  NOT CHECKED: records under data/ (the census's domain) and case-local records under tutorials/ (nobody's); the engine's tolerance in core/Origin.H; whether a word is TRUE of its value; the backtick prose form with no semicolon.",
-      "seconds": 0.6
+      "seconds": 0.8
     },
     "check_overlay_aad_pinned": {
       "exit": 0,
@@ -713,7 +713,7 @@
     },
     "check_phase_envelope": {
       "exit": 0,
-      "claim": "check_phase_envelope: OK -- the saturation residuals have one home; envelope01 dew steps within 10x their neighbour (worst 3.5x); envelope02 dew steps within 10x their neighbour (worst 0.9x); an empty branch is reported as never started; a root jump is reported as one, and not as a turning point; envelope01's interior maximum is reported, as bracketed; envelope02 claims no cricondentherm from a jump endpoint; the unclosed nose names Michelsen (1980).  NOT COVERED: no number in either witness is checked against a MEASURED envelope (the feeds are plausible, not sampled, and the K-values are Peng-Robinson over an ideal liquid) -- both are STRUCTURAL witnesses for what the op reports and refuses to report.  The nose itself is not drawn and the critical point is not located.  The continuity thresholds are sized for the discontinuous kind of root jump; one inside the noise of the branch's own steps would pass unseen.",
+      "claim": "check_phase_envelope: OK -- the saturation residuals have one home; envelope01 dew steps within 10x their neighbour (worst 3.5x); envelope02 dew steps within 10x their neighbour (worst 0.9x); an empty branch is reported as never started; a root jump is reported as one, and not as a turning point; envelope01's interior maximum is reported, as bracketed; envelope02 claims no cricondentherm from a jump endpoint; the unclosed nose names Michelsen (1980); PR78: methanol (omega 0.565) gets the 1978 slope 1.16920, recomputed here, not the 1976 1.15985.  NOT COVERED: no number in either witness is checked against a MEASURED envelope (the feeds are plausible, not sampled, and the K-values are Peng-Robinson over an ideal liquid) -- both are STRUCTURAL witnesses for what the op reports and refuses to report.  The nose itself is not drawn and the critical point is not located.  The continuity thresholds are sized for the discontinuous kind of root jump; one inside the noise of the branch's own steps would pass unseen.",
       "seconds": 0.1
     },
     "check_phase_speciation": {
@@ -1205,6 +1205,11 @@
       "exit": 0,
       "claim": "check_phase_split_scan: OK -- one flash home (flash21/16/19 goldens reproduced at their operating point), the freezing-point identity recomputed from water.dat at every point (12 ice points), the ice appearance announced between its grid values, a pure-water probe refused by name below Tt and continued, the Psat/dCp announcements at their first point, closure to 1e-9, 4 grammar refusals, source arm.  NOT checked: any measured freezing point; the reactive path along a sweep; `phaseSet auto` changing along a scan; `variable P` beyond the grammar.",
       "seconds": 6.1
+    },
+    "check_ppr78_route": {
+      "exit": 0,
+      "claim": "check_ppr78_route: OK -- the four source homes are in place; the op's kij(CO2,N2; 300 K) = -0.031748 reproduces Eq. 7 recomputed independently; the set reaches the PR and the run says at which T it was evaluated; an extrapolated pair is written as one and repeated on the run with its window; an inline kij refuses without variedBy and is announced with one; the P_bubble fit recovers a planted kij (0.0500 vs 0.05) with verdict validated and writes the pair record; a regressed pair record used with verdict notValidated is said, with its held-out AAD and band; a validated one is not; the compressor's P_out and W_shaft forms are inverses (20 bar <-> 5800 kW); a bubble pressure that jumps branch one FD step away enters J from its smooth side and is said (sigma 0.0034); a phaseChanger whose dominant component is a gas finds vf 0.9 at 374.95 K and says which window it searched.  NOT COVERED: no number is checked against a MEASURED equilibrium (the op is held to the equation it implements, the fit to what the engine planted); the 2010 / 2017 tables' values are not re-read here.",
+      "seconds": 0.7
     }
   }
 }
