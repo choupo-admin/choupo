@@ -1390,8 +1390,19 @@ accepts today, and that is a policy call.
 > level.  NOT in scope, named: a control-valve sizing standard's tables
 > (no-grant; the case declares the Cv or the equation's coefficients
 > with source), alarm rationalisation, SIL, any vendor instrument.
-> Status: proposed, awaiting Vitor's morning answer on scope (which
-> instruments a student should see first) before dispatch.
+> **Vitor, minutes later: "este e o diagrama de flowsheet com
+> instrumentacao e controlo que deve ser usado para correr o
+> choupoCtrl".**  The diagram is the P&ID (piping and instrumentation
+> diagram), the level after the PFD the GUI draws today; and it is not
+> an export FROM the steady case but the INPUT TO choupoCtrl: one case,
+> choupoSolve runs the PFD, the student declares the P&ID over it,
+> choupoCtrl runs the same case from the P&ID -- each declared loop a
+> controller, each control valve the final element that manipulates its
+> variable, the converged steady state the starting point -- so the
+> `controllers` block choupoCtrl reads today becomes DERIVED from the
+> P&ID declaration (one home), never written beside it.  Status:
+> proposed, awaiting Vitor's morning answer on scope (which instruments
+> a student should see first) before dispatch.
 
 
 > **C128. WHICH SOLVENT, OR WHICH SOLVENT MIXTURE, FOR A GIVEN SUBSTANCE
