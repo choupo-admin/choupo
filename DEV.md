@@ -1421,6 +1421,17 @@ accepts today, and that is a policy call.
 > commander's own C123 note naming the benchmark folder's subpath.
 > TODOs for Vitor are listed at the top of the source.  Next: the
 > cold-reader forum on the PDF.
+> **FRAMING REJECTED by Vitor the same day** ("Tu achas que isto e o
+> primeiro paper que vai apresentar o Choupo ao mundo?!").  The commander
+> turned a conversation about AI anxiety into the paper's thesis and
+> title; the first paper must present CHOUPO -- what it is, how it is
+> built, what it computes and why its numbers can be trusted -- with the
+> agent argument as one section at most.  The content (architecture,
+> OpenFOAM, the gates by class, the open-simulator comparison, the
+> limitations) stands; the title, the thesis and the section order are
+> redone once Vitor decides the frame (he is consulting a second
+> opinion).  The forum already launched on the draft runs to completion
+> as evidence on whether the frame works.
 
 > **C125. WHY THE BREAKTHROUGH PAGES ARE SLOW (Vitor, 2026-10-21: "Porque
 > isto e tao lento? breakthrough e do lub-scaleup").**  Measured by the
