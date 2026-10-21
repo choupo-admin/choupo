@@ -1392,6 +1392,29 @@ accepts today, and that is a policy call.
 > app's sentinel, the page and, where it runs a witness in the browser,
 > that the run completes -- the WASM engine had never been exercised before
 > students opened it.  Dispatched (G22, G23).
+> **Item 2 DONE 2026-10-21 (G23, branch claude/c122-site-smoke):**
+> `bin/drive-app --edutools` serves the built site locally and opens every
+> live EduTool (the list is the site's own `methodTools.json`, each at its
+> published `href`) in headless Chrome, 3 pages at a time, reading only
+> facts the app publishes about itself: drive-app's positive sentinel,
+> `data-method-tool`/`-loading`/`-unmounted`, `data-error-boundary`, and a
+> RUN LEDGER on `<html>` (`gui/src/adapters/runLedger.ts`, written where
+> every in-browser run passes, `WasmAdapter.run` and `resolveAdapter`).  A
+> probe that cannot see the chrome and a tool marker REFUSES (exit 2).  CI:
+> the build moved verbatim into `.github/actions/build-site`;
+> `.github/actions/smoke-site` fails on a finding or a refusal;
+> publish-site runs it BEFORE the push, so a broken EduTool stops the
+> publish; `site-smoke.yml` runs it on other branches on demand and never
+> publishes.  420 s per tool (hang detector); slower than 60 s is reported
+> SLOW, not failed (stated default).  First CI run (39509861122): 61 tools,
+> 49 ran the engine, 12 rendered with no run on open, 0 failed, 276 s.
+> Five by-hand breakages caught (a missing wasm, a missing engine js, a
+> throwing chunk, the pre-C122 site refused, an unreachable target).
+> FINDING for Vitor (pedagogy, his): `breakthrough` and `lub-scaleup` run
+> the batch13 adsorber witness on open and keep a student waiting about
+> 195 s before drawing.  Fixed on integration: `check_doc_references`
+> accused CLAUDE.md's `build/suiteTimings.csv` in every unbuilt checkout;
+> a root git ignores is now the run-output rule one directory up.
 > **Item 1 DONE 2026-10-20 (G22, main 7b3bb890e):** `bin/integrate
 > <branch>` merges into a reusable worktree off main, regenerates
 > conflicted and stale generated files from `bin/curate/

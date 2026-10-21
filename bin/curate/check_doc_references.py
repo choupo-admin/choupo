@@ -306,8 +306,13 @@ def main() -> int:
 
         for m in FOREIGN_ROOT_RE.finditer(txt):
             root = m.group(1)
+            #  A ROOT GIT IGNORES is a build or run output (`build/`), absent
+            #  from every fresh clone by the repository's own declaration --
+            #  the RUN_OUTPUT rule above, one directory up.  It went red on
+            #  CLAUDE.md's `build/suiteTimings.csv` in every unbuilt worktree
+            #  and green wherever `make` had run (2026-10-21).
             if root in PREFIXES or root in BARE_ROOTS \
-               or (ROOT / root).is_dir():
+               or (ROOT / root).is_dir() or git_ignores(root + "/"):
                 continue
             whole = m.group(0).rstrip('.,;:)`"\'')
             if PLACEHOLDER.search(whole) or whole in ALLOWED_PATHS \
