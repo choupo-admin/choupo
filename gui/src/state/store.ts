@@ -243,9 +243,10 @@ export type WorkspaceKey =
   | "plots"
   | "log"
   | "props"
-  //  The Compounds tab (2026-09-03): the catalogue as a surface of its own,
-  //  the door the Explore tab used to have to be as well.
-  | "compounds"
+  //  Explore: ONE key for the catalogue and the property surfaces, two VIEWS
+  //  of one tab (2026-10-21, DEV.md 4c C116).  The catalogue's own key
+  //  `compounds` (2026-09-03) is retired; state/workspaceUrl.ts redirects it
+  //  and a restored session carrying it is read as `explore` below.
   | "explore"
   | "methods"
   | "control"
@@ -526,23 +527,17 @@ function bootShowIntro(): boolean {
 // `?workspace=explore` (a frictionless "try it" CTA).  The explorer is
 // standalone, so it opens with no case loaded.
 //
-// WHAT `?workspace=explore` LANDS ON CHANGED 2026-09-03, on the owner's
-// clarification -- "eu chamo isto a landing do explorer", of the screen that
-// address opens.  The explorer's LANDING is now where you choose compounds
-// and read their records; the property surfaces are a tab of their own.  Four
-// addresses, two surfaces:
+// ONE SCREEN SINCE 2026-10-21 (DEV.md 4c C116).  The catalogue and the
+// property surfaces are two VIEWS of the one Explore tab; the view is the
+// screen's own reading of `view=` (explore/selectionLink.ts):
 //
-//     ?workspace=explore                 -> the landing (catalogue + record)
-//     ?workspace=compounds               -> the same, the alias it shipped as
-//     ?workspace=properties[&components] -> the property surfaces
-//     ?workspace=explore&components=…    -> the property surfaces (LEGACY:
-//                                           the hand-over links of the first
-//                                           build, and any bookmark that
-//                                           already names a set)
+//     ?workspace=explore                       -> Explore, the catalogue view
+//     ?workspace=explore&components=…          -> Explore, the surfaces view
+//     ?workspace=explore&view=catalogue|surfaces -> the view named
+//     ?workspace=properties | compounds        -> REDIRECTED to the above
 //
-// The legacy arm is not politeness: an address that NAMES COMPONENTS is
-// asking to plot them, so routing it to the landing would drop the request
-// the URL is carrying.
+// An address that NAMES COMPONENTS is asking to plot them, which is why the
+// set alone selects the surfaces when no view is named.
 function bootWorkspace(): WorkspaceKey | null {
   if (typeof window === "undefined") return null;
   //  ONE URL WORD PER SCREEN (2026-09-14).  The decision lives in
@@ -620,7 +615,9 @@ export const useStore = create<AppState>((set, get) => ({
     bootWorkspace()
     ?? (initial.name === ""
         && (bootSession?.activeWorkspace === "explore"
-            || bootSession?.activeWorkspace === "compounds"
+            //  the retired catalogue key, as a session written before C116
+            //  stored it
+            || (bootSession?.activeWorkspace as string | undefined) === "compounds"
             || bootSession?.activeWorkspace === "methods")
           ? null
           // A result view (plots/reports/streams/variables/log/pinch) needs a
@@ -631,7 +628,9 @@ export const useStore = create<AppState>((set, get) => ({
           : RESULT_WORKSPACES
               .includes(bootSession?.activeWorkspace as WorkspaceKey)
               ? null
-              : bootSession?.activeWorkspace ?? null),
+              : (bootSession?.activeWorkspace as string | undefined) === "compounds"
+                ? "explore"
+                : bootSession?.activeWorkspace ?? null),
   displayPrefs: loadStoredPrefs(),
 
   setDisplayPrefs: (patch) =>

@@ -187,9 +187,9 @@ export function CompoundBrowser({
    *  reduz a complexidade.  Neste caso, o novo tab mantém a lista completa de
    *  compostos!").
    *
-   *  The property surfaces are opened from the catalogue with a CHOSEN SET in
-   *  the address, and arrived carrying the whole 570-compound tree with that
-   *  set at the very bottom — the reader had already answered "which
+   *  The property surfaces are opened from the catalogue (a view of the same
+   *  tab since 2026-10-21, C116) with a CHOSEN SET, and arrived carrying the
+   *  whole 570-compound tree with that set at the very bottom — the reader had already answered "which
    *  substances?" and the tab asked it again, hiding the answer.
    *
    *  This app already does the opposite well, twelve times over: the unit

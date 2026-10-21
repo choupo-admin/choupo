@@ -98,32 +98,24 @@ export interface ModeTab {
 /** The modes, in the order the hub offers them.  These are NOT in WORKSPACES
  *  and must never be put back there: that is the whole decision. */
 export const MODE_TABS: ModeTab[] = [
-  //  TWO DOORS, NOT A SEQUENCE (Vítor, 2026-09-03).  "Explore" is the
-  //  CATALOGUE (internal key `compounds`): it chooses and reads records.
-  //  "Property surfaces" (internal key `explore`) PLOTS.  They are listed side
-  //  by side, and the surfaces open perfectly well with no selection, because
-  //  a pair where the second is reachable only through the first is the setup
-  //  wizard gui-credo §5 forbids.  The catalogue comes first because it is
-  //  where a student who does not yet know what to plot should start -- not
-  //  because it is step one.
-  //
-  //  (This comment used to read "Compounds chooses and reads records; Explore
-  //  plots" -- a labelling that no longer existed, and it sent an audit to
-  //  the wrong URL.  The internal keys kept the old names; the LABELS and the
-  //  URL words are the ones above.  state/workspaceUrl.ts is the one home for
-  //  which word opens which screen.)
+  //  ONE DOOR (Vítor, 2026-10-20, DEV.md 4c C116: "temos o 'explore' e o
+  //  'Property Surfaces' que acho que fazem a mesma coisa e so se cria
+  //  confusao por se ter dois").  The 2026-09-03 split gave the catalogue and
+  //  the plots two doors here, labelled AGAINST their internal keys (label
+  //  "Explore" = key `compounds`, label "Property surfaces" = key `explore`),
+  //  which once sent an audit to the wrong URL.  They are two VIEWS of one tab
+  //  now -- Catalogue and Surfaces, switched in place, the view in the address
+  //  -- with ONE key, `explore`, under ONE label.  The surfaces still open with
+  //  no selection (`?workspace=explore&view=surfaces`): no wizard (gui-credo
+  //  §5).  state/workspaceUrl.ts is the one home for which word opens which
+  //  screen, and redirects the two retired words.
   {
     label: "Explore",
     search: "?workspace=explore",
-    blurb: "The catalogue: every substance by role and family, what its record "
-      + "declares, and what the curation dossier says about it. Pick a set and "
-      + "open it in the property surfaces.",
-  },
-  {
-    label: "Property surfaces",
-    search: "?workspace=properties",
-    blurb: "T-x-y, γ(x), a Psat scan — over components you pick, here or in the "
-      + "catalogue.",
+    blurb: "Every substance by role and family, what its record declares and "
+      + "what the curation dossier says about it — then, for the set you pick, "
+      + "the property surfaces: T-x-y, γ(x), a Psat scan, measured data against "
+      + "every candidate model.",
   },
   {
     // The label is the student-facing word; the URL key stays `methods`

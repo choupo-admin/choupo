@@ -44,6 +44,13 @@ will hit it at $x = 0.89$.
 
 \section{The workflow}
 
+Explore is \emph{one} tab with two \textbf{views} of one selected set,
+switched in place by the \textbf{Catalogue\,|\,Surfaces} control at the top
+left: the \emph{Catalogue} browses the substances and reads their records,
+the \emph{Surfaces} plot them.  The set and the view travel in the address
+(\code{?workspace=explore\&view=surfaces\&components=water,ethanol}), so an
+exploration is a link you can hand to somebody.
+
 \begin{enumerate}[leftmargin=*,nosep]
   \item \textbf{Pick components} in the left panel.  The list is the live
         catalogue; each card shows the data the component actually carries
@@ -65,13 +72,22 @@ will hit it at $x = 0.89$.
 
 \section{The views, one by one}
 
-\subsection{The compound browser (the Explorer's landing)}
-%  MOVED 2026-09-03: the catalogue IS the Explorer's landing now
-%  (?workspace=explore); the property surfaces moved to
-%  ?workspace=properties and keep a compound rail of their own.
-%  Record: docs/design/one-tab-one-thing.md §8, amended in §8.7.
+\subsection{The Catalogue view (the compound browser)}\label{sec:explorer-catalogue}
+%  ONE TAB SINCE 2026-10-21 (DEV.md 4c C116): the catalogue (2026-09-03,
+%  its own tab at ?workspace=explore) and the property surfaces (then
+%  ?workspace=properties) are two VIEWS of one Explore tab.  Record:
+%  docs/design/one-tab-one-thing.md §8 (the 2026-09-03 split) and DEV.md 4c
+%  C116 (the merge).
 % Verified against gui/src/ui/explore/CompoundBrowser.tsx (hosted by
-% gui/src/ui/ExploreWorkspace.tsx:2149) and gui/src/case/family.ts.
+% gui/src/ui/ExploreWorkspace.tsx:1325 on a phone and, through LeftRail,
+% :2394), gui/src/case/family.ts, and the view: ExploreWorkspace.tsx:225
+% (boot from the address), :474 (a set-carrying address opens on the last
+% record), :481 (a click adds AND reads), :1092 (F1 here
+% opens this section), :1316-1368 (the Catalogue view, the record through
+% the one InspectorPanel), :2403 (the switch); explore/selectionLink.ts:108
+% (this label), :117 (the view an address names; absent, a set opens the
+% surfaces), :126 (the address); state/workspaceUrl.ts:133-136 (the two
+% retired words are redirects).
 % Tree of folding groups: CompoundBrowser.tsx:86-95 (OPEN_BY_DEFAULT,
 % FAMILY_THRESHOLD), groups derived from record facts: 63-82, display
 % order: 84-85; families built and ranked: 337-344, family headers folded
@@ -94,17 +110,22 @@ Typing in the search box flattens the tree; a double click inspects a
 component without changing the set.  The browser reads the catalogue; it
 does not edit a record.
 
-The browser is the left half of the Explorer's \emph{landing} --- the screen
-\code{?workspace=explore} opens; its right half shows the record of whichever
-compound you last touched --- identity, what the record carries, the curation
-dossier's verdict --- and its \textbf{Explore properties} button opens the
-property surfaces in a tab of their own, carrying the set in the address
-(\code{?workspace=properties\&components=water,ethanol}), which makes an
-exploration a link you can hand to somebody.  Neither tab needs the other: the
-surfaces have their own door on the hub, keep a compound rail, and open
-perfectly well with nothing selected,
-and a component the address names but the catalogue cannot resolve is left
-out of the set and said so, never dropped in silence.
+The browser is the left half of the \emph{Catalogue} view --- the view
+\code{?workspace=explore} opens when the address names no set.  A click adds
+a compound to the set \emph{and} shows its record in the right half ---
+identity, what the record carries, the curation dossier's verdict --- so the
+panel follows your reading; a double click reads a record without changing
+the set.  \textbf{Plot $n$ compounds} switches to the \emph{Surfaces} view
+in place, and for a pair some study has measured, \textbf{Evidence for this
+pair} opens the Evidence view (\S\ref{sec:explorer-evidence}).  The
+Surfaces do not need the Catalogue: they keep a compound rail of their own
+and open perfectly well with nothing selected
+(\code{?workspace=explore\&view=surfaces}).  A component the address names
+but the catalogue cannot resolve is left out of the set and said so, never
+dropped in silence.  \textbf{F1} on the Catalogue view opens this section; on
+the Surfaces it opens the Theory Guide section of the active lens.  The old
+addresses --- \code{?workspace=properties} and \code{?workspace=compounds}
+--- still work: they are rewritten to the view they used to open.
 
 \subsection{Property vs $T$/$P$ (scan)}
 Any pure-component property --- $P^{\mathrm{sat}}$, liquid density,

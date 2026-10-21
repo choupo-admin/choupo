@@ -44,7 +44,7 @@ License
 import helpIndex from "../../../docs/help-index.json";
 import { guideUrl } from "./guideLinks.js";
 
-export type GuideKey = "theory" | "user" | "props" | "developer";
+export type GuideKey = "theory" | "user" | "props" | "developer" | "explorer";
 
 export interface HelpTarget {
   guide: GuideKey;

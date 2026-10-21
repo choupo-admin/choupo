@@ -587,11 +587,13 @@ async function main() {
         //  from the hub.  The landing carries a compound so the record panel
         //  is populated rather than showing its empty state -- an empty
         //  surface is exactly the state whose controls cannot go missing.
+        //  ONE Explore since 2026-10-21 (DEV.md 4c C116): the catalogue and
+        //  the surfaces are two VIEWS of one tab, named in the address.
         { id: "explore-landing",  url: `${BASE}?workspace=explore` },
-        { id: "explore-landing+record",
-          url: `${BASE}?workspace=compounds` },
-        { id: "property-surfaces",
-          url: `${BASE}?workspace=properties&components=acetone` },
+        { id: "explore-catalogue+record",
+          url: `${BASE}?workspace=explore&view=catalogue&components=acetone` },
+        { id: "explore-surfaces",
+          url: `${BASE}?workspace=explore&view=surfaces&components=acetone` },
         { id: "shell+case",
           url: `${BASE}?case=steady/flash/flash01_benzene_toluene`
              + "&workspace=methods&tool=mccabe" },
