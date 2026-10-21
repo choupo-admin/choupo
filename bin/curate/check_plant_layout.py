@@ -265,7 +265,9 @@ The risks such a feature carries are specific, and each arm names one:
       moved into its catch area; the catch area's kerb moved across a road;
       a declared pipe route at 0.1 m through the kerb.  The bullets in a 2 m
       BUND displace their circular segments (recomputed, and less than 90 %
-      of their bounding boxes).  REFUSED, exit 2 and named: a listed item
+      of their bounding boxes).  An L-shaped POLYGON wall round the tanks
+      publishes its shoelace area and is recomputed like the rest; a
+      bow-tie polygon is refused as crossing itself.  REFUSED, exit 2 and named: a listed item
       outside the wall, an unlisted item inside it, a wall through a
       footprint, no capacity rule, an unknown kind, a bund with a pit, an
       unknown basis, an impounding area with no pit, a pit under an item, an
@@ -3187,6 +3189,28 @@ def arm_bunds(work):
         #  The shortfall's numbers are the rule's, recomputed (the verdict
         #  word must follow the arithmetic, not a flag).
         check_bund("green, 2 m wall", d, lay, bs[0], None)
+    # ---- a POLYGON wall: an L-shaped bund round the same tanks ------------
+    #  The witnesses declare rectangles; the outline's own corners must give
+    #  the area (shoelace) and the containment test (inside, not across).
+    d = prepare(work, "bund_polygon", GREEN, sub(
+        "region      { xMin 103 m; xMax 213 m; yMin -69 m; yMax -1 m; }",
+        "polygon     ( { x 103 m; y -69 m; } { x 213 m; y -69 m; } { x 213 m; y -1 m; }"
+        " { x 160 m; y -1 m; } { x 160 m; y -10 m; } { x 103 m; y -10 m; } );"))
+    out, err, rc, j, lay = layout_of(d)
+    bs = lay.get("bunds") or []
+    if rc != 0 or not bs or bs[0]["regionFrom"] != "polygon" \
+            or not close(bs[0]["area"], 110 * 68 - 57 * 9):
+        fail(f"(p) an L-shaped polygon bund: exit {rc}, {bs[:1]}; its area is"
+             f" {110 * 68 - 57 * 9} m2")
+    else:
+        check_bund("green, L-shaped wall", d, lay, bs[0], None)
+    d = prepare(work, "bund_bowtie", GREEN, sub(
+        "region      { xMin 103 m; xMax 213 m; yMin -69 m; yMax -1 m; }",
+        "polygon     ( { x 103 m; y -69 m; } { x 213 m; y -1 m; } { x 213 m; y -69 m; }"
+        " { x 103 m; y -1 m; } );"))
+    o, e, rc = solve(d)
+    if rc != 2 or "a wall's outline must not cross itself" not in o + e:
+        fail(f"(p) a bow-tie polygon must be refused as crossing itself: exit {rc}")
     # ---- a bund round LYING cylinders: the circular segment ---------------
     #  The witness's bullets (D 5.27 m, lying along y) in a 2 m bund: each
     #  displaces the segment of its circle below 2 m times its length -- the
@@ -3255,7 +3279,7 @@ def arm_bunds(work):
                       " allowances) and the verdict recomputed here, every published"
                       " number pinned; the impounding pit remote; without bunds every"
                       " liquid store announced unbunded on the three surfaces with its"
-                      " sheet's volume, nothing else; a 2 m wall SHORT and announced, its numbers recomputed; the bullets in a 2 m bund displacing their circular segments; an"
+                      " sheet's volume, nothing else; a 2 m wall SHORT and announced, its numbers recomputed; the bullets in a 2 m bund displacing their circular segments; an L-shaped polygon wall recomputed, a bow-tie refused; an"
                       " open drain, a pit in its catch area, a road and a low pipe through"
                       " a wall announced; " + str(n_ref) + " refusals named")
 
