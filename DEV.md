@@ -962,6 +962,25 @@ accepts today, and that is a policy call.
 > paper on main, and the PDF for his review.  userOp03's 133 % mass
 > closure is NOT from these branches (none touches the CSTR) -- to
 > diagnose separately.
+> **THE TWO OPEN DECISIONS, DELEGATED (Vitor, 2026-10-21: "Nao me pecas
+> nada e decide tu de forma sensata").  Commander's decisions:**
+> (a) **Compressor with liquid in its suction: REFUSE by name**, quoting the
+> resolved vapour fraction and two remedies (a knock-out drum upstream, or
+> a pump if the stream is a liquid).  Reason: a compressor is a vapour
+> machine and liquid in the suction is a design fault in practice;
+> computing on the vapour root of the overall composition in silence is
+> the "state a unit computes with is not the state its streams carry"
+> family; wet compression is new physics nobody asked for.  Case D gets a
+> knock-out drum before C5, stated in its README as a departure from the
+> sample (whose compressor ignores the phase).
+> (b) **The adiabatic mixer: FIX it** -- the outlet is the state of equal
+> enthalpy resolved on the surface the report prices (`flashState::
+> priceState` with the split resolved, as C77 did for the cstr / pfr),
+> published with its vapour fraction; "a mixer does not flash" stays true
+> of the DECLARED-T mixer only.  It is an enumerated member of CLAUDE.md
+> 6's family, and case A's as-built variant shows it creating 49.97 MW.
+> Moved rows are recorded by the commander (delegated) and listed in the
+> commit.  Both AFTER G37's integration lands, on the new main.
 
 > **C84. AN EDUTOOL: MATERIALS OF CONSTRUCTION, SEALS AND GASKETS -- THE
 > PARETO (Vítor, 2026-10-17: "Temos algum EduTools sobre materiais
