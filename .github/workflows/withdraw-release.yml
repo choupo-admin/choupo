@@ -102,22 +102,26 @@ jobs:
           printf '%s\n' "$DEPLOY_KEY" > ~/.ssh/id_ed25519
           chmod 600 ~/.ssh/id_ed25519
           ssh-keyscan github.com >> ~/.ssh/known_hosts 2>/dev/null
-          git clone --depth 1 "$SITE_REPO" /tmp/site
-          if [ ! -e "/tmp/site/$TAG" ]; then
+          #  The site checkout lives under $RUNNER_TEMP, on the runner's main
+          #  disk: /tmp there is a ~8 GB RAM tmpfs, and the site no longer fits
+          #  in it (publish-site.yml died on it from 2026-10-21 until d82dbeed2).
+          SITE_DIR="$RUNNER_TEMP/site"
+          git clone --depth 1 "$SITE_REPO" "$SITE_DIR"
+          if [ ! -e "$SITE_DIR/$TAG" ]; then
             echo "no /$TAG/ in the site repository"; exit 0
           fi
           #  publish-site REFUSES to publish when no frozen app is left, to
           #  catch an rsync that erased them all.  Removing the last one here
           #  would therefore break every future publish -- so say so and stop,
           #  rather than leaving that landmine for whoever pushes next.
-          remaining=$(ls -d /tmp/site/v[0-9]*/app 2>/dev/null | grep -cv "/$TAG/" || true)
+          remaining=$(ls -d "$SITE_DIR"/v[0-9]*/app 2>/dev/null | grep -cv "/$TAG/" || true)
           if [ "$remaining" -eq 0 ]; then
             echo "REFUSED: /$TAG/ is the last frozen app in the site repository,"
             echo "and bin/publish-site refuses to publish when none is left."
             echo "Removing it would break every subsequent site publish."
             exit 1
           fi
-          cd /tmp/site
+          cd "$SITE_DIR"
           git config user.name  "Vítor Geraldes"
           git config user.email "talentgroundlda@gmail.com"
           git rm -rq "$TAG"
