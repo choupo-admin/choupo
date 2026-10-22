@@ -1501,6 +1501,39 @@ accepts today, and that is a policy call.
 > final; }` layout draws what the steady flowsheet and the sizing pass
 > already hold.
 
+> **C138. A STIFF PORE SOLVED AS NANOFILTRAN SOLVES IT: THE EXTENDED
+> NERNST-PLANCK DISCRETISED ACROSS THE PORE AND EVERY NODE SOLVED AT ONCE
+> (Vitor, 2026-10-22: "Porra!  Mas aquilo e um problema muito stiff!  O
+> nanofiltran usa uma abordagem muito poderosa" ... "Faz isso e eu depois
+> dou-te o meu artigo para comparares e criares um golden case").**  His
+> code: Geraldes & Alves, "Computer program for simulation of mass
+> transport in nanofiltration membranes", J. Membr. Sci. 321 (2008)
+> 172-182 -- NanoFiltran: DSPM&DE with non-ideal electrolytes and
+> concentration polarisation, the ENP equations discretised by finite
+> differences inside the membrane, linearised and solved simultaneously
+> (from the abstract; the full paper is his to hand over).  MEASURED in the
+> engine: `DSPM-DE` does NOT solve the pore -- it takes a uniform-gradient
+> closed form per ion and imposes electroneutrality only in the permeate
+> (`src/unitOperations/membrane/transport/DSPM_DE.cpp` ~276-284 and
+> ~385-404), while its header lists pore electroneutrality (4) and zero
+> current (5) as the physics solved (`DSPM_DE.H` "THE PHYSICS") -- a
+> header claiming more than the code does, fixed in this slice.  `SDEM`
+> shoots a fixed-step RK4 across the layer (`SDEM.cpp:66`, 320 steps at
+> :398) and converged at its witnesses' operating points and almost
+> nowhere else until the shot was turned round (CLAUDE.md, the SDEM
+> paragraph) -- the symptom of a stiff boundary-value problem met with an
+> explicit march.  The structure is BLOCK-TRIDIAGONAL (each node couples
+> only to its neighbours), and its one home already exists
+> (`src/solver/BlockTridiagonal.H`, `NDOptions::blockTri` at
+> `src/solver/NewtonND.H:105-123`, built for the MESH column).  SLICE 1:
+> one pore solver, opt-in on DSPM-DE, the default path byte-identical;
+> grid convergence, flux constancy and zero current to machine level, and
+> the closed form compared beside it (differences REPORTED, no golden
+> moved).  SLICE 2, on his paper: a golden case against NanoFiltran's own
+> published results; SDEM's march onto the same solver measured, not
+> assumed.  Engine numerics of two models, Vitor's decision taken in the
+> quotation above.
+
 > **C137. THE RECONCILIATION EDUTOOL MUST MAKE BAYES VISIBLE AND CENTRAL
 > (Vitor, 2026-10-21, for SATURDAY, a follow-up on C121: "Na realidade,
 > Bayes quase nao se ve na primeira parte do EduTool!  E isso e uma
