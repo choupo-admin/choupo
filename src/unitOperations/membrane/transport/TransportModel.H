@@ -69,6 +69,7 @@ Description
 #include "core/Types.H"
 #include "../massTransfer/Polarisation.H"
 
+#include <algorithm>
 #include <cstddef>
 #include <functional>
 #include <map>
@@ -87,6 +88,42 @@ namespace electrolyte { class SpeciationSolver; }
 // `TransportModel` is already taken in `Choupo` by the thermo property
 // (viscosity) transport model (src/thermo/transport/), an unrelated concept.
 namespace membrane {
+
+// ---- The account of a pore that was SOLVED ----------------------------------
+//
+//  Set only by a law that solved the extended Nernst-Planck equations across
+//  the pore (DSPM-DE with `poreSolver { method finiteDifference; }`), one per
+//  z station, merged by the module over the channel.  A law that solved no
+//  pore leaves `TransportSolution::hasPore` false, so a module publishes and
+//  prints nothing about a pore nobody solved -- absence keeps meaning "not
+//  solved", never "solved trivially".
+struct PoreAccount
+{
+    int    nodes             = 0;   // grid nodes across the pore
+    int    solves            = 0;   // pore solves (water-flux passes)
+    int    newtonMax         = 0;   // the most Newton iterations of one solve
+    int    continuations     = 0;   // solves reached by continuation in J_v
+    scalar residualMax       = 0.0; // ||F||_2 of the normalised rows
+    scalar fluxConstancyMax  = 0.0; // |N_k - J_v c_perm| / the terms balanced
+    scalar fluxRelativeMax   = 0.0; // |N_k - J_v c_perm| / J_v c_perm
+    scalar stiffnessMax      = 0.0; // migration flux / net flux
+    scalar currentMax        = 0.0; // |sum z N| / sum |z N|
+    scalar electroneutralMax = 0.0; // |sum z c + X_d| / (sum |z| c + |X_d|)
+
+    void merge(const PoreAccount& o)
+    {
+        nodes             = std::max(nodes, o.nodes);
+        solves           += o.solves;
+        newtonMax         = std::max(newtonMax, o.newtonMax);
+        continuations    += o.continuations;
+        residualMax       = std::max(residualMax, o.residualMax);
+        fluxConstancyMax  = std::max(fluxConstancyMax, o.fluxConstancyMax);
+        fluxRelativeMax   = std::max(fluxRelativeMax, o.fluxRelativeMax);
+        stiffnessMax      = std::max(stiffnessMax, o.stiffnessMax);
+        currentMax        = std::max(currentMax, o.currentMax);
+        electroneutralMax = std::max(electroneutralMax, o.electroneutralMax);
+    }
+};
 
 // ---- The result of the local J_w–c_m–c_p problem at one z station ----------
 struct TransportSolution
@@ -108,6 +145,9 @@ struct TransportSolution
     //  declared; `hasXi` stays false otherwise.
     scalar              xi     = 0.0;
     bool                hasXi  = false;
+    //  The pore solve's own account at this station (see PoreAccount).
+    PoreAccount         pore;
+    bool                hasPore = false;
 };
 
 // ---- The inputs to the local problem at one z station ----------------------

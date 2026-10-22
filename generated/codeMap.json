@@ -1254,6 +1254,9 @@
   "PhaseChangeHTC": [
    "src/unitOperations/heatTransfer/htc/PhaseChangeHTC.H"
   ],
+  "PhaseChangeProcess": [
+   "src/postProcessing/sizing/ShellTubeHX.H"
+  ],
   "PhaseChangeResult": [
    "src/unitOperations/heatTransfer/htc/PhaseChangeHTC.H"
   ],
@@ -1310,6 +1313,24 @@
   ],
   "PolynomialCp": [
    "src/thermo/heatCapacity/PolynomialCp.H"
+  ],
+  "PoreAccount": [
+   "src/unitOperations/membrane/transport/TransportModel.H"
+  ],
+  "PoreIon": [
+   "src/unitOperations/membrane/transport/PoreNernstPlanck.H"
+  ],
+  "PoreProblem": [
+   "src/unitOperations/membrane/transport/PoreNernstPlanck.H"
+  ],
+  "PoreSeed": [
+   "src/unitOperations/membrane/transport/PoreNernstPlanck.H"
+  ],
+  "PoreSettings": [
+   "src/unitOperations/membrane/transport/PoreNernstPlanck.H"
+  ],
+  "PoreSolution": [
+   "src/unitOperations/membrane/transport/PoreNernstPlanck.H"
   ],
   "PostProcessor": [
    "src/postProcessing/PostProcessor.H"
@@ -4475,6 +4496,7 @@
    "src/unitOperations/flash/PureSaturationPlateau.H",
    "src/unitOperations/flash/StreamEquilibrium.H",
    "src/unitOperations/heatTransfer/htc/HeatTransferCorrelation.H",
+   "src/unitOperations/heatTransfer/htc/PhaseChangeHTC.H",
    "src/unitOperations/heatTransfer/htc/ShellTubeDesign.H"
   ],
   "src/postProcessing/sizing/SprayDryerSize.cpp": [
@@ -8623,6 +8645,7 @@
    "src/core/Dimensions.H",
    "src/core/Identifiers.H",
    "src/core/Origin.H",
+   "src/core/RegistryRefusal.H",
    "src/core/Types.H",
    "src/solver/Convergence.H",
    "src/thermo/Component.H",
@@ -8643,6 +8666,7 @@
    "src/unitOperations/membrane/transport/../massTransfer/Polarisation.H",
    "src/unitOperations/membrane/transport/../osmotic/OsmoticModel.H",
    "src/unitOperations/membrane/transport/DSPM_DE.H",
+   "src/unitOperations/membrane/transport/PoreNernstPlanck.H",
    "src/unitOperations/membrane/transport/TransportModel.H"
   ],
   "src/unitOperations/membrane/transport/GelPolarisation.cpp": [
@@ -8659,6 +8683,13 @@
    "src/unitOperations/membrane/transport/../massTransfer/Polarisation.H",
    "src/unitOperations/membrane/transport/GelPolarisation.H",
    "src/unitOperations/membrane/transport/TransportModel.H"
+  ],
+  "src/unitOperations/membrane/transport/PoreNernstPlanck.cpp": [
+   "src/core/Advisory.H",
+   "src/core/InfeasibleTrial.H",
+   "src/core/Types.H",
+   "src/solver/NewtonND.H",
+   "src/unitOperations/membrane/transport/PoreNernstPlanck.H"
   ],
   "src/unitOperations/membrane/transport/SDEM.cpp": [
    "src/core/Advisory.H",
@@ -8710,6 +8741,7 @@
    "src/unitOperations/membrane/transport/../massTransfer/Polarisation.H",
    "src/unitOperations/membrane/transport/DSPM_DE.H",
    "src/unitOperations/membrane/transport/GelPolarisation.H",
+   "src/unitOperations/membrane/transport/PoreNernstPlanck.H",
    "src/unitOperations/membrane/transport/SDEM.H",
    "src/unitOperations/membrane/transport/SolutionDiffusion.H",
    "src/unitOperations/membrane/transport/TransportModel.H"
@@ -9658,6 +9690,7 @@
    "src/unitOperations/membrane/SpiralWoundModule.cpp",
    "src/unitOperations/membrane/massTransfer/Polarisation.cpp",
    "src/unitOperations/membrane/transport/DSPM_DE.cpp",
+   "src/unitOperations/membrane/transport/PoreNernstPlanck.cpp",
    "src/unitOperations/membrane/transport/SDEM.cpp",
    "src/unitOperations/mixer/Mixer.cpp",
    "src/unitOperations/mixer/Splitter.cpp",
@@ -10968,7 +11001,8 @@
   ],
   "src/core/InfeasibleTrial.H": [
    "src/solver/NewtonND.cpp",
-   "src/unitOperations/distillation/DistillationColumn.cpp"
+   "src/unitOperations/distillation/DistillationColumn.cpp",
+   "src/unitOperations/membrane/transport/PoreNernstPlanck.cpp"
   ],
   "src/core/MiniZip.H": [
    "src/core/OdsWriter.cpp"
@@ -11368,6 +11402,7 @@
    "src/unitOperations/membrane/massTransfer/Polarisation.cpp",
    "src/unitOperations/membrane/osmotic/OsmoticModel.cpp",
    "src/unitOperations/membrane/pressureDrop/PressureDropModel.cpp",
+   "src/unitOperations/membrane/transport/DSPM_DE.cpp",
    "src/unitOperations/membrane/transport/TransportModel.cpp",
    "src/unitOperations/reactor/PFR.cpp",
    "src/unitOperations/reactor/wallHeatTransfer/BedWallHeatTransfer.cpp"
@@ -11853,6 +11888,7 @@
    "src/unitOperations/membrane/pressureDrop/PressureDropModel.cpp",
    "src/unitOperations/membrane/transport/DSPM_DE.cpp",
    "src/unitOperations/membrane/transport/GelPolarisation.cpp",
+   "src/unitOperations/membrane/transport/PoreNernstPlanck.cpp",
    "src/unitOperations/membrane/transport/SDEM.cpp",
    "src/unitOperations/membrane/transport/SolutionDiffusion.cpp",
    "src/unitOperations/membrane/transport/TransportModel.cpp",
@@ -13117,6 +13153,7 @@
    "src/unitOperations/flash/IsothermalFlash.cpp",
    "src/unitOperations/flowsheet/Flowsheet.cpp",
    "src/unitOperations/membrane/massTransfer/Polarisation.cpp",
+   "src/unitOperations/membrane/transport/PoreNernstPlanck.cpp",
    "src/unitOperations/reactor/CSTR.cpp",
    "src/unitOperations/reactor/gibbsMethod/DirectMin.cpp",
    "src/unitOperations/reactor/gibbsMethod/GibbsMethod.cpp",
@@ -15785,6 +15822,7 @@
    "src/unitOperations/heatTransfer/htc/PhaseChangeHTC.cpp"
   ],
   "src/unitOperations/heatTransfer/htc/PhaseChangeHTC.H": [
+   "src/postProcessing/sizing/ShellTubeHX.cpp",
    "src/propertyOps/HeatTransferBench.cpp",
    "src/unitOperations/heatTransfer/PhaseChanger.cpp",
    "src/unitOperations/heatTransfer/htc/PhaseChangeHTC.cpp"
@@ -15891,6 +15929,11 @@
   ],
   "src/unitOperations/membrane/transport/GelPolarisation.H": [
    "src/unitOperations/membrane/transport/GelPolarisation.cpp",
+   "src/unitOperations/membrane/transport/TransportModel.cpp"
+  ],
+  "src/unitOperations/membrane/transport/PoreNernstPlanck.H": [
+   "src/unitOperations/membrane/transport/DSPM_DE.cpp",
+   "src/unitOperations/membrane/transport/PoreNernstPlanck.cpp",
    "src/unitOperations/membrane/transport/TransportModel.cpp"
   ],
   "src/unitOperations/membrane/transport/SDEM.H": [

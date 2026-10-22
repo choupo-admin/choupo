@@ -21,8 +21,21 @@
     "transportParameters": {
       "type": "object",
       "title": "Transport-law parameters",
-      "description": "Optional block handed verbatim to the chosen transport law's readParameters (the DSPM-DE pore/charge inputs). Absent for solutionDiffusion.",
-      "unit": "-"
+      "description": "Optional block handed verbatim to the chosen transport law's readParameters. `DSPM-DE` reads `poreSolver { method closedForm | finiteDifference; nodes <n>; }` -- and nothing else (an unknown key refuses). Absent for solutionDiffusion.",
+      "unit": "-",
+      "properties": {
+        "poreSolver": {
+          "type": "object",
+          "title": "DSPM-DE pore solver",
+          "description": "How DSPM-DE crosses the pore.  Absent = `closedForm` (the default: the pore is NOT solved -- feed-face Donnan, an electroneutral permeate, and each ion carried across alone by a closed-form transmission).  `finiteDifference` SOLVES the extended Nernst-Planck equations on `nodes` grid points across the pore (faces included), electroneutrality at every node and zero current, every node at once by Newton on the declared block-tridiagonal structure -- NanoFiltran's method (Geraldes & Alves 2008).  `nodes` defaults to 101, announced; it refuses with `closedForm`, and an unknown method word refuses.",
+          "properties": {
+            "method": { "type": "string", "title": "Method", "enum": ["closedForm", "finiteDifference"] },
+            "nodes": { "type": "integer", "title": "Grid nodes across the pore", "minimum": 3, "unit": "-" }
+          },
+          "required": ["method"],
+          "additionalProperties": false
+        }
+      }
     },
     "mode": {
       "type": "string",

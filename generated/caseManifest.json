@@ -6,7 +6,7 @@
   "runtime": "not recorded; runTests does not time per case and this script does not run the corpus"
  },
  "counts": {
-  "cases": 488,
+  "cases": 489,
   "witnesses": 16,
   "validationOp": 6,
   "anchored": 12
@@ -6131,6 +6131,20 @@
    "roles": [],
    "hasGolden": true
   },
+  "tutorials/steady/membranes/membrane20_dspmde_pore_finite_difference": {
+   "application": "choupoSolve",
+   "unitTypes": [
+    "spiralWoundModule"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [],
+   "hasGolden": true
+  },
   "tutorials/steady/optimisation/designSpec01_triple_equal_areas": {
    "application": "choupoSolve",
    "unitTypes": [
@@ -7575,6 +7589,7 @@
     "tutorials/steady/membranes/membrane17_sepa_cf_flat_cell",
     "tutorials/steady/membranes/membrane18_nf_feed_and_bleed",
     "tutorials/steady/membranes/membrane19_uf_gel_polarisation",
+    "tutorials/steady/membranes/membrane20_dspmde_pore_finite_difference",
     "tutorials/steady/optimisation/designSpec01_triple_equal_areas",
     "tutorials/steady/optimisation/optim01_column_reflux",
     "tutorials/steady/optimisation/optim02_process_cost",
@@ -8220,6 +8235,7 @@
     "tutorials/steady/membranes/membrane17_sepa_cf_flat_cell",
     "tutorials/steady/membranes/membrane18_nf_feed_and_bleed",
     "tutorials/steady/membranes/membrane19_uf_gel_polarisation",
+    "tutorials/steady/membranes/membrane20_dspmde_pore_finite_difference",
     "tutorials/steady/optimisation/optim04_membrane_recovery_scaling",
     "tutorials/unsteady/unsteady03_nf_feed_and_bleed_startup",
     "tutorials/unsteady/unsteady04_uf_feed_and_bleed_startup"
@@ -8737,6 +8753,7 @@
     "tutorials/steady/membranes/membrane17_sepa_cf_flat_cell",
     "tutorials/steady/membranes/membrane18_nf_feed_and_bleed",
     "tutorials/steady/membranes/membrane19_uf_gel_polarisation",
+    "tutorials/steady/membranes/membrane20_dspmde_pore_finite_difference",
     "tutorials/steady/optimisation/designSpec01_triple_equal_areas",
     "tutorials/steady/optimisation/optim01_column_reflux",
     "tutorials/steady/optimisation/optim02_process_cost",

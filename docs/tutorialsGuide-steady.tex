@@ -1815,6 +1815,47 @@ WHAT THE STUDENT SHOULD DO WITH IT. Run the case and read the `iterations` KPI; 
 \end{tutgolden}
 
 \clearpage
+\tutentry{column17\_exchanger\_design}{tutorials/steady/distillation/column17\_exchanger\_design}
+\begin{tutscheme}
+\begin{tikzpicture}[>={Stealth[length=2mm]}, every node/.style={font=\scriptsize}]
+  \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (column17) at (0.0,-0.0) {\textbf{column17}\\[-1pt]{\tiny distillationColumn}};
+  \draw[->] ($(column17.west)+(-1.05,0.00)$) -- ($(column17.west)+(0,0.00)$) node[at start, above, font=\tiny, anchor=south west] {feed};
+  \draw[->] ($(column17.east)+(0,-0.17)$) -- ($(column17.east)+(1.05,-0.17)$) node[at end, below, font=\tiny, anchor=north east] {distillate};
+  \draw[->] ($(column17.east)+(0,0.17)$) -- ($(column17.east)+(1.05,0.17)$) node[at end, above, font=\tiny, anchor=south east] {bottoms};
+\end{tikzpicture}
+\end{tutscheme}
+\tutwhat{The column's condenser and reboiler designed: Nusselt film condensation and Rohsenow boiling under the critical heat flux}
+\begin{tutnarrative}
+column09's column, unchanged, with its CONDENSER and REBOILER designed instead of estimated.
+
+The flowsheet below is column09's to the last key: the same benzene/toluene feed, the same 15 stages, the same reflux, the same tray hydraulics. What changes is system/postDict, and the sheets it writes for the two exchangers. Read column09 first; this case is the next question.
+
+column09 sizes its condenser and reboiler as A = Q/(U LMTD), with U and the LMTD TYPED by the author -- a first estimate, not a design. Here both are DESIGNED on the same route a flowsheet exchanger has (a Kern shell-and-tube design: the bundle declared, the tube count solved, U a RESULT of the films, the wall and the fouling), and the process side of each is priced by a PHASE-CHANGE film instead of a single-phase one:
+
+the CONDENSER condenses the overhead on the outside of horizontal tubes, cooling water inside: Nusselt's laminar film, the condensate of one tube falling on the next (h\_1 N\textasciicircum{}-1/4 at the deepest tier); the REBOILER boils the bottoms as a pool around a tube bundle (a kettle), LP steam condensing inside: Rohsenow's nucleate flux, HELD UNDER the Zuber critical heat flux.
+
+NOTHING ABOUT THE PROCESS SIDE IS TYPED. The temperatures are the column's own (the top tray's dew point and the distillate's bubble point; the bottoms' bubble point), and every property a film needs -- density, viscosity, conductivity, heat capacity, surface tension, latent heat -- comes from constant/thermoPhysPropDict. That is why this case's package declares LIQUID transport models where column09's declares only a surface tension: delete one and the exchanger it prices refuses by name.
+
+\end{tutnarrative}
+\begin{tutgolden}
+\goldrow{stream}{bottoms}{F}{0.0138888888889}
+\goldrow{stream}{bottoms}{T}{381.514100345}
+\goldrow{stream}{distillate}{F}{0.0138888888889}
+\goldrow{stream}{distillate}{T}{354.247899351}
+\goldrow{stream}{feed}{F}{0.0277777777778}
+\goldrow{stream}{feed}{T}{370}
+\goldrow{kpi}{column17}{B}{0.0138888888889}
+\goldrow{kpi}{column17}{D}{0.0138888888889}
+\goldrow{kpi}{column17}{L\_rect}{0.0277777777778}
+\goldrow{kpi}{column17}{L\_strip}{0.0361877253979}
+\goldrow{kpi}{column17}{Q\_condensate\_m3\_s}{0.00403798363546}
+\goldrow{kpi}{column17}{Q\_condenser\_kW}{-1282.91540916}
+\goldrow{kpi}{column17}{Q\_reboiler\_kW}{647.138092345}
+\goldrow{kpi}{column17}{R}{2}
+\goldmore{180}
+\end{tutgolden}
+
+\clearpage
 \tutentry{column18\_partial\_condenser}{tutorials/steady/distillation/column18\_partial\_condenser}
 \begin{tutscheme}
 \begin{tikzpicture}[>={Stealth[length=2mm]}, every node/.style={font=\scriptsize}]
@@ -8377,6 +8418,63 @@ NOT MODELLED, said plainly: the osmotic pressure of the protein (the gel model's
 \goldrow{kpi}{UF}{mass\_closure\_rel}{3.97205898188e-16}
 \goldrow{kpi}{UF}{solute\_closure\_rel}{1.58180682192e-16}
 \goldrow{kpi}{UF}{water\_recovery}{0.560896239275}
+\end{tutgolden}
+
+\clearpage
+\tutentry{membrane20\_dspmde\_pore\_finite\_difference}{tutorials/steady/membranes/membrane20\_dspmde\_pore\_finite\_difference}
+\begin{tutscheme}
+\begin{tikzpicture}[>={Stealth[length=2mm]}, every node/.style={font=\scriptsize}]
+  \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (NFNaClclosedForm) at (0.0,-0.0) {\textbf{NF\_NaCl\_closedForm}\\[-1pt]{\tiny spiralWoundModule}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (NFNaClpore) at (0.0,-1.7) {\textbf{NF\_NaCl\_pore}\\[-1pt]{\tiny spiralWoundModule}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (NFMgSO4closedForm) at (0.0,-3.4) {\textbf{NF\_MgSO4\_closedForm}\\[-1pt]{\tiny spiralWoundModule}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (NFMgSO4pore) at (0.0,-5.1) {\textbf{NF\_MgSO4\_pore}\\[-1pt]{\tiny spiralWoundModule}};
+  \draw[->] ($(NFNaClclosedForm.west)+(-1.05,0.00)$) -- ($(NFNaClclosedForm.west)+(0,0.00)$) node[at start, above, font=\tiny, anchor=south west] {feed\_NaCl\_closedForm};
+  \draw[->] ($(NFNaClpore.west)+(-1.05,0.00)$) -- ($(NFNaClpore.west)+(0,0.00)$) node[at start, above, font=\tiny, anchor=south west] {feed\_NaCl\_pore};
+  \draw[->] ($(NFMgSO4closedForm.west)+(-1.05,0.00)$) -- ($(NFMgSO4closedForm.west)+(0,0.00)$) node[at start, above, font=\tiny, anchor=south west] {feed\_MgSO4\_closedForm};
+  \draw[->] ($(NFMgSO4pore.west)+(-1.05,0.00)$) -- ($(NFMgSO4pore.west)+(0,0.00)$) node[at start, above, font=\tiny, anchor=south west] {feed\_MgSO4\_pore};
+  \draw[->] ($(NFNaClclosedForm.east)+(0,-0.17)$) -- ($(NFNaClclosedForm.east)+(1.05,-0.17)$) node[at end, below, font=\tiny, anchor=north east] {ret\_NaCl\_closedForm};
+  \draw[->] ($(NFNaClclosedForm.east)+(0,0.17)$) -- ($(NFNaClclosedForm.east)+(1.05,0.17)$) node[at end, above, font=\tiny, anchor=south east] {perm\_NaCl\_closedForm};
+  \draw[->] ($(NFNaClpore.east)+(0,-0.17)$) -- ($(NFNaClpore.east)+(1.05,-0.17)$) node[at end, below, font=\tiny, anchor=north east] {ret\_NaCl\_pore};
+  \draw[->] ($(NFNaClpore.east)+(0,0.17)$) -- ($(NFNaClpore.east)+(1.05,0.17)$) node[at end, above, font=\tiny, anchor=south east] {perm\_NaCl\_pore};
+  \draw[->] ($(NFMgSO4closedForm.east)+(0,-0.17)$) -- ($(NFMgSO4closedForm.east)+(1.05,-0.17)$) node[at end, below, font=\tiny, anchor=north east] {ret\_MgSO4\_closedForm};
+  \draw[->] ($(NFMgSO4closedForm.east)+(0,0.17)$) -- ($(NFMgSO4closedForm.east)+(1.05,0.17)$) node[at end, above, font=\tiny, anchor=south east] {perm\_MgSO4\_closedForm};
+  \draw[->] ($(NFMgSO4pore.east)+(0,-0.17)$) -- ($(NFMgSO4pore.east)+(1.05,-0.17)$) node[at end, below, font=\tiny, anchor=north east] {ret\_MgSO4\_pore};
+  \draw[->] ($(NFMgSO4pore.east)+(0,0.17)$) -- ($(NFMgSO4pore.east)+(1.05,0.17)$) node[at end, above, font=\tiny, anchor=south east] {perm\_MgSO4\_pore};
+\end{tikzpicture}
+\end{tutscheme}
+\tutwhat{DSPM-DE NF: the charged pore solved node by node (finite differences, NanoFiltran's method) beside the default closed form, NaCl and MgSO4 at 10 bar}
+\begin{tutnarrative}
+FOUR NF270 elements, two salts, two ways across the pore -- every unit has the SAME membrane (NF270\_dspmde: r\_p 0.6 nm, X\_d = -5 mol/m3, Born on), the same 10 bar, the same 5 mM feed of its salt. Each pair differs in ONE line:
+
+NF\_<salt>\_closedForm transport DSPM-DE; (the default pore) NF\_<salt>\_pore transport DSPM-DE; transportParameters \{ poreSolver \{ method finiteDifference; nodes 101; \} \}
+
+WHAT THE DEFAULT DOES NOT SOLVE. The default DSPM-DE does not solve the pore: it makes the pore electroneutral at the FEED face, the permeate electroneutral, and carries each ion across ALONE by a closed-form transmission -- no potential gradient couples the ions inside the pore, and neither electroneutrality nor zero current is imposed there.
+
+WHAT `finiteDifference` SOLVES. The extended Nernst-Planck equation of every ion on 101 nodes across the pore, electroneutrality with the fixed charge at EVERY node, zero net current, and the Donnan + steric + Born partitions at both faces -- every node at once, by Newton on the declared block-tridiagonal structure. That is the method of NanoFiltran (Geraldes \& Alves, "Computer program for simulation of mass transport in nanofiltration membranes", J. Membr. Sci. 321 (2008) 172-182): the problem is STIFF -- a co-ion held back by the Donnan field carries a migration and a diffusion flux far larger than the flux they net, and the run prints that ratio ("stiffness") beside its residuals.
+
+WHAT TO LOOK AT. The two R\_obs of each salt. They are NOT the same number, and the difference is the pore: the closed form is not the solution of the equations the solved pore satisfies (DSPM\_DE.H states what each path solves). Read the [DSPM-DE] lines: the node count, the Newton iterations, the residual, the block-tridiagonal structure VERIFIED on the first solve, and the pore summary per unit (flux constancy, zero current and electroneutrality, each measured on the answer).
+
+WHAT THIS CASE DOES NOT CLAIM. Nothing in it is validated against NanoFiltran's published results, or against any measurement; that comparison is a later case, built on the paper. The grid, the residuals and the analytic limit are held by bin/curate/check\_pore\_solver.py. Shared with the default path and unchanged by the solved pore: the wall (the film, closed with the salt's solution-diffusion B\_s), the Davies activity at the feed face, an ideal permeate, van't Hoff osmotic pressure.
+
+Data: as membrane10\_dspmde\_divalent -- the salts carry their ion decomposition, the membrane its poreModel\{\} tier, the ions their radius and D0 from the species records.
+
+\end{tutnarrative}
+\begin{tutgolden}
+\goldrow{stream}{feed\_MgSO4\_closedForm}{F}{0.0555555555556}
+\goldrow{stream}{feed\_MgSO4\_closedForm}{T}{298.15}
+\goldrow{stream}{feed\_MgSO4\_pore}{F}{0.0555555555556}
+\goldrow{stream}{feed\_MgSO4\_pore}{T}{298.15}
+\goldrow{stream}{feed\_NaCl\_closedForm}{F}{0.0555555555556}
+\goldrow{stream}{feed\_NaCl\_closedForm}{T}{298.15}
+\goldrow{stream}{feed\_NaCl\_pore}{F}{0.0555555555556}
+\goldrow{stream}{feed\_NaCl\_pore}{T}{298.15}
+\goldrow{stream}{perm\_MgSO4\_closedForm}{F}{0.0200859121724}
+\goldrow{stream}{perm\_MgSO4\_closedForm}{T}{298.15}
+\goldrow{stream}{perm\_MgSO4\_pore}{F}{0.0200853457304}
+\goldrow{stream}{perm\_MgSO4\_pore}{T}{298.15}
+\goldrow{stream}{perm\_NaCl\_closedForm}{F}{0.0208607742073}
+\goldrow{stream}{perm\_NaCl\_closedForm}{T}{298.15}
+\goldmore{58}
 \end{tutgolden}
 
 \subsection{optimisation}

@@ -332,7 +332,7 @@ NDResult newtonND(const std::function<sVector(const sVector&)>& F,
             auto colored = fdJacobianColoredBT(F, x, Fx, opts.fdStep, N, nv);
             jacEvals += colored.evals;
 
-            if (it == 0)
+            if (it == 0 && opts.blockTri.audit)
             {
                 //  THE DECLARATION IS A CLAIM, AND A CLAIM IS MEASURED.  The
                 //  first iteration also builds the dense Jacobian and takes

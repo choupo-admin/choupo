@@ -102,10 +102,18 @@ struct NDResult
 //  REFUSES by name when the structure is materially false -- a wrong
 //  declaration must never become a silently wrong answer.  The measured
 //  off-band maximum rides out in NDResult for the caller to announce.
+//
+//  `audit = false` skips that first-iteration measurement.  It is for a
+//  caller that solves the SAME residual function thousands of times (the
+//  DSPM-DE pore, once per station and water-flux pass): the structure is a
+//  property of the code, not of the numbers, so that caller audits its
+//  FIRST solve, announces the measurement, and declares the rest.  The
+//  default audits, and every caller that predates the field is unchanged.
 struct BlockTri
 {
     std::size_t nBlocks   = 0;
     std::size_t blockSize = 0;
+    bool        audit     = true;
     bool declared() const { return nBlocks > 1 && blockSize > 0; }
 };
 

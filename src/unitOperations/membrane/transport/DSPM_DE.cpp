@@ -38,18 +38,32 @@ License
       interface model when the case declares `polarisation { ionCoupling
       electroneutral; }` -- and the wall is then read ION BY ION, which is
       what the partition (2) takes as its c_bulk.
-    * Inner unknowns solved by NewtonND: per ion the pore-inlet concentration
-      c_in,i, plus J_v -- closed by feed-face electroneutrality (4), zero net
-      current (5) integrated across the pore, and the water-flux / osmotic loop.
-    * STAGED: the steric-only solve (Donnan = 0, Born = 0) is solved FIRST and
-      used to SEED the charged solve, so Newton starts away from the trivial
-      Donnan = 0 saddle.  If the +Born stage will not converge, the model keeps
-      the +Donnan result and ANNOUNCES the descope (no silent fallback).
+    * The DEFAULT pore (closed form): a bisection on the feed Donnan
+      potential (feed-face electroneutrality), a bisection on a permeate
+      Donnan potential (permeate electroneutrality) -- both only when the
+      membrane declares a charge -- and a closed-form per-ion transmission
+      between them.  It does NOT impose (4) or (5) inside the pore (DSPM_DE.H
+      says what each path solves; this list used to say "inner unknowns
+      solved by NewtonND ... zero net current integrated across the pore",
+      which the closed form never did).
+    * The SOLVED pore (`poreSolver { method finiteDifference; }`): the ENP
+      on n nodes, every node at once by Newton on the declared
+      block-tridiagonal structure -- PoreNernstPlanck.{H,cpp}.
+    * The water flux: a damped fixed point J_w = A_w (dP - dpi) around
+      either pore.
+    * The exclusions are switched on by the membrane record and ANNOUNCED;
+      there is no seeding chain between them at run time (the closed form
+      needs no seed -- its potentials are monotone bisections that cannot
+      land on the psi = 0 branch -- and the solved pore starts from local
+      Donnan equilibrium at every node).
 \*---------------------------------------------------------------------------*/
 
 #include "DSPM_DE.H"
+#include "PoreNernstPlanck.H"
 
+#include "core/Advisory.H"
 #include "core/Constants.H"
+#include "core/RegistryRefusal.H"
 #include "thermo/ThermoPackage.H"
 #include "thermo/membrane/Membrane.H"
 #include "thermo/electrolyte/SolventProperties.H"
@@ -64,7 +78,9 @@ License
 
 #include <algorithm>
 #include <cmath>
+#include <iomanip>
 #include <iostream>
+#include <sstream>
 #include <numeric>
 #include <stdexcept>
 #include <string>
@@ -151,6 +167,65 @@ struct Ion
 };
 
 } // anonymous namespace
+
+// ---------------------------------------------------------------------------
+//  `transportParameters { poreSolver { method <word>; nodes <n>; } }`.
+//  Absent, the closed form runs and nothing is read -- every DSPM-DE case
+//  that predates the block is untouched.  A key this law does not read, a
+//  method word it does not know, and a grid it cannot use each REFUSE by
+//  name: a declared word the engine dispatches on must not fall through to
+//  a default (CLAUDE.md, 2026-09-07).
+void DSPM_DE::readParameters(const DictPtr& params)
+{
+    const std::string ctx = "transport DSPM-DE: transportParameters";
+    if (!params) return;
+    for (const auto& k : params->keys())
+        if (k != "poreSolver")
+            throw std::runtime_error(ctx + " declares `" + k + "`, which this"
+                " law does not read.  DSPM-DE reads only `poreSolver { method"
+                " closedForm | finiteDifference; nodes <n>; }` there.");
+    if (!params->found("poreSolver")) return;
+    const auto ps = params->subDict("poreSolver");
+    for (const auto& k : ps->keys())
+        if (k != "method" && k != "nodes")
+            throw std::runtime_error(ctx + ".poreSolver declares `" + k
+                + "`, which the pore solver does not read (it reads `method`"
+                  " and `nodes`).");
+    if (!ps->found("method"))
+        throw std::runtime_error(ctx + ".poreSolver declares no `method` --"
+            " say `closedForm` (the uniform-gradient form, the default when the"
+            " block is absent) or `finiteDifference` (the pore solved node by"
+            " node)");
+    const std::string method = ps->lookupWord("method");
+    const std::vector<std::string> accepted = { "closedForm", "finiteDifference" };
+    if (std::find(accepted.begin(), accepted.end(), method) == accepted.end())
+        throw std::runtime_error(registryRefusal::message(
+            "DSPM-DE pore solver method", method, accepted, "Accepted"));
+    finiteDifference_ = (method == "finiteDifference");
+    if (!finiteDifference_)
+    {
+        if (ps->found("nodes"))
+            throw std::runtime_error(ctx + ".poreSolver declares `nodes` with"
+                " `method closedForm;` -- the closed form has no grid, so the"
+                " number would be read by nothing.  Drop it, or say"
+                " `method finiteDifference;`.");
+        return;
+    }
+    if (ps->found("nodes"))
+    {
+        const scalar n = ps->lookupScalar("nodes");
+        if (!(n >= 3.0) || n != std::floor(n) || n > 100000.0)
+            throw std::runtime_error(ctx + ".poreSolver `nodes` must be a whole"
+                " number of grid nodes across the pore, faces included, of at"
+                " least 3 (it reads " + std::to_string(n) + ")");
+        poreNodes_ = static_cast<std::size_t>(n);
+    }
+    else
+    {
+        poreNodes_      = 101;     // stated default, announced at the first solve
+        nodesDefaulted_ = true;
+    }
+}
 
 // ---------------------------------------------------------------------------
 TransportSolution DSPM_DE::localFluxes(const TransportContext& ctx) const
@@ -267,21 +342,18 @@ TransportSolution DSPM_DE::localFluxes(const TransportContext& ctx) const
     // ===================================================================
     //  Inner pore solve at a GIVEN water flux J_v (peclet enters via J_v).
     //
-    //  Unknowns (log-space, kept positive): the pore-INLET concentration of
-    //  each ion c_in,i [mol/m^3] AND the permeate concentration c_perm,i.
-    //  Closures:
+    //  The closed form (the default):
     //    * feed-face Donnan + Born + steric partition (2) links c_in,i to the
     //      wall ion conc through a single feed Donnan potential dphi_f;
-    //    * pore electroneutrality (4) at the inlet fixes dphi_f given c_in;
-    //    * the EXTENDED NERNST-PLANCK (1) integrated across the pore with the
-    //      zero-current constraint (5) gives each ion's permeate concentration;
-    //    * permeate-face partition (2)+(4) ties c_perm,i to the bulk permeate.
-    //
-    //  To keep the glass-box pedagogy and robustness, we use the standard
-    //  DSPM-DE "linearised-gradient" closed form for the ENP integral across a
-    //  thin pore (Bowen-Welfoot 2002): with a uniform pore potential gradient,
-    //  the per-ion permeate concentration solves the algebraic system below.
-    //  This avoids an inner RK4 while preserving the charge coupling.
+    //    * pore electroneutrality (4) AT THE INLET ONLY fixes dphi_f;
+    //    * each ion is carried across ALONE by the closed-form transmission
+    //      below -- not an integral of (1) under (4)-(5), which are not
+    //      imposed inside the pore (DSPM_DE.H, "TWO WAYS ACROSS THE PORE");
+    //    * the permeate-face partition and permeate electroneutrality tie
+    //      c_perm,i to the bulk permeate.
+    //  The solved pore (poreSolver finiteDifference) replaces the middle two
+    //  steps by PoreNernstPlanck's solve of (1)-(5), seeded from this
+    //  closed form's permeate.
     // ===================================================================
 
     // Wall ion conc with the polarisation at the current J_v: the shared
@@ -364,6 +436,13 @@ TransportSolution DSPM_DE::localFluxes(const TransportContext& ctx) const
         return 0.5 * (lo + hi);
     };
 
+    // The pore SOLVED (poreSolver finiteDifference): the account of every
+    // solve at this station, and the last solution, which warm-starts the
+    // next water-flux pass (same station, same ions, J_v moved a little).
+    PoreAccount         poreAcc;
+    pore::PoreSolution  poreWarm;
+    bool                haveWarm = false;
+
     // Given J_v, compute the per-ion permeate concentration and the per-salt
     // wall/permeate concentrations.  Returns the osmotic-pressure difference
     // (van't Hoff over the ions) so the outer J_v loop can close.
@@ -383,14 +462,17 @@ TransportSolution DSPM_DE::localFluxes(const TransportContext& ctx) const
 
         // ---- Across-pore extended Nernst-Planck, closed on the permeate ----
         //
-        //  THE KEY CLOSURE (Bowen-Welfoot 2002).  At steady state each ion's
+        //  THE KEY CLOSURE (cited to Bowen-Welfoot 2002; the citation is not
+        //  verified against the paper's text).  At steady state each ion's
         //  pore flux is carried OUT by convection into the permeate:
         //        j_i = J_v * c_perm,i                                       (*)
-        //  The ENP (1) integrated across the pore from the feed-face pore
-        //  concentration c_in,i to the permeate-face pore concentration
-        //  c_outpore,i = part_perm,i * c_perm,i (the permeate Donnan/steric/Born
-        //  partition) gives, for a uniform potential gradient, the per-ion
-        //  relation that closes c_perm,i implicitly:
+        //  Between the feed-face pore concentration c_in,i and the
+        //  permeate-face pore concentration c_outpore,i = part_perm,i *
+        //  c_perm,i the default takes the per-ion relation below.  It is NOT
+        //  the integral of (1): with no potential and R = 1 the integral is
+        //  c_p/c_w = Phi Kc/(1 - (1 - Phi Kc) e^{-Pe}), and this relation does
+        //  not reduce to it (a point solute, Phi = Kc = 1, is rejected up to
+        //  50 % here and not at all by (1)) -- see DSPM_DE.H:
         //
         //     c_perm,i / c_in,i  =  Kc_i / ( Kc_i + (1 - Kc_i e^{-Pe_i}) R_i )
         //
@@ -456,6 +538,118 @@ TransportSolution DSPM_DE::localFluxes(const TransportContext& ctx) const
         }
         for (std::size_t i = 0; i < Ni; ++i) c_perm_ion[i] = std::max(cp[i], 0.0);
 
+        // ---- The pore SOLVED, when declared (poreSolver finiteDifference) --
+        //  Everything above stays: the wall, the feed-face partition and the
+        //  closed form, whose permeate SEEDS the solve.  The pore solver is
+        //  handed each present ion's conductance, convective hindrance and
+        //  the two partition coefficients computed HERE (one home), and
+        //  returns the permeate that (1)-(5) give.  An ion with no feed
+        //  concentration is not a term and is left out of the pore.
+        if (finiteDifference_)
+        {
+            pore::PoreProblem pb;
+            pb.Xd = X_d;
+            pb.Jv = Jv;
+            pore::PoreSeed seed;
+            std::vector<std::size_t> present;
+            for (std::size_t i = 0; i < Ni; ++i)
+            {
+                const scalar feedSide = part_feed[i] * gwall[i] * cwall[i];
+                if (!(feedSide > 0.0)) continue;
+                pore::PoreIon pi;
+                pi.z        = ions[i].z;
+                pi.P        = ions[i].Kd * ions[i].D * AkdX;
+                pi.Kc       = ions[i].Kc;
+                pi.feedSide = feedSide;
+                pi.permSide = part_feed[i];
+                pb.ions.push_back(pi);
+                present.push_back(i);
+                seed.cPerm.push_back(cp[i]);
+            }
+            pore::PoreSettings settings;
+            settings.intervals = poreNodes_ - 1;
+            settings.audit     = !poreBanner_;
+            //  The seed, in order of preference: this station's previous
+            //  water-flux pass; the previous STATION's converged pore (the
+            //  channel moves a little between stations); the closed form
+            //  (the first station of a run).  Measured on membrane10's
+            //  MgSO4 module: the closed-form seed alone sent the Newton to
+            //  continuation at every one of its 51 stations.
+            const std::size_t nx = (2 * pb.ions.size() + 2) * (settings.intervals + 1);
+            pore::PoreSolution sol =
+                  (haveWarm && poreWarm.x.size() == nx)
+                ? pore::solve(pb, settings, poreWarm)
+                : (haveLastPore_ && lastPore_.x.size() == nx)
+                ? pore::solve(pb, settings, lastPore_)
+                : pore::solve(pb, settings, seed);
+            if (!sol.converged)
+            {
+                std::ostringstream m;
+                m << "transport DSPM-DE: the finite-difference pore solve did"
+                     " NOT converge at J_v = " << Jv << " m/s, X_d = " << X_d
+                  << " mol/m3 on " << poreNodes_ << " nodes (||F|| = "
+                  << sol.residual << "): " << sol.stopReason << ".  Refusing"
+                     " rather than publishing a pore that does not satisfy its"
+                     " equations.";
+                throw std::runtime_error(m.str());
+            }
+            if (!poreBanner_)
+            {
+                poreBanner_ = true;
+                std::ostringstream b;
+                b << std::setprecision(3)
+                  << "  [DSPM-DE] pore SOLVED (poreSolver finiteDifference): the"
+                     " extended Nernst-Planck equations on " << poreNodes_
+                  << " nodes across the pore" << (nodesDefaulted_
+                      ? " (stated default; declare `nodes`)" : "")
+                  << ", Scharfetter-Gummel fluxes, electroneutrality at every"
+                     " node and zero current; every node solved at once by"
+                     " Newton on the declared block-tridiagonal structure ("
+                  << poreNodes_ << " blocks of " << 2 * pb.ions.size() + 2
+                  << ") -- the method of NanoFiltran (Geraldes & Alves,"
+                     " J. Membr. Sci. 321 (2008) 172-182); seeded from the"
+                     " closed form at the first station, from the previous"
+                     " station's pore after it\n"
+                  << "  [DSPM-DE] first pore solve: " << sol.iterations
+                  << " Newton iterations, ||F|| = " << sol.residual;
+                if (sol.offBandMax >= 0.0)
+                    b << ", block-tridiagonal structure VERIFIED (max |J| off"
+                         " the bands = " << sol.offBandMax << ")";
+                b << ", stiffness (migration / net flux) = "
+                  << sol.stiffnessRatio << "\n";
+                std::cout << b.str();
+            }
+            if (sol.continuationSteps > 0 && !continuationSaid_)
+            {
+                continuationSaid_ = true;
+                const std::string msg = "the pore Newton from its seed stopped ("
+                    + sol.directFailure + "); the pore was solved by"
+                    " continuation in J_v from the exact J_v = 0 state ("
+                    + std::to_string(sol.continuationSteps) + " solves).  Every"
+                    " continuation is counted in the module's pore summary.";
+                if (AdvisoryLog::instance().add("solver", "info", "DSPM-DE pore", msg))
+                    std::cout << "  [DSPM-DE] " << msg << "\n";
+            }
+            for (std::size_t i = 0; i < Ni; ++i) c_perm_ion[i] = 0.0;
+            for (std::size_t m = 0; m < present.size(); ++m)
+                c_perm_ion[present[m]] = sol.cPerm[m];
+
+            PoreAccount a;
+            a.nodes             = int(poreNodes_);
+            a.solves            = 1;
+            a.newtonMax         = sol.iterations;
+            a.continuations     = sol.continuationSteps > 0 ? 1 : 0;
+            a.residualMax       = sol.residual;
+            a.fluxConstancyMax  = sol.fluxConstancyMax;
+            a.fluxRelativeMax   = sol.fluxRelativeMax;
+            a.stiffnessMax      = sol.stiffnessRatio;
+            a.currentMax        = sol.currentMax;
+            a.electroneutralMax = sol.electroneutralMax;
+            poreAcc.merge(a);
+            poreWarm = std::move(sol);
+            haveWarm = true;
+        }
+
         // van't Hoff osmotic difference [Pa] over ALL ions (wall - permeate).
         scalar c_wall_tot = 0.0, c_perm_tot = 0.0;
         for (std::size_t i = 0; i < Ni; ++i)
@@ -506,6 +700,11 @@ TransportSolution DSPM_DE::localFluxes(const TransportContext& ctx) const
         out.J_s[s] = out.J_w * out.c_p[s];               // kmol/(m^2 s): convective
     }
     if (lastCoupled) { out.xi = lastXi; out.hasXi = true; }
+    if (finiteDifference_)
+    {
+        out.pore = poreAcc; out.hasPore = true;
+        if (haveWarm) { lastPore_ = std::move(poreWarm); haveLastPore_ = true; }
+    }
     return out;
 }
 

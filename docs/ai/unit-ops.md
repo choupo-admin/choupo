@@ -1174,7 +1174,24 @@ each channel node):
   announces it (`per-ion solution-diffusion without charge coupling`).
 * `DSPM-DE` — the charged-pore Donnan-steric model with dielectric
   exclusion; needs a membrane record with a `poreModel {}` tier and SALT
-  components carrying `electrolyte { cation; anion; }`.
+  components carrying `electrolyte { cation; anion; }`.  By default the pore
+  is NOT solved (feed-face Donnan, an electroneutral permeate, each ion
+  carried across alone by a closed form).  To SOLVE it — the extended
+  Nernst-Planck equations on a grid across the pore, electroneutrality at
+  every node, zero current, every node at once (NanoFiltran's method) —
+  declare in the unit's operation:
+
+  ```
+  transportParameters { poreSolver { method finiteDifference; nodes 101; } }
+  ```
+
+  `nodes` counts grid points, faces included (default 101, announced); the
+  run prints the node count, the Newton iterations, the residual, the
+  structure audit and a per-unit pore summary.  The two paths give
+  DIFFERENT rejections — the closed form is not the solved pore's limit
+  (`membrane20_dspmde_pore_finite_difference` runs both side by side).
+  `method closedForm;` is the default; any other key in
+  `transportParameters` refuses.
 * `SDEM` — **solution-diffusion-electromigration** (Yaroshchuk 2013): the
   SAME per-ion `B_s` as above, coupled by the electric field that zero
   current imposes — the permeate is electroneutral **by construction, with

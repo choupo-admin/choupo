@@ -3847,6 +3847,27 @@ PYEOF
     fi
     rm -f /tmp/modules.$$
 
+    # Pore-solver gate (2026-10-22, DEV.md 4c C138).  DSPM-DE's opt-in
+    # `poreSolver { method finiteDifference; }` SOLVES the extended
+    # Nernst-Planck equations across the pore -- every node at once, by
+    # Newton on the declared block-tridiagonal structure (NanoFiltran's
+    # method).  The gate compiles a probe against the pore solver alone and
+    # holds it to an ambipolar analytic limit at observed order 2, a stiff
+    # pore's Richardson order, machine-level flux constancy / zero current /
+    # electroneutrality, the structure audit and a 56-point robustness
+    # sweep; runs the witness (the announcements, the summaries), the
+    # engine END TO END against the analytic limit, the default path on
+    # membrane10/11 against their goldens to 1e-10, and five refusals.
+    if "$ROOT/bin/curate/check_pore_solver.py" > /tmp/pore.$$ 2>&1; then
+        printf "PASS  %-40s  (%s)\n" "pore-solver-gate" "$(grep -m1 '^check_pore_solver: OK' /tmp/pore.$$)"
+        pass=$((pass+1))
+    else
+        printf "FAIL  %-40s  (run bin/curate/check_pore_solver.py)\n" "pore-solver-gate"
+        cat /tmp/pore.$$
+        fail=$((fail+1))
+    fi
+    rm -f /tmp/pore.$$
+
     # ED-stack gate (2026-09-16).  An electrodialysis stack is a RECORD and its
     # limiting current is a PREDICTION: the crossflow velocity is derived from
     # the diluate flow instead of declared, and the counter-ion transport

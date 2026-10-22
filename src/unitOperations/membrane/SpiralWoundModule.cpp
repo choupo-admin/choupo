@@ -52,6 +52,7 @@ License
 #include <cstdio>
 #include <iostream>
 #include <map>
+#include <sstream>
 #include <memory>
 #include <stdexcept>
 #include <variant>
@@ -950,6 +951,10 @@ int SpiralWoundModule::solve(const DictPtr& dict,
     zGrid.reserve(nNodes + 1);
     std::vector<scalar> gammaSum(Ns, 0.0);
     scalar xiSum = 0.0; int nXi = 0; int nRecorded = 0;
+    //  The pore's own account, when the transport law SOLVED the pore
+    //  (DSPM-DE poreSolver finiteDifference): merged over every station.
+    membrane::PoreAccount poreRun;
+    bool anyPore = false;
 
     // Local channel hydraulics for the film coefficient: the crossflow
     // velocity u = Q_b / A_channel, the hydraulic diameter and the fluid
@@ -1020,6 +1025,7 @@ int SpiralWoundModule::solve(const DictPtr& dict,
             cols["xi_V_per_m"].push_back(st.xi);
             xiSum += st.xi; ++nXi;
         }
+        if (st.hasPore) { poreRun.merge(st.pore); anyPore = true; }
         //  The electric potential drop across the active layer, when the
         //  transport law computes one (SDEM).  RT/F units -> mV, so a reader
         //  compares it with a membrane-potential measurement directly.  A law
@@ -1463,6 +1469,27 @@ int SpiralWoundModule::solve(const DictPtr& dict,
     }
     //  The interface potential gradient, averaged, when the film was coupled.
     if (nXi > 0) kpis_["xi_V_per_m_avg"] = xiSum / nXi;
+    //  The pore, when it was SOLVED: the grid and the stiffness of the
+    //  answer are published (a golden can pin them); the residuals are
+    //  round-off and are PRINTED, never pinned -- a golden on a number at
+    //  the last digit pins the compiler, not the physics.
+    if (anyPore)
+    {
+        kpis_["pore_nodes"]         = static_cast<scalar>(poreRun.nodes);
+        kpis_["pore_stiffness_max"] = poreRun.stiffnessMax;
+        std::ostringstream m;
+        m << std::setprecision(3)
+          << "  [DSPM-DE] pore summary (" << (dict->name().empty() ? type() : dict->name()) << "): " << poreRun.solves
+          << " pore solves on " << poreRun.nodes << " nodes, at most "
+          << poreRun.newtonMax << " Newton iterations, ||F|| <= "
+          << poreRun.residualMax << "; flux constancy <= "
+          << poreRun.fluxConstancyMax << " of the terms it nets ("
+          << poreRun.fluxRelativeMax << " of the net flux, at a stiffness of "
+          << poreRun.stiffnessMax << "), zero current <= " << poreRun.currentMax
+          << ", electroneutrality <= " << poreRun.electroneutralMax << "; "
+          << poreRun.continuations << " solves by continuation in J_v\n";
+        std::cout << m.str();
+    }
 
     if (verbosity >= 2)
     {

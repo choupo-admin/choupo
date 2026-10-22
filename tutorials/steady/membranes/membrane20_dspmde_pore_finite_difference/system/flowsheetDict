@@ -1,0 +1,139 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+  membrane20_dspmde_pore_finite_difference  --  the charged pore SOLVED.
+
+  FOUR NF270 elements, two salts, two ways across the pore -- every unit has
+  the SAME membrane (NF270_dspmde: r_p 0.6 nm, X_d = -5 mol/m3, Born on), the
+  same 10 bar, the same 5 mM feed of its salt.  Each pair differs in ONE line:
+
+       NF_<salt>_closedForm   transport DSPM-DE;  (the default pore)
+       NF_<salt>_pore         transport DSPM-DE;  transportParameters {
+                                poreSolver { method finiteDifference;
+                                             nodes 101; } }
+
+  WHAT THE DEFAULT DOES NOT SOLVE.  The default DSPM-DE does not solve the
+  pore: it makes the pore electroneutral at the FEED face, the permeate
+  electroneutral, and carries each ion across ALONE by a closed-form
+  transmission -- no potential gradient couples the ions inside the pore,
+  and neither electroneutrality nor zero current is imposed there.
+
+  WHAT `finiteDifference` SOLVES.  The extended Nernst-Planck equation of
+  every ion on 101 nodes across the pore, electroneutrality with the fixed
+  charge at EVERY node, zero net current, and the Donnan + steric + Born
+  partitions at both faces -- every node at once, by Newton on the declared
+  block-tridiagonal structure.  That is the method of NanoFiltran (Geraldes
+  & Alves, "Computer program for simulation of mass transport in
+  nanofiltration membranes", J. Membr. Sci. 321 (2008) 172-182): the problem
+  is STIFF -- a co-ion held back by the Donnan field carries a migration and
+  a diffusion flux far larger than the flux they net, and the run prints
+  that ratio ("stiffness") beside its residuals.
+
+  WHAT TO LOOK AT.  The two R_obs of each salt.  They are NOT the same
+  number, and the difference is the pore: the closed form is not the
+  solution of the equations the solved pore satisfies (DSPM_DE.H states
+  what each path solves).  Read the [DSPM-DE] lines: the node count, the
+  Newton iterations, the residual, the block-tridiagonal structure VERIFIED
+  on the first solve, and the pore summary per unit (flux constancy, zero
+  current and electroneutrality, each measured on the answer).
+
+  WHAT THIS CASE DOES NOT CLAIM.  Nothing in it is validated against
+  NanoFiltran's published results, or against any measurement; that
+  comparison is a later case, built on the paper.  The grid, the residuals
+  and the analytic limit are held by bin/curate/check_pore_solver.py.
+  Shared with the default path and unchanged by the solved pore: the wall
+  (the film, closed with the salt's solution-diffusion B_s), the Davies
+  activity at the feed face, an ideal permeate, van't Hoff osmotic pressure.
+
+  Data: as membrane10_dspmde_divalent -- the salts carry their ion
+  decomposition, the membrane its poreModel{} tier, the ions their radius
+  and D0 from the species records.
+\*---------------------------------------------------------------------------*/
+
+// stream state lives on disk in 0/ (per-stream files); flowsheetDict is TOPOLOGY only
+
+units
+(
+    {
+        name        NF_NaCl_closedForm;
+        type        spiralWoundModule;
+        in          feed_NaCl_closedForm;
+        outputs     ( ret_NaCl_closedForm  perm_NaCl_closedForm );
+        operation
+        {
+            membrane         NF270_dspmde;
+            transport        DSPM-DE;
+            area             5.0;
+            length           1.0;
+            P_permeate       1.0 bar;
+            k_film           5.0e-5;
+            dP_feed_total    1.0 bar;
+            nNodes           20;
+        }
+    }
+    {
+        name        NF_NaCl_pore;
+        type        spiralWoundModule;
+        in          feed_NaCl_pore;
+        outputs     ( ret_NaCl_pore  perm_NaCl_pore );
+        operation
+        {
+            membrane         NF270_dspmde;
+            transport        DSPM-DE;
+            transportParameters
+            {
+                poreSolver { method finiteDifference;  nodes 101; }
+            }
+            area             5.0;
+            length           1.0;
+            P_permeate       1.0 bar;
+            k_film           5.0e-5;
+            dP_feed_total    1.0 bar;
+            nNodes           20;
+        }
+    }
+    {
+        name        NF_MgSO4_closedForm;
+        type        spiralWoundModule;
+        in          feed_MgSO4_closedForm;
+        outputs     ( ret_MgSO4_closedForm  perm_MgSO4_closedForm );
+        operation
+        {
+            membrane         NF270_dspmde;
+            transport        DSPM-DE;
+            area             5.0;
+            length           1.0;
+            P_permeate       1.0 bar;
+            k_film           5.0e-5;
+            dP_feed_total    1.0 bar;
+            nNodes           20;
+        }
+    }
+    {
+        name        NF_MgSO4_pore;
+        type        spiralWoundModule;
+        in          feed_MgSO4_pore;
+        outputs     ( ret_MgSO4_pore  perm_MgSO4_pore );
+        operation
+        {
+            membrane         NF270_dspmde;
+            transport        DSPM-DE;
+            transportParameters
+            {
+                poreSolver { method finiteDifference;  nodes 101; }
+            }
+            area             5.0;
+            length           1.0;
+            P_permeate       1.0 bar;
+            k_film           5.0e-5;
+            dP_feed_total    1.0 bar;
+            nNodes           20;
+        }
+    }
+);

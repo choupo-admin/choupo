@@ -17,7 +17,7 @@ person.  For prose, groupings and worked examples instead of an
 alphabetical dump, read [`unit-ops.md`](unit-ops.md) beside it; to be
 taught rather than to look something up, read the User Guide.
 
-*99 of 99 registered operations carry a schema and are documented below.*
+*100 of 100 registered operations carry a schema and are documented below.*
 
 ## `FUG`  (FUG operation)
 
@@ -97,7 +97,7 @@ A stirred RETENTATE vessel behind a membrane (choupoBatch): the batch half of th
 |---|:-:|---|---|---|
 | `membrane` | ✓ | string | - | Name of the curated membrane record (data/standards/assets/, kind membrane) whose permeabilities the transport law reads. |
 | `transport` | ✓ | string | - | The same local flux law the steady module uses; DSPM_DE needs the record's pore data and a charged feed. |
-| `transportParameters` |   | object | - | Optional block handed verbatim to the chosen transport law's readParameters (the DSPM-DE pore/charge inputs). Absent for solutionDiffusion. |
+| `transportParameters` |   | object | - | Optional block handed verbatim to the chosen transport law's readParameters. `DSPM-DE` reads `poreSolver { method closedForm \| finiteDif… |
 | `mode` | ✓ | string | - | `concentration`: Q_d = 0, the vessel shrinks and solutes concentrate. `constantVolume`: Q_d = Q_p, solvent made up as fast as it permeate… |
 | `area` | ✓ | number | m2 |  |
 | `P_feed` | ✓ | number | Pa | Retentate-side pressure; the transmembrane pressure is P_feed - P_permeate. |

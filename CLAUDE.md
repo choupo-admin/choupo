@@ -2749,6 +2749,39 @@ guard nothing tests.*  The gate now BUILDS the offending cases (reason stripped,
 `standard` requested, a law nobody implemented) and requires each to refuse AND
 name why.  8 sabotages total, two of which survived first contact.
 
+**A STIFF PORE SOLVED AT ONCE -- the DSPM-DE pore, by finite differences
+(2026-10-22, DEV.md 4c C138 slice 1, Vítor's decision).**  The default
+`DSPM-DE` does NOT solve the pore: it makes the feed face and the permeate
+electroneutral (only when the membrane declares a charge) and carries each
+ion across ALONE by a closed-form transmission; its header had listed pore
+electroneutrality and zero current as "the physics solved", and that closed
+form is not the solution of the extended Nernst-Planck equation even in its
+own uncharged limit (a point solute is rejected up to 50 %; on an uncharged
+Born-free membrane it departs ~70 % from the exact ambipolar answer).  Opt-in
+`transportParameters { poreSolver { method finiteDifference; nodes <n>; } }`
+SOLVES it -- NanoFiltran's method (Geraldes & Alves, J. Membr. Sci. 321 (2008)
+172-182): ENP on n nodes, Scharfetter-Gummel (exponentially fitted) fluxes,
+electroneutrality at every node, zero current, the law's own partitions at
+both faces, every node at once by `newtonND` on the DECLARED block-tridiagonal
+structure (`BlockTri::audit`: the first solve is audited, the rest declared).
+ONE home, `membrane/transport/PoreNernstPlanck`, which holds no partition
+model.  Seeded from local Donnan equilibrium on the closed form's permeate,
+warm-started station to station; a failed Newton is retried by continuation
+in J_v from the exact J_v = 0 state, ANNOUNCED and counted.  The default is
+byte-identical (every DSPM-DE golden pinned to it); whether to retire the
+closed form is RESERVED for Vítor, and so is the WALL both paths share, which
+is closed with the salt's solution-diffusion B_s rather than the pore's own
+permeate (membrane11 Born-off reads NEGATIVE rejection under the solved pore
+because of it).  Measured, never assumed: order 2 against an ambipolar
+analytic limit, exact at cell Péclet 17.6, machine-level residuals on a pore
+with migration 3e5 x its net flux, 56/56 sweep convergence, the engine within
+2e-6 of the limit end to end.  NOT done: any NanoFiltran number (slice 2, on
+the paper), SDEM's march onto the solver (measured: it serves SDEM's equations
+but a uniform grid is slow at thin permeate-face layers), a stretched grid.
+Gate: `check_pore_solver` (8 sabotages, one SURVIVED the first refusal arm).
+Witness `membrane20_dspmde_pore_finite_difference`.  Record:
+[`docs/design/a-stiff-pore-solved-at-once.md`](docs/design/a-stiff-pore-solved-at-once.md).
+
 **ELECTRONEUTRALITY WITHOUT A NEW PARAMETER — the `SDEM` transport law
 (2026-09-15, Vítor: "não se pode andar a aumentar o número de parâmetros
 porque o modelo fica melhor mas depois não há dados").**  `solutionDiffusion`
