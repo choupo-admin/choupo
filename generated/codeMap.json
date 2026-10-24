@@ -1318,6 +1318,12 @@
   "PoreAccount": [
    "src/unitOperations/membrane/transport/TransportModel.H"
   ],
+  "PoreActivity": [
+   "src/unitOperations/membrane/transport/PoreNernstPlanck.H"
+  ],
+  "PoreClosure": [
+   "src/unitOperations/membrane/transport/PoreNernstPlanck.H"
+  ],
   "PoreIon": [
    "src/unitOperations/membrane/transport/PoreNernstPlanck.H"
   ],
@@ -1335,6 +1341,9 @@
   ],
   "PoreTransportBench": [
    "src/propertyOps/PoreTransportBench.H"
+  ],
+  "PoreWall": [
+   "src/unitOperations/membrane/transport/PoreNernstPlanck.H"
   ],
   "PostProcessor": [
    "src/postProcessing/PostProcessor.H"
@@ -1955,6 +1964,9 @@
   ],
   "Wall": [
    "src/postProcessing/sizing/VesselMechanics.H"
+  ],
+  "WallAtField": [
+   "src/unitOperations/membrane/massTransfer/Polarisation.H"
   ],
   "WallExchange": [
    "src/unitOperations/reactor/PFR.H"
@@ -8615,6 +8627,14 @@
    "src/unitOperations/membrane/pressureDrop/PressureDropModel.H",
    "src/unitOperations/membrane/transport/TransportModel.H"
   ],
+  "src/unitOperations/membrane/massTransfer/InterfaceBalance.cpp": [
+   "src/core/Advisory.H",
+   "src/core/Dictionary.H",
+   "src/core/Dimensions.H",
+   "src/core/Types.H",
+   "src/unitOperations/membrane/massTransfer/MassTransferModel.H",
+   "src/unitOperations/membrane/massTransfer/Polarisation.H"
+  ],
   "src/unitOperations/membrane/massTransfer/MassTransferModel.cpp": [
    "src/core/Dictionary.H",
    "src/core/Dimensions.H",
@@ -8718,9 +8738,14 @@
   ],
   "src/unitOperations/membrane/transport/PoreNernstPlanck.cpp": [
    "src/core/Advisory.H",
+   "src/core/Dictionary.H",
+   "src/core/Dimensions.H",
    "src/core/InfeasibleTrial.H",
    "src/core/Types.H",
+   "src/solver/BlockTridiagonal.H",
    "src/solver/NewtonND.H",
+   "src/unitOperations/membrane/transport/../massTransfer/MassTransferModel.H",
+   "src/unitOperations/membrane/transport/../massTransfer/Polarisation.H",
    "src/unitOperations/membrane/transport/PoreNernstPlanck.H"
   ],
   "src/unitOperations/membrane/transport/SDEM.cpp": [
@@ -9720,6 +9745,7 @@
    "src/unitOperations/heatTransfer/SprayDryer.cpp",
    "src/unitOperations/hydraulics/Pipe.cpp",
    "src/unitOperations/membrane/SpiralWoundModule.cpp",
+   "src/unitOperations/membrane/massTransfer/InterfaceBalance.cpp",
    "src/unitOperations/membrane/massTransfer/Polarisation.cpp",
    "src/unitOperations/membrane/transport/DSPM_DE.cpp",
    "src/unitOperations/membrane/transport/PoreNernstPlanck.cpp",
@@ -10281,12 +10307,14 @@
    "src/unitOperations/hydraulics/PneumaticConveyor.cpp",
    "src/unitOperations/hydraulics/friction/FrictionFactorCorrelation.cpp",
    "src/unitOperations/membrane/SpiralWoundModule.cpp",
+   "src/unitOperations/membrane/massTransfer/InterfaceBalance.cpp",
    "src/unitOperations/membrane/massTransfer/MassTransferModel.cpp",
    "src/unitOperations/membrane/massTransfer/Polarisation.cpp",
    "src/unitOperations/membrane/osmotic/OsmoticModel.cpp",
    "src/unitOperations/membrane/pressureDrop/PressureDropModel.cpp",
    "src/unitOperations/membrane/transport/DSPM_DE.cpp",
    "src/unitOperations/membrane/transport/GelPolarisation.cpp",
+   "src/unitOperations/membrane/transport/PoreNernstPlanck.cpp",
    "src/unitOperations/membrane/transport/SDEM.cpp",
    "src/unitOperations/membrane/transport/SolutionDiffusion.cpp",
    "src/unitOperations/membrane/transport/TransportModel.cpp",
@@ -10614,12 +10642,14 @@
    "src/unitOperations/hydraulics/PneumaticConveyor.cpp",
    "src/unitOperations/hydraulics/friction/FrictionFactorCorrelation.cpp",
    "src/unitOperations/membrane/SpiralWoundModule.cpp",
+   "src/unitOperations/membrane/massTransfer/InterfaceBalance.cpp",
    "src/unitOperations/membrane/massTransfer/MassTransferModel.cpp",
    "src/unitOperations/membrane/massTransfer/Polarisation.cpp",
    "src/unitOperations/membrane/osmotic/OsmoticModel.cpp",
    "src/unitOperations/membrane/pressureDrop/PressureDropModel.cpp",
    "src/unitOperations/membrane/transport/DSPM_DE.cpp",
    "src/unitOperations/membrane/transport/GelPolarisation.cpp",
+   "src/unitOperations/membrane/transport/PoreNernstPlanck.cpp",
    "src/unitOperations/membrane/transport/SDEM.cpp",
    "src/unitOperations/membrane/transport/SolutionDiffusion.cpp",
    "src/unitOperations/membrane/transport/TransportModel.cpp",
@@ -11920,6 +11950,7 @@
    "src/unitOperations/hydraulics/PneumaticConveyor.cpp",
    "src/unitOperations/hydraulics/friction/FrictionFactorCorrelation.cpp",
    "src/unitOperations/membrane/SpiralWoundModule.cpp",
+   "src/unitOperations/membrane/massTransfer/InterfaceBalance.cpp",
    "src/unitOperations/membrane/massTransfer/MassTransferModel.cpp",
    "src/unitOperations/membrane/massTransfer/Polarisation.cpp",
    "src/unitOperations/membrane/osmotic/OsmoticModel.cpp",
@@ -12972,7 +13003,8 @@
    "src/solver/NewtonND.cpp",
    "src/solver/ODE/EulerSI.cpp",
    "src/solver/ODE/Jacobian.cpp",
-   "src/solver/ODE/Rosenbrock23.cpp"
+   "src/solver/ODE/Rosenbrock23.cpp",
+   "src/unitOperations/membrane/transport/PoreNernstPlanck.cpp"
   ],
   "src/solver/Convergence.H": [
    "src/applications/choupoBatch/main.cpp",
@@ -15918,6 +15950,7 @@
    "src/unitOperations/UnitOperation.cpp",
    "src/unitOperations/batch/BatchDiafilter.cpp",
    "src/unitOperations/membrane/SpiralWoundModule.cpp",
+   "src/unitOperations/membrane/massTransfer/InterfaceBalance.cpp",
    "src/unitOperations/membrane/massTransfer/MassTransferModel.cpp",
    "src/unitOperations/membrane/massTransfer/Polarisation.cpp"
   ],
@@ -15926,6 +15959,7 @@
    "src/propertyOps/PoreTransportBench.cpp",
    "src/unitOperations/batch/BatchDiafilter.cpp",
    "src/unitOperations/membrane/SpiralWoundModule.cpp",
+   "src/unitOperations/membrane/massTransfer/InterfaceBalance.cpp",
    "src/unitOperations/membrane/massTransfer/Polarisation.cpp"
   ],
   "src/unitOperations/membrane/massTransfer/SchockMiquel.H": [
@@ -15961,6 +15995,7 @@
    "src/unitOperations/batch/BatchUnitOperation.cpp",
    "src/unitOperations/membrane/transport/DSPM_DE.cpp",
    "src/unitOperations/membrane/transport/GelPolarisation.cpp",
+   "src/unitOperations/membrane/transport/PoreNernstPlanck.cpp",
    "src/unitOperations/membrane/transport/SDEM.cpp",
    "src/unitOperations/membrane/transport/SolutionDiffusion.cpp",
    "src/unitOperations/membrane/transport/TransportModel.cpp"
@@ -15969,6 +16004,7 @@
    "src/unitOperations/batch/BatchUnitOperation.cpp",
    "src/unitOperations/membrane/transport/DSPM_DE.cpp",
    "src/unitOperations/membrane/transport/GelPolarisation.cpp",
+   "src/unitOperations/membrane/transport/PoreNernstPlanck.cpp",
    "src/unitOperations/membrane/transport/SDEM.cpp",
    "src/unitOperations/membrane/transport/SolutionDiffusion.cpp",
    "src/unitOperations/membrane/transport/TransportModel.cpp"

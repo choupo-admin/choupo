@@ -1,7 +1,10 @@
 # A stiff pore solved at once — the extended Nernst-Planck equations across a DSPM-DE pore
 
 *2026-10-22, DEV.md 4c C138, slice 1; slice 2 (the comparison with
-NanoFiltran itself) is §9.  Vítor's decision: build, as an
+NanoFiltran itself) is §9; the defaults corrected (C141) §10; a better
+solver -- an analytic Jacobian, the wall and the water flux in the same
+Newton, the closed form retired, NanoFiltran kept as the reference (C142) --
+§11.  Vítor's decision: build, as an
 opt-in pore solver for the `DSPM-DE` transport law, the method of his own
 NanoFiltran (Geraldes & Alves, "Computer program for simulation of mass
 transport in nanofiltration membranes", J. Membr. Sci. 321 (2008)
@@ -118,6 +121,10 @@ answer.  A pore that still does not converge REFUSES the run, naming `J_v`,
 
 ## 3. The declaration and the voice
 
+*(Slice 1 as built.  Since C141 the solved pore is the default; since C142
+`method closedForm` is RETIRED and refuses, `nodes` has a sibling `grading`,
+and the audit runs on an 11-node copy of the first station -- §11.)*
+
     transportParameters { poreSolver { method finiteDifference; nodes 101; } }
 
 `method closedForm` is the default, byte-identical.  `nodes` (faces
@@ -214,6 +221,10 @@ converges where the shot was tuned and beyond, but a production swap wants a
 grid stretched toward the permeate face.  Slice 2's question.
 
 ## 7. What is NOT done
+
+*(As of slice 1.  The non-uniform grid was built in C142 and measured not to
+help; the default was replaced in C141 and the closed form retired in C142 --
+§10, §11.)*
 
 - ~~Any comparison with NanoFiltran~~ -- done in slice 2, against the
   PROGRAM itself on the same model (§9); its published figures were not
@@ -589,3 +600,208 @@ The NF ordering MgSO4 > CaCl2 > NaCl (membrane10) and Born on > off
 (membrane11) both hold.  membrane11's Born-off row is no longer negative
 (§5's -2.46 % was the solved pore against the B_s wall): with the wall
 closed with the pore's own permeate it is +9.39 %.
+
+## 11. A better solver (2026-10-24, DEV.md 4c C142)
+
+*Vítor, on the C141 timings: "Eu quero que faças um solver melhor! E deixes o
+nanofiltran resultados só para comparares!"  NanoFiltran stays the REFERENCE;
+the solver must be as accurate, more robust and faster.  Every number below
+was measured on this branch against a build of its parent (e8afeef7e) and
+against NanoFiltran rebuilt by `regenerate.py`'s own `build()` (gfortran
+13.3, `-O2`), on one machine, wall clock including process start.*
+
+### 11.1 What the C141 solver spent its time on
+
+Per station of a spiral-wound module the C141 path ran a safeguarded secant
+on the water flux; each secant pass ran a Newton on the wall (one unknown per
+fed ion, a DENSE finite-difference Jacobian, so 2 Na + 1 pore solves per
+iteration plus the line search); each of those ran the pore's Newton, whose
+Jacobian was a colored finite difference (3 colours x (2 Ni + 2) slots x 2
+residual evaluations per Newton iteration).  Measured in the old pore
+summaries: membrane10's NaCl unit made **3 933 pore solves for 51 stations**
+(CaCl2 4 540, MgSO4 3 265; membrane11 4 795 and 3 683).
+
+### 11.2 What was built
+
+- **An analytic Jacobian.**  Every row of the pore residual (§2) has
+  closed-form derivatives: the Scharfetter-Gummel terms through the
+  Bernoulli function, `B'(x) = B(x)(1 - x - B(x))/x` (the identity
+  `B(-x) = B(x) + x`), with the series `-1/2 + x/6 - x^3/180 + x^5/5040` below
+  |x| = 1e-2 where the bracket cancels; every row's NORMALISATION is
+  differentiated too (`d(r/s) = (dr - (r/s) ds)/s`), because a Jacobian of a
+  differently normalised function would make the line search compare norms of
+  two functions.  It is assembled straight into the three bands and handed to
+  `solver::newtonND` through the new `BlockTri::jacobian`.  The colored
+  finite differences of C138 stay, as the ORACLE: `PoreSettings::
+  finiteDifferenceJacobian` restores them, and the audit compares the two.
+- **One Newton per station.**  The wall concentration that feeds the feed
+  partition is the film's interface balance (Geraldes & Afonso 2007) AT A
+  GIVEN FIELD -- `C_m = (k* C_b - J_v C_p)/(k* - J_v + z D xi')`, or with
+  the solution-diffusion closure `C_m = k* C_b/(k* - J_v + z D xi' + J_v
+  B/(J_v + B))` -- evaluated with its derivatives by `membrane::
+  wallAtField` (`massTransfer/InterfaceBalance.cpp`; the kernel and it share
+  `detail::wallAt`, so the wall keeps ONE home); electroneutrality at a
+  coupled wall is one row; the water flux `J_v = A_w (dP - RT (sum C_m -
+  sum c_p))` is one row; `bulkOverPoreDavies`' four face coefficients are
+  evaluated on the answer's own ionic strengths (with `d ln gamma/dI`).  All of
+  them read only node 0's unknowns, so they fit the block-tridiagonal shape
+  as they stand -- two more slots per node, J_v and xi', held equal node to
+  node exactly like the permeate copies of §2 (the J_v copy is read by every
+  flux row; xi' only at node 0, its slot idle elsewhere because the blocks
+  share one size).  Block size `2 Ni + 4`.
+- **The robust fallback, kept**: continuation from the exact no-flux state,
+  now in the DRIVE -- the imposed J_v, or dP under the closure -- raised
+  geometrically, counted and announced.  And one case it had never met: when
+  the osmotic pressure at vanishing flux (the pore in Donnan equilibrium with
+  both baths, `RT sum (c_b - feedSide c_b / permSide)`, exact) is not below
+  dP there is no positive root; the closure's only root is a negative flux.
+  The station then has J_w = 0, said once per unit (membrane11 at 3 bar and
+  500 mM: before, the damped fixed point crawled to J_w = 7e-25 and
+  published R_obs 0.267 of it).
+- **The audit on an 11-node copy** of the first station: the off-band
+  maximum and the analytic-against-FD departure are properties of the code,
+  not of the grid, and the dense audit at 201 nodes of a four-ion pore (46 MB,
+  4 800 residual evaluations) cost more than the solve; above 4 096 unknowns
+  C141 skipped it.  Now it is never skipped.
+- **An allocation-free substitution** (`solver::luSolveInto`) inside the
+  shared block-Thomas: the same operations in the same order (bit-identical
+  results, measured on every membrane case's JSON), one third of the run
+  time removed (callgrind: malloc was 40 %).
+- **`method closedForm;` RETIRED**, refused by name with its reason (§10.1).
+  membrane20 rebuilt: the same NaCl and MgSO4 feeds, the pore solved, the
+  wall closed with the pore's own permeate against the solution-diffusion
+  B_s -- NaCl R_obs 49.73 % against 30.80 % (the B_s wall over-polarises,
+  Gamma 2.79 against 2.07), MgSO4 equal to 1e-6.
+
+**Where this departs from the brief, and why.**  The brief asked for the wall
+unknowns in "a bordered block-Thomas / Schur complement".  None is needed:
+the copies of §2 already carry global unknowns through a block-tridiagonal
+structure, and the wall and the water flux are such unknowns.  The block
+grows from `2 Ni + 2` to `2 Ni + 4`; the solve stays the shared block-Thomas
+(one home, no new linear algebra).
+
+### 11.3 The grid -- measured, and the brief's premise did not hold
+
+The brief asked for a grid graded toward both faces "(where the Donnan/Born
+layers and thin permeate-face layers live)".  It was built
+(`poreSolver { grading <beta>; }`, a tanh map, PoreNernstPlanck.H "THE
+GRID") and measured.  It keeps the order (1.99-2.00 on the ambipolar limit)
+and, from beta 1.5 up, it is WORSE on every problem measured, at the same
+node count (beta 1 is within 10 % of uniform either way: slightly better on
+two high-Peclet probe problems, worse on the rest):
+
+| problem | uniform, 101 nodes | beta 1.5 | beta 3 |
+|---|---:|---:|---:|
+| ambipolar limit, Pe 0.44 / 4.4 (rel. error of c_p) | 5.4e-7 / 1.19e-6 | 7.9e-7 / 1.27e-6 | 2.3e-6 / 3.6e-6 |
+| stiff pore, X_d -5 / -50 / -200 mol/m3, J_v 4e-4 | 8.6e-7 / 1.2e-9 / 1.9e-11 | 1.4e-6 / 1.9e-9 / 3.1e-11 | 4.1e-6 / 5.8e-9 / 9.3e-11 |
+| membrane10, worst published R_obs / composition | 1.3e-8 | 2.1e-8 | 6.2e-8 |
+| membrane11 | 1.4e-7 | 2.1e-7 | 6.3e-7 |
+| NanoFiltran's example, J_v 5e-5 (trace Na+) | 1.10e-3 | 2.62e-3 | 8.38e-3 |
+
+(reference: Richardson from 1601/3201 uniform nodes, or the analytic limit;
+the face-graded error at beta 1.5-3 is 1.1 to 8 times the uniform one.)  The reason was
+found by looking at the hardest row's profile (a scratch dump of NanoFiltran's
+example at J_v = 5e-5, 401 nodes): the steepest curvature of ln c_Na and of
+psi is at **xi = 0.39, in the interior** -- the front where the trace Na+
+hands the fixed charge over to Mg2+, ln c_Na falling two decades -- not at a
+face, where the Donnan and Born jumps are interfacial (they are partitions,
+not layers, in this model).  Clustering toward the faces takes cells from
+exactly where they are needed.  So the stated default stays **uniform, 101
+nodes**: its grid error on the corpus is 1e-8 (membrane10) to 1.4e-7
+(membrane11), well below the goldens' 1e-4; at 41 nodes it would still be
+8.6e-7.  The case to know is an interior ion-exchange front, which needs some
+400 nodes for 1e-4 (NanoFiltran's example: 101 -> 1.1e-3, 201 -> 2.7e-4,
+401 -> 6.9e-5, 801 -> 1.7e-5); nanofiltran01 declares 801.  The `grading`
+key stays a declared choice (0..6, announced), for a student to see the
+measurement for themselves and for a future SDEM march (§6), whose thin
+PERMEATE-face layer is the case a face-graded grid serves.  What would
+serve an interior front is a solution-adaptive grid (equidistributing the
+arc length of ln c and psi) -- not built: it makes the grid depend on the
+answer.
+
+### 11.4 Verification (bin/curate/check_pore_solver.py, rebuilt)
+
+New arms: JACOBIAN -- the analytic Jacobian against a Richardson-combined
+central difference on 50 random states of five problems (the fixed-face pore,
+the stiff pore, three stations with the wall and the water flux folded in),
+on the uniform and the graded grid: worst 4.5e-8 of a row (on the stiff pore,
+the oracle's own floor; ~1e-11 elsewhere), exactly 0 off the bands.  A plain
+central difference was not good enough as an oracle: its own error reached
+1.6e-6 there.  STATION -- the three stations' answers recomputed in Python
+from the film's interface balance, the closure and the wall
+electroneutrality (3.3e-16), and the finite-difference Newton reaching the
+same answer (5.7e-15).  GRADED -- the order on the graded grid.  Four
+sabotages on the C142 code, all caught; the instructive one drops the wall's
+dC_m/dJ_v from the Jacobian, and only the JACOBIAN arm sees it: the Newton
+still converges, more slowly, to the same answer.  The gate's docstring has
+the observed output.
+
+### 11.5 The comparison
+
+**The NanoFiltran matrix** (§9.3), each problem solved cold and alone.
+NanoFiltran: its matrix's settings (uniform mesh, URF 0.1, TOL 1e-9, ITMAX
+4000); its "residual" is its own sum of normalised absolute residuals, not
+comparable digit for digit with Choupo's ||F||_2 of the normalised rows.
+Choupo at the case's 801 nodes, before (C141, e8afeef7e) and after; the
+anchor column is the worst |c_p / NanoFiltran's extrapolation - 1| of the
+op's ions at 801 nodes -- identical before and after (the same grid).
+
+| op | J_v [m/s] | NF ND 102: s / it | NF ND 204: s / it / residual | Choupo before (801) | Choupo after (801): s / it / ‖F‖ | after (101) s | anchor (801) |
+|---|---:|---:|---:|---:|---:|---:|---:|
+| example_ideal | 1e-6 | 0.61 / 251 | 32.0 / 1897 / 1.0e-9 | 0.34 | 0.066 / 7 / 6e-14 | 0.016 | 2.6e-8 |
+| example_ideal | 5e-6 | 0.47 / 246 | 3.71 / 246 / 9.2e-10 | 0.27 | 0.049 / 6 / 1e-14 | 0.012 | 6.8e-8 |
+| example_ideal | 1e-5 | 0.38 / 248 | 2.76 / 250 / 9.3e-10 | 0.33 | 0.058 / 6 / 1e-14 | 0.012 | 6.7e-8 |
+| example_ideal | 2e-5 | 0.44 / 251 | 3.23 / 257 / 9.4e-10 | 0.37 | 0.064 / 7 / 1e-14 | 0.015 | 1.1e-6 |
+| example_ideal | 5e-5 | 0.49 / 279 | 3.73 / 286 / 9.6e-10 | 0.54 | 0.206 / 24 / 1e-14 | 0.019 | 1.7e-5 |
+| example_noBorn | 5e-5 | 0.37 / 236 | 2.98 / 243 / 9.3e-10 | 0.22 | 0.053 / 5 / 8e-15 | 0.012 | 5.3e-7 |
+| example_davies | 5e-5 | 0.34 / 238 | 2.88 / 244 / 9.7e-10 | 0.94 | 0.054 / 5 / 8e-15 | 0.013 | 2.9e-7 |
+| NaCl_ideal | 1e-5 | 0.16 / 264 | 14.4 / **4001** / 4.8e-9 | 0.13 | 0.025 / 4 / 1.6e-13 | 0.009 | 9.3e-8 |
+| NaCl_ideal | 5e-5 | 0.16 / 287 | 15.1 / **4001** / 2.4e-9 | 0.06 | 0.031 / 6 / 7e-15 | 0.009 | 1.1e-7 |
+| Na2SO4_ideal | 1e-5 | 2.97 / **4001** | 20.3 / **4001** / 7.1e-8 | 0.27 | 0.043 / 9 / 1e-14 | 0.008 | 1.8e-7 |
+| Na2SO4_ideal | 5e-5 | 2.43 / **4001** | 15.6 / **4001** / 2.8e-8 | 0.39 | 0.054 / 9 / 9e-15 | 0.019 | 1.8e-7 |
+| mixed_polarised | 1e-5 | 0.52 / 311 | 2.68 / 311 / 9.7e-10 | 2.31 | 0.083 / 9 / 8e-15 | 0.015 | 7.9e-7 |
+| mixed_polarised | 3e-5 | 0.34 / 279 | 2.79 / 279 / 9.8e-10 | 2.48 | 0.071 / 10 / 7e-15 | 0.014 | 4.2e-7 |
+
+**4001** = ITMAX: NanoFiltran stopped short of its tolerance.  Choupo's
+iterations are the station's whole Newton (4 to 24; no problem needed the
+continuation at 801 nodes; at 101 nodes Na2SO4 at 5e-5 did, 5 solves).  Of
+Choupo's wall time about 10 ms is the process start; NanoFiltran's per-run
+times include its own I/O.  At its finer grid NanoFiltran took 2.7-32 s and
+236-4001 iterations per problem; Choupo after takes 0.03-0.21 s at 801 nodes,
+four times NanoFiltran's grid, and the anchors (NanoFiltran's grid limit)
+are met within the bands of §9.4 (`check_nanofiltran_reference`: agreement
+of the two extrapolations within 7.9e-7 on all 35 rows, unchanged).
+
+**The corpus cases** (whole runs; per unit: station solves / Newton
+iterations in all / the worst ||F|| of a station):
+
+| case | Choupo before (C141) | Choupo after | per unit after |
+|---|---:|---:|---|
+| membrane10 (3 units, 51 stations) | 10.9 s; 3 933 / 4 540 / 3 265 pore solves, ‖F‖ <= 1e-12 | **0.27 s** | 51 / 156 / 2.9e-15; 51 / 156 / 3.6e-15; 51 / 194 / 1.4e-14 (MgSO4: 5 continuation solves at the first station, as before) |
+| membrane11 (2 units) | 8.2 s; 4 795 / 3 683 pore solves | **0.16 s** | 51 / 154 / 8.4e-15; 51 / 155 / 2.7e-15 |
+| membrane20 | 2.4 s (3 units, one the closed form) | **0.20 s** (4 units) | 21 / 66 / 2.4e-15; 21 / 65 / 2.5e-15; 21 / 104 / 1.4e-14 (x2) |
+| nanofiltran01 (13 points, 801 nodes) | 8.5 s | **0.57 s** | -- |
+| membrane11 at 3/10/20/40 bar x 5/50/500 mM | 5.1-21.1 s per point, 2-13 continuation solves on 4 points | **0.03-0.21 s**, no continuation | identical answers to every printed digit on 11 of 12; the 12th has no flux (11.2) |
+
+Agreement: on the same grid the answers are the C141 answers -- every one of
+membrane10's 1 835 published numbers (profiles included), membrane11's 795
+and nanofiltran01's 70, to the last printed digit, except round-off closures
+and `pore_stiffness_max`, which C141 took as a maximum over every pore the
+nested solver evaluated on its way and is now over the accepted answers (it
+is pinned by no golden).
+
+### 11.6 Still NOT done
+
+- A solution-adaptive grid for an interior front (11.3).
+- SDEM's march onto this solver (§6) -- its thin permeate-face layer is where
+  `grading` would earn its keep; not measured here.
+- The first station of a highly rejected salt (MgSO4 99.98 %) still needs
+  the continuation (5 solves): the cold seed is an unrejected permeate.  A
+  better seed would remove it; it costs ~40 iterations once per unit.
+- The block-Thomas is now 45 % of a run; a flat-storage factorisation would
+  halve it, but `BlockBands`' layout is shared with the MESH column and the
+  stiff integrator, so it was not touched.
+- The batch diafilter under the solved pore (it runs; no witness).
+- `NF270_dspmde.dat` still says its `permeabilities` are "unused by DSPM-DE";
+  true under the default, not under `wallClosure solutionDiffusion`.  A
+  record edit was not made from a solver slice.

@@ -8019,25 +8019,25 @@ Data: the salts (case-local constant/components/) carry an electrolyte\{\} ion d
 
 `transport DSPM-DE;` selects the charged-pore law; drop it (or set `transport solutionDiffusion;`) to compare against the baseline.
 
-THE MODEL, with nothing declared (DSPM-DE's defaults since 2026-10-24, DEV.md 4c C141, each announced in the run): the hindrance pair of Dechadilok \& Deen 2006 (K\_d = H/Phi -- the earlier default counted the steric partition twice in diffusion); the pore SOLVED by finite differences on 101 nodes, electroneutral at every node with zero current (NanoFiltran's method); and the wall closed with that pore's own permeate. membrane20\_dspmde\_pore\_finite\_difference declares the same model and sets the retired closed form beside it.
+THE MODEL, with nothing declared (DSPM-DE's defaults since 2026-10-24, DEV.md 4c C141, each announced in the run): the hindrance pair of Dechadilok \& Deen 2006 (K\_d = H/Phi -- the earlier default counted the steric partition twice in diffusion); the pore SOLVED by finite differences on 101 nodes, electroneutral at every node with zero current (NanoFiltran's model, solved since C142 by one Newton per station that carries the pore, the wall and the water flux together); and the wall closed with that pore's own permeate. membrane20\_dspmde\_pore\_finite\_difference declares the same model and sets the solution-diffusion wall closure beside it.
 
 \end{tutnarrative}
 \begin{tutgolden}
 \goldrow{stream}{feed\_CaCl2}{F}{0.0555555555556}
 \goldrow{stream}{feed\_MgSO4}{F}{0.0555555555556}
 \goldrow{stream}{feed\_NaCl}{F}{0.0555555555556}
-\goldrow{stream}{perm\_CaCl2}{F}{0.0191734334025}
-\goldrow{stream}{perm\_MgSO4}{F}{0.0200353943946}
-\goldrow{stream}{perm\_NaCl}{F}{0.0208249923968}
-\goldrow{stream}{ret\_CaCl2}{F}{0.036382122153}
-\goldrow{stream}{ret\_MgSO4}{F}{0.035520161161}
-\goldrow{stream}{ret\_NaCl}{F}{0.0347305631587}
-\goldrow{kpi}{NF\_CaCl2}{J\_w\_avg}{6.90913559208e-05}
-\goldrow{kpi}{NF\_CaCl2}{R\_obs\_CaCl2}{0.704575527626}
+\goldrow{stream}{perm\_CaCl2}{F}{0.0198924018864}
+\goldrow{stream}{perm\_MgSO4}{F}{0.0200291397136}
+\goldrow{stream}{perm\_NaCl}{F}{0.0215682162363}
+\goldrow{stream}{ret\_CaCl2}{F}{0.0356631536691}
+\goldrow{stream}{ret\_MgSO4}{F}{0.035526415842}
+\goldrow{stream}{ret\_NaCl}{F}{0.0339873393193}
+\goldrow{kpi}{NF\_CaCl2}{J\_w\_avg}{7.16824231251e-05}
+\goldrow{kpi}{NF\_CaCl2}{R\_obs\_CaCl2}{0.696509463412}
 \goldrow{kpi}{NF\_CaCl2}{R\_obs\_MgSO4}{1}
 \goldrow{kpi}{NF\_CaCl2}{R\_obs\_NaCl}{1}
 \goldrow{kpi}{NF\_CaCl2}{dP\_feed}{100000}
-\goldmore{37}
+\goldmore{40}
 \end{tutgolden}
 
 \clearpage
@@ -8076,19 +8076,19 @@ Both units run DSPM-DE's defaults (since 2026-10-24, DEV.md 4c C141, each announ
 \begin{tutgolden}
 \goldrow{stream}{feed\_born}{F}{0.0555555555556}
 \goldrow{stream}{feed\_noBorn}{F}{0.0555555555556}
-\goldrow{stream}{perm\_born}{F}{0.0103274158565}
-\goldrow{stream}{perm\_noBorn}{F}{0.0112232798004}
-\goldrow{stream}{ret\_born}{F}{0.045228139699}
-\goldrow{stream}{ret\_noBorn}{F}{0.0443322757552}
-\goldrow{kpi}{NF\_born}{J\_w\_avg}{3.72201060256e-05}
-\goldrow{kpi}{NF\_born}{R\_obs\_NaCl}{0.8610089064}
+\goldrow{stream}{perm\_born}{F}{0.0159093373676}
+\goldrow{stream}{perm\_noBorn}{F}{0.0201361870707}
+\goldrow{stream}{ret\_born}{F}{0.0396462181879}
+\goldrow{stream}{ret\_noBorn}{F}{0.0354193684848}
+\goldrow{kpi}{NF\_born}{J\_w\_avg}{5.74022297607e-05}
+\goldrow{kpi}{NF\_born}{R\_obs\_NaCl}{0.300852023184}
 \goldrow{kpi}{NF\_born}{dP\_feed}{100000}
-\goldrow{kpi}{NF\_born}{water\_recovery}{0.185570802807}
-\goldrow{kpi}{NF\_noBorn}{J\_w\_avg}{4.0465249236e-05}
-\goldrow{kpi}{NF\_noBorn}{R\_obs\_NaCl}{0.659478397597}
+\goldrow{kpi}{NF\_born}{water\_recovery}{0.286194183657}
+\goldrow{kpi}{NF\_noBorn}{J\_w\_avg}{7.26834214911e-05}
+\goldrow{kpi}{NF\_noBorn}{R\_obs\_NaCl}{0.0938863676869}
 \goldrow{kpi}{NF\_noBorn}{dP\_feed}{100000}
-\goldrow{kpi}{NF\_noBorn}{water\_recovery}{0.201750333042}
-\goldmore{12}
+\goldrow{kpi}{NF\_noBorn}{water\_recovery}{0.362382655966}
+\goldmore{14}
 \end{tutgolden}
 
 \clearpage
@@ -8429,34 +8429,42 @@ NOT MODELLED, said plainly: the osmotic pressure of the protein (the gel model's
 \begin{tutscheme}
 \begin{tikzpicture}[>={Stealth[length=2mm]}, every node/.style={font=\scriptsize}]
   \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (NFNaClpore) at (0.0,-0.0) {\textbf{NF\_NaCl\_pore}\\[-1pt]{\tiny spiralWoundModule}};
-  \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (NFMgSO4closedForm) at (0.0,-1.7) {\textbf{NF\_MgSO4\_closedForm}\\[-1pt]{\tiny spiralWoundModule}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (NFNaClBsWall) at (0.0,-1.7) {\textbf{NF\_NaCl\_BsWall}\\[-1pt]{\tiny spiralWoundModule}};
   \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (NFMgSO4pore) at (0.0,-3.4) {\textbf{NF\_MgSO4\_pore}\\[-1pt]{\tiny spiralWoundModule}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (NFMgSO4BsWall) at (0.0,-5.1) {\textbf{NF\_MgSO4\_BsWall}\\[-1pt]{\tiny spiralWoundModule}};
   \draw[->] ($(NFNaClpore.west)+(-1.05,0.00)$) -- ($(NFNaClpore.west)+(0,0.00)$) node[at start, above, font=\tiny, anchor=south west] {feed\_NaCl\_pore};
-  \draw[->] ($(NFMgSO4closedForm.west)+(-1.05,0.00)$) -- ($(NFMgSO4closedForm.west)+(0,0.00)$) node[at start, above, font=\tiny, anchor=south west] {feed\_MgSO4\_closedForm};
+  \draw[->] ($(NFNaClBsWall.west)+(-1.05,0.00)$) -- ($(NFNaClBsWall.west)+(0,0.00)$) node[at start, above, font=\tiny, anchor=south west] {feed\_NaCl\_BsWall};
   \draw[->] ($(NFMgSO4pore.west)+(-1.05,0.00)$) -- ($(NFMgSO4pore.west)+(0,0.00)$) node[at start, above, font=\tiny, anchor=south west] {feed\_MgSO4\_pore};
+  \draw[->] ($(NFMgSO4BsWall.west)+(-1.05,0.00)$) -- ($(NFMgSO4BsWall.west)+(0,0.00)$) node[at start, above, font=\tiny, anchor=south west] {feed\_MgSO4\_BsWall};
   \draw[->] ($(NFNaClpore.east)+(0,-0.17)$) -- ($(NFNaClpore.east)+(1.05,-0.17)$) node[at end, below, font=\tiny, anchor=north east] {ret\_NaCl\_pore};
   \draw[->] ($(NFNaClpore.east)+(0,0.17)$) -- ($(NFNaClpore.east)+(1.05,0.17)$) node[at end, above, font=\tiny, anchor=south east] {perm\_NaCl\_pore};
-  \draw[->] ($(NFMgSO4closedForm.east)+(0,-0.17)$) -- ($(NFMgSO4closedForm.east)+(1.05,-0.17)$) node[at end, below, font=\tiny, anchor=north east] {ret\_MgSO4\_closedForm};
-  \draw[->] ($(NFMgSO4closedForm.east)+(0,0.17)$) -- ($(NFMgSO4closedForm.east)+(1.05,0.17)$) node[at end, above, font=\tiny, anchor=south east] {perm\_MgSO4\_closedForm};
+  \draw[->] ($(NFNaClBsWall.east)+(0,-0.17)$) -- ($(NFNaClBsWall.east)+(1.05,-0.17)$) node[at end, below, font=\tiny, anchor=north east] {ret\_NaCl\_BsWall};
+  \draw[->] ($(NFNaClBsWall.east)+(0,0.17)$) -- ($(NFNaClBsWall.east)+(1.05,0.17)$) node[at end, above, font=\tiny, anchor=south east] {perm\_NaCl\_BsWall};
   \draw[->] ($(NFMgSO4pore.east)+(0,-0.17)$) -- ($(NFMgSO4pore.east)+(1.05,-0.17)$) node[at end, below, font=\tiny, anchor=north east] {ret\_MgSO4\_pore};
   \draw[->] ($(NFMgSO4pore.east)+(0,0.17)$) -- ($(NFMgSO4pore.east)+(1.05,0.17)$) node[at end, above, font=\tiny, anchor=south east] {perm\_MgSO4\_pore};
+  \draw[->] ($(NFMgSO4BsWall.east)+(0,-0.17)$) -- ($(NFMgSO4BsWall.east)+(1.05,-0.17)$) node[at end, below, font=\tiny, anchor=north east] {ret\_MgSO4\_BsWall};
+  \draw[->] ($(NFMgSO4BsWall.east)+(0,0.17)$) -- ($(NFMgSO4BsWall.east)+(1.05,0.17)$) node[at end, above, font=\tiny, anchor=south east] {perm\_MgSO4\_BsWall};
 \end{tikzpicture}
 \end{tutscheme}
-\tutwhat{DSPM-DE NF: the charged pore solved node by node (finite differences, NanoFiltran's method, the default) on NaCl and MgSO4 at 10 bar, and the declared closed form beside it on MgSO4}
+\tutwhat{DSPM-DE NF: the charged pore solved node by node (the default) on NaCl and MgSO4 at 10 bar, its wall closed with the pore's own permeate against the solution-diffusion B\_s closure}
 \begin{tutnarrative}
-THREE NF270 elements, two salts -- every unit has the SAME membrane (NF270\_dspmde: r\_p 0.6 nm, X\_d = -5 mol/m3, Born on), the same 10 bar, the same 5 mM feed of its salt:
+the charged pore SOLVED, and the wall closed with the permeate it gives, or with one it does not.
 
-NF\_NaCl\_pore transport DSPM-DE; transportParameters \{ NF\_MgSO4\_pore poreSolver \{ method finiteDifference; nodes 101; \} \} NF\_MgSO4\_closedForm transport DSPM-DE; transportParameters \{ poreSolver \{ method closedForm; \} \}
+FOUR NF270 elements, two salts -- every unit has the SAME membrane (NF270\_dspmde: r\_p 0.6 nm, X\_d = -5 mol/m3, Born on), the same 10 bar, the same 5 mM feed of its salt, and the same SOLVED pore (101 nodes):
 
-The `\_pore` units DECLARE what has been DSPM-DE's default since 2026-10-24 (DEV.md 4c C141) -- the pore solved on 101 nodes, the wall closed with that pore's own permeate (`wallClosure porePermeate`, the default too) -- so the declaration is visible; membrane10 and membrane11 run the same model with nothing declared.
+NF\_NaCl\_pore NF\_MgSO4\_pore wallClosure porePermeate; NF\_NaCl\_BsWall NF\_MgSO4\_BsWall wallClosure solutionDiffusion;
 
-WHAT `finiteDifference` SOLVES. The extended Nernst-Planck equation of every ion on 101 nodes across the pore, electroneutrality with the fixed charge at EVERY node, zero net current, and the Donnan + steric + Born partitions at both faces -- every node at once, by Newton on the declared block-tridiagonal structure; and the wall (the multi-ionic film) closed with the permeate that pore gives, the two converged together. That is the method of NanoFiltran (Geraldes \& Alves, "Computer program for simulation of mass transport in nanofiltration membranes", J. Membr. Sci. 321 (2008) 172-182): the problem is STIFF -- a co-ion held back by the Donnan field carries a migration and a diffusion flux far larger than the flux they net, and the run prints that ratio ("stiffness") beside its residuals.
+The `\_pore` units DECLARE what has been DSPM-DE's default since 2026-10-24 (DEV.md 4c C141, C142) -- the pore solved, the wall closed with that pore's own permeate -- so the declaration is visible; membrane10 and membrane11 run the same model with nothing declared.
 
-WHAT THE CLOSED FORM DOES NOT SOLVE, and why only ONE unit carries it. `method closedForm;` (the default until 2026-10-24) makes the pore electroneutral at the FEED face, the permeate electroneutral, and carries each ion across ALONE by a closed-form transmission -- no potential gradient couples the ions inside the pore, and neither electroneutrality nor zero current is imposed there; its wall is closed with the salt's solution-diffusion B\_s. With the corrected hindrance (K\_d = H/Phi, DEV.md 4c C141) its transmission tends to K\_c > 1 at low Peclet number, so on this membrane it returns a NaCl permeate RICHER than the wall: the bulk is exhausted inside the channel and the module refuses the run (its solute balance does not close). This case used to carry an NF\_NaCl\_closedForm unit; it was removed for that reason, and bin/curate/check\_pore\_solver.py pins the refusal as a finding. On MgSO4 the closed form runs, and the lesson is the gap: about 58 \% rejection against the solved pore's 99.98 \%.
+WHAT THE SOLVED PORE IS. The extended Nernst-Planck equation of every ion on 101 nodes across the pore, electroneutrality with the fixed charge at EVERY node, zero net current, and the Donnan + steric + Born partitions at both faces; and, in the SAME Newton (C142), the film's interface balance at the wall and the water flux J\_w = A\_w (dP - dpi) -- one Newton per station on the declared block-tridiagonal structure, with an analytic Jacobian. The problem is STIFF -- a co-ion held back by the Donnan field carries a migration and a diffusion flux far larger than the flux they net, and the run prints that ratio ("stiffness") beside its residuals. NanoFiltran (Geraldes \& Alves, "Computer program for simulation of mass transport in nanofiltration membranes", J. Membr. Sci. 321 (2008) 172-182) is the reference it is compared with, in tutorials/props/membrane/ nanofiltran01\_dspmde\_reference.
 
-WHAT TO LOOK AT. The two MgSO4 R\_obs, and the [DSPM-DE] lines: the node count, the Newton iterations, the residual, the block-tridiagonal structure VERIFIED on the first solve, and the pore summary per unit (flux constancy, zero current and electroneutrality, each measured on the answer).
+WHAT THE PAIR TEACHES: THE WALL MUST BE CLOSED WITH THE PERMEATE THE MEMBRANE MAKES. The film's interface balance (Geraldes \& Afonso, J. Membr. Sci. 300 (2007) 20, Eq. 1) says the solute leaving the wall into the membrane is J\_v c\_p. `porePermeate` puts there the permeate THIS pore makes, so the film delivers to the wall exactly what the pore carries away -- solute is conserved across the interface. `solutionDiffusion` puts there c\_p = B\_s c\_m/(J\_v + B\_s) with the record's solution-diffusion B\_s -- a permeate from ANOTHER model, which the pore does not make -- so the film is solved for a solute flux that does not cross the membrane. (It is the wall the retired closed form had, and C138 traced a NEGATIVE NaCl rejection on membrane11 to it.) The gap measures how far that B\_s is from what the pore transmits: NaCl B\_s 5e-6 m/s says c\_p \textasciitilde{} 0.06 c\_m (94 \% at the wall); the pore transmits about 0.16 c\_m (its R\_obs 49.7 \% over a wall 3.07 times the bulk), nearly three times more. The B\_s wall believes almost all the salt is held back, so its film must carry more salt back to the bulk and over-polarises (Gamma 2.79 against 2.07); the pore is fed that richer wall, and R\_obs falls from 49.73 \% to 30.80 \%. MgSO4 both permeates are a few parts in ten thousand of the wall, the film carries back essentially everything either way, and the two R\_obs agree to 1e-6 (99.9751 \% / 99.9752 \%). So the closure is a modelling decision exactly where the permeate is not negligible -- which, in nanofiltration, is the monovalent salt.
 
-WHAT THIS CASE DOES NOT CLAIM. Nothing in it is validated against any measurement. The code-to-code comparison with NanoFiltran is tutorials/props/membrane/nanofiltran01\_dspmde\_reference; the grid, the residuals and the analytic limit are held by bin/curate/check\_pore\_solver.py. Shared by all three units: the Davies activity at the feed face, an ideal permeate, van't Hoff osmotic pressure.
+THE RETIRED CLOSED FORM. Until 2026-10-24 this case carried a `method closedForm;` unit (the default until C141): the pore made electroneutral at the feed face only, each ion carried across ALONE by a closed-form transmission with no field coupling the ions inside. With the corrected hindrance (K\_d = H/Phi, C141) that transmission tends to K\_c > 1 at low Peclet number -- it put more NaCl in the permeate than the wall held and exhausted the bulk, and gave MgSO4 58 \% where the solved pore gives 99.98 \%. It is RETIRED (DEV.md 4c C142): the word refuses by name with that reason.
+
+WHAT TO LOOK AT. The four R\_obs and Gamma, and the [DSPM-DE] lines: the node count, the first station's Newton iterations and residual, the block-tridiagonal structure and the analytic Jacobian VERIFIED on the first solve, the pore summary per unit (flux constancy, zero current and electroneutrality, each measured on the answer), and the continuation the MgSO4 units need at their first station (announced and counted).
+
+WHAT THIS CASE DOES NOT CLAIM. Nothing in it is validated against any measurement. The grid, the residuals, the analytic Jacobian and the analytic limit are held by bin/curate/check\_pore\_solver.py. Shared by all four units: the Davies activity at the feed face, an ideal permeate, van't Hoff osmotic pressure.
 
 Data: as membrane10\_dspmde\_divalent -- the salts carry their ion decomposition, the membrane its poreModel\{\} tier, the ions their radius and D0 from the species records.
 
@@ -8466,17 +8474,17 @@ Data: as membrane10\_dspmde\_divalent -- the salts carry their ion decomposition
 \goldrow{stream}{feed\_MgSO4\_closedForm}{T}{298.15}
 \goldrow{stream}{feed\_MgSO4\_pore}{F}{0.0555555555556}
 \goldrow{stream}{feed\_MgSO4\_pore}{T}{298.15}
-\goldrow{stream}{feed\_NaCl\_closedForm}{F}{0.0555555555556}
-\goldrow{stream}{feed\_NaCl\_closedForm}{T}{298.15}
 \goldrow{stream}{feed\_NaCl\_pore}{F}{0.0555555555556}
 \goldrow{stream}{feed\_NaCl\_pore}{T}{298.15}
-\goldrow{stream}{perm\_MgSO4\_closedForm}{F}{0.0200859121724}
+\goldrow{stream}{perm\_MgSO4\_closedForm}{F}{0.0204073354703}
 \goldrow{stream}{perm\_MgSO4\_closedForm}{T}{298.15}
-\goldrow{stream}{perm\_MgSO4\_pore}{F}{0.0200853457304}
+\goldrow{stream}{perm\_MgSO4\_pore}{F}{0.0200796563488}
 \goldrow{stream}{perm\_MgSO4\_pore}{T}{298.15}
-\goldrow{stream}{perm\_NaCl\_closedForm}{F}{0.0208607742073}
-\goldrow{stream}{perm\_NaCl\_closedForm}{T}{298.15}
-\goldmore{58}
+\goldrow{stream}{perm\_NaCl\_pore}{F}{0.0216109651417}
+\goldrow{stream}{perm\_NaCl\_pore}{T}{298.15}
+\goldrow{stream}{ret\_MgSO4\_closedForm}{F}{0.0351482200852}
+\goldrow{stream}{ret\_MgSO4\_closedForm}{T}{298.15}
+\goldmore{39}
 \end{tutgolden}
 
 \subsection{optimisation}

@@ -39,9 +39,11 @@
   Dechadilok & Deen 2006 (K_d = H/Phi -- the earlier default counted the
   steric partition twice in diffusion); the pore SOLVED by finite
   differences on 101 nodes, electroneutral at every node with zero current
-  (NanoFiltran's method); and the wall closed with that pore's own
-  permeate.  membrane20_dspmde_pore_finite_difference declares the same
-  model and sets the retired closed form beside it.
+  (NanoFiltran's model, solved since C142 by one Newton per station that
+  carries the pore, the wall and the water flux together); and the wall
+  closed with that pore's own permeate.
+  membrane20_dspmde_pore_finite_difference declares the same model and sets
+  the solution-diffusion wall closure beside it.
 \*---------------------------------------------------------------------------*/
 
 // stream state lives on disk in 0/ (per-stream files); flowsheetDict is TOPOLOGY only

@@ -160,11 +160,36 @@ the closed form retired) and are superseded by C1-C4 below.
           (c) the solved pore departs from the ambipolar limit by 1.394e+00
   S8 -- the continuation disabled:
           (a) GRID: the stiff pore at N=25 did not converge ... (every grid)
-On the C142 code (2026-10-24), by hand, each restored before the next:
-  C1 -- SABOTAGE_C1
-  C2 -- SABOTAGE_C2
-  C3 -- SABOTAGE_C3
-  C4 -- SABOTAGE_C4
+On the C142 code (2026-10-24), by hand, each restored (`git checkout`)
+before the next; the probe compiles from source, so none needed a rebuild --
+but the restore moves the file's clock, so `make all` before a suite:
+  C1 -- the flux rows' normalisation left out of their derivative
+        ((dr - f ds)/s -> dr/s in PoreNernstPlanck.cpp `evaluate`):
+          (a) JACOBIAN: on fixedFace (beta 0.0) the analytic Jacobian departs
+              from the finite-difference one by 6.076e-01 of its row ... (all
+              ten problem lines; 1.584e+04 on the stiff pore)
+          (a) SWEEP: 52 of 56 problems converged
+  C2 -- the feed partition's derivative through J_v dropped (the wall's
+        dC_m/dJ_v; the line `add(0, rs, 0, 2 Ni + 2, -dJ)` removed):
+          (a) JACOBIAN: on porePermeate ... 1.110e-01; coupledActivity
+              5.157e-02; solutionDiffusion 1.598e-01 (both grids)
+        and NOTHING ELSE: the Newton still converges, more slowly, to the
+        same answer, so no arm that reads an answer can see a wrong
+        derivative -- which is why the JACOBIAN arm exists.
+  C3 -- the solution-diffusion wall's B^2/(J_v + B)^2 term left out of
+        dC_m/dJ_v (InterfaceBalance.cpp `wallAtField`):
+          (a) JACOBIAN: on solutionDiffusion (beta 0.0) ... 8.785e-05 of its
+              row (> 1e-6)
+        Small, because B << J_v there -- the reason the bound is 1e-6 and the
+        oracle Richardson-combined: a plain central difference's own error
+        reached 1.6e-6 on the stiff pore.
+  C4 -- the water-flux closure's RT scaled by 1.01, in the residual AND its
+        derivative (so the Jacobian stays consistent):
+          (a) STATION porePermeate: J_v 8.155874172608662e-06 is not
+              A_w (dP - dpi) = 8.164231854067983e-06 recomputed here (and
+              solutionDiffusion)
+        with the JACOBIAN arm green: it is the recomputation of the
+        equations, not of their derivatives, that sees a wrong equation.
 """
 import json
 import math

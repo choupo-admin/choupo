@@ -1228,8 +1228,8 @@
     },
     "check_pore_solver": {
       "exit": 0,
-      "claim": "check_pore_solver: OK -- the probe (compiled here) converges to the ambipolar analytic limit at observed order 1.97-2.00 and to 1e-8 at 1600 intervals, and to 1e-10 on every grid at Peclet 440; a stiff pore (migration 2.89e+05 x its net flux) shows Richardson order 2.00-2.01 with ||F||, flux constancy, zero current and electroneutrality at machine level; the declared block-tridiagonal structure is audited at exactly 0 off the bands; 56/56 sweep problems from a crude seed converge (14 by continuation in J_v); a warm start reproduces a cold solve; 2 probe refusals fire.  The witness announces method, nodes, iterations, residual and the structure on both solved units and nothing on the closed-form ones; END TO END the engine's solved pore matches the analytic limit within 1.6e-06 at every station of an uncharged Born-free variant (the closed form departs by 70.6%, pinned as a finding); membrane10/11 reproduce 77 golden rows to 1e-10 with no pore line; 5 refusals fire by name.  NOT CHECKED here: NanoFiltran (held by check_nanofiltran_reference, with the declared wall closure and activities), the batch diafilter under the solved pore, whether a case's grid is enough.",
-      "seconds": 14.0
+      "claim": "check_pore_solver: OK -- the probe (compiled here) converges to the ambipolar analytic limit at observed order 1.97-2.00 on the uniform grid and 1.99-2.00 on the face-graded one (whose error is 1.5-2.1x the uniform grid's at 100 intervals -- why uniform stays the default), to 1e-8 at 1600 intervals and to 1e-10 on every grid at Peclet 440; a stiff pore (migration 2.89e+05 x its net flux) shows Richardson order 2.00-2.01 with ||F||, flux constancy, zero current and electroneutrality at machine level; the ANALYTIC Jacobian matches finite differences within 4.5e-08 of its row on 50 random states of five problems, with exactly 0 off the bands; three stations with the wall and the water flux folded in reproduce the interface balance, the closure and the wall electroneutrality recomputed here within 3.3e-16 and the finite-difference Newton's answer; 56/56 sweep problems from a crude seed converge (14 by continuation); a warm start reproduces a cold solve; 2 probe refusals fire.  The witness's four units announce method, nodes, iterations, residual, the structure and the analytic Jacobian, and teach the pair (NaCl R_obs 0.4973 with the pore's own permeate, 0.3080 with the B_s wall; MgSO4 equal to 1e-5); END TO END the engine matches the analytic limit within 3.9e-08 at every station of an uncharged Born-free variant; membrane10/11 run the DEFAULT solved pore, say so on every unit and reproduce 82 golden rows to 1e-10; 6 refusals fire by name, the retired closed form among them.  NOT CHECKED here: NanoFiltran (held by check_nanofiltran_reference), the batch diafilter under the solved pore, whether a case's grid is enough, wall-clock speed.",
+      "seconds": 10.6
     },
     "check_hansen_mixture": {
       "exit": 0,
@@ -1239,7 +1239,7 @@
     "check_nanofiltran_reference": {
       "exit": 0,
       "claim": "check_nanofiltran_reference: OK -- 13 NanoFiltran inputs are the matching rule's and its 5 vendored files hash as received; 35 anchors equal reference.tsv; Choupo's pore at 401/801/1601 nodes shows order 2.00-2.00 and, extrapolated, agrees with NanoFiltran extrapolated (ND 102/204) within 7.9e-07 relative on all 35 rows (bound 2e-06); at the case's 801 nodes the worst row is 1.7e-05 from NanoFiltran, inside every anchor; 6 refusals fire by name.  NOT CHECKED: whether NanoFiltran is right (code-to-code is not validation), the as-received program's Davies constant (a finding), the default DSPM-DE path, any measured membrane.",
-      "seconds": 42.9
+      "seconds": 2.5
     }
   }
 }

@@ -11,8 +11,13 @@ electrolytes and concentration polarisation: the extended Nernst–Planck
 equations discretised by finite differences across the active layer,
 linearised, and every node solved at once (a dense LAPACK solve, under-relaxed
 Newton).  Choupo's `poreSolver { method finiteDifference; }` (DEV.md 4c C138)
-is that method, built independently; this directory holds the program so the
-two can be compared on the same model, reproducibly.  It is **not** part of
+solves the same model, built independently -- and since C142 (2026-10-24,
+Vitor: "Eu quero que faças um solver melhor!") by a different method: one
+Newton per station carrying the pore, the wall and the water flux, an
+analytic Jacobian, a block-tridiagonal solve and no under-relaxation.  This
+directory holds NanoFiltran as the REFERENCE the two are compared with, on
+the same model, reproducibly (timings and iterations side by side:
+`docs/design/a-stiff-pore-solved-at-once.md` section 11).  It is **not** part of
 Choupo's build: nothing in `src/` includes it, and no Choupo binary needs it.
 
 Vendored at Vítor's word (2026-10-22: *"O nanofiltran pode ser usado sem

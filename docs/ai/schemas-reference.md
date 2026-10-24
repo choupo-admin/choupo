@@ -97,7 +97,7 @@ A stirred RETENTATE vessel behind a membrane (choupoBatch): the batch half of th
 |---|:-:|---|---|---|
 | `membrane` | ✓ | string | - | Name of the curated membrane record (data/standards/assets/, kind membrane) whose permeabilities the transport law reads. |
 | `transport` | ✓ | string | - | The same local flux law the steady module uses; DSPM-DE needs the record's pore data and a charged feed. |
-| `transportParameters` |   | object | - | Optional block handed verbatim to the chosen transport law's readParameters. `DSPM-DE` reads `poreSolver { method finiteDifference \| clo… |
+| `transportParameters` |   | object | - | Optional block handed verbatim to the chosen transport law's readParameters. `DSPM-DE` reads `poreSolver { method finiteDifference; nodes… |
 | `mode` | ✓ | string | - | `concentration`: Q_d = 0, the vessel shrinks and solutes concentrate. `constantVolume`: Q_d = Q_p, solvent made up as fast as it permeate… |
 | `area` | ✓ | number | m2 |  |
 | `P_feed` | ✓ | number | Pa | Retentate-side pressure; the transmembrane pressure is P_feed - P_permeate. |

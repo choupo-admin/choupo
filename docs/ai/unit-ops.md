@@ -1174,18 +1174,21 @@ each channel node):
   announces it (`per-ion solution-diffusion without charge coupling`).
 * `DSPM-DE` — the charged-pore Donnan-steric model with dielectric
   exclusion; needs a membrane record with a `poreModel {}` tier and SALT
-  components carrying `electrolyte { cation; anion; }`.  By default (since
-  2026-10-24) the pore is SOLVED — the extended Nernst-Planck equations on
-  101 nodes across the pore, electroneutrality at every node, zero current,
-  every node at once (NanoFiltran's method) — and the wall is closed with
-  that pore's own permeate; with the hindrance pair below, each default is
-  announced in the run.  Nothing need be declared; to make the choices
-  visible, or to change them, declare in the unit's operation:
+  components carrying `electrolyte { cation; anion; }`.  The pore is
+  SOLVED — the extended Nernst-Planck equations on 101 nodes across the
+  pore, electroneutrality at every node, zero current — and, in the SAME
+  Newton, the wall (the film's interface balance, closed with that pore's
+  own permeate) and the water flux J_w = A_w (dP − dpi): one Newton per
+  channel station on a block-tridiagonal structure with an analytic
+  Jacobian.  With the hindrance pair below, each default is announced in the
+  run.  Nothing need be declared; to make the choices visible, or to change
+  them, declare in the unit's operation:
 
   ```
   transportParameters
   {
       poreSolver { method finiteDifference; nodes 101;   // the defaults
+                   grading 0;                           // uniform (default)
                    wallClosure porePermeate; }          // or solutionDiffusion
       hindrance  DechadilokDeen2006;             // the default, and the only word
       activity   bulkOverPoreDavies;             // default wallDavies; or ideal
@@ -1193,32 +1196,36 @@ each channel node):
   }
   ```
 
-  `nodes` counts grid points, faces included (default 101, announced); the
-  run prints the node count, the Newton iterations, the residual, the
-  structure audit and a per-unit pore summary.  `method closedForm;` (the
-  default until 2026-10-24) does NOT solve the pore — feed-face Donnan, an
-  electroneutral permeate, each ion carried across alone by a closed form
-  whose transmission tends to K_c > 1 at low Peclet number, its wall closed
-  with the salts' B_s; on the corpus membrane it refuses NaCl (the permeate
-  comes out richer than the wall and the module's solute balance stops the
-  run) and holds MgSO4 at ~58 % against the solved pore's 99.98 %
-  (`membrane20_dspmde_pore_finite_difference` runs both on MgSO4).
+  `nodes` counts grid points, faces included (default 101, announced; the
+  corpus cases' grid error there is 1e-8..1e-7, but an interior
+  ion-exchange front — a trace counter-ion handing over to a divalent one —
+  needs some 400 nodes for 1e-4); `grading` (0..6, default 0) is the beta of
+  a tanh map toward both faces, measured NOT to help on any case in the
+  corpus.  The run prints the node count, the first station's Newton
+  iterations and residual, the structure and the analytic Jacobian audited
+  against finite differences on an 11-node copy of that station, and a
+  per-unit pore summary.  A station whose osmotic pressure at vanishing flux
+  is not below dP has no water flux (J_w = 0, announced).  `method
+  closedForm;` (the default until 2026-10-24) is RETIRED and refuses by
+  name: it did not solve the pore, and with the corrected K_d its
+  transmission tends to K_c > 1 at low Peclet number.
 
   `DechadilokDeen2006` is the cross-section-averaged pair (K_d = H/Phi) and
   the default since 2026-10-24; `hindrance legacy` — the old default, which
   took the Dechadilok-Deen polynomial H (= Phi K_d) itself as K_d and so
   counted the steric partition twice in diffusion — REFUSES by name.
   `wallClosure porePermeate` closes the wall with the solved pore's own
-  permeate (the two solved together; `solutionDiffusion` closes it with
-  B_s); `activity bulkOverPoreDavies` puts gamma_bulk/gamma_pore at both
-  faces, the pore gammas at the pore's end nodes with A(eps_p) (needs the
-  solved pore).  Together they are NanoFiltran's model (Geraldes & Alves
-  2008); the code-to-code golden is
+  permeate; `solutionDiffusion` closes it with the salts' B_s, a permeate
+  the pore does not make (`membrane20_dspmde_pore_finite_difference` runs
+  both: NaCl R_obs 49.7 % against 30.8 %, MgSO4 equal); `activity
+  bulkOverPoreDavies` puts gamma_bulk/gamma_pore at both faces, the pore
+  gammas at the pore's end nodes with A(eps_p).  Together they are
+  NanoFiltran's model (Geraldes & Alves 2008), the reference the solver is
+  compared with; the code-to-code golden is
   `tutorials/props/membrane/nanofiltran01_dspmde_reference`, which runs the
   law at IMPOSED J_v through the `poreTransport` props op.  Any other key or
-  word refuses.  Cost: the solved pore is a stiff boundary-value problem at
-  every channel station, seconds per module where the closed form took
-  milliseconds.
+  word refuses.  Cost (C142): a few hundred milliseconds per module (it was
+  seconds before the station became one Newton with an analytic Jacobian).
 * `SDEM` — **solution-diffusion-electromigration** (Yaroshchuk 2013): the
   SAME per-ion `B_s` as above, coupled by the electric field that zero
   current imposes — the permeate is electroneutral **by construction, with
