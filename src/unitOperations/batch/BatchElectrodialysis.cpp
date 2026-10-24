@@ -42,6 +42,7 @@ Description
 #include "streams/Composition.H"
 #include "thermo/ThermoAnnounce.H"
 #include "thermo/ThermoPackage.H"
+#include "thermo/transport/StokesEinstein.H"
 #include "thermo/electrochem/EDStack.H"
 #include "thermo/electrochem/EDStackRegistry.H"
 #include "thermo/electrolyte/AqueousActivity.H"
@@ -316,14 +317,13 @@ void BatchElectrodialysis::initialise(const DictPtr&       unitDict,
             " to compute and no tank for the salt to go to.");
 
     // ---- the solvent, resolved ONCE (the rig is isothermal) ---------------
-    sVector xSolvent(Nc, 0.0);
-    xSolvent[iWater_] = 1.0;
-    if (thermo.hasLiquidViscosity())
+    //  ONE home for the factor since C148 (thermo/transport/StokesEinstein.H),
+    //  the same arithmetic in the same order.
+    const stokesEinstein::Factor se = stokesEinstein::factorFor(thermo, iWater_, state_.T);
+    if (se.priced)
     {
-        const scalar mu    = thermo.viscosityLiquid(state_.T, xSolvent);
-        const scalar muRef = thermo.viscosityLiquid(298.15, xSolvent);
-        nu_       = mu / edCell::RHO_CARRIER;
-        seFactor_ = (state_.T / 298.15) * (muRef / mu);
+        nu_       = se.mu / edCell::RHO_CARRIER;
+        seFactor_ = se.value;
         muPriced_ = true;
     }
 

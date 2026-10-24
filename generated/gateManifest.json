@@ -1255,6 +1255,11 @@
       "exit": 0,
       "claim": "check_constant_rejection: OK -- transport constantRejection (c_p = (1 - R) c_m, Geraldes & Afonso 2007 Eq. 1): the witness's observed rejections sit below the declared intrinsic ones; with no film both salts give ONE ln(Q/Q0) to 2e-4, converging first-order; mismatched per-ION R's on membrane21's feed are REFUSED as a charged permeate while equal ones run; the flat cell and the batch diafilter take the law (the diafilter's R = R_int to 1e-5 and its washout = exp(-(1 - R) N) to 1e-4); 7 refusals fire.  NOT checked: that any constant R describes a real membrane (none here is measured against a wall).",
       "seconds": 2.8
+    },
+    "check_ion_diffusivity_temperature": {
+      "exit": 0,
+      "claim": "check_ion_diffusivity_temperature: OK -- the ion D0 (25 C) is corrected by Stokes-Einstein on the package's own liquid viscosity in the membrane film (inlet k moves by exactly f^0.75), the DSPM-DE pore (its trace Na+ moves) and the ED stack (its KPI = the factor recomputed from the water Vogel record); with no viscosity model the run announces an uncorrected D0; at 298.15 K the model moves no number bit for bit.  NOT checked: Stokes-Einstein's validity for an ion, a neutral solute's D, or the massTransfer block's own viscosity against the package's.",
+      "seconds": 0.4
     }
   }
 }

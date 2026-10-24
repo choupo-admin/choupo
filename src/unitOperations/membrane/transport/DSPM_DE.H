@@ -56,6 +56,10 @@ Description
         j_i = -K_d,i D_i dc_i/dx
               - (z_i c_i D_i K_d,i F / RT) dpsi/dx
               + K_c,i c_i J_v                                       (1)
+        D_i the species record's 25 C D0 corrected to T by Stokes-Einstein,
+        D0 (T/298.15)(mu(298.15)/mu(T)) on the package's own liquid
+        viscosity (thermo/transport/StokesEinstein.H; 1 and announced when
+        no liquid-viscosity model is declared -- DEV.md 4c C148)
 
       interfacial PARTITION at each face (feed|pore and pore|permeate),
       the three exclusion mechanisms multiplied (Bowen-Welfoot Eq. 7):
