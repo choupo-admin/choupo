@@ -47,7 +47,7 @@ Description
                 name      base;
                 type      poreTransport;
                 T         298.15 K;
-                membrane  NFX_nanofiltran01;        // a record with poreModel {}
+                membrane  NanoFiltranExample;       // a record with poreModel {}
                 transport DSPM-DE;                  // the only law that takes J_v
                 transportParameters
                 {
@@ -97,7 +97,7 @@ Description
     count the pore was solved on (the abscissa of a grid study).  Every
     diagnostic publishes its unit (diagnosticUnit).
 
-    PUBLISHED TABLES (DEV.md 4c C147), named so a `system/plotDict` draws
+    PUBLISHED TABLES (DEV.md 4c C147), named so a `system/postProcessDict` draws
     them: `points`, one row per J_v point carrying the per-point diagnostics
     as columns (c_bulk_/c_wall_/c_perm_<ion>_molm3, Rreal_/Robs_<ion>, and
     dPsi_m_V, poreNewton, poreNodes where a pore was solved); and `pore`,

@@ -337,7 +337,7 @@ int PoreTransportBench::run(const DictPtr& dict,
     //  porosityOverThickness), each ion species' concentration (summed over
     //  the salts that carry it) and the potential in volts on the same
     //  reference as dPsi_m_V.  It is published to the run whether or not the
-    //  case asks for a file (DEV.md 4c C147: a `system/plotDict` names it);
+    //  case asks for a file (DEV.md 4c C147: a `system/postProcessDict` names it);
     //  `profile <file>.csv;` writes the same rows to disk, a props case's
     //  CSV being a run output.
     if (!profiles.empty())

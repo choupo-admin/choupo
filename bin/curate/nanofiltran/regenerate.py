@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 """Regenerate NanoFiltran's reference numbers for the code-to-code golden
-case tutorials/props/membrane/nanofiltran01_dspmde_reference.
+case tutorials/props/membrane/nanofiltran_geraldesAlves2008 (its part A, the former
+nanofiltran01_dspmde_reference; one case per paper since DEV.md 4c C147).
 
     bin/curate/nanofiltran/regenerate.py            # run, print, compare
     bin/curate/nanofiltran/regenerate.py --write    # also (re)write the

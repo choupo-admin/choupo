@@ -7,7 +7,7 @@
 |        |     O ptimization  |                                               |
 \*-----------------------------------------------------------------------------*/
 /*---------------------------------------------------------------------------*\
-  plotDict -- THE NANOFILTRAN PAPER'S TABLES AND FIGURES, GENERATED FROM THE
+  postProcessDict -- THE NANOFILTRAN PAPER'S TABLES AND FIGURES, GENERATED FROM THE
   RUN (DEV.md 4c C147; Vitor: "Um pos processamento nao gera os graficos e
   tabelas que sao precisos para este artigo?").
 
@@ -16,7 +16,7 @@
   table (`op <op>; table points|pore; x <col>; y <col>;`) -- and case-local
   REFERENCE data under constant/ with its citation.  The engine refuses a
   name it cannot resolve, holds every unit the source publishes to the unit
-  declared here, and writes postProcessing/plotDict/<name>.csv (+ <name>.json)
+  declared here, and writes postProcessing/postProcessDict/<name>.csv (+ <name>.json)
   on every run; the GUI's Plot workspace draws them under "Post-processing"
   and computes nothing -- a difference column is the engine's.  The grammar:
   docs/design/a-post-processing-dictionary.md.
@@ -112,15 +112,15 @@ plots
         yAxis   { label "concentration in the pore"; unit "mol/m3"; scale log; }
         series
         (
-            { name choupoNa;     label "Na+ Choupo";                       op N350; table pore; x x_um; y c_Na_molm3; style lines; }
-            { name correctedNa;  label "Na+ NanoFiltran, corrected";        reference nfFig4; select { variant corrected; }  x x_um; y c_Na_molm3; }
-            { name asReceivedNa; label "Na+ NanoFiltran as received";       reference nfFig4; select { variant asReceived; } x x_um; y c_Na_molm3; }
-            { name choupoMg;     label "Mg2+ Choupo";                       op N350; table pore; x x_um; y c_Mg_molm3; style lines; }
-            { name correctedMg;  label "Mg2+ NanoFiltran, corrected";        reference nfFig4; select { variant corrected; }  x x_um; y c_Mg_molm3; }
-            { name asReceivedMg; label "Mg2+ NanoFiltran as received";       reference nfFig4; select { variant asReceived; } x x_um; y c_Mg_molm3; }
-            { name choupoCl;     label "Cl- Choupo";                       op N350; table pore; x x_um; y c_Cl_molm3; style lines; }
-            { name correctedCl;  label "Cl- NanoFiltran, corrected";        reference nfFig4; select { variant corrected; }  x x_um; y c_Cl_molm3; }
-            { name asReceivedCl; label "Cl- NanoFiltran as received";       reference nfFig4; select { variant asReceived; } x x_um; y c_Cl_molm3; }
+            { name choupoNa;     label "Na+ Choupo";                       op N350; table pore; x x_um; y c_Na_molm3; style lines; group Na; }
+            { name correctedNa;  label "Na+ NanoFiltran, corrected";        reference nfFig4; select { variant corrected; }  x x_um; y c_Na_molm3; group Na; }
+            { name asReceivedNa; label "Na+ NanoFiltran as received";       reference nfFig4; select { variant asReceived; } x x_um; y c_Na_molm3; style markers; group Na; }
+            { name choupoMg;     label "Mg2+ Choupo";                       op N350; table pore; x x_um; y c_Mg_molm3; style lines; group Mg; }
+            { name correctedMg;  label "Mg2+ NanoFiltran, corrected";        reference nfFig4; select { variant corrected; }  x x_um; y c_Mg_molm3; group Mg; }
+            { name asReceivedMg; label "Mg2+ NanoFiltran as received";       reference nfFig4; select { variant asReceived; } x x_um; y c_Mg_molm3; style markers; group Mg; }
+            { name choupoCl;     label "Cl- Choupo";                       op N350; table pore; x x_um; y c_Cl_molm3; style lines; group Cl; }
+            { name correctedCl;  label "Cl- NanoFiltran, corrected";        reference nfFig4; select { variant corrected; }  x x_um; y c_Cl_molm3; group Cl; }
+            { name asReceivedCl; label "Cl- NanoFiltran as received";       reference nfFig4; select { variant asReceived; } x x_um; y c_Cl_molm3; style markers; group Cl; }
         );
     }
     {
@@ -142,12 +142,12 @@ plots
         yAxis   { label "observed rejection R_obs = 1 - c_p/c_b"; unit "-"; scale linear; }
         series
         (
-            { name expNa;    label "Na+ experiment (Bowen & Mohammad)"; reference bmFig3; select { dye_molm3 4; ion Na; } x cCl_molm3; y Robs_exp; yError dRobs; style markers; }
-            { name choupoNa; label "Na+ Choupo";                         ops ( dye4_p1 dye4_p2 dye4_p3 dye4_p4 dye4_p5 ); x c_bulk_Cl_p1; y Robs_Na_p1; style linesMarkers; }
-            { name nfNa;     label "Na+ NanoFiltran (the paper's settings)"; reference nfFig3; select { dye_molm3 4; } x cCl_molm3; y Robs_Na; style lines; }
-            { name expCl;    label "Cl- experiment (Bowen & Mohammad)"; reference bmFig3; select { dye_molm3 4; ion Cl; } x cCl_molm3; y Robs_exp; yError dRobs; style markers; }
-            { name choupoCl; label "Cl- Choupo";                         ops ( dye4_p1 dye4_p2 dye4_p3 dye4_p4 dye4_p5 ); x c_bulk_Cl_p1; y Robs_Cl_p1; style linesMarkers; }
-            { name nfCl;     label "Cl- NanoFiltran (the paper's settings)"; reference nfFig3; select { dye_molm3 4; } x cCl_molm3; y Robs_Cl; style lines; }
+            { name expNa;    label "Na+ experiment (Bowen & Mohammad)"; reference bmFig3; select { dye_molm3 4; ion Na; } x cCl_molm3; y Robs_exp; yError dRobs; style markers; group Na; }
+            { name choupoNa; label "Na+ Choupo";                         ops ( dye4_p1 dye4_p2 dye4_p3 dye4_p4 dye4_p5 ); x c_bulk_Cl_p1; y Robs_Na_p1; style linesMarkers; group Na; }
+            { name nfNa;     label "Na+ NanoFiltran (the paper's settings)"; reference nfFig3; select { dye_molm3 4; } x cCl_molm3; y Robs_Na; style lines; group Na; }
+            { name expCl;    label "Cl- experiment (Bowen & Mohammad)"; reference bmFig3; select { dye_molm3 4; ion Cl; } x cCl_molm3; y Robs_exp; yError dRobs; style markers; group Cl; }
+            { name choupoCl; label "Cl- Choupo";                         ops ( dye4_p1 dye4_p2 dye4_p3 dye4_p4 dye4_p5 ); x c_bulk_Cl_p1; y Robs_Cl_p1; style linesMarkers; group Cl; }
+            { name nfCl;     label "Cl- NanoFiltran (the paper's settings)"; reference nfFig3; select { dye_molm3 4; } x cCl_molm3; y Robs_Cl; style lines; group Cl; }
         );
     }
     {
@@ -157,12 +157,12 @@ plots
         yAxis   { label "observed rejection R_obs = 1 - c_p/c_b"; unit "-"; scale linear; }
         series
         (
-            { name expNa;    label "Na+ experiment (Bowen & Mohammad)"; reference bmFig3; select { dye_molm3 37; ion Na; } x cCl_molm3; y Robs_exp; yError dRobs; style markers; }
-            { name choupoNa; label "Na+ Choupo";                         ops ( dye37_p1 dye37_p2 dye37_p3 dye37_p4 dye37_p5 ); x c_bulk_Cl_p1; y Robs_Na_p1; style linesMarkers; }
-            { name nfNa;     label "Na+ NanoFiltran (the paper's settings)"; reference nfFig3; select { dye_molm3 37; } x cCl_molm3; y Robs_Na; style lines; }
-            { name expCl;    label "Cl- experiment (Bowen & Mohammad)"; reference bmFig3; select { dye_molm3 37; ion Cl; } x cCl_molm3; y Robs_exp; yError dRobs; style markers; }
-            { name choupoCl; label "Cl- Choupo";                         ops ( dye37_p1 dye37_p2 dye37_p3 dye37_p4 dye37_p5 ); x c_bulk_Cl_p1; y Robs_Cl_p1; style linesMarkers; }
-            { name nfCl;     label "Cl- NanoFiltran (the paper's settings)"; reference nfFig3; select { dye_molm3 37; } x cCl_molm3; y Robs_Cl; style lines; }
+            { name expNa;    label "Na+ experiment (Bowen & Mohammad)"; reference bmFig3; select { dye_molm3 37; ion Na; } x cCl_molm3; y Robs_exp; yError dRobs; style markers; group Na; }
+            { name choupoNa; label "Na+ Choupo";                         ops ( dye37_p1 dye37_p2 dye37_p3 dye37_p4 dye37_p5 ); x c_bulk_Cl_p1; y Robs_Na_p1; style linesMarkers; group Na; }
+            { name nfNa;     label "Na+ NanoFiltran (the paper's settings)"; reference nfFig3; select { dye_molm3 37; } x cCl_molm3; y Robs_Na; style lines; group Na; }
+            { name expCl;    label "Cl- experiment (Bowen & Mohammad)"; reference bmFig3; select { dye_molm3 37; ion Cl; } x cCl_molm3; y Robs_exp; yError dRobs; style markers; group Cl; }
+            { name choupoCl; label "Cl- Choupo";                         ops ( dye37_p1 dye37_p2 dye37_p3 dye37_p4 dye37_p5 ); x c_bulk_Cl_p1; y Robs_Cl_p1; style linesMarkers; group Cl; }
+            { name nfCl;     label "Cl- NanoFiltran (the paper's settings)"; reference nfFig3; select { dye_molm3 37; } x cCl_molm3; y Robs_Cl; style lines; group Cl; }
         );
     }
     {
@@ -172,12 +172,12 @@ plots
         yAxis   { label "observed rejection R_obs"; unit "-"; scale linear; }
         series
         (
-            { name choupoNa; label "Na+ Choupo";      op example_ideal; table points; x Jv_mps; y Robs_Na; style lines; }
-            { name nfNa;     label "Na+ NanoFiltran"; reference nfCode; select { op example_ideal; } x Jv_mps; y Robs_Na; style markers; }
-            { name choupoMg; label "Mg2+ Choupo";      op example_ideal; table points; x Jv_mps; y Robs_Mg; style lines; }
-            { name nfMg;     label "Mg2+ NanoFiltran"; reference nfCode; select { op example_ideal; } x Jv_mps; y Robs_Mg; style markers; }
-            { name choupoCl; label "Cl- Choupo";      op example_ideal; table points; x Jv_mps; y Robs_Cl; style lines; }
-            { name nfCl;     label "Cl- NanoFiltran"; reference nfCode; select { op example_ideal; } x Jv_mps; y Robs_Cl; style markers; }
+            { name choupoNa; label "Na+ Choupo";      op example_ideal; table points; x Jv_mps; y Robs_Na; style lines; group Na; }
+            { name nfNa;     label "Na+ NanoFiltran"; reference nfCode; select { op example_ideal; } x Jv_mps; y Robs_Na; style markers; group Na; }
+            { name choupoMg; label "Mg2+ Choupo";      op example_ideal; table points; x Jv_mps; y Robs_Mg; style lines; group Mg; }
+            { name nfMg;     label "Mg2+ NanoFiltran"; reference nfCode; select { op example_ideal; } x Jv_mps; y Robs_Mg; style markers; group Mg; }
+            { name choupoCl; label "Cl- Choupo";      op example_ideal; table points; x Jv_mps; y Robs_Cl; style lines; group Cl; }
+            { name nfCl;     label "Cl- NanoFiltran"; reference nfCode; select { op example_ideal; } x Jv_mps; y Robs_Cl; style markers; group Cl; }
         );
     }
 );

@@ -214,7 +214,10 @@ def solve_paper(Jv, k, D, z, cb, cp, T):
 
 
 def build_props_probe(dst, ions, close_by, dataset_text, policy):
-    shutil.copytree(PROPS_CASE, dst, ignore=shutil.ignore_patterns("log.*", "expected", "reports"))
+    #  without the case's postProcessDict: a probe changes the ions its figures
+    #  name, and those figures are check_postprocessing's (DEV.md 4c C147)
+    shutil.copytree(PROPS_CASE, dst, ignore=shutil.ignore_patterns(
+        "log.*", "expected", "reports", "postProcessDict", "postProcessing"))
     (dst / "constant" / "experimental" / "probe.dat").write_text(dataset_text)
     pd = dst / "system" / "propsDict"
     t = pd.read_text()
@@ -340,7 +343,8 @@ def main():
         # ---------------- (d) the refusals ------------------------------------
         def probe_refusal(label, mutate, must_contain):
             dd = tmp / label
-            shutil.copytree(PROPS_CASE, dd, ignore=shutil.ignore_patterns("log.*", "expected", "reports"))
+            shutil.copytree(PROPS_CASE, dd, ignore=shutil.ignore_patterns(
+                "log.*", "expected", "reports", "postProcessDict", "postProcessing"))
             mutate(dd)
             rc, out = run("choupoProps", dd)
             missing = [m for m in must_contain if m not in out]

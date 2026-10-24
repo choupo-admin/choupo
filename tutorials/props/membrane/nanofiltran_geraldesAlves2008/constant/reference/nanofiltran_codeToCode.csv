@@ -1,0 +1,23 @@
+# NanoFiltran on its own matrix (V. Geraldes, A.M. Brites Alves, J. Membr. Sci. 321 (2008) 172-182, doi:10.1016/j.memsci.2008.04.054): the permeate of every ion,
+#   Richardson-extrapolated from ND 102 and 204 -- the code-to-code reference of part A,
+#   the SAME numbers the case's anchor rows carry.  One row per op and J_v point; an ion
+#   the op's feed does not carry is empty.  c mol/m3, J_v m/s, R_obs = 1 - c_p/c_b.
+# WRITTEN by bin/curate/nanofiltran/export_case.py from bin/curate/nanofiltran/reference.tsv
+#   -- DO NOT EDIT; rerun the exporter.
+# LICENCE: the paper's numbers here are FACTS, cited above (numbers, never the paper's
+#   text or figures); the paper and its figures are the publisher's copyright and are not in
+#   the tree.  NanoFiltran's own numbers are its output (MIT; bin/curate/nanofiltran/README.md).
+op,point,Jv_mps,cperm_Na_molm3,cperm_Mg_molm3,cperm_Cl_molm3,cperm_SO4_molm3,Robs_Na,Robs_Mg,Robs_Cl,Robs_SO4
+example_ideal,1,1e-06,10.954345406,14.4481020122,39.8505494304,,-0.0954345406029,0.277594899392,0.202989011393,
+example_ideal,2,5e-06,9.55059873814,9.62217413089,28.794947,,0.0449401261864,0.518891293456,0.42410106,
+example_ideal,3,1e-05,6.63111140239,8.760691414,24.1524942306,,0.336888859761,0.5619654293,0.516950115389,
+example_ideal,4,2e-05,2.68519973668,8.56159531769,19.808390372,,0.731480026332,0.571920234116,0.60383219256,
+example_ideal,5,5e-05,0.0465007639157,8.57611593292,17.1987326296,,0.995349923608,0.571194203354,0.656025347409,
+example_noBorn,1,5e-05,8.21406380579,10.3444238735,28.9029115533,,0.178593619421,0.482778806326,0.421941768933,
+example_davies,1,5e-05,7.2651557508,9.7006403463,26.6664364432,,0.27348442492,0.514967982685,0.466671271136,
+NaCl_ideal,1,1e-05,3.12820884729,,3.12820884729,,0.687179115271,,0.687179115271,
+NaCl_ideal,2,5e-05,0.898632962753,,0.898632962753,,0.910136703725,,0.910136703725,
+Na2SO4_ideal,1,1e-05,0.0337217135189,,,0.0168608567596,0.998313914324,,,0.998313914324
+Na2SO4_ideal,2,5e-05,0.0139881628781,,,0.00699408143916,0.999300591856,,,0.999300591856
+mixed_polarised,1,1e-05,12.9922667885,,11.8340070346,0.579129876403,0.566924440384,,-0.183400703457,0.94208701236
+mixed_polarised,2,3e-05,22.1806889109,,10.4120783685,5.88430527111,0.260643702971,,-0.0412078368455,0.41156947289

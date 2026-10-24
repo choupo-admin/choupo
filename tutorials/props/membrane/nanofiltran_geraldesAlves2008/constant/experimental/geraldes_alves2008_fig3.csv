@@ -10,7 +10,7 @@
 #   under the same marker (empty where the line does not reach it).  dcCl/dRobs are READING
 #   errors only: no measurement uncertainty is stated by either paper.
 # image_sha256 c73ba0b2517c22daec568d504e7eb98ff5ee29cf50b452623b8bb297709b4f65
-# digitiser_sha256 ceb1ed15693e0808b60c4242e5800cc0b7511afdf7ff9419e5b07a72585ecda2
+# digitiser_sha256 fcef1a70788b01c5091d3e1bbb695b6e6eb2691f8bbccfab5661479b96ac2854
 # calibration: x = (px - 86.00)/4.708333 ; y = (147.50 - py)/136.000000  (px from the image top-left)
 series,ion,dye_molm3,marker,cCl_molm3,dcCl_molm3,Robs_exp,dRobs,Robs_NanoFiltran_line,dRobs_line,line_reading,px_x,px_y,bbox
 Na_dye4,Na,4,filled circle,5.097,0.319,0.6434,0.0147,0.6188,0.0221,end,110.0,60.0,9x9

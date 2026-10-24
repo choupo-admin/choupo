@@ -1,0 +1,20 @@
+# Bowen & Mohammad's MEASURED observed rejections on CA30 (AIChE J. 44 (1998) 1799), as
+#   Fig. 3 of V. Geraldes, A.M. Brites Alves, J. Membr. Sci. 321 (2008) 172-182, doi:10.1016/j.memsci.2008.04.054 plots them --
+#   constant/experimental/geraldes_alves2008_fig3.csv RE-KEYED by experiment: one row per
+#   measurement at its op's feed c_Cl (the mean of its Na+ and Cl- markers' readings), the
+#   values and reading errors unchanged.  R_obs dimensionless, c in mol/m3.
+# WRITTEN by bin/curate/nanofiltran/export_case.py -- DO NOT EDIT; rerun the exporter.
+# LICENCE: the paper's numbers here are FACTS, cited above (numbers, never the paper's
+#   text or figures); the paper and its figures are the publisher's copyright and are not in
+#   the tree.  NanoFiltran's own numbers are its output (MIT; bin/curate/nanofiltran/README.md).
+op,dye_molm3,cCl_molm3,Robs_Na,dRobs_Na,Robs_Cl,dRobs_Cl
+dye4_p1,4,5.097,0.6434,0.0147,-0.1838,0.0184
+dye4_p2,4,10.46,0.4963,0.0147,-0.0221,0.011
+dye4_p3,4,25.752,0.3382,0.011,0.0551,0.0147
+dye4_p4,4,52.46,0.2574,0.011,0.0993,0.0147
+dye4_p5,4,103.009,0.1875,0.0147,0.1029,0.0184
+dye37_p1,37,4.46,0.8713,0.0147,-2.0919,0.011
+dye37_p2,37,9.239,0.8125,0.0147,-1.3419,0.011
+dye37_p3,37,21.929,0.6985,0.011,-0.7684,0.011
+dye37_p4,37,42.903,0.5846,0.0147,-0.4816,0.011
+dye37_p5,37,87.292,0.4559,0.011,-0.2353,0.0147

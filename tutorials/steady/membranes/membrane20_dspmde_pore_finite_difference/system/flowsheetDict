@@ -34,7 +34,7 @@
   (Geraldes & Alves, "Computer program for simulation of mass transport in
   nanofiltration membranes", J. Membr. Sci. 321 (2008) 172-182) is the
   reference it is compared with, in tutorials/props/membrane/
-  nanofiltran01_dspmde_reference.
+  nanofiltran_geraldesAlves2008 (the paper's one case).
 
   WHAT THE PAIR TEACHES: THE WALL MUST BE CLOSED WITH THE PERMEATE THE
   MEMBRANE MAKES.  The film's interface balance (Geraldes & Afonso, J.

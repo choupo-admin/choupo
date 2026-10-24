@@ -3957,7 +3957,7 @@ PYEOF
     rm -f /tmp/nanofiltranpaper.$$
 
     # POST-PROCESSING gate (2026-10-24, DEV.md 4c C147).  A case's
-    # system/plotDict declares plots and tables over what the run PUBLISHES;
+    # system/postProcessDict declares plots and tables over what the run PUBLISHES;
     # on the NanoFiltran paper's one case every declared item is produced,
     # every written number is recomputed from the source the dict names
     # (this gate's own reading of the dict), the tables meet the golden's

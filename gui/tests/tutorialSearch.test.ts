@@ -194,9 +194,9 @@ describe("every membrane tutorial is reachable", () => {
       for (const rel of steadyMembranes) expect(found.has(rel), rel).toBe(true);
     });
 
-  // nanofiltran01 is NOT among them, and that is the corpus, not the search:
-  // it has no README and its description names the DSPM-DE model and the
-  // NanoFiltran program, never the word nanofiltration -- "DSPM" finds it.
+  // the NanoFiltran paper's case is NOT among them, and that is the corpus,
+  // not the search: it has no README and its description names the paper
+  // and the NanoFiltran program, never the word nanofiltration.
   it.each(["nanofiltration", "nanofiltração", "NF"])("'%s' finds the NF cases", (q) => {
     const found = searchTutorials(q, TUTORIALS).map((h) => h.entry.name);
     expect(found).toContain("steady/membranes/membrane02_NF_sugar");

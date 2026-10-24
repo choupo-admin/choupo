@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Gate: the post-processing dictionary (`system/plotDict`) -- every declared
+"""Gate: the post-processing dictionary (`system/postProcessDict`) -- every declared
 plot and table is produced, every number it writes is the number its source
 published, and every name it cannot resolve is refused by name.
 
@@ -8,12 +8,14 @@ published, and every name it cannot resolve is refused by name.
 WHY THIS EXISTS (2026-10-24, DEV.md 4c C147).  Vitor asked for "um dicionario
 onde se pudessem pedir plots ... pertinentes para pos processamento", and for
 the NanoFiltran paper "um caso unico ... com um pos-processamento para gerar os
-plots adequados".  The engine now reads a case's system/plotDict
-(src/postProcessing/plotDict/PlotDict.cpp), writes
-postProcessing/plotDict/<name>.csv + <name>.json, and the GUI draws them --
+plots adequados".  The engine now reads a case's system/postProcessDict
+(src/postProcessing/postProcessDict/PostProcessDict.cpp), writes
+postProcessing/postProcessDict/<name>.csv + <name>.json, and the GUI draws them --
 computing nothing.  A plot is a CLAIM about published numbers, so this gate
-holds the claim, on the witness tutorials/props/membrane/nanofiltran_geraldesAlves2008
-(the one case of the NanoFiltran paper; parts A, B, C).
+holds the claim, on two witnesses: tutorials/props/membrane/nanofiltran_geraldesAlves2008
+(the one case of the NanoFiltran paper; parts A, B, C) for every arm, and
+polarisation01_geraldes_afonso_table1 (Geraldes & Afonso 2007; its `rows` table)
+for arms (b) and (c).
 
 THE ARMS.
   (a) THE REFERENCES ARE THEIR SOURCES'.  The case's constant/reference/ files
@@ -21,10 +23,10 @@ THE ARMS.
       fig4_profiles.tsv, reference.tsv and the digitised Fig. 3 CSV (pure
       Python), and no other file sits there.
   (b) EVERY DECLARED ITEM IS PRODUCED, AND NOTHING ELSE.  Run in a copy, each
-      plot and table the plotDict names has its CSV and its JSON sidecar, the
+      plot and table the postProcessDict names has its CSV and its JSON sidecar, the
       result JSON's `postProcessing` block lists exactly those items in that
       order, and the sidecar equals the block's entry.
-  (c) EVERY CELL IS ITS SOURCE'S.  This gate parses the plotDict ITSELF and
+  (c) EVERY CELL IS ITS SOURCE'S.  This gate parses the postProcessDict ITSELF and
       recomputes every point of every series and every cell of every table
       from the source the dict names -- an operation's diagnostics in the
       result JSON, its `points` table from those diagnostics and its propsDict
@@ -43,9 +45,9 @@ THE ARMS.
       name; a reference outside constant/; a non-positive value on a log axis
       -- each refuses, exit non-zero, naming the culprit and what IS there.
   (f) A DERIVATIVE VIEW DOES NOT OUTLIVE ITS DECLARATION.  A stale file
-      planted in postProcessing/plotDict/ is gone after a run (the view is
+      planted in postProcessing/postProcessDict/ is gone after a run (the view is
       regenerated whole), and the directory is removed when the case declares
-      no plotDict.
+      no postProcessDict.
 
 WHAT THIS GATE DOES NOT CHECK, said plainly: that a plot is the RIGHT plot for
 the paper (that is the case author's claim, read by a human); the GUI's drawing
@@ -55,13 +57,13 @@ the agreement of Choupo's interior pore profile with NanoFiltran's node by node
 (the two grids differ; the faces are check_nanofiltran_paper's arm (c)).
 
 BY-HAND SABOTAGES (2026-10-24), each restored and the engine rebuilt:
-  S1  PlotDict.cpp's difference written b - a  -> FAILED (c) on every difference
+  S1  PostProcessDict.cpp's difference written b - a  -> FAILED (c) on every difference
       column and row (and the golden's post-processing csv rows).
   S2  the unknown-diagnostic refusal disarmed (the lookup then reads past the
       map)  -> FAILED (e) "unknown diagnostic" ACCEPTED, exit 0 -- and ONLY
-      (e): the shipped plotDict names nothing unpublished, so no arm that
+      (e): the shipped postProcessDict names nothing unpublished, so no arm that
       reads the shipped dict could have seen it.  A refusal needs a probe.
-  S3  the remove_all of postProcessing/plotDict dropped  -> FAILED (f).
+  S3  the remove_all of postProcessing/postProcessDict dropped  -> FAILED (f).
   S4  one cell of constant/reference/nanofiltran_stiff.csv hand-edited
       -> FAILED (a), and (c) did NOT (it recomputes from the file as it
       stands) -- which is why (a) exists.
@@ -85,6 +87,9 @@ import regenerate_paper as rp  # noqa: E402
 
 PROPS = ROOT / "choupoProps"
 CASE = paper_case.CASE
+#  Every case that declares a postProcessDict is a witness of arms (b) and (c);
+#  the NanoFiltran paper's case also of (a), (d), (e) and (f).
+WITNESSES = [CASE, ROOT / "tutorials/props/membrane/polarisation01_geraldes_afonso_table1"]
 TOL = 1e-12
 fails = []
 
@@ -101,13 +106,13 @@ def run(case_dir):
     return r.returncode, out, res
 
 
-def copy_full(dst):
-    shutil.copytree(CASE, dst, ignore=shutil.ignore_patterns("postProcessing", "pore_*.csv"))
+def copy_full(dst, src=CASE):
+    shutil.copytree(src, dst, ignore=shutil.ignore_patterns("postProcessing", "pore_*.csv"))
     return Path(dst)
 
 
 # ---------------------------------------------------------------- a dict parser
-#  The plotDict grammar is the dict grammar: words, "strings", { }, ( ), ;.  A
+#  The postProcessDict grammar is the dict grammar: words, "strings", { }, ( ), ;.  A
 #  reader of its own, so this gate does not trust the engine's reading of it.
 def tokens(text):
     text = re.sub(r"/\*.*?\*/", " ", text, flags=re.S)
@@ -204,7 +209,11 @@ class Sources:
         self.ops = {o["name"]: o for o in props["operations"]}
 
     def ref_rows(self, name):
-        return read_csv_rows(CASE / self.refs[name]["file"])
+        return read_csv_rows(self.dir / self.refs[name]["file"])
+
+    def _charge(self, ion):
+        txt = (self.dir / "constant" / "species" / (ion + ".dat")).read_text()
+        return float(re.search(r"^charge\s+([-+]?\d+);", txt, re.M).group(1))
 
     def op_table(self, op, table):
         """The op's published table, rebuilt from what else the run published."""
@@ -227,6 +236,35 @@ class Sources:
                         r[base] = v
                 rows.append(r)
             return rows
+        if table == "rows":
+            #  polarisationIndex: the measured rows from the op's own dataset,
+            #  the closeBy ion by electroneutrality, the wall from Gamma.
+            o = self.ops[op]
+            dsp = self.dir / o["dataset"]
+            ds = read_dict(dsp if dsp.is_file() else dsp.with_name(dsp.name + ".dat"))
+            cols = [c["name"] for c in ds["columns"]]
+            flat = [float(v) for v in ds["data"]]
+            ions, close_by = o["ions"], o.get("closeBy")
+            d = self.diag[op]
+            rows = []
+            for r in range(len(flat) // len(cols)):
+                v = dict(zip(cols, flat[r * len(cols):(r + 1) * len(cols)]))
+                cb = {i: v.get("C_b_" + i) for i in ions}
+                cp = {i: v.get("C_p_" + i) for i in ions}
+                if close_by:
+                    z = self._charge(close_by)
+                    cb[close_by] = -sum(self._charge(i) * cb[i] for i in ions if i != close_by) / z
+                    cp[close_by] = -sum(self._charge(i) * cp[i] for i in ions if i != close_by) / z
+                row = {"row": float(r + 1), "J_v_mps": v["J_v"], "xi_Vpm": d["xi_r%d" % (r + 1)]}
+                for i in ions:
+                    g = d["Gamma_%s_r%d" % (i, r + 1)]
+                    cm = cb[i] * (1.0 + g)
+                    row.update({"C_b_%s_molm3" % i: cb[i], "C_p_%s_molm3" % i: cp[i],
+                                "C_m_%s_molm3" % i: cm, "Gamma_" + i: g,
+                                "k_%s_mps" % i: d["k_" + i],
+                                "Robs_" + i: 1.0 - cp[i] / cb[i], "Rreal_" + i: 1.0 - cp[i] / cm})
+                rows.append(row)
+            return rows
         raise KeyError("no rule to rebuild table %s" % table)
 
     def series(self, s, earlier):
@@ -236,7 +274,9 @@ class Sources:
                     for o in s["ops"]]
         if "op" in s:
             rows = [r for r in self.op_table(s["op"], s["table"]) if matches(s.get("select"), r)]
-            return [(r[s["x"]], r[s["y"]], TOL * abs(r[s["y"]])) for r in rows]
+            #  a column REBUILT here from 12-figure diagnostics carries their
+            #  rounding: 1e-11 absolute beside the relative bound
+            return [(r[s["x"]], r[s["y"]], TOL * abs(r[s["y"]]) + 1e-11) for r in rows]
         if "reference" in s:
             pts = []
             for r in self.ref_rows(s["reference"]):
@@ -282,13 +322,13 @@ def arm_a():
 
 
 # ---------------------------------------------------------------- (b), (c), (d)
-def arm_bcd(tmp):
-    case = copy_full(tmp / "case")
+def arm_bcd(tmp, witness=CASE):
+    case = copy_full(tmp / witness.name, witness)
     rc, out, res = run(case)
     if rc != 0 or res is None:
         fails.append("(b) the case did not run (exit %d):\n%s" % (rc, out[-1500:]))
         return None
-    pdict = read_dict(CASE / "system" / "plotDict")
+    pdict = read_dict(witness / "system" / "postProcessDict")
     declared = [p["name"] for p in pdict.get("plots", [])] + [t["name"] for t in pdict.get("tables", [])]
     block = res.get("postProcessing")
     if not block:
@@ -296,12 +336,12 @@ def arm_bcd(tmp):
         return None
     listed = [it["name"] for it in block["items"]]
     if listed != declared:
-        fails.append("(b) the block lists %s, the plotDict declares %s" % (listed, declared))
-    outdir = case / "postProcessing" / "plotDict"
+        fails.append("(b) the block lists %s, the postProcessDict declares %s" % (listed, declared))
+    outdir = case / "postProcessing" / "postProcessDict"
     files = sorted(p.name for p in outdir.iterdir())
     want = sorted([n + ".csv" for n in declared] + [n + ".json" for n in declared])
     if files != want:
-        fails.append("(b) postProcessing/plotDict holds %s, the plotDict declares %s" % (files, want))
+        fails.append("(b) postProcessing/postProcessDict holds %s, the postProcessDict declares %s" % (files, want))
     for it in block["items"]:
         side = outdir / (it["name"] + ".json")
         if side.is_file() and json.loads(side.read_text()) != it:
@@ -377,6 +417,9 @@ def arm_bcd(tmp):
                         fails.append("(c) table %s row %s column %s: %r written, %r published"
                                      % (t["name"], w["name"], c, row and row[c], v[c]))
 
+    if witness != CASE:
+        return len(declared), ncells, 0
+
     # (d) the tables a reader quotes are the golden's anchors
     anc = {}
     for line in (CASE / "expected").read_text().splitlines():
@@ -417,7 +460,7 @@ def arm_bcd(tmp):
 
 # ---------------------------------------------------------------- (e)
 def arm_e(tmp):
-    base = (CASE / "system" / "plotDict").read_text()
+    base = (CASE / "system" / "postProcessDict").read_text()
     sub = lambda old, new, count=1: (lambda t: t.replace(old, new, count))   # noqa: E731
     probes = [
         ("unknown operation", sub("ops ( N10 N20", "ops ( N10x N20"),
@@ -462,7 +505,7 @@ def arm_e(tmp):
         if text == base:
             fails.append("(e) the probe `%s` could not be built (its anchor text moved)" % tag)
             continue
-        (case / "system" / "plotDict").write_text(text)
+        (case / "system" / "postProcessDict").write_text(text)
         rc, out, _ = run(case)
         if rc == 0:
             fails.append("(e) `%s` was ACCEPTED (exit 0)" % tag)
@@ -478,22 +521,22 @@ def arm_e(tmp):
 # ---------------------------------------------------------------- (f)
 def arm_f(tmp):
     case = copy_full(tmp / "stale")
-    stale = case / "postProcessing" / "plotDict" / "old_plot.csv"
+    stale = case / "postProcessing" / "postProcessDict" / "old_plot.csv"
     stale.parent.mkdir(parents=True)
     stale.write_text("series,x,y,yError\nold,1,2,\n")
     rc, out, _ = run(case)
     if rc != 0:
         fails.append("(f) the stale-file copy did not run (exit %d)" % rc)
     elif stale.exists():
-        fails.append("(f) a stale postProcessing/plotDict/old_plot.csv survived the run")
-    (case / "system" / "plotDict").unlink()
+        fails.append("(f) a stale postProcessing/postProcessDict/old_plot.csv survived the run")
+    (case / "system" / "postProcessDict").unlink()
     rc, out, res = run(case)
     if rc != 0:
-        fails.append("(f) the copy without a plotDict did not run (exit %d)" % rc)
-    elif (case / "postProcessing" / "plotDict").exists():
-        fails.append("(f) postProcessing/plotDict/ outlived the plotDict that declared it")
+        fails.append("(f) the copy without a postProcessDict did not run (exit %d)" % rc)
+    elif (case / "postProcessing" / "postProcessDict").exists():
+        fails.append("(f) postProcessing/postProcessDict/ outlived the postProcessDict that declared it")
     elif res is not None and "postProcessing" in res:
-        fails.append("(f) a run with no plotDict still emits a postProcessing block")
+        fails.append("(f) a run with no postProcessDict still emits a postProcessing block")
 
 
 def main():
@@ -504,6 +547,7 @@ def main():
     with tempfile.TemporaryDirectory(prefix="postprocessing_") as d:
         tmp = Path(d)
         bcd = arm_bcd(tmp)
+        other = [arm_bcd(tmp, w) for w in WITNESSES[1:]]
         fired = arm_e(tmp)
         arm_f(tmp)
     if fails:
@@ -512,15 +556,22 @@ def main():
             print("  " + f)
         return 1
     nitems, ncells, nanch = bcd
+    if any(o is None for o in other):
+        print("check_postprocessing: FAILED")
+        return 1
+    nitems2 = sum(o[0] for o in other)
+    ncells += sum(o[1] for o in other)
     print("check_postprocessing: OK -- the paper case's %d reference files are their sources'"
-          " export; its %d plotDict items are produced (CSV + sidecar = the result block, nothing"
-          " else in postProcessing/plotDict/); %d written numbers recomputed by this gate's own"
-          " reading of the plotDict from the run's diagnostics, the ops' tables, the reference"
-          " files and the differences, to %g; the tables meet %d anchors of the golden; %d"
-          " refusals fire by name; a stale file and an undeclared view are removed.  NOT CHECKED:"
-          " that a plot is the right one for the paper, the GUI's drawing (its own tests), units"
-          " beyond their spelling, the interior pore profile node by node."
-          % (6, nitems, ncells, TOL, nanch, fired))
+          " export; %d postProcessDict items over %d witness cases are produced (CSV + sidecar ="
+          " the result block, nothing else in postProcessing/postProcessDict/); %d written"
+          " numbers recomputed by this gate's own reading of each postProcessDict from the"
+          " run's diagnostics, the ops' published tables (rebuilt from what else the run"
+          " publishes), the reference files and the differences, to %g; the paper's tables"
+          " meet %d anchors of its golden; %d refusals fire by name; a stale file and an"
+          " undeclared view are removed.  NOT CHECKED: that a plot is the right one for the"
+          " paper, the GUI's drawing (its own tests), units beyond their spelling, the"
+          " interior pore profile node by node, the op-table columns no witness draws."
+          % (6, nitems + nitems2, len(WITNESSES), ncells, TOL, nanch, fired))
     return 0
 
 

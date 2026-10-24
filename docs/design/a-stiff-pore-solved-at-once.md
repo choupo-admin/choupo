@@ -279,7 +279,8 @@ J. Membr. Sci. 321 (2008) 172-182, doi:10.1016/j.memsci.2008.04.054) and,
 the same day, leave to vendor it ("O nanofiltran pode ser usado sem
 problema!").  It lives in `bin/curate/nanofiltran/` as received (README
 there: licences, build, the matching rule, the findings), and
-`tutorials/props/membrane/nanofiltran01_dspmde_reference` is the golden case.
+`tutorials/props/membrane/nanofiltran01_dspmde_reference` is the golden case
+(since C147 part A of `nanofiltran_geraldesAlves2008`, the paper's one case: §14).
 CODE-TO-CODE VERIFICATION: one model, two implementations.  Nothing here is
 a measurement.*
 
@@ -1062,7 +1063,8 @@ the publisher's copyright: it is not in the tree, nor are its figures; its
 numbers enter as cited facts -- Table 2 transcribed
 (`bin/curate/nanofiltran/regenerate_paper.py`, `PAPER_TABLE2`) and Fig. 3
 digitised (`bin/curate/digitise_geraldes_alves2008.py` into
-`nanofiltran03_bowen_mohammad_ca30/constant/experimental/geraldes_alves2008_fig3.csv`)
+`nanofiltran03_bowen_mohammad_ca30/constant/experimental/geraldes_alves2008_fig3.csv`,
+since C147 under `nanofiltran_geraldesAlves2008/`)
 -- held by `check_source_licence` (`ACCEPTED_PAPER_FACTS`: each carrier
 cites the paper and says what it carries, and no PDF or image under the
 scanned roots hashes to the paper or its figures).  Two cases, one gate
@@ -1355,3 +1357,18 @@ Choupo shot its SDEM pore once and turned the shot round, CLAUDE.md, and the
 DSPM-DE pore is never shot); a measurement uncertainty for Fig. 3 (neither
 paper states one); the dye's molar mass (`Na3Dye.dat` carries a placeholder
 the grammar requires and nothing reads, said in the record).
+
+## 14. One case for the paper (DEV.md 4c C147, 2026-10-24)
+
+Vítor: "Não multipliques casos!  Faz um caso único!  Com um pós-processamento
+para gerar os plots adequados."  The three cases this record names --
+nanofiltran01 (§9-§12), nanofiltran02 and nanofiltran03 (§13) -- are parts A,
+C and B of `tutorials/props/membrane/nanofiltran_geraldesAlves2008`, every
+anchor and band kept row for row, and its `system/postProcessDict` generates Table 2
+(accounted at N = 350 and over the grid), Fig. 3 (both dye levels, with the
+measurements), Fig. 4 (c_i(x) and ψ(x) against NanoFiltran corrected and as
+received; NanoFiltran's whole profile now sits in
+`bin/curate/nanofiltran/fig4_profiles.tsv`) and the code-to-code table.  The
+sections above keep the old names: they record what was measured when, on the
+cases as they then were.  The post-processing dictionary is its own record:
+[`a-post-processing-dictionary.md`](a-post-processing-dictionary.md).

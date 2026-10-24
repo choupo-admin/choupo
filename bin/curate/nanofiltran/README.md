@@ -32,7 +32,9 @@ problema!"*).
 | `regenerate.py` | builds the program, runs the reference matrix, writes/checks `reference.tsv` |
 | `cases/<op>_p<n>/INPUT.XLS`, `cases/IONS.XLS` | the inputs of every reference run (ND 204 shown; the ND 102 run differs only in that cell) — written by `regenerate.py --write` from `shipped/` by changing value cells only |
 | `reference.tsv` | NanoFiltran's permeate and interface concentrations at ND 102 and 204, their Richardson extrapolation, iterations and final residual, per op / point / ion |
-| `regenerate_paper.py`, `paper.tsv` | the paper's own two comparisons (Table 2 and Fig. 3) run by NanoFiltran, and its Table 2 transcribed -- the reference of nanofiltran02 and nanofiltran03 (section "The paper's own comparisons" below) |
+| `regenerate_paper.py`, `paper.tsv` | the paper's own two comparisons (Table 2 and Fig. 3) run by NanoFiltran, and its Table 2 transcribed -- the reference of the paper case's parts B and C (section "The paper's own comparisons" below) |
+| `fig4_profiles.tsv` | the two N = 350 pore profiles of Fig. 4 node by node (as received; corrected), written by `regenerate_paper.py --write` beside `paper.tsv` |
+| `export_case.py`, `paper_case.py` | the case's `constant/reference/` files exported from the tables here (`--check` holds them), and the one home of which op belongs to which part of the case |
 | `LICENSE-LAPACK.txt` | the LAPACK licence (see below) |
 
 sha256 of the five files as received (held by
@@ -60,7 +62,7 @@ writes `OUTPUT.XLW`.  `regenerate.py` does all of it:
 Without `gfortran` it **refuses** (exit 2) — it never passes on a check it
 could not run.  The golden case does not need it: NanoFiltran's numbers are
 committed (`reference.tsv`, and as anchor rows in
-`tutorials/props/membrane/nanofiltran01_dspmde_reference/expected`), and the
+`tutorials/props/membrane/nanofiltran_geraldesAlves2008/expected`, part A), and the
 gate that holds them reruns Choupo only.  Measured on 2026-10-22 with gfortran
 13.3 (x86-64): 26 runs, a few minutes on four cores.
 
@@ -135,13 +137,18 @@ whose pore A used 60 exactly: then the two programs agree to 1.3e-7).
 ## The paper's own comparisons (DEV.md 4c C145, 2026-10-24)
 
 `regenerate_paper.py` runs NanoFiltran on the two comparisons of its paper
-and writes `paper.tsv`, the reference of
-`tutorials/props/membrane/nanofiltran02_paper_stiff_case` (section 4.2,
-Table 2, Fig. 4) and `nanofiltran03_bowen_mohammad_ca30` (section 4.1,
-Fig. 3: Bowen & Mohammad's measured CA30 rejections).  The paper itself is
+and writes `paper.tsv` (and `fig4_profiles.tsv`), the reference of
+`tutorials/props/membrane/nanofiltran_geraldesAlves2008` -- ONE case for the
+paper since DEV.md 4c C147 (Vitor: "Nao multipliques casos!"): part C is
+section 4.2 (Table 2, Fig. 4), part B section 4.1 (Fig. 3: Bowen &
+Mohammad's measured CA30 rejections), part A the code-to-code matrix of
+`regenerate.py`.  The case's `system/postProcessDict` generates the paper's tables
+and figures from the run, beside NanoFiltran's numbers exported into its
+`constant/reference/` by `export_case.py` (`--check`, held by
+`bin/curate/check_postprocessing.py`).  The paper itself is
 the publisher's and is not here; its Table 2 is transcribed in the script
 (`PAPER_TABLE2`) and its Fig. 3 digitised by
-`bin/curate/digitise_geraldes_alves2008.py` into nanofiltran03's
+`bin/curate/digitise_geraldes_alves2008.py` into the case's
 `constant/experimental/` -- numbers, cited, held by
 `check_source_licence` (`ACCEPTED_PAPER_FACTS`, which also refuses the PDF
 and its figures anywhere in the tree).

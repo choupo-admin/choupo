@@ -22,6 +22,14 @@ dragged after it by the field; Cl- sits BELOW its bulk concentration
 Na +0.310, Cl -0.137; row 10 (dye 37, Cl 87.3) dye +0.273, Na +0.120,
 Cl -0.074.  Re = 26906 against the paper's 26907.
 
+**The figures.** `system/postProcessDict` draws them from the run (the GUI
+opens the Results on them): Gamma of every ion against the feed chloride at
+4 and at 37 mol/m3 of dye (the paper's Fig. 7, open symbols), the rejection
+the cell MEASURES (1 - C_p/C_b, from Table 1) beside the one the membrane
+makes (1 - C_p/C_m, Choupo's wall), and Table 1 row by row with Gamma_i and
+the field.  Every number is the bench's published `rows` table; the paper's
+own Gamma values are not in the tree, so none is drawn as if it were.
+
 **What is measured and what is not.** C_b, C_p and J_v are the table's; Na+
 is derived by electroneutrality as the table's footnote says (`closeBy Na;`).
 Every Gamma is a PREDICTION from those inputs, the ions' D and the

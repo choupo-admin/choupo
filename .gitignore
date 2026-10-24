@@ -112,10 +112,13 @@ tutorials/**/postProcessing/
 # is user-defined in the dict so we match by location.  Recursive **
 # covers sectored plants AND archived tutorials/props/old/.  Experimental
 # datasets that ship with a case (rare) live under constant/experimental/
-# and are whitelisted below.
+# and are whitelisted below -- as is constant/reference/, the REFERENCE data a
+# case's system/postProcessDict sets beside its run (another program's numbers, a
+# published table; DEV.md 4c C147): a case INPUT, never a run output.
 tutorials/**/*.csv
 tutorials/**/balanceTrajectory.meta
 !tutorials/**/constant/experimental/*.csv
+!tutorials/**/constant/reference/*.csv
 # Generated fit / estimate proposals (any nesting depth -- cases live under a
 # sub-class folder since 2026-06-03, e.g. steady/optimisation/<case>/).
 #

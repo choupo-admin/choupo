@@ -1,0 +1,21 @@
+# Table 2 of the NanoFiltran paper at N = 350, accounted for ONE CHANGE AT A TIME --
+#   V. Geraldes, A.M. Brites Alves, J. Membr. Sci. 321 (2008) 172-182, doi:10.1016/j.memsci.2008.04.054.  Each stage is a NanoFiltran run (paper.tsv) adding one
+#   change to the one before: paper = the table as published; asReceived = the program as
+#   published; daviesCorrected = + its Davies constant corrected (ln 10); matchedD = + its
+#   D input matched (Vogel, K_d literals); bornCodata = + its Born constant in CODATA values;
+#   converged = + TOL 1e-4 -> 1e-9; corrected = + grid extrapolated (Richardson, ND 102/204)
+#   -- the code-to-code reference Choupo's anchors carry.  Concentrations mol/m3; dPsi_m_V as
+#   the program prints it (R 8.314, F 96500), dPsi_m_Vcodata the same x 1.000207673574947 (CODATA R, F).
+# WRITTEN by bin/curate/nanofiltran/export_case.py from bin/curate/nanofiltran/paper.tsv
+#   -- DO NOT EDIT; rerun the exporter.
+# LICENCE: the paper's numbers here are FACTS, cited above (numbers, never the paper's
+#   text or figures); the paper and its figures are the publisher's copyright and are not in
+#   the tree.  NanoFiltran's own numbers are its output (MIT; bin/curate/nanofiltran/README.md).
+stage,Na_molm3,Mg_molm3,Cl_molm3,dPsi_m_V,dPsi_m_Vcodata
+paper,0.0483937,8.598782,17.245959,0.149754,0.149785099949
+asReceived,0.048394921895,8.5987693705,17.24593331,0.14975345555,0.149784555385
+daviesCorrected,0.053592288182,8.6310818588,17.315755666,0.14584445309,0.145874741129
+matchedD,0.055212164527,8.6309382001,17.317088228,0.1450250724,0.145055190275
+bornCodata,0.055418190826,8.631750884,17.318919623,0.14492953107,0.144959629104
+converged,0.055417971838,8.6317507019,17.318919376,0.14492955207,0.144959650108
+corrected,0.0554248111132,8.63173259303,17.3188899966,0.14492981971,0.144959917804

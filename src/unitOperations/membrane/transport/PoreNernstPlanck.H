@@ -41,7 +41,7 @@ Description
     excluded co-ion sits orders of magnitude below the counter-ion, and the
     drift and diffusion terms of its flux nearly cancel).  NanoFiltran is
     the REFERENCE this solver is compared with
-    (tutorials/props/membrane/nanofiltran01_dspmde_reference,
+    (tutorials/props/membrane/nanofiltran_geraldesAlves2008, part A;
     bin/curate/check_nanofiltran_reference.py); since C142 (2026-10-24,
     Vitor: "Eu quero que facas um solver melhor!") it is not the method this
     file copies -- the differences below are each measured in

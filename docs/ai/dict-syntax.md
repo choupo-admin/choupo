@@ -930,3 +930,49 @@ reduced network passes the same charge/stoichiometry verification as the
 full one.  Reference: `tutorials/props/electrolyte/pitzer_seawater_verify`;
 gate `check_restricted_network`.  (The old `constant/electrolyte/`
 sidecar is fully retired.)
+
+## Post-processing: `system/postProcessDict` (choupoProps, DEV.md 4c C147)
+
+A case may DECLARE the plots and tables it wants over what the run
+PUBLISHES -- an op's diagnostics, an op's published tables (the
+`poreTransport` bench publishes `points` and `pore`), and case-local
+REFERENCE files under `constant/` with their citation.  The engine refuses
+any name it cannot resolve (listing what IS published), holds every unit the
+source publishes to the declared one, computes differences, and writes
+`postProcessing/postProcessDict/<name>.csv` + `<name>.json` every run; the GUI's
+Plot workspace draws them under "Post-processing".  The GUI computes nothing.
+
+```
+references ( { name nf; file "constant/reference/x.csv"; role reference;   // | experiment
+               citation "..."; units { N "-"; Na_molm3 "mol/m3"; } } );
+plots
+(
+    {
+        name   gridStudy;  title "...";
+        xAxis  { label "N"; unit "-"; scale log; }
+        yAxis  { label "permeate Na+"; unit "mol/m3"; scale linear; }
+        series
+        (
+            { name choupo; label "Choupo"; ops ( N10 N20 N50 ); x poreNodes_p1; y c_perm_Na_p1; }
+            { name paper;  label "Table 2"; reference nf; select { variant paper; } x N; y Na_molm3; style markers; }
+            { name pore;   label "pore";   op N50; table pore; select { point 1; } x x_um; y psi_V; }
+            { name d;      label "Choupo vs paper"; difference ( choupo paper ); relative yes; }
+        );
+    }
+);
+tables
+(
+    { name grid; title "..."; x { label "N"; unit "-"; } columns ( <series> ... ); }       // one row per x
+    { name t2;   title "..."; columns ( { name Na; label "Na+"; unit "mol/m3"; } );         // one row per record
+      rows ( { name paper; label "Table 2"; reference nf; select { variant paper; N 350; } cells { Na Na_molm3; } }
+             { name choupo; label "Choupo"; op N350; cells { Na c_perm_Na_p1; } }
+             { name d; label "Choupo vs Table 2"; difference ( choupo paper ); relative yes; } ); }
+);
+```
+
+A reference file lives under `constant/` (never outside the case); a key
+nothing reads is REFUSED (not warned); a run without a postProcessDict removes a
+stale `postProcessing/postProcessDict/`.  Witness:
+`tutorials/props/membrane/nanofiltran_geraldesAlves2008` (the NanoFiltran
+paper's tables and figures); gate `check_postprocessing`; record
+`docs/design/a-post-processing-dictionary.md`.

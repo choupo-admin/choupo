@@ -105,8 +105,11 @@ const CASE_FILES = import.meta.glob(
     // root as a run output -- so a stale `txy.csv` from one machine's native
     // run would be drawn as this run's answer, even by a run that wrote none.
     // (`trajectory.csv` was the one name excluded before; the rule covers it.)
-    "!../../../tutorials/**/!(experimental)/*.csv",
+    //  `constant/reference/*.csv` is the same kind of INPUT (DEV.md 4c C147):
+    //  the reference data a case's system/postProcessDict sets beside its run.
+    "!../../../tutorials/**/!(experimental|reference)/*.csv",
     "!../../../tutorials/**/!(constant)/experimental/*.csv",
+    "!../../../tutorials/**/!(constant)/reference/*.csv",
     // The sidecar of balanceTrajectory.csv, gitignored beside it and harvested
     // by the worker the same way.
     "!../../../tutorials/**/balanceTrajectory.meta",

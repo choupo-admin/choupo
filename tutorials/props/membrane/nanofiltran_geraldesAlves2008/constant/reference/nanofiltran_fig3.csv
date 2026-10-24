@@ -1,0 +1,22 @@
+# NanoFiltran on Fig. 3 of its paper -- V. Geraldes, A.M. Brites Alves, J. Membr. Sci. 321 (2008) 172-182, doi:10.1016/j.memsci.2008.04.054, section 4.1 (Bowen & Mohammad's
+#   CA30 case) -- at the feed of each measurement (the mean of its two markers' c_Cl).
+#   Robs_<ion>: the program with the paper's settings (ND 20, URF 0.2, TOL 1e-4; Fig. 3's
+#   solid line); Robs_converged_<ion>: matched inputs, ND 102/204 extrapolated, TOL 1e-9,
+#   as 1 - c_p/c_b; Robs_line_<ion>: the paper's drawn line as digitised under the marker
+#   (empty where the line does not reach it).  c in mol/m3, R_obs dimensionless.
+# WRITTEN by bin/curate/nanofiltran/export_case.py from bin/curate/nanofiltran/paper.tsv
+#   (section fig3) and constant/experimental/geraldes_alves2008_fig3.csv -- DO NOT EDIT.
+# LICENCE: the paper's numbers here are FACTS, cited above (numbers, never the paper's
+#   text or figures); the paper and its figures are the publisher's copyright and are not in
+#   the tree.  NanoFiltran's own numbers are its output (MIT; bin/curate/nanofiltran/README.md).
+op,dye_molm3,cCl_molm3,Robs_Na,Robs_Cl,Robs_converged_Na,Robs_converged_Cl,Robs_line_Na,Robs_line_Cl
+dye4_p1,4,5.097,0.620567246283,-0.272734132313,0.620210002191,-0.273939492355,0.6188,-0.2684
+dye4_p2,4,10.46,0.4740334122,-0.129365646749,0.473659193959,-0.130173470715,0.4748,-0.1274
+dye4_p3,4,25.752,0.31661224359,-0.00183280747126,0.316243019455,-0.002376263185,0.3187,-0.0034
+dye4_p4,4,52.46,0.2311630852,0.0552960082539,0.230803228952,0.0548527666464,0.228,0.0514
+dye4_p5,4,103.009,0.177989889296,0.0822307694473,0.177641900325,0.0818415605863,0.1801,0.0818
+dye37_p1,37,4.46,0.891306261831,-1.81381364484,0.891128206687,-1.81846126814,0.8793,-1.8057
+dye37_p2,37,9.239,0.817722565191,-1.37218212913,0.817495790008,-1.37516221509,0.8156,-1.3738
+dye37_p3,37,21.929,0.693158135343,-0.859992107574,0.692890536529,-0.861633173867,0.6934,-0.8579
+dye37_p4,37,42.903,0.572442981924,-0.533733972636,0.572157083173,-0.534771657657,0.5699,-0.5338
+dye37_p5,37,87.292,0.430556950356,-0.293537575952,0.430273853892,-0.294186603172,0.4375,-0.2978

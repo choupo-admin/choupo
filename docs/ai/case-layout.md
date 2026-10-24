@@ -18,8 +18,10 @@ are the source of truth.
 │   ├── solverDict           OPTIONAL  per-unit-op solver options
 │   ├── outerDict            OPTIONAL  outer driver (sweep /
 │   │                                   optimization / DesignSpec)
-│   └── layoutDict           OPTIONAL  the plot plan of the SIZED items
-│                                       (bin/choupo-layout --draft)
+│   ├── layoutDict           OPTIONAL  the plot plan of the SIZED items
+│   │                                   (bin/choupo-layout --draft)
+│   └── postProcessDict             OPTIONAL  plots + tables over published numbers
+│                                       (choupoProps; dict-syntax.md)
 ├── constant/
 │   ├── thermoPhysPropDict   REQUIRED; the thermophysical system (v2
 │   │                          grammar).  Declares `recordType

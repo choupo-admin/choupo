@@ -1,0 +1,33 @@
+# Table 2 of the NanoFiltran paper -- V. Geraldes, A.M. Brites Alves, J. Membr. Sci. 321 (2008) 172-182, doi:10.1016/j.memsci.2008.04.054 (publisher's copyright; the
+#   numbers are cited facts) -- and NanoFiltran's own runs at its N.  variant paper: the
+#   table as published, transcribed; asReceived: the program as published, on its shipped
+#   inputs and the paper's numerics (URF 0.2, TOL 1e-4); daviesPatched: the same with its
+#   Davies constant corrected (ln 10).  N is NanoFiltran's (it counts the permeate node).
+#   Concentrations mol/m3 (permeate); dPsi_m_V as the program prints it (R 8.314, F 96500).
+# WRITTEN by bin/curate/nanofiltran/export_case.py from bin/curate/nanofiltran/paper.tsv
+#   (section table2) -- DO NOT EDIT; rerun the exporter.
+# LICENCE: the paper's numbers here are FACTS, cited above (numbers, never the paper's
+#   text or figures); the paper and its figures are the publisher's copyright and are not in
+#   the tree.  NanoFiltran's own numbers are its output (MIT; bin/curate/nanofiltran/README.md).
+N,variant,Na_molm3,Mg_molm3,Cl_molm3,dPsi_m_V,iterations
+10,paper,0.0367468,8.634545,17.305819,0.149227,71
+10,asReceived,0.036747700497,8.6345268734,17.305784541,0.14922676418,71
+10,daviesPatched,0.040976651703,8.6657963013,17.372552867,0.14532670714,71
+20,paper,0.0460774,8.6058,17.257671,0.149651,75
+20,asReceived,0.046078537919,8.605786307,17.25764463,0.14965045645,75
+20,daviesPatched,0.051088667272,8.6379067977,17.326894406,0.14574287371,74
+50,paper,0.0480736,8.599753,17.247577,0.14974,79
+50,asReceived,0.048074808445,8.5997396397,17.247551451,0.14973915877,79
+50,daviesPatched,0.053246218531,8.6320259368,17.317295552,0.14583035286,79
+100,paper,0.0483219,8.599001,17.246324,0.149751,82
+100,asReceived,0.048323124601,8.5989879966,17.24629777,0.14975021133,82
+100,daviesPatched,0.053514652138,8.6312946498,17.316102654,0.1458412507,82
+200,paper,0.0483809,8.598822,17.246025,0.149753,85
+200,asReceived,0.048382098805,8.5988087704,17.24599895,0.14975286329,85
+200,daviesPatched,0.053578415769,8.6311202273,17.315818206,0.14584386758,85
+300,paper,0.0483915,8.59879,17.245971,0.149754,87
+300,asReceived,0.048392707525,8.5987762418,17.24594475,0.14975335083,87
+300,daviesPatched,0.053589891359,8.6310885541,17.315766574,0.1458443494,87
+350,paper,0.0483937,8.598782,17.245959,0.149754,88
+350,asReceived,0.048394921895,8.5987693705,17.24593331,0.14975345555,88
+350,daviesPatched,0.053592288182,8.6310818588,17.315755666,0.14584445309,88

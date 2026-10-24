@@ -57,7 +57,7 @@ exactly once:
     program divides by its own 8.314).  This is the code-to-code reference:
     regenerate.py matches the Born constant through the pore dielectric
     INPUT instead, which would here also move the pore-side Davies A by 2e-4
-    (the Davies op of nanofiltran01 runs Born off for that reason); with
+    (the Davies op of the case's part A runs Born off for that reason); with
     Davies AND Born on, the constant is the one place to match it.  Run with
     the matched IONS (regenerate.py's rule at this T: D divided by the Vogel
     factor, times K_d(double)/K_d(single)).

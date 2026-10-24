@@ -125,8 +125,8 @@ third-party numeric values" held for its estimated PROPERTIES and not for those
 three columns.  See `docs/legal/data-licensing-review-2026-08-11.md`.
 
 * Vendored third-party code: NanoFiltran (bin/curate/nanofiltran/)
-  The reference program of the code-to-code golden case
-  tutorials/props/membrane/nanofiltran01_dspmde_reference, kept byte for byte
+  The reference program of the NanoFiltran paper's golden case
+  tutorials/props/membrane/nanofiltran_geraldesAlves2008, kept byte for byte
   as received so its numbers can be regenerated.  It is a curation tool
   beside Choupo's code, never compiled into it.  Three licences, each kept
   with its own text:

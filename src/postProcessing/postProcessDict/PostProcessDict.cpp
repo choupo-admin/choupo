@@ -26,7 +26,7 @@ License
     Required legal notices:  see NOTICE
 \*---------------------------------------------------------------------------*/
 
-#include "postProcessing/plotDict/PlotDict.H"
+#include "postProcessing/postProcessDict/PostProcessDict.H"
 
 #include "core/DictAudit.H"
 #include "result/ResultEmitter.H"
@@ -46,7 +46,7 @@ License
 #include <variant>
 
 namespace Choupo {
-namespace plotDict {
+namespace postProcessDict {
 
 namespace fs = std::filesystem;
 
@@ -56,7 +56,7 @@ const scalar NaN = std::numeric_limits<scalar>::quiet_NaN();
 
 [[noreturn]] void refuse(const std::string& where, const std::string& what)
 {
-    throw std::runtime_error("system/plotDict, " + where + ": " + what);
+    throw std::runtime_error("system/postProcessDict, " + where + ": " + what);
 }
 
 std::string joined(const std::vector<std::string>& v, std::size_t cap = 40)
@@ -240,7 +240,7 @@ Reference readReference(const DictPtr& d, std::size_t k)
 // ---------------------------------------------------------------- series
 struct Series
 {
-    std::string name, label, role, style, source;
+    std::string name, label, role, style, group, source;
     //  kind: op-table | ops | reference | difference
     std::string kind;
     std::string op, table, ref;
@@ -266,6 +266,9 @@ Series readSeries(const DictPtr& d, const std::string& at)
     if (!isWord(s.name)) refuse(where, "a name is a word (letters, digits, _)");
     s.label = d->found("label") ? d->lookupWord("label") : s.name;
     s.style = d->lookupWordOrDefault("style", "");
+    //  `group <word>;` -- series that share a colour (one ion across sources);
+    //  a drawing hint, never a number.
+    s.group = d->lookupWordOrDefault("group", "");
     if (!s.style.empty() && s.style != "lines" && s.style != "markers"
         && s.style != "linesMarkers")
         refuse(where, "`style " + s.style + ";` -- Accepted: lines, markers, linesMarkers");
@@ -435,10 +438,10 @@ Reader::Reader(const std::string& path, const std::vector<std::string>& declared
     auto claim = [&](const std::string& nm, const std::string& where)
     {
         if (!isWord(nm)) refuse(where, "a name is a word (letters, digits, _): it names the"
-                                " file postProcessing/plotDict/" + nm + ".csv");
+                                " file postProcessing/postProcessDict/" + nm + ".csv");
         if (!itemNames.insert(nm).second)
             refuse(where, "the name '" + nm + "' is taken by another plot or table --"
-                   " both would write postProcessing/plotDict/" + nm + ".csv");
+                   " both would write postProcessing/postProcessDict/" + nm + ".csv");
     };
 
     //  Each series' sources, checked against the dict alone.
@@ -654,7 +657,7 @@ Reader::Reader(const std::string& path, const std::vector<std::string>& declared
 
     //  A NEW DICTIONARY OWES NO CORPUS A TOLERANCE: a key nothing reads is a
     //  silent instruction, and here it is refused, not warned.
-    const auto unread = dictAudit::auditTree(*D, "plotDict");
+    const auto unread = dictAudit::auditTree(*D, "postProcessDict");
     if (!unread.empty())
     {
         std::string msg = "keys nothing reads:";
@@ -876,12 +879,12 @@ std::string Reader::evaluate(const std::vector<Publication>& pubs, int verbosity
     fs::create_directories(outputDir(), ec);
     if (ec) refuse("the dictionary", std::string("cannot create ") + outputDir() + ": " + ec.message());
 
-    std::cout << "\n========  Post-processing (system/plotDict)  ========\n"
+    std::cout << "\n========  Post-processing (system/postProcessDict)  ========\n"
               << "  " << I.items.size() << " item(s) -> " << outputDir() << "/<name>.csv"
               << " (+ <name>.json: titles, units, series roles and sources)\n";
 
     std::ostringstream block;
-    block << "{ \"source\": \"system/plotDict\", \"directory\": " << q(outputDir())
+    block << "{ \"source\": \"system/postProcessDict\", \"directory\": " << q(outputDir())
           << ",\n    \"references\": [";
     for (std::size_t k = 0; k < I.refs.size(); ++k)
     {
@@ -936,13 +939,13 @@ std::string Reader::evaluate(const std::vector<Publication>& pubs, int verbosity
                     }
                 }
                 if (!s.xPublished || !s.yPublished)
-                    std::cout << "  [plotDict] " << sw << ": its source publishes no unit for "
+                    std::cout << "  [postProcessDict] " << sw << ": its source publishes no unit for "
                               << (!s.xPublished ? "'" + s.xKey + "'" : std::string())
                               << (!s.xPublished && !s.yPublished ? " and " : "")
                               << (!s.yPublished ? "'" + s.yKey + "'" : std::string())
                               << " -- the declared unit is taken as the author's statement\n";
                 if (s.dropped > 0)
-                    std::cout << "  [plotDict] " << sw << ": " << s.dropped << " row(s) of the"
+                    std::cout << "  [postProcessDict] " << sw << ": " << s.dropped << " row(s) of the"
                                  " reference carry no number on an axis and are not drawn\n";
             }
         }
@@ -966,7 +969,7 @@ std::string Reader::evaluate(const std::vector<Publication>& pubs, int verbosity
                                              [](scalar v) { return std::isfinite(v); });
                 js << (j ? ", " : "") << "{ \"name\": " << q(s.name) << ", \"label\": "
                    << q(s.label) << ", \"role\": " << q(s.role) << ", \"style\": "
-                   << q(s.style) << ", \"source\": " << q(s.source)
+                   << q(s.style) << ", \"group\": " << q(s.group) << ", \"source\": " << q(s.source)
                    << ", \"x\": " << unitJson(s.xKey, s.xUnit, s.xPublished)
                    << ", \"y\": " << unitJson(s.yKey, s.yUnit, s.yPublished)
                    << ", \"yError\": " << (err ? "true" : "false")
@@ -1166,5 +1169,5 @@ void clearStale()
     if (fs::exists(outputDir(), ec)) fs::remove_all(outputDir(), ec);
 }
 
-} // namespace plotDict
+} // namespace postProcessDict
 } // namespace Choupo

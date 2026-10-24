@@ -79,7 +79,7 @@ from PIL import Image
 
 ROOT = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 DEFAULT_OUT = os.path.join(ROOT, "tutorials", "props", "membrane",
-                           "nanofiltran03_bowen_mohammad_ca30", "constant",
+                           "nanofiltran_geraldesAlves2008", "constant",
                            "experimental", "geraldes_alves2008_fig3.csv")
 IMAGE_SHA256 = "c73ba0b2517c22daec568d504e7eb98ff5ee29cf50b452623b8bb297709b4f65"
 PAGE = 7                       # the PDF page that carries Fig. 3

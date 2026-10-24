@@ -50,3 +50,27 @@ diag    table1                 xi_r6            -34.6116272686     1e-4
 diag    table1                 xi_r7            -35.0855097984     1e-4
 diag    table1                 xi_r8            -36.1349943902     1e-4
 diag    table1                 xi_r9            -35.5049391235     1e-4
+# ==== POST-PROCESSING CELLS (DEV.md 4c C147) ====
+# The real rejections 1 - C_p/C_m the postProcessDict draws -- the only numbers it writes
+# that are neither a pinned diagnostic (Gamma, xi, k) nor an input of Table 1.  Self-recorded:
+# they pin that the wall has not MOVED (check_postprocessing recomputes every cell).
+csv     postProcessing/postProcessDict/rejection_dye4.csv 5:y 0.713814075928 1e-4
+csv     postProcessing/postProcessDict/rejection_dye4.csv 6:y 0.594290791072 1e-4
+csv     postProcessing/postProcessDict/rejection_dye4.csv 7:y 0.42734625415 1e-4
+csv     postProcessing/postProcessDict/rejection_dye4.csv 8:y 0.322721332975 1e-4
+csv     postProcessing/postProcessDict/rejection_dye4.csv 9:y 0.23342278339 1e-4
+csv     postProcessing/postProcessDict/rejection_dye4.csv 15:y -0.396858491063 1e-4
+csv     postProcessing/postProcessDict/rejection_dye4.csv 16:y -0.177869463169 1e-4
+csv     postProcessing/postProcessDict/rejection_dye4.csv 17:y -0.0169215159317 1e-4
+csv     postProcessing/postProcessDict/rejection_dye4.csv 18:y 0.0676573697063 1e-4
+csv     postProcessing/postProcessDict/rejection_dye4.csv 19:y 0.0870936936183 1e-4
+csv     postProcessing/postProcessDict/rejection_dye37.csv 5:y 0.882787194816 1e-4
+csv     postProcessing/postProcessDict/rejection_dye37.csv 6:y 0.834371312715 1e-4
+csv     postProcessing/postProcessDict/rejection_dye37.csv 7:y 0.738782710489 1e-4
+csv     postProcessing/postProcessDict/rejection_dye37.csv 8:y 0.633250821061 1e-4
+csv     postProcessing/postProcessDict/rejection_dye37.csv 9:y 0.510313126336 1e-4
+csv     postProcessing/postProcessDict/rejection_dye37.csv 15:y -3.14012471401 1e-4
+csv     postProcessing/postProcessDict/rejection_dye37.csv 16:y -1.82601749799 1e-4
+csv     postProcessing/postProcessDict/rejection_dye37.csv 17:y -1.03001382181 1e-4
+csv     postProcessing/postProcessDict/rejection_dye37.csv 18:y -0.650349113933 1e-4
+csv     postProcessing/postProcessDict/rejection_dye37.csv 19:y -0.325072442511 1e-4

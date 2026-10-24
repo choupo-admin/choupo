@@ -219,6 +219,29 @@ int PolarisationIndex::run(const DictPtr& dict,
     std::cout << "\n  row   J_v [m/s]   ion        C_b        C_p      phi_i     Xi_i"
                  "        C_m     Gamma_i\n";
     scalar maxResidual = 0.0;
+    //  The `rows` table (DEV.md 4c C147): the same numbers as the per-row
+    //  diagnostics and the console, one row per operating point.
+    tables_.clear();
+    PublishedTable rowsTab;
+    rowsTab.name = "rows";
+    rowsTab.description = "one row per measured operating point: the feed, permeate and"
+                          " wall of every ion, its k, phi, Xi, polarisation index and both"
+                          " rejections, and the interface field";
+    rowsTab.columns = { {"row", "-"}, {"J_v_mps", "m/s"} };
+    for (std::size_t s = 0; s < n; ++s)
+    {
+        const std::string& nm = sol[s].name;
+        rowsTab.columns.push_back({ "C_b_" + nm + "_molm3", "mol/m3" });
+        rowsTab.columns.push_back({ "C_p_" + nm + "_molm3", "mol/m3" });
+        rowsTab.columns.push_back({ "C_m_" + nm + "_molm3", "mol/m3" });
+        rowsTab.columns.push_back({ "k_" + nm + "_mps", "m/s" });
+        rowsTab.columns.push_back({ "phi_" + nm, "-" });
+        rowsTab.columns.push_back({ "Xi_" + nm, "-" });
+        rowsTab.columns.push_back({ "Gamma_" + nm, "-" });
+        rowsTab.columns.push_back({ "Robs_" + nm, "-" });
+        rowsTab.columns.push_back({ "Rreal_" + nm, "-" });
+    }
+    rowsTab.columns.push_back({ "xi_Vpm", "V/m" });
     for (std::size_t r = 0; r < nRows; ++r)
     {
         const scalar Jv = flat[r * nc + jCol];
@@ -278,7 +301,19 @@ int PolarisationIndex::run(const DictPtr& dict,
             std::cout << b;
         }
         diag_["xi_r" + std::to_string(r + 1)] = w.xi;
+        std::vector<scalar> row{ static_cast<scalar>(r + 1), Jv };
+        for (std::size_t s = 0; s < n; ++s)
+        {
+            row.push_back(c_b[s]); row.push_back(c_p[s]); row.push_back(w.c_m[s]);
+            row.push_back(k[s]); row.push_back(w.phi[s]); row.push_back(w.Xi[s]);
+            row.push_back(w.Gamma[s]);
+            row.push_back(1.0 - c_p[s] / c_b[s]);
+            row.push_back(1.0 - c_p[s] / w.c_m[s]);
+        }
+        row.push_back(w.xi);
+        rowsTab.rows.push_back(std::move(row));
     }
+    tables_.push_back(std::move(rowsTab));
     diag_["n_rows"] = static_cast<scalar>(nRows);
     diag_["chargeResidual_max"] = maxResidual;
     std::cout << "\n  " << nRows << " row(s); largest wall-electroneutrality residual "
@@ -289,6 +324,17 @@ int PolarisationIndex::run(const DictPtr& dict,
               << "=============================================\n";
     (void)verbosity;
     return 0;
+}
+
+std::string PolarisationIndex::diagnosticUnit(const std::string& key) const
+{
+    auto starts = [&](const char* p) { return key.rfind(p, 0) == 0; };
+    if (starts("k_")) return "m/s";
+    if (starts("D_")) return "m2/s";
+    if (starts("xi_r")) return "V/m";
+    if (starts("Gamma_") || key == "Re" || key == "n_rows"
+        || key == "chargeResidual_max") return "-";
+    return {};
 }
 
 } // namespace Choupo

@@ -94,7 +94,7 @@ Description
       pore solve; the partition coefficients stay computed HERE).
       NanoFiltran (Geraldes & Alves, J. Membr. Sci. 321 (2008) 172-182) is
       the reference it is compared with
-      (tutorials/props/membrane/nanofiltran01_dspmde_reference).  Started
+      (tutorials/props/membrane/nanofiltran_geraldesAlves2008).  Started
       from the previous station's answer; at the first station from a
       local-Donnan profile, and by continuation in J_v from the exact
       no-flux state when the Newton cannot reach the answer from there
@@ -122,7 +122,7 @@ Description
     C141, 2026-10-24) -- each with a stated default, the first word listed.
     They exist so that the model of NanoFiltran (Geraldes & Alves 2008) can
     be EXPRESSED here and compared code to code
-    (tutorials/props/membrane/nanofiltran01_reference); each is announced
+    (tutorials/props/membrane/nanofiltran_geraldesAlves2008); each is announced
     once per run.
 
       hindrance DechadilokDeen2006;

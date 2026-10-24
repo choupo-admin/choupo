@@ -68,7 +68,15 @@ Description
     `closeBy` ion is derived, never listed.
 
     Diagnostics: `k_<ion>` (m/s), `Re`, `n_rows`, `Gamma_<ion>_r<n>` and
-    `xi_r<n>` per row, `chargeResidual_max`.  Nothing here is a fit: the
+    `xi_r<n>` per row, `chargeResidual_max`; every one carries its unit.
+
+    PUBLISHED TABLE `rows` (DEV.md 4c C147): one row per operating point --
+    `row`, `J_v_mps`, per ion `C_b_<ion>_molm3`, `C_p_<ion>_molm3`,
+    `C_m_<ion>_molm3`, `k_<ion>_mps`, `phi_<ion>`, `Xi_<ion>`, `Gamma_<ion>`,
+    `Robs_<ion>` = 1 - C_p/C_b (what the cell measures) and `Rreal_<ion>` =
+    1 - C_p/C_m (what the membrane does), and `xi_Vpm` -- so a
+    `system/postProcessDict` draws one series per ion over the rows (the
+    paper's Fig. 7) instead of a list of keys.  Nothing here is a fit: the
     correlation's constants and the ions' D are the case's inputs, the
     Gamma are predictions, and the bench says which is which.
 \*---------------------------------------------------------------------------*/
@@ -93,10 +101,13 @@ public:
     std::map<std::string, scalar> diagnostics() const override { return diag_; }
     std::vector<std::string> headline() const override
     { return { "n_rows", "chargeResidual_max", "Re" }; }
+    std::vector<PublishedTable> publishedTables() const override { return tables_; }
+    std::string diagnosticUnit(const std::string& key) const override;
 
 private:
     inline static const std::string type_ = "polarisationIndex";
     std::map<std::string, scalar> diag_;
+    std::vector<PublishedTable> tables_;
 };
 
 } // namespace Choupo

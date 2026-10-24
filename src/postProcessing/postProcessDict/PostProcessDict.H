@@ -26,7 +26,7 @@ License
     Required legal notices:  see NOTICE
 -------------------------------------------------------------------------------
 Namespace
-    Choupo::plotDict
+    Choupo::postProcessDict
 
 Description
     THE POST-PROCESSING DICTIONARY (2026-10-24, DEV.md 4c C147; Vitor: "Era
@@ -34,7 +34,7 @@ Description
     pos processamento", and for the NanoFiltran paper: "Um pos processamento
     nao gera os graficos e tabelas que sao precisos para este artigo?").
 
-    `system/plotDict` declares named PLOTS and TABLES over what the run
+    `system/postProcessDict` declares named PLOTS and TABLES over what the run
     PUBLISHES -- an operation's diagnostics, an operation's published tables
     (core/PublishedTable.H), and case-local REFERENCE data under `constant/`
     with its citation -- and this reader:
@@ -45,7 +45,7 @@ Description
         no corpus a tolerance);
       * holds every unit the source publishes to the unit the plot or table
         declares, and refuses a disagreement;
-      * writes each item's numbers to `postProcessing/plotDict/<name>.csv`
+      * writes each item's numbers to `postProcessing/postProcessDict/<name>.csv`
         and its description (titles, units, series roles, sources) to
         `<name>.json` beside it -- a run output regenerated WHOLE every run,
         gitignored like converged/ -- and returns the same descriptions as
@@ -93,7 +93,7 @@ Description
 #include <vector>
 
 namespace Choupo {
-namespace plotDict {
+namespace postProcessDict {
 
 //- What one operation of the run published, as the reader sees it.
 struct Publication
@@ -106,12 +106,12 @@ struct Publication
 };
 
 //- The directory every item is written to, relative to the case.
-inline const char* outputDir() { return "postProcessing/plotDict"; }
+inline const char* outputDir() { return "postProcessing/postProcessDict"; }
 
 class Reader
 {
 public:
-    //  Parse `path` (the case's system/plotDict).  `declaredOps` are the
+    //  Parse `path` (the case's system/postProcessDict).  `declaredOps` are the
     //  propsDict operation names, in order: an op a series names must be
     //  one of them.  Throws a refusal naming what is wrong.
     Reader(const std::string& path, const std::vector<std::string>& declaredOps);
@@ -127,9 +127,9 @@ private:
     std::unique_ptr<Impl> impl_;
 };
 
-//- Remove `postProcessing/plotDict/` when the case declares no plotDict: a
+//- Remove `postProcessing/postProcessDict/` when the case declares no postProcessDict: a
 //  DERIVATIVE view regenerated whole must not outlive its declaration.
 void clearStale();
 
-} // namespace plotDict
+} // namespace postProcessDict
 } // namespace Choupo

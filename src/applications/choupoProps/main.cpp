@@ -56,7 +56,7 @@ Description
 #include "core/DictCanonical.H"
 #include "core/Dictionary.H"
 #include "result/ResultEmitter.H"
-#include "postProcessing/plotDict/PlotDict.H"
+#include "postProcessing/postProcessDict/PostProcessDict.H"
 #include "core/ThermoResolution.H"
 #include "core/Units.H"
 #include "curation/AqueousGraph.H"
@@ -620,19 +620,19 @@ try
     //  OPERATIONS RUN: what the dict alone can refute -- its grammar, a
     //  reference file, an operation the propsDict does not declare -- is
     //  refused before the run it guards is spent.  Its names of published
-    //  things are resolved after the operations (plotDict::Reader::evaluate).
-    std::unique_ptr<plotDict::Reader> plotReader;
-    std::vector<plotDict::Publication> publications;
-    if (std::filesystem::exists("system/plotDict"))
+    //  things are resolved after the operations (postProcessDict::Reader::evaluate).
+    std::unique_ptr<postProcessDict::Reader> plotReader;
+    std::vector<postProcessDict::Publication> publications;
+    if (std::filesystem::exists("system/postProcessDict"))
     {
         std::vector<std::string> declared;
         for (std::size_t k = 0; k < opsList.size(); ++k)
             declared.push_back(opsList[k]->lookupWordOrDefault("name",
                 opsList[k]->lookupWord("type") + "_" + std::to_string(k)));
-        plotReader = std::make_unique<plotDict::Reader>("system/plotDict", declared);
+        plotReader = std::make_unique<postProcessDict::Reader>("system/postProcessDict", declared);
     }
     else
-        plotDict::clearStale();
+        postProcessDict::clearStale();
     for (std::size_t k = 0; k < opsList.size(); ++k)
     {
         const auto& opDict = opsList[k];
@@ -698,7 +698,7 @@ try
                               op->headline(), op->curation() });
         if (plotReader)
         {
-            plotDict::Publication pub{ opName, opType, diags, {}, op->publishedTables() };
+            postProcessDict::Publication pub{ opName, opType, diags, {}, op->publishedTables() };
             for (const auto& kv : diags) pub.units[kv.first] = op->diagnosticUnit(kv.first);
             publications.push_back(std::move(pub));
         }
@@ -1181,7 +1181,7 @@ try
 
     //  The post-processing dictionary's items (DEV.md 4c C147): titles,
     //  units, series roles and sources; the numbers are the CSVs under
-    //  postProcessing/plotDict/.  Absent when the case declares no plotDict.
+    //  postProcessing/postProcessDict/.  Absent when the case declares no postProcessDict.
     if (!postProcessingBlock.empty())
         std::cout << ",\n  \"postProcessing\": " << postProcessingBlock;
 
