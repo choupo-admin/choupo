@@ -482,9 +482,20 @@ concentration 12 orders below its feed, not a fold.
 ### 9.7 Still NOT done
 
 - The batch diafilter under the declared choices (they are read there too,
-  untested), and the spiral module: a DSPM-DE salt feed under `ionCoupling
-  electroneutral;` is still refused by `buildPolarisation` (the bench builds
-  the film from the policy directly).
+  untested).  ~~The spiral module: a DSPM-DE salt feed under `ionCoupling
+  electroneutral;` is still refused by `buildPolarisation`.~~  Lifted in
+  C148 (2026-10-24) for a law that decomposes its salts itself
+  (`TransportModel::decomposesSaltsIntoIons`, DSPM-DE; the builder says so
+  once, the module and the batch diafilter pass it); solutionDiffusion on
+  salts still refuses.  Witness `membrane22_two_stage_nf_array_dspmde`, the
+  first MIXED-salt DSPM-DE feed in a module -- and it found the salt
+  collapse's limit: the pore conserves charge, not salts, so a salt's two
+  legs differ in a mixture (membrane22's MgSO4: Mg2+ passes 0.18 mol/m3 at
+  the first station, SO4 2- 3e-4, the Mg crossing with Cl-), and the
+  module's salt basis carries the cation leg.  The run ANNOUNCES each salt
+  whose legs differ; the stream table's anions are not the pore's.  Mapping
+  the ion permeate back onto the salt components (or marching the module
+  in ions) is a model decision, NOT taken.
 - NanoFiltran's data-fitting mode (Nelder-Mead on X, r_p, δ, ε_p) and its
   refined meshes (`EPSX` 1.05 was run once, before the matching, ND 26 to
   204: it converges; nothing of it is pinned).

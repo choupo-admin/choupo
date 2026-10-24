@@ -257,7 +257,7 @@ void BatchDiafilter::initialise(const DictPtr&       unitDict,
         membrane::buildPolarisation(op, thermo, soluteIdx_, nullptr, kFilm_,
                                     std::numeric_limits<scalar>::quiet_NaN(),
                                     state_.T, "batchDiafilter '" + name() + "'",
-                                    verbosity_));
+                                    verbosity_, transport_->decomposesSaltsIntoIons()));
     const scalar nTot = init->lookupScalar("totalMoles");
     const sVector x   =
         readComposition(init, thermo, "batchDiafilter '" + name() + "' init");

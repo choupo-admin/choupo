@@ -71,6 +71,17 @@ converged/):
       storing `leafWidth`; an element with `feedSpacer` AND `channelHeight`;
       a case `a` coefficient beside the spacer; a case correlation the spacer
       does not carry; `vessels 2.5`.
+  (i) THE SAME HARDWARE, OTHER MEMBRANE MODELS (C148).  membrane22 (the
+      4:2 array of membrane21 under DSPM-DE, salts in, the solved pore, the
+      Geraldes-Afonso film coupled on the salts' ions, D(T) declared) runs to
+      exit 0 in under 60 s, solves a pore at every station of both stages,
+      says the coupling is the law's on a salt feed, prints the D(T) factor,
+      ANNOUNCES that MgSO4's two legs differ (its anion leg below its cation
+      leg: the pore passes Mg2+ with Cl-, not with SO4 2-), and each stage
+      closes per component to 1e-9; membrane23 (constantRejection on one
+      vessel of the same element) runs to exit 0.  The coupling-on-salts lift
+      is scoped to a law that decomposes salts: membrane22 with `transport
+      solutionDiffusion;` still REFUSES `ionCoupling electroneutral;`.
 
 WHAT THIS GATE DOES **NOT** COVER.  Whether the generic estimates are good
 ones (no element of the class was unrolled here); the transcription
@@ -94,6 +105,9 @@ restored; the gate never patches a source):
       whose edit anchors on that line and silently did not land -- so every
       probe now refuses to run unbuilt and says so.
   S5  MembraneModule.cpp: the `leafWidth` refusal removed      CAUGHT by (h).
+  S6  DSPM_DE.cpp: the two-legs announcement disabled (C148)   CAUGHT by (i).
+  S7  Polarisation.cpp: the coupling-on-salts lift disabled    CAUGHT by (i)
+      (membrane22 refuses).
 """
 import json
 import math
@@ -110,6 +124,8 @@ from check_membrane_modules import (parse_record, si, word, close, run,  # noqa:
                                     result_of, copy_case, ROOT, ASSETS)
 
 M21 = ROOT / "tutorials/steady/membranes/membrane21_two_stage_nf_array"
+M22 = ROOT / "tutorials/steady/membranes/membrane22_two_stage_nf_array_dspmde"
+M23 = ROOT / "tutorials/steady/membranes/membrane23_constant_rejection_nf8040"
 
 #  Schock & Miquel (1987) Tab. 1, p. 343 -- transcribed a second time.
 #  name: (h_SP mm, d_F mm, l_M mm, eps, S_V,SP 1/mm, d_h mm)
@@ -434,6 +450,53 @@ def main():
         refusal("fractionalVessels", lambda dd: op(dd, "vessels          4;", "vessels          2.5;"),
                 ["`vessels` is a whole number"])
 
+        # ---------------- (i) the same hardware, other membrane models -------
+        import time
+        dd = tmp / "m22"
+        copy_case(M22, dd)
+        t0 = time.time()
+        rc, out = run(dd)
+        wall = time.time() - t0
+        j22 = result_of(out) if rc == 0 else None
+        if j22 is None:
+            failures.append(f"(i) membrane22 did not run (exit {rc}):\n" + out[-800:])
+        else:
+            if wall > 60.0:
+                failures.append(f"(i) membrane22 took {wall:.1f} s (> 60 s)")
+            for unit in ("Stage1", "Stage2"):
+                if not re.search(r"\[DSPM-DE\] pore summary \(%s\): \d+ pore solves" % unit, out):
+                    failures.append(f"(i) no pore summary for {unit}")
+                st = j22["streams"]
+                fi, co, pe = {"Stage1": ("feed", "concentrate1", "permeate1"),
+                              "Stage2": ("boosted", "concentrate2", "permeate2")}[unit]
+                for c, x in st[fi]["composition"].items():
+                    fin = st[fi]["F"] * x
+                    fout = st[co]["F"] * st[co]["composition"][c] + st[pe]["F"] * st[pe]["composition"][c]
+                    if not close(fin, fout, 1e-9):
+                        failures.append(f"(i) {unit}: component {c} in {fin:.9e} vs out {fout:.9e}")
+            if "ionCoupling electroneutral on a feed of SALTS" not in out:
+                failures.append("(i) membrane22 does not say the coupling is the law's on a salt feed")
+            if not re.search(r"\[D\(T\)\] ion D0 of the pore and the film at T = 293\.15 K: .* = 0\.874", out):
+                failures.append("(i) membrane22 prints no D(T) factor 0.874 at 293.15 K")
+            m = re.search(r"salt 'MgSO4' in a MIXED feed: its cation leg passes ([0-9.e+-]+) mol/m3 and its"
+                          r" anion leg ([0-9.e+-]+) mol/m3", out)
+            if not m or not float(m.group(2)) < float(m.group(1)):
+                failures.append("(i) membrane22 does not announce MgSO4's anion leg below its cation leg")
+        dd = tmp / "m23"
+        copy_case(M23, dd)
+        rc, out = run(dd)
+        if rc != 0:
+            failures.append(f"(i) membrane23 did not run (exit {rc})")
+        dd = tmp / "m22sd"
+        copy_case(M22, dd)
+        p = dd / "system/flowsheetDict"
+        t = p.read_text()
+        p.write_text(t.replace("transport        DSPM-DE;", "transport        solutionDiffusion;"))
+        rc, out = run(dd)
+        if rc == 0 or "needs at least two" not in out:
+            failures.append(f"(i) solutionDiffusion on membrane22's salts with ionCoupling electroneutral"
+                            f" did not refuse (exit {rc})")
+
     if failures:
         print("check_spiral_array: FAILED")
         for f in failures:
@@ -448,7 +511,9 @@ def main():
           "crossflow recomputes the per-vessel feed, each stage closes per component to 1e-9, k_i/k_Na = "
           "(D_i/D_Na)^0.75 at every node and the inlet k_Na is Eq. 30 on Eq. 17 to 1e-9; 4 vessels on F are 4x one "
           "vessel on F/4 to 1e-10; a low-Re twin announces both windows and exits 0, membrane21 none; 9 refusals "
-          "fire by name.  NOT CHECKED: whether the generic estimates are good, the transcription against the PDF, "
+          "fire by name; the same element under DSPM-DE (membrane22: a pore at every station, D(T), the salts' "
+          "two legs announced, each stage closed to 1e-9, under 60 s) and under constantRejection (membrane23) "
+          "runs, and solutionDiffusion on a salt feed still refuses the coupling.  NOT CHECKED: whether the generic estimates are good, the transcription against the PDF, "
           "any measured array, vessel maldistribution, the permeate-side drop, the spacer's edge bypass.")
     return 0
 

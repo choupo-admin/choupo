@@ -1,0 +1,111 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+  membrane22_two_stage_nf_array_dspmde -- membrane21's TWO-STAGE array (4:2
+  pressure vessels of 6 generic 8-inch elements, the interstage booster a
+  unit of its own) with a DIFFERENT MEMBRANE MODEL: DSPM-DE, the charged
+  pore with steric, Donnan and dielectric exclusion (Bowen & Welfoot 2002),
+  SOLVED across the pore at every station (the extended Nernst-Planck
+  equations on 101 nodes, one Newton with the film's interface balance and
+  the water flux -- the default since C141).  See the README.
+
+  THE HARDWARE IS THE SAME RECORD.  `module Generic-8040;` with the FilmTec
+  FT30 spacer and Schock & Miquel's correlations, exactly membrane21's; only
+  `membrane` and `transport` change.  NF270_dspmde (data/standards/assets/)
+  carries the pore: radius 0.60 nm, A_k/dx, a fixed charge -5 mol/m3, a
+  pore dielectric 35.
+
+  THE FEED IS SALTS, THE MODEL WORKS IN IONS.  DSPM-DE decomposes NaCl,
+  CaCl2 and MgSO4 into Na+, Ca2+, Mg2+, Cl- and SO4 2- (their charges, Stokes
+  radii and D0 from the species records) and solves them together in the
+  pore; the film couples the SAME ions at the wall by electroneutrality
+  (`ionCoupling electroneutral;`, Geraldes & Afonso 2007), each ion's k on
+  its own D on Sc_i.  The D's are corrected to 20 C by Stokes-Einstein on
+  the package's declared liquid viscosity (constant/thermoPhysPropDict).
+\*---------------------------------------------------------------------------*/
+
+units
+(
+    {
+        name        Stage1;
+        type        spiralWoundModule;
+        in          feed;
+        outputs     ( concentrate1  permeate1 );
+        operation
+        {
+            module           Generic-8040;      // data/standards/assets/, estimates announced
+            membrane         NF270_dspmde;      // data/standards/assets/: the pore tier
+            transport        DSPM-DE;           // the solved pore, every default announced
+            vessels          4;                 // identical pressure vessels in parallel
+            elements         6;                 // elements in series in each vessel
+            P_permeate       1.0 bar;
+            nNodes           10;                // stations per element
+
+            massTransfer
+            {
+                model          SchockMiquel;    // coefficients + window: the spacer record
+                viscosity      1.0e-3;          // Pa.s, water at 20 C (prices Re and Sc)
+                diffusivity    1.5e-9;          // m2/s: the SALT-level k_film column only;
+                                                // DSPM-DE prices each ion's k on its own D
+            }
+            pressureDrop
+            {
+                model          SchockMiquel;
+            }
+            polarisation
+            {
+                suctionCorrection  GeraldesAfonso2006;
+                ionCoupling        electroneutral;
+            }
+        }
+    }
+    {
+        name        Booster;
+        type        pump;
+        in          concentrate1;
+        outputs     ( boosted );
+        operation
+        {
+            dP        1.5 bar;                  // the interstage boost
+            eta       0.70;
+        }
+    }
+    {
+        name        Stage2;
+        type        spiralWoundModule;
+        in          boosted;
+        outputs     ( concentrate2  permeate2 );
+        operation
+        {
+            module           Generic-8040;
+            membrane         NF270_dspmde;
+            transport        DSPM-DE;
+            vessels          2;                 // half the vessels: the array tapers
+            elements         6;
+            P_permeate       1.0 bar;
+            nNodes           10;
+
+            massTransfer
+            {
+                model          SchockMiquel;
+                viscosity      1.0e-3;
+                diffusivity    1.5e-9;
+            }
+            pressureDrop
+            {
+                model          SchockMiquel;
+            }
+            polarisation
+            {
+                suctionCorrection  GeraldesAfonso2006;
+                ionCoupling        electroneutral;
+            }
+        }
+    }
+);

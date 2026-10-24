@@ -264,6 +264,13 @@ public:
     //  run never reads.
     virtual bool readsMembranePermeabilities() const { return true; }
 
+    //  Does this law take a feed of SALTS and work in their IONS itself
+    //  (DSPM-DE: `electrolyte { cation; anion; }`)?  Then the film's
+    //  `ionCoupling electroneutral;` is the law's to apply ion by ion, and
+    //  the polarisation builder does not refuse it for want of charged
+    //  SOLUTES (DEV.md 4c C148).
+    virtual bool decomposesSaltsIntoIons() const { return false; }
+
     // ---- Factory ----
     static void registerType(const std::string& name, Factory f);
     static std::unique_ptr<TransportModel> New(const std::string& name);

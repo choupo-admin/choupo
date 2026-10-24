@@ -63,7 +63,8 @@ an NF270-4040 spacer here) -- only that it is marked and announced.  It does
 not check the transcription against the PDFs themselves (the table is a
 human's second reading).  The rated-test ratio is not held to any band.
 The batch vessel reads no module record.  DSPM-DE under a module record is
-exercised by no case.  The pH limit fires only from a `scaling { pH }`
+exercised by membrane22 since C148, checked by check_spiral_array (i) and
+not here.  The pH limit fires only from a `scaling { pH }`
 declaration and no witness declares one.
 
 SABOTAGE-VERIFIED 2026-09-15 (engine and record edits BY HAND, rebuilt where

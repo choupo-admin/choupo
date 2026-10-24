@@ -627,7 +627,8 @@ Polarisation buildPolarisation(const DictPtr&                  operation,
                                scalar                          D_neutral,
                                scalar                          T_K,
                                const std::string&              unitLabel,
-                               int                             verbosity)
+                               int                             verbosity,
+                               bool                            lawResolvesIons)
 {
     const PolarisationPolicy policy = readPolarisationPolicy(operation);
     const bool coupled = policy.coupling == IonCoupling::Electroneutral;
@@ -696,7 +697,20 @@ Polarisation buildPolarisation(const DictPtr&                  operation,
         stokesEinstein::announce(se, unitLabel,
             "ion D0 of the polarisation film", verbosity);
 
-    if (coupled && nIons < 2)
+    //  A law that decomposes the salts itself (DSPM-DE) couples their ions
+    //  in its own wall balance: the coupling is its to apply, said once.
+    if (coupled && nIons < 2 && lawResolvesIons)
+    {
+        const std::string msg =
+            "[polarisation] ionCoupling electroneutral on a feed of SALTS: the"
+            " transport law decomposes each salt into its ions and couples"
+            " THOSE at the wall (Geraldes & Afonso, J. Membr. Sci. 300 (2007)"
+            " 20), each ion's k on its own D";
+        if (AdvisoryLog::instance().add("model", "info", unitLabel, msg)
+         && verbosity >= 2)
+            std::cout << "  " << msg << "\n";
+    }
+    else if (coupled && nIons < 2)
         throw std::runtime_error(
             "polarisation: `ionCoupling electroneutral;` needs at least two"
             " charged solutes, each a component with a single-species aqueous"

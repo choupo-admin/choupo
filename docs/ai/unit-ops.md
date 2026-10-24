@@ -1277,6 +1277,17 @@ each channel node):
   law at IMPOSED J_v through the `poreTransport` props op.  Any other key or
   word refuses.  Cost (C142): a few hundred milliseconds per module (it was
   seconds before the station became one Newton with an analytic Jacobian).
+  `polarisation { ionCoupling electroneutral; }` on a feed of SALTS is
+  ACCEPTED under DSPM-DE (since C148): the law decomposes the salts and the
+  film couples their ions -- under solutionDiffusion the same declaration
+  still refuses.  In a MIXED salt feed the pore conserves charge, not salts,
+  so a salt's two legs differ (an Mg2+ crossing with Cl-, its SO4 2- held
+  back); the module's salt basis carries the CATION leg and the run
+  ANNOUNCES each salt whose legs differ -- the permeate stream's anions are
+  then not the pore's, and the ion-by-ion permeate is the props bench's.
+  Witness on module hardware: `membrane22_two_stage_nf_array_dspmde`
+  (membrane21's 4:2 array of Generic-8040 elements, NaCl + CaCl2 + MgSO4,
+  D(T) declared; under a second).
   An ion as large as the pore (lambda >= 1, e.g. a dye whose Stokes radius
   equals the pore radius) is EXCLUDED, announced: it is not a pore unknown,
   its permeate is 0, and it stays in the film -- its wall concentration the

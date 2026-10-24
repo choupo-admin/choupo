@@ -408,7 +408,10 @@ private:
 //  the correlation needs it (refusing by name otherwise), hands a neutral
 //  solute `D_neutral` (the unit's declared / priced / legacy value), and
 //  ANNOUNCES every default that is used.  `unitLabel` is the advisory
-//  locus ("membrane 'NF270'").
+//  locus ("membrane 'NF270'").  `lawResolvesIons` is true when the transport
+//  law decomposes SALT solutes into their ions itself (DSPM-DE): then
+//  `ionCoupling electroneutral;` on a feed of salts is the law's to apply
+//  and is not refused here (DEV.md 4c C148).
 Polarisation buildPolarisation(const DictPtr&                  operation,
                                const ThermoPackage&            thermo,
                                const std::vector<std::size_t>& soluteIdx,
@@ -417,7 +420,8 @@ Polarisation buildPolarisation(const DictPtr&                  operation,
                                scalar                          D_neutral,
                                scalar                          T_K,
                                const std::string&              unitLabel,
-                               int                             verbosity);
+                               int                             verbosity,
+                               bool                            lawResolvesIons = false);
 
 } // namespace membrane
 } // namespace Choupo

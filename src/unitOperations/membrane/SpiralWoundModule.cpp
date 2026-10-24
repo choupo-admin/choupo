@@ -764,7 +764,8 @@ int SpiralWoundModule::solve(const DictPtr& dict,
     //  own.  Defaults that are used are announced inside the builder.
     const membrane::Polarisation polar = membrane::buildPolarisation(
         opDict, thermo, soluteIdx, mtModel.get(), k_film_const, D_solute, T_in,
-        "membrane '" + membraneName + "'", verbosity);
+        "membrane '" + membraneName + "'", verbosity,
+        transportModel->decomposesSaltsIntoIons());
     const bool perSoluteK = polar.perSoluteK();
     if (!dSoluteAdvisory.empty() && polar.nIons() < polar.solutes().size())
         AdvisoryLog::instance().add("model", dSoluteSeverity,

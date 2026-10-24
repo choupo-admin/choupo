@@ -182,8 +182,8 @@ int PoreTransportBench::run(const DictPtr& dict,
     //  charge through its aqueous bridge and REFUSES `ionCoupling
     //  electroneutral;` on salts (no single-species bridge, so no charged
     //  solute) -- right for solutionDiffusion, which polarises solutes, and
-    //  a refusal the spiral-wound module still applies to a DSPM-DE salt
-    //  feed (recorded in docs/design/a-stiff-pore-solved-at-once.md §9).
+    //  a refusal the spiral-wound module lifts for a law that decomposes
+    //  salts itself since C148 (`decomposesSaltsIntoIons`; design §9.7).
     //  DSPM-DE decomposes the salts itself and hands the kernel every ion's
     //  own z and D (DSPM_DE.cpp, wallIons / wallFromPermeate); it reads
     //  only the policy and the k supplier from this object.

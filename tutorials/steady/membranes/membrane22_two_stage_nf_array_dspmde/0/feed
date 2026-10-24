@@ -1,0 +1,23 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*--- Choupo stream state.  Every DIMENSIONAL value carries its unit; the parser converts to SI.
+     componentMolarFlows is the OVERALL material (all phases). ---*/
+//  48 m3/h -- 12 m3/h per stage-1 vessel, membrane21's flow -- of a soft
+//  brackish water written by SALTS: NaCl 10 mol/m3, CaCl2 1 mol/m3, MgSO4
+//  1 mol/m3 (Na+ 10, Ca2+ 1, Mg2+ 1, Cl- 12, SO4 2- 1).  Per m3: water
+//  (1000 - 0.584 - 0.111 - 0.120)/18.015 = 55.463 kmol.
+componentMolarFlows
+{
+    water   2662.22 kmol/h;
+    NaCl    0.480 kmol/h;
+    CaCl2   0.048 kmol/h;
+    MgSO4   0.048 kmol/h;
+}
+T               293.15 K;      // 20 C, membrane21's
+P               2.4 bar;

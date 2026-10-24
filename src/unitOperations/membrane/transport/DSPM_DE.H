@@ -243,6 +243,10 @@ public:
 
     TransportSolution localFluxes(const TransportContext& ctx) const override;
 
+    //  The salts are decomposed into ions here, and the film's coupling is
+    //  applied to those ions (pb.wall.coupled) -- see TransportModel.H.
+    bool decomposesSaltsIntoIons() const override { return true; }
+
 private:
     inline static const std::string type_ = "DSPM-DE";
     // The stage banner (which exclusions are active) is announced ONCE per run.

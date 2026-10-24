@@ -82,6 +82,7 @@ License
 
 #include <algorithm>
 #include <cmath>
+#include <cstdio>
 #include <iomanip>
 #include <iostream>
 #include <sstream>
@@ -939,6 +940,38 @@ TransportSolution DSPM_DE::localFluxes(const TransportContext& ctx) const
         out.c_m[s] = salt_wall * 1.0e-3;                  // mol/m^3 -> kmol/m^3
         out.c_p[s] = salt_perm * 1.0e-3;
         out.J_s[s] = out.J_w * out.c_p[s];               // kmol/(m^2 s): convective
+
+        //  THE TWO LEGS OF A SALT IN A MIXTURE ARE NOT ONE NUMBER (C148,
+        //  measured on membrane22): the pore conserves CHARGE, not salts, so
+        //  in a feed of several salts an ion may cross with the counter-ion
+        //  of another (Mg2+ with Cl-, while SO4 2- stays behind).  The salt
+        //  basis the module marches can carry only one of the two legs, and
+        //  the cation leg is the one published; where the anion leg differs
+        //  the stream's anion is NOT the pore's, and the run says so (once
+        //  per salt per pass) rather than letting the stream table imply it.
+        scalar anion_perm = -1.0;
+        for (std::size_t i = 0; i < Ni; ++i)
+            if (ions[i].salt == s && ions[i].z < 0)
+                anion_perm = c_perm_ion[i] / std::max(ions[i].stoich, 1);
+        if (got && anion_perm >= 0.0
+            && std::abs(anion_perm - salt_perm)
+                   > 1.0e-6 * std::max(std::abs(salt_perm), std::abs(anion_perm)) + 1.0e-12)
+        {
+            const std::string nm = ctx.thermo.comp(soluteIdx[s]).name();
+            char b[400];
+            std::snprintf(b, sizeof(b),
+                "salt '%s' in a MIXED feed: its cation leg passes %.4g mol/m3 and"
+                " its anion leg %.4g mol/m3 at the first station that differs --"
+                " the pore conserves charge, not salts, and the salt basis carries"
+                " the CATION leg, so the permeate stream's anion of '%s' is not"
+                " the pore's (the ion rows of the props bench `poreTransport`"
+                " give each ion's own permeate)",
+                nm.c_str(), static_cast<double>(salt_perm),
+                static_cast<double>(anion_perm), nm.c_str());
+            if (AdvisoryLog::instance().addAnnouncedOnce("dspmde:legs:" + nm,
+                    "approximation", "warning", "transport DSPM-DE", b))
+                std::cout << "  [DSPM-DE] " << b << "\n";
+        }
     }
     if (pb.wall.coupled)
     {
