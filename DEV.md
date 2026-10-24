@@ -3462,6 +3462,13 @@ accepts today, and that is a policy call.
 > The GUI maps published numbers and computes no physics.  Status: design
 > proposed; Vitor 2026-10-20: "Avanca com 1-6, o 7 fica para depois" --
 > items 1-6 dispatched (G16); the time scrubber (7) planned for later.
+> LANDED 2026-10-24 (revived from `claude/c114-flowsheet-colour`): items
+> 1-6 checked on ammonia02 in the built app, export with legend; and the
+> live defect it carried a fix for -- `computePerStream` counted
+> crystals twice (crystalliser02 magma: 2.2478 kg/s shown against the
+> engine's 1.8516) -- now equals the engine.  Noted for Vitor: turbo's low
+> end is near-invisible on the dark canvas; on a phone the SHOW panel
+> overlaps the run panel (pre-existing, not measured on main).
 
 > **C113. FINDING A TUTORIAL OR AN EDUTOOL CHAPTER IN SECONDS (Vitor,
 > 2026-10-20, a written brief: search across ALL tutorials in the Open Case
