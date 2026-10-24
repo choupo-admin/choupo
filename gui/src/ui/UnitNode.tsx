@@ -49,6 +49,7 @@ import { operationSchemaFor, type OperationSchema } from "../case/operationSchem
 import { COLUMN_TYPES, HEAT_DUTY_TYPES, PHASE_SPLIT_TYPES } from "../case/dutyTypes.js";
 import { DUTY_TIER_COLOUR, type DutyTier } from "../case/dutySign.js";
 import { useStore } from "../state/store.js";
+import { SolvingHalo } from "./SolvingHalo.js";
 import {
   type DisplayPrefs,
   authoredScalarToPrefs,
@@ -213,6 +214,8 @@ export function UnitNode({ id, data, selected }: NodeProps) {
         fontFamily: "Inter, sans-serif",
       }}
     >
+      {/* DEV.md 4c C115: the unit being solved pulses on a slow run. */}
+      <SolvingHalo nodeName={unit.name} />
       {inputs.map((name, i) => (
         <DraggableHandle
           key={`in-${name}`}

@@ -114,3 +114,51 @@ License
     --choupo-vh: 100dvh;
   }
 }
+
+/* ---------------------------------------------------------------------------
+   THE UNIT BEING SOLVED PULSES WHEN A RUN IS SLOW (DEV.md 4c C115).  Drawn
+   by ui/SolvingHalo.tsx, decided by case/runProgress.ts.  An OUTLINE OUTSIDE
+   the unit box, in INK: colour on this canvas means phase, duty tier,
+   utility class or the published field / unit KPI the reader chose to colour
+   by (C114), every one a computed result, so the box, its border, its
+   selection ring and its wires are never repainted -- the halo sits around
+   them, 8 px out, clear of the 3 px selection ring.  The animation is
+   opacity + scale only (the compositor's two cheap properties); the
+   reduced-motion form is the same ink outline, still.  The chip is filled
+   (an indicator over the canvas carries its own surface, gui-credo).
+   --------------------------------------------------------------------------- */
+.choupo-solving-halo {
+  --choupo-solving-ink: light-dark(var(--mantine-color-dark-7), var(--mantine-color-gray-1));
+  position: absolute;
+  inset: -8px;
+  pointer-events: none;
+}
+.choupo-solving-ring {
+  position: absolute;
+  inset: 0;
+  border: 2.5px solid var(--choupo-solving-ink);
+  border-radius: 15px;
+}
+@keyframes choupo-solving-kf {
+  0%, 100% { opacity: 0.95; transform: scale(1); }
+  50%      { opacity: 0.2;  transform: scale(1.03); }
+}
+.choupo-solving-halo--pulse .choupo-solving-ring {
+  animation: choupo-solving-kf 1.2s ease-in-out infinite;
+}
+.choupo-solving-halo--static .choupo-solving-ring {
+  border-style: dashed;
+}
+.choupo-solving-chip {
+  position: absolute;
+  left: 50%;
+  bottom: 100%;
+  transform: translate(-50%, -3px);
+  white-space: nowrap;
+  padding: 1px 7px;
+  border-radius: 9px;
+  font: 600 11px/16px Inter, sans-serif;
+  font-variant-numeric: tabular-nums;
+  color: light-dark(var(--mantine-color-white), var(--mantine-color-dark-8));
+  background: var(--choupo-solving-ink);
+}

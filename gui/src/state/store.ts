@@ -42,6 +42,7 @@ import type { RunInputs } from "../case/staleness.js";
 import type { JsonDict } from "../dict/json.js";
 import type { RunResult } from "../adapters/SolverAdapter.js";
 import { applyDrillFeeds } from "../case/drillSeed.js";
+import { IDLE_RUN_PROGRESS, progressOnChunk, type RunProgress } from "../case/runProgress.js";
 // RESULT_WORKSPACES: the ONE list of workspaces that draw a run (ui/workspaces.ts).
 // That module imports from here TYPE-ONLY, so this is not a runtime cycle.
 import { RESULT_WORKSPACES } from "../ui/workspaces.js";
@@ -268,6 +269,10 @@ interface AppState {
   selectedNodeId: string | null;
   runStatus: RunStatus;
   runLog: string;
+  /** Which unit the LIVE log says is being solved (case/runProgress.ts) --
+   *  fed by appendLog, cleared when the run starts, ends, fails or is reset.
+   *  Drawn by the canvas as a pulse on a slow unit (DEV.md 4c C115). */
+  runProgress: RunProgress;
   runResult: RunResult | null;
   /** What the drawn result was computed from -- see finishRun.  null = never
    *  stamped (a fresh tab, or a drilled-in tab that INHERITED its parent's
@@ -597,6 +602,7 @@ export const useStore = create<AppState>((set, get) => ({
   // sub-case overrides all of it via the normal startRun/finishRun path.
   runStatus: initial.inherited ? initial.inherited.status : "idle",
   runLog: initial.inherited?.log ?? "",
+  runProgress: IDLE_RUN_PROGRESS,
   runResult: initial.inherited ?? null,
   runInputs: null,
   propsRunAt: 0,
@@ -879,16 +885,20 @@ export const useStore = create<AppState>((set, get) => ({
   // result when the solve lands.  Nulling it here flashed the flowsheet empty on
   // every Run and, if the solve then failed, discarded a good solution outright.
   // Reset (resetRun) is the explicit way to clear.
-  startRun: () => set({ runStatus: "running", runLog: "", scrubIdx: null }),
-  appendLog: (chunk) => set((s) => ({ runLog: s.runLog + chunk })),
+  startRun: () => set({ runStatus: "running", runLog: "", scrubIdx: null,
+                         runProgress: IDLE_RUN_PROGRESS }),
+  appendLog: (chunk) => set((s) => ({ runLog: s.runLog + chunk,
+                                      runProgress: progressOnChunk(s.runProgress, chunk, Date.now()) })),
   finishRun: (result, inputs) => set({ runStatus: result.status, runResult: result,
-                                      runInputs: inputs ?? null }),
+                                      runInputs: inputs ?? null,
+                                      runProgress: IDLE_RUN_PROGRESS }),
   markPropsRun: () =>
     set((s) => ({ propsRunAt: Math.max(s.propsRunAt, s.flowsheetRunAt) + 1 })),
   markFlowsheetRun: () =>
     set((s) => ({ flowsheetRunAt: Math.max(s.propsRunAt, s.flowsheetRunAt) + 1 })),
-  failRun: () => set({ runStatus: "error" }),
-  resetRun: () => set({ runStatus: "idle", runLog: "", runResult: null }),
+  failRun: () => set({ runStatus: "error", runProgress: IDLE_RUN_PROGRESS }),
+  resetRun: () => set({ runStatus: "idle", runLog: "", runResult: null,
+                        runProgress: IDLE_RUN_PROGRESS }),
 
   plotsViewHint: null,
   setPlotsViewHint: (h) => set({ plotsViewHint: h }),
