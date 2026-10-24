@@ -1529,6 +1529,17 @@ accepts today, and that is a policy call.
 > fact dossier with every claim sourced and its confidence stated.  The
 > pedagogical scope is put to Vitor with the dossier BEFORE anything is
 > built.
+> PHASE 1 DONE (2026-10-24): the dossier (economics only) confirms the
+> number he named -- the inquiry report, p.323: "O envolvimento global da
+> CGD neste projeto, resultou em perdas de pelo menos EUR 400M".  SCOPE
+> PUT TO HIM; RULING (2026-10-24): "Deixa a politica de fora" -- no
+> government, no political finding or testimony, no names of persons,
+> institutions only.  Phase 2 dispatched the same day: a research record
+> under docs/design/ and a NOTES EduTool on "Process design & economics"
+> (the chain PX -> PTA -> PET, the plan's NPV, its sensitivity to the
+> spread and to the merchant share, the risk department's written
+> warnings as the concepts that catch them, the outcome with the loss
+> metrics defined and not added).
 
 > **C142. A PORE SOLVER BETTER THAN NANOFILTRAN, WITH NANOFILTRAN ONLY AS
 > THE COMPARISON (Vitor, 2026-10-24: "Eu quero que facas um solver melhor!
