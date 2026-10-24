@@ -7,6 +7,6 @@
 |        |     O ptimization  |                                               |
 \*-----------------------------------------------------------------------------*/
 application   choupoSolve;
-description   "DSPM-DE NF: the charged pore solved node by node (finite differences, NanoFiltran's method) beside the default closed form, NaCl and MgSO4 at 10 bar";
+description   "DSPM-DE NF: the charged pore solved node by node (finite differences, NanoFiltran's method, the default) on NaCl and MgSO4 at 10 bar, and the declared closed form beside it on MgSO4";
 
 verbosity     3;

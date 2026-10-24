@@ -18691,10 +18691,13 @@ At steady state the flux each ion carries out is swept into the permeate
 by convection, $j_i = J_v\,c_{p,i}$.  Equations
 \eqref{eq:dspmde-partition}--\eqref{eq:dspmde-current} are the model;
 Choupo offers two ways across the pore, and they are not the same model.
+By default (since 2026-10-24) it \emph{solves} them, as the next subsection
+describes; the closed form below is kept as a declared option, for what its
+failure teaches.
 
-\paragraph{The default: a closed form that does not solve the pore.}
-Without a \code{poreSolver} declaration each ion is carried across alone by
-the transmission
+\paragraph{The declared closed form, which does not solve the pore.}
+With \code{poreSolver \{ method closedForm; \}} (the default until
+2026-10-24) each ion is carried across alone by the transmission
 \begin{equation}
    \frac{c_{\text{out},i}}{c_{\text{in},i}}
    = \frac{K_{c,i}}{K_{c,i} + \bigl(1 - K_{c,i}\,e^{-\mathrm{Pe}_i}\bigr)R_i},
@@ -18714,15 +18717,21 @@ potential gradient couples the ions, and neither
 under those constraints.  It is not one even in its own limit with no
 potential: a point solute in an uncharged pore ($\Phi=K_c=R=1$) is
 transmitted $1/(2-e^{-\mathrm{Pe}})$, i.e.\ rejected by up to 50\,\%, where
-\eqref{eq:dspmde-enp} gives no rejection at all.  It is kept, byte for byte,
-because every DSPM-DE result recorded before the solved pore is pinned to
-it.
+\eqref{eq:dspmde-enp} gives no rejection at all.  And with $K_c > 1$ ---
+which \eqref{eq:dspmde-Kc} gives for every ion of the corpus --- it tends
+to $K_c$ as $\mathrm{Pe}\to 0$: a permeate \emph{richer} than the pore inlet.
+That limit was masked while the default $K_d$ was too small (a small
+$K_d$ is a large Pe); with the corrected $K_d$, on the corpus NF270
+record, the closed form exhausts NaCl from the bulk until the module refuses
+its solute balance, and rejects MgSO$_4$ at 58\,\% where the solved pore
+gives 99.98\,\%.  Its wall is closed with the salts' solution-diffusion
+$B_s$ (it has no permeate of its own to close it with).
 
 \subsection{Solving the pore: every node at once}
 
-\code{transportParameters \{ poreSolver \{ method finiteDifference;
-nodes 101; \} \}} solves \eqref{eq:dspmde-enp}--\eqref{eq:dspmde-current}
-as written --- the method of NanoFiltran \cite{GeraldesAlves2008}: the
+The default --- \code{poreSolver \{ method finiteDifference; nodes 101; \}}
+when written out, each default announced --- solves
+\eqref{eq:dspmde-enp}--\eqref{eq:dspmde-current} as written --- the method of NanoFiltran \cite{GeraldesAlves2008}: the
 extended Nernst--Planck equations discretised by finite differences inside
 the membrane, linearised, and every node solved simultaneously.  The problem
 is \emph{stiff}: a co-ion held back by the Donnan field carries a migration
@@ -18784,9 +18793,10 @@ $S = \sqrt{\Phi_+\Phi_-}$, $\mathrm{Pe}_s = K_{c,s} J_v/P_s$ --- the neutral
 solute's classical result with the salt's ambipolar coefficients.  The
 finite-difference solve converges to \eqref{eq:dspmde-ambipolar} at second
 order, and on the witness's uncharged variant the engine reproduces it
-within $2\times10^{-6}$ at every channel station with 101 nodes.  The
-default closed form departs from the same limit by up to 70\,\% in the
-permeate concentration.
+within $10^{-7}$ at every channel station with 101 nodes (the hindrance of
+\eqref{eq:dspmde-Kd}--\eqref{eq:dspmde-Kc}, the wall closed with the pore's
+own permeate).  The declared closed form departs from the same limit by up
+to 76\,\% in the permeate concentration.
 
 \paragraph{The same model in two programs.}  Three more declared choices
 make NanoFiltran's model \cite{GeraldesAlves2008} expressible, each
@@ -18801,11 +18811,13 @@ converged around the pore solve (\code{ideal} sets every coefficient to~1;
 the default, \code{wallDavies}, is the feed-face Davies at the bulk ionic
 strength with an ideal permeate).  \code{bulkDielectric 80;} declares the
 solution's dielectric constant in the Born term and in $A(\varepsilon_b)$.
-\code{poreSolver \{ wallClosure porePermeate; \}} closes the multi-ionic
-interface balance of the wall (\S\ref{ch:membrane}) with the solved pore's
-own permeate, the wall and the pore solved together by an outer Newton on
-the permeate (the default closes the wall with the salts' solution-diffusion
-$B_s$, as the closed form does).  With all of them,
+\code{poreSolver \{ wallClosure porePermeate; \}} --- the default of the
+solved pore since 2026-10-24 --- closes the multi-ionic interface balance of
+the wall (\S\ref{ch:membrane}) with the solved pore's own permeate, the
+wall and the pore solved together by an outer Newton on the permeate of the
+ions the feed carries (\code{wallClosure solutionDiffusion} closes it with
+the salts' solution-diffusion $B_s$, as the closed form does).  With
+\code{activity bulkOverPoreDavies;} and \code{bulkDielectric 80;},
 \file{tutorials/props/membrane/nanofiltran01\_dspmde\_reference} runs the
 law at imposed $J_v$ (the \code{poreTransport} bench) beside NanoFiltran
 itself on its shipped example, a 1:1 salt, a 2:1 salt with a divalent
@@ -18828,11 +18840,17 @@ The water flux still obeys the solution-diffusion law
 \eqref{eq:sd-water}, $J_w=A_w(\Delta P-\Delta\pi)$, but now
 $\Delta\pi=\Rgas T\bigl(\sum_i c_{\text{wall},i}-\sum_i c_{p,i}\bigr)$
 is a van't Hoff sum over \emph{all} ions, both faces.  Choupo closes the
-$J_w$--$\Delta\pi$ loop with a damped fixed point (relaxation $0.5$),
-seeded from the no-osmotic guess $J_w=A_w\Delta P$; each evaluation
-runs the feed-face partition and then either the transmission
-\eqref{eq:dspmde-transmission} with the permeate-face Donnan close (the
-default) or the solved pore of the previous subsection.  The
+$J_w$--$\Delta\pi$ loop from the no-osmotic guess $J_w=A_w\Delta P$; each
+evaluation runs the solved pore of the previous subsection (the default) or
+the feed-face partition and the transmission \eqref{eq:dspmde-transmission}
+with the permeate-face Donnan close (the declared closed form).  The closed
+form takes a damped fixed point (relaxation $0.5$); the solved pore takes a
+safeguarded secant on the same residual $h(J)=J-A_w(\Delta P-\Delta\pi(J))$,
+which rises monotonically from $-A_w\Delta P$ at $J=0$ to $A_w\Delta\pi\ge0$
+at $J=A_w\Delta P$, so the root is bracketed and a secant step that leaves
+the bracket falls back to the damped one --- because each evaluation there
+is a full wall-and-pore Newton and the fixed point needs some forty of them
+to $10^{-12}$.  The
 per-ion permeate concentrations are then collapsed back to the per-salt
 $c_p$ the spiral-wound march expects (stoichiometric, electroneutral),
 and the channel is marched station-by-station exactly as in
@@ -18866,8 +18884,10 @@ partition reproduces the canonical NF fingerprint
    R_{\text{obs}}(\mathrm{CaCl_2}) \;>\;
    R_{\text{obs}}(\mathrm{NaCl}),
 \]
-Choupo returning $R_{\text{obs}}(\mathrm{NaCl})\approx 55\,\%$ against
-near-total rejection of the divalent-co-ion salt $\mathrm{MgSO_4}$.  The
+Choupo returning $R_{\text{obs}}(\mathrm{NaCl})\approx 50\,\%$ and
+$R_{\text{obs}}(\mathrm{CaCl_2})\approx 70\,\%$ against near-total rejection
+of the divalent-co-ion salt $\mathrm{MgSO_4}$ (99.97\,\%), with the pore
+solved and the wall closed with its own permeate (the defaults).  The
 $z^2$ in both the Donnan \eqref{eq:dspmde-partition} and the Born
 \eqref{eq:dspmde-born} terms is the whole story: the divalent co-ion
 $\mathrm{SO_4^{2-}}$ is excluded far harder than the monovalent
@@ -18890,11 +18910,9 @@ hydrated/Nightingale radii, so $r_p=0.6$~nm is consistent with
 \emph{those}, not with the Stokes-radius fits of the original papers);
 the charge density $X_d$ is in reality pH- and concentration-dependent
 (it grows on dilution and with rising pH) but is a constant scalar here;
-$\varepsilon_p$ is a single fitted dielectric; the default closed-form
-transmission does not solve the pore (the finite-difference solver does, at
-the cost of a grid the case declares); the wall concentration both paths
-share is closed with the salt's solution-diffusion $B_s$, not with the
-pore's own permeate;
+$\varepsilon_p$ is a single fitted dielectric; the pore is solved on a grid
+(101 nodes unless the case declares otherwise) at every channel station,
+seconds per module where the retired closed form took milliseconds;
 and the model is for an aqueous electrolyte, not a general
 mixed-charge speciation solver.  Treat the numbers as a mechanistic
 ordering tool, calibrated per operating point --- \emph{all models are
@@ -18908,10 +18926,11 @@ one membrane. \\
 the same case with the Born (dielectric) term toggled on/off to isolate
 its contribution. \\
 \file{tutorials/steady/membranes/membrane20\_dspmde\_pore\_finite\_difference}
---- the same membrane and feeds as membrane10, each salt through the
-default closed form and through the solved pore, one line apart (NaCl
-$R_{\text{obs}}$ about $57\,\%$ against $75\,\%$).  Nothing in it is
-compared with NanoFiltran yet.
+--- the same membrane and feeds as membrane10, the solved pore DECLARED on
+NaCl and MgSO$_4$, and the closed form declared beside it on MgSO$_4$
+($R_{\text{obs}}$ about $58\,\%$ against $99.98\,\%$; on NaCl the closed
+form refuses).  The code-to-code comparison with NanoFiltran is
+\file{tutorials/props/membrane/nanofiltran01\_dspmde\_reference}.
 \end{tutoriallink}
 
 % ---------------------------------------------------------------------
@@ -24535,7 +24554,7 @@ model development'', \emph{Chem.\ Eng.\ Sci.}, 57, 1121--1137 (2002).
 Adds dielectric exclusion to give DSPM-DE: the Born solvation partition
 (Eq.~\ref{eq:dspmde-born}) with the reduced pore dielectric
 $\varepsilon_p$, the three-mechanism interfacial partition
-(Eq.~\ref{eq:dspmde-partition}); the engine cites the default's
+(Eq.~\ref{eq:dspmde-partition}); the engine cites the declared closed form's
 pore-transmission closure (Eq.~\ref{eq:dspmde-transmission}) to it, a
 citation not verified against the paper's text --- that closure does not
 reduce to the solution of Eq.~\ref{eq:dspmde-enp} in its own uncharged

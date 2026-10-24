@@ -1174,49 +1174,51 @@ each channel node):
   announces it (`per-ion solution-diffusion without charge coupling`).
 * `DSPM-DE` — the charged-pore Donnan-steric model with dielectric
   exclusion; needs a membrane record with a `poreModel {}` tier and SALT
-  components carrying `electrolyte { cation; anion; }`.  By default the pore
-  is NOT solved (feed-face Donnan, an electroneutral permeate, each ion
-  carried across alone by a closed form).  To SOLVE it — the extended
-  Nernst-Planck equations on a grid across the pore, electroneutrality at
-  every node, zero current, every node at once (NanoFiltran's method) —
-  declare in the unit's operation:
-
-  ```
-  transportParameters { poreSolver { method finiteDifference; nodes 101; } }
-  ```
-
-  `nodes` counts grid points, faces included (default 101, announced); the
-  run prints the node count, the Newton iterations, the residual, the
-  structure audit and a per-unit pore summary.  The two paths give
-  DIFFERENT rejections — the closed form is not the solved pore's limit
-  (`membrane20_dspmde_pore_finite_difference` runs both side by side).
-  `method closedForm;` is the default.
-
-  Four more DECLARED choices (C138 slice 2), each opt-in, the default the
-  model every DSPM-DE case was recorded on:
+  components carrying `electrolyte { cation; anion; }`.  By default (since
+  2026-10-24) the pore is SOLVED — the extended Nernst-Planck equations on
+  101 nodes across the pore, electroneutrality at every node, zero current,
+  every node at once (NanoFiltran's method) — and the wall is closed with
+  that pore's own permeate; with the hindrance pair below, each default is
+  announced in the run.  Nothing need be declared; to make the choices
+  visible, or to change them, declare in the unit's operation:
 
   ```
   transportParameters
   {
-      poreSolver { method finiteDifference; nodes 801;
-                   wallClosure porePermeate; }   // default solutionDiffusion
+      poreSolver { method finiteDifference; nodes 101;   // the defaults
+                   wallClosure porePermeate; }          // or solutionDiffusion
       hindrance  DechadilokDeen2006;             // the default, and the only word
       activity   bulkOverPoreDavies;             // default wallDavies; or ideal
       bulkDielectric 80;                         // default epsWater(T)
   }
   ```
 
+  `nodes` counts grid points, faces included (default 101, announced); the
+  run prints the node count, the Newton iterations, the residual, the
+  structure audit and a per-unit pore summary.  `method closedForm;` (the
+  default until 2026-10-24) does NOT solve the pore — feed-face Donnan, an
+  electroneutral permeate, each ion carried across alone by a closed form
+  whose transmission tends to K_c > 1 at low Peclet number, its wall closed
+  with the salts' B_s; on the corpus membrane it refuses NaCl (the permeate
+  comes out richer than the wall and the module's solute balance stops the
+  run) and holds MgSO4 at ~58 % against the solved pore's 99.98 %
+  (`membrane20_dspmde_pore_finite_difference` runs both on MgSO4).
+
   `DechadilokDeen2006` is the cross-section-averaged pair (K_d = H/Phi) and
   the default since 2026-10-24; `hindrance legacy` — the old default, which
   took the Dechadilok-Deen polynomial H (= Phi K_d) itself as K_d and so
-  counted the steric partition twice in diffusion — REFUSES by name.  `wallClosure porePermeate` closes the wall with the solved
-  pore's own permeate (the two solved together); `activity
-  bulkOverPoreDavies` puts gamma_bulk/gamma_pore at both faces, the pore
-  gammas at the pore's end nodes with A(eps_p) (needs the solved pore).
-  Together they are NanoFiltran's model (Geraldes & Alves 2008); the
-  code-to-code golden is `tutorials/props/membrane/nanofiltran01_dspmde_reference`,
-  which runs the law at IMPOSED J_v through the `poreTransport` props op.
-  Any other key or word refuses.
+  counted the steric partition twice in diffusion — REFUSES by name.
+  `wallClosure porePermeate` closes the wall with the solved pore's own
+  permeate (the two solved together; `solutionDiffusion` closes it with
+  B_s); `activity bulkOverPoreDavies` puts gamma_bulk/gamma_pore at both
+  faces, the pore gammas at the pore's end nodes with A(eps_p) (needs the
+  solved pore).  Together they are NanoFiltran's model (Geraldes & Alves
+  2008); the code-to-code golden is
+  `tutorials/props/membrane/nanofiltran01_dspmde_reference`, which runs the
+  law at IMPOSED J_v through the `poreTransport` props op.  Any other key or
+  word refuses.  Cost: the solved pore is a stiff boundary-value problem at
+  every channel station, seconds per module where the closed form took
+  milliseconds.
 * `SDEM` — **solution-diffusion-electromigration** (Yaroshchuk 2013): the
   SAME per-ion `B_s` as above, coupled by the electric field that zero
   current imposes — the permeate is electroneutral **by construction, with

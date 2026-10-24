@@ -29,6 +29,13 @@
   This is the pedagogical core of DSPM-"DE": the DE (dielectric exclusion) is
   what distinguishes the 2002 Bowen-Welfoot model from the 1997 steric-Donnan
   DSPM.  Toggling poreDielectric is a single, visible switch.
+
+  Both units run DSPM-DE's defaults (since 2026-10-24, DEV.md 4c C141, each
+  announced): the Dechadilok & Deen 2006 hindrance (K_d = H/Phi), the pore
+  SOLVED on 101 nodes, and the wall closed with that pore's own permeate.
+  The Born term is what separates the two observed rejections; read the
+  wall polarisation (Gamma_avg) beside them -- the film, not only the pore,
+  sets what the permeate sees.
 \*---------------------------------------------------------------------------*/
 
 // stream state lives on disk in 0/ (per-stream files); flowsheetDict is TOPOLOGY only

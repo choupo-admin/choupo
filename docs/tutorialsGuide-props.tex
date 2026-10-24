@@ -3013,6 +3013,53 @@ Why the case exists: `kinetics1D` had NO case and no gate. Its sibling vaporPres
 \subsection{membrane}
 \grouptheory{membrane}
 \clearpage
+\tutentry{nanofiltran01\_dspmde\_reference}{tutorials/props/membrane/nanofiltran01\_dspmde\_reference}
+\begin{tutscheme}
+\begin{tikzpicture}[>={Stealth[length=2mm]}, every node/.style={font=\scriptsize}]
+  \node[draw, rounded corners=2pt, align=center, minimum width=3.1cm, minimum height=0.8cm, fill=black!4] at (0.0,-0.0) {\textbf{example\_ideal}\\[-1pt]{\tiny poreTransport}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=3.1cm, minimum height=0.8cm, fill=black!4] at (3.6,-0.0) {\textbf{example\_noBorn}\\[-1pt]{\tiny poreTransport}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=3.1cm, minimum height=0.8cm, fill=black!4] at (7.2,-0.0) {\textbf{example\_davies}\\[-1pt]{\tiny poreTransport}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=3.1cm, minimum height=0.8cm, fill=black!4] at (0.0,-1.3) {\textbf{NaCl\_ideal}\\[-1pt]{\tiny poreTransport}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=3.1cm, minimum height=0.8cm, fill=black!4] at (3.6,-1.3) {\textbf{Na2SO4\_ideal}\\[-1pt]{\tiny poreTransport}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=3.1cm, minimum height=0.8cm, fill=black!4] at (7.2,-1.3) {\textbf{mixed\_polarised}\\[-1pt]{\tiny poreTransport}};
+\end{tikzpicture}
+\end{tutscheme}
+\tutwhat{The DSPM-DE pore solved by two programs: Choupo against NanoFiltran (Geraldes \& Alves 2008), same model, same inputs -- code-to-code verification, not validation}
+\begin{tutnarrative}
+nanofiltran01 -- THE DSPM-DE PORE SOLVED TWICE, BY TWO PROGRAMS: Choupo's finite-difference pore against NanoFiltran (Geraldes \& Alves, "Computer program for simulation of mass transport in nanofiltration membranes", J. Membr. Sci. 321 (2008) 172-182), Vitor Geraldes's own program, on the SAME model and the SAME inputs.
+
+WHAT KIND OF CHECK THIS IS. CODE-TO-CODE VERIFICATION: one model, two independent implementations (NanoFiltran: Fortran 77, central differences, under-relaxed Newton on a dense matrix; Choupo: C++, exponentially fitted fluxes, Newton on a block-tridiagonal matrix). It says the equations are solved right. It is NOT a validation: no number here is a measurement, and the membrane is NanoFiltran's worked example, which describes no real membrane.
+
+THE MODEL BOTH SOLVE. The extended Nernst-Planck equations across the pore with electroneutrality at every node; steric (1 - lambda)\textasciicircum{}2, Born dielectric and Donnan partitions at both faces; the Dechadilok \& Deen (2006) hindrance pair; the multi-ionic interface balance of Geraldes \& Afonso (2007) with the suction correction of Geraldes \& Afonso (2006); the wall closed with the pore's own permeate. Every one of those is DECLARED below (`transportParameters`), so this case does not depend on Choupo's defaults; since 2026-10-24 (DEV.md 4c C141) the hindrance pair, the solved pore and that wall closure ARE the defaults, while the activities and the bulk dielectric constant stay NanoFiltran's declared choices (docs/design/a-stiff-pore-solved-at-once.md, sections 9 and 10, list every difference and how each was handled). "No polarisation" is NanoFiltran's own: a film of k = 10 m/s.
+
+THE SIX OPERATIONS (NanoFiltran's matrix, bin/curate/nanofiltran/): example\_ideal NanoFiltran's shipped example (Na+/Mg2+/Cl- 10/20/50 mol/m3, X -30 mol/m3, r\_p 0.4 nm, 2.5 um, eps\_p 60), ideal activities, J\_v 1e-6 .. 5e-5 m/s example\_noBorn the same with eps\_p = 80 (no dielectric exclusion) example\_davies example\_noBorn with Davies activities at both faces (bulk/pore ratio; see the Davies finding below) NaCl\_ideal a 1:1 salt, 10 mol/m3 Na2SO4\_ideal a 2:1 salt whose DIVALENT CO-ION meets the negative pore mixed\_polarised NaCl + Na2SO4 10/10 mol/m3 with concentration polarisation: Sh = 0.23 Re\textasciicircum{}0.567 Sc\textasciicircum{}0.33 per ion, Re 2000, L 2.4 cm (Choupo's StirredCell with radius = L, density 997 kg/m3 and NanoFiltran's own Vogel viscosity at 298.15 K, so k\_c,i is the same number)
+
+WHAT IS PINNED. `expected` carries NanoFiltran's permeate concentrations as ANCHOR rows -- its Richardson extrapolation of ND 102 and 204, the program's limit -- with tolerances sized from the MEASURED discretisation error of both programs: this case runs 801 nodes, whose error against the converged pore is the larger term. bin/curate/check\_nanofiltran\_reference.py holds the tighter claim: Choupo extrapolated from 401/801/1601 nodes agrees with NanoFiltran extrapolated to \textasciitilde{}1e-7 relative on every row.
+
+THREE THINGS IN NANOFILTRAN ARE CONSTANTS, NOT MODEL, and are matched through its INPUTS (its source is run as received): its diffusivity is corrected to T by its Vogel viscosity (1.00014 at 298.15 K); its Born constant is the rounded 6.95e-5/8.314; its hindrance polynomial is written in single-precision literals, which at lambda = 0.875 (Mg2+) moves K\_d by 1.55e-4 -- uncorrected, that alone parts the two programs by 5.5e-5 on MgCl2 and 6.8e-4 on the trace Na+ of the example.
+
+THE DAVIES FINDING. NanoFiltran evaluates Davies as exp(-A z\textasciicircum{}2 (...)) with A = 1.825e6 (eps T)\textasciicircum{}-1.5 -- the log10 constant (0.495 at 80, 298 K) -- so its ln gamma is ln 10 = 2.303 times too small. Choupo's `activity bulkOverPoreDavies` is Davies on log10; its rows are anchored on NanoFiltran built with the two lines that compute A corrected (DAVIES\_PATCH in regenerate.py: ln 10, and the constant to five figures, 1.82483e6). As received, the program puts 7.7 \% more Na+ in this op's permeate; that number is reported (`regenerate.py --report-davies`), not pinned. The op runs with Born OFF because, with it on, matching NanoFiltran's Born constant through its pore dielectric input would also move its pore-side Davies A by 2e-4 -- measured to part the trace Na+ by 5.5e-4 -- and the two effects could not be told apart.
+
+\end{tutnarrative}
+\begin{tutgolden}
+\goldrow{diag}{example\_ideal}{Robs\_Cl\_p1}{0.202989025795}
+\goldrow{diag}{example\_ideal}{Robs\_Cl\_p2}{0.42410107917}
+\goldrow{diag}{example\_ideal}{Robs\_Cl\_p3}{0.51695014572}
+\goldrow{diag}{example\_ideal}{Robs\_Cl\_p4}{0.603832218837}
+\goldrow{diag}{example\_ideal}{Robs\_Cl\_p5}{0.656025668338}
+\goldrow{diag}{example\_ideal}{Robs\_Mg\_p1}{0.277594917868}
+\goldrow{diag}{example\_ideal}{Robs\_Mg\_p2}{0.518891301308}
+\goldrow{diag}{example\_ideal}{Robs\_Mg\_p3}{0.561965456186}
+\goldrow{diag}{example\_ideal}{Robs\_Mg\_p4}{0.57192034085}
+\goldrow{diag}{example\_ideal}{Robs\_Mg\_p5}{0.571194624339}
+\goldrow{diag}{example\_ideal}{Robs\_Na\_p1}{-0.095434542496}
+\goldrow{diag}{example\_ideal}{Robs\_Na\_p2}{0.0449401906182}
+\goldrow{diag}{example\_ideal}{Robs\_Na\_p3}{0.336888903859}
+\goldrow{diag}{example\_ideal}{Robs\_Na\_p4}{0.731479730785}
+\goldmore{138}
+\end{tutgolden}
+
+\clearpage
 \tutentry{polarisation01\_geraldes\_afonso\_table1}{tutorials/props/membrane/polarisation01\_geraldes\_afonso\_table1}
 \begin{tutscheme}
 \begin{tikzpicture}[>={Stealth[length=2mm]}, every node/.style={font=\scriptsize}]

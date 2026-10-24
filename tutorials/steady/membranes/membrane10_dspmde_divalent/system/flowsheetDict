@@ -18,7 +18,7 @@
        (2:2 divalent)   (2:1 mixed)      (1:1 monovalent)
 
   WHY (Bowen-Welfoot 2002): the membrane carries a NEGATIVE fixed charge
-  (X_d = -40 mol/m3).  The CO-ION (the anion, here Cl- / SO4--) is excluded by
+  (X_d = -5 mol/m3, the record's value).  The CO-ION (the anion, here Cl- / SO4--) is excluded by
   Donnan; a DIVALENT co-ion (SO4--) is excluded far more strongly than a
   monovalent one (z^2 in the Donnan + Born partition).  So MgSO4 -- whose
   co-ion is divalent -- is rejected most; NaCl -- whose co-ion is the
@@ -33,6 +33,15 @@
 
   `transport DSPM-DE;` selects the charged-pore law; drop it (or set
   `transport solutionDiffusion;`) to compare against the baseline.
+
+  THE MODEL, with nothing declared (DSPM-DE's defaults since 2026-10-24,
+  DEV.md 4c C141, each announced in the run): the hindrance pair of
+  Dechadilok & Deen 2006 (K_d = H/Phi -- the earlier default counted the
+  steric partition twice in diffusion); the pore SOLVED by finite
+  differences on 101 nodes, electroneutral at every node with zero current
+  (NanoFiltran's method); and the wall closed with that pore's own
+  permeate.  membrane20_dspmde_pore_finite_difference declares the same
+  model and sets the retired closed form beside it.
 \*---------------------------------------------------------------------------*/
 
 // stream state lives on disk in 0/ (per-stream files); flowsheetDict is TOPOLOGY only

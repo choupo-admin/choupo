@@ -38,19 +38,23 @@ License
       interface model when the case declares `polarisation { ionCoupling
       electroneutral; }` -- and the wall is then read ION BY ION, which is
       what the partition (2) takes as its c_bulk.
-    * The DEFAULT pore (closed form): a bisection on the feed Donnan
-      potential (feed-face electroneutrality), a bisection on a permeate
-      Donnan potential (permeate electroneutrality) -- both only when the
-      membrane declares a charge -- and a closed-form per-ion transmission
-      between them.  It does NOT impose (4) or (5) inside the pore (DSPM_DE.H
-      says what each path solves; this list used to say "inner unknowns
-      solved by NewtonND ... zero net current integrated across the pore",
-      which the closed form never did).
-    * The SOLVED pore (`poreSolver { method finiteDifference; }`): the ENP
-      on n nodes, every node at once by Newton on the declared
-      block-tridiagonal structure -- PoreNernstPlanck.{H,cpp}.
-    * The water flux: a damped fixed point J_w = A_w (dP - dpi) around
-      either pore.
+    * The SOLVED pore (the DEFAULT since 2026-10-24, DEV.md 4c C141; or
+      `poreSolver { method finiteDifference; }`): the ENP on n nodes, every
+      node at once by Newton on the declared block-tridiagonal structure --
+      PoreNernstPlanck.{H,cpp} -- with, by default, the wall closed with
+      that pore's own permeate (`wallClosure porePermeate`).
+    * The DECLARED closed form (`poreSolver { method closedForm; }`, the
+      default until C141): a bisection on the feed Donnan potential
+      (feed-face electroneutrality), a bisection on a permeate Donnan
+      potential (permeate electroneutrality) -- both only when the membrane
+      declares a charge -- and a closed-form per-ion transmission between
+      them.  It does NOT impose (4) or (5) inside the pore (DSPM_DE.H says
+      what each path solves; this list used to say "inner unknowns solved by
+      NewtonND ... zero net current integrated across the pore", which the
+      closed form never did).  It still computes the solved pore's seed.
+    * The water flux: J_w = A_w (dP - dpi) around either pore -- a damped
+      fixed point under the closed form, a safeguarded secant under the
+      solved pore.
     * The exclusions are switched on by the membrane record and ANNOUNCED;
       there is no seeding chain between them at run time (the closed form
       needs no seed -- its potentials are monotone bisections that cannot
@@ -190,12 +194,15 @@ struct Ion
 } // anonymous namespace
 
 // ---------------------------------------------------------------------------
-//  `transportParameters { poreSolver { method <word>; nodes <n>; } }`.
-//  Absent, the closed form runs and nothing is read -- every DSPM-DE case
-//  that predates the block is untouched.  A key this law does not read, a
-//  method word it does not know, and a grid it cannot use each REFUSE by
-//  name: a declared word the engine dispatches on must not fall through to
-//  a default (CLAUDE.md, 2026-09-07).
+//  `transportParameters { poreSolver { method <word>; nodes <n>;
+//  wallClosure <word>; } ... }`.  Absent (the block, or `poreSolver` in it),
+//  the pore is SOLVED -- `method finiteDifference; nodes 101; wallClosure
+//  porePermeate;`, the stated defaults since 2026-10-24 (DEV.md 4c C141),
+//  set in the member initialisers because this reader is called only when
+//  the case writes the block, and announced at the first solve.  A key
+//  this law does not read, a method word it does not know, and a grid it
+//  cannot use each REFUSE by name: a declared word the engine dispatches on
+//  must not fall through to a default (CLAUDE.md, 2026-09-07).
 void DSPM_DE::readParameters(const DictPtr& params)
 {
     const std::string ctx = "transport DSPM-DE: transportParameters";
@@ -256,14 +263,7 @@ void DSPM_DE::readParameters(const DictPtr& params)
     }
 
     if (!params->found("poreSolver"))
-    {
-        if (activity_ == Activity::BulkOverPoreDavies)
-            throw std::runtime_error(ctx + " declares `activity"
-                " bulkOverPoreDavies;`, whose pore-side activity coefficients"
-                " are read at the pore's own end nodes -- the closed form has"
-                " none.  Declare `poreSolver { method finiteDifference; }`.");
-        return;
-    }
+        return;                   // the solved pore, every stated default
     const auto ps = params->subDict("poreSolver");
     for (const auto& k : ps->keys())
         if (k != "method" && k != "nodes" && k != "wallClosure")
@@ -272,17 +272,24 @@ void DSPM_DE::readParameters(const DictPtr& params)
                   " `nodes` and `wallClosure`).");
     if (!ps->found("method"))
         throw std::runtime_error(ctx + ".poreSolver declares no `method` --"
-            " say `closedForm` (the uniform-gradient form, the default when the"
-            " block is absent) or `finiteDifference` (the pore solved node by"
-            " node)");
+            " say `finiteDifference` (the pore solved node by node, the default"
+            " when the block is absent) or `closedForm` (the uniform-gradient"
+            " form, which does not solve the pore)");
     const std::string method = ps->lookupWord("method");
     const std::vector<std::string> accepted = { "closedForm", "finiteDifference" };
     if (std::find(accepted.begin(), accepted.end(), method) == accepted.end())
         throw std::runtime_error(registryRefusal::message(
             "DSPM-DE pore solver method", method, accepted, "Accepted"));
     finiteDifference_ = (method == "finiteDifference");
+    methodDefaulted_  = false;
     if (!finiteDifference_)
     {
+        //  The closed form has no permeate of its own to close the wall
+        //  with: its wall is the solution-diffusion B_s closure.
+        wallClosure_          = WallClosure::SolutionDiffusion;
+        wallClosureDefaulted_ = false;
+        poreNodes_            = 0;
+        nodesDefaulted_       = false;
         if (ps->found("nodes"))
             throw std::runtime_error(ctx + ".poreSolver declares `nodes` with"
                 " `method closedForm;` -- the closed form has no grid, so the"
@@ -310,6 +317,7 @@ void DSPM_DE::readParameters(const DictPtr& params)
                 "DSPM-DE pore solver wallClosure", w, acc, "Accepted"));
         wallClosure_ = (w == "porePermeate") ? WallClosure::PorePermeate
                                              : WallClosure::SolutionDiffusion;
+        wallClosureDefaulted_ = false;
     }
     if (ps->found("nodes"))
     {
@@ -318,13 +326,11 @@ void DSPM_DE::readParameters(const DictPtr& params)
             throw std::runtime_error(ctx + ".poreSolver `nodes` must be a whole"
                 " number of grid nodes across the pore, faces included, of at"
                 " least 3 (it reads " + std::to_string(n) + ")");
-        poreNodes_ = static_cast<std::size_t>(n);
+        poreNodes_      = static_cast<std::size_t>(n);
+        nodesDefaulted_ = false;
     }
-    else
-    {
-        poreNodes_      = 101;     // stated default, announced at the first solve
-        nodesDefaulted_ = true;
-    }
+    // else: the stated default (101, the member initialiser), announced at
+    // the first solve.
 }
 
 // ---------------------------------------------------------------------------
@@ -394,8 +400,15 @@ TransportSolution DSPM_DE::localFluxes(const TransportContext& ctx) const
               << " (declared; SolventProperties::epsWater(T) would give "
               << SolventProperties::epsWater(T) << ")\n";
         if (wallClosure_ == WallClosure::PorePermeate)
-            c << "  [DSPM-DE] wallClosure porePermeate (declared): the wall"
-                 " closed with the solved pore's own permeate\n";
+            c << "  [DSPM-DE] wallClosure porePermeate ("
+              << (wallClosureDefaulted_ ? "the default" : "declared")
+              << "): the wall closed with the solved pore's own permeate\n";
+        if (!finiteDifference_)
+            c << "  [DSPM-DE] poreSolver closedForm (declared): the pore is NOT"
+                 " solved -- feed-face Donnan, an electroneutral permeate, each"
+                 " ion carried across alone by a closed-form transmission that"
+                 " is not the solution of the extended Nernst-Planck equations"
+                 " (DSPM_DE.H); the wall closed with the salts' B_s\n";
         if (imposed)
             c << "  [DSPM-DE] J_v IMPOSED by the caller (" << ctx.imposedJv
               << " m/s): no J_w = A_w (dP - dpi) closure\n";
@@ -479,7 +492,7 @@ TransportSolution DSPM_DE::localFluxes(const TransportContext& ctx) const
     // ===================================================================
     //  Inner pore solve at a GIVEN water flux J_v (peclet enters via J_v).
     //
-    //  The closed form (the default):
+    //  The closed form (declared; under the solved pore, its seed):
     //    * feed-face Donnan + Born + steric partition (2) links c_in,i to the
     //      wall ion conc through a single feed Donnan potential dphi_f;
     //    * pore electroneutrality (4) AT THE INLET ONLY fixes dphi_f;
@@ -666,7 +679,7 @@ TransportSolution DSPM_DE::localFluxes(const TransportContext& ctx) const
         //        j_i = J_v * c_perm,i                                       (*)
         //  Between the feed-face pore concentration c_in,i and the
         //  permeate-face pore concentration c_outpore,i = part_perm,i *
-        //  c_perm,i the default takes the per-ion relation below.  It is NOT
+        //  c_perm,i the closed form takes the per-ion relation below.  It is NOT
         //  the integral of (1): with no potential and R = 1 the integral is
         //  c_p/c_w = Phi Kc/(1 - (1 - Phi Kc) e^{-Pe}), and this relation does
         //  not reduce to it (a point solute, Phi = Kc = 1, is rejected up to
@@ -825,7 +838,8 @@ TransportSolution DSPM_DE::localFluxes(const TransportContext& ctx) const
                     poreBanner_ = true;
                     std::ostringstream b;
                     b << std::setprecision(3)
-                      << "  [DSPM-DE] pore SOLVED (poreSolver finiteDifference): the"
+                      << "  [DSPM-DE] pore SOLVED (poreSolver finiteDifference"
+                      << (methodDefaulted_ ? ", the default" : "") << "): the"
                          " extended Nernst-Planck equations on " << poreNodes_
                       << " nodes across the pore" << (nodesDefaulted_
                           ? " (stated default; declare `nodes`)" : "")

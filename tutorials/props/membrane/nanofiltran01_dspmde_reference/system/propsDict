@@ -26,10 +26,13 @@
   dielectric and Donnan partitions at both faces; the Dechadilok & Deen
   (2006) hindrance pair; the multi-ionic interface balance of Geraldes &
   Afonso (2007) with the suction correction of Geraldes & Afonso (2006);
-  the wall closed with the pore's own permeate.  Every one of those is a
-  DECLARED choice of Choupo's DSPM-DE law (`transportParameters` below);
-  its defaults are a different model (docs/design/a-stiff-pore-solved-at-
-  once.md, section 9, lists every difference and how each was handled).
+  the wall closed with the pore's own permeate.  Every one of those is
+  DECLARED below (`transportParameters`), so this case does not depend on
+  Choupo's defaults; since 2026-10-24 (DEV.md 4c C141) the hindrance pair,
+  the solved pore and that wall closure ARE the defaults, while the
+  activities and the bulk dielectric constant stay NanoFiltran's declared
+  choices (docs/design/a-stiff-pore-solved-at-once.md, sections 9 and 10,
+  list every difference and how each was handled).
   "No polarisation" is NanoFiltran's own: a film of k = 10 m/s.
 
   THE SIX OPERATIONS (NanoFiltran's matrix, bin/curate/nanofiltran/):

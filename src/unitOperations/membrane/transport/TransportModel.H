@@ -93,7 +93,7 @@ namespace membrane {
 // ---- The account of a pore that was SOLVED ----------------------------------
 //
 //  Set only by a law that solved the extended Nernst-Planck equations across
-//  the pore (DSPM-DE with `poreSolver { method finiteDifference; }`), one per
+//  the pore (DSPM-DE's solved pore, its default since C141), one per
 //  z station, merged by the module over the channel.  A law that solved no
 //  pore leaves `TransportSolution::hasPore` false, so a module publishes and
 //  prints nothing about a pore nobody solved -- absence keeps meaning "not

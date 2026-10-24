@@ -8013,11 +8013,13 @@ THREE parallel NF270 elements, one per salt, all on the SAME membrane (NF270\_ds
 
 R\_obs(MgSO4) > R\_obs(CaCl2) > R\_obs(NaCl) (2:2 divalent) (2:1 mixed) (1:1 monovalent)
 
-WHY (Bowen-Welfoot 2002): the membrane carries a NEGATIVE fixed charge (X\_d = -40 mol/m3). The CO-ION (the anion, here Cl- / SO4--) is excluded by Donnan; a DIVALENT co-ion (SO4--) is excluded far more strongly than a monovalent one (z\textasciicircum{}2 in the Donnan + Born partition). So MgSO4 -- whose co-ion is divalent -- is rejected most; NaCl -- whose co-ion is the monovalent Cl- -- least. This is the classic NF fingerprint that plain solution-diffusion (one B\_s per salt) cannot predict mechanistically.
+WHY (Bowen-Welfoot 2002): the membrane carries a NEGATIVE fixed charge (X\_d = -5 mol/m3, the record's value). The CO-ION (the anion, here Cl- / SO4--) is excluded by Donnan; a DIVALENT co-ion (SO4--) is excluded far more strongly than a monovalent one (z\textasciicircum{}2 in the Donnan + Born partition). So MgSO4 -- whose co-ion is divalent -- is rejected most; NaCl -- whose co-ion is the monovalent Cl- -- least. This is the classic NF fingerprint that plain solution-diffusion (one B\_s per salt) cannot predict mechanistically.
 
 Data: the salts (case-local constant/components/) carry an electrolyte\{\} ion decomposition and the membrane (constant/membranes/) carries the poreModel\{\} block; the ions' radius/D0 transport tier resolves from data/standards/ at runtime -- self-DESCRIBING (inline manifest), seal with bin/choupo-import for a runtime-self-contained copy.
 
 `transport DSPM-DE;` selects the charged-pore law; drop it (or set `transport solutionDiffusion;`) to compare against the baseline.
+
+THE MODEL, with nothing declared (DSPM-DE's defaults since 2026-10-24, DEV.md 4c C141, each announced in the run): the hindrance pair of Dechadilok \& Deen 2006 (K\_d = H/Phi -- the earlier default counted the steric partition twice in diffusion); the pore SOLVED by finite differences on 101 nodes, electroneutral at every node with zero current (NanoFiltran's method); and the wall closed with that pore's own permeate. membrane20\_dspmde\_pore\_finite\_difference declares the same model and sets the retired closed form beside it.
 
 \end{tutnarrative}
 \begin{tutgolden}
@@ -8067,6 +8069,8 @@ dW\_i = (z\_i\textasciicircum{}2 e\textasciicircum{}2 / 8 pi eps0 r\_i)(1/eps\_p
 (Bowen \& Welfoot 2002, Eq. 16). With eps\_p < eps\_b an ion pays an extra solvation-energy penalty to enter the low-dielectric pore, so it is excluded MORE strongly. The student reads the Born contribution straight off the two R\_obs(NaCl) KPIs: R\_obs(NF\_born) > R\_obs(NF\_noBorn).
 
 This is the pedagogical core of DSPM-"DE": the DE (dielectric exclusion) is what distinguishes the 2002 Bowen-Welfoot model from the 1997 steric-Donnan DSPM. Toggling poreDielectric is a single, visible switch.
+
+Both units run DSPM-DE's defaults (since 2026-10-24, DEV.md 4c C141, each announced): the Dechadilok \& Deen 2006 hindrance (K\_d = H/Phi), the pore SOLVED on 101 nodes, and the wall closed with that pore's own permeate. The Born term is what separates the two observed rejections; read the wall polarisation (Gamma\_avg) beside them -- the film, not only the pore, sets what the permeate sees.
 
 \end{tutnarrative}
 \begin{tutgolden}
@@ -8424,16 +8428,12 @@ NOT MODELLED, said plainly: the osmotic pressure of the protein (the gel model's
 \tutentry{membrane20\_dspmde\_pore\_finite\_difference}{tutorials/steady/membranes/membrane20\_dspmde\_pore\_finite\_difference}
 \begin{tutscheme}
 \begin{tikzpicture}[>={Stealth[length=2mm]}, every node/.style={font=\scriptsize}]
-  \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (NFNaClclosedForm) at (0.0,-0.0) {\textbf{NF\_NaCl\_closedForm}\\[-1pt]{\tiny spiralWoundModule}};
-  \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (NFNaClpore) at (0.0,-1.7) {\textbf{NF\_NaCl\_pore}\\[-1pt]{\tiny spiralWoundModule}};
-  \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (NFMgSO4closedForm) at (0.0,-3.4) {\textbf{NF\_MgSO4\_closedForm}\\[-1pt]{\tiny spiralWoundModule}};
-  \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (NFMgSO4pore) at (0.0,-5.1) {\textbf{NF\_MgSO4\_pore}\\[-1pt]{\tiny spiralWoundModule}};
-  \draw[->] ($(NFNaClclosedForm.west)+(-1.05,0.00)$) -- ($(NFNaClclosedForm.west)+(0,0.00)$) node[at start, above, font=\tiny, anchor=south west] {feed\_NaCl\_closedForm};
+  \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (NFNaClpore) at (0.0,-0.0) {\textbf{NF\_NaCl\_pore}\\[-1pt]{\tiny spiralWoundModule}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (NFMgSO4closedForm) at (0.0,-1.7) {\textbf{NF\_MgSO4\_closedForm}\\[-1pt]{\tiny spiralWoundModule}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (NFMgSO4pore) at (0.0,-3.4) {\textbf{NF\_MgSO4\_pore}\\[-1pt]{\tiny spiralWoundModule}};
   \draw[->] ($(NFNaClpore.west)+(-1.05,0.00)$) -- ($(NFNaClpore.west)+(0,0.00)$) node[at start, above, font=\tiny, anchor=south west] {feed\_NaCl\_pore};
   \draw[->] ($(NFMgSO4closedForm.west)+(-1.05,0.00)$) -- ($(NFMgSO4closedForm.west)+(0,0.00)$) node[at start, above, font=\tiny, anchor=south west] {feed\_MgSO4\_closedForm};
   \draw[->] ($(NFMgSO4pore.west)+(-1.05,0.00)$) -- ($(NFMgSO4pore.west)+(0,0.00)$) node[at start, above, font=\tiny, anchor=south west] {feed\_MgSO4\_pore};
-  \draw[->] ($(NFNaClclosedForm.east)+(0,-0.17)$) -- ($(NFNaClclosedForm.east)+(1.05,-0.17)$) node[at end, below, font=\tiny, anchor=north east] {ret\_NaCl\_closedForm};
-  \draw[->] ($(NFNaClclosedForm.east)+(0,0.17)$) -- ($(NFNaClclosedForm.east)+(1.05,0.17)$) node[at end, above, font=\tiny, anchor=south east] {perm\_NaCl\_closedForm};
   \draw[->] ($(NFNaClpore.east)+(0,-0.17)$) -- ($(NFNaClpore.east)+(1.05,-0.17)$) node[at end, below, font=\tiny, anchor=north east] {ret\_NaCl\_pore};
   \draw[->] ($(NFNaClpore.east)+(0,0.17)$) -- ($(NFNaClpore.east)+(1.05,0.17)$) node[at end, above, font=\tiny, anchor=south east] {perm\_NaCl\_pore};
   \draw[->] ($(NFMgSO4closedForm.east)+(0,-0.17)$) -- ($(NFMgSO4closedForm.east)+(1.05,-0.17)$) node[at end, below, font=\tiny, anchor=north east] {ret\_MgSO4\_closedForm};
@@ -8442,19 +8442,21 @@ NOT MODELLED, said plainly: the osmotic pressure of the protein (the gel model's
   \draw[->] ($(NFMgSO4pore.east)+(0,0.17)$) -- ($(NFMgSO4pore.east)+(1.05,0.17)$) node[at end, above, font=\tiny, anchor=south east] {perm\_MgSO4\_pore};
 \end{tikzpicture}
 \end{tutscheme}
-\tutwhat{DSPM-DE NF: the charged pore solved node by node (finite differences, NanoFiltran's method) beside the default closed form, NaCl and MgSO4 at 10 bar}
+\tutwhat{DSPM-DE NF: the charged pore solved node by node (finite differences, NanoFiltran's method, the default) on NaCl and MgSO4 at 10 bar, and the declared closed form beside it on MgSO4}
 \begin{tutnarrative}
-FOUR NF270 elements, two salts, two ways across the pore -- every unit has the SAME membrane (NF270\_dspmde: r\_p 0.6 nm, X\_d = -5 mol/m3, Born on), the same 10 bar, the same 5 mM feed of its salt. Each pair differs in ONE line:
+THREE NF270 elements, two salts -- every unit has the SAME membrane (NF270\_dspmde: r\_p 0.6 nm, X\_d = -5 mol/m3, Born on), the same 10 bar, the same 5 mM feed of its salt:
 
-NF\_<salt>\_closedForm transport DSPM-DE; (the default pore) NF\_<salt>\_pore transport DSPM-DE; transportParameters \{ poreSolver \{ method finiteDifference; nodes 101; \} \}
+NF\_NaCl\_pore transport DSPM-DE; transportParameters \{ NF\_MgSO4\_pore poreSolver \{ method finiteDifference; nodes 101; \} \} NF\_MgSO4\_closedForm transport DSPM-DE; transportParameters \{ poreSolver \{ method closedForm; \} \}
 
-WHAT THE DEFAULT DOES NOT SOLVE. The default DSPM-DE does not solve the pore: it makes the pore electroneutral at the FEED face, the permeate electroneutral, and carries each ion across ALONE by a closed-form transmission -- no potential gradient couples the ions inside the pore, and neither electroneutrality nor zero current is imposed there.
+The `\_pore` units DECLARE what has been DSPM-DE's default since 2026-10-24 (DEV.md 4c C141) -- the pore solved on 101 nodes, the wall closed with that pore's own permeate (`wallClosure porePermeate`, the default too) -- so the declaration is visible; membrane10 and membrane11 run the same model with nothing declared.
 
-WHAT `finiteDifference` SOLVES. The extended Nernst-Planck equation of every ion on 101 nodes across the pore, electroneutrality with the fixed charge at EVERY node, zero net current, and the Donnan + steric + Born partitions at both faces -- every node at once, by Newton on the declared block-tridiagonal structure. That is the method of NanoFiltran (Geraldes \& Alves, "Computer program for simulation of mass transport in nanofiltration membranes", J. Membr. Sci. 321 (2008) 172-182): the problem is STIFF -- a co-ion held back by the Donnan field carries a migration and a diffusion flux far larger than the flux they net, and the run prints that ratio ("stiffness") beside its residuals.
+WHAT `finiteDifference` SOLVES. The extended Nernst-Planck equation of every ion on 101 nodes across the pore, electroneutrality with the fixed charge at EVERY node, zero net current, and the Donnan + steric + Born partitions at both faces -- every node at once, by Newton on the declared block-tridiagonal structure; and the wall (the multi-ionic film) closed with the permeate that pore gives, the two converged together. That is the method of NanoFiltran (Geraldes \& Alves, "Computer program for simulation of mass transport in nanofiltration membranes", J. Membr. Sci. 321 (2008) 172-182): the problem is STIFF -- a co-ion held back by the Donnan field carries a migration and a diffusion flux far larger than the flux they net, and the run prints that ratio ("stiffness") beside its residuals.
 
-WHAT TO LOOK AT. The two R\_obs of each salt. They are NOT the same number, and the difference is the pore: the closed form is not the solution of the equations the solved pore satisfies (DSPM\_DE.H states what each path solves). Read the [DSPM-DE] lines: the node count, the Newton iterations, the residual, the block-tridiagonal structure VERIFIED on the first solve, and the pore summary per unit (flux constancy, zero current and electroneutrality, each measured on the answer).
+WHAT THE CLOSED FORM DOES NOT SOLVE, and why only ONE unit carries it. `method closedForm;` (the default until 2026-10-24) makes the pore electroneutral at the FEED face, the permeate electroneutral, and carries each ion across ALONE by a closed-form transmission -- no potential gradient couples the ions inside the pore, and neither electroneutrality nor zero current is imposed there; its wall is closed with the salt's solution-diffusion B\_s. With the corrected hindrance (K\_d = H/Phi, DEV.md 4c C141) its transmission tends to K\_c > 1 at low Peclet number, so on this membrane it returns a NaCl permeate RICHER than the wall: the bulk is exhausted inside the channel and the module refuses the run (its solute balance does not close). This case used to carry an NF\_NaCl\_closedForm unit; it was removed for that reason, and bin/curate/check\_pore\_solver.py pins the refusal as a finding. On MgSO4 the closed form runs, and the lesson is the gap: about 58 \% rejection against the solved pore's 99.98 \%.
 
-WHAT THIS CASE DOES NOT CLAIM. Nothing in it is validated against NanoFiltran's published results, or against any measurement; that comparison is a later case, built on the paper. The grid, the residuals and the analytic limit are held by bin/curate/check\_pore\_solver.py. Shared with the default path and unchanged by the solved pore: the wall (the film, closed with the salt's solution-diffusion B\_s), the Davies activity at the feed face, an ideal permeate, van't Hoff osmotic pressure.
+WHAT TO LOOK AT. The two MgSO4 R\_obs, and the [DSPM-DE] lines: the node count, the Newton iterations, the residual, the block-tridiagonal structure VERIFIED on the first solve, and the pore summary per unit (flux constancy, zero current and electroneutrality, each measured on the answer).
+
+WHAT THIS CASE DOES NOT CLAIM. Nothing in it is validated against any measurement. The code-to-code comparison with NanoFiltran is tutorials/props/membrane/nanofiltran01\_dspmde\_reference; the grid, the residuals and the analytic limit are held by bin/curate/check\_pore\_solver.py. Shared by all three units: the Davies activity at the feed face, an ideal permeate, van't Hoff osmotic pressure.
 
 Data: as membrane10\_dspmde\_divalent -- the salts carry their ion decomposition, the membrane its poreModel\{\} tier, the ions their radius and D0 from the species records.
 

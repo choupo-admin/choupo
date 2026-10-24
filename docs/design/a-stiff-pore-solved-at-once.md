@@ -477,7 +477,8 @@ concentration 12 orders below its feed, not a fold.
 - The paper's own figures.
 - ~~Replacing any default (`hindrance legacy`, the B_s wall closure,
   `wallDavies`) -- Vitor's.~~  Vitor took it on 2026-10-24 (DEV.md 4c
-  C141): the hindrance in §10.1; `wallDavies` stays the default.
+  C141): the hindrance in §10.1, the pore and the wall closure in §10.2;
+  `wallDavies` stays the default.
 
 ## 10. The defaults corrected (2026-10-24, DEV.md 4c C141)
 
@@ -510,3 +511,81 @@ membrane11's Born-off NaCl reports R_obs = -121.5 %; MgSO4 drops from
 99.92 % to 58.5 % and CaCl2 from 70.5 % to 52.5 %.  The solved pore, on
 the same K_d, moves membrane20's NaCl from 75.09 % to 30.80 % and leaves
 MgSO4 at 99.98 %.
+
+### 10.2 The pore SOLVED by default, the wall closed with its own permeate
+
+The default became `poreSolver { method finiteDifference; nodes 101;
+wallClosure porePermeate; }`, every default announced in the run
+("(the default)"; a declared word still says "(declared)", so
+nanofiltran01, which declares all of them, prints what it printed).
+`method closedForm;` stays, DECLARED, announced as not solving the pore;
+its wall is the B_s closure (it has no permeate of its own).
+
+**Measured BEFORE it was taken -- and it failed.**  As C138 left it, the
+`porePermeate` path refused on all three spiral-wound DSPM-DE cases at the
+first station:
+
+| case | refusal | cause |
+|---|---|---|
+| membrane10 | `DSPM-DE wall: a permeate concentration reached zero` | the wall Newton's unknowns were EVERY ion of the flowsheet, and a unit fed NaCl alone carries the zero Ca2+/Mg2+/SO4 2- of the other salt components: ln c_p of an absent ion is -inf at the first evaluation |
+| membrane11 | `pore ENP solver: the pore needs at least one cation and one anion` | the uncoupled film computes a wall below zero for a trial permeate (it does not hide it, Polarisation.cpp) and the trial was handed to the pore, which refused it as a one-sign pore -- a fatal error, not a trial to back away from |
+| membrane20 | as membrane10 | as membrane10 |
+
+nanofiltran01 had never met either: every ion of every op is fed, and its
+walls stay positive.  Both are fixed in the path itself: the unknowns are
+the FED ions (an absent ion is not a term, as the pore already treated it),
+and a trial wall with a fed ion at or below zero is an `InfeasibleTrial`.
+
+**Then the cost.**  With the two fixes every case converged, at 113 s
+(membrane10), 121 s (membrane11) and 62 s (membrane20) against 0.12 s,
+0.03 s and 1.8 s before: each of the ~40 passes of the water-flux fixed
+point re-started the wall Newton from the B_s closure.  Two aids, both
+the same equations: the wall Newton warm-starts from this station's
+previous pass and from the previous station (results identical to the last
+bit), and the solved pore's water-flux closure takes a safeguarded secant
+on h(J) = J - A_w (dP - dpi(J)) -- bracketed by (0, A_w dP], a step that
+leaves the bracket falls back to the damped one -- instead of the fixed
+point (results within 3e-12 relative, the last printed digit).  The closed
+form keeps the fixed point.  nanofiltran01, which imposes J_v and so has no
+water-flux loop, moves by at most 1.3e-11 relative (the warm start: its wall
+Newton stops at 1e-12 on ln c_p) and passes every anchor.
+
+| case | closed form, legacy K_d (before C141) | default after C141 |
+|---|---:|---:|
+| membrane10 (3 units, 50 stations) | 0.12 s | 10.9 s |
+| membrane11 (2 units, 50 stations) | 0.03 s | 8.2 s |
+| membrane20 (3 units, 20 stations; was 4) | 1.8 s | 3.0 s |
+| nanofiltran01 (declares everything) | 9.2 s | 9.2 s |
+
+Every solve: `||F||` <= 1e-12, zero current and electroneutrality at
+machine level; continuation in J_v only at the first station of an MgSO4
+unit (5 solves), as before.  Beyond the corpus, membrane11's two units at
+3/10/20/40 bar x 5/50/500 mM NaCl: 12 of 12 converge (5.5-22.5 s, at most
+13 continuation solves); at 3 bar and 500 mM the osmotic pressure exceeds
+the applied one and there is no flux.
+
+**The closed form with the honest K_d** (§10.1) cannot run membrane20's
+NaCl unit on the charged record, so the unit was removed from the witness
+and the refusal pinned (check_pore_solver arm (c3)); on the uncharged
+variant it departs from the ambipolar limit by 76 % (arm (c2), 70.6 % with
+the legacy K_d), the solved pore by 3.9e-8.
+
+**Headline rejections** (R_obs, the salt basis -- a single-salt feed's
+cation and anion are rejected alike by electroneutrality):
+
+| case | unit | before C141 | closed form + corrected K_d | after C141 (default) |
+|---|---|---:|---:|---:|
+| membrane10 | NaCl | 54.95 % | refused (bulk exhausted) | 49.56 % |
+| | CaCl2 | 70.46 % | 52.54 % | 69.65 % |
+| | MgSO4 | 99.924 % | 58.47 % | 99.975 % |
+| membrane11 | Born on | 86.10 % | 23.92 % | 30.09 % |
+| | Born off | 65.95 % | -121.5 % | 9.39 % |
+| membrane20 | NaCl, solved pore | 75.09 % | 30.80 % (B_s wall) | 49.73 % |
+| | MgSO4, solved pore | 99.980 % | 99.98 % (B_s wall) | 99.975 % |
+| | MgSO4, closed form | 99.924 % | 58.49 % | 58.49 % |
+| | NaCl, closed form | 56.97 % | refused | removed |
+
+The NF ordering MgSO4 > CaCl2 > NaCl (membrane10) and Born on > off
+(membrane11) both hold.  membrane11's Born-off row is no longer negative
+(§5's -2.46 % was the solved pore against the B_s wall): with the wall
+closed with the pore's own permeate it is +9.39 %.

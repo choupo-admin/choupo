@@ -4,8 +4,8 @@ level, an analytic limit, the default untouched, the refusals, the voice.
 
     bin/curate/check_pore_solver.py
 
-WHY THIS EXISTS (2026-10-22, DEV.md 4c C138).  The default DSPM-DE does not
-solve the pore: it makes the pore electroneutral at the feed face, the
+WHY THIS EXISTS (2026-10-22, DEV.md 4c C138).  The default DSPM-DE did not
+solve the pore (it does since 2026-10-24, DEV.md 4c C141 -- see (d)): it makes the pore electroneutral at the feed face, the
 permeate electroneutral, and carries each ion across ALONE by a closed-form
 transmission, while its header listed pore electroneutrality and zero
 current as "the physics solved".  `transportParameters { poreSolver { method
@@ -56,8 +56,9 @@ WHAT THIS GATE CHECKS.
       Newton iterations and ||F||, and the structure VERIFIED at 0; prints a
       pore summary whose residual, flux constancy, zero current and
       electroneutrality are each <= 1e-12 (the Newton's own tolerance); publishes
-      `pore_nodes` 101.  Each `_closedForm` unit says and publishes NOTHING
-      about a pore -- silence keeps meaning "not solved".
+      `pore_nodes` 101.  The `_closedForm` unit (MgSO4, `method closedForm;`
+      DECLARED since C141) says and publishes NOTHING about a pore -- silence
+      keeps meaning "not solved".
   (c) THE ENGINE AGAINST THE ANALYTIC LIMIT, END TO END.  A copy of the
       witness on an UNCHARGED, Born-free variant of its membrane (written
       here, beside the record): per station, the permeate the march used
@@ -69,23 +70,38 @@ WHAT THIS GATE CHECKS.
       hindrance pair (K_d = H/Phi, their K_c; until 2026-10-24 the retired
       default that took H as K_d): within 1e-5 at every station.  This is what proves the LAW hands the pore the right
       conductances, hindrances and partitions -- the probe cannot.
-      (c2) A FINDING, pinned: on the same stations the DEFAULT closed form
+      (c2) A FINDING, pinned: on the same stations the DECLARED closed form
+      (a second copy, its NaCl unit switched to `method closedForm;`)
       departs from that limit by more than 5 % -- the day it stops, this
       arm fails asking for its pin back.
-  (d) THE DEFAULT IS UNTOUCHED.  membrane10 and membrane11 (DSPM-DE, no
-      poreSolver) run here: no pore line, no `pore_` KPI, and every row of
-      their `expected` golden reproduced to 1e-10 relative -- tighter than
-      the golden's own 1e-4, at the twelve printed digits.
+      (c3) A FINDING, pinned (C141): on the CHARGED witness membrane the
+      declared closed form with the corrected hindrance returns a NaCl
+      permeate richer than the wall -- its transmission tends to K_c > 1 at
+      low Peclet number -- and the module refuses the run on its solute
+      balance; the day it runs, this arm asks for its pin back (and the
+      NaCl closed-form unit membrane20 lost for this reason can return).
+  (d) THE DEFAULT IS THE SOLVED PORE (C141, 2026-10-24; until then this arm
+      held the closed form untouched).  membrane10 and membrane11 (DSPM-DE,
+      no transportParameters) run here: every unit announces the hindrance
+      DechadilokDeen2006 "(the default)", wallClosure porePermeate "(the
+      default)" and the pore SOLVED "(poreSolver finiteDifference, the
+      default)" on 101 nodes "(stated default; declare `nodes`)", prints a
+      pore summary at machine level and publishes `pore_nodes` 101; and
+      every row of their `expected` golden is reproduced to 1e-10 relative
+      -- tighter than the golden's own 1e-4, at the twelve printed digits.
+      THAT LAST HALF FAILS until Vitor's re-record of the two goldens: the
+      default moved by design (C141), and the moved rows are his to see
+      first (CLAUDE.md, a golden re-record is a claim).
   (e) REFUSALS, on copies of the witness: an unknown method word (naming
       both accepted words), `nodes 2`, `nodes` beside `method closedForm`,
       an unknown key inside `poreSolver`, an unknown key inside
       `transportParameters` -- each exits non-zero naming its cause.
 
 WHAT THIS GATE DOES NOT COVER, stated so its green line cannot imply it:
-any comparison with NanoFiltran's published numbers (slice 2, on the paper);
-the batch diafilter under the solved pore (it runs, but no witness and no
-pore summary there); the wall, which both paths share and which is closed
-with the salt's solution-diffusion B_s rather than the pore's own permeate;
+any comparison with NanoFiltran's published numbers (the code-to-code
+comparison is check_nanofiltran_reference's); the batch diafilter under the
+solved pore (it runs, but no witness and no pore summary there); the
+closed-form wall (B_s) against the solved pore's (porePermeate) as a pair;
 activity inside the pore and at the permeate face (ideal in both paths);
 whether 101 nodes are ENOUGH for a given case (the grid arm measures the
 order, a case must still declare its grid); wall-clock speed.
@@ -372,7 +388,7 @@ def arm_witness():
     for u in ("NF_NaCl_pore", "NF_MgSO4_pore"):
         if k.get(u, {}).get("pore_nodes") != 101:
             fails.append(f"(b) {u} does not publish pore_nodes 101")
-    for u in ("NF_NaCl_closedForm", "NF_MgSO4_closedForm"):
+    for u in ("NF_MgSO4_closedForm",):
         if any(key.startswith("pore_") for key in k.get(u, {})):
             fails.append(f"(b) {u} publishes a pore_ KPI -- the closed form solved no pore")
     r_obs = {u: k.get(u, {}).get("R_obs_" + u.split("_")[1]) for u in k}
@@ -404,36 +420,55 @@ def deen(lam):
     return phi, kd, kc
 
 
-def arm_analytic_engine(tmp):
-    case = copy_case(WITNESS, tmp / "uncharged")
+PORE_LINE = "poreSolver { method finiteDifference;  nodes 101; }"
+CLOSED_LINE = "poreSolver { method closedForm; }"
+
+
+def uncharged_copy(tmp, name, closed_nacl):
+    """The witness on an UNCHARGED, Born-free variant of its membrane; with
+    `closed_nacl` its NaCl unit declares the closed form instead."""
+    case = copy_case(WITNESS, tmp / name)
     rec = (case / "constant" / "assets" / "NF270_dspmde.dat").read_text()
     rec = rec.replace("name           NF270_dspmde;", "name           NF270_dspmde_uncharged;")
     rec = re.sub(r"^\s*chargeDensity.*$", "", rec, flags=re.M)
     rec = re.sub(r"^\s*poreDielectric.*$", "", rec, flags=re.M)
     if "NF270_dspmde_uncharged" not in rec:
         fails.append("(c) could not write the uncharged variant (the record's name line moved)")
-        return None
+        return None, None
     (case / "constant" / "assets" / "NF270_dspmde_uncharged.dat").write_text(rec)
     fd = (case / "system" / "flowsheetDict").read_text()
     fd = fd.replace("membrane         NF270_dspmde;", "membrane         NF270_dspmde_uncharged;")
+    if closed_nacl:
+        if fd.count(PORE_LINE) != 2:
+            fails.append("(c2) the witness's poreSolver line moved; the closed-form copy "
+                         "cannot be built")
+            return None, None
+        fd = fd.replace(PORE_LINE, CLOSED_LINE, 1)      # the first unit is NF_NaCl_pore
     (case / "system" / "flowsheetDict").write_text(fd)
-    rc, out = run_case(case)
-    if rc != 0:
-        fails.append(f"(c) the uncharged variant exited {rc}:\n{out[-2000:]}")
-        return None
-    if "Donnan OFF (X_d=0)" not in out or "Born OFF" not in out:
-        fails.append("(c) the variant does not announce Donnan OFF and Born OFF -- it is "
-                     "not the limit this arm computes")
-        return None
-    res = result_of(out)
-    r_p = 6.0e-10
-    akdx = 5.0e6
+    return case, rec
+
+
+def arm_analytic_engine(tmp):
+    runs = {}
+    for name, closed in (("uncharged", False), ("uncharged_closed", True)):
+        case, rec = uncharged_copy(tmp, name, closed)
+        if case is None:
+            return None
+        rc, out = run_case(case)
+        if rc != 0:
+            fails.append(f"(c) the {name} variant exited {rc}:\n{out[-2000:]}")
+            return None
+        if "Donnan OFF (X_d=0)" not in out or "Born OFF" not in out:
+            fails.append("(c) the variant does not announce Donnan OFF and Born OFF -- it is "
+                         "not the limit this arm computes")
+            return None
+        runs[name] = result_of(out)
     m = re.search(r"poreRadius\s+(\S+);", rec); r_p = float(m.group(1))
     m = re.search(r"porosityOverThickness\s+(\S+);", rec); akdx = float(m.group(1))
     ions = {}
     for ion in ("Na", "Cl"):
-        r = species_value(case, ion, "radius")
-        D = species_value(case, ion, "D0")
+        r = species_value(WITNESS, ion, "radius")
+        D = species_value(WITNESS, ion, "D0")
         phi, kd, kc = deen(r / r_p)
         ions[ion] = (phi, kd * D * akdx, kc)
     (Fp, Pp, Kp), (Fm, Pm, Km) = ions["Na"], ions["Cl"]
@@ -442,8 +477,8 @@ def arm_analytic_engine(tmp):
     S = math.sqrt(Fp * Fm)
     A = 0.51            # Davies A at 298.15 K (debyeHuckelFactor = 1 there)
     worst = {}
-    for unit in ("NF_NaCl_pore", "NF_NaCl_closedForm"):
-        cols = res["profiles"][unit]["columns"]
+    for key, name in (("solved", "uncharged"), ("closedForm", "uncharged_closed")):
+        cols = runs[name]["profiles"]["NF_NaCl_pore"]["columns"]
         Jw, Q, cb, G = cols["J_w"], cols["Q_b"], cols["c_b_NaCl"], cols["Gamma_NaCl"]
         w = 0.0
         for k in range(len(Q) - 1):
@@ -455,33 +490,76 @@ def arm_analytic_engine(tmp):
             Pe = Kcs * Jw[k] / Ps
             cp_exact = S * Kcs * gam * cm / (1 - (1 - S * Kcs) * math.exp(-Pe))
             w = max(w, abs(cp_march / cp_exact - 1))
-        worst[unit] = w
-    if worst["NF_NaCl_pore"] > 1e-5:
+        worst[key] = w
+    if worst["solved"] > 1e-5:
         fails.append(f"(c) the solved pore departs from the ambipolar limit by "
-                     f"{worst['NF_NaCl_pore']:.3e} at its worst station (> 1e-5) -- the law"
+                     f"{worst['solved']:.3e} at its worst station (> 1e-5) -- the law"
                      " hands the pore the wrong conductances, hindrances or partitions")
-    if worst["NF_NaCl_closedForm"] < 0.05:
-        fails.append(f"(c2) the default closed form now departs from the analytic limit by"
-                     f" only {worst['NF_NaCl_closedForm']:.3e} (< 5 %): the recorded finding"
+    if worst["closedForm"] < 0.05:
+        fails.append(f"(c2) the declared closed form now departs from the analytic limit by"
+                     f" only {worst['closedForm']:.3e} (< 5 %): the recorded finding"
                      " has closed -- take this pin back and re-read DSPM_DE.H")
     return worst
 
 
-# ---- (d) the default, untouched ------------------------------------------------------
+def arm_closed_form_charged(tmp):
+    """(c3) the declared closed form on the CHARGED witness membrane, NaCl."""
+    case = copy_case(WITNESS, tmp / "charged_closed")
+    fd = (case / "system" / "flowsheetDict").read_text()
+    if fd.count(PORE_LINE) != 2:
+        fails.append("(c3) the witness's poreSolver line moved; the probe cannot be built")
+        return None
+    (case / "system" / "flowsheetDict").write_text(fd.replace(PORE_LINE, CLOSED_LINE, 1))
+    rc, out = run_case(case)
+    needle = "spiralWoundModule solute balance does not close"
+    if rc == 0:
+        fails.append("(c3) the declared closed form now RUNS the charged NaCl unit (exit 0): "
+                     "the recorded finding has closed -- take this pin back, re-read "
+                     "DSPM_DE.H, and consider restoring membrane20's NaCl closed-form unit")
+        return None
+    if needle not in out:
+        fails.append(f"(c3) the charged closed-form NaCl probe exited {rc} without the "
+                     f"solute-balance refusal it is pinned to:\n{out[-800:]}")
+        return None
+    m = re.search(r"worst solute rel = (\S+)", out)
+    return m.group(1) if m else "?"
+
+
+# ---- (d) the default: the solved pore ----------------------------------------------
+DEFAULT_VOICE = (
+    "[DSPM-DE] hindrance DechadilokDeen2006 (the default)",
+    "[DSPM-DE] wallClosure porePermeate (the default)",
+    "[DSPM-DE] pore SOLVED (poreSolver finiteDifference, the default): the extended "
+    "Nernst-Planck equations on 101 nodes across the pore (stated default; declare `nodes`)",
+)
+
+
 def arm_default(tmp):
     checked = 0
     for src in DEFAULTS:
         case = copy_case(src, tmp / src.name)
         rc, out = run_case(case)
         if rc != 0:
-            fails.append(f"(d) {src.name} exited {rc}")
+            fails.append(f"(d) {src.name} exited {rc}:\n{out[-1500:]}")
             continue
-        if "[DSPM-DE] pore" in out:
-            fails.append(f"(d) {src.name} prints a pore line with no poreSolver declared")
         res = result_of(out)
-        for u, d in res.get("kpis", {}).items():
-            if isinstance(d, dict) and any(k.startswith("pore_") for k in d):
-                fails.append(f"(d) {src.name}.{u} publishes a pore_ KPI")
+        units = [u for u, d in res.get("kpis", {}).items()
+                 if isinstance(d, dict) and "J_w_avg" in d]
+        for needle in DEFAULT_VOICE:
+            if out.count(needle) != len(units):
+                fails.append(f"(d) {src.name}: '{needle[:60]}...' appears {out.count(needle)} "
+                             f"times for {len(units)} DSPM-DE units -- the default is not said")
+        sums = {m.group(1): m for m in SUMMARY.finditer(out)}
+        if set(sums) != set(units):
+            fails.append(f"(d) {src.name}: pore summaries for {sorted(sums)}, units {sorted(units)}")
+        for u, m in sums.items():
+            if float(m.group(5)) > 1e-12 or float(m.group(9)) > 1e-12 \
+                    or float(m.group(10)) > 1e-12:
+                fails.append(f"(d) {src.name}.{u}'s pore summary: ||F|| {m.group(5)}, current "
+                             f"{m.group(9)}, electroneutrality {m.group(10)} -- not machine level")
+        for u in units:
+            if res["kpis"][u].get("pore_nodes") != 101:
+                fails.append(f"(d) {src.name}.{u} does not publish pore_nodes 101")
         for line in (src / "expected").read_text().splitlines():
             if line.startswith("#") or not line.strip():
                 continue
@@ -504,7 +582,8 @@ def arm_default(tmp):
             tol = 1e-14 if abs(want) < 1e-12 else 1e-10 * abs(want)
             if abs(got - want) > tol:
                 fails.append(f"(d) {src.name} {kind} {name} {key}: {got!r} against the "
-                             f"golden {want!r} -- the default path moved")
+                             f"golden {want!r} -- the default path moved (until the C141 "
+                             "re-record, by design)")
     if checked < 40:
         fails.append(f"(d) only {checked} golden rows were compared -- the reader lost "
                      "the golden's format")
@@ -561,6 +640,7 @@ def main():
         probe = arm_probe(tmp)
         wit = arm_witness()
         worst = arm_analytic_engine(tmp)
+        c3 = arm_closed_form_charged(tmp)
         checked = arm_default(tmp)
         fired = arm_refusals(tmp)
     if fails:
@@ -579,10 +659,12 @@ def main():
           f"seed converge ({sweep[2]} by continuation in J_v); a warm start reproduces a cold "
           f"solve; 2 probe refusals fire.  The witness announces method, nodes, iterations, "
           f"residual and the structure on both solved units and nothing on the closed-form "
-          f"ones; END TO END the engine's solved pore matches the analytic limit within "
-          f"{worst['NF_NaCl_pore']:.1e} at every station of an uncharged Born-free variant "
-          f"(the closed form departs by {worst['NF_NaCl_closedForm']:.1%}, pinned as a "
-          f"finding); membrane10/11 reproduce {checked} golden rows to 1e-10 with no pore line; "
+          f"one; END TO END the engine's solved pore matches the analytic limit within "
+          f"{worst['solved']:.1e} at every station of an uncharged Born-free variant "
+          f"(the declared closed form departs by {worst['closedForm']:.1%}, and on the charged "
+          f"membrane refuses on its solute balance at {c3}, both pinned as findings); "
+          f"membrane10/11 run the DEFAULT solved pore, say so on every unit and reproduce "
+          f"{checked} golden rows to 1e-10; "
           f"{fired} refusals fire by name.  NOT CHECKED here: NanoFiltran (held by "
           f"check_nanofiltran_reference, with the declared wall closure and activities), "
           f"the batch diafilter under the solved pore, whether a case's grid is enough.")
