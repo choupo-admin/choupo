@@ -1501,6 +1501,35 @@ accepts today, and that is a policy call.
 > final; }` layout draws what the steady flowsheet and the sizing pass
 > already hold.
 
+> **C143. AN EDUTOOL ON A NEGATIVE CASE OF PROCESS ECONOMICS: THE SINES
+> PTA PLANT (ARTLANT) AND THE PUBLIC BANK'S LOSS (Vitor, 2026-10-24:
+> "Achas que podes fazer um EduTools sobre o caso em que a CGD perdeu 400 M
+> euros em Sines.  E um caso negativo para mostrar o que nao se deve fazer
+> em analise economica de processos quimicos.  Usa factos confirmados e
+> nada de especulacao porque eu sou professor associado do IST e a CGD e
+> uma empresa publica.  Todo o case study tem de ser feito de forma seria e
+> sem insinuacoes de corrupcao").**  The case, identified 2026-10-24 from
+> press coverage and to be confirmed on primary sources: Artlant's
+> purified terephthalic acid (PTA) plant in Sines, a La Seda de Barcelona
+> project financed by Caixa Geral de Depositos, which also became a
+> shareholder; insolvent in 2017 and sold in liquidation to Indorama
+> Ventures for EUR 28 M.  The loss figure DEPENDS ON THE METRIC (the EY
+> audit's 2015 exposure of EUR 350.8 M with 60 % recognised lost that year;
+> press totals above EUR 500 M) -- the tool must say which number it uses
+> and why.  RULES, from his words: every fact cited to a PRIMARY public
+> document (the EY audit of CGD 2000-2015, the parliamentary inquiry
+> reports, CGD and La Seda filings, the insolvency proceedings, Indorama's
+> release), opinion columns and blogs never used as sources; no motive,
+> intent or wrongdoing attributed to any person, and individuals not named
+> where the lesson does not need them; the lesson is the ECONOMIC ANALYSIS
+> (margin cycle and feedstock spread, market capacity, captive-customer
+> dependence, lender-turned-shareholder concentration, sensitivity and
+> downside cases).  Market numbers come from licence-compatible sources or
+> are labelled SYNTHETIC.  Phase 1 (dispatched 2026-10-24): a read-only
+> fact dossier with every claim sourced and its confidence stated.  The
+> pedagogical scope is put to Vitor with the dossier BEFORE anything is
+> built.
+
 > **C142. A PORE SOLVER BETTER THAN NANOFILTRAN, WITH NANOFILTRAN ONLY AS
 > THE COMPARISON (Vitor, 2026-10-24: "Eu quero que facas um solver melhor!
 > E deixes o nanofiltran resultados so para comparares!").**  C141 landed
