@@ -33,7 +33,7 @@ kpi     reactor                y_water          0.000754467693498  1e-4
 boundary global               H_feeds_kW       -8588.232649       1e-4
 boundary global               Q_boundary_kW    -3927.08208264     1e-4
 boundary global               H_products_kW    -12515.6544755     1e-4
-boundary global               residual_kW      0.339743875387     1e-4
+boundary global               residual_kW      0     1e-4
 utility reactor                cooling.coolingWater.duty_kW -3927.08208264     1e-4
 utility reactor                cooling.coolingWater.T 460                1e-4
 utility reactor                cooling.coolingWater.kg_s 93.9493321206      1e-4

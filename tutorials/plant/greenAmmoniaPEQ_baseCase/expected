@@ -76,7 +76,7 @@ kpi     Converter              F_out_kmol_h     16330.10396      1e-4
 kpi     Converter              N_in_mol_s       5349.40270466    1e-4
 kpi     Converter              N_out_mol_s      4536.1399889     1e-4
 kpi     Converter              P                15000000         1e-4
-kpi     Converter              Q_kW             -30605.2573041   1e-4
+kpi     Converter              Q_kW             -30612.4966018   1e-4
 kpi     Converter              T                733.15           1e-4
 kpi     Converter              converged        1                1e-4
 kpi     Converter              lambda_Ar        -123623.476612   1e-4
@@ -246,9 +246,9 @@ kpi     WaterCooler            Tsat             150              1e-4
 kpi     WaterCooler            vf_in            1                1e-4
 kpi     WaterCooler            vf_out           0.948241919011   1e-4
 boundary global                 H_feeds_kW       533.06073992     1e-4
-boundary global                 Q_boundary_kW    -57636.8448383   1e-4
+boundary global                 Q_boundary_kW    -57644.0841359   1e-4
 boundary global                 H_products_kW    -57112.7768004   1e-4
-boundary global                 residual_kW      8.99270205596    1e-4
+boundary global                 residual_kW      1.75340444359    1e-4
 boundary global                 W_shaft_kW       13670            1e-4
 utility Aftercooler            cooling.coolingWater.duty_kW -5482.93664891   1e-4
 utility Aftercooler            cooling.coolingWater.T 313.15           1e-4
@@ -789,12 +789,12 @@ equipment WaterCooler            values.tubesPerPass 732              1e-4
 equipment WaterCooler            values.u_shell   0.446865797635   1e-4
 equipment WaterCooler            values.u_tube    3.38698215443    1e-4
 equipment WaterCooler            values.wallK     50               1e-4
-kpi     economics              C_UT             5074264.02232    1e-4
-kpi     economics              C_UT_credit      -15635711.7884   1e-4
-utility Converter              cooling.steamGenerationHP.duty_kW -30605.2573041   1e-4
+kpi     economics              C_UT             5070565.58679    1e-4
+kpi     economics              C_UT_credit      -15639410.2239   1e-4
+utility Converter              cooling.steamGenerationHP.duty_kW -30612.4966018   1e-4
 utility Converter              cooling.steamGenerationHP.T 733.15           1e-4
-utility Converter              cooling.steamGenerationHP.kg_s 17.8560427679    1e-4
-utility Converter              cooling.steamGenerationHP.eur_h -1983.22067331   1e-4
+utility Converter              cooling.steamGenerationHP.kg_s 17.8602663954    1e-4
+utility Converter              cooling.steamGenerationHP.eur_h -1983.68977979   1e-4
 layout  N2Boost                shape            box              exact
 layout  N2Boost                orientation      alongX           exact
 layout  N2Boost                footprintFrom    declared         exact
@@ -1090,7 +1090,7 @@ equipment H2Buffer/vessel1       inventory.mass.H2 2661.14921405    1e-4
 equipment H2Buffer/vessel1       inventory.mass.total 2661.14921405    1e-4
 equipment H2Buffer/vessel1       cost.purchased   3411303.48666    1e-4
 equipment H2Buffer/vessel1       cost.bareModule  3411303.48666    1e-4
-equipment H2Buffer/vessel1       cost.totalModule 3411303.48666    1e-4
+equipment H2Buffer/vessel1       cost.totalModule 4025338.11426    1e-4
 equipment H2Buffer/vessel10      basis            gas_store_V_=_autonomy_x_mdot_/_(rho(maxPressure,_T)_-_rho(minPressure,_T)),_rho_from_the_case's_package_(vapour),_split_into_equal_standing_vessels_of_at_most_maxVesselVolume;_wall_at_maxPressure_as_gauge;_costed_BY_ITS_SHELL_STEEL_MASS_(the_cylindrical_shell_only:_no_heads,_nozzles_or_supports)_x_a_declared_installed_price_per_kg,_the_Turton_vessel_set_printed_beside_it_as_a_comparison_--_NOT_included:_the_charging_compressor_and_its_power;_the_autonomy_is_a_design_assumption,_not_derived_from_a_renewable-power_profile exact
 equipment H2Buffer/vessel10      values.D         5.35758292591    1e-4
 equipment H2Buffer/vessel10      values.H         16.0727487777    1e-4
@@ -1124,7 +1124,7 @@ equipment H2Buffer/vessel10      inventory.mass.H2 2661.14921405    1e-4
 equipment H2Buffer/vessel10      inventory.mass.total 2661.14921405    1e-4
 equipment H2Buffer/vessel10      cost.purchased   3411303.48666    1e-4
 equipment H2Buffer/vessel10      cost.bareModule  3411303.48666    1e-4
-equipment H2Buffer/vessel10      cost.totalModule 3411303.48666    1e-4
+equipment H2Buffer/vessel10      cost.totalModule 4025338.11426    1e-4
 equipment H2Buffer/vessel2       basis            gas_store_V_=_autonomy_x_mdot_/_(rho(maxPressure,_T)_-_rho(minPressure,_T)),_rho_from_the_case's_package_(vapour),_split_into_equal_standing_vessels_of_at_most_maxVesselVolume;_wall_at_maxPressure_as_gauge;_costed_BY_ITS_SHELL_STEEL_MASS_(the_cylindrical_shell_only:_no_heads,_nozzles_or_supports)_x_a_declared_installed_price_per_kg,_the_Turton_vessel_set_printed_beside_it_as_a_comparison_--_NOT_included:_the_charging_compressor_and_its_power;_the_autonomy_is_a_design_assumption,_not_derived_from_a_renewable-power_profile exact
 equipment H2Buffer/vessel2       values.D         5.35758292591    1e-4
 equipment H2Buffer/vessel2       values.H         16.0727487777    1e-4
@@ -1158,7 +1158,7 @@ equipment H2Buffer/vessel2       inventory.mass.H2 2661.14921405    1e-4
 equipment H2Buffer/vessel2       inventory.mass.total 2661.14921405    1e-4
 equipment H2Buffer/vessel2       cost.purchased   3411303.48666    1e-4
 equipment H2Buffer/vessel2       cost.bareModule  3411303.48666    1e-4
-equipment H2Buffer/vessel2       cost.totalModule 3411303.48666    1e-4
+equipment H2Buffer/vessel2       cost.totalModule 4025338.11426    1e-4
 equipment H2Buffer/vessel3       basis            gas_store_V_=_autonomy_x_mdot_/_(rho(maxPressure,_T)_-_rho(minPressure,_T)),_rho_from_the_case's_package_(vapour),_split_into_equal_standing_vessels_of_at_most_maxVesselVolume;_wall_at_maxPressure_as_gauge;_costed_BY_ITS_SHELL_STEEL_MASS_(the_cylindrical_shell_only:_no_heads,_nozzles_or_supports)_x_a_declared_installed_price_per_kg,_the_Turton_vessel_set_printed_beside_it_as_a_comparison_--_NOT_included:_the_charging_compressor_and_its_power;_the_autonomy_is_a_design_assumption,_not_derived_from_a_renewable-power_profile exact
 equipment H2Buffer/vessel3       values.D         5.35758292591    1e-4
 equipment H2Buffer/vessel3       values.H         16.0727487777    1e-4
@@ -1192,7 +1192,7 @@ equipment H2Buffer/vessel3       inventory.mass.H2 2661.14921405    1e-4
 equipment H2Buffer/vessel3       inventory.mass.total 2661.14921405    1e-4
 equipment H2Buffer/vessel3       cost.purchased   3411303.48666    1e-4
 equipment H2Buffer/vessel3       cost.bareModule  3411303.48666    1e-4
-equipment H2Buffer/vessel3       cost.totalModule 3411303.48666    1e-4
+equipment H2Buffer/vessel3       cost.totalModule 4025338.11426    1e-4
 equipment H2Buffer/vessel4       basis            gas_store_V_=_autonomy_x_mdot_/_(rho(maxPressure,_T)_-_rho(minPressure,_T)),_rho_from_the_case's_package_(vapour),_split_into_equal_standing_vessels_of_at_most_maxVesselVolume;_wall_at_maxPressure_as_gauge;_costed_BY_ITS_SHELL_STEEL_MASS_(the_cylindrical_shell_only:_no_heads,_nozzles_or_supports)_x_a_declared_installed_price_per_kg,_the_Turton_vessel_set_printed_beside_it_as_a_comparison_--_NOT_included:_the_charging_compressor_and_its_power;_the_autonomy_is_a_design_assumption,_not_derived_from_a_renewable-power_profile exact
 equipment H2Buffer/vessel4       values.D         5.35758292591    1e-4
 equipment H2Buffer/vessel4       values.H         16.0727487777    1e-4
@@ -1226,7 +1226,7 @@ equipment H2Buffer/vessel4       inventory.mass.H2 2661.14921405    1e-4
 equipment H2Buffer/vessel4       inventory.mass.total 2661.14921405    1e-4
 equipment H2Buffer/vessel4       cost.purchased   3411303.48666    1e-4
 equipment H2Buffer/vessel4       cost.bareModule  3411303.48666    1e-4
-equipment H2Buffer/vessel4       cost.totalModule 3411303.48666    1e-4
+equipment H2Buffer/vessel4       cost.totalModule 4025338.11426    1e-4
 equipment H2Buffer/vessel5       basis            gas_store_V_=_autonomy_x_mdot_/_(rho(maxPressure,_T)_-_rho(minPressure,_T)),_rho_from_the_case's_package_(vapour),_split_into_equal_standing_vessels_of_at_most_maxVesselVolume;_wall_at_maxPressure_as_gauge;_costed_BY_ITS_SHELL_STEEL_MASS_(the_cylindrical_shell_only:_no_heads,_nozzles_or_supports)_x_a_declared_installed_price_per_kg,_the_Turton_vessel_set_printed_beside_it_as_a_comparison_--_NOT_included:_the_charging_compressor_and_its_power;_the_autonomy_is_a_design_assumption,_not_derived_from_a_renewable-power_profile exact
 equipment H2Buffer/vessel5       values.D         5.35758292591    1e-4
 equipment H2Buffer/vessel5       values.H         16.0727487777    1e-4
@@ -1260,7 +1260,7 @@ equipment H2Buffer/vessel5       inventory.mass.H2 2661.14921405    1e-4
 equipment H2Buffer/vessel5       inventory.mass.total 2661.14921405    1e-4
 equipment H2Buffer/vessel5       cost.purchased   3411303.48666    1e-4
 equipment H2Buffer/vessel5       cost.bareModule  3411303.48666    1e-4
-equipment H2Buffer/vessel5       cost.totalModule 3411303.48666    1e-4
+equipment H2Buffer/vessel5       cost.totalModule 4025338.11426    1e-4
 equipment H2Buffer/vessel6       basis            gas_store_V_=_autonomy_x_mdot_/_(rho(maxPressure,_T)_-_rho(minPressure,_T)),_rho_from_the_case's_package_(vapour),_split_into_equal_standing_vessels_of_at_most_maxVesselVolume;_wall_at_maxPressure_as_gauge;_costed_BY_ITS_SHELL_STEEL_MASS_(the_cylindrical_shell_only:_no_heads,_nozzles_or_supports)_x_a_declared_installed_price_per_kg,_the_Turton_vessel_set_printed_beside_it_as_a_comparison_--_NOT_included:_the_charging_compressor_and_its_power;_the_autonomy_is_a_design_assumption,_not_derived_from_a_renewable-power_profile exact
 equipment H2Buffer/vessel6       values.D         5.35758292591    1e-4
 equipment H2Buffer/vessel6       values.H         16.0727487777    1e-4
@@ -1294,7 +1294,7 @@ equipment H2Buffer/vessel6       inventory.mass.H2 2661.14921405    1e-4
 equipment H2Buffer/vessel6       inventory.mass.total 2661.14921405    1e-4
 equipment H2Buffer/vessel6       cost.purchased   3411303.48666    1e-4
 equipment H2Buffer/vessel6       cost.bareModule  3411303.48666    1e-4
-equipment H2Buffer/vessel6       cost.totalModule 3411303.48666    1e-4
+equipment H2Buffer/vessel6       cost.totalModule 4025338.11426    1e-4
 equipment H2Buffer/vessel7       basis            gas_store_V_=_autonomy_x_mdot_/_(rho(maxPressure,_T)_-_rho(minPressure,_T)),_rho_from_the_case's_package_(vapour),_split_into_equal_standing_vessels_of_at_most_maxVesselVolume;_wall_at_maxPressure_as_gauge;_costed_BY_ITS_SHELL_STEEL_MASS_(the_cylindrical_shell_only:_no_heads,_nozzles_or_supports)_x_a_declared_installed_price_per_kg,_the_Turton_vessel_set_printed_beside_it_as_a_comparison_--_NOT_included:_the_charging_compressor_and_its_power;_the_autonomy_is_a_design_assumption,_not_derived_from_a_renewable-power_profile exact
 equipment H2Buffer/vessel7       values.D         5.35758292591    1e-4
 equipment H2Buffer/vessel7       values.H         16.0727487777    1e-4
@@ -1328,7 +1328,7 @@ equipment H2Buffer/vessel7       inventory.mass.H2 2661.14921405    1e-4
 equipment H2Buffer/vessel7       inventory.mass.total 2661.14921405    1e-4
 equipment H2Buffer/vessel7       cost.purchased   3411303.48666    1e-4
 equipment H2Buffer/vessel7       cost.bareModule  3411303.48666    1e-4
-equipment H2Buffer/vessel7       cost.totalModule 3411303.48666    1e-4
+equipment H2Buffer/vessel7       cost.totalModule 4025338.11426    1e-4
 equipment H2Buffer/vessel8       basis            gas_store_V_=_autonomy_x_mdot_/_(rho(maxPressure,_T)_-_rho(minPressure,_T)),_rho_from_the_case's_package_(vapour),_split_into_equal_standing_vessels_of_at_most_maxVesselVolume;_wall_at_maxPressure_as_gauge;_costed_BY_ITS_SHELL_STEEL_MASS_(the_cylindrical_shell_only:_no_heads,_nozzles_or_supports)_x_a_declared_installed_price_per_kg,_the_Turton_vessel_set_printed_beside_it_as_a_comparison_--_NOT_included:_the_charging_compressor_and_its_power;_the_autonomy_is_a_design_assumption,_not_derived_from_a_renewable-power_profile exact
 equipment H2Buffer/vessel8       values.D         5.35758292591    1e-4
 equipment H2Buffer/vessel8       values.H         16.0727487777    1e-4
@@ -1362,7 +1362,7 @@ equipment H2Buffer/vessel8       inventory.mass.H2 2661.14921405    1e-4
 equipment H2Buffer/vessel8       inventory.mass.total 2661.14921405    1e-4
 equipment H2Buffer/vessel8       cost.purchased   3411303.48666    1e-4
 equipment H2Buffer/vessel8       cost.bareModule  3411303.48666    1e-4
-equipment H2Buffer/vessel8       cost.totalModule 3411303.48666    1e-4
+equipment H2Buffer/vessel8       cost.totalModule 4025338.11426    1e-4
 equipment H2Buffer/vessel9       basis            gas_store_V_=_autonomy_x_mdot_/_(rho(maxPressure,_T)_-_rho(minPressure,_T)),_rho_from_the_case's_package_(vapour),_split_into_equal_standing_vessels_of_at_most_maxVesselVolume;_wall_at_maxPressure_as_gauge;_costed_BY_ITS_SHELL_STEEL_MASS_(the_cylindrical_shell_only:_no_heads,_nozzles_or_supports)_x_a_declared_installed_price_per_kg,_the_Turton_vessel_set_printed_beside_it_as_a_comparison_--_NOT_included:_the_charging_compressor_and_its_power;_the_autonomy_is_a_design_assumption,_not_derived_from_a_renewable-power_profile exact
 equipment H2Buffer/vessel9       values.D         5.35758292591    1e-4
 equipment H2Buffer/vessel9       values.H         16.0727487777    1e-4
@@ -1396,7 +1396,7 @@ equipment H2Buffer/vessel9       inventory.mass.H2 2661.14921405    1e-4
 equipment H2Buffer/vessel9       inventory.mass.total 2661.14921405    1e-4
 equipment H2Buffer/vessel9       cost.purchased   3411303.48666    1e-4
 equipment H2Buffer/vessel9       cost.bareModule  3411303.48666    1e-4
-equipment H2Buffer/vessel9       cost.totalModule 3411303.48666    1e-4
+equipment H2Buffer/vessel9       cost.totalModule 4025338.11426    1e-4
 layout  H2Buffer/vessel1       shape            cylinder         exact
 layout  H2Buffer/vessel1       orientation      vertical         exact
 layout  H2Buffer/vessel1       footprintFrom    published        exact

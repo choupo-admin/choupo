@@ -121,7 +121,7 @@ kpi     reactor                N_in_mol_s       79.6576597408    1e-4
 kpi     reactor                N_liq_mol_s      21.8711454653    1e-4
 kpi     reactor                N_out_mol_s      51.900753368     1e-4
 kpi     reactor                P                3000000          1e-4
-kpi     reactor                Q_kW             -3815.74081581   1e-4
+kpi     reactor                Q_kW             -3818.53088952   1e-4
 kpi     reactor                T                460              1e-4
 kpi     reactor                converged        1                1e-4
 kpi     reactor                lambda_C         64976.0532098    1e-4
@@ -138,9 +138,9 @@ kpi     reactor                y_methanol       4.01094743366e-08 1e-4
 kpi     reactor                y_methylAcetate  0.000789334259838 1e-4
 kpi     reactor                y_water          0.000721123409883 1e-4
 boundary global                 H_feeds_kW       -9856.88413201   1e-4
-boundary global                 Q_boundary_kW    -3016.83386543   1e-4
+boundary global                 Q_boundary_kW    -3019.62393913   1e-4
 boundary global                 H_products_kW    -12879.8872735   1e-4
-boundary global                 residual_kW      6.1692760994     1e-4
+boundary global                 residual_kW      3.37920239041     1e-4
 utility condenser              cooling.coolingWater.duty_kW -308.699472538   1e-4
 utility condenser              cooling.coolingWater.T 330              1e-4
 utility condenser              cooling.coolingWater.kg_s 7.38515484541    1e-4
@@ -161,10 +161,10 @@ utility preheater              heating.steamHP.duty_kW 1419.9858568     1e-4
 utility preheater              heating.steamHP.T 460              1e-4
 utility preheater              heating.steamHP.kg_s 0.828463160327   1e-4
 utility preheater              heating.steamHP.eur_h 92.0150835207    1e-4
-utility reactor                cooling.coolingWater.duty_kW -3815.74081581   1e-4
+utility reactor                cooling.coolingWater.duty_kW -3818.53088952   1e-4
 utility reactor                cooling.coolingWater.T 460              1e-4
-utility reactor                cooling.coolingWater.kg_s 91.2856654499    1e-4
-utility reactor                cooling.coolingWater.eur_h 5.49466677476    1e-4
+utility reactor                cooling.coolingWater.kg_s 91.3524136248    1e-4
+utility reactor                cooling.coolingWater.eur_h 5.4986844809    1e-4
 kpi     M1                     Q_kW             81.1117146187    1e-4
 utility M1                     heating.steamLP.duty_kW 81.1117146187    1e-4
 utility M1                     heating.steamLP.T 320              1e-4
@@ -547,3 +547,4 @@ layout  unbundedLiquid:methanolTank/tank1: value            1371.27550566    1e-
 layout  unbundedLiquid:methanolTank/tank1: limit            0                1e-4
 layout  unbundedLiquid:acidTank/tank1: value            966.763412675    1e-4
 layout  unbundedLiquid:acidTank/tank1: limit            0                1e-4
+kpi     lightsColumn           Q_condensate_m3_s 0.000105484763751 1e-4

@@ -104,7 +104,7 @@ equipment converter/catalystCharge values.catalystBulkDensity 2500             1
 equipment converter/catalystCharge values.m_catalyst_kg 17474.5646769    1e-4
 equipment converter/catalystCharge cost.purchased   262118.470153    1e-4
 equipment converter/catalystCharge cost.bareModule  262118.470153    1e-4
-equipment converter/catalystCharge cost.totalModule 262118.470153    1e-4
+equipment converter/catalystCharge cost.totalModule 309299.79479    1e-4
 equipment converter/shell        basis            catalyst_volume_V_R_read_from_the_unit_(rating_model);_shell_=_straight_cylinder_of_that_volume_at_L_over_D exact
 equipment converter/shell        values.D         1.14044691573    1e-4
 equipment converter/shell        values.H         6.8426814944     1e-4
@@ -144,3 +144,4 @@ boundary global                 H_feeds_kW       104.859286489    1e-4
 boundary global                 Q_boundary_kW    -61651.9883008   1e-4
 boundary global                 H_products_kW    -61547.1431498   1e-4
 boundary global                 residual_kW      0.0141354660154  1e-4
+kpi     converter              X_H2             0.16532986782    1e-4

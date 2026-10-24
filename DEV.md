@@ -1546,6 +1546,14 @@ accepts today, and that is a policy call.
 > C131 phase 1 validation of the unvalidated C124 merge; C136, C137 (for
 > Saturday); C127; C143 (built, awaiting Vitor's look); C145, C146 (in
 > flight).  Waves that wait on these: C110 wave 2, C112 wave B.
+> PROGRESS 2026-10-24: LANDED -- C113 search, G16/C114 colour (with the
+> Streams-table solid double count fixed), and lane A: G14 letdown NH3
+> (12 rows), G13 gibbs07/08/09 + greenAmmonia + aceticAcid feed and
+> outlet priced as the report prices them (gibbs07 residual -6.69 kW ->
+> 0), G8 one home for the 1.18 (per-item C_TM only; FCI/NPV identical to
+> 1e-12 on 23 cases).  Goldens updated ROW BY ROW (only rows out of
+> tolerance or no longer published: 84 across 13 cases), never by a
+> blanket --record, on Vitor's delegated authority.
 
 > **C146. SPIRAL-WOUND ELEMENTS BY STANDARD SIZE AND SPACER, ARRANGED IN
 > SERIES AND PARALLEL, MULTI-ION THROUGHOUT (Vitor, 2026-10-24, with

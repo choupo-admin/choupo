@@ -66,7 +66,7 @@ equipment reactor/catalystCharge values.catalystBulkDensity 1300               1
 equipment reactor/catalystCharge values.m_catalyst_kg 4941.7252441       1e-4
 equipment reactor/catalystCharge cost.purchased   148251.757323      1e-4
 equipment reactor/catalystCharge cost.bareModule  148251.757323      1e-4
-equipment reactor/catalystCharge cost.totalModule 148251.757323      1e-4
+equipment reactor/catalystCharge cost.totalModule 174937.073641      1e-4
 equipment reactor/reactor      basis            multitubular_reactor:_the_unit's_tube_count_(nTubesSolved)_rounded_UP_to_whole_tubes_(nTubes);_shell_ID_=_Sinnott_bundle_diameter_(one_tube_pass,_triangular_pitch)_+_clearance;_A_=_pi_d_o_L_N,_the_tubes'_outside_surface;_priced_as_a_FIXED-TUBE-SHEET_shell-and-tube_exchanger_of_that_area_(a_costing_choice_--_no_reactor_correlation_is_carried) exact
 equipment reactor/reactor      values.A         688.496366316      1e-4
 equipment reactor/reactor      values.Q_coolant 639.082703919      1e-4

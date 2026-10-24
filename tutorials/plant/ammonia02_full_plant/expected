@@ -481,7 +481,7 @@ equipment T201/vessel1           inventory.mass.NH3 402790.605895    1e-4
 equipment T201/vessel1           inventory.mass.total 416033.563048    1e-4
 equipment T201/vessel1           cost.purchased   1410395.77368    1e-4
 equipment T201/vessel1           cost.bareModule  1410395.77368    1e-4
-equipment T201/vessel1           cost.totalModule 1410395.77368    1e-4
+equipment T201/vessel1           cost.totalModule 1664267.01295    1e-4
 equipment T201/vessel2           basis            pressurised_liquid_store_V_=_storageTime_x_mdot_/_(rho_liquid(T)_x_fillFraction),_the_storage_time,_the_fill_fraction_and_the_stream_read_from_the_storageTank_unit_'T201',_rho_from_the_case's_package;_designPressure_(absolute)_at_or_above_the_liquid's_bubble_pressure_at_T_(the_case's_own_K-values);_split_into_equal_vessels_of_at_most_maxVesselVolume,_wall_at_designPressure_as_gauge;_costed_BY_ITS_SHELL_STEEL_MASS_(the_cylindrical_shell_only:_no_heads,_nozzles_or_supports)_x_a_declared_installed_price_per_kg,_the_Turton_vessel_set_printed_beside_it_as_a_comparison_--_NOT_included:_boil-off,_vapour_return_and_relief exact
 equipment T201/vessel2           values.D         5.27174552142    1e-4
 equipment T201/vessel2           values.H         31.6304731285    1e-4
@@ -515,7 +515,7 @@ equipment T201/vessel2           inventory.mass.NH3 402790.605895    1e-4
 equipment T201/vessel2           inventory.mass.total 416033.563048    1e-4
 equipment T201/vessel2           cost.purchased   1410395.77368    1e-4
 equipment T201/vessel2           cost.bareModule  1410395.77368    1e-4
-equipment T201/vessel2           cost.totalModule 1410395.77368    1e-4
+equipment T201/vessel2           cost.totalModule 1664267.01295    1e-4
 equipment T201/vessel3           basis            pressurised_liquid_store_V_=_storageTime_x_mdot_/_(rho_liquid(T)_x_fillFraction),_the_storage_time,_the_fill_fraction_and_the_stream_read_from_the_storageTank_unit_'T201',_rho_from_the_case's_package;_designPressure_(absolute)_at_or_above_the_liquid's_bubble_pressure_at_T_(the_case's_own_K-values);_split_into_equal_vessels_of_at_most_maxVesselVolume,_wall_at_designPressure_as_gauge;_costed_BY_ITS_SHELL_STEEL_MASS_(the_cylindrical_shell_only:_no_heads,_nozzles_or_supports)_x_a_declared_installed_price_per_kg,_the_Turton_vessel_set_printed_beside_it_as_a_comparison_--_NOT_included:_boil-off,_vapour_return_and_relief exact
 equipment T201/vessel3           values.D         5.27174552142    1e-4
 equipment T201/vessel3           values.H         31.6304731285    1e-4
@@ -549,7 +549,7 @@ equipment T201/vessel3           inventory.mass.NH3 402790.605895    1e-4
 equipment T201/vessel3           inventory.mass.total 416033.563048    1e-4
 equipment T201/vessel3           cost.purchased   1410395.77368    1e-4
 equipment T201/vessel3           cost.bareModule  1410395.77368    1e-4
-equipment T201/vessel3           cost.totalModule 1410395.77368    1e-4
+equipment T201/vessel3           cost.totalModule 1664267.01295    1e-4
 equipment T201/vessel4           basis            pressurised_liquid_store_V_=_storageTime_x_mdot_/_(rho_liquid(T)_x_fillFraction),_the_storage_time,_the_fill_fraction_and_the_stream_read_from_the_storageTank_unit_'T201',_rho_from_the_case's_package;_designPressure_(absolute)_at_or_above_the_liquid's_bubble_pressure_at_T_(the_case's_own_K-values);_split_into_equal_vessels_of_at_most_maxVesselVolume,_wall_at_designPressure_as_gauge;_costed_BY_ITS_SHELL_STEEL_MASS_(the_cylindrical_shell_only:_no_heads,_nozzles_or_supports)_x_a_declared_installed_price_per_kg,_the_Turton_vessel_set_printed_beside_it_as_a_comparison_--_NOT_included:_boil-off,_vapour_return_and_relief exact
 equipment T201/vessel4           values.D         5.27174552142    1e-4
 equipment T201/vessel4           values.H         31.6304731285    1e-4
@@ -583,7 +583,7 @@ equipment T201/vessel4           inventory.mass.NH3 402790.605895    1e-4
 equipment T201/vessel4           inventory.mass.total 416033.563048    1e-4
 equipment T201/vessel4           cost.purchased   1410395.77368    1e-4
 equipment T201/vessel4           cost.bareModule  1410395.77368    1e-4
-equipment T201/vessel4           cost.totalModule 1410395.77368    1e-4
+equipment T201/vessel4           cost.totalModule 1664267.01295    1e-4
 equipment T201/vessel5           basis            pressurised_liquid_store_V_=_storageTime_x_mdot_/_(rho_liquid(T)_x_fillFraction),_the_storage_time,_the_fill_fraction_and_the_stream_read_from_the_storageTank_unit_'T201',_rho_from_the_case's_package;_designPressure_(absolute)_at_or_above_the_liquid's_bubble_pressure_at_T_(the_case's_own_K-values);_split_into_equal_vessels_of_at_most_maxVesselVolume,_wall_at_designPressure_as_gauge;_costed_BY_ITS_SHELL_STEEL_MASS_(the_cylindrical_shell_only:_no_heads,_nozzles_or_supports)_x_a_declared_installed_price_per_kg,_the_Turton_vessel_set_printed_beside_it_as_a_comparison_--_NOT_included:_boil-off,_vapour_return_and_relief exact
 equipment T201/vessel5           values.D         5.27174552142    1e-4
 equipment T201/vessel5           values.H         31.6304731285    1e-4
@@ -617,7 +617,7 @@ equipment T201/vessel5           inventory.mass.NH3 402790.605895    1e-4
 equipment T201/vessel5           inventory.mass.total 416033.563048    1e-4
 equipment T201/vessel5           cost.purchased   1410395.77368    1e-4
 equipment T201/vessel5           cost.bareModule  1410395.77368    1e-4
-equipment T201/vessel5           cost.totalModule 1410395.77368    1e-4
+equipment T201/vessel5           cost.totalModule 1664267.01295    1e-4
 equipment T201/vessel6           basis            pressurised_liquid_store_V_=_storageTime_x_mdot_/_(rho_liquid(T)_x_fillFraction),_the_storage_time,_the_fill_fraction_and_the_stream_read_from_the_storageTank_unit_'T201',_rho_from_the_case's_package;_designPressure_(absolute)_at_or_above_the_liquid's_bubble_pressure_at_T_(the_case's_own_K-values);_split_into_equal_vessels_of_at_most_maxVesselVolume,_wall_at_designPressure_as_gauge;_costed_BY_ITS_SHELL_STEEL_MASS_(the_cylindrical_shell_only:_no_heads,_nozzles_or_supports)_x_a_declared_installed_price_per_kg,_the_Turton_vessel_set_printed_beside_it_as_a_comparison_--_NOT_included:_boil-off,_vapour_return_and_relief exact
 equipment T201/vessel6           values.D         5.27174552142    1e-4
 equipment T201/vessel6           values.H         31.6304731285    1e-4
@@ -651,7 +651,7 @@ equipment T201/vessel6           inventory.mass.NH3 402790.605895    1e-4
 equipment T201/vessel6           inventory.mass.total 416033.563048    1e-4
 equipment T201/vessel6           cost.purchased   1410395.77368    1e-4
 equipment T201/vessel6           cost.bareModule  1410395.77368    1e-4
-equipment T201/vessel6           cost.totalModule 1410395.77368    1e-4
+equipment T201/vessel6           cost.totalModule 1664267.01295    1e-4
 equipment T201/vessel7           basis            pressurised_liquid_store_V_=_storageTime_x_mdot_/_(rho_liquid(T)_x_fillFraction),_the_storage_time,_the_fill_fraction_and_the_stream_read_from_the_storageTank_unit_'T201',_rho_from_the_case's_package;_designPressure_(absolute)_at_or_above_the_liquid's_bubble_pressure_at_T_(the_case's_own_K-values);_split_into_equal_vessels_of_at_most_maxVesselVolume,_wall_at_designPressure_as_gauge;_costed_BY_ITS_SHELL_STEEL_MASS_(the_cylindrical_shell_only:_no_heads,_nozzles_or_supports)_x_a_declared_installed_price_per_kg,_the_Turton_vessel_set_printed_beside_it_as_a_comparison_--_NOT_included:_boil-off,_vapour_return_and_relief exact
 equipment T201/vessel7           values.D         5.27174552142    1e-4
 equipment T201/vessel7           values.H         31.6304731285    1e-4
@@ -685,7 +685,7 @@ equipment T201/vessel7           inventory.mass.NH3 402790.605895    1e-4
 equipment T201/vessel7           inventory.mass.total 416033.563048    1e-4
 equipment T201/vessel7           cost.purchased   1410395.77368    1e-4
 equipment T201/vessel7           cost.bareModule  1410395.77368    1e-4
-equipment T201/vessel7           cost.totalModule 1410395.77368    1e-4
+equipment T201/vessel7           cost.totalModule 1664267.01295    1e-4
 layout  T201/vessel1           shape            cylinder         exact
 layout  T201/vessel1           orientation      alongY           exact
 layout  T201/vessel1           footprintFrom    published        exact

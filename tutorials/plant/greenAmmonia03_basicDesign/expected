@@ -1030,7 +1030,7 @@ equipment CONVERTER.Bed1/catalystCharge values.catalystBulkDensity 2500         
 equipment CONVERTER.Bed1/catalystCharge values.m_catalyst_kg 22377.5          1e-4
 equipment CONVERTER.Bed1/catalystCharge cost.purchased   335662.5         1e-4
 equipment CONVERTER.Bed1/catalystCharge cost.bareModule  335662.5         1e-4
-equipment CONVERTER.Bed1/catalystCharge cost.totalModule 335662.5         1e-4
+equipment CONVERTER.Bed1/catalystCharge cost.totalModule 396081.75         1e-4
 equipment CONVERTER.Bed1/shell   basis            catalyst_volume_V_R_read_from_the_unit_(rating_model);_shell_=_straight_cylinder_of_that_volume_at_the_bed's_DECLARED_diameter_(read_from_the_unit's_operation.diameter,_the_cross-section_its_pressure_drop_is_integrated_on;_H_=_V_R_/_(pi_D^2_/_4)) exact
 equipment CONVERTER.Bed1/shell   values.D         2.2283           1e-4
 equipment CONVERTER.Bed1/shell   values.H         2.29527303822    1e-4
@@ -1045,7 +1045,7 @@ equipment CONVERTER.Bed2/catalystCharge values.catalystBulkDensity 2500         
 equipment CONVERTER.Bed2/catalystCharge values.m_catalyst_kg 46028.75         1e-4
 equipment CONVERTER.Bed2/catalystCharge cost.purchased   690431.25        1e-4
 equipment CONVERTER.Bed2/catalystCharge cost.bareModule  690431.25        1e-4
-equipment CONVERTER.Bed2/catalystCharge cost.totalModule 690431.25        1e-4
+equipment CONVERTER.Bed2/catalystCharge cost.totalModule 814708.875        1e-4
 equipment CONVERTER.Bed2/shell   basis            catalyst_volume_V_R_read_from_the_unit_(rating_model);_shell_=_straight_cylinder_of_that_volume_at_the_bed's_DECLARED_diameter_(read_from_the_unit's_operation.diameter,_the_cross-section_its_pressure_drop_is_integrated_on;_H_=_V_R_/_(pi_D^2_/_4)) exact
 equipment CONVERTER.Bed2/shell   values.D         2.2283           1e-4
 equipment CONVERTER.Bed2/shell   values.H         4.72119534613    1e-4
@@ -1060,7 +1060,7 @@ equipment CONVERTER.Bed3/catalystCharge values.catalystBulkDensity 2500         
 equipment CONVERTER.Bed3/catalystCharge values.m_catalyst_kg 79242.75         1e-4
 equipment CONVERTER.Bed3/catalystCharge cost.purchased   1188641.25       1e-4
 equipment CONVERTER.Bed3/catalystCharge cost.bareModule  1188641.25       1e-4
-equipment CONVERTER.Bed3/catalystCharge cost.totalModule 1188641.25       1e-4
+equipment CONVERTER.Bed3/catalystCharge cost.totalModule 1402596.675       1e-4
 equipment CONVERTER.Bed3/shell   basis            catalyst_volume_V_R_read_from_the_unit_(rating_model);_shell_=_straight_cylinder_of_that_volume_at_the_bed's_DECLARED_diameter_(read_from_the_unit's_operation.diameter,_the_cross-section_its_pressure_drop_is_integrated_on;_H_=_V_R_/_(pi_D^2_/_4)) exact
 equipment CONVERTER.Bed3/shell   values.D         2.2283           1e-4
 equipment CONVERTER.Bed3/shell   values.H         8.12797441847    1e-4
