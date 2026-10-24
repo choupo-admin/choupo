@@ -1777,6 +1777,18 @@ accepts today, and that is a policy call.
 > insolvency is NOT stated (no primary document read confirms it); the
 > calculator's synthetic defaults put the break-even spread at 236 US$/t
 > and the page says they are teaching values.
+> EXTERNAL REVIEW (2026-10-24, an external reviewer's eleven points relayed
+> by Vitor, an Associate Professor at a public university): the page
+> claimed the appraisal "was not done" (unsupported: the business plan was
+> not read), carried a tone of censure, sat its illustrative NPV too close
+> to reading as a historical valuation, mixed 2014-2017 spreads with
+> decision-time information, read "up to 450 kt/yr" as a purchase, turned
+> two different capex perimeters into an overrun, and generalised project
+> finance, subordination and import parity beyond the documents.  The
+> commander agrees with all eleven; the revision was dispatched the same
+> day, with a fact-by-fact status list (confirmed / attributed / own
+> calculation / assumption), public links, an institutional note, and no
+> wording that moves editorial responsibility to the AI.
 
 > **C142. A PORE SOLVER BETTER THAN NANOFILTRAN, WITH NANOFILTRAN ONLY AS
 > THE COMPARISON (Vitor, 2026-10-24: "Eu quero que facas um solver melhor!
