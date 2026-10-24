@@ -27,7 +27,8 @@ WHAT THIS GATE CHECKS (every case is RUN here):
   (c) THE REFERENCE TEMPERATURE MOVES NOTHING.  Twins at 298.15 K with and
       without the model publish the same streams, KPIs and profiles BIT FOR
       BIT, and neither carries a D(T) advisory.
-  (d) THE PORE.  A nanofiltran02 twin (one op, 50 nodes, T = 298 K) with the
+  (d) THE PORE.  A twin of the paper case's stiff op N50 (part C, the former
+      nanofiltran02; one op, 50 nodes, T = 298 K, no plotDict) with the
       model declared prints the factor this gate recomputes and its permeate
       Na+ moves (|dc/c| > 1e-3: the trace ion amplifies a 0.4 % D); without
       it the op is unchanged from the shipped case's own op.
@@ -64,7 +65,9 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[2]
 M14 = ROOT / "tutorials/steady/membranes/membrane14_polarisation_multiionic"
-NF02 = ROOT / "tutorials/props/membrane/nanofiltran02_paper_stiff_case"
+#  the NanoFiltran paper's one case (DEV.md 4c C147); its part C is the former
+#  nanofiltran02, the stiff case of Table 2
+NF02 = ROOT / "tutorials/props/membrane/nanofiltran_geraldesAlves2008"
 ED04 = ROOT / "tutorials/steady/electrodialysis/ed04_limiting_current_multiionic"
 T0 = 298.15
 
@@ -215,6 +218,8 @@ def main():
         for tag, visc in (("nf", False), ("nfv", True)):
             d = tmp / tag
             copy_case(NF02, d)
+            #  one op: the case's plotDict names ops this twin does not carry
+            (d / "system/plotDict").unlink(missing_ok=True)
             p = d / "system/propsDict"
             s = p.read_text()
             i = s.index("operations")

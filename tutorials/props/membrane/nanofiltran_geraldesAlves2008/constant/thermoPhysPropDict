@@ -1,0 +1,33 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+  thermoPhysPropDict (v2) -- the salts of the NanoFiltran comparison,
+  declared as components, each with its ion stoichiometry `dissociatesTo`
+  (which the DSPM-DE law decomposes); every transport fact of an ion
+  (charge, Stokes radius, D0) is read off its species record.  No phase
+  equilibrium is computed here.
+\*---------------------------------------------------------------------------*/
+recordType    thermophysicalPropertySystem;
+schemaVersion 2;
+
+components       ( water NaCl MgCl2 Na2SO4 Na3Dye );
+
+equilibrium
+{
+    formulation gammaPhi;
+    liquid
+    {
+        activityModel ideal;
+        standardState pureLiquid;
+    }
+    vapour
+    {
+        fugacityModel idealGas;
+    }
+}

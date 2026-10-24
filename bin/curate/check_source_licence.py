@@ -403,8 +403,8 @@ ACCEPTED_PUBLIC_DOMAIN = {
 }
 #  VENDORED THIRD-PARTY CODE IS A CONTRACT TOO (2026-10-22, DEV.md 4c C138).
 #  NanoFiltran (Geraldes & Alves 2008) lives in bin/curate/nanofiltran/ so the
-#  reference numbers of tutorials/props/membrane/nanofiltran01_* can be
-#  regenerated, and it carries THREE licences: its own MIT notice, Michael F.
+#  reference numbers of tutorials/props/membrane/nanofiltran_geraldesAlves2008
+#  (the NanoFiltran paper's one case, DEV.md 4c C147) can be regenerated, and it carries THREE licences: its own MIT notice, Michael F.
 #  Hutt's MIT notice on the Nelder-Mead routine, and the LAPACK (modified
 #  BSD) licence of the linear solver.  A licence the code carries in a header
 #  stays only while the header does, so each file is held here to its own
@@ -450,10 +450,19 @@ ACCEPTED_PAPER_FACTS = {
             "bin/curate/nanofiltran/paper.tsv":
                 ["doi:10.1016/j.memsci.2008.04.054", "transcribed (facts, cited)",
                  "not in the tree"],
-            "tutorials/props/membrane/nanofiltran03_bowen_mohammad_ca30/constant/"
+            "tutorials/props/membrane/nanofiltran_geraldesAlves2008/constant/"
             "experimental/geraldes_alves2008_fig3.csv":
                 ["doi:10.1016/j.memsci.2008.04.054", "LICENCE: these are FACTS",
                  "are not in the tree"],
+            #  The case's REFERENCE data (bin/curate/nanofiltran/export_case.py,
+            #  DEV.md 4c C147): Table 2 and the Fig. 3 readings re-keyed beside
+            #  NanoFiltran's own output, each file carrying the same words.
+            **{"tutorials/props/membrane/nanofiltran_geraldesAlves2008/constant/reference/"
+               + f: ["doi:10.1016/j.memsci.2008.04.054",
+                     "LICENCE: the paper's numbers here are FACTS", "are not in"]
+               for f in ("nanofiltran_table2.csv", "nanofiltran_stiff.csv",
+                         "nanofiltran_fig3.csv", "nanofiltran_fig4.csv",
+                         "bowenMohammad_fig3_byFeed.csv", "nanofiltran_codeToCode.csv")},
         },
         "excluded_sha256": {
             "e53ef6500b4e56bf0e0d492931f1bc7038ff6e836d4d31caadf590cba5c5f626": "the paper (PDF)",

@@ -56,6 +56,7 @@ Description
 #include "core/DictCanonical.H"
 #include "core/Dictionary.H"
 #include "result/ResultEmitter.H"
+#include "postProcessing/plotDict/PlotDict.H"
 #include "core/ThermoResolution.H"
 #include "core/Units.H"
 #include "curation/AqueousGraph.H"
@@ -614,6 +615,24 @@ try
                       std::map<std::string, std::string> val; };
     std::vector<OpResult> opResults;
     std::map<std::string, std::vector<std::string>> opBlocks;
+
+    //  THE POST-PROCESSING DICTIONARY (DEV.md 4c C147), PARSED BEFORE THE
+    //  OPERATIONS RUN: what the dict alone can refute -- its grammar, a
+    //  reference file, an operation the propsDict does not declare -- is
+    //  refused before the run it guards is spent.  Its names of published
+    //  things are resolved after the operations (plotDict::Reader::evaluate).
+    std::unique_ptr<plotDict::Reader> plotReader;
+    std::vector<plotDict::Publication> publications;
+    if (std::filesystem::exists("system/plotDict"))
+    {
+        std::vector<std::string> declared;
+        for (std::size_t k = 0; k < opsList.size(); ++k)
+            declared.push_back(opsList[k]->lookupWordOrDefault("name",
+                opsList[k]->lookupWord("type") + "_" + std::to_string(k)));
+        plotReader = std::make_unique<plotDict::Reader>("system/plotDict", declared);
+    }
+    else
+        plotDict::clearStale();
     for (std::size_t k = 0; k < opsList.size(); ++k)
     {
         const auto& opDict = opsList[k];
@@ -677,6 +696,12 @@ try
 
         opResults.push_back({ opName, opType, diags, opProv,
                               op->headline(), op->curation() });
+        if (plotReader)
+        {
+            plotDict::Publication pub{ opName, opType, diags, {}, op->publishedTables() };
+            for (const auto& kv : diags) pub.units[kv.first] = op->diagnosticUnit(kv.first);
+            publications.push_back(std::move(pub));
+        }
         //  The op's OWN top-level block, if it publishes one (2026-10-20,
         //  PropertyOperation::resultBlock): grouped by block name, emitted
         //  beside the validation table below.
@@ -891,6 +916,13 @@ try
             }
         }
     }
+
+    // --- The post-processing dictionary: plots and tables -----------------
+    //  After every operation and every experimental dataset, before the
+    //  machine channel opens (its console tables are for a human).
+    std::string postProcessingBlock;
+    if (plotReader)
+        postProcessingBlock = plotReader->evaluate(publications, verbosity);
 
     // --- Structured result emitter (JSON) -------------------------------
     // D-c (forum #67/#73): announced BEFORE the JSON stream opens -- an
@@ -1146,6 +1178,12 @@ try
             std::cout << (i ? ",\n    " : "\n    ") << objects[i];
         std::cout << "\n  ]";
     }
+
+    //  The post-processing dictionary's items (DEV.md 4c C147): titles,
+    //  units, series roles and sources; the numbers are the CSVs under
+    //  postProcessing/plotDict/.  Absent when the case declares no plotDict.
+    if (!postProcessingBlock.empty())
+        std::cout << ",\n  \"postProcessing\": " << postProcessingBlock;
 
     std::cout << "\n}\n<<<Choupo:result-end>>>\n";
 

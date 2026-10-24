@@ -1,11 +1,13 @@
 #!/usr/bin/env python3
 """Run NanoFiltran on the two comparisons of its own paper and write what it
-gives -- the reference numbers of the C145 cases
-tutorials/props/membrane/nanofiltran02_paper_stiff_case and
-tutorials/props/membrane/nanofiltran03_bowen_mohammad_ca30.
+gives -- the reference numbers of the C145 case
+tutorials/props/membrane/nanofiltran_geraldesAlves2008 (the paper's two
+comparisons, its section 4.1 and 4.2; DEV.md 4c C145, merged into one case per
+paper by C147).
 
     bin/curate/nanofiltran/regenerate_paper.py            # run, print, compare
     bin/curate/nanofiltran/regenerate_paper.py --write    # (re)write paper.tsv
+                                                          # and fig4_profiles.tsv
     bin/curate/nanofiltran/regenerate_paper.py --check    # REFUSE (exit 2)
                                                           # without gfortran;
                                                           # FAIL (exit 1) if a
@@ -16,8 +18,14 @@ of mass transport in nanofiltration membranes", J. Membr. Sci. 321 (2008)
 172-182, doi:10.1016/j.memsci.2008.04.054 -- publisher's copyright, NOT in the
 tree.  Two numbers sets are taken from it, cited, as facts: Table 2 (below,
 PAPER_TABLE2, transcribed) and Fig. 3 (digitised by
-bin/curate/digitise_geraldes_alves2008.py into nanofiltran03's
+bin/curate/digitise_geraldes_alves2008.py into the case's
 constant/experimental/geraldes_alves2008_fig3.csv).
+
+FIG. 4'S WHOLE PROFILE (DEV.md 4c C147).  paper.tsv carries the profile's two
+faces; fig4_profiles.tsv carries every node of the two N = 350 profiles the
+case's post-processing draws against Choupo's -- the as-received program on
+the paper's inputs (what Fig. 4 shows) and the corrected one (daviesBorn,
+matched D, TOL 1e-9) -- the potential in CODATA volts (x VOLT_CODATA).
 
 WHAT IT RUNS (NanoFiltran src/ as received, built in a temporary directory;
 src/ is never edited), every variant built from the SAME source with the
@@ -86,8 +94,11 @@ sys.path.insert(0, str(HERE))
 import regenerate as R  # noqa: E402
 
 PAPER_TSV = HERE / "paper.tsv"
-FIG3_CSV = (ROOT / "tutorials" / "props" / "membrane" / "nanofiltran03_bowen_mohammad_ca30"
-            / "constant" / "experimental" / "geraldes_alves2008_fig3.csv")
+PROFILES_TSV = HERE / "fig4_profiles.tsv"
+CASE = ROOT / "tutorials" / "props" / "membrane" / "nanofiltran_geraldesAlves2008"
+FIG3_CSV = CASE / "constant" / "experimental" / "geraldes_alves2008_fig3.csv"
+#  NanoFiltran's volts (R 8.314, F 96500) -> CODATA volts.
+VOLT_CODATA = (8.314462618 / 96485.33212) / (8.314 / 96500.0)
 
 #  TABLE 2 of the paper ("Grid-independence study"), transcribed: N, permeate
 #  Na+, Mg2+, Cl- [mol/m3], Delta Psi_m [V], iterations.
@@ -235,6 +246,7 @@ def run_one(args):
             v = num(l)
             if v:
                 prof.append(v)
+    r["profile"] = prof                             # every node: x [m], c..., psi
     r["face0"] = prof[0][1:] if prof else []        # node 1: c..., psi
     r["face1"] = prof[-1][1:] if prof else []       # node ND-1
     return r
@@ -382,6 +394,39 @@ HEADER = """# NanoFiltran on its own paper -- written by bin/curate/nanofiltran/
 """
 
 
+PROFILE_COLS = ["variant", "node", "x_um", "c_Na_molm3", "c_Mg_molm3", "c_Cl_molm3",
+                "psi_V"]
+PROFILE_HEADER = """# Fig. 4 of the NanoFiltran paper, node by node -- written by
+#   bin/curate/nanofiltran/regenerate_paper.py (--write).  N = 350, the pore nodes 1 .. ND-1
+#   (the feed face to the permeate face, inside), x across the equivalent thickness dx_e.
+# variant asReceived: the program as published, on its shipped inputs and the paper's numerics
+#   (URF 0.2, TOL 1e-4) -- the profile Fig. 4 draws.  variant corrected: DAVIES_PATCH +
+#   BORN_PATCH, the D input matched, URF 0.1, TOL 1e-9 (paper.tsv's daviesBorn_tol1e-9 350).
+# concentrations mol/m3; psi in CODATA volts (NanoFiltran's x %.16g).
+""" % VOLT_CODATA
+
+
+def tabulate_profiles(res):
+    rows = []
+    for variant, key in (("asReceived", ("table2", "asReceived", 350)),
+                         ("corrected", ("stiff", "daviesBorn_tol1e-9", 350))):
+        for k, v in enumerate(res[key]["profile"]):
+            x, na, mg, cl, psi = v[:5]
+            rows.append(dict(variant=variant, node=str(k), x_um="%.12e" % (x * 1e6),
+                             c_Na_molm3="%.12e" % na, c_Mg_molm3="%.12e" % mg,
+                             c_Cl_molm3="%.12e" % cl, psi_V="%.12e" % (psi * VOLT_CODATA)))
+    return rows
+
+
+def read_profiles():
+    rows = []
+    for line in PROFILES_TSV.read_text().splitlines():
+        if not line or line.startswith("#") or line.startswith("variant\t"):
+            continue
+        rows.append(dict(zip(PROFILE_COLS, line.split("\t"))))
+    return rows
+
+
 def read_table():
     rows = []
     for line in PAPER_TSV.read_text().splitlines():
@@ -404,6 +449,7 @@ def main():
     with tempfile.TemporaryDirectory(prefix="nanofiltran_paper_") as w:
         res = regenerate(w)
     rows = tabulate(res)
+    prof = tabulate_profiles(res)
     for r in rows:
         if r["section"] in ("table2", "stiff") and r["quantity"] in IONS3 + ("dPsi_m_V",):
             print("%-7s %-20s %-8s %-9s %s  it %s %s" % (r["section"], r["variant"], r["key"],
@@ -414,6 +460,11 @@ def main():
             for r in rows:
                 f.write("\t".join(r[c] for c in COLS) + "\n")
         print("regenerate_paper.py: wrote", PAPER_TSV.relative_to(ROOT), "(%d rows)" % len(rows))
+        with open(PROFILES_TSV, "w") as f:
+            f.write(PROFILE_HEADER + "\t".join(PROFILE_COLS) + "\n")
+            for r in prof:
+                f.write("\t".join(r[c] for c in PROFILE_COLS) + "\n")
+        print("regenerate_paper.py: wrote", PROFILES_TSV.relative_to(ROOT), "(%d rows)" % len(prof))
         return 0
     bad = []
     if PAPER_TSV.is_file():
@@ -432,11 +483,23 @@ def main():
             bad.append("paper.tsv holds %d rows, regeneration %d" % (len(ref), len(rows)))
     else:
         bad.append("paper.tsv is missing (run with --write)")
+    if PROFILES_TSV.is_file():
+        old = read_profiles()
+        if len(old) != len(prof):
+            bad.append("fig4_profiles.tsv holds %d rows, regeneration %d" % (len(old), len(prof)))
+        for a, b in zip(prof, old):
+            for c in PROFILE_COLS[2:]:
+                x, y = float(a[c]), float(b[c])
+                if abs(x - y) > 1e-8 * max(abs(y), 1e-300):
+                    bad.append("fig4_profiles %s node %s %s: regenerated %s vs committed %s"
+                               % (a["variant"], a["node"], c, a[c], b[c]))
+    else:
+        bad.append("fig4_profiles.tsv is missing (run with --write)")
     if bad:
         print("regenerate_paper.py: FAILED --\n  " + "\n  ".join(bad))
         return 1
-    print("regenerate_paper.py: OK -- %d rows regenerated and equal to paper.tsv to 1e-8"
-          " relative" % len(rows))
+    print("regenerate_paper.py: OK -- %d rows regenerated and equal to paper.tsv, %d profile"
+          " nodes equal to fig4_profiles.tsv, to 1e-8 relative" % (len(rows), len(prof)))
     return 0
 
 

@@ -13,8 +13,17 @@ original para criar um caso de comparacao").  The paper -- V. Geraldes,
 A.M. Brites Alves, J. Membr. Sci. 321 (2008) 172-182 -- is the publisher's
 and is not in the tree; its numbers enter as cited facts in two homes:
 PAPER_TABLE2 in bin/curate/nanofiltran/regenerate_paper.py (Table 2,
-transcribed) and nanofiltran03's constant/experimental/
-geraldes_alves2008_fig3.csv (Fig. 3, digitised).  NanoFiltran's own runs on
+transcribed) and the case's constant/experimental/
+geraldes_alves2008_fig3.csv (Fig. 3, digitised).
+
+ONE CASE PER PAPER (DEV.md 4c C147).  The former nanofiltran02 (Table 2,
+Fig. 4) and nanofiltran03 (Fig. 3) are parts C and B of
+tutorials/props/membrane/nanofiltran_geraldesAlves2008, whose plotDict
+generates the paper's tables and figures (held by check_postprocessing).
+Below, "nanofiltran02" and "nanofiltran03" name those parts: their ops, the
+part of the propsDict header that documents them, and their anchor rows of
+the one golden; an arm that re-runs one runs a copy of that part alone
+(bin/curate/nanofiltran/paper_case.py).  NanoFiltran's own runs on
 them are committed in bin/curate/nanofiltran/paper.tsv (regenerate_paper.py,
 which REFUSES without gfortran; this gate never needs it -- a check that
 cannot run must not pass, and this one reruns only Choupo).
@@ -98,11 +107,11 @@ ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(ROOT / "bin" / "curate" / "nanofiltran"))
 sys.path.insert(0, str(ROOT / "bin" / "curate"))
 import regenerate_paper as rp  # noqa: E402  (pure Python here; never builds)
+import paper_case  # noqa: E402
 
 PROPS = ROOT / "choupoProps"
-MEM = ROOT / "tutorials" / "props" / "membrane"
-CASE2 = MEM / "nanofiltran02_paper_stiff_case"
-CASE3 = MEM / "nanofiltran03_bowen_mohammad_ca30"
+CASE = paper_case.CASE
+CASE2 = CASE3 = CASE          # parts C and B of the one case
 DIGITISER = ROOT / "bin" / "curate" / "digitise_geraldes_alves2008.py"
 GRIDS = (401, 801, 1601)
 VOLT = (8.314462618 / 96485.33212) / (8.314 / 96500.0)   # NanoFiltran volts -> CODATA volts
@@ -125,15 +134,11 @@ def diags_of(out):
     return {o["name"]: o.get("diagnostics", {}) for o in res.get("operationResults", [])}
 
 
-def copy_case(src, dst, edit=None):
-    shutil.copytree(src, dst, ignore=shutil.ignore_patterns("expected", "*.csv"))
-    if (src / "constant" / "experimental").is_dir():
-        shutil.copytree(src / "constant" / "experimental", dst / "constant" / "experimental",
-                        dirs_exist_ok=True)
-    if edit:
-        pd = dst / "system" / "propsDict"
-        pd.write_text(edit(pd.read_text()))
-    return dst
+def copy_case(part, dst, edit=None, only=None):
+    """A copy of PART ('B' Fig. 3, 'C' Table 2) of the paper's case alone, or of the
+    ops named in `only`."""
+    keep = (lambda op: op in only) if only else (lambda op: paper_case.part_of(op) == part)
+    return paper_case.subset_case(dst, keep, edit)
 
 
 def table():
@@ -151,11 +156,12 @@ def tv(T, *key):
     return float(r["value"])
 
 
-def anchors(case):
+def anchors(part):
     out = {}
-    for line in (case / "expected").read_text().splitlines():
+    for line in (CASE / "expected").read_text().splitlines():
         f = line.split()
-        if len(f) >= 6 and f[0] == "diag" and f[5] == "anchor":
+        if (len(f) >= 6 and f[0] == "diag" and f[5] == "anchor"
+                and paper_case.part_of(f[1]) == part):
             out[(f[1], f[2])] = (float(f[3]), float(f[4]))
     return out
 
@@ -237,7 +243,7 @@ def arm_stiff(tmp, T):
         def edit(t, n=n):
             t = re.sub(r"nodes\s+\d+;", "nodes %d;" % n, t)
             return t
-        c = copy_case(CASE2, tmp / ("s%d" % n), edit)
+        c = copy_case("C", tmp / ("s%d" % n), edit, only=("N350",))
         rc, out = run_case(c)
         d = diags_of(out) if rc == 0 else None
         if d is None:
@@ -335,7 +341,7 @@ def arm_case2_text(T, ext, case_run):
 
 
 def arm_case2_anchors(T, case_run):
-    anc = anchors(CASE2)
+    anc = anchors("C")
     n350 = case_run["N350"]
     refs = {
         ("N350", "c_perm_Na_p1"): tv(T, "stiff", "daviesBorn_ext", "102/204", "Na"),
@@ -376,11 +382,12 @@ def experiments():
 
 
 def op_blocks(text):
-    return {m.group(1): m.group(0) for m in re.finditer(
-        r"\{\s*name\s+(\S+);.*?\n    \}", text, re.S)}
+    """Part B's op blocks (the dye ops) of the one propsDict."""
+    return {n: b for n, b in paper_case.op_blocks(text).items()
+            if paper_case.part_of(n) == "B"}
 
 
-def arm_case3(T):
+def arm_case3(T, tmp):
     exps, marks = experiments()
     text = (CASE3 / "system" / "propsDict").read_text()
     blocks = op_blocks(text)
@@ -412,7 +419,7 @@ def arm_case3(T):
             fails.append("(f) op %s: the stirred cell's Re is %.3f, not 26 900" % (op, Re))
         if "a 0.23;  b 0.567;  c 0.33;" not in b or "model      StirredCell;" not in b:
             fails.append("(f) op %s: not the paper's Sh = 0.23 Re^0.567 Sc^0.33 stirred cell" % op)
-    rc, out = run_case(CASE3)
+    rc, out = run_case(copy_case("B", tmp / "case3"))
     d = diags_of(out) if rc == 0 else None
     if d is None:
         fails.append("(f) nanofiltran03 did not run (exit %d):\n%s" % (rc, out[-1500:]))
@@ -447,7 +454,7 @@ def arm_case3(T):
             residuals.append((op, ion, cl, float(mk["Robs_exp"]), Rc, nfl if mk["Robs_NanoFiltran_line"] else
                               tv(T, "fig3", "paperSettings", op, "Robs_" + ion), cb, mk))
     #  (e) the anchors: the MEASURED permeates
-    anc = anchors(CASE3)
+    anc = anchors("B")
     want = {}
     for op, ion, cl, Rexp, Rc, Rnf, cb, mk in residuals:
         want[(op, "c_perm_%s_p1" % ion)] = (cb * (1.0 - Rexp), cb * float(mk["dRobs"]))
@@ -505,11 +512,11 @@ def main():
     with tempfile.TemporaryDirectory(prefix="nanofiltran_paper_") as d:
         tmp = Path(d)
         stiff = arm_stiff(tmp, T)
-        rc, out = run_case(copy_case(CASE2, tmp / "case2"))
+        rc, out = run_case(copy_case("C", tmp / "case2"))
         run2 = diags_of(out) if rc == 0 else None
         if run2 is None:
             fails.append("nanofiltran02 did not run at its own grids (exit %d)" % rc)
-        res3 = arm_case3(T)
+        res3 = arm_case3(T, tmp)
     checked = n2 = 0
     if stiff and run2:
         checked = arm_case2_text(T, stiff[0], run2)
@@ -531,9 +538,9 @@ def main():
           " which the Davies-corrected program is not: the table carries the ln 10; Choupo's"
           " stiff pore at 401/801/1601 nodes (order %.2f-%.2f), extrapolated, agrees with the"
           " corrected NanoFiltran within %.1e on the permeates and the potential and %.1e on"
-          " the pore's faces; %d printed numbers of nanofiltran02's header and its %d anchors"
+          " the pore's faces; %d printed numbers of part C's header (the former nanofiltran02) and its %d anchors"
           " are the measurement's; the Fig. 3 CSV (%d markers) is the digitiser's, fresh and"
-          " pixel-consistent; nanofiltran03's 10 ops are the paper's Eqs. 43-46 at the read"
+          " pixel-consistent; part B's 10 ops (the former nanofiltran03) are the paper's Eqs. 43-46 at the read"
           " feeds, Choupo meets NanoFiltran on them within %.1e, NanoFiltran with the paper's"
           " settings lands on the drawn line within %.1f reading errors at %d markers, and"
           " against EXPERIMENT the rms of R_obs is %.3f (NanoFiltran's %.3f) inside every"

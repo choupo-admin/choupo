@@ -51,6 +51,7 @@ Description
 #pragma once
 
 #include "core/Dictionary.H"
+#include "core/PublishedTable.H"
 #include "core/Types.H"
 
 #include <functional>
@@ -135,6 +136,21 @@ public:
     // block must have a home a golden kind reads (the op's own CSV through
     // the `csv` kind, or a diagnostic), and the op's header says which.
     virtual std::pair<std::string, std::string> resultBlock() const
+    { return {}; }
+
+    // NAMED TABLES THE OP PUBLISHES (2026-10-24, DEV.md 4c C147): a profile,
+    // a per-point table -- rows under named columns with units -- that a
+    // post-processing dictionary (`system/plotDict`) names and draws.  Empty
+    // (the default) MEANS "this op publishes no table".  A table is an
+    // IN-MEMORY publication: a CSV the op writes is a projection of it, never
+    // a second reader's source.
+    virtual std::vector<PublishedTable> publishedTables() const { return {}; }
+
+    // THE UNIT OF A DIAGNOSTIC, where the op knows it ("-" dimensionless;
+    // empty = not published).  A plotDict axis declaring a unit is held to
+    // it; a diagnostic with no published unit takes the axis's declared unit
+    // as the author's statement, and the sidecar says so.
+    virtual std::string diagnosticUnit(const std::string& /*key*/) const
     { return {}; }
 
     // Optional setters used by ops that need to RE-BUILD the thermoPackage

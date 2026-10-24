@@ -80,7 +80,9 @@ Description
                                 // output, like every props CSV)
 
     Diagnostics, per J_v point p (1-based) and per ion species (an ion
-    carried by two salts is summed): `c_wall_<ion>_p<p>`, `c_perm_<ion>_p<p>`
+    carried by two salts is summed): `c_bulk_<ion>_p<p>` (the feed the point
+    sees, so a plot of rejection against feed concentration reads its
+    abscissa off the run), `c_wall_<ion>_p<p>`, `c_perm_<ion>_p<p>`
     [mol/m3], `Rreal_<ion>_p<p>` = 1 - c_perm/c_wall, `Robs_<ion>_p<p>` =
     1 - c_perm/c_bulk -- NanoFiltran's two definitions -- and
     `permeateCharge_max`, the worst |sum z c_perm| / sum |z| c_perm.  Where
@@ -91,7 +93,17 @@ Description
     included; volts with the CODATA R and F), and `poreNewton_p<p>` /
     `poreContinuations_p<p>`, the station's Newton iterations and whether it
     took the continuation -- the first point from the seed, each later one
-    warm-started from the point before it.
+    warm-started from the point before it -- and `poreNodes_p<p>`, the node
+    count the pore was solved on (the abscissa of a grid study).  Every
+    diagnostic publishes its unit (diagnosticUnit).
+
+    PUBLISHED TABLES (DEV.md 4c C147), named so a `system/plotDict` draws
+    them: `points`, one row per J_v point carrying the per-point diagnostics
+    as columns (c_bulk_/c_wall_/c_perm_<ion>_molm3, Rreal_/Robs_<ion>, and
+    dPsi_m_V, poreNewton, poreNodes where a pore was solved); and `pore`,
+    every point's solved pore -- point, Jv_mps, node, xi, x_um,
+    c_<ion>_molm3, psi_V: the columns of the `profile` CSV, which is written
+    FROM it -- with or without the CSV.
 \*---------------------------------------------------------------------------*/
 
 #pragma once
@@ -114,10 +126,13 @@ public:
     std::map<std::string, scalar> diagnostics() const override { return diag_; }
     std::vector<std::string> headline() const override
     { return { "n_points", "permeateCharge_max" }; }
+    std::vector<PublishedTable> publishedTables() const override { return tables_; }
+    std::string diagnosticUnit(const std::string& key) const override;
 
 private:
     inline static const std::string type_ = "poreTransport";
     std::map<std::string, scalar> diag_;
+    std::vector<PublishedTable> tables_;
 };
 
 } // namespace Choupo

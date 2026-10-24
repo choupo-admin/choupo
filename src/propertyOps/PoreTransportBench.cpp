@@ -57,6 +57,7 @@ int PoreTransportBench::run(const DictPtr& dict,
 {
     using namespace membrane;
     diag_.clear();
+    tables_.clear();
     const std::string opName = dict->name().empty() ? type() : dict->name();
     const std::string site   = "poreTransport '" + opName + "'";
 
@@ -203,6 +204,13 @@ int PoreTransportBench::run(const DictPtr& dict,
                  " march, J_v handed to it\n";
 
     // ---- the points --------------------------------------------------------
+    //  `points`, the second published table: one row per J_v point, the same
+    //  numbers as the per-point diagnostics, so a plot of a rejection against
+    //  J_v names columns instead of a list of keys (DEV.md 4c C147).
+    PublishedTable pointsTab;
+    pointsTab.name = "points";
+    pointsTab.description = "one row per imposed J_v point: the feed, wall and permeate"
+                            " of every ion, both rejections and the pore's numerics";
     scalar chargeMax = 0.0;
     std::vector<TransportSolution::PoreProfile> profiles;
     for (std::size_t p = 0; p < Jvs.size(); ++p)
@@ -253,10 +261,48 @@ int PoreTransportBench::run(const DictPtr& dict,
                 static_cast<double>(cw[k]), static_cast<double>(cp[k]),
                 static_cast<double>(Rr), static_cast<double>(Ro));
             std::cout << b;
+            diag_["c_bulk_" + names[k] + tag] = cb[k];
             diag_["c_wall_" + names[k] + tag] = cw[k];
             diag_["c_perm_" + names[k] + tag] = cp[k];
             diag_["Rreal_"  + names[k] + tag] = Rr;
             diag_["Robs_"   + names[k] + tag] = Ro;
+        }
+        {
+            //  The columns are fixed by the first point (every point solves the
+            //  same feed, so the same ions); a point that disagrees refuses.
+            std::vector<PublishedTable::Column> cols{ {"point", "-"}, {"Jv_mps", "m/s"} };
+            std::vector<scalar> row{ static_cast<scalar>(p + 1), Jvs[p] };
+            for (std::size_t k = 0; k < names.size(); ++k)
+            {
+                cols.push_back({ "c_bulk_" + names[k] + "_molm3", "mol/m3" });
+                cols.push_back({ "c_wall_" + names[k] + "_molm3", "mol/m3" });
+                cols.push_back({ "c_perm_" + names[k] + "_molm3", "mol/m3" });
+                cols.push_back({ "Rreal_" + names[k], "-" });
+                cols.push_back({ "Robs_" + names[k], "-" });
+                row.push_back(cb[k]); row.push_back(cw[k]); row.push_back(cp[k]);
+                row.push_back(1.0 - cp[k] / cw[k]); row.push_back(1.0 - cp[k] / cb[k]);
+            }
+            if (sol.hasPoreProfile)
+            {
+                cols.push_back({ "dPsi_m_V", "V" });
+                cols.push_back({ "poreNewton", "-" });
+                cols.push_back({ "poreNodes", "-" });
+                row.push_back(sol.poreProfile.psiPerm * constant::R * T / constant::F);
+                row.push_back(static_cast<scalar>(sol.pore.newtonTotal));
+                row.push_back(static_cast<scalar>(sol.pore.nodes));
+            }
+            if (p == 0) pointsTab.columns = cols;
+            else
+            {
+                bool same = cols.size() == pointsTab.columns.size();
+                for (std::size_t c = 0; same && c < cols.size(); ++c)
+                    same = cols[c].name == pointsTab.columns[c].name;
+                if (!same)
+                    throw std::runtime_error(site + ": J_v point " + std::to_string(p + 1)
+                        + " published different columns from point 1 -- the points table"
+                          " would not be rectangular");
+            }
+            pointsTab.rows.push_back(std::move(row));
         }
         std::cout << "    permeate charge |sum z c| / sum |z| c = "
                   << std::scientific << std::setprecision(2) << charge << "\n";
@@ -273,6 +319,7 @@ int PoreTransportBench::run(const DictPtr& dict,
             diag_["dPsi_m_V" + tag]         = dPsi;
             diag_["poreNewton" + tag]       = static_cast<scalar>(sol.pore.newtonTotal);
             diag_["poreContinuations" + tag] = static_cast<scalar>(sol.pore.continuations);
+            diag_["poreNodes" + tag]        = static_cast<scalar>(sol.pore.nodes);
             std::cout << "    potential difference across the membrane psi_p - psi_m = "
                       << std::fixed << std::setprecision(6) << dPsi << " V;  pore "
                       << sol.pore.nodes << " nodes, " << sol.pore.newtonTotal
@@ -282,54 +329,80 @@ int PoreTransportBench::run(const DictPtr& dict,
             profiles.push_back(sol.poreProfile);
         }
     }
-    // ---- the profiles (optional) -------------------------------------------
-    //  `profile <file>.csv;` writes the solved pore of every point: x across
-    //  the equivalent thickness dx/A_k (the length the pore model sees; the
-    //  record's porosityOverThickness), each ion species' concentration
-    //  (summed over the salts that carry it) and the potential in volts on
-    //  the same reference as dPsi_m_V.  A props case's CSV is a run output.
-    if (dict->found("profile"))
+    tables_.push_back(std::move(pointsTab));
+
+    // ---- the solved pores: ONE published table, the CSV written from it --
+    //  `pore` holds the solved pore of every point: x across the equivalent
+    //  thickness dx/A_k (the length the pore model sees; the record's
+    //  porosityOverThickness), each ion species' concentration (summed over
+    //  the salts that carry it) and the potential in volts on the same
+    //  reference as dPsi_m_V.  It is published to the run whether or not the
+    //  case asks for a file (DEV.md 4c C147: a `system/plotDict` names it);
+    //  `profile <file>.csv;` writes the same rows to disk, a props case's
+    //  CSV being a run output.
+    if (!profiles.empty())
     {
-        const std::string path = dict->lookupWord("profile");
-        records::refuseStandardsWrite(site, "profile", path);
-        if (profiles.empty())
-            throw std::runtime_error(site + ": `profile " + path + ";` -- the law"
-                " published no solved pore (DSPM-DE's pore is solved at every"
-                " point with a positive J_v)");
         std::vector<std::string> species;
         for (const auto& pr : profiles)
             for (const auto& nm : pr.ionNames)
                 if (std::find(species.begin(), species.end(), nm) == species.end())
                     species.push_back(nm);
-        std::ofstream csv(path);
-        if (!csv)
-            throw std::runtime_error(site + ": cannot write '" + path + "'");
         const scalar VT = constant::R * T / constant::F;
         const scalar dxe_um = 1.0e6 / mem.porosityOverThickness();
-        csv << "point,Jv_mps,node,xi,x_um";
-        for (const auto& nm : species) csv << ",c_" << nm << "_molm3";
-        csv << ",psi_V\n";
-        csv << std::setprecision(12);
+        PublishedTable tab;
+        tab.name = "pore";
+        tab.description = "the solved pore of every J_v point, node by node from"
+                          " the feed face (xi = 0) to the permeate face (xi = 1)";
+        tab.columns = { {"point", "-"}, {"Jv_mps", "m/s"}, {"node", "-"},
+                        {"xi", "-"}, {"x_um", "um"} };
+        for (const auto& nm : species) tab.columns.push_back({ "c_" + nm + "_molm3", "mol/m3" });
+        tab.columns.push_back({ "psi_V", "V" });
         for (std::size_t p = 0; p < profiles.size(); ++p)
         {
             const auto& pr = profiles[p];
             for (std::size_t k = 0; k < pr.xi.size(); ++k)
             {
-                csv << (p + 1) << "," << Jvs[p] << "," << k << "," << pr.xi[k]
-                    << "," << pr.xi[k] * dxe_um;
+                std::vector<scalar> row{ static_cast<scalar>(p + 1), Jvs[p],
+                                         static_cast<scalar>(k), pr.xi[k],
+                                         pr.xi[k] * dxe_um };
                 for (const auto& nm : species)
                 {
                     scalar c = 0.0;
                     for (std::size_t m = 0; m < pr.ionNames.size(); ++m)
                         if (pr.ionNames[m] == nm) c += pr.c[k][m];
-                    csv << "," << c;
+                    row.push_back(c);
                 }
-                csv << "," << pr.psi[k] * VT << "\n";
+                row.push_back(pr.psi[k] * VT);
+                tab.rows.push_back(std::move(row));
             }
+        }
+        tables_.push_back(std::move(tab));
+    }
+    if (dict->found("profile"))
+    {
+        const std::string path = dict->lookupWord("profile");
+        records::refuseStandardsWrite(site, "profile", path);
+        if (tables_.back().name != "pore")
+            throw std::runtime_error(site + ": `profile " + path + ";` -- the law"
+                " published no solved pore (DSPM-DE's pore is solved at every"
+                " point with a positive J_v)");
+        const PublishedTable& tab = tables_.back();
+        std::ofstream csv(path);
+        if (!csv)
+            throw std::runtime_error(site + ": cannot write '" + path + "'");
+        for (std::size_t c = 0; c < tab.columns.size(); ++c)
+            csv << (c ? "," : "") << tab.columns[c].name;
+        csv << "\n";
+        csv << std::setprecision(12);
+        for (const auto& row : tab.rows)
+        {
+            for (std::size_t c = 0; c < row.size(); ++c)
+                csv << (c ? "," : "") << row[c];
+            csv << "\n";
         }
         std::cout << "\n  pore profiles written to " << path << " (" << profiles.size()
                   << " point(s); x over the equivalent thickness dx/A_k = "
-                  << std::setprecision(4) << dxe_um << " um)\n";
+                  << std::setprecision(4) << 1.0e6 / mem.porosityOverThickness() << " um)\n";
     }
     diag_["n_points"] = static_cast<scalar>(Jvs.size());
     diag_["permeateCharge_max"] = chargeMax;
@@ -337,6 +410,17 @@ int PoreTransportBench::run(const DictPtr& dict,
                  "  Nothing was fitted.\n"
               << "=================================================================\n";
     return 0;
+}
+
+std::string PoreTransportBench::diagnosticUnit(const std::string& key) const
+{
+    auto starts = [&](const char* p) { return key.rfind(p, 0) == 0; };
+    if (starts("c_bulk_") || starts("c_wall_") || starts("c_perm_")) return "mol/m3";
+    if (starts("dPsi_m_V")) return "V";
+    if (starts("Rreal_") || starts("Robs_") || starts("poreNewton")
+        || starts("poreContinuations") || starts("poreNodes")
+        || key == "n_points" || key == "permeateCharge_max") return "-";
+    return {};
 }
 
 } // namespace Choupo

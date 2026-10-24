@@ -11,7 +11,10 @@ compared it with nothing but itself and an analytic limit.  Vitor handed
 over NanoFiltran; it lives in bin/curate/nanofiltran/ (as received, built
 and run by regenerate.py), and its numbers are committed in
 bin/curate/nanofiltran/reference.tsv and, as ANCHOR rows, in the golden
-case tutorials/props/membrane/nanofiltran01_dspmde_reference/expected.
+of the paper's case tutorials/props/membrane/nanofiltran_geraldesAlves2008
+(its part A, the former nanofiltran01_dspmde_reference; one case per paper
+since DEV.md 4c C147 -- the arms below run a copy of part A alone,
+bin/curate/nanofiltran/paper_case.py).
 This gate holds the agreement -- WITHOUT gfortran: a check that cannot run
 must not pass, and this one never needs the compiler; regenerating the
 reference is regenerate.py's own job, and it REFUSES without gfortran.
@@ -84,8 +87,10 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(ROOT / "bin" / "curate" / "nanofiltran"))
 import regenerate as nf  # noqa: E402  (pure-Python input rule; never builds here)
+import paper_case  # noqa: E402
 
-CASE = ROOT / "tutorials" / "props" / "membrane" / "nanofiltran01_dspmde_reference"
+CASE = paper_case.CASE
+PART_A = lambda op: paper_case.part_of(op) == "A"   # noqa: E731
 PROPS = ROOT / "choupoProps"
 GRIDS = (401, 801, 1601)
 CASE_NODES = 801
@@ -119,15 +124,15 @@ def diags_of(out):
 
 
 def copy_case(dst, nodes=None, props=None):
-    shutil.copytree(CASE, dst, ignore=shutil.ignore_patterns("expected"))
-    pd = dst / "system" / "propsDict"
-    text = pd.read_text()
-    if nodes is not None:
-        text = re.sub(r"nodes\s+\d+;", f"nodes {nodes};", text)
-    if props is not None:
-        text = props(text)
-    pd.write_text(text)
-    return dst
+    """Part A of the paper's case alone (paper_case.subset_case), its node count
+    rewritten when asked."""
+    def edit(text):
+        if nodes is not None:
+            text = re.sub(r"nodes\s+\d+;", f"nodes {nodes};", text)
+        if props is not None:
+            text = props(text)
+        return text
+    return paper_case.subset_case(dst, PART_A, edit)
 
 
 def anchors():
@@ -137,7 +142,7 @@ def anchors():
         return rows
     for line in (CASE / "expected").read_text().splitlines():
         f = line.split()
-        if len(f) >= 6 and f[0] == "diag" and f[5] == "anchor":
+        if len(f) >= 6 and f[0] == "diag" and f[5] == "anchor" and PART_A(f[1]):
             rows[(f[1], f[2])] = (float(f[3]), float(f[4]))
     return rows
 
@@ -256,7 +261,8 @@ def arm_refusals(tmp):
     fired = 0
     for tag, edit, needles in probes:
         case = copy_case(tmp / ("refuse_" + re.sub(r"\W+", "_", tag)), props=edit)
-        if (case / "system" / "propsDict").read_text() == (CASE / "system" / "propsDict").read_text():
+        plain = copy_case(tmp / ("plain_" + re.sub(r"\W+", "_", tag)))
+        if (case / "system" / "propsDict").read_text() == (plain / "system" / "propsDict").read_text():
             fails.append(f"(e) the probe `{tag}` could not be built (its anchor text moved)")
             continue
         rc, out = run_case(case)
