@@ -178,8 +178,19 @@ both exchangers on `design {}`.  Sealed (Choupo-2608).
 
 | item | N (per pass x passes) | shell ID m | h_tube / h_shell W/m2K | U (clean) | F | LMTD K | A req / inst m2 | film |
 |---|---|---|---|---|---|---|---|---|
-| condenser | 142 (71 x 2) | 0.350 | 10293 (water) / 1012 | 600.6 (875.8) | 0.999 | 51.70 | 41.36 / 41.45 | Nusselt, 8 tubes per tier, dT_film 30.6 K, Re_film 25.2 |
-| reboiler | 134 (67 x 2) | 0.497 | 8000 (declared steam) / 1005 | 661.7 (839.4) | 1 | 18.79 | 52.06 / 52.15 | Rohsenow, dT_excess 12.4 K, q 12.4 kW/m2 = 3.8 % of q_CHF 331 kW/m2 |
+| condenser | 144 (72 x 2) | 0.352 | 10226 (water) / 1012 | 600.3 (875.3) | 0.999 | 51.70 | 41.64 / 42.03 | Nusselt, 8 tubes per tier, dT_film 30.6 K, Re_film 25.2 |
+| reboiler | 136 (68 x 2) | 0.500 | 8000 (declared steam) / 1005 | 661.7 (839.4) | 1 | 18.79 | 52.72 / 52.93 | Rohsenow, dT_excess 12.4 K, q 12.4 kW/m2 = 3.8 % of q_CHF 331 kW/m2 |
+
+The table is the witness on `main` as of 2026-10-24 (DEV.md 4c C131 phase
+1).  The branch that built this record was cut before the column fix of the
+same week (G28, `6f4faf2c5`: a total condenser condenses to its
+distillate's state) and recorded its golden there, at Q_condenser
+-1282.92 kW and Q_reboiler 647.14 kW (142 and 134 tubes).  On `main` the
+column publishes -1291.11 and 655.33 kW -- to twelve digits the values
+G28 re-recorded for `column09`, whose column this is -- and every row that
+moved with them (53, all derived from the two duties: the condensed and
+boiled flows, the utility flows and their price, the tube counts and the
+areas, the shell, the costs) was updated row by row.
 
 Against `column09`'s typed estimates (U 500 / LMTD 48 -> 53.5 m2; U 800 /
 LMTD 17 -> 47.6 m2): the designed condenser is smaller (the typed LMTD was

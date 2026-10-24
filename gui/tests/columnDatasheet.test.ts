@@ -537,7 +537,7 @@ describe("the tower is drawn from the sheets and nothing else", () => {
     expect(notes).toContain("the rectifying trays need ⌀1.222 m");
     expect(notes).toContain("the stripping trays need ⌀0.9695 m");
     //  The gap is the ENGINE's: `swageGap = (big - sml) / big` at
-    //  ColumnSize.cpp:229, published on the sheet, and the caption only
+    //  ColumnSize.cpp:302, published on the sheet, and the caption only
     //  multiplies it by 100 (equipmentSchematic.ts:470).  0.2066829 -> 20.67.
     expect(notes).toMatch(/20\.67 % apart/);
     expect(notes).toMatch(/sizes the shell STRAIGHT/);

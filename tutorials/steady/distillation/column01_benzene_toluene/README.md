@@ -31,8 +31,8 @@ The golden: **x_D = 0.9510** benzene, **x_B = 0.9510** toluene, T_top
    95.1 %), 381.51 K and 95.1 % toluene in the reboiler.  That table is
    the McCabe–Thiele diagram in numbers.
 4. **Two duties, two utilities, priced from the catalogue.**  The reboiler
-   is served by low-pressure steam (0.296 kg/s, 27.96 €/h at the catalogue
-   price) and the condenser by cooling water (30.69 kg/s, 1.85 €/h) — the
+   is served by low-pressure steam (0.300 kg/s, 28.31 €/h at the catalogue
+   price) and the condenser by cooling water (30.89 kg/s, 1.86 €/h) — the
    same picker every steady report uses, and the €/h is a catalogue
    number, not a market one.
 5. **Read the caveats.**  Both Antoine fits are asked slightly outside
