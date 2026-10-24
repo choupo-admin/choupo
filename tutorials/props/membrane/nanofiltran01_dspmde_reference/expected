@@ -1,0 +1,172 @@
+# Reference KPIs (golden master, auto-recorded by runTests --record).
+# units: stream F is kmol/s (canonical SI, as in the result JSON); the run LOG prints kmol/h.
+# kind   name      key         expected        reltol
+diag    example_ideal          Robs_Cl_p1       0.202989025795     1e-4
+diag    example_ideal          Robs_Cl_p2       0.42410107917      1e-4
+diag    example_ideal          Robs_Cl_p3       0.51695014572      1e-4
+diag    example_ideal          Robs_Cl_p4       0.603832218837     1e-4
+diag    example_ideal          Robs_Cl_p5       0.656025668338     1e-4
+diag    example_ideal          Robs_Mg_p1       0.277594917868     1e-4
+diag    example_ideal          Robs_Mg_p2       0.518891301308     1e-4
+diag    example_ideal          Robs_Mg_p3       0.561965456186     1e-4
+diag    example_ideal          Robs_Mg_p4       0.57192034085      1e-4
+diag    example_ideal          Robs_Mg_p5       0.571194624339     1e-4
+diag    example_ideal          Robs_Na_p1       -0.095434542496    1e-4
+diag    example_ideal          Robs_Na_p2       0.0449401906182    1e-4
+diag    example_ideal          Robs_Na_p3       0.336888903859     1e-4
+diag    example_ideal          Robs_Na_p4       0.731479730785     1e-4
+diag    example_ideal          Robs_Na_p5       0.995349844333     1e-4
+diag    example_ideal          Rreal_Cl_p1      0.202989041974     1e-4
+diag    example_ideal          Rreal_Cl_p2      0.42410120129      1e-4
+diag    example_ideal          Rreal_Cl_p3      0.516950395433     1e-4
+diag    example_ideal          Rreal_Cl_p4      0.603832697274     1e-4
+diag    example_ideal          Rreal_Cl_p5      0.656026796614     1e-4
+diag    example_ideal          Rreal_Mg_p1      0.277594937922     1e-4
+diag    example_ideal          Rreal_Mg_p2      0.518891426129     1e-4
+diag    example_ideal          Rreal_Mg_p3      0.561965702346     1e-4
+diag    example_ideal          Rreal_Mg_p4      0.571920830504     1e-4
+diag    example_ideal          Rreal_Mg_p5      0.571195848992     1e-4
+diag    example_ideal          Rreal_Na_p1      -0.0954345529502   1e-4
+diag    example_ideal          Rreal_Na_p2      0.0449402120785    1e-4
+diag    example_ideal          Rreal_Na_p3      0.336889127254     1e-4
+diag    example_ideal          Rreal_Na_p4      0.731480123619     1e-4
+diag    example_ideal          Rreal_Na_p5      0.995349867476     1e-4
+diag    example_ideal          c_wall_Cl_p1     50.0000010149      1e-4
+diag    example_ideal          c_wall_Cl_p2     50.0000106025      1e-4
+diag    example_ideal          c_wall_Cl_p3     50.0000258475      1e-4
+diag    example_ideal          c_wall_Cl_p4     50.0000603832      1e-4
+diag    example_ideal          c_wall_Cl_p5     50.0001640064      1e-4
+diag    example_ideal          c_wall_Mg_p1     20.0000005552      1e-4
+diag    example_ideal          c_wall_Mg_p2     20.0000051889      1e-4
+diag    example_ideal          c_wall_Mg_p3     20.0000112393      1e-4
+diag    example_ideal          c_wall_Mg_p4     20.0000228768      1e-4
+diag    example_ideal          c_wall_Mg_p5     20.0000571195      1e-4
+diag    example_ideal          c_wall_Na_p1     9.99999990457      1e-4
+diag    example_ideal          c_wall_Na_p2     10.0000002247      1e-4
+diag    example_ideal          c_wall_Na_p3     10.0000033689      1e-4
+diag    example_ideal          c_wall_Na_p4     10.0000146296      1e-4
+diag    example_ideal          c_wall_Na_p5     10.0000497675      1e-4
+diag    example_ideal          n_points         5                  1e-4
+diag    example_ideal          permeateCharge_max 6.24056545179e-16  1e-4
+diag    example_noBorn         Robs_Cl_p1       0.421941888756     1e-4
+diag    example_noBorn         Robs_Mg_p1       0.48277884641      1e-4
+diag    example_noBorn         Robs_Na_p1       0.178594058136     1e-4
+diag    example_noBorn         Rreal_Cl_p1      0.421943108288     1e-4
+diag    example_noBorn         Rreal_Mg_p1      0.482780094925     1e-4
+diag    example_noBorn         Rreal_Na_p1      0.178594791626     1e-4
+diag    example_noBorn         c_wall_Cl_p1     50.0001054855      1e-4
+diag    example_noBorn         c_wall_Mg_p1     20.0000482779      1e-4
+diag    example_noBorn         c_wall_Na_p1     10.0000089297      1e-4
+diag    example_noBorn         n_points         1                  1e-4
+diag    example_noBorn         permeateCharge_max 6.14594555408e-17  1e-4
+diag    example_davies         Robs_Cl_p1       0.466671343706     1e-4
+diag    example_davies         Robs_Mg_p1       0.514968020521     1e-4
+diag    example_davies         Robs_Na_p1       0.273484636445     1e-4
+diag    example_davies         Rreal_Cl_p1      0.466672588149     1e-4
+diag    example_davies         Rreal_Mg_p1      0.514969269397     1e-4
+diag    example_davies         Rreal_Na_p1      0.273485629898     1e-4
+diag    example_davies         c_wall_Cl_p1     50.0001166678      1e-4
+diag    example_davies         c_wall_Mg_p1     20.0000514968      1e-4
+diag    example_davies         c_wall_Na_p1     10.0000136742      1e-4
+diag    example_davies         n_points         1                  1e-4
+diag    example_davies         permeateCharge_max 2.66455862581e-16  1e-4
+diag    NaCl_ideal             Robs_Cl_p1       0.687179144407     1e-4
+diag    NaCl_ideal             Robs_Cl_p2       0.910136713218     1e-4
+diag    NaCl_ideal             Robs_Na_p1       0.687179144407     1e-4
+diag    NaCl_ideal             Robs_Na_p2       0.910136713218     1e-4
+diag    NaCl_ideal             Rreal_Cl_p1      0.687179359371     1e-4
+diag    NaCl_ideal             Rreal_Cl_p2      0.910137122155     1e-4
+diag    NaCl_ideal             Rreal_Na_p1      0.687179359371     1e-4
+diag    NaCl_ideal             Rreal_Na_p2      0.910137122155     1e-4
+diag    NaCl_ideal             c_wall_Cl_p1     10.0000068718      1e-4
+diag    NaCl_ideal             c_wall_Cl_p2     10.0000455068      1e-4
+diag    NaCl_ideal             c_wall_Na_p1     10.0000068718      1e-4
+diag    NaCl_ideal             c_wall_Na_p2     10.0000455068      1e-4
+diag    NaCl_ideal             n_points         2                  1e-4
+diag    NaCl_ideal             permeateCharge_max 6.17728921554e-17  1e-4
+diag    Na2SO4_ideal           Robs_Na_p1       0.998313914634     1e-4
+diag    Na2SO4_ideal           Robs_Na_p2       0.999300591981     1e-4
+diag    Na2SO4_ideal           Robs_SO4_p1      0.998313914634     1e-4
+diag    Na2SO4_ideal           Robs_SO4_p2      0.999300591981     1e-4
+diag    Na2SO4_ideal           Rreal_Na_p1      0.998313916317     1e-4
+diag    Na2SO4_ideal           Rreal_Na_p2      0.999300595476     1e-4
+diag    Na2SO4_ideal           Rreal_SO4_p1     0.998313916317     1e-4
+diag    Na2SO4_ideal           Rreal_SO4_p2     0.999300595476     1e-4
+diag    Na2SO4_ideal           c_wall_Na_p1     20.0000199663      1e-4
+diag    Na2SO4_ideal           c_wall_Na_p2     20.0000999301      1e-4
+diag    Na2SO4_ideal           c_wall_SO4_p1    10.0000099831      1e-4
+diag    Na2SO4_ideal           c_wall_SO4_p2    10.000049965       1e-4
+diag    Na2SO4_ideal           n_points         2                  1e-4
+diag    Na2SO4_ideal           permeateCharge_max 2.05769353168e-16  1e-4
+diag    mixed_polarised        Robs_Cl_p1       -0.183400711704    1e-4
+diag    mixed_polarised        Robs_Cl_p2       -0.0412078226497   1e-4
+diag    mixed_polarised        Robs_Na_p1       0.566924407009     1e-4
+diag    mixed_polarised        Robs_Na_p2       0.260643541537     1e-4
+diag    mixed_polarised        Robs_SO4_p1      0.942086966365     1e-4
+diag    mixed_polarised        Robs_SO4_p2      0.41156922363      1e-4
+diag    mixed_polarised        Rreal_Cl_p1      -0.655591663065    1e-4
+diag    mixed_polarised        Rreal_Cl_p2      -0.887640794328    1e-4
+diag    mixed_polarised        Rreal_Na_p1      0.811171696729     1e-4
+diag    mixed_polarised        Rreal_Na_p2      0.889381075368     1e-4
+diag    mixed_polarised        Rreal_SO4_p1     0.981214376917     1e-4
+diag    mixed_polarised        Rreal_SO4_p2     0.939647672687     1e-4
+diag    mixed_polarised        c_wall_Cl_p1     7.14790209509      1e-4
+diag    mixed_polarised        c_wall_Cl_p2     5.51592138599      1e-4
+diag    mixed_polarised        c_wall_Na_p1     68.8046630969      1e-4
+diag    mixed_polarised        c_wall_Na_p2     200.514458333      1e-4
+diag    mixed_polarised        c_wall_SO4_p1    30.8283805009      1e-4
+diag    mixed_polarised        c_wall_SO4_p2    97.4992684736      1e-4
+diag    mixed_polarised        n_points         2                  1e-4
+diag    mixed_polarised        permeateCharge_max 3.08330023739e-15  1e-4
+# ANCHORS: NanoFiltran (Geraldes & Alves, J. Membr. Sci. 321 (2008) 172-182),
+# the permeate concentration of every ion [mol/m3], Richardson-extrapolated
+# from its ND 102 and 204 runs (its limit is 205).  CODE-TO-CODE VERIFICATION:
+# the same model in a second, independent implementation -- not a measurement.
+# The program, its inputs and the regeneration are bin/curate/nanofiltran/
+# (regenerate.py; reference.tsv holds both grids, the iterations and the
+# residual of every run).  op example_davies is anchored on NanoFiltran built
+# with its Davies constant corrected to log10 (README.md there: the as-received
+# program uses exp() on the log10 A, and its Na+ permeate is 7.7 % higher).
+#
+# BANDS: sized to the MEASURED errors, per row 3 x (Choupo's error at this
+# case's 801 nodes against its own 401/801/1601 extrapolation + a third of
+# NanoFiltran's last Richardson step + the measured disagreement of the two
+# extrapolations), floored at 1e-6.  The extrapolations agree within 7.9e-7
+# on every row (check_nanofiltran_reference.py holds that at 2e-6).  The
+# widest band, 5e-4 on example_ideal's trace Na+ at J_v = 5e-5 m/s, is
+# NanoFiltran's own grid: 3.8e-4 between ND 204 and its extrapolation.
+diag    example_ideal          c_perm_Na_p1     10.954345406     1e-6     anchor
+diag    example_ideal          c_perm_Cl_p1     39.8505494304    1e-6     anchor
+diag    example_ideal          c_perm_Mg_p1     14.4481020122    1e-6     anchor
+diag    example_ideal          c_perm_Na_p2     9.55059873814    1e-6     anchor
+diag    example_ideal          c_perm_Cl_p2     28.794947        1e-6     anchor
+diag    example_ideal          c_perm_Mg_p2     9.62217413089    1e-6     anchor
+diag    example_ideal          c_perm_Na_p3     6.63111140239    1e-6     anchor
+diag    example_ideal          c_perm_Cl_p3     24.1524942306    1e-6     anchor
+diag    example_ideal          c_perm_Mg_p3     8.760691414      1e-6     anchor
+diag    example_ideal          c_perm_Na_p4     2.68519973668    6e-6     anchor
+diag    example_ideal          c_perm_Cl_p4     19.808390372     2e-6     anchor
+diag    example_ideal          c_perm_Mg_p4     8.56159531769    3e-6     anchor
+diag    example_ideal          c_perm_Na_p5     0.0465007639157  5e-4     anchor
+diag    example_ideal          c_perm_Cl_p5     17.1987326296    9e-6     anchor
+diag    example_ideal          c_perm_Mg_p5     8.57611593292    1e-5     anchor
+diag    example_noBorn         c_perm_Na_p1     8.21406380579    2e-6     anchor
+diag    example_noBorn         c_perm_Cl_p1     28.9029115533    1e-6     anchor
+diag    example_noBorn         c_perm_Mg_p1     10.3444238735    1e-6     anchor
+diag    example_davies         c_perm_Na_p1     7.2651557508     2e-6     anchor
+diag    example_davies         c_perm_Cl_p1     26.6664364432    1e-6     anchor
+diag    example_davies         c_perm_Mg_p1     9.7006403463     1e-6     anchor
+diag    NaCl_ideal             c_perm_Na_p1     3.12820884729    1e-6     anchor
+diag    NaCl_ideal             c_perm_Cl_p1     3.12820884729    1e-6     anchor
+diag    NaCl_ideal             c_perm_Na_p2     0.898632962753   2e-6     anchor
+diag    NaCl_ideal             c_perm_Cl_p2     0.898632962753   2e-6     anchor
+diag    Na2SO4_ideal           c_perm_Na_p1     0.0337217135189  1e-6     anchor
+diag    Na2SO4_ideal           c_perm_SO4_p1    0.0168608567596  1e-6     anchor
+diag    Na2SO4_ideal           c_perm_Na_p2     0.0139881628781  4e-6     anchor
+diag    Na2SO4_ideal           c_perm_SO4_p2    0.00699408143916 4e-6     anchor
+diag    mixed_polarised        c_perm_Na_p1     12.9922667885    1e-6     anchor
+diag    mixed_polarised        c_perm_Cl_p1     11.8340070346    1e-6     anchor
+diag    mixed_polarised        c_perm_SO4_p1    0.579129876403   3e-6     anchor
+diag    mixed_polarised        c_perm_Na_p2     22.1806889109    1e-6     anchor
+diag    mixed_polarised        c_perm_Cl_p2     10.4120783685    1e-6     anchor
+diag    mixed_polarised        c_perm_SO4_p2    5.88430527111    2e-6     anchor

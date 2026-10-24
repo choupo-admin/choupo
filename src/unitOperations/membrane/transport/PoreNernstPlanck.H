@@ -39,8 +39,10 @@ Description
     is STIFF (a strongly excluded co-ion sits orders of magnitude below the
     counter-ion, and the drift and diffusion terms of its flux nearly
     cancel), and an explicit march across it converges where it was tuned
-    and almost nowhere else.  Nothing here is yet compared with NanoFiltran's
-    published numbers; that comparison is a separate slice.
+    and almost nowhere else.  Compared with NanoFiltran itself on the same
+    model since C138 slice 2: tutorials/props/membrane/
+    nanofiltran01_dspmde_reference and bin/curate/check_nanofiltran_reference.py
+    (the two programs' extrapolations agree within 8e-7 on every row).
 
     THE PROBLEM, per ion i on the dimensionless pore coordinate xi = x/dx
     in [0, 1] (psi is the potential in RT/F units, relative to the FEED

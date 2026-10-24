@@ -575,9 +575,9 @@ def main():
           f"{worst['NF_NaCl_pore']:.1e} at every station of an uncharged Born-free variant "
           f"(the closed form departs by {worst['NF_NaCl_closedForm']:.1%}, pinned as a "
           f"finding); membrane10/11 reproduce {checked} golden rows to 1e-10 with no pore line; "
-          f"{fired} refusals fire by name.  NOT CHECKED: NanoFiltran's published numbers "
-          f"(slice 2), the batch diafilter under the solved pore, the wall's B_s closure "
-          f"shared by both paths, activity inside the pore, whether a case's grid is enough.")
+          f"{fired} refusals fire by name.  NOT CHECKED here: NanoFiltran (held by "
+          f"check_nanofiltran_reference, with the declared wall closure and activities), "
+          f"the batch diafilter under the solved pore, whether a case's grid is enough.")
     return 0
 
 

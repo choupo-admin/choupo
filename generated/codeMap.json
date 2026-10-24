@@ -880,7 +880,8 @@
    "src/thermo/electrolyte/ENRTLMultiSalt.H"
   ],
   "IonState": [
-   "src/thermo/electrolyte/AqueousActivity.H"
+   "src/thermo/electrolyte/AqueousActivity.H",
+   "src/unitOperations/membrane/transport/TransportModel.H"
   ],
   "IoziaLeith": [
    "src/unitOperations/separation/cycloneModel/IoziaLeith.H"
@@ -1331,6 +1332,9 @@
   ],
   "PoreSolution": [
    "src/unitOperations/membrane/transport/PoreNernstPlanck.H"
+  ],
+  "PoreTransportBench": [
+   "src/propertyOps/PoreTransportBench.H"
   ],
   "PostProcessor": [
    "src/postProcessing/PostProcessor.H"
@@ -2347,6 +2351,10 @@
     "type": "PolarisationIndex"
    },
    {
+    "key": "poreTransport",
+    "type": "PoreTransportBench"
+   },
+   {
     "key": "dataReconciliation",
     "type": "DataReconciliation"
    }
@@ -3074,6 +3082,8 @@
    "src/thermo/electrolyte/AqueousVolumetric.H",
    "src/thermo/equationOfState/EquationOfState.H",
    "src/thermo/heatCapacity/HeatCapacityModel.H",
+   "src/thermo/membrane/Membrane.H",
+   "src/thermo/membrane/MembraneRegistry.H",
    "src/thermo/phase/Phase.H",
    "src/thermo/pureFluid/PureFluidModel.H",
    "src/thermo/transport/CorrelationVerify.H",
@@ -5153,6 +5163,25 @@
    "src/unitOperations/membrane/massTransfer/Polarisation.H",
    "src/unitOperations/membrane/massTransfer/StirredCell.H"
   ],
+  "src/propertyOps/PoreTransportBench.cpp": [
+   "src/core/Dictionary.H",
+   "src/core/Dimensions.H",
+   "src/core/Identifiers.H",
+   "src/core/Origin.H",
+   "src/core/Types.H",
+   "src/propertyOps/PoreTransportBench.H",
+   "src/propertyOps/PropertyOperation.H",
+   "src/solver/Convergence.H",
+   "src/thermo/Component.H",
+   "src/thermo/PackageAudit.H",
+   "src/thermo/ThermoPackage.H",
+   "src/thermo/membrane/Membrane.H",
+   "src/thermo/membrane/MembraneRegistry.H",
+   "src/unitOperations/membrane/massTransfer/MassTransferModel.H",
+   "src/unitOperations/membrane/massTransfer/Polarisation.H",
+   "src/unitOperations/membrane/osmotic/OsmoticModel.H",
+   "src/unitOperations/membrane/transport/TransportModel.H"
+  ],
   "src/propertyOps/Ppr78Kij.cpp": [
    "src/core/Advisory.H",
    "src/core/Constants.H",
@@ -5226,6 +5255,7 @@
    "src/propertyOps/PhaseSplitScan.H",
    "src/propertyOps/PitzerActivity.H",
    "src/propertyOps/PolarisationIndex.H",
+   "src/propertyOps/PoreTransportBench.H",
    "src/propertyOps/Ppr78Kij.H",
    "src/propertyOps/PropertyOperation.H",
    "src/propertyOps/PropertyPoint.H",
@@ -8644,10 +8674,12 @@
    "src/core/Dictionary.H",
    "src/core/Dimensions.H",
    "src/core/Identifiers.H",
+   "src/core/InfeasibleTrial.H",
    "src/core/Origin.H",
    "src/core/RegistryRefusal.H",
    "src/core/Types.H",
    "src/solver/Convergence.H",
+   "src/solver/NewtonND.H",
    "src/thermo/Component.H",
    "src/thermo/Database.H",
    "src/thermo/PackageAudit.H",
@@ -10070,6 +10102,7 @@
    "src/propertyOps/PhaseSplitScan.cpp",
    "src/propertyOps/PitzerActivity.cpp",
    "src/propertyOps/PolarisationIndex.cpp",
+   "src/propertyOps/PoreTransportBench.cpp",
    "src/propertyOps/Ppr78Kij.cpp",
    "src/propertyOps/PropertyEvaluator.cpp",
    "src/propertyOps/PropertyOperation.cpp",
@@ -10402,6 +10435,7 @@
    "src/propertyOps/PhaseSplitScan.cpp",
    "src/propertyOps/PitzerActivity.cpp",
    "src/propertyOps/PolarisationIndex.cpp",
+   "src/propertyOps/PoreTransportBench.cpp",
    "src/propertyOps/Ppr78Kij.cpp",
    "src/propertyOps/PropertyEvaluator.cpp",
    "src/propertyOps/PropertyOperation.cpp",
@@ -10818,6 +10852,7 @@
    "src/propertyOps/PhaseSplitScan.cpp",
    "src/propertyOps/PitzerActivity.cpp",
    "src/propertyOps/PolarisationIndex.cpp",
+   "src/propertyOps/PoreTransportBench.cpp",
    "src/propertyOps/Ppr78Kij.cpp",
    "src/propertyOps/PropertyEvaluator.cpp",
    "src/propertyOps/PropertyOperation.cpp",
@@ -11002,6 +11037,7 @@
   "src/core/InfeasibleTrial.H": [
    "src/solver/NewtonND.cpp",
    "src/unitOperations/distillation/DistillationColumn.cpp",
+   "src/unitOperations/membrane/transport/DSPM_DE.cpp",
    "src/unitOperations/membrane/transport/PoreNernstPlanck.cpp"
   ],
   "src/core/MiniZip.H": [
@@ -11092,6 +11128,7 @@
    "src/propertyOps/PhaseSplitScan.cpp",
    "src/propertyOps/PitzerActivity.cpp",
    "src/propertyOps/PolarisationIndex.cpp",
+   "src/propertyOps/PoreTransportBench.cpp",
    "src/propertyOps/Ppr78Kij.cpp",
    "src/propertyOps/PropertyEvaluator.cpp",
    "src/propertyOps/PropertyOperation.cpp",
@@ -11685,6 +11722,7 @@
    "src/propertyOps/PhaseSplitScan.cpp",
    "src/propertyOps/PitzerActivity.cpp",
    "src/propertyOps/PolarisationIndex.cpp",
+   "src/propertyOps/PoreTransportBench.cpp",
    "src/propertyOps/Ppr78Kij.cpp",
    "src/propertyOps/PropertyEvaluator.cpp",
    "src/propertyOps/PropertyOperation.cpp",
@@ -12447,6 +12485,10 @@
    "src/propertyOps/PolarisationIndex.cpp",
    "src/propertyOps/PropertyOperation.cpp"
   ],
+  "src/propertyOps/PoreTransportBench.H": [
+   "src/propertyOps/PoreTransportBench.cpp",
+   "src/propertyOps/PropertyOperation.cpp"
+  ],
   "src/propertyOps/Ppr78Kij.H": [
    "src/propertyOps/Ppr78Kij.cpp",
    "src/propertyOps/PropertyOperation.cpp"
@@ -12485,6 +12527,7 @@
    "src/propertyOps/PhaseSplitScan.cpp",
    "src/propertyOps/PitzerActivity.cpp",
    "src/propertyOps/PolarisationIndex.cpp",
+   "src/propertyOps/PoreTransportBench.cpp",
    "src/propertyOps/Ppr78Kij.cpp",
    "src/propertyOps/PropertyOperation.cpp",
    "src/propertyOps/PropertyPoint.cpp",
@@ -12996,6 +13039,7 @@
    "src/propertyOps/PhaseEnvelope.cpp",
    "src/propertyOps/PhaseSplitScan.cpp",
    "src/propertyOps/PolarisationIndex.cpp",
+   "src/propertyOps/PoreTransportBench.cpp",
    "src/propertyOps/Ppr78Kij.cpp",
    "src/propertyOps/PropertyEvaluator.cpp",
    "src/propertyOps/PropertyOperation.cpp",
@@ -13153,6 +13197,7 @@
    "src/unitOperations/flash/IsothermalFlash.cpp",
    "src/unitOperations/flowsheet/Flowsheet.cpp",
    "src/unitOperations/membrane/massTransfer/Polarisation.cpp",
+   "src/unitOperations/membrane/transport/DSPM_DE.cpp",
    "src/unitOperations/membrane/transport/PoreNernstPlanck.cpp",
    "src/unitOperations/reactor/CSTR.cpp",
    "src/unitOperations/reactor/gibbsMethod/DirectMin.cpp",
@@ -13554,6 +13599,7 @@
    "src/propertyOps/PhaseSplitScan.cpp",
    "src/propertyOps/PitzerActivity.cpp",
    "src/propertyOps/PolarisationIndex.cpp",
+   "src/propertyOps/PoreTransportBench.cpp",
    "src/propertyOps/Ppr78Kij.cpp",
    "src/propertyOps/PropertyEvaluator.cpp",
    "src/propertyOps/PropertyOperation.cpp",
@@ -13920,6 +13966,7 @@
    "src/propertyOps/PhaseEnvelope.cpp",
    "src/propertyOps/PhaseSplitScan.cpp",
    "src/propertyOps/PolarisationIndex.cpp",
+   "src/propertyOps/PoreTransportBench.cpp",
    "src/propertyOps/Ppr78Kij.cpp",
    "src/propertyOps/PropertyEvaluator.cpp",
    "src/propertyOps/PropertyOperation.cpp",
@@ -14366,6 +14413,7 @@
    "src/propertyOps/PhaseEnvelope.cpp",
    "src/propertyOps/PhaseSplitScan.cpp",
    "src/propertyOps/PolarisationIndex.cpp",
+   "src/propertyOps/PoreTransportBench.cpp",
    "src/propertyOps/Ppr78Kij.cpp",
    "src/propertyOps/PropertyEvaluator.cpp",
    "src/propertyOps/PropertyOperation.cpp",
@@ -15006,8 +15054,10 @@
   ],
   "src/thermo/membrane/Membrane.H": [
    "src/applications/choupoBatch/main.cpp",
+   "src/applications/choupoProps/main.cpp",
    "src/applications/choupoSolve/main.cpp",
    "src/dynamicDriver/DynamicDriver.cpp",
+   "src/propertyOps/PoreTransportBench.cpp",
    "src/thermo/membrane/Membrane.cpp",
    "src/thermo/membrane/MembraneRegistry.cpp",
    "src/unitOperations/batch/BatchDiafilter.cpp",
@@ -15029,8 +15079,10 @@
   ],
   "src/thermo/membrane/MembraneRegistry.H": [
    "src/applications/choupoBatch/main.cpp",
+   "src/applications/choupoProps/main.cpp",
    "src/applications/choupoSolve/main.cpp",
    "src/dynamicDriver/DynamicDriver.cpp",
+   "src/propertyOps/PoreTransportBench.cpp",
    "src/thermo/membrane/MembraneRegistry.cpp",
    "src/unitOperations/batch/BatchDiafilter.cpp",
    "src/unitOperations/membrane/SpiralWoundModule.cpp"
@@ -15862,6 +15914,7 @@
   ],
   "src/unitOperations/membrane/massTransfer/MassTransferModel.H": [
    "src/propertyOps/PolarisationIndex.cpp",
+   "src/propertyOps/PoreTransportBench.cpp",
    "src/unitOperations/UnitOperation.cpp",
    "src/unitOperations/batch/BatchDiafilter.cpp",
    "src/unitOperations/membrane/SpiralWoundModule.cpp",
@@ -15870,6 +15923,7 @@
   ],
   "src/unitOperations/membrane/massTransfer/Polarisation.H": [
    "src/propertyOps/PolarisationIndex.cpp",
+   "src/propertyOps/PoreTransportBench.cpp",
    "src/unitOperations/batch/BatchDiafilter.cpp",
    "src/unitOperations/membrane/SpiralWoundModule.cpp",
    "src/unitOperations/membrane/massTransfer/Polarisation.cpp"
@@ -15882,6 +15936,7 @@
    "src/unitOperations/membrane/massTransfer/MassTransferModel.cpp"
   ],
   "src/unitOperations/membrane/osmotic/OsmoticModel.H": [
+   "src/propertyOps/PoreTransportBench.cpp",
    "src/unitOperations/UnitOperation.cpp",
    "src/unitOperations/batch/BatchDiafilter.cpp",
    "src/unitOperations/batch/BatchUnitOperation.cpp",
@@ -15945,6 +16000,7 @@
    "src/unitOperations/membrane/transport/TransportModel.cpp"
   ],
   "src/unitOperations/membrane/transport/TransportModel.H": [
+   "src/propertyOps/PoreTransportBench.cpp",
    "src/unitOperations/batch/BatchDiafilter.cpp",
    "src/unitOperations/batch/BatchUnitOperation.cpp",
    "src/unitOperations/membrane/SpiralWoundModule.cpp",

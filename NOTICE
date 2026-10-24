@@ -124,6 +124,25 @@ redistributed via the MIT-licensed `thermo` package and stated as such in
 third-party numeric values" held for its estimated PROPERTIES and not for those
 three columns.  See `docs/legal/data-licensing-review-2026-08-11.md`.
 
+* Vendored third-party code: NanoFiltran (bin/curate/nanofiltran/)
+  The reference program of the code-to-code golden case
+  tutorials/props/membrane/nanofiltran01_dspmde_reference, kept byte for byte
+  as received so its numbers can be regenerated.  It is a curation tool
+  beside Choupo's code, never compiled into it.  Three licences, each kept
+  with its own text:
+    - NanoFiltran (src/NANOFILTRAN.F): MIT licence, Copyright (C) 2007
+      Vitor Geraldes and Ana Maria Alves, Instituto Superior Tecnico --
+      Geraldes & Alves, J. Membr. Sci. 321 (2008) 172-182.
+    - SIMPLEX (src/SIMPLEX.F, the Nelder-Mead routine): MIT licence,
+      Copyright (c) 1998-2004 Michael F. Hutt.
+    - LAPACK 3.0 and the reference BLAS (src/LINEAR.F): the LAPACK licence
+      (modified BSD), verbatim in bin/curate/nanofiltran/LICENSE-LAPACK.txt;
+      Copyright (c) 1992-2013 The University of Tennessee and The University
+      of Tennessee Research Foundation, (c) 2000-2013 The University of
+      California Berkeley, (c) 2006-2013 The University of Colorado Denver.
+  bin/curate/check_source_licence.py holds each file to its notice
+  (ACCEPTED_VENDORED_CODE); bin/curate/nanofiltran/README.md is its card.
+
 * Independence from OpenFOAM
   Choupo is an independent project.  Its file-based case organization
   (controlDict-style dictionaries, constant/ and time directories such as

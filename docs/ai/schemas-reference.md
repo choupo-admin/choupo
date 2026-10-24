@@ -17,7 +17,7 @@ person.  For prose, groupings and worked examples instead of an
 alphabetical dump, read [`unit-ops.md`](unit-ops.md) beside it; to be
 taught rather than to look something up, read the User Guide.
 
-*100 of 100 registered operations carry a schema and are documented below.*
+*101 of 101 registered operations carry a schema and are documented below.*
 
 ## `FUG`  (FUG operation)
 
@@ -91,12 +91,12 @@ Fabric (bag-house) filter. Collection is near-total; the cake-dominated pressure
 
 ## `batchDiafilter`  (batchDiafilter operation)
 
-A stirred RETENTATE vessel behind a membrane (choupoBatch): the batch half of the pressure-driven separation the steady spiralWoundModule solves. It adds no architecture — the same TransportModel::localFluxes (solutionDiffusion or DSPM_DE), the same membrane asset record and osmotic block, asked once per instant instead of once per channel node. Well mixed, so one bulk composition; the permeate's solvent is closed on the declared solution density the concentrations were built from, so the vessel conserves mass to machine precision. Two modes: `concentration` (no make-up, the vessel shrinks) and `constantVolume` (diafiltrate added at the permeate rate, solutes wash out; the make-up is ledgered under its own kind word externalIntake). The unit publishes the OBSERVED rejection R_obs_<solute> at every instant and, in constantVolume mode, washoutActual_<solute> beside washoutIdeal_<solute> — the ideal evaluated from this run's own initial R, computed and never declared, so the gap between the hand derivation c/c0 = exp(-(1-R)N) and the run cannot have been arranged. Initial holdup comes from 0/internalStates/<unit>, a `holdup {}` block (an inline initial{} is refused). The pump work is NOT ledgered: energyLedgerGap names it and the campaign energy balance stays UNAVAILABLE.
+A stirred RETENTATE vessel behind a membrane (choupoBatch): the batch half of the pressure-driven separation the steady spiralWoundModule solves. It adds no architecture — the same TransportModel::localFluxes (solutionDiffusion or DSPM-DE), the same membrane asset record and osmotic block, asked once per instant instead of once per channel node. Well mixed, so one bulk composition; the permeate's solvent is closed on the declared solution density the concentrations were built from, so the vessel conserves mass to machine precision. Two modes: `concentration` (no make-up, the vessel shrinks) and `constantVolume` (diafiltrate added at the permeate rate, solutes wash out; the make-up is ledgered under its own kind word externalIntake). The unit publishes the OBSERVED rejection R_obs_<solute> at every instant and, in constantVolume mode, washoutActual_<solute> beside washoutIdeal_<solute> — the ideal evaluated from this run's own initial R, computed and never declared, so the gap between the hand derivation c/c0 = exp(-(1-R)N) and the run cannot have been arranged. Initial holdup comes from 0/internalStates/<unit>, a `holdup {}` block (an inline initial{} is refused). The pump work is NOT ledgered: energyLedgerGap names it and the campaign energy balance stays UNAVAILABLE.
 
 | Field | Required | Type | Unit | Description |
 |---|:-:|---|---|---|
 | `membrane` | ✓ | string | - | Name of the curated membrane record (data/standards/assets/, kind membrane) whose permeabilities the transport law reads. |
-| `transport` | ✓ | string | - | The same local flux law the steady module uses; DSPM_DE needs the record's pore data and a charged feed. |
+| `transport` | ✓ | string | - | The same local flux law the steady module uses; DSPM-DE needs the record's pore data and a charged feed. |
 | `transportParameters` |   | object | - | Optional block handed verbatim to the chosen transport law's readParameters. `DSPM-DE` reads `poreSolver { method closedForm \| finiteDif… |
 | `mode` | ✓ | string | - | `concentration`: Q_d = 0, the vessel shrinks and solutes concentrate. `constantVolume`: Q_d = Q_p, solvent made up as fast as it permeate… |
 | `area` | ✓ | number | m2 |  |
@@ -880,6 +880,22 @@ The PROPS BENCH of the multi-ionic concentration-polarisation model of Geraldes 
 | `ions` | ✓ | array[string] | — | Components with an aqueous bridge; charge and D0 come from their species records (an ion whose record carries no D0 refuses by name, nami… |
 | `closeBy` |   | string | — | That ion's bulk AND permeate concentrations are derived from the others by electroneutrality (as a table that reports only the measured i… |
 | `dataset` | ✓ | string | — | Path to a dataset in the experiments grammar: `columns ( { name C_b_<ion>; unit mol/m3; } ... { name C_p_<ion>; unit mol/m3; } { name J_v… |
+
+## `poreTransport`  (poreTransport operation)
+
+The PROPS BENCH of the DSPM-DE transport law at IMPOSED permeate fluxes: the same TransportModel the spiral-wound module marches, built through the same factory, the same `transportParameters` reader and the same wall kernel, handed J_v instead of closing J_w = A_w (dP - dpi) -- the way NanoFiltran (Geraldes & Alves 2008) takes it.  Publishes per J_v point p and per ion species c_wall_<ion>_p<p>, c_perm_<ion>_p<p> (mol/m3), Rreal_<ion>_p<p> = 1 - c_perm/c_wall and Robs_<ion>_p<p> = 1 - c_perm/c_bulk, and permeateCharge_max.  Witness nanofiltran01_dspmde_reference; gate check_nanofiltran_reference holds it to NanoFiltran.  The film is built from the `polarisation {}` policy directly (not buildPolarisation), because the feed is declared as salts and DSPM-DE hands the kernel each ion's own z and D.
+
+| Field | Required | Type | Unit | Description |
+|---|:-:|---|---|---|
+| `T` | ✓ | number | K |  |
+| `membrane` | ✓ | string | — | A membrane record (data/standards/assets or the case's constant/assets) carrying a poreModel {} block. |
+| `transport` |   | string | — | Only `DSPM-DE` honours an imposed J_v; any other word refuses.  Absent = DSPM-DE. |
+| `transportParameters` |   | object | — | Parameters a transport law reads for itself (the block batchDiafilter hands its law too).  `gelPolarisation` reads `gel { solute <gel-for… |
+| `feedMolPerM3` | ✓ | object | — | One entry per SALT component of the package (each with `dissociatesTo`), its bulk molar concentration in mol/m3; the law decomposes the s… |
+| `J_v` | ✓ | array[number] | m/s |  |
+| `k_film` |   | number | m/s | k for every ion, in place of `massTransfer {}` (NanoFiltran simulates "no polarisation" with 10 m/s). |
+| `massTransfer` |   | object | — | The cell's correlation, evaluated per ion on the ion's own D0. `StirredCell` (Sh = a (omega r^2/nu)^b Sc^c, k = Sh D/r; Bowen et al. 1997… |
+| `polarisation` |   | object | — | The film's POLICY, one block whichever way k arrives (a correlation or a bare `k_film`); declaring these words inside massTransfer {} ref… |
 
 ## `ppr78Kij`  (ppr78Kij operation)
 

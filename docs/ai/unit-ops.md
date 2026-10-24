@@ -1190,8 +1190,33 @@ each channel node):
   structure audit and a per-unit pore summary.  The two paths give
   DIFFERENT rejections — the closed form is not the solved pore's limit
   (`membrane20_dspmde_pore_finite_difference` runs both side by side).
-  `method closedForm;` is the default; any other key in
-  `transportParameters` refuses.
+  `method closedForm;` is the default.
+
+  Four more DECLARED choices (C138 slice 2), each opt-in, the default the
+  model every DSPM-DE case was recorded on:
+
+  ```
+  transportParameters
+  {
+      poreSolver { method finiteDifference; nodes 801;
+                   wallClosure porePermeate; }   // default solutionDiffusion
+      hindrance  DechadilokDeen2006;             // default legacy
+      activity   bulkOverPoreDavies;             // default wallDavies; or ideal
+      bulkDielectric 80;                         // default epsWater(T)
+  }
+  ```
+
+  `hindrance legacy` takes K_d as the Dechadilok-Deen polynomial H, which is
+  Phi K_d — the steric partition counted twice in diffusion (recorded, not
+  changed); `DechadilokDeen2006` is the cross-section-averaged pair
+  (K_d = H/Phi).  `wallClosure porePermeate` closes the wall with the solved
+  pore's own permeate (the two solved together); `activity
+  bulkOverPoreDavies` puts gamma_bulk/gamma_pore at both faces, the pore
+  gammas at the pore's end nodes with A(eps_p) (needs the solved pore).
+  Together they are NanoFiltran's model (Geraldes & Alves 2008); the
+  code-to-code golden is `tutorials/props/membrane/nanofiltran01_dspmde_reference`,
+  which runs the law at IMPOSED J_v through the `poreTransport` props op.
+  Any other key or word refuses.
 * `SDEM` — **solution-diffusion-electromigration** (Yaroshchuk 2013): the
   SAME per-ion `B_s` as above, coupled by the electric field that zero
   current imposes — the permeate is electroneutral **by construction, with

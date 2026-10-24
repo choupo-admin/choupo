@@ -40,7 +40,7 @@ uncited aqueous species). A green suite must not be read as covering those.
 | class | what a pass proves | most of the corpus? |
 |---|---|---|
 | **regression** | the answer has not moved from a self-recorded golden | **yes** |
-| **verification** | the implementation matches a stated specification or a closed-form result | some |
+| **verification** | the implementation matches a stated specification, a closed-form result, or a second independent implementation of the same model (code to code: `nanofiltran01_dspmde_reference`'s anchors are NanoFiltran's numbers -- agreement with a program, never a measurement) | some |
 | **architectural gate** | a structural contract holds (`check_*`) | ~150 (census 2026-08-22; the authority is `ls bin/curate/check_*.py`, and this cell drifted 10× once) |
 | **expected refusal** | the engine refuses what the doctrine says it must | 5 named + the refusal gates |
 | **validation** | agreement with an **independent published result the model was not fitted to** | **a small named subset** |

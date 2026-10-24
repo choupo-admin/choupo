@@ -858,8 +858,8 @@
     },
     "check_schema_coverage": {
       "exit": 0,
-      "claim": "check_schema_coverage: OK -- every one of the 96 registered operations carries a schema (92 exercised by the corpus over 1093 case use(s)); no schema rejects a key a running case uses, none marks required a key a running case omits, and 8 registry-derived alias group(s) agree property-for-property",
-      "seconds": 37.6
+      "claim": "check_schema_coverage: OK -- every one of the 98 registered operations carries a schema (94 exercised by the corpus over 1108 case use(s)); no schema rejects a key a running case uses, none marks required a key a running case omits, and 8 registry-derived alias group(s) agree property-for-property",
+      "seconds": 21.4
     },
     "check_sdem": {
       "exit": 0,
@@ -933,8 +933,8 @@
     },
     "check_source_licence": {
       "exit": 0,
-      "claim": "check_source_licence: OK -- 1180 record(s) scanned (an absent or collapsed scan root REFUSES); no encumbered source stands as the authority for a value, except 4 pinned violations awaiting curation (a primary datum, not a guess).  A primary cited via an aggregator is compliant and is not counted.  NonCommercial compilations: no new record names Burcat/ReSpecTh as a value's origin; 36 existing ones do and are pinned.  Accepted third-party databanks, by CONTRACT here and cross-checked against the importer's LICENSE constant: ChemSep (Artistic-2.0, 360 record(s)) -- and that acceptance has a SCOPE: 2 excluded interaction-parameter table classes (ChemSep .ipd, the thermo package's copy) are named as a value's origin by no record.  No source file reproduces a no-grant standard's table (1 class: the API STD 526 orifice-letter areas, matched by their VALUES over 13705 source files, not by the name).  Every source ruled on here has a thirdParty/ card and every card on disk is named by a gate (6 card(s)).",
-      "seconds": 3.9
+      "claim": "check_source_licence: OK -- 1180 record(s) scanned (an absent or collapsed scan root REFUSES); no encumbered source stands as the authority for a value, except 4 pinned violations awaiting curation (a primary datum, not a guess).  A primary cited via an aggregator is compliant and is not counted.  NonCommercial compilations: no new record names Burcat/ReSpecTh as a value's origin; 36 existing ones do and are pinned.  Engineering Toolbox and REFPROP (C65) are among the names refused, and they alone are also sought in the 4930 case-local records under tutorials/**/constant/: 35 name one as a value's origin, all sealed NH3 mirrors awaiting re-import, pinned (every other name is judged in data/standards/ only).  Accepted third-party databanks, by CONTRACT here and cross-checked against the importer's LICENSE constant: ChemSep (Artistic-2.0, 360 record(s)) -- and that acceptance has a SCOPE: 2 excluded interaction-parameter table classes (ChemSep .ipd, the thermo package's copy) are named as a value's origin by no record.  No source file reproduces a no-grant standard's table (1 class: the API STD 526 orifice-letter areas, matched by their VALUES over 13017 source files, not by the name).  Every source ruled on here has a thirdParty/ card and every card on disk is named by a gate (6 card(s)).  Vendored third-party code, by CONTRACT: NanoFiltran -- 3 file(s) each carrying its own licence notice, the LAPACK text the fetched one, NOTICE naming every holder.",
+      "seconds": 3.5
     },
     "check_species_citation": {
       "exit": 0,
@@ -1228,13 +1228,18 @@
     },
     "check_pore_solver": {
       "exit": 0,
-      "claim": "check_pore_solver: OK -- the probe (compiled here) converges to the ambipolar analytic limit at observed order 1.97-2.00 and to 1e-8 at 1600 intervals, and to 1e-10 on every grid at Peclet 440; a stiff pore (migration 2.89e+05 x its net flux) shows Richardson order 2.00-2.01 with ||F||, flux constancy, zero current and electroneutrality at machine level; the declared block-tridiagonal structure is audited at exactly 0 off the bands; 56/56 sweep problems from a crude seed converge (14 by continuation in J_v); a warm start reproduces a cold solve; 2 probe refusals fire.  The witness announces method, nodes, iterations, residual and the structure on both solved units and nothing on the closed-form ones; END TO END the engine's solved pore matches the analytic limit within 1.6e-06 at every station of an uncharged Born-free variant (the closed form departs by 70.6%, pinned as a finding); membrane10/11 reproduce 77 golden rows to 1e-10 with no pore line; 5 refusals fire by name.  NOT CHECKED: NanoFiltran's published numbers (slice 2), the batch diafilter under the solved pore, the wall's B_s closure shared by both paths, activity inside the pore, whether a case's grid is enough.",
-      "seconds": 15.4
+      "claim": "check_pore_solver: OK -- the probe (compiled here) converges to the ambipolar analytic limit at observed order 1.97-2.00 and to 1e-8 at 1600 intervals, and to 1e-10 on every grid at Peclet 440; a stiff pore (migration 2.89e+05 x its net flux) shows Richardson order 2.00-2.01 with ||F||, flux constancy, zero current and electroneutrality at machine level; the declared block-tridiagonal structure is audited at exactly 0 off the bands; 56/56 sweep problems from a crude seed converge (14 by continuation in J_v); a warm start reproduces a cold solve; 2 probe refusals fire.  The witness announces method, nodes, iterations, residual and the structure on both solved units and nothing on the closed-form ones; END TO END the engine's solved pore matches the analytic limit within 1.6e-06 at every station of an uncharged Born-free variant (the closed form departs by 70.6%, pinned as a finding); membrane10/11 reproduce 77 golden rows to 1e-10 with no pore line; 5 refusals fire by name.  NOT CHECKED here: NanoFiltran (held by check_nanofiltran_reference, with the declared wall closure and activities), the batch diafilter under the solved pore, whether a case's grid is enough.",
+      "seconds": 14.0
     },
     "check_hansen_mixture": {
       "exit": 0,
       "claim": "check_hansen_mixture: OK -- solvent01: 21 rows rebuilt (volume); solvent02/hexaneAcetone: 21 rows rebuilt (volume); solvent02/hexaneNitromethane: 4 rows rebuilt (mole); solvent03/screen: 13 rows rebuilt (pure); synthetic minimum 2.000 at 0.5, ends 6.000; hexane/nitromethane: 17 twoPhase, 2 homogeneous of 21; T stated beside Tref; a warm probe announced, Ra unmoved; 9 refusals by name; rule named an approximation; affinity not solubility; gamma = 1 named; confrontation: 13 solvents, residual 3: acetone (RED 0.93, rated 3), nitroethane (RED 1.39, rated 2), cyclohexane (RED 1.06, rated 1).  Rebuilt from the records, never from the CSV's own columns.  NOT checked: any measured blend point (the thesis tabulates pure solvents only), the Hansen values themselves (transcriptions, interim), UNIFAC's gap against a measured miscibility, a mass-basis sweep.",
       "seconds": 0.3
+    },
+    "check_nanofiltran_reference": {
+      "exit": 0,
+      "claim": "check_nanofiltran_reference: OK -- 13 NanoFiltran inputs are the matching rule's and its 5 vendored files hash as received; 35 anchors equal reference.tsv; Choupo's pore at 401/801/1601 nodes shows order 2.00-2.00 and, extrapolated, agrees with NanoFiltran extrapolated (ND 102/204) within 7.9e-07 relative on all 35 rows (bound 2e-06); at the case's 801 nodes the worst row is 1.7e-05 from NanoFiltran, inside every anchor; 6 refusals fire by name.  NOT CHECKED: whether NanoFiltran is right (code-to-code is not validation), the as-received program's Davies constant (a finding), the default DSPM-DE path, any measured membrane.",
+      "seconds": 42.9
     }
   }
 }

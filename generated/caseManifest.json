@@ -6,10 +6,10 @@
   "runtime": "not recorded; runTests does not time per case and this script does not run the corpus"
  },
  "counts": {
-  "cases": 489,
+  "cases": 490,
   "witnesses": 16,
   "validationOp": 6,
-  "anchored": 12
+  "anchored": 13
  },
  "cases": {
   "tutorials/batch/adsorber/batch09_adsorber_co2": {
@@ -2561,6 +2561,22 @@
     ]
    },
    "roles": [],
+   "hasGolden": true
+  },
+  "tutorials/props/membrane/nanofiltran01_dspmde_reference": {
+   "application": "choupoProps",
+   "ops": [
+    "poreTransport"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [
+    "anchored"
+   ],
    "hasGolden": true
   },
   "tutorials/props/membrane/polarisation01_geraldes_afonso_table1": {
@@ -7315,6 +7331,7 @@
     "tutorials/props/hydraulics/moody02_correlation_sweeps",
     "tutorials/props/kinetics/ammoniaRate01_dyson_simon",
     "tutorials/props/kinetics/rate01_arrhenius_recovery",
+    "tutorials/props/membrane/nanofiltran01_dspmde_reference",
     "tutorials/props/membrane/polarisation01_geraldes_afonso_table1",
     "tutorials/props/molecular/cosmoSAC01_water_ethanol",
     "tutorials/props/molecular/entropy01_air_ledger",
@@ -8602,6 +8619,7 @@
     "tutorials/props/hydraulics/moody02_correlation_sweeps",
     "tutorials/props/kinetics/ammoniaRate01_dyson_simon",
     "tutorials/props/kinetics/rate01_arrhenius_recovery",
+    "tutorials/props/membrane/nanofiltran01_dspmde_reference",
     "tutorials/props/membrane/polarisation01_geraldes_afonso_table1",
     "tutorials/props/molecular/envelope01_natural_gas",
     "tutorials/props/molecular/envelope02_root_jump",
@@ -8943,6 +8961,9 @@
    ],
    "polarisationIndex": [
     "tutorials/props/membrane/polarisation01_geraldes_afonso_table1"
+   ],
+   "poreTransport": [
+    "tutorials/props/membrane/nanofiltran01_dspmde_reference"
    ],
    "ppr78Kij": [
     "tutorials/props/molecular/ppr78Kij01_ch4_co2_h2"

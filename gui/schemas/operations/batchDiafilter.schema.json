@@ -2,7 +2,7 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://choupo.org/schemas/operations/batchDiafilter.schema.json",
   "title": "batchDiafilter operation",
-  "description": "A stirred RETENTATE vessel behind a membrane (choupoBatch): the batch half of the pressure-driven separation the steady spiralWoundModule solves. It adds no architecture — the same TransportModel::localFluxes (solutionDiffusion or DSPM_DE), the same membrane asset record and osmotic block, asked once per instant instead of once per channel node. Well mixed, so one bulk composition; the permeate's solvent is closed on the declared solution density the concentrations were built from, so the vessel conserves mass to machine precision. Two modes: `concentration` (no make-up, the vessel shrinks) and `constantVolume` (diafiltrate added at the permeate rate, solutes wash out; the make-up is ledgered under its own kind word externalIntake). The unit publishes the OBSERVED rejection R_obs_<solute> at every instant and, in constantVolume mode, washoutActual_<solute> beside washoutIdeal_<solute> — the ideal evaluated from this run's own initial R, computed and never declared, so the gap between the hand derivation c/c0 = exp(-(1-R)N) and the run cannot have been arranged. Initial holdup comes from 0/internalStates/<unit>, a `holdup {}` block (an inline initial{} is refused). The pump work is NOT ledgered: energyLedgerGap names it and the campaign energy balance stays UNAVAILABLE.",
+  "description": "A stirred RETENTATE vessel behind a membrane (choupoBatch): the batch half of the pressure-driven separation the steady spiralWoundModule solves. It adds no architecture — the same TransportModel::localFluxes (solutionDiffusion or DSPM-DE), the same membrane asset record and osmotic block, asked once per instant instead of once per channel node. Well mixed, so one bulk composition; the permeate's solvent is closed on the declared solution density the concentrations were built from, so the vessel conserves mass to machine precision. Two modes: `concentration` (no make-up, the vessel shrinks) and `constantVolume` (diafiltrate added at the permeate rate, solutes wash out; the make-up is ledgered under its own kind word externalIntake). The unit publishes the OBSERVED rejection R_obs_<solute> at every instant and, in constantVolume mode, washoutActual_<solute> beside washoutIdeal_<solute> — the ideal evaluated from this run's own initial R, computed and never declared, so the gap between the hand derivation c/c0 = exp(-(1-R)N) and the run cannot have been arranged. Initial holdup comes from 0/internalStates/<unit>, a `holdup {}` block (an inline initial{} is refused). The pump work is NOT ledgered: energyLedgerGap names it and the campaign energy balance stays UNAVAILABLE.",
   "type": "object",
   "properties": {
     "membrane": {
@@ -13,33 +13,87 @@
     },
     "transport": {
       "type": "string",
-      "enum": ["solutionDiffusion", "DSPM_DE"],
+      "enum": [
+        "solutionDiffusion",
+        "DSPM-DE"
+      ],
       "title": "Local transport law",
-      "description": "The same local flux law the steady module uses; DSPM_DE needs the record's pore data and a charged feed.",
+      "description": "The same local flux law the steady module uses; DSPM-DE needs the record's pore data and a charged feed.",
       "unit": "-"
     },
     "transportParameters": {
       "type": "object",
       "title": "Transport-law parameters",
-      "description": "Optional block handed verbatim to the chosen transport law's readParameters. `DSPM-DE` reads `poreSolver { method closedForm | finiteDifference; nodes <n>; }` -- and nothing else (an unknown key refuses). Absent for solutionDiffusion.",
+      "description": "Optional block handed verbatim to the chosen transport law's readParameters. `DSPM-DE` reads `poreSolver { method closedForm | finiteDifference; nodes <n>; wallClosure solutionDiffusion | porePermeate; }`, `hindrance legacy | DechadilokDeen2006;`, `activity wallDavies | ideal | bulkOverPoreDavies;` and `bulkDielectric <eps>;` -- and nothing else (an unknown key or word refuses).",
       "unit": "-",
       "properties": {
         "poreSolver": {
           "type": "object",
           "title": "DSPM-DE pore solver",
-          "description": "How DSPM-DE crosses the pore.  Absent = `closedForm` (the default: the pore is NOT solved -- feed-face Donnan, an electroneutral permeate, and each ion carried across alone by a closed-form transmission).  `finiteDifference` SOLVES the extended Nernst-Planck equations on `nodes` grid points across the pore (faces included), electroneutrality at every node and zero current, every node at once by Newton on the declared block-tridiagonal structure -- NanoFiltran's method (Geraldes & Alves 2008).  `nodes` defaults to 101, announced; it refuses with `closedForm`, and an unknown method word refuses.",
+          "description": "How DSPM-DE crosses the pore.  Absent = `closedForm` (the default: the pore is NOT solved -- feed-face Donnan, an electroneutral permeate, and each ion carried across alone by a closed-form transmission).  `finiteDifference` SOLVES the extended Nernst-Planck equations on `nodes` grid points across the pore (faces included), electroneutrality at every node and zero current, every node at once by Newton on the declared block-tridiagonal structure -- NanoFiltran's method (Geraldes & Alves 2008).  `nodes` defaults to 101, announced; it refuses with `closedForm`, and an unknown method word refuses.  `wallClosure` (finiteDifference only): `solutionDiffusion` (default) closes the wall with the salts' solution-diffusion B_s, as the closed form does; `porePermeate` closes it with the solved pore's own permeate, the wall and the pore converged together by Newton (NanoFiltran solves them in one matrix).",
           "properties": {
-            "method": { "type": "string", "title": "Method", "enum": ["closedForm", "finiteDifference"] },
-            "nodes": { "type": "integer", "title": "Grid nodes across the pore", "minimum": 3, "unit": "-" }
+            "method": {
+              "type": "string",
+              "title": "Method",
+              "enum": [
+                "closedForm",
+                "finiteDifference"
+              ]
+            },
+            "nodes": {
+              "type": "integer",
+              "title": "Grid nodes across the pore",
+              "minimum": 3,
+              "unit": "-"
+            },
+            "wallClosure": {
+              "type": "string",
+              "title": "Wall closure",
+              "enum": [
+                "solutionDiffusion",
+                "porePermeate"
+              ]
+            }
           },
-          "required": ["method"],
+          "required": [
+            "method"
+          ],
           "additionalProperties": false
+        },
+        "hindrance": {
+          "type": "string",
+          "title": "DSPM-DE hindrance factors",
+          "description": "Absent = `legacy`: K_d is the Dechadilok-Deen polynomial H itself (= Phi K_d, so the steric partition is counted twice in diffusion -- recorded, not changed) and K_c the Bowen-Welfoot centreline form.  `DechadilokDeen2006`: K_d = H/Phi (lambda <= 0.95; 0.984((1-lambda)/lambda)^2.5 above) and K_c their rational fit -- the cross-section-averaged pair (Ind. Eng. Chem. Res. 45 (2006) 6953).",
+          "enum": [
+            "legacy",
+            "DechadilokDeen2006"
+          ]
+        },
+        "activity": {
+          "type": "string",
+          "title": "DSPM-DE activity treatment",
+          "description": "Absent = `wallDavies`: Davies at the bulk ionic strength on the feed face, the permeate ideal.  `ideal`: every activity coefficient 1.  `bulkOverPoreDavies`: gamma_bulk/gamma_pore at BOTH faces, Davies (log10) with A(eps, T) = 1.82483e6 (eps T)^-1.5 -- eps_b on the solution side, eps_p on the pore side, the pore gammas at the pore's end nodes; requires `poreSolver { method finiteDifference; }`.",
+          "enum": [
+            "wallDavies",
+            "ideal",
+            "bulkOverPoreDavies"
+          ]
+        },
+        "bulkDielectric": {
+          "type": "number",
+          "title": "Bulk dielectric constant",
+          "description": "The solution's relative dielectric constant in the Born term and in A(eps_b).  Absent = SolventProperties::epsWater(T) (78.45 at 25 C).",
+          "minimum": 1,
+          "unit": "-"
         }
       }
     },
     "mode": {
       "type": "string",
-      "enum": ["concentration", "constantVolume"],
+      "enum": [
+        "concentration",
+        "constantVolume"
+      ],
       "title": "Operating mode",
       "description": "`concentration`: Q_d = 0, the vessel shrinks and solutes concentrate. `constantVolume`: Q_d = Q_p, solvent made up as fast as it permeates and solutes wash out.",
       "unit": "-"
@@ -89,9 +143,19 @@
       "title": "Osmotic pressure model",
       "description": "The same block the steady module reads: `model vanHoff;` or `model pitzer;`.",
       "properties": {
-        "model": { "type": "string", "enum": ["vanHoff", "pitzer"], "title": "Osmotic model", "unit": "-" }
+        "model": {
+          "type": "string",
+          "enum": [
+            "vanHoff",
+            "pitzer"
+          ],
+          "title": "Osmotic model",
+          "unit": "-"
+        }
       },
-      "required": ["model"]
+      "required": [
+        "model"
+      ]
     },
     "fouling": {
       "type": "object",
@@ -100,7 +164,10 @@
       "properties": {
         "law": {
           "type": "string",
-          "enum": ["cake", "intermediate"],
+          "enum": [
+            "cake",
+            "intermediate"
+          ],
           "title": "Blocking law",
           "description": "`cake`: r_f = k v (a deposited layer). `intermediate`: 1/A_eff = exp(k v)/A_w (progressive pore covering).",
           "unit": "-"
@@ -119,10 +186,24 @@
           "unit": "-"
         }
       },
-      "required": ["law", "k", "reason"],
+      "required": [
+        "law",
+        "k",
+        "reason"
+      ],
       "additionalProperties": false
     }
   },
-  "required": ["membrane", "transport", "mode", "area", "P_feed", "P_permeate", "rho", "k_film", "osmotic"],
+  "required": [
+    "membrane",
+    "transport",
+    "mode",
+    "area",
+    "P_feed",
+    "P_permeate",
+    "rho",
+    "k_film",
+    "osmotic"
+  ],
   "additionalProperties": false
 }

@@ -1,0 +1,21 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: Sodium sulfate (Na2SO4, CAS 7757-82-6) -- CASE-LOCAL.
+
+  Authored for nanofiltran01_dspmde_reference: the 2:1 salt whose
+  DIVALENT CO-ION (SO4--) meets a negatively charged pore, the case the
+  Donnan exclusion is most selective on.  The catalogue's Na2SO4 record
+  carries the solid (thenardite) and its thermochemistry but no ion
+  stoichiometry, which the DSPM-DE law needs to decompose the salt; this
+  record carries ONLY what the pore model reads.  No thermochemistry:
+  nothing here prices an energy.
+    MW  142.036 g/mol  (the catalogue record's value)
+\*---------------------------------------------------------------------------*/
+
+name           Na2SO4;
+formula        Na2SO4;
+CAS            7757-82-6;
+MW             142.036;         // g/mol  (= kg/kmol)
+
+role           nonvolatile;
+dissociation   3;               // van't Hoff factor
+dissociatesTo  { Na 2; SO4 1; } // ion stoichiometry (formula-like identity)
