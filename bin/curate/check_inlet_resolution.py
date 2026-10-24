@@ -278,6 +278,23 @@ WHAT THIS CHECKS, all from fresh runs of corpus cases:
              Callers that can do without the gas (`pricedDensity::select`:
              the tray hydraulics, the storage tank, the sizing pass) catch
              the refusal and leave the component out, announced, as before.
+  (q) A COMPRESSOR REFUSES LIQUID IN ITS SUCTION (the delegated decision
+      of 2026-10-21, DEV.md 4c).  It used to compute a two-phase feed on
+      the vapour root of the overall composition, in silence, while the
+      report resolved the same stream and found the latent heat of its
+      liquid unaccounted (24.93 kW on the methanol benchmark's hydrogen
+      compressor).
+        (q1) SOURCE: `Compressor.cpp` reads its suction through
+             `flashState::resolvedInletVaporFraction` (comments stripped)
+             and throws below a vapour fraction of 1.
+        (q2) OUTPUT: compressor01 with its air feed at 80 K (two-phase)
+             and at 70 K (all liquid) exits non-zero, quoting the vapour
+             fraction and naming both remedies (a knock-out drum, a
+             pump); the case as shipped (298.15 K) still runs -- the
+             negative.
+      Sabotage-verified 2026-10-24 by hand: the refusal's condition made
+      unreachable (`vfSuction < -1.0`, rebuilt) -- caught by (q1) and by
+      both (q2) fixtures, which ran to exit 0.
   (e) flash13_acetic_ethanol_vacuum_flash keeps a LARGE duty -- the
       negative control.  Its feed is at 1 atm and it operates at 0.65 atm,
       so its 669 kW is genuine pressure-drop work; a gate that drove every
@@ -825,6 +842,54 @@ def arm_p(tmp: pathlib.Path, fail: list) -> str:
     m = re.search(r"no liquid molar volume for component '(\w+)'", log)
     return (f"the pipe exits {rc} naming '{m.group(1)}'" if m
             else f"the pipe exits {rc}")
+
+
+#  (q) a compressor refuses liquid in its suction
+COMPRESSOR_SRC = ROOT / "src/unitOperations/rotating/Compressor.cpp"
+COMPRESSOR_CASE = "tutorials/steady/rotating/compressor01_air"
+
+
+def arm_q(tmp: pathlib.Path, fail: list) -> str:
+    """(q) A COMPRESSOR REFUSES LIQUID IN ITS SUCTION."""
+    src = strip_comments(COMPRESSOR_SRC.read_text()) \
+        if COMPRESSOR_SRC.is_file() else ""
+    if not re.search(r"flashState::resolvedInletVaporFraction\s*\(", src):
+        fail.append("(q1) Compressor.cpp does not read its suction through "
+                    "flashState::resolvedInletVaporFraction")
+    if not re.search(r"if\s*\(\s*vfSuction\s*<\s*1\.0\s*\)", src):
+        fail.append("(q1) Compressor.cpp does not refuse a suction vapour "
+                    "fraction below 1")
+    said = []
+    for T, shape in (("80", "two-phase"), ("70", "all liquid")):
+        case = tmp / ("compressor_suction_" + T)
+        shutil.copytree(ROOT / COMPRESSOR_CASE, case)
+        feed = case / "0" / "feed"
+        text, n = re.subn(r"(?m)^T\s+298\.15 K;", "T               %s K;" % T,
+                          feed.read_text())
+        if n != 1:
+            fail.append("(q2) could not set compressor01's feed to %s K -- "
+                        "the fixture no longer matches the case" % T)
+            continue
+        feed.write_text(text)
+        rc, log = run(case)
+        if rc == 0:
+            fail.append("(q2) compressor01 with its feed at %s K (%s) ran to "
+                        "exit 0 -- liquid in a compressor's suction must "
+                        "refuse" % (T, shape))
+            continue
+        for need in ("carries LIQUID", shape, "vapour fraction V/F = ",
+                     "knock-out drum", "`pump`"):
+            if need not in log:
+                fail.append("(q2) the %s K refusal does not say %r" % (T, need))
+        m = re.search(r"V/F = ([0-9.eE+-]+)", log)
+        said.append("%s K V/F = %s, exit %d" % (T, m.group(1) if m else "?", rc))
+    case = tmp / "compressor_suction_shipped"
+    shutil.copytree(ROOT / COMPRESSOR_CASE, case)
+    rc, _ = run(case)
+    if rc != 0:
+        fail.append("(q2) compressor01 as shipped (a vapour at 298.15 K) "
+                    "failed (exit %d) -- the refusal accuses a vapour" % rc)
+    return "; ".join(said) + "; as shipped exit %d" % rc
 
 
 def main() -> int:
@@ -1622,6 +1687,7 @@ def main() -> int:
         # density refuses by name
         said_o = arm_o(tmp, fail)
         said_p = arm_p(tmp, fail)
+        said_q = arm_q(tmp, fail)
 
         # (e) the negative control: a real pressure-drop duty survives
         ctrl = tmp / "flash13"
@@ -1695,7 +1761,11 @@ def main() -> int:
           "LIQUID DENSITY THAT CANNOT BE PRICED REFUSES BY NAME: no NaN-blind "
           "guard in ThermoPackage::density (source), and a pipe carrying "
           "liquid ammonia with dissolved H2/N2/Ar names the supercritical "
-          f"component instead of printing -nan ({said_p}).  NOT "
+          f"component instead of printing -nan ({said_p}).  A COMPRESSOR "
+          "REFUSES LIQUID IN ITS SUCTION: it reads the suction through "
+          "`resolvedInletVaporFraction` (source), and compressor01 fed "
+          "air two-phase and all liquid refuses quoting V/F and both "
+          f"remedies while the shipped vapour runs ({said_q}).  NOT "
           "CHECKED: whether a NON-zero duty is right (only the identity has a "
           "closed form); the multi-condition cases' duties, which ride their "
           "goldens; whether the 1e-3 incipient band is the right number (it "
