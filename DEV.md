@@ -1501,6 +1501,39 @@ accepts today, and that is a policy call.
 > final; }` layout draws what the steady flowsheet and the sizing pass
 > already hold.
 
+> **C139. AN EDUTOOL ON THE ECONOMICS OF THE CHEMICAL NETWORK: BASE
+> CHEMICALS, INTERMEDIATES, INDUSTRIAL PARKS AND INTERNATIONAL TRADE
+> (Vitor, 2026-10-24, "para refletir trabalho futuro": "ha uma rede de
+> produtos quimicos de base, e depois ha outra network de produtos
+> quimicos intermedios que estao todos interligados economicamente ...
+> pode explicar a forma como os parques industriais se organizam e
+> tambem como a rede internacional de produtos quimicos funciona").**
+> Status: FUTURE WORK, to reflect on -- NOT scheduled; scope to be agreed
+> with Vitor before anything is built (pedagogy is his).  Measured: the
+> "Process design & economics" shelf (`gui/src/ui/methods/registry.ts`
+> METHOD_DISCIPLINES) holds Front-End Loading, plant layout, the GMP
+> interior and materials -- nothing on the chemical value chain, markets
+> or industrial clusters; the engine prices ONE plant (`EconomicsPass`,
+> declared prices per stream) and `ammoniaRoutes01_screening` compares
+> routes to one product.  Commander's first reading, to put to him:
+> (1) the network as a graph -- a few feedstocks (natural gas, naphtha,
+> salt, air, biomass) -> ~20 base chemicals (syngas, ammonia, methanol,
+> ethylene, propylene, BTX, chlorine/caustic, sulfuric acid) ->
+> intermediates -> products, where a node's price is set by its feedstock
+> and by the co-products it is forced to make (chlor-alkali: chlorine and
+> caustic in fixed ratio; steam cracking: the ethylene/propylene slate);
+> (2) INTEGRATION in a park (Verbund-style): pipeline exchange of
+> intermediates, shared utilities and steam, one site's waste another's
+> feed, and why co-location wins on logistics, safety and energy;
+> (3) the international network: where feedstock is cheap (shale gas,
+> Middle East) base chemicals are made and shipped, specialties stay near
+> the customer; shipping cost per tonne against value per tonne decides
+> what travels; (4) a student exercise: move a feedstock price and watch
+> margins propagate down the graph, or remove a co-product's market and
+> see the coupled unit's economics break.  Must not invent prices,
+> capacities or trade flows: every number from a cited, licence-compatible
+> source, or a clearly SYNTHETIC teaching network labelled as such.
+
 > **C138. A STIFF PORE SOLVED AS NANOFILTRAN SOLVES IT: THE EXTENDED
 > NERNST-PLANCK DISCRETISED ACROSS THE PORE AND EVERY NODE SOLVED AT ONCE
 > (Vitor, 2026-10-22: "Porra!  Mas aquilo e um problema muito stiff!  O
