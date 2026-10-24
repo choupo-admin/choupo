@@ -169,6 +169,38 @@ public:
                                   const GibbsEquilibrium& eq,
                                   scalar                  T);
 
+    //- Enthalpy flow [W] of the FEED over the reactor's declared species, in
+    //  the state the feed stream CARRIES, priced exactly as the energy report
+    //  prices it (C112 point 6): an unpinned authored feed is its own
+    //  equilibrium at (T_in, P_in, z), a pinned one its declaration, a
+    //  produced one its producer's answer -- `resolvedInletVaporFraction`
+    //  then `flashState::priceState`.  Both modes call it, so the isothermal
+    //  duty and the adiabatic balance read one inlet.  It used to be the
+    //  feed priced as a VAPOUR always, which on gibbs07 (CO + 3 steam at
+    //  350 K and 1 bar, 57 % of it liquid at its own equilibrium) charged the
+    //  duty 6.6911 kW of latent heat the report did not.
+    static scalar feedEnthalpy_W(const DictPtr&      feedDict,
+                                 scalar              T_in,
+                                 scalar              P_in,
+                                 const GibbsProblem& prob);
+
+    //- F x h of one stream state, priced as the report prices it
+    //  (`flashState::priceState`).  When the report's resolution CANNOT be
+    //  priced -- a split whose liquid leg needs a datum the record lacks
+    //  (claus01's boiler gas: S8/S2 condense at 600 K, and S2 has no Watson
+    //  data) -- the report itself is UNAVAILABLE for that stream, so there is
+    //  nothing to agree with: the state the unit publishes,
+    //  `H_stream_formation(T, P, vf, z)`, is priced instead and ANNOUNCED
+    //  (once per locus and reason, console + AdvisoryLog), never silently.
+    static scalar pricedOrAsPublished(scalar               T,
+                                      scalar               P,
+                                      const sVector&       z,
+                                      scalar               F,
+                                      bool                 pinned,
+                                      scalar               vf,
+                                      const ThermoPackage& thermo,
+                                      const std::string&   locus);
+
     //- The adiabatic outer Newton on T that did not converge, ANNOUNCED
     //  (console + AdvisoryLog) with the energy residual at the published T.
     static void announceOuterNotConverged(const std::string& unitLocus,

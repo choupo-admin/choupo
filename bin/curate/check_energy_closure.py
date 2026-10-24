@@ -113,7 +113,8 @@ WHAT THIS DOES NOT CHECK, said plainly:
     evaporator (its heat crosses as its own chest/condensate streams; joined
     2026-10-05), a distillationColumn (its reboiler and condenser cross the
     boundary whatever its feed count; joined 2026-10-05, C35), a
-    cstr/conversionReactor that published Q_kW, and (2026-10-17, DEV.md 4c
+    cstr/conversionReactor/gibbsReactor (the last since 2026-10-20, C112)
+    that published Q_kW, and (2026-10-17, DEV.md 4c
     C74) a mixer at a DECLARED outlet temperature that published Q_kW --
     must leave nothing unattributed.  Every other unit is judged only
     through the plant sum.
@@ -181,6 +182,25 @@ restore:
       phase, where the blend IS the resolved price -- a sabotage that changes
       no number there proves nothing there.  Restored from the saved file
       (md5-identical) + one `make all`.
+  U9  (2026-10-20, DEV.md 4c C112 point 6: the isothermal gibbsReactor
+      joins the arm) three by-hand sabotages on a SCOPED cache, each
+      restored md5-identical + `make all`:
+        S1  price the feed as a VAPOUR again in `feedEnthalpy_W` -> "unit
+            'wgs' (gibbsReactor) leaves +6.6942 kW" on gibbs07, gibbs08 and
+            gibbs09, and the plant arm re-fails all three as unpinned
+            (150.69 %, 150.69 %, 150.68 %).
+        S2  price the OUTLETS on the carried label (`H_stream_formation(T,
+            P, vf, z)`) instead of `pricedOrAsPublished` -> "leaves -0.0031
+            kW" on gibbs07/08 and -0.0002 kW on gibbs09: the report's
+            re-flash of a gas leaving exactly at its dew point.  The plant
+            arm does NOT see it (0.14 % of 2.25 kW, inside the band); only
+            this arm does.
+        S3  price the isothermal feed at the REACTOR's pressure instead of
+            its own -> "unit 'Converter' (gibbsReactor) leaves -7.2393 kW"
+            on greenAmmoniaPEQ_baseCase (SRK, feed 150.93 bar, reactor 150
+            bar).  The plant arm does not see it (0.011 %).  gibbs07 is
+            untouched by S3 (its feed and reactor share 1 bar) -- a
+            sabotage that changes no number there proves nothing there.
   U5  (2026-10-05, the evaporator joins the arm) restore the evaporator's
       Watson duty -> "unit 'CONCENTRATION.Evap1' (evaporator) leaves -21.0456
       kW", Evap2 -10.3209, evaporator02's effect1/2/3 -152.9702 / -62.7408 /
@@ -489,13 +509,20 @@ def ratchet_kW(pin: float) -> float:
 #                            +2.1445 kW had been paid by C74)           LEFT
 #  (userOp01_yield_reactor stays in KNOWN_OPEN_KW below: a `code/` case the
 #  standalone `--seed` cannot run -- the blind spot above.)
+#  THREE LEFT ON 2026-10-20 (DEV.md 4c C112 point 6): the isothermal
+#  gibbsReactor priced its feed as a VAPOUR whatever the stream was, and the
+#  three cooled-WGS witnesses feed 1 CO : 3 steam at 350 K and 1 bar, which
+#  the report resolves at vf = 0.4315 -- the residual was exactly the latent
+#  heat of the feed's 0.5685 kmol/h of liquid water.  Both ends of the duty
+#  go through `flashState::priceState` now; measured after, all three close
+#  at 0.0000 kW and the unit arm judges their reactor.
+#    gibbs07_wgs_cooled                  150.7280 % -> 0.0000 %   LEFT
+#    gibbs08_wgs_cooled_reactiveflash    150.7280 % -> 0.0000 %   LEFT
+#    gibbs09_wgs_cooled_directmin        150.6790 % -> 0.0000 %   LEFT
 KNOWN_OPEN = {
     "tutorials/plant/esterification2sector": 170.9790,
     "tutorials/steady/flowsheets/cavett01_recycle_train": 88.0220,
     "tutorials/steady/flowsheets/proxy01_gas_loop": 51.9550,
-    "tutorials/steady/gibbs/gibbs07_wgs_cooled": 150.7280,
-    "tutorials/steady/gibbs/gibbs08_wgs_cooled_reactiveflash": 150.7280,
-    "tutorials/steady/gibbs/gibbs09_wgs_cooled_directmin": 150.6790,
     "tutorials/steady/rotating/pump01_water": 65.0000,
     "tutorials/steady/rotating/pump02_pressure_spec": 65.0000,
     "tutorials/steady/thermo/basis01_two_unit_chain": 7.4630,
@@ -601,7 +628,16 @@ KNOWN_OPEN_KW = {
 UNIT_BOUNDARY_DUTY = {"distillationColumn"}
 UNIT_ADIABATIC = {"sprayDryer", "solidDryer", "convectiveDryer"}
 UNIT_MATERIAL_HEAT = {"evaporator"}
-UNIT_DUTY_IS_DH = {"cstr", "conversionReactor"}
+#  `gibbsReactor` joined 2026-10-20 (DEV.md 4c C112 point 6): its ISOTHERMAL
+#  mode publishes Q_kW = H_out - H_in, and it priced the inlet as a VAPOUR
+#  whatever the feed was, while the report resolves an unpinned feed at its
+#  own (T, P, z).  gibbs07/08/09 (1 CO : 3 steam at 350 K and 1 bar, 57 % of
+#  the water liquid at its own equilibrium) each left +6.69 kW there -- the
+#  latent heat of the feed's liquid, ~150.7 % of each plant's exchanged
+#  energy and the whole of each plant's residual.  Both ends go through
+#  `flashState::priceState` now (`GibbsReactor::feedEnthalpy_W`).  Its
+#  ADIABATIC mode publishes no Q_kW and is not judged here.
+UNIT_DUTY_IS_DH = {"cstr", "conversionReactor", "gibbsReactor"}
 #  `valve` joined 2026-10-11 (DEV.md 4c C65 item d): a throttle declares no
 #  heat and no work, so the report's remainder for it IS the enthalpy change
 #  across its own two streams -- and it must be zero now that it prices both
@@ -677,6 +713,15 @@ UNIT_WITNESSES = {
     ("tutorials/plant/acetonePlant", "M1"),
     ("tutorials/plant/acetonePlant", "M2"),
     ("tutorials/plant/polycaprolactonePlant", "Mixer"),
+    #  The isothermal gibbsReactor (C112 point 6): a two-phase AUTHORED feed
+    #  (the condensing WGS reactor, by each of its three methods) and a
+    #  produced feed at a pressure above the reactor's on SRK (the green
+    #  ammonia Converter, whose -7.24 kW was the departure function between
+    #  the feed's 150.93 bar and the reactor's 150 bar).
+    ("tutorials/steady/gibbs/gibbs07_wgs_cooled", "wgs"),
+    ("tutorials/steady/gibbs/gibbs08_wgs_cooled_reactiveflash", "wgs"),
+    ("tutorials/steady/gibbs/gibbs09_wgs_cooled_directmin", "wgs"),
+    ("tutorials/plant/greenAmmoniaPEQ_baseCase", "Converter"),
 }
 UNIT_HEADER = re.compile(r">>>  Unit \[\d+\]:\s+(\S+)\s+\(type = (\w+)\)")
 #  The header's next line names the unit's inlets and outlets (either side
@@ -1134,7 +1179,7 @@ def main() -> int:
           "distillationColumn, whose reboiler and condenser cross the "
           "boundary whatever its feed count; a valve, an isenthalpic "
           "throttle; a "
-          "cstr/conversionReactor "
+          "cstr/conversionReactor/isothermal gibbsReactor "
           "that published "
           "Q_kW; a mixer at a declared outlet T that published Q_kW) leave "
           "no more than %.0e kW unattributed in the report, "
