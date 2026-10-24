@@ -883,16 +883,18 @@ The PROPS BENCH of the multi-ionic concentration-polarisation model of Geraldes 
 
 ## `poreTransport`  (poreTransport operation)
 
-The PROPS BENCH of the DSPM-DE transport law at IMPOSED permeate fluxes: the same TransportModel the spiral-wound module marches, built through the same factory, the same `transportParameters` reader and the same wall kernel, handed J_v instead of closing J_w = A_w (dP - dpi) -- the way NanoFiltran (Geraldes & Alves 2008) takes it.  Publishes per J_v point p and per ion species c_wall_<ion>_p<p>, c_perm_<ion>_p<p> (mol/m3), Rreal_<ion>_p<p> = 1 - c_perm/c_wall and Robs_<ion>_p<p> = 1 - c_perm/c_bulk, and permeateCharge_max.  Witness nanofiltran01_dspmde_reference; gate check_nanofiltran_reference holds it to NanoFiltran.  The film is built from the `polarisation {}` policy directly (not buildPolarisation), because the feed is declared as salts and DSPM-DE hands the kernel each ion's own z and D.
+The PROPS BENCH of the DSPM-DE transport law at IMPOSED permeate fluxes: the same TransportModel the spiral-wound module marches, built through the same factory, the same `transportParameters` reader and the same wall kernel, handed J_v instead of closing J_w = A_w (dP - dpi) -- the way NanoFiltran (Geraldes & Alves 2008) takes it.  Publishes per J_v point p and per ion species c_wall_<ion>_p<p>, c_perm_<ion>_p<p> (mol/m3), Rreal_<ion>_p<p> = 1 - c_perm/c_wall and Robs_<ion>_p<p> = 1 - c_perm/c_bulk, and permeateCharge_max; where the pore was solved also dPsi_m_V_p<p> (the potential difference across the membrane as Geraldes & Alves 2008 define it: the permeate's potential against the feed-side solution at the wall, both Donnan jumps included, CODATA volts) and poreNewton_p<p> / poreContinuations_p<p> (the station's Newton iterations; the first point from the seed, each later one warm-started).  An ion as large as the pore (lambda >= 1) is EXCLUDED: no pore unknown, permeate 0, its film counted in the wall's electroneutrality (announced).  Witnesses nanofiltran01_dspmde_reference (gate check_nanofiltran_reference), nanofiltran02_paper_stiff_case and nanofiltran03_bowen_mohammad_ca30 (gate check_nanofiltran_paper).  The film is built from the `polarisation {}` policy directly (not buildPolarisation), because the feed is declared as salts and DSPM-DE hands the kernel each ion's own z and D.
 
 | Field | Required | Type | Unit | Description |
 |---|:-:|---|---|---|
 | `T` | ✓ | number | K |  |
 | `membrane` | ✓ | string | — | A membrane record (data/standards/assets or the case's constant/assets) carrying a poreModel {} block. |
+| `chargeDensity` |   | number | mol/m3 | Replaces the membrane record's poreModel chargeDensity (signed, mol/m3) for THIS op only, announced with both values; the record is never… |
 | `transport` |   | string | — | Only `DSPM-DE` honours an imposed J_v; any other word refuses.  Absent = DSPM-DE. |
 | `transportParameters` |   | object | — | Parameters a transport law reads for itself (the block batchDiafilter hands its law too).  `gelPolarisation` reads `gel { solute <gel-for… |
 | `feedMolPerM3` | ✓ | object | — | One entry per SALT component of the package (each with `dissociatesTo`), its bulk molar concentration in mol/m3; the law decomposes the s… |
 | `J_v` | ✓ | array[number] | m/s |  |
+| `profile` |   | string | — | A file name (in the case directory; never under data/standards/): every point's solved pore -- point, J_v, node, xi, x_um over the equiva… |
 | `k_film` |   | number | m/s | k for every ion, in place of `massTransfer {}` (NanoFiltran simulates "no polarisation" with 10 m/s). |
 | `massTransfer` |   | object | — | The cell's correlation, evaluated per ion on the ion's own D0. `StirredCell` (Sh = a (omega r^2/nu)^b Sc^c, k = Sh D/r; Bowen et al. 1997… |
 | `polarisation` |   | object | — | The film's POLICY, one block whichever way k arrives (a correlation or a bare `k_film`); declaring these words inside massTransfer {} ref… |

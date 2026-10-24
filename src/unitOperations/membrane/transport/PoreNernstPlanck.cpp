@@ -177,6 +177,22 @@ FluxTerms fittedFlux(const PoreIon& ion, scalar Jv, scalar h,
     return { Ph * bernoulli(-ah) * ck, Ph * bernoulli(ah) * ck1 };
 }
 
+// The wall of the ions that do not enter the pore (PoreWall::excluded): the
+// interface balance at zero permeate, at the station's J_v and field.
+WallAtField excludedWall(const PoreProblem& pb, scalar Jv, scalar xiPrime)
+{
+    const std::size_t Ne = pb.wall.excluded.size();
+    std::vector<int> z(Ne);
+    std::vector<scalar> k(Ne), D(Ne), cb(Ne), zero(Ne, 0.0);
+    for (std::size_t e = 0; e < Ne; ++e)
+    {
+        const auto& x = pb.wall.excluded[e];
+        z[e] = x.z; k[e] = x.k; D[e] = x.D; cb[e] = x.cBulk;
+    }
+    return wallAtField(pb.wall.suction, pb.wall.coupled, Jv, k, D, z, cb, zero,
+                       xiPrime, nullptr);
+}
+
 // ---- the residual and, when asked, its ANALYTIC Jacobian --------------------
 //  One pass computes both: every row's value and, into the three bands, its
 //  derivative with respect to every unknown it reads.  `Jb` null: residual
@@ -219,6 +235,14 @@ sVector evaluate(const PoreProblem& pb, const Context& C, const sVector& x,
                         pb.wall.solutionDiffusion ? &pb.wall.B : nullptr);
         if (!W.ok) throw InfeasibleTrial("pore ENP wall: " + W.reason);
     }
+    const std::size_t Ne = wallOn ? pb.wall.excluded.size() : 0;
+    WallAtField WE;
+    if (Ne > 0)
+    {
+        WE = excludedWall(pb, J0, xi0);
+        if (!WE.ok) throw InfeasibleTrial("pore ENP wall (an ion the pore"
+                                          " excludes): " + WE.reason);
+    }
 
     // ---- the face activities (bulkOverPoreDavies) ---------------------------
     std::vector<scalar> lgW(Ni, 0.0), dgW(Ni, 0.0), lg0(Ni, 0.0), dg0(Ni, 0.0),
@@ -233,6 +257,11 @@ sVector evaluate(const PoreProblem& pb, const Context& C, const sVector& x,
             I0 += 0.5 * z2 * c[0][i];
             IN += 0.5 * z2 * c[N][i];
             Ip += 0.5 * z2 * cp[N][i];
+        }
+        for (std::size_t e = 0; e < Ne; ++e)
+        {
+            const scalar ze = scalar(pb.wall.excluded[e].z);
+            Iw += 0.5 * ze * ze * WE.c_m[e];
         }
         for (std::size_t i = 0; i < Ni; ++i)
         {
@@ -377,6 +406,12 @@ sVector evaluate(const PoreProblem& pb, const Context& C, const sVector& x,
                                 sJ += 0.5 * z2l * W.dc_dJ[l]  * C.Jref  / 1000.0;
                                 sX += 0.5 * z2l * W.dc_dxi[l] * C.xiRef / 1000.0;
                             }
+                            for (std::size_t e = 0; e < Ne; ++e)
+                            {
+                                const scalar ze = scalar(pb.wall.excluded[e].z);
+                                sJ += 0.5 * ze * ze * WE.dc_dJ[e]  * C.Jref  / 1000.0;
+                                sX += 0.5 * ze * ze * WE.dc_dxi[e] * C.xiRef / 1000.0;
+                            }
                             dJ  += dgW[i] * sJ;
                             dXi += dgW[i] * sX;
                         }
@@ -427,6 +462,7 @@ sVector evaluate(const PoreProblem& pb, const Context& C, const sVector& x,
                 const scalar sc = pb.closure.Aw * pb.closure.dP;
                 scalar sm = 0.0, sp = 0.0;
                 for (std::size_t i = 0; i < Ni; ++i) { sm += W.c_m[i]; sp += cp[0][i]; }
+                for (std::size_t e = 0; e < Ne; ++e) sm += WE.c_m[e];
                 const scalar ART = pb.closure.Aw * pb.closure.RT;
                 F[row + 2 * Ni + 2] = (J0 - pb.closure.Aw * pb.closure.dP + ART * (sm - sp)) / sc;
                 if (Jb)
@@ -438,6 +474,11 @@ sVector evaluate(const PoreProblem& pb, const Context& C, const sVector& x,
                         dX += ART * W.dc_dxi[i] * C.xiRef;
                         add(0, 2 * Ni + 2, 0, Ni + 1 + i,
                             ART * (W.dc_dcp[i] * cp[0][i] - cp[0][i]) / sc);
+                    }
+                    for (std::size_t e = 0; e < Ne; ++e)
+                    {
+                        dJ += ART * WE.dc_dJ[e] * C.Jref;
+                        dX += ART * WE.dc_dxi[e] * C.xiRef;
                     }
                     add(0, 2 * Ni + 2, 0, 2 * Ni + 2, dJ / sc);
                     add(0, 2 * Ni + 2, 0, 2 * Ni + 3, dX / sc);
@@ -465,6 +506,11 @@ sVector evaluate(const PoreProblem& pb, const Context& C, const sVector& x,
                 r += scalar(pb.ions[i].z) * W.c_m[i];
                 s += std::abs(scalar(pb.ions[i].z)) * W.c_m[i];
             }
+            for (std::size_t e = 0; e < Ne; ++e)
+            {
+                r += scalar(pb.wall.excluded[e].z) * WE.c_m[e];
+                s += std::abs(scalar(pb.wall.excluded[e].z)) * WE.c_m[e];
+            }
             const scalar f = r / s;
             F[row + 2 * Ni + 3] = f;
             if (Jb)
@@ -477,6 +523,12 @@ sVector evaluate(const PoreProblem& pb, const Context& C, const sVector& x,
                     add(0, 2 * Ni + 3, 0, Ni + 1 + i, (z * dv - f * az * dv) / s);
                     dJr += z * W.dc_dJ[i] * C.Jref;   dJs += az * W.dc_dJ[i] * C.Jref;
                     dXr += z * W.dc_dxi[i] * C.xiRef; dXs += az * W.dc_dxi[i] * C.xiRef;
+                }
+                for (std::size_t e = 0; e < Ne; ++e)
+                {
+                    const scalar z = scalar(pb.wall.excluded[e].z), az = std::abs(z);
+                    dJr += z * WE.dc_dJ[e] * C.Jref;   dJs += az * WE.dc_dJ[e] * C.Jref;
+                    dXr += z * WE.dc_dxi[e] * C.xiRef; dXs += az * WE.dc_dxi[e] * C.xiRef;
                 }
                 add(0, 2 * Ni + 3, 0, 2 * Ni + 2, (dJr - f * dJs) / s);
                 add(0, 2 * Ni + 3, 0, 2 * Ni + 3, (dXr - f * dXs) / s);
@@ -538,7 +590,14 @@ void validate(const PoreProblem& pb, const PoreSettings& s)
             if (!(pb.wall.cBulk[i] > 0.0))
                 throw std::runtime_error(ctx + "an ion with no bulk concentration"
                     " was handed to the wall -- an absent ion is not a term");
+        for (const auto& e : pb.wall.excluded)
+            if (!(e.cBulk > 0.0) || !(e.k > 0.0) || !(e.D > 0.0))
+                throw std::runtime_error(ctx + "an ion the pore excludes needs a"
+                    " positive bulk concentration, film coefficient and D");
     }
+    else if (!pb.wall.excluded.empty())
+        throw std::logic_error(ctx + "an ion the pore excludes lives only in the"
+                                     " film: it needs PoreProblem::wall");
     if (pb.closure.active)
     {
         if (!pb.wall.active)
@@ -607,11 +666,21 @@ PoreSolution solveFrom(const PoreProblem& pb, const PoreSettings& s, sVector x0)
             pb.wall.k, pb.wall.D, z, pb.wall.cBulk, cp0, out.xiPrime,
             pb.wall.solutionDiffusion ? &pb.wall.B : nullptr);
         out.cWall = W.c_m;
+        if (!pb.wall.excluded.empty())
+        {
+            const WallAtField WE = excludedWall(pb, out.Jv, out.xiPrime);
+            out.cWallExcluded = WE.c_m;
+        }
         if (pb.wall.coupled && W.ok)
         {
             scalar q = 0.0, qa = 0.0;
             for (std::size_t i = 0; i < Ni; ++i)
             { q += z[i] * W.c_m[i]; qa += std::abs(scalar(z[i])) * W.c_m[i]; }
+            for (std::size_t e = 0; e < out.cWallExcluded.size(); ++e)
+            {
+                const scalar ze = scalar(pb.wall.excluded[e].z);
+                q += ze * out.cWallExcluded[e]; qa += std::abs(ze) * out.cWallExcluded[e];
+            }
             out.wallChargeMax = qa > 0.0 ? std::abs(q) / qa : 0.0;
         }
     }

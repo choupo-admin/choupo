@@ -1232,6 +1232,21 @@ each channel node):
   law at IMPOSED J_v through the `poreTransport` props op.  Any other key or
   word refuses.  Cost (C142): a few hundred milliseconds per module (it was
   seconds before the station became one Newton with an analytic Jacobian).
+  An ion as large as the pore (lambda >= 1, e.g. a dye whose Stokes radius
+  equals the pore radius) is EXCLUDED, announced: it is not a pore unknown,
+  its permeate is 0, and it stays in the film -- its wall concentration the
+  interface balance at zero permeate, counted in the wall's
+  electroneutrality and osmotic pressure.  The `poreTransport` op also takes
+  `chargeDensity <mol/m3>;` (replaces the record's X_d for that op, for a
+  charge FITTED as a function of the feed) and `profile <file>.csv;` (the
+  solved c_i(x) and psi(x)), and publishes `dPsi_m_V_p<p>`, the potential
+  difference across the membrane (permeate against the feed-side solution
+  at the wall, both Donnan jumps included).  The NanoFiltran paper's own
+  comparisons are `nanofiltran02_paper_stiff_case` (its Table 2 -- which
+  carries NanoFiltran's ln-10 Davies defect, accounted for term by term) and
+  `nanofiltran03_bowen_mohammad_ca30` (Bowen & Mohammad's measured CA30
+  rejections: a comparison with EXPERIMENT, several inputs being fits to
+  those data).
 * `SDEM` — **solution-diffusion-electromigration** (Yaroshchuk 2013): the
   SAME per-ion `B_s` as above, coupled by the electric field that zero
   current imposes — the permeate is electroneutral **by construction, with

@@ -32,6 +32,7 @@ problema!"*).
 | `regenerate.py` | builds the program, runs the reference matrix, writes/checks `reference.tsv` |
 | `cases/<op>_p<n>/INPUT.XLS`, `cases/IONS.XLS` | the inputs of every reference run (ND 204 shown; the ND 102 run differs only in that cell) — written by `regenerate.py --write` from `shipped/` by changing value cells only |
 | `reference.tsv` | NanoFiltran's permeate and interface concentrations at ND 102 and 204, their Richardson extrapolation, iterations and final residual, per op / point / ion |
+| `regenerate_paper.py`, `paper.tsv` | the paper's own two comparisons (Table 2 and Fig. 3) run by NanoFiltran, and its Table 2 transcribed -- the reference of nanofiltran02 and nanofiltran03 (section "The paper's own comparisons" below) |
 | `LICENSE-LAPACK.txt` | the LAPACK licence (see below) |
 
 sha256 of the five files as received (held by
@@ -130,6 +131,59 @@ whose pore A used 60 exactly: then the two programs agree to 1.3e-7).
   single-precision names (`SGESV`, …).  The netlib BLAS FAQ asks that a
   modified routine be renamed; recorded, not changed (the file is kept as
   received).
+
+## The paper's own comparisons (DEV.md 4c C145, 2026-10-24)
+
+`regenerate_paper.py` runs NanoFiltran on the two comparisons of its paper
+and writes `paper.tsv`, the reference of
+`tutorials/props/membrane/nanofiltran02_paper_stiff_case` (section 4.2,
+Table 2, Fig. 4) and `nanofiltran03_bowen_mohammad_ca30` (section 4.1,
+Fig. 3: Bowen & Mohammad's measured CA30 rejections).  The paper itself is
+the publisher's and is not here; its Table 2 is transcribed in the script
+(`PAPER_TABLE2`) and its Fig. 3 digitised by
+`bin/curate/digitise_geraldes_alves2008.py` into nanofiltran03's
+`constant/experimental/` -- numbers, cited, held by
+`check_source_licence` (`ACCEPTED_PAPER_FACTS`, which also refuses the PDF
+and its figures anywhere in the tree).
+
+    bin/curate/nanofiltran/regenerate_paper.py            # run, print, compare
+    bin/curate/nanofiltran/regenerate_paper.py --write    # rewrite paper.tsv
+    bin/curate/nanofiltran/regenerate_paper.py --check    # REFUSES without gfortran
+
+Three more DECLARED patches, each applied to a copy in a temporary build
+directory and each required to match exactly once (`src/` is never edited):
+
+- **ARRAY_PATCH** (every build): `NDX=205` -> `NDX=351` in the six
+  PARAMETER lines.  Table 2 runs N = 300 and 350, beyond the vendored cap,
+  so the paper's own build carried a larger array.  Measured: the program
+  gives the same numbers, to every printed digit, with and without it at
+  N = 10, 50 and 200.
+- **DAVIES_PATCH** (`regenerate.py`'s): ln 10 restored in the Davies A.
+- **BORN_PATCH** (the code-to-code variant only): the Born constant written
+  as the CODATA e^2 N_A/(8 pi eps0), scaled by 8.314/R_CODATA because the
+  program divides by its own R.  `regenerate.py` matches the Born constant
+  through the pore dielectric INPUT instead, which would here also move the
+  pore-side Davies A by 2e-4 -- and Table 2's case has Davies and Born on at
+  once.
+
+**What Table 2 turned out to be.**  NanoFiltran AS RECEIVED, on the shipped
+`INPUT.XLS` and `IONS.XLS` (the paper's section 4.2 case IS the shipped
+example, T = 298 K) with the paper's numerics (URF 0.2, TOL 1e-4),
+reproduces Table 2: the iteration counts 71 ... 88 exactly, Mg2+, Cl- and
+the potential within 6e-6, the trace Na+ within 2.6e-5 (the residue a
+loosely converged iteration leaves on a different compiler).  The
+Davies-corrected program does not (Na+ 10.7 % higher at N = 350).  So
+**Table 2 carries the ln-10 Davies defect** -- and so do the paper's own
+Eqs. 12-13 as printed (Eq. 13 is the log10 constant, Eq. 12 takes ln gamma
+with it).  The paper's Delta Psi_m is the permeate node's potential PHI(ND),
+psi_m = 0 being its Eq. 24's reference: the Donnan jumps included.
+
+**Fig. 3.**  Run as received with section 4.1's inputs (Eqs. 43-46 at each
+measured feed, 20 nodes, URF 0.2, TOL 1e-4) the program lands on the
+paper's drawn line within half a reading error at every marker -- the
+inputs were read right.  Converged on matched inputs (ND 102/204, TOL 1e-9)
+these runs stop at ITMAX with residuals of 9e-9 to 4e-7, the floor the
+section above describes; their permeates agree with Choupo's to 2e-8.
 
 ## Licences — each kept with its own text
 

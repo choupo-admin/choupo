@@ -255,6 +255,26 @@ struct PoreWall
     std::vector<scalar> k;       // film coefficient [m/s]
     std::vector<scalar> D;       // free-solution D (the migration term) [m2/s]
     std::vector<scalar> B;       // solution-diffusion B_s [m/s] (solutionDiffusion only)
+    //  IONS THAT DO NOT ENTER THE PORE (C145): a solute as large as the pore
+    //  (lambda >= 1; Bowen & Mohammad's trivalent dye in CA30) has a steric
+    //  partition of zero, so it carries no flux and its permeate is zero.
+    //  It is not a pore unknown -- carried as one, its partition (the law's
+    //  1e-15) puts a concentration 15 orders below the others in the pore
+    //  and the Newton cannot step (measured: the station refused at the
+    //  first point).  It stays in the FILM: its wall concentration is the
+    //  interface balance (7) at zero permeate, C_m = k* c_b / (k* - J_v +
+    //  z D xi'), and it enters the wall's electroneutrality (8), the wall's
+    //  ionic strength (bulkOverPoreDavies) and the osmotic difference (9).
+    //  NanoFiltran carries such an ion in the pore with a partition of 1e-15;
+    //  the two are the same problem in that limit.
+    struct Excluded
+    {
+        int    z     = 0;
+        scalar cBulk = 0.0;      // [mol/m3]
+        scalar k     = 0.0;      // film coefficient [m/s]
+        scalar D     = 0.0;      // free-solution D [m2/s]
+    };
+    std::vector<Excluded> excluded;
 };
 
 //- `activity bulkOverPoreDavies`: gamma_bulk/gamma_pore at both faces,
@@ -358,6 +378,7 @@ struct PoreSolution
     scalar psiPerm = 0.0;
     scalar Jv      = 0.0;                    // the water flux solved / imposed [m/s]
     std::vector<scalar> cWall;               // with a wall: C_m [mol/m3]
+    std::vector<scalar> cWallExcluded;       // PoreWall::excluded's C_m [mol/m3]
     scalar xiPrime = 0.0;                    // with a coupled wall: (F/RT) xi [1/m]
 
     //  measured on the answer (see the header)

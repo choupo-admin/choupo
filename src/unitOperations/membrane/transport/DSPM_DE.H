@@ -63,6 +63,11 @@ Description
             = Phi_S,i * exp(-z_i F dpsi_Donnan / RT) * exp(-dW_i / kT)  (2)
         Phi_S,i = (1 - lambda_i)^2                       (steric)
         Born:  dW_i = (z_i^2 e^2 / 8 pi eps0 r_i)(1/eps_p - 1/eps_b)    (3)
+      an ion with lambda_i >= 1 is EXCLUDED (Phi_S = 0): no pore unknown,
+      permeate 0; it stays in the film, where it counts in the wall's
+      electroneutrality and osmotic pressure (pore::PoreWall::excluded,
+      DEV.md 4c C145 -- carried in the pore at the partition 1e-15 the
+      Newton could not step), announced once per unit
 
       pore ELECTRONEUTRALITY, at every point of the pore:
         sum_i z_i c_pore,i + X_d = 0                                (4)
@@ -272,6 +277,7 @@ private:
     mutable bool poreBanner_      = false;   // first solve announced once
     mutable bool continuationSaid_ = false;  // first continuation announced once
     mutable bool noFluxSaid_      = false;   // a station with no water flux, said once
+    mutable bool excludedSaid_    = false;   // an ion the pore excludes, said once
     // The previous station's converged state: the next station's start.
     mutable pore::PoreSolution lastPore_;
     mutable bool               haveLastPore_ = false;

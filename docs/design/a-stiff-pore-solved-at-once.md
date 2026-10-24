@@ -4,7 +4,9 @@
 NanoFiltran itself) is §9; the defaults corrected (C141) §10; a better
 solver -- an analytic Jacobian, the wall and the water flux in the same
 Newton, the closed form retired, NanoFiltran kept as the reference (C142) --
-§11; a solution-adaptive grid, built and measured (C144) -- §12.  Vítor's
+§11; a solution-adaptive grid, built and measured (C144) -- §12; the
+paper's own comparisons, its Table 2 and its Fig. 3 against experiment
+(C145) -- §13.  Vítor's
 decision: build, as an
 opt-in pore solver for the `DSPM-DE` transport law, the method of his own
 NanoFiltran (Geraldes & Alves, "Computer program for simulation of mass
@@ -1040,3 +1042,285 @@ six refusals.  Sabotages, by hand, each restored before the next:
   had.  The flag is decided on every pass now.
 - A4 -- the refusal of `grid adaptive;` beside `grading` removed (engine
   rebuilt): caught by (e) alone.
+
+## 13. The paper as a comparison case (2026-10-24, DEV.md 4c C145)
+
+*Vítor, uploading Geraldes & Alves, J. Membr. Sci. 321 (2008) 172-182:
+"Tens aqui o paper original para criar um caso de comparação".  The paper is
+the publisher's copyright: it is not in the tree, nor are its figures; its
+numbers enter as cited facts -- Table 2 transcribed
+(`bin/curate/nanofiltran/regenerate_paper.py`, `PAPER_TABLE2`) and Fig. 3
+digitised (`bin/curate/digitise_geraldes_alves2008.py` into
+`nanofiltran03_bowen_mohammad_ca30/constant/experimental/geraldes_alves2008_fig3.csv`)
+-- held by `check_source_licence` (`ACCEPTED_PAPER_FACTS`: each carrier
+cites the paper and says what it carries, and no PDF or image under the
+scanned roots hashes to the paper or its figures).  Two cases, one gate
+(`bin/curate/check_nanofiltran_paper.py`).*
+
+### 13.1 Table 2 is NanoFiltran as received -- and carries its Davies defect
+
+The paper's stiff case (§4.2: Na+/Mg2+/Cl- 10/20/50 mol/m3, J_v 5e-5 m/s,
+Δx_e 2.5 µm, r_p 0.40 nm, c_X −30 mol/m3, ε_p 60, 298 K, Davies, no
+polarisation) IS NanoFiltran's shipped example: `shipped/INPUT.XLS` carries
+exactly those values (T 298, Davies on), and the ion database it ships
+supplies Na+ (0.184 nm, 1.33e-9 m2/s) and Cl- (0.121 nm, 2.03e-9) -- the
+rows citing Bowen & Mohammad, the values the paper also states in §4.1 --
+beside the paper's Mg2+ (0.35 nm, 0.707e-9).  The paper's numerics: URF 0.2,
+TOL 1e-4.  The vendored program caps the grid at 205 nodes and Table 2 runs
+N = 300 and 350, so every paper build carries a declared ARRAY_PATCH (NDX
+351; measured to change no printed digit at N = 10, 50, 200).
+
+| N | Table 2: Na+ / Mg2+ / Cl- / ΔΨ_m / it | NanoFiltran as received | Davies corrected |
+|---:|---|---|---|
+| 10 | 0.0367468 / 8.634545 / 17.305819 / 0.149227 / 71 | 0.0367477 / 8.634527 / 17.305785 / 0.149227 / 71 | 0.0409767 / 8.665796 / 17.372553 / 0.145327 / 71 |
+| 20 | 0.0460774 / 8.605800 / 17.257671 / 0.149651 / 75 | 0.0460785 / 8.605786 / 17.257645 / 0.149650 / 75 | 0.0510887 / 8.637907 / 17.326894 / 0.145743 / 74 |
+| 50 | 0.0480736 / 8.599753 / 17.247577 / 0.149740 / 79 | 0.0480748 / 8.599740 / 17.247551 / 0.149739 / 79 | 0.0532462 / 8.632026 / 17.317296 / 0.145830 / 79 |
+| 100 | 0.0483219 / 8.599001 / 17.246324 / 0.149751 / 82 | 0.0483231 / 8.598988 / 17.246298 / 0.149750 / 82 | 0.0535147 / 8.631295 / 17.316103 / 0.145841 / 82 |
+| 200 | 0.0483809 / 8.598822 / 17.246025 / 0.149753 / 85 | 0.0483821 / 8.598809 / 17.245999 / 0.149753 / 85 | 0.0535784 / 8.631120 / 17.315818 / 0.145844 / 85 |
+| 300 | 0.0483915 / 8.598790 / 17.245971 / 0.149754 / 87 | 0.0483927 / 8.598776 / 17.245945 / 0.149753 / 87 | 0.0535899 / 8.631089 / 17.315767 / 0.145844 / 87 |
+| 350 | 0.0483937 / 8.598782 / 17.245959 / 0.149754 / 88 | 0.0483949 / 8.598769 / 17.245933 / 0.149753 / 88 | 0.0535923 / 8.631082 / 17.315756 / 0.145844 / 88 |
+
+The program as received reproduces the table: **every iteration count
+exactly**, Mg2+, Cl- and the potential within 6e-6, the trace Na+ within
+2.6e-5 -- the same +2.5e-5 at every N, the residue a loosely converged
+(TOL 1e-4) iteration leaves when the floating point differs (a 2007 compiler
+against gfortran 13; nothing else in the inputs is free).  The program with
+DAVIES_PATCH does not: +10.7 % on Na+.  **Table 2 carries the ln 10** -- and
+not by an accident of the code: the paper's Eq. 13 is the Debye-Hückel
+constant on log10 (it carries the 1/ln 10; it is 0.495 L^1/2 mol^-1/2 at
+ε 80 and 298 K, which only the log10 constant is) and its Eq. 12 is
+ln γ = −A z^2(...).  The program implements the equations as printed.
+
+**ΔΨ_m** is the permeate node's potential, PHI(ND) in the output, against
+ψ_m = 0 (Eq. 24's reference, the solution just outside the feed face): the
+potential difference across the membrane with both Donnan jumps.  It is what
+Table 2 prints (0.149227 = PHI(ND) at N = 10 to six figures).  Choupo now
+publishes it as `dPsi_m_V_p<p>` on the `poreTransport` bench (CODATA volts,
+2.08e-4 larger than NanoFiltran's 96500/8.314 volts for one dimensionless
+potential).
+
+Choupo has deliberately **no option** that reproduces the ln 10: a declared
+choice that reproduces a known error is a wrong model with a name (§9.5).
+So nanofiltran02 is pinned to NanoFiltran with its Davies corrected, and
+Table 2 is ACCOUNTED FOR, one change at a time (N = 350; `paper.tsv`):
+
+| | Na+ | Mg2+ | Cl- | ΔΨ_m [V] |
+|---|---:|---:|---:|---:|
+| Table 2 | 0.0483937 | 8.598782 | 17.245959 | 0.149754 |
+| NanoFiltran as received | 0.0483949 | 8.598769 | 17.245933 | 0.149753 |
+| + Davies corrected (ln 10) | 0.0535923 | 8.631082 | 17.315756 | 0.145844 |
+| + D input matched (Vogel to 298 K, K_d literals) | 0.0552122 | 8.630938 | 17.317088 | 0.145025 |
+| + Born constant in CODATA values (BORN_PATCH) | 0.0554182 | 8.631751 | 17.318920 | 0.144930 |
+| + converged (TOL 1e-4 → 1e-9) | 0.0554180 | 8.631751 | 17.318919 | 0.144930 |
+| + grid extrapolated (ND 102/204) | 0.0554248 | 8.631733 | 17.318890 | 0.144930 (0.144960 CODATA) |
+| **Choupo, extrapolated (801/1601 nodes)** | **0.0554248** | **8.631732** | **17.318889** | **0.144960** |
+| Choupo, the case's 350 nodes | 0.0554298 | 8.631692 | 17.318815 | 0.144958 |
+
+Choupo against the corrected program: 7e-8 (Na+), 1e-7 (Mg2+), 7e-8 (Cl-),
+−2.6e-8 (ΔΨ_m).  Against Table 2: +14.5 % Na+, +0.38 % Mg2+, +0.42 % Cl-,
+ΔΨ_m −3.2 %.  Three quarters of the Na+ is the Davies defect; most of the
+rest is the DIFFUSIVITY.
+
+**A FINDING about Choupo, recorded and not changed: its DSPM-DE has no
+temperature dependence of D.**  NanoFiltran corrects every D to T by
+Stokes-Einstein with Vogel's viscosity, D(T) = D25 (0.897e-3/298.15) T/μ(T);
+at 298 K -- 0.15 K below 25 C, where water's viscosity moves 2.3 % per kelvin
+-- that is 0.38 % on every D, and the trace Na+ amplifies it to +3.0 %.
+Choupo's law reads the species' 25 C `D0` at any temperature
+(`electrolyte::ionD0`, `DSPM_DE.cpp`).  At 298.15 K the two agree (§9.2,
+1.00014); at a process temperature of 40 C the omission would be ~30 % on
+every D.  Whether the law should carry D(T) is a model decision (Vítor's):
+the paper's own case is the measurement that names it.
+
+### 13.2 The grid study at Choupo's own N
+
+| N | Table 2 Na+ / iterations (NanoFiltran, as published) | Choupo Na+ / Newton iterations (correct Davies) |
+|---:|---|---|
+| 10 | 0.0367468 / 71 | 0.0627659 / 7 |
+| 20 | 0.0460774 / 75 | 0.0571069 / 9 |
+| 50 | 0.0480736 / 79 | 0.0556794 / 9 |
+| 100 | 0.0483219 / 82 | 0.0554872 / 10 |
+| 200 | 0.0483809 / 85 | 0.0554403 / 11 |
+| 350 | 0.0483937 / 88 | 0.0554298 / 12 |
+
+Choupo's N counts the pore nodes (N − 1 intervals); NanoFiltran's N counts
+the permeate node too (N − 2 intervals across the membrane).  The two
+discretisations converge from opposite sides -- central differences from
+below, exponentially fitted fluxes from above -- both second order (Choupo's
+measured 2.00 on this case).  Choupo's iterations are a full Newton with an
+analytic Jacobian from a local-Donnan seed; NanoFiltran's an under-relaxed
+(0.2) Newton stopped at TOL 1e-4.  At N = 10 Choupo is 13 % from its own
+limit on the trace Na+, NanoFiltran 24 % from its own.
+
+### 13.3 Fig. 4: the profile
+
+The `poreTransport` bench gained `profile <file>.csv;` (every point's solved
+pore: x over the equivalent thickness, each ion species' concentration, ψ in
+volts on the ΔΨ_m reference); nanofiltran02's op N350 writes
+`pore_N350.csv`, the paper's Fig. 4.  The figure is NOT digitised: it is
+NanoFiltran's own output at N = 350, which the as-received run reproduces
+(Table 2 being reproduced), so the as-received program's profile IS the
+figure.  At the two faces (concentrations; ψ in CODATA volts):
+
+| face | | as received (Fig. 4) | corrected NanoFiltran (ext.) | Choupo (ext.) |
+|---|---|---:|---:|---:|
+| feed (x = 0) | Na+ | 15.1153 | 15.072668 | 15.072668 |
+| | Mg2+ | 7.91872 | 7.946131 | 7.946131 |
+| | Cl- | 0.952728 | 0.9649302 | 0.9649302 |
+| | ψ [V] | −0.0584815 | −0.0582841 | −0.0582841 |
+| permeate (x = 2.5 µm) | Na+ | 0.147901 | 0.1602845 | 0.1602845 |
+| | Mg2+ | 15.0137 | 15.023507 | 15.023507 |
+| | Cl- | 0.175323 | 0.2072982 | 0.2072982 |
+| | ψ [V] | 0.0741967 | 0.0721758 | 0.0721758 |
+
+Choupo and the corrected program agree on the faces within 1.1e-7.
+
+### 13.4 Fig. 3: the solved pore against EXPERIMENT
+
+§4.1 sets NanoFiltran against Bowen & Mohammad's measured rejections (AIChE
+J. 44 (1998) 1799): Na+, Cl- and a trivalent dye on CA30, r_p 0.63 nm,
+**Δx_e** 6.2 µm (the paper's own word: "equivalent membrane thickness", Δx/A_k
+-- the record's `porosityOverThickness` 1/6.2e-6), 298 K, ideal activities,
+ε_p = ε_b (no Born term), the stirred cell's Sh = 0.23 Re^0.567 Sc^0.33 at
+Re 26 900 and L 0.024 m (Choupo's `StirredCell`, exactly: Re = ω r²ρ/μ with
+NanoFiltran's Vogel viscosity at 298 K and density 997), c_X of Eq. 43 and
+J_v of Eqs. 44-45 at each feed.  Nothing needed new grammar but one key:
+**the charge of Eq. 43 is a function of the feed**, so no single record value
+carries it -- the `poreTransport` op gained `chargeDensity <mol/m3>;`, which
+replaces the record's X_d for that op, announced with both values
+(`Membrane::withChargeDensity`, a copy; the registry's record is never
+touched).  Each of the ten ops writes its c_X and J_v with the arithmetic
+beside it, and the gate recomputes both from the equations.
+
+**THE DYE COULD NOT BE CARRIED AS A PORE ION, AND THAT WAS AN ENGINE GAP.**
+Its Stokes radius equals the pore radius (λ = 1), and the law's steric
+partition at λ ≥ 1 is 1e-15 (NanoFiltran's own number).  As a pore unknown
+it sat 15 orders below the other ions, and the station REFUSED at the first
+point ("the line search found no evaluable step").  The pore excludes such an
+ion, so it is no longer a pore unknown: `pore::PoreWall::excluded` carries
+it in the FILM only -- its wall concentration the interface balance at zero
+permeate, C_m = k* c_b/(k* − J_v + z D ξ'), in the wall's electroneutrality
+(8), the wall's ionic strength (bulkOverPoreDavies) and the osmotic
+difference (9), with their analytic derivatives -- and its permeate is zero.
+Announced once per unit.  The two are the same problem in NanoFiltran's
+limit: the converged programs agree on the Na+/Cl- permeates within 2e-8.
+No corpus case has an ion with λ ≥ 1, so no golden moved (36 membrane-family
+cases re-run).
+
+**The figure was digitised** (`digitise_geraldes_alves2008.py`): the raster
+the PDF embeds (670 × 524 px, sha256 recorded), calibrated on the plot frame
+and the tick marks (every tick read back to its label within half a
+pixel: 0.11 mol/m3 in x, 1e-4 in R_obs), each marker found by a morphological opening around its eye-placed
+position (open markers filled first), the solid NanoFiltran lines TRACED on a
+mask of continuous pixels (the dotted Bowen & Mohammad lines fail it) and
+read at each marker's x.  Reading error ±1.5 px: 0.32 mol/m3 and 0.011 in
+R_obs.  The CSV records the digitiser's own sha256 (a stale CSV is refused)
+and its calibration line (each row is checked to be its own pixel).  An
+experiment's feed is the mean of its two markers' c_Cl.
+
+NanoFiltran with the paper's settings (20 nodes, URF 0.2, TOL 1e-4) lands on
+the drawn line within half a reading error at all twenty markers: Eqs. 43-46
+were read right.  The comparison with experiment:
+
+| dye | c_Cl | ion | experiment | Choupo | NanoFiltran (paper) | Choupo − exp |
+|---:|---:|---|---:|---:|---:|---:|
+| 4 | 5.097 | Na+ | 0.643 ± 0.015 | 0.620 | 0.621 | −0.023 |
+| 4 | 5.097 | Cl- | −0.184 ± 0.018 | −0.274 | −0.273 | −0.090 |
+| 4 | 10.460 | Na+ | 0.496 ± 0.015 | 0.474 | 0.474 | −0.023 |
+| 4 | 10.460 | Cl- | −0.022 ± 0.011 | −0.130 | −0.129 | −0.108 |
+| 4 | 25.752 | Na+ | 0.338 ± 0.011 | 0.316 | 0.317 | −0.022 |
+| 4 | 25.752 | Cl- | 0.055 ± 0.015 | −0.002 | −0.002 | −0.057 |
+| 4 | 52.460 | Na+ | 0.257 ± 0.011 | 0.231 | 0.231 | −0.027 |
+| 4 | 52.460 | Cl- | 0.099 ± 0.015 | 0.055 | 0.055 | −0.044 |
+| 4 | 103.009 | Na+ | 0.188 ± 0.015 | 0.178 | 0.178 | −0.010 |
+| 4 | 103.009 | Cl- | 0.103 ± 0.018 | 0.082 | 0.082 | −0.021 |
+| 37 | 4.460 | Na+ | 0.871 ± 0.015 | 0.891 | 0.891 | +0.020 |
+| 37 | 4.460 | Cl- | −2.092 ± 0.011 | −1.818 | −1.814 | +0.273 |
+| 37 | 9.239 | Na+ | 0.812 ± 0.015 | 0.817 | 0.818 | +0.005 |
+| 37 | 9.239 | Cl- | −1.342 ± 0.011 | −1.375 | −1.372 | −0.033 |
+| 37 | 21.929 | Na+ | 0.699 ± 0.011 | 0.693 | 0.693 | −0.006 |
+| 37 | 21.929 | Cl- | −0.768 ± 0.011 | −0.862 | −0.860 | −0.093 |
+| 37 | 42.903 | Na+ | 0.585 ± 0.015 | 0.572 | 0.572 | −0.012 |
+| 37 | 42.903 | Cl- | −0.482 ± 0.011 | −0.535 | −0.534 | −0.053 |
+| 37 | 87.292 | Na+ | 0.456 ± 0.011 | 0.430 | 0.431 | −0.026 |
+| 37 | 87.292 | Cl- | −0.235 ± 0.015 | −0.294 | −0.294 | −0.059 |
+
+Root-mean-square over the twenty symbols: Choupo 0.077, NanoFiltran 0.078
+(the two are the same model; NanoFiltran's 20 nodes and TOL 1e-4 give the
+third decimal).  The model follows both dye levels' trends -- the excluded
+trivalent anion at the wall drives Cl- strongly negative, and both
+rejections fall as chloride screens the fitted charge -- and misses where
+the paper's own figure shows it missing: at 4 mol/m3 of dye it
+under-predicts both rejections by 0.01-0.11 (the Cl- symbols sit above the
+line), and at the lowest chloride with 37 of dye it reaches −1.82 where the
+measurement is −2.09 (Bowen & Mohammad's own model, the dotted line, reaches
+it).  **This is a comparison with experiment carried by FITTED inputs**:
+r_p and Δx_e were determined from these data, c_X is Bowen & Mohammad's
+fitted function of the feed and J_v their fitted function at each dye level.
+Agreement says the pore model reproduces the data at its fitted inputs; it
+is not a prediction of a membrane nobody fitted.
+
+The anchors of nanofiltran03 are on the PERMEATE, c_p = c_b(1 − R_obs) of each
+symbol, not on R_obs: R_obs crosses zero (Cl- at 25.8 mol/m3 of chloride and
+4 of dye), and a relative band on a number near zero means nothing.  Bands:
+the measured disagreement × 1.25 plus half the reading error (2 % to 25 %);
+the gate caps each at twice the disagreement plus the reading error.
+
+### 13.5 The gate, and what its sabotages found
+
+`bin/curate/check_nanofiltran_paper.py` (no compiler needed; it reruns only
+Choupo): (a) the transcription is PAPER_TABLE2's, the CSV fresh (digitiser
+hash), from the named image, every row its own pixel; (b) Table 2 is the
+as-received program (iterations exact, Na+ 5e-5, the rest 1e-5) and is NOT
+the Davies-corrected one (> 5 %); (c) nanofiltran02 at 401/801/1601 nodes,
+order 2, extrapolated within 1e-6 of the corrected program on the permeates
+and ΔΨ_m and 1e-5 on the faces; (d) the cases' printed tables are the
+measurement (60 numbers in nanofiltran02's header, nanofiltran03's results
+table verbatim); (e) the anchors are the reference's and the measurement's,
+every run inside its band and no band wider than twice the disagreement;
+(f) every nanofiltran03 op is Eqs. 43-46 at the read feed, Choupo meets the
+converged program within 1e-6, the paper-settings program meets the drawn
+line within 2.5 reading errors, the dye's permeate is exactly 0 and its
+exclusion announced.  `regenerate_paper.py --check` holds `paper.tsv` to a
+fresh NanoFiltran run (it refuses without gfortran).
+
+By hand, 2026-10-24, each restored (engine ones rebuilt) and the gate
+re-run to OK:
+
+- S1 -- the excluded ion left out of the wall's electroneutrality (engine):
+  caught by (f), but as a REFUSAL, not a disagreement -- without the dye's
+  charge at the wall the coupled film has no electroneutral solution and the
+  station stops.  A refusal for another reason is still a refusal; S1b is
+  why the arm is trusted.
+- S1b -- the excluded ion's film removed (its k × 1e6, so C_m = c_b; engine):
+  caught by (f), code to code, 2.5 % on Na+ at the lowest chloride.
+- S2 -- one measured R_obs hand-edited in the CSV (−2.0919 → −1.9919):
+  caught by (a) (the value is not its pixel), (e) and (d).
+- S3 -- the digitiser edited, the CSV not rerun: caught by (a) (stale).
+- S4 -- one op's c_X edited (−65.28 → −60.28): caught by (f), twice -- the
+  equation and the code-to-code permeate (2.8 %).
+- S5 -- one number of nanofiltran02's header table edited: caught by (d).
+- S6 -- one Table 2 value mistranscribed in PAPER_TABLE2: caught by (a).
+- S7 -- one experiment anchor's band widened to 0.3: caught by (e).
+- L1 (`check_source_licence`) -- the Fig. 3 JPEG copied into the case's
+  `constant/experimental/`: refused by name ("IS its Fig. 3 (JPEG)").
+
+### 13.6 What was added, and what is NOT done
+
+Added: `pore::PoreWall::excluded` (an ion the pore excludes, carried in the
+film), its routing in DSPM-DE (λ ≥ 1), the excluded ion's c_perm 0 at the
+no-flux limit and its c_b in that limit's Δπ; `TransportSolution::
+PoreProfile` (the solved profile, filled by DSPM-DE, read by the bench only);
+the bench's `dPsi_m_V_p<p>`, `poreNewton_p<p>`, `poreContinuations_p<p>`,
+`chargeDensity` and `profile`; `Membrane::withChargeDensity`;
+`regenerate_paper.py` + `paper.tsv`; the digitiser and its CSV; the two
+cases; the gate; the licence contract.  No existing golden moved (the 36
+membrane-family cases re-run, byte-for-byte KPIs).
+
+NOT done, named: the temperature dependence of D in DSPM-DE (§13.1, the
+finding; Vítor's); Fig. 4 digitised beyond its two faces (it is NanoFiltran's
+own output); the paper's Fig. 5 (the Runge-Kutta shooting it argues against:
+Choupo shot its SDEM pore once and turned the shot round, CLAUDE.md, and the
+DSPM-DE pore is never shot); a measurement uncertainty for Fig. 3 (neither
+paper states one); the dye's molar mass (`Na3Dye.dat` carries a placeholder
+the grammar requires and nothing reads, said in the record).

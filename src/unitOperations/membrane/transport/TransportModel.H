@@ -175,6 +175,29 @@ struct TransportSolution
         scalar      c_perm = 0.0;
     };
     std::vector<IonState> ions;
+    //  The SOLVED PORE's own profile at this station (DSPM-DE), for a caller
+    //  that draws it -- the props bench, which publishes the potential
+    //  difference across the membrane and the concentration and potential
+    //  profiles (C145, the NanoFiltran paper's Table 2 and Fig. 4).  `xi`
+    //  is the dimensionless pore coordinate x/dx in [0, 1]; `c[node][k]`
+    //  the concentration of pore ion k [mol/m^3], the ions named in
+    //  `ionNames` in the order the law built them (an ion carried by two
+    //  salts appears once per salt -- a reader that wants the species sums
+    //  by name); `psi` and `psiPerm` the potential in RT/F units, relative
+    //  to the feed-side solution at the membrane wall (psi(0) is the feed
+    //  Donnan jump, psiPerm the permeate's potential: the potential
+    //  difference across the membrane is psiPerm).  The modules ignore it.
+    struct PoreProfile
+    {
+        std::vector<std::string>         ionNames;
+        std::vector<int>                 z;
+        std::vector<scalar>              xi;
+        std::vector<std::vector<scalar>> c;
+        std::vector<scalar>              psi;
+        scalar                           psiPerm = 0.0;
+    };
+    PoreProfile poreProfile;
+    bool        hasPoreProfile = false;
 };
 
 // ---- The inputs to the local problem at one z station ----------------------

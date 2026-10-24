@@ -1,0 +1,35 @@
+# Bowen & Mohammad's measured R_obs of Na+ and Cl- on CA30, and NanoFiltran's line -- Fig. 3 of
+#   V. Geraldes, A.M. Brites Alves, "Computer program for simulation of mass transport in
+#   nanofiltration membranes", J. Membr. Sci. 321 (2008) 172-182, doi:10.1016/j.memsci.2008.04.054
+#   (the measurements: W.R. Bowen, A.W. Mohammad, AIChE J. 44 (1998) 1799).
+# LICENCE: these are FACTS read from a figure (numbers, not the figure), cited above; the figure
+#   and the paper are the publisher's copyright and are not in the tree.
+# HOW: bin/curate/digitise_geraldes_alves2008.py, whose header states the method and what the
+#   reading error means.  R_obs = 1 - c_p/c_b (the paper's Eq. 42); c_Cl in mol/m3.
+#   Robs_exp is the SYMBOL (the measurement); Robs_NanoFiltran_line the paper's solid line read
+#   under the same marker (empty where the line does not reach it).  dcCl/dRobs are READING
+#   errors only: no measurement uncertainty is stated by either paper.
+# image_sha256 c73ba0b2517c22daec568d504e7eb98ff5ee29cf50b452623b8bb297709b4f65
+# digitiser_sha256 ceb1ed15693e0808b60c4242e5800cc0b7511afdf7ff9419e5b07a72585ecda2
+# calibration: x = (px - 86.00)/4.708333 ; y = (147.50 - py)/136.000000  (px from the image top-left)
+series,ion,dye_molm3,marker,cCl_molm3,dcCl_molm3,Robs_exp,dRobs,Robs_NanoFiltran_line,dRobs_line,line_reading,px_x,px_y,bbox
+Na_dye4,Na,4,filled circle,5.097,0.319,0.6434,0.0147,0.6188,0.0221,end,110.0,60.0,9x9
+Na_dye4,Na,4,filled circle,10.407,0.319,0.4963,0.0147,0.4748,0.0110,read,135.0,80.0,9x9
+Na_dye4,Na,4,filled circle,25.699,0.319,0.3382,0.0110,0.3187,0.0110,read,207.0,101.5,9x10
+Na_dye4,Na,4,filled circle,52.460,0.319,0.2574,0.0110,0.2280,0.0110,read,333.0,112.5,9x10
+Na_dye4,Na,4,filled circle,103.009,0.319,0.1875,0.0147,0.1801,0.0221,end,571.0,122.0,9x9
+Cl_dye4,Cl,4,filled triangle,5.097,0.425,-0.1838,0.0184,-0.2684,0.0221,end,110.0,172.5,7x6
+Cl_dye4,Cl,4,filled triangle,10.513,0.531,-0.0221,0.0110,-0.1274,0.0110,read,135.5,150.5,6x8
+Cl_dye4,Cl,4,filled triangle,25.805,0.319,0.0551,0.0147,-0.0034,0.0221,bridged,207.5,140.0,8x7
+Cl_dye4,Cl,4,filled triangle,52.460,0.425,0.0993,0.0147,0.0514,0.0110,read,333.0,134.0,7x7
+Cl_dye4,Cl,4,filled triangle,103.009,0.425,0.1029,0.0184,0.0818,0.0221,end,571.0,133.5,7x6
+Na_dye37,Na,37,open square,4.460,0.425,0.8713,0.0147,0.8793,0.0221,end,107.0,29.0,9x9
+Na_dye37,Na,37,open square,9.239,0.319,0.8125,0.0147,0.8156,0.0110,read,129.5,37.0,10x9
+Na_dye37,Na,37,open square,21.982,0.319,0.6985,0.0110,0.6934,0.0110,read,189.5,52.5,10x10
+Na_dye37,Na,37,open square,42.903,0.425,0.5846,0.0147,0.5699,0.0110,read,288.0,68.0,9x9
+Na_dye37,Na,37,open square,87.292,0.425,0.4559,0.0110,0.4375,0.0221,end,497.0,85.5,9x10
+Cl_dye37,Cl,37,open circle,4.460,0.425,-2.0919,0.0110,-1.8057,0.0221,end,107.0,432.0,9x9
+Cl_dye37,Cl,37,open circle,9.239,0.319,-1.3419,0.0110,-1.3738,0.0110,read,129.5,330.0,10x9
+Cl_dye37,Cl,37,open circle,21.876,0.425,-0.7684,0.0110,-0.8579,0.0110,read,189.0,252.0,9x9
+Cl_dye37,Cl,37,open circle,42.903,0.425,-0.4816,0.0110,-0.5338,0.0110,read,288.0,213.0,9x9
+Cl_dye37,Cl,37,open circle,87.292,0.425,-0.2353,0.0147,-0.2978,0.0221,end,497.0,179.5,9x8

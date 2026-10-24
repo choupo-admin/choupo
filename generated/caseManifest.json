@@ -6,10 +6,10 @@
   "runtime": "not recorded; runTests does not time per case and this script does not run the corpus"
  },
  "counts": {
-  "cases": 490,
+  "cases": 492,
   "witnesses": 16,
   "validationOp": 6,
-  "anchored": 13
+  "anchored": 15
  },
  "cases": {
   "tutorials/batch/adsorber/batch09_adsorber_co2": {
@@ -2564,6 +2564,38 @@
    "hasGolden": true
   },
   "tutorials/props/membrane/nanofiltran01_dspmde_reference": {
+   "application": "choupoProps",
+   "ops": [
+    "poreTransport"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [
+    "anchored"
+   ],
+   "hasGolden": true
+  },
+  "tutorials/props/membrane/nanofiltran02_paper_stiff_case": {
+   "application": "choupoProps",
+   "ops": [
+    "poreTransport"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [
+    "anchored"
+   ],
+   "hasGolden": true
+  },
+  "tutorials/props/membrane/nanofiltran03_bowen_mohammad_ca30": {
    "application": "choupoProps",
    "ops": [
     "poreTransport"
@@ -7332,6 +7364,8 @@
     "tutorials/props/kinetics/ammoniaRate01_dyson_simon",
     "tutorials/props/kinetics/rate01_arrhenius_recovery",
     "tutorials/props/membrane/nanofiltran01_dspmde_reference",
+    "tutorials/props/membrane/nanofiltran02_paper_stiff_case",
+    "tutorials/props/membrane/nanofiltran03_bowen_mohammad_ca30",
     "tutorials/props/membrane/polarisation01_geraldes_afonso_table1",
     "tutorials/props/molecular/cosmoSAC01_water_ethanol",
     "tutorials/props/molecular/entropy01_air_ledger",
@@ -8620,6 +8654,8 @@
     "tutorials/props/kinetics/ammoniaRate01_dyson_simon",
     "tutorials/props/kinetics/rate01_arrhenius_recovery",
     "tutorials/props/membrane/nanofiltran01_dspmde_reference",
+    "tutorials/props/membrane/nanofiltran02_paper_stiff_case",
+    "tutorials/props/membrane/nanofiltran03_bowen_mohammad_ca30",
     "tutorials/props/membrane/polarisation01_geraldes_afonso_table1",
     "tutorials/props/molecular/envelope01_natural_gas",
     "tutorials/props/molecular/envelope02_root_jump",
@@ -8963,7 +8999,9 @@
     "tutorials/props/membrane/polarisation01_geraldes_afonso_table1"
    ],
    "poreTransport": [
-    "tutorials/props/membrane/nanofiltran01_dspmde_reference"
+    "tutorials/props/membrane/nanofiltran01_dspmde_reference",
+    "tutorials/props/membrane/nanofiltran02_paper_stiff_case",
+    "tutorials/props/membrane/nanofiltran03_bowen_mohammad_ca30"
    ],
    "ppr78Kij": [
     "tutorials/props/molecular/ppr78Kij01_ch4_co2_h2"

@@ -1,0 +1,30 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+  species/Dye.dat -- CASE-LOCAL: the trivalent dye anion of Bowen &
+  Mohammad's CA30 experiments (W.R. Bowen, A.W. Mohammad, "Diafiltration
+  by nanofiltration: prediction and optimization", AIChE J. 44 (1998)
+  1799), as Geraldes & Alves (J. Membr. Sci. 321 (2008) 172-182, their
+  section 4.1) carry it into NanoFiltran: charge -3, Stokes radius
+  0.63 nm, D 0.36e-9 m2/s -- the DYE3- row of the ion database NanoFiltran
+  ships (bin/curate/nanofiltran/shipped/IONS.XLS), which cites Bowen &
+  Mohammad.  The paper does not name the dye; neither does this record.
+
+  ONLY what the pore model reads: a charge, a Stokes radius, a free-
+  solution diffusivity.  No thermochemistry, no molar mass: nothing here
+  prices an energy or converts a mass, and a number nobody stated is not
+  written in.  Its radius equals the CA30 pore radius (0.63 nm), so
+  lambda = 1: the dye does not enter the pore (the DSPM-DE law's steric
+  partition at lambda >= 1, as NanoFiltran's) and is rejected completely;
+  it matters through the film and the electroneutrality it imposes there.
+\*-----------------------------------------------------------------------------*/
+recordType modelSpecies;
+schemaVersion 1;
+
+name    Dye;
+formula     "Dye-3";
+charge  -3;
+
+transport
+{
+radius { value 6.30e-10; unit m;}
+D0     { value 3.60e-10; unit m2/s;}
+}

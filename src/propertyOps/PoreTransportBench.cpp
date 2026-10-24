@@ -28,7 +28,9 @@ License
 
 #include "PoreTransportBench.H"
 
+#include "core/Constants.H"
 #include "core/Dimensions.H"
+#include "thermo/RecordResolver.H"
 #include "thermo/ThermoPackage.H"
 #include "thermo/membrane/Membrane.H"
 #include "thermo/membrane/MembraneRegistry.H"
@@ -40,6 +42,7 @@ License
 #include <algorithm>
 #include <cmath>
 #include <cstdio>
+#include <fstream>
 #include <iomanip>
 #include <iostream>
 #include <limits>
@@ -76,7 +79,32 @@ int PoreTransportBench::run(const DictPtr& dict,
         throw std::runtime_error(site + ": declare `membrane <name>;`, a"
             " membrane record carrying a poreModel {} block");
     const std::string memName = dict->lookupWord("membrane");
-    const Membrane& mem = MembraneRegistry::byName(memName);
+    const Membrane& recordMem = MembraneRegistry::byName(memName);
+    //  `chargeDensity` on the OP replaces the record's X_d for this op only
+    //  (C145): a membrane whose charge was FITTED as a function of the feed
+    //  -- Bowen & Mohammad's CA30, X_d from the dye and chloride of each
+    //  feed -- has no one X_d its record could carry.  Announced with both
+    //  values; the record is never modified.
+    std::unique_ptr<Membrane> withCharge;
+    if (dict->found("chargeDensity"))
+    {
+        const scalar X = dict->lookupScalar("chargeDensity");
+        if (!std::isfinite(X))
+            throw std::runtime_error(site + ": `chargeDensity` must be a finite"
+                " signed fixed charge in mol/m3");
+        if (!recordMem.hasPoreModel())
+            throw std::runtime_error(site + ": `chargeDensity` replaces the"
+                " fixed charge of a poreModel {} -- membrane '" + memName
+                + "' has none");
+        withCharge = std::make_unique<Membrane>(recordMem.withChargeDensity(X));
+        std::cout << "  [poreTransport] chargeDensity " << X << " mol/m3 DECLARED"
+                     " on this op: it replaces the record's "
+                  << (recordMem.hasChargeDensity()
+                          ? std::to_string(recordMem.chargeDensity_molm3()) + " mol/m3"
+                          : std::string("absent X_d"))
+                  << " for this op only\n";
+    }
+    const Membrane& mem = withCharge ? *withCharge : recordMem;
 
     // ---- the feed: salt components and their molar concentrations ---------
     if (!dict->found("feedMolPerM3"))
@@ -176,6 +204,7 @@ int PoreTransportBench::run(const DictPtr& dict,
 
     // ---- the points --------------------------------------------------------
     scalar chargeMax = 0.0;
+    std::vector<TransportSolution::PoreProfile> profiles;
     for (std::size_t p = 0; p < Jvs.size(); ++p)
     {
         TransportContext ctx{ thermo, soluteIdx, B_s, mem.A_w(), polar, hyd,
@@ -231,6 +260,76 @@ int PoreTransportBench::run(const DictPtr& dict,
         }
         std::cout << "    permeate charge |sum z c| / sum |z| c = "
                   << std::scientific << std::setprecision(2) << charge << "\n";
+        if (sol.hasPoreProfile)
+        {
+            //  THE POTENTIAL DIFFERENCE ACROSS THE MEMBRANE, as Geraldes &
+            //  Alves (2008) define it (their Table 2's Delta Psi_m): the
+            //  permeate's potential psi_p against the feed-side solution at
+            //  the wall, psi_m = 0 (their Eq. 24's reference) -- Donnan jumps
+            //  at both faces included.  psi is solved in RT/F units; volts
+            //  with the CODATA R and F.
+            const scalar VT  = constant::R * T / constant::F;
+            const scalar dPsi = sol.poreProfile.psiPerm * VT;
+            diag_["dPsi_m_V" + tag]         = dPsi;
+            diag_["poreNewton" + tag]       = static_cast<scalar>(sol.pore.newtonTotal);
+            diag_["poreContinuations" + tag] = static_cast<scalar>(sol.pore.continuations);
+            std::cout << "    potential difference across the membrane psi_p - psi_m = "
+                      << std::fixed << std::setprecision(6) << dPsi << " V;  pore "
+                      << sol.pore.nodes << " nodes, " << sol.pore.newtonTotal
+                      << " Newton iterations"
+                      << (p == 0 ? " (from the seed)" : " (warm-started from the previous point)")
+                      << (sol.pore.continuations > 0 ? ", by continuation" : "") << "\n";
+            profiles.push_back(sol.poreProfile);
+        }
+    }
+    // ---- the profiles (optional) -------------------------------------------
+    //  `profile <file>.csv;` writes the solved pore of every point: x across
+    //  the equivalent thickness dx/A_k (the length the pore model sees; the
+    //  record's porosityOverThickness), each ion species' concentration
+    //  (summed over the salts that carry it) and the potential in volts on
+    //  the same reference as dPsi_m_V.  A props case's CSV is a run output.
+    if (dict->found("profile"))
+    {
+        const std::string path = dict->lookupWord("profile");
+        records::refuseStandardsWrite(site, "profile", path);
+        if (profiles.empty())
+            throw std::runtime_error(site + ": `profile " + path + ";` -- the law"
+                " published no solved pore (DSPM-DE's pore is solved at every"
+                " point with a positive J_v)");
+        std::vector<std::string> species;
+        for (const auto& pr : profiles)
+            for (const auto& nm : pr.ionNames)
+                if (std::find(species.begin(), species.end(), nm) == species.end())
+                    species.push_back(nm);
+        std::ofstream csv(path);
+        if (!csv)
+            throw std::runtime_error(site + ": cannot write '" + path + "'");
+        const scalar VT = constant::R * T / constant::F;
+        const scalar dxe_um = 1.0e6 / mem.porosityOverThickness();
+        csv << "point,Jv_mps,node,xi,x_um";
+        for (const auto& nm : species) csv << ",c_" << nm << "_molm3";
+        csv << ",psi_V\n";
+        csv << std::setprecision(12);
+        for (std::size_t p = 0; p < profiles.size(); ++p)
+        {
+            const auto& pr = profiles[p];
+            for (std::size_t k = 0; k < pr.xi.size(); ++k)
+            {
+                csv << (p + 1) << "," << Jvs[p] << "," << k << "," << pr.xi[k]
+                    << "," << pr.xi[k] * dxe_um;
+                for (const auto& nm : species)
+                {
+                    scalar c = 0.0;
+                    for (std::size_t m = 0; m < pr.ionNames.size(); ++m)
+                        if (pr.ionNames[m] == nm) c += pr.c[k][m];
+                    csv << "," << c;
+                }
+                csv << "," << pr.psi[k] * VT << "\n";
+            }
+        }
+        std::cout << "\n  pore profiles written to " << path << " (" << profiles.size()
+                  << " point(s); x over the equivalent thickness dx/A_k = "
+                  << std::setprecision(4) << dxe_um << " um)\n";
     }
     diag_["n_points"] = static_cast<scalar>(Jvs.size());
     diag_["permeateCharge_max"] = chargeMax;

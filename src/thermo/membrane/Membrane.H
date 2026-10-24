@@ -122,6 +122,20 @@ public:
     bool   hasChargeDensity()     const { return hasXd_;    }
     bool   hasPoreDielectric()    const { return eps_p_ > 0.0; }
 
+    //  A COPY with the fixed charge X_d replaced [mol/m^3, signed] -- the
+    //  props bench's op-level `chargeDensity` (poreTransport, DEV.md 4c
+    //  C145): a membrane whose charge was FITTED as a function of the feed
+    //  (Bowen & Mohammad's CA30, X_d from the feed's dye and chloride) has
+    //  no single X_d a record could carry.  The registry's record is never
+    //  modified.
+    Membrane withChargeDensity(scalar X_d) const
+    {
+        Membrane m(*this);
+        m.hasXd_ = true;
+        m.X_d_   = X_d;
+        return m;
+    }
+
 private:
     std::string name_, kind_, manufacturer_;
     scalar      A_w_     = 0.0;

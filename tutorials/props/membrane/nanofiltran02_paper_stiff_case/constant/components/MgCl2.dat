@@ -1,0 +1,22 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: Magnesium chloride (MgCl2, CAS 7786-30-3) -- CASE-LOCAL.
+
+  Authored for nanofiltran01_dspmde_reference, the code-to-code
+  comparison with NanoFiltran, whose shipped example is a Na+/Mg2+/Cl-
+  solution (10/20/50 mol/m3) -- i.e. NaCl 10 + MgCl2 20 mol/m3.  The
+  catalogue carries no MgCl2 record; this one carries ONLY what the
+  DSPM-DE pore model reads: the identity, the molar mass and the ion
+  stoichiometry (the salt is decomposed into its ions through
+  `dissociatesTo`, and every transport fact of an ion lives on its
+  species record).  No thermochemistry: nothing here prices an energy.
+    MW  95.211 g/mol  (24.305 + 2 x 35.453, IUPAC standard atomic weights)
+\*---------------------------------------------------------------------------*/
+
+name           MgCl2;
+formula        MgCl2;
+CAS            7786-30-3;
+MW             95.211;          // g/mol  (= kg/kmol)
+
+role           nonvolatile;
+dissociation   3;               // van't Hoff factor
+dissociatesTo  { Mg 1; Cl 2; }  // ion stoichiometry (formula-like identity)

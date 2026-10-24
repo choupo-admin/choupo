@@ -609,12 +609,28 @@ TransportSolution DSPM_DE::localFluxes(const TransportContext& ctx) const
     pore::PoreProblem pb;
     pb.Xd = X_d;
     std::vector<std::size_t> present;      // the ions the FEED carries
+    std::vector<std::size_t> excludedIdx;  // ... of which the pore excludes (lambda >= 1)
     for (std::size_t i = 0; i < Ni; ++i)
     {
         //  An ion with no bulk concentration (a salt component of the
         //  flowsheet this unit is not fed) is not a term: the pore and the
         //  wall leave it out, and its permeate stays exactly zero.
         if (!(ions[i].c_bulk > 0.0)) continue;
+        //  An ion as large as the pore (lambda >= 1) does not enter it: its
+        //  steric partition is zero, its permeate zero, and it stays in the
+        //  FILM, where it counts in the wall's electroneutrality and osmotic
+        //  pressure (pore::PoreWall::excluded, C145).
+        if (ions[i].lambda >= 1.0)
+        {
+            pore::PoreWall::Excluded e;
+            e.z     = ions[i].z;
+            e.cBulk = ions[i].c_bulk;
+            e.k     = polar.kFilmForD(hyd, ions[i].D);
+            e.D     = ions[i].D;
+            pb.wall.excluded.push_back(e);
+            excludedIdx.push_back(i);
+            continue;
+        }
         const scalar part = ions[i].Phi * std::exp(-ions[i].dWkT);    // steric x Born
         pore::PoreIon pi;
         pi.z        = ions[i].z;
@@ -682,6 +698,7 @@ TransportSolution DSPM_DE::localFluxes(const TransportContext& ctx) const
     scalar dpi0 = 0.0;
     for (std::size_t m = 0; m < present.size(); ++m)
         dpi0 += ions[present[m]].c_bulk * (1.0 - gFixed[present[m]]);
+    for (const std::size_t i : excludedIdx) dpi0 += ions[i].c_bulk;   // c_p,0 = 0
     dpi0 *= constant::R * T;
     bool noFlux = pb.closure.active && !pb.activity.active && !(dP > dpi0);
 
@@ -749,7 +766,7 @@ TransportSolution DSPM_DE::localFluxes(const TransportContext& ctx) const
             st.z      = ions[i].z;
             st.c_bulk = ions[i].c_bulk;
             st.c_wall = ions[i].c_bulk;
-            st.c_perm = gFixed[i] * ions[i].c_bulk;
+            st.c_perm = ions[i].lambda >= 1.0 ? 0.0 : gFixed[i] * ions[i].c_bulk;
             out.ions.push_back(st);
         }
         for (std::size_t s = 0; s < Ns; ++s)
@@ -823,6 +840,26 @@ TransportSolution DSPM_DE::localFluxes(const TransportContext& ctx) const
     {
         c_perm_ion[present[m]] = sol.cPerm[m];
         cwall[present[m]]      = sol.cWall[m];
+    }
+    for (std::size_t e = 0; e < excludedIdx.size(); ++e)
+        cwall[excludedIdx[e]] = sol.cWallExcluded[e];      // its permeate stays 0
+    if (!excludedIdx.empty() && !excludedSaid_)
+    {
+        excludedSaid_ = true;
+        std::ostringstream m;
+        m << std::setprecision(4) << "  [DSPM-DE] ";
+        for (std::size_t e = 0; e < excludedIdx.size(); ++e)
+        {
+            const Ion& io = ions[excludedIdx[e]];
+            m << (e ? ", " : "") << io.name.key << " (r_s " << io.r * 1e9
+              << " nm, lambda " << io.lambda << ")";
+        }
+        m << ": as large as the pore (lambda >= 1), so the pore EXCLUDES it --"
+             " steric partition 0, permeate 0, no pore unknown; it stays in the"
+             " film, its wall concentration the interface balance at zero"
+             " permeate, counted in the wall's electroneutrality and osmotic"
+             " pressure\n";
+        std::cout << m.str();
     }
     out.J_w = std::max(sol.Jv, 0.0);
 
@@ -899,6 +936,22 @@ TransportSolution DSPM_DE::localFluxes(const TransportContext& ctx) const
         out.hasXi = true;
     }
     out.pore = acc; out.hasPore = true;
+    //  The solved profile, for a caller that draws it (TransportSolution::
+    //  PoreProfile; the props bench).  A copy of what the pore solver
+    //  returned, nothing recomputed.
+    {
+        TransportSolution::PoreProfile& pp = out.poreProfile;
+        for (std::size_t m = 0; m < present.size(); ++m)
+        {
+            pp.ionNames.push_back(ions[present[m]].name.key);
+            pp.z.push_back(ions[present[m]].z);
+        }
+        pp.xi      = sol.grid;
+        pp.c       = sol.c;
+        pp.psi     = sol.psi;
+        pp.psiPerm = sol.psiPerm;
+        out.hasPoreProfile = true;
+    }
     lastPore_ = std::move(sol); haveLastPore_ = true;
     return out;
 }

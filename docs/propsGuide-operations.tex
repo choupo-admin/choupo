@@ -744,6 +744,31 @@ The PROPS BENCH of the multi-ionic concentration-polarisation model of Geraldes 
 \file{tutorials/props/membrane/polarisation01\_geraldes\_afonso\_table1}
 \end{tutoriallink}
 
+\paragraph{\code{poreTransport}}
+The PROPS BENCH of the DSPM-DE transport law at IMPOSED permeate fluxes: the same TransportModel the spiral-wound module marches, built through the same factory, the same \code{transportParameters} reader and the same wall kernel, handed J\_v instead of closing J\_w = A\_w (dP - dpi) -- the way NanoFiltran (Geraldes \& Alves 2008) takes it.  Publishes per J\_v point p and per ion species c\_wall\_<ion>\_p<p>, c\_perm\_<ion>\_p<p> (mol/m3), Rreal\_<ion>\_p<p> = 1 - c\_perm/c\_wall and Robs\_<ion>\_p<p> = 1 - c\_perm/c\_bulk, and permeateCharge\_max; where the pore was solved also dPsi\_m\_V\_p<p> (the potential difference across the membrane as Geraldes \& Alves 2008 define it: the permeate's potential against the feed-side solution at the wall, both Donnan jumps included, CODATA volts) and poreNewton\_p<p> / poreContinuations\_p<p> (the station's Newton iterations; the first point from the seed, each later one warm-started).  An ion as large as the pore (lambda >= 1) is EXCLUDED: no pore unknown, permeate 0, its film counted in the wall's electroneutrality (announced).  Witnesses nanofiltran01\_dspmde\_reference (gate check\_nanofiltran\_reference), nanofiltran02\_paper\_stiff\_case and nanofiltran03\_bowen\_mohammad\_ca30 (gate check\_nanofiltran\_paper).  The film is built from the \code{polarisation \{\}} policy directly (not buildPolarisation), because the feed is declared as salts and DSPM-DE hands the kernel each ion's own z and D.
+
+\begin{tabular}{@{}p{0.30\linewidth}p{0.62\linewidth}@{}}
+\hline
+\code{J\_v}\textbf{*} & Imposed permeate fluxes [m/s] \\
+\code{T}\textbf{*} & Temperature [K] \\
+\code{chargeDensity} & Fixed charge for this op [mol/m3] \\
+\code{feedMolPerM3}\textbf{*} & Feed salts [mol/m3] \\
+\code{k\_film} & Constant film coefficient [m/s] \\
+\code{massTransfer} & Film-coefficient correlation \\
+\code{membrane}\textbf{*} & Membrane record \\
+\code{polarisation} & Polarisation policy \\
+\code{profile} & Pore-profile CSV \\
+\code{transport} & Transport law \\
+\code{transportParameters} & Transport-law parameters \\
+\hline
+\end{tabular}
+
+
+\begin{tutoriallink}
+\file{tutorials/props/membrane/nanofiltran01\_dspmde\_reference}
+\quad (and 2 more)
+\end{tutoriallink}
+
 \paragraph{\code{ppr78Kij}}
 The PPR78 / E-PPR78 group-contribution binary interaction parameters of the PR78 equation of state (Jaubert, Privat \& Mutelet, AIChE J. 56 (2010) 3225, Eq. 7; Xu, Lasala, Privat \& Jaubert, Int. J. Greenh. Gas Control 56 (2017) 126, Eq. 4), EVALUATED ONCE at a declared temperature and WRITTEN INTO THE CASE as a kij SET record (\code{recordType eosBinaryInteractionSet}) that the phi-phi package then declares beside its cited pair records (DEV.md 4c C123, route P: the kij a unit runs on are constants in a file the student can read, evaluated at the temperature the unit declares, never a hidden kij(T) inside the cubic). k\_ij = [E\_ij - (delta\_i - delta\_j)\textasciicircum{}2] / (2 delta\_i delta\_j) with delta\_i = sqrt(a\_i(T))/b\_i taken from Choupo's own PR78 (one home) and E\_ij the double sum over the molecules' DECLARED group decompositions on the table's A\_kl, B\_kl (MPa). A pair whose group interaction the table lacks REFUSES by name (never zero); a pair evaluated outside the T range its parameters were fitted on is written \code{extrapolated yes;} with the window, and every run that reads the set repeats it.
 

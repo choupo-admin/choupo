@@ -1,0 +1,204 @@
+# NanoFiltran on its own paper -- written by bin/curate/nanofiltran/regenerate_paper.py
+# Paper: V. Geraldes, A.M. Brites Alves, J. Membr. Sci. 321 (2008) 172-182,
+#   doi:10.1016/j.memsci.2008.04.054 (publisher's copyright; not in the tree).  The `paper`
+#   rows are its Table 2, transcribed (facts, cited); every other row is a NanoFiltran run.
+# Program: bin/curate/nanofiltran/src as received, built with ARRAY_PATCH (NDX 351) and,
+#   per variant, DAVIES_PATCH and BORN_PATCH (regenerate_paper.py's docstring).
+# section table2: the paper's inputs (shipped INPUT.XLS / IONS.XLS), URF 0.2, TOL 1e-4.
+# section stiff:  on matched IONS (T 298 K): daviesPatched_matchedD (the Born constant as
+#   published) and daviesBorn (both constants CODATA); tol1e-4 = the paper's numerics,
+#   tol1e-9 = URF 0.1 / ITMAX 4000; ext = Richardson of ND 102 and 204 (100, 202 intervals).
+#   face0/face1 = the pore nodes 1 and ND-1 (the feed and permeate faces, inside).
+# section fig4:   the as-received ND 350 run's face values (Fig. 4's profile ends).
+# section fig3:   Bowen & Mohammad's CA30 case; paperSettings = ND 20, URF 0.2, TOL 1e-4 on
+#   the shipped IONS (Fig. 3's solid line); matched_ext = matched IONS, ND 102/204, TOL 1e-9.
+# concentrations mol/m3, potentials V (NanoFiltran's F = 96500, R = 8.314).
+section	variant	key	quantity	value	iterations	note
+table2	paper	10	Na	3.674680000000e-02	71	Table 2, transcribed
+table2	paper	10	Mg	8.634545000000e+00	71	Table 2, transcribed
+table2	paper	10	Cl	1.730581900000e+01	71	Table 2, transcribed
+table2	paper	10	dPsi_m_V	1.492270000000e-01	71	Table 2, transcribed
+table2	asReceived	10	Na	3.674770049700e-02	71	
+table2	asReceived	10	Mg	8.634526873400e+00	71	
+table2	asReceived	10	Cl	1.730578454100e+01	71	
+table2	asReceived	10	dPsi_m_V	1.492267641800e-01	71	psi_p of the permeate node; psi_m = 0
+table2	daviesPatched	10	Na	4.097665170300e-02	71	
+table2	daviesPatched	10	Mg	8.665796301300e+00	71	
+table2	daviesPatched	10	Cl	1.737255286700e+01	71	
+table2	daviesPatched	10	dPsi_m_V	1.453267071400e-01	71	psi_p of the permeate node; psi_m = 0
+table2	paper	20	Na	4.607740000000e-02	75	Table 2, transcribed
+table2	paper	20	Mg	8.605800000000e+00	75	Table 2, transcribed
+table2	paper	20	Cl	1.725767100000e+01	75	Table 2, transcribed
+table2	paper	20	dPsi_m_V	1.496510000000e-01	75	Table 2, transcribed
+table2	asReceived	20	Na	4.607853791900e-02	75	
+table2	asReceived	20	Mg	8.605786307000e+00	75	
+table2	asReceived	20	Cl	1.725764463000e+01	75	
+table2	asReceived	20	dPsi_m_V	1.496504564500e-01	75	psi_p of the permeate node; psi_m = 0
+table2	daviesPatched	20	Na	5.108866727200e-02	74	
+table2	daviesPatched	20	Mg	8.637906797700e+00	74	
+table2	daviesPatched	20	Cl	1.732689440600e+01	74	
+table2	daviesPatched	20	dPsi_m_V	1.457428737100e-01	74	psi_p of the permeate node; psi_m = 0
+table2	paper	50	Na	4.807360000000e-02	79	Table 2, transcribed
+table2	paper	50	Mg	8.599753000000e+00	79	Table 2, transcribed
+table2	paper	50	Cl	1.724757700000e+01	79	Table 2, transcribed
+table2	paper	50	dPsi_m_V	1.497400000000e-01	79	Table 2, transcribed
+table2	asReceived	50	Na	4.807480844500e-02	79	
+table2	asReceived	50	Mg	8.599739639700e+00	79	
+table2	asReceived	50	Cl	1.724755145100e+01	79	
+table2	asReceived	50	dPsi_m_V	1.497391587700e-01	79	psi_p of the permeate node; psi_m = 0
+table2	daviesPatched	50	Na	5.324621853100e-02	79	
+table2	daviesPatched	50	Mg	8.632025936800e+00	79	
+table2	daviesPatched	50	Cl	1.731729555200e+01	79	
+table2	daviesPatched	50	dPsi_m_V	1.458303528600e-01	79	psi_p of the permeate node; psi_m = 0
+table2	paper	100	Na	4.832190000000e-02	82	Table 2, transcribed
+table2	paper	100	Mg	8.599001000000e+00	82	Table 2, transcribed
+table2	paper	100	Cl	1.724632400000e+01	82	Table 2, transcribed
+table2	paper	100	dPsi_m_V	1.497510000000e-01	82	Table 2, transcribed
+table2	asReceived	100	Na	4.832312460100e-02	82	
+table2	asReceived	100	Mg	8.598987996600e+00	82	
+table2	asReceived	100	Cl	1.724629777000e+01	82	
+table2	asReceived	100	dPsi_m_V	1.497502113300e-01	82	psi_p of the permeate node; psi_m = 0
+table2	daviesPatched	100	Na	5.351465213800e-02	82	
+table2	daviesPatched	100	Mg	8.631294649800e+00	82	
+table2	daviesPatched	100	Cl	1.731610265400e+01	82	
+table2	daviesPatched	100	dPsi_m_V	1.458412507000e-01	82	psi_p of the permeate node; psi_m = 0
+table2	paper	200	Na	4.838090000000e-02	85	Table 2, transcribed
+table2	paper	200	Mg	8.598822000000e+00	85	Table 2, transcribed
+table2	paper	200	Cl	1.724602500000e+01	85	Table 2, transcribed
+table2	paper	200	dPsi_m_V	1.497530000000e-01	85	Table 2, transcribed
+table2	asReceived	200	Na	4.838209880500e-02	85	
+table2	asReceived	200	Mg	8.598808770400e+00	85	
+table2	asReceived	200	Cl	1.724599895000e+01	85	
+table2	asReceived	200	dPsi_m_V	1.497528632900e-01	85	psi_p of the permeate node; psi_m = 0
+table2	daviesPatched	200	Na	5.357841576900e-02	85	
+table2	daviesPatched	200	Mg	8.631120227300e+00	85	
+table2	daviesPatched	200	Cl	1.731581820600e+01	85	
+table2	daviesPatched	200	dPsi_m_V	1.458438675800e-01	85	psi_p of the permeate node; psi_m = 0
+table2	paper	300	Na	4.839150000000e-02	87	Table 2, transcribed
+table2	paper	300	Mg	8.598790000000e+00	87	Table 2, transcribed
+table2	paper	300	Cl	1.724597100000e+01	87	Table 2, transcribed
+table2	paper	300	dPsi_m_V	1.497540000000e-01	87	Table 2, transcribed
+table2	asReceived	300	Na	4.839270752500e-02	87	
+table2	asReceived	300	Mg	8.598776241800e+00	87	
+table2	asReceived	300	Cl	1.724594475000e+01	87	
+table2	asReceived	300	dPsi_m_V	1.497533508300e-01	87	psi_p of the permeate node; psi_m = 0
+table2	daviesPatched	300	Na	5.358989135900e-02	87	
+table2	daviesPatched	300	Mg	8.631088554100e+00	87	
+table2	daviesPatched	300	Cl	1.731576657400e+01	87	
+table2	daviesPatched	300	dPsi_m_V	1.458443494000e-01	87	psi_p of the permeate node; psi_m = 0
+table2	paper	350	Na	4.839370000000e-02	88	Table 2, transcribed
+table2	paper	350	Mg	8.598782000000e+00	88	Table 2, transcribed
+table2	paper	350	Cl	1.724595900000e+01	88	Table 2, transcribed
+table2	paper	350	dPsi_m_V	1.497540000000e-01	88	Table 2, transcribed
+table2	asReceived	350	Na	4.839492189500e-02	88	
+table2	asReceived	350	Mg	8.598769370500e+00	88	
+table2	asReceived	350	Cl	1.724593331000e+01	88	
+table2	asReceived	350	dPsi_m_V	1.497534555500e-01	88	psi_p of the permeate node; psi_m = 0
+table2	daviesPatched	350	Na	5.359228818200e-02	88	
+table2	daviesPatched	350	Mg	8.631081858800e+00	88	
+table2	daviesPatched	350	Cl	1.731575566600e+01	88	
+table2	daviesPatched	350	dPsi_m_V	1.458444530900e-01	88	psi_p of the permeate node; psi_m = 0
+stiff	daviesPatched_matchedD_tol1e-4	350	Na	5.521216452700e-02	88	
+stiff	daviesPatched_matchedD_tol1e-4	350	Mg	8.630938200100e+00	88	
+stiff	daviesPatched_matchedD_tol1e-4	350	Cl	1.731708822800e+01	88	
+stiff	daviesPatched_matchedD_tol1e-4	350	dPsi_m_V	1.450250724000e-01	88	
+stiff	daviesBorn_tol1e-4	350	Na	5.541819082600e-02	88	
+stiff	daviesBorn_tol1e-4	350	Mg	8.631750884000e+00	88	
+stiff	daviesBorn_tol1e-4	350	Cl	1.731891962300e+01	88	
+stiff	daviesBorn_tol1e-4	350	dPsi_m_V	1.449295310700e-01	88	
+stiff	daviesBorn_tol1e-9	102	Na	5.534197760500e-02	278	converged
+stiff	daviesBorn_tol1e-9	102	Mg	8.631951889100e+00	278	converged
+stiff	daviesBorn_tol1e-9	102	Cl	1.731924575600e+01	278	converged
+stiff	daviesBorn_tol1e-9	102	dPsi_m_V	1.449265787300e-01	278	converged
+stiff	daviesBorn_tol1e-9	102	face0_Na	1.507266811500e+01	278	converged
+stiff	daviesBorn_tol1e-9	102	face0_Mg	7.946131044100e+00	278	converged
+stiff	daviesBorn_tol1e-9	102	face0_Cl	9.649302035700e-01	278	converged
+stiff	daviesBorn_tol1e-9	102	face0_psi_V	-5.827196894000e-02	278	converged
+stiff	daviesBorn_tol1e-9	102	face1_Na	1.600436983600e-01	278	converged
+stiff	daviesBorn_tol1e-9	102	face1_Mg	1.502362999900e+01	278	converged
+stiff	daviesBorn_tol1e-9	102	face1_Cl	2.073036958800e-01	278	converged
+stiff	daviesBorn_tol1e-9	102	face1_psi_V	7.215779396200e-02	278	converged
+stiff	daviesBorn_tol1e-9	204	Na	5.540451077300e-02	285	converged
+stiff	daviesBorn_tol1e-9	204	Mg	8.631786336800e+00	285	converged
+stiff	daviesBorn_tol1e-9	204	Cl	1.731897718400e+01	285	converged
+stiff	daviesBorn_tol1e-9	204	dPsi_m_V	1.449290254300e-01	285	converged
+stiff	daviesBorn_tol1e-9	204	face0_Na	1.507266811500e+01	285	converged
+stiff	daviesBorn_tol1e-9	204	face0_Mg	7.946131044300e+00	285	converged
+stiff	daviesBorn_tol1e-9	204	face0_Cl	9.649302035900e-01	285	converged
+stiff	daviesBorn_tol1e-9	204	face0_psi_V	-5.827196894000e-02	285	converged
+stiff	daviesBorn_tol1e-9	204	face1_Na	1.602254689900e-01	285	converged
+stiff	daviesBorn_tol1e-9	204	face1_Mg	1.502353704700e+01	285	converged
+stiff	daviesBorn_tol1e-9	204	face1_Cl	2.072995620200e-01	285	converged
+stiff	daviesBorn_tol1e-9	204	face1_psi_V	7.216010918200e-02	285	converged
+stiff	daviesBorn_tol1e-9	350	Na	5.541797183800e-02	290	converged
+stiff	daviesBorn_tol1e-9	350	Mg	8.631750701900e+00	290	converged
+stiff	daviesBorn_tol1e-9	350	Cl	1.731891937600e+01	290	converged
+stiff	daviesBorn_tol1e-9	350	dPsi_m_V	1.449295520700e-01	290	converged
+stiff	daviesBorn_tol1e-9	350	face0_Na	1.507266811500e+01	290	converged
+stiff	daviesBorn_tol1e-9	350	face0_Mg	7.946131044400e+00	290	converged
+stiff	daviesBorn_tol1e-9	350	face0_Cl	9.649302035900e-01	290	converged
+stiff	daviesBorn_tol1e-9	350	face0_psi_V	-5.827196894000e-02	290	converged
+stiff	daviesBorn_tol1e-9	350	face1_Na	1.602645977100e-01	290	converged
+stiff	daviesBorn_tol1e-9	350	face1_Mg	1.502351703700e+01	290	converged
+stiff	daviesBorn_tol1e-9	350	face1_Cl	2.072986722300e-01	290	converged
+stiff	daviesBorn_tol1e-9	350	face1_psi_V	7.216060751400e-02	290	converged
+stiff	daviesBorn_ext	102/204	Na	5.542481111322e-02		
+stiff	daviesBorn_ext	102/204	Mg	8.631732593033e+00		
+stiff	daviesBorn_ext	102/204	Cl	1.731888999662e+01		
+stiff	daviesBorn_ext	102/204	dPsi_m_V	1.449298197100e-01		
+stiff	daviesBorn_ext	102/204	face0_Na	1.507266811500e+01		
+stiff	daviesBorn_ext	102/204	face0_Mg	7.946131044365e+00		
+stiff	daviesBorn_ext	102/204	face0_Cl	9.649302035965e-01		
+stiff	daviesBorn_ext	102/204	face0_psi_V	-5.827196894000e-02		
+stiff	daviesBorn_ext	102/204	face1_Na	1.602844777648e-01		
+stiff	daviesBorn_ext	102/204	face1_Mg	1.502350687170e+01		
+stiff	daviesBorn_ext	102/204	face1_Cl	2.072982200319e-01		
+stiff	daviesBorn_ext	102/204	face1_psi_V	7.216086077920e-02		
+fig4	asReceived	350	face0_Na	1.511529228000e+01	88	the profile Fig. 4 draws (N = 350, the paper's run)
+fig4	asReceived	350	face0_Mg	7.918717973500e+00	88	the profile Fig. 4 draws (N = 350, the paper's run)
+fig4	asReceived	350	face0_Cl	9.527283450100e-01	88	the profile Fig. 4 draws (N = 350, the paper's run)
+fig4	asReceived	350	face0_psi_V	-5.846937969600e-02	88	the profile Fig. 4 draws (N = 350, the paper's run)
+fig4	asReceived	350	face1_Na	1.479012995100e-01	88	the profile Fig. 4 draws (N = 350, the paper's run)
+fig4	asReceived	350	face1_Mg	1.501371115400e+01	88	the profile Fig. 4 draws (N = 350, the paper's run)
+fig4	asReceived	350	face1_Cl	1.753228503600e-01	88	the profile Fig. 4 draws (N = 350, the paper's run)
+fig4	asReceived	350	face1_psi_V	7.418131373600e-02	88	the profile Fig. 4 draws (N = 350, the paper's run)
+fig3	paperSettings	dye37_p1	Robs_Na	8.913062618309e-01	60	c_Cl 4.46
+fig3	paperSettings	dye37_p1	Robs_Cl	-1.813813644843e+00	60	c_Cl 4.46
+fig3	paperSettings	dye37_p2	Robs_Na	8.177225651910e-01	58	c_Cl 9.239
+fig3	paperSettings	dye37_p2	Robs_Cl	-1.372182129127e+00	58	c_Cl 9.239
+fig3	paperSettings	dye37_p3	Robs_Na	6.931581353429e-01	56	c_Cl 21.929
+fig3	paperSettings	dye37_p3	Robs_Cl	-8.599921075744e-01	56	c_Cl 21.929
+fig3	paperSettings	dye37_p4	Robs_Na	5.724429819237e-01	55	c_Cl 42.903
+fig3	paperSettings	dye37_p4	Robs_Cl	-5.337339726359e-01	55	c_Cl 42.903
+fig3	paperSettings	dye37_p5	Robs_Na	4.305569503560e-01	55	c_Cl 87.292
+fig3	paperSettings	dye37_p5	Robs_Cl	-2.935375759520e-01	55	c_Cl 87.292
+fig3	paperSettings	dye4_p1	Robs_Na	6.205672462830e-01	57	c_Cl 5.097
+fig3	paperSettings	dye4_p1	Robs_Cl	-2.727341323131e-01	57	c_Cl 5.097
+fig3	paperSettings	dye4_p2	Robs_Na	4.740334121995e-01	56	c_Cl 10.46
+fig3	paperSettings	dye4_p2	Robs_Cl	-1.293656467495e-01	56	c_Cl 10.46
+fig3	paperSettings	dye4_p3	Robs_Na	3.166122435897e-01	55	c_Cl 25.752
+fig3	paperSettings	dye4_p3	Robs_Cl	-1.832807471264e-03	55	c_Cl 25.752
+fig3	paperSettings	dye4_p4	Robs_Na	2.311630852001e-01	55	c_Cl 52.46
+fig3	paperSettings	dye4_p4	Robs_Cl	5.529600825391e-02	55	c_Cl 52.46
+fig3	paperSettings	dye4_p5	Robs_Na	1.779898892956e-01	54	c_Cl 103.009
+fig3	paperSettings	dye4_p5	Robs_Cl	8.223076944733e-02	54	c_Cl 103.009
+fig3	matched_ext	dye4_p1	cperm_Na	6.493269592532e+00	4001	c_Cl 5.097; stopped at ITMAX, residual 6.0e-08 / 3.1e-08
+fig3	matched_ext	dye4_p1	cperm_Cl	6.493269592532e+00	4001	c_Cl 5.097; stopped at ITMAX, residual 6.0e-08 / 3.1e-08
+fig3	matched_ext	dye4_p2	cperm_Na	1.182161450368e+01	4001	c_Cl 10.46; stopped at ITMAX, residual 2.3e-07 / 3.3e-08
+fig3	matched_ext	dye4_p2	cperm_Cl	1.182161450368e+01	4001	c_Cl 10.46; stopped at ITMAX, residual 2.3e-07 / 3.3e-08
+fig3	matched_ext	dye4_p3	cperm_Na	2.581319352954e+01	4001	c_Cl 25.752; stopped at ITMAX, residual 2.0e-07 / 1.4e-08
+fig3	matched_ext	dye4_p3	cperm_Cl	2.581319352954e+01	4001	c_Cl 25.752; stopped at ITMAX, residual 2.0e-07 / 1.4e-08
+fig3	matched_ext	dye4_p4	cperm_Na	4.958242386173e+01	4001	c_Cl 52.46; stopped at ITMAX, residual 3.4e-07 / 2.1e-08
+fig3	matched_ext	dye4_p4	cperm_Cl	4.958242386173e+01	4001	c_Cl 52.46; stopped at ITMAX, residual 3.4e-07 / 2.1e-08
+fig3	matched_ext	dye4_p5	cperm_Na	9.457858268557e+01	4001	c_Cl 103.009; stopped at ITMAX, residual 3.7e-07 / 1.8e-08
+fig3	matched_ext	dye4_p5	cperm_Cl	9.457858268557e+01	4001	c_Cl 103.009; stopped at ITMAX, residual 3.7e-07 / 1.8e-08
+fig3	matched_ext	dye37_p1	cperm_Na	1.257033725589e+01	4001	c_Cl 4.46; stopped at ITMAX, residual 2.5e-08 / 4.4e-08
+fig3	matched_ext	dye37_p1	cperm_Cl	1.257033725589e+01	4001	c_Cl 4.46; stopped at ITMAX, residual 2.5e-08 / 4.4e-08
+fig3	matched_ext	dye37_p2	cperm_Na	2.194412370524e+01	4001	c_Cl 9.239; stopped at ITMAX, residual 2.0e-08 / 4.5e-08
+fig3	matched_ext	dye37_p2	cperm_Cl	2.194412370524e+01	4001	c_Cl 9.239; stopped at ITMAX, residual 2.0e-08 / 4.5e-08
+fig3	matched_ext	dye37_p3	cperm_Na	4.082375386974e+01	4001	c_Cl 21.929; stopped at ITMAX, residual 1.5e-08 / 2.0e-08
+fig3	matched_ext	dye37_p3	cperm_Cl	4.082375386974e+01	4001	c_Cl 21.929; stopped at ITMAX, residual 1.5e-08 / 2.0e-08
+fig3	matched_ext	dye37_p4	cperm_Na	6.584630842845e+01	4001	c_Cl 42.903; stopped at ITMAX, residual 1.6e-08 / 4.0e-08
+fig3	matched_ext	dye37_p4	cperm_Cl	6.584630842845e+01	4001	c_Cl 42.903; stopped at ITMAX, residual 1.6e-08 / 4.0e-08
+fig3	matched_ext	dye37_p5	cperm_Na	1.129721369641e+02	4001	c_Cl 87.292; stopped at ITMAX, residual 8.9e-09 / 1.5e-08
+fig3	matched_ext	dye37_p5	cperm_Cl	1.129721369641e+02	4001	c_Cl 87.292; stopped at ITMAX, residual 8.9e-09 / 1.5e-08

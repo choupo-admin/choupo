@@ -69,11 +69,29 @@ Description
     a; b; c; }` replaces `k_film` when the film coefficient is to come from
     a correlation per ion on the ion's own D.
 
+    Two optional keys (DEV.md 4c C145, the NanoFiltran paper's cases):
+      chargeDensity -38.2;      // mol/m3, signed: replaces the membrane
+                                // record's X_d for THIS op (a charge fitted
+                                // as a function of the feed has no single
+                                // value a record could carry); announced
+      profile pore_N350.csv;    // write every point's solved pore: x over
+                                // the equivalent thickness dx/A_k, each ion
+                                // species' c [mol/m3] and psi [V] (a run
+                                // output, like every props CSV)
+
     Diagnostics, per J_v point p (1-based) and per ion species (an ion
     carried by two salts is summed): `c_wall_<ion>_p<p>`, `c_perm_<ion>_p<p>`
     [mol/m3], `Rreal_<ion>_p<p>` = 1 - c_perm/c_wall, `Robs_<ion>_p<p>` =
     1 - c_perm/c_bulk -- NanoFiltran's two definitions -- and
-    `permeateCharge_max`, the worst |sum z c_perm| / sum |z| c_perm.
+    `permeateCharge_max`, the worst |sum z c_perm| / sum |z| c_perm.  Where
+    the law solved a pore (DSPM-DE, every positive J_v): `dPsi_m_V_p<p>`,
+    the potential difference across the membrane as Geraldes & Alves (2008)
+    define it (their Table 2's Delta Psi_m: the permeate's potential
+    against the feed-side solution at the wall, psi_m = 0, both Donnan jumps
+    included; volts with the CODATA R and F), and `poreNewton_p<p>` /
+    `poreContinuations_p<p>`, the station's Newton iterations and whether it
+    took the continuation -- the first point from the seed, each later one
+    warm-started from the point before it.
 \*---------------------------------------------------------------------------*/
 
 #pragma once

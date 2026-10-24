@@ -3060,6 +3060,104 @@ THE DAVIES FINDING. NanoFiltran evaluates Davies as exp(-A z\textasciicircum{}2 
 \end{tutgolden}
 
 \clearpage
+\tutentry{nanofiltran02\_paper\_stiff\_case}{tutorials/props/membrane/nanofiltran02\_paper\_stiff\_case}
+\begin{tutscheme}
+\begin{tikzpicture}[>={Stealth[length=2mm]}, every node/.style={font=\scriptsize}]
+  \node[draw, rounded corners=2pt, align=center, minimum width=3.1cm, minimum height=0.8cm, fill=black!4] at (0.0,-0.0) {\textbf{N10}\\[-1pt]{\tiny poreTransport}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=3.1cm, minimum height=0.8cm, fill=black!4] at (3.6,-0.0) {\textbf{N20}\\[-1pt]{\tiny poreTransport}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=3.1cm, minimum height=0.8cm, fill=black!4] at (7.2,-0.0) {\textbf{N50}\\[-1pt]{\tiny poreTransport}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=3.1cm, minimum height=0.8cm, fill=black!4] at (0.0,-1.3) {\textbf{N100}\\[-1pt]{\tiny poreTransport}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=3.1cm, minimum height=0.8cm, fill=black!4] at (3.6,-1.3) {\textbf{N200}\\[-1pt]{\tiny poreTransport}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=3.1cm, minimum height=0.8cm, fill=black!4] at (7.2,-1.3) {\textbf{N350}\\[-1pt]{\tiny poreTransport}};
+\end{tikzpicture}
+\end{tutscheme}
+\tutwhat{The stiff case of the NanoFiltran paper (Geraldes \& Alves 2008, section 4.2, Table 2, Fig. 4): Choupo against NanoFiltran with the Davies constant corrected, and the published table accounted for term by term}
+\begin{tutnarrative}
+nanofiltran02 -- THE STIFF CASE OF THE NANOFILTRAN PAPER, AND ITS TABLE 2. V. Geraldes, A.M. Brites Alves, "Computer program for simulation of mass transport in nanofiltration membranes", J. Membr. Sci. 321 (2008) 172-182, doi:10.1016/j.memsci.2008.04.054, section 4.2: Na+/Mg2+/Cl- 10/20/50 mol/m3 through a negatively charged pore (X -30 mol/m3, r\_p 0.40 nm, dx\_e 2.5 um, eps\_p 60) at J\_v 5e-5 m/s and 298 K, Davies activities, no concentration polarisation. The paper calls it "very stiff": the hindered diffusivities of Na+ (0.302e-9 m2/s) and Mg2+ (0.429e-11) differ by two orders of magnitude, the Na+ permeate is 0.5 \% of its feed, and a shooting method from a guessed permeate fails (its Fig. 5). The ions are the paper's: Mg2+ 0.35 nm and 0.707e-9 m2/s (section 4.2), Na+ 0.184 nm / 1.33e-9 and Cl- 0.121 nm / 2.03e-9 from the ion database NanoFiltran ships, whose rows cite Bowen \& Mohammad, AIChE J. 44 (1998) 1799 -- the same values the paper states in its section 4.1. The membrane IS NanoFiltran's shipped example (its INPUT.XLS).
+
+THE SIX OPERATIONS are Table 2's grid study at Choupo's own node counts: N10 ... N350, the pore on N nodes (N - 1 intervals; NanoFiltran's N counts the permeate node, so its N has N - 2 intervals inside the membrane). N350 also writes the pore's profile (pore\_N350.csv: c\_i(x) and psi(x), the paper's Fig. 4).
+
+WHAT TABLE 2 TURNED OUT TO BE (measured; bin/curate/nanofiltran/ regenerate\_paper.py, docs/design/a-stiff-pore-solved-at-once.md section 13). NanoFiltran AS RECEIVED, on its shipped inputs with the paper's numerics (URF 0.2, TOL 1e-4), reproduces Table 2: the iteration counts (71 ... 88) exactly, Mg2+, Cl- and the potential to 2e-6, the trace Na+ to 2.6e-5. Its Davies evaluates ln gamma with the LOG10 constant -- and so do the paper's own Eqs. 12-13 as printed (Eq. 13's A carries the ln 10 of a log10 constant, Eq. 12 is ln gamma) -- so ln gamma is ln 10 = 2.303 times too small, and TABLE 2 CARRIES THAT FACTOR. Choupo's `activity bulkOverPoreDavies` is Davies on log10; there is deliberately no option that reproduces the factor (a declared choice that reproduces a known error is a wrong model with a name). So Choupo is NOT pinned to Table 2. It is pinned (the `anchor` rows) to NanoFiltran built with the Davies constant corrected and the Born constant written in CODATA values (DAVIES\_PATCH + BORN\_PATCH), its diffusivity input matched (its Vogel correction of D to 298 K and its single-precision K\_d literals cancelled through IONS.XLS), converged (TOL 1e-9) and Richardson-extrapolated from ND 102 and 204: agreement 7e-8 or better on all four numbers, Choupo extrapolated likewise.
+
+CHOUPO AGAINST TABLE 2 AT N = 350, the difference ACCOUNTED FOR one change at a time (NanoFiltran runs, regenerate\_paper.py / paper.tsv): Na+ Mg2+ Cl- dPsi\_m [V] Table 2 (the paper) 0.0483937 8.598782 17.245959 0.149754 NanoFiltran as received 0.0483949 8.598769 17.245933 0.149753 + its Davies corrected (ln 10) 0.0535923 8.631082 17.315756 0.145844 + its D input matched (Vogel, K\_d) 0.0552122 8.630938 17.317088 0.145025 + its Born constant in CODATA values 0.0554182 8.631751 17.318920 0.144930 + converged (TOL 1e-4 $\to$ 1e-9) 0.0554180 8.631751 17.318919 0.144930 + grid extrapolated (ND 102/204) 0.0554248 8.631733 17.318890 0.144930 (0.144960 in CODATA volts) Choupo, extrapolated (801/1601 nodes) 0.0554248 8.631732 17.318889 0.144960 Choupo, op N350 0.0554298 8.631692 17.318815 0.144958 So Choupo puts 14.5 \% more Na+ in the permeate than Table 2, 0.38 \% more Mg2+ and 0.42 \% more Cl-, at a potential 3.2 \% lower. The paper's Davies is +10.7 \% of the Na+ and the whole of the potential's shift; the next +3.0 \% is the DIFFUSIVITY: NanoFiltran corrects every D to T through its Vogel viscosity, and at the paper's 298 K (0.15 K below 25 C) that is 0.38 \% below the 25 C value -- Choupo's DSPM-DE reads the species' 25 C D0 at any temperature (a FINDING, recorded in the design record, not changed here); the Born constant's fifth figure is +0.4 \%. The trace Na+ amplifies every one of them: it is held by the Donnan field, and its permeate is a small difference of large migration and diffusion fluxes.
+
+THE POTENTIAL. dPsi\_m\_V is the paper's Delta Psi\_m: the permeate's potential against the feed-side solution at the wall (psi\_m = 0, its Eq. 24's reference) -- the two Donnan jumps included -- which is the permeate-node potential NanoFiltran writes. Choupo's volts use CODATA R and F, NanoFiltran's 8.314 and 96500, so one dimensionless potential is 2.08e-4 larger in Choupo's volts; the anchor is NanoFiltran's converted.
+
+THE GRID STUDY (permeate Na+ [mol/m3], Newton iterations): Table 2 (NanoFiltran, as published) Choupo (correct Davies) N 10 0.0367468 71 0.0627659 7 N 20 0.0460774 75 0.0571069 9 N 50 0.0480736 79 0.0556794 9 N 100 0.0483219 82 0.0554872 10 N 200 0.0483809 85 0.0554403 11 N 350 0.0483937 88 0.0554298 12 Different discretisations converge from opposite sides: NanoFiltran's central differences from below, Choupo's exponentially fitted fluxes from above; both are second order. Choupo's iterations are a full Newton with an analytic Jacobian from a local-Donnan seed; NanoFiltran's an under-relaxed (0.2) Newton to TOL 1e-4.
+
+WHAT KIND OF CHECK THIS IS. Code-to-code verification (the anchors) and an ACCOUNTING of a published table: nothing here is a measurement.
+
+\end{tutnarrative}
+\begin{tutgolden}
+\goldrow{diag}{N350}{c\_perm\_Na\_p1}{0.05542481111322}
+\goldrow{diag}{N350}{c\_perm\_Mg\_p1}{8.631732593033}
+\goldrow{diag}{N350}{c\_perm\_Cl\_p1}{17.31888999662}
+\goldrow{diag}{N350}{dPsi\_m\_V\_p1}{0.14495991780377562}
+\goldrow{diag}{N10}{Robs\_Cl\_p1}{0.655680930906}
+\goldrow{diag}{N10}{Robs\_Mg\_p1}{0.571170310089}
+\goldrow{diag}{N10}{Robs\_Na\_p1}{0.993723414176}
+\goldrow{diag}{N10}{Rreal\_Cl\_p1}{0.65568205972}
+\goldrow{diag}{N10}{Rreal\_Mg\_p1}{0.571171534759}
+\goldrow{diag}{N10}{Rreal\_Na\_p1}{0.993723445362}
+\goldrow{diag}{N10}{c\_perm\_Cl\_p1}{17.2159534547}
+\goldrow{diag}{N10}{c\_perm\_Mg\_p1}{8.57659379822}
+\goldrow{diag}{N10}{c\_perm\_Na\_p1}{0.0627658582356}
+\goldrow{diag}{N10}{c\_wall\_Cl\_p1}{50.0001639202}
+\goldmore{108}
+\end{tutgolden}
+
+\clearpage
+\tutentry{nanofiltran03\_bowen\_mohammad\_ca30}{tutorials/props/membrane/nanofiltran03\_bowen\_mohammad\_ca30}
+\begin{tutscheme}
+\begin{tikzpicture}[>={Stealth[length=2mm]}, every node/.style={font=\scriptsize}]
+  \node[draw, rounded corners=2pt, align=center, minimum width=3.1cm, minimum height=0.8cm, fill=black!4] at (0.0,-0.0) {\textbf{dye4\_p1}\\[-1pt]{\tiny poreTransport}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=3.1cm, minimum height=0.8cm, fill=black!4] at (3.6,-0.0) {\textbf{dye4\_p2}\\[-1pt]{\tiny poreTransport}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=3.1cm, minimum height=0.8cm, fill=black!4] at (7.2,-0.0) {\textbf{dye4\_p3}\\[-1pt]{\tiny poreTransport}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=3.1cm, minimum height=0.8cm, fill=black!4] at (0.0,-1.3) {\textbf{dye4\_p4}\\[-1pt]{\tiny poreTransport}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=3.1cm, minimum height=0.8cm, fill=black!4] at (3.6,-1.3) {\textbf{dye4\_p5}\\[-1pt]{\tiny poreTransport}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=3.1cm, minimum height=0.8cm, fill=black!4] at (7.2,-1.3) {\textbf{dye37\_p1}\\[-1pt]{\tiny poreTransport}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=3.1cm, minimum height=0.8cm, fill=black!4] at (0.0,-2.6) {\textbf{dye37\_p2}\\[-1pt]{\tiny poreTransport}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=3.1cm, minimum height=0.8cm, fill=black!4] at (3.6,-2.6) {\textbf{dye37\_p3}\\[-1pt]{\tiny poreTransport}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=3.1cm, minimum height=0.8cm, fill=black!4] at (7.2,-2.6) {\textbf{dye37\_p4}\\[-1pt]{\tiny poreTransport}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=3.1cm, minimum height=0.8cm, fill=black!4] at (0.0,-3.9) {\textbf{dye37\_p5}\\[-1pt]{\tiny poreTransport}};
+\end{tikzpicture}
+\end{tutscheme}
+\tutwhat{Bowen \& Mohammad's CA30 rejections of Na+ and Cl- with a trivalent dye, as the NanoFiltran paper (Geraldes \& Alves 2008, Fig. 3) compares them: Choupo against EXPERIMENT and against NanoFiltran}
+\begin{tutnarrative}
+nanofiltran03 -- THE DSPM-DE PORE AGAINST EXPERIMENT: Bowen \& Mohammad's CA30 membrane, sodium chloride with a trivalent dye, as the NanoFiltran paper compares it. W.R. Bowen, A.W. Mohammad, "Diafiltration by nanofiltration: prediction and optimization", AIChE J. 44 (1998) 1799 -- the MEASUREMENTS; V. Geraldes, A.M. Brites Alves, "Computer program for simulation of mass transport in nanofiltration membranes", J. Membr. Sci. 321 (2008) 172-182, doi:10.1016/j.memsci.2008.04.054 -- section 4.1 and Fig. 3, where NanoFiltran is set against them.
+
+WHAT KIND OF CHECK THIS IS. A COMPARISON WITH EXPERIMENT -- the first in this corpus for the solved DSPM-DE pore -- and it must be read for what it is: SEVERAL INPUTS ARE FITS TO THESE VERY DATA, by Bowen \& Mohammad. The pore radius and the equivalent thickness (0.63 nm, 6.2 um) were determined from them; the membrane charge is their fitted function of the feed (Eq. 43 below); the permeate flux their fitted function of the feed at each dye level (Eqs. 44-45). So agreement here says the pore model, carried by inputs fitted on these data, reproduces them -- it does NOT say the model PREDICTS a membrane it was not fitted on. Nothing was fitted by Choupo.
+
+THE CASE (the paper's section 4.1): Na+, Cl- and a trivalent dye (Stokes radius 0.63 nm = the pore radius, so lambda = 1 and the pore EXCLUDES it: it acts through the film and the electroneutrality there), 298 K, 500 kPa, a stirred cell (stirrer radius 0.024 m, Re 26 900) with Sh = 0.23 Re\textasciicircum{}0.567 Sc\textasciicircum{}0.33 (the paper's Eq. 46) -- exactly Choupo's `StirredCell`, with NanoFiltran's own Vogel viscosity at 298 K and density 997 kg/m3, omega chosen so that Re = 26 900 -- c\_X = -9.03 - 3.29 (3 c\_Dye + c\_Cl) [mol/m3] (Eq. 43) J\_v = 9.91e-6 (1 - 0.0011 c\_Cl) [m/s] at 4 mol/m3 of dye (Eq. 44) J\_v = 4.13e-6 (1 + 0.00981 c\_Cl - 7.46e-5 c\_Cl\textasciicircum{}2) [m/s] at 37 mol/m3 (Eq. 45) ideal activities, eps\_p = eps\_b (no dielectric exclusion), the multi-ionic film of Geraldes \& Afonso (2007) with its suction correction (NanoFiltran's), the Dechadilok-Deen hindrance. Ions: Na+ 0.184 nm / 1.33e-9 m2/s, Cl- 0.121 nm / 2.03e-9, the dye 0.63 nm / 0.36e-9 -- the paper's values. Every op below writes its own c\_X and J\_v with the arithmetic beside it; bin/curate/check\_nanofiltran\_paper.py recomputes them from the equations.
+
+THE TEN OPERATIONS are the ten measurements of Fig. 3 (five chloride levels at each dye level). The feed chloride of each is READ OFF THE FIGURE: constant/experimental/geraldes\_alves2008\_fig3.csv, digitised by bin/curate/digitise\_geraldes\_alves2008.py (calibration checked against the tick labels, reading error +-1.5 px = 0.32 mol/m3 and 0.011 in R\_obs; the paper and its figure are the publisher's and are not in the tree). An op's c\_Cl is the mean of its two markers' readings (the Na+ and Cl- symbols of one measurement sit at one feed).
+
+WHAT IS PINNED. `expected`'s anchor rows are the MEASURED permeates, c\_p = c\_b (1 - R\_obs) of each symbol, with bands sized to the measured disagreement; the self-recorded rows pin that Choupo's answer has not moved. bin/curate/check\_nanofiltran\_paper.py also holds Choupo to NanoFiltran on the same inputs (code to code, 1e-6), and NanoFiltran with the paper's own settings to the paper's drawn line (the inputs read right).
+
+RESULTS (R\_obs = 1 - c\_p/c\_b; experiment = Bowen \& Mohammad as Fig. 3 plots it, read +- the reading error; NanoFiltran = the paper's own settings, ND 20): dye c\_Cl ion experiment Choupo NanoFiltran Choupo - exp 4 5.097 Na+ 0.643 +- 0.015 0.620 0.621 -0.023 4 5.097 Cl- -0.184 +- 0.018 -0.274 -0.273 -0.090 4 10.460 Na+ 0.496 +- 0.015 0.474 0.474 -0.023 4 10.460 Cl- -0.022 +- 0.011 -0.130 -0.129 -0.108 4 25.752 Na+ 0.338 +- 0.011 0.316 0.317 -0.022 4 25.752 Cl- 0.055 +- 0.015 -0.002 -0.002 -0.057 4 52.460 Na+ 0.257 +- 0.011 0.231 0.231 -0.027 4 52.460 Cl- 0.099 +- 0.015 0.055 0.055 -0.044 4 103.009 Na+ 0.188 +- 0.015 0.178 0.178 -0.010 4 103.009 Cl- 0.103 +- 0.018 0.082 0.082 -0.021 37 4.460 Na+ 0.871 +- 0.015 0.891 0.891 +0.020 37 4.460 Cl- -2.092 +- 0.011 -1.818 -1.814 +0.273 37 9.239 Na+ 0.812 +- 0.015 0.817 0.818 +0.005 37 9.239 Cl- -1.342 +- 0.011 -1.375 -1.372 -0.033 37 21.929 Na+ 0.699 +- 0.011 0.693 0.693 -0.006 37 21.929 Cl- -0.768 +- 0.011 -0.862 -0.860 -0.093 37 42.903 Na+ 0.585 +- 0.015 0.572 0.572 -0.012 37 42.903 Cl- -0.482 +- 0.011 -0.535 -0.534 -0.053 37 87.292 Na+ 0.456 +- 0.011 0.430 0.431 -0.026 37 87.292 Cl- -0.235 +- 0.015 -0.294 -0.294 -0.059 root-mean-square of R\_obs - experiment over the 20 symbols: Choupo 0.077, NanoFiltran 0.078.
+
+READING IT. Choupo and NanoFiltran agree with each other to 1e-6 on the same inputs (the paper's line is NanoFiltran at 20 nodes and TOL 1e-4, hence the third decimal), so every difference from the symbols is the MODEL's, not the solver's. The model follows the trends -- the dye drives Cl- strongly negative (Donnan: the excluded trivalent anion at the wall pushes chloride through), and both rejections fall with chloride as the fitted charge c\_X is screened -- and misses in two places, both visible in the paper's own figure: at 4 mol/m3 of dye it under-predicts the rejection of BOTH ions by 0.01-0.11 (the Cl- symbols sit above the line), and at the lowest chloride with 37 mol/m3 of dye it does not reach the measured -2.09 (it gives -1.82; Bowen \& Mohammad's own model, the dotted line, does). Root-mean-square over the twenty symbols: 0.077 in R\_obs. The CHARGE and the FLUX were fitted by Bowen \& Mohammad to these data, so the residual is the pore model's at its fitted inputs, not a prediction error.
+
+\end{tutnarrative}
+\begin{tutgolden}
+\goldrow{diag}{dye37\_p1}{c\_perm\_Na\_p1}{14.859702}
+\goldrow{diag}{dye37\_p1}{c\_perm\_Cl\_p1}{13.789874}
+\goldrow{diag}{dye37\_p2}{c\_perm\_Na\_p1}{22.5448125}
+\goldrow{diag}{dye37\_p2}{c\_perm\_Cl\_p1}{21.6368141}
+\goldrow{diag}{dye37\_p3}{c\_perm\_Na\_p1}{40.0780935}
+\goldrow{diag}{dye37\_p3}{c\_perm\_Cl\_p1}{38.7792436}
+\goldrow{diag}{dye37\_p4}{c\_perm\_Na\_p1}{63.9313062}
+\goldrow{diag}{dye37\_p4}{c\_perm\_Cl\_p1}{63.5650848}
+\goldrow{diag}{dye37\_p5}{c\_perm\_Na\_p1}{107.8906772}
+\goldrow{diag}{dye37\_p5}{c\_perm\_Cl\_p1}{107.8318076}
+\goldrow{diag}{dye4\_p1}{c\_perm\_Na\_p1}{6.0967902}
+\goldrow{diag}{dye4\_p1}{c\_perm\_Cl\_p1}{6.0338286}
+\goldrow{diag}{dye4\_p2}{c\_perm\_Na\_p1}{11.313102}
+\goldrow{diag}{dye4\_p2}{c\_perm\_Cl\_p1}{10.691166}
+\goldmore{156}
+\end{tutgolden}
+
+\clearpage
 \tutentry{polarisation01\_geraldes\_afonso\_table1}{tutorials/props/membrane/polarisation01\_geraldes\_afonso\_table1}
 \begin{tutscheme}
 \begin{tikzpicture}[>={Stealth[length=2mm]}, every node/.style={font=\scriptsize}]

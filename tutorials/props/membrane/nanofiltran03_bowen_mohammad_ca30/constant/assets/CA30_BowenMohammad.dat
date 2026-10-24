@@ -1,0 +1,39 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Membrane: CA30, a cellulose acetate nanofiltration membrane -- CASE-
+  LOCAL, as Bowen & Mohammad characterised it.
+
+  The pore parameters Bowen & Mohammad determined for CA30 (W.R. Bowen,
+  A.W. Mohammad, "Diafiltration by nanofiltration: prediction and
+  optimization", AIChE J. 44 (1998) 1799), as Geraldes & Alves quote them
+  (J. Membr. Sci. 321 (2008) 172-182, section 4.1):
+    pore radius                      0.63 nm
+    equivalent thickness dx/A_k      6.2 um  -> porosityOverThickness 1/6.2e-6
+  "Equivalent thickness" is the paper's own word for the active-layer
+  thickness over the surface porosity (its section 2: dx_e = dx/A_k), the
+  length the pore model sees; Choupo's record states the same thing as
+  A_k/dx.  No pore dielectric constant: the paper ran this case with
+  eps_p = eps_b, so there is no dielectric exclusion (Born OFF).
+
+  THE FIXED CHARGE IS NOT HERE.  Bowen & Mohammad found it to depend on
+  the feed and fitted it to their data (the paper's Eq. 43):
+      c_X = -9.03 - 3.29 (3 c_Dye + c_Cl)        [mol/m3]
+  so it has no one value a record could carry; every op of the case
+  declares the c_X of its own feed (`chargeDensity`), its arithmetic
+  written beside it.
+
+  A_w is not read by the props bench (it imposes J_v, which the paper's
+  Eqs. 44-45 give for each feed); a value is carried because the record
+  grammar requires one.
+\*---------------------------------------------------------------------------*/
+
+name           CA30_BowenMohammad;
+kind           NF;
+manufacturer   "CA30 (cellulose acetate), as characterised by Bowen & Mohammad (1998)";
+
+A_w            1.0e-5  m/s/bar;     // not read at an imposed J_v
+
+poreModel
+{
+    poreRadius             6.3e-10;            // m
+    porosityOverThickness  161290.32258064516; // 1/m  (= 1/6.2e-6 m)
+}

@@ -657,6 +657,9 @@
   "ExchangerSide": [
    "src/core/ResultRecords.H"
   ],
+  "Excluded": [
+   "src/unitOperations/membrane/transport/PoreNernstPlanck.H"
+  ],
   "Exergy": [
    "src/propertyOps/Exergy.H"
   ],
@@ -1329,6 +1332,9 @@
   ],
   "PoreProblem": [
    "src/unitOperations/membrane/transport/PoreNernstPlanck.H"
+  ],
+  "PoreProfile": [
+   "src/unitOperations/membrane/transport/TransportModel.H"
   ],
   "PoreSeed": [
    "src/unitOperations/membrane/transport/PoreNernstPlanck.H"
@@ -5176,6 +5182,7 @@
    "src/unitOperations/membrane/massTransfer/StirredCell.H"
   ],
   "src/propertyOps/PoreTransportBench.cpp": [
+   "src/core/Constants.H",
    "src/core/Dictionary.H",
    "src/core/Dimensions.H",
    "src/core/Identifiers.H",
@@ -5185,7 +5192,9 @@
    "src/propertyOps/PropertyOperation.H",
    "src/solver/Convergence.H",
    "src/thermo/Component.H",
+   "src/thermo/Database.H",
    "src/thermo/PackageAudit.H",
+   "src/thermo/RecordResolver.H",
    "src/thermo/ThermoPackage.H",
    "src/thermo/membrane/Membrane.H",
    "src/thermo/membrane/MembraneRegistry.H",
@@ -9955,6 +9964,7 @@
    "src/propertyOps/Kinetics1D.cpp",
    "src/propertyOps/MixingRules.cpp",
    "src/propertyOps/PitzerActivity.cpp",
+   "src/propertyOps/PoreTransportBench.cpp",
    "src/propertyOps/Ppr78Kij.cpp",
    "src/propertyOps/PropertyEvaluator.cpp",
    "src/propertyOps/PropertyOperation.cpp",
@@ -13845,6 +13855,7 @@
    "src/propertyOps/PhaseEnvelope.cpp",
    "src/propertyOps/PhaseSplitScan.cpp",
    "src/propertyOps/PitzerActivity.cpp",
+   "src/propertyOps/PoreTransportBench.cpp",
    "src/propertyOps/Ppr78Kij.cpp",
    "src/propertyOps/PropertyOperation.cpp",
    "src/propertyOps/PropertyScan1D.cpp",
@@ -14183,6 +14194,7 @@
    "src/propertyOps/PhaseEnvelope.cpp",
    "src/propertyOps/PhaseSplitScan.cpp",
    "src/propertyOps/PitzerActivity.cpp",
+   "src/propertyOps/PoreTransportBench.cpp",
    "src/propertyOps/Ppr78Kij.cpp",
    "src/propertyOps/PropertyScan1D.cpp",
    "src/propertyOps/PropertyScan2D.cpp",

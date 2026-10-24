@@ -1,0 +1,204 @@
+# Reference KPIs (golden master).  The `anchor` rows are AUTHORED, never re-recorded.
+# kind   name      key         expected        reltol  claim
+#
+# ANCHORS AGAINST EXPERIMENT: the permeate concentrations Bowen & Mohammad MEASURED on the CA30
+# membrane (AIChE J. 44 (1998) 1799), as Fig. 3 of Geraldes & Alves (J. Membr. Sci. 321 (2008)
+# 172-182) plots them: c_p = c_b (1 - R_obs), R_obs of each symbol read off the figure
+# (constant/experimental/geraldes_alves2008_fig3.csv, +- its reading error), c_b the op's feed.
+# The anchors are on c_p, not on R_obs, because R_obs crosses zero (Cl- at 25.8 mol/m3 of
+# chloride and 4 of dye) and a relative band on a number near zero means nothing.  Bands: the
+# MEASURED disagreement x 1.25 plus half the reading error, rounded up -- sized to what Choupo
+# does here, so a row that moves fails, and capped by bin/curate/check_nanofiltran_paper.py
+# arm (e) at twice the disagreement plus the reading error, so none is sized to hide one.
+# Several inputs are FITS to these data (by Bowen & Mohammad): this is agreement of a model
+# carried by fitted inputs, not a prediction (the propsDict header says which).
+#   dye37_p1  Na  c_b  115.460  R_obs +0.8713 +- 0.0147  c_p   14.8597   Choupo  -15.41 %   band 0.25
+#   dye37_p1  Cl  c_b    4.460  R_obs -2.0919 +- 0.0110  c_p   13.7899   Choupo   -8.84 %   band 0.11
+#   dye37_p2  Na  c_b  120.239  R_obs +0.8125 +- 0.0147  c_p   22.5448   Choupo   -2.66 %   band 0.073
+#   dye37_p2  Cl  c_b    9.239  R_obs -1.3419 +- 0.0110  c_p   21.6368   Choupo   +1.42 %   band 0.02
+#   dye37_p3  Na  c_b  132.929  R_obs +0.6985 +- 0.0110  c_p   40.0781   Choupo   +1.86 %   band 0.042
+#   dye37_p3  Cl  c_b   21.929  R_obs -0.7684 +- 0.0110  c_p   38.7792   Choupo   +5.27 %   band 0.069
+#   dye37_p4  Na  c_b  153.903  R_obs +0.5846 +- 0.0147  c_p   63.9313   Choupo   +3.00 %   band 0.055
+#   dye37_p4  Cl  c_b   42.903  R_obs -0.4816 +- 0.0110  c_p   63.5651   Choupo   +3.59 %   band 0.049
+#   dye37_p5  Na  c_b  198.292  R_obs +0.4559 +- 0.0110  c_p  107.8907   Choupo   +4.71 %   band 0.069
+#   dye37_p5  Cl  c_b   87.292  R_obs -0.2353 +- 0.0147  c_p  107.8318   Choupo   +4.77 %   band 0.066
+#   dye4_p1   Na  c_b   17.097  R_obs +0.6434 +- 0.0147  c_p    6.0968   Choupo   +6.50 %   band 0.1
+#   dye4_p1   Cl  c_b    5.097  R_obs -0.1838 +- 0.0184  c_p    6.0338   Choupo   +7.61 %   band 0.1
+#   dye4_p2   Na  c_b   22.460  R_obs +0.4963 +- 0.0147  c_p   11.3131   Choupo   +4.49 %   band 0.071
+#   dye4_p2   Cl  c_b   10.460  R_obs -0.0221 +- 0.0110  c_p   10.6912   Choupo  +10.57 %   band 0.14
+#   dye4_p3   Na  c_b   37.752  R_obs +0.3382 +- 0.0110  c_p   24.9843   Choupo   +3.32 %   band 0.05
+#   dye4_p3   Cl  c_b   25.752  R_obs +0.0551 +- 0.0147  c_p   24.3331   Choupo   +6.08 %   band 0.084
+#   dye4_p4   Na  c_b   64.460  R_obs +0.2574 +- 0.0110  c_p   47.8680   Choupo   +3.58 %   band 0.052
+#   dye4_p4   Cl  c_b   52.460  R_obs +0.0993 +- 0.0147  c_p   47.2507   Choupo   +4.93 %   band 0.07
+#   dye4_p5   Na  c_b  115.009  R_obs +0.1875 +- 0.0147  c_p   93.4448   Choupo   +1.21 %   band 0.024
+#   dye4_p5   Cl  c_b  103.009  R_obs +0.1029 +- 0.0184  c_p   92.4094   Choupo   +2.35 %   band 0.04
+diag    dye37_p1               c_perm_Na_p1     14.859702          0.25     anchor
+diag    dye37_p1               c_perm_Cl_p1     13.789874          0.11     anchor
+diag    dye37_p2               c_perm_Na_p1     22.5448125         0.073    anchor
+diag    dye37_p2               c_perm_Cl_p1     21.6368141         0.02     anchor
+diag    dye37_p3               c_perm_Na_p1     40.0780935         0.042    anchor
+diag    dye37_p3               c_perm_Cl_p1     38.7792436         0.069    anchor
+diag    dye37_p4               c_perm_Na_p1     63.9313062         0.055    anchor
+diag    dye37_p4               c_perm_Cl_p1     63.5650848         0.049    anchor
+diag    dye37_p5               c_perm_Na_p1     107.8906772        0.069    anchor
+diag    dye37_p5               c_perm_Cl_p1     107.8318076        0.066    anchor
+diag    dye4_p1                c_perm_Na_p1     6.0967902          0.1      anchor
+diag    dye4_p1                c_perm_Cl_p1     6.0338286          0.1      anchor
+diag    dye4_p2                c_perm_Na_p1     11.313102          0.071    anchor
+diag    dye4_p2                c_perm_Cl_p1     10.691166          0.14     anchor
+diag    dye4_p3                c_perm_Na_p1     24.9842736         0.05     anchor
+diag    dye4_p3                c_perm_Cl_p1     24.3330648         0.084    anchor
+diag    dye4_p4                c_perm_Na_p1     47.867996          0.052    anchor
+diag    dye4_p4                c_perm_Cl_p1     47.250722          0.07     anchor
+diag    dye4_p5                c_perm_Na_p1     93.4448125         0.024    anchor
+diag    dye4_p5                c_perm_Cl_p1     92.4093739         0.04     anchor
+diag    dye4_p1                Robs_Cl_p1       -0.27393948294   1e-4
+diag    dye4_p1                Robs_Dye_p1      1                1e-4
+diag    dye4_p1                Robs_Na_p1       0.620210004998   1e-4
+diag    dye4_p1                Rreal_Cl_p1      -0.501591011627  1e-4
+diag    dye4_p1                Rreal_Dye_p1     1                1e-4
+diag    dye4_p1                Rreal_Na_p1      0.71017767242    1e-4
+diag    dye4_p1                c_perm_Dye_p1    0                1e-4
+diag    dye4_p1                c_wall_Cl_p1     4.32425973135    1e-4
+diag    dye4_p1                c_wall_Dye_p1    6.02668373631    1e-4
+diag    dye4_p1                c_wall_Na_p1     22.4043109403    1e-4
+diag    dye4_p1                dPsi_m_V_p1      0.0351687894148  1e-4
+diag    dye4_p1                n_points         1                1e-4
+diag    dye4_p1                permeateCharge_max 0                1e-4
+diag    dye4_p1                poreContinuations_p1 0                1e-4
+diag    dye4_p1                poreNewton_p1    5                1e-4
+diag    dye4_p2                Robs_Cl_p1       -0.130173465252  1e-4
+diag    dye4_p2                Robs_Dye_p1      1                1e-4
+diag    dye4_p2                Robs_Na_p1       0.473659196503   1e-4
+diag    dye4_p2                Rreal_Cl_p1      -0.269032767428  1e-4
+diag    dye4_p2                Rreal_Dye_p1     1                1e-4
+diag    dye4_p2                Rreal_Na_p1      0.575691388476   1e-4
+diag    dye4_p2                c_perm_Dye_p1    0                1e-4
+diag    dye4_p2                c_wall_Cl_p1     9.31545248472    1e-4
+diag    dye4_p2                c_wall_Dye_p1    6.18181163686    1e-4
+diag    dye4_p2                c_wall_Na_p1     27.8608873953    1e-4
+diag    dye4_p2                dPsi_m_V_p1      0.0252434291655  1e-4
+diag    dye4_p2                n_points         1                1e-4
+diag    dye4_p2                permeateCharge_max 2.25395209017e-16 1e-4
+diag    dye4_p2                poreContinuations_p1 0                1e-4
+diag    dye4_p2                poreNewton_p1    4                1e-4
+diag    dye4_p3                Robs_Cl_p1       -0.0023762590761 1e-4
+diag    dye4_p3                Robs_Dye_p1      1                1e-4
+diag    dye4_p3                Robs_Na_p1       0.316243022258   1e-4
+diag    dye4_p3                Rreal_Cl_p1      -0.0645649373471 1e-4
+diag    dye4_p3                Rreal_Dye_p1     1                1e-4
+diag    dye4_p3                Rreal_Na_p1      0.407928452021   1e-4
+diag    dye4_p3                c_perm_Dye_p1    0                1e-4
+diag    dye4_p3                c_wall_Cl_p1     24.2476456984    1e-4
+diag    dye4_p3                c_wall_Dye_p1    6.45015079643    1e-4
+diag    dye4_p3                c_wall_Na_p1     43.5980980877    1e-4
+diag    dye4_p3                dPsi_m_V_p1      0.016498773571   1e-4
+diag    dye4_p3                n_points         1                1e-4
+diag    dye4_p3                permeateCharge_max 6.88158497184e-17 1e-4
+diag    dye4_p3                poreContinuations_p1 0                1e-4
+diag    dye4_p3                poreNewton_p1    4                1e-4
+diag    dye4_p4                Robs_Cl_p1       0.0548527704145  1e-4
+diag    dye4_p4                Robs_Dye_p1      1                1e-4
+diag    dye4_p4                Robs_Na_p1       0.230803232019   1e-4
+diag    dye4_p4                Rreal_Cl_p1      0.0302591450907  1e-4
+diag    dye4_p4                Rreal_Dye_p1     1                1e-4
+diag    dye4_p4                Rreal_Na_p1      0.301720717779   1e-4
+diag    dye4_p4                c_perm_Dye_p1    0                1e-4
+diag    dye4_p4                c_wall_Cl_p1     51.1295604522    1e-4
+diag    dye4_p4                c_wall_Dye_p1    6.62567315811    1e-4
+diag    dye4_p4                c_wall_Na_p1     71.0065799265    1e-4
+diag    dye4_p4                dPsi_m_V_p1      0.0120935343611  1e-4
+diag    dye4_p4                n_points         1                1e-4
+diag    dye4_p4                permeateCharge_max 7.16526828715e-17 1e-4
+diag    dye4_p4                poreContinuations_p1 0                1e-4
+diag    dye4_p4                poreNewton_p1    4                1e-4
+diag    dye4_p5                Robs_Cl_p1       0.0818415641989  1e-4
+diag    dye4_p5                Robs_Dye_p1      1                1e-4
+diag    dye4_p5                Robs_Na_p1       0.17764190356    1e-4
+diag    dye4_p5                Rreal_Cl_p1      0.0783163440845  1e-4
+diag    dye4_p5                Rreal_Dye_p1     1                1e-4
+diag    dye4_p5                Rreal_Na_p1      0.22803902659    1e-4
+diag    dye4_p5                c_perm_Dye_p1    0                1e-4
+diag    dye4_p5                c_wall_Cl_p1     102.615015148    1e-4
+diag    dye4_p5                c_wall_Dye_p1    6.63409846804    1e-4
+diag    dye4_p5                c_wall_Na_p1     122.517310552    1e-4
+diag    dye4_p5                dPsi_m_V_p1      0.00930160133249 1e-4
+diag    dye4_p5                n_points         1                1e-4
+diag    dye4_p5                permeateCharge_max 1.50254469538e-16 1e-4
+diag    dye4_p5                poreContinuations_p1 0                1e-4
+diag    dye4_p5                poreNewton_p1    4                1e-4
+diag    dye37_p1               Robs_Cl_p1       -1.81846121575   1e-4
+diag    dye37_p1               Robs_Dye_p1      1                1e-4
+diag    dye37_p1               Robs_Na_p1       0.891128208711   1e-4
+diag    dye37_p1               Rreal_Cl_p1      -2.58911672536   1e-4
+diag    dye37_p1               Rreal_Dye_p1     1                1e-4
+diag    dye37_p1               Rreal_Na_p1      0.907029672979   1e-4
+diag    dye37_p1               c_perm_Dye_p1    0                1e-4
+diag    dye37_p1               c_wall_Cl_p1     3.50234834477    1e-4
+diag    dye37_p1               c_wall_Dye_p1    43.9019019782    1e-4
+diag    dye37_p1               c_wall_Na_p1     135.208054279    1e-4
+diag    dye37_p1               dPsi_m_V_p1      0.0625518721014  1e-4
+diag    dye37_p1               n_points         1                1e-4
+diag    dye37_p1               permeateCharge_max 7.0656691076e-17 1e-4
+diag    dye37_p1               poreContinuations_p1 0                1e-4
+diag    dye37_p1               poreNewton_p1    5                1e-4
+diag    dye37_p2               Robs_Cl_p1       -1.37516218217   1e-4
+diag    dye37_p2               Robs_Dye_p1      1                1e-4
+diag    dye37_p2               Robs_Na_p1       0.817495792537   1e-4
+diag    dye37_p2               Rreal_Cl_p1      -1.90340775589   1e-4
+diag    dye37_p2               Rreal_Dye_p1     1                1e-4
+diag    dye37_p2               Rreal_Na_p1      0.843648017974   1e-4
+diag    dye37_p2               c_perm_Dye_p1    0                1e-4
+diag    dye37_p2               c_wall_Cl_p1     7.55805771909    1e-4
+diag    dye37_p2               c_wall_Dye_p1    44.2642424003    1e-4
+diag    dye37_p2               c_wall_Na_p1     140.35078492     1e-4
+diag    dye37_p2               dPsi_m_V_p1      0.0492377927603  1e-4
+diag    dye37_p2               n_points         1                1e-4
+diag    dye37_p2               permeateCharge_max 1.61898181753e-16 1e-4
+diag    dye37_p2               poreContinuations_p1 0                1e-4
+diag    dye37_p2               poreNewton_p1    5                1e-4
+diag    dye37_p3               Robs_Cl_p1       -0.861633156072  1e-4
+diag    dye37_p3               Robs_Dye_p1      1                1e-4
+diag    dye37_p3               Robs_Na_p1       0.692890539465   1e-4
+diag    dye37_p3               Rreal_Cl_p1      -1.17410431946   1e-4
+diag    dye37_p3               Rreal_Dye_p1     1                1e-4
+diag    dye37_p3               Rreal_Na_p1      0.735429877109   1e-4
+diag    dye37_p3               c_perm_Dye_p1    0                1e-4
+diag    dye37_p3               c_wall_Cl_p1     18.7772744455    1e-4
+diag    dye37_p3               c_wall_Dye_p1    45.1749770282    1e-4
+diag    dye37_p3               c_wall_Na_p1     154.30220553     1e-4
+diag    dye37_p3               dPsi_m_V_p1      0.035818636233   1e-4
+diag    dye37_p3               n_points         1                1e-4
+diag    dye37_p3               permeateCharge_max 8.70256499218e-17 1e-4
+diag    dye37_p3               poreContinuations_p1 0                1e-4
+diag    dye37_p3               poreNewton_p1    6                1e-4
+diag    dye37_p4               Robs_Cl_p1       -0.534771646877  1e-4
+diag    dye37_p4               Robs_Dye_p1      1                1e-4
+diag    dye37_p4               Robs_Na_p1       0.572157086178   1e-4
+diag    dye37_p4               Rreal_Cl_p1      -0.735935086189  1e-4
+diag    dye37_p4               Rreal_Dye_p1     1                1e-4
+diag    dye37_p4               Rreal_Na_p1      0.628056895594   1e-4
+diag    dye37_p4               c_perm_Dye_p1    0                1e-4
+diag    dye37_p4               c_wall_Cl_p1     37.9313192583    1e-4
+diag    dye37_p4               c_wall_Dye_p1    46.367320444     1e-4
+diag    dye37_p4               c_wall_Na_p1     177.03328059     1e-4
+diag    dye37_p4               dPsi_m_V_p1      0.0271659554132  1e-4
+diag    dye37_p4               n_points         1                1e-4
+diag    dye37_p4               permeateCharge_max 2.15818550108e-16 1e-4
+diag    dye37_p4               poreContinuations_p1 0                1e-4
+diag    dye37_p4               poreNewton_p1    5                1e-4
+diag    dye37_p5               Robs_Cl_p1       -0.294186596333  1e-4
+diag    dye37_p5               Robs_Dye_p1      1                1e-4
+diag    dye37_p5               Robs_Na_p1       0.430273856903   1e-4
+diag    dye37_p5               Rreal_Cl_p1      -0.409525992693  1e-4
+diag    dye37_p5               Rreal_Dye_p1     1                1e-4
+diag    dye37_p5               Rreal_Na_p1      0.490240659436   1e-4
+diag    dye37_p5               c_perm_Dye_p1    0                1e-4
+diag    dye37_p5               c_wall_Cl_p1     80.1490266606    1e-4
+diag    dye37_p5               c_wall_Dye_p1    47.1565146212    1e-4
+diag    dye37_p5               c_wall_Na_p1     221.618570524    1e-4
+diag    dye37_p5               dPsi_m_V_p1      0.019014928416   1e-4
+diag    dye37_p5               n_points         1                1e-4
+diag    dye37_p5               permeateCharge_max 2.51581587676e-16 1e-4
+diag    dye37_p5               poreContinuations_p1 0                1e-4
+diag    dye37_p5               poreNewton_p1    4                1e-4

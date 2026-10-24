@@ -1,0 +1,139 @@
+# Reference KPIs (golden master).  The `anchor` rows are AUTHORED, never re-recorded.
+# kind   name      key         expected        reltol  claim
+#
+# ANCHORS: NanoFiltran on the paper's stiff case (Geraldes & Alves, J. Membr. Sci. 321
+# (2008) 172-182, section 4.2) built with its Davies constant corrected (ln 10) and its Born
+# constant in CODATA values, its D input matched, converged (TOL 1e-9) and Richardson-
+# extrapolated from ND 102 and 204 -- bin/curate/nanofiltran/paper.tsv, section stiff,
+# variant daviesBorn_ext (regenerate_paper.py).  NOT the paper's Table 2, which carries
+# NanoFiltran's Davies defect (the propsDict header accounts for the difference).  The
+# potential is NanoFiltran's converted to CODATA volts: x (R/F)_CODATA / (8.314/96500) =
+# 1.0002076735749472.  Bands: about twice the MEASURED distance of the 350-node op from the
+# extrapolated reference (Na+ 9.1e-5, Mg2+ 4.7e-6, Cl- 4.4e-6, the potential 1.6e-5) --
+# Choupo's own grid error at 350 nodes; extrapolated, Choupo agrees to 1e-7
+# (bin/curate/check_nanofiltran_paper.py arm (c), which also caps every band at twice it).
+diag    N350                   c_perm_Na_p1     0.05542481111322   1.5e-4   anchor
+diag    N350                   c_perm_Mg_p1     8.631732593033     8e-6     anchor
+diag    N350                   c_perm_Cl_p1     17.31888999662     8e-6     anchor
+diag    N350                   dPsi_m_V_p1      0.14495991780377562 3e-5    anchor
+diag    N10                    Robs_Cl_p1       0.655680930906   1e-4
+diag    N10                    Robs_Mg_p1       0.571170310089   1e-4
+diag    N10                    Robs_Na_p1       0.993723414176   1e-4
+diag    N10                    Rreal_Cl_p1      0.65568205972    1e-4
+diag    N10                    Rreal_Mg_p1      0.571171534759   1e-4
+diag    N10                    Rreal_Na_p1      0.993723445362   1e-4
+diag    N10                    c_perm_Cl_p1     17.2159534547    1e-4
+diag    N10                    c_perm_Mg_p1     8.57659379822    1e-4
+diag    N10                    c_perm_Na_p1     0.0627658582356  1e-4
+diag    N10                    c_wall_Cl_p1     50.0001639202    1e-4
+diag    N10                    c_wall_Mg_p1     20.000057117     1e-4
+diag    N10                    c_wall_Na_p1     10.0000496862    1e-4
+diag    N10                    dPsi_m_V_p1      0.141753986464   1e-4
+diag    N10                    n_points         1                1e-4
+diag    N10                    permeateCharge_max 2.06361714915e-16 1e-4
+diag    N10                    poreContinuations_p1 0                1e-4
+diag    N10                    poreNewton_p1    7                1e-4
+diag    N20                    Robs_Cl_p1       0.65411541898    1e-4
+diag    N20                    Robs_Mg_p1       0.569071945031   1e-4
+diag    N20                    Robs_Na_p1       0.994289314779   1e-4
+diag    N20                    Rreal_Cl_p1      0.654116550219   1e-4
+diag    N20                    Rreal_Mg_p1      0.569073171173   1e-4
+diag    N20                    Rreal_Na_p1      0.99428934317    1e-4
+diag    N20                    c_perm_Cl_p1     17.294229051     1e-4
+diag    N20                    c_perm_Mg_p1     8.61856109939    1e-4
+diag    N20                    c_perm_Na_p1     0.0571068522056  1e-4
+diag    N20                    c_wall_Cl_p1     50.0001635289    1e-4
+diag    N20                    c_wall_Mg_p1     20.0000569072    1e-4
+diag    N20                    c_wall_Na_p1     10.0000497145    1e-4
+diag    N20                    dPsi_m_V_p1      0.144189507887   1e-4
+diag    N20                    n_points         1                1e-4
+diag    N20                    permeateCharge_max 1.02713849468e-16 1e-4
+diag    N20                    poreContinuations_p1 0                1e-4
+diag    N20                    poreNewton_p1    9                1e-4
+diag    N50                    Robs_Cl_p1       0.653697412469   1e-4
+diag    N50                    Robs_Mg_p1       0.568513750309   1e-4
+diag    N50                    Robs_Na_p1       0.994432061111   1e-4
+diag    N50                    Rreal_Cl_p1      0.653698544351   1e-4
+diag    N50                    Rreal_Mg_p1      0.568514976835   1e-4
+diag    N50                    Rreal_Na_p1      0.994432088796   1e-4
+diag    N50                    c_perm_Cl_p1     17.3151293765    1e-4
+diag    N50                    c_perm_Mg_p1     8.62972499382    1e-4
+diag    N50                    c_perm_Na_p1     0.055679388889   1e-4
+diag    N50                    c_wall_Cl_p1     50.0001634244    1e-4
+diag    N50                    c_wall_Mg_p1     20.0000568514    1e-4
+diag    N50                    c_wall_Na_p1     10.0000497216    1e-4
+diag    N50                    dPsi_m_V_p1      0.144841832012   1e-4
+diag    N50                    n_points         1                1e-4
+diag    N50                    permeateCharge_max 1.0258986813e-16 1e-4
+diag    N50                    poreContinuations_p1 0                1e-4
+diag    N50                    poreNewton_p1    9                1e-4
+diag    N100                   Robs_Cl_p1       0.653640674686   1e-4
+diag    N100                   Robs_Mg_p1       0.568438024296   1e-4
+diag    N100                   Robs_Na_p1       0.994451276246   1e-4
+diag    N100                   Rreal_Cl_p1      0.653641806655   1e-4
+diag    N100                   Rreal_Mg_p1      0.568439250873   1e-4
+diag    N100                   Rreal_Na_p1      0.994451303835   1e-4
+diag    N100                   c_perm_Cl_p1     17.3179662657    1e-4
+diag    N100                   c_perm_Mg_p1     8.63123951409    1e-4
+diag    N100                   c_perm_Na_p1     0.055487237541   1e-4
+diag    N100                   c_wall_Cl_p1     50.0001634102    1e-4
+diag    N100                   c_wall_Mg_p1     20.0000568438    1e-4
+diag    N100                   c_wall_Na_p1     10.0000497226    1e-4
+diag    N100                   dPsi_m_V_p1      0.144930910096   1e-4
+diag    N100                   n_points         1                1e-4
+diag    N100                   permeateCharge_max 0                1e-4
+diag    N100                   poreContinuations_p1 0                1e-4
+diag    N100                   poreNewton_p1    10               1e-4
+diag    N200                   Robs_Cl_p1       0.653626791809   1e-4
+diag    N200                   Robs_Mg_p1       0.568419496456   1e-4
+diag    N200                   Robs_Na_p1       0.99445597322    1e-4
+diag    N200                   Rreal_Cl_p1      0.653627923799   1e-4
+diag    N200                   Rreal_Mg_p1      0.568420723047   1e-4
+diag    N200                   Rreal_Na_p1      0.994456000786   1e-4
+diag    N200                   c_perm_Cl_p1     17.3186604096    1e-4
+diag    N200                   c_perm_Mg_p1     8.63161007087    1e-4
+diag    N200                   c_perm_Na_p1     0.0554402678021  1e-4
+diag    N200                   c_wall_Cl_p1     50.0001634067    1e-4
+diag    N200                   c_wall_Mg_p1     20.000056842     1e-4
+diag    N200                   c_wall_Na_p1     10.0000497228    1e-4
+diag    N200                   dPsi_m_V_p1      0.144952731152   1e-4
+diag    N200                   n_points         1                1e-4
+diag    N200                   permeateCharge_max 0                1e-4
+diag    N200                   poreContinuations_p1 0                1e-4
+diag    N200                   poreNewton_p1    11               1e-4
+diag    N350                   Robs_Cl_p1       0.653623708789   1e-4
+diag    N350                   Robs_Mg_p1       0.568415381973   1e-4
+diag    N350                   Robs_Na_p1       0.994457016054   1e-4
+diag    N350                   Rreal_Cl_p1      0.653624840784   1e-4
+diag    N350                   Rreal_Mg_p1      0.568416608566   1e-4
+diag    N350                   Rreal_Na_p1      0.994457043615   1e-4
+diag    N350                   c_wall_Cl_p1     50.0001634059    1e-4
+diag    N350                   c_wall_Mg_p1     20.0000568415    1e-4
+diag    N350                   c_wall_Na_p1     10.0000497229    1e-4
+diag    N350                   n_points         1                1e-4
+diag    N350                   permeateCharge_max 0                1e-4
+diag    N350                   poreContinuations_p1 0                1e-4
+diag    N350                   poreNewton_p1    12               1e-4
+# The pore profile of op N350 (the paper's Fig. 4): self-recorded cells of pore_N350.csv at
+# the two faces and at x = 0.50, 1.25 and 2.00 um -- regression, not anchors (the faces are
+# held against the corrected NanoFiltran by bin/curate/check_nanofiltran_paper.py arm (c)).
+csv     pore_N350.csv          0:c_Na_molm3 15.0726681179 1e-4
+csv     pore_N350.csv          0:c_Cl_molm3 0.964930178179 1e-4
+csv     pore_N350.csv          0:c_Mg_molm3 7.94613103015 1e-4
+csv     pore_N350.csv          0:psi_V -0.0582840698536 1e-4
+csv     pore_N350.csv          70:c_Na_molm3 13.6359621056 1e-4
+csv     pore_N350.csv          70:c_Cl_molm3 0.642439401732 1e-4
+csv     pore_N350.csv          70:c_Mg_molm3 8.50323864806 1e-4
+csv     pore_N350.csv          70:psi_V -0.052856759316 1e-4
+csv     pore_N350.csv          175:c_Na_molm3 5.59210566171 1e-4
+csv     pore_N350.csv          175:c_Cl_molm3 0.356740684323 1e-4
+csv     pore_N350.csv          175:c_Mg_molm3 12.3823175113 1e-4
+csv     pore_N350.csv          175:psi_V -0.0256911873334 1e-4
+csv     pore_N350.csv          279:c_Na_molm3 0.751628074482 1e-4
+csv     pore_N350.csv          279:c_Cl_molm3 0.290995886777 1e-4
+csv     pore_N350.csv          279:c_Mg_molm3 14.7696839061 1e-4
+csv     pore_N350.csv          279:psi_V 0.0300022851236 1e-4
+csv     pore_N350.csv          349:c_Na_molm3 0.160299312962 1e-4
+csv     pore_N350.csv          349:c_Cl_molm3 0.20729703061 1e-4
+csv     pore_N350.csv          349:c_Mg_molm3 15.0234988588 1e-4
+csv     pore_N350.csv          349:psi_V 0.0721734672636 1e-4

@@ -432,6 +432,41 @@ ACCEPTED_VENDORED_CODE = {
     },
 }
 
+#  FACTS FROM A COPYRIGHTED PAPER, AND THE PAPER KEPT OUT (2026-10-24, DEV.md
+#  4c C145).  The NanoFiltran paper (Geraldes & Alves, J. Membr. Sci. 321
+#  (2008) 172-182) is the publisher's copyright.  Its NUMBERS enter the tree
+#  as cited facts -- Table 2 transcribed (regenerate_paper.py's PAPER_TABLE2,
+#  echoed in paper.tsv) and Fig. 3 digitised (a CSV of numbers, not the
+#  figure) -- and the paper itself, and the figure images the digitiser
+#  reads, must not.  So each file carrying its numbers is held to the
+#  citation and to the words that say what kind of thing it carries, and no
+#  file anywhere in the scanned roots may hash to the paper's PDF or to the
+#  figures extracted from it (pdfimages -j, the digitiser's own input).
+ACCEPTED_PAPER_FACTS = {
+    "Geraldes & Alves 2008 (NanoFiltran paper)": {
+        "files": {
+            "bin/curate/nanofiltran/regenerate_paper.py":
+                ["doi:10.1016/j.memsci.2008.04.054", "PAPER_TABLE2", "NOT in the"],
+            "bin/curate/nanofiltran/paper.tsv":
+                ["doi:10.1016/j.memsci.2008.04.054", "transcribed (facts, cited)",
+                 "not in the tree"],
+            "tutorials/props/membrane/nanofiltran03_bowen_mohammad_ca30/constant/"
+            "experimental/geraldes_alves2008_fig3.csv":
+                ["doi:10.1016/j.memsci.2008.04.054", "LICENCE: these are FACTS",
+                 "are not in the tree"],
+        },
+        "excluded_sha256": {
+            "e53ef6500b4e56bf0e0d492931f1bc7038ff6e836d4d31caadf590cba5c5f626": "the paper (PDF)",
+            "c73ba0b2517c22daec568d504e7eb98ff5ee29cf50b452623b8bb297709b4f65": "its Fig. 3 (JPEG)",
+            "283df89774df2c3d3ec0fea549b448044fe8cf91d2047aeb5b2a8460a79793ae": "its Fig. 4 (JPEG)",
+        },
+        "why": "numbers from a figure and a table are facts; the publisher's text "
+               "and figures are not redistributed",
+    },
+}
+PAPER_SCAN_ROOTS = ["bin", "tutorials", "docs", "data", "gui/public", "gui/src", "thirdParty"]
+PAPER_SCAN_SUFFIXES = {".pdf", ".jpg", ".jpeg", ".png", ".tif", ".tiff", ".gif", ".webp"}
+
 #  The report BY NAME, not the agency: hundreds of records cite NASA
 #  thermochemical polynomials (McBride et al.) in their authority fields
 #  under the general public-domain reading and carry no licence word; this
@@ -588,6 +623,42 @@ def main() -> int:
             print(f"check_source_licence: FAILED -- NOTICE does not name {miss} for "
                   f"the vendored {name}")
             return 1
+
+    #  FACTS FROM A PAPER: cited, said, and the paper itself kept out.
+    paper_files, paper_scanned = 0, 0
+    excluded = {}
+    for name, acc in ACCEPTED_PAPER_FACTS.items():
+        for rel, needles in acc["files"].items():
+            p = ROOT / rel
+            if not p.is_file():
+                print(f"check_source_licence: FAILED -- ACCEPTED_PAPER_FACTS['{name}'] "
+                      f"names {rel}, which does not exist")
+                return 1
+            body = p.read_text(errors="ignore")
+            miss = [s for s in needles if s not in body]
+            if miss:
+                print(f"check_source_licence: FAILED -- {rel} carries numbers from "
+                      f"{name} and no longer says so ({miss}): a fact from a "
+                      "copyrighted paper is cited where it is carried, or not carried")
+                return 1
+            paper_files += 1
+        for h, what in acc["excluded_sha256"].items():
+            excluded[h] = f"{what} of {name}"
+    for root in PAPER_SCAN_ROOTS:
+        base = ROOT / root
+        if not base.is_dir():
+            continue
+        for f in base.rglob("*"):
+            if (not f.is_file() or f.suffix.lower() not in PAPER_SCAN_SUFFIXES
+                    or "node_modules" in f.parts):
+                continue
+            paper_scanned += 1
+            h = _sha(f.read_bytes()).hexdigest()
+            if h in excluded:
+                print(f"check_source_licence: FAILED -- {f.relative_to(ROOT)} IS "
+                      f"{excluded[h]}: the publisher's copyright does not enter "
+                      "the tree (its numbers do, cited)")
+                return 1
 
     #  A SCAN OVER NOTHING IS NOT A CLEAN CATALOGUE (2026-08-15 fleet
     #  census).  This gate shared the check_true_ions death shape: rename
@@ -828,7 +899,11 @@ def main() -> int:
           f"Vendored third-party code, by CONTRACT: "
           f"{', '.join(ACCEPTED_VENDORED_CODE)} -- {vendored_files} file(s) each "
           f"carrying its own licence notice, the LAPACK text the fetched one, "
-          f"NOTICE naming every holder.")
+          f"NOTICE naming every holder.  Facts from a copyrighted paper, by "
+          f"CONTRACT: {', '.join(ACCEPTED_PAPER_FACTS)} -- {paper_files} file(s) "
+          f"each citing it and saying what it carries, and none of the "
+          f"{paper_scanned} PDF/image file(s) under {', '.join(PAPER_SCAN_ROOTS)} "
+          f"is the paper or a figure of it.")
     #  THE MANIFEST READS ONLY THE FIRST LINE.  gate_manifest.py captures
     #  `line[0]` as the gate's claim, so a claim printed on a second line is
     #  invisible in the one place that answers "what does this project
