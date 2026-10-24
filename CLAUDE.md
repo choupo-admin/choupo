@@ -2749,56 +2749,46 @@ guard nothing tests.*  The gate now BUILDS the offending cases (reason stripped,
 `standard` requested, a law nobody implemented) and requires each to refuse AND
 name why.  8 sabotages total, two of which survived first contact.
 
-**A STIFF PORE SOLVED AT ONCE -- the DSPM-DE pore, by finite differences
-(2026-10-22, DEV.md 4c C138 slice 1, Vítor's decision).**  The default
-`DSPM-DE` does NOT solve the pore: it makes the feed face and the permeate
-electroneutral (only when the membrane declares a charge) and carries each
-ion across ALONE by a closed-form transmission; its header had listed pore
-electroneutrality and zero current as "the physics solved", and that closed
-form is not the solution of the extended Nernst-Planck equation even in its
-own uncharged limit (a point solute is rejected up to 50 %; on an uncharged
-Born-free membrane it departs ~70 % from the exact ambipolar answer).  Opt-in
-`transportParameters { poreSolver { method finiteDifference; nodes <n>; } }`
-SOLVES it -- NanoFiltran's method (Geraldes & Alves, J. Membr. Sci. 321 (2008)
-172-182): ENP on n nodes, Scharfetter-Gummel (exponentially fitted) fluxes,
-electroneutrality at every node, zero current, the law's own partitions at
-both faces, every node at once by `newtonND` on the DECLARED block-tridiagonal
-structure (`BlockTri::audit`: the first solve is audited, the rest declared).
-ONE home, `membrane/transport/PoreNernstPlanck`, which holds no partition
-model.  Seeded from local Donnan equilibrium on the closed form's permeate,
-warm-started station to station; a failed Newton is retried by continuation
-in J_v from the exact J_v = 0 state, ANNOUNCED and counted.  The default is
-byte-identical (every DSPM-DE golden pinned to it); whether to retire the
-closed form is RESERVED for Vítor, and so is the DEFAULT WALL both paths
-share, closed with the salt's solution-diffusion B_s rather than the pore's own
-permeate (membrane11 Born-off reads NEGATIVE rejection under the solved pore
-because of it; slice 2 added the opt-in `wallClosure porePermeate`).  Measured, never assumed: order 2 against an ambipolar
-analytic limit, exact at cell Péclet 17.6, machine-level residuals on a pore
-with migration 3e5 x its net flux, 56/56 sweep convergence, the engine within
-2e-6 of the limit end to end.  NOT done: SDEM's march onto the solver
-(measured: it serves SDEM's equations but a uniform grid is slow at thin
-permeate-face layers), a stretched grid.  Gate: `check_pore_solver` (8
-sabotages, one SURVIVED the first refusal arm).  Witness
-`membrane20_dspmde_pore_finite_difference`.  **SLICE 2 (same day): the same
-model in NanoFiltran itself, code to code.**  NanoFiltran is VENDORED as
-received in `bin/curate/nanofiltran/` (Vítor's leave; MIT + Hutt's MIT +
-LAPACK, held by `check_source_licence` ACCEPTED_VENDORED_CODE); its source is
-never edited -- three of its CONSTANTS (Vogel D(T), the rounded Born constant,
-single-precision literals that move Mg2+'s K_d by 1.55e-4) are cancelled
-through its INPUTS, and `regenerate.py` rebuilds it and REFUSES without
-gfortran.  Four DECLARED DSPM-DE choices express its model, every default
-byte-identical: `hindrance DechadilokDeen2006`, `activity bulkOverPoreDavies |
-ideal`, `bulkDielectric`, `poreSolver { wallClosure porePermeate; }` (the wall
-and the pore solved together by a Newton on the permeate -- a plain fixed point
-was measured to fail).  The golden `props/membrane/nanofiltran01_dspmde_reference`
-(the `poreTransport` op: the law at IMPOSED J_v) pins 35 NanoFiltran permeates
-as anchors; the two programs' grid limits agree within 8e-7 on every row.
-FINDINGS, recorded not changed: the default `K_d` is Dechadilok-Deen's H =
-Phi K_d (the steric partition counted twice in diffusion, in every DSPM-DE
-golden -- RESERVED for Vítor), and NanoFiltran's Davies uses exp() on the
-log10 A (the Davies anchors use a copy with that constant corrected).  Gate:
-`check_nanofiltran_reference` (needs no gfortran).  Record:
-[`docs/design/a-stiff-pore-solved-at-once.md`](docs/design/a-stiff-pore-solved-at-once.md) §9.
+**A STIFF PORE SOLVED AT ONCE -- the DSPM-DE pore by finite differences,
+NanoFiltran the reference and never the solver (2026-10-22/24, DEV.md 4c
+C138, C141, C142; Vítor: "faz um solver melhor ... deixa o nanofiltran
+resultados só para comparares").**  `DSPM-DE` SOLVES the pore by default:
+extended Nernst-Planck on a uniform grid (101 nodes), Scharfetter-Gummel
+fluxes, electroneutrality at every node, zero current, the law's partitions
+at both faces, and -- since C142 -- the WALL, its electroneutrality, the water
+flux J_v = A_w(ΔP − Δπ) and the face activities as rows of the SAME Newton,
+one per module station, with an ANALYTIC Jacobian (the CPR finite-difference
+one kept as a test oracle) on the declared block-tridiagonal structure,
+audited on an 11-node copy of the first station.  A failed Newton restarts
+from the exact no-flux state and ramps the drive, ANNOUNCED and counted; a
+station with no positive water-flux root publishes J_w = 0, said once.  ONE
+home for the pore (`membrane/transport/PoreNernstPlanck`) and one for the
+wall (`membrane::wallAtField`, `src/unitOperations/membrane/massTransfer/InterfaceBalance.cpp`).  The
+CLOSED FORM IS RETIRED and `method closedForm;` refuses by name: with the
+honest K_d it transmits at K_c > 1 at low Péclet (−121.5 % rejection on
+membrane11).  `hindrance legacy;` refuses too: it took Dechadilok-Deen's H =
+Φ K_d as K_d and counted the steric partition twice; the default is
+`DechadilokDeen2006` (K_d = H/Φ).  The default wall is closed by the pore's
+own permeate (`wallClosure porePermeate`); `solutionDiffusion` (the salt's
+B_s) is a declared option, and membrane20 compares the two.  Measured, never
+assumed: order 2 against an ambipolar analytic limit; ‖F‖ ≤ 1e-12 on every
+station; membrane10 10.9 s → 0.27 s; and on NanoFiltran's own problems
+Choupo converges in 4-24 Newton iterations where NanoFiltran needs hundreds to
+thousands of under-relaxed iterations and STALLS at its cap on NaCl (ND 204)
+and Na2SO4.  A grid graded toward the faces was built (`grading`) and
+measured WORSE: the hardest profile's steep region is an INTERIOR
+ion-exchange front, not a face layer, so the default stays uniform and an
+adaptive grid is the named next step.  NanoFiltran is VENDORED as received
+in `bin/curate/nanofiltran/` (Vítor's leave; held by `check_source_licence`
+ACCEPTED_VENDORED_CODE) and only RUN by `regenerate.py` to produce the 35
+anchors of `props/membrane/nanofiltran01_dspmde_reference` (the
+`poreTransport` op: the law at imposed J_v); its own Davies applies exp() to
+a log10 constant, so the Davies anchors come from a copy with that ONE
+declared patch.  The 101-node goldens moved on C141 with the list shown to
+Vítor; C142 moved none.  NOT done: SDEM's march onto this solver, an
+adaptive grid.  Gates: `check_pore_solver` (analytic-vs-FD Jacobian arm,
+station arm; sabotage-verified), `check_nanofiltran_reference`.  Record:
+[`docs/design/a-stiff-pore-solved-at-once.md`](docs/design/a-stiff-pore-solved-at-once.md) §9-§11.
 
 **ELECTRONEUTRALITY WITHOUT A NEW PARAMETER — the `SDEM` transport law
 (2026-09-15, Vítor: "não se pode andar a aumentar o número de parâmetros

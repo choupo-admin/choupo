@@ -1555,8 +1555,19 @@ accepts today, and that is a policy call.
 > closed form retired by name and membrane20 rebuilt to compare the two
 > wall closures, and a timing table against NanoFiltran on its own
 > problems.  NanoFiltran stays in bin/curate/ as the reference that
-> produces the comparison numbers, never as a solver.  Status: dispatched
-> 2026-10-24.
+> produces the comparison numbers, never as a solver.  LANDED 2026-10-24:
+> one Newton per station (pore + wall + its electroneutrality + J_v + face
+> activities), analytic Jacobian (FD kept as the test oracle), the closed
+> form refused by name, membrane20 rebuilt (porePermeate vs B_s wall);
+> membrane10 10.9 s -> 0.27 s; on NanoFiltran's problems 4-24 Newton
+> iterations, where NanoFiltran stalls at its cap on NaCl (ND 204) and
+> Na2SO4.  The graded grid was built and measured WORSE (the steep region
+> is an interior front), so the default stays uniform 101 nodes.  No
+> 101-node golden moved; membrane20 lost its closed-form rows and gained
+> its B_s-wall rows (appended).  OPEN, named: an adaptive grid; SDEM's
+> march onto this solver; the NF270_dspmde record comment "B_s unused by
+> DSPM-DE" is false under a declared `wallClosure solutionDiffusion`;
+> MgSO4 first stations still take the continuation once per unit.
 
 > **C141. THE DSPM-DE DEFAULTS CORRECTED: K_d NO LONGER COUNTS THE STERIC
 > PARTITION TWICE, AND THE PORE IS SOLVED AS NANOFILTRAN SOLVES IT (Vitor,
