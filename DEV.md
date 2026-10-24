@@ -1501,6 +1501,21 @@ accepts today, and that is a policy call.
 > final; }` layout draws what the steady flowsheet and the sizing pass
 > already hold.
 
+> **C144. A SOLUTION-ADAPTIVE GRID FOR THE DSPM-DE PORE (Vitor,
+> 2026-10-24: "Faz a malha adaptativa, porque eu preciso de enviar o link
+> para um cientista que me pediu").**  C142 measured that a grid graded
+> toward the faces is WORSE (1.1-8x the uniform error from beta >= 1.5):
+> the hardest profile's steep region is an INTERIOR ion-exchange front
+> (xi ~ 0.39), which needs ~400 uniform nodes to reach 1e-4 (nanofiltran01
+> declares 801).  Scope: equidistribute a monitor of the solved profile
+> (arc length / gradient of ln c and psi) with a fixed node count, re-solve
+> on the moved grid, iterate to a declared tolerance; the error measured
+> against the analytic limit and the 801-node reference; the default node
+> count chosen by that measurement; every pinned golden reproduced within
+> its tolerance or listed.  It is URGENT: the result goes to an outside
+> scientist through the published site, so it must land validated and the
+> site must be seen to publish it.  Status: dispatched 2026-10-24.
+
 > **C143. AN EDUTOOL ON A NEGATIVE CASE OF PROCESS ECONOMICS: THE SINES
 > PTA PLANT (ARTLANT) AND THE PUBLIC BANK'S LOSS (Vitor, 2026-10-24:
 > "Achas que podes fazer um EduTools sobre o caso em que a CGD perdeu 400 M
