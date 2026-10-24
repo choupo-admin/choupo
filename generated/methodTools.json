@@ -15,8 +15,8 @@
     "Process safety",
     "Flowsheeting & numerics"
   ],
-  "liveTools": 63,
-  "registryTools": 63,
+  "liveTools": 64,
+  "registryTools": 64,
   "tools": [
     {
       "id": "what-is-temperature",
@@ -451,6 +451,13 @@
       "discipline": "Process design & economics",
       "teaches": "That routes to a product are screened on paper in order of cost, cheapest filter first: the stoichiometric gross margin, the atom economy, the equilibrium limit at the catalyst's temperature, the heat to remove, and whether the product is where the atoms go when every species is allowed; that direct oxidation of methane wins the first four and fails the fifth, because the combustion products lie far below methanol in Gibbs energy; that the remaining questions (Safety, Environmental, Legal, Economics, Control, Throughput) need no rate constant; and that the rate law is bought last, for the one route that survives.",
       "href": "/app/?workspace=methods&tool=route-screening"
+    },
+    {
+      "id": "sines-pta",
+      "label": "A negative case: the Sines PTA plant",
+      "discipline": "Process design & economics",
+      "teaches": "What the economic analysis of a chemical process must contain, read from a documented case in which a world-scale PTA plant and its lender lost heavily: why a PTA producer is paid the spread over paraxylene and not a product price; a capital cost stated seven times with four perimeters; a plan that assumed one shareholder would buy the whole output against a contract for up to 450 of 700 kt/yr with no explicit penalty, so that a third of the plant was a merchant plant; a discounted cash flow you move, with its break-even spread set beside the published Asian and Western spreads and a tornado; the written warnings of the lender's risk department, each mapped to the concept that catches it (offtake, customer credit, feedstock, capacity and import parity, downside cases, project finance, concentration, stage gates); the outcome; and nine loss figures, each defined, that overlap and must not be added.",
+      "href": "/app/?workspace=methods&tool=sines-pta"
     },
     {
       "id": "solvent-mixture",

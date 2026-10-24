@@ -286,6 +286,9 @@ const RunLogTool = lazy(() =>
 const FrontEndLoadingTool = lazy(() =>
   import("./methods/FrontEndLoadingTool.js")
     .then((m) => ({ default: m.FrontEndLoadingTool })));
+const SinesPtaTool = lazy(() =>
+  import("./methods/SinesPtaTool.js")
+    .then((m) => ({ default: m.SinesPtaTool })));
 const ProcessSafetyTool = lazy(() =>
   import("./methods/ProcessSafetyTool.js")
     .then((m) => ({ default: m.ProcessSafetyTool })));
@@ -542,6 +545,7 @@ export function MethodsWorkspace() {
             : tool === "case-assembly" ? <CaseAssemblyTool />
             : tool === "run-log" ? <RunLogTool />
             : tool === "front-end-loading" ? <FrontEndLoadingTool />
+            : tool === "sines-pta" ? <SinesPtaTool />
             : tool === "process-safety" ? <ProcessSafetyTool />
             : tool === "overpressure" ? <OverpressureTool />
             : tool === "pool-fire" ? <PoolFireTool />

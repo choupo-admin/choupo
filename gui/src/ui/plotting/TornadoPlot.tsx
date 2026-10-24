@@ -43,6 +43,14 @@ License
   READABLE WITHOUT COLOUR.  Every bar carries its input value as text, the
   legend names the two ends, and the hover repeats the input, the end, its
   value and the NPV, so a greyscale print loses nothing.
+
+  THE TEXT TAKES THE THEME'S INK (2026-10-24, C143).  The value labels and
+  the two annotations used to spread `darkLayout.font`, whose colour is the
+  DARK scheme's light grey; the <Plot> wrapper re-themes the layout's font
+  but not a trace's `textfont` or an annotation's own font, so in the light
+  scheme every value was #c9c9c9 on white -- the text that makes the chart
+  readable without colour was the least readable thing on it.  They now
+  name the family and size only and inherit the re-themed colour.
 \*---------------------------------------------------------------------------*/
 
 import type { TornadoFigure } from "../../case/tornado.js";
@@ -51,12 +59,19 @@ import { Plot, PLOT_COLORS, PLOT_CONFIG, darkLayout } from "./plotly.js";
 
 interface TornadoPlotProps {
   fig: TornadoFigure;
+  /** The two END colours, low and high.  Optional, and absent on every
+   *  engine-fed caller, which keep the house accent/warm pair.  Added for the
+   *  Sines EduTool (C143), whose light-scheme page needs a pair that passes
+   *  the 3:1 contrast check on white (Mantine blue-6 / orange-8, validated on
+   *  both chrome backgrounds); the bars carry their values as text either
+   *  way, so colour stays secondary. */
+  colors?: { low: string; high: string };
 }
 
 /** Row height in px: two lines of axis label fit, the bars stay thin. */
 const ROW_PX = 34;
 
-export function TornadoPlot({ fig }: TornadoPlotProps) {
+export function TornadoPlot({ fig, colors }: TornadoPlotProps) {
   const cats = fig.bars.map((b) => b.axisLabel);
   const cur = fig.currency;
   const end = (which: "low" | "high") => {
@@ -70,13 +85,14 @@ export function TornadoPlot({ fig }: TornadoPlotProps) {
       base: fig.bars.map(() => fig.baseNPV),
       width: 0.62,
       marker: {
-        color: lo ? PLOT_COLORS.accent : PLOT_COLORS.warm,
+        color: lo ? (colors?.low ?? PLOT_COLORS.accent)
+                  : (colors?.high ?? PLOT_COLORS.warm),
         line: { color: PLOT_COLORS.background, width: 1 },
       },
       text: fig.bars.map((b) => (lo ? b.lowValueText : b.highValueText)),
       textposition: "outside",
       cliponaxis: false,
-      textfont: { ...darkLayout.font, size: 11 },
+      textfont: { family: darkLayout.font.family, size: 11 },
       customdata: fig.bars.map((b) => [
         b.input,
         lo ? b.lowValueText : b.highValueText,
@@ -109,12 +125,12 @@ export function TornadoPlot({ fig }: TornadoPlotProps) {
   const annotations: Record<string, unknown>[] = [{
     xref: "x", yref: "paper", x: fig.baseNPV, y: 1, yanchor: "bottom",
     text: `base NPV ${fmtMoney(fig.baseNPV)} ${cur}`, showarrow: false,
-    font: { ...darkLayout.font, size: 11 },
+    font: { family: darkLayout.font.family, size: 11 },
   }];
   if (lo < 0 && hi > 0) {
     annotations.push({
       xref: "x", yref: "paper", x: 0, y: 0, yanchor: "top",
-      text: "NPV = 0", showarrow: false, font: { ...darkLayout.font, size: 10 },
+      text: "NPV = 0", showarrow: false, font: { family: darkLayout.font.family, size: 10 },
     });
   }
   //  Room either side for the outside labels.

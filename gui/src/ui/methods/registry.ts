@@ -72,7 +72,8 @@ export type MethodToolId =
   | "reaction-enthalpy" | "standard-state" | "case-assembly" | "run-log"
   | "front-end-loading" | "process-safety" | "overpressure" | "letdown"
   | "plant-layout" | "gmp-layout" | "pool-fire" | "materials" | "syngas"
-  | "correlation-simplicity" | "data-reconciliation" | "solvent-mixture";
+  | "correlation-simplicity" | "data-reconciliation" | "solvent-mixture"
+  | "sines-pta";
 
 /** WHAT KIND OF TOOL THIS IS, and the field exists to keep a boundary legible
  *  rather than to switch behaviour.
@@ -1529,6 +1530,38 @@ export const METHOD_TOOLS: MethodTool[] = [
       + "Control, Throughput) need no rate constant; and that the rate law "
       + "is bought last, for the one route that survives.",
     theory: "ch:gibbs-reactor",
+  },
+  //  COMMISSIONED 2026-10-24 (DEV.md 4c C143): "Achas que podes fazer um
+  //  EduTools sobre o caso em que a CGD perdeu 400 M euros em Sines.  E um
+  //  caso negativo para mostrar o que nao se deve fazer em analise economica
+  //  de processos quimicos.  Usa factos confirmados e nada de especulacao",
+  //  and the scope ruling the same day, "Deixa a politica de fora".  A NOTES
+  //  page built from one research record (docs/design/the-sines-pta-plant-a-
+  //  negative-case.md): institutions only, no persons, every fact with its
+  //  primary source and page; ONE interactive, a pre-tax DCF the student
+  //  moves, whose undocumented inputs are labelled synthetic.  `theory` is
+  //  the discounted-cash-flow section, the appraisal the page asks for.
+  //  First version, for Vitor's review.
+  {
+    id: "sines-pta",
+    label: "A negative case: the Sines PTA plant",
+    discipline: "Process design & economics", kind: "notes",
+    status: "live",
+    teaches: "What the economic analysis of a chemical process must contain, "
+      + "read from a documented case in which a world-scale PTA plant and "
+      + "its lender lost heavily: why a PTA producer is paid the spread over paraxylene and "
+      + "not a product price; a capital cost stated seven times with four "
+      + "perimeters; a plan that assumed one shareholder would buy the whole "
+      + "output against a contract for up to 450 of 700 kt/yr with no "
+      + "explicit penalty, so that a third of the plant was a merchant plant; "
+      + "a discounted cash flow you move, with its break-even spread set "
+      + "beside the published Asian and Western spreads and a tornado; the "
+      + "written warnings of the lender's risk department, each mapped to the "
+      + "concept that catches it (offtake, customer credit, feedstock, "
+      + "capacity and import parity, downside cases, project finance, "
+      + "concentration, stage gates); the outcome; and nine loss figures, "
+      + "each defined, that overlap and must not be added.",
+    theory: "ch:economics",
   },
   //  WHICH SOLVENT, OR WHICH SOLVENT MIXTURE (2026-10-21, DEV.md 4c C128,
   //  Vitor: the student PREDICTS the best composition before the curve is
