@@ -1501,6 +1501,26 @@ accepts today, and that is a policy call.
 > final; }` layout draws what the steady flowsheet and the sizing pass
 > already hold.
 
+> **C141. THE DSPM-DE DEFAULTS CORRECTED: K_d NO LONGER COUNTS THE STERIC
+> PARTITION TWICE, AND THE PORE IS SOLVED AS NANOFILTRAN SOLVES IT (Vitor,
+> 2026-10-24, on C138 slice 2's findings: "Avanca com tudo e Corrige o K_d
+> e mostra-me as linhas que mudam").**  Measured before dispatch:
+> `deenFactors` (`src/unitOperations/membrane/transport/DSPM_DE.cpp:109`)
+> returns as K_d the Dechadilok-Deen polynomial, which is H = Phi K_d,
+> while Phi is carried separately as the partition -- the steric
+> partition enters the diffusive flux twice (K_d too small by (1-lambda)^2).
+> Scope ("tudo"): (1) the default hindrance becomes the cited, consistent
+> pair `DechadilokDeen2006` (K_d = H/Phi, its own K_c), and the `legacy`
+> word is refused by name with the reason; (2) the default pore becomes
+> `poreSolver { method finiteDifference; wallClosure porePermeate; }`, the
+> closed form kept as a declared option -- each default change measured for
+> robustness on every DSPM-DE case before it is taken; (3) the NanoFiltran
+> Davies correction already exists as `regenerate.py`'s declared
+> DAVIES_PATCH (the vendored source stays as received).  The moved golden
+> rows are LISTED, per change, and shown to Vitor BEFORE any `--record`.
+> Cases reached: membrane10, membrane11, membrane20, diafilter02,
+> nanofiltran01.  Status: dispatched 2026-10-24.
+
 > **C140. AN EDUTOOL ON INTELLECTUAL PROPERTY AS COMPETITIVE STRATEGY:
 > PATENT OR SECRET, AND HOW FIRMS FIGHT WITH IP (Vitor, 2026-10-24: "as
 > formas e estrategias como as empresas gerem a propriedade intelectual e
