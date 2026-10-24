@@ -921,7 +921,7 @@ Benzene/toluene distillation --- classical textbook problem with Raoult, no azeo
 
 \end{tutnarrative}
 \tutreadme{The same equimolar benzene/toluene feed (100 kmol/h, now at 370 K) in a rigorous column: 15 stages (reboiler counted), feed on stage 8, R = 2, distillate 50 kmol/h, Raoult VLE, solved by the Wang--Henke bubble-point method. At 370 K and 1 atm the feed resolves to about 70 \% vapour (q = 0.30), so the reboiler does far less than the condenser. The golden: x\_D = 0.9510 benzene, x\_B = 0.9510 toluene, T\_top 355.69 K, T\_bottom 381.51 K, condenser -1283 kW, reboiler 647 kW.}
-\tutreadme{1. The specification is the column, not the split. Compare with shortcut01: there you declared the recoveries and got N; here you declare N, the feed stage, R and D --- and the purity is the $\ast$answer$\ast$. Both cases separate the same feed; only the question differs. 2. Watch it converge. The Log tab prints Pass max balance/F T\_top T\_bottom for the 41 bubble-point passes. The step and the balance fall by the same factor, about 0.65, every pass: that is what linear convergence looks like. The column stops on the balance, not the step --- when every stage balance and the balance over its ports close to 1e-9 of the feed (here 7.4e-10, with a last step of 2.3e-9). A small step alone is not a closed balance: a column that contracts slowly takes small steps while still far from its answer. column02\_simultaneous solves the identical column by a Newton on all the MESH equations in a handful of iterations --- run both and count. 3. The profile is printed stage by stage. T and x for every tray, the feed tray marked, the reboiler last: 355.69 K and 88.3 \% benzene in the liquid on tray 1 (the vapour leaving it, the distillate, is 95.1 \%), 381.51 K and 95.1 \% toluene in the reboiler. That table is the McCabe--Thiele diagram in numbers. 4. Two duties, two utilities, priced from the catalogue. The reboiler is served by low-pressure steam (0.296 kg/s, 27.96 ?/h at the catalogue price) and the condenser by cooling water (30.69 kg/s, 1.85 ?/h) --- the same picker every steady report uses, and the ?/h is a catalogue number, not a market one. 5. Read the caveats. Both Antoine fits are asked slightly outside their declared windows on the way to the answer (benzene at 370 K, toluene at 380.7 K), announced and still returned.}
+\tutreadme{1. The specification is the column, not the split. Compare with shortcut01: there you declared the recoveries and got N; here you declare N, the feed stage, R and D --- and the purity is the $\ast$answer$\ast$. Both cases separate the same feed; only the question differs. 2. Watch it converge. The Log tab prints Pass max balance/F T\_top T\_bottom for the 41 bubble-point passes. The step and the balance fall by the same factor, about 0.65, every pass: that is what linear convergence looks like. The column stops on the balance, not the step --- when every stage balance and the balance over its ports close to 1e-9 of the feed (here 7.4e-10, with a last step of 2.3e-9). A small step alone is not a closed balance: a column that contracts slowly takes small steps while still far from its answer. column02\_simultaneous solves the identical column by a Newton on all the MESH equations in a handful of iterations --- run both and count. 3. The profile is printed stage by stage. T and x for every tray, the feed tray marked, the reboiler last: 355.69 K and 88.3 \% benzene in the liquid on tray 1 (the vapour leaving it, the distillate, is 95.1 \%), 381.51 K and 95.1 \% toluene in the reboiler. That table is the McCabe--Thiele diagram in numbers. 4. Two duties, two utilities, priced from the catalogue. The reboiler is served by low-pressure steam (0.300 kg/s, 28.31 ?/h at the catalogue price) and the condenser by cooling water (30.89 kg/s, 1.86 ?/h) --- the same picker every steady report uses, and the ?/h is a catalogue number, not a market one. 5. Read the caveats. Both Antoine fits are asked slightly outside their declared windows on the way to the answer (benzene at 370 K, toluene at 380.7 K), announced and still returned.}
 \tutreadme{Raise refluxRatio to 3: purities climb, both duties climb with them --- the trade-off every column design turns on. Then try feedStage 4: the same reflux buys less separation when the feed lands in the wrong place.}
 \begin{tutgolden}
 \goldrow{kpi}{column01}{T\_top}{355.689111404}
@@ -1849,8 +1849,8 @@ NOTHING ABOUT THE PROCESS SIDE IS TYPED. The temperatures are the column's own (
 \goldrow{kpi}{column17}{L\_rect}{0.0277777777778}
 \goldrow{kpi}{column17}{L\_strip}{0.0361877253979}
 \goldrow{kpi}{column17}{Q\_condensate\_m3\_s}{0.00403798363546}
-\goldrow{kpi}{column17}{Q\_condenser\_kW}{-1282.91540916}
-\goldrow{kpi}{column17}{Q\_reboiler\_kW}{647.138092345}
+\goldrow{kpi}{column17}{Q\_condenser\_kW}{-1291.10978215}
+\goldrow{kpi}{column17}{Q\_reboiler\_kW}{655.332465336}
 \goldrow{kpi}{column17}{R}{2}
 \goldmore{180}
 \end{tutgolden}
@@ -8535,6 +8535,99 @@ PER ION, PER ELEMENT. The film coefficient is priced for each ion on its own Sc\
 \goldrow{kpi}{Booster}{F}{0.461180543856}
 \goldrow{kpi}{Booster}{P\_in}{133388.103411}
 \goldmore{187}
+\end{tutgolden}
+
+\clearpage
+\tutentry{membrane22\_two\_stage\_nf\_array\_dspmde}{tutorials/steady/membranes/membrane22\_two\_stage\_nf\_array\_dspmde}
+\begin{tutscheme}
+\begin{tikzpicture}[>={Stealth[length=2mm]}, every node/.style={font=\scriptsize}]
+  \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (Stage1) at (0.0,-0.0) {\textbf{Stage1}\\[-1pt]{\tiny spiralWoundModule}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (Booster) at (2.9,-0.0) {\textbf{Booster}\\[-1pt]{\tiny pump}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (Stage2) at (5.8,-0.0) {\textbf{Stage2}\\[-1pt]{\tiny spiralWoundModule}};
+  \draw[->] ($(Stage1.west)+(-1.05,0.00)$) -- ($(Stage1.west)+(0,0.00)$) node[at start, above, font=\tiny, anchor=south west] {feed};
+  \draw[->] (Stage1) -- (Booster) node[midway, above, font=\tiny] {concentrate1};
+  \draw[->] (Booster) -- (Stage2) node[midway, above, font=\tiny] {boosted};
+  \draw[->] ($(Stage1.east)+(0,0.00)$) -- ($(Stage1.east)+(1.05,0.00)$) node[at end, above, font=\tiny, anchor=south east] {permeate1};
+  \draw[->] ($(Stage2.east)+(0,-0.17)$) -- ($(Stage2.east)+(1.05,-0.17)$) node[at end, below, font=\tiny, anchor=north east] {concentrate2};
+  \draw[->] ($(Stage2.east)+(0,0.17)$) -- ($(Stage2.east)+(1.05,0.17)$) node[at end, above, font=\tiny, anchor=south east] {permeate2};
+\end{tikzpicture}
+\end{tutscheme}
+\tutwhat{membrane21 with the charged-pore membrane model: the same 4:2 array of generic 8-inch elements and booster, DSPM-DE with its solved pore, the Geraldes \& Afonso film, D(T) by Stokes-Einstein}
+\begin{tutnarrative}
+membrane21's TWO-STAGE array (4:2 pressure vessels of 6 generic 8-inch elements, the interstage booster a unit of its own) with a DIFFERENT MEMBRANE MODEL: DSPM-DE, the charged pore with steric, Donnan and dielectric exclusion (Bowen \& Welfoot 2002), SOLVED across the pore at every station (the extended Nernst-Planck equations on 101 nodes, one Newton with the film's interface balance and the water flux -- the default since C141). See the README.
+
+THE HARDWARE IS THE SAME RECORD. `module Generic-8040;` with the FilmTec FT30 spacer and Schock \& Miquel's correlations, exactly membrane21's; only `membrane` and `transport` change. NF270\_dspmde (data/standards/assets/) carries the pore: radius 0.60 nm, A\_k/dx, a fixed charge -5 mol/m3, a pore dielectric 35.
+
+THE FEED IS SALTS, THE MODEL WORKS IN IONS. DSPM-DE decomposes NaCl, CaCl2 and MgSO4 into Na+, Ca2+, Mg2+, Cl- and SO4 2- (their charges, Stokes radii and D0 from the species records) and solves them together in the pore; the film couples the SAME ions at the wall by electroneutrality (`ionCoupling electroneutral;`, Geraldes \& Afonso 2007), each ion's k on its own D on Sc\_i. The D's are corrected to 20 C by Stokes-Einstein on the package's declared liquid viscosity (constant/thermoPhysPropDict).
+
+\end{tutnarrative}
+\tutreadme{The question. membrane21 runs a two-stage array of generic 8-inch elements with the SDEM membrane model. What changes when the SAME hardware carries a different membrane model -- the charged pore of DSPM-DE?}
+\tutreadme{What is the same. The array (4:2 vessels of six Generic-8040 elements, the interstage booster a unit of its own), the FT30 feed spacer and Schock \& Miquel's correlations, the Geraldes \& Afonso multi-ionic film (ionCoupling electroneutral; with the 2006 suction correction), 20 C, 12 m3/h per stage-1 vessel. Only two lines of each stage differ:}
+\tutreadme{membrane NF270\_dspmde; // the pore tier: r\_p 0.60 nm, X\_d -5 mol/m3, eps\_p 35 transport DSPM-DE; // the pore SOLVED at every station}
+\tutreadme{What the model does. DSPM-DE (Bowen \& Welfoot 2002) carries each ion through the pore by the extended Nernst-Planck equations -- hindered diffusion, convection and migration -- with steric, Donnan and dielectric exclusion at both faces, on 101 nodes, in ONE Newton per station with the film's interface balance and the water flux. The feed is declared by SALTS (NaCl, CaCl2, MgSO4); the law decomposes them into Na+, Ca2+, Mg2+, Cl- and SO4 2-, and the film couples those same ions at the wall. Each stage prints a pore summary: 61 and 43 pore solves, at most 8 Newton iterations each. The whole array runs in under a second.}
+\tutreadme{D(T). The ion D0 are 25 C values; this case DECLARES the liquid viscosity (transport \{ liquid \{ viscosity \{ model Vogel; \} \} \} in its thermoPhysPropDict), so every D is corrected by Stokes-Einstein to the stage's temperature -- 0.874 at 20 C, printed on the run as [D(T)] (the booster's dissipation warms stage 2 by 0.015 K, and its factor is 0.8744). membrane21, which declares none, runs on the 25 C values and says so.}
+\tutreadme{What the student sees -- and the limit it shows. In ions, the pore rejects SO4 2- almost completely (Donnan and dielectric exclusion of a divalent co-ion) while Mg2+ and Ca2+ pass in part, and Na+ and Cl- more. But the module marches SALTS, and a pore conserves CHARGE, not salts: Mg2+ crosses with Cl-, not with SO4 2-. So a salt's two legs differ in a mixture -- at the first station MgSO4's cation leg passes 0.18 mol/m3 and its anion leg 3e-4 -- and the salt basis can carry only one. The engine carries the cation leg and ANNOUNCES every salt whose legs differ ([DSPM-DE] salt 'MgSO4' in a MIXED feed ...): the permeate stream's sulfate and chloride are NOT the pore's. The published R\_obs\_MgSO4 (0.69 in stage 1) is therefore the rejection of Mg2+, not of the salt. The ion-by-ion permeate is what the props bench poreTransport prints (its ion rows). Mapping the ion permeate back onto the salt components -- or marching the module in ions -- is a model decision that has not been taken.}
+\begin{tutgolden}
+\goldrow{stream}{boosted}{F}{0.508750920568}
+\goldrow{stream}{boosted}{T}{293.165385998}
+\goldrow{stream}{concentrate1}{F}{0.508750920568}
+\goldrow{stream}{concentrate1}{T}{293.15}
+\goldrow{stream}{concentrate2}{F}{0.410594876442}
+\goldrow{stream}{concentrate2}{T}{293.165385998}
+\goldrow{stream}{feed}{F}{0.739665555556}
+\goldrow{stream}{feed}{T}{293.15}
+\goldrow{stream}{permeate1}{F}{0.230914634987}
+\goldrow{stream}{permeate1}{T}{293.15}
+\goldrow{stream}{permeate2}{F}{0.0981560441261}
+\goldrow{stream}{permeate2}{T}{293.165385998}
+\goldrow{kpi}{Booster}{F}{0.508750920568}
+\goldrow{kpi}{Booster}{P\_in}{126335.527185}
+\goldmore{173}
+\end{tutgolden}
+
+\clearpage
+\tutentry{membrane23\_constant\_rejection\_nf8040}{tutorials/steady/membranes/membrane23\_constant\_rejection\_nf8040}
+\begin{tutscheme}
+\begin{tikzpicture}[>={Stealth[length=2mm]}, every node/.style={font=\scriptsize}]
+  \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (NF) at (0.0,-0.0) {\textbf{NF}\\[-1pt]{\tiny spiralWoundModule}};
+  \draw[->] ($(NF.west)+(-1.05,0.00)$) -- ($(NF.west)+(0,0.00)$) node[at start, above, font=\tiny, anchor=south west] {feed};
+  \draw[->] ($(NF.east)+(0,-0.17)$) -- ($(NF.east)+(1.05,-0.17)$) node[at end, below, font=\tiny, anchor=north east] {retentate};
+  \draw[->] ($(NF.east)+(0,0.17)$) -- ($(NF.east)+(1.05,0.17)$) node[at end, above, font=\tiny, anchor=south east] {permeate};
+\end{tikzpicture}
+\end{tutscheme}
+\tutwhat{Constant intrinsic rejection per salt (Geraldes \& Afonso 2007, Eq. 1): NaCl + MgSO4 through one vessel of six generic 8-inch NF elements}
+\begin{tutnarrative}
+the SIMPLEST membrane model a spiral-wound element can carry: a CONSTANT INTRINSIC REJECTION per solute, c\_p,i = (1 - R\_i) c\_m,i at the wall (Geraldes \& Afonso, J. Membr. Sci. 300 (2007) 20, Eq. 1, where R\_i is the paper's INPUT). One pressure vessel of six generic 8-inch elements; NaCl and MgSO4, 1 g/L each.
+
+THE SAME ELEMENT TAKES ANY MEMBRANE MODEL. The module (Generic-8040, its FT30 feed spacer and Schock \& Miquel's correlations) is the hardware; the `transport` word is the membrane: `solutionDiffusion` (B\_i per solute), `SDEM` (per-ion B\_i under zero current, membrane21), `DSPM-DE` (the charged pore, membrane22) or, here, `constantRejection`. The membrane record gives the water permeance A\_w only.
+
+INTRINSIC IS NOT OBSERVED. R\_int is measured against the WALL. The run publishes R\_obs\_<salt> = 1 - c\_p/c\_b against the FEED, which the polarisation lowers: the element sees a wall richer than its feed, so a constant R\_int still passes more salt where the film is thicker. Compare R\_obs\_NaCl with the 0.60 declared below.
+
+WHY BY SALTS. A salt is neutral, so one R per salt cannot charge the permeate. A feed written ion by ion with one R per ion generally does -- the permeate charge is sum z\_i (1 - R\_i) c\_m,i -- and the law REFUSES it by name (see the README for the measurement on membrane21's feed).
+
+\end{tutnarrative}
+\tutreadme{The question. A spiral-wound element is hardware; the membrane model is a choice. What is the simplest model it can carry, and what does it leave out?}
+\tutreadme{The model. transport constantRejection; -- each solute leaves through the membrane with a DECLARED intrinsic rejection, measured against the wall:}
+\tutreadme{c\_p,i = (1 - R\_i) c\_m,i, N\_i = J\_v c\_p,i, J\_v = A\_w (dP - dpi)}
+\tutreadme{This is Eq. (1) of Geraldes \& Afonso, J. Membr. Sci. 300 (2007) 20-27, which takes R\_i as an input. The wall concentration c\_m comes from the module's polarisation model (here Schock \& Miquel's correlation on the FT30 spacer with the Geraldes \& Afonso 2006 suction correction) and the water flux from the same Newton the solution-diffusion law uses. The membrane record (NF270) supplies A\_w only.}
+\tutreadme{transport constantRejection; transportParameters \{ rejection \{ NaCl 0.60; MgSO4 0.98; \} source "..."; \}}
+\tutreadme{The same module Generic-8040; runs solutionDiffusion (B per solute), SDEM (per-ion B under zero current, membrane21) and DSPM-DE (the charged pore, membrane22): only the transport line changes.}
+\begin{tutgolden}
+\goldrow{stream}{feed}{F}{0.184745844444}
+\goldrow{stream}{feed}{T}{298.15}
+\goldrow{stream}{permeate}{F}{0.080576329433}
+\goldrow{stream}{permeate}{T}{298.15}
+\goldrow{stream}{retentate}{F}{0.104169515011}
+\goldrow{stream}{retentate}{T}{298.15}
+\goldrow{kpi}{NF}{Gamma\_MgSO4\_avg}{0.14208197636}
+\goldrow{kpi}{NF}{Gamma\_MgSO4\_elem1}{0.235594911845}
+\goldrow{kpi}{NF}{Gamma\_MgSO4\_elem2}{0.196754783898}
+\goldrow{kpi}{NF}{Gamma\_MgSO4\_elem3}{0.157820648895}
+\goldrow{kpi}{NF}{Gamma\_MgSO4\_elem4}{0.119172795219}
+\goldrow{kpi}{NF}{Gamma\_MgSO4\_elem5}{0.0829956168512}
+\goldrow{kpi}{NF}{Gamma\_MgSO4\_elem6}{0.0508018079009}
+\goldrow{kpi}{NF}{Gamma\_NaCl\_avg}{0.0815896543444}
+\goldmore{57}
 \end{tutgolden}
 
 \subsection{optimisation}
