@@ -1501,6 +1501,23 @@ accepts today, and that is a policy call.
 > final; }` layout draws what the steady flowsheet and the sizing pass
 > already hold.
 
+> **C142. A PORE SOLVER BETTER THAN NANOFILTRAN, WITH NANOFILTRAN ONLY AS
+> THE COMPARISON (Vitor, 2026-10-24: "Eu quero que facas um solver melhor!
+> E deixes o nanofiltran resultados so para comparares!").**  C141 landed
+> (e8afeef7e): K_d corrected, the pore solved by default, goldens
+> re-recorded on his authority.  Measured then: the solved pore is ~100x
+> the old closed form (membrane10 10.9 s vs 0.12 s) -- a finite-difference
+> (CPR) Jacobian on a uniform 101-node grid (PoreNernstPlanck.cpp:212),
+> nested inside a wall Newton inside a water-flux secant at every module
+> station.  Scope dispatched: analytic Scharfetter-Gummel Jacobian (FD kept
+> as the test oracle), a grid graded at both faces chosen by measured order,
+> wall + pore in ONE bordered block-tridiagonal Newton per station, the
+> closed form retired by name and membrane20 rebuilt to compare the two
+> wall closures, and a timing table against NanoFiltran on its own
+> problems.  NanoFiltran stays in bin/curate/ as the reference that
+> produces the comparison numbers, never as a solver.  Status: dispatched
+> 2026-10-24.
+
 > **C141. THE DSPM-DE DEFAULTS CORRECTED: K_d NO LONGER COUNTS THE STERIC
 > PARTITION TWICE, AND THE PORE IS SOLVED AS NANOFILTRAN SOLVES IT (Vitor,
 > 2026-10-24, on C138 slice 2's findings: "Avanca com tudo e Corrige o K_d
@@ -1519,7 +1536,8 @@ accepts today, and that is a policy call.
 > DAVIES_PATCH (the vendored source stays as received).  The moved golden
 > rows are LISTED, per change, and shown to Vitor BEFORE any `--record`.
 > Cases reached: membrane10, membrane11, membrane20, diafilter02,
-> nanofiltran01.  Status: dispatched 2026-10-24.
+> nanofiltran01.  Status: LANDED 2026-10-24 (e8afeef7e); goldens
+> re-recorded on Vitor's authority, pore_stiffness_max deliberately unpinned.
 
 > **C140. AN EDUTOOL ON INTELLECTUAL PROPERTY AS COMPETITIVE STRATEGY:
 > PATENT OR SECRET, AND HOW FIRMS FIGHT WITH IP (Vitor, 2026-10-24: "as
