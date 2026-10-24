@@ -1501,6 +1501,26 @@ accepts today, and that is a policy call.
 > final; }` layout draws what the steady flowsheet and the sizing pass
 > already hold.
 
+> **C147. PLOTS A CASE ASKS FOR: A POST-PROCESSING DICTIONARY (Vitor,
+> 2026-10-24: "Era bom ter um dicionario onde se pudessem pedir plots que
+> o utilizador gostasse de ter e que sejam pertinentes para pos
+> processamento! ... no menu Plot em PostProcessing ... membrane10 ...
+> o potencial dentro da membrana ou rejeicoes").**  Measured on main: a
+> unit publishes ONE `UnitProfile` (one x-axis; `SimulationResult::
+> profiles` holds one per unit -- `check_internal_states` arm (f) says two
+> kinds on one unit has no live case); `spiralWoundModule` publishes its
+> z-profile or, with scaling, a per-module table
+> (SpiralWoundModule.cpp:1176); the pore profiles (c_i(xi), psi(xi)) are
+> solved at every station and published nowhere; the GUI has a Plot
+> workspace with a CSV auto-plot.  Proposal put to him: `system/plotDict`
+> declares plots by name over PUBLISHED quantities (a unit profile, the
+> pore at chosen stations, KPIs across an outer sweep); the engine
+> REFUSES a name it does not publish and writes each plot's data to
+> `postProcessing/<plot>.csv` with its units; the GUI draws them under
+> "Post-processing" in the Plot workspace and computes nothing.  It needs
+> a unit to publish MORE THAN ONE named profile -- an architecture change,
+> his to approve.  Status: proposed.
+
 > **OPEN-WORK REGISTER (2026-10-24, after Vitor found a request dropped:
 > "Tu ja te tinhas esquecido dessa tarefa que eu te tinha pedido?").**  An
 > audit of every branch stranded by the 2026-10-20 machine failure found
