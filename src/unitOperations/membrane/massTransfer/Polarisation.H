@@ -133,7 +133,11 @@ Description
     diffusivity.  An ion with no `D0` refuses by name with the curation
     remedy -- but only when D_i is needed (a correlation, or coupling on);
     a constant `k_film` with `ionCoupling none;` reads no D at all, so a
-    case that never asked for one is not refused.
+    case that never asked for one is not refused.  The `D0` is curated at
+    25 C and corrected to the unit's T by Stokes-Einstein on the package's
+    own liquid viscosity (thermo/transport/StokesEinstein.H, DEV.md 4c
+    C148): 1 exactly at 298.15 K, 1 and ANNOUNCED when no liquid-viscosity
+    model is declared.
 
     Published per solute: the polarisation index Gamma_i = (C_{i,m} -
     C_{i,b})/C_{i,b} (the paper's quantity) and, when coupled, xi in V/m.

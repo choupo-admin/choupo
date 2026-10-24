@@ -67,9 +67,13 @@
   is +10.7 % of the Na+ and the whole of the potential's shift; the next
   +3.0 % is the DIFFUSIVITY: NanoFiltran corrects every D to T through its
   Vogel viscosity, and at the paper's 298 K (0.15 K below 25 C) that is
-  0.38 % below the 25 C value -- Choupo's DSPM-DE reads the species' 25 C
-  D0 at any temperature (a FINDING, recorded in the design record, not
-  changed here); the Born constant's fifth figure is +0.4 %.  The trace
+  0.38 % below the 25 C value.  Choupo's DSPM-DE corrects D0 to T by the
+  same Stokes-Einstein ratio on the package's own liquid viscosity since
+  C148 -- and this case declares NO liquid-viscosity model, so it reads the
+  25 C D0 here, announced, and its anchors stay matched to it (with a Vogel
+  model declared Choupo meets NanoFiltran's own D(T) to 1.1e-3 on the trace
+  Na+, the residual NanoFiltran's literal 0.897e-3 Pa s: the design record,
+  section 13.1); the Born constant's fifth figure is +0.4 %.  The trace
   Na+ amplifies every one of them: it is held by the Donnan field, and
   its permeate is a small difference of large migration and diffusion
   fluxes.

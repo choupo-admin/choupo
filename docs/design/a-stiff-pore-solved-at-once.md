@@ -1132,6 +1132,26 @@ Choupo's law reads the species' 25 C `D0` at any temperature
 every D.  Whether the law should carry D(T) is a model decision (Vítor's):
 the paper's own case is the measurement that names it.
 
+**CLOSED 2026-10-24 (DEV.md 4c C145 ruling, built in C148).**  Every
+membrane reader of `D0` -- the DSPM-DE pore and its film, the Polarisation
+object's per-ion k -- now takes D_i(T) = D_i0 (T/298.15)(μ(298.15)/μ(T)) on
+the package's OWN declared liquid viscosity, ONE home
+(`thermo/transport/StokesEinstein.H`, which the electrodialysis stack's
+correction also calls).  With no liquid-viscosity model declared the factor
+is 1 and the run says so; at 298.15 K it is 1 exactly.  This case declares
+none, so its numbers and anchors did not move.  MEASURED on a copy that
+declares `transport { liquid { viscosity { model Vogel; } } }`, against
+NanoFiltran (Davies + Born corrected, TOL 1e-9, ND 102/204 extrapolated)
+WITHOUT the Vogel half of the D matching (K_d literals still matched): with
+NanoFiltran's own Vogel constants (−10.5, 530, 146) the factor is 0.996067,
+and Choupo agrees on Mg2+ to 2e-7, Cl- to 3e-6, the potential to 2.0e-4 and
+the trace Na+ to −1.1e-3 (it was +2.95e-2 without D(T)); with the
+catalogue's water Vogel fit, 0.996084, Na+ −9.6e-4.  The residual is
+NanoFiltran's normalisation: it divides by the literal 0.897e-3 Pa s where
+its own Vogel gives μ(298.15) = 0.89687e-3, 1.4e-4 on every D, amplified
+~8x by the trace Na+.  So D(T) closes the "D input matched" step to that
+literal; the K_d single-precision step remains NanoFiltran's.
+
 ### 13.2 The grid study at Choupo's own N
 
 | N | Table 2 Na+ / iterations (NanoFiltran, as published) | Choupo Na+ / Newton iterations (correct Davies) |

@@ -60,6 +60,7 @@ License
 \*---------------------------------------------------------------------------*/
 
 #include "DSPM_DE.H"
+#include "thermo/transport/StokesEinstein.H"
 #include "PoreNernstPlanck.H"
 
 #include "core/Advisory.H"
@@ -528,6 +529,15 @@ TransportSolution DSPM_DE::localFluxes(const TransportContext& ctx) const
 
     // ---- Decompose each salt solute into its ions --------------------------
     std::vector<Ion> ions;
+    //  D(T): every ion's D0 (25 C) corrected to the station's T by
+    //  Stokes-Einstein on the package's own liquid viscosity -- ONE home,
+    //  thermo/transport/StokesEinstein.H (DEV.md 4c C145/C148); 1 EXACTLY at
+    //  298.15 K, and 1 -- announced -- when no liquid-viscosity model is
+    //  declared.  It reaches the pore (hindered diffusion and convection) and
+    //  the film's per-ion k through the same ic.D / ia.D.
+    const stokesEinstein::Factor se = stokesEinstein::factor(thermo, T);
+    stokesEinstein::announce(se, "transport DSPM-DE", "ion D0 of the pore and"
+                             " the film", 2);
     for (std::size_t s = 0; s < Ns; ++s)
     {
         const auto& comp = thermo.comp(soluteIdx[s]);
@@ -554,10 +564,10 @@ TransportSolution DSPM_DE::localFluxes(const TransportContext& ctx) const
         const scalar c_salt_bulk = c_b[s] * 1.0e3;      // kmol/m^3 -> mol/m^3
 
         Ion ic; ic.name = cat; ic.z = zc; ic.salt = s; ic.stoich = nu_c;
-        ic.r = electrolyte::ionRadius(cat); ic.D = electrolyte::ionD0(cat);
+        ic.r = electrolyte::ionRadius(cat); ic.D = electrolyte::ionD0(cat) * se.value;
         ic.c_bulk = nu_c * c_salt_bulk;
         Ion ia; ia.name = an;  ia.z = za; ia.salt = s; ia.stoich = nu_a;
-        ia.r = electrolyte::ionRadius(an);  ia.D = electrolyte::ionD0(an);
+        ia.r = electrolyte::ionRadius(an);  ia.D = electrolyte::ionD0(an) * se.value;
         ia.c_bulk = nu_a * c_salt_bulk;
         ions.push_back(ic); ions.push_back(ia);
     }

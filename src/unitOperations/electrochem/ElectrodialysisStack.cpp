@@ -31,6 +31,7 @@ License
 #include "EDCell.H"
 #include "LimitingCurrent.H"
 #include "thermo/electrolyte/IonTransport.H"
+#include "thermo/transport/StokesEinstein.H"
 
 #include "core/Advisory.H"
 #include "core/Constants.H"
@@ -351,17 +352,19 @@ int ElectrodialysisStack::solve(const DictPtr& dict,
     //  corrected through Stokes-Einstein.  So is this, from the SAME
     //  viscosity model at both temperatures -- and when the case declares no
     //  liquid-viscosity model there is no correction and the run SAYS so.
-    sVector xSolvent(Ncomp, 0.0);
-    xSolvent[iWater] = 1.0;
     scalar mu_solvent = 0.0, nu_solvent = 1.0e-6, seFactor = 1.0;
     bool   muPriced = false;
-    if (thermo.hasLiquidViscosity())
+    //  ONE home for the factor since C148: thermo/transport/StokesEinstein.H,
+    //  the same arithmetic in the same order (the membrane units call it too).
     {
-        mu_solvent = thermo.viscosityLiquid(T, xSolvent);
-        const scalar mu_ref = thermo.viscosityLiquid(298.15, xSolvent);
-        nu_solvent = mu_solvent / rho_carrier;
-        seFactor   = (T / 298.15) * (mu_ref / mu_solvent);
-        muPriced   = true;
+        const stokesEinstein::Factor se = stokesEinstein::factorFor(thermo, iWater, T);
+        if (se.priced)
+        {
+            mu_solvent = se.mu;
+            nu_solvent = mu_solvent / rho_carrier;
+            seFactor   = se.value;
+            muPriced   = true;
+        }
     }
 
     scalar D_eff = 0.0, k_c_eff = 0.0, Sh_lc = 0.0, Re_lc = 0.0, Sc_lc = 0.0;

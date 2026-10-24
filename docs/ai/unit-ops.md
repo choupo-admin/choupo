@@ -1189,6 +1189,14 @@ wall concentration below the bulk is legitimate (a lightly rejected anion
 pulled by the field); a negative one is refused, never clamped.
 Witnesses: `membrane14_polarisation_multiionic` (module) and the props
 bench `polarisation01_geraldes_afonso_table1` (below).
+**D(T).**  The species `D0` is a 25 C value; every membrane reader of it
+(this film's per-ion k, the DSPM-DE pore) corrects it to the unit's T by
+Stokes-Einstein, `D(T) = D0 (T/298.15)(mu(298.15)/mu(T))`, on the
+package's OWN liquid viscosity -- declare it in the case's
+thermoPhysPropDict, `transport { liquid { viscosity { model Vogel; } } }`.
+Undeclared, D0 is used as it is and the run ANNOUNCES it (`[D(T)]`, the
+caveat block); at 298.15 K the factor is 1 exactly.  The massTransfer
+`viscosity` key prices Re and Sc only, not D(T).
 
 **`massTransfer` models:** `SchockMiquel` (spacer channel, Sh = a Re^b Sc^c
 on the local crossflow, defaults 0.065/0.875/0.25) and `StirredCell`

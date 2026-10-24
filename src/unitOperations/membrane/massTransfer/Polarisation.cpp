@@ -27,6 +27,7 @@ License
 \*---------------------------------------------------------------------------*/
 
 #include "Polarisation.H"
+#include "thermo/transport/StokesEinstein.H"
 
 #include "core/Advisory.H"
 #include "core/Constants.H"
@@ -633,6 +634,13 @@ Polarisation buildPolarisation(const DictPtr&                  operation,
 
     std::vector<Polarisation::Solute> solutes;
     std::size_t nIons = 0;
+    //  D(T): the ion D0 is curated at 25 C and corrected to T by
+    //  Stokes-Einstein on the package's own liquid viscosity (ONE home,
+    //  thermo/transport/StokesEinstein.H; DEV.md 4c C145/C148).  The factor
+    //  is 1 EXACTLY at 298.15 K, and 1 -- announced -- when the case
+    //  declares no liquid-viscosity model.
+    const stokesEinstein::Factor se = stokesEinstein::factor(thermo, T_K);
+    bool readD0 = false;
     for (std::size_t idx : soluteIdx)
     {
         Polarisation::Solute s;
@@ -656,8 +664,11 @@ Polarisation buildPolarisation(const DictPtr&                  operation,
         {
             try
             {
-                s.D = electrolyte::ionD0(sp);
+                s.D = electrolyte::ionD0(sp) * se.value;
                 s.dOrigin = "species record D0 (" + sp.key + ")";
+                if (se.priced && se.T != stokesEinstein::referenceTemperature)
+                    s.dOrigin += " x Stokes-Einstein";
+                readD0 = true;
             }
             catch (const std::exception& e)
             {
@@ -680,6 +691,10 @@ Polarisation buildPolarisation(const DictPtr&                  operation,
         }
         solutes.push_back(std::move(s));
     }
+
+    if (readD0)
+        stokesEinstein::announce(se, unitLabel,
+            "ion D0 of the polarisation film", verbosity);
 
     if (coupled && nIons < 2)
         throw std::runtime_error(
