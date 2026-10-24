@@ -310,7 +310,17 @@ def _components_footer() -> str:
         "limits (checked and announced, never refused) and, for a module, the "
         "sheet's rated test; a value the source does not state is marked "
         "`origin estimated; reviewStatus unverified;` and announced on every "
-        "run that reads it.",
+        "run that reads it.  The `Generic-*` modules are the four standard "
+        "40-inch sizes (every value an estimate, the membrane the case's).",
+    ) + "\n" + _kind_section(
+        "## Feed spacers (the channel a spiral element is wound with)",
+        ("feedSpacer",),
+        "Named by an element record (`feedSpacer <name>;`) or, with the "
+        "explicit `area` + `length` form, by the case.  Thickness = channel "
+        "height; porosity weighed or derived from the mesh; the hydraulic "
+        "diameter is Schock & Miquel's Eq. 17 (derived from the filament); "
+        "the record carries its Sherwood and friction correlations with their "
+        "Reynolds window, announced when a run leaves it.",
     ) + "\n" + _kind_section(
         "## Adsorbents and resins",
         ("adsorbent", "ionExchangeResin"),

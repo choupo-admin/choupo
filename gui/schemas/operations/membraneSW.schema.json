@@ -2,24 +2,24 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://choupo.org/schemas/operations/membraneSW.schema.json",
   "title": "membraneSW operation",
-  "description": "Spiral-wound membrane module — the SAME unit as `spiralWoundModule` under its compact name; both read the identical operation block. Spiral-wound membrane module (RO/NF), solved node by node along the feed channel: local flux from the transport law, osmotic back-pressure from the declared model, concentration polarisation from the film coefficient. Hardware in one of three forms — a `module` RECORD (a commercial element or a laboratory flat-sheet cell from the assets catalogue, kind membraneModule), explicit (`area` + `length`, optionally `elements` in series) or nominal (`moduleDiameter` + `nModules`). One inlet, two outlets bound positionally: retentate first, permeate second.",
+  "description": "Spiral-wound membrane module — the SAME unit as `spiralWoundModule` under its compact name; both read the identical operation block. Spiral-wound membrane module (RO/NF), solved node by node along the feed channel: local flux from the transport law, osmotic back-pressure from the declared model, concentration polarisation from the film coefficient. One unit is one STAGE: `vessels` identical pressure vessels in parallel, each holding `elements` in series. Hardware in one of two forms — a `module` RECORD (a commercial element, a generic standard size Generic-2540/4040/8040/16040, or a laboratory flat-sheet cell, from the assets catalogue, kind membraneModule) or explicit (`area` + `length`). The nominal form `moduleDiameter` + `nModules` was retired 2026-10-24 and refuses, naming the Generic records. One inlet, two outlets bound positionally: retentate first, permeate second.",
   "type": "object",
   "properties": {
     "module": {
       "type": "string",
       "title": "Module record",
-      "description": "A commercial element or a laboratory cell named as a RECORD (assets catalogue or the case's constant/assets/, kind membraneModule): it supplies the active area, the channel geometry (channelHeight, spacerPorosity), the leaf length and, for a spiral element, the membrane; its limits {} are checked against the run and announced. Declaring `area`, `length`, `moduleDiameter`, `nModules`, or channelHeight/spacerPorosity inside massTransfer/pressureDrop beside it refuses by name (one home). Every value the record marks `origin estimated` is announced on every run."
+      "description": "A commercial element or a laboratory cell named as a RECORD (assets catalogue or the case's constant/assets/, kind membraneModule): it supplies the active area, the leaf length (and leaf count), the channel -- either the feed SPACER record it is wound with (`feedSpacer`, kind feedSpacer: thickness, porosity, Schock & Miquel's Eq. 17 hydraulic diameter, its correlations and their Reynolds window) or an inline channelHeight + spacerPorosity -- and, for a commercial spiral element, the membrane; its limits {} are checked per vessel and per element and announced. Declaring `area`, `length`, `feedSpacer`, or channelHeight/spacerPorosity inside massTransfer/pressureDrop beside it refuses by name (one home). Every value the record marks `origin estimated` is announced on every run."
     },
     "membrane": {
       "type": "string",
       "title": "Membrane",
-      "description": "Resolved by exact name in the assets catalogue (kind RO/NF) or the case's own records; it supplies A_w and the per-solute B_s. Required unless `module` names a spiral element (which is wound with its own membrane); required BESIDE `module` when the module is a flat-sheet cell (a cell takes any coupon)."
+      "description": "Resolved by exact name in the assets catalogue (kind RO/NF) or the case's own records; it supplies A_w and the per-solute B_s. Required unless `module` names a commercial spiral element (which is wound with its own membrane); required BESIDE `module` when the module is a generic standard-size element or a flat-sheet cell (their records name no membrane)."
     },
     "area": {
       "type": "number",
       "exclusiveMinimum": 0,
       "title": "Membrane area",
-      "description": "Explicit-hardware form, together with `length`. The alternative is the nominal form: `moduleDiameter` + `nModules`.",
+      "description": "Explicit-hardware form, together with `length`. The alternative is a `module` record (the standard sizes are Generic-2540/4040/8040/16040).",
       "unit": "m2"
     },
     "length": {
@@ -29,25 +29,23 @@
       "unit": "m"
     },
     "elements": {
+      "type": "number",
+      "exclusiveMinimum": 0,
+      "title": "Elements in series per vessel",
+      "description": "The elements in series in each pressure vessel: the retentate of one feeds the next. A REAL count is allowed (an optimisation driver varies it continuously); the fraction is marched as a shorter last element, announced.",
+      "unit": "-"
+    },
+    "vessels": {
       "type": "integer",
       "minimum": 1,
-      "title": "Elements in series",
-      "description": "A multi-element pressure vessel: the retentate of one element feeds the next.",
+      "title": "Vessels in parallel",
+      "description": "Identical pressure vessels in parallel in this stage. One vessel is solved on F/n and its outlets are scaled by n (exact for identical vessels; announced). A multi-stage array is built in the flowsheet, one unit per stage, with its interstage pump a unit of its own.",
       "unit": "-"
     },
-    "moduleDiameter": {
-      "type": "number",
-      "exclusiveMinimum": 0,
-      "title": "Nominal module diameter",
-      "description": "Nominal form: the area and length follow from the standard module size.",
-      "unit": "m"
-    },
-    "nModules": {
-      "type": "number",
-      "exclusiveMinimum": 0,
-      "title": "Parallel modules",
-      "description": "Nominal form: how many modules in parallel (fractional allowed for a design pass).",
-      "unit": "-"
+    "feedSpacer": {
+      "type": "string",
+      "title": "Feed spacer record",
+      "description": "With the explicit `area` + `length` form only: a feed spacer RECORD (kind feedSpacer) that supplies the channel height, porosity and Eq. 17 hydraulic diameter, and the coefficients and Reynolds window of the correlation the massTransfer / pressureDrop block names. Beside `module` it refuses (the element record names its own)."
     },
     "P_permeate": {
       "type": "number",

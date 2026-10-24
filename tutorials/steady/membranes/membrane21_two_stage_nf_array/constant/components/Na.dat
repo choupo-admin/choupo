@@ -1,0 +1,26 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: sodium ion (Na+)  -- CASE-LOCAL ionic component
+
+  A master ion of the electrolyte catalogue used AS a flowsheet
+  component, so a process stream can carry a water ANALYSIS (the
+  membrane scaling audit speciates the stream per module).  Name
+  matches the `species` key in the model-species catalogue (constant/species/); MW is
+  the same row (USGS PHREEQC, public domain).
+
+  nonvolatile: an ion never enters the vapour; the membrane unit op
+  treats it as a rejected solute (per-ion solution-diffusion).
+  dissociation 1: one osmotically active particle per mole of ion
+  (the analysis already lists ions, not salts).
+\*---------------------------------------------------------------------------*/
+
+name           Na;
+formula        "Na+";
+
+MW             22.99;          // g/mol  (= kg/kmol), from ions.dat
+role        nonvolatile;
+reviewStatus   interim;       // copied from membrane07 (case-local ion); not yet read back by a human
+dissociation   1;              // already an ion: 1 particle/mol
+
+// Bridge to the aqueous master species of the same spelling -- two
+// identity spaces, one DECLARED crossing (identifier typing, 2026-07-25).
+aqueousMapping ( { species Na; nu 1; } );

@@ -89,8 +89,8 @@ units
         operation
         {
             membrane         SW30HR;          // case-local constant/membranes/
-            moduleDiameter   8 in;            // nominal 8in/40in SW element
-            nModules         7;               // one vessel, 7 elements
+            module           Generic-8040;    // a generic 8in/40in element (record, estimates announced)
+            elements         7;               // one vessel, 7 elements in series
             P_permeate       1.0 bar;
             k_film           1.2e-5;           // m/s -- moderate crossflow; the
                                                // polarisation (wall I >> bulk I)

@@ -1,0 +1,76 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  FEED SPACER: a 28 mil diamond feed spacer (the thickness DuPont states
+  for the SW30HR-380 element)
+
+  WHAT THIS RECORD IS.  The feed spacer named by data/standards/assets/
+  SW30HR-380.dat.  Of its geometry the data sheet states ONE number, the
+  thickness: "Feed Spacer Thickness 28 mil" (DuPont FilmTec SW30HR-380
+  Element Product Data Sheet, Form No. 45-D00971-en, Rev. 7, January 2026,
+  Typical Properties).  28 mil = 0.7112 mm.
+
+  WHAT IS ESTIMATED, AND FROM WHAT.  The porosity and the filament
+  diameter are not on the sheet.  Each is an EDUCATED value, marked
+  `origin estimated; reviewStatus unverified;` with a note saying how to
+  verify it, and announced on every run that reads this record:
+    * filamentDiameter = h/2 = 0.3556 mm: Schock & Miquel (1987) take the
+      filament diameter as half the spacer thickness and judge that
+      "sufficient for feed spacer materials" (p. 346); every feed spacer of
+      their Tab. 1 has d_F = h_SP / 2 exactly;
+    * porosity 0.90: inside the band 0.88-0.91 that Tab. 1 reports for the
+      four RO-range spacers of 0.54-0.82 mm.
+  With them, Eq. (17) gives d_h = 0.9144 mm.
+
+  THE CORRELATIONS are Schock & Miquel's (Eqs. 24 and 30), carried with
+  their window; that they apply to THIS spacer is the paper's claim of
+  generality (pp. 345, 347), not a measurement on it.
+\*---------------------------------------------------------------------------*/
+
+name              Spacer-28mil;
+kind              feedSpacer;
+manufacturer      "generic 28 mil diamond feed spacer";
+
+thickness         0.7112 mm;       // 28 mil (data sheet)
+filamentDiameter  0.3556 mm;       // ESTIMATE, see provenance
+porosity          0.90;            // ESTIMATE, see provenance
+
+//  THE CORRELATIONS, AS DATA (Schock & Miquel 1987, primary read).  The
+//  case selects one by naming its model in its own massTransfer /
+//  pressureDrop block; the coefficients and the window come from here.
+//      Re = rho v d_h / eta (Eq. 5),  v = V / (b h eps) (Eqs. 11-12),
+//      Sc = nu / D (Eq. 8),  Sh = k d_h / D (Eq. 7),
+//      lambda = 2 dp d_h / (rho v^2 l) (Eq. 6).
+massTransfer
+{
+    model    SchockMiquel;            // Sh = a Re^b Sc^c
+    a        0.065;                   // Eq. (30), p. 347
+    b        0.875;
+    c        0.25;
+    validity { Re ( 100 1000 ); }     // the Reynolds axis of Fig. 9 (p. 348)
+}
+pressureDrop
+{
+    model    SchockMiquel;            // lambda = a Re^-b
+    a        6.23;                    // Eq. (24), p. 345
+    b        0.3;
+    validity { Re ( 100 1000 ); }     // "only be valid in the tested flow regime, i.e. 100<Re<1000" (p. 345)
+}
+
+provenance
+{
+    source  "DuPont FilmTec SW30HR-380 Element Product Data Sheet, Form No. 45-D00971-en, Rev. 7, January 2026 (the thickness); G. Schock, A. Miquel, Mass transfer and pressure loss in spiral wound modules, Desalination 64 (1987) 339-352 (the estimates' basis and the correlations)";
+    thickness        { origin literature; method "data sheet, Typical Properties: Feed Spacer Thickness 28 mil"; }
+    filamentDiameter
+    {
+        origin        estimated;
+        reviewStatus  unverified;
+        notes         "half the spacer thickness, Schock & Miquel's own assumption for feed spacers (Desalination 64 (1987) p. 346; every Tab. 1 spacer has d_F = h_SP/2); to be verified by measuring the filaments of an unrolled leaf's spacer under a microscope, as the paper did";
+    }
+    porosity
+    {
+        origin        estimated;
+        reviewStatus  unverified;
+        notes         "0.90 lies in the 0.88-0.91 band Schock & Miquel's Tab. 1 reports for RO feed spacers of 0.54-0.82 mm; to be verified by weighing a spacer coupon: porosity = 1 - (m/rho_PP)/(l b h), their Eq. (19)";
+    }
+    massTransfer     { origin literature; method "Schock & Miquel Eq. (30), p. 347, applied on its stated generality (primary read 2026-10-24)"; }
+    pressureDrop     { origin literature; method "Schock & Miquel Eq. (24), 100 < Re < 1000, p. 345, applied on its stated generality (primary read 2026-10-24)"; }
+}

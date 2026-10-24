@@ -1052,7 +1052,9 @@ operation
                                     //    spiral `module`; REQUIRED beside a flat-cell `module`)
     area             35 m2;          // per element      (refused beside `module`)
     length           1 m;            //                  (refused beside `module`)
-    elements         1;              // for a train      (allowed beside a spiral `module`)
+    elements         1;              // in SERIES in each vessel (allowed beside a spiral
+                                     //   `module`; a REAL count marches a short last element)
+    vessels          1;              // identical vessels in PARALLEL: one unit = one STAGE
     interElementDP   0.5 bar;        // gap loss between elements
     P_permeate       1.01325 bar;
     dP_feed_total    2 bar;          // constant drop (used when no pressureDrop block)
@@ -1106,11 +1108,46 @@ note on how to verify it (NF270-4040: spacer 28 mil, porosity 0.90, leaf
 0.95 m; SW30HR-380: porosity and leaf — its 28 mil spacer is a sheet fact;
 SEPA_CF: the installed 31 mil spacer and porosity).  Copy a record to the
 case's `constant/assets/` to set your own.  Declaring `area`, `length`,
-`moduleDiameter`, `nModules`, or `channelHeight`/`spacerPorosity` inside
+`feedSpacer`, or `channelHeight`/`spacerPorosity` inside
 `massTransfer`/`pressureDrop` beside `module` REFUSES by name (one home); an
 unknown module name refuses with the registered list.  Witnesses:
 `membrane15_module_nf270_4040`, `membrane16_module_sw30hr_8040`,
 `membrane17_sepa_cf_flat_cell` (a laboratory cell in five lines).
+
+**A STAGE, AN ARRAY, AND THE HARDWARE BY SIZE** (2026-10-24, C146).  One
+`spiralWoundModule` is one STAGE: `vessels <n>;` identical pressure vessels in
+parallel, each holding `elements <m>;` in series.  The vessels see the same
+feed state, so the engine solves ONE on F/n and scales its retentate and
+permeate by n (`[array]`, announced).  A multi-stage array is built in the
+flowsheet, one unit per stage, the interstage booster a `pump` of its own
+(a dissolved ion carries no Vliq: the pump reads the solvent's volume and
+heat capacity, announced).  Per element the run publishes `J_w_avg_elemK`,
+`dP_elemK`, `feedFlow_elemK`, `Re_in_elemK` and `Gamma_<solute>_elemK`;
+the `dP_max` limit is checked per element, `feedFlow_max` per vessel.  The
+standard sizes are RECORDS: **`Generic-2540` / `Generic-4040` /
+`Generic-8040` / `Generic-16040`** (`kind membraneModule`, 2.6 / 7.9 / 37.2 /
+148.6 m2, a leaf count and leaf length, every value an announced estimate,
+NO membrane -- declare it beside `module`); the leaf WIDTH is derived,
+A/(2 n L), and a record storing it refuses.  `moduleDiameter` + `nModules`
+(the hand table they replace) REFUSE, naming them.
+
+**The feed spacer is a record** (`kind feedSpacer`): `thickness` (the
+channel height), `porosity` XOR `filamentDiameter` + `meshLength` (Schock &
+Miquel Eqs. 19-22), `filamentDiameter` XOR `hydraulicDiameter`; d_h is
+DERIVED by Schock & Miquel's Eq. 17, `4 eps / (2/h + (1 - eps) 4/d_F)` --
+the inline channel's `2 h eps` is not that diameter and is announced as such
+wherever a correlation reads it.  The record carries its correlations as
+data (`massTransfer { model SchockMiquel; a; b; c; validity { Re ( 100 1000
+); } }`, the same for `pressureDrop`): the case NAMES the model in its own
+block, the record supplies the coefficients (a case `a`/`b`/`c` beside it
+refuses, so does a model it does not carry) and the window, outside which
+`[window] ... EXTRAPOLATED` is announced and the run continues.  Shipped:
+the five spacers of Schock & Miquel's Tab. 1 (`SchockMiquel-FilmTecFT30`,
+`-TorayPEC1000`, `-Naltex1228`, `-DesalRO`, `-DesalUF`, primary-read) and
+`Spacer-28mil` (SW30HR-380's, porosity and filament estimated).  An element
+names one with `feedSpacer <name>;`; with the explicit `area` + `length`
+form the CASE may.  No viscosity correction: the paper uses bulk properties.
+Witness `membrane21_two_stage_nf_array`; gate `check_spiral_array`.
 
 **A module in a feed-and-bleed loop** is the module plus a `mixer` and a
 `splitter` and one declared tear (`tearStreams ( Recycle );` in

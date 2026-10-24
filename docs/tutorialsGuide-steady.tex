@@ -7858,7 +7858,7 @@ Here the analysis is a PROCESS STREAM: the ions are flowsheet components (case-l
 
 Ca 3.7731e-5 Mg 1.9998e-5 Na 2.8425e-4 K 5.5253e-6 Cl 2.5897e-4 SO4 4.6852e-5 HCO3 5.3989e-5 water = balance
 
-HARDWARE BY NOMINAL DIAMETER (no `area`): one pressure vessel with 6 x 8-inch standard 40-inch elements -- `moduleDiameter 8 in; nModules 6;`. The per-module area (37.2 m2, 400 ft2 class) comes from the engine's nominal table and the derivation is announced: "6 x 37.2 m2 (8in/40in standard element) = 223.2 m2".
+HARDWARE BY STANDARD SIZE (no `area`): one pressure vessel with 6 x 8-inch standard 40-inch elements -- `module Generic-8040; elements 6;`. The generic element is a RECORD (data/standards/assets/ Generic-8040.dat, 37.2 m2, the 400 ft2 class): every value in it is an estimate, announced on every run, and the membrane is the case's. The k\_film and the dP are FIXED here, so the record's spacer and leaf length shape no number (until 2026-10-24 this case read a hand table in the engine, `moduleDiameter 8 in; nModules 6;`, with the same area).
 
 THE SCALING AUDIT (`scaling \{\}`): at each module exit the local BULK concentrate AND the membrane-WALL composition (c\_m from the module's own film-model polarisation) are speciated (Davies) and the calcite / gypsum saturation indices recorded. The WALL crosses SI=0 modules before the bulk does -- concentration polarisation, normally an invisible flux penalty, is seen here as THE scaling driver.
 
@@ -7907,7 +7907,7 @@ membrane07 the SAME brackish groundwater (\textasciitilde{}1500 mg/L TDS, Ca 84 
 
 membrane08 here a cation-exchange SOFTENER (`ionExchanger`, SAC resin in the Na form, Gaines-Thomas) sits UPSTREAM of the SAME vessel. Ca and Mg drop \textasciitilde{}99\% onto the resin (Na rises eq-for-eq -- the salt penalty), so the water entering the vessel is essentially hardness-free. With Ca gone the calcite IAP collapses and the per-module WALL SI\_calcite stays NEGATIVE through ALL 6 modules -- the scaling driver is removed at source.
 
-ZERO change to the membrane. The spiralWoundModule is byte-for-byte the membrane07 vessel (moduleDiameter 8 in; nModules 6; the same scaling\{\} audit); it simply receives a BETTER feed. Removing the hardness, not chasing the supersaturation in the vessel, is the cure -- the engineering lesson.
+ZERO change to the membrane. The spiralWoundModule is byte-for-byte the membrane07 vessel (module Generic-8040; elements 6; the same scaling\{\} audit); it simply receives a BETTER feed. Removing the hardness, not chasing the supersaturation in the vessel, is the cure -- the engineering lesson.
 
 HONESTY (printed, non-suppressible): the softener returns the LIMITING (fully-equilibrated) effluent -- the best a fresh / fully-loaded contactor does per pass, NOT a bed in service (breakthrough / regeneration are TRANSIENT and not modelled). See the banner on every run.
 
@@ -8485,6 +8485,56 @@ Data: as membrane10\_dspmde\_divalent -- the salts carry their ion decomposition
 \goldrow{kpi}{NF\_MgSO4\_pore}{Gamma\_CaCl2\_avg}{0}
 \goldrow{kpi}{NF\_MgSO4\_pore}{Gamma\_MgSO4\_avg}{3.23444105173}
 \goldmore{58}
+\end{tutgolden}
+
+\clearpage
+\tutentry{membrane21\_two\_stage\_nf\_array}{tutorials/steady/membranes/membrane21\_two\_stage\_nf\_array}
+\begin{tutscheme}
+\begin{tikzpicture}[>={Stealth[length=2mm]}, every node/.style={font=\scriptsize}]
+  \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (Stage1) at (0.0,-0.0) {\textbf{Stage1}\\[-1pt]{\tiny spiralWoundModule}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (Booster) at (2.9,-0.0) {\textbf{Booster}\\[-1pt]{\tiny pump}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (Stage2) at (5.8,-0.0) {\textbf{Stage2}\\[-1pt]{\tiny spiralWoundModule}};
+  \draw[->] ($(Stage1.west)+(-1.05,0.00)$) -- ($(Stage1.west)+(0,0.00)$) node[at start, above, font=\tiny, anchor=south west] {feed};
+  \draw[->] (Stage1) -- (Booster) node[midway, above, font=\tiny] {concentrate1};
+  \draw[->] (Booster) -- (Stage2) node[midway, above, font=\tiny] {boosted};
+  \draw[->] ($(Stage1.east)+(0,0.00)$) -- ($(Stage1.east)+(1.05,0.00)$) node[at end, above, font=\tiny, anchor=south east] {permeate1};
+  \draw[->] ($(Stage2.east)+(0,-0.17)$) -- ($(Stage2.east)+(1.05,-0.17)$) node[at end, below, font=\tiny, anchor=north east] {concentrate2};
+  \draw[->] ($(Stage2.east)+(0,0.17)$) -- ($(Stage2.east)+(1.05,0.17)$) node[at end, above, font=\tiny, anchor=south east] {permeate2};
+\end{tikzpicture}
+\end{tutscheme}
+\tutwhat{A two-stage NF array, 4:2 vessels x 6 generic 8-inch elements, interstage booster: one unit per stage, the spacer and the elements as records, SDEM + the multi-ionic film per ion and per element}
+\begin{tutnarrative}
+a TWO-STAGE nanofiltration ARRAY, 4:2 pressure vessels of 6 generic 8-inch elements each, with the interstage booster pump a unit of its own. Multi-ion throughout: membrane14's NaCl feed with NO3-/NH4+ traces, written ion by ion, through the SDEM transport law and the Geraldes \& Afonso multi-ionic film. See the README.
+
+ONE UNIT IS ONE STAGE. `vessels 4; elements 6;` -- four identical pressure vessels in parallel, each holding six elements in series. The vessels see the same feed state, so the engine solves ONE vessel on F/4 and scales its retentate and permeate by 4 (said on every run). Stage 2 takes stage 1's concentrate, BOOSTED by the pump, on half the vessels: the "tapered" array that keeps the crossflow up as the feed shrinks.
+
+THE HARDWARE IS RECORDS. `module Generic-8040;` (data/standards/assets/) is a 37.2 m2 element of 16 leaves, 0.854 m long, wound with the FilmTec FT30 feed spacer Schock \& Miquel measured (assets/SchockMiquel- FilmTecFT30.dat): its thickness is the channel height, its Eq. (17) hydraulic diameter (0.952 mm) is what the correlations read, and its correlations (Sh = 0.065 Re\textasciicircum{}0.875 Sc\textasciicircum{}0.25, lambda = 6.23 Re\textasciicircum{}-0.3) come WITH their measured window, 100 < Re < 1000 -- outside which the run announces the extrapolation. Every value of the generic element is an estimate and is announced; the membrane is the case's.
+
+PER ION, PER ELEMENT. The film coefficient is priced for each ion on its own Sc\_i = nu/D\_i, the four ions are coupled at the wall by electroneutrality, and every element publishes its own flux, friction drop, feed, inlet Re and the polarisation modulus of each ion (`J\_w\_avg\_elemK`, `dP\_elemK`, `feedFlow\_elemK`, `Re\_in\_elemK`, `Gamma\_<ion>\_elemK`).
+
+\end{tutnarrative}
+\tutreadme{The question. A real membrane plant is not one element: it is an ARRAY of pressure vessels, several elements in series in each, the vessels of a stage in parallel, the concentrate of one stage boosted and fed to the next on fewer vessels. What does each stage, and each element of a vessel, actually do -- and where does the film correlation stop being a measurement?}
+\tutreadme{The case. 48 m3/h of membrane14's solution (NaCl 0.01 mol/L with NO3-/NH4+ traces at 2e-4 mol/L, written ion by ion) through a 4:2 array of Generic-8040 elements, six per vessel:}
+\tutreadme{feed (2.4 bar) $\to$ Stage1 (4 vessels x 6) $\to$ concentrate1 $\to$ Booster (+1.5 bar) $\to$ Stage2 (2 vessels x 6) $\to$ concentrate2 permeate1, permeate2 leave as two product streams}
+\tutreadme{spiralWoundModule with vessels <n>; elements <m>; IS a stage: the vessels are identical, so the engine solves ONE vessel on F/n and scales its outlets by n, and says so ([array]). The booster is a pump of its own, so its shaft work is on the stream table.}
+\tutreadme{The hardware is records. module Generic-8040; is a generic 8-inch x 40-inch element (data/standards/assets/Generic-8040.dat): 37.2 m2, 16 leaves, 0.854 m leaf length -- every value an ANNOUNCED estimate -- and the leaf width DERIVED, W = A/(2 n L) = 1.361 m. It is wound with the FilmTec FT30 feed spacer of Schock \& Miquel, Desalination 64 (1987) 339-352, Tab. 1 (assets/SchockMiquel-FilmTecFT30.dat): h = 0.77 mm, d\_F = 0.385 mm, eps = 0.89, so S\_v = 4/d\_F (Eq. 23) and the hydraulic diameter is their Eq. 17, d\_h = 4 eps/(2/h + (1 - eps) S\_v) = 0.952 mm -- not the 2 h eps = 1.37 mm an inline channel would use. The spacer record carries the two correlations (Sh = 0.065 Re\textasciicircum{}0.875 Sc\textasciicircum{}0.25, Eq. 30; lambda = 6.23 Re\textasciicircum{}-0.3, Eq. 24) WITH their window, 100 < Re < 1000: the case names the model, the record supplies the numbers, and a run outside the window is announced.}
+\tutreadme{What a student sees. - Per stage: stage 1 recovers 37.7 \% of its feed, stage 2 35.1 \% of its own (about 60 \% overall); the observed rejections rise in stage 2 (Na+ 35.1 \% $\to$ 40.2 \%) because its flux is lower against a richer feed. - Per element (J\_w\_avg\_elemK, dP\_elemK, feedFlow\_elemK, Re\_in\_elemK, Gamma\_<ion>\_elemK): the first element of each vessel does the most work and polarises the most (Gamma\_Na 0.090 in element 1 of stage 1, 0.014 in element 6); Re falls from 213 to 132 along a stage-1 vessel, still inside the spacer's window -- the 4:2 taper keeps stage 2's inlet Re at 265. - Per ion: the film coefficient is the spacer correlation evaluated on each ion's own D (k\_film\_<ion>, k proportional to D\textasciicircum{}0.75 through Sc\textasciicircum{}0.25), and the four ions are coupled at the wall by electroneutrality (Geraldes \& Afonso, J. Membr. Sci. 300 (2007) 20-27): the trace nitrate passes NEGATIVELY rejected under the dominant NaCl (R\_obs -4.7 \% in stage 1), as in membrane12/14.}
+\begin{tutgolden}
+\goldrow{stream}{boosted}{F}{0.461180543856}
+\goldrow{stream}{boosted}{T}{293.165385998}
+\goldrow{stream}{concentrate1}{F}{0.461180543856}
+\goldrow{stream}{concentrate1}{T}{293.15}
+\goldrow{stream}{concentrate2}{F}{0.299341194167}
+\goldrow{stream}{concentrate2}{T}{293.165385998}
+\goldrow{stream}{feed}{F}{0.740384}
+\goldrow{stream}{feed}{T}{293.15}
+\goldrow{stream}{permeate1}{F}{0.279203456144}
+\goldrow{stream}{permeate1}{T}{293.15}
+\goldrow{stream}{permeate2}{F}{0.161839349689}
+\goldrow{stream}{permeate2}{T}{293.165385998}
+\goldrow{kpi}{Booster}{F}{0.461180543856}
+\goldrow{kpi}{Booster}{P\_in}{133388.103411}
+\goldmore{187}
 \end{tutgolden}
 
 \subsection{optimisation}

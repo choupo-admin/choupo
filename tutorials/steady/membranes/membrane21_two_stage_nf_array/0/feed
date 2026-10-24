@@ -1,0 +1,24 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*--- Choupo stream state.  Every DIMENSIONAL value carries its unit; the parser converts to SI.
+     componentMolarFlows is the OVERALL material (all phases). ---*/
+//  48 m3/h of solution -- 12 m3/h per stage-1 vessel -- at membrane14's
+//  composition: dominant salt 0.01 mol/L, trace salts 2e-4 mol/L, written
+//  ION BY ION and electroneutral by construction (the SDEM law refuses a
+//  feed that is not).
+componentMolarFlows
+{
+    water   2664.384 kmol/h;
+    Na      0.4896 kmol/h;
+    Cl      0.4896 kmol/h;
+    NO3     0.0096 kmol/h;
+    NH4     0.0096 kmol/h;
+}
+T               293.15 K;      // 20 C
+P               2.4 bar;

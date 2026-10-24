@@ -678,6 +678,12 @@
   "Feed": [
    "src/unitOperations/heatTransfer/atomizer/Atomizer.H"
   ],
+  "FeedSpacer": [
+   "src/thermo/membrane/FeedSpacer.H"
+  ],
+  "FeedSpacerRegistry": [
+   "src/thermo/membrane/FeedSpacer.H"
+  ],
   "Finding": [
    "src/core/DictAudit.H"
   ],
@@ -1693,6 +1699,9 @@
   ],
   "SolutionWriter": [
    "src/io/SolutionWriter.H"
+  ],
+  "SpacerCorrelation": [
+   "src/thermo/membrane/FeedSpacer.H"
   ],
   "Span": [
    "src/thermo/PairAudit.H"
@@ -7024,6 +7033,16 @@
   "src/thermo/iapws/IF97.cpp": [
    "src/thermo/iapws/IF97.H"
   ],
+  "src/thermo/membrane/FeedSpacer.cpp": [
+   "src/core/Dictionary.H",
+   "src/core/Dimensions.H",
+   "src/core/Origin.H",
+   "src/core/RegistryRefusal.H",
+   "src/core/Types.H",
+   "src/core/Units.H",
+   "src/thermo/membrane/FeedSpacer.H",
+   "src/thermo/membrane/MembraneModule.H"
+  ],
   "src/thermo/membrane/Membrane.cpp": [
    "src/core/Dictionary.H",
    "src/core/Dimensions.H",
@@ -7050,6 +7069,7 @@
    "src/thermo/Component.H",
    "src/thermo/Database.H",
    "src/thermo/RecordResolver.H",
+   "src/thermo/membrane/FeedSpacer.H",
    "src/thermo/membrane/MembraneModule.H",
    "src/thermo/membrane/MembraneModuleRegistry.H"
   ],
@@ -8623,6 +8643,7 @@
    "src/thermo/electrolyte/ScalingIndices.H",
    "src/thermo/electrolyte/SolventProperties.H",
    "src/thermo/electrolyte/SpeciationSolver.H",
+   "src/thermo/membrane/FeedSpacer.H",
    "src/thermo/membrane/Membrane.H",
    "src/thermo/membrane/MembraneModule.H",
    "src/thermo/membrane/MembraneModuleRegistry.H",
@@ -10229,6 +10250,7 @@
    "src/thermo/heatCapacity/RowlinsonBondi.cpp",
    "src/thermo/henrysLaw/HenrysLaw.cpp",
    "src/thermo/henrysLaw/HenrysLawRegistry.cpp",
+   "src/thermo/membrane/FeedSpacer.cpp",
    "src/thermo/membrane/Membrane.cpp",
    "src/thermo/membrane/MembraneModule.cpp",
    "src/thermo/membrane/MembraneModuleRegistry.cpp",
@@ -10564,6 +10586,7 @@
    "src/thermo/heatCapacity/RowlinsonBondi.cpp",
    "src/thermo/henrysLaw/HenrysLaw.cpp",
    "src/thermo/henrysLaw/HenrysLawRegistry.cpp",
+   "src/thermo/membrane/FeedSpacer.cpp",
    "src/thermo/membrane/Membrane.cpp",
    "src/thermo/membrane/MembraneModule.cpp",
    "src/thermo/membrane/MembraneModuleRegistry.cpp",
@@ -11246,6 +11269,7 @@
    "src/thermo/equationOfState/PR.cpp",
    "src/thermo/equationOfState/SRK.cpp",
    "src/thermo/henrysLaw/HenrysLawRegistry.cpp",
+   "src/thermo/membrane/FeedSpacer.cpp",
    "src/thermo/membrane/MembraneModule.cpp",
    "src/thermo/membrane/MembraneModuleRegistry.cpp",
    "src/thermo/membrane/MembraneRegistry.cpp",
@@ -11457,6 +11481,7 @@
    "src/thermo/electrochem/EDStackRegistry.cpp",
    "src/thermo/equationOfState/EquationOfState.cpp",
    "src/thermo/heatCapacity/HeatCapacityModel.cpp",
+   "src/thermo/membrane/FeedSpacer.cpp",
    "src/thermo/membrane/MembraneModule.cpp",
    "src/thermo/membrane/MembraneModuleRegistry.cpp",
    "src/thermo/reaction/ExpressionRate.cpp",
@@ -11869,6 +11894,7 @@
    "src/thermo/heatCapacity/RowlinsonBondi.cpp",
    "src/thermo/henrysLaw/HenrysLaw.cpp",
    "src/thermo/henrysLaw/HenrysLawRegistry.cpp",
+   "src/thermo/membrane/FeedSpacer.cpp",
    "src/thermo/membrane/Membrane.cpp",
    "src/thermo/membrane/MembraneModule.cpp",
    "src/thermo/membrane/MembraneModuleRegistry.cpp",
@@ -12036,6 +12062,7 @@
    "src/propertyOps/VleConsistency.cpp",
    "src/reporting/ComputedReport.cpp",
    "src/thermo/electrochem/EDStack.cpp",
+   "src/thermo/membrane/FeedSpacer.cpp",
    "src/thermo/membrane/MembraneModule.cpp",
    "src/thermo/reaction/ExpressionRate.cpp",
    "src/thermo/vaporPressure/Antoine.cpp",
@@ -15096,6 +15123,11 @@
    "src/thermo/iapws/IF97.cpp",
    "src/thermo/pureFluid/PureFluidModel.cpp"
   ],
+  "src/thermo/membrane/FeedSpacer.H": [
+   "src/thermo/membrane/FeedSpacer.cpp",
+   "src/thermo/membrane/MembraneModuleRegistry.cpp",
+   "src/unitOperations/membrane/SpiralWoundModule.cpp"
+  ],
   "src/thermo/membrane/Membrane.H": [
    "src/applications/choupoBatch/main.cpp",
    "src/applications/choupoProps/main.cpp",
@@ -15111,6 +15143,7 @@
   "src/thermo/membrane/MembraneModule.H": [
    "src/applications/choupoSolve/main.cpp",
    "src/dynamicDriver/DynamicDriver.cpp",
+   "src/thermo/membrane/FeedSpacer.cpp",
    "src/thermo/membrane/MembraneModule.cpp",
    "src/thermo/membrane/MembraneModuleRegistry.cpp",
    "src/unitOperations/membrane/SpiralWoundModule.cpp"

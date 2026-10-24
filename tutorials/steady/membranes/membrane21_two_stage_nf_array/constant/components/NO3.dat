@@ -1,0 +1,26 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+  Component: nitrate ion (NO3-)  -- CASE-LOCAL ionic component
+  A master ion of the electrolyte catalogue used AS a flowsheet component,
+  so the stream carries a water ANALYSIS ion by ion and the membrane's
+  transport law (SDEM) can read each ion's charge through the declared
+  aqueous bridge below.  Name matches the `species` key in the model-species
+  catalogue (data/standards/species/NO3.dat); MW is that record's.
+  nonvolatile: an ion never enters the vapour.
+  dissociation 1: one osmotically active particle per mole of ion (the
+  analysis already lists ions, not salts).
+\*---------------------------------------------------------------------------*/
+name           NO3;
+formula        "NO3-";
+MW             62.004;          // g/mol  (= kg/kmol), species/NO3.dat
+role           nonvolatile;
+reviewStatus   interim;       // MW and charge transcribed from the species record; not yet read back by a human
+dissociation   1;              // already an ion: 1 particle/mol
+aqueousMapping ( { species NO3; nu 1; } );

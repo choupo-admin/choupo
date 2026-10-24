@@ -27,7 +27,7 @@
                 -- the scaling driver is removed at source.
 
   ZERO change to the membrane.  The spiralWoundModule is byte-for-byte the
-  membrane07 vessel (moduleDiameter 8 in; nModules 6; the same scaling{} audit);
+  membrane07 vessel (module Generic-8040; elements 6; the same scaling{} audit);
   it simply receives a BETTER feed.  Removing the hardness, not chasing the
   supersaturation in the vessel, is the cure -- the engineering lesson.
 
@@ -80,8 +80,8 @@ units
         operation
         {
             membrane         SW30HR;          // case-local constant/membranes/
-            moduleDiameter   8 in;            // nominal spec: 2.5 | 4 | 8 | 16 in
-            nModules         6;               // 6 elements in one vessel
+            module           Generic-8040;    // standard size, data/standards/assets/
+            elements         6;               // 6 elements in series in one vessel
             P_permeate       1.0 bar;
             k_film           2.0e-5;          // m/s -- modest crossflow
             dP_feed_total    0.3 bar;         // per element (linear model)

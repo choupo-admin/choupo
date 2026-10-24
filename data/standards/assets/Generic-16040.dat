@@ -1,0 +1,70 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Membrane MODULE: a GENERIC 16-inch x 40-inch spiral-wound element
+  (the 1600 ft2 class)
+
+  WHAT THIS RECORD IS.  A standard SIZE, not a product: the element a case
+  names with `module Generic-16040;` when it wants "a 16-inch element"
+  rather than a manufacturer's.  It replaces the hand table that sat in
+  SpiralWoundModule.cpp until 2026-10-24 (`moduleDiameter 16 in;`, an area
+  and nothing else) -- the same area, now beside the leaves, the leaf length
+  and the feed spacer, so the channel the feed sees is a declared fact.
+  It names NO membrane: the case declares the one it winds in, beside
+  `module` (`membrane <name>;`).
+
+  EVERY GEOMETRIC VALUE IS AN ESTIMATE, marked `origin estimated;
+  reviewStatus unverified;` with a note saying how to verify it, and the
+  engine announces each one on every run that reads this record:
+    * activeArea 148.6 m2 -- the 1600 ft2 class area of the retired table;
+    * leaves 64 -- see its note;
+    * leafLength 0.854 m -- the active leaf length (without glue strips) of
+      the FilmTec FT30 SW2540 element in Schock & Miquel, Desalination 64 (1987) 339-352, Tab. 3, p. 344 (primary
+      read): the axial dimension of a 40-inch element is set by its length,
+      not its diameter, so the one measured leaf length serves the class.
+  The element length 40 in (1.016 m) is the definition of the class.
+  DERIVED, never stored: the leaf width W = A/(2 n L) = 1.3594 m.
+
+  THE FEED SPACER is the FilmTec FT30 spacer Schock & Miquel measured
+  (Tab. 1, p. 343): a documented spacer beats an invented one.  Its
+  thickness (0.77 mm, 30 mil) sits between the 28 mil and 34 mil spacers
+  current elements quote; that it is THIS class's spacer is an estimate.
+
+  NO LIMITS ARE DECLARED: a generic class has no manufacturer's rating, and
+  a limit the record does not declare is absent and not checked.
+\*---------------------------------------------------------------------------*/
+
+name             Generic-16040;
+kind             membraneModule;
+manufacturer     "generic 16-inch x 40-inch element (estimated class)";
+format           spiralWound;
+feedSpacer       SchockMiquel-FilmTecFT30;   // the channel: data/standards/assets/
+
+nominalDiameter  16 in;
+elementLength    40 in;
+activeArea       148.6 m2;            // ESTIMATE, see provenance
+leaves           64;                  // ESTIMATE, see provenance
+leafLength       0.854 m;              // ESTIMATE, see provenance
+
+provenance
+{
+    source  "a generic size class (no data sheet); the leaf length from Schock & Miquel, Desalination 64 (1987) 339-352, Tab. 3, p. 344";
+    nominalDiameter { origin assumed; method "the nominal size that names the class"; }
+    elementLength   { origin assumed; method "40-inch elements: the length that names the class"; }
+    activeArea
+    {
+        origin        estimated;
+        reviewStatus  unverified;
+        notes         "the 1600 ft2 class area of 16-inch x 40-inch elements, carried from the retired nominal table (manufacturers' sheets of the class quote it); to be verified against the data sheet of the element actually installed";
+    }
+    leaves
+    {
+        origin        estimated;
+        reviewStatus  unverified;
+        notes         "chosen so that the derived leaf width (A/(2 n L) = 1.36 m) equals that of the 8-inch estimate, for the reason given there (the permeate path, not the diameter, limits the leaf width; Schock & Miquel p. 349); to be verified against a large-format element's leaf count";
+    }
+    leafLength
+    {
+        origin        estimated;
+        reviewStatus  unverified;
+        notes         "the active leaf length without glue strips (854 mm) of the FilmTec FT30 SW2540 element, Schock & Miquel, Desalination 64 (1987) 339-352, Tab. 3, p. 344; applied to every 40-inch class because the axial dimension is set by the element length; to be verified by unrolling a leaf of the element installed";
+    }
+}

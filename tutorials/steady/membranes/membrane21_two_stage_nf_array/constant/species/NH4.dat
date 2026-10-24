@@ -1,0 +1,44 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+  species/NH4.dat -- CASE-LOCAL COPY of data/standards/species/NH4.dat with ONE
+  addition: the transport block the membrane14 witness needs.  The
+  polarisation model of Geraldes & Afonso (2007) prices the film
+  coefficient of every ion on that ion's OWN diffusivity and the
+  migration term on the same D, and the standard record carries no D0.
+  The record body below is the catalogue's, verbatim; the block at the
+  end is this case's addition, cited, and is NOT promoted to the
+  standards (a curation act reserved to a human review).
+\*-----------------------------------------------------------------------------*/
+recordType modelSpecies;
+schemaVersion 1;
+
+name    NH4;
+formula     "NH4+";
+charge  +1;
+MW { value 18.039; unit g/mol;}
+aqueousThermo
+{
+hfAq { value -132510; unit J/mol;}
+sAq  { value 113.4;  unit J/mol/K;}
+}
+
+volumetric
+{
+    //  STANDARD-STATE (infinite-dilution) partial molar volume,
+    //  CONVENTIONAL scale V0(H+) = 0 (see the convention profile:
+    //  only electroneutral sums are physical).
+    V0          { value 17.86; unit cm3/mol; }
+    convention  MilleroConventional-v1;
+    Trange      ( 293 303 );   // 25 C table; +-5 K working band, extrapolation announced by the consumer's domain refusals
+    source      "Millero, Chem. Rev. 71 (1971) 147, Table III (Conventional Partial Molal Volumes of Ions in Water at 0, 25 and 50 degC), 25 degC block, p. 162 -- PRIMARY PAGE READ 2026-08-24 (delegated review, docs/design/interim-review-2026-08-24.md).  Millero states the table is itself taken from the compilation of his ref 81";
+}
+
+transport
+{
+    //  D0 = R T lambda0 / (z^2 F^2)  (Nernst-Einstein) from the limiting
+    //  molar conductivity lambda0 = 73.5 S cm2/mol at 25 C (Robinson &
+    //  Stokes, Electrolyte Solutions, 2nd ed., Butterworths 1959, Appendix
+    //  6.1), the same route the eight master ions' D0 took.  Not read back
+    //  against the primary conductivity measurements by a human.
+    D0 { value 1.9572e-09; unit m2/s; }
+    source "lambda0 73.5 S cm2/mol: Robinson & Stokes, Electrolyte Solutions, 2nd ed. (1959), Appendix 6.1; D0 by Nernst-Einstein, this record";
+}

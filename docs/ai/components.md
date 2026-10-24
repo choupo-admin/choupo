@@ -957,15 +957,31 @@ Each carries A_w + per-solute B_s + ratings (P_max, T_max, pH, MWCO); the ion-ex
 | `SW30HR` |
 ## Modules and stacks (the HARDWARE a membrane is deployed in)
 
-A `spiralWoundModule` names one with `module <name>;` and an `electrodialysisStack` with `stack <name>;`, instead of typing the geometry inline -- and typing it beside the name REFUSES.  The record carries the active area, the channel and spacer, the manufacturer's limits (checked and announced, never refused) and, for a module, the sheet's rated test; a value the source does not state is marked `origin estimated; reviewStatus unverified;` and announced on every run that reads it.
+A `spiralWoundModule` names one with `module <name>;` and an `electrodialysisStack` with `stack <name>;`, instead of typing the geometry inline -- and typing it beside the name REFUSES.  The record carries the active area, the channel and spacer, the manufacturer's limits (checked and announced, never refused) and, for a module, the sheet's rated test; a value the source does not state is marked `origin estimated; reviewStatus unverified;` and announced on every run that reads it.  The `Generic-*` modules are the four standard 40-inch sizes (every value an estimate, the membrane the case's).
 
 | Name |
 |---|
 | `EUR2C-7P18` |
 | `EurodiaED-100P-50` |
+| `Generic-16040` |
+| `Generic-2540` |
+| `Generic-4040` |
+| `Generic-8040` |
 | `NF270-4040` |
 | `SEPA_CF` |
 | `SW30HR-380` |
+## Feed spacers (the channel a spiral element is wound with)
+
+Named by an element record (`feedSpacer <name>;`) or, with the explicit `area` + `length` form, by the case.  Thickness = channel height; porosity weighed or derived from the mesh; the hydraulic diameter is Schock & Miquel's Eq. 17 (derived from the filament); the record carries its Sherwood and friction correlations with their Reynolds window, announced when a run leaves it.
+
+| Name |
+|---|
+| `SchockMiquel-DesalRO` |
+| `SchockMiquel-DesalUF` |
+| `SchockMiquel-FilmTecFT30` |
+| `SchockMiquel-Naltex1228` |
+| `SchockMiquel-TorayPEC1000` |
+| `Spacer-28mil` |
 ## Adsorbents and resins
 
 Isotherm and bed properties for the fixed-bed, TSA and softener units.

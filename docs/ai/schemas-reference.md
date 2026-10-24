@@ -723,17 +723,17 @@ One-dimensional batch kinetics bench: integrates c(t) for an nth-order rate, ove
 
 ## `membraneSW`  (membraneSW operation)
 
-Spiral-wound membrane module — the SAME unit as `spiralWoundModule` under its compact name; both read the identical operation block. Spiral-wound membrane module (RO/NF), solved node by node along the feed channel: local flux from the transport law, osmotic back-pressure from the declared model, concentration polarisation from the film coefficient. Hardware in one of three forms — a `module` RECORD (a commercial element or a laboratory flat-sheet cell from the assets catalogue, kind membraneModule), explicit (`area` + `length`, optionally `elements` in series) or nominal (`moduleDiameter` + `nModules`). One inlet, two outlets bound positionally: retentate first, permeate second.
+Spiral-wound membrane module — the SAME unit as `spiralWoundModule` under its compact name; both read the identical operation block. Spiral-wound membrane module (RO/NF), solved node by node along the feed channel: local flux from the transport law, osmotic back-pressure from the declared model, concentration polarisation from the film coefficient. One unit is one STAGE: `vessels` identical pressure vessels in parallel, each holding `elements` in series. Hardware in one of two forms — a `module` RECORD (a commercial element, a generic standard size Generic-2540/4040/8040/16040, or a laboratory flat-sheet cell, from the assets catalogue, kind membraneModule) or explicit (`area` + `length`). The nominal form `moduleDiameter` + `nModules` was retired 2026-10-24 and refuses, naming the Generic records. One inlet, two outlets bound positionally: retentate first, permeate second.
 
 | Field | Required | Type | Unit | Description |
 |---|:-:|---|---|---|
 | `module` |   | string | — | A commercial element or a laboratory cell named as a RECORD (assets catalogue or the case's constant/assets/, kind membraneModule): it su… |
 | `membrane` |   | string | — | Resolved by exact name in the assets catalogue (kind RO/NF) or the case's own records; it supplies A_w and the per-solute B_s. Required u… |
-| `area` |   | number | m2 | Explicit-hardware form, together with `length`. The alternative is the nominal form: `moduleDiameter` + `nModules`. |
+| `area` |   | number | m2 | Explicit-hardware form, together with `length`. The alternative is a `module` record (the standard sizes are Generic-2540/4040/8040/16040). |
 | `length` |   | number | m |  |
-| `elements` |   | integer | - | A multi-element pressure vessel: the retentate of one element feeds the next. |
-| `moduleDiameter` |   | number | m | Nominal form: the area and length follow from the standard module size. |
-| `nModules` |   | number | - | Nominal form: how many modules in parallel (fractional allowed for a design pass). |
+| `elements` |   | number | - | The elements in series in each pressure vessel: the retentate of one feeds the next. A REAL count is allowed (an optimisation driver vari… |
+| `vessels` |   | integer | - | Identical pressure vessels in parallel in this stage. One vessel is solved on F/n and its outlets are scaled by n (exact for identical ve… |
+| `feedSpacer` |   | string | — | With the explicit `area` + `length` form only: a feed spacer RECORD (kind feedSpacer) that supplies the channel height, porosity and Eq. … |
 | `P_permeate` | ✓ | number | Pa |  |
 | `dP_feed_total` |   | number | Pa | Total friction drop along the feed channel, applied linearly. The `pressureDrop { model SchockMiquel; }` block computes it from the space… |
 | `interElementDP` |   | number | Pa | Extra drop between elements of a multi-element vessel (interconnectors). |
@@ -1127,17 +1127,17 @@ Aqueous speciation: distributes the declared analytical totals over the curated 
 
 ## `spiralWoundModule`  (spiralWoundModule operation)
 
-Spiral-wound membrane module (RO/NF), solved node by node along the feed channel: local flux from the transport law, osmotic back-pressure from the declared model, concentration polarisation from the film coefficient. Hardware in one of three forms — a `module` RECORD (a commercial element or a laboratory flat-sheet cell from the assets catalogue, kind membraneModule), explicit (`area` + `length`, optionally `elements` in series) or nominal (`moduleDiameter` + `nModules`). One inlet, two outlets bound positionally: retentate first, permeate second.
+Spiral-wound membrane module (RO/NF), solved node by node along the feed channel: local flux from the transport law, osmotic back-pressure from the declared model, concentration polarisation from the film coefficient. One unit is one STAGE: `vessels` identical pressure vessels in parallel, each holding `elements` in series. Hardware in one of two forms — a `module` RECORD (a commercial element, a generic standard size Generic-2540/4040/8040/16040, or a laboratory flat-sheet cell, from the assets catalogue, kind membraneModule) or explicit (`area` + `length`). The nominal form `moduleDiameter` + `nModules` was retired 2026-10-24 and refuses, naming the Generic records. One inlet, two outlets bound positionally: retentate first, permeate second.
 
 | Field | Required | Type | Unit | Description |
 |---|:-:|---|---|---|
 | `module` |   | string | — | A commercial element or a laboratory cell named as a RECORD (assets catalogue or the case's constant/assets/, kind membraneModule): it su… |
 | `membrane` |   | string | — | Resolved by exact name in the assets catalogue (kind RO/NF) or the case's own records; it supplies A_w and the per-solute B_s. Required u… |
-| `area` |   | number | m2 | Explicit-hardware form, together with `length`. The alternative is the nominal form: `moduleDiameter` + `nModules`. |
+| `area` |   | number | m2 | Explicit-hardware form, together with `length`. The alternative is a `module` record (the standard sizes are Generic-2540/4040/8040/16040). |
 | `length` |   | number | m |  |
-| `elements` |   | integer | - | A multi-element pressure vessel: the retentate of one element feeds the next. |
-| `moduleDiameter` |   | number | m | Nominal form: the area and length follow from the standard module size. |
-| `nModules` |   | number | - | Nominal form: how many modules in parallel (fractional allowed for a design pass). |
+| `elements` |   | number | - | The elements in series in each pressure vessel: the retentate of one feeds the next. A REAL count is allowed (an optimisation driver vari… |
+| `vessels` |   | integer | - | Identical pressure vessels in parallel in this stage. One vessel is solved on F/n and its outlets are scaled by n (exact for identical ve… |
+| `feedSpacer` |   | string | — | With the explicit `area` + `length` form only: a feed spacer RECORD (kind feedSpacer) that supplies the channel height, porosity and Eq. … |
 | `P_permeate` | ✓ | number | Pa |  |
 | `dP_feed_total` |   | number | Pa | Total friction drop along the feed channel, applied linearly. The `pressureDrop { model SchockMiquel; }` block computes it from the space… |
 | `interElementDP` |   | number | Pa | Extra drop between elements of a multi-element vessel (interconnectors). |

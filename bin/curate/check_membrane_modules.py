@@ -123,6 +123,11 @@ M17 = ROOT / "tutorials/steady/membranes/membrane17_sepa_cf_flat_cell"
 MW = {"water": 18.015, "NaCl": 58.44, "MgSO4": 120.37, "Na": 22.99, "Cl": 35.45,
       "NO3": 62.004, "NH4": 18.04}
 MIL = 25.4e-6
+#  The GENERIC standard-size elements (C146) are `kind membraneModule` too, but
+#  they transcribe no data sheet: bin/curate/check_spiral_array.py holds them
+#  (their estimates, their leaves, their spacer).  Listed here so this gate
+#  neither accuses them of missing a table row nor silently skips a new record.
+GENERIC = ("Generic-2540", "Generic-4040", "Generic-8040", "Generic-16040")
 
 #  THE TABLE: a second transcription of the same documents, in SI.  A value
 #  listed under `estimates` is one the document does NOT state; everything
@@ -142,14 +147,17 @@ TABLE = {
     "SW30HR-380": {
         "format": "spiralWound", "membrane": "SW30HR", "manufacturer": "DuPont FilmTec",
         "source": "45-D00971-en",
-        "values": {"activeArea": 35.0, "channelHeight": 28 * MIL},
+        #  Since C146 (2026-10-24) the 28 mil the sheet states lives on the
+        #  feed SPACER record the element names; check_spiral_array holds it.
+        "feedSpacer": "Spacer-28mil",
+        "values": {"activeArea": 35.0},
         "limits": {"P_max": 83e5, "T_max": 318.15, "dP_max": 1.0e5,
                    "pH_min": 2.0, "pH_max": 11.0},
         "absentLimits": ["feedFlow_max"],
         "ratedTest": {"feedMassFraction": 32.0e-3, "P": 55e5, "T": 298.15,
                       "recovery": 0.08, "permeateFlow": 26.0 / 86400.0, "rejection": 0.997},
         "ratedSolute": "NaCl",
-        "estimates": {"spacerPorosity": 0.90, "leafLength": 0.95},
+        "estimates": {"leafLength": 0.95},
     },
     "SEPA_CF": {
         "format": "flatSheetCell", "membrane": None, "manufacturer": "Sterlitech Corporation",
@@ -270,14 +278,25 @@ def main():
             continue
         name = word(d.get("name", []))
         records[name] = d
+        if name in GENERIC:
+            continue
         if name not in TABLE:
             failures.append(f"(a) {p.name}: module '{name}' has no row in this gate's transcription table")
             continue
         tb = TABLE[name]
-        for k in ("name", "kind", "manufacturer", "format", "activeArea", "channelHeight",
-                  "spacerPorosity", "limits", "provenance"):
+        #  The channel has ONE home: the inline pair, or the spacer record.
+        channel = (("feedSpacer",) if "feedSpacer" in tb
+                   else ("channelHeight", "spacerPorosity"))
+        for k in ("name", "kind", "manufacturer", "format", "activeArea", "limits",
+                  "provenance") + channel:
             if k not in d:
                 failures.append(f"(a) {name}: required key `{k}` missing")
+        if "feedSpacer" in tb:
+            if word(d.get("feedSpacer", [])) != tb["feedSpacer"]:
+                failures.append(f"(a) {name}: feedSpacer {word(d.get('feedSpacer', []))!r} vs table {tb['feedSpacer']!r}")
+            for k in ("channelHeight", "spacerPorosity"):
+                if k in d:
+                    failures.append(f"(a) {name}: `{k}` beside `feedSpacer` -- one home")
         if word(d.get("format", [])) != tb["format"]:
             failures.append(f"(a) {name}: format {word(d.get('format', []))!r} vs table {tb['format']!r}")
         if word(d.get("manufacturer", [])) != tb["manufacturer"]:
@@ -347,6 +366,15 @@ def main():
             failures.append(f"(a) record '{name}' not found in {ASSETS}")
 
     # ---------------- (b) the announcement, per witness ---------------------
+    #  A SEALED witness runs on its OWN mirror of the record (constant/assets/),
+    #  frozen as the catalogue stood when it was sealed -- membrane16 still
+    #  carries the pre-C146 SW30HR-380 with its inline channel.  So the
+    #  announcement is held to the record the case RAN, and arm (a) holds the
+    #  catalogue's record to the documents.
+    def ran_record(case, name):
+        m = case / "constant" / "assets" / (name + ".dat")
+        return parse_record(m) if m.exists() else records.get(name, {})
+
     outs = {}
     for case, name in ((M15, "NF270-4040"), (M16, "SW30HR-380"), (M17, "SEPA_CF")):
         rc, out = run(case)
@@ -355,11 +383,13 @@ def main():
             failures.append(f"(b) {case.name} did not run (exit {rc}):\n" + out[-800:])
             continue
         lines = estimate_lines(out, name)
-        want = set(TABLE[name]["estimates"])
+        ran = ran_record(case, name)
+        want = {k for k, b in ran.get("provenance", {}).items()
+                if isinstance(b, dict) and word(b.get("origin", [])) == "estimated"}
         got = {k for k, _, _ in lines}
         if got != want or len(lines) != len(want):
             failures.append(f"(b) {case.name}: announced estimates {sorted(got)} ({len(lines)} lines) vs the record's {sorted(want)}")
-        prov = records.get(name, {}).get("provenance", {})
+        prov = ran.get("provenance", {})
         for k, status, note in lines:
             if status != "unverified":
                 failures.append(f"(b) {case.name}: `{k}` announced with reviewStatus {status}")
@@ -415,7 +445,7 @@ def main():
             j = result_of(out) if rc == 0 else None
             if j is None:
                 return
-            d = records[name]
+            d = ran_record(case, name)
             A = si(d["activeArea"]); h = si(d["channelHeight"]); eps = si(d["spacerPorosity"])
             u = j["kpis"][unit].get("u_crossflow_inlet")
             if u is None:
@@ -467,6 +497,11 @@ def main():
             tb = TABLE[name]; rt = tb["ratedTest"]; sol = tb["ratedSolute"]
             dd = tmp / ("rated_" + name)
             copy_case(case, dd)
+            #  The rated test measures the CATALOGUE record (arm (a)'s), not a
+            #  sealed witness's frozen mirror of it.
+            mirror = dd / "constant" / "assets" / (name + ".dat")
+            if mirror.exists():
+                mirror.unlink()
             Qf = rt["permeateFlow"] / rt["recovery"]                 # m3/s the sheet's recovery implies
             w = rt["feedMassFraction"]
             F_sol = Qf * 1000.0 * w / MW[sol] * 3600.0                # kmol/h at rho 1000
@@ -508,13 +543,15 @@ def main():
     print("check_membrane_modules: OK -- 3 `kind membraneModule` records (NF270-4040, SW30HR-380, SEPA_CF) match a second "
           "transcription of their documents on every data-sheet value, mark every value the document does not state "
           "`origin estimated; reviewStatus unverified;` with a note saying how to verify it and mark no data-sheet value so; "
-          "membrane15/16/17 announce exactly those estimates (3/2/2 lines, the record's own note, a provenance advisory each) "
+          "membrane15/16/17 announce exactly the estimates of the record each RAN (its sealed mirror where it has one; "
+          "the record's own note, a provenance advisory each) "
           "and no [limit] line; 5 refusals fire by name (inline area / channelHeight / membrane beside a spiral module, a cell "
           "without a membrane, an unknown module with the registered list); the published inlet crossflow recomputes the feed "
           "flow on W = A/L for the cell (one face, L = A/slotWidth) and A/(2L) for the spiral to 1e-9; a 60 bar, 5 m3/h twin "
           "prints both [limit] lines and exits 0; the two spirals' rated tests ran and printed engine vs data sheet.  "
           "NOT CHECKED: whether any estimate is a good one, the transcription against the PDFs, any band on the rated-test "
-          "ratio, the batch vessel, DSPM-DE under a module, the pH limit (no witness declares a pH).")
+          "ratio, the batch vessel, DSPM-DE under a module, the pH limit (no witness declares a pH), the four Generic-* "
+          "records and the feed spacers (check_spiral_array's).")
     return 0
 
 

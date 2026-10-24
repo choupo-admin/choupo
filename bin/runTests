@@ -3847,6 +3847,23 @@ PYEOF
     fi
     rm -f /tmp/modules.$$
 
+    # spiral-array gate (2026-10-24, DEV.md 4c C146).  One unit is one STAGE
+    # (`vessels`, `elements`); the four standard sizes and the feed spacers
+    # are RECORDS; d_h is Schock & Miquel's Eq. (17) and the spacer carries
+    # its correlations with their window.  The spacer records against a
+    # second transcription of the paper's Tab. 1, Eq. 17 and the per-ion k
+    # recomputed from the published run, the n-vessel identity, the window
+    # announced (and silent inside it), nine refusals.
+    if "$ROOT/bin/curate/check_spiral_array.py" > /tmp/spiral.$$ 2>&1; then
+        printf "PASS  %-40s  (%s)\n" "spiral-array-gate" "$(grep -m1 '^check_spiral_array: OK' /tmp/spiral.$$)"
+        pass=$((pass+1))
+    else
+        printf "FAIL  %-40s  (run bin/curate/check_spiral_array.py)\n" "spiral-array-gate"
+        cat /tmp/spiral.$$
+        fail=$((fail+1))
+    fi
+    rm -f /tmp/spiral.$$
+
     # Pore-solver gate (2026-10-22, DEV.md 4c C138).  DSPM-DE's opt-in
     # `poreSolver { method finiteDifference; }` SOLVES the extended
     # Nernst-Planck equations across the pore -- every node at once, by

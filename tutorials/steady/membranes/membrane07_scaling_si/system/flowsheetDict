@@ -26,11 +26,14 @@
       Ca 3.7731e-5   Mg 1.9998e-5   Na 2.8425e-4   K 5.5253e-6
       Cl 2.5897e-4   SO4 4.6852e-5  HCO3 5.3989e-5    water = balance
 
-  HARDWARE BY NOMINAL DIAMETER (no `area`): one pressure vessel with
-  6 x 8-inch standard 40-inch elements -- `moduleDiameter 8 in;
-  nModules 6;`.  The per-module area (37.2 m2, 400 ft2 class) comes
-  from the engine's nominal table and the derivation is announced:
-  "6 x 37.2 m2 (8in/40in standard element) = 223.2 m2".
+  HARDWARE BY STANDARD SIZE (no `area`): one pressure vessel with
+  6 x 8-inch standard 40-inch elements -- `module Generic-8040;
+  elements 6;`.  The generic element is a RECORD (data/standards/assets/
+  Generic-8040.dat, 37.2 m2, the 400 ft2 class): every value in it is an
+  estimate, announced on every run, and the membrane is the case's.  The
+  k_film and the dP are FIXED here, so the record's spacer and leaf length
+  shape no number (until 2026-10-24 this case read a hand table in the
+  engine, `moduleDiameter 8 in; nModules 6;`, with the same area).
 
   THE SCALING AUDIT (`scaling {}`): at each module exit the local BULK
   concentrate AND the membrane-WALL composition (c_m from the module's
@@ -70,8 +73,8 @@ units
         operation
         {
             membrane         SW30HR;          // case-local constant/membranes/
-            moduleDiameter   8 in;            // nominal spec: 2.5 | 4 | 8 | 16 in
-            nModules         6;               // 6 elements in one vessel
+            module           Generic-8040;    // standard size: Generic-2540 | -4040 | -8040 | -16040
+            elements         6;               // 6 elements in series in one vessel
             P_permeate       1.0 bar;
             k_film           2.0e-5;          // m/s -- modest crossflow, so the
                                               // polarisation factor is visible

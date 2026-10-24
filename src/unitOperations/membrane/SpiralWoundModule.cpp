@@ -39,6 +39,7 @@ License
 #include "thermo/electrolyte/SaltFromCatalogue.H"
 #include "thermo/electrolyte/ScalingIndices.H"
 #include "thermo/electrolyte/SpeciationSolver.H"
+#include "thermo/membrane/FeedSpacer.H"
 #include "thermo/membrane/Membrane.H"
 #include "thermo/membrane/MembraneModule.H"
 #include "thermo/membrane/MembraneModuleRegistry.H"
@@ -116,7 +117,7 @@ int SpiralWoundModule::solve(const DictPtr& dict,
     {
         modRec = &MembraneModuleRegistry::byName(opDict->lookupWord("module"));
         std::vector<std::string> clash;
-        for (const char* k : { "area", "length", "moduleDiameter", "nModules" })
+        for (const char* k : { "area", "length", "feedSpacer" })
             if (opDict->found(k)) clash.push_back(k);
         for (const char* blk : { "massTransfer", "pressureDrop" })
             if (opDict->found(blk))
@@ -125,7 +126,9 @@ int SpiralWoundModule::solve(const DictPtr& dict,
                 for (const char* k : { "channelHeight", "spacerPorosity" })
                     if (b->found(k)) clash.push_back(std::string(blk) + "." + k);
             }
-        if (!modRec->isFlatSheetCell() && opDict->found("membrane"))
+        //  An element record that NAMES its membrane owns it; a generic
+        //  element or a flat cell takes the case's (C146).
+        if (!modRec->membrane().empty() && opDict->found("membrane"))
             clash.push_back("membrane");
         if (!clash.empty())
         {
@@ -138,102 +141,58 @@ int SpiralWoundModule::solve(const DictPtr& dict,
                   " operation ALSO declares" + list + " -- one home.  Remove"
                   " the inline value(s), or drop `module` and keep them.");
         }
-        if (modRec->isFlatSheetCell() && !opDict->found("membrane"))
+        if (modRec->membrane().empty() && !opDict->found("membrane"))
             throw std::runtime_error("spiralWoundModule '" + unitLabel + "': `module "
-                + modRec->name() + ";` is a flat-sheet cell, which takes ANY"
-                  " coupon -- declare the membrane beside it: `membrane <name>;`"
+                + modRec->name() + ";` is " + (modRec->isFlatSheetCell()
+                  ? std::string("a flat-sheet cell, which takes ANY coupon")
+                  : std::string("a generic element whose record names no"
+                                " membrane"))
+                + " -- declare the membrane beside it: `membrane <name>;`"
                   " (a record of kind RO | NF).");
         if (modRec->isFlatSheetCell() && opDict->found("elements"))
             throw std::runtime_error("spiralWoundModule '" + unitLabel + "': a"
                 " flat-sheet cell is ONE coupon; `elements` is a spiral train's key.");
     }
-    const std::string membraneName = (hasModule && !modRec->isFlatSheetCell())
+    const std::string membraneName = (hasModule && !modRec->membrane().empty())
                                    ? modRec->membrane()
                                    : opDict->lookupWord("membrane");
 
     // ---- Module hardware spec ----------------------------------------------
-    // THE THIRD FORM is `module <name>;`, resolved ABOVE: the record supplies
-    // the area and the leaf length, and `area`, `length`, `moduleDiameter` and
-    // `nModules` have already REFUSED beside it (`elements` has not -- a spiral
-    // element record still describes ONE element, and a train of them is a
-    // legitimate thing to ask for; a flat cell refuses it, being one coupon).
-    // The two forms below are what a case with NO record declares instead:
-    // EITHER  `area` + `length` (+ `elements`)  -- explicit area (legacy spec,
-    //         numerically untouched)
-    // OR      `moduleDiameter` + `nModules`     -- nominal 40-inch standard
-    //         elements; the per-module area comes from the hand table below
-    //         and the derivation is announced.  `nModules` may be REAL
-    //         (continuous, for optimisation drivers -- announced); the
-    //         fractional remainder is marched as a shorter last element.
+    // TWO FORMS, never both:
+    //   * `module <name>;` -- resolved ABOVE: the record supplies the area,
+    //     the leaf length (and leaf count) and the channel, and `area` /
+    //     `length` have already refused beside it;
+    //   * `area` + `length` -- explicit per-element area (the legacy spec,
+    //     numerically untouched).
+    // Either way `elements` is the number of elements IN SERIES in one
+    // pressure vessel and `vessels` the number of IDENTICAL vessels in
+    // PARALLEL: one unit is one STAGE of an array (C146, 2026-10-24).
     //
-    // Standard 40-inch spiral-wound elements: nominal diameter -> typical
-    // active area.  Catalogue-representative values (DuPont FilmTec /
-    // Hydranautics / Toray product sheets; the ft2 class is the industry name):
-    //     2.5 in ->   2.6 m2   ( 28 ft2 class, e.g. XX-2540)
-    //     4   in ->   7.9 m2   ( 85 ft2 class, e.g. XX-4040)
-    //     8   in ->  37.2 m2   (400 ft2 class, e.g. SW30HR-380 / BW30-400)
-    //     16  in -> 148.6 m2   (1600 ft2 class, large-format elements)
-    const bool hasArea = opDict->found("area");
-    const bool hasDiam = opDict->found("moduleDiameter");
-    if (hasArea && hasDiam)
-        throw std::runtime_error("spiralWoundModule: give EITHER `area` "
-            "(explicit area, legacy spec) OR `moduleDiameter` + `nModules` "
-            "(nominal 40-inch standard elements) -- not both");
+    // THE NOMINAL-DIAMETER TABLE IS RETIRED (C146).  `moduleDiameter` +
+    // `nModules` read a hand table of four areas (2.6 / 7.9 / 37.2 / 148.6 m2)
+    // kept in this file -- a second home for what an element record says.
+    // The four standard sizes are RECORDS now (data/standards/assets/
+    // Generic-2540 | Generic-4040 | Generic-8040 | Generic-16040, kind
+    // membraneModule, every value an announced estimate), so the keys refuse
+    // and name them.  No dual reader.
+    for (const char* retired : { "moduleDiameter", "nModules" })
+        if (opDict->found(retired))
+            throw std::runtime_error("spiralWoundModule '" + unitLabel + "': `"
+                + std::string(retired) + "` is RETIRED (2026-10-24) -- the"
+                  " nominal 40-inch sizes are element RECORDS now.  Write"
+                  " `module Generic-2540 | Generic-4040 | Generic-8040 |"
+                  " Generic-16040;` (data/standards/assets/, every value an"
+                  " announced estimate) or a real element (`module"
+                  " SW30HR-380;`), with `elements <n>;` for the elements in"
+                  " series in one vessel (a REAL n is allowed: the fraction is"
+                  " marched as a shorter last element) and `vessels <n>;` for"
+                  " identical vessels in parallel.  The retired hand table's"
+                  " areas were 2.6 / 7.9 / 37.2 / 148.6 m2; the records carry"
+                  " the same.  For anything else give `area` + `length`.");
 
-    scalar A_membrane   = 0.0;     // per element / module [m2]
-    scalar L            = 0.0;     // per element / module [m]
-    scalar nModulesReal = 1.0;     // continuous module count (nominal spec)
-    int    nElements    = 1;       // marched elements (ceil of nModulesReal)
-    scalar lastFrac     = 1.0;     // fractional size of the LAST element
-    bool   nominalSpec  = false;
-    scalar diam_in      = 0.0;     // matched nominal diameter [inch]
-
-    if (hasDiam)
-    {
-        nominalSpec = true;
-        if (opDict->found("elements"))
-            throw std::runtime_error("spiralWoundModule: `elements` is the "
-                "legacy-train key -- with `moduleDiameter` the count is "
-                "`nModules` (a REAL number is allowed)");
-        if (!opDict->hasDimensions("moduleDiameter")
-         || !(opDict->dimensionsOf("moduleDiameter") == Dims::length))
-            throw std::runtime_error("spiralWoundModule: moduleDiameter needs "
-                "a length unit -- e.g. `moduleDiameter 8 in;`  (in | inch)");
-        const scalar d_in_raw = opDict->lookupScalar("moduleDiameter")
-                              / units::inch_to_m;
-
-        struct NominalElement { scalar d_in; scalar area_m2; };
-        static const NominalElement nominalTable[] =
-            { {2.5, 2.6}, {4.0, 7.9}, {8.0, 37.2}, {16.0, 148.6} };
-        const NominalElement* hit = nullptr;
-        for (const auto& t : nominalTable)
-            if (std::abs(d_in_raw - t.d_in) < 1.0e-3 * t.d_in) hit = &t;
-        if (!hit)
-        {
-            char b[320];
-            std::snprintf(b, sizeof(b),
-                "spiralWoundModule: moduleDiameter %g in is not a standard "
-                "element -- the nominal table knows 2.5 in (2.6 m2), "
-                "4 in (7.9 m2), 8 in (37.2 m2) and 16 in (148.6 m2) "
-                "(40-inch standard elements).  For anything else give the "
-                "explicit `area` + `length`.", static_cast<double>(d_in_raw));
-            throw std::runtime_error(b);
-        }
-        diam_in    = hit->d_in;
-        A_membrane = hit->area_m2;
-
-        nModulesReal = opDict->lookupScalarOrDefault("nModules", 1.0);
-        if (nModulesReal <= 0.0)
-            throw std::runtime_error("spiralWoundModule: nModules must be > 0");
-        const scalar nFull = std::floor(nModulesReal + 1.0e-9);
-        const scalar frac  = nModulesReal - nFull;
-        if (frac > 1.0e-9) { nElements = static_cast<int>(nFull) + 1; lastFrac = frac; }
-        else               { nElements = std::max(1, static_cast<int>(nFull)); }
-
-        // 40-inch standard element length (1.016 m); explicit `length` overrides.
-        L = opDict->lookupScalarOrDefault("length", 1.016, Dims::length);
-    }
-    else if (hasModule)
+    scalar A_membrane   = 0.0;     // per element [m2]
+    scalar L            = 0.0;     // per element: the marched leaf length [m]
+    if (hasModule)
     {
         A_membrane = modRec->activeArea_m2();
         //  A spiral marches its LEAF length (the record's, an estimate where
@@ -242,16 +201,43 @@ int SpiralWoundModule::solve(const DictPtr& dict,
         L = modRec->isFlatSheetCell()
           ? modRec->activeArea_m2() / modRec->slotWidth_m()
           : modRec->leafLength_m();
-        nElements    = static_cast<int>(opDict->lookupScalarOrDefault("elements", 1.0));
-        nModulesReal = static_cast<scalar>(nElements);
     }
     else
     {
         A_membrane   = opDict->lookupScalar("area",   Dims::area);
         L            = opDict->lookupScalar("length", Dims::length);
-        nElements    = static_cast<int>(opDict->lookupScalarOrDefault("elements", 1.0));
-        nModulesReal = static_cast<scalar>(nElements);
     }
+
+    //  Elements in series in one vessel.  A REAL count is allowed (an
+    //  optimisation driver varies it continuously -- optim04): the integer
+    //  part is marched whole and the fraction as a shorter LAST element, and
+    //  the run says so.
+    const scalar nModulesReal = opDict->lookupScalarOrDefault("elements", 1.0);
+    if (!(nModulesReal > 0.0))
+        throw std::runtime_error("spiralWoundModule '" + unitLabel + "':"
+            " `elements` must be > 0");
+    int    nElements = 1;          // marched elements (ceil of nModulesReal)
+    scalar lastFrac  = 1.0;        // fractional size of the LAST element
+    {
+        const scalar nFull = std::floor(nModulesReal + 1.0e-9);
+        const scalar frac  = nModulesReal - nFull;
+        if (frac > 1.0e-9) { nElements = static_cast<int>(nFull) + 1; lastFrac = frac; }
+        else               { nElements = std::max(1, static_cast<int>(nFull)); }
+    }
+
+    //  Identical vessels in parallel.  They see the same feed state, so ONE
+    //  vessel is solved on F / n and its outlets are scaled by n -- exact,
+    //  not an approximation, and said so on every run that has more than one.
+    const scalar vesselsReal = opDict->lookupScalarOrDefault("vessels", 1.0);
+    if (!(vesselsReal >= 1.0) || std::abs(vesselsReal - std::round(vesselsReal)) > 1.0e-12)
+        throw std::runtime_error("spiralWoundModule '" + unitLabel + "':"
+            " `vessels` is a whole number of pressure vessels in parallel"
+            " (>= 1) -- got " + std::to_string(vesselsReal));
+    const int nVessels = static_cast<int>(std::round(vesselsReal));
+    if (hasModule && modRec->isFlatSheetCell() && nVessels > 1)
+        throw std::runtime_error("spiralWoundModule '" + unitLabel + "': a"
+            " flat-sheet cell is ONE coupon; `vessels` is an array's key.");
+
     //  The channel has TWO membrane faces per leaf in a spiral (the leaf is
     //  an envelope, permeate carrier inside) and ONE in a flat cell (the
     //  coupon lies on the permeate carrier; the channel above it has a steel
@@ -261,25 +247,8 @@ int SpiralWoundModule::solve(const DictPtr& dict,
 
     if (verbosity >= 2)
     {
-        char b[200];
-        if (nominalSpec)
-        {
-            std::snprintf(b, sizeof(b),
-                "  [spec] %g x %g m2 (%gin/40in standard element) = %g m2\n",
-                static_cast<double>(nModulesReal),
-                static_cast<double>(A_membrane),
-                static_cast<double>(diam_in),
-                static_cast<double>(nModulesReal * A_membrane));
-            std::cout << b;
-            if (lastFrac != 1.0)
-            {
-                std::snprintf(b, sizeof(b),
-                    "  [spec] nModules %g (continuous -- optimisation mode)\n",
-                    static_cast<double>(nModulesReal));
-                std::cout << b;
-            }
-        }
-        else if (hasModule)
+        char b[240];
+        if (hasModule)
         {
             std::snprintf(b, sizeof(b),
                 "  [spec] module '%s' (%s, %s): A %g m2, %s %g m\n",
@@ -298,6 +267,27 @@ int SpiralWoundModule::solve(const DictPtr& dict,
                 static_cast<double>(A_membrane));
             std::cout << b;
         }
+        if (lastFrac != 1.0)
+        {
+            std::snprintf(b, sizeof(b),
+                "  [spec] elements %g (continuous -- optimisation mode: the"
+                " last element is marched at %.4g of its length)\n",
+                static_cast<double>(nModulesReal), static_cast<double>(lastFrac));
+            std::cout << b;
+        }
+    }
+    if (nVessels > 1)
+    {
+        std::ostringstream m;
+        m << nVessels << " identical pressure vessels in PARALLEL, each "
+          << nModulesReal << " element(s) in series: ONE vessel is solved on"
+             " F/" << nVessels << " and its retentate and permeate are scaled"
+             " by " << nVessels << " (identical vessels see the same feed"
+             " state; a maldistribution between them is not modelled)";
+        if (verbosity >= 1)
+            std::cout << "  [array] " << m.str() << "\n";
+        AdvisoryLog::instance().add("model", "info",
+            "membrane stage '" + unitLabel + "'", m.str());
     }
 
     const scalar P_perm     = opDict->lookupScalar("P_permeate", Dims::pressure);
@@ -328,9 +318,44 @@ int SpiralWoundModule::solve(const DictPtr& dict,
         readGeom(mt);
         if (mt->found("diffusivity")) { D_solute = mt->lookupScalar("diffusivity"); DDeclared = true; }
     }
-    if (hasModule)
+    //  THE FEED SPACER IS A RECORD (C146, 2026-10-24).  Named by the element
+    //  record (`feedSpacer <name>;` in a kind membraneModule) or, with the
+    //  explicit `area` + `length` spec, by the case beside them.  Its
+    //  thickness IS the channel height (Schock & Miquel 1987, p. 341), its
+    //  porosity is weighed or derived from the mesh (Eqs. 19-22) and its
+    //  hydraulic diameter is Schock & Miquel's Eq. (17) -- one home each,
+    //  so an inline channelHeight / spacerPorosity beside it REFUSES.
+    const FeedSpacer* spacer = nullptr;
     {
-        //  The record's channel (the inline keys were refused above).
+        const std::string spacerName = hasModule
+            ? modRec->feedSpacer()
+            : opDict->lookupWordOrDefault("feedSpacer", "");
+        if (!spacerName.empty())
+        {
+            spacer = &FeedSpacerRegistry::byName(spacerName);
+            if (!hasModule)
+                for (const char* blk : { "massTransfer", "pressureDrop" })
+                    if (opDict->found(blk))
+                    {
+                        auto b = opDict->subDict(blk);
+                        for (const char* k : { "channelHeight", "spacerPorosity" })
+                            if (b->found(k))
+                                throw std::runtime_error("spiralWoundModule '"
+                                    + unitLabel + "': `feedSpacer " + spacerName
+                                    + ";` supplies the channel, and `" + blk
+                                    + "." + k + "` ALSO declares it -- one home."
+                                      "  Remove the inline value or the spacer.");
+                    }
+        }
+    }
+    if (spacer)
+    {
+        h_ch = spacer->thickness_m();
+        eps  = spacer->porosity();
+    }
+    else if (hasModule)
+    {
+        //  The record's inline channel (the case's inline keys were refused above).
         h_ch = modRec->channelHeight_m();
         eps  = modRec->spacerPorosity();
     }
@@ -410,7 +435,17 @@ int SpiralWoundModule::solve(const DictPtr& dict,
     }
     const scalar W_ch      = A_membrane / (facesPerLeaf * L);   // channel width: A/(2L) spiral, A/L flat cell
     const scalar A_channel = W_ch * h_ch * eps;
-    const scalar d_h       = 2.0 * h_ch * eps;
+    //  The hydraulic diameter: the spacer's Eq. (17) value where a spacer
+    //  record is named; otherwise the legacy 2 h eps, which is NOT Schock &
+    //  Miquel's definition (their Eq. 17 needs the filament's wetted surface;
+    //  2 h eps is neither it nor their empty-channel Eq. 10, 2h).  The legacy
+    //  value is kept so no golden moves, and is ANNOUNCED below wherever a
+    //  correlation reads it.
+    const scalar d_h       = spacer ? spacer->hydraulicDiameter_m()
+                                    : 2.0 * h_ch * eps;
+    //  The leaves: W_leaf = A / (2 n L), DERIVED (the record stores A, n, L).
+    const int    nLeaves   = (hasModule && !flatCell) ? modRec->leaves() : 0;
+    const scalar W_leaf    = nLeaves > 0 ? W_ch / nLeaves : 0.0;
 
     // k_film model (concentration polarisation).
     std::unique_ptr<MassTransferModel> mtModel;
@@ -439,7 +474,28 @@ int SpiralWoundModule::solve(const DictPtr& dict,
                   " all and give `k_film <value>;` in operation instead.");
         }
         mtModel = MassTransferModel::New(mt->lookupWord("model"));
-        mtModel->readParameters(mt);
+        //  A spacer that CARRIES the correlation supplies its coefficients:
+        //  the case selects the model by name, the record holds the numbers.
+        if (spacer && spacer->massTransfer().declared)
+        {
+            const auto& sc = spacer->massTransfer();
+            if (mt->lookupWord("model") != sc.model)
+                throw std::runtime_error("spiralWoundModule '" + unitLabel
+                    + "': massTransfer model '" + mt->lookupWord("model")
+                    + "' is not the correlation the feed spacer '"
+                    + spacer->name() + "' carries ('" + sc.model + "', "
+                    + spacer->sourcePath() + ").  Name '" + sc.model
+                    + "', or fix k_film and declare no massTransfer block.");
+            for (const char* k : { "a", "b", "c" })
+                if (mt->found(k))
+                    throw std::runtime_error("spiralWoundModule '" + unitLabel
+                        + "': massTransfer `" + std::string(k) + "` beside the"
+                          " feed spacer '" + spacer->name() + "', which carries"
+                          " the coefficients of its own correlation -- one home.");
+            mtModel->readParameters(sc.dict);
+        }
+        else
+            mtModel->readParameters(mt);
     }
     else
         k_film_const = opDict->lookupScalar("k_film", Dims::massTransferCoeff);
@@ -449,8 +505,94 @@ int SpiralWoundModule::solve(const DictPtr& dict,
     if (opDict->found("pressureDrop"))
     {
         auto pd = opDict->subDict("pressureDrop");
-        pdModel = PressureDropModel::New(pd->lookupWordOrDefault("model", "SchockMiquel"));
-        pdModel->readParameters(pd);
+        const std::string pdWord = pd->lookupWordOrDefault("model", "SchockMiquel");
+        pdModel = PressureDropModel::New(pdWord);
+        if (spacer && spacer->pressureDrop().declared)
+        {
+            const auto& sc = spacer->pressureDrop();
+            if (pdWord != sc.model)
+                throw std::runtime_error("spiralWoundModule '" + unitLabel
+                    + "': pressureDrop model '" + pdWord + "' is not the"
+                      " correlation the feed spacer '" + spacer->name()
+                    + "' carries ('" + sc.model + "', " + spacer->sourcePath()
+                    + ").  Name '" + sc.model + "', or give `dP_feed_total` and"
+                      " declare no pressureDrop block.");
+            for (const char* k : { "a", "b" })
+                if (pd->found(k))
+                    throw std::runtime_error("spiralWoundModule '" + unitLabel
+                        + "': pressureDrop `" + std::string(k) + "` beside the"
+                          " feed spacer '" + spacer->name() + "', which carries"
+                          " the coefficients of its own correlation -- one home.");
+            pdModel->readParameters(sc.dict);
+        }
+        else
+            pdModel->readParameters(pd);
+    }
+
+    //  WHAT THE CHANNEL IS, said once.  A spacer record: its geometry and the
+    //  derivations (Schock & Miquel Eqs. 17, 20-23) and every estimate it
+    //  carries.  The legacy inline channel: that its 2 h eps is not Eq. 17 --
+    //  said only where a correlation actually reads d_h.
+    if (spacer)
+    {
+        if (verbosity >= 2)
+        {
+            char b[420];
+            if (spacer->hasFilament())
+                std::snprintf(b, sizeof(b),
+                    "  [spacer] '%s': h = %.4g mm, d_F = %.4g mm%s -> porosity"
+                    " %.4f (%s), S_v,sp = 4/d_F = %.4g 1/mm (Eq. 23), d_h ="
+                    " 4 eps/(2/h + (1-eps) S_v,sp) = %.4g mm (Schock & Miquel"
+                    " Eq. 17)\n",
+                    spacer->name().c_str(),
+                    static_cast<double>(spacer->thickness_m() * 1e3),
+                    static_cast<double>(spacer->filamentDiameter_m() * 1e3),
+                    spacer->hasMesh()
+                      ? (", l_M = " + std::to_string(spacer->meshLength_m() * 1e3)
+                         + " mm").c_str() : "",
+                    static_cast<double>(spacer->porosity()),
+                    spacer->porosityDerived() ? "Eqs. 20-22, from the mesh"
+                                              : "declared",
+                    static_cast<double>(spacer->specificSurface() * 1e-3),
+                    static_cast<double>(d_h * 1e3));
+            else
+                std::snprintf(b, sizeof(b),
+                    "  [spacer] '%s': h = %.4g mm, porosity %.4f, d_h = %.4g mm"
+                    " (published, no filament geometry)\n",
+                    spacer->name().c_str(),
+                    static_cast<double>(spacer->thickness_m() * 1e3),
+                    static_cast<double>(spacer->porosity()),
+                    static_cast<double>(d_h * 1e3));
+            std::cout << b;
+        }
+        for (const auto& e : spacer->estimates())
+        {
+            char v[64];
+            std::snprintf(v, sizeof(v), "%.6g", static_cast<double>(e.value));
+            const std::string msg = "`" + e.key + "` = " + v + " (SI) is an"
+                " ESTIMATE, reviewStatus " + e.reviewStatus + " -- " + e.notes;
+            if (verbosity >= 1)
+                std::cout << "  [estimate] spacer '" << spacer->name() << "': "
+                          << msg << "\n";
+            AdvisoryLog::instance().add("provenance", "warning",
+                "spacer '" + spacer->name() + "'", msg);
+        }
+    }
+    else if (mtModel || pdModel)
+    {
+        char b[400];
+        std::snprintf(b, sizeof(b),
+            "d_h = 2 h eps = %.4g mm from the inline channel (h %.4g mm, eps"
+            " %.3g): NOT Schock & Miquel's hydraulic diameter (Desalination 64"
+            " (1987) 339, Eq. 17, which needs the spacer filament's wetted"
+            " surface); name a feed spacer record (`feedSpacer <name>;`, kind"
+            " feedSpacer) to use Eq. 17",
+            static_cast<double>(d_h * 1e3), static_cast<double>(h_ch * 1e3),
+            static_cast<double>(eps));
+        if (verbosity >= 2)
+            std::cout << "  [spacer] " << b << "\n";
+        AdvisoryLog::instance().add("approximation", "info",
+            "membrane '" + unitLabel + "'", b);
     }
 
     // Osmotic-pressure model (van't Hoff default; Pitzer for concentrated
@@ -635,7 +777,9 @@ int SpiralWoundModule::solve(const DictPtr& dict,
     const scalar dz = L / nNodes;
 
     // Initial bulk state from the inlet stream.
-    auto bulk0 = membrane::toBulk(F_in, z_in, MW, rho, Ncomp);
+    //  ONE VESSEL of the stage: the feed is split evenly over the identical
+    //  vessels in parallel, and the outlets are scaled back by nVessels below.
+    auto bulk0 = membrane::toBulk(F_in / nVessels, z_in, MW, rho, Ncomp);
     // Pack into per-solute bulk concentrations (the local solver only
     // needs the solute c values).
     std::vector<scalar> c_b(Ns, 0.0);
@@ -951,6 +1095,10 @@ int SpiralWoundModule::solve(const DictPtr& dict,
     zGrid.reserve(nNodes + 1);
     std::vector<scalar> gammaSum(Ns, 0.0);
     scalar xiSum = 0.0; int nXi = 0; int nRecorded = 0;
+    //  Per-element diagnostics (C146): the polarisation modulus of each solute
+    //  averaged over each element's stations.
+    std::vector<scalar> elemGammaSum(Ns, 0.0);
+    int elemNodes = 0;
     //  The pore's own account, when the transport law SOLVED the pore
     //  (DSPM-DE poreSolver finiteDifference): merged over every station.
     membrane::PoreAccount poreRun;
@@ -1015,8 +1163,10 @@ int SpiralWoundModule::solve(const DictPtr& dict,
                            ? (st.c_m[s] - c_b[s]) / c_b[s] : 0.0;
             cols["Gamma_" + thermo.comp(soluteIdx[s]).name()].push_back(g);
             gammaSum[s] += g;
+            elemGammaSum[s] += g;
         }
         ++nRecorded;
+        ++elemNodes;
         //  The interface potential gradient of the coupled film (Geraldes &
         //  Afonso 2007), V/m -- published only when a coupled wall produced
         //  it, beside the membrane's own psi below.
@@ -1063,6 +1213,20 @@ int SpiralWoundModule::solve(const DictPtr& dict,
     int   globalNode = 0;
     bool  dry = false;
     std::vector<scalar> elemRecovery, elemRetConc;   // per-element diagnostics
+    //  C146: what each element of the vessel does -- its own flux, its own
+    //  friction drop, the Reynolds number it is fed at, the feed it receives,
+    //  and the polarisation modulus of each solute.
+    std::vector<scalar> elemJw, elemDP, elemReIn, elemFeed;
+    std::vector<std::vector<scalar>> elemGamma;
+    //  The Reynolds number the correlations are evaluated at, over the march
+    //  (Re = rho u d_h / mu, u = Q / (W h eps): Schock & Miquel Eqs. 5, 11-12).
+    const bool readsDh = (mtModel != nullptr) || (pdModel != nullptr);
+    auto ReAt = [&](scalar Qlocal) -> scalar
+    {
+        if (A_channel <= 0.0 || mu_feed <= 0.0) return 0.0;
+        return rho * (Qlocal / A_channel) * d_h / mu_feed;
+    };
+    scalar ReMin = ReAt(Q_b), ReMax = ReMin;
     // ---- March element by element (a train is a continuous channel) ------
     for (int e = 0; e < nElements && !dry; ++e)
     {
@@ -1071,6 +1235,9 @@ int SpiralWoundModule::solve(const DictPtr& dict,
         // fractional remainder as a shorter LAST element; legacy: always 1.
         const scalar elemFrac = (e == nElements - 1) ? lastFrac : 1.0;
         const scalar dz_e = (L * elemFrac) / nNodes;
+        const scalar Qperm0 = Q_perm, P0 = P_b;
+        elemFeed.push_back(Q_b);
+        elemReIn.push_back(ReAt(Q_b));
         for (int k = 0; k < nNodes; ++k)
         {
             // Local fluxes at the start of the cell (forward Euler for the
@@ -1102,6 +1269,8 @@ int SpiralWoundModule::solve(const DictPtr& dict,
             P_b -= dPdzAt(Q_b) * dz_e;
 
             if (Q_b <= 0.0) { dry = true; break; }
+            ReMin = std::min(ReMin, ReAt(Q_b));
+            ReMax = std::max(ReMax, ReAt(Q_b));
             sol = transportModel->localFluxes(makeCtx(Q_b));
             recordNode(++globalNode, z0 + (k + 1) * dz_e, sol);
         }
@@ -1110,6 +1279,17 @@ int SpiralWoundModule::solve(const DictPtr& dict,
         // and the retentate concentration leaving it (shows the buildup).
         elemRecovery.push_back((Q_feed > 0.0) ? Q_perm / Q_feed : 0.0);
         elemRetConc.push_back(Ns > 0 ? c_b[0] : 0.0);   // first solute [kmol/m³]
+        {
+            const scalar Ae = A_membrane * elemFrac;
+            elemJw.push_back(Ae > 0.0 ? (Q_perm - Qperm0) / Ae : 0.0);
+            elemDP.push_back(P0 - P_b);
+            std::vector<scalar> g(Ns, 0.0);
+            for (std::size_t s2 = 0; s2 < Ns; ++s2)
+                g[s2] = elemNodes > 0 ? elemGammaSum[s2] / elemNodes : 0.0;
+            elemGamma.push_back(std::move(g));
+            std::fill(elemGammaSum.begin(), elemGammaSum.end(), 0.0);
+            elemNodes = 0;
+        }
 
         // Scaling audit at this module's exit: speciate the local BULK
         // concentrate AND the WALL composition (c_m from the module's own
@@ -1163,6 +1343,35 @@ int SpiralWoundModule::solve(const DictPtr& dict,
         if (e + 1 < nElements) P_b -= interDP;
     }
     profile_->columns["z"] = std::move(zGrid);
+
+    //  THE WINDOW OF THE CORRELATION (C146).  A spacer record carries the
+    //  Reynolds band its correlation was measured over (Schock & Miquel:
+    //  "100 < Re < 1000", p. 345, for the friction law; the same band for the
+    //  Sherwood law's Fig. 9).  The run is ANNOUNCED outside it and continues:
+    //  an extrapolation is a fact about the answer, not a reason to refuse it.
+    if (spacer && readsDh)
+    {
+        auto checkBand = [&](const SpacerCorrelation& c, bool used, const char* what)
+        {
+            if (!used || !c.declared || !c.hasReBand) return;
+            if (ReMin >= c.Re_lo && ReMax <= c.Re_hi) return;
+            char b[400];
+            std::snprintf(b, sizeof(b),
+                "%s correlation '%s' of the feed spacer '%s' EXTRAPOLATED: Re"
+                " runs %.4g to %.4g along the vessel, outside its measured"
+                " window %.4g < Re < %.4g (the spacer record's validity) --"
+                " the run continues",
+                what, c.model.c_str(), spacer->name().c_str(),
+                static_cast<double>(ReMin), static_cast<double>(ReMax),
+                static_cast<double>(c.Re_lo), static_cast<double>(c.Re_hi));
+            if (verbosity >= 1)
+                std::cout << "  [window] " << b << "\n";
+            AdvisoryLog::instance().add("extrapolation", "warning",
+                "membrane stage '" + unitLabel + "'", b);
+        };
+        checkBand(spacer->massTransfer(), mtModel != nullptr, "mass-transfer");
+        checkBand(spacer->pressureDrop(), pdModel != nullptr, "friction");
+    }
 
     // ---- Scaling audit: per-module profile + onset detection ---------------
     const int nAudited = static_cast<int>(audRecovery.size());
@@ -1243,7 +1452,7 @@ int SpiralWoundModule::solve(const DictPtr& dict,
         mass_ret = rho * Q_b;                      // = (Σ c_i·MW_i)·Q_b
         ProcessStream ret;
         ret.name = "retentate";
-        ret.F = F_ret;
+        ret.F = F_ret * nVessels;          // the stage: n identical vessels
         ret.T = T_in;
         ret.P = P_b;
         ret.vf = 0.0;
@@ -1269,7 +1478,7 @@ int SpiralWoundModule::solve(const DictPtr& dict,
         mass_perm = rho * Q_perm;                  // = (Σ c_i·MW_i)·Q_perm
         ProcessStream perm;
         perm.name = "permeate";
-        perm.F = F_perm_total;
+        perm.F = F_perm_total * nVessels;  // the stage: n identical vessels
         perm.T = T_in;
         perm.P = P_perm;
         perm.vf = 0.0;
@@ -1367,6 +1576,9 @@ int SpiralWoundModule::solve(const DictPtr& dict,
                 static_cast<double>(lim.T_max));
             violate(b);
         }
+        //  Per VESSEL and per ELEMENT (C146): the first element of a vessel
+        //  receives the vessel's whole feed, and each element's own friction
+        //  drop is checked -- never the vessel average.
         if (lim.hasFeedFlow_max && Q_feed > lim.feedFlow_max)
         {
             std::snprintf(b, sizeof(b), "feed flow %.3f m3/h EXCEEDS the"
@@ -1375,13 +1587,19 @@ int SpiralWoundModule::solve(const DictPtr& dict,
                 static_cast<double>(lim.feedFlow_max * 3600.0));
             violate(b);
         }
-        if (lim.hasDP_max && (P_in - P_b) / nModulesReal > lim.dP_max)
+        if (lim.hasDP_max)
         {
-            std::snprintf(b, sizeof(b), "feed-channel pressure drop %.3f bar"
-                " per element EXCEEDS the maximum pressure drop %.3f bar",
-                static_cast<double>((P_in - P_b) / nModulesReal * 1e-5),
-                static_cast<double>(lim.dP_max * 1e-5));
-            violate(b);
+            std::size_t eMax = 0;
+            for (std::size_t e = 1; e < elemDP.size(); ++e)
+                if (elemDP[e] > elemDP[eMax]) eMax = e;
+            if (!elemDP.empty() && elemDP[eMax] > lim.dP_max)
+            {
+                std::snprintf(b, sizeof(b), "feed-channel pressure drop %.3f bar"
+                    " in element %zu EXCEEDS the maximum pressure drop %.3f bar"
+                    " per element", static_cast<double>(elemDP[eMax] * 1e-5),
+                    eMax + 1, static_cast<double>(lim.dP_max * 1e-5));
+                violate(b);
+            }
         }
         if (lim.hasPH && doScaling && !scalePHsolve
          && (scalePH < lim.pH_min || scalePH > lim.pH_max))
@@ -1409,6 +1627,25 @@ int SpiralWoundModule::solve(const DictPtr& dict,
     //  Published only under `module`: no pre-existing golden gains an
     //  unpinned KPI.
     if (hasModule && A_channel > 0.0) kpis_["u_crossflow_inlet"] = feed_vol / A_channel;
+    //  C146: the stage, the channel and the window.
+    if (nVessels > 1)
+    {
+        kpis_["vessels"]        = static_cast<scalar>(nVessels);
+        kpis_["feedFlowPerVessel"] = feed_vol;                     // m3/s
+        kpis_["area_stage"]     = nVessels * A_total;              // m2
+    }
+    if (nLeaves > 0)
+    {
+        kpis_["leaves"]    = static_cast<scalar>(nLeaves);
+        kpis_["leafWidth"] = W_leaf;                               // m, derived
+    }
+    if (readsDh)
+    {
+        kpis_["hydraulicDiameter"] = d_h;                          // m
+        kpis_["Re_inlet"] = elemReIn.empty() ? 0.0 : elemReIn.front();
+        kpis_["Re_min"]   = ReMin;
+        kpis_["Re_max"]   = ReMax;
+    }
     // Mass-closure residual |feed − (ret+perm)| / feed (the guard above also
     // throws if it ever exceeds 1e-9): a permanent, visible witness that the
     // module conserves mass.
@@ -1454,6 +1691,13 @@ int SpiralWoundModule::solve(const DictPtr& dict,
             const std::string ee = std::to_string(e + 1);
             kpis_["recovery_elem" + ee] = elemRecovery[e];
             kpis_["c_ret_elem"   + ee] = elemRetConc[e];
+            kpis_["J_w_avg_elem" + ee] = elemJw[e];
+            kpis_["dP_elem"      + ee] = elemDP[e];
+            kpis_["feedFlow_elem" + ee] = elemFeed[e];
+            if (readsDh) kpis_["Re_in_elem" + ee] = elemReIn[e];
+            for (std::size_t s = 0; s < Ns; ++s)
+                kpis_["Gamma_" + thermo.comp(soluteIdx[s]).name() + "_elem" + ee]
+                    = elemGamma[e][s];
         }
     }
     for (std::size_t s = 0; s < Ns; ++s)
@@ -1502,24 +1746,21 @@ int SpiralWoundModule::solve(const DictPtr& dict,
     {
         std::cout << "\n=========================  Spiral-wound result  ===\n"
                   << "  Membrane:        " << membraneName << "  (" << mem.kind() << ")\n";
-        if (nominalSpec)
-        {
-            char b[200];
-            std::snprintf(b, sizeof(b),
-                "  Modules:         %g x %g m2 (%gin/40in standard element) = %g m2\n",
-                static_cast<double>(nModulesReal),
-                static_cast<double>(A_membrane),
-                static_cast<double>(diam_in),
-                static_cast<double>(nModulesReal * A_membrane));
-            std::cout << b;
-        }
-        else if (hasModule)
+        if (hasModule)
         {
             std::cout << "  Module:          " << modRec->name() << "  ("
                       << modRec->format() << ", " << modRec->manufacturer()
                       << ")  A = " << A_membrane << " m2";
             if (nElements > 1) std::cout << " x " << nElements;
             std::cout << "\n";
+            if (nLeaves > 0)
+            {
+                char b[200];
+                std::snprintf(b, sizeof(b), "  Leaves:          %d x %.4g m"
+                    " long x %.4g m wide (width = A/(2 n L), derived)\n",
+                    nLeaves, static_cast<double>(L), static_cast<double>(W_leaf));
+                std::cout << b;
+            }
             const RatedTest& rt = modRec->ratedTest();
             if (rt.declared)
             {
@@ -1541,6 +1782,15 @@ int SpiralWoundModule::solve(const DictPtr& dict,
         }
         else
             std::cout << "  Area:            " << A_membrane << " m²\n";
+        if (nVessels > 1)
+        {
+            char b[200];
+            std::snprintf(b, sizeof(b), "  Stage:           %d vessels x %g"
+                " element(s) = %.4g m2 (one vessel solved on F/%d)\n",
+                nVessels, static_cast<double>(nModulesReal),
+                static_cast<double>(nVessels * nModulesReal * A_membrane), nVessels);
+            std::cout << b;
+        }
         std::cout << "  Water recovery:  " << std::fixed << std::setprecision(3)
                   << 100.0 * recovery << " %\n"
                   << "  Average flux:    " << std::scientific << std::setprecision(3)

@@ -32,6 +32,7 @@ License
 #include "core/RegistryRefusal.H"
 #include "core/Units.H"
 
+#include <cmath>
 #include <set>
 #include <stdexcept>
 #include <variant>
@@ -64,13 +65,11 @@ void MembraneModule::readFromDict(const DictPtr& d, const std::string& sourcePat
             + registryRefusal::message("module format", format_,
                                        acceptedFormats(), "Accepted"));
 
-    // ---- the membrane: a spiral is WOUND with one; a cell takes any coupon,
-    //      so the case declares it beside the module and the record may not.
+    // ---- the membrane: a commercial spiral is WOUND with one and its record
+    //      names it; a GENERIC spiral (a standard size, C146) and a flat cell
+    //      take whichever membrane the case declares beside the module, so
+    //      their records name none.  A cell may not name one.
     membrane_ = d->lookupWordOrDefault("membrane", "");
-    if (!isFlatSheetCell() && membrane_.empty())
-        throw std::runtime_error(locus + ": a `format spiralWound;` element is"
-            " wound with ONE membrane -- declare `membrane <name>;` (a record"
-            " in assets/ of kind RO | NF).");
     if (isFlatSheetCell() && !membrane_.empty())
         throw std::runtime_error(locus + ": a `format flatSheetCell;` takes"
             " any coupon, so the membrane is the CASE's to declare (`membrane"
@@ -79,12 +78,42 @@ void MembraneModule::readFromDict(const DictPtr& d, const std::string& sourcePat
 
     // ---- channel geometry (SI, dimension-checked) --------------------------
     activeArea_     = d->lookupScalar("activeArea",     Dims::area);
-    channelHeight_  = d->lookupScalar("channelHeight",  Dims::length);
-    spacerPorosity_ = d->lookupScalar("spacerPorosity");
-    if (activeArea_ <= 0.0 || channelHeight_ <= 0.0)
-        throw std::runtime_error(locus + ": activeArea and channelHeight must be > 0");
-    if (spacerPorosity_ <= 0.0 || spacerPorosity_ > 1.0)
-        throw std::runtime_error(locus + ": spacerPorosity must lie in (0, 1]");
+    if (activeArea_ <= 0.0)
+        throw std::runtime_error(locus + ": activeArea must be > 0");
+
+    //  THE CHANNEL HAS ONE HOME (C146, 2026-10-24): EITHER the feed spacer
+    //  the element is wound with, named as a record (`feedSpacer <name>;`,
+    //  kind feedSpacer -- its thickness IS the channel height, its porosity
+    //  and its Eq. 17 hydraulic diameter come with it), OR the legacy inline
+    //  pair `channelHeight` + `spacerPorosity` for a sheet that names no
+    //  spacer.  Both at once REFUSES; a flat cell keeps the inline pair (the
+    //  user installs whatever spacer the slot takes).
+    feedSpacer_ = d->lookupWordOrDefault("feedSpacer", "");
+    if (!feedSpacer_.empty())
+    {
+        if (isFlatSheetCell())
+            throw std::runtime_error(locus + ": `feedSpacer` is a spiral"
+                " element's key -- a flat cell's channel is the spacer the"
+                " user installs, declared as `channelHeight` + `spacerPorosity`.");
+        std::vector<std::string> clash;
+        for (const char* k : { "channelHeight", "spacerPorosity" })
+            if (d->found(k)) clash.push_back(k);
+        if (!clash.empty())
+            throw std::runtime_error(locus + ": `feedSpacer " + feedSpacer_
+                + ";` supplies the channel (the spacer thickness IS the channel"
+                  " height, its porosity comes with it), and the record ALSO"
+                  " declares `" + clash.front() + "` -- one home.  Remove the"
+                  " inline value(s) or the spacer reference.");
+    }
+    else
+    {
+        channelHeight_  = d->lookupScalar("channelHeight",  Dims::length);
+        spacerPorosity_ = d->lookupScalar("spacerPorosity");
+        if (channelHeight_ <= 0.0)
+            throw std::runtime_error(locus + ": channelHeight must be > 0");
+        if (spacerPorosity_ <= 0.0 || spacerPorosity_ > 1.0)
+            throw std::runtime_error(locus + ": spacerPorosity must lie in (0, 1]");
+    }
     if (isFlatSheetCell())
     {
         if (d->found("leafLength"))
@@ -93,6 +122,11 @@ void MembraneModule::readFromDict(const DictPtr& d, const std::string& sourcePat
                 " activeArea / slotWidth, derived where it is used -- the tree"
                 " never stores a derivative.  Declare `slotWidth` and"
                 " `slotDepth` instead.");
+        for (const char* k : { "leaves", "leafWidth", "nominalDiameter", "elementLength" })
+            if (d->found(k))
+                throw std::runtime_error(locus + ": `" + std::string(k)
+                    + "` is a spiral element's key; a flat cell is one coupon"
+                      " in a slot.");
         slotWidth_    = d->lookupScalar("slotWidth", Dims::length);
         slotDepth_    = d->lookupScalar("slotDepth", Dims::length);
         holdUpVolume_ = d->lookupScalarOrDefault("holdUpVolume", 0.0, Dims::volume);
@@ -118,6 +152,33 @@ void MembraneModule::readFromDict(const DictPtr& d, const std::string& sourcePat
         leafLength_ = d->lookupScalar("leafLength", Dims::length);
         if (leafLength_ <= 0.0)
             throw std::runtime_error(locus + ": leafLength must be > 0");
+
+        //  THE LEAVES (C146).  An element is `leaves` envelopes, each with two
+        //  membrane faces, so A = 2 n L W: of the four, the record stores the
+        //  area (the data sheet's), the leaf length and the leaf count, and
+        //  the leaf width is DERIVED, W = A/(2 n L) -- storing it as well
+        //  would be a second home for one quantity.
+        if (d->found("leafWidth"))
+            throw std::runtime_error(locus + ": `leafWidth` is DERIVED, W ="
+                " activeArea / (2 leaves leafLength) -- the tree never stores a"
+                " derivative.  Declare `leaves <n>;` and remove `leafWidth`.");
+        if (d->found("leaves"))
+        {
+            const scalar n = d->lookupScalar("leaves");
+            if (!(n >= 1.0) || std::abs(n - std::round(n)) > 1.0e-12)
+                throw std::runtime_error(locus + ": `leaves` is a whole number"
+                    " of envelopes >= 1 -- got " + std::to_string(n));
+            leaves_ = static_cast<int>(std::round(n));
+        }
+        if (d->found("nominalDiameter"))
+            nominalDiameter_ = d->lookupScalar("nominalDiameter", Dims::length);
+        if (d->found("elementLength"))
+        {
+            elementLength_ = d->lookupScalar("elementLength", Dims::length);
+            if (leafLength_ > elementLength_)
+                throw std::runtime_error(locus + ": leafLength exceeds the"
+                    " elementLength -- the leaf is wound inside the element.");
+        }
     }
 
     // ---- limits {} : each ABSENT unless declared -------------------------

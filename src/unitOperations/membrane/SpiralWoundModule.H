@@ -62,31 +62,41 @@ Description
     stage an inner Newton-1D in J_w resolves the coupled
     flux–polarisation–osmotic-pressure non-linearity.
 
-    Pressure drop along the feed channel uses a simple linear
-    friction model dP/dz = (P_feed − P_outlet) / L from a
-    user-supplied DP_total, sufficient for pedagogical
-    accuracy.  A spacer-enhanced correlation is on the list.
+    Pressure drop along the feed channel: either a linear drop
+    dP/dz = dP_feed_total / L from a declared total, or the
+    spacer-channel friction of a `pressureDrop { model ...; }` block
+    (Schock & Miquel's lambda = 6.23 Re^-0.3, its coefficients from a
+    feed spacer record when one is named).
 
-    Hardware spec (THREE forms since 2026-09-16, never two at once):
+    Hardware spec (TWO forms, never both):
       * `module <name>;` — the element or the laboratory cell named as a
         RECORD (`kind membraneModule`, thermo/membrane/MembraneModule.H):
-        the record supplies the active area, the channel height, the
-        spacer porosity, the leaf length and — for a spiral element —
-        the membrane, carries the manufacturer's `limits {}` (CHECKED
-        against the run and ANNOUNCED when exceeded, never refused) and
-        its own `ratedTest {}`.  `format spiralWound | flatSheetCell`:
-        a flat cell has ONE membrane face, so its channel width is A/L
-        and not A/(2L), and the run says which rule it used.  Typing
-        `area`, `length`, `moduleDiameter`, `nModules`, or the
-        channelHeight / spacerPorosity of the massTransfer or
+        the record supplies the active area, the leaf length (and leaf
+        count; the leaf WIDTH is derived, A/(2 n L)), the channel -- the feed
+        SPACER record it is wound with (`feedSpacer`, kind feedSpacer,
+        thermo/membrane/FeedSpacer.H: thickness, porosity, Schock & Miquel's
+        Eq. 17 hydraulic diameter, the correlations' coefficients and
+        Reynolds window) or an inline channelHeight / spacerPorosity -- and,
+        for a commercial spiral, the membrane.  It carries the
+        manufacturer's `limits {}` (CHECKED per vessel and per element,
+        ANNOUNCED, never refused) and its own `ratedTest {}`.  The four
+        standard 40-inch sizes are the records Generic-2540 / -4040 / -8040 /
+        -16040 (2026-10-24, C146; the `moduleDiameter` + `nModules` hand
+        table they replace REFUSES, naming them).  `format spiralWound |
+        flatSheetCell`: a flat cell has ONE membrane face, so its channel
+        width is A/L and not A/(2L).  Typing `area`, `length`, `feedSpacer`,
+        or the channelHeight / spacerPorosity of the massTransfer or
         pressureDrop blocks BESIDE it refuses by name;
-      * `area` + `length` (+ `elements`) — explicit per-element area,
-        the legacy spec (numerics untouched);
-      * `moduleDiameter` (2.5 | 4 | 8 | 16 in, unit mandatory) +
-        `nModules` — nominal 40-inch standard elements; per-module
-        area from a hand table (catalogue-typical values, announced).
-        `nModules` may be REAL (continuous, for optimisation drivers,
-        announced); the fraction marches as a shorter last element.
+      * `area` + `length` — explicit per-element area, the legacy spec
+        (numerics untouched), optionally with a case-level `feedSpacer`.
+
+    ONE UNIT IS ONE STAGE (C146): `vessels <n>;` identical pressure vessels
+    in PARALLEL, each holding `elements <m>;` in SERIES (a REAL m marches its
+    fraction as a shorter last element).  One vessel is solved on F/n and
+    its outlets scaled by n -- exact for identical vessels, announced.  Per
+    element: J_w_avg_elemK, dP_elemK, feedFlow_elemK, Re_in_elemK,
+    Gamma_<solute>_elemK.  A spacer correlation run outside its Reynolds
+    window is ANNOUNCED ([window], an extrapolation advisory).
 
     Optional `scaling {}` block (unit level, beside `operation`):
     at each module exit the BULK concentrate and the WALL composition

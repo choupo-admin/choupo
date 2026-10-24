@@ -1,0 +1,84 @@
+/*----------------------------------------------------------*\
+  constant/propertyManifest -- property-record OWNERSHIP registry
+  (context: case root).  Written by bin/choupo-import from the Choupo-2608 catalogue
+  release; the manifest is the authority on which files under
+  constant/ the importer owns.  A file it does NOT claim is
+  authored and untouchable; a claimed file it verifies by sha256.
+  `sealed true;` FORBIDS the runtime every catalogue fallback --
+  the case runs exclusively from its own constant/ records.
+  claim types:  imported = installed + hash-verified copy;
+                adopted  = authored record explicitly adopted at
+                           import time (never installed, never
+                           hash-enforced, never removed);
+                merged   = standards base with a partial by-name
+                           overlay applied top-level, materialised
+                           at import time (base + overlay hashes
+                           both recorded; durable like adopted).
+\*----------------------------------------------------------*/
+
+propertyManifest
+{
+    sealed             true;
+    sealSchema         computational;
+    catalogueRelease   Choupo-2608;
+    importedAt         "2026-10-24";
+    importerVersion    "3";
+    records
+    {
+        "assets/Generic-8040.dat"
+        {
+            type          imported;
+            sha256        "d4afe5a19c7a5163e48ca58096fe8ad59920d81245c63091d96df0db4aa29781";
+            computationalSha256 "196febda1e626351564fa13851d5d93b1cd61781f0c879315bcb1cd5f371b8df";
+            origin        "data/standards/assets/Generic-8040.dat";
+            originSha256  "d321454c843308787e073f09a28aa6bec936cd99a683cb80bd840720feeb8dd6";
+            release       Choupo-2608;
+        }
+        "assets/SchockMiquel-FilmTecFT30.dat"
+        {
+            type          imported;
+            sha256        "0674237f51b5c84e246c5271f6133c904e867fb599100edf0b059705622d1ff7";
+            computationalSha256 "b1c082fc5fc8b98475ad4a6f81f1e88b2d07b9c5179de162b77127ec1037f981";
+            origin        "data/standards/assets/SchockMiquel-FilmTecFT30.dat";
+            originSha256  "b0d059deae82a45fd8bc5af62bca13a9f986a548dcdbbbf948dfbc4cd653050a";
+            release       Choupo-2608;
+        }
+        "components/Cl.dat"
+        {
+            type          adopted;
+            adoptedAt     "2026-10-24";
+        }
+        "components/NO3.dat"
+        {
+            type          adopted;
+            adoptedAt     "2026-10-24";
+        }
+        "components/water.dat"
+        {
+            type          imported;
+            sha256        "434214d874e17a076ce391a9d1dbca47321b4285429660688db4e64237ee0b2a";
+            computationalSha256 "ce55eca4e8c4f234b2633edec3fb54de5e630256ace48491a44357db2aaacf5c";
+            origin        "data/standards/components/water.dat";
+            originSha256  "3723b03d86ab148fd084c01f9fc3cce1bb4398a3dc6b6914e0336c40d4ade16d";
+            release       Choupo-2608;
+        }
+        "species/Cl.dat"
+        {
+            type          imported;
+            sha256        "e4deb170af58ba90c2e80fe60e5d2cc6035f337bdee8aefd31877daa9df78a6b";
+            computationalSha256 "05431d588a289813130ec9921081101da89bfea7f621d9e34b1798827f035bd4";
+            origin        "data/standards/species/Cl.dat";
+            originSha256  "44e7edb0c5a282e3c74784826b43d67b6572fb2e4e2a3d4176dd49c7af1c2612";
+            release       Choupo-2608;
+        }
+        "species/Na.dat"
+        {
+            type          imported;
+            sha256        "9e5cca89d3dd8d2543efbcdaf530c332f4b427ab0a866e1d10e78368f197a34b";
+            computationalSha256 "091c7c5284f11e65bf118b815887b5bfd715d00a9dcebe0b19dd8f13fe048309";
+            origin        "data/standards/species/Na.dat";
+            originSha256  "8115f927183111567583e5849c729c7f2c1a9ed9d668f26921267491d7598ad3";
+            release       Choupo-2608;
+        }
+    }
+}

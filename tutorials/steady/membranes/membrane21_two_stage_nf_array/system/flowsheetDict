@@ -1,0 +1,116 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+  membrane21_two_stage_nf_array -- a TWO-STAGE nanofiltration ARRAY, 4:2
+  pressure vessels of 6 generic 8-inch elements each, with the interstage
+  booster pump a unit of its own.  Multi-ion throughout: membrane14's NaCl
+  feed with NO3-/NH4+ traces, written ion by ion, through the SDEM transport
+  law and the Geraldes & Afonso multi-ionic film.  See the README.
+
+  ONE UNIT IS ONE STAGE.  `vessels 4; elements 6;` -- four identical
+  pressure vessels in parallel, each holding six elements in series.  The
+  vessels see the same feed state, so the engine solves ONE vessel on F/4
+  and scales its retentate and permeate by 4 (said on every run).  Stage 2
+  takes stage 1's concentrate, BOOSTED by the pump, on half the vessels:
+  the "tapered" array that keeps the crossflow up as the feed shrinks.
+
+  THE HARDWARE IS RECORDS.  `module Generic-8040;` (data/standards/assets/)
+  is a 37.2 m2 element of 16 leaves, 0.854 m long, wound with the FilmTec
+  FT30 feed spacer Schock & Miquel measured (assets/SchockMiquel-
+  FilmTecFT30.dat): its thickness is the channel height, its Eq. (17)
+  hydraulic diameter (0.952 mm) is what the correlations read, and its
+  correlations (Sh = 0.065 Re^0.875 Sc^0.25, lambda = 6.23 Re^-0.3) come
+  WITH their measured window, 100 < Re < 1000 -- outside which the run
+  announces the extrapolation.  Every value of the generic element is an
+  estimate and is announced; the membrane is the case's.
+
+  PER ION, PER ELEMENT.  The film coefficient is priced for each ion on its
+  own Sc_i = nu/D_i, the four ions are coupled at the wall by
+  electroneutrality, and every element publishes its own flux, friction
+  drop, feed, inlet Re and the polarisation modulus of each ion
+  (`J_w_avg_elemK`, `dP_elemK`, `feedFlow_elemK`, `Re_in_elemK`,
+  `Gamma_<ion>_elemK`).
+\*---------------------------------------------------------------------------*/
+
+units
+(
+    {
+        name        Stage1;
+        type        spiralWoundModule;
+        in          feed;
+        outputs     ( concentrate1  permeate1 );
+        operation
+        {
+            module           Generic-8040;      // data/standards/assets/, estimates announced
+            membrane         NF270_sdem_NaCl;   // constant/assets/, the paper's Table 1 row
+            transport        SDEM;
+            vessels          4;                 // identical pressure vessels in parallel
+            elements         6;                 // elements in series in each vessel
+            P_permeate       1.0 bar;
+            nNodes           10;                // stations per element
+
+            massTransfer
+            {
+                model          SchockMiquel;    // coefficients + window: the spacer record
+                viscosity      1.0e-3;          // Pa.s, water at 20 C
+            }
+            pressureDrop
+            {
+                model          SchockMiquel;    // coefficients + window: the spacer record
+            }
+            polarisation
+            {
+                suctionCorrection  GeraldesAfonso2006;
+                ionCoupling        electroneutral;
+            }
+        }
+    }
+    {
+        name        Booster;
+        type        pump;
+        in          concentrate1;
+        outputs     ( boosted );
+        operation
+        {
+            dP        1.5 bar;                  // the interstage boost
+            eta       0.70;
+        }
+    }
+    {
+        name        Stage2;
+        type        spiralWoundModule;
+        in          boosted;
+        outputs     ( concentrate2  permeate2 );
+        operation
+        {
+            module           Generic-8040;
+            membrane         NF270_sdem_NaCl;
+            transport        SDEM;
+            vessels          2;                 // half the vessels: the array tapers
+            elements         6;
+            P_permeate       1.0 bar;
+            nNodes           10;
+
+            massTransfer
+            {
+                model          SchockMiquel;
+                viscosity      1.0e-3;
+            }
+            pressureDrop
+            {
+                model          SchockMiquel;
+            }
+            polarisation
+            {
+                suctionCorrection  GeraldesAfonso2006;
+                ionCoupling        electroneutral;
+            }
+        }
+    }
+);

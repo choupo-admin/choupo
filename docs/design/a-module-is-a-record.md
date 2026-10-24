@@ -28,9 +28,11 @@ and nothing in that text said which number was the manufacturer's and
 which the author's guess, nor what the element is rated for.  membrane14
 (the polarisation witness) carried `channelHeight 0.7 mm` with no source;
 membrane01 carried `length 1.0` and the header could not say whether that
-was the element or the leaf.  The nominal form (`moduleDiameter 4 in;`) is
+was the element or the leaf.  The nominal form (`moduleDiameter 4 in;`) was
 a hand table INSIDE `SpiralWoundModule.cpp` — a catalogue-typical area with
-no record behind it — and it stays, untouched, for the cases recorded on it.
+no record behind it — and it stayed, untouched, for the cases recorded on it
+until 2026-10-24, when C146 retired it for the `Generic-*` element records
+(see [`a-stage-of-spiral-elements.md`](a-stage-of-spiral-elements.md)).
 
 ## 2. The record
 
@@ -121,7 +123,10 @@ membrane (spiral) or `membrane` required beside it (cell), the area, the
 channel geometry and the length come from the record; `area`, `length`,
 `moduleDiameter`, `nModules`, `channelHeight`/`spacerPorosity` inside
 `massTransfer`/`pressureDrop`, and `membrane` beside a spiral module each
-REFUSE, every offending key listed (one home).  `elements N` stays allowed
+REFUSE, every offending key listed (one home).  (Since C146: `moduleDiameter`
+and `nModules` refuse everywhere, retired; `feedSpacer` joins the list; a
+GENERIC element record names no membrane, so `membrane` is required beside
+it as beside a cell.)  `elements N` stays allowed
 on a spiral (a count is not geometry) and refuses on a cell.
 
 **One face or two.**  `facesPerLeaf` is 2 for a spiral and 1 for a cell,
@@ -157,6 +162,12 @@ module and PRINTS:
     engine permeate 51.77 m3/d (recovery 15.9 %), rejection 99.84 %
     | data sheet: 26.0 m3/d at 8 %, rejection 99.70 %   (ratio permeate 1.99x)
 ```
+
+(Since C146, 2026-10-24, the catalogue SW30HR-380 names its feed spacer as a
+record, `Spacer-28mil`, and its channel's hydraulic diameter is Schock &
+Miquel's Eq. 17 (0.914 mm) instead of 2 h eps (1.280 mm); the same probe
+prints 52.14 m3/d, 2.01x.  membrane16 is sealed against the pre-C146 record
+and keeps its numbers -- see `a-stage-of-spiral-elements.md`.)
 
 Two findings, recorded and not tuned.  **The fitted `A_w` of both membrane
 records is high against the manufacturer's own test — 1.6× on the NF270,

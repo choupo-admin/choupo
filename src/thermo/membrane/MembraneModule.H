@@ -135,6 +135,15 @@ public:
     scalar spacerPorosity()   const { return spacerPorosity_; }
     // Spiral: the leaf length the channel is marched over.
     scalar leafLength_m()     const { return leafLength_; }
+    // Spiral, C146: the leaf count (0 = not declared), the nominal diameter
+    // and the element length (0 = not declared); the leaf WIDTH is derived
+    // where it is used, A / (2 n L), and never stored.
+    int    leaves()            const { return leaves_; }
+    scalar nominalDiameter_m() const { return nominalDiameter_; }
+    scalar elementLength_m()   const { return elementLength_; }
+    // The feed spacer record the element is wound with (empty: the legacy
+    // inline channelHeight + spacerPorosity, which are 0 when a spacer is named).
+    const std::string& feedSpacer() const { return feedSpacer_; }
     // Flat cell: the slot the coupon sits in.  The channel LENGTH is not
     // stored -- it is activeArea / slotWidth, derived where it is used.
     scalar slotWidth_m()      const { return slotWidth_; }
@@ -150,7 +159,9 @@ public:
     const std::vector<ModuleEstimate>& estimates() const { return estimates_; }
 
 private:
-    std::string name_, manufacturer_, source_, sourcePath_, format_, membrane_;
+    std::string name_, manufacturer_, source_, sourcePath_, format_, membrane_, feedSpacer_;
+    int    leaves_ = 0;
+    scalar nominalDiameter_ = 0.0, elementLength_ = 0.0;
     scalar activeArea_ = 0.0, channelHeight_ = 0.0, spacerPorosity_ = 0.0;
     scalar leafLength_ = 0.0, slotWidth_ = 0.0, slotDepth_ = 0.0, holdUpVolume_ = 0.0;
     std::vector<scalar> spacers_;

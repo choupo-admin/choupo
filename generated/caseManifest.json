@@ -6,7 +6,7 @@
   "runtime": "not recorded; runTests does not time per case and this script does not run the corpus"
  },
  "counts": {
-  "cases": 492,
+  "cases": 493,
   "witnesses": 16,
   "validationOp": 6,
   "anchored": 15
@@ -6193,6 +6193,26 @@
    "roles": [],
    "hasGolden": true
   },
+  "tutorials/steady/membranes/membrane21_two_stage_nf_array": {
+   "application": "choupoSolve",
+   "unitTypes": [
+    "pump",
+    "spiralWoundModule"
+   ],
+   "unitModels": [
+    "SchockMiquel"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "davies",
+     "ideal"
+    ],
+    "aqueousChemistry": true
+   },
+   "roles": [],
+   "hasGolden": true
+  },
   "tutorials/steady/optimisation/designSpec01_triple_equal_areas": {
    "application": "choupoSolve",
    "unitTypes": [
@@ -7641,6 +7661,7 @@
     "tutorials/steady/membranes/membrane18_nf_feed_and_bleed",
     "tutorials/steady/membranes/membrane19_uf_gel_polarisation",
     "tutorials/steady/membranes/membrane20_dspmde_pore_finite_difference",
+    "tutorials/steady/membranes/membrane21_two_stage_nf_array",
     "tutorials/steady/optimisation/designSpec01_triple_equal_areas",
     "tutorials/steady/optimisation/optim01_column_reflux",
     "tutorials/steady/optimisation/optim02_process_cost",
@@ -8241,6 +8262,7 @@
    "pump": [
     "tutorials/plant/aceticAcid02_plant",
     "tutorials/steady/hydraulics/pumpSystem01_operating_point",
+    "tutorials/steady/membranes/membrane21_two_stage_nf_array",
     "tutorials/steady/power/rankine02_water",
     "tutorials/steady/rotating/pump01_water",
     "tutorials/steady/rotating/pump02_pressure_spec"
@@ -8287,6 +8309,7 @@
     "tutorials/steady/membranes/membrane18_nf_feed_and_bleed",
     "tutorials/steady/membranes/membrane19_uf_gel_polarisation",
     "tutorials/steady/membranes/membrane20_dspmde_pore_finite_difference",
+    "tutorials/steady/membranes/membrane21_two_stage_nf_array",
     "tutorials/steady/optimisation/optim04_membrane_recovery_scaling",
     "tutorials/unsteady/unsteady03_nf_feed_and_bleed_startup",
     "tutorials/unsteady/unsteady04_uf_feed_and_bleed_startup"
@@ -8500,6 +8523,7 @@
     "tutorials/steady/membranes/membrane13_sdem_nf270_mgso4_traces",
     "tutorials/steady/membranes/membrane14_polarisation_multiionic",
     "tutorials/steady/membranes/membrane17_sepa_cf_flat_cell",
+    "tutorials/steady/membranes/membrane21_two_stage_nf_array",
     "tutorials/steady/optimisation/optim04_membrane_recovery_scaling",
     "tutorials/steady/thermo/basis01_two_unit_chain"
    ],
@@ -8808,6 +8832,7 @@
     "tutorials/steady/membranes/membrane18_nf_feed_and_bleed",
     "tutorials/steady/membranes/membrane19_uf_gel_polarisation",
     "tutorials/steady/membranes/membrane20_dspmde_pore_finite_difference",
+    "tutorials/steady/membranes/membrane21_two_stage_nf_array",
     "tutorials/steady/optimisation/designSpec01_triple_equal_areas",
     "tutorials/steady/optimisation/optim01_column_reflux",
     "tutorials/steady/optimisation/optim02_process_cost",

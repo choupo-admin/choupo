@@ -18445,6 +18445,75 @@ laboratory cell in five lines: one membrane face, 0.2\,m/s crossflow, the
 coupled multi-ionic film.
 \end{tutoriallink}
 
+%  Engine: src/thermo/membrane/FeedSpacer.{H,cpp} (the spacer record, Eqs.
+%  17 and 20-23), src/thermo/membrane/MembraneModule.cpp (leaves, the
+%  feedSpacer reference), src/unitOperations/membrane/SpiralWoundModule.cpp
+%  (vessels, the per-element KPIs, the window).  Records: data/standards/
+%  assets/{SchockMiquel-*,Spacer-28mil,Generic-*}.dat.  Gate:
+%  bin/curate/check_spiral_array.py.  Added 2026-10-24 (C146).
+\subsection{Stages, arrays and the feed spacer as a record}
+
+\paragraph{One unit is one stage.}  A plant is an \emph{array}: pressure
+vessels, each holding several elements in series, the vessels of a stage
+in parallel, the concentrate of one stage boosted and fed to the next on
+fewer vessels.  A \code{spiralWoundModule} is one stage ---
+\code{vessels~$n$;} in parallel, \code{elements~$m$;} in series in each.
+Identical vessels see the same feed state, so the engine solves
+\emph{one} vessel on $F/n$ and scales its retentate and permeate by $n$:
+exact, not an approximation, and announced.  The array is built in the
+flowsheet, one unit per stage, the interstage booster a \code{pump} of its
+own.  Each element publishes its own flux, friction drop, feed, inlet
+Reynolds number and polarisation modulus per solute, and a manufacturer's
+pressure-drop limit is checked element by element.
+
+\paragraph{The spacer sets the channel.}  Schock and Miquel (Desalination
+64 (1987) 339--352) characterise a feed spacer by its thickness $h$, its
+filament diameter $d_F$ and its mesh length $l_M$, and take the channel
+height equal to the spacer thickness.  The velocity is the flow over the
+open section, $v = V/(b\,h\,\varepsilon)$, and the hydraulic diameter of a
+spacer-filled channel is four times the open volume over the wetted
+surface:
+\begin{equation}
+   d_h = \frac{4\varepsilon}{2/h + (1-\varepsilon)\,S_{V,sp}},
+   \qquad S_{V,sp} = \frac{4}{d_F},
+   \qquad \varepsilon = 1 - \frac{\tfrac12\pi d_F^2 l_M}{l_M^2\,h},
+   \label{eq:spacer-dh}
+\end{equation}
+their Eqs.~(17), (23) and (20)--(22).  With $\varepsilon\to1$ it is the
+empty flat channel, $2h$; with $h\to\infty$ it is a packed bed.  A feed
+spacer is a record (\code{kind feedSpacer}) that stores what was measured
+--- the thickness, the filament, and \emph{either} a weighed porosity
+\emph{or} the mesh it follows from --- and the engine derives $S_{V,sp}$
+and $d_h$.  For the FilmTec FT30 spacer of their Tab.~1 ($h = 0.77$\,mm,
+$d_F = 0.385$\,mm, $\varepsilon = 0.89$) Eq.~\eqref{eq:spacer-dh} gives
+$d_h = 0.952$\,mm; an inline channel's $2h\varepsilon = 1.37$\,mm is not
+that diameter, and a run that reads it says so.  The record carries the
+two correlations the paper fits,
+\begin{equation}
+   Sh = 0.065\,Re^{0.875}\,Sc^{0.25},
+   \qquad
+   \lambda = 6.23\,Re^{-0.3},
+\end{equation}
+their Eqs.~(30) and (24), \emph{with} the window they were measured over,
+$100 < Re < 1000$: a run outside it is announced as an extrapolation and
+continues.  For a mixture of ions the Sherwood law is evaluated per ion
+on that ion's own $Sc_i = \nu/D_i$, so $k_i \propto D_i^{0.75}$, before
+the Geraldes--Afonso coupling of the film.  The paper applies no wall
+viscosity correction (its numbers use bulk properties), and neither does
+the engine.
+
+\paragraph{Standard sizes are records too.}  The four 40-inch sizes
+(2.5, 4, 8 and 16\,in) are \code{Generic-2540} \ldots{}
+\code{Generic-16040}: an area, a leaf count and a leaf length, every value
+an announced estimate, wound with the FT30 spacer, the membrane the
+case's.  The leaf \emph{width} is derived, $W = A/(2\,n\,L)$, never stored.
+
+\begin{tutoriallink}
+\file{tutorials/steady/membranes/membrane21\_two\_stage\_nf\_array} --- a
+4:2 array of six \code{Generic-8040} elements per vessel with an
+interstage booster, multi-ion (SDEM and the multi-ionic film), per element.
+\end{tutoriallink}
+
 %  Engine: src/unitOperations/batch/BatchDiafilter.{H,cpp} (the model, the
 %  two modes, the published pair, the fouling block and its refusals);
 %  src/unitOperations/membrane/BulkConversion.H (the density closure).

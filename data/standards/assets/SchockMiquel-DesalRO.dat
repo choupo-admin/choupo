@@ -1,0 +1,75 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  FEED SPACER: Desal RO, as characterised by Schock & Miquel (1987)
+
+  WHAT THIS RECORD IS.  The feed-channel net of a spiral-wound element
+  (kind feedSpacer): its thickness, which IS the channel height (p. 341,
+  "the assumption is made that the effective channel height is equal to
+  the spacer thickness"), its filament diameter and its porosity, plus the
+  two correlations the paper fits for spacer-filled channels.  An element
+  record names it with `feedSpacer SchockMiquel-DesalRO;`.
+
+  SOURCE (PRIMARY, READ 2026-10-24 from the paper itself -- numbers
+  transcribed; the paper is Elsevier copyright and is NOT in the tree):
+      G. Schock, A. Miquel, Mass transfer and pressure loss in spiral
+      wound modules, Desalination 64 (1987) 339-352.
+  Tab. 1, p. 343, "geometrical data of different feed spacers", row
+  "Desal RO":  h_SP 0.82 mm,  d_F 0.41 mm,  l_M 2.7 mm,  eps 0.88,
+  S_V,SP 9.8 1/mm,  d_h 0.97 mm.
+  On the correlations: it is in Fig. 6 (friction) but not among the Fig. 9 mass-transfer spacers; Eq. (30) is attached on the paper's statement that it holds 'independently of the type of spacer and membrane' (p. 347).
+
+  WHAT IS STORED AND WHAT IS DERIVED.  The record stores h_SP, d_F and the
+  paper's porosity.  The engine DERIVES S_V,SP = 4/d_F (Eq. 23) and
+  d_h = 4 eps / (2/h + (1 - eps) S_V,SP) (Eq. 17); bin/curate/
+  check_spiral_array.py holds both to the Tab. 1 columns (9.8 1/mm,
+  0.97 mm) within their printed rounding.  The mesh length l_M = 2.7 mm is
+  NOT a key: with the filament it would compute the porosity a second time
+  (Eqs. 20-22 give 0.8807 against the table's 0.88), and the
+  paper's own d_h column follows from the TABLE's porosity, which is
+  therefore the one stored; the gate holds the mesh route to it.
+
+  NO VISCOSITY CORRECTION.  The paper evaluates every dimensionless number
+  on "average bulk physical properties" and assumes the concentration
+  dependence "to be insignificant" (p. 340); it gives no wall-viscosity
+  term, and none is applied.
+\*---------------------------------------------------------------------------*/
+
+name              SchockMiquel-DesalRO;
+kind              feedSpacer;
+manufacturer      "Desal RO (characterised by Schock & Miquel 1987)";
+
+thickness         0.82 mm;          // h_SP, Tab. 1
+filamentDiameter  0.41 mm;         // d_F,  Tab. 1
+porosity          0.88;             // eps,  Tab. 1
+
+//  THE CORRELATIONS, AS DATA (Schock & Miquel 1987, primary read).  The
+//  case selects one by naming its model in its own massTransfer /
+//  pressureDrop block; the coefficients and the window come from here.
+//      Re = rho v d_h / eta (Eq. 5),  v = V / (b h eps) (Eqs. 11-12),
+//      Sc = nu / D (Eq. 8),  Sh = k d_h / D (Eq. 7),
+//      lambda = 2 dp d_h / (rho v^2 l) (Eq. 6).
+massTransfer
+{
+    model    SchockMiquel;            // Sh = a Re^b Sc^c
+    a        0.065;                   // Eq. (30), p. 347
+    b        0.875;
+    c        0.25;
+    validity { Re ( 100 1000 ); }     // the Reynolds axis of Fig. 9 (p. 348)
+}
+pressureDrop
+{
+    model    SchockMiquel;            // lambda = a Re^-b
+    a        6.23;                    // Eq. (24), p. 345
+    b        0.3;
+    validity { Re ( 100 1000 ); }     // "only be valid in the tested flow regime, i.e. 100<Re<1000" (p. 345)
+}
+
+provenance
+{
+    source  "G. Schock, A. Miquel, Mass transfer and pressure loss in spiral wound modules, Desalination 64 (1987) 339-352";
+    licence "facts transcribed from a copyrighted paper and cited per value; the paper itself is not redistributed";
+    thickness        { origin literature; method "Tab. 1, p. 343, h_SP (primary read 2026-10-24)"; }
+    filamentDiameter { origin literature; method "Tab. 1, p. 343, d_F (primary read 2026-10-24)"; }
+    porosity         { origin literature; method "Tab. 1, p. 343, eps (primary read 2026-10-24)"; }
+    massTransfer     { origin literature; method "Eq. (30), p. 347; window: Fig. 9's Reynolds axis, p. 348 (primary read 2026-10-24)"; }
+    pressureDrop     { origin literature; method "Eq. (24) and its stated window 100 < Re < 1000, p. 345 (primary read 2026-10-24)"; }
+}

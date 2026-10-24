@@ -29,9 +29,14 @@ units
             transport        SDEM;
             //  One nominal 4-inch element (7.9 m2, 1.016 m): with the 4 m3/h
             //  feed the crossflow is ~0.45 m/s in the spacer channel, a
-            //  realistic velocity, and the recovery stays modest.
-            moduleDiameter   4 in;
-            nModules         1;
+            //  realistic velocity, and the recovery stays modest.  Typed as
+            //  the explicit area and length the retired nominal table gave
+            //  (`moduleDiameter 4 in;`, retired 2026-10-24): the record
+            //  Generic-4040 carries a different leaf length and the measured
+            //  FT30 spacer, so naming it would move this case's film -- see
+            //  membrane21 for an array built on the records.
+            area             7.9 m2;
+            length           1.016 m;
             P_permeate       1.0 bar;
             nNodes           20;
 

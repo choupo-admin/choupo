@@ -31,6 +31,7 @@ License
 #include "core/Advisory.H"
 
 #include <cmath>
+#include <cstdio>
 #include <iomanip>
 #include <iostream>
 #include <stdexcept>
@@ -69,16 +70,45 @@ int Pump::solve(const DictPtr& dict,
     // ---- Liquid molar volume (incompressible) ---------------------------
     //   v_mix = Σ x_i v_liq,i   [m^3/mol].  Requires every component to
     //   carry Vliq in its.dat (liquids do).
-    scalar v_mix = 0.0;
+    //
+    //  A DISSOLVED ION is not a liquid and has no Vliq (C146, 2026-10-24: an
+    //  interstage booster in a membrane array pumps a brine written ion by
+    //  ion).  Its volume is not invented: it is left OUT of the sum, so the
+    //  volume flow is the solvent's -- the dilute-solution reading -- and the
+    //  run ANNOUNCES it with the mole fraction it neglected.  Only a component
+    //  with a declared aqueous bridge qualifies; any other component without
+    //  Vliq still refuses.
+    scalar v_mix = 0.0, x_ions = 0.0;
+    std::string ions;
     for (std::size_t i = 0; i < n; ++i)
     {
         const scalar vi = thermo.comp(i).Vliq();
         if (x[i] > 0.0 && vi <= 0.0)
+        {
+            if (thermo.comp(i).hasAqueousMapping())
+            {
+                x_ions += x[i];
+                ions   += (ions.empty() ? "" : " ") + thermo.comp(i).name();
+                continue;
+            }
             throw std::runtime_error(
                 "Pump: component '" + thermo.comp(i).name()
                 + "' has no liquid molar volume (Vliq) in its.dat --- "
                 "required for the incompressible pump model");
+        }
         v_mix += x[i] * vi;
+    }
+    if (x_ions > 0.0)
+    {
+        char b[200];
+        std::snprintf(b, sizeof(b), "dissolved ion(s) (%s) carry no liquid"
+            " molar volume: the volume flow is the solvent's (dilute-solution"
+            " reading, and its heat capacity likewise; ion mole fraction %.3g"
+            " neglected)", ions.c_str(),
+            static_cast<double>(x_ions));
+        AdvisoryLog::instance().add("approximation", "info",
+            "pump '" + (dict->name().empty() ? type() : dict->name()) + "'", b);
+        if (verbosity >= 2) std::cout << "  [pump] " << b << "\n";
     }
 
     const scalar F_mol_s = F * 1000.0;                  // mol/s
@@ -178,8 +208,22 @@ int Pump::solve(const DictPtr& dict,
     {
         // Liquid Cp from a finite difference of the liquid enthalpy.
         const scalar dT = 0.5;
-        const scalar Cp_liq =
-            (thermo.Hliquid(T_in + dT, x) - thermo.Hliquid(T_in - dT, x))
+        //  The dilute-solution reading of the volume above holds for the
+        //  heat capacity too: dissolved ions carry no liquid enthalpy datum,
+        //  so Cp is the solvent's, per mole of solution (C146, announced
+        //  with the volume).  Without ions xCp IS x -- byte-identical.
+        sVector xCp = x;
+        scalar  solventShare = 1.0;
+        if (x_ions > 0.0)
+        {
+            for (std::size_t i = 0; i < n; ++i)
+                if (thermo.comp(i).Vliq() <= 0.0 && thermo.comp(i).hasAqueousMapping())
+                    xCp[i] = 0.0;
+            solventShare = 1.0 - x_ions;
+            for (auto& v : xCp) v /= solventShare;
+        }
+        const scalar Cp_liq = solventShare *
+            (thermo.Hliquid(T_in + dT, xCp) - thermo.Hliquid(T_in - dT, xCp))
             / (2.0 * dT);
         const scalar dT_rise = (Cp_liq > 0.0)
             ? (w_real - w_isen) / Cp_liq

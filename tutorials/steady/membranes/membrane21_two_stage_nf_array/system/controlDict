@@ -1,0 +1,11 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+application   choupoSolve;
+description   "A two-stage NF array, 4:2 vessels x 6 generic 8-inch elements, interstage booster: one unit per stage, the spacer and the elements as records, SDEM + the multi-ionic film per ion and per element";
+verbosity     3;

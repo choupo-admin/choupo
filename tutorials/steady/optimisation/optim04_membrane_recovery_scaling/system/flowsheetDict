@@ -69,8 +69,8 @@ units
         operation
         {
             membrane         SW30HR;
-            moduleDiameter   8 in;
-            nModules         $nMods;       // <-- design variable (continuous)
+            module           Generic-8040; // standard size, data/standards/assets/
+            elements         $nMods;       // <-- design variable (continuous)
             P_permeate       1.0 bar;
             k_film           2.0e-5;
             dP_feed_total    0.3 bar;

@@ -1681,7 +1681,7 @@ def main():
         dtext = re.sub(r'(^|\s)//.*$', '', dtext, flags=re.M)
         for m in re.finditer(
                 r'\b(?:membrane|module|stack|adsorbent|material|wallMaterial'
-                r'|wall|resin)'
+                r'|wall|resin|feedSpacer)'
                 r'\s+([A-Za-z0-9_-]+)\s*;', dtext):
             asset_names.add(m.group(1))
 
@@ -1720,8 +1720,10 @@ def main():
                 atext = read(f) or ""
                 atext = re.sub(r'/\*.*?\*/', '', atext, flags=re.S)
                 atext = re.sub(r'(^|\s)//.*$', '', atext, flags=re.M)
+                #  ... and a spiral element names the feed spacer it is wound
+                #  with (`feedSpacer Spacer-28mil;`, C146) -- followed the same way.
                 for m in re.finditer(
-                        r'^\s*membranes?\s+([A-Za-z0-9_-]+)\s*;',
+                        r'^\s*(?:membranes?|feedSpacer)\s+([A-Za-z0-9_-]+)\s*;',
                         atext, re.M):
                     asset_names.add(m.group(1))
                 break

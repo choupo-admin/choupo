@@ -27,6 +27,7 @@ License
 \*---------------------------------------------------------------------------*/
 
 #include "MembraneModuleRegistry.H"
+#include "FeedSpacer.H"
 #include "core/Dictionary.H"
 #include "core/RegistryRefusal.H"
 #include "core/RegistryScan.H"
@@ -58,7 +59,14 @@ void MembraneModuleRegistry::loadFrom(const std::string& dataRoot)
     //  `kind membraneModule` is this registry's; every other kind is another
     //  reader's and is skipped.  A record with NO kind is refused by
     //  MembraneRegistry, which scans the same folder first -- one refusal.
-    auto scan = [](const fs::path& dir, records::ScanGuard& guard)
+    //
+    //  THE FEED SPACERS RIDE THE SAME SCAN (C146, 2026-10-24): `kind
+    //  feedSpacer` is the net an element is wound with, named by the element
+    //  record (`feedSpacer <name>;`) or by a case, and read by this one scan
+    //  into FeedSpacerRegistry -- so every binary that loads the modules
+    //  loads their spacers, with no second call in any main.
+    auto scan = [](const fs::path& dir, records::ScanGuard& guard,
+                   records::ScanGuard& spacerGuard)
     {
         if (!fs::exists(dir)) return;
         for (auto& e : fs::directory_iterator(dir))
@@ -66,7 +74,16 @@ void MembraneModuleRegistry::loadFrom(const std::string& dataRoot)
             if (!e.is_regular_file()) continue;
             if (e.path().extension() != ".dat") continue;
             auto d = Dictionary::fromFile(e.path().string());
-            if (d->lookupWordOrDefault("kind", "") != "membraneModule") continue;
+            const std::string kind = d->lookupWordOrDefault("kind", "");
+            if (kind == "feedSpacer")
+            {
+                FeedSpacer s;
+                s.readFromDict(d, e.path().string());
+                spacerGuard.claim(s.name(), e.path().string());
+                FeedSpacerRegistry::add(std::move(s));
+                continue;
+            }
+            if (kind != "membraneModule") continue;
             MembraneModule m;
             m.readFromDict(d, e.path().string());
             guard.claim(m.name(), e.path().string());
@@ -75,11 +92,13 @@ void MembraneModuleRegistry::loadFrom(const std::string& dataRoot)
     };
     {
         records::ScanGuard guard("MembraneModuleRegistry", "membrane module");
-        scan(fs::path(dataRoot) / "standards" / "assets", guard);
+        records::ScanGuard sg("FeedSpacerRegistry", "feed spacer");
+        scan(fs::path(dataRoot) / "standards" / "assets", guard, sg);
     }
     {
         records::ScanGuard guard("MembraneModuleRegistry", "membrane module");
-        for (const auto& d : records::localScanDirs("assets")) scan(d, guard);
+        records::ScanGuard sg("FeedSpacerRegistry", "feed spacer");
+        for (const auto& d : records::localScanDirs("assets")) scan(d, guard, sg);
     }
 }
 
