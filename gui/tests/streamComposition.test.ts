@@ -56,6 +56,43 @@ describe("computePerStream -- mass basis (the fixed pop-out bug)", () => {
   });
 });
 
+describe("computePerStream -- the engine's OVERALL contract (no double count)", () => {
+  //  As the engine writes it today (ResultEmitter.cpp): F and composition
+  //  are OVERALL, the crystals included; `solids` names a PART of them.
+  it("a slurry's solid is counted once", () => {
+    const nSil = 2 / 60.084;
+    const F = 1 + nSil;
+    const slurry: StreamResult = {
+      name: "slurry", role: "intermediate", F, T: 300, P: 1e5,
+      composition: { water: 1 / F, silica: nSil / F }, solids: { silica: 2 },
+    };
+    const ps = computePerStream([slurry], MWS)["slurry"]!;
+    expect(ps.totMol).toBeCloseTo(F, 12);
+    expect(ps.totMass).toBeCloseTo(18.015 + 2, 9);
+    expect(ps.molFrac["silica"]).toBeCloseTo(nSil / F, 12);
+    expect(ps.massFrac["silica"]).toBeCloseTo(2 / (18.015 + 2), 12);
+  });
+  it("a magma whose solute is BOTH dissolved and crystalline reads the engine's F and F_mass", () => {
+    //  The shape crystalliser02_msmpr's `magma` has (measured 2026-10-24):
+    //  sucrose in the liquor AND as crystals, `composition` overall, `solids`
+    //  the crystalline part.  The old sum read 2.2478 kg/s against the
+    //  engine's own F_mass 1.8516 -- the crystals' 0.3962 kg/s twice.
+    const MW = { water: 18.015, sucrose: 342.3 };
+    const nW = 0.02, nDis = 0.002, nCry = 0.001;          // kmol/s
+    const F = nW + nDis + nCry;
+    const magma: StreamResult = {
+      name: "magma", role: "product", F, T: 300, P: 1e5,
+      F_mass: nW * MW.water + (nDis + nCry) * MW.sucrose,
+      composition: { water: nW / F, sucrose: (nDis + nCry) / F },
+      solids: { sucrose: nCry * MW.sucrose },
+    };
+    const ps = computePerStream([magma], MW)["magma"]!;
+    expect(ps.totMol).toBeCloseTo(F, 12);
+    expect(ps.totMass).toBeCloseTo(magma.F_mass!, 12);
+    expect(ps.massFrac["sucrose"]).toBeCloseTo((nDis + nCry) * MW.sucrose / magma.F_mass!, 12);
+  });
+});
+
 describe("computePerStream -- solid phase folded in", () => {
   it("solids-only stream (cyclone capturedSolids) reads its real flow, w = 1", () => {
     const solidsOnly: StreamResult = {

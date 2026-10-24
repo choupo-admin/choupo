@@ -249,7 +249,7 @@ chemical-process simulation is not CFD; some adaptations are needed.
 | **View modes** | Render View / Spreadsheet / Plot / etc. swap on the central canvas | **On-demand workspaces** opened from the top menu (context-dependent lineup — see §2.5; `MenuBar.tsx` is the authority); each toggles over the canvas, Esc returns | Done in Fase A/B (2026-05-27).  The earlier bottom-tab strip was removed; workspaces are the canvas-view-mode pattern this row once flagged for "Layer 2". |
 | **Multi-view split** | Yes (4-up layout) | **No — pop-outs (new tab) instead** | Pop-outs let the user multi-monitor or window-tile, with the same outcome and far less code.  Browser tabs are persistent and survive a Choupo crash. |
 | **Time controls** | Timeline + slider for transient runs | Not yet — `choupoBatch` / `choupoCtrl` / `choupoSemiContinuous` trajectories have static plots | Layer 2 work. |
-| **Color By field selector** | Yes | **Yes — the Colours menu** (`gui/src/ui/ColoursMenu.tsx`): colour by phase (the default, from the engine's vapour fraction), temperature or pressure, with a continuous legend on the canvas and a choice of gradient | Phase colour stays the semantic default; a property gradient is a deliberate display MODE the reader picks, never a repaint on interaction.  Colouring by dominant component is not offered. |
+| **Color By field selector** | Yes | **The Colours menu** (DEV.md 4c C114): wires by any field the run PUBLISHES (T, P, vapour fraction, pH, molar / mass / enthalpy flow, a component's mole or mass fraction or flow), linear or log, auto or fixed range, a threshold that dims, "follow a molecule" (colour = its concentration, width = its own flow), units by a published KPI (diverging at zero), hover probe, SVG/PNG export with the legend.  Phase stays the default | Phase colour stays the semantic default; a property gradient is a deliberate display MODE the reader picks, never a repaint on interaction.  A field is offered only when a stream publishes it, and a stream that does not is drawn NO-DATA grey, never as zero: the canvas maps published numbers and computes no physics (`case/streamColouring.ts`). |
 
 ### The Property Explorer (interactive visualiser scratchpad) — adaptation, 2026-06-05
 
@@ -650,7 +650,7 @@ this Credo before proposing**.
 | **1 — Onboarding & context** | Subtitle, file/stream pop-out, ErrorBoundary, defensive formatters, sector lookup, slash/dot stream name normalisation | **Done** |
 | **1.5 — Shell redesign** | Full-screen canvas, 32 px header, on-demand workspaces (replacing the bottom-tab strip), floating selection card (replacing the right panel), removal of the left case-tree | **Done** (Fase A/B, 2026-05-27) |
 | **2 — Run + inspect** | Draggable nodes + edge bends + connection points, per-case layout persistence (localStorage), stream-class show/hide toggle, column duty stubs | **Done** |
-| **2.5 — Inspect, remaining** | Time controls for trajectories, color-by-stream field selector, multi-stream comparison overlay | Planned |
+| **2.5 — Inspect, remaining** | Colour by a published stream field / unit KPI (done, C114); time controls for trajectories, multi-stream comparison overlay | Partial |
 | **3 — Comparison & decision** | `compare_*` props tutorials with multi-CSV overlay (done), parity plots for fits, declared `experimental {}` block + overlay, thermo audit auto-generation against current flowsheet | Partial |
 
 ## 8. Three questions before any UI change

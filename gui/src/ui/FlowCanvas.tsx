@@ -66,7 +66,6 @@ import { loopMembership } from "../case/recycleLoops";
 import { caseDescription } from "../case/caseDescription";
 import { boundaryForStream } from "../case/modelBoundary.js";
 import { tutorialByName } from "../cases/tutorials.js";
-import type { StreamSpec } from "../case/types.js";
 import { useStore, hasCaseOpen } from "../state/store.js";
 import { useStaleResult } from "../state/useStaleResult.js";
 import { findRunStream, popOutStreamByName } from "./streamPopOut.js";
@@ -79,14 +78,9 @@ import {
   phaseColor as phaseColorFor,
   classifyPhase,
   totalFlowOf,
-  colorForValue,
-  gradientCss,
 } from "./plotting/palette.js";
 import {
-  formatTemperature,
-  formatPressure,
-  temperatureLabel,
-  pressureLabel,
+  formatSig,
 } from "../state/displayUnits.js";
 import { ErrorBoundary } from "./ErrorBoundary.js";
 import { FLOWSHEET_FIT, FLOWSHEET_FIT_ANIMATED, FLOWSHEET_MIN_ZOOM } from "./flowsheetViewport.js";
@@ -109,6 +103,17 @@ import { operationScratch } from "../case/scratch.js";
 import { buildDrillSeed, feedsKeyFor, inheritKeyFor } from "../case/drillSeed.js";
 import { dutyStubFromRun, type DutyAllocationFacts } from "../case/dutyUtility.js";
 import { writeCaseFile } from "../cases/workspace.js";
+import { computePerStream } from "../case/streamComposition.js";
+import {
+  activeFieldKey, colourOfValue, colourUnits, followFields, followWidth,
+  insideThreshold, probeRows, resolveScale, streamFieldValue,
+  DIMMED_OPACITY, DIMMED_NODE_OPACITY, NO_DATA_COLOUR, type ProbeRow, type ResolvedScale,
+} from "../case/streamColouring.js";
+import { phaseLegend, streamLegend, unitLegend, type ColourLegend } from "../case/colourLegend.js";
+import { useCanvasColour } from "../state/canvasColour.js";
+import { EXPORT_EVENT } from "./ColoursMenu.js";
+import { exportFlowsheetFigure } from "./flowsheetExport.js";
+import { LegendBox } from "./LegendBox.js";
 import { notifications } from "@mantine/notifications";
 
 // Storage-key separator for per-handle overrides: a null char never appears
@@ -294,10 +299,19 @@ function CanvasInner({ flowsheet, scrubInstant }: {
   const resetRun = useStore((s) => s.resetRun);
   const scrubIdx = useStore((s) => s.scrubIdx);
   const colorScheme = useStore((s) => s.displayPrefs.colorScheme);
-  const colorMode = useStore((s) => s.displayPrefs.colorMode);
   const colorMap = useStore((s) => s.displayPrefs.colorMap);
-  const tempUnit = useStore((s) => s.displayPrefs.temperature);
-  const pressUnit = useStore((s) => s.displayPrefs.pressure);
+  const displayPrefs = useStore((s) => s.displayPrefs);
+  //  THE COLOURING THAT BELONGS TO THIS CASE (DEV.md 4c C114): a fixed
+  //  range, a threshold, the compound followed, the unit KPI.  Cleared when
+  //  another case opens -- a range typed in this plant's numbers means
+  //  nothing in the next one (state/canvasColour.ts).
+  const cc = useCanvasColour();
+  useEffect(() => { useCanvasColour.getState().resetForCase(); }, [tutorialName]);
+  //  What the wires encode: a field (or none, the default phase), and --
+  //  while following a molecule -- the field the WIDTH reads.
+  const followF = cc.follow ? followFields(cc.follow, displayPrefs) : null;
+  const colourField = followF ? followF.colour : activeFieldKey(displayPrefs);
+  const widthField = followF ? followF.width : null;
   // The UI light/dark scheme (distinct from the stream `colorMode` display pref
   // above) -- drives the React Flow canvas chrome + dot grid.
   const uiScheme = useComputedColorScheme("light");
@@ -773,136 +787,170 @@ function CanvasInner({ flowsheet, scrubInstant }: {
       ? selectedNodeId.slice("stream:".length)
     : null;
 
-  // After a run, each edge is coloured by the solver's authoritative
-  // vf + F_solid_mass for that stream, and its stroke width scales with
-  // total mass flow (sqrt-mapped so low-flow streams stay visible).
-  // Without a run, fall back to the project accent.  The phase set
-  // present in this run drives the small legend in the top-right corner.
-  // styledNodes and styledEdges both consume `phaseOf`, so it must be
-  // declared before either of them.
-  const { phaseOf, utilityOf, resultStreamOf, maxFlow, phasesPresent, propRange } = useMemo(() => {
-    type Range = { min: number; max: number } | null;
-    if (!runResult) {
-      // PRE-RUN: style from the authored / 0/ stream state (view.streams) so a
-      // drilled unit (or any migrated case, before a solve) still shows
-      // proportional line width and colour-by-T/P/phase.  The width basis and
-      // the terminal flow are MASS (kg/s), computed from the 0/ molar flow x the
-      // component MWs the case carries -- matching the post-run totalFlowOf so a
-      // mass-basis view does NOT flip kg/h<->kmol/h (or its wire widths) between
-      // Run and Reset.  When no MW is known the honest fallback is molar.
-      const specs = graph.view.streams;
-      const propOf = (s: StreamSpec): number | undefined =>
-        colorMode === "temperature" ? s.T : colorMode === "pressure" ? s.P : undefined;
-      // Flow used for WIDTH: mass when the composition's MWs are all known
-      // (matches post-run totalFlowOf = kg/s), else the molar flow.
-      const massF = (s: StreamSpec): number | undefined => {
-        const avg = meanMolarMass(s.composition, mwMap);
-        return avg > 0 ? s.F * avg : undefined;
-      };
-      const widthF = (s: StreamSpec): number => massF(s) ?? s.F;
-      let mx = 0, lo = Infinity, hi = -Infinity;
-      for (const s of Object.values(specs)) {
-        const wf = widthF(s);
-        if (wf > mx) mx = wf;
-        if (colorMode !== "phase" && s.F > 1e-15) {
-          const v = propOf(s);
-          if (v !== undefined && Number.isFinite(v)) { if (v < lo) lo = v; if (v > hi) hi = v; }
-        }
-      }
-      const rng: Range = (colorMode !== "phase" && lo <= hi) ? { min: lo, max: hi } : null;
-      const styleOf = (label: string): PhaseStyle | null => {
-        const s = specs[label];
-        if (!s) return null;
-        const phase = classifyPhase({ vf: s.vf, F: s.F, F_mass: s.F });
-        let color: string;
-        if (rng) {
-          const v = propOf(s);
-          color = (v !== undefined && s.F > 1e-15)
-            ? colorForValue(v, rng.min, rng.max, colorMap)
-            : phaseColorFor(phase, colorScheme);
-        } else color = phaseColorFor(phase, colorScheme);
-        return { color, phase, totalFlow: widthF(s) };
-      };
-      const present = new Set<PhaseKind>();
-      for (const s of Object.values(specs)) if (s.F > 1e-15) present.add(classifyPhase({ vf: s.vf, F: s.F, F_mass: s.F }));
-      return { phaseOf: styleOf,
-               utilityOf: (() => null) as (label: string) => string | null,
-               resultStreamOf: ((label: string) => {
-                 const s = specs[label];
-                 return s ? { F: s.F, F_mass: massF(s), T: s.T, P: s.P, vf: s.vf } : null;
-               }) as ((label: string) => { F: number; F_mass?: number; F_solid_mass?: number; F_solid?: number; T: number; P: number } | null),
-               maxFlow: mx,
-               phasesPresent: present,
-               propRange: rng };
+  //  EVERY STREAM THE CANVAS DRAWS, as the run published it -- or, before a
+  //  run, as its authored / 0/ state declares it (so a drilled unit or a
+  //  migrated case still shows proportional widths and its colours).  ONE
+  //  list and ONE label->stream lookup feed the phase colouring, the field
+  //  colouring (DEV.md 4c C114), the widths and the probe, so the four can
+  //  never read two different streams for one wire.
+  const streamSource = useMemo(() => {
+    if (runResult) {
+      const lookup = (label: string): StreamResult | null =>
+        findRunStream(runResult.streams, label, runResult.streamAliases) ?? null;
+      return { list: runResult.streams, lookup,
+               mws: runResult.componentMolarMass, isRun: true as const };
     }
+    // PRE-RUN.  The width basis is MASS (kg/s) from the 0/ molar flow x the
+    // component MWs the case carries -- matching the post-run totalFlowOf so
+    // a mass-basis view does NOT flip its wire widths between Run and Reset;
+    // with no MW the honest fallback is molar.
+    const specs = graph.view.streams;
+    const pseudo = new Map<string, StreamResult>();
+    for (const [label, sp] of Object.entries(specs)) {
+      const avg = meanMolarMass(sp.composition, mwMap);
+      pseudo.set(label, { name: label, role: "feed", F: sp.F, T: sp.T, P: sp.P, vf: sp.vf,
+                          composition: sp.composition,
+                          ...(avg > 0 ? { F_mass: sp.F * avg } : {}) });
+    }
+    return { list: [...pseudo.values()], lookup: (l: string) => pseudo.get(l) ?? null,
+             mws: mwMap as { [c: string]: number } | undefined, isRun: false as const };
+  }, [runResult, graph, mwMap]);
+
+  //  The ONE shared per-component conversion (case/streamComposition.ts):
+  //  the mass fractions and component flows the Streams table prints.
+  const perStream = useMemo(
+    () => computePerStream(streamSource.list, streamSource.mws),
+    [streamSource]);
+
+  // After a run, each edge is coloured by the solver's authoritative
+  // vf + F_solid_mass for that stream (or, in a deliberate display MODE, by
+  // a published field), and its stroke width scales with total mass flow
+  // (sqrt-mapped so low-flow streams stay visible).  The phase set present
+  // drives the legend.  styledNodes and styledEdges both consume `phaseOf`,
+  // so it must be declared before either of them.
+  const { phaseOf, utilityOf, resultStreamOf, maxFlow, phasesPresent, fieldScale,
+          fieldValueOf, widthValueOf, maxWidthFlow, anyNoData, anyBelow } = useMemo(() => {
+    const { list, lookup } = streamSource;
+    const lookupUtility = (label: string): string | null => {
+      if (!streamSource.isRun) return null;
+      const st = lookup(label);
+      return st && st.category ? st.category : null;
+    };
+    //  THE STREAMS ON SCREEN: every label a wire or a terminal carries,
+    //  minus the utility streams while the utility class is hidden.  The
+    //  automatic range is taken over THESE, so hiding the cooling water
+    //  re-spreads the scale over the process.
+    const labels = new Set<string>();
+    for (const e of graph.edges) if (typeof e.label === "string" && e.label) labels.add(e.label);
+    for (const n of graph.nodes)
+      if (n.type === "streamTerminal" && n.id.startsWith("stream:")) labels.add(n.id.slice(7));
+    const visible = new Map<string, StreamResult>();
+    for (const l of labels) {
+      const st = lookup(l);
+      if (!st) continue;
+      if (!show.utility && st.category) continue;
+      visible.set(st.name, st);
+    }
+    const valueOf = (st: StreamResult, key: string | null): number | undefined =>
+      key ? streamFieldValue(st, perStream[st.name], key) : undefined;
     const present = new Set<PhaseKind>();
     let mx = 0;
-    // Property range (T or P) is taken over the streams that actually carry
-    // flow, so an empty/zero-flow leg doesn't widen the gradient scale.
-    let lo = Infinity, hi = -Infinity;
-    const propVal = (s: StreamResult): number | undefined =>
-      colorMode === "temperature" ? s.T
-        : colorMode === "pressure" ? s.P
-        : undefined;
-    for (const s of runResult.streams) {
-      const phase = classifyPhase(s);
-      present.add(phase);
-      const tf = totalFlowOf(s);
-      if (tf > mx) mx = tf;
-      if (colorMode !== "phase" && tf > 1e-15) {
-        const v = propVal(s);
-        if (v !== undefined && Number.isFinite(v)) { if (v < lo) lo = v; if (v > hi) hi = v; }
+    for (const st of list) {
+      if (streamSource.isRun) {
+        present.add(classifyPhase(st));
+        const tf = totalFlowOf(st);
+        if (tf > mx) mx = tf;
+      } else {
+        // Before a run the width basis may be molar (no MWs); the phase is
+        // read off the declared vf, exactly as the pre-run canvas always did.
+        if (st.F > 1e-15) present.add(classifyPhase({ vf: st.vf, F: st.F, F_mass: st.F }));
+        const wf = st.F_mass ?? st.F;
+        if (wf > mx) mx = wf;
       }
     }
-    const range: Range = (colorMode !== "phase" && lo <= hi) ? { min: lo, max: hi } : null;
-    // The colour a stream gets, honouring scheme (phase mode) or the
-    // viridis gradient over [min,max] (temperature / pressure modes).
-    const styleFor = (s: StreamResult): PhaseStyle => {
-      const phase = classifyPhase(s);
-      const totalFlow = totalFlowOf(s);
-      let color: string;
-      if (range) {
-        const v = propVal(s);
-        color = (v !== undefined && totalFlow > 1e-15)
-          ? colorForValue(v, range.min, range.max, colorMap)
-          : phaseColorFor(phase, colorScheme);
-      } else {
-        color = phaseColorFor(phase, colorScheme);
-      }
+    //  The range is taken over streams that CARRY FLOW: an empty leg keeps
+    //  its dashed "empty" phase look and must not widen the scale.
+    const vals: (number | undefined)[] = [];
+    let noData = false, below = false, mxW = 0;
+    for (const st of visible.values()) {
+      if (widthField) { const w = valueOf(st, widthField); if (w !== undefined && w > mxW) mxW = w; }
+      if (!colourField || !(totalFlowOf(st) > 1e-15 || st.F > 1e-15)) continue;
+      const v = valueOf(st, colourField);
+      if (v === undefined) noData = true;
+      else if (!(v > 0)) below = true;
+      vals.push(v);
+    }
+    const scale: ResolvedScale | null = colourField
+      ? resolveScale(vals, displayPrefs.colorScale, cc.range) : null;
+    const styleFor = (st: StreamResult): PhaseStyle => {
+      const phase = streamSource.isRun
+        ? classifyPhase(st) : classifyPhase({ vf: st.vf, F: st.F, F_mass: st.F });
+      const totalFlow = streamSource.isRun ? totalFlowOf(st) : (st.F_mass ?? st.F);
+      let color = phaseColorFor(phase, colorScheme);
+      if (colourField && phase !== "empty")
+        color = colourOfValue(valueOf(st, colourField), scale, colorMap);
       return { color, phase, totalFlow };
     };
-    const lookupPhase = (label: string): PhaseStyle | null => {
-      const s = findRunStream(runResult.streams, label, runResult.streamAliases);
-      return s ? styleFor(s) : null;
-    };
-    const lookupUtility = (label: string): string | null => {
-      const s = findRunStream(runResult.streams, label, runResult.streamAliases);
-      return s && s.category ? s.category : null;
-    };
-    // Resolved stream conditions (F, F_mass, T, P) from the converged run.
-    // The terminal prefers these over the dict spec so it shows what the
-    // solver actually computed --- e.g. a utility stream whose T comes from
-    // the catalogue (the dict has no T) reads its real temperature, not 0.
+    // Resolved stream conditions (F, F_mass, T, P) the terminal shows -- the
+    // run's, so a utility whose T comes from the catalogue reads its real
+    // temperature, not the dict's 0.
     const lookupResult = (label: string) => {
-      const s = findRunStream(runResult.streams, label, runResult.streamAliases);
-      if (!s) return null;
-      // Solid molar flow: s.solids is per-component MASS [kg/s] (it pairs with
-      // F_solid_mass -- NOT moles), so convert each via its molar mass to the
-      // solid moles [kmol/s] the molar terminal adds to the fluid F.  Summing
-      // the masses as if they were moles made a sugar powder read ~3.5 Mmol/h
-      // (the sucrose kg/h counted as kmol/h).  A pure-solid `crystals` product
-      // (fluid F = 0) still reads its real flow.
-      const solidMw = runResult.componentMolarMass;
-      const F_solid = s.solids
-        ? Object.entries(s.solids).reduce(
-            (a, [c, m]) => a + (solidMw?.[c] ? (m ?? 0) / solidMw[c] : 0), 0)
+      const st = lookup(label);
+      if (!st) return null;
+      if (!streamSource.isRun) return { F: st.F, F_mass: st.F_mass, T: st.T, P: st.P, vf: st.vf };
+      // Solid molar flow: st.solids is per-component MASS [kg/s] (it pairs
+      // with F_solid_mass -- NOT moles), converted through its molar mass.
+      // Summing the masses as moles once made a sugar powder read ~3.5
+      // Mmol/h (the sucrose kg/h counted as kmol/h).
+      const solidMw = streamSource.mws;
+      const F_solid = st.solids
+        ? Object.entries(st.solids).reduce(
+            (a, [c, m]) => a + (solidMw?.[c] ? (m ?? 0) / solidMw[c]! : 0), 0)
         : 0;
-      return { F: s.F, F_mass: s.F_mass, F_solid_mass: s.F_solid_mass, F_solid, T: s.T, P: s.P, vf: s.vf };
+      return { F: st.F, F_mass: st.F_mass, F_solid_mass: st.F_solid_mass, F_solid, T: st.T, P: st.P, vf: st.vf };
     };
-    return { phaseOf: lookupPhase, utilityOf: lookupUtility,
-             resultStreamOf: lookupResult,
-             maxFlow: mx, phasesPresent: present, propRange: range };
-  }, [runResult, colorMode, colorScheme, colorMap, graph, mwMap]);
+    return {
+      phaseOf: (label: string): PhaseStyle | null => {
+        const st = lookup(label); return st ? styleFor(st) : null; },
+      utilityOf: lookupUtility,
+      resultStreamOf: lookupResult as (label: string) => { F: number; F_mass?: number;
+        F_solid_mass?: number; F_solid?: number; T: number; P: number; vf?: number } | null,
+      maxFlow: mx,
+      phasesPresent: present,
+      fieldScale: scale,
+      fieldValueOf: (label: string): number | undefined => {
+        const st = lookup(label); return st ? valueOf(st, colourField) : undefined; },
+      widthValueOf: (label: string): number | undefined => {
+        const st = lookup(label); return st ? valueOf(st, widthField) : undefined; },
+      maxWidthFlow: mxW,
+      anyNoData: noData,
+      anyBelow: below,
+    };
+  }, [streamSource, perStream, graph, show.utility, colourField, widthField,
+      displayPrefs.colorScale, cc.range, colorScheme, colorMap]);
+
+  //  Publish the drawn range, so the Colours menu can start a FIXED range
+  //  from what the reader is looking at.
+  useEffect(() => {
+    const r = fieldScale ? { min: fieldScale.min, max: fieldScale.max } : null;
+    const cur = useCanvasColour.getState().shownRange;
+    if (cur?.min !== r?.min || cur?.max !== r?.max) useCanvasColour.getState().set({ shownRange: r });
+  }, [fieldScale]);
+
+  //  A stream DIMMED by the drawing: under "follow a molecule" one that
+  //  carries none of it, under a threshold one whose value lies outside.
+  const streamDimmed = useCallback((label: string): boolean => {
+    if (cc.follow && !((widthValueOf(label) ?? 0) > 0)) return true;
+    if (cc.threshold && colourField && !insideThreshold(fieldValueOf(label), cc.threshold)) return true;
+    return false;
+  }, [cc.follow, cc.threshold, colourField, fieldValueOf, widthValueOf]);
+
+  //  UNITS COLOURED BY A PUBLISHED KPI (DEV.md 4c C114 item 4).  A unit
+  //  that does not publish it is drawn neutral, never as a zero.
+  const unitColours = useMemo(
+    () => (cc.unitKpi && runResult?.kpis
+      ? colourUnits(runResult.kpis, cc.unitKpi, cc.unitMap, colorMap) : null),
+    [cc.unitKpi, cc.unitMap, runResult?.kpis, colorMap]);
 
   //  THE RECYCLE LOOPS the engine published (DEV.md 4c C42): with the
   //  `recycle` chip on, every wire and unit of a loop wears a cyan halo (the
@@ -1058,9 +1106,27 @@ function CanvasInner({ flowsheet, scrubInstant }: {
         const unitOnLoop = show.recycle && n.type === "unitNode"
           && loops.unitOnLoop((n.data as { name?: string }).name
                               ?? n.id.slice("unit:".length));
+        //  A unit coloured by a published KPI (C114): its colour and value
+        //  when it publishes one, `none` when it does not (drawn neutral).
+        let kpiTint: { colour: string; text: string } | { none: string } | undefined;
+        let dimmed = false;
+        if (n.type === "unitNode" && unitColours && cc.unitKpi) {
+          const uname = (_ud as { name?: string } | undefined)?.name ?? n.id.slice("unit:".length);
+          const v = unitColours.value.get(uname);
+          kpiTint = v !== undefined
+            ? { colour: unitColours.colour.get(uname)!, text: `${cc.unitKpi} = ${formatSig(v)}` }
+            : { none: `no ${cc.unitKpi}` };
+          if (cc.unitThreshold && !insideThreshold(v, cc.unitThreshold)) dimmed = true;
+        }
+        if (n.type === "streamTerminal" && n.id.startsWith("stream:")
+            && streamDimmed(n.id.slice("stream:".length))) dimmed = true;
+        const extraStyle = {
+          ...(unitOnLoop ? { filter: LOOP_HALO } : {}),
+          ...(dimmed ? { opacity: DIMMED_NODE_OPACITY } : {}),
+        };
         return {
 ...n,
-          ...(unitOnLoop ? { style: { ...(n.style ?? {}), filter: LOOP_HALO } } : {}),
+          ...(Object.keys(extraStyle).length ? { style: { ...(n.style ?? {}), ...extraStyle } } : {}),
           selected: n.id === selectedNodeId,
           hidden: (energyOnly && !show.energy)
                || (isUtilityTerminal && !show.utility)
@@ -1069,7 +1135,7 @@ function CanvasInner({ flowsheet, scrubInstant }: {
           data: {...(n.data as object), drillable, phaseColor, phaseLabel, phaseGlyph,
                   ...(stubRun ? { tier: stubRun.tier } : {}),
                   utilityCategory, resolved, dutyKW, dutyAlloc, dutyEurH,
-                  feedDrivenTag,
+                  feedDrivenTag, kpiTint,
                   showNumbers: show.numbers,
                   showDetails,
                   //  WHAT THE RUN WILL USE, not what is on disk.  A tinkered
@@ -1087,7 +1153,7 @@ function CanvasInner({ flowsheet, scrubInstant }: {
     [nodes, selectedNodeId, drillableSub, phaseOf, utilityOf, resultStreamOf, show,
      showDetails, scratchEdits,
      handlePos, onHandleMove, onHandleReset, commitHandles, runResult, numberOf,
-     scrubOverlay, colorScheme, loops, dutyRun],
+     scrubOverlay, colorScheme, loops, dutyRun, unitColours, cc.unitKpi, cc.unitThreshold, streamDimmed],
   );
 
   const styledEdges: Edge[] = useMemo(
@@ -1144,9 +1210,21 @@ function CanvasInner({ flowsheet, scrubInstant }: {
           ? (e.style as { stroke?: string } | undefined)?.stroke
               ?? "var(--mantine-color-accent-5)"
           : ps?.color ?? ovColor ?? "var(--mantine-color-accent-5)";
-        const baseWidth = ps && maxFlow > 0
+        //  "FOLLOW A MOLECULE" (C114): the width is THAT component's own flow,
+        //  with a stated floor so a trace stays visible; everything else
+        //  keeps the total-mass rule.
+        const material = !isEnergy && !isDuty && !isRecipe;
+        const baseWidth = cc.follow && material && label
+          ? followWidth(widthValueOf(label), maxWidthFlow)
+          : ps && maxFlow > 0
           ? 1.0 + 5.0 * Math.sqrt(ps.totalFlow / maxFlow)
           : 1.5;
+        //  Dimmed: a stream the drawing puts in the background (it carries
+        //  none of the followed component, or lies outside the threshold);
+        //  energy and duty wires step back with them while a molecule is
+        //  followed, so the eye is left with its path alone.
+        const dimmed = (material && label !== "" && streamDimmed(label))
+          || (!material && !!cc.follow);
         const strokeWidth = isSelected
           ? Math.max(3, baseWidth + 1.0)
           : isTear ? Math.max(2, baseWidth) : baseWidth;
@@ -1202,6 +1280,7 @@ function CanvasInner({ flowsheet, scrubInstant }: {
             //  paints the wire AND fills the legend, so the two cannot drift.
             ...dashStyle(dashKind !== "process" ? dashKind
                          : (ps?.phase === "empty" ? "empty" : "process")),
+            ...(dimmed ? { opacity: DIMMED_OPACITY } : {}),
             // Selection halo: SVG drop-shadow in the project accent.
             // Visible regardless of phase colour, doesn't repaint stroke.
             ...(isSelected
@@ -1225,7 +1304,7 @@ function CanvasInner({ flowsheet, scrubInstant }: {
       }),
     [graph.edges, selectedStreamName, phaseOf, utilityOf, maxFlow, show,
      edgeCenters, onEdgeCenterChange, commitEdgeCenters, onEdgeCenterReset,
-     runResult, numberOf, scrubOverlay, colorScheme, loops, dutyRun],
+     runResult, numberOf, scrubOverlay, colorScheme, loops, dutyRun, cc.follow, widthValueOf, maxWidthFlow, streamDimmed],
   );
 
   //  THE DASH LEGEND.  Derived from the kind each edge was STAMPED with, so
@@ -1240,6 +1319,86 @@ function CanvasInner({ flowsheet, scrubInstant }: {
     ),
     [styledEdges],
   );
+
+  //  THE COLOUR LEGENDS, as data (case/colourLegend.ts): drawn on the canvas
+  //  by LegendBox and carried by an exported figure, so the two say the
+  //  same thing.
+  const legends: ColourLegend[] = useMemo(() => {
+    const out: ColourLegend[] = [];
+    if (colourField) {
+      out.push(streamLegend({ field: colourField, scale: fieldScale, map: colorMap,
+        prefs: displayPrefs, anyNoData, anyBelow, threshold: cc.threshold, follow: cc.follow }));
+    } else if (phasesPresent.size > 0) {
+      out.push(phaseLegend(PHASE_ORDER.filter((p) => phasesPresent.has(p)).map((p) => ({
+        colour: phaseColorFor(p, colorScheme), label: `${PHASE_GLYPH[p]} ${PHASE_LABEL[p]}` }))));
+    }
+    if (unitColours && cc.unitKpi) {
+      const without = graph.nodes.some((n) => n.type === "unitNode"
+        && !unitColours.value.has(
+          (n.data as { unit?: { name?: string } }).unit?.name ?? n.id.slice("unit:".length)));
+      out.push(unitLegend(cc.unitKpi, unitColours, colorMap, cc.unitThreshold, without));
+    }
+    return out;
+  }, [colourField, fieldScale, colorMap, displayPrefs, anyNoData, anyBelow, cc.threshold,
+      cc.follow, phasesPresent, colorScheme, unitColours, cc.unitKpi, cc.unitThreshold, graph]);
+
+  //  The SHOW bar's measured height: the legend column sits under it.
+  const showBarRef = useRef<HTMLDivElement>(null);
+  const [showBarH, setShowBarH] = useState(34);
+  useEffect(() => {
+    const el = showBarRef.current;
+    if (!el || typeof ResizeObserver === "undefined") return;
+    const ro = new ResizeObserver(() => setShowBarH(el.offsetHeight || 34));
+    ro.observe(el);
+    return () => ro.disconnect();
+  }, []);
+
+  //  THE PROBE: every field a hovered stream publishes (C114 item 6).
+  const wrapperRef = useRef<HTMLDivElement>(null);
+  const [probe, setProbe] = useState<{ name: string; rows: ProbeRow[];
+    x: number; y: number; w: number; h: number } | null>(null);
+  const showProbe = useCallback((label: string, ev: { clientX: number; clientY: number }) => {
+    const st = streamSource.lookup(label);
+    const box = wrapperRef.current?.getBoundingClientRect();
+    if (!st || !box) { setProbe(null); return; }
+    const rows = probeRows(st, perStream[st.name], displayPrefs);
+    setProbe({ name: streamSource.isRun ? st.name : `${label} (declared, before a run)`, rows,
+               x: ev.clientX - box.left, y: ev.clientY - box.top, w: box.width, h: box.height });
+  }, [streamSource, perStream, displayPrefs]);
+
+  //  EXPORT (C114 item 6): the coloured flowsheet with its legend, as a
+  //  self-contained SVG or a PNG rasterised from it (ui/flowsheetExport.ts).
+  useEffect(() => {
+    const onExport = (ev: Event) => {
+      const format = (ev as CustomEvent<{ format?: "svg" | "png" }>).detail?.format ?? "svg";
+      if (!wrapperRef.current) return;
+      const what = cc.follow ? `following ${cc.follow}`
+        : colourField ? `coloured by ${legends[0]?.title ?? colourField}` : "coloured by phase";
+      void exportFlowsheetFigure({
+        format,
+        wrapper: wrapperRef.current,
+        rf: reactFlow,
+        legends,
+        title: (tutorialName || "").split("/").pop() || "Choupo flowsheet",
+        subtitle: `Choupo flowsheet · ${what}`
+          + (unitColours && cc.unitKpi ? ` · units by ${cc.unitKpi}` : "")
+          + (stale.stale ? " · STALE: the case changed since this run" : "")
+          + (runResult ? "" : " · before a run (declared state)"),
+        unitInfo: (name) => {
+          const v = unitColours?.value.get(name);
+          return unitColours && cc.unitKpi
+            ? v !== undefined
+              ? { stroke: unitColours.colour.get(name)!, sub: `${cc.unitKpi} = ${formatSig(v)}` }
+              : { stroke: NO_DATA_COLOUR, sub: `no ${cc.unitKpi}` }
+            : null;
+        },
+        fileStem: (tutorialName || "flowsheet").split("/").pop() || "flowsheet",
+      });
+    };
+    window.addEventListener(EXPORT_EVENT, onExport);
+    return () => window.removeEventListener(EXPORT_EVENT, onExport);
+  }, [reactFlow, legends, cc.follow, cc.unitKpi, colourField, unitColours, tutorialName,
+      stale.stale, runResult]);
 
   // Keyboard shortcuts.  Esc -> deselect; F -> fit view; ] -> fold/unfold the
   // selection card (rhymes with the Explorer's `[` for its LEFT rail).
@@ -1272,13 +1431,22 @@ function CanvasInner({ flowsheet, scrubInstant }: {
     //  the boxes and the wiring are the declaration and stay bright.  The
     //  class carries no per-value claim -- everything the run produced dims
     //  together (case/staleness.ts).
-    <div className={stale.stale ? "choupo-stale-canvas" : undefined}
-      style={{ width: "100%", height: "100%", background: "light-dark(var(--mantine-color-gray-6), var(--mantine-color-dark-8))" }}>
+    <div ref={wrapperRef} className={stale.stale ? "choupo-stale-canvas" : undefined}
+      style={{ position: "relative", width: "100%", height: "100%", background: "light-dark(var(--mantine-color-gray-6), var(--mantine-color-dark-8))" }}>
       <ReactFlow
         nodes={styledNodes}
         edges={styledEdges}
         nodeTypes={NODE_TYPES}
         edgeTypes={EDGE_TYPES}
+        onEdgeMouseEnter={(ev, e) => {
+          if (typeof e.label === "string" && e.label) showProbe(e.label, ev);
+        }}
+        onEdgeMouseLeave={() => setProbe(null)}
+        onNodeMouseEnter={(ev, n) => {
+          if (n.type === "streamTerminal" && n.id.startsWith("stream:"))
+            showProbe(n.id.slice("stream:".length), ev);
+        }}
+        onNodeMouseLeave={() => setProbe(null)}
         onNodesChange={onNodesChange}
         // Persist the arrangement (view state -> localStorage): node
         // positions on drag-end, viewport on pan/zoom-end.
@@ -1427,6 +1595,7 @@ function CanvasInner({ flowsheet, scrubInstant }: {
         {/* Visualisation filters (top-left): show/hide stream classes so a
             busy plant declutters.  Process material is always shown. */}
         <Box
+          ref={showBarRef}
           style={{
             position: "absolute",
             left: 12,
@@ -1515,152 +1684,113 @@ function CanvasInner({ flowsheet, scrubInstant }: {
             </Popover>
           </Group>
         </Box>
-        {/* Legend, top-left (below the filters).  Only shown when a run
-            has produced streams to colour.  In the default `phase` mode it
-            lists the phases present (colour + glyph); in temperature /
-            pressure mode it becomes a continuous viridis scale bar annotated
-            with the run's min/max in the chosen unit --- so the eye decodes a
-            gradient cyan as "cold", never as "liquid". */}
-        {/* The DASH legend, under the phase legend.  Vitor asked why a
-            stream was dashed when it is not a utility (it was a recycle
-            cut): the canvas states six facts in stroke patterns and nothing
-            decoded them.  Colour is shown where a kind HAS a fixed one --
-            two patterns are shared and only the colour separates them. */}
-        {dashesPresent.length > 0 && (
+        {/* THE LEGENDS, top-left under the filters, stacked in ONE column so
+            a taller colour bar never runs into the wires legend.  The colour
+            legend is the PHASE chips in the default mode and a ParaView-style
+            colour bar in a field mode (DEV.md 4c C114) -- annotated in the
+            reader's units, so the eye decodes a gradient cyan as "cold",
+            never as "liquid".  Both are drawn from ONE legend model
+            (case/colourLegend.ts), the same one an exported figure carries.
+            The DASH legend follows: Vitor asked why a stream was dashed when
+            it is not a utility (it was a recycle cut) -- the canvas states six
+            facts in stroke patterns and nothing decoded them.  */}
+        <Box
+          style={{
+            position: "absolute",
+            left: 12,
+            //  UNDER THE SHOW BAR, at its MEASURED height: on a phone the bar
+            //  wraps to two rows and a fixed `top: 52` put the legend under it.
+            top: 12 + showBarH + 6,
+            zIndex: 5,
+            display: "flex",
+            flexDirection: "column",
+            alignItems: "flex-start",
+            gap: 6,
+            maxWidth: "calc(100% - 24px)",
+          }}
+        >
+          {cc.follow && (
+            <Group gap={6} wrap="nowrap"
+              style={{ padding: "3px 4px 3px 10px", borderRadius: 4,
+                       background: "var(--mantine-color-cyan-filled)" }}>
+              <Text size="xs" fw={700} c="white">Following {cc.follow}</Text>
+              <Button size="compact-xs" variant="white" color="dark"
+                leftSection={<IconX size={12} />}
+                onClick={() => cc.set({ follow: null })}
+                title="Return to the normal colouring">
+                back to normal
+              </Button>
+            </Group>
+          )}
+          {legends.map((lg) => <LegendBox key={lg.title} legend={lg} />)}
+          {dashesPresent.length > 0 && (
+            <Box
+              style={{
+                padding: "6px 10px",
+                borderRadius: 4,
+                background: "light-dark(rgba(255,255,255,0.9), rgba(0,0,0,0.55))",
+                pointerEvents: "none",
+                display: "flex",
+                gap: 12,
+                alignItems: "center",
+                flexWrap: "wrap",
+                maxWidth: 520,
+              }}
+            >
+              <Text size="10px" c="dimmed" ff="monospace" tt="uppercase" style={{ letterSpacing: 0.4 }}>
+                wires
+              </Text>
+              {dashesPresent.map((d) => (
+                <Box key={d.kind} style={{ display: "flex", gap: 5, alignItems: "center" }} title={d.meaning}>
+                  <svg width={22} height={6} aria-hidden>
+                    <line
+                      x1={0} y1={3} x2={22} y2={3}
+                      stroke={d.colour ?? "currentColor"}
+                      strokeWidth={2}
+                      strokeDasharray={d.dash ?? undefined}
+                      opacity={d.opacity}
+                    />
+                    {d.mark === "cut" && (
+                      <g stroke="currentColor" strokeWidth={1.5}>
+                        <line x1={8} y1={6} x2={11} y2={0} />
+                        <line x1={11} y1={6} x2={14} y2={0} />
+                      </g>
+                    )}
+                  </svg>
+                  <Text size="10px" c="dimmed">{d.label}</Text>
+                </Box>
+              ))}
+            </Box>
+          )}
+        </Box>
+        {/* THE PROBE (C114 item 6): every field the hovered stream publishes,
+            in the reader's units.  It follows the pointer and never takes
+            it; on a touch screen a tap selects the stream and the selection
+            card shows the same conditions. */}
+        {probe && (
           <Box
+            data-testid="stream-probe"
             style={{
               position: "absolute",
-              left: 12,
-              top: 90,
-              zIndex: 5,
-              padding: "6px 10px",
-              borderRadius: 4,
-              background: "light-dark(rgba(255,255,255,0.9), rgba(0,0,0,0.55))",
+              left: Math.min(probe.x + 14, Math.max(8, probe.w - 250)),
+              top: Math.min(probe.y + 14, Math.max(8, probe.h - 40 - 17 * probe.rows.length)),
+              zIndex: 8,
+              width: 236,
+              padding: "6px 9px",
+              borderRadius: 6,
+              background: "light-dark(var(--mantine-color-white), var(--mantine-color-dark-7))",
+              border: "1px solid light-dark(var(--mantine-color-gray-3), var(--mantine-color-dark-4))",
+              boxShadow: "0 4px 14px rgba(0,0,0,0.25)",
               pointerEvents: "none",
-              display: "flex",
-              gap: 12,
-              alignItems: "center",
-              flexWrap: "wrap",
-              maxWidth: 520,
             }}
           >
-            <Text size="10px" c="dimmed" ff="monospace" tt="uppercase" style={{ letterSpacing: 0.4 }}>
-              wires
-            </Text>
-            {dashesPresent.map((d) => (
-              <Box key={d.kind} style={{ display: "flex", gap: 5, alignItems: "center" }} title={d.meaning}>
-                <svg width={22} height={6} aria-hidden>
-                  <line
-                    x1={0} y1={3} x2={22} y2={3}
-                    stroke={d.colour ?? "currentColor"}
-                    strokeWidth={2}
-                    strokeDasharray={d.dash ?? undefined}
-                    opacity={d.opacity}
-                  />
-                  {d.mark === "cut" && (
-                    <g stroke="currentColor" strokeWidth={1.5}>
-                      <line x1={8} y1={6} x2={11} y2={0} />
-                      <line x1={11} y1={6} x2={14} y2={0} />
-                    </g>
-                  )}
-                </svg>
-                <Text size="10px" c="dimmed">{d.label}</Text>
+            <Text size="xs" fw={700} ff="monospace" mb={2}>{probe.name}</Text>
+            {probe.rows.map((r, i) => (
+              <Box key={i} style={{ display: "flex", justifyContent: "space-between", gap: 8 }}>
+                <Text size="10px" c="dimmed" ff="monospace">{r.label}</Text>
+                <Text size="10px" ff="monospace" style={{ textAlign: "right" }}>{r.value}</Text>
               </Box>
             ))}
-          </Box>
-        )}
-        {phasesPresent.size > 0 && (
-          <Box
-            style={{
-              position: "absolute",
-              left: 12,
-              top: 52,
-              zIndex: 5,
-              padding: "6px 10px",
-              borderRadius: 4,
-              background: "light-dark(rgba(255,255,255,0.9), rgba(0,0,0,0.55))",
-              pointerEvents: "none",
-              display: "flex",
-              gap: 12,
-              alignItems: "center",
-              flexWrap: "wrap",
-              maxWidth: 520,
-            }}
-          >
-            {colorMode === "phase" || !propRange ? (
-              <>
-                <Text size="10px" c="dimmed" ff="monospace" tt="uppercase" style={{ letterSpacing: 0.4 }}>
-                  phase
-                </Text>
-                {PHASE_ORDER.filter((p) => phasesPresent.has(p)).map((p) => (
-                  <Box key={p} style={{ display: "flex", gap: 5, alignItems: "center" }}>
-                    <Box
-                      style={{
-                        width: 18,
-                        height: 3,
-                        borderRadius: 2,
-                        background: phaseColorFor(p, colorScheme),
-                        ...(p === "empty" ? { opacity: 0.55 } : {}),
-                      }}
-                    />
-                    <Text size="10px" c="dimmed" ff="monospace">
-                      {PHASE_GLYPH[p]} {PHASE_LABEL[p]}
-                    </Text>
-                  </Box>
-                ))}
-              </>
-            ) : (
-              <>
-                <Text size="10px" c="dimmed" ff="monospace" tt="uppercase" style={{ letterSpacing: 0.4 }}>
-                  {colorMode}
-                </Text>
-                {Math.abs(propRange.max - propRange.min)
-                   < 1e-6 * Math.max(Math.abs(propRange.max), 1) ? (
-                  // Degenerate range (e.g. an isothermal case): a gradient over a
-                  // single value reads as a rendering glitch ("370 · 370 · 370").
-                  // Collapse it to one chip with the single value.
-                  <Text size="10px" c="dimmed" ff="monospace">
-                    all streams{" "}
-                    {colorMode === "temperature"
-                      ? `${formatTemperature(propRange.min, tempUnit)} ${temperatureLabel(tempUnit)}`
-                      : `${formatPressure(propRange.min, pressUnit)} ${pressureLabel(pressUnit)}`}
-                  </Text>
-                ) : (
-                  <>
-                    {/* ParaView-style continuous colour bar: min · mid · max,
-                        labelled in the user's unit, on the chosen colormap. */}
-                    <Box style={{ display: "flex", flexDirection: "column", gap: 2 }}>
-                      <Box
-                        style={{
-                          width: 160,
-                          height: 9,
-                          borderRadius: 2,
-                          background: gradientCss(colorMap),
-                        }}
-                      />
-                      <Box style={{ display: "flex", justifyContent: "space-between", width: 160 }}>
-                        {[propRange.min, (propRange.min + propRange.max) / 2, propRange.max].map((val, i) => (
-                          <Text key={i} size="9px" c="dimmed" ff="monospace">
-                            {colorMode === "temperature"
-                              ? formatTemperature(val, tempUnit)
-                              : formatPressure(val, pressUnit)}
-                          </Text>
-                        ))}
-                      </Box>
-                    </Box>
-                    <Text size="10px" c="dimmed" ff="monospace">
-                      {colorMode === "temperature" ? temperatureLabel(tempUnit) : pressureLabel(pressUnit)}
-                    </Text>
-                  </>
-                )}
-              </>
-            )}
-            {/* Honest caption: the styling rule is 1 + 5·√(F/Fmax), so the
-                width tracks the SQUARE ROOT of the mass flow, not the flow
-                itself (√ compresses the range so small streams stay legible). */}
-            <Text size="10px" c="dimmed" ff="monospace" style={{ marginLeft: 4 }}>
-              · wire thickness ∝ √(mass flow)
-            </Text>
           </Box>
         )}
         {/* Selection card (top-right): the unit's "hardware" --- its

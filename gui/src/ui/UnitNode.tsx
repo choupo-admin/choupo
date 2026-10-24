@@ -124,6 +124,14 @@ export function UnitNode({ id, data, selected }: NodeProps) {
   //  (case/flowsheetLayout.ts) spaces siblings by the FULL card's estimated
   //  height.  Growing the symbol any other way makes that spacing grow.
   const symbolPx = symbolSizeFor(showDetails);
+  //  COLOURED BY A PUBLISHED UNIT KPI (DEV.md 4c C114 item 4) -- a display
+  //  MODE the reader chose in the Colours menu.  The SYMBOL stays in ink
+  //  (shape is the equipment); what carries the colour is the box, as the
+  //  wire carries a stream's.  A unit that does not publish the KPI is
+  //  drawn neutral with a dashed grey border and says so -- never as a zero.
+  const kpiTint = (data as { kpiTint?: { colour: string; text: string } | { none: string } }).kpiTint;
+  const tinted = kpiTint && "colour" in kpiTint ? kpiTint : null;
+  const untinted = kpiTint && "none" in kpiTint ? kpiTint : null;
   const icon = unitIconFor(unit.type, 18);
   const label = UNIT_LABEL[unit.type] ?? unit.type;
   //  THE NODE DRAWS WHAT THE RUN WILL USE.  A tinkered operation value lives
@@ -175,8 +183,14 @@ export function UnitNode({ id, data, selected }: NodeProps) {
     <div
       ref={nodeRef}
       style={{
-        background: "light-dark(var(--mantine-color-white), var(--mantine-color-dark-6))",
-        border: `1.5px solid ${selected ? "var(--mantine-color-accent-5)" : "light-dark(var(--mantine-color-gray-4), var(--mantine-color-dark-4))"}`,
+        background: tinted
+          ? `color-mix(in srgb, ${tinted.colour} 22%, light-dark(var(--mantine-color-white), var(--mantine-color-dark-6)))`
+          : "light-dark(var(--mantine-color-white), var(--mantine-color-dark-6))",
+        border: tinted
+          ? `3px solid ${tinted.colour}`
+          : untinted
+          ? "1.5px dashed var(--mantine-color-gray-5)"
+          : `1.5px solid ${selected ? "var(--mantine-color-accent-5)" : "light-dark(var(--mantine-color-gray-4), var(--mantine-color-dark-4))"}`,
         borderRadius: 10,
         padding: "10px 14px",
         minWidth: 190,
@@ -189,8 +203,11 @@ export function UnitNode({ id, data, selected }: NodeProps) {
         //  wires.  Named rather than tuned: no test here measures a pixel,
         //  and the number below is the one a human must check by looking.
         minHeight: nodeMinHeight(showDetails, inputs.length, outputs.length),
+        //  A KPI-tinted box has spent its border on the colour, so the
+        //  selection ring takes the accent outright -- otherwise a selected
+        //  coloured unit looks exactly like an unselected one.
         boxShadow: selected
-          ? "0 0 0 3px rgba(38, 198, 218, 0.15)"
+          ? (tinted ? "0 0 0 3px var(--mantine-color-accent-5)" : "0 0 0 3px rgba(38, 198, 218, 0.15)")
         : "0 1px 3px rgba(0,0,0,0.4)",
         transition: "border-color 150ms ease, box-shadow 150ms ease",
         fontFamily: "Inter, sans-serif",
@@ -342,6 +359,14 @@ export function UnitNode({ id, data, selected }: NodeProps) {
               {unit.name}
             </Text>
           </Group>
+          {(tinted || untinted) && (
+            <Text size="10px" ff="monospace" fw={600}
+              c={tinted ? "var(--mantine-color-text)" : "dimmed"}
+              data-testid="unit-kpi-chip"
+              style={{ whiteSpace: "nowrap" }}>
+              {tinted ? tinted.text : untinted!.none}
+            </Text>
+          )}
           {drillable && (
             <Tooltip label="Double-click to open this node as a case in a new window" withArrow>
               <span style={{ color: "var(--mantine-color-accent-4)", display: "inline-flex", opacity: 0.75 }}>

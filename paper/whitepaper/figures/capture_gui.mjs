@@ -42,7 +42,8 @@ License
        <html> (gui/src/adapters/runLedger.ts) -- the engine is the WASM
        build of the same C++ in gui/dist/wasm, run in the page's worker;
     3. Figure A (--flow-case): switches the stream colouring to Temperature
-       (the Colours menu, gui/src/ui/ColoursMenu.tsx), frames the units named
+       (the Colours popover's "Colour streams by" select,
+       gui/src/ui/ColoursMenu.tsx), frames the units named
        by --zoom-units (the synthesis loop by default) with the wheel and a
        drag of the bare canvas -- a reader's two gestures -- and saves the
        window (gui_flowsheet.png); then opens the Case view, the case's file
@@ -360,8 +361,11 @@ const FOLD_TREE = (open) => `(async () => {
 async function figureA(browser, base) {
   const page = await openAndRun(browser, base, opt.flowCase, opt.flowW, opt.flowH, "A");
   await click(page, "button", "/^Flowsheet$/", "the Flowsheet view");
-  await click(page, "button", "/^Stream colours/", "the Colours menu");
-  await click(page, "[role=menuitem]", "/^Temperature/", "Colour by > Temperature");
+  //  The Colours popover (DEV.md 4c C114): its "Colour streams by" select
+  //  lists every field the run publishes; Temperature is one of them.
+  await click(page, "button", "/^Flowsheet colours/", "the Colours menu");
+  await click(page, "input", "/^Colour streams by$/", "the Colour streams by select");
+  await click(page, "[role=option]", "/^Temperature/", "Colour streams by > Temperature");
   await page.send("Input.dispatchKeyEvent", { type: "keyDown", key: "Escape", code: "Escape", windowsVirtualKeyCode: 27 });
   await page.send("Input.dispatchKeyEvent", { type: "keyUp", key: "Escape", code: "Escape", windowsVirtualKeyCode: 27 });
   await sleep(1500);

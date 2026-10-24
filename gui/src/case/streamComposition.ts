@@ -80,15 +80,32 @@ export function computePerStream(
         totMass += n * mw;
       }
     }
-    // solid phase: per-component kg/s (already mass); moles = mass/MW
+    // solid phase: per-component kg/s (already mass); moles = mass/MW.
+    //  THE SOLID IS A NAMED PART OF THE OVERALL MATERIAL, NEVER A SECOND
+    //  INVENTORY (ResultEmitter.cpp, ruled 2026-08-08): `F` and
+    //  `composition` already carry the crystals, so adding `solids` on top
+    //  counted every crystal twice -- a slurry's solid share read double in
+    //  the Streams table (found 2026-10-20, DEV.md 4c C114, when the canvas
+    //  began colouring by a component's mass fraction).  Only the part of a
+    //  solid the composition does NOT already carry is added: zero on every
+    //  stream the engine writes today, the whole solid on a stream written
+    //  the older way (F fluid-only), so both read their real flow.
     if (s.solids)
       for (const [c, m] of Object.entries(s.solids)) {
-        mass[c] = (mass[c] ?? 0) + m;
-        totMass += m;
         const mw = mws?.[c];
         if (mw !== undefined && mw > 0) {
-          mol[c] = (mol[c] ?? 0) + m / mw;
-          totMol += m / mw;
+          const sMol = m / mw;
+          const extra = sMol - (mol[c] ?? 0);
+          if (extra > 1e-9 * sMol) {
+            mol[c] = (mol[c] ?? 0) + extra;
+            totMol += extra;
+            mass[c] = (mass[c] ?? 0) + extra * mw;
+            totMass += extra * mw;
+          }
+        } else if (!(c in mass)) {
+          // No molar mass: the solid's mass is still a published number.
+          mass[c] = m;
+          totMass += m;
         }
       }
     const molFrac: { [c: string]: number } = {};
