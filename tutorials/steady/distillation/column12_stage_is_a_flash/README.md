@@ -51,25 +51,29 @@ somewhere:
 
 ## The tolerance, honestly
 
-The identity holds to about 1e-7 relative, not to machine precision, and
-the reason is visible in the log: the adiabatic flash stops its outer
-Newton at an energy residual of ~2.5e-4 J/mol out of 5.4e+4 J/mol.  That
-is the limit of the *check*, not of the physics.  The gate is set at 1e-6
-relative, which is a factor of ten of headroom over the observed
-agreement.
+Since 2026-10-24 the identity holds to round-off: `restage` publishes
+`T_drop` 0 and `H_residual` 0, and lands on V/F = 0.5 exactly.  Until then
+it held to about 1e-7 relative -- the adiabatic flash stopped its outer
+Newton at an energy residual of ~2.5e-4 J/mol, because `recombine` handed
+it a single-phase stream at a temperature 189 K away from the stage's (see
+below), and the flash had to walk all the way back.  The gate is still set
+at 1e-6 relative.
 
 ## The one thing to know about `recombine`
 
-A Choupo mixer mixes; it does not do the vapour/liquid split ("mixers mix,
-flashes separate").  Handed a liquid and a vapour it conserves total
-enthalpy exactly and reports a single dominant phase at whatever
-temperature carries that enthalpy — here 182.88 K, a fictitious
-sub-cooled vapour that appears in the stream table and means nothing on
-its own.  It is a faithful enthalpy carrier, which is all this case asks
-of it, and the adiabatic flash downstream reads that enthalpy back on the
-same surface.  A student who is puzzled by 182 K in the stream table has
-understood the case correctly; the answer is that `stageMix` is not a
-physical state, it is a bookkeeping entry between two units.
+`recombine` is an ADIABATIC mixer, and since 2026-10-24 its outlet is the
+state of equal enthalpy RESOLVED at its own equilibrium, priced the way
+the energy report prices every stream.  Handed the two halves of stage 5
+it therefore publishes exactly what they are together: 371.8839 K and
+V/F = 0.5, the stage's own temperature and the ratio of the two draws --
+the identity already, one unit early.  It does not SEPARATE the phases
+(one combined outlet); `restage` does, and finds nothing to do.
+
+Before that date the mixer balanced its enthalpy on ONE dominant phase and
+published that label, so `stageMix` appeared in the stream table as a
+sub-cooled vapour at 182.88 K -- a bookkeeping entry, not a physical state.
+The case still closed, because the adiabatic flash read the same enthalpy
+back, but the stream table showed a temperature no fluid can have.
 
 ## Running it
 

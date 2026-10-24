@@ -82,7 +82,7 @@ kpi     Chiller                vf_out           0.82934417727    1e-4
 kpi     FEHE                   C_cold           165649.236816    1e-4
 kpi     FEHE                   C_hot            153640.764185    1e-4
 kpi     FEHE                   C_r              0.927488119975   1e-4
-kpi     FEHE                   H_closure_gap_kW -1.72178988578e-06 1e-4
+kpi     FEHE                   H_closure_gap_kW -7.8010634752e-07 1e-4
 kpi     FEHE                   LMTD             72.9274521522    1e-4
 kpi     FEHE                   NTU              7.15955824506    1e-4
 kpi     FEHE                   Q                64066545.3653    1e-4
@@ -716,7 +716,7 @@ equipment WaterCooler            cost.totalModule 529172.775179    1e-4
 boundary global               H_feeds_kW       533.06073992       1e-4
 boundary global               Q_boundary_kW    -57636.6280672     1e-4
 boundary global               H_products_kW    -57105.3265119     1e-4
-boundary global                 residual_kW      1.75984788757    1e-4
+boundary global                 residual_kW      1.75849803454    1e-4
 boundary global               W_shaft_kW       13728              1e-4
 utility Aftercooler            cooling.coolingWater.duty_kW -5482.93664891     1e-4
 utility Aftercooler            cooling.coolingWater.T 313.15             1e-4

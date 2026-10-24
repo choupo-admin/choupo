@@ -8897,7 +8897,8 @@
    "src/unitOperations/flash/IsothermalFlash.H",
    "src/unitOperations/flash/PureSaturationPlateau.H",
    "src/unitOperations/flash/StreamEquilibrium.H",
-   "src/unitOperations/mixer/Mixer.H"
+   "src/unitOperations/mixer/Mixer.H",
+   "src/unitOperations/reactor/ReactorOutlet.H"
   ],
   "src/unitOperations/mixer/Splitter.cpp": [
    "src/core/Advisory.H",
@@ -16249,6 +16250,7 @@
    "src/unitOperations/reactor/ReactionHeat.cpp"
   ],
   "src/unitOperations/reactor/ReactorOutlet.H": [
+   "src/unitOperations/mixer/Mixer.cpp",
    "src/unitOperations/reactor/CSTR.cpp",
    "src/unitOperations/reactor/ConversionReactor.cpp",
    "src/unitOperations/reactor/PFR.cpp",

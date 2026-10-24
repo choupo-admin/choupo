@@ -152,9 +152,9 @@ Plant balances (each side on its own stored numbers)
   Choupo: first-law residual -67.3135 kW (energy exchanged (the larger of: sum of |declared duties and work|, and |Q boundary|)); converged True
 
 Variant adiabaticMixers (the mixers as the sample has them): exit 0, converged True
-  Choupo, adiabatic mixers: first-law residual -4.9965e+04 kW (energy exchanged (the larger of: sum of |declared duties and work|, and |Q boundary|)); converged True
-  M1: H_in -946696.5406 kW, H_out -906492.7790 kW, remaining imbalance 40203.7615 kW (the engine's own report)
-  M0: H_in -1498141.5644 kW, H_out -1488456.8995 kW, remaining imbalance 9684.6649 kW (the engine's own report)
+  Choupo, adiabatic mixers: first-law residual -69.1033 kW (energy exchanged (the larger of: sum of |declared duties and work|, and |Q boundary|)); converged True
+  M1: H_in -946696.5406 kW, H_out -946696.5406 kW, remaining imbalance -0.0000 kW (the engine's own report)
+  M0: H_in -1498141.5644 kW, H_out -1498141.5644 kW, remaining imbalance -0.0000 kW (the engine's own report)
 ```
 
 ## Findings on Choupo's side
@@ -187,18 +187,24 @@ Variant adiabaticMixers (the mixers as the sample has them): exit 0, converged T
   compressors (C0 -1.59 kW): the P_out form finds the outlet T from the
   enthalpy to the isentropic core's 1 J/mol tolerance, times 3031 mol/s.
   The sample's own stored state closes at +17.49 kW.
-* **THE ADIABATIC MIXER CREATES ENERGY (a Choupo defect, enumerated in
-  CLAUDE.md 6 and not fixed here).**  Run as built (`variants/
+* **THE ADIABATIC MIXER CREATED ENERGY -- FIXED 2026-10-24 (the delegated
+  decision of 2026-10-21, DEV.md 4c (b)).**  Run as built (`variants/
   adiabaticMixers`, which compare.py also runs), Choupo's adiabatic `mixer`
-  merges each compressor's hot vapour into a liquid-dominant stream on its
-  liquid sensible datum and publishes the outlet single-phase; the plant's
-  own report finds M0 creating 9 684.66 kW and M1 40 203.76 kW, a plant
-  residual of -49 965 kW.  The main case declares each mixer at its
-  separator's temperature (the workaround in system/flowsheetDict), which
-  prices the duty on the report's own surface (DEV.md 4c C74) and closes.
+  merged each compressor's hot vapour into a liquid-dominant stream on one
+  dominant-phase rung and published the outlet single-phase; the plant's own
+  report found M0 creating 9 684.66 kW and M1 40 203.76 kW, a plant residual
+  of -49 965 kW.  The mixer's outlet is now the state of equal enthalpy
+  RESOLVED at its own equilibrium and priced as the report prices it: both
+  mixers close to 0.0000 kW and the variant's plant residual is -69.10 kW,
+  beside the main case's -67.31 kW (attributed above).  The main case
+  still declares each mixer at its separator's temperature (the workaround
+  in system/flowsheetDict, DEV.md 4c C74), which is no longer needed for
+  the first law and is kept because it compares the separator duty over the
+  sample's own boundary.
 * **Stated, not hidden:** the tears s4 and s12 are published at the mixers'
-  declared temperatures with the mixer's phase LABEL, vf 0 -- a mixer does
-  not flash (src/unitOperations/mixer/Mixer.cpp, "DOMINANT IS A LABEL") --
+  declared temperatures with the mixer's phase LABEL, vf 0 -- a DECLARED-T
+  mixer does not resolve its outlet (src/unitOperations/mixer/Mixer.cpp,
+  "DOMINANT IS A LABEL"; the adiabatic one does since 2026-10-24) --
   while the separator and the energy report resolve the same (T, P, z)
   two-phase; the sample's adiabatic mixers store them two-phase (0.433,
   0.281) at 331.16 and 308.24 K.  The sample's separator duty is compared

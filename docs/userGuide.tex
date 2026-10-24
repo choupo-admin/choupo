@@ -2518,13 +2518,15 @@ pass: two directions of one model, both on the page, neither hidden.}
 \subsection{Flow primitives: mixer, splitter, valve, pipe}\label{sec:primitives}
 
 \paragraph{\code{mixer}.}  Adiabatic merge:
-$P_{\mathrm{out}} = \min(P_{\mathrm{in}})$, energy balance on the
-dominant phase, solids summed, Newton-1D in $T_{\mathrm{out}}$.  A
-mixer \emph{mixes} --- it never runs an internal flash (separators
-separate).  Declare gas inlets with \code{phase gas;} in their
-\file{0/} files so the energy balance picks the right basis; an
-optional \code{operation \{ T 330 K; \}} declares the mix temperature
-and skips the adiabatic balance (announced in the log).
+$P_{\mathrm{out}} = \min(P_{\mathrm{in}})$, solids summed; the outlet is
+the state of equal enthalpy, \emph{resolved} at its own equilibrium and
+priced as the energy report prices every stream, so a merge of a vapour
+and a liquid can leave two-phase, with the vapour fraction it resolves to.
+A mixer does not \emph{separate} --- one combined outlet; put a flash
+after it to split the phases.  An optional \code{operation \{ T 330 K; \}}
+declares the mix temperature instead, publishes the duty that implies as
+\code{Q\_kW}, and labels the outlet with the dominant inlet phase
+(announced in the log).
 
 \paragraph{\code{splitter}.}  One inlet, N outlets at
 \code{fractions ( 0.6 0.4 );} --- a flow split, not a separation: all

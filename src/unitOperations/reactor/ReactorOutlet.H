@@ -179,13 +179,22 @@ struct EnthalpyInversion
     scalar vf = 0.0;
     scalar unmatched_J_per_mol = 0.0;   //  0 unless a pure fluid's jump
 };
+//
+//  `solids` / `F` (2026-10-24, the adiabatic mixer -- its second caller):
+//  a stream that also carries CRYSTALS in `s[]` prices them on the solid
+//  rung (`flashState::priceSolids`, kW for kmol/s) beside its fluid, so the
+//  enthalpy matched is the fluid's PLUS the crystals' per mole of fluid,
+//  `h = (H_fluid + H_solid) / F` -- the rule the energy report applies to
+//  every stream.  Absent (nullptr, the reactors), nothing changes.
 EnthalpyInversion temperatureOfEnthalpy(scalar               h,
                                         scalar               P,
                                         const sVector&       z,
                                         scalar               Tguess,
                                         scalar               vfGuess,
                                         scalar               vf_in,
-                                        const ThermoPackage& thermo);
+                                        const ThermoPackage& thermo,
+                                        const sVector*       solids = nullptr,
+                                        scalar               F      = 0.0);
 
 //  Said once per unit (stderr + AdvisoryLog), with the duty it leaves.
 void announceUnmatchedEnthalpy(const std::string& unitType,

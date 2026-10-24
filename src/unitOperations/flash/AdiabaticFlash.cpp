@@ -108,8 +108,24 @@ int AdiabaticFlash::solve(const DictPtr& dict,
     const scalar vfFeed = flashState::resolvedInletVaporFraction(
         feedDict, Tfeed, Pfeed, z, thermo,
         "adiabaticFlash inlet");
+    //  PRICED AS THE ENERGY REPORT PRICES IT (2026-10-24).  A two-phase inlet
+    //  was priced as `H_stream_formation(T, P, vf, z)` -- a QUALITY BLEND at
+    //  the overall z, exact only for a pure fluid -- while the report prices
+    //  the same stream on its equilibrium phases (`flashState::priceState`),
+    //  so the unit and the report disagreed by the blend's error.  No case
+    //  reached it until the adiabatic mixer started publishing its outlet
+    //  RESOLVED: column12's `recombine` hands `restage` the stage's own
+    //  two-phase mixture, and the blend moved the restaged flash off the
+    //  stage (V/F 0.5066 against 0.5, 1.2494 kW unattributed) -- breaking the
+    //  very identity that case exists to witness.  A single-phase inlet is
+    //  priced exactly as before (`priceState` falls through to
+    //  `H_stream_formation` at the carried vapour fraction).
+    std::vector<std::string> inletNotes;
+    const bool feedPinned =
+        feedDict->lookupScalarOrDefault("phasePinned", 0.0) > 0.5;
     const scalar Hin  = useFormation
-        ? thermo.H_stream_formation(Tfeed, Pfeed, vfFeed, z)   // the stream's own surface
+        ? flashState::priceState(Tfeed, Pfeed, z, 1.0, feedPinned, vfFeed,
+                                 thermo, "adiabaticFlash inlet", &inletNotes)
         : (1.0 - vfFeed) * thermo.Hliquid(Tfeed, z, Tref)
           +      vfFeed  * thermo.Hvapour(Tfeed, z, Tref);
     const scalar Hreq = Hin;            // adiabatic: H_out = H_in

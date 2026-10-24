@@ -106,9 +106,10 @@ WHAT THIS CHECKS, all from fresh runs of corpus cases:
              valve's T_out must equal its T_in within 0.5 K (an ideal-gas
              vapour has no Joule-Thomson effect) with vf = 1, the mixer's vf
              must be 1, both splitter branches must carry vf = 1, and the
-             plant's first law must close within 1e-2 kW (the mixer's own Newton
-             tolerance leaves ~1e-3 kW on 250 kmol/h; a misread inlet costs
-             hundreds).
+             plant's first law must close within 1e-2 kW (a misread inlet
+             costs hundreds; since 2026-10-24 the adiabatic mixer closes to
+             round-off, ~1e-12 kW, where its dominant-phase Newton left
+             ~1e-3 kW).
   (j) AN OUTLET SEARCH DISCARDS THE SAME ROOT (2026-10-04, C34).  The
       valve's and the adiabatic flash's outlet searches, the pipe's
       inlet-regime test and the isothermal flash's own OPERATING resolution
@@ -557,8 +558,9 @@ INLET_READERS = [
 #  The two bare `vf` reads that are not the inlet's reading: multiStreamHX's
 #  DECLARED outlet phase in `operation.outlet.<stream>` (`od`), whose default
 #  is the resolved inlet; and the mixer's CARRIED value, kept -- announced --
-#  for a two-phase authored inlet its one-phase balance cannot carry (the
-#  stated default of C34, cavett01).
+#  for the dominant-phase VOTE of a DECLARED-T mixer fed a two-phase authored
+#  inlet (the stated default of C34, cavett01; since 2026-10-24 the
+#  adiabatic mixer resolves its outlet and has no vote).
 BARE_VF_ALLOWED = {
     "heatTransfer/MultiStreamHX.cpp": r"\bod->lookupScalarOrDefault",
     "mixer/Mixer.cpp": r"\bvfCarried\s*=\s*sd->lookupScalarOrDefault",

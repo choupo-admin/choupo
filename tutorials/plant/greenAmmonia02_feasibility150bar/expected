@@ -539,7 +539,7 @@ equipment WaterCooler          cost.totalModule 576723.682981      1e-4
 boundary global               H_feeds_kW       533.06073992       1e-4
 boundary global               Q_boundary_kW    -57644.0841949     1e-4
 boundary global               H_products_kW    -57112.7768006     1e-4
-boundary global               residual_kW      1.75334559061      1e-4
+boundary global               residual_kW      1.75218391052      1e-4
 boundary global               W_shaft_kW       13670              1e-4
 utility Aftercooler            cooling.coolingWater.duty_kW -5482.93664891     1e-4
 utility Aftercooler            cooling.coolingWater.T 313.15             1e-4
