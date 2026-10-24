@@ -494,7 +494,7 @@ K_d; H is Phi K_d, and Phi is carried separately in the partition, so the
 diffusive flux carried Phi twice (K_d too small by (1 - lambda)^2: x0.163
 for Na+, x0.200 for Cl-, x0.136 for SO4 2-, x0.098 for Ca2+ and x0.082 for
 Mg2+ in membrane10's 0.6 nm pore, from the case's own ion radii -- so the
-corrected K_d is 5 to 12 times the old one; K_c moves 5-7 % down).  The one pair is now `DechadilokDeen2006`
+corrected K_d is 5 to 12 times the old one; K_c moves 4.7-7.4 % down).  The one pair is now `DechadilokDeen2006`
 (K_d = H/Phi, their rational K_c), announced on every DSPM-DE run as the
 default when undeclared; `hindrance legacy;` REFUSES by name with that
 reason, and the Bowen-Welfoot centreline K_c went with it (no centreline
