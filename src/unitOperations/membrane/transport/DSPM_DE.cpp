@@ -634,6 +634,10 @@ TransportSolution DSPM_DE::localFluxes(const TransportContext& ctx) const
     // next water-flux pass (same station, same ions, J_v moved a little).
     PoreAccount         poreAcc;
     pore::PoreSolution  poreWarm;
+    //  `wallClosure porePermeate`: the permeate the wall and the pore last
+    //  converged on at THIS station, which warm-starts the wall Newton at
+    //  the next water-flux pass (J_v moves a little between passes).
+    std::vector<scalar> permWarm;
     bool                haveWarm = false;
     std::vector<scalar> lastWall(Ni, 0.0);   // the wall the last pore pass used
 
@@ -936,35 +940,78 @@ TransportSolution DSPM_DE::localFluxes(const TransportContext& ctx) const
         //  is an InfeasibleTrial the Newton's line search backs away from.
         if (finiteDifference_ && wallClosure_ == WallClosure::PorePermeate)
         {
-            poreAtWall(false);                     // at the B_s closure's wall
-            //  The starting permeate: the pore's at the closure's wall,
-            //  scaled by the largest theta = 1, 1/2, ... whose wall the
-            //  interface balance admits (theta -> 0 is always admitted: a
-            //  permeate-free wall needs no field), so the Newton starts from
-            //  an evaluable point.
-            std::vector<scalar> u0(Ni), cStart(Ni), cwS(Ni), gwS(Ni);
+            //  The unknowns are the ions the FEED carries.  An ion with no
+            //  bulk concentration (a salt component of the flowsheet that
+            //  this unit is not fed) is not a term -- the pore leaves it out
+            //  too -- and its permeate stays exactly zero; making ln c_p of
+            //  it an unknown put -inf in the residual at its first
+            //  evaluation (MEASURED, C141: membrane10, whose three units
+            //  share three salt components).
+            std::vector<std::size_t> act;
+            for (std::size_t i = 0; i < Ni; ++i)
+                if (ions[i].c_bulk > 0.0) act.push_back(i);
+            const std::size_t Na = act.size();
+            //  A trial wall is admissible only if the interface balance
+            //  admits it AND every fed ion stands above zero there: the
+            //  uncoupled film computes a wall below zero rather than hide it
+            //  (Polarisation.cpp), and such a wall is a trial to back away
+            //  from, never a pore to solve (the pore would refuse it as a
+            //  one-sign pore -- MEASURED, C141: membrane11).
+            auto admissible = [&](const WallSolution& w,
+                                  const std::vector<scalar>& cw)
+            {
+                if (!w.ok) return false;
+                for (std::size_t m = 0; m < Na; ++m)
+                    if (!(cw[act[m]] > 0.0)) return false;
+                return true;
+            };
+            //  The starting permeate, in order of preference: the one the
+            //  wall and the pore converged on at this station's previous
+            //  water-flux pass; the previous STATION's; and, at the first
+            //  station of a run, the pore's at the B_s closure's wall --
+            //  each scaled by the largest theta = 1, 1/2, ... whose wall is
+            //  admissible (theta -> 0 always is: a permeate-free wall needs
+            //  no field), so the Newton starts from an evaluable point.
+            //  MEASURED (C141), the warm starts are what makes this the
+            //  default: started from the B_s closure at every pass,
+            //  membrane10 took 113 s.
+            std::vector<scalar> u0(Na), cStart(Ni, 0.0), cwS(Ni), gwS(Ni);
+            std::vector<scalar> base;
+            if (permWarm.size() == Ni)                     base = permWarm;
+            else if (lastPermeate_.size() == Ni)           base = lastPermeate_;
+            for (std::size_t m = 0; m < Na && !base.empty(); ++m)
+                if (!(base[act[m]] > 0.0)) base.clear();
+            if (base.empty())
+            {
+                poreAtWall(false);                 // at the B_s closure's wall
+                base = c_perm_ion;
+            }
             for (scalar theta = 1.0; ; theta *= 0.5)
             {
-                for (std::size_t i = 0; i < Ni; ++i)
-                    cStart[i] = theta * std::max(c_perm_ion[i], 1e-300);
-                if (wallFromPermeate(Jv, cStart, cwS, gwS).ok || theta < 1e-12) break;
+                for (std::size_t m = 0; m < Na; ++m)
+                    cStart[act[m]] = theta * std::max(base[act[m]], 1e-300);
+                if (admissible(wallFromPermeate(Jv, cStart, cwS, gwS), cwS)
+                    || theta < 1e-12) break;
             }
-            for (std::size_t i = 0; i < Ni; ++i) u0[i] = std::log(cStart[i]);
+            for (std::size_t m = 0; m < Na; ++m) u0[m] = std::log(cStart[act[m]]);
             auto F = [&](const sVector& u) -> sVector
             {
-                std::vector<scalar> cpTrial(Ni), cw(Ni), gw(Ni);
-                for (std::size_t i = 0; i < Ni; ++i) cpTrial[i] = std::exp(u[i]);
+                std::vector<scalar> cpTrial(Ni, 0.0), cw(Ni), gw(Ni);
+                for (std::size_t m = 0; m < Na; ++m) cpTrial[act[m]] = std::exp(u[m]);
                 const WallSolution w = wallFromPermeate(Jv, cpTrial, cw, gw);
                 if (!w.ok) throw InfeasibleTrial("DSPM-DE wall: " + w.reason);
+                if (!admissible(w, cw))
+                    throw InfeasibleTrial("DSPM-DE wall: a fed ion's wall"
+                                          " concentration is not positive");
                 cwall = cw; gwall = gw;
                 poreAtWall(true);
-                sVector r(Ni);
-                for (std::size_t i = 0; i < Ni; ++i)
+                sVector r(Na);
+                for (std::size_t m = 0; m < Na; ++m)
                 {
-                    if (!(c_perm_ion[i] > 0.0))
+                    if (!(c_perm_ion[act[m]] > 0.0))
                         throw InfeasibleTrial("DSPM-DE wall: a permeate concentration"
                                               " reached zero");
-                    r[i] = std::log(c_perm_ion[i]) - u[i];
+                    r[m] = std::log(c_perm_ion[act[m]]) - u[m];
                 }
                 return r;
             };
@@ -987,6 +1034,7 @@ TransportSolution DSPM_DE::localFluxes(const TransportContext& ctx) const
             }
             const sVector rFinal = F(nr.x);        // leave the state AT the answer
             (void)rFinal;
+            permWarm = c_perm_ion;
             outerPassesMax_ = std::max(outerPassesMax_, nr.iterations);
         }
         else if (finiteDifference_)
@@ -1005,12 +1053,33 @@ TransportSolution DSPM_DE::localFluxes(const TransportContext& ctx) const
     std::vector<scalar> c_in(Ni, 0.0), c_perm_ion(Ni, 0.0);
     scalar dpi = 0.0;
     if (imposed) Jw = ctx.imposedJv;          // the caller's J_v: no closure
+    //  The closed form keeps the damped fixed point it was recorded on.  The
+    //  SOLVED pore takes a safeguarded SECANT on the same equation, h(J) =
+    //  J - A_w (dP - dpi(J)) = 0: the damped fixed point contracts by about
+    //  one half per pass, so it needs ~40 passes to 1e-12, and under the
+    //  solved pore each pass is a full wall-and-pore Newton (MEASURED, C141:
+    //  membrane10 40 s on the fixed point).  h rises monotonically from
+    //  -A_w dP at J = 0 (no flux, no polarisation, dpi = 0) to A_w dpi >= 0
+    //  at J = A_w dP, so the root is bracketed by (0, A_w dP]; a secant step
+    //  that leaves the bracket falls back to the damped step.  Same equation,
+    //  same tolerance -- only the path to the root differs.
+    scalar Ja = 0.0, ha = 0.0;   bool haveA = false;
     for (int it = 0; it < 80 && !imposed; ++it)
     {
         poreSolve(Jw, c_in, c_perm_ion, dpi);
         const scalar Jw_new = A_w * std::max(dP - dpi, 0.0);
         const scalar relax = 0.5;
-        const scalar Jw_upd = (1.0 - relax) * Jw + relax * Jw_new;
+        scalar Jw_upd = (1.0 - relax) * Jw + relax * Jw_new;
+        if (finiteDifference_)
+        {
+            const scalar hb = Jw - Jw_new;
+            if (haveA && std::abs(hb - ha) > 0.0)
+            {
+                const scalar Js = Jw - hb * (Jw - Ja) / (hb - ha);
+                if (std::isfinite(Js) && Js > 0.0 && Js <= A_w * dP) Jw_upd = Js;
+            }
+            Ja = Jw; ha = hb; haveA = true;
+        }
         if (std::abs(Jw_upd - Jw) < 1e-12 * std::max(Jw, 1e-12)) { Jw = Jw_upd; break; }
         Jw = std::max(Jw_upd, 0.0);
     }
@@ -1061,6 +1130,7 @@ TransportSolution DSPM_DE::localFluxes(const TransportContext& ctx) const
     {
         out.pore = poreAcc; out.hasPore = true;
         if (haveWarm) { lastPore_ = std::move(poreWarm); haveLastPore_ = true; }
+        if (permWarm.size() == Ni) lastPermeate_ = permWarm;
     }
     return out;
 }

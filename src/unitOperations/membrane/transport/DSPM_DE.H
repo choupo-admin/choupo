@@ -240,6 +240,9 @@ private:
     // The previous station's converged pore: the next station's seed.
     mutable pore::PoreSolution lastPore_;
     mutable bool               haveLastPore_ = false;
+    // The previous station's converged permeate under `wallClosure
+    // porePermeate` [mol/m3, per ion]: the next station's wall-Newton seed.
+    mutable std::vector<scalar> lastPermeate_;
 };
 
 } // namespace membrane
