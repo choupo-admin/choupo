@@ -3466,6 +3466,13 @@ accepts today, and that is a policy call.
 > the elapsed seconds; a recycle pass that revisits a unit moves the pulse;
 > prefers-reduced-motion gets a static highlight; it stops when the run
 > ends or fails.  Dispatched 2026-10-20 (G17), after G16 on shared files.
+> LANDED 2026-10-24 (revived from `backup/g-a2f767a5e10a7820e`): the unit
+> the engine is solving pulses with a seconds counter on slow runs, none on
+> fast ones; Stop removes it; reduced motion gets a static ring; checked in
+> the built app on column14 (~2 min) and acetonePlant.  NOTED for Vitor:
+> the slowest plants spend most of their time in outer-driver and recycle
+> passes that print no unit banner, so they show no pulse there -- an
+> "outer iteration k" indicator would be new scope.
 
 > **C114. A FLOWSHEET VIEWER STUDENTS LOVE, "TIPO PARAVIEW" (Vitor,
 > 2026-10-20: "ve como podes tornar o visualizador do flowsheet mais tipo
