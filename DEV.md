@@ -1514,7 +1514,15 @@ accepts today, and that is a policy call.
 > count chosen by that measurement; every pinned golden reproduced within
 > its tolerance or listed.  It is URGENT: the result goes to an outside
 > scientist through the published site, so it must land validated and the
-> site must be seen to publish it.  Status: dispatched 2026-10-24.
+> site must be seen to publish it.  LANDED 2026-10-24, OPT-IN
+> (`poreSolver { grid adaptive; }`): the arc-length monitor was measured
+> WORSE than uniform; the local error follows psi'' so the monitor is
+> |psi''|^(1/3); on the interior front it reaches 0.76x the uniform error,
+> which is the computed bound for any grid of that node count, and it gains
+> nothing on the corpus pores -- so uniform stays the default and no golden
+> moved.  Fourth-order Richardson extrapolation (N, 2N) would reach 1e-6
+> everywhere at ~2x cost but publish a permeate no discrete profile carries:
+> recorded, not built.
 
 > **C143. AN EDUTOOL ON A NEGATIVE CASE OF PROCESS ECONOMICS: THE SINES
 > PTA PLANT (ARTLANT) AND THE PUBLIC BANK'S LOSS (Vitor, 2026-10-24:
@@ -1579,7 +1587,7 @@ accepts today, and that is a policy call.
 > Na2SO4.  The graded grid was built and measured WORSE (the steep region
 > is an interior front), so the default stays uniform 101 nodes.  No
 > 101-node golden moved; membrane20 lost its closed-form rows and gained
-> its B_s-wall rows (appended).  OPEN, named: an adaptive grid; SDEM's
+> its B_s-wall rows (appended).  OPEN, named: (adaptive grid: C144); SDEM's
 > march onto this solver; the NF270_dspmde record comment "B_s unused by
 > DSPM-DE" is false under a declared `wallClosure solutionDiffusion`;
 > MgSO4 first stations still take the continuation once per unit.

@@ -2777,18 +2777,25 @@ Choupo converges in 4-24 Newton iterations where NanoFiltran needs hundreds to
 thousands of under-relaxed iterations and STALLS at its cap on NaCl (ND 204)
 and Na2SO4.  A grid graded toward the faces was built (`grading`) and
 measured WORSE: the hardest profile's steep region is an INTERIOR
-ion-exchange front, not a face layer, so the default stays uniform and an
-adaptive grid is the named next step.  NanoFiltran is VENDORED as received
+ion-exchange front, not a face layer.  A solution-ADAPTIVE grid was then
+built (C144, `poreSolver { grid adaptive; }`, the monitor |psi''|^(1/3) --
+the measured local error follows the curvature of psi, and arc length of
+(ln c, psi) was measured WORSE than uniform) and kept OPT-IN: it sits at the
+computed bound for its node count (0.76x the uniform error on the interior
+front, which spreads over a third of the pore) and gains nothing on the
+corpus pores, so the default stays uniform 101 nodes and a case needing
+1e-6 declares its nodes.  NanoFiltran is VENDORED as received
 in `bin/curate/nanofiltran/` (Vítor's leave; held by `check_source_licence`
 ACCEPTED_VENDORED_CODE) and only RUN by `regenerate.py` to produce the 35
 anchors of `props/membrane/nanofiltran01_dspmde_reference` (the
 `poreTransport` op: the law at imposed J_v); its own Davies applies exp() to
 a log10 constant, so the Davies anchors come from a copy with that ONE
 declared patch.  The 101-node goldens moved on C141 with the list shown to
-Vítor; C142 moved none.  NOT done: SDEM's march onto this solver, an
-adaptive grid.  Gates: `check_pore_solver` (analytic-vs-FD Jacobian arm,
+Vítor; C142 moved none.  NOT done: SDEM's march onto this solver;
+Richardson extrapolation of the published permeate (measured fourth order,
+a design decision: the result would match no published discrete profile).  Gates: `check_pore_solver` (analytic-vs-FD Jacobian arm,
 station arm; sabotage-verified), `check_nanofiltran_reference`.  Record:
-[`docs/design/a-stiff-pore-solved-at-once.md`](docs/design/a-stiff-pore-solved-at-once.md) §9-§11.
+[`docs/design/a-stiff-pore-solved-at-once.md`](docs/design/a-stiff-pore-solved-at-once.md) §9-§12.
 
 **ELECTRONEUTRALITY WITHOUT A NEW PARAMETER — the `SDEM` transport law
 (2026-09-15, Vítor: "não se pode andar a aumentar o número de parâmetros
