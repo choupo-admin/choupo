@@ -1519,7 +1519,9 @@ accepts today, and that is a policy call.
 > `postProcessing/<plot>.csv` with its units; the GUI draws them under
 > "Post-processing" in the Plot workspace and computes nothing.  It needs
 > a unit to publish MORE THAN ONE named profile -- an architecture change,
-> his to approve.  Status: proposed.
+> his to approve.  RULING 2026-10-24: "Avanca como achares melhor" --
+> APPROVED as proposed.  Sequenced after C146 and the C113 revival (both
+> edit the files it needs: SpiralWoundModule, the GUI Plot workspace).
 
 > **OPEN-WORK REGISTER (2026-10-24, after Vitor found a request dropped:
 > "Tu ja te tinhas esquecido dessa tarefa que eu te tinha pedido?").**  An
@@ -1610,7 +1612,14 @@ accepts today, and that is a policy call.
 > film, announced; `poreTransport` takes a per-op `chargeDensity` and
 > writes a `profile` csv.  OPEN for Vitor: D(T) (Choupo reads the 25 C D0
 > at any T; NanoFiltran applies Stokes-Einstein with Vogel's viscosity);
-> whether nanofiltran03 joins the named validation subset.
+> whether nanofiltran03 joins the named validation subset.  RULED by the
+> commander on his delegation ("Avanca como achares melhor", 2026-10-24):
+> D(T) by Stokes-Einstein, D_i(T) = D_i0 (T/T0)(mu(T0)/mu(T)) on the
+> package's own liquid viscosity, announced, the reference temperature
+> moving no number -- dispatched after C146 (same transport layer);
+> nanofiltran03 does NOT join the validation subset: its c_X and J_v are
+> fitted to the same data, so it is a CALIBRATED comparison, and is
+> labelled so.
 
 > **C144. A SOLUTION-ADAPTIVE GRID FOR THE DSPM-DE PORE (Vitor,
 > 2026-10-24: "Faz a malha adaptativa, porque eu preciso de enviar o link
