@@ -1538,6 +1538,29 @@ accepts today, and that is a policy call.
 > study is either documented or explicitly fictitious.  Not legal
 > advice, and the tool says so.  Shelf: "Process design & economics",
 > beside C139 (the economics of the chemical network).
+> **Addendum (Vitor, same day): "ha empresas que publicam coisas em
+> revistas estrangeiras ... porque se alguem patentear eles podem provar
+> que ja tinham isso primeiro! ... outras tecnicas que os meus alunos nao
+> conhecem?"**  The list to put in the tool, each with its catch (to be
+> checked against primary sources -- the EPC, the EU trade-secrets
+> directive 2016/943, the Portuguese CPI -- before any of it is taught):
+> DEFENSIVE PUBLICATION (novelty is absolute: a disclosure anywhere, in
+> any language, blocks a later patent -- dedicated venues exist, e.g. the
+> Research Disclosure journal; the catch: it ends the secret and the
+> publisher's own right to patent); PRIOR-USER RIGHTS (keep the secret and
+> keep using it after a rival patents, where national law grants it --
+> needs DATED proof of use before the rival's filing date, and is
+> territorial); DATED DEPOSITS as evidence without publication (France's
+> enveloppe Soleau, the Benelux i-DEPOT, witnessed notebooks, timestamps);
+> the trade secret's legal condition ("reasonable steps": need-to-know,
+> NDAs, access control) and the legality of reverse engineering;
+> splitting know-how (black-box catalyst supply, a process split among
+> suppliers); UTILITY MODELS (faster, shorter, cheaper); TIMING (the
+> 12-month priority year, the PCT's ~30 months to delay the cost and the
+> choice, divisional applications); third-party observations and EPO
+> oppositions (nine months after grant) as cheap counter-moves; cross-
+> licensing, patent pools and standard-essential patents; patent
+> assertion entities; employee-invention rules.
 
 > **C139. AN EDUTOOL ON THE ECONOMICS OF THE CHEMICAL NETWORK: BASE
 > CHEMICALS, INTERMEDIATES, INDUSTRIAL PARKS AND INTERNATIONAL TRADE
