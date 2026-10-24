@@ -30,8 +30,9 @@ Namespace
 
 Description
     The extended Nernst-Planck (ENP) equations SOLVED across a charged pore:
-    discretised by finite differences on N intervals of a grid GRADED toward
-    both faces, every node solved at once by Newton on the DECLARED
+    discretised by finite differences on N intervals of a grid -- uniform,
+    graded toward both faces, or adapted to the solved profile (THE ADAPTIVE
+    GRID) -- every node solved at once by Newton on the DECLARED
     block-tridiagonal structure with an ANALYTIC Jacobian.  The method of
     NanoFiltran (Geraldes & Alves, "Computer program for simulation of mass
     transport in nanofiltration membranes", J. Membr. Sci. 321 (2008)
@@ -114,14 +115,41 @@ Description
     it is second order -- which the grid-convergence arms of
     bin/curate/check_pore_solver.py MEASURE rather than assume.
 
-    THE GRID (C142): graded toward BOTH faces by a symmetric tanh map,
+    THE GRID (C142): uniform by default, or graded toward BOTH faces by a
+    symmetric tanh map,
         xi_k = (1 + tanh(beta (2k/N - 1)) / tanh(beta)) / 2,
-    so the cells are smallest where the profiles bend -- at the faces, where
-    the convective boundary layer of a high-Peclet co-ion sits (the permeate
-    face) and where the Donnan field is steepest.  A smooth map keeps the
-    order (2, measured); beta = 0 is the uniform grid of C138.  The default
-    beta and the default node count are the ones MEASURED in
-    docs/design/a-stiff-pore-solved-at-once.md section 11.
+    which keeps the order (2, measured) but was measured NOT to help: the
+    steep part of a mixed-counter-ion pore is an interior front, not a face
+    layer.  beta = 0 is the uniform grid of C138.  The default and the node
+    count are the ones MEASURED in docs/design/a-stiff-pore-solved-at-once.md
+    sections 11 and 12.  A caller may also hand an explicit node list
+    (PoreSettings::nodes).
+
+    THE ADAPTIVE GRID (C144, PoreSettings::adaptive; DSPM-DE `grid
+    adaptive;`).  The fitted flux above is EXACT on a cell where psi is
+    linear, so its truncation error on cell k is O(h_k^2 |psi''|) -- the
+    potential's CURVATURE is what the scheme leaves out.  The published
+    permeate's error is the sum of those, and the node distribution that
+    minimises sum h_k^2 D_k at a fixed node count has h_k ~ D_k^{-1/3}; so
+    the monitor of a solved profile is
+        M_k = |psi''|_k^{1/3} + mean(|psi''|^{1/3}),
+    the mean a floor that keeps at least half the nodes uniformly spread
+    (Beckett & Mackenzie, Appl. Numer. Math. 35 (2000) 87), smoothed by two
+    passes of a (1/4, 1/2, 1/4) filter.  The loop (de Boor's): solve,
+    EQUIDISTRIBUTE M (the new nodes cut the integral of M into equal parts
+    -- strictly increasing, because M > 0), carry the state onto the new
+    grid (ln c and psi interpolated linearly, the global copies kept), solve
+    again warm-started, until no node would move by more than
+    `gridTolerance` of its own cell (PoreSolution::gridMove), at most
+    `gridPasses` re-solves; a re-solve that fails is abandoned and the last
+    converged answer stands (PoreSolution::gridFailure).  A warm start
+    carries its own grid, so a module adapts at its first station and
+    re-adapts only when the profile moves.  WHAT IT BUYS, measured (section
+    12): 0.76x the uniform grid's error on NanoFiltran's interior front at
+    50, 100 and 200 intervals, 0.8-0.9x on the ambipolar limit, the same
+    error on the corpus cases -- a margin, not an order, because the
+    curvature of psi there is spread over a third of the pore; which is why
+    the uniform grid stays the default.
 
     THE UNKNOWNS, one block per node k = 0..N (block size 2 Ni + 4):
         u_{k,i} = ln c_{k,i}   (positive by construction)
@@ -264,6 +292,16 @@ struct PoreSettings
 {
     std::size_t intervals = 100;     // N: the nodes are 0..N
     scalar      grading   = 0.0;     // beta of the tanh map; 0 = uniform
+    //  An explicit grid, xi_0 = 0 < xi_1 < ... < xi_N = 1 (intervals + 1
+    //  values): when given it replaces the tanh map.  The adaptive loop
+    //  hands each re-solve its moved grid this way (THE ADAPTIVE GRID).
+    std::vector<scalar> nodes;
+    //  THE ADAPTIVE GRID (C144): equidistribute the monitor of the answer,
+    //  re-solve on the moved grid, repeat until no node moves by more than
+    //  `gridTolerance` of its own local cell, at most `gridPasses` re-solves.
+    bool        adaptive      = false;
+    scalar      gridTolerance = 0.1;
+    int         gridPasses    = 8;
     scalar      tolerance = 1.0e-12; // on ||F||_2 of the normalised rows
     int         maxIter   = 60;
     bool        audit     = true;    // audit the structure and the derivatives
@@ -299,8 +337,18 @@ struct PoreSolution
     int         continuationSteps = 0;
     std::string directFailure;
     //  Newton iterations summed over every solve this call made (direct
-    //  attempt and continuation): the cost, as the module counts it.
+    //  attempt, continuation and the adaptive re-solves): the cost, as the
+    //  module counts it.
     int         iterationsTotal = 0;
+    //  THE ADAPTIVE GRID, measured (PoreSettings::adaptive only): the
+    //  re-solves on a moved grid this call made, the last node movement
+    //  measured (in units of the local cell), whether it settled below the
+    //  tolerance, and why a re-solve was abandoned (the answer then stays
+    //  the last converged one, on its own grid).
+    int         gridPasses  = 0;
+    scalar      gridMove    = 0.0;
+    bool        gridSettled = true;
+    std::string gridFailure;
 
     std::size_t intervals = 0;
     std::vector<scalar> grid;                // [node] xi_k
@@ -327,8 +375,11 @@ struct PoreSolution
 PoreSolution solve(const PoreProblem& pb, const PoreSettings& s,
                    const PoreSeed& seed);
 
-//- Solve warm-started from a previous solution on the SAME grid and ion
-//  list (the next station of a module, or the next point of a sweep).
+//- Solve warm-started from a previous solution with the SAME node count
+//  and ion list (the next station of a module, or the next point of a
+//  sweep).  Adaptive: the warm answer's own grid is the start.  Fixed: the
+//  warm state is carried onto the declared grid (the identity when the two
+//  are the same).
 PoreSolution solve(const PoreProblem& pb, const PoreSettings& s,
                    const PoreSolution& warm);
 
@@ -351,6 +402,13 @@ scalar bernoulliSlope(scalar x);
 
 //- The graded grid, xi_0 = 0 .. xi_N = 1 (see THE GRID).
 std::vector<scalar> gradedGrid(std::size_t N, scalar beta);
+
+//- THE ADAPTIVE GRID: the grid of the same node count that equidistributes
+//  the monitor of a solved profile (see the header), and the movement from
+//  one grid to another in units of the local cell (max over the interior
+//  nodes of |xi_new - xi_old| over the mean of the two old cells there).
+std::vector<scalar> equidistributedGrid(const PoreSolution& r);
+scalar gridMovement(const std::vector<scalar>& from, const std::vector<scalar>& to);
 
 //- Davies ln gamma on log10 at ionic strength I [mol/L], and d ln gamma/dI.
 //  The one home of the Davies form the DSPM-DE law and this solver use.

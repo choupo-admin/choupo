@@ -79,8 +79,25 @@ WHAT THIS GATE CHECKS.
                   is printed.
         WARM      a warm start from a neighbouring flux agrees with a cold
                   solve to 1e-10.
-        REFUSED   a pore with one sign of charge, and an absent ion handed
-                  in as a term, each refuse by name.
+        ADAPTIVE  (C144) the SOLUTION-ADAPTIVE grid on an INTERIOR-FRONT
+                  pore (NanoFiltran's example at J_v 5e-5 m/s, coefficients
+                  in the probe) at 50/100/200 intervals against a Richardson
+                  reference from 3200/6400: both grids converge; the
+                  adaptive grid is strictly increasing from 0 to 1, settles,
+                  holds ||F|| <= 1e-12 and leaves BELOW 0.85x the uniform
+                  grid's error at the same node count (measured 0.76x -- the
+                  bound any grid of that node count can reach on that front,
+                  docs/design/a-stiff-pore-solved-at-once.md 12.4); a warm
+                  start from a neighbouring flux carries its grid (no more
+                  re-solves than cold) and agrees with the cold answer to
+                  1e-5; on the ambipolar limit the adaptive grid is no worse
+                  than uniform at Pe 0.44 and 4.4 and exact to 1e-10 at
+                  Pe 440 (the fitted flux is exact on any cell), its cation
+                  and anion permeates equal.
+        REFUSED   a pore with one sign of charge, an absent ion handed in as
+                  a term, an explicit grid that is not strictly increasing,
+                  and an adaptive grid with no tolerance each refuse by
+                  name.
   (b) THE WITNESS membrane20_dspmde_pore_finite_difference, run here: each of
       its FOUR units announces the method and its node count, the first
       station's Newton iterations and ||F||, and -- on an 11-node copy of
@@ -124,9 +141,18 @@ WHAT THIS GATE CHECKS.
       its header always said).
   (e) REFUSALS, on copies of the witness: an unknown method word (naming
       the accepted word and the retired one), `method closedForm` (RETIRED,
-      with its reason), `nodes 2`, `grading 7`, an unknown key inside
-      `poreSolver`, an unknown key inside `transportParameters` -- each
-      exits non-zero naming its cause.
+      with its reason), `nodes 2`, `grading 7`, `grid banana`, `grid
+      adaptive` beside `grading`, `grid graded` with no grading,
+      `gridTolerance` on a fixed grid, `gridTolerance 0`, `gridPasses 0`, an
+      unknown key inside `poreSolver`, an unknown key inside
+      `transportParameters` -- each exits non-zero naming its cause.
+  (f) THE WITNESS ON THE ADAPTIVE GRID (C144): membrane20 with `grid
+      adaptive;` on all four units announces the adaptive grid four times
+      and the first station's re-solves, keeps every pore summary at
+      machine level, counts at least one re-solve and NO unsettled station
+      per unit, and publishes every KPI within 1e-6 of the uniform witness
+      (run by (b)) -- the corpus grid error at 101 nodes is 1e-8..1e-7, so
+      two correct grids must agree well inside that.
 
 WHAT THIS GATE DOES NOT COVER, stated so its green line cannot imply it:
 any comparison with NanoFiltran's published numbers (the code-to-code
@@ -135,8 +161,11 @@ solved pore (it runs, but no witness and no pore summary there); activity
 inside the pore between the faces (ideal); whether 101 nodes are ENOUGH for
 a given case (the grid arms measure the order, a case must still declare its
 grid -- an interior ion-exchange front, as in NanoFiltran's example at
-J_v = 5e-5 m/s, needs some 400 nodes for 1e-4); wall-clock speed (measured
-in the record, section 11, not gated).
+J_v = 5e-5 m/s, needs some 400 nodes for 1e-4, adaptive or not); whether
+the adaptive grid is the RIGHT default (it is not, measured in the record,
+section 12; the gate holds the margin it was measured to have, nothing
+more); wall-clock speed (measured in the record, sections 11 and 12, not
+gated).
 
 SABOTAGE-VERIFIED.  On the C138 code (2026-10-22), by hand, each restored and
 rebuilt (`make all`) before the next; OBSERVED output, abridged to the
@@ -190,6 +219,30 @@ but the restore moves the file's clock, so `make all` before a suite:
               solutionDiffusion)
         with the JACOBIAN arm green: it is the recomputation of the
         equations, not of their derivatives, that sees a wrong equation.
+On the C144 code (2026-10-24), by hand, each restored from a copy before
+the next (A1-A3 in PoreNernstPlanck.cpp, compiled by the probe from source;
+A4 in DSPM_DE.cpp, the engine rebuilt), OBSERVED output abridged:
+  A1 -- the monitor on the SLOPE of psi, |psi_{k+1} - psi_k|/h_k, in place
+        of its curvature:
+          (a) ADAPTIVE: on the interior front at N=50 the adaptive grid's
+              error 5.059e-03 is not below 0.85 x the uniform grid's
+              4.388e-03 ... (N=100, 200 alike)
+  A2 -- the equidistribution's inverse written as a product, (t - W) * M
+        for (t - W) / M:
+          (a) ADAPTIVE: the adaptive grid at N=50 did not settle (node
+              movement 2.000000e+00 after 1 re-solves) ... the error equal
+              to the uniform one; (a) ADAPTIVE CARRY and ADAPTIVE ANALYTIC:
+              settled 0
+  A3 -- the re-solve handed the OLD grid (`sg.nodes = g;` dropped):
+          (a) ADAPTIVE: the adaptive grid at N=50 did not settle (node
+              movement 2.722334e+00 after 8 re-solves) ...
+        Its FIRST run passed the "settled" checks and failed only the margin:
+        the loop left the last re-solve's own default `gridSettled = true`
+        when it stopped on its pass count -- a defect in the code under
+        test, fixed (the flag is decided on every pass), and the run above
+        is the sabotage against the fixed code.
+  A4 -- the refusal of `grid adaptive;` beside `grading` disabled:
+          (e) `grid adaptive with grading` was ACCEPTED (exit 0)
 """
 import json
 import math
@@ -498,14 +551,109 @@ def arm_probe(tmp):
         fails.append("(a) WARM: a warm start does not reproduce a cold solve "
                      + (m.group(1) if m else "(no line)"))
 
+    # ADAPTIVE (C144)
+    adaptive = arm_probe_adaptive(out)
+
     # REFUSED
     for tag, needle in (("one-sign", "one cation and one anion"),
-                        ("absent-ion", "absent ion is not a term")):
+                        ("absent-ion", "absent ion is not a term"),
+                        ("bad-grid", "strictly increasing nodes from 0 to 1"),
+                        ("no-tolerance", "needs a finite gridTolerance > 0")):
         m = re.search(rf"^REFUSED {tag}: (.*)$", out, re.M)
         if not m or needle not in m.group(1):
             fails.append(f"(a) REFUSED: {tag} was not refused naming '{needle}'")
     return (analytic_orders, graded_orders, graded_ratio, grid_orders, stiffness,
-            sweep, jac_worst, st_worst)
+            sweep, jac_worst, st_worst, adaptive)
+
+
+#  The adaptive grid must beat the uniform one at the same node count on the
+#  interior front by at least this factor.  MEASURED (C144): 0.76 at 50, 100
+#  and 200 intervals; the bound leaves room for round-off and none for a
+#  monitor that does not see the potential's curvature (the arc length of
+#  (ln c, psi) measured 1.16, WORSE than uniform).
+ADAPTIVE_GAIN_MAX = 0.85
+
+
+def arm_probe_adaptive(out):
+    m = re.search(r"^adaptiveRef conv (\d) (\d)$", out, re.M)
+    if not m or m.groups() != ("1", "1"):
+        fails.append("(a) ADAPTIVE: the 3200/6400-interval reference of the interior"
+                     " front did not converge (or no line)")
+        return None
+    rows = re.findall(r"^adaptiveFront N (\d+) conv (\d) (\d) uniform (\S+) adaptive (\S+)"
+                      r" passes (\d+) settled (\d) move (\S+) monotone (\d) minCell (\S+)"
+                      r" res (\S+)$", out, re.M)
+    if len(rows) != 3:
+        fails.append(f"(a) ADAPTIVE: {len(rows)} interior-front rows, not 3:\n{out[-1500:]}")
+        return None
+    ratios = []
+    for N, cu, ca, eu, ea, passes, settled, move, mono, hmin, res in rows:
+        eu, ea = float(eu), float(ea)
+        if cu != "1" or ca != "1":
+            fails.append(f"(a) ADAPTIVE: the interior front at N={N} did not converge"
+                         f" (uniform {cu}, adaptive {ca})")
+            continue
+        if mono != "1":
+            fails.append(f"(a) ADAPTIVE: the adaptive grid at N={N} is not strictly"
+                         " increasing from 0 to 1")
+        if settled != "1":
+            fails.append(f"(a) ADAPTIVE: the adaptive grid at N={N} did not settle"
+                         f" (node movement {move} after {passes} re-solves)")
+        if float(res) > 1e-12:
+            fails.append(f"(a) ADAPTIVE: ||F|| {res} on the adaptive grid at N={N}")
+        ratios.append(ea / eu)
+        if not ea < ADAPTIVE_GAIN_MAX * eu:
+            fails.append(f"(a) ADAPTIVE: on the interior front at N={N} the adaptive grid's"
+                         f" error {ea:.3e} is not below {ADAPTIVE_GAIN_MAX} x the uniform"
+                         f" grid's {eu:.3e} at the same node count -- the monitor does not"
+                         " put the nodes where the fitted flux's error is made")
+    m = re.search(r"^adaptiveCarry conv (\d) passesWarm (\d+) passesCold (\d+) settled (\d)"
+                  r" monotone (\d) err (\S+) maxRelDiff (\S+)$", out, re.M)
+    if not m:
+        fails.append("(a) ADAPTIVE: no carry line")
+    else:
+        conv, pw, pc, st, mono, e, d = m.groups()
+        if conv != "1" or st != "1" or mono != "1":
+            fails.append(f"(a) ADAPTIVE CARRY: conv {conv}, settled {st}, monotone {mono}")
+        if int(pw) > int(pc):
+            fails.append(f"(a) ADAPTIVE CARRY: the warm start took {pw} re-solves, more than"
+                         f" the cold solve's {pc} -- the grid is not carried")
+        if float(d) > 1e-5:
+            fails.append(f"(a) ADAPTIVE CARRY: the carried answer departs from the cold one"
+                         f" by {float(d):.3e} (> 1e-5, against a grid error near 8e-4)")
+    Pp, Pm, Kp, Km, Fp, Fm, gcw = 4.0e-4, 7.0e-4, 1.10, 1.15, 0.16, 0.20, 9.0
+    Ps = 2 * Pp * Pm / (Pp + Pm)
+    Kcs = (Kp * Pm + Km * Pp) / (Pp + Pm)
+    S = math.sqrt(Fp * Fm)
+    amb = []
+    for Jv in (2.0e-4, 2.0e-3, 2.0e-1):
+        Pe = Kcs * Jv / Ps
+        exact = S * Kcs * gcw / (1 - (1 - S * Kcs) * math.exp(-Pe))
+        m = re.search(rf"^adaptiveAnalytic {Jv:.3e} conv (\d) settled (\d) monotone (\d)"
+                      r" uniform (\S+) adaptive (\S+) (\S+)$", out, re.M)
+        if not m:
+            fails.append(f"(a) ADAPTIVE ANALYTIC: no line at J_v {Jv:.1e}")
+            continue
+        conv, st, mono, cu, ca, cm = m.groups()
+        cu, ca, cm = float(cu), float(ca), float(cm)
+        if conv != "1" or st != "1" or mono != "1":
+            fails.append(f"(a) ADAPTIVE ANALYTIC: at J_v {Jv:.1e} conv {conv}, settled {st},"
+                         f" monotone {mono}")
+        if abs(ca - cm) > 1e-12 * ca:
+            fails.append(f"(a) ADAPTIVE ANALYTIC: cation and anion permeates differ at"
+                         f" J_v {Jv:.1e} on the adaptive grid")
+        eu, ea = abs(cu / exact - 1), abs(ca / exact - 1)
+        if Jv > 1e-2:
+            if ea > 1e-10:
+                fails.append(f"(a) ADAPTIVE ANALYTIC: at Pe {Pe:.0f} the adaptive grid is"
+                             f" {ea:.3e} from the analytic limit (> 1e-10): the fitted flux"
+                             " is exact for a uniform drift on ANY cell, uneven ones included")
+            continue
+        amb.append(ea / eu)
+        if ea > eu:
+            fails.append(f"(a) ADAPTIVE ANALYTIC: at Pe {Pe:.2f} the adaptive grid's error"
+                         f" {ea:.3e} is above the uniform grid's {eu:.3e} at 100 intervals")
+    return ratios, amb
 
 
 # ---- (b) the witness ---------------------------------------------------------------
@@ -564,7 +712,7 @@ def arm_witness():
     r_obs = {u: k.get(u, {}).get("R_obs_" + u.split("_")[1]) for u in WITNESS_UNITS}
     if None in r_obs.values():
         fails.append(f"(b) an R_obs is missing: {r_obs}")
-        return sums, r_obs
+        return sums, r_obs, res
     gapNaCl = r_obs["NF_NaCl_pore"] - r_obs["NF_NaCl_BsWall"]
     gapMg = abs(r_obs["NF_MgSO4_pore"] - r_obs["NF_MgSO4_BsWall"])
     if not gapNaCl > 0.10:
@@ -574,7 +722,7 @@ def arm_witness():
     if not gapMg < 1e-5:
         fails.append(f"(b) THE PAIR: on MgSO4 the two closures part by {gapMg:.3e} (> 1e-5)"
                      " -- the case header says they agree")
-    return sums, r_obs
+    return sums, r_obs, res
 
 
 # ---- (c) the engine against the analytic limit -------------------------------------
@@ -728,6 +876,66 @@ def arm_default(tmp):
     return checked
 
 
+# ---- (f) the witness on the ADAPTIVE grid (C144) ------------------------------------
+ADAPTIVE_SUMMARY = re.compile(r"; adaptive grid: (\d+) re-solves on a moved grid, final node"
+                              r" movement <= (\S+) of a cell, (\d+) stations unsettled")
+
+
+def arm_adaptive_witness(tmp, uniform_run):
+    """The witness with `grid adaptive;` on every unit: each announces the
+    adaptive grid and its first station's re-solves, its pore summary stays
+    at machine level and counts the re-solves with no station unsettled, and
+    every published KPI agrees with the uniform witness to 1e-6 (the corpus
+    grid error at 101 nodes is 1e-8..1e-7, so the two grids must agree well
+    inside the target)."""
+    if uniform_run is None:
+        fails.append("(f) the uniform witness did not run; nothing to compare with")
+        return None
+    fd0 = (WITNESS / "system" / "flowsheetDict").read_text()
+    if fd0.count("nodes 101;") != 4:
+        fails.append("(f) the witness no longer declares `nodes 101;` on four units")
+        return None
+    case = copy_case(WITNESS, tmp / "adaptive_witness")
+    (case / "system" / "flowsheetDict").write_text(
+        fd0.replace("nodes 101;", "nodes 101;  grid adaptive;"))
+    rc, out = run_case(case)
+    if rc != 0:
+        fails.append(f"(f) the adaptive witness exited {rc}:\n{out[-2000:]}")
+        return None
+    res = result_of(out)
+    said = out.count("a SOLUTION-ADAPTIVE grid (declared;")
+    if said != 4:
+        fails.append(f"(f) the adaptive grid is announced {said} times, not on each of 4 units")
+    if out.count("the adaptive grid took ") != 4:
+        fails.append("(f) the first station's adaptive re-solves are not said on every unit")
+    sums = {m.group(1): m for m in SUMMARY.finditer(out)}
+    ad = ADAPTIVE_SUMMARY.findall(out)
+    if set(sums) != set(WITNESS_UNITS) or len(ad) != 4:
+        fails.append(f"(f) pore summaries {sorted(sums)} with {len(ad)} adaptive-grid counts")
+    for u, m in sums.items():
+        if not summary_at_machine_level(m):
+            fails.append(f"(f) {u}'s pore summary on the adaptive grid is not machine level")
+    for passes, move, unsettled in ad:
+        if unsettled != "0" or int(passes) < 1:
+            fails.append(f"(f) adaptive grid: {passes} re-solves, {unsettled} stations unsettled")
+    worst = 0.0
+    for u in WITNESS_UNITS:
+        a, b = res["kpis"].get(u, {}), uniform_run["kpis"].get(u, {})
+        for k, v in b.items():
+            if k.startswith("pore_") or "closure" in k or not isinstance(v, (int, float)):
+                continue
+            w = a.get(k)
+            if not isinstance(w, (int, float)):
+                fails.append(f"(f) {u}.{k} is not published on the adaptive grid")
+                continue
+            if v != 0:
+                worst = max(worst, abs(w / v - 1))
+    if worst > 1e-6:
+        fails.append(f"(f) the adaptive witness departs from the uniform one by {worst:.3e}"
+                     " (> 1e-6) -- more than the grid error either can carry")
+    return worst
+
+
 # ---- (e) refusals -----------------------------------------------------------------
 def arm_refusals(tmp):
     fd0 = (WITNESS / "system" / "flowsheetDict").read_text()
@@ -752,6 +960,22 @@ def arm_refusals(tmp):
          ["`nodes` must be a whole number", "at least 3"]),
         ("grading 7", "poreSolver { method finiteDifference;  grading 7; }",
          ["`grading` is the beta of the tanh map", "between 0 (uniform) and 6"]),
+        ("grid banana", "poreSolver { method finiteDifference;  grid banana; }",
+         ["unknown DSPM-DE pore solver grid 'banana'", "adaptive"]),
+        ("grid adaptive with grading",
+         "poreSolver { method finiteDifference;  grid adaptive;  grading 2; }",
+         ["`grid adaptive;` and `grading`", "`grid graded;`"]),
+        ("grid graded without grading", "poreSolver { method finiteDifference;  grid graded; }",
+         ["`grid graded;`", "no `grading` above 0"]),
+        ("gridTolerance on a fixed grid",
+         "poreSolver { method finiteDifference;  gridTolerance 0.1; }",
+         ["`gridTolerance`, which only an adaptive grid reads"]),
+        ("gridTolerance 0",
+         "poreSolver { method finiteDifference;  grid adaptive;  gridTolerance 0; }",
+         ["`gridTolerance` is the largest node movement", "above 0 and at most 1"]),
+        ("gridPasses 0",
+         "poreSolver { method finiteDifference;  grid adaptive;  gridPasses 0; }",
+         ["`gridPasses` is the most re-solves", "from 1 to 100"]),
         ("unknown key in poreSolver",
          "poreSolver { method finiteDifference;  nodes 101;  tolerance 1e-9; }",
          ["declares `tolerance`, which the pore solver does not read"]),
@@ -780,6 +1004,7 @@ def main():
         tmp = Path(d)
         probe = arm_probe(tmp)
         wit = arm_witness()
+        adw = arm_adaptive_witness(tmp, wit[2] if wit else None)
         worst = arm_analytic_engine(tmp)
         checked = arm_default(tmp)
         fired = arm_refusals(tmp)
@@ -788,8 +1013,8 @@ def main():
         for f in fails:
             print("  " + f)
         return 1
-    ao, go, gr, grid_o, stiff, sweep, jw, sw = probe
-    sums, r_obs = wit
+    ao, go, gr, grid_o, stiff, sweep, jw, sw, (ad_ratio, ad_amb) = probe
+    sums, r_obs, _ = wit
     print(f"check_pore_solver: OK -- the probe (compiled here) converges to the ambipolar "
           f"analytic limit at observed order {min(ao):.2f}-{max(ao):.2f} on the uniform grid "
           f"and {min(go):.2f}-{max(go):.2f} on the face-graded one (whose error is "
@@ -803,14 +1028,21 @@ def main():
           f"reproduce the interface balance, the closure and the wall electroneutrality "
           f"recomputed here within {sw:.1e} and the finite-difference Newton's answer; "
           f"{sweep[1]}/{sweep[0]} sweep problems from a crude seed converge ({sweep[2]} by "
-          f"continuation); a warm start reproduces a cold solve; 2 probe refusals fire.  The "
+          f"continuation); a warm start reproduces a cold solve; the SOLUTION-ADAPTIVE grid "
+          f"(C144) settles strictly ordered, carries its grid to a warm start, leaves "
+          f"{min(ad_ratio):.2f}-{max(ad_ratio):.2f}x the uniform grid's error on an interior "
+          f"front at 50/100/200 intervals (a margin, not an order: why uniform stays the "
+          f"default) and {min(ad_amb):.2f}-{max(ad_amb):.2f}x on the ambipolar limit, exact "
+          f"at Peclet 440; 4 probe refusals fire.  The "
           f"witness's four units announce method, nodes, iterations, residual, the structure "
           f"and the analytic Jacobian, and teach the pair (NaCl R_obs "
           f"{r_obs['NF_NaCl_pore']:.4f} with the pore's own permeate, "
           f"{r_obs['NF_NaCl_BsWall']:.4f} with the B_s wall; MgSO4 equal to 1e-5); END TO END "
           f"the engine matches the analytic limit within {worst:.1e} at every station of an "
           f"uncharged Born-free variant; membrane10/11 run the DEFAULT solved pore, say so on "
-          f"every unit and reproduce {checked} golden rows to 1e-10; {fired} refusals fire by "
+          f"every unit and reproduce {checked} golden rows to 1e-10; the witness on `grid "
+          f"adaptive;` announces it, settles on every station and agrees with the uniform run "
+          f"within {adw:.1e}; {fired} refusals fire by "
           f"name, the retired closed form among them.  NOT CHECKED here: NanoFiltran (held by "
           f"check_nanofiltran_reference), the batch diafilter under the solved pore, whether "
           f"a case's grid is enough, wall-clock speed.")

@@ -18810,7 +18810,19 @@ uniform grid's error at the same node count), because the steep part of a mixed-
 an \emph{interior} front --- where a trace monovalent counter-ion hands the
 fixed charge over to a divalent one --- not a face layer.  On the corpus
 cases the 101-node default is within $10^{-7}$ of the converged grid; that
-interior front needs some 400 nodes for $10^{-4}$.
+interior front needs some 400 nodes for $10^{-4}$.  \code{grid adaptive}
+moves the nodes to the solved profile: the fitted flux is exact on a cell
+where $\psi$ is linear, so its truncation error on cell $k$ is
+$O(h_k^2\,|\psi''|)$, and the node count is spent best with
+$h_k \propto |\psi''|^{-1/3}$ --- the nodes equidistribute the monitor
+$M = |\psi''|^{1/3} + \overline{|\psi''|^{1/3}}$ (the mean keeps at least
+half of them uniformly spread), and the pore is solved again on the moved
+grid until no node moves by more than a tenth of its cell.  It was
+\emph{measured}: on the interior front it leaves $0.76$ of the uniform
+grid's error at the same node count, on the corpus cases the same error.
+A margin and not an order, because the curvature of $\psi$ there is
+spread over a third of the pore --- so it is a declared option, not the
+default.
 
 \paragraph{An exact limit to check it against.}  For one 1:1 salt in an
 uncharged pore, \eqref{eq:dspmde-electroneutral} makes $c_+ = c_- = c$ and

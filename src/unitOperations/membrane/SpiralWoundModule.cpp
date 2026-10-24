@@ -1489,7 +1489,12 @@ int SpiralWoundModule::solve(const DictPtr& dict,
           << poreRun.fluxRelativeMax << " of the net flux, at a stiffness of "
           << poreRun.stiffnessMax << "), zero current <= " << poreRun.currentMax
           << ", electroneutrality <= " << poreRun.electroneutralMax << "; "
-          << poreRun.continuations << " solves by continuation in J_v\n";
+          << poreRun.continuations << " solves by continuation in J_v";
+        if (poreRun.adaptive)
+            m << "; adaptive grid: " << poreRun.gridPasses << " re-solves on a"
+                 " moved grid, final node movement <= " << poreRun.gridMoveMax
+              << " of a cell, " << poreRun.gridUnsettled << " stations unsettled";
+        m << "\n";
         std::cout << m.str();
     }
 

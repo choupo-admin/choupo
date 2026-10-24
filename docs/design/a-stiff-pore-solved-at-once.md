@@ -4,7 +4,8 @@
 NanoFiltran itself) is §9; the defaults corrected (C141) §10; a better
 solver -- an analytic Jacobian, the wall and the water flux in the same
 Newton, the closed form retired, NanoFiltran kept as the reference (C142) --
-§11.  Vítor's decision: build, as an
+§11; a solution-adaptive grid, built and measured (C144) -- §12.  Vítor's
+decision: build, as an
 opt-in pore solver for the `DSPM-DE` transport law, the method of his own
 NanoFiltran (Geraldes & Alves, "Computer program for simulation of mass
 transport in nanofiltration membranes", J. Membr. Sci. 321 (2008)
@@ -717,7 +718,9 @@ measurement for themselves and for a future SDEM march (§6), whose thin
 PERMEATE-face layer is the case a face-graded grid serves.  What would
 serve an interior front is a solution-adaptive grid (equidistributing the
 arc length of ln c and psi) -- not built: it makes the grid depend on the
-answer.
+answer.  *(Built on 2026-10-24, §12 -- and the arc length was measured to be
+the wrong monitor, and the right one a margin and not a cure: that front is
+not narrow.)*
 
 ### 11.4 Verification (bin/curate/check_pore_solver.py, rebuilt)
 
@@ -792,7 +795,8 @@ is pinned by no golden).
 
 ### 11.6 Still NOT done
 
-- A solution-adaptive grid for an interior front (11.3).
+- A solution-adaptive grid for an interior front (11.3).  *Built and
+  measured in §12 (C144): an option, not the default.*
 - SDEM's march onto this solver (§6) -- its thin permeate-face layer is where
   `grading` would earn its keep; not measured here.
 - The first station of a highly rejected salt (MgSO4 99.98 %) still needs
@@ -805,3 +809,234 @@ is pinned by no golden).
 - `NF270_dspmde.dat` still says its `permeabilities` are "unused by DSPM-DE";
   true under the default, not under `wallClosure solutionDiffusion`.  A
   record edit was not made from a solver slice.
+
+## 12. A solution-adaptive grid (2026-10-24, DEV.md 4c C144)
+
+*Vítor: "Faz a malha adaptativa, porque eu preciso de enviar o link para um
+cientista que me pediu."  The premise, from §11.3: the hardest profile's
+steep region is an INTERIOR ion-exchange front at xi ~ 0.39, so a grid
+graded toward the faces takes cells from where they are needed and a grid
+adapted to the solved profile should put them there.  Built
+(`poreSolver { grid adaptive; }`), measured, and kept a DECLARED OPTION: it
+is never worse than uniform by more than a few per cent, better by 1.0x to
+3.3x, and nowhere near the factor that would let it replace a finer grid.
+Every number below was measured on this branch, one machine, wall clock
+including the process start; "error" is the worst relative error of a
+published number (the permeate composition and flow, every KPI but the pore
+diagnostics and the round-off closures; the bench's per-ion wall and
+permeate concentrations) against a Richardson extrapolation of the same case
+on 1601 and 3201 uniform nodes.*
+
+### 12.1 What was built
+
+- **The loop** (de Boor's): solve; compute the monitor of the answer;
+  place the nodes so that each cell holds an equal share of the integral of
+  the monitor (the inverse of its piecewise-linear cumulative integral -- the
+  nodes are strictly increasing because the monitor is positive); carry the
+  state onto the new grid (ln c and psi interpolated linearly, the copies of
+  the global unknowns kept node for node); solve again, warm-started; stop
+  when no node would move by more than `gridTolerance` of its own cell
+  (default 0.1) or after `gridPasses` re-solves (default 8).  A re-solve that
+  fails is abandoned, the last converged answer stands, and the run says so.
+  The Newton, the Jacobian and the block-Thomas are untouched: the
+  Scharfetter-Gummel flux was always written per cell with its own h_k, and
+  the analytic Jacobian differentiates it with that h_k -- the JACOBIAN arm
+  had already held it on the graded grid (§11.4).
+- **The grid is carried.**  A warm start (the next station of a module, the
+  next J_v of the bench) starts on the previous answer's own grid and
+  re-adapts only when the monitor moves; on a fixed grid a warm state is
+  carried onto the declared grid (the identity when the two are the same).
+- **The declaration**: `grid uniform | graded | adaptive;` beside `nodes`,
+  `gridTolerance` and `gridPasses` read only by `adaptive`.  `grading` alone
+  keeps C142's meaning (graded).  A contradiction refuses by name: `grading`
+  with `grid uniform` or `grid adaptive`, `grid graded` with no grading,
+  `gridTolerance`/`gridPasses` on a fixed grid, a tolerance outside (0, 1],
+  a pass count outside 1..100.  The run announces the grid and its defaults,
+  the first station's re-solves, whether it settled, its smallest cell; the
+  module's pore summary counts the re-solves and the stations whose grid did
+  not settle (an unsettled station is also an advisory).
+
+### 12.2 The monitor -- the brief's was measured first, and it was the wrong one
+
+The brief proposed the arc length of the profile, M = sqrt(1 + alpha
+sum (d ln c_i/dxi)^2 + beta (dpsi/dxi)^2).  Built with alpha = 1/the mean
+of the squared slope and four smoothing passes, it made NanoFiltran's
+example at J_v = 5e-5 WORSE than uniform at every node count (101 nodes:
+1.26e-3 against 1.10e-3; the probe's copy of that pore 1.27e-3 against
+1.10e-3).  The reason is in the profile itself (a scratch dump, 101 nodes):
+ln c_Na falls 4.6 across xi = 0.3..1 at a slope that is nearly CONSTANT
+there, psi ramps almost linearly, so the arc length is largest where the
+profile is straight -- and a straight profile is the one the fitted flux
+solves exactly.  The local truncation error, measured directly (the 3201-node
+answer sampled on the 101-node grid and put into the 101-node flux rows),
+is largest at xi = 0.39 for EVERY ion, at 1.5e-4 of J_v c_p (Na, Cl) and
+3.0e-4 (Mg), and falls only five- to ten-fold toward the faces: it follows
+the CURVATURE of psi, which is what the Scharfetter-Gummel flux leaves out
+(it is exact for a linear potential on any cell).
+
+So the monitor is built on psi'': on cell k the error is O(h_k^2 |psi''|),
+the error of a published permeate is their sum, and the node distribution
+that minimises sum h_k^2 D_k for a fixed node count has h_k ~ D_k^(-1/3).
+The monitor is therefore M = |psi''|^(1/3) + mean(|psi''|^(1/3)) -- the
+mean a floor that keeps at least half the nodes uniformly spread (Beckett &
+Mackenzie, Appl. Numer. Math. 35 (2000) 87), where psi'' is not the only
+source of error (the concentration's own curvature under convection) --
+smoothed by two passes of a (1/4, 1/2, 1/4) filter.  Four families were
+measured on the probe's problems (a scratch study driving the solver's own
+API): the arc length (above); the gradient of psi; the curvature of the
+whole (ln c, psi) vector, with and without a Peclet weight
+J_v c_p/(P c); and the curvature of psi alone at exponents 1/3 and 1/2 and
+floors 1, 0.3, 0.1 and 0 times the mean.  The more aggressive D^(1/2) with a
+floor of 0.1 x the mean took the interior front to 0.59x the uniform error
+(the best seen) -- and the ambipolar limit at Pe 4.4 to 2.4x WORSE, and the
+high-Peclet stiff pore to 2.3x worse.  D^(1/3) with the mean as floor is the
+only one measured never worse than uniform by more than a few per cent.
+
+### 12.3 The measurement
+
+**The probe's problems** (fixed faces, coefficients in
+`_poreSolverProbe.cpp`; the interior front is NanoFiltran's example at
+J_v = 5e-5 with no polarisation, the coefficients its DSPM-DE run hands the
+pore; reference Richardson on 3200/6400 intervals, or the closed form):
+
+| problem | uniform 50 / 100 / 200 | adaptive 50 / 100 / 200 |
+|---|---:|---:|
+| interior front, J_v 5e-5 | 4.39e-3 / 1.10e-3 / 2.75e-4 | 3.35e-3 / 8.34e-4 / 2.08e-4 (0.76x) |
+| interior front, J_v 2e-5 | 3.08e-4 / 7.70e-5 / 1.92e-5 | 2.77e-4 / 6.92e-5 / 1.73e-5 (0.90x) |
+| ambipolar limit, Pe 0.44 (100) | 5.42e-7 | 5.03e-7 (0.93x) |
+| ambipolar limit, Pe 4.4 (100) | 1.19e-6 | 9.62e-7 (0.81x) |
+| ambipolar limit, Pe 440 | round-off | round-off (the fitted flux is exact on any cell) |
+| stiff pore X_d -5 / -50 / -200, J_v 4e-4 (100) | 8.61e-7 / 1.19e-9 / 1.93e-11 | 8.53e-7 / 1.20e-9 / 1.94e-11 (0.99-1.01x) |
+| stiff pore X_d -200, J_v 4e-3 (100) | 1.50e-11 | 9.96e-12 (0.67x) |
+
+(the stiff rows from the scratch study, whose loop ran at a tolerance of
+0.05 against the engine's 0.1; the others from the gate's own probe.)
+
+**The corpus cases and NanoFiltran's matrix**, whole runs, error / wall
+time (best of three) / re-solves on a moved grid in all:
+
+| case | uniform 101 | uniform 801 | adaptive 101 | adaptive 201 |
+|---|---:|---:|---:|---:|
+| nanofiltran01 (13 points) | 1.10e-3 / 0.062 s | 1.72e-5 / 0.49 s | 8.34e-4 / 0.10 s / 6 | 2.08e-4 / 0.17 s / 6 |
+| membrane10 (3 units, 51 stations) | 1.28e-8 / 0.31 s | 2.0e-10 / 1.59 s | 1.28e-8 / 0.25 s / 5 | 3.19e-9 / 0.51 s / 9 |
+| membrane11 (2 units) | 1.38e-7 / 0.15 s | 2.2e-9 / 1.19 s | 1.34e-7 / 0.13 s / 4 | 3.35e-8 / 0.29 s / 6 |
+| membrane20 (4 units) | 5.58e-8 / 0.19 s | 8.7e-10 / 1.10 s | 5.57e-8 / 0.20 s / 8 | 1.39e-8 / 0.34 s / 15 |
+
+The adaptive module costs what the uniform one costs: the grid adapts at the
+first station (one to three re-solves) and is carried; on membrane10 51
+stations took 5 re-solves in all (0.25 s against 0.31 s -- within noise, a
+re-solve on a carried grid is a warm Newton of two or three iterations).
+On the corpus the error does not move, because the corpus pores have little
+curvature to adapt to.
+
+**nanofiltran01 point by point** (the worst ion of each point):
+
+| op | J_v | uniform 101 | adaptive 101 | uniform 801 | adaptive 801 | uniform 3201 |
+|---|---:|---:|---:|---:|---:|---:|
+| example_ideal | 1e-6 | 3.1e-7 | 3.0e-7 | 4.8e-9 | 4.8e-9 | 3.0e-10 |
+| example_ideal | 5e-6 | 3.3e-6 | 3.1e-6 | 5.2e-8 | 4.9e-8 | 3.2e-9 |
+| example_ideal | 1e-5 | 1.3e-6 | 1.1e-6 | 2.0e-8 | 1.7e-8 | 1.2e-9 |
+| example_ideal | 2e-5 | 7.7e-5 | 6.9e-5 | 1.2e-6 | 1.1e-6 | 7.5e-8 |
+| example_ideal | 5e-5 | 1.1e-3 | 8.3e-4 | 1.7e-5 | 1.3e-5 | 1.1e-6 |
+| example_noBorn | 5e-5 | 3.5e-5 | 1.1e-5 | 5.6e-7 | 1.7e-7 | 3.5e-8 |
+| example_davies | 5e-5 | 2.0e-5 | 6.1e-6 | 3.1e-7 | 9.5e-8 | 1.9e-8 |
+| NaCl_ideal | 1e-5 | 2.8e-9 | 2.8e-9 | 4.4e-11 | 4.0e-11 | 2.1e-12 |
+| NaCl_ideal | 5e-5 | 1.8e-8 | 1.8e-8 | 2.8e-10 | 2.8e-10 | 1.8e-11 |
+| Na2SO4_ideal | 1e-5 | 1.3e-9 | 1.3e-9 | 2.0e-11 | 2.0e-11 | 2.0e-12 |
+| Na2SO4_ideal | 5e-5 | 4.2e-9 | 4.4e-9 | 6.0e-11 | 6.0e-11 | 2.9e-12 |
+| mixed_polarised | 1e-5 | 4.8e-8 | 4.8e-8 | 7.4e-10 | 7.4e-10 | 4.7e-11 |
+| mixed_polarised | 3e-5 | 4.5e-7 | 4.4e-7 | 7.0e-9 | 6.9e-9 | 4.4e-10 |
+
+(the 3201-node column is the reference's own fine grid against the
+extrapolation: an upper bound on how far the reference itself is from its
+grid limit, a quarter of it.)
+
+**membrane11 off the corpus** (C142's sweep: feed pressure x NaCl, the
+permeate at 1 bar), error / wall time:
+
+| P [bar] | NaCl [mM] | uniform 101 | adaptive 101 | uniform 801 |
+|---:|---:|---:|---:|---:|
+| 3 | 5 / 50 / 500 | 9.0e-10 / 2.6e-9 / (no flux) | 9.0e-10 / 2.6e-9 / (no flux) | 1.4e-11 / 4.0e-11 / (no flux) |
+| 10 | 5 / 50 / 500 | 2.6e-8 / 1.4e-7 / 2.5e-9 | 2.6e-8 / 1.3e-7 / 2.4e-9 | 4.2e-10 / 2.2e-9 / 4.0e-11 |
+| 20 | 5 / 50 / 500 | 1.2e-7 / 7.2e-7 / 4.9e-8 | 1.2e-7 / 6.2e-7 / 4.9e-8 | 1.9e-9 / 1.1e-8 / 7.7e-10 |
+| 40 | 5 / 50 / 500 | 1.4e-6 / 4.8e-5 / 5.7e-7 | 1.4e-6 / 2.8e-5 / 5.6e-7 | 2.3e-8 / 7.4e-7 / 8.9e-9 |
+
+every point 0.10-0.25 s on either grid at 101 nodes, 0.9-1.6 s at 801.
+
+### 12.4 The decision: an option, not the default -- and why
+
+The brief's rule was to make the adaptive grid the default if it beat the
+uniform one at the same node count by a clear margin everywhere, with the
+node count chosen so that every row's grid error is at most 1e-6.  Neither
+half holds.  The margin is 1.0x on the corpus cases and the sweep, 1.1-1.3x
+on the hardest row and 3.2-3.3x on the two Born/Davies variants at
+J_v = 5e-5; a few rows are a few per cent worse (Na2SO4 at 5e-5: 4.4e-9
+against 4.2e-9).  And no node count makes the adaptive grid meet 1e-6 on
+the hardest row where the uniform one does not: at the observed order 2 and
+0.76x the uniform constant, 1e-6 on NanoFiltran's example at 5e-5 needs some
+2 900 adaptive nodes against some 3 300 uniform ones.
+
+The reason is the shape of that front, measured above: the curvature of psi
+-- the only error the fitted flux makes -- is spread over a third of the
+pore, peaking only some ten-fold above its value at the faces.  An
+equidistributing grid gains in proportion to how CONCENTRATED its monitor
+is, and here the bound can be computed rather than argued: with the local
+truncation error D_k measured on the uniform 101-node grid (the 3201-node
+answer put into its flux rows), the best that ANY grid of the same node
+count can do for sum h_k^2 D_k is (mean D^(1/3))^3 / mean D times the
+uniform error -- **0.764, for every ion**.  The adaptive grid measures
+0.76: it is at the bound of what moving these nodes can buy.  A
+solution-adaptive grid earns its keep on a NARROW layer (a high-Peclet face
+layer, a shock), where that ratio is small; this pore has none.  "Interior front" in §11.3 was the right
+word for where the curvature peaks and the wrong picture of how narrow it is.
+
+So the default stays uniform, 101 nodes (C142's measured choice, no golden
+moved), and `grid adaptive;` is a declared option -- for a case that does
+have a narrow layer, and for a student to see the measurement.
+
+**What would meet 1e-6 everywhere, measured and NOT built.**  The uniform
+grid's error is cleanly second order on every problem (observed order 2.00
+from 50 to 400 intervals), so a Richardson extrapolation of the PUBLISHED
+permeate from N and 2N intervals is fourth order: on the probe's interior
+front at J_v = 5e-5 it is 1.25e-6 from 50/100 and 7.9e-8 from 100/200
+intervals (against 1.1e-3 for 100 uniform nodes alone); at J_v = 2e-5 6.2e-8
+and 3.9e-9; on the ambipolar limit and the stiff pores 1e-11 to round-off.
+Its cost is a second solve on the doubled grid per station (about 2x); its
+price is a design question, not a numerical one: the published permeate
+would then be an extrapolation, not the solution of any discrete problem the
+run also publishes (the profile, the wall, the water flux of the module's
+own balances), and that is Vítor's to decide.  Until then, a case that needs
+1e-6 on such a front declares the nodes it needs (3201 nodes: nanofiltran01's
+hardest row at 1.1e-6 in 3.2 s for the whole matrix).
+
+### 12.5 Verification (bin/curate/check_pore_solver.py, extended)
+
+New probe arm ADAPTIVE: the interior front at 50/100/200 intervals against
+the 3200/6400 reference -- both grids converge, the adaptive grid is
+strictly increasing from 0 to 1, settles, ||F|| <= 1e-12, and its error is
+below 0.85x the uniform grid's (measured 0.76x); a warm start from
+J_v = 4.8e-5 carries its grid (no more re-solves than the cold solve) and
+agrees with the cold answer to 1e-5 (measured 1.9e-7, against a grid error
+of 8e-4); the ambipolar limit on the adaptive grid no worse than uniform at
+Pe 0.44 and 4.4 and exact to 1e-10 at Pe 440, its cation and anion permeates
+equal; an explicit grid that is not increasing and an adaptive grid with no
+tolerance refuse.  New arm (f): the witness membrane20 with `grid adaptive;`
+on every unit announces it four times, says the first station's re-solves,
+keeps its pore summaries at machine level with no station unsettled, and
+agrees with the uniform witness to 1e-6 (measured 6.8e-11).  Arm (e) gains
+six refusals.  Sabotages, by hand, each restored before the next:
+
+- A1 -- the monitor on the SLOPE of psi instead of its curvature: caught by
+  ADAPTIVE (the adaptive error 1.15x the uniform one at every node count).
+- A2 -- the equidistribution's inverse written as a product,
+  `(t - W) * M` for `(t - W) / M`: caught by ADAPTIVE (not settled, node
+  movement 2 to 11 cells; error equal to uniform -- the re-solve on the
+  wrong grid failed and the loop kept the uniform answer, as designed).
+- A3 -- the re-solve handed the OLD grid (`sg.nodes = g` dropped): caught
+  by ADAPTIVE (not settled after 8 re-solves; the margin gone).  **Its first
+  run found a defect in the code it attacked**: the loop left the "settled"
+  flag of the last re-solve's answer, a default `true`, when it stopped on
+  its pass count, so an adaptive grid that had NOT settled reported that it
+  had.  The flag is decided on every pass now.
+- A4 -- the refusal of `grid adaptive;` beside `grading` removed (engine
+  rebuilt): caught by (e) alone.

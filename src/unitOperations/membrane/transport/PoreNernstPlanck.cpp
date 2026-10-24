@@ -138,7 +138,7 @@ Context contextOf(const PoreProblem& pb, const PoreSettings& s)
     C.L.Ni = pb.ions.size();
     C.L.nv = 2 * C.L.Ni + 4;
     C.L.N  = s.intervals;
-    C.grid = gradedGrid(s.intervals, s.grading);
+    C.grid = s.nodes.empty() ? gradedGrid(s.intervals, s.grading) : s.nodes;
     C.h.resize(s.intervals);
     for (std::size_t k = 0; k < s.intervals; ++k) C.h[k] = C.grid[k + 1] - C.grid[k];
     if (pb.closure.active)
@@ -498,6 +498,20 @@ void validate(const PoreProblem& pb, const PoreSettings& s)
         throw std::runtime_error(ctx + "`nodes` must give at least 2 intervals");
     if (!(s.grading >= 0.0) || !std::isfinite(s.grading))
         throw std::runtime_error(ctx + "the grid grading must be finite and >= 0");
+    if (!s.nodes.empty())
+    {
+        bool ok = s.nodes.size() == s.intervals + 1
+               && s.nodes.front() == 0.0 && s.nodes.back() == 1.0;
+        for (std::size_t k = 0; ok && k < s.intervals; ++k)
+            ok = std::isfinite(s.nodes[k + 1]) && s.nodes[k + 1] > s.nodes[k];
+        if (!ok)
+            throw std::runtime_error(ctx + "an explicit grid must hold `intervals"
+                " + 1` strictly increasing nodes from 0 to 1");
+    }
+    if (s.adaptive && (!(s.gridTolerance > 0.0) || !std::isfinite(s.gridTolerance)
+                       || s.gridPasses < 1))
+        throw std::runtime_error(ctx + "the adaptive grid needs a finite"
+            " gridTolerance > 0 and at least one pass");
     bool pos = false, neg = false;
     for (const PoreIon& io : pb.ions)
     {
@@ -853,7 +867,188 @@ PoreSolution finish(const PoreProblem& pb, const PoreSettings& s, PoreSolution r
     return c;
 }
 
+// ---- THE ADAPTIVE GRID (C144) ------------------------------------------------
+//  THE MONITOR (C144, measured in docs/design/a-stiff-pore-solved-at-once.md
+//  section 12).  The Scharfetter-Gummel flux is EXACT on a cell where the
+//  potential is linear, so what it leaves out is the potential's CURVATURE:
+//  its truncation error is O(h_k^2 |psi''|) on cell k.  The error of a
+//  published permeate is the sum of those over the cells, so the grid that
+//  minimises sum h_k^2 D_k for a fixed node count has h_k ~ D_k^{-1/3} --
+//  the monitor M_k = D_k^{1/3}, equidistributed.  A FLOOR equal to the mean
+//  of D^{1/3} over the pore (Beckett & Mackenzie, Appl. Numer. Math. 35
+//  (2000) 87) keeps at least half the nodes uniformly spread, where psi''
+//  is not the only source of error (the concentration's own curvature
+//  under convection), and two passes of a (1/4, 1/2, 1/4) filter keep
+//  neighbouring cells within a bounded ratio.  Measured and REJECTED, with
+//  their numbers in the record: the arc length of (ln c, psi) -- the profile
+//  is steep where it is nearly linear, so it moved nodes to where the
+//  scheme is already exact and was WORSE than uniform on the interior front
+//  -- and the more aggressive D^{1/2} with a smaller floor, which gained
+//  1.7x there and lost 2.4x on the ambipolar limit.
+std::vector<scalar> monitorOf(const std::vector<scalar>& xi,
+                              const std::vector<scalar>& psi)
+{
+    const std::size_t N = xi.size() - 1;
+    //  |psi''| at the interior nodes (the three-point form on an uneven
+    //  grid), copied to the two faces, averaged onto the cells.
+    std::vector<scalar> d2(N + 1, 0.0);
+    for (std::size_t j = 1; j < N; ++j)
+    {
+        const scalar hl = xi[j] - xi[j - 1], hr = xi[j + 1] - xi[j];
+        d2[j] = std::abs(2.0 * ((psi[j + 1] - psi[j]) / hr
+                              - (psi[j] - psi[j - 1]) / hl) / (hl + hr));
+    }
+    d2[0] = d2[1];
+    d2[N] = d2[N - 1];
+    std::vector<scalar> M(N);
+    scalar mean = 0.0;
+    for (std::size_t k = 0; k < N; ++k)
+    {
+        M[k] = std::cbrt(0.5 * (d2[k] + d2[k + 1]));
+        mean += M[k] * (xi[k + 1] - xi[k]);
+    }
+    //  A linear potential (no curvature at all) has nothing to adapt to:
+    //  the floor alone is left, and the grid stays where it is.
+    const scalar floor = mean > 0.0 ? mean : 1.0;
+    for (std::size_t k = 0; k < N; ++k) M[k] += floor;
+    for (int p = 0; p < 2; ++p)
+    {
+        std::vector<scalar> t(M);
+        for (std::size_t k = 0; k < N; ++k)
+        {
+            const scalar l = M[k > 0 ? k - 1 : 0], r = M[k + 1 < N ? k + 1 : N - 1];
+            t[k] = 0.25 * l + 0.5 * M[k] + 0.25 * r;
+        }
+        M.swap(t);
+    }
+    return M;
+}
+
+//  A state carried from one grid to another of the SAME node count: the
+//  profile unknowns (ln c_i and psi) linearly interpolated in xi; the copies
+//  of the global unknowns (permeate, permeate potential, J_v, the wall
+//  field) kept node for node -- they are equal at every node of a converged
+//  state, and the wall field's slot is read at node 0 only.  The
+//  interpolated profile is not electroneutral to round-off; the Newton
+//  restores it, from a state a cell's interpolation error away.
+sVector transferState(const sVector& x, const std::vector<scalar>& from,
+                      const std::vector<scalar>& to, std::size_t Ni)
+{
+    const std::size_t nv = 2 * Ni + 4, N = from.size() - 1;
+    sVector y = x;
+    if (from == to) return y;
+    std::size_t m = 0;
+    for (std::size_t j = 1; j < N; ++j)
+    {
+        const scalar t = to[j];
+        while (m + 1 < N && from[m + 1] <= t) ++m;
+        const scalar w = (t - from[m]) / (from[m + 1] - from[m]);
+        for (std::size_t q = 0; q <= Ni; ++q)
+            y[j * nv + q] = (1.0 - w) * x[m * nv + q] + w * x[(m + 1) * nv + q];
+    }
+    return y;
+}
+
+//  The loop: from a converged answer on its own grid, the equidistributing
+//  grid is computed; when no node would move by more than the tolerance the
+//  answer is SETTLED, otherwise the state is carried onto the new grid and
+//  re-solved (a warm Newton, no continuation: a re-solve that fails is
+//  abandoned and the last converged answer stands, said in gridFailure).
+PoreSolution adapt(const PoreProblem& pb, const PoreSettings& s, PoreSolution r)
+{
+    if (!s.adaptive || !r.converged) return r;
+    int passes = 0, iters = 0;
+    long jevals = 0;
+    for (;;)
+    {
+        const std::vector<scalar> g = equidistributedGrid(r);
+        r.gridMove    = gridMovement(r.grid, g);
+        //  Decided on EVERY pass: a re-solve's answer arrives with its own
+        //  (default) flag, and a loop that stops on its pass count must not
+        //  inherit a "settled" it never measured.
+        r.gridSettled = r.gridMove <= s.gridTolerance;
+        if (r.gridSettled) break;
+        if (passes >= s.gridPasses) break;
+        PoreSettings sg = s;
+        sg.nodes = g;
+        sg.audit = false;
+        PoreSolution rn;
+        {
+            AdvisoryFrame trial("pore ENP adaptive grid", true);
+            rn = solveFrom(pb, sg, transferState(r.x, r.grid, g, pb.ions.size()));
+        }
+        ++passes;
+        iters  += rn.iterations;
+        jevals += rn.jacobianEvals;
+        if (!rn.converged)
+        {
+            r.gridFailure = "the re-solve on the moved grid stopped ("
+                          + rn.stopReason + ")";
+            break;
+        }
+        rn.offBandMax        = r.offBandMax;
+        rn.jacobianMismatch  = r.jacobianMismatch;
+        rn.continuationSteps = r.continuationSteps;
+        rn.directFailure     = r.directFailure;
+        rn.iterationsTotal   = r.iterationsTotal;
+        rn.jacobianEvals     = r.jacobianEvals;
+        rn.gridMove          = r.gridMove;
+        r = std::move(rn);
+    }
+    r.gridPasses       = passes;
+    r.iterationsTotal += iters;
+    r.jacobianEvals   += jevals;
+    return r;
+}
+
+//  The settings a solve runs on: the adaptive loop starts from the grid it
+//  is handed (a warm start's own grid, so a module carries its grid station
+//  to station) or, cold, from the declared one.
+PoreSettings onGrid(const PoreSettings& s, const std::vector<scalar>& g)
+{
+    PoreSettings t = s;
+    if (s.adaptive && g.size() == s.intervals + 1) t.nodes = g;
+    return t;
+}
+
 } // anonymous namespace
+
+// ---- the monitor and its equidistribution (THE ADAPTIVE GRID) ---------------
+std::vector<scalar> equidistributedGrid(const PoreSolution& r)
+{
+    const std::vector<scalar>& xi = r.grid;
+    const std::size_t N = xi.size() - 1;
+    std::vector<scalar> h(N);
+    for (std::size_t k = 0; k < N; ++k) h[k] = xi[k + 1] - xi[k];
+    const std::vector<scalar> M = monitorOf(xi, r.psi);
+    //  The cumulative integral of M, and its inverse at equal shares.
+    std::vector<scalar> W(N + 1, 0.0);
+    for (std::size_t k = 0; k < N; ++k) W[k + 1] = W[k] + M[k] * h[k];
+    std::vector<scalar> g(N + 1);
+    g.front() = 0.0; g.back() = 1.0;
+    std::size_t m = 0;
+    for (std::size_t j = 1; j < N; ++j)
+    {
+        const scalar t = W[N] * scalar(j) / scalar(N);
+        while (m + 1 < N && W[m + 1] <= t) ++m;
+        g[j] = xi[m] + (t - W[m]) / M[m];
+        g[j] = std::min(std::max(g[j], xi[m]), xi[m + 1]);
+    }
+    return g;
+}
+
+scalar gridMovement(const std::vector<scalar>& from, const std::vector<scalar>& to)
+{
+    //  max_j |xi_new,j - xi_old,j| over the mean of the two old cells that
+    //  meet at node j: how far a node moves in units of its own cell.
+    scalar mv = 0.0;
+    for (std::size_t j = 1; j + 1 < from.size(); ++j)
+    {
+        const scalar cell = 0.5 * (from[j + 1] - from[j - 1]);
+        mv = std::max(mv, std::abs(to[j] - from[j]) / cell);
+    }
+    return mv;
+}
 
 PoreSolution solve(const PoreProblem& pb, const PoreSettings& s,
                    const PoreSeed& seed)
@@ -869,25 +1064,31 @@ PoreSolution solve(const PoreProblem& pb, const PoreSettings& s,
         AdvisoryFrame trial("pore ENP from the seed", true);
         r = solveFrom(pb, s, seedVector(pb, C, seed.cPerm, seedFlux(pb, seed.Jv)));
     }
-    return finish(pb, s, std::move(r));
+    return adapt(pb, s, finish(pb, s, std::move(r)));
 }
 
 PoreSolution solve(const PoreProblem& pb, const PoreSettings& s,
                    const PoreSolution& warm)
 {
     validate(pb, s);
-    const Context C = contextOf(pb, s);
-    if (warm.x.size() != C.L.nv * (C.L.N + 1))
+    if (warm.x.size() != (2 * pb.ions.size() + 4) * (s.intervals + 1)
+        || warm.grid.size() != s.intervals + 1)
         throw std::runtime_error("pore ENP solver: a warm start from a"
-            " solution on a different grid or ion list");
+            " solution with a different node count or ion list");
+    //  Adaptive: the warm answer's own grid is the start (carried station
+    //  to station); fixed: the declared grid, the warm state carried onto it
+    //  (the identity when the two grids are the same).
+    const PoreSettings sw = onGrid(s, warm.grid);
+    const Context C = contextOf(pb, sw);
     //  The warm state carries its own J_v / J_ref; the reference of THIS
     //  problem may differ (the next station's dP): rescale the copies.
     PoreSolution r;
     {
         AdvisoryFrame trial("pore ENP warm start", true);
-        r = solveFrom(pb, s, withFlux(warm.x, C, warm.Jv));
+        r = solveFrom(pb, sw, withFlux(transferState(warm.x, warm.grid, C.grid,
+                                                     pb.ions.size()), C, warm.Jv));
     }
-    return finish(pb, s, std::move(r));
+    return adapt(pb, sw, finish(pb, sw, std::move(r)));
 }
 
 PoreSolution audit(const PoreProblem& pb, const PoreSettings& s,

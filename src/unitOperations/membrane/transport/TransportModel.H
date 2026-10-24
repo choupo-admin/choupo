@@ -111,9 +111,20 @@ struct PoreAccount
     scalar stiffnessMax      = 0.0; // migration flux / net flux
     scalar currentMax        = 0.0; // |sum z N| / sum |z N|
     scalar electroneutralMax = 0.0; // |sum z c + X_d| / (sum |z| c + |X_d|)
+    //  The adaptive grid (C144): whether it ran, the re-solves on a moved
+    //  grid, the largest final node movement (in cells) and the stations
+    //  whose grid did not settle below the tolerance.
+    bool   adaptive          = false;
+    int    gridPasses        = 0;
+    scalar gridMoveMax       = 0.0;
+    int    gridUnsettled     = 0;
 
     void merge(const PoreAccount& o)
     {
+        adaptive          = adaptive || o.adaptive;
+        gridPasses       += o.gridPasses;
+        gridMoveMax       = std::max(gridMoveMax, o.gridMoveMax);
+        gridUnsettled    += o.gridUnsettled;
         nodes             = std::max(nodes, o.nodes);
         solves           += o.solves;
         newtonMax         = std::max(newtonMax, o.newtonMax);

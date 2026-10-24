@@ -35,6 +35,13 @@
 //             (not the closed form) -- the robustness arm.
 //   WARM      a warm start from a neighbouring water flux against a cold
 //             solve at the same flux.
+//   ADAPTIVE  (C144) the SOLUTION-ADAPTIVE grid: an INTERIOR-FRONT pore
+//             (NanoFiltran's example at J_v 5e-5 m/s, its coefficients
+//             written here: a trace Na+ handing the fixed charge over to
+//             Mg2+) against a Richardson reference from 3200/6400 uniform
+//             intervals, uniform and adaptive at the same node count; the
+//             ambipolar limit on the adaptive grid; a warm start carrying
+//             its grid; every adaptive grid's ordering.
 //   REFUSED   problems the solver must refuse by name.
 #include "unitOperations/membrane/transport/PoreNernstPlanck.H"
 #include "solver/BlockTridiagonal.H"
@@ -345,6 +352,93 @@ int main()
                     cold.continuationSteps, d);
     }
 
+    // ---- ADAPTIVE (C144) ----------------------------------------------------
+    {
+        //  NanoFiltran's example at J_v = 5e-5 m/s with no polarisation, the
+        //  coefficients its DSPM-DE run hands the pore (Dechadilok-Deen,
+        //  Born on): Na+ 10, Cl- 50, Mg2+ 20 mol/m3 at the feed face,
+        //  X_d = -30 mol/m3.  The steepest curvature of psi is at xi ~ 0.39,
+        //  in the interior (docs/design/a-stiff-pore-solved-at-once.md 11.3).
+        const scalar fNa = 0.15459440778207306, fCl = 0.18535475375775634,
+                     fMg = 0.0041142034299427345;
+        PoreProblem front;
+        front.ions = { ion(+1, 1.2124269307343133e-4, 1.3478776073950525, fNa, 10.0),
+                       ion(-1, 3.3424559847156901e-4, 1.3174551248544035, fCl, 50.0),
+                       ion(+2, 1.7211905784263515e-6, 1.1444934703538183, fMg, 20.0) };
+        front.Xd = -30.0;
+        front.Jv = 5.0e-5;
+        auto monotone = [](const std::vector<scalar>& g)
+        {
+            bool ok = !g.empty() && g.front() == 0.0 && g.back() == 1.0;
+            for (std::size_t k = 0; ok && k + 1 < g.size(); ++k) ok = g[k + 1] > g[k];
+            return ok;
+        };
+        auto minCell = [](const std::vector<scalar>& g)
+        {
+            scalar h = 1.0;
+            for (std::size_t k = 0; k + 1 < g.size(); ++k) h = std::min(h, g[k + 1] - g[k]);
+            return h;
+        };
+        PoreSettings sr; sr.audit = false;
+        sr.intervals = 3200; const PoreSolution r1 = solve(front, sr, crudeSeed(front));
+        sr.intervals = 6400; const PoreSolution r2 = solve(front, sr, crudeSeed(front));
+        std::vector<scalar> ref(r2.cPerm.size());
+        for (std::size_t i = 0; i < ref.size(); ++i)
+            ref[i] = (4.0 * r2.cPerm[i] - r1.cPerm[i]) / 3.0;
+        auto err = [&](const PoreSolution& r)
+        {
+            scalar e = 0.0;
+            for (std::size_t i = 0; i < ref.size(); ++i)
+                e = std::max(e, std::abs(r.cPerm[i] / ref[i] - 1.0));
+            return e;
+        };
+        std::printf("adaptiveRef conv %d %d\n", r1.converged ? 1 : 0, r2.converged ? 1 : 0);
+        for (std::size_t N : {50, 100, 200})
+        {
+            PoreSettings su; su.intervals = N; su.audit = false;
+            const PoreSolution ru = solve(front, su, crudeSeed(front));
+            PoreSettings sa = su; sa.adaptive = true;
+            const PoreSolution ra = solve(front, sa, crudeSeed(front));
+            std::printf("adaptiveFront N %zu conv %d %d uniform %.6e adaptive %.6e passes %d"
+                        " settled %d move %.6e monotone %d minCell %.6e res %.6e\n",
+                        N, ru.converged ? 1 : 0, ra.converged ? 1 : 0, err(ru), err(ra),
+                        ra.gridPasses, ra.gridSettled ? 1 : 0, ra.gridMove,
+                        monotone(ra.grid) ? 1 : 0, minCell(ra.grid), ra.residual);
+            if (N == 100)
+            {
+                //  THE CARRY: a module hands the next station the last
+                //  answer, its grid with it.
+                PoreProblem near = front; near.Jv = 4.8e-5;
+                const PoreSolution rn = solve(near, sa, crudeSeed(near));
+                const PoreSolution rw = solve(front, sa, rn);
+                scalar d = 0.0;
+                for (std::size_t i = 0; i < rw.cPerm.size(); ++i)
+                    d = std::max(d, std::abs(rw.cPerm[i] / ra.cPerm[i] - 1.0));
+                std::printf("adaptiveCarry conv %d passesWarm %d passesCold %d settled %d"
+                            " monotone %d err %.6e maxRelDiff %.6e\n",
+                            rw.converged ? 1 : 0, rw.gridPasses, ra.gridPasses,
+                            rw.gridSettled ? 1 : 0, monotone(rw.grid) ? 1 : 0, err(rw), d);
+            }
+        }
+        //  The ambipolar limit on the adaptive grid (its curvature is the
+        //  ambipolar profile's own): the exact answer, and the uniform error
+        //  beside it at the same node count.
+        for (scalar Jv : {2.0e-4, 2.0e-3, 2.0e-1})
+        {
+            PoreProblem pb;
+            pb.ions = { ion(+1, Pp, Kp, Fp, gcw), ion(-1, Pm, Km, Fm, gcw) };
+            pb.Xd = 0.0; pb.Jv = Jv;
+            PoreSettings su; su.intervals = 100; su.audit = false;
+            PoreSettings sa = su; sa.adaptive = true;
+            const PoreSolution ru = solve(pb, su, crudeSeed(pb));
+            const PoreSolution ra = solve(pb, sa, crudeSeed(pb));
+            std::printf("adaptiveAnalytic %.3e conv %d settled %d monotone %d uniform %.15e"
+                        " adaptive %.15e %.15e\n", Jv, ra.converged ? 1 : 0,
+                        ra.gridSettled ? 1 : 0, monotone(ra.grid) ? 1 : 0, ru.cPerm[0],
+                        ra.cPerm[0], ra.cPerm[1]);
+        }
+    }
+
     // ---- REFUSED ------------------------------------------------------------
     {
         PoreProblem pb;
@@ -357,6 +451,16 @@ int main()
         pb.ions = { ion(+1, 1e-3, 1.1, 0.2, 5.0), ion(-1, 1e-3, 1.1, 0.2, 0.0) };
         try { solve(pb, s, crudeSeed(pb)); std::printf("ACCEPTED absent-ion\n"); }
         catch (const std::exception& e) { std::printf("REFUSED absent-ion: %s\n", e.what()); }
+
+        //  (C144) an explicit grid that is not one, and an adaptive grid
+        //  with no tolerance
+        pb.ions = { ion(+1, 1e-3, 1.1, 0.2, 5.0), ion(-1, 1e-3, 1.1, 0.2, 5.0) };
+        PoreSettings sg; sg.intervals = 4; sg.nodes = { 0.0, 0.3, 0.2, 0.6, 1.0 };
+        try { solve(pb, sg, crudeSeed(pb)); std::printf("ACCEPTED bad-grid\n"); }
+        catch (const std::exception& e) { std::printf("REFUSED bad-grid: %s\n", e.what()); }
+        PoreSettings st; st.intervals = 50; st.adaptive = true; st.gridTolerance = 0.0;
+        try { solve(pb, st, crudeSeed(pb)); std::printf("ACCEPTED no-tolerance\n"); }
+        catch (const std::exception& e) { std::printf("REFUSED no-tolerance: %s\n", e.what()); }
     }
     return 0;
 }

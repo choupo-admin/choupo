@@ -180,6 +180,7 @@ struct Ion
 
 // ---------------------------------------------------------------------------
 //  `transportParameters { poreSolver { method <word>; nodes <n>;
+//  grid <word>; grading <beta>; gridTolerance <cells>; gridPasses <n>;
 //  wallClosure <word>; } ... }`.  Absent (the block, or `poreSolver` in it),
 //  the pore is SOLVED -- `method finiteDifference; nodes 101; wallClosure
 //  porePermeate;`, the stated defaults since 2026-10-24 (DEV.md 4c C141),
@@ -197,8 +198,9 @@ void DSPM_DE::readParameters(const DictPtr& params)
             && k != "bulkDielectric")
             throw std::runtime_error(ctx + " declares `" + k + "`, which this"
                 " law does not read.  DSPM-DE reads `poreSolver { method"
-                " finiteDifference; nodes <n>; wallClosure"
-                " porePermeate | solutionDiffusion; }`, `hindrance`,"
+                " finiteDifference; nodes <n>; grid uniform | graded |"
+                " adaptive; wallClosure porePermeate | solutionDiffusion; }`,"
+                " `hindrance`,"
                 " `activity` and `bulkDielectric` there.");
 
     //  The declared model choices (DSPM_DE.H, "DECLARED CHOICES").  Each
@@ -251,10 +253,12 @@ void DSPM_DE::readParameters(const DictPtr& params)
         return;                   // the solved pore, every stated default
     const auto ps = params->subDict("poreSolver");
     for (const auto& k : ps->keys())
-        if (k != "method" && k != "nodes" && k != "grading" && k != "wallClosure")
+        if (k != "method" && k != "nodes" && k != "grading" && k != "wallClosure"
+            && k != "grid" && k != "gridTolerance" && k != "gridPasses")
             throw std::runtime_error(ctx + ".poreSolver declares `" + k
                 + "`, which the pore solver does not read (it reads `method`,"
-                  " `nodes`, `grading` and `wallClosure`).");
+                  " `nodes`, `grid`, `grading`, `gridTolerance`, `gridPasses`"
+                  " and `wallClosure`).");
     if (ps->found("method"))
     {
         const std::string method = ps->lookupWord("method");
@@ -318,6 +322,104 @@ void DSPM_DE::readParameters(const DictPtr& params)
         poreGrading_      = g;
         gradingDefaulted_ = false;
     }
+    //  THE GRID (DEV.md 4c C144): `uniform`, `graded` (the tanh map of
+    //  `grading`) or `adaptive` (equidistributing the monitor of the solved
+    //  profile, PoreNernstPlanck.H "THE ADAPTIVE GRID").  A declaration that
+    //  contradicts itself refuses by name rather than one key silently
+    //  winning: `grading` on a uniform or an adaptive grid, `graded` with
+    //  no grading, and the adaptive grid's own keys on a fixed one.
+    if (ps->found("grid"))
+    {
+        const std::string w = ps->lookupWord("grid");
+        const std::vector<std::string> acc = { "uniform", "graded", "adaptive" };
+        if (std::find(acc.begin(), acc.end(), w) == acc.end())
+            throw std::runtime_error(registryRefusal::message(
+                "DSPM-DE pore solver grid", w, acc, "Accepted"));
+        gridKind_ = (w == "adaptive") ? GridKind::Adaptive
+                  : (w == "graded")   ? GridKind::Graded : GridKind::Uniform;
+        gridDefaulted_ = false;
+        if (gridKind_ != GridKind::Graded && ps->found("grading"))
+            throw std::runtime_error(ctx + ".poreSolver declares `grid " + w
+                + ";` and `grading`: a grading is the beta of the tanh map of a"
+                  " `graded` grid.  Drop `grading`, or say `grid graded;`.");
+        if (gridKind_ == GridKind::Graded && !(poreGrading_ > 0.0))
+            throw std::runtime_error(ctx + ".poreSolver declares `grid graded;`"
+                " with no `grading` above 0: declare the beta of the tanh map"
+                " (`grading <beta>;`, 0 < beta <= 6).");
+    }
+    else if (ps->found("grading"))
+    {
+        //  `grading` alone (C142's grammar): a graded grid; `grading 0` is
+        //  the uniform one.
+        gridKind_      = poreGrading_ > 0.0 ? GridKind::Graded : GridKind::Uniform;
+        gridDefaulted_ = false;
+    }
+    if (ps->found("gridTolerance") || ps->found("gridPasses"))
+    {
+        if (gridKind_ != GridKind::Adaptive)
+            throw std::runtime_error(ctx + ".poreSolver declares `"
+                + std::string(ps->found("gridTolerance") ? "gridTolerance" : "gridPasses")
+                + "`, which only an adaptive grid reads (`grid adaptive;`).");
+        if (ps->found("gridTolerance"))
+        {
+            const scalar t = ps->lookupScalar("gridTolerance");
+            if (!(t > 0.0) || !(t <= 1.0))
+                throw std::runtime_error(ctx + ".poreSolver `gridTolerance` is the"
+                    " largest node movement accepted as settled, in units of the"
+                    " node's own cell, above 0 and at most 1 (it reads "
+                    + std::to_string(t) + ")");
+            gridTolerance_ = t;
+            gridTolDefaulted_ = false;
+        }
+        if (ps->found("gridPasses"))
+        {
+            const scalar n = ps->lookupScalar("gridPasses");
+            if (!(n >= 1.0) || n != std::floor(n) || n > 100.0)
+                throw std::runtime_error(ctx + ".poreSolver `gridPasses` is the"
+                    " most re-solves on a moved grid per station, a whole number"
+                    " from 1 to 100 (it reads " + std::to_string(n) + ")");
+            gridPasses_ = int(n);
+            gridPassesDefaulted_ = false;
+        }
+    }
+}
+
+// ---------------------------------------------------------------------------
+//  The grid, in the words the banner prints (declared or the stated default).
+std::string DSPM_DE::gridWords() const
+{
+    std::ostringstream w;
+    w << std::setprecision(3);
+    const char* how = gridDefaulted_ ? "the stated default" : "declared";
+    switch (gridKind_)
+    {
+    case GridKind::Uniform:
+        w << "a uniform grid (" << how << ")";
+        break;
+    case GridKind::Graded:
+        w << "a grid graded toward both faces (tanh, beta " << poreGrading_
+          << ", " << how << ")";
+        break;
+    case GridKind::Adaptive:
+        w << "a SOLUTION-ADAPTIVE grid (" << how << "; the nodes equidistribute"
+             " the monitor |psi''|^(1/3) + its mean -- the curvature of the"
+             " solved potential, what the fitted flux leaves out -- re-solved"
+             " until no node moves by more than "
+          << gridTolerance_ << " of its cell"
+          << (gridTolDefaulted_ ? " (stated default; declare `gridTolerance`)" : "")
+          << ", at most " << gridPasses_ << " re-solves per station"
+          << (gridPassesDefaulted_ ? " (stated default; declare `gridPasses`)" : "")
+          << ", the grid carried station to station)";
+        break;
+    }
+    return w.str();
+}
+
+scalar DSPM_DE::smallestCell(const std::vector<scalar>& g)
+{
+    scalar h = 1.0;
+    for (std::size_t k = 0; k + 1 < g.size(); ++k) h = std::min(h, g[k + 1] - g[k]);
+    return h;
 }
 
 // ---------------------------------------------------------------------------
@@ -548,7 +650,10 @@ TransportSolution DSPM_DE::localFluxes(const TransportContext& ctx) const
 
     pore::PoreSettings settings;
     settings.intervals = poreNodes_ - 1;
-    settings.grading   = poreGrading_;
+    settings.grading   = gridKind_ == GridKind::Graded ? poreGrading_ : 0.0;
+    settings.adaptive  = gridKind_ == GridKind::Adaptive;
+    settings.gridTolerance = gridTolerance_;
+    settings.gridPasses    = gridPasses_;
     //  THE AUDIT (the declared structure and the analytic Jacobian against
     //  a dense finite-difference one) is taken ONCE per unit, on an 11-node
     //  copy of the first station: both are properties of the code, not of
@@ -669,10 +774,8 @@ TransportSolution DSPM_DE::localFluxes(const TransportContext& ctx) const
              " extended Nernst-Planck equations on " << poreNodes_
           << " nodes across the pore" << (nodesDefaulted_
               ? " (stated default; declare `nodes`)" : "")
-          << ", " << (poreGrading_ > 0.0 ? "graded toward both faces (tanh, beta "
-                                          : "uniform (grading ")
-          << poreGrading_ << (gradingDefaulted_ ? ", the stated default" : ", declared")
-          << "), Scharfetter-Gummel fluxes, electroneutrality at every node and"
+          << ", " << gridWords()
+          << ", Scharfetter-Gummel fluxes, electroneutrality at every node and"
              " zero current, the wall closed with "
           << (wallClosure_ == WallClosure::PorePermeate ? "this pore's own permeate"
                                                         : "the salts' solution-diffusion B_s")
@@ -693,7 +796,14 @@ TransportSolution DSPM_DE::localFluxes(const TransportContext& ctx) const
           << audited.offBandMax << ") and the analytic Jacobian against finite"
              " differences " << audited.jacobianMismatch
           << " (of each row's largest entry); stiffness (migration / net flux) = "
-          << sol.stiffnessRatio << "\n";
+          << sol.stiffnessRatio;
+        if (settings.adaptive)
+            b << "; the adaptive grid took " << sol.gridPasses << " re-solves"
+              << (sol.gridSettled ? " and settled" : " and did NOT settle")
+              << " (node movement " << sol.gridMove << " of a cell), smallest"
+                 " cell " << smallestCell(sol.grid) << " against the uniform "
+              << 1.0 / scalar(poreNodes_ - 1);
+        b << "\n";
         std::cout << b.str();
     }
     if (sol.continuationSteps > 0 && !continuationSaid_)
@@ -728,6 +838,26 @@ TransportSolution DSPM_DE::localFluxes(const TransportContext& ctx) const
     acc.stiffnessMax      = sol.stiffnessRatio;
     acc.currentMax        = sol.currentMax;
     acc.electroneutralMax = sol.electroneutralMax;
+    acc.adaptive          = settings.adaptive;
+    acc.gridPasses        = sol.gridPasses;
+    acc.gridMoveMax       = settings.adaptive ? sol.gridMove : 0.0;
+    acc.gridUnsettled     = (settings.adaptive && !sol.gridSettled) ? 1 : 0;
+    if (settings.adaptive && !sol.gridSettled && !gridUnsettledSaid_)
+    {
+        gridUnsettledSaid_ = true;
+        std::ostringstream m;
+        m << std::setprecision(3)
+          << "the adaptive pore grid did not settle at a station: its nodes"
+             " would still move by " << sol.gridMove << " of a cell (tolerance "
+          << gridTolerance_ << ") after " << sol.gridPasses << " re-solves"
+          << (sol.gridFailure.empty() ? std::string()
+                                      : "; " + sol.gridFailure)
+          << ".  The answer published there is the last converged one, on its"
+             " own grid; every such station is counted in the module's pore"
+             " summary.";
+        AdvisoryLog::instance().add("solver", "warning", "DSPM-DE pore", m.str());
+        std::cout << "  [DSPM-DE] " << m.str() << "\n";
+    }
 
     // ---- Collapse ions back to per-salt wall / permeate / flux -------------
     // Per salt: wall conc = max over its ions of (ion wall conc / stoich); the

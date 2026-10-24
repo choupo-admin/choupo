@@ -1188,7 +1188,7 @@ each channel node):
   transportParameters
   {
       poreSolver { method finiteDifference; nodes 101;   // the defaults
-                   grading 0;                           // uniform (default)
+                   grid uniform;                        // default; or graded, adaptive
                    wallClosure porePermeate; }          // or solutionDiffusion
       hindrance  DechadilokDeen2006;             // the default, and the only word
       activity   bulkOverPoreDavies;             // default wallDavies; or ideal
@@ -1199,9 +1199,15 @@ each channel node):
   `nodes` counts grid points, faces included (default 101, announced; the
   corpus cases' grid error there is 1e-8..1e-7, but an interior
   ion-exchange front — a trace counter-ion handing over to a divalent one —
-  needs some 400 nodes for 1e-4); `grading` (0..6, default 0) is the beta of
-  a tanh map toward both faces, measured NOT to help on any case in the
-  corpus.  The run prints the node count, the first station's Newton
+  needs some 400 nodes for 1e-4); `grid` is `uniform` (default), `graded`
+  (with `grading` 0 < beta <= 6, the beta of a tanh map toward both faces,
+  measured NOT to help on any case in the corpus) or `adaptive` (the nodes
+  equidistribute the curvature of the solved potential, re-solved until no
+  node moves by more than `gridTolerance` of its cell, default 0.1, in at
+  most `gridPasses` re-solves per station, default 8; measured at 0.76x the
+  uniform error on an interior front and the same error on the corpus
+  cases, so it is an option, not the default; the run says how many
+  re-solves it took and whether every station settled).  The run prints the node count, the first station's Newton
   iterations and residual, the structure and the analytic Jacobian audited
   against finite differences on an 11-node copy of that station, and a
   per-unit pore summary.  A station whose osmotic pressure at vanishing flux

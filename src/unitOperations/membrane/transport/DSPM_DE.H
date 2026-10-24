@@ -76,8 +76,8 @@ Description
 
       `poreSolver` absent, or `transportParameters { poreSolver { method
       finiteDifference; nodes <n>; } }`: (1)-(5) SOLVED, all at once -- the
-      ENP discretised on n nodes across the pore, graded toward both faces
-      (the default node count stated and announced when undeclared), (4) at
+      ENP discretised on n nodes across the pore (the default node count
+      stated and announced when undeclared; the grid below), (4) at
       every node, (5), the partitions (2)-(3) at both faces, and -- since
       C142 (2026-10-24) -- the wall and the water flux in the SAME Newton:
       one Newton per station on the declared block-tridiagonal structure
@@ -158,6 +158,24 @@ Description
           solution-diffusion B_s, the closure the retired closed form had --
           the film then carries a solute flux the pore does not, and
           membrane20 shows what that costs in rejection.
+      poreSolver { grid uniform | graded | adaptive; grading <beta>;
+                   gridTolerance <cells>; gridPasses <n>; }
+        uniform (the default, announced as such): equal cells.
+        graded: the tanh map toward both faces of `grading` (0 < beta <= 6;
+          `grading` alone, C142's grammar, means graded, and `grading 0`
+          uniform).  Measured not to help (the steep part is interior).
+        adaptive (C144): the nodes equidistribute the curvature of the
+          solved potential (PoreNernstPlanck.H, THE ADAPTIVE GRID), re-solved
+          until no node moves by more than `gridTolerance` of its own cell
+          (default 0.1, announced) in at most `gridPasses` re-solves per
+          station (default 8, announced); the grid is carried station to
+          station.  Measured (docs/design/a-stiff-pore-solved-at-once.md
+          section 12) at 0.76x the uniform error on an interior front and
+          the same error on the corpus cases -- why it is a declared option
+          and not the default.
+        A contradiction refuses by name: `grading` on a uniform or an
+        adaptive grid, `graded` with no grading, `gridTolerance` or
+        `gridPasses` on a fixed grid.
 
     The classic NF SIGNATURE the tutorials demonstrate falls out of (2)-(4):
     a divalent co-ion (e.g. SO4 against a negative X_d) is excluded far more
@@ -240,6 +258,17 @@ private:
     bool        nodesDefaulted_   = true;
     scalar      poreGrading_      = 0.0;     // beta of the tanh map toward both faces
     bool        gradingDefaulted_ = true;
+    //  THE GRID (C144): uniform, graded (tanh, `grading`) or adaptive.
+    enum class GridKind { Uniform, Graded, Adaptive };
+    GridKind    gridKind_         = GridKind::Uniform;
+    bool        gridDefaulted_    = true;
+    scalar      gridTolerance_    = 0.1;     // node movement, in cells
+    bool        gridTolDefaulted_ = true;
+    int         gridPasses_       = 8;       // re-solves per station at most
+    bool        gridPassesDefaulted_ = true;
+    mutable bool gridUnsettledSaid_ = false; // an unsettled grid, said once
+    std::string gridWords() const;
+    static scalar smallestCell(const std::vector<scalar>& g);
     mutable bool poreBanner_      = false;   // first solve announced once
     mutable bool continuationSaid_ = false;  // first continuation announced once
     mutable bool noFluxSaid_      = false;   // a station with no water flux, said once
