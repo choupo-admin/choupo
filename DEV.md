@@ -1501,6 +1501,31 @@ accepts today, and that is a policy call.
 > final; }` layout draws what the steady flowsheet and the sizing pass
 > already hold.
 
+> **C149. THE RESULTS A RESEARCHER RECEIVES: PLOTS FIRST, AND FITTING A
+> MEMBRANE TO HIS OWN DATA (Vitor, 2026-10-24, with screenshots of the live
+> app on polarisation01: "Tu achas que isto e um bom GUI para acompanhar os
+> resultados da simulacao?!  Nao ha um postProcessDict a selecionar o que e
+> representativo para esta analise?!  Nao ha um grafico! ... Eu tenho um
+> investigador que pediu o Nanofiltran e eu quero lhe dar isto!  Ele pode
+> estar interessado em criar uma simulacao para simular um conjunto de
+> resultados experimentais e ajustar parametros!  Isto e AI SLOP!").**
+> Measured: a props case's Results view is a flat list of KPI keys
+> (Gamma_Cl_r1 ... r10, D_Na, ...) with no plot; no outer driver estimates
+> parameters of a membrane model (OuterDriver.cpp registers sweep,
+> gridSweep, fitBinaryPair -- retired, paretoSweep, optimization,
+> designSpec); `fitParameters` (src/propertyOps/FitParameters.cpp) fits
+> PAIR parameters with a held-out verdict.  (1) Folded into C147 at once:
+> the dictionary is `system/postProcessDict`, a case that has one OPENS its
+> results on its plots and tables, per-row KPIs are published as series, and
+> polarisation01 gets its Table 1 / Fig. 7 view.  (2) NEW: a membrane
+> characterisation fit -- the DSPM-DE (and SDEM / solution-diffusion)
+> parameters (r_p, X_d, dx/A_k, eps_p; per-ion P_i) estimated from a
+> researcher's dataset of fluxes and rejections, on the fitParameters
+> discipline (evidence partition, a held-out set, a band declared before
+> the fit, identifiability, a verdict), shown as fitted curves over the
+> data in the same post-processing view.  Dispatched after C147 (shared
+> src/propertyOps and the Plot workspace).
+
 > **C147. PLOTS A CASE ASKS FOR: A POST-PROCESSING DICTIONARY (Vitor,
 > 2026-10-24: "Era bom ter um dicionario onde se pudessem pedir plots que
 > o utilizador gostasse de ter e que sejam pertinentes para pos
