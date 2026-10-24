@@ -101,6 +101,21 @@ describe("the lesson's shape", () => {
       + "makes the Newton bigger");
     expect(allText()).not.toMatch(/M\s*\+\s*2/);
   });
+
+  it("says the liquid witness's first law closes only while the gate says so", () => {
+    //  Until 2026-10-20 (DEV.md 4c C112 point 6) this limit said gibbs07's
+    //  energy balance did NOT close, and it was true: the reactor priced its
+    //  two-phase feed as a vapour.  The claim now follows the gate's own
+    //  ledger -- a case pinned in check_energy_closure.KNOWN_OPEN is a plant
+    //  that does not close, so the page may not say it does.
+    const gate = read("bin/curate/check_energy_closure.py");
+    const pinned = gate.match(/^KNOWN_OPEN = \{([\s\S]*?)^\}/m)?.[1] ?? "";
+    expect(gate).toMatch(/UNIT_DUTY_IS_DH = \{[^}]*"gibbsReactor"/);
+    expect(pinned).not.toContain(EP_LIQUID_WITNESS);
+    const limit = EP_LIMITS.find((l) => l.id === "equilibrium-not-duty");
+    expect(prose(limit?.body ?? "")).toContain("its first law closes");
+    expect(allText()).not.toMatch(/does not close/);
+  });
 });
 
 describe("every number the prose quotes is the engine's own", () => {

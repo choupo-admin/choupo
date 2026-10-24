@@ -135,6 +135,19 @@ list of what that plant exercises.  Record:
   third reader — that header's own warning is "a rule enforced by repetition
   is a rule with an arity of three".  Remedy measured, not guessed: the R-E5
   pair takes it to 99.86 % and moves 9 rows across 3 cases.
+  **CLOSED 2026-10-20 (DEV.md 4c C112 point 6), and the bullet above stayed
+  open for six weeks while the seam it names was pinned in
+  `check_energy_closure.KNOWN_OPEN` at 150.73 %.**  Both ends of the duty go
+  through `flashState::priceState` now — the feed at its OWN pressure and in
+  the state it carries (`GibbsReactor::feedEnthalpy_W`), each outlet
+  unpinned as the report reads it — so the unit and the report cannot part.
+  The remaining 0.14 % of the "R-E5 pair" was the OUTLETS: the report
+  re-flashes a gas leaving exactly at its dew point, and priced on its
+  carried label it is 0.0031 kW away.  gibbs07/08/09 close at 0.0000 kW; the
+  reactor is HEATED (+2.2519 kW, steamLP), not cooled, because the feed it
+  is handed is 57 % liquid water and the outlet carries more vapour than
+  the inlet.  The isothermal `gibbsReactor` joined `check_energy_closure`'s
+  unit arm the same day.
 * **`DistillationColumn`.**  `column01_benzene_toluene`: reboiler +1279.30 kW,
   condenser −1281.04 kW, net −1.74 kW declared, against a dH of −633.69 kW.
   **631.96 kW unaccounted, 24.68 % of the energy the column exchanges.**  The
