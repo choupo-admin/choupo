@@ -1561,6 +1561,24 @@ accepts today, and that is a policy call.
 > oppositions (nine months after grant) as cheap counter-moves; cross-
 > licensing, patent pools and standard-essential patents; patent
 > assertion entities; employee-invention rules.
+> **Second addendum (Vitor, 2026-10-24), a worked case for the tool:
+> "imagina que eu patenteio uma turbina de aviao ... as blades derretem
+> ... Essa empresa poe blades refrigerantes e a turbina passa a
+> funcionar.  A empresa original continua a ter direito a primeira
+> patente?"**  The teaching points (to check against primary sources):
+> an office does not build the invention, so a patent that does not work
+> may be GRANTED and is presumed valid until challenged; it is open to
+> revocation for INSUFFICIENT DISCLOSURE (EPC Art. 83 / 35 USC 112
+> enablement) where the skilled person cannot carry it out without undue
+> burden -- but NOT if the missing piece is common general knowledge
+> (blade cooling in a gas turbine is); the improver may patent the
+> improvement if it is new and inventive, and the two patents then BLOCK
+> each other (the improver infringes the first claim -- adding a feature
+> does not escape it -- and the original may not use the cooling) ->
+> cross-licence, or a compulsory licence for a dependent patent (TRIPS
+> Art. 31(l)).  Historical case: the Wright brothers' wing-warping patent
+> against Curtiss's ailerons, settled only by the 1917 US aircraft patent
+> pool; Watt's patent holding back high-pressure steam until 1800.
 
 > **C139. AN EDUTOOL ON THE ECONOMICS OF THE CHEMICAL NETWORK: BASE
 > CHEMICALS, INTERMEDIATES, INDUSTRIAL PARKS AND INTERNATIONAL TRADE
