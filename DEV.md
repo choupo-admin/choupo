@@ -1501,6 +1501,25 @@ accepts today, and that is a policy call.
 > final; }` layout draws what the steady flowsheet and the sizing pass
 > already hold.
 
+> **C145. THE NANOFILTRAN PAPER AS A COMPARISON CASE (Vitor, 2026-10-24,
+> uploading Geraldes & Alves, J. Membr. Sci. 321 (2008) 172-182: "Tens aqui
+> o paper original para criar um caso de comparacao").**  The paper (kept
+> out of the tree: publisher copyright; its numbers are cited) carries two
+> comparisons: (1) the STIFF case of its section 4.2 -- Na+/Mg2+/Cl-
+> 10/20/50 mol/m3, J_v 5e-5 m/s, dx_e 2.5 um, r_p 0.40 nm, c_X -30
+> mol/m3, eps_p 60, Davies activities, no polarisation -- with Table 2, a
+> grid study (permeate Na+, Mg2+, Cl-, the potential difference across the
+> membrane and the iteration count, N = 10..350) and Fig. 4's profiles;
+> (2) the VERIFICATION against Bowen & Mohammad, AIChE J. 44 (1998) 1799:
+> Na+/Cl-/a trivalent dye on the CA30 membrane (r_p 0.63 nm, dx 6.2 um,
+> c_X from the paper's Eq. 43, J_v from Eqs. 44-45, the stirred cell's
+> Sh = 0.23 Re^0.567 Sc^0.33, ideal activities, no dielectric exclusion)
+> with the measured rejections of Fig. 3 -- the first comparison of this
+> solver with EXPERIMENT.  Known before dispatch: NanoFiltran's Davies
+> applies exp() to a log10 constant (C138), so the published Table 2 may
+> carry that factor; the case must say which Davies each number uses.
+> Status: dispatched 2026-10-24.
+
 > **C144. A SOLUTION-ADAPTIVE GRID FOR THE DSPM-DE PORE (Vitor,
 > 2026-10-24: "Faz a malha adaptativa, porque eu preciso de enviar o link
 > para um cientista que me pediu").**  C142 measured that a grid graded
