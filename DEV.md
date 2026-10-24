@@ -1581,6 +1581,20 @@ accepts today, and that is a policy call.
 > source gives those; (3) generic standard elements 2.5/4/8/16 in as
 > records labelled estimated BESIDE real data-sheet elements, the hand
 > table in SpiralWoundModule.cpp retired.  Dispatched the same day.
+> LANDED 2026-10-24: `kind feedSpacer` records from Schock & Miquel's
+> Tab. 1 (primary read; d_h by their Eq. 17, which replaces 2 h eps
+> wherever a spacer record is named -- 0.952 vs 1.371 mm on FT30),
+> Generic-2540/4040/8040/16040 records (the hand table retired),
+> `vessels` x `elements` per unit with per-element KPIs, the Re window
+> announced, witness `membrane21_two_stage_nf_array` (4:2, SDEM + the
+> Geraldes-Afonso film); no existing golden moved.  OPEN: cases that still
+> type channelHeight + spacerPorosity keep 2 h eps (announced; switching
+> moves every correlation-driven membrane golden); membrane16's re-seal
+> (7 rows) left; the 8040/16040 leaf counts are judgement.  Vitor's
+> follow-up the same day: the spiral module takes ANY membrane model --
+> solution-diffusion with B_i, SDEM, DSPM-DE, and a CONSTANT INTRINSIC
+> REJECTION R_int,i (his 2007 paper's own input, Eq. 1) which does not
+> exist yet; dispatched with a DSPM-DE twin of membrane21 and D(T).
 
 > **C145. THE NANOFILTRAN PAPER AS A COMPARISON CASE (Vitor, 2026-10-24,
 > uploading Geraldes & Alves, J. Membr. Sci. 321 (2008) 172-182: "Tens aqui
