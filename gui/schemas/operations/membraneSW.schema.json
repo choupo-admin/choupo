@@ -98,12 +98,12 @@
     "transportParameters": {
       "type": "object",
       "title": "Transport-law parameters",
-      "description": "Parameters a transport law reads for itself (the block batchDiafilter hands its law too).  `gelPolarisation` reads `gel { solute <gel-forming solute>; c_gel <kg/m3>; sieving { <solute> <S>; ... }; source \"...\"; }` -- S in [0, 1) for EVERY solute, and `source` says where c_g and S come from.  `DSPM-DE` reads `poreSolver { method closedForm | finiteDifference; nodes <n>; }` -- and nothing else (an unknown key refuses).",
+      "description": "Parameters a transport law reads for itself (the block batchDiafilter hands its law too).  `gelPolarisation` reads `gel { solute <gel-forming solute>; c_gel <kg/m3>; sieving { <solute> <S>; ... }; source \"...\"; }` -- S in [0, 1) for EVERY solute, and `source` says where c_g and S come from.  `DSPM-DE` reads `poreSolver { method closedForm | finiteDifference; nodes <n>; wallClosure solutionDiffusion | porePermeate; }`, `hindrance legacy | DechadilokDeen2006;`, `activity wallDavies | ideal | bulkOverPoreDavies;` and `bulkDielectric <eps>;` -- and nothing else (an unknown key or word refuses).",
       "properties": {
         "poreSolver": {
           "type": "object",
           "title": "DSPM-DE pore solver",
-          "description": "How DSPM-DE crosses the pore.  Absent = `closedForm` (the default: the pore is NOT solved -- feed-face Donnan, an electroneutral permeate, and each ion carried across alone by a closed-form transmission).  `finiteDifference` SOLVES the extended Nernst-Planck equations on `nodes` grid points across the pore (faces included), electroneutrality at every node and zero current, every node at once by Newton on the declared block-tridiagonal structure -- NanoFiltran's method (Geraldes & Alves 2008).  `nodes` defaults to 101, announced; it refuses with `closedForm`, and an unknown method word refuses.",
+          "description": "How DSPM-DE crosses the pore.  Absent = `closedForm` (the default: the pore is NOT solved -- feed-face Donnan, an electroneutral permeate, and each ion carried across alone by a closed-form transmission).  `finiteDifference` SOLVES the extended Nernst-Planck equations on `nodes` grid points across the pore (faces included), electroneutrality at every node and zero current, every node at once by Newton on the declared block-tridiagonal structure -- NanoFiltran's method (Geraldes & Alves 2008).  `nodes` defaults to 101, announced; it refuses with `closedForm`, and an unknown method word refuses.  `wallClosure` (finiteDifference only): `solutionDiffusion` (default) closes the wall with the salts' solution-diffusion B_s, as the closed form does; `porePermeate` closes it with the solved pore's own permeate, the wall and the pore converged together by Newton (NanoFiltran solves them in one matrix).",
           "properties": {
             "method": {
               "type": "string",
@@ -118,12 +118,46 @@
               "title": "Grid nodes across the pore",
               "minimum": 3,
               "unit": "-"
+            },
+            "wallClosure": {
+              "type": "string",
+              "title": "Wall closure",
+              "enum": [
+                "solutionDiffusion",
+                "porePermeate"
+              ]
             }
           },
           "required": [
             "method"
           ],
           "additionalProperties": false
+        },
+        "hindrance": {
+          "type": "string",
+          "title": "DSPM-DE hindrance factors",
+          "description": "Absent = `legacy`: K_d is the Dechadilok-Deen polynomial H itself (= Phi K_d, so the steric partition is counted twice in diffusion -- recorded, not changed) and K_c the Bowen-Welfoot centreline form.  `DechadilokDeen2006`: K_d = H/Phi (lambda <= 0.95; 0.984((1-lambda)/lambda)^2.5 above) and K_c their rational fit -- the cross-section-averaged pair (Ind. Eng. Chem. Res. 45 (2006) 6953).",
+          "enum": [
+            "legacy",
+            "DechadilokDeen2006"
+          ]
+        },
+        "activity": {
+          "type": "string",
+          "title": "DSPM-DE activity treatment",
+          "description": "Absent = `wallDavies`: Davies at the bulk ionic strength on the feed face, the permeate ideal.  `ideal`: every activity coefficient 1.  `bulkOverPoreDavies`: gamma_bulk/gamma_pore at BOTH faces, Davies (log10) with A(eps, T) = 1.82483e6 (eps T)^-1.5 -- eps_b on the solution side, eps_p on the pore side, the pore gammas at the pore's end nodes; requires `poreSolver { method finiteDifference; }`.",
+          "enum": [
+            "wallDavies",
+            "ideal",
+            "bulkOverPoreDavies"
+          ]
+        },
+        "bulkDielectric": {
+          "type": "number",
+          "title": "Bulk dielectric constant",
+          "description": "The solution's relative dielectric constant in the Born term and in A(eps_b).  Absent = SolventProperties::epsWater(T) (78.45 at 25 C).",
+          "minimum": 1,
+          "unit": "-"
         }
       }
     },

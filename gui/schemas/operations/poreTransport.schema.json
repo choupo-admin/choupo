@@ -1,0 +1,219 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://choupo.org/schemas/operations/poreTransport.schema.json",
+  "title": "poreTransport operation",
+  "description": "The PROPS BENCH of the DSPM-DE transport law at IMPOSED permeate fluxes: the same TransportModel the spiral-wound module marches, built through the same factory, the same `transportParameters` reader and the same wall kernel, handed J_v instead of closing J_w = A_w (dP - dpi) -- the way NanoFiltran (Geraldes & Alves 2008) takes it.  Publishes per J_v point p and per ion species c_wall_<ion>_p<p>, c_perm_<ion>_p<p> (mol/m3), Rreal_<ion>_p<p> = 1 - c_perm/c_wall and Robs_<ion>_p<p> = 1 - c_perm/c_bulk, and permeateCharge_max.  Witness nanofiltran01_dspmde_reference; gate check_nanofiltran_reference holds it to NanoFiltran.  The film is built from the `polarisation {}` policy directly (not buildPolarisation), because the feed is declared as salts and DSPM-DE hands the kernel each ion's own z and D.",
+  "type": "object",
+  "properties": {
+    "T": {
+      "type": "number",
+      "exclusiveMinimum": 0,
+      "title": "Temperature",
+      "unit": "K"
+    },
+    "membrane": {
+      "type": "string",
+      "title": "Membrane record",
+      "description": "A membrane record (data/standards/assets or the case's constant/assets) carrying a poreModel {} block."
+    },
+    "transport": {
+      "type": "string",
+      "title": "Transport law",
+      "description": "Only `DSPM-DE` honours an imposed J_v; any other word refuses.  Absent = DSPM-DE.",
+      "enum": [
+        "DSPM-DE"
+      ]
+    },
+    "transportParameters": {
+      "type": "object",
+      "title": "Transport-law parameters",
+      "description": "Parameters a transport law reads for itself (the block batchDiafilter hands its law too).  `gelPolarisation` reads `gel { solute <gel-forming solute>; c_gel <kg/m3>; sieving { <solute> <S>; ... }; source \"...\"; }` -- S in [0, 1) for EVERY solute, and `source` says where c_g and S come from.  `DSPM-DE` reads `poreSolver { method closedForm | finiteDifference; nodes <n>; wallClosure solutionDiffusion | porePermeate; }`, `hindrance legacy | DechadilokDeen2006;`, `activity wallDavies | ideal | bulkOverPoreDavies;` and `bulkDielectric <eps>;` -- and nothing else (an unknown key or word refuses).",
+      "properties": {
+        "poreSolver": {
+          "type": "object",
+          "title": "DSPM-DE pore solver",
+          "description": "How DSPM-DE crosses the pore.  Absent = `closedForm` (the default: the pore is NOT solved -- feed-face Donnan, an electroneutral permeate, and each ion carried across alone by a closed-form transmission).  `finiteDifference` SOLVES the extended Nernst-Planck equations on `nodes` grid points across the pore (faces included), electroneutrality at every node and zero current, every node at once by Newton on the declared block-tridiagonal structure -- NanoFiltran's method (Geraldes & Alves 2008).  `nodes` defaults to 101, announced; it refuses with `closedForm`, and an unknown method word refuses.  `wallClosure` (finiteDifference only): `solutionDiffusion` (default) closes the wall with the salts' solution-diffusion B_s, as the closed form does; `porePermeate` closes it with the solved pore's own permeate, the wall and the pore converged together by Newton (NanoFiltran solves them in one matrix).",
+          "properties": {
+            "method": {
+              "type": "string",
+              "title": "Method",
+              "enum": [
+                "closedForm",
+                "finiteDifference"
+              ]
+            },
+            "nodes": {
+              "type": "integer",
+              "title": "Grid nodes across the pore",
+              "minimum": 3,
+              "unit": "-"
+            },
+            "wallClosure": {
+              "type": "string",
+              "title": "Wall closure",
+              "enum": [
+                "solutionDiffusion",
+                "porePermeate"
+              ]
+            }
+          },
+          "required": [
+            "method"
+          ],
+          "additionalProperties": false
+        },
+        "hindrance": {
+          "type": "string",
+          "title": "DSPM-DE hindrance factors",
+          "description": "Absent = `legacy`: K_d is the Dechadilok-Deen polynomial H itself (= Phi K_d, so the steric partition is counted twice in diffusion -- recorded, not changed) and K_c the Bowen-Welfoot centreline form.  `DechadilokDeen2006`: K_d = H/Phi (lambda <= 0.95; 0.984((1-lambda)/lambda)^2.5 above) and K_c their rational fit -- the cross-section-averaged pair (Ind. Eng. Chem. Res. 45 (2006) 6953).",
+          "enum": [
+            "legacy",
+            "DechadilokDeen2006"
+          ]
+        },
+        "activity": {
+          "type": "string",
+          "title": "DSPM-DE activity treatment",
+          "description": "Absent = `wallDavies`: Davies at the bulk ionic strength on the feed face, the permeate ideal.  `ideal`: every activity coefficient 1.  `bulkOverPoreDavies`: gamma_bulk/gamma_pore at BOTH faces, Davies (log10) with A(eps, T) = 1.82483e6 (eps T)^-1.5 -- eps_b on the solution side, eps_p on the pore side, the pore gammas at the pore's end nodes; requires `poreSolver { method finiteDifference; }`.",
+          "enum": [
+            "wallDavies",
+            "ideal",
+            "bulkOverPoreDavies"
+          ]
+        },
+        "bulkDielectric": {
+          "type": "number",
+          "title": "Bulk dielectric constant",
+          "description": "The solution's relative dielectric constant in the Born term and in A(eps_b).  Absent = SolventProperties::epsWater(T) (78.45 at 25 C).",
+          "minimum": 1,
+          "unit": "-"
+        }
+      }
+    },
+    "feedMolPerM3": {
+      "type": "object",
+      "title": "Feed salts [mol/m3]",
+      "description": "One entry per SALT component of the package (each with `dissociatesTo`), its bulk molar concentration in mol/m3; the law decomposes the salts into ions.",
+      "additionalProperties": {
+        "type": "number",
+        "exclusiveMinimum": 0
+      }
+    },
+    "J_v": {
+      "type": "array",
+      "title": "Imposed permeate fluxes",
+      "items": {
+        "type": "number",
+        "exclusiveMinimum": 0
+      },
+      "unit": "m/s"
+    },
+    "k_film": {
+      "type": "number",
+      "exclusiveMinimum": 0,
+      "title": "Constant film coefficient",
+      "description": "k for every ion, in place of `massTransfer {}` (NanoFiltran simulates \"no polarisation\" with 10 m/s).",
+      "unit": "m/s"
+    },
+    "massTransfer": {
+      "type": "object",
+      "title": "Film-coefficient correlation",
+      "description": "The cell's correlation, evaluated per ion on the ion's own D0. `StirredCell` (Sh = a (omega r^2/nu)^b Sc^c, k = Sh D/r; Bowen et al. 1997 defaults 0.23/0.567/0.33) needs `omega` and `radius`; `SchockMiquel` (a spacer channel) needs `velocity` and `hydraulicDiameter`. `viscosity` and `density` are REQUIRED (nu = mu/rho).",
+      "properties": {
+        "model": {
+          "type": "string",
+          "title": "Correlation name"
+        },
+        "omega": {
+          "type": "number",
+          "exclusiveMinimum": 0,
+          "title": "Stirrer angular speed",
+          "unit": "rad/s"
+        },
+        "radius": {
+          "type": "number",
+          "exclusiveMinimum": 0,
+          "title": "Stirred-cell radius",
+          "unit": "m"
+        },
+        "velocity": {
+          "type": "number",
+          "minimum": 0,
+          "title": "Crossflow velocity",
+          "unit": "m/s"
+        },
+        "hydraulicDiameter": {
+          "type": "number",
+          "minimum": 0,
+          "title": "Hydraulic diameter",
+          "unit": "m"
+        },
+        "viscosity": {
+          "type": "number",
+          "exclusiveMinimum": 0,
+          "title": "Feed viscosity",
+          "unit": "Pa.s"
+        },
+        "density": {
+          "type": "number",
+          "exclusiveMinimum": 0,
+          "title": "Feed density",
+          "unit": "kg/m3"
+        },
+        "a": {
+          "type": "number",
+          "title": "Correlation constant a",
+          "unit": "-"
+        },
+        "b": {
+          "type": "number",
+          "title": "Correlation exponent b (Re)",
+          "unit": "-"
+        },
+        "c": {
+          "type": "number",
+          "title": "Correlation exponent c (Sc)",
+          "unit": "-"
+        }
+      },
+      "required": [
+        "model",
+        "viscosity",
+        "density"
+      ],
+      "additionalProperties": false
+    },
+    "polarisation": {
+      "type": "object",
+      "title": "Polarisation policy",
+      "description": "The film's POLICY, one block whichever way k arrives (a correlation or a bare `k_film`); declaring these words inside massTransfer {} refuses. `suctionCorrection`: GeraldesAfonso2006 (Xi = phi + (1 + 0.26 phi^1.4)^-1.7), filmTheory (the default: Xi = phi + phi/(e^phi - 1)) or none. `ionCoupling`: electroneutral (the multi-ionic model of Geraldes & Afonso 2007 -- each ion's k on its own D0, one interface potential gradient fixed by electroneutrality at the wall; needs >= 2 charged solutes) or none (the default, announced on an ion-declared feed).",
+      "properties": {
+        "suctionCorrection": {
+          "type": "string",
+          "title": "Suction correction of k",
+          "enum": [
+            "GeraldesAfonso2006",
+            "filmTheory",
+            "none"
+          ]
+        },
+        "ionCoupling": {
+          "type": "string",
+          "title": "Interface coupling of the ions",
+          "enum": [
+            "electroneutral",
+            "none"
+          ]
+        }
+      },
+      "additionalProperties": false
+    }
+  },
+  "required": [
+    "T",
+    "membrane",
+    "feedMolPerM3",
+    "J_v"
+  ],
+  "additionalProperties": false
+}

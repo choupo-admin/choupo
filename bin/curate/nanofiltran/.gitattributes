@@ -1,0 +1,6 @@
+# NanoFiltran's files are kept BYTE FOR BYTE as their authors distributed
+# them: Fortran 77 fixed form with CRLF line ends, NANOFILTRAN.F in
+# Latin-1, and the tab-separated .XLS inputs (Latin-1, CRLF).  No end-of-line
+# or encoding conversion on checkout or commit, ever.
+*.F    -text
+*.XLS  -text

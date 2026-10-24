@@ -1,0 +1,52 @@
+SYSTEM IDENTIFICATION:	¤  Aqueous solution Na+/Mg2+/Cl-				
+!					
+"""§1-RUNNING MODE"""	1				"¤  1: System simulation ;2- Data fitting for estimation of membrane parameters"
+!					
+§2. NUMERICAL PARAMETERS  OF THE COMPUTER ALGORITHM					
+"""     Number discretization points"""	204				¤ The maximum value should be lower than 205. Increasing this value increases the computational time, but may facilitate the convergence.
+"""     Mesh expansion factor"""	1.0				¤  The mesh is refined in both membrane/solution interfaces. This parameters should be in the range between 1 and 2.
+"""     Under-relaxation factor"""	0.1				¤  This parameter should be in the range between 0 and 1. Reducing this value increases the running time and the converence rate, but increases the chance of solving the problem. A typical value is 0.1, but values as low as 0.01 may be required for very stiff systems.
+"""     Maximum number of iterations"""	4000				¤  Increasing this value increases may facilitate the convergence.
+"""     Monitoring interval"""	0				¤  This parameter controls the frequency of monitoring the convegence in the screen. If the parameter is zero, the monitoring function is disabled.
+"""     Maximum normalized residuals"""	1E-09				¤  If all the normalized residuals of the several sets of equations that are beeing solved are lower than this value, the convergence  was achived. The value should be positive and very close to zero. The value of 0.001 is acceptable for most problems.
+!					
+§3. MEMBRANE PHYSICAL PARAMETERS					
+"""     Membrane charge (eq.m-3)"""	-30.0				
+"""     Pore radius (m)"""	4E-10				
+"""     Active layer thickness (m)"""	2.5E-06				
+"""     Pore dielectric constant"""	60.00780023217337								
+!									
+§4. OPERATING PARAMETERS									
+"""     Temperature (K)"""	298.15								
+"""     Permeate flux, Jv (m.s-1)"""	1E-05								
+"""     Number of ions"""	3				¤ At least one positive and one negative ions should be used. ¤ Insert the codes in a row in the next line. Neutral solutes may be inserted if at least one positive and one negative ion are also added. The ion codes must be found in the ions database (IONS.XLS file). ¤ The electroneutrality should be checked, to avoid a premature stopping of the program.				
+"""     Ions codes in the Database"""	3	102	30					
+"""     Bulk ion concentration (mol.m-3)"""	10.0	50.0	20.0					
+"""     Activity Coefficients Model"""	0				"¤ 0-Ideal;1-Davies Equation"				
+!									
+"§5. CONCENTRATION POLARIZATION PARAMETERS"""									
+"""     Sh Correlation Parameters"""	0	0	0		¤  Sh=a1Re^a2*Sc^a3				¤ If the first parameter is zero, the concentration polarization is not simulated and the other parameters are disregarded.
+"""     Reynolds number"""	0				¤  The Reynolds number is based on the characteristic lenght insertet in the next line.				
+"""     Cell characteristic lenght (m)"""	0				¤  This characteristic lenght is used to compute the individual mass transfer coefficients, from the individual Sherwood numbers.				
+******************************************************************************************************************************************************									
+The following data is only required if Data Fitting Mode option is activated in § 1. In this simulation mode, the selected fitting variables are manipulated by the Nelder-Mead (Simplex) minimization algorithm, in order to minimize the difference between the predicted and experimental values of the ions concentration in the permeate.									
+******************************************************************************************************************************************************						
+§6. SELECTION OF FITTING VARIABLES						
+"""    Membrane charge"""	1				"¤ 1-Yes; 0-No"	
+"""    Pore radius"""	0				"¤ 1-Yes; 0-No"	
+"""    Membrane thickness"""	0				"¤ 1-Yes; 0-No"	
+"""    Pore dielectric constant"""	0				"¤ 1-Yes; 0-No"	
+!						
+§7. PARAMETERS OF THE SIMPLEX ALGORITHM USED FOR DATA FITTING						
+"""    Minimization Function """	1				"¤ 1-Average Relative Error; 2-Maximum Relative Error; 3-Least squares method. "	
+"""    Simplex convergence criteria parameter"""	1.00E-03				¤ This value should be close to zero. Increasing this value to reduces the number of simplex iterations.	
+"""    Simplex maximum number of iterations"""	100					
+!						
+§8. EXPERIMENTAL DATA FOR FITTING						
+¤	Jv (m/s)	Cp(1)	Cp(2) 	... (units: mol/m3)		¤ In each line insert the experimental permeate flux and the corresponding individual concentrations of the ions (in a row) in the permeate solution.
+	3.81E-06	0.758386838	0.758386838			
+	5.21E-06	0.688683788	0.688683788			
+	6.64E-06	0.633788122	0.633788122
+	8.04E-06	0.592977528	0.592977528
+	9.52E-06	0.58105939	0.58105939
+	1.06E-05	0.553611557	0.553611557

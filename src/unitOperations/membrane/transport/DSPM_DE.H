@@ -106,11 +106,56 @@ Description
         count, iterations, residual and the structure audit.
 
       Both paths share everything outside the pore: the wall (the shared
-      Polarisation object), the feed-face activity (Davies, frozen per
-      station, at the BULK ionic strength), the permeate taken ideal (the
-      closed form's convention, kept so the two paths differ ONLY in the
-      pore), the van't Hoff osmotic difference over the ions and the
-      damped fixed point on the water flux.
+      Polarisation object), the feed-face activity (by default Davies,
+      frozen per station, at the BULK ionic strength), the permeate taken
+      ideal (the closed form's convention, kept so the two paths differ
+      ONLY in the pore), the van't Hoff osmotic difference over the ions
+      and the damped fixed point on the water flux.  The DECLARED CHOICES
+      below change the wall closure and the activities of the solved pore.
+
+    DECLARED CHOICES (C138 slice 2, 2026-10-22) -- each OPT-IN, its first
+    word the default, so every DSPM-DE case that declares none runs
+    byte-identically.  They exist so that the model of NanoFiltran
+    (Geraldes & Alves 2008) can be EXPRESSED here and compared code to code
+    (tutorials/props/membrane/nanofiltran01_reference); each declared one
+    is announced once per run.
+
+      hindrance legacy | DechadilokDeen2006;
+        legacy (default): K_d is the Dechadilok-Deen polynomial H(lambda)
+          itself and K_c the Bowen-Welfoot centreline form
+          (2 - Phi)(1 + 0.054 l - 0.988 l^2 + 0.441 l^3).  H is the
+          PRODUCT Phi K_d (Dechadilok & Deen, Ind. Eng. Chem. Res. 45
+          (2006) 6953 -- the quantity their polynomial fits, continuous
+          with their lambda > 0.95 form only once divided by Phi), so with
+          the partition Phi already carried in (2) the legacy diffusive
+          hindrance counts the steric partition TWICE: K_d too small by
+          (1 - lambda)^2.  MEASURED and recorded, NOT changed: every
+          DSPM-DE golden is pinned to it, and replacing it is Vitor's.
+        DechadilokDeen2006: K_d = H/Phi for lambda <= 0.95 and
+          0.984 ((1 - lambda)/lambda)^(5/2) above, K_c = (1 + 3.867 l
+          - 1.907 l^2 - 0.834 l^3)/(1 + 1.867 l - 0.741 l^2) -- the
+          cross-section-averaged pair NanoFiltran uses.
+      activity wallDavies | ideal | bulkOverPoreDavies;
+        wallDavies (default): Davies (A from SpeciationSolver::daviesA) at
+          the bulk ionic strength on the feed face, the permeate ideal.
+        ideal: every activity coefficient 1.
+        bulkOverPoreDavies: the partition (2) carries gamma_bulk/gamma_pore
+          at BOTH faces -- the bulk-side gamma (the wall solution at the
+          feed face, the permeate at the permeate face) with A(eps_b), the
+          pore-side gamma at the pore node of that face with A(eps_p),
+          both Davies on log10 with A(eps, T) = 1.82483e6 (eps T)^-3/2 (the
+          Debye-Hueckel constant; Davies, "Ion Association", 1962).  The
+          pore gammas depend on the pore solution, so they are converged by
+          a fixed point around the pore solve: the solved pore is required.
+      bulkDielectric <eps>;
+        the bulk-solution dielectric constant in the Born term (3) and in
+        A(eps_b); absent, SolventProperties::epsWater(T).
+      poreSolver { wallClosure solutionDiffusion | porePermeate; }
+        solutionDiffusion (default): the wall is closed with the salts'
+          solution-diffusion B_s, as the closed form's is.
+        porePermeate: the wall is closed with the permeate the solved pore
+          gives -- the interface balance and the pore converged together by
+          a fixed point, where NanoFiltran solves them in one matrix.
 
     The classic NF SIGNATURE the tutorials demonstrate falls out of (2)-(4):
     a divalent co-ion (e.g. SO4 against a negative X_d) is excluded far more
@@ -157,8 +202,16 @@ public:
     const std::string& type() const override { return type_; }
 
     //  `transportParameters { poreSolver { method closedForm |
-    //  finiteDifference; nodes <n>; } }` -- the only block this law reads.
+    //  finiteDifference; nodes <n>; wallClosure <word>; } hindrance <word>;
+    //  activity <word>; bulkDielectric <eps>; }` -- the block this law
+    //  reads (see "DECLARED CHOICES" above).
     void readParameters(const DictPtr& transportDict) override;
+
+    //- The declared model choices (C138 slice 2).  The first of each is
+    //  the default, byte-identical with every DSPM-DE golden.
+    enum class Hindrance   { Legacy, DechadilokDeen2006 };
+    enum class Activity    { WallDavies, Ideal, BulkOverPoreDavies };
+    enum class WallClosure { SolutionDiffusion, PorePermeate };
 
     TransportSolution localFluxes(const TransportContext& ctx) const override;
 
@@ -166,6 +219,14 @@ private:
     inline static const std::string type_ = "DSPM-DE";
     // The stage banner (which exclusions are active) is announced ONCE per run.
     mutable bool banner_done_ = false;
+
+    // The declared model choices ("DECLARED CHOICES" above).
+    Hindrance   hindrance_      = Hindrance::Legacy;
+    Activity    activity_       = Activity::WallDavies;
+    WallClosure wallClosure_    = WallClosure::SolutionDiffusion;
+    scalar      bulkDielectric_ = -1.0;     // < 0: SolventProperties::epsWater(T)
+    mutable bool choicesSaid_   = false;    // the declared choices, announced once
+    mutable int  outerPassesMax_ = 0;       // pore <-> wall/activity passes, the most
 
     // The pore solver (see "TWO WAYS ACROSS THE PORE" above).
     bool        finiteDifference_ = false;

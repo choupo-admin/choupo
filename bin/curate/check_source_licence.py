@@ -107,6 +107,14 @@ hand, each restored and the gate re-run to exit 0:
       so the read-through branch is real for the new names too;
   S4  a pin for a case-local record that names nothing -> STALE PIN, naming
       NO_GRANT_CASE_LOCAL.
+
+VENDORED THIRD-PARTY CODE (2026-10-22, C138 slice 2).  NanoFiltran and the
+two libraries inside it, held by ACCEPTED_VENDORED_CODE.  By hand, each
+restored and the gate re-run to OK:
+  S1  NOTICE's "Michael F. Hutt" replaced by "the author" -> FAILED, "NOTICE
+      does not name ['Michael F. Hutt'] for the vendored NanoFiltran";
+  S2  one word added to LICENSE-LAPACK.txt -> FAILED, "is missing or is not
+      the licence text the acceptance was made on".
 """
 import re
 import sys
@@ -393,6 +401,37 @@ ACCEPTED_PUBLIC_DOMAIN = {
         "tool": "bin/curate/propose_lennard_jones.py",
     },
 }
+#  VENDORED THIRD-PARTY CODE IS A CONTRACT TOO (2026-10-22, DEV.md 4c C138).
+#  NanoFiltran (Geraldes & Alves 2008) lives in bin/curate/nanofiltran/ so the
+#  reference numbers of tutorials/props/membrane/nanofiltran01_* can be
+#  regenerated, and it carries THREE licences: its own MIT notice, Michael F.
+#  Hutt's MIT notice on the Nelder-Mead routine, and the LAPACK (modified
+#  BSD) licence of the linear solver.  A licence the code carries in a header
+#  stays only while the header does, so each file is held here to its own
+#  notice (the `needles`, read in the file's own encoding), the LAPACK text
+#  to the hash of the copy fetched from netlib, and NOTICE to naming all
+#  three.  Adding a vendored program is a licence decision: add its row.
+ACCEPTED_VENDORED_CODE = {
+    "NanoFiltran": {
+        "dir": "bin/curate/nanofiltran",
+        "files": {
+            "src/NANOFILTRAN.F": ["Permission is hereby granted, free of charge",
+                                  "GERALDES AND ANA MARIA ALVES"],
+            "src/SIMPLEX.F":     ["Permission is hereby granted, free of charge",
+                                  "Copyright (c) 1998-2004 <Michael F. Hutt>"],
+            "src/LINEAR.F":      ["LAPACK driver routine (version 3.0)"],
+        },
+        "licenceTexts": {
+            "LICENSE-LAPACK.txt":
+                "a14cc25e10d40a3aa705b7de2fb764a6535d8ee9b2db4e1724900585457dfd55",
+        },
+        "notice": ["NanoFiltran", "Ana Maria Alves", "Michael F. Hutt", "LAPACK"],
+        "why": "MIT (NanoFiltran, Geraldes & Alves 2007; SIMPLEX, Hutt 1998-2004) "
+               "and the LAPACK modified-BSD licence -- permissive, GPL-compatible, "
+               "aggregated beside Choupo's code and never linked into it",
+    },
+}
+
 #  The report BY NAME, not the agency: hundreds of records cite NASA
 #  thermochemical polynomials (McBride et al.) in their authority fields
 #  under the general public-domain reading and carry no licence word; this
@@ -413,6 +452,7 @@ CARDS = {
     "thermo IPDB":   "thirdParty/thermo-ipdb/README.md",
     "NASA TR R-132": "thirdParty/svehla/README.md",
     "Burcat":        "thirdParty/README.md",   # one bulk file, no folder: its card is the index row
+    "NanoFiltran":   "bin/curate/nanofiltran/README.md",   # vendored code, tracked beside its tool
 }
 #  Cards this gate does NOT rule on but which must still be named by the gate
 #  that does -- so no card is an orphan and no gate a silent one.
@@ -514,6 +554,39 @@ def main() -> int:
                   f"SOURCE_CLASS = '{acc['licenceWord']}' as its licence word, the "
                   f"word this gate accepts a {name} source under.  One decision, two "
                   "homes, disagreeing.")
+            return 1
+
+    #  VENDORED CODE: every file carries its own notice, the licence text is
+    #  the fetched one, NOTICE names every holder (ACCEPTED_VENDORED_CODE).
+    from hashlib import sha256 as _sha
+    notice_text = (ROOT / "NOTICE").read_text()
+    vendored_files = 0
+    for name, acc in ACCEPTED_VENDORED_CODE.items():
+        base = ROOT / acc["dir"]
+        for rel, needles in acc["files"].items():
+            p = base / rel
+            if not p.is_file():
+                print(f"check_source_licence: FAILED -- ACCEPTED_VENDORED_CODE['{name}'] "
+                      f"names {acc['dir']}/{rel}, which does not exist")
+                return 1
+            body = p.read_bytes().decode("latin-1")
+            miss = [s for s in needles if s not in body]
+            if miss:
+                print(f"check_source_licence: FAILED -- {acc['dir']}/{rel} no longer "
+                      f"carries its licence notice ({miss}); vendored code is "
+                      "redistributed under the notice it ships with, or not at all")
+                return 1
+            vendored_files += 1
+        for rel, h in acc["licenceTexts"].items():
+            p = base / rel
+            if not p.is_file() or _sha(p.read_bytes()).hexdigest() != h:
+                print(f"check_source_licence: FAILED -- {acc['dir']}/{rel} is missing "
+                      "or is not the licence text the acceptance was made on")
+                return 1
+        miss = [s for s in acc["notice"] if s not in notice_text]
+        if miss:
+            print(f"check_source_licence: FAILED -- NOTICE does not name {miss} for "
+                  f"the vendored {name}")
             return 1
 
     #  A SCAN OVER NOTHING IS NOT A CLEAN CATALOGUE (2026-08-15 fleet
@@ -751,7 +824,11 @@ def main() -> int:
           f"the API STD 526 orifice-letter areas, matched by their VALUES "
           f"over {std_nscan} source files, not by the name).  "
           f"Every source ruled on here has a thirdParty/ card and "
-          f"every card on disk is named by a gate ({len(on_disk)} card(s)).")
+          f"every card on disk is named by a gate ({len(on_disk)} card(s)).  "
+          f"Vendored third-party code, by CONTRACT: "
+          f"{', '.join(ACCEPTED_VENDORED_CODE)} -- {vendored_files} file(s) each "
+          f"carrying its own licence notice, the LAPACK text the fetched one, "
+          f"NOTICE naming every holder.")
     #  THE MANIFEST READS ONLY THE FIRST LINE.  gate_manifest.py captures
     #  `line[0]` as the gate's claim, so a claim printed on a second line is
     #  invisible in the one place that answers "what does this project

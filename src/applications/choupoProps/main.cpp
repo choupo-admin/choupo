@@ -85,6 +85,7 @@ Description
 #include "thermo/phase/Phase.H"
 #include "unitOperations/heatTransfer/htc/HeatTransferCorrelation.H"
 #include "thermo/vaporPressure/VaporPressureModel.H"
+#include "thermo/membrane/MembraneRegistry.H"
 
 #include <cmath>
 #include <filesystem>
@@ -400,6 +401,10 @@ try
         }
     }
     Database db(dataRoot.empty() ? "" : dataRoot.string());
+    //  The membrane records (kind NF/RO assets), read by the poreTransport
+    //  bench (DEV.md 4c C138).  A sealed case with the catalogue hidden
+    //  reads its own constant/assets/ alone, as in choupoSolve.
+    MembraneRegistry::loadFrom(dataRoot.string());
 
     // --- Dictionaries ---------------------------------------------------
     //  Cascade resolution (folder cascade), identical to choupoSolve: a sector node

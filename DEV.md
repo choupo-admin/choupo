@@ -1533,6 +1533,34 @@ accepts today, and that is a policy call.
 > published results; SDEM's march onto the same solver measured, not
 > assumed.  Engine numerics of two models, Vitor's decision taken in the
 > quotation above.
+> SLICE 1 DONE (be3a51788).  SLICE 2 DONE (2026-10-22, branch
+> claude/c138-nanofiltran-golden): Vitor handed over NanoFiltran itself
+> and leave to vendor it ("O nanofiltran pode ser usado sem problema!");
+> it lives as received in `bin/curate/nanofiltran/` (MIT + Hutt's MIT +
+> LAPACK modified BSD, held by `check_source_licence`
+> ACCEPTED_VENDORED_CODE; `regenerate.py` rebuilds and reruns it and
+> REFUSES without gfortran).  The golden
+> `tutorials/props/membrane/nanofiltran01_dspmde_reference` (the new
+> `poreTransport` props op: the DSPM-DE law at imposed J_v) pins 35
+> NanoFiltran permeates as anchors: the example, Born off, Davies, NaCl,
+> Na2SO4, a polarised mixture, J_v 1e-6..5e-5; the two programs' grid
+> limits agree within 7.9e-7 on every row (gate
+> `check_nanofiltran_reference`, 6 sabotages).  To express NanoFiltran's
+> model four DECLARED DSPM-DE choices were added, every default
+> byte-identical (23 membrane cases, JSON and console): `hindrance
+> DechadilokDeen2006`, `activity bulkOverPoreDavies | ideal`,
+> `bulkDielectric`, `poreSolver { wallClosure porePermeate; }`.  FINDINGS,
+> recorded not changed: (1) Choupo's default K_d is Dechadilok-Deen's H =
+> Phi K_d, the steric partition counted twice in diffusion (K_d too small
+> by (1-lambda)^2) in every DSPM-DE golden -- replacing the default is
+> Vitor's; (2) NanoFiltran evaluates Davies with exp() on the log10 A
+> (ln gamma ln 10 too small; +7.7 % Na+ on the Davies op) -- the anchors
+> use a copy with that one constant corrected; (3) NanoFiltran's
+> single-precision literals move Mg2+'s K_d by 1.55e-4, cancelled through
+> its inputs.  Record: docs/design/a-stiff-pore-solved-at-once.md §9.
+> STILL OPEN: SDEM's march onto the pore solver; the spiral module still
+> refuses `ionCoupling electroneutral;` on a DSPM-DE salt feed; the
+> paper's figures; whether to retire any default.
 
 > **C137. THE RECONCILIATION EDUTOOL MUST MAKE BAYES VISIBLE AND CENTRAL
 > (Vitor, 2026-10-21, for SATURDAY, a follow-up on C121: "Na realidade,

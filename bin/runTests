@@ -3868,6 +3868,25 @@ PYEOF
     fi
     rm -f /tmp/pore.$$
 
+    # NanoFiltran reference gate (2026-10-22, DEV.md 4c C138 slice 2).  The
+    # DSPM-DE pore against NanoFiltran itself (Geraldes & Alves 2008), the
+    # SAME model expressed through the law's declared choices: the committed
+    # NanoFiltran inputs are the matching rule's and its vendored sources
+    # hash as received, the case's anchors are reference.tsv's, Choupo's pore
+    # at 401/801/1601 nodes is second order and its extrapolation agrees with
+    # NanoFiltran's within 2e-6 on every row, and six refusals fire.  Needs
+    # no gfortran (bin/curate/nanofiltran/regenerate.py does, and refuses
+    # without it).  6 by-hand sabotages in its docstring.
+    if "$ROOT/bin/curate/check_nanofiltran_reference.py" > /tmp/nanofiltran.$$ 2>&1; then
+        printf "PASS  %-40s  (%s)\n" "nanofiltran-reference-gate" "$(grep -m1 '^check_nanofiltran_reference: OK' /tmp/nanofiltran.$$)"
+        pass=$((pass+1))
+    else
+        printf "FAIL  %-40s  (run bin/curate/check_nanofiltran_reference.py)\n" "nanofiltran-reference-gate"
+        cat /tmp/nanofiltran.$$
+        fail=$((fail+1))
+    fi
+    rm -f /tmp/nanofiltran.$$
+
     # ED-stack gate (2026-09-16).  An electrodialysis stack is a RECORD and its
     # limiting current is a PREDICTION: the crossflow velocity is derived from
     # the diluate flow instead of declared, and the counter-ion transport

@@ -59,6 +59,7 @@ License
 #include "FreezingPoint.H"
 #include "PitzerActivity.H"
 #include "PolarisationIndex.H"
+#include "PoreTransportBench.H"
 #include "ENRTLMixedSolventOp.H"
 #include "ENRTLMultiSaltOp.H"
 #include "GibbsMapOp.H"
@@ -221,6 +222,10 @@ void PropertyOperation::registerBuiltins()
     reg("estimateComponent", []{ return std::make_unique<EstimateComponent>(); });
     reg("elementalComposition", []{ return std::make_unique<ElementCompositionOp>(); });
     reg("polarisationIndex", []{ return std::make_unique<PolarisationIndex>(); });
+    //  THE DSPM-DE LAW AT IMPOSED PERMEATE FLUXES (DEV.md 4c C138 slice 2):
+    //  the transport law the membrane units march, handed J_v the way
+    //  NanoFiltran takes it, ion by ion.
+    reg("poreTransport", []{ return std::make_unique<PoreTransportBench>(); });
     //  PLANT FLOW MEASUREMENTS RECONCILED UNDER THE NODE BALANCES, with the
     //  global and measurement tests and the posterior covariance (DEV.md 4c
     //  C121).  The weighted least squares itself is the one in

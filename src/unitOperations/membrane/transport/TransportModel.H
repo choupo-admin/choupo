@@ -72,6 +72,7 @@ Description
 #include <algorithm>
 #include <cstddef>
 #include <functional>
+#include <limits>
 #include <map>
 #include <memory>
 #include <string>
@@ -148,6 +149,19 @@ struct TransportSolution
     //  The pore solve's own account at this station (see PoreAccount).
     PoreAccount         pore;
     bool                hasPore = false;
+    //  Ion by ion, for a law that works in ions (DSPM-DE): the bulk, wall
+    //  and permeate concentrations [mol/m^3].  A salt's ion appears once
+    //  per salt that carries it (two salts sharing Cl- give two rows), so a
+    //  reader that wants the species sums by `name`.  Empty otherwise.
+    struct IonState
+    {
+        std::string name;
+        int         z      = 0;
+        scalar      c_bulk = 0.0;
+        scalar      c_wall = 0.0;
+        scalar      c_perm = 0.0;
+    };
+    std::vector<IonState> ions;
 };
 
 // ---- The inputs to the local problem at one z station ----------------------
@@ -180,6 +194,12 @@ struct TransportContext
     const OsmoticModel&             osm;        // osmotic-pressure model
     const Membrane*                 membrane;   // membrane handle (hook)
     const electrolyte::SpeciationSolver* speciation; // activity hook
+    //  A water flux IMPOSED by the caller [m/s] (the props bench, which
+    //  reproduces a program that takes J_v as its input): the law skips
+    //  its J_w = A_w (dP - dpi) closure and solves the solute transport at
+    //  this J_v.  NaN (every unit) means the law closes J_w itself.  Only
+    //  DSPM-DE honours it; a caller handing it to another law must refuse.
+    scalar imposedJv = std::numeric_limits<scalar>::quiet_NaN();
 };
 
 class TransportModel

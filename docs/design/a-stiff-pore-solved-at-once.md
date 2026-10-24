@@ -1,6 +1,7 @@
 # A stiff pore solved at once — the extended Nernst-Planck equations across a DSPM-DE pore
 
-*2026-10-22, DEV.md 4c C138, slice 1.  Vítor's decision: build, as an
+*2026-10-22, DEV.md 4c C138, slice 1; slice 2 (the comparison with
+NanoFiltran itself) is §9.  Vítor's decision: build, as an
 opt-in pore solver for the `DSPM-DE` transport law, the method of his own
 NanoFiltran (Geraldes & Alves, "Computer program for simulation of mass
 transport in nanofiltration membranes", J. Membr. Sci. 321 (2008)
@@ -214,9 +215,12 @@ grid stretched toward the permeate face.  Slice 2's question.
 
 ## 7. What is NOT done
 
-- Any comparison with NanoFiltran's published results (slice 2, on the paper).
-- The wall closed with the pore's own permeate (§5); activity inside the pore
-  and at the permeate face (ideal in both paths, as the closed form had it).
+- ~~Any comparison with NanoFiltran~~ -- done in slice 2, against the
+  PROGRAM itself on the same model (§9); its published figures were not
+  digitised.
+- The wall closed with the pore's own permeate (§5) and activity at both
+  faces exist since slice 2 as DECLARED choices (§9); the default of both
+  paths is unchanged (B_s wall closure, feed-face Davies, ideal permeate).
 - The batch diafilter under the solved pore: it runs (`transportParameters`
   is handed to the law there too), but it prints no pore summary and has no
   witness.
@@ -253,3 +257,223 @@ gate's docstring.  Every one fails the gate.  Three are worth reading:
 Also found by a sabotage: two of membrane10's golden rows are closures at
 round-off (2e-16 against 4e-16), which a 1e-10 relative comparison would
 read as the default path moving; they are compared absolutely now.
+
+## 9. Slice 2: the same model in NanoFiltran — a code-to-code golden
+
+*2026-10-22.  Vítor handed over NanoFiltran itself (Geraldes & Brites Alves,
+J. Membr. Sci. 321 (2008) 172-182, doi:10.1016/j.memsci.2008.04.054) and,
+the same day, leave to vendor it ("O nanofiltran pode ser usado sem
+problema!").  It lives in `bin/curate/nanofiltran/` as received (README
+there: licences, build, the matching rule, the findings), and
+`tutorials/props/membrane/nanofiltran01_dspmde_reference` is the golden case.
+CODE-TO-CODE VERIFICATION: one model, two implementations.  Nothing here is
+a measurement.*
+
+### 9.1 What NanoFiltran's model is — read from the source
+
+Read in `NANOFILTRAN.F` (`MODEL`), not assumed:
+
+- ENP per ion between nodes with **central** differences — the flux
+  `−D K_d Δc/Δx − z U c̄ Δφ/Δx + J_v K_c c̄ = J_v c_p` on every interval,
+  `c̄` the interval mean; electroneutrality with the fixed charge at every
+  pore node; the permeate is the last node.  Exact Newton linearisation of
+  the products, a dense `SGESV` (LAPACK 3.0 converted to `REAL*8`),
+  under-relaxed by `URF`.  ND nodes of which ND−1 span the layer on a mesh
+  mirrored about the centre and refined toward both faces by `EPSX`; ND is
+  forced EVEN (the comment says "odd") and limited to 205.
+- Partitions at both faces: steric `(1−λ)²` × Born `exp(−6.95e-5 z²/r_s
+  (1/ε_p − 1/80)/(8.314 T))` × the activity ratio × Donnan.  ε_water is
+  fixed at 80.
+- Activities: `GB = γ_bulk(I_wall; A(80)) / γ_pore(I_node1; A(ε_p))` at the
+  feed face, `GP = γ_perm(I_perm; A(80)) / γ_pore(I_node ND−1; A(ε_p))` at the
+  permeate face, Davies `exp(−A z² (√I/(1+√I) − 0.3 I))` with
+  `A = 1.825e6 (εT)^−1.5`; neutral solutes `exp(0.1 I)`; `IACT 0` = ideal.
+- Hindrance: `K_d = H(λ)/(1−λ)²` (λ ≤ 0.95, Dechadilok-Deen's `H`), `K_d =
+  0.984((1−λ)/λ)^{5/2}` above; `K_c = (1+3.867λ−1.907λ²−0.834λ³)/(1+1.867λ
+  −0.741λ²)`.
+- The film, when a Sherwood correlation is given: per ion `k = D/L · a Re^b
+  Sc^c`, `Sc = μ/997/D`, the suction correction `k* = k (φ + (1+0.26φ^1.4)^−1.7)`
+  (Geraldes & Afonso 2006) and the interface balance `J_v c_p = J_v c_0 −
+  k*(c_0 − c_b) − z D F/RT c_0 dφ/dx` with electroneutrality at the
+  interface — the multi-ionic model of Geraldes & Afonso 2007, i.e. Choupo's
+  `Polarisation` kernel equation for equation.  Without a correlation the
+  film is NOT removed: `k = 10 m/s` in the same equations.
+- `D(T)` from `D25` by Vogel's viscosity and Stokes-Einstein; `F = 96500`,
+  `R = 8.314`.
+
+### 9.2 Every difference, and how each was handled
+
+| difference | kind | handled by |
+|---|---|---|
+| `K_d`: Choupo's default takes the polynomial `H` itself, NanoFiltran `H/Φ` | **model** (and a Choupo defect, §9.5) | new declared `hindrance DechadilokDeen2006;` |
+| `K_c`: Bowen-Welfoot centreline vs Dechadilok-Deen rational fit | model | the same declaration |
+| activity: Choupo Davies at the feed face only, permeate ideal; NanoFiltran the bulk/pore ratio at both faces, pore A from ε_p | model | new `activity bulkOverPoreDavies;` (and `ideal`) |
+| bulk dielectric: Choupo `epsWater(T)` (78.45), NanoFiltran 80 | model input | new `bulkDielectric 80;` |
+| wall: Choupo closes it with the salts' `B_s`, NanoFiltran with the pore's own permeate | model | new `poreSolver { wallClosure porePermeate; }` |
+| fixed `J_v` (NanoFiltran's input) vs `J_w = A_w(ΔP − Δπ)` | problem statement | the `poreTransport` props op hands the SAME law `imposedJv` |
+| `D` corrected to T by Vogel (×1.000140779 at 298.15 K) | constant | NanoFiltran's IONS input divided by it |
+| Born constant `6.95e-5/8.314` vs CODATA (exponent 5.2e-4 larger) | constant | NanoFiltran's ε_p input 60 → 60.0078 |
+| single-precision literals in `H(λ)`: K_d of Mg²⁺ −1.55e-4 | numerics | NanoFiltran's D input × K_d(double)/K_d(single) |
+| Davies `exp()` on the log10 A | **NanoFiltran defect** (§9.5) | the Davies op anchored on a copy with ln 10 restored (`DAVIES_PATCH`) |
+| `F`, `R` | constants | none needed: `F/RT` only scales the potential variable, which is not compared |
+| central differences vs Scharfetter-Gummel; ND ≤ 205 vs any grid | numerics | both converged in their own grids (second order, measured) and Richardson-extrapolated |
+| the Davies constant's fifth figure (1.825e6 vs 1.82483e6) | constant | written to five figures in the same patch |
+
+### 9.3 The matrix, and what NanoFiltran could not converge
+
+Six ops, 13 operating points, 35 ion rows (`bin/curate/nanofiltran/
+regenerate.py`): the shipped example (Na⁺/Mg²⁺/Cl⁻ 10/20/50 mol/m³, X −30
+mol/m³, r_p 0.4 nm, δ 2.5 μm, ε_p 60, T 298.15 K) at J_v 1e-6 … 5e-5 m/s; the
+example with Born off (ε_p = 80); the example with Davies (Born off, §9.4);
+NaCl 10 mol/m³ and Na₂SO₄ 10 mol/m³ (the divalent co-ion against the negative
+pore) at 1e-5 and 5e-5; and NaCl + Na₂SO₄ 10/10 with polarisation (Sh = 0.23
+Re^0.567 Sc^0.33, Re 2000, L 2.4 cm — Choupo's `StirredCell` with radius = L,
+density 997 and NanoFiltran's Vogel viscosity) at 1e-5 and 3e-5.  NanoFiltran
+ran each at ND 102 and 204, uniform mesh, URF 0.1, TOL 1e-9, ITMAX 4000.
+
+NanoFiltran's normalised residuals sum absolute values over every interval,
+so their floor grows with ND and with the stiffness: at TOL 1e-9 it stopped
+at ITMAX on NaCl at ND 204 (residual 4.8e-9, 2.4e-9) and Na₂SO₄ at both grids
+(7.1e-8, 2.8e-8); at TOL 1e-10, NaCl ran 20 000 iterations at both grids.
+Those answers had stopped moving all the same — they agree with Choupo to
+1.1e-7 and 1.8e-7 — and reference.tsv says which rows they are.  At TOL
+1e-12 the shipped example had not terminated after two minutes (ITMAX
+100 000) and was stopped.  Its own grid: second order,
+Na⁺ of the example at J_v 5e-5 moving 3.8e-4 between ND 204 and the
+extrapolation — the widest error in the table, and the widest anchor band.
+
+### 9.4 The comparison
+
+Both programs Richardson-extrapolated: NanoFiltran from ND 102/204 (100/202
+intervals), Choupo from 801/1601 nodes (its observed order 2.00 on every
+row, from 401/801/1601).  The grid columns are each program's own error at
+its finest run (NanoFiltran at ND 204, Choupo at the case's 801 nodes).
+
+| op | J_v [m/s] | ion | NanoFiltran c_p (ext) | Choupo c_p (ext) | rel. diff | NF grid (ND 204) | Choupo grid (801) |
+|---|---:|---|---:|---:|---:|---:|---:|
+| example_ideal | 1e-06 | Na | 10.95434541 | 10.95434546 | +4.6e-09 | 2.1e-08 | 3.7e-09 |
+| example_ideal | 1e-06 | Cl | 39.85054943 | 39.85054861 | -2.1e-08 | 3.7e-08 | 2.5e-09 |
+| example_ideal | 1e-06 | Mg | 14.44810201 | 14.44810157 | -3.0e-08 | 5.9e-08 | 4.8e-09 |
+| example_ideal | 5e-06 | Na | 9.550598738 | 9.550598588 | -1.6e-08 | 8.0e-08 | 5.2e-08 |
+| example_ideal | 5e-06 | Cl | 28.794947 | 28.79494566 | -4.7e-08 | 3.1e-07 | 1.3e-08 |
+| example_ideal | 5e-06 | Mg | 9.622174131 | 9.622173538 | -6.2e-08 | 5.0e-07 | 4.5e-08 |
+| example_ideal | 1e-05 | Na | 6.631111402 | 6.631111091 | -4.7e-08 | 2.5e-08 | 2.0e-08 |
+| example_ideal | 1e-05 | Cl | 24.15249423 | 24.1524927 | -6.3e-08 | 7.2e-08 | 4.1e-10 |
+| example_ideal | 1e-05 | Mg | 8.760691414 | 8.760690806 | -6.9e-08 | 9.0e-08 | 8.0e-09 |
+| example_ideal | 2e-05 | Na | 2.685199737 | 2.685199462 | -1.0e-07 | 1.2e-06 | 1.2e-06 |
+| example_ideal | 2e-05 | Cl | 19.80839037 | 19.80838886 | -7.6e-08 | 9.6e-07 | 1.0e-08 |
+| example_ideal | 2e-05 | Mg | 8.561595318 | 8.561594699 | -7.2e-08 | 1.3e-06 | 1.8e-07 |
+| example_ideal | 5e-05 | Na | 0.04650076392 | 0.04650075874 | -1.1e-07 | 3.8e-04 | 1.7e-05 |
+| example_ideal | 5e-05 | Cl | 17.19873263 | 17.19873139 | -7.2e-08 | 5.5e-06 | 8.6e-07 |
+| example_ideal | 5e-05 | Mg | 8.576115933 | 8.576115316 | -7.2e-08 | 6.6e-06 | 9.1e-07 |
+| example_noBorn | 5e-05 | Na | 8.214063806 | 8.214063981 | +2.1e-08 | 2.0e-08 | 5.6e-07 |
+| example_noBorn | 5e-05 | Cl | 28.90291155 | 28.90291041 | -3.9e-08 | 2.6e-09 | 1.7e-07 |
+| example_noBorn | 5e-05 | Mg | 10.34442387 | 10.34442321 | -6.4e-08 | 4.3e-09 | 1.4e-08 |
+| example_davies | 5e-05 | Na | 7.265155751 | 7.265155898 | +2.0e-08 | 2.6e-07 | 3.1e-07 |
+| example_davies | 5e-05 | Cl | 26.66643644 | 26.66643533 | -4.2e-08 | 7.1e-08 | 9.5e-08 |
+| example_davies | 5e-05 | Mg | 9.700640346 | 9.700639718 | -6.5e-08 | 1.4e-09 | 1.3e-08 |
+| NaCl_ideal | 1e-05 | Na | 3.128208847 | 3.128208556 | -9.3e-08 | 3.2e-08 | <1e-11 |
+| NaCl_ideal | 1e-05 | Cl | 3.128208847 | 3.128208556 | -9.3e-08 | 3.2e-08 | <1e-11 |
+| NaCl_ideal | 5e-05 | Na | 0.8986329628 | 0.8986328676 | -1.1e-07 | 7.4e-07 | 2.2e-10 |
+| NaCl_ideal | 5e-05 | Cl | 0.8986329628 | 0.8986328676 | -1.1e-07 | 7.4e-07 | 2.2e-10 |
+| Na2SO4_ideal | 1e-05 | Na | 0.03372171352 | 0.03372170732 | -1.8e-07 | 3.5e-07 | <1e-11 |
+| Na2SO4_ideal | 1e-05 | SO4 | 0.01686085676 | 0.01686085366 | -1.8e-07 | 3.5e-07 | <1e-11 |
+| Na2SO4_ideal | 5e-05 | Na | 0.01398816288 | 0.01398816038 | -1.8e-07 | 2.8e-06 | <1e-11 |
+| Na2SO4_ideal | 5e-05 | SO4 | 0.006994081439 | 0.006994080188 | -1.8e-07 | 2.8e-06 | <1e-11 |
+| mixed_polarised | 1e-05 | Na | 12.99226679 | 12.99226779 | +7.7e-08 | 2.4e-08 | <1e-11 |
+| mixed_polarised | 1e-05 | Cl | 11.83400703 | 11.83400712 | +7.6e-09 | 3.0e-10 | <1e-11 |
+| mixed_polarised | 1e-05 | SO4 | 0.5791298764 | 0.5791303359 | +7.9e-07 | 2.6e-07 | 6.9e-10 |
+| mixed_polarised | 3e-05 | Na | 22.18068891 | 22.18069367 | +2.1e-07 | 1.6e-07 | 3.6e-09 |
+| mixed_polarised | 3e-05 | Cl | 10.41207837 | 10.41207822 | -1.4e-08 | 2.0e-08 | 9.6e-10 |
+| mixed_polarised | 3e-05 | SO4 | 5.884305271 | 5.884307722 | +4.2e-07 | 3.3e-07 | 7.1e-09 |
+
+**Every row agrees within 7.9e-7, and 32 of 35 within 2e-7** — below both
+programs' discretisation error wherever that error is above 1e-7.  The
+residual is systematic and has visible sources on NanoFiltran's side: its
+`K_c` literals are single precision too (2–6e-8), it stops at TOL 1e-9, and
+the `D` compensation of §9.2 reaches its FILM as well as its pore — on SO₄²⁻
+(K_d compensation 8.3e-7) the polarised rows are the largest, 7.9e-7 and
+4.2e-7.  `bin/curate/check_nanofiltran_reference.py` holds the agreement at
+2e-6; the case's own 801-node rows sit within anchor bands sized 3 × (its
+grid error + a third of NanoFiltran's last Richardson step + the measured
+disagreement), floored at 1e-6.
+
+**What the matching was worth.**  With only the Vogel and Born constants
+matched, the example parted by 6.8e-4 on the trace Na⁺ and 1.4e-5 on Mg²⁺,
+and MgCl₂ alone by 5.5e-5, while NaCl alone agreed to 1.1e-7: a disagreement
+confined to Mg²⁺.  NanoFiltran's printed `KDF` for Mg²⁺ (6.0853010159e-3)
+is the single-precision evaluation of the polynomial exactly; the double is
+6.0862467e-3.  Compensated through the input, every row fell to ~1e-7.
+With no matching at all (the first run of the day) the example's Na⁺ differed by 3.2e-3.
+
+**The Davies op runs with Born off.**  With Born on, the ε_p input that
+matches NanoFiltran's Born constant also enters its pore-side Davies
+`A(ε_p)` (2e-4 larger), and the example's trace Na⁺ amplifies that to 5.5e-4.
+A one-off build with the pore A evaluated at 60 exactly agreed to 1.3e-7
+(Na⁺) and 7e-8 (Cl⁻, Mg²⁺) with Born ON — the Born-on path of
+`bulkOverPoreDavies` is verified, but not pinned.
+
+### 9.5 Two findings
+
+**NanoFiltran's Davies is ln 10 too weak.**  `A = 1.825e6 (εT)^−1.5` is the
+constant of Davies' equation for log₁₀ γ (0.495 at ε = 80, 298.15 K);
+NanoFiltran writes `γ = exp(−A z² …)`.  As received, it puts 7.7 % more Na⁺,
+4.8 % more Cl⁻ and 3.8 % more Mg²⁺ in the Davies op's permeate than the
+corrected copy (`regenerate.py --report-davies`: 7.824213764 / 27.95573084 /
+10.06575854 against 7.265155751 / 26.66643644 / 9.700640346 mol/m³).  The
+by-hand sabotage that gives Choupo the same mistake reproduces the
+as-received numbers to 5e-6, so the explanation is the whole difference.
+Choupo was not given an option for it: a declared choice that reproduces a
+known error is a wrong model with a name.
+
+**Choupo's default `K_d` counts the steric partition twice.**  The DSPM-DE
+default (`deenFactors`, `DSPM_DE.cpp`) takes Dechadilok-Deen's polynomial as
+`K_d`; the polynomial is `H = Φ K_d` (it meets the λ > 0.95 lubrication form
+only once divided by Φ), and Φ is already in the partition.  `K_d` is too
+small by `(1−λ)²` — 0.29 for Na⁺ in this pore, 0.016 for Mg²⁺ — in every
+DSPM-DE case of the corpus (membrane10, 11, 20).
+NOT changed: every DSPM-DE golden is pinned to it, and replacing the default
+is Vítor's decision.  `hindrance DechadilokDeen2006;` is the remedy, opt-in.
+One consequence measured on the way: on NanoFiltran's example membrane the
+legacy `K_d` drives the trace Na⁺ permeate from 1.16 to 3e-12 mol/m³ between
+J_v 1e-5 and 1.4e-5 m/s, and the solved pore's continuation then stalls at
+1.4e-5 on every grid (101 to 801 nodes) — the representable limit of a
+concentration 12 orders below its feed, not a fold.
+
+### 9.6 What was added to Choupo
+
+- `DSPM-DE` declared choices, each opt-in, each refusing an unknown word by
+  name, each announced once per run when declared: `hindrance`,
+  `activity`, `bulkDielectric`, `poreSolver { wallClosure }`.  With none
+  declared every membrane case's result JSON and console are byte-identical
+  to the parent build (measured: 23 cases — steady/membranes, the two
+  diafilters, polarisation01).
+- `wallClosure porePermeate` is a NEWTON on the permeate the wall is closed
+  with (one unknown per ion, `solver::newtonND`, each evaluation one pore
+  warm-started from the last), not a fixed point: a plain fixed point was
+  built first and failed on the polarised op (400 passes without settling),
+  and a full step from the B_s closure can ask the film for more of an ion
+  than it supplies — such a trial is an `InfeasibleTrial` the line search
+  backs away from.  The shared `Polarisation` kernel is unchanged.
+- `bulkOverPoreDavies` converges the pore-side gammas by a fixed point
+  around each pore solve (≤ 1e-13 relative); it refuses the closed form.
+- The structure audit (a dense Jacobian of the first pore) is skipped above
+  4096 unknowns and the banner says so with its size: at 3201 nodes of a
+  four-ion pore it was 8.2 GB.
+- `TransportContext::imposedJv` (NaN for every unit) and
+  `TransportSolution::ions` (per-ion bulk, wall, permeate).
+- The `poreTransport` props op; `choupoProps` now loads the membrane
+  registry.
+
+### 9.7 Still NOT done
+
+- The batch diafilter under the declared choices (they are read there too,
+  untested), and the spiral module: a DSPM-DE salt feed under `ionCoupling
+  electroneutral;` is still refused by `buildPolarisation` (the bench builds
+  the film from the policy directly).
+- NanoFiltran's data-fitting mode (Nelder-Mead on X, r_p, δ, ε_p) and its
+  refined meshes (`EPSX` 1.05 was run once, before the matching, ND 26 to
+  204: it converges; nothing of it is pinned).
+- The paper's own figures.
+- Replacing any default (`hindrance legacy`, the B_s wall closure,
+  `wallDavies`) -- Vitor's.

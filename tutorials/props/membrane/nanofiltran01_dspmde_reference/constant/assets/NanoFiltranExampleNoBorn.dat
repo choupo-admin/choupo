@@ -1,0 +1,24 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Membrane: the NanoFiltran example membrane WITH THE BORN TERM OFF --
+  CASE-LOCAL, HYPOTHETICAL.
+
+  NanoFiltranExample.dat with the pore dielectric constant set to 80, the
+  bulk value the case declares (`bulkDielectric 80;`, NanoFiltran's fixed
+  EWATER), so the dielectric exclusion vanishes (1/eps_p - 1/eps_b = 0)
+  and only the steric and Donnan exclusions remain.  NanoFiltran is run
+  the same way, with its "pore dielectric constant" input at 80.
+\*---------------------------------------------------------------------------*/
+
+name           NanoFiltranExampleNoBorn;
+kind           NF;
+manufacturer   "none (NanoFiltran's worked example)";
+
+A_w            1.0e-5  m/s/bar;     // not read at an imposed J_v
+
+poreModel
+{
+    poreRadius             4.0e-10;   // m
+    porosityOverThickness  4.0e5;     // 1/m  (= 1/2.5e-6 m)
+    chargeDensity          -30;       // mol/m3, SIGNED
+    poreDielectric         80;        // [-]  = bulkDielectric: Born OFF
+}
