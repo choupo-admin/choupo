@@ -1597,7 +1597,20 @@ accepts today, and that is a policy call.
 > solver with EXPERIMENT.  Known before dispatch: NanoFiltran's Davies
 > applies exp() to a log10 constant (C138), so the published Table 2 may
 > carry that factor; the case must say which Davies each number uses.
-> Status: dispatched 2026-10-24.
+> LANDED 2026-10-24: `props/membrane/nanofiltran02_paper_stiff_case`
+> (Table 2 accounted for step by step: NanoFiltran AS RECEIVED reproduces
+> it, so Table 2 carries the Davies factor -- and the defect is in the
+> paper's printed Eqs. 12-13, the log10 constant used as ln gamma; Choupo,
+> with no option to reproduce it, agrees with the corrected NanoFiltran to
+> ~1e-7, 12 Newton iterations against 88) and
+> `nanofiltran03_bowen_mohammad_ca30` (the solved pore against MEASURED
+> rejections: rms 0.077, NanoFiltran 0.078 on the same inputs, several of
+> them fitted to these data by Bowen & Mohammad -- said in the case).  The
+> engine gained: ions the pore excludes (lambda >= 1) live only in the
+> film, announced; `poreTransport` takes a per-op `chargeDensity` and
+> writes a `profile` csv.  OPEN for Vitor: D(T) (Choupo reads the 25 C D0
+> at any T; NanoFiltran applies Stokes-Einstein with Vogel's viscosity);
+> whether nanofiltran03 joins the named validation subset.
 
 > **C144. A SOLUTION-ADAPTIVE GRID FOR THE DSPM-DE PORE (Vitor,
 > 2026-10-24: "Faz a malha adaptativa, porque eu preciso de enviar o link
