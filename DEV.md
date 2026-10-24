@@ -1525,6 +1525,30 @@ accepts today, and that is a policy call.
 > the fit, identifiability, a verdict), shown as fitted curves over the
 > data in the same post-processing view.  Dispatched after C147 (shared
 > src/propertyOps and the Plot workspace).
+> DESIGN, decided by the commander on Vitor's delegation (2026-10-24:
+> "Avanca com a que achares melhor -- eu depois testo e dou-te a minha
+> opiniao"), after he rejected taking "postProcessDict" literally ("tens de
+> refletir!  ... o caso choupoProps e para ser preparado para AI, e o GUI
+> so serve para o utilizador rever ... o choupoProps serve para criar
+> componentes novos, ajustar cineticas, adsorcoes etc -- e um companion
+> para o engenheiro que cria o seu data set no laboratorio"): THREE LAYERS,
+> ALL IN THE propsDict (one file an AI writes whole).  (1) DATA:
+> `constant/experimental/<name>.dat`, one row = one experiment = one
+> simulation.  (2) AN OPERATION OVER THE DATA: `fitParameters` with a new
+> `residual { kind membrane; model DSPM-DE|SDEM|solutionDiffusion|
+> constantRejection; dataset ...; }` (the isotherm grammar), the same op
+> with no free parameters PREDICTS every row; rows are independent, run in
+> parallel natively and in series (warm-started) where continuation or the
+> browser needs it; the held-out / band / identifiability / verdict
+> discipline unchanged.  (3) VIEWS: every operation publishes its DEFAULT
+> views (a fit: parity, residuals, parameter table, verdict; a prediction:
+> model curves over the data) with nothing declared; extra views in a
+> `views ( ... )` block of the propsDict; data in
+> `postProcessing/<op>/<view>.csv`.  The Props review screen, top to
+> bottom: a verdict strip per operation, the figures, the parameters, and
+> an "Audit" section collapsed by default (raw KPIs, decision ledger,
+> operations; thermo readiness only where components are being created or
+> estimated).  The same idea extends to choupoSolve later.
 
 > **C147. PLOTS A CASE ASKS FOR: A POST-PROCESSING DICTIONARY (Vitor,
 > 2026-10-24: "Era bom ter um dicionario onde se pudessem pedir plots que
