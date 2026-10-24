@@ -1501,6 +1501,30 @@ accepts today, and that is a policy call.
 > final; }` layout draws what the steady flowsheet and the sizing pass
 > already hold.
 
+> **OPEN-WORK REGISTER (2026-10-24, after Vitor found a request dropped:
+> "Tu ja te tinhas esquecido dessa tarefa que eu te tinha pedido?").**  An
+> audit of every branch stranded by the 2026-10-20 machine failure found
+> that NONE of the nine reached main by any route; each is listed here
+> until it is merged or closed, and this register is re-read at every
+> session start.  Lane A (engine, goldens owed to Vitor's authority):
+> G14 letdown NH3 re-import (`claude/g14-letdown-nh3-reimport`, 12
+> letdown01 rows), G13 gibbs07 closure (`backup/g-a7ca4522633443063`,
+> gibbs07/08/09 + greenAmmoniaPEQ rows), G8 one home for the 1.18 + C71
+> README (`backup/g-a351ac66e0c704e8d`, per-item C_TM rows).  Lane B (GUI,
+> one at a time because they share files): C113 search (being revived),
+> G16 colour by any field + the Streams-table solid double count
+> (`claude/c114-flowsheet-colour`), G17 the unit that pulses
+> (`backup/g-a2f767a5e10a7820e`), G9 fold long trains
+> (`backup/g-af5c1d01a52ae83b4`, scratch tests to drop), G11 + G12 the C112
+> EduTool corrections (`claude/c112-overpressure-review`,
+> `claude/c112-g12-pump-fel-ladder-ss-poolfire`), G5 the batch Gantt
+> (`backup/g-aa0b7a24502e7bf75`).  Also open: G4 debt financing
+> (`claude/c110-g4-debt-financing` 484b52f54); the 2026-10-21 delegated
+> decisions (compressor refuses liquid in suction; adiabatic mixer fixed);
+> C131 phase 1 validation of the unvalidated C124 merge; C136, C137 (for
+> Saturday); C127; C143 (built, awaiting Vitor's look); C145, C146 (in
+> flight).  Waves that wait on these: C110 wave 2, C112 wave B.
+
 > **C146. SPIRAL-WOUND ELEMENTS BY STANDARD SIZE AND SPACER, ARRANGED IN
 > SERIES AND PARALLEL, MULTI-ION THROUGHOUT (Vitor, 2026-10-24, with
 > Geraldes & Afonso, J. Membr. Sci. 300 (2007) 20-27: "Achas que podemos
