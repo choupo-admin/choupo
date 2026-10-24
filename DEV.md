@@ -1524,6 +1524,17 @@ accepts today, and that is a policy call.
 > width), parallel vessels and stages, Schock-Miquel's validity window
 > (100 < Re < 1000) announced, its viscosity correction.  Proposal put to
 > him the same day.
+> RULING (2026-10-24): "Faz como achares a melhor boa pratica para
+> simuladores de processos quimicos" -- the commander decides: (1) ONE unit
+> = ONE STAGE (vessels in parallel x elements in series; parallel vessels
+> identical, solved once on the split flow, said so), a multi-stage array
+> built in the flowsheet with its interstage pump visible; (2) the feed
+> spacer a record (`kind feedSpacer`) with its geometry and the
+> correlations valid for it, values only from a primary source read by us,
+> d_h DERIVED from thickness, porosity and filament geometry where the
+> source gives those; (3) generic standard elements 2.5/4/8/16 in as
+> records labelled estimated BESIDE real data-sheet elements, the hand
+> table in SpiralWoundModule.cpp retired.  Dispatched the same day.
 
 > **C145. THE NANOFILTRAN PAPER AS A COMPARISON CASE (Vitor, 2026-10-24,
 > uploading Geraldes & Alves, J. Membr. Sci. 321 (2008) 172-182: "Tens aqui
