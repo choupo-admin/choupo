@@ -3400,6 +3400,17 @@ accepts today, and that is a policy call.
 > rest, and checks interference with the generals running in parallel.
 > Dispatched 2026-10-20 (G15), in his order: tutorials, EduTools, chapter
 > index.
+> DROPPED AND FOUND (2026-10-24): G15 finished parts 1 and 2 and a WIP of
+> part 3, then the machine failed and the work was preserved on
+> `backup/g-af59dd3526f2beaea` and NEVER RESUMED -- this entry still read
+> "dispatched" four days later.  Vitor asked again the same day ("E ja te
+> tinha pedido para quando quero abrir um tutorial ter uma opcao para
+> pesquisar por nome!"), and could not find `tutorials/steady/membranes/`
+> in the Open Case window.  Revived the same day from the backup branch
+> onto main, with the membranes visibility checked in a browser.  The
+> lesson, for the commander: a backup branch listed in a handoff is an
+> OPEN item until it is merged or closed; the handoff list is re-read at
+> every session start.
 
 > **C112. AN EXTERNAL SCIENTIFIC AND PEDAGOGICAL AUDIT OF THE EDUTOOLS
 > (Vitor, 2026-10-20, a review by ChatGPT he asked the commander to judge:
