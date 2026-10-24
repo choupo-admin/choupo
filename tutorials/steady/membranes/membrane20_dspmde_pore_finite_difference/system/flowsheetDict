@@ -7,65 +7,82 @@
 |        |     O ptimization  |                                               |
 \*-----------------------------------------------------------------------------*/
 /*---------------------------------------------------------------------------*\
-  membrane20_dspmde_pore_finite_difference  --  the charged pore SOLVED.
+  membrane20_dspmde_pore_finite_difference  --  the charged pore SOLVED, and
+  the wall closed with the permeate it gives, or with one it does not.
 
-  THREE NF270 elements, two salts -- every unit has the SAME membrane
+  FOUR NF270 elements, two salts -- every unit has the SAME membrane
   (NF270_dspmde: r_p 0.6 nm, X_d = -5 mol/m3, Born on), the same 10 bar, the
-  same 5 mM feed of its salt:
+  same 5 mM feed of its salt, and the same SOLVED pore (101 nodes):
 
-       NF_NaCl_pore           transport DSPM-DE;  transportParameters {
-       NF_MgSO4_pore            poreSolver { method finiteDifference;
-                                             nodes 101; } }
-       NF_MgSO4_closedForm    transport DSPM-DE;  transportParameters {
-                                poreSolver { method closedForm; } }
+       NF_NaCl_pore      NF_MgSO4_pore     wallClosure porePermeate;
+       NF_NaCl_BsWall    NF_MgSO4_BsWall   wallClosure solutionDiffusion;
 
   The `_pore` units DECLARE what has been DSPM-DE's default since
-  2026-10-24 (DEV.md 4c C141) -- the pore solved on 101 nodes, the wall
-  closed with that pore's own permeate (`wallClosure porePermeate`, the
-  default too) -- so the declaration is visible; membrane10 and membrane11
-  run the same model with nothing declared.
+  2026-10-24 (DEV.md 4c C141, C142) -- the pore solved, the wall closed with
+  that pore's own permeate -- so the declaration is visible; membrane10 and
+  membrane11 run the same model with nothing declared.
 
-  WHAT `finiteDifference` SOLVES.  The extended Nernst-Planck equation of
-  every ion on 101 nodes across the pore, electroneutrality with the fixed
-  charge at EVERY node, zero net current, and the Donnan + steric + Born
-  partitions at both faces -- every node at once, by Newton on the declared
-  block-tridiagonal structure; and the wall (the multi-ionic film) closed
-  with the permeate that pore gives, the two converged together.  That is
-  the method of NanoFiltran (Geraldes & Alves, "Computer program for
-  simulation of mass transport in nanofiltration membranes", J. Membr.
-  Sci. 321 (2008) 172-182): the problem is STIFF -- a co-ion held back by
-  the Donnan field carries a migration and a diffusion flux far larger than
-  the flux they net, and the run prints that ratio ("stiffness") beside its
-  residuals.
+  WHAT THE SOLVED PORE IS.  The extended Nernst-Planck equation of every ion
+  on 101 nodes across the pore, electroneutrality with the fixed charge at
+  EVERY node, zero net current, and the Donnan + steric + Born partitions at
+  both faces; and, in the SAME Newton (C142), the film's interface balance at
+  the wall and the water flux J_w = A_w (dP - dpi) -- one Newton per station
+  on the declared block-tridiagonal structure, with an analytic Jacobian.
+  The problem is STIFF -- a co-ion held back by the Donnan field carries a
+  migration and a diffusion flux far larger than the flux they net, and the
+  run prints that ratio ("stiffness") beside its residuals.  NanoFiltran
+  (Geraldes & Alves, "Computer program for simulation of mass transport in
+  nanofiltration membranes", J. Membr. Sci. 321 (2008) 172-182) is the
+  reference it is compared with, in tutorials/props/membrane/
+  nanofiltran01_dspmde_reference.
 
-  WHAT THE CLOSED FORM DOES NOT SOLVE, and why only ONE unit carries it.
-  `method closedForm;` (the default until 2026-10-24) makes the pore
-  electroneutral at the FEED face, the permeate electroneutral, and carries
-  each ion across ALONE by a closed-form transmission -- no potential
-  gradient couples the ions inside the pore, and neither electroneutrality
-  nor zero current is imposed there; its wall is closed with the salt's
-  solution-diffusion B_s.  With the corrected hindrance (K_d = H/Phi, DEV.md
-  4c C141) its transmission tends to K_c > 1 at low Peclet number, so on
-  this membrane it returns a NaCl permeate RICHER than the wall: the bulk is
-  exhausted inside the channel and the module refuses the run (its solute
-  balance does not close).  This case used to carry an NF_NaCl_closedForm
-  unit; it was removed for that reason, and bin/curate/check_pore_solver.py
-  pins the refusal as a finding.  On MgSO4 the closed form runs, and the
-  lesson is the gap: about 58 % rejection against the solved pore's 99.98 %.
+  WHAT THE PAIR TEACHES: THE WALL MUST BE CLOSED WITH THE PERMEATE THE
+  MEMBRANE MAKES.  The film's interface balance (Geraldes & Afonso, J.
+  Membr. Sci. 300 (2007) 20, Eq. 1) says the solute leaving the wall into the
+  membrane is J_v c_p.  `porePermeate` puts there the permeate THIS pore
+  makes, so the film delivers to the wall exactly what the pore carries away
+  -- solute is conserved across the interface.  `solutionDiffusion` puts
+  there c_p = B_s c_m/(J_v + B_s) with the record's solution-diffusion B_s --
+  a permeate from ANOTHER model, which the pore does not make -- so the film
+  is solved for a solute flux that does not cross the membrane.  (It is the
+  wall the retired closed form had, and C138 traced a NEGATIVE NaCl
+  rejection on membrane11 to it.)  The gap measures how far that B_s is from
+  what the pore transmits:
+    NaCl   B_s 5e-6 m/s says c_p ~ 0.06 c_m (94 % at the wall); the pore
+           transmits about 0.16 c_m (its R_obs 49.7 % over a wall 3.07
+           times the bulk), nearly three times more.  The B_s wall
+           believes almost all the salt is held back, so its film must
+           carry more salt back to the bulk and over-polarises (Gamma 2.79
+           against 2.07); the pore is fed that richer wall, and R_obs falls
+           from 49.73 % to 30.80 %.
+    MgSO4  both permeates are a few parts in ten thousand of the wall, the
+           film carries back essentially everything either way, and the two
+           R_obs agree to 1e-6 (99.9751 % / 99.9752 %).
+  So the closure is a modelling decision exactly where the permeate is not
+  negligible -- which, in nanofiltration, is the monovalent salt.
 
-  WHAT TO LOOK AT.  The two MgSO4 R_obs, and the [DSPM-DE] lines: the node
-  count, the Newton iterations, the residual, the block-tridiagonal
-  structure VERIFIED on the first solve, and the pore summary per unit
-  (flux constancy, zero current and electroneutrality, each measured on the
-  answer).
+  THE RETIRED CLOSED FORM.  Until 2026-10-24 this case carried a
+  `method closedForm;` unit (the default until C141): the pore made
+  electroneutral at the feed face only, each ion carried across ALONE by a
+  closed-form transmission with no field coupling the ions inside.  With the
+  corrected hindrance (K_d = H/Phi, C141) that transmission tends to K_c > 1
+  at low Peclet number -- it put more NaCl in the permeate than the wall
+  held and exhausted the bulk, and gave MgSO4 58 % where the solved pore
+  gives 99.98 %.  It is RETIRED (DEV.md 4c C142): the word refuses by name
+  with that reason.
+
+  WHAT TO LOOK AT.  The four R_obs and Gamma, and the [DSPM-DE] lines: the
+  node count, the first station's Newton iterations and residual, the
+  block-tridiagonal structure and the analytic Jacobian VERIFIED on the
+  first solve, the pore summary per unit (flux constancy, zero current and
+  electroneutrality, each measured on the answer), and the continuation the
+  MgSO4 units need at their first station (announced and counted).
 
   WHAT THIS CASE DOES NOT CLAIM.  Nothing in it is validated against any
-  measurement.  The code-to-code comparison with NanoFiltran is
-  tutorials/props/membrane/nanofiltran01_dspmde_reference; the grid, the
-  residuals and the analytic limit are held by
-  bin/curate/check_pore_solver.py.  Shared by all three units: the Davies
-  activity at the feed face, an ideal permeate, van't Hoff osmotic
-  pressure.
+  measurement.  The grid, the residuals, the analytic Jacobian and the
+  analytic limit are held by bin/curate/check_pore_solver.py.  Shared by all
+  four units: the Davies activity at the feed face, an ideal permeate,
+  van't Hoff osmotic pressure.
 
   Data: as membrane10_dspmde_divalent -- the salts carry their ion
   decomposition, the membrane its poreModel{} tier, the ions their radius
@@ -87,7 +104,7 @@ units
             transport        DSPM-DE;
             transportParameters
             {
-                poreSolver { method finiteDifference;  nodes 101; }
+                poreSolver { method finiteDifference;  nodes 101;  wallClosure porePermeate; }
             }
             area             5.0;
             length           1.0;
@@ -98,17 +115,17 @@ units
         }
     }
     {
-        name        NF_MgSO4_closedForm;
+        name        NF_NaCl_BsWall;
         type        spiralWoundModule;
-        in          feed_MgSO4_closedForm;
-        outputs     ( ret_MgSO4_closedForm  perm_MgSO4_closedForm );
+        in          feed_NaCl_BsWall;
+        outputs     ( ret_NaCl_BsWall  perm_NaCl_BsWall );
         operation
         {
             membrane         NF270_dspmde;
             transport        DSPM-DE;
             transportParameters
             {
-                poreSolver { method closedForm; }
+                poreSolver { method finiteDifference;  nodes 101;  wallClosure solutionDiffusion; }
             }
             area             5.0;
             length           1.0;
@@ -129,7 +146,28 @@ units
             transport        DSPM-DE;
             transportParameters
             {
-                poreSolver { method finiteDifference;  nodes 101; }
+                poreSolver { method finiteDifference;  nodes 101;  wallClosure porePermeate; }
+            }
+            area             5.0;
+            length           1.0;
+            P_permeate       1.0 bar;
+            k_film           5.0e-5;
+            dP_feed_total    1.0 bar;
+            nNodes           20;
+        }
+    }
+    {
+        name        NF_MgSO4_BsWall;
+        type        spiralWoundModule;
+        in          feed_MgSO4_BsWall;
+        outputs     ( ret_MgSO4_BsWall  perm_MgSO4_BsWall );
+        operation
+        {
+            membrane         NF270_dspmde;
+            transport        DSPM-DE;
+            transportParameters
+            {
+                poreSolver { method finiteDifference;  nodes 101;  wallClosure solutionDiffusion; }
             }
             area             5.0;
             length           1.0;

@@ -1480,8 +1480,10 @@ int SpiralWoundModule::solve(const DictPtr& dict,
         std::ostringstream m;
         m << std::setprecision(3)
           << "  [DSPM-DE] pore summary (" << (dict->name().empty() ? type() : dict->name()) << "): " << poreRun.solves
-          << " pore solves on " << poreRun.nodes << " nodes, at most "
-          << poreRun.newtonMax << " Newton iterations, ||F|| <= "
+          << " pore solves on " << poreRun.nodes << " nodes (pore, wall and water"
+             " flux in one Newton per station), at most "
+          << poreRun.newtonMax << " Newton iterations (" << poreRun.newtonTotal
+          << " in all), ||F|| <= "
           << poreRun.residualMax << "; flux constancy <= "
           << poreRun.fluxConstancyMax << " of the terms it nets ("
           << poreRun.fluxRelativeMax << " of the net flux, at a stiffness of "

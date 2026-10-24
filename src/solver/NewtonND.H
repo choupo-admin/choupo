@@ -54,6 +54,8 @@ Description
 
 namespace Choupo::solver {
 
+struct BlockBands;   // BlockTridiagonal.H
+
 struct NDTrace
 {
     int       iteration;
@@ -87,6 +89,13 @@ struct NDResult
     //  stop is also raised on the AdvisoryLog by newtonND itself (DEV.md §5
     //  A3), because no caller printed it.
     std::string stopReason;
+    //- With an ANALYTIC block Jacobian declared (BlockTri::jacobian) and the
+    //  audit on: the largest departure of the analytic in-band entries from
+    //  the first iteration's dense finite-difference Jacobian, each entry
+    //  relative to the largest |J| of its row (NaN otherwise).  A central
+    //  difference carries its own truncation and round-off error, so this
+    //  is a number to ANNOUNCE (~1e-6 is agreement), not a refusal test.
+    scalar    analyticMismatch = std::numeric_limits<scalar>::quiet_NaN();
 };
 
 //- A DECLARED block-tridiagonal structure: unknowns grouped in nBlocks
@@ -109,11 +118,21 @@ struct NDResult
 //  property of the code, not of the numbers, so that caller audits its
 //  FIRST solve, announces the measurement, and declares the rest.  The
 //  default audits, and every caller that predates the field is unchanged.
+//
+//  `jacobian`, when set, is an ANALYTIC Jacobian the caller assembles
+//  straight into the three bands (C142, the DSPM-DE pore: the
+//  Scharfetter-Gummel fluxes have closed-form derivatives).  It replaces the
+//  colored finite differences, which then serve only as the audit's oracle:
+//  with `audit` on, the first iteration still builds the dense FD Jacobian,
+//  measures the off-band maximum (the structure claim) AND the departure of
+//  the analytic bands from it (NDResult::analyticMismatch, the derivative
+//  claim) -- both announced by the caller.  Unset, nothing changes.
 struct BlockTri
 {
     std::size_t nBlocks   = 0;
     std::size_t blockSize = 0;
     bool        audit     = true;
+    std::function<void(const sVector&, BlockBands&)> jacobian = nullptr;
     bool declared() const { return nBlocks > 1 && blockSize > 0; }
 };
 

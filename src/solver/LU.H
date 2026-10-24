@@ -54,4 +54,17 @@ sVector luSolve (const std::vector<sVector>& LU,
                  const std::vector<std::size_t>& piv,
                  sVector b);
 
+//- The same substitution writing into caller-owned storage: `x` and the two
+//  work vectors are resized once and reused, so a caller that solves many
+//  small systems (block-Thomas, one column of an inverse at a time) does not
+//  allocate per solve.  The ARITHMETIC is luSolve's, operation for
+//  operation, so the two return identical bits (C142: the DSPM-DE pore
+//  spent a third of its time in malloc inside block-Thomas).
+void    luSolveInto(const std::vector<sVector>&     LU,
+                    const std::vector<std::size_t>& piv,
+                    const scalar*                   b,
+                    sVector&                        x,
+                    sVector&                        pb,
+                    sVector&                        y);
+
 } // namespace Choupo::solver

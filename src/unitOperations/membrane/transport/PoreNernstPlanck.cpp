@@ -26,14 +26,15 @@ License
     Required legal notices:  see NOTICE
 -------------------------------------------------------------------------------
   The ENP pore solved node by node at once -- the equations are in
-  PoreNernstPlanck.H; this file is the residual, the seed and the Newton
-  call, in that order.
+  PoreNernstPlanck.H; this file is the residual with its analytic Jacobian,
+  the grid, the seed, the Newton call and the continuation, in that order.
 \*---------------------------------------------------------------------------*/
 
 #include "PoreNernstPlanck.H"
 
 #include "core/Advisory.H"
 #include "core/InfeasibleTrial.H"
+#include "solver/BlockTridiagonal.H"
 #include "solver/NewtonND.H"
 
 #include <algorithm>
@@ -58,6 +59,54 @@ scalar bernoulli(scalar x)
     return x / std::expm1(x);
 }
 
+scalar bernoulliSlope(scalar x)
+{
+    //  B'(x) = B(x) (1 - x - B(x)) / x, from B(-x) = B(x) + x.  The bracket
+    //  cancels near 0, where the series -1/2 + x/6 - x^3/180 + x^5/5040 is
+    //  used (the next term, x^7/151200, is below 1e-19 at |x| = 1e-2).
+    if (std::abs(x) < 1.0e-2)
+    {
+        const scalar x2 = x * x;
+        return -0.5 + x / 6.0 - x * x2 / 180.0 + x * x2 * x2 / 5040.0;
+    }
+    const scalar B = bernoulli(x);
+    return B * (1.0 - x - B) / x;
+}
+
+std::vector<scalar> gradedGrid(std::size_t N, scalar beta)
+{
+    std::vector<scalar> g(N + 1);
+    for (std::size_t k = 0; k <= N; ++k)
+    {
+        const scalar s = scalar(k) / scalar(N);
+        g[k] = (beta > 0.0)
+             ? 0.5 * (1.0 + std::tanh(beta * (2.0 * s - 1.0)) / std::tanh(beta))
+             : s;
+    }
+    g.front() = 0.0;
+    g.back()  = 1.0;
+    return g;
+}
+
+scalar daviesLnGamma(int z, scalar I_molL, scalar A, scalar* dLnGamma_dI)
+{
+    //  log10 gamma = -A z^2 (sqrt(I)/(1 + sqrt(I)) - 0.3 I)  (Davies 1962)
+    static const scalar ln10 = std::log(10.0);
+    if (z == 0 || !(A > 0.0))
+    {
+        if (dLnGamma_dI) *dLnGamma_dI = 0.0;
+        return 0.0;
+    }
+    const scalar I  = std::max(I_molL, 0.0);
+    const scalar sI = std::sqrt(I);
+    const scalar z2 = scalar(z) * scalar(z);
+    if (dLnGamma_dI)
+        *dLnGamma_dI = (sI > 0.0)
+            ? -ln10 * A * z2 * (0.5 / (sI * (1.0 + sI) * (1.0 + sI)) - 0.3)
+            : 0.0;
+    return -ln10 * A * z2 * (sI / (1.0 + sI) - 0.3 * I);
+}
+
 namespace {
 
 // ---- the unknown layout, one block per node (see the header) ---------------
@@ -68,15 +117,41 @@ struct Layout
     std::size_t ps(std::size_t k)                const { return k * nv + Ni; }
     std::size_t v (std::size_t k, std::size_t i) const { return k * nv + Ni + 1 + i; }
     std::size_t pp(std::size_t k)                const { return k * nv + 2 * Ni + 1; }
+    std::size_t jv(std::size_t k)                const { return k * nv + 2 * Ni + 2; }
+    std::size_t xs(std::size_t k)                const { return k * nv + 2 * Ni + 3; }
 };
 
-Layout layoutOf(const PoreProblem& pb, std::size_t N)
+//  What every evaluation of one problem shares: the layout, the grid and
+//  the two scales that make J_v and xi' O(1) unknowns.
+struct Context
 {
     Layout L;
-    L.Ni = pb.ions.size();
-    L.nv = 2 * L.Ni + 2;
-    L.N  = N;
-    return L;
+    std::vector<scalar> h;       // h_k = xi_{k+1} - xi_k
+    std::vector<scalar> grid;
+    scalar Jref  = 1.0;          // J_v = Jref j
+    scalar xiRef = 1.0;          // xi' = xiRef x
+};
+
+Context contextOf(const PoreProblem& pb, const PoreSettings& s)
+{
+    Context C;
+    C.L.Ni = pb.ions.size();
+    C.L.nv = 2 * C.L.Ni + 4;
+    C.L.N  = s.intervals;
+    C.grid = gradedGrid(s.intervals, s.grading);
+    C.h.resize(s.intervals);
+    for (std::size_t k = 0; k < s.intervals; ++k) C.h[k] = C.grid[k + 1] - C.grid[k];
+    if (pb.closure.active)
+        C.Jref = (pb.closure.Aw * pb.closure.dP > 0.0) ? pb.closure.Aw * pb.closure.dP : 1.0e-6;
+    else
+        C.Jref = (pb.Jv > 0.0) ? pb.Jv : 1.0e-6;
+    if (pb.wall.active && pb.wall.coupled)
+    {
+        scalar ks = 0.0, Ds = 0.0;
+        for (std::size_t i = 0; i < C.L.Ni; ++i) { ks += pb.wall.k[i]; Ds += pb.wall.D[i]; }
+        C.xiRef = (Ds > 0.0 && ks > 0.0) ? ks / Ds : 1.0;
+    }
+    return C;
 }
 
 // A concentration from its logarithm; a trial whose logarithm leaves the
@@ -102,78 +177,316 @@ FluxTerms fittedFlux(const PoreIon& ion, scalar Jv, scalar h,
     return { Ph * bernoulli(-ah) * ck, Ph * bernoulli(ah) * ck1 };
 }
 
-sVector residual(const PoreProblem& pb, const Layout& L, const sVector& x)
+// ---- the residual and, when asked, its ANALYTIC Jacobian --------------------
+//  One pass computes both: every row's value and, into the three bands, its
+//  derivative with respect to every unknown it reads.  `Jb` null: residual
+//  only.  The row list is the header's ("THE EQUATIONS of block k").
+sVector evaluate(const PoreProblem& pb, const Context& C, const sVector& x,
+                 solver::BlockBands* Jb)
 {
-    const std::size_t Ni = L.Ni, N = L.N;
-    const scalar h  = 1.0 / scalar(N);
-    const scalar Jv = pb.Jv;
+    const Layout& L = C.L;
+    const std::size_t Ni = L.Ni, N = L.N, nv = L.nv;
+    const bool wallOn = pb.wall.active;
+    const bool actOn  = pb.activity.active;
 
-    std::vector<std::vector<scalar>> c(N + 1, std::vector<scalar>(Ni));
+    //  The concentrations and the permeate copies, node by node (flat
+    //  storage: this runs once per residual, thousands of times a run).
+    std::vector<scalar> cFlat((N + 1) * Ni), cpFlat((N + 1) * Ni);
     for (std::size_t k = 0; k <= N; ++k)
         for (std::size_t i = 0; i < Ni; ++i)
-            c[k][i] = expChecked(x[L.u(k, i)], "a pore concentration");
-    std::vector<scalar> cp(Ni);
-    for (std::size_t i = 0; i < Ni; ++i)
-        cp[i] = expChecked(x[L.v(N, i)], "a permeate concentration");
+        {
+            cFlat[k * Ni + i]  = expChecked(x[L.u(k, i)], "a pore concentration");
+            cpFlat[k * Ni + i] = expChecked(x[L.v(k, i)], "a permeate concentration");
+        }
+    struct Rows
+    {
+        const scalar* p; std::size_t n;
+        const scalar* operator[](std::size_t k) const { return p + k * n; }
+    };
+    const Rows c{ cFlat.data(), Ni }, cp{ cpFlat.data(), Ni };
+
+    // ---- the wall (7)-(8), at block 0's own copies --------------------------
+    const scalar J0  = C.Jref * x[L.jv(0)];
+    const scalar xi0 = C.xiRef * x[L.xs(0)];
+    WallAtField W;
+    if (wallOn)
+    {
+        std::vector<int> z(Ni);
+        for (std::size_t i = 0; i < Ni; ++i) z[i] = pb.ions[i].z;
+        const std::vector<scalar> cp0(cp[0], cp[0] + Ni);
+        W = wallAtField(pb.wall.suction, pb.wall.coupled, J0, pb.wall.k, pb.wall.D,
+                        z, pb.wall.cBulk, cp0, xi0,
+                        pb.wall.solutionDiffusion ? &pb.wall.B : nullptr);
+        if (!W.ok) throw InfeasibleTrial("pore ENP wall: " + W.reason);
+    }
+
+    // ---- the face activities (bulkOverPoreDavies) ---------------------------
+    std::vector<scalar> lgW(Ni, 0.0), dgW(Ni, 0.0), lg0(Ni, 0.0), dg0(Ni, 0.0),
+                        lgN(Ni, 0.0), dgN(Ni, 0.0), lgP(Ni, 0.0), dgP(Ni, 0.0);
+    if (actOn)
+    {
+        scalar Iw = 0.0, I0 = 0.0, IN = 0.0, Ip = 0.0;
+        for (std::size_t i = 0; i < Ni; ++i)
+        {
+            const scalar z2 = scalar(pb.ions[i].z) * scalar(pb.ions[i].z);
+            if (wallOn) Iw += 0.5 * z2 * W.c_m[i];
+            I0 += 0.5 * z2 * c[0][i];
+            IN += 0.5 * z2 * c[N][i];
+            Ip += 0.5 * z2 * cp[N][i];
+        }
+        for (std::size_t i = 0; i < Ni; ++i)
+        {
+            const int z = pb.ions[i].z;
+            if (wallOn) lgW[i] = daviesLnGamma(z, Iw / 1000.0, pb.activity.Asolution, &dgW[i]);
+            lg0[i] = daviesLnGamma(z, I0 / 1000.0, pb.activity.Apore, &dg0[i]);
+            lgN[i] = daviesLnGamma(z, IN / 1000.0, pb.activity.Apore, &dgN[i]);
+            lgP[i] = daviesLnGamma(z, Ip / 1000.0, pb.activity.Asolution, &dgP[i]);
+        }
+    }
 
     sVector F(x.size(), 0.0);
+    //  J[row block][column block][row slot][column slot] += value
+    auto add = [&](std::size_t rb, std::size_t rs, std::size_t cb, std::size_t cs, scalar v)
+    {
+        Jb->b[rb][cb + 1 - rb][rs][cs] += v;
+    };
+
     for (std::size_t k = 0; k <= N; ++k)
     {
-        const std::size_t row = k * L.nv;
-        // rows 0..Ni-1: the flux of [k, k+1], or the permeate partition
+        const std::size_t row = k * nv;
+        const scalar Jk = C.Jref * x[L.jv(k)];
+
+        // ---- rows 0..Ni-1: the flux of [k, k+1], or the permeate partition --
         for (std::size_t i = 0; i < Ni; ++i)
         {
             const PoreIon& ion = pb.ions[i];
+            const scalar z = scalar(ion.z);
             if (k < N)
             {
-                const FluxTerms t = fittedFlux(ion, Jv, h, c[k][i], c[k+1][i],
-                                               x[L.ps(k)], x[L.ps(k+1)]);
-                const scalar j = Jv * expChecked(x[L.v(k, i)],
-                                                 "a permeate concentration");
-                F[row + i] = (t.t1 - t.t2 - j)
-                           / (std::abs(t.t1) + std::abs(t.t2) + std::abs(j));
+                const scalar h  = C.h[k];
+                const scalar Ph = ion.P / h;
+                const scalar ah = ion.Kc * Jk * h / ion.P - z * (x[L.ps(k+1)] - x[L.ps(k)]);
+                const scalar Bm = bernoulli(-ah), Bp = bernoulli(ah);
+                const scalar t1 = Ph * Bm * c[k][i];
+                const scalar t2 = Ph * Bp * c[k+1][i];
+                const scalar jj = Jk * cp[k][i];
+                const scalar s  = t1 + t2 + std::abs(jj);
+                const scalar r  = t1 - t2 - jj;
+                const scalar f  = r / s;
+                F[row + i] = f;
+                if (Jb)
+                {
+                    const scalar dt1 = -Ph * bernoulliSlope(-ah) * c[k][i];   // d t1/d ah
+                    const scalar dt2 =  Ph * bernoulliSlope(ah)  * c[k+1][i]; // d t2/d ah
+                    const scalar sg  = (jj >= 0.0) ? 1.0 : -1.0;
+                    auto put = [&](std::size_t cb, std::size_t cs, scalar dr, scalar ds)
+                    { add(k, i, cb, cs, (dr - f * ds) / s); };
+                    put(k,     i,       t1,  t1);
+                    put(k + 1, i,      -t2,  t2);
+                    put(k,     Ni,      (dt1 - dt2) * z,  (dt1 + dt2) * z);
+                    put(k + 1, Ni,     -(dt1 - dt2) * z, -(dt1 + dt2) * z);
+                    const scalar dahdj = ion.Kc * h * C.Jref / ion.P;
+                    put(k, 2 * Ni + 2, (dt1 - dt2) * dahdj - C.Jref * cp[k][i],
+                                       (dt1 + dt2) * dahdj + sg * C.Jref * cp[k][i]);
+                    put(k, Ni + 1 + i, -jj, sg * jj);
+                }
             }
             else
             {
-                F[row + i] = x[L.u(N, i)] - std::log(ion.permSide)
-                           - x[L.v(N, i)]
-                           + scalar(ion.z) * (x[L.ps(N)] - x[L.pp(N)]);
+                scalar lnPerm = std::log(ion.permSide);
+                if (actOn) lnPerm += lgP[i] - lgN[i];
+                F[row + i] = x[L.u(N, i)] - lnPerm - x[L.v(N, i)]
+                           + z * (x[L.ps(N)] - x[L.pp(N)]);
+                if (Jb)
+                {
+                    add(N, i, N, i, 1.0);
+                    add(N, i, N, Ni + 1 + i, -1.0);
+                    add(N, i, N, Ni, z);
+                    add(N, i, N, 2 * Ni + 1, -z);
+                    if (actOn)
+                        for (std::size_t j = 0; j < Ni; ++j)
+                        {
+                            const scalar z2j = scalar(pb.ions[j].z) * scalar(pb.ions[j].z);
+                            add(N, i, N, Ni + 1 + j, -dgP[i] * 0.5 * z2j * cp[N][j] / 1000.0);
+                            add(N, i, N, j,           dgN[i] * 0.5 * z2j * c[N][j]  / 1000.0);
+                        }
+                }
             }
         }
-        // row Ni: electroneutrality at node k
+
+        // ---- row Ni: electroneutrality at node k ------------------------------
         {
-            scalar s = pb.Xd, a = std::abs(pb.Xd);
+            scalar r = pb.Xd, s = std::abs(pb.Xd);
             for (std::size_t i = 0; i < Ni; ++i)
             {
-                s += scalar(pb.ions[i].z) * c[k][i];
-                a += std::abs(scalar(pb.ions[i].z)) * c[k][i];
+                r += scalar(pb.ions[i].z) * c[k][i];
+                s += std::abs(scalar(pb.ions[i].z)) * c[k][i];
             }
-            F[row + Ni] = s / a;
+            const scalar f = r / s;
+            F[row + Ni] = f;
+            if (Jb)
+                for (std::size_t j = 0; j < Ni; ++j)
+                {
+                    const scalar z = scalar(pb.ions[j].z);
+                    add(k, Ni, k, j, (z * c[k][j] - f * std::abs(z) * c[k][j]) / s);
+                }
         }
-        // rows Ni+1..2Ni: the feed partition, or the copies held equal
+
+        // ---- rows Ni+1..2Ni: the feed partition with the wall, or the copies --
         for (std::size_t i = 0; i < Ni; ++i)
         {
             const PoreIon& ion = pb.ions[i];
-            F[row + Ni + 1 + i] = (k == 0)
-                ? x[L.u(0, i)] - std::log(ion.feedSide)
-                  + scalar(ion.z) * x[L.ps(0)]
-                : x[L.v(k, i)] - x[L.v(k - 1, i)];
+            const std::size_t rs = Ni + 1 + i;
+            if (k == 0)
+            {
+                scalar lnFeed = std::log(ion.feedSide);
+                if (wallOn) lnFeed += std::log(W.c_m[i]);
+                if (actOn)  lnFeed += lgW[i] - lg0[i];
+                F[row + rs] = x[L.u(0, i)] - lnFeed + scalar(ion.z) * x[L.ps(0)];
+                if (Jb)
+                {
+                    add(0, rs, 0, i, 1.0);
+                    add(0, rs, 0, Ni, scalar(ion.z));
+                    if (actOn)
+                        for (std::size_t j = 0; j < Ni; ++j)
+                        {
+                            const scalar z2j = scalar(pb.ions[j].z) * scalar(pb.ions[j].z);
+                            add(0, rs, 0, j, dg0[i] * 0.5 * z2j * c[0][j] / 1000.0);
+                        }
+                    if (wallOn)
+                    {
+                        //  d ln C_m,i and d ln gamma_wall,i through the wall
+                        //  unknowns: the permeate copies, J_v and xi'.
+                        for (std::size_t j = 0; j < Ni; ++j)
+                        {
+                            const scalar dcm_j = W.dc_dcp[j] * cp[0][j];   // dC_m,j/dv_j
+                            scalar d = (j == i) ? dcm_j / W.c_m[i] : 0.0;
+                            if (actOn)
+                                d += dgW[i] * 0.5 * scalar(pb.ions[j].z * pb.ions[j].z)
+                                   * dcm_j / 1000.0;
+                            add(0, rs, 0, Ni + 1 + j, -d);
+                        }
+                        scalar dJ  = W.dc_dJ[i]  * C.Jref  / W.c_m[i];
+                        scalar dXi = W.dc_dxi[i] * C.xiRef / W.c_m[i];
+                        if (actOn)
+                        {
+                            scalar sJ = 0.0, sX = 0.0;
+                            for (std::size_t l = 0; l < Ni; ++l)
+                            {
+                                const scalar z2l = scalar(pb.ions[l].z * pb.ions[l].z);
+                                sJ += 0.5 * z2l * W.dc_dJ[l]  * C.Jref  / 1000.0;
+                                sX += 0.5 * z2l * W.dc_dxi[l] * C.xiRef / 1000.0;
+                            }
+                            dJ  += dgW[i] * sJ;
+                            dXi += dgW[i] * sX;
+                        }
+                        add(0, rs, 0, 2 * Ni + 2, -dJ);
+                        add(0, rs, 0, 2 * Ni + 3, -dXi);
+                    }
+                }
+            }
+            else
+            {
+                F[row + rs] = x[L.v(k, i)] - x[L.v(k - 1, i)];
+                if (Jb) { add(k, rs, k, rs, 1.0); add(k, rs, k - 1, rs, -1.0); }
+            }
         }
-        // row 2Ni+1: the permeate potential held equal FORWARD (so each
-        // copy sits on its own block's diagonal), or, at the last node, zero
-        // current
+
+        // ---- row 2Ni+1: the permeate potential held equal FORWARD (so each
+        //      copy sits on its own block's diagonal), or zero current ----------
         if (k == N)
         {
-            scalar s = 0.0, a = 0.0;
+            scalar r = 0.0, s = 0.0;
             for (std::size_t i = 0; i < Ni; ++i)
             {
-                s += scalar(pb.ions[i].z) * cp[i];
-                a += std::abs(scalar(pb.ions[i].z)) * cp[i];
+                r += scalar(pb.ions[i].z) * cp[N][i];
+                s += std::abs(scalar(pb.ions[i].z)) * cp[N][i];
             }
-            F[row + 2 * Ni + 1] = s / a;
+            const scalar f = r / s;
+            F[row + 2 * Ni + 1] = f;
+            if (Jb)
+                for (std::size_t j = 0; j < Ni; ++j)
+                {
+                    const scalar z = scalar(pb.ions[j].z);
+                    add(N, 2 * Ni + 1, N, Ni + 1 + j,
+                        (z * cp[N][j] - f * std::abs(z) * cp[N][j]) / s);
+                }
         }
         else
+        {
             F[row + 2 * Ni + 1] = x[L.pp(k)] - x[L.pp(k + 1)];
+            if (Jb) { add(k, 2 * Ni + 1, k, 2 * Ni + 1, 1.0);
+                      add(k, 2 * Ni + 1, k + 1, 2 * Ni + 1, -1.0); }
+        }
+
+        // ---- row 2Ni+2: the water flux (9) or the imposed one, or the copy ----
+        if (k == 0)
+        {
+            if (pb.closure.active)
+            {
+                const scalar sc = pb.closure.Aw * pb.closure.dP;
+                scalar sm = 0.0, sp = 0.0;
+                for (std::size_t i = 0; i < Ni; ++i) { sm += W.c_m[i]; sp += cp[0][i]; }
+                const scalar ART = pb.closure.Aw * pb.closure.RT;
+                F[row + 2 * Ni + 2] = (J0 - pb.closure.Aw * pb.closure.dP + ART * (sm - sp)) / sc;
+                if (Jb)
+                {
+                    scalar dJ = C.Jref, dX = 0.0;
+                    for (std::size_t i = 0; i < Ni; ++i)
+                    {
+                        dJ += ART * W.dc_dJ[i] * C.Jref;
+                        dX += ART * W.dc_dxi[i] * C.xiRef;
+                        add(0, 2 * Ni + 2, 0, Ni + 1 + i,
+                            ART * (W.dc_dcp[i] * cp[0][i] - cp[0][i]) / sc);
+                    }
+                    add(0, 2 * Ni + 2, 0, 2 * Ni + 2, dJ / sc);
+                    add(0, 2 * Ni + 2, 0, 2 * Ni + 3, dX / sc);
+                }
+            }
+            else
+            {
+                F[row + 2 * Ni + 2] = x[L.jv(0)] - pb.Jv / C.Jref;
+                if (Jb) add(0, 2 * Ni + 2, 0, 2 * Ni + 2, 1.0);
+            }
+        }
+        else
+        {
+            F[row + 2 * Ni + 2] = x[L.jv(k)] - x[L.jv(k - 1)];
+            if (Jb) { add(k, 2 * Ni + 2, k, 2 * Ni + 2, 1.0);
+                      add(k, 2 * Ni + 2, k - 1, 2 * Ni + 2, -1.0); }
+        }
+
+        // ---- row 2Ni+3: electroneutrality AT THE WALL (8), or the idle slot ---
+        if (k == 0 && wallOn && pb.wall.coupled)
+        {
+            scalar r = 0.0, s = 0.0;
+            for (std::size_t i = 0; i < Ni; ++i)
+            {
+                r += scalar(pb.ions[i].z) * W.c_m[i];
+                s += std::abs(scalar(pb.ions[i].z)) * W.c_m[i];
+            }
+            const scalar f = r / s;
+            F[row + 2 * Ni + 3] = f;
+            if (Jb)
+            {
+                scalar dJr = 0.0, dJs = 0.0, dXr = 0.0, dXs = 0.0;
+                for (std::size_t i = 0; i < Ni; ++i)
+                {
+                    const scalar z = scalar(pb.ions[i].z), az = std::abs(z);
+                    const scalar dv = W.dc_dcp[i] * cp[0][i];
+                    add(0, 2 * Ni + 3, 0, Ni + 1 + i, (z * dv - f * az * dv) / s);
+                    dJr += z * W.dc_dJ[i] * C.Jref;   dJs += az * W.dc_dJ[i] * C.Jref;
+                    dXr += z * W.dc_dxi[i] * C.xiRef; dXs += az * W.dc_dxi[i] * C.xiRef;
+                }
+                add(0, 2 * Ni + 3, 0, 2 * Ni + 2, (dJr - f * dJs) / s);
+                add(0, 2 * Ni + 3, 0, 2 * Ni + 3, (dXr - f * dXs) / s);
+            }
+        }
+        else
+        {
+            F[row + 2 * Ni + 3] = x[L.xs(k)];
+            if (Jb) add(k, 2 * Ni + 3, k, 2 * Ni + 3, 1.0);
+        }
     }
     return F;
 }
@@ -183,6 +496,8 @@ void validate(const PoreProblem& pb, const PoreSettings& s)
     const std::string ctx = "pore ENP solver: ";
     if (s.intervals < 2)
         throw std::runtime_error(ctx + "`nodes` must give at least 2 intervals");
+    if (!(s.grading >= 0.0) || !std::isfinite(s.grading))
+        throw std::runtime_error(ctx + "the grid grading must be finite and >= 0");
     bool pos = false, neg = false;
     for (const PoreIon& io : pb.ions)
     {
@@ -198,31 +513,61 @@ void validate(const PoreProblem& pb, const PoreSettings& s)
     if (!pos || !neg)
         throw std::runtime_error(ctx + "the pore needs at least one cation and"
             " one anion (electroneutrality has no solution otherwise)");
-    if (!(pb.Jv >= 0.0) || !std::isfinite(pb.Jv))
+    const std::size_t Ni = pb.ions.size();
+    if (pb.wall.active)
+    {
+        if (pb.wall.cBulk.size() != Ni || pb.wall.k.size() != Ni
+            || pb.wall.D.size() != Ni
+            || (pb.wall.solutionDiffusion && pb.wall.B.size() != Ni))
+            throw std::logic_error(ctx + "the wall's per-ion vectors do not match the ions");
+        for (std::size_t i = 0; i < Ni; ++i)
+            if (!(pb.wall.cBulk[i] > 0.0))
+                throw std::runtime_error(ctx + "an ion with no bulk concentration"
+                    " was handed to the wall -- an absent ion is not a term");
+    }
+    if (pb.closure.active)
+    {
+        if (!pb.wall.active)
+            throw std::logic_error(ctx + "the water-flux closure reads the wall:"
+                                         " it needs PoreProblem::wall");
+        if (!(pb.closure.Aw > 0.0) || !(pb.closure.dP > 0.0) || !(pb.closure.RT > 0.0))
+            throw std::runtime_error(ctx + "the water-flux closure needs A_w > 0,"
+                                           " dP > 0 and RT > 0");
+    }
+    else if (!(pb.Jv >= 0.0) || !std::isfinite(pb.Jv))
         throw std::runtime_error(ctx + "the water flux must be finite and >= 0");
+    if (pb.activity.active && !pb.wall.active)
+        throw std::logic_error(ctx + "the face activities read the wall: they"
+                                     " need PoreProblem::wall");
 }
 
-PoreSolution solveFrom(const PoreProblem& pb, const PoreSettings& s,
-                       sVector x0)
+PoreSolution solveFrom(const PoreProblem& pb, const PoreSettings& s, sVector x0)
 {
-    const Layout L = layoutOf(pb, s.intervals);
+    const Context C = contextOf(pb, s);
+    const Layout& L = C.L;
     solver::NDOptions o;
     o.tolerance          = s.tolerance;
     o.maxIter            = s.maxIter;
     o.blockTri.nBlocks   = L.N + 1;
     o.blockTri.blockSize = L.nv;
     o.blockTri.audit     = s.audit;
-    auto F = [&](const sVector& x) { return residual(pb, L, x); };
+    if (!s.finiteDifferenceJacobian)
+        o.blockTri.jacobian = [&](const sVector& x, solver::BlockBands& J)
+        { evaluate(pb, C, x, &J); };
+    auto F = [&](const sVector& x) { return evaluate(pb, C, x, nullptr); };
     const solver::NDResult r = solver::newtonND(F, std::move(x0), o);
 
     PoreSolution out;
     out.converged     = r.converged;
     out.iterations    = r.iterations;
+    out.iterationsTotal = r.iterations;
     out.residual      = r.residual;
     out.offBandMax    = std::isfinite(r.offBandMax) ? r.offBandMax : -1.0;
+    out.jacobianMismatch = std::isfinite(r.analyticMismatch) ? r.analyticMismatch : -1.0;
     out.jacobianEvals = r.jacobianEvals;
     out.stopReason    = r.stopReason;
     out.intervals     = L.N;
+    out.grid          = C.grid;
     out.x             = r.x;
 
     const std::size_t Ni = L.Ni, N = L.N;
@@ -236,23 +581,43 @@ PoreSolution solveFrom(const PoreProblem& pb, const PoreSettings& s,
     }
     for (std::size_t i = 0; i < Ni; ++i) out.cPerm[i] = std::exp(r.x[L.v(N, i)]);
     out.psiPerm = r.x[L.pp(N)];
+    out.Jv      = C.Jref * r.x[L.jv(0)];
+    if (pb.wall.active)
+    {
+        out.xiPrime = pb.wall.coupled ? C.xiRef * r.x[L.xs(0)] : 0.0;
+        std::vector<scalar> cp0(Ni);
+        std::vector<int> z(Ni);
+        for (std::size_t i = 0; i < Ni; ++i)
+        { cp0[i] = std::exp(r.x[L.v(0, i)]); z[i] = pb.ions[i].z; }
+        const WallAtField W = wallAtField(pb.wall.suction, pb.wall.coupled, out.Jv,
+            pb.wall.k, pb.wall.D, z, pb.wall.cBulk, cp0, out.xiPrime,
+            pb.wall.solutionDiffusion ? &pb.wall.B : nullptr);
+        out.cWall = W.c_m;
+        if (pb.wall.coupled && W.ok)
+        {
+            scalar q = 0.0, qa = 0.0;
+            for (std::size_t i = 0; i < Ni; ++i)
+            { q += z[i] * W.c_m[i]; qa += std::abs(scalar(z[i])) * W.c_m[i]; }
+            out.wallChargeMax = qa > 0.0 ? std::abs(q) / qa : 0.0;
+        }
+    }
 
     //  Measured on the answer: every interval's flux against J_v c_perm,i
     //  -- relative to the two fitted terms it nets (what the Newton drove
     //  to round-off) AND relative to the net flux itself -- the STIFFNESS
     //  ratio, the electromigration flux against the net flux, the current
     //  and the electroneutrality.
-    const scalar h = 1.0 / scalar(N);
     scalar fluxMax = 0.0, fluxRel = 0.0, stiff = 0.0, enMax = 0.0;
     scalar zj = 0.0, azj = 0.0;
     for (std::size_t i = 0; i < Ni; ++i)
     {
-        const scalar j = pb.Jv * out.cPerm[i];
+        const scalar j = out.Jv * out.cPerm[i];
         zj  += scalar(pb.ions[i].z) * j;
         azj += std::abs(scalar(pb.ions[i].z)) * j;
         for (std::size_t k = 0; k < N; ++k)
         {
-            const FluxTerms t = fittedFlux(pb.ions[i], pb.Jv, h, out.c[k][i],
+            const scalar h = C.h[k];
+            const FluxTerms t = fittedFlux(pb.ions[i], out.Jv, h, out.c[k][i],
                                            out.c[k+1][i], out.psi[k],
                                            out.psi[k+1]);
             const scalar terms = std::abs(t.t1) + std::abs(t.t2);
@@ -316,13 +681,15 @@ scalar localDonnan(const PoreProblem& pb, const std::vector<scalar>& la)
 }
 
 // ---- the seed ---------------------------------------------------------------
-sVector seedVector(const PoreProblem& pb, const Layout& L,
-                   const std::vector<scalar>& cPerm)
+sVector seedVector(const PoreProblem& pb, const Context& C,
+                   const std::vector<scalar>& cPerm, scalar Jseed)
 {
     //  THE SEED: LOCAL DONNAN EQUILIBRIUM.  Each ion's "reservoir" value
-    //  a_i runs log-linear from the feed face (feedSide_i) to the permeate
-    //  face (permSide_i c_perm,i), and at every node the potential is the
-    //  one that makes the pore ELECTRONEUTRAL against those reservoirs:
+    //  a_i runs log-linear (in node index) from the feed face (feedSide_i,
+    //  times the wall concentration at the seed when the wall is folded in)
+    //  to the permeate face (permSide_i c_perm,i), and at every node the
+    //  potential is the one that makes the pore ELECTRONEUTRAL against those
+    //  reservoirs:
     //      sum_i z_i a_i(xi) e^{-z_i psi} + X_d = 0,
     //  monotone in psi, so a bisection finds it.  The seed therefore
     //  satisfies both partitions and electroneutrality at every node
@@ -332,16 +699,30 @@ sVector seedVector(const PoreProblem& pb, const Layout& L,
     //  (log-linear concentrations, a flat potential) was MEASURED to send
     //  the Newton into overflow on a strongly charged pore with a divalent
     //  co-ion, which is why this one is built.
+    const Layout& L = C.L;
     sVector x(L.nv * (L.N + 1), 0.0);
-    std::vector<scalar> la0(L.Ni), laN(L.Ni);
+    std::vector<scalar> la0(L.Ni), laN(L.Ni), cps(L.Ni);
     for (std::size_t i = 0; i < L.Ni; ++i)
     {
         const PoreIon& io = pb.ions[i];
-        const scalar cp = cPerm[i] > 0.0 ? cPerm[i]
-                                              : 1.0e-6 * io.feedSide;
-        la0[i] = std::log(io.feedSide);
-        laN[i] = std::log(io.permSide * cp);
-        for (std::size_t k = 0; k <= L.N; ++k) x[L.v(k, i)] = std::log(cp);
+        cps[i] = cPerm[i] > 0.0 ? cPerm[i] : 1.0e-6 * io.feedSide / io.permSide;
+    }
+    std::vector<scalar> cm(L.Ni, 1.0);
+    if (pb.wall.active)
+    {
+        std::vector<int> z(L.Ni);
+        for (std::size_t i = 0; i < L.Ni; ++i) z[i] = pb.ions[i].z;
+        const WallAtField W = wallAtField(pb.wall.suction, pb.wall.coupled, Jseed,
+            pb.wall.k, pb.wall.D, z, pb.wall.cBulk, cps, 0.0,
+            pb.wall.solutionDiffusion ? &pb.wall.B : nullptr);
+        cm = W.ok ? W.c_m : pb.wall.cBulk;
+    }
+    for (std::size_t i = 0; i < L.Ni; ++i)
+    {
+        const PoreIon& io = pb.ions[i];
+        la0[i] = std::log(io.feedSide * cm[i]);
+        laN[i] = std::log(io.permSide * cps[i]);
+        for (std::size_t k = 0; k <= L.N; ++k) x[L.v(k, i)] = std::log(cps[i]);
     }
     std::vector<scalar> la(L.Ni);
     for (std::size_t k = 0; k <= L.N; ++k)
@@ -351,6 +732,8 @@ sVector seedVector(const PoreProblem& pb, const Layout& L,
         const scalar psi = localDonnan(pb, la);
         x[L.ps(k)] = psi;
         x[L.pp(k)] = 0.0;      // psi(1) - psi_perm is the local Donnan at N
+        x[L.jv(k)] = Jseed / C.Jref;
+        x[L.xs(k)] = 0.0;
         for (std::size_t i = 0; i < L.Ni; ++i)
             x[L.u(k, i)] = la[i] - scalar(pb.ions[i].z) * psi;
     }
@@ -360,50 +743,81 @@ sVector seedVector(const PoreProblem& pb, const Layout& L,
     return x;
 }
 
-// ---- continuation in the water flux -----------------------------------------
-//  When the Newton fails from the seed it was handed, the pore is solved
-//  again from the one state that is EXACT without any Newton: at J_v = 0
-//  no flux crosses, the pore is in Donnan equilibrium with both baths and
-//  the permeate equals the feed, which is what the local-Donnan seed
-//  builds when it is handed c_perm,i = feedSide_i/permSide_i.  From a tiny
-//  J_v (a Peclet number of 1e-4 on every ion) the flux is raised
-//  geometrically to the target, each solve warm-started from the last; a
-//  failed step shortens the ratio.  A solver aid, so it is COUNTED
-//  (PoreSolution::continuationSteps) for the caller to announce.
+//  A state with its water-flux copies re-expressed in THIS problem's J_ref
+//  (a warm start from another station, or from the previous step of the
+//  continuation, carries its own reference).
+sVector withFlux(sVector x, const Context& C, scalar Jv)
+{
+    for (std::size_t k = 0; k <= C.L.N; ++k) x[C.L.jv(k)] = Jv / C.Jref;
+    return x;
+}
+
+scalar seedFlux(const PoreProblem& pb, scalar Jv)
+{
+    if (Jv >= 0.0) return Jv;
+    return pb.closure.active ? 0.5 * pb.closure.Aw * pb.closure.dP : pb.Jv;
+}
+
+// ---- continuation in the drive ---------------------------------------------
+//  When the Newton fails from the seed it was handed, the station is solved
+//  again from the one state that is EXACT without any Newton: with no flux
+//  nothing crosses, the pore is in Donnan equilibrium with both baths and
+//  the permeate is the feed-face reservoir over the permeate partition,
+//  c_perm,i = feedSide_i C_b,i / permSide_i, which is what the local-Donnan
+//  seed builds when it is handed that permeate.  From a tiny drive (a
+//  Peclet number of 1e-4 on every ion) the DRIVE -- the imposed J_v, or dP
+//  under the closure -- is raised geometrically to the target, each solve
+//  warm-started from the last; a failed step shortens the ratio.  A solver
+//  aid, so it is COUNTED (PoreSolution::continuationSteps) for the caller
+//  to announce.
 PoreSolution continuation(const PoreProblem& pb, const PoreSettings& s,
-                          const Layout& L, const std::string& why)
+                          const std::string& why)
 {
     PoreSettings sc = s;
     sc.audit = false;
+    const Context C = contextOf(pb, s);
+    const std::size_t Ni = C.L.Ni;
     scalar Jstart = std::numeric_limits<scalar>::max();
-    std::vector<scalar> cEq(L.Ni);
-    for (std::size_t i = 0; i < L.Ni; ++i)
+    std::vector<scalar> cEq(Ni);
+    for (std::size_t i = 0; i < Ni; ++i)
     {
         Jstart = std::min(Jstart, 1.0e-4 * pb.ions[i].P / pb.ions[i].Kc);
-        cEq[i] = pb.ions[i].feedSide / pb.ions[i].permSide;
+        cEq[i] = pb.ions[i].feedSide * (pb.wall.active ? pb.wall.cBulk[i] : 1.0)
+               / pb.ions[i].permSide;
     }
-    PoreProblem q = pb;
-    q.Jv = std::min(pb.Jv, Jstart);
+    const scalar drive = pb.closure.active ? pb.closure.Aw * pb.closure.dP : pb.Jv;
+    scalar t = (drive > 0.0) ? std::min(1.0, Jstart / drive) : 1.0;
+    auto atT = [&](scalar tt)
+    {
+        PoreProblem q = pb;
+        if (q.closure.active) q.closure.dP = tt * pb.closure.dP;
+        else                  q.Jv         = tt * pb.Jv;
+        return q;
+    };
     PoreSolution r;
+    int iterSum = 0;
     {
         AdvisoryFrame trial("pore ENP continuation", true);
-        r = solveFrom(q, sc, seedVector(q, L, cEq));
+        const PoreProblem q = atT(t);
+        r = solveFrom(q, sc, seedVector(q, contextOf(q, sc), cEq, t * drive));
+        iterSum += r.iterations;
     }
     int steps = 1;
     scalar ratio = 4.0;
-    while (r.converged && q.Jv < pb.Jv && steps < 400)
+    while (r.converged && t < 1.0 && steps < 400)
     {
-        PoreProblem next = pb;
-        next.Jv = std::min(pb.Jv, q.Jv * ratio);
+        const scalar tn = std::min(1.0, t * ratio);
         PoreSolution rn;
         {
             AdvisoryFrame trial("pore ENP continuation", true);
-            rn = solveFrom(next, sc, r.x);
+            const PoreProblem q = atT(tn);
+            rn = solveFrom(q, sc, withFlux(r.x, contextOf(q, sc), r.Jv));
+            iterSum += rn.iterations;
         }
         ++steps;
         if (rn.converged)
         {
-            q = next; r = std::move(rn);
+            t = tn; r = std::move(rn);
             ratio = std::min(ratio * 2.0, 100.0);
         }
         else
@@ -412,17 +826,31 @@ PoreSolution continuation(const PoreProblem& pb, const PoreSettings& s,
             if (ratio < 1.0 + 1.0e-3) break;
         }
     }
-    if (!(r.converged && q.Jv >= pb.Jv))
+    if (!(r.converged && t >= 1.0))
     {
         r.converged  = false;
-        r.stopReason = "continuation in J_v stalled at J_v = "
-                     + std::to_string(q.Jv) + " m/s of " + std::to_string(pb.Jv)
-                     + " after " + std::to_string(steps) + " solves (the"
+        r.stopReason = std::string("continuation in the ")
+                     + (pb.closure.active ? "applied pressure" : "imposed J_v")
+                     + " stalled at " + std::to_string(t) + " of the target"
+                       " after " + std::to_string(steps) + " solves (the"
                        " direct Newton had stopped: " + why + ")";
     }
     r.continuationSteps = steps;
     r.directFailure     = why;
+    r.iterationsTotal   = iterSum;
     return r;
+}
+
+PoreSolution finish(const PoreProblem& pb, const PoreSettings& s, PoreSolution r)
+{
+    if (r.converged) return r;
+    PoreSolution c = continuation(pb, s, r.stopReason.empty()
+                         ? std::string("no convergence in maxIter") : r.stopReason);
+    c.offBandMax       = r.offBandMax;       // the audit was taken on the first try
+    c.jacobianMismatch = r.jacobianMismatch;
+    c.jacobianEvals   += r.jacobianEvals;
+    c.iterationsTotal += r.iterations;
+    return c;
 }
 
 } // anonymous namespace
@@ -431,42 +859,71 @@ PoreSolution solve(const PoreProblem& pb, const PoreSettings& s,
                    const PoreSeed& seed)
 {
     validate(pb, s);
-    const Layout L = layoutOf(pb, s.intervals);
-    if (seed.cPerm.size() != L.Ni)
+    const Context C = contextOf(pb, s);
+    if (seed.cPerm.size() != C.L.Ni)
         throw std::runtime_error("pore ENP solver: the seed carries "
             + std::to_string(seed.cPerm.size()) + " permeate concentrations"
-            " for " + std::to_string(L.Ni) + " ions");
+            " for " + std::to_string(C.L.Ni) + " ions");
     PoreSolution r;
     {
         AdvisoryFrame trial("pore ENP from the seed", true);
-        r = solveFrom(pb, s, seedVector(pb, L, seed.cPerm));
+        r = solveFrom(pb, s, seedVector(pb, C, seed.cPerm, seedFlux(pb, seed.Jv)));
     }
-    if (r.converged) return r;
-    PoreSolution c = continuation(pb, s, L, r.stopReason.empty()
-                         ? std::string("no convergence in maxIter") : r.stopReason);
-    c.offBandMax    = r.offBandMax;       // the audit was taken on the seed
-    c.jacobianEvals += r.jacobianEvals;
-    return c;
+    return finish(pb, s, std::move(r));
 }
 
 PoreSolution solve(const PoreProblem& pb, const PoreSettings& s,
                    const PoreSolution& warm)
 {
     validate(pb, s);
-    const Layout L = layoutOf(pb, s.intervals);
-    if (warm.x.size() != L.nv * (L.N + 1))
+    const Context C = contextOf(pb, s);
+    if (warm.x.size() != C.L.nv * (C.L.N + 1))
         throw std::runtime_error("pore ENP solver: a warm start from a"
             " solution on a different grid or ion list");
+    //  The warm state carries its own J_v / J_ref; the reference of THIS
+    //  problem may differ (the next station's dP): rescale the copies.
     PoreSolution r;
     {
         AdvisoryFrame trial("pore ENP warm start", true);
-        r = solveFrom(pb, s, warm.x);
+        r = solveFrom(pb, s, withFlux(warm.x, C, warm.Jv));
     }
-    if (r.converged) return r;
-    PoreSolution c = continuation(pb, s, L, r.stopReason.empty()
-                         ? std::string("no convergence in maxIter") : r.stopReason);
-    c.jacobianEvals += r.jacobianEvals;
-    return c;
+    return finish(pb, s, std::move(r));
+}
+
+PoreSolution audit(const PoreProblem& pb, const PoreSettings& s,
+                   const PoreSeed& seed)
+{
+    validate(pb, s);
+    const Context C = contextOf(pb, s);
+    PoreSettings sa = s;
+    sa.audit    = true;
+    sa.maxIter  = 1;
+    sa.finiteDifferenceJacobian = false;
+    AdvisoryFrame trial("pore ENP audit", true);
+    return solveFrom(pb, sa, seedVector(pb, C, seed.cPerm, seedFlux(pb, seed.Jv)));
+}
+
+// ---- the test surface ---------------------------------------------------------
+std::size_t blockSize(const PoreProblem& pb) { return 2 * pb.ions.size() + 4; }
+
+sVector residualAt(const PoreProblem& pb, const PoreSettings& s, const sVector& x)
+{
+    return evaluate(pb, contextOf(pb, s), x, nullptr);
+}
+
+void jacobianAt(const PoreProblem& pb, const PoreSettings& s, const sVector& x,
+                solver::BlockBands& J)
+{
+    const Context C = contextOf(pb, s);
+    J = solver::BlockBands(C.L.N + 1, C.L.nv);
+    evaluate(pb, C, x, &J);
+}
+
+sVector seedOf(const PoreProblem& pb, const PoreSettings& s, const PoreSeed& seed)
+{
+    validate(pb, s);
+    const Context C = contextOf(pb, s);
+    return seedVector(pb, C, seed.cPerm, seedFlux(pb, seed.Jv));
 }
 
 } // namespace pore

@@ -184,7 +184,22 @@ const std::string& word(IonCoupling c);
 PolarisationPolicy readPolarisationPolicy(const DictPtr& operation);
 
 //- Xi_i for the declared correction at phi = J_v/k  (Eq. 5, Eq. 6, or 1).
+//  Defined, with suctionFactorSlope and wallAtField below, in
+//  InterfaceBalance.cpp: the half of this home that reads no dictionary, so
+//  the pore solver and its gate probe link it alone (C142).
 scalar suctionFactor(SuctionCorrection s, scalar phi);
+
+namespace detail {
+//  THE EXPLICIT WALL at a given migration term zDxi = z_i D_i xi' (0 when
+//  uncoupled): C_m = (k* C_b - J_v C_p) / (k* - J_v + zDxi).  ONE helper for
+//  the kernel's final evaluation and for wallAtField (C142), so the two
+//  cannot drift apart; with zDxi = 0.0 the denominator is (k* - J_v) to the
+//  last bit, which is what keeps every uncoupled golden unmoved.
+inline scalar wallAt(scalar kstar, scalar J_v, scalar c_b, scalar c_p, scalar zDxi)
+{
+    return (kstar * c_b - J_v * c_p) / ((kstar - J_v) + zDxi);
+}
+} // namespace detail
 
 //- The wall at one station: what the kernel returns.
 struct WallSolution
@@ -238,6 +253,55 @@ WallSolution wallWithSolutionDiffusion(const PolarisationPolicy&       policy,
                                        scalar                          T_K,
                                        const std::vector<std::string>& names,
                                        std::vector<scalar>&            c_p);
+
+//- dXi/dphi of the declared correction: the derivative of Eq. (5), of
+//  Eq. (6), or 0 for `none` (Xi = 1).  A Newton that carries J_v as an
+//  unknown (the DSPM-DE station solve, C142) needs it, because k* = k Xi(J_v/k)
+//  moves with J_v: dk*/dJ_v = dXi/dphi.
+scalar suctionFactorSlope(SuctionCorrection s, scalar phi);
+
+//- THE INTERFACE BALANCE AT A GIVEN FIELD, with its partial derivatives
+//  (C142, 2026-10-24).  For a GIVEN xi' every wall concentration is explicit
+//  -- the same expression the kernel above evaluates once it has found its
+//  xi', and evaluated by the SAME helper, so the two cannot drift apart:
+//
+//      C_{i,m} = num_i / den_i,
+//      num_i = k*_i C_{i,b} - J_v C_{i,p},   den_i = k*_i - J_v + z_i D_i xi'
+//
+//  With `B` handed in (non-null), the permeate in Eq. (1) is the
+//  solution-diffusion closure C_{i,p} = B_i C_{i,m}/(J_v + B_i) -- the wall
+//  of wallWithSolutionDiffusion -- and the expression becomes
+//      C_{i,m} = k*_i C_{i,b} / (k*_i - J_v + z_i D_i xi' + J_v B_i/(J_v + B_i)),
+//  which reads no c_p at all.  `coupled` false drops the migration term (xi'
+//  unread, D unread -- it may be NaN there, as for the kernel).
+//
+//  This is what lets a transport law carry the wall INSIDE its own Newton
+//  instead of around it: the solved DSPM-DE pore makes (c_p, J_v, xi') its
+//  unknowns and electroneutrality at the wall (Eq. 8) one of its rows.  The
+//  derivatives are exact (the Newton that uses them is checked against
+//  finite differences by bin/curate/check_pore_solver.py).  ok = false names
+//  the first solute whose numerator or denominator is not positive -- a
+//  TRIAL wall for the caller's line search to back away from, never a
+//  refusal on its own.
+struct WallAtField
+{
+    std::vector<scalar> c_m;      // the wall concentration (units of c_b)
+    std::vector<scalar> dc_dcp;   // dC_{i,m}/dC_{i,p} (C_{i,m} reads no other permeate)
+    std::vector<scalar> dc_dxi;   // dC_{i,m}/dxi'
+    std::vector<scalar> dc_dJ;    // dC_{i,m}/dJ_v
+    bool        ok = true;
+    std::string reason;
+};
+WallAtField wallAtField(SuctionCorrection          suction,
+                        bool                       coupled,
+                        scalar                     J_v,
+                        const std::vector<scalar>& k,
+                        const std::vector<scalar>& D,
+                        const std::vector<int>&    z,
+                        const std::vector<scalar>& c_b,
+                        const std::vector<scalar>& c_p,
+                        scalar                     xiPrime,
+                        const std::vector<scalar>* B);
 
 //- Refuse, by name, a wall the kernel could not satisfy.  `site` names the
 //  law or op asking.

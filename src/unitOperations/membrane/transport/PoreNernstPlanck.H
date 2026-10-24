@@ -30,19 +30,21 @@ Namespace
 
 Description
     The extended Nernst-Planck (ENP) equations SOLVED across a charged pore:
-    discretised by finite differences on N intervals, every node solved at
-    once by Newton on the DECLARED block-tridiagonal structure.  This is the
-    method of NanoFiltran (Geraldes & Alves, "Computer program for
-    simulation of mass transport in nanofiltration membranes", J. Membr.
-    Sci. 321 (2008) 172-182): the ENP discretised inside the membrane,
-    linearised, and all nodes solved simultaneously -- because the problem
-    is STIFF (a strongly excluded co-ion sits orders of magnitude below the
-    counter-ion, and the drift and diffusion terms of its flux nearly
-    cancel), and an explicit march across it converges where it was tuned
-    and almost nowhere else.  Compared with NanoFiltran itself on the same
-    model since C138 slice 2: tutorials/props/membrane/
-    nanofiltran01_dspmde_reference and bin/curate/check_nanofiltran_reference.py
-    (the two programs' extrapolations agree within 8e-7 on every row).
+    discretised by finite differences on N intervals of a grid GRADED toward
+    both faces, every node solved at once by Newton on the DECLARED
+    block-tridiagonal structure with an ANALYTIC Jacobian.  The method of
+    NanoFiltran (Geraldes & Alves, "Computer program for simulation of mass
+    transport in nanofiltration membranes", J. Membr. Sci. 321 (2008)
+    172-182) is the ENP discretised inside the membrane, linearised and all
+    nodes solved simultaneously -- because the problem is STIFF (a strongly
+    excluded co-ion sits orders of magnitude below the counter-ion, and the
+    drift and diffusion terms of its flux nearly cancel).  NanoFiltran is
+    the REFERENCE this solver is compared with
+    (tutorials/props/membrane/nanofiltran01_dspmde_reference,
+    bin/curate/check_nanofiltran_reference.py); since C142 (2026-10-24,
+    Vitor: "Eu quero que facas um solver melhor!") it is not the method this
+    file copies -- the differences below are each measured in
+    docs/design/a-stiff-pore-solved-at-once.md section 11.
 
     THE PROBLEM, per ion i on the dimensionless pore coordinate xi = x/dx
     in [0, 1] (psi is the potential in RT/F units, relative to the FEED
@@ -68,52 +70,98 @@ Description
       steric x Born) -- this file holds no partition model of its own, so
       the law's one home for them stays the only one.
 
+    THE STATION, when the caller hands the wall and the water flux in too
+    (PoreProblem::wall, ::activity, ::closure -- what DSPM-DE does since
+    C142; the fixed-face problem above stays available, the gate's probe
+    uses it):
+      the feed-face wall concentration of every ion from the film's
+      interface balance, Geraldes & Afonso, J. Membr. Sci. 300 (2007) 20,
+      AT THE FIELD xi' THE NEWTON CARRIES (membrane::wallAtField, the one
+      home of that equation), closed with the permeate (2) of THIS pore
+      (`wallClosure porePermeate`) or with the salts' solution-diffusion
+      B_s (`solutionDiffusion`):
+        feedSide_i = partition_i C_m,i(c_perm, J_v, xi')               (7)
+      electroneutrality AT THE WALL when the film is coupled
+      (`ionCoupling electroneutral`), xi' = 0 otherwise:
+        sum_i z_i C_m,i = 0                                            (8)
+      the water flux, imposed (the props bench) or CLOSED:
+        J_v = A_w (dP - R T (sum_i C_m,i - sum_i c_perm,i))             (9)
+      and, with `activity bulkOverPoreDavies`, the Davies coefficients at
+      both faces evaluated on the answer's own ionic strengths (wall,
+      first pore node, last pore node, permeate) -- not by a fixed point
+      around the solve.
+    Before C142 the wall was a Newton AROUND the pore and the water flux a
+    secant AROUND that (each wall evaluation a full pore solve): the three
+    are now ONE Newton, because (7)-(9) read only the first node's unknowns
+    and fit the block structure as they stand -- no bordering, no dense
+    solve.
+
     THE FLUX BETWEEN TWO NODES -- exponentially fitted (Scharfetter-Gummel).
-    On the interval [k, k+1] of width h the coefficients of (1) are frozen
+    On the interval [k, k+1] of width h_k the coefficients of (1) are frozen
     and the potential is taken linear, so (1) is a linear ODE whose EXACT
     solution gives the discrete flux
-        N_i = (P_i/h) [ B(-a h) c_k - B(a h) c_{k+1} ],
-        a h  = K_c,i J_v h / P_i - z_i (psi_{k+1} - psi_k),
+        N_i = (P_i/h_k) [ B(-a) c_k - B(a) c_{k+1} ],
+        a    = K_c,i J_v h_k / P_i - z_i (psi_{k+1} - psi_k),
         B(x) = x / (e^x - 1)  (the Bernoulli function).
     WHY this and not a central difference: a central difference of (1) is
-    free of spurious oscillation only while the cell Peclet number |a h|
+    free of spurious oscillation only while the cell Peclet number |a|
     stays below 2, and a strongly excluded co-ion crosses a steep profile
-    far above it; the fitted flux is exact for a uniform drift, so it stays
-    monotone at any cell Peclet number and reduces to central differences
-    where the drift vanishes.  It is the standard cure for drift-diffusion
-    stiffness in semiconductor device simulation, where the same equations
-    are solved.  On a smooth profile it is second order -- which the
-    grid-convergence arm of bin/curate/check_pore_solver.py MEASURES rather
-    than assumes.
+    far above it; the fitted flux is exact for a uniform drift on ANY cell
+    (uniform or not), so it stays monotone at any cell Peclet number and
+    reduces to central differences where the drift vanishes.  It is the
+    standard cure for drift-diffusion stiffness in semiconductor device
+    simulation, where the same equations are solved.  On a smooth profile
+    it is second order -- which the grid-convergence arms of
+    bin/curate/check_pore_solver.py MEASURE rather than assume.
 
-    THE UNKNOWNS, one block per node k = 0..N (block size 2 Ni + 2):
+    THE GRID (C142): graded toward BOTH faces by a symmetric tanh map,
+        xi_k = (1 + tanh(beta (2k/N - 1)) / tanh(beta)) / 2,
+    so the cells are smallest where the profiles bend -- at the faces, where
+    the convective boundary layer of a high-Peclet co-ion sits (the permeate
+    face) and where the Donnan field is steepest.  A smooth map keeps the
+    order (2, measured); beta = 0 is the uniform grid of C138.  The default
+    beta and the default node count are the ones MEASURED in
+    docs/design/a-stiff-pore-solved-at-once.md section 11.
+
+    THE UNKNOWNS, one block per node k = 0..N (block size 2 Ni + 4):
         u_{k,i} = ln c_{k,i}   (positive by construction)
         psi_k
         v_{k,i} = ln c_perm,i  (a copy per node, held equal by a row)
         psi_perm,k             (a copy per node, held equal by a row)
-    The copies are what lets the two GLOBAL unknowns (c_perm, psi_perm) fit
+        j_k = J_v / J_ref      (a copy per node, held equal by a row)
+        x_k = xi' / xi_ref     (the wall field; read at k = 0 only)
+    The copies are what lets the GLOBAL unknowns (c_perm, psi_perm, J_v) fit
     the block-tridiagonal shape: each copy couples only to its neighbour.
     THE EQUATIONS of block k:
         rows 0..Ni-1     k < N: the fitted flux of [k, k+1] minus (2)
                          k = N: the permeate partition (6), in logs
         row  Ni          electroneutrality (3) at node k
-        rows Ni+1..2Ni   k = 0: the feed partition (5), in logs
+        rows Ni+1..2Ni   k = 0: the feed partition (5) with (7), in logs
                          k > 0: v_{k,i} - v_{k-1,i}
-        row  2Ni+1       k = 0: zero current (4)
-                         k > 0: psi_perm,k - psi_perm,k-1
+        row  2Ni+1       k < N: psi_perm,k - psi_perm,k+1
+                         k = N: zero current (4)
+        row  2Ni+2       k = 0: the water flux, (9) or j_0 = J_imposed/J_ref
+                         k > 0: j_k - j_{k-1}
+        row  2Ni+3       k = 0: (8) when the film is coupled, x_0 otherwise
+                         k > 0: x_k (an idle slot: blocks share one size)
     Every row is NORMALISED by the terms it balances (the project's one
     rule, solver/Convergence.H): a flux row by the sum of the magnitudes of
-    its two fitted terms and the convective flux, the electroneutrality row
-    by sum |z_i| c_i + |X_d|, the zero-current row by sum |z_i| N_i.  The
-    log-form rows are already O(1).
+    its two fitted terms and the convective flux, the electroneutrality
+    rows by sum |z_i| c_i (+ |X_d|), the zero-current row by sum |z_i| N_i,
+    the water-flux row by A_w dP.  The log-form rows are already O(1).
 
-    THE SOLVE is solver::newtonND with NDOptions::blockTri declared -- the
-    colored (Curtis-Powell-Reid) Jacobian and the block-Thomas solve, the
-    one home the MESH column and the stiff integrator already share.  When
-    the caller asks (PoreSettings::audit), the declared structure is
-    AUDITED against a dense Jacobian on the first iteration
-    (NDResult::offBandMax) and the measurement is returned for the caller
-    to announce.
+    THE JACOBIAN IS ANALYTIC (C142): every row above has closed-form
+    derivatives (the Bernoulli function's own, B'(x) = B(x)(1 - x - B(x))/x
+    with its series near 0; the wall's from membrane::wallAtField; Davies'
+    d ln gamma/dI), assembled straight into the three bands and handed to
+    solver::newtonND (BlockTri::jacobian), whose block-Thomas solve is the
+    one home the MESH column and the stiff integrator share.  The colored
+    finite differences of C138 are kept as the ORACLE only: with
+    PoreSettings::audit the first iteration builds the dense FD Jacobian and
+    the solve returns both the off-band maximum (the structure claim) and
+    the analytic-against-FD departure (the derivative claim); the gate
+    compares the two on random states.  PoreSettings::finiteDifferenceJacobian
+    restores the FD Newton for that comparison.
 
     WHAT IS MEASURED ON THE ANSWER (PoreSolution), never assumed: the
     largest departure of any interval's flux from J_v c_perm,i -- relative
@@ -128,19 +176,29 @@ Description
     small one -- the representable limit of the problem, not a defect of
     the solver.
 
-    NOT HERE: activity coefficients inside the pore (the ions are ideal
-    between the faces), a non-uniform grid, a pore-size distribution.
+    CONTINUATION, the robust fallback.  When the Newton fails from the seed
+    it was handed, the station is solved again from the one state that is
+    exact without any Newton -- no flux, the pore in Donnan equilibrium with
+    both baths -- and the DRIVE (the imposed J_v, or dP under the closure
+    (9)) is raised geometrically from a Peclet number of 1e-4 to the target,
+    each solve warm-started; it is COUNTED (PoreSolution::continuationSteps)
+    for the caller to announce.
+
+    NOT HERE: activity coefficients inside the pore between the faces (the
+    ions are ideal there, as in NanoFiltran), a pore-size distribution.
 \*---------------------------------------------------------------------------*/
 
 #pragma once
 
 #include "core/Types.H"
+#include "../massTransfer/Polarisation.H"
 
 #include <cstddef>
 #include <string>
 #include <vector>
 
 namespace Choupo {
+namespace solver { struct BlockBands; }
 namespace membrane {
 namespace pore {
 
@@ -150,33 +208,79 @@ struct PoreIon
     int    z        = 0;    // signed charge
     scalar P        = 0.0;  // K_d D A_k/dx: diffusive conductance [m/s]
     scalar Kc       = 0.0;  // convective hindrance [-]
-    scalar feedSide = 0.0;  // c(0) = feedSide e^{-z psi(0)}  [mol/m3]
+    //  c(0) = feedSide e^{-z psi(0)}  [mol/m3]; with a wall (PoreWall), the
+    //  partition per unit WALL concentration (steric x Born x the activity
+    //  the caller holds fixed), multiplied by C_m from (7).
+    scalar feedSide = 0.0;
     scalar permSide = 0.0;  // c(1) = permSide c_perm e^{-z (psi(1)-psi_perm)}
+};
+
+//- The film, folded into the station's Newton (7)-(8).  Per ion, in the
+//  order of PoreProblem::ions.
+struct PoreWall
+{
+    bool active = false;
+    SuctionCorrection   suction = SuctionCorrection::FilmTheory;
+    bool                coupled = false;           // (8) on: ionCoupling electroneutral
+    bool                solutionDiffusion = false; // close the wall with B, not with (2)
+    std::vector<scalar> cBulk;   // [mol/m3]
+    std::vector<scalar> k;       // film coefficient [m/s]
+    std::vector<scalar> D;       // free-solution D (the migration term) [m2/s]
+    std::vector<scalar> B;       // solution-diffusion B_s [m/s] (solutionDiffusion only)
+};
+
+//- `activity bulkOverPoreDavies`: gamma_bulk/gamma_pore at both faces,
+//  Davies on log10, A(eps) for the solution side and for the pore side.
+//  When active, feedSide_i is multiplied by gamma_wall,i(I_wall)/gamma_0,i(I_0)
+//  and permSide_i by gamma_perm,i(I_perm)/gamma_N,i(I_N), each on the
+//  answer's own ionic strength.
+struct PoreActivity
+{
+    bool   active    = false;
+    scalar Asolution = 0.0;
+    scalar Apore     = 0.0;
+};
+
+//- The water flux (9): absent, J_v = PoreProblem::Jv is imposed.
+struct PoreClosure
+{
+    bool   active = false;
+    scalar Aw     = 0.0;    // water permeance [m/(s Pa)]
+    scalar dP     = 0.0;    // applied pressure difference [Pa]
+    scalar RT     = 0.0;    // [J/mol]
 };
 
 struct PoreProblem
 {
     std::vector<PoreIon> ions;
     scalar Xd = 0.0;        // signed fixed charge [mol/m3]
-    scalar Jv = 0.0;        // volumetric flux per membrane area [m/s]
+    scalar Jv = 0.0;        // the imposed flux [m/s] (no closure)
+    PoreWall     wall;
+    PoreActivity activity;
+    PoreClosure  closure;
 };
 
 struct PoreSettings
 {
     std::size_t intervals = 100;     // N: the nodes are 0..N
+    scalar      grading   = 0.0;     // beta of the tanh map; 0 = uniform
     scalar      tolerance = 1.0e-12; // on ||F||_2 of the normalised rows
     int         maxIter   = 60;
-    bool        audit     = true;    // audit the declared structure
+    bool        audit     = true;    // audit the structure and the derivatives
+    //  The test oracle: the colored finite-difference Jacobian of C138 in
+    //  place of the analytic one (bin/curate/check_pore_solver.py compares).
+    bool        finiteDifferenceJacobian = false;
 };
 
-//- The seed a caller supplies when it has no previous pore solution: the
-//  permeate concentrations of an estimate (DSPM-DE hands its closed form's).
-//  From them the solver builds a LOCAL DONNAN EQUILIBRIUM profile (see the
-//  .cpp): both partitions and electroneutrality hold at every node of the
-//  seed, and only the flux rows and zero current are left to the Newton.
+//- The seed a caller supplies when it has no previous solution: a permeate
+//  estimate and, under the closure, a water flux.  From them the solver
+//  builds a LOCAL DONNAN EQUILIBRIUM profile (see the .cpp): both
+//  partitions and electroneutrality hold at every node of the seed, and
+//  only the flux rows and zero current are left to the Newton.
 struct PoreSeed
 {
     std::vector<scalar> cPerm;       // [mol/m3]
+    scalar              Jv = -1.0;   // [m/s]; < 0: the imposed one, or A_w dP / 2
 };
 
 struct PoreSolution
@@ -184,21 +288,29 @@ struct PoreSolution
     bool        converged     = false;
     int         iterations    = 0;
     scalar      residual      = 0.0;   // ||F||_2 at the answer
-    scalar      offBandMax    = -1.0;  // the audit; < 0 when not audited
+    scalar      offBandMax    = -1.0;  // the structure audit; < 0 when not audited
+    scalar      jacobianMismatch = -1.0; // analytic vs FD; < 0 when not audited
     long        jacobianEvals = 0;
     std::string stopReason;
     //  > 0 when the Newton failed from the seed (or the warm start) it was
-    //  handed and the answer was reached by continuation in J_v from the
-    //  exact J_v = 0 state; the number of solves it took, and why the
+    //  handed and the answer was reached by continuation in the drive from
+    //  the exact no-flux state; the number of solves it took, and why the
     //  direct Newton stopped.  0 and empty otherwise.
     int         continuationSteps = 0;
     std::string directFailure;
+    //  Newton iterations summed over every solve this call made (direct
+    //  attempt and continuation): the cost, as the module counts it.
+    int         iterationsTotal = 0;
 
     std::size_t intervals = 0;
+    std::vector<scalar> grid;                // [node] xi_k
     std::vector<scalar> cPerm;               // [mol/m3]
     std::vector<std::vector<scalar>> c;      // [node][ion] [mol/m3]
     std::vector<scalar> psi;                 // [node] [RT/F]
     scalar psiPerm = 0.0;
+    scalar Jv      = 0.0;                    // the water flux solved / imposed [m/s]
+    std::vector<scalar> cWall;               // with a wall: C_m [mol/m3]
+    scalar xiPrime = 0.0;                    // with a coupled wall: (F/RT) xi [1/m]
 
     //  measured on the answer (see the header)
     scalar fluxConstancyMax  = 0.0;  // |N_k - J_v c_perm| / (terms + |J_v c_perm|)
@@ -206,23 +318,53 @@ struct PoreSolution
     scalar stiffnessRatio    = 0.0;  // max migration flux / net flux
     scalar currentMax        = 0.0;  // |sum z N| / sum |z N|
     scalar electroneutralMax = 0.0;  // worst node
+    scalar wallChargeMax     = 0.0;  // coupled wall: |sum z C_m| / sum |z| C_m
 
     std::vector<scalar> x;                   // the raw unknowns (warm starts)
 };
 
-//- Solve from a closed-form seed.
+//- Solve from a seed.
 PoreSolution solve(const PoreProblem& pb, const PoreSettings& s,
                    const PoreSeed& seed);
 
 //- Solve warm-started from a previous solution on the SAME grid and ion
-//  list (the caller's outer water-flux iteration moves J_v a little each
-//  pass).
+//  list (the next station of a module, or the next point of a sweep).
 PoreSolution solve(const PoreProblem& pb, const PoreSettings& s,
                    const PoreSolution& warm);
 
+//- THE AUDIT, on its own: the declared block-tridiagonal structure and the
+//  analytic Jacobian measured against the dense finite-difference Jacobian
+//  at the seed state (PoreSolution::offBandMax, ::jacobianMismatch), after
+//  one Newton step and no continuation.  The structure and the derivatives
+//  are properties of the CODE, not of the grid, so a caller audits a small
+//  copy of its problem (DSPM-DE: 11 nodes) and solves the real one
+//  unaudited -- the dense audit Jacobian of a 201-node four-ion pore is
+//  46 MB and 4800 residual evaluations, more than the solve itself.
+PoreSolution audit(const PoreProblem& pb, const PoreSettings& s,
+                   const PoreSeed& seed);
+
 //- The Bernoulli function B(x) = x / (e^x - 1), evaluated without
-//  cancellation near 0 and without overflow at large |x|.
+//  cancellation near 0 and without overflow at large |x|, and its
+//  derivative B'(x) = B(x)(1 - x - B(x))/x (series near 0).
 scalar bernoulli(scalar x);
+scalar bernoulliSlope(scalar x);
+
+//- The graded grid, xi_0 = 0 .. xi_N = 1 (see THE GRID).
+std::vector<scalar> gradedGrid(std::size_t N, scalar beta);
+
+//- Davies ln gamma on log10 at ionic strength I [mol/L], and d ln gamma/dI.
+//  The one home of the Davies form the DSPM-DE law and this solver use.
+scalar daviesLnGamma(int z, scalar I_molL, scalar A, scalar* dLnGamma_dI = nullptr);
+
+// ---- the test surface (bin/curate/_poreSolverProbe.cpp) --------------------
+//  The residual, the ANALYTIC Jacobian and the seed, exposed so the gate can
+//  compare the derivatives with finite differences at states of its own
+//  choosing.  Nothing in the engine calls these.
+std::size_t blockSize(const PoreProblem& pb);
+sVector residualAt(const PoreProblem& pb, const PoreSettings& s, const sVector& x);
+void    jacobianAt(const PoreProblem& pb, const PoreSettings& s, const sVector& x,
+                   solver::BlockBands& J);
+sVector seedOf(const PoreProblem& pb, const PoreSettings& s, const PoreSeed& seed);
 
 } // namespace pore
 } // namespace membrane

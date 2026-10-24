@@ -118,4 +118,29 @@ sVector luSolve(const std::vector<sVector>&     LU,
     return x;
 }
 
+void luSolveInto(const std::vector<sVector>&     LU,
+                 const std::vector<std::size_t>& piv,
+                 const scalar*                   b,
+                 sVector&                        x,
+                 sVector&                        pb,
+                 sVector&                        y)
+{
+    //  luSolve, operation for operation, into caller-owned storage.
+    const std::size_t n = LU.size();
+    pb.resize(n); y.resize(n); x.resize(n);
+    for (std::size_t i = 0; i < n; ++i) pb[i] = b[piv[i]];
+    for (std::size_t i = 0; i < n; ++i)
+    {
+        scalar s = pb[i];
+        for (std::size_t j = 0; j < i; ++j) s -= LU[i][j] * y[j];
+        y[i] = s;
+    }
+    for (std::size_t k = n; k-- > 0; )
+    {
+        scalar s = y[k];
+        for (std::size_t j = k + 1; j < n; ++j) s -= LU[k][j] * x[j];
+        x[k] = s / LU[k][k];
+    }
+}
+
 } // namespace Choupo::solver

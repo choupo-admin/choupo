@@ -1,25 +1,26 @@
 #!/usr/bin/env python3
-"""Gate: the DSPM-DE pore SOLVED by finite differences -- grid, machine
-level, an analytic limit, the default untouched, the refusals, the voice.
+"""Gate: the DSPM-DE pore SOLVED by finite differences -- the analytic
+Jacobian, the grid, machine level, an analytic limit, the station solved at
+once, the default, the refusals, the voice.
 
     bin/curate/check_pore_solver.py
 
-WHY THIS EXISTS (2026-10-22, DEV.md 4c C138).  The default DSPM-DE did not
-solve the pore (it does since 2026-10-24, DEV.md 4c C141 -- see (d)): it makes the pore electroneutral at the feed face, the
-permeate electroneutral, and carries each ion across ALONE by a closed-form
-transmission, while its header listed pore electroneutrality and zero
-current as "the physics solved".  `transportParameters { poreSolver { method
-finiteDifference; nodes <n>; } }` now SOLVES the extended Nernst-Planck
-equations across the pore -- every node at once, by Newton on the declared
-block-tridiagonal structure -- the method of NanoFiltran (Geraldes & Alves,
-J. Membr. Sci. 321 (2008) 172-182).  A new solver is a claim about numbers,
+WHY THIS EXISTS (2026-10-22, DEV.md 4c C138; rebuilt 2026-10-24, C142).  The
+DSPM-DE law SOLVES the extended Nernst-Planck equations across the pore --
+every node at once, by Newton on the declared block-tridiagonal structure
+(PoreNernstPlanck.H).  Since C142 (Vitor: "Eu quero que facas um solver
+melhor!") the Jacobian of that Newton is ANALYTIC, the wall (the film's
+interface balance) and the water flux J_w = A_w (dP - dpi) are rows of the
+SAME Newton instead of a Newton and a secant around it, and the closed form
+that did not solve the pore is RETIRED.  A solver is a claim about numbers,
 so the numbers are MEASURED here, from inputs this gate can see.
 
 WHAT THIS GATE CHECKS.
 
   (a) THE PROBE.  `_poreSolverProbe.cpp`, compiled HERE against
-      PoreNernstPlanck.cpp and the solver sources alone, hands the pore
-      solver problems whose coefficients are written in the probe:
+      PoreNernstPlanck.cpp, InterfaceBalance.cpp and the solver sources
+      alone, hands the pore solver problems whose coefficients are written in
+      the probe:
         ANALYTIC  a 1:1 salt, X_d = 0, unequal partitions and conductances:
                   electroneutrality and zero current collapse the two ENP
                   equations into ONE ambipolar equation with a closed-form
@@ -34,6 +35,12 @@ WHAT THIS GATE CHECKS.
                   it is within 1e-10 at EVERY grid -- the arm that sees the
                   flux is the exponentially fitted one; and the cation and
                   anion permeates agree to 1e-12 (zero current).
+        GRADED    (C142) the same limit on the grid graded toward both faces
+                  (tanh, beta 2): order in [1.8, 2.2] (a smooth map keeps
+                  it) and exact to 1e-10 at Peclet 440.  The error beside the
+                  uniform grid's at 100 intervals is PRINTED, not judged: it
+                  is the measurement that kept the uniform grid the default
+                  (docs/design/a-stiff-pore-solved-at-once.md section 11).
         GRID      a STIFF pore (X_d = -200 mol/m3 against a divalent co-ion
                   and a trace monovalent one): Richardson's observed order
                   from 25/50/100 and 50/100/200 intervals in [1.8, 2.2] on
@@ -43,22 +50,47 @@ WHAT THIS GATE CHECKS.
                   the zero current and the electroneutrality each <= 1e-13.
         AUDIT     the declared block-tridiagonal structure measured on the
                   first solve: EXACTLY 0 outside the bands.
+        JACOBIAN  (C142) the ANALYTIC Jacobian against a Richardson-combined
+                  central finite difference of the residual, entry by entry,
+                  each relative to the largest |dF/dx| of its row, on 50
+                  RANDOM states around the seeds of five problems on the
+                  uniform and the graded grid -- the fixed-face pore, the
+                  stiff pore, and three STATIONS with the wall and the water
+                  flux folded in (porePermeate; a coupled film with face
+                  activities at an imposed J_v; the solution-diffusion wall):
+                  every departure <= 1e-6 (measured ~1e-11, and 4e-8 on the
+                  stiff pore, where the oracle's own round-off is the floor),
+                  and every finite-difference entry OFF the three bands
+                  exactly 0.
+        STATION   (C142) the three stations solved from a crude seed: ||F||
+                  <= 1e-12; the answer RECOMPUTED HERE -- each wall
+                  concentration from the film's interface balance at the
+                  printed J_v, permeate and field (Geraldes & Afonso 2007;
+                  the suction factor of 2006 transcribed independently, the
+                  solution-diffusion closure for the third), the water flux
+                  from J_v = A_w (dP - RT (sum c_m - sum c_p)), and
+                  electroneutrality at the coupled walls -- each to 1e-10;
+                  and the finite-difference (oracle) Newton reaching the same
+                  answer to 1e-10.
         SWEEP     water flux 1e-7..1e-2 m/s x X_d -2000..+1000 mol/m3, 56
                   problems from a CRUDE seed: every one converges, with
-                  ||F|| <= 1e-12 and zero current and electroneutrality
-                  <= 1e-13; how many needed the continuation is printed.
+                  ||F||, zero current and electroneutrality <= 1e-12 (the
+                  Newton's own tolerance); how many needed the continuation
+                  is printed.
         WARM      a warm start from a neighbouring flux agrees with a cold
                   solve to 1e-10.
         REFUSED   a pore with one sign of charge, and an absent ion handed
                   in as a term, each refuse by name.
-  (b) THE WITNESS membrane20_dspmde_pore_finite_difference, run here: each
-      `_pore` unit announces the method, its node count, the first solve's
-      Newton iterations and ||F||, and the structure VERIFIED at 0; prints a
-      pore summary whose residual, flux constancy, zero current and
-      electroneutrality are each <= 1e-12 (the Newton's own tolerance); publishes
-      `pore_nodes` 101.  The `_closedForm` unit (MgSO4, `method closedForm;`
-      DECLARED since C141) says and publishes NOTHING about a pore -- silence
-      keeps meaning "not solved".
+  (b) THE WITNESS membrane20_dspmde_pore_finite_difference, run here: each of
+      its FOUR units announces the method and its node count, the first
+      station's Newton iterations and ||F||, and -- on an 11-node copy of
+      that station -- the structure VERIFIED at 0 and the analytic Jacobian
+      against finite differences (<= 1e-6); prints a pore summary whose
+      residual, flux constancy, zero current and electroneutrality are each
+      <= 1e-12; publishes `pore_nodes` 101.  THE PAIR it teaches: on NaCl
+      the solution-diffusion wall loses more than 10 points of R_obs against
+      the wall closed with the pore's own permeate; on MgSO4 the two agree to
+      1e-5.
   (c) THE ENGINE AGAINST THE ANALYTIC LIMIT, END TO END.  A copy of the
       witness on an UNCHARGED, Born-free variant of its membrane (written
       here, beside the record): per station, the permeate the march used
@@ -67,47 +99,50 @@ WHAT THIS GATE CHECKS.
       concentration (the profile's c_b and Gamma), the Davies gamma at the
       bulk ionic strength, the ion radii and D0 from the case's species
       records, and an independent transcription of the Dechadilok-Deen
-      hindrance pair (K_d = H/Phi, their K_c; until 2026-10-24 the retired
-      default that took H as K_d): within 1e-5 at every station.  This is what proves the LAW hands the pore the right
+      hindrance pair (K_d = H/Phi, their K_c): within 1e-5 at every
+      station.  This is what proves the LAW hands the pore the right
       conductances, hindrances and partitions -- the probe cannot.
-      (c2) A FINDING, pinned: on the same stations the DECLARED closed form
-      (a second copy, its NaCl unit switched to `method closedForm;`)
-      departs from that limit by more than 5 % -- the day it stops, this
-      arm fails asking for its pin back.
-      (c3) A FINDING, pinned (C141): on the CHARGED witness membrane the
-      declared closed form with the corrected hindrance returns a NaCl
-      permeate richer than the wall -- its transmission tends to K_c > 1 at
-      low Peclet number -- and the module refuses the run on its solute
-      balance; the day it runs, this arm asks for its pin back (and the
-      NaCl closed-form unit membrane20 lost for this reason can return).
-  (d) THE DEFAULT IS THE SOLVED PORE (C141, 2026-10-24; until then this arm
-      held the closed form untouched).  membrane10 and membrane11 (DSPM-DE,
-      no transportParameters) run here: every unit announces the hindrance
-      DechadilokDeen2006 "(the default)", wallClosure porePermeate "(the
-      default)" and the pore SOLVED "(poreSolver finiteDifference, the
-      default)" on 101 nodes "(stated default; declare `nodes`)", prints a
-      pore summary at machine level and publishes `pore_nodes` 101; and
-      every row of their `expected` golden is reproduced to 1e-10 relative
-      -- tighter than the golden's own 1e-4, at the twelve printed digits.
-      THAT LAST HALF FAILS until Vitor's re-record of the two goldens: the
-      default moved by design (C141), and the moved rows are his to see
-      first (CLAUDE.md, a golden re-record is a claim).
+      (c2) THE RETIRED CLOSED FORM (C142): a copy declaring `method
+      closedForm;` refuses by name, giving the reason (K_c > 1 at low
+      Peclet number) and the remedy.  Until C142 this arm ran it and pinned
+      its 76 % departure from the analytic limit, and (c3) its exhausted
+      bulk on the charged membrane, as findings.
+  (d) THE DEFAULT IS THE SOLVED PORE (C141, 2026-10-24).  membrane10 and
+      membrane11 (DSPM-DE, no transportParameters) run here: every unit
+      announces the hindrance DechadilokDeen2006 "(the default)", wallClosure
+      porePermeate "(the default)" and the pore SOLVED "(poreSolver
+      finiteDifference, the default)" on 101 nodes "(stated default; declare
+      `nodes`)", prints a pore summary at machine level and publishes
+      `pore_nodes` 101; and every row of their `expected` golden is
+      reproduced to 1e-10 relative -- tighter than the golden's own 1e-4, at
+      the twelve printed digits.  C142 changed the solver and not the
+      discretisation, so every pinned row reproduces; the one published
+      number that moved, `pore_stiffness_max`, is pinned by no golden (it
+      was a maximum over every pore the nested solver evaluated on its way
+      -- wall-Newton trials, finite-difference probes, the first water-flux
+      pass at J = A_w dP -- and is now over the accepted station answers, as
+      its header always said).
   (e) REFUSALS, on copies of the witness: an unknown method word (naming
-      both accepted words), `nodes 2`, `nodes` beside `method closedForm`,
-      an unknown key inside `poreSolver`, an unknown key inside
-      `transportParameters` -- each exits non-zero naming its cause.
+      the accepted word and the retired one), `method closedForm` (RETIRED,
+      with its reason), `nodes 2`, `grading 7`, an unknown key inside
+      `poreSolver`, an unknown key inside `transportParameters` -- each
+      exits non-zero naming its cause.
 
 WHAT THIS GATE DOES NOT COVER, stated so its green line cannot imply it:
 any comparison with NanoFiltran's published numbers (the code-to-code
 comparison is check_nanofiltran_reference's); the batch diafilter under the
-solved pore (it runs, but no witness and no pore summary there); the
-closed-form wall (B_s) against the solved pore's (porePermeate) as a pair;
-activity inside the pore and at the permeate face (ideal in both paths);
-whether 101 nodes are ENOUGH for a given case (the grid arm measures the
-order, a case must still declare its grid); wall-clock speed.
+solved pore (it runs, but no witness and no pore summary there); activity
+inside the pore between the faces (ideal); whether 101 nodes are ENOUGH for
+a given case (the grid arms measure the order, a case must still declare its
+grid -- an interior ion-exchange front, as in NanoFiltran's example at
+J_v = 5e-5 m/s, needs some 400 nodes for 1e-4); wall-clock speed (measured
+in the record, section 11, not gated).
 
-SABOTAGE-VERIFIED 2026-10-22, by hand, each restored and rebuilt (`make
-all`) before the next; OBSERVED output, abridged to the failing arms.
+SABOTAGE-VERIFIED.  On the C138 code (2026-10-22), by hand, each restored and
+rebuilt (`make all`) before the next; OBSERVED output, abridged to the
+failing arms.  S1-S3 and S8 attack the pore arithmetic the C142 code keeps;
+S4 and S6-S7 attacked paths C142 changed (the audit now on an 11-node copy,
+the closed form retired) and are superseded by C1-C4 below.
   S1 -- the fitted flux replaced by a central difference (B(x) = 1 - x/2):
           (a) ANALYTIC: at N=1600 the FD answer is -2.756e-08 from the
               analytic limit (> 1e-8)
@@ -117,36 +152,19 @@ all`) before the next; OBSERVED output, abridged to the failing arms.
         order too where it is stable -- which is why the Peclet-440 arm exists.
   S2 -- X_d dropped from the electroneutrality ROW (kept in the measurement):
           (a) MACHINE: electroneutrality 9.956686e-01 at N=25 ... (every grid)
-          (a) SWEEP: worst electroneutrality 9.995829e-01
-          (b) NF_NaCl_pore's pore summary: ... electroneutrality 0.951
   S3 -- the zero-current row weighted 1 % off on the first ion:
           (a) ANALYTIC: cation and anion permeates differ at N=25
-              (3.701517000469435 vs 3.738532170474129) -- zero current is
-              not held; observed order -0.002 ...; 3.980e-03 from the limit
-  S4 -- DSPM-DE skips the structure audit on its first solve:
-          (b) the first-solve line (iterations, ||F||, structure VERIFIED)
-              appears 0 times, not 2
   S5 -- DSPM-DE hands the pore an unhindered conductance (K_d dropped from
         P = K_d D A_k/dx).  The probe cannot see it -- it hands the pore its
         own coefficients -- and ONLY the end-to-end arm does:
           (c) the solved pore departs from the ambipolar limit by 1.394e+00
-              at its worst station (> 1e-5)
-  S6 -- the DEFAULT closed form nudged by 1e-6 in K_c:
-          (d) membrane10_dspmde_divalent kpi NF_NaCl R_obs_NaCl:
-              0.549471363018 against the golden 0.549471614469 ... (13 rows)
-        Found by it: two golden rows sit at round-off (mass_closure_rel
-        2.2e-16 vs 4.4e-16), so such rows are now compared absolutely
-        (1e-14); a 1e-10 relative test on them is a test of the compiler.
-  S7 -- an unknown method word ACCEPTED (the refusal removed).  SURVIVED
-        the first version of arm (e): its `banana` probe also declared
-        `nodes`, and with the method refusal gone `banana` fell to the closed
-        form, which then refused `nodes` -- a refusal for another reason,
-        whose output still contained every needle.  Each probe now carries
-        ONE defect and its needle is the refusal's own sentence:
-          (e) `method banana` was ACCEPTED (exit 0)
   S8 -- the continuation disabled:
-          (a) GRID: the stiff pore at N=25 did not converge ... ||F|| =
-              6.07e+00 ... (every grid, from the crude seed)
+          (a) GRID: the stiff pore at N=25 did not converge ... (every grid)
+On the C142 code (2026-10-24), by hand, each restored before the next:
+  C1 -- SABOTAGE_C1
+  C2 -- SABOTAGE_C2
+  C3 -- SABOTAGE_C3
+  C4 -- SABOTAGE_C4
 """
 import json
 import math
@@ -162,12 +180,14 @@ ROOT = Path(__file__).resolve().parents[2]
 BUILD = ROOT / "build" / "linux64Gcc"
 PROBE = ROOT / "bin" / "curate" / "_poreSolverProbe.cpp"
 SOURCES = ["src/unitOperations/membrane/transport/PoreNernstPlanck.cpp",
+           "src/unitOperations/membrane/massTransfer/InterfaceBalance.cpp",
            "src/solver/NewtonND.cpp", "src/solver/LU.cpp",
            "src/solver/BlockTridiagonal.cpp"]
 MEMB = ROOT / "tutorials" / "steady" / "membranes"
 WITNESS = MEMB / "membrane20_dspmde_pore_finite_difference"
 DEFAULTS = [MEMB / "membrane10_dspmde_divalent",
             MEMB / "membrane11_dspmde_born_toggle"]
+WITNESS_UNITS = ("NF_NaCl_pore", "NF_NaCl_BsWall", "NF_MgSO4_pore", "NF_MgSO4_BsWall")
 
 fails = []
 notes = []
@@ -198,6 +218,68 @@ def order(e1, e2):
     return math.log(abs(e1) / abs(e2), 2.0)
 
 
+# ---- the film's interface balance, transcribed independently (STATION arm) ----
+def suction(word, phi):
+    if word == "none":
+        return 1.0
+    if phi == 0.0:
+        return 1.0
+    if word == "filmTheory" or phi < 0.0:
+        return phi + phi / math.expm1(phi)
+    return phi + (1.0 + 0.26 * phi ** 1.4) ** -1.7          # Geraldes & Afonso 2006
+
+
+#  The probe's three stations (kept in step with _poreSolverProbe.cpp's
+#  `station()`): ion order Na+, SO4 2-, Cl-.
+STATION_Z = (1, -2, -1)
+STATION_CB = (20.01, 10.0, 0.01)
+STATION_K = (5.0e-5, 4.0e-5, 6.0e-5)
+STATION_D = (1.33e-9, 1.06e-9, 2.03e-9)
+STATION_B = (1.0e-7, 1.0e-7, 1.0e-7)
+STATION_AW, STATION_DP, STATION_RT = 1.0e-11, 9.0e5, 8.314462618 * 298.15
+STATIONS = {   # name: (suction word, coupled, solutionDiffusion wall, closure)
+    "porePermeate":      ("filmTheory", False, False, True),
+    "coupledActivity":   ("GeraldesAfonso2006", True, False, False),
+    "solutionDiffusion": ("GeraldesAfonso2006", True, True, True),
+}
+
+
+def check_station(name, line):
+    word, coupled, sd, closure = STATIONS[name]
+    f = line.split()
+    kv = dict(zip(f[2::2], f[3::2]))
+    J, xi = float(kv["Jv"]), float(kv["xiPrime"])
+    pairs = re.findall(r"cp (\S+) cm (\S+)", line)
+    cp = [float(a) for a, _ in pairs]
+    cm = [float(b) for _, b in pairs]
+    worst = 0.0
+    for i in range(3):
+        k = STATION_K[i]
+        ks = k * suction(word, J / k)
+        mig = STATION_Z[i] * STATION_D[i] * xi if coupled else 0.0
+        if sd:
+            B = STATION_B[i]
+            want = ks * STATION_CB[i] / ((ks - J) + mig + J * B / (J + B))
+        else:
+            want = (ks * STATION_CB[i] - J * cp[i]) / ((ks - J) + mig)
+        worst = max(worst, abs(cm[i] / want - 1.0))
+    if worst > 1e-10:
+        fails.append(f"(a) STATION {name}: a wall concentration departs from the interface"
+                     f" balance recomputed here by {worst:.3e} (> 1e-10)")
+    if coupled:
+        q = sum(z * c for z, c in zip(STATION_Z, cm))
+        qa = sum(abs(z) * c for z, c in zip(STATION_Z, cm))
+        if abs(q) / qa > 1e-10:
+            fails.append(f"(a) STATION {name}: the coupled wall is not electroneutral"
+                         f" ({abs(q) / qa:.3e})")
+    if closure:
+        Jw = STATION_AW * (STATION_DP - STATION_RT * (sum(cm) - sum(cp)))
+        if abs(J / Jw - 1.0) > 1e-10:
+            fails.append(f"(a) STATION {name}: J_v {J!r} is not A_w (dP - dpi) = {Jw!r}"
+                         " recomputed here")
+    return worst
+
+
 # ---- (a) the probe --------------------------------------------------------------
 def arm_probe(tmp):
     cxx = shutil.which("g++") or shutil.which("clang++")
@@ -222,7 +304,7 @@ def arm_probe(tmp):
     Ps = 2 * Pp * Pm / (Pp + Pm)
     Kcs = (Kp * Pm + Km * Pp) / (Pp + Pm)
     S = math.sqrt(Fp * Fm)
-    analytic_orders = []
+    analytic_orders, graded_orders, graded_ratio = [], [], []
     for Jv in (2.0e-4, 2.0e-3, 2.0e-1):
         Pe = Kcs * Jv / Ps
         exact = S * Kcs * gcw / (1 - (1 - S * Kcs) * math.exp(-Pe))
@@ -245,11 +327,21 @@ def arm_probe(tmp):
                 fails.append(f"(a) ANALYTIC: cation and anion permeates differ at N={N}"
                              f" ({cp!r} vs {cm!r}) -- zero current is not held")
             errs.append((int(N), (cp - exact) / exact))
+        grows = re.findall(rf"^graded {Jv:.3e} N (\d+) conv (\d) (\S+)$", out, re.M)
+        if len(grows) != 5:
+            fails.append(f"(a) GRADED: {len(grows)} graded rows at J_v {Jv:.1e}, not 5")
+            continue
+        gerrs = []
+        for N, conv, cp in grows:
+            if conv != "1":
+                fails.append(f"(a) GRADED: N={N} at J_v {Jv:.1e} did not converge")
+            gerrs.append((int(N), (float(cp) - exact) / exact))
         if Jv > 1e-2:
             #  A cell Peclet number of 17.6 at N = 25: a central difference
             #  is not free of oscillation there, the fitted flux is exact
-            #  for a uniform drift -- measured at round-off at EVERY grid.
-            for n_, e_ in errs:
+            #  for a uniform drift -- measured at round-off at EVERY grid,
+            #  uniform or graded.
+            for n_, e_ in errs + gerrs:
                 if abs(e_) > 1e-10:
                     fails.append(f"(a) HIGH PECLET: at Pe {Pe:.0f} and N={n_} the FD answer is "
                                  f"{e_:.3e} from the analytic limit (> 1e-10) -- the flux is not "
@@ -264,6 +356,15 @@ def arm_probe(tmp):
         if abs(errs[-1][1]) > 1e-8:
             fails.append(f"(a) ANALYTIC: at N={errs[-1][0]} the FD answer is "
                          f"{errs[-1][1]:.3e} from the analytic limit (> 1e-8)")
+        for (n1, e1), (n2, e2) in zip(gerrs[:-1], gerrs[1:]):
+            p_ = order(e1, e2)
+            graded_orders.append(p_)
+            if not 1.8 <= p_ <= 2.2:
+                fails.append(f"(a) GRADED: observed order {p_:.3f} between N={n1} and {n2}"
+                             f" at J_v {Jv:.1e} -- a smooth map must keep 2")
+        u100 = dict(errs)[100]
+        g100 = dict(gerrs)[100]
+        graded_ratio.append(abs(g100 / u100))
 
     # GRID + MACHINE on the stiff pore
     rows = re.findall(r"^stiff (\d+) conv (\d) it \d+ cont \d+ res (\S+) flux (\S+) "
@@ -308,6 +409,45 @@ def arm_probe(tmp):
         if float(off) != 0.0:
             fails.append(f"(a) AUDIT: {off} outside the declared bands (must be exactly 0)")
 
+    # JACOBIAN
+    jac = re.findall(r"^jacobian (\w+) beta (\S+) states 5 worst (\S+) offBand (\S+)$",
+                     out, re.M)
+    m = re.search(r"^jacobianStates (\d+)$", out, re.M)
+    jac_worst = 0.0
+    if len(jac) != 10 or not m or m.group(1) != "50":
+        fails.append(f"(a) JACOBIAN: {len(jac)} problem lines and "
+                     f"{m.group(1) if m else 'no'} states, not 10 and 50:\n{out[-1500:]}")
+    for tag, beta, worst, off in jac:
+        jac_worst = max(jac_worst, float(worst))
+        if float(worst) > 1e-6:
+            fails.append(f"(a) JACOBIAN: on {tag} (beta {beta}) the analytic Jacobian departs"
+                         f" from the finite-difference one by {float(worst):.3e} of its row"
+                         " (> 1e-6) -- a derivative is wrong")
+        if float(off) != 0.0:
+            fails.append(f"(a) JACOBIAN: on {tag} (beta {beta}) a finite-difference entry"
+                         f" OFF the three bands is {off} -- the residual couples"
+                         " non-adjacent blocks")
+
+    # STATION
+    st = {mm.group(1): mm.group(0) for mm in
+          re.finditer(r"^station (\w+) conv .*$", out, re.M)}
+    if set(st) != set(STATIONS):
+        fails.append(f"(a) STATION: lines for {sorted(st)}, expected {sorted(STATIONS)}")
+    st_worst = 0.0
+    for name, line in st.items():
+        f = line.split()
+        kv = dict(zip(f[2::2], f[3::2]))
+        if kv.get("conv") != "1" or float(kv.get("res", "1")) > 1e-12:
+            fails.append(f"(a) STATION {name}: conv {kv.get('conv')}, ||F|| {kv.get('res')}")
+        if kv.get("fdConv") != "1" or float(kv.get("fdMaxRelDiff", "1")) > 1e-10:
+            fails.append(f"(a) STATION {name}: the finite-difference Newton (the oracle)"
+                         f" gives conv {kv.get('fdConv')}, differing by"
+                         f" {kv.get('fdMaxRelDiff')} (> 1e-10)")
+        for k_ in ("current", "en", "wallCharge"):
+            if float(kv.get(k_, "1")) > 1e-12:
+                fails.append(f"(a) STATION {name}: {k_} {kv.get(k_)} (> 1e-12)")
+        st_worst = max(st_worst, check_station(name, line))
+
     # SWEEP
     m = re.search(r"^sweep total (\d+) converged (\d+) continued (\d+) worstRes (\S+)"
                   r" worstFlux (\S+) worstCurrent (\S+) worstEn (\S+) worstIter (\d+)$",
@@ -321,11 +461,10 @@ def arm_probe(tmp):
         if ok != tot or tot != 56:
             fails.append(f"(a) SWEEP: {ok} of {tot} problems converged (56 expected):\n"
                          + "\n".join(re.findall(r"^sweepFail.*$", out, re.M)))
-        if float(m.group(4)) > 1e-12:
-            fails.append(f"(a) SWEEP: worst ||F|| {m.group(4)} (> 1e-12)")
-        for nm, v in (("zero current", m.group(6)), ("electroneutrality", m.group(7))):
-            if float(v) > 1e-13:
-                fails.append(f"(a) SWEEP: worst {nm} {v} (> 1e-13)")
+        for nm, v in (("||F||", m.group(4)), ("zero current", m.group(6)),
+                      ("electroneutrality", m.group(7))):
+            if float(v) > 1e-12:
+                fails.append(f"(a) SWEEP: worst {nm} {v} (> 1e-12)")
 
     # WARM
     m = re.search(r"^warm itWarm \d+ contWarm \d+ itCold \d+ contCold \d+ maxRelDiff (\S+)$",
@@ -340,15 +479,26 @@ def arm_probe(tmp):
         m = re.search(rf"^REFUSED {tag}: (.*)$", out, re.M)
         if not m or needle not in m.group(1):
             fails.append(f"(a) REFUSED: {tag} was not refused naming '{needle}'")
-    return (analytic_orders, grid_orders, stiffness, sweep)
+    return (analytic_orders, graded_orders, graded_ratio, grid_orders, stiffness,
+            sweep, jac_worst, st_worst)
 
 
 # ---- (b) the witness ---------------------------------------------------------------
-SUMMARY = re.compile(r"\[DSPM-DE\] pore summary \((\w+)\): (\d+) pore solves on (\d+) nodes,"
-                     r" at most (\d+) Newton iterations, \|\|F\|\| <= (\S+); flux constancy"
-                     r" <= (\S+) of the terms it nets \((\S+) of the net flux, at a stiffness"
-                     r" of (\S+)\), zero current <= (\S+), electroneutrality <= (\S+); (\d+)"
-                     r" solves by continuation in J_v")
+SUMMARY = re.compile(r"\[DSPM-DE\] pore summary \((\w+)\): (\d+) pore solves on (\d+) nodes"
+                     r" \(pore, wall and water flux in one Newton per station\), at most"
+                     r" (\d+) Newton iterations \((\d+) in all\), \|\|F\|\| <= (\S+); flux"
+                     r" constancy <= (\S+) of the terms it nets \((\S+) of the net flux, at a"
+                     r" stiffness of (\S+)\), zero current <= (\S+), electroneutrality <="
+                     r" (\S+); (\d+) solves by continuation in J_v")
+FIRST = re.compile(r"\[DSPM-DE\] first station solve: (\d+) Newton iterations(?: \(\d+ solves"
+                   r" by continuation\))?, \|\|F\|\| = (\S+); on an 11-node copy of this"
+                   r" station the block-tridiagonal structure VERIFIED \(max \|J\| off the"
+                   r" bands = (\S+)\) and the analytic Jacobian against finite differences"
+                   r" (\S+) \(of each row's largest entry\)")
+
+
+def summary_at_machine_level(m):
+    return all(float(m.group(g)) <= 1e-12 for g in (6, 7, 10, 11))
 
 
 def arm_witness():
@@ -362,36 +512,43 @@ def arm_witness():
         return None
     banners = re.findall(r"\[DSPM-DE\] pore SOLVED \(poreSolver finiteDifference\): the "
                          r"extended Nernst-Planck equations on (\d+) nodes", out)
-    firsts = re.findall(r"\[DSPM-DE\] first pore solve: (\d+) Newton iterations, \|\|F\|\| ="
-                        r" (\S+), block-tridiagonal structure VERIFIED \(max \|J\| off the"
-                        r" bands = (\S+)\)", out)
-    if banners != ["101", "101"]:
+    firsts = FIRST.findall(out)
+    if banners != ["101"] * 4:
         fails.append(f"(b) the method banner appears {len(banners)} times with nodes "
-                     f"{banners} (expected twice, 101)")
-    if len(firsts) != 2:
-        fails.append(f"(b) the first-solve line (iterations, ||F||, structure VERIFIED) "
-                     f"appears {len(firsts)} times, not 2")
-    for it, r_, off in firsts:
-        if float(r_.rstrip(",")) > 1e-12 or float(off) != 0.0:
-            fails.append(f"(b) first solve: ||F|| {r_}, off-band {off}")
+                     f"{banners} (expected four times, 101)")
+    if len(firsts) != 4:
+        fails.append(f"(b) the first-solve line (iterations, ||F||, structure and analytic "
+                     f"Jacobian VERIFIED) appears {len(firsts)} times, not 4")
+    for it, r_, off, mis in firsts:
+        if float(r_) > 1e-12 or float(off) != 0.0 or float(mis) > 1e-6:
+            fails.append(f"(b) first solve: ||F|| {r_}, off-band {off}, analytic Jacobian "
+                         f"against FD {mis}")
     sums = {m.group(1): m for m in SUMMARY.finditer(out)}
-    if set(sums) != {"NF_NaCl_pore", "NF_MgSO4_pore"}:
-        fails.append(f"(b) pore summaries for {sorted(sums)}, expected exactly the two "
-                     "_pore units -- a _closedForm unit must say nothing about a pore")
+    if set(sums) != set(WITNESS_UNITS):
+        fails.append(f"(b) pore summaries for {sorted(sums)}, expected exactly "
+                     f"{sorted(WITNESS_UNITS)}")
     for u, m in sums.items():
-        if float(m.group(5)) > 1e-12 or float(m.group(6)) > 1e-12 \
-                or float(m.group(9)) > 1e-12 or float(m.group(10)) > 1e-12:
-            fails.append(f"(b) {u}'s pore summary: ||F|| {m.group(5)}, flux constancy "
-                         f"{m.group(6)}, current {m.group(9)}, electroneutrality "
-                         f"{m.group(10)} -- not machine level")
+        if not summary_at_machine_level(m):
+            fails.append(f"(b) {u}'s pore summary: ||F|| {m.group(6)}, flux constancy "
+                         f"{m.group(7)}, current {m.group(10)}, electroneutrality "
+                         f"{m.group(11)} -- not machine level")
     k = res.get("kpis", {})
-    for u in ("NF_NaCl_pore", "NF_MgSO4_pore"):
+    for u in WITNESS_UNITS:
         if k.get(u, {}).get("pore_nodes") != 101:
             fails.append(f"(b) {u} does not publish pore_nodes 101")
-    for u in ("NF_MgSO4_closedForm",):
-        if any(key.startswith("pore_") for key in k.get(u, {})):
-            fails.append(f"(b) {u} publishes a pore_ KPI -- the closed form solved no pore")
-    r_obs = {u: k.get(u, {}).get("R_obs_" + u.split("_")[1]) for u in k}
+    r_obs = {u: k.get(u, {}).get("R_obs_" + u.split("_")[1]) for u in WITNESS_UNITS}
+    if None in r_obs.values():
+        fails.append(f"(b) an R_obs is missing: {r_obs}")
+        return sums, r_obs
+    gapNaCl = r_obs["NF_NaCl_pore"] - r_obs["NF_NaCl_BsWall"]
+    gapMg = abs(r_obs["NF_MgSO4_pore"] - r_obs["NF_MgSO4_BsWall"])
+    if not gapNaCl > 0.10:
+        fails.append(f"(b) THE PAIR: on NaCl the B_s wall gives R_obs {r_obs['NF_NaCl_BsWall']}"
+                     f" against {r_obs['NF_NaCl_pore']} with the pore's own permeate -- the"
+                     " case header's lesson (more than 10 points lost) no longer holds")
+    if not gapMg < 1e-5:
+        fails.append(f"(b) THE PAIR: on MgSO4 the two closures part by {gapMg:.3e} (> 1e-5)"
+                     " -- the case header says they agree")
     return sums, r_obs
 
 
@@ -404,9 +561,7 @@ def species_value(case, ion, key):
 def deen(lam):
     """Dechadilok & Deen 2006 (Ind. Eng. Chem. Res. 45, 6953), transcribed
     independently: their polynomial is H = Phi K_d, so K_d = H/Phi
-    (lambda <= 0.95; the lubrication form above), and their rational K_c.
-    Until 2026-10-24 (DEV.md 4c C141) this transcribed the retired default,
-    which took H itself as K_d."""
+    (lambda <= 0.95; the lubrication form above), and their rational K_c."""
     lam = max(lam, 0.0)
     phi = (1 - lam) ** 2
     if lam <= 0.95:
@@ -420,13 +575,11 @@ def deen(lam):
     return phi, kd, kc
 
 
-PORE_LINE = "poreSolver { method finiteDifference;  nodes 101; }"
-CLOSED_LINE = "poreSolver { method closedForm; }"
+PORE_LINE = "poreSolver { method finiteDifference;  nodes 101;  wallClosure porePermeate; }"
 
 
-def uncharged_copy(tmp, name, closed_nacl):
-    """The witness on an UNCHARGED, Born-free variant of its membrane; with
-    `closed_nacl` its NaCl unit declares the closed form instead."""
+def uncharged_copy(tmp, name):
+    """The witness on an UNCHARGED, Born-free variant of its membrane."""
     case = copy_case(WITNESS, tmp / name)
     rec = (case / "constant" / "assets" / "NF270_dspmde.dat").read_text()
     rec = rec.replace("name           NF270_dspmde;", "name           NF270_dspmde_uncharged;")
@@ -438,31 +591,23 @@ def uncharged_copy(tmp, name, closed_nacl):
     (case / "constant" / "assets" / "NF270_dspmde_uncharged.dat").write_text(rec)
     fd = (case / "system" / "flowsheetDict").read_text()
     fd = fd.replace("membrane         NF270_dspmde;", "membrane         NF270_dspmde_uncharged;")
-    if closed_nacl:
-        if fd.count(PORE_LINE) != 2:
-            fails.append("(c2) the witness's poreSolver line moved; the closed-form copy "
-                         "cannot be built")
-            return None, None
-        fd = fd.replace(PORE_LINE, CLOSED_LINE, 1)      # the first unit is NF_NaCl_pore
     (case / "system" / "flowsheetDict").write_text(fd)
     return case, rec
 
 
 def arm_analytic_engine(tmp):
-    runs = {}
-    for name, closed in (("uncharged", False), ("uncharged_closed", True)):
-        case, rec = uncharged_copy(tmp, name, closed)
-        if case is None:
-            return None
-        rc, out = run_case(case)
-        if rc != 0:
-            fails.append(f"(c) the {name} variant exited {rc}:\n{out[-2000:]}")
-            return None
-        if "Donnan OFF (X_d=0)" not in out or "Born OFF" not in out:
-            fails.append("(c) the variant does not announce Donnan OFF and Born OFF -- it is "
-                         "not the limit this arm computes")
-            return None
-        runs[name] = result_of(out)
+    case, rec = uncharged_copy(tmp, "uncharged")
+    if case is None:
+        return None
+    rc, out = run_case(case)
+    if rc != 0:
+        fails.append(f"(c) the uncharged variant exited {rc}:\n{out[-2000:]}")
+        return None
+    if "Donnan OFF (X_d=0)" not in out or "Born OFF" not in out:
+        fails.append("(c) the variant does not announce Donnan OFF and Born OFF -- it is "
+                     "not the limit this arm computes")
+        return None
+    run = result_of(out)
     m = re.search(r"poreRadius\s+(\S+);", rec); r_p = float(m.group(1))
     m = re.search(r"porosityOverThickness\s+(\S+);", rec); akdx = float(m.group(1))
     ions = {}
@@ -476,53 +621,23 @@ def arm_analytic_engine(tmp):
     Kcs = (Kp * Pm + Km * Pp) / (Pp + Pm)
     S = math.sqrt(Fp * Fm)
     A = 0.51            # Davies A at 298.15 K (debyeHuckelFactor = 1 there)
-    worst = {}
-    for key, name in (("solved", "uncharged"), ("closedForm", "uncharged_closed")):
-        cols = runs[name]["profiles"]["NF_NaCl_pore"]["columns"]
-        Jw, Q, cb, G = cols["J_w"], cols["Q_b"], cols["c_b_NaCl"], cols["Gamma_NaCl"]
-        w = 0.0
-        for k in range(len(Q) - 1):
-            cp_march = (Q[k + 1] * cb[k + 1] - Q[k] * cb[k]) / (Q[k + 1] - Q[k])
-            cm = cb[k] * (1 + G[k])
-            I = cb[k]                         # 1:1, kmol/m3 = mol/L
-            sI = math.sqrt(I)
-            gam = 10 ** (-A * (sI / (1 + sI) - 0.3 * I))
-            Pe = Kcs * Jw[k] / Ps
-            cp_exact = S * Kcs * gam * cm / (1 - (1 - S * Kcs) * math.exp(-Pe))
-            w = max(w, abs(cp_march / cp_exact - 1))
-        worst[key] = w
-    if worst["solved"] > 1e-5:
+    cols = run["profiles"]["NF_NaCl_pore"]["columns"]
+    Jw, Q, cb, G = cols["J_w"], cols["Q_b"], cols["c_b_NaCl"], cols["Gamma_NaCl"]
+    w = 0.0
+    for k in range(len(Q) - 1):
+        cp_march = (Q[k + 1] * cb[k + 1] - Q[k] * cb[k]) / (Q[k + 1] - Q[k])
+        cm = cb[k] * (1 + G[k])
+        I = cb[k]                         # 1:1, kmol/m3 = mol/L
+        sI = math.sqrt(I)
+        gam = 10 ** (-A * (sI / (1 + sI) - 0.3 * I))
+        Pe = Kcs * Jw[k] / Ps
+        cp_exact = S * Kcs * gam * cm / (1 - (1 - S * Kcs) * math.exp(-Pe))
+        w = max(w, abs(cp_march / cp_exact - 1))
+    if w > 1e-5:
         fails.append(f"(c) the solved pore departs from the ambipolar limit by "
-                     f"{worst['solved']:.3e} at its worst station (> 1e-5) -- the law"
+                     f"{w:.3e} at its worst station (> 1e-5) -- the law"
                      " hands the pore the wrong conductances, hindrances or partitions")
-    if worst["closedForm"] < 0.05:
-        fails.append(f"(c2) the declared closed form now departs from the analytic limit by"
-                     f" only {worst['closedForm']:.3e} (< 5 %): the recorded finding"
-                     " has closed -- take this pin back and re-read DSPM_DE.H")
-    return worst
-
-
-def arm_closed_form_charged(tmp):
-    """(c3) the declared closed form on the CHARGED witness membrane, NaCl."""
-    case = copy_case(WITNESS, tmp / "charged_closed")
-    fd = (case / "system" / "flowsheetDict").read_text()
-    if fd.count(PORE_LINE) != 2:
-        fails.append("(c3) the witness's poreSolver line moved; the probe cannot be built")
-        return None
-    (case / "system" / "flowsheetDict").write_text(fd.replace(PORE_LINE, CLOSED_LINE, 1))
-    rc, out = run_case(case)
-    needle = "spiralWoundModule solute balance does not close"
-    if rc == 0:
-        fails.append("(c3) the declared closed form now RUNS the charged NaCl unit (exit 0): "
-                     "the recorded finding has closed -- take this pin back, re-read "
-                     "DSPM_DE.H, and consider restoring membrane20's NaCl closed-form unit")
-        return None
-    if needle not in out:
-        fails.append(f"(c3) the charged closed-form NaCl probe exited {rc} without the "
-                     f"solute-balance refusal it is pinned to:\n{out[-800:]}")
-        return None
-    m = re.search(r"worst solute rel = (\S+)", out)
-    return m.group(1) if m else "?"
+    return w
 
 
 # ---- (d) the default: the solved pore ----------------------------------------------
@@ -553,10 +668,9 @@ def arm_default(tmp):
         if set(sums) != set(units):
             fails.append(f"(d) {src.name}: pore summaries for {sorted(sums)}, units {sorted(units)}")
         for u, m in sums.items():
-            if float(m.group(5)) > 1e-12 or float(m.group(9)) > 1e-12 \
-                    or float(m.group(10)) > 1e-12:
-                fails.append(f"(d) {src.name}.{u}'s pore summary: ||F|| {m.group(5)}, current "
-                             f"{m.group(9)}, electroneutrality {m.group(10)} -- not machine level")
+            if not summary_at_machine_level(m):
+                fails.append(f"(d) {src.name}.{u}'s pore summary: ||F|| {m.group(6)}, current "
+                             f"{m.group(10)}, electroneutrality {m.group(11)} -- not machine level")
         for u in units:
             if res["kpis"][u].get("pore_nodes") != 101:
                 fails.append(f"(d) {src.name}.{u} does not publish pore_nodes 101")
@@ -582,8 +696,7 @@ def arm_default(tmp):
             tol = 1e-14 if abs(want) < 1e-12 else 1e-10 * abs(want)
             if abs(got - want) > tol:
                 fails.append(f"(d) {src.name} {kind} {name} {key}: {got!r} against the "
-                             f"golden {want!r} -- the default path moved (until the C141 "
-                             "re-record, by design)")
+                             f"golden {want!r} -- the default path moved")
     if checked < 40:
         fails.append(f"(d) only {checked} golden rows were compared -- the reader lost "
                      "the golden's format")
@@ -593,7 +706,7 @@ def arm_default(tmp):
 # ---- (e) refusals -----------------------------------------------------------------
 def arm_refusals(tmp):
     fd0 = (WITNESS / "system" / "flowsheetDict").read_text()
-    line = "poreSolver { method finiteDifference;  nodes 101; }"
+    line = PORE_LINE
     if fd0.count(line) != 2:
         fails.append("(e) the witness's poreSolver line moved; the refusal probes cannot "
                      "be built")
@@ -605,12 +718,15 @@ def arm_refusals(tmp):
     #  not the refusal under test.
     probes = [
         ("method banana", "poreSolver { method banana; }",
-         ["unknown DSPM-DE pore solver method 'banana'", "closedForm",
-          "finiteDifference"]),
+         ["unknown DSPM-DE pore solver method 'banana'", "finiteDifference",
+          "`closedForm` was retired"]),
+        ("method closedForm", "poreSolver { method closedForm; }",
+         ["`method closedForm;`, which is RETIRED", "K_c > 1",
+          "`method finiteDifference;`"]),
         ("nodes 2", "poreSolver { method finiteDifference;  nodes 2; }",
          ["`nodes` must be a whole number", "at least 3"]),
-        ("nodes with closedForm", "poreSolver { method closedForm;  nodes 101; }",
-         ["the closed form has no grid"]),
+        ("grading 7", "poreSolver { method finiteDifference;  grading 7; }",
+         ["`grading` is the beta of the tanh map", "between 0 (uniform) and 6"]),
         ("unknown key in poreSolver",
          "poreSolver { method finiteDifference;  nodes 101;  tolerance 1e-9; }",
          ["declares `tolerance`, which the pore solver does not read"]),
@@ -640,7 +756,6 @@ def main():
         probe = arm_probe(tmp)
         wit = arm_witness()
         worst = arm_analytic_engine(tmp)
-        c3 = arm_closed_form_charged(tmp)
         checked = arm_default(tmp)
         fired = arm_refusals(tmp)
     if fails:
@@ -648,26 +763,32 @@ def main():
         for f in fails:
             print("  " + f)
         return 1
-    ao, go, stiff, sweep = probe
+    ao, go, gr, grid_o, stiff, sweep, jw, sw = probe
     sums, r_obs = wit
     print(f"check_pore_solver: OK -- the probe (compiled here) converges to the ambipolar "
-          f"analytic limit at observed order {min(ao):.2f}-{max(ao):.2f} and to 1e-8 at 1600 "
-          f"intervals, and to 1e-10 on every grid at Peclet 440; a stiff pore (migration {stiff:.2e} x its net flux) shows Richardson order "
-          f"{min(go):.2f}-{max(go):.2f} with ||F||, flux constancy, zero current and "
-          f"electroneutrality at machine level; the declared block-tridiagonal structure is "
-          f"audited at exactly 0 off the bands; {sweep[1]}/{sweep[0]} sweep problems from a crude "
-          f"seed converge ({sweep[2]} by continuation in J_v); a warm start reproduces a cold "
-          f"solve; 2 probe refusals fire.  The witness announces method, nodes, iterations, "
-          f"residual and the structure on both solved units and nothing on the closed-form "
-          f"one; END TO END the engine's solved pore matches the analytic limit within "
-          f"{worst['solved']:.1e} at every station of an uncharged Born-free variant "
-          f"(the declared closed form departs by {worst['closedForm']:.1%}, and on the charged "
-          f"membrane refuses on its solute balance at {c3}, both pinned as findings); "
-          f"membrane10/11 run the DEFAULT solved pore, say so on every unit and reproduce "
-          f"{checked} golden rows to 1e-10; "
-          f"{fired} refusals fire by name.  NOT CHECKED here: NanoFiltran (held by "
-          f"check_nanofiltran_reference, with the declared wall closure and activities), "
-          f"the batch diafilter under the solved pore, whether a case's grid is enough.")
+          f"analytic limit at observed order {min(ao):.2f}-{max(ao):.2f} on the uniform grid "
+          f"and {min(go):.2f}-{max(go):.2f} on the face-graded one (whose error is "
+          f"{min(gr):.1f}-{max(gr):.1f}x the uniform grid's at 100 intervals -- why uniform "
+          f"stays the default), to 1e-8 at 1600 intervals and to 1e-10 on every grid at "
+          f"Peclet 440; a stiff pore (migration {stiff:.2e} x its net flux) shows Richardson "
+          f"order {min(grid_o):.2f}-{max(grid_o):.2f} with ||F||, flux constancy, zero current "
+          f"and electroneutrality at machine level; the ANALYTIC Jacobian matches finite "
+          f"differences within {jw:.1e} of its row on 50 random states of five problems, with "
+          f"exactly 0 off the bands; three stations with the wall and the water flux folded in "
+          f"reproduce the interface balance, the closure and the wall electroneutrality "
+          f"recomputed here within {sw:.1e} and the finite-difference Newton's answer; "
+          f"{sweep[1]}/{sweep[0]} sweep problems from a crude seed converge ({sweep[2]} by "
+          f"continuation); a warm start reproduces a cold solve; 2 probe refusals fire.  The "
+          f"witness's four units announce method, nodes, iterations, residual, the structure "
+          f"and the analytic Jacobian, and teach the pair (NaCl R_obs "
+          f"{r_obs['NF_NaCl_pore']:.4f} with the pore's own permeate, "
+          f"{r_obs['NF_NaCl_BsWall']:.4f} with the B_s wall; MgSO4 equal to 1e-5); END TO END "
+          f"the engine matches the analytic limit within {worst:.1e} at every station of an "
+          f"uncharged Born-free variant; membrane10/11 run the DEFAULT solved pore, say so on "
+          f"every unit and reproduce {checked} golden rows to 1e-10; {fired} refusals fire by "
+          f"name, the retired closed form among them.  NOT CHECKED here: NanoFiltran (held by "
+          f"check_nanofiltran_reference), the batch diafilter under the solved pore, whether "
+          f"a case's grid is enough, wall-clock speed.")
     return 0
 
 

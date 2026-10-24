@@ -103,6 +103,7 @@ struct PoreAccount
     int    nodes             = 0;   // grid nodes across the pore
     int    solves            = 0;   // pore solves (water-flux passes)
     int    newtonMax         = 0;   // the most Newton iterations of one solve
+    long   newtonTotal       = 0;   // Newton iterations, every solve summed
     int    continuations     = 0;   // solves reached by continuation in J_v
     scalar residualMax       = 0.0; // ||F||_2 of the normalised rows
     scalar fluxConstancyMax  = 0.0; // |N_k - J_v c_perm| / the terms balanced
@@ -116,6 +117,7 @@ struct PoreAccount
         nodes             = std::max(nodes, o.nodes);
         solves           += o.solves;
         newtonMax         = std::max(newtonMax, o.newtonMax);
+        newtonTotal      += o.newtonTotal;
         continuations    += o.continuations;
         residualMax       = std::max(residualMax, o.residualMax);
         fluxConstancyMax  = std::max(fluxConstancyMax, o.fluxConstancyMax);

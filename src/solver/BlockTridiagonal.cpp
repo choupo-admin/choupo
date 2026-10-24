@@ -29,6 +29,8 @@ License
 #include "BlockTridiagonal.H"
 #include "LU.H"
 
+#include <algorithm>
+
 namespace Choupo::solver
 {
 
@@ -60,18 +62,21 @@ BlockThomasLU blockThomasFactor(const BlockBands& A)
     for (std::size_t bidx = 0; bidx < N; ++bidx)
         F.sup[bidx] = A.b[bidx][2];
 
+    //  Work storage reused across blocks (C142: allocation, not arithmetic --
+    //  the operations and their order are unchanged, so the MESH's and the
+    //  integrator's steps stay bit-identical).
+    std::vector<sVector> Dinv(nv, sVector(nv, 0.0));
+    sVector e(nv, 0.0), col, wPb, wY;
     for (std::size_t bidx = 0; bidx < N; ++bidx)
     {
         std::vector<sVector> D = A.b[bidx][1];
         if (bidx > 0)
         {
             const auto& sub = A.b[bidx][0];
-            std::vector<sVector> Dinv(nv, sVector(nv, 0.0));
             for (std::size_t cix = 0; cix < nv; ++cix)
             {
-                sVector e(nv, 0.0); e[cix] = 1.0;
-                sVector col = luSolve(F.Dfac[bidx-1], F.Dpiv[bidx-1],
-                                      std::move(e));
+                std::fill(e.begin(), e.end(), 0.0); e[cix] = 1.0;
+                luSolveInto(F.Dfac[bidx-1], F.Dpiv[bidx-1], e.data(), col, wPb, wY);
                 for (std::size_t i = 0; i < nv; ++i) Dinv[i][cix] = col[i];
             }
             auto& L = F.L[bidx];
@@ -118,9 +123,10 @@ sVector blockThomasSolve(const BlockThomasLU& F, sVector rhs)
         }
 
     sVector xsol(N * nv, 0.0);
+    sVector r(nv), xb, wPb, wY;
     for (long bidx = long(N) - 1; bidx >= 0; --bidx)
     {
-        sVector r = y[std::size_t(bidx)];
+        r = y[std::size_t(bidx)];
         if (bidx + 1 < long(N))
         {
             const auto& sup = F.sup[std::size_t(bidx)];
@@ -132,8 +138,8 @@ sVector blockThomasSolve(const BlockThomasLU& F, sVector rhs)
                 r[i] -= acc;
             }
         }
-        sVector xb = luSolve(F.Dfac[std::size_t(bidx)],
-                             F.Dpiv[std::size_t(bidx)], std::move(r));
+        luSolveInto(F.Dfac[std::size_t(bidx)], F.Dpiv[std::size_t(bidx)],
+                    r.data(), xb, wPb, wY);
         for (std::size_t i = 0; i < nv; ++i)
             xsol[std::size_t(bidx) * nv + i] = xb[i];
     }

@@ -70,59 +70,44 @@ Description
       ZERO NET CURRENT through the pore:
         sum_i z_i j_i = 0                                           (5)
 
-    TWO WAYS ACROSS THE PORE -- and what each one SOLVES.  This header
+    THE PORE IS SOLVED -- and the header says what is solved.  This header
     used to list (4) and (5) as "the physics solved" while the code solved
-    neither along the pore (corrected 2026-10-22, DEV.md 4c C138); the two
-    paths are now stated apart, because they are not the same model.
+    neither along the pore (corrected 2026-10-22, DEV.md 4c C138).
 
-      finiteDifference (the DEFAULT since 2026-10-24, DEV.md 4c C141 --
-        `poreSolver` absent, or `transportParameters { poreSolver { method
-        finiteDifference; nodes <n>; } }`): (1)-(5) SOLVED, all at once --
-        the method of NanoFiltran (Geraldes & Alves, J. Membr. Sci. 321
-        (2008) 172-182): the ENP discretised on n nodes across the pore
-        (101 when undeclared, announced), (4) at every node, (5), the
-        partitions (2)-(3) at both faces, every node solved simultaneously
-        by Newton on the declared block-tridiagonal structure
-        (PoreNernstPlanck.H, the one home of the pore solve; the partition
-        coefficients stay computed HERE).  Seeded from the closed form's
-        permeate at the first station, from the previous station's pore
-        after it; announced with its node count, iterations, residual and
-        the structure audit.
+      `poreSolver` absent, or `transportParameters { poreSolver { method
+      finiteDifference; nodes <n>; } }`: (1)-(5) SOLVED, all at once -- the
+      ENP discretised on n nodes across the pore, graded toward both faces
+      (the default node count stated and announced when undeclared), (4) at
+      every node, (5), the partitions (2)-(3) at both faces, and -- since
+      C142 (2026-10-24) -- the wall and the water flux in the SAME Newton:
+      one Newton per station on the declared block-tridiagonal structure
+      with an ANALYTIC Jacobian (PoreNernstPlanck.H, the one home of the
+      pore solve; the partition coefficients stay computed HERE).
+      NanoFiltran (Geraldes & Alves, J. Membr. Sci. 321 (2008) 172-182) is
+      the reference it is compared with
+      (tutorials/props/membrane/nanofiltran01_dspmde_reference).  Started
+      from the previous station's answer; at the first station from a
+      local-Donnan profile, and by continuation in J_v from the exact
+      no-flux state when the Newton cannot reach the answer from there
+      (counted and announced).
 
-      closedForm (`poreSolver { method closedForm; }`, DECLARED; the default
-        until 2026-10-24): the pore is NOT solved.  (4) is imposed at the
-        FEED face only, by a bisection on the feed Donnan potential, and the
-        permeate is made electroneutral by a bisection on a permeate Donnan
-        potential -- both only when the membrane declares a charge (with
-        X_d = 0 neither face is made electroneutral, so two ions of unequal
-        steric partition enter and leave the pore with a net charge);
-        between the faces each ion is transmitted ALONE by
+      `method closedForm;` is RETIRED (2026-10-24, DEV.md 4c C142) and
+        refuses by name.  It was the default until C141 and did not solve
+        the pore: the pore electroneutral at the feed face only, the
+        permeate electroneutral, each ion carried across ALONE by
             c_perm,i / c_in,i = K_c / (K_c + (1 - K_c e^{-Pe}) R)
-        with R the ratio of the two faces' partitions -- no potential
-        gradient couples the ions inside the pore, and (4) and (5) are not
-        imposed there.  This transmission is not the solution of (1) even in
-        its own limit with no potential: a point solute in an uncharged pore
-        (Phi = K_c = R = 1) is transmitted 1/(2 - e^{-Pe}), i.e. REJECTED up
-        to 50 %, where (1) gives no rejection at all (algebra); with K_c > 1
-        it tends to K_c at low Peclet number, a permeate RICHER than the
-        pore inlet.  MEASURED with the corrected hindrance (C141): on an
-        uncharged, Born-free membrane it departs from the exact ambipolar
-        solution of (1)-(5) by 76 % in the permeate at the worst station of
-        membrane20's NaCl unit, and on the charged NF270_dspmde record it
-        exhausts NaCl from the bulk until the module refuses its solute
-        balance (bin/curate/check_pore_solver.py arms (c2), (c3)).  Its
-        wall is the solution-diffusion B_s closure: it has no permeate of
-        its own to close the wall with.  Kept as a declared option, and
-        announced as one; whether to retire it is Vitor's.
+        -- not the solution of (1) even in its own limit with no potential
+        (a point solute in an uncharged pore is rejected up to 50 % where
+        (1) rejects nothing), and, with the corrected K_d (C141), tending to
+        K_c > 1 at low Peclet number: a permeate richer than the pore
+        inlet, -121.5 % rejection on membrane11's Born-off NaCl, a bulk
+        exhausted until membrane20's solute balance refused.
 
-      Both paths share the feed-face activity (by default Davies, frozen
-      per station, at the BULK ionic strength), the permeate taken ideal,
-      the van't Hoff osmotic difference over the ions and the closure
-      J_w = A_w (dP - dpi) of the water flux -- reached by a damped fixed
-      point under the closed form, by a safeguarded secant on the same
-      equation under the solved pore (each pass there is a full wall-and-
-      pore Newton).  They differ in the pore and, by default, in the wall
-      (`wallClosure` below).
+      The feed-face activity (by default Davies, frozen per station, at the
+      BULK ionic strength), the permeate taken ideal, the van't Hoff osmotic
+      difference over the ions and the closure J_w = A_w (dP - dpi) of the
+      water flux are the station's equations; the wall closure is the
+      declared choice below.
 
     DECLARED CHOICES (C138 slice 2, 2026-10-22; the hindrance corrected by
     C141, 2026-10-24) -- each with a stated default, the first word listed.
@@ -146,8 +131,7 @@ Description
           partition TWICE in diffusion: K_d too small by (1 - lambda)^2.
           It was the default until that day, so every DSPM-DE result
           recorded before it carries the defect.
-      activity wallDavies | ideal | bulkOverPoreDavies;  (needs the solved
-        pore for bulkOverPoreDavies)
+      activity wallDavies | ideal | bulkOverPoreDavies;
         wallDavies (default): Davies (A from SpeciationSolver::daviesA) at
           the bulk ionic strength on the feed face, the permeate ideal.
         ideal: every activity coefficient 1.
@@ -157,23 +141,23 @@ Description
           pore-side gamma at the pore node of that face with A(eps_p),
           both Davies on log10 with A(eps, T) = 1.82483e6 (eps T)^-3/2 (the
           Debye-Hueckel constant; Davies, "Ion Association", 1962).  The
-          pore gammas depend on the pore solution, so they are converged by
-          a fixed point around the pore solve: the solved pore is required.
+          gammas depend on the answer's own ionic strengths, so since C142
+          they are evaluated INSIDE the station's Newton (they were a fixed
+          point around the pore solve).
       bulkDielectric <eps>;
         the bulk-solution dielectric constant in the Born term (3) and in
         A(eps_b); absent, SolventProperties::epsWater(T).
       poreSolver { wallClosure porePermeate | solutionDiffusion; }
-        porePermeate (the default of the solved pore since C141, announced
-          as such): the wall is closed with the permeate the solved pore
-          gives -- the interface balance and the pore converged together by
-          a Newton on the permeate the wall is closed with, warm-started
-          from the previous water-flux pass and the previous station, where
-          NanoFiltran solves them in one matrix.  Only the ions the feed
-          carries are its unknowns, and a trial wall below zero is a trial
-          to back away from (C141: both were refusals before).
+        porePermeate (the default since C141, announced as such): the wall
+          is closed with the permeate the solved pore gives -- the film
+          carries to the wall exactly the solute flux the pore carries away.
+          Since C142 the interface balance is one of the station Newton's
+          rows (it was a Newton around the pore), as NanoFiltran solves them
+          in one matrix.  Only the ions the feed carries are unknowns.
         solutionDiffusion: the wall is closed with the salts'
-          solution-diffusion B_s, as the closed form's is (the closed form
-          has no other).
+          solution-diffusion B_s, the closure the retired closed form had --
+          the film then carries a solute flux the pore does not, and
+          membrane20 shows what that costs in rejection.
 
     The classic NF SIGNATURE the tutorials demonstrate falls out of (2)-(4):
     a divalent co-ion (e.g. SO4 against a negative X_d) is excluded far more
@@ -189,10 +173,9 @@ Description
     present) and ANNOUNCED in the run header -- no silent fallback.  There is
     no seeding CHAIN between the stages at run time (this header used to say
     each was "seeded from the previous, simpler converged state"; the code
-    does not do that): the closed form needs no seed -- its two Donnan
-    potentials are monotone bisections, which cannot land on the psi = 0
-    branch -- and the solved pore starts from local Donnan equilibrium at
-    every node.
+    does not do that): the solved pore starts from local Donnan equilibrium
+    at every node, whose two face potentials are monotone bisections that
+    cannot land on the psi = 0 branch.
 
     SCOPE / INTERFACE GLUE.  The host SpiralWoundModule marches per SALT
     COMPONENT (NaCl, MgSO4, ...), one B_s and one c_b per salt.  DSPM-DE works
@@ -219,8 +202,8 @@ class DSPM_DE : public TransportModel
 public:
     const std::string& type() const override { return type_; }
 
-    //  `transportParameters { poreSolver { method finiteDifference |
-    //  closedForm; nodes <n>; wallClosure <word>; } hindrance <word>;
+    //  `transportParameters { poreSolver { method finiteDifference;
+    //  nodes <n>; wallClosure <word>; } hindrance <word>;
     //  activity <word>; bulkDielectric <eps>; }` -- the block this law
     //  reads (see "DECLARED CHOICES" above; absent, every default).
     void readParameters(const DictPtr& transportDict) override;
@@ -241,28 +224,28 @@ private:
     // The declared model choices ("DECLARED CHOICES" above).
     bool        hindranceDeclared_ = false; // `hindrance` said by the case
     Activity    activity_       = Activity::WallDavies;
-    //  The stated defaults (C141, 2026-10-24): the pore SOLVED on 101
-    //  nodes, the wall closed with the pore's own permeate -- set here
-    //  because readParameters runs only when the case writes the block.
+    //  The stated default (C141, 2026-10-24): the wall closed with the
+    //  pore's own permeate -- set here because readParameters runs only
+    //  when the case writes the block.
     WallClosure wallClosure_    = WallClosure::PorePermeate;
     bool        wallClosureDefaulted_ = true;
     scalar      bulkDielectric_ = -1.0;     // < 0: SolventProperties::epsWater(T)
     mutable bool choicesSaid_   = false;    // the declared choices, announced once
-    mutable int  outerPassesMax_ = 0;       // pore <-> wall/activity passes, the most
 
-    // The pore solver (see "TWO WAYS ACROSS THE PORE" above).
-    bool        finiteDifference_ = true;
+    // The pore solver (see "THE PORE IS SOLVED" above).
     bool        methodDefaulted_  = true;    // no `poreSolver { method }`
+    //  The stated defaults, MEASURED (docs/design/a-stiff-pore-solved-at-once.md
+    //  section 11): the node count and the grading of the grid.
     std::size_t poreNodes_        = 101;     // grid nodes, faces included
     bool        nodesDefaulted_   = true;
+    scalar      poreGrading_      = 0.0;     // beta of the tanh map toward both faces
+    bool        gradingDefaulted_ = true;
     mutable bool poreBanner_      = false;   // first solve announced once
     mutable bool continuationSaid_ = false;  // first continuation announced once
-    // The previous station's converged pore: the next station's seed.
+    mutable bool noFluxSaid_      = false;   // a station with no water flux, said once
+    // The previous station's converged state: the next station's start.
     mutable pore::PoreSolution lastPore_;
     mutable bool               haveLastPore_ = false;
-    // The previous station's converged permeate under `wallClosure
-    // porePermeate` [mol/m3, per ion]: the next station's wall-Newton seed.
-    mutable std::vector<scalar> lastPermeate_;
 };
 
 } // namespace membrane

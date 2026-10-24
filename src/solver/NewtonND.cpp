@@ -310,13 +310,14 @@ NDResult newtonND(const std::function<sVector(const sVector&)>& F,
     sVector Fx = F(x);
     scalar  normF = normL2(Fx);
     scalar  offBand  = std::numeric_limits<scalar>::quiet_NaN();
+    scalar  mismatch = std::numeric_limits<scalar>::quiet_NaN();
     long    jacEvals = 0;
 
     int it = 0;
     for (; it < opts.maxIter; ++it)
     {
         if (normF < opts.tolerance)
-            return {x, Fx, normF, it, true, offBand, jacEvals, {}};
+            return {x, Fx, normF, it, true, offBand, jacEvals, {}, mismatch};
 
         // Build J(x) and solve J · dx = -F
         sVector minusFx(Fx.size());
@@ -329,8 +330,18 @@ NDResult newtonND(const std::function<sVector(const sVector&)>& F,
         {
             const std::size_t N  = opts.blockTri.nBlocks;
             const std::size_t nv = opts.blockTri.blockSize;
-            auto colored = fdJacobianColoredBT(F, x, Fx, opts.fdStep, N, nv);
-            jacEvals += colored.evals;
+            ColoredResult colored;
+            if (opts.blockTri.jacobian)
+            {
+                //  the caller's ANALYTIC bands (C142); no residual evaluations
+                colored.bands = BlockBands(N, nv);
+                opts.blockTri.jacobian(x, colored.bands);
+            }
+            else
+            {
+                colored = fdJacobianColoredBT(F, x, Fx, opts.fdStep, N, nv);
+                jacEvals += colored.evals;
+            }
 
             if (it == 0 && opts.blockTri.audit)
             {
@@ -350,6 +361,32 @@ NDResult newtonND(const std::function<sVector(const sVector&)>& F,
                         else        off    = std::max(off,    std::abs(Jd[i][j]));
                     }
                 offBand = off;
+                if (opts.blockTri.jacobian)
+                {
+                    //  the derivative claim, measured beside the structure
+                    //  claim: each in-band analytic entry against the dense
+                    //  FD one, relative to the largest |J| of its row.
+                    scalar mis = 0.0;
+                    for (std::size_t i = 0; i < x.size(); ++i)
+                    {
+                        scalar rowMax = 0.0;
+                        for (std::size_t j = 0; j < x.size(); ++j)
+                            rowMax = std::max(rowMax, std::abs(Jd[i][j]));
+                        if (!(rowMax > 0.0)) continue;
+                        const std::size_t bi = i / nv;
+                        for (long bj = long(bi) - 1; bj <= long(bi) + 1; ++bj)
+                        {
+                            if (bj < 0 || bj >= long(N)) continue;
+                            const auto& blk = colored.bands.b[bi][std::size_t(bj - long(bi) + 1)];
+                            for (std::size_t c = 0; c < nv; ++c)
+                            {
+                                const std::size_t j = std::size_t(bj) * nv + c;
+                                mis = std::max(mis, std::abs(blk[i % nv][c] - Jd[i][j]) / rowMax);
+                            }
+                        }
+                    }
+                    mismatch = mis;
+                }
                 if (off > 1.0e-4 * std::max(inBand, scalar(1.0)))
                     throw std::runtime_error(
                         "newtonND: the DECLARED block-tridiagonal structure ("
@@ -369,7 +406,7 @@ NDResult newtonND(const std::function<sVector(const sVector&)>& F,
                 return {x, Fx, normF, it, false, offBand, jacEvals,
                         announceStop(std::string("the block-Thomas linear"
                             " solve of the Newton step failed (")
-                            + e.what() + ")", it, normF)};
+                            + e.what() + ")", it, normF), mismatch};
             }
         }
         else
@@ -437,7 +474,7 @@ NDResult newtonND(const std::function<sVector(const sVector&)>& F,
             return {x, Fx, normF, it, false, offBand, jacEvals,
                     announceStop("the line search found no evaluable step"
                         " (every trial infeasible or non-finite down to the"
-                        " minimum backtracking factor)", it, normF)};
+                        " minimum backtracking factor)", it, normF), mismatch};
         }
 
         if (opts.onIter) opts.onIter({it, x, Fx, normF, alpha});
@@ -450,7 +487,7 @@ NDResult newtonND(const std::function<sVector(const sVector&)>& F,
     //  maxIter reached: the structure measurement and the Jacobian count
     //  travel with this exit too (they were dropped here, so a column that
     //  hit maxIter lost its `block-tridiagonal structure VERIFIED` line).
-    return {x, Fx, normF, it, normF < opts.tolerance, offBand, jacEvals, {}};
+    return {x, Fx, normF, it, normF < opts.tolerance, offBand, jacEvals, {}, mismatch};
 }
 
 } // namespace Choupo::solver

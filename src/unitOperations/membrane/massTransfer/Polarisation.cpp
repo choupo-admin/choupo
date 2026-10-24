@@ -145,29 +145,6 @@ PolarisationPolicy readPolarisationPolicy(const DictPtr& operation)
 }
 
 // ---------------------------------------------------------------------------
-//  Xi_i  (Eq. 5 / Eq. 6 / 1)
-// ---------------------------------------------------------------------------
-scalar suctionFactor(SuctionCorrection s, scalar phi)
-{
-    if (s == SuctionCorrection::None) return 1.0;
-    if (phi == 0.0) return 1.0;
-    //  A negative phi is a numerical probe (an outer Newton's finite
-    //  difference straddling J_v = 0), never an operating point: the film
-    //  form is defined there and used for both corrections.
-    if (s == SuctionCorrection::FilmTheory || phi < 0.0)
-        return phi + phi / std::expm1(phi);                         // (6)
-    //  Geraldes & Afonso, AIChE J. 52 (2006) 3353, valid for phi < 20.
-    if (phi >= 20.0)
-        AdvisoryLog::instance().add("extrapolation", "warning",
-            "polarisation suctionCorrection GeraldesAfonso2006",
-            "phi = J_v/k_c reached 20 or more; the correction of Geraldes &"
-            " Afonso (2006), Eq. (5), was derived for phi < 20 and is being"
-            " extrapolated -- the wall concentration beyond that band is"
-            " outside the correlation's evidence");
-    return phi + std::pow(1.0 + 0.26 * std::pow(phi, 1.4), -1.7);     // (5)
-}
-
-// ---------------------------------------------------------------------------
 //  The kernel
 // ---------------------------------------------------------------------------
 namespace {
@@ -253,7 +230,8 @@ WallSolution wallConcentrations(const PolarisationPolicy&       policy,
         //  arithmetic when the correction is filmTheory; a wall below zero
         //  is computed, not hidden, and the caller's `requireOk` refuses it
         //  on an ACCEPTED answer (a law's trial may pass through one).
-        for (std::size_t i = 0; i < n; ++i) w.c_m[i] = num[i] / a[i];
+        for (std::size_t i = 0; i < n; ++i)
+            w.c_m[i] = detail::wallAt(k[i] * w.Xi[i], J_v, c_b[i], c_p[i], 0.0);
     }
     else
     {
@@ -343,7 +321,10 @@ WallSolution wallConcentrations(const PolarisationPolicy&       policy,
         scalar q = 0.0, qa = 0.0;
         for (std::size_t i = 0; i < n; ++i)
         {
-            w.c_m[i] = num[i] / (a[i] + scalar(z[i]) * D[i] * x);
+            w.c_m[i] = (z[i] == 0)
+                     ? detail::wallAt(k[i] * w.Xi[i], J_v, c_b[i], c_p[i], 0.0)
+                     : detail::wallAt(k[i] * w.Xi[i], J_v, c_b[i], c_p[i],
+                              scalar(z[i]) * D[i] * x);
             q  += scalar(z[i]) * w.c_m[i];
             qa += std::abs(scalar(z[i])) * w.c_m[i];
         }

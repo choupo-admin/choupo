@@ -37,9 +37,11 @@ WHAT THIS GATE CHECKS.
       801-node error (so a too-tight anchor fails here, not at random).
   (e) THE DECLARATIONS REFUSE.  An unknown `hindrance`, `activity` and
       `wallClosure` word, the RETIRED `hindrance legacy` (with its reason:
-      the steric partition counted twice; DEV.md 4c C141), `wallClosure` and
-      `activity bulkOverPoreDavies` under `method closedForm`, and a
-      non-DSPM-DE law on the bench -- each refuses by name.
+      the steric partition counted twice; DEV.md 4c C141), the RETIRED
+      `method closedForm` (with its reason: K_c > 1 at low Peclet number;
+      C142 -- until then two probes declared `wallClosure` and `activity
+      bulkOverPoreDavies` under it), and a non-DSPM-DE law on the bench --
+      each refuses by name.
 
 WHAT THIS GATE DOES NOT CHECK, said plainly: whether NanoFiltran is right
 (two programs agreeing is verification, not validation); the as-received
@@ -242,14 +244,11 @@ def arm_refusals(tmp):
         ("wallClosure banana", lambda t: t.replace("wallClosure porePermeate;",
                                                    "wallClosure banana;", 1),
          ["unknown DSPM-DE pore solver wallClosure 'banana'", "porePermeate"]),
-        ("wallClosure under closedForm",
-         lambda t: t.replace("{ method finiteDifference; nodes 801; wallClosure porePermeate; }",
-                             "{ method closedForm; wallClosure porePermeate; }", 1),
-         ["only the solved pore can close"]),
-        ("bulkOverPoreDavies under closedForm",
+        #  The retired pore method, refused with its reason (DEV.md 4c C142).
+        ("method closedForm",
          lambda t: re.sub(r"(name\s+example_davies;.*?)poreSolver \{[^}]*\}",
                           r"\1poreSolver { method closedForm; }", t, count=1, flags=re.S),
-         ["bulkOverPoreDavies", "the closed form does not have"]),
+         ["`method closedForm;`, which is RETIRED", "K_c > 1"]),
         ("another law on the bench", lambda t: t.replace("transport DSPM-DE;",
                                                          "transport SDEM;", 1),
          ["only the DSPM-DE law honours an imposed"]),
