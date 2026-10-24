@@ -73,6 +73,14 @@ License
   React state update is not visible inside the handler that made it, so a
   double-click could open whatever had been selected before.  A row now
   opens BY ITS OWN NAME (`openByName`), never through the selection.
+
+  THE FOLDER ON DISK IS PRINTED BESIDE ITS LABEL (2026-10-24).  Vítor could
+  not find `tutorials/steady/membranes/` here: it was listed, but only as
+  "Membranes (NF / RO)", the fourteenth of twenty-four labels sorted
+  alphabetically, below the fold of the list -- and a README, a terminal and
+  `runCase` all name the PATH, never the label.  Every sub-class row now
+  carries its path (`steady/membranes/`), every search result names its
+  folder by path first, and the search matches the path as typed.
 \*---------------------------------------------------------------------------*/
 
 import {
@@ -109,6 +117,7 @@ import {
   TUTORIALS_BY_CATEGORY,
   subclassGroupsFor,
   subclassLabel,
+  tutorialFolderPath,
   type Category,
   type SubclassGroup,
   type TutorialEntry,
@@ -464,6 +473,7 @@ function renderSubclasses(
       <NavRow
         key={g.slug}
         label={g.label}
+        path={tutorialFolderPath(cat, g.slug)}
         icon={<IconFolder size={14} />}
         rightLabel={right}
         onClick={() => setCwd({ cat, sub: g.slug })}
@@ -534,7 +544,10 @@ function SearchResultRow(props: {
 }) {
   const { id, hit, readmeExcerpt, highlighted, onHover, onOpen } = props;
   const e = hit.entry;
-  const folder = [e.category, subclassLabel(e.subclass)].filter(Boolean).join(" / ");
+  // The ON-DISK folder first, then the label the browser lists it under: a
+  // README or a terminal names `steady/membranes/`, never the label.
+  const label = subclassLabel(e.subclass, e.category);
+  const folder = tutorialFolderPath(e.category, e.subclass) + (label ? `  ·  ${label}` : "");
   return (
     <Box
       id={id}
@@ -590,11 +603,14 @@ function SearchResultRow(props: {
 
 function NavRow(props: {
   label: string;
+  /** The folder on disk, printed dimmed beside a sub-class label (the label
+   *  describes; the path is what a README, a terminal and `runCase` say). */
+  path?: string;
   icon: React.ReactNode;
   rightLabel?: string;
   onClick: () => void;
 }) {
-  const { label, icon, rightLabel, onClick } = props;
+  const { label, path, icon, rightLabel, onClick } = props;
   return (
     <Group
       gap={6}
@@ -616,11 +632,21 @@ function NavRow(props: {
       }}
     >
       <Box style={{ color: "light-dark(var(--mantine-color-accent-6), var(--mantine-color-accent-4))" }}>{icon}</Box>
-      <Text size="xs" ff="monospace">
-        {label}
-      </Text>
+      {/* Label and path WRAP as a pair: on a phone the path drops under the
+          label instead of pushing the case count out of the row. */}
+      <Box style={{ flex: "1 1 auto", minWidth: 0, display: "flex", flexWrap: "wrap",
+        columnGap: 10, alignItems: "baseline" }}>
+        <Text size="xs" ff="monospace">
+          {label}
+        </Text>
+        {path && (
+          <Text size="xs" ff="monospace" c="dimmed" style={{ overflowWrap: "anywhere" }}>
+            {path}
+          </Text>
+        )}
+      </Box>
       {rightLabel && (
-        <Text size="xs" c="dimmed" ml="auto" pr={4}>
+        <Text size="xs" c="dimmed" pr={4} style={{ flexShrink: 0, whiteSpace: "nowrap" }}>
           {rightLabel}
         </Text>
       )}

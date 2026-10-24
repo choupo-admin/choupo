@@ -31,7 +31,7 @@
 \*---------------------------------------------------------------------------*/
 
 import { fold, parseQuery, termMatches, type Term } from "../search/textSearch.js";
-import { subclassLabel, type TutorialEntry } from "./tutorials.js";
+import { subclassLabel, tutorialFolderPath, type TutorialEntry } from "./tutorials.js";
 
 /** Field weights, in Vítor's order. */
 export const TUTORIAL_FIELD_WEIGHT = {
@@ -54,7 +54,8 @@ function hayOf(e: TutorialEntry): Hay {
     h = {
       name: fold(`${e.name} ${e.shortName}`),
       description: fold(e.description ?? ""),
-      folder: fold(`${e.category} ${e.subclass} ${subclassLabel(e.subclass)}`),
+      folder: fold(`${e.category} ${e.subclass} ${subclassLabel(e.subclass, e.category)} `
+        + tutorialFolderPath(e.category, e.subclass)),
       readme: fold(e.readme ?? ""),
     };
     HAY.set(e, h);

@@ -32,7 +32,13 @@
 import { describe, expect, it } from "vitest";
 import type { ReactElement } from "react";
 
-import { TUTORIALS, type TutorialEntry } from "../src/cases/tutorials.js";
+import { readdirSync } from "node:fs";
+import { dirname, join } from "node:path";
+import { fileURLToPath } from "node:url";
+
+import {
+  TUTORIALS, subclassGroupsFor, subclassLabel, tutorialFolderPath, type TutorialEntry,
+} from "../src/cases/tutorials.js";
 import { searchEnterTarget, searchTutorials } from "../src/cases/tutorialSearch.js";
 import { excerptAround, fold, parseQuery } from "../src/search/textSearch.js";
 import { renderCases, searchResultRows } from "../src/ui/OpenTutorialModal.js";
@@ -146,5 +152,64 @@ describe("opening the RIGHT case", () => {
     const rows = renderCases(es, "steady/x/first", () => {}, (n) => opened.push(n));
     (rows[1] as ReactElement<{ onDoubleSelect: () => void }>).props.onDoubleSelect();
     expect(opened).toEqual(["steady/x/second"]);
+  });
+});
+
+// THE MEMBRANES VÍTOR COULD NOT FIND (2026-10-24).  Every membrane case on
+// disk must be in the catalogue, listed in its folder, and found by the words
+// a reader types -- the folder's PATH among them, because a README and a
+// terminal name `steady/membranes`, never the label.
+describe("every membrane tutorial is reachable", () => {
+  const here = dirname(fileURLToPath(import.meta.url));
+  const onDisk = (rel: string): string[] =>
+    readdirSync(join(here, "../../tutorials", rel), { withFileTypes: true })
+      .filter((d) => d.isDirectory()).map((d) => `${rel}/${d.name}`).sort();
+  const names = new Set(TUTORIALS.map((t) => t.name));
+  const steadyMembranes = onDisk("steady/membranes");
+
+  it("every case folder under the membrane folders is in the catalogue", () => {
+    expect(steadyMembranes.length).toBeGreaterThanOrEqual(20);
+    for (const rel of [...steadyMembranes, ...onDisk("props/membrane"), ...onDisk("batch/membrane")]) {
+      expect(names.has(rel), rel).toBe(true);
+    }
+  });
+
+  it("steady/ lists the Membranes folder, with its path, holding all of them", () => {
+    const g = subclassGroupsFor("steady")!.find((x) => x.slug === "membranes")!;
+    expect(g.label).toBe("Membranes (NF / RO)");
+    expect(tutorialFolderPath("steady", g.slug)).toBe("steady/membranes/");
+    expect(g.entries.map((e) => e.name).sort()).toEqual(steadyMembranes);
+  });
+
+  it("props/membrane is not labelled as the batch diafiltration rig", () => {
+    expect(subclassLabel("membrane", "batch")).toBe("Diafiltration & batch membranes");
+    expect(subclassLabel("membrane", "props")).not.toBe(subclassLabel("membrane", "batch"));
+    expect(subclassLabel("reactor", "props")).not.toBe(subclassLabel("reactor", "batch"));
+    expect(subclassLabel("membranes")).toBe("Membranes (NF / RO)");
+  });
+
+  it.each(["membranes", "steady/membranes", "Steady/Membranes/"])(
+    "'%s' finds every case in steady/membranes/", (q) => {
+      const found = new Set(searchTutorials(q, TUTORIALS).map((h) => h.entry.name));
+      for (const rel of steadyMembranes) expect(found.has(rel), rel).toBe(true);
+    });
+
+  // nanofiltran01 is NOT among them, and that is the corpus, not the search:
+  // it has no README and its description names the DSPM-DE model and the
+  // NanoFiltran program, never the word nanofiltration -- "DSPM" finds it.
+  it.each(["nanofiltration", "nanofiltração", "NF"])("'%s' finds the NF cases", (q) => {
+    const found = searchTutorials(q, TUTORIALS).map((h) => h.entry.name);
+    expect(found).toContain("steady/membranes/membrane02_NF_sugar");
+    expect(found).toContain("steady/membranes/membrane15_module_nf270_4040");
+    expect(found).toContain("batch/membrane/diafilter01_nf_desalting");
+  });
+
+  it("'DSPM' finds every DSPM-DE case, name hits first", () => {
+    const hits = searchTutorials("DSPM", TUTORIALS);
+    const found = hits.map((h) => h.entry.name);
+    for (const rel of [...steadyMembranes, ...onDisk("props/membrane")].filter((r) => /dspm/i.test(r))) {
+      expect(found).toContain(rel);
+    }
+    expect(hits[0]!.bestField).toBe("name");
   });
 });

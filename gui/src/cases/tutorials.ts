@@ -314,10 +314,35 @@ const SUBCLASS_LABEL: { [slug: string]: string } = {
   plant: "Plant design (run in lots)",
 };
 
-/** The label a sub-class slug is shown under ("" for none) -- read by the
- *  Open Case search so a result names its folder as the browser does. */
-export function subclassLabel(slug: string): string {
-  return slug ? (SUBCLASS_LABEL[slug] || slug) : "";
+/** A label for ONE category's folder, where the slug alone would borrow
+ *  another category's meaning.  The plain table above is keyed on the slug,
+ *  and two folders share a slug across categories: `membrane` is the batch
+ *  diafiltration rig under batch/ and the DSPM-DE / polarisation benches
+ *  under props/, so props/membrane was listed as "Diafiltration & batch
+ *  membranes" (found 2026-10-24, walking the dialog for the membranes Vítor
+ *  could not find); `reactor` is the batch reactor under batch/ and the
+ *  catalyst-pellet (Thiele) benches under props/.  Looked up first. */
+const SUBCLASS_LABEL_IN: { [catSlash: string]: string } = {
+  "props/membrane": "Membrane transport (DSPM-DE / polarisation)",
+  "props/reactor": "Catalyst pellet (Thiele / Prater)",
+};
+
+/** The label a sub-class is shown under ("" for none) -- read by the folder
+ *  browser AND the Open Case search, so a result names its folder as the
+ *  browser does.  `category` selects a category-specific label where one is
+ *  declared (see SUBCLASS_LABEL_IN). */
+export function subclassLabel(slug: string, category?: string): string {
+  if (!slug) return "";
+  return (category ? SUBCLASS_LABEL_IN[`${category}/${slug}`] : undefined)
+    || SUBCLASS_LABEL[slug] || slug;
+}
+
+/** The folder a tutorial lives in ON DISK, as a reader would type it after
+ *  `tutorials/`: `steady/membranes/`, or `ctrl/` for a flat category.  The
+ *  dialog prints it beside every label, because the label is a description
+ *  and the path is what a README, a terminal and `runCase` say. */
+export function tutorialFolderPath(category: string, slug: string): string {
+  return slug ? `${category}/${slug}/` : `${category}/`;
 }
 
 export interface SubclassGroup {
@@ -337,7 +362,7 @@ export function subclassGroupsFor(category: Category): SubclassGroup[] | null {
   const entries = cat ? cat.entries : [];
   const make = (slug: string): SubclassGroup => ({
     slug,
-    label: SUBCLASS_LABEL[slug] || slug,
+    label: subclassLabel(slug, category),
     entries: entries.filter((e) => e.subclass === slug),
   });
   const groups: SubclassGroup[] = [];
