@@ -1501,6 +1501,44 @@ accepts today, and that is a policy call.
 > final; }` layout draws what the steady flowsheet and the sizing pass
 > already hold.
 
+> **C140. AN EDUTOOL ON INTELLECTUAL PROPERTY AS COMPETITIVE STRATEGY:
+> PATENT OR SECRET, AND HOW FIRMS FIGHT WITH IP (Vitor, 2026-10-24: "as
+> formas e estrategias como as empresas gerem a propriedade intelectual e
+> como lutam com os concorrentes usando tecnicas sujas, como fazer
+> patentes sem interesse so para induzirem os concorrentes a avancar por
+> ideias sem futuro e os fazer perder tempo.  A competicao e feita sempre
+> em modo de guerra e os alunos nao sabem isso.  Depois ha a questao de
+> decidir o que vale a pena patentear e o que e melhor guardar como
+> segredo industrial").**  Status: FUTURE WORK, not scheduled; scope to
+> agree with Vitor (pedagogy is his).  Commander's first reading:
+> (1) PATENT OR TRADE SECRET as a decision the student makes: a patent
+> trades disclosure for ~20 years of exclusion; a secret lasts as long as
+> it holds.  The questions that decide it -- can the product be reverse-
+> engineered? can infringement be DETECTED (a process inside a plant
+> usually cannot, a product on the market can)? how long is the useful
+> life against the patent term? what does filing cost across the markets
+> that matter? can the secret survive staff turnover?  A process
+> catalyst recipe and a new molecule land on opposite sides, and the
+> student should see why.  (2) IP AS A WEAPON, described as it is
+> practised: blocking and fencing patents, patent thickets around a core
+> invention, filings on dead-end routes that signal a direction the
+> filer abandoned (decoys), continuation strategies, evergreening near
+> expiry, defensive publication to destroy a rival's novelty, freedom-
+> to-operate searches and opposition proceedings as counter-moves; the
+> point is that competitors read your filings, and you read theirs.
+> (3) THE LIMITS: where strategy becomes unlawful or sanctionable --
+> sham litigation and misuse under competition law, inequitable conduct
+> before a patent office, misappropriation of a rival's trade secrets --
+> stated so the student can recognise them, not as a manual.  (4) an
+> exercise: a fictitious company with three inventions (a process
+> improvement, a new product, an analytical method) decides patent /
+> secret / publish for each and plays one round against a competitor
+> that reads its filings.  No real company accused of anything without a
+> cited, public source (court decision or official record); any case
+> study is either documented or explicitly fictitious.  Not legal
+> advice, and the tool says so.  Shelf: "Process design & economics",
+> beside C139 (the economics of the chemical network).
+
 > **C139. AN EDUTOOL ON THE ECONOMICS OF THE CHEMICAL NETWORK: BASE
 > CHEMICALS, INTERMEDIATES, INDUSTRIAL PARKS AND INTERNATIONAL TRADE
 > (Vitor, 2026-10-24, "para refletir trabalho futuro": "ha uma rede de
