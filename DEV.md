@@ -1683,6 +1683,12 @@ accepts today, and that is a policy call.
 > spread and to the merchant share, the risk department's written
 > warnings as the concepts that catch them, the outcome with the loss
 > metrics defined and not added).
+> LANDED 2026-10-24 (EduTool `sines-pta`, record
+> docs/design/the-sines-pta-plant-a-negative-case.md) on his delegation
+> ("Avanca como achares melhor"), screenshots shown first.  The 2017
+> insolvency is NOT stated (no primary document read confirms it); the
+> calculator's synthetic defaults put the break-even spread at 236 US$/t
+> and the page says they are teaching values.
 
 > **C142. A PORE SOLVER BETTER THAN NANOFILTRAN, WITH NANOFILTRAN ONLY AS
 > THE COMPARISON (Vitor, 2026-10-24: "Eu quero que facas um solver melhor!
