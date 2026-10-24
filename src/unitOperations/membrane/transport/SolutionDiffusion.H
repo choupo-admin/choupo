@@ -58,8 +58,27 @@ Description
 
 #include "TransportModel.H"
 
+#include <functional>
+#include <string>
+#include <vector>
+
 namespace Choupo {
 namespace membrane {
+
+namespace detail {
+//- The wall at a trial water flux J_w, its permeate returned through c_p.
+using WallClosure = std::function<WallSolution(scalar J_w, std::vector<scalar>& c_p)>;
+
+//- THE WATER-FLUX NEWTON of every law whose permeate is a closure of the
+//  wall (solutionDiffusion, constantRejection): F(J_w) = J_w - A_w (dP -
+//  dpi(J_w)) = 0, the wall from `wallAt`.  Returns J_w, c_m, c_p; J_s is
+//  left zero for the caller's own law (B (c_m - c_p), or J_w c_p).
+//  `lastWall` is the wall at the accepted J_w.
+TransportSolution waterFluxNewton(const TransportContext& ctx,
+                                  const WallClosure&      wallAt,
+                                  const std::string&      site,
+                                  WallSolution&           lastWall);
+} // namespace detail
 
 class SolutionDiffusion : public TransportModel
 {

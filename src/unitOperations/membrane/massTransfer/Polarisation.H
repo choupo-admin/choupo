@@ -254,6 +254,23 @@ WallSolution wallWithSolutionDiffusion(const PolarisationPolicy&       policy,
                                        const std::vector<std::string>& names,
                                        std::vector<scalar>&            c_p);
 
+//- The wall solved jointly with ANY permeate closure of the form
+//  c_{p,i} = ratio_i c_{m,i} (DEV.md 4c C148): the solution-diffusion wall
+//  above is this with ratio_i = B_i/(J_v + B_i), the constant-rejection law
+//  this with ratio_i = 1 - R_i.  ONE Newton for both; `closureLabel` names
+//  the closure in a refusal.
+WallSolution wallWithPermeateRatio(const PolarisationPolicy&       policy,
+                                   scalar                          J_v,
+                                   const std::vector<scalar>&      k,
+                                   const std::vector<scalar>&      D,
+                                   const std::vector<int>&         z,
+                                   const std::vector<scalar>&      c_b,
+                                   const std::vector<scalar>&      ratio,
+                                   scalar                          T_K,
+                                   const std::vector<std::string>& names,
+                                   const std::string&              closureLabel,
+                                   std::vector<scalar>&            c_p);
+
 //- dXi/dphi of the declared correction: the derivative of Eq. (5), of
 //  Eq. (6), or 0 for `none` (Xi = 1).  A Newton that carries J_v as an
 //  unknown (the DSPM-DE station solve, C142) needs it, because k* = k Xi(J_v/k)
@@ -357,6 +374,15 @@ public:
                                            const std::vector<scalar>& c_b,
                                            const std::vector<scalar>& B,
                                            std::vector<scalar>& c_p) const;
+
+    //- The wall with the closure c_p = ratio c_m (the constantRejection law,
+    //  ratio = 1 - R).
+    WallSolution wallWithPermeateRatio(const MassTransferContext& hyd,
+                                       scalar J_v,
+                                       const std::vector<scalar>& c_b,
+                                       const std::vector<scalar>& ratio,
+                                       const std::string& closureLabel,
+                                       std::vector<scalar>& c_p) const;
 
     std::vector<scalar>      kVector(const MassTransferContext& hyd) const;
     std::vector<scalar>      DVector() const;

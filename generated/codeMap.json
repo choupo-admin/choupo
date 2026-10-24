@@ -330,6 +330,9 @@
   "ConstantEstimator": [
    "src/propertyOps/ConstantEstimator.H"
   ],
+  "ConstantRejection": [
+   "src/unitOperations/membrane/transport/ConstantRejection.H"
+  ],
   "Constraint": [
    "src/streams/ProcessStream.H"
   ],
@@ -2900,6 +2903,10 @@
    {
     "key": "gelPolarisation",
     "type": "GelPolarisation"
+   },
+   {
+    "key": "constantRejection",
+    "type": "ConstantRejection"
    }
   ],
   "src/unitOperations/reactor/gibbsMethod/GibbsMethod.cpp": [
@@ -3373,6 +3380,17 @@
    "src/core/Advisory.H",
    "src/core/Origin.H",
    "src/core/ThermoResolution.H"
+  ],
+  "src/core/Types.H": [
+   "src/core/Advisory.H",
+   "src/core/Dictionary.H",
+   "src/core/Dimensions.H",
+   "src/core/Identifiers.H",
+   "src/core/Origin.H",
+   "src/solver/Convergence.H",
+   "src/thermo/Component.H",
+   "src/thermo/PackageAudit.H",
+   "src/thermo/ThermoPackage.H"
   ],
   "src/core/Units.cpp": [
    "src/core/Dimensions.H",
@@ -8718,6 +8736,22 @@
    "src/unitOperations/membrane/pressureDrop/PressureDropModel.H",
    "src/unitOperations/membrane/pressureDrop/SchockMiquelDrop.H"
   ],
+  "src/unitOperations/membrane/transport/ConstantRejection.cpp": [
+   "src/core/Dictionary.H",
+   "src/core/Dimensions.H",
+   "src/core/Identifiers.H",
+   "src/core/Origin.H",
+   "src/core/Types.H",
+   "src/solver/Convergence.H",
+   "src/thermo/Component.H",
+   "src/thermo/PackageAudit.H",
+   "src/thermo/ThermoPackage.H",
+   "src/unitOperations/membrane/transport/../massTransfer/MassTransferModel.H",
+   "src/unitOperations/membrane/transport/../massTransfer/Polarisation.H",
+   "src/unitOperations/membrane/transport/ConstantRejection.H",
+   "src/unitOperations/membrane/transport/SolutionDiffusion.H",
+   "src/unitOperations/membrane/transport/TransportModel.H"
+  ],
   "src/unitOperations/membrane/transport/DSPM_DE.cpp": [
    "src/core/Advisory.H",
    "src/core/Constants.H",
@@ -8826,6 +8860,7 @@
    "src/core/Types.H",
    "src/unitOperations/membrane/transport/../massTransfer/MassTransferModel.H",
    "src/unitOperations/membrane/transport/../massTransfer/Polarisation.H",
+   "src/unitOperations/membrane/transport/ConstantRejection.H",
    "src/unitOperations/membrane/transport/DSPM_DE.H",
    "src/unitOperations/membrane/transport/GelPolarisation.H",
    "src/unitOperations/membrane/transport/PoreNernstPlanck.H",
@@ -9628,6 +9663,7 @@
    "src/applications/choupoProps/main.cpp",
    "src/applications/choupoSolve/main.cpp",
    "src/core/ThermoResolution.cpp",
+   "src/core/Types.H",
    "src/dynamicDriver/DynamicDriver.cpp",
    "src/io/DesignSheetWriter.cpp",
    "src/io/InternalStateIO.cpp",
@@ -10080,6 +10116,7 @@
    "src/core/DisplayUnits.cpp",
    "src/core/Formula.cpp",
    "src/core/RegistryRefusal.cpp",
+   "src/core/Types.H",
    "src/core/distribution/LogNormalSize.cpp",
    "src/core/distribution/RosinRammler.cpp",
    "src/core/distribution/SizeDistribution.cpp",
@@ -10344,6 +10381,7 @@
    "src/unitOperations/membrane/massTransfer/Polarisation.cpp",
    "src/unitOperations/membrane/osmotic/OsmoticModel.cpp",
    "src/unitOperations/membrane/pressureDrop/PressureDropModel.cpp",
+   "src/unitOperations/membrane/transport/ConstantRejection.cpp",
    "src/unitOperations/membrane/transport/DSPM_DE.cpp",
    "src/unitOperations/membrane/transport/GelPolarisation.cpp",
    "src/unitOperations/membrane/transport/PoreNernstPlanck.cpp",
@@ -10415,6 +10453,7 @@
    "src/core/DisplayUnits.cpp",
    "src/core/Formula.cpp",
    "src/core/RegistryRefusal.cpp",
+   "src/core/Types.H",
    "src/core/Units.cpp",
    "src/core/distribution/LogNormalSize.cpp",
    "src/core/distribution/RosinRammler.cpp",
@@ -10680,6 +10719,7 @@
    "src/unitOperations/membrane/massTransfer/Polarisation.cpp",
    "src/unitOperations/membrane/osmotic/OsmoticModel.cpp",
    "src/unitOperations/membrane/pressureDrop/PressureDropModel.cpp",
+   "src/unitOperations/membrane/transport/ConstantRejection.cpp",
    "src/unitOperations/membrane/transport/DSPM_DE.cpp",
    "src/unitOperations/membrane/transport/GelPolarisation.cpp",
    "src/unitOperations/membrane/transport/PoreNernstPlanck.cpp",
@@ -10845,6 +10885,7 @@
    "src/control/PIDController.cpp",
    "src/control/ScheduleController.cpp",
    "src/control/SignalController.cpp",
+   "src/core/Types.H",
    "src/curation/AqueousGraph.cpp",
    "src/dynamicDriver/DynamicDriver.cpp",
    "src/io/DesignSheetWriter.cpp",
@@ -11056,6 +11097,7 @@
    "src/unitOperations/hydraulics/PneumaticConveyor.cpp",
    "src/unitOperations/membrane/SpiralWoundModule.cpp",
    "src/unitOperations/membrane/massTransfer/Polarisation.cpp",
+   "src/unitOperations/membrane/transport/ConstantRejection.cpp",
    "src/unitOperations/membrane/transport/DSPM_DE.cpp",
    "src/unitOperations/membrane/transport/GelPolarisation.cpp",
    "src/unitOperations/membrane/transport/SDEM.cpp",
@@ -11121,6 +11163,7 @@
    "src/control/ScheduleController.cpp",
    "src/control/SignalController.cpp",
    "src/core/ThermoResolution.cpp",
+   "src/core/Types.H",
    "src/curation/AqueousGraph.cpp",
    "src/dynamicDriver/DynamicDriver.cpp",
    "src/io/DesignSheetWriter.cpp",
@@ -11336,6 +11379,7 @@
    "src/unitOperations/hydraulics/PneumaticConveyor.cpp",
    "src/unitOperations/membrane/SpiralWoundModule.cpp",
    "src/unitOperations/membrane/massTransfer/Polarisation.cpp",
+   "src/unitOperations/membrane/transport/ConstantRejection.cpp",
    "src/unitOperations/membrane/transport/DSPM_DE.cpp",
    "src/unitOperations/membrane/transport/GelPolarisation.cpp",
    "src/unitOperations/membrane/transport/SDEM.cpp",
@@ -11991,6 +12035,7 @@
    "src/unitOperations/membrane/massTransfer/Polarisation.cpp",
    "src/unitOperations/membrane/osmotic/OsmoticModel.cpp",
    "src/unitOperations/membrane/pressureDrop/PressureDropModel.cpp",
+   "src/unitOperations/membrane/transport/ConstantRejection.cpp",
    "src/unitOperations/membrane/transport/DSPM_DE.cpp",
    "src/unitOperations/membrane/transport/GelPolarisation.cpp",
    "src/unitOperations/membrane/transport/PoreNernstPlanck.cpp",
@@ -13052,6 +13097,7 @@
    "src/control/PIDController.cpp",
    "src/control/ScheduleController.cpp",
    "src/control/SignalController.cpp",
+   "src/core/Types.H",
    "src/dynamicDriver/DynamicDriver.cpp",
    "src/io/DesignSheetWriter.cpp",
    "src/io/InternalStateIO.cpp",
@@ -13201,6 +13247,7 @@
    "src/unitOperations/hydraulics/PneumaticConveyor.cpp",
    "src/unitOperations/membrane/SpiralWoundModule.cpp",
    "src/unitOperations/membrane/massTransfer/Polarisation.cpp",
+   "src/unitOperations/membrane/transport/ConstantRejection.cpp",
    "src/unitOperations/membrane/transport/DSPM_DE.cpp",
    "src/unitOperations/membrane/transport/GelPolarisation.cpp",
    "src/unitOperations/membrane/transport/SDEM.cpp",
@@ -13598,6 +13645,7 @@
    "src/control/PIDController.cpp",
    "src/control/ScheduleController.cpp",
    "src/control/SignalController.cpp",
+   "src/core/Types.H",
    "src/curation/AqueousGraph.cpp",
    "src/dynamicDriver/DynamicDriver.cpp",
    "src/io/DesignSheetWriter.cpp",
@@ -13808,6 +13856,7 @@
    "src/unitOperations/hydraulics/PneumaticConveyor.cpp",
    "src/unitOperations/membrane/SpiralWoundModule.cpp",
    "src/unitOperations/membrane/massTransfer/Polarisation.cpp",
+   "src/unitOperations/membrane/transport/ConstantRejection.cpp",
    "src/unitOperations/membrane/transport/DSPM_DE.cpp",
    "src/unitOperations/membrane/transport/GelPolarisation.cpp",
    "src/unitOperations/membrane/transport/SDEM.cpp",
@@ -13980,6 +14029,7 @@
    "src/control/PIDController.cpp",
    "src/control/ScheduleController.cpp",
    "src/control/SignalController.cpp",
+   "src/core/Types.H",
    "src/dynamicDriver/DynamicDriver.cpp",
    "src/io/DesignSheetWriter.cpp",
    "src/io/InternalStateIO.cpp",
@@ -14129,6 +14179,7 @@
    "src/unitOperations/hydraulics/PneumaticConveyor.cpp",
    "src/unitOperations/membrane/SpiralWoundModule.cpp",
    "src/unitOperations/membrane/massTransfer/Polarisation.cpp",
+   "src/unitOperations/membrane/transport/ConstantRejection.cpp",
    "src/unitOperations/membrane/transport/DSPM_DE.cpp",
    "src/unitOperations/membrane/transport/GelPolarisation.cpp",
    "src/unitOperations/membrane/transport/SDEM.cpp",
@@ -14428,6 +14479,7 @@
    "src/control/PIDController.cpp",
    "src/control/ScheduleController.cpp",
    "src/control/SignalController.cpp",
+   "src/core/Types.H",
    "src/dynamicDriver/DynamicDriver.cpp",
    "src/io/DesignSheetWriter.cpp",
    "src/io/InternalStateIO.cpp",
@@ -14576,6 +14628,7 @@
    "src/unitOperations/hydraulics/PneumaticConveyor.cpp",
    "src/unitOperations/membrane/SpiralWoundModule.cpp",
    "src/unitOperations/membrane/massTransfer/Polarisation.cpp",
+   "src/unitOperations/membrane/transport/ConstantRejection.cpp",
    "src/unitOperations/membrane/transport/DSPM_DE.cpp",
    "src/unitOperations/membrane/transport/GelPolarisation.cpp",
    "src/unitOperations/membrane/transport/SDEM.cpp",
@@ -16038,6 +16091,7 @@
   ],
   "src/unitOperations/membrane/transport/../massTransfer/MassTransferModel.H": [
    "src/unitOperations/batch/BatchUnitOperation.cpp",
+   "src/unitOperations/membrane/transport/ConstantRejection.cpp",
    "src/unitOperations/membrane/transport/DSPM_DE.cpp",
    "src/unitOperations/membrane/transport/GelPolarisation.cpp",
    "src/unitOperations/membrane/transport/PoreNernstPlanck.cpp",
@@ -16047,6 +16101,7 @@
   ],
   "src/unitOperations/membrane/transport/../massTransfer/Polarisation.H": [
    "src/unitOperations/batch/BatchUnitOperation.cpp",
+   "src/unitOperations/membrane/transport/ConstantRejection.cpp",
    "src/unitOperations/membrane/transport/DSPM_DE.cpp",
    "src/unitOperations/membrane/transport/GelPolarisation.cpp",
    "src/unitOperations/membrane/transport/PoreNernstPlanck.cpp",
@@ -16058,6 +16113,10 @@
    "src/unitOperations/membrane/transport/DSPM_DE.cpp",
    "src/unitOperations/membrane/transport/SDEM.cpp",
    "src/unitOperations/membrane/transport/SolutionDiffusion.cpp"
+  ],
+  "src/unitOperations/membrane/transport/ConstantRejection.H": [
+   "src/unitOperations/membrane/transport/ConstantRejection.cpp",
+   "src/unitOperations/membrane/transport/TransportModel.cpp"
   ],
   "src/unitOperations/membrane/transport/DSPM_DE.H": [
    "src/unitOperations/membrane/transport/DSPM_DE.cpp",
@@ -16077,6 +16136,7 @@
    "src/unitOperations/membrane/transport/TransportModel.cpp"
   ],
   "src/unitOperations/membrane/transport/SolutionDiffusion.H": [
+   "src/unitOperations/membrane/transport/ConstantRejection.cpp",
    "src/unitOperations/membrane/transport/SolutionDiffusion.cpp",
    "src/unitOperations/membrane/transport/TransportModel.cpp"
   ],
@@ -16085,6 +16145,7 @@
    "src/unitOperations/batch/BatchDiafilter.cpp",
    "src/unitOperations/batch/BatchUnitOperation.cpp",
    "src/unitOperations/membrane/SpiralWoundModule.cpp",
+   "src/unitOperations/membrane/transport/ConstantRejection.cpp",
    "src/unitOperations/membrane/transport/DSPM_DE.cpp",
    "src/unitOperations/membrane/transport/GelPolarisation.cpp",
    "src/unitOperations/membrane/transport/SDEM.cpp",

@@ -229,7 +229,7 @@ void BatchDiafilter::initialise(const DictPtr&       unitDict,
         soluteIdx_.push_back(i);
         const scalar Bi = membrane_->B_s(compNames_[i]);
         B_s_.push_back(Bi);
-        if (Bi == 0.0 && verbosity_ >= 1)
+        if (Bi == 0.0 && verbosity_ >= 1 && transport_->readsMembranePermeabilities())
             std::cout << "  WARNING  membrane '" << membraneName_
                       << "' has no B_s entry for solute '" << compNames_[i]
                       << "' --- assuming perfect rejection (B_s = 0)\n";

@@ -53,10 +53,10 @@
                                           BatchDiafilter.H:105-118
     the `reason` is REQUIRED              BatchDiafilter.cpp:191-199
     the permeance in series                BatchDiafilter.cpp:340-357
-    the flux residual J_w = A_w(dP - dpi) SolutionDiffusion.cpp:126
+    the flux residual J_w = A_w(dP - dpi) SolutionDiffusion.cpp:133
     dpi summed over the WALL and the
-      permeate, per solute                SolutionDiffusion.cpp:99-112
-    the solute flux B_s (c_m - c_p)       SolutionDiffusion.cpp:153
+      permeate, per solute                SolutionDiffusion.cpp:106-119
+    the solute flux B_s (c_m - c_p)       SolutionDiffusion.cpp:181
     the wall has ONE home                 membrane/massTransfer/
                                             Polarisation.H:41-46
     the pump work is NOT ledgered         BatchDiafilter.cpp:616-632
@@ -170,7 +170,7 @@ export const BATCH_MEMBRANE_STEPS: readonly LessonStep[] = [
       { sym: "J_\\mathrm{s,i}",
         means: "the flux of solute i through the membrane, "
         + "which solution-diffusion writes as B_s,i (c_m,i − c_p,i) "
-        + "(SolutionDiffusion.cpp:153)", unit: "kmol/(m²·s)" },
+        + "(SolutionDiffusion.cpp:181)", unit: "kmol/(m²·s)" },
       { sym: "A", means: "the membrane area the case declares "
         + "(BatchDiafilter.cpp:118)", unit: "m²" },
       { sym: "Q_d", means: "the DIAFILTRATE rate: clean solvent added to the "
@@ -347,11 +347,11 @@ N &= \frac{\int Q_d\, \mathrm{d}t}{V_0} &\qquad& \text{the wash clock}
       + "actually solves.  The flux is fixed by the applied pressure LESS the "
       + "osmotic pressure difference across the membrane, which is a Newton "
       + "solve because the flux appears on both sides "
-      + "(SolutionDiffusion.cpp:126).  The osmotic term is evaluated at the "
-      + "membrane WALL, not in the bulk (SolutionDiffusion.cpp:99-112), and "
+      + "(SolutionDiffusion.cpp:133).  The osmotic term is evaluated at the "
+      + "membrane WALL, not in the bulk (SolutionDiffusion.cpp:106-119), and "
       + "the wall is richer than the bulk by a polarisation factor that grows "
       + "with the flux (Polarisation.H:41-46).  The solute flux is driven by "
-      + "the wall-to-permeate difference (SolutionDiffusion.cpp:153).  Now "
+      + "the wall-to-permeate difference (SolutionDiffusion.cpp:181).  Now "
       + "run the vessel: the composition changes, so the osmotic pressure "
       + "changes, so the flux changes, so the wall changes, so the permeate "
       + "changes -- and the rejection you would MEASURE moves although the "

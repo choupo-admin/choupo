@@ -1,0 +1,22 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*--- Choupo stream state.  Every DIMENSIONAL value carries its unit; the parser converts to SI.
+     componentMolarFlows is the OVERALL material (all phases). ---*/
+//  12 m3/h of a brackish NF feed, 1 g/L NaCl + 1 g/L MgSO4: per m3, NaCl
+//  1/58.44 = 0.017112 kmol, MgSO4 1/120.37 = 0.008308 kmol, water
+//  (1000 - 2)/18.015 = 55.398 kmol.  12 m3/h is an ordinary feed for one
+//  8-inch pressure vessel.
+componentMolarFlows
+{
+    water   664.78 kmol/h;
+    NaCl    0.20534 kmol/h;
+    MgSO4   0.09970 kmol/h;
+}
+T               298.15 K;      // 25 C
+P               3.5 bar;

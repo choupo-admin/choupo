@@ -1074,7 +1074,7 @@ operation
     pressureDrop  { model SchockMiquel; }   // in-block default SchockMiquel; omit the
                                             // block for the constant dP_feed_total
     osmotic       { model Pitzer; }         // or `vanHoff` (default)
-    transport     solutionDiffusion;        // default | DSPM-DE | SDEM | gelPolarisation (below)
+    transport     solutionDiffusion;        // default | DSPM-DE | SDEM | gelPolarisation | constantRejection (below)
 
     // The FILM'S POLICY -- one block whichever way k arrives (a correlation
     // or a bare `k_film`); NOT inside massTransfer {} (refused there).
@@ -1320,6 +1320,29 @@ each channel node):
   `transportParameters {}` is the same block `batchDiafilter` hands its law.
   Witness `membrane19_uf_gel_polarisation` (every UF number in it is a
   HYPOTHETICAL teaching value, said in its header).
+* `constantRejection` — **a constant INTRINSIC rejection per solute**
+  (Geraldes & Afonso, J. Membr. Sci. 300 (2007) 20, Eq. 1, R an input):
+  `c_p,i = (1 - R_i) c_m,i` against the WALL, `N_i = J_v c_p,i`, the water
+  flux `J_v = A_w (dP - dpi)` by the same Newton as `solutionDiffusion` and
+  the wall from the same `polarisation {}` policy.  The membrane record
+  gives `A_w` only (its `permeabilities {}` are not read).  R in [0, 1] for
+  EVERY solute present, keyed by the component name:
+  ```
+  transport  constantRejection;
+  transportParameters
+  {
+      rejection { NaCl 0.60;  MgSO4 0.98; }
+      source    "...";            // where the R's come from -- required
+  }
+  ```
+  A feed declared by SALTS is electroneutral by construction.  On a feed
+  declared ION by ION a constant R per ion generally CHARGES the permeate
+  (`sum z (1 - R) c_m` vanishes only for equal R's or a set tuned to one wall
+  composition) and the law REFUSES it at the station where the relative
+  charge exceeds 1e-6, naming the remedies (R per salt, or `transport
+  SDEM;`).  Taken by the spiral module, the flat cell and `batchDiafilter`.
+  Witness `membrane23_constant_rejection_nf8040`; gate
+  `check_constant_rejection`.
 
 **Props bench `polarisationIndex`** (choupoProps) — the glass-box surface of
 the multi-ionic polarisation model: given `massTransfer { model StirredCell;

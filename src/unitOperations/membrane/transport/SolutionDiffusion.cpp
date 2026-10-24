@@ -58,21 +58,29 @@ namespace membrane {
 //  solved by Newton-1D with damping, starting from the no-osmotic guess
 //  J_w₀ = A_w · (P_b − P_p).
 // ---------------------------------------------------------------------------
-TransportSolution SolutionDiffusion::localFluxes(const TransportContext& ctx) const
+namespace detail {
+
+// ---------------------------------------------------------------------------
+//  THE WATER-FLUX NEWTON, shared by every law whose permeate is a closure of
+//  the wall (DEV.md 4c C148): solution-diffusion's c_p = B c_m/(J_w + B) and
+//  the constant-rejection law's c_p = (1 - R) c_m.  Lifted VERBATIM from
+//  SolutionDiffusion::localFluxes when the second law arrived -- one Newton,
+//  not two copies of it.  `wallAt(J_w, c_p)` returns the wall at a trial
+//  flux and its permeate through c_p; a wall refused at an ACCEPTED J_w is
+//  refused by name (`site`), never clamped.  The caller fills J_s.
+// ---------------------------------------------------------------------------
+TransportSolution waterFluxNewton(const TransportContext& ctx,
+                                  const WallClosure&      wallAt,
+                                  const std::string&      site,
+                                  WallSolution&           lastWall)
 {
-    // Unpack the context into the local names the law is written in.  The
-    // membrane handle + speciation hook are unused by solution-diffusion.
     const ThermoPackage&            thermo    = ctx.thermo;
     const std::vector<std::size_t>& soluteIdx = ctx.soluteIdx;
-    const std::vector<scalar>&      B_s       = ctx.B_s;
     const scalar                    A_w       = ctx.A_w;
-    const Polarisation&             polar     = ctx.polarisation;
-    const MassTransferContext&      hyd       = ctx.hydraulics;
     const scalar                    P_feed_Pa = ctx.P_feed_Pa;
     const scalar                    P_perm_Pa = ctx.P_perm_Pa;
     const scalar                    T_K       = ctx.T_K;
     const OsmoticModel&             osm       = ctx.osm;
-    const std::vector<scalar>&      c_b       = ctx.c_b;
 
     const std::size_t Ns = soluteIdx.size();
     const scalar dP = P_feed_Pa - P_perm_Pa;       // Pa
@@ -92,12 +100,11 @@ TransportSolution SolutionDiffusion::localFluxes(const TransportContext& ctx) co
     // F(J_w) = J_w − A_w · (dP − Δπ).  The wall and the permeate come from
     // the polarisation object (one home); a wall it refuses at an ACCEPTED
     // J_w is refused by name below, never clamped.
-    WallSolution lastWall;
     auto eval = [&](scalar Jw, std::vector<scalar>& cm,
                     std::vector<scalar>& cp, scalar& dpi)
     {
-        lastWall = polar.wallWithSolutionDiffusion(hyd, Jw, c_b, B_s, cp);
-        if (!lastWall.ok) requireOk(lastWall, "transport solutionDiffusion");
+        lastWall = wallAt(Jw, cp);
+        if (!lastWall.ok) requireOk(lastWall, site);
         cm = lastWall.c_m;
         dpi = 0.0;
         for (std::size_t s = 0; s < Ns; ++s)
@@ -144,13 +151,34 @@ TransportSolution SolutionDiffusion::localFluxes(const TransportContext& ctx) co
     }
 
     eval(Jw, cm, cp, dpi);
-    requireOk(lastWall, "transport solutionDiffusion");
+    requireOk(lastWall, site);
     sol.J_w = std::max(Jw, 0.0);
     sol.c_m = cm;
     sol.c_p = cp;
     sol.J_s.assign(Ns, 0.0);
+    return sol;
+}
+
+} // namespace detail
+
+TransportSolution SolutionDiffusion::localFluxes(const TransportContext& ctx) const
+{
+    // The membrane handle + speciation hook are unused by solution-diffusion.
+    const std::vector<scalar>&      B_s       = ctx.B_s;
+    const Polarisation&             polar     = ctx.polarisation;
+    const MassTransferContext&      hyd       = ctx.hydraulics;
+    const std::vector<scalar>&      c_b       = ctx.c_b;
+
+    WallSolution lastWall;
+    TransportSolution sol = detail::waterFluxNewton(ctx,
+        [&](scalar Jw, std::vector<scalar>& cp)
+        { return polar.wallWithSolutionDiffusion(hyd, Jw, c_b, B_s, cp); },
+        "transport solutionDiffusion", lastWall);
+    if (!(ctx.P_feed_Pa - ctx.P_perm_Pa > 0.0)) return sol;
+
+    const std::size_t Ns = ctx.soluteIdx.size();
     for (std::size_t s = 0; s < Ns; ++s)
-        sol.J_s[s] = B_s[s] * (cm[s] - cp[s]);
+        sol.J_s[s] = B_s[s] * (sol.c_m[s] - sol.c_p[s]);
     if (lastWall.coupled) { sol.xi = lastWall.xi; sol.hasXi = true; }
     return sol;
 }
