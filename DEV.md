@@ -1501,6 +1501,30 @@ accepts today, and that is a policy call.
 > final; }` layout draws what the steady flowsheet and the sizing pass
 > already hold.
 
+> **C146. SPIRAL-WOUND ELEMENTS BY STANDARD SIZE AND SPACER, ARRANGED IN
+> SERIES AND PARALLEL, MULTI-ION THROUGHOUT (Vitor, 2026-10-24, with
+> Geraldes & Afonso, J. Membr. Sci. 300 (2007) 20-27: "Achas que podemos
+> fazer agora um modelo para simular modulos enrolados em espiral com
+> diferentes tipos de modulos? 2.5'' 4'' 8'' 16'' standards, com
+> diferentes espacadores ... Incluindo a correlacao de Schock e Miquel? ...
+> preparar tudo para sistema multi ião usando a teoria de Geraldes e
+> Afonso ... Uma operacao unitaria pode depois dizer quantos modulos tem
+> em serie e em paralelo.  ... Discute primeiro comigo antes de
+> implementar").**  DISCUSSION STAGE -- nothing is built before his answer.
+> Measured on main 55b6b28f0: `spiralWoundModule` marches ONE pressure
+> vessel of N elements in series (`elements`, or `moduleDiameter` +
+> `nModules` against a HAND TABLE in SpiralWoundModule.cpp:169-213 that
+> holds only an area per size -- a second home); module records
+> (NF270-4040, SW30HR-380, SEPA_CF) carry channelHeight / spacerPorosity /
+> leafLength as estimates; Schock & Miquel's Sh (0.065/0.875/0.25) and
+> friction (6.23 Re^-0.3) are registered; the Geraldes-Afonso multi-ionic
+> film with suction correction is built (`polarisation { ionCoupling
+> electroneutral; }`) and serves SD, SDEM and DSPM-DE.  Missing: the
+> spacer as a record, element geometry beyond the area (leaves, leaf
+> width), parallel vessels and stages, Schock-Miquel's validity window
+> (100 < Re < 1000) announced, its viscosity correction.  Proposal put to
+> him the same day.
+
 > **C145. THE NANOFILTRAN PAPER AS A COMPARISON CASE (Vitor, 2026-10-24,
 > uploading Geraldes & Alves, J. Membr. Sci. 321 (2008) 172-182: "Tens aqui
 > o paper original para criar um caso de comparacao").**  The paper (kept
