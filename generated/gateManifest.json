@@ -739,7 +739,7 @@
     "check_polarisation_coupling": {
       "exit": 0,
       "claim": "check_polarisation_coupling: OK -- the polarisationIndex bench on Geraldes & Afonso (2007) Table 1 reproduces an independent Python solve of Eqs. (25)-(28) on all 10 rows (Gamma per ion AND xi to 1e-8); a single salt obeys the paper's closed form Eq. (20) with Eqs. (19), (23), (24) to 1e-10; `filmTheory` + `none` reduces to c_p + (c_b - c_p) exp(J_v/k) to 1e-11 (the JSON's 12 digits); 4 refusals fire by name; the used default is announced on membrane12 and not on membrane14; membrane14's published wall is electroneutral to 1e-9 on every node, prices k per ion, publishes xi, and its `ionCoupling none` twin polarises the trace ions differently.  NOT CHECKED: the paper's Fig. 7 Nernst-Planck comparison (not reproduced), any MEASURED polarisation index (none exists), DSPM-DE and the batch vessel under the coupled film, a film with a potential inside it.",
-      "seconds": 0.4
+      "seconds": 0.5
     },
     "check_postdict_audit": {
       "exit": 0,
@@ -933,8 +933,8 @@
     },
     "check_source_licence": {
       "exit": 0,
-      "claim": "check_source_licence: OK -- 1180 record(s) scanned (an absent or collapsed scan root REFUSES); no encumbered source stands as the authority for a value, except 4 pinned violations awaiting curation (a primary datum, not a guess).  A primary cited via an aggregator is compliant and is not counted.  NonCommercial compilations: no new record names Burcat/ReSpecTh as a value's origin; 36 existing ones do and are pinned.  Engineering Toolbox and REFPROP (C65) are among the names refused, and they alone are also sought in the 4930 case-local records under tutorials/**/constant/: 35 name one as a value's origin, all sealed NH3 mirrors awaiting re-import, pinned (every other name is judged in data/standards/ only).  Accepted third-party databanks, by CONTRACT here and cross-checked against the importer's LICENSE constant: ChemSep (Artistic-2.0, 360 record(s)) -- and that acceptance has a SCOPE: 2 excluded interaction-parameter table classes (ChemSep .ipd, the thermo package's copy) are named as a value's origin by no record.  No source file reproduces a no-grant standard's table (1 class: the API STD 526 orifice-letter areas, matched by their VALUES over 13017 source files, not by the name).  Every source ruled on here has a thirdParty/ card and every card on disk is named by a gate (6 card(s)).  Vendored third-party code, by CONTRACT: NanoFiltran -- 3 file(s) each carrying its own licence notice, the LAPACK text the fetched one, NOTICE naming every holder.",
-      "seconds": 3.5
+      "claim": "check_source_licence: OK -- 1190 record(s) scanned (an absent or collapsed scan root REFUSES); no encumbered source stands as the authority for a value, except 4 pinned violations awaiting curation (a primary datum, not a guess).  A primary cited via an aggregator is compliant and is not counted.  NonCommercial compilations: no new record names Burcat/ReSpecTh as a value's origin; 36 existing ones do and are pinned.  Engineering Toolbox and REFPROP (C65) are among the names refused, and they alone are also sought in the 4977 case-local records under tutorials/**/constant/: 33 name one as a value's origin, all sealed NH3 mirrors awaiting re-import, pinned (every other name is judged in data/standards/ only).  Accepted third-party databanks, by CONTRACT here and cross-checked against the importer's LICENSE constant: ChemSep (Artistic-2.0, 360 record(s)) -- and that acceptance has a SCOPE: 2 excluded interaction-parameter table classes (ChemSep .ipd, the thermo package's copy) are named as a value's origin by no record.  No source file reproduces a no-grant standard's table (1 class: the API STD 526 orifice-letter areas, matched by their VALUES over 13011 source files, not by the name).  Every source ruled on here has a thirdParty/ card and every card on disk is named by a gate (6 card(s)).  Vendored third-party code, by CONTRACT: NanoFiltran -- 3 file(s) each carrying its own licence notice, the LAPACK text the fetched one, NOTICE naming every holder.  Facts from a copyrighted paper, by CONTRACT: Geraldes & Alves 2008 (NanoFiltran paper) -- 9 file(s) each citing it and saying what it carries, and none of the 20 PDF/image file(s) under bin, tutorials, docs, data, gui/public, gui/src, thirdParty is the paper or a figure of it.",
+      "seconds": 5.1
     },
     "check_species_citation": {
       "exit": 0,
@@ -1239,7 +1239,7 @@
     "check_nanofiltran_reference": {
       "exit": 0,
       "claim": "check_nanofiltran_reference: OK -- 13 NanoFiltran inputs are the matching rule's and its 5 vendored files hash as received; 35 anchors equal reference.tsv; Choupo's pore at 401/801/1601 nodes shows order 2.00-2.00 and, extrapolated, agrees with NanoFiltran extrapolated (ND 102/204) within 7.9e-07 relative on all 35 rows (bound 2e-06); at the case's 801 nodes the worst row is 1.7e-05 from NanoFiltran, inside every anchor; 6 refusals fire by name.  NOT CHECKED: whether NanoFiltran is right (code-to-code is not validation), the as-received program's Davies constant (a finding), the default DSPM-DE path, any measured membrane.",
-      "seconds": 2.5
+      "seconds": 3.2
     },
     "check_spiral_array": {
       "exit": 0,
@@ -1248,8 +1248,8 @@
     },
     "check_nanofiltran_paper": {
       "exit": 0,
-      "claim": "check_nanofiltran_paper: OK -- Table 2 transcribed as PAPER_TABLE2 and reproduced by NanoFiltran AS RECEIVED (iterations exact, Na+ within 2.5e-05, the rest within 5.6e-06), which the Davies-corrected program is not: the table carries the ln 10; Choupo's stiff pore at 401/801/1601 nodes (order 2.00-2.00), extrapolated, agrees with the corrected NanoFiltran within 7.2e-08 on the permeates and the potential and 1.1e-07 on the pore's faces; 60 printed numbers of nanofiltran02's header and its 4 anchors are the measurement's; the Fig. 3 CSV (20 markers) is the digitiser's, fresh and pixel-consistent; nanofiltran03's 10 ops are the paper's Eqs. 43-46 at the read feeds, Choupo meets NanoFiltran on them within 1.9e-08, NanoFiltran with the paper's settings lands on the drawn line within 0.5 reading errors at 20 markers, and against EXPERIMENT the rms of R_obs is 0.077 (NanoFiltran's 0.078) inside every anchor.  NOT CHECKED: whether the model is right for CA30 (its inputs are fits to these data), any measurement uncertainty (none stated), Fig. 4 beyond the profile's faces, D(T).",
-      "seconds": 5.3
+      "claim": "check_nanofiltran_paper: OK -- Table 2 transcribed as PAPER_TABLE2 and reproduced by NanoFiltran AS RECEIVED (iterations exact, Na+ within 2.5e-05, the rest within 5.6e-06), which the Davies-corrected program is not: the table carries the ln 10; Choupo's stiff pore at 401/801/1601 nodes (order 2.00-2.00), extrapolated, agrees with the corrected NanoFiltran within 7.2e-08 on the permeates and the potential and 1.1e-07 on the pore's faces; 60 printed numbers of part C's header (the former nanofiltran02) and its 4 anchors are the measurement's; the Fig. 3 CSV (20 markers) is the digitiser's, fresh and pixel-consistent; part B's 10 ops (the former nanofiltran03) are the paper's Eqs. 43-46 at the read feeds, Choupo meets NanoFiltran on them within 1.9e-08, NanoFiltran with the paper's settings lands on the drawn line within 0.5 reading errors at 20 markers, and against EXPERIMENT the rms of R_obs is 0.077 (NanoFiltran's 0.078) inside every anchor.  NOT CHECKED: whether the model is right for CA30 (its inputs are fits to these data), any measurement uncertainty (none stated), Fig. 4 beyond the profile's faces, D(T).",
+      "seconds": 1.6
     },
     "check_constant_rejection": {
       "exit": 0,
@@ -1259,7 +1259,12 @@
     "check_ion_diffusivity_temperature": {
       "exit": 0,
       "claim": "check_ion_diffusivity_temperature: OK -- the ion D0 (25 C) is corrected by Stokes-Einstein on the package's own liquid viscosity in the membrane film (inlet k moves by exactly f^0.75), the DSPM-DE pore (its trace Na+ moves) and the ED stack (its KPI = the factor recomputed from the water Vogel record); with no viscosity model the run announces an uncorrected D0; at 298.15 K the model moves no number bit for bit.  NOT checked: Stokes-Einstein's validity for an ion, a neutral solute's D, or the massTransfer block's own viscosity against the package's.",
-      "seconds": 0.4
+      "seconds": 0.7
+    },
+    "check_postprocessing": {
+      "exit": 0,
+      "claim": "check_postprocessing: OK -- the paper case's 6 reference files are their sources' export; 17 postProcessDict items over 2 witness cases are produced (CSV + sidecar = the result block, nothing else in postProcessing/postProcessDict/); 9191 written numbers recomputed by this gate's own reading of each postProcessDict from the run's diagnostics, the ops' published tables (rebuilt from what else the run publishes), the reference files and the differences, to 1e-12; the paper's tables meet 59 anchors of its golden; 13 refusals fire by name; a stale file and an undeclared view are removed.  NOT CHECKED: that a plot is the right one for the paper, the GUI's drawing (its own tests), units beyond their spelling, the interior pore profile node by node, the op-table columns no witness draws.",
+      "seconds": 7.7
     }
   }
 }
