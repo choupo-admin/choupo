@@ -597,9 +597,10 @@ rebuilds it from a throughput; its `designRules {}`:
 Two items under `design/<unit>/`: `shell` (a straight cylinder of the bed
 volume at L/D, ASME wall at `pressureDesign`, costed as a `vessel` on the
 existing Turton vessel set) and `catalystCharge` (`m = V_R x catalystBulkDensity`,
-costed at `catalystPrice x m` with NO price index, NO material or module
-factor and NO contingency -- the costing table prints the shape word
-`declared-unit-price` and the price beside it).  Absent the density the charge
+costed at `catalystPrice x m` with NO price index and NO material or module
+factor -- the costing table prints the shape word `declared-unit-price` and
+the price beside it; its C_TM is 1.18 x C_BM, the contingency and fee the
+FCI applies to every item).  Absent the density the charge
 publishes no mass and its basis says `mass not derivable`; absent the price
 the charge is REFUSED BY NAME at costing time and the total reads `TOTALS
 (EUR) -- INCOMPLETE` naming it.  The basis reads *catalyst volume V_R read
@@ -862,9 +863,10 @@ vessels of at most `maxVesselVolume` (`design/H2Buffer/vessel1`, ...), each
 wall by the ASME thin-wall rule at `maxPressure` read as GAUGE, rated against
 the material record, and COSTED BY ITS STEEL MASS: its published `weight` (the
 cylindrical shell only, rho pi D H t -- no heads, nozzles or supports) x the
-declared `steelPrice`, with NO index, NO module factor and NO 1.18 -- so the
-price must be an INSTALLED price per kg of shell steel, the rest folded in
-(the `declared-unit-price` shape the catalyst charge uses).  The Turton vessel
+declared `steelPrice`, with NO index and NO module factor -- so the price must
+be an INSTALLED price per kg of shell steel, the rest folded in (the
+`declared-unit-price` shape the catalyst charge uses); its C_TM is 1.18 x C_BM,
+the contingency and fee the FCI applies to every item.  The Turton vessel
 cost (the vertical set) is printed beside it as an announced EXTRAPOLATED
 comparison -- its F_P and the wall over the radius -- and enters no total.
 No `steelPrice` or no `steelPriceReason`: the vessels stay sized, their cost

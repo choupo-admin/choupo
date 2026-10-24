@@ -497,6 +497,11 @@ SPACEV  = "tutorials/plant/ammoniaReactor03_equilibriumApproach"
 HXROUTE = "tutorials/plant/greenAmmoniaPEQ_baseCase"
 
 TOL = 1.0e-6      # relative, between two projections of the same number
+#  Turton's contingency and fee, C_TM = 1.18 C_BM, on EVERY costed row --
+#  the `declared-unit-price` rows included since 2026-10-20 (DEV.md 4c C110,
+#  G8): the FCI always charged it on their C_BM.  Transcribed here, never
+#  read off the engine, so a row that drops it is caught.
+CONTINGENCY_AND_FEE = 1.18
 
 
 def run_case(rel: str):
@@ -1795,12 +1800,21 @@ def check_catalyst_bed(problems, notes):
                 "price x mass = %g x %s = %.2f.  A declared unit price is the "
                 "case's money and no index or factor may touch it."
                 % (c.get("purchased"), pr, m_sheet[0], want))
+        #  C_BM = C_p (no module factor) and C_TM = 1.18 C_BM, the
+        #  contingency and fee the FCI charges on every row (DEV.md 4c C110,
+        #  G8; until 2026-10-20 the row printed C_TM = C_BM).  The product is
+        #  held at the sheet's printed precision (8 significant digits): the
+        #  sheet rounds C_p and C_TM separately, so 1.18 x the PRINTED C_p
+        #  misses the printed C_TM by up to ~2e-9 relative -- a 1e-9 band
+        #  failed on correct output.  1e-7 still refuses a missing 1.18 (0.18).
         if not (close(c.get("bareModule", -1.0), c.get("purchased", 0.0), 1e-12)
-                and close(c.get("totalModule", -1.0), c.get("purchased", 0.0), 1e-12)):
+                and close(c.get("totalModule", -1.0),
+                          CONTINGENCY_AND_FEE * c.get("purchased", 0.0), 1e-7)):
             problems.append(
                 "check_design_sheet(n): the charge's bareModule / totalModule "
-                "(%s / %s) differ from its purchased cost %s -- a module factor "
-                "or the 1.18 was applied to a catalyst charge."
+                "(%s / %s) are not purchased %s / 1.18 x purchased -- a module "
+                "factor was applied to a catalyst charge, or its C_TM is not "
+                "the contingency and fee the FCI charges."
                 % (c.get("bareModule"), c.get("totalModule"), c.get("purchased")))
     sc = shell["cost"]
     if not sc or not sc.get("totalModule", 0.0) > sc.get("purchased", 0.0):
@@ -3930,8 +3944,9 @@ def check_gas_store(problems, notes):
         the wall t = P_g D / (2 sigma E - 1.2 P_g) + c at P_g = Pmax - 1 atm,
         and the weight rho_steel pi D H t, from the material record;
       * each vessel's COST BY ITS STEEL MASS (Vitor's ruling on C89):
-        purchased = bare-module = total-module = weight x the declared
-        `steelPrice` (installed; no index, no module factor, no 1.18), on the
+        purchased = bare-module = weight x the declared `steelPrice`
+        (installed; no index, no module factor), total-module = 1.18 x that
+        (the contingency and fee the FCI charges, DEV.md 4c C110), on the
         `declared-unit-price` shape, and the printed C_TM total equal to the
         sum of the items' totalModule;
       * the Turton COMPARISON, published as `comparison_*` factors and
@@ -4079,7 +4094,8 @@ def check_gas_store(problems, notes):
             "values.rho_min": rho_min, "inventory.mass.total": V_R * rho_max,
             "values.t_over_R": t / (0.5 * D),
             "cost.purchased": c_steel, "cost.bareModule": c_steel,
-            "cost.totalModule": c_steel, "factors.steelPrice": price,
+            "cost.totalModule": CONTINGENCY_AND_FEE * c_steel,
+            "factors.steelPrice": price,
             "factors.comparison_C_p": cp, "factors.comparison_C_BM": cbm,
             "factors.comparison_C_TM": 1.18 * cbm,
             "factors.comparison_F_P": FP}
@@ -4460,7 +4476,7 @@ def check_pressure_store_link(problems, notes):
             "values.V_total": Vt, "values.V_R": V_R, "values.D": D, "values.H": H,
             "values.rho_max": rmax, "values.rho_min": rmin, "values.t_wall": t,
             "values.pressureDesign": Pg, "values.weight": wgt,
-            "cost.totalModule": wgt * price}
+            "cost.totalModule": CONTINGENCY_AND_FEE * wgt * price}
     check_items(gout, gu, N, want, False, D, H)
     if '"%s.fraction"' % gunits[gu][1] not in next(
             (l for l in gout.splitlines()
@@ -4503,7 +4519,8 @@ def check_pressure_store_link(problems, notes):
              "values.massFlow": mdot2, "values.rho": rho, "values.V_total": Vt2,
              "values.V_R": V_R2, "values.D": D2, "values.H": L2,
              "values.t_wall": t2, "values.pressureDesign": Pg2,
-             "values.weight": wgt2, "cost.totalModule": wgt2 * price2,
+             "values.weight": wgt2,
+             "cost.totalModule": CONTINGENCY_AND_FEE * wgt2 * price2,
              "inventory.mass.total": V_R2 * fill * rho}
     check_items(out, lu, N2, want2, True, D2, L2)
     first = next((l for l in out.splitlines()

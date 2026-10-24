@@ -422,12 +422,12 @@ CostBreakdown Turton::cost(const EquipmentSizing& dim, const Material& mat) cons
     //  by the kilogram at a vendor's price in TODAY's money, so
     //
     //      C_p = catalystPrice x m_catalyst        [case currency, no index]
-    //      C_BM = C_TM = C_p                         (F_BM = 1, no contingency)
+    //      C_BM = C_p,  C_TM = 1.18 C_BM             (F_BM = 1; contingency and fee, since C110 G8)
     //
     //  -- no CEPCI rebasing (the price is not a 2001-USD correlation), no
     //  currency conversion (it is declared in the currency the run totals
-    //  in), no bare-module or total-module factor (those install a fabricated
-    //  item; a charge is loaded into a vessel that carries its own).  Every
+    //  in), no bare-module factor (it installs a fabricated item; a charge
+    //  is loaded into a vessel that carries its own; the 1.18 is not one).  Every
     //  one of those "no"s is a fact a reader must be able to see on the
     //  printed line, so `correlation` carries its own word and the pass
     //  prints the price where the other shapes print K1..K3.
@@ -470,7 +470,7 @@ CostBreakdown Turton::cost(const EquipmentSizing& dim, const Material& mat) cons
         out.unitName        = dim.unitName;
         out.purchasedCost   = Cp;
         out.bareModuleCost  = Cp;
-        out.totalModuleCost = Cp;
+        out.totalModuleCost = costing::contingencyAndFee * Cp;  // the FCI's own 1.18 (C110 G8, CostingModel.H)
         //  THE FACTORS THAT ARE NOT APPLIED, STATED AS ONES.  A reader of
         //  the row sees `F_M 1.00  F_P 1.00` beside a shell at 3.05 / 36 and
         //  the provenance line names the reason; a blank would read as a
@@ -479,7 +479,7 @@ CostBreakdown Turton::cost(const EquipmentSizing& dim, const Material& mat) cons
         out.factors["F_P"]            = 1.0;
         out.factors["B1"]             = 1.0;
         out.factors["B2"]             = 0.0;
-        out.factors["C_TM_over_C_BM"] = 1.0;
+        out.factors["C_TM_over_C_BM"] = costing::contingencyAndFee;
         out.factors["S"]              = m_kg;
         out.factors["catalystPrice"]  = price;      // the DECLARED input, republished
         //  The four index constants ride along UNAPPLIED so that the header
@@ -567,7 +567,7 @@ CostBreakdown Turton::cost(const EquipmentSizing& dim, const Material& mat) cons
         const scalar Cp       = Cp_2001 * (cepci_ / cepci2001_) * usdToEur_;
         const scalar F_q      = trayQuantityFactor(N);
         const scalar C_BM     = Cp * F_BM * F_q;
-        const scalar C_TM     = 1.18 * C_BM;
+        const scalar C_TM     = costing::contingencyAndFee * C_BM;
 
         CostBreakdown out;
         out.unitName        = dim.unitName;
@@ -586,7 +586,7 @@ CostBreakdown Turton::cost(const EquipmentSizing& dim, const Material& mat) cons
         out.factors["K3"]             = t.K3;
         out.factors["S"]              = A;
         out.factors["Cp_2001"]        = Cp_2001;
-        out.factors["C_TM_over_C_BM"] = 1.18;
+        out.factors["C_TM_over_C_BM"] = costing::contingencyAndFee;
         out.factors["cepci"]          = cepci_;
         out.factors["cepci2001"]      = cepci2001_;
         out.factors["usdToEur"]       = usdToEur_;
@@ -704,7 +704,7 @@ CostBreakdown Turton::cost(const EquipmentSizing& dim, const Material& mat) cons
     const scalar F_M        = (mat.F_M > 0.0) ? mat.F_M : 1.0;
 
     const scalar C_BM       = Cp_target * (c.B1 + c.B2 * F_M * F_P);
-    const scalar C_TM       = 1.18 * C_BM;
+    const scalar C_TM       = costing::contingencyAndFee * C_BM;
 
     CostBreakdown out;
     out.unitName        = dim.unitName;
@@ -727,7 +727,7 @@ CostBreakdown Turton::cost(const EquipmentSizing& dim, const Material& mat) cons
     //  (log10 S)^2) x CEPCI/CEPCI_2001 x EUR/USD` is arithmetic a reader can
     //  redo, and without them it is an assertion.
     out.factors["S"]        = S;
-    out.factors["C_TM_over_C_BM"] = 1.18;
+    out.factors["C_TM_over_C_BM"] = costing::contingencyAndFee;
     if (c.powerLaw)
     {
         out.factors["Cp_ref"] = c.Cp_ref;

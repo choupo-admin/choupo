@@ -229,9 +229,10 @@ Three things to read before quoting the buffer:
   cylindrical shell only, ρ π D H t, 426 t — times a **declared installed
   price of 8 EUR/kg** (`steelPrice`, a round placeholder with heads,
   nozzles and supports folded in; not a quotation and not from any source):
-  about 3.4 M€ per vessel and **34.1 M€ for the buffer**, with no index, no
-  module factor and no 1.18 applied, because the price is already an
-  installed one. The Turton vessel set is still printed beside each vessel
+  about 3.4 M€ per vessel and **34.1 M€ for the buffer** (its bare-module
+  cost), with no index and no module factor applied, because the price is
+  already an installed one; like every item it then carries the 1.18
+  contingency and fee into its total-module cost and the FCI. The Turton vessel set is still printed beside each vessel
   as an *extrapolated comparison*: its pressure factor grows with the wall,
   and a 200 mm wall on a 5.36 m shell (t/R ≈ 0.075) gives F_P ≈ 32 and about
   30 M€ per vessel — nine times the steel. It enters no total. The buffer

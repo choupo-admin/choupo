@@ -86,6 +86,19 @@ is **not** stored: it arrives by pipeline at the plant pressure.
   tank, and `methanolPump` (efficiency 0.65, **assumed**) lifts it to 30 bar.
   The CO arrives by pipeline, declared at 30 bar; no CO compressor is
   modelled.
+* **`M1` is a mixer AND a heat exchanger in one box.**  It merges a liquid
+  (the pumped methanol) with two gases at a DECLARED 320 K, because a
+  gas + liquid merge has no well-posed adiabatic temperature, and it
+  publishes the duty that temperature implies (`Q_kW`, priced like every
+  other duty; about +81 kW, allocated to LP steam).  Without that duty the
+  plant's first law was open by about 80 kW (DEV.md 4c C71, C74).  The
+  mixer does not flash: its outlet carries the dominant label (vapour), and
+  the energy report says on every run that `mixedFeed` cannot hold that
+  label at 320 K and 30 bar (the methanol's partial pressure is far above
+  its vapour pressure there).  That label decides how the methanol's latent
+  heat is SHARED between `M1` and the `preheater`; the plant's total heat
+  does not depend on it, the utility bill does.  An exercise: put an
+  isothermal flash after `M1` and see where the duty goes.
 * **The pump's own energy balance is announced as FAILED on every run**
   (dH 1.76 kW against 5.04 kW of shaft work, 35 % = 1 - eta).  It is the
   engine's, not the case's: the liquid enthalpy of this package carries no
