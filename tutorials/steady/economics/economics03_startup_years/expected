@@ -40,7 +40,7 @@ stream  unreactedGas           T                250                1e-4
 kpi     FEHE                   C_cold           330806.212944      1e-4
 kpi     FEHE                   C_hot            323034.648807      1e-4
 kpi     FEHE                   C_r              0.976507200189     1e-4
-kpi     FEHE                   H_closure_gap_kW 1.41807540786e-05  1e-4
+kpi     FEHE                   H_closure_gap_kW -2.95876816381e-06  1e-4
 kpi     FEHE                   LMTD             151.517407449      1e-4
 kpi     FEHE                   NTU              2.55390560439      1e-4
 kpi     FEHE                   Q                117169816.769      1e-4
@@ -170,7 +170,7 @@ kpi     separator              phaseSet         0                  1e-4
 kpi     waterCooler            C_cold           10486111.1111      1e-4
 kpi     waterCooler            C_hot            308440.768029      1e-4
 kpi     waterCooler            C_r              0.0294142189378    1e-4
-kpi     waterCooler            H_closure_gap_kW -0.000156978610903 1e-4
+kpi     waterCooler            H_closure_gap_kW -3.70050111087e-06 1e-4
 kpi     waterCooler            LMTD             64.7770387668      1e-4
 kpi     waterCooler            NTU              9.07791799993      1e-4
 kpi     waterCooler            Q                57821268.7624      1e-4
@@ -258,7 +258,7 @@ equipment waterCooler          cost.totalModule 936666.621881      1e-4
 boundary global               H_feeds_kW       -39777909.9013     1e-4
 boundary global               Q_boundary_kW    -9633.12459567     1e-4
 boundary global               H_products_kW    -39787541.4977     1e-4
-boundary global               residual_kW      -1.52822134644     1e-4
+boundary global               residual_kW      -1.37615589797     1e-4
 boundary global               W_shaft_kW       28000              1e-4
 boundary mass                 process_in_kg_per_h 70636.62           1e-4
 boundary mass                 process_out_kg_per_h 70634.8863408      1e-4

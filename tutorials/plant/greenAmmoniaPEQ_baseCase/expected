@@ -90,7 +90,7 @@ kpi     Converter              y_NH3            0.196982743304   1e-4
 kpi     FEHE                   C_cold           157611.65481     1e-4
 kpi     FEHE                   C_hot            145439.421793    1e-4
 kpi     FEHE                   C_r              0.922770730175   1e-4
-kpi     FEHE                   H_closure_gap_kW -1.52795109898e-07 1e-4
+kpi     FEHE                   H_closure_gap_kW 1.40335760079e-06 1e-4
 kpi     FEHE                   LMTD             70.4211993844    1e-4
 kpi     FEHE                   NTU              7.56328639403    1e-4
 kpi     FEHE                   Q                60526676.3502    1e-4
@@ -248,7 +248,7 @@ kpi     WaterCooler            vf_out           0.948241919011   1e-4
 boundary global                 H_feeds_kW       533.06073992     1e-4
 boundary global                 Q_boundary_kW    -57644.0841359   1e-4
 boundary global                 H_products_kW    -57112.7768004   1e-4
-boundary global                 residual_kW      1.75340444359    1e-4
+boundary global                 residual_kW      1.75224120734    1e-4
 boundary global                 W_shaft_kW       13670            1e-4
 utility Aftercooler            cooling.coolingWater.duty_kW -5482.93664891   1e-4
 utility Aftercooler            cooling.coolingWater.T 313.15           1e-4

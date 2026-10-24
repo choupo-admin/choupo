@@ -50,19 +50,18 @@
   it must hold on a system where nobody doubts the answer, before the
   same construction is trusted on one where they should.
 
-  HOW THE RECOMBINATION WORKS, and the one thing to understand about it.
-  `recombine` is a plain mixer, and a Choupo mixer MIXES -- it does not do
-  the vapour/liquid split ("mixers mix, flashes separate").  Handed a
-  liquid and a vapour it conserves total enthalpy exactly and reports the
-  result as a single dominant phase at whatever temperature carries that
-  enthalpy.  That temperature is FICTITIOUS -- a nominal vapour read out
-  at 182.9 K, far below its saturation -- and the case does not use it for
-  anything.  What the mixer is doing here is carrying an ENTHALPY across
-  one arrow, faithfully; `restage` is an ADIABATIC flash, so enthalpy is
-  precisely the quantity it reads back, and the fictitious temperature
-  cancels out of the answer.  The identity is therefore an ENERGY
-  statement as well as an equilibrium one: it would fail if the column
-  and the flash disagreed about the enthalpy of either phase.
+  HOW THE RECOMBINATION WORKS.  `recombine` is an ADIABATIC mixer, and
+  since 2026-10-24 its outlet is the state of equal enthalpy RESOLVED at
+  its own equilibrium, priced as the energy report prices it.  Handed the
+  two halves of stage 5 it publishes the stage itself -- its temperature
+  and V/F = W / (U + W) -- one unit early; it does not SEPARATE the phases,
+  `restage` does.  `restage` is an ADIABATIC flash, so enthalpy is
+  precisely the quantity it reads back, and the identity is therefore an
+  ENERGY statement as well as an equilibrium one: it would fail if the
+  column and the flash disagreed about the enthalpy of either phase.
+  (Before that date the mixer published one dominant-phase label at a
+  fictitious 182.9 K and carried only the enthalpy across; the identity
+  held then too, to the flash's outer tolerance.)
 
   WHY THE DRAWS ARE ON ONE STAGE AND NOT TWO.  Both draws come off stage
   5.  A liquid draw from stage 5 and a vapour draw from stage 6 would

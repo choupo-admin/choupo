@@ -33,9 +33,17 @@ Description
        F_out             = Σ_k F_k
        (F·z)_i,out       = Σ_k F_k · z_i,k                (per component)
        z_i,out           = (F·z)_i,out / F_out
-       T_out             solved from energy balance:
-                              Σ_k F_k · H_liquid(T_k, z_k)
-                              =       F_out · H_liquid(T_out, z_out)
+       T_out             solved from the energy balance (adiabatic):
+                              Σ_k H(inlet_k)  =  H(outlet at T_out)
+                         every H priced as the energy report prices it
+                         (`flashState::priceState` + `priceSolids`), the
+                         outlet RESOLVED at its own (T_out, P_out, z_out) and
+                         published with that equilibrium's vapour fraction
+                         (2026-10-24); or DECLARED (`operation { T ...; }`),
+                         when the duty it implies is published as Q_kW (C74)
+                         and the outlet carries the dominant phase's label.
+                         Without formation data on every component the
+                         sensible H_liquid balance of the dominant phase.
 
     Receives its inlets from the Flowsheet's `inputs (...)` list,
     materialised in the augmented dict as a list of sub-dicts in the

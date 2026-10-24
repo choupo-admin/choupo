@@ -62,7 +62,7 @@ kpi     separator              phaseSet         0                1e-4
 boundary global                 H_feeds_kW       104.859286489    1e-4
 boundary global                 Q_boundary_kW    -66812.1922843   1e-4
 boundary global                 H_products_kW    -66707.3393797   1e-4
-boundary global                 residual_kW      0.00638190585596 1e-4
+boundary global                 residual_kW      0.00645731003897 1e-4
 utility letdown                heating.steamLP.duty_kW 16.239254287     1e-4
 utility letdown                heating.steamLP.T 250              1e-4
 utility letdown                heating.steamLP.kg_s 0.00742875310474 1e-4

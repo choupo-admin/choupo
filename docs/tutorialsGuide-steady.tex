@@ -1392,7 +1392,7 @@ Nothing above is a number anyone typed. Every one of them is produced by the run
 
 WHY IT IS WORTH A CASE. The column asks the thermodynamic package for K-values per stage; the flash asks it for an equilibrium split. Those are different entry points and, for a package that resolves CHEMISTRY, they are different code. The effective K-value a reacting stage uses (`ThermoPackage::stageK`, added 2026-08-04 for the sour-water column) is exactly the sort of definition that can be subtly wrong -- wrong normalisation, wrong basis, the reaction counted twice -- and still produce a column that converges to a plausible-looking profile. This identity is what catches it. The molecular case here is the CONTROL: it must hold on a system where nobody doubts the answer, before the same construction is trusted on one where they should.
 
-HOW THE RECOMBINATION WORKS, and the one thing to understand about it. `recombine` is a plain mixer, and a Choupo mixer MIXES -- it does not do the vapour/liquid split ("mixers mix, flashes separate"). Handed a liquid and a vapour it conserves total enthalpy exactly and reports the result as a single dominant phase at whatever temperature carries that enthalpy. That temperature is FICTITIOUS -- a nominal vapour read out at 182.9 K, far below its saturation -- and the case does not use it for anything. What the mixer is doing here is carrying an ENTHALPY across one arrow, faithfully; `restage` is an ADIABATIC flash, so enthalpy is precisely the quantity it reads back, and the fictitious temperature cancels out of the answer. The identity is therefore an ENERGY statement as well as an equilibrium one: it would fail if the column and the flash disagreed about the enthalpy of either phase.
+HOW THE RECOMBINATION WORKS. `recombine` is an ADIABATIC mixer, and since 2026-10-24 its outlet is the state of equal enthalpy RESOLVED at its own equilibrium, priced as the energy report prices it. Handed the two halves of stage 5 it publishes the stage itself -- its temperature and V/F = W / (U + W) -- one unit early; it does not SEPARATE the phases, `restage` does. `restage` is an ADIABATIC flash, so enthalpy is precisely the quantity it reads back, and the identity is therefore an ENERGY statement as well as an equilibrium one: it would fail if the column and the flash disagreed about the enthalpy of either phase. (Before that date the mixer published one dominant-phase label at a fictitious 182.9 K and carried only the enthalpy across; the identity held then too, to the flash's outer tolerance.)
 
 WHY THE DRAWS ARE ON ONE STAGE AND NOT TWO. Both draws come off stage 5. A liquid draw from stage 5 and a vapour draw from stage 6 would also recombine into something -- and it would not be an equilibrium mixture, so the flash would move it. The point of the case is that when the two phases genuinely leave the SAME stage, the flash cannot move them at all.
 
@@ -1402,7 +1402,7 @@ WHY THE DRAWS ARE ON ONE STAGE AND NOT TWO. Both draws come off stage 5. A liqui
 \tutreadme{Not one of those numbers is typed into the case. Both sides are computed, by different code, and bin/curate/check\_stage\_identity.py compares them.}
 \tutreadme{Three things at once, and each of them has been wrong in a simulator somewhere:}
 \tutreadme{1. The K-value definition. The column asks the package for K-values per stage; the flash asks it for a split. A wrong normalisation or a wrong basis in one of them shifts the profile without ever making the column fail to converge. 2. The enthalpy of each phase. The recombination carries an $\ast$enthalpy$\ast$ across one arrow and the adiabatic flash reads it back. If the column and the flash priced the vapour differently, the recovered temperature would be wrong even with perfect K-values. 3. That a two-phase inlet is priced as two phases. Building this case is what found adiabaticFlash pricing every inlet as a sub-cooled liquid regardless of its vapour fraction --- silently, since no case in the corpus had ever fed it one.}
-\tutreadme{The identity holds to about 1e-7 relative, not to machine precision, and the reason is visible in the log: the adiabatic flash stops its outer Newton at an energy residual of \textasciitilde{}2.5e-4 J/mol out of 5.4e+4 J/mol. That is the limit of the $\ast$check$\ast$, not of the physics. The gate is set at 1e-6 relative, which is a factor of ten of headroom over the observed agreement.}
+\tutreadme{Since 2026-10-24 the identity holds to round-off: restage publishes T\_drop 0 and H\_residual 0, and lands on V/F = 0.5 exactly. Until then it held to about 1e-7 relative -- the adiabatic flash stopped its outer Newton at an energy residual of \textasciitilde{}2.5e-4 J/mol, because recombine handed it a single-phase stream at a temperature 189 K away from the stage's (see below), and the flash had to walk all the way back. The gate is still set at 1e-6 relative.}
 \begin{tutgolden}
 \goldrow{stream}{bottoms}{F}{0.00833333333333}
 \goldrow{stream}{checkLiquid}{F}{0.00277777761205}
@@ -1414,9 +1414,9 @@ WHY THE DRAWS ARE ON ONE STAGE AND NOT TWO. Both draws come off stage 5. A liqui
 \goldrow{stream}{stageVapour}{F}{0.00277777777778}
 \goldrow{kpi}{recombine}{F\_out}{0.00555555555556}
 \goldrow{kpi}{recombine}{P\_out}{101325}
-\goldrow{kpi}{recombine}{T\_out}{182.884624593}
+\goldrow{kpi}{recombine}{T\_out}{371.883911726}
 \goldrow{kpi}{recombine}{n\_in}{2}
-\goldrow{kpi}{recombine}{vf}{1}
+\goldrow{kpi}{recombine}{vf}{0.5}
 \goldrow{kpi}{restage}{F\_in}{0.00555555555556}
 \goldmore{41}
 \end{tutgolden}
@@ -5365,7 +5365,7 @@ feedC (420 K, 1.5 bar) -$\to$ [S1 splitter: 0.3 / 0.7] -$\to$ sideA + sideB
 
 The three feeds are benzene/toluene, each well above its dew point at its own pressure, and NONE declares `phase`. A stream file that declares no phase does not thereby declare a liquid: its (T, P, z) means its own equilibrium, and here that equilibrium is all vapour. The stream record still carries a default `vf = 0` until something resolves it, and for a domain inlet nothing upstream does -- so each unit that reads its inlet's phase resolves it itself, at the inlet's own (T, P, z), in its own thermo world (`flashState::resolvedInletVaporFraction`, the one home):
 
-V1 (valve). The isenthalpic let-down prices H\_in on the inlet's phase. Read as a liquid, H\_in is a liquid's and the outlet search lands tens of kelvin colder, part-condensed -- a valve that "condenses" a vapour. Read as what it is, an ideal-gas vapour has no Joule-Thomson effect and T\_out = T\_in. M1 (mixer). The inlets' phases price the inlet enthalpies AND vote for the outlet's dominant phase. feedB is the LARGER inlet (150 against 100 kmol/h) on purpose: the valve's outlet is a PRODUCED vapour that votes vapour either way, so only an authored inlet that carries the vote can show a mixer reading it as a liquid -- its vapour would then leave labelled a liquid. S1 (splitter). A splitter preserves the phase -- the phase the inlet MEANS. Its branches are PRODUCED streams that nobody re-resolves, so copying the carried default would publish two vapours as liquids.
+V1 (valve). The isenthalpic let-down prices H\_in on the inlet's phase. Read as a liquid, H\_in is a liquid's and the outlet search lands tens of kelvin colder, part-condensed -- a valve that "condenses" a vapour. Read as what it is, an ideal-gas vapour has no Joule-Thomson effect and T\_out = T\_in. M1 (mixer). The inlets' phases price the inlet enthalpies. feedB is the LARGER inlet (150 against 100 kmol/h) on purpose: read as a liquid, its enthalpy would be a liquid's, and the adiabatic outlet -- the state of equal enthalpy, resolved at its own equilibrium since 2026-10-24 -- would leave part-condensed and colder (until that date the inlets also VOTED for a dominant-phase label, and feedB's vote would have labelled the vapour a liquid). S1 (splitter). A splitter preserves the phase -- the phase the inlet MEANS. Its branches are PRODUCED streams that nobody re-resolves, so copying the carried default would publish two vapours as liquids.
 
 The plant's first law closes only if the units and the energy report read the same states. check\_inlet\_resolution arm (i) runs this case and holds all three readings and the closure.
 
@@ -8535,6 +8535,99 @@ PER ION, PER ELEMENT. The film coefficient is priced for each ion on its own Sc\
 \goldrow{kpi}{Booster}{F}{0.461180543856}
 \goldrow{kpi}{Booster}{P\_in}{133388.103411}
 \goldmore{187}
+\end{tutgolden}
+
+\clearpage
+\tutentry{membrane22\_two\_stage\_nf\_array\_dspmde}{tutorials/steady/membranes/membrane22\_two\_stage\_nf\_array\_dspmde}
+\begin{tutscheme}
+\begin{tikzpicture}[>={Stealth[length=2mm]}, every node/.style={font=\scriptsize}]
+  \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (Stage1) at (0.0,-0.0) {\textbf{Stage1}\\[-1pt]{\tiny spiralWoundModule}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (Booster) at (2.9,-0.0) {\textbf{Booster}\\[-1pt]{\tiny pump}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (Stage2) at (5.8,-0.0) {\textbf{Stage2}\\[-1pt]{\tiny spiralWoundModule}};
+  \draw[->] ($(Stage1.west)+(-1.05,0.00)$) -- ($(Stage1.west)+(0,0.00)$) node[at start, above, font=\tiny, anchor=south west] {feed};
+  \draw[->] (Stage1) -- (Booster) node[midway, above, font=\tiny] {concentrate1};
+  \draw[->] (Booster) -- (Stage2) node[midway, above, font=\tiny] {boosted};
+  \draw[->] ($(Stage1.east)+(0,0.00)$) -- ($(Stage1.east)+(1.05,0.00)$) node[at end, above, font=\tiny, anchor=south east] {permeate1};
+  \draw[->] ($(Stage2.east)+(0,-0.17)$) -- ($(Stage2.east)+(1.05,-0.17)$) node[at end, below, font=\tiny, anchor=north east] {concentrate2};
+  \draw[->] ($(Stage2.east)+(0,0.17)$) -- ($(Stage2.east)+(1.05,0.17)$) node[at end, above, font=\tiny, anchor=south east] {permeate2};
+\end{tikzpicture}
+\end{tutscheme}
+\tutwhat{membrane21 with the charged-pore membrane model: the same 4:2 array of generic 8-inch elements and booster, DSPM-DE with its solved pore, the Geraldes \& Afonso film, D(T) by Stokes-Einstein}
+\begin{tutnarrative}
+membrane21's TWO-STAGE array (4:2 pressure vessels of 6 generic 8-inch elements, the interstage booster a unit of its own) with a DIFFERENT MEMBRANE MODEL: DSPM-DE, the charged pore with steric, Donnan and dielectric exclusion (Bowen \& Welfoot 2002), SOLVED across the pore at every station (the extended Nernst-Planck equations on 101 nodes, one Newton with the film's interface balance and the water flux -- the default since C141). See the README.
+
+THE HARDWARE IS THE SAME RECORD. `module Generic-8040;` with the FilmTec FT30 spacer and Schock \& Miquel's correlations, exactly membrane21's; only `membrane` and `transport` change. NF270\_dspmde (data/standards/assets/) carries the pore: radius 0.60 nm, A\_k/dx, a fixed charge -5 mol/m3, a pore dielectric 35.
+
+THE FEED IS SALTS, THE MODEL WORKS IN IONS. DSPM-DE decomposes NaCl, CaCl2 and MgSO4 into Na+, Ca2+, Mg2+, Cl- and SO4 2- (their charges, Stokes radii and D0 from the species records) and solves them together in the pore; the film couples the SAME ions at the wall by electroneutrality (`ionCoupling electroneutral;`, Geraldes \& Afonso 2007), each ion's k on its own D on Sc\_i. The D's are corrected to 20 C by Stokes-Einstein on the package's declared liquid viscosity (constant/thermoPhysPropDict).
+
+\end{tutnarrative}
+\tutreadme{The question. membrane21 runs a two-stage array of generic 8-inch elements with the SDEM membrane model. What changes when the SAME hardware carries a different membrane model -- the charged pore of DSPM-DE?}
+\tutreadme{What is the same. The array (4:2 vessels of six Generic-8040 elements, the interstage booster a unit of its own), the FT30 feed spacer and Schock \& Miquel's correlations, the Geraldes \& Afonso multi-ionic film (ionCoupling electroneutral; with the 2006 suction correction), 20 C, 12 m3/h per stage-1 vessel. Only two lines of each stage differ:}
+\tutreadme{membrane NF270\_dspmde; // the pore tier: r\_p 0.60 nm, X\_d -5 mol/m3, eps\_p 35 transport DSPM-DE; // the pore SOLVED at every station}
+\tutreadme{What the model does. DSPM-DE (Bowen \& Welfoot 2002) carries each ion through the pore by the extended Nernst-Planck equations -- hindered diffusion, convection and migration -- with steric, Donnan and dielectric exclusion at both faces, on 101 nodes, in ONE Newton per station with the film's interface balance and the water flux. The feed is declared by SALTS (NaCl, CaCl2, MgSO4); the law decomposes them into Na+, Ca2+, Mg2+, Cl- and SO4 2-, and the film couples those same ions at the wall. Each stage prints a pore summary: 61 and 43 pore solves, at most 8 Newton iterations each. The whole array runs in under a second.}
+\tutreadme{D(T). The ion D0 are 25 C values; this case DECLARES the liquid viscosity (transport \{ liquid \{ viscosity \{ model Vogel; \} \} \} in its thermoPhysPropDict), so every D is corrected by Stokes-Einstein to the stage's temperature -- 0.874 at 20 C, printed on the run as [D(T)] (the booster's dissipation warms stage 2 by 0.015 K, and its factor is 0.8744). membrane21, which declares none, runs on the 25 C values and says so.}
+\tutreadme{What the student sees -- and the limit it shows. In ions, the pore rejects SO4 2- almost completely (Donnan and dielectric exclusion of a divalent co-ion) while Mg2+ and Ca2+ pass in part, and Na+ and Cl- more. But the module marches SALTS, and a pore conserves CHARGE, not salts: Mg2+ crosses with Cl-, not with SO4 2-. So a salt's two legs differ in a mixture -- at the first station MgSO4's cation leg passes 0.18 mol/m3 and its anion leg 3e-4 -- and the salt basis can carry only one. The engine carries the cation leg and ANNOUNCES every salt whose legs differ ([DSPM-DE] salt 'MgSO4' in a MIXED feed ...): the permeate stream's sulfate and chloride are NOT the pore's. The published R\_obs\_MgSO4 (0.69 in stage 1) is therefore the rejection of Mg2+, not of the salt. The ion-by-ion permeate is what the props bench poreTransport prints (its ion rows). Mapping the ion permeate back onto the salt components -- or marching the module in ions -- is a model decision that has not been taken.}
+\begin{tutgolden}
+\goldrow{stream}{boosted}{F}{0.508750920568}
+\goldrow{stream}{boosted}{T}{293.165385998}
+\goldrow{stream}{concentrate1}{F}{0.508750920568}
+\goldrow{stream}{concentrate1}{T}{293.15}
+\goldrow{stream}{concentrate2}{F}{0.410594876442}
+\goldrow{stream}{concentrate2}{T}{293.165385998}
+\goldrow{stream}{feed}{F}{0.739665555556}
+\goldrow{stream}{feed}{T}{293.15}
+\goldrow{stream}{permeate1}{F}{0.230914634987}
+\goldrow{stream}{permeate1}{T}{293.15}
+\goldrow{stream}{permeate2}{F}{0.0981560441261}
+\goldrow{stream}{permeate2}{T}{293.165385998}
+\goldrow{kpi}{Booster}{F}{0.508750920568}
+\goldrow{kpi}{Booster}{P\_in}{126335.527185}
+\goldmore{173}
+\end{tutgolden}
+
+\clearpage
+\tutentry{membrane23\_constant\_rejection\_nf8040}{tutorials/steady/membranes/membrane23\_constant\_rejection\_nf8040}
+\begin{tutscheme}
+\begin{tikzpicture}[>={Stealth[length=2mm]}, every node/.style={font=\scriptsize}]
+  \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (NF) at (0.0,-0.0) {\textbf{NF}\\[-1pt]{\tiny spiralWoundModule}};
+  \draw[->] ($(NF.west)+(-1.05,0.00)$) -- ($(NF.west)+(0,0.00)$) node[at start, above, font=\tiny, anchor=south west] {feed};
+  \draw[->] ($(NF.east)+(0,-0.17)$) -- ($(NF.east)+(1.05,-0.17)$) node[at end, below, font=\tiny, anchor=north east] {retentate};
+  \draw[->] ($(NF.east)+(0,0.17)$) -- ($(NF.east)+(1.05,0.17)$) node[at end, above, font=\tiny, anchor=south east] {permeate};
+\end{tikzpicture}
+\end{tutscheme}
+\tutwhat{Constant intrinsic rejection per salt (Geraldes \& Afonso 2007, Eq. 1): NaCl + MgSO4 through one vessel of six generic 8-inch NF elements}
+\begin{tutnarrative}
+the SIMPLEST membrane model a spiral-wound element can carry: a CONSTANT INTRINSIC REJECTION per solute, c\_p,i = (1 - R\_i) c\_m,i at the wall (Geraldes \& Afonso, J. Membr. Sci. 300 (2007) 20, Eq. 1, where R\_i is the paper's INPUT). One pressure vessel of six generic 8-inch elements; NaCl and MgSO4, 1 g/L each.
+
+THE SAME ELEMENT TAKES ANY MEMBRANE MODEL. The module (Generic-8040, its FT30 feed spacer and Schock \& Miquel's correlations) is the hardware; the `transport` word is the membrane: `solutionDiffusion` (B\_i per solute), `SDEM` (per-ion B\_i under zero current, membrane21), `DSPM-DE` (the charged pore, membrane22) or, here, `constantRejection`. The membrane record gives the water permeance A\_w only.
+
+INTRINSIC IS NOT OBSERVED. R\_int is measured against the WALL. The run publishes R\_obs\_<salt> = 1 - c\_p/c\_b against the FEED, which the polarisation lowers: the element sees a wall richer than its feed, so a constant R\_int still passes more salt where the film is thicker. Compare R\_obs\_NaCl with the 0.60 declared below.
+
+WHY BY SALTS. A salt is neutral, so one R per salt cannot charge the permeate. A feed written ion by ion with one R per ion generally does -- the permeate charge is sum z\_i (1 - R\_i) c\_m,i -- and the law REFUSES it by name (see the README for the measurement on membrane21's feed).
+
+\end{tutnarrative}
+\tutreadme{The question. A spiral-wound element is hardware; the membrane model is a choice. What is the simplest model it can carry, and what does it leave out?}
+\tutreadme{The model. transport constantRejection; -- each solute leaves through the membrane with a DECLARED intrinsic rejection, measured against the wall:}
+\tutreadme{c\_p,i = (1 - R\_i) c\_m,i, N\_i = J\_v c\_p,i, J\_v = A\_w (dP - dpi)}
+\tutreadme{This is Eq. (1) of Geraldes \& Afonso, J. Membr. Sci. 300 (2007) 20-27, which takes R\_i as an input. The wall concentration c\_m comes from the module's polarisation model (here Schock \& Miquel's correlation on the FT30 spacer with the Geraldes \& Afonso 2006 suction correction) and the water flux from the same Newton the solution-diffusion law uses. The membrane record (NF270) supplies A\_w only.}
+\tutreadme{transport constantRejection; transportParameters \{ rejection \{ NaCl 0.60; MgSO4 0.98; \} source "..."; \}}
+\tutreadme{The same module Generic-8040; runs solutionDiffusion (B per solute), SDEM (per-ion B under zero current, membrane21) and DSPM-DE (the charged pore, membrane22): only the transport line changes.}
+\begin{tutgolden}
+\goldrow{stream}{feed}{F}{0.184745844444}
+\goldrow{stream}{feed}{T}{298.15}
+\goldrow{stream}{permeate}{F}{0.080576329433}
+\goldrow{stream}{permeate}{T}{298.15}
+\goldrow{stream}{retentate}{F}{0.104169515011}
+\goldrow{stream}{retentate}{T}{298.15}
+\goldrow{kpi}{NF}{Gamma\_MgSO4\_avg}{0.14208197636}
+\goldrow{kpi}{NF}{Gamma\_MgSO4\_elem1}{0.235594911845}
+\goldrow{kpi}{NF}{Gamma\_MgSO4\_elem2}{0.196754783898}
+\goldrow{kpi}{NF}{Gamma\_MgSO4\_elem3}{0.157820648895}
+\goldrow{kpi}{NF}{Gamma\_MgSO4\_elem4}{0.119172795219}
+\goldrow{kpi}{NF}{Gamma\_MgSO4\_elem5}{0.0829956168512}
+\goldrow{kpi}{NF}{Gamma\_MgSO4\_elem6}{0.0508018079009}
+\goldrow{kpi}{NF}{Gamma\_NaCl\_avg}{0.0815896543444}
+\goldmore{57}
 \end{tutgolden}
 
 \subsection{optimisation}

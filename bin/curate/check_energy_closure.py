@@ -115,10 +115,13 @@ WHAT THIS DOES NOT CHECK, said plainly:
     boundary whatever its feed count; joined 2026-10-05, C35), a
     cstr/conversionReactor/gibbsReactor (the last since 2026-10-20, C112)
     that published Q_kW, and (2026-10-17, DEV.md 4c
-    C74) a mixer at a DECLARED outlet temperature that published Q_kW --
+    C74) a mixer at a DECLARED outlet temperature that published Q_kW, and
+    (2026-10-24) an ADIABATIC mixer, whose outlet is the state of equal
+    enthalpy resolved at its own equilibrium --
     must leave nothing unattributed.  Every other unit is judged only
     through the plant sum.
-  * A DECLARED-T MIXER WHOSE PUBLISHED STREAMS DO NOT CLOSE ITS MATERIAL.
+  * A MIXER (declared-T or, since 2026-10-24, adiabatic) WHOSE PUBLISHED
+    STREAMS DO NOT CLOSE ITS MATERIAL.
     A mixer conserves moles exactly, so its published outlet F must equal
     the sum of its published inlets -- except where an inlet is a recycle
     TEAR: the report prices the tear as PUBLISHED after the final pass, the
@@ -201,6 +204,14 @@ restore:
             bar).  The plant arm does not see it (0.011 %).  gibbs07 is
             untouched by S3 (its feed and reactor share 1 bar) -- a
             sabotage that changes no number there proves nothing there.
+  U10 (2026-10-24, the ADIABATIC mixer joins the arm) the published-surface
+      balance disabled (the dominant-phase rung forced on every adiabatic
+      mixer, rebuilt) on a SCOPED run of cavett01 and ammonia03 -> "unit
+      'mixer' (mixer) leaves -6.6844 kW", "'quench1Mix' ... +0.5741 kW" and
+      "'quench2Mix' ... +3.3711 kW" on ammonia03; cavett01 does not even
+      run (its two-phase inlets, now read as they mean, give the old
+      dominant-phase Newton no root -- the failure the 2026-10-04 stated
+      default existed to avoid).  Restored from the saved file + `make all`.
   U5  (2026-10-05, the evaporator joins the arm) restore the evaporator's
       Watson duty -> "unit 'CONCENTRATION.Evap1' (evaporator) leaves -21.0456
       kW", Evap2 -10.3209, evaporator02's effect1/2/3 -152.9702 / -62.7408 /
@@ -519,9 +530,17 @@ def ratchet_kW(pin: float) -> float:
 #    gibbs07_wgs_cooled                  150.7280 % -> 0.0000 %   LEFT
 #    gibbs08_wgs_cooled_reactiveflash    150.7280 % -> 0.0000 %   LEFT
 #    gibbs09_wgs_cooled_directmin        150.6790 % -> 0.0000 %   LEFT
+#  ONE LEFT ON 2026-10-24 (the delegated decision of 2026-10-21, DEV.md 4c
+#  (b)): the ADIABATIC mixer solved its balance on one dominant phase and
+#  published that label, while the report resolves and prices the same
+#  streams at their own equilibrium.  cavett01's M2 and M3 published
+#  liquids at 337.93 and 336.42 K that resolve two-phase, and carried
+#  +352 666.2 and +196 652.9 kW -- the whole of the plant's residual.  The
+#  mixer's outlet is now the state of equal enthalpy RESOLVED at its own
+#  equilibrium (269.67 K, V/F 0.7788; 273.62 K, V/F 0.6169).
+#    cavett01_recycle_train  88.0220 % -> 0.0000 % (+0.0019 kW)   LEFT
 KNOWN_OPEN = {
     "tutorials/plant/esterification2sector": 170.9790,
-    "tutorials/steady/flowsheets/cavett01_recycle_train": 88.0220,
     "tutorials/steady/flowsheets/proxy01_gas_loop": 51.9550,
     "tutorials/steady/rotating/pump01_water": 65.0000,
     "tutorials/steady/rotating/pump02_pressure_spec": 65.0000,
@@ -658,6 +677,14 @@ UNIT_THROTTLE = {"valve"}
 #  publishes none either.  A declared-T mixer fed by a recycle TEAR is
 #  counted and named, not judged (see the docstring: the report prices the
 #  published tear, the unit consumed the one the final pass started from).
+#  The ADIABATIC mixer joined 2026-10-24 (the delegated decision of
+#  2026-10-21, DEV.md 4c (b)): it publishes no Q_kW, declares no energy
+#  item, and its outlet is the state of equal enthalpy resolved at its own
+#  equilibrium and priced through `flashState::priceState`, so the report's
+#  remainder for it is zero by construction.  Until then it balanced on one
+#  dominant phase: cavett01's M2/M3 left +352 666 / +196 653 kW,
+#  ammonia03's three mixers -6.68 / +0.57 / +3.37 kW.  Tear-fed ones are
+#  counted and named exactly as the declared-T ones are.
 UNIT_DECLARED_T = {"mixer"}
 UNIT_TOL_KW = 1.0e-4
 #  The relative material gap above which a declared-T mixer's row is taken to
@@ -713,6 +740,17 @@ UNIT_WITNESSES = {
     ("tutorials/plant/acetonePlant", "M1"),
     ("tutorials/plant/acetonePlant", "M2"),
     ("tutorials/plant/polycaprolactonePlant", "Mixer"),
+    #  The ADIABATIC mixer (2026-10-24): cavett01's two mixers, which carried
+    #  the plant's whole 88 % residual and now publish a two-phase outlet;
+    #  column12's `recombine`, the stage's own two phases put back together
+    #  (V/F 0.5, the case's identity); ammonia03's two quench mixers (gas at
+    #  680 K) and inletState01's undeclared vapours.
+    ("tutorials/steady/flowsheets/cavett01_recycle_train", "M2"),
+    ("tutorials/steady/flowsheets/cavett01_recycle_train", "M3"),
+    ("tutorials/steady/distillation/column12_stage_is_a_flash", "recombine"),
+    ("tutorials/plant/ammonia03_quench_converter", "quench1Mix"),
+    ("tutorials/plant/ammonia03_quench_converter", "quench2Mix"),
+    ("tutorials/steady/flowsheets/inletState01_undeclared_vapour", "M1"),
     #  The isothermal gibbsReactor (C112 point 6): a two-phase AUTHORED feed
     #  (the condensing WGS reactor, by each of its three methods) and a
     #  produced feed at a pressure above the reactor's on SRK (the green
@@ -801,6 +839,23 @@ def judge_units(rel: str, txt: str, seen: set, stats: dict, bad: list):
         elif t in UNIT_DUTY_IS_DH and "Q_kW" in kpis.get(unit, {}):
             why = ("a %s publishes Q_kW = H_out - H_in on the streams it "
                    "publishes, so nothing may remain unattributed" % t)
+        elif t in UNIT_DECLARED_T and "Q_kW" not in kpis.get(unit, {}):
+            #  The ADIABATIC mixer (2026-10-24): no Q_kW, so no energy item,
+            #  and the report's remainder IS the enthalpy change across its
+            #  own streams.  A declared-T mixer whose duty is UNAVAILABLE
+            #  publishes no Q_kW either -- but its streams have no enthalpy
+            #  route, so the report carries no closure row for it and it
+            #  never reaches this loop.
+            gap = material_gap(unit)
+            if gap is not None and abs(gap) > MATERIAL_GAP_REL:
+                stats["tearFed"].append("%s:%s (published material gap %.2e)"
+                                        % (rel, unit, gap))
+                continue
+            why = ("an ADIABATIC %s declares no energy item, so this is the "
+                   "enthalpy change across its own streams -- its outlet must "
+                   "be the state of equal enthalpy, RESOLVED at its own "
+                   "equilibrium and priced as the report prices it "
+                   "(2026-10-24 decision, DEV.md 4c (b))" % t)
         elif t in UNIT_DECLARED_T and "Q_kW" in kpis.get(unit, {}):
             gap = material_gap(unit)
             if gap is not None and abs(gap) > MATERIAL_GAP_REL:
@@ -1181,12 +1236,13 @@ def main() -> int:
           "throttle; a "
           "cstr/conversionReactor/isothermal gibbsReactor "
           "that published "
-          "Q_kW; a mixer at a declared outlet T that published Q_kW) leave "
+          "Q_kW; a mixer at a declared outlet T that published Q_kW; an "
+          "ADIABATIC mixer, its outlet resolved at its own equilibrium) leave "
           "no more than %.0e kW unattributed in the report, "
           "every in-scope witness among %d was read, and %d case(s) running "
           "such a unit published no per-unit ledger (the report did not run "
           "under an outer driver) and are unjudged.  NOT judged and NAMED: "
-          "%d declared-T mixer(s) whose PUBLISHED inlets do not sum to "
+          "%d mixer(s) whose PUBLISHED inlets do not sum to "
           "their outlet beyond %.0e relative -- a recycle tear's convergence "
           "gap (the report prices the published tear, the unit the one the "
           "final pass started from), which their energy row carries "

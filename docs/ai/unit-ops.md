@@ -1609,18 +1609,27 @@ and `solid { rho_p; k_v; }` — or, for a salt, an `electrolyte {}` block
 ### `mixer`
 Adiabatic stream merge.  `P_out = min(P_in)` (a higher-pressure feed
 expands to the lowest inlet pressure — no silent throttling penalty
-invented); energy balance on the dominant phase (gas-aware: a gas-dominant
-mix uses the formation enthalpy, a liquid mix the sensible datum); solids
-summed.  A mixer MIXES — it never runs an internal flash (separators
-separate).  Newton-1D in T_out.
+invented); solids summed.  **The outlet is the state of equal enthalpy,
+RESOLVED at its own equilibrium** (2026-10-24): every inlet is priced as the
+energy report prices it (an unpinned authored inlet at its own (T, P, z), a
+two-phase one on its equilibrium phases, crystals on the solid rung), T_out
+is the temperature at which the outlet, resolved at (T_out, P_out, z_out),
+carries that enthalpy, and the outlet is published with the vapour fraction
+it resolves to — a two-phase merge leaves as ONE combined two-phase stream
+(the mixer does not SEPARATE; put a flash after it to split the phases).  A
+pure fluid inside its saturation jump (steam into condensate) leaves at its
+saturation T with its quality pinned.  Until 2026-10-24 the balance used one
+dominant phase and published that label, which the report contradicted: the
+first law of `cavett01` was open by 88 % on its two mixers.  Without
+formation data on every component the sensible dominant-phase balance is
+kept (the report is UNAVAILABLE there too).
 
 **Declare each inlet's phase** in its `0/` file with `phase gas;` /
-`phase liquid;` (there is no `state` key; a mixture's `vaporFraction` beside
-T and P is refused as over-specified — see dict-syntax "Pinning the phase of
-an inlet").  The mixer picks its
-energy-balance basis from the flow-weighted inlet vf — leave the phase out
-and every inlet defaults to liquid, so a gas-dominant merge tries a liquid
-balance and the T-solve can fail.
+`phase liquid;` where it is a declaration (there is no `state` key; a
+mixture's `vaporFraction` beside T and P is refused as over-specified — see
+dict-syntax "Pinning the phase of an inlet").  An undeclared authored inlet
+means its own equilibrium; an undeclared recycle-tear SEED carries vf = 0 on
+the first pass.
 
 **Optional `operation { T <K>; }` → isothermal.** The mixer then DECLARES
 the mix temperature instead of solving the adiabatic energy balance — it is
@@ -1631,11 +1640,11 @@ energy report prices the same streams.  That duty is a boundary energy item
 `T_out`, like a heater's); if a merged stream has no enthalpy datum the duty
 is announced UNAVAILABLE and no `Q_kW` is published.  Use it when (a) a furnace/heater downstream fixes T
 anyway (e.g. a reactor feed whose furnace is lumped into the reactor's
-`operation.T`), or (b) the adiabatic balance is ill-posed — a genuine
-gas+liquid merge whose liquid species carry a large formation+latent gap on
-the gas basis can push the 1-D Newton in T off its bracket.  Mixing
-(F, composition, P) is exact either way; only the T datum is the question,
-and here the author owns it.
+`operation.T`), or (b) the author wants the mixed temperature as a
+specification.  A declared-T mixer labels its outlet with the flow-weighted
+DOMINANT phase and does not resolve it.  Mixing (F, composition, P) is
+exact either way; only the T datum is the question, and here the author
+owns it.
 ```
 inputs  (s1  s2  s3 );  outputs (merged );
 operation {}                  // adiabatic: T_out is a result

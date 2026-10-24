@@ -189,10 +189,19 @@ EnthalpyInversion temperatureOfEnthalpy(scalar               h,
                                         scalar               Tguess,
                                         scalar               vfGuess,
                                         scalar               vf_in,
-                                        const ThermoPackage& thermo)
+                                        const ThermoPackage& thermo,
+                                        const sVector*       solids,
+                                        scalar               F)
 {
     const std::string locus = "reactor trial outlet";
     EnthalpyInversion inv;
+    //  The crystals' enthalpy per mole of fluid at T (zero for a reactor).
+    const bool withSolids = solids != nullptr && F > 0.0;
+    auto hSol = [&](scalar Tk) -> scalar
+    {
+        return withSolids ? flashState::priceSolids(*solids, Tk, thermo) / F
+                          : 0.0;
+    };
 
     //  ---- one phase: a Newton on that phase's rung, confirmed -----------
     //  The inversion every evaluation took before C77, on the rung of the
@@ -207,9 +216,10 @@ EnthalpyInversion temperatureOfEnthalpy(scalar               h,
         const scalar vfR = (vfGuess >= 0.5) ? 1.0 : 0.0;
         for (int it = 0; it < 40; ++it)
         {
-            const scalar hk = thermo.H_stream_formation(T1, P, vfR, z);
+            const scalar hk = thermo.H_stream_formation(T1, P, vfR, z) + hSol(T1);
             const scalar dT = 1.0e-3;
-            const scalar cp = (thermo.H_stream_formation(T1 + dT, P, vfR, z) - hk) / dT;
+            const scalar cp = (thermo.H_stream_formation(T1 + dT, P, vfR, z)
+                               + hSol(T1 + dT) - hk) / dT;
             if (!(std::abs(cp) > 1.0e-12)) break;
             const scalar step = (h - hk) / cp;
             T1 += std::max(-50.0, std::min(50.0, step));       // damped
@@ -234,7 +244,7 @@ EnthalpyInversion temperatureOfEnthalpy(scalar               h,
     {
         const Resolution r = resolve(Tk, P, z, vf_in, thermo, locus);
         vfk = r.vf;
-        return molarH(r, Tk, P, z, thermo) - h;
+        return molarH(r, Tk, P, z, thermo) + hSol(Tk) - h;
     };
     const scalar Tmin = 10.0, Tmax = 6000.0;
     scalar vfa = 0.0, vfb = 0.0;

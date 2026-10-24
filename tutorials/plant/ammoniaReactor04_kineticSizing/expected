@@ -143,5 +143,5 @@ equipment separator              cost.totalModule 15425687.1475    1e-4
 boundary global                 H_feeds_kW       104.859286489    1e-4
 boundary global                 Q_boundary_kW    -61651.9883008   1e-4
 boundary global                 H_products_kW    -61547.1431498   1e-4
-boundary global                 residual_kW      0.0141354660154  1e-4
+boundary global                 residual_kW      0.00547051853209  1e-4
 kpi     converter              X_H2             0.16532986782    1e-4
