@@ -720,7 +720,7 @@ int SpiralWoundModule::solve(const DictPtr& dict,
         const std::string nm = thermo.comp(i).name();
         const scalar Bi = mem.B_s(nm);
         B_s.push_back(Bi);
-        if (Bi == 0.0 && verbosity >= 1)
+        if (Bi == 0.0 && verbosity >= 1 && transportModel->readsMembranePermeabilities())
             std::cout << "  WARNING  membrane '" << membraneName
                       << "' has no B_s entry for solute '" << nm
                       << "' --- assuming perfect rejection (B_s = 0)\n";

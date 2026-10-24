@@ -351,13 +351,39 @@ WallSolution wallWithSolutionDiffusion(const PolarisationPolicy&       policy,
                                        std::vector<scalar>&            c_p)
 {
     const std::size_t n = c_b.size();
-    c_p.assign(n, 0.0);
     std::vector<scalar> ratio(n, 0.0);            // B_i / (J_v + B_i)
     for (std::size_t i = 0; i < n; ++i)
     {
         const scalar phiB = J_v + B[i];
         ratio[i] = (phiB > 0.0) ? B[i] / phiB : 0.0;
     }
+    return wallWithPermeateRatio(policy, J_v, k, D, z, c_b, ratio, T_K, names,
+                                 "solution-diffusion closure", c_p);
+}
+
+// ---------------------------------------------------------------------------
+//  The wall with ANY permeate closure of the form c_p,i = ratio_i c_m,i
+//
+//  Extracted 2026-10-24 (DEV.md 4c C148) from the solution-diffusion closure
+//  above, VERBATIM, when the constant-rejection law arrived: its closure,
+//  c_p,i = (1 - R_i) c_m,i, is the same form with ratio_i = 1 - R_i, so the
+//  two share ONE Newton rather than two copies of it.  The solution-diffusion
+//  wall computes its ratio and calls this; every golden it pins is unmoved.
+// ---------------------------------------------------------------------------
+WallSolution wallWithPermeateRatio(const PolarisationPolicy&       policy,
+                                   scalar                          J_v,
+                                   const std::vector<scalar>&      k,
+                                   const std::vector<scalar>&      D,
+                                   const std::vector<int>&         z,
+                                   const std::vector<scalar>&      c_b,
+                                   const std::vector<scalar>&      ratio,
+                                   scalar                          T_K,
+                                   const std::vector<std::string>& names,
+                                   const std::string&              closureLabel,
+                                   std::vector<scalar>&            c_p)
+{
+    const std::size_t n = c_b.size();
+    c_p.assign(n, 0.0);
 
     //  THE SEED is the uncoupled closed form with the SAME correction: with
     //  xi = 0, C_m = k* C_b / (k* - J_v + J_v B/(J_v + B)).  Uncoupled, the
@@ -428,8 +454,7 @@ WallSolution wallWithSolutionDiffusion(const PolarisationPolicy&       policy,
         catch (const std::exception& e)
         {
             w.ok = false;
-            w.reason = std::string("solution-diffusion closure: singular"
-                                   " Jacobian (") + e.what() + ")";
+            w.reason = closureLabel + ": singular Jacobian (" + e.what() + ")";
             return w;
         }
         scalar lambda = 1.0;
@@ -458,7 +483,7 @@ WallSolution wallWithSolutionDiffusion(const PolarisationPolicy&       policy,
         if (!accepted)
         {
             w.ok = false;
-            w.reason = "solution-diffusion closure: the Newton on the permeate"
+            w.reason = closureLabel + ": the Newton on the permeate"
                        " composition stalled at residual " + fmt(fmax)
                      + " (iteration " + std::to_string(it) + ")";
             return w;
@@ -466,7 +491,7 @@ WallSolution wallWithSolutionDiffusion(const PolarisationPolicy&       policy,
         c_p = cpTry; F = Ft; fmax = fTry; w = wt;
     }
     w.ok = false;
-    w.reason = "solution-diffusion closure: 60 Newton iterations without"
+    w.reason = closureLabel + ": 60 Newton iterations without"
                " convergence (residual " + fmt(fmax) + ")";
     return w;
 }
@@ -576,6 +601,18 @@ WallSolution Polarisation::wallWithSolutionDiffusion(const MassTransferContext& 
 {
     return membrane::wallWithSolutionDiffusion(policy_, J_v, kVector(hyd), DVector(),
                                                zVector(), c_b, B, T_, nameVector(), c_p);
+}
+
+WallSolution Polarisation::wallWithPermeateRatio(const MassTransferContext& hyd,
+                                                 scalar J_v,
+                                                 const std::vector<scalar>& c_b,
+                                                 const std::vector<scalar>& ratio,
+                                                 const std::string& closureLabel,
+                                                 std::vector<scalar>& c_p) const
+{
+    return membrane::wallWithPermeateRatio(policy_, J_v, kVector(hyd), DVector(),
+                                           zVector(), c_b, ratio, T_, nameVector(),
+                                           closureLabel, c_p);
 }
 
 // ---------------------------------------------------------------------------

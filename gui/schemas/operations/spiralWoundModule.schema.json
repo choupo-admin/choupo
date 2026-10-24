@@ -91,12 +91,12 @@
     "transport": {
       "type": "string",
       "title": "Transport law",
-      "description": "The inner J_w–c_m–c_p problem: `solutionDiffusion` (default), `DSPM-DE` (the pore-flow model for NF, with its announced internal Davies), `SDEM` (per-ion solution-diffusion coupled by the zero-current field) or `gelPolarisation` (ultrafiltration: pressure-controlled flux until the wall reaches the gel concentration, then J = k ln(c_g(1-S)/(c_b - S c_g)); its parameters in `transportParameters { gel {} }`)."
+      "description": "The inner J_w–c_m–c_p problem: `solutionDiffusion` (default), `DSPM-DE` (the pore-flow model for NF, with its announced internal Davies), `SDEM` (per-ion solution-diffusion coupled by the zero-current field), `gelPolarisation` (ultrafiltration: pressure-controlled flux until the wall reaches the gel concentration, then J = k ln(c_g(1-S)/(c_b - S c_g)); its parameters in `transportParameters { gel {} }`) or `constantRejection` (a CONSTANT INTRINSIC REJECTION per solute, c_p,i = (1 - R_i) c_m,i at the wall, Geraldes & Afonso 2007 Eq. 1 with R_i an input; its R's in `transportParameters { rejection {} source; }`; the record's A_w only is read)."
     },
     "transportParameters": {
       "type": "object",
       "title": "Transport-law parameters",
-      "description": "Parameters a transport law reads for itself (the block batchDiafilter hands its law too).  `gelPolarisation` reads `gel { solute <gel-forming solute>; c_gel <kg/m3>; sieving { <solute> <S>; ... }; source \"...\"; }` -- S in [0, 1) for EVERY solute, and `source` says where c_g and S come from.  `DSPM-DE` reads `poreSolver { method finiteDifference; nodes <n>; grid uniform | graded | adaptive; grading <beta>; gridTolerance <cells>; gridPasses <n>; wallClosure porePermeate | solutionDiffusion; }`, `hindrance DechadilokDeen2006;`, `activity wallDavies | ideal | bulkOverPoreDavies;` and `bulkDielectric <eps>;` -- and nothing else (an unknown key or word refuses).",
+      "description": "Parameters a transport law reads for itself (the block batchDiafilter hands its law too).  `gelPolarisation` reads `gel { solute <gel-forming solute>; c_gel <kg/m3>; sieving { <solute> <S>; ... }; source \"...\"; }` -- S in [0, 1) for EVERY solute, and `source` says where c_g and S come from.  `DSPM-DE` reads `poreSolver { method finiteDifference; nodes <n>; grid uniform | graded | adaptive; grading <beta>; gridTolerance <cells>; gridPasses <n>; wallClosure porePermeate | solutionDiffusion; }`, `hindrance DechadilokDeen2006;`, `activity wallDavies | ideal | bulkOverPoreDavies;` and `bulkDielectric <eps>;` -- and nothing else (an unknown key or word refuses).  `constantRejection` reads `rejection { <solute> <R_int>; ... }` -- R in [0, 1] for EVERY solute present, keyed by the component name (one R per salt on a feed declared by salts; one R per ion on a feed declared ion by ion, where a CHARGED permeate, relative charge > 1e-6, is refused naming `transport SDEM;`) -- and `source \"...\";` saying where the R's come from.",
       "properties": {
         "poreSolver": {
           "type": "object",
@@ -180,6 +180,23 @@
           "title": "Bulk dielectric constant",
           "description": "The solution's relative dielectric constant in the Born term and in A(eps_b).  Absent = SolventProperties::epsWater(T) (78.45 at 25 C).",
           "minimum": 1,
+          "unit": "-"
+        },
+        "rejection": {
+          "type": "object",
+          "title": "Constant intrinsic rejections (constantRejection)",
+          "description": "R_int per solute, keyed by the component name, each in [0, 1]: c_p,i = (1 - R_i) c_m,i against the WALL (not the observed 1 - c_p/c_b).  A solute present with no R, an R naming no solute and an R outside [0, 1] each refuse.",
+          "additionalProperties": {
+            "type": "number",
+            "minimum": 0,
+            "maximum": 1
+          },
+          "unit": "-"
+        },
+        "source": {
+          "type": "string",
+          "title": "Where the rejections come from (constantRejection)",
+          "description": "Required by `constantRejection`: a measurement against the wall, a paper, or \"hypothetical teaching value\".",
           "unit": "-"
         }
       }

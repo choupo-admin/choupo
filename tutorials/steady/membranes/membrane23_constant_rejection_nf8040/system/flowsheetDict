@@ -1,0 +1,74 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+  membrane23_constant_rejection_nf8040 -- the SIMPLEST membrane model a
+  spiral-wound element can carry: a CONSTANT INTRINSIC REJECTION per solute,
+  c_p,i = (1 - R_i) c_m,i at the wall (Geraldes & Afonso, J. Membr. Sci.
+  300 (2007) 20, Eq. 1, where R_i is the paper's INPUT).  One pressure
+  vessel of six generic 8-inch elements; NaCl and MgSO4, 1 g/L each.
+
+  THE SAME ELEMENT TAKES ANY MEMBRANE MODEL.  The module (Generic-8040, its
+  FT30 feed spacer and Schock & Miquel's correlations) is the hardware; the
+  `transport` word is the membrane: `solutionDiffusion` (B_i per solute),
+  `SDEM` (per-ion B_i under zero current, membrane21), `DSPM-DE` (the
+  charged pore, membrane22) or, here, `constantRejection`.  The membrane
+  record gives the water permeance A_w only.
+
+  INTRINSIC IS NOT OBSERVED.  R_int is measured against the WALL.  The run
+  publishes R_obs_<salt> = 1 - c_p/c_b against the FEED, which the
+  polarisation lowers: the element sees a wall richer than its feed, so a
+  constant R_int still passes more salt where the film is thicker.  Compare
+  R_obs_NaCl with the 0.60 declared below.
+
+  WHY BY SALTS.  A salt is neutral, so one R per salt cannot charge the
+  permeate.  A feed written ion by ion with one R per ion generally does --
+  the permeate charge is sum z_i (1 - R_i) c_m,i -- and the law REFUSES it
+  by name (see the README for the measurement on membrane21's feed).
+\*---------------------------------------------------------------------------*/
+
+units
+(
+    {
+        name        NF;
+        type        spiralWoundModule;
+        in          feed;
+        outputs     ( retentate  permeate );
+        operation
+        {
+            module           Generic-8040;      // data/standards/assets/, estimates announced
+            membrane         NF270;             // data/standards/assets/: A_w only is read
+            transport        constantRejection;
+            transportParameters
+            {
+                rejection { NaCl 0.60;  MgSO4 0.98; }
+                source    "hypothetical teaching values, NOT measured against a wall: MgSO4 0.98 is of the order of the NF270 data sheet's stabilised MgSO4 rejection (an OBSERVED value, 2000 ppm at 4.8 bar), NaCl 0.60 a representative loose-NF value";
+            }
+            vessels          1;
+            elements         6;                 // elements in series in the vessel
+            P_permeate       1.0 bar;
+            nNodes           10;                // stations per element
+
+            massTransfer
+            {
+                model          SchockMiquel;    // coefficients + window: the spacer record
+                viscosity      0.89e-3;         // Pa.s, water at 25 C
+                diffusivity    1.4e-9;          // m2/s, ONE value for both salts (NaCl 1.6, MgSO4 0.85 x 1e-9): the film of a lumped solute reads one D
+            }
+            pressureDrop
+            {
+                model          SchockMiquel;
+            }
+            polarisation
+            {
+                suctionCorrection  GeraldesAfonso2006;
+                ionCoupling        none;          // lumped salts: nothing to couple
+            }
+        }
+    }
+);

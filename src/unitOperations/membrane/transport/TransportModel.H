@@ -52,6 +52,11 @@ Description
                                ion, for a membrane record carrying a
                                poreModel{} tier.
 
+        constantRejection  --  a CONSTANT INTRINSIC REJECTION R_i per
+                               solute, c_p,i = (1 - R_i) c_m,i (Geraldes &
+                               Afonso 2007, Eq. 1, R_i an input), declared
+                               in `transportParameters { rejection {} }`.
+
         SDEM               --  solution-diffusion-electromigration
                                (Yaroshchuk): per-ion solution-diffusion
                                coupled by the zero-current electric field,
@@ -252,6 +257,12 @@ public:
 
     // Solve the coupled local J_w–c_m–c_p problem at fixed bulk state.
     virtual TransportSolution localFluxes(const TransportContext& ctx) const = 0;
+
+    //  Does this law read the membrane record's `permeabilities {}` (B_s)?
+    //  A law that does not (constantRejection) is not warned about a solute
+    //  the record gives no B_s -- the warning would describe an input the
+    //  run never reads.
+    virtual bool readsMembranePermeabilities() const { return true; }
 
     // ---- Factory ----
     static void registerType(const std::string& name, Factory f);

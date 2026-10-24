@@ -1250,6 +1250,11 @@
       "exit": 0,
       "claim": "check_nanofiltran_paper: OK -- Table 2 transcribed as PAPER_TABLE2 and reproduced by NanoFiltran AS RECEIVED (iterations exact, Na+ within 2.5e-05, the rest within 5.6e-06), which the Davies-corrected program is not: the table carries the ln 10; Choupo's stiff pore at 401/801/1601 nodes (order 2.00-2.00), extrapolated, agrees with the corrected NanoFiltran within 7.2e-08 on the permeates and the potential and 1.1e-07 on the pore's faces; 60 printed numbers of nanofiltran02's header and its 4 anchors are the measurement's; the Fig. 3 CSV (20 markers) is the digitiser's, fresh and pixel-consistent; nanofiltran03's 10 ops are the paper's Eqs. 43-46 at the read feeds, Choupo meets NanoFiltran on them within 1.9e-08, NanoFiltran with the paper's settings lands on the drawn line within 0.5 reading errors at 20 markers, and against EXPERIMENT the rms of R_obs is 0.077 (NanoFiltran's 0.078) inside every anchor.  NOT CHECKED: whether the model is right for CA30 (its inputs are fits to these data), any measurement uncertainty (none stated), Fig. 4 beyond the profile's faces, D(T).",
       "seconds": 5.3
+    },
+    "check_constant_rejection": {
+      "exit": 0,
+      "claim": "check_constant_rejection: OK -- transport constantRejection (c_p = (1 - R) c_m, Geraldes & Afonso 2007 Eq. 1): the witness's observed rejections sit below the declared intrinsic ones; with no film both salts give ONE ln(Q/Q0) to 2e-4, converging first-order; mismatched per-ION R's on membrane21's feed are REFUSED as a charged permeate while equal ones run; the flat cell and the batch diafilter take the law (the diafilter's R = R_int to 1e-5 and its washout = exp(-(1 - R) N) to 1e-4); 7 refusals fire.  NOT checked: that any constant R describes a real membrane (none here is measured against a wall).",
+      "seconds": 2.8
     }
   }
 }

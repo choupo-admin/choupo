@@ -15,16 +15,17 @@
       "type": "string",
       "enum": [
         "solutionDiffusion",
-        "DSPM-DE"
+        "DSPM-DE",
+        "constantRejection"
       ],
       "title": "Local transport law",
-      "description": "The same local flux law the steady module uses; DSPM-DE needs the record's pore data and a charged feed.",
+      "description": "The same local flux law the steady module uses; DSPM-DE needs the record's pore data and a charged feed; `constantRejection` (DEV.md 4c C148) is the constant intrinsic rejection c_p,i = (1 - R_i) c_m,i, its R's in `transportParameters { rejection {} source; }`.",
       "unit": "-"
     },
     "transportParameters": {
       "type": "object",
       "title": "Transport-law parameters",
-      "description": "Optional block handed verbatim to the chosen transport law's readParameters. `DSPM-DE` reads `poreSolver { method finiteDifference; nodes <n>; grid uniform | graded | adaptive; grading <beta>; gridTolerance <cells>; gridPasses <n>; wallClosure porePermeate | solutionDiffusion; }`, `hindrance DechadilokDeen2006;`, `activity wallDavies | ideal | bulkOverPoreDavies;` and `bulkDielectric <eps>;` -- and nothing else (an unknown key or word refuses).",
+      "description": "Optional block handed verbatim to the chosen transport law's readParameters. `DSPM-DE` reads `poreSolver { method finiteDifference; nodes <n>; grid uniform | graded | adaptive; grading <beta>; gridTolerance <cells>; gridPasses <n>; wallClosure porePermeate | solutionDiffusion; }`, `hindrance DechadilokDeen2006;`, `activity wallDavies | ideal | bulkOverPoreDavies;` and `bulkDielectric <eps>;` -- and nothing else (an unknown key or word refuses).  `constantRejection` reads `rejection { <solute> <R_int>; ... }` -- R in [0, 1] for EVERY solute present, keyed by the component name (one R per salt on a feed declared by salts; one R per ion on a feed declared ion by ion, where a CHARGED permeate, relative charge > 1e-6, is refused naming `transport SDEM;`) -- and `source \"...\";` saying where the R's come from.",
       "unit": "-",
       "properties": {
         "poreSolver": {
@@ -109,6 +110,23 @@
           "title": "Bulk dielectric constant",
           "description": "The solution's relative dielectric constant in the Born term and in A(eps_b).  Absent = SolventProperties::epsWater(T) (78.45 at 25 C).",
           "minimum": 1,
+          "unit": "-"
+        },
+        "rejection": {
+          "type": "object",
+          "title": "Constant intrinsic rejections (constantRejection)",
+          "description": "R_int per solute, keyed by the component name, each in [0, 1]: c_p,i = (1 - R_i) c_m,i against the WALL (not the observed 1 - c_p/c_b).  A solute present with no R, an R naming no solute and an R outside [0, 1] each refuse.",
+          "additionalProperties": {
+            "type": "number",
+            "minimum": 0,
+            "maximum": 1
+          },
+          "unit": "-"
+        },
+        "source": {
+          "type": "string",
+          "title": "Where the rejections come from (constantRejection)",
+          "description": "Required by `constantRejection`: a measurement against the wall, a paper, or \"hypothetical teaching value\".",
           "unit": "-"
         }
       }
