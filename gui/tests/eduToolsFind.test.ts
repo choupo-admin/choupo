@@ -38,6 +38,7 @@ import {
   eduHitHref, eduToolsIndex, searchEduTools, type EduDoc,
 } from "../src/ui/methods/eduToolsIndex.js";
 import { LETDOWN_STEPS } from "../src/ui/methods/letdownLesson.js";
+import { SINES_STEPS } from "../src/ui/methods/sinesPtaLesson.js";
 import { PUMP_STEPS } from "../src/ui/methods/pumpSystemLesson.js";
 import {
   METHOD_TOOLS, bootChapter, getActiveMethodTool, getMethodChapterRequest,
@@ -72,6 +73,10 @@ describe("the index is derived", () => {
     }
     expect(docs.filter((d) => d.tool === "letdown" && d.kind === "step").length)
       .toBe(LETDOWN_STEPS.length);
+    // The newest tool (C143, landed after this index was written) is indexed
+    // chapter by chapter with no edit here: the index is DERIVED.
+    expect(docs.filter((d) => d.tool === "sines-pta" && d.kind === "step").length)
+      .toBe(SINES_STEPS.length);
   });
 
   it("reads a notes page's own plain-text headings, skipping expressions", () => {
