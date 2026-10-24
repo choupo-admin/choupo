@@ -3497,6 +3497,12 @@ accepts today, and that is a policy call.
 > lesson, for the commander: a backup branch listed in a handoff is an
 > OPEN item until it is merged or closed; the handoff list is re-read at
 > every session start.
+> LANDED 2026-10-24 (all three parts from the backup, plus): every
+> sub-class row shows its path on disk (`steady/membranes/`) and the
+> search matches it -- the membranes were in the catalogue but labelled
+> only "Membranes (NF / RO)", 14th of 24 and below the fold; two folders
+> carried another category's label (`props/membrane`, `props/reactor`),
+> now their own; the double-click opens the row clicked.
 
 > **C112. AN EXTERNAL SCIENTIFIC AND PEDAGOGICAL AUDIT OF THE EDUTOOLS
 > (Vitor, 2026-10-20, a review by ChatGPT he asked the commander to judge:
