@@ -1200,16 +1200,16 @@ each channel node):
   {
       poreSolver { method finiteDifference; nodes 801;
                    wallClosure porePermeate; }   // default solutionDiffusion
-      hindrance  DechadilokDeen2006;             // default legacy
+      hindrance  DechadilokDeen2006;             // the default, and the only word
       activity   bulkOverPoreDavies;             // default wallDavies; or ideal
       bulkDielectric 80;                         // default epsWater(T)
   }
   ```
 
-  `hindrance legacy` takes K_d as the Dechadilok-Deen polynomial H, which is
-  Phi K_d — the steric partition counted twice in diffusion (recorded, not
-  changed); `DechadilokDeen2006` is the cross-section-averaged pair
-  (K_d = H/Phi).  `wallClosure porePermeate` closes the wall with the solved
+  `DechadilokDeen2006` is the cross-section-averaged pair (K_d = H/Phi) and
+  the default since 2026-10-24; `hindrance legacy` — the old default, which
+  took the Dechadilok-Deen polynomial H (= Phi K_d) itself as K_d and so
+  counted the steric partition twice in diffusion — REFUSES by name.  `wallClosure porePermeate` closes the wall with the solved
   pore's own permeate (the two solved together); `activity
   bulkOverPoreDavies` puts gamma_bulk/gamma_pore at both faces, the pore
   gammas at the pore's end nodes with A(eps_p) (needs the solved pore).

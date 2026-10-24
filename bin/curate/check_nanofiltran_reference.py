@@ -36,9 +36,10 @@ WHAT THIS GATE CHECKS.
       the anchor's tolerance, and that tolerance is at least the measured
       801-node error (so a too-tight anchor fails here, not at random).
   (e) THE DECLARATIONS REFUSE.  An unknown `hindrance`, `activity` and
-      `wallClosure` word, `wallClosure` and `activity bulkOverPoreDavies`
-      under `method closedForm`, and a non-DSPM-DE law on the bench -- each
-      refuses by name.
+      `wallClosure` word, the RETIRED `hindrance legacy` (with its reason:
+      the steric partition counted twice; DEV.md 4c C141), `wallClosure` and
+      `activity bulkOverPoreDavies` under `method closedForm`, and a
+      non-DSPM-DE law on the bench -- each refuses by name.
 
 WHAT THIS GATE DOES NOT CHECK, said plainly: whether NanoFiltran is right
 (two programs agreeing is verification, not validation); the as-received
@@ -48,8 +49,8 @@ check_pore_solver arm (d) hold it); any measured membrane.
 
 BY-HAND SABOTAGES (2026-10-22), each restored (engine ones rebuilt) and the
 gate re-run to OK:
-  S1  DechadilokDeen2006 K_d = H instead of H/Phi (the legacy diffusive
-      factor) -> FAILED, but NOT where predicted: the case no longer RAN --
+  S1  DechadilokDeen2006 K_d = H instead of H/Phi (the then-default
+      `legacy` diffusive factor, retired 2026-10-24) -> FAILED, but NOT where predicted: the case no longer RAN --
       at J_v = 2e-5 m/s on 401 nodes the pore's continuation in J_v stalled
       (DSPM-DE refused), so arm (c) reported the run, not a disagreement.
   S2  A(eps, T) divided by ln 10 (NanoFiltran's own constant on log10) ->
@@ -61,7 +62,8 @@ gate re-run to OK:
       closure still moves the example's trace Na+ by 1.0e-5.
   S4  one anchor's value edited in `expected` -> FAILED (b).
   S5  the membrane charge in one committed INPUT.XLS edited -> FAILED (a).
-  S6  the `hindrance` refusal removed (an unknown word falls to legacy) ->
+  S6  the `hindrance` refusal removed (an unknown word fell to the then-
+      default `legacy`; since 2026-10-24 there is no such default) ->
       FAILED (e) -- the run still exited 1, because the legacy pore stalls as
       in S1, and only the needle (the refusal's own sentence) told the two
       apart: a refusal for another reason is not the refusal under test.
@@ -226,7 +228,15 @@ def arm_refusals(tmp):
     probes = [
         ("hindrance banana", lambda t: t.replace("hindrance  DechadilokDeen2006;",
                                                  "hindrance  banana;", 1),
-         ["unknown DSPM-DE hindrance 'banana'", "DechadilokDeen2006", "legacy"]),
+         ["unknown DSPM-DE hindrance 'banana'", "DechadilokDeen2006"]),
+        #  The retired word refuses with its reason, not as an unknown word
+        #  (DEV.md 4c C141): a case that asked for the old default must be
+        #  told why it is gone, never moved to the new one in silence.
+        ("hindrance legacy", lambda t: t.replace("hindrance  DechadilokDeen2006;",
+                                                 "hindrance  legacy;", 1),
+         ["`hindrance legacy;`, which is RETIRED",
+          "counted the steric partition twice in diffusion",
+          "hindrance DechadilokDeen2006;"]),
         ("activity banana", lambda t: t.replace("activity   ideal;", "activity   banana;", 1),
          ["unknown DSPM-DE activity 'banana'", "bulkOverPoreDavies"]),
         ("wallClosure banana", lambda t: t.replace("wallClosure porePermeate;",

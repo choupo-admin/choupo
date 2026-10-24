@@ -18652,37 +18652,34 @@ concentration, the electric potential, and convection with the water
 \end{equation}
 where $J_v$ is the volume (water) flux and $K_{d,i}$, $K_{c,i}$ are the
 hydrodynamic \emph{hindrance} factors --- a confined ion diffuses and is
-convected more slowly than in free solution.  By default
-(\code{hindrance legacy}) Choupo takes, in $\lambda=r_i/r_p$,
+convected more slowly than in free solution.  Choupo takes, in
+$\lambda=r_i/r_p$, the cross-section-averaged pair of Dechadilok \& Deen
+\cite{DechadilokDeen2006}:
 \begin{align}
-   K_{d,i} &= 1 + \tfrac{9}{8}\lambda\ln\lambda - 1.56034\,\lambda
+   H(\lambda) &= 1 + \tfrac{9}{8}\lambda\ln\lambda - 1.56034\,\lambda
               + 0.528155\,\lambda^2 + 1.91521\,\lambda^3 - 2.81903\,\lambda^4
               \nonumber\\
            &\quad {}+ 0.270788\,\lambda^5 + 1.10115\,\lambda^6
-              - 0.435933\,\lambda^7, \label{eq:dspmde-Kd}\\
-   K_{c,i} &= (2-\Phi_{S,i})\,
-              \bigl(1 + 0.054\,\lambda - 0.988\,\lambda^2 + 0.441\,\lambda^3\bigr).
+              - 0.435933\,\lambda^7, \label{eq:dspmde-H}\\
+   K_{d,i} &= H(\lambda)/\Phi_{S,i}\quad(\lambda\le 0.95),\qquad
+   K_{d,i} = 0.984\Bigl(\frac{1-\lambda}{\lambda}\Bigr)^{5/2}\quad(\lambda>0.95),
+   \label{eq:dspmde-Kd}\\
+   K_{c,i} &= \frac{1 + 3.867\lambda - 1.907\lambda^2 - 0.834\lambda^3}
+                  {1 + 1.867\lambda - 0.741\lambda^2},
    \label{eq:dspmde-Kc}
 \end{align}
-The convective factor \eqref{eq:dspmde-Kc} is the Bowen--Welfoot
-centreline form.  The polynomial \eqref{eq:dspmde-Kd}, however, is not a
-$K_d$: it is Dechadilok \& Deen's fit \cite{DechadilokDeen2006} of
-$H = \Phi\,K_d$, the diffusive hindrance \emph{times} the steric partition
---- which one can check without the paper, because only $H/\Phi$ meets
-their lubrication form $0.984\,((1-\lambda)/\lambda)^{5/2}$ at
-$\lambda = 0.95$.  With $\Phi$ already in the partition
-\eqref{eq:dspmde-partition}, the default counts the steric partition twice
-in diffusion: its $K_d$ is too small by $(1-\lambda)^2$ (0.29 for Na$^+$ in
-a 0.4\,nm pore).  It is kept, byte for byte, because every DSPM-DE result
-recorded before it was found is pinned to it.  \code{hindrance
-DechadilokDeen2006;} declares the cross-section-averaged pair
-\begin{equation}
-   K_{d,i} = H(\lambda)/\Phi_{S,i}\ (\lambda\le 0.95),\qquad
-   K_{c,i} = \frac{1 + 3.867\lambda - 1.907\lambda^2 - 0.834\lambda^3}
-                  {1 + 1.867\lambda - 0.741\lambda^2},
-   \label{eq:dspmde-dd2006}
-\end{equation}
-the one NanoFiltran \cite{GeraldesAlves2008} evaluates.
+the pair NanoFiltran \cite{GeraldesAlves2008} evaluates.  The polynomial
+\eqref{eq:dspmde-H} is \emph{not} a $K_d$: it is the product $H=\Phi\,K_d$
+of the diffusive hindrance and the steric partition --- which one can check
+without the paper, because only $H/\Phi$ meets the lubrication form of
+\eqref{eq:dspmde-Kd} at $\lambda = 0.95$.  Since $\Phi$ is already in the
+partition \eqref{eq:dspmde-partition}, the diffusive factor is $H/\Phi$.
+Until 2026-10-24 Choupo's default took $H$ itself as $K_d$ (with the
+Bowen--Welfoot centreline $K_c$), counting the steric partition twice in
+diffusion: its $K_d$ was too small by $(1-\lambda)^2$ (0.29 for Na$^+$ in a
+0.4\,nm pore).  That form is retired: \code{hindrance legacy;} refuses by
+name, saying why, and \code{hindrance DechadilokDeen2006;} --- the only
+accepted word --- is what a case gets when it declares none.
 The pore potential gradient is not free: it is fixed by the
 \emph{zero-net-current} condition (no external circuit on an NF
 element),
@@ -24525,8 +24522,10 @@ Hilal, N., ``Characterisation of nanofiltration membranes for predictive
 purposes --- use of salt, uncharged solutes and atomic force
 microscopy'', \emph{J.\ Membr.\ Sci.}, 126, 91--105 (1997). The
 Donnan-Steric Pore Model (DSPM): the extended Nernst--Planck pore flux
-(Eq.~\ref{eq:dspmde-enp}), the steric partition and Deen hindrance
-(Eqs.~\ref{eq:dspmde-steric}, \ref{eq:dspmde-Kd}--\ref{eq:dspmde-Kc}),
+(Eq.~\ref{eq:dspmde-enp}), the steric partition
+(Eq.~\ref{eq:dspmde-steric}) with Deen's hindered transport (Choupo
+evaluates the hindrance factors by the later Dechadilok \& Deen fits,
+Eqs.~\ref{eq:dspmde-H}--\ref{eq:dspmde-Kc}),
 pore electroneutrality (Eq.~\ref{eq:dspmde-electroneutral}) and the
 effective fixed charge density $X_d$ fitted from salt rejection.
 
@@ -24546,14 +24545,15 @@ parameters ($r_p$, $A_k/\Delta x$, $\varepsilon_p$).
 \bibitem{Deen1987} Deen, W. M., ``Hindered transport of large molecules
 in liquid-filled pores'', \emph{AIChE J.}, 33(9), 1409--1425 (1987).
 The hydrodynamic hindrance factors $K_d$ (diffusive) and $K_c$
-(convective) as functions of $\lambda=r_i/r_p$
-(Eqs.~\ref{eq:dspmde-Kd}--\ref{eq:dspmde-Kc}).
+(convective) as functions of $\lambda=r_i/r_p$ --- the theory; the
+fits Choupo evaluates are Dechadilok \& Deen's
+(Eqs.~\ref{eq:dspmde-H}--\ref{eq:dspmde-Kc}).
 
 \bibitem{DechadilokDeen2006} Dechadilok, P., \& Deen, W. M., ``Hindrance
 factors for diffusion and convection in pores'', \emph{Ind.\ Eng.\ Chem.\
 Res.}, 45(21), 6953--6959 (2006).  The cross-section-averaged fits of
-$H = \Phi K_d$ and of $K_c$ (Eq.~\ref{eq:dspmde-dd2006}); the polynomial of
-Eq.~\ref{eq:dspmde-Kd} is their $H$.
+$H = \Phi K_d$ and of $K_c$ (Eqs.~\ref{eq:dspmde-H}--\ref{eq:dspmde-Kc}),
+Choupo's hindrance pair: $K_d = H/\Phi$, $K_c$ their rational fit.
 
 \bibitem{GeraldesAlves2008} Geraldes, V., \& Alves, A. M. B., ``Computer
 program for simulation of mass transport in nanofiltration membranes'',

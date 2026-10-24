@@ -475,5 +475,38 @@ concentration 12 orders below its feed, not a fold.
   refined meshes (`EPSX` 1.05 was run once, before the matching, ND 26 to
   204: it converges; nothing of it is pinned).
 - The paper's own figures.
-- Replacing any default (`hindrance legacy`, the B_s wall closure,
-  `wallDavies`) -- Vitor's.
+- ~~Replacing any default (`hindrance legacy`, the B_s wall closure,
+  `wallDavies`) -- Vitor's.~~  Vitor took it on 2026-10-24 (DEV.md 4c
+  C141): the hindrance in §10.1; `wallDavies` stays the default.
+
+## 10. The defaults corrected (2026-10-24, DEV.md 4c C141)
+
+*Vitor, on §9.5's findings: "Avanca com tudo e Corrige o K_d e mostra-me as
+linhas que mudam".  Each change is its own commit, so the golden rows each
+one moves can be attributed to it; the rows are LISTED and shown to him
+before any `--record`.*
+
+### 10.1 K_d no longer counts the steric partition twice
+
+The default hindrance (`legacy`) took the Dechadilok-Deen polynomial H as
+K_d; H is Phi K_d, and Phi is carried separately in the partition, so the
+diffusive flux carried Phi twice (K_d too small by (1 - lambda)^2: x0.163
+for Na+, x0.200 for Cl-, x0.136 for SO4 2-, x0.098 for Ca2+ and x0.082 for
+Mg2+ in membrane10's 0.6 nm pore, from the case's own ion radii -- so the
+corrected K_d is 5 to 12 times the old one; K_c moves 5-7 % down).  The one pair is now `DechadilokDeen2006`
+(K_d = H/Phi, their rational K_c), announced on every DSPM-DE run as the
+default when undeclared; `hindrance legacy;` REFUSES by name with that
+reason, and the Bowen-Welfoot centreline K_c went with it (no centreline
+K_d was put in its place -- none is citable from a primary in this tree).
+
+MEASURED with the closed form still the default pore, and it is the
+finding that decides §10.2: **with the honest K_d the closed form stops
+being a model.**  Its transmission K_c/(K_c + (1 - K_c e^{-Pe}) R) has a
+denominator that shrinks when K_c > 1 and Pe is small, and a K_d 5 to 12
+times larger makes Pe 5 to 12 times smaller: membrane10's NaCl
+unit and membrane20's NaCl closed-form unit exhaust the solute from the
+bulk and the module's solute-balance refusal stops the run (exit 2);
+membrane11's Born-off NaCl reports R_obs = -121.5 %; MgSO4 drops from
+99.92 % to 58.5 % and CaCl2 from 70.5 % to 52.5 %.  The solved pore, on
+the same K_d, moves membrane20's NaCl from 75.09 % to 30.80 % and leaves
+MgSO4 at 99.98 %.

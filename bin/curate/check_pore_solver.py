@@ -65,9 +65,9 @@ WHAT THIS GATE CHECKS.
       above, built in Python from the station's own J_w and wall
       concentration (the profile's c_b and Gamma), the Davies gamma at the
       bulk ionic strength, the ion radii and D0 from the case's species
-      records, and an independent transcription of the Deen hindrance
-      polynomials (Bowen & Welfoot 2002, Eqs. 14-15): within 1e-5 at every
-      station.  This is what proves the LAW hands the pore the right
+      records, and an independent transcription of the Dechadilok-Deen
+      hindrance pair (K_d = H/Phi, their K_c; until 2026-10-24 the retired
+      default that took H as K_d): within 1e-5 at every station.  This is what proves the LAW hands the pore the right
       conductances, hindrances and partitions -- the probe cannot.
       (c2) A FINDING, pinned: on the same stations the DEFAULT closed form
       departs from that limit by more than 5 % -- the day it stops, this
@@ -386,13 +386,21 @@ def species_value(case, ion, key):
 
 
 def deen(lam):
-    """Bowen & Welfoot 2002 Eqs. 14-15, transcribed independently."""
-    lam = min(max(lam, 0.0), 0.999)
+    """Dechadilok & Deen 2006 (Ind. Eng. Chem. Res. 45, 6953), transcribed
+    independently: their polynomial is H = Phi K_d, so K_d = H/Phi
+    (lambda <= 0.95; the lubrication form above), and their rational K_c.
+    Until 2026-10-24 (DEV.md 4c C141) this transcribed the retired default,
+    which took H itself as K_d."""
+    lam = max(lam, 0.0)
     phi = (1 - lam) ** 2
-    kd = (1 + 9.0 / 8.0 * lam * math.log(lam) - 1.56034 * lam + 0.528155 * lam ** 2
-          + 1.91521 * lam ** 3 - 2.81903 * lam ** 4 + 0.270788 * lam ** 5
-          + 1.10115 * lam ** 6 - 0.435933 * lam ** 7)
-    kc = (2 - phi) * (1 + 0.054 * lam - 0.988 * lam ** 2 + 0.441 * lam ** 3)
+    if lam <= 0.95:
+        h = (1 + 9.0 / 8.0 * lam * math.log(lam) - 1.56034 * lam + 0.528155 * lam ** 2
+             + 1.91521 * lam ** 3 - 2.81903 * lam ** 4 + 0.270788 * lam ** 5
+             + 1.10115 * lam ** 6 - 0.435933 * lam ** 7)
+        kd = h / phi
+    else:
+        kd = 0.984 * ((1 - lam) / lam) ** 2.5
+    kc = (1 + 3.867 * lam - 1.907 * lam ** 2 - 0.834 * lam ** 3) / (1 + 1.867 * lam - 0.741 * lam ** 2)
     return phi, kd, kc
 
 

@@ -27,7 +27,7 @@
     "transportParameters": {
       "type": "object",
       "title": "Transport-law parameters",
-      "description": "Parameters a transport law reads for itself (the block batchDiafilter hands its law too).  `gelPolarisation` reads `gel { solute <gel-forming solute>; c_gel <kg/m3>; sieving { <solute> <S>; ... }; source \"...\"; }` -- S in [0, 1) for EVERY solute, and `source` says where c_g and S come from.  `DSPM-DE` reads `poreSolver { method closedForm | finiteDifference; nodes <n>; wallClosure solutionDiffusion | porePermeate; }`, `hindrance legacy | DechadilokDeen2006;`, `activity wallDavies | ideal | bulkOverPoreDavies;` and `bulkDielectric <eps>;` -- and nothing else (an unknown key or word refuses).",
+      "description": "Parameters a transport law reads for itself (the block batchDiafilter hands its law too).  `gelPolarisation` reads `gel { solute <gel-forming solute>; c_gel <kg/m3>; sieving { <solute> <S>; ... }; source \"...\"; }` -- S in [0, 1) for EVERY solute, and `source` says where c_g and S come from.  `DSPM-DE` reads `poreSolver { method closedForm | finiteDifference; nodes <n>; wallClosure solutionDiffusion | porePermeate; }`, `hindrance DechadilokDeen2006;`, `activity wallDavies | ideal | bulkOverPoreDavies;` and `bulkDielectric <eps>;` -- and nothing else (an unknown key or word refuses).",
       "properties": {
         "poreSolver": {
           "type": "object",
@@ -65,9 +65,8 @@
         "hindrance": {
           "type": "string",
           "title": "DSPM-DE hindrance factors",
-          "description": "Absent = `legacy`: K_d is the Dechadilok-Deen polynomial H itself (= Phi K_d, so the steric partition is counted twice in diffusion -- recorded, not changed) and K_c the Bowen-Welfoot centreline form.  `DechadilokDeen2006`: K_d = H/Phi (lambda <= 0.95; 0.984((1-lambda)/lambda)^2.5 above) and K_c their rational fit -- the cross-section-averaged pair (Ind. Eng. Chem. Res. 45 (2006) 6953).",
+          "description": "Absent = `DechadilokDeen2006`, the one pair (announced as the default): K_d = H/Phi (lambda <= 0.95; 0.984((1-lambda)/lambda)^2.5 above) and K_c their rational fit -- the cross-section-averaged pair (Ind. Eng. Chem. Res. 45 (2006) 6953).  H, the Dechadilok-Deen polynomial, is Phi K_d.  `legacy` (H itself taken as K_d, so the steric partition counted twice in diffusion; the default until 2026-10-24) REFUSES by name, saying why.",
           "enum": [
-            "legacy",
             "DechadilokDeen2006"
           ]
         },

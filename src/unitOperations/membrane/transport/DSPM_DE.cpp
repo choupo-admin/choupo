@@ -100,37 +100,15 @@ constexpr scalar F_const   = 96485.33212;            // [C/mol]  Faraday
 constexpr scalar e_charge  = F_const / constant::Na; // [C]      elementary charge
 constexpr scalar eps0      = 8.8541878128e-12;       // [F/m]    vacuum permittivity
 
-// ---- Deen (1987) hindrance factors from lambda = r_ion / r_pore ------------
-// Diffusive hindrance K_d and convective hindrance K_c, the centreline-averaged
-// forms used in the DSPM-DE literature (Bowen & Welfoot 2002, Eqs. 14-15).
-// Valid for 0 <= lambda < 1; clamped at lambda -> 1 (a fully excluded ion).
+// ---- The hindrance factors from lambda = r_ion / r_pore ---------------------
+// Diffusive hindrance K_d, convective hindrance K_c and the steric partition
+// Phi = (1 - lambda)^2.  ONE pair since 2026-10-24 (DEV.md 4c C141): until
+// then the default took Dechadilok & Deen's polynomial H itself as K_d -- but
+// H = Phi K_d, and Phi is carried separately in the partition (2), so that
+// default counted the steric partition TWICE in diffusion (K_d too small by
+// (1 - lambda)^2).  The word that selected it, `hindrance legacy`, now
+// refuses by name (readParameters).
 struct HindranceFactors { scalar Kd; scalar Kc; scalar Phi; };
-
-HindranceFactors deenFactors(scalar lambda)
-{
-    const scalar lam = std::min(std::max(lambda, 0.0), 0.999);
-    const scalar Phi = (1.0 - lam) * (1.0 - lam);          // steric partition
-
-    // K_d (diffusive), Bowen & Welfoot 2002 Eq. 14 (polynomial fit to Deen):
-    //   K_d = 1 + 9/8 lam ln(lam) - 1.56034 lam + 0.528155 lam^2
-    //         + 1.91521 lam^3 - 2.81903 lam^4 + 0.270788 lam^5
-    //         + 1.10115 lam^6 - 0.435933 lam^7
-    const scalar l = lam;
-    const scalar l2 = l*l, l3 = l2*l, l4 = l3*l, l5 = l4*l, l6 = l5*l, l7 = l6*l;
-    const scalar lnl = (l > 1e-12) ? std::log(l) : 0.0;
-    scalar Kt = 1.0 + 1.125 * l * lnl - 1.56034 * l + 0.528155 * l2
-              + 1.91521 * l3 - 2.81903 * l4 + 0.270788 * l5
-              + 1.10115 * l6 - 0.435933 * l7;               // K^-1,t (drag)
-    // K_d = Phi * K^-1,t / ... -- in the centreline form the partition is carried
-    // separately, so the diffusive HINDRANCE coefficient is simply Kt here.
-    const scalar Kd = std::max(Kt, 1e-6);
-
-    // K_c (convective lag), Bowen & Welfoot 2002 Eq. 15 -- the centreline
-    // (Geraldes-Brites) form with the (2 - Phi) partitioning prefactor:
-    //   K_c = (2 - Phi)(1 + 0.054 lam - 0.988 lam^2 + 0.441 lam^3)
-    const scalar Kc = (2.0 - Phi) * (1.0 + 0.054 * l - 0.988 * l2 + 0.441 * l3);
-    return { Kd, std::max(Kc, 1e-6), Phi };
-}
 
 // ---- Dechadilok & Deen (2006), the cross-section-averaged pair -------------
 // Dechadilok & Deen, "Hindrance factors for diffusion and convection in
@@ -236,12 +214,24 @@ void DSPM_DE::readParameters(const DictPtr& params)
     if (params->found("hindrance"))
     {
         const std::string w = params->lookupWord("hindrance");
-        const std::vector<std::string> acc = { "legacy", "DechadilokDeen2006" };
+        //  The retired word, refused with its reason (DEV.md 4c C141): a
+        //  case that declared it asked for a model this law no longer has,
+        //  and falling to the default in silence would change its answer
+        //  without a word.
+        if (w == "legacy")
+            throw std::runtime_error(ctx + " declares `hindrance legacy;`,"
+                " which is RETIRED (2026-10-24): it took as K_d the Dechadilok-Deen"
+                " polynomial H, which is the PRODUCT Phi K_d, while the steric"
+                " partition Phi = (1 - lambda)^2 is carried separately in the"
+                " interfacial partition -- so it counted the steric partition"
+                " twice in diffusion (K_d too small by (1 - lambda)^2).  Declare"
+                " `hindrance DechadilokDeen2006;` (K_d = H/Phi, their K_c; the"
+                " default) or drop the key.");
+        const std::vector<std::string> acc = { "DechadilokDeen2006" };
         if (std::find(acc.begin(), acc.end(), w) == acc.end())
             throw std::runtime_error(registryRefusal::message(
                 "DSPM-DE hindrance", w, acc, "Accepted"));
-        hindrance_ = (w == "DechadilokDeen2006") ? Hindrance::DechadilokDeen2006
-                                                 : Hindrance::Legacy;
+        hindranceDeclared_ = true;
     }
     if (params->found("activity"))
     {
@@ -383,10 +373,13 @@ TransportSolution DSPM_DE::localFluxes(const TransportContext& ctx) const
     {
         choicesSaid_ = true;
         std::ostringstream c;
-        if (hindrance_ == Hindrance::DechadilokDeen2006)
-            c << "  [DSPM-DE] hindrance DechadilokDeen2006 (declared): K_d ="
-                 " H/Phi (Dechadilok & Deen, Ind. Eng. Chem. Res. 45 (2006)"
-                 " 6953), K_c their rational fit\n";
+        //  The hindrance pair is announced whether declared or not: it is
+        //  the one pair this law has, and a reader of an undeclared run must
+        //  still see which K_d and K_c priced it.
+        c << "  [DSPM-DE] hindrance DechadilokDeen2006 ("
+          << (hindranceDeclared_ ? "declared" : "the default") << "): K_d ="
+             " H/Phi (Dechadilok & Deen, Ind. Eng. Chem. Res. 45 (2006)"
+             " 6953), K_c their rational fit\n";
         if (activity_ == Activity::Ideal)
             c << "  [DSPM-DE] activity ideal (declared): every activity"
                  " coefficient 1, both faces\n";
@@ -469,14 +462,13 @@ TransportSolution DSPM_DE::localFluxes(const TransportContext& ctx) const
     }
     const std::size_t Ni = ions.size();
 
-    // Deen hindrance + Born (in kT units) per ion -- geometry is J_w independent.
+    // Dechadilok-Deen hindrance + Born (in kT units) per ion -- geometry is
+    // J_w independent.
     const scalar kT = constant::kB * T;
     for (auto& io : ions)
     {
         io.lambda = io.r / r_p;
-        const HindranceFactors h = (hindrance_ == Hindrance::DechadilokDeen2006)
-                          ? dechadilokDeenFactors(io.lambda)
-                          : deenFactors(io.lambda);
+        const HindranceFactors h = dechadilokDeenFactors(io.lambda);
         io.Kd = h.Kd; io.Kc = h.Kc; io.Phi = h.Phi;
         io.dWkT = bornOn ? bornEnergy(io.z, io.r, eps_p, eps_b) / kT : 0.0;
     }

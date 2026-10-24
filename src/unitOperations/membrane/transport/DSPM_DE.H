@@ -46,6 +46,9 @@ Description
       * Deen, "Hindered transport of large molecules in liquid-filled
         pores", AIChE J. 33 (1987) 1409-1425.  (the hydrodynamic hindrance
         factors K_d (diffusive) and K_c (convective) from lambda = r_i/r_p).
+      * Dechadilok & Deen, "Hindrance factors for diffusion and convection
+        in pores", Ind. Eng. Chem. Res. 45 (2006) 6953-6959.  (the
+        cross-section-averaged fits this law evaluates: K_d = H/Phi, K_c).
 
     THE MODEL, per ion i across the pore axial coordinate x in [0, dx]:
 
@@ -113,28 +116,28 @@ Description
       and the damped fixed point on the water flux.  The DECLARED CHOICES
       below change the wall closure and the activities of the solved pore.
 
-    DECLARED CHOICES (C138 slice 2, 2026-10-22) -- each OPT-IN, its first
-    word the default, so every DSPM-DE case that declares none runs
-    byte-identically.  They exist so that the model of NanoFiltran
-    (Geraldes & Alves 2008) can be EXPRESSED here and compared code to code
-    (tutorials/props/membrane/nanofiltran01_reference); each declared one
-    is announced once per run.
+    DECLARED CHOICES (C138 slice 2, 2026-10-22; the hindrance corrected by
+    C141, 2026-10-24) -- each with a stated default, the first word listed.
+    They exist so that the model of NanoFiltran (Geraldes & Alves 2008) can
+    be EXPRESSED here and compared code to code
+    (tutorials/props/membrane/nanofiltran01_reference); each is announced
+    once per run.
 
-      hindrance legacy | DechadilokDeen2006;
-        legacy (default): K_d is the Dechadilok-Deen polynomial H(lambda)
-          itself and K_c the Bowen-Welfoot centreline form
-          (2 - Phi)(1 + 0.054 l - 0.988 l^2 + 0.441 l^3).  H is the
-          PRODUCT Phi K_d (Dechadilok & Deen, Ind. Eng. Chem. Res. 45
-          (2006) 6953 -- the quantity their polynomial fits, continuous
-          with their lambda > 0.95 form only once divided by Phi), so with
-          the partition Phi already carried in (2) the legacy diffusive
-          hindrance counts the steric partition TWICE: K_d too small by
-          (1 - lambda)^2.  MEASURED and recorded, NOT changed: every
-          DSPM-DE golden is pinned to it, and replacing it is Vitor's.
-        DechadilokDeen2006: K_d = H/Phi for lambda <= 0.95 and
-          0.984 ((1 - lambda)/lambda)^(5/2) above, K_c = (1 + 3.867 l
-          - 1.907 l^2 - 0.834 l^3)/(1 + 1.867 l - 0.741 l^2) -- the
-          cross-section-averaged pair NanoFiltran uses.
+      hindrance DechadilokDeen2006;
+        the one pair (the default, announced as such when undeclared):
+          K_d = H/Phi for lambda <= 0.95 and 0.984 ((1 - lambda)/lambda)^(5/2)
+          above, K_c = (1 + 3.867 l - 1.907 l^2 - 0.834 l^3)/(1 + 1.867 l
+          - 0.741 l^2) -- the cross-section-averaged pair NanoFiltran uses.
+          H is the Dechadilok-Deen polynomial 1 + 9/8 l ln l - 1.56034 l
+          + ..., the PRODUCT Phi K_d (the quantity their polynomial fits,
+          continuous with their lambda > 0.95 form only once divided by
+          Phi).
+        legacy: REFUSED by name since 2026-10-24 (DEV.md 4c C141).  It took
+          H itself as K_d (with the Bowen-Welfoot centreline K_c), and with
+          the partition Phi already carried in (2) that counted the steric
+          partition TWICE in diffusion: K_d too small by (1 - lambda)^2.
+          It was the default until that day, so every DSPM-DE result
+          recorded before it carries the defect.
       activity wallDavies | ideal | bulkOverPoreDavies;
         wallDavies (default): Davies (A from SpeciationSolver::daviesA) at
           the bulk ionic strength on the feed face, the permeate ideal.
@@ -207,9 +210,9 @@ public:
     //  reads (see "DECLARED CHOICES" above).
     void readParameters(const DictPtr& transportDict) override;
 
-    //- The declared model choices (C138 slice 2).  The first of each is
-    //  the default, byte-identical with every DSPM-DE golden.
-    enum class Hindrance   { Legacy, DechadilokDeen2006 };
+    //- The declared model choices (C138 slice 2; DSPM_DE.H "DECLARED
+    //  CHOICES" says which is each one's default).  The hindrance has one
+    //  pair (C141) and needs no enum.
     enum class Activity    { WallDavies, Ideal, BulkOverPoreDavies };
     enum class WallClosure { SolutionDiffusion, PorePermeate };
 
@@ -221,7 +224,7 @@ private:
     mutable bool banner_done_ = false;
 
     // The declared model choices ("DECLARED CHOICES" above).
-    Hindrance   hindrance_      = Hindrance::Legacy;
+    bool        hindranceDeclared_ = false; // `hindrance` said by the case
     Activity    activity_       = Activity::WallDavies;
     WallClosure wallClosure_    = WallClosure::SolutionDiffusion;
     scalar      bulkDielectric_ = -1.0;     // < 0: SolventProperties::epsWater(T)
