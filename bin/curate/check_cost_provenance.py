@@ -1607,6 +1607,253 @@ def check_operating_crew(fails):
         shutil.rmtree(tmp, ignore_errors=True)
 
 
+
+#  (w): DEV.md 4c C110, G8 -- THE PRINTED C_TM IS THE ARITHMETIC THE FCI
+#  APPLIED.  The two `declared-unit-price` rows (a vessel priced by its steel
+#  mass, a catalyst charge) printed C_TM = C_BM while the FCI charged
+#  `contingencyFee` on their C_BM like any other row's.
+#  ---------------------------------------------------------------------------
+STEELCASE = ROOT / "tutorials/plant/greenAmmoniaPEQ_baseCase"
+CATCASE = ROOT / "tutorials/steady/reactors/pfr05_cooled_multitubular"
+#  Turton's contingency and fee, transcribed here -- never read off the
+#  engine, so an engine that drops it is caught.
+CONTINGENCY_AND_FEE = 1.18
+COST_ROW_RE = re.compile(
+    r"^  (\S+)\s+(\S+)\s+([\d.]+)\s+([\d.]+)\s+(\d+)\s+(\d+)\s+(\d+)\s*$", re.M)
+ECON_LADDER_RE = re.compile(
+    r"FCI = ([\d.]+)\*SC_BM \+ ([\d.]+)\*SC_BM_base =\s+(\d+)\s+EUR")
+
+
+def _cost_rows(out):
+    """Every row of the costing table, read off the console: (unit,
+    equipment column, C_p, C_BM, C_TM).  The table sits between its header
+    and its TOTALS line, so nothing else on the console can be read as one."""
+    m = re.search(r"C_total_mod\s*\n(.*?)\n\s+TOTALS \(EUR\)", out, re.S)
+    if not m:
+        return []
+    return [(g[0], g[1], float(g[4]), float(g[5]), float(g[6]))
+            for g in COST_ROW_RE.findall(m.group(1) + "\n")]
+
+
+def _totals(out):
+    m = re.search(r"TOTALS \(EUR\)(?: -- INCOMPLETE)?\s+(\d+)\s+(\d+)\s+(\d+)",
+                  out)
+    return tuple(float(x) for x in m.groups()) if m else None
+
+
+def _csv_col(row, prefix):
+    for k, v in row.items():
+        if k and k.startswith(prefix):
+            return float(v)
+    raise KeyError(prefix)
+
+
+def check_contingency_printed(fails):
+    """(w) THE PRINTED C_TM IS THE ARITHMETIC THE FCI APPLIED (DEV.md 4c
+    C110, G8).  The `declared-unit-price` rows printed C_TM = C_BM while
+    `EconomicsPass` built FCI = contingencyFee x SUM C_BM + siteFactor x
+    SUM C_BM_base over every row, theirs included.
+
+      w1  on greenAmmoniaPEQ_baseCase (ten H2Buffer vessels priced by their
+          steel mass): EVERY row of the console costing table prints C_TM =
+          1.18 C_BM, the `declared-unit-price` rows among them (ten H2Buffer
+          vessels named on that shape in the provenance table); the TOTALS
+          line's C_TM is the economics ladder's contingencyFee x SUM C_BM,
+          and the FCI less its siteFactor x SUM C_BM_base term IS that
+          printed total -- the table's total is the contingency term of the
+          capital that decided; costs.csv and the result JSON's equipment
+          entries carry C_TM = 1.18 C_BM on every row; the provenance header
+          prints the shape as `C_p = C_BM = price x mass;  C_TM = 1.18 x C_BM`.
+      w2  on pfr05_cooled_multitubular (a catalyst charge): the charge's row
+          prints C_BM = C_p and C_TM = 1.18 C_BM.
+      w3  a copy of economics01 that DECLARES `contingencyFee 1.15;` gets
+          its FCI at 1.15 x SUM C_BM + siteFactor x SUM C_BM_base AND an
+          announcement that the table's C_TM column was priced at 1.18
+          (console, caveat block, result JSON); the shipped case, which
+          declares 1.18, gets none (the negative).
+
+    SABOTAGES, by hand, 2026-10-20 (each restored with `cp` and `make all`):
+      W1  SteelMassCost.cpp: totalModuleCost = Cp (the old row)  -> FAILED
+          on every H2Buffer vessel: "row H2Buffer vessel1 prints C_TM
+          3411303 against 1.18 x C_BM ...", the TOTALS-vs-ladder and
+          FCI-vs-total lines, costs.csv and the result JSON.
+      W2  Turton.cpp: the catalyst charge's totalModuleCost = Cp  -> FAILED
+          (w2) only: "the catalyst charge prints C_p 148252, C_BM 148252,
+          C_TM 148252".
+      W3  EconomicsPass.cpp: the contingencyFee announcement removed  ->
+          FAILED (w3): "announced 0 time(s)".
+      W4  this gate's ECONCASE probe left at 1.18 (the substitution
+          disabled)  -> FAILED (w3): announced 0 time(s) and the FCI not at
+          1.15 -- the probe is what makes the arm able to fire.
+    RE-RUN 2026-10-24 on the revived branch (on main past C110 wave 1):
+      the arm FAILED on correct output first -- its SUM C_BM / FCI patterns
+      required ONE space before `EUR`, which greenAmmoniaPEQ prints and
+      economics01 (a narrower column, padded) does not, so (w3) reported
+      "did not print its CAPEX ladder" on a run that printed it.  Now
+      `\s+EUR`.  W1, W2 and W3 re-run after the fix, each caught as above."""
+    tmp = tempfile.mkdtemp(prefix="cost_ctm_")
+    try:
+        # ---- w1, the steel-mass vessels
+        if not STEELCASE.exists():
+            fails.append("(w1) %s is missing -- this arm CANNOT RUN and must"
+                         " not pass" % STEELCASE.name)
+        else:
+            d = _copy_case(STEELCASE, tmp, "w1")
+            add_reports(d, ["economics"])
+            rc, out = _run(d, timeout=900)
+            rows = _cost_rows(out)
+            dup = re.findall(r"^  (H2Buffer/vessel\d+)\s+declared-unit-price\s",
+                             out, re.M)
+            if rc != 0 or len(rows) < 10:
+                fails.append("(w1) the steel-mass witness printed %d costing"
+                             " rows (rc=%d) -- nothing to recompute"
+                             % (len(rows), rc))
+            if len(dup) != 10:
+                fails.append("(w1) the witness names %d H2Buffer vessels on"
+                             " the declared-unit-price shape, not ten -- the"
+                             " rows this arm exists for are not in front of"
+                             " it" % len(dup))
+            for (u, eqp, cp, cbm, ctm) in rows:
+                #  Printed to the euro: |dC_TM| <= 0.5 + 1.18 x 0.5.
+                if abs(ctm - CONTINGENCY_AND_FEE * cbm) > 1.2:
+                    fails.append("(w1) row %s %s prints C_TM %.0f against"
+                                 " 1.18 x C_BM %.0f = %.0f -- the table is not"
+                                 " the arithmetic the FCI applies"
+                                 % (u, eqp, ctm, cbm, CONTINGENCY_AND_FEE * cbm))
+            tot = _totals(out)
+            sbm = re.search(r"SUM C_BM\s+(\d+)\s+EUR", out)
+            sb0 = re.search(r"SUM C_BM_base\s+(\d+)\s+EUR", out)
+            fl = ECON_LADDER_RE.search(out)
+            if not (tot and sbm and sb0 and fl):
+                fails.append("(w1) the TOTALS line or the CAPEX ladder is not"
+                             " printed -- nothing to tie the table to the"
+                             " FCI")
+            else:
+                cf, sf, fci = (float(x) for x in fl.groups())
+                if abs(float(sbm.group(1)) - tot[1]) > 1.0:
+                    fails.append("(w1) the ladder's SUM C_BM %s is not the"
+                                 " table's C_BM total %.0f"
+                                 % (sbm.group(1), tot[1]))
+                if abs(tot[2] - cf * tot[1]) > 1.0 + 1e-9 * tot[2]:
+                    fails.append("(w1) the table's C_TM total %.0f is not"
+                                 " contingencyFee %.2f x SUM C_BM %.0f = %.0f"
+                                 % (tot[2], cf, tot[1], cf * tot[1]))
+                if abs((fci - sf * float(sb0.group(1))) - tot[2]) \
+                        > 2.0 + 1e-9 * fci:
+                    fails.append("(w1) FCI %.0f minus siteFactor %.2f x SUM"
+                                 " C_BM_base %s is not the table's C_TM total"
+                                 " %.0f" % (fci, sf, sb0.group(1), tot[2]))
+            csvp = d / "reports/economics/costs.csv"
+            if not csvp.exists():
+                fails.append("(w1) no reports/economics/costs.csv")
+            else:
+                rd = [r for r in csv.DictReader(csvp.open())
+                      if r.get("unit") not in ("TOTAL", "SUBTOTAL")]
+                ndp = 0
+                for r in rd:
+                    try:
+                        bm = _csv_col(r, "bareModule_")
+                        tm = _csv_col(r, "totalModule_")
+                    except (KeyError, ValueError):
+                        fails.append("(w1) costs.csv has no readable"
+                                     " bareModule_ / totalModule_ columns: %s"
+                                     % list(r.keys()))
+                        break
+                    ndp += r.get("correlation") == "declared-unit-price"
+                    if abs(tm - CONTINGENCY_AND_FEE * bm) > 0.02:
+                        fails.append("(w1) costs.csv %s %s: totalModule %.2f"
+                                     " is not 1.18 x %.2f"
+                                     % (r["unit"], r.get("equipmentTag", ""),
+                                        tm, bm))
+                if ndp != 10:
+                    fails.append("(w1) costs.csv carries %d declared-unit-price"
+                                 " rows, not ten" % ndp)
+            eq = [l for l in out.splitlines() if l.startswith('    { "unit": ')
+                  and '"cost": {' in l]
+            if len(eq) < 10:
+                fails.append("(w1) the result JSON carries %d costed"
+                             " equipment entries" % len(eq))
+            for l in eq:
+                bm = float(re.search(r'"bareModule": ([-0-9.eE+]+)', l).group(1))
+                tm = float(re.search(r'"totalModule": ([-0-9.eE+]+)', l).group(1))
+                if abs(tm - CONTINGENCY_AND_FEE * bm) > 1e-9 * max(tm, 1.0):
+                    it = re.search(r'"item": "([^"]+)"', l)
+                    fails.append("(w1) the result JSON's %s carries totalModule"
+                                 " %.6g against 1.18 x bareModule %.6g"
+                                 % (it.group(1) if it else "?", tm,
+                                    CONTINGENCY_AND_FEE * bm))
+            if "C_p = C_BM = price x mass;  C_TM = 1.18 x C_BM" not in out:
+                fails.append("(w1) the provenance header does not print the"
+                             " declared-unit-price shape as C_TM = 1.18 x C_BM")
+
+        # ---- w2, the catalyst charge
+        if not CATCASE.exists():
+            fails.append("(w2) %s is missing -- this arm CANNOT RUN and must"
+                         " not pass" % CATCASE.name)
+        else:
+            d = _copy_case(CATCASE, tmp, "w2")
+            rc, out = _run(d)
+            cat = [r for r in _cost_rows(out) if r[1] == "catalystCharge"]
+            if rc != 0 or len(cat) != 1:
+                fails.append("(w2) the catalyst witness printed %d catalyst"
+                             " charge rows (rc=%d)" % (len(cat), rc))
+            else:
+                (u, eqp, cp, cbm, ctm) = cat[0]
+                if abs(cbm - cp) > 0.5 or \
+                        abs(ctm - CONTINGENCY_AND_FEE * cbm) > 1.2:
+                    fails.append("(w2) the catalyst charge prints C_p %.0f,"
+                                 " C_BM %.0f, C_TM %.0f -- not C_BM = C_p and"
+                                 " C_TM = 1.18 C_BM" % (cp, cbm, ctm))
+
+        # ---- w3, a declared contingencyFee that is not the table's
+        ann = "the economics block declares `contingencyFee"
+        if not ECONCASE.exists():
+            fails.append("(w3) %s is missing -- this arm CANNOT RUN and must"
+                         " not pass" % ECONCASE.name)
+        else:
+            d = _copy_case(ECONCASE, tmp, "w3")
+            pd = d / "system" / "postDict"
+            txt2, n = re.subn(r"contingencyFee\s+1\.18\s*;",
+                              "contingencyFee      1.15;", pd.read_text())
+            if n != 1:
+                fails.append("(w3) economics01 no longer declares"
+                             " `contingencyFee 1.18;` -- the probe cannot be"
+                             " built")
+            else:
+                pd.write_text(txt2)
+                rc, out = _run(d)
+                fl = ECON_LADDER_RE.search(out)
+                sbm = re.search(r"SUM C_BM\s+(\d+)\s+EUR", out)
+                sb0 = re.search(r"SUM C_BM_base\s+(\d+)\s+EUR", out)
+                if rc != 0 or not (fl and sbm and sb0):
+                    fails.append("(w3) the contingencyFee probe did not print"
+                                 " its CAPEX ladder (rc=%d)" % rc)
+                else:
+                    want = 1.15 * float(sbm.group(1)) \
+                        + float(fl.group(2)) * float(sb0.group(1))
+                    if abs(float(fl.group(3)) - want) > 2.0:
+                        fails.append("(w3) the FCI %s is not 1.15 x SUM C_BM"
+                                     " + siteFactor x SUM C_BM_base = %.0f"
+                                     % (fl.group(3), want))
+                cnt = out.count(ann)
+                #  At its site, in the caveat block, in the JSON advisory.
+                if cnt < 3:
+                    fails.append("(w3) a declared contingencyFee of 1.15 is"
+                                 " announced %d time(s), not at its site AND in"
+                                 " the caveat block AND in the result JSON --"
+                                 " the table's C_TM column was priced at 1.18"
+                                 % cnt)
+            d0 = _copy_case(ECONCASE, tmp, "w3neg")
+            rc, out = _run(d0)
+            if rc != 0:
+                fails.append("(w3) the shipped economics01 failed (rc=%d)" % rc)
+            elif ann in out:
+                fails.append("(w3) economics01, which declares 1.18, is told its"
+                             " contingencyFee disagrees with the table")
+    finally:
+        shutil.rmtree(tmp, ignore_errors=True)
+
+
 def main():
     if not BIN.exists():
         print("check_cost_provenance: FAIL -- choupoSolve missing; run `make all`")
@@ -1908,6 +2155,7 @@ def main():
     check_particulate_labour(fails)
     check_declared_quotes(fails)
     check_operating_crew(fails)
+    check_contingency_printed(fails)
 
     if fails:
         print("check_cost_provenance: FAIL")
@@ -1915,7 +2163,17 @@ def main():
             print("  - " + f)
         return 1
 
-    print("check_cost_provenance: OK -- the PARTICULATE LABOUR TERM (C98): "
+    print("check_cost_provenance: OK -- THE PRINTED C_TM IS THE ARITHMETIC "
+          "THE FCI APPLIED (C110): every costing row of "
+          "greenAmmoniaPEQ_baseCase, its ten steel-mass vessels among them, "
+          "prints C_TM = 1.18 C_BM on the console, in costs.csv and in the "
+          "result JSON, the table's C_TM total is contingencyFee x SUM C_BM "
+          "and equals the FCI less its siteFactor term, pfr05's catalyst "
+          "charge prints C_BM = C_p and C_TM = 1.18 C_BM, and a declared "
+          "contingencyFee other than the table's (1.15 on an economics01 "
+          "copy) prices the FCI and is ANNOUNCED on three surfaces while the "
+          "shipped 1.18 is not; "
+          "the PARTICULATE LABOUR TERM (C98): "
           "the operator line prints Turton's 31.7 P^2 with the P used, a "
           "declared `particulateSteps` recomputes N_OL and C_OL from the "
           "printed numbers with its source beside it, a malformed declaration "

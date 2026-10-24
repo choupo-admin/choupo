@@ -369,12 +369,15 @@ int CostingPass::run(SimulationResult& result)
                      //  THE THIRD SHAPE, so a reader meeting a
                      //  `declared-unit-price` row below knows that NONE of
                      //  the three lines above was applied to it.
-                     "  C_p = C_BM = C_TM = price x mass                       "
+                     //  The 1.18 IS applied to this shape since 2026-10-20
+                     //  (DEV.md 4c C110, G8): the FCI always charged it on
+                     //  the row's C_BM, so the row now prints what decided.
+                     "  C_p = C_BM = price x mass;  C_TM = 1.18 x C_BM         "
                      "     [declared-unit-price: the CASE's own price, in"
                      " the run's currency,\n"
                      "                                                          "
-                     "      today's money -- NO index, NO F_M/F_P, NO 1.18;"
-                     " a catalyst charge, or a\n"
+                     "      today's money -- NO index, NO F_M/F_P; a catalyst"
+                     " charge, or a\n"
                      "                                                          "
                      "      gas-store vessel by its shell steel (an INSTALLED"
                      " price)]\n"

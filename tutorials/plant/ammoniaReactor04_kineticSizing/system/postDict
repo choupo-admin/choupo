@@ -36,8 +36,9 @@
 
     catalystCharge  the catalyst: m = V_R x catalystBulkDensity, priced at
                     catalystPrice x m in the run's own currency (EUR), today's
-                    money.  NO index, NO material factor, NO module factor,
-                    NO 1.18 -- the costing line prints the shape word
+                    money.  NO index, NO material factor, NO module factor
+                    (C_TM = 1.18 C_BM, the contingency and fee every item
+                    carries into the FCI) -- the costing line prints the shape word
                     `declared-unit-price` and the price beside it so it cannot
                     be read as a Turton correlation.  THERE IS NO GUTHRIE SET
                     FOR A CATALYST BED and none was invented; remove
