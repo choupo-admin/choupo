@@ -9264,6 +9264,7 @@
    "src/unitOperations/reactor/wallHeatTransfer/LiFinlayson.H"
   ],
   "src/unitOperations/rotating/Compressor.cpp": [
+   "src/core/Advisory.H",
    "src/core/Constants.H",
    "src/core/Dictionary.H",
    "src/core/Dimensions.H",
@@ -9277,6 +9278,9 @@
    "src/thermo/PackageAudit.H",
    "src/thermo/ThermoPackage.H",
    "src/unitOperations/UnitOperation.H",
+   "src/unitOperations/flash/IsothermalFlash.H",
+   "src/unitOperations/flash/PureSaturationPlateau.H",
+   "src/unitOperations/flash/StreamEquilibrium.H",
    "src/unitOperations/rotating/Compressor.H",
    "src/unitOperations/rotating/IsentropicCore.H"
   ],
@@ -9842,6 +9846,7 @@
    "src/unitOperations/reactor/gibbsMethod/DirectMin.cpp",
    "src/unitOperations/reactor/gibbsMethod/GibbsMethod.cpp",
    "src/unitOperations/reactor/pellet/EffectiveDiffusivity.cpp",
+   "src/unitOperations/rotating/Compressor.cpp",
    "src/unitOperations/rotating/Pump.cpp",
    "src/unitOperations/separation/Absorber.cpp",
    "src/unitOperations/separation/IonExchanger.cpp",
@@ -15846,6 +15851,7 @@
    "src/unitOperations/reactor/GibbsReactor.cpp",
    "src/unitOperations/reactor/PFR.cpp",
    "src/unitOperations/reactor/ReactorOutlet.cpp",
+   "src/unitOperations/rotating/Compressor.cpp",
    "src/unitOperations/separation/Extractor.cpp",
    "src/unitOperations/storage/StorageTank.cpp",
    "src/unitOperations/valve/Valve.cpp"
@@ -15884,6 +15890,7 @@
    "src/unitOperations/reactor/GibbsReactor.cpp",
    "src/unitOperations/reactor/PFR.cpp",
    "src/unitOperations/reactor/ReactorOutlet.cpp",
+   "src/unitOperations/rotating/Compressor.cpp",
    "src/unitOperations/storage/StorageTank.cpp",
    "src/unitOperations/valve/Valve.cpp"
   ],
@@ -15918,6 +15925,7 @@
    "src/unitOperations/reactor/GibbsReactor.cpp",
    "src/unitOperations/reactor/PFR.cpp",
    "src/unitOperations/reactor/ReactorOutlet.cpp",
+   "src/unitOperations/rotating/Compressor.cpp",
    "src/unitOperations/storage/StorageTank.cpp",
    "src/unitOperations/valve/Valve.cpp"
   ],

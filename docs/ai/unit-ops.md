@@ -717,6 +717,13 @@ operation { W_shaft  <W>;    eta 0.75; }   // motor given -> P_out, T_out result
 operation { P_out    30 bar; eta 0.75; }   // header given -> W_shaft, T_out results
 ```
 Both or neither refuses; `P_out <= P_in` refuses (a let-down is a `valve`).
+**Liquid in the suction refuses** (2026-10-21): the inlet is read by what it
+means -- an authored stream at its own (T, P, z), a produced one at its
+producer's answer -- and a vapour fraction below 1 stops the run, quoting it.
+Put a knock-out drum (an `isothermalFlash` at the suction's T and P) in
+front and send its vapour to the compressor, or use a `pump` for a liquid.
+A recycle TEAR that feeds a compressor is its suction on the first pass:
+its seed in `0/` declares `phase gas;` (an undeclared seed carries vf = 0).
 
 ### `turbine`
 Mirror of compressor.  `W_shaft` is NEGATIVE (energy out).  Same

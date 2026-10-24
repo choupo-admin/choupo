@@ -106,6 +106,13 @@ Description
     still works and solves the same equations from the outside.
 
     Limitation: requires a gas-phase EoS (idealGas, SRK, PengRobinson).
+
+    LIQUID IN THE SUCTION IS REFUSED (2026-10-21 decision, DEV.md 4c).  The
+    suction is read by what it means (`flashState::resolvedInletVaporFraction`:
+    an authored inlet at its own (T, P, z), a produced one at its producer's
+    answer); a vapour fraction below 1 refuses the unit by name, quoting it,
+    with the two remedies -- a knock-out drum (`flash`) upstream, or a `pump`
+    if the stream is a liquid.  Wet compression is not modelled.
 \*---------------------------------------------------------------------------*/
 
 #pragma once

@@ -7,7 +7,7 @@
   HX12, SEP-051 -> SEP51, SC-085 -> COL85, VALV-058 -> V58, PUMP-066 -> P66,
   MIX-037 -> M37, SPLT-057 -> SPLIT57).
 
-   hydrogen ─► C5 (to 78 bar) ─► s6 ─┐
+   hydrogen ─► KO5 (knock-out; koWater) ─► s5 ─► C5 (to 78 bar) ─► s6 ─┐
    co2Feed ─► C10 (3 bar) ─► HX12 ─► C16 (8.8 bar) ─► HX19 ─► C23 (26.3 bar) ─► HX26 ─► C27 (78 bar) ─► s31 ─┤
                  cw1 ─┘ s14         cw2 ─┘ s21           cw3 ─┘ s30                                 M37 ─► s33 ─┐
                                                                                                                │
@@ -61,11 +61,13 @@
        0.007702; COL78 LK 0.998967, HK 0.098992 (README shows the arithmetic).
     7. The sample's hydrogen feed is stored two-phase (vapour fraction
        0.9656 at 298 K, 10.75 bar: its 3.7 % water condenses) and its
-       compressor is set to ignore the phase.  Choupo's compressor computes
-       on the vapour root of the overall composition and says nothing; the
-       energy report, which resolves the feed, then finds 24.93 kW at C5
-       that no term accounts for -- a Choupo finding (README), not the same
-       reading as the sample's, which was the first draft of this note.
+       compressor is set to ignore the phase.  A Choupo compressor REFUSES
+       liquid in its suction (2026-10-21, DEV.md 4c: until then it computed
+       on the vapour root of the overall composition in silence, and the
+       energy report found 24.93 kW at C5 that no term accounted for), so a
+       knock-out drum KO5 -- a DEPARTURE from the sample -- separates the
+       feed at its own (T, P) and only its vapour reaches C5; the condensed
+       water leaves as `koWater`.
 
   THERMODYNAMICS: constant/thermoPhysPropDict (PR78, the E-PPR78 set at
   510.15 K, the three regressed methanol pairs).  Every unit inherits it.
@@ -74,10 +76,22 @@
 units
 (
     // ---- hydrogen compression ----------------------------------------------
+    //  KO5 is NOT in the sample (workaround 7): its hydrogen feed is
+    //  two-phase at 298.15 K and 10.75 bar, and a Choupo compressor refuses
+    //  liquid in its suction (the 2026-10-21 decision, DEV.md 4c).  The drum
+    //  separates the feed at its own (T, P); its liquid, the condensed water,
+    //  leaves the plant as `koWater`.
+    {
+        name        KO5;
+        type        isothermalFlash;
+        in          hydrogen;
+        outputs     ( koWater  s5 );
+        operation   { }                      // separates the feed at its own (T, P)
+    }
     {
         name        C5;
         type        compressor;
-        in          hydrogen;
+        in          s5;
         outputs     ( s6 );
         operation   { P_out 7800000 Pa;  eta 0.75; }
     }

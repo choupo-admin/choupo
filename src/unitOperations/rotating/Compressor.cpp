@@ -29,10 +29,12 @@ License
 #include "Compressor.H"
 #include "IsentropicCore.H"
 #include "core/Constants.H"
+#include "unitOperations/flash/StreamEquilibrium.H"
 
 #include <cmath>
 #include <iomanip>
 #include <iostream>
+#include <sstream>
 #include <stdexcept>
 
 namespace Choupo {
@@ -58,6 +60,53 @@ int Compressor::solve(const DictPtr& dict,
         zsum += y[thermo.indexOf(key)];
     }
     for (auto& v : y) v /= zsum;
+
+    // ---- LIQUID IN THE SUCTION IS REFUSED (DEV.md 4c, 2026-10-21) --------
+    //
+    //  A compressor is a vapour machine: liquid in its suction is a design
+    //  fault in practice (slugging, erosion, a broken valve plate), and the
+    //  arithmetic below has no answer for it either -- `H_real` and `S_real`
+    //  are the VAPOUR root at the OVERALL composition, so a two-phase feed
+    //  was compressed as if it were all vapour, in silence, while the energy
+    //  report resolved the same stream and found the latent heat of its
+    //  liquid unaccounted (24.93 kW at the hydrogen compressor of the
+    //  methanol benchmark, whose feed carries 3.4 % condensed water).  That
+    //  is the family CLAUDE.md 6 names, THE STATE A UNIT COMPUTES WITH IS
+    //  NOT THE STATE ITS STREAMS CARRY; wet compression is physics nobody
+    //  asked for.  So the suction is read by what it MEANS -- an authored
+    //  inlet at its own (T, P, z), a produced one at its producer's answer
+    //  (`flashState::resolvedInletVaporFraction`, the one home) -- and any
+    //  liquid refuses the unit by name, with the two remedies.
+    {
+        const std::string unitName = dict->name().empty() ? type() : dict->name();
+        const std::string inName   = feedDict->lookupWordOrDefault("streamName", "?");
+        const scalar vfSuction = flashState::resolvedInletVaporFraction(
+            feedDict, T_in, P_in, y, thermo,
+            "compressor '" + unitName + "' suction '" + inName + "'");
+        //  The one home returns exactly 1 for a vapour (it rounds V/F within
+        //  1e-9 of a phase boundary onto it), so any value below 1 is liquid.
+        if (vfSuction < 1.0)
+        {
+            std::ostringstream m;
+            m << std::setprecision(6)
+              << "Compressor '" << unitName << "': its suction '" << inName
+              << "' carries LIQUID -- at its own T = " << T_in << " K and P = "
+              << (P_in / 1.0e5) << " bar the stream is "
+              << (vfSuction <= 0.0 ? "all liquid" : "two-phase")
+              << " (vapour fraction V/F = " << vfSuction
+              << ", liquid fraction " << (1.0 - vfSuction) << ", "
+              << (1.0 - vfSuction) * F * 3600.0 << " kmol/h of liquid).\n"
+                 "  A compressor is a vapour machine: it does not compress a"
+                 " liquid, and this unit's isentropic path has no answer for"
+                 " one (it would compute the vapour root of the overall"
+                 " composition and hide the liquid's latent heat).\n"
+                 "  REMEDY: put a knock-out drum upstream -- a `flash` at the"
+                 " suction's T and P, its vapour to this compressor and its"
+                 " liquid out of the plant -- or, if the stream is meant to be"
+                 " a liquid, raise its pressure with a `pump` instead.";
+            throw std::runtime_error(m.str());
+        }
+    }
 
     // ---- Hardware --------------------------------------------------------
     //  eta plus EXACTLY ONE of W_shaft (the motor) and P_out (the header the
