@@ -95,6 +95,23 @@ orphan.  Fired by hand, observed lines:
   sabotaged one, so the `in` test still matched.  A sabotage must remove the
   thing, not decorate it; the second attempt (README.md -> nothing) fired.
 
+THE NO-GRANT MECHANISM ARM (2026-10-25, C164): GRI-Mech 3.0.  Its pages
+grant use and citation and nothing else, so no value may come from it; the
+arm scans catalogue records AND every file under a case's constant/ (where a
+mechanism lives).  By hand, each restored and the gate re-run to OK:
+  S1  `// dHf_298 source: GRI-Mech 3.0 thermo file` added to CH.dat -> FAILED,
+      naming CH.dat and the line;
+  S2  the same line reading `via GRI-Mech 3.0` -> FAILED (no via rescue, the
+      Burcat shape);
+  S3  `cross-checked against GRI-Mech 3.0 (local copy)` -> OK, so the
+      cross-check branch is real;
+  S4  `gri30.yaml H/O subset` in ignition01_h2o2's constant/reactions ->
+      FAILED, naming the case-local file (the catalogue arms never look there);
+  S5  ignition01_h2o2's constant/reactions as it stood at a05428177 (the
+      verbatim GRI H/O copy) -> FAILED;
+  S6  CH.dat as it stood at a05428177 (generated from the GRI thermo file)
+      -> FAILED on its banner line.
+
 THE NO-GRANT NAMES AND THE CASE-LOCAL ARM (2026-10-11, C65 item c).  The
 first run of the widened pattern failed on its own, on the real thing:
 data/standards/components/NH3.dat named Engineering Toolbox in its header
@@ -176,6 +193,62 @@ DECHEMA = re.compile(r'\bDECHEMA\b', re.I)
 #  two homes, disagreeing, and the disagreement shipped: 36 records in the
 #  public tree name it as the origin of their formation data.
 NC_COMPILATION_SOURCE = re.compile(r'\b(BURCAT\.THR|Burcat|ReSpecTh)\b', re.I)
+
+#  A NO-GRANT MECHANISM -- GRI-Mech 3.0 (2026-10-25, DEV.md 4c C164, Vitor's
+#  ruling: "Nao podes usar de forma direta!").  GRI-Mech's pages carry a
+#  warranty disclaimer and a permission to CITE them, and no grant to
+#  redistribute anything -- the no-grant class CLAUDE.md 10 excludes, and the
+#  2026-06-21 kinetics record (docs/chemkin-kinetics-plan.md) had already
+#  said fetch-and-cite.  It reached the tree anyway, twice: the H/O subset
+#  copied verbatim into the three ignition01 cases' constant/reactions, and
+#  17 catalogue components generated from its thermo file (plus the NASA-7 Cp
+#  overrides of 28 case-local records).  Each value was replaced from a
+#  primary (O Conaire et al. 2004 for the rates, NASA/TP-2002-211556 for the
+#  thermo) or its species removed, in the same commit as this arm.
+#
+#  It is the Burcat shape, not the aggregator one: the mechanism IS what
+#  would be copied, so no `via` rescues it.  Allowed: the name after a
+#  cross-check marker, which enters no value (a LOCAL parity run against a
+#  user's own copy, C160).  Unlike the catalogue arms, this one reaches the
+#  CASE-LOCAL constant/ tree as well -- a mechanism lives in a case's
+#  constant/reactions, which no catalogue scan sees, and that is exactly
+#  where the copy was.  Nothing is pinned: every violation found was fixed.
+NO_GRANT_MECHANISM = re.compile(
+    r'\bGRI[-\s]?Mech\w*|\bgrimech\w*|\bgri30\w*|\bGRI\b', re.I)
+NO_GRANT_MECHANISM_ROOTS = ("data/standards", "tutorials")
+
+
+def no_grant_mechanism():
+    """Lines naming GRI-Mech as a value's origin, in catalogue records and in
+    every file under a case's constant/ (records AND reaction files), and the
+    number of files scanned."""
+    found, nscan = [], 0
+    for root in NO_GRANT_MECHANISM_ROOTS:
+        base = ROOT / root
+        if not base.is_dir():
+            continue
+        for p in sorted(base.rglob("*")):
+            if not p.is_file():
+                continue
+            if root == "tutorials" and "constant" not in p.parts:
+                continue
+            if root == "data/standards" and p.suffix != ".dat":
+                continue
+            nscan += 1
+            try:
+                lines = p.read_text(errors="ignore").splitlines()
+            except OSError:
+                continue
+            for n, line in enumerate(lines, 1):
+                hit = NO_GRANT_MECHANISM.search(line)
+                if not hit or CHECK_MARKER.search(line[:hit.start()]):
+                    continue
+                found.append(f"{p.relative_to(ROOT).as_posix()}:{n}  {hit.group(0)} "
+                             "is the ORIGIN of a value; GRI-Mech grants no "
+                             "redistribution and no 'via' rescues it\n        "
+                             f"{line.strip()[:110]}")
+                break
+    return found, nscan
 
 #  Markers that make a mention a CHECK rather than an origin.  Deliberately
 #  narrower than VIA below: `via` is not among them.
@@ -400,6 +473,16 @@ ACCEPTED_PUBLIC_DOMAIN = {
                "under 17 U.S.C. 105 -- Svehla (1962) NASA TR R-132",
         "tool": "bin/curate/propose_lennard_jones.py",
     },
+    #  McBride, Zehe & Gordon (2002), the NASA Glenn coefficients: the clean
+    #  route for ideal-gas formation data and NASA-9 heat capacities, taken
+    #  when GRI-Mech's thermo file was ruled out (DEV.md 4c C164).
+    "NASA/TP-2002-211556": {
+        "licenceWord": "publicDomain",
+        "why": "US government work (NASA Technical Publication), public domain "
+               "under 17 U.S.C. 105 -- McBride, Zehe & Gordon (2002) "
+               "NASA/TP-2002-211556",
+        "tool": "bin/curate/nasa_tp2002_to_choupo.py",
+    },
 }
 #  VENDORED THIRD-PARTY CODE IS A CONTRACT TOO (2026-10-22, DEV.md 4c C138).
 #  NanoFiltran (Geraldes & Alves 2008) lives in bin/curate/nanofiltran/ so the
@@ -480,7 +563,7 @@ PAPER_SCAN_SUFFIXES = {".pdf", ".jpg", ".jpeg", ".png", ".tif", ".tiff", ".gif",
 #  thermochemical polynomials (McBride et al.) in their authority fields
 #  under the general public-domain reading and carry no licence word; this
 #  contract binds the source the lennardJones records are drafted from.
-KNOWN_PUBLIC_DOMAIN = re.compile(r'\b(NASA\s+TR\s+R-132)\b')
+KNOWN_PUBLIC_DOMAIN = re.compile(r'\b(NASA\s+TR\s+R-132|NASA/TP-2002-211556)\b')
 
 #  EVERY SOURCE THIS GATE RULES ON HAS A CARD, AND EVERY CARD IS NAMED BY A
 #  GATE (2026-09-06).  thirdParty/<source>/README.md records where a source
@@ -497,6 +580,8 @@ CARDS = {
     "NASA TR R-132": "thirdParty/svehla/README.md",
     "Burcat":        "thirdParty/README.md",   # one bulk file, no folder: its card is the index row
     "NanoFiltran":   "bin/curate/nanofiltran/README.md",   # vendored code, tracked beside its tool
+    "GRI-Mech":      "thirdParty/grimech/README.md",
+    "NASA/TP-2002-211556": "thirdParty/nasa-tp2002/README.md",
 }
 #  Cards this gate does NOT rule on but which must still be named by the gate
 #  that does -- so no card is an orphan and no gate a silent one.
@@ -777,6 +862,14 @@ def main() -> int:
                 violations.append(f"{rel}:{n}  {hit.group(0)} cited AS the "
                                   f"authority (not 'via')\n        {line.strip()[:110]}")
 
+    gri_found, gri_nscan = no_grant_mechanism()
+    violations += gri_found
+    if gri_nscan < 1000:
+        print(f"check_source_licence: FAILED -- only {gri_nscan} file(s) scanned "
+              "for a no-grant mechanism against a floor of 1000; the scan "
+              "surface has collapsed.")
+        return 1
+
     std_found, std_nscan = standard_table_violations()
     if std_found or std_nscan < 1000:
         print("check_source_licence: FAILED")
@@ -878,7 +971,10 @@ def main() -> int:
               "licence position is enforced somewhere.")
         return 1
     accepted_txt = "; ".join(
-        f"{n} ({ACCEPTED_DATABANK[n]['licence']}, {k} record(s))"
+        #  The public-domain class counts into the same tally since a catalogue
+        #  record first cited one (NASA/TP-2002-211556, C164); its licence is
+        #  the WORD the record declares, not a databank licence.
+        f"{n} ({ACCEPTED_DATABANK[n]['licence'] if n in ACCEPTED_DATABANK else ACCEPTED_PUBLIC_DOMAIN[n]['licenceWord']}, {k} record(s))"
         for n, k in sorted(accepted_seen.items()))
     print(f"check_source_licence: OK -- {nfiles} record(s) scanned (an "
           f"absent or collapsed scan root REFUSES); no "
@@ -888,7 +984,11 @@ def main() -> int:
           "compliant and is not counted.  "
           f"NonCommercial compilations: no new record names Burcat/ReSpecTh "
           f"as a value's origin; {len(NC_COMPILATION)} existing ones do and "
-          f"are pinned.  Engineering Toolbox and REFPROP (C65) are among the "
+          f"are pinned.  No-grant mechanism (C164): no line of the "
+          f"{gri_nscan} catalogue records and case-local constant/ files "
+          f"names GRI-Mech as a value's origin (none pinned; a cross-check "
+          f"marker before the name is allowed).  "
+          f"Engineering Toolbox and REFPROP (C65) are among the "
           f"names refused, and they alone are also sought in the {cl_nscan} "
           f"case-local records under tutorials/**/constant/: "
           f"{len(NO_GRANT_CASE_LOCAL)} name one as a value's origin, all "

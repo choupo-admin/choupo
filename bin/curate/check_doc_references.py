@@ -133,6 +133,11 @@ ALLOWED_PATHS = {
         "RETIRED 2026-10-12, DEV.md 4c C67 -- named in dated records",
     "src/unitOperations/reactor/kinetics/AmmoniaSynthesisRate.cpp":
         "RETIRED 2026-10-12, DEV.md 4c C67 -- named in dated records",
+    # RETIRED 2026-10-25 (DEV.md 4c C164): the tool copied GRI-Mech 3.0's H/O
+    # subset into three tutorials, and GRI-Mech grants no redistribution.
+    # DEV.md's C164 record names it as the thing to retire.
+    "bin/curate/gri_subset_to_choupo.py":
+        "RETIRED 2026-10-25, DEV.md 4c C164 -- named in the dated record",
     "generated/indexes/":  "never built; named in CLAUDE.md as a correction, so\n"
                            "                          the next reader stops looking for it",
     # DELETED, and named BECAUSE it was deleted.  DEV.md records the finding
