@@ -1659,7 +1659,51 @@ accepts today, and that is a policy call.
 > Validated: the five cases, check_converter_shell, check_relief_valve,
 > check_design_sheet, check_cost_provenance, check_economic_sensitivity,
 > `--gui` 34/1 with the one failure (those citations) fixed and its four
-> test files re-run 301/301, the generated artefacts.  OPEN: waves 2-3.
+> test files re-run 301/301, the generated artefacts.  WAVE 2 LANDED
+> 2026-10-25 (`claude/c150-wave2`), every point measured against the
+> engine before it was fixed, each with a test shown failing first:
+> R07 CONFIRMED and worse -- with two condensables supersaturated the
+> element-potential, reactiveFlash and directMin-fallback answers stayed
+> gas-only in silence (gibbs07 + methanol at 280 K: "single gas phase" with
+> y_w P 14.5 kPa against Psat 0.99 kPa); one test
+> (`supersaturatedCondensables`, GibbsMethod.cpp) now marks such an answer
+> and the reactor REFUSES it by name on its final solve, naming
+> `model directMin;` (gate `check_gibbs_condensables`; gibbsMap counts and
+> announces those cells).  R08 CONFIRMED -- `PCSAFT::S_residual` returned
+> the (T, rho) residual, the cubics the (T, P) departure `S_real` assumes;
+> + R ln Z added (gate `check_departure_convention`: two Maxwell
+> identities, PC-SAFT 56-136 % off before, 1e-6 after); the 12 moved
+> rows (pcsaft01-03, S_R and S_real) each move by exactly R ln Z of the Z
+> its golden pins, checked point by point, and were updated row by row on
+> the commander's delegated authority.  R14 CONFIRMED -- an exchanger
+> whose side crosses saturation is ANNOUNCED (the duty is sensible
+> epsilon-NTU; LMTD is no check there; F printed with 2N passes); no
+> number moved (gate `check_exchanger_phase_change`).  R15 CONFIRMED --
+> the cooling tower's G(h2 - h1) = L cp range is an identity of the
+> constant-L line; the unbalanced -E cpL (T_out - T0) is published as
+> `H_closure_gap_kW` (tower01 -1.39 kW, 3.8 % of the duty; one row
+> appended) and announced, nothing corrected.  R16 CONFIRMED -- the pinch
+> population took only units publishing `Q` (a column did not enter; an
+> exchanger entered as its hot side and its duty counted as cooling:
+> heatExchanger01 reported Q_C,min 93.79 kW for a plant that needs no
+> utility); every boundary duty is now a segment or an EXCLUDED row with
+> its reason (`reports/pinch/population.csv`), the targets say "of the N
+> extracted segments" or "NOT the plant's", KPIs `segments`,
+> `duties_excluded`, `Q_excluded_kW` (rows appended: pinch01, greenAmmonia02
+> 150/50 bar -- the 31/22 MW converter excluded); the energy-item
+> vocabulary moved verbatim to `src/result/EnergyItems.H` (layering).  R27
+> PARTLY -- the engine refuses a bad plan; the lesson spoke of the old
+> silent answer; gate `check_sequential_plan` runs the three refusals
+> through the binary.  Validation on main + C151 (the touched cases, the
+> four new gates and the changed ones, `--gui`) RUNNING at this commit;
+> the generated artefacts pass.
+> PROPOSALS for Vitor (not built, physics or pedagogy): column ports and
+> reactor duties in the pinch population; a variable-L (Poppe) tower;
+> reactiveFlash growing its active set instead of refusing; a two-phase
+> epsilon-NTU / condenser model; the pcsaft "..._liquid" props points are
+> evaluated on the vapour root by the family contract (names mislead).
+> Riding: Views.cpp's missing <map>/<memory> (check_std_includes red on
+> main since C147).  OPEN: wave 3 (the wording points).
 
 > **C149. THE RESULTS A RESEARCHER RECEIVES: PLOTS FIRST, AND FITTING A
 > MEMBRANE TO HIS OWN DATA (Vitor, 2026-10-24, with screenshots of the live
@@ -1839,6 +1883,24 @@ accepts today, and that is a policy call.
 > residual -549 319 -> +0.002 kW, the C&CE reviewer's central objection
 > (section 2) answered in the engine; 47 rows moved row by row.  OPEN:
 > userOp03_case_rate_law at 133.33 % mass closure (pre-existing).
+
+> **THE FULL SUITE ON A 10-CORE PC (owed to Vitor since 2026-10-24;
+> written 2026-10-25).**  Ubuntu 24.04 or WSL2 Ubuntu:
+> `sudo apt install build-essential clang python3 nodejs npm git
+> poppler-utils texlive-latex-extra` (clang for check_wasm_dialect,
+> pdftotext for the guide-version gate, pdflatex only to rebuild guides;
+> no Python package beyond the standard library is needed by the suite);
+> `git clone https://github.com/choupo-admin/choupo.git && cd choupo`;
+> `make all -j10`; `(cd gui && npm ci)` once; then
+> `bin/runTests > runTests.log 2>&1; echo $?` -- the verdict is the
+> `PASS n / FAIL 0 / KNOWN-BROKEN 0 / EXPECTED-FAIL k` line at the end of
+> the log, the ten slowest items are printed after it and every item's
+> seconds land in `build/suiteTimings.csv`.  The case walk is SERIAL: the
+> ten cores shorten the build and the GUI tests (vitest's workers), not
+> the walk.  Do not edit the tree while it runs; after any `git pull` run
+> `make all` again first (check_build_fresh refuses a stale binary and
+> aborts the walk, by design).  A partial run on one folder:
+> `bin/runTests tutorials/steady/flash` (cases only, no gates).
 
 > **C146. SPIRAL-WOUND ELEMENTS BY STANDARD SIZE AND SPACER, ARRANGED IN
 > SERIES AND PARALLEL, MULTI-ION THROUGHOUT (Vitor, 2026-10-24, with
@@ -8927,7 +8989,9 @@ corpus packages the flash's own dew test still cannot resolve it -- 4d D1.]
      Newton's 1e-8, so the re-seeded Newton takes zero iterations -- the
      primal is the solver there.  FOUND, not fixed: with two condensables
      supersaturated the element-potential method returns the gas-only
-     answer and says nothing (`ElementPotential.cpp:71`).  The browser
+     answer and says nothing (`ElementPotential.cpp:71`) -- FIXED
+     2026-10-25 by C150 R07: the reactor refuses such an answer by name
+     (gate `check_gibbs_condensables`).  The browser
      gets the new WASM from `publish-site.yml` on the next push to `main`;
      no hand build is needed.
 
