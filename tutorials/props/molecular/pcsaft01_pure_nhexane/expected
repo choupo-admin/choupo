@@ -6,9 +6,9 @@ diag    liquid_298K_1bar       H_R              -3.91460e+02       1e-4
 diag    liquid_298K_1bar       H_ig             -1.67200e+05       1e-4
 diag    liquid_298K_1bar       H_real           -1.67591e+05       1e-4
 diag    liquid_298K_1bar       P                1.00000e+05        1e-4
-diag    liquid_298K_1bar       S_R              -3.54309e-01       1e-4
+diag    liquid_298K_1bar       S_R              -0.846425525134       1e-4
 diag    liquid_298K_1bar       S_ig             3.88510e+02        1e-4
-diag    liquid_298K_1bar       S_real           3.88156e+02        1e-4
+diag    liquid_298K_1bar       S_real           387.663574475        1e-4
 diag    liquid_298K_1bar       T                2.98150e+02        1e-4
 diag    liquid_298K_1bar       Z                9.42530e-01        1e-4
 diag    liquid_298K_1bar       Z_liquid         5.35107e-03        1e-4

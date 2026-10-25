@@ -6,9 +6,9 @@ diag    CH4_vapour_pcsaft      H_R              -8.28601e+02       1e-4
 diag    CH4_vapour_pcsaft      H_ig             -7.44541e+04       1e-4
 diag    CH4_vapour_pcsaft      H_real           -7.52827e+04       1e-4
 diag    CH4_vapour_pcsaft      P                5.00000e+06        1e-4
-diag    CH4_vapour_pcsaft      S_R              -1.24811e+00       1e-4
+diag    CH4_vapour_pcsaft      S_R              -2.01270526714       1e-4
 diag    CH4_vapour_pcsaft      S_ig             1.53964e+02        1e-4
-diag    CH4_vapour_pcsaft      S_real           1.52716e+02        1e-4
+diag    CH4_vapour_pcsaft      S_real           151.951191741        1e-4
 diag    CH4_vapour_pcsaft      T                3.00000e+02        1e-4
 diag    CH4_vapour_pcsaft      Z                9.12141e-01        1e-4
 diag    CH4_vapour_pcsaft      gamma            1.30404e+00        1e-4
@@ -30,9 +30,9 @@ diag    propane_liquid         H_R              -2.08822e+03       1e-4
 diag    propane_liquid         H_ig             -1.04700e+05       1e-4
 diag    propane_liquid         H_real           -1.06788e+05       1e-4
 diag    propane_liquid         P                1.50000e+06        1e-4
-diag    propane_liquid         S_R              -2.00038e+00       1e-4
+diag    propane_liquid         S_R              -4.89742448555       1e-4
 diag    propane_liquid         S_ig             2.47784e+02        1e-4
-diag    propane_liquid         S_real           2.45784e+02        1e-4
+diag    propane_liquid         S_real           242.88659335        1e-4
 diag    propane_liquid         T                2.98150e+02        1e-4
 diag    propane_liquid         Z                7.05792e-01        1e-4
 diag    propane_liquid         Z_liquid         5.39924e-02        1e-4
@@ -44,9 +44,9 @@ diag    nButane_liquid         H_R              -9.85957e+02       1e-4
 diag    nButane_liquid         H_ig             -1.25790e+05       1e-4
 diag    nButane_liquid         H_real           -1.26776e+05       1e-4
 diag    nButane_liquid         P                5.00000e+05        1e-4
-diag    nButane_liquid         S_R              -9.04889e-01       1e-4
+diag    nButane_liquid         S_R              -2.18993045815       1e-4
 diag    nButane_liquid         S_ig             2.96738e+02        1e-4
-diag    nButane_liquid         S_real           2.95833e+02        1e-4
+diag    nButane_liquid         S_real           294.548458183        1e-4
 diag    nButane_liquid         T                2.98150e+02        1e-4
 diag    nButane_liquid         Z                8.56796e-01        1e-4
 diag    nButane_liquid         Z_liquid         2.05151e-02        1e-4
