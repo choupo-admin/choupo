@@ -1950,8 +1950,33 @@ accepts today, and that is a policy call.
 > source-tree rule (apalutamide01 crossings 18 -> 10, donepezil01 16 -> 1),
 > 358 identical, the folded list pinned by a test; the 0.5 / 1.2
 > thresholds are the general's judgement, Vitor may move them; `--gui`
-> 36/0 on main).  IN FLIGHT: G5 (Gantt), C112 wave B, C131 phase 2 family
-> (a).  Owed to Vitor, unchanged: C139 and C140 start with their scope.
+> 36/0 on main).  G5 LANDED (`claude/g5-batch-gantt`): the batch plan's
+> Gantt in Reports, drawn from the engine's batch-plan JSON in BOTH shapes
+> it writes (`BatchPlanJson.cpp` single product and `emitMultiProduct`) --
+> a field the reader needs and the engine did not publish is named in red
+> and never defaulted, nothing re-derived; one product: one block per
+> train, the limiting stage and T_L dimensioned between the published lot
+> starts; several: a year block (campaigns, changeovers, stage cleans, the
+> available time) and a first-campaign block per product; held to
+> apalutamide01's own gantt.csv; `--gui` 36/0.  NOT done: no multiproduct
+> TUTORIAL exists (G2 shipped only a probe inside check_batch_plan), so
+> the multiproduct drawing is tested on a fixture in the engine's shape --
+> a witness case is a corpus decision.  C131 phase 2 family (a)
+> thermodynamics REVIEWED (`claude/c131-review-thermo`,
+> docs/design/review-c131-thermodynamics.md): WRONG W1 gamma-phi without
+> phi_sat / Poynting (pure propane at 310 K, 15 bar reported superheated
+> vapour, 23 cases reach it -- a proposal, moves goldens), W2 bubble/dew T
+> pricing the trial phase at the wrong composition and clamped to
+> 200-700 K, W3 the phi-phi liquid enthalpy not on the EoS (flash09 latent
+> heat 2.0 % low), W4/W8 an outer loop at its cap reported converged
+> (fixed), W5 UNIQUAC gamma = 1 for an absent component (fixed), W6 the SRK
+> m(omega) attribution (Graboski-Daubert, comments fixed), W7 a flat T-x-y
+> (fixed); MISSING M1 no liquid-split check after a VL flash, M2 no
+> fugacity residual published; gate `check_thermo_limits`; its REFUTER is
+> running, and the flash fix reaches a shared path, so it lands only after
+> the refuter's corpus measurement.  Family (b) separations IN FLIGHT;
+> C112 wave B IN FLIGHT.  Owed to Vitor, unchanged: C139 and C140 start
+> with their scope.
 
 > **THE FULL SUITE ON A 10-CORE PC (owed to Vitor since 2026-10-24;
 > written 2026-10-25).**  Ubuntu 24.04 or WSL2 Ubuntu:
