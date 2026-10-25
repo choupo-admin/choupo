@@ -111,9 +111,9 @@ ammonia03's converged answer**:
 
 | state | T | V₃ [kmol/m³/h] | ξ (8 mm, interpolated) | Eq 40 |
 |---|---|---|---|---|
-| bed 1 inlet | 683.15 K | **929.13** | 0.337 | 312.96 |
-| bed 1 outlet | 841.28 K | **9.341** | 0.502 | 4.69 |
-| bed 3 outlet (converter exit) | 777.51 K | **1.0031** | 0.767 | 0.77 |
+| bed 1 inlet | 683.15 K | **929.25** | 0.337 | 312.98 |
+| bed 1 outlet | 841.28 K | **9.342** | 0.502 | 4.69 |
+| bed 3 outlet (converter exit) | 777.51 K | **1.0034** | 0.767 | 0.77 |
 
 **The rate falls by a factor of 99.5 across bed 1 and 926 across the whole
 converter.**  That single column is the quantitative answer to a question
@@ -122,20 +122,20 @@ of its work in its first few centimetres, and the last of it takes a length no
 one would build.
 
 **And bed 1's outlet should have a rate of ZERO, because the flowsheet solved
-it as an equilibrium — it has 9.341.**  That is not an error in either place:
+it as an equilibrium — it has 9.342.**  That is not an error in either place:
 it is **two independent equilibria disagreeing**.  Choupo reaches equilibrium
 by minimising Gibbs energy with SRK fugacities and its own formation data;
 Dyson & Simon use Gillespie & Beattie's 1930 Ka with the fugacity coefficients
 of Eqs 6–8.  Solved out, at 841.28 K and 200 bar from bed 1's own feed:
 
 * Dyson & Simon: **x(NH₃) = 0.106761**
-* Choupo (`gibbsReactor`, SRK): **x(NH₃) = 0.1060861**
-* **0.636 % apart**, with Choupo the more conservative of the two.
+* Choupo (`gibbsReactor`, SRK): **x(NH₃) = 0.1060834**
+* **0.635 % apart**, with Choupo the more conservative of the two.
 
 That is the first independent check in this corpus of the ammonia equilibrium
 every one of its plant cases rests on, and it is a cross-check between two
 sources rather than a model checking itself.  It is also why the residual rate
-is 9.341 and not zero: it is 1.01 % of the inlet rate, which is what 0.636 % in
+is 9.342 and not zero: it is 1.01 % of the inlet rate, which is what 0.635 % in
 composition buys you this close to equilibrium.
 
 Those three gases are a **second home** for somebody else's numbers, so

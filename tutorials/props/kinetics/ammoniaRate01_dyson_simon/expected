@@ -2,15 +2,15 @@
 # units: stream F is kmol/s (canonical SI, as in the result JSON); the run LOG prints kmol/h.
 # kind   name      key         expected        reltol
 diag    dysonSimon             bed1Inlet_Eq40   312.95744498     1e-4
-diag    dysonSimon             bed1Inlet_V3     929.13051108     1e-4
+diag    dysonSimon             bed1Inlet_V3     929.247293094     1e-4
 diag    dysonSimon             bed1Inlet_eta    0.0251956498047  1e-4
 diag    dysonSimon             bed1Inlet_xi     0.336828294032   1e-4
 diag    dysonSimon             bed1Outlet_Eq40  4.6853092592     1e-4
 diag    dysonSimon             bed1Outlet_V3    9.34102880697    1e-4
 diag    dysonSimon             bed1Outlet_eta   0.219727948649   1e-4
 diag    dysonSimon             bed1Outlet_xi    0.501583857199   1e-4
-diag    dysonSimon             bed3Outlet_Eq40  0.769439779812   1e-4
-diag    dysonSimon             bed3Outlet_V3    1.00310235931    1e-4
+diag    dysonSimon             bed3Outlet_Eq40  0.769642159744   1e-4
+diag    dysonSimon             bed3Outlet_V3    1.0033709893    1e-4
 diag    dysonSimon             bed3Outlet_eta   0.337604123841   1e-4
 diag    dysonSimon             bed3Outlet_xi    0.76706008382    1e-4
 diag    dysonSimon             locus1_Eq40      -889.947776496   1e-4

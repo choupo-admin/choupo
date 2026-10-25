@@ -64,18 +64,18 @@ operations
         (
             //  Bed 1's inlet: the leanest, coldest gas in the converter, and
             //  by far the fastest.
-            { label bed1Inlet;   T 683.1469 K;  P 200 bar;
+            { label bed1Inlet;   T 683.1545 K;  P 200 bar;
               composition { N2 0.2393446; H2 0.7262456; NH3 0.0111202; inert 0.0232896; } }
 
             //  Bed 1's outlet -- which the flowsheet computed as an
             //  EQUILIBRIUM state, so this rate should be zero and is not.
             //  See README.md section 4: it is the two equilibria disagreeing.
-            { label bed1Outlet;  T 841.2768 K;  P 200 bar;
-              composition { N2 0.2148635; H2 0.6535734; NH3 0.1060861; inert 0.0254770; } }
+            { label bed1Outlet;  T 841.2802 K;  P 200 bar;
+              composition { N2 0.2148642; H2 0.6535755; NH3 0.1060834; inert 0.0254769; } }
 
             //  The converter's exit.
-            { label bed3Outlet;  T 777.5091 K;  P 200 bar;
-              composition { N2 0.1976567; H2 0.6024952; NH3 0.1728337; inert 0.0270144; } }
+            { label bed3Outlet;  T 777.5096 K;  P 200 bar;
+              composition { N2 0.1976569; H2 0.6024957; NH3 0.1728329; inert 0.0270144; } }
         );
     }
 );

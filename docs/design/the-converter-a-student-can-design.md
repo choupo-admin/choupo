@@ -157,11 +157,11 @@ this slice nothing in Choupo could draw it.
 ### A cross-check nobody had made
 
 Evaluated at ammonia03's own bed states, the rate falls **926-fold** from the
-converter inlet (929.13 kmol/m³/h) to its exit (1.0031).  At bed 1's outlet —
-which the flowsheet solved as an EQUILIBRIUM — the rate is **9.341, not zero**.
+converter inlet (929.25 kmol/m³/h) to its exit (1.0034).  At bed 1's outlet —
+which the flowsheet solved as an EQUILIBRIUM — the rate is **9.342, not zero**.
 That is two independent equilibria disagreeing: solved out at 841.28 K and
 200 bar from bed 1's own feed, Dyson & Simon give x(NH₃) = 0.106761 and
-Choupo's SRK Gibbs minimisation 0.1060861 — **0.636 % apart, Choupo the more
+Choupo's SRK Gibbs minimisation 0.1060834 — **0.635 % apart, Choupo the more
 conservative.**  It is the first independent check in this corpus of the
 ammonia equilibrium every one of its plant cases rests on.
 
