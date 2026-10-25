@@ -52,6 +52,8 @@ Description
 #include "core/Types.H"
 #include "thermo/ThermoPackage.H"
 
+#include <cmath>
+#include <cstddef>
 #include <vector>
 
 namespace Choupo {
@@ -69,6 +71,35 @@ scalar bubbleT(const ThermoPackage& thermo,
                scalar P,
                scalar Tguess,
                scalar tolerance = 1.0e-8);
+
+/// THE TRIVIAL SATURATION ROOT (DEV.md 4c C131, family a).  A bubble or dew
+/// residual sum K x - 1 (or sum y/K - 1) is satisfied IDENTICALLY when every
+/// present K is 1: the two phases are the same phase.  That happens when both
+/// fugacities are read on ONE root of a cubic -- phi-phi with the trial
+/// phase at the given phase's own composition, above the mixture's
+/// pseudo-critical, or a "vapour" root that the cubic only has as a liquid
+/// one.  It is a root of the equation and not a saturation point: measured,
+/// the equimolar propane + n-butane bubble AND dew temperature at 10 bar on
+/// phi-phi Peng-Robinson both came back "converged" at the 251.8 K seed
+/// (an independent iterated-incipient-phase solve gives 320.7 K and
+/// 332.8 K), and N2 + CH4 at 20.6 bar at the 200 K bracket floor.
+///
+/// True when at least TWO components are present and every present K is 1
+/// to `tol`.  A PURE component is excluded on purpose: its genuine
+/// saturation point has K = 1 too, so the test cannot tell the two apart
+/// there.
+inline bool trivialSaturationK(const sVector& K, const sVector& comp,
+                               scalar tol = 1.0e-9)
+{
+    std::size_t present = 0;
+    for (std::size_t i = 0; i < comp.size() && i < K.size(); ++i)
+    {
+        if (comp[i] == 0.0) continue;
+        ++present;
+        if (!(std::abs(K[i] - 1.0) <= tol)) return false;
+    }
+    return present >= 2;
+}
 
 /// Stored binary T-x-y locus.  Both vectors share the same temperature
 /// axis: Tbubble[i] is the bubble-T of liquid xBubble[i] AND the dew-T

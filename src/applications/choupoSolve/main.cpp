@@ -424,9 +424,14 @@ static SimulationResult runSimulation(const DictPtr&     flowsheetDict,
                                  " physics; omitting the T-x-y block.\n";
             }
             else if (yValid) r.txy = std::move(t);
-        } catch (const std::exception&) {
+        } catch (const std::exception& e) {
             // Some thermo combinations (e.g. azeotropes near pure-component
-            // bounds) can fail the inner Newton; degrade silently.
+            // bounds) can fail the inner Newton; the diagram is omitted.  The
+            // reason is said (DEV.md 4c C131): a trivial K = 1 root on a
+            // phi-phi package used to be published as a flat diagram, and an
+            // omission nobody explains reads as "nothing to draw".
+            if (verbosity >= 2)
+                std::cout << "[txy] T-x-y block omitted: " << e.what() << "\n";
         }
     }
     return r;

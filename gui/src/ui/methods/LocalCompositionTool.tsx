@@ -164,8 +164,9 @@ export const LC_STEPS = [
     assumes: "That the size and energy contributions are separable and "
       + "simply add — the same assumption the plus sign makes on the "
       + "COSMO-SAC page, and it is no better justified here.",
-    cites: "UNIQUAC.cpp:244 (τ), UNIQUAC.cpp:253-254 (φ, θ), "
-      + "UNIQUAC.cpp:279-283 (combinatorial), UNIQUAC.cpp:292 (residual)",
+    cites: "UNIQUAC.cpp:244 (τ), UNIQUAC.cpp:254 (θ), "
+      + "UNIQUAC.cpp:287-295 (φ/x and θ/φ, combinatorial), "
+      + "UNIQUAC.cpp:304 (residual)",
   },
 ] as const;
 

@@ -2897,6 +2897,23 @@ PYEOF
     fi
     rm -f /tmp/az.$$
 
+    # Thermo-limits gate (DEV.md 4c C131, family a): four answers the
+    # flash, the saturation solvers and UNIQUAC used to publish as converged
+    # when they were not -- an exhausted flash outer loop, a trivial K = 1
+    # bubble/dew root, a flat trivial-root T-x-y block, and UNIQUAC's gamma = 1
+    # at x = 0.  Each probe is built from a corpus case in a temp directory.
+    if "$ROOT/bin/curate/check_thermo_limits.py" > /tmp/thlim.$$ 2>&1; then
+        printf "PASS  %-40s  (%s)\n" "thermo-limits-gate" \
+            "$(tail -1 /tmp/thlim.$$)"
+        pass=$((pass+1))
+    else
+        printf "FAIL  %-40s  (run bin/curate/check_thermo_limits.py)\n" \
+            "thermo-limits-gate"
+        cat /tmp/thlim.$$
+        fail=$((fail+1))
+    fi
+    rm -f /tmp/thlim.$$
+
     # Problem-divergence gate (ruled 2026-08-11): the problem SOLVED must
     # not silently differ from the problem POSED.  An unauthorised ideal-pair
     # substitution refuses by name with a paste-ready remedy; an authorised

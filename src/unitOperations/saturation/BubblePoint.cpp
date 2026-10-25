@@ -29,6 +29,7 @@ License
 #include "BubblePoint.H"
 #include "unitOperations/flash/IncipientPhase.H"
 #include "solver/NewtonRaphson.H"
+#include "thermo/SaturationCurves.H"
 
 #include <algorithm>
 #include <cmath>
@@ -94,7 +95,9 @@ BubblePoint::Result BubblePoint::compute(const ThermoPackage& thermo,
     out.y.assign(n, 0.0);
     for (std::size_t i = 0; i < n; ++i) out.y[i] = K[i] * x[i];
     out.iterations = r.iterations;
-    out.converged  = r.converged;
+    //  A trivial root (every present K = 1) is not a bubble point
+    //  (thermo/SaturationCurves.H, trivialSaturationK).
+    out.converged  = r.converged && !trivialSaturationK(K, x);
     out.residual   = r.residual;
     return out;
 }
@@ -289,12 +292,23 @@ int BubblePoint::solve(const DictPtr& dict,
         r.y.assign(n, 0.0);
         for (std::size_t i = 0; i < n; ++i) r.y[i] = K[i] * x[i];
         r.iterations = raw.iterations;
-        r.converged  = raw.converged;
+        r.converged  = raw.converged && !trivialSaturationK(K, x);
         r.residual   = raw.residual;
     }
     else
     {
         r = BubblePoint::compute(thermo, x, P, Tinit);
+    }
+
+    if (!r.converged)
+    {
+        const auto Kt = thermo.Kvec(r.T, P, x, x);
+        if (trivialSaturationK(Kt, x))
+            std::cout << "  [bubbleT] the root found is TRIVIAL: every present"
+                         " K = 1 at T = " << std::fixed << std::setprecision(4)
+                      << r.T << " K, so the vapour was priced as the liquid itself"
+                         " (one root of the cubic for both phases).  It is not a"
+                         " bubble point and is reported as NOT converged.\n";
     }
 
     kpis_.clear();

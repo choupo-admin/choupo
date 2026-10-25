@@ -93,6 +93,15 @@ BinaryTxy binaryTxy(const ThermoPackage& thermo, scalar P, int nPoints)
         Tguess   = T;
 
         auto K = thermo.Kvec(T, P, x, x);
+        //  A trivial root is not a point of the diagram (trivialSaturationK):
+        //  on phi-phi N2 + CH4 every bubble T came back as the 350 K seed with
+        //  K = 1, and the flat line was published as the T-x-y block.  The
+        //  caller treats a throw as "no diagram" -- better none than a false one.
+        if (trivialSaturationK(K, x))
+            throw std::runtime_error("binaryTxy: trivial bubble-point root"
+                " (every K = 1 at T = " + std::to_string(T) + " K, x1 = "
+                + std::to_string(x1) + ") -- the vapour was priced on the"
+                " liquid's own root, so this is not a saturation point");
         const scalar y1 = K[0] * x1;
 
         out.xBubble.push_back(x1);
