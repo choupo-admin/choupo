@@ -178,7 +178,7 @@
     },
     "check_cooling_tower": {
       "exit": 0,
-      "claim": "check_cooling_tower: OK -- the published Merkel number and its Chebyshev-4 companion are reproduced from the unit's own published diagram (cpL taken off the operating line, never the engine's internals), the approach/range/evaporation identities hold, the operating line stays strictly below saturation, and five refusals (double spec, wet-bulb floor, pinched L/G, two liquids, target above inlet) fire by name.  NOT COVERED: agreement with a MEASURED tower (no primary anchor wired yet -- structural witness only), the Lewis = 1 and saturated-exit hypotheses themselves, and the golden values (runTests' own rows).",
+      "claim": "check_cooling_tower: OK -- the published Merkel number and its Chebyshev-4 companion are reproduced from the unit's own published diagram (cpL taken off the operating line, never the engine's internals), the approach/range/evaporation identities hold, the operating line stays strictly below saturation, the tower publishes and announces its BOUNDARY first-law residual (-E cpL (T_out - T0), the evaporated water the constant-L line never sees) and the plant energy report carries it, and five refusals (double spec, wet-bulb floor, pinched L/G, two liquids, target above inlet) fire by name.  NOT COVERED: agreement with a MEASURED tower (no primary anchor wired yet -- structural witness only), the Lewis = 1 and saturated-exit hypotheses themselves, and the golden values (runTests' own rows).",
       "seconds": 0.1
     },
     "check_cosmo_scrub": {
@@ -728,8 +728,8 @@
     },
     "check_pinch_p1": {
       "exit": 0,
-      "claim": "check_pinch_p1: OK -- witness targets equal the independent cascade (107.5 / 40 / 353.15), CSV coherent, negative silent, dTmin<=0 refused",
-      "seconds": 0.1
+      "claim": "check_pinch_p1: OK -- witness targets equal the independent cascade (107.5 / 40 / 353.15), CSV coherent, negative silent, dTmin<=0 refused; the population is published and labelled -- an excluded Q_kW duty is listed and the targets say NOT the plant's, and a two-stream exchanger enters as both sides with its duty in neither current-utility total (no duty is ADDED to the population: columns, reactors and crystallisers stay excluded)",
+      "seconds": 0.2
     },
     "check_pinch_p2": {
       "exit": 0,
@@ -1270,6 +1270,26 @@
       "exit": 0,
       "claim": "check_fit_then_simulate: OK -- (a) zero-noise data the props bench generated at r_p 0.62 nm, X_d -25 are fitted back to 1e-5 (identifiable, chi2 < 1e-12, validated); (b) the witness membrane24 fits r_p 0.6748 nm, X_d -10.525 mol/m3 to Fernandez de Labastida & Yaroshchuk 2021 (verdict validated) and rewrites its record byte-identically at 6 figures; (c) Process mode reads it and names the fit; (d) a moved dataset, fit block, base record or hand-edited value refuses Process mode with the remedy, a comment does not, and the remedy works; (e) runCase runs both modes and refuses a missing one; (f) six grammar refusals fire.  NOT CHECKED: that NF270 is this pore (the held-out salts are of the same study), the other three laws on real data, and the thermophysical package, which is not fingerprinted",
       "seconds": 6.9
+    },
+    "check_gibbs_condensables": {
+      "exit": 0,
+      "claim": "check_gibbs_condensables: OK -- with water and methanol both condensable, elementPotential refuses a gas-only answer that leaves both supersaturated (280 K) and a one-liquid answer that leaves methanol supersaturated (300 K), reactiveFlash refuses the same 300 K miss, each naming y P, Psat and `model directMin;`; directMin returns a water + methanol liquid; gibbs07's one-liquid path is unchanged (gibbsMap counts such cells rather than refusing; adiabatic trial temperatures are not refused)",
+      "seconds": 0.2
+    },
+    "check_departure_convention": {
+      "exit": 0,
+      "claim": "check_departure_convention: OK -- under PCSAFT, SRK and PengRobinson, the published S_R of CH4 (300 K, 50 bar) and propane (350 K, 15 bar) satisfies (dH_R/dT)_P = T (dS_R/dT)_P and (dG_R/dP)_T = v - RT/P to 1e-4, so S_real = S_ig(T, P) + S_R adds a (T, P) departure (vapour root only; no liquid root, no mixture)",
+      "seconds": 0.1
+    },
+    "check_exchanger_phase_change": {
+      "exit": 0,
+      "claim": "check_exchanger_phase_change: OK -- heatExchanger01 with its cold side boiling announces (stderr + result advisories) that the duty is the sensible eps-NTU's and qualifies U.A.LMTD as no check; the shipped single-phase witness announces nothing; with 2 tube passes the implied F < 1 is printed and equals Q/(U.A.LMTD) (no phase-change transfer model exists; F is implied, not correlated)",
+      "seconds": 0.1
+    },
+    "check_sequential_plan": {
+      "exit": 0,
+      "claim": "check_sequential_plan: OK -- process03_recycle solves as shipped; with its tear removed it refuses MISSING TEAR, with a forward tear declared FORWARD TEAR, and process01 declared in reverse order refuses INVALID ORDER; no refused plan writes converged/ (4 of the 7 named refusals fired; OFF-CYCLE, UNKNOWN, INLET and UNCONSUMED not fired here)",
+      "seconds": 0.1
     }
   }
 }

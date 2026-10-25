@@ -3940,21 +3940,15 @@
    "src/core/Units.H",
    "src/postProcessing/PinchPass.H",
    "src/postProcessing/PostProcessor.H",
-   "src/reporting/BalanceMath.H",
+   "src/result/EnergyItems.H",
    "src/result/SimulationResult.H",
    "src/result/UnitProfile.H",
    "src/solver/Convergence.H",
    "src/streams/ProcessStream.H",
-   "src/streams/StreamMass.H",
    "src/thermo/Component.H",
-   "src/thermo/ElementComposition.H",
    "src/thermo/PackageAudit.H",
    "src/thermo/SaturationCurves.H",
-   "src/thermo/ThermoPackage.H",
-   "src/unitOperations/UnitOperation.H",
-   "src/unitOperations/flash/IsothermalFlash.H",
-   "src/unitOperations/flash/PureSaturationPlateau.H",
-   "src/unitOperations/flash/StreamEquilibrium.H"
+   "src/thermo/ThermoPackage.H"
   ],
   "src/postProcessing/PostProcessor.cpp": [
    "src/core/Advisory.H",
@@ -5906,6 +5900,7 @@
    "src/reporting/ElementBalanceReport.H",
    "src/reporting/Report.H",
    "src/reporting/Topology.H",
+   "src/result/EnergyItems.H",
    "src/result/SimulationResult.H",
    "src/result/UnitProfile.H",
    "src/solver/Convergence.H",
@@ -5941,6 +5936,7 @@
    "src/reporting/ModelBoundaryLedger.H",
    "src/reporting/Report.H",
    "src/reporting/Topology.H",
+   "src/result/EnergyItems.H",
    "src/result/SimulationResult.H",
    "src/result/UnitProfile.H",
    "src/solver/Convergence.H",
@@ -5998,6 +5994,7 @@
    "src/reporting/MassBalanceReport.H",
    "src/reporting/Report.H",
    "src/reporting/Topology.H",
+   "src/result/EnergyItems.H",
    "src/result/SimulationResult.H",
    "src/result/UnitProfile.H",
    "src/solver/Convergence.H",
@@ -6029,6 +6026,7 @@
    "src/core/Types.H",
    "src/reporting/BalanceMath.H",
    "src/reporting/ModelBoundaryLedger.H",
+   "src/result/EnergyItems.H",
    "src/result/SimulationResult.H",
    "src/result/UnitProfile.H",
    "src/solver/Convergence.H",
@@ -6127,6 +6125,7 @@
    "src/reporting/Report.H",
    "src/reporting/SpreadsheetReport.H",
    "src/reporting/Topology.H",
+   "src/result/EnergyItems.H",
    "src/result/SimulationResult.H",
    "src/result/UnitProfile.H",
    "src/solver/Convergence.H",
@@ -6161,6 +6160,7 @@
    "src/reporting/Report.H",
    "src/reporting/StreamTableReport.H",
    "src/reporting/Topology.H",
+   "src/result/EnergyItems.H",
    "src/result/SimulationResult.H",
    "src/result/UnitProfile.H",
    "src/solver/Convergence.H",
@@ -6219,6 +6219,7 @@
    "src/reporting/BalanceMath.H",
    "src/reporting/Report.H",
    "src/reporting/UtilityAllocationReport.H",
+   "src/result/EnergyItems.H",
    "src/result/SimulationResult.H",
    "src/result/UnitProfile.H",
    "src/solver/Convergence.H",
@@ -13012,7 +13013,6 @@
    "src/reporting/EnergyBalanceReport.cpp"
   ],
   "src/reporting/BalanceMath.H": [
-   "src/postProcessing/PinchPass.cpp",
    "src/reporting/ElementBalanceReport.cpp",
    "src/reporting/EnergyBalanceReport.cpp",
    "src/reporting/MassBalanceReport.cpp",
@@ -13110,6 +13110,16 @@
    "src/applications/choupoSolve/main.cpp",
    "src/dynamicDriver/DynamicDriver.cpp",
    "src/result/ComponentIdentity.cpp"
+  ],
+  "src/result/EnergyItems.H": [
+   "src/postProcessing/PinchPass.cpp",
+   "src/reporting/ElementBalanceReport.cpp",
+   "src/reporting/EnergyBalanceReport.cpp",
+   "src/reporting/MassBalanceReport.cpp",
+   "src/reporting/ModelBoundaryLedger.cpp",
+   "src/reporting/SpreadsheetReport.cpp",
+   "src/reporting/StreamTableReport.cpp",
+   "src/reporting/UtilityAllocationReport.cpp"
   ],
   "src/result/ResultEmitter.H": [
    "src/applications/choupoBatch/main.cpp",
@@ -13828,7 +13838,6 @@
   "src/streams/StreamMass.H": [
    "src/applications/choupoSolve/main.cpp",
    "src/io/DesignSheetWriter.cpp",
-   "src/postProcessing/PinchPass.cpp",
    "src/postProcessing/sizing/ReliefValveSize.cpp",
    "src/reporting/ElementBalanceReport.cpp",
    "src/reporting/EnergyBalanceReport.cpp",
@@ -14268,7 +14277,6 @@
   "src/thermo/ElementComposition.H": [
    "src/applications/choupoBatch/main.cpp",
    "src/dynamicDriver/DynamicDriver.cpp",
-   "src/postProcessing/PinchPass.cpp",
    "src/propertyOps/ElementCompositionOp.cpp",
    "src/reporting/ElementBalanceReport.cpp",
    "src/reporting/EnergyBalanceReport.cpp",
@@ -15865,7 +15873,6 @@
   "src/unitOperations/UnitOperation.H": [
    "src/applications/choupoSolve/main.cpp",
    "src/dynamicDriver/DynamicDriver.cpp",
-   "src/postProcessing/PinchPass.cpp",
    "src/postProcessing/sizing/GasStoreSize.cpp",
    "src/postProcessing/sizing/ReliefValveSize.cpp",
    "src/postProcessing/sizing/ShellTubeHX.cpp",
@@ -16079,7 +16086,6 @@
   ],
   "src/unitOperations/flash/IsothermalFlash.H": [
    "src/dynamicDriver/DynamicDriver.cpp",
-   "src/postProcessing/PinchPass.cpp",
    "src/postProcessing/sizing/ShellTubeHX.cpp",
    "src/propertyOps/PhaseSplitScan.cpp",
    "src/propertyOps/PropertyEvaluator.cpp",
@@ -16124,7 +16130,6 @@
   ],
   "src/unitOperations/flash/PureSaturationPlateau.H": [
    "src/dynamicDriver/DynamicDriver.cpp",
-   "src/postProcessing/PinchPass.cpp",
    "src/postProcessing/sizing/ShellTubeHX.cpp",
    "src/reporting/ElementBalanceReport.cpp",
    "src/reporting/EnergyBalanceReport.cpp",
@@ -16160,7 +16165,6 @@
   ],
   "src/unitOperations/flash/StreamEquilibrium.H": [
    "src/dynamicDriver/DynamicDriver.cpp",
-   "src/postProcessing/PinchPass.cpp",
    "src/postProcessing/sizing/ShellTubeHX.cpp",
    "src/reporting/ElementBalanceReport.cpp",
    "src/reporting/EnergyBalanceReport.cpp",
