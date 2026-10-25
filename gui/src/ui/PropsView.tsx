@@ -900,6 +900,8 @@ export function PropsView() {
       {!hasFlowsheet && hasProps ? (
         <Box style={{ flex: 1, minHeight: 0, position: "relative" }}>
           <ReviewScreen ops={reviewOps} result={runs.get(targets[0]?.caseName ?? "")}
+            propsDict={targets[0]?.propsDict} thermo={caseFiles.thermoPackage}
+            rawFiles={caseFiles.rawFiles} caseKey={tutorialName}
             readiness={readinessProminent(reviewOps)
               ? <Box style={{ position: "absolute", inset: 0 }}><ThermoView /></Box> : undefined}
             audit={navigator} />

@@ -145,7 +145,15 @@ export interface MapBand {
   x: number; y: number; w: number; h: number;
 }
 
+/** One member of the map, beside the block that draws it: what the tree and
+ *  the details panel read (the same ids the canvas selects). */
+export interface MapNode { id: string; kind: BlockKind; role: string; member: MapMember }
+
 export interface PropsMap {
+  /** every member, in the propsDict's order */
+  nodes: MapNode[];
+  /** member-level wires (from -> to), the ones the blocks aggregate */
+  links: { from: string; to: string; flow: FlowKind }[];
   blocks: MapBlock[];
   edges: MapEdge[];
   bands: MapBand[];
@@ -402,7 +410,7 @@ export function buildFine(input: MapInput): { nodes: Map<string, Fine>; edges: F
         if (writes) {
           const oid = `out:${op.name}:${s.key}`;
           add({ id: oid, kind: "view", role: "proposal", order, member: {
-            id: oid, label: v === "auto" ? s.label : `${v}`, detail: s.label,
+            id: oid, label: v === "auto" ? `${op.name}: proposal` : `${v}`, detail: s.label,
             target: { kind: "guide", url: propsOpHelpLink(op.type),
               label: `${s.label}: written by ${op.name} on a native run` },
             source: caseTarget(PROPS_DICT_PATH, opLines, `${op.name} in system/propsDict`) } });
@@ -523,11 +531,15 @@ const BAND_GAP = 26;
 const BAND_PAD = 14;
 const BAND_LABEL = 22;
 export const MAX_ROWS = 5;
+/** A model block lists its law and EVERY choice inside it: a law with its
+ *  choices half-hidden reads as a different law. */
+export const maxRows = (kind: BlockKind) => (kind === "model" ? 10 : MAX_ROWS);
 
 const COLUMN: Record<BlockKind, number> = { data: 0, model: 1, operation: 2, view: 3 };
 
-export function blockHeight(b: Pick<MapBlock, "members" | "badges" | "expanded">): number {
-  const rows = b.members.length > 1 ? Math.min(b.members.length, MAX_ROWS) + (b.members.length > MAX_ROWS ? 1 : 0) : 0;
+export function blockHeight(b: Pick<MapBlock, "members" | "badges" | "expanded" | "kind">): number {
+  const max = maxRows(b.kind);
+  const rows = b.members.length > 1 ? Math.min(b.members.length, max) + (b.members.length > max ? 1 : 0) : 0;
   return 58 + rows * 19 + (b.badges.length ? 20 : 0);
 }
 
@@ -708,7 +720,12 @@ export function derivePropsMap(input: MapInput): PropsMap {
     y += h + BAND_GAP;
   }
   const width = (framed ? 2 * BAND_PAD : 0) + 4 * COL_W + 3 * COL_GAP;
-  return { blocks, edges: [...agg.values()], bands, blockOf, width, height: Math.max(0, y - BAND_GAP) };
+  const order = [...nodes.values()].sort((p, q) => p.order - q.order);
+  return {
+    nodes: order.map((n) => ({ id: n.id, kind: n.kind, role: n.role, member: n.member })),
+    links: edges.map((e) => ({ ...e })),
+    blocks, edges: [...agg.values()], bands, blockOf, width, height: Math.max(0, y - BAND_GAP),
+  };
 }
 
 /* ---- the tree by discipline ---------------------------------------------- */
@@ -738,5 +755,126 @@ export function propsTree(propsDict: JsonDict | null | undefined,
     const types = by.get(d);
     if (types) out.push({ discipline: d as TreeDiscipline["discipline"], types: [...types.values()] });
   }
+  return out;
+}
+
+/* ---- neighbourhoods (the details panel and the tree) --------------------- */
+
+/** The members wired to `id`, upstream and downstream. */
+export function neighbours(map: PropsMap, id: string): { up: string[]; down: string[] } {
+  const up: string[] = []; const down: string[] = [];
+  for (const l of map.links) {
+    if (l.to === id && !up.includes(l.from)) up.push(l.from);
+    if (l.from === id && !down.includes(l.to)) down.push(l.to);
+  }
+  return { up, down };
+}
+
+/** The VIEWS a selection leads to: a view itself; an op's views; for data or
+ *  a model, the views of the ops it feeds and the views it feeds directly. */
+export function viewsOf(map: PropsMap, ids: readonly string[]): string[] {
+  const out: string[] = [];
+  const push = (v: string) => { if (v.startsWith("view:") && !out.includes(v)) out.push(v); };
+  for (const id of ids) {
+    if (id.startsWith("view:")) { push(id); continue; }
+    for (const d of neighbours(map, id).down) {
+      push(d);
+      if (d.startsWith("op:")) for (const v of neighbours(map, d).down) push(v);
+    }
+  }
+  return out;
+}
+
+/** The view's DOM id, from its member id. */
+export const domIdOfView = (id: string) => id.replace(/^view:/, "");
+
+/* ---- the case tree: the pipeline browser (DEV.md 4c C151) ----------------
+
+   ONE tree of the case, ParaView's pipeline browser read for a props case:
+   Data, Models, Operations by discipline (each op with its views as
+   children), the records the run proposes, and the reader's own plots.  Its
+   ids are the map's member ids, so selecting in either selects in both. */
+
+export interface CaseTreeNode {
+  id: string;
+  label: string;
+  /** a dimmed second word */
+  detail?: string;
+  /** the op's activity, a verdict ... */
+  tag?: string;
+  children: CaseTreeNode[];
+  /** a section or a folder only groups: selecting it shows the overview */
+  folder?: boolean;
+}
+
+export interface MyPlot { id: string; file: string; title: string }
+
+export function caseTree(map: PropsMap, propsDict: JsonDict | null | undefined,
+                         disciplines: readonly string[], myPlots: readonly MyPlot[] = [],
+                         verdicts?: ReadonlyMap<string, string>): CaseTreeNode[] {
+  const leaf = (n: MapNode, tag?: string): CaseTreeNode =>
+    ({ id: n.id, label: n.member.label, detail: n.member.detail, tag, children: [] });
+  const byKind = (k: BlockKind) => map.nodes.filter((n) => n.kind === k);
+  const out: CaseTreeNode[] = [];
+
+  const data = byKind("data");
+  if (data.length) {
+    const roles: [string, string][] = [["experiment", "measured"], ["reference", "reference"],
+      ["record", "records"], ["inline", "inline"]];
+    const kids: CaseTreeNode[] = [];
+    for (const [r, word] of roles) {
+      const ns = data.filter((n) => n.role === r);
+      if (ns.length === 0) continue;
+      kids.push({ id: `folder:data:${r}`, label: word, folder: true, children: ns.map((n) => leaf(n)) });
+    }
+    out.push({ id: "folder:data", label: "Data", folder: true, children: kids });
+  }
+
+  const models = byKind("model");
+  if (models.length) out.push({ id: "folder:models", label: "Models", folder: true,
+    children: models.map((n) => leaf(n)) });
+
+  //  Operations by discipline; each op's views as its children
+  const ops = declaredOps(propsDict);
+  const viewKids = (opId: string): CaseTreeNode[] => neighbours(map, opId).down
+    .map((v) => map.nodes.find((n) => n.id === v))
+    .filter((n): n is MapNode => !!n && n.kind === "view" && n.role !== "proposal")
+    .map((n) => leaf(n));
+  const shelves: CaseTreeNode[] = [];
+  for (const d of [...disciplines, "Undeclared"]) {
+    const inShelf = ops.filter((o) => (o.meta ? disciplineOf(o.meta, o.dict) : "Undeclared") === d);
+    if (inShelf.length === 0) continue;
+    const types: CaseTreeNode[] = [];
+    for (const t of [...new Set(inShelf.map((o) => o.type))]) {
+      const ofType = inShelf.filter((o) => o.type === t);
+      const opNodes = ofType.map((o) => ({
+        id: `op:${o.name}`, label: o.name,
+        detail: o.type,
+        tag: [o.meta ? activityOf(o.meta, o.dict) : "", verdicts?.get(o.name) ?? ""].filter(Boolean).join(" · "),
+        children: viewKids(`op:${o.name}`),
+      }));
+      if (ofType.length === 1) types.push(opNodes[0]!);
+      else {
+        const acts = [...new Set(ofType.map((o) => (o.meta ? activityOf(o.meta, o.dict) : "")))];
+        types.push({ id: `folder:type:${d}:${t}`, label: `${t} × ${ofType.length}`, folder: true,
+          tag: acts.length === 1 ? acts[0] : undefined, children: opNodes });
+      }
+    }
+    shelves.push({ id: `folder:discipline:${d}`, label: d, folder: true, children: types });
+  }
+  if (shelves.length) out.push({ id: "folder:ops", label: "Operations", folder: true, children: shelves });
+
+  //  views no operation feeds (drawn from references alone)
+  const orphan = byKind("view").filter((n) => n.role !== "proposal"
+    && !map.links.some((l) => l.to === n.id && l.from.startsWith("op:")));
+  if (orphan.length) out.push({ id: "folder:views", label: "Views across the case", folder: true,
+    children: orphan.map((n) => leaf(n)) });
+
+  const written = byKind("view").filter((n) => n.role === "proposal");
+  if (written.length) out.push({ id: "folder:records", label: "Records produced", folder: true,
+    children: written.map((n) => leaf(n)) });
+
+  out.push({ id: "folder:myplots", label: "My plots", folder: true,
+    children: myPlots.map((p) => ({ id: `myplot:${p.id}`, label: p.title, detail: p.file, children: [] })) });
   return out;
 }

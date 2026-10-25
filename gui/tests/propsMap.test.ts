@@ -33,7 +33,7 @@ import { parse, toJson, type JsonDict } from "../src/dict/index.js";
 import {
   operationMapMeta, mappedOperationTypes, PROPS_DISCIPLINES, PROPS_ACTIVITIES,
 } from "../src/case/operationSchemas.js";
-import { derivePropsMap, propsTree, type MapBlock } from "../src/case/propsMap.js";
+import { caseTree, derivePropsMap, propsTree, type MapBlock } from "../src/case/propsMap.js";
 import { locatePropsBlocks } from "../src/case/propsDictLocate.js";
 import { REPO } from "./witnessOutputs.js";
 
@@ -241,6 +241,33 @@ describe("F1 on each block kind", () => {
       { kind: "case", path: "constant/experimental/geraldes_alves2008_fig3.csv" });
     expect(member("record:CA30_BowenMohammad").target).toMatchObject(
       { kind: "case", path: "constant/assets/CA30_BowenMohammad.dat" });
+  });
+});
+
+describe("the case tree (the pipeline browser)", () => {
+  it("NanoFiltran: Data, Models, Operations by discipline with each op's views, My plots", () => {
+    const { propsDict, map } = mapOf(NF);
+    const tree = caseTree(map, propsDict, PROPS_DISCIPLINES, []);
+    expect(tree.map((n) => n.label)).toEqual(["Data", "Models", "Operations", "My plots"]);
+    const ops = tree.find((n) => n.label === "Operations")!;
+    expect(ops.children.map((d) => d.label)).toEqual(["Separation"]);
+    const type = ops.children[0]!.children[0]!;
+    expect(type.label).toBe("poreTransport × 22");
+    expect(type.tag).toBe("evaluate");
+    const n350 = type.children.find((c) => c.id === "op:N350")!;
+    //  N350's views: the grid study, Table 2 and Fig. 4 -- the ids the map selects
+    expect(n350.children.map((c) => c.label)).toEqual(expect.arrayContaining(
+      ["gridStudy_Na", "table2_N350", "fig4_concentration", "fig4_potential"]));
+    for (const c of n350.children) expect(map.blockOf.has(c.id)).toBe(true);
+    const data = tree.find((n) => n.label === "Data")!;
+    expect(data.children.map((c) => c.label)).toEqual(["measured", "reference", "records"]);
+  });
+
+  it("isotherm02: the records a fit proposes, and the reader's plots", () => {
+    const { propsDict, map } = mapOf(ISO);
+    const tree = caseTree(map, propsDict, PROPS_DISCIPLINES, [{ id: "p1", file: "a.csv", title: "a" }]);
+    expect(tree.find((n) => n.label === "Records produced")!.children).toHaveLength(2);
+    expect(tree.find((n) => n.label === "My plots")!.children.map((c) => c.id)).toEqual(["myplot:p1"]);
   });
 });
 

@@ -255,6 +255,11 @@ export function AppShell() {
       // can only know the workspace.  Adding a workspace with its own F1
       // means adding it here.
       if (s.activeWorkspace === "props" || s.activeWorkspace === "explore") return;
+      //  A PROPS case's centre IS PropsView with no workspace open, and it
+      //  owns F1 there too (the selected map block or tree node, else the
+      //  selected panel): answering here as well opened two tabs per press
+      //  (found 2026-10-25, DEV.md 4c C151).
+      if (s.activeWorkspace === null && s.caseFiles.propsDict && !s.caseFiles.flowsheet) return;
       const kind = tabKindFor({
         hasCase: hasCaseOpen(s.tutorialName),
         activeWorkspace: s.activeWorkspace,

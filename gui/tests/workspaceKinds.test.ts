@@ -81,7 +81,7 @@ import { describe, it, expect } from "vitest";
 
 import {
   WORKSPACES, VIEW_LABELS, MODE_TABS, allowedWorkspaceLabels,
-  visibleWorkspacesFor, type WorkspaceContext,
+  visibleWorkspacesFor, captionOf, type WorkspaceContext,
 } from "../src/ui/workspaces.js";
 import { exploreTabSearch, toolsTabSearch, caseTabSearch } from "../src/ui/openInTab.js";
 
@@ -220,10 +220,19 @@ describe("allowedWorkspaceLabels", () => {
       "Flowsheet", "Props", "Streams", "Variables",
       "Plots", "Log", "Case", "Pinch", "Reports", "Literature",
     ]);
-    // props-only: no canvas, no streams, no duties
+    // props-only: no canvas, no streams, no duties -- and NO Plots (DEV.md
+    // 4c C151): the Results screen is the one home of a props case's figures
     expect(visibleWorkspacesFor(PROPS).map((w) => w.label)).toEqual([
-      "Props", "Plots", "Log", "Case", "Literature",
+      "Props", "Log", "Case", "Literature",
     ]);
+    // ...and its Props view is CAPTIONED Results there, nowhere else
+    expect(visibleWorkspacesFor(PROPS).map(captionOf)).toEqual([
+      "Results", "Log", "Case", "Literature",
+    ]);
+    expect(visibleWorkspacesFor({ ...PROPS, isPropsCase: false, application: "choupoProps" })
+      .map(captionOf)).toEqual(["Results", "Log", "Case", "Literature"]);
+    expect(visibleWorkspacesFor(SOLVE).map(captionOf)).toContain("Props");
+    expect(visibleWorkspacesFor(SOLVE).map(captionOf)).not.toContain("Results");
     // time-dependent: no steady-only views; Control only with a declared PID
     expect(visibleWorkspacesFor(CTRL_PID).map((w) => w.label)).toEqual([
       "Flowsheet", "Props", "Control", "Plots", "Log", "Case", "Literature",
