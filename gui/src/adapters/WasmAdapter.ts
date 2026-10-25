@@ -58,6 +58,7 @@ License
 import { shapeBuilding, type GmpBuilding } from "./buildingPayload.js";
 import { shapePhaseSplitScans, type PhaseSplitScanBlock } from "./phaseSplitPayload.js";
 import { shapePostProcessing, type PostProcessingBlock } from "../case/postProcessing.js";
+import { shapeBatchPlan, type BatchPlan } from "./batchPlanPayload.js";
 import { readEdges } from "../case/toGraph.js";
 import { fromJson, serialize } from "../dict/index.js";
 import { parseDynamicInstants } from "../case/dynamicInstants.js";
@@ -184,7 +185,7 @@ export class WasmAdapter implements SolverAdapter {
         const { displayLog, streams, streamAliases, convergence, profiles, txy, componentMolarMass, unitSectors, equipment, kpis,
           utilityAllocation, globalEnergyBoundary, globalMassBoundary, computed, timeline, transfers, energyLedger, advisories, divergences, modelBoundaries, recycleLoops, operationResults, thermoResolution,
           componentCoverage, experimentalDatasets, validation, economics, layout, building, phaseSplitScans,
-          postProcessing } =
+          postProcessing, batchPlan } =
           extractStructured(log, caseFiles);
         const result: RunResult = { status, log: displayLog, streams, convergence };
         if (streamAliases) result.streamAliases = streamAliases;
@@ -221,6 +222,7 @@ export class WasmAdapter implements SolverAdapter {
         if (building) result.building = building;
         if (phaseSplitScans && phaseSplitScans.length > 0) result.phaseSplitScans = phaseSplitScans;
         if (postProcessing) result.postProcessing = postProcessing;
+        if (batchPlan) result.batchPlan = batchPlan;
         if (trajectoryCsv) {
           const parsed = parseTrajectoryCsv(trajectoryCsv);
           if (parsed) result.trajectory = parsed;
@@ -442,6 +444,8 @@ export function extractStructured(log: string,
   phaseSplitScans?: PhaseSplitScanBlock[];
   /** The run's views (DEV.md 4c C147, C149), as the engine wrote them. */
   postProcessing?: PostProcessingBlock;
+  /** The batch plan (`batchPlan {}`, DEV.md 4c C99, C110 G2), as published. */
+  batchPlan?: BatchPlan;
 } {
   const beginIdx = log.lastIndexOf(BEGIN_MARK);
   const endIdx = log.lastIndexOf(END_MARK);
@@ -691,6 +695,8 @@ export function extractStructured(log: string,
 //  numbers are the harvested postProcessing/<op>/<view>.csv files.
 ...(shapePostProcessing(parsed.postProcessing)
       ? { postProcessing: shapePostProcessing(parsed.postProcessing)! } : {}),
+...(parsed.batchPlan && shapeBatchPlan(parsed.batchPlan)
+      ? { batchPlan: shapeBatchPlan(parsed.batchPlan)! } : {}),
   };
 }
 
@@ -1143,6 +1149,8 @@ interface ResultPayload {
   phaseSplitScans?: unknown;
   /** The run's views (DEV.md 4c C147, C149), shaped by case/postProcessing. */
   postProcessing?: unknown;
+  /** The batch plan (DEV.md 4c C99, C110 G2), shaped by adapters/batchPlanPayload. */
+  batchPlan?: unknown;
   version: number;
   converged: boolean;
   components: string[];

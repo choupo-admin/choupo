@@ -280,6 +280,22 @@ export const WITNESS_OUTPUTS: readonly WitnessOutput[] = [
     readBy: ["postProcessing.test.ts"],
     stdout: true,
   },
+  //  The batch plan's Gantt chart (DEV.md 4c C99, C110 G5): apalutamide01's
+  //  run log, whose result block (`batchPlan`) the adapter reads, held to
+  //  the gantt.csv its `batchPlan {}` pass writes from the same record.
+  //  The gantt.csv first and the stdout last, so the file on disk when the
+  //  test reads it is the run's whose log it reads.
+  {
+    caseDir: "tutorials/batch/plant/apalutamide01_tablets",
+    file: "reports/batchPlan/gantt.csv",
+    readBy: ["batchGantt.test.ts"],
+  },
+  {
+    caseDir: "tutorials/batch/plant/apalutamide01_tablets",
+    file: "log.choupoSolve",
+    readBy: ["batchGantt.test.ts"],
+    stdout: true,
+  },
 ];
 
 /** What `witnessSetup.ts` found for each declared output, keyed by

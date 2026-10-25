@@ -37,7 +37,7 @@
 
 export type ReportSectionId =
   | "equipment" | "sheets" | "utilities" | "mass" | "energy"
-  | "layout" | "columns" | "exchangers" | "economics" | "sensitivity";
+  | "layout" | "columns" | "exchangers" | "economics" | "sensitivity" | "batchPlan";
 
 export interface ReportSection {
   id: ReportSectionId;
@@ -62,12 +62,20 @@ export interface ReportFacts {
   /** The economics pass published a sensitivity (the case declared
    *  `economics { sensitivity { ... } }`) with at least one drawable row. */
   sensitivity: boolean;
+  /** A `batchPlan {}` pass ran and published at least one stage (DEV.md 4c
+   *  C99, C110 G2): the batch plant designed on the steady balance. */
+  batchPlan: boolean;
 }
 
 /** The sections, in page order.  ONE list: the rail lists it, the page
  *  renders it, and nothing else decides which reports exist. */
 export function reportSections(f: ReportFacts): ReportSection[] {
   const out: ReportSection[] = [];
+  //  First: the plan is declared ABOVE sizing and costing in the postDict and
+  //  feeds both (`volume fromBatchPlan`, `streamFactor fromBatchPlan`).
+  if (f.batchPlan)
+    out.push({ id: "batchPlan", title: "Batch plan",
+      subtitle: "stages, trains, cycle times and the Gantt chart of the campaigns" });
   if (f.equipment)
     out.push({ id: "equipment", title: "Equipment design",
       subtitle: "sized items by sector, with cost and share" });

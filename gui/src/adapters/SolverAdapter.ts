@@ -37,6 +37,7 @@ License
 import type { GmpBuilding } from "./buildingPayload.js";
 import type { PhaseSplitScanBlock } from "./phaseSplitPayload.js";
 import type { PostProcessingBlock } from "../case/postProcessing.js";
+import type { BatchPlan } from "./batchPlanPayload.js";
 import type { CaseFiles } from "../case/types.js";
 import type { DynamicInstants } from "../case/dynamicInstants.js";
 
@@ -700,6 +701,12 @@ export interface RunResult {
    *  postProcessing/<op>/ (in `csvFiles`); the review screen draws them and
    *  computes nothing.  Absent where no operation published a view. */
   postProcessing?: PostProcessingBlock;
+  /** THE BATCH PLAN (DEV.md 4c C99, C110 G2): the `batchPlan {}` postDict
+   *  pass's trains, stages, findings and Gantt bars as data -- one product's
+   *  first campaign, or several products' year in single-product campaigns
+   *  (adapters/batchPlanPayload).  Absent unless the case declares one; the
+   *  GUI draws it (Reports, case/batchGantt) and computes nothing. */
+  batchPlan?: BatchPlan;
 }
 
 /** One hazardous-area zone envelope: a vertical cylinder about the item's
