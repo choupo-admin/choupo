@@ -46,6 +46,7 @@
 \*---------------------------------------------------------------------------*/
 
 import type { LessonLimit, LessonStep } from "./lessonStep.js";
+import type { QuizQuestion } from "./lessonQuiz.js";
 
 /** The idea the whole page is built on: Vitor's sentence (DEV.md 4c C137),
  *  rendered in English.  Drawn at the top of the tool and restated, in the
@@ -735,5 +736,121 @@ export const DR_LIMITS: readonly LessonLimit[] = [
       + "pressed against zero the answer is still the most probable state "
       + "the engine can find, but the tests no longer hold, and the engine "
       + "refuses to publish them rather than publish them wrong.",
+  },
+];
+
+/** The questions at the foot of the tool, under every page (DEV.md 4c
+ *  C158): drafts for Vitor's review, each testing a step and naming it. */
+export const DR_QUIZ: readonly QuizQuestion[] = [
+  {
+    id: "overall-balance", steps: [3, 11],
+    q: "The plant's overall balance, F1 = F4 + F6, is true.  Should it be "
+      + "declared as a fifth balance beside the four node balances?",
+    options: [
+      "Yes — every true balance adds information and narrows the answer",
+      "No — it is the sum of the four, adds no knowledge, and the engine refuses it",
+      "Yes — the global test needs it to count its degrees of freedom",
+    ],
+    correct: 1,
+    feedback: "Adding the mixer, reactor, separator and splitter rows gives "
+      + "the overall balance, so it says nothing the four did not.  What "
+      + "every test counts with is the number of INDEPENDENT balances — the "
+      + "rank of A, which is the degrees of freedom of the global test "
+      + "(steps 3 and 11).",
+  },
+  {
+    id: "posterior-width", steps: [7, 15],
+    q: "After reconciliation, how does the standard deviation of a "
+      + "reconciled flow compare with its own meter's?",
+    options: [
+      "The same: reconciliation moves the values, not the uncertainties",
+      "Larger: the correction adds its own uncertainty",
+      "Zero: the balances are exact, so the reconciled flows are too",
+      "Smaller, for a meter that shares a balance with other meters",
+    ],
+    correct: 3,
+    feedback: "Through the balances every other meter says something about "
+      + "each flow, so the posterior is narrower than the meter alone: on "
+      + "this plant the engine takes the reactor-line flows from the 3 t/h "
+      + "declared for their meters to about 1.3 (step 15).  A meter in no "
+      + "balance keeps its own width (step 7).  The balances are exact; the "
+      + "flows that satisfy them are still uncertain.",
+    origins: ["engine", "assumption"],
+  },
+  {
+    id: "same-answer", steps: [6, 20],
+    q: "Weighted least squares under the balances, and Bayes with a prior "
+      + "that is flat on every flow vector closing them: how do their "
+      + "reconciled flows compare?",
+    options: [
+      "They are the same flows: the least-squares answer is the posterior's most probable point",
+      "They differ, because Bayes brings in a prior and least squares does not",
+      "Least squares gives the posterior mean and Bayes the mode, and the two differ",
+    ],
+    correct: 0,
+    feedback: "With Gaussian meters, minus twice the log of the posterior is "
+      + "the weighted sum of squares plus a constant on the balance subspace, "
+      + "so its peak is the least-squares answer (step 6).  What Bayes adds is "
+      + "the width around it.  The flows MOVE only when the prior says more "
+      + "than the balances — yesterday's estimate, on page 5's third panel "
+      + "(step 20).",
+  },
+  {
+    id: "global-test", steps: [11, 12, 14],
+    q: "The global test's statistic is far above its critical value.  What "
+      + "does that tell you?",
+    options: [
+      "The probability that some meter is faulty",
+      "Which meter is faulty",
+      "That readings this inconsistent would be rare if every meter were "
+        + "healthy — something is wrong, and the test does not say what",
+      "That the balances themselves are wrong",
+    ],
+    correct: 2,
+    feedback: "The test is frequentist: it assumes every meter healthy and "
+      + "asks how often noise alone would push the objective this high "
+      + "(step 11).  WHICH meter is the measurement test's question "
+      + "(step 12).  The probability that a meter has failed is a different, "
+      + "Bayesian question that needs a failure prior and a model of a faulty "
+      + "meter, and it is named on page 3, not computed (step 14).",
+  },
+  {
+    id: "gross-error-spread", steps: [13],
+    q: "A meter with a large gross error is left in the reconciliation.  "
+      + "What happens to its error?",
+    options: [
+      "It stays in that meter; the other meters are untouched",
+      "It is removed: reconciliation corrects the worst reading most",
+      "The reconciliation refuses to run",
+      "It is spread to the meters that share a balance with it",
+    ],
+    correct: 3,
+    feedback: "The reconciled flows must close the balances, so the bad "
+      + "reading's error has to go somewhere: in the exercise the engine puts "
+      + "both F2 and F3 near 153 t/h against an invented true 150, and moves "
+      + "F4 and F7 for an error that is not theirs.  The cure is to take the "
+      + "meter out of service and let its flow be read back from the "
+      + "balances (step 13).",
+    origins: ["engine", "assumption"],
+  },
+  {
+    id: "prior-width", steps: [17, 18],
+    q: "The fourth operation uses yesterday's flows as the prior, each with "
+      + "a width of 2 % of its value.  What is that 2 %?",
+    options: [
+      "Yesterday's posterior width, which the engine computed and carried over",
+      "One author's judgement, read by the engine as the prior's whole "
+        + "width, standing both for how well yesterday was known and how far "
+        + "the plant may have moved",
+      "A Kalman-filter prediction step the engine adds to yesterday's answer",
+    ],
+    correct: 1,
+    feedback: "The engine reads one standard deviation per prior flow and "
+      + "takes it as the whole width (step 17).  A prior that knows the "
+      + "plant may have moved overnight is yesterday's posterior WIDENED by a "
+      + "process-evolution term — the prediction step of a Kalman filter — "
+      + "and the engine has no term for it; a case that wants it adds the two "
+      + "variances itself (step 18).",
+    origins: ["assumption"],
   },
 ];

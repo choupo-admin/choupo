@@ -64,8 +64,9 @@ import type { RunResult, UnitProfile } from "../../adapters/SolverAdapter.js";
 import { KnobSlider, PanelNote, type PanelKnob } from "./knobPanel.js";
 import { Tex } from "./lessonStep.js";
 import {
-  LADDER_LIMITS, LADDER_SECTIONS, type LadderSection,
+  LADDER_LIMITS, LADDER_QUIZ, LADDER_SECTIONS, type LadderSection,
 } from "./reactorLadderLesson.js";
+import { LessonQuiz } from "./lessonQuiz.js";
 import { setActiveMethodTool } from "./registry.js";
 import { OriginMark } from "./origin.js";
 
@@ -470,6 +471,9 @@ export function ReactorLadderTool(): JSX.Element {
 
         {sec("rung3")}
         {sec("phases")}
+
+        <LessonQuiz title="Check your understanding" questions={LADDER_QUIZ}
+          lesson={LADDER_SECTIONS} numbered={false} />
 
         <Box>
           <Title order={5}>What this does not show</Title>

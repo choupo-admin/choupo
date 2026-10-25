@@ -223,6 +223,6 @@ describe("the tool renders it as a scrolling lesson", () => {
     expect(i).toBeGreaterThan(0);
     expect(mccabe, "the psychrometric lesson leaked into McCabe-Thiele")
       .not.toContain("PSYCHRO_");
-    expect((mccabe.match(/MCCABE_STEPS/g) ?? []).length).toBe(1);
+    expect((mccabe.match(/lessonStepper\(MCCABE_STEPS\)/g) ?? []).length).toBe(1);
   });
 });

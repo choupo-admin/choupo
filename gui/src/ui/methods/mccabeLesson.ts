@@ -30,6 +30,7 @@
 \*---------------------------------------------------------------------------*/
 
 import type { LessonStep, SymbolGloss } from "./lessonStep.js";
+import type { QuizQuestion } from "./lessonQuiz.js";
 export type { LessonStep, SymbolGloss };
 
 export const MCCABE_STEPS: readonly LessonStep[] = [
@@ -286,5 +287,96 @@ export const MCCABE_LIMITS: readonly { id: string; title: string; body: string }
       + "the staircase pinches, and across an azeotrope between the two "
       + "products it cannot step — the diagram then shows infinity rather "
       + "than a number.",
+  },
+];
+
+/** The questions at the foot of the page (DEV.md 4c C158): drafts for
+ *  Vitor's review, each testing a step above and naming it. */
+export const MCCABE_QUIZ: readonly QuizQuestion[] = [
+  {
+    id: "horizontal-step", steps: [1],
+    q: "In the staircase, what does one horizontal move from the operating "
+      + "line to the equilibrium curve stand for?",
+    options: [
+      "The material balance carrying you to the next stage",
+      "One ideal stage: the vapour and the liquid leaving it reach equilibrium",
+      "One real tray, with its efficiency already in it",
+      "The pressure drop across one tray",
+    ],
+    correct: 1,
+    feedback: "Horizontal to the curve is one stage reaching equilibrium; "
+      + "vertical to the line is the material balance taking you to the next "
+      + "stage — the flash construction, walked (step 1).  The step is an "
+      + "IDEAL stage: a real tray falls short of equilibrium, and the "
+      + "E_MV knob is how this diagram counts real trays instead.",
+  },
+  {
+    id: "why-straight", steps: [2],
+    q: "Why are the two operating lines straight?",
+    options: [
+      "Because a material balance is linear, so it is a straight line for any column",
+      "Because the equilibrium curve is nearly straight in each section",
+      "Because constant molar overflow keeps L/V the same on every stage of a section",
+      "Because the reflux ratio is held constant by the operator",
+    ],
+    correct: 2,
+    feedback: "The balance V y = L x + D x_D is exact for any column, and it "
+      + "relates y to x through L/V.  It becomes a straight line only when L/V "
+      + "is one number in each section, which is the constant-molar-overflow "
+      + "assumption the derivation spends in step 2.  Where the two latent "
+      + "heats differ the balances still hold and the lines curve.",
+  },
+  {
+    id: "q-line", steps: [3],
+    q: "The feed arrives as a saturated liquid.  What does its q-line look like?",
+    options: [
+      "Vertical, through (z_F, z_F)",
+      "Horizontal, through (z_F, z_F)",
+      "The diagonal y = x itself",
+      "A line through the distillate point (x_D, x_D)",
+    ],
+    correct: 0,
+    feedback: "A saturated liquid needs a full latent heat to vaporise, so "
+      + "q = 1 and the slope q/(q − 1) is infinite: the q-line is vertical.  "
+      + "A saturated vapour (q = 0) gives a horizontal one, and every q-line "
+      + "passes through (z_F, z_F), so changing the feed's condition rotates "
+      + "it about that point (step 3).  It is fixed by the feed alone, by "
+      + "neither product.",
+  },
+  {
+    id: "reflux-limits", steps: [4],
+    q: "What do the two limits, total reflux and minimum reflux, give you?",
+    options: [
+      "Total reflux the most stages, minimum reflux the fewest",
+      "Total reflux the cheapest column to build and run",
+      "Minimum reflux the operating point a good design aims at",
+      "Total reflux the fewest stages (and no product); minimum reflux "
+        + "infinitely many (and the least energy)",
+    ],
+    correct: 3,
+    feedback: "At total reflux both operating lines fall on the diagonal and "
+      + "the staircase is as wide as it can be: the minimum number of stages, "
+      + "for infinite energy and zero product.  At minimum reflux the "
+      + "operating line touches the curve and the steps shrink to nothing at "
+      + "the pinch.  Neither is buildable; every real design sits between "
+      + "them (step 4).",
+  },
+  {
+    id: "azeotrope", steps: [5],
+    q: "On ethanol/water the staircase stops where the equilibrium curve "
+      + "crosses the diagonal.  What has it met?",
+    options: [
+      "A numerical failure that more points on the curve would cure",
+      "An azeotrope: ordinary distillation cannot pass it at this pressure",
+      "The minimum-reflux pinch, cured by raising the reflux ratio",
+      "The feed stage",
+    ],
+    correct: 1,
+    feedback: "There y* = x — a vapour of the same composition as its "
+      + "liquid — and a step needs the curve and the diagonal apart.  The "
+      + "construction failing there is the physics, not the numerics, and "
+      + "more reflux does not help: it is not a pinch of the operating line.  "
+      + "The usual answers are another pressure, an entrainer, or another "
+      + "separation (step 5).",
   },
 ];

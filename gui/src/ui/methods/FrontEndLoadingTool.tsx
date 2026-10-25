@@ -68,7 +68,8 @@ import {
 
 import { KnobField, KnobNumber, PanelNote } from "./knobPanel.js";
 import { LessonLimits, LessonStepView, Tex } from "./lessonStep.js";
-import { FEL_LIMITS, FEL_STEPS } from "./frontEndLoadingLesson.js";
+import { FEL_LIMITS, FEL_QUIZ, FEL_STEPS } from "./frontEndLoadingLesson.js";
+import { LessonQuiz } from "./lessonQuiz.js";
 import {
   AACE_CLASSES, DELIVERABLE_ROWS, FEL_NUMBERINGS, FEL_STAGES,
   HIGH_RANGE_MULTIPLIERS, bandOf, decide, firstSeparatingClass,
@@ -586,6 +587,9 @@ export function FrontEndLoadingTool(): JSX.Element {
           </Table.Tbody>
         </Table>
         </Box>
+
+        <LessonQuiz title="Check your understanding" questions={FEL_QUIZ}
+          lesson={FEL_STEPS} />
 
         <LessonLimits limits={FEL_LIMITS} />
 

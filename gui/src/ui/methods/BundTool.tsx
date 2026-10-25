@@ -45,7 +45,10 @@ import {
   simulate, tankPositions, wallClearances, wallForEngineRule, wallLoad,
   type Basis, type Bund, type CapacityRule, type ScenarioInput, type Tank,
 } from "./bund.js";
-import { BUND_LIMITS, BUND_SOURCES, BUND_STEPS, RULE_IS_AN_EXAMPLE } from "./bundLesson.js";
+import {
+  BUND_LIMITS, BUND_QUIZ, BUND_SOURCES, BUND_STEPS, RULE_IS_AN_EXAMPLE,
+} from "./bundLesson.js";
+import { LessonQuiz } from "./lessonQuiz.js";
 import { KnobField, KnobNumber, PanelNote } from "./knobPanel.js";
 import { LessonLimits, LessonStepView } from "./lessonStep.js";
 import { setActiveMethodTool } from "./registry.js";
@@ -513,6 +516,9 @@ export function BundTool(): JSX.Element {
         {step(15)}
         {step(16)}
         <ExerciseBench />
+
+        <LessonQuiz title="Check your understanding" questions={BUND_QUIZ}
+          lesson={BUND_STEPS} />
 
         <Box data-testid="bund-closing" px="sm" py={8}
           style={{ borderLeft: "3px solid var(--mantine-color-accent-5)" }}>

@@ -62,8 +62,9 @@ import {
 import { useMethodRun, type MethodRunState } from "../../case/methodRun.js";
 import type { OperationResult } from "../../adapters/SolverAdapter.js";
 import { LessonLimits, lessonStepper } from "./lessonStep.js";
+import { LessonQuiz } from "./lessonQuiz.js";
 import {
-  CENTRAL_IDEA, DR_LIMITS, DR_STEPS, THREE_INGREDIENTS,
+  CENTRAL_IDEA, DR_LIMITS, DR_QUIZ, DR_STEPS, THREE_INGREDIENTS,
 } from "./dataReconciliationLesson.js";
 import { KnobSlider, type PanelKnob } from "./knobPanel.js";
 import {
@@ -1010,6 +1011,8 @@ export function DataReconciliationTool(): JSX.Element {
         {page === "prior" && ready(prior, () => <PriorPage honest={honest} prior={prior} />)}
         {page === "three" && ready(honest.why ? honest : prior,
           () => <ThreeAnswersPage honest={honest} prior={prior} />)}
+        <LessonQuiz title="Check your understanding (all five pages)"
+          questions={DR_QUIZ} lesson={DR_STEPS} />
         <LessonLimits limits={DR_LIMITS} />
       </Stack>
     </Box>

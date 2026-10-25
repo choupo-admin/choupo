@@ -47,7 +47,7 @@ import {
   shellHeight, simulate, termVolume, wallForEngineRule, wallLoad, G_N,
   type Bund, type ScenarioInput, type Tank,
 } from "../src/ui/methods/bund.js";
-import { BUND_LIMITS, BUND_SOURCES, BUND_STEPS } from "../src/ui/methods/bundLesson.js";
+import { BUND_LIMITS, BUND_QUIZ, BUND_SOURCES, BUND_STEPS } from "../src/ui/methods/bundLesson.js";
 import { BundTool, BUND_TITLE } from "../src/ui/methods/BundTool.js";
 import { texParses } from "../src/ui/methods/lessonTex.js";
 import { METHOD_TOOLS } from "../src/ui/methods/registry.js";
@@ -281,8 +281,10 @@ describe("Vitor's exercise: 20, 15 and 10 m3", () => {
 
 describe("the lesson text", () => {
   const all = prose(BUND_STEPS.map((s) => `${s.title} ${s.body} ${s.note ?? ""}`).join(" "));
-  it("quotes nothing: no quotation mark in a step, a limit or a source", () => {
+  it("quotes nothing: no quotation mark in a step, a limit, a source or the quiz", () => {
     expect(all).not.toMatch(/["“”]/);
+    for (const q of BUND_QUIZ)
+      expect(`${q.q} ${q.options.join(" ")} ${q.feedback}`, q.id).not.toMatch(/["“”]/);
     for (const l of BUND_LIMITS) expect(l.body).not.toMatch(/["“”]/);
     for (const s of BUND_SOURCES) expect(`${s.cite} ${s.used}`).not.toMatch(/["“”]/);
   });

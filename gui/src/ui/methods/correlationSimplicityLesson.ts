@@ -45,6 +45,7 @@
 \*---------------------------------------------------------------------------*/
 
 import type { LessonLimit, LessonStep } from "./lessonStep.js";
+import type { QuizQuestion } from "./lessonQuiz.js";
 
 export const SIMPLICITY_STEPS: readonly LessonStep[] = [
   // ---- Page 1: dimensional analysis ------------------------------------------
@@ -643,5 +644,118 @@ export const SIMPLICITY_LIMITS: readonly LessonLimit[] = [
       + "Nusselt sweep is a SHELL-side law whose Reynolds number is built on "
       + "the crossflow velocity and the equivalent diameter; it is not "
       + "drawn here.",
+  },
+];
+
+/** The questions at the foot of the tool, under every page (DEV.md 4c
+ *  C158): drafts for Vitor's review, each testing a step and naming it. */
+export const SIMPLICITY_QUIZ: readonly QuizQuestion[] = [
+  {
+    id: "pi-count", steps: [1],
+    q: "The pipe problem has six variables spanning three dimensions, so "
+      + "three groups.  You add a temperature to the list.  How many groups "
+      + "now?",
+    options: [
+      "Four: every new variable brings a new group",
+      "Still three: the temperature brings a new dimension with it",
+      "Two: a new dimension removes a group",
+    ],
+    correct: 1,
+    feedback: "The count is n − r.  A temperature adds one to the number of "
+      + "variables AND one to the rank of the dimensional matrix, so no group "
+      + "is gained; the gravitational acceleration, by contrast, adds a "
+      + "variable and no dimension, and so a group (step 1).  And the count "
+      + "is only as good as the list: a variable left out is not detected.",
+  },
+  {
+    id: "shape-of-phi", steps: [4, 5],
+    q: "Dimensional analysis has shown that the friction factor depends only "
+      + "on Re and ε/D.  What does it say about the SHAPE of that function?",
+    options: [
+      "That it is a power law in Re",
+      "That it is smooth, though not necessarily a power law",
+      "That it falls monotonically with Re",
+      "Nothing: a curve with any number of ripples is just as admissible",
+    ],
+    correct: 3,
+    feedback: "The theorem fixes the arguments and says nothing about the "
+      + "function: the rippled curve on page 2 depends on Re and ε/D and on "
+      + "nothing else, and passes every dimensional test (step 5).  That real "
+      + "correlations are smooth and nearly straight on log axes is a fact "
+      + "about the physics, which pages 3 to 5 trace.",
+  },
+  {
+    id: "which-exponent", steps: [6, 8, 11],
+    q: "Which of these exponents is a consequence of the physics rather than "
+      + "a number fitted to data?",
+    options: [
+      "The −1 of the laminar f = 64/Re",
+      "The 0.8 of Dittus-Boelter's Re^0.8",
+      "The −1/4 of Blasius's Re^(−1/4)",
+    ],
+    correct: 0,
+    feedback: "f = 64/Re is the exact solution of laminar flow in a straight "
+      + "pipe, so its slope is −1 to the last digit (step 6).  Blasius's −1/4 "
+      + "holds only over a range — the local slope drifts toward zero as Re "
+      + "grows, incomplete similarity (step 8) — and Dittus-Boelter's 0.8 is "
+      + "fitted: turbulence has no clean gap between master and slave to fix "
+      + "it (step 11).",
+    origins: ["engine"],
+  },
+  {
+    id: "slaving-fails", steps: [9, 10],
+    q: "In Haken's two-variable model, when does replacing the fast variable "
+      + "by y = x²/γ fail?",
+    options: [
+      "Never: at the fixed point dy/dt = 0, so the reduction is exact",
+      "Only when the variables are not dimensionless",
+      "When γ is not much larger than ε: the time scales are no longer "
+        + "separated, and below γ = 8ε the full system overshoots and oscillates",
+    ],
+    correct: 2,
+    feedback: "Setting dy/dt to zero assumes the slave relaxes long before the "
+      + "master moves (step 9).  The reduction was never exact; it is "
+      + "accurate in proportion to the separation of the two rates, and once "
+      + "the roots of the linearised system turn complex the full system "
+      + "makes a motion no single first-order equation can (step 10).",
+    origins: ["page"],
+  },
+  {
+    id: "one-decade", steps: [12],
+    q: "A power law fits one decade of the engine's smooth-pipe friction "
+      + "curve to about one percent.  What does that show?",
+    options: [
+      "That the flow obeys that power law at every Re",
+      "That its exponent is fixed by dimensional analysis",
+      "Little about the physics: any smooth curve whose local slope drifts "
+        + "slowly is a power law over a short enough range",
+    ],
+    correct: 2,
+    feedback: "The error of a power law grows with the square of the range "
+      + "and with how fast the local slope drifts; move the decade and the "
+      + "exponent moves too (step 12).  Part of a correlation's simplicity is "
+      + "the narrowness of its range and the width of its tolerance, and an "
+      + "honest correlation states both.",
+  },
+  {
+    id: "transition-band", steps: [13, 14],
+    q: "Between Re ≈ 2300 and 4000 Churchill's blend draws one smooth curve.  "
+      + "What is that curve?",
+    options: [
+      "An interpolation that keeps a solver continuous: in the band the "
+        + "friction factor is not a function of Re",
+      "The measured friction factor of the transition",
+      "An average of the laminar and turbulent values, weighted by how often "
+        + "the flow is turbulent",
+      "The curve whose blending exponent the physics selects",
+    ],
+    correct: 0,
+    feedback: "In the band the regime depends on the disturbances the pipe "
+      + "meets and on its history, so at one Re the same pipe can carry "
+      + "laminar flow, turbulent flow or puffs of both: there is no single f "
+      + "to predict (step 14).  Every blending exponent gives a smooth curve "
+      + "there and nothing in the physics prefers one (step 13).  A design in "
+      + "the band should be moved out of it.",
+    origins: ["engine"],
   },
 ];

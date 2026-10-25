@@ -44,6 +44,8 @@
       600 K with a 50 K approach = 0.797474319208 = the 650 K limit, exactly.
 \*---------------------------------------------------------------------------*/
 
+import type { QuizQuestion } from "./lessonQuiz.js";
+
 export interface LadderGloss { sym: string; means: string; unit?: string }
 
 export interface LadderSection {
@@ -345,5 +347,102 @@ export const LADDER_LIMITS: readonly LadderLimit[] = [
       + "P, both published by the same run, and warns when the first is "
       + "higher.  Outside this page, the student has to make that "
       + "comparison.",
+  },
+];
+
+/** The questions at the foot of the page (DEV.md 4c C158): drafts for
+ *  Vitor's review.  `steps` are section numbers; the sections are not
+ *  numbered on the page, so the quiz points back by their titles.  None
+ *  repeats a section's own check question. */
+export const LADDER_QUIZ: readonly QuizQuestion[] = [
+  {
+    id: "climb-order", steps: [1, 6],
+    q: "In what order does a design climb the ladder, and why?",
+    options: [
+      "The rate first, since equilibrium is only the limit of a very long reactor",
+      "Atoms, then thermodynamics, then the rate: each rung needs more "
+        + "information, and more expensive information, than the one below",
+      "Straight to the rate, because only it gives a volume, and a volume is "
+        + "what a design needs",
+    ],
+    correct: 1,
+    feedback: "A course often begins with the rate law; a design runs the "
+      + "other way, and climbs only as far as the decision in front of it "
+      + "requires.  The top rung needs a rate law somebody measured on this "
+      + "catalyst — the most expensive fact on the page.  A student who "
+      + "starts there can compute a volume without knowing whether the "
+      + "target was possible.",
+  },
+  {
+    id: "declared-above-limit", steps: [2],
+    q: "At 600 K the page shows the declared conversion 0.90 beside the "
+      + "equilibrium reactor's 0.841 for the same feed.  How should the 0.90 "
+      + "be read?",
+    options: [
+      "As a hypothesis no reactor can reach at these conditions",
+      "As the conversion of a long enough plug-flow bed",
+      "As a conversion the conversion reactor has checked against equilibrium",
+    ],
+    correct: 0,
+    feedback: "The conversion reactor balances atoms and knows no equilibrium "
+      + "constant, so it prints 0.90 without complaint; the engine compares "
+      + "nothing.  The page puts the two published numbers side by side and "
+      + "warns in red.  Above the limit, rung 1 is a hypothesis — and outside "
+      + "this page, making that comparison is the student's job.",
+    origins: ["engine", "assumption"],
+  },
+  {
+    id: "gibbs-agrees", steps: [3],
+    q: "The equilibrium reactor and the Gibbs reactor agree to every digit "
+      + "here.  What would make them differ?",
+    options: [
+      "Raising the pressure, because the shift's equilibrium depends on it",
+      "A species list for the Gibbs reactor that permits another reaction, "
+        + "such as one that makes methane",
+      "Nothing: they are the same solver under two names",
+    ],
+    correct: 1,
+    feedback: "The Gibbs reactor is given species and no reactions, and "
+      + "minimises the mixture's Gibbs energy; over these four species the "
+      + "only reaction they permit is the shift, so the two must agree.  Add "
+      + "methane and they would not.  Pressure cancels here, because two "
+      + "moles of gas give two.",
+  },
+  {
+    id: "approach-moves-k", steps: [4],
+    q: "A designer declares a 25 K approach for the shift, run at 600 K.  "
+      + "What does the engine change?",
+    options: [
+      "The outlet temperature becomes 625 K",
+      "The rate constant is evaluated at 625 K",
+      "K is evaluated at 625 K, and the outlet stays at 600 K",
+      "K is evaluated at 575 K, because an approach always lowers the temperature",
+    ],
+    correct: 2,
+    feedback: "The approach is a magnitude; the engine picks its side from "
+      + "the thermicity of the reaction as it runs, and for an exothermic one "
+      + "K is taken at T + ΔT, where it is smaller.  Only K moves — the outlet "
+      + "stays at the physical temperature — and ΔT is calibrated from plants "
+      + "and catalyst vendors, never predicted.",
+    origins: ["assumption"],
+  },
+  {
+    id: "rate-binds", steps: [3, 5],
+    q: "Cool the plug-flow bed from 600 K to 550 K: the limit rises from 0.841 "
+      + "to 0.884, but the same bed delivers only 0.866.  Why?",
+    options: [
+      "The equilibrium constant falls when the bed is cooled",
+      "The plug-flow profile has crossed the equilibrium line",
+      "At 550 K the rate binds, not equilibrium: hot beds are limited by "
+        + "equilibrium, cool beds by the rate",
+    ],
+    correct: 2,
+    feedback: "The shift is exothermic, so cooling raises K and the limit "
+      + "(rung 2); but the rate falls with temperature, and the same volume "
+      + "no longer reaches the limit.  The profile can never cross it: the "
+      + "reverse term is built from the same K, so the net rate vanishes "
+      + "there.  That is why industry runs the shift in two beds, hot then "
+      + "cool.",
+    origins: ["engine", "assumption"],
   },
 ];
