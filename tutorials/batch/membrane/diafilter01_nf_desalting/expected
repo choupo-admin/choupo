@@ -56,3 +56,13 @@ ledger  retentate->(external_boundary) material.external.valid invalid          
 ledger  (external_boundary)->retentate material.externalIntake.dn.water 3.02879614114    1e-4
 ledger  (external_boundary)->retentate material.externalIntake.H_kJ -867452.035858   1e-4
 ledger  (external_boundary)->retentate material.externalIntake.valid valid            exact
+kpi     retentate              R_avgVsInitialFeed_MgSO4 0.998557505247   1e-4
+kpi     retentate              R_avgVsInitialFeed_NaCl 0.908316463388   1e-4
+kpi     retentate              R_avg_MgSO4      0.998551825847   1e-4
+kpi     retentate              R_avg_NaCl       0.873151167269   1e-4
+kpi     retentate              c_bInitial_MgSO4 0.0199264924976  1e-4
+kpi     retentate              c_bInitial_NaCl  0.0199264924976  1e-4
+kpi     retentate              c_bMeanPerm_MgSO4 0.0198483454632  1e-4
+kpi     retentate              c_bMeanPerm_NaCl 0.0144024289789  1e-4
+kpi     retentate              c_permPooled_MgSO4 2.87438608734e-05 1e-4
+kpi     retentate              c_permPooled_NaCl 0.00182693130445 1e-4

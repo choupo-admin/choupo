@@ -6,7 +6,7 @@
   "runtime": "not recorded; runTests does not time per case and this script does not run the corpus"
  },
  "counts": {
-  "cases": 494,
+  "cases": 495,
   "witnesses": 16,
   "validationOp": 6,
   "anchored": 13
@@ -464,6 +464,23 @@
    "hasGolden": true
   },
   "tutorials/batch/membrane/diafilter02_fouling_decline": {
+   "application": "choupoBatch",
+   "unitTypes": [
+    "batchDiafilter"
+   ],
+   "unitModels": [
+    "vanHoff"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [],
+   "hasGolden": true
+  },
+  "tutorials/batch/membrane/diafilter03_dspmde_batch": {
    "application": "choupoBatch",
    "unitTypes": [
     "batchDiafilter"
@@ -7291,6 +7308,7 @@
     "tutorials/batch/electrodialysis/edbatch03_multiionic_split",
     "tutorials/batch/membrane/diafilter01_nf_desalting",
     "tutorials/batch/membrane/diafilter02_fouling_decline",
+    "tutorials/batch/membrane/diafilter03_dspmde_batch",
     "tutorials/batch/reactor/batch01_first_order",
     "tutorials/batch/reactor/batch01b_first_order_eulersi",
     "tutorials/batch/reactor/batch02_adiabatic",
@@ -7831,7 +7849,8 @@
    ],
    "batchDiafilter": [
     "tutorials/batch/membrane/diafilter01_nf_desalting",
-    "tutorials/batch/membrane/diafilter02_fouling_decline"
+    "tutorials/batch/membrane/diafilter02_fouling_decline",
+    "tutorials/batch/membrane/diafilter03_dspmde_batch"
    ],
    "batchDryer": [
     "tutorials/batch/drying/dryer01_sucrose_tray",
@@ -8613,6 +8632,7 @@
     "tutorials/batch/electrodialysis/edbatch03_multiionic_split",
     "tutorials/batch/membrane/diafilter01_nf_desalting",
     "tutorials/batch/membrane/diafilter02_fouling_decline",
+    "tutorials/batch/membrane/diafilter03_dspmde_batch",
     "tutorials/batch/plant/apalutamide01_tablets",
     "tutorials/batch/plant/donepezil01_tablets",
     "tutorials/batch/reactor/batch01_first_order",

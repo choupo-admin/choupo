@@ -20,8 +20,12 @@ step-by-step "replace these files with your data".*
           |  read by
           v
     the process            spiralWoundModule  membrane <membrane>;   (runCase <case>;  choupoSolve)
+                           batchDiafilter     membrane <membrane>;   (a batch rig;     choupoBatch)
 
-The process refuses a record whose datasets, fit block or base record changed
+The same membrane record and the same transport law serve both processes:
+the spiral module asks the law at every station of its channel, the batch
+vessel (`tutorials/batch/membrane/diafilter03_dspmde_batch`, DSPM-DE in
+batch concentration) at every instant of its campaign.  The process refuses a record whose datasets, fit block or base record changed
 after the fit, naming what changed: a stale fit is never used in silence.
 
 ## 2. What goes in
@@ -66,7 +70,9 @@ after the fit, naming what changed: a stale fit is never used in silence.
   held at the base record), its uncertainty and the verdict.
 * **From the process:** rejections per salt and per ion, permeate and concentrate compositions and flows, the flux and
   polarisation along the element, the pressure drop, and the energy and
-  mass balances.
+  mass balances.  From a batch vessel: the volume, flux and observed
+  rejection at every instant, and the campaign's time-averaged rejection
+  (section 5).
 
 ## 4. What each transport law assumes
 
@@ -80,7 +86,64 @@ The DSPM-DE fit is witnessed on published data (membrane24); the SDEM,
 solution-diffusion and constant-rejection fits run through the same machinery
 but have no real-data witness yet.
 
-## 5. What the model cannot do
+## 5. How the rejection is reported
+
+A rejection is always `R = 1 - c_permeate / c_reference`; what changes
+between configurations is WHICH permeate and WHICH reference, and a number
+quoted without them is not comparable with another.
+
+* **At one point of the membrane** (what the transport law computes, and
+  what a fit is fitted to): the **intrinsic** rejection `1 - c_p / c_m`,
+  against the concentration at the membrane WALL, and the **observed**
+  rejection `1 - c_p / c_b`, against the bulk.  They differ by the
+  concentration polarisation of the film (`k_film`, or a mass-transfer
+  correlation).  The measured series declare which one they carry
+  (`rejection intrinsic | observed`); there is no default.
+* **In a spiral-wound stage** (`spiralWoundModule`, `R_obs_<salt>`): a
+  SPATIAL average.  The permeate is the MIXED permeate of the whole channel
+  -- every station's permeate, collected -- and the reference is the stage's
+  INLET feed: `R_obs = 1 - (F_perm,solute / Q_perm) / c_feed,inlet`.  The
+  bulk concentrates along the channel and the local rejection moves with
+  it, so the stage's number is neither the inlet's nor the outlet's local
+  rejection.  A train of elements reports the same for the whole vessel.
+* **In a batch campaign** (`batchDiafilter`): a TIME average, published per
+  solute at the end of the run beside the instantaneous `R_obs_<solute>`
+  of every instant (bulk reference, against the well-mixed retentate):
+
+      c_permPooled_<s>       = (n0 - n) / V_perm
+                               the POOLED permeate: everything collected
+                               since t = 0, mixed (exact -- no solute enters
+                               the vessel, so what left went through)
+      c_bMeanPerm_<s>        = INTEGRAL c_b dV_perm / V_perm
+                               the retentate's bulk concentration averaged
+                               over the campaign, weighted by the permeate
+                               rate at each instant (dV_perm = Q_p dt)
+      c_bInitial_<s>         = n0 / V0, the charge
+      R_avg_<s>              = 1 - c_permPooled / c_bMeanPerm
+      R_avgVsInitialFeed_<s> = 1 - c_permPooled / c_bInitial
+
+  `R_avg` is the campaign's rejection of the solution the membrane actually
+  saw: it equals the mean of the instantaneous `R_obs` weighted by
+  `c_b Q_p`, so it lies between the smallest and the largest of them.
+  `R_avgVsInitialFeed` is what a laboratory reports when it analyses the
+  collected permeate against the feed it started from; it is a statement
+  about the OPERATION, not the membrane -- in concentration mode the
+  retentate only gets richer, so it lies BELOW `R_avg` (diafilter03: NaCl
+  0.635 against 0.467), and in constant-volume diafiltration a passing
+  solute is washed out, so it lies ABOVE it (diafilter01: NaCl 0.873
+  against 0.908).  A plain time mean of the bulk, `INTEGRAL c_b dt / t`, is
+  NOT published: it weighs an instant at which almost nothing permeates as
+  much as one at which most of the permeate is made, and the rejection built
+  on it is not a mean of anything the membrane did.  The integral is
+  advanced by the same integrator, on the same steps, as the inventory and
+  the permeated volume (`BatchDiafilter.cpp`, `odeDerivative` and `kpis`);
+  `check_diafiltration` arm (i) rebuilds every one of these from the
+  inventory and the trajectory.  Declare `timeStepping adaptive;` in the
+  batch case's `controlDict`: without it the vessel is advanced by a fixed
+  explicit Euler step and every integral, this one included, is first
+  order in `deltaT`.
+
+## 6. What the model cannot do
 
 * **It is fitted per membrane AND per solution type.**  The charge density
   of a real nanofiltration membrane changes with pH and concentration; here
@@ -104,7 +167,7 @@ but have no real-data witness yet.
   writes does not yet reach the opened case (DEV.md 4c C157): run the two
   modes with a local build to simulate the process on your own fit.
 
-## 6. Licence
+## 7. Licence
 
 Choupo is GPL-3.0-or-later: free to use, also commercially; the name is a
 trademark.  Your data and your fitted records are yours; a case you

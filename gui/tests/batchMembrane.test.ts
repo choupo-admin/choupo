@@ -26,7 +26,7 @@
   2. THE HAND LAW AGAINST THE ENGINE'S OWN PUBLISHED IDEAL.  Both shipped
      witnesses carry `washoutIdeal_<s>` in their goldens, and the engine builds
      it from the run's own `R_initial_<s>` and `diavolumes`
-     (src/unitOperations/batch/BatchDiafilter.cpp:597-607).  `washoutIdeal`
+     (src/unitOperations/batch/BatchDiafilter.cpp:651-661).  `washoutIdeal`
      here must REPRODUCE that number from those two -- which is the check that
      the page and the engine are quoting one law rather than two.
 
@@ -136,7 +136,7 @@ describe("the classical batch results, against their limiting cases", () => {
     expect(diafiltrationTime(1, 0.010, 5, 1e-4)).toBeCloseTo(20, 10);
     expect(diafiltrationTime(5, 0.010, 5, 1e-4)).toBeCloseTo(100, 10);
     //  The engine's own LMH conversion, so the page and the run agree on
-    //  what the unit means (BatchDiafilter.cpp:553).
+    //  what the unit means (BatchDiafilter.cpp:567).
     expect(LMH_PER_MS).toBe(3.6e6);
   });
 });
@@ -235,7 +235,7 @@ describe("detectDiafilter -- which unit in a run is a batch membrane vessel", ()
     expect(d.unit).toBe("retentate");
     expect(d.solutes).toEqual(["MgSO4", "NaCl"]);
     //  Constant volume is read from the engine's own counter, never from a
-    //  dict word (BatchDiafilter.H:265-266).
+    //  dict word (BatchDiafilter.H:268-269).
     expect(d.constantVolume).toBe(true);
     expect(detectDiafilter(["retentate.V_m3"],
       { retentate: { ...block, diavolumes: 0 } }).constantVolume).toBe(false);
@@ -604,7 +604,7 @@ describe("buildView -- what the page draws, assembled once", () => {
     expect(v.VpermState).toBeCloseTo(7.0e-3, 12);
     //  The trapezoid over the WRITTEN samples is a DIFFERENT number, and
     //  that difference is the whole point of the row
-    //  (BatchDiafilter.H:258-266).
+    //  (BatchDiafilter.H:261-269).
     expect(v.VpermTrapezoid).toBeCloseTo(
       trapezoid(traj.t, traj.vars["retentate.Q_p_m3s"]), 15);
     expect(v.VpermTrapezoid).not.toBeCloseTo(v.VpermState!, 6);

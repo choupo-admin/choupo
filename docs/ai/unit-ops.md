@@ -2064,9 +2064,12 @@ curve shapes; gate `check_drying_curve`).
 ### `batchDiafilter`
 A stirred RETENTATE vessel behind a membrane — the batch half of the
 pressure-driven separation the steady `spiralWoundModule` solves.  It adds
-no architecture: it asks the same `TransportModel::localFluxes`
-(`solutionDiffusion` or `DSPM_DE`, the same `membrane` asset record, the
-same `osmotic {}` block) once per instant instead of once per channel node.
+no architecture: it asks the same `TransportModel::localFluxes` (the law
+comes through the factory: `solutionDiffusion`, `DSPM-DE` and
+`constantRejection` have shipped witnesses or gates, `SDEM` was run on a
+probe and has no batch case -- with the same `membrane` asset
+record, the same `osmotic {}` and `polarisation {}` blocks) once per instant
+instead of once per channel node.
 Well mixed, so one bulk composition; the permeate's solvent is closed on
 the SAME declared solution density the concentrations were built from, so
 the vessel conserves mass to machine precision.  Two modes, one line apart:
@@ -2082,7 +2085,7 @@ block) — an inline `initial {}` is refused.
   operation
   {
       membrane     NF270;               // the curated asset record
-      transport    solutionDiffusion;   // or DSPM_DE
+      transport    solutionDiffusion;   // or DSPM-DE, SDEM, ...
       mode         constantVolume;      // or concentration
       area         5.0;                 // m2
       P_feed       10 bar;  P_permeate 0 bar;
@@ -2112,7 +2115,19 @@ blocking laws (`cake`: `r_f = k·v`; `intermediate`: `1/A_eff = e^{k v}/A_w`);
 a blocking law is a claim about a MECHANISM, hence the mandatory `reason`.
 KPIs: `J_w_LMH`/`J_w_final_LMH`, `TMP_bar`, `R_initial_<s>`/`R_final_<s>`,
 `recovery_<s>`, `diavolumes`, `concentrationFactor`, `washoutActual_<s>`,
-`washoutIdeal_<s>`, `A_eff_over_A_w_final` (with fouling).  NOT modelled,
+`washoutIdeal_<s>`, `A_eff_over_A_w_final` (with fouling), and the
+campaign's TIME-AVERAGED rejection (the batch counterpart of the spiral
+module's spatial `R_obs_<s>`): `c_permPooled_<s>` = (n0 − n)/V_perm (the
+pooled permeate), `c_bMeanPerm_<s>` = ∫c_b dV_perm / V_perm (the bulk
+averaged over what permeated), `c_bInitial_<s>` = n0/V0, `R_avg_<s>` =
+1 − c_permPooled/c_bMeanPerm (a `c_b Q_p`-weighted mean of R_obs) and
+`R_avgVsInitialFeed_<s>` = 1 − c_permPooled/c_bInitial (the collected
+permeate against the charge: below `R_avg` when the retentate concentrates,
+above it when the solute is washed out) -- the integral advanced by the same
+integrator as the inventory; definitions in `docs/ai/membrane-research.md`
+§5.  Declare `timeStepping adaptive;` in the case's `controlDict`: without
+it choupoBatch advances this vessel by its own fixed explicit Euler step of
+`deltaT` (first order).  NOT modelled,
 said plainly: any k_film correlation, temperature transients, critical
 flux, gel layers, cleaning/backwash cycles, any prediction of `k`, and the
 pump work (`energyLedgerGap` names it; the campaign energy balance is
@@ -2120,7 +2135,11 @@ UNAVAILABLE rather than closed with a term quietly zero).  Witnesses:
 `tutorials/batch/membrane/diafilter01_nf_desalting` (5.44 diavolumes: NaCl
 washed to 50.2 %, MgSO4 held at 99.2 %, actual 0.5015 vs ideal 0.4970) and
 `diafilter02_fouling_decline` (same run plus a HYPOTHETICAL `cake` law:
-permeance to 72.5 % of clean, 4.74 diavolumes, 53.4 % of the NaCl left).
+permeance to 72.5 % of clean, 4.74 diavolumes, 53.4 % of the NaCl left)
+and `diafilter03_dspmde_batch` (DSPM-DE, the pore solved at every instant,
+in batch concentration to a factor 3.9 under the adaptive sweep: the NaCl
+rejection falls 0.691 → 0.554 as the retentate concentrates; R_avg 0.635,
+against the charge 0.467).  Gate: `check_diafiltration`.
 
 ### `batchElectrodialysis`
 A RECIRCULATING BATCH electrodialysis rig: two well-mixed tanks — diluate

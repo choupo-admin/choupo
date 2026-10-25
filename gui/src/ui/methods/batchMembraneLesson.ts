@@ -30,36 +30,36 @@
     the unit, its model and its scope     src/unitOperations/batch/
                                             BatchDiafilter.H:31-134
     the two modes, and the ONE line
-      that differs (Q_d)                  BatchDiafilter.cpp:389
+      that differs (Q_d)                  BatchDiafilter.cpp:390
     the mode words, and the refusal of
       any third                           BatchDiafilter.cpp:202-210
-    the solute balance                    BatchDiafilter.cpp:429-437
+    the solute balance                    BatchDiafilter.cpp:435-443
     the solvent line, closed on the
-      solution density                    BatchDiafilter.cpp:439-446
+      solution density                    BatchDiafilter.cpp:445-452
     the permeated volume is a STATE,
-      not a re-quadrature                 BatchDiafilter.cpp:451,
-                                          BatchDiafilter.H:258-266
+      not a re-quadrature                 BatchDiafilter.cpp:457,
+                                          BatchDiafilter.H:261-269
     diavolumes = V_perm/V_0, counted
-      in constant-volume mode ONLY        BatchDiafilter.H:265-266
-    concentrationFactor = V_0/V           BatchDiafilter.cpp:580
-    R_0 taken from THIS run at t = 0      BatchDiafilter.cpp:281-283
-    R_obs published at every instant      BatchDiafilter.cpp:566-569
+      in constant-volume mode ONLY        BatchDiafilter.H:268-269
+    concentrationFactor = V_0/V           BatchDiafilter.cpp:594
+    R_0 taken from THIS run at t = 0      BatchDiafilter.cpp:282-284
+    R_obs published at every instant      BatchDiafilter.cpp:580-583
     washoutActual_/washoutIdeal_,
-      published in constant volume ONLY   BatchDiafilter.cpp:597-607
+      published in constant volume ONLY   BatchDiafilter.cpp:651-661
     k_film REQUIRED, refused by name      BatchDiafilter.cpp:129-137
     rho ANNOUNCED when it defaults        BatchDiafilter.cpp:140-158
     Hermia's laws; `standard`/`complete`
       refused rather than approximated    BatchDiafilter.cpp:161-182,
                                           BatchDiafilter.H:105-118
     the `reason` is REQUIRED              BatchDiafilter.cpp:191-199
-    the permeance in series                BatchDiafilter.cpp:340-357
+    the permeance in series                BatchDiafilter.cpp:341-358
     the flux residual J_w = A_w(dP - dpi) SolutionDiffusion.cpp:133
     dpi summed over the WALL and the
       permeate, per solute                SolutionDiffusion.cpp:106-119
     the solute flux B_s (c_m - c_p)       SolutionDiffusion.cpp:181
     the wall has ONE home                 membrane/massTransfer/
                                             Polarisation.H:41-46
-    the pump work is NOT ledgered         BatchDiafilter.cpp:616-632
+    the pump work is NOT ledgered         BatchDiafilter.cpp:670-686
 
   SOURCES cited to the reader, each already carried in the tree at the line
   given:
@@ -128,7 +128,7 @@ export const BATCH_MEMBRANE_STEPS: readonly LessonStep[] = [
       { sym: "J_w", means: "the WATER FLUX through the membrane, volume of "
         + "permeate per unit area per unit time.  The engine computes it in "
         + "m/s and publishes it as L/(m²·h), the unit a membrane rig is read "
-        + "in (BatchDiafilter.cpp:553)", unit: "L/(m²·h)" },
+        + "in (BatchDiafilter.cpp:567)", unit: "L/(m²·h)" },
       { sym: "R_i", means: "the OBSERVED rejection of solute i: how much of "
         + "what reaches the membrane it keeps back, measured against the "
         + "bulk.  Step 5 is about why it moves" },
@@ -153,13 +153,13 @@ export const BATCH_MEMBRANE_STEPS: readonly LessonStep[] = [
       + "keep is washed out.  The two are not different models.  They are the "
       + "same solute balance under two different volume balances, and in the "
       + "code the difference is a single line -- the diafiltrate rate is "
-      + "either zero or the permeate rate (BatchDiafilter.cpp:389).  A word "
+      + "either zero or the permeate rate (BatchDiafilter.cpp:390).  A word "
       + "the engine does not know is refused by name rather than defaulted "
       + "(BatchDiafilter.cpp:202-210).",
     formula: String.raw`\begin{array}{ll}
 \text{solutes} & \dfrac{\mathrm{d}n_i}{\mathrm{d}t} = -J_\mathrm{s,i}\, A + Q_d\, c_\mathrm{d,i}\\[8pt]
 \text{solvent} & \text{the permeate's mass, closed on the SAME solution density } \rho\\
-& \text{the concentrations were built from (BatchDiafilter.cpp:439-446)}\\[8pt]
+& \text{the concentrations were built from (BatchDiafilter.cpp:445-452)}\\[8pt]
 \text{concentration} & Q_d = 0 \qquad \text{the vessel shrinks}\\
 \text{constantVolume} & Q_d = Q_p \qquad \text{the volume is held}
 \end{array}`,
@@ -217,7 +217,7 @@ export const BATCH_MEMBRANE_STEPS: readonly LessonStep[] = [
       + "areas and pressures comparable, which seconds do not.  The engine "
       + "publishes each of them, and publishes the diavolume count ONLY in "
       + "constant-volume mode, because outside it the number would be "
-      + "counting a wash that is not happening (BatchDiafilter.H:265-266).",
+      + "counting a wash that is not happening (BatchDiafilter.H:268-269).",
     formula: String.raw`\begin{aligned}
 \mathrm{VCF} &= \frac{V_0}{V} &\qquad& \text{the concentration clock}\\[4pt]
 N &= \frac{\int Q_d\, \mathrm{d}t}{V_0} &\qquad& \text{the wash clock}
@@ -227,14 +227,14 @@ N &= \frac{\int Q_d\, \mathrm{d}t}{V_0} &\qquad& \text{the wash clock}
         means: "the VOLUME CONCENTRATION FACTOR, how many times "
         + "smaller the vessel is than its charge.  VCF = 1 at the start; the "
         + "engine publishes it as `concentrationFactor` "
-        + "(BatchDiafilter.cpp:580)" },
+        + "(BatchDiafilter.cpp:594)" },
       { sym: "V_0", means: "the volume of the initial charge, published as "
         + "`V_initial_m3`", unit: "m³" },
       { sym: "V", means: "the volume in the vessel now", unit: "m³" },
       { sym: "N", means: "the DIAVOLUMES: vessel volumes of clean solvent "
         + "pushed through.  N = 0 at the start, and the engine derives it "
         + "from the permeated volume it integrated as a STATE, so the count "
-        + "and the trajectory cannot disagree (BatchDiafilter.H:258-266)" },
+        + "and the trajectory cannot disagree (BatchDiafilter.H:261-269)" },
       { sym: "Q_d", means: "the diafiltrate rate of step 2, equal to the "
         + "permeate rate in constant-volume mode", unit: "m³/s" },
       { sym: "\\mathrm{d}t",
@@ -250,7 +250,7 @@ N &= \frac{\int Q_d\, \mathrm{d}t}{V_0} &\qquad& \text{the wash clock}
       + "prints it beside the volume the adaptive integrator ACCEPTED.  The "
       + "gap between the two is the write mesh and nothing else, and the "
       + "engine's own header says why the state is the authority "
-      + "(BatchDiafilter.H:258-266): a ledger built by re-quadrature "
+      + "(BatchDiafilter.H:261-269): a ledger built by re-quadrature "
       + "disagrees with the state at first order in the step.",
   },
   {
@@ -372,7 +372,7 @@ c_m > c_b & \text{the wall is richer than the bulk}\\[8pt]
         + "the two is the lesson" },
       { sym: "R_\\mathrm{obs}",
         means: "the OBSERVED rejection the run publishes at "
-        + "every instant as `R_obs_<solute>` (BatchDiafilter.cpp:566-569)" },
+        + "every instant as `R_obs_<solute>` (BatchDiafilter.cpp:580-583)" },
       { sym: "c_b", means: "the solute's concentration in the well-mixed "
         + "BULK of the vessel, published as `c_b_<solute>`",
         unit: "kmol/m³" },
@@ -383,7 +383,7 @@ c_m > c_b & \text{the wall is richer than the bulk}\\[8pt]
         + "answers to", unit: "kmol/m³" },
       { sym: "R_0", means: "the observed rejection at the FIRST instant of "
         + "this run, which the engine takes from the run itself rather than "
-        + "from any declaration (BatchDiafilter.cpp:281-283)" },
+        + "from any declaration (BatchDiafilter.cpp:282-284)" },
       { sym: "n", means: "moles of the solute left in the vessel",
         unit: "kmol" },
       { sym: "n_0", means: "moles of it in the charge", unit: "kmol" },
@@ -395,7 +395,7 @@ c_m > c_b & \text{the wall is richer than the bulk}\\[8pt]
       + "`washoutActual_<solute>` -- what the vessel did -- and "
       + "`washoutIdeal_<solute>`, the constant-R law evaluated at THIS run's "
       + "own initial rejection and its own diavolume count "
-      + "(BatchDiafilter.cpp:597-607).  No case declares either number.  Read "
+      + "(BatchDiafilter.cpp:651-661).  No case declares either number.  Read "
       + "the SIGN of the gap against the rejection trajectory beside it: a "
       + "rejection that ROSE means less solute passed than the law predicted, "
       + "so more was retained than the ideal; a rejection that FELL means the "
@@ -404,7 +404,7 @@ c_m > c_b & \text{the wall is richer than the bulk}\\[8pt]
       + "in either direction.  IN CONCENTRATION MODE THE ENGINE PUBLISHES NO "
       + "IDEAL AT ALL, deliberately -- the washout law is not the law of that "
       + "mode and quoting it there would be a category error "
-      + "(BatchDiafilter.cpp:597-601) -- so the power law on that branch is "
+      + "(BatchDiafilter.cpp:651-655) -- so the power law on that branch is "
       + "computed by this page, from the engine's own R_0 and VCF, and is "
       + "labelled as the tool's rather than the engine's.",
   },
@@ -419,7 +419,7 @@ c_m > c_b & \text{the wall is richer than the bulk}\\[8pt]
       + " The engine offers it as a resistance in series on the permeance it "
       + "hands the transport law -- applied where the transport CONTEXT is "
       + "assembled, so solution-diffusion and DSPM-DE are served alike and "
-      + "neither law is modified (BatchDiafilter.cpp:340-357).  The "
+      + "neither law is modified (BatchDiafilter.cpp:341-358).  The "
       + "resistance grows with the volume filtered per unit area, by one of "
       + "Hermia's blocking laws.",
     formula: String.raw`\begin{array}{ll}
@@ -801,7 +801,7 @@ export const BATCH_MEMBRANE_LIMITS: readonly LessonLimit[] = [
       + "is reserved and unimplemented.  The material and the vessel enthalpy "
       + "ARE priced, and the campaign energy balance reports UNAVAILABLE "
       + "rather than closing with a term quietly set to zero "
-      + "(BatchDiafilter.cpp:616-632).",
+      + "(BatchDiafilter.cpp:670-686).",
   },
   {
     id: "isothermal-single-liquid",

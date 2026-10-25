@@ -36,16 +36,16 @@
 
   THE ENGINE IS THE JUDGE, NOT THE SOURCE.  `batchDiafilter` publishes its own
   `washoutActual_<s>` and `washoutIdeal_<s>` in constant-volume mode
-  (src/unitOperations/batch/BatchDiafilter.cpp:604-607), and the idealisation
+  (src/unitOperations/batch/BatchDiafilter.cpp:658-661), and the idealisation
   is built from THIS RUN's own initial rejection R_initial_<s>
-  (BatchDiafilter.cpp:283, 593) -- so the gap between them cannot have been
+  (BatchDiafilter.cpp:284, 607) -- so the gap between them cannot have been
   arranged by a case.  `washoutIdeal` below must REPRODUCE that KPI from the
   engine's own R and N; where it does not, the finding is about this module,
   and where the engine's ideal parts from its actual, the finding is about the
   constant-R assumption.
 
   IN CONCENTRATION MODE THE ENGINE PUBLISHES NO IDEAL AT ALL, deliberately
-  (BatchDiafilter.cpp:597-603: quoting the washout comparison there would be a
+  (BatchDiafilter.cpp:651-657: quoting the washout comparison there would be a
   category error).  So `retainedIdeal` is the ONLY idealisation on that branch
   and the tool says so rather than letting a reader think the engine drew it.
 
@@ -69,7 +69,7 @@ export type KpiMap = NonNullable<RunResult["kpis"]>;
 export type UnitKpis = KpiMap[string];
 
 /** m/s -> L/(m2.h).  The engine's own conversion, at
- *  BatchDiafilter.cpp:553 and 586; kept here so the tool and the engine
+ *  BatchDiafilter.cpp:567 and 586; kept here so the tool and the engine
  *  cannot disagree about what "LMH" means. */
 export const LMH_PER_MS = 3.6e6;
 
@@ -82,7 +82,7 @@ export interface DiafilterActivation {
   /** The solutes the unit tracked, read from its own `R_initial_<s>` keys. */
   solutes: string[];
   /** true when the run held the volume (the engine counts diavolumes only
-   *  in constant-volume mode -- BatchDiafilter.H:265-266). */
+   *  in constant-volume mode -- BatchDiafilter.H:268-269). */
   constantVolume: boolean;
 }
 
@@ -90,7 +90,7 @@ const INACTIVE: DiafilterActivation =
   { active: false, unit: null, solutes: [], constantVolume: false };
 
 /** The solute names a `batchDiafilter` KPI block carries, from the keys it
- *  publishes per solute (BatchDiafilter.cpp:593).  Derived from the run, never
+ *  publishes per solute (BatchDiafilter.cpp:607).  Derived from the run, never
  *  a list this file keeps. */
 export function solutesFromKpis(unitKpis: UnitKpis | undefined): string[] {
   if (!unitKpis) return [];
@@ -105,7 +105,7 @@ export function solutesFromKpis(unitKpis: UnitKpis | undefined): string[] {
 /**
  * Find the batch membrane vessel in a run.
  *
- * THE SIGNATURE IS `V_permeated_m3` (BatchDiafilter.cpp:582), which no other
+ * THE SIGNATURE IS `V_permeated_m3` (BatchDiafilter.cpp:596), which no other
  * unit in the tree publishes.  `concentrationFactor` alone would NOT do:
  * `batchElectrodialysis` publishes a key of that name for a different
  * quantity (BatchElectrodialysis.cpp:934), and a detector that matched it
@@ -125,7 +125,7 @@ export function detectDiafilter(
     if (!columns.includes(`${unit}.V_m3`)) continue;
     //  CONSTANT VOLUME IS READ FROM THE ENGINE'S OWN COUNTER, never from the
     //  case's `mode` word: the counter is zero in concentration mode by
-    //  construction (BatchDiafilter.H:265-266), so a run that counted
+    //  construction (BatchDiafilter.H:268-269), so a run that counted
     //  diavolumes held its volume, whatever any dict says.
     return {
       active: true, unit, solutes,
@@ -143,7 +143,7 @@ export function detectDiafilter(
  *   V dc/dt = -Q_p (1 - R) c,  N = INTEGRAL Q_d dt / V_0  =>  n/n_0 = exp(-(1-R)N)
  *
  * This is the same expression the engine evaluates for `washoutIdeal_<s>`
- * (BatchDiafilter.cpp:606-607); reproducing it here is the CHECK that the two
+ * (BatchDiafilter.cpp:660-661); reproducing it here is the CHECK that the two
  * pages are talking about one law, not two.
  */
 export function washoutIdeal(R: number, N: number): number {
@@ -322,10 +322,10 @@ export function diafiltrationTime(
 export interface Sample {
   t: number;
   /** Vessel volume [m3], the unit's own `V_m3` column
-   *  (BatchDiafilter.cpp:552). */
+   *  (BatchDiafilter.cpp:566). */
   V: number;
   /** V_0/V -- the VOLUME CONCENTRATION FACTOR, on the engine's own
-   *  definition of `concentrationFactor` (BatchDiafilter.cpp:580). */
+   *  definition of `concentrationFactor` (BatchDiafilter.cpp:594). */
   vcf: number;
   /** Water flux [L/(m2.h)], the unit's `J_w_LMH` column. */
   J_LMH: number;
@@ -335,7 +335,7 @@ export interface Sample {
    *  (zero throughout a concentration-mode run, by construction). */
   N: number;
   /** The integrator's ACCEPTED permeated volume [m3], `V_perm_m3` -- the
-   *  state, not a re-quadrature (BatchDiafilter.H:258-266). */
+   *  state, not a re-quadrature (BatchDiafilter.H:261-269). */
   Vperm: number;
   /** A_eff/A_w where the case declared fouling, else null. */
   permeanceRatio: number | null;
@@ -381,7 +381,7 @@ export function readSamples(
 }
 
 export interface SoluteSeries {
-  /** Bulk concentration [kmol/m3], `c_b_<s>` (BatchDiafilter.cpp:564). */
+  /** Bulk concentration [kmol/m3], `c_b_<s>` (BatchDiafilter.cpp:578). */
   cb: number[];
   /** Permeate concentration [kmol/m3], `c_p_<s>` (line 565). */
   cp: number[];
@@ -601,7 +601,7 @@ export function conservativeOptimum(
  * re-integrating the permeate flow over the WRITTEN samples and comparing it
  * with `V_perm_m3`, the volume the adaptive integrator actually accepted.
  *
- * `BatchDiafilter.H:258-266` records why the unit integrates the volume as a
+ * `BatchDiafilter.H:261-269` records why the unit integrates the volume as a
  * STATE instead: a ledger built by re-quadrature disagrees with the accepted
  * state at O(dt).  This reproduces that disagreement, on the coarser mesh of
  * the write interval, so the gap is visible rather than described.
@@ -751,7 +751,7 @@ export function readVessel(
 
 export interface SoluteVerdict {
   solute: string;
-  /** `R_initial_<s>` / `R_final_<s>` (BatchDiafilter.cpp:593-594). */
+  /** `R_initial_<s>` / `R_final_<s>` (BatchDiafilter.cpp:607-608). */
   R0: number | null;
   R1: number | null;
   /** `recovery_<s>` -- n/n_0 at the end (line 595). */
