@@ -1528,6 +1528,32 @@ accepts today, and that is a policy call.
 > final; }` layout draws what the steady flowsheet and the sizing pass
 > already hold.
 
+> **C162. A NONVOLATILE ON THE FORMATION LEG REFUSES, AND VITOR RUNS THE
+> SWEEP ON HIS LAPTOP (Vitor, 2026-10-25, asked whether the full sweep the
+> fix needs was authorised: "Eu estou em casa e posso fazer a suite
+> completa no meu laptop.").**  Found by the general that cleared the
+> container suite's first four FAILs (all four were stale gate PROBES, no
+> engine regression; branch `claude/fix-suite-fd688e4ce`): the sensible
+> leg (`Component::Hliq_pure`, Component.cpp:1378-1412) REFUSES a `role
+> nonvolatile` component with no liquid Cp, while the formation leg
+> (`ThermoPackage::speciesPhaseEnthalpy`, ThermoPackage.cpp ~1504-1516)
+> ANNOUNCES and prices it through `h_pure_ig - Hvap` -- the ideal-gas
+> route CLAUDE.md 5 (salt formation, 2026-06-29) forbids for a
+> nonvolatile.  Since C65 the formation leg is the surface the energy
+> report and every `priceState` unit price on, so the rule is unenforced
+> on the main path, and one decision has two homes.  Scope: the refusal in
+> ONE home both legs call; a formation-leg arm in
+> `check_liquid_cp_fallback` (whose docstring wrongly calls that leg
+> "already correct"); the corpus measured BEFORE the sweep (which cases
+> start refusing -- expected: refusals rather than moved rows); then one
+> branch carrying main + C158b + the gate fixes + this, which Vitor sweeps
+> on his laptop (DEV.md 4c "THE FULL SUITE ON A 10-CORE PC").  The
+> container sweep on fd688e4ce keeps running for its findings (6 FAIL at
+> 704 PASS: the four probes, the theory bibliography out of first-citation
+> order -- the Deen1987 cite -- and the origin census recount after the
+> C157 provenance blocks).
+> Status: recorded; dispatched the same hour.
+
 > **C160. THERMODYNAMICS AND KINETICS TOP NOTCH: A PARITY PROGRAMME
 > AGAINST AN OPEN REFERENCE LIBRARY (Vitor, 2026-10-25, a programme text
 > -- "CHOUPO -- Cantera 3.2 Scientific Parity Programme" -- with "Podes ver
