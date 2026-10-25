@@ -4072,6 +4072,27 @@ accepts today, and that is a policy call.
 > (5, 8, 9, 12, 13, 14); G13 gibbs07 energy closure (6); G14 letdown
 > witness NH3 (7).  Wave B after A merges: origin labels and the homepage
 > claim (15, 18), then the sweeps (16, 17, 19, 20).
+> WAVE B LANDED 2026-10-25 (`claude/c112-wave-b`): (15, 18) every result
+> panel of the 65 tools carries an ORIGIN mark -- engine / page /
+> reference / assumption, one home `gui/src/ui/methods/originKinds.ts`,
+> drawn by `origin.tsx` with a legend in the tool frame; `registry.ts`
+> declares each tool's origins and `methodOrigins.test.ts` holds declared
+> = drawn both ways; the homepage, `EDUTOOLS_BLURB` and the EduTools Guide
+> claimed every tool runs the engine, which was false (9 run none, 3 quote
+> a recorded run) -- the claims now say what is true and each landing card
+> prints its tool's origins from `methodTools.json`.  (17) the engine's
+> own validity warnings were dropped by the pages: every run hook now
+> publishes them (`engineCaveats.ts`) and the frame shows them in the
+> engine's words; pool fire warns outside Heskestad's tested range.  (19)
+> all 65 tools rendered at 390 px; the shared causes (knob columns,
+> segmented controls, badges, the Kremser legend) fixed in
+> theme-overrides.css; the layout and GMP plans still clip labels.  (16)
+> two incoherences fixed (cooling-tower vs Kremser L; the Claus ratio),
+> (20) seven absolute claims scoped.  `--gui` 36/0 on main.  PROPOSALS for
+> Vitor: guard-rail 4 ("ZERO physics in TS") is contradicted by the
+> page-computing tools the marks now show -- the rule or the tools; the
+> pool-fire default pool is above the measured pans; the COSMO-SAC page
+> shows no numbers; absorber01's default asks N2's Psat above its Tc.
 
 > **C111. A SPRAY DRYER THAT TAKES A FEED WITH SEVERAL SOLVENTS (Vitor,
 > 2026-10-20, testing: "o modelo de spray dryer nao aceita correntes com
