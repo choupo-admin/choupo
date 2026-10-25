@@ -7,5 +7,5 @@
 |        |     O ptimization  |                                               |
 \*-----------------------------------------------------------------------------*/
 application  choupoSolve;
-description  "The start-up years of a discounted cash flow (DEV.md 4c C63): ammonia02_full_plant's plant and costing, appraised over a THREE-year construction with a declared capital schedule, a two-year production ramp-up and a start-up cost expensed in year 1 -- the cash flow is printed year by year and checked by hand in system/postDict.";
+description  "The start-up years of a discounted cash flow (DEV.md 4c C63): ammonia02_full_plant's plant and costing, appraised over a THREE-year construction with a declared capital schedule, a two-year production ramp-up and a start-up cost expensed in year 1 -- the cash flow is printed year by year and checked by hand in system/postDict.  Half the fixed capital is borrowed (DEV.md 4c C110 G4): the loan's interest is capitalised during construction and repaid as an annuity, and the owners' EQUITY NPV/IRR are printed BESIDE the project's, which the loan does not move.";
 verbosity    3;

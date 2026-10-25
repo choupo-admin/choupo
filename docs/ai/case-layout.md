@@ -1176,11 +1176,11 @@ of the .ods; `cashFlow.csv` stays the project's.  `financing.rate` and
 `financing.debtFraction` are sensitivity inputs: they move the equity NPV only
 (published as `sens_<input>_equityNPV_low/_high`), the project NPV's swing is
 zero by construction.  Witness:
-`tutorials/steady/economics/economics04_debt_financing` (economics03's plant
-with an annuity loan and a sensitivity on its two terms, checked by hand in
-its postDict); the gate `bin/curate/check_debt_financing.py` holds it and
-builds further probes from `economics03_startup_years` and
-`economics01_esterification_dcf`.
+`tutorials/steady/economics/economics03_startup_years` (its three-year
+construction carries an annuity loan and a sensitivity on the loan's two
+terms, checked by hand in its postDict); the gate
+`bin/curate/check_debt_financing.py` holds it and builds further probes from
+a loan-free copy of it and from `economics01_esterification_dcf`.
 
 **THE PARTICULATE STEPS IN THE LABOUR (2026-10-19, DEV.md 4c C98).**  The
 operator count is Turton's `N_OL = (6.29 + 31.7 P^2 + 0.23 N_np)^0.5` per

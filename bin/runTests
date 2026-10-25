@@ -6473,8 +6473,8 @@ if [ "$#" -eq 0 ]; then
     # Debt-financing gate (2026-10-20, revived 2026-10-25, DEV.md 4c C110
     # G4): the opt-in `economics { financing {} }` loan adds the EQUITY view
     # BESIDE the project's and changes none of it -- on probes built from
-    # economics03 and economics01 and on the witness economics04_debt_
-    # financing, every draw, capitalised interest, repayment and equity cash
+    # economics03 and economics01 and on the witness economics03 itself,
+    # which declares a loan, every draw, capitalised interest, repayment and equity cash
     # flow recomputes by hand from the project's published cash flow, the
     # project's cashFlow.csv is byte-identical with and without the loan, the
     # refusals fire by name, an absent block is silent, the witness's golden

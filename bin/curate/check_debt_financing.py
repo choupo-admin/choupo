@@ -73,8 +73,8 @@ WHAT THIS GATE CHECKS:
       value, an empty source, a sensitivity on a loan nobody declared, a
       rate end outside [0, 1), an equity rate at or below -100 %.
 
-  (h) AN ABSENT BLOCK IS SILENT: economics01 and economics03 as shipped
-      publish no `financing` object, no debt_/equity_ KPI, no financing.csv,
+  (h) AN ABSENT BLOCK IS SILENT: economics01 as shipped and economics03
+      with its loan removed publish no `financing` object, no debt_/equity_ KPI, no financing.csv,
       no equity line, and their .ods has one sheet.
 
   (i) PUBLISHED IMPLIES PINNED: every scalar of the JSON `financing` object
@@ -88,13 +88,16 @@ WHAT THIS GATE CHECKS:
       `in.fin.debtFraction` through `withSensitivityValue`.  No output arm
       can tell a correct second copy from the first.
 
-  (k) THE SHIPPED WITNESS, economics04_debt_financing (economics03's plant
-      with an annuity loan and a sensitivity on its two terms): its run
-      recomputes by hand against the terms its postDict DECLARES (read from
-      the file, not typed here), its every project KPI equals economics03's
-      as shipped to the last bit, and its golden pins every `debt_*`,
-      `equity_*` and `sens_financing_*` KPI it publishes (published implies
-      pinned).
+  (k) THE SHIPPED WITNESS, economics03_startup_years (its three-year
+      construction carries an annuity loan and a sensitivity on the loan's
+      two terms): its run recomputes by hand against the terms its postDict
+      DECLARES (read from the file, not typed here); a TEMPORARY COPY of the
+      same case with the `financing {}` and `sensitivity {}` blocks removed
+      publishes every project KPI the case publishes, to the last bit (the
+      project view does not move with the loan); and its golden pins every
+      `debt_*`, `equity_*` and `sens_financing_*` KPI it publishes
+      (published implies pinned).  The probes of (b)-(d) and (f) are built
+      on that loan-free copy, so they never carry two loans.
 
   (l) THE OTHER TWO SURFACES: the .ods `Financing (equity)` sheet and the
       printed year-by-year schedule carry the JSON schedule's numbers, row
@@ -113,7 +116,7 @@ touched src/, the gate run, the bytes restored):
   S8  a second copy of the draw arithmetic outside appraise()     CAUGHT (j)
   S9  the rate-in-per-cent refusal removed                        CAUGHT (g)
   S10 financing.csv not written                                   CAUGHT (i)
-  S11 the witness golden loses its `equity_NPV` row               CAUGHT (k)
+  S11 economics03's golden loses its `equity_NPV` row            CAUGHT (k)
   S12 the annuity priced on the drawn sum, not the loan at t = 0  CAUGHT (b)(k)
   S13 the .ods equity sheet writes no year rows                   CAUGHT (l)
       (it SURVIVED the first version of this gate, which read no .ods;
@@ -149,8 +152,7 @@ ROOT = Path(__file__).resolve().parents[2]
 BIN = ROOT / "choupoSolve"
 SRC = ROOT / "src/postProcessing/EconomicsPass.cpp"
 E01 = ROOT / "tutorials/steady/economics/economics01_esterification_dcf"
-E03 = ROOT / "tutorials/steady/economics/economics03_startup_years"
-E04 = ROOT / "tutorials/steady/economics/economics04_debt_financing"   # the witness
+E03 = ROOT / "tutorials/steady/economics/economics03_startup_years"   # the witness
 
 fails = []
 CLAIM = []
@@ -177,12 +179,44 @@ def insert_in_economics(s, text):
     return s[:k] + text + "\n" + s[k:]
 
 
-def prepare(work, name, src, text=None):
+def masked(s):
+    """`s` with every comment blanked, offsets kept, so a search finds code."""
+    s = re.sub(r"/\*.*?\*/", lambda m: re.sub(r"[^\n]", " ", m.group(0)), s, flags=re.S)
+    return re.sub(r"//[^\n]*", lambda m: " " * len(m.group(0)), s)
+
+
+def strip_loan(s):
+    """The postDict `s` with its `financing {}` and `sensitivity {}` blocks
+    removed (a sensitivity on a loan nobody declares refuses, and the
+    witness's sensitivity moves only the loan's terms): economics03 as it
+    is WITHOUT its loan, the project the loan must not move."""
+    for word in ("financing", "sensitivity"):
+        m = re.search(r"^[ \t]*" + word + r"\s*\{", masked(s), re.M)
+        if not m:
+            continue
+        code = masked(s)
+        depth, k = 0, code.index("{", m.start())
+        while True:
+            if code[k] == "{":
+                depth += 1
+            elif code[k] == "}":
+                depth -= 1
+                if depth == 0:
+                    break
+            k += 1
+        s = s[:m.start()] + s[k + 1:]
+    return s
+
+
+def prepare(work, name, src, text=None, strip=False):
     d = work / name
     if d.exists():
         shutil.rmtree(d)
     shutil.copytree(src, d, ignore=shutil.ignore_patterns("reports", "converged",
                                                           "design", "iterations"))
+    if strip:
+        p = d / "system" / "postDict"
+        p.write_text(strip_loan(p.read_text()))
     if text is not None:
         p = d / "system" / "postDict"
         p.write_text(insert_in_economics(p.read_text(), text))
@@ -690,24 +724,24 @@ def main():
     work = reuse or keep or Path(tempfile.mkdtemp(prefix="debtfin."))
     work.mkdir(parents=True, exist_ok=True)
 
-    def get(name, src, text=None):
+    def get(name, src, text=None, strip=False):
         d = work / name
         if reuse:
             return d, *stored(d)
-        d = prepare(work, name, src, text)
+        d = prepare(work, name, src, text, strip)
         return d, *run(d)
 
     try:
         arm_hand_anchor()
 
         # (b) + (i): the annuity probe, with the two financing sensitivities
-        d1, out1, rc1 = get("annuity", E03, block(FIN_ANNUITY, SENS))
+        d1, out1, rc1 = get("annuity", E03, block(FIN_ANNUITY, SENS), strip=True)
         res1 = check_probe("b", d1, out1, rc1, FIN_ANNUITY)
 
         # (c) the project is unchanged: the same case without the loan
-        d0, out0, rc0 = get("e03_absent", E03)
+        d0, out0, rc0 = get("e03_absent", E03, strip=True)
         if rc0 != 0:
-            fail(f"(c) economics03 as shipped exited {rc0}")
+            fail(f"(c) economics03 with its loan removed exited {rc0}")
         elif res1:
             a = (d0 / "reports/economics/cashFlow.csv").read_bytes()
             b = (d1 / "reports/economics/cashFlow.csv").read_bytes()
@@ -753,7 +787,7 @@ def main():
                 fail("(f) the sensitivity table does not say financing.* moves the equity view only")
 
         # (d) linear, totalCapital, no grace, the equity rate defaulted
-        d2, out2, rc2 = get("linear", E03, block(FIN_LINEAR))
+        d2, out2, rc2 = get("linear", E03, block(FIN_LINEAR), strip=True)
         fl = dict(FIN_LINEAR)
         res2 = result_json(out2) if rc2 == 0 else None
         if res2:
@@ -796,27 +830,27 @@ def main():
                      + ("absent" if not re.search(pat, o) else "present"))
             nref += 1
 
-        # (k) THE SHIPPED WITNESS: economics04_debt_financing declares a loan
-        #     on economics03's plant.  Its run recomputes by hand against the
-        #     terms its postDict DECLARES, its project figures are
-        #     economics03's to the last bit, and its golden pins every
-        #     debt_/equity_ KPI and every financing sensitivity KPI it
-        #     publishes (published implies pinned).
+        # (k) THE SHIPPED WITNESS: economics03_startup_years declares a loan.
+        #     Its run recomputes by hand against the terms its postDict
+        #     DECLARES, its project KPIs equal those of a temporary copy of
+        #     itself with the loan removed, to the last bit, and its golden
+        #     pins every debt_/equity_ KPI and every financing sensitivity
+        #     KPI it publishes (published implies pinned).
         nwit = 0
-        finW = declared_financing(E04)
+        finW = declared_financing(E03)
         if not finW:
-            fail("(k) the witness economics04_debt_financing declares no `financing {}` block")
+            fail("(k) the witness economics03_startup_years declares no `financing {}` block")
         else:
             if "equityDiscountRate" not in finW:
                 fail("(k) the witness declares no equityDiscountRate (it is meant to own it)")
-            dW, outW, rcW = get("witness", E04)
+            dW, outW, rcW = get("witness", E03)
             resW = check_probe("k", dW, outW, rcW, finW)
             if resW and rc0 == 0:
                 k0, kW = econ_kpis(result_json(out0)), econ_kpis(resW)
                 moved = [x for x in k0 if not close(k0[x], kW.get(x), abs_tol=0.0, rel=0.0)]
                 if moved:
-                    fail(f"(k) the witness's PROJECT KPIs are not economics03's: {moved}")
-                pinned = golden_kpi_keys(E04)
+                    fail(f"(k) the witness's PROJECT KPIs move when its loan is removed: {moved}")
+                pinned = golden_kpi_keys(E03)
                 published = [x for x in kW if x.startswith(("debt_", "equity_"))
                              or (x.startswith("sens_financing_"))]
                 if not any(x.startswith("debt_") for x in published):
@@ -828,9 +862,9 @@ def main():
 
         # (h) absent: silent
         dA, outA, rcA = get("e01_absent", E01)
-        for dd, o, rc, nm in ((dA, outA, rcA, "economics01"), (d0, out0, rc0, "economics03")):
+        for dd, o, rc, nm in ((dA, outA, rcA, "economics01"), (d0, out0, rc0, "economics03 without its loan")):
             if rc != 0:
-                fail(f"(h) {nm} as shipped exited {rc}")
+                fail(f"(h) {nm} exited {rc}")
                 continue
             res = result_json(o) or {}
             k = econ_kpis(res)
@@ -862,12 +896,13 @@ def main():
           " construction accrues no interest during construction and says why;"
           " `financing.rate` and `financing.debtFraction` leave the project NPV exactly"
           f" where it was and their equity NPVs recompute; {nref} malformed declarations"
-          " refuse by name; economics01 and economics03 as shipped print, publish and"
-          " write nothing of a loan; every financing scalar is a pinned KPI and"
-          " financing.csv, the .ods equity sheet and the printed schedule equal the"
-          " JSON schedule; the shipped witness economics04_debt_financing recomputes"
-          " against the terms it declares, keeps every project KPI of economics03"
-          f" and its golden pins all {nwit} financing KPIs it publishes; and the"
+          " refuse by name; economics01 as shipped and economics03 with its loan removed"
+          " print, publish and write nothing of a loan; every financing scalar is a"
+          " pinned KPI and financing.csv, the .ods equity sheet and the printed schedule"
+          " equal the JSON schedule; the shipped witness economics03_startup_years"
+          " recomputes against the loan it declares, its every project KPI equals that"
+          " of a copy of it with the loan removed, and its golden pins all"
+          f" {nwit} financing KPIs it publishes; and the"
           " loan's arithmetic lives inside appraise().  NOT COVERED: whether the"
           " terms are sensible, a country's tax law on capitalised interest, the"
           " equity multiple-IRR guard firing (no case has an ambiguous equity IRR),"

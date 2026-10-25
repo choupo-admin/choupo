@@ -8,16 +8,17 @@
 \*-----------------------------------------------------------------------------*/
 /*---------------------------------------------------------------------------*\
   economics03_startup_years -- THE START-UP YEARS OF A DISCOUNTED CASH FLOW
-  (DEV.md 4c C63).  The plant, its sizing and its costing are
-  ammonia02_full_plant's, unchanged; only the `economics {}` block below
-  differs, by four keys:
+  (DEV.md 4c C63), AND A LOAN (DEV.md 4c C110 G4).  The plant, its sizing
+  and its costing are ammonia02_full_plant's, unchanged; only the
+  `economics {}` block below differs, by four keys:
 
       constructionPeriod  3;                 capital over THREE years
       capitalSchedule     ( 0.3 0.5 0.2 );   FCI share at the END of each
       rampUp              ( 0.6 0.85 );      production in operating years 1, 2
       startupCostFraction 0.10;              start-up cost = 0.10 x FCI, year 1
 
-  Every one of them is an AUTHOR-SET ASSUMPTION, not a datum.
+  and by two blocks, a `financing` loan and a `sensitivity` on its two
+  terms (below).  Every one of them is an AUTHOR-SET ASSUMPTION, not a datum.
 
   THE TIMELINE (CAPCOST 2017's placement; the reference instant is
   Choupo's -- see EconomicsPass.cpp `readTimeline`).  Year 0 is the END of
@@ -26,33 +27,68 @@
   at t = 0; the plant operates in years 1..15.  Every year is discounted by
   1/(1+i)^t, so an outflow at t < 0 is COMPOUNDED to start-up.
 
-  CHECK IT BY HAND (i = 0.10, tau = 0.21; the run prints every input):
-    FCI = 55 272 205,  WC = 0.15 FCI = 8 290 831,  d = FCI/9 = 6 141 356,
-    R = 239 167 295,   C_OL = 1 041 193,  C_RM + C_UT = 162 705 466,
+  CHECK IT BY HAND (i = 0.10, tau = 0.21; the run prints every input; the
+  figures are this run's, read off it on 2026-10-25):
+    FCI = 55 416 333,  WC = 0.15 FCI = 8 312 450,  d = FCI/9 = 6 157 370,
+    R = 239 167 353,   C_OL = 1 041 193,  C_RM + C_UT = 162 705 455,
     COM_d,t = 0.180 FCI + 2.73 C_OL + 1.23 p_t (C_RM + C_UT)
-            = 12 791 455 + p_t x 200 127 723.
-    t = -2   -0.3 FCI          = -16 581 661   x 1.21 = -20 063 810
-    t = -1   -0.5 FCI          = -27 636 102   x 1.10 = -30 399 713
-    t =  0   -0.2 FCI - WC     = -19 345 272   x 1.00 = -19 345 272
-    t =  1   p = 0.6:  R_1 = 143 500 377,  COM_d,1 = 132 868 089,
-             start-up S = 0.10 FCI = 5 527 220 (an EXPENSE of year 1),
-             taxable = R_1 - COM_d,1 - S - d = -1 036 288  (a tax CREDIT,
-             -217 621: the pass's standing convention that a loss offsets
+            = 12 817 398 + p_t x 200 127 710.
+    t = -2   -0.3 FCI          = -16 624 900   x 1.21 = -20 116 129
+    t = -1   -0.5 FCI          = -27 708 166   x 1.10 = -30 478 983
+    t =  0   -0.2 FCI - WC     = -19 395 716   x 1.00 = -19 395 716
+    t =  1   p = 0.6:  R_1 = 143 500 412,  COM_d,1 = 132 894 024,
+             start-up S = 0.10 FCI = 5 541 633 (an EXPENSE of year 1),
+             taxable = R_1 - COM_d,1 - S - d = -1 092 616  (a tax CREDIT,
+             -229 449: the pass's standing convention that a loss offsets
              other income),
-             CF_1 = taxable x (1 - tau) + d = 5 322 688
-    t =  2   p = 0.85: R_2 = 203 292 200,  COM_d,2 = 182 900 020,
-             CF_2 = (R_2 - COM_d,2 - d)(1 - tau) + d = 17 399 508
-    t >= 3   full production, CF = 22 025 697 (20 736 012 once the
-             depreciation ends after year 9; + WC at t = 15)
-  The run's NPV is 78 315 195 EUR at start-up (58 839 365 at the start of
-  construction, CAPCOST's year 0: / 1.1^3), the IRR 22.06 %, the discounted
-  payback 5.43 operating years.  The one-year twin, ammonia02_full_plant
-  with one construction year and none of these keys, would be at
-  NPV 103 568 805 and IRR 34.16 % -- the difference is what the start-up
+             CF_1 = taxable x (1 - tau) + d = 5 294 204
+    t =  2   p = 0.85: R_2 = 203 292 250,  COM_d,2 = 182 925 952,
+             CF_2 = (R_2 - COM_d,2 - d)(1 - tau) + d = 17 382 423
+    t >= 3   full production, CF = 22 008 621 (20 715 573 once the
+             depreciation ends after year 9; + WC at t = 15: 29 028 023)
+  The run's NPV is 77 991 866 EUR at start-up (58 596 444 at the start of
+  construction, CAPCOST's year 0: / 1.1^3), the IRR 21.99 %, the discounted
+  payback 5.45 operating years.  The one-year twin -- this case with one
+  construction year and none of the four keys, run on 2026-10-25 -- is at
+  NPV 103 272 141 and IRR 34.04 % -- the difference is what the start-up
   years cost.
 
   THE WORKING CAPITAL DOES NOT FOLLOW THE RAMP-UP: it is invested in full at
   t = 0, and the run says so ([assumed] economics).
+
+  THE LOAN (DEV.md 4c C110 G4; record
+  docs/design/a-loan-is-the-owners-view-not-the-projects.md).  Half the FCI
+  is lent at 6 %, two grace years, an eight-year annuity, the owners
+  discounting at 12 %.  The PROJECT figures above do NOT move with it: the
+  project's merit does not depend on how it is financed, and the gate
+  check_debt_financing runs this case with the loan removed and requires
+  every project KPI to the last bit.  The loan adds a SECOND view, the
+  EQUITY (owners') one, beside them:
+    draws, at the END of each construction year (r = 0.06):
+      t = -2   0.5 x 0.3 FCI =  8 312 450
+      t = -1   0.5 x 0.5 FCI = 13 854 083,  interest CAPITALISED
+               0.06 x  8 312 450 =    498 747  -> balance 22 665 280
+      t =  0   0.5 x 0.2 FCI =  5 541 633,  interest capitalised
+               0.06 x 22 665 280 =  1 359 917  -> P = 29 566 830
+    interest during construction 1 858 664, depreciated with the plant
+    over 9 yr: 206 518 a year (IAS 23 / NCRF 10, a stated convention).
+    Operating years 1-2 (grace): interest only, 0.06 x P = 1 774 010.
+    Years 3-10: a level payment A = P r / (1 - 1.06^-8) = 4 761 323; in
+    year 3 interest 1 774 010 + principal 2 987 313; the balance clears at
+    year 10.  The equity cash flow of an operating year is the project's
+    less (interest + 206 518)(1 - tau), plus 206 518, less the principal
+    (year 1: 5 294 204 - 1 980 528 x 0.79 + 206 518 = 3 936 105); of a
+    construction year, the project's plus the draw -- so the owners invest
+    8 312 450 + 13 854 083 + 13 854 083 = 36 020 616.
+  The equity NPV at 12 % is 71 086 928 EUR, the equity IRR 30.35 %, the
+  equity discounted payback 3.98 operating years.  The sensitivity moves
+  `financing.rate` (4 % -> 8 %) and `financing.debtFraction` (0.3 -> 0.7):
+  the project NPV swing is EXACTLY zero, the equity NPV moves
+  (73 309 917 -> 68 733 263 and 66 493 995 -> 75 679 861).  Not modelled: a
+  balloon or a loan longer than the plant (refused), several loans, fees, a
+  variable rate, tax-loss carry-forward, a cost of equity derived from
+  leverage (the 12 % is declared), a country's tax law on capitalised
+  interest.
 
   What follows is ammonia02_full_plant's own header, unchanged.
 
@@ -185,4 +221,27 @@ economics
     contingencyFee      1.18;
     estimateClass       4;
     refuseOnMissingPrice 1;
+    //  THE LOAN (DEV.md 4c C110 G4) -- see the header.
+    //  Every term is an AUTHOR-SET ASSUMPTION of the coursework kind
+    //  (half the fixed capital lent by a bank at a stated rate), chosen so
+    //  each term moves a number a reader can recompute; none is a datum.
+    financing
+    {
+        debtFraction        0.5;            // half the FCI is lent
+        basis               fixedCapital;   // the FCI only; the WC is the owners'
+        rate                0.06;           // 6 %/yr on the balance
+        graceYears          2;              // operating years 1-2: interest only
+        termYears           8;              // repaid in operating years 3-10
+        repayment           annuity;        // a level payment
+        equityDiscountRate  0.12;           // the owners ask more than the project
+        source              "author-set coursework loan terms (DEV.md 4c C110 G4); not a quoted bank offer";
+        reason              "half the fixed capital borrowed, as the students' projects do, with a grace period covering the ramp-up years so every term of the loan moves a number this header recomputes";
+    }
+    //  The two terms of the loan, one at a time: the PROJECT NPV does not
+    //  move (a swing of exactly zero), the EQUITY NPV does.
+    sensitivity
+    {
+        financing.rate          { absolute ( 0.04 0.08 ); }
+        financing.debtFraction  { absolute ( 0.3 0.7 ); }
+    }
 }

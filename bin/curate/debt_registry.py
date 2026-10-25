@@ -281,10 +281,6 @@ NO_GRANT_CASE_LOCAL = {
         "sealed NH3 mirror; Engineering Toolbox viscosity fit -- re-import.",
     "tutorials/steady/economics/economics03_startup_years/constant/components/NH3.dat":
         "sealed NH3 mirror; Engineering Toolbox viscosity fit -- re-import.",
-    "tutorials/steady/economics/economics04_debt_financing/constant/components/NH3.dat":
-        "sealed NH3 mirror, copied with economics03's plant so the two stay"
-        " one plant to the last bit; Engineering Toolbox viscosity fit --"
-        " re-import (together with economics03's).",
     "tutorials/steady/flash/flash09_nh3_water_reactive/constant/components/NH3.dat":
         "sealed NH3 mirror; Engineering Toolbox viscosity fit -- re-import.",
     "tutorials/steady/flash/flash12_nh3_acetic_ethanol_reactive/constant/components/NH3.dat":

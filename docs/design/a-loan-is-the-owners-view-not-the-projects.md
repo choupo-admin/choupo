@@ -15,7 +15,11 @@ commit).  What changed from the first version: the equity view's taxable
 income is now DERIVED from the project's (one vector, §4) rather than a
 second copy of the income statement; the witness is a shipped tutorial
 (§6), not only the gate's probes; the byte-identity measurement is reported
-(§6) rather than promised; the sabotages are recorded (§8).
+(§6) rather than promised; the sabotages are recorded (§8).  On review the
+same day (the commander's ruling, under Vítor's standing rule not to
+multiply cases) the loan was FOLDED into `economics03_startup_years`
+instead of a new tutorial that copied its plant, and the stated defaults of
+§4 were confirmed as they stand.
 
 ## 1. What was there
 
@@ -91,6 +95,13 @@ equity NPV at the project's rate is not simply the project NPV; the equity
 view shows it, the project view does not need it.)
 
 ## 4. The arithmetic, and the stated defaults
+
+**Confirmed 2026-10-25 (the commander's ruling on the review of this
+slice):** the three defaults this section states STAND -- the interest
+during construction is CAPITALISED and depreciated with the plant; `basis`
+is REQUIRED (no default between fixed and total capital); an undeclared
+`equityDiscountRate` falls back to the project's `discountRate` and is
+ANNOUNCED.
 
 All of it is inside `appraise`, the one cash-flow home (C68), derived FROM the
 project's cash-flow vector so the two views can differ only by the loan.
@@ -180,24 +191,28 @@ unchanged operation for operation (every economics case byte-identical, §6).
 
 **Byte identity without the block (2026-10-25).**  Every corpus case whose
 `system/postDict` mentions `economics` (17 cases; 13 of them run the pass
-and write `reports/economics/`) was run in place with a build of `main` at
-`22dc303d4` and then with a build of this slice, from the same directory:
-stdout (which carries the result JSON), stderr, the exit code and every file
-under `reports/economics/` (the .ods included) were compared with `cmp`.
-All 17 are byte-identical, the run banner's commit line included (both
-builds were of a tree whose HEAD was `22dc303d4`).  A measurement, not a
-gate: it is retaken whenever `EconomicsPass.cpp` moves.
+and write `reports/economics/`) was run in place with a build of `main` and
+then with a build of this slice, from the same directory: stdout (which
+carries the result JSON), stderr, the exit code and every file under
+`reports/economics/` (the .ods included) were compared with `cmp`, the run
+banner's commit line set aside.  Taken twice: against `22dc303d4` (all 17
+identical, before the loan was folded into economics03) and, after the
+rebase, against `411f0148a`: the 16 cases that declare no loan are
+identical, and economics03 -- which now declares one -- writes a
+`cashFlow.csv` byte-identical to main's.  A measurement, not a gate: it is
+retaken whenever `EconomicsPass.cpp` moves.
 
-**The witness is a shipped tutorial**:
-`tutorials/steady/economics/economics04_debt_financing` is
-`economics03_startup_years`'s plant, costing and three-year construction
-with an annuity loan (0.5 x FCI at 6 %, two grace years, eight repayments,
-equity at 12 %) and a sensitivity on `financing.rate` and
-`financing.debtFraction`; its postDict checks the loan by hand.  Its golden
-is economics03's golden COPIED -- all 287 rows, every one still passing, so
-the golden itself says the project view did not move -- plus 28 rows
-appended with `--record-append` (the eight `debt_*` / `equity_*` KPIs and
-twenty `sens_financing_*` KPIs, the equity NPV at each end among them).
+**The witness is `economics03_startup_years` itself**: its three-year
+construction carries an annuity loan (0.5 x FCI at 6 %, two grace years,
+eight repayments, equity at 12 %) and a sensitivity on `financing.rate`
+and `financing.debtFraction`; its postDict checks the loan by hand.  Its
+golden kept all 287 of its rows, every one still passing with the loan
+declared (the project view did not move), and gained 28 rows appended with
+`--record-append` -- the eight `debt_*` / `equity_*` KPIs and twenty
+`sens_financing_*` KPIs, the equity NPV at each end among them; the file's
+diff is 28 lines added, 0 removed.  The gate also runs a temporary copy of
+the case with the loan removed and requires every project KPI the case
+publishes to the last bit.
 **The gate's probes** add what one case cannot: `bin/curate/check_debt_financing.py` builds loans on copies of
 `economics03_startup_years` (three construction years, a ramp-up, a start-up
 cost -- so capitalisation, grace and the ramped tax interact) and
@@ -210,7 +225,7 @@ the income-statement form above, not by the engine's delta form.
 ## 7. Not done, said plainly
 
 * The GUI does not draw the equity view (the result carries it); one
-  tutorial declares a loan (`economics04_debt_financing`).
+  tutorial declares a loan (`economics03_startup_years`).
 * A balloon payment, a loan longer than the plant, several loans, a drawdown
   schedule that differs from the capital schedule, fees, a variable rate.
 * A cost of equity derived from leverage (Modigliani-Miller, a CAPM beta): the
@@ -223,8 +238,8 @@ the income-statement form above, not by the engine's delta form.
 `bin/curate/check_debt_financing.py`, wired in `bin/runTests` after the
 economic-sensitivity gate; arms (a)-(l) listed in its docstring, arm (k)
 holding the shipped witness (its run against the terms its postDict
-declares, its project KPIs equal to economics03's, its golden pinning every
-financing KPI it publishes) and arm (l) the .ods equity sheet and the
+declares, its project KPIs equal to those of a copy of it with the loan
+removed, its golden pinning every financing KPI it publishes) and arm (l) the .ods equity sheet and the
 printed schedule.  Fifteen by-hand sabotages, recorded in the docstring:
 fourteen caught.  Two of the fourteen SURVIVED the first version of the
 gate -- an .ods equity sheet with no rows and a console schedule printing
