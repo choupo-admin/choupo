@@ -80,7 +80,17 @@ def render(salt, pts):
                f" Solutions: Quantitative Control of Concentration Polarization and Interpretation by"
                f" Solution-Diffusion-Electro-Migration Model, Membranes 11 (2021) 272, Figure"
                f" {FIGURE[salt]}\";")
-    out.append("    doi          \"10.3390/membranes11040272\";")
+    #  NO `doi` IDENTITY, deliberately, and said in the file: the evidence
+    #  partition reads a DOI as the identity of a piece of evidence and refuses
+    #  one shared across roles (EvidencePartition R3) -- right for a held-out
+    #  STUDY.  These four files are four SERIES of one study (four salts), and
+    #  the partition holds out two SALTS within it; a DOI identity would call
+    #  them the same evidence, which they are not, and leaving it off is what
+    #  makes the claim the narrower one ("held out within one study").  The
+    #  DOI stays in the citation.
+    out.append("    identity     \"one series of the study cited above; no doi identity: the four"
+               " fdl2021_* datasets are four salts of ONE study, and a held-out one is held out"
+               " WITHIN that study, not an independent study\";")
     out.append("    licence      CC-BY-4.0;")
     out.append("}")
     out.append("")

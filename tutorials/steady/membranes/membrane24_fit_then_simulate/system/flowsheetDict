@@ -1,0 +1,73 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+  PROCESS MODE of membrane24 (runCase <case>, the default): ONE pressure
+  vessel of three generic 8-inch elements carrying the membrane the
+  PROPERTIES MODE fitted (runCase <case> props, system/propsDict).
+
+  THE MEMBRANE IS A FITTED RECORD.  constant/assets/NF270_FdL2021.dat was
+  written by operation `fit_NF270_FdL2021`: NF270's DSPM-DE pore fitted to
+  Fernandez de Labastida & Yaroshchuk's measured intrinsic rejections of
+  the two chlorides (NaCl, MgCl2), the two sulfates held out.  Before the stage uses it the
+  run checks its `fit {}` block -- the fingerprints of the four datasets,
+  of the fit block in system/propsDict, of the base record NF270_dspmde and
+  of the record's own values -- and REFUSES a stale one, naming what moved
+  and the remedy (run the case in Properties mode).  A fresh one is
+  announced as `[fitted]`, with the operation that wrote it and its
+  held-out verdict: the link from this unit to the fit.
+
+  WHAT CARRIES OVER AND WHAT DOES NOT, said plainly.  The pore (r_p, X_d,
+  A_k/dx, eps_p) is the fit's; the water permeability A_w is NOT -- the
+  data impose J_v, so A_w is NF270_dspmde's archetype value, held fixed
+  and marked so in the record.  The fit's evidence spans J_v 6-56 um/s at
+  0.01 mol/L of ONE salt; this stage runs a MIXTURE (NaCl 10 + MgSO4 1
+  mol/m3), so its rejections extrapolate in composition with a constant
+  charge, which is what the fitted record claims and nothing more.
+
+  THE HARDWARE is membrane22's: `module Generic-8040` with the FilmTec FT30
+  spacer and Schock & Miquel's correlations, the Geraldes & Afonso multi-
+  ionic film.  12 m3/h at 3 bar, 20 C.
+\*---------------------------------------------------------------------------*/
+
+units
+(
+    {
+        name        Stage;
+        type        spiralWoundModule;
+        in          feed;
+        outputs     ( concentrate  permeate );
+        operation
+        {
+            module           Generic-8040;      // constant/assets/, estimates announced
+            membrane         NF270_FdL2021;     // WRITTEN by the Properties mode's fit
+            transport        DSPM-DE;           // the solved pore, every default announced
+            vessels          1;
+            elements         3;
+            P_permeate       1.0 bar;
+            nNodes           10;                // stations per element
+
+            massTransfer
+            {
+                model          SchockMiquel;
+                viscosity      1.0e-3;          // Pa.s, water at 20 C (prices Re and Sc)
+                diffusivity    1.5e-9;          // m2/s: the SALT-level k_film column only;
+                                                // DSPM-DE prices each ion's k on its own D
+            }
+            pressureDrop
+            {
+                model          SchockMiquel;
+            }
+            polarisation
+            {
+                suctionCorrection  GeraldesAfonso2006;
+                ionCoupling        electroneutral;
+            }
+        }
+    }
+);

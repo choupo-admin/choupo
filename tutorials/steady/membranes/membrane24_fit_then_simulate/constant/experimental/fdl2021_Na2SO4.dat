@@ -1,0 +1,56 @@
+/*--------------------------------------------------------------------------*\
+  NF270 INTRINSIC REJECTION OF Na2SO4 AGAINST THE PERMEATE FLUX -- a dataset
+  a membrane fit reads (fitParameters, residual kind membrane).
+
+  Fernandez de Labastida & Yaroshchuk, Membranes 11 (2021) 272,
+  doi:10.3390/membranes11040272 (CC BY 4.0), Figure 3a: the measured
+  symbols, Na2SO4 0.01 mol/L, 20 C, flat NF270 in a rotating-disk cell, CP-
+  corrected by the authors.  Digitised by bin/curate/digitise_fdl2021.py;
+  written in this grammar by bin/curate/export_fdl2021_rejections.py
+  (R = 1 - 1/f, Jv = J_v[um/s] x 1e-6).
+
+  READING ERROR (not a measurement uncertainty -- none is published):
+    J_v   6.431 um/s +- 0.06   f 52.2045 +- 0.6567
+    J_v  10.469 um/s +- 0.06   f 77.1576 +- 0.6567
+    J_v  18.903 um/s +- 0.06   f 122.7955 +- 0.6567
+    J_v  27.248 um/s +- 0.06   f 160.2251 +- 0.6567
+    J_v  33.619 um/s +- 0.06   f 214.728 +- 0.6567
+    J_v  41.755 um/s +- 0.06   f 261.6792 +- 0.6567
+    J_v  49.472 um/s +- 0.06   f 284.9906 +- 0.6567
+
+  NOT IN THE FEED BELOW: the 2e-4 mol/L NaNO3 + NH4Cl traces the authors
+  added (2 % of the dominant salt).  The role this dataset plays -- fit or
+  held out -- is declared by the operation that reads it, never here.
+\*--------------------------------------------------------------------------*/
+
+property     membrane.rejection;
+membrane     NF270;
+
+provenance
+{
+    source       measured;
+    reviewStatus digitisedFromFigure;
+    citation     "M. Fernandez de Labastida, A. Yaroshchuk, Nanofiltration of Multi-Ion Solutions: Quantitative Control of Concentration Polarization and Interpretation by Solution-Diffusion-Electro-Migration Model, Membranes 11 (2021) 272, Figure 3a";
+    identity     "one series of the study cited above; no doi identity: the four fdl2021_* datasets are four salts of ONE study, and a held-out one is held out WITHIN that study, not an independent study";
+    licence      CC-BY-4.0;
+}
+
+T            293.15 K;
+feed         { Na2SO4 10 mol/m3; }
+
+columns
+(
+    { name Jv;  unit m/s; }
+    { name R_Na2SO4;  unit -; }
+);
+
+data
+(
+    6.431000e-06  0.980845
+    1.046900e-05  0.987040
+    1.890300e-05  0.991856
+    2.724800e-05  0.993759
+    3.361900e-05  0.995343
+    4.175500e-05  0.996179
+    4.947200e-05  0.996491
+);

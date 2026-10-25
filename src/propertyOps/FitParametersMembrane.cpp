@@ -587,6 +587,14 @@ int FitParameters::runMembraneFit(const DictPtr& dict, const ThermoPackage& ther
         osm = OsmoticModel::New("vanHoff");
     const DictPtr lawParams0 = res->found("transportParameters")
         ? res->subDict("transportParameters")->deepCopy() : nullptr;
+    //  The law reads its declared block ONCE here, on the AUTHORED dict: every
+    //  key is validated before any row runs, and the unread-key audit sees the
+    //  keys the evaluations below read on copies.
+    if (res->found("transportParameters"))
+    {
+        CoutSilencer quiet(true);
+        membrane::TransportModel::New(law)->readParameters(res->subDict("transportParameters"));
+    }
 
     //  One law per row, so each row's pore is warm-started from its OWN
     //  previous solve (a pore of another feed is not a start).
@@ -609,7 +617,6 @@ int FitParameters::runMembraneFit(const DictPtr& dict, const ThermoPackage& ther
         Eval E;
         E.model.assign(rows.size(), {});
         E.Jw.assign(rows.size(), NaN);
-        CoutSilencer quiet(!firstEval);
         try
         {
             DictPtr rec = baseDict->deepCopy();
@@ -622,6 +629,9 @@ int FitParameters::runMembraneFit(const DictPtr& dict, const ThermoPackage& ther
             {
                 const MemRow& row = rows[k];
                 if (onlyFit && row.heldOut) continue;
+                //  the law's own announcements, once: the first row of the first
+                //  evaluation speaks, every other is the same law again
+                CoutSilencer quiet(!firstEval || k > 0);
                 if (!rowLaw[k] || lawFree)
                 {
                     rowLaw[k] = membrane::TransportModel::New(law);
@@ -821,8 +831,13 @@ int FitParameters::runMembraneFit(const DictPtr& dict, const ThermoPackage& ther
             else lambda *= 10.0;
         }
         if (verbosity >= 3)
+        {
             std::cout << "  " << std::setw(4) << iter << "   " << std::scientific
-                      << std::setprecision(6) << chi2 << "   " << std::setprecision(1) << lambda << "\n";
+                      << std::setprecision(6) << chi2 << "   " << std::setprecision(1) << lambda;
+            const sVector v = natural(th);
+            for (std::size_t i = 0; i < P; ++i) std::cout << "   " << std::setprecision(6) << v[i];
+            std::cout << "\n";
+        }
         if (!accepted) { converged = true; stopWhy = "no step lowers chi2 (a minimum at the solver's resolution)"; break; }
         if (converged) break;
     }
@@ -1039,7 +1054,7 @@ int FitParameters::runMembraneFit(const DictPtr& dict, const ThermoPackage& ther
                 std::cout << "    ACTIVE BOUND: '" << b << "' ended on its declared min/max --"
                              " the data and the declared domain disagree\n";
             std::cout << "    -> " << (identifiable ? "IDENTIFIABLE" : "NOT IDENTIFIABLE")
-                      << " (converged, J^T J invertible, cond < 1e8, |corr| < 0.999, no active"
+                      << " (requires: converged, J^T J invertible, cond < 1e8, |corr| < 0.999, no active"
                          " bound)\n";
         }
         std::cout << "  HELD-OUT EVIDENCE\n";
@@ -1115,7 +1130,7 @@ int FitParameters::runMembraneFit(const DictPtr& dict, const ThermoPackage& ther
                                         : baseMem.manufacturer()) << "\";\n\n"
              << "provenance     fittedToCase;\n"
              << "fittedAgainst  " << caseName << ";\n\n"
-             << valueLine("A_w", "A_w", fm.A_w(), "m/(s Pa)") << "\n";
+             << valueLine("A_w", "A_w", fm.A_w(), "m/(s Pa), raw SI") << "\n";
         if (!fm.allBs().empty())
         {
             body << "\npermeabilities\n{\n";
@@ -1181,19 +1196,44 @@ int FitParameters::runMembraneFit(const DictPtr& dict, const ThermoPackage& ther
             << "    identifiability   { conditionNumber " << sig6(condScaled)
             << "; maxAbsCorrelation " << sig6(maxAbsCorr) << "; }\n"
             << "    values            // the 95 % half-width is t(dof) x the standard error\n    {\n";
-        for (std::size_t i = 0; i < P; ++i)
-            fit << "        " << params[i].path << "  { origin fitted; stderr " << sig6(se[i])
-                << "; ci95 " << sig6(tc * se[i]) << "; unit \"" << params[i].unit << "\"; }\n";
+        //  per-value provenance, nested as the record nests the value
+        //  (poreModel { poreRadius { ... } }), so a path reads the same in both
+        {
+            std::map<std::string, std::vector<std::size_t>> groups;   // "" = top level
+            std::vector<std::string> order;
+            for (std::size_t i = 0; i < P; ++i)
+            {
+                const auto dot = params[i].path.find('.');
+                const std::string g = dot == std::string::npos ? "" : params[i].path.substr(0, dot);
+                if (!groups.count(g)) order.push_back(g);
+                groups[g].push_back(i);
+            }
+            auto entry = [&](std::size_t i, const std::string& in)
+            {
+                const auto dot = params[i].path.find('.');
+                const std::string leaf = dot == std::string::npos ? params[i].path
+                                                                  : params[i].path.substr(dot + 1);
+                fit << in << leaf << "  { origin fitted; stderr " << sig6(se[i]) << "; ci95 "
+                    << sig6(tc * se[i]) << "; unit \"" << params[i].unit << "\"; }\n";
+            };
+            for (const auto& g : order)
+            {
+                if (g.empty()) { for (std::size_t i : groups[g]) entry(i, "        "); continue; }
+                fit << "        " << g << "\n        {\n";
+                for (std::size_t i : groups[g]) entry(i, "            ");
+                fit << "        }\n";
+            }
+        }
         fit << "    }\n"
-            << "    correlation\n    {\n";
+            << "    correlation\n    (\n";
         for (const auto& kv : corrMap)
         {
             const auto a = std::stoul(kv.first.substr(5, kv.first.find('.', 5) - 5));
             const auto b = std::stoul(kv.first.substr(kv.first.rfind('.') + 1));
-            fit << "        \"" << params[a].path << " / " << params[b].path << "\"  "
-                << sig6(kv.second) << ";\n";
+            fit << "        { a " << params[a].path << "; b " << params[b].path << "; r "
+                << sig6(kv.second) << "; }\n";
         }
-        fit << "    }\n}\n";
+        fit << "    );\n}\n";
 
         std::ofstream f(recPath);
         if (!f) throw std::runtime_error(site + ": cannot write '" + recPath + "'");

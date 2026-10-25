@@ -1,0 +1,26 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+  ONE CASE, TWO MODES (DEV.md 4c C152).  This case carries BOTH
+  system/flowsheetDict (Process mode, choupoSolve) and system/propsDict
+  (Properties & data mode, choupoProps) over ONE constant/.
+
+  `application` names the DEFAULT mode -- what `runCase <case>` runs.  The
+  other mode is one word away:
+      runCase <case>            Process mode: the spiral-wound stage
+      runCase <case> props      Properties & data mode: the membrane fit
+      runCase <case> process    Process mode, said explicitly
+  Information flows ONE way: Properties mode WRITES
+  constant/assets/NF270_FdL2021.dat, Process mode only READS it -- and
+  refuses it, naming the remedy, if its datasets or its fit block have
+  changed since it was written.
+\*---------------------------------------------------------------------------*/
+application   choupoSolve;
+description   "One case, two modes: NF270's DSPM-DE pore fitted to published intrinsic rejections (Properties mode), then the fitted membrane in a spiral-wound stage (Process mode)";
+verbosity     3;

@@ -1,0 +1,83 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Membrane: NF270_FdL2021 -- WRITTEN BY A PROPERTIES-MODE FIT, not by hand.
+
+  Operation 'fit_NF270_FdL2021' of case 'membrane24_fit_then_simulate' (fitParameters,
+  residual kind membrane, model DSPM-DE) fitted the values marked FITTED
+  below to the datasets named in fit {}; every other value is base record
+  NF270_dspmde's.  Fitted values are rounded to 6 significant figures,
+  and the verdict was taken at the rounded values.
+
+  A Process-mode run checks the fingerprints in fit {} before it uses this
+  record and REFUSES it, naming what changed, when a dataset, the fit block
+  or the base record has moved since: re-run the case in Properties mode
+  (runCase <case> props) to re-fit it.  An edit here is overwritten by the
+  next Properties-mode run.
+\*---------------------------------------------------------------------------*/
+
+name           NF270_FdL2021;
+kind           NF;
+manufacturer   "DuPont FilmTec";
+
+provenance     fittedToCase;
+fittedAgainst  membrane24_fit_then_simulate;
+
+A_w                   1e-10;   // m/(s Pa), raw SI, held at NF270_dspmde's value
+
+permeabilities
+{
+    CaCl2                 1e-06;   // m/s, held at NF270_dspmde's value
+    MgSO4                 5e-08;   // m/s, held at NF270_dspmde's value
+    NaCl                  5e-06;   // m/s, held at NF270_dspmde's value
+    glucose               8e-06;   // m/s, held at NF270_dspmde's value
+}
+
+poreModel
+{
+    poreRadius            6.7476e-10;   // m, FITTED
+    porosityOverThickness 5000000;   // 1/m, held at NF270_dspmde's value
+    chargeDensity         -10.525;   // mol/m3, signed, FITTED
+    poreDielectric        35;   // -, held at NF270_dspmde's value
+}
+
+P_max          41.4;   // bar, NF270_dspmde's rating
+T_max          318;   // K
+pH_min         3;
+pH_max         10;
+MWCO           200;   // Da
+
+fit
+{
+    origin            fitted;
+    method            "fitParameters, residual kind membrane, model DSPM-DE: Levenberg-Marquardt on intrinsic rejections, weighting absolute";
+    fittedInCase      membrane24_fit_then_simulate;
+    operation         fit_NF270_FdL2021;
+    propsDict         "system/propsDict";
+    fitBlockSha256    "727043e121068bae02ced207f00c76810ba8f1a246549d02ba4b636141d2bb25";
+    baseRecord        NF270_dspmde;
+    baseRecordSha256  "09ee7be95e70442fb7528a27893c634af62e614ca731d5725a5317a1c2cc8b32";
+    recordSha256      "b2ecbf49b99b6f5fec48014c4c793f2af036d1c6cf1172b013d23d5f475efaa6";
+    datasets
+    (
+        { role fit; dataset "constant/experimental/fdl2021_NaCl.dat"; sha256 "66ef3de76137c966e7ecc799bd8ff7d8de91070c6b951a08898d11f9dc2eeab4"; }
+        { role fit; dataset "constant/experimental/fdl2021_MgCl2.dat"; sha256 "b085637bab97ae3063cd733a010893188035c077be99c1294d0b5263bacf82eb"; }
+        { role validation; dataset "constant/experimental/fdl2021_Na2SO4.dat"; sha256 "19690fb90ac99b1039537916ef11ac33775314a741e52d1f0b77a686760b37e2"; }
+        { role validation; dataset "constant/experimental/fdl2021_MgSO4.dat"; sha256 "a26bf2ab93abbad76cb6d593ed883b1f32139931c37ee9fd5b99f7b71ffe04e8"; }
+    );
+    verdict           validated;
+    acceptance        { maxAADPoints 10; origin "declared before the fit, by this case: a pore model held at ONE fixed charge for four salts is asked to predict the held-out salts within 10 points of rejection on average -- an engineering criterion for a pedagogical characterisation, not a measurement uncertainty (the source publishes none)"; }
+    heldOut           { measurements 14; AADPoints 0.925798; }
+    inSample          { measurements 14; AADPoints 2.66345; chi2Reduced 0.000971447; }
+    identifiability   { conditionNumber 28.7505; maxAbsCorrelation 0.962078; }
+    values            // the 95 % half-width is t(dof) x the standard error
+    {
+        poreModel
+        {
+            poreRadius  { origin fitted; stderr 1.5611e-11; ci95 3.40163e-11; unit "m"; }
+            chargeDensity  { origin fitted; stderr 1.88041; ci95 4.09741; unit "mol/m3"; }
+        }
+    }
+    correlation
+    (
+        { a poreModel.poreRadius; b poreModel.chargeDensity; r -0.962078; }
+    );
+}

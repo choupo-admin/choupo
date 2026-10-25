@@ -306,6 +306,7 @@ int FitParameters::run(const DictPtr& dict,
     // Kind dispatch FIRST: the isotherm kind is pair-data regression --- it
     // never rebuilds a thermoPackage, so the thermoDict guard below does not
     // apply to it.
+    memSets_.clear(); memQuantities_.clear(); memSetQuantities_.clear(); memUnits_.clear();
     if (dict->subDict("residual")->lookupWord("kind") == "isotherm")
         return runIsothermFit(dict, verbosity);
     // The membrane kind (DEV.md 4c C149/C152) fits a MEMBRANE RECORD's
@@ -2999,6 +3000,18 @@ int FitParameters::runIsothermFit(const DictPtr& dict, int verbosity)
 std::string FitParameters::diagnosticUnit(const std::string& key) const
 {
     auto starts = [&](const char* p) { return key.rfind(p, 0) == 0; };
+    //  the membrane residual (C149): each fit.<i>.* in its field's raw unit
+    if (!memSets_.empty())
+    {
+        if (starts("fit."))
+        {
+            const auto dot = key.find('.', 4);
+            const auto it = memUnits_.find(key.substr(0, dot));
+            if (it != memUnits_.end()) return it->second;
+        }
+        if (key == "heldOut_AAD_pct" || key == "inSample_AAD_pct") return "points";
+        return {};
+    }
     if (isoTemperatures_.empty()) return {};
     if (starts("fit.q_max.")) return "mol/kg";
     if (starts("fit.b_ref.") || starts("fit.b_at_T.")) return "1/Pa";
@@ -3029,6 +3042,33 @@ std::string FitParameters::diagnosticLabel(const std::string& key) const
 //  reviewer reads first; the parity, residuals and parameters come generically.
 std::string FitParameters::defaultViews(const std::string& op) const
 {
+    //  THE MEMBRANE FIT ITSELF (C149): every measured quantity of every
+    //  dataset against the permeate flux -- the data as markers and the
+    //  fitted law at the same points as a line, fit and held-out sets alike
+    //  (the legend says which); parity, residuals and the parameter table
+    //  come generically from fitPoints and fit.<i>.*.
+    if (!memSets_.empty())
+    {
+        std::string s = "{ name rejections; type series; title \"" + op + ": measured (markers)"
+                        " and fitted (lines) against the permeate flux, every dataset\";"
+                        " xAxis { label \"permeate flux J_v\"; } yAxis { label \"rejection\"; }"
+                        " series ( ";
+        for (std::size_t k = 0; k < memSets_.size(); ++k)
+            for (const std::size_t q : memSetQuantities_[k])
+            {
+                const std::string g = "s" + std::to_string(k + 1) + "q" + std::to_string(q + 1);
+                const std::string sel = "select { set " + std::to_string(k + 1) + "; quantity "
+                                      + std::to_string(q + 1) + "; }";
+                const std::string lab = memQuantities_[q] + ", " + memSets_[k];
+                s += "{ name data" + g + "; label \"measured " + lab + "\"; op " + op
+                   + "; table fitPoints; " + sel + " x Jv_mps; y measured; style markers; group "
+                   + g + "; } ";
+                s += "{ name model" + g + "; label \"fitted " + lab + "\"; op " + op
+                   + "; table fitPoints; " + sel + " x Jv_mps; y model; style lines; group "
+                   + g + "; } ";
+            }
+        return s + "); }\n";
+    }
     if (isoTemperatures_.empty()) return {};
     std::string s = "{ name isotherm; type series; title \"" + op + ": loading against pressure"
                     " -- the data (markers) and the fitted isotherm (lines), every temperature\";"

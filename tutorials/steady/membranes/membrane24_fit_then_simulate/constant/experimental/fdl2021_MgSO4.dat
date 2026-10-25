@@ -1,0 +1,56 @@
+/*--------------------------------------------------------------------------*\
+  NF270 INTRINSIC REJECTION OF MgSO4 AGAINST THE PERMEATE FLUX -- a dataset
+  a membrane fit reads (fitParameters, residual kind membrane).
+
+  Fernandez de Labastida & Yaroshchuk, Membranes 11 (2021) 272,
+  doi:10.3390/membranes11040272 (CC BY 4.0), Figure 4a: the measured
+  symbols, MgSO4 0.01 mol/L, 20 C, flat NF270 in a rotating-disk cell, CP-
+  corrected by the authors.  Digitised by bin/curate/digitise_fdl2021.py;
+  written in this grammar by bin/curate/export_fdl2021_rejections.py
+  (R = 1 - 1/f, Jv = J_v[um/s] x 1e-6).
+
+  READING ERROR (not a measurement uncertainty -- none is published):
+    J_v   7.208 um/s +- 0.06   f 42.9174 +- 0.5629
+    J_v  11.575 um/s +- 0.06   f 53.3302 +- 0.5629
+    J_v  19.172 um/s +- 0.06   f 92.5891 +- 0.5629
+    J_v  26.859 um/s +- 0.06   f 120.4503 +- 0.5629
+    J_v  34.726 um/s +- 0.06   f 152.2514 +- 0.5629
+    J_v  43.131 um/s +- 0.06   f 184.334 +- 0.5629
+    J_v  53.779 um/s +- 0.06   f 200.5159 +- 0.5629
+
+  NOT IN THE FEED BELOW: the 2e-4 mol/L NaNO3 + NH4Cl traces the authors
+  added (2 % of the dominant salt).  The role this dataset plays -- fit or
+  held out -- is declared by the operation that reads it, never here.
+\*--------------------------------------------------------------------------*/
+
+property     membrane.rejection;
+membrane     NF270;
+
+provenance
+{
+    source       measured;
+    reviewStatus digitisedFromFigure;
+    citation     "M. Fernandez de Labastida, A. Yaroshchuk, Nanofiltration of Multi-Ion Solutions: Quantitative Control of Concentration Polarization and Interpretation by Solution-Diffusion-Electro-Migration Model, Membranes 11 (2021) 272, Figure 4a";
+    identity     "one series of the study cited above; no doi identity: the four fdl2021_* datasets are four salts of ONE study, and a held-out one is held out WITHIN that study, not an independent study";
+    licence      CC-BY-4.0;
+}
+
+T            293.15 K;
+feed         { MgSO4 10 mol/m3; }
+
+columns
+(
+    { name Jv;  unit m/s; }
+    { name R_MgSO4;  unit -; }
+);
+
+data
+(
+    7.208000e-06  0.976699
+    1.157500e-05  0.981249
+    1.917200e-05  0.989200
+    2.685900e-05  0.991698
+    3.472600e-05  0.993432
+    4.313100e-05  0.994575
+    5.377900e-05  0.995013
+);

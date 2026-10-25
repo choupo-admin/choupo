@@ -1,0 +1,21 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*--- Choupo stream state.  Every DIMENSIONAL value carries its unit; the parser converts to SI.
+     componentMolarFlows is the OVERALL material (all phases). ---*/
+//  12 m3/h of a soft brackish water written by SALTS: NaCl 10 mol/m3 and
+//  MgSO4 1 mol/m3 (Na+ 10, Mg2+ 1, Cl- 10, SO4 2- 1).  Per m3: water
+//  (1000 - 0.584 - 0.120)/18.015 = 55.470 kmol.
+componentMolarFlows
+{
+    water   665.64 kmol/h;
+    NaCl    0.120 kmol/h;
+    MgSO4   0.012 kmol/h;
+}
+T               293.15 K;      // 20 C, the fit's temperature
+P               3.0 bar;

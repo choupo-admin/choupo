@@ -42,11 +42,22 @@
 #  Writes the log inside the case directory (log.<application>) so
 #  each case carries its own output.
 #
+#  ONE CASE, TWO MODES (DEV.md 4c C152).  A case may carry BOTH
+#  system/flowsheetDict (Process mode) and system/propsDict (Properties &
+#  data mode) over one constant/.  `application` is the DEFAULT mode; a
+#  second argument picks the other:
+#      runCase <case> process    the flowsheet (choupoSolve, or the
+#                                application when it is a flowsheet binary)
+#      runCase <case> props      the propsDict (choupoProps)
+#  A mode whose dict the case does not carry refuses by name.  A single-
+#  dict case is unchanged, and the mode word is optional on every case.
+#
 #  Usage:
 #      cd tutorials/steady/flash01_benzene_toluene && runCase   # cwd
 #      runCase .                                                 # same
 #      runCase tutorials/steady/flash01_benzene_toluene          # explicit
 #      runCase $CHOUPO_HOME/tutorials/batch/batch01_first_order
+#      runCase <two-mode case> props                             # the other mode
 #
 #  Options:
 #      -a   append to existing log instead of refusing
@@ -76,6 +87,17 @@ while [ "$#" -gt 0 ]; do
 done
 
 CASE="${1:-.}"
+MODE=
+if [ "$#" -ge 2 ]; then
+    MODE="$2"
+elif [ "$#" -eq 1 ] && { [ "$1" = props ] || [ "$1" = process ]; } && [ ! -d "$1" ]; then
+    MODE="$1"; CASE=.
+fi
+case "$MODE" in
+    ''|props|process) ;;
+    *) echo "runCase: unknown mode '$MODE' -- Accepted: process (system/flowsheetDict), props (system/propsDict)" >&2
+       exit 1 ;;
+esac
 
 # A RENAMED tutorial (tutorials/ALIASES, DEV.md 4c C68): a path under
 # tutorials/ that no longer exists but whose identifier -- or the root of it,
@@ -236,6 +258,31 @@ else
             ;;
     esac
     RUNNER="$APP"
+fi
+
+# ---- the MODE (C152): a two-mode case runs the other application ---------
+if [ -n "$MODE" ]; then
+    if [ -n "$INPLACE_UNIT" ]; then
+        echo "runCase: a unit-operation folder has one mode (process); drop '$MODE'" >&2; exit 1
+    fi
+    if [ "$MODE" = props ]; then
+        [ -f "$CASE_ABS/system/propsDict" ] || {
+            echo "runCase: mode 'props' runs system/propsDict, and '$CASE_ABS' has none" >&2; exit 1; }
+        WANT=choupoProps
+    else
+        [ -f "$CASE_ABS/system/flowsheetDict" ] || {
+            echo "runCase: mode 'process' runs system/flowsheetDict, and '$CASE_ABS' has none" >&2; exit 1; }
+        if [ "$APP" = choupoProps ]; then WANT=choupoSolve; else WANT="$APP"; fi
+    fi
+    if [ "$WANT" != "$APP" ]; then
+        if [ -d "$CASE_ABS/code" ]; then
+            echo "runCase: case-local code/ is compiled against the default mode ('$APP');" \
+                 "mode '$MODE' would need it compiled against $WANT, which buildCode does not do" >&2
+            exit 1
+        fi
+        echo "runCase: mode '$MODE' -- running $WANT (the case's default is $APP)"
+        APP="$WANT"; RUNNER="$APP"
+    fi
 fi
 
 LOG="$CASE_ABS/log.$APP"

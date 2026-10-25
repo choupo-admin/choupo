@@ -1,0 +1,56 @@
+/*--------------------------------------------------------------------------*\
+  NF270 INTRINSIC REJECTION OF MgCl2 AGAINST THE PERMEATE FLUX -- a dataset
+  a membrane fit reads (fitParameters, residual kind membrane).
+
+  Fernandez de Labastida & Yaroshchuk, Membranes 11 (2021) 272,
+  doi:10.3390/membranes11040272 (CC BY 4.0), Figure 2a: the measured
+  symbols, MgCl2 0.01 mol/L, 20 C, flat NF270 in a rotating-disk cell, CP-
+  corrected by the authors.  Digitised by bin/curate/digitise_fdl2021.py;
+  written in this grammar by bin/curate/export_fdl2021_rejections.py
+  (R = 1 - 1/f, Jv = J_v[um/s] x 1e-6).
+
+  READING ERROR (not a measurement uncertainty -- none is published):
+    J_v   8.727 um/s +- 0.06   f 2.2368 +- 0.0132
+    J_v  13.349 um/s +- 0.06   f 2.7566 +- 0.0132
+    J_v  19.751 um/s +- 0.06   f 3.2303 +- 0.0132
+    J_v  28.364 um/s +- 0.06   f 4.0395 +- 0.0132
+    J_v  36.488 um/s +- 0.06   f 4.7566 +- 0.0132
+    J_v  44.411 um/s +- 0.06   f 5.6645 +- 0.0132
+    J_v  52.536 um/s +- 0.06   f 6.125 +- 0.0132
+
+  NOT IN THE FEED BELOW: the 2e-4 mol/L NaNO3 + NH4Cl traces the authors
+  added (2 % of the dominant salt).  The role this dataset plays -- fit or
+  held out -- is declared by the operation that reads it, never here.
+\*--------------------------------------------------------------------------*/
+
+property     membrane.rejection;
+membrane     NF270;
+
+provenance
+{
+    source       measured;
+    reviewStatus digitisedFromFigure;
+    citation     "M. Fernandez de Labastida, A. Yaroshchuk, Nanofiltration of Multi-Ion Solutions: Quantitative Control of Concentration Polarization and Interpretation by Solution-Diffusion-Electro-Migration Model, Membranes 11 (2021) 272, Figure 2a";
+    identity     "one series of the study cited above; no doi identity: the four fdl2021_* datasets are four salts of ONE study, and a held-out one is held out WITHIN that study, not an independent study";
+    licence      CC-BY-4.0;
+}
+
+T            293.15 K;
+feed         { MgCl2 10 mol/m3; }
+
+columns
+(
+    { name Jv;  unit m/s; }
+    { name R_MgCl2;  unit -; }
+);
+
+data
+(
+    8.727000e-06  0.552933
+    1.334900e-05  0.637234
+    1.975100e-05  0.690431
+    2.836400e-05  0.752445
+    3.648800e-05  0.789766
+    4.441100e-05  0.823462
+    5.253600e-05  0.836735
+);

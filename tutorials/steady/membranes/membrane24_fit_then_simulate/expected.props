@@ -1,0 +1,28 @@
+# Reference KPIs (golden master, auto-recorded by runTests --record).
+# units: stream F is kmol/s (canonical SI, as in the result JSON); the run LOG prints kmol/h.
+# kind   name      key         expected        reltol
+diag    fit_NF270_FdL2021      chi2             0.0116573675401    1e-4
+diag    fit_NF270_FdL2021      chi2_reduced     0.000971447295009  1e-4
+diag    fit_NF270_FdL2021      cond_scaled      28.7504509901      1e-4
+diag    fit_NF270_FdL2021      converged        1                  1e-4
+diag    fit_NF270_FdL2021      dof              12                 1e-4
+diag    fit_NF270_FdL2021      heldOut_AAD_pct  0.925797692862     1e-4
+diag    fit_NF270_FdL2021      identifiable     1                  1e-4
+diag    fit_NF270_FdL2021      inSample_AAD_pct 2.66344502745      1e-4
+diag    fit_NF270_FdL2021      iter             8                  1e-4
+diag    fit_NF270_FdL2021      maxAbsCorr       0.962078368382     1e-4
+diag    fit_NF270_FdL2021      n_fit            14                 1e-4
+diag    fit_NF270_FdL2021      n_heldOut        14                 1e-4
+diag    fit_NF270_FdL2021      n_params         2                  1e-4
+diag    fit_NF270_FdL2021      n_points         28                 1e-4
+diag    fit_NF270_FdL2021      rms              0.0288560064806    1e-4
+verdict fit_NF270_FdL2021      verdict          validated          exact
+# The fitted parameters themselves (written by hand: the recorder reads
+# word-keyed diagnostics only).  fit.0 = poreModel.poreRadius [m],
+# fit.1 = poreModel.chargeDensity [mol/m3]; the values are the record's,
+# rounded to 6 significant figures, and pin that the fit has not MOVED.
+diag    fit_NF270_FdL2021      fit.0.value      6.7476e-10         1e-5
+diag    fit_NF270_FdL2021      fit.0.ci95       3.40163093415e-11  1e-3
+diag    fit_NF270_FdL2021      fit.1.value      -10.525            1e-5
+diag    fit_NF270_FdL2021      fit.1.ci95       4.09740785513      1e-3
+diag    fit_NF270_FdL2021      corr.0.1         -0.962078368382    1e-4

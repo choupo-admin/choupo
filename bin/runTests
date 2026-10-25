@@ -1929,8 +1929,19 @@ if [ -n "$RECORD" ]; then
         if [ -f "$case_dir/.expect-nonconvergence" ] || [ -f "$case_dir/.known-broken" ]; then
             echo "skip (marked: not recordable): $case_dir"; continue
         fi
-        exp="$case_dir/expected"
-        app=$(binary_for "$case_dir"); out=$(run_case_raw "$case_dir" "$app")
+        #  ONE CASE, TWO MODES (C152): the default mode records `expected`,
+        #  the other `expected.<mode>` -- the same pairs the check loop reads.
+        RRUNS=()
+        def_app=$(binary_for "$case_dir")
+        RRUNS+=("$def_app|$case_dir/expected")
+        if [ "$def_app" != BUILDCODE ] && [ -f "$case_dir/system/propsDict" ] \
+           && [ -f "$case_dir/system/flowsheetDict" ]; then
+            if [ "$def_app" = choupoProps ]; then RRUNS+=("choupoSolve|$case_dir/expected.process")
+            else RRUNS+=("choupoProps|$case_dir/expected.props"); fi
+        fi
+        for rrun in "${RRUNS[@]}"; do
+        IFS='|' read -r app exp <<< "$rrun"
+        out=$(run_case_raw "$case_dir" "$app")
         if [ -n "$RECORD_APPEND" ] && [ ! -f "$exp" ]; then
             echo "  (no golden; --record-append creates none)"
             continue
@@ -2001,11 +2012,12 @@ if [ -n "$RECORD" ]; then
             fi
             rm -f "$gen"
             echo "refreshed: $exp"
-        elif auto_generate "$case_dir" "$out"; then
+        elif auto_generate "$case_dir" "$out" "1e-4" "$exp"; then
             echo "generated: $exp  ($(grep -cE '^(kpi|stream|diag)' "$exp") refs)"
         else
             echo "skip (no kpis/streams block): $case_dir"
         fi
+        done
     done
     exit 0
 fi
@@ -6168,17 +6180,38 @@ for case_dir in "${CASES[@]}"; do
         expected_fail=$((expected_fail+1)); EF_NAMES+=("$name_short"); continue
     fi
 
-    app=$(binary_for "$case_dir")
+    #  ONE CASE, TWO MODES (DEV.md 4c C152): a case carrying BOTH
+    #  system/flowsheetDict and system/propsDict is checked in BOTH modes --
+    #  the default (its `application`) against `expected`, the other against
+    #  `expected.<mode>` (`expected.props` / `expected.process`, the word
+    #  `runCase <case> <mode>` takes), labelled `<case>[<mode>]`.  The default
+    #  runs FIRST, because a Properties-mode run may read what the process run
+    #  wrote (ctrl17) or write what it reads (membrane24) -- and the file it
+    #  writes must re-write byte-identically, which the clean-tree gates hold.
+    #  A single-dict case runs exactly as before.
+    RUNS=()
+    def_app=$(binary_for "$case_dir")
+    RUNS+=("$def_app|$case_dir/expected|$name_short")
+    if [ "$def_app" != BUILDCODE ] && [ -f "$case_dir/system/propsDict" ] \
+       && [ -f "$case_dir/system/flowsheetDict" ]; then
+        if [ "$def_app" = choupoProps ]; then
+            RUNS+=("choupoSolve|$case_dir/expected.process|$name_short[process]")
+        else
+            RUNS+=("choupoProps|$case_dir/expected.props|$name_short[props]")
+        fi
+    fi
+    for run_spec in "${RUNS[@]}"; do
+    IFS='|' read -r app exp_file label <<< "$run_spec"
     out=$(run_case_raw "$case_dir" "$app"); rc=$?
 
     if [ "$out" = "__BUILDFAIL__" ]; then
-        printf "FAIL  %-40s  (compile failed)\n" "$name_short"; fail=$((fail+1)); continue
+        printf "FAIL  %-40s  (compile failed)\n" "$label"; fail=$((fail+1)); continue
     fi
 
     #  Single-pass cache: a CLEAN run's stdout is kept for the post-loop
     #  meta-gates (see the cache header above).  Only exit-0 runs are
     #  cached, so cache-present implies ran-clean.
-    if [ -n "$SUITE_OUT_DIR" ] && [ "$rc" -eq 0 ]; then
+    if [ -n "$SUITE_OUT_DIR" ] && [ "$rc" -eq 0 ] && [ "$exp_file" = "$case_dir/expected" ]; then
         rel_key="${case_dir#"$ROOT"/}"; rel_key="${rel_key//\//__}"
         printf '%s\n' "$out" > "$SUITE_OUT_DIR/$rel_key.out"
     fi
@@ -6187,7 +6220,7 @@ for case_dir in "${CASES[@]}"; do
     #     This is the §10 fix: a crash that emits no result block used to fall
     #     through to a vacuous "smoke pass"; it no longer can.
     if [ "$rc" -ne 0 ]; then
-        printf "FAIL  %-40s  (non-zero exit code %s -- crashed/aborted)\n" "$name_short" "$rc"
+        printf "FAIL  %-40s  (non-zero exit code %s -- crashed/aborted)\n" "$label" "$rc"
         fail=$((fail+1)); continue
     fi
 
@@ -6197,28 +6230,28 @@ for case_dir in "${CASES[@]}"; do
 
     # (1) NaN / inf guard
     if printf '%s\n' "$block" | grep -qiE ':[[:space:]]*-?(nan|inf)\b'; then
-        printf "FAIL  %-40s  (NaN/inf in result)\n" "$name_short"; fail=$((fail+1)); continue
+        printf "FAIL  %-40s  (NaN/inf in result)\n" "$label"; fail=$((fail+1)); continue
     fi
 
     # (2) result-block guard -- a case that PROMISES a golden but emits NO
     #     comparable result block FAILS (the golden cannot be checked
     #     vacuously).  Without this, an errored-but-exit-0 run, or one whose
     #     result-begin/result-end markers never appeared, would slip through.
-    if [ -f "$case_dir/expected" ] && [ "$have_block" -eq 0 ]; then
+    if [ -f "$exp_file" ] && [ "$have_block" -eq 0 ]; then
         #  A golden of ONLY `csv` rows needs no result block: the sweep
         #  drivers publish their whole answer as a CSV and emit none, which
         #  is why the kind exists (2026-08-22).  Any other kind present
         #  keeps the refusal -- those rows read the block that never came.
-        if awk '$1!~/^#/ && NF>=5 && $1!="csv" {exit 1}' "$case_dir/expected"; then
+        if awk '$1!~/^#/ && NF>=5 && $1!="csv" {exit 1}' "$exp_file"; then
             :
         else
-            printf "FAIL  %-40s  (no result block, but ships a golden 'expected')\n" "$name_short"
+            printf "FAIL  %-40s  (no result block, but ships a golden 'expected')\n" "$label"
             fail=$((fail+1)); continue
         fi
     fi
 
     # (3) reference KPIs
-    if [ -f "$case_dir/expected" ]; then
+    if [ -f "$exp_file" ]; then
         bad=""; anchors_ok=0; golden_rows=0
         while read -r line; do
             case "$line" in ''|\#*) continue;; esac
@@ -6264,30 +6297,31 @@ for case_dir in "${CASES[@]}"; do
                      bad="$bad\n    ANCHOR $name.$key: model gives ${act:-?} against the CITED $exp_v (band $tol) -- a disagreement with the primary, not a moved golden"
                  else bad="$bad\n    $kind.$name.$key: got ${act:-?} expected $exp_v (reltol $tol)"; fi;;
             esac
-        done < "$case_dir/expected"
+        done < "$exp_file"
         #  A golden with ZERO data rows pinned nothing and still printed the
         #  suite's STRONGEST verdict ("checked vs reference") -- observed on
         #  farelo_licl_range, 2026-08-22.  Checked-vacuously is not checked.
         if [ "$golden_rows" -eq 0 ]; then
-            printf "FAIL  %-40s  (golden 'expected' has 0 rows -- pins nothing; record rows or remove the file)\n" "$name_short"
+            printf "FAIL  %-40s  (golden 'expected' has 0 rows -- pins nothing; record rows or remove the file)\n" "$label"
             fail=$((fail+1)); continue
         fi
         if [ -n "$bad" ]; then
-            printf "FAIL  %-40s  (KPI mismatch)" "$name_short"; printf '%b\n' "$bad"; fail=$((fail+1)); continue
+            printf "FAIL  %-40s  (KPI mismatch)" "$label"; printf '%b\n' "$bad"; fail=$((fail+1)); continue
         fi
         #  Say WHICH claim passed.  "checked vs reference" is true of a
         #  self-recorded golden and would be a false advertisement for an
         #  anchor row, whose PASS means the answer agrees with a published
         #  measurement.  A case carrying both says both.
         if [ "$anchors_ok" -gt 0 ]; then
-            printf "PASS  %-40s  (checked vs reference; %d anchor(s) agree with the cited primary)\n" "$name_short" "$anchors_ok"
+            printf "PASS  %-40s  (checked vs reference; %d anchor(s) agree with the cited primary)\n" "$label" "$anchors_ok"
         else
-            printf "PASS  %-40s  (checked vs reference)\n" "$name_short"
+            printf "PASS  %-40s  (checked vs reference)\n" "$label"
         fi
         pass=$((pass+1))
     else
-        printf "pass  %-40s  (smoke + NaN guard)\n" "$name_short"; pass=$((pass+1))
+        printf "pass  %-40s  (smoke + NaN guard)\n" "$label"; pass=$((pass+1))
     fi
+    done
 done
 
 # --- standalone-branch regression (lean-sector-folder promise) ------------------

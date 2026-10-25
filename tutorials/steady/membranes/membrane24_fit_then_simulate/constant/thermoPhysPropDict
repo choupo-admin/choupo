@@ -1,0 +1,46 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+  thermoPhysPropDict (v2) -- T1 ideal gamma-phi mixture; the solutes are
+  SALTS (NaCl, CaCl2, MgSO4), each a component whose `dissociatesTo` gives
+  the ions the DSPM-DE law works in (their charge, Stokes radius and D0 are
+  read off the species records).
+
+  THE LIQUID VISCOSITY IS DECLARED, because the ion D0 are 25 C values and
+  this array runs at 20 C: every membrane reader of D0 corrects it by
+  Stokes-Einstein, D(T) = D0 (T/298.15)(mu(298.15)/mu(T)), on THIS model
+  (water's Vogel record) -- 0.874 at 293.15 K, printed on the run.  Without
+  the declaration the run would use the 25 C values and say so.
+\*---------------------------------------------------------------------------*/
+recordType    thermophysicalPropertySystem;
+schemaVersion 2;
+
+components       ( water  NaCl  MgSO4  MgCl2  Na2SO4 );
+
+equilibrium
+{
+    formulation gammaPhi;
+    liquid
+    {
+        activityModel ideal;
+        standardState pureLiquid;
+    }
+    vapour
+    {
+        fugacityModel idealGas;
+    }
+}
+
+transport
+{
+    liquid
+    {
+        viscosity { model Vogel; }
+    }
+}
