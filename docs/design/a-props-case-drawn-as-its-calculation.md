@@ -209,6 +209,49 @@ already loaded (`gui/src/case/caseModes.ts`), the same fact by the same rule.
   remedy as a button over the canvas (`StaleFitBanner`) that
   switches to Properties & data.
 
+## 6c. The split the reader drags (DEV.md 4c C153)
+
+Vítor, on NanoFiltran the day phase 1 landed: "Ficou agora mesmo fixe e
+intuitivo!! ... o painel que fica por baixo não é ajustável.  Será que pode
+ficar noutro menu de 'Plots'?  Aqui ainda estou na dúvida."  Measured: the map
+had a height computed from the laid-out map (`min(560, max(300, 90 + 0.62 x
+its height))`) and no handle, so on a large map the details of a selection
+began below the fold and a click on a block looked like nothing.
+
+* **The map is a TOP panel of the panel contract** (`PROPS_MAP_PANEL`,
+  `ui/panelContract.tsx`; its keys `PANELS.propsMap` in `state/prefs.ts`), the
+  same seam the Streams workspace's balances band has: drag it, arrow keys on
+  it, double-click or Enter to reset.  Its size is a READER PREFERENCE, kept
+  across cases and tabs.  Until the reader drags it, the map keeps C151's
+  computed height (`autoMapPx`, `ui/propsSplit.ts`), so nothing moved for a
+  reader who never touches it, and a reset returns to that computed height
+  rather than to a fixed number (`hasPanelSize` / `forgetPanelSize`).
+* **The details pane keeps its header row** (Overview / Details, "← overview",
+  the selection's block in the propsDict) however far the map is dragged, so a
+  pane dragged down to nothing still says what it would show.
+* **"Figures full height"** is one button in the map's header: it folds the
+  map (the contract's fold, remembered) and gives the details and figures the
+  whole height; "Show the map" brings it back at the size it had.
+* **A selection opens a pane too short to show it.**  When something is
+  selected (on the map, the tree or the verdict strip) while the details pane
+  is shorter than a usable height (260 px, half the split on a short screen),
+  the map's DRAWN height is capped so the pane opens to it.  Render-only: the
+  reader's stored size is not touched, the cap is dropped the moment he drags
+  or resets, and a pane he made larger is never shrunk (`openDetailsCap`).
+* **No Plots menu.**  C151 removed the second door to a props case's figures
+  on purpose (Vítor's own complaint: a Plots menu beside plots already on the
+  main screen confuses), and the split answers the complaint underneath it:
+  the figures can now have the screen.  If he still wants a separate Plots
+  entry for a props case after using the split, it is one switch -- `Plots`
+  back in the props branch of `allowedWorkspaceLabels` (`ui/workspaces.ts`),
+  with the props branch of `AppShell.tsx` drawing it from the same one home
+  the Results screen reads (`postProcessing.ts`'s views), never a second
+  computation.
+* **The floating selection card was NOT built.**  C153 first proposed the
+  flowsheet's card on the props map; Vítor, looking again, found that a click
+  already shows its summary in the details pane and that a resizable pane
+  "already solves a lot", so the card was dropped before it was written.
+
 ## 7. Gates and tests
 
 * `gui/tests/propsMap.test.ts`: the registry coverage of `x-choupo`; the
@@ -220,6 +263,12 @@ already loaded (`gui/src/case/caseModes.ts`), the same fact by the same rule.
   `generated/caseManifest.json` over every case; membrane24's datasets ->
   fit -> record -> Stage; the record naming its fit; ctrl17; the stale-fit
   refusal read off a log.
+* `gui/tests/propsSplit.test.ts` (C153): the computed default is C151's; the
+  map dragged to its maximum leaves the details' header row; a selection opens
+  a pane dragged to nothing and never shrinks one the reader made large; the
+  cap is render-only (a source arm: the effect that opens the pane never saves
+  a size).  `gui/tests/panelContract.test.ts` holds the new panel to the three
+  questions every docked panel answers.
 * `bin/curate/check_guide_anchors.py` now holds `OP_DEST`, `PROPS_MODEL_DEST`
   and the `op:<type>` fallback for every props op, beside the two tables it
   held.

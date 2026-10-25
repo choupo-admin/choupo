@@ -272,14 +272,19 @@ function Canvas({ map, h, wide }: { map: PropsMap; h: PropsMapHandlers; wide: bo
 }
 
 export function PropsMapCanvas({ map, handlers, height, wide = true }: {
-  map: PropsMap; handlers: PropsMapHandlers; height: number;
+  map: PropsMap; handlers: PropsMapHandlers;
+  /** a fixed height in px; omitted, the canvas FILLS its parent (the
+   *  calculation-map panel the reader resizes, DEV.md 4c C153) */
+  height?: number;
   /** room for a minimap in the corner */
   wide?: boolean;
 }) {
+  const fill = height === undefined;
   return (
-    <Box>
+    <Box style={fill ? { height: "100%", display: "flex", flexDirection: "column", minHeight: 0 } : undefined}>
     <Box data-review="map" style={{
-      position: "relative", height, minHeight: 260,
+      position: "relative",
+      ...(fill ? { flex: "1 1 0px", minHeight: 0 } : { height, minHeight: 260 }),
       border: "1px solid light-dark(var(--mantine-color-gray-3), var(--mantine-color-dark-4))",
       borderRadius: 6, overflow: "hidden",
       background: "light-dark(var(--mantine-color-white), var(--mantine-color-dark-7))",

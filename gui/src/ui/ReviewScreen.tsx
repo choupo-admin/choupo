@@ -36,8 +36,12 @@ License
             with its views), Records produced, My plots (PropsTree)
     CENTRE  the CALCULATION MAP -- the case drawn as a flowsheet of its
             calculation, read-only and derived (PropsMap, case/propsMap.ts)
-    BELOW   the DETAILS of what is selected in either (PropsDetails); with
-            nothing selected, the OVERVIEW:
+    BELOW   the DETAILS of what is selected in either (PropsDetails), under a
+            seam the reader drags (C153: the map is a TOP panel of the panel
+            contract, its height a reader preference; folding it is "figures
+            full height"; a selection made while this pane is too short to
+            show its summary opens it -- ui/propsSplit.ts); with nothing
+            selected, the OVERVIEW:
               1. what the run did -- one verdict row per operation
               2. (thermo readiness, where the case creates a component)
               3. figures, then parameters and tables -- every view
@@ -53,11 +57,11 @@ License
   postProcessing.ts for the views, propsMap.ts for the map).
 \*---------------------------------------------------------------------------*/
 
-import { useCallback, useEffect, useMemo, useState, type ReactNode } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState, type KeyboardEvent as ReactKeyboardEvent, type ReactNode } from "react";
 import { ActionIcon, Badge, Box, Button, Group, ScrollArea, Select, Stack, Table, Text, Tooltip } from "@mantine/core";
-import { useMediaQuery } from "@mantine/hooks";
+import { useMediaQuery, useReducedMotion } from "@mantine/hooks";
 import { notifications } from "@mantine/notifications";
-import { IconChevronDown, IconChevronUp, IconFileCode } from "@tabler/icons-react";
+import { IconChevronsDown, IconChevronsUp, IconFileCode } from "@tabler/icons-react";
 
 import type { RunResult } from "../adapters/SolverAdapter.js";
 import type { JsonDict } from "../dict/index.js";
@@ -75,6 +79,14 @@ import { CsvAutoPlot, dropPointColumn } from "./plotting/CsvAutoPlot.js";
 import { PropsMapCanvas } from "./PropsMap.js";
 import { PropsTree } from "./PropsTree.js";
 import { CaseLink, FigureGrid, SelectionDetails } from "./PropsDetails.js";
+import { useMeasuredBoxHeight } from "./methods/methodsChrome.js";
+import {
+  PROPS_MAP_PANEL, PanelResizeHandle, panelBoxProps, shownTopPanelPx, usePanel, type PanelHandle,
+} from "./panelContract.js";
+import {
+  PANELS, clampSize, forgetPanelSize, hasPanelSize, loadPanelSize, savePanelSize,
+} from "../state/prefs.js";
+import { autoMapPx, DETAILS_FLOOR_PX, openDetailsCap } from "./propsSplit.js";
 
 function SectionTitle({ children, hint }: { children: ReactNode; hint?: string }) {
   return (
@@ -286,7 +298,6 @@ export function ReviewScreen({ ops, result, readiness, audit, propsDict, thermo,
   const propsFocus = useStore((s) => s.propsFocus);
   useEffect(() => { if (propsFocus) setSelected(propsFocus.id); }, [propsFocus]);
   const [expanded, setExpanded] = useState<Set<string>>(new Set());
-  const [mapFolded, setMapFolded] = useState(false);
   const [treeOpen, setTreeOpen] = useState(false);
   const key = caseKey ?? "case";
   const [myPlots, setMyPlots] = useState<MyPlot[]>(() => loadPlots(key));
@@ -481,14 +492,71 @@ export function ReviewScreen({ ops, result, readiness, audit, propsDict, thermo,
     <PropsTree tree={tree} selected={selected || null} onSelect={(id) => { setSelected(id); setTreeOpen(false); }}
       onNewPlot={() => setSelected("myplot:new")} onRemovePlot={removePlot} />
   );
-  const mapHeight = narrow ? 340 : Math.min(560, Math.max(300, 90 + map.height * 0.62));
+  /*  THE SPLIT (DEV.md 4c C153).  The map is a TOP panel; its size is the
+   *  reader's once dragged and C151's computed height until then
+   *  (`autoMapPx`), so the contract runs CONTROLLED here: this component owns
+   *  the one value and writes it to the one key (PANELS.propsMap).  Reset
+   *  (double-click, Enter on the seam) forgets the drag and returns to the
+   *  computed height rather than to a fixed number. */
+  const reduceMotion = useReducedMotion();
+  const split = useMeasuredBoxHeight<HTMLDivElement>();
+  const mapSpec = PROPS_MAP_PANEL.prefs.size;
+  const [mapPref, setMapPref] = useState<number | null>(
+    () => (hasPanelSize(PANELS.propsMap) ? loadPanelSize(PANELS.propsMap) : null));
+  //  the affordance's cap on the map's DRAWN height: render-only, dropped the
+  //  moment the reader drags or resets (ui/propsSplit.ts)
+  const [mapCap, setMapCap] = useState<number | null>(null);
+  const onMapPx = useCallback((px: number) => {
+    setMapPref(clampSize(px, PROPS_MAP_PANEL.prefs.size));
+    setMapCap(null);
+    savePanelSize(PANELS.propsMap, px);
+  }, []);
+  const autoPx = autoMapPx(map.height, narrow);
+  //  What is DRAWN: the preference (or the computed height), fitted into the
+  //  split render-only, then the affordance's cap.  The contract is handed
+  //  THIS number, so a drag or an arrow key starts from the seam the reader
+  //  sees -- handed the stored size instead, a map fitted from 1485 px down to
+  //  689 px did not move until the pointer had travelled 800 px (measured).
+  const fittedMap = shownTopPanelPx(clampSize(mapPref ?? autoPx, mapSpec), 0, split.height,
+    DETAILS_FLOOR_PX, mapSpec);
+  const shownMap = mapCap !== null ? Math.min(fittedMap, mapCap) : fittedMap;
+  const controlled = useMemo(() => ({ value: shownMap, onValue: onMapPx }), [shownMap, onMapPx]);
+  const contract = usePanel(PROPS_MAP_PANEL, { controlled });
+  const resetMap = useCallback(() => {
+    forgetPanelSize(PANELS.propsMap);
+    setMapPref(null);
+    setMapCap(null);
+  }, []);
+  const mapPanel: PanelHandle = useMemo(() => ({
+    ...contract,
+    reset: resetMap,
+    onKeyDown: (e: ReactKeyboardEvent) => {
+      if (e.key === "Enter" || e.key === " ") { e.preventDefault(); resetMap(); return; }
+      contract.onKeyDown(e);
+    },
+  }), [contract, resetMap]);
+  const mapBox = panelBoxProps(mapPanel, !!reduceMotion, shownMap);
+
+  //  A SELECTION THAT CANNOT BE SEEN IS NOT AN ANSWER: when something is
+  //  selected and the details pane is too short for its summary, open it.
+  const lastSelected = useRef(selected);
+  useEffect(() => {
+    if (selected === lastSelected.current) return;
+    lastSelected.current = selected;
+    if (!selected || mapPanel.collapsed) return;
+    const cap = openDetailsCap(split.height, shownMap, mapSpec);
+    if (cap !== null) setMapCap(cap);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [selected]);
+
+  const selLink = selected.startsWith("op:") ? opLink(selected.slice(3)) : undefined;
 
   const centre = (
     <Box style={{ display: "flex", flexDirection: "column", minWidth: 0, minHeight: 0, height: "100%" }}>
       <Box px="md" pt="sm" style={{ flex: "0 0 auto" }}>
         <Group justify="space-between" mb={4} wrap="nowrap">
-          <SectionTitle hint={mapFolded ? undefined
-            : "Data, models, operations, views -- derived from system/propsDict.  Click to select, F1 or double-click to open."}>
+          <SectionTitle hint={narrow ? undefined : mapPanel.collapsed ? "Folded: the details and figures have the whole height."
+            : "Data, models, operations, views -- derived from system/propsDict.  Click to select, F1 or double-click to open; drag the seam under it to resize."}>
             Calculation map
           </SectionTitle>
           <Group gap={4} wrap="nowrap">
@@ -497,10 +565,15 @@ export function ReviewScreen({ ops, result, readiness, audit, propsDict, thermo,
                 {treeOpen ? "Hide the case tree" : "Case tree"}
               </Button>
             )}
-            <Tooltip label={mapFolded ? "show the map" : "fold the map"} withArrow>
-              <ActionIcon size="sm" variant="subtle" onClick={() => setMapFolded(!mapFolded)} aria-label="fold map">
-                {mapFolded ? <IconChevronDown size={14} /> : <IconChevronUp size={14} />}
-              </ActionIcon>
+            <Tooltip withArrow multiline maw={300} label={mapPanel.collapsed
+              ? "Show the calculation map again, at the height you left it"
+              : "Fold the calculation map away: the details and figures take the whole height (the map's size is kept)"}>
+              <Button size="compact-xs" variant="default" data-review="figures-full-height"
+                aria-expanded={!mapPanel.collapsed}
+                leftSection={mapPanel.collapsed ? <IconChevronsDown size={13} /> : <IconChevronsUp size={13} />}
+                onClick={mapPanel.toggle}>
+                {mapPanel.collapsed ? "Show the map" : "Figures full height"}
+              </Button>
             </Tooltip>
           </Group>
         </Group>
@@ -508,18 +581,39 @@ export function ReviewScreen({ ops, result, readiness, audit, propsDict, thermo,
           <Box style={{ height: 320, border: "1px solid light-dark(var(--mantine-color-gray-3), var(--mantine-color-dark-4))",
             borderRadius: 6, marginBottom: 8 }}>{treePane}</Box>
         )}
-        {!mapFolded && <PropsMapCanvas map={map} handlers={handlers} height={mapHeight} wide={!narrow} />}
-        {selected && (
-          <Group gap={6} mt={6}>
-            <Button size="compact-xs" variant="subtle" onClick={() => setSelected("")}>← overview</Button>
-            {(() => { const l = selected.startsWith("op:") ? opLink(selected.slice(3)) : undefined;
-              return l ? <CaseLink t={l} onOpen={activate} /> : null; })()}
-          </Group>
-        )}
       </Box>
-      <ScrollArea style={{ flex: 1, minHeight: 0 }} type="auto">
-        <Box px="md" py="sm" style={{ maxWidth: 1600 }}>{details}</Box>
-      </ScrollArea>
+      <Box ref={split.ref} data-review="split"
+        style={{ flex: "1 1 0px", minHeight: 0, display: "flex", flexDirection: "column" }}>
+        {!mapPanel.collapsed && (
+          <>
+            <Box data-panel={mapBox["data-panel"]} style={{ ...mapBox.style, flex: "0 0 auto" }}>
+              <Box px="md" pb={4} style={{ height: "100%", boxSizing: "border-box" }}>
+                <PropsMapCanvas map={map} handlers={handlers} wide={!narrow} />
+              </Box>
+            </Box>
+            <PanelResizeHandle panel={mapPanel} />
+          </>
+        )}
+        <Box data-review="details-pane"
+          style={{ flex: "1 1 0px", minHeight: 0, display: "flex", flexDirection: "column",
+            borderTop: "1px solid light-dark(var(--mantine-color-gray-3), var(--mantine-color-dark-4))" }}>
+          <Group px="md" gap={8} wrap="nowrap"
+            style={{ flex: `0 0 ${DETAILS_FLOOR_PX - 1}px`, minHeight: 0, overflow: "hidden" }}>
+            <Text size="11px" c="dimmed" tt="uppercase" fw={700} style={{ letterSpacing: 0.5, whiteSpace: "nowrap" }}>
+              {selected ? "Details" : "Overview"}
+            </Text>
+            {selected && (
+              <>
+                <Button size="compact-xs" variant="subtle" onClick={() => setSelected("")}>← overview</Button>
+                {selLink && <CaseLink t={selLink} onOpen={activate} />}
+              </>
+            )}
+          </Group>
+          <ScrollArea style={{ flex: 1, minHeight: 0 }} type="auto">
+            <Box px="md" pb="sm" style={{ maxWidth: 1600 }}>{details}</Box>
+          </ScrollArea>
+        </Box>
+      </Box>
     </Box>
   );
 
