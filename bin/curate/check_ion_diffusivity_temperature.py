@@ -64,6 +64,8 @@ import tempfile
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[2]
+sys.path.insert(0, str(ROOT / "bin" / "curate" / "nanofiltran"))
+import paper_case  # noqa: E402
 M14 = ROOT / "tutorials/steady/membranes/membrane14_polarisation_multiionic"
 #  the NanoFiltran paper's one case (DEV.md 4c C147); its part C is the former
 #  nanofiltran02, the stiff case of Table 2
@@ -217,15 +219,13 @@ def main():
         cp = {}
         for tag, visc in (("nf", False), ("nfv", True)):
             d = tmp / tag
-            copy_case(NF02, d)
-            #  one op -- and the case's `references`/`views`, which follow the
-            #  operations list and name ops this twin does not carry, go with
-            #  the rest of the file
-            p = d / "system/propsDict"
-            s = p.read_text()
-            i = s.index("\noperations\n(") + 1   # the list, never a comment naming it
-            op = re.search(r"\{\s*name\s+N50;.*?\n    \}", s, re.S).group(0)
-            p.write_text(s[:i] + "operations\n(\n" + op + "\n);\n")
+            #  one op, copied by the ONE home of how a part of this case is
+            #  copied (paper_case.subset_case): it drops the `studies`,
+            #  `references` and `views`, which name ops this twin does not
+            #  carry.  This arm used to cut the file itself, keeping everything
+            #  ABOVE the operations list -- and the day C154 put `studies`
+            #  there, the twin was refused for naming `dye4_p1` (2026-10-25).
+            paper_case.subset_case(d, ["N50"], src=NF02)
             if visc:
                 declare_viscosity(d)
             rc, out, js = run(d, "choupoProps")
