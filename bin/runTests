@@ -159,12 +159,277 @@
 #
 #  The three tier flags take NO cases and authorise NO commit on their own.
 #
+#  Every form takes `-j N` / `--jobs N` (or env CHOUPO_JOBS): the cases
+#  and the independent gates run N-wide, the default being every CPU this
+#  process may use, and the report is the same lines in the same order.
+#  `-j 1` is the serial walk, byte for byte.  See THE CORES below.
+#
 #  Exit code: 0 if all pass, 1 if any fail.
 # =============================================================================
 
 set -uo pipefail
 
 ROOT=$(cd "$(dirname "$0")/.." && pwd)
+
+# --- THE CORES (2026-10-25, DEV.md 4c C167) ------------------------------------
+#  Vitor watched the sweep on a ten-core laptop use one core most of the time.
+#  The case walk and every gate ran one after another, so the cores shortened
+#  only the build and vitest.  Now the work that shares no state runs N-wide,
+#  and the REPORT IS UNCHANGED: every result line is still printed by the one
+#  serial walk below, in the same order, from the same code -- what moved is
+#  only WHEN the expensive part (a case's run, a gate's run) happens.
+#
+#    * THE CASES: each case's whole check -- its run, the exit/NaN/result-
+#      block guards and every golden row -- is ONE function, check_case.  The
+#      walk calls it case by case under `-j 1`; under `-j N` a pool calls it
+#      N-wide ahead of the walk, each call's printed lines and tally kept in
+#      build/suitePrepass/, and the walk prints them in its own order and adds
+#      the tallies.  Measured on --fast: the COMPARISON, not the run, was most
+#      of a case's cost (a golden row is a grep of the run's output), which is
+#      why the check moves and not only the run.  Kept in the walk, live: a
+#      case with code/ (bin/buildCode runs `make lib` on the shared build
+#      tree).  A case nested inside another case is checked in the SAME job,
+#      after it; a two-mode case (C152) keeps its two runs in one call.
+#    * THE GATES: bin/curate/suite_lanes.txt classifies every gate site.  A
+#      gate in a LANE is run before its section by the pool, its output and
+#      exit code kept, and REPLAYED by gate_exec at its own site, byte for
+#      byte; the gates of one lane run one after another in walk order.  A
+#      gate marked SERIAL -- or not listed at all, the safe default -- runs
+#      live at its own site, alone, exactly as before.  The pre-loop gates
+#      are prefetched before the pre-loop section and the cache-reading gates
+#      after the case loop, so no gate ever runs beside a case.
+#    * A CORE BUDGET, NOT N SLOTS: the engine's parallel Jacobian takes
+#      allowed CPUs - 2 threads by default (src/solver/NewtonND.cpp,
+#      jacobianThreads), so N column cases at once would oversubscribe the
+#      machine N-fold.  Every pooled job is given CHOUPO_THREADS =
+#      max(1, cores / N), so jobs x threads ~ cores; a gate with its own
+#      thread pool, `make` or vitest is SERIAL and has the machine to itself.
+#
+#  -j N | --jobs N (or env CHOUPO_JOBS) sets N; the default is `nproc` (the
+#  CPUs this process may use).  `-j 1` takes NONE of the paths above: no
+#  pre-pass, no pool, gate_exec runs every gate live -- today's run, byte for
+#  byte.  Record modes never use the pool (they exit before it).
+_JOBS="${CHOUPO_JOBS:-}"
+_rest=()
+while [ $# -gt 0 ]; do
+    case "$1" in
+        -j|--jobs) _JOBS="${2:-}"; shift 2 || { echo "usage: runTests -j N ..."; exit 2; } ;;
+        -j[0-9]*)  _JOBS="${1#-j}"; shift ;;
+        --jobs=*)  _JOBS="${1#--jobs=}"; shift ;;
+        *)         _rest+=("$1"); shift ;;
+    esac
+done
+set -- ${_rest[@]+"${_rest[@]}"}
+NCPU=$(nproc 2>/dev/null || echo 1)
+JOBS="${_JOBS:-$NCPU}"
+case "$JOBS" in
+    ''|*[!0-9]*|0) echo "ERROR: -j / CHOUPO_JOBS must be a positive integer (got '$JOBS')"; exit 2 ;;
+esac
+export CHOUPO_JOBS="$JOBS"
+#  Threads for each pooled job; an explicit CHOUPO_THREADS from the caller wins.
+JOB_THREADS=$(( NCPU / JOBS )); [ "$JOB_THREADS" -lt 1 ] && JOB_THREADS=1
+[ -n "${CHOUPO_THREADS:-}" ] && JOB_THREADS="$CHOUPO_THREADS"
+PREPASS_DIR=""      # set by case_prepass when the pool ran the cases
+GATE_PF=""          # set by gate_prefetch for the section being replayed
+JOBTIMES="$ROOT/build/suiteJobTimes.tsv"   # last measured seconds per pooled job
+
+secs_since() { awk -v a="$1" -v b="$EPOCHREALTIME" 'BEGIN{printf "%.3f\n", b-a}'; }
+
+#  timing_replay <secfile> -- a replayed run tells the timing wrapper its OWN
+#  seconds (measured in the pool), so build/suiteTimings.csv charges an item
+#  what it cost and not the near-zero gap of its replay; the stamp is taken
+#  before the item's result line, which bin/curate/suite_timings.py pairs it
+#  with.  Without a wrapper (CHOUPO_SUITE_TIMED unset) nothing is written.
+timing_replay() {
+    [ -n "${CHOUPO_SUITE_TIMED:-}" ] && [ -f "$1" ] || return 0
+    printf '%s\t%s\n' "$EPOCHREALTIME" "$(cat "$1")" >> "$ROOT/build/suiteTimings.replay"
+}
+
+#  pool_run <fn> <id>... -- runs `<fn> <id>` for every id, at most $JOBS at a
+#  time, each in its own subshell with stdin closed and CHOUPO_THREADS set.
+#  Ids are started LONGEST FIRST by the last measured time (an unmeasured id
+#  first of all), so the longest job does not start last and set the wall
+#  clock alone.  Output order is irrelevant here: nothing a job prints is
+#  shown -- each writes its own files, and the walk prints.
+pool_run() {
+    local fn="$1"; shift
+    local id running=0 ordered
+    ordered=$(printf '%s\n' "$@" \
+        | awk -v fn="$fn" -v tf="$JOBTIMES" '
+              BEGIN { while ((getline l < tf) > 0) { split(l, a, "\t"); t[a[1]] = a[2] } }
+              { k = fn ":" $0; printf "%s\t%s\n", ((k in t) ? t[k] : 1e9), $0 }' \
+        | sort -t$'\t' -k1,1gr -s | cut -f2-)
+    while IFS= read -r id; do
+        [ -n "$id" ] || continue
+        ( export CHOUPO_THREADS="$JOB_THREADS"
+          _t0=$EPOCHREALTIME
+          "$fn" "$id"
+          printf '%s:%s\t%s\n' "$fn" "$id" "$(secs_since "$_t0")" \
+              >> "$ROOT/build/suiteJobTimes.new" ) < /dev/null > /dev/null 2>&1 &
+        running=$((running+1))
+        if [ "$running" -ge "$JOBS" ]; then wait -n; running=$((running-1)); fi
+    done <<< "$ordered"
+    wait
+}
+
+#  The measured times replace the old ones for the ids that ran; others stay.
+pool_times_commit() {
+    local new="$ROOT/build/suiteJobTimes.new"
+    [ -f "$new" ] || return 0
+    { cat "$new"; cat "$JOBTIMES" 2>/dev/null; true; } \
+        | awk -F'\t' '!seen[$1]++' > "$JOBTIMES.tmp" && mv "$JOBTIMES.tmp" "$JOBTIMES"
+    rm -f "$new"
+}
+
+#  gate_key <argv...> -- the file-safe name of one gate invocation.
+gate_key() {
+    local k="${1#"$ROOT"/}"; shift
+    [ $# -gt 0 ] && k="$k $*"
+    printf '%s' "${k//[^A-Za-z0-9._-]/_}"
+}
+
+#  gate_exec <argv...> -- run a gate, or replay the run the pool already made
+#  of this exact invocation in this section.  A replay prints the kept output
+#  (stdout and stderr were captured merged, as every site redirects them) and
+#  returns the kept exit code; anything not prefetched runs live.
+gate_exec() {
+    if [ -n "$GATE_PF" ]; then
+        local k; k=$(gate_key "$@")
+        if [ -f "$GATE_PF/$k.rc" ]; then
+            cat "$GATE_PF/$k.out"
+            : > "$GATE_PF/$k.used"
+            timing_replay "$GATE_PF/$k.sec"
+            return "$(cat "$GATE_PF/$k.rc")"
+        fi
+    fi
+    "$@"
+}
+
+#  gate_lane_job <lane> -- one pool job: the lane's gates in listed order.
+gate_lane_job() {
+    local lane="$1" sec argv k t0
+    while IFS=$'\t' read -r sec argv; do
+        k=$(eval gate_key "\"\$ROOT/\"$argv")
+        t0=$EPOCHREALTIME
+        eval "\"\$ROOT/\"$argv" > "$GATE_PF/$k.out" 2>&1
+        echo $? > "$GATE_PF/$k.rc"
+        secs_since "$t0" > "$GATE_PF/$k.sec"
+    done < "$GATE_PF/lane.$lane"
+}
+
+#  gate_prefetch <SECTION> -- run that section's laned gates N-wide.  The
+#  lanes file is read here and nowhere else; SERIAL and unlisted gates are
+#  left to their sites.  Under -j 1 it does nothing at all.
+gate_prefetch() {
+    local section="$1" lanes_file="$ROOT/bin/curate/suite_lanes.txt"
+    GATE_PF=""
+    [ "$JOBS" -gt 1 ] || return 0
+    [ -f "$lanes_file" ] || return 0
+    GATE_PF="$ROOT/build/suiteGates/$section"
+    rm -rf "$GATE_PF"; mkdir -p "$GATE_PF"
+    local sec lane argv _reason
+    local -a lanes=()
+    while IFS='|' read -r sec lane argv _reason; do
+        sec="${sec// /}"; lane="${lane// /}"
+        argv="${argv#"${argv%%[![:space:]]*}"}"; argv="${argv%"${argv##*[![:space:]]}"}"
+        case "$sec" in ''|\#*) continue ;; esac
+        [ "$sec" = "$section" ] || continue
+        [ "$lane" = SERIAL ] && continue
+        [ -f "$GATE_PF/lane.$lane" ] || lanes+=("$lane")
+        printf '%s\t%s\n' "$sec" "$argv" >> "$GATE_PF/lane.$lane"
+    done < "$lanes_file"
+    [ "${#lanes[@]}" -gt 0 ] || return 0
+    echo "[parallel] $section gates: ${#lanes[@]} lane(s) prefetched $JOBS-wide (CHOUPO_THREADS=$JOB_THREADS each); SERIAL and unlisted gates run live at their sites"
+    pool_run gate_lane_job "${lanes[@]}"
+}
+
+#  gate_prefetch_close -- after a section: a prefetched run its site never
+#  asked for is a lanes entry that names no site (a renamed gate, a changed
+#  argument).  Said once, to the log; it is not a result line.
+gate_prefetch_close() {
+    [ -n "$GATE_PF" ] || return 0
+    local rc
+    for rc in "$GATE_PF"/*.rc; do
+        [ -f "$rc" ] || continue
+        [ -f "${rc%.rc}.used" ] || echo "[parallel] NOTE: $(basename "${rc%.rc}") was prefetched but no site ran it -- bin/curate/suite_lanes.txt names an invocation runTests does not make"
+    done
+    GATE_PF=""
+}
+
+#  prepass_key <case_dir> -- the file-safe name of one case's default run.
+prepass_key() {
+    local k="${1#"$ROOT"/}"
+    printf '%s' "${k//\//__}"
+}
+
+#  case_pool_group <id> -- one pool job: the cases of group <id> (an
+#  outermost case and any case nested inside it), in walk order, each CHECKED
+#  in full by check_case -- run, every guard, every golden row -- with its
+#  printed lines kept in <key>.out and its tally in <key>.cnt.  The tally is
+#  counted from zero in the job's own subshell and added by the walk.
+case_pool_group() {
+    local d k t0 n
+    while IFS= read -r d; do
+        [ -n "$d" ] || continue
+        k=$(prepass_key "$d")
+        t0=$EPOCHREALTIME
+        ( pass=0; fail=0; known_broken=0; expected_fail=0; KB_NAMES=(); EF_NAMES=()
+          check_case "$d"
+          { echo "$pass $fail $known_broken $expected_fail"
+            for n in ${KB_NAMES[@]+"${KB_NAMES[@]}"}; do printf 'KB\t%s\n' "$n"; done
+            for n in ${EF_NAMES[@]+"${EF_NAMES[@]}"}; do printf 'EF\t%s\n' "$n"; done
+          } > "$PREPASS_DIR/$k.cnt" ) > "$PREPASS_DIR/$k.out" 2>&1
+        secs_since "$t0" > "$PREPASS_DIR/$k.sec"
+    done < "$PREPASS_DIR/group.$1"
+}
+
+#  case_prepass -- run the walk's cases N-wide before the walk compares them.
+case_prepass() {
+    PREPASS_DIR=""
+    [ "$JOBS" -gt 1 ] || return 0
+    [ "${#CASES[@]}" -gt 1 ] || return 0
+    PREPASS_DIR="$ROOT/build/suitePrepass"
+    rm -rf "$PREPASS_DIR"; mkdir -p "$PREPASS_DIR"
+    #  A group is named by its outermost case (prepass_key), so its measured
+    #  time survives the corpus gaining or losing a case.
+    local d g placed
+    local -a roots=() ids=()
+    for d in "${CASES[@]}"; do
+        [ "$(binary_for "$d")" = BUILDCODE ] && continue     # live in the walk
+        placed=""
+        for g in "${!roots[@]}"; do
+            case "$d/" in "${roots[$g]}/"*) placed="$g"; break ;; esac
+            case "${roots[$g]}/" in "$d/"*) placed="$g"; break ;; esac
+        done
+        if [ -z "$placed" ]; then
+            placed=${#roots[@]}; roots[$placed]="$d"; ids+=("$(prepass_key "$d")")
+        fi
+        printf '%s\n' "$d" >> "$PREPASS_DIR/group.$(prepass_key "${roots[$placed]}")"
+    done
+    echo "[parallel] cases: checked $JOBS-wide ahead of the walk, which prints them in its own order (CHOUPO_THREADS=$JOB_THREADS each)"
+    pool_run case_pool_group "${ids[@]}"
+}
+
+#  walk_case <case_dir> -- the walk's one way to check a case: print what the
+#  pool's check of it printed and add its tally, or check it here and now.
+walk_case() {
+    if [ -n "$PREPASS_DIR" ]; then
+        local k p f kb ef tag n
+        k=$(prepass_key "$1")
+        if [ -f "$PREPASS_DIR/$k.cnt" ]; then
+            timing_replay "$PREPASS_DIR/$k.sec"
+            cat "$PREPASS_DIR/$k.out"
+            { read -r p f kb ef
+              while IFS=$'\t' read -r tag n; do
+                  case "$tag" in KB) KB_NAMES+=("$n") ;; EF) EF_NAMES+=("$n") ;; esac
+              done; } < "$PREPASS_DIR/$k.cnt"
+            pass=$((pass+p)); fail=$((fail+f))
+            known_broken=$((known_broken+kb)); expected_fail=$((expected_fail+ef))
+            return 0
+        fi
+    fi
+    check_case "$1"
+}
 
 #  WHICH LINE OF A GATE'S OUTPUT IS ITS CLAIM (2026-09-06).  That fact had two
 #  homes and they disagreed: `bin/curate/gate_manifest.py` recorded `line[0]`
@@ -239,7 +504,7 @@ if [ -z "${CHOUPO_SUITE_TIMED:-}" ]; then
         --record|--record-append|--gui|-h|--help) ;;
         *)
             mkdir -p "$ROOT/build"
-            _raw="$ROOT/build/suiteTimings.raw"; : > "$_raw"
+            _raw="$ROOT/build/suiteTimings.raw"; : > "$_raw"; : > "$ROOT/build/suiteTimings.replay"
             #  PROGRESS (Vitor, 2026-10-25: "devia de aparecer a % de casos
             #  que correram!").  A sweep run as `bin/runTests > log 2>&1`
             #  shows nothing on the terminal for half an hour, so when stdout
@@ -2078,13 +2343,14 @@ KB_NAMES=(); EF_NAMES=()
 # Catalogue identity + CAS audit runs once on the FULL sweep (it is a property
 # of the whole standard catalogue, not of any one case).
 if [ "$#" -eq 0 ]; then
+    gate_prefetch PRE
     audit_catalogue; nprob=$?
     if [ "$nprob" -eq 0 ]; then pass=$((pass+1)); else fail=$((fail+nprob)); fi
     # Doctrine gate (forum #91/#95): user-facing teaching surfaces must not
     # teach the retired grammars (streams{}, thermoPackage/propertyPackage
     # filenames, fitBinaryPair) nor name competitors.  Full-sweep only, like
     # the catalogue audit -- a property of the whole tree, not of one case.
-    if "$ROOT/bin/curate/check_doctrine.py" > /tmp/doctrine.$$ 2>&1; then
+    if gate_exec "$ROOT/bin/curate/check_doctrine.py" > /tmp/doctrine.$$ 2>&1; then
         printf "PASS  %-40s  (%s)\n" "doctrine-gate" "$(head -1 /tmp/doctrine.$$)"
         pass=$((pass+1))
     else
@@ -2102,7 +2368,7 @@ if [ "$#" -eq 0 ]; then
     #  "if the EOS line is stale, how many other capability claims are stale
     #  too?"  General prose staleness stays UNGATED by ruling; a capability
     #  TABLE is the tractable exception -- fixed rows, machine-readable keys.
-    if "$ROOT/bin/curate/check_readme_capabilities.py" > /tmp/readmecap.$$ 2>&1; then
+    if gate_exec "$ROOT/bin/curate/check_readme_capabilities.py" > /tmp/readmecap.$$ 2>&1; then
         printf "PASS  %-40s  (%s)\n" "readme-capabilities" "$(head -1 /tmp/readmecap.$$)"
         pass=$((pass+1))
     else
@@ -2117,7 +2383,7 @@ if [ "$#" -eq 0 ]; then
     #  authoritative material-input form per inlet -- a wrapper beside a
     #  top-level form is refused rather than resolved by an undeclared
     #  precedence.  The round trip is witnessed, not asserted.
-    if "$ROOT/bin/curate/check_material_wrapper.py" > /tmp/matwrap.$$ 2>&1; then
+    if gate_exec "$ROOT/bin/curate/check_material_wrapper.py" > /tmp/matwrap.$$ 2>&1; then
         printf "PASS  %-40s  (%s)\n" "material-wrapper" "$(head -1 /tmp/matwrap.$$)"
         pass=$((pass+1))
     else
@@ -2135,7 +2401,7 @@ if [ "$#" -eq 0 ]; then
     #  The gate recomputes every published gamma_pm from the run's own
     #  per-ion gammas and the species charges, and requires the derived
     #  stoichiometry to be announced.
-    if "$ROOT/bin/curate/check_mean_ionic.py" > /tmp/meanionic.$$ 2>&1; then
+    if gate_exec "$ROOT/bin/curate/check_mean_ionic.py" > /tmp/meanionic.$$ 2>&1; then
         printf "PASS  %-40s  (%s)\n" "mean-ionic-gate" "$(head -1 /tmp/meanionic.$$)"
         pass=$((pass+1))
     else
@@ -2148,7 +2414,7 @@ if [ "$#" -eq 0 ]; then
     #  The witness tier's declared list stays resolvable (2026-08-10): every
     #  line an existing case with a golden, classes unique.  The tier itself
     #  is `runTests --witnesses`; this arm only keeps its declaration honest.
-    if "$ROOT/bin/curate/check_witness_tier.py" > /tmp/witness.$$ 2>&1; then
+    if gate_exec "$ROOT/bin/curate/check_witness_tier.py" > /tmp/witness.$$ 2>&1; then
         printf "PASS  %-40s  (%s)\n" "witness-tier-gate" "$(head -1 /tmp/witness.$$)"
         pass=$((pass+1))
     else
@@ -2165,7 +2431,7 @@ if [ "$#" -eq 0 ]; then
     #  declared `# EXCLUDED` line.  A family added without a line would not
     #  fail; it would just stop being covered, silently, which is the whole
     #  reason this gate exists.  The tier itself is `runTests --fast`.
-    if "$ROOT/bin/curate/check_fastset.py" > /tmp/fastset.$$ 2>&1; then
+    if gate_exec "$ROOT/bin/curate/check_fastset.py" > /tmp/fastset.$$ 2>&1; then
         printf "PASS  %-40s  (%s)\n" "fastset-gate" "$(head -1 /tmp/fastset.$$ | cut -c1-150)"
         pass=$((pass+1))
     else
@@ -2198,7 +2464,7 @@ if [ "$#" -eq 0 ]; then
                    "evidence-partition-gate check_evidence_partition.py" \
                    "thermoml-index-gate check_thermoml_index.py"; do
         read -r om_name om_script om_arg <<< "$om_gate"
-        if "$ROOT/bin/curate/$om_script" ${om_arg:-} > /tmp/opmem.$$ 2>&1; then
+        if gate_exec "$ROOT/bin/curate/$om_script" ${om_arg:-} > /tmp/opmem.$$ 2>&1; then
             printf "PASS  %-40s  (%s)\n" "$om_name" "$(head -1 /tmp/opmem.$$)"
             pass=$((pass+1))
         else
@@ -2282,7 +2548,7 @@ if [ "$#" -eq 0 ]; then
     #  says so.  Like gui-typecheck it needs gui/node_modules (the registry is
     #  TypeScript and is EVALUATED, not parsed), so exit 2 means CANNOT RUN and
     #  is counted as neither pass nor fail.
-    "$ROOT/bin/curate/check_method_tools.py" > /tmp/mtools.$$ 2>&1
+    gate_exec "$ROOT/bin/curate/check_method_tools.py" > /tmp/mtools.$$ 2>&1
     mt_rc=$?
     if [ "$mt_rc" = 0 ]; then
         printf "PASS  %-40s  (%s)\n" "method-tools-gate" "$(head -1 /tmp/mtools.$$)"
@@ -2300,7 +2566,7 @@ if [ "$#" -eq 0 ]; then
     #  the explanation and the equations; the Explorer is the surface for
     #  studies that need compounds and compositions CHOSEN first.  Pure file
     #  reading -- no node_modules, so it cannot SKIP.
-    "$ROOT/bin/curate/check_edutool_form.py" > /tmp/eform.$$ 2>&1
+    gate_exec "$ROOT/bin/curate/check_edutool_form.py" > /tmp/eform.$$ 2>&1
     if [ $? = 0 ]; then
         printf "PASS  %-40s  (%s)\n" "edutool-form-gate" "$(head -1 /tmp/eform.$$)"
         pass=$((pass+1))
@@ -2316,7 +2582,7 @@ if [ "$#" -eq 0 ]; then
     #  whether a student would know what the letters mean; measured, 210
     #  symbol uses had no definition anywhere on the page.  Pure file reading,
     #  so it cannot SKIP.
-    "$ROOT/bin/curate/check_lesson_symbols.py" > /tmp/lsym.$$ 2>&1
+    gate_exec "$ROOT/bin/curate/check_lesson_symbols.py" > /tmp/lsym.$$ 2>&1
     if [ $? = 0 ]; then
         printf "PASS  %-40s  (%s)\n" "lesson-symbols-gate" "$(head -1 /tmp/lsym.$$)"
         pass=$((pass+1))
@@ -2329,7 +2595,7 @@ if [ "$#" -eq 0 ]; then
 
     # Tree gate (Migration 6): retired data/standards homes must never come
     # back -- neither as src path-builders nor as resurrected directories.
-    if "$ROOT/bin/curate/check_tree_gate.py" > /tmp/treegate.$$ 2>&1; then
+    if gate_exec "$ROOT/bin/curate/check_tree_gate.py" > /tmp/treegate.$$ 2>&1; then
         printf "PASS  %-40s  (%s)\n" "tree-gate" "$(head -1 /tmp/treegate.$$)"
         pass=$((pass+1))
     else
@@ -2343,7 +2609,7 @@ if [ "$#" -eq 0 ]; then
     # pins the ROUTE -- the EXTRACTION sector's 5 tuned pairs must resolve
     # from the sealed snapshot (never idealDefault) and the organic phase
     # must stay loaded (x_LiCl) and dry (x_water).
-    if "$ROOT/bin/curate/check_lithium_routes.py" > /tmp/ligate.$$ 2>&1; then
+    if gate_exec "$ROOT/bin/curate/check_lithium_routes.py" > /tmp/ligate.$$ 2>&1; then
         printf "PASS  %-40s  (%s)\n" "lithium-route-gate" "$(head -1 /tmp/ligate.$$)"
         pass=$((pass+1))
     else
@@ -2355,7 +2621,7 @@ if [ "$#" -eq 0 ]; then
 
     # Species-ontology gate (Codex P0-semantico, 2026-07-18): flat modelSpecies
     # files, formula-typed, neutrals (O2/N2 aq) never mislabelled as ions.
-    if "$ROOT/bin/curate/check_species_ontology.py" > /tmp/spgate.$$ 2>&1; then
+    if gate_exec "$ROOT/bin/curate/check_species_ontology.py" > /tmp/spgate.$$ 2>&1; then
         printf "PASS  %-40s  (%s)\n" "species-ontology-gate" "$(head -1 /tmp/spgate.$$)"
         pass=$((pass+1))
     else
@@ -2368,7 +2634,7 @@ if [ "$#" -eq 0 ]; then
     # Retired-name gate (Codex tutorial-audit P2, 2026-07-18): no tutorial
     # SOURCE may cite a retired architecture name -- a green case with a false
     # comment teaches the wrong layout.
-    if "$ROOT/bin/curate/check_retired_names.py" > /tmp/retgate.$$ 2>&1; then
+    if gate_exec "$ROOT/bin/curate/check_retired_names.py" > /tmp/retgate.$$ 2>&1; then
         printf "PASS  %-40s  (%s)\n" "retired-name-gate" "$(head -1 /tmp/retgate.$$)"
         pass=$((pass+1))
     else
@@ -2381,7 +2647,7 @@ if [ "$#" -eq 0 ]; then
     # v2 negative-parity gate (Codex 2026-07-18, the translateV2 retirement):
     # every refusal the retired scaffold enforced must survive in the NATIVE
     # reader/dispatch -- a bad system silently ACCEPTED fails the release.
-    if "$ROOT/bin/curate/check_v2_refusals.py" > /tmp/neggate.$$ 2>&1; then
+    if gate_exec "$ROOT/bin/curate/check_v2_refusals.py" > /tmp/neggate.$$ 2>&1; then
         printf "PASS  %-40s  (%s)\n" "v2-negative-parity-gate" "$(head -1 /tmp/neggate.$$)"
         pass=$((pass+1))
     else
@@ -2394,7 +2660,7 @@ if [ "$#" -eq 0 ]; then
     # Composite-report gate: a composite/named-edge case's reports must carry
     # the REAL boundary and a non-empty global balance (roles derive from the
     # flattened solver topology, never from walking the raw flowsheetDict).
-    if "$ROOT/bin/curate/check_composite_reports.py" > /tmp/comprep.$$ 2>&1; then
+    if gate_exec "$ROOT/bin/curate/check_composite_reports.py" > /tmp/comprep.$$ 2>&1; then
         printf "PASS  %-40s  (%s)\n" "composite-report-gate" "$(head -1 /tmp/comprep.$$)"
         pass=$((pass+1))
     else
@@ -2409,7 +2675,7 @@ if [ "$#" -eq 0 ]; then
     # `streams` spelling must not be resurrectable.  (Its migrator arm went
     # with migrate_dyn0.py on 2026-09-30: the time-integrated layout is
     # check_time_state_layout's.)
-    if "$ROOT/bin/curate/check_stream_faces.py" > /tmp/sfgate.$$ 2>&1; then
+    if gate_exec "$ROOT/bin/curate/check_stream_faces.py" > /tmp/sfgate.$$ 2>&1; then
         printf "PASS  %-40s  (%s)\n" "stream-face-gate" "$(head -1 /tmp/sfgate.$$)"
         pass=$((pass+1))
     else
@@ -2422,7 +2688,7 @@ if [ "$#" -eq 0 ]; then
     # Element-composition gate: THE shared formula parser decomposes the
     # ratified grammar (groups, hydrates, charges, isotopes) and refuses the
     # rest loudly -- every balance (batch/steady/ctrl) rides on it.
-    if "$ROOT/bin/curate/check_element_composition.py" > /tmp/elgate.$$ 2>&1; then
+    if gate_exec "$ROOT/bin/curate/check_element_composition.py" > /tmp/elgate.$$ 2>&1; then
         printf "PASS  %-40s  (%s)\n" "element-composition-gate" "$(head -1 /tmp/elgate.$$)"
         pass=$((pass+1))
     else
@@ -2437,7 +2703,7 @@ if [ "$#" -eq 0 ]; then
     # keys are pinned, not blessed), and it WATCHES the six identities that are
     # still declared twice -- that vigilance is precisely what lets the ratified
     # schema-v2 campaign wait instead of being rushed.
-    if "$ROOT/bin/curate/check_species_identity.py" > /tmp/sidgate.$$ 2>&1; then
+    if gate_exec "$ROOT/bin/curate/check_species_identity.py" > /tmp/sidgate.$$ 2>&1; then
         printf "PASS  %-40s  (%s)\n" "species-identity-gate" "$(head -1 /tmp/sidgate.$$)"
         pass=$((pass+1))
     else
@@ -2452,7 +2718,7 @@ if [ "$#" -eq 0 ]; then
     # the mediators declared (without them family propagation collapses every
     # acid-base reaction into `water`), and NO solver reading the file -- which
     # is what keeps a taxonomy edit from ever drifting a sealed case.
-    if "$ROOT/bin/curate/check_aqueous_navigation.py" > /tmp/navgate.$$ 2>&1; then
+    if gate_exec "$ROOT/bin/curate/check_aqueous_navigation.py" > /tmp/navgate.$$ 2>&1; then
         printf "PASS  %-40s  (%s)\n" "aqueous-navigation-gate" "$(head -1 /tmp/navgate.$$)"
         pass=$((pass+1))
     else
@@ -2497,7 +2763,7 @@ PYEOF
     # corpus grew the opposite habit because the grammar had no slot for a
     # liquid-only electrolyte declaration; the slot exists now, the hidden
     # defaults are gone, and this keeps them gone.
-    if "$ROOT/bin/curate/check_no_unit_chemistry.py" > /tmp/ucgate.$$ 2>&1; then
+    if gate_exec "$ROOT/bin/curate/check_no_unit_chemistry.py" > /tmp/ucgate.$$ 2>&1; then
         printf "PASS  %-40s  (%s)\n" "unit-chemistry-gate" "$(head -1 /tmp/ucgate.$$)"
         pass=$((pass+1))
     else
@@ -2512,7 +2778,7 @@ PYEOF
     # compiler cannot see -- laundering a component name into species space
     # through .name()/.key -- and proves every bridge-unit case declares its
     # component->species mappings.
-    if "$ROOT/bin/curate/check_typed_identifiers.py" > /tmp/tidgate.$$ 2>&1; then
+    if gate_exec "$ROOT/bin/curate/check_typed_identifiers.py" > /tmp/tidgate.$$ 2>&1; then
         printf "PASS  %-40s  (%s)\n" "typed-identifier-gate" "$(head -1 /tmp/tidgate.$$)"
         pass=$((pass+1))
     else
@@ -2527,7 +2793,7 @@ PYEOF
     # `aq` -- six such collisions exist today (CaCO3, CO2, NH3, ...).  The
     # suffix is a functional disambiguator, not decoration; its removal is
     # the F2 campaign, one closed transaction, never piecemeal.
-    if "$ROOT/bin/curate/check_aq_disambiguation.py" > /tmp/aqgate.$$ 2>&1; then
+    if gate_exec "$ROOT/bin/curate/check_aq_disambiguation.py" > /tmp/aqgate.$$ 2>&1; then
         printf "PASS  %-40s  (%s)\n" "aq-disambiguation-gate" "$(head -1 /tmp/aqgate.$$)"
         pass=$((pass+1))
     else
@@ -2544,7 +2810,7 @@ PYEOF
     # organic admits no acid; flash16 passed it by counting solid calcite as a
     # dissolved species.  The three structural refusals survive the fix being
     # reverted (verified by sabotage), so case (d) is the one that guards it.
-    if "$ROOT/bin/curate/check_phase_speciation.py" > /tmp/phspec.$$ 2>&1; then
+    if gate_exec "$ROOT/bin/curate/check_phase_speciation.py" > /tmp/phspec.$$ 2>&1; then
         printf "PASS  %-40s  (%s)\n" "phase-speciation-gate" "$(tail -1 /tmp/phspec.$$)"
         pass=$((pass+1))
     else
@@ -2560,7 +2826,7 @@ PYEOF
     # corpus reported its apparent salt and not one ion while the reactive
     # flashes reported both, and nothing failed because the corpus only ever
     # asserted the block where it already existed.
-    if "$ROOT/bin/curate/check_both_bases.py" > /tmp/bothbases.$$ 2>&1; then
+    if gate_exec "$ROOT/bin/curate/check_both_bases.py" > /tmp/bothbases.$$ 2>&1; then
         printf "PASS  %-40s  (%s)\n" "both-bases-gate" "$(tail -1 /tmp/bothbases.$$)"
         pass=$((pass+1))
     else
@@ -2575,7 +2841,7 @@ PYEOF
     # converged/<stream> component by component, whose phases{} blocks sum
     # back to it; H_kW = F*H as one pair.  The JSON leaked the engine's
     # fluid-only internals for months and the GUI exposed it on flash19.
-    if "$ROOT/bin/curate/check_stream_transport_closure.py" > /tmp/strclose.$$ 2>&1; then
+    if gate_exec "$ROOT/bin/curate/check_stream_transport_closure.py" > /tmp/strclose.$$ 2>&1; then
         printf "PASS  %-40s  (%s)\n" "stream-transport-gate" "$(tail -1 /tmp/strclose.$$)"
         pass=$((pass+1))
     else
@@ -2591,7 +2857,7 @@ PYEOF
     # liquid that does not exist, a supersaturation whose numerator and
     # denominator were on different bases -- and the corpus had no case that
     # could see any of them until evaporator09, crystalliser12 and batch14.
-    if "$ROOT/bin/curate/check_solute_basis.py" > /tmp/solutebasis.$$ 2>&1; then
+    if gate_exec "$ROOT/bin/curate/check_solute_basis.py" > /tmp/solutebasis.$$ 2>&1; then
         printf "PASS  %-40s  (%s)\n" "solute-basis-gate" "$(tail -1 /tmp/solutebasis.$$)"
         pass=$((pass+1))
     else
@@ -2608,7 +2874,7 @@ PYEOF
     # choupo-drill carried five defects at once and had never completed on
     # either plant, because it had no test: four of the five only showed when
     # the solver was pointed at what it wrote.
-    if "$ROOT/bin/curate/check_drill_in.py" > /tmp/drillin.$$ 2>&1; then
+    if gate_exec "$ROOT/bin/curate/check_drill_in.py" > /tmp/drillin.$$ 2>&1; then
         printf "PASS  %-40s  (%s)\n" "drill-in-gate" "$(tail -1 /tmp/drillin.$$)"
         pass=$((pass+1))
     else
@@ -2622,7 +2888,7 @@ PYEOF
     # its datum amendments, and the T/u/P swing refusals are real (fired
     # through the recipe path, asserted on the named messages -- both
     # directions sabotage-verified 2026-08-01).
-    if "$ROOT/bin/curate/check_feed_switch.py" > /tmp/feedswitch.$$ 2>&1; then
+    if gate_exec "$ROOT/bin/curate/check_feed_switch.py" > /tmp/feedswitch.$$ 2>&1; then
         printf "PASS  %-40s  (%s)\n" "feed-switch-gate" "$(tail -1 /tmp/feedswitch.$$)"
         pass=$((pass+1))
     else
@@ -2636,7 +2902,7 @@ PYEOF
     # file nobody reads -- announced by name with the cost stated (the
     # unread-keys posture), never refused; clean cases stay silent
     # (sabotage-verified 2026-08-01).
-    if "$ROOT/bin/curate/check_solverdict_lint.py" > /tmp/sdlint.$$ 2>&1; then
+    if gate_exec "$ROOT/bin/curate/check_solverdict_lint.py" > /tmp/sdlint.$$ 2>&1; then
         printf "PASS  %-40s  (%s)\n" "solverdict-lint-gate" "$(tail -1 /tmp/sdlint.$$)"
         pass=$((pass+1))
     else
@@ -2650,7 +2916,7 @@ PYEOF
     # theory anchors and the design's 6 scope refusals fire named
     # (sabotage-verified 2026-08-01: the gutted A3-pin refusal ran
     # silently-isothermal and the gate caught it on exit 0).
-    if "$ROOT/bin/curate/check_thermal_bed.py" > /tmp/thermbed.$$ 2>&1; then
+    if gate_exec "$ROOT/bin/curate/check_thermal_bed.py" > /tmp/thermbed.$$ 2>&1; then
         printf "PASS  %-40s  (%s)\n" "thermal-bed-gate" "$(tail -1 /tmp/thermbed.$$)"
         pass=$((pass+1))
     else
@@ -2665,7 +2931,7 @@ PYEOF
     # contradiction (dowthermA: modelled K = 0, declared volatile at
     # Tb = 530.15 K) instead of obeying it in silence.  Absence stays
     # UNKNOWN.  Sabotage-verified 2026-08-02.
-    if "$ROOT/bin/curate/check_volatility_declaration.py" > /tmp/volat.$$ 2>&1; then
+    if gate_exec "$ROOT/bin/curate/check_volatility_declaration.py" > /tmp/volat.$$ 2>&1; then
         printf "PASS  %-40s  (%s)\n" "volatility-declaration-gate" "$(tail -1 /tmp/volat.$$)"
         pass=$((pass+1))
     else
@@ -2679,7 +2945,7 @@ PYEOF
     # together -- the tri-state verdict reaches the RESULT (it used to die
     # on stderr while every artefact inherited the release name), and the
     # refusal is the CASE's to declare.  Sabotage-verified 2026-08-02.
-    if "$ROOT/bin/curate/check_seal_verdict.py" > /tmp/sealv.$$ 2>&1; then
+    if gate_exec "$ROOT/bin/curate/check_seal_verdict.py" > /tmp/sealv.$$ 2>&1; then
         printf "PASS  %-40s  (%s)\n" "seal-verdict-gate" "$(tail -1 /tmp/sealv.$$)"
         pass=$((pass+1))
     else
@@ -2694,7 +2960,7 @@ PYEOF
     # what retired batch23's event list), and the CSS verdict is tri-state
     # with the tolerance the CASE declares.  Sabotage-verified 2026-08-02:
     # dropping the k*period offset breaks equivalence by 7e-1.
-    if "$ROOT/bin/curate/check_cycle_css.py" > /tmp/cycss.$$ 2>&1; then
+    if gate_exec "$ROOT/bin/curate/check_cycle_css.py" > /tmp/cycss.$$ 2>&1; then
         printf "PASS  %-40s  (%s)\n" "cycle-css-gate" "$(tail -1 /tmp/cycss.$$)"
         pass=$((pass+1))
     else
@@ -2710,7 +2976,7 @@ PYEOF
     # constant/chemistry/), the one without a home survives, announced
     # (`replace`, a deliberately restricted network).  Sabotage-verified
     # 2026-08-02: restoring either read makes its refusal probe exit 0.
-    if "$ROOT/bin/curate/check_electrolyte_sidecars.py" > /tmp/elsc.$$ 2>&1; then
+    if gate_exec "$ROOT/bin/curate/check_electrolyte_sidecars.py" > /tmp/elsc.$$ 2>&1; then
         printf "PASS  %-40s  (%s)\n" "electrolyte-sidecar-gate" "$(tail -1 /tmp/elsc.$$)"
         pass=$((pass+1))
     else
@@ -2723,7 +2989,7 @@ PYEOF
     # D-R1 restricted-network gate (approved 2026-08-02): the declared
     # `networkScope restricted` announces + labels + refuses its five
     # dishonest shapes; sabotage-verified (no-op parser -> 7 probes fail).
-    if "$ROOT/bin/curate/check_restricted_network.py" > /tmp/rnet.$$ 2>&1; then
+    if gate_exec "$ROOT/bin/curate/check_restricted_network.py" > /tmp/rnet.$$ 2>&1; then
         printf "PASS  %-40s  (%s)\n" "restricted-network-gate" "$(tail -1 /tmp/rnet.$$)"
         pass=$((pass+1))
     else
@@ -2737,7 +3003,7 @@ PYEOF
     # equal an independent Python problem-table over the same segments,
     # the composite CSV is coherent, the pass never runs uninvited, and
     # dTmin <= 0 refuses; sabotage-verified (wrong shift -> 3 probes fail).
-    if "$ROOT/bin/curate/check_pinch_p1.py" > /tmp/pnch.$$ 2>&1; then
+    if gate_exec "$ROOT/bin/curate/check_pinch_p1.py" > /tmp/pnch.$$ 2>&1; then
         printf "PASS  %-40s  (%s)\n" "pinch-p1-gate" "$(tail -1 /tmp/pnch.$$)"
         pass=$((pass+1))
     else
@@ -2752,7 +3018,7 @@ PYEOF
     # approach/range/evaporation identities, strict sub-saturation of the
     # operating line, and five named refusals; sabotage-verified twice
     # (damaged Simpson divisor -> A1; shifted approach KPI -> A3).
-    if "$ROOT/bin/curate/check_cooling_tower.py" > /tmp/ctwr.$$ 2>&1; then
+    if gate_exec "$ROOT/bin/curate/check_cooling_tower.py" > /tmp/ctwr.$$ 2>&1; then
         printf "PASS  %-40s  (%s)\n" "cooling-tower-gate" "$(tail -1 /tmp/ctwr.$$)"
         pass=$((pass+1))
     else
@@ -2779,7 +3045,7 @@ PYEOF
                  check_exchanger_phase_change:exchanger-phase-change-gate \
                  check_sequential_plan:sequential-plan-gate; do
         _c150g=${_c150%%:*}; _c150l=${_c150##*:}
-        if "$ROOT/bin/curate/$_c150g.py" > /tmp/c150.$$ 2>&1; then
+        if gate_exec "$ROOT/bin/curate/$_c150g.py" > /tmp/c150.$$ 2>&1; then
             printf "PASS  %-40s  (%s)\n" "$_c150l" "$(tail -1 /tmp/c150.$$)"
             pass=$((pass+1))
         else
@@ -2796,7 +3062,7 @@ PYEOF
     # several roots, a dropped Gibbs condensate, the equilibriumReactor's
     # missing phi, duty and supersaturation check, and the dynamicCSTR's
     # drain and dropped reverse leg.  Record docs/design/review-c131-reactors.md.
-    if "$ROOT/bin/curate/check_reactor_limits.py" > /tmp/rlim.$$ 2>&1; then
+    if gate_exec "$ROOT/bin/curate/check_reactor_limits.py" > /tmp/rlim.$$ 2>&1; then
         printf "PASS  %-40s  (%s)\n" "check_reactor_limits" \
             "$(gate_claim check_reactor_limits /tmp/rlim.$$)"
         pass=$((pass+1))
@@ -2824,7 +3090,7 @@ PYEOF
     # published R_constant -> A2/A2b/A4; the vapour term dropped from the
     # wet-bulb humid heat -> A2b ALONE, every other arm green around a
     # T_wb wrong by 0.134 K).
-    if "$ROOT/bin/curate/check_batch_dryer.py" > /tmp/bdry.$$ 2>&1; then
+    if gate_exec "$ROOT/bin/curate/check_batch_dryer.py" > /tmp/bdry.$$ 2>&1; then
         printf "PASS  %-40s  (%s)\n" "batch-dryer-gate" "$(tail -1 /tmp/bdry.$$)"
         pass=$((pass+1))
     else
@@ -2841,7 +3107,7 @@ PYEOF
     # never appears, and the violation diagnostics satisfy
     # violations == current - target; sabotage-verified (flipped
     # below-pinch inequality -> 4 wording probes fail by value).
-    if "$ROOT/bin/curate/check_pinch_p2.py" > /tmp/pnc2.$$ 2>&1; then
+    if gate_exec "$ROOT/bin/curate/check_pinch_p2.py" > /tmp/pnc2.$$ 2>&1; then
         printf "PASS  %-40s  (%s)\n" "pinch-p2-gate" "$(tail -1 /tmp/pnc2.$$)"
         pass=$((pass+1))
     else
@@ -2857,7 +3123,7 @@ PYEOF
     # COOLING + the rigid-vessel U-basis energy closure; three refusals.
     # Sabotage-verified: cp-form restored -> B fails by value (T 298.15,
     # residual exactly the mis-booked 0.100 kJ).
-    if "$ROOT/bin/curate/check_pswing.py" > /tmp/pswg.$$ 2>&1; then
+    if gate_exec "$ROOT/bin/curate/check_pswing.py" > /tmp/pswg.$$ 2>&1; then
         printf "PASS  %-40s  (%s)\n" "pswing-gate" "$(tail -1 /tmp/pswg.$$)"
         pass=$((pass+1))
     else
@@ -2873,7 +3139,7 @@ PYEOF
     # on molecular cases, and the intermediate stream untouched by what the
     # downstream unit is.  Sabotage-verified twice (transport contract
     # disabled -> C2/C4/C7 fail; R4 + canonical order removed -> C6/C8 fail).
-    if "$ROOT/bin/curate/check_basis_spike.py" > /tmp/bspk.$$ 2>&1; then
+    if gate_exec "$ROOT/bin/curate/check_basis_spike.py" > /tmp/bspk.$$ 2>&1; then
         printf "PASS  %-40s  (%s)\n" "basis-spike-gate" "$(tail -1 /tmp/bspk.$$)"
         pass=$((pass+1))
     else
@@ -2895,7 +3161,7 @@ PYEOF
     # credited.  Sabotage-verified three times (credit whatever the audit
     # concluded; collapse the three quantities; suppress the alarm wherever
     # an entry exists) -- observed output in the gate's docstring.
-    if "$ROOT/bin/curate/check_model_boundary_ledger.py" > /tmp/mbl.$$ 2>&1; then
+    if gate_exec "$ROOT/bin/curate/check_model_boundary_ledger.py" > /tmp/mbl.$$ 2>&1; then
         printf "PASS  %-40s  (%s)\n" "model-boundary-ledger-gate" \
             "$(tail -1 /tmp/mbl.$$)"
         pass=$((pass+1))
@@ -2915,7 +3181,7 @@ PYEOF
     # pinned at BOTH ends -- excellent for non-polar, poor for
     # hydrogen-bonding, and a "fix" that made the alcohols agree would mean
     # the comparison stopped comparing.
-    if "$ROOT/bin/curate/check_rowlinson_bondi.py" > /tmp/rb.$$ 2>&1; then
+    if gate_exec "$ROOT/bin/curate/check_rowlinson_bondi.py" > /tmp/rb.$$ 2>&1; then
         printf "PASS  %-40s  (%s)\n" "rowlinson-bondi-gate" \
             "$(tail -1 /tmp/rb.$$)"
         pass=$((pass+1))
@@ -2933,7 +3199,7 @@ PYEOF
     # pins that AND the two refusals that must survive it, because the danger
     # of turning a refusal into an answer is turning every refusal into one --
     # on BOTH legs, through one home (arm A6, DEV.md 4c C162).
-    if "$ROOT/bin/curate/check_liquid_cp_fallback.py" > /tmp/lcp.$$ 2>&1; then
+    if gate_exec "$ROOT/bin/curate/check_liquid_cp_fallback.py" > /tmp/lcp.$$ 2>&1; then
         printf "PASS  %-40s  (%s)\n" "liquid-cp-fallback-gate" \
             "$(tail -1 /tmp/lcp.$$)"
         pass=$((pass+1))
@@ -2953,7 +3219,7 @@ PYEOF
     # fires on PROGRESS makes a column that finally MEETS Luyben's spec a
     # FAILURE, because it would mean the thermodynamics moved under the
     # finding rather than the finding being wrong.
-    if "$ROOT/bin/curate/check_azeotrope_ceiling.py" > /tmp/az.$$ 2>&1; then
+    if gate_exec "$ROOT/bin/curate/check_azeotrope_ceiling.py" > /tmp/az.$$ 2>&1; then
         printf "PASS  %-40s  (%s)\n" "azeotrope-ceiling-gate" \
             "$(tail -1 /tmp/az.$$)"
         pass=$((pass+1))
@@ -2970,7 +3236,7 @@ PYEOF
     # when they were not -- an exhausted flash outer loop, a trivial K = 1
     # bubble/dew root, a flat trivial-root T-x-y block, and UNIQUAC's gamma = 1
     # at x = 0.  Each probe is built from a corpus case in a temp directory.
-    if "$ROOT/bin/curate/check_thermo_limits.py" > /tmp/thlim.$$ 2>&1; then
+    if gate_exec "$ROOT/bin/curate/check_thermo_limits.py" > /tmp/thlim.$$ 2>&1; then
         printf "PASS  %-40s  (%s)\n" "thermo-limits-gate" \
             "$(tail -1 /tmp/thlim.$$)"
         pass=$((pass+1))
@@ -2990,7 +3256,7 @@ PYEOF
     # approximation like an FUG column is recorded without being refused.
     # Four sabotages -- and the first caught nothing, which is what put arm
     # A8 (the unexamined branch) there.  Observed output in the docstring.
-    if "$ROOT/bin/curate/check_problem_divergence.py" > /tmp/pdv.$$ 2>&1; then
+    if gate_exec "$ROOT/bin/curate/check_problem_divergence.py" > /tmp/pdv.$$ 2>&1; then
         printf "PASS  %-40s  (%s)\n" "problem-divergence-gate" \
             "$(tail -1 /tmp/pdv.$$)"
         pass=$((pass+1))
@@ -3012,7 +3278,7 @@ PYEOF
     # Sabotage-verified twice (the adiabatic flash's feed vf reverted to
     # sub-cooled liquid -> the witness cannot converge at all; stageK
     # perturbed by 2e-4 relative -> all four claims fail).
-    if "$ROOT/bin/curate/check_stage_identity.py" > /tmp/stgid.$$ 2>&1; then
+    if gate_exec "$ROOT/bin/curate/check_stage_identity.py" > /tmp/stgid.$$ 2>&1; then
         printf "PASS  %-40s  (%s)\n" "stage-identity-gate" "$(tail -1 /tmp/stgid.$$)"
         pass=$((pass+1))
     else
@@ -3030,7 +3296,7 @@ PYEOF
     # NOT assert a monotone pH, because the measurement says pH is not
     # monotone here (ionic strength varies 22-fold and a pH is an activity).
     # Sabotage-verified: swapping NH3aq/NH4 in the report fails T2 and T3.
-    if "$ROOT/bin/curate/check_tray_chemistry.py" > /tmp/traych.$$ 2>&1; then
+    if gate_exec "$ROOT/bin/curate/check_tray_chemistry.py" > /tmp/traych.$$ 2>&1; then
         printf "PASS  %-40s  (%s)\n" "tray-chemistry-gate" "$(tail -1 /tmp/traych.$$)"
         pass=$((pass+1))
     else
@@ -3053,7 +3319,7 @@ PYEOF
     # Sabotage-verified five ways: unregistering the model, forcing gamma = 1
     # for z == 0, dropping a rule label, changing Eq 24's slope, and removing
     # the banner branch each fail by name.
-    if "$ROOT/bin/curate/check_edwards_model.py" > /tmp/edwards.$$ 2>&1; then
+    if gate_exec "$ROOT/bin/curate/check_edwards_model.py" > /tmp/edwards.$$ 2>&1; then
         printf "PASS  %-40s  (%s)\n" "edwards-model-gate" "$(tail -1 /tmp/edwards.$$)"
         pass=$((pass+1))
     else
@@ -3077,7 +3343,7 @@ PYEOF
     # work-list, and removing a name without fixing the record fails.
     # Sabotage-verified both ways: a seventh bad window fails by name, and
     # so does an unpinned-but-unfixed record.
-    if "$ROOT/bin/curate/check_validity_windows.py" > /tmp/vwin.$$ 2>&1; then
+    if gate_exec "$ROOT/bin/curate/check_validity_windows.py" > /tmp/vwin.$$ 2>&1; then
         printf "PASS  %-40s  (%s)\n" "validity-window-gate" "$(tail -1 /tmp/vwin.$$)"
         pass=$((pass+1))
     else
@@ -3100,7 +3366,7 @@ PYEOF
     # the aggregator standing AS the authority.
     # Sabotage-verified both ways: the same source name fails as an
     # authority and passes behind "via".
-    if "$ROOT/bin/curate/check_source_licence.py" > /tmp/slic.$$ 2>&1; then
+    if gate_exec "$ROOT/bin/curate/check_source_licence.py" > /tmp/slic.$$ 2>&1; then
         printf "PASS  %-40s  (%s)\n" "source-licence-gate" "$(tail -1 /tmp/slic.$$)"
         pass=$((pass+1))
     else
@@ -3121,7 +3387,7 @@ PYEOF
     # Sabotage-verified four ways: silent 0 restored (4 reactors accept),
     # products no longer exempt, an explicit `order 0;` treated as unset,
     # and the remedy stripped from the message.
-    if "$ROOT/bin/curate/check_forward_order.py" > /tmp/fworder.$$ 2>&1; then
+    if gate_exec "$ROOT/bin/curate/check_forward_order.py" > /tmp/fworder.$$ 2>&1; then
         printf "PASS  %-40s  (%s)\n" "forward-order-gate" "$(tail -1 /tmp/fworder.$$)"
         pass=$((pass+1))
     else
@@ -3144,7 +3410,7 @@ PYEOF
     # GATE rather than the engine: a negative that could not fire (the
     # single-reaction CSTR path never reaches the call site) and a caveat-block
     # arm the first sabotage could not reach.
-    if "$ROOT/bin/curate/check_pellet_announcement.py" > /tmp/pellet.$$ 2>&1; then
+    if gate_exec "$ROOT/bin/curate/check_pellet_announcement.py" > /tmp/pellet.$$ 2>&1; then
         printf "PASS  %-40s  (%s)\n" "pellet-announcement-gate" "$(tail -1 /tmp/pellet.$$)"
         pass=$((pass+1))
     else
@@ -3167,7 +3433,7 @@ PYEOF
     # both refusals; the one-home source arm; the caveat block; and the
     # witness equil02, whose complete reaction set reproduces the Gibbs
     # reactor while the declared subset makes methanol.
-    if "$ROOT/bin/curate/check_reaction_subset_approach.py" > /tmp/rsapproach.$$ 2>&1; then
+    if gate_exec "$ROOT/bin/curate/check_reaction_subset_approach.py" > /tmp/rsapproach.$$ 2>&1; then
         printf "PASS  %-40s  (%s)\n" "reaction-subset-approach-gate" "$(tail -1 /tmp/rsapproach.$$)"
         pass=$((pass+1))
     else
@@ -3191,7 +3457,7 @@ PYEOF
     # names T0 and T0 is the dT = 0 run's own T; the probe's cost is
     # published; the isothermal path is untouched (the dT = 0 run prints no
     # approach line); a sealed source arm.
-    if "$ROOT/bin/curate/check_adiabatic_approach_direction.py" > /tmp/adiabappr.$$ 2>&1; then
+    if gate_exec "$ROOT/bin/curate/check_adiabatic_approach_direction.py" > /tmp/adiabappr.$$ 2>&1; then
         printf "PASS  %-40s  (%s)\n" "adiabatic-approach-direction-gate" "$(gate_claim check_adiabatic_approach_direction /tmp/adiabappr.$$)"
         pass=$((pass+1))
     else
@@ -3217,7 +3483,7 @@ PYEOF
     # stripper01 and stripper02 broken while looking complete.  Arm (e) found
     # a THIRD reader while the fix was being written (the distillateRecovery
     # wrapper, printing a q the column no longer used).
-    if "$ROOT/bin/curate/check_feed_thermal_state.py" > /tmp/feedstate.$$ 2>&1; then
+    if gate_exec "$ROOT/bin/curate/check_feed_thermal_state.py" > /tmp/feedstate.$$ 2>&1; then
         printf "PASS  %-40s  (%s)\n" "feed-thermal-state-gate" "$(gate_claim check_feed_thermal_state /tmp/feedstate.$$)"
         pass=$((pass+1))
     else
@@ -3236,7 +3502,7 @@ PYEOF
     # from the first law.  The reader refuses (the pure two-phase pin kept),
     # the writer no longer emits it for a mixture, the surface draws the
     # resolved state, and the corpus carries no such file.  Five sabotages.
-    if "$ROOT/bin/curate/check_overspecified_stream.py" > /tmp/overspec.$$ 2>&1; then
+    if gate_exec "$ROOT/bin/curate/check_overspecified_stream.py" > /tmp/overspec.$$ 2>&1; then
         printf "PASS  %-40s  (%s)\n" "overspecified-stream-gate" "$(gate_claim check_overspecified_stream /tmp/overspec.$$)"
         pass=$((pass+1))
     else
@@ -3263,7 +3529,7 @@ PYEOF
     # match the prediction and are recorded in the gate's own docstring --
     # S3 is caught structurally and NOT behaviourally, and a presence-based
     # arm (e) was measured to survive S4 at exit 0.
-    if "$ROOT/bin/curate/check_evaporator_chest_phase.py" > /tmp/chestphase.$$ 2>&1; then
+    if gate_exec "$ROOT/bin/curate/check_evaporator_chest_phase.py" > /tmp/chestphase.$$ 2>&1; then
         printf "PASS  %-40s  (%s)\n" "evaporator-chest-phase-gate" "$(gate_claim check_evaporator_chest_phase /tmp/chestphase.$$)"
         pass=$((pass+1))
     else
@@ -3289,7 +3555,7 @@ PYEOF
     # while a published number is wrong -- Lambda/L for a sphere off by 1.5x
     # is invisible to the case and caught only by the independent
     # recomputation, which is the argument for this gate existing at all.
-    if "$ROOT/bin/curate/check_thiele_pellet.py" > /tmp/thiele.$$ 2>&1; then
+    if gate_exec "$ROOT/bin/curate/check_thiele_pellet.py" > /tmp/thiele.$$ 2>&1; then
         printf "PASS  %-40s  (%s)\n" "thiele-pellet-gate" "$(tail -1 /tmp/thiele.$$)"
         pass=$((pass+1))
     else
@@ -3315,7 +3581,7 @@ PYEOF
     # everywhere.  A fourth sabotage exposed a defect in the gate itself (an
     # arm that searched the whole run output for a component name the banner
     # already prints, so it would have passed with the refusal deleted).
-    if "$ROOT/bin/curate/check_enthalpy_concentration.py" > /tmp/hxy.$$ 2>&1; then
+    if gate_exec "$ROOT/bin/curate/check_enthalpy_concentration.py" > /tmp/hxy.$$ 2>&1; then
         printf "PASS  %-40s  (%s)\n" "enthalpy-concentration-gate" "$(tail -1 /tmp/hxy.$$)"
         pass=$((pass+1))
     else
@@ -3340,7 +3606,7 @@ PYEOF
     # both halves under the harness this line is what stands in for the row.
     # What it does NOT claim: that the surrogate or any of the three rules is
     # any GOOD.  No loop is ever closed on these settings anywhere in Choupo.
-    if "$ROOT/bin/curate/check_reaction_curve.py" > /tmp/rcurve.$$ 2>&1; then
+    if gate_exec "$ROOT/bin/curate/check_reaction_curve.py" > /tmp/rcurve.$$ 2>&1; then
         printf "PASS  %-40s  (%s)\n" "reaction-curve-gate" "$(tail -1 /tmp/rcurve.$$)"
         pass=$((pass+1))
     else
@@ -3362,7 +3628,7 @@ PYEOF
     # an ordinary comparison making that claim is a different, stronger
     # statement.  Sabotage-verified five ways, the fifth being that a renamed
     # verdictOf makes the gate FAIL BLIND rather than pass.
-    if "$ROOT/bin/curate/check_verdict_parity.py" > /tmp/vparity.$$ 2>&1; then
+    if gate_exec "$ROOT/bin/curate/check_verdict_parity.py" > /tmp/vparity.$$ 2>&1; then
         printf "PASS  %-40s  (%s)\n" "verdict-parity-gate" "$(tail -1 /tmp/vparity.$$)"
         pass=$((pass+1))
     else
@@ -3382,7 +3648,7 @@ PYEOF
     # it compared formatted strings (blind, because chi2 prints scientific and
     # the held-out slot fixed), and it probed the legacy case as shipped, at a
     # verbosity that silences the whole block.
-    if "$ROOT/bin/curate/check_claim_separation.py" > /tmp/claimsep.$$ 2>&1; then
+    if gate_exec "$ROOT/bin/curate/check_claim_separation.py" > /tmp/claimsep.$$ 2>&1; then
         printf "PASS  %-40s  (%s)\n" "claim-separation-gate" "$(tail -1 /tmp/claimsep.$$)"
         pass=$((pass+1))
     else
@@ -3404,7 +3670,7 @@ PYEOF
     # Sabotage-verified three ways: the wording reintroduced in a tutorial,
     # an exemption pointed at an innocent file, and six probe strings
     # confirming `apparent` is never flagged.
-    if "$ROOT/bin/curate/check_glossary_bans.py" > /tmp/gbans.$$ 2>&1; then
+    if gate_exec "$ROOT/bin/curate/check_glossary_bans.py" > /tmp/gbans.$$ 2>&1; then
         printf "PASS  %-40s  (%s)\n" "glossary-bans-gate" "$(tail -1 /tmp/gbans.$$)"
         pass=$((pass+1))
     else
@@ -3427,7 +3693,7 @@ PYEOF
     # meaning what it meant, so the derivation is opt-in.
     # Sabotage-verified twice: derivation made non-opt-in (the negative
     # fires), and the derivation removed (the recomputed value is absent).
-    if "$ROOT/bin/curate/check_ebullioscopic.py" > /tmp/ebul.$$ 2>&1; then
+    if gate_exec "$ROOT/bin/curate/check_ebullioscopic.py" > /tmp/ebul.$$ 2>&1; then
         printf "PASS  %-40s  (%s)\n" "ebullioscopic-gate" "$(tail -1 /tmp/ebul.$$)"
         pass=$((pass+1))
     else
@@ -3450,7 +3716,7 @@ PYEOF
     # SILENT, because an announcement that fires on everything is noise.
     # Sabotage-verified twice: engine silenced (0 of 7), and announcing
     # unconditionally (16 of 7, and the silent case speaks).
-    if "$ROOT/bin/curate/check_review_status.py" > /tmp/rvst.$$ 2>&1; then
+    if gate_exec "$ROOT/bin/curate/check_review_status.py" > /tmp/rvst.$$ 2>&1; then
         printf "PASS  %-40s  (%s)\n" "review-status-gate" "$(tail -1 /tmp/rvst.$$)"
         pass=$((pass+1))
     else
@@ -3472,7 +3738,7 @@ PYEOF
     # solver path is probed through a case that NATIVELY uses it (forcing the
     # reactive azeotropic case onto Wang-Henke measures the forcing).
     # Sabotage-verified: silencing ONE of the two catches fails the gate.
-    if "$ROOT/bin/curate/check_column_datum_downgrade.py" > /tmp/cdd.$$ 2>&1; then
+    if gate_exec "$ROOT/bin/curate/check_column_datum_downgrade.py" > /tmp/cdd.$$ 2>&1; then
         printf "PASS  %-40s  (%s)\n" "column-datum-gate" "$(tail -1 /tmp/cdd.$$)"
         pass=$((pass+1))
     else
@@ -3492,7 +3758,7 @@ PYEOF
     # Naming the gap beats inventing a reachable substitute and implying
     # coverage.  Sabotage-verified: removing the tsaTwinBed announcement
     # fails the gate.
-    if "$ROOT/bin/curate/check_economics_honesty.py" > /tmp/eco.$$ 2>&1; then
+    if gate_exec "$ROOT/bin/curate/check_economics_honesty.py" > /tmp/eco.$$ 2>&1; then
         printf "PASS  %-40s  (%s)\n" "economics-honesty-gate" "$(tail -1 /tmp/eco.$$)"
         pass=$((pass+1))
     else
@@ -3511,7 +3777,7 @@ PYEOF
     # published duty to a row, the declared steam CREDIT on the witness, the
     # auto-pick to never choosing a credit, and four refusals of a declared
     # utility that cannot serve.  Sabotage-verified (see the gate).
-    if "$ROOT/bin/curate/check_unit_duty_allocation.py" > /tmp/uda.$$ 2>&1; then
+    if gate_exec "$ROOT/bin/curate/check_unit_duty_allocation.py" > /tmp/uda.$$ 2>&1; then
         printf "PASS  %-40s  (%s)\n" "unit-duty-allocation-gate" "$(grep -m1 ': OK' /tmp/uda.$$)"
         pass=$((pass+1))
     else
@@ -3532,7 +3798,7 @@ PYEOF
     # and an announcement that fires everywhere is read nowhere.
     # Sabotage-verified twice: noteRange removed, and the non-interval branch
     # collapsed into the extrapolation one.
-    if "$ROOT/bin/curate/check_cp_range_announced.py" > /tmp/cprange.$$ 2>&1; then
+    if gate_exec "$ROOT/bin/curate/check_cp_range_announced.py" > /tmp/cprange.$$ 2>&1; then
         printf "PASS  %-40s  (%s)\n" "cp-range-gate" "$(tail -1 /tmp/cprange.$$)"
         pass=$((pass+1))
     else
@@ -3553,7 +3819,7 @@ PYEOF
     # reproduce, not what was measured, and picking a side moves goldens.
     # COVERAGE IS PARTIAL and the OK line says so -- sabotaging SW30HR did not
     # fail this gate, because its header documents no comparable number.
-    if "$ROOT/bin/curate/check_record_self_consistency.py" > /tmp/rsc.$$ 2>&1; then
+    if gate_exec "$ROOT/bin/curate/check_record_self_consistency.py" > /tmp/rsc.$$ 2>&1; then
         printf "PASS  %-40s  (%s)\n" "record-self-consistency-gate" "$(tail -1 /tmp/rsc.$$)"
         pass=$((pass+1))
     else
@@ -3568,7 +3834,7 @@ PYEOF
     # 13 records disagreed inside their own Trange, formaldehyde by 59 K).
     # The 13 are PINNED with their observed deviation -- fixing needs primary
     # literature -- and the list can neither grow nor heal in silence.
-    if "$ROOT/bin/curate/check_tb_antoine.py" > /tmp/tba.$$ 2>&1; then
+    if gate_exec "$ROOT/bin/curate/check_tb_antoine.py" > /tmp/tba.$$ 2>&1; then
         printf "PASS  %-40s  (%s)\n" "tb-antoine-gate" "$(tail -1 /tmp/tba.$$)"
         pass=$((pass+1))
     else
@@ -3581,7 +3847,7 @@ PYEOF
     # The two PID gain refusals fire with their named remedies (I5): the
     # textbook Kc/tauI spelling used to run the loop with zero action at
     # exit 0 (2026-08-22).
-    if "$ROOT/bin/curate/check_pid_refusals.py" > /tmp/pidr.$$ 2>&1; then
+    if gate_exec "$ROOT/bin/curate/check_pid_refusals.py" > /tmp/pidr.$$ 2>&1; then
         printf "PASS  %-40s  (%s)\n" "pid-refusals-gate" "$(tail -1 /tmp/pidr.$$)"
         pass=$((pass+1))
     else
@@ -3595,7 +3861,7 @@ PYEOF
     # unit named FAILED, excluded, totals stamped INCOMPLETE (2026-08-22 --
     # four sizers silently costed pressure equipment as atmospheric, and a
     # material that cannot contain the pressure priced at the CHEAPEST factor).
-    if "$ROOT/bin/curate/check_costing_refusals.py" > /tmp/costr.$$ 2>&1; then
+    if gate_exec "$ROOT/bin/curate/check_costing_refusals.py" > /tmp/costr.$$ 2>&1; then
         printf "PASS  %-40s  (%s)\n" "costing-refusals-gate" "$(tail -1 /tmp/costr.$$)"
         pass=$((pass+1))
     else
@@ -3621,7 +3887,7 @@ PYEOF
     # Sabotage-verified twice: strip Cl.dat's source (fails by name), and pin
     # a record that IS cited (stale-pin failure, so the list cannot decay into
     # a blanket exemption).
-    if "$ROOT/bin/curate/check_species_citation.py" > /tmp/spcit.$$ 2>&1; then
+    if gate_exec "$ROOT/bin/curate/check_species_citation.py" > /tmp/spcit.$$ 2>&1; then
         printf "PASS  %-40s  (%s)\n" "species-citation-gate" "$(tail -1 /tmp/spcit.$$)"
         pass=$((pass+1))
     else
@@ -3644,7 +3910,7 @@ PYEOF
     # layering entirely -- excluded and NAMED, never defaulted into a band
     # where nothing can violate.
     # Sabotage-verified twice: a new upward edge, and a pin naming nothing.
-    if "$ROOT/bin/curate/check_layering.py" > /tmp/layer.$$ 2>&1; then
+    if gate_exec "$ROOT/bin/curate/check_layering.py" > /tmp/layer.$$ 2>&1; then
         printf "PASS  %-40s  (%s)\n" "layering-gate" "$(tail -1 /tmp/layer.$$)"
         pass=$((pass+1))
     else
@@ -3665,7 +3931,7 @@ PYEOF
     # home the registry removes.
     # Sabotage-verified twice: a gate re-growing a literal table, and an
     # orphan registry entry.
-    if "$ROOT/bin/curate/check_debt_registry.py" > /tmp/debtreg.$$ 2>&1; then
+    if gate_exec "$ROOT/bin/curate/check_debt_registry.py" > /tmp/debtreg.$$ 2>&1; then
         printf "PASS  %-40s  (%s)\n" "debt-registry-gate" "$(head -1 /tmp/debtreg.$$)"
         pass=$((pass+1))
     else
@@ -3682,7 +3948,7 @@ PYEOF
     # precisely because it checks counts and SILENCE rather than presence.
     # Four sabotages: drop the "none raised" line; un-name the component;
     # unwire a binary; make the block print an item the JSON does not carry.
-    if "$ROOT/bin/curate/check_caveat_surface.py" > /tmp/caveat.$$ 2>&1; then
+    if gate_exec "$ROOT/bin/curate/check_caveat_surface.py" > /tmp/caveat.$$ 2>&1; then
         printf "PASS  %-40s  (%s)\n" "caveat-surface-gate" "$(head -1 /tmp/caveat.$$)"
         pass=$((pass+1))
     else
@@ -3700,7 +3966,7 @@ PYEOF
     # STATE it is about, stamped by the sink from the innermost open
     # AdvisoryFrame.  Five sabotages; the first SURVIVED and is recorded as
     # such, which is why there is a fifth attacking the mechanism itself.
-    if "$ROOT/bin/curate/check_advisory_attribution.py" > /tmp/advattr.$$ 2>&1; then
+    if gate_exec "$ROOT/bin/curate/check_advisory_attribution.py" > /tmp/advattr.$$ 2>&1; then
         printf "PASS  %-40s  (%s)\n" "advisory-attribution-gate" "$(head -1 /tmp/advattr.$$)"
         pass=$((pass+1))
     else
@@ -3717,7 +3983,7 @@ PYEOF
     # being DERIVED from a third (the golden).  Three had already drifted,
     # silently, because nothing looked.  This recomputes them from the golden
     # and requires both homes to quote them.  4 sabotages.
-    if "$ROOT/bin/curate/check_bjerrum_prose.py" > /tmp/bjerprose.$$ 2>&1; then
+    if gate_exec "$ROOT/bin/curate/check_bjerrum_prose.py" > /tmp/bjerprose.$$ 2>&1; then
         printf "PASS  %-40s  (%s)\n" "bjerrum-prose-gate" "$(head -1 /tmp/bjerprose.$$)"
         pass=$((pass+1))
     else
@@ -3734,7 +4000,7 @@ PYEOF
     # golden.  Three of them had already drifted before the page shipped (the
     # ratio is 1.999270 and two homes said 1.99926; COS is 0.037 % and one
     # said 0.04 %).  6 sabotages.
-    if "$ROOT/bin/curate/check_process_prose.py" > /tmp/clausprose.$$ 2>&1; then
+    if gate_exec "$ROOT/bin/curate/check_process_prose.py" > /tmp/clausprose.$$ 2>&1; then
         printf "PASS  %-40s  (%s)\n" "process-prose-gate" "$(head -1 /tmp/clausprose.$$)"
         pass=$((pass+1))
     else
@@ -3751,7 +4017,7 @@ PYEOF
     # was built, published and reachable from nowhere in the app, and was
     # reported as deleted.  An unreachable document is indistinguishable from
     # a deleted one.  4 sabotages.
-    if "$ROOT/bin/curate/check_guide_menu.py" > /tmp/guidemenu.$$ 2>&1; then
+    if gate_exec "$ROOT/bin/curate/check_guide_menu.py" > /tmp/guidemenu.$$ 2>&1; then
         printf "PASS  %-40s  (%s)\n" "guide-menu-gate" "$(head -1 /tmp/guidemenu.$$)"
         pass=$((pass+1))
     else
@@ -3767,7 +4033,7 @@ PYEOF
     # drift class this tree found three times in a week.  Checks the index is
     # current against the .tex, every deep link lands on a real label, and the
     # page carries no rule text.  4 sabotages, arm (b) recorded as latent.
-    if "$ROOT/bin/curate/check_rules_of_thumb.py" > /tmp/rot.$$ 2>&1; then
+    if gate_exec "$ROOT/bin/curate/check_rules_of_thumb.py" > /tmp/rot.$$ 2>&1; then
         printf "PASS  %-40s  (%s)\n" "rules-of-thumb-gate" "$(head -1 /tmp/rot.$$)"
         pass=$((pass+1))
     else
@@ -3784,7 +4050,7 @@ PYEOF
     # stage published as 0.0 when Kirkbride could not be formed.  The first two
     # refuse by name now; the third WITHHOLDS, and the gate says plainly that
     # that branch is latent rather than claiming to exercise it.
-    if "$ROOT/bin/curate/check_shortcut_column_refusals.py" > /tmp/fugref.$$ 2>&1; then
+    if gate_exec "$ROOT/bin/curate/check_shortcut_column_refusals.py" > /tmp/fugref.$$ 2>&1; then
         printf "PASS  %-40s  (%s)\n" "shortcut-column-refusals-gate" "$(head -1 /tmp/fugref.$$)"
         pass=$((pass+1))
     else
@@ -3802,7 +4068,7 @@ PYEOF
     # careful-sounding 1e-3 would have waved through.  It also recomputes the
     # constant-R washout idealisation independently and requires the model to
     # DISOBEY it -- a lesson that agrees with itself teaches nothing.
-    if "$ROOT/bin/curate/check_diafiltration.py" > /tmp/diafil.$$ 2>&1; then
+    if gate_exec "$ROOT/bin/curate/check_diafiltration.py" > /tmp/diafil.$$ 2>&1; then
         printf "PASS  %-40s  (%s)\n" "diafiltration-gate" "$(head -1 /tmp/diafil.$$)"
         pass=$((pass+1))
     else
@@ -3816,7 +4082,7 @@ PYEOF
     # follows a DECLARED characteristic drying curve (van Meel 1958); the gate
     # recomputes the linear, Phi^2 and Phi^0.5 closed forms from each tray's
     # own KPIs in dryer02 and fires six malformed curves through the reader.
-    if "$ROOT/bin/curate/check_drying_curve.py" > /tmp/drycurve.$$ 2>&1; then
+    if gate_exec "$ROOT/bin/curate/check_drying_curve.py" > /tmp/drycurve.$$ 2>&1; then
         printf "PASS  %-40s  (%s)\n" "drying-curve-gate" "$(head -1 /tmp/drycurve.$$)"
         pass=$((pass+1))
     else
@@ -3830,7 +4096,7 @@ PYEOF
     # characteristic curve: first law per dryer and for the plant report,
     # water balance against the streams, counter drier than co-current,
     # profile monotonicity, step convergence, four refusals by name.
-    if "$ROOT/bin/curate/check_convective_dryer.py" > /tmp/convdry.$$ 2>&1; then
+    if gate_exec "$ROOT/bin/curate/check_convective_dryer.py" > /tmp/convdry.$$ 2>&1; then
         printf "PASS  %-40s  (%s)\n" "convective-dryer-gate" "$(head -1 /tmp/convdry.$$)"
         pass=$((pass+1))
     else
@@ -3844,7 +4110,7 @@ PYEOF
     # dryer announces the limit its own answer satisfies, evaporates at its
     # floor only what the gas pays for (doubling the gas doubles the water),
     # and announces the zero heat capacity it defaults for a salt.
-    if "$ROOT/bin/curate/check_evaporative_dryer.py" > /tmp/evapdry.$$ 2>&1; then
+    if gate_exec "$ROOT/bin/curate/check_evaporative_dryer.py" > /tmp/evapdry.$$ 2>&1; then
         printf "PASS  %-40s  (%s)\n" "evaporative-dryer-gate" "$(head -1 /tmp/evapdry.$$)"
         pass=$((pass+1))
     else
@@ -3860,7 +4126,7 @@ PYEOF
     # above its dew point, the unit's energy row zero, and the sorption
     # isotherm, the droplet-trajectory models and a component with no
     # outlet each refuse by name.
-    if "$ROOT/bin/curate/check_spray_dryer_solvents.py" > /tmp/spraysolv.$$ 2>&1; then
+    if gate_exec "$ROOT/bin/curate/check_spray_dryer_solvents.py" > /tmp/spraysolv.$$ 2>&1; then
         printf "PASS  %-40s  (%s)\n" "spray-dryer-solvents-gate" "$(head -1 /tmp/spraysolv.$$)"
         pass=$((pass+1))
     else
@@ -3875,7 +4141,7 @@ PYEOF
     # steady answer, its mass residual must converge with deltaT, and four
     # refusals (a loop with no vessel, a vessel with two inputs, topology
     # inside the wrapped unit, an inlet with no state file) fire by name.
-    if "$ROOT/bin/curate/check_quasi_steady.py" > /tmp/quasis.$$ 2>&1; then
+    if gate_exec "$ROOT/bin/curate/check_quasi_steady.py" > /tmp/quasis.$$ 2>&1; then
         printf "PASS  %-40s  (%s)\n" "quasi-steady-gate" "$(head -1 /tmp/quasis.$$)"
         pass=$((pass+1))
     else
@@ -3890,7 +4156,7 @@ PYEOF
     # with a holdup {} block), refuse the retired 0/internalState +
     # 0/streamFaces naming the migrator, and write <t>/ directories by
     # default that restart the case (or say why they cannot).
-    if "$ROOT/bin/curate/check_time_state_layout.py" > /tmp/tslayout.$$ 2>&1; then
+    if gate_exec "$ROOT/bin/curate/check_time_state_layout.py" > /tmp/tslayout.$$ 2>&1; then
         printf "PASS  %-40s  (%s)\n" "time-state-layout-gate" "$(head -1 /tmp/tslayout.$$)"
         pass=$((pass+1))
     else
@@ -3904,7 +4170,7 @@ PYEOF
     # gel-limited closed form at every node, flat from 3 to 5 bar, exactly
     # A_w dP at 0.1 bar, Michaels' form at S = 0; the solute closes; four
     # refusals by name.
-    if "$ROOT/bin/curate/check_uf_gel.py" > /tmp/ufgel.$$ 2>&1; then
+    if gate_exec "$ROOT/bin/curate/check_uf_gel.py" > /tmp/ufgel.$$ 2>&1; then
         printf "PASS  %-40s  (%s)\n" "uf-gel-gate" "$(head -1 /tmp/ufgel.$$)"
         pass=$((pass+1))
     else
@@ -3923,7 +4189,7 @@ PYEOF
     # must hold, and the UNCOUPLED law on the same feed must announce itself
     # and must NOT produce a neutral permeate -- the negative that proves the
     # coupling is what the new law adds.
-    if "$ROOT/bin/curate/check_sdem.py" > /tmp/sdem.$$ 2>&1; then
+    if gate_exec "$ROOT/bin/curate/check_sdem.py" > /tmp/sdem.$$ 2>&1; then
         printf "PASS  %-40s  (%s)\n" "sdem-gate" "$(grep -m1 '^check_sdem: OK' /tmp/sdem.$$)"
         pass=$((pass+1))
     else
@@ -3944,7 +4210,7 @@ PYEOF
     # announced default on membrane12 (and its silence on membrane14), and
     # the module witness's published wall electroneutrality -- with the
     # `ionCoupling none` twin as the negative that shows the coupling acts.
-    if "$ROOT/bin/curate/check_polarisation_coupling.py" > /tmp/polar.$$ 2>&1; then
+    if gate_exec "$ROOT/bin/curate/check_polarisation_coupling.py" > /tmp/polar.$$ 2>&1; then
         printf "PASS  %-40s  (%s)\n" "polarisation-coupling-gate" "$(grep -m1 '^check_polarisation_coupling: OK' /tmp/polar.$$)"
         pass=$((pass+1))
     else
@@ -3971,7 +4237,7 @@ PYEOF
     # refuses with the remedy and a comment does not, runCase runs both
     # modes, six grammar refusals fire.  By-hand sabotages in
     # docs/design/one-case-two-modes.md section 8.
-    if "$ROOT/bin/curate/check_fit_then_simulate.py" > /tmp/fitsim.$$ 2>&1; then
+    if gate_exec "$ROOT/bin/curate/check_fit_then_simulate.py" > /tmp/fitsim.$$ 2>&1; then
         printf "PASS  %-40s  (%s)\n" "fit-then-simulate-gate" "$(grep -m1 '^check_fit_then_simulate: OK' /tmp/fitsim.$$)"
         pass=$((pass+1))
     else
@@ -3981,7 +4247,7 @@ PYEOF
     fi
     rm -f /tmp/fitsim.$$
 
-    if "$ROOT/bin/curate/check_membrane_modules.py" > /tmp/modules.$$ 2>&1; then
+    if gate_exec "$ROOT/bin/curate/check_membrane_modules.py" > /tmp/modules.$$ 2>&1; then
         printf "PASS  %-40s  (%s)\n" "membrane-modules-gate" "$(grep -m1 '^check_membrane_modules: OK' /tmp/modules.$$)"
         pass=$((pass+1))
     else
@@ -3998,7 +4264,7 @@ PYEOF
     # second transcription of the paper's Tab. 1, Eq. 17 and the per-ion k
     # recomputed from the published run, the n-vessel identity, the window
     # announced (and silent inside it), nine refusals.
-    if "$ROOT/bin/curate/check_spiral_array.py" > /tmp/spiral.$$ 2>&1; then
+    if gate_exec "$ROOT/bin/curate/check_spiral_array.py" > /tmp/spiral.$$ 2>&1; then
         printf "PASS  %-40s  (%s)\n" "spiral-array-gate" "$(grep -m1 '^check_spiral_array: OK' /tmp/spiral.$$)"
         pass=$((pass+1))
     else
@@ -4015,7 +4281,7 @@ PYEOF
     # salt); per-ION R's that charge the permeate REFUSED; the flat cell and
     # the batch diafilter take the law (its washout = exp(-(1-R)N)); seven
     # refusals.
-    if "$ROOT/bin/curate/check_constant_rejection.py" > /tmp/crej.$$ 2>&1; then
+    if gate_exec "$ROOT/bin/curate/check_constant_rejection.py" > /tmp/crej.$$ 2>&1; then
         printf "PASS  %-40s  (%s)\n" "constant-rejection-gate" "$(grep -m1 '^check_constant_rejection: OK' /tmp/crej.$$)"
         pass=$((pass+1))
     else
@@ -4030,7 +4296,7 @@ PYEOF
     # package's own liquid viscosity, ONE home (thermo/transport/
     # StokesEinstein.H): the film's per-ion k, the DSPM-DE pore and the ED
     # stack recomputed; the uncorrected D0 announced; 298.15 K bit-identical.
-    if "$ROOT/bin/curate/check_ion_diffusivity_temperature.py" > /tmp/iondt.$$ 2>&1; then
+    if gate_exec "$ROOT/bin/curate/check_ion_diffusivity_temperature.py" > /tmp/iondt.$$ 2>&1; then
         printf "PASS  %-40s  (%s)\n" "ion-diffusivity-T-gate" "$(grep -m1 '^check_ion_diffusivity_temperature: OK' /tmp/iondt.$$)"
         pass=$((pass+1))
     else
@@ -4051,7 +4317,7 @@ PYEOF
     # sweep; runs the witness (the announcements, the summaries), the
     # engine END TO END against the analytic limit, the default path on
     # membrane10/11 against their goldens to 1e-10, and five refusals.
-    if "$ROOT/bin/curate/check_pore_solver.py" > /tmp/pore.$$ 2>&1; then
+    if gate_exec "$ROOT/bin/curate/check_pore_solver.py" > /tmp/pore.$$ 2>&1; then
         printf "PASS  %-40s  (%s)\n" "pore-solver-gate" "$(grep -m1 '^check_pore_solver: OK' /tmp/pore.$$)"
         pass=$((pass+1))
     else
@@ -4070,7 +4336,7 @@ PYEOF
     # NanoFiltran's within 2e-6 on every row, and six refusals fire.  Needs
     # no gfortran (bin/curate/nanofiltran/regenerate.py does, and refuses
     # without it).  6 by-hand sabotages in its docstring.
-    if "$ROOT/bin/curate/check_nanofiltran_reference.py" > /tmp/nanofiltran.$$ 2>&1; then
+    if gate_exec "$ROOT/bin/curate/check_nanofiltran_reference.py" > /tmp/nanofiltran.$$ 2>&1; then
         printf "PASS  %-40s  (%s)\n" "nanofiltran-reference-gate" "$(grep -m1 '^check_nanofiltran_reference: OK' /tmp/nanofiltran.$$)"
         pass=$((pass+1))
     else
@@ -4090,7 +4356,7 @@ PYEOF
     # the experiment inside bands sized to the disagreement (part B; one case per paper since C147).
     # Needs no gfortran (regenerate_paper.py does).  8 by-hand sabotages in
     # its docstring.
-    if "$ROOT/bin/curate/check_nanofiltran_paper.py" > /tmp/nanofiltranpaper.$$ 2>&1; then
+    if gate_exec "$ROOT/bin/curate/check_nanofiltran_paper.py" > /tmp/nanofiltranpaper.$$ 2>&1; then
         printf "PASS  %-40s  (%s)\n" "nanofiltran-paper-gate" "$(grep -m1 '^check_nanofiltran_paper: OK' /tmp/nanofiltranpaper.$$)"
         pass=$((pass+1))
     else
@@ -4130,7 +4396,7 @@ PYEOF
     # anchors, a fit's defaults are one table whose rms is the op's, 14
     # refusals fire by name, and a stale view is removed.  6 by-hand sabotages
     # in its docstring.
-    if "$ROOT/bin/curate/check_postprocessing.py" > /tmp/postprocessing.$$ 2>&1; then
+    if gate_exec "$ROOT/bin/curate/check_postprocessing.py" > /tmp/postprocessing.$$ 2>&1; then
         printf "PASS  %-40s  (%s)\n" "postprocessing-gate" "$(grep -m1 '^check_postprocessing: OK' /tmp/postprocessing.$$)"
         pass=$((pass+1))
     else
@@ -4151,7 +4417,7 @@ PYEOF
     # recomputed in Python, and ed04's six anchors are printed against Table 4
     # with their deviations.  9 by-hand sabotages in its docstring, two of
     # which did not do what was predicted.
-    if "$ROOT/bin/curate/check_ed_stack.py" > /tmp/edstack.$$ 2>&1; then
+    if gate_exec "$ROOT/bin/curate/check_ed_stack.py" > /tmp/edstack.$$ 2>&1; then
         printf "PASS  %-40s  (%s)\n" "ed-stack-gate" "$(grep -m1 '^check_ed_stack: OK' /tmp/edstack.$$)"
         pass=$((pass+1))
     else
@@ -4173,7 +4439,7 @@ PYEOF
     # refusals on cases it BUILDS, and proves ONE HOME twice by holding the
     # rig's t = 0 numbers to ed03's.  11 by-hand sabotages in its docstring,
     # two of which did not do what was predicted.
-    if "$ROOT/bin/curate/check_ed_batch.py" > /tmp/edbatch.$$ 2>&1; then
+    if gate_exec "$ROOT/bin/curate/check_ed_batch.py" > /tmp/edbatch.$$ 2>&1; then
         printf "PASS  %-40s  (%s)\n" "ed-batch-gate" "$(grep -m1 '^check_ed_batch: OK' /tmp/edbatch.$$)"
         pass=$((pass+1))
     else
@@ -4188,7 +4454,7 @@ PYEOF
     # colored evaluation count must equal the CPR formula recomputed by the
     # gate.  Five sabotages: a coarse false structure is caught by
     # arithmetic, a fine one by the named runtime refusal.
-    if "$ROOT/bin/curate/check_block_tridiagonal.py" > /tmp/blocktri.$$ 2>&1; then
+    if gate_exec "$ROOT/bin/curate/check_block_tridiagonal.py" > /tmp/blocktri.$$ 2>&1; then
         printf "PASS  %-40s  (%s)\n" "block-tridiagonal-gate" "$(head -1 /tmp/blocktri.$$)"
         pass=$((pass+1))
     else
@@ -4203,7 +4469,7 @@ PYEOF
     # count must equal the CPR formula recomputed by the gate, false
     # declarations refuse by name, dense and structured agree, and the
     # chunk warm start rejects at most 5 % of its steps.
-    if "$ROOT/bin/curate/check_ode_block_structure.py" > /tmp/odeblk.$$ 2>&1; then
+    if gate_exec "$ROOT/bin/curate/check_ode_block_structure.py" > /tmp/odeblk.$$ 2>&1; then
         printf "PASS  %-40s  (%s)\n" "ode-block-structure-gate" "$(head -1 /tmp/odeblk.$$)"
         pass=$((pass+1))
     else
@@ -4221,7 +4487,7 @@ PYEOF
     # at another pressure.  Five sabotages; the instructive one is that a
     # held-constant without a unit is read as pascals and CONVERGES, so the
     # gate demands the named refusal rather than any failure.
-    if "$ROOT/bin/curate/check_held_out_pressure.py" > /tmp/heldoutp.$$ 2>&1; then
+    if gate_exec "$ROOT/bin/curate/check_held_out_pressure.py" > /tmp/heldoutp.$$ 2>&1; then
         printf "PASS  %-40s  (%s)\n" "held-out-pressure-gate" "$(head -1 /tmp/heldoutp.$$)"
         pass=$((pass+1))
     else
@@ -4239,7 +4505,7 @@ PYEOF
     # same run -- were absent.  Five sabotages; the round-trip arm is the one
     # that matters, because a record whose own reader cannot see its `origin`
     # resolves to `unattributed` silently.
-    if "$ROOT/bin/curate/check_promoted_pair_record.py" > /tmp/pairrec.$$ 2>&1; then
+    if gate_exec "$ROOT/bin/curate/check_promoted_pair_record.py" > /tmp/pairrec.$$ 2>&1; then
         printf "PASS  %-40s  (%s)\n" "promoted-pair-record-gate" "$(head -1 /tmp/pairrec.$$)"
         pass=$((pass+1))
     else
@@ -4257,7 +4523,7 @@ PYEOF
     # voiced at run time.  Six by-hand sabotages; two SURVIVED the first draft
     # because a regex read the header PROSE "reviewStatus interim: ..." as the
     # field.
-    if "$ROOT/bin/curate/check_regressed_pairs.py" > /tmp/regpairs.$$ 2>&1; then
+    if gate_exec "$ROOT/bin/curate/check_regressed_pairs.py" > /tmp/regpairs.$$ 2>&1; then
         printf "PASS  %-40s  (%s)\n" "regressed-pairs-gate" "$(head -1 /tmp/regpairs.$$)"
         pass=$((pass+1))
     else
@@ -4277,7 +4543,7 @@ PYEOF
     # (`vary { points ( ... ) }`, the Explorer's Evidence view) -- the
     # witness's CSVs carry the dataset's x exactly, announced, and the three
     # built probes (both forms, a scalar, an empty list) refuse by name.
-    if "$ROOT/bin/curate/check_evidence_records.py" > /tmp/evrec.$$ 2>&1; then
+    if gate_exec "$ROOT/bin/curate/check_evidence_records.py" > /tmp/evrec.$$ 2>&1; then
         printf "PASS  %-40s  (%s)\n" "evidence-records-gate" "$(head -1 /tmp/evrec.$$)"
         pass=$((pass+1))
     else
@@ -4293,7 +4559,7 @@ PYEOF
     # something to be wrong against.  The three silent failure modes (dropped
     # RT, wrong V_m unit, Pa^0.5 vs MPa^0.5) all produce a number that still
     # reads as a solubility parameter; only the anchor column catches them.
-    if "$ROOT/bin/curate/check_solubility_parameter.py" > /tmp/solpar.$$ 2>&1; then
+    if gate_exec "$ROOT/bin/curate/check_solubility_parameter.py" > /tmp/solpar.$$ 2>&1; then
         printf "PASS  %-40s  (%s)\n" "solubility-parameter-gate" "$(head -1 /tmp/solpar.$$)"
         pass=$((pass+1))
     else
@@ -4312,7 +4578,7 @@ PYEOF
     # denied`, naming a line of wasm.mk that was entirely correct.  Reported
     # by Vitor from his own laptop.  The gate probes the MECHANISM (a
     # throwaway project with its own make/ directory), not the PATH order.
-    if "$ROOT/bin/curate/check_bashrc_path.py" > /tmp/bashrcpath.$$ 2>&1; then
+    if gate_exec "$ROOT/bin/curate/check_bashrc_path.py" > /tmp/bashrcpath.$$ 2>&1; then
         printf "PASS  %-40s  (%s)\n" "bashrc-path-gate" "$(head -1 /tmp/bashrcpath.$$)"
         pass=$((pass+1))
     else
@@ -4330,7 +4596,7 @@ PYEOF
     # log, and reads Pipe.cpp's source to prove the decision has one home.
     # Four sabotages; they also found a false diagnosis in the gate's own
     # pipe-golden arm, which now says "could not run" instead of "moved".
-    if "$ROOT/bin/curate/check_friction_correlations.py" > /tmp/friction.$$ 2>&1; then
+    if gate_exec "$ROOT/bin/curate/check_friction_correlations.py" > /tmp/friction.$$ 2>&1; then
         printf "PASS  %-40s  (%s)\n" "friction-correlations-gate" "$(head -1 /tmp/friction.$$)"
         pass=$((pass+1))
     else
@@ -4346,7 +4612,7 @@ PYEOF
     # the formula route agree on one law and equal its closed form; 16
     # refusals by name.  Six by-hand sabotages, one of which survived first
     # contact.
-    if "$ROOT/bin/curate/check_rate_expression.py" > /tmp/rateexpr.$$ 2>&1; then
+    if gate_exec "$ROOT/bin/curate/check_rate_expression.py" > /tmp/rateexpr.$$ 2>&1; then
         printf "PASS  %-40s  (%s)\n" "rate-expression-gate" "$(head -1 /tmp/rateexpr.$$)"
         pass=$((pass+1))
     else
@@ -4364,7 +4630,7 @@ PYEOF
     # and reproduces the bench's diagnostics, fires the law's declared
     # refusals, and holds the bench's three transcribed states to ammonia03's
     # converged answer.  Six by-hand sabotages, all caught.
-    if "$ROOT/bin/curate/check_ammonia_rate.py" > /tmp/ammrate.$$ 2>&1; then
+    if gate_exec "$ROOT/bin/curate/check_ammonia_rate.py" > /tmp/ammrate.$$ 2>&1; then
         printf "PASS  %-40s  (%s)\n" "ammonia-rate-gate" "$(head -1 /tmp/ammrate.$$)"
         pass=$((pass+1))
     else
@@ -4380,7 +4646,7 @@ PYEOF
     # the geometry recomputed from V_R and L/D, the outlet leaving at the
     # integrated P, six refusals by name, the allowable announced.  Three
     # by-hand sabotages, all caught.
-    if "$ROOT/bin/curate/check_pfr_ergun.py" > /tmp/pfrergun.$$ 2>&1; then
+    if gate_exec "$ROOT/bin/curate/check_pfr_ergun.py" > /tmp/pfrergun.$$ 2>&1; then
         printf "PASS  %-40s  (%s)\n" "pfr-ergun-gate" "$(head -1 /tmp/pfrergun.$$)"
         pass=$((pass+1))
     else
@@ -4397,7 +4663,7 @@ PYEOF
     # RK4 (+ bisection shooting) on N2's own Cp; the multitubular sizer; 13
     # refusals by name; the legacy U/areaPerVolume/T_coolant form untouched.
     # Four by-hand sabotages, all caught.
-    if "$ROOT/bin/curate/check_cooled_pfr.py" > /tmp/cooledpfr.$$ 2>&1; then
+    if gate_exec "$ROOT/bin/curate/check_cooled_pfr.py" > /tmp/cooledpfr.$$ 2>&1; then
         printf "PASS  %-40s  (%s)\n" "cooled-pfr-gate" "$(gate_claim check_cooled_pfr /tmp/cooledpfr.$$)"
         pass=$((pass+1))
     else
@@ -4418,7 +4684,7 @@ PYEOF
     # transport model (on a stripped copy), the membrane's [legacy] line,
     # and the Theory Guide carrying no Sutherland/lennardJones example while
     # the engine has no reader.  Four by-hand sabotages on outputs/inputs.
-    if "$ROOT/bin/curate/check_transport_correlations.py" > /tmp/transportc.$$ 2>&1; then
+    if gate_exec "$ROOT/bin/curate/check_transport_correlations.py" > /tmp/transportc.$$ 2>&1; then
         printf "PASS  %-40s  (%s)\n" "transport-correlations-gate" "$(head -1 /tmp/transportc.$$)"
         pass=$((pass+1))
     else
@@ -4438,7 +4704,7 @@ PYEOF
     # components' own molar masses, and ratchets it both ways (a sudden
     # IMPROVEMENT fails too: the case declares that nothing is fitted).  Five
     # by-hand sabotages, all on data.
-    if "$ROOT/bin/curate/check_srk_h2n2_aad.py" > /tmp/srkaad.$$ 2>&1; then
+    if gate_exec "$ROOT/bin/curate/check_srk_h2n2_aad.py" > /tmp/srkaad.$$ 2>&1; then
         printf "PASS  %-40s  (%s)\n" "srk-h2n2-aad-gate" "$(head -1 /tmp/srkaad.$$)"
         pass=$((pass+1))
     else
@@ -4458,7 +4724,7 @@ PYEOF
     # wrong once), and pins the window announcement and the two refusals.
     # Seven sabotages; the sixth SURVIVED first contact and exposed a real hole
     # -- Cp_liquid > Cp_ig waves a thousandfold error through in one direction.
-    if "$ROOT/bin/curate/check_chemsep_transport.py" > /tmp/chemseptr.$$ 2>&1; then
+    if gate_exec "$ROOT/bin/curate/check_chemsep_transport.py" > /tmp/chemseptr.$$ 2>&1; then
         printf "PASS  %-40s  (%s)\n" "chemsep-transport-gate" "$(head -1 /tmp/chemseptr.$$)"
         pass=$((pass+1))
     else
@@ -4478,7 +4744,7 @@ PYEOF
     # decomposition is a different molecule.  Four sabotages; the third
     # reproduces a real defect this gate found -- the derivation counting its
     # own emitted records as evidence.
-    if "$ROOT/bin/curate/check_unifac_key.py" > /tmp/unifackey.$$ 2>&1; then
+    if gate_exec "$ROOT/bin/curate/check_unifac_key.py" > /tmp/unifackey.$$ 2>&1; then
         printf "PASS  %-40s  (%s)\n" "unifac-key-gate" "$(head -1 /tmp/unifackey.$$)"
         pass=$((pass+1))
     else
@@ -4497,7 +4763,7 @@ PYEOF
     # independent route, so a mistyped or mis-united triple cannot agree with
     # it.  Five sabotages; the third normalises the fractions by magnitude
     # instead of sum and still looks exactly like a Teas diagram.
-    if "$ROOT/bin/curate/check_hansen_teas.py" > /tmp/hansen.$$ 2>&1; then
+    if gate_exec "$ROOT/bin/curate/check_hansen_teas.py" > /tmp/hansen.$$ 2>&1; then
         printf "PASS  %-40s  (%s)\n" "hansen-teas-gate" "$(head -1 /tmp/hansen.$$)"
         pass=$((pass+1))
     else
@@ -4515,7 +4781,7 @@ PYEOF
     # UNIFAC pair that is one liquid, a pair UNIFAC finds two-phase and the
     # op REFUSES to average); the synthetic minimum at 50:50; eight refusals
     # by name; the thesis's ratings confronted and the residual counted.
-    if "$ROOT/bin/curate/check_hansen_mixture.py" > /tmp/hansenmix.$$ 2>&1; then
+    if gate_exec "$ROOT/bin/curate/check_hansen_mixture.py" > /tmp/hansenmix.$$ 2>&1; then
         printf "PASS  %-40s  (%s)\n" "hansen-mixture-gate" "$(gate_claim check_hansen_mixture /tmp/hansenmix.$$)"
         pass=$((pass+1))
     else
@@ -4534,7 +4800,7 @@ PYEOF
     # curation act fills it.  Five sabotages; the fifth survived first contact
     # and the defect was in the gate -- it searched the whole run for the
     # component names, which the [unreviewed] advisories also print.
-    if "$ROOT/bin/curate/check_unifac_gaps.py" > /tmp/unifacgaps.$$ 2>&1; then
+    if gate_exec "$ROOT/bin/curate/check_unifac_gaps.py" > /tmp/unifacgaps.$$ 2>&1; then
         printf "PASS  %-40s  (%s)\n" "unifac-gaps-gate" "$(head -1 /tmp/unifacgaps.$$)"
         pass=$((pass+1))
     else
@@ -4554,7 +4820,7 @@ PYEOF
     # was the resulting spike.  A converged point is not necessarily a point
     # on the curve.  Six sabotages; the fourth proved nothing (it attacked a
     # redundant line) and is recorded as such.
-    if "$ROOT/bin/curate/check_phase_envelope.py" > /tmp/envelope.$$ 2>&1; then
+    if gate_exec "$ROOT/bin/curate/check_phase_envelope.py" > /tmp/envelope.$$ 2>&1; then
         printf "PASS  %-40s  (%s)\n" "phase-envelope-gate" "$(head -1 /tmp/envelope.$$)"
         pass=$((pass+1))
     else
@@ -4570,7 +4836,7 @@ PYEOF
     # fit recovering a planted kij, and the compressor's P_out form.  Probes
     # only: no corpus case declares any of them (the benchmarks are outside
     # this suite by C123's stated default).
-    if "$ROOT/bin/curate/check_ppr78_route.py" > /tmp/ppr78.$$ 2>&1; then
+    if gate_exec "$ROOT/bin/curate/check_ppr78_route.py" > /tmp/ppr78.$$ 2>&1; then
         printf "PASS  %-40s  (%s)\n" "ppr78-route-gate" "$(tail -1 /tmp/ppr78.$$)"
         pass=$((pass+1))
     else
@@ -4588,7 +4854,7 @@ PYEOF
     # down.  444 of 603 names carry an internal capital and none collide when
     # folded, so a case-only miss has exactly one candidate.  It still
     # REFUSES; it just names the record.
-    if "$ROOT/bin/curate/check_component_name_hint.py" > /tmp/namehint.$$ 2>&1; then
+    if gate_exec "$ROOT/bin/curate/check_component_name_hint.py" > /tmp/namehint.$$ 2>&1; then
         printf "PASS  %-40s  (%s)\n" "component-name-hint-gate" "$(head -1 /tmp/namehint.$$)"
         pass=$((pass+1))
     else
@@ -4606,7 +4872,7 @@ PYEOF
     # way in one day).  Regenerating runs all 92 gates and is slow, so the
     # suite runs only the NAMES arm: a gate added without regenerating fails
     # here, and the manifest cannot silently go stale.
-    if "$ROOT/bin/curate/gate_manifest.py" --check > /tmp/gman.$$ 2>&1; then
+    if gate_exec "$ROOT/bin/curate/gate_manifest.py" --check > /tmp/gman.$$ 2>&1; then
         printf "PASS  %-40s  (%s)\n" "gate-manifest-gate" "$(head -1 /tmp/gman.$$)"
         pass=$((pass+1))
     else
@@ -4626,7 +4892,7 @@ PYEOF
     # Sabotage-verified three ways: break the basis conversion; drop the Gamma
     # from a closed-form moment; make both laws declare the same basis so the
     # conversion arm stops discriminating.
-    if "$ROOT/bin/curate/check_size_distribution.py" > /tmp/sizedist.$$ 2>&1; then
+    if gate_exec "$ROOT/bin/curate/check_size_distribution.py" > /tmp/sizedist.$$ 2>&1; then
         printf "PASS  %-40s  (%s)\n" "size-distribution-gate" "$(head -1 /tmp/sizedist.$$)"
         pass=$((pass+1))
     else
@@ -4650,7 +4916,7 @@ PYEOF
     # catalogue) and checks the default rung is untouched, the non-gas rungs
     # refuse quoting the record's own key, the derived Gibbs surface refuses
     # too, and the remedy the refusal names actually runs.
-    if "$ROOT/bin/curate/check_reference_rung.py" > /tmp/refrung.$$ 2>&1; then
+    if gate_exec "$ROOT/bin/curate/check_reference_rung.py" > /tmp/refrung.$$ 2>&1; then
         printf "PASS  %-40s  (%s)\n" "reference-rung-gate" "$(head -1 /tmp/refrung.$$)"
         pass=$((pass+1))
     else
@@ -4665,7 +4931,7 @@ PYEOF
     # records they quote, the H asymmetry is structural, and both refusals
     # (unknown property; the pureFluids fundamental-equation route) fire by
     # name.  Witness: entropy01_air_ledger, the case the EduTool page runs.
-    if "$ROOT/bin/curate/check_explain_property.py" > /tmp/explainprop.$$ 2>&1; then
+    if gate_exec "$ROOT/bin/curate/check_explain_property.py" > /tmp/explainprop.$$ 2>&1; then
         printf "PASS  %-40s  (%s)\n" "explain-property-gate" "$(head -1 /tmp/explainprop.$$)"
         pass=$((pass+1))
     else
@@ -4685,7 +4951,7 @@ PYEOF
     # re-seals by re-running the importer, and the component ask reaches the
     # consumption ledger before the sealed refusal -- the seam the
     # learn-on-refusal path stands on.
-    if "$ROOT/bin/curate/check_seal_growth.py" > /tmp/sealgrowth.$$ 2>&1; then
+    if gate_exec "$ROOT/bin/curate/check_seal_growth.py" > /tmp/sealgrowth.$$ 2>&1; then
         printf "PASS  %-40s  (%s)\n" "seal-growth-gate" "$(head -1 /tmp/sealgrowth.$$)"
         pass=$((pass+1))
     else
@@ -4694,7 +4960,7 @@ PYEOF
         fail=$((fail+1))
     fi
 
-    if "$ROOT/bin/curate/check_exergy.py" > /tmp/exergy.$$ 2>&1; then
+    if gate_exec "$ROOT/bin/curate/check_exergy.py" > /tmp/exergy.$$ 2>&1; then
         printf "PASS  %-40s  (%s)\n" "exergy-gate" "$(head -1 /tmp/exergy.$$)"
         pass=$((pass+1))
     else
@@ -4708,7 +4974,7 @@ PYEOF
     # SITE -- fails while dev and vitest stay green.  It blocked three
     # consecutive publishes; this is the cheap local check for the
     # construct, on the check_wasm_dialect pattern.
-    if "$ROOT/bin/curate/check_glob_raw.py" > /tmp/globraw.$$ 2>&1; then
+    if gate_exec "$ROOT/bin/curate/check_glob_raw.py" > /tmp/globraw.$$ 2>&1; then
         printf "PASS  %-40s  (%s)\n" "glob-raw-gate" "$(head -1 /tmp/globraw.$$)"
         pass=$((pass+1))
     else
@@ -4725,7 +4991,7 @@ PYEOF
     # complains.  The drawing is fixed by families; this gate is why that fix
     # is not the same mistake again: it recounts the GUI's table against the
     # engine's own registry, so it cannot go quietly short a second time.
-    if "$ROOT/bin/curate/check_unit_families.py" > /tmp/unitfam.$$ 2>&1; then
+    if gate_exec "$ROOT/bin/curate/check_unit_families.py" > /tmp/unitfam.$$ 2>&1; then
         printf "PASS  %-40s  (%s)\n" "unit-family-gate" "$(head -1 /tmp/unitfam.$$)"
         pass=$((pass+1))
     else
@@ -4743,7 +5009,7 @@ PYEOF
     # that exists to prove the engine is glass, an unpinned copy is the one
     # thing that must not be there.  The gate re-runs each case and compares
     # at the precision the screen chose -- a transcription may round.
-    if "$ROOT/bin/curate/check_intro_trace.py" > /tmp/introtrace.$$ 2>&1; then
+    if gate_exec "$ROOT/bin/curate/check_intro_trace.py" > /tmp/introtrace.$$ 2>&1; then
         printf "PASS  %-40s  (%s)\n" "intro-trace-gate" "$(head -1 /tmp/introtrace.$$)"
         pass=$((pass+1))
     else
@@ -4758,7 +5024,7 @@ PYEOF
     # destination).  A label renamed in a guide breaks every link to it in
     # SILENCE -- the PDF just opens at page one -- and the map is TypeScript
     # while the labels are LaTeX, so no compiler or test saw across the seam.
-    if "$ROOT/bin/curate/check_guide_anchors.py" > /tmp/guideanch.$$ 2>&1; then
+    if gate_exec "$ROOT/bin/curate/check_guide_anchors.py" > /tmp/guideanch.$$ 2>&1; then
         printf "PASS  %-40s  (%s)\n" "guide-anchor-gate" "$(head -1 /tmp/guideanch.$$)"
         pass=$((pass+1))
     else
@@ -4775,7 +5041,7 @@ PYEOF
     # Desktop cannot see the difference: 100vh and 100dvh are the same number
     # without a retracting chrome, so every screen, test and screenshot here
     # agrees while the phone is broken.  A gate is the only thing that looks.
-    if "$ROOT/bin/curate/check_viewport_units.py" > /tmp/viewportunits.$$ 2>&1; then
+    if gate_exec "$ROOT/bin/curate/check_viewport_units.py" > /tmp/viewportunits.$$ 2>&1; then
         printf "PASS  %-40s  (%s)\n" "viewport-unit-gate" "$(head -1 /tmp/viewportunits.$$)"
         pass=$((pass+1))
     else
@@ -4791,7 +5057,7 @@ PYEOF
     # architecture and exactly what makes the op self-consistent under an
     # engine defect.  The gate recomputes the double sum and the pure
     # Soave leg INDEPENDENTLY from the witness's own sealed records.
-    if "$ROOT/bin/curate/check_mixing_ledger.py" > /tmp/mixledger.$$ 2>&1; then
+    if gate_exec "$ROOT/bin/curate/check_mixing_ledger.py" > /tmp/mixledger.$$ 2>&1; then
         printf "PASS  %-40s  (%s)\n" "mixing-ledger-gate" "$(head -1 /tmp/mixledger.$$)"
         pass=$((pass+1))
     else
@@ -4825,7 +5091,7 @@ PYEOF
     # is why the negatives are synthesised -- the fixture had been ethanol,
     # which declares neither constant, so the arm was blocked by the anchor
     # guard and never reached the one it claimed to test.
-    if "$ROOT/bin/curate/check_ice_freezing.py" > /tmp/icefreeze.$$ 2>&1; then
+    if gate_exec "$ROOT/bin/curate/check_ice_freezing.py" > /tmp/icefreeze.$$ 2>&1; then
         printf "PASS  %-40s  (%s)\n" "ice-freezing-gate" "$(head -1 /tmp/icefreeze.$$)"
         pass=$((pass+1))
     else
@@ -4844,7 +5110,7 @@ PYEOF
     # its grid values; a pure-water probe is refused BY NAME below Tt and the
     # scan continues; the Psat/dCp announcements land at their first point;
     # closure, four grammar refusals, a source arm (no equilibrium of its own).
-    if "$ROOT/bin/curate/check_phase_split_scan.py" > /tmp/phsplit.$$ 2>&1; then
+    if gate_exec "$ROOT/bin/curate/check_phase_split_scan.py" > /tmp/phsplit.$$ 2>&1; then
         printf "PASS  %-40s  (%s)\n" "phase-split-scan-gate" "$(gate_claim check_phase_split_scan /tmp/phsplit.$$)"
         pass=$((pass+1))
     else
@@ -4864,7 +5130,7 @@ PYEOF
     # form and the printed tables, the Sidak measurement test, the multipliers
     # and the attribution, the excluded meter's offset test; nine refusals by
     # name; a source arm (no second QP).
-    if "$ROOT/bin/curate/check_data_reconciliation.py" > /tmp/datarec.$$ 2>&1; then
+    if gate_exec "$ROOT/bin/curate/check_data_reconciliation.py" > /tmp/datarec.$$ 2>&1; then
         printf "PASS  %-40s  (%s)\n" "data-reconciliation-gate" "$(gate_claim check_data_reconciliation /tmp/datarec.$$)"
         pass=$((pass+1))
     else
@@ -4884,7 +5150,7 @@ PYEOF
     # it still fails when it should, and that has to be asked empirically.
     # It prints its own coverage (a small minority of the gates) and names the
     # rest UNAUDITED rather than letting a green line imply the whole set.
-    if "$ROOT/bin/curate/check_gate_selftest.py" > /tmp/gateself.$$ 2>&1; then
+    if gate_exec "$ROOT/bin/curate/check_gate_selftest.py" > /tmp/gateself.$$ 2>&1; then
         printf "PASS  %-40s  (%s)\n" "gate-selftest" "$(head -1 /tmp/gateself.$$)"
         pass=$((pass+1))
     else
@@ -4903,7 +5169,7 @@ PYEOF
     # violation measured.  The review PASSED (2026-08-08); the migration
     # runs under its four boundaries, and this gate keeps the spike's
     # evidence true until the migration's own gates supersede it.
-    if "$ROOT/bin/curate/check_solid_equilibrium_spike.py" > /tmp/solideq.$$ 2>&1; then
+    if gate_exec "$ROOT/bin/curate/check_solid_equilibrium_spike.py" > /tmp/solideq.$$ 2>&1; then
         printf "PASS  %-40s  (%s)\n" "solid-equilibrium-spike-gate" "$(head -1 /tmp/solideq.$$)"
         pass=$((pass+1))
     else
@@ -4918,7 +5184,7 @@ PYEOF
     # provider-resolved sinks (the CO3 leg CHAINED onto the carbonate
     # master, never copied), and the SolidEquilibriumService reproduces
     # the internal equilibrate oracle it will replace in S3.
-    if "$ROOT/bin/curate/check_solid_service.py" > /tmp/solidsvc.$$ 2>&1; then
+    if gate_exec "$ROOT/bin/curate/check_solid_service.py" > /tmp/solidsvc.$$ 2>&1; then
         printf "PASS  %-40s  (%s)\n" "solid-service-gate" "$(head -1 /tmp/solidsvc.$$)"
         pass=$((pass+1))
     else
@@ -4943,7 +5209,7 @@ PYEOF
     # announced, and that the vacuum-flash control keeps its genuine
     # pressure-drop duty (a gate that zeroed every flash would be
     # measuring its own wish).
-    if "$ROOT/bin/curate/check_inlet_resolution.py" > /tmp/inletres.$$ 2>&1; then
+    if gate_exec "$ROOT/bin/curate/check_inlet_resolution.py" > /tmp/inletres.$$ 2>&1; then
         printf "PASS  %-40s  (%s)\n" "inlet-resolution-gate" "$(head -1 /tmp/inletres.$$)"
         pass=$((pass+1))
     else
@@ -4960,7 +5226,7 @@ PYEOF
     # over the resolved state.  process02's heater used to walk 12 K past the
     # bubble point on a sensible Cp relation, paying no latent heat: 827.62 %
     # closure on a 0.40 kW declaration.
-    if "$ROOT/bin/curate/check_duty_inversion.py" > /tmp/dutyinv.$$ 2>&1; then
+    if gate_exec "$ROOT/bin/curate/check_duty_inversion.py" > /tmp/dutyinv.$$ 2>&1; then
         printf "PASS  %-40s  (%s)\n" "duty-inversion-gate" "$(head -1 /tmp/dutyinv.$$)"
         pass=$((pass+1))
     else
@@ -4976,7 +5242,7 @@ PYEOF
     # corpus UNIFAC (VLE) table pinned in BOTH directions -- the stale-pin arm
     # fires the day a curated LLE set opens the gap, demanding the witness be
     # upgraded to the full tie-triangle.
-    if "$ROOT/bin/curate/check_marcilla_lls.py" > /tmp/marcilla.$$ 2>&1; then
+    if gate_exec "$ROOT/bin/curate/check_marcilla_lls.py" > /tmp/marcilla.$$ 2>&1; then
         printf "PASS  %-40s  (%s)\n" "marcilla-lls-gate" "$(head -1 /tmp/marcilla.$$)"
         pass=$((pass+1))
     else
@@ -4992,7 +5258,7 @@ PYEOF
     # physically interpretable energy imbalance.  Six arms, sabotage-verified
     # twice (dropping `&& conv.converged` from acceptance made a 1e-30 run
     # exit 0 while printing NOT converged).
-    if "$ROOT/bin/curate/check_convergence_residual.py" > /tmp/convres.$$ 2>&1; then
+    if gate_exec "$ROOT/bin/curate/check_convergence_residual.py" > /tmp/convres.$$ 2>&1; then
         printf "PASS  %-40s  (%s)\n" "convergence-residual-gate" "$(tail -1 /tmp/convres.$$)"
         pass=$((pass+1))
     else
@@ -5006,7 +5272,7 @@ PYEOF
     # tutorials compose features, showcases compose engineering -- classified
     # IN PLACE by a `tier` word, absence meaning WITNESS.  Until this split
     # the release inventory called all 336 cases tutorials.
-    if "$ROOT/bin/curate/check_case_tiers.py" > /tmp/casetier.$$ 2>&1; then
+    if gate_exec "$ROOT/bin/curate/check_case_tiers.py" > /tmp/casetier.$$ 2>&1; then
         printf "PASS  %-40s  (%s)\n" "case-tier-gate" "$(head -1 /tmp/casetier.$$)"
         pass=$((pass+1))
     else
@@ -5027,7 +5293,7 @@ PYEOF
     #  six that did not included tutorials/plant/acetonePlant, the plant the
     #  whole document builds toward.  A student who read the document and a
     #  student who clicked the folder were taught two different courses.
-    if "$ROOT/bin/curate/check_first_path_agrees.py" > /tmp/firstpath.$$ 2>&1; then
+    if gate_exec "$ROOT/bin/curate/check_first_path_agrees.py" > /tmp/firstpath.$$ 2>&1; then
         printf "PASS  %-40s  (%s)\n" "first-path-gate" "$(head -1 /tmp/firstpath.$$)"
         pass=$((pass+1))
     else
@@ -5045,7 +5311,7 @@ PYEOF
     # R = 1.0) and REFUSES a vacuous run, because gammas that do not vary with
     # composition pass 0/0 -- which is how two probe bugs each produced a
     # clean sheet of zeros during development.
-    if "$ROOT/bin/curate/check_gibbs_duhem.py" > /tmp/gibbsduhem.$$ 2>&1; then
+    if gate_exec "$ROOT/bin/curate/check_gibbs_duhem.py" > /tmp/gibbsduhem.$$ 2>&1; then
         printf "PASS  %-40s  (%s)\n" "gibbs-duhem-gate" "$(head -1 /tmp/gibbsduhem.$$)"
         pass=$((pass+1))
     else
@@ -5062,7 +5328,7 @@ PYEOF
     # C/H/O and both duties on the solid rung, holds the absent-solid reformer
     # to gibbs02's answer, fires the directMin refusal and runs the adiabatic
     # energy path the isothermal witness never reaches.
-    if "$ROOT/bin/curate/check_gibbs_solid_phase.py" > /tmp/gibbssolid.$$ 2>&1; then
+    if gate_exec "$ROOT/bin/curate/check_gibbs_solid_phase.py" > /tmp/gibbssolid.$$ 2>&1; then
         printf "PASS  %-40s  (%s)\n" "gibbs-solid-phase-gate" "$(head -1 /tmp/gibbssolid.$$)"
         pass=$((pass+1))
     else
@@ -5081,7 +5347,7 @@ PYEOF
     # constraint.  The gate MEASURES that departure rather than failing it, and
     # requires it to grow with ionic strength: a Davies that came back
     # consistent would have silently stopped being Davies.
-    if "$ROOT/bin/curate/check_ion_gibbs_duhem.py" > /tmp/iongd.$$ 2>&1; then
+    if gate_exec "$ROOT/bin/curate/check_ion_gibbs_duhem.py" > /tmp/iongd.$$ 2>&1; then
         printf "PASS  %-40s  (%s)\n" "ion-gibbs-duhem-gate" "$(head -1 /tmp/iongd.$$)"
         pass=$((pass+1))
     else
@@ -5104,7 +5370,7 @@ PYEOF
     # Sabotage-verified twice: drop the noteRange call; collapse the two
     # branches into one.  A third round is impossible by construction -- a
     # subclass cannot skip the check, because Psat_Pa is not virtual.
-    if "$ROOT/bin/curate/check_psat_range.py" > /tmp/psatrange.$$ 2>&1; then
+    if gate_exec "$ROOT/bin/curate/check_psat_range.py" > /tmp/psatrange.$$ 2>&1; then
         printf "PASS  %-40s  (%s)\n" "psat-range-gate" "$(head -1 /tmp/psatrange.$$)"
         pass=$((pass+1))
     else
@@ -5129,7 +5395,7 @@ PYEOF
     # comment out a species datum (coverage falls -- and this round found a
     # real bug, the reader was matching inside comments); reshape a record so
     # it cannot be parsed (unparsed must be 0, never silently skipped).
-    if "$ROOT/bin/curate/check_logk_crosscheck.py" > /tmp/logkx.$$ 2>&1; then
+    if gate_exec "$ROOT/bin/curate/check_logk_crosscheck.py" > /tmp/logkx.$$ 2>&1; then
         printf "PASS  %-40s  (%s)\n" "logk-crosscheck-gate" "$(head -1 /tmp/logkx.$$)"
         pass=$((pass+1))
     else
@@ -5151,7 +5417,7 @@ PYEOF
     # NOT claim an `alt` mark is TRUE -- that is a reading judgement.
     # Sabotage-verified twice: a record dropped from the index, and a prose
     # count drifted from the table.
-    if "$ROOT/bin/curate/check_decision_index.py" > /tmp/didx.$$ 2>&1; then
+    if gate_exec "$ROOT/bin/curate/check_decision_index.py" > /tmp/didx.$$ 2>&1; then
         printf "PASS  %-40s  (%s)\n" "decision-index-gate" "$(tail -1 /tmp/didx.$$)"
         pass=$((pass+1))
     else
@@ -5167,7 +5433,7 @@ PYEOF
     # verified + announced, moved values diverge/refuse by name, the
     # migration is idempotent + fail-closed; sabotage-verified
     # (computational divergence classified cosmetic -> 2 probes fail).
-    if "$ROOT/bin/curate/check_seal_schema.py" > /tmp/sscm.$$ 2>&1; then
+    if gate_exec "$ROOT/bin/curate/check_seal_schema.py" > /tmp/sscm.$$ 2>&1; then
         printf "PASS  %-40s  (%s)\n" "seal-schema-gate" "$(tail -1 /tmp/sscm.$$)"
         pass=$((pass+1))
     else
@@ -5183,7 +5449,7 @@ PYEOF
     # canonical profile only, impulses are excluded with a warning,
     # unprofiled records are LISTED.  Includes the three mandated
     # sabotages (removed interval / flipped sign / altered deltaEnergy).
-    if "$ROOT/bin/curate/check_temporal_utilities.py" > /tmp/tmpu.$$ 2>&1; then
+    if gate_exec "$ROOT/bin/curate/check_temporal_utilities.py" > /tmp/tmpu.$$ 2>&1; then
         printf "PASS  %-40s  (%s)\n" "temporal-utilities-gate" "$(tail -1 /tmp/tmpu.$$)"
         pass=$((pass+1))
     else
@@ -5198,7 +5464,7 @@ PYEOF
     # form, CRC density anchors, partial-trio + unknown-scheme refusals,
     # non-associating corpus untouched at 1e-10; sabotage-verified
     # (Delta scaled 2% -> 4 probes fail by value).
-    if "$ROOT/bin/curate/check_pcsaft_association.py" > /tmp/pcsa.$$ 2>&1; then
+    if gate_exec "$ROOT/bin/curate/check_pcsaft_association.py" > /tmp/pcsa.$$ 2>&1; then
         printf "PASS  %-40s  (%s)\n" "pcsaft-association-gate" "$(tail -1 /tmp/pcsa.$$)"
         pass=$((pass+1))
     else
@@ -5214,7 +5480,7 @@ PYEOF
     # Deliberate absences (the gitignored private tier, retired homes named as
     # retired, worked-example placeholders) are listed WITH their reason, and
     # the gate also fires when one of them quietly comes true.
-    if "$ROOT/bin/curate/check_doc_references.py" > /tmp/docref.$$ 2>&1; then
+    if gate_exec "$ROOT/bin/curate/check_doc_references.py" > /tmp/docref.$$ 2>&1; then
         printf "PASS  %-40s  (%s)\n" "doc-reference-gate" "$(tail -1 /tmp/docref.$$)"
         pass=$((pass+1))
     else
@@ -5233,7 +5499,7 @@ PYEOF
     # cases in order and is the first thing a newcomer is pointed at, from the
     # README and from listCases.  A curated list of paths held in prose is
     # exactly the shape that rots when other work renames a case.
-    if "$ROOT/bin/curate/check_start_here.py" > /tmp/sh.$$ 2>&1; then
+    if gate_exec "$ROOT/bin/curate/check_start_here.py" > /tmp/sh.$$ 2>&1; then
         printf "PASS  %-40s  (%s)\n" "start-here-gate" "$(tail -1 /tmp/sh.$$)"
         pass=$((pass+1))
     else
@@ -5249,7 +5515,7 @@ PYEOF
     # moved thousands of lines across six category files -- every case added
     # since the last manual run was absent from the manual a student reads.
     # Same shape as the WASM: a derived artefact with no freshness check.
-    if "$ROOT/bin/curate/gen_tutorials_guide.py" --check > /tmp/tutg.$$ 2>&1; then
+    if gate_exec "$ROOT/bin/curate/gen_tutorials_guide.py" --check > /tmp/tutg.$$ 2>&1; then
         printf "PASS  %-40s  (%s)\n" "tutorials-guide-gate" "$(tail -1 /tmp/tutg.$$)"
         pass=$((pass+1))
     else
@@ -5265,7 +5531,7 @@ PYEOF
     # the engine is the derived artefact with no freshness check the comment
     # above describes, one guide section inward.  ~1 min: 106 figure points,
     # two probes each.
-    if "$ROOT/bin/curate/gen_sdem_validation.py" --check > /tmp/sdemt.$$ 2>&1; then
+    if gate_exec "$ROOT/bin/curate/gen_sdem_validation.py" --check > /tmp/sdemt.$$ 2>&1; then
         printf "PASS  %-40s  (%s)\n" "sdem-tables-gate" "$(grep -m1 '^gen_sdem_validation: OK' /tmp/sdemt.$$)"
         pass=$((pass+1))
     else
@@ -5281,7 +5547,7 @@ PYEOF
     # design's start-up years), an NPV decomposition held to the engine's own
     # NPVs, and every direction the prose states held to the runs.  ~70 s,
     # almost all of it the basic design's DesignSpec.
-    if "$ROOT/bin/curate/gen_ammonia_stage_comparison.py" --check > /tmp/amst.$$ 2>&1; then
+    if gate_exec "$ROOT/bin/curate/gen_ammonia_stage_comparison.py" --check > /tmp/amst.$$ 2>&1; then
         printf "PASS  %-40s  (%s)\n" "ammonia-stage-comparison-gate" \
             "$(grep -m1 '^gen_ammonia_stage_comparison: OK' /tmp/amst.$$)"
         pass=$((pass+1))
@@ -5299,7 +5565,7 @@ PYEOF
     # the manual's first two citations rendered [79] and [82] (Pedro Mendes,
     # reviewing Choupo-2608, where they read [73] and [76] on printed page 3).
     # The generator reorders by first citation and touches no entry's text.
-    if "$ROOT/bin/curate/gen_theory_bibliography.py" --check > /tmp/thbib.$$ 2>&1; then
+    if gate_exec "$ROOT/bin/curate/gen_theory_bibliography.py" --check > /tmp/thbib.$$ 2>&1; then
         printf "PASS  %-40s  (%s)\n" "theory-bibliography-gate" \
             "$(grep -m1 '^gen_theory_bibliography: OK' /tmp/thbib.$$)"
         pass=$((pass+1))
@@ -5320,7 +5586,7 @@ PYEOF
     # the manuals had no equivalent.  The debt is per CHAPTER (58 of 81
     # equation-bearing chapters cited nothing when it was measured) and the
     # gate RATCHETS it down from a seeded pin list.  Read-only, ~2 s.
-    if "$ROOT/bin/curate/check_theory_citations.py" > /tmp/thcite.$$ 2>&1; then
+    if gate_exec "$ROOT/bin/curate/check_theory_citations.py" > /tmp/thcite.$$ 2>&1; then
         printf "PASS  %-40s  (%s)\n" "check_theory_citations" \
             "$("$ROOT/bin/curate/gate_claim.py" check_theory_citations /tmp/thcite.$$)"
         pass=$((pass+1))
@@ -5349,7 +5615,7 @@ PYEOF
     # -Wmisleading-indentation on unconditional statements that read as
     # guarded.  ~50 s, and it runs only in this gates section: never on a
     # single case, never on --witnesses.
-    if "$ROOT/bin/curate/check_compile_clean.py" > /tmp/ccl.$$ 2>&1; then
+    if gate_exec "$ROOT/bin/curate/check_compile_clean.py" > /tmp/ccl.$$ 2>&1; then
         printf "PASS  %-40s  (%s)\n" "check_compile_clean" "$(tail -1 /tmp/ccl.$$)"
         pass=$((pass+1))
     else
@@ -5359,7 +5625,7 @@ PYEOF
     fi
     rm -f /tmp/ccl.$$
 
-    if "$ROOT/bin/curate/check_lumped_cp_note.py" > /tmp/lcp.$$ 2>&1; then
+    if gate_exec "$ROOT/bin/curate/check_lumped_cp_note.py" > /tmp/lcp.$$ 2>&1; then
         printf "PASS  %-40s  (%s)\n" "check_lumped_cp_note" "$(tail -1 /tmp/lcp.$$)"
         pass=$((pass+1))
     else
@@ -5370,7 +5636,7 @@ PYEOF
     fi
     rm -f /tmp/lcp.$$
 
-    if "$ROOT/bin/curate/check_kremser_inventory.py" > /tmp/kri.$$ 2>&1; then
+    if gate_exec "$ROOT/bin/curate/check_kremser_inventory.py" > /tmp/kri.$$ 2>&1; then
         printf "PASS  %-40s  (%s)\n" "check_kremser_inventory" \
             "$(gate_claim check_kremser_inventory /tmp/kri.$$)"
         pass=$((pass+1))
@@ -5390,7 +5656,7 @@ PYEOF
     # dying since the commit that added them and nothing said so -- no gate
     # builds the guides, and buildSite's refusal only fires when someone runs
     # it.  Running LaTeX here would cost minutes; this is the static half.
-    if "$ROOT/bin/curate/check_guide_environments.py" > /tmp/genv.$$ 2>&1; then
+    if gate_exec "$ROOT/bin/curate/check_guide_environments.py" > /tmp/genv.$$ 2>&1; then
         printf "PASS  %-40s  (%s)\n" "check_guide_environments" "$(tail -1 /tmp/genv.$$)"
         pass=$((pass+1))
     else
@@ -5400,7 +5666,7 @@ PYEOF
     fi
     rm -f /tmp/genv.$$
 
-    if "$ROOT/bin/curate/check_guide_paths.py" > /tmp/gpaths.$$ 2>&1; then
+    if gate_exec "$ROOT/bin/curate/check_guide_paths.py" > /tmp/gpaths.$$ 2>&1; then
         printf "PASS  %-40s  (%s)\n" "check_guide_paths" "$(tail -1 /tmp/gpaths.$$)"
         pass=$((pass+1))
     else
@@ -5411,7 +5677,7 @@ PYEOF
     fi
     rm -f /tmp/gpaths.$$
 
-    if "$ROOT/bin/regen-llm-docs" --check > /tmp/regen.$$ 2>&1; then
+    if gate_exec "$ROOT/bin/regen-llm-docs" --check > /tmp/regen.$$ 2>&1; then
         printf "PASS  %-40s  (%s)\n" "generated-doc-gate" "$(tail -1 /tmp/regen.$$)"
         pass=$((pass+1))
     else
@@ -5427,7 +5693,7 @@ PYEOF
     # runs, so every key it uses is real and every key it omits is optional.
     # Carries a SHRINKING baseline of the disagreements that pre-date it;
     # anything new fails, and so does a baseline line that stops firing.
-    if "$ROOT/bin/curate/check_schema_coverage.py" > /tmp/schcov.$$ 2>&1; then
+    if gate_exec "$ROOT/bin/curate/check_schema_coverage.py" > /tmp/schcov.$$ 2>&1; then
         printf "PASS  %-40s  (%s)\n" "schema-coverage-gate" "$(tail -1 /tmp/schcov.$$)"
         pass=$((pass+1))
     else
@@ -5444,7 +5710,7 @@ PYEOF
     # facts, no ERROR register); a DECLARED one keeps the hard ERROR.
     # Sabotage-verified 2026-08-02: removing the massBalance default fails
     # the DEFAULTS probe by name.
-    if "$ROOT/bin/curate/check_default_reports.py" > /tmp/defrep.$$ 2>&1; then
+    if gate_exec "$ROOT/bin/curate/check_default_reports.py" > /tmp/defrep.$$ 2>&1; then
         printf "PASS  %-40s  (%s)\n" "default-reports-gate" "$(tail -1 /tmp/defrep.$$)"
         pass=$((pass+1))
     else
@@ -5463,7 +5729,7 @@ PYEOF
     # not run guards nothing.
 
     # the salt's solid formation is DERIVED from ions + dissolutionEnthalpy, never stored twice
-    if "$ROOT/bin/curate/check_ion_pins.py" > /tmp/check_ion_pins.$$ 2>&1; then
+    if gate_exec "$ROOT/bin/curate/check_ion_pins.py" > /tmp/check_ion_pins.$$ 2>&1; then
         printf "PASS  %-40s  (%s)\n" "ion-pins-gate" "$(gate_claim check_ion_pins /tmp/check_ion_pins.$$)"
         pass=$((pass+1))
     else
@@ -5474,7 +5740,7 @@ PYEOF
     rm -f /tmp/check_ion_pins.$$
 
     # every structured Joback estimate reproduces its own recipe
-    if "$ROOT/bin/curate/check_estimates.py" > /tmp/check_estimates.$$ 2>&1; then
+    if gate_exec "$ROOT/bin/curate/check_estimates.py" > /tmp/check_estimates.$$ 2>&1; then
         printf "PASS  %-40s  (%s)\n" "estimates-gate" "$(tail -1 /tmp/check_estimates.$$)"
         pass=$((pass+1))
     else
@@ -5491,7 +5757,7 @@ PYEOF
     # TypeScript, and the GUI's tests run on a TRANSCRIPTION because the
     # generated file is a run output: this gate runs the generator and holds
     # that transcription to what the engine actually writes.
-    if "$ROOT/bin/curate/check_estimate_visible.py" > /tmp/estvis.$$ 2>&1; then
+    if gate_exec "$ROOT/bin/curate/check_estimate_visible.py" > /tmp/estvis.$$ 2>&1; then
         printf "PASS  %-40s  (%s)\n" "estimate-visible-gate" "$(head -1 /tmp/estvis.$$)"
         pass=$((pass+1))
     else
@@ -5508,7 +5774,7 @@ PYEOF
     # regexes under a comment saying a second parser would be wrong.  The
     # Explorer therefore told every reader that "no dossier is attached" about
     # components that have three.  Three sabotages; S2 survived twice.
-    if "$ROOT/bin/curate/check_dossier_grammar.py" > /tmp/dossgram.$$ 2>&1; then
+    if gate_exec "$ROOT/bin/curate/check_dossier_grammar.py" > /tmp/dossgram.$$ 2>&1; then
         printf "PASS  %-40s  (%s)\n" "dossier-grammar-gate" "$(head -1 /tmp/dossgram.$$)"
         pass=$((pass+1))
     else
@@ -5523,7 +5789,7 @@ PYEOF
     # killed the script at the invocation, before `rc=$?`.  A student's first
     # typo printed three lines that look like a normal start, then nothing,
     # while the engine's own excellent message sat in the log.
-    if "$ROOT/bin/curate/check_runcase_reports_failure.py" > /tmp/rcfail.$$ 2>&1; then
+    if gate_exec "$ROOT/bin/curate/check_runcase_reports_failure.py" > /tmp/rcfail.$$ 2>&1; then
         printf "PASS  %-40s  (%s)\n" "runcase-reports-failure-gate" "$(head -1 /tmp/rcfail.$$)"
         pass=$((pass+1))
     else
@@ -5539,7 +5805,7 @@ PYEOF
     # engine never sent.  It lost `curation` the day it was published and
     # `headline` for far longer.  The TYPE is the contract; this holds the
     # crossing to it.
-    if "$ROOT/bin/curate/check_operation_result_crossing.py" > /tmp/opcross.$$ 2>&1; then
+    if gate_exec "$ROOT/bin/curate/check_operation_result_crossing.py" > /tmp/opcross.$$ 2>&1; then
         printf "PASS  %-40s  (%s)\n" "operation-result-crossing-gate" "$(head -1 /tmp/opcross.$$)"
         pass=$((pass+1))
     else
@@ -5554,7 +5820,7 @@ PYEOF
     # reached the console, the dossier and the promotable record and NOT the
     # result JSON -- so the GUI could not show it and no golden could pin it:
     # published to a human, pinned by nothing.  This checks the sinks agree.
-    if "$ROOT/bin/curate/check_fit_verdict_channel.py" > /tmp/fitverd.$$ 2>&1; then
+    if gate_exec "$ROOT/bin/curate/check_fit_verdict_channel.py" > /tmp/fitverd.$$ 2>&1; then
         printf "PASS  %-40s  (%s)\n" "fit-verdict-channel-gate" "$(head -1 /tmp/fitverd.$$)"
         pass=$((pass+1))
     else
@@ -5571,7 +5837,7 @@ PYEOF
     # of `provenance {}` and missing the per-value blocks one level deeper.
     # Stated scope "~95 values across 72 files"; recounted, 2207 across 478.
     # The number is DERIVED now and the record must state what the gate finds.
-    if "$ROOT/bin/curate/check_origin_census.py" > /tmp/origcensus.$$ 2>&1; then
+    if gate_exec "$ROOT/bin/curate/check_origin_census.py" > /tmp/origcensus.$$ 2>&1; then
         printf "PASS  %-40s  (%s)\n" "origin-census-gate" "$(head -1 /tmp/origcensus.$$)"
         pass=$((pass+1))
     else
@@ -5592,7 +5858,7 @@ PYEOF
     # docs/, src/, bin/, gui/src/, gui/schemas/ and the root *.md to the
     # census's KNOWN set -- IMPORTED, never copied -- reading each file as one
     # string so a form wrapped across two lines is seen.  Read-only, ~1 s.
-    if "$ROOT/bin/curate/check_origin_vocabulary.py" > /tmp/origvocab.$$ 2>&1; then
+    if gate_exec "$ROOT/bin/curate/check_origin_vocabulary.py" > /tmp/origvocab.$$ 2>&1; then
         printf "PASS  %-40s  (%s)\n" "check_origin_vocabulary" \
             "$("$ROOT/bin/curate/gate_claim.py" check_origin_vocabulary /tmp/origvocab.$$)"
         pass=$((pass+1))
@@ -5609,7 +5875,7 @@ PYEOF
     # pair record into a standards path and exited 0.  The rule has ONE home
     # now and every writer calls it; this recounts the writers and proves both
     # of the guard's rules through the real binary.
-    if "$ROOT/bin/curate/check_standards_write_guard.py" > /tmp/stdwrite.$$ 2>&1; then
+    if gate_exec "$ROOT/bin/curate/check_standards_write_guard.py" > /tmp/stdwrite.$$ 2>&1; then
         printf "PASS  %-40s  (%s)\n" "standards-write-guard-gate" "$(head -1 /tmp/stdwrite.$$)"
         pass=$((pass+1))
     else
@@ -5626,7 +5892,7 @@ PYEOF
     # vocabulary and only one was updated; RegistryRefusal.H says in its own
     # words that it cannot see this class.  This recounts both sides and
     # carries the construct itself as a probe.
-    if "$ROOT/bin/curate/check_model_default_registered.py" > /tmp/mdefault.$$ 2>&1; then
+    if gate_exec "$ROOT/bin/curate/check_model_default_registered.py" > /tmp/mdefault.$$ 2>&1; then
         printf "PASS  %-40s  (%s)\n" "model-default-registered-gate" "$(head -1 /tmp/mdefault.$$)"
         pass=$((pass+1))
     else
@@ -5659,7 +5925,7 @@ PYEOF
 
     # ONE structural guard for the six electrolyte record populations
     # (collapsed from seven clone gates, 2026-08-23 -- same coverage).
-    if "$ROOT/bin/curate/check_electrolyte_records.py" > /tmp/elrec.$$ 2>&1; then
+    if gate_exec "$ROOT/bin/curate/check_electrolyte_records.py" > /tmp/elrec.$$ 2>&1; then
         printf "PASS  %-40s  (%s)\n" "electrolyte-records-gate" "$(tail -1 /tmp/elrec.$$)"
         pass=$((pass+1))
     else
@@ -5670,7 +5936,7 @@ PYEOF
     rm -f /tmp/elrec.$$
 
     # the group-contribution group table
-    if "$ROOT/bin/curate/check_groups.py" > /tmp/check_groups.$$ 2>&1; then
+    if gate_exec "$ROOT/bin/curate/check_groups.py" > /tmp/check_groups.$$ 2>&1; then
         printf "PASS  %-40s  (%s)\n" "groups-gate" "$(gate_claim check_groups /tmp/check_groups.$$)"
         pass=$((pass+1))
     else
@@ -5689,7 +5955,7 @@ PYEOF
     # at all: every slice of the phase work could break it with the whole
     # suite staying green.  Verified by sabotage -- deleting the organic
     # declaration leaves it converging, exit 0, answering a different problem.
-    if "$ROOT/bin/curate/check_flash_complex.py" > /tmp/fcgate.$$ 2>&1; then
+    if gate_exec "$ROOT/bin/curate/check_flash_complex.py" > /tmp/fcgate.$$ 2>&1; then
         printf "PASS  %-40s  (%s)\n" "flashComplex-gate" "$(tail -1 /tmp/fcgate.$$)"
         pass=$((pass+1))
     else
@@ -5706,7 +5972,7 @@ PYEOF
     # sweeps every dict on disk, loaded or not, and it exists because the
     # corpus was SAMPLED once (sixty cases, declared clean) and the full
     # suite then found four more.
-    if "$ROOT/bin/curate/check_duplicate_keys.py" > /tmp/dupkey.$$ 2>&1; then
+    if gate_exec "$ROOT/bin/curate/check_duplicate_keys.py" > /tmp/dupkey.$$ 2>&1; then
         printf "PASS  %-40s  (%s)\n" "duplicate-key-gate" "$(tail -1 /tmp/dupkey.$$)"
         pass=$((pass+1))
     else
@@ -5722,7 +5988,7 @@ PYEOF
     # read from inside the file and `registry()[key] = rec` kept whichever the
     # directory listing reached last.  It is not hypothetical: flash16 with
     # its CO3 formation record duplicated ran to exit 0 and moved the pH.
-    if "$ROOT/bin/curate/check_registry_scan.py" > /tmp/regscan.$$ 2>&1; then
+    if gate_exec "$ROOT/bin/curate/check_registry_scan.py" > /tmp/regscan.$$ 2>&1; then
         printf "PASS  %-40s  (%s)\n" "registry-scan-gate" "$(tail -1 /tmp/regscan.$$)"
         pass=$((pass+1))
     else
@@ -5740,7 +6006,7 @@ PYEOF
     # 333 PASS, and every publish-site run failed at the build step until the
     # failure arrived by EMAIL.  Building both compilers on every slice costs
     # ~8 min of emscripten; this costs a second and catches that shape.
-    if "$ROOT/bin/curate/check_std_includes.py" > /tmp/stdinc.$$ 2>&1; then
+    if gate_exec "$ROOT/bin/curate/check_std_includes.py" > /tmp/stdinc.$$ 2>&1; then
         printf "PASS  %-40s  (%s)\n" "std-include-gate" "$(tail -1 /tmp/stdinc.$$)"
         pass=$((pass+1))
     else
@@ -5757,7 +6023,7 @@ PYEOF
     # and this project stages explicitly (never `git add -A`), so it would
     # simply never be committed.  Both were found by accident; this finds them
     # on purpose.
-    if "$ROOT/bin/curate/check_git_visibility.py" > /tmp/gitvis.$$ 2>&1; then
+    if gate_exec "$ROOT/bin/curate/check_git_visibility.py" > /tmp/gitvis.$$ 2>&1; then
         printf "PASS  %-40s  (%s)\n" "git-visibility-gate" "$(tail -1 /tmp/gitvis.$$)"
         pass=$((pass+1))
     else
@@ -5774,7 +6040,7 @@ PYEOF
     # `evaporativeDryer` was the last unit-op class nobody built.  Aliases
     # need no case of their own (`flash` and `isothermalFlash` are one
     # class); a CLASS with no case at all is the failure.
-    if "$ROOT/bin/curate/check_type_coverage.py" > /tmp/typecov.$$ 2>&1; then
+    if gate_exec "$ROOT/bin/curate/check_type_coverage.py" > /tmp/typecov.$$ 2>&1; then
         printf "PASS  %-40s  (%s)\n" "type-coverage-gate" "$(tail -1 /tmp/typecov.$$)"
         pass=$((pass+1))
     else
@@ -5789,7 +6055,7 @@ PYEOF
     # installed false) or carries an open-licence profile (the synthetic
     # teaching surrogates); a VT-2005 profile anywhere in data/ or tutorials/
     # is redistribution and fails here.
-    if "$ROOT/bin/curate/check_cosmo_scrub.py" > /tmp/csgate.$$ 2>&1; then
+    if gate_exec "$ROOT/bin/curate/check_cosmo_scrub.py" > /tmp/csgate.$$ 2>&1; then
         printf "PASS  %-40s  (%s)\n" "cosmo-scrub-gate" "$(head -1 /tmp/csgate.$$)"
         pass=$((pass+1))
     else
@@ -5802,7 +6068,7 @@ PYEOF
     # Header self-containment gate: every src/**/*.H compiles ALONE with the
     # project flags (g++ -fsyntax-only) -- a header that only works through
     # an accidental transitive include couples the build graph invisibly.
-    if "$ROOT/bin/checkHeaderSelfContained" > /tmp/hscgate.$$ 2>&1; then
+    if gate_exec "$ROOT/bin/checkHeaderSelfContained" > /tmp/hscgate.$$ 2>&1; then
         printf "PASS  %-40s  (%s)\n" "header-selfcontained-gate" "$(tail -1 /tmp/hscgate.$$)"
         pass=$((pass+1))
     else
@@ -5816,7 +6082,7 @@ PYEOF
     # (typed family refs + versioned convention profiles); cross-convention
     # comparisons are curation DIAGNOSTICS, duplicates/contradicted
     # identity are the errors (ADR 2026-07-26).
-    if "$ROOT/bin/curate/check_equilibrium_families.py" > /tmp/efgate.$$ 2>&1; then
+    if gate_exec "$ROOT/bin/curate/check_equilibrium_families.py" > /tmp/efgate.$$ 2>&1; then
         printf "PASS  %-40s  (%s)\n" "equilibrium-family-gate" "$(head -1 /tmp/efgate.$$)"
         grep "\[diagnostic\]" /tmp/efgate.$$ || true
         pass=$((pass+1))
@@ -5832,7 +6098,7 @@ PYEOF
     # (schemaVersion 2 + typed identity), Henry pairs identity-complete,
     # sealed tutorial mirrors re-imported.  The loader's legacy adapter is
     # for OLD EXTERNAL cases only (announced, converted in memory).
-    if "$ROOT/bin/curate/check_legacy_schema.py" > /tmp/lsgate.$$ 2>&1; then
+    if gate_exec "$ROOT/bin/curate/check_legacy_schema.py" > /tmp/lsgate.$$ 2>&1; then
         printf "PASS  %-40s  (%s)\n" "legacy-schema-gate" "$(head -1 /tmp/lsgate.$$)"
         pass=$((pass+1))
     else
@@ -5846,7 +6112,7 @@ PYEOF
     # docs/design/ too -- the one place the 25 other gates never looked, and
     # therefore the place where `role`, a second standard state and six
     # single-valued ceremony fields silently came back on 2026-07-27.
-    if "$ROOT/bin/curate/check_record_form.py" > /tmp/rfgate.$$ 2>&1; then
+    if gate_exec "$ROOT/bin/curate/check_record_form.py" > /tmp/rfgate.$$ 2>&1; then
         printf "PASS  %-40s  (%s)\n" "record-form-gate" "$(tail -1 /tmp/rfgate.$$)"
         grep "still carry" /tmp/rfgate.$$ || true
         pass=$((pass+1))
@@ -5861,7 +6127,7 @@ PYEOF
     # logK -4.059 / dH 158 kJ/mol against siblings at +1.0 / 3-25 kJ/mol,
     # while citing a source that holds +1.106).  INFORMATIONAL: chemistry has
     # real outliers, so this reports for a human eye and never fails.
-    if "$ROOT/bin/curate/check_family_outliers.py" > /tmp/fogate.$$ 2>&1; then
+    if gate_exec "$ROOT/bin/curate/check_family_outliers.py" > /tmp/fogate.$$ 2>&1; then
         printf "PASS  %-40s  (%s)\n" "family-outlier-gate" "$(head -1 /tmp/fogate.$$)"
         grep -E "deserve a human eye|MAD from" /tmp/fogate.$$ || true
         pass=$((pass+1))
@@ -5875,7 +6141,7 @@ PYEOF
     # Composite-limits gate: the composite mixed-solvent electrolyte v1
     # surface must RECOVER its pure constituents at the limits (x_co -> 0,
     # I -> 0, NRTL -> ideal) -- proven on live solver probes, never assumed.
-    if "$ROOT/bin/curate/check_composite_limits.py" > /tmp/clgate.$$ 2>&1; then
+    if gate_exec "$ROOT/bin/curate/check_composite_limits.py" > /tmp/clgate.$$ 2>&1; then
         printf "PASS  %-40s  (%s)\n" "composite-limits-gate" "$(tail -1 /tmp/clgate.$$)"
         pass=$((pass+1))
     else
@@ -5889,7 +6155,7 @@ PYEOF
     # components must agree with the bridges and the chemistry catalogue
     # (a lying fact misclassifies a system silently), and vapour reactions
     # stay off the aqueous records (phase purity, ratified 2026-07-26).
-    if "$ROOT/bin/curate/check_resolver_coherence.py" > /tmp/rcgate.$$ 2>&1; then
+    if gate_exec "$ROOT/bin/curate/check_resolver_coherence.py" > /tmp/rcgate.$$ 2>&1; then
         printf "PASS  %-40s  (%s)\n" "resolver-coherence-gate" "$(head -1 /tmp/rcgate.$$)"
         pass=$((pass+1))
     else
@@ -5903,7 +6169,7 @@ PYEOF
     # -- the student finds a hashed copy of every record the case uses INSIDE
     # the case.  The two live-overlay demos are exempt by design (their lesson
     # IS the un-sealed overlay against the evolving catalogue).
-    if "$ROOT/bin/curate/check_sealed_corpus.py" > /tmp/scgate.$$ 2>&1; then
+    if gate_exec "$ROOT/bin/curate/check_sealed_corpus.py" > /tmp/scgate.$$ 2>&1; then
         printf "PASS  %-40s  (%s)\n" "sealed-corpus-gate" "$(head -1 /tmp/scgate.$$)"
         pass=$((pass+1))
     else
@@ -5920,7 +6186,7 @@ PYEOF
     # basis still runs.  flash15 is `.expect-nonconvergence`, which makes the
     # tutorial sweep SKIP it; without this gate nothing would ever check that
     # the refusal still happens.  A refusal with no test rots.
-    if "$ROOT/bin/curate/check_basis_rank.py" > /tmp/brgate.$$ 2>&1; then
+    if gate_exec "$ROOT/bin/curate/check_basis_rank.py" > /tmp/brgate.$$ 2>&1; then
         printf "PASS  %-40s  (%s)\n" "basis-rank-gate" "$(head -1 /tmp/brgate.$$)"
         pass=$((pass+1))
     else
@@ -5935,7 +6201,7 @@ PYEOF
     # No golden-master KPI can see this -- the two liquids leave as ONE
     # apparent stream, so a case that silently reverted to one liquid would
     # produce byte-identical stream numbers.
-    if "$ROOT/bin/curate/check_two_liquids.py" > /tmp/tlgate.$$ 2>&1; then
+    if gate_exec "$ROOT/bin/curate/check_two_liquids.py" > /tmp/tlgate.$$ 2>&1; then
         printf "PASS  %-40s  (%s)\n" "second-liquid-gate" "$(head -1 /tmp/tlgate.$$)"
         pass=$((pass+1))
     else
@@ -5950,7 +6216,7 @@ PYEOF
     # (charge, network, basis) still fire.  Invisible to a golden master: the
     # projection happens on read, so by the time a KPI sees the case it is an
     # ordinary component-basis stream.
-    if "$ROOT/bin/curate/check_stream_basis.py" > /tmp/sbgate.$$ 2>&1; then
+    if gate_exec "$ROOT/bin/curate/check_stream_basis.py" > /tmp/sbgate.$$ 2>&1; then
         printf "PASS  %-40s  (%s)\n" "stream-basis-gate" "$(head -1 /tmp/sbgate.$$)"
         pass=$((pass+1))
     else
@@ -5966,7 +6232,7 @@ PYEOF
     # mg/L, and eight refusals fire by name.  Invisible to a golden master:
     # the reconciliation happens on READ, so a correction that silently
     # stopped being applied leaves the KPIs where they were.
-    if "$ROOT/bin/curate/check_aqueous_analysis.py" > /tmp/aqagate.$$ 2>&1; then
+    if gate_exec "$ROOT/bin/curate/check_aqueous_analysis.py" > /tmp/aqagate.$$ 2>&1; then
         printf "PASS  %-40s  (%s)\n" "aqueous-analysis-gate" "$(head -1 /tmp/aqagate.$$)"
         pass=$((pass+1))
     else
@@ -5984,7 +6250,7 @@ PYEOF
     # exactly one Choupo symbol, so it cannot reach the equilibrium it feeds.
     # A golden cannot see any of it: the fit happens on read, and an
     # UNWEIGHTED fit passes the corpus at 1e-4 (measured, not assumed).
-    if "$ROOT/bin/curate/check_aqueous_reconciliation.py" > /tmp/aqrgate.$$ 2>&1; then
+    if gate_exec "$ROOT/bin/curate/check_aqueous_reconciliation.py" > /tmp/aqrgate.$$ 2>&1; then
         printf "PASS  %-40s  (%s)\n" "aqueous-reconciliation-gate" "$(head -1 /tmp/aqrgate.$$)"
         pass=$((pass+1))
     else
@@ -5994,7 +6260,7 @@ PYEOF
     fi
     rm -f /tmp/aqrgate.$$
 
-    if "$ROOT/bin/curate/check_element_balance.py" > /tmp/ebgate.$$ 2>&1; then
+    if gate_exec "$ROOT/bin/curate/check_element_balance.py" > /tmp/ebgate.$$ 2>&1; then
         printf "PASS  %-40s  (%s)\n" "element-balance-gate" "$(head -1 /tmp/ebgate.$$)"
         pass=$((pass+1))
     else
@@ -6007,7 +6273,7 @@ PYEOF
     # Ctrl balance-ledger gate: accepted-state integration closes mass+atoms;
     # the elemental and energy claims are honest (withheld/refused with named
     # reasons, never fabricated).
-    if "$ROOT/bin/curate/check_ctrl_balance.py" > /tmp/cbgate.$$ 2>&1; then
+    if gate_exec "$ROOT/bin/curate/check_ctrl_balance.py" > /tmp/cbgate.$$ 2>&1; then
         printf "PASS  %-40s  (%s)\n" "ctrl-balance-gate" "$(head -1 /tmp/cbgate.$$)"
         pass=$((pass+1))
     else
@@ -6021,7 +6287,7 @@ PYEOF
     # the distillation convention) -- and a name that cannot lie.  Four
     # refusals, including the one that matters: a REACTIVE package's machine
     # belongs to the declared formulation, never to the unit.
-    if "$ROOT/bin/curate/check_flash_model.py" > /tmp/fmgate.$$ 2>&1; then
+    if gate_exec "$ROOT/bin/curate/check_flash_model.py" > /tmp/fmgate.$$ 2>&1; then
         printf "PASS  %-40s  (%s)\n" "flash-model-gate" "$(head -1 /tmp/fmgate.$$)"
         pass=$((pass+1))
     else
@@ -6037,7 +6303,7 @@ PYEOF
     # for "VL" -- and "VLLE" contains it, so the second liquid left on the
     # vapour port with vf = 1 and the report booked a 498 kW latent heat that
     # never happened.  The split's kind is now a typed field of the solution.
-    if "$ROOT/bin/curate/check_vlle_fallback.py" > /tmp/vllefb.$$ 2>&1; then
+    if gate_exec "$ROOT/bin/curate/check_vlle_fallback.py" > /tmp/vllefb.$$ 2>&1; then
         printf "PASS  %-40s  (%s)\n" "vlle-fallback-gate" "$(head -1 /tmp/vllefb.$$)"
         pass=$((pass+1))
     else
@@ -6052,7 +6318,7 @@ PYEOF
     # round-off -- and a precipitating crystal, being neutral, may not move it.
     # (The double-counted carbonate proton this catches was invisible to every
     # other check: converged, exit 0, goldens green, scale under-read by 37%.)
-    if "$ROOT/bin/curate/check_charge_balance.py" > /tmp/qgate.$$ 2>&1; then
+    if gate_exec "$ROOT/bin/curate/check_charge_balance.py" > /tmp/qgate.$$ 2>&1; then
         printf "PASS  %-40s  (%s)\n" "charge-balance-gate" "$(head -1 /tmp/qgate.$$)"
         pass=$((pass+1))
     else
@@ -6065,7 +6331,7 @@ PYEOF
     # Asset-home gate (Codex assets-audit, 2026-07-18): a physical asset lives
     # in ONE home (constant/assets/) -- the legacy membranes/ overlay let a
     # sealed case open input its manifest never claimed.
-    if "$ROOT/bin/curate/check_asset_homes.py" > /tmp/assetgate.$$ 2>&1; then
+    if gate_exec "$ROOT/bin/curate/check_asset_homes.py" > /tmp/assetgate.$$ 2>&1; then
         printf "PASS  %-40s  (%s)\n" "asset-home-gate" "$(head -1 /tmp/assetgate.$$)"
         pass=$((pass+1))
     else
@@ -6077,7 +6343,7 @@ PYEOF
 
     # Empty-dir gate (2026-07-18): reachable-closure / methods removals must
     # leave no hollow species/ or parameters/ shells (the importer prunes).
-    if "$ROOT/bin/curate/check_empty_dirs.py" > /tmp/emptygate.$$ 2>&1; then
+    if gate_exec "$ROOT/bin/curate/check_empty_dirs.py" > /tmp/emptygate.$$ 2>&1; then
         printf "PASS  %-40s  (%s)\n" "empty-dir-gate" "$(head -1 /tmp/emptygate.$$)"
         pass=$((pass+1))
     else
@@ -6091,7 +6357,7 @@ PYEOF
     # sha256 vs the LIVE catalogue.  Drift (catalogue evolved under a frozen
     # copy) is REPORTED but passes -- refreshing is a per-case curation act;
     # DAMAGE (a claimed file missing / failing its own manifest hash) FAILS.
-    if "$ROOT/bin/curate/check_seal_drift.py" > /tmp/sealgate.$$ 2>&1; then
+    if gate_exec "$ROOT/bin/curate/check_seal_drift.py" > /tmp/sealgate.$$ 2>&1; then
         printf "PASS  %-40s  (%s)\n" "seal-drift-gate" "$(gate_claim check_seal_drift /tmp/sealgate.$$)"
         pass=$((pass+1))
         if grep -q 'SEAL DRIFT' /tmp/sealgate.$$; then cat /tmp/sealgate.$$; fi
@@ -6106,7 +6372,7 @@ PYEOF
     # source-of-truth counts (generated/releaseInventory.json, consumed by the
     # homepage hero + "What is inside" + /models) must match the current tree --
     # a published release metric may not silently drift.  Regenerate to fix.
-    if "$ROOT/bin/curate/release_inventory.py" --check > /tmp/inventory.$$ 2>&1; then
+    if gate_exec "$ROOT/bin/curate/release_inventory.py" --check > /tmp/inventory.$$ 2>&1; then
         printf "PASS  %-40s  (%s)\n" "release-inventory-gate" "$(head -1 /tmp/inventory.$$)"
         pass=$((pass+1))
     else
@@ -6124,7 +6390,7 @@ PYEOF
     # every data-inv fallback literal in the site sources must equal its
     # artefact value -- the homepage said 284, the releases page said 331,
     # and the tag says 288; neither public number was ever right.
-    if "$ROOT/bin/curate/check_release_identity.py" > /tmp/relid.$$ 2>&1; then
+    if gate_exec "$ROOT/bin/curate/check_release_identity.py" > /tmp/relid.$$ 2>&1; then
         printf "PASS  %-40s  (%s)\n" "release-identity-gate" "$(head -1 /tmp/relid.$$)"
         pass=$((pass+1))
     else
@@ -6140,7 +6406,7 @@ PYEOF
     # project-level "validation deficit" number inherited it.  Recounts the
     # validation-op cases, refuses synthetic anchors, and refuses independence
     # claimed where a case's own header says fit-consistency.
-    if "$ROOT/bin/curate/check_validation_subset.py" > /tmp/valsub.$$ 2>&1; then
+    if gate_exec "$ROOT/bin/curate/check_validation_subset.py" > /tmp/valsub.$$ 2>&1; then
         printf "PASS  %-40s  (%s)\n" "validation-subset-gate" "$(head -1 /tmp/valsub.$$)"
         pass=$((pass+1))
     else
@@ -6157,7 +6423,7 @@ PYEOF
     # lived only in prose, and prose about a number goes stale: this case's
     # own header claimed UNIFAC "T_bubble AAD ~2.6 K" against its output's
     # 0.407 K.  Requires published-implies-pinned and pinned-implies-published.
-    if "$ROOT/bin/curate/check_overlay_aad_pinned.py" > /tmp/aadpin.$$ 2>&1; then
+    if gate_exec "$ROOT/bin/curate/check_overlay_aad_pinned.py" > /tmp/aadpin.$$ 2>&1; then
         printf "PASS  %-40s  (%s)\n" "overlay-aad-gate" "$(gate_claim check_overlay_aad_pinned /tmp/aadpin.$$)"
         pass=$((pass+1))
     else
@@ -6192,7 +6458,7 @@ PYEOF
     # props-op partition is derived from the C++ unit-op registries, not
     # listed anywhere, so a new operation appears in the guide the day its
     # schema does.  Regenerate with bin/curate/props_ops_reference.py.
-    if "$ROOT/bin/curate/props_ops_reference.py" --check > /tmp/propsops.$$ 2>&1; then
+    if gate_exec "$ROOT/bin/curate/props_ops_reference.py" --check > /tmp/propsops.$$ 2>&1; then
         printf "PASS  %-40s  (%s)\n" "props-ops-reference-gate" "$(head -1 /tmp/propsops.$$)"
         pass=$((pass+1))
     else
@@ -6209,7 +6475,7 @@ PYEOF
     # release it does not describe.  Regenerate with
     # bin/curate/guide_version.py (and rebuild the PDFs).
     # Sabotage-verified: bumping CHOUPO_VERSION makes it fail by name.
-    if "$ROOT/bin/curate/guide_version.py" --check > /tmp/gver.$$ 2>&1; then
+    if gate_exec "$ROOT/bin/curate/guide_version.py" --check > /tmp/gver.$$ 2>&1; then
         printf "PASS  %-40s  (%s)\n" "guide-version-gate" "$(head -1 /tmp/gver.$$)"
         pass=$((pass+1))
     else
@@ -6228,7 +6494,7 @@ PYEOF
     # the repository's own PDF was correct.
     # Sabotage-verified with the real stale artefact: dropping the deployed
     # 2607 PDF into docs/ fails by name and reports the version it found.
-    if "$ROOT/bin/curate/check_guide_pdf_version.py" > /tmp/gpdf.$$ 2>&1; then
+    if gate_exec "$ROOT/bin/curate/check_guide_pdf_version.py" > /tmp/gpdf.$$ 2>&1; then
         printf "PASS  %-40s  (%s)\n" "guide-pdf-version-gate" "$(tail -1 /tmp/gpdf.$$)"
         pass=$((pass+1))
     else
@@ -6245,7 +6511,7 @@ PYEOF
     #  shipped PDFs were renders of sources that had since moved.  Every other
     #  manual gate in this suite reads the .tex; the tree ships the .pdf, and
     #  the two are the same claim only while this one holds.
-    if "$ROOT/bin/curate/check_guide_pdf_fresh.py" > /tmp/gfresh.$$ 2>&1; then
+    if gate_exec "$ROOT/bin/curate/check_guide_pdf_fresh.py" > /tmp/gfresh.$$ 2>&1; then
         printf "PASS  %-40s  (%s)\n" "guide-pdf-fresh-gate" "$(tail -1 /tmp/gfresh.$$)"
         pass=$((pass+1))
     else
@@ -6266,7 +6532,7 @@ PYEOF
     #  and requires every curator to state the SCOPE they answer for.
     #  Its arm (c) also holds the guide AUTHOR lists, which had lived in both
     #  files with nothing keeping them equal.
-    if "$ROOT/bin/curate/check_curator_parity.py" > /tmp/curator.$$ 2>&1; then
+    if gate_exec "$ROOT/bin/curate/check_curator_parity.py" > /tmp/curator.$$ 2>&1; then
         printf "PASS  %-40s  (%s)\n" "curator-parity-gate" "$(head -1 /tmp/curator.$$)"
         pass=$((pass+1))
     else
@@ -6288,7 +6554,7 @@ PYEOF
     # was sealed against the 2607 catalogue), not a label, and rewriting it
     # would falsify provenance.  Same string, opposite meaning.
     # Sabotage-verified: restoring one banner to Choupo-2607 fails by name.
-    if "$ROOT/bin/curate/banner_version.py" --check > /tmp/bver.$$ 2>&1; then
+    if gate_exec "$ROOT/bin/curate/banner_version.py" --check > /tmp/bver.$$ 2>&1; then
         printf "PASS  %-40s  (%s)\n" "banner-version-gate" "$(head -1 /tmp/bver.$$)"
         pass=$((pass+1))
     else
@@ -6301,7 +6567,7 @@ PYEOF
     # Adsorption catalogue gate: pair records have one home, declared bases,
     # provenance and an honest quality class.  In particular a historical
     # teaching fit may not masquerade as directly measured literature data.
-    if "$ROOT/bin/curate/check_adsorption_tree.py" > /tmp/adsorption.$$ 2>&1; then
+    if gate_exec "$ROOT/bin/curate/check_adsorption_tree.py" > /tmp/adsorption.$$ 2>&1; then
         printf "PASS  %-40s  (%s)\n" "adsorption-tree-gate" "$(head -1 /tmp/adsorption.$$)"
         pass=$((pass+1))
     else
@@ -6314,7 +6580,7 @@ PYEOF
     # One-enthalpy-surface gate (forum #103/#105): the retired H_stream
     # blend must never re-enter a balance/duty/published .H; the surviving
     # blend is legal only at AUTHORIZED-BLEND loci, LISTED by the gate.
-    if "$ROOT/bin/curate/check_h_surface.py" > /tmp/hsurface.$$ 2>&1; then
+    if gate_exec "$ROOT/bin/curate/check_h_surface.py" > /tmp/hsurface.$$ 2>&1; then
         printf "PASS  %-40s  (%s)\n" "h-surface-gate" "$(head -1 /tmp/hsurface.$$)"
         pass=$((pass+1))
     else
@@ -6323,9 +6589,15 @@ PYEOF
         fail=$((fail+1))
     fi
     rm -f /tmp/hsurface.$$
+    gate_prefetch_close
 fi
 
-for case_dir in "${CASES[@]}"; do
+#  ONE CASE'S CHECK -- run, guards, golden rows, its result lines and its
+#  tally.  The walk below calls it in order, or prints what the pool's call
+#  of it printed (THE CORES, at the top of this file).
+check_case() {
+    local case_dir
+for case_dir in "$1"; do
     name_short=$(basename "$case_dir")
 
     # --- honest opt-outs, classified BEFORE gating ------------------------
@@ -6487,6 +6759,13 @@ for case_dir in "${CASES[@]}"; do
     fi
     done
 done
+}
+
+case_prepass
+for case_dir in "${CASES[@]}"; do
+    walk_case "$case_dir"
+done
+[ -n "$PREPASS_DIR" ] && rm -rf "$PREPASS_DIR"   # the walk has read it
 
 # --- standalone-branch regression (lean-sector-folder promise) ------------------
 #  The lean sector-folder layout PROMISES that any branch of a composite plant can be
@@ -6505,6 +6784,7 @@ if [ "$#" -eq 0 ]; then
     #  written by the loop above; anything the cache lacks they run live.
     #  Their witness and sabotage arms are untouched -- always live.
     [ -n "$SUITE_OUT_DIR" ] && export CHOUPO_SUITE_OUTPUTS="$SUITE_OUT_DIR"
+    gate_prefetch POST
 
     # A model's degenerate limit is the LIMIT: a one-stage absorber/stripper
     # is a flash of its combined feeds, and an absent product contributes
@@ -6515,7 +6795,7 @@ if [ "$#" -eq 0 ]; then
     # and to scale invariance (A8); A7 reads this loop's cached pass, which
     # is why the gate sits here and not with the pre-loop gates.  Measured:
     # ~12 s for A1-A6 alone before; now ~23 s on the cache, ~70 s standalone.
-    if "$ROOT/bin/curate/check_degenerate_limits.py" > /tmp/dgl.$$ 2>&1; then
+    if gate_exec "$ROOT/bin/curate/check_degenerate_limits.py" > /tmp/dgl.$$ 2>&1; then
         printf "PASS  %-40s  (%s)\n" "check_degenerate_limits" \
             "$(gate_claim check_degenerate_limits /tmp/dgl.$$)"
         pass=$((pass+1))
@@ -6531,7 +6811,7 @@ if [ "$#" -eq 0 ]; then
     # nothing while the author believes it did.  `murphreeEficiency` -- one
     # letter short -- ran the column ideal-tray and moved the distillate
     # toluene 2.47 -> 0.94 kmol/h in silence.
-    if "$ROOT/bin/curate/check_unread_keys.py" > /tmp/unread.$$ 2>&1; then
+    if gate_exec "$ROOT/bin/curate/check_unread_keys.py" > /tmp/unread.$$ 2>&1; then
         printf "PASS  %-40s  (%s)\n" "unread-keys-gate" "$(tail -1 /tmp/unread.$$)"
         pass=$((pass+1))
     else
@@ -6545,7 +6825,7 @@ if [ "$#" -eq 0 ]; then
     # layer out.  `targetYearCEPCI 800;` in a `costing {}` block priced a
     # plant at the DEFAULT index of 820 -- 2.5 % of the capital cost, on a
     # number the author believed they had set, with nothing saying otherwise.
-    if "$ROOT/bin/curate/check_postdict_audit.py" > /tmp/pdaudit.$$ 2>&1; then
+    if gate_exec "$ROOT/bin/curate/check_postdict_audit.py" > /tmp/pdaudit.$$ 2>&1; then
         printf "PASS  %-40s  (%s)\n" "postdict-audit-gate" "$(tail -1 /tmp/pdaudit.$$)"
         pass=$((pass+1))
     else
@@ -6560,7 +6840,7 @@ if [ "$#" -eq 0 ]; then
     # printed coefficients alone -- which is what a student under questioning
     # would do, and what catches a block that prints too few digits to
     # reproduce (2.25 -> "2.2" puts the reader 2.6 % out and blames them).
-    if "$ROOT/bin/curate/check_cost_provenance.py" > /tmp/costprov.$$ 2>&1; then
+    if gate_exec "$ROOT/bin/curate/check_cost_provenance.py" > /tmp/costprov.$$ 2>&1; then
         printf "PASS  %-40s  (%s)\n" "cost-provenance-gate" "$(tail -1 /tmp/costprov.$$)"
         pass=$((pass+1))
     else
@@ -6577,7 +6857,7 @@ if [ "$#" -eq 0 ]; then
     # refusals fire by name, an absent block is silent, and the cash flow
     # has one home in EconomicsPass.cpp (a source arm: a correct second copy
     # is invisible to every output).
-    if "$ROOT/bin/curate/check_economic_sensitivity.py" > /tmp/econsens.$$ 2>&1; then
+    if gate_exec "$ROOT/bin/curate/check_economic_sensitivity.py" > /tmp/econsens.$$ 2>&1; then
         printf "PASS  %-40s  (%s)\n" "economic-sensitivity-gate" "$(tail -1 /tmp/econsens.$$)"
         pass=$((pass+1))
     else
@@ -6597,7 +6877,7 @@ if [ "$#" -eq 0 ]; then
     # refusals fire by name, an absent block is silent, the witness's golden
     # pins every financing KPI, the .ods sheet and the printed schedule agree
     # with the JSON, and the loan's arithmetic lives inside appraise().
-    if "$ROOT/bin/curate/check_debt_financing.py" > /tmp/debtfin.$$ 2>&1; then
+    if gate_exec "$ROOT/bin/curate/check_debt_financing.py" > /tmp/debtfin.$$ 2>&1; then
         printf "PASS  %-40s  (%s)\n" "debt-financing-gate" "$(gate_claim check_debt_financing /tmp/debtfin.$$)"
         pass=$((pass+1))
     else
@@ -6614,7 +6894,7 @@ if [ "$#" -eq 0 ]; then
     # through the real reader; the zone, downwind, dead-rule and outside-area
     # announcements recompute; the draft tool never overwrites without
     # --force and its proposal checks clean; an absent layout is silent.
-    if "$ROOT/bin/curate/check_plant_layout.py" > /tmp/plantlayout.$$ 2>&1; then
+    if gate_exec "$ROOT/bin/curate/check_plant_layout.py" > /tmp/plantlayout.$$ 2>&1; then
         printf "PASS  %-40s  (%s)\n" "plant-layout-gate" "$(gate_claim check_plant_layout /tmp/plantlayout.$$)"
         pass=$((pass+1))
     else
@@ -6631,7 +6911,7 @@ if [ "$#" -eq 0 ]; then
     # probe (no finding) and twelve probes built to fire each rule; seventeen
     # refusals through the real reader; absence is silence; the building
     # rows are pinned by the `layout` golden kind.
-    if "$ROOT/bin/curate/check_gmp_layout.py" > /tmp/gmplayout.$$ 2>&1; then
+    if gate_exec "$ROOT/bin/curate/check_gmp_layout.py" > /tmp/gmplayout.$$ 2>&1; then
         printf "PASS  %-40s  (%s)\n" "gmp-layout-gate" "$(gate_claim check_gmp_layout /tmp/gmplayout.$$)"
         pass=$((pass+1))
     else
@@ -6649,7 +6929,7 @@ if [ "$#" -eq 0 ]; then
     # the vessels, scaled quotes and economics that read it follow it; the
     # findings reach three surfaces; fourteen refusals name their defect;
     # absence is silence; the `batch` golden kind reads the block.
-    if "$ROOT/bin/curate/check_batch_plan.py" > /tmp/batchplan.$$ 2>&1; then
+    if gate_exec "$ROOT/bin/curate/check_batch_plan.py" > /tmp/batchplan.$$ 2>&1; then
         printf "PASS  %-40s  (%s)\n" "batch-plan-gate" "$(gate_claim check_batch_plan /tmp/batchplan.$$)"
         pass=$((pass+1))
     else
@@ -6667,7 +6947,7 @@ if [ "$#" -eq 0 ]; then
     # Class 5, so the wrong branch was never reached and no golden could see
     # it.  The gate holds ONE home against the engine, against the doc table,
     # and against the monotonicity the inversion violated.
-    if "$ROOT/bin/curate/check_estimate_class.py" > /tmp/estclass.$$ 2>&1; then
+    if gate_exec "$ROOT/bin/curate/check_estimate_class.py" > /tmp/estclass.$$ 2>&1; then
         printf "PASS  %-40s  (%s)\n" "estimate-class-gate" "$(tail -1 /tmp/estclass.$$)"
         pass=$((pass+1))
     else
@@ -6682,7 +6962,7 @@ if [ "$#" -eq 0 ]; then
     # DATA from the flatten seam, never recovered by splitting a dotted name --
     # and a flat case must be left exactly as it was, with no invented root
     # section.  The subtotals are recomputed here from costs.csv's own rows.
-    if "$ROOT/bin/curate/check_sector_hierarchy.py" > /tmp/sectorh.$$ 2>&1; then
+    if gate_exec "$ROOT/bin/curate/check_sector_hierarchy.py" > /tmp/sectorh.$$ 2>&1; then
         printf "PASS  %-40s  (%s)\n" "sector-hierarchy-gate" "$(tail -1 /tmp/sectorh.$$)"
         pass=$((pass+1))
     else
@@ -6699,7 +6979,7 @@ if [ "$#" -eq 0 ]; then
     # one that reads a report this writer does not produce: each sheet's port
     # mass flows must sum to the unit's row in massBalance_byUnit.csv, which is
     # what caught a first draft computing the port mass without the crystals.
-    if "$ROOT/bin/curate/check_design_sheet.py" > /tmp/designsheet.$$ 2>&1; then
+    if gate_exec "$ROOT/bin/curate/check_design_sheet.py" > /tmp/designsheet.$$ 2>&1; then
         printf "PASS  %-40s  (%s)\n" "design-sheet-gate" "$(tail -1 /tmp/designsheet.$$)"
         pass=$((pass+1))
     else
@@ -6720,7 +7000,7 @@ if [ "$#" -eq 0 ]; then
     # file carries is CONDITIONED on whether that unit reads one; a wrong
     # stage count and an orphan record both REFUSE by name; the retired
     # top-level `internalStates/` view exists nowhere, tree, source or docs.
-    if "$ROOT/bin/curate/check_internal_states.py" > /tmp/internalstates.$$ 2>&1; then
+    if gate_exec "$ROOT/bin/curate/check_internal_states.py" > /tmp/internalstates.$$ 2>&1; then
         printf "PASS  %-40s  (%s)\n" "internal-states-gate" "$(tail -1 /tmp/internalstates.$$)"
         pass=$((pass+1))
     else
@@ -6735,7 +7015,7 @@ if [ "$#" -eq 0 ]; then
     # -- the published-implies-pinned rule, applied to the block that shipped
     # a day ahead of the kind that reads it.  A sweep with no golden is
     # excused BY NAME (which point is the answer is RESERVED, task #77).
-    if "$ROOT/bin/curate/check_equipment_pinned.py" > /tmp/equippin.$$ 2>&1; then
+    if gate_exec "$ROOT/bin/curate/check_equipment_pinned.py" > /tmp/equippin.$$ 2>&1; then
         printf "PASS  %-40s  (%s)\n" "equipment-pinned-gate" "$(gate_claim check_equipment_pinned /tmp/equippin.$$)"
         pass=$((pass+1))
     else
@@ -6751,7 +7031,7 @@ if [ "$#" -eq 0 ]; then
     # API 520 Examples 1, 2 and 5), the green-ammonia basic design's valves
     # recompute from their own published inputs and stay uncosted, and the
     # refusals fire by name on a small fixture.
-    if "$ROOT/bin/curate/check_relief_valve.py" > /tmp/reliefvalve.$$ 2>&1; then
+    if gate_exec "$ROOT/bin/curate/check_relief_valve.py" > /tmp/reliefvalve.$$ 2>&1; then
         printf "PASS  %-40s  (%s)\n" "relief-valve-gate" "$(gate_claim check_relief_valve /tmp/reliefvalve.$$)"
         pass=$((pass+1))
     else
@@ -6766,7 +7046,7 @@ if [ "$#" -eq 0 ]; then
     # EduTool's (a probe reproduces every example its TypeScript test pins),
     # the green-ammonia witness's tankFarm bund is those pins and its golden,
     # and PlantLayout.cpp calls the header rather than a copy of it.
-    if "$ROOT/bin/curate/check_bund_arithmetic.py" > /tmp/bundarith.$$ 2>&1; then
+    if gate_exec "$ROOT/bin/curate/check_bund_arithmetic.py" > /tmp/bundarith.$$ 2>&1; then
         printf "PASS  %-40s  (%s)\n" "bund-arithmetic-gate" "$(gate_claim check_bund_arithmetic /tmp/bundarith.$$)"
         pass=$((pass+1))
     else
@@ -6787,7 +7067,7 @@ if [ "$#" -eq 0 ]; then
     # admissible diameter re-bracketed per bed and end to end at two other
     # diameters; the DesignSpec's `largestOf` on a two-bed fixture.  Ten
     # by-hand sabotages, all caught.
-    if "$ROOT/bin/curate/check_converter_shell.py" > /tmp/convshell.$$ 2>&1; then
+    if gate_exec "$ROOT/bin/curate/check_converter_shell.py" > /tmp/convshell.$$ 2>&1; then
         printf "PASS  %-40s  (%s)\n" "converter-shell-gate" "$(gate_claim check_converter_shell /tmp/convshell.$$)"
         pass=$((pass+1))
     else
@@ -6801,7 +7081,7 @@ if [ "$#" -eq 0 ]; then
     # the energyBalance report decides now travels on the result as
     # `globalEnergyBoundary`; every steady case that publishes it pins its
     # three terms, and every pinned row is still published.
-    if "$ROOT/bin/curate/check_energy_boundary_pinned.py" > /tmp/ebpin.$$ 2>&1; then
+    if gate_exec "$ROOT/bin/curate/check_energy_boundary_pinned.py" > /tmp/ebpin.$$ 2>&1; then
         printf "PASS  %-40s  (%s)\n" "energy-boundary-pinned-gate" "$(tail -1 /tmp/ebpin.$$)"
         pass=$((pass+1))
     else
@@ -6821,7 +7101,7 @@ if [ "$#" -eq 0 ]; then
     # published answers, which is a curation decision and reserved.  What is
     # not deferred is the ratchet: a new case may not join the list quietly,
     # and a pinned one may not get worse.  Three sabotages.
-    if "$ROOT/bin/curate/check_impossible_phase_pins.py" > /tmp/impphase.$$ 2>&1; then
+    if gate_exec "$ROOT/bin/curate/check_impossible_phase_pins.py" > /tmp/impphase.$$ 2>&1; then
         printf "PASS  %-40s  (%s)\n" "impossible-phase-pins" "$(head -1 /tmp/impphase.$$)"
         pass=$((pass+1))
     else
@@ -6839,7 +7119,7 @@ if [ "$#" -eq 0 ]; then
     # gets one fails by name.  Built after Vitor found a 113 % closure on the
     # live site: a spray dryer creating 2948 kg/h of water, on a case whose
     # outer driver switched the one instrument that would have caught it off.
-    if "$ROOT/bin/curate/check_mass_closure.py" > /tmp/massclos.$$ 2>&1; then
+    if gate_exec "$ROOT/bin/curate/check_mass_closure.py" > /tmp/massclos.$$ 2>&1; then
         printf "PASS  %-40s  (%s)\n" "mass-closure-gate" "$(tail -1 /tmp/massclos.$$)"
         pass=$((pass+1))
     else
@@ -6857,7 +7137,7 @@ if [ "$#" -eq 0 ]; then
     #  plants that do not close today and a ratchet so a declared debt cannot
     #  grow quietly.  Beside the mass gate because the two answer the same
     #  question about two different conserved quantities.
-    if "$ROOT/bin/curate/check_energy_closure.py" > /tmp/energyclos.$$ 2>&1; then
+    if gate_exec "$ROOT/bin/curate/check_energy_closure.py" > /tmp/energyclos.$$ 2>&1; then
         printf "PASS  %-40s  (%s)\n" "energy-closure-gate" "$(tail -1 /tmp/energyclos.$$)"
         pass=$((pass+1))
     else
@@ -6876,7 +7156,7 @@ if [ "$#" -eq 0 ]; then
     #  elementBalance, every element, a measured pin ledger that ratchets both
     #  ways.  It found 16 of 210 outside the band, 14 of them membrane cases --
     #  a FAMILY, not a scatter.
-    if "$ROOT/bin/curate/check_element_closure.py" > /tmp/elemclos.$$ 2>&1; then
+    if gate_exec "$ROOT/bin/curate/check_element_closure.py" > /tmp/elemclos.$$ 2>&1; then
         printf "PASS  %-40s  (%s)\n" "element-closure-gate" "$(tail -1 /tmp/elemclos.$$)"
         pass=$((pass+1))
     else
@@ -6897,7 +7177,7 @@ if [ "$#" -eq 0 ]; then
     #  -12.70 kW now).  The tag is applied only symmetrically, the run
     #  ANNOUNCES where it was ignored, and this holds both halves.  Found by
     #  Vitor, reading the panel and asking whether it looked right.
-    if "$ROOT/bin/curate/check_utility_tag_symmetry.py" > /tmp/utilsym.$$ 2>&1; then
+    if gate_exec "$ROOT/bin/curate/check_utility_tag_symmetry.py" > /tmp/utilsym.$$ 2>&1; then
         printf "PASS  %-40s  (%s)\n" "utility-tag-symmetry-gate" "$(tail -1 /tmp/utilsym.$$)"
         pass=$((pass+1))
     else
@@ -6915,7 +7195,7 @@ if [ "$#" -eq 0 ]; then
     # from a different toolchain.  Local clang reports the family as a
     # warning; this promotes it to an error.  NOT a replacement for
     # `make wasm`.
-    if "$ROOT/bin/curate/check_wasm_dialect.py" > /tmp/wasmdia.$$ 2>&1; then
+    if gate_exec "$ROOT/bin/curate/check_wasm_dialect.py" > /tmp/wasmdia.$$ 2>&1; then
         printf "PASS  %-40s  (%s)\n" "wasm-dialect-gate" "$(tail -1 /tmp/wasmdia.$$)"
         pass=$((pass+1))
     else
@@ -6928,7 +7208,7 @@ if [ "$#" -eq 0 ]; then
     # Model-boundary ledger gate (2026-08-12): the ledger's three quantities
     # live in a top-level `energyClosures` array; published => pinned AND
     # pinned => published.
-    if "$ROOT/bin/curate/check_closure_ledger_pinned.py" > /tmp/clopin.$$ 2>&1; then
+    if gate_exec "$ROOT/bin/curate/check_closure_ledger_pinned.py" > /tmp/clopin.$$ 2>&1; then
         printf "PASS  %-40s  (%s)\n" "closure-ledger-gate" "$(grep -m1 ': OK' /tmp/clopin.$$)"
         pass=$((pass+1))
     else
@@ -6941,7 +7221,7 @@ if [ "$#" -eq 0 ]; then
     # Utility-allocation gate (2026-08-12): `pickForDuty`'s choice, kg/s and
     # eur/h ride a top-level `utilityAllocation` array; published => pinned
     # AND pinned => published.
-    if "$ROOT/bin/curate/check_utility_allocation_pinned.py" > /tmp/utilpin.$$ 2>&1; then
+    if gate_exec "$ROOT/bin/curate/check_utility_allocation_pinned.py" > /tmp/utilpin.$$ 2>&1; then
         printf "PASS  %-40s  (%s)\n" "utility-allocation-gate" "$(grep -m1 ': OK' /tmp/utilpin.$$)"
         pass=$((pass+1))
     else
@@ -6956,7 +7236,7 @@ if [ "$#" -eq 0 ]; then
     # => pinned AND pinned => published, plus the two arms that require each
     # BLOCK to reproduce the KPI its aggregate is mirrored into (which is why
     # no `ledger` row duplicates the energy total -- see get_ledger).
-    if "$ROOT/bin/curate/check_campaign_ledger_pinned.py" > /tmp/camlpin.$$ 2>&1; then
+    if gate_exec "$ROOT/bin/curate/check_campaign_ledger_pinned.py" > /tmp/camlpin.$$ 2>&1; then
         printf "PASS  %-40s  (%s)\n" "campaign-ledger-gate" \
             "$("$ROOT/bin/curate/gate_claim.py" check_campaign_ledger_pinned < /tmp/camlpin.$$)"
         pass=$((pass+1))
@@ -6967,6 +7247,7 @@ if [ "$#" -eq 0 ]; then
     fi
     rm -f /tmp/camlpin.$$
     unset CHOUPO_SUITE_OUTPUTS
+    gate_prefetch_close
 
     branch="tutorials/plant/ChemicalPlantTutorial/FERMENTATION"
     if [ -f "$branch/flowsheetDict" ]; then
@@ -7134,6 +7415,7 @@ if [ "$expected_fail" -gt 0 ]; then
     echo "EXPECTED-FAIL (deliberate teaching non-convergence):"
     for n in "${EF_NAMES[@]}"; do echo "    - $n"; done
 fi
+pool_times_commit
 echo "PASS $pass / FAIL $fail / KNOWN-BROKEN $known_broken / EXPECTED-FAIL $expected_fail"
 #  WHAT THAT NUMBER MEANS (G2, 2026-08-05).  Almost every case above compares
 #  against a golden Choupo recorded itself, so a PASS proves the answer has NOT
