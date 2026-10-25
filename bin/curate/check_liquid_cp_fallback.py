@@ -132,9 +132,18 @@ def result_json(text):
 def probe(tmp, record_text, comps):
     """A minimal STEADY case whose one unit reaches the SENSIBLE liquid leg.
 
-    A `valve` is the exerciser, and the choice matters: it calls
-    `ThermoPackage::Hliquid` unconditionally (Valve.cpp, `Hin`), which is the
-    leg this gate is about.  The first probe written here used a props
+    A `pump` is the exerciser, and the choice matters: on a package with no
+    pure-fluid route it takes its liquid Cp as a finite difference of
+    `ThermoPackage::Hliquid` unconditionally (Pump.cpp, `Cp_liq`), which is
+    the leg this gate is about.  IT WAS A `valve` UNTIL 2026-10-25, and the
+    valve stopped reaching this leg on 2026-10-11: DEV.md 4c C65 item d moved
+    both of its ends onto `flashState::priceState` -- the FORMATION leg the
+    report prices on -- so the probe went on running, on the other leg, and
+    this gate stayed red on A1/A3/A5 for two weeks while the leg it names was
+    as correct as ever.  A probe whose exerciser is a unit's private choice of
+    surface goes stale the day that unit is put on the report's surface;
+    when it moves again, find the next unit that still calls `Hliquid`
+    (`grep -n 'Hliquid(' src/unitOperations`).  The first probe written here used a props
     `propertyPoint` and its `H_real`, which routes through the FORMATION leg
     (`speciesPhaseEnthalpy`) instead -- so it exercised the leg that was
     already correct, and reported green on the nonvolatile refusal by simply
@@ -157,13 +166,13 @@ def probe(tmp, record_text, comps):
                            comps[0] + ".dat"), "w") as fh:
         fh.write(record_text)
     with open(os.path.join(tmp, "system", "flowsheetDict"), "w") as fh:
-        fh.write("units ( { name v; type valve; in feed; outputs ( out );"
-                 " operation { P 1.0 bar; } } );\n")
+        fh.write("units ( { name p; type pump; in feed; outputs ( out );"
+                 " operation { dP 1.0 bar; eta 0.7; } } );\n")
     flows = "\n".join("    %s 1.0 kmol/h;" % c for c in comps)
     with open(os.path.join(tmp, "0", "feed"), "w") as fh:
         fh.write("componentMolarFlows\n{\n%s\n}\n\nT 330 K;\nP 5 bar;\n" % flows)
     with open(os.path.join(tmp, "0", "out"), "w") as fh:
-        fh.write("componentMolarFlows\n{\n%s\n}\n\nT 330 K;\nP 1 bar;\n" % flows)
+        fh.write("componentMolarFlows\n{\n%s\n}\n\nT 330 K;\nP 6 bar;\n" % flows)
     return run(tmp)
 
 
@@ -179,6 +188,7 @@ Pc          40.0;
 omega       0.1;
 Tb          200.0;
 HvapTb      12000.0;
+Vliq        3.0e-5;   // the pump exerciser refuses a component with no Vliq
 {role}
 vaporPressure {{ model Antoine; coefficients (5.0 1500.0 -30.0); Trange (150 290); }}
 {cpig}
@@ -255,7 +265,12 @@ try:
                      " liquidHeatCapacity returned a liquid enthalpy instead"
                      " of refusing -- the ideal-gas reference is forbidden for"
                      " a nonvolatile (settled 2026-06-29)")
-    elif "nonvolatile" not in out:
+    #  THE REFUSAL'S OWN WORDS, not the bare word: the run also prints a
+    #  `[volatility] ... modelled nonvolatile (K = 0)` advisory about the same
+    #  component, so `"nonvolatile" in out` held on a NEIGHBOUR's evidence
+    #  whatever the refusal said (found 2026-10-25, when the pump probe first
+    #  reached this refusal again).
+    elif "`role nonvolatile;`" not in out:
         fails.append("A3: the nonvolatile refusal does not name the role, so"
                      " a reader cannot tell it apart from a plain missing-data"
                      " refusal and will add the wrong block")
