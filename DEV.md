@@ -1618,9 +1618,26 @@ accepts today, and that is a policy call.
 > (`letdown01` 0/RawLiquid + 0/Purge, `letdown02` purge + liquidLP); they
 > are re-copied, no golden moved.  Validated: `--gui` 35/0 (6228 tests),
 > the four cases, check_relief_valve, check_cost_provenance,
-> check_design_sheet, the generated artefacts.  OPEN: the R01 design-
-> pressure branch (`claude/c150-r01-design-pressure`, 285 rows in 5
-> cases) must be rebased onto this before its rows are reviewed; waves 2-3.
+> check_design_sheet, the generated artefacts.  R01 LANDED 2026-10-25,
+> on the commander's delegated authority on goldens: `pressureDesign` is
+> derived on GAUGE by max(1.1 x Pg, Pg + 1.7 bar), the Design Guide's
+> preliminary rule, in five plant cases (it had been 1.1 x the ABSOLUTE
+> pressure, one bar of atmosphere in every margin; every consumer reads it
+> as gauge).  285 rows moved, exactly the prepared list (same keys; values
+> within 1.4e-7 of it, the C131 mixer's drift), updated row by row:
+> design pressures, walls, weights, costs, relief set pressures and areas,
+> economics (FCI -0.07 % PEQ, -0.16 % 150 bar; the acetic low-pressure
+> items rise 2 -> 3 bar g on the +1.7 bar floor).  greenAmmonia03's README
+> re-read (166 bar g, 147 mm, 175 t, the psv table) and the one-shell
+> comparison re-measured by a probe (unchanged at its precision); the
+> stage comparison regenerated.  NOT touched, Vitor's call: ammonia02,
+> ammonia03, ammoniaReactor03/04 (220 = "200 bar loop + 10 %", the same
+> derivation).  Riding with it: C152 had left three lesson citations
+> stale (bin/runCase, FitParameters.cpp); remapped by the diff's line map.
+> Validated: the five cases, check_converter_shell, check_relief_valve,
+> check_design_sheet, check_cost_provenance, check_economic_sensitivity,
+> `--gui` 34/1 with the one failure (those citations) fixed and its four
+> test files re-run 301/301, the generated artefacts.  OPEN: waves 2-3.
 
 > **C149. THE RESULTS A RESEARCHER RECEIVES: PLOTS FIRST, AND FITTING A
 > MEMBRANE TO HIS OWN DATA (Vitor, 2026-10-24, with screenshots of the live
