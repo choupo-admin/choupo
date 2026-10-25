@@ -60,6 +60,7 @@ import { resolveAdapter } from "../adapters/index.js";
 import type { RunResult } from "../adapters/SolverAdapter.js";
 import type { CaseFiles } from "./types.js";
 import { filesToCaseFiles, tutorialByName } from "../cases/tutorials.js";
+import { usePublishCaveats } from "./engineCaveats.js";
 
 /** One knob: replace the numeric value of `key ...;` in `file`.
  *  `key` is the dict key as written (e.g. "merkelNumber", "T", "water");
@@ -313,6 +314,9 @@ export function useCaseFilesRun(
     // closure itself is NOT a dependency, so callers may build it inline.
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [buildKey, build === null, binary]);
+  //  The engine's own caveats on this run reach the tool frame (DEV.md 4c
+  //  C112, point 17): case/engineCaveats.ts.
+  usePublishCaveats([result]);
   return { result, err, busy, log };
 }
 
@@ -408,5 +412,6 @@ export function useMethodRunSweep(
     // sweepKey is the change signal for the override sets (see useMethodRun).
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [witness, sweepKey, binary]);
+  usePublishCaveats(state.results);
   return state;
 }

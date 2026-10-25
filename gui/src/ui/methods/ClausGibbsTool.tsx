@@ -217,8 +217,9 @@ export const CLAUS_STEPS = [
     n: 7,
     title: "The 2 : 1, and what set it",
     body: "Look at H₂S and SO₂ in the boiler: 2.783 % and 1.392 %, a ratio "
-      + "of 1.999270.  Every Claus plant in the world is controlled to keep "
-      + "that ratio at 2 : 1, because it is the stoichiometry the catalytic "
+      + "of 1.999270.  A conventional Claus plant is controlled to keep "
+      + "that ratio at 2 : 1 (some tail-gas variants deliberately run an "
+      + "excess of H₂S instead), because it is the stoichiometry the catalytic "
       + "beds need — and it is controlled with the AIR RATE, which is "
       + "exactly what fixed it here.  The ratio was never entered as a "
       + "ratio, but it did not fall out of the minimisation either: with "

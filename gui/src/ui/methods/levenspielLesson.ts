@@ -123,8 +123,9 @@ V_\mathrm{CSTR} &= \frac{F_{A0}\, X_\mathrm{exit}}{\left.(-r_A)\right|_\mathrm{e
     n: 3,
     title: "Ordinary kinetics: the rectangle swallows the area",
     body: "For a rate that falls as the reactant is consumed — any positive "
-      + "order in that reactant, which is most of what you meet — 1/(−r_A) "
-      + "RISES with X.  The exit ordinate is then the highest one on the "
+      + "order in that reactant at a FIXED temperature, which is most of what "
+      + "you meet (an adiabatic exothermic reactor heats up as it converts, "
+      + "and its rate can rise instead) — 1/(−r_A) RISES with X.  The exit ordinate is then the highest one on the "
       + "whole interval, so the rectangle drawn at that height contains the "
       + "entire area beneath the curve.  Same feed, same chemistry, same "
       + "conversion: the stirred tank needs the larger volume, and the "
@@ -145,9 +146,9 @@ V_\mathrm{CSTR} &= \frac{F_{A0}\, X_\mathrm{exit}}{\left.(-r_A)\right|_\mathrm{e
     ],
     note: "The same reading explains tanks in SERIES.  Each tank is its own "
       + "rectangle standing on the previous tank's conversion, so N tanks are "
-      + "a staircase of rectangles over one curve — always more than the "
-      + "area, but less than one big tank, and closing on the area as N "
-      + "grows.  An infinite chain of stirred tanks is a plug-flow reactor, "
+      + "a staircase of rectangles over one curve — where the curve rises, "
+      + "more than the area but less than one big tank, closing on the area "
+      + "as N grows.  An infinite chain of stirred tanks is a plug-flow reactor, "
       + "which is this same statement said twice.",
   },
   {

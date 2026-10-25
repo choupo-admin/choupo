@@ -128,6 +128,7 @@ import {
 import { IconBook, IconExternalLink, IconSearch } from "@tabler/icons-react";
 import { ChapterIndex } from "./methods/ChapterIndex.js";
 import { OriginLegend, OriginMark } from "./methods/origin.js";
+import { EngineCaveats } from "./methods/EngineCaveats.js";
 import { EduToolsFind, openEduToolsFind } from "./methods/EduToolsFind.js";
 
 import { resolveAdapter } from "../adapters/index.js";
@@ -486,6 +487,11 @@ export function MethodsWorkspace() {
           word means.  Every result panel inside the tool carries its own
           OriginMark; tests/methodOrigins.test.ts holds the two together. */}
       <OriginLegend origins={active.origins} />
+      {/* The engine's own warnings on the runs behind this page -- a model
+          used outside its validity when a knob reaches an extreme, in the
+          engine's words (DEV.md 4c C112, point 17).  Drawn only when there
+          is something to say. */}
+      <EngineCaveats />
       {/* "Find in EduTools" -- drawn once here, opened from the Find button
           on the line above and from the tab's Tool menu (DEV.md 4c C113). */}
       <EduToolsFind />

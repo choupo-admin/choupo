@@ -162,3 +162,25 @@ License
   color: light-dark(var(--mantine-color-white), var(--mantine-color-dark-8));
   background: var(--choupo-solving-ink);
 }
+
+/* ---------------------------------------------------------------------------
+   AN EDUTOOL READOUT IS NEVER CUT SHORT (DEV.md 4c C112, point 19).  Mantine
+   draws a Badge on one line and ELIDES what does not fit; the EduTools put
+   NUMBERS in badges ("... IT SAYS 512.2 K"), and at 390 px a phone cut that
+   one to "... IT SAYS 51..." (measured on thermometer-trust).  Inside a tool
+   page a badge may wrap instead: a badge that fits is drawn exactly as
+   before (one line, its own height); one that does not grows a line rather
+   than losing its number.  Scoped to [data-method-tool], the EduTools body,
+   so no other surface changes. */
+[data-method-tool] .mantine-Badge-root {
+  height: auto;
+  min-height: var(--badge-height);
+  max-width: 100%;
+}
+[data-method-tool] .mantine-Badge-label {
+  white-space: normal;
+  overflow: visible;
+  text-overflow: clip;
+  overflow-wrap: anywhere;
+  line-height: 1.25;
+}

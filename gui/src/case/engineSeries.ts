@@ -75,6 +75,7 @@ import { useEffect, useRef, useState } from "react";
 import { resolveAdapter } from "../adapters/index.js";
 import type { RunResult } from "../adapters/SolverAdapter.js";
 import { methodCase, type DictOverride } from "./methodRun.js";
+import { usePublishCaveats } from "./engineCaveats.js";
 
 /** One point of a series: the overrides that pose it, plus a label the caller
  *  can use to say which point failed. */
@@ -184,5 +185,7 @@ export function useEngineSeries(
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [witness, seriesKey, binary]);
 
+  //  The engine's own caveats reach the tool frame (DEV.md 4c C112, 17).
+  usePublishCaveats(state.results);
   return state;
 }

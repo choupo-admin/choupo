@@ -169,8 +169,10 @@ Q &= L\, \mathrm{cp}_L\, \text{range} &\qquad \text{range} &= T_\mathrm{water,in
         + "the condensable component in the water inlet, so a dissolved "
         + "solute in that stream is not counted in L.  Across this corpus L "
         + "is overloaded: in the distillation pages it is a liquid MOLAR flow "
-        + "inside a column, and in Kremser a solute-free molar solvent flow. "
-        + " Same letter, different quantity, different units.", unit: "kg/s" },
+        + "inside a column, and in Kremser the lean solvent stream's whole "
+        + "molar flow (that page defines it on the total stream, not on a "
+        + "solute-free basis).  "
+        + "Same letter, different quantity, different units.", unit: "kg/s" },
       { sym: "G", means: "The DRY-air mass flow: the carrier component alone, "
         + "deliberately excluding the water vapour the air already carries "
         + "and the water it is about to pick up.  That exclusion is what "

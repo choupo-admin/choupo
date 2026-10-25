@@ -29,8 +29,10 @@
   DIRECTION on it.  So the page defines the coordinates first (what a point
   IS), then the two curve families that bound and grade them, then the one
   temperature that is a balance rather than a reading -- and only after the
-  chart itself does it draw the four moves every humid-gas process is made
-  of, plus the pressure the whole page was drawn at.
+  chart itself does it draw the four moves the common humid-gas processes
+  are built from (C112 point 20: not EVERY process -- a steam injection or a
+  desiccant wheel draws a different line), plus the pressure the whole page
+  was drawn at.
 
   WHAT THE ENGINE ACTUALLY EMITS, checked against
   src/propertyOps/PsychrometricChart.cpp before this prose was written:
@@ -236,7 +238,7 @@ Y(\varphi, T) &= \frac{M_v}{M_c} \cdot \frac{\varphi\, P_\mathrm{sat}(T)}{P - \v
   },
   {
     n: 4,
-    title: "Four moves, and every humid-gas process is made of them",
+    title: "Four moves, and the common humid-gas processes are built from them",
     body: "HEATING is horizontal to the right: nothing is added, Y is "
       + "unchanged, and relative humidity falls because the ceiling rose.  "
       + "COOLING is horizontal to the left until the saturation curve — that "
@@ -250,7 +252,10 @@ Y(\varphi, T) &= \frac{M_v}{M_c} \cdot \frac{\varphi\, P_\mathrm{sat}(T)}{P - \v
       + "rises, and the gas pays the latent heat out of its own temperature.  "
       + "MIXING two streams puts the mixed state on the straight segment "
       + "joining them, dividing it in the inverse ratio of the two dry-gas "
-      + "flows.",
+      + "flows.  These four cover heating, cooling coils, evaporative "
+      + "coolers, dryers and mixing boxes; they are not every process -- "
+      + "steam injected into the gas or a desiccant that adsorbs its vapour "
+      + "draws a line of its own, set by its own balance.",
     formula: String.raw`\begin{aligned}
 \text{heating / cooling:}\quad & Y \text{ constant, move along } T\\
 \text{dehumidification:}\quad & \text{condensate} = Y_\mathrm{in} - Y_\mathrm{sat}(T_\mathrm{surface})\\

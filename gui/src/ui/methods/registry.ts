@@ -544,9 +544,10 @@ export const METHOD_TOOLS: MethodTool[] = [
       + "atoms and the candidate species and minimise G subject to A n = b, "
       + "which collapses N unknowns into one element potential per ELEMENT "
       + "plus a total.  That an adiabatic temperature is a RESULT of the "
-      + "air rate, not a specification.  That the 2 : 1 H2S : SO2 every "
-      + "Claus plant is controlled to falls out of a minimisation never "
-      + "told about it, while the furnace's 1.04 is explained by the "
+      + "air rate, not a specification.  That the 2 : 1 H2S : SO2 a "
+      + "conventional Claus plant is controlled to is never entered as a "
+      + "ratio: the declared air rate forces it through the O and H "
+      + "balances, while the furnace's 1.04 is explained by the "
       + "hydrogen on the same line.  And that a species with no formation "
       + "data has no Gibbs energy and cannot play at all -- which is why "
       + "the case writes two components of its own, one new and one an "
@@ -701,7 +702,7 @@ export const METHOD_TOOLS: MethodTool[] = [
     id: "psychro", label: "Psychrometric chart",
     discipline: "Heat transfer & energy", kind: "construction", status: "live",
     origins: ["engine", "assumption"],
-    teaches: "The humid-gas state map: saturation, relative-humidity and adiabatic-saturation / wet-bulb lines locate every drying and conditioning path.",
+    teaches: "The humid-gas state map: saturation, relative-humidity and adiabatic-saturation / wet-bulb lines locate the common drying and conditioning paths.",
     theory: "ch:drying",
   },
   {
@@ -1206,12 +1207,12 @@ export const METHOD_TOOLS: MethodTool[] = [
     label: "Data reconciliation, and how Bayes helps",
     discipline: "Hydraulics & control", kind: "construction", status: "live",
     origins: ["engine", "assumption"],
-    teaches: "Why plant meters never close a mass balance, and what to "
+    teaches: "Why noisy plant meters do not close a mass balance, and what to "
       + "believe instead -- read through Bayes from the first page: a prior "
       + "(what was known, at least the exact balances), a likelihood (what "
       + "the meters say) and a posterior (what is believed now), whose most "
       + "probable point is the weighted least squares answer and whose width "
-      + "is narrower than any meter's.  Then plant a gross error on any "
+      + "is narrower than its own meter's.  Then plant a gross error on any "
       + "meter and watch the frequentist chi-square and measurement tests "
       + "reject the snapshot and point at the meter, and the error smear "
       + "over its neighbours until the meter is taken out of service; add "
@@ -1310,7 +1311,7 @@ export const METHOD_TOOLS: MethodTool[] = [
     discipline: "Flowsheeting & numerics", kind: "construction",
     status: "live",
     origins: ["engine", "assumption"],
-    teaches: "That a Gibbs reactor never solves for its amounts: it solves "
+    teaches: "That Choupo's Gibbs reactor never solves for its amounts: it solves "
       + "for ONE potential per element and the log of the total, M + 1 "
       + "unknowns however many species, with every species' stationarity "
       + "built into the change of variables -- so no amount can ever go "

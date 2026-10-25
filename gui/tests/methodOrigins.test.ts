@@ -39,7 +39,11 @@
         way to skip the check;
     (e) every mark's `of` is a LITERAL the parser can read -- a computed
         `of={x}` would make (b) and (c) blind to it;
-    (f) the frame draws the legend from the active tool's declaration.
+    (f) the frame draws the legend from the active tool's declaration;
+    (g) point 17's shared half: every EduTools run hook publishes the
+        engine's own warnings (case/engineCaveats.ts) and the frame draws
+        them, so a knob that takes a witness outside a model's validity is
+        said, in the engine's words, on every engine-run page.
 
   BLIND SPOT, said plainly: this reads source text.  It sees that each origin
   a tool claims is drawn somewhere on its page and that none is drawn which is
@@ -55,6 +59,8 @@ import { describe, expect, it } from "vitest";
 
 import { METHOD_TOOLS } from "../src/ui/methods/registry.js";
 import { ORIGIN_KINDS, ORIGIN_MEANING, type OriginKind } from "../src/ui/methods/originKinds.js";
+import { caveatsOf } from "../src/case/engineCaveats.js";
+import type { RunResult } from "../src/adapters/SolverAdapter.js";
 
 const read = (rel: string): string =>
   readFileSync(new URL(rel, import.meta.url), "utf-8");
@@ -172,6 +178,26 @@ describe("every EduTool declares where its numbers come from", () => {
 
   it("(f) the tool frame draws the legend from the active tool's declaration", () => {
     expect(code(WORKSPACE)).toMatch(/<OriginLegend\s+origins=\{active\.origins\}/);
+  });
+
+  it("(g) the frame draws the engine's own caveats, and every run hook publishes them", () => {
+    //  DEV.md 4c C112 point 17: a knob at its extreme takes a witness out of
+    //  a model's validity and the ENGINE says so; the page must not drop it.
+    expect(code(WORKSPACE)).toMatch(/<EngineCaveats\s*\/>/);
+    const run = code(read("../src/case/methodRun.ts"));
+    expect((run.match(/usePublishCaveats\(/g) ?? []).length,
+      "useCaseFilesRun and useMethodRunSweep must both publish").toBe(2);
+    expect(code(read("../src/case/engineSeries.ts"))).toMatch(/usePublishCaveats\(state\.results\)/);
+    const list = caveatsOf([
+      { advisories: [
+        { category: "validity", severity: "warning", locus: "component 'NH3'",
+          message: "integrated outside its declared Trange" },
+        { category: "init", severity: "info", locus: "tear", message: "seeded" },
+      ] } as unknown as RunResult,
+      null,
+    ]);
+    expect(list).toEqual([{ category: "validity", locus: "component 'NH3'",
+      message: "integrated outside its declared Trange" }]);
   });
 
   it("every origin word has a meaning to print", () => {

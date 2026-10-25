@@ -305,6 +305,9 @@ function Bench({ cat, fuel, onFuel }: {
   const hg = heskestadGroup(fire.Q, D);
   const hgInside = hg >= HESKESTAD_RANGE[0] && hg <= HESKESTAD_RANGE[1];
   const valid = Number.isFinite(fire.L) && fire.L > 0;
+  //  The largest pan this fuel was MEASURED on (the calibration's reach).
+  const maxPan = Math.max(...MEASURED[fuel].map((m) => m.D_m));
+  const pastMeasured = D > maxPan * 1.0001;
 
   const layoutRaw = tutorialByName(LAYOUT_CASE)?.files.rawFiles?.["system/layoutDict"];
   const sepTable = useMemo(() => {
@@ -405,6 +408,36 @@ function Bench({ cat, fuel, onFuel }: {
           Heskestad&apos;s height is not positive for this pool (its −1.02 D
           term wins on a fire this weak for its size); take Thomas&apos;s, or a
           smaller pool.
+        </Alert>
+      )}
+      {/*  SLIDER EXTREMES SAY WHERE THE MODEL STOPS (DEV.md 4c C112, point
+          17).  The diameter knob runs to 60 m; the measurements every
+          default on this bench is calibrated on are pans of 0.3 and 1 m,
+          and Heskestad's height was tested over a stated range of his
+          group.  Past either, the curve below is still drawn -- it is the
+          same arithmetic -- but it is an extrapolation, and the page says
+          so beside it rather than in a table further down.  */}
+      {valid && (pastMeasured || (flame === "heskestad" && !hgInside)) && (
+        <Alert color="yellow" variant="light" mt={8}
+          title="Outside what the model was measured on">
+          {flame === "heskestad" && !hgInside && (
+            <Text size="sm">
+              Heskestad&apos;s group here is {fx(hg, 1)} kW^(2/5)/m, outside
+              the {HESKESTAD_RANGE[0]}–{HESKESTAD_RANGE[1]} his flame height was
+              tested on: the height, and every flux the solid flame draws
+              from it, is an extrapolation.
+            </Text>
+          )}
+          {pastMeasured && (
+            <Text size="sm" mt={4}>
+              A {fx(D, 1)} m pool is larger than the largest {fuel} pan
+              measured here ({fx(maxPan, 2)} m): the burning rate and the
+              radiative fraction are carried from those pans, and a large
+              sooty fire radiates a smaller fraction as smoke hides the flame
+              (the limit &quot;The radiative fraction is held constant&quot;).
+              Read the curve as an order of magnitude, not a result.
+            </Text>
+          )}
         </Alert>
       )}
       {plot && (

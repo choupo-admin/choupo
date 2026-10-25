@@ -982,7 +982,7 @@ export function DataReconciliationTool(): JSX.Element {
         <Box>
           <Title order={3}>Data reconciliation, and how Bayes helps</Title>
           <Text size="sm" c="dimmed" mt={4}>
-            Plant meters are noisy, so their readings never close the mass balances the true flows
+            Plant meters are noisy, so their readings do not close the mass balances the true flows
             obey.  Reconciliation finds the flows that do, moving each reading as little as its
             meter allows — and read through Bayes, that answer is a distribution over the true
             state: its most probable point and how well it is known.  Then: how to tell noise from

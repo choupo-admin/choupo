@@ -175,7 +175,7 @@
       "id": "claus-gibbs",
       "label": "The allotrope nobody declared (a Claus plant)",
       "discipline": "Reaction engineering",
-      "teaches": "That a Claus stoichiometry CANNOT be written by hand, because '3/x S_x' contains an unknown that is itself an equilibrium -- and that the way out is to stop specifying reactions: declare the atoms and the candidate species and minimise G subject to A n = b, which collapses N unknowns into one element potential per ELEMENT plus a total.  That an adiabatic temperature is a RESULT of the air rate, not a specification.  That the 2 : 1 H2S : SO2 every Claus plant is controlled to falls out of a minimisation never told about it, while the furnace's 1.04 is explained by the hydrogen on the same line.  And that a species with no formation data has no Gibbs energy and cannot play at all -- which is why the case writes two components of its own, one new and one an overlay filling a gap the catalogue record honestly declares.",
+      "teaches": "That a Claus stoichiometry CANNOT be written by hand, because '3/x S_x' contains an unknown that is itself an equilibrium -- and that the way out is to stop specifying reactions: declare the atoms and the candidate species and minimise G subject to A n = b, which collapses N unknowns into one element potential per ELEMENT plus a total.  That an adiabatic temperature is a RESULT of the air rate, not a specification.  That the 2 : 1 H2S : SO2 a conventional Claus plant is controlled to is never entered as a ratio: the declared air rate forces it through the O and H balances, while the furnace's 1.04 is explained by the hydrogen on the same line.  And that a species with no formation data has no Gibbs energy and cannot play at all -- which is why the case writes two components of its own, one new and one an overlay filling a gap the catalogue record honestly declares.",
       "origins": [
         "engine"
       ],
@@ -252,7 +252,7 @@
       "id": "psychro",
       "label": "Psychrometric chart",
       "discipline": "Heat transfer & energy",
-      "teaches": "The humid-gas state map: saturation, relative-humidity and adiabatic-saturation / wet-bulb lines locate every drying and conditioning path.",
+      "teaches": "The humid-gas state map: saturation, relative-humidity and adiabatic-saturation / wet-bulb lines locate the common drying and conditioning paths.",
       "origins": [
         "engine",
         "assumption"
@@ -571,7 +571,7 @@
       "id": "data-reconciliation",
       "label": "Data reconciliation, and how Bayes helps",
       "discipline": "Hydraulics & control",
-      "teaches": "Why plant meters never close a mass balance, and what to believe instead -- read through Bayes from the first page: a prior (what was known, at least the exact balances), a likelihood (what the meters say) and a posterior (what is believed now), whose most probable point is the weighted least squares answer and whose width is narrower than any meter's.  Then plant a gross error on any meter and watch the frequentist chi-square and measurement tests reject the snapshot and point at the meter, and the error smear over its neighbours until the meter is taken out of service; add yesterday's estimate as a prior; and set three answers side by side -- classical, Bayes with a flat prior, Bayes with yesterday's prior -- to see that Bayes represents and updates what is known.",
+      "teaches": "Why noisy plant meters do not close a mass balance, and what to believe instead -- read through Bayes from the first page: a prior (what was known, at least the exact balances), a likelihood (what the meters say) and a posterior (what is believed now), whose most probable point is the weighted least squares answer and whose width is narrower than its own meter's.  Then plant a gross error on any meter and watch the frequentist chi-square and measurement tests reject the snapshot and point at the meter, and the error smear over its neighbours until the meter is taken out of service; add yesterday's estimate as a prior; and set three answers side by side -- classical, Bayes with a flat prior, Bayes with yesterday's prior -- to see that Bayes represents and updates what is known.",
       "origins": [
         "engine",
         "assumption"
@@ -630,7 +630,7 @@
       "id": "element-potential",
       "label": "How a Gibbs reactor solves (element potentials)",
       "discipline": "Flowsheeting & numerics",
-      "teaches": "That a Gibbs reactor never solves for its amounts: it solves for ONE potential per element and the log of the total, M + 1 unknowns however many species, with every species' stationarity built into the change of variables -- so no amount can ever go negative.  Watch the engine's own Newton, iterate by iterate: its first step cut to 1/64 by the line search, then the digits doubling.  Check by hand that each species' chemical potential is the sum of its atoms' potentials, which puts every reaction at equilibrium at once.  See a liquid and a solid added not by a bigger Newton but by a test on the gas answer and a one-dimensional search.  And meet the feed on which the least-squares seed makes the Jacobian singular at iteration 0, and the primal re-seed the engine announces.",
+      "teaches": "That Choupo's Gibbs reactor never solves for its amounts: it solves for ONE potential per element and the log of the total, M + 1 unknowns however many species, with every species' stationarity built into the change of variables -- so no amount can ever go negative.  Watch the engine's own Newton, iterate by iterate: its first step cut to 1/64 by the line search, then the digits doubling.  Check by hand that each species' chemical potential is the sum of its atoms' potentials, which puts every reaction at equilibrium at once.  See a liquid and a solid added not by a bigger Newton but by a test on the gas answer and a one-dimensional search.  And meet the feed on which the least-squares seed makes the Jacobian singular at iteration 0, and the primal re-seed the engine announces.",
       "origins": [
         "engine",
         "assumption"
