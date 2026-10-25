@@ -1962,8 +1962,8 @@ accepts today, and that is a policy call.
 > TUTORIAL exists (G2 shipped only a probe inside check_batch_plan), so
 > the multiproduct drawing is tested on a fixture in the engine's shape --
 > a witness case is a corpus decision.  C131 phase 2 family (a)
-> thermodynamics REVIEWED (`claude/c131-review-thermo`,
-> docs/design/review-c131-thermodynamics.md): WRONG W1 gamma-phi without
+> thermodynamics REVIEWED (branch `claude/c131-review-thermo`, its report
+> in the branch's docs/design/, not yet on main): WRONG W1 gamma-phi without
 > phi_sat / Poynting (pure propane at 310 K, 15 bar reported superheated
 > vapour, 23 cases reach it -- a proposal, moves goldens), W2 bubble/dew T
 > pricing the trial phase at the wrong composition and clamped to
