@@ -1704,6 +1704,16 @@ accepts today, and that is a policy call.
 > greyed with "nothing published"; the unit's F1 to its theory as on the
 > flowsheet.  Read from what the result publishes per unit, never
 > inferred from a unit's type.  Status: dispatched 2026-10-25.
+> LANDED 2026-10-25 (`claude/c156-plots-units`): a UNITS section under
+> the plot types -- each unit with the profile and convergence curve the
+> run published for it (read from `result.profiles` and the unit-keyed
+> convergence rows; the global rows filed under no unit), sectors from the
+> engine's stamp and UNSTAMPED units listed directly (on greenAmmonia03
+> only the five CONVERTER units carry a stamp -- the plant-level units,
+> FEHE's profile among them, had been hidden), a unit with nothing
+> published greyed, F1 through the flowsheet's own help.  NOT per unit
+> because the engine publishes it per case: the T-x-y; and no stream has
+> a producer/consumer field for a port view.
 
 > **C155. THE LAMINAR-TURBULENT TRANSITION IS NOT A CURVE (Vitor,
 > 2026-10-25: "na analise dimensional usaste o metodo de Churchill para
@@ -1744,6 +1754,21 @@ accepts today, and that is a policy call.
 > regime is not determined there, the design should move out of the band
 > -- an announcement, no number moved; the "covering transition" wording
 > corrected in the headers.  Status: dispatched 2026-10-25.
+> LANDED 2026-10-25 (`claude/c155-transition`): the lesson teaches the
+> band as instability (finite disturbances decide the regime above ~2000;
+> puffs; hysteresis; f not a function of Re) and Churchill as an
+> interpolation for continuity, the band shaded on all four friction
+> plots; a history step with its sources and how each was read --
+> Reynolds 1883 read in full (two critical values, the coil of wire,
+> "43.7 to 278"), Mukund & Hof (JFM 2018) for the ~13 000 and the ~2000,
+> Avila et al. (2011) abstract only; his anecdote PARTLY confirmed: Van
+> Dyke's Album says modern Manchester traffic lowered the critical number
+> of Reynolds' own apparatus -- the year, the value, "vibration",
+> "trucks" and "museum" were NOT found and are not taught; the engine
+> ANNOUNCES a single-phase pipe with 2300 <= Re < 4000 (`Pipe.cpp`,
+> caveat block, no number moved; `check_friction_correlations` arm (h),
+> failing on main first); the Theory Guide, User Guide and pipe01 header
+> teach the same.
 
 > **C154. A USER'S WALK THROUGH THE NANOFILTRAN CASE ON THE LIVE SITE
 > (Vitor, 2026-10-25: "O CPT Astra tambem decidiu ajudar e fez este review
@@ -1785,6 +1810,26 @@ accepts today, and that is a policy call.
 > trial, not a physical validation.  Status: the Born text fixed;
 > the rest DISPATCHED after C153 lands (same files: PropsView,
 > PropsDetails), one general, the reviewer's walk as the acceptance test.
+> LANDED 2026-10-25 (`claude/c154-props-walk`, integrated with C155 and
+> C156): the reviewer's walk replayed in a browser, step by step -- the
+> map framed by the three studies, which the case now DECLARES
+> (`studies (...)` in its propsDict, purpose from a closed list with no
+> `validated` in it; an unknown op, an op in two studies, an unread key
+> refused); About shows the case's README (the science, what it imposes,
+> the caveats); run status, purpose and evidence in separate columns,
+> "not applicable" where an op cannot have an AAD; a scientific table per
+> J_v point and ion first (declared in the op schema, units from the
+> engine; poreTransport now publishes `Jv_p<p>`, 29 rows APPENDED), the
+> raw diagnostics folded after it; figures at full width with Enlarge and
+> a `note` the views grammar now carries (11 on NanoFiltran); the CSV
+> export with a 14-line self-describing header; F1 on a dictionary KEY
+> (meaning, unit, the model it feeds, from the schemas -- a new membrane
+> record schema; a key no schema covers answered for its block, said so);
+> the log navigates operations and groups repeated announcements; every
+> map block shows run / failed / not run / stale, stale per block only
+> where the changed part is one the block reads, otherwise one case-wide
+> badge.  NOT done: inactive-property marks (needs a structured engine
+> fact), the thermoPhysPropDict F1 (its schema is the old grammar).
 > ADDED the same day (Vitor: "Sim, regista no C154"), after asking whether
 > such information diagrams are common in engineering software (they are:
 > project schematics that show how the work is assembled left to right,
