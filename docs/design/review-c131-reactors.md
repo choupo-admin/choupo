@@ -484,3 +484,207 @@ and set by hand), the Van Heerden page's sentence that the extent solve
 4. **M1-M6** as written in section 3.
 5. **W3, general** the flowsheet refusing a non-empty produced stream it has
    no outlet name for (family d: `Flowsheet.cpp:1160-1193`).
+
+---
+
+## Refutation
+
+Status: the refuter's appendix, 2026-10-25, branch
+`claude/c131-refute-reactors` (from `745df60e1`). Three engines were built
+from one tree and run side by side: `origin/main` (`f871943a9`), the
+analyst's branch as committed, and this branch. Every witness below was
+rebuilt from the gate's own fixture code or from the corpus case named and
+run on all three; every number the arithmetic allows was re-derived by hand.
+
+Verdicts: **CONFIRMED**; **CONFIRMED WITH CORRECTION** (the finding stands,
+its fix or its text had a hole -- corrected here, each with an arm that fails
+on the analyst's engine); **REFUTED**; **UNPROVEN**.
+
+### R.1 Per item
+
+* **W1 CONFIRMED.** The unit chain, re-derived. `concentrationFactor`
+  (`Reaction.cpp:107-112`) takes c° = P°/(1000 R T) = 0.03505 kmol/m3 at
+  343.15 K, so Kc = 21.670/0.03505 = 618.26 m3/kmol, the number the engine
+  prints. `RateLaw::netRate` (`RateLaw.cpp:144-153`) relaxes to
+  Π c_i^ν = Kc in the CALLER's unit; `cstr`/`pfr` hand it mol/m3 on
+  Q = F Σ z_i Vliq_i (`CSTR.cpp:247`, `:629`; `PFR.cpp:196`, `:667` -- the
+  liquid basis is the only basis these two reactors have). On the engine's
+  own Q = 3.7792e-5 m3/s, X Q/(F_A0 (1-X)^2) = Kc solves to 98.528 % in
+  consistent units and to 99.9531 % with Kc read as m3/mol -- the plateau
+  the engine reaches on main (99.953 % `pfr`; 99.943 % `cstr` at V_R 50, not
+  yet at the plateau). K_x = 21.670 × 9.943 × 1.251/1.624 = 165.97 gives
+  X(2-X)/(1-X)^2 = K_x at 92.261 %. **Does the refusal reject a legitimate
+  consistent gas case?** No: `cstr` and `pfr` have no gas volumetric basis,
+  so no Σν ≠ 0 detailed balance on them is consistent; the corpus's
+  legitimate Σν ≠ 0 detailed balance is the `batchReactor` bomb
+  (`ignition01*`, `ignition02`, `nox01`: c = n/V of an ideal gas in kmol/m3,
+  Kc's own basis), which the fix does not touch. **CORRECTION (arm R1b):**
+  the refusal ran before `ReactionRate::New` for EVERY law, so a `type
+  expression` law declaring `reversible true;` -- which its own reader
+  refuses, "`reversible` is not read by a `type expression` law"
+  (`ExpressionRate.cpp:127-130`) -- got the W1 text instead, whose remedy
+  (`A_rev`/`Ea_rev`) is not that grammar; a case's own `code/` law would have
+  been refused on a key it may read its own way. The refusal now applies to
+  the two laws that READ `reversible` (Arrhenius and LHHW, `RateLaw.cpp:85`).
+  For M1, not a defect of this fix: a `batchReactor` with a LIQUID
+  reversible Σν ≠ 0 reaction has consistent units but the gas's standard
+  state -- the second half of W1's "twice over". No corpus case reaches it
+  (its reversible cases are gas bombs and the Σν = 0 WGS).
+
+* **W2 CONFIRMED WITH CORRECTION.** Roots re-derived: autocatalytic
+  k = 1e5 exp(-70000/(8.314 × 350)) = 3.575e-6 m3/(mol s), Da = k τ C_E0 =
+  9.561, X = 1 - 1/Da = 0.89541 (engine 0.895411); cubic
+  X = Da (1-X)(ε+X)^2 at Da 9.481, ε 0.01: 0.0011846, 0.095574, 0.88324
+  (engine 0.00118472, 0.095565, 0.88325 -- Da's rounding). The isothermal
+  stability rule is right: with Q constant every species shares τ, the
+  manifold F_i = F_i0 + ν_i ξ attracts at rate 1/τ, and on it
+  τ dξ/dt = -g(ξ), so dg/dξ > 0 is stability -- washout UNSTABLE for Da > 1
+  and the middle cubic root UNSTABLE, as Levenspiel and Fogler have it.
+  **CORRECTION (arm R2b):** the audit also runs after the energy-balance
+  T-scan (`thermalMode adiabatic` / `heatExchange`), and there its text was
+  false in kind: "each root is a steady state of this CSTR", labelled with an
+  isothermal stability. At the reported T only the reported extent satisfies
+  the energy balance (cstr04's own golden carries dT_rise 104 K, so X = 0.895
+  at 350 K is some 90 K from its adiabatic temperature): the other roots are
+  not steady states of that reactor, and dg/dξ at fixed T is not its
+  stability. The text now says so and prints no stability label outside
+  isothermal mode. STILL OPEN, named: the adiabatic T-scan solves the extent
+  from ξ = 0 at every T, so it cannot reach an ignited autocatalytic branch.
+  **Completeness:** "finds every root" holds to the grid -- two roots inside
+  one of the 400 cells cancel their sign change. Emulating the scan exactly,
+  the cubic at ε = 0.01 and Da = 3.8431367 (within ~1e-5 of its fold) has
+  three roots and the scan sees one, so the run says nothing. Real, and too
+  narrow to matter; recorded, not fixed.
+
+* **W3 CONFIRMED.** Main: exit 0, plant mass closure 0.254 %, the unit's
+  energy row dH 72.01 kW against Q -12.58 kW (the dropped liquid). This
+  branch refuses by name; with two outlets declared it runs and the unit
+  closes at 100.00 %. The refusal keys on `outputs`, which every flowsheet
+  unit carries (`Flowsheet.cpp:1075`).
+
+* **W4 CONFIRMED** (a proposal, no fix). With two outlets: gas
+  1.0486e-6 kmol/s at y_IB 0.89871, liquid x_IB 6.7e-6, `Conv.: yes`;
+  y P/(x Psat) = 17.97/6.7e-5, ln 12.5; the liquid's own
+  x_MTBE/(x_IB x_MeOH) = 4.4e7 against K_x 166.
+
+* **W5 CONFIRMED.** Main: y_NH3 0.30011874 (REquil) vs 0.32386685 (Gibbs).
+  Here: 0.323866849 vs 0.323866847, 8 fugacity passes, Π φ^ν = 0.748,
+  Q -14.72701 kW in both. Ideal-gas byte identity: every corpus case holding
+  an `equilibriumReactor` publishes main's result JSON to 1e-9 relative
+  (R.3).
+
+* **W6 CONFIRMED.** equil01 fed at 700 K: 59.6425 -> 80.4318 kW. The syngas
+  shift bench, rebuilt from `syngasExercise.ts`'s SHIFT_UNITS on equil01:
+  hts/lts -5.2989/-1.7179 kW on main -> -30.8901/-11.0771 kW here -- and
+  main's OWN energy report already read dH = -30.890088 and -11.077149 kW
+  for those units ("582.9 %" and "644.8 %" closures). The EduTool's corrected
+  -30.89/-11.08 kW are the right numbers.
+
+* **W7 CONFIRMED WITH CORRECTION (arm R6b).** A per-component test
+  (y_i P > Psat_i) is sufficient, not necessary: a mixture condenses at its
+  DEW point. Witness: equil02's records, `reactions ( waterGasShift )`,
+  H2 0.19 + CO2 0.19 + water 0.12 + methanol 0.5 kmol/h at 330 K, 1 bar --
+  water at y P/Psat 0.70, methanol 0.68, neither supersaturated alone. The
+  analyst's engine published that outlet at vf 0.813634 (the package's own
+  resolution) beside a gas-only reaction equilibrium, exit 0 (main at
+  vf 1). Now the outlet's own resolution (`outSt`, which the duty already
+  prices; `OutletState::resolved` added so a CARRIED or discarded vapour
+  fraction never refuses) finding a liquid refuses too, naming the vapour
+  fraction.
+
+* **W8 CONFIRMED.** Re-integrated independently (explicit Euler, dt 1 s,
+  1.24 kmol charged equimolar, k = 2.7e-5 m3/(kmol s), F = 1e-4 kmol/s):
+  N(3e5 s) = 0.0511 kmol; Da = k τ C_A0 = 2.92 on the liquid Q, steady
+  X = 0.56. The announcement sits in `initialise` and touches no arithmetic,
+  so `check_ctrl_balance` arm a2b still proves what it was written to prove
+  -- the ledger closes when the moles change; re-run, it passes. A refusal
+  would have broken that proof; announcing is the right posture.
+
+* **W9 CONFIRMED.** ctrl11 + `reversible true;`: n_ethanol 1.11333560e-02
+  -> 1.28653936e-02 here, identical either way on main.
+
+* **M1-M6 CONFIRMED** against the code: M1 (no liquid standard state; Σν = 0
+  relaxes to the gas Kp, K_x = Kp Π Psat_i^-ν away from it); M2
+  (`GibbsReactor.cpp:232` refuses on a count; MTBE's H row is 2 C + 2 O,
+  rank 2); M3 (`CSTR.cpp:697`, 1e-14 × max(F_in, 1) mol/s absolute; main's
+  `reactions ( mtbe )` at V_R 50 "failed to converge"); M4 (`ReactionHeat.cpp`
+  calls no `AdvisoryLog`); M5 (a case comment only); M6
+  (`ReactionRate.H:70-71`). D1 and D3 spot-checked (P° = 1e5 Pa,
+  `Constants.H:51`; Ergun, `PFR.cpp:1635-1636`). The open reference
+  simulator's file:line claims were NOT re-read (UNPROVEN, not doubted).
+
+### R.2 The fixes and the gates
+
+* `check_reactor_limits` fails on main on every arm (15 failures) and passes
+  on both engines that carry the fixes; the three arms added here (R1b, R2b,
+  R6b) fail on the analyst's engine and pass on this one.
+* `check_energy_closure`'s unit arm: `equilibriumReactor` in
+  `UNIT_DUTY_IS_DH`, equil01's `reformer` its witness -- right now that the
+  duty is H_out - H_in, and green on the scoped pass below.
+* `check_reaction_subset_approach`'s fixtures: HONEST. Arm (u) reads the
+  liquid off the unit's KPIs (`N_liq_mol_s`, `x_*`), so declaring the
+  condensate outlet at the 300 K points (1 and 50 bar, `T <= 300`) changes no
+  assertion and stops the fixture dropping matter. Arm (l)'s subject is
+  ln Kp ~ 8243 and the step control on ln n; at 0.1 bar the Σν ln P term is
+  15 × ln 0.1 = -34.5 against 8243 and the water stays a gas. Its S4
+  sabotage was not re-performed at 0.1 bar (UNPROVEN; argued).
+* **NOT AS REPORTED: `check_doctrine` FAILS on this record** -- 26 lines name
+  the open reference simulator, which the gate refuses anywhere outside the
+  trees `COMPETITOR_NAMED_TREES` exempts (`paper/whitepaper/`, `paper/joss/`,
+  `paper/cace/`); family (a)'s record on its branch names it 22 times. Every
+  failure is this file's (none elsewhere), and it is why `bin/runTests
+  --gui` reads PASS 35 / FAIL 1 here where §5 reports 36 / 0 (the record
+  was presumably not yet tracked when §5's run scanned the tree). Whether a C131 review record may
+  name the simulator it was compared with (one more named-word exemption,
+  C126's shape) or must describe it is the commander's/Vitor's ruling, not a
+  refuter's; this appendix does not name it.
+
+### R.3 Corpus measurement
+
+Every case whose dicts declare `cstr`, `pfr`, `conversionReactor`,
+`gibbsReactor`, `equilibriumReactor`, `batchReactor` or `dynamicCSTR`: 115.
+Each was copied and run on main and on the analyst's engine, exit codes and
+the whole result JSON compared (numbers to 1e-9 relative): **115 identical**
+(two differ only in the scratch directory's name inside
+`thermoResolution.source`; three exit 2 on both -- the two explicit-
+integrator ignition EXPECTED-FAILs, and userOp03 without its compiled
+`code/`). On this branch, with the three corrections: `bin/runTests --scope`
+over the same 115: PASS 118 / FAIL 1 / EXPECTED-FAIL 2. The FAIL is
+`mass_closure` on `userOp03_case_rate_law` (133.33 %) and it is not a reactor
+defect: the case's own toy compA -> compB carries two molar masses (60 kg/h
+in, 80 kg/h out, `reports/balances/massBalance.csv`), its files and the path
+it runs are untouched by either branch, and it is judged only when the
+case's `code/` is compiled. `bin/runTests --fast`: PASS 76 / FAIL 0 /
+EXPECTED-FAIL 5.
+
+### R.4 `check_ammonia_rate` arm (i)
+
+Cause CONFIRMED, by building `origin/main` with ONLY the five files of
+4c8a5097a (`Mixer.{H,cpp}`, `ReactorOutlet.{H,cpp}`, `AdiabaticFlash.cpp`)
+returned to its parent: that engine reproduces all three transcribed states
+to the last printed digit (bed1Inlet 683.1469 K; bed1Outlet 841.2768 K,
+H2 0.6535734, NH3 0.1060861; bed3Outlet 777.5091 K, NH3 0.1728337). With the
+adiabatic-mixer fix the preheated feed is 683.1545 K and bed 1 leaves at
+841.2802 K with NH3 0.1060834 -- 2.8e-6 against the arm's 1e-6. CORRECTION
+to the analyst's wording: ammonia03's golden was NOT re-recorded on these
+rows; it still pins 683.1469098 K and y_NH3 0.106086140296, which the moved
+run meets inside its 1e-4 relative tolerance, so the bench's 1e-6 arm is the
+only check that saw the move. NOT FIXED here, because the re-transcription
+(683.1545 K; 841.2802 K, 0.2148642 / 0.6535755 / 0.1060834 / 0.0254769;
+777.5096 K, 0.1976569 / 0.6024957 / 0.1728330 / 0.0270144) moves the bench's
+OWN golden past 1e-4 relative -- `bed1Inlet_V3` 929.13051 -> 929.24729
+(1.26e-4) and `bed3Outlet_V3` 1.0031024 -> 1.0032051 (1.02e-4); nine
+other rows move by 3e-6 to 9.8e-5 -- and the prose quoting the old states
+would move with it (`tutorials/props/kinetics/ammoniaRate01_dyson_simon/
+README.md` §4: x(NH3) 0.1060861, "0.636 % apart", 9.341, 929.13, 1.0031;
+`docs/design/the-converter-a-student-can-design.md`). That is a re-record
+with a list: Vitor's.
+
+### R.5 Safe to land?
+
+Not as it stands: `check_doctrine` is red on this record (R.2), a policy
+call to make first. With that settled, and with this branch's three
+corrections and its EduTool citation remap (three `EquilibriumReactor.cpp`
+lines moved: 969 -> 985, 1042 -> 1058, 1055 -> 1071), the engine change is
+safe: no golden moves, the 115 reactor cases are main's, `--fast` is green.
+`check_ammonia_rate` stays red exactly as on main until R.4 is ruled.
