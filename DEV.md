@@ -1528,6 +1528,32 @@ accepts today, and that is a policy call.
 > final; }` layout draws what the steady flowsheet and the sizing pass
 > already hold.
 
+> **C165. CAN A PHD STUDENT LEARN DSPM-DE FROM THE NANOFILTRAN CASE ON THE
+> SITE? (Vitor, 2026-10-25, forwarding a second opinion on
+> props/membrane/nanofiltran_geraldesAlves2008: "Podes ver o que esta a
+> sugerir o GPT no caso DSPM-DE?").**  The second opinion could not render
+> the GUI and so judged nothing on screen; it set seven questions the GUI
+> must answer without the 2008 paper -- what is simulated; why each ion is
+> rejected (steric, Donnan and dielectric exclusion told apart); how it
+> crosses (diffusion, electromigration, convection); what happens at the
+> interfaces (concentrations, potentials, partition); the polarisation
+> (bulk against wall); whether the results make sense (per-ion rejection,
+> mass, electroneutrality, profiles); whether the solution can be trusted
+> (convergence, tolerances, residuals, assumptions) -- and named two
+> improvements: a spatial plot following each ion through film, interface
+> and pore (click an ion, see why its concentration rises or falls), and
+> F1 saying what physically happens when a parameter goes up or down.
+> Measured the same turn: the live site renders the case for a headless
+> browser here (the calculation map, studies A-C, data, models, ops), so
+> the review can be made ON SCREEN rather than from screenshots.  Scope:
+> (1) a measured on-screen audit against the seven questions, each answer
+> naming what the screen shows or does not, with screenshots, scored, no
+> claim made from the source alone; (2) the proposal that follows from it,
+> engine facts before GUI drawing (a decomposition the engine does not
+> publish is not drawn by TypeScript -- the GUI credo); (3) built under
+> C163 on stated defaults, Vitor reviewing after.
+> Status: recorded; (1) dispatched the same turn.
+
 > **C164. GRI-MECH 3.0 IS NOT USED DIRECTLY (Vitor, 2026-10-25, ruling on
 > the licence question, quoting the two findings -- the H/O subset copied
 > verbatim into the three ignition01 tutorials and the 17 component
