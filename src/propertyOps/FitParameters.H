@@ -195,6 +195,9 @@ private:
 private:
     std::vector<PublishedTable> tables_;
     std::vector<std::string> paramPaths_;   // fit.<i>.* is the parameter at paramPaths_[i]
+    static PublishedTable bubbleFitPoints(const ThermoPackage& thermo,
+        const sVector& xExp, const sVector& pExp, const sVector& tExp,
+        std::size_t iF1, std::size_t iF2, bool kindP, const std::string& parityPath);
     std::vector<scalar> isoTemperatures_;   // the distinct T of an isotherm dataset
     bool isoUnweighted_ = true;              // every sigma the unweighted 1 mol/kg
 

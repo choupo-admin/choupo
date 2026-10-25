@@ -53,7 +53,6 @@ Description
 #include "core/Dictionary.H"
 #include "core/PublishedTable.H"
 #include "core/Types.H"
-
 #include <functional>
 #include <map>
 #include <memory>
@@ -141,10 +140,9 @@ public:
     // NAMED TABLES THE OP PUBLISHES (2026-10-24, DEV.md 4c C147): a profile,
     // a per-point table -- rows under named columns with units -- that a
     // view (the propsDict's `views ( ... )`, or the op's own defaults) names
-    // and draws.  Empty
-    // (the default) MEANS "this op publishes no table".  A table is an
-    // IN-MEMORY publication: a CSV the op writes is a projection of it, never
-    // a second reader's source.
+    // and draws.  Empty (the default) MEANS "this op publishes no table".  A
+    // table is an IN-MEMORY publication: a CSV the op writes is a projection
+    // of it, never a second reader's source.
     virtual std::vector<PublishedTable> publishedTables() const { return {}; }
 
     // THE UNIT OF A DIAGNOSTIC, where the op knows it ("-" dimensionless;

@@ -5,8 +5,10 @@ first witness, the NanoFiltran paper as ONE case (C148's landing note:
 Vítor, "Não multipliques casos!  Faz um caso único!  Com um
 pós-processamento para gerar os plots adequados", and "Um pós-processamento
 não gera os gráficos e tabelas que são precisos para este artigo?"); the
-place and the shape DECIDED the same day by Vítor, DEV.md 4c C149 (its
-DESIGN paragraph).  The file keeps the name of the first cut so the links to
+place and the shape decided the same day on Vítor's delegation, after he
+rejected taking the dictionary's name literally, DEV.md 4c C149 (its DESIGN
+paragraph: "the choupoProps case is to be prepared for AI, and the GUI only
+serves the user to review").  The file keeps the name of the first cut so the links to
 it hold; what it records is the design that landed.*
 
 ## 1. What was measured before anything was built
@@ -38,7 +40,7 @@ computes nothing.**
 ### Why in the propsDict, and not a dictionary of its own
 
 The first cut was a separate `system/postProcessDict` (named `plotDict` before
-that).  Vítor ruled it out the same day (C149): the views are ABOUT the
+that).  C149 ruled it out the same day: the views are ABOUT the
 operations, so they live beside them, and a case that declares nothing must
 still be read as figures — which only DEFAULTS can give.  The precedents
 weighed: `controlDict`'s `reports {}` (declared presentation, but of a

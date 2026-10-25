@@ -45,8 +45,8 @@ License
   (reviewScreen.ts for the strip, postProcessing.ts for the views).
 \*---------------------------------------------------------------------------*/
 
-import type { ReactNode } from "react";
-import { Badge, Box, ScrollArea, Stack, Table, Text, Tooltip } from "@mantine/core";
+import { useState, type ReactNode } from "react";
+import { Badge, Box, Button, ScrollArea, Stack, Table, Text, Tooltip } from "@mantine/core";
 
 import type { RunResult } from "../adapters/SolverAdapter.js";
 import type { JsonDict } from "../dict/index.js";
@@ -68,8 +68,15 @@ function pct(v: number | null): string {
   return v === null ? "" : `${v.toPrecision(3)} %`;
 }
 
+/** Rows shown before the strip folds: a case of twenty operations must not
+ *  push its figures below the fold. */
+const STRIP_ROWS = 8;
+
 function VerdictStrip({ rows, ran }: { rows: VerdictRow[]; ran: boolean }) {
+  const [all, setAll] = useState(false);
+  const shown = all ? rows : rows.slice(0, STRIP_ROWS);
   return (
+    <>
     <ScrollArea type="auto">
       <Table withTableBorder fz="xs" verticalSpacing={3} data-review="verdicts"
         style={{ minWidth: 640 }}>
@@ -84,13 +91,18 @@ function VerdictStrip({ rows, ran }: { rows: VerdictRow[]; ran: boolean }) {
           </Table.Tr>
         </Table.Thead>
         <Table.Tbody>
-          {rows.map((r) => (
+          {shown.map((r, i) => (
             <Table.Tr key={r.name} style={!r.ran && ran ? { opacity: 0.6 } : undefined}>
               <Table.Td style={{ whiteSpace: "nowrap" }}>
                 <Text span size="xs" ff="monospace" fw={600}>{r.name}</Text>
                 <Text span size="xs" c="dimmed"> · {r.type}</Text>
               </Table.Td>
-              <Table.Td><Text size="xs" c="dimmed" lineClamp={2}>{r.did}</Text></Table.Td>
+              <Table.Td>
+                {/* the type's sentence once per run of one type, not twenty times */}
+                <Text size="xs" c="dimmed" lineClamp={2}>
+                  {i > 0 && shown[i - 1]!.type === r.type ? "″" : r.did}
+                </Text>
+              </Table.Td>
               <Table.Td>
                 {r.verdict ? (
                   <Badge size="sm" variant="light" color={CURATION_COLOUR[r.verdict] ?? "gray"}
@@ -113,6 +125,12 @@ function VerdictStrip({ rows, ran }: { rows: VerdictRow[]; ran: boolean }) {
         </Table.Tbody>
       </Table>
     </ScrollArea>
+    {rows.length > STRIP_ROWS && (
+      <Button size="compact-xs" variant="subtle" mt={4} onClick={() => setAll(!all)}>
+        {all ? "show the first " + STRIP_ROWS : "show all " + rows.length + " operations"}
+      </Button>
+    )}
+    </>
   );
 }
 

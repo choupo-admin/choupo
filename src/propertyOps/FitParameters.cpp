@@ -1013,59 +1013,32 @@ int FitParameters::run(const DictPtr& dict,
     //  The NAMED pair's indices (iF1/iF2, resolved for the LM above), never
     //  slots 0/1 (forum #87-P1: in a package whose components are not ordered
     //  (LK, HK) the parity plotted a DIFFERENT pair than the one optimised).
-    //  THE FIT'S POINTS, published whether or not a parity CSV is asked for
-    //  (DEV.md 4c C149: any fit earns its parity and residuals views); the
-    //  CSV, when declared, is written from the same numbers.
-    {
-        PublishedTable tab;
-        tab.name = "fitPoints";
-        tab.description = "one row per datum: the measured bubble point and the fitted one";
-        const char* fixed = kindP ? "T_K" : "P_Pa";
-        const char* fixedU = kindP ? "K" : "Pa";
-        const char* measU = kindP ? "Pa" : "K";
-        const char* resU = kindP ? "-" : "K";
-        tab.columns.push_back({ "point", "-" });
-        tab.columns.push_back({ "x_1", "-" });
-        tab.columns.push_back({ fixed, fixedU });
-        tab.columns.push_back({ "measured", measU });
-        tab.columns.push_back({ "model", measU });
-        tab.columns.push_back({ "residual", resU });
-        std::ofstream pcsv;
-        if (!parityPath.empty())
-        {
-            pcsv.open(parityPath);
-            //  P_Pa is a COLUMN and not a header note: a parity plot of a fit
-            //  spanning three isobars is unreadable without it -- the same x with
-            //  two different T's is not scatter, it is two experiments.
-            pcsv << (kindP ? "x_1,T_K,P_exp_Pa,P_model_Pa,residual_rel\n"
-                           : "x_1,P_Pa,T_exp,T_model,residual\n");
-        }
-        for (std::size_t k = 0; k < N; ++k)
-        {
-            sVector x(thermo.n(), 0.0);
-            x[iF1] = xExp[k]; x[iF2] = 1.0 - xExp[k];
-            if (kindP)
-            {
-                auto br = BubblePoint::pressure(thermo, x, pExp[k], tExp[k]);
-                const scalar Pm = (br.converged && !br.belowFloor) ? br.P : std::nan("");
-                if (pcsv.is_open())
-                    pcsv << xExp[k] << "," << pExp[k] << "," << tExp[k] << "," << Pm
-                         << "," << ((Pm - tExp[k]) / tExp[k]) << "\n";
-                tab.rows.push_back(std::vector<scalar>{ static_cast<scalar>(k + 1), xExp[k],
-                    pExp[k], tExp[k], Pm, (Pm - tExp[k]) / tExp[k] });
-                continue;
-            }
-            auto br = BubblePoint::compute(thermo, x, pExp[k]);
-            const scalar Tm = br.converged ? br.T : std::nan("");
-            if (pcsv.is_open())
-                pcsv << xExp[k] << "," << pExp[k] << "," << tExp[k] << "," << Tm
-                     << "," << (Tm - tExp[k]) << "\n";
-            tab.rows.push_back(std::vector<scalar>{ static_cast<scalar>(k + 1), xExp[k],
-                pExp[k], tExp[k], Tm, Tm - tExp[k] });
-        }
-        tables_.clear();
-        tables_.push_back(std::move(tab));
-    }
+    //  THE FIT'S POINTS (DEV.md 4c C149) -- one row per datum, the measured
+    //  bubble point beside the fitted one, published whether or not a parity
+    //  CSV is asked for, because any fit earns its parity and residuals views
+    //  from this table (src/postProcessing/views, genericDefaultViews).  The
+    //  parity CSV, when declared, is written from the SAME numbers by
+    //  bubbleFitPoints (the end of this file), so the file and the view can
+    //  never be two evaluations of the model.
+    //
+    //  The columns: point, x_1, the fixed coordinate (T_K for a bubble-P fit,
+    //  P_Pa for a bubble-T one), measured, model and residual (relative for
+    //  P, in kelvin for T).  A point whose bubble point does not converge
+    //  carries NaN, which the CSV writes as an empty cell and no view draws.
+    //
+    //  Why a call and not the loop inline: this block keeps the line count of
+    //  the one it replaced, because the EduTools lessons cite this file's
+    //  lines by number (gui/tests/numericsLessons.test.ts holds them), and
+    //  a slice that moves them breaks a lesson for no gain to the engine.
+    tables_.clear();
+    tables_.push_back(bubbleFitPoints(thermo, xExp, pExp, tExp, iF1, iF2,
+                                      kindP, parityPath));
+    //  The parameters' PATHS, so the default parameter table names
+    //  fit.<i>.value by what it varied (diagnosticLabel); recorded here,
+    //  beside the points, so the two descriptions of one fit are taken in
+    //  one place.
+    paramPaths_.clear();
+    for (const auto& ps : params) paramPaths_.push_back(ps.path);
 
     if (verbosity >= 2)
     {
@@ -1262,8 +1235,6 @@ int FitParameters::run(const DictPtr& dict,
             diag_["fit." + std::to_string(i) + ".at_bound"] = pinned ? 1.0 : 0.0;
         }
         diag_["params_at_bound"] = static_cast<scalar>(atBound);
-        paramPaths_.clear();
-        for (const auto& ps : params) paramPaths_.push_back(ps.path);
 
         if (verbosity >= 2)
         {
@@ -3056,6 +3027,63 @@ std::string FitParameters::defaultViews(const std::string& op) const
              " group " + g + "; } ";
     }
     return s + "); }\n";
+}
+
+//  The bubble fit's points as a published table, and the parity CSV (when
+//  declared) written from the same numbers.  The arithmetic is the block it
+//  was moved out of, verbatim (DEV.md 4c C149).
+PublishedTable FitParameters::bubbleFitPoints(const ThermoPackage& thermo,
+    const sVector& xExp, const sVector& pExp, const sVector& tExp,
+    std::size_t iF1, std::size_t iF2, bool kindP, const std::string& parityPath)
+{
+    const std::size_t N = xExp.size();
+    PublishedTable tab;
+    tab.name = "fitPoints";
+    tab.description = "one row per datum: the measured bubble point and the fitted one";
+    const char* fixed = kindP ? "T_K" : "P_Pa";
+    const char* fixedU = kindP ? "K" : "Pa";
+    const char* measU = kindP ? "Pa" : "K";
+    const char* resU = kindP ? "-" : "K";
+    tab.columns.push_back({ "point", "-" });
+    tab.columns.push_back({ "x_1", "-" });
+    tab.columns.push_back({ fixed, fixedU });
+    tab.columns.push_back({ "measured", measU });
+    tab.columns.push_back({ "model", measU });
+    tab.columns.push_back({ "residual", resU });
+    std::ofstream pcsv;
+    if (!parityPath.empty())
+    {
+        pcsv.open(parityPath);
+        //  P_Pa is a COLUMN and not a header note: a parity plot of a fit
+        //  spanning three isobars is unreadable without it -- the same x with
+        //  two different T's is not scatter, it is two experiments.
+        pcsv << (kindP ? "x_1,T_K,P_exp_Pa,P_model_Pa,residual_rel\n"
+                       : "x_1,P_Pa,T_exp,T_model,residual\n");
+    }
+    for (std::size_t k = 0; k < N; ++k)
+    {
+        sVector x(thermo.n(), 0.0);
+        x[iF1] = xExp[k]; x[iF2] = 1.0 - xExp[k];
+        if (kindP)
+        {
+            auto br = BubblePoint::pressure(thermo, x, pExp[k], tExp[k]);
+            const scalar Pm = (br.converged && !br.belowFloor) ? br.P : std::nan("");
+            if (pcsv.is_open())
+                pcsv << xExp[k] << "," << pExp[k] << "," << tExp[k] << "," << Pm
+                     << "," << ((Pm - tExp[k]) / tExp[k]) << "\n";
+            tab.rows.push_back(std::vector<scalar>{ static_cast<scalar>(k + 1), xExp[k],
+                pExp[k], tExp[k], Pm, (Pm - tExp[k]) / tExp[k] });
+            continue;
+        }
+        auto br = BubblePoint::compute(thermo, x, pExp[k]);
+        const scalar Tm = br.converged ? br.T : std::nan("");
+        if (pcsv.is_open())
+            pcsv << xExp[k] << "," << pExp[k] << "," << tExp[k] << "," << Tm
+                 << "," << (Tm - tExp[k]) << "\n";
+        tab.rows.push_back(std::vector<scalar>{ static_cast<scalar>(k + 1), xExp[k],
+            pExp[k], tExp[k], Tm, Tm - tExp[k] });
+    }
+    return tab;
 }
 
 } // namespace Choupo

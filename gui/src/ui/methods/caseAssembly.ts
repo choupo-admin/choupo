@@ -181,11 +181,11 @@ export const CITES = {
     contains: 'std::cerr << "\\nERROR: " << e.what()' },
   guiCho: { file: "gui/src/ui/FlowCanvas.tsx", line: 470,
     contains: 'k.endsWith(".cho")' },
-  guiReadme: { file: "gui/src/cases/tutorials.ts", line: 483,
+  guiReadme: { file: "gui/src/cases/tutorials.ts", line: 486,
     contains: 'entry.readme = files["README.md"]' },
-  guiNoExpected: { file: "gui/src/cases/tutorials.ts", line: 115,
+  guiNoExpected: { file: "gui/src/cases/tutorials.ts", line: 118,
     contains: '"!../../../tutorials/**/expected"' },
-  guiVerbatim: { file: "gui/src/adapters/WasmAdapter.ts", line: 360,
+  guiVerbatim: { file: "gui/src/adapters/WasmAdapter.ts", line: 363,
     contains: "if (caseFiles.extraFiles) {" },
 } as const satisfies { [name: string]: Cite };
 
