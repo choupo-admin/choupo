@@ -1704,7 +1704,31 @@ accepts today, and that is a policy call.
 > epsilon-NTU / condenser model; the pcsaft "..._liquid" props points are
 > evaluated on the vapour root by the family contract (names mislead).
 > Riding: Views.cpp's missing <map>/<memory> (check_std_includes red on
-> main since C147).  OPEN: wave 3 (the wording points).
+> main since C147).  WAVE 3 LANDED 2026-10-25 (`claude/c150-wave3`), 40
+> files of wording under gui/src/ui/methods/, each point measured first:
+> R09 confirmed (Wilson's missing pair is Lambda = 1, not A = 0 -- with
+> A = 0 a size term stays; "exactly ideal" scoped to the binary); R10,
+> R12, R18, R23, R28 confirmed; R11, R13, R17, R19, R20, R21, R22, R24,
+> R25, R27 partly (much already said; the over-broad remainder scoped to
+> "this example / this model"); claims now scoped, limits beside the
+> numbers, the column-control registry's "five inventories" corrected to
+> the lesson's three.  `--gui` 36/0.  FOUND by it and FIXED by the
+> commander on the same branch: the McCabe-Thiele page added one stage
+> for a partial condenser -- the staircase is the same either way and its
+> first step IS the condenser, so the +1 counted it twice and moved the
+> feed marker; N and the feed stage no longer depend on the condenser and
+> a `trays` readout says which steps are trays.  FOUND, NOT FIXED
+> (suspected, not demonstrated -- separate slices): the single-reaction
+> PFR uses liquid molar volumes for concentrations but the ideal-gas
+> standard concentration for Kc (matters only for delta-nu != 0); the
+> multi-reaction CSTR assumes one root at fixed T without checking.
+> PROPOSALS for Vitor (pedagogy or physics): fractions over total carbon
+> with an "other species" curve (Bjerrum); complete Ponchon and
+> Hunter-Nash staircases against MESH at the same specifications; a
+> centrifugal pump curve with NPSH; a delta-nu != 0 reactor witness; the
+> van Heerden stability from the Jacobian; KKT residuals with scales;
+> a collapsible technical section for bug chronicles; a Wilson case with
+> unequal volumes.  C150 is COMPLETE.
 
 > **C149. THE RESULTS A RESEARCHER RECEIVES: PLOTS FIRST, AND FITTING A
 > MEMBRANE TO HIS OWN DATA (Vitor, 2026-10-24, with screenshots of the live
