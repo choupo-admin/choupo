@@ -1565,6 +1565,34 @@ accepts today, and that is a policy call.
 > the honest scope (a model whose parameters must be fitted per membrane
 > and solution; what was verified and what was validated).  Status:
 > (1)-(2) dispatched 2026-10-25; the draft given to Vitor in chat.
+> (1)-(2) LANDED 2026-10-25 (`claude/c157-membrane-researcher`): D0 for
+> 14 ions (Li, Sr, Ba, FeII, MnII, CO3, NO3, PO4, F, Br, HCO3, NH4, HPO4,
+> H2PO4) from the public-domain USGS PHREEQC `phreeqc.dat` (`-dw`, file,
+> line and sha256 cited; reviewStatus interim); the multi-ionic film and
+> the ED units read them.  NO RADIUS was added: the eight existing ions
+> store Nightingale's (1959) hydrated radius, which DSPM-DE pores are
+> fitted on, and no rule derives it from D0 -- a Stokes radius under the
+> same key would silently shift steric hindrance -- so DSPM-DE still
+> REFUSES those ions by name until a curator reads Nightingale's table
+> (it covers NO3, F, Br, I, Li, NH4, Sr, Ba, CO3, PO4, Fe2+, Mn2+; not
+> HCO3 or the hydrogen phosphates).  I- and B(OH)4- have no D0 in any
+> PHREEQC database.  The researcher's path: membrane24's README "use it
+> with your own data" (eight steps) and `docs/ai/membrane-research.md`;
+> the live-site round trip (download -> edit a rejection -> open ->
+> Process refuses the stale fit -> re-fit validated) DOES NOT CLOSE: the
+> record the browser fit writes is not carried back into the opened case,
+> so Process refuses again -- and the top Run button in Properties mode
+> runs choupoSolve instead of the fit.  Both GUI defects queued as C157b
+> behind C154 (same files).  Vitor, the same hour: wait for the ions
+> before replying; the reply must also say the model runs in spiral-wound
+> modules (the stage's rejection a SPATIAL average) and in batch (a
+> TIME average).  Measured: the spiral module publishes the stage's
+> observed rejection from the mixed permeate (`R_obs_<ion>`,
+> SpiralWoundModule.cpp:1710, DSPM-DE witnesses membrane10/11/20/22); the
+> batch diafilter takes any transport law through the factory
+> (BatchDiafilter.cpp:113) but NO batch case runs DSPM-DE and it
+> publishes R_initial / R_final and the recovery, not a time-averaged
+> rejection -- a batch DSPM-DE witness and that average are C157c.
 
 > **C156. THE PLOTS PAGE NAVIGATES BY UNIT TOO (Vitor, 2026-10-25, on
 > ammonia02_full_plant's Plots page: "do lado esquerdo devia de haver uma
