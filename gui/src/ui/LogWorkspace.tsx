@@ -64,7 +64,9 @@ import {
 import { IconChevronDown, IconChevronRight, IconSearch } from "@tabler/icons-react";
 
 import { useStore } from "../state/store.js";
-import { parseUnitBanners, type UnitBannerAt } from "../case/unitBanner.js";
+import {
+  groupAnnouncements, parseOperationBanners, parseUnitBanners, type UnitBannerAt,
+} from "../case/unitBanner.js";
 
 import { useMeasuredBoxWidth } from "./methods/methodsChrome.js";
 import {
@@ -76,8 +78,15 @@ import {
 // pulse (case/unitBanner.ts): `>>>  Unit [k]:  <name>   (type = <T>)`, one
 // per unit the engine solves, in solve order -- so the navigator's order
 // matches the solve order.
+//  A props log has no unit banner but one OPERATION banner per op (DEV.md 4c
+//  C154): the navigator lists those instead, under their own word.
 type JumpEntry = UnitBannerAt;
-const parseJumps = parseUnitBanners;
+function parseJumps(log: string): { jumps: JumpEntry[]; word: "unit" | "operation" } {
+  const units = parseUnitBanners(log);
+  if (units.length > 0) return { jumps: units, word: "unit" };
+  const ops = parseOperationBanners(log);
+  return { jumps: ops, word: ops.length > 0 ? "operation" : "unit" };
+}
 
 // Strip the namespacing prefix so the jump list reads as just
 // "Evap1" / "Cryst" rather than "CONCENTRATION.Evap1".  The full
@@ -126,7 +135,8 @@ export function LogWorkspace() {
   const [filter, setFilter] = useState("");
   const [selectedLine, setSelectedLine] = useState<number | null>(null);
 
-  const jumps = useMemo(() => parseJumps(log), [log]);
+  const { jumps, word } = useMemo(() => parseJumps(log), [log]);
+  const announcements = useMemo(() => groupAnnouncements(log), [log]);
   const filtered = useMemo(() => {
     const q = filter.trim().toLowerCase();
     if (!q) return jumps;
@@ -209,7 +219,7 @@ export function LogWorkspace() {
           <Group justify="space-between" align="center" wrap="nowrap" gap={4} mb={6}>
             <Text size="xs" c="dimmed" tt="uppercase"
               style={{ letterSpacing: 0.5, fontWeight: 600 }}>
-              Jump to unit
+              Jump to {word}
             </Text>
             <PanelCollapseButton panel={rail} />
           </Group>
@@ -231,7 +241,7 @@ export function LogWorkspace() {
             <Stack gap={0} px="xs" pb="xs">
               {jumps.length === 0 && (
                 <Text size="xs" c="dimmed" px="xs" mt={4}>
-                  No unit banners found in the log yet.
+                  No unit or operation banners found in the log yet.
                 </Text>
               )}
               {jumps.length > 0 && filtered.length === 0 && (
@@ -269,7 +279,7 @@ export function LogWorkspace() {
                         tt={g.sector === "(top)" ? undefined : "uppercase"}
                         style={{ letterSpacing: g.sector === "(top)" ? 0 : 0.4, flex: 1 }}
                       >
-                        {g.sector === "(top)" ? "Units" : g.sector}
+                        {g.sector === "(top)" ? (word === "operation" ? "Operations" : "Units") : g.sector}
                       </Text>
                       <Text size="10px" c="dimmed" ff="monospace">
                         {g.jumps.length}
@@ -312,6 +322,27 @@ export function LogWorkspace() {
                   </Stack>
                 );
               })}
+              {announcements.length > 0 && (
+                <Stack gap={0} mt="sm" data-log-announcements="">
+                  <Text size="xs" c="dimmed" tt="uppercase" px={4}
+                    style={{ letterSpacing: 0.5, fontWeight: 600 }}
+                    title="Every [tag] line the run printed, grouped by kind with its count (numbers and quoted names folded); a click jumps to the first, every line stays in the log">
+                    Announcements, grouped
+                  </Text>
+                  {announcements.map((a) => (
+                    <Group key={`${a.tag}:${a.lines[0]}`} gap={6} wrap="nowrap" align="flex-start"
+                      style={{ cursor: "pointer", padding: "3px 6px" }}
+                      onClick={() => jumpTo(a.lines[0]!)} title={a.example}>
+                      <Text size="10px" ff="monospace" fw={700} c="accent" style={{ flex: "0 0 auto" }}>
+                        ×{a.count}
+                      </Text>
+                      <Text size="10px" c="dimmed" lineClamp={2} style={{ minWidth: 0 }}>
+                        <Text span size="10px" ff="monospace">[{a.tag}]</Text> {a.example}
+                      </Text>
+                    </Group>
+                  ))}
+                </Stack>
+              )}
             </Stack>
           </ScrollArea>
         </Box>

@@ -366,6 +366,11 @@ struct Column { std::string name, label, unit; };
 struct Item
 {
     std::string name, title, kind, shape;   // kind plot|table; shape series|rows
+    //  the case's own caveat beside the figure (DEV.md 4c C154): what a
+    //  reader must know to read THIS view right -- what its error bars are,
+    //  what a reference line does and does not include.  Prose the case
+    //  states, drawn under the figure; "" = none.
+    std::string note;
     std::string type;                       // series | profile | parity | residuals | table
     std::string home;                       // the op it is about ("" = the case)
     std::string origin;                     // declared | default
@@ -378,11 +383,25 @@ struct Item
 } // namespace
 
 // ============================================================================
+//  A STUDY: operations the case groups under one scientific question, with
+//  what KIND of check the question is (DEV.md 4c C154).  The purpose is a
+//  word from a closed list, because it is a claim about the evidence and a
+//  reader must be able to tell a code-to-code check from a comparison with
+//  measurements whose parameters were fitted to them -- and no word on the
+//  list says `validated`: a purpose is what the case SET OUT to do, never
+//  what a run concluded.
+struct Study
+{
+    std::string name, title, purpose, summary;
+    std::vector<std::string> ops;
+};
+
 struct Reader::Impl
 {
     std::vector<std::string> declaredOps;
     std::vector<Reference> refs;
     std::vector<Item> items;
+    std::vector<Study> studies;
 
     const Reference& refNamed(const std::string& nm, const std::string& where) const
     {
@@ -547,6 +566,12 @@ Item Reader::Impl::parseView(const DictPtr& v, const std::string& at,
     if (!it.home.empty()) checkOp(it.home, where);
     where = "view '" + (it.home.empty() ? std::string("case") : it.home) + "/" + it.name + "'";
     it.title = v->found("title") ? v->lookupWord("title") : std::string();
+    if (v->found("note"))
+    {
+        it.note = v->lookupWord("note");
+        if (it.note.find_first_not_of(" \t\n") == std::string::npos)
+            refuse(where, "`note \"\";` is empty -- state the caveat or drop the key");
+    }
 
     if (it.type != "table")
     {
@@ -756,6 +781,19 @@ void refuseUnread(const Dictionary& d, const std::string& where)
 }
 }
 
+static const std::vector<std::string>& studyPurposes()
+{
+    //  codeToCodeVerification  one model, independent implementations
+    //  calibratedComparison    against measurements its inputs were fitted to
+    //  independentComparison   against measurements its inputs never saw
+    //  numericalStudy          discretisation, convergence, a solver's work
+    //  demonstration           the method shown, compared with nothing
+    static const std::vector<std::string> p{ "codeToCodeVerification",
+        "calibratedComparison", "independentComparison", "numericalStudy",
+        "demonstration" };
+    return p;
+}
+
 Reader::Reader(const DictPtr& propsDict, const std::vector<std::string>& declaredOps)
     : impl_(std::make_unique<Impl>())
 {
@@ -787,6 +825,60 @@ Reader::Reader(const DictPtr& propsDict, const std::vector<std::string>& declare
                            + "/ -- both would write one file");
             I.items.push_back(std::move(it));
             refuseUnread(*list[k], at);
+        }
+    }
+    //  STUDIES (DEV.md 4c C154): `studies ( { name; title; purpose; ops ( ...
+    //  ); summary; } ... );` -- the case's scientific questions, in the order
+    //  it tells them.  Parsed here, before the run, for the same reason the
+    //  views are: a study naming an operation the propsDict does not declare
+    //  is refuted by the dict alone.
+    if (propsDict->found("studies"))
+    {
+        const auto list = propsDict->lookupDictList("studies");
+        std::map<std::string, std::string> owner;   // op -> its study
+        for (std::size_t k = 0; k < list.size(); ++k)
+        {
+            const std::string at = "propsDict studies[" + std::to_string(k) + "]";
+            const auto& d = list[k];
+            Study st;
+            if (!d->found("name")) refuse(at, "declare `name <word>;`");
+            st.name = d->lookupWord("name");
+            const std::string where = "study '" + st.name + "'";
+            if (!isWord(st.name)) refuse(where, "a name is a word (letters, digits, _)");
+            for (const auto& o : I.studies)
+                if (o.name == st.name) refuse(where, "declared twice");
+            if (!d->found("title"))
+                refuse(where, "declare `title \"...\";` -- the question the study asks, in words");
+            st.title = d->lookupWord("title");
+            if (!d->found("purpose"))
+                refuse(where, "declare `purpose <word>;` -- Accepted: " + joined(studyPurposes()));
+            st.purpose = d->lookupWord("purpose");
+            if (std::find(studyPurposes().begin(), studyPurposes().end(), st.purpose)
+                == studyPurposes().end())
+                refuse(where, "`purpose " + st.purpose + ";` -- Accepted: "
+                       + joined(studyPurposes()) + " (a purpose is what the study sets out"
+                       " to do; whether it succeeded is the run's verdict, never a word"
+                       " declared here)");
+            if (d->found("summary")) st.summary = d->lookupWord("summary");
+            if (!d->found("ops")) refuse(where, "declare `ops ( <op> ... );` -- the operations"
+                                                " that answer it");
+            st.ops = d->lookupWordList("ops");
+            if (st.ops.empty()) refuse(where, "`ops ( );` is empty");
+            for (const auto& op : st.ops)
+            {
+                if (std::find(I.declaredOps.begin(), I.declaredOps.end(), op)
+                    == I.declaredOps.end())
+                    refuse(where, "operation '" + op + "' is not an operation of this"
+                           " case's propsDict.  Operations: " + joined(I.declaredOps));
+                const auto it = owner.find(op);
+                if (it != owner.end())
+                    refuse(where, "operation '" + op + "' is already in study '"
+                           + it->second + "' -- a study is a partition, one question per"
+                           " operation");
+                owner[op] = st.name;
+            }
+            refuseUnread(*d, at);
+            I.studies.push_back(std::move(st));
         }
     }
 }
@@ -1109,6 +1201,10 @@ std::string Reader::evaluate(const std::vector<Publication>& pubs, int verbosity
     std::cout << "\n========  Views (the propsDict's `views` + each operation's defaults)  ========\n"
               << "  " << I.items.size() << " view(s) -> " << outputDir() << "/<op>/<view>.csv"
               << " (+ .json: titles, units, series roles and sources)\n";
+    if (verbosity >= 2)
+        for (const auto& st : I.studies)
+            std::cout << "  study " << st.name << " (" << st.purpose << ", "
+                      << st.ops.size() << " operation(s)): " << st.title << "\n";
 
     std::ostringstream block;
     block << "{ \"source\": \"system/propsDict views + operation defaults\", \"directory\": "
@@ -1148,7 +1244,9 @@ std::string Reader::evaluate(const std::vector<Publication>& pubs, int verbosity
            << ", \"origin\": " << q(it.origin) << ", \"type\": " << q(it.type)
            << ", \"kind\": " << q(it.kind);
         if (it.kind == "table") js << ", \"shape\": " << q(it.shape);
-        js << ", \"title\": " << q(it.title) << ", \"file\": " << q(file);
+        js << ", \"title\": " << q(it.title);
+        if (!it.note.empty()) js << ", \"note\": " << q(it.note);
+        js << ", \"file\": " << q(file);
 
         std::vector<std::string> head;
         std::vector<std::vector<std::string>> body;

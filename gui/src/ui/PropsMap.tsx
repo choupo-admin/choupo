@@ -42,6 +42,10 @@ License
   Each kind of block has its own shape AND colour AND icon AND word, and each
   kind of wire its own colour AND dash, so no distinction rests on colour
   alone (a greyscale print, a colour-blind reader): the legend says which.
+
+  Every block also carries its STATE (DEV.md 4c C154, case/propsMapState.ts):
+  run, failed, not run or stale, as a WORD in the block's header in its own
+  colour -- the word, never the colour alone -- and the legend names the four.
 \*---------------------------------------------------------------------------*/
 
 import { memo, useMemo, useState, type CSSProperties } from "react";
@@ -59,6 +63,7 @@ import {
 import {
   maxRows, type BlockKind, type FlowKind, type MapBlock, type MapMember, type MapTarget, type PropsMap,
 } from "../case/propsMap.js";
+import { BLOCK_STATE, type BlockState, type MapStates } from "../case/propsMapState.js";
 
 /** One look per block kind: the colour, the corner, the icon, the word. */
 const KIND: Record<BlockKind, { word: string; color: string; radius: number; Icon: typeof IconDatabase }> = {
@@ -84,6 +89,20 @@ export interface PropsMapHandlers {
   onSelect: (blockId: string, memberId?: string) => void;
   onActivate: (t: MapTarget) => void;
   onToggle: (group: string) => void;
+  /** each block's state in the last run (absent: drawn without one) */
+  states?: MapStates;
+}
+
+/** The state word of a block: ink AND colour, and the reason on hover. */
+function StateWord({ state, why }: { state: BlockState; why: string }) {
+  const s = BLOCK_STATE[state];
+  return (
+    <Tooltip label={`${s.word}: ${why}`} withArrow multiline maw={300}>
+      <Badge size="xs" radius="sm" variant={state === "run" ? "light" : state === "notRun" ? "outline" : "filled"}
+        color={s.color} data-block-state={state}
+        style={{ textTransform: "none", flex: "0 0 auto", paddingInline: 4 }}>{s.word}</Badge>
+    </Tooltip>
+  );
 }
 
 type BlockData = { block: MapBlock; h: PropsMapHandlers };
@@ -141,6 +160,9 @@ const BlockNode = memo(function BlockNode({ data }: NodeProps<Node<BlockData>>) 
           <Text size="9px" c="dimmed" truncate>· {b.role}</Text>
         </Group>
         <Group gap={0} wrap="nowrap">
+          {h.states?.block.get(b.id) && (
+            <StateWord state={h.states.block.get(b.id)!.state} why={h.states.block.get(b.id)!.why} />
+          )}
           {b.expandable && (
             <Tooltip label={b.expanded ? "draw these as one block" : "draw each one as its own block"} withArrow>
               <ActionIcon size={16} variant="subtle" color="gray" aria-label="expand"
@@ -200,9 +222,21 @@ const FrameNode = memo(function FrameNode({ data }: NodeProps<Node<FrameData>>) 
 
 const NODE_TYPES = { block: BlockNode, frame: FrameNode };
 
-function Legend() {
+function Legend({ withStates }: { withStates: boolean }) {
   return (
     <Box style={{ padding: "3px 2px" }} data-map-legend="">
+      {withStates && (
+        <Group gap={10} wrap="wrap" mb={2} data-map-legend-states="">
+          <Text size="10px" c="dimmed">block state:</Text>
+          {(Object.keys(BLOCK_STATE) as BlockState[]).map((k) => (
+            <Group key={k} gap={4} wrap="nowrap">
+              <Badge size="xs" radius="sm" variant={k === "run" ? "light" : k === "notRun" ? "outline" : "filled"}
+                color={BLOCK_STATE[k].color} style={{ textTransform: "none", paddingInline: 4 }}>{BLOCK_STATE[k].word}</Badge>
+              <Text size="10px">{BLOCK_STATE[k].legend}</Text>
+            </Group>
+          ))}
+        </Group>
+      )}
       <Group gap={12} wrap="wrap">
         <Text size="10px" c="dimmed">wires:</Text>
         {(Object.keys(FLOW) as FlowKind[]).map((f) => (
@@ -294,7 +328,7 @@ export function PropsMapCanvas({ map, handlers, height, wide = true }: {
         <Canvas map={map} h={handlers} wide={wide} />
       </ReactFlowProvider>
     </Box>
-    <Legend />
+    <Legend withStates={!!handlers.states} />
     </Box>
   );
 }

@@ -37,7 +37,7 @@ License
 
 import { useMemo } from "react";
 
-import { declaredInputsOf, stalenessOf, type Staleness } from "../case/staleness.js";
+import { changedParts, declaredInputsOf, stalenessOf, type Staleness } from "../case/staleness.js";
 import { useStore } from "./store.js";
 
 export function useStaleResult(): Staleness {
@@ -49,4 +49,19 @@ export function useStaleResult(): Staleness {
     () => stalenessOf(declaredInputsOf(caseFiles, scratchEdits), runInputs, !!runResult),
     [caseFiles, scratchEdits, runInputs, runResult],
   );
+}
+
+/** The same question, with the PARTS that differ (case/staleness.ts
+ *  `changedParts`; null when the run's stamp carries none) -- for a reader
+ *  that can attribute a part to what it draws (the props calculation map,
+ *  DEV.md 4c C154). */
+export function useStaleParts(): Staleness & { changed: string[] | null } {
+  const caseFiles = useStore((s) => s.caseFiles);
+  const scratchEdits = useStore((s) => s.scratchEdits);
+  const runResult = useStore((s) => s.runResult);
+  const runInputs = useStore((s) => s.runInputs);
+  return useMemo(() => {
+    const now = declaredInputsOf(caseFiles, scratchEdits);
+    return { ...stalenessOf(now, runInputs, !!runResult), changed: changedParts(now, runInputs) };
+  }, [caseFiles, scratchEdits, runInputs, runResult]);
 }

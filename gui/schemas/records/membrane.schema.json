@@ -1,0 +1,42 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://choupo.org/schemas/records/membrane.schema.json",
+  "title": "membrane record",
+  "description": "A membrane record (data/standards/assets/<name>.dat or a case's constant/assets/<name>.dat, `kind NF;` / `RO;` / ...), as src/thermo/membrane/Membrane.cpp (Membrane::readFromDict) reads it: the solution-diffusion permeances every membrane law can use and, in an optional `poreModel {}` block, the charged-pore geometry the DSPM-DE transport law needs.  This schema is the GUI's reading aid for F1 in the Case tab (DEV.md 4c C154); the reader is the engine, and a key it does not read refuses there.",
+  "x-choupo": {
+    "recordKinds": ["NF", "RO", "UF", "MF"],
+    "feeds": "DSPM-DE"
+  },
+  "type": "object",
+  "properties": {
+    "name": { "type": "string", "title": "Record name", "description": "The word a case names the membrane by (`membrane <name>;`); the file is <name>.dat." },
+    "kind": { "type": "string", "title": "Membrane kind", "description": "NF, RO, ... -- the family of the membrane, what a module or bench checks it against." },
+    "manufacturer": { "type": "string", "title": "Manufacturer", "description": "Who makes it, or what it is when nobody does (a program's worked example)." },
+    "A_w": { "type": "number", "title": "Pure-water permeance A_w", "unit": "m/s/bar",
+      "description": "J_w = A_w (dP - dpi): the water flux per unit of net driving pressure.  REQUIRED by the record grammar.  A unit that IMPOSES the permeate flux J_v (the props bench `poreTransport`) does not read it: there is no J_w = A_w (dP - dpi) closure there, and the engine says so at every point (`[DSPM-DE] J_v IMPOSED by the caller`)." },
+    "P_max": { "type": "number", "title": "Maximum pressure", "description": "The manufacturer's limit, when stated; 0 = none declared." },
+    "T_max": { "type": "number", "title": "Maximum temperature", "description": "The manufacturer's limit, when stated; 0 = none declared." },
+    "pH_min": { "type": "number", "title": "Minimum pH", "description": "The manufacturer's limit, when stated; 0 = none declared." },
+    "pH_max": { "type": "number", "title": "Maximum pH", "description": "The manufacturer's limit, when stated; 0 = none declared." },
+    "MWCO": { "type": "number", "title": "Molecular-weight cut-off", "description": "The manufacturer's nominal cut-off, when stated." },
+    "permeabilities": { "type": "object", "title": "Solute permeances B_s", "unit": "m/s",
+      "description": "Per solute (component name -> B_s): the solution-diffusion salt flux J_s = B_s (c_wall - c_perm).  Read by the solution-diffusion laws, not by DSPM-DE (which solves the pore instead)." },
+    "poreModel": { "type": "object", "title": "DSPM-DE pore model",
+      "description": "The Donnan-steric-dielectric pore the DSPM-DE transport law solves across (Bowen & Mohammad; Geraldes & Alves 2008 for NanoFiltran).  `poreRadius` and either `porosityOverThickness` or both `porosity` and `thickness` are MANDATORY when the block is present; `chargeDensity` and `poreDielectric` are optional (absent: steric only / Born off).  A membrane without this block cannot select DSPM-DE.",
+      "properties": {
+        "poreRadius": { "type": "number", "title": "Pore radius r_p", "unit": "m",
+          "description": "The radius of the cylindrical pore of the active layer (raw SI metres).  It is the MEMBRANE's radius, not a solute's: each ion enters through its ratio lambda = r_s/r_p (r_s the ion's Stokes radius, from its species record), which sets the steric partition Phi = (1 - lambda)^2 and the hindrance factors K_d, K_c (Dechadilok & Deen 2006); an ion with lambda >= 1 is excluded.  (The Born dielectric exclusion uses the ION's radius, not this one: see `poreDielectric`.)" },
+        "porosityOverThickness": { "type": "number", "title": "A_k / dx", "unit": "1/m",
+          "description": "Porosity over active-layer thickness: the flux per unit MEMBRANE area is the flux per unit pore area times A_k/dx, so its inverse dx/A_k is the equivalent thickness the extended Nernst-Planck equations are integrated across.  Alternatively declare `porosity` and `thickness`." },
+        "porosity": { "type": "number", "title": "Porosity A_k", "unit": "-", "description": "With `thickness`, the alternative to `porosityOverThickness`." },
+        "thickness": { "type": "number", "title": "Active-layer thickness dx", "unit": "m", "description": "With `porosity`, the alternative to `porosityOverThickness`." },
+        "chargeDensity": { "type": "number", "title": "Fixed charge X_d", "unit": "mol/m3",
+          "description": "The membrane's effective fixed charge per pore volume, SIGNED (negative for a negatively charged membrane).  It enters the Donnan partition at both faces and electroneutrality in the pore.  Absent: steric only.  A props `poreTransport` op may replace it for that op only (`chargeDensity` in the op), announced." },
+        "poreDielectric": { "type": "number", "title": "Pore dielectric constant eps_p", "unit": "-",
+          "description": "Relative permittivity inside the pore; below the bulk value it excludes ions by the Born solvation energy z_i^2 e^2 / (8 pi eps_0 r_i) (1/eps_p - 1/eps_b), r_i the ion's own radius -- both signs alike, divalent ions four times as strongly.  Absent: Born off.  Must be > 0." }
+      }
+    },
+    "fit": { "type": "object", "title": "Fit provenance",
+      "description": "Written by a Properties-mode fit (DEV.md 4c C152): the fingerprints of the inputs that produced this record; Process mode refuses the record when they no longer match." }
+  }
+}

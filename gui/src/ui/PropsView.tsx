@@ -121,6 +121,8 @@ import { readinessProminent } from "../case/reviewScreen.js";
 import { propsOpHelpLink, propsTheoryLink } from "../case/modelDocs.js";
 import { ThermoView } from "./ThermoView.js";
 import { guideUrl, openGuide } from "../help/guideLinks.js";
+import { declaredStudies, dictStory, purposeWords } from "../case/propsStudies.js";
+import { Lesson } from "./Lesson.js";
 import {
   parsePropertyPointReferences,
   type PointResult,
@@ -158,21 +160,6 @@ function pointsFromOps(ops: JsonDict[], opResults: OperationResult[]): PointResu
       gamma: d["gamma"], Z: d["Z"], S_real: d["S_real"] });
   }
   return out;
-}
-
-/** The author's own case story: the leading /*---…---*\ comment block at the
- *  top of a dict, stripped of its decorative frame.  THE glass-box answer to
- *  "what does this case do?" -- the case documents itself; F1 shows it. */
-function dictHeaderComment(raw: string | undefined): string | null {
-  if (!raw) return null;
-  const m = raw.match(/\/\*([\s\S]*?)\*\//);
-  if (!m) return null;
-  const body = m[1]!
-    .split("\n")
-    .filter((l) => !/^[\s\-\\*|]*$/.test(l))   // drop pure frame lines
-    .join("\n")
-    .trimEnd();
-  return body.trim().length > 40 ? body : null;
 }
 
 /** Pretty trace name from a CSV filename: drops the trailing .csv. */
@@ -726,8 +713,16 @@ export function PropsView() {
   // the visible "About this case" button instead -- two questions, two doors.
   const [helpOpen, setHelpOpen] = useState(false);
   const rawFiles = useStore((s) => s.caseFiles.rawFiles);
+  //  THE CASE'S OWN INTRODUCTION (DEV.md 4c C154): its README.md where it
+  //  carries one (rendered as the lesson it is), else the first comment block
+  //  of its propsDict that is not the Choupo banner -- the dialog used to show
+  //  the banner, because it took the FIRST comment, and every dict opens
+  //  with the banner.  The studies it declares are listed as doors.
+  const caseReadme = rawFiles?.["README.md"];
   const caseStory = useMemo(
-    () => dictHeaderComment(rawFiles?.["system/propsDict"]), [rawFiles]);
+    () => (caseReadme ? null : dictStory(rawFiles?.["system/propsDict"])), [rawFiles, caseReadme]);
+  const aboutStudies = useMemo(() => declaredStudies(targets[0]?.propsDict), [targets]);
+  const focusProps = useStore((s) => s.focusProps);
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
       if (e.key !== "F1") return;
@@ -790,19 +785,48 @@ export function PropsView() {
     <Box style={{ width: "100%", height: "100%", display: "flex", flexDirection: "column",
       background: "light-dark(var(--mantine-color-gray-0), var(--mantine-color-dark-7))" }}>
       <Drawer opened={helpOpen} onClose={() => setHelpOpen(false)} position="right"
-        size="lg" title={`What this case does — ${tutorialName}`}>
+        size="xl" title={`About this case — ${tutorialName}`}>
+        <Box data-about="">
         {typeof controlDict?.["description"] === "string" && (
           <Text size="sm" mb="md">{controlDict["description"] as string}</Text>
         )}
-        {caseStory ? (
+        {aboutStudies.length > 0 && (
+          <Box mb="md" data-about-studies="">
+            <Text size="11px" c="dimmed" tt="uppercase" fw={700} mb={4} style={{ letterSpacing: 0.5 }}>
+              The questions it asks (its <code>studies</code>, in order)
+            </Text>
+            <Stack gap={6}>
+              {aboutStudies.map((st) => (
+                <Box key={st.name} style={{ borderLeft: "3px solid var(--mantine-color-cyan-6)", paddingLeft: 8 }}>
+                  <Anchor component="button" type="button" size="sm" fw={700} data-about-study={st.name}
+                    onClick={() => { setHelpOpen(false); focusProps(`study:${st.name}`); }}
+                    title="Show this study: its operations, figures and tables">
+                    {st.title}
+                  </Anchor>
+                  <Text size="xs" c="cyan.7">{purposeWords(st.purpose).label} -- {st.ops.length} operation(s)</Text>
+                  {st.summary && <Text size="xs" c="dimmed">{st.summary}</Text>}
+                </Box>
+              ))}
+            </Stack>
+          </Box>
+        )}
+        {caseReadme ? (
+          <Box data-about-readme="">
+            <Text size="11px" c="dimmed" tt="uppercase" fw={700} mb={4} style={{ letterSpacing: 0.5 }}>
+              The case's introduction (README.md)
+            </Text>
+            <Lesson md={caseReadme} />
+          </Box>
+        ) : caseStory ? (
           <Text size="xs" ff="monospace" style={{ whiteSpace: "pre-wrap" }}>{caseStory}</Text>
         ) : (
           <Text size="sm" c="dimmed">
-            This case's propsDict carries no header comment — the description
-            above is its story. (Case authors: the leading comment block of
-            system/propsDict is what F1 shows here.)
+            This case carries no introduction -- no README.md and no comment
+            block in its propsDict beyond the banner -- so the description
+            above is all it says about itself.
           </Text>
         )}
+        </Box>
         {selectedItem && theoryHref && (
           <Text size="sm" mt="md">
             theory behind <Text span fw={600}>{selectedItem.label}</Text>:{" "}

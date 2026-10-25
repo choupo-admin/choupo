@@ -39,6 +39,12 @@ License
 
   It computes nothing: the figures are ViewFigure over the engine's CSVs, the
   numbers the op's own diagnostics, the wiring the map's (case/propsMap.ts).
+
+  DEV.md 4c C154: an operation whose type declares how its numbers tabulate
+  (`x-choupo.pointTable`) shows that SCIENTIFIC table first -- one row per
+  point and ion, with the op's own units -- and its raw diagnostics after it,
+  folded; a lone figure takes the pane's whole width (`auto-fit`, never an
+  empty track beside it).
 \*---------------------------------------------------------------------------*/
 
 import { useState, type ReactNode } from "react";
@@ -46,7 +52,9 @@ import { Anchor, Badge, Box, Button, Group, ScrollArea, Stack, Table, Text } fro
 import { IconFileCode, IconHelp } from "@tabler/icons-react";
 
 import type { OperationResult, RunResult } from "../adapters/SolverAdapter.js";
-import type { PostItem } from "../case/postProcessing.js";
+import type { PostItem, PostReference } from "../case/postProcessing.js";
+import { operationMapMeta } from "../case/operationSchemas.js";
+import { pointTable } from "../case/opPointTable.js";
 import {
   domIdOfView, neighbours, viewDomId, viewsOf,
   type MapNode, type MapTarget, type PropsMap,
@@ -65,10 +73,12 @@ export function itemsByDomId(items: PostItem[] | undefined): Map<string, PostIte
   return out;
 }
 
-export function FigureGrid({ items, csvFiles, linkOf }: {
+export function FigureGrid({ items, csvFiles, linkOf, references }: {
   items: PostItem[]; csvFiles: { [f: string]: string };
   /** the dict block a figure is declared in, when it has one */
   linkOf?: (it: PostItem) => MapTarget | undefined;
+  /** the run's references, cited in an exported CSV */
+  references?: readonly PostReference[];
 }) {
   const plots = items.filter((i) => i.kind === "plot");
   const tables = items.filter((i) => i.kind === "table");
@@ -77,7 +87,7 @@ export function FigureGrid({ items, csvFiles, linkOf }: {
     return (
       <Box key={`${it.origin}/${it.op}/${it.name}`} id={viewDomId(it.origin, it.op, it.name)}
         style={{ minWidth: 0, scrollMarginTop: 8 }}>
-        <ViewFigure item={it} csv={csvFiles[it.file]} />
+        <ViewFigure item={it} csv={csvFiles[it.file]} references={references} />
         {link && link.kind === "case" && <CaseLink t={link} small />}
       </Box>
     );
@@ -86,7 +96,7 @@ export function FigureGrid({ items, csvFiles, linkOf }: {
     <Stack gap="md">
       {plots.length > 0 && (
         <Box style={{ display: "grid", gap: 12,
-          gridTemplateColumns: "repeat(auto-fill, minmax(min(100%, 440px), 1fr))" }}>
+          gridTemplateColumns: "repeat(auto-fit, minmax(min(100%, 440px), 1fr))" }}>
           {plots.map(cell)}
         </Box>
       )}
@@ -159,25 +169,63 @@ function NodeList({ title, ids, map, onSelect }: {
   );
 }
 
-function Diagnostics({ r }: { r: OperationResult }) {
+/** The op's numbers as its type tabulates them (case/opPointTable.ts). */
+function PointTableView({ r }: { r: OperationResult }) {
+  const t = pointTable(operationMapMeta(r.type)?.pointTable, r);
+  if (!t) return null;
+  const fmt = (v: number | null) => (v === null ? "" : Number(v.toPrecision(6)).toString());
+  const head = (c: { label: string; unit: string }) => (c.unit && c.unit !== "-" ? `${c.label} [${c.unit}]` : c.label);
+  return (
+    <Box data-review="point-table">
+      <Text size="10px" c="dimmed" tt="uppercase" fw={700} mb={2}>{t.title}</Text>
+      {t.definitions && <Text size="xs" c="dimmed" mb={4}>{t.definitions}</Text>}
+      <ScrollArea type="auto">
+        <Table fz="xs" verticalSpacing={1} withTableBorder withColumnBorders striped style={{ minWidth: 560 }}>
+          <Table.Thead>
+            <Table.Tr>
+              <Table.Th>point</Table.Th>
+              {t.columns.slice(0, t.nPerPoint).map((c, i) =>
+                <Table.Th key={`p${i}`} style={{ whiteSpace: "nowrap" }}>{head(c)}</Table.Th>)}
+              <Table.Th>ion</Table.Th>
+              {t.columns.slice(t.nPerPoint).map((c, i) =>
+                <Table.Th key={`i${i}`} style={{ whiteSpace: "nowrap" }}>{head(c)}</Table.Th>)}
+            </Table.Tr>
+          </Table.Thead>
+          <Table.Tbody>
+            {t.rows.map((row) => (
+              <Table.Tr key={`${row.point}:${row.ion}`}>
+                <Table.Td ff="monospace">{row.point}</Table.Td>
+                {row.cells.slice(0, t.nPerPoint).map((v, i) =>
+                  <Table.Td key={`p${i}`} ff="monospace" ta="right">{fmt(v)}</Table.Td>)}
+                <Table.Td ff="monospace" fw={600}>{row.ion}</Table.Td>
+                {row.cells.slice(t.nPerPoint).map((v, i) =>
+                  <Table.Td key={`i${i}`} ff="monospace" ta="right">{fmt(v)}</Table.Td>)}
+              </Table.Tr>
+            ))}
+          </Table.Tbody>
+        </Table>
+      </ScrollArea>
+    </Box>
+  );
+}
+
+function Diagnostics({ r, folded }: { r: OperationResult; folded?: boolean }) {
   const [all, setAll] = useState(false);
   const keys = Object.keys(r.diagnostics);
   const head = (r.headline ?? []).filter((k) => k in r.diagnostics);
   const order = [...head, ...keys.filter((k) => !head.includes(k))];
   const shown = all ? order : order.slice(0, 16);
   if (order.length === 0) return null;
-  return (
-    <Box>
-      <Text size="10px" c="dimmed" tt="uppercase" fw={700} mb={2}>
-        Its numbers ({order.length}) -- the engine's own diagnostics
-      </Text>
+  const body = (
+    <>
       <ScrollArea type="auto">
-        <Table fz="xs" verticalSpacing={1} withTableBorder style={{ maxWidth: 560 }}>
+        <Table fz="xs" verticalSpacing={1} withTableBorder style={{ maxWidth: 640 }}>
           <Table.Tbody>
             {shown.map((k) => (
               <Table.Tr key={k}>
                 <Table.Td ff="monospace" fw={head.includes(k) ? 700 : 400}>{k}</Table.Td>
                 <Table.Td ff="monospace" ta="right">{Number(r.diagnostics[k]).toPrecision(6)}</Table.Td>
+                <Table.Td ff="monospace" c="dimmed">{r.units?.[k] && r.units[k] !== "-" ? r.units[k] : ""}</Table.Td>
               </Table.Tr>
             ))}
           </Table.Tbody>
@@ -188,6 +236,22 @@ function Diagnostics({ r }: { r: OperationResult }) {
           {all ? "show the first 16" : `show all ${order.length}`}
         </Button>
       )}
+    </>
+  );
+  const title = `Its numbers (${order.length}) -- the engine's own diagnostics, as it keys them`;
+  if (folded)
+    return (
+      <details data-review="raw-diagnostics">
+        <summary style={{ cursor: "pointer" }}>
+          <Text span size="10px" c="dimmed" tt="uppercase" fw={700}>{title}</Text>
+        </summary>
+        <Box mt={4}>{body}</Box>
+      </details>
+    );
+  return (
+    <Box>
+      <Text size="10px" c="dimmed" tt="uppercase" fw={700} mb={2}>{title}</Text>
+      {body}
     </Box>
   );
 }
@@ -238,7 +302,10 @@ export function SelectionDetails({ id, map, result, rows, strip, onSelect, onAct
       <Header kind={kind} title={title} detail={detail} onActivate={onActivate}
         help={first.member.target} source={many ? undefined : first.member.source} />
       {kind === "operation" && strip(rows.filter((r) => opNames.includes(r.name)))}
-      {kind === "operation" && !many && results[0] && <Diagnostics r={results[0]} />}
+      {kind === "operation" && !many && results[0] && <PointTableView r={results[0]} />}
+      {kind === "operation" && !many && results[0] && (
+        <Diagnostics r={results[0]} folded={!!operationMapMeta(results[0].type)?.pointTable} />
+      )}
       {kind === "operation" && !ran && <Text size="sm" c="dimmed">Run properties: its numbers and figures appear here.</Text>}
       <NodeList title={kind === "view" ? "drawn from" : "reads"} ids={up} map={map} onSelect={onSelect} />
       <NodeList title={kind === "view" ? "" : "feeds"} ids={down.filter((d) => !d.startsWith("view:"))} map={map} onSelect={onSelect} />
@@ -247,7 +314,7 @@ export function SelectionDetails({ id, map, result, rows, strip, onSelect, onAct
           {kind === "view" ? "The figure" : `Figures it ${kind === "operation" ? "feeds" : "appears in"} (${viewIds.length})`}
         </Text>
         {figures.length > 0
-          ? <FigureGrid items={figures} csvFiles={csv} />
+          ? <FigureGrid items={figures} csvFiles={csv} references={result?.postProcessing?.references} />
           : <Text size="sm" c="dimmed">{ran ? "No figure draws from it." : "Not run yet."}</Text>}
       </Box>
       {viewIds.length > figures.length && ran && (

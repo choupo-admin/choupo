@@ -191,6 +191,13 @@ export interface OperationResult {
    *  Absent = the op claims no maturity (not "the block did not run" -- every
    *  op that computes a verdict publishes one, `notClaimed` included). */
   curation?: { [key: string]: string };
+  /** Each diagnostic's unit as the op declares it (`diagnosticUnit`), for
+   *  the keys that have one -- a number drawn with its unit, never a guessed
+   *  one (DEV.md 4c C154).  Absent = the engine published none. */
+  units?: { [key: string]: string };
+  /** The op's own NON-ZERO return code; absent = it ran to its end.  The run
+   *  status, kept apart from the status of the evidence (`curation`). */
+  rc?: number;
 }
 
 /** Provenance of a raw experimental dataset (B1): where the lab data came from. */

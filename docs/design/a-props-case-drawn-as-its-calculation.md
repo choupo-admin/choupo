@@ -252,6 +252,60 @@ began below the fold and a click on a block looked like nothing.
   already shows its summary in the details pane and that a resizable pane
   "already solves a lot", so the card was dropped before it was written.
 
+## 6d. An external reviewer's walk (DEV.md 4c C154)
+
+A reviewer walked NanoFiltran on the live site -- About, run, Fig. 3, the op
+that feeds it, the dictionary, F1 on a parameter, the CSV -- and judged that
+the case is auditable but its first use needs too much of Choupo's insides.
+What changed, each from a declaration or a published fact, none computed:
+
+* **About this case** shows the case's own introduction: its `README.md`
+  (rendered as a lesson) where it carries one, else the first comment of its
+  propsDict that is NOT the Choupo banner (the dialog had shown the banner,
+  because it took the first comment).  The studies the propsDict declares
+  are listed as doors.
+* **Studies are declared, not inferred** (`studies ( ... )`, the views
+  grammar's record §4): the map's frames carry their titles, the tree lists
+  them first, the Overview reads them in the case's order -- each with its
+  purpose, its operations, its figures and tables -- and every operation's
+  row says the purpose of its study.
+* **Run status apart from the status of the evidence**
+  (`case/reviewScreen.ts`): `run` (done / failed / no result / not run, the
+  op's own `rc` published by the engine when non-zero) and `evidence` (the
+  op's curation verdict, else "no acceptance test in this run"); an AAD an op
+  type cannot publish (its declared activity fits and compares nothing) reads
+  "not applicable".
+* **Every block shows its state** (`case/propsMapState.ts`): run, failed, not
+  run or stale -- a word in ink AND colour, named in the legend.  Stale is
+  claimed per block only when every changed part of the case is one a block
+  reads (its propsDict block, the files it names; `case/staleness.ts`'s
+  per-part fingerprints) and travels downstream along the wires; otherwise
+  the map says once "case changed since the run".
+* **A poreTransport op shows its scientific table first** -- per J_v point
+  and ion, J_v, c_bulk, c_wall, c_perm, R_obs, R_real with the op's units
+  (the engine publishes `Jv_p<p>` and each diagnostic's unit now) -- shaped
+  by its schema's `x-choupo.pointTable`, the raw diagnostics folded after it.
+* **Figures**: a lone figure takes the pane's width, "Enlarge" opens it at
+  the window's size, the case's `note` sits under the title, and the CSV
+  export carries a `#` header (title, note, axes and series with units,
+  sources, the cited references).
+* **The selection and the expanded blocks survive a trip to another tab**
+  (the store keeps them per case), and a new selection is read from its top.
+* **F1 on a key in the Case tab** (`case/keyHelp.ts`): click a line, F1, and
+  a card gives the key's meaning, unit and model from the schema that
+  documents it -- an operation's or unit's, a record's by its `kind`
+  (`gui/schemas/records/membrane.schema.json`), the controlDict's -- or the
+  block's help with that scope said, never a guess.  The Outline names the
+  propsDict's studies, operations, views and references.
+* **The Log** lists a props log's OPERATIONS and groups its repeated `[tag]`
+  announcements with a count.
+
+Not done, said plainly: marking a record key the run did not READ (A_w at an
+imposed J_v) as inactive -- the engine says so only in a log sentence, and a
+mark parsed from prose would be the GUI inferring; the F1 card says it from
+the record schema instead.  The thermoPhysPropDict's v2 grammar has no schema
+in the GUI, so F1 there answers for the file.
+
 ## 7. Gates and tests
 
 * `gui/tests/propsMap.test.ts`: the registry coverage of `x-choupo`; the
@@ -269,6 +323,12 @@ began below the fold and a click on a block looked like nothing.
   cap is render-only (a source arm: the effect that opens the pane never saves
   a size).  `gui/tests/panelContract.test.ts` holds the new panel to the three
   questions every docked panel answers.
+* `gui/tests/c154PropsWalk.test.ts` (C154): the declared studies and the
+  purpose vocabulary held to the engine's list; the story that is not the
+  banner; run status apart from evidence; F1 on poreRadius, A_w, an op's
+  J_v, an undocumented key and a schemaless file; the point table; the
+  block states (stale attributed or said once); the CSV header; the log's
+  operations and grouped announcements.
 * `bin/curate/check_guide_anchors.py` now holds `OP_DEST`, `PROPS_MODEL_DEST`
   and the `op:<type>` fallback for every props op, beside the two tables it
   held.

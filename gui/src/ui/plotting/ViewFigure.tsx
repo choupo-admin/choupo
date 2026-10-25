@@ -39,19 +39,27 @@ License
   colour, so a reader matches them at a glance.  Every figure exports as
   PNG and SVG, every view as the engine's own CSV, and under each the
   sources of its numbers are listed.
+
+  DEV.md 4c C154: the case's own caveat for a view (`note`) is drawn under
+  its title, beside the figure it qualifies; a figure ENLARGES to the window
+  (same view, same data, more room -- never a rescaled or filtered one); and
+  the exported CSV carries a `#` header block that makes it read alone: the
+  title, the note, each axis with its unit, and every column's series with
+  its label, role, units, source and the citation of the reference it reads
+  (the engine's CSV body follows, unchanged).
 \*---------------------------------------------------------------------------*/
 
-import { useMemo, useRef } from "react";
-import { Box, Button, Group, ScrollArea, Stack, Table, Text } from "@mantine/core";
-import { IconDownload } from "@tabler/icons-react";
+import { useMemo, useRef, useState } from "react";
+import { Box, Button, Group, Modal, ScrollArea, Stack, Table, Text } from "@mantine/core";
+import { IconArrowsMaximize, IconDownload } from "@tabler/icons-react";
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore -- the basic-dist package has no types
 import Plotly from "plotly.js-basic-dist-min";
 
 import { Plot, PLOT_CONFIG, darkLayout } from "./plotly.js";
 import {
-  formatCell, plotSeries, tableRows,
-  type PostItem, type PostPlot, type PostRowsTable, type PostSeriesTable,
+  csvHeader, formatCell, plotSeries, tableRows,
+  type PostItem, type PostPlot, type PostReference, type PostRowsTable, type PostSeriesTable,
 } from "../../case/postProcessing.js";
 
 /** Six hues that hold their contrast on both the light and the dark chrome. */
@@ -94,8 +102,10 @@ function exportName(item: PostItem): string {
   return `${item.op || "case"}_${item.name}`;
 }
 
-function ExportButtons({ item, csv, png }: {
+function ExportButtons({ item, csv, png, references, onEnlarge }: {
   item: PostItem; csv: string; png?: (f: "png" | "svg") => void;
+  references?: readonly PostReference[];
+  onEnlarge?: () => void;
 }) {
   return (
     <Group gap={4} justify="flex-end" wrap="nowrap">
@@ -104,12 +114,21 @@ function ExportButtons({ item, csv, png }: {
       {png && <Button size="compact-xs" variant="default" leftSection={<IconDownload size={12} />}
         onClick={() => png("svg")}>SVG</Button>}
       <Button size="compact-xs" variant="default" leftSection={<IconDownload size={12} />}
-        onClick={() => download(`${exportName(item)}.csv`, csv)}>CSV</Button>
+        title="The engine's CSV, with a # header naming every column, its unit and its source"
+        onClick={() => download(`${exportName(item)}.csv`, csvHeader(item, references) + csv)}>CSV</Button>
+      {onEnlarge && <Button size="compact-xs" variant="default" leftSection={<IconArrowsMaximize size={12} />}
+        data-view-enlarge={`${item.op || "case"}/${item.name}`}
+        onClick={onEnlarge} title="The same figure, at the size of the window">Enlarge</Button>}
     </Group>
   );
 }
 
-function PlotFigure({ item, csv }: { item: PostPlot; csv: string }) {
+function PlotFigure({ item, csv, references, onEnlarge, height }: {
+  item: PostPlot; csv: string; references?: readonly PostReference[];
+  onEnlarge?: () => void;
+  /** a fixed plot height (the enlarged figure); omitted, sized by its legend */
+  height?: number | string;
+}) {
   const gd = useRef<HTMLElement | null>(null);
   const pts = useMemo(() => plotSeries(item, csv), [item, csv]);
   const colours = useMemo(() => seriesColours(item), [item]);
@@ -166,8 +185,8 @@ function PlotFigure({ item, csv }: { item: PostPlot; csv: string }) {
   const nLegend = traces.length;
   return (
     <Stack gap={4}>
-      <ExportButtons item={item} csv={csv} png={save} />
-      <Box style={{ height: 340 + 20 * Math.max(0, Math.ceil(nLegend / 2) - 1) }}
+      <ExportButtons item={item} csv={csv} png={save} references={references} onEnlarge={onEnlarge} />
+      <Box style={{ height: height ?? 340 + 20 * Math.max(0, Math.ceil(nLegend / 2) - 1) }}
         data-view-plot={`${item.op || "case"}/${item.name}`}>
         <Plot data={traces} layout={layout} config={{ ...PLOT_CONFIG,
             toImageButtonOptions: { ...PLOT_CONFIG.toImageButtonOptions, filename: exportName(item) } }}
@@ -180,7 +199,9 @@ function PlotFigure({ item, csv }: { item: PostPlot; csv: string }) {
   /* eslint-enable @typescript-eslint/no-explicit-any */
 }
 
-function TableFigure({ item, csv }: { item: PostSeriesTable | PostRowsTable; csv: string }) {
+function TableFigure({ item, csv, references }: {
+  item: PostSeriesTable | PostRowsTable; csv: string; references?: readonly PostReference[];
+}) {
   const cells = useMemo(() => tableRows(item, csv), [item, csv]);
   const head = item.shape === "series"
     ? [axisTitle(item.x), ...item.columns.map((c) =>
@@ -196,7 +217,7 @@ function TableFigure({ item, csv }: { item: PostSeriesTable | PostRowsTable; csv
   const rowRole = (r: number) => (item.shape === "rows" ? item.rows[r]?.role ?? "" : "");
   return (
     <Stack gap={4}>
-      <ExportButtons item={item} csv={csv} />
+      <ExportButtons item={item} csv={csv} references={references} />
       <ScrollArea type="auto">
         <Table striped withTableBorder withColumnBorders fz="xs" verticalSpacing={3}
           data-view-table={`${item.op || "case"}/${item.name}`}>
@@ -245,8 +266,25 @@ function Sources({ item }: { item: PostItem }) {
   );
 }
 
-/** One view, drawn: its title, the figure or table, its exports, its sources. */
-export function ViewFigure({ item, csv }: { item: PostItem; csv: string | undefined }) {
+/** The case's caveat for a view, beside the figure it qualifies. */
+function ViewNote({ note }: { note: string }) {
+  if (!note) return null;
+  return (
+    <Box data-view-note="" style={{ borderLeft: "3px solid var(--mantine-color-yellow-6)",
+      background: "light-dark(var(--mantine-color-yellow-0), rgba(250,204,21,0.08))",
+      padding: "4px 8px", borderRadius: 3 }}>
+      <Text size="xs"><Text span fw={700}>Read it right: </Text>{note}</Text>
+    </Box>
+  );
+}
+
+/** One view, drawn: its title, the case's note, the figure or table, its
+ *  exports, its sources.  `references` (the run's reference list) lets the
+ *  exported CSV cite what each column reads. */
+export function ViewFigure({ item, csv, references }: {
+  item: PostItem; csv: string | undefined; references?: readonly PostReference[];
+}) {
+  const [big, setBig] = useState(false);
   return (
     <Box data-view={`${item.op || "case"}/${item.name}`}
       style={{ border: "1px solid light-dark(var(--mantine-color-gray-3), var(--mantine-color-dark-4))",
@@ -255,17 +293,29 @@ export function ViewFigure({ item, csv }: { item: PostItem; csv: string | undefi
                minWidth: 0 }}>
       <Stack gap={6}>
         <Text size="sm" fw={600} style={{ lineHeight: 1.3 }}>{item.title}</Text>
+        <ViewNote note={item.note} />
         {csv === undefined ? (
           <Text size="sm" c="red.5">
             The run wrote no {item.file} -- the engine's views did not finish (see the Log).
           </Text>
         ) : item.kind === "plot" ? (
-          <PlotFigure item={item} csv={csv} />
+          <PlotFigure item={item} csv={csv} references={references} onEnlarge={() => setBig(true)} />
         ) : (
-          <TableFigure item={item} csv={csv} />
+          <TableFigure item={item} csv={csv} references={references} />
         )}
         <Sources item={item} />
       </Stack>
+      {item.kind === "plot" && csv !== undefined && (
+        <Modal opened={big} onClose={() => setBig(false)} size="95%" centered
+          title={<Text size="sm" fw={600}>{item.title}</Text>}>
+          {big && (
+            <Stack gap={6}>
+              <ViewNote note={item.note} />
+              <PlotFigure item={item} csv={csv} references={references} height="72vh" />
+            </Stack>
+          )}
+        </Modal>
+      )}
     </Box>
   );
 }

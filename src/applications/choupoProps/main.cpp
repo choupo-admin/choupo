@@ -612,7 +612,14 @@ try
                       //  from) -- see PropertyOperation::curation().  NOT
                       //  `validation`: that key is already this document's
                       //  top-level overlay AAD table.
-                      std::map<std::string, std::string> val; };
+                      std::map<std::string, std::string> val;
+                      //  each diagnostic's unit as the op declares it
+                      //  (diagnosticUnit; "" = none, not emitted), and the
+                      //  op's own return code (DEV.md 4c C154: a reader
+                      //  tells the RUN status from the status of the
+                      //  EVIDENCE, so a non-zero rc travels per op).
+                      std::map<std::string, std::string> units;
+                      int rc = 0; };
     std::vector<OpResult> opResults;
     std::map<std::string, std::vector<std::string>> opBlocks;
 
@@ -693,7 +700,12 @@ try
             verbosity);
 
         opResults.push_back({ opName, opType, diags, opProv,
-                              op->headline(), op->curation() });
+                              op->headline(), op->curation(), {}, rc });
+        for (const auto& kv : diags)
+        {
+            const std::string u = op->diagnosticUnit(kv.first);
+            if (!u.empty()) opResults.back().units[kv.first] = u;
+        }
         {
             views::Publication pub{ opName, opType, diags, {}, {}, op->publishedTables(), {} };
             for (const auto& kv : diags)
@@ -991,6 +1003,21 @@ try
                 std::cout << (h ? ", " : "") << "\"" << orr.head[h] << "\"";
             std::cout << "]";
         }
+        //  UNITS -- the op's own unit of each diagnostic it declares one for
+        //  (the diagnosticUnit the views hold every series to), so a reader
+        //  draws a number with its unit and never guesses one.
+        if (!orr.units.empty())
+        {
+            std::cout << ", \"units\": {";
+            std::size_t u = 0;
+            for (const auto& [key, val] : orr.units)
+                if (orr.diag.count(key) && std::isfinite(orr.diag.at(key)))
+                    std::cout << (u++ ? ", " : "") << "\"" << key << "\": " << jsonEscape(val);
+            std::cout << "}";
+        }
+        //  RC -- only when the op returned non-zero: absent means it ran to
+        //  its end (a refusal throws, and the run then publishes nothing).
+        if (orr.rc != 0) std::cout << ", \"rc\": " << orr.rc;
         std::cout << ", \"provenance\": {";
         std::size_t j = 0;
         for (const auto& [key, val] : orr.prov)

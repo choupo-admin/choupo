@@ -38,11 +38,39 @@ License
   the run's `validation` AAD), and a cell the run did not publish is EMPTY,
   never guessed.  What an operation DID is its schema's own description
   (`operationDescription`), never a second sentence kept here.
+
+  TWO QUESTIONS, TWO COLUMNS (DEV.md 4c C154).  An external reviewer read
+  `no claim` beside two empty AAD cells after a clean run and took them for
+  missing results: the RUN status (did the op run to its end?) and the
+  status of the EVIDENCE (what does its answer claim?) had been one column.
+  They are apart now.  `runState` is the run's word (done / failed / no
+  result / not run, the op's own rc where it returned one); the evidence is
+  the op's curation verdict where it publishes one, else "no acceptance test
+  in this run" -- never `validated` because it converged.  An AAD column an op
+  CANNOT fill (it fits nothing, it is compared with no dataset) is "not
+  applicable", decided by the op type's declared activity (its schema), so
+  an empty cell keeps meaning "applicable and not published".  The purpose
+  is the declared study's (case/propsStudies.ts).
 \*---------------------------------------------------------------------------*/
 
 import type { JsonDict } from "../dict/index.js";
 import type { OperationResult, ValidationBlock } from "../adapters/SolverAdapter.js";
-import { operationDescription } from "./operationSchemas.js";
+import { operationDescription, operationMapMeta } from "./operationSchemas.js";
+import { activityOf } from "./propsMap.js";
+import { declaredStudies, studyOfOp } from "./propsStudies.js";
+
+/** The run's own word for one operation. */
+export type RunState = "done" | "failed" | "noResult" | "notRun";
+
+export const RUN_STATE_WORD: Record<RunState, string> = {
+  done: "done", failed: "failed", noResult: "no result", notRun: "not run",
+};
+
+/** The activities whose answer is compared with a dataset (an AAD can be
+ *  published) and those that hold evidence out of a fit (a held-out AAD can
+ *  be published).  Every other activity makes neither number applicable. */
+const AAD_ACTIVITIES = new Set(["fit", "estimate", "compare"]);
+const HELD_OUT_ACTIVITIES = new Set(["fit", "estimate"]);
 
 export interface VerdictRow {
   name: string;
@@ -59,6 +87,17 @@ export interface VerdictRow {
   heldOutAadPct: number | null;
   /** false when the op is declared but the run published nothing for it */
   ran: boolean;
+  /** the RUN status, apart from the evidence (DEV.md 4c C154) */
+  runState: RunState;
+  /** the op's own non-zero return code, where it published one */
+  rc: number | null;
+  /** the declared study's purpose word ("" = in no declared study) */
+  purpose: string;
+  /** the declared study's name ("" = none) */
+  study: string;
+  /** can this op type publish the AAD / the held-out AAD at all? */
+  aadApplicable: boolean;
+  heldOutApplicable: boolean;
 }
 
 /** The point count keys, in the order an op is asked for one: the first it
@@ -96,10 +135,14 @@ function aadFor(op: string, validation: ValidationBlock[] | undefined): number |
   return null;
 }
 
-/** One row per DECLARED operation, in the propsDict's order. */
+/** One row per DECLARED operation, in the propsDict's order.  `runStatus` is
+ *  the whole run's ("done" / "error"; undefined = not run), `propsDict` the
+ *  case's (its declared studies give each row its purpose). */
 export function verdictRows(ops: JsonDict[], results: OperationResult[],
-                            validation?: ValidationBlock[]): VerdictRow[] {
+                            validation?: ValidationBlock[],
+                            runStatus?: string, propsDict?: JsonDict | null): VerdictRow[] {
   const out: VerdictRow[] = [];
+  const studyOf = studyOfOp(declaredStudies(propsDict));
   for (const op of ops) {
     if (!op || typeof op !== "object" || Array.isArray(op)) continue;
     const name = typeof op["name"] === "string" ? op["name"] : "";
@@ -109,6 +152,13 @@ export function verdictRows(ops: JsonDict[], results: OperationResult[],
     const d = r?.diagnostics ?? {};
     const key = POINT_KEYS.find((k) => typeof d[k] === "number" && Number.isFinite(d[k]));
     const held = d["aad_heldout_pct"];
+    const rc = typeof r?.rc === "number" && r.rc !== 0 ? r.rc : null;
+    const runState: RunState = runStatus === undefined ? "notRun"
+      : r === undefined ? (runStatus === "done" ? "noResult" : "failed")
+      : rc !== null ? "failed" : "done";
+    const meta = operationMapMeta(type);
+    const activity = meta ? activityOf(meta, op) : "";
+    const st = studyOf.get(name);
     out.push({
       name, type,
       did: firstSentence(operationDescription(type)),
@@ -117,6 +167,13 @@ export function verdictRows(ops: JsonDict[], results: OperationResult[],
       aadPct: aadFor(name, validation),
       heldOutAadPct: typeof held === "number" && Number.isFinite(held) ? held : null,
       ran: r !== undefined,
+      runState, rc,
+      purpose: st?.purpose ?? "",
+      study: st?.name ?? "",
+      //  an op type with no declared activity keeps the cells (an absence
+      //  of a declaration is not evidence that a number cannot exist)
+      aadApplicable: !meta || AAD_ACTIVITIES.has(activity),
+      heldOutApplicable: !meta || HELD_OUT_ACTIVITIES.has(activity),
     });
   }
   return out;

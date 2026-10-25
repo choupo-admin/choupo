@@ -82,3 +82,60 @@ export function endsUnitPhase(line: string): boolean {
   return /^=+\s+Flowsheet summary\s+=+/.test(line)
       || /^Recycle outer loop \(/.test(line);
 }
+
+/*  OPERATION BANNERS (DEV.md 4c C154).  choupoProps prints one per operation,
+ *  `>>>  Operation [k]:  <name>   (type = <T>)` (src/applications/
+ *  choupoProps/main.cpp) -- the same shape, another word.  The log
+ *  navigator said "No unit banners found" over a props log carrying 22 of
+ *  them; it lists these where the log has no unit banner. */
+const OP_BANNER = /^>>>\s+Operation\s+\[(\d+)\]:\s+(\S+)\s+\(type\s*=\s*(\S+)\s*\)/;
+
+/** Every OPERATION banner of a props log, in log order (= run order). */
+export function parseOperationBanners(log: string): UnitBannerAt[] {
+  const out: UnitBannerAt[] = [];
+  if (!log) return out;
+  const lines = log.split("\n");
+  for (let i = 0; i < lines.length; i++) {
+    const m = OP_BANNER.exec(lines[i] ?? "");
+    if (m) out.push({ unitIndex: parseInt(m[1]!, 10), qualifiedName: m[2]!, type: m[3]!, line: i + 1 });
+  }
+  return out;
+}
+
+/** A repeated ANNOUNCEMENT of the log, grouped: the engine prints a
+ *  `[tag] ...` line at every site that raises it (a J_v imposed at every
+ *  point, an unreviewed record per component), and a reader scanning a log
+ *  of 800 lines needs the kinds and their counts first.  Lines are grouped
+ *  by their tag and their text with numbers and quoted names folded, so
+ *  "[DSPM-DE] J_v IMPOSED by the caller (1e-06 m/s)" and "(5e-05 m/s)" are
+ *  one kind; the count and every line stay, nothing is dropped. */
+export interface AnnouncementGroup {
+  tag: string;
+  /** the first line's text, as printed */
+  example: string;
+  count: number;
+  /** 1-based log lines, in order */
+  lines: number[];
+}
+
+export function groupAnnouncements(log: string): AnnouncementGroup[] {
+  const by = new Map<string, AnnouncementGroup>();
+  if (!log) return [];
+  const lines = log.split("\n");
+  for (let i = 0; i < lines.length; i++) {
+    const l = lines[i] ?? "";
+    if (l.includes("<<<Choupo:result-begin>>>")) break;
+    const m = /^\s*\[([A-Za-z][A-Za-z0-9 _-]*)\]\s+(.*)$/.exec(l);
+    if (!m) continue;
+    const tag = m[1]!;
+    const norm = m[2]!
+      .replace(/'[^']*'|"[^"]*"/g, "'…'")
+      .replace(/[-+]?\d+(\.\d+)?([eE][-+]?\d+)?/g, "#")
+      .slice(0, 80);
+    const key = `${tag}\u0000${norm}`;
+    const g = by.get(key) ?? { tag, example: m[2]!.trim(), count: 0, lines: [] };
+    g.count++; g.lines.push(i + 1);
+    by.set(key, g);
+  }
+  return [...by.values()].sort((a, b) => b.count - a.count || a.lines[0]! - b.lines[0]!);
+}

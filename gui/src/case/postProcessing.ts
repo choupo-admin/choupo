@@ -59,6 +59,9 @@ export interface PostOrigin {
   origin: "default" | "declared";
   /** series | profile | parity | residuals | table */
   type: string;
+  /** the case's own caveat for this view (`note "...";`, DEV.md 4c C154):
+   *  what a reader must know to read it right; "" none */
+  note: string;
 }
 
 export interface PostSeries {
@@ -152,6 +155,7 @@ export function shapePostProcessing(raw: unknown): PostProcessingBlock | undefin
     const from: PostOrigin = {
       op: str(it.op), origin: it.origin === "default" ? "default" : "declared",
       type: str(it.type) || (it.kind === "plot" ? "series" : "table"),
+      note: str(it.note),
     };
     if (it.kind === "plot") {
       items.push({
@@ -272,4 +276,49 @@ export function viewGroups(block: PostProcessingBlock): ViewGroup[] {
     else out.push({ op: it.op, origin: "default", items: [it] });
   }
   return out;
+}
+
+/** The `#` header an exported CSV carries, so the file reads on its own
+ *  (DEV.md 4c C154): every line is metadata the engine published for this
+ *  view -- nothing is computed -- and a reader that skips `#` lines
+ *  (pandas `comment="#"`, R `comment.char`) reads the body unchanged. */
+export function csvHeader(item: PostItem, references: readonly PostReference[] = []): string {
+  const out: string[] = [];
+  const one = (s: string) => s.replace(/\s+/g, " ").trim();
+  out.push(`# Choupo view ${item.op || "case"}/${item.name} (${item.origin}, ${item.type})`);
+  if (item.title) out.push(`# title: ${one(item.title)}`);
+  if (item.note) out.push(`# note: ${one(item.note)}`);
+  const unit = (u: string) => (u && u !== "-" ? u : "dimensionless");
+  const cited = new Set<string>();
+  const cite = (src: string) => {
+    for (const r of references) if (src.includes(`reference ${r.name} `)) cited.add(r.name);
+  };
+  if (item.kind === "plot") {
+    out.push("# columns: series = the series name below; x, y = its point; yError = the half-width"
+      + " of its error bar where the series declares one (what it measures is the note's), empty otherwise");
+    out.push(`# x: ${one(item.xAxis.label)} [${unit(item.xAxis.unit)}]`);
+    out.push(`# y: ${one(item.yAxis.label)} [${unit(item.yAxis.unit)}]`);
+    for (const s of item.series) {
+      out.push(`# series ${s.name}: ${one(s.label)} -- ${s.role}; x [${unit(s.xUnit)}], y [${unit(s.yUnit)}]`
+        + `${s.yError ? "; carries yError" : ""}; source: ${one(s.source)}`);
+      cite(s.source);
+    }
+  } else if (item.shape === "series") {
+    out.push(`# x: ${one(item.x.label)} [${unit(item.x.unit)}]`);
+    for (const c of item.columns) {
+      out.push(`# column ${c.name}: ${one(c.label)} [${c.relative ? "relative difference" : unit(c.unit)}]`
+        + `${c.role ? ` -- ${c.role}` : ""}${c.source ? `; source: ${one(c.source)}` : ""}`);
+      cite(c.source ?? "");
+    }
+  } else {
+    for (const c of item.columns) out.push(`# column ${c.name}: ${one(c.label)} [${unit(c.unit)}]`);
+    for (const r of item.rows) {
+      out.push(`# row ${r.name}: ${one(r.label)}${r.role ? ` -- ${r.role}` : ""}`
+        + `${r.relative ? " (relative difference)" : ""}${r.source ? `; source: ${one(r.source)}` : ""}`);
+      cite(r.source);
+    }
+  }
+  for (const r of references)
+    if (cited.has(r.name)) out.push(`# reference ${r.name} (${r.role}, ${r.file}): ${one(r.citation)}`);
+  return out.join("\n") + "\n";
 }
