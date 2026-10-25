@@ -120,7 +120,7 @@ the comparison a group should make with the basic-design stage in hand,
 not this one.
 
 The fixed capital, sized on assumed U values and costed by Turton, is
-35.2 M EUR against 41.4 M EUR at 150 bar (a 56 bar design pressure, one
+35.2 M EUR against 41.4 M EUR at 150 bar (a 55 bar g design pressure, one
 compressor fewer, carbon steel wherever the 700 K rule allows; the run's
 equipment table itemises it); the NPV is −489 M EUR
 against −493 M EUR. Class 4 is −30 % / +50 %: those two capitals are inside

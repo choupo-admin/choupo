@@ -589,7 +589,7 @@ def build(A, B, C, sfA, sfC, salA, salC):
     why_g = {
         "compressors": f"The recycle compressor's declared power, {rcA:g} → {rcC:g} kW (above). "
                        "*Pressure-drop model.*",
-        "converter": "The space-velocity vessel → one shell around beds and coolers at 167 bar. "
+        "converter": "The space-velocity vessel → one shell around beds and coolers at 166 bar g. "
                      "The coolers' shells are counted twice (here as converter height, and again "
                      "inside their own exchanger cost), an over-estimate C69 names. *Reactor model "
                      "+ one-shell construction.*",
