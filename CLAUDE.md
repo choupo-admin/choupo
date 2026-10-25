@@ -1203,9 +1203,12 @@ report's reading of an under-declared stream, so the case now declares
 `phase gas;`.  ENUMERATED, not fixed (none is in the flagship):
 `evaporativeDryer`, `coolingTower`, `absorber`,
 `stripper`, `phaseChanger`,
-the ADIABATIC `mixer` (its DECLARED-T form, which published no duty at
-all, closed 2026-10-17 by DEV.md 4c C74: it publishes `Q_kW = H(out) -
-SUM H(in)` through `priceState`), `adiabaticFlash` (and `evaporator`,
+(the ADIABATIC `mixer` was taken off 2026-10-25: every inlet priced
+through `priceState` + `priceSolids`, T_out the temperature at which the
+outlet, resolved at its own equilibrium, carries that enthalpy -- cavett01's
+plant residual -549 319 -> +0.002 kW; `adiabaticFlash`'s inlet priced the
+same way; its DECLARED-T form had closed 2026-10-17 by DEV.md 4c C74,
+`Q_kW = H(out) - SUM H(in)` through `priceState`), (and `evaporator`,
 taken off the list 2026-10-05;
 and `valve`, which this list had MISSED -- found by C64's letdown witness,
 38.66 kW, and closed 2026-10-11 by DEV.md 4c C65 item d, which is why an

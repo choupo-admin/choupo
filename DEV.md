@@ -1660,6 +1660,17 @@ accepts today, and that is a policy call.
 > 1e-12 on 23 cases).  Goldens updated ROW BY ROW (only rows out of
 > tolerance or no longer published: 84 across 13 cases), never by a
 > blanket --record, on Vitor's delegated authority.
+> 2026-10-25: C131 phase 1 DONE (C124 item 1 validated; column17's golden
+> had been recorded before G28 -- 53 rows caught up, row by row; the C126
+> figure rebuilds byte for byte); the 2026-10-21 delegated decisions DONE
+> -- a compressor REFUSES liquid in its suction (three recycle-tear seeds
+> declared `phase gas;`; benchmark D gains a knock-out drum, C5 144.54 ->
+> 140.00 kW, methanol 1.2098 -> 1.3967 mol/s -- the white paper and the
+> C&CE draft quote the old benchmark D numbers and must be re-read), and
+> the ADIABATIC mixer priced as the report prices it: cavett01's plant
+> residual -549 319 -> +0.002 kW, the C&CE reviewer's central objection
+> (section 2) answered in the engine; 47 rows moved row by row.  OPEN:
+> userOp03_case_rate_law at 133.33 % mass closure (pre-existing).
 
 > **C146. SPIRAL-WOUND ELEMENTS BY STANDARD SIZE AND SPACER, ARRANGED IN
 > SERIES AND PARALLEL, MULTI-ION THROUGHOUT (Vitor, 2026-10-24, with
