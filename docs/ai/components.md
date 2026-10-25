@@ -57,7 +57,7 @@ level up.)
 <!-- AUTO-GENERATED below this line by bin/regen-llm-docs. -->
 <!-- Edit the .dat files in data/standards/components/, then re-run. -->
 
-## Components (604 entries)
+## Components (601 entries)
 
 ### Volatile (curated for VLE)
 
@@ -561,8 +561,6 @@ level up.)
 | `CaCl2` | 110.98 | nonvolatile | — | — | — | — | — | — | — | — | ν=3 |
 | `CH` | 13.019 | nonvolatile | — | ✓ | — | ✓ | — | — | — | — |   |
 | `CH2` | 14.027 | nonvolatile | — | ✓ | — | ✓ | — | — | — | — |   |
-| `CH2_S` | 14.027 | nonvolatile | — | ✓ | — | ✓ | — | — | — | — |   |
-| `CH2CO` | 42.037 | nonvolatile | — | ✓ | — | ✓ | — | — | — | — |   |
 | `CH2OH` | 31.034 | nonvolatile | — | ✓ | — | ✓ | — | — | — | — |   |
 | `CH3` | 15.0345 | nonvolatile | — | ✓ | — | ✓ | — | — | — | — |   |
 | `CH3CO` | 43.045 | nonvolatile | — | ✓ | — | ✓ | — | — | — | — |   |
@@ -597,7 +595,6 @@ level up.)
 | `NCO` | 42.017 | nonvolatile | — | ✓ | — | ✓ | — | — | — | — |   |
 | `NH` | 15.0146 | nonvolatile | — | ✓ | — | ✓ | — | — | — | — |   |
 | `NH2` | 16.0226 | nonvolatile | — | ✓ | — | ✓ | — | — | — | — |   |
-| `NNH` | 29.022 | nonvolatile | — | ✓ | — | ✓ | — | — | — | — |   |
 | `NO3` | 62.004 | nonvolatile | — | ✓ | — | ✓ | — | — | — | — |   |
 | `O` | 15.999 | nonvolatile | — | ✓ | — | ✓ | — | — | — | — |   |
 | `OH` | 17.008 | nonvolatile | — | ✓ | — | ✓ | — | — | — | — |   |

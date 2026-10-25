@@ -161,9 +161,9 @@ stated, not compared and forgiven.
 |---|---|---|---|---|
 | N2H2 | 300.936 | 211.859 | −89.077 | yes (.THR) |
 | C2O | 378.858 | 291.038 | −87.820 | yes (.THR) |
-| NCO | 131.796 | 177.465 | +45.669 | no (GRI-Mech) |
+| NCO | 131.796 | 177.465 | +45.669 | no (GRI-Mech at the time; NASA/TP-2002-211556 since 2026-10-25, C164) |
 | C4H2 | 460.362 | 449.997 | −10.365 | yes (.THR) |
-| CH2OH | −14.628 | −8.900 | +5.728 | no (GRI-Mech) |
+| CH2OH | −14.628 | −8.900 | +5.728 | no (GRI-Mech at the time; NASA/TP-2002-211556 since 2026-10-25, C164) |
 
 `N2H2` is almost certainly not an error in either table: trans-diazene and the
 1,1- isomer differ by about that much, and TM-4513 names many species by
