@@ -20772,8 +20772,8 @@ solves it by fixed-point iteration on $x = 1/\sqrt{f}$,
        \frac{\varepsilon/D}{3.7} + \frac{2.51\,x_k}{\mathrm{Re}}\right),
 \end{equation}
 seeded with the Haaland value below so it converges in a handful of steps
-(this is the glass-box \code{f\_colebrook} you can read in
-\file{Pipe.cpp}).
+(this is the glass-box \code{Colebrook} correlation you can read in
+\file{FrictionFactorCorrelation.cpp}).
 
 \paragraph{An explicit shortcut: Haaland.}  To avoid the iteration,
 Haaland~\cite{Haaland1983} gives an explicit approximation within
@@ -20789,11 +20789,46 @@ $\sim$2\,\% of Colebrook over the whole turbulent range:
 Choupo's \code{Haaland} and \code{Colebrook} models both fall back to the
 exact $64/\mathrm{Re}$ of Eq.~\eqref{eq:lam} below $\mathrm{Re} = 2300$.
 
+\paragraph{The transition band ($2300 \le \mathrm{Re} < 4000$): no
+correlation.}  Between the two regimes there is no friction law to give.
+Laminar pipe flow is, as far as is known, linearly stable at every
+$\mathrm{Re}$ --- a small enough disturbance dies away --- but above
+$\mathrm{Re}\approx 2000$ a \emph{large} enough one makes it turbulent, so
+whether a given line runs laminar, turbulent or intermittent (turbulent
+puffs travelling through laminar flow) depends on the disturbances it meets
+--- the inlet, the stillness of the supply, vibration, the wall --- and
+\emph{not on $\mathrm{Re}$ alone}.  The state also depends on the path: a
+flow brought up gently from rest can stay laminar far above the
+$\mathrm{Re}$ at which an already turbulent flow, slowed down, becomes
+laminar again.  Reynolds saw all of this in 1883~\cite{Reynolds1883}: with
+the greatest care over the stillness of his supply tank the breakdown was
+postponed to $\mathrm{Re}\approx 13\,000$, a coil of wire in the tube brought
+eddies in at less than half the previous critical velocity, and the velocity below which
+existing eddies die out was lower again, in his ratio of 43.7 to 278 ---
+$\mathrm{Re}$ close to 2000~\cite{MukundHof2018}.  Following puffs for very
+long times, the onset of \emph{sustained} turbulence has since been placed
+near $\mathrm{Re} = 2040$~\cite{Avila2011}, between 2020 (every flow
+eventually laminar) and 2060 (turbulence persists)~\cite{MukundHof2018}.
+The 2300 and 4000 that bound Choupo's band are conventions, not that
+critical point.  So in the band $f$ is not a function of $\mathrm{Re}$: at
+one $\mathrm{Re}$ the same pipe can carry laminar flow at $64/\mathrm{Re}$,
+turbulent flow at roughly twice that, or a mixture that changes in time.
+No correlation predicts it, and a design that sits in the band is one that
+should be moved out of it (change $D$ or the flow).  A \code{pipe} whose
+$\mathrm{Re}$ falls there is \textbf{announced} once, at its site and in the
+end-of-run caveat block, as a \code{validity} advisory saying exactly this
+(\file{Pipe.cpp}, \code{pipeTransition}); its number is kept, because a
+solver needs a continuous $f$, and is not moved.  The EduTool \emph{Why
+engineering correlations are simple} (page~5) draws the band and tells the
+history.
+
 \paragraph{One expression for every regime: Churchill (the default).}
-Churchill~\cite{Churchill1977} stitched laminar, transition and turbulent
-flow into a \emph{single} explicit formula valid for every $\mathrm{Re}$
-and every $\varepsilon/D$ --- so it needs no laminar branch and is smooth
-through the awkward transition zone:
+Churchill~\cite{Churchill1977} joined the laminar law and a turbulent branch
+into a \emph{single} explicit formula defined for every $\mathrm{Re}$ and
+every $\varepsilon/D$ --- so it needs no laminar branch and is continuous
+through the transition band.  Through that band its value is an
+\emph{interpolation} that keeps a solver continuous, not a prediction: the
+paragraph above is why there is no curve there for it to describe.
 \begin{align}
    f &= 8\left[\left(\frac{8}{\mathrm{Re}}\right)^{12}
               + \frac{1}{(A+B)^{3/2}}\right]^{1/12},
@@ -20808,8 +20843,10 @@ through the awkward transition zone:
 As $\mathrm{Re}\to0$ the $(8/\mathrm{Re})^{12}$ term dominates and
 Eq.~\eqref{eq:churchill} collapses to $f = 8(8/\mathrm{Re}) =
 64/\mathrm{Re}$ --- it reproduces the laminar law automatically.  This is
-why Choupo defaults to \code{Churchill}; the other two are offered for
-pedagogy and for matching textbook hand calculations.
+why Choupo defaults to \code{Churchill}: its continuity, not any claim about
+the transition.  The other two are offered for pedagogy and for matching
+textbook hand calculations; in the band they are turbulent fits evaluated
+below the $\mathrm{Re}$ they were fitted for, and the engine flags them.
 
 \subsection{Minor losses and the assembled \texorpdfstring{$\Delta
 P$}{dP}}
@@ -24795,9 +24832,30 @@ Colebrook used by Choupo's \code{Haaland} model.
 
 \bibitem{Churchill1977} Churchill, S. W., ``Friction-Factor Equation
 Spans All Fluid-Flow Regimes,'' \emph{Chem. Eng.}\ \textbf{84}(24),
-91--92, 1977.  The single explicit correlation valid across laminar,
-transition and turbulent flow; Choupo's default \code{Churchill}
-model.
+91--92, 1977.  The single explicit expression defined for every
+$\mathrm{Re}$, an interpolation through the transition band; Choupo's
+default \code{Churchill} model.
+
+\bibitem{Reynolds1883} Reynolds, O., ``An Experimental Investigation of
+the Circumstances Which Determine Whether the Motion of Water Shall Be
+Direct or Sinuous, and of the Law of Resistance in Parallel Channels,''
+\emph{Phil.\ Trans.\ R.\ Soc.\ London} \textbf{174}, 935--982, 1883.  The
+two critical velocities (art.\ 16), the flashes and the coil of wire
+(art.\ 23).  Reynolds gives the critical velocities as formulas, not as
+Reynolds numbers.
+
+\bibitem{MukundHof2018} Mukund, V. and Hof, B., ``The Critical Point of the
+Transition to Turbulence in Pipe Flow,'' \emph{J.\ Fluid Mech.}\
+\textbf{839}, 76--94, 2018 (preprint arXiv:1709.06372).  Read in the
+preprint: Reynolds' values as Reynolds numbers (about 2000 and 13\,000), the
+dependence of the natural transition point on finite disturbances, and the
+bracket $2020 < \mathrm{Re}_c < 2060$.
+
+\bibitem{Avila2011} Avila, K., Moxey, D., de Lozar, A., Avila, M., Barkley,
+D. and Hof, B., ``The Onset of Turbulence in Pipe Flow,'' \emph{Science}
+\textbf{333}, 192--196, 2011.  The abstract was read; the value
+$\mathrm{Re}_c \approx 2040$ is cited as Mukund and Hof report
+it.
 
 \bibitem{Butterworth1975} Butterworth, D., ``A Comparison of Some
 Void-Fraction Relationships for Co-Current Gas--Liquid Flow,''
