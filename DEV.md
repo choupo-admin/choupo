@@ -1528,6 +1528,44 @@ accepts today, and that is a policy call.
 > final; }` layout draws what the steady flowsheet and the sizing pass
 > already hold.
 
+> **C157. CHOUPO READY FOR AN OUTSIDE MEMBRANE RESEARCHER (Vitor,
+> 2026-10-25, with an e-mail of 2026-10-21 from a water-treatment R&D
+> company asking for NanoFiltran "to better predict the rejection of
+> specific ions by NF membranes ... to plan our experiments more
+> efficiently" and its licence terms: "queria preparar o Choupo para
+> responder").**  Measured on main: the original NanoFiltran source is in
+> the tree under the MIT licence, copyright Vitor Geraldes and Ana Maria
+> Alves, IST (`bin/curate/nanofiltran/README.md`, "Licences"); Choupo
+> reproduces it code to code (C138) and goes beyond it (the solved pore,
+> C142/C144; multi-ion polarisation; the membrane fit with a held-out
+> verdict and the fitted record a unit reads, C149/C152; spiral elements
+> in series and parallel, C146); the site can download a case as a zip
+> and open a folder or zip back (`gui/src/case/saveCase.ts`,
+> `gui/src/cases/loadCase.ts`), so a researcher can run his own data
+> without installing anything.  THE GAP that matters for water treatment:
+> of the 53 aqueous species in `data/standards/species/`, ONLY eight carry
+> the radius and the free-solution diffusivity DSPM-DE needs (Na, K, Ca,
+> Mg, H, OH, Cl, SO4) -- nitrate, bicarbonate, carbonate, fluoride,
+> bromide, ammonium, lithium, strontium, barium, phosphates, borate,
+> silica, iron and manganese have none, so a real water cannot be
+> simulated.  Scope: (1) the transport data of those species, each value
+> from a citable, licence-compatible primary source (the public-domain
+> PHREEQC databases carry measured diffusion coefficients with
+> references; the radius by ONE declared rule from D0 where the model
+> asks for a Stokes radius, or from a primary measurement -- never typed
+> from a no-grant compilation), reviewStatus as curation requires; (2)
+> the researcher's path made explicit: membrane24 (fit then simulate) as
+> the template, its README saying "replace these files with your data",
+> the download -> edit -> open round trip verified on the live site, one
+> quick-start page (what goes in, what comes out, what the verdict
+> means, what the model cannot do); (3) the C154 usability fixes (About,
+> evidence status, F1 on keys) before the e-mail goes; (4) the reply
+> drafted for Vitor -- the licence answer (NanoFiltran MIT, Choupo
+> GPL-3.0-or-later, free for commercial use, the name a trademark) and
+> the honest scope (a model whose parameters must be fitted per membrane
+> and solution; what was verified and what was validated).  Status:
+> (1)-(2) dispatched 2026-10-25; the draft given to Vitor in chat.
+
 > **C156. THE PLOTS PAGE NAVIGATES BY UNIT TOO (Vitor, 2026-10-25, on
 > ammonia02_full_plant's Plots page: "do lado esquerdo devia de haver uma
 > tree para se associar um dado plot a operacao unitaria respetiva!
