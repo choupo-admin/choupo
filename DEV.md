@@ -1553,6 +1553,9 @@ accepts today, and that is a policy call.
 > order -- the Deen1987 cite -- and the origin census recount after the
 > C157 provenance blocks).
 > Status: recorded; dispatched the same hour.
+> The container suite's six FAILs are cleared on main: the four probes
+> (60a308466, 817ea51af -- the pump probe; `studies` dropped by
+> props_views.strip_views), the bibliography and the census (9638d1cd9).
 
 > **C160. THERMODYNAMICS AND KINETICS TOP NOTCH: A PARITY PROGRAMME
 > AGAINST AN OPEN REFERENCE LIBRARY (Vitor, 2026-10-25, a programme text
@@ -1683,6 +1686,16 @@ accepts today, and that is a policy call.
 > drain valve, low/wide vs high/narrow) and the reactor ladder's declared
 > 0.90 against 0.841 at equilibrium.  The four open questions put with
 > the sample were not answered and stay open.
+> LANDED 2026-10-25 on main (1147c8363, 832ea6a59, 975fa802a): the sample,
+> the eight corrections, and the same corrections in the SEVEN lesson
+> steps the quiz points to (plus the FEED row of the FEL stage table) --
+> the general's disagreement, taken: a quiz corrected over a step that
+> still makes the claim contradicts itself on one page.  `--gui` 36/0,
+> 6465 GUI tests.  Put to Vitor: the general's added clause in the reactor
+> ladder Q3 (with a non-ideal EoS both reactors read the same phi, so
+> pressure moves them together); whether check_friction_correlations's
+> prose ("the regime is not a function of Re") takes the same wording.
+> The other 58 tools wait for the four open questions.
 
 > **C157. CHOUPO READY FOR AN OUTSIDE MEMBRANE RESEARCHER (Vitor,
 > 2026-10-25, with an e-mail of 2026-10-21 from a water-treatment R&D
