@@ -1528,6 +1528,42 @@ accepts today, and that is a policy call.
 > final; }` layout draws what the steady flowsheet and the sizing pass
 > already hold.
 
+> **C160. THERMODYNAMICS AND KINETICS TOP NOTCH: A PARITY PROGRAMME
+> AGAINST AN OPEN REFERENCE LIBRARY (Vitor, 2026-10-25, a programme text
+> -- "CHOUPO -- Cantera 3.2 Scientific Parity Programme" -- with "Podes ver
+> se isto faz falta para consolidarmos o choupo?  Eu queria ter a
+> termodinamica e cinetica top notch!").**  The text asks, BEFORE any
+> code: an inventory of what Choupo has, a parity matrix against the
+> library's 3.2 documentation and examples (thermodynamics, homogeneous
+> and heterogeneous kinetics, transport, reactors, 1-D flames,
+> electrochemistry, plasma), the confirmed gaps, an architecture, a
+> phased plan, oracle cases with quantitative tolerances (implementation
+> error vs numerical-method error vs legitimate formulation difference),
+> the numerical and scientific risks; the library used ONLY as an external
+> numerical oracle, never as a hidden engine; zero FAIL on the full suite
+> before each phase lands; licences and provenance checked.  Measured on
+> main before judging: Choupo already has NASA-7 thermo (the GRI-Mech 3.0
+> and Burcat-family combustion library; `bin/curate/import_gibbs_nasa.py`
+> and `verify_against_nasa.py` already import the library as a CURATION
+> oracle, never at run time), Troe / Lindemann fall-off and third bodies
+> (src/thermo/reaction/, BatchReactor), LHHW and written rate laws
+> (C67), Gibbs minimisation and equilibrium reactors, ideal reactors
+> (batch, CSTR, PFR, dynamic), Chung / Wilke / Chapman-Enskog transport;
+> it has NO sticking-coefficient surface kinetics with site coverages,
+> no mixture-averaged or multicomponent diffusion fluxes, no 1-D flame
+> and no plasma.  COMMANDER'S JUDGEMENT, put to him: the THERMODYNAMICS
+> and KINETICS half is in Choupo's line (process simulation, glass box)
+> and a parity matrix there is a strong validation layer -- worth doing;
+> 1-D flames and plasma are BREADTH the project says it does not chase
+> (CLAUDE.md section 1: "not aiming for breadth") and are his call
+> (architecture / scope); electrochemistry only as far as the process
+> units need it.  Taken as the stated default, reversible: PHASE 0 only
+> -- the inventory, the matrix over ALL areas (so he decides with the
+> whole picture), the confirmed gaps, the oracle cases and tolerances for
+> the thermo + kinetics + ideal-reactor + transport scope, the
+> architecture and phases -- a document, on a branch, landing after his
+> full-suite run; no engine code until he rules on the scope.
+
 > **C159. FROM THE EXPLORER TO THE FIT THAT MADE A PAIR, AND A STUDENT'S
 > OWN FIT (Vitor, 2026-10-25: "o explorer permite mostrar a evidencia e
 > os ajustes para um dado composto/binario.  Mas agora com o props podemos
