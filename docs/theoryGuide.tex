@@ -19571,6 +19571,22 @@ electroneutrality, which drives $\mathrm{Cl^-}$ to $R_\text{obs}\approx-2$.
 The run prints the stiffness (migration over net flux) of every first
 station.
 
+\paragraph{Reading a solved pore on screen.}  The \code{poreTransport}
+bench publishes, for every operation, the numbers of this chapter beside
+each other, so none has to be recomputed by hand: per ion, $\lambda_i$,
+$K_{d,i}$, $K_{c,i}$, $\Phi_{S,i}$ and the Born factor
+$e^{-\Delta W_i/k_BT}$; per ion, face and $J_v$ point, the activity ratio
+$g_i$, the Donnan factor and the partition coefficient
+\eqref{eq:dspmde-partition} as read off the solved pore (so that the
+product of the factors equalling it is a check, not a construction), the
+pore's face concentrations and $\mathrm{Pe}_i$ \eqref{eq:dspmde-Pe}; per
+point, the potential across the membrane split into the feed Donnan jump,
+the drop inside the pore and the permeate Donnan jump, the stiffness, and
+the Newton's final $\|\mathbf{F}\|_2$ against its tolerance with the
+closure checks of \S\ref{sec:dspmde-newton} (electroneutrality, zero
+current, flux constancy).  An excluded ion is published as excluded.  The
+console prints the same as a per-ion ``why'' table.
+
 \paragraph{How many nodes --- it depends on what is reported.}  Measured
 on study C (the case's six node counts, plus 801 and 1601 nodes, each
 operation writing its pore profile; the reference is the case's finest
