@@ -174,7 +174,7 @@ def main() -> int:
         #  sabotage that renamed only the `if` line left this arm green -- the
         #  gate was unwired and the check still said it was in the suite.
         suite = (ROOT / "bin/runTests").read_text(errors="ignore")
-        if not re.search(r'if\s+"\$ROOT/bin/curate/check_ice_freezing\.py"',
+        if not re.search(r'if\s+(?:gate_exec\s+)?"\$ROOT/bin/curate/check_ice_freezing\.py"',
                          suite):
             fail.append(
                 "check_ice_freezing.py exists but is NOT wired into "
