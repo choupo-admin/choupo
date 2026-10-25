@@ -37,6 +37,7 @@ License
   "infer-from-value" form -- no GUI regression.
 \*---------------------------------------------------------------------------*/
 
+import type { PointTableDecl } from "./opPointTable.js";
 
 export interface OperationField {
   key: string;
@@ -105,6 +106,13 @@ for (const [path, mod] of Object.entries(GLOB)) {
   RAW[name] = (mod as { default?: RawSchema }).default ?? (mod as RawSchema);
 }
 
+/** An operation type's schema as written (its `properties` nested as the
+ *  JSON states them), or null -- what the Case tab's key help walks
+ *  (case/keyHelp.ts, DEV.md 4c C154). */
+export function rawOperationSchema(opType: string): unknown {
+  return RAW[opType] ?? null;
+}
+
 /** An operation type's own description (its schema's), or undefined where no
  *  schema describes it -- what the review screen says an operation DID, so the
  *  sentence has one home: the schema beside the grammar it documents. */
@@ -165,6 +173,9 @@ export interface OpMapMeta {
   models?: OpModelSlot[];
   data?: OpDataSlot[];
   writes?: OpDataSlot[];
+  /** How the op's per-point numbers tabulate (case/opPointTable.ts, DEV.md
+   *  4c C154): its keys with `{p}` / `{ion}` slots and their labels. */
+  pointTable?: PointTableDecl;
 }
 
 /** The map declaration of an op type, or null where its schema carries none

@@ -47,11 +47,11 @@ License
 
 import { Tokenizer, type Token } from "../dict/tokenizer.js";
 
-export type PropsListName = "operations" | "views" | "references";
+export type PropsListName = "operations" | "views" | "references" | "studies";
 export interface BlockLines { line: number; endLine: number }
 export type PropsBlockIndex = Record<PropsListName, Map<string, BlockLines>>;
 
-const LISTS: readonly PropsListName[] = ["operations", "views", "references"];
+const LISTS: readonly PropsListName[] = ["operations", "views", "references", "studies"];
 
 const opens = (t: Token) => t.kind === "lbrace" || t.kind === "lparen";
 const closes = (t: Token) => t.kind === "rbrace" || t.kind === "rparen";
@@ -59,7 +59,7 @@ const closes = (t: Token) => t.kind === "rbrace" || t.kind === "rparen";
 /** The line span of every named entry of the propsDict's three lists. */
 export function locatePropsBlocks(text: string | undefined): PropsBlockIndex {
   const out: PropsBlockIndex = {
-    operations: new Map(), views: new Map(), references: new Map(),
+    operations: new Map(), views: new Map(), references: new Map(), studies: new Map(),
   };
   if (!text) return out;
   const toks: Token[] = [];

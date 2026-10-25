@@ -254,6 +254,11 @@ int PoreTransportBench::run(const DictPtr& dict,
                   << "    ion        z     c_bulk        c_wall        c_perm"
                      "        R_real          R_obs\n";
         const std::string tag = "_p" + std::to_string(p + 1);
+        //  The imposed flux of THIS point, beside the concentrations it
+        //  produced (DEV.md 4c C154: a reader's per-point table needs the J_v
+        //  each row was solved at, and it is the op's to say, not the GUI's to
+        //  re-read from the declaration).
+        diag_["Jv" + tag] = Jvs[p];
         for (std::size_t k = 0; k < names.size(); ++k)
         {
             const scalar Rr = 1.0 - cp[k] / cw[k];
@@ -424,6 +429,7 @@ std::string PoreTransportBench::diagnosticUnit(const std::string& key) const
     auto starts = [&](const char* p) { return key.rfind(p, 0) == 0; };
     if (starts("c_bulk_") || starts("c_wall_") || starts("c_perm_")) return "mol/m3";
     if (starts("dPsi_m_V")) return "V";
+    if (starts("Jv_p")) return "m/s";
     if (starts("Rreal_") || starts("Robs_") || starts("poreNewton")
         || starts("poreContinuations") || starts("poreNodes")
         || key == "n_points" || key == "permeateCharge_max") return "-";

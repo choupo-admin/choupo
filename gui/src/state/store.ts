@@ -309,6 +309,12 @@ interface AppState {
    *  to the fit that wrote its membrane.  `seq` makes a repeat a new request. */
   propsFocus: { id: string; seq: number } | null;
   focusProps: (id: string) => void;
+  /** What the props Results screen had selected and expanded, per case, so
+   *  a reader who goes to the Case tab and comes back finds the screen as
+   *  they left it (DEV.md 4c C154: the selection was component state and was
+   *  lost on every tab switch).  This tab's business, never persisted. */
+  propsViewFor: { [caseName: string]: { selected: string; expanded: string[] } };
+  setPropsView: (caseName: string, v: { selected?: string; expanded?: string[] }) => void;
 
   // Assistant console (a real `claude -c` session via the local bridge) — the
   // BOTTOM DOCK of the shell.  Its SHAPE (dock / fold / height) is a reader
@@ -871,6 +877,12 @@ export const useStore = create<AppState>((set, get) => ({
   caseFocus: null,
   caseModeFor: {},
   propsFocus: null,
+  propsViewFor: {},
+  setPropsView: (caseName, v) =>
+    set((s) => {
+      const cur = s.propsViewFor[caseName] ?? { selected: "", expanded: [] };
+      return { propsViewFor: { ...s.propsViewFor, [caseName]: { ...cur, ...v } } };
+    }),
   focusProps: (id) =>
     set((s) => ({
       caseModeFor: { ...s.caseModeFor, [s.tutorialName]: "props" }, activeWorkspace: null,

@@ -80,6 +80,7 @@ import { propsModelTheoryLink, propsOpHelpLink } from "./modelDocs.js";
 import { locatePropsBlocks, type BlockLines } from "./propsDictLocate.js";
 import { firstSentence } from "./reviewScreen.js";
 import { recordNameOfPath, unitsReadingRecord } from "./caseModes.js";
+import { declaredStudies, purposeWords } from "./propsStudies.js";
 
 export const PROPS_DICT_PATH = "system/propsDict";
 export const THERMO_DICT_PATH = "constant/thermoPhysPropDict";
@@ -144,6 +145,10 @@ export interface MapBand {
   label: string;
   /** a longer sentence for the frame's tooltip */
   title: string;
+  /** the declared study this band draws (case/propsStudies.ts), "" none --
+   *  a band is labelled with the case's own question where it declares one,
+   *  "Study n" only where it does not */
+  study: string;
   framed: boolean;
   x: number; y: number; w: number; h: number;
 }
@@ -724,6 +729,7 @@ export function derivePropsMap(input: MapInput): PropsMap {
   }
 
   //  LAYOUT: four columns, one band per study, top to bottom
+  const studies = declaredStudies(input.propsDict);
   const ordOf = (b: MapBlock) => Math.min(...b.members.map((m) => nodes.get(m.id)?.order ?? Infinity));
   const bands: MapBand[] = [];
   let y = 0;
@@ -748,15 +754,24 @@ export function derivePropsMap(input: MapInput): PropsMap {
     const opsIn = inBand.filter((b) => b.kind === "operation").flatMap((b) => b.members);
     const viewsIn = inBand.filter((b) => b.kind === "view" && b.role !== "records written").flatMap((b) => b.members);
     const types = [...new Set(opsIn.map((m) => m.detail))];
+    const counts = `${plural(opsIn.length, types.length === 1 ? `${types[0]} op` : "op")} → ${plural(viewsIn.length, "view")}`;
+    //  the DECLARED study whose operations are exactly this band's: its
+    //  title is the frame's label (the case's own words for the question)
+    const opNamesIn = new Set(opsIn.map((m) => m.label));
+    const declared = studies.find((st) => st.ops.length === opNamesIn.size
+      && st.ops.every((o) => opNamesIn.has(o)));
     const label = !framed ? ""
-      : isStudy ? `Study ${bi + 1} · ${plural(opsIn.length, types.length === 1 ? `${types[0]} op` : "op")} → ${plural(viewsIn.length, "view")}`
+      : declared ? `${declared.title} · ${counts}`
+      : isStudy ? `Study ${bi + 1} · ${counts}`
       : `Operations no declared view reads · ${plural(opsIn.length, "op")}`;
-    const title = isStudy
+    const title = declared
+      ? `${purposeWords(declared.purpose).label}${declared.summary ? ` -- ${declared.summary}` : ""}`
+      : isStudy
       ? `Ops, views and data that refer to each other in system/propsDict: ${viewsIn.map((m) => m.label).slice(0, 8).join(", ")}${viewsIn.length > 8 ? ", ..." : ""}`
       : "Operations that no view of the propsDict draws from";
     const w = (framed ? 2 * BAND_PAD : 0) + nCols * COL_W + (nCols - 1) * COL_GAP;
     const h = bottom - y + (framed ? BAND_PAD : 0);
-    bands.push({ index: bi, label, title, framed, x: 0, y, w, h });
+    bands.push({ index: bi, label, title, study: declared?.name ?? "", framed, x: 0, y, w, h });
     y += h + BAND_GAP;
   }
   const width = (framed ? 2 * BAND_PAD : 0) + nCols * COL_W + (nCols - 1) * COL_GAP;

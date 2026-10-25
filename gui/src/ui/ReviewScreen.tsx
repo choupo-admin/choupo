@@ -53,6 +53,16 @@ License
   theory, an operation's section, a view's figure, a dataset's file.  Every
   operation and every declared view links to its block in system/propsDict.
 
+  DEV.md 4c C154 (an external reviewer's walk through NanoFiltran): the
+  strip keeps the RUN status apart from the status of the EVIDENCE and says
+  "not applicable" where an op type cannot publish an AAD; a case that
+  DECLARES its studies (case/propsStudies.ts) is read by them -- the
+  Overview in the case's own order, each study with its purpose, its
+  operations and its figures, the tree and the map's frames under its
+  titles; the selection and the expanded blocks survive a trip to another
+  tab (the store keeps them per case); and every block of the map shows its
+  STATE (case/propsMapState.ts).
+
   Nothing here computes a number (reviewScreen.ts for the strip,
   postProcessing.ts for the views, propsMap.ts for the map).
 \*---------------------------------------------------------------------------*/
@@ -65,11 +75,15 @@ import { IconChevronsDown, IconChevronsUp, IconFileCode } from "@tabler/icons-re
 
 import type { RunResult } from "../adapters/SolverAdapter.js";
 import type { JsonDict } from "../dict/index.js";
-import { viewGroups, type PostItem, type ViewGroup } from "../case/postProcessing.js";
-import { verdictRows, type VerdictRow } from "../case/reviewScreen.js";
+import { viewGroups, type PostItem, type PostReference, type ViewGroup } from "../case/postProcessing.js";
+import { RUN_STATE_WORD, verdictRows, type RunState, type VerdictRow } from "../case/reviewScreen.js";
+import { declaredStudies, purposeWords, type Study } from "../case/propsStudies.js";
+import { mapStates } from "../case/propsMapState.js";
+import { useStaleParts } from "../state/useStaleResult.js";
 import { PROPS_DISCIPLINES } from "../case/operationSchemas.js";
 import {
-  caseTree, derivePropsMap, PROPS_DICT_PATH, type CaseTreeNode, type MapTarget, type MyPlot,
+  caseTree, derivePropsMap, neighbours, PROPS_DICT_PATH, viewDomId,
+  type CaseTreeNode, type MapTarget, type MyPlot, type PropsMap,
 } from "../case/propsMap.js";
 import { locatePropsBlocks } from "../case/propsDictLocate.js";
 import { useStore } from "../state/store.js";
@@ -105,6 +119,23 @@ function pct(v: number | null): string {
  *  push its figures below the fold. */
 const STRIP_ROWS = 8;
 
+const RUN_COLOUR: Record<RunState, string> = { done: "teal", failed: "red", noResult: "orange", notRun: "gray" };
+
+/** What the two status columns mean, said once (DEV.md 4c C154). */
+const RUN_EVIDENCE_SENTENCE = "run: whether the operation ran to its end.  evidence: what its answer claims -- a"
+  + " verdict only where the operation tests it against a band declared before the run.  Converging is not"
+  + " a verdict, and no operation is called validated for having run.";
+
+/** A cell an op type cannot fill, said as such (never an empty cell that
+ *  reads as a missing result). */
+function NotApplicable({ why }: { why: string }) {
+  return (
+    <Tooltip label={why} withArrow multiline maw={300}>
+      <Text span size="xs" c="dimmed" fs="italic" data-na="" style={{ whiteSpace: "nowrap" }}>not applicable</Text>
+    </Tooltip>
+  );
+}
+
 function VerdictStrip({ rows, ran, selected, onSelect, linkOf }: {
   rows: VerdictRow[]; ran: boolean;
   selected?: string | null;
@@ -113,16 +144,19 @@ function VerdictStrip({ rows, ran, selected, onSelect, linkOf }: {
 }) {
   const [all, setAll] = useState(false);
   const shown = all ? rows : rows.slice(0, STRIP_ROWS);
+  const anyPurpose = rows.some((r) => r.purpose);
   return (
     <>
     <ScrollArea type="auto">
       <Table withTableBorder fz="xs" verticalSpacing={3} data-review="verdicts"
-        style={{ minWidth: 640 }}>
+        style={{ minWidth: 760 }}>
         <Table.Thead>
           <Table.Tr>
             <Table.Th>operation</Table.Th>
             <Table.Th>what it did</Table.Th>
-            <Table.Th>verdict</Table.Th>
+            {anyPurpose && <Table.Th>purpose</Table.Th>}
+            <Table.Th title={RUN_EVIDENCE_SENTENCE}>run</Table.Th>
+            <Table.Th title={RUN_EVIDENCE_SENTENCE}>evidence</Table.Th>
             <Table.Th ta="right">points</Table.Th>
             <Table.Th ta="right">AAD vs data</Table.Th>
             <Table.Th ta="right">held-out AAD</Table.Th>
@@ -158,12 +192,31 @@ function VerdictStrip({ rows, ran, selected, onSelect, linkOf }: {
                   {i > 0 && shown[i - 1]!.type === r.type ? "″" : r.did}
                 </Text>
               </Table.Td>
-              <Table.Td>
+              {anyPurpose && (
+                <Table.Td data-purpose={r.purpose}>
+                  {r.purpose ? (
+                    <Tooltip label={purposeWords(r.purpose).sentence} withArrow multiline maw={320}>
+                      <Text size="xs" lineClamp={2}>
+                        {i > 0 && shown[i - 1]!.purpose === r.purpose ? "″" : purposeWords(r.purpose).label}
+                      </Text>
+                    </Tooltip>
+                  ) : <Text size="xs" c="dimmed">in no declared study</Text>}
+                </Table.Td>
+              )}
+              <Table.Td data-run-state={r.runState} style={{ whiteSpace: "nowrap", minWidth: 74 }}>
+                <Badge size="sm" variant={r.runState === "done" ? "light" : "outline"} color={RUN_COLOUR[r.runState]}
+                  style={{ textTransform: "none", overflow: "visible" }}>
+                  {RUN_STATE_WORD[r.runState]}{r.rc !== null ? ` (rc ${r.rc})` : ""}
+                </Badge>
+              </Table.Td>
+              <Table.Td data-evidence="">
                 {r.verdict ? (
                   <Badge size="sm" variant="light" color={CURATION_COLOUR[r.verdict] ?? "gray"}
                     style={{ textTransform: "none" }}>{r.verdict}</Badge>
                 ) : (
-                  <Text size="xs" c="dimmed">{!ran ? "not run" : r.ran ? "no claim" : "no result"}</Text>
+                  <Text size="xs" c="dimmed">
+                    {r.runState === "done" ? "no acceptance test in this run" : "--"}
+                  </Text>
                 )}
               </Table.Td>
               <Table.Td ta="right" ff="monospace">
@@ -173,8 +226,14 @@ function VerdictStrip({ rows, ran, selected, onSelect, linkOf }: {
                   </Tooltip>
                 )}
               </Table.Td>
-              <Table.Td ta="right" ff="monospace">{pct(r.aadPct)}</Table.Td>
-              <Table.Td ta="right" ff="monospace">{pct(r.heldOutAadPct)}</Table.Td>
+              <Table.Td ta="right" ff="monospace">
+                {r.aadApplicable ? pct(r.aadPct)
+                  : <NotApplicable why="This operation type compares its answer with no dataset, so it publishes no AAD." />}
+              </Table.Td>
+              <Table.Td ta="right" ff="monospace">
+                {r.heldOutApplicable ? pct(r.heldOutAadPct)
+                  : <NotApplicable why="This operation type fits nothing, so no evidence is held out of a fit." />}
+              </Table.Td>
             </Table.Tr>
             );
           })}
@@ -268,6 +327,83 @@ function OtherPlots({ files, csvFiles }: { files: string[]; csvFiles: { [f: stri
   );
 }
 
+/** The audit, folded: the panels this screen replaced as the landing. */
+function AuditBlock({ audit }: { audit: ReactNode }) {
+  return (
+    <details data-review="audit">
+      <summary style={{ cursor: "pointer" }}>
+        <Text span size="11px" c="dimmed" tt="uppercase" fw={700} style={{ letterSpacing: 0.5 }}>
+          Audit
+        </Text>
+        <Text span size="xs" c="dimmed"> — the raw diagnostics, the decision ledger, the thermo
+          readiness and every operation&apos;s own panel</Text>
+      </summary>
+      <Box mt="xs" style={{ position: "relative", height: "78vh", minHeight: 480,
+        display: "flex", flexDirection: "column",
+        border: "1px solid light-dark(var(--mantine-color-gray-3), var(--mantine-color-dark-4))",
+        borderRadius: 6, overflow: "hidden" }}>
+        {audit}
+      </Box>
+    </details>
+  );
+}
+
+/** The views of one study: the default views of its operations and every
+ *  declared view one of its operations feeds (the map's own wires), in the
+ *  run's order. */
+export function studyViews(st: Study, map: PropsMap, items: PostItem[]): PostItem[] {
+  const ops = new Set(st.ops);
+  return items.filter((it) => {
+    if (it.origin === "default") return ops.has(it.op);
+    const id = `view:${viewDomId("declared", "", it.name)}`;
+    return neighbours(map, id).up.some((u) => u.startsWith("op:") && ops.has(u.slice(3)));
+  });
+}
+
+/** One declared study: its question, what kind of check it is, its
+ *  operations (the strip), then its figures and tables. */
+function StudySection({ st, rows, map, strip, groups, csvFiles, linkOf, ran, references, onOpen, link }: {
+  st: Study; rows: VerdictRow[]; map: PropsMap;
+  strip: (rows: VerdictRow[]) => ReactNode;
+  groups: ViewGroup[]; csvFiles: { [f: string]: string };
+  linkOf: (it: PostItem) => MapTarget | undefined;
+  ran: boolean; references?: PostReference[];
+  onOpen: (t: MapTarget) => void;
+  link?: MapTarget;
+}) {
+  const pw = purposeWords(st.purpose);
+  const items = studyViews(st, map, groups.flatMap((g) => g.items));
+  const plots = items.filter((i) => i.kind === "plot");
+  const tables = items.filter((i) => i.kind === "table");
+  return (
+    <Box data-study={st.name} style={{ borderLeft: "3px solid var(--mantine-color-cyan-6)", paddingLeft: 12 }}>
+      <Group gap={8} wrap="wrap" align="baseline">
+        <Text size="md" fw={700}>{st.title}</Text>
+        {link && <CaseLink t={link} onOpen={onOpen} />}
+      </Group>
+      <Group gap={6} mt={2} wrap="nowrap" align="flex-start">
+        <Badge size="sm" variant="light" color="cyan" style={{ textTransform: "none", flex: "0 0 auto" }}
+          data-study-purpose={st.purpose}>{pw.label}</Badge>
+        {pw.sentence && <Text size="xs" c="dimmed">{pw.sentence}</Text>}
+      </Group>
+      {st.summary && <Text size="sm" mt={6}>{st.summary}</Text>}
+      <Box mt="sm">{strip(rows.filter((r) => st.ops.includes(r.name)))}</Box>
+      <Box mt="md">
+        <SectionTitle>Figures</SectionTitle>
+        {!ran ? <Text size="sm" c="dimmed">Not run yet.</Text>
+          : plots.length ? <FigureGrid items={plots} csvFiles={csvFiles} linkOf={linkOf} references={references} />
+          : <Text size="sm" c="dimmed">No figure published.</Text>}
+      </Box>
+      {ran && tables.length > 0 && (
+        <Box mt="md">
+          <SectionTitle>Tables</SectionTitle>
+          <FigureGrid items={tables} csvFiles={csvFiles} linkOf={linkOf} references={references} />
+        </Box>
+      )}
+    </Box>
+  );
+}
+
 export function ReviewScreen({ ops, result, readiness, audit, propsDict, thermo, rawFiles, caseKey, flowsheet }: {
   ops: JsonDict[];
   result: RunResult | undefined;
@@ -284,7 +420,8 @@ export function ReviewScreen({ ops, result, readiness, audit, propsDict, thermo,
   flowsheet?: JsonDict | null;
 }) {
   const ran = result?.status === "done";
-  const rows = verdictRows(ops, result?.operationResults ?? [], result?.validation);
+  const rows = verdictRows(ops, result?.operationResults ?? [], result?.validation, result?.status, propsDict);
+  const studies = useMemo(() => declaredStudies(propsDict), [propsDict]);
   const block = result?.postProcessing;
   const groups = block ? viewGroups(block) : [];
   const csvFiles = result?.csvFiles ?? {};
@@ -293,22 +430,41 @@ export function ReviewScreen({ ops, result, readiness, audit, propsDict, thermo,
   const selectNode = useStore((s) => s.selectNode);
   const narrow = useMediaQuery("(max-width: 900px)") ?? false;
 
-  const [selected, setSelected] = useState<string>("");
+  //  THE SELECTION AND THE EXPANDED BLOCKS live in the store, per case, so
+  //  a trip to the Case tab and back finds the screen as the reader left it
+  //  (DEV.md 4c C154).
+  const key = caseKey ?? "case";
+  const view = useStore((s) => s.propsViewFor[key]);
+  const setPropsView = useStore((s) => s.setPropsView);
+  const selected = view?.selected ?? "";
+  const setSelected = useCallback((id: string) => setPropsView(key, { selected: id }), [key, setPropsView]);
+  const expanded = useMemo(() => new Set(view?.expanded ?? []), [view?.expanded]);
+  const setExpanded = useCallback((f: (s: Set<string>) => Set<string>) =>
+    setPropsView(key, { expanded: [...f(new Set(useStore.getState().propsViewFor[key]?.expanded ?? []))] }),
+  [key, setPropsView]);
   //  a selection asked for from outside (a unit's link to its fit, C152)
   const propsFocus = useStore((s) => s.propsFocus);
-  useEffect(() => { if (propsFocus) setSelected(propsFocus.id); }, [propsFocus]);
-  const [expanded, setExpanded] = useState<Set<string>>(new Set());
+  useEffect(() => { if (propsFocus) setSelected(propsFocus.id); }, [propsFocus, setSelected]);
   const [treeOpen, setTreeOpen] = useState(false);
-  const key = caseKey ?? "case";
   const [myPlots, setMyPlots] = useState<MyPlot[]>(() => loadPlots(key));
-  useEffect(() => { setMyPlots(loadPlots(key)); setSelected(""); }, [key]);
+  useEffect(() => { setMyPlots(loadPlots(key)); }, [key]);
 
   const map = useMemo(() => derivePropsMap({
     propsDict, thermo, rawFiles, post: block ?? null, results: result?.operationResults, expanded, flowsheet,
   }), [propsDict, thermo, rawFiles, block, result, expanded, flowsheet]);
   const verdicts = useMemo(() => new Map(rows.filter((r) => r.verdict).map((r) => [r.name, r.verdict])), [rows]);
-  const tree = useMemo(() => caseTree(map, propsDict, PROPS_DISCIPLINES, myPlots, verdicts),
-    [map, propsDict, myPlots, verdicts]);
+  const tree = useMemo(() => {
+    const t = caseTree(map, propsDict, PROPS_DISCIPLINES, myPlots, verdicts);
+    //  the case's own questions first, in its order (DEV.md 4c C154)
+    return studies.length === 0 ? t : [{
+      id: "folder:studies", label: "Studies", folder: true,
+      children: studies.map((st) => ({ id: `study:${st.name}`, label: st.title,
+        detail: purposeWords(st.purpose).label, children: [] })),
+    }, ...t];
+  }, [map, propsDict, myPlots, verdicts, studies]);
+  const stale = useStaleParts();
+  const states = useMemo(() => mapStates(map, result,
+    { stale: stale.stale, changed: stale.changed }), [map, result, stale]);
   const where = useMemo(() => locatePropsBlocks(rawFiles?.[PROPS_DICT_PATH]), [rawFiles]);
 
   const folderOps = useCallback((id: string): string[] => {
@@ -344,12 +500,17 @@ export function ReviewScreen({ ops, result, readiness, audit, propsDict, thermo,
 
   const targetOf = useCallback((id: string): MapTarget | undefined => {
     if (!id) return undefined;
+    if (id.startsWith("study:")) {
+      const l = where.studies.get(id.slice(6));
+      return l ? { kind: "case", path: PROPS_DICT_PATH, line: l.line, endLine: l.endLine,
+        label: `study ${id.slice(6)} in system/propsDict` } : undefined;
+    }
     const ids = id.startsWith("folder:type:") ? folderOps(id) : [id];
     const n = map.nodes.find((x) => x.id === ids[0]);
     if (n) return n.member.target;
     const b = map.blocks.find((x) => x.id === id);
     return b?.members[0]?.target;
-  }, [map, folderOps]);
+  }, [map, folderOps, where]);
 
   //  F1 with something selected opens what it is about -- ahead of the
   //  workspace's own F1 (capture phase, stopped), which keeps its answer for
@@ -417,10 +578,65 @@ export function ReviewScreen({ ops, result, readiness, audit, propsDict, thermo,
           : <Text size="sm" c="dimmed">{ran ? `The run wrote no ${p?.file}.` : "Run properties to draw it."}</Text>}
       </Stack>
     );
+  } else if (selected.startsWith("study:")) {
+    const st = studies.find((x) => `study:${x.name}` === selected);
+    details = st
+      ? <StudySection st={st} rows={rows} map={map} strip={strip} groups={groups} csvFiles={csvFiles}
+          linkOf={figureLink} ran={ran} references={block?.references} onOpen={activate}
+          link={targetOf(selected)} />
+      : <Text size="sm" c="dimmed">This case declares no study {selected.slice(6)}.</Text>;
   } else if (selected && !isFolderOverview) {
     details = (
       <SelectionDetails id={selected} map={map} result={result} rows={rows} strip={strip}
         onSelect={setSelected} onActivate={activate} folderOps={folderOps} />
+    );
+  } else if (studies.length > 0) {
+    //  THE OVERVIEW BY STUDY: the case's own questions, in its order -- each
+    //  with what kind of check it is, its operations, then its figures and
+    //  tables; what no study claims after them.
+    const inStudy = new Set(studies.flatMap((st) => st.ops));
+    const loose = rows.filter((r) => !inStudy.has(r.name));
+    const allItems = groups.flatMap((g) => g.items);
+    const inSomeStudy = new Set(studies.flatMap((st) => studyViews(st, map, allItems)));
+    const looseViews = allItems.filter((it) => !inSomeStudy.has(it));
+    details = (
+      <Stack gap="xl" data-review="overview" data-overview="studies">
+        <Text size="xs" c="dimmed">
+          {result?.status === "done" ? "The run completed.  " : result?.status === "error" ? "The run failed (see the Log).  " : "Not run yet.  "}
+          This case asks {studies.length} question{studies.length === 1 ? "" : "s"}, in the order below
+          (its <code>studies</code> in system/propsDict).  Click an operation for its numbers.
+          <br />{RUN_EVIDENCE_SENTENCE}
+        </Text>
+        {studies.map((st) => (
+          <StudySection key={st.name} st={st} rows={rows} map={map} strip={strip} groups={groups}
+            csvFiles={csvFiles} linkOf={figureLink} ran={ran} references={block?.references}
+            onOpen={activate} link={targetOf(`study:${st.name}`)} />
+        ))}
+        {loose.length > 0 && (
+          <Box>
+            <SectionTitle>Operations in no declared study</SectionTitle>
+            {strip(loose)}
+          </Box>
+        )}
+        {ran && looseViews.length > 0 && (
+          <Box data-overview="views-in-no-study">
+            <SectionTitle hint="Views no operation of a declared study feeds (drawn from references alone, or from operations in no study).">
+              Views in no declared study
+            </SectionTitle>
+            <FigureGrid items={looseViews} csvFiles={csvFiles} linkOf={figureLink} references={block?.references} />
+          </Box>
+        )}
+        {readiness && (
+          <Box>
+            <SectionTitle hint="This case creates or estimates a component: is the thermo ready for it?">
+              Thermo readiness
+            </SectionTitle>
+            <Box style={{ position: "relative", height: "70vh", minHeight: 420 }}>{readiness}</Box>
+          </Box>
+        )}
+        {ran && otherFiles.length > 0 && <OtherPlots files={otherFiles} csvFiles={csvFiles} />}
+        <AuditBlock audit={audit} />
+      </Stack>
     );
   } else {
     details = (
@@ -455,21 +671,7 @@ export function ReviewScreen({ ops, result, readiness, audit, propsDict, thermo,
             : <Text size="sm" c="dimmed">Not run yet.</Text>}
         </Box>
         {ran && otherFiles.length > 0 && <OtherPlots files={otherFiles} csvFiles={csvFiles} />}
-        <details data-review="audit">
-          <summary style={{ cursor: "pointer" }}>
-            <Text span size="11px" c="dimmed" tt="uppercase" fw={700} style={{ letterSpacing: 0.5 }}>
-              Audit
-            </Text>
-            <Text span size="xs" c="dimmed"> — the raw diagnostics, the decision ledger, the thermo
-              readiness and every operation&apos;s own panel</Text>
-          </summary>
-          <Box mt="xs" style={{ position: "relative", height: "78vh", minHeight: 480,
-            display: "flex", flexDirection: "column",
-            border: "1px solid light-dark(var(--mantine-color-gray-3), var(--mantine-color-dark-4))",
-            borderRadius: 6, overflow: "hidden" }}>
-            {audit}
-          </Box>
-        </details>
+        <AuditBlock audit={audit} />
       </Stack>
     );
   }
@@ -486,7 +688,8 @@ export function ReviewScreen({ ops, result, readiness, audit, propsDict, thermo,
       if (n.has(g)) n.delete(g); else n.add(g);
       return n;
     }),
-  }), [mapSelected, activate, map]);
+    states,
+  }), [mapSelected, activate, map, setSelected, setExpanded, states]);
 
   const treePane = (
     <PropsTree tree={tree} selected={selected || null} onSelect={(id) => { setSelected(id); setTreeOpen(false); }}
@@ -537,6 +740,10 @@ export function ReviewScreen({ ops, result, readiness, audit, propsDict, thermo,
   }), [contract, resetMap]);
   const mapBox = panelBoxProps(mapPanel, !!reduceMotion, shownMap);
 
+  //  a new selection is read from its top, never from where the last one
+  //  left the details scrolled (DEV.md 4c C154)
+  const detailsVp = useRef<HTMLDivElement>(null);
+  useEffect(() => { detailsVp.current?.scrollTo({ top: 0 }); }, [selected]);
   //  A SELECTION THAT CANNOT BE SEEN IS NOT AN ANSWER: when something is
   //  selected and the details pane is too short for its summary, open it.
   const lastSelected = useRef(selected);
@@ -559,6 +766,14 @@ export function ReviewScreen({ ops, result, readiness, audit, propsDict, thermo,
             : "Data, models, operations, views -- derived from system/propsDict.  Click to select, F1 or double-click to open; drag the seam under it to resize."}>
             Calculation map
           </SectionTitle>
+          {states.caseWide && (
+            <Tooltip withArrow multiline maw={360} label={`What changed: ${(stale.changed ?? []).join(", ") || "the case (no per-part record)"}.  `
+              + "No block can be named for every change, so no block is marked: the whole map shows the last run."}>
+              <Badge color="orange" variant="outline" data-map-stale="case" style={{ textTransform: "none" }}>
+                stale: case changed since the run
+              </Badge>
+            </Tooltip>
+          )}
           <Group gap={4} wrap="nowrap">
             {narrow && (
               <Button size="compact-xs" variant="default" onClick={() => setTreeOpen(!treeOpen)}>
@@ -609,7 +824,7 @@ export function ReviewScreen({ ops, result, readiness, audit, propsDict, thermo,
               </>
             )}
           </Group>
-          <ScrollArea style={{ flex: 1, minHeight: 0 }} type="auto">
+          <ScrollArea style={{ flex: 1, minHeight: 0 }} type="auto" viewportRef={detailsVp}>
             <Box px="md" pb="sm" style={{ maxWidth: 1600 }}>{details}</Box>
           </ScrollArea>
         </Box>

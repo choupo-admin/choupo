@@ -539,6 +539,14 @@ export function extractStructured(log: string,
       for (const [k, v] of Object.entries(orr.curation ?? {})) {
         if (typeof v === "string") cur[k] = v;
       }
+      //  `units` and `rc` (DEV.md 4c C154): each diagnostic's own unit, and
+      //  the op's non-zero return code -- the run status a reader is shown
+      //  apart from the status of the evidence.
+      const units: { [k: string]: string } = {};
+      for (const [k, v] of Object.entries(orr.units ?? {})) {
+        if (typeof v === "string" && k in clean) units[k] = v;
+      }
+      const rc = typeof orr.rc === "number" && Number.isFinite(orr.rc) && orr.rc !== 0 ? orr.rc : undefined;
       const head = Array.isArray(orr.headline)
         ? orr.headline.filter((h: unknown): h is string => typeof h === "string")
         : [];
@@ -547,6 +555,8 @@ export function extractStructured(log: string,
         ...(head.length > 0 ? { headline: head } : {}),
         ...(Object.keys(prov).length > 0 ? { provenance: prov } : {}),
         ...(Object.keys(cur).length > 0 ? { curation: cur } : {}),
+        ...(Object.keys(units).length > 0 ? { units: units } : {}),
+        ...(rc !== undefined ? { rc: rc } : {}),
       });
     }
     if (rows.length > 0) operationResults = rows;

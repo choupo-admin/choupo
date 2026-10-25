@@ -57,7 +57,12 @@ THE ARMS.
       an undeclared series; a reference row whose select keeps no record; two
       views of one name in one folder; a reference outside constant/; a
       non-positive value on a log axis -- each refuses, exit non-zero, naming
-      the culprit and what IS there.
+      the culprit and what IS there.  Since DEV.md 4c C154 also an empty view
+      `note`, and four `studies` declarations: a purpose off the closed list
+      (`validated` among them -- a purpose is never a verdict), a study naming
+      an operation the propsDict does not declare, one operation in two
+      studies, and a key nothing reads; (b) holds every declared note to the
+      one the result block publishes.
   (f) A VIEW DOES NOT OUTLIVE ITS DECLARATION.  A stale file the last run's
       index lists is gone after a run, a file the index does not list (the
       author's own) is left alone, a declared view of a default's name
@@ -475,6 +480,12 @@ def arm_bcd(tmp, witness=CASE):
         fails.append("(b) %s: the block lists %s, the defaults and the propsDict declare %s"
                      % (witness.name, listed, want))
     for (h, v, origin), it in zip(views, block["items"]):
+        #  a view's `note` (DEV.md 4c C154) is published as declared, and only
+        #  where declared: published implies pinned, so the block must carry
+        #  exactly the case's words
+        if (v.get("note") or None) != (it.get("note") or None):
+            fails.append("(b) %s view %s/%s: the propsDict's note %r is published as %r"
+                         % (witness.name, folder(h), v["name"], v.get("note"), it.get("note")))
         if it.get("origin") != origin or it.get("type") != v.get("type"):
             fails.append("(b) %s view %s/%s: the block says %s %s, the declaration %s %s"
                          % (witness.name, folder(h), v["name"], it.get("origin"),
@@ -696,14 +707,30 @@ def arm_e(tmp):
         ("non-positive on a log axis", sub('unit "V"; scale linear; }', 'unit "V"; scale log; }'),
          ["on a log axis"]),
     ]
+    probes += [
+        ("empty note", sub('note    "Code-to-code verification:', 'note    ""; //'),
+         ["`note \"\";` is empty"]),
+    ]
+    #  STUDIES (DEV.md 4c C154): edits of the HEAD, where `studies` is declared
+    head_probes = [
+        ("study purpose unknown", sub("purpose  numericalStudy;", "purpose  validated;"),
+         ["study 'C'", "`purpose validated;` -- Accepted: codeToCodeVerification"]),
+        ("study names an unknown op", sub("ops      ( N10 N20 N50", "ops      ( N10x N20 N50"),
+         ["study 'C'", "operation 'N10x' is not an operation of this case's propsDict"]),
+        ("op in two studies", sub("ops      ( example_ideal", "ops      ( N350 example_ideal"),
+         ["study 'C'", "operation 'N350' is already in study 'A'"]),
+        ("study unread key", sub("purpose  numericalStudy;", "purpose  numericalStudy; verdict validated;"),
+         ["keys nothing reads", "`verdict`"]),
+    ]
     fired = 0
-    for tag, edit, needles in probes:
+    for entry in [(t, e, n, False) for t, e, n in probes] + [(t, e, n, True) for t, e, n in head_probes]:
+        tag, edit, needles, on_head = entry
         case = copy_full(tmp / ("refuse_" + re.sub(r"\W+", "_", tag)))
-        text = edit(base)
-        if text == base:
+        text = edit(head if on_head else base)
+        if text == (head if on_head else base):
             fails.append("(e) the probe `%s` could not be built (its anchor text moved)" % tag)
             continue
-        (case / "system" / "propsDict").write_text(head + text)
+        (case / "system" / "propsDict").write_text(text + base if on_head else head + text)
         rc, out, _ = run(case)
         if rc == 0:
             fails.append("(e) `%s` was ACCEPTED (exit 0)" % tag)

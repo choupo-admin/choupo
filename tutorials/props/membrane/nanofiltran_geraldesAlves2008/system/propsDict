@@ -311,6 +311,35 @@
   an ACCOUNTING of a published table: nothing here is a measurement.
 \*---------------------------------------------------------------------------*/
 
+//  THE THREE STUDIES, in the paper's order: the question each asks and what
+//  KIND of check it is (`purpose`, a closed list -- a purpose is what a study
+//  sets out to do, never what the run concluded).  The GUI navigates by
+//  them; the engine refuses a study naming an operation not declared below.
+studies
+(
+    {
+        name     A;
+        title    "A -- Code to code: Choupo against NanoFiltran on one model and the same inputs";
+        purpose  codeToCodeVerification;
+        summary  "The DSPM-DE pore solved by two independent programs on NanoFiltran's own matrix.  It says the equations are solved right; no number here is a measurement, and the membrane is NanoFiltran's worked example, which describes no real membrane.";
+        ops      ( example_ideal example_noBorn example_davies NaCl_ideal Na2SO4_ideal mixed_polarised );
+    }
+    {
+        name     B;
+        title    "B -- Experiment: Bowen & Mohammad's measured CA30 rejections (the paper's Fig. 3)";
+        purpose  calibratedComparison;
+        summary  "A comparison with MEASUREMENTS whose inputs Bowen & Mohammad fitted to these very data (pore radius and thickness, the charge and the flux as functions of the feed).  Agreement says the pore model, carried by those inputs, reproduces them; it is not a prediction.  Nothing was fitted by this run.";
+        ops      ( dye4_p1 dye4_p2 dye4_p3 dye4_p4 dye4_p5 dye37_p1 dye37_p2 dye37_p3 dye37_p4 dye37_p5 );
+    }
+    {
+        name     C;
+        title    "C -- The stiff case of Table 2 and Fig. 4, and its grid study";
+        purpose  numericalStudy;
+        summary  "The paper's very stiff pore on six node counts, and Choupo's answer against Table 2 accounted for one change at a time.  Nothing here is a measurement; the anchors are NanoFiltran with its Davies and Born constants and its diffusivity input corrected.";
+        ops      ( N10 N20 N50 N100 N200 N350 );
+    }
+);
+
 operations
 (
     //  ---- PART A: code to code with NanoFiltran (its matrix) ----------------
@@ -888,6 +917,7 @@ views
         name    gridStudy_Na;
         type    series;
         title   "Table 2's grid study: the trace Na+ in the permeate against the node count N (part C)";
+        note    "Each program counts N its own way: Choupo's N nodes have N - 1 intervals; NanoFiltran's N counts the permeate node, so it has N - 2 intervals inside the membrane.  The 'Davies corrected' NanoFiltran line has ONLY its Davies constant corrected; its diffusivity input and Born constant still differ from Choupo's (table2_N350 accounts for each), so the gap left between it and Choupo is not discretisation alone.";
         xAxis   { label "nodes N (each program counts its own)"; unit "-"; scale log; }
         yAxis   { label "permeate Na+"; unit "mol/m3"; scale linear; }
         series
@@ -902,6 +932,7 @@ views
         name    gridStudy_iterations;
         type    series;
         title   "Table 2's grid study: iterations against N -- NanoFiltran's under-relaxed Newton against Choupo's full Newton (part C)";
+        note    "Not a speed measurement: NanoFiltran runs an under-relaxed (0.2) Newton to TOL 1e-4, Choupo a full Newton with an analytic Jacobian to its own tolerance -- the criteria, the relaxation and the work per iteration differ.  Each program counts N its own way: Choupo's N nodes have N - 1 intervals; NanoFiltran's N counts the permeate node, so it has N - 2 intervals inside the membrane.";
         xAxis   { label "nodes N"; unit "-"; scale log; }
         yAxis   { label "iterations"; unit "-"; scale linear; }
         series
@@ -914,6 +945,7 @@ views
         name    fig4_concentration;
         type    profile;
         title   "Fig. 4: the ions in the pore of the stiff case at N = 350 -- Choupo against NanoFiltran (part C)";
+        note    "Choupo at N = 350 against NanoFiltran corrected (its Davies and Born constants and its diffusivity input) and as received.";
         xAxis   { label "position across the equivalent thickness, x"; unit "um"; scale linear; }
         yAxis   { label "concentration in the pore"; unit "mol/m3"; scale log; }
         series
@@ -946,6 +978,7 @@ views
         name    fig3_dye4;
         type    series;
         title   "Fig. 3: observed rejection against feed chloride with 4 mol/m3 of dye -- experiment, Choupo, NanoFiltran (part B)";
+        note    "The error bars are the READING uncertainty of the digitised symbols (+-1.5 px: 0.011 in R_obs, 0.32 mol/m3 in c_Cl), not the original experimental uncertainty.  The membrane charge and the flux were fitted to these data by Bowen & Mohammad; nothing was fitted by this run.  Each operation's feed chloride is the mean of its Na+ and Cl- markers' readings, so a symbol may sit up to a reading error left or right of the Choupo point at its feed.";
         xAxis   { label "feed chloride, c_Cl"; unit "mol/m3"; scale linear; }
         yAxis   { label "observed rejection R_obs = 1 - c_p/c_b"; unit "-"; scale linear; }
         series
@@ -962,6 +995,7 @@ views
         name    fig3_dye37;
         type    series;
         title   "Fig. 3: observed rejection against feed chloride with 37 mol/m3 of dye -- experiment, Choupo, NanoFiltran (part B)";
+        note    "The error bars are the READING uncertainty of the digitised symbols (+-1.5 px: 0.011 in R_obs, 0.32 mol/m3 in c_Cl), not the original experimental uncertainty.  The membrane charge and the flux were fitted to these data by Bowen & Mohammad; nothing was fitted by this run.  Each operation's feed chloride is the mean of its Na+ and Cl- markers' readings, so a symbol may sit up to a reading error left or right of the Choupo point at its feed.";
         xAxis   { label "feed chloride, c_Cl"; unit "mol/m3"; scale linear; }
         yAxis   { label "observed rejection R_obs = 1 - c_p/c_b"; unit "-"; scale linear; }
         series
@@ -978,6 +1012,7 @@ views
         name    codeToCode_exampleIdeal;
         type    series;
         title   "Code to code: NanoFiltran's shipped example (ideal activities) -- R_obs against J_v, Choupo at 801 nodes and NanoFiltran extrapolated (part A)";
+        note    "Code-to-code verification: one model, the same inputs, two independent programs.  No number here is a measurement.";
         xAxis   { label "permeate flux, J_v"; unit "m/s"; scale log; }
         yAxis   { label "observed rejection R_obs"; unit "-"; scale linear; }
         series
@@ -994,6 +1029,7 @@ views
         name    table2_N350;
         type    table;
         title   "Table 2 at N = 350, accounted for one change at a time: the paper, NanoFiltran step by step, and Choupo (part C)";
+        note    "Choupo is pinned to the last NanoFiltran row (corrected), not to Table 2, whose Davies activities carry a factor ln 10 that no Choupo option reproduces; the rows between account for the difference one change at a time.";
         columns
         (
             { name Na;         label "permeate Na+";                  unit "mol/m3"; }
@@ -1021,6 +1057,7 @@ views
         name    table2_grid;
         type    table;
         title   "Table 2's grid study: permeate Na+ and iterations against N -- the paper, NanoFiltran and Choupo (part C)";
+        note    "Each program counts N its own way: Choupo's N nodes have N - 1 intervals; NanoFiltran's N counts the permeate node, so it has N - 2 intervals inside the membrane.  The 'Davies corrected' NanoFiltran line has ONLY its Davies constant corrected; its diffusivity input and Born constant still differ from Choupo's (table2_N350 accounts for each), so the gap left between it and Choupo is not discretisation alone.  The iteration columns are not a speed measurement: NanoFiltran runs an under-relaxed (0.2) Newton to TOL 1e-4, Choupo a full Newton with an analytic Jacobian to its own tolerance -- the criteria, the relaxation and the work per iteration differ.";
         x       { label "nodes N"; unit "-"; }
         columns
         (
@@ -1037,6 +1074,7 @@ views
         name    fig3_dye4_table;
         type    table;
         title   "Fig. 3 as numbers, 4 mol/m3 of dye: R_obs at each measured feed -- experiment, Choupo, NanoFiltran, and Choupo minus experiment (part B)";
+        note    "Choupo - experiment is the pore model's residual at inputs Bowen & Mohammad fitted to these very data, not a prediction error; nothing was fitted by this run.  The experiment column is the digitised symbol at the operation's feed (constant/reference/bowenMohammad_fig3_byFeed.csv).";
         x       { label "feed chloride, c_Cl"; unit "mol/m3"; }
         columns
         (
@@ -1054,6 +1092,7 @@ views
         name    fig3_dye37_table;
         type    table;
         title   "Fig. 3 as numbers, 37 mol/m3 of dye: R_obs at each measured feed -- experiment, Choupo, NanoFiltran, and Choupo minus experiment (part B)";
+        note    "Choupo - experiment is the pore model's residual at inputs Bowen & Mohammad fitted to these very data, not a prediction error; nothing was fitted by this run.  The experiment column is the digitised symbol at the operation's feed (constant/reference/bowenMohammad_fig3_byFeed.csv).";
         x       { label "feed chloride, c_Cl"; unit "mol/m3"; }
         columns
         (
@@ -1071,6 +1110,7 @@ views
         name    codeToCode;
         type    table;
         title   "Code to code on NanoFiltran's matrix: the permeate of every ion, NanoFiltran extrapolated against Choupo at 801 nodes, and their relative difference (part A)";
+        note    "Code-to-code verification: one model, the same inputs, two independent programs.  No number here is a measurement.";
         columns
         (
             { name Na;  label "permeate Na+";    unit "mol/m3"; }

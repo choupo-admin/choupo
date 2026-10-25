@@ -63,6 +63,15 @@ License
     * an outline jump switches too, and scrolls AFTER the switch -- the
       viewer is not mounted while the outline is showing, so the
       getElementById the desk path relies on would find nothing.
+  F1 ON A KEY (DEV.md 4c C154).  A click on a line SELECTS it (marked like
+  the active row of a table), and F1 then answers for the KEY on that line --
+  its meaning, its unit, the model it feeds -- from the schema that documents
+  it (case/keyHelp.ts), in a card at the foot of the viewer with a door to
+  the theory; a key no schema documents is answered for its block, with that
+  scope said.  With no line selected, F1 keeps the workspace's own answer.
+  The Outline names the propsDict's studies, operations, views and references
+  under their lists, so a reader jumps to `N350` rather than to `operations`.
+
   WHEN it switches is decided by `fitsRow` -- the project's ONE fit rule
   (methods/methodsChrome.tsx) -- against the width this layout's own columns
   need (CASE_PANES_ONE_ROW_PX below).  It is NOT decided by the pointer: a
@@ -72,7 +81,11 @@ License
 
 import { useEffect, useMemo, useState } from "react";
 import { useReducedMotion } from "@mantine/hooks";
-import { Box, Group, ScrollArea, SegmentedControl, Stack, Text } from "@mantine/core";
+import { ActionIcon, Anchor, Box, Group, ScrollArea, SegmentedControl, Stack, Text } from "@mantine/core";
+import { IconHelp, IconX } from "@tabler/icons-react";
+import { keyHelp, type KeyHelp } from "../case/keyHelp.js";
+import { locatePropsBlocks } from "../case/propsDictLocate.js";
+import { openGuide } from "../help/guideLinks.js";
 import { FileTree } from "./FileTree.js";
 
 import { lessonOutline } from "../case/lesson.js";
@@ -169,6 +182,23 @@ function orderFiles(paths: string[]): string[] {
 interface OutlineKey {
   key: string;
   line: number;
+  /** a named entry of a list (an operation, a view ...), drawn under it */
+  child?: boolean;
+}
+
+/** The propsDict's outline: each top-level key, and under `studies`,
+ *  `operations`, `views` and `references` the NAME of every entry with its
+ *  line (case/propsDictLocate.ts -- the tokenizer, never a regex over text). */
+function propsOutline(text: string): OutlineKey[] {
+  const top = parseOutline(text);
+  const idx = locatePropsBlocks(text);
+  const out: OutlineKey[] = [];
+  for (const o of top) {
+    out.push(o);
+    const list = (idx as Record<string, Map<string, { line: number }> | undefined>)[o.key];
+    if (list) for (const [name, l] of list) out.push({ key: name, line: l.line, child: true });
+  }
+  return out;
 }
 
 function parseOutline(text: string): OutlineKey[] {
@@ -277,8 +307,9 @@ export function CaseWorkspace() {
   // (case/lesson.ts), never through the dict highlighter, and outlined by
   // its headings rather than by dict keys.
   const isLesson = !!active && /\.md$/i.test(active);
-  const outline = useMemo(() => {
+  const outline = useMemo<OutlineKey[]>(() => {
     if (!active) return [];
+    if (!isLesson && /(^|\/)system\/propsDict$/.test(active)) return propsOutline(activeText);
     if (!isLesson) return parseOutline(activeText);
     try { return lessonOutline(activeText).map((h) => ({ key: h.key, line: h.line })); }
     catch { return []; }
@@ -333,6 +364,23 @@ export function CaseWorkspace() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [caseFocus?.seq]);
   const marked = (i: number) => !!mark && mark.path === active && i + 1 >= mark.line && i + 1 <= mark.endLine;
+
+  /* THE SELECTED LINE and F1's answer for its key (DEV.md 4c C154). */
+  const [activeLine, setActiveLine] = useState<{ path: string; line: number } | null>(null);
+  const [help, setHelp] = useState<KeyHelp | null>(null);
+  const propsDict = caseFiles.propsDict;
+  const flowsheet = caseFiles.flowsheet;
+  useEffect(() => { setHelp(null); }, [active]);
+  useEffect(() => {
+    const on = (e: KeyboardEvent) => {
+      if (e.key !== "F1" || !activeLine || activeLine.path !== active || isLesson) return;
+      e.preventDefault();
+      e.stopImmediatePropagation();
+      setHelp(keyHelp(activeLine.path, activeText, activeLine.line, { propsDict, flowsheet }));
+    };
+    window.addEventListener("keydown", on, true);
+    return () => window.removeEventListener("keydown", on, true);
+  }, [activeLine, active, activeText, isLesson, propsDict, flowsheet]);
 
   /* The file list is a PANEL CONTRACT rail (ui/panelContract.tsx) — draggable,
    * foldable, remembered — but ONLY in the wide posture, and that exception is
@@ -461,7 +509,14 @@ export function CaseWorkspace() {
                   zIndex: 1,
                 }}
               >
-                <Text size="xs" c="accent" ff="monospace">{active}</Text>
+                <Group justify="space-between" wrap="nowrap">
+                  <Text size="xs" c="accent" ff="monospace">{active}</Text>
+                  {!isLesson && (
+                    <Text size="10px" c="dimmed">
+                      {activeLine?.path === active ? `line ${activeLine.line} selected -- F1 for its key` : "click a line, then F1 for what its key means"}
+                    </Text>
+                  )}
+                </Group>
               </Box>
               <Box style={{ padding: "10px 14px" }}>
                 {isLesson && <Lesson md={activeText} />}
@@ -469,7 +524,10 @@ export function CaseWorkspace() {
                   <div
                     key={i}
                     id={`ln-${i + 1}`}
-                    className="cw-line"
+                    className={`cw-line${activeLine?.path === active && activeLine.line === i + 1 ? " cw-active" : ""}`}
+                    data-line={i + 1}
+                    onClick={() => setActiveLine({ path: active, line: i + 1 })}
+                    title="Click to select this line, then F1 for what its key means"
                     style={{
                       fontFamily: "JetBrains Mono, monospace",
                       fontSize: 12,
@@ -485,6 +543,38 @@ export function CaseWorkspace() {
                   />
                 ))}
               </Box>
+              {help && help.file === active && (
+                <Box data-key-help={help.scope} style={{
+                  position: "sticky", bottom: 0, zIndex: 2, margin: "0 10px 10px 10px",
+                  border: "1px solid light-dark(var(--mantine-color-cyan-4), var(--mantine-color-cyan-8))",
+                  borderRadius: 6, padding: "8px 12px",
+                  background: "light-dark(var(--mantine-color-white), var(--mantine-color-dark-7))",
+                  boxShadow: "0 2px 10px rgba(0,0,0,0.18)" }}>
+                  <Group justify="space-between" wrap="nowrap" gap={6}>
+                    <Group gap={6} wrap="wrap" style={{ minWidth: 0 }}>
+                      <IconHelp size={14} color="var(--mantine-color-cyan-6)" />
+                      <Text size="sm" fw={700} ff="monospace">{help.subject}</Text>
+                      <Text size="sm" fw={600}>{help.title !== help.subject ? help.title : ""}</Text>
+                      {help.unit && <Text size="xs" c="dimmed">unit: <b>{help.unit}</b></Text>}
+                      <Text size="10px" c="dimmed" tt="uppercase">
+                        {help.scope === "key" ? `line ${help.line}` : help.scope === "block" ? "help of the block (no schema documents this key)" : "no schema for this file"}
+                      </Text>
+                    </Group>
+                    <ActionIcon size="sm" variant="subtle" color="gray" aria-label="close" onClick={() => setHelp(null)}>
+                      <IconX size={13} />
+                    </ActionIcon>
+                  </Group>
+                  {help.description && <Text size="xs" mt={4} style={{ whiteSpace: "pre-wrap" }}>{help.description}</Text>}
+                  <Group gap="md" mt={4}>
+                    {help.guide && (
+                      <Anchor component="button" type="button" size="xs" onClick={() => openGuide(help.guide!.url)}>
+                        Open {help.guide.label}
+                      </Anchor>
+                    )}
+                    <Text size="10px" c="dimmed">from {help.source}</Text>
+                  </Group>
+                </Box>
+              )}
             </>
           )}
         </ScrollArea>
@@ -532,7 +622,8 @@ export function CaseWorkspace() {
                 <Text size="10px" c="dimmed" ff="monospace" style={{ width: 32 }}>
                   L{o.line}
                 </Text>
-                <Text size="xs" c="var(--mantine-color-text)" ff="monospace">
+                <Text size="xs" c={o.child ? "dimmed" : "var(--mantine-color-text)"} ff="monospace"
+                  pl={o.child ? 10 : 0} data-outline-child={o.child ? "" : undefined}>
                   {o.key}
                 </Text>
               </Group>

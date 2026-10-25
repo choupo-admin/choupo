@@ -137,6 +137,37 @@ land in `table1/`); else `case/` (a view across operations or beside a
 reference).  A declared view of a default's name in the same folder REPLACES
 it, said once on the console.
 
+### A view's `note`, and the case's `studies` (DEV.md 4c C154)
+
+```
+studies
+(
+    {
+        name     B;                                   // a word
+        title    "B -- Experiment: ... (Fig. 3)";      // the question, in words
+        purpose  calibratedComparison;                // the closed list below
+        summary  "A comparison with MEASUREMENTS whose inputs ...";   // optional
+        ops      ( dye4_p1 ... dye37_p5 );            // the operations that answer it
+    }
+);
+views ( { name fig3_dye4; type series; title "Fig. 3: ..."; note "The error bars are READING uncertainty ..."; ... } );
+```
+
+`note "..."` is the case's caveat for ONE view -- what a reader must know to
+read it right (what its error bars are, what a reference line does and does
+not include) -- published as the view's `note` in the result block and its
+sidecar, drawn under the figure and written into the exported CSV's `#`
+header; an empty note refuses.  `studies` are the case's scientific
+questions in the order it tells them: the GUI navigates by them (About, the
+tree, the map's frames, the Overview).  `purpose` is what a study SETS OUT to
+do, from a closed list -- `codeToCodeVerification`, `calibratedComparison`,
+`independentComparison`, `numericalStudy`, `demonstration` -- and no word on
+it says `validated`: whether an answer survived evidence it never saw is the
+op's own curation verdict, never a declared word.  Refused before the run: a
+purpose off the list, an operation the propsDict does not declare, one
+operation in two studies (a study is a partition), a missing title or ops,
+and a key nothing reads.  Gate: `check_postprocessing` arms (b) and (e).
+
 ## 5. What is refused, and when
 
 TWO PHASES, so a typo does not cost the run it guards.  BEFORE the

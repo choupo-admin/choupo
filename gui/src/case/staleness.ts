@@ -71,6 +71,16 @@ License
   fingerprints later: the case with the scratch overlay applied, and nothing
   else.
 
+  PARTS, AND WHAT THEY ARE NOT (DEV.md 4c C154).  Beside the one fingerprint
+  the stamp keeps a fingerprint per PART of the case -- each propsDict
+  operation, view and reference by name, every other parsed dict, every
+  case-local file -- so a reader that KNOWS which parts one of its blocks
+  reads (the props calculation map: an operation's own block and the files
+  it names) can say which blocks a change reaches.  The parts are still not a
+  dependency analysis: `changedParts` only lists what differs, and a reader
+  that cannot attribute every changed part to a block it knows must say
+  "the case changed since the run" ONCE rather than guess per block.
+
   ABSENCE MEANS NO CLAIM.  With no result, or with a result nobody stamped
   (a drilled-in tab inherits its parent's), the answer is "not stale" -- this
   module never manufactures a verdict it has no evidence for.
@@ -89,6 +99,9 @@ export interface RunInputs {
    *  since.  It is a count of EDITS (inputs), never a claim about which
    *  outputs they touched. */
   edits: { [path: string]: string };
+  /** Fingerprint of each PART of the case (see `casePartsOf`).  Optional: a
+   *  stamp taken before parts existed simply makes no per-part claim. */
+  parts?: { [part: string]: string };
 }
 
 export interface Staleness {
@@ -133,13 +146,51 @@ export function fingerprintCase(files: CaseFiles): string {
   return fnv1a(stable(physical && Object.keys(physical).length ? {...solved, extraFiles: physical } : solved));
 }
 
+/** One fingerprint per PART of the case: each propsDict operation, view and
+ *  reference by name (`propsDict.operations.<name>` ...), the rest of the
+ *  propsDict by top-level key (`propsDict.<key>`), every other parsed dict by
+ *  its field (`thermoPackage`, `controlDict`, ...) and every case-local file
+ *  (`file:<relPath>`, the `.cho` marker excluded as above).  The same two
+ *  exclusions as the case fingerprint, so the parts never disagree with it. */
+export function casePartsOf(files: CaseFiles): { [part: string]: string } {
+  const out: { [part: string]: string } = {};
+  const { rawFiles: _r, extraFiles, propsDict, ...dicts } = files;
+  for (const [k, v] of Object.entries(dicts)) if (v !== undefined) out[k] = fnv1a(stable(v));
+  if (propsDict) {
+    for (const [k, v] of Object.entries(propsDict)) {
+      if ((k === "operations" || k === "views" || k === "references") && Array.isArray(v)) {
+        v.forEach((e, i) => {
+          const nm = e && typeof e === "object" && !Array.isArray(e)
+            && typeof (e as Record<string, unknown>)["name"] === "string"
+            ? (e as Record<string, unknown>)["name"] as string : `[${i}]`;
+          out[`propsDict.${k}.${nm}`] = fnv1a(stable(e));
+        });
+      } else out[`propsDict.${k}`] = fnv1a(stable(v));
+    }
+  }
+  for (const [rel, body] of Object.entries(extraFiles ?? {}))
+    if (!rel.endsWith(".cho")) out[`file:${rel}`] = fnv1a(body);
+  return out;
+}
+
+/** The parts that differ between what is declared now and what the run was
+ *  given (added, removed or changed).  null = the run's stamp carries no
+ *  parts, so no per-part claim can be made. */
+export function changedParts(current: RunInputs, ran: RunInputs | null | undefined): string[] | null {
+  if (!ran?.parts || !current.parts) return null;
+  const out: string[] = [];
+  for (const k of new Set([...Object.keys(current.parts), ...Object.keys(ran.parts)]))
+    if (current.parts[k] !== ran.parts[k]) out.push(k);
+  return out.sort();
+}
+
 /** The stamp to keep beside a result.  `applied` must be the case the solver
  *  was actually handed (the scratch overlay already applied), and `edits` the
  *  overlay that produced it. */
 export function runInputsOf(applied: CaseFiles, edits: ScratchEdits): RunInputs {
   const flat: { [path: string]: string } = {};
   for (const [path, e] of Object.entries(edits)) flat[path] = `${e.value}${e.unit ? ` ${e.unit}` : ""}`;
-  return { fingerprint: fingerprintCase(applied), edits: flat };
+  return { fingerprint: fingerprintCase(applied), edits: flat, parts: casePartsOf(applied) };
 }
 
 /** What is declared NOW, reduced the way a run's stamp is: the case with the
