@@ -4,12 +4,19 @@
   (Prog. Energy Combust. Sci. 67, 31, DOI 10.1016/j.pecs.2018.01.002):
   extended Zeldovich (their Table 2: N+NO, N+OH, N+O2 -- thermal NO forms
   through the REVERSE of Z1, O + N2 -> NO + N, Ea ~ 75 kcal via the
-  equilibrium constant), the NNH route (R20-R24) and the N2O route
-  (R15-R19, incl. the N2O(+M) Lindemann falloff).  All A/b/Ea VERBATIM in
-  mol-cm-s-cal; the engine converts and announces.  Reverse rates from
-  equilibrium -- the curated NASA-7 thermo of all 14 species (NNH's
-  Delta_Hf = +249.5 kJ/mol, the number the NNH-route literature hinges on,
-  is the ATcT-consistent value).
+  equilibrium constant) and the N2O route (R15-R19, incl. the N2O(+M)
+  Lindemann falloff).  All A/b/Ea VERBATIM in mol-cm-s-cal; the engine
+  converts and announces.  Reverse rates from equilibrium, through the
+  thermo of the 13 species (the flame-range heat capacities are NASA-9
+  polynomials read from NASA/TP-2002-211556).
+
+  THE NNH ROUTE (Glarborg 2018 R20-R24) IS NOT CARRIED, since 2026-10-25
+  (DEV.md 4c C164): its thermo had come from a mechanism's thermo file that
+  grants no redistribution, and no public-domain primary for NNH's heat
+  capacity and entropy was found (NASA/TP-2002-211556 has no NNH entry).
+  An ABSENCE, named: the route matters in the flame front, far less in the
+  post-flame gas this case holds, and the plateau still lands on the Gibbs
+  ceiling (README).
 \*-----------------------------------------------------------------------------*/
 
 provenance
@@ -497,105 +504,6 @@ Z3_N_O2_NO_O
     {
         type modifiedArrhenius;
         A 5.9000e+09;  b 1.0;  Ea 6280.0;
-        units { A "cm3/mol/s"; Ea "cal/mol"; }
-    }
-}
-
-NNH20_NNH_N2_H
-{
-    // Glarborg et al. 2018 (PECS 67, 31), Tables 2/5 VERBATIM (mol-cm-s-cal)
-    reversible        true;
-    limitingReactant  NNH;
-    stoichiometry
-    (
-        { component H;      nu  1;  order 0; }
-        { component N2;     nu  1;  order 0; }
-        { component NNH;    nu -1;  order 1; }
-    );
-    kinetics
-    {
-        type modifiedArrhenius;
-        A 1.0000e+09;  b 0.0;  Ea 0.0;
-        units { A "cm3/mol/s"; Ea "cal/mol"; }
-    }
-}
-
-NNH21_NNH_O_N2O_H
-{
-    // Glarborg et al. 2018 (PECS 67, 31), Tables 2/5 VERBATIM (mol-cm-s-cal)
-    reversible        true;
-    limitingReactant  NNH;
-    stoichiometry
-    (
-        { component H;      nu  1;  order 0; }
-        { component N2O;    nu  1;  order 0; }
-        { component NNH;    nu -1;  order 1; }
-        { component O;      nu -1;  order 1; }
-    );
-    kinetics
-    {
-        type modifiedArrhenius;
-        A 1.9000e+14;  b -0.274;  Ea -22.0;
-        units { A "cm3/mol/s"; Ea "cal/mol"; }
-    }
-}
-
-NNH22_NNH_O_N2_OH
-{
-    // Glarborg et al. 2018 (PECS 67, 31), Tables 2/5 VERBATIM (mol-cm-s-cal)
-    reversible        true;
-    limitingReactant  NNH;
-    stoichiometry
-    (
-        { component N2;     nu  1;  order 0; }
-        { component NNH;    nu -1;  order 1; }
-        { component O;      nu -1;  order 1; }
-        { component OH;     nu  1;  order 0; }
-    );
-    kinetics
-    {
-        type modifiedArrhenius;
-        A 1.2000e+13;  b 0.145;  Ea -217.0;
-        units { A "cm3/mol/s"; Ea "cal/mol"; }
-    }
-}
-
-NNH23_NNH_O_NH_NO
-{
-    // Glarborg et al. 2018 (PECS 67, 31), Tables 2/5 VERBATIM (mol-cm-s-cal)
-    reversible        true;
-    limitingReactant  NNH;
-    stoichiometry
-    (
-        { component NH;     nu  1;  order 0; }
-        { component NNH;    nu -1;  order 1; }
-        { component NO;     nu  1;  order 0; }
-        { component O;      nu -1;  order 1; }
-    );
-    kinetics
-    {
-        type modifiedArrhenius;
-        A 5.2000e+11;  b 0.381;  Ea -409.0;
-        units { A "cm3/mol/s"; Ea "cal/mol"; }
-    }
-}
-
-NNH24_NNH_O2_N2_HO2
-{
-    // Glarborg et al. 2018 (PECS 67, 31), Tables 2/5 VERBATIM (mol-cm-s-cal)
-    reversible        true;
-    limitingReactant  NNH;
-    stoichiometry
-    (
-        { component HO2;    nu  1;  order 0; }
-        { component N2;     nu  1;  order 0; }
-        { component NNH;    nu -1;  order 1; }
-        { component O2;     nu -1;  order 1; }
-    );
-    kinetics
-    {
-        type modifiedArrhenius;
-        A 5.6000e+14;  b -0.385;  Ea -13.0;
         units { A "cm3/mol/s"; Ea "cal/mol"; }
     }
 }

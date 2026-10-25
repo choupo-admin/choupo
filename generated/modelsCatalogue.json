@@ -128,14 +128,26 @@
     "heatCapacity": [
       {
         "key": "NASA7",
-        "name": "NASA 7-coefficient polynomial Cp (combustion/GRI-Mech)",
+        "name": "NASA 7-coefficient polynomial Cp (CHEMKIN form; NASA TM-4513)",
         "source": "src/thermo/heatCapacity/NASA7Cp.cpp",
+        "engine": "all",
+        "phases": "vapour/solid",
+        "tutorials": [
+          "gibbs11_carbon_deposition",
+          "gibbs12_element_potential_newton"
+        ]
+      },
+      {
+        "key": "NASA9",
+        "name": "NASA Glenn 9-coefficient polynomial Cp (NASA/TP-2002-211556)",
+        "source": "src/thermo/heatCapacity/NASA9Cp.cpp",
         "engine": "all",
         "phases": "vapour",
         "tutorials": [
           "gibbs06_h2_flame_radicals",
           "ignition01_h2o2",
-          "ignition01_h2o2_rk4"
+          "ignition02_h2air_slack",
+          "nox01_zeldovich_postflame"
         ]
       },
       {
@@ -1059,7 +1071,7 @@
         "key": "components",
         "name": "Pure-component property records",
         "source": "data/standards/components/",
-        "count": 604
+        "count": 601
       },
       {
         "key": "species",

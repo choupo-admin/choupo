@@ -10,11 +10,15 @@
   ignition01_h2o2 -- adiabatic constant-volume H2/O2 ignition (choupoBatch).
 
   A stoichiometric H2/O2 charge diluted in N2 is held in a closed rigid vessel
-  at 1100 K.  KINETICS ARE REAL: the GRI-Mech 3.0 H/O subsystem (28 reactions,
-  verbatim; see constant/reactions).  With the NASA-7 Cp overrides (constant/
-  components/ -- the catalogue poly3 fits stop at 1500 K) the stiff run gives
-  tau_ign ~ 9 us (max dT/dt on a 1 us grid; 1100 K, 5 bar) and T_final = 2641 K (constant-V
-  flame).  A slow initiation seeds radicals; chain branching then runs away
+  at 1100 K.  KINETICS: the O Conaire et al. 2004 H2/O2 mechanism (Int. J.
+  Chem. Kinet. 36, 603, Table I; the same constant/reactions as
+  ignition02_h2air_slack, where it is pinned against the Slack shock-tube
+  delays).  With the NASA-9 Cp overrides of NASA/TP-2002-211556 (constant/
+  components/ -- the catalogue's process-range Cp stops short of a flame) the
+  stiff run gives tau_ign ~ 8 us (max dT/dt on a 1 us grid; 1100 K, 5 bar,
+  trace-H seed) and T_final = 3078 K, the constant-V equilibrium of the charge.
+  (Until 2026-10-25 this case ran the GRI-Mech 3.0 H/O subset, which grants no
+  redistribution -- DEV.md 4c C164; see README.)  A slow initiation seeds radicals; chain branching then runs away
   and the mixture IGNITES -- a sharp temperature jump after an induction delay.
 
   The stiff solver (Rosenbrock23, chosen in flowsheetDict) integrates the
@@ -25,13 +29,13 @@
 \*---------------------------------------------------------------------------*/
 
 application   choupoBatch;
-description   "Adiabatic constant-V H2/O2 ignition at 1100 K (GRI-Mech 3.0 H/O kinetics, curated thermo); Rosenbrock23 stiff solver; reports ignition delay";
+description   "Adiabatic constant-V H2/O2 ignition at 1100 K (O Conaire 2004 H2/O2 kinetics, NASA-9 thermo); Rosenbrock23 stiff solver; reports ignition delay";
 
 verbosity     3;
 
 // ---- Time integration ----
 startTime       0;          // s
-endTime         2.0e-4;      // s  (GRI kinetics ignite ~20x faster than the old synthetic set)
+endTime         2.0e-4;      // s  (the trace-H seed ignites it at ~8 us; equilibrium by ~50 us)
 deltaT          1.0e-6;     // s   (the stiff integrator sub-steps adaptively
                             //      within each deltaT; the explicit RK4 sibling
                             //      cannot survive this step -- that is the point)

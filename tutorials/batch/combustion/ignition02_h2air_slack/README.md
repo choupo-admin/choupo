@@ -16,5 +16,5 @@ Two lessons:
 2. The engine now prints `tau_ign` in the epilogue (time of max dT/dt on the
    write grid) whenever a vessel ignites — no CSV spelunking.
 
-Run `ignition01_h2o2` (GRI kinetics, 5 bar) for the sibling case and the
+Run `ignition01_h2o2` (the same kinetics, 5 bar, trace-H seeded) for the sibling case and the
 stiffness lesson (`_rk4`).

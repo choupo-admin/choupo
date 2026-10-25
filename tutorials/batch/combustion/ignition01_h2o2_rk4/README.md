@@ -4,7 +4,7 @@ This is the **failure half** of the stiffness lesson. It runs the exact same
 adiabatic constant-volume H₂/O₂ ignition as the sibling case
 [`ignition01_h2o2`](../ignition01_h2o2/README.md), but with the **explicit RK4**
 integrator instead of the stiff Rosenbrock23 — at the same fixed step
-(`deltaT = 1e-5 s`).
+(`deltaT = 1e-6 s`).
 
 Run it by hand:
 
@@ -14,37 +14,35 @@ runCase tutorials/batch/combustion/ignition01_h2o2_rk4
 
 ## What you see
 
-`trajectory.csv` is a column of `nan` from the very first output step
-(t = 1e-4 s) onward — there is **no** clean induction-then-jump, just immediate
-divergence:
+The first step is still plausible (T 1100 → 1110 K); the second already throws
+the state out of the physical region (T near 8000 K, H₂ at zero), and the
+third is `nan`.  The engine refuses rather than exit 0:
 
 ```
-t,...,bomb.T
-0.0,...,1.10000000e+03
-1.0e-4,...,-nan
-2.0e-4,...,-nan
-...
+ERROR: BatchReactor 'bomb': accepted state has unphysical T = nan K after a RK4
+step -- the integration blew up.  Use a smaller deltaT or a stiff integrator
+(integrator Rosenbrock23;).
 ```
 
-That immediate blow-up **is** the result. The radical lifetimes (~10⁻⁸–10⁻⁷ s)
-are six orders of magnitude shorter than the induction timescale (~10⁻³ s) — the
-chemistry is **stiff**. An explicit method like RK4 is stability-limited to a
-step of order the *fastest* scale, so the ~10⁻⁵ s step this case uses is far too
-large: the integration is murdered by stability long before accuracy matters.
+That blow-up **is** the result.  The stiff sibling prints a stiffness ratio of
+order 10⁷ for this chemistry: an explicit method is stability-limited to a step
+of order the *fastest* scale, so a step chosen for the *induction* is murdered
+by stability long before accuracy matters.
 
-Compare side-by-side with the stiff sibling: switch to (or open)
-`ignition01_h2o2`, whose L-stable adaptive sub-stepping integrates the *same*
-chemistry to a clean burned state (~2440 K). *See, then decide*, applied to
-numerics.
+Compare side-by-side with `ignition01_h2o2`, whose L-stable adaptive
+sub-stepping integrates the *same* chemistry to a clean burned state
+(~3078 K), and with `ignition01_h2o2_eulersi`, which is A-stable but first
+order and fails honestly by name.  *See, then decide*, applied to numerics.
 
 ## Regression note
 
-This case ships a `.expect-nonconvergence` marker, so `bin/runTests` **skips**
-it — its whole point is to fail, and it would otherwise trip the NaN guard.
+This case ships a `.expect-nonconvergence` marker, so `bin/runTests` counts it
+as an EXPECTED-FAIL — its whole point is to fail.
 
 ## Provenance
 
-Same as the sibling: the **thermodynamics is real curated Choupo data**, but the
-**reaction rates are synthetic** (hand-chosen Arrhenius constants reproducing the
-chain-branching structure, not a published mechanism). Do not quote any number
-from this case as quantitative.
+Same as the sibling: the Ó Conaire et al. (2004) H₂/O₂ mechanism
+(`constant/reactions`, shared with `ignition02_h2air_slack`) and NASA-9 heat
+capacities from NASA/TP-2002-211556 for H₂, O₂, N₂ and water.  Until
+2026-10-25 it ran a GRI-Mech 3.0 subset, replaced because GRI-Mech grants no
+redistribution (DEV.md §4c C164); the failure it teaches did not change.

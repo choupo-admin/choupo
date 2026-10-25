@@ -16,7 +16,7 @@
 recordType    thermophysicalPropertySystem;
 schemaVersion 2;
 
-components       ( H2 O2 H O OH HO2 H2O2 water N2 NO N N2O NNH NH );
+components       ( H2 O2 H O OH HO2 H2O2 water N2 NO N N2O NH );
 
 equilibrium
 {

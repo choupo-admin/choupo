@@ -13,12 +13,14 @@
   Setup: the EQUILIBRATED H/O radical pool of a lean H2/air flame at 2125 K,
   1 atm (Homer & Sutton Flame 1, as compiled in Glarborg 2018 Fig 4) with
   ALL nitrogen still as N2 -- then the Glarborg 2018 nitrogen chemistry
-  (extended Zeldovich + NNH + N2O routes, Tables 2/5 verbatim) switches on
+  (extended Zeldovich + N2O routes, Tables 2/5 verbatim; the NNH route is
+  not carried, see constant/reactions) switches on
   and NO grows toward its ceiling, ISOTHERMALLY (the post-flame zone).
 
-  THE CROSS-ENGINE PIN (verified 2026-07-02): the kinetic plateau must land
-  on the GIBBS equilibrium of the same 14-species pool at the same T,P --
-  NO_eq = 5227 ppm (choupoSolve gibbsReactor, same thermo).  Two engines,
+  THE CROSS-ENGINE PIN: the kinetic plateau must land
+  on the GIBBS equilibrium of the same 13-species pool at the same T,P --
+  NO_eq = 5178 ppm (choupoSolve gibbsReactor, same thermo; re-measured
+  2026-10-25).  Two engines,
   one thermodynamics: the kinetics only choose the PATH and the CLOCK; the
   destination belongs to the Gibbs surface.  See README for the recorded
   plateau + the time-to-half-equilibrium (the "NOx forms in engineering
