@@ -12,16 +12,22 @@ minutes on ops the arm does not read, and a node count rewritten across the whol
 file would also rewrite the grid study's own N.  This is the one home of which op
 belongs to which part and of how a part is copied -- never a regex per gate.
 
-A copy carries the case's constant/ and system/ WITHOUT the propsDict's `references`
-and `views` (they follow the operations list, name ops the copy no longer has, and
-are held by their own gate, check_postprocessing), without `expected`, and without
-any run output.
+A copy carries the case's constant/ and system/ WITHOUT the propsDict's `studies`,
+`references` and `views` (they name ops the copy no longer has, and are held by their
+own gate, check_postprocessing), without `expected`, and without any run output.
+They are taken out by props_views.strip_views, the one home of which lists name
+operations -- this helper used to cut "everything after the operations list" by
+POSITION, and so kept the `studies` C154 wrote ABOVE it (2026-10-25: three gates
+refused on study B's `dye4_p1`; props_views.py says the rest).
 """
 import re
 import shutil
+import sys
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[3]
+sys.path.insert(0, str(ROOT / "bin" / "curate"))
+from props_views import strip_views  # noqa: E402
 CASE = ROOT / "tutorials" / "props" / "membrane" / "nanofiltran_geraldesAlves2008"
 
 
@@ -70,13 +76,12 @@ def subset_case(dst, keep, edit=None, src=CASE):
         if (src / "constant" / sub).is_dir():
             shutil.copytree(src / "constant" / sub, dst / "constant" / sub, dirs_exist_ok=True)
     pd = dst / "system" / "propsDict"
-    text = pd.read_text()
+    text = strip_views(pd.read_text())
     blocks = op_blocks(text)
     want = [n for n in blocks if (keep(n) if callable(keep) else n in keep)]
     if not want:
         raise SystemExit("paper_case.subset_case: no operation kept of %s" % list(blocks))
-    #  everything AFTER the operations list -- the `references` and `views` --
-    #  is dropped with it
+    #  what is left after the operations list is comments: it goes with it
     head = text[:text.index("operations\n(\n")]
     text = head + "operations\n(\n" + "".join(blocks[n] for n in want) + ");\n"
     if edit is not None:
