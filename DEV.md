@@ -1553,6 +1553,29 @@ accepts today, and that is a policy call.
 > publish is not drawn by TypeScript -- the GUI credo); (3) built under
 > C163 on stated defaults, Vitor reviewing after.
 > Status: recorded; (1) dispatched the same turn.
+> (1) DONE 2026-10-25 (live build 87e85755; audit and ~60 screenshots in
+> the session scratchpad, not in the tree): scores 6/2/2/3/6/5/7 out of 10.
+> The case does what it was built for (verification against the paper)
+> and does not teach WHY: no per-ion steric/Born/Donnan factor, no flux
+> split, no named face potentials, the solver tolerance nowhere on
+> screen, J_v without a description, F1 for `ideal` under DSPM-DE lands
+> on Raoult.  The second opinion is wrong twice, said with the screen:
+> polarisation and trust are largely there; a fixed "goes up / goes down"
+> sentence about REJECTION would be false (Na+ changes sign with J_v,
+> Cl- is negatively rejected in study B) -- directions only at the
+> partition level, the rest by an engine sweep; and the film has no
+> coordinate in this model, so it is drawn as a labelled jump, never a
+> profile.  DECIDED under C163, phase 1 (dispatched): E1 the pore profile
+> drawn for every operation (already published); E2 per ion and face
+> lambda, hindrances, steric, Born and Donnan factors and the activity
+> ratio, held by a gate to the published partition coefficient; E3/E5
+> the three named potentials (summing to dPsi_m_V) and the final
+> residual, tolerance and closure checks per point; G2/G3 F1 fixes (the
+> DSPM-DE activity words, J_v's description, partition-level direction
+> sentences with the non-monotone warning); the stale "robust bisection"
+> sentence in Theory Guide 19.1; the module-only warning in the bench.
+> Phase 2: E4 the per-node flux split with its closure residual; then
+> G4 "follow an ion", assembled by the engine as a view.
 
 > **C164. GRI-MECH 3.0 IS NOT USED DIRECTLY (Vitor, 2026-10-25, ruling on
 > the licence question, quoting the two findings -- the H/O subset copied
