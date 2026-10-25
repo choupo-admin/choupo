@@ -15,6 +15,16 @@ is the basename of a case directory under tutorials/ is a `case`, anything
 else a `gate`.  Two totals follow (cases vs gates), which is the number the
 "minimise the case list" argument needs and never had.
 
+UNDER `runTests -j N` (2026-10-25, DEV.md 4c C167) the expensive part of an
+item -- a case's run, a pooled gate's run -- happens earlier, N-wide, and the
+walk only REPLAYS it, so the gap before its result line is near zero and says
+nothing.  Each replay therefore stamps the item's OWN measured seconds into
+`suiteTimings.replay` beside the raw log, just before its result line, and an
+item preceded by such a stamp is charged that number instead of the gap.  The
+totals then read as the work each kind costs (what a serial run would spend),
+while `walked in` stays the wall clock.  Without the file -- `-j 1`, or any
+run before C167 -- every number is the gap, exactly as before.
+
 This is a MEASUREMENT, not a gate: it prints, it writes the CSV, it judges
 nothing.  The decisions it informs are separate slices.
 """
@@ -43,6 +53,17 @@ def main(argv: list[str]) -> int:
         print("suite_timings: no raw log at", raw)
         return 1
     cases = case_names()
+    replay = []
+    rp = raw.with_suffix(".replay")
+    if rp.exists():
+        for line in rp.read_text(errors="replace").splitlines():
+            a, _, b = line.partition("\t")
+            try:
+                replay.append((float(a), float(b)))
+            except ValueError:
+                continue
+        replay.sort()
+    ri = 0
     rows, t_prev, t_first = [], None, None
     for line in raw.read_text(errors="replace").splitlines():
         stamp, _, text = line.partition("\t")
@@ -56,7 +77,15 @@ def main(argv: list[str]) -> int:
         if not m or TALLY.match(text):
             continue
         verdict, name = m.groups()
-        rows.append((name, "case" if name in cases else "gate", verdict, round(t - t_prev, 3)))
+        secs = t - t_prev
+        own = None
+        while ri < len(replay) and replay[ri][0] <= t:
+            if replay[ri][0] > t_prev:
+                own = replay[ri][1]
+            ri += 1
+        if own is not None:
+            secs = own
+        rows.append((name, "case" if name in cases else "gate", verdict, round(secs, 3)))
         t_prev = t
     if not rows:
         print("suite_timings: no result lines in", raw)
@@ -75,7 +104,11 @@ def main(argv: list[str]) -> int:
     print(f"  items {len(rows)}: " + ", ".join(
         f"{k} {sum(1 for r in rows if r[1] == k)} = {v/60:.1f} min" for k, v in sorted(by_kind.items()))
         + f"; walked in {total/60:.1f} min")
-    print("  slowest ten (seconds are the gap since the previous result line):")
+    if replay:
+        print("  (a -j N run: an item pooled ahead of the walk is charged its OWN run's seconds,")
+        print("   so the kind totals are serial-equivalent work and only `walked in` is wall clock)")
+    print("  slowest ten (seconds are the gap since the previous result line"
+          + (", or a pooled item's own run" if replay else "") + "):")
     for name, kind, verdict, s in sorted(rows, key=lambda r: -r[3])[:10]:
         print(f"    {s:8.1f} s  {kind:<4}  {name}")
     return 0

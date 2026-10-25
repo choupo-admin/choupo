@@ -1,0 +1,41 @@
+# =============================================================================
+#  suite_lanes.txt -- which gates of the full sweep may run N-wide
+#  (read by bin/runTests' gate_prefetch, and by nothing else; DEV.md 4c C167)
+#
+#  One line per gate INVOCATION the sweep makes:
+#
+#      SECTION | LANE | argv (relative to the repository root) | reason
+#
+#  SECTION  PRE  -- the gates before the case walk;
+#           POST -- the gates after it, which read the walk's own output cache
+#                   (CHOUPO_SUITE_OUTPUTS) and are prefetched with it set.
+#  LANE     a name: the pool runs each lane as ONE job, its gates one after
+#           another in the order listed here (the walk's order), and lanes
+#           side by side; or
+#           SERIAL -- run live at its own site, alone, exactly as `-j 1` does.
+#  A gate invocation NOT LISTED HERE IS SERIAL: the safe default, so a new
+#  gate costs speed until classified, never correctness.
+#
+#  HOW A LINE WAS DECIDED (2026-10-25).  Not from the gate's docstring: every
+#  gate was run under `strace -f` on the sweep and its file accesses recorded
+#  (opens, stats, directory listings, creates, removes, renames, execs, thread
+#  creation).  A gate is SERIAL when it
+#    (a) mutates the tree or rebuilds -- check_gate_selftest's sabotages, any
+#        `make`, a compiler, a probe build;
+#    (b) has its own pool of workers (ThreadPoolExecutor, vitest, a parallel
+#        compiler) -- it gets the whole machine, alone, instead of a slot;
+#    (c) writes a shared file other gates read (generated/, build/, docs/,
+#        data/, src/, a fixed /tmp name);
+#    (d) failed or could not be traced in the classification sweep (its
+#        accesses are then not known); or
+#    (e) touches what a SERIAL gate EARLIER in its section writes -- in the
+#        pool it would run before that gate, against an older tree.
+#  Two gates whose accesses meet -- one writes a path the other reads, writes,
+#  lists or lives under (the same tutorial case's converged/, one /tmp name)
+#  -- share a LANE, so they keep their order and never overlap.
+#
+#  WHEN TO RE-CLASSIFY: a gate that starts running a case, writing a file or
+#  building something must move to SERIAL or to the lane of what it shares,
+#  in the same commit.  A line naming an invocation the sweep no longer makes
+#  is reported by the sweep ("prefetched but no site ran it").
+# =============================================================================

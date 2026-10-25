@@ -47,9 +47,94 @@ License
 #include <thread>
 #include <utility>
 
+#if defined(__linux__) && !defined(__EMSCRIPTEN__)
+#include <sched.h>
+#endif
+
 namespace Choupo::solver {
 
 namespace {
+
+#ifndef __EMSCRIPTEN__
+//  THE THREAD CAP OF THE PARALLEL JACOBIAN -- ONE home (DEV.md 4c C167).
+//
+//  The rule it implements was implicit until 2026-10-25: hardware_concurrency()
+//  minus two, with no override.  That is right for one run on an idle machine
+//  and wrong for the suite, which now runs several cases at once: four column
+//  cases each taking ten threads on a ten-core laptop is forty threads fighting
+//  for ten cores.  Distributing the cores is the ORCHESTRATOR's job
+//  (bin/runTests sets CHOUPO_THREADS so that cases x threads ~ cores), never
+//  the solver's -- so this reads a declared cap and the CPUs the process is
+//  ALLOWED to use, and does NOT probe "free" cores (a load average is a race
+//  between processes and goes stale within the solve).
+//
+//      threads = min( CHOUPO_THREADS if set,
+//                     allowed CPUs > 3 ? allowed CPUs - 2 : 1,   (today's rule)
+//                     n columns )
+//
+//  "Allowed" is sched_getaffinity on Linux, so `taskset` and a cpuset cgroup
+//  are honoured; elsewhere it is hardware_concurrency().  With CHOUPO_THREADS
+//  unset and no affinity restriction the count is exactly the old one.  The
+//  count changes only WHEN columns are computed, never WHICH or HOW: every
+//  column is the same pure function of its own perturbation, so J is the same
+//  matrix bit for bit at any thread count.
+//
+//  A cap that BINDS is announced once per process on stderr (it is a choice
+//  made from outside the case, so the reader is told); an unusable value is
+//  announced and ignored, the default rule applying.
+unsigned allowedCpus()
+{
+#if defined(__linux__)
+    cpu_set_t set;
+    CPU_ZERO(&set);
+    if (sched_getaffinity(0, sizeof(set), &set) == 0)
+    {
+        const int c = CPU_COUNT(&set);
+        if (c > 0) return static_cast<unsigned>(c);
+    }
+#endif
+    return std::thread::hardware_concurrency();
+}
+
+std::size_t jacobianThreads(std::size_t n)
+{
+    struct Cap { std::size_t rule = 1; std::size_t declared = 0; };
+    static const Cap cap = []
+    {
+        Cap c;
+        const unsigned cpus = allowedCpus();
+        c.rule = (cpus > 3u) ? static_cast<std::size_t>(cpus) - 2u : 1u;   // cores - 2
+        if (const char* env = std::getenv("CHOUPO_THREADS"))
+        {
+            char* end = nullptr;
+            const long v = std::strtol(env, &end, 10);
+            if (end != env && *end == '\0' && v >= 1)
+                c.declared = static_cast<std::size_t>(v);
+            else
+                std::cerr << "[solver] CHOUPO_THREADS='" << env << "' is not a"
+                             " positive integer -- ignored; the parallel"
+                             " Jacobian keeps its default rule (allowed CPUs - 2"
+                             " = " << c.rule << " thread(s)).\n";
+        }
+        return c;
+    }();
+    std::size_t t = cap.rule;
+    if (cap.declared > 0 && cap.declared < t)
+    {
+        t = cap.declared;
+        static std::once_flag announced;
+        std::call_once(announced, [&]
+        {
+            std::cerr << "[solver] CHOUPO_THREADS=" << cap.declared << " caps the"
+                         " parallel finite-difference Jacobian at " << t
+                      << " thread(s) (default rule: allowed CPUs - 2 = "
+                      << cap.rule << "); the Jacobian is the same, only its"
+                         " wall clock changes.\n";
+        });
+    }
+    return std::min(t, n);
+}
+#endif
 
 scalar normL2(const sVector& v)
 {
@@ -114,9 +199,10 @@ std::vector<sVector> fdJacobian(const std::function<sVector(const sVector&)>& F,
     // Parallel ONLY when the caller asserts F is thread-safe (a pure function with
     // no shared mutable state).  The recycle / flowsheet Newton mutates unit state
     // per evaluation and must stay serial -- so this is opt-in (opts.parallel).
-    const unsigned hw = std::thread::hardware_concurrency();
-    std::size_t nThreads = (hw > 3u) ? static_cast<std::size_t>(hw) - 2u : 1u;  // cores − 2
-    nThreads = std::min(nThreads, n);
+    //  The count has ONE home, jacobianThreads() above (CHOUPO_THREADS, the
+    //  allowed CPUs, n); asked only where the parallel path is eligible, so a
+    //  binding cap is announced by the runs it actually binds.
+    const std::size_t nThreads = (parallel && n >= 8) ? jacobianThreads(n) : 1u;
     if (parallel && nThreads > 1 && n >= 8)
     {
         std::atomic<std::size_t> next{0};  // dynamic load balancing (columns vary in cost)
