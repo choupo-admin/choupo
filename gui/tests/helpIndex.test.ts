@@ -7,6 +7,7 @@ import {
   UNIT_HELP,
   WORKSPACE_HELP,
   ALGORITHM_HELP,
+  TRANSPORT_HELP,
   DEFAULT_HELP,
   HELP_TOPICS,
   helpUrl,
@@ -56,12 +57,14 @@ describe("help index — structure & URL building", () => {
   it("HELP_TOPICS flattens every bucket with an id and a group", () => {
     const total =
       Object.keys(UNIT_HELP).length +
+      Object.keys(TRANSPORT_HELP).length +
       Object.keys(WORKSPACE_HELP).length +
       Object.keys(ALGORITHM_HELP).length;
     expect(HELP_TOPICS).toHaveLength(total);
     for (const t of HELP_TOPICS) {
       expect(t.id).toBeTruthy();
-      expect(["Unit operations", "Workspaces", "Algorithms & solvers"]).toContain(t.group);
+      expect(["Unit operations", "Transport models", "Workspaces", "Algorithms & solvers"])
+        .toContain(t.group);
     }
   });
 
@@ -82,6 +85,16 @@ describe("help index — structure & URL building", () => {
     }
   });
 
+  it("carries the C166 entries: the two membrane units it lacked, the pore solver, the laws", () => {
+    expect(UNIT_HELP["poreTransport"]?.anchor).toBe("sec:dspmde-model");
+    expect(UNIT_HELP["batchDiafilter"]?.anchor).toBe("sec:batch-diafiltration");
+    expect(ALGORITHM_HELP["poreENP"]?.anchor).toBe("sec:dspmde-method");
+    expect(TRANSPORT_HELP["DSPM-DE"]?.anchor).toBe("sec:dspmde-model");
+    expect(TRANSPORT_HELP["DSPM-DE"]?.seeAlso?.[0]?.anchor).toBe("sec:dspmde-method");
+    expect(TRANSPORT_HELP["SDEM"]?.anchor).toBe("ch:sdem");
+    expect(TRANSPORT_HELP["solutionDiffusion"]?.anchor).toBe("ch:membrane");
+  });
+
   it("resolveHelp prefers a selected unit, then workspace, then default", () => {
     expect(resolveHelp({ selectedUnitType: "isothermalFlash" }).anchor).toBe("ch:flash");
     expect(resolveHelp({ activeWorkspace: "props" }).guide).toBe("props");
@@ -90,8 +103,13 @@ describe("help index — structure & URL building", () => {
 });
 
 describe("help index — every anchor is a real \\label in its guide", () => {
+  //  A see-also is a destination too (DEV.md 4c C166): an anchor offered
+  //  beside a topic that the guide does not define lands the reader at page 1
+  //  exactly as a dead primary anchor would, so it is held to the same check.
   const all = [
     ...HELP_TOPICS.map((t) => ({ id: t.id, guide: t.guide, anchor: t.anchor })),
+    ...HELP_TOPICS.flatMap((t) => (t.seeAlso ?? []).map((s) => ({
+      id: `${t.id} (see also)`, guide: s.guide, anchor: s.anchor }))),
     { id: "(default)", guide: DEFAULT_HELP.guide, anchor: DEFAULT_HELP.anchor },
   ];
   for (const t of all) {

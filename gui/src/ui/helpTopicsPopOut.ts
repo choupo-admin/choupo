@@ -28,7 +28,9 @@ License
 
 /*---------------------------------------------------------------------------*\
   Help-topics pop-out: open a SEPARATE browser tab listing every indexed help
-  topic (unit operations, workspaces, algorithms/solvers) as a deep link into
+  topic (unit operations, membrane transport models, workspaces,
+  algorithms/solvers) -- each with the sections it offers beside it, its
+  see-also -- as a deep link into
   the theory/user/props guides.  Each link is built by `help/guideLinks` (the
   ONE home for it) and targets the named destination in Choupo's own viewer
   page — `guide.html?g=<guide>#nameddest=<anchor>` — so the student lands on
@@ -69,8 +71,15 @@ export function popOutHelpTopics(): void {
           const href = helpUrl(t);
           const title = escText(t.title ?? t.id);
           const guide = GUIDE_LABEL[t.guide] ?? t.guide;
-          return `<li><a href="${escAttr(href)}" target="_blank" rel="noopener">${title}</a>` +
-            `<span class="guide">${escText(guide)}</span></li>`;
+          // SEE ALSO (DEV.md 4c C166): the sections the index offers beside
+          // this one -- from a model to its numerical method -- drawn under
+          // it, each its own deep link.  Nothing when the index names none.
+          const also = (t.seeAlso ?? [])
+            .map((s) => `<a class="also" href="${escAttr(helpUrl(s))}" target="_blank"` +
+              ` rel="noopener">see also: ${escText(s.title ?? s.anchor ?? "")}</a>`)
+            .join("");
+          return `<li><span class="topic"><a href="${escAttr(href)}" target="_blank" rel="noopener">${title}</a>` +
+            `${also}</span><span class="guide">${escText(guide)}</span></li>`;
         })
         .join("");
       return `<h3>${escText(group)}</h3><ul>${rows}</ul>`;
@@ -94,6 +103,8 @@ export function popOutHelpTopics(): void {
   li:nth-child(odd) { background: ${C.panel}; }
   a { color: ${C.blue}; text-decoration: none; font-size: 13px; }
   a:hover { text-decoration: underline; }
+  span.topic { display: flex; flex-direction: column; gap: 2px; }
+  a.also { font-size: 12px; padding-left: 14px; color: ${C.dim}; }
   span.guide { color: ${C.dim}; font-size: 11px; white-space: nowrap; }
 </style>
 </head><body>

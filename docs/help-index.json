@@ -1,5 +1,5 @@
 {
-  "$comment": "Choupo Help index --- the tracked topic -> guide-section map. The GUI Help (gui/src/help/helpMap.ts) parses this to deep-link F1 / 'Help on current view' / the Help-topics panel into the correct PDF named destination. Every 'anchor' below is a REAL \\label{...} in the named guide's .tex (the preamble sets destlabel=true, so each \\label becomes a PDF named destination reachable via <guide>.pdf#nameddest=<anchor>). Keep this file in sync with the .tex labels; the GUI never invents an anchor the guide does not define. Guides: theory=theoryGuide.pdf, props=propsGuide.pdf, user=userGuide.pdf, developer=developerGuide.pdf, explorer=explorerGuide.pdf.",
+  "$comment": "Choupo Help index --- the tracked topic -> guide-section map. The GUI Help (gui/src/help/helpMap.ts) parses this to deep-link F1 / 'Help on current view' / the Help-topics panel into the correct PDF named destination. Every 'anchor' below is a REAL \\label{...} in the named guide's .tex (the preamble sets destlabel=true, so each \\label becomes a PDF named destination reachable via <guide>.pdf#nameddest=<anchor>). Keep this file in sync with the .tex labels; the GUI never invents an anchor the guide does not define. TRANSPORT-AWARE F1: A membrane unit or op that declares `transport` (see the unit's own `transport` entry: where the word is read and its default) resolves F1 by the LAW it runs, not by its type: a spiralWoundModule with `transport DSPM-DE;` is a charged pore, not solution-diffusion.  A unit running its own default law keeps its own entry; a law with no entry here falls back to the unit's.  An entry may carry `seeAlso`: further sections the GUI offers beside it (the Help menu and the Help-topics panel), e.g. from a model to its numerical method.  Guides: theory=theoryGuide.pdf, props=propsGuide.pdf, user=userGuide.pdf, developer=developerGuide.pdf, explorer=explorerGuide.pdf.",
   "version": 1,
   "guides": {
     "theory": "theoryGuide.pdf",
@@ -30,8 +30,15 @@
     "evaporativeDryer": { "guide": "theory", "anchor": "ch:drying",        "title": "Drying (evaporative dryer)" },
     "extract":          { "guide": "theory", "anchor": "ch:extractor",     "title": "Liquid-liquid extractor" },
     "ionExchanger":     { "guide": "theory", "anchor": "ch:ion-exchange",  "title": "Ion-exchange softening (Gaines-Thomas)" },
-    "spiralWoundModule": { "guide": "theory", "anchor": "ch:membrane",     "title": "Spiral-wound membrane (solution-diffusion)" },
-    "membraneSW":       { "guide": "theory", "anchor": "ch:membrane",      "title": "Spiral-wound membrane (solution-diffusion)" },
+    "spiralWoundModule": { "guide": "theory", "anchor": "ch:membrane",     "title": "Spiral-wound membrane (solution-diffusion)",
+                           "transport": { "path": "operation.transport", "default": "solutionDiffusion" } },
+    "membraneSW":       { "guide": "theory", "anchor": "ch:membrane",      "title": "Spiral-wound membrane (solution-diffusion)",
+                           "transport": { "path": "operation.transport", "default": "solutionDiffusion" } },
+    "batchDiafilter":   { "guide": "theory", "anchor": "sec:batch-diafiltration", "title": "Batch diafiltration (the membrane flux law, once per instant)",
+                           "transport": { "path": "operation.transport", "default": "solutionDiffusion" } },
+    "poreTransport":    { "guide": "theory", "anchor": "sec:dspmde-model", "title": "DSPM-DE pore bench at imposed J_v: the model",
+                           "transport": { "path": "transport", "default": "DSPM-DE" },
+                           "seeAlso": [ { "guide": "theory", "anchor": "sec:dspmde-method", "title": "Solving the DSPM-DE pore: the numerical method" } ] },
     "multiStreamHX":    { "guide": "theory", "anchor": "ch:mheatx",        "title": "Multi-stream heat exchanger" },
     "MHeatX":           { "guide": "theory", "anchor": "ch:mheatx",        "title": "Multi-stream heat exchanger" },
     "pipe":             { "guide": "theory", "anchor": "ch:hydraulics",    "title": "Pipe pressure drop (Darcy-Weisbach)" },
@@ -91,6 +98,17 @@
     "stiffOde":     { "guide": "theory", "anchor": "ch:stiff-ode",   "title": "Stiff integration: Rosenbrock23" },
     "meshNewton":   { "guide": "theory", "anchor": "ch:mesh",        "title": "Rigorous distillation: simultaneous MESH Newton" },
     "rayleigh":     { "guide": "theory", "anchor": "ch:rayleigh",    "title": "Rayleigh batch distillation" },
-    "architecture": { "guide": "theory", "anchor": "ch:sm-architecture", "title": "The sequential-modular architecture" }
+    "architecture": { "guide": "theory", "anchor": "ch:sm-architecture", "title": "The sequential-modular architecture" },
+    "poreENP":      { "guide": "theory", "anchor": "sec:dspmde-method", "title": "The DSPM-DE pore solver: Scharfetter-Gummel fluxes, block-tridiagonal Newton, local Donnan seed, J_v continuation",
+                      "seeAlso": [ { "guide": "theory", "anchor": "sec:dspmde-model", "title": "The DSPM-DE model: the whole boundary-value problem" },
+                                   { "guide": "theory", "anchor": "sec:dspmde-guidance", "title": "DSPM-DE in practice: when the pore is stiff, how many nodes" } ] }
+  },
+  "transportModels": {
+    "solutionDiffusion": { "guide": "theory", "anchor": "ch:membrane",      "title": "Solution-diffusion and concentration polarisation" },
+    "DSPM-DE":           { "guide": "theory", "anchor": "sec:dspmde-model", "title": "DSPM-DE: the model (the whole boundary-value problem)",
+                           "seeAlso": [ { "guide": "theory", "anchor": "sec:dspmde-method", "title": "Solving the DSPM-DE pore: the numerical method" },
+                                        { "guide": "theory", "anchor": "sec:dspmde-guidance", "title": "DSPM-DE in practice: when the pore is stiff, how many nodes" } ] },
+    "SDEM":              { "guide": "theory", "anchor": "ch:sdem",          "title": "SDEM: solution-diffusion with one electric field",
+                           "seeAlso": [ { "guide": "theory", "anchor": "sec:sdem-method", "title": "SDEM numerics: shoot from the face where the unknown is" } ] }
   }
 }
