@@ -244,7 +244,7 @@ export function evidenceLines(log: string | null): string[] {
  *  word, so the only honest way to name it here is to read the one number it
  *  DOES publish and that the decision moves by a fixed factor: 0.7 on an
  *  accepted step, 2.5 on a rejected one, 10 when the damped normal matrix
- *  came back singular (FitParameters.cpp:990, :997, :967).
+ *  came back singular (FitParameters.cpp:997, :1004, :974).
  *
  *  A FIRST VERSION RE-TOOK THE DECISION instead, from whether chi2 had fallen
  *  — which is a second home for a decision the engine already made, and it

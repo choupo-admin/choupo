@@ -70,9 +70,9 @@ const BUILDER = "src/thermo/ThermoPackageBuilder.cpp";
  *  assembly list, the breaks and the lesson prose all reach a line through
  *  this map, so a line that moves is corrected once. */
 export const CITES = {
-  runCaseApplication: { file: "bin/runCase", line: 227,
+  runCaseApplication: { file: "bin/runCase", line: 249,
     contains: "application[[:space:]]+" },
-  runCaseLog: { file: "bin/runCase", line: 241,
+  runCaseLog: { file: "bin/runCase", line: 288,
     contains: 'LOG="$CASE_ABS/log.$APP"' },
   registerUnits: { file: MAIN, line: 463,
     contains: "UnitOperation   ::registerBuiltins();" },
