@@ -699,6 +699,21 @@ CostBreakdown Turton::cost(const EquipmentSizing& dim, const Material& mat) cons
     else
     {
         F_P = pressureFactor_poly(c, P_gauge);
+        //  ABOVE THE SET'S SOURCED CEILING THE FACTOR IS EXTRAPOLATED, said
+        //  on the costing line (DEV.md 4c C150 R06; C86 had named it and
+        //  left it silent): CAPCOST 2017's exchanger data sheet carries
+        //  Pmax 140 bar g (cell M126).  Never clamped -- the size-range rule.
+        if (&c == &hxCoeffs && P_gauge > 140.0)
+        {
+            std::ostringstream v;
+            v << std::defaultfloat << std::setprecision(4)
+              << "  [validity] WARNING: " << dim.equipmentType << " '"
+              << dim.itemId() << "': pressureDesign " << P_gauge
+              << " bar g is ABOVE the pressure factor's sourced range"
+                 " (<= 140 bar g, CAPCOST 2017) -- F_P = " << F_P
+              << " EXTRAPOLATED, treat with caution.\n";
+            std::cout << v.str();
+        }
     }
 
     const scalar F_M        = (mat.F_M > 0.0) ? mat.F_M : 1.0;

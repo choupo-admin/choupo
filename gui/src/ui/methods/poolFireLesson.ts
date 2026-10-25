@@ -668,7 +668,14 @@ export const POOL_STEPS: readonly LessonStep[] = [
       + "models, and how far each threshold reaches.  A prescriptive table "
       + "answers once, for a class of equipment; this calculation answers for "
       + "one fire, with every assumption visible -- and changes when any "
-      + "one of them does.",
+      + "one of them does.  What the bench prints is a CONSEQUENCE, in "
+      + "still air, of one pool on burning rates calibrated on pans a metre "
+      + "or less across and extrapolated beyond them: it neither confirms "
+      + "nor refutes the case's table, and no distance on it is a certified "
+      + "siting distance.  A flux threshold means something only with the "
+      + "receiver it is for, the exposure time and the standard it comes "
+      + "from (step 11); a siting decision adds the frequency of the fire "
+      + "(step 13).",
     formula: String.raw`s_\mathrm{e} = x - \frac{D}{2}`,
     where: [
       { sym: "s_\\mathrm{e}", means: "the distance from the pool's EDGE, the way the "

@@ -496,8 +496,9 @@ export const PLANT_LAYOUT_LIMITS: readonly LessonLimit[] = [
       + "its pressure drop or prices it, so the piping's cost is not on any "
       + "page yet (the LAND the layout occupies is: its plot area is published, "
       + "and the economic appraisal prices it when the case declares a land "
-      + "price).  Nor does it check whether a route passes through an item, or "
-      + "draw the piping inside a unit that realises several items." },
+      + "price).  A route that runs through a placed item is announced "
+      + "(pipeClash) but not re-routed, and the piping inside a unit that "
+      + "realises several items is not drawn." },
   { id: "structures", title: "No structures or floors",
     body: "Elevation is declared and checked for collisions, but nothing "
       + "models a steel structure, a floor of a multi-level unit or whether an "
@@ -509,14 +510,19 @@ export const PLANT_LAYOUT_LIMITS: readonly LessonLimit[] = [
       + "against the largest of your terms plus your rain and fire-water "
       + "allowances), and a liquid store no containment encloses is "
       + "announced (src/postProcessing/layout/PlantLayout.cpp, readBunds).  "
+      + "The scenarios behind those terms -- which tank fails, which rain "
+      + "event, how long the fire water runs -- are yours to define and "
+      + "defend; a bund that passes the rule is sized for them, not shown "
+      + "to contain every spill.  "
       + "Where a spill runs on open ground, how the ground slopes to a drain "
       + "or a pit, whether the floor is impermeable and how much of the pool "
       + "evaporates are not modelled." },
   { id: "access", title: "Access is checked only where you declare it",
     body: "Roads are checked when you declare them (a road through an item, "
       + "or under a rack lower than the headroom you declare, is refused; an "
-      + "item farther than your access distance from every road is announced), "
-      + "but not their turning radius or gradient.  Escape routes, crane "
+      + "item farther than your access distance from every road is announced, "
+      + "and a declared truck route is walked against a declared design "
+      + "vehicle's turning), but not their gradient.  Escape routes, crane "
       + "positions and maintenance spaces are not checked unless you declare "
       + "them, for example as a non-process box the overlap rule then keeps "
       + "clear." },
@@ -526,7 +532,9 @@ export const PLANT_LAYOUT_LIMITS: readonly LessonLimit[] = [
   { id: "numbers", title: "Nothing judges whether a number is sensible",
     body: "The engine checks the distances, wind and zones you declared; it "
       + "does not say whether they are the right ones for your plant.  That is "
-      + "yours to defend, with a source, by design." },
+      + "yours to defend, with a source, by design.  A plot plan that raises "
+      + "no finding meets the rules you declared; it is not shown to be safe, "
+      + "which needs the consequence and the frequency of each scenario." },
   { id: "physics", title: "No consequence modelling",
     body: "The wind test is a sector, not a dispersion model, and a zone is an "
       + "envelope you declare, not one the engine computes from a release.  "

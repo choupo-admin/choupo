@@ -37,7 +37,8 @@
   4.4 and 4.12 to 4.14, and the glossary entry for an airlock), reused under
   the Commission's document-reuse policy (Decision 2011/833/EU) with the
   source acknowledged; and Directive 1999/92/EC, Annex I (EUR-Lex), for the
-  zone definitions.  Both are PARAPHRASED.  The ISPE Baseline Guides and the
+  zone definitions.  Both are PARAPHRASED.  EudraLex Part I Chapters 3 and 5
+  (the non-sterile basis, added on the C150 review), the ISPE Baseline Guides and the
   WHO HVAC guideline are named by title only and marked NOT READ.  Nothing
   is quoted: the test refuses a quotation mark in the steps.
 \*---------------------------------------------------------------------------*/
@@ -69,6 +70,14 @@ export const GMP_SOURCES: readonly GmpSource[] = [
       + "zones 20, 21 and 22 by how often and how long an explosive "
       + "atmosphere is present, and its note that a layer of dust counts as "
       + "a source; paraphrased in step 11." },
+  { id: "eudralex-ch3-ch5",
+    cite: "European Commission, EudraLex Volume 4, EU Guidelines for Good "
+      + "Manufacturing Practice, Part I, Chapter 3 (Premises and Equipment) "
+      + "and Chapter 5 (Production)",
+    used: "named as the GMP basis of a NON-sterile plant: premises, and the "
+      + "prevention of cross-contamination by a risk assessment of product "
+      + "and containment (step 1).  NOT READ for this page; no rule or "
+      + "number on it comes from them." },
   { id: "ispe-osd",
     cite: "ISPE Baseline Guide, Volume 2: Oral Solid Dosage Forms",
     used: "named as the industry's design guide for a tablet plant.  NOT "
@@ -110,11 +119,16 @@ export const GMP_LAYOUT_STEPS: readonly LessonStep[] = [
       + "but its own scope says that some of its principles, among them the "
       + "design of premises, the classification of cleanrooms and gowning, may "
       + "be used for products that are not sterile.  So an oral-solid-dose "
-      + "plant borrows the vocabulary by DECLARATION: the rooms where the "
-      + "product is open are typically held to grade D or by analogy with it, "
-      + "and the rest are controlled, not classified (CNC), the industry's word "
-      + "for a room with no grade.  Which grade a room gets is the company's "
-      + "own risk assessment, never a value looked up.",
+      + "plant may borrow the vocabulary by DECLARATION.  In this example the "
+      + "rooms where the product is open are declared grade D by analogy, and "
+      + "the rest controlled, not classified (CNC), the industry's word for a "
+      + "room with no grade -- the example's choice, justified in its case, "
+      + "not a requirement for every oral-solid-dose plant.  For a product "
+      + "that is not sterile the GMP basis is the general guide itself -- its "
+      + "chapters on premises (3) and production (5), with the prevention of "
+      + "cross-contamination and a quality risk assessment of the product and "
+      + "its containment -- and which grade, if any, a room gets is that "
+      + "assessment's answer, not a value looked up.",
     formula: String.raw`r(\text{A}) = 4,\; r(\text{B}) = 3,\; r(\text{C}) = 2,\; r(\text{D}) = 1,\; r(\text{CNC}) = 0,\; r(\text{outside}) = -1`,
     where: [
       { sym: "r", means: "the cleanliness rank the engine gives a grade: the "
@@ -160,11 +174,18 @@ export const GMP_LAYOUT_STEPS: readonly LessonStep[] = [
     n: 3,
     title: "The pressure cascade: air flows from clean to less clean",
     body: "A door is never perfectly tight and is opened many times a shift, "
-      + "so the air through it must always move the RIGHT way: out of the "
-      + "cleaner room, into the less clean one.  That is done by holding the "
-      + "cleaner room at a higher pressure.  Annex 1 gives a guidance value of "
+      + "so the design aims for the air through it to move the RIGHT way: out "
+      + "of the cleaner room, into the less clean one.  That is done by "
+      + "holding the cleaner room at a higher pressure, which sets the "
+      + "direction of the leakage through a CLOSED door.  It does not "
+      + "guarantee that nothing crosses: an open door, the wake of a person "
+      + "or a trolley, turbulence and a failed extract fan carry air and "
+      + "particles both ways, which is why doors are interlocked, flows "
+      + "are monitored and alarmed, and a static pressure difference is "
+      + "one control among several.  Annex 1 gives a guidance value of "
       + "at least 10 Pa between adjacent rooms of different grades; the "
-      + "teaching building declares that value as its step, with that source, "
+      + "teaching building declares that value as its step, with that source "
+      + "(a choice of the example, for its grade D rooms), "
       + "and the engine checks every pressure against the step the case "
       + "declared -- a case that declares none is refused, because no step is "
       + "shipped.  Pressures are declared as a commissioning sheet writes "
@@ -222,10 +243,12 @@ export const GMP_LAYOUT_STEPS: readonly LessonStep[] = [
       + "set by its pressure, and the case declares which of three it is.  A "
       + "CASCADE airlock lies between its two sides, one more step down the "
       + "cascade.  A BUBBLE airlock is higher than both sides by the step, so "
-      + "air leaves it through both doors: nothing from either side gets "
-      + "through.  A SINK airlock is lower than both by the step, so air "
-      + "enters it through both doors and is exhausted: whatever is in the "
-      + "air on either side stays out of the other.  The engine does not take "
+      + "air leaves it through both doors and air from either side is pushed "
+      + "back.  A SINK airlock is lower than both by the step, so air enters "
+      + "it through both doors and is exhausted, and what is in the air on "
+      + "one side is drawn away from the other.  Both REDUCE what crosses "
+      + "with the doors closed; neither proves that nothing does (step 3).  "
+      + "The engine does not take "
       + "the word on trust: it checks the declared regime against the "
       + "declared pressures.  Try it below -- declare the sink airlock into "
       + "the spray-drying suite a bubble, without changing its pressure, and "
@@ -256,7 +279,9 @@ export const GMP_LAYOUT_STEPS: readonly LessonStep[] = [
       + "mistake, and the engine does not announce it: air leaves the suite "
       + "into each sink and is exhausted there, while air from the dispensary "
       + "(or, on the far side, the blending room) enters the same sink from "
-      + "its other door, so nothing crosses.  A sink is lower than the contained room by design, "
+      + "its other door, so the design intent is that the suite's air does "
+      + "not reach the dispensary -- an intent the pressures support with "
+      + "the doors closed, not a demonstration.  A sink is lower than the contained room by design, "
       + "and the engine exempts a sink from the rule that a contained room must "
       + "be negative to its neighbours.  Declare the same airlock a bubble and "
       + "the exemption goes with the word: the suite must now be below it by "
@@ -337,7 +362,11 @@ export const GMP_LAYOUT_STEPS: readonly LessonStep[] = [
       + "packed, one way, never back through a room it has left -- a room it "
       + "returned to would hold clean and less clean product together.  WASTE "
       + "leaves by its own route.  The engine reads each flow as the list of "
-      + "spaces it passes through and checks it: every step must cross a "
+      + "spaces it passes through and checks it against the rules this "
+      + "example's building declares -- the one-way material rule is a way "
+      + "of organising THIS plant, not a GMP requirement for every one: "
+      + "campaigns, closed systems and separation in time can justify "
+      + "another arrangement, and each needs its own analysis.  Every step must cross a "
       + "declared door, stair or lift; people must use personnel airlocks and "
       + "material and waste material airlocks; a material flow must never "
       + "enter a room twice; and a room that a personnel flow and the material "
@@ -388,12 +417,19 @@ export const GMP_LAYOUT_STEPS: readonly LessonStep[] = [
       + "dust -- which a dryer's powder can be, and the directive counts a "
       + "layer of dust as a source too.  So the suite is its own room, "
       + "zoned, and kept away from IGNITION SOURCES such as switchgear and "
-      + "motors that are not rated for the zone.  The case declares the zone "
+      + "motors that are not rated for the zone.  A room is not a zone because "
+      + "a solvent is in it: a classification starts from each source of "
+      + "release, its grade (how often and how long it releases), the "
+      + "ventilation and its availability, and from those sets the zone and "
+      + "its extent -- a study this page does not do, so the zone of each "
+      + "room is an INPUT the case declares.  The case declares the zone "
       + "of each room with its source, which rooms are ignition sources with "
       + "the reason, and the separation between them; the engine announces "
       + "an ATEX room that IS an ignition room, opens on one through a door, "
       + "or stands closer to one than the separation, measured as the clear "
-      + "distance between the two room volumes.  It also announces a "
+      + "distance between the two room volumes -- a geometric check of the "
+      + "declaration, which does not show that an ignition source is "
+      + "protected against.  It also announces a "
       + "building that has both and declares no separation at all, rather "
       + "than pass it.  In the teaching building the electrical room above "
       + "the lobby is about 7.3 m from the suite; raise the separation past "
@@ -439,7 +475,9 @@ export const GMP_LAYOUT_STEPS: readonly LessonStep[] = [
     body: "Every room must have a way out to the open air through doors and "
       + "stairs.  A lift is not one: in a fire it is the one way down nobody "
       + "may use.  The engine walks the openings from outside inwards, "
-      + "leaving lifts out, and announces every room it cannot reach.  In "
+      + "leaving lifts out, and announces every room it cannot reach -- a "
+      + "geometric check that a way out exists, not a certification of "
+      + "evacuation (no travel distance, exit width or exit count).  In "
       + "the teaching building the electrical room upstairs is reached by a "
       + "stair; turn it into a lift and the room has no escape.  Then turn it "
       + "into a door instead, and see the other half of step 2: a door "
@@ -498,5 +536,7 @@ export const GMP_LAYOUT_LIMITS: readonly LessonLimit[] = [
       + "zones and distances the case declared.  It does not say whether a "
       + "room should be grade D, whether 10 Pa is enough, whether a powder "
       + "needs containment, or whether a zone is the right one: those are "
-      + "the project's risk assessment, defended with a source." },
+      + "the project's risk assessment, defended with a source.  A building "
+      + "that raises no finding obeys the rules of this example; it is not "
+      + "shown to be GMP-compliant, contained, or safe from ignition." },
 ];

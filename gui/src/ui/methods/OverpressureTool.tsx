@@ -320,12 +320,15 @@ function LoopBench(): JSX.Element {
       <Text size="sm" mt={6}>
         {Number.isFinite(ratio)
           ? <>At 50 bar the valve needs {ratio.toFixed(2)} times the area it
-              needs at 150 bar, on the same blocked-outlet hypothesis for
+              needs at 150 bar, on the same declared blocked-outlet flow for
               both: the lower-pressure loop circulates more gas, and every
-              kilogram passes the orifice at a third of the pressure.
-              Attenuation lowered the pressure and enlarged the relief system
-              -- the same trade the Process-safety page found in the
-              inventory.</>
+              kilogram passes the orifice at a third of the pressure.  In this
+              exercise, lowering the pressure enlarged the required area --
+              the same trade the Process-safety page found in the inventory.
+              It is a comparison of the sizing arithmetic under one teaching
+              hypothesis, not of the two loops&apos; real relief systems,
+              whose rates would be worked from each compressor&apos;s curve at
+              the relieving pressure (step 2).</>
           : "—"}
       </Text>
       <PanelNote>
@@ -612,7 +615,7 @@ function TwoPhaseBench({ fire }: { fire: FireOutcome | null }): JSX.Element {
       </Box>
       <PanTable>
         <Table.Thead>
-          <Table.Tr><Table.Th>what leaves</Table.Th><Table.Th>mass to vent [kg/h]</Table.Th><Table.Th>× the all-vapour vent</Table.Th></Table.Tr>
+          <Table.Tr><Table.Th>what leaves</Table.Th><Table.Th>mass to vent, restricted energy estimate [kg/h]</Table.Th><Table.Th>× the all-vapour vent</Table.Th></Table.Tr>
         </Table.Thead>
         <Table.Tbody>
           <Table.Tr><Table.Td>all vapour (the fire bench)</Table.Td><Table.Td>{fx(fire?.W_kg_h, 0)}</Table.Td><Table.Td>1</Table.Td></Table.Tr>
@@ -621,10 +624,12 @@ function TwoPhaseBench({ fire }: { fire: FireOutcome | null }): JSX.Element {
       </PanTable>
       <PanelNote>
         The fire bench&apos;s heat input and latent heat, put through step
-        13&apos;s energy approximation only to show the factor 1/x -- a
-        fire on a solvent drum is not a runaway, and this is not a vent
-        size.  Under its hypotheses the liquid leaving carries no enthalpy
-        and does not flash on the way out; a real vent does both.  What area
+        13&apos;s restricted estimate of latent-heat removal only to show
+        the factor 1/x -- a fire on a solvent drum is not a runaway, and
+        this is not a vent size.  Under its hypotheses the power is fixed,
+        no gas is made, and the liquid leaving carries no enthalpy and does
+        not flash on the way out; a real vent breaks each of them, and the
+        liquid it discharges takes reacting mass with it.  What area
         that mass needs is the omega method&apos;s question, which this page
         does not answer (step 13).
       </PanelNote>
@@ -648,7 +653,8 @@ export function OverpressureTool(): JSX.Element {
             Why a relief system is sized for the worst credible cause, the
             pressures a device lives between, the published sizing equations
             worked on fluids the engine computes, where the relief goes after
-            the valve, and why a runaway vent is larger than a vapour one.
+            the valve, and why a runaway vent that passes liquid must pass
+            more mass, under a restricted energy estimate.
           </Text>
           <Text size="sm" mt={6}>
             The Design Guide&apos;s chapter{" "}

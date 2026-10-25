@@ -209,12 +209,12 @@ function MaterialsBench(): JSX.Element {
               <Table.Th colSpan={6} ta="center">what the engine published for {vessel}</Table.Th>
             </Table.Tr>
             <Table.Tr>
-              <Table.Th ta="right">sigma_y [MPa]</Table.Th>
+              <Table.Th ta="right">sigma_y [MPa], used as the allowable S</Table.Th>
               <Table.Th ta="right">density [kg/m3]</Table.Th>
               <Table.Th ta="right">F_M</Table.Th>
               <Table.Th ta="right">maxP [bar]</Table.Th>
               <Table.Th ta="right">maxT [K]</Table.Th>
-              <Table.Th ta="right">wall [mm]</Table.Th>
+              <Table.Th ta="right">wall [mm] — teaching estimate*</Table.Th>
               <Table.Th ta="right">weight [kg]</Table.Th>
               <Table.Th ta="right">F_M</Table.Th>
               <Table.Th ta="right">F_P</Table.Th>
@@ -253,11 +253,22 @@ function MaterialsBench(): JSX.Element {
           </Table.Tbody>
         </Table>
       </Box>
+      <Text size="xs" mt={4} fw={600}>
+        * Teaching estimate — temperature-dependent strength not modelled.  Each
+        wall is the thin-shell formula on ONE stress per record, the same at
+        300 K and at 700 K, with no minimum design temperature: it shows how
+        the formula responds to a material, and is not a mechanical design of
+        this vessel at its service temperature.
+      </Text>
       <PanelNote>
         The record columns are the files&apos; own declarations; the engine columns are
         read off the run&apos;s equipment list (its design sheet and cost row for this
         vessel), and nothing in them is computed on this page.  sigma_y is the
-        number the engine uses as the allowable stress.  The engine compares maxP with
+        number the engine uses as the allowable stress S: despite its symbol it
+        is not a yield strength (carbonSteel&apos;s header labels its 140 MPa an
+        allowable at 250 degrees C), and nothing here derives an allowable from
+        a yield or tensile strength at temperature, as a pressure code does.
+        F_M is a third, unrelated number: a cost factor, not a strength.  The engine compares maxP with
         the design pressure, and maxT with the hottest stream on the vessel&apos;s ports,
         and warns on each; it sizes and prices the vessel anyway, on the same
         allowable stress at every temperature.  Every number

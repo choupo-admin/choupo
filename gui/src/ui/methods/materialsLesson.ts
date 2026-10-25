@@ -509,7 +509,11 @@ export const MATERIALS_STEPS: readonly LessonStep[] = [
         + "pressureDesign)", unit: "Pa" },
       { sym: "D", means: "the shell diameter", unit: "m" },
       { sym: "S", means: "the allowable stress of the material at the design "
-        + "temperature (in Choupo, the record's sigma_y)", unit: "Pa" },
+        + "temperature, which a pressure code derives from the yield and "
+        + "tensile strengths at that temperature with its own factors.  In "
+        + "Choupo it is the record's sigma_y, ONE number at every temperature "
+        + "and, despite the symbol, not a yield strength (step 22)",
+        unit: "Pa" },
       { sym: "E", means: "the joint efficiency of the welds (1 for a fully "
         + "radiographed joint; the engine's jointEfficiency)", unit: "-" },
       { sym: "\\sigma_\\theta", means: "the hoop (circumferential) stress in "
@@ -531,7 +535,11 @@ export const MATERIALS_STEPS: readonly LessonStep[] = [
       { step: "Then pay for the corrosion in advance.",
         eq: String.raw`t = \frac{P\, D}{2\, S\, E - 1.2\, P} + r\, t_\mathrm{life}` },
     ],
-    note: "A rate of 0.1 mm per year over 20 years is an allowance of 2 mm.  "
+    note: "In this implementation the wall is a TEACHING ESTIMATE: S does not "
+      + "fall with temperature, so a wall computed for a hot or a cold "
+      + "vessel is the formula's response to the record, not a mechanical "
+      + "design at its service temperature.  "
+      + "A rate of 0.1 mm per year over 20 years is an allowance of 2 mm.  "
       + "The 3 mm the engine assumes when a case is silent "
       + "(src/postProcessing/sizing/DesignDefaults.cpp:46) is announced on "
       + "every run that uses it and listed on the design sheet as assumed.",
@@ -616,7 +624,7 @@ export const MATERIALS_STEPS: readonly LessonStep[] = [
     title: "Cost: the material factor, and what it multiplies",
     body: "A material is finally chosen against its price, and in a "
       + "bare-module estimate the material enters as one factor on part of "
-      + "the purchased cost (src/postProcessing/costing/Turton.cpp:704-706).  "
+      + "the purchased cost (src/postProcessing/costing/Turton.cpp:719-721).  "
       + "Two things in the form are easy to miss.  F_M multiplies only the "
       + "B_2 part: the installation that B_1 stands for -- foundations, "
       + "piping, instruments, labour -- costs the same whatever the shell is "
@@ -752,7 +760,7 @@ export const MATERIALS_STEPS: readonly LessonStep[] = [
       + "VOLUME (the size key V_R, src/postProcessing/costing/Turton.cpp:80), "
       + "so the weight -- and the density with it -- moves no euro.  F_M "
       + "multiplies the cost "
-      + "(src/postProcessing/costing/Turton.cpp:704-706), and sigma_y "
+      + "(src/postProcessing/costing/Turton.cpp:719-721), and sigma_y "
       + "enters the cost again through F_P.  maxP is compared with the "
       + "design pressure by the vessel sizers "
       + "(src/postProcessing/sizing/MaterialLimits.cpp:41), and maxT, read "
@@ -831,7 +839,11 @@ export const MATERIALS_LIMITS: readonly LessonLimit[] = [
       + "not represented at all." },
   { id: "one-stress",
     title: "One allowable stress for every temperature",
-    body: "A record holds a single sigma_y.  Real allowable stresses fall "
+    body: "A record holds a single sigma_y, used as the allowable stress.  "
+      + "Every wall on the bench and on a design sheet is therefore a "
+      + "teaching estimate: it is not a mechanical design wherever the "
+      + "service temperature differs from the one that stress belongs to.  "
+      + "Real allowable stresses fall "
       + "with temperature and, in the creep range, with design life; the "
       + "engine sizes a 700 K vessel on the same stress as a 300 K one.  "
       + "maxT is compared with the hottest port and announced, never applied "
@@ -853,7 +865,9 @@ export const MATERIALS_LIMITS: readonly LessonLimit[] = [
       + "ABSOLUTE stream pressure, so one bar of their margin is the "
       + "atmosphere.  And the exchanger pressure factor is a polynomial its "
       + "source states up to 140 bar g; an ammonia loop's exchangers sit "
-      + "above that, and the engine evaluates it there without a word." },
+      + "above that, and the engine evaluates it there and says so on the "
+      + "costing line, F_P EXTRAPOLATED (src/postProcessing/costing/"
+      + "Turton.cpp:706-715) -- a cost outside its correlation, not refused." },
   { id: "four-records",
     title: "Four records, most of them unsourced",
     body: "Only carbon steel, SS304, SS316 and aluminium are in the tree; no "

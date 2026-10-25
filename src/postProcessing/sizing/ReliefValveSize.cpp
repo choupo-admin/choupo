@@ -168,8 +168,8 @@ std::vector<EquipmentSizing> ReliefValveSize::size(const std::string& unitName,
     auto pd = item->values.find("pressureDesign");
     if (pd == item->values.end())
         throw std::runtime_error(who + ": the protected item '" + item->itemId()
-            + "' publishes no `pressureDesign`, so there is no MAWP to set the"
-              " valve at.  Only an item sized as a pressure-holding object"
+            + "' publishes no `pressureDesign`, so there is no design pressure"
+              " to set the valve at.  Only a pressure-holding item sized as such"
               " (a vessel, a catalyst-bed shell, a compressor casing) can be"
               " protected.");
     if (item->unitOf("pressureDesign") != "bar")
@@ -544,9 +544,9 @@ std::vector<EquipmentSizing> ReliefValveSize::size(const std::string& unitName,
 
     d.set("A_relief", Agov, "mm2");
     d.basis = "ONE relief valve set at the protected item's design pressure"
-              " (read from " + item->itemId() + ", gauge); every declared"
-              " scenario sized by API 520 Part I at its relieving pressure"
-              " (MAWP + 10 % or 3 psi; fire + 21 %), the governing one the"
+              " (read from " + item->itemId() + ", gauge), its MAWP ASSUMED equal to it; each"
+              " declared scenario sized by API 520 Part I at its relieving pressure"
+              " (set + 10 % or 3 psi; fire + 21 %), the governing one the"
               " largest area (" + d.relief.governing + "); the lettered"
               " orifice is NOT selected -- the letter areas are in API 526, a"
               " no-grant source, not reproduced here; Z the package's EoS vapour root and k = Cp_ig/(Cp_ig - R) at"

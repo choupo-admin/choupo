@@ -33,15 +33,20 @@
     * P -- the RELIEVING pressure, worked from the stream's operating
       pressure in the EduTool and written here to the digit:
         operating (gauge)  = P_stream - 1.01325 bar
-        MAWP (gauge)       = max(1.1 x operating, operating + 1.7 bar)
-                             (the Design Guide's rule of thumb for the
-                             design pressure, docs/designGuide.tex,
+        design (gauge)     = max(1.1 x operating, operating + 1.7 bar)
+                             (the Design Guide's rule of thumb for a
+                             PRELIMINARY design pressure, docs/designGuide.tex,
                              "Pressure relief, flare & safety basics")
+        MAWP (gauge)       = design (gauge) -- an ASSUMPTION, the lowest
+                             MAWP the vessel can have; a real MAWP is a
+                             property of the built vessel, never of a rule
+                             of thumb
         set pressure       = MAWP (a single device)
         relieving (gauge)  = max(1.10 x MAWP, MAWP + 3 psi)
         relieving (abs)    = relieving (gauge) + 1.01325 bar
-      The MAWP is a rule of thumb applied to a feasibility case that sizes
-      no vessel; no number here is the design pressure of any real loop.
+      The design pressure is a rule of thumb applied to a feasibility case
+      that sizes no vessel, and the MAWP is assumed equal to it; no number
+      here is the design pressure or the MAWP of any real loop.
 
   WHAT IS COMPUTED.  propertyPoint's base set: Z on the SRK vapour root,
   and gamma = Cp_ig/(Cp_ig - R) from the records' ideal-gas heat capacities

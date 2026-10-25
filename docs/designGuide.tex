@@ -1868,8 +1868,16 @@ disc) is preferred over an instrumented trip for the primary case.
 the maximum operating pressure so the PSV does not weep on normal
 swings. Heuristic: \textbf{design P = max(1.1 \(\times\) operating P, operating P
 + 1.7 bar)}; the two rules cross at 17 barg (0.1 \(\times\) 17 bar = 1.7 bar):
-below that the +1.7 bar floor dominates, above it the +10\% rule does. The \textbf{PSV set pressure =
-design pressure (MAWP)}. Code allows accumulation above set ---
+below that the +1.7 bar floor dominates, above it the +10\% rule does.
+The heuristic gives a \emph{preliminary} design pressure, not a MAWP: the
+\textbf{maximum allowable working pressure (MAWP)} is a property of the
+built vessel --- its actual wall, material, temperature and the code it is
+stamped to --- and is at least the design pressure. A single PSV is set at
+or below the MAWP; at the preliminary stage the set pressure is
+\emph{assumed} at the design pressure, the lowest MAWP the vessel can have,
+which is the conservative choice for the relief area. State every pressure
+as gauge or absolute: the accumulation percentages below apply to the
+gauge set pressure. Code allows accumulation above set ---
 typically \textbf{+10\%} for a single non-fire device, \textbf{+16\%}
 for multiple devices, and \textbf{+21\%} for the fire case --- because
 momentary overshoot during full relief is tolerable but permanent yield

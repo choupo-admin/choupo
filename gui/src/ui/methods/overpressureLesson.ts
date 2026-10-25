@@ -55,6 +55,16 @@
   energy approximation, not DIERS sizing (steps 13-14); the disposal
   inequality is necessary, not sufficient (step 12); the blocked-outlet
   compressor's nominal flow is a declared hypothesis (step 2).
+
+  REVISED AGAIN 2026-10-25 on a second external review (DEV.md 4c C150,
+  R01-R05): the 150/50 bar comparison is the sizing arithmetic under one
+  hypothesis, not two real relief systems (step 2); a rupture disc is a
+  non-reclosing barrier, not immune to deposits, corrosion, cycling,
+  temperature, back pressure or installation (step 7); Q_r/(x lambda) is a
+  restricted estimate of latent-heat removal, its hypotheses listed beside
+  it (fixed power, no gas made, the liquid carrying neither enthalpy nor
+  reacting mass), no universal conclusion about the area, and no basis for
+  calling a system vapour, gassy or hybrid (step 13).
 \*---------------------------------------------------------------------------*/
 
 import type { LessonLimit, LessonStep } from "./lessonStep.js";
@@ -156,8 +166,12 @@ export const OVERPRESSURE_STEPS: readonly LessonStep[] = [
       + "flashes in the valve (step 10, Part 5) -- cannot be sized by the "
       + "single-phase equations of Part 3.  It is marked as needing a "
       + "two-phase method and is not compared until one has sized it, "
-      + "because a device sized without it is not sized for it.  The causes "
-      + "below are the ones every list starts with.",
+      + "because a device sized without it is not sized for it.  Where "
+      + "several devices discharge into one header, the causes that can act "
+      + "TOGETHER -- a power or cooling-water failure that opens many valves "
+      + "at once -- are a further question, taken up for the disposal "
+      + "system in step 12.  The causes below are the ones every list "
+      + "starts with.",
     formula: String.raw`A_\mathrm{relief} = \max_s A_s\left(W_s;\ P_{1,s},\ T_{1,s},\ \text{phase and regime of } s\right)`,
     where: [
       { sym: "A_\\mathrm{relief}", means: "the required discharge area the "
@@ -194,8 +208,13 @@ export const OVERPRESSURE_STEPS: readonly LessonStep[] = [
       + "recycle that opens to protect it, by the trips that stop it, and "
       + "by the topology of the loop -- what else feeds the blocked section, "
       + "and what the blocked section can still send elsewhere.  None of "
-      + "those is modelled here, so the bench's rate is an upper bound on "
-      + "that one hypothesis, not the loop's relief load.",
+      + "those is modelled here, so the bench's rate is that one hypothesis "
+      + "evaluated, not the loop's relief load; a real one is worked at the "
+      + "relieving pressure from the machine's curve, the feed paths, the "
+      + "recycle configuration and the boundary the device protects.  For "
+      + "the same reason, the comparison the bench draws between the 150 bar "
+      + "and the 50 bar loop is a comparison of the sizing arithmetic under "
+      + "one hypothesis, not of the two loops' real relief systems.",
     formula: String.raw`W = W_\mathrm{in,max}`,
     where: [
       { sym: "W", means: "the relieving rate of this cause", unit: "kg/h" },
@@ -274,8 +293,9 @@ export const OVERPRESSURE_STEPS: readonly LessonStep[] = [
       + "REACTION is the cooling-failure scenario of the Process-safety page "
       + "carried past the point where the methodology stops: the mass "
       + "reaches its boiling point at the relieving pressure, and the vent "
-      + "must remove the reaction's heat as vapour -- usually as a "
-      + "two-phase mixture, which Part 5 explains.  An EXCHANGER TUBE "
+      + "must remove the reaction's heat -- often as a two-phase mixture, "
+      + "which Part 5 discusses, and for a gassy or hybrid system also as "
+      + "the non-condensable gas the reaction makes.  An EXCHANGER TUBE "
       + "RUPTURE lets the high-pressure side flow into the low-pressure "
       + "side through the two open ends of one broken tube; the rate is two "
       + "orifice flows, and the standard gives a criterion for when the "
@@ -381,10 +401,15 @@ export const OVERPRESSURE_STEPS: readonly LessonStep[] = [
       + "benches below take it as 1 and let you change it).  A "
       + "PILOT-OPERATED valve uses the process pressure itself to hold the "
       + "main valve shut, through a small pilot, and opens fully at the set "
-      + "pressure.  A RUPTURE DISC is a membrane that bursts: it does not "
-      + "leak and it does not foul, but it does not reclose, so the whole "
-      + "inventory can leave.  A disc UPSTREAM of a valve protects the valve "
-      + "from a corrosive or fouling fluid and keeps the reclosing; the pair "
+      + "pressure.  A RUPTURE DISC is a membrane that bursts: it provides a "
+      + "non-reclosing barrier, so once it has burst the whole inventory can "
+      + "leave, and it can protect a relief valve from the process fluid.  "
+      + "It is not immune to the process: deposits, corrosion, pressure "
+      + "cycling, temperature, back pressure and the way it is installed "
+      + "all change when it bursts or whether it opens fully, and its "
+      + "suitability depends on them.  A disc UPSTREAM of a valve shields "
+      + "the valve from a corrosive or fouling fluid and keeps the "
+      + "reclosing; the pair "
       + "passes less than the valve alone, which a combination factor "
       + "carries -- 0.9 when the combination has not been certified "
       + "together.",
@@ -507,10 +532,15 @@ export const OVERPRESSURE_STEPS: readonly LessonStep[] = [
       + "vapour pressure, and the equation applies.  CAVITATION WITH "
       + "RECOVERY: the vena contracta falls below the vapour pressure and "
       + "the outlet stays above it; vapour forms in the jet and collapses as "
-      + "the pressure recovers, and as it develops the flow rises less than "
-      + "the equation says.  FLASHING: the outlet is at or below the vapour "
+      + "the pressure recovers.  It has stages: at its INCIPIENT onset the "
+      + "first bubbles form and the flow still follows the equation; as it "
+      + "DEVELOPS the flow rises less than the equation says (the values of "
+      + "the cavitation index at which a given valve begins to cavitate and "
+      + "to choke are the maker's, as the letdown page's step 8 says).  "
+      + "FLASHING: the outlet is at or below the vapour "
       + "pressure; the vapour stays, and the valve passes a two-phase "
-      + "mixture.  CHOKED LIQUID FLOW, which the last two reach: once the "
+      + "mixture.  CHOKED LIQUID FLOW, which either of the last two can "
+      + "reach and which is not the same thing as either: once the "
       + "vaporising vena contracta limits the flow, a lower outlet pressure "
       + "no longer raises it, even with the outlet still above the vapour "
       + "pressure (the letdown page puts the ammonia throttle's choke at "
@@ -625,36 +655,44 @@ export const OVERPRESSURE_STEPS: readonly LessonStep[] = [
   // ---- Part 5: two-phase venting -----------------------------------------
   {
     n: 13,
-    title: "Why a runaway vent is two-phase, and why that makes it larger",
+    title: "Why a runaway vent is often two-phase, and what that does to the mass it passes",
     body: "When a reactor full of boiling liquid is vented, the vapour "
       + "forms throughout the liquid, not only at its surface.  The bubbles "
       + "take up room, the level SWELLS, and if it reaches the vent the "
       + "device passes a frothy mixture of liquid and vapour.  For a "
-      + "runaway that is the usual case, and it is what the Design "
+      + "runaway that is a common case, and it is what the Design "
       + "Institute for Emergency Relief Systems (DIERS, an AIChE "
       + "consortium) set out to quantify; its project manual (Fisher et "
-      + "al., 1992) is the reference, and it was not read for this page.  The DIRECTION "
-      + "of the consequence follows from an energy balance, under "
-      + "hypotheses that are restrictive and are stated: the vent holds the "
+      + "al., 1992) is the reference, and it was not read for this page.  A "
+      + "restricted estimate of the LATENT heat the vent must remove follows "
+      + "from an energy balance, under hypotheses that are restrictive and "
+      + "are stated: the vent holds the "
       + "pressure, so the mass sits at its boiling temperature and stores "
       + "no more sensible heat; all the power the reaction releases at that "
-      + "instant leaves through the vent; the liquid leaving carries no "
-      + "latent heat; and the latent heat and the vapour fraction are "
-      + "constants.  The vent then removes the reaction's power because the "
+      + "instant leaves through the vent; that power stays the same while "
+      + "the vent runs; the reaction makes no non-condensable gas; the "
+      + "liquid leaving carries no latent heat; and the latent heat and the "
+      + "vapour fraction are constants.  The vent then removes the reaction's power because the "
       + "vapour leaving carries latent heat.  If only a mass fraction x of "
       + "what leaves is vapour, the vent must pass 1/x times as much mass "
-      + "to remove the same power -- ten times as much at x = 0.1.  Two of "
-      + "those hypotheses fail in a real vent, and both matter: the liquid "
-      + "that leaves carries ENTHALPY out of the vessel with it, and as its "
-      + "pressure falls through the vent it FLASHES, so x is not a fixed "
-      + "number but changes along the flow.  The line is therefore an "
-      + "energy approximation, not DIERS sizing: DIERS methods size a vent "
+      + "to remove the same power -- ten times as much at x = 0.1.  Every "
+      + "one of those hypotheses can fail in a real vent.  A transient "
+      + "balance carries the energy still accumulating in the mass, the "
+      + "enthalpy of everything discharged (the liquid that leaves takes "
+      + "ENTHALPY out of the vessel with it), any feed, the reaction, the "
+      + "expansion, and any gas the reaction makes; the liquid that leaves "
+      + "also takes REACTING mass with it, so the power the reaction "
+      + "releases does not stay fixed; and as its pressure falls through "
+      + "the vent the liquid FLASHES, so x is not a fixed number but "
+      + "changes along the flow.  The line is therefore a restricted "
+      + "energy estimate, not DIERS sizing, and it is no basis for "
+      + "classifying a system as vapour, gassy or hybrid: DIERS methods size a vent "
       + "from the rates of temperature and pressure rise measured in "
       + "adiabatic calorimetry, from whether the mass froths, and from a "
       + "two-phase flow model at the vent.  A two-phase mixture is denser than vapour and passes "
       + "more mass through each square millimetre, so the AREA does not "
-      + "grow by the whole factor 1/x -- it grows unless the denser flow "
-      + "makes up all of it.  How much more mass per unit area a flashing "
+      + "follow the factor 1/x: whether it grows, and by how much, is the "
+      + "two-phase flow model's answer, not this line's.  How much more mass per unit area a flashing "
       + "two-phase flow passes is the question "
       + "Leung's omega method answers (AIChE J. 32 (1986) 1743), and the "
       + "method API 520 Part I builds its two-phase sizing on.  Its "
@@ -669,9 +707,11 @@ export const OVERPRESSURE_STEPS: readonly LessonStep[] = [
       { sym: "x", means: "the mass fraction of vapour in what the vent "
         + "passes, taken constant", unit: "–" },
     ],
-    note: "The formula is an energy approximation, not a sizing method: "
-      + "under its hypotheses it says how much MASS must leave, and nothing "
-      + "about the AREA that mass needs.  The bench below puts the fire "
+    note: "The formula is a restricted estimate of latent-heat removal, "
+      + "not a sizing method: under its hypotheses (constant power, no "
+      + "gas made, no enthalpy carried by the liquid, no flashing in the "
+      + "vent) it says how much MASS must leave, and nothing about the AREA "
+      + "that mass needs.  The bench below puts the fire "
       + "bench's heat input through it only to show the factor 1/x; a fire "
       + "on a drum of solvent is not a runaway.",
   },
@@ -761,7 +801,7 @@ export const OVERPRESSURE_LIMITS: readonly LessonLimit[] = [
     title: "No two-phase sizing",
     body: "The omega method, the homogeneous direct integration and the "
       + "DIERS methods are named, not computed.  The page shows how much more "
-      + "MASS a two-phase vent passes under an energy approximation, never "
+      + "MASS a two-phase vent passes under a restricted energy estimate, never "
       + "the area it needs; a scenario that needs one is marked and left "
       + "out of the comparison that picks the governing area." },
   { id: "liquid-flash",

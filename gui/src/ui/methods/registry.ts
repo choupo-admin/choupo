@@ -1375,9 +1375,12 @@ export const METHOD_TOOLS: MethodTool[] = [
       + "and fire-case equations worked on fluid properties the engine "
       + "computes, and where the liquid one stops holding -- an acetone drum "
       + "in a fire, and an ammonia loop whose 50 bar version, on the same "
-      + "blocked-outlet hypothesis, needs a relief valve about four and a "
-      + "half times larger -- where the relief goes after the valve, and why "
-      + "a runaway vent is usually two-phase and must pass more mass.",
+      + "declared blocked-outlet flow, needs a relief valve about four and a "
+      + "half times larger in the sizing arithmetic (a comparison under one "
+      + "teaching hypothesis, not of two real relief systems) -- where the "
+      + "relief goes after the valve, and why a runaway vent is often "
+      + "two-phase and, under a restricted energy estimate, must pass more "
+      + "mass.",
     theory: "ch:cubic-eos",
   },
   //  COMMISSIONED 2026-10-17 (DEV.md 4c C83): "Faz essa EduTool da radiacao
@@ -1406,8 +1409,10 @@ export const METHOD_TOOLS: MethodTool[] = [
       + "energy and by Mudan and Croce's smoke correlation (and why it does "
       + "not fit a methanol flame), the point-source and solid-flame models "
       + "side by side -- apart near the fire, the same law far away -- and "
-      + "the distance to four published thresholds, set beside the "
-      + "separation the acetic-acid plant's layout declares.",
+      + "the still-air distance to four published thresholds, each with the "
+      + "receiver and exposure its source states, set beside the separation "
+      + "the acetic-acid plant's layout declares -- a consequence for one "
+      + "scenario, not a risk and not a certified siting distance.",
     theory: "ch:integrals",
   },
   //  COMMISSIONED 2026-10-17 (DEV.md 4c C75, slice 2): "Podes fazer um
@@ -1457,15 +1462,20 @@ export const METHOD_TOOLS: MethodTool[] = [
     discipline: "Process design & economics", kind: "construction",
     status: "live",
     teaches: "That a pharmaceutical plant is laid out inside a building: the "
-      + "cleanliness grades of EU GMP Annex 1 and why an oral-solid-dose room "
-      + "is grade D by analogy or controlled not classified; the pressure "
-      + "cascade (air from clean to less clean, the case's declared step); "
+      + "cleanliness grades of EU GMP Annex 1 and how this example declares "
+      + "its oral-solid-dose rooms grade D by analogy or controlled not "
+      + "classified (a declared choice, not a universal requirement); the "
+      + "pressure cascade (air from clean to less clean with the doors "
+      + "closed, the case's declared step -- a control, not a proof that "
+      + "nothing crosses); "
       + "cascade, bubble and sink airlocks, and why a contained room's airlock "
       + "is a sink; gowning for the grade one enters; containment of a potent "
       + "ingredient (negative pressure, the exposure band Choupo does not "
       + "know); the personnel, material and waste flows, one way each and "
-      + "kept apart; the solvent suite as an ATEX zone away from ignition "
-      + "rooms; and escape (a lift is not an exit) -- each as an exercise on "
+      + "kept apart as this example organises them; the solvent suite as a "
+      + "DECLARED ATEX zone checked geometrically against ignition rooms (a "
+      + "classification needs the sources, their grade and the ventilation); "
+      + "and escape as reachability (a lift is not an exit) -- each as an exercise on "
       + "a teaching building the engine checks in the browser, a broken rule "
       + "announced and an impossible building refused; and what the model "
       + "does not do (air changes, doors, travel distances).",
