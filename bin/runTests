@@ -6470,6 +6470,26 @@ if [ "$#" -eq 0 ]; then
     fi
     rm -f /tmp/econsens.$$
 
+    # Debt-financing gate (2026-10-20, revived 2026-10-25, DEV.md 4c C110
+    # G4): the opt-in `economics { financing {} }` loan adds the EQUITY view
+    # BESIDE the project's and changes none of it -- on probes built from
+    # economics03 and economics01 and on the witness economics04_debt_
+    # financing, every draw, capitalised interest, repayment and equity cash
+    # flow recomputes by hand from the project's published cash flow, the
+    # project's cashFlow.csv is byte-identical with and without the loan, the
+    # refusals fire by name, an absent block is silent, the witness's golden
+    # pins every financing KPI, the .ods sheet and the printed schedule agree
+    # with the JSON, and the loan's arithmetic lives inside appraise().
+    if "$ROOT/bin/curate/check_debt_financing.py" > /tmp/debtfin.$$ 2>&1; then
+        printf "PASS  %-40s  (%s)\n" "debt-financing-gate" "$(gate_claim check_debt_financing /tmp/debtfin.$$)"
+        pass=$((pass+1))
+    else
+        printf "FAIL  %-40s  (run bin/curate/check_debt_financing.py)\n" "debt-financing-gate"
+        cat /tmp/debtfin.$$
+        fail=$((fail+1))
+    fi
+    rm -f /tmp/debtfin.$$
+
     # Plant-layout gate (2026-10-17, DEV.md 4c C75): system/layoutDict is
     # DECLARED, CHECKED and DRAFTED -- the witness's vessel extents equal
     # their own design sheets, its separation shortfall recomputes and

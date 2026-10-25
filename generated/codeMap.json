@@ -1063,6 +1063,9 @@
   "LmtdCorrection": [
    "src/unitOperations/heatTransfer/htc/ShellTubeDesign.H"
   ],
+  "LoanYear": [
+   "src/core/ResultRecords.H"
+  ],
   "LogNormalSize": [
    "src/core/distribution/LogNormalSize.H"
   ],

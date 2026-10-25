@@ -1,0 +1,37 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+// ---------------------------------------------------------------------------
+// TEAR SEED -- an author-owned INITIAL GUESS for this recycle stream.  A recycle
+// loop has no upstream to propagate from, so the student seeds the tear; the
+// solver (Wegstein/Newton on the tear) CONVERGES it -- the values below are a
+// starting estimate, NOT a specification.  The no-silent-crutch credo: the seed
+// is visible and yours to own.
+// ---------------------------------------------------------------------------
+/*--- Choupo stream state.  Every DIMENSIONAL value carries its unit; the parser converts to SI.
+     componentMolarFlows is the OVERALL material (all phases); a phases{} block, when present,
+     is a decomposition that sums back to it exactly. ---*/
+
+componentMolarFlows
+{
+    N2    7959.133697 kmol/h;
+    H2    24084.79879 kmol/h;
+    NH3    540.3069209 kmol/h;
+    Ar    1115.528171 kmol/h;
+}
+
+T               250 K;
+P               20000000 Pa;
+phase           gas;
+// The seed is the separator's VAPOUR and it feeds recycleComp, which refuses
+// liquid in its suction (2026-10-21, DEV.md 4c).  A tear seed is the
+// compressor's inlet on the FIRST pass and is read as it carries (a produced
+// stream keeps its producer's answer), so its phase is DECLARED here, as
+// greenAmmoniaPEQ_baseCase's and evaporator05's seeds declare theirs; without
+// it the seed carries the struct default, vf = 0, and the first pass reads
+// 33 700 kmol/h of liquid.  The solver overwrites it from the second pass on.

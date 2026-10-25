@@ -6,7 +6,7 @@
   "runtime": "not recorded; runTests does not time per case and this script does not run the corpus"
  },
  "counts": {
-  "cases": 494,
+  "cases": 495,
   "witnesses": 16,
   "validationOp": 6,
   "anchored": 13
@@ -4057,6 +4057,14 @@
    "roles": [],
    "hasGolden": true
   },
+  "tutorials/steady/economics/economics04_debt_financing": {
+   "application": "choupoSolve",
+   "thermo": {
+    "formulation": "diluteSolution"
+   },
+   "roles": [],
+   "hasGolden": true
+  },
   "tutorials/steady/electrodialysis/ed01_nacl_desalination": {
    "application": "choupoSolve",
    "unitTypes": [
@@ -7559,6 +7567,7 @@
     "tutorials/steady/economics/economics01_esterification_dcf",
     "tutorials/steady/economics/economics02_irr_sweep",
     "tutorials/steady/economics/economics03_startup_years",
+    "tutorials/steady/economics/economics04_debt_financing",
     "tutorials/steady/electrodialysis/ed01_nacl_desalination",
     "tutorials/steady/electrodialysis/ed02_over_limiting_current",
     "tutorials/steady/electrodialysis/ed03_stack_record",
