@@ -110,6 +110,19 @@ WHAT THIS GATE CHECKS.
       carries no V_j, L_j) separates the two pricings when both close the
       column's own balance through the reboiler plug.
 
+  (k) OUTPUT: TWO FEEDS ON ONE STAGE are two terms (C131 separations
+      refutation, 2026-10-25).  The arm (i) fixture with its vapour feed moved
+      onto the two-phase feed's stage 5, under `simultaneous` and under
+      `fullMESH`, must satisfy the (i2) identity to 1e-6 kW.  Until C131 a
+      stage holding two feeds was priced as ONE blend at the merged q, the
+      merged z and a MOLAR-AVERAGE temperature, in the duty block of both
+      models (and in the full MESH's energy rows): measured on the engine of
+      origin/main 79d152339 with column04's two feeds both on stage 8, the
+      column left 6.916 kW of its own first law unattributed at exit 0 under
+      either model; with each feed priced by its own resolution it closes to
+      4e-6 kW.  This is the OUTPUT half of arm (j): a merged stage is the one
+      place the duty block and the report disagree, so the identity sees it.
+
 WHAT THIS GATE DOES NOT CHECK, said plainly rather than implied:
 
   * THE PLANT BOUNDARY OF A MULTI-FEED COLUMN.  The energy report classifies
@@ -203,7 +216,7 @@ units
     {
         name        probeColumn;
         type        distillationColumn;
-        model       simultaneous;
+        model       %(model)s;
         inputs      ( feedA  feedB );
         outputs     ( distillate  bottoms );
 
@@ -216,7 +229,7 @@ units
             feeds
             (
                 { stream feedA; stage 5; }
-                { stream feedB; stage 10; %(quality)s}
+                { stream feedB; stage %(stageB)s; %(quality)s}
             );
         }
     }
@@ -267,9 +280,11 @@ def build_fixture(root: Path, quality: str, vf: str) -> Path:
     return case
 
 
-def build_multi_fixture(root: Path, quality: str) -> Path:
+def build_multi_fixture(root: Path, quality: str, stage_b: int = 10,
+                        model: str = "simultaneous") -> Path:
     """The two-stream-feed column of arm (i).  `quality` is '' or a
-    `quality <q>; ` fragment placed on the lower (vapour) feed."""
+    `quality <q>; ` fragment placed on the lower (vapour) feed; arm (k)
+    moves that feed onto the upper feed's stage 5 and picks the model."""
     case = root / "multiFeedProbe"
     if case.exists():
         shutil.rmtree(case)
@@ -279,7 +294,8 @@ def build_multi_fixture(root: Path, quality: str) -> Path:
     (case / "constant" / "propertyManifest").unlink(missing_ok=True)
     (case / "system" / "controlDict").write_text(CONTROL)
     (case / "system" / "flowsheetDict").write_text(
-        MULTI_FLOWSHEET % {"quality": quality})
+        MULTI_FLOWSHEET % {"quality": quality, "stageB": stage_b,
+                           "model": model})
     (case / "0" / "feedA").write_text(MULTI_FEED % {"b": "25", "t": "25", "T": "370"})
     (case / "0" / "feedB").write_text(MULTI_FEED % {"b": "20", "t": "30", "T": "395"})
     (case / "0" / "distillate").write_text(
@@ -506,6 +522,36 @@ def main() -> int:
                         "priced as a blend at z, or a vapour feed priced as "
                         "the carried liquid, leaves exactly this.")
 
+        # ---- (k) OUTPUT: two feeds on one stage, both models -------------
+        for model in ("simultaneous", "fullMESH"):
+            case = build_multi_fixture(tmp, "", stage_b=5, model=model)
+            rc, out = run(case)
+            if rc != 0:
+                failures.append(
+                    f"(k) the two-feeds-on-one-stage fixture under `{model}` "
+                    f"did not run (exit {rc}).  Last lines:\n"
+                    + "\n".join(out.strip().splitlines()[-6:]))
+                continue
+            hf = result_number(out, "globalEnergyBoundary", "H_feeds_kW")
+            hp = result_number(out, "globalEnergyBoundary", "H_products_kW")
+            qr = result_number(out, "probeColumn", "Q_reboiler_kW")
+            qc = result_number(out, "probeColumn", "Q_condenser_kW")
+            if None in (hf, hp, qr, qc):
+                failures.append(
+                    f"(k) under `{model}` could not read H_feeds/H_products "
+                    "from the report or Q_reboiler/Q_condenser from the "
+                    "column -- the arm cannot run, so it must not pass")
+                continue
+            gap = (hp - hf) - (qr + qc)
+            if abs(gap) > 1.0e-6:
+                failures.append(
+                    f"(k) under `{model}`, two feeds sharing stage 5 leave "
+                    f"{gap:.6f} kW between the report's H_products - H_feeds "
+                    f"({hp - hf:.6f} kW) and the column's Q_reboiler + "
+                    f"Q_condenser ({qr + qc:.6f} kW).  A stage holding two "
+                    "feeds priced as one blend at the merged q, z and a "
+                    "molar-average T leaves exactly this.")
+
         # ---- (e) SOURCE: the second home stays deleted --------------------
         src = strip_comments(SRC.read_text())
         if re.search(r'lookupScalarOrDefault\(\s*"feedQuality"', src):
@@ -600,8 +646,9 @@ def main() -> int:
           "energy report does (H_products - H_feeds = Q_reboiler + "
           "Q_condenser to 1e-6 kW); and the full MESH's stage energy rows "
           "price every feed by its own resolution, never the merged blend "
-          "(source arm (j)).  SCANNED: fixture cases written by this "
-          "gate (six single-feed variants, two multi-feed) and "
+          "(source arm (j)), and two feeds sharing a stage are priced as two "
+          "terms under `simultaneous` and `fullMESH` (output arm (k)).  SCANNED: fixture cases written by this "
+          "gate (six single-feed variants, four multi-feed) and "
           "src/unitOperations/distillation/DistillationColumn.cpp.  NOT "
           "CHECKED: the plant boundary of a multi-feed column (the report "
           "drops its duties as an internal exchanger's); an inline `feeds` "

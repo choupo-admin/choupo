@@ -436,3 +436,237 @@ changed (check_doctrine marks no claim line, as before), and `--check`. Not run:
 authorisation, and none of the changes is a path every case goes through),
 `--fast`, `--gui` (no `gui/` file and no cited engine line was moved), and
 the WASM build.
+
+---
+
+## Refutation
+
+Status: the refuter's appendix, 2026-10-25, branch
+`claude/c131-refute-separations` (cut from the analyst's branch). The brief
+was to break each claim, not to agree with it. Both engines were built: the
+analyst's branch, and `origin/main` (`f871943a9`, whose `src/` is
+byte-identical to the `79d152339` the report names). Every witness below was
+rebuilt from its corpus case in a scratch directory, run on both, and deleted.
+
+Verdicts: **CONFIRMED**, **CONFIRMED WITH CORRECTION**, **REFUTED**,
+**UNPROVEN**.
+
+### WRONG items
+
+* **W1. CONFIRMED.** stripper01_NH3_water with gas `N2 80; water 20`: main
+  exits 0 at 91.807 % closure; the branch refuses by name. A 1e-11 relative
+  trace (1e-9 kmol/h in 100) is also refused, as the 1e-12 threshold says.
+  *Correction to the fix's framing.* "Strip with a gas that carries no
+  solvent" also refuses HUMID AIR, which is the inlet of every air stripper.
+  The refusal is the right minimal fix, because main deletes the water. But
+  P7 should go to Vítor with that case named. The asymmetry with the absorber
+  should be stated too: the absorber CONDENSES all the solvent arriving in
+  its gas (solvent row `L_in x + V_in y`), while the stripper now refuses it.
+* **W2. CONFIRMED.** absorber01 with 5 kmol/h N2 in the wash: main 97.469 %,
+  the branch refuses. stripper01 with 5 kmol/h N2 in the liquid: main
+  96.986 % with `recovery_N2 = 1`, the branch refuses.
+* **W3. CONFIRMED.** stripper01 on a `gammaPhi`/ideal/idealGas package: main
+  exits 0 at 60.926 %; the branch refuses. The absorber refuses on both.
+* **W4. CONFIRMED, and worse than reported.**
+  * *The definition.* Under CMO the feed line uses
+    q = (H_V,sat - H_F)/(H_V,sat - H_L,sat), and q > 1 for a subcooled liquid
+    (Wankat ch. 4, the feed-line derivation; Seader §7.2, the q-line table of
+    feed conditions). The McCabe-Thiele EduTool says the same,
+    `mccabeLesson.ts:184`: "q > 1 subcooled liquid".
+  * *The engine.* It sets `q = 1.0 - feedState.vf` (`DistillationColumn.cpp:784`)
+    and builds L' and V' from it (`:812-813`).
+  * *Re-run.* column01 with `model` declared at the UNIT level. Under
+    `WangHenke` and `simultaneous`, x_D is 0.98124512 at both 364 K and 300 K
+    (to 9 figures) and `V_strip` is 0.0416667 at both, while Q_reboiler goes
+    1305.86 -> 1565.77 kW. Under `fullMESH`, x_D goes 0.97850 -> 0.98302.
+    Main and branch agree, as expected, since neither touches this. The extra
+    (1566 - 1306) kW over 0.0278 kmol/s at ~32 MJ/kmol puts q near 1.29,
+    which is 1 + c_p,L ΔT/λ for ΔT = 64 K.
+  * *What the report missed.* The engine also REFUSES the textbook q.
+    `feedQuality 1.29;` on the 300 K feed is refused as a "contradiction"
+    with the stream (`refuseContradictoryFeedQuality`, `:478-520`). The
+    stream-side remedy it names is `phase liquid;` ("a declared
+    saturated-liquid feed"), which means q = 1. So no case can give a CMO
+    column a subcooled feed, and the refusal calls the correct number a
+    contradiction. P1 should change that refusal in the same slice.
+* **W5. CONFIRMED WITH CORRECTION: the fix reaches further than reported.**
+  * *As reported.* column01 under `fullMESH` with the 370 K feed: main gives
+    x_D 0.938168949 and Q_reb 657.2897 kW; the branch gives 0.938924131 and
+    657.1753 kW.
+  * *Not reported.* The DUTY-BLOCK half also moves the `simultaneous` (CMO)
+    model. In both models a stage holding two feeds was priced as one blend
+    at the merged q, the merged z and a molar-average T.
+  * *Witness.* column04_multifeed_sidedraw with both feeds on stage 8 (the
+    side draw moved to stage 11, the `quality` keys removed). Under
+    `simultaneous` and under `fullMESH`, main leaves **6.916 kW** of the
+    column's own first law unattributed, at exit 0. The branch closes it to
+    0 and 4e-6 kW. No corpus case puts two feeds on one stage, so nothing in
+    the corpus moved. WangHenke has no multi-feed branch and refuses the
+    fixture (exit 2) on both engines.
+  * *The gate.* This is an OUTPUT witness, so the "source arm, the weakest
+    kind" caveat now covers only the two-phase-feed half. It is added as
+    `check_feed_thermal_state` arm **(k)** (below).
+* **W6. CONFIRMED.**
+  * `DistillationColumn.cpp:723-724` sends all four names to
+    `solveSimultaneous`, and `:2446-2447` runs the energy refinement only for
+    `fullMESH`, `MESH` and `NaphtaliSandholm`.
+  * `docs/userGuide.tex:1867` still lists `MESH` and `NaphtaliSandholm` as
+    aliases of `simultaneous`, so P4 stands.
+  * The `docs/ai/unit-ops.md` fix is correct, but it promised the full MESH
+    unconditionally, which is false for a reactive column (M9 below). The
+    refuter added one sentence.
+
+### MISSING items
+
+* **M1. CONFIRMED.** extract01 with the solvent at 330 K exits 0. The
+  extractor's energy closure is -143.7496 kW (global residual +143.7496 kW)
+  and no `Q_kW` is published. At 298.15 K the closure is 1.1e-4 kW.
+* **M2. CONFIRMED.** `Crystalliser.cpp:489-490` and `:801-802` take `sr.x`
+  and never read `sr.converged`. `newton1D` returns the flag without
+  throwing (`NewtonRaphson.cpp:103`). The tolerance is an absolute 1e-10 kg/s
+  (`:487`, `:799`). There is no witness: the bracketed Newton converges on
+  every corpus input.
+* **M3. CONFIRMED WITH CORRECTION.** The KPI is the NUMBER CV,
+  √(μ0μ2/μ1² - 1) = 1 (`Crystalliser.cpp:508`, `:831`). `theoryGuide.tex:17693`
+  says the MSMPR "always produces a PSD with a coefficient of variation of
+  exactly 100 %" and names no basis. The moment-based MASS CV is
+  √(μ3μ5/μ4² - 1) = 0.5, as the report says. *Correction:* the figure a
+  student meets in Mullin and in Randolph & Larson is usually the PERCENTILE
+  form, (L84 - L16)/(2 L50) on the cumulative mass distribution, about 52 %
+  for MSMPR, not the moment form's 50 %. Whichever is published, name its
+  definition as well as its basis.
+* **M4. CONFIRMED.** `check_energy_closure.py:584-586` pins absorber01
+  -27.9838, acetone05 3.1179 and stripper01 19.8710 kW.
+* **M5. CONFIRMED.** `DistillationColumn.cpp:1823-1824`: an inline feed's
+  `quality` defaults to 1.0 and its `T` to the primary feed's T, both
+  silently.
+* **M6. CONFIRMED.** Antoine gives water 17.15 kPa at 330 K, so y = 0.169.
+  100 kmol/h of dry N2 then saturates with about 20.4 kmol/h of water, about
+  240 kW of latent heat, and the unit holds all of it in the liquid.
+* **M7. CONFIRMED (structure only).** `Extractor.cpp:596-600`: the stop is
+  total-mole closure < 1e-8. The analyst's per-component figures were not
+  re-measured.
+* **M8. CONFIRMED that the two homes disagree; UNPROVEN which one the source
+  supports.**
+  * *The engine.* `ShortcutColumn.cpp:289-290` sets `feedStage = N - N_S`,
+    i.e. N_R, "counted from the top", so the feed is the LAST rectifying
+    stage.
+  * *The lesson.* `fugLesson.ts:315-321` defines N_rect as the stages ABOVE
+    the feed and N_strip as the stages BELOW it, and says the Gilliland N is
+    split by their ratio. With N = N_rect + N_strip and the feed stage
+    counted in neither, that page cannot be literally true. The lesson is the
+    internally inconsistent half.
+  * *The ladder.* `fugShortcut.ts:354-366` uses `feed_stage/N`, which is the
+    engine's reading.
+  * *The source.* The refuter could not reach Seader-Henley-Roper's worked
+    example or Kirkbride (1944) from this container, so it stays unproven
+    which side a primary source takes. P6 stands as written.
+
+### New findings (not in the analyst's report)
+
+* **M9. `model fullMESH;` on a reactive column runs CMO and does not say
+  so.**
+  * *The code.* `DistillationColumn.cpp:2446-2447` requires `!reactive`. The
+    only record of that is a code comment (`:2444`, "Reactive full-MESH is
+    not wired yet").
+  * *Witness.* column05_reactive_methylacetate with `model fullMESH;` runs to
+    exit 0. B, D, R, T_top, T_bottom, conversion, Q_condenser and Q_reboiler
+    all equal the `simultaneous` golden to 12 figures, and nothing in the
+    output mentions the substitution. That is a problem divergence at exit 0
+    (CLAUDE.md §6, *THE PROBLEM SOLVED IS NOT ALWAYS THE PROBLEM POSED*).
+  * *Proposal.* Refuse `fullMESH`, `MESH` and `NaphtaliSandholm` with a
+    `reaction {}` block, by name, pointing to `simultaneous`. No corpus case
+    is affected, because column05 declares `simultaneous`.
+  * *Status.* Not fixed here: the refuter's brief covers corrections to the
+    analyst's fixes. `docs/ai/unit-ops.md` now states the limitation.
+* **A stale NOT-CHECKED line.** `check_feed_thermal_state` still says the
+  energy report drops a multi-feed column's duties as an internal
+  exchanger's. CLAUDE.md §6 records that as closed on 2026-10-05, and the W5
+  witness confirms it: the report's global residual follows the column's own
+  closure on both engines (6.916 kW on main, ~0 here). The line belongs to
+  the gate's owner, so it is flagged here rather than edited.
+
+### The analyst's fixes, reviewed
+
+* **Absorber.cpp and Stripper.cpp: correct and minimal.**
+  * The refusals sit after the classification and before any arithmetic.
+  * The trace carry writes each component in the phase it arrived in, so
+    Σ out = Σ in per component in every branch.
+  * The 1e-12 threshold is on the NORMALISED fraction, so it does not depend
+    on scale.
+  * Fail-first: with the worktree's `choupoSolve` symlink pointed at the main
+    build, `check_kremser_inventory` FAILS K1 (91.807 %), K2 (96.986 %), K3
+    (97.469 %), K4 stripper (60.926 %) and K5 ("the trace was deleted"). On
+    the branch it passes.
+  * One accepted weakness: K5 reads the rich gas with a regex that cannot
+    cross nested braces. If the result JSON ever nests an object before
+    `composition`, the arm would accuse the engine falsely. It fails closed,
+    not open.
+* **DistillationColumn.cpp, per-feed pricing: correct.**
+  * The rows' `stageFeedEnthalpy` uses `thermo.Hliquid` and `Hvapour`, the
+    same functions as the rows' `hL` and `hV` (`:2521-2522`), in
+    kmol/s × kJ/kmol = kW.
+  * A resolved single-phase feed has q ∈ {0, 1}, so its term is unchanged.
+    Only a resolved VL split or a shared stage moves.
+  * The duty block's per-feed loop is what closes the two-feed stage (W5
+    above).
+* **Arm (j) and the new arm (k).**
+  * Arm (j) is a source arm, as the report says, and it fails on main's
+    source by construction.
+  * **Arm (k), added by the refuter**, is the output half. It moves the arm
+    (i) fixture's vapour feed onto the two-phase feed's stage 5 and requires,
+    under `simultaneous` and `fullMESH`, that
+    `H_products - H_feeds = Q_reboiler + Q_condenser` to 1e-6 kW.
+  * Run against the main engine, arm (k) FAILS on both models (gap
+    2.1536 kW). On the branch it passes.
+* **The `check_doctrine` exemption: as narrow as claimed.**
+  * It is a path PREFIX matched by `startswith` (`check_doctrine.py:396-398`),
+    so it covers only files named `docs/design/review-c131-*`.
+  * It lifts the one word `dwsim`; every other banned word still fails there.
+  * Arm (t) still holds. No manual, `docs/ai/` file, GUI source,
+    `bin/buildSite` or `vite.config.ts` names the prefix (grepped). Nothing
+    ships `docs/design/`: `buildSite` and the GUI glob name no `docs/design`
+    path, and the GUI mentions it only in comments.
+  * The prefix would also exempt a FUTURE file of that name. That is the
+    intent (family (a)'s record needs it), and the policy line the commander
+    takes to Vítor should say so.
+
+### Corpus measurement (branch engine)
+
+* `bin/runTests` on all 36 cases whose flowsheet declares an `absorber`,
+  `stripper` or `distillationColumn`, found by grep. They include the
+  optimisation, sensitivity and Pareto drivers over column01, and the plants
+  aceticAcid02_plant and acetonePlant. Result: **PASS 36 / FAIL 0**, no
+  golden re-recorded.
+* `bin/runTests --fast`: **PASS 76 / FAIL 0 / EXPECTED-FAIL 5**.
+* Raw comparison of main against the branch: each of the 36 cases run on both
+  engines, with every number on every printed line compared at 1e-11
+  relative.
+  * Every case exits 0 on both.
+  * Outside the banner's commit tag, only three kinds of line differ:
+    * a column's own energy-closure residual of order 1e-13 kW printed as 0
+      (column02, 06, 08, 12 and acetonePlant's C2);
+    * column12's plant residual, 9.049e-11 -> 9.027e-11 kW;
+    * column06's profile and full-MESH ||F||, at 1e-12 relative
+      (0.00175906528887 -> ...885).
+  * This is summation order, since each feed is now summed feed by feed. No
+    golden row can see it (tolerances are at 1e-4 or above).
+  * The corpus is unmoved, as the analyst reported.
+* Gates re-run on the branch: `check_kremser_inventory`,
+  `check_feed_thermal_state` (with (k)), `check_doctrine`,
+  `check_doc_references`, `check_glossary_bans`, `check_retired_names`,
+  `check_decision_index` and `gate_manifest --check` all pass, and
+  `gate_manifest --only check_feed_thermal_state` was re-observed.
+* NOT run: the full regression, `--gui` (no `gui/` file and no cited engine
+  line moved), the WASM build, and the User Guide render.
+
+### Safe to land?
+
+Yes, with this appendix and arm (k). The four engine fixes are correct,
+conserve every mole they used to delete, fail first on main (by gate and by
+witness), and move no golden. Two items go to Vítor with the proposals:
+
+* P7, now with the humid-air case named;
+* M9, a one-line refusal that moves nothing.
+
+P1 should take the `feedQuality` refusal with it.
