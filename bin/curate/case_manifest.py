@@ -89,6 +89,13 @@ def scan_case(case_dir, wmap):
     ctrl = strip_comments(read(os.path.join(sysd, "controlDict")))
     m = re.search(r"^\s*application\s+(\w+)", ctrl, re.M)
     entry["application"] = m.group(1) if m else "unknown"
+    #  ONE CASE, TWO MODES (DEV.md 4c C152): a case carrying both dicts runs
+    #  in either; `application` is the default, `runCase <case> <mode>` the
+    #  other, and bin/runTests checks both (expected / expected.<mode>).
+    if os.path.isfile(os.path.join(sysd, "flowsheetDict")) \
+       and os.path.isfile(os.path.join(sysd, "propsDict")):
+        entry["modes"] = ["process", "props"]
+        entry["defaultMode"] = "props" if entry["application"] == "choupoProps" else "process"
 
     fsd = strip_comments(read(os.path.join(sysd, "flowsheetDict")))
     unit_types = sorted(set(re.findall(r"^\s*type\s+(\w+)\s*;", fsd, re.M)))

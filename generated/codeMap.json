@@ -699,6 +699,9 @@
   "FitParameters": [
    "src/propertyOps/FitParameters.H"
   ],
+  "FitProvenance": [
+   "src/thermo/membrane/Membrane.H"
+  ],
   "FixedBedAdsorber": [
    "src/unitOperations/batch/FixedBedAdsorber.H"
   ],
@@ -1830,7 +1833,8 @@
    "src/unitOperations/separation/TSATwinBed.H"
   ],
   "Table": [
-   "src/core/Formula.H"
+   "src/core/Formula.H",
+   "src/propertyOps/EvidencePartition.H"
   ],
   "TabularSizeDistribution": [
    "src/core/distribution/TabularSizeDistribution.H"
@@ -4942,6 +4946,7 @@
    "src/core/Units.H",
    "src/propertyOps/CurationDossier.H",
    "src/propertyOps/EvidencePartition.H",
+   "src/propertyOps/FitAlgebra.H",
    "src/propertyOps/FitParameters.H",
    "src/propertyOps/FitWeighting.H",
    "src/propertyOps/PropertyOperation.H",
@@ -4959,6 +4964,34 @@
    "src/thermo/vaporPressure/VaporPressureModel.H",
    "src/unitOperations/UnitOperation.H",
    "src/unitOperations/saturation/BubblePoint.H"
+  ],
+  "src/propertyOps/FitParametersMembrane.cpp": [
+   "src/core/DictCanonical.H",
+   "src/core/Dictionary.H",
+   "src/core/Dimensions.H",
+   "src/core/Identifiers.H",
+   "src/core/Origin.H",
+   "src/core/PublishedTable.H",
+   "src/core/Sha256.H",
+   "src/core/Types.H",
+   "src/propertyOps/CurationDossier.H",
+   "src/propertyOps/EvidencePartition.H",
+   "src/propertyOps/FitAlgebra.H",
+   "src/propertyOps/FitParameters.H",
+   "src/propertyOps/PropertyOperation.H",
+   "src/solver/Convergence.H",
+   "src/thermo/Component.H",
+   "src/thermo/Database.H",
+   "src/thermo/PackageAudit.H",
+   "src/thermo/RecordResolver.H",
+   "src/thermo/ThermoPackage.H",
+   "src/thermo/membrane/FittedRecord.H",
+   "src/thermo/membrane/Membrane.H",
+   "src/thermo/membrane/MembraneRegistry.H",
+   "src/unitOperations/membrane/massTransfer/MassTransferModel.H",
+   "src/unitOperations/membrane/massTransfer/Polarisation.H",
+   "src/unitOperations/membrane/osmotic/OsmoticModel.H",
+   "src/unitOperations/membrane/transport/TransportModel.H"
   ],
   "src/propertyOps/FitWeighting.cpp": [
    "src/core/Dictionary.H",
@@ -7142,6 +7175,16 @@
    "src/thermo/membrane/FeedSpacer.H",
    "src/thermo/membrane/MembraneModule.H"
   ],
+  "src/thermo/membrane/FittedRecord.cpp": [
+   "src/core/Advisory.H",
+   "src/core/DictCanonical.H",
+   "src/core/Dictionary.H",
+   "src/core/Dimensions.H",
+   "src/core/Sha256.H",
+   "src/core/Types.H",
+   "src/thermo/membrane/FittedRecord.H",
+   "src/thermo/membrane/Membrane.H"
+  ],
   "src/thermo/membrane/Membrane.cpp": [
    "src/core/Dictionary.H",
    "src/core/Dimensions.H",
@@ -7182,6 +7225,7 @@
    "src/thermo/Component.H",
    "src/thermo/Database.H",
    "src/thermo/RecordResolver.H",
+   "src/thermo/membrane/FittedRecord.H",
    "src/thermo/membrane/Membrane.H",
    "src/thermo/membrane/MembraneRegistry.H"
   ],
@@ -9877,6 +9921,7 @@
    "src/thermo/heatCapacity/PolynomialCp.cpp",
    "src/thermo/heatCapacity/RowlinsonBondi.cpp",
    "src/thermo/henrysLaw/HenrysLaw.cpp",
+   "src/thermo/membrane/FittedRecord.cpp",
    "src/thermo/phase/LiquidPhase.cpp",
    "src/thermo/phase/SolidPhase.cpp",
    "src/thermo/pureFluid/SaturationCurve.cpp",
@@ -10208,7 +10253,9 @@
   "src/core/DictCanonical.H": [
    "src/applications/choupoProps/main.cpp",
    "src/core/DictCanonical.cpp",
-   "src/thermo/SealCheck.cpp"
+   "src/propertyOps/FitParametersMembrane.cpp",
+   "src/thermo/SealCheck.cpp",
+   "src/thermo/membrane/FittedRecord.cpp"
   ],
   "src/core/Dictionary.H": [
    "src/applications/choupoBatch/main.cpp",
@@ -10290,6 +10337,7 @@
    "src/propertyOps/Exergy.cpp",
    "src/propertyOps/ExplainProperty.cpp",
    "src/propertyOps/FitParameters.cpp",
+   "src/propertyOps/FitParametersMembrane.cpp",
    "src/propertyOps/FitWeighting.cpp",
    "src/propertyOps/FreezingPoint.cpp",
    "src/propertyOps/FrictionBench.cpp",
@@ -10399,6 +10447,7 @@
    "src/thermo/henrysLaw/HenrysLaw.cpp",
    "src/thermo/henrysLaw/HenrysLawRegistry.cpp",
    "src/thermo/membrane/FeedSpacer.cpp",
+   "src/thermo/membrane/FittedRecord.cpp",
    "src/thermo/membrane/Membrane.cpp",
    "src/thermo/membrane/MembraneModule.cpp",
    "src/thermo/membrane/MembraneModuleRegistry.cpp",
@@ -10629,6 +10678,7 @@
    "src/propertyOps/Exergy.cpp",
    "src/propertyOps/ExplainProperty.cpp",
    "src/propertyOps/FitParameters.cpp",
+   "src/propertyOps/FitParametersMembrane.cpp",
    "src/propertyOps/FitWeighting.cpp",
    "src/propertyOps/FreezingPoint.cpp",
    "src/propertyOps/FrictionBench.cpp",
@@ -10738,6 +10788,7 @@
    "src/thermo/henrysLaw/HenrysLaw.cpp",
    "src/thermo/henrysLaw/HenrysLawRegistry.cpp",
    "src/thermo/membrane/FeedSpacer.cpp",
+   "src/thermo/membrane/FittedRecord.cpp",
    "src/thermo/membrane/Membrane.cpp",
    "src/thermo/membrane/MembraneModule.cpp",
    "src/thermo/membrane/MembraneModuleRegistry.cpp",
@@ -11054,6 +11105,7 @@
    "src/propertyOps/Exergy.cpp",
    "src/propertyOps/ExplainProperty.cpp",
    "src/propertyOps/FitParameters.cpp",
+   "src/propertyOps/FitParametersMembrane.cpp",
    "src/propertyOps/FreezingPoint.cpp",
    "src/propertyOps/FrictionBench.cpp",
    "src/propertyOps/GibbsMapOp.cpp",
@@ -11333,6 +11385,7 @@
    "src/propertyOps/Exergy.cpp",
    "src/propertyOps/ExplainProperty.cpp",
    "src/propertyOps/FitParameters.cpp",
+   "src/propertyOps/FitParametersMembrane.cpp",
    "src/propertyOps/FreezingPoint.cpp",
    "src/propertyOps/FrictionBench.cpp",
    "src/propertyOps/GibbsMapOp.cpp",
@@ -11638,6 +11691,7 @@
    "src/propertyOps/Exergy.cpp",
    "src/propertyOps/ExplainProperty.cpp",
    "src/propertyOps/FitParameters.cpp",
+   "src/propertyOps/FitParametersMembrane.cpp",
    "src/propertyOps/FreezingPoint.cpp",
    "src/propertyOps/FrictionBench.cpp",
    "src/propertyOps/GibbsMapOp.cpp",
@@ -11814,7 +11868,9 @@
   "src/core/Sha256.H": [
    "src/core/DictCanonical.cpp",
    "src/core/Sha256.cpp",
-   "src/thermo/SealCheck.cpp"
+   "src/propertyOps/FitParametersMembrane.cpp",
+   "src/thermo/SealCheck.cpp",
+   "src/thermo/membrane/FittedRecord.cpp"
   ],
   "src/core/ThermoResolution.H": [
    "src/applications/choupoBatch/main.cpp",
@@ -11985,6 +12041,7 @@
    "src/propertyOps/Exergy.cpp",
    "src/propertyOps/ExplainProperty.cpp",
    "src/propertyOps/FitParameters.cpp",
+   "src/propertyOps/FitParametersMembrane.cpp",
    "src/propertyOps/FitWeighting.cpp",
    "src/propertyOps/FreezingPoint.cpp",
    "src/propertyOps/FrictionBench.cpp",
@@ -12110,6 +12167,7 @@
    "src/thermo/henrysLaw/HenrysLaw.cpp",
    "src/thermo/henrysLaw/HenrysLawRegistry.cpp",
    "src/thermo/membrane/FeedSpacer.cpp",
+   "src/thermo/membrane/FittedRecord.cpp",
    "src/thermo/membrane/Membrane.cpp",
    "src/thermo/membrane/MembraneModule.cpp",
    "src/thermo/membrane/MembraneModuleRegistry.cpp",
@@ -12649,6 +12707,7 @@
    "src/applications/choupoProps/main.cpp",
    "src/propertyOps/CurationDossier.cpp",
    "src/propertyOps/FitParameters.cpp",
+   "src/propertyOps/FitParametersMembrane.cpp",
    "src/propertyOps/HeatCapacityFit.cpp",
    "src/propertyOps/VaporPressureFit.cpp"
   ],
@@ -12686,6 +12745,7 @@
    "src/propertyOps/EstimateComponent.cpp",
    "src/propertyOps/EvidencePartition.cpp",
    "src/propertyOps/FitParameters.cpp",
+   "src/propertyOps/FitParametersMembrane.cpp",
    "src/propertyOps/FitWeighting.cpp",
    "src/propertyOps/FreezingPoint.cpp",
    "src/propertyOps/HeatCapacityFit.cpp",
@@ -12704,8 +12764,13 @@
    "src/propertyOps/ExplainProperty.cpp",
    "src/propertyOps/PropertyOperation.cpp"
   ],
+  "src/propertyOps/FitAlgebra.H": [
+   "src/propertyOps/FitParameters.cpp",
+   "src/propertyOps/FitParametersMembrane.cpp"
+  ],
   "src/propertyOps/FitParameters.H": [
    "src/propertyOps/FitParameters.cpp",
+   "src/propertyOps/FitParametersMembrane.cpp",
    "src/propertyOps/PropertyOperation.cpp"
   ],
   "src/propertyOps/FitWeighting.H": [
@@ -12803,6 +12868,7 @@
    "src/propertyOps/Exergy.cpp",
    "src/propertyOps/ExplainProperty.cpp",
    "src/propertyOps/FitParameters.cpp",
+   "src/propertyOps/FitParametersMembrane.cpp",
    "src/propertyOps/FreezingPoint.cpp",
    "src/propertyOps/FrictionBench.cpp",
    "src/propertyOps/GibbsMapOp.cpp",
@@ -13326,6 +13392,7 @@
    "src/propertyOps/Exergy.cpp",
    "src/propertyOps/ExplainProperty.cpp",
    "src/propertyOps/FitParameters.cpp",
+   "src/propertyOps/FitParametersMembrane.cpp",
    "src/propertyOps/GibbsMapOp.cpp",
    "src/propertyOps/HConsistency.cpp",
    "src/propertyOps/HansenMixture.cpp",
@@ -13883,6 +13950,7 @@
    "src/propertyOps/Exergy.cpp",
    "src/propertyOps/ExplainProperty.cpp",
    "src/propertyOps/FitParameters.cpp",
+   "src/propertyOps/FitParametersMembrane.cpp",
    "src/propertyOps/FreezingPoint.cpp",
    "src/propertyOps/FrictionBench.cpp",
    "src/propertyOps/GibbsMapOp.cpp",
@@ -14102,6 +14170,7 @@
    "src/propertyOps/EstimateComponent.cpp",
    "src/propertyOps/Exchange.cpp",
    "src/propertyOps/FitParameters.cpp",
+   "src/propertyOps/FitParametersMembrane.cpp",
    "src/propertyOps/FreezingPoint.cpp",
    "src/propertyOps/FrictionBench.cpp",
    "src/propertyOps/GibbsMapOp.cpp",
@@ -14261,6 +14330,7 @@
    "src/propertyOps/Exergy.cpp",
    "src/propertyOps/ExplainProperty.cpp",
    "src/propertyOps/FitParameters.cpp",
+   "src/propertyOps/FitParametersMembrane.cpp",
    "src/propertyOps/GibbsMapOp.cpp",
    "src/propertyOps/HConsistency.cpp",
    "src/propertyOps/HansenMixture.cpp",
@@ -14445,6 +14515,7 @@
    "src/propertyOps/EstimateComponent.cpp",
    "src/propertyOps/Exchange.cpp",
    "src/propertyOps/FitParameters.cpp",
+   "src/propertyOps/FitParametersMembrane.cpp",
    "src/propertyOps/FreezingPoint.cpp",
    "src/propertyOps/FrictionBench.cpp",
    "src/propertyOps/GibbsMapOp.cpp",
@@ -14713,6 +14784,7 @@
    "src/propertyOps/Exergy.cpp",
    "src/propertyOps/ExplainProperty.cpp",
    "src/propertyOps/FitParameters.cpp",
+   "src/propertyOps/FitParametersMembrane.cpp",
    "src/propertyOps/GibbsMapOp.cpp",
    "src/propertyOps/HConsistency.cpp",
    "src/propertyOps/HansenMixture.cpp",
@@ -15368,12 +15440,19 @@
    "src/thermo/membrane/MembraneModuleRegistry.cpp",
    "src/unitOperations/membrane/SpiralWoundModule.cpp"
   ],
+  "src/thermo/membrane/FittedRecord.H": [
+   "src/propertyOps/FitParametersMembrane.cpp",
+   "src/thermo/membrane/FittedRecord.cpp",
+   "src/thermo/membrane/MembraneRegistry.cpp"
+  ],
   "src/thermo/membrane/Membrane.H": [
    "src/applications/choupoBatch/main.cpp",
    "src/applications/choupoProps/main.cpp",
    "src/applications/choupoSolve/main.cpp",
    "src/dynamicDriver/DynamicDriver.cpp",
+   "src/propertyOps/FitParametersMembrane.cpp",
    "src/propertyOps/PoreTransportBench.cpp",
+   "src/thermo/membrane/FittedRecord.cpp",
    "src/thermo/membrane/Membrane.cpp",
    "src/thermo/membrane/MembraneRegistry.cpp",
    "src/unitOperations/batch/BatchDiafilter.cpp",
@@ -15399,6 +15478,7 @@
    "src/applications/choupoProps/main.cpp",
    "src/applications/choupoSolve/main.cpp",
    "src/dynamicDriver/DynamicDriver.cpp",
+   "src/propertyOps/FitParametersMembrane.cpp",
    "src/propertyOps/PoreTransportBench.cpp",
    "src/thermo/membrane/MembraneRegistry.cpp",
    "src/unitOperations/batch/BatchDiafilter.cpp",
@@ -16243,6 +16323,7 @@
    "src/unitOperations/membrane/SpiralWoundModule.cpp"
   ],
   "src/unitOperations/membrane/massTransfer/MassTransferModel.H": [
+   "src/propertyOps/FitParametersMembrane.cpp",
    "src/propertyOps/PolarisationIndex.cpp",
    "src/propertyOps/PoreTransportBench.cpp",
    "src/unitOperations/UnitOperation.cpp",
@@ -16253,6 +16334,7 @@
    "src/unitOperations/membrane/massTransfer/Polarisation.cpp"
   ],
   "src/unitOperations/membrane/massTransfer/Polarisation.H": [
+   "src/propertyOps/FitParametersMembrane.cpp",
    "src/propertyOps/PolarisationIndex.cpp",
    "src/propertyOps/PoreTransportBench.cpp",
    "src/unitOperations/batch/BatchDiafilter.cpp",
@@ -16268,6 +16350,7 @@
    "src/unitOperations/membrane/massTransfer/MassTransferModel.cpp"
   ],
   "src/unitOperations/membrane/osmotic/OsmoticModel.H": [
+   "src/propertyOps/FitParametersMembrane.cpp",
    "src/propertyOps/PoreTransportBench.cpp",
    "src/unitOperations/UnitOperation.cpp",
    "src/unitOperations/batch/BatchDiafilter.cpp",
@@ -16341,6 +16424,7 @@
    "src/unitOperations/membrane/transport/TransportModel.cpp"
   ],
   "src/unitOperations/membrane/transport/TransportModel.H": [
+   "src/propertyOps/FitParametersMembrane.cpp",
    "src/propertyOps/PoreTransportBench.cpp",
    "src/unitOperations/batch/BatchDiafilter.cpp",
    "src/unitOperations/batch/BatchUnitOperation.cpp",

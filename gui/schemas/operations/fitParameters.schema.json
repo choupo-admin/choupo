@@ -56,7 +56,7 @@
         "kind": {
           "type": "string",
           "title": "Residual kind",
-          "description": "T_bubble (isobaric VLE: the bubble temperature at a fixed P, residual in K), P_bubble (isothermal VLE: the bubble PRESSURE at a fixed T, residual RELATIVE -- for a cubic's kij against high-pressure solubilities; since 2026-10-21, DEV.md 4c C123), isotherm (adsorption)."
+          "description": "T_bubble (isobaric VLE: the bubble temperature at a fixed P, residual in K), P_bubble (isothermal VLE: the bubble PRESSURE at a fixed T, residual RELATIVE -- for a cubic's kij against high-pressure solubilities; since 2026-10-21, DEV.md 4c C123), isotherm (adsorption). membrane (a membrane record's transport parameters against measured rejections / fluxes, one operating point per dataset row; since 2026-10-25, DEV.md 4c C149/C152)."
         },
         "T": {
           "type": "number",
@@ -85,7 +85,7 @@
         },
         "model": {
           "type": "string",
-          "title": "Model being fitted, e.g. langmuir"
+          "title": "Model being fitted, e.g. langmuir; for kind membrane the transport law: DSPM-DE, SDEM, solutionDiffusion, constantRejection"
         },
         "tRef": {
           "type": "number",
@@ -104,6 +104,56 @@
           },
           "title": "Inline data",
           "description": "Flat grid, as an alternative to `dataset`."
+        },
+        "membrane": {
+          "type": "string",
+          "title": "Base membrane record (kind membrane)",
+          "description": "The record whose values the free parameters replace and the rest hold fixed (data/standards/assets/ or the case's constant/assets/). A parameter `path` points into it (poreModel.poreRadius, poreModel.chargeDensity, poreModel.porosityOverThickness, poreModel.poreDielectric, A_w, permeabilities.<solute>) or into `transportParameters` (transportParameters.<path>)."
+        },
+        "rejection": {
+          "type": "string",
+          "enum": [
+            "intrinsic",
+            "observed"
+          ],
+          "title": "Which rejection the data are (kind membrane)",
+          "description": "intrinsic: R = 1 - c_p/c_wall (the data were corrected for concentration polarisation); observed: R = 1 - c_p/c_bulk. REQUIRED for kind membrane -- there is no default."
+        },
+        "weighting": {
+          "type": "string",
+          "title": "Residual weighting",
+          "description": "kind membrane: absolute (default; a rejection as a fraction, a flux relative) or sigma (the dataset's sigma_<column> columns). Other kinds have their own words."
+        },
+        "transportParameters": {
+          "type": "object",
+          "title": "The transport law's own block (kind membrane)",
+          "description": "Read exactly as the membrane units read it (poreSolver, hindrance, activity, rejection {} ...)."
+        },
+        "k_film": {
+          "type": "number",
+          "title": "Film mass-transfer coefficient (kind membrane)",
+          "unit": "m/s",
+          "description": "A constant film; a large value (10 m/s) for intrinsic data. Exclusive with massTransfer {}."
+        },
+        "massTransfer": {
+          "type": "object",
+          "title": "Film correlation (kind membrane)",
+          "description": "model, its coefficients, viscosity and density -- as the poreTransport bench reads it."
+        },
+        "polarisation": {
+          "type": "object",
+          "title": "Polarisation policy (kind membrane)",
+          "description": "suctionCorrection, ionCoupling -- the module's own policy block."
+        },
+        "diffusivity": {
+          "type": "number",
+          "title": "Neutral-solute diffusivity for a correlation film (kind membrane)",
+          "unit": "m2/s"
+        },
+        "osmotic": {
+          "type": "object",
+          "title": "Osmotic model (kind membrane, imposed-dP rows)",
+          "description": "model vanHoff (default) or another osmotic model, as the module reads it."
         }
       },
       "required": [
@@ -153,6 +203,16 @@
         "proposal": {
           "type": "string",
           "title": "Proposal record to write under data/local/"
+        },
+        "record": {
+          "type": "string",
+          "title": "Fitted record to write (kind membrane)",
+          "description": "constant/assets/<name>.dat of THIS case -- the one home the membrane registry reads; refused under data/standards/ and anywhere else. The record carries the fitted values (6 significant figures, the verdict taken at them), per-value provenance, the uncertainty and a fit {} block of fingerprints that a Process-mode run checks before it uses the record (DEV.md 4c C152)."
+        },
+        "name": {
+          "type": "string",
+          "title": "The written record's name (kind membrane)",
+          "description": "Defaults to the file stem; may not be the base record's own name."
         }
       }
     },

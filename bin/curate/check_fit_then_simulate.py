@@ -27,7 +27,8 @@ the engine (nothing is read from a stale run output):
       verdict word reaches the result JSON's `curation`, and the record it
       writes is BYTE-IDENTICAL to the committed one (a re-run of an unchanged
       case must not dirty the tree), its FITTED values are the published
-      fit.<i>.value to 6 significant figures, and no fitted value carries more
+      fit.<i>.value, which is ITSELF a 6-figure number (the verdict is taken at
+      the rounded values the record carries), and no fitted value carries more
       than 6.
   (c) THE ROUND TRIP: Process mode runs to exit 0, prints the `[fitted]` line
       naming the operation that wrote the record and its verdict, and the
@@ -218,6 +219,12 @@ def arm_b():
         pub = o["diagnostics"].get(f"fit.{i}.value")
         if pub is None or float(m.group(1)) != float(f"{pub:.6g}"):
             fail("b", f"`{key} {m.group(1)}` is not the published fit.{i}.value {pub} at 6 figures")
+        #  THE VERDICT IS TAKEN AT THE ROUNDED VALUES: what the fit publishes
+        #  (and scored) must itself be the 6-figure number, or the record a
+        #  Process run reads is not the fit that was judged
+        elif float(f"{pub:.6g}") != pub:
+            fail("b", f"the published fit.{i}.value {pub!r} is not rounded to 6 figures -- the"
+                      " verdict was taken at a value the record does not carry")
     return o
 
 
