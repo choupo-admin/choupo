@@ -41,6 +41,13 @@ License
                     trajectory, campaign Gantt, sweeps) is hidden -- it is
                     not an option of the open case, so a dead row would
                     only be noise.
+                    Below them, a UNITS tree (DEV.md 4c C156): every unit
+                    the run carries -- under its sector on a sectored plant,
+                    directly on a flat one -- with the plots the run
+                    published FOR it (its profile, its convergence trace),
+                    each opening the plot focused on that unit; a unit with
+                    nothing published stays greyed.  The rule is
+                    case/unitPlots.ts; this file only draws it.
     centre 1fr      The selected plot, full size.  Plotly components
                     are reused from gui/src/ui/plotting/ unchanged.
 
@@ -63,6 +70,7 @@ import {
   IconChevronDown,
   IconChevronRight,
   IconExternalLink,
+  IconHelp,
 } from "@tabler/icons-react";
 
 import { useStore } from "../state/store.js";
@@ -81,6 +89,13 @@ import { TxyPlot } from "./plotting/TxyPlot.js";
 import { CsvAutoPlot, dropPointColumn } from "./plotting/CsvAutoPlot.js";
 import { GanttPlot } from "./plotting/GanttPlot.js";
 import { hasCampaignSequence } from "../case/campaignLedger.js";
+import {
+  declaredMemberNames, unitPlotTree, unitSelection, UNIT_PLOT_LABEL,
+  type UnitNode, type UnitPlotKey,
+} from "../case/unitPlots.js";
+import { parseUnitBanners } from "../case/unitBanner.js";
+import { openGuide } from "../help/guideLinks.js";
+import { selectedUnitTypeIn, tabHelp } from "./tabChrome.js";
 
 import { useMeasuredBoxWidth } from "./methods/methodsChrome.js";
 import {
@@ -108,10 +123,6 @@ interface PlotItem {
   label: string;
   available: boolean;
   hint?: string;
-  /** The flattened unit this row is ABOUT, when the row is a unit operation
-   *  under its sector rather than a plant-wide view.  Selecting it opens the
-   *  same plot focused on that unit. */
-  unit?: string;
   /** Regime/driver-gated views vanish when absent (they belong to another
    *  binary or an outerDict, not to choices inside this case); case-gated
    *  views stay dimmed with the hint saying how to produce them. */
@@ -133,9 +144,10 @@ export function PlotsWorkspace() {
   const reduceMotion = useReducedMotion();
   const railBox = panelBoxProps(rail, !!reduceMotion);
   const result = useStore((s) => s.runResult);
+  const flowsheet = useStore((s) => s.caseFiles.flowsheet);
   const prefs = useStore((s) => s.displayPrefs);
   const [view, setView] = useState<PlotKey>("profile");
-  /** The unit a UNIT-SCOPED row selected, if any.  Kept beside `view` rather
+  /** The unit a row of the UNITS tree selected, if any.  Kept beside `view` rather
    *  than folded into it: the plot KIND and the unit it is about are two
    *  facts, and a compound key would have to be split to use either. */
   const [viewUnit, setViewUnit] = useState<string | undefined>(undefined);
@@ -154,36 +166,49 @@ export function PlotsWorkspace() {
       .sort();
   }, [result]);
 
-  //  One group per sector, its units as rows, in the order the engine
-  //  reports them (which is the flowsheet's own declared order, not
-  //  alphabetical -- a plant reads in the order it was built).
-  const sectorGroups = useMemo<PlotGroup[]>(() => {
-    const owns = result?.unitSectors;
-    if (!owns || Object.keys(owns).length === 0) return [];
-    const profiled = new Set((result?.profiles ?? []).map((p) => p.unit));
-    const bySector = new Map<string, PlotItem[]>();
-    for (const [unit, sector] of Object.entries(owns)) {
-      if (!bySector.has(sector)) bySector.set(sector, []);
-      //  The row's LABEL is the leaf name, because the sector heading already
-      //  carries the rest -- but everything the row DOES uses the full
-      //  qualified name, which is the unit's identity everywhere else.
-      const leaf = unit.startsWith(sector + ".")
-        ? unit.slice(sector.length + 1) : unit;
-      const has = profiled.has(unit);
-      bySector.get(sector)!.push({
-        key: "profile",
-        label: leaf,
-        available: has,
-        unit,
-        hint: has
-          ? `The 1-D internal state of ${unit} -- the profile this unit computed along its own coordinate (reactor axis, column stages, particle sizes).`
-          : `${unit} produced no 1-D profile in this run.  A profile comes from a unit that HAS an internal coordinate -- a pfr along its length, a distillation column across its stages, a crystalliser over its size distribution.  A mixer, a splitter or a flash is a point: it has KPIs (see the selection card on the flowsheet) and nothing to draw along.`,
-      });
-    }
-    return [...bySector.entries()].map(([sector, items]) => ({
-      label: sector, items,
-    }));
+  //  THE PLANT'S OWN SHAPE: every unit the run carries, and what the run
+  //  published for each (DEV.md 4c C156).
+  //
+  //  THE HIERARCHY IS READ, NEVER RECONSTRUCTED.  `unitSectors` is stamped by
+  //  the engine at the flatten seam, where the parent chain is actually in
+  //  hand.  Splitting `CONCENTRATION.Evap1` on its last dot would give the
+  //  same answer for every case in the corpus today and be silently wrong for
+  //  the first unit whose name carries a dot for another reason -- the name
+  //  identity the F2 contract bans.
+  //
+  //  A UNIT THE ENGINE DID NOT STAMP IS LISTED DIRECTLY, under no sector:
+  //  every unit of a flat case, and a sectored plant's own plant-level units.
+  //  An invented "root" section would be a claim about a structure that does
+  //  not exist.  case/unitPlots.ts holds the rule (which units, in which
+  //  order, and why `kpis` is the test of "the result carries it").
+  const unitTree = useMemo(() => unitPlotTree({
+    ...(result?.unitSectors !== undefined ? { unitSectors: result.unitSectors } : {}),
+    ...(result?.kpis !== undefined ? { kpis: result.kpis } : {}),
+    ...(result?.profiles !== undefined ? { profiles: result.profiles } : {}),
+    convergence: result?.convergence ?? [],
+    declaredMembers: declaredMemberNames(flowsheet),
+  }), [result, flowsheet]);
+
+  //  A unit's TYPE, for its theory: the type the run's own banner printed for
+  //  it (`>>> Unit [k]: <name> (type = <T>)`, read by case/unitBanner.ts, the
+  //  one reader), else the flowsheet's own lookup -- the one the canvas's F1
+  //  makes for a selected unit.
+  const bannerTypes = useMemo(() => {
+    const m = new Map<string, string>();
+    for (const b of parseUnitBanners(result?.log ?? ""))
+      if (!m.has(b.qualifiedName)) m.set(b.qualifiedName, b.type);
+    return m;
   }, [result]);
+  const unitTypeOf = (unit: string): string | null =>
+    bannerTypes.get(unit) ?? selectedUnitTypeIn(`unit:${unit}`, flowsheet);
+  //  F1 / "?" on a unit opens its theory EXACTLY as the flowsheet does: the
+  //  same destination function (tabChrome.tabHelp, context help resolved from
+  //  the unit's type), never a second table.
+  const openUnitTheory = (unit: string) => {
+    openGuide(tabHelp({
+      kind: "case", selectedUnitType: unitTypeOf(unit), activeWorkspace: null,
+    }).url);
+  };
 
   // Build the navigator from what the current run produced.  Items
   // whose data is absent stay in the tree but are dimmed/disabled.
@@ -274,28 +299,11 @@ export function PlotsWorkspace() {
             hint: "CSV written by the run itself -- an outerDict sweep (KPIs vs the swept parameter) or a props scan.  The same file runCase leaves in the case folder." },
         ],
       },
-      //  THE PLANT'S OWN SHAPE, one group per SECTOR, its units inside.
-      //
-      //  Everything above is a PLANT-WIDE view; a sectored plant also has
-      //  structure, and until now the only trace of it in this navigator was
-      //  a dotted prefix inside the profile plot's own dropdown -- so a
-      //  student looking for "what did the concentration section do?" had to
-      //  know which plot hid the answer.
-      //
-      //  THE HIERARCHY IS READ, NEVER RECONSTRUCTED.  `unitSectors` is
-      //  stamped by the engine at the flatten seam, where the parent chain is
-      //  actually in hand.  Splitting `CONCENTRATION.Evap1` on its last dot
-      //  would give the same answer for every case in the corpus today and be
-      //  silently wrong for the first unit whose name carries a dot for
-      //  another reason -- the name identity the F2 contract bans.
-      //
-      //  A FLAT CASE GETS NOTHING HERE.  No `unitSectors`, no groups, and the
-      //  navigator is exactly what it was: a flat case has no hierarchy, and
-      //  an invented "root" section would be a claim about a structure that
-      //  does not exist.
-      ...sectorGroups,
+      //  Everything above is a PLANT-WIDE view.  The plant's own shape --
+      //  its units, and under a sectored plant its sectors -- is the UNITS
+      //  tree drawn below these groups (`unitTree`).
     ];
-  }, [result, scanCsvs, sectorGroups]);
+  }, [result, scanCsvs]);
 
   // After a run lands, jump to the most informative GENUINE plot available.
   // Balances now live in the Streams-workspace summary band, so they are no
@@ -346,6 +354,121 @@ export function PlotsWorkspace() {
       if (next.has(g)) next.delete(g); else next.add(g);
       return next;
     });
+
+  const hasUnitTree = unitTree.length > 0;
+  const selectUnit = (node: UnitNode, key?: UnitPlotKey) => {
+    const sel = unitSelection(node, key);
+    if (!sel) return;
+    setView(sel.view);
+    setViewUnit(sel.unit);
+  };
+  const rowSelected = {
+    background: "light-dark(var(--mantine-color-gray-2), var(--mantine-color-dark-5))",
+    borderLeft: "2px solid var(--mantine-color-accent-3)",
+  };
+  //  ONE unit of the tree: its row (chevron, name, theory "?") and, beneath,
+  //  the plots the run published for it.  A render function rather than a
+  //  component, so a re-render does not remount the rows.
+  const renderUnit = (node: UnitNode, depth: number) => {
+    const k = `unit:${node.unit}`;
+    const empty = node.plots.length === 0;
+    const isCollapsed = collapsed.has(k);
+    const focused = viewUnit === node.unit;
+    const type = unitTypeOf(node.unit);
+    const pad = 4 + depth * 14;
+    return (
+      <Stack key={k} gap={0}>
+        <Tooltip
+          label={empty
+            ? `The run published no profile and no convergence trace for ${node.unit}.  A profile comes from a unit with an internal coordinate (a pfr along its length, a column across its stages); a convergence trace from a unit that iterates its own solve.  Its KPIs are on the flowsheet's selection card.`
+            : `${node.unit}${type ? ` (${type})` : ""}: the plots the run published for this unit.  Press F1 or "?" for its theory.`}
+          openDelay={400} position="right" withArrow multiline w={260}
+        >
+          <Group
+            gap={4}
+            wrap="nowrap"
+            tabIndex={0}
+            data-unit-row={node.unit}
+            data-unit-empty={empty ? "" : undefined}
+            style={{
+              cursor: empty ? "default" : "pointer",
+              padding: `3px 4px 3px ${pad}px`,
+              borderLeft: "2px solid transparent",
+              ...(focused && empty === false ? { borderLeft: rowSelected.borderLeft } : {}),
+            }}
+            onClick={() => {
+              if (empty) return;
+              if (isCollapsed) toggleGroup(k);
+              selectUnit(node);
+            }}
+            onKeyDown={(e) => {
+              //  F1 here is the unit's theory, and the shell's own F1 (the
+              //  workspace's help) must not ALSO fire: one key, one answer.
+              if (e.key === "F1") {
+                e.preventDefault();
+                e.stopPropagation();
+                openUnitTheory(node.unit);
+              } else if (e.key === "Enter" || e.key === " ") {
+                e.preventDefault();
+                selectUnit(node);
+              }
+            }}
+          >
+            {empty
+              ? <Box w={18} style={{ flex: "0 0 auto" }} />
+              : (
+                <ActionIcon variant="transparent" size="xs" c="dimmed"
+                  aria-label={isCollapsed ? `Expand ${node.label}` : `Collapse ${node.label}`}
+                  onClick={(e) => { e.stopPropagation(); toggleGroup(k); }}>
+                  {isCollapsed
+                    ? <IconChevronRight size={12} />
+                    : <IconChevronDown size={12} />}
+                </ActionIcon>
+              )}
+            {/* WRAPS rather than truncates: "nothing published" is the fact
+                the greyed row exists to state, and a narrow rail cut it. */}
+            <Text size="xs" fw={500}
+              c={empty ? "dimmed" : "var(--mantine-color-text)"}
+              style={{ flex: 1, minWidth: 0, opacity: empty ? 0.7 : 1, overflowWrap: "anywhere" }}>
+              {node.label}
+              {empty && (
+                <Text span size="xs" c="dimmed" fs="italic"> · nothing published</Text>
+              )}
+            </Text>
+            <Tooltip label={`Theory of ${node.unit}${type ? ` (${type})` : ""}  ·  F1`}
+              openDelay={300} withArrow position="right">
+              <ActionIcon variant="subtle" size="xs" c="dimmed"
+                aria-label={`Theory of ${node.unit}`}
+                data-unit-theory={node.unit}
+                onClick={(e) => { e.stopPropagation(); openUnitTheory(node.unit); }}>
+                <IconHelp size={12} />
+              </ActionIcon>
+            </Tooltip>
+          </Group>
+        </Tooltip>
+        {!empty && !isCollapsed && node.plots.map((leaf) => {
+          const isSelected = focused && view === leaf.key;
+          return (
+            <Group
+              key={leaf.key}
+              gap={4}
+              wrap="nowrap"
+              data-unit-plot={`${node.unit}:${leaf.key}`}
+              style={{
+                cursor: "pointer",
+                padding: `3px 6px 3px ${pad + 22}px`,
+                background: isSelected ? rowSelected.background : undefined,
+                borderLeft: isSelected ? rowSelected.borderLeft : "2px solid transparent",
+              }}
+              onClick={() => selectUnit(node, leaf.key)}
+            >
+              <Text size="xs" c="var(--mantine-color-text)">{leaf.label}</Text>
+            </Group>
+          );
+        })}
+      </Stack>
+    );
+  };
 
   if (!result) {
     return (
@@ -431,7 +554,8 @@ export function PlotsWorkspace() {
         ? <ProfilePlot profiles={result.profiles}
             {...(viewUnit !== undefined ? { unit: viewUnit } : {})} />
         : null;
-      case "convergence": return <ConvergencePlot curves={result.convergence} />;
+      case "convergence": return <ConvergencePlot curves={result.convergence}
+        {...(viewUnit !== undefined ? { unit: viewUnit } : {})} />;
       case "scanCsv": {
         const file = scanFile && scanCsvs.includes(scanFile) ? scanFile : scanCsvs[0];
         const body = file ? result.csvFiles?.[file] : undefined;
@@ -523,7 +647,7 @@ export function PlotsWorkspace() {
                   </Group>
                   {!isCollapsed && g.items.map((it) => {
                     const isSelected = view === it.key && it.available
-                      && viewUnit === it.unit;
+                      && viewUnit === undefined;
                     return (
                       <Tooltip
                         key={it.key}
@@ -555,10 +679,10 @@ export function PlotsWorkspace() {
                             if (!it.available) return;
                             setView(it.key);
                             //  A plant-wide row CLEARS the unit focus; a
-                            //  unit row sets it.  Leaving a stale unit behind
-                            //  would draw the last sector's unit under a
-                            //  plant-wide heading.
-                            setViewUnit(it.unit);
+                            //  row of the units tree sets it.  Leaving a stale
+                            //  unit behind would draw the last unit's curve
+                            //  under a plant-wide heading.
+                            setViewUnit(undefined);
                           }}
                         >
                           <Text size="xs" c="var(--mantine-color-text)">
@@ -571,6 +695,40 @@ export function PlotsWorkspace() {
                 </Stack>
               );
             })}
+            {hasUnitTree && (
+              <Stack gap={0} mt={10} data-units-tree="">
+                <Text size="xs" c="dimmed" tt="uppercase" mb={6}
+                  style={{ letterSpacing: 0.5, fontWeight: 600, padding: "0 4px" }}>
+                  Units
+                </Text>
+                {unitTree.map((entry) => {
+                  if (entry.kind === "unit") return renderUnit(entry.node, 0);
+                  const g = entry.group;
+                  const k = `sector:${g.sector}`;
+                  const isCollapsed = collapsed.has(k);
+                  return (
+                    <Stack key={k} gap={0} mb={2}>
+                      <Group gap={4} wrap="nowrap"
+                        style={{ cursor: "pointer", padding: "4px 4px 2px" }}
+                        onClick={() => toggleGroup(k)}>
+                        <ActionIcon variant="transparent" size="xs" c="dimmed"
+                          aria-label={isCollapsed ? `Expand ${g.sector}` : `Collapse ${g.sector}`}
+                          onClick={(e) => { e.stopPropagation(); toggleGroup(k); }}>
+                          {isCollapsed
+                            ? <IconChevronRight size={12} />
+                            : <IconChevronDown size={12} />}
+                        </ActionIcon>
+                        <Text size="xs" fw={600} c="accent" tt="uppercase"
+                          style={{ letterSpacing: 0.4 }}>
+                          {g.sector}
+                        </Text>
+                      </Group>
+                      {!isCollapsed && g.units.map((n) => renderUnit(n, 1))}
+                    </Stack>
+                  );
+                })}
+              </Stack>
+            )}
           </Stack>
         </ScrollArea>
       </Box>
@@ -604,9 +762,11 @@ export function PlotsWorkspace() {
         >
           <Text size="sm" c="dimmed" tt="uppercase" fw={600}
             style={{ letterSpacing: 0.5 }}>
-            {viewUnit ?? (groups.flatMap((g) => g.items)
-              .find((it) => it.key === view && it.unit === undefined)?.label
-              ?? view)}
+            {viewUnit !== undefined
+              ? `${viewUnit} · ${(UNIT_PLOT_LABEL as Record<string, string>)[view] ?? view}`
+              : (groups.flatMap((g) => g.items)
+                  .find((it) => it.key === view)?.label
+                  ?? view)}
           </Text>
           <Tooltip
             label="Open this plot as a high-resolution PNG in a separate browser tab"
