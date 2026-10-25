@@ -1694,9 +1694,10 @@ accepts today, and that is a policy call.
 > vocabulary moved verbatim to `src/result/EnergyItems.H` (layering).  R27
 > PARTLY -- the engine refuses a bad plan; the lesson spoke of the old
 > silent answer; gate `check_sequential_plan` runs the three refusals
-> through the binary.  Validation on main + C151 (the touched cases, the
-> four new gates and the changed ones, `--gui`) RUNNING at this commit;
-> the generated artefacts pass.
+> through the binary.  Validated on main + C151: the 29 touched cases, the
+> four new gates and the changed ones, check_std_includes,
+> check_compile_clean, check_wasm_dialect, `--gui` 35/0, the generated
+> artefacts.
 > PROPOSALS for Vitor (not built, physics or pedagogy): column ports and
 > reactor duties in the pinch population; a variable-L (Poppe) tower;
 > reactiveFlash growing its active set instead of refusing; a two-phase
