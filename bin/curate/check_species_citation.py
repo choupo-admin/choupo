@@ -62,7 +62,11 @@ PINNED = SPECIES_WITHOUT_CITATION
 
 #  Blocks that carry their OWN source for their OWN datum -- excluded from
 #  the thermochemistry citation search (see the note in main()).
-OTHER_SOURCED_BLOCKS = re.compile(r"\nvolumetric\s*\{.*?\n\}", re.S)
+#  `transport` joined 2026-10-25 (DEV.md 4c C157): the D0 blocks of the
+#  water-treatment ions cite the PHREEQC database for D0 alone, and three of
+#  those records (FeII, MnII, NH4) carry PINNED uncited thermochemistry --
+#  the D0's source would otherwise have read as a citation of their hfAq.
+OTHER_SOURCED_BLOCKS = re.compile(r"\n(?:volumetric|transport)\s*\{.*?\n\}", re.S)
 def main() -> int:
     missing, seen, nclaim = [], set(), 0
     if not SPECIES.is_dir():

@@ -38,3 +38,28 @@ cpAvg298
     source "Criss & Cobble, JACS 86 (1964) 5390, Table II";
 }
 }
+
+transport
+{
+    //  D0 ONLY (DEV.md 4c C157).  No `radius` is curated for this ion: the
+    //  tier's radius is the HYDRATED radius of Nightingale, J. Phys. Chem. 63
+    //  (1959) 1381 -- the convention of the eight master ions and of every
+    //  DSPM-DE pore fitted against them -- and that table was not read back
+    //  in the session that wrote this block.  A Stokes radius computed from
+    //  D0 would be a different convention under the same key, so none is
+    //  written: DSPM-DE still refuses this ion by name, while the multi-ionic
+    //  polarisation film and the electrodialysis units read D0 alone.
+    D0 { value 8.46e-10; unit m2/s; }
+    provenance
+    {
+        source  "USGS PHREEQC database phreeqc.dat (usgs-coupled/phreeqc3, branch master, fetched 2026-10-25, sha256 5b80d45c989cd1db7aab485e198321ba550d5902be8097c8be26d85ba03da278), SOLUTION_SPECIES `PO4-3 + 2 H+ = H2PO4-` (line 339), `-dw` line 344: the 25 C tracer diffusion coefficient Dw is its first field; the further fields (temperature and ionic-strength dependence) are not used.  The database names no per-value reference on this line; its file-level references are Appelo, Parkhurst and Post, Geochim. Cosmochim. Acta 125 (2014) 49-67 (its ref. 1) and Appelo, Cem. Concr. Res. 101 (2017) 102-113 (its ref. 3)";
+        licence publicDomain;
+        D0
+        {
+            origin        literature;
+            method        "read from the cited database line by a parse that checks the species equation above it (Dw at 25 C, infinite dilution)";
+            reviewStatus  interim;
+            notes         "Transcribed by machine from the cited public-domain database, not read back against a primary measurement of this ion's limiting conductance; the Stokes-Einstein correction to the run temperature is applied by the consumer (thermo/transport/StokesEinstein.H).";
+        }
+    }
+}

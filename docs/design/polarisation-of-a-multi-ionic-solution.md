@@ -210,9 +210,11 @@ run" has not shown its arm fires, and the docstring says so.
   non-dilute solutions (outside the model).
 * DSPM-DE and the batch vessel under the coupled film are wired and not
   exercised by any case.
-* The standards species records of NO₃⁻ and NH₄⁺ still carry no `D0`; the
-  witness carries case-local copies with a cited one, not promoted (a
-  curation act).  Na.dat's `D0` in the standards carries no citation of its
+* The standards species records of NO₃⁻ and NH₄⁺ carried no `D0` when this
+  was written; the witness carries case-local copies with a cited one, not
+  promoted (a curation act).  The standards records carry one since DEV.md
+  4c C157, read from the public-domain PHREEQC `phreeqc.dat`; the sealed
+  witness still runs from its own copies.  Na.dat's `D0` in the standards carries no citation of its
   own (found, not fixed).
 * `--record-append` of `Gamma_<solute>_avg` on the 13 pre-existing membrane
   goldens (a new KPI on every membrane case, published and not pinned there);

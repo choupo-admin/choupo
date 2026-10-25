@@ -3,7 +3,10 @@
   addition: the transport block the membrane14 witness needs.  The
   polarisation model of Geraldes & Afonso (2007) prices the film
   coefficient of every ion on that ion's OWN diffusivity and the
-  migration term on the same D, and the standard record carries no D0.
+  migration term on the same D, and the standard record carried no D0
+  when this copy was written (it carries one since DEV.md 4c C157, read
+  from the public-domain PHREEQC phreeqc.dat; this case runs from its
+  own sealed records and does not read it).
   The record body below is the catalogue's, verbatim; the block at the
   end is this case's addition, cited, and is NOT promoted to the
   standards (a curation act reserved to a human review).
