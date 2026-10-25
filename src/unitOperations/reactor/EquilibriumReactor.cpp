@@ -29,6 +29,9 @@ License
 #include "EquilibriumReactor.H"
 #include "PureSolidPhase.H"
 #include "TemperatureApproach.H"
+#include "ReactorOutlet.H"
+#include "thermo/equationOfState/EquationOfState.H"
+#include "unitOperations/flash/StreamEquilibrium.H"   // the ONE resolve-and-price home
 #include "thermo/reaction/Reaction.H"
 #include "core/Advisory.H"
 #include "core/Dimensions.H"
@@ -310,6 +313,17 @@ int EquilibriumReactor::solve(const DictPtr&       dict,
     //  equilibrium is a constrained minimum of a convex G, so a_s > 1 in the
     //  solid-free answer means depositing s lowers G, and n_s > 0 follows).
     std::vector<bool> present(nL, false);
+    //  THE FUGACITY CORRECTION (C131 reactors review, 2026-10-25).  The
+    //  equilibrium condition is the REAL-gas one, Kp_j = PROD_i (y_i phi_i
+    //  P/P0)^nu_ij (Smith, Van Ness & Abbott ch. 13), and ln Q_j gains
+    //  SUM_i nu_ij ln phi_i -- the term the gibbsReactor has folded in by
+    //  successive substitution since its fugacity loop.  This unit left it
+    //  out, so under a cubic EoS the two reactors parted on the same feed
+    //  (N2 + 3 H2 at 700 K, 200 bar, SRK: y_NH3 0.3001 here, 0.3239 in the
+    //  gibbsReactor) at exit 0.  Zero for an ideal-gas package, where nothing
+    //  below runs and every number is the one it always was.
+    sVector lnPhiSum(R, 0.0);
+    const bool nonIdealGas = thermo.hasEos() && !thermo.eos().isIdeal();
 
     //  Residual at x = ln n (logged species): g (ln units) then h (/F_in).
     struct State { sVector nLv; scalar ntot = 0.0; sVector F; bool finite = true; };
@@ -333,7 +347,7 @@ int EquilibriumReactor::solve(const DictPtr&       dict,
                 if (nuL[j][a] != 0.0)
                     q += solidAt[a] ? (present[a] ? 0.0 : nuL[j][a] * x[a])
                                     : nuL[j][a] * (x[a] - lnt + lnPP);
-            s.F[j] = q - lnKp[j];
+            s.F[j] = q + lnPhiSum[j] - lnKp[j];
         }
         for (std::size_t k = 0; k < nW; ++k)
         {
@@ -666,7 +680,42 @@ int EquilibriumReactor::solve(const DictPtr&       dict,
         solidFreeIters = s0.iters;
         return s1;
     };
-    Solved sol = solveExtents();
+    //  The fugacity loop: phi at the solved composition, folded into each
+    //  ln Q_j, re-solved until SUM nu ln phi stops moving (1e-10).  One
+    //  pass, and no evaluation of phi at all, on an ideal-gas package.
+    int phiPasses = 0;
+    auto solveWithPhi = [&]() -> Solved
+    {
+        Solved s = solveExtents();
+        if (!nonIdealGas) return s;
+        for (int pass = 0; pass < 60; ++pass)
+        {
+            scalar Nf = 0.0;
+            for (std::size_t i = 0; i < n; ++i) if (!isSolid[i]) Nf += s.niCur[i];
+            sVector y(n, 0.0);
+            if (Nf > 0.0)
+                for (std::size_t i = 0; i < n; ++i)
+                    if (!isSolid[i]) y[i] = std::max(s.niCur[i], 0.0) / Nf;
+            const sVector phi = thermo.eos().phi(T, P, y);
+            scalar dMax = 0.0;
+            sVector next(R, 0.0);
+            for (std::size_t j = 0; j < R; ++j)
+            {
+                for (std::size_t i = 0; i < n; ++i)
+                    if (nu[j][i] != 0.0 && !isSolid[i])
+                        next[j] += nu[j][i] * std::log(std::max(phi[i], 1.0e-300));
+                dMax = std::max(dMax, std::abs(next[j] - lnPhiSum[j]));
+            }
+            lnPhiSum = next;
+            ++phiPasses;
+            if (dMax < 1.0e-10) return s;
+            s = solveExtents();
+        }
+        throw std::runtime_error("equilibriumReactor: the fugacity-coefficient"
+            " loop did not settle in 60 passes -- the equilibrium under this"
+            " equation of state is not published.");
+    };
+    Solved sol = solveWithPhi();
 
     // ---- The direction of each reaction's approach, assigned HERE --------
     //  Read from the probe above: the extent a reaction reaches at the
@@ -766,7 +815,7 @@ int EquilibriumReactor::solve(const DictPtr&       dict,
             AdvisoryLog::instance().add("model", sgn.determined ? "info" : "warning",
                                         locus, m.str());
         }
-        sol = solveExtents();
+        sol = solveWithPhi();
     }
     const sVector& xi    = sol.xi;
     const scalar   gNorm = sol.gNorm;
@@ -801,14 +850,85 @@ int EquilibriumReactor::solve(const DictPtr&       dict,
     sVector zout(n, 0.0);
     if (F_out > 0.0) for (std::size_t i = 0; i < n; ++i) zout[i] = nOut[i] / F_out;
 
-    // ---- Isothermal duty: Σ_j xi_j dHrxn_j (elements datum) -------------
-    scalar Q_W = 0.0;
-    for (std::size_t j = 0; j < R; ++j) Q_W += xi[j] * 1000.0 * dHrxn[j];
+    const std::string unitName = !dict->name().empty() ? dict->name()
+        : dict->lookupWordOrDefault("name", "equilibriumReactor");
 
-    // ---- Outlet stream (gas-phase effluent; a downstream flash re-splits) --
+    // ---- A LIQUID AT THE ANSWER IS OUTSIDE THIS UNIT (C131, 2026-10-25) ---
+    //  The equilibrium above is the GAS's: every ln Q_j is written on the
+    //  vapour's mole fractions.  A condensable left at y_i P > Psat_i(T)
+    //  (below its Tc) is supersaturated -- the gas cannot hold it, a liquid
+    //  forms, and the reaction equilibrium of the two phases is not this one.
+    //  It used to be published all the same, at vf = 1, at exit 0 (measured:
+    //  equil01's 1 CH4 : 3 H2O at 350 K, 1 bar, water at y P = 0.75 bar
+    //  against Psat 0.42 bar).  Refused, naming the reactor that carries a
+    //  liquid -- the gibbsReactor's 2026-10-25 R07 refusal, mirrored.
+    {
+        std::string super;
+        for (std::size_t i = 0; i < n; ++i)
+        {
+            if (isSolid[i] || !(zout[i] > 0.0)) continue;
+            const Component& c = thermo.comp(i);
+            if (!c.hasVaporPressure() || !(T < c.Tc())) continue;
+            const scalar Psat = thermo.Psat(i, T);
+            const scalar yP   = zout[i] * P;
+            if (yP > Psat * (1.0 + 1.0e-6))
+            {
+                std::ostringstream m;
+                m << std::setprecision(6) << c.name() << " (y P = " << yP
+                  << " Pa > Psat = " << Psat << " Pa)";
+                super += (super.empty() ? "" : ", ") + m.str();
+            }
+        }
+        if (!super.empty())
+            throw std::runtime_error("equilibriumReactor: at T = "
+                + std::to_string(T) + " K the gas-phase equilibrium leaves "
+                + super + " supersaturated -- a liquid forms there, and the"
+                " equilibrium of the declared reactions over a gas AND a liquid is"
+                " not the gas-only one this unit solves, so no answer is"
+                " published.  Use a `gibbsReactor` with `model directMin;` (a"
+                " multi-component liquid), or operate where the gas holds every"
+                " product.");
+    }
+
+    // ---- The duty: H_out - H_in on the package's own surface ------------
+    //  (C131 reactors review, 2026-10-25.)  It used to be SUM_j xi_j
+    //  dH_rxn_j(T) on the ideal-gas rung: the heat of reaction at T ALONE.
+    //  A feed entering at another temperature then had its sensible heat left
+    //  out (equil01 fed at 700 K to the 1100 K reformer: 59.64 kW declared,
+    //  80.43 kW by the energy report, 134.86 %), and under a cubic EoS the
+    //  departure function was too (N2 + 3 H2 at 200 bar, SRK: 102.78 %).  The
+    //  conversion reactor's posture since 2026-09-25 (ConversionReactor.H):
+    //  the inlet on its own resolved state, the outlet at its OWN equilibrium
+    //  (reactorOutlet::outletState, C72), each priced by the rule the energy
+    //  report applies to the same stream (flashState::priceState), the
+    //  deposited solid on the solid rung (priceSolids).  dH_rxn_j keeps its
+    //  rung for the approach direction above, where its sign is what is read.
+    const bool   pinned_in = feedDict->lookupScalarOrDefault("phasePinned", 0.0) > 0.5;
+    const scalar vf_in = !feedDict->found("vf") ? 1.0
+        : flashState::resolvedInletVaporFraction(feedDict, T_feed, P, z, thermo,
+                                                 "equilibriumReactor inlet");
+    const reactorOutlet::OutletState outSt = reactorOutlet::outletState(
+        T, P, zout, pinned_in, vf_in, thermo, "equilibriumReactor", unitName);
+    scalar Q_W = 0.0;
+    haveDuty = true;
+    try
+    {
+        std::vector<std::string> notes;
+        const scalar H_in  = flashState::priceState(T_feed, P, z, F_in, pinned_in,
+                                 vf_in, thermo, "equilibriumReactor '" + unitName
+                                 + "' inlet", &notes);
+        scalar H_out = flashState::priceState(T, P, zout, F_out, false, outSt.vf,
+                                 thermo, "equilibriumReactor '" + unitName
+                                 + "' outlet", &notes);
+        H_out += flashState::priceSolids(nSolidOut, T, thermo);
+        Q_W = (H_out - H_in) * 1000.0;                // kW -> W
+    }
+    catch (const std::exception&) { haveDuty = false; }
+
+    // ---- Outlet stream (at its own equilibrium; a downstream flash re-splits)
     produced_.clear();
     ProcessStream out;
-    out.name = "out"; out.F = F_out; out.T = T; out.P = P; out.z = zout; out.vf = 1.0;
+    out.name = "out"; out.F = F_out; out.T = T; out.P = P; out.z = zout; out.vf = outSt.vf;
     //  A deposited pure solid leaves in the SAME outlet, as its solid phase
     //  (the gibbsReactor's convention, C14): `F`/`z` stay the fluid, `s[]`
     //  carries the deposit, which the energy report prices on the solid rung
@@ -955,6 +1075,16 @@ int EquilibriumReactor::solve(const DictPtr&       dict,
             if (anyApproach)   // only then does the evaluation T differ from T
                 std::cout << "   (Kp at " << std::setprecision(2) << T_Kp[j] << " K)";
             std::cout << "\n";
+        }
+        if (nonIdealGas)
+        {
+            std::cout << "  vapour '" << thermo.eos().modelName() << "': each ln Q_j"
+                         " carries SUM_i nu_ij ln phi_i (" << phiPasses
+                      << " fugacity pass(es)):";
+            for (std::size_t j = 0; j < R; ++j)
+                std::cout << "  " << rname[j] << " PROD phi^nu = "
+                          << std::setprecision(6) << std::exp(lnPhiSum[j]);
+            std::cout << "\n" << std::fixed;
         }
         if (haveDuty)
             std::cout << "  duty Q = " << std::setprecision(2) << (Q_W / 1000.0) << " kW"

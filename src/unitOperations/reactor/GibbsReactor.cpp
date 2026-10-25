@@ -655,6 +655,26 @@ int GibbsReactor::solve(const DictPtr& dict,
 
     if (eq.twoPhase && Nl > 0.0)
     {
+        //  A CONDENSATE NEEDS A PIPE (C131 reactors review, 2026-10-25).  The
+        //  liquid leaves as a SECOND produced stream, bound positionally to
+        //  the second declared outlet.  The flowsheet refuses a unit that
+        //  produces FEWER streams than it declares, and binds only as many as
+        //  it declares -- so a case declaring ONE outlet lost the whole liquid
+        //  at exit 0 (measured: MTBE synthesis at 343 K, 20 bar under
+        //  `directMin`, 99.6 % of the material condensed and the plant mass
+        //  balance closed at 0.254 %).  Refuse, naming the liquid formed.
+        if (dict->found("outputs") && dict->lookupWordList("outputs").size() < 2)
+        {
+            std::ostringstream m;
+            m << "GibbsReactor: a LIQUID formed at the equilibrium ("
+              << std::setprecision(6) << (Nl / 1000.0) * 3600.0
+              << " kmol/h, " << (100.0 * Nl / (Ng + Nl)) << " % of the outlet)"
+                 " and this unit declares ONE outlet, so the condensate has no"
+                 " stream to leave by -- it would be dropped and matter destroyed."
+                 "  Declare `outputs ( <gas> <condensate> );` (the second name"
+                 " receives the liquid), or operate where no liquid forms.";
+            throw std::runtime_error(m.str());
+        }
         ProcessStream liqOut;
         liqOut.name = "condensate";
         liqOut.F = Nl / 1000.0;

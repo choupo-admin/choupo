@@ -69,7 +69,7 @@ describe("the lesson", () => {
 
   it("cites the engine where it prices the reaction heat", () => {
     expect(all(5)).toContain("ReactionHeat.cpp:40");
-    expect(all(5)).toContain("PFR.cpp:462");
+    expect(all(5)).toContain("PFR.cpp:464");
   });
 
   it("names its three limits", () => {

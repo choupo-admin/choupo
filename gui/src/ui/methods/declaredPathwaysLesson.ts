@@ -63,13 +63,13 @@ export const PATHWAYS_STEPS: readonly LessonStep[] = [
       + "list of names from constant/reactions, each a stoichiometry.  The "
       + "outlet can move only along those reactions, n = n0 + Σ ν ξ (the "
       + "engine writes it as the conservation laws the declared set leaves "
-      + "intact, EquilibriumReactor.cpp:276–288), and each declared reaction "
+      + "intact, EquilibriumReactor.cpp:279–291), and each declared reaction "
       + "is driven to its own equilibrium constant, the residual ln Q − ln K "
-      + "(EquilibriumReactor.cpp:333–336), with every K from the same "
+      + "(EquilibriumReactor.cpp:347–350), with every K from the same "
       + "formation data the Gibbs reactor minimises over "
       + "(`pureSolidPhase::reactionEquilibrium`, which is "
       + "`Reaction::equilibrium` itself for a reaction with no pure solid, "
-      + "EquilibriumReactor.cpp:116).  Same "
+      + "EquilibriumReactor.cpp:119).  Same "
       + "thermodynamics, same data, two different questions.",
     formula: String.raw`\min_{n \ge 0}\; G(T,P,n) \quad \text{subject to} \quad A\,n = b
 \qquad\text{versus}\qquad
@@ -97,7 +97,7 @@ n = n_0 + \nu^{\top}\xi, \quad \sum_i \nu_{ji}\,\ln\frac{y_i\,P}{P^{\circ}} = \l
         + "reaction: how far each has run.  Negative when a reaction runs "
         + "backward from the feed.  The engine solves for the LOGARITHMS of "
         + "the outlet amounts and recovers ξ from them "
-        + "(EquilibriumReactor.cpp:532–576), so a species left at 10⁻¹⁴ of the "
+        + "(EquilibriumReactor.cpp:546–590), so a species left at 10⁻¹⁴ of the "
         + "feed is resolved, not lost to a subtraction", unit: "mol/s" },
       { sym: "\\nu_{ji}", means: "the entry of ν in row j and column i: the "
         + "stoichiometric coefficient of species i in reaction j (rows are "
@@ -195,9 +195,9 @@ n = n_0 + \nu^{\top}\xi, \quad \sum_i \nu_{ji}\,\ln\frac{y_i\,P}{P^{\circ}} = \l
     body: "A real bed does not reach even the equilibrium of its OWN "
       + "pathways.  `temperatureApproach` declares how far it falls short, as "
       + "a MAGNITUDE — a negative value is refused by name "
-      + "(EquilibriumReactor.cpp:159 and :170) — and the ENGINE assigns the "
+      + "(EquilibriumReactor.cpp:162 and :173) — and the ENGINE assigns the "
       + "direction to each declared reaction separately "
-      + "(EquilibriumReactor.cpp:671–769).  It first solves the true "
+      + "(EquilibriumReactor.cpp:720–818).  It first solves the true "
       + "equilibrium at the physical T, reads which way each reaction RUNS "
       + "from this feed, and multiplies that direction by the reaction's "
       + "enthalpy as written: exothermic AS IT RUNS, Kp is taken at T + ΔT; "
@@ -209,7 +209,7 @@ n = n_0 + \nu^{\top}\xi, \quad \sum_i \nu_{ji}\,\ln\frac{y_i\,P}{P^{\circ}} = \l
       + "running forward, is taken above it: with 20 K the conversion falls "
       + "from 0.610 to 0.442.  The reactor itself stays at T; only each K "
       + "moves, and each reaction's evaluation temperature is published as "
-      + "`T_Kp_<name>` (EquilibriumReactor.cpp:935).",
+      + "`T_Kp_<name>` (EquilibriumReactor.cpp:1055).",
     formula: String.raw`K_j \;\to\; K_j\!\left(T + s_j\,\lvert\Delta T\rvert\right),
 \qquad
 s_j = \begin{cases} +1 & \xi_j^{\,0}\,\Delta H_j < 0 \\ -1 & \xi_j^{\,0}\,\Delta H_j > 0 \end{cases}`,
@@ -285,7 +285,7 @@ export const PATHWAYS_LIMITS: readonly LessonLimit[] = [
       + "multiple of an extent, and it held every species above 10⁻¹² of the "
       + "feed — it stalled and refused rather than print a wrong equilibrium.  "
       + "It now solves for the logarithms of the amounts "
-      + "(EquilibriumReactor.cpp:175–201), where 10⁻¹⁴, or 10⁻³⁰⁰, is an "
+      + "(EquilibriumReactor.cpp:178–204), where 10⁻¹⁴, or 10⁻³⁰⁰, is an "
       + "ordinary number.",
   },
   {
@@ -298,7 +298,7 @@ export const PATHWAYS_LIMITS: readonly LessonLimit[] = [
       + "at ACTIVITY ONE — no mole fraction, no mixing term — and enters "
       + "each equilibrium constant only through its pure-solid standard "
       + "Gibbs energy (PureSolidPhase.cpp:68–94; the residual that leaves it "
-      + "out of ln Q, EquilibriumReactor.cpp:333–336).  With every pathway "
+      + "out of ln Q, EquilibriumReactor.cpp:347–350).  With every pathway "
       + "open the Gibbs reactor DEPOSITS it: 0.217 mol of graphite per mol "
       + "of methane fed, 21.7 % of the carbon.  The complete set — reforming, "
       + "the shift and methane cracking, CH₄ → C + 2 H₂ (6 − 3 = 3) — "
@@ -309,14 +309,14 @@ export const PATHWAYS_LIMITS: readonly LessonLimit[] = [
       + "decides whether the solid appears exactly as the Gibbs reactor does: "
       + "it first solves with no solid, reads the carbon activity a_C that "
       + "gas leaves, and deposits graphite only if a_C > 1 "
-      + "(EquilibriumReactor.cpp:584–669).  Here a_C = exp[(μ_C − g_C)/RT], "
+      + "(EquilibriumReactor.cpp:598–718).  Here a_C = exp[(μ_C − g_C)/RT], "
       + "where μ_C is the chemical potential of carbon that the equilibrated "
       + "gas implies, g_C the molar Gibbs energy of pure graphite, R the gas "
       + "constant and T the reactor temperature: above one, depositing "
       + "carbon LOWERS the Gibbs energy.  Now leave Boudouard and cracking OFF the "
       + "list, keeping reforming and the shift, and no graphite forms — but "
       + "the gas it leaves has a_C = 1.580, published as "
-      + "`activity_graphite` (EquilibriumReactor.cpp:849–883).  Recompute it "
+      + "`activity_graphite` (EquilibriumReactor.cpp:969–1003).  Recompute it "
       + "by hand by either route the list excludes: a_C = K_crack · p_CH₄ / "
       + "p_H₂², or a_C = K_boud · p_CO² / p_CO₂, where each p is the "
       + "outlet mole fraction times P / 1 bar and each K is that reaction's "

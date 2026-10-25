@@ -102,6 +102,14 @@ reactions ( r1 r2 ... );       // MULTI (same grammar as batch/dynamicCSTR)
 ```
 Reversible: add `reversible true;` to a reaction entry — detailed balance
 `k_rev = k_fwd / K_eq(T)`.  Duty from the enthalpy balance (formation datum).
+Detailed balance is REFUSED on a reaction that changes the number of moles
+(Σν ≠ 0): the engine's Kc is the ideal-gas one and these reactors' concentrations
+are liquid-basis, so the two meet only when Σν = 0 (C131 reactors review,
+2026-10-25) -- give the reverse leg its own `A_rev`/`Ea_rev`, or use an
+`equilibriumReactor`/`gibbsReactor`.  An AUTOCATALYTIC (or negative-order) law
+on a one-reaction `reactions ( ... )` set has several steady states at one T;
+the run reports the one its Newton reaches from the feed and ANNOUNCES every
+root of the extent equation with its stability.
 Example: `tutorials/steady/reactors/cstr03_series_selectivity` (A→B→C).
 
 **THE OUTLET IS ITS OWN EQUILIBRIUM (2026-10-17, DEV.md 4c C73)** -- for the
@@ -416,7 +424,10 @@ Stoichiometric **equilibrium** reactor (the "REquil" of process simulators): you
 `Kp(T)` (from the species' `standardThermochemistry`, `K = exp(-ΔG°/RT)`) — **no kinetics, no
 residence time**.  The R extents are a **result**: the coupled gas-phase ideal system
 `Kp_j = ∏_i (p_i/P°)^ν_ij`, `n_i = n_i0 + Σ_j ν_ij ξ_j`, is solved by a Newton on
-`ln n_i` (since 2026-09-27), so a reaction that runs almost to completion is solved like
+`ln n_i` (since 2026-09-27) -- with each `p_i` carrying the vapour's own fugacity
+coefficient under a real-gas package (`y_i φ_i P`, successive substitution, as the
+`gibbsReactor` does; an ideal-gas package evaluates no φ, since 2026-10-25) -- so a
+reaction that runs almost to completion is solved like
 any other: ammonia burned to NO at 1100 K (ln K 121.5) leaves its NH3 at 1e-14 of the
 outlet, and that number is resolved, not lost to a subtraction.  A species below the
 smallest double (ln n < about -745) is published as 0 and ANNOUNCED with its ln n.  The
@@ -449,7 +460,12 @@ reaction RUNS from this feed; exothermic as it runs -> Kp at `T + dT`, endotherm
 `T - dT`, so every shift pushes Kp against the direction its reaction runs (a reaction
 running BACKWARD takes the opposite side from its as-written thermicity).  The reactor stays
 ISOTHERMAL at T -- the outlet and the duty stay at the physical T.  A negative value is
-REFUSED by name.  NOT here: an adiabatic mode, and any Kp beyond the ideal-gas rung.
+REFUSED by name.  The duty `Q_kW` is `H_out - H_in` on the package's own surface
+(the feed on its own state, the outlet at its own equilibrium, both priced as the
+energy report prices them; since 2026-10-25 -- it used to be the heat of reaction
+alone).  A gas-phase equilibrium that leaves a condensable SUPERSATURATED
+(`y_i P > Psat_i`, below its Tc) is REFUSED, naming the `gibbsReactor` that carries
+a liquid.  NOT here: an adiabatic mode, and a liquid phase.
 KPIs: `Kp_<name>` (the Kp actually used; withheld, and announced with its ln Kp, when a
 double cannot carry it), `extent_<name>_kmol_h`, `conversion_<name>`,
 `Q_kW`, `newtonResidual`; with an approach, `T_Kp_<name>` (where each Kp was evaluated)
@@ -2278,7 +2294,12 @@ control layer (`controllers (...)`).  The class boundary is refused one way
 
 ### `dynamicCSTR`
 Constant-volume continuous CSTR, optional jacket (UA·(T_j-T)).  RK4 on packed
-`(nᵢ, T)`.  MV/CV string-keyed registry so controllers bind by name.
+`(nᵢ, T)`.  MV/CV string-keyed registry so controllers bind by name.  Its outflow is
+molar and equal to the inflow, so a reaction that changes the number of moles
+(Σν ≠ 0) drains or swells the holdup at a fixed V and never reaches a steady state --
+ANNOUNCED at its site and in the caveat block (for a long-time answer use the steady
+`cstr`).  `reversible true;` or `A_rev`/`Ea_rev` on its `Arrhenius` word is read by
+the shared `RateLaw` (both legs; before 2026-10-25 the reverse leg was dropped).
 `kinetics { type Arrhenius; }` or **`type LHHW;`** (the shared `RateLaw`; same
 `catalystLoading` key as the batch reactor).  Example: `ctrl07_lhhw_inhibition` — the
 product adsorbs, the exotherm FADES as conversion proceeds, and the PID must hold a

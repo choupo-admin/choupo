@@ -178,6 +178,8 @@ int PFR::solve(const DictPtr& dict,
     scalar k_rev = 0.0;
     if (reversible)
     {
+        Reaction::refuseLiquidBasisDetailedBalance(*rxnDict, nu,
+            rxnDict->name(), "PFR");
         const scalar K_eq = Reaction::equilibriumKc(thermo, nu, T);
         k_rev = k / K_eq;
     }
@@ -571,6 +573,7 @@ int PFR::solveMultiReaction(const DictPtr&       dict,
         rname[j] = rxnList[j]->lookupWordOrDefault("name", "rxn" + std::to_string(j + 1));
         for (const auto& s : rxnList[j]->lookupDictList("stoichiometry"))
             nu[j][thermo.indexOf(s->lookupWord("component"))] = s->lookupScalar("nu");
+        Reaction::refuseLiquidBasisDetailedBalance(*rxnList[j], nu[j], rname[j], "PFR");
         law.push_back(ReactionRate::New(rxnList[j], thermo,
                                         "PFR: reaction '" + rname[j] + "'", offer));
     }

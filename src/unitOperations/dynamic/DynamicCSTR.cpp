@@ -27,6 +27,7 @@ License
 \*---------------------------------------------------------------------------*/
 
 #include "DynamicCSTR.H"
+#include "core/Advisory.H"
 #include "core/Constants.H"
 #include "streams/Composition.H"
 #include "unitOperations/reactor/ReactionHeat.H"
@@ -40,6 +41,7 @@ License
 #include <cmath>
 #include <iostream>
 #include <optional>
+#include <sstream>
 #include <stdexcept>
 #include "thermo/heatCapacity/HeatCapacityModel.H"
 
@@ -129,9 +131,54 @@ void DynamicCSTR::initialise(const DictPtr&        unitDict,
             r.order.push_back(ownLaw ? Reaction::forwardOrder(
                 *s, r.nu.back(), s->lookupWord("component"), "dynamicCSTR") : 0.0);
         }
+        //  THE OUTFLOW IS MOLAR AND EQUAL TO THE INFLOW (`F_out = F_in`, the
+        //  constant-volume closure in derivatives_), so the holdup's total
+        //  moles change only by SUM_i nu_i r V.  For a reaction that changes
+        //  the number of moles there is then no steady state but a drain (or a
+        //  swell) at a fixed declared V: measured (C131 reactors review,
+        //  2026-10-25), isobutene + methanol -> MTBE at 343 K, 1.24 kmol charged
+        //  in V = 0.1 m3, fell to 0.051 kmol after 20 residence times while the
+        //  steady CSTR on the same law converts 56 %; the ledger closed at
+        //  1e-7, because it is consistent with the arithmetic, not with the
+        //  vessel.  ANNOUNCED, not refused: the material and element ledgers
+        //  stay exact over any horizon (check_ctrl_balance proves them on an
+        //  A -> 2B vessel), and a short start-up transient can be what the
+        //  case is about; what is false is a long-time "steady state".  The
+        //  constant-volume outflow is a proposal in
+        //  docs/design/review-c131-reactors.md (W8).
+        {
+            scalar sumNu = 0.0;
+            for (auto v : r.nu) sumNu += v;
+            if (std::abs(sumNu) > 1.0e-12)
+            {
+                std::ostringstream m;
+                m << "reaction '" << rn << "' changes the number of moles (sum of"
+                     " nu = " << sumNu << ") and this vessel's outflow is F_out ="
+                     " F_in (molar) at a fixed V, so its holdup "
+                  << (sumNu < 0.0 ? "DRAINS" : "SWELLS") << " by sum(nu) r V and"
+                     " never reaches a steady state: the vessel's density is not"
+                     " held, and a long horizon does not approach the steady"
+                     " `cstr` on the same law.  Read the transient as a"
+                     " constant-molar-outflow model, not a constant-volume one.";
+                if (AdvisoryLog::instance().addAnnouncedOnce(
+                        "dynamicCSTR-sumnu:" + name_ + ":" + rn, "model", "warning",
+                        "dynamicCSTR '" + name_ + "'", m.str()))
+                    std::cout << "  [dynamicCSTR] WARNING: " << m.str() << "\n";
+            }
+        }
         auto kin = rxn->subDict("kinetics");
         const std::string ktype = kin->lookupWord("type");
-        if (ktype == "Arrhenius")
+        //  A REVERSE LEG ON THE VESSEL'S OWN `Arrhenius` WORD WAS DROPPED IN
+        //  SILENCE: the own-law rate below is the forward product alone, so
+        //  `reversible true;` (detailed balance) and an explicit `A_rev`/
+        //  `Ea_rev` pair both ran irreversible at exit 0 (C131 reactors
+        //  review, 2026-10-25).  A reaction that declares either is read by
+        //  the shared RateLaw, which carries both legs; c_i = n_i / V in
+        //  kmol/m3 is the basis Reaction::equilibriumKc is written in.
+        const bool declaresReverse =
+            rxn->lookupWordOrDefault("reversible", "false") == "true"
+            || kin->found("A_rev");
+        if (ktype == "Arrhenius" && !declaresReverse)
         {
             r.A_pre = kin->lookupScalar("A");
             r.Ea    = kin->lookupScalar("Ea");
