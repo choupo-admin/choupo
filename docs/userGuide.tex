@@ -2542,8 +2542,14 @@ $P \ge P_{\mathrm{in}}$.
 of geometry + flow --- never a spec (a pipe has no knob; a pump raises
 $P$, a valve sets a let-down).  Darcy--Weisbach friction + minor losses
 + static head, with the friction-factor sub-model in the \code{model}
-slot (\code{Churchill} default --- one explicit correlation across all
-regimes; \code{Haaland}; \code{Colebrook}):
+slot (\code{Churchill} default --- one explicit expression for every
+$\mathrm{Re}$, continuous through the laminar--turbulent transition;
+\code{Haaland}; \code{Colebrook}).  In the transition band
+($2300 \le \mathrm{Re} < 4000$) the regime is not determined by
+$\mathrm{Re}$ --- it depends on the disturbances the line meets --- so the
+$f$ any model returns there is an interpolation that keeps the solve
+continuous, not a prediction; a pipe in the band is announced once in the
+run's caveat block, and a design should move out of it:
 
 \begin{lstlisting}[language=dict]
 { name P1;  type pipe;  model Churchill;

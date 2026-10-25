@@ -20,8 +20,11 @@
       -> [P1 pipe]   D, L, roughness, dz, fittings -> ΔP (result)
       -> downstream  (P reduced by the computed ΔP, T held)
 
-  Friction factor: Churchill (default) --- one explicit correlation across
-  laminar / transition / turbulent.  Re ~ 1.5e5 here, so the flow is
+  Friction factor: Churchill (default) --- one explicit expression for
+  every Re, continuous from laminar to turbulent.  Through the transition
+  band (2300 <= Re < 4000) its value is an interpolation, not a prediction:
+  the regime there is not determined by Re, and a pipe in the band is
+  announced in the caveat block.  Re ~ 1.5e5 here, so the flow is
   turbulent and all three ΔP terms (friction, fittings, elevation) matter.
 \*---------------------------------------------------------------------------*/
 
