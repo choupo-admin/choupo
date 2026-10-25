@@ -20,22 +20,28 @@
       hand (an annuity, a zero discount rate, the straight line in the
       spread, the break-even that zeroes it);
     * every number the PROSE states that is computed (the merchant shares,
-      the capital growth, "seven" statements, "more than twice") against
-      the data it is computed from;
+      "seven" statements, "more than twice", "ten figures") against the data
+      it is computed from;
+    * every number the page TABULATES carries one of the four statuses
+      (documented / attributed conclusion / own calculation / assumption),
+      and the rendered page shows the word beside it;
+    * the teaching-scenario notice sits INSIDE the results box, beside the
+      NPV and the break-even, not only in the limits at the end;
     * every quotation in its original language against the research record,
       verbatim, so a quotation nobody read back cannot reach the page;
-    * every source short name the page cites against the record's §1;
+    * every source short name the page cites against the record's §1, and
+      every source with a public https link (never a path into this tree);
     * the page renders, with no NaN, no "undefined";
-    * a small DENYLIST of words the scope ruling excludes.
+    * a DENYLIST of the wording the review removed, and a small one of the
+      words the scope excludes.
 
-  WHAT THE DENYLIST CANNOT PROVE, said plainly: it catches the obvious
-  categories (a minister, a government, an honorific before a name, an
-  allegation word) in the rendered page and the registry line.  It cannot
-  tell that a sentence attributes a motive, that a capitalised word is a
-  person's name, or that a quotation is used out of its context -- those are
-  read by a person, and the record says what was read.  It deliberately
-  lists NO person's name: a test that named the people it excludes would
-  put them in the tree.
+  WHAT THE DENYLISTS CANNOT PROVE, said plainly: they catch phrases, in the
+  rendered page and the registry line.  They cannot tell that a sentence
+  presumes a link between a warning and a decision, or that a quotation is
+  used out of its context -- those are read by a person, and the record says
+  what was read next to each passage.  The scope denylist deliberately lists
+  NO person's name: a test that named the people it excludes would put them
+  in the tree.
 \*---------------------------------------------------------------------------*/
 
 import { readFileSync } from "node:fs";
@@ -56,21 +62,23 @@ vi.mock("../src/ui/plotting/plotly.js", () => ({
 }));
 
 import {
-  APPRAISAL_INPUTS, CAPEX_HISTORY, DEFAULT_APPRAISAL, LOSS_METRICS, OFFTAKE,
-  PUBLISHED_SPREADS, SOURCES, TIMELINE, TORNADO_RANGES, appraise,
-  breakEvenSpread, merchantShareAt, npvCurve, npvSlopeInSpread, tornadoFigure,
-  type Appraisal,
+  APPRAISAL_INPUTS, CAPEX_HISTORY, DEFAULT_APPRAISAL, IVL_REPORT_URLS,
+  LOSS_METRICS, OFFTAKE, PUBLISHED_SPREADS, SCENARIO_NOTICE, SOURCES,
+  STATUS_WORD, TIMELINE, TORNADO_RANGES, appraise, breakEvenSpread,
+  merchantShareAt, npvCurve, npvSlopeInSpread, offtakeRows, tornadoFigure,
+  type Appraisal, type Status,
 } from "../src/ui/methods/sinesPta.js";
 import {
-  SINES_CHECKLIST, SINES_LIMITS, SINES_MARKET_QUOTES, SINES_STEPS,
-  SINES_WARNINGS,
+  SINES_CHECKLIST, SINES_INSTITUTIONAL_NOTE, SINES_LIMITS, SINES_MARKET_QUOTES,
+  SINES_PURPOSE, SINES_RISKS, SINES_SCOPE, SINES_STEPS, SINES_TITLE,
+  type Quote,
 } from "../src/ui/methods/sinesPtaLesson.js";
 import { SinesPtaTool } from "../src/ui/methods/SinesPtaTool.js";
 import { METHOD_TOOLS } from "../src/ui/methods/registry.js";
 
 const tree = (rel: string): string =>
   readFileSync(new URL(`../../${rel}`, import.meta.url), "utf-8");
-const RECORD = tree("docs/design/the-sines-pta-plant-a-negative-case.md");
+const RECORD = tree("docs/design/the-sines-pta-plant-appraisal-and-project-risk.md");
 const prose = (s: string): string => s.replace(/\s+/g, " ").trim();
 const stepBody = (n: number): string =>
   prose(SINES_STEPS.find((s) => s.n === n)!.body);
@@ -163,43 +171,60 @@ describe("the appraisal against closed forms", () => {
     }
     const st = (k: keyof Appraisal) => APPRAISAL_INPUTS.find((x) => x.key === k)!.status;
     expect(st("capacity")).toBe("documented");
-    expect(st("captive")).toBe("documented");
     expect(st("capex")).toBe("documented");
-    expect(st("spread")).toBe("published");
-    for (const k of ["utilisation", "conversionCost", "merchantDiscount",
-      "fixedCost", "usdPerEur", "discountRate", "life"] as const)
-      expect(st(k)).toBe("synthetic");
+    //  the offtake volume is a MAXIMUM, so buying it is an assumption; and no
+    //  spread available at the decision was found, so the spread is one too
+    for (const k of ["captive", "spread", "utilisation", "conversionCost",
+      "merchantDiscount", "fixedCost", "usdPerEur", "discountRate", "life",
+      "delayYears", "captiveStopsAfter"] as const)
+      expect(st(k)).toBe("assumption");
+    expect(APPRAISAL_INPUTS.filter((x) => x.status === "documented").length).toBe(2);
     expect(DEFAULT_APPRAISAL.capacity).toBe(OFFTAKE.capacity);
     expect(DEFAULT_APPRAISAL.captive).toBe(OFFTAKE.contract);
-    //  the record's §10 table lists each SYNTHETIC input as such
+    //  the capital default is the November 2008 investment of the table
+    expect(CAPEX_HISTORY.find((c) => c.when === "Nov 2008")!.value).toBe(DEFAULT_APPRAISAL.capex);
+    //  the published spreads are never the default: they are later information
+    for (const r of PUBLISHED_SPREADS) {
+      expect(DEFAULT_APPRAISAL.spread).not.toBe(r.asia);
+      expect(DEFAULT_APPRAISAL.spread).not.toBe(r.west);
+    }
+    //  the record's §10 table lists each ASSUMPTION as such
     const sec10 = RECORD.split("## 10.")[1]!.split("## 11.")[0]!;
     for (const w of ["Conversion cost", "Merchant discount", "Fixed costs",
-      "Exchange rate", "Discount rate", "Utilisation"])
-      expect(sec10).toMatch(new RegExp(`\\| ${w}[^\\n]*SYNTHETIC`));
+      "Exchange rate", "Discount rate", "Utilisation", "Spread",
+      "Captive volume"])
+      expect(sec10).toMatch(new RegExp(`\\| ${w}[^\\n]*ASSUMPTION`));
   });
 });
 
 describe("what the prose computes is computed from the data", () => {
-  it("the merchant shares of step 4", () => {
+  it("the merchant shares of step 4, and why the calculator shows another", () => {
     expect(merchantShareAt(700, 450)).toBeCloseTo(0.357, 3);
     expect(merchantShareAt(700, 470)).toBeCloseTo(0.329, 3);
-    const d = SINES_STEPS.find((s) => s.n === 4)!.derivation!.map((x) => x.eq).join(" ");
-    expect(d).toContain("0.357");
-    expect(d).toContain("0.329");
+    expect(merchantShareAt(630, 450)).toBeCloseTo(0.286, 3);
+    expect(appraise(DEFAULT_APPRAISAL).merchantShare).toBeCloseTo(0.286, 3);
+    expect(DEFAULT_APPRAISAL.capacity * DEFAULT_APPRAISAL.utilisation).toBeCloseTo(630, 9);
+    const d = SINES_STEPS.find((s) => s.n === 4)!.derivation!;
+    const eqs = d.map((x) => x.eq).join(" ");
+    for (const v of ["0.357", "0.329", "0.286", "630"]) expect(eqs).toContain(v);
+    expect(d.map((x) => x.step).join(" ")).toContain("630 kt");
     expect(OFFTAKE.ptaPerPet * OFFTAKE.petCapacity).toBeCloseTo(476, 9);
     expect(stepBody(4)).toContain("0.85 × 560 = 476");
+    expect(stepBody(4)).toContain("35.7 %");
+    expect(stepBody(4)).toContain("MAXIMUM, not a guaranteed purchase");
+    expect(stepBody(4)).toContain("not the whole commercial risk");
   });
 
-  it("the capital cost of step 3: seven statements, +28 %, 510 to 660 EUR per t/yr", () => {
+  it("the capital cost of step 3: seven statements, kept with their perimeters, no ratio", () => {
     expect(CAPEX_HISTORY.length).toBe(7);
     expect(stepBody(3)).toContain("stated seven times");
     const lo = Math.min(...CAPEX_HISTORY.map((c) => c.value));
     const hi = Math.max(...CAPEX_HISTORY.map((c) => c.value));
     expect([lo, hi]).toEqual([360, 462.056]);
-    expect(Math.round(100 * (hi / lo - 1))).toBe(28);
-    expect(stepBody(3)).toContain("+28 %");
-    expect(Math.round(lo / 0.7 / 10) * 10).toBe(510);
-    expect(Math.round(hi / 0.7 / 10) * 10).toBe(660);
+    expect(stepBody(3)).toContain("draws no ratio");
+    for (const c of CAPEX_HISTORY) expect(c.perimeter.length).toBeGreaterThan(10);
+    //  the conclusion is attributed to the inquiry report
+    expect(stepBody(3)).toContain("is the inquiry report's");
   });
 
   it("step 7's 'more than twice the Asian one in every year from 2014 to 2017'", () => {
@@ -207,6 +232,7 @@ describe("what the prose computes is computed from the data", () => {
     expect(yearly.map((r) => r.year)).toEqual(["2014", "2015", "2016", "2017"]);
     for (const r of yearly) expect(r.west!).toBeGreaterThan(2 * r.asia);
     expect(stepBody(7)).toContain("more than twice the Asian one");
+    expect(stepBody(7)).toContain("not the Sines plant's realised spread");
   });
 
   it("the spreads and the loss figures the page states are in the record", () => {
@@ -215,18 +241,40 @@ describe("what the prose computes is computed from the data", () => {
       else expect(RECORD).toContain(`| ${r.year} | ${r.asia} | ${r.west} |`);
     }
     for (const v of ["EUR 381 M", "EUR 520 M", "EUR 351 M", "EUR 211 M",
-      "≈ EUR 900 M", "≥ EUR 400 M", "−EUR 131.4 M", "EUR 28 M", "EUR 100 000"])
+      "≈ EUR 900 M", "≥ EUR 400 M", "−EUR 131.4 M", "EUR 28 M", "EUR 42.5 M",
+      "EUR 100 000", "43.061"])
       expect(RECORD).toContain(v);
-    expect(LOSS_METRICS.length).toBe(9);
-    expect(stepBody(10)).toContain("nine figures");
+    expect(LOSS_METRICS.length).toBe(10);
+    expect(stepBody(10)).toContain("ten figures");
     expect(stepBody(10)).toContain("must not be added");
+    expect(LOSS_METRICS.find((m) => m.value === "at least EUR 400 M")!.status).toBe("attributed");
+  });
+});
+
+describe("every number the page tabulates says what it is", () => {
+  const STATUSES = Object.keys(STATUS_WORD) as Status[];
+  const rows: { source: string; status: Status }[] = [
+    ...CAPEX_HISTORY, ...PUBLISHED_SPREADS, ...LOSS_METRICS, ...TIMELINE,
+    ...offtakeRows(),
+  ];
+  it("every row has one of the four statuses", () => {
+    for (const r of rows) expect(STATUSES, r.source).toContain(r.status);
+    for (const inp of APPRAISAL_INPUTS) expect(STATUSES).toContain(inp.status);
+  });
+  it("an own calculation cites this page, and a documented row cites a document", () => {
+    for (const r of rows) {
+      if (r.status === "calculation") expect(r.source).toContain("this page");
+      else expect(r.source).toMatch(/CPI-2019|EY-final|LSB-201[24]|IVL-|EC-2007|USITC-4604/);
+    }
   });
 });
 
 describe("every quotation is the record's, verbatim", () => {
   const sec11 = RECORD.split("## 11.")[1] ?? "";
+  const cardQuotes: Quote[] = SINES_RISKS.flatMap((c) => [
+    ...c.identified.quotes, ...(c.condition?.quotes ?? []), ...c.decision.quotes]);
   const originals = [
-    ...SINES_WARNINGS.flatMap((w) => w.quotes.map((q) => q.original)),
+    ...cardQuotes.map((q) => q.original),
     ...SINES_MARKET_QUOTES.map((q) => q.original),
   ];
   it("the record carries a quotation section", () => {
@@ -236,25 +284,29 @@ describe("every quotation is the record's, verbatim", () => {
     expect(prose(sec11)).toContain(prose(o));
   });
   it("every non-English quotation has its translation", () => {
-    for (const w of SINES_WARNINGS) for (const q of w.quotes)
-      expect(q.english.length).toBeGreaterThan(10);
+    for (const q of cardQuotes) expect(q.english.length).toBeGreaterThan(10);
   });
-  it("every quotation in a step body is in the record too", () => {
-    const bodies = SINES_STEPS.map((s) => s.body).join(" ");
-    const quoted = [...bodies.matchAll(/"([^"]{12,})"/g)].map((m) => m[1]!);
-    expect(quoted.length).toBeGreaterThan(8);
+  it("every quotation in a step body or a card is in the record too", () => {
+    const texts = [
+      ...SINES_STEPS.map((s) => s.body),
+      ...SINES_RISKS.flatMap((c) => [c.identified.note, c.condition?.note ?? "",
+        c.decision.note, c.later]),
+    ].join(" ");
+    const quoted = [...texts.matchAll(/"([^"]{12,})"/g)].map((m) => m[1]!);
+    expect(quoted.length).toBeGreaterThan(12);
     for (const q of quoted) expect(prose(RECORD)).toContain(prose(q));
   });
 });
 
-describe("every source the page cites is defined", () => {
+describe("every source the page cites is defined, with a public link", () => {
   const shorts = SOURCES.map((s) => s.short);
-  const known = (src: string) => /CPI-2019|EY-final|LSB-2012|LSB-2014|IVL-AR20\d\d|IVL-SET-2025|EC-2007|USITC-4604/.test(src);
+  const known = (src: string) => /CPI-2019|EY-final|LSB-2012|LSB-2014|IVL-AR20\d\d|IVL-SET-2025|EC-2007|USITC-4604|this page/.test(src);
   it("in the data tables and the lesson", () => {
     const cited = [
       ...CAPEX_HISTORY.map((c) => c.source), ...PUBLISHED_SPREADS.map((c) => c.source),
       ...LOSS_METRICS.map((c) => c.source), ...TIMELINE.map((c) => c.source),
-      ...SINES_WARNINGS.flatMap((w) => w.quotes.map((q) => q.source)),
+      ...SINES_RISKS.flatMap((c) => [...c.identified.quotes, ...(c.condition?.quotes ?? []),
+        ...c.decision.quotes].map((q) => q.source)),
       ...SINES_MARKET_QUOTES.map((q) => q.source),
     ];
     for (const c of cited) expect(known(c), c).toBe(true);
@@ -264,45 +316,110 @@ describe("every source the page cites is defined", () => {
       expect(RECORD).toContain(`| ${s} |`);
     }
   });
+  it("every source says what it is and links a public https document", () => {
+    for (const s of SOURCES) {
+      expect(s.nature.length, s.short).toBeGreaterThan(20);
+      expect(s.url, s.short).toMatch(/^https:\/\//);
+      expect(s.url).not.toMatch(/docs\/design|github|choupo/i);
+      expect(RECORD).toContain(s.url);
+    }
+    for (const [k, u] of Object.entries(IVL_REPORT_URLS)) {
+      expect(u, k).toMatch(/^https:\/\//);
+      expect(RECORD).toContain(u);
+    }
+  });
 });
 
 describe("the page", () => {
   const html = renderToStaticMarkup(createElement(MantineProvider, null,
     createElement(SinesPtaTool)));
+  const text = html.replace(/<[^>]+>/g, " ").replace(/&#x27;/g, "'")
+    .replace(/&quot;/g, '"').replace(/&amp;/g, "&").replace(/\s+/g, " ");
 
   it("renders every step, the tables and the limits, with no NaN", () => {
-    for (const s of SINES_STEPS) expect(html).toContain(s.title.replace(/'/g, "&#x27;"));
+    expect(text).toContain(SINES_TITLE);
+    for (const s of SINES_STEPS) expect(text).toContain(s.title);
     expect(html).toContain("These figures overlap.");
     expect(html).toContain("break-even spread s*");
-    for (const l of SINES_LIMITS) expect(html).toContain(l.title);
-    for (const c of SINES_CHECKLIST.slice(0, 3)) expect(html).toContain(c.slice(0, 30));
+    for (const l of SINES_LIMITS) expect(text).toContain(l.title);
+    for (const c of SINES_CHECKLIST.slice(0, 3)) expect(text).toContain(c.slice(0, 30));
+    for (const c of SINES_RISKS) expect(text).toContain(c.title);
     expect(html).not.toMatch(/NaN|undefined|Infinity/);
   });
 
-  it("labels the synthetic inputs as synthetic", () => {
-    const n = (html.match(/synthetic teaching value/g) ?? []).length;
-    expect(n).toBeGreaterThanOrEqual(
-      APPRAISAL_INPUTS.filter((x) => x.status === "synthetic").length);
-    expect(html).toContain("not a reconstruction");
+  it("states its purpose, its scope and the institutional note", () => {
+    expect(text).toContain(prose(SINES_PURPOSE));
+    expect(text).toContain(prose(SINES_SCOPE));
+    expect(text).toContain(prose(SINES_INSTITUTIONAL_NOTE));
   });
 
-  //  The scope ruling: institutions only, no politics.  See the header for
-  //  what this denylist cannot prove.
+  it("puts the teaching-scenario notice beside the results, not only at the end", () => {
+    const start = html.indexOf('data-testid="sines-results"');
+    expect(start).toBeGreaterThan(0);
+    const box = html.slice(start, html.indexOf("The inputs", start));
+    expect(box).toContain('data-testid="scenario-notice"');
+    expect(box.replace(/<[^>]+>/g, "")).toContain(
+      "Illustrative teaching scenario — not an estimate of the historical project");
+    expect(SCENARIO_NOTICE).toContain("Results depend on the assumptions selected below.");
+    //  the notice comes BEFORE the numbers it qualifies, inside the same box
+    expect(box.indexOf("scenario-notice")).toBeLessThan(box.indexOf("NPV ="));
+    expect(box).toContain("break-even spread s*");
+    expect(box).toContain('data-status="calculation"');
+    //  and the inputs it refers to are BELOW it
+    expect(html.indexOf("The inputs")).toBeGreaterThan(start);
+    expect(html.indexOf(APPRAISAL_INPUTS[0]!.label)).toBeGreaterThan(start);
+  });
+
+  it("shows the status word beside every tabulated number and every input", () => {
+    const tagged = (html.match(/data-status="/g) ?? []).length;
+    const rows = CAPEX_HISTORY.length + PUBLISHED_SPREADS.length
+      + LOSS_METRICS.length + TIMELINE.length + offtakeRows().length
+      + APPRAISAL_INPUTS.length;
+    expect(tagged).toBeGreaterThanOrEqual(rows);
+    for (const w of Object.values(STATUS_WORD)) expect(text).toContain(w);
+    const assumed = (html.match(/data-status="assumption"/g) ?? []).length;
+    expect(assumed).toBeGreaterThanOrEqual(
+      APPRAISAL_INPUTS.filter((x) => x.status === "assumption").length);
+  });
+
+  it("separates the decision from what came later", () => {
+    for (const w of ["the decision, 2006-2008", "construction and financing, 2009-2011",
+      "operation, restructuring and sale, 2012-2017", "after the sale, 2018-2025"])
+      expect(text).toContain(w);
+    expect(text).toContain("Later information, all of it");
+  });
+
+  //  THE WORDING THE REVIEW REMOVED (2026-10-24).  A phrase here is one the
+  //  page must not carry again: a claim the documents do not support (that no
+  //  analysis was made), a tone of censure, or a generalisation the review
+  //  corrected.  Held over the rendered page AND the registry line.
+  const REMOVED = [
+    /negative case/i, /should have (made|done)/i, /catches it/i, /hindsight/i,
+    /not paid a PTA price/i, /never on a product price/i, /what not to do/i,
+    /in which it was not done/i, /\+28 ?%/, /synthetic teaching value/i,
+    /not from a related party's promise/i, /pulls it toward/i,
+    /would each raise/i, /whole risk of a European merchant plant/i,
+    /ranks behind other creditors/i,
+  ];
+  //  The scope: no persons, no political finding; and nothing that hands
+  //  responsibility for the content to a tool.
   const DENY = [
     /\bminist(er|ers|ry|ro|ros|ério)\b/i, /\bprime minister\b/i,
     /\bprimeiro.ministro\b/i, /\bgovern(ment|o)\b/i, /\bcorrup/i,
     /\bbrib/i, /\bfraud/i, /\bnational interest\b/i, /\binteresse nacional\b/i,
     /\bConselho de Ministros\b/, /\b(Sr|Sra|Dr|Dra|Prof|Mr|Mrs|Ms)\.\s/,
     /\bdeputad[oa]s?\b/i, /\b(PSD|CDS-PP|PCP)\b/,
+    /\b(AI|artificial intelligence|Claude|language model)\b/,
   ];
   const registryLine = (() => {
     const t = METHOD_TOOLS.find((m) => m.id === "sines-pta")!;
     return `${t.label} ${t.teaches}`;
   })();
-  it.each(DENY.map((r) => [String(r), r] as const))("names nothing excluded: %s", (_n, r) => {
-    expect(html).not.toMatch(r);
-    expect(registryLine).not.toMatch(r);
-  });
+  it.each([...REMOVED, ...DENY].map((r) => [String(r), r] as const))(
+    "carries none of: %s", (_n, r) => {
+      expect(text).not.toMatch(r);
+      expect(registryLine).not.toMatch(r);
+    });
 });
 
 describe("the registry", () => {
@@ -310,6 +427,7 @@ describe("the registry", () => {
     const t = METHOD_TOOLS.find((m) => m.id === "sines-pta");
     expect(t?.status).toBe("live");
     expect(t?.kind).toBe("notes");
+    expect(t?.label).toBe(SINES_TITLE);
     expect(t?.discipline).toBe("Process design & economics");
     expect(t?.theory).toBe("ch:economics");
     expect(tree("gui/src/ui/MethodsWorkspace.tsx"))

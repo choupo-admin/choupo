@@ -13,34 +13,38 @@
 \*---------------------------------------------------------------------------*/
 
 /*---------------------------------------------------------------------------*\
-  SinesPtaTool -- "A negative case: the Sines PTA plant" (DEV.md 4c C143).
+  SinesPtaTool -- "Economic appraisal and project risk: lessons from the
+  Sines PTA plant" (DEV.md 4c C143).
 
-  A NOTES page with ONE interactive: a pre-tax discounted cash flow the
-  student moves, with its break-even spread, NPV against the spread beside
-  the published spreads, and a tornado.  NO ENGINE RUN, and that is the
+  A NOTES page with ONE interactive: a simplified, pre-tax, unfinanced
+  discounted cash flow the student moves, with its break-even spread, NPV
+  against the spread, and a tornado.  NO ENGINE RUN, and that is the
   subject rather than an omission: the case is about the economic analysis
   that decides whether a simulation is worth building at all.
 
+  FOUR KINDS OF STATEMENT, told apart in ink AND in words on every table and
+  beside every result: documented, attributed conclusion, own calculation,
+  assumption (sinesPta.ts `Status`).  The notice that the calculator is an
+  illustrative teaching scenario sits IMMEDIATELY beside its results, not
+  only in the limits at the end; tests/sinesPta.test.ts holds that.
+
   THE FACTS are in sinesPta.ts and the prose in sinesPtaLesson.ts, both
-  React-free, both from one record (docs/design/the-sines-pta-plant-a-
-  negative-case.md) and both held by tests/sinesPta.test.ts.  The scope is
-  Vitor's ruling: institutions only, no persons, no motives, no politics.
+  React-free, both from one record (docs/design/the-sines-pta-plant-
+  appraisal-and-project-risk.md) and both held by tests/sinesPta.test.ts.
 
   THE TWO LINE COLOURS are Mantine blue-6 (#228be6) and orange-8 (#e8590c),
   the pair the Front-End Loading page validated, re-run here with the
   dataviz palette validator against the Plotly chrome of BOTH schemes
   (#ffffff and #1f1f1f): every check PASSES in both (lightness band, chroma,
-  CVD separation 27.7, normal-vision 34.5, contrast >= 3:1).  The house
-  accent/warm pair FAILS the light band and the 3:1 contrast on white, which
-  is why the shared TornadoPlot gained an optional `colors` prop.  The
-  second line is ALSO dashed and both are named in the legend, so identity
-  is never colour alone.
+  CVD separation 27.7, normal-vision 34.5, contrast >= 3:1).  The second
+  line is ALSO dashed and both are named in the legend, so identity is never
+  colour alone.
 \*---------------------------------------------------------------------------*/
 
 import { useMemo, useState } from "react";
 
 import {
-  Anchor, Badge, Box, Group, Stack, Table, Text, Title,
+  Anchor, Badge, Box, Group, Paper, Stack, Table, Text, Title,
 } from "@mantine/core";
 
 import { Plot, PLOT_COLORS, PLOT_CONFIG, darkLayout } from "../plotting/plotly.js";
@@ -48,13 +52,16 @@ import { TornadoPlot } from "../plotting/TornadoPlot.js";
 import { KnobNumber, PanelNote } from "./knobPanel.js";
 import { LessonLimits, lessonStepper } from "./lessonStep.js";
 import {
-  SINES_CHECKLIST, SINES_LIMITS, SINES_MARKET_QUOTES, SINES_STEPS,
-  SINES_WARNINGS, type Quote,
+  SINES_CHECKLIST, SINES_INSTITUTIONAL_NOTE, SINES_LIMITS, SINES_MARKET_QUOTES,
+  SINES_PURPOSE, SINES_RISKS, SINES_SCOPE, SINES_STEPS, SINES_TITLE,
+  type Quote, type Recorded, type RiskCard,
 } from "./sinesPtaLesson.js";
 import {
-  APPRAISAL_INPUTS, CAPEX_HISTORY, DEFAULT_APPRAISAL, LOSS_METRICS, OFFTAKE,
-  PUBLISHED_SPREADS, SOURCES, TIMELINE, appraise, breakEvenSpread, fmtMoney,
-  merchantShareAt, npvCurve, tornadoFigure, type Appraisal, type InputStatus,
+  APPRAISAL_INPUTS, CAPEX_HISTORY, DEFAULT_APPRAISAL, IVL_REPORT_URLS,
+  LOSS_METRICS, PERIOD_WORD, PUBLISHED_SPREADS, SCENARIO_NOTICE, SOURCES,
+  STATUS_MEANING, STATUS_WORD, TIMELINE, appraise, breakEvenSpread, fmtMoney,
+  npvCurve, offtakeRows, tornadoFigure, type Appraisal, type Period,
+  type Status,
 } from "./sinesPta.js";
 import { setActiveMethodTool } from "./registry.js";
 
@@ -63,16 +70,23 @@ const HUE_B = "#e8590c";
 
 const step = lessonStepper(SINES_STEPS);
 
-const STATUS_COLOR: Record<InputStatus, string> = {
-  documented: "teal", published: "blue", synthetic: "orange",
-};
-const STATUS_WORD: Record<InputStatus, string> = {
-  documented: "documented", published: "published figure",
-  synthetic: "synthetic teaching value",
+const STATUS_COLOR: Record<Status, string> = {
+  documented: "teal", attributed: "violet", calculation: "blue",
+  assumption: "orange",
 };
 
 const fx = (v: number, d = 1): string =>
   Number.isFinite(v) ? v.toFixed(d).replace("-", "−") : "—";
+
+/** The status of a number, in ink and in words. */
+function StatusBadge({ status }: { status: Status }): JSX.Element {
+  return (
+    <Badge size="xs" variant="light" color={STATUS_COLOR[status]}
+      data-status={status} style={{ whiteSpace: "nowrap" }}>
+      {STATUS_WORD[status]}
+    </Badge>
+  );
+}
 
 function PanTable({ children }: { children: React.ReactNode }): JSX.Element {
   return (
@@ -102,6 +116,37 @@ const GRID = {
   gridTemplateColumns: "repeat(auto-fit, minmax(min(220px, 100%), 1fr))",
 } as const;
 
+/** How to read the page: the four kinds of statement. */
+function StatusLegend(): JSX.Element {
+  const all: Status[] = ["documented", "attributed", "calculation", "assumption"];
+  return (
+    <Paper withBorder p="xs" radius="sm">
+      <Text size="sm" fw={600}>How to read this page</Text>
+      <Text size="xs" mt={2}>
+        Every number and statement is one of four kinds, marked with its word:
+      </Text>
+      <Box component="ul" style={{ margin: "4px 0 0 0", paddingLeft: 20 }}>
+        {all.map((s) => (
+          <Text component="li" size="xs" key={s} mb={2}>
+            <StatusBadge status={s} /> {STATUS_MEANING[s]}.
+          </Text>
+        ))}
+      </Box>
+      <Text size="xs" mt={4}>
+        And every documented fact says when it is from, because information
+        that came during construction or afterwards was not available at the
+        decision: {(Object.keys(PERIOD_WORD) as Period[])
+          .map((p) => PERIOD_WORD[p]).join("; ")}.
+      </Text>
+      <Text size="xs" mt={4}>
+        Interpretations are written as readings ("one possible reading"),
+        never as facts, and a link between a risk, a
+        decision and an outcome is stated only where a document states it.
+      </Text>
+    </Paper>
+  );
+}
+
 // ---- the appraisal --------------------------------------------------------
 
 function InputGrid({ a, set }: {
@@ -116,9 +161,7 @@ function InputGrid({ a, set }: {
             decimals={inp.step < 1 ? 3 : 0}
             onChange={(v) => set(inp.key, v)} />
           <Group gap={4} mt={2} wrap="wrap">
-            <Badge size="xs" variant="light" color={STATUS_COLOR[inp.status]}>
-              {STATUS_WORD[inp.status]}
-            </Badge>
+            <StatusBadge status={inp.status} />
           </Group>
           <Text size="xs" c="dimmed" style={{ lineHeight: 1.25 }}>{inp.basis}</Text>
         </Box>
@@ -133,9 +176,9 @@ function NpvSpreadChart({ a }: { a: Appraisal }): JSX.Element {
   const down = npvCurve({ ...a, captiveStopsAfter: 2 }, 0, 300);
   const sStar = breakEvenSpread(a);
   const marks = [
-    { s: 87, label: "Asia 2014: 87" },
-    { s: 163, label: "Asia 5-yr avg to 2014: 163" },
-    { s: 231, label: "West 2014: 231" },
+    { s: 87, label: "Asia 2014: 87 (later)" },
+    { s: 163, label: "Asia 5-yr avg to 2014: 163 (later)" },
+    { s: 231, label: "West index 2014: 231 (later)" },
   ];
   const shapes: Record<string, unknown>[] = [
     { type: "line", xref: "paper", x0: 0, x1: 1, yref: "y", y0: 0, y1: 0,
@@ -177,7 +220,7 @@ function NpvSpreadChart({ a }: { a: Appraisal }): JSX.Element {
       <Plot data={traces}
         layout={{
           ...darkLayout,
-          title: { text: "NPV against the spread (pre-tax, at the decision)",
+          title: { text: "NPV against a constant spread: illustrative teaching scenario",
             font: { ...darkLayout.font, size: 13 } },
           xaxis: { ...darkLayout.xaxis, range: [0, 300],
             title: { text: "industry spread s  [US$/t]" } },
@@ -200,35 +243,50 @@ function Appraiser(): JSX.Element {
   const sStar = useMemo(() => breakEvenSpread(a), [a]);
   const fig = useMemo(() => tornadoFigure(a), [a]);
   return (
-    <Box>
-      <Title order={5}>Your appraisal</Title>
-      <Text size="sm" mt={4}>
-        Move any input.  The badge under each says whether its default is
-        documented, a published figure, or a synthetic teaching value; the
-        line under it says where it comes from.
+    <Box data-testid="sines-appraisal">
+      <Title order={5}>A simplified appraisal for teaching</Title>
+      <Paper withBorder p="xs" radius="sm" mt={6} data-testid="sines-results"
+        style={{ borderLeft: "4px solid var(--mantine-color-orange-6)" }}>
+        <Text size="sm" fw={600} data-testid="scenario-notice">{SCENARIO_NOTICE}</Text>
+        <Group gap="xs" mt={6} wrap="wrap">
+          <Badge size="lg" variant="light" color={r.npv >= 0 ? "teal" : "red"}>
+            NPV = {fx(r.npv, 0)} M EUR
+          </Badge>
+          <Badge size="lg" variant="light" color="blue">
+            break-even spread s* = {fx(sStar, 0)} US$/t
+          </Badge>
+          <Badge size="lg" variant="light" color="gray">
+            merchant share (year 2) = {fx(100 * r.merchantShare, 1)} %
+          </Badge>
+          <Badge size="lg" variant="light" color="gray">
+            PV of capital = {fx(r.pvCapex, 0)} M EUR
+          </Badge>
+        </Group>
+        <Group gap={6} mt={6} wrap="wrap">
+          <StatusBadge status="calculation" />
+          <Text size="xs">
+            on the inputs below, of which two are documented and the rest are
+            assumptions.  Pre-tax and unfinanced: it cannot say whether the
+            project could service its debt.
+          </Text>
+        </Group>
+      </Paper>
+      <Text size="sm" mt={10} fw={600}>The inputs</Text>
+      <Text size="xs" mt={2}>
+        Move any input.  The word under each says whether its default is
+        documented or an assumption; the line under it says where it comes
+        from, and when.
       </Text>
       <Box mt={8}><InputGrid a={a} set={set} /></Box>
-      <Group gap="xs" mt={10} wrap="wrap">
-        <Badge size="lg" variant="filled" color={r.npv >= 0 ? "teal" : "red"}>
-          NPV = {fx(r.npv, 0)} M EUR
-        </Badge>
-        <Badge size="lg" variant="light" color="blue">
-          break-even spread s* = {fx(sStar, 0)} US$/t
-        </Badge>
-        <Badge size="lg" variant="light" color="gray">
-          merchant share (year 2) = {fx(100 * r.merchantShare, 1)} %
-        </Badge>
-        <Badge size="lg" variant="light" color="gray">
-          PV of capital = {fx(r.pvCapex, 0)} M EUR
-        </Badge>
-      </Group>
       <Box mt={10}><NpvSpreadChart a={a} /></Box>
       <Text size="xs" c="dimmed">
-        Dotted verticals: three of the published spreads (IVL-AR2014,
-        IVL-AR2015).  Solid line: the NPV with every input as set; dashed:
-        the same with the captive customer stopping after operating year 2
-        (drawn only while your own setting is a later year or never).
-        Diamond: the break-even spread.
+        Dotted verticals: three of IVL's published spreads, all of them later
+        information (published 2015 on) and none of them the Sines plant's
+        own; the West figure is a 50:50 North America : Europe index.  Solid
+        line: the NPV with every input as set; dashed: the same with the
+        captive customer stopping after operating year 2 (drawn only while
+        your own setting is a later year or never).  Diamond: the constant
+        break-even spread.
       </Text>
       <Box mt={12}>
         <Title order={6}>One input at a time: the tornado</Title>
@@ -260,38 +318,78 @@ function Appraiser(): JSX.Element {
         </PanTable>
       </Box>
       <PanelNote>
-        This is the analysis a student should have done, not a reconstruction
-        of the real business plan: no public document read gives the plan's
+        The year table, like every result above, is this page's calculation on
+        the inputs as set.  No public document gives the business plan's
         conversion cost, fixed costs, assumed spread, discount rate or cash
-        flows.  Pre-tax; no depreciation, debt service, working capital or
-        receivables.  The tornado writes its NPVs in EUR, so that{" "}
-        {fmtMoney(-1.5e8)} reads minus EUR 150 million.
+        flows.  Not modelled: taxes and depreciation, financing and debt
+        service, working capital, receivables, and any cost of a delay.  The
+        tornado writes its NPVs in EUR, so that {fmtMoney(-1.5e8)} reads
+        minus EUR 150 million.
       </PanelNote>
     </Box>
+  );
+}
+
+// ---- the risk cards --------------------------------------------------------
+
+function RecordedView({ label, rec }: { label: string; rec: Recorded | null }): JSX.Element {
+  return (
+    <Box mt={6}>
+      <Text size="xs" fw={700} tt="uppercase" c="dimmed">{label}</Text>
+      {rec === null ? (
+        <Text size="xs">None recorded in the passages read.</Text>
+      ) : (
+        <>
+          {rec.when !== "—" && <Text size="xs" c="dimmed">{rec.when}</Text>}
+          {rec.quotes.map((q) => <QuoteView key={q.original} q={q} />)}
+          {rec.note && <Text size="xs">{rec.note}</Text>}
+        </>
+      )}
+    </Box>
+  );
+}
+
+function RiskCardView({ c }: { c: RiskCard }): JSX.Element {
+  return (
+    <Paper withBorder p="xs" radius="sm" data-risk={c.n}>
+      <Text size="sm" fw={700}>{c.n}. {c.title}</Text>
+      <RecordedView label="Risk identified" rec={c.identified} />
+      <RecordedView label="Condition recommended" rec={c.condition} />
+      <RecordedView label="What the documents record about the decision" rec={c.decision} />
+      <Box mt={6}>
+        <Text size="xs" fw={700} tt="uppercase" c="dimmed">Later (later information)</Text>
+        <Text size="xs">{c.later}</Text>
+      </Box>
+      <Box mt={6}>
+        <Text size="xs" fw={700} tt="uppercase" c="dimmed">
+          The corresponding appraisal concept
+        </Text>
+        <Text size="sm">{c.concept}</Text>
+      </Box>
+    </Paper>
   );
 }
 
 // ---- the page --------------------------------------------------------------
 
 export function SinesPtaTool(): JSX.Element {
-  const shareContract = merchantShareAt(OFFTAKE.capacity, OFFTAKE.contract);
-  const shareNeed = merchantShareAt(OFFTAKE.capacity, OFFTAKE.need);
+  const offtake = offtakeRows();
+  const periods = Object.keys(PERIOD_WORD) as Period[];
   return (
     <Box style={{ flex: 1, minHeight: 0, overflowY: "auto" }} px="md" py="sm">
       <Stack gap="md" style={{ maxWidth: 980, margin: "0 auto" }}>
         <Box>
-          <Title order={4}>A negative case: the Sines PTA plant</Title>
-          <Text size="sm" c="dimmed" mt={4}>
-            What the economic analysis of a chemical process must contain,
-            read from a case in which it was not done: a PTA plant whose
-            margin was a spread, whose output had one captive customer, and
-            whose warnings were written down at the time.  Every fact carries
-            its primary source and page; the research record is{" "}
-            <code>docs/design/the-sines-pta-plant-a-negative-case.md</code>.
-            Institutions only: no persons are named and no motive is
-            attributed to anyone.
+          <Title order={4}>{SINES_TITLE}</Title>
+          <Text size="sm" mt={4}>{SINES_PURPOSE}</Text>
+          <Text size="sm" c="dimmed" mt={4}>{SINES_SCOPE}  Every fact carries
+            its primary source and page; the documents are listed, with what
+            each one is and a public link, at the end of the page.</Text>
+          <Text size="xs" c="dimmed" mt={4} data-testid="institutional-note">
+            {SINES_INSTITUTIONAL_NOTE}
           </Text>
         </Box>
+
+        <StatusLegend />
 
         {step(1)}
         {step(2)}
@@ -300,19 +398,27 @@ export function SinesPtaTool(): JSX.Element {
         <PanTable>
           <Table.Thead>
             <Table.Tr>
-              <Table.Th>when</Table.Th><Table.Th>what the document stated</Table.Th>
-              <Table.Th>EUR M</Table.Th><Table.Th>source</Table.Th>
+              <Table.Th>when</Table.Th><Table.Th>perimeter, as the document stated it</Table.Th>
+              <Table.Th>EUR M</Table.Th><Table.Th>status</Table.Th>
+              <Table.Th>source</Table.Th>
             </Table.Tr>
           </Table.Thead>
           <Table.Tbody>
             {CAPEX_HISTORY.map((c) => (
               <Table.Tr key={`${c.when}-${c.value}`}>
-                <Table.Td>{c.when}</Table.Td><Table.Td>{c.what}</Table.Td>
-                <Table.Td>{c.value}</Table.Td><Table.Td>{c.source}</Table.Td>
+                <Table.Td style={{ whiteSpace: "nowrap" }}>{c.when}</Table.Td>
+                <Table.Td>{c.perimeter}</Table.Td>
+                <Table.Td>{c.value}</Table.Td>
+                <Table.Td><StatusBadge status={c.status} /></Table.Td>
+                <Table.Td>{c.source}</Table.Td>
               </Table.Tr>
             ))}
           </Table.Tbody>
         </PanTable>
+        <Text size="xs" c="dimmed">
+          Different perimeters: compare each value only with its own
+          definition.  The page draws no ratio between them.
+        </Text>
 
         {step(4)}
 
@@ -320,21 +426,18 @@ export function SinesPtaTool(): JSX.Element {
           <Table.Thead>
             <Table.Tr>
               <Table.Th>quantity</Table.Th><Table.Th>kt/yr</Table.Th>
-              <Table.Th>source</Table.Th>
+              <Table.Th>status</Table.Th><Table.Th>source</Table.Th>
             </Table.Tr>
           </Table.Thead>
           <Table.Tbody>
-            <Table.Tr><Table.Td>plant capacity</Table.Td>
-              <Table.Td>{OFFTAKE.capacity}</Table.Td><Table.Td>LSB-2012 p. 29</Table.Td></Table.Tr>
-            <Table.Tr><Table.Td>what the plan assumed the shareholder would buy</Table.Td>
-              <Table.Td>the whole output</Table.Td><Table.Td>CPI-2019 p. 288</Table.Td></Table.Tr>
-            <Table.Tr><Table.Td>what the contract allowed it to buy (no explicit penalty)</Table.Td>
-              <Table.Td>up to {OFFTAKE.contract}</Table.Td><Table.Td>LSB-2012 p. 29; LSB-2014 pp. 122-123</Table.Td></Table.Tr>
-            <Table.Tr><Table.Td>what its PET plants ({OFFTAKE.petCapacity} kt/yr) needed</Table.Td>
-              <Table.Td>{OFFTAKE.need}</Table.Td><Table.Td>LSB-2012 p. 37</Table.Td></Table.Tr>
-            <Table.Tr><Table.Td>merchant share, against the contract / the need</Table.Td>
-              <Table.Td>{fx(100 * shareContract, 1)} % / {fx(100 * shareNeed, 1)} %</Table.Td>
-              <Table.Td>this page's arithmetic</Table.Td></Table.Tr>
+            {offtake.map((o) => (
+              <Table.Tr key={o.quantity}>
+                <Table.Td>{o.quantity}</Table.Td>
+                <Table.Td style={{ whiteSpace: "nowrap" }}>{o.value}</Table.Td>
+                <Table.Td><StatusBadge status={o.status} /></Table.Td>
+                <Table.Td>{o.source}</Table.Td>
+              </Table.Tr>
+            ))}
           </Table.Tbody>
         </PanTable>
 
@@ -347,83 +450,85 @@ export function SinesPtaTool(): JSX.Element {
           <Table.Thead>
             <Table.Tr>
               <Table.Th>year</Table.Th><Table.Th>Asia PTA [US$/t]</Table.Th>
-              <Table.Th>West PTA, 50:50 North America : Europe [US$/t]</Table.Th>
-              <Table.Th>source</Table.Th>
+              <Table.Th>West PTA index, 50:50 North America : Europe [US$/t]</Table.Th>
+              <Table.Th>published in</Table.Th>
+              <Table.Th>status</Table.Th><Table.Th>source</Table.Th>
             </Table.Tr>
           </Table.Thead>
           <Table.Tbody>
             {PUBLISHED_SPREADS.map((r) => (
               <Table.Tr key={r.year}>
                 <Table.Td>{r.year}</Table.Td><Table.Td>{r.asia}</Table.Td>
-                <Table.Td>{r.west ?? "—"}</Table.Td><Table.Td>{r.source}</Table.Td>
+                <Table.Td>{r.west ?? "—"}</Table.Td>
+                <Table.Td>IVL {r.published}</Table.Td>
+                <Table.Td><StatusBadge status={r.status} /></Table.Td>
+                <Table.Td>{r.source}</Table.Td>
               </Table.Tr>
             ))}
           </Table.Tbody>
         </PanTable>
         <Text size="xs" c="dimmed">
           IVL's "industry spread": selling price less raw-material
-          consumption.  Published figures, quoted with their source.
+          consumption.  Later information, all of it: none of these figures
+          was available at the 2007-2008 decision, and none is the Sines
+          plant's realised spread.  For retrospective scenarios only.
         </Text>
         <Box>
           {SINES_MARKET_QUOTES.map((q) => <QuoteView key={q.original} q={q} />)}
         </Box>
 
         {step(8)}
-        <PanTable>
-          <Table.Thead>
-            <Table.Tr>
-              <Table.Th>#</Table.Th>
-              <Table.Th>what the documents record (original, then English)</Table.Th>
-              <Table.Th>the concept that catches it</Table.Th>
-            </Table.Tr>
-          </Table.Thead>
-          <Table.Tbody>
-            {SINES_WARNINGS.map((w) => (
-              <Table.Tr key={w.n}>
-                <Table.Td style={{ verticalAlign: "top" }}>{w.n}</Table.Td>
-                <Table.Td style={{ verticalAlign: "top", minWidth: 280 }}>
-                  {w.quotes.map((q) => <QuoteView key={q.original} q={q} />)}
-                  <Text size="xs" mt={2}>{w.context}</Text>
-                </Table.Td>
-                <Table.Td style={{ verticalAlign: "top", minWidth: 180 }}>
-                  <Text size="sm">{w.concept}</Text>
-                </Table.Td>
-              </Table.Tr>
-            ))}
-          </Table.Tbody>
-        </PanTable>
+        <Box style={{ display: "grid", gap: 10,
+          gridTemplateColumns: "repeat(auto-fit, minmax(min(420px, 100%), 1fr))" }}>
+          {SINES_RISKS.map((c) => <RiskCardView key={c.n} c={c} />)}
+        </Box>
 
         {step(9)}
-        <PanTable>
-          <Table.Thead>
-            <Table.Tr>
-              <Table.Th>when</Table.Th><Table.Th>what happened</Table.Th>
-              <Table.Th>source</Table.Th>
-            </Table.Tr>
-          </Table.Thead>
-          <Table.Tbody>
-            {TIMELINE.map((t) => (
-              <Table.Tr key={t.when + t.event}>
-                <Table.Td style={{ whiteSpace: "nowrap" }}>{t.when}</Table.Td>
-                <Table.Td>{t.event}</Table.Td><Table.Td>{t.source}</Table.Td>
-              </Table.Tr>
-            ))}
-          </Table.Tbody>
-        </PanTable>
+        {periods.map((p) => {
+          const rows = TIMELINE.filter((t) => t.period === p);
+          if (rows.length === 0) return null;
+          return (
+            <Box key={p}>
+              <Text size="sm" fw={600}>{PERIOD_WORD[p]}</Text>
+              <PanTable>
+                <Table.Thead>
+                  <Table.Tr>
+                    <Table.Th>when</Table.Th><Table.Th>what the documents record</Table.Th>
+                    <Table.Th>status</Table.Th><Table.Th>source</Table.Th>
+                  </Table.Tr>
+                </Table.Thead>
+                <Table.Tbody>
+                  {rows.map((t) => (
+                    <Table.Tr key={t.when + t.event}>
+                      <Table.Td style={{ whiteSpace: "nowrap" }}>{t.when}</Table.Td>
+                      <Table.Td>{t.event}</Table.Td>
+                      <Table.Td><StatusBadge status={t.status} /></Table.Td>
+                      <Table.Td>{t.source}</Table.Td>
+                    </Table.Tr>
+                  ))}
+                </Table.Tbody>
+              </PanTable>
+            </Box>
+          );
+        })}
 
         {step(10)}
         <PanTable>
           <Table.Thead>
             <Table.Tr>
-              <Table.Th>metric</Table.Th><Table.Th>what it measures</Table.Th>
-              <Table.Th>value</Table.Th><Table.Th>source</Table.Th>
+              <Table.Th>metric</Table.Th><Table.Th>what kind of number</Table.Th>
+              <Table.Th>what it measures</Table.Th>
+              <Table.Th>value</Table.Th><Table.Th>status</Table.Th>
+              <Table.Th>source</Table.Th>
             </Table.Tr>
           </Table.Thead>
           <Table.Tbody>
             {LOSS_METRICS.map((m) => (
               <Table.Tr key={m.metric}>
-                <Table.Td><b>{m.metric}</b></Table.Td><Table.Td>{m.definition}</Table.Td>
+                <Table.Td><b>{m.metric}</b></Table.Td><Table.Td>{m.kind}</Table.Td>
+                <Table.Td>{m.definition}</Table.Td>
                 <Table.Td style={{ whiteSpace: "nowrap" }}>{m.value}</Table.Td>
+                <Table.Td><StatusBadge status={m.status} /></Table.Td>
                 <Table.Td>{m.source}</Table.Td>
               </Table.Tr>
             ))}
@@ -445,13 +550,33 @@ export function SinesPtaTool(): JSX.Element {
         <LessonLimits limits={SINES_LIMITS} />
 
         <Box>
-          <Title order={5}>Sources</Title>
+          <Title order={5}>Sources: what each document is, and where to read it</Title>
           <PanTable>
             <Table.Tbody>
               {SOURCES.map((s) => (
                 <Table.Tr key={s.short}>
-                  <Table.Td style={{ whiteSpace: "nowrap" }}><b>{s.short}</b></Table.Td>
-                  <Table.Td>{s.cite}</Table.Td>
+                  <Table.Td style={{ whiteSpace: "nowrap", verticalAlign: "top" }}>
+                    <b>{s.short}</b>
+                  </Table.Td>
+                  <Table.Td>
+                    <Text size="xs">{s.cite}</Text>
+                    <Text size="xs" c="dimmed">{s.nature}.</Text>
+                    {s.short.startsWith("IVL-AR") ? (
+                      <Text size="xs">
+                        {Object.entries(IVL_REPORT_URLS).map(([k, u], i) => (
+                          <span key={k}>{i > 0 && " · "}
+                            <Anchor href={u} target="_blank" rel="noopener noreferrer"
+                              size="xs">{k}</Anchor>
+                          </span>
+                        ))}
+                      </Text>
+                    ) : (
+                      <Anchor href={s.url} target="_blank" rel="noopener noreferrer"
+                        size="xs" style={{ overflowWrap: "anywhere" }}>
+                        open the document
+                      </Anchor>
+                    )}
+                  </Table.Td>
                 </Table.Tr>
               ))}
             </Table.Tbody>
@@ -469,7 +594,7 @@ export function SinesPtaTool(): JSX.Element {
             <Anchor component="button" type="button"
               onClick={() => setActiveMethodTool("front-end-loading")}>
               Front-End Loading
-            </Anchor>{" "}(the stage gates warning 8 is about) and{" "}
+            </Anchor>{" "}(the stage gates of card 8) and{" "}
             <Anchor component="button" type="button"
               onClick={() => setActiveMethodTool("route-screening")}>
               Screening routes to a product

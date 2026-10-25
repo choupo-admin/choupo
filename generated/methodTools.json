@@ -454,9 +454,9 @@
     },
     {
       "id": "sines-pta",
-      "label": "A negative case: the Sines PTA plant",
+      "label": "Economic appraisal and project risk: lessons from the Sines PTA plant",
       "discipline": "Process design & economics",
-      "teaches": "What the economic analysis of a chemical process must contain, read from a documented case in which a world-scale PTA plant and its lender lost heavily: why a PTA producer is paid the spread over paraxylene and not a product price; a capital cost stated seven times with four perimeters; a plan that assumed one shareholder would buy the whole output against a contract for up to 450 of 700 kt/yr with no explicit penalty, so that a third of the plant was a merchant plant; a discounted cash flow you move, with its break-even spread set beside the published Asian and Western spreads and a tornado; the written warnings of the lender's risk department, each mapped to the concept that catches it (offtake, customer credit, feedstock, capacity and import parity, downside cases, project finance, concentration, stage gates); the outcome; and nine loss figures, each defined, that overlap and must not be added.",
+      "teaches": "The importance of economic appraisal, contractual robustness and downside analysis, read from risks and outcomes recorded in public documents on a world-scale PTA plant: why the price of PTA, the paraxylene it is made from and the conversion cost are analysed together, with the spread as the central measure of the margin; a capital cost stated seven times with different perimeters; an offtake contract whose 450 kt/yr is a maximum, not a guaranteed purchase, against a 700 kt/yr plant; a simplified pre-tax, unfinanced appraisal you move, with its break-even spread and a tornado, labelled an illustrative teaching scenario; the risks the lender's risk department recorded, each read as risk identified, condition recommended, what the documents record about the decision, and later outcome; and ten loss and price figures, each defined, that overlap and must not be added.",
       "href": "/app/?workspace=methods&tool=sines-pta"
     },
     {
