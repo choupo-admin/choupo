@@ -1616,6 +1616,18 @@ accepts today, and that is a policy call.
 > ajustado isso ja resolve muita coisa."): the card is DROPPED; the slice
 > is the draggable divider, the full-height toggle, and a click on a block
 > opening a collapsed details pane to a usable height.
+> LANDED 2026-10-25 (`claude/c153-props-card`): the map is a draggable top
+> panel on the shared resize behaviour the Streams band uses
+> (`PROPS_MAP_PANEL`, `PANELS.propsMap`, 200-1600 px; drag, arrow keys,
+> double-click or Enter resets to C151's computed height), its size a
+> reader preference that changes nothing until dragged; "Figures full
+> height" folds the map with one click and "Show the map" brings it back;
+> the details header is never covered; a click on a block opens a details
+> pane shorter than 260 px (or half the split on a short screen) without
+> ever writing the stored size or shrinking a pane the reader enlarged
+> (`propsSplit.ts`, 13 tests).  FlowCanvas untouched.  `--gui` 36/0 on
+> main.  A Plots menu, should he still want one, is the props set in
+> `allowedWorkspaceLabels` plus AppShell drawing it from the same views.
 
 > **C152. ONE CASE, TWO MODES: PROCESS SIMULATION AND PROPERTIES & DATA
 > (Vitor, 2026-10-25: "os dados podem ser usados no DSPM-DE para gerar
