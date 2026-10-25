@@ -20,6 +20,14 @@ CLAIM.  On the witness (tutorials/steady/heat/coolingTower01_merkel):
       L_over_G -- all published numbers.
   A5  The operating line lies strictly BELOW the saturation curve at every
       published point (the feasibility the integral needs).
+  A6  The BOUNDARY first law (C150 R15, 2026-10-25), not the operating
+      line's identity: the published `H_closure_gap_kW` equals
+      -E cpL (T_water_out - T0) from published numbers (1e-6), it is
+      announced, and the plant energy report's boundary residual on the
+      package's own enthalpy carries it with the same sign to within 25 %
+      (measured on the witness: gap -1.39 kW, report -1.57 kW; the rest is
+      the two enthalpy surfaces).  Against the parent build A6 failed: no
+      gap was published, while the report's -1.57 kW had no owner.
 
 REFUSALS (probe cases built from the witness, each matched on its text):
   R1  both spec keys            -> "specify EXACTLY ONE"
@@ -177,6 +185,39 @@ def main() -> int:
                 failures.append(f"A4: evaporation chain {e:.6g} vs KPI"
                                 f" {k['evaporation_kg_s']:.6g}")
 
+            # A6 the BOUNDARY first law, not the operating line's identity
+            #    (C150 R15).  G (h2 - h1) = L cpL range holds by construction;
+            #    the four published streams on the unit's own surface leave
+            #    -E cpL (T_water_out - T0).  The unit must PUBLISH that gap,
+            #    and the plant's own energy report -- which prices the same
+            #    four streams on the package's enthalpy -- must read a
+            #    residual of the same sign and size (the remainder is the
+            #    difference between the two enthalpy surfaces).
+            gap = k.get("H_closure_gap_kW")
+            want = -k["evaporation_kg_s"] * cpl * (k["T_water_out"] - 273.15) \
+                / 1000.0
+            if gap is None:
+                failures.append("A6: the tower publishes no H_closure_gap_kW"
+                                " -- its boundary first-law residual is"
+                                " unpublished")
+            elif abs(gap - want) > 1e-6 * max(1.0, abs(want)):
+                failures.append(f"A6: H_closure_gap_kW {gap:.9g} vs"
+                                f" -E cpL (T_out - T0) = {want:.9g} from the"
+                                " published numbers")
+            m6 = re.search(r'"globalEnergyBoundary": \{[^{}]*"residual_kW":'
+                           r' ([-+0-9.eE]+)', out)
+            if not m6:
+                failures.append("A6: no globalEnergyBoundary in the result")
+            elif gap is not None:
+                plant = -float(m6.group(1))       # residual = in - out
+                if plant * gap <= 0.0 or abs(plant - gap) > 0.25 * abs(gap):
+                    failures.append(f"A6: the energy report's boundary"
+                                    f" residual (out - in = {plant:.6g} kW)"
+                                    f" does not carry the tower's own gap"
+                                    f" {gap:.6g} kW to within 25 %")
+            if "boundary balance of the four published streams" not in out:
+                failures.append("A6: the gap is not announced")
+
         # ---- REFUSALS ------------------------------------------------------
         def probe(tag, mutate, expect):
             c = copy(tmp, tag)
@@ -215,7 +256,11 @@ def main() -> int:
           " Chebyshev-4 companion are reproduced from the unit's own published"
           " diagram (cpL taken off the operating line, never the engine's"
           " internals), the approach/range/evaporation identities hold, the"
-          " operating line stays strictly below saturation, and five refusals"
+          " operating line stays strictly below saturation, the tower"
+          " publishes and announces its BOUNDARY first-law residual"
+          " (-E cpL (T_out - T0), the evaporated water the constant-L line"
+          " never sees) and the plant energy report carries it, and five"
+          " refusals"
           " (double spec, wet-bulb floor, pinched L/G, two liquids, target"
           " above inlet) fire by name.  NOT COVERED: agreement with a MEASURED"
           " tower (no primary anchor wired yet -- structural witness only),"

@@ -227,6 +227,35 @@ describe("what Merkel assumes — the page states all of it, and only it", () =>
     expect(note).toContain("boundary mass balance is exact");
   });
 
+  it("keeps the wet bulb and adiabatic saturation apart, as psychro does (C150 R15)", () => {
+    //  The engine solves the ADIABATIC-SATURATION balance (Psychrometry.H)
+    //  and calls it T_wb; that is the air-water near-coincidence at a Lewis
+    //  factor of one, not one definition of two things.
+    const body = prose(step(2).body);
+    expect(body).toContain("ADIABATIC-SATURATION temperature");
+    expect(body).toContain("Lewis factor is near one");
+    expect(body).not.toMatch(/WET-BULB temperature — what a thermometer with a wetted wick reads, the temperature air reaches when it saturates itself/);
+  });
+
+  it("does not let the mass correction stand for an energy check (C150 R15)", () => {
+    //  The air enthalpy is DEFINED by the constant-L operating line, so
+    //  G(h2 - h1) = L cp_L range is an identity, not a validation.  The
+    //  boundary first law of the four published streams leaves the
+    //  evaporated water's enthalpy, which the engine publishes; the page
+    //  must quote it at its real size and in the engine's own words.
+    const gap = golden("H_closure_gap_kW");
+    const duty = golden("Q_kW");
+    expect(gap.toFixed(2)).toBe("-1.39");
+    expect((100 * Math.abs(gap) / duty).toFixed(1)).toBe("3.8");
+    const note = prose(step(5).note!);
+    expect(note).toContain("H_closure_gap_kW");
+    expect(note).toContain("−1.39 kW, 3.8 % of the duty");
+    expect(prose(limit("constant-water-flow").body))
+      .toContain("does NOT close the energy balance");
+    expect(ENGINE_CPP).toContain('kpis_["H_closure_gap_kW"]');
+    expect(ENGINE_CPP).toContain("boundary balance of the four published streams");
+  });
+
   it("does not claim a comparison the engine cannot make", () => {
     //  Poppe's formulation is named as the thing Choupo does NOT implement;
     //  a page implying the comparison is available would be inventing it.

@@ -56,7 +56,10 @@ Description
         (L held constant along the packing, the classical Merkel form);
         the loss itself is REPORTED from the air-side humidity gain, and
         the water outlet flow honours it, so the boundary mass balance
-        is exact even though the integrand's L is not.
+        is exact even though the integrand's L is not.  The boundary
+        ENERGY balance is not: the air enthalpy comes from the constant-L
+        line, so the four published streams leave -E cpL (T_water_out -
+        T0), published as `H_closure_gap_kW` and announced (C150 R15).
       * The exit air is assumed SATURATED (h*(T_air_out) = h_air_out):
         Merkel resolves the air enthalpy profile, not its humidity, so
         the exit state needs one closing assumption and this is the

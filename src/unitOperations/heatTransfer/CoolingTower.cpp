@@ -30,6 +30,7 @@ License
 #include "CoolingTower.H"
 #include "Psychrometry.H"
 #include "thermo/ThermoPackage.H"
+#include "core/Advisory.H"
 
 #include <algorithm>
 #include <cmath>
@@ -353,6 +354,42 @@ int CoolingTower::solve(const DictPtr& dict,
     kpis_["makeup_kg_s"]   = evap_kg;       // drift/blowdown not modelled
     kpis_["evaporation_pct_of_L"] = 100.0 * evap_kg / L_in;
     kpis_["Q_kW"]          = L_in * cpL * range / 1000.0;                // water side
+
+    //  ---- THE BOUNDARY FIRST LAW ON THE UNIT'S OWN SURFACE (C150 R15) ------
+    //  G (h2 - h1) = L cpL range is not a check: h2 is DEFINED by the
+    //  constant-L operating line.  The boundary balance is the four streams
+    //  as published -- the water leaves with L - E, not L -- priced on the
+    //  same humid-air construction (dry air + liquid water at T0):
+    //      H_out - H_in = -E cpL (T_water_out - T0),
+    //  the enthalpy the evaporated water carries at the cold-water
+    //  temperature, which the constant-L line never sees.  Published, and
+    //  announced; NOT corrected, because correcting it is not Merkel's method
+    //  (the remedy -- a variable-L integral, Poppe's -- is new physics).  The
+    //  plant's energy report prices the same four streams on the package's
+    //  own enthalpy and reads this gap plus the difference between the two
+    //  surfaces.
+    {
+        const scalar H_in  = L_in * cpL * (T_Lin - T0) + G_dry * h1;            // W
+        const scalar H_out = (L_in - evap_kg) * cpL * (T_out - T0) + G_dry * h2;
+        const scalar gap_kW = (H_out - H_in) / 1000.0;
+        kpis_["H_closure_gap_kW"] = gap_kW;
+        std::ostringstream m;
+        m << "Merkel holds L constant, so the air enthalpy it publishes"
+             " satisfies G (h2 - h1) = L cpL range by construction; the"
+             " boundary balance of the four published streams on the same"
+             " humid-air surface leaves " << gap_kW << " kW ("
+          << (kpis_["Q_kW"] != 0.0 ? 100.0 * gap_kW / kpis_["Q_kW"] : 0.0)
+          << " % of the water-side duty) -- the enthalpy of the "
+          << evap_kg << " kg/s evaporated, at the cold-water temperature."
+             "  It is this model's own first-law residual, not corrected";
+        if (AdvisoryLog::instance().addAnnouncedOnce(
+                "ctGap:" + dict->lookupWordOrDefault("name", "(unnamed)"),
+                "approximation", "warning",
+                "coolingTower '" + dict->lookupWordOrDefault("name", "(unnamed)")
+                    + "'", m.str()))
+            if (verbosity >= 1)
+                std::cout << "  [coolingTower] " << m.str() << ".\n";
+    }
 
     // ---- Announcements (the method's hypotheses, never silent) -------------
     if (verbosity >= 1)

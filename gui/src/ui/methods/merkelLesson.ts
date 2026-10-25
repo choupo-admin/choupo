@@ -78,12 +78,22 @@ export const MERKEL_STEPS: readonly LessonStep[] = [
     n: 2,
     title: "The floor is the WET bulb, and the approach is what you pay for",
     body: "Ask how cold a tower can make water and the usual answer is the "
-      + "air temperature.  It is not: it is the WET-BULB temperature — what a "
-      + "thermometer with a wetted wick reads, the temperature air reaches "
-      + "when it saturates itself by evaporating water into itself with no "
-      + "heat from outside.  Water sitting at the incoming air's wet bulb is "
-      + "already in balance with that air: the enthalpy gap there is zero and "
-      + "the tower has nothing left to work with.  How far ABOVE that floor "
+      + "air temperature.  It is not: it is the incoming air's WET-BULB "
+      + "temperature.  Two definitions meet here and they are not the same "
+      + "one.  A wet-bulb thermometer reads a balance between heat and mass "
+      + "transfer at a wetted wick; the ADIABATIC-SATURATION temperature is "
+      + "where air ends up when it saturates itself by evaporating water with "
+      + "no heat from outside.  For air and water, whose Lewis factor is near "
+      + "one, the two very nearly coincide — and that coincidence is what "
+      + "this model uses: the engine computes the adiabatic-saturation "
+      + "temperature and calls it T_wb (the psychrometric-chart page draws "
+      + "both lines; for another gas and liquid they part).  Water sitting at "
+      + "that temperature is, very nearly, already in balance with the "
+      + "incoming air: the enthalpy gap there is close to zero (exactly zero "
+      + "only where h*(T) equals the inlet air's enthalpy, which the "
+      + "adiabatic-saturation balance meets to within the enthalpy of the "
+      + "water it evaporates) and the tower has nothing left to work with.  "
+      + "How far ABOVE that floor "
       + "the cold water actually ends up is the APPROACH, and it is the "
       + "number that sizes and prices the tower.",
     formula: String.raw`\text{approach} = T_\mathrm{water,out} - T_\mathrm{wb,in} \qquad \text{(the engine publishes both)}`,
@@ -93,8 +103,10 @@ export const MERKEL_STEPS: readonly LessonStep[] = [
         + "water could conceivably be brought to",
         unit: "K" },
       { sym: "T_\\mathrm{wb}",
-        means: "The WET-BULB temperature of the INLET air — what "
-        + "that air reaches by saturating itself adiabatically.  It is the "
+        means: "The WET-BULB temperature of the INLET air, computed "
+        + "here as its ADIABATIC-SATURATION temperature (the two coincide "
+        + "for air–water at a Lewis factor of one, the assumption this "
+        + "whole model rests on — not for any gas and liquid).  It is the "
         + "thermodynamic FLOOR for the cold water: a design specification at "
         + "or below it is refused by name, and in rating mode the solver "
         + "brackets its search just above it so the answer can never sit "
@@ -282,6 +294,18 @@ Q &= L\, \mathrm{cp}_L\, \text{range} &\qquad \text{range} &= T_\mathrm{water,in
       + "settings that loss is about 2.4 % of the water fed — the water flow "
       + "at the bottom of the packing is that much lower than at the top, "
       + "while the integral uses one L throughout.  Small, and not zero.  "
+      + "The ENERGY balance is a different matter, and correcting the flow "
+      + "does not settle it: the air enthalpy the engine publishes is "
+      + "defined by the constant-L operating line, so the boundary balance "
+      + "of the four streams as published leaves exactly the enthalpy the "
+      + "evaporated water carries at the cold-water temperature, "
+      + "−E·cp_L·(T_water,out − 0 °C).  The engine publishes it as "
+      + "H_closure_gap_kW and says so on every run: on the witness about "
+      + "−1.39 kW, 3.8 % of the duty, and the plant's own energy report, "
+      + "pricing the same streams on the package's enthalpy, reads −1.57 kW "
+      + "(the rest is the difference between the two enthalpy surfaces).  "
+      + "That residual is Merkel's approximation, not an error to tune away; "
+      + "the fix is a variable-L formulation, which this model is not.  "
       + "Later formulations (Poppe's, for instance) carry the Lewis factor "
       + "and the air humidity explicitly; Choupo implements Merkel only, and "
       + "the comparison is not available here.",
@@ -307,8 +331,12 @@ export const MERKEL_LIMITS: readonly { id: string; title: string; body: string }
       + "the air's humidity gain, publishes it (evaporation_kg_s, "
       + "evaporation_pct_of_L) and subtracts it from the cold-water outlet, "
       + "so the boundary mass balance is exact while the integrand's L is "
-      + "not. The specific heats are likewise taken once, at mean "
-      + "temperatures, and not re-evaluated along the packing.",
+      + "not. That flow correction does NOT close the energy balance: the "
+      + "four boundary streams leave −E·cp_L·(T_water,out − 0 °C), "
+      + "published as H_closure_gap_kW and announced (about −1.39 kW, 3.8 % "
+      + "of the duty, on the witness). The specific heats are likewise "
+      + "taken once, at mean temperatures, and not re-evaluated along the "
+      + "packing.",
   },
   {
     id: "saturated-exit-air",

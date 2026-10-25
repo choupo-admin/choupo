@@ -28,3 +28,4 @@ boundary global                 Q_boundary_kW    0                1e-4
 boundary global                 H_products_kW    -8002.54796411   1e-4
 boundary global                 residual_kW      1.5665826285     1e-4
 utility tower01                heating.-.carried 1                1e-4
+kpi     tower01                H_closure_gap_kW -1.39277111799   1e-4
