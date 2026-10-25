@@ -246,7 +246,7 @@ const OP_DEST: Record<string, { pdf: string; dest?: string }> = {
   propertyScanTernary: { pdf: "propsGuide.pdf", dest: "ch:pairs" },
   // The calculation map's op blocks (DEV.md 4c C151): the benches whose
   // derivation has a chapter of its own in the Theory Guide.
-  poreTransport:      { pdf: "theoryGuide.pdf", dest: "ch:dspmde" },          // DSPM-DE pore at imposed J_v
+  poreTransport:      { pdf: "theoryGuide.pdf", dest: "sec:dspmde-model" },   // DSPM-DE pore at imposed J_v (the help index agrees, C166)
   polarisationIndex:  { pdf: "theoryGuide.pdf", dest: "sec:polarisation-multiionic" }, // Geraldes & Afonso 2007
   isothermEval:       { pdf: "theoryGuide.pdf", dest: "ch:adsorption" },      // the curated isotherm
   thielePellet:       { pdf: "theoryGuide.pdf", dest: "ch:thiele" },          // Thiele modulus, effectiveness
