@@ -1683,6 +1683,24 @@ accepts today, and that is a policy call.
 > (BatchDiafilter.cpp:113) but NO batch case runs DSPM-DE and it
 > publishes R_initial / R_final and the recovery, not a time-averaged
 > rejection -- a batch DSPM-DE witness and that average are C157c.
+> C157c LANDED 2026-10-25 (`claude/c157c-batch-dspmde`): DSPM-DE and
+> SDEM run end to end inside `batchDiafilter` (no engine change needed);
+> witness `tutorials/batch/membrane/diafilter03_dspmde_batch` (NaCl R
+> 0.691 -> 0.554 as the retentate concentrates, MgSO4 0.973 -> 0.979);
+> the campaign publishes the TIME-AVERAGED rejection R_avg_<s> = 1 -
+> c_permPooled / c_bMeanPerm (the pooled permeate against the retentate
+> bulk averaged over what permeated, = the c_b Q_p-weighted mean of the
+> instantaneous R_obs) and R_avgVsInitialFeed_<s> against the initial
+> charge, from the unit's own integrated states (one more ODE row, not a
+> second quadrature); diafilter01/02 gained 10 rows each by
+> --record-append, none moved; `check_diafiltration` arm (i);
+> docs/ai/membrane-research.md says how rejection is reported at a point,
+> in a spiral stage and in a batch campaign.  FOUND, not fixed (goldens
+> would move -- Vitor's): diafilter01/02 integrate by forward EULER while
+> the header prints "(fixed RK4)" (NaCl recovery 0.501529 vs 0.502215
+> adaptive, 1.4e-3); a declared fouling law lags under adaptive stepping;
+> the electroneutral film's message misdescribes a constant k_film; SDEM's
+> advisory names the wrong unit.
 
 > **C156. THE PLOTS PAGE NAVIGATES BY UNIT TOO (Vitor, 2026-10-25, on
 > ammonia02_full_plant's Plots page: "do lado esquerdo devia de haver uma
@@ -2352,7 +2370,30 @@ accepts today, and that is a policy call.
 > (24 cases move), W2 bubble/dew T rebuilt on the incipient-phase
 > iteration with a Tb/Tc bracket, W3 the phi-phi liquid enthalpy from the
 > EoS liquid root, M1 an announcement, M2 a residual KPI, W6 Soave's or
-> Graboski-Daubert's slope.  Family (b) separations LANDED
+> Graboski-Daubert's slope.  Family (c) REACTORS LANDED (analyst +
+> refuter, `claude/c131-refute-reactors`, report
+> `docs/design/review-c131-reactors.md`): FIXED -- the cstr/pfr reverse
+> rate used the ideal-gas Kc in kmol/m3 against liquid-basis mol/m3
+> (MTBE, Sigma-nu = -1: 99.95 % against 98.53 % consistent), now refused
+> by name for Arrhenius/LHHW laws; the multi-reaction CSTR's other extent
+> roots ANNOUNCED with their stability for a one-reaction set (an
+> autocatalytic law had reported washout X = 0 against the stable 0.8954;
+> in adiabatic mode the other roots are said NOT to be steady states);
+> the gibbsReactor dropping a condensate with one declared outlet
+> (0.254 % mass closure) refused; the equilibriumReactor's phi loop (y_NH3
+> 0.300 -> 0.324 at 200 bar, ideal gas byte-identical), its duty as
+> H_out - H_in (the syngas EduTool's -5.30/-1.72 kW were the defect; -30.89
+> / -11.08 kW), its supersaturated outlet refused (incl. the mixture's dew
+> point); the dynamicCSTR's Sigma-nu != 0 drain ANNOUNCED and its dropped
+> `reversible`/`A_rev` restored; gate `check_reactor_limits`; 115 reactor
+> cases identical to main.  PROPOSALS: a KKT check on directMin, the root
+> audit for several reactions, a constant-volume outflow for the
+> dynamicCSTR, M1-M6 of the report (a liquid standard state for reversible
+> liquid reactions is pedagogy).  `check_ammonia_rate` arm (i) is RED on
+> main since the C131 adiabatic mixer moved ammonia03's bed states inside
+> its 1e-4 golden tolerance but outside the bench's 1e-6: re-transcribing
+> moves the bench's golden past 1e-4 (two rows) and prose figures -- the
+> commander's next slice, on delegated authority.  Family (b) separations LANDED
 > (analyst `claude/c131-review-separations` + refuter
 > `claude/c131-refute-separations`, report
 > `docs/design/review-c131-separations.md` with its Refutation appendix):
