@@ -8655,6 +8655,12 @@ THE RECORD. `output \{ record ...; \}` writes constant/assets/ NF270\_FdL2021.da
 WHAT IS PINNED (expected.props). The fitted values and their uncertainties, the held-out AAD and the verdict: self-recorded rows -- they pin that the fit has not MOVED, not that NF270 is right. The held-out verdict is the validation claim, and it is the paper's data that decide it.
 
 \end{tutnarrative}
+\tutreadme{The question. A researcher has measured the rejections of his membrane in the laboratory. Can he fit a pore model to them, judge the fit against data it never saw, and then use the fitted membrane in a process -- without the data, the fit and the process drifting apart?}
+\tutreadme{Two modes, one case. This case carries BOTH a system/propsDict (Properties \& data mode) and a system/flowsheetDict (Process mode) over one constant/:}
+\tutreadme{runCase tutorials/steady/membranes/membrane24\_fit\_then\_simulate props \# the fit runCase tutorials/steady/membranes/membrane24\_fit\_then\_simulate \# the stage}
+\tutreadme{The fit. NF270's DSPM-DE pore -- its radius r\_p and fixed charge X\_d -- fitted to Fernandez de Labastida \& Yaroshchuk's (Membranes 11 (2021) 272, CC BY 4.0) measured intrinsic rejections of NaCl and MgCl2; Na2SO4 and MgSO4 held out. Result: r\_p = 0.675 +- 0.034 nm, X\_d = -10.5 +- 4.1 mol/m3, held-out AAD 0.93 points of rejection, verdict validated against a band of 10 points declared before the fit. Read the propsDict header for how the partition was chosen: other partitions were measured first and do NOT identify the pore, and the sulfates are an easy test.}
+\tutreadme{The record. The fit writes constant/assets/NF270\_FdL2021.dat: the fitted values, their uncertainty, the verdict, and the fingerprints of the datasets, of the fit block and of the base record.}
+\tutreadme{The stage. One vessel of three generic 8-inch elements reads that record. It first CHECKS the fingerprints: change one measured rejection in constant/experimental/, and the stage refuses to run, naming the dataset and telling you to run the Properties mode again -- a stale fit is never used in silence.}
 \begin{tutgolden}
 \goldrow{stream}{concentrate}{F}{0.107699137018}
 \goldrow{stream}{concentrate}{T}{293.15}
