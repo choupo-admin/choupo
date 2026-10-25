@@ -48,7 +48,7 @@ License
 
   Kept free of React / the DOM so the staircase is unit-tested directly
   (tests/mccabeThiele.test.ts): step count vs R, R_min detection, the q = 1
-  vertical case, total vs partial condenser ±1 stage.
+  vertical case, a partial condenser that takes a stage rather than adding one.
 
   References: Wankat, Separation Process Engineering 4e ch. 4;
   Seader-Henley-Roper, Separation Process Principles 3e §7.2; King, Separation
@@ -74,7 +74,7 @@ export interface MccabeSpec {
   xW: number;            // bottoms / residue composition
   R: number;             // reflux ratio L/D (the knob)
   q: number;             // feed quality (the knob): 1 sat-liq, 0 sat-vap, …
-  totalCondenser: boolean; // total → distillate vapour-of-comp = xD; partial → 1 stage
+  totalCondenser: boolean; // total → liquid distillate at xD; partial → vapour distillate at xD, the condenser is the first stage
   partialReboiler: boolean; // a partial reboiler is an equilibrium stage (default true)
   efficiency?: number;     // Murphree tray efficiency E_MV in (0,1]; default 1 (ideal stages)
 }
@@ -92,7 +92,8 @@ export interface MccabeResult {
   qLine: Line | null;        // null when vertical
   feedInt: Pt;               // ROL ∩ q-line (the optimal feed switch abscissa)
   staircase: Pt[];           // polyline (alternating horizontal/vertical corners)
-  nStages: number;           // equilibrium stages (incl. reboiler; partial cond +1)
+  nStages: number;           // equilibrium stages (every step: condenser and reboiler included when they are stages)
+  trays: number;             // the steps that are trays: nStages less a partial condenser and a partial reboiler
   nStagesFractional: number; // with the fractional last step (N = 8.3 → 9)
   feedStage: number;         // 1-based stage where the step crosses to the SOL
   rMin: number;              // minimum reflux (the pinch)
@@ -368,6 +369,7 @@ export function buildMccabe(curve: EqCurve, spec: MccabeSpec): MccabeResult {
   let nStages = 0;
   let feedStage = 0;
   let nFrac = 0;
+  let trays = 0;
   let capped = false;
 
   if (!pinched && !azeotrope) {
@@ -401,11 +403,17 @@ export function buildMccabe(curve: EqCurve, spec: MccabeSpec): MccabeResult {
     if (feedStage === 0) feedStage = nStages;  // feed at/after the bottom
     if (nFrac === 0) nFrac = nStages;
 
-    // partial condenser is an extra equilibrium stage above the top tray.
-    if (!totalCondenser) { nStages += 1; nFrac += 1; feedStage += 1; }
-    // a TOTAL reboiler (no equilibrium stage) subtracts one; the default is a
-    // partial reboiler (an equilibrium stage), already counted by the walk.
-    if (!partialReboiler && nStages > 0) { nStages -= 1; nFrac -= 1; }
+    // The walk already counts every equilibrium stage, whichever condenser
+    // and reboiler the column has: the operating line passes through
+    // (xD, xD) either way, so the staircase is the same.  With a PARTIAL
+    // condenser the first step from (xD, xD) IS the condenser (y_D = xD in
+    // equilibrium with the reflux x_0); with a total one it is the top tray.
+    // With a partial reboiler the last step IS the reboiler; with a total
+    // one it is the bottom tray.  So the condenser and the reboiler change
+    // WHICH steps are trays (`trays` below), never how many stages there are
+    // -- adding one for a partial condenser counted the condenser twice and
+    // moved the feed marker one corner down the staircase.
+    trays = nStages - (totalCondenser ? 0 : 1) - (partialReboiler ? 1 : 0);
   }
 
   return {
@@ -416,6 +424,7 @@ export function buildMccabe(curve: EqCurve, spec: MccabeSpec): MccabeResult {
     staircase,
     nStages: pinched || azeotrope || capped ? Infinity : nStages,
     nStagesFractional: pinched || azeotrope || capped ? Infinity : nFrac,
+    trays: pinched || azeotrope || capped ? Infinity : trays,
     feedStage,
     rMin,
     pinch,

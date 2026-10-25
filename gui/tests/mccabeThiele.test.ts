@@ -140,12 +140,21 @@ describe("mccabeThiele — N_min (total reflux / Fenske)", () => {
   });
 });
 
-describe("mccabeThiele — total vs partial condenser (±1 stage)", () => {
-  it("a partial condenser adds exactly one equilibrium stage", () => {
+describe("mccabeThiele — total vs partial condenser", () => {
+  //  The operating line passes through (xD, xD) either way, so the walk is
+  //  the same staircase; a partial condenser is its FIRST step, not an extra
+  //  one.  The old +1 counted the condenser twice and moved the feed marker.
+  it("a partial condenser takes a stage: same staircase, same N, one fewer tray", () => {
     const spec = defaultSpec({ R: 3, totalCondenser: true });
-    const total = buildMccabe(curve, spec).nStages;
-    const partial = buildMccabe(curve, { ...spec, totalCondenser: false }).nStages;
-    expect(partial).toBe(total + 1);
+    const total = buildMccabe(curve, spec);
+    const partial = buildMccabe(curve, { ...spec, totalCondenser: false });
+    expect(partial.nStages).toBe(total.nStages);
+    expect(partial.nStagesFractional).toBe(total.nStagesFractional);
+    expect(partial.feedStage).toBe(total.feedStage);
+    expect(partial.staircase).toEqual(total.staircase);
+    expect(partial.trays).toBe(total.trays - 1);
+    // the default column: partial reboiler, total condenser -> trays = N - 1
+    expect(total.trays).toBe(total.nStages - 1);
   });
 });
 

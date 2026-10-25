@@ -221,8 +221,8 @@ export function McCabePlot(
             <SetField label="E_MV (tray eff.)" value={eff} onChange={(v) => setEff(clamp(v, 0.1, 1))} />
           </span>
         </Tooltip>
-        <Tooltip label="total condenser: the distillate is liquid of composition x_D (no equilibrium stage).  partial condenser: the condenser IS one equilibrium stage — the count goes up by exactly one." multiline w={280} withArrow>
-          <Switch size="xs" checked={!totalCondenser} label="partial condenser (+1 stage)"
+        <Tooltip label="total condenser: the distillate is liquid of composition x_D and the condenser is not a stage.  partial condenser: the distillate is vapour of composition x_D and the condenser IS an equilibrium stage — the FIRST step of the staircase.  The staircase and N do not change; one fewer of the steps is a tray." multiline w={280} withArrow>
+          <Switch size="xs" checked={!totalCondenser} label="partial condenser (one stage is the condenser)"
             onChange={(e) => setTotalCondenser(!e.currentTarget.checked)} styles={{ label: { fontSize: 11 } }} />
         </Tooltip>
       </Group>
@@ -451,6 +451,9 @@ function ReadoutStrip({ res, effectiveR }: { res: MccabeResult; effectiveR: numb
       <Badge size="sm" variant="light" tt="none" color={res.pinched || res.azeotrope ? "red" : "teal"}>
         N = {res.pinched || res.azeotrope ? "∞" : `${res.nStagesFractional.toFixed(1)} → ${res.nStages}`}
       </Badge>
+      {!res.pinched && !res.azeotrope && (
+        <Badge size="sm" variant="light" tt="none" color="teal">trays = {res.trays}</Badge>
+      )}
       {!res.pinched && !res.azeotrope && (
         <Badge size="sm" variant="light" tt="none" color="grape">feed stage {res.feedStage}</Badge>
       )}
