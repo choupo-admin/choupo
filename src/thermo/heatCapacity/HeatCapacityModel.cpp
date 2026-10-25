@@ -32,6 +32,7 @@ License
 #include "PolynomialCp.H"
 #include "RowlinsonBondi.H"
 #include "NASA7Cp.H"
+#include "NASA9Cp.H"
 
 #include <map>
 #include <memory>
@@ -80,6 +81,12 @@ void HeatCapacityModel::registerBuiltins()
     registerModel("NASA7",
         [](const DictPtr& d) -> std::unique_ptr<HeatCapacityModel>
         { return std::make_unique<NASA7Cp>(d); });
+    //  The NASA Glenn 9-coefficient form, read as NASA/TP-2002-211556
+    //  publishes it (public domain) -- the clean primary for the combustion
+    //  species once GRI-Mech's thermo file was ruled out (DEV.md 4c C164).
+    registerModel("NASA9",
+        [](const DictPtr& d) -> std::unique_ptr<HeatCapacityModel>
+        { return std::make_unique<NASA9Cp>(d); });
 }
 
 } // namespace Choupo

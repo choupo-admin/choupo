@@ -1150,6 +1150,9 @@
   "NASA7Cp": [
    "src/thermo/heatCapacity/NASA7Cp.H"
   ],
+  "NASA9Cp": [
+   "src/thermo/heatCapacity/NASA9Cp.H"
+  ],
   "NDOptions": [
    "src/solver/NewtonND.H"
   ],
@@ -7125,6 +7128,7 @@
    "src/thermo/heatCapacity/ChemSepCp16.H",
    "src/thermo/heatCapacity/HeatCapacityModel.H",
    "src/thermo/heatCapacity/NASA7Cp.H",
+   "src/thermo/heatCapacity/NASA9Cp.H",
    "src/thermo/heatCapacity/PolynomialCp.H",
    "src/thermo/heatCapacity/RowlinsonBondi.H"
   ],
@@ -7135,6 +7139,15 @@
    "src/core/Types.H",
    "src/thermo/heatCapacity/HeatCapacityModel.H",
    "src/thermo/heatCapacity/NASA7Cp.H"
+  ],
+  "src/thermo/heatCapacity/NASA9Cp.cpp": [
+   "src/core/Advisory.H",
+   "src/core/Constants.H",
+   "src/core/Dictionary.H",
+   "src/core/Dimensions.H",
+   "src/core/Types.H",
+   "src/thermo/heatCapacity/HeatCapacityModel.H",
+   "src/thermo/heatCapacity/NASA9Cp.H"
   ],
   "src/thermo/heatCapacity/PolynomialCp.cpp": [
    "src/core/Advisory.H",
@@ -9944,6 +9957,7 @@
    "src/thermo/equationOfState/PR.cpp",
    "src/thermo/equationOfState/SRK.cpp",
    "src/thermo/heatCapacity/ChemSepCp16.cpp",
+   "src/thermo/heatCapacity/NASA9Cp.cpp",
    "src/thermo/heatCapacity/PolynomialCp.cpp",
    "src/thermo/heatCapacity/RowlinsonBondi.cpp",
    "src/thermo/henrysLaw/HenrysLaw.cpp",
@@ -10233,6 +10247,7 @@
    "src/thermo/equationOfState/PR.cpp",
    "src/thermo/equationOfState/SRK.cpp",
    "src/thermo/heatCapacity/NASA7Cp.cpp",
+   "src/thermo/heatCapacity/NASA9Cp.cpp",
    "src/thermo/heatCapacity/RowlinsonBondi.cpp",
    "src/thermo/henrysLaw/HenrysLaw.cpp",
    "src/thermo/phase/LiquidPhase.cpp",
@@ -10472,6 +10487,7 @@
    "src/thermo/heatCapacity/ChemSepCp16.cpp",
    "src/thermo/heatCapacity/HeatCapacityModel.cpp",
    "src/thermo/heatCapacity/NASA7Cp.cpp",
+   "src/thermo/heatCapacity/NASA9Cp.cpp",
    "src/thermo/heatCapacity/PolynomialCp.cpp",
    "src/thermo/heatCapacity/RowlinsonBondi.cpp",
    "src/thermo/henrysLaw/HenrysLaw.cpp",
@@ -10813,6 +10829,7 @@
    "src/thermo/heatCapacity/ChemSepCp16.cpp",
    "src/thermo/heatCapacity/HeatCapacityModel.cpp",
    "src/thermo/heatCapacity/NASA7Cp.cpp",
+   "src/thermo/heatCapacity/NASA9Cp.cpp",
    "src/thermo/heatCapacity/PolynomialCp.cpp",
    "src/thermo/heatCapacity/RowlinsonBondi.cpp",
    "src/thermo/henrysLaw/HenrysLaw.cpp",
@@ -12192,6 +12209,7 @@
    "src/thermo/heatCapacity/ChemSepCp16.cpp",
    "src/thermo/heatCapacity/HeatCapacityModel.cpp",
    "src/thermo/heatCapacity/NASA7Cp.cpp",
+   "src/thermo/heatCapacity/NASA9Cp.cpp",
    "src/thermo/heatCapacity/PolynomialCp.cpp",
    "src/thermo/heatCapacity/RowlinsonBondi.cpp",
    "src/thermo/henrysLaw/HenrysLaw.cpp",
@@ -15425,6 +15443,7 @@
    "src/thermo/heatCapacity/ChemSepCp16.cpp",
    "src/thermo/heatCapacity/HeatCapacityModel.cpp",
    "src/thermo/heatCapacity/NASA7Cp.cpp",
+   "src/thermo/heatCapacity/NASA9Cp.cpp",
    "src/thermo/heatCapacity/PolynomialCp.cpp",
    "src/thermo/heatCapacity/RowlinsonBondi.cpp",
    "src/thermo/transport/Eucken.cpp",
@@ -15447,6 +15466,10 @@
   "src/thermo/heatCapacity/NASA7Cp.H": [
    "src/thermo/heatCapacity/HeatCapacityModel.cpp",
    "src/thermo/heatCapacity/NASA7Cp.cpp"
+  ],
+  "src/thermo/heatCapacity/NASA9Cp.H": [
+   "src/thermo/heatCapacity/HeatCapacityModel.cpp",
+   "src/thermo/heatCapacity/NASA9Cp.cpp"
   ],
   "src/thermo/heatCapacity/PolynomialCp.H": [
    "src/thermo/heatCapacity/HeatCapacityModel.cpp",
