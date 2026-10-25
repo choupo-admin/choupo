@@ -71,6 +71,10 @@ interface TearData {
   /** how far each vertical leg stands off its box (automatic layout) */
   sourceOutset?: number;
   targetOutset?: number;
+  /** a RETURN WIRE of a folded drawing (case/flowsheetLayout.ts step 7):
+   *  a forward stream from the first row to the second, drawn with this
+   *  same U through the band between the rows -- not a recycle */
+  wrap?: boolean;
   [k: string]: unknown;
 }
 
@@ -228,7 +232,9 @@ export function TearEdge({
           onPointerUp={onPointerUp}
           onClick={(e) => e.stopPropagation()}
           onDoubleClick={onDoubleClick}
-          title="Drag to raise / lower this recycle line; double-click to reset"
+          title={td.wrap
+            ? "Drag to raise / lower this return wire (the stream continues on the row below); double-click to reset"
+            : "Drag to raise / lower this recycle line; double-click to reset"}
           style={{
             position: "absolute",
             transform: `translate(-50%, -50%) translate(${labelX}px, ${busY}px)`,

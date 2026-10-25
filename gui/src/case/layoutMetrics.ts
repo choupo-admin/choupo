@@ -52,7 +52,7 @@ License
 
 import type { Edge, Node } from "@xyflow/react";
 
-import type { XY } from "./flowsheetLayout.js";
+import { isReturnWire, type XY } from "./flowsheetLayout.js";
 import { PHASE_SPLIT_TYPES } from "./dutyTypes.js";
 import type { UnitSpec } from "./types.js";
 
@@ -93,7 +93,8 @@ function polyline(
   const tb = boxes.get(e.target);
   if (!sn || !tn || !sb || !tb) return null;
   const raw = (e.data ?? {}) as {
-    kind?: string; backEdge?: boolean; routeY?: number; sourceOutset?: number; targetOutset?: number;
+    kind?: string; backEdge?: boolean; wrap?: boolean;
+    routeY?: number; sourceOutset?: number; targetOutset?: number;
   };
   //  `routed: false` measures a drawing made WITHOUT the layout's routing
   //  (the previous layout): a recycle at TearEdge's own default depth, an
@@ -120,7 +121,11 @@ function polyline(
   const sy = portY(sn, sb, e.sourceHandle, "out");
   const tx = tb.x;
   const ty = portY(tn, tb, e.targetHandle, "in");
-  if (data.kind === "tear" || data.backEdge) {
+  //  A RETURN WIRE of a folded drawing (flowsheetLayout.ts step 7) is drawn
+  //  as the recycle's U -- when its target does lie back to the left and
+  //  below, as FlowCanvas decides (`isReturnWire`); otherwise as a forward
+  //  wire.
+  if (data.kind === "tear" || data.backEdge || (data.wrap && isReturnWire(sb, tb))) {
     const bus = data.routeY ?? Math.max(sy, ty) + 70;
     const os = data.sourceOutset ?? 18;
     const ot = data.targetOutset ?? 18;

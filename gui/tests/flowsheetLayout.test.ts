@@ -12,7 +12,7 @@
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
 
 import {
-  closeEmptyBands, layoutFlowsheet, placeUnsavedNodes,
+  closeEmptyBands, isReturnWire, layoutFlowsheet, placeUnsavedNodes,
   type LayoutEdge, type LayoutNode, type XY,
 } from "../src/case/flowsheetLayout.js";
 import { flowsheetToGraph } from "../src/case/toGraph.js";
@@ -163,6 +163,119 @@ describe("step 6: an empty band is closed (DEV.md 4c C102)", () => {
       const s0 = Math.sign(before.get(a.id)!.y - before.get(b.id)!.y);
       expect(Math.sign(p.get(a.id)!.y - p.get(b.id)!.y)).toBe(s0);
     }
+  });
+});
+
+describe("step 2: a source tree sits just before its consumer (DEV.md 4c C110, G9)", () => {
+  // F -> A -> B -> C -> D -> E -> P, and a side line G1, G2 -> S feeding E
+  // only: S is a source tree (fed by feeds that feed nothing else).
+  const nodes = [box("F", [], ["f"], true), box("G1", [], ["g1"], true), box("G2", [], ["g2"], true),
+                 box("A", ["f"], ["a"]), box("B", ["a"], ["b"]), box("C", ["b"], ["c"]),
+                 box("D", ["c"], ["d"]), box("E", ["d", "s"], ["e"]),
+                 box("S", ["g1", "g2"], ["s"]), box("P", ["e"], [], true)];
+  const edges = [edge("1", "F", "A", "f"), edge("2", "A", "B", "a"), edge("3", "B", "C", "b"),
+                 edge("4", "C", "D", "c"), edge("5", "D", "E", "d"), edge("6", "E", "P", "e"),
+                 edge("7", "G1", "S", "g1"), edge("8", "G2", "S", "g2"), edge("9", "S", "E", "s")];
+
+  it("moves the tree WHOLE: the unit just before its consumer, its feeds just before it", () => {
+    const l = layoutFlowsheet(nodes, edges);
+    expect(l.layer.get("S")).toBe(l.layer.get("E")! - 1);
+    expect(l.layer.get("G1")).toBe(l.layer.get("S")! - 1);
+    expect(l.layer.get("G2")).toBe(l.layer.get("S")! - 1);
+  });
+
+  it("witness: without the rule the side line stays at the far left (a long wire)", () => {
+    const l = layoutFlowsheet(nodes, edges, { sourceTrees: false });
+    expect(l.layer.get("S")).toBe(1);
+  });
+
+  it("a unit whose feed also feeds another unit is NOT a source tree and does not move", () => {
+    const n2 = [...nodes, box("H", ["g1"], ["h"]), box("Q", ["h"], [], true)];
+    const e2 = [...edges, edge("10", "G1", "H", "g1"), edge("11", "H", "Q", "h")];
+    const l = layoutFlowsheet(n2, e2);
+    expect(l.layer.get("S")!).toBeLessThan(l.layer.get("E")! - 1);
+  });
+});
+
+describe("step 7: a drawing far wider than the canvas is folded into two rows (DEV.md 4c C110, G9)", () => {
+  // A train of N units in series: N + 2 columns, one row of boxes.
+  const train = (n: number, tear?: [number, number]) => {
+    const nodes: LayoutNode[] = [box("F", [], ["s0"], true)];
+    const edges: LayoutEdge[] = [];
+    for (let i = 1; i <= n; i++) {
+      const ins = [`s${i - 1}`];
+      if (tear && i === tear[1]) ins.push("r");
+      const outs = [`s${i}`];
+      if (tear && i === tear[0]) outs.push("r");
+      nodes.push(box(`U${i}`, ins, outs));
+      edges.push(edge(`e${i}`, i === 1 ? "F" : `U${i - 1}`, `U${i}`, `s${i - 1}`));
+    }
+    nodes.push(box("P", [`s${n}`], [], true));
+    edges.push(edge("eP", `U${n}`, "P", `s${n}`));
+    if (tear) edges.push(edge("tear", `U${tear[0]}`, `U${tear[1]}`, "r", "tear"));
+    return { nodes, edges };
+  };
+  const bottomOf = (l: ReturnType<typeof layoutFlowsheet>, ns: LayoutNode[], row: number) =>
+    Math.max(...ns.filter((n) => l.row.get(n.id) === row).map((n) => l.positions.get(n.id)!.y + n.height));
+  const topOf = (l: ReturnType<typeof layoutFlowsheet>, ns: LayoutNode[], row: number) =>
+    Math.min(...ns.filter((n) => l.row.get(n.id) === row).map((n) => l.positions.get(n.id)!.y));
+
+  it("a short train already fits and is drawn exactly as steps 1-6 draw it", () => {
+    const { nodes, edges } = train(4);
+    const l = layoutFlowsheet(nodes, edges);
+    const flat = layoutFlowsheet(nodes, edges, { fold: false });
+    expect(l.wrapEdges.size).toBe(0);
+    expect([...l.positions]).toEqual([...flat.positions]);
+  });
+
+  it("a long train is folded at ONE wire, the second row below the first from the same margin", () => {
+    const { nodes, edges } = train(18);
+    const l = layoutFlowsheet(nodes, edges);
+    expect(new Set(l.row.values())).toEqual(new Set([0, 1]));
+    expect(l.wrapEdges.size).toBe(1);
+    // Every stream flows from the first row to the second, never back.
+    for (const e of edges) expect(l.row.get(e.source)!).toBeLessThanOrEqual(l.row.get(e.target)!);
+    const w = [...l.wrapEdges][0]!;
+    const we = edges.find((e) => e.id === w)!;
+    // The return wire runs in the band between the rows, back to the left.
+    expect(l.routeY.get(w)!).toBeGreaterThan(bottomOf(l, nodes, 0));
+    expect(l.routeY.get(w)!).toBeLessThan(topOf(l, nodes, 1));
+    expect(l.positions.get(we.target)!.x).toBeLessThan(l.positions.get(we.source)!.x);
+    const left = (r: number) => Math.min(...nodes.filter((n) => l.row.get(n.id) === r).map((n) => l.positions.get(n.id)!.x));
+    expect(left(1)).toBe(left(0));
+    // Narrower: the rows hold about half the columns each.
+    const xs = (r: number) => nodes.filter((n) => l.row.get(n.id) === r).map((n) => l.positions.get(n.id)!.x);
+    const flat = layoutFlowsheet(nodes, edges, { fold: false });
+    const widthFlat = Math.max(...[...flat.positions.values()].map((p) => p.x)) - 80;
+    expect(Math.max(...xs(0), ...xs(1)) - 80).toBeLessThan(0.7 * widthFlat);
+  });
+
+  it("is deterministic", () => {
+    const { nodes, edges } = train(18);
+    const a = layoutFlowsheet(nodes, edges);
+    const b = layoutFlowsheet(nodes, edges);
+    expect([...a.positions]).toEqual([...b.positions]);
+    expect([...a.wrapEdges]).toEqual([...b.wrapEdges]);
+  });
+
+  it("never splits a recycle loop between the rows", () => {
+    const { nodes, edges } = train(18, [6, 3]);
+    const l = layoutFlowsheet(nodes, edges);
+    expect(l.wrapEdges.size).toBe(1);
+    expect(l.row.get("U6")).toBe(l.row.get("U3"));
+    expect(l.backEdges.has("tear")).toBe(true);
+  });
+
+  it("is never applied with `fold: false`", () => {
+    const { nodes, edges } = train(18);
+    expect(layoutFlowsheet(nodes, edges, { fold: false }).wrapEdges.size).toBe(0);
+  });
+
+  it("a return wire is drawn as one only while its target lies back to the left AND below", () => {
+    const src = { x: 1000, y: 100, w: 190, h: 84 };
+    expect(isReturnWire(src, { x: 80, y: 400, w: 190, h: 84 })).toBe(true);    // the folded row
+    expect(isReturnWire(src, { x: 1400, y: 400, w: 190, h: 84 })).toBe(false); // dragged out right
+    expect(isReturnWire(src, { x: 80, y: 120, w: 190, h: 84 })).toBe(false);   // dragged up beside
   });
 });
 

@@ -425,7 +425,11 @@ browser's working copy > the case's curated `.cho` snapshot > the
 automatic layout (`gui/src/case/flowsheetLayout.ts`: a layered drawing,
 flow left to right, declared tears as the recycles routed above or below
 the train, feeds beside their consumer and products beside their
-producer, crossings reduced, the main train straight).  The moment the
+producer, crossings reduced, the main train straight; a plant too LONG
+to fit the canvas at a legible zoom -- one train behind another -- is
+folded into two rows like a line of text, at the cut crossing the fewest
+wires, never across a recycle loop, the stream between the rows drawn as
+a return wire through the band between them).  The moment the
 reader moves ANY node, connection point or edge bend, the WHOLE drawing
 is snapshotted -- every unit and terminal, including the ones nobody
 touched -- so a later improvement of the algorithm never reshuffles the

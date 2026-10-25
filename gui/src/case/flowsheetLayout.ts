@@ -40,7 +40,7 @@ License
 
   This is a layered (Sugiyama) drawing, process flow left to right, written
   out here rather than imported (no dependency; a student can read every
-  step).  Six steps, each a function below:
+  step).  Seven steps, each a function below:
 
     1. CYCLES.  A recycle makes the stream graph cyclic.  A DECLARED tear is
        the back edge (the author already said where the loop is cut).  Any
@@ -51,7 +51,12 @@ License
        fewer inputs than outputs (a feed, a recycle compressor whose only
        input is the tear) moves right to sit just before its first consumer;
        a product sits just after its producer.  No more feeds stranded in
-       column 0, no more purges dragged to the last column.
+       column 0, no more purges dragged to the last column.  A SOURCE TREE
+       -- a unit fed only by feeds (or by units that are themselves source
+       trees) each of which feeds nothing else -- moves right WHOLE to sit
+       just before its first consumer (DEV.md 4c C110, G9: apalutamide01's
+       coating line had been drawn in column 1, its wires crossing the
+       whole plant to reach the coating pan in column 11).
     3. LONG EDGES get virtual nodes, one per layer crossed, so step 4 sees
        them as the wires they are.
     4. ORDER inside each layer: barycenter sweeps down and up, PORT-AWARE (a
@@ -75,6 +80,14 @@ License
        5600 px apart); closing the band is a monotone map of y, so it
        changes no crossing and no order.  The recycle runs are routed on
        the closed drawing.
+    7. FOLD.  A drawing that does not fit the canvas at a legible zoom
+       because it is LONG (one train behind another, a dozen columns and
+       more) is folded into two rows, like a line of text, at the cut that
+       crosses the fewest wires; each row is drawn by steps 1-6 and the
+       wires between them are RETURN WIRES through the band between the
+       rows.  Never applied to a drawing that already fits, nor to one its
+       height limits, nor across a recycle loop (a plant whose recycle
+       spans the whole train is drawn in one row) -- see `foldLongTrain`.
 
   PURE: no React, no DOM, no clock; the same input draws the same picture.
   The sizes it is given are ESTIMATES of the rendered cards (a browser is
@@ -83,6 +96,19 @@ License
 \*---------------------------------------------------------------------------*/
 
 export interface XY { x: number; y: number }
+
+/** A box as a wire rule sees it: top-left corner and size, flow coordinates. */
+export interface WireBox { x: number; y: number; w: number; h: number }
+
+/** A return wire of a folded drawing (step 7) is DRAWN as one only while its
+ *  target lies back to the LEFT of its source and BELOW it -- where the
+ *  automatic layout puts it (the second row starts under the first).  A
+ *  reader who drags the second row out to the right or up beside the first,
+ *  or a curated `.cho` that never folded, gets a plain forward wire again.
+ *  ONE rule, read by FlowCanvas, by layoutMetrics and by step 7 itself. */
+export function isReturnWire(source: WireBox, target: WireBox): boolean {
+  return target.x < source.x + source.w + 20 && target.y >= source.y + source.h;
+}
 
 export interface LayoutPort {
   id: string;
@@ -128,7 +154,46 @@ export interface LayoutOptions {
   /** The tallest horizontal band with no box in it that the drawing keeps
    *  (step 6): a taller one is closed to this height. */
   maxEmptyBand: number;
+  /** When and how a drawing far wider than the canvas is folded into two
+   *  rows (step 7); `false` never folds. */
+  fold: FoldOptions | false;
+  /** Step 2 moves a SOURCE TREE right to sit just before its consumer. */
+  sourceTrees: boolean;
 }
+
+/** Step 7's rule, in the numbers it is decided by. */
+export interface FoldOptions {
+  /** The REFERENCE pane a fit must fill, px: a 1280 x 720 window's canvas
+   *  (1280 x 653 below the menu bar and the case banner, measured in
+   *  Chromium, DEV.md 4c C102b) less the margins every fit leaves
+   *  (ui/flowsheetViewport.ts FLOWSHEET_FIT_PADDING: 6 % each side, 150 px
+   *  above, 56 px below).  tests/flowsheetViewport.test.ts holds the two
+   *  together. */
+  paneWidth: number;
+  paneHeight: number;
+  /** A drawing whose fit zoom in that pane is at least this ALREADY FITS
+   *  and is never folded.  0.5 is where a card's 11 px label is drawn at
+   *  about 5.5 px, the smallest a reader can still make out: below it a
+   *  whole-plant fit is a map, not a drawing. */
+  fitsAtZoom: number;
+  /** A fold is kept only if it raises the fit zoom by at least this factor. */
+  minGain: number;
+  /** Among the folds whose fit zoom is within this fraction of the best
+   *  one, the one crossing the FEWEST wires is taken. */
+  nearBest: number;
+  /** Which of the ranked folds to draw (0, the first, by default).  A
+   *  caller that measures the drawing on wires the layout cannot see
+   *  (toGraph.ts: energy wires, utility stubs) may ask for the next one. */
+  rank?: number;
+}
+
+export const DEFAULT_FOLD_OPTIONS: FoldOptions = {
+  paneWidth: 1126,
+  paneHeight: 447,
+  fitsAtZoom: 0.5,
+  minGain: 1.2,
+  nearBest: 0.9,
+};
 
 export const DEFAULT_LAYOUT_OPTIONS: LayoutOptions = {
   originX: 80,
@@ -136,6 +201,8 @@ export const DEFAULT_LAYOUT_OPTIONS: LayoutOptions = {
   xGap: 120,
   yGap: 46,
   maxEmptyBand: 120,
+  fold: DEFAULT_FOLD_OPTIONS,
+  sourceTrees: true,
 };
 
 export interface FlowsheetLayout {
@@ -152,6 +219,13 @@ export interface FlowsheetLayout {
    *  column with a wider one would otherwise drop its leg through the
    *  wider neighbour. */
   routeOutset: Map<string, { source: number; target: number }>;
+  /** Forward material edges from the first row of a FOLDED drawing to the
+   *  second (step 7), drawn as a RETURN WIRE: out of the source, down into
+   *  the band between the rows at `routeY`, back left, down and into the
+   *  target.  Empty when the drawing is not folded. */
+  wrapEdges: Set<string>;
+  /** The row each node was drawn in (0, or 1 below a fold). */
+  row: Map<string, number>;
 }
 
 /* ------------------------------------------------------------------------ */
@@ -263,7 +337,7 @@ function topoOrder(ids: string[], dag: DEdge[]): string[] {
   return order;
 }
 
-function assignLayers(ids: string[], dag: DEdge[]): Map<string, number> {
+function assignLayers(ids: string[], dag: DEdge[], sourceTrees: boolean): Map<string, number> {
   const order = topoOrder(ids, dag);
   const preds = new Map<string, string[]>();
   const succs = new Map<string, string[]>();
@@ -289,6 +363,31 @@ function assignLayers(ids: string[], dag: DEdge[]): Map<string, number> {
       let lim = Infinity;
       for (const w of s) lim = Math.min(lim, layer.get(w)! - 1);
       if (lim > layer.get(v)!) layer.set(v, lim);
+    }
+  }
+  if (sourceTrees) {
+    // A SOURCE TREE -- a unit fed only by feeds, or by units that are
+    // themselves source trees, each of which feeds nothing else (a coating
+    // suspension made up from six feeds, beside a granulation train) --
+    // moves right, whole, to sit just before its first consumer: one long
+    // wire becomes short and no wire gets longer.
+    const tree = new Map<string, boolean>();
+    for (const v of order) {
+      const p = preds.get(v) ?? [];
+      tree.set(v, p.every((u) => (succs.get(u) ?? []).length === 1
+                                  && ((preds.get(u) ?? []).length === 0 || tree.get(u)!)));
+    }
+    const shiftTree = (v: string, by: number): void => {
+      layer.set(v, layer.get(v)! + by);
+      for (const u of preds.get(v) ?? []) shiftTree(u, by);
+    };
+    for (let k = order.length - 1; k >= 0; k--) {
+      const v = order[k]!;
+      const s = succs.get(v) ?? [];
+      if (s.length === 0 || (preds.get(v) ?? []).length === 0 || !tree.get(v)) continue;
+      let lim = Infinity;
+      for (const w of s) lim = Math.min(lim, layer.get(w)! - 1);
+      if (lim > layer.get(v)!) shiftTree(v, lim - layer.get(v)!);
     }
   }
   let min = Infinity;
@@ -340,12 +439,28 @@ export function layoutFlowsheet(
   options: Partial<LayoutOptions> = {},
 ): FlowsheetLayout {
   const opt = { ...DEFAULT_LAYOUT_OPTIONS, ...options };
+  const flat = layoutLayered(nodes, edges, opt);
+  if (opt.fold === false) return flat.layout;
+  return foldLongTrain(nodes, edges, opt, opt.fold, flat) ?? flat.layout;
+}
+
+/** Steps 1-6, one row: the drawing and the columns it was drawn in. */
+interface Layered {
+  layout: FlowsheetLayout;
+  /** Left edge and width of every column, by layer. */
+  colX: number[];
+  colW: number[];
+  /** The material DAG of step 1 (back edges reversed) and its layers. */
+  dag: DEdge[];
+}
+
+function layoutLayered(nodes: LayoutNode[], edges: LayoutEdge[], opt: LayoutOptions): Layered {
   const byId = new Map(nodes.map((n) => [n.id, n]));
   const ids = nodes.map((n) => n.id);
 
   // 1 + 2
   const { dag, back } = breakCycles(nodes, edges);
-  const layer = assignLayers(ids, dag);
+  const layer = assignLayers(ids, dag, opt.sourceTrees);
 
   // 3
   const items = new Map<string, Item>();
@@ -441,7 +556,12 @@ export function layoutFlowsheet(
     });
   }
   const routeY = routeBackEdges(edges, back, nodes, positions, nodeLayer, outset);
-  return { positions, layer: nodeLayer, backEdges: back, routeY, routeOutset: outset };
+  const row = new Map(nodes.map((n) => [n.id, 0]));
+  return {
+    layout: { positions, layer: nodeLayer, backEdges: back, routeY, routeOutset: outset,
+              wrapEdges: new Set(), row },
+    colX, colW, dag,
+  };
 }
 
 /* ------------------------------------------------------------------------ */
@@ -709,8 +829,478 @@ export function closeEmptyBands(nodes: LayoutNode[], positions: Map<string, XY>,
 }
 
 /* ------------------------------------------------------------------------ */
+/*  Step 7 -- folding a long train into two rows                            */
+/* ------------------------------------------------------------------------ */
+
+const WRAP_LANE = 32;      // air between two return wires in the band between rows
+const WRAP_LEG_STEP = 12;  // two return wires leaving one column stand this far apart
+const FLOW_INF = 1e6;      // an arc a cut may never take
+
+interface Extent { left: number; right: number; top: number; bottom: number }
+
+/** What a fit of the canvas sees: every box with the room its stubs take. */
+function extentOf(nodes: LayoutNode[], positions: Map<string, XY>): Extent {
+  const e: Extent = { left: Infinity, right: -Infinity, top: Infinity, bottom: -Infinity };
+  for (const n of nodes) {
+    const p = positions.get(n.id);
+    if (!p) continue;
+    e.left = Math.min(e.left, p.x);
+    e.right = Math.max(e.right, p.x + n.width);
+    e.top = Math.min(e.top, p.y - (n.above ?? 0));
+    e.bottom = Math.max(e.bottom, p.y + n.height + (n.below ?? 0));
+  }
+  return e;
+}
+
+/** The zoom a fit of the drawing needs in the reference pane. */
+const fitZoom = (e: Extent, f: FoldOptions): number =>
+  Math.min(f.paneWidth / Math.max(1, e.right - e.left), f.paneHeight / Math.max(1, e.bottom - e.top));
+
+interface Arc { from: number; to: number; cap: number }
+
+/**
+ * A minimum s-t cut (Edmonds-Karp: shortest augmenting paths, so the answer
+ * does not depend on luck).  Returns its value and which nodes lie on the
+ * SOURCE side -- the smallest such side among the minimum cuts.
+ */
+function minCut(n: number, s: number, t: number, arcs: Arc[]): { value: number; sourceSide: boolean[] } {
+  const cap = new Float64Array(n * n);
+  const adj: number[][] = Array.from({ length: n }, () => []);
+  const linked = new Set<number>();
+  for (const a of arcs) {
+    const k = Math.min(a.from, a.to) * n + Math.max(a.from, a.to);
+    if (!linked.has(k)) {
+      linked.add(k);
+      adj[a.from]!.push(a.to);
+      adj[a.to]!.push(a.from);
+    }
+    const ij = a.from * n + a.to;
+    cap[ij] = cap[ij]! + a.cap;
+  }
+  const reach = (): Int32Array => {
+    const prev = new Int32Array(n).fill(-1);
+    prev[s] = s;
+    const q = [s];
+    for (let h = 0; h < q.length; h++) {
+      const u = q[h]!;
+      for (const v of adj[u]!)
+        if (prev[v]! < 0 && cap[u * n + v]! > 1e-9) { prev[v] = u; q.push(v); }
+    }
+    return prev;
+  };
+  let value = 0;
+  for (;;) {
+    const prev = reach();
+    if (prev[t]! < 0) break;
+    let f = Infinity;
+    for (let v = t; v !== s; v = prev[v]!) f = Math.min(f, cap[prev[v]! * n + v]!);
+    for (let v = t; v !== s; v = prev[v]!) {
+      const fw = prev[v]! * n + v;
+      const bw = v * n + prev[v]!;
+      cap[fw] = cap[fw]! - f;
+      cap[bw] = cap[bw]! + f;
+    }
+    value += f;
+    if (value >= FLOW_INF) break;
+  }
+  const prev = reach();
+  return { value, sourceSide: Array.from(prev, (p) => p >= 0) };
+}
+
+/** One row of a folded drawing, drawn by steps 1-6 on its own units. */
+interface Row { nodes: LayoutNode[]; edges: LayoutEdge[]; drawn: Layered }
+
+/** Two rows stacked: the first where steps 1-6 drew it, the second below
+ *  the band its return wires need, both from the same left margin. */
+interface Stacked {
+  rows: [Row, Row];
+  positions: Map<string, XY>;
+  routeY: Map<string, number>;
+  /** The y of the band's first lane. */
+  bandY: number;
+  extent: Extent;
+}
+
+function stackRows(rows: [Row, Row], wraps: number): Stacked {
+  const [r0, r1] = rows;
+  const e0 = extentOf(r0.nodes, r0.drawn.layout.positions);
+  const e1 = extentOf(r1.nodes, r1.drawn.layout.positions);
+  // A recycle run of the first row may lie below its boxes, one of the
+  // second row above its boxes: the band starts and ends clear of both
+  // (a run's name chip sits above it, its boundary badge below it).
+  let bottom0 = e0.bottom;
+  for (const y of r0.drawn.layout.routeY.values()) if (y > e0.bottom) bottom0 = Math.max(bottom0, y + 12);
+  let top1 = e1.top;
+  for (const y of r1.drawn.layout.routeY.values()) if (y < e1.top) top1 = Math.min(top1, y - 28);
+  const bandY = Math.round(bottom0 + ROUTE_CLEAR);
+  const lastLane = bandY + Math.max(0, wraps - 1) * WRAP_LANE;
+  const dy = Math.round(lastLane + ROUTE_CLEAR - top1);
+  const positions = new Map(r0.drawn.layout.positions);
+  for (const [id, p] of r1.drawn.layout.positions) positions.set(id, { x: p.x, y: p.y + dy });
+  const routeY = new Map(r0.drawn.layout.routeY);
+  for (const [id, y] of r1.drawn.layout.routeY) routeY.set(id, y + dy);
+  const extent = {
+    left: Math.min(e0.left, e1.left), right: Math.max(e0.right, e1.right),
+    top: Math.min(e0.top, e1.top + dy), bottom: Math.max(e0.bottom, e1.bottom + dy),
+  };
+  return { rows, positions, routeY, bandY, extent };
+}
+
+/**
+ * Step 7.  A drawing that does not fit the reference pane at a legible zoom
+ * BECAUSE IT IS LONG -- one train in series behind another, fifteen columns
+ * (apalutamide01, DEV.md 4c C102b) -- is folded into two rows, like a line
+ * of text, at the cut that crosses the FEWEST wires.
+ *
+ * WHEN.  Only when the drawing does not already fit (its fit zoom in the
+ * reference pane is below `fitsAtZoom`), when it is WIDTH-limited there (a
+ * fold makes a drawing taller, so it cannot help one its height limits), and
+ * when the folded drawing's fit zoom is at least `minGain` times the
+ * unfolded one.  Anything else is returned exactly as steps 1-6 drew it.
+ *
+ * WHERE.  The two rows partition the units so that every process stream
+ * flows from the first row to the second or stays in its row -- never back
+ * -- and no recycle loop is split (a recycle between the rows would have to
+ * wrap round the whole drawing).  Among those partitions the one crossing
+ * the fewest wires is a MINIMUM CUT of the stream graph (a stream costs 1,
+ * an energy wire or a recipe transfer 1/2, a stream drawn backwards or a
+ * split recycle can never be cut), solved exactly by a max-flow -- once for
+ * every window of columns: the units of the columns before the window are
+ * held in the first row, those after it in the second, and the units inside
+ * it and every boundary terminal go wherever the cut is smallest (so a feed
+ * follows the unit it feeds, a product the unit that makes it, and a group
+ * of units that only feeds the second row goes there whole).  Every distinct
+ * partition is then drawn -- each row by steps 1-6 on its own units and the
+ * wires between them -- and stacked; among the drawings whose fit zoom is
+ * within `nearBest` of the best one, the one crossing the fewest wires is
+ * kept (then the larger zoom).
+ *
+ * THE RETURN WIRE.  A stream from the first row to the second leaves its
+ * unit to the right, drops just outside its column into the band between
+ * the rows, runs back left in its own lane, drops just outside the target's
+ * column and enters it from the left -- the recycle's own U (TearEdge draws
+ * both), with no cut mark and the stream's own colour.  Legs leaving one
+ * column stand apart; the lanes are ordered to cross the fewest wires and
+ * boxes (every order is tried for up to six return wires).
+ */
+function foldLongTrain(
+  nodes: LayoutNode[], edges: LayoutEdge[], opt: LayoutOptions, fold: FoldOptions, flat: Layered,
+): FlowsheetLayout | null {
+  const e0 = extentOf(nodes, flat.layout.positions);
+  const z0 = fitZoom(e0, fold);
+  if (z0 >= fold.fitsAtZoom) return null;                                   // it already fits
+  if ((e0.right - e0.left) * fold.paneHeight <= (e0.bottom - e0.top) * fold.paneWidth)
+    return null;                                                            // its height limits it
+
+  const ids = nodes.map((n) => n.id);
+  const index = new Map(ids.map((id, i) => [id, i]));
+  const S = ids.length;
+  const T = ids.length + 1;
+  const base: Arc[] = [];
+  for (const d of flat.dag) {
+    if (d.e.kind === "soft") continue;
+    const u = index.get(d.from)!;
+    const v = index.get(d.to)!;
+    if (d.reversed) {                      // a recycle is never split
+      base.push({ from: u, to: v, cap: FLOW_INF }, { from: v, to: u, cap: FLOW_INF });
+      continue;
+    }
+    base.push({ from: u, to: v, cap: 1 }, { from: v, to: u, cap: FLOW_INF });
+  }
+  for (const e of edges) {
+    if (e.kind !== "soft" || e.source === e.target) continue;
+    const u = index.get(e.source);
+    const v = index.get(e.target);
+    if (u === undefined || v === undefined) continue;
+    base.push({ from: u, to: v, cap: 0.5 }, { from: v, to: u, cap: 0.5 });
+  }
+
+  // How EARLY along the flow each unit can stand (its longest path from a
+  // source) and how LATE (the longest path from it to a sink, counted back
+  // from the end).  A side branch that only feeds the far end -- a coating
+  // line beside a granulation train -- is early by the first and late by
+  // the second, so no window holds it in the first row.
+  const material = flat.dag.filter((d) => d.e.kind !== "soft");
+  const order = topoOrder(ids, material);
+  const early = new Map(ids.map((id) => [id, 0]));
+  const tail = new Map(ids.map((id) => [id, 0]));
+  const succ = new Map<string, string[]>();
+  const pred = new Map<string, string[]>();
+  for (const d of material) {
+    succ.set(d.from, [...(succ.get(d.from) ?? []), d.to]);
+    pred.set(d.to, [...(pred.get(d.to) ?? []), d.from]);
+  }
+  for (const v of order)
+    for (const u of pred.get(v) ?? []) early.set(v, Math.max(early.get(v)!, early.get(u)! + 1));
+  for (let k = order.length - 1; k >= 0; k--) {
+    const v = order[k]!;
+    for (const w of succ.get(v) ?? []) tail.set(v, Math.max(tail.get(v)!, tail.get(w)! + 1));
+  }
+  let maxL = 0;
+  for (const id of ids) maxL = Math.max(maxL, early.get(id)! + tail.get(id)!);
+  const seen = new Set<string>();
+  const parts: { rowOf: Map<string, number>; cut: number }[] = [];
+  for (let a = 0; a < maxL; a++)
+    for (let b = a + 1; b <= maxL; b++) {
+      const arcs = [...base];
+      for (const n of nodes) {
+        if (n.terminal) continue;
+        if (maxL - tail.get(n.id)! <= a) arcs.push({ from: S, to: index.get(n.id)!, cap: FLOW_INF });
+        else if (early.get(n.id)! >= b) arcs.push({ from: index.get(n.id)!, to: T, cap: FLOW_INF });
+      }
+      const { value, sourceSide } = minCut(ids.length + 2, S, T, arcs);
+      if (value >= FLOW_INF / 2) continue;
+      const key = ids.map((_, i) => (sourceSide[i] ? "0" : "1")).join("");
+      if (seen.has(key)) continue;
+      seen.add(key);
+      const rowOf = new Map(ids.map((id, i) => [id, sourceSide[i] ? 0 : 1]));
+      if (![0, 1].every((r) => nodes.some((n) => !n.terminal && rowOf.get(n.id) === r))) continue;
+      parts.push({ rowOf, cut: value });
+    }
+  if (parts.length === 0) return null;
+
+  const rowOpt: LayoutOptions = { ...opt, fold: false };
+  const isWrap = (e: LayoutEdge, rowOf: Map<string, number>) =>
+    e.kind !== "soft" && rowOf.get(e.source) === 0 && rowOf.get(e.target) === 1;
+  const drawn = parts.map((p) => {
+    const rows = [0, 1].map((r) => {
+      const ns = nodes.filter((n) => p.rowOf.get(n.id) === r);
+      const keep = new Set(ns.map((n) => n.id));
+      const es = edges.filter((e) => keep.has(e.source) && keep.has(e.target));
+      return { nodes: ns, edges: es, drawn: layoutLayered(ns, es, rowOpt) };
+    }) as [Row, Row];
+    const st = stackRows(rows, edges.filter((e) => isWrap(e, p.rowOf)).length);
+    return { ...p, st, z: fitZoom(st.extent, fold) };
+  });
+  let zBest = 0;
+  for (const d of drawn) zBest = Math.max(zBest, d.z);
+  const flatDefects = defectsOf(nodes, edges, flat.layout);
+  const pick = drawn
+    .filter((d) => d.z >= fold.nearBest * zBest && d.z >= fold.minGain * z0)
+    .map((d) => {
+      const layout = assembleFold(nodes, edges, d.st, d.rowOf, isWrap);
+      return { ...d, layout, defects: defectsOf(nodes, edges, layout) };
+    })
+    .filter((d) => d.defects <= flatDefects)
+    .sort((a, b) => a.cut - b.cut || a.defects - b.defects || b.z - a.z)[fold.rank ?? 0];
+  return pick ? pick.layout : null;
+}
+
+/** The wires a layout draws, as the canvas draws them (layoutMetrics.ts):
+ *  a stream out right, one vertical at mid-gap, in left; a recycle or a
+ *  return wire as the U at its run. */
+function wiresOf(nodes: LayoutNode[], edges: LayoutEdge[], l: FlowsheetLayout): { e: LayoutEdge; segs: RSeg[] }[] {
+  const byId = new Map(nodes.map((n) => [n.id, n]));
+  const portY = (id: string, side: "in" | "out", port: string | undefined): number => {
+    const n = byId.get(id)!;
+    return l.positions.get(id)!.y + portFrac(side === "in" ? n.ins : n.outs, port) * n.height;
+  };
+  const out: { e: LayoutEdge; segs: RSeg[] }[] = [];
+  for (const e of edges) {
+    if (e.kind === "soft" || e.source === e.target || !byId.has(e.source) || !byId.has(e.target)) continue;
+    const sx = l.positions.get(e.source)!.x + byId.get(e.source)!.width;
+    const tx = l.positions.get(e.target)!.x;
+    const sy = portY(e.source, "out", e.sourcePort);
+    const ty = portY(e.target, "in", e.targetPort);
+    const box = (id: string): WireBox => {
+      const p = l.positions.get(id)!;
+      const n = byId.get(id)!;
+      return { x: p.x, y: p.y, w: n.width, h: n.height };
+    };
+    if (l.backEdges.has(e.id) || (l.wrapEdges.has(e.id) && isReturnWire(box(e.source), box(e.target)))) {
+      const o = l.routeOutset.get(e.id) ?? { source: LEG_OUTSET, target: LEG_OUTSET };
+      const yr = l.routeY.get(e.id) ?? Math.max(sy, ty) + ROUTE_MIN_DROP;
+      out.push({ e, segs: polySegs([[sx, sy], [sx + o.source, sy], [sx + o.source, yr],
+                                    [tx - o.target, yr], [tx - o.target, ty], [tx, ty]]) });
+      continue;
+    }
+    const mx = (sx + tx) / 2;
+    out.push({ e, segs: polySegs([[sx, sy], [mx, sy], [mx, ty], [tx, ty]]) });
+  }
+  return out;
+}
+
+/** A drawing's defects on the wires the layout knows: two wires crossing
+ *  count 1, a wire through a box (with its stubs' room) 3. */
+function defectsOf(nodes: LayoutNode[], edges: LayoutEdge[], l: FlowsheetLayout): number {
+  const ws = wiresOf(nodes, edges, l);
+  let c = 0;
+  for (let i = 0; i < ws.length; i++)
+    for (let j = i + 1; j < ws.length; j++)
+      for (const a of ws[i]!.segs) for (const b of ws[j]!.segs) if (segsCross(a, b)) c += 1;
+  for (const w of ws)
+    for (const n of nodes) {
+      if (n.id === w.e.source || n.id === w.e.target) continue;
+      if (w.segs.some((s) => segHitsBox(s, n, l.positions.get(n.id)!))) c += 3;
+    }
+  return c;
+}
+
+/** Both rows of a fold in one drawing, its return wires routed. */
+function assembleFold(
+  nodes: LayoutNode[], edges: LayoutEdge[], st: Stacked, rowOf: Map<string, number>,
+  isWrap: (e: LayoutEdge, rowOf: Map<string, number>) => boolean,
+): FlowsheetLayout {
+  const ids = nodes.map((n) => n.id);
+  const [r0, r1] = st.rows;
+  const positions = st.positions;
+  const byId = new Map(nodes.map((n) => [n.id, n]));
+  let off1 = 0;
+  for (const n of r0.nodes) off1 = Math.max(off1, r0.drawn.layout.layer.get(n.id)! + 1);
+  const nodeLayer = new Map<string, number>();
+  for (const n of r0.nodes) nodeLayer.set(n.id, r0.drawn.layout.layer.get(n.id)!);
+  for (const n of r1.nodes) nodeLayer.set(n.id, r1.drawn.layout.layer.get(n.id)! + off1);
+  const backEdges = new Set([...r0.drawn.layout.backEdges, ...r1.drawn.layout.backEdges]);
+  const routeOutset = new Map([...r0.drawn.layout.routeOutset, ...r1.drawn.layout.routeOutset]);
+  const routeY = new Map(st.routeY);
+
+  // The return wires: where each leg stands, then which lane each runs in.
+  const portY = (id: string, side: "in" | "out", port: string | undefined): number => {
+    const n = byId.get(id)!;
+    return positions.get(id)!.y + portFrac(side === "in" ? n.ins : n.outs, port) * n.height;
+  };
+  const wraps = edges.filter((e) => isWrap(e, rowOf));
+  const legs = new Map<string, { source: number; target: number }>();
+  for (const side of ["source", "target"] as const) {
+    const row = side === "source" ? r0 : r1;
+    const by = new Map<number, LayoutEdge[]>();
+    for (const e of wraps) {
+      const l = row.drawn.layout.layer.get(side === "source" ? e.source : e.target)!;
+      by.set(l, [...(by.get(l) ?? []), e]);
+    }
+    for (const [l, list] of by) {
+      const y = (e: LayoutEdge) => (side === "source"
+        ? portY(e.source, "out", e.sourcePort) : portY(e.target, "in", e.targetPort));
+      //  A HIGHER source stands further out, so its leg passes clear of the
+      //  lower ones' first piece; a LOWER target stands further out, so its
+      //  leg passes clear of the higher ones' last piece.
+      const sorted = [...list].sort((a, b) => y(a) - y(b) || wraps.indexOf(a) - wraps.indexOf(b));
+      //  A recycle of the same row leaving (entering) this column already
+      //  stands its leg at the first offset: a return wire stands beyond it,
+      //  so the two never share one vertical line (which no count of
+      //  crossings sees, and no reader can untangle).
+      let recycles = 0;
+      for (const e of row.edges)
+        if (row.drawn.layout.backEdges.has(e.id)
+            && row.drawn.layout.layer.get(side === "source" ? e.source : e.target) === l) recycles++;
+      sorted.forEach((e, k) => {
+        const rank = (side === "source" ? sorted.length - 1 - k : k) + Math.min(recycles, 1);
+        const g = legs.get(e.id) ?? { source: LEG_OUTSET, target: LEG_OUTSET };
+        if (side === "source") {
+          const p = positions.get(e.source)!;
+          g.source = Math.round(row.drawn.colX[l]! + row.drawn.colW[l]! - (p.x + byId.get(e.source)!.width))
+            + LEG_OUTSET + rank * WRAP_LEG_STEP;
+        } else {
+          g.target = Math.round(positions.get(e.target)!.x - row.drawn.colX[l]!)
+            + LEG_OUTSET + rank * WRAP_LEG_STEP;
+        }
+        legs.set(e.id, g);
+      });
+    }
+  }
+
+  // What a return wire could cross: every other wire of both rows as the
+  // canvas draws it (a recycle at its run), and every box.
+  const fixed: RSeg[] = [];
+  for (const e of edges) {
+    if (e.kind === "soft" || isWrap(e, rowOf) || !byId.has(e.source) || !byId.has(e.target)) continue;
+    if (rowOf.get(e.source) !== rowOf.get(e.target)) continue;
+    const sx = positions.get(e.source)!.x + byId.get(e.source)!.width;
+    const tx = positions.get(e.target)!.x;
+    const sy = portY(e.source, "out", e.sourcePort);
+    const ty = portY(e.target, "in", e.targetPort);
+    if (backEdges.has(e.id)) {
+      const o = routeOutset.get(e.id) ?? { source: LEG_OUTSET, target: LEG_OUTSET };
+      const yr = routeY.get(e.id) ?? Math.max(sy, ty) + ROUTE_MIN_DROP;
+      fixed.push(...polySegs([[sx, sy], [sx + o.source, sy], [sx + o.source, yr],
+                              [tx - o.target, yr], [tx - o.target, ty], [tx, ty]]));
+      continue;
+    }
+    const mx = (sx + tx) / 2;
+    fixed.push(...polySegs([[sx, sy], [mx, sy], [mx, ty], [tx, ty]]));
+  }
+  const wireOf = (e: LayoutEdge, lane: number): RSeg[] => {
+    const g = legs.get(e.id)!;
+    const sx = positions.get(e.source)!.x + byId.get(e.source)!.width;
+    const tx = positions.get(e.target)!.x;
+    const sy = portY(e.source, "out", e.sourcePort);
+    const ty = portY(e.target, "in", e.targetPort);
+    return polySegs([[sx, sy], [sx + g.source, sy], [sx + g.source, lane],
+                     [tx - g.target, lane], [tx - g.target, ty], [tx, ty]]);
+  };
+  const costOf = (order: LayoutEdge[]): number => {
+    const ws = order.map((e, k) => ({ e, segs: wireOf(e, st.bandY + k * WRAP_LANE) }));
+    let c = 0;
+    for (const w of ws)
+      for (const s of w.segs) {
+        for (const f of fixed) if (segsCross(s, f)) c += 1;
+        for (const n of nodes)
+          if (n.id !== w.e.source && n.id !== w.e.target && segHitsBox(s, n, positions.get(n.id)!)) c += 3;
+      }
+    for (let i = 0; i < ws.length; i++)
+      for (let j = i + 1; j < ws.length; j++)
+        for (const a of ws[i]!.segs) for (const b of ws[j]!.segs) if (segsCross(a, b)) c += 1;
+    return c;
+  };
+  // The first order tried: the wire whose target leg stands furthest left
+  // runs in the top lane (it then crosses no other wire's target leg).
+  const legX = (e: LayoutEdge) => positions.get(e.target)!.x - legs.get(e.id)!.target;
+  let best = [...wraps].sort((a, b) => legX(a) - legX(b) || wraps.indexOf(a) - wraps.indexOf(b));
+  let bestCost = costOf(best);
+  if (best.length <= 6) {
+    const permute = (rest: LayoutEdge[], acc: LayoutEdge[]): void => {
+      if (rest.length === 0) {
+        const c = costOf(acc);
+        if (c < bestCost) { bestCost = c; best = [...acc]; }
+        return;
+      }
+      rest.forEach((e, i) => permute([...rest.slice(0, i), ...rest.slice(i + 1)], [...acc, e]));
+    };
+    permute(best, []);
+  }
+  best.forEach((e, k) => {
+    routeY.set(e.id, st.bandY + k * WRAP_LANE);
+    routeOutset.set(e.id, legs.get(e.id)!);
+  });
+
+  return {
+    positions, layer: nodeLayer, backEdges, routeY, routeOutset,
+    wrapEdges: new Set(wraps.map((e) => e.id)),
+    row: new Map(ids.map((id) => [id, rowOf.get(id)!])),
+  };
+}
+
+/* ------------------------------------------------------------------------ */
 /*  Back-edge routing                                                       */
 /* ------------------------------------------------------------------------ */
+
+/** A straight piece of a wire: x1 y1 x2 y2. */
+type RSeg = [number, number, number, number];
+
+const polySegs = (pts: [number, number][]): RSeg[] => {
+  const out: RSeg[] = [];
+  for (let i = 0; i + 1 < pts.length; i++)
+    out.push([pts[i]![0], pts[i]![1], pts[i + 1]![0], pts[i + 1]![1]]);
+  return out;
+};
+
+/** Two orthogonal pieces crossing (strictly inside both). */
+function segsCross(a: RSeg, b: RSeg): boolean {
+  const h = (s: RSeg) => Math.abs(s[1] - s[3]) < 0.5;
+  const v = (s: RSeg) => Math.abs(s[0] - s[2]) < 0.5;
+  const btw = (q: number, p0: number, p1: number) => q > Math.min(p0, p1) + 1 && q < Math.max(p0, p1) - 1;
+  if (h(a) && v(b)) return btw(b[0], a[0], a[2]) && btw(a[1], b[1], b[3]);
+  if (v(a) && h(b)) return btw(a[0], b[0], b[2]) && btw(b[1], a[1], a[3]);
+  return false;
+}
+
+/** A piece entering a box, with the room its stubs take. */
+function segHitsBox(s: RSeg, n: LayoutNode, p: XY): boolean {
+  const x0 = p.x, x1 = p.x + n.width;
+  const y0 = p.y - (n.above ?? 0), y1 = p.y + n.height + (n.below ?? 0);
+  return Math.max(s[0], s[2]) > x0 && Math.min(s[0], s[2]) < x1
+      && Math.max(s[1], s[3]) > y0 && Math.min(s[1], s[3]) < y1;
+}
 
 const ROUTE_CLEAR = 34;    // air between the last box and a recycle run
 const ROUTE_LANE = 26;     // air between two recycle runs that overlap
@@ -746,14 +1336,9 @@ function routeBackEdges(
   // What a run above or below would have to cross: every forward wire (as
   // the canvas draws it: out, one vertical at mid-gap, in), every recycle
   // already routed, and every box with the room its stubs take.
-  type S = [number, number, number, number];
+  type S = RSeg;
   const wires: S[] = [];
-  const poly = (pts: [number, number][]) => {
-    const out: S[] = [];
-    for (let i = 0; i + 1 < pts.length; i++)
-      out.push([pts[i]![0], pts[i]![1], pts[i + 1]![0], pts[i + 1]![1]]);
-    return out;
-  };
+  const poly = polySegs;
   for (const e of edges) {
     if (back.has(e.id) || e.kind === "soft" || !byId.has(e.source) || !byId.has(e.target)) continue;
     const sx = positions.get(e.source)!.x + byId.get(e.source)!.width;
@@ -763,22 +1348,8 @@ function routeBackEdges(
     const mx = (sx + tx) / 2;
     wires.push(...poly([[sx, sy], [mx, sy], [mx, ty], [tx, ty]]));
   }
-  const crosses = (a: S, b: S): boolean => {
-    const h = (s: S) => Math.abs(s[1] - s[3]) < 0.5;
-    const v = (s: S) => Math.abs(s[0] - s[2]) < 0.5;
-    const btw = (q: number, p0: number, p1: number) => q > Math.min(p0, p1) + 1 && q < Math.max(p0, p1) - 1;
-    if (h(a) && v(b)) return btw(b[0], a[0], a[2]) && btw(a[1], b[1], b[3]);
-    if (v(a) && h(b)) return btw(a[0], b[0], b[2]) && btw(b[1], a[1], a[3]);
-    return false;
-  };
-  const hitsBox = (s: S, n: LayoutNode): boolean => {
-    const p = positions.get(n.id)!;
-    const x0 = p.x, x1 = p.x + n.width;
-    const y0 = p.y - (n.above ?? 0), y1 = p.y + n.height + (n.below ?? 0);
-    const lo = (a: number, b: number) => Math.min(a, b);
-    const hi = (a: number, b: number) => Math.max(a, b);
-    return hi(s[0], s[2]) > x0 && lo(s[0], s[2]) < x1 && hi(s[1], s[3]) > y0 && lo(s[1], s[3]) < y1;
-  };
+  const crosses = segsCross;
+  const hitsBox = (s: S, n: LayoutNode): boolean => segHitsBox(s, n, positions.get(n.id)!);
   const runCost = (e: LayoutEdge, yRun: number): { cost: number; segs: S[] } => {
     const o = outset.get(e.id) ?? { source: LEG_OUTSET, target: LEG_OUTSET };
     const sx = positions.get(e.source)!.x + byId.get(e.source)!.width + o.source;

@@ -24,7 +24,7 @@ import { getViewportForBounds } from "@xyflow/react";
 import { describe, expect, it } from "vitest";
 
 import { flowsheetToGraph } from "../src/case/toGraph.js";
-import type { XY } from "../src/case/flowsheetLayout.js";
+import { DEFAULT_FOLD_OPTIONS, type XY } from "../src/case/flowsheetLayout.js";
 import {
   boundsOf, FLOWSHEET_FIT, FLOWSHEET_FIT_MAX_ZOOM, FLOWSHEET_FIT_PADDING, FLOWSHEET_MIN_ZOOM, type Rect,
 } from "../src/ui/flowsheetViewport.js";
@@ -107,9 +107,56 @@ describe("the flowsheet canvas zooms out to the whole flowsheet (C102)", () => {
     //  fit was a map at 0.063.  The canvas below the menu bar and the case
     //  banner of a 1280 x 720 window is 1280 x 653 (measured in Chromium).
     const apa = VIEWS.find((v) => v.id === "batch/plant/apalutamide01_tablets")!;
-    expect(apa.bounds.height).toBeLessThan(2000);
+    //  G9 (DEV.md 4c C110): its coating line is a SOURCE TREE and sits just
+    //  before the coating pan (flowsheetLayout.ts step 2), so the plant is
+    //  1527 px tall, not 1695.  It is NOT folded (step 7): it is tall as
+    //  well as long, and two rows of it would fit no better.
+    expect(apa.bounds.height).toBeLessThan(1600);
     const z = getViewportForBounds(apa.bounds, 1280, 653, 0, Infinity, FLOWSHEET_FIT_PADDING).zoom;
     expect(z).toBeGreaterThan(0.2);
+  });
+
+  it("G9: the layout's fold reference pane IS the 1280 x 720 window's canvas less the fit's margins", () => {
+    //  flowsheetLayout.ts step 7 decides on a pane it cannot measure; it
+    //  must be the one the canvas fits into (1280 x 653, C102b) with
+    //  FLOWSHEET_FIT_PADDING taken off -- or the fold answers another question.
+    const pct = (s: string) => parseFloat(s) / 100;
+    const w = 1280 * (1 - pct(FLOWSHEET_FIT_PADDING.left) - pct(FLOWSHEET_FIT_PADDING.right));
+    const h = 653 - parseFloat(FLOWSHEET_FIT_PADDING.top) - parseFloat(FLOWSHEET_FIT_PADDING.bottom);
+    expect(DEFAULT_FOLD_OPTIONS.paneWidth).toBeCloseTo(w, -1);
+    expect(DEFAULT_FOLD_OPTIONS.paneHeight).toBeCloseTo(h, -1);
+  });
+
+  it("G9: a plant ten times wider than tall is folded into two rows and fits at a third of full size", () => {
+    //  The green-ammonia plants were one row of 17 columns (5687 x 543 px,
+    //  fit 0.198 in the 1280 x 653 canvas); folded, they fit above 0.3.
+    for (const id of ["plant/greenAmmonia02_feasibility150bar", "plant/greenAmmonia03_basicDesign",
+                      "plant/greenAmmoniaPEQ_baseCase", "plant/aceticAcid02_plant"]) {
+      const v = VIEWS.find((x) => x.id === id)!;
+      const z = getViewportForBounds(v.bounds, 1280, 653, 0, Infinity, FLOWSHEET_FIT_PADDING).zoom;
+      expect(z, id).toBeGreaterThan(0.3);
+    }
+  });
+
+  it("G9: the fold is taken on exactly these automatic views, and on no other", () => {
+    //  A view that is not folded is drawn exactly as steps 1-6 draw it
+    //  (layoutFlowsheet returns that drawing), so pinning WHICH views fold
+    //  pins that every other view of the corpus lays out as before.  A
+    //  curated .cho is drawn from its saved positions either way.
+    const folded = collectViews()
+      .filter((v) => flowsheetToGraph(v.flowsheet, v.raw).edges
+        .some((e) => (e.data as { wrap?: boolean } | undefined)?.wrap === true))
+      .map((v) => v.id).sort();
+    expect(folded).toEqual([
+      "plant/aceticAcid02_plant",
+      "plant/greenAmmonia02_feasibility150bar",
+      "plant/greenAmmonia02_feasibility50bar",
+      "plant/greenAmmonia03_basicDesign",
+      "plant/greenAmmoniaPEQ_baseCase",
+      "steady/economics/economics03_startup_years",
+      "steady/flowsheets/proxy01_gas_loop",
+      "steady/power/combined01_brayton_rankine",
+    ]);
   });
 
   it("witness: under React Flow's default minZoom (0.5) the largest views would NOT fit", () => {
