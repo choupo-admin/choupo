@@ -1528,6 +1528,36 @@ accepts today, and that is a policy call.
 > final; }` layout draws what the steady flowsheet and the sizing pass
 > already hold.
 
+> **C164. GRI-MECH 3.0 IS NOT USED DIRECTLY (Vitor, 2026-10-25, ruling on
+> the licence question, quoting the two findings -- the H/O subset copied
+> verbatim into the three ignition01 tutorials and the 17 component
+> records citing GRI-Mech 3.0, some generated from its thermo file: "Nao
+> podes usar de forma direta!").**  GRI-Mech 3.0 is "freely available,
+> all rights reserved, cite to use" -- no redistribution grant -- so it
+> is in the no-grant class CLAUDE.md 10 excludes, and the 2026-06-21
+> kinetics record already said fetch-and-cite.  Measured on main
+> 18e5dd732 (`git grep -i gri-mech`): 17 records under
+> data/standards/components/ (C2H, C2H3, C2H5, C3H7, CH, CH2, CH2CO,
+> CH2OH, CH2_S, CH3O, CN, HCCO, HCO, HNO, NCO, NNH, acetaldehyde); the
+> case-local component copies of ignition01 (x3), ignition02, nox01 and
+> gibbs06; the three ignition01 `constant/reactions`; the tools
+> bin/curate/gri_subset_to_choupo.py and bin/import_nasa.py.  Scope: (1)
+> classify every mention -- a VALUE taken from GRI-Mech (out) versus a
+> name used as a cross-check that enters no value (allowed, the
+> `via`/cross-check rule of CLAUDE.md 7); (2) every GRI-derived value
+> replaced from a redistributable PRIMARY -- kinetics from the rate
+> literature, cited per reaction (O Conaire et al. 2004, already
+> transcribed from the paper in ignition02, or Burke et al. 2012); NASA-7
+> thermo from NASA TM-4513 / TP-2002-211556 (public domain) -- or, where
+> no clean primary exists, the species REMOVED and its absence named;
+> never Burcat (NonCommercial); (3) the importers that read GRI files
+> into the tree retired or turned into LOCAL-only cross-check tools; (4)
+> `check_source_licence` refuses GRI-Mech as a value's origin from now on
+> (the 2026-09-01 rule: a licence decision not in a gate is a sentence);
+> (5) the goldens that move listed with their reason (C163: shown in the
+> report, not waited on).  C160's GRI parity runs are LOCAL only.
+> Status: recorded; dispatched the same turn.
+
 > **C163. THE OPEN QUESTIONS ARE THE COMMANDER'S TO DECIDE, AND VITOR
 > REVIEWS AFTER (Vitor, 2026-10-25, on the list of sixteen items put to
 > him: "Isso sao merdas que tu podes decidir e eu depois revejo!  Diz me
