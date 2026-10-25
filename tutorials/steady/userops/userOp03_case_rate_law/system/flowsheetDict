@@ -22,6 +22,13 @@
                   the engine's own expression evaluator.  It runs
                   everywhere, the site included.
 
+  The reaction is an ISOMERISATION, isomerA -> isomerB, between two
+  synthetic species this case carries in its own constant/components/: one
+  molar mass between them, so each reactor's mass balance closes at 100 %
+  (the witness used to turn the catalogue's compA, MW 30, into compB, MW 50,
+  one-for-one, and the engine reported 133.333 % -- correctly), and one molar
+  liquid volume, so the constant-volumetric-flow liquid basis is exact.
+
   The two reactors are fed the same stream and must give the same answer;
   both must equal the closed-form CSTR solution of Michaelis-Menten
   kinetics (a quadratic in the outlet concentration).  `bin/curate/

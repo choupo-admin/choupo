@@ -12,7 +12,8 @@ ways to carry one (DEV.md 4c C67, 2026-10-12):
 
 This case writes ONE law — Michaelis–Menten, `r = Vmax c_A / (Km + c_A)` —
 both ways, and feeds two identical CSTRs (`reactorCode`, `reactorExpr`) the
-same stream.
+same stream.  The reaction is an isomerisation, `isomerA -> isomerB`, between
+two synthetic species the case carries itself (see *The species* below).
 
 ```
 runCase tutorials/steady/userops/userOp03_case_rate_law     # builds code/ first
@@ -26,7 +27,7 @@ GUI says so when it is opened.  Its `reactorExpr` half would, on its own.
 * `constant/reactions` — `mm_code` names `type michaelisMenten;` and declares
   `Vmax` and `Km` WITH UNITS, which the C++ reads through the dictionary (so the
   units are checked there, not trusted); `mm_expr` writes the same law as a
-  formula over `c[compA]`, `Vmax` and `Km`.
+  formula over `c[isomerA]`, `Vmax` and `Km`.
 * `code/MichaelisMenten.{H,cpp}` — the whole law, thirty lines: read the
   parameters, return the extent rate in the reactor's convention
   (`RateState::amountPerKmol` says whether the reactor works in mol or kmol).
@@ -55,3 +56,26 @@ loop, a property the expression grammar cannot reach.  The C++ route has no
 dimension checker but the dictionary's own (`lookupScalar(key, dims)`), and
 it is the author's responsibility to refuse what it does not read, as this one
 does.
+
+## The species
+
+`isomerA` and `isomerB` are NOT real substances: they live in this case's
+`constant/components/`, declare `provenance { source synthetic; }` (the run
+says so) and exist only to be the substrate and the product of this witness.
+They are isomers — one formula, one molar mass (30 kg/kmol) — so `nu -1/+1`
+conserves MASS as well as moles: each reactor takes in 30 kg/h and gives out
+30 kg/h.  They also share one molar liquid volume, so the volumetric flow the
+CSTR evaluates on its feed is the outlet's too, and `c_A = c_A0 (1 - X)` above
+is exact rather than an approximation.
+
+Until 2026-10-25 the witness reacted the catalogue's `compA` (MW 30) into
+`compB` (MW 50), two VLLE-audit stand-ins that were never a reactant and its
+product: one kmol of 30 kg became one kmol of 50 kg, each reactor turned
+30 kg/h into 40 kg/h, and the mass balance reported 133.333 %.  The engine was
+right to report it; the case was wrong.  The catalogue records are shared by
+other cases, so the fix is a pair of the case's own, not an edit to them.
+
+The element balance is UNAVAILABLE and says so: the formula `X` is
+fictitious, and a synthetic species has no atoms to count.  The energy balance
+is UNAVAILABLE too (no heat of formation, for the same reason); the reactors
+run isothermal.

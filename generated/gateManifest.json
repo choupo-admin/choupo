@@ -1168,8 +1168,8 @@
     },
     "check_rate_expression": {
       "exit": 0,
-      "claim": "check_rate_expression: OK -- the C++ law and the expression agree (0.138888888889 mol/s) and both equal the closed-form Michaelis-Menten CSTR; precedence held by value (2^3^2 = 512, 8/4/2 = 1, -1^2 = -1); 16 refusals fired by name; a table read at its midpoint doubles the rate exactly, announced.  NOT CHECKED: whether any law is RIGHT (the witness's Vmax and Km are author-set; the ammonia law's anchors are check_ammonia_rate's), the batchReactor and dynamicCSTR routes, and the WASM build (check_wasm_dialect's).",
-      "seconds": 2.7
+      "claim": "check_rate_expression: OK -- the C++ law and the expression agree (0.138888888889 mol/s) and both equal the closed-form Michaelis-Menten CSTR; both reactors conserve mass (outlet F_mass = feed F_mass); precedence held by value (2^3^2 = 512, 8/4/2 = 1, -1^2 = -1); 16 refusals fired by name; a table read at its midpoint doubles the rate exactly, announced.  NOT CHECKED: whether any law is RIGHT (the witness's Vmax and Km are author-set; the ammonia law's anchors are check_ammonia_rate's), the batchReactor and dynamicCSTR routes, and the WASM build (check_wasm_dialect's).",
+      "seconds": 2.1
     },
     "check_economic_sensitivity": {
       "exit": 0,

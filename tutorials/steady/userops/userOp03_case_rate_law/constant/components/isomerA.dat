@@ -1,0 +1,74 @@
+/*---------------------------------------------------------------------------*\
+  Component: isomerA  -- SYNTHETIC witness species, carried by this case only
+  (userOp03_case_rate_law).  The SUBSTRATE of the isomerisation
+  isomerA -> isomerB that the case's Michaelis-Menten law drives.
+
+  NOT A REAL SUBSTANCE -- a stand-in for a kinetics witness (CAS 00-00-0),
+  like the catalogue's compA/compB/compC, and declared so below
+  (`provenance { source synthetic; }`) so the engine says it on every run.
+
+  WHY THE CASE CARRIES ITS OWN PAIR (2026-10-25).  The witness used to react
+  the catalogue's compA (MW 30) into compB (MW 50) one-for-one, so each CSTR
+  turned 30 kg/h into 40 kg/h and the plant's mass balance closed at
+  133.333 % -- the engine reported it, correctly; the case was wrong.  compB
+  is a VLLE-audit partner, never a product of compA, and the catalogue
+  records are not this case's to edit.  An isomer has the substrate's molar
+  mass by definition, so the reaction conserves mass with the stoichiometry
+  the law is written for (nu -1/+1).
+
+  Every value below is compA's, so the substrate's behaviour is unchanged:
+  the pure-A feed is still 12.5 kmol/m3 on the liquid basis (1/Vliq).
+
+  formula X: fictitious, and the SAME for both isomers because they are
+  isomers.  X is no element, so the element balance is UNAVAILABLE (said on
+  every run), as it is for every synthetic species -- it has no atoms to
+  count, and inventing some would convert "no elements" into false ones.
+  No standardThermochemistry block, ON PURPOSE (compA's reason): a
+  fictitious species has no heat of formation.  The reactors run
+  isothermal, and the energy balance is UNAVAILABLE and says so.
+
+  Sources: none -- author-set for this witness; no physical primary exists.
+\*---------------------------------------------------------------------------*/
+
+name        isomerA;
+formula     X;              // fictitious; isomerB carries the same formula
+CAS         00-00-0;
+
+MW          30.0;           // kg/kmol -- EQUAL to isomerB's: an isomerisation conserves mass
+Tc          500.0;
+Pc          50.0;
+omega       0.10;
+Tb          320.0;
+HvapTb      28000;
+Vliq        8.0e-5;         // m3/mol -- EQUAL to isomerB's: the liquid's volumetric flow
+                            // does not change with conversion, so the CSTR's
+                            // c_A = c_A0 (1 - X) is exact, not an approximation
+
+vaporPressure
+{
+    model         Antoine;
+    coefficients  (4.0   1700.0   -30.0);   // log10 P_bar = A - B/(T + C); Psat(350 K) = 0.049 bar
+    Trange        (300  400);
+}
+
+idealGasHeatCapacity
+{
+    model         polynomial;
+    coefficients  (80.0   0.0   0.0   0.0);
+    Trange        (200  500);
+}
+
+liquidHeatCapacity
+{
+    model         polynomial;
+    coefficients  (120.0);
+    Trange        (300  400);
+}
+
+provenance
+{
+    source      synthetic;
+    reason      "the substrate of the userOp03 isomerisation witness; no physical primary exists";
+}
+
+reviewStatus interim;       // author-set witness record, not read back by a curator
