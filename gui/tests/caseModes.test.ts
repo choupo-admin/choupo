@@ -15,7 +15,8 @@
 /*---------------------------------------------------------------------------*\
   ONE CASE, TWO MODES, AS THE GUI READS THEM (DEV.md 4c C151/C152).
 
-  On a fixture in the grammar of membrane24_fit_then_simulate (C152): the mode
+  On a fixture in the grammar of membrane24_fit_then_simulate and on the
+  case itself, ctrl17 and the whole manifest (C152): the mode
   rule (both dicts -> both modes, the default from `application`); the bridge
   dataset -> fitParameters -> RECORD -> the unit whose membrane names it, on
   the calculation map; the unit's way back to the fit, read off the record's
@@ -23,12 +24,18 @@
 \*---------------------------------------------------------------------------*/
 
 import { describe, expect, it } from "vitest";
+import { existsSync, readFileSync, readdirSync, statSync } from "node:fs";
+import { join, relative } from "node:path";
+import { REPO } from "./witnessOutputs.js";
 import { parse, toJson } from "../src/dict/index.js";
 import {
   caseModesOf, recordFit, staleFitRefusal, unitsReadingRecord, writtenRecords,
 } from "../src/case/caseModes.js";
 import { caseTree, derivePropsMap } from "../src/case/propsMap.js";
 import { PROPS_DISCIPLINES } from "../src/case/operationSchemas.js";
+
+const M24 = "tutorials/steady/membranes/membrane24_fit_then_simulate";
+const C17 = "tutorials/ctrl/ctrl17_step_reaction_curve";
 
 const PROPS = `operations
 (
@@ -110,6 +117,88 @@ describe("the bridge: a fit writes a record a unit reads", () => {
     expect(tree.find((n) => n.label === "Process units")!.children.map((c) => c.id)).toEqual(["unit:Stage"]);
     expect(tree.find((n) => n.label === "Records produced")!.children.map((c) => c.id))
       .toEqual(["record:NF270_FdL2021"]);
+  });
+});
+
+/* ---- the real cases (C152 on main) ------------------------------------- */
+
+function caseFiles(dir: string) {
+  const root = join(REPO, dir);
+  const raw: Record<string, string> = {};
+  const walk = (d: string) => {
+    for (const f of readdirSync(d)) {
+      const p = join(d, f);
+      if (statSync(p).isDirectory()) walk(p);
+      else raw[relative(root, p)] = readFileSync(p, "utf-8");
+    }
+  };
+  walk(join(root, "system"));
+  walk(join(root, "constant"));
+  const dict = (rel: string) => (raw[rel] !== undefined ? toJson(parse(raw[rel]!)) : null);
+  return { raw, propsDict: dict("system/propsDict"), flowsheet: dict("system/flowsheetDict"),
+           controlDict: dict("system/controlDict") };
+}
+
+describe("the GUI's mode rule IS the manifest's (generated/caseManifest.json)", () => {
+  const manifest = JSON.parse(readFileSync(join(REPO, "generated/caseManifest.json"), "utf-8")) as
+    { cases: Record<string, { modes?: string[]; defaultMode?: string }> };
+  const entries = Object.entries(manifest.cases);
+
+  it("reads the manifest (a harvest of nothing is blindness)", () => {
+    expect(entries.length).toBeGreaterThan(300);
+    expect(entries.filter(([, e]) => e.modes).length).toBeGreaterThanOrEqual(2);
+  });
+
+  it("every case: two modes exactly where the manifest says, with its default", () => {
+    const disagree: string[] = [];
+    for (const [dir, e] of entries) {
+      const sys = join(REPO, dir, "system");
+      if (!existsSync(sys)) continue;
+      const has = (f: string) => existsSync(join(sys, f));
+      const ctrl = has("controlDict") ? readFileSync(join(sys, "controlDict"), "utf-8") : "";
+      const app = /^\s*application\s+(\w+)/m.exec(ctrl.replace(/\/\/[^\n]*/g, ""))?.[1];
+      const got = caseModesOf({
+        propsDict: has("propsDict") ? {} : null,
+        flowsheet: has("flowsheetDict") ? {} : null,
+        controlDict: app ? { application: app } : null,
+      });
+      const want = e.modes ? { modes: e.modes, defaultMode: e.defaultMode } : null;
+      if (JSON.stringify(got) !== JSON.stringify(want)) disagree.push(dir);
+    }
+    expect(disagree).toEqual([]);
+  });
+});
+
+describe("membrane24_fit_then_simulate: the fit, the record it wrote, the stage that reads it", () => {
+  const c = caseFiles(M24);
+  it("two modes, Process by default", () => {
+    expect(caseModesOf(c)).toEqual({ modes: ["process", "props"], defaultMode: "process" });
+  });
+  it("the record names the fit that wrote it", () => {
+    const [w] = writtenRecords(c.propsDict);
+    expect(w).toBeDefined();
+    expect(unitsReadingRecord(c.flowsheet, w!.name)).toEqual(["Stage"]);
+    expect(recordFit(c.raw, w!.name)).toMatchObject({ operation: w!.op, verdict: "validated" });
+  });
+  it("the map: the four datasets -> the fit -> the record -> Stage", () => {
+    const map = derivePropsMap({ propsDict: c.propsDict, flowsheet: c.flowsheet, rawFiles: c.raw });
+    const [w] = writtenRecords(c.propsDict);
+    const has = (from: string, to: string) => map.links.some((l) => l.from === from && l.to === to);
+    for (const ds of ["NaCl", "MgCl2", "Na2SO4", "MgSO4"])
+      expect(has(`file:constant/experimental/fdl2021_${ds}.dat`, `op:${w!.op}`)).toBe(true);
+    expect(has(`op:${w!.op}`, `record:${w!.name}`)).toBe(true);
+    expect(has(`record:${w!.name}`, "unit:Stage")).toBe(true);
+    const rec = map.nodes.find((n) => n.id === `record:${w!.name}`)!;
+    expect(rec.member.target).toMatchObject({ kind: "case", path: w!.path });
+    expect(map.blocks.length).toBeLessThanOrEqual(15);
+  });
+});
+
+describe("ctrl17: a two-mode case whose props ops read a Process run's output", () => {
+  it("two modes, Process by default; no record bridge", () => {
+    const c = caseFiles(C17);
+    expect(caseModesOf(c)!.defaultMode).toBe("process");
+    expect(writtenRecords(c.propsDict)).toEqual([]);
   });
 });
 
