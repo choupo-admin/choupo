@@ -1528,6 +1528,42 @@ accepts today, and that is a policy call.
 > final; }` layout draws what the steady flowsheet and the sizing pass
 > already hold.
 
+> **C159. FROM THE EXPLORER TO THE FIT THAT MADE A PAIR, AND A STUDENT'S
+> OWN FIT (Vitor, 2026-10-25: "o explorer permite mostrar a evidencia e
+> os ajustes para um dado composto/binario.  Mas agora com o props podemos
+> mostrar o data set do NIST e a forma como se faz a estimativa de
+> parametros, nao e?  Ate pode gerar o ficheiro de binarios!!  E nos
+> dicionarios especificamos os metodos de minimizacao dos ajustes e
+> devemos ter help/F1 acessivel para os alunos perceberem").**  Measured
+> on main: a regressed catalogue pair NAMES the case that fitted it --
+> `data/standards/parameters/NRTL/acetone-ethanol.dat:64` `fittedInCase
+> "tutorials/props/curation/curate11_nrtl_acetone_ethanol"`, its series
+> located through the ThermoML archive and cited by DOI, its verdict
+> `validated` (C16); that case is a props case (`fitParameters`), so with
+> C151/C154 it already DRAWS the datasets, the fit, the parity and the
+> verdict; the fit writes a promotable pair record (`output.proposal`,
+> into data/local/); the minimisation is Levenberg-Marquardt, FIXED, with
+> its controls declared (`lambda0` and the rest, the op schema's
+> `x-choupo` lists the regression as "LevenbergMarquardt", fixed) -- no
+> `method` key names it in the dict.  Scope: (1) the Explorer's pair view
+> OPENS the case named by `fittedInCase` in Properties & data, at its fit
+> (one click from "where did these numbers come from" to the data and the
+> regression); (2) a student's own fit: from a pair with ThermoML series
+> (`bin/choupo-thermoml extract-vle`), a props case is generated whose
+> datasets carry the series with their citations, whose fit declares the
+> partition fit / held-out and a band BEFORE the fit, and whose output is
+> the pair record -- shipped as a template the student downloads, edits
+> (another pair, another model) and opens back; (3) the minimisation made
+> VISIBLE in the dict: `method LevenbergMarquardt;` declared (the default
+> announced when absent, any other word refused by name until a second
+> method exists), its controls each F1-answerable, F1 on `method` / the
+> controls / `residual` / `evidence` landing on the least-squares EduTool
+> and the Props Guide's fitting section (C154's key help is the
+> mechanism).  Licence: the ThermoML series ship in a case only as the
+> measured values with their article's citation, as the C16 records do.
+> Status: recorded; queued AFTER Vitor's full-suite run (no new work
+> before it, his ruling of the same evening).
+
 > **C158. EVERY EDUTOOL ENDS WITH A LEARNING QUIZ (Vitor, 2026-10-25:
 > "no final de cada EduTool deve haver um questionario de
 > aprendizagem").**  Measured on main: the shared component exists --
