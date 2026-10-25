@@ -317,7 +317,7 @@ export function ReviewScreen({ ops, result, readiness, audit, propsDict, thermo,
     if (t.kind === "guide") openGuide(t.url);
     else if (t.kind === "case") openCaseAt(t.path, t.line, t.endLine);
     else if (t.kind === "view") setSelected(`view:${t.domId}`);
-    else if (t.kind === "process") { setCaseMode("process"); selectNode(t.unit); }
+    else if (t.kind === "process") { setCaseMode("process"); selectNode(`unit:${t.unit}`); }
     else notifications.show({ message: t.label, color: "gray", autoClose: 4000 });
   }, [openCaseAt, setCaseMode, selectNode]);
 
