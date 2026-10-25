@@ -1528,6 +1528,27 @@ accepts today, and that is a policy call.
 > final; }` layout draws what the steady flowsheet and the sizing pass
 > already hold.
 
+> **C156. THE PLOTS PAGE NAVIGATES BY UNIT TOO (Vitor, 2026-10-25, on
+> ammonia02_full_plant's Plots page: "do lado esquerdo devia de haver uma
+> tree para se associar um dado plot a operacao unitaria respetiva!
+> Agenda isso tambem.").**  Measured on main: the Plots navigator
+> (`gui/src/ui/PlotsWorkspace.tsx`, "Plot types") lists plot KINDS only
+> (Balance, Phase equilibrium, Solver, Internal, Outer driver); a SECTORED
+> plant also gets one group per sector with its units (read from the
+> engine's `unitSectors` stamp), but a FLAT case gets nothing ("A FLAT
+> CASE GETS NOTHING HERE", deliberately: no invented "root" sector) -- so
+> on a flat plant like ammonia02 a unit's profile, its convergence trace
+> or its envelope is reached only through each plot's own dropdown.
+> Scope: a UNITS tree beside the plot types on every flowsheet case --
+> flat cases list their units directly (no invented sector), sectored
+> cases keep the sector level; under each unit, the plots the RUN
+> published for that unit (its internal profile, its convergence trace,
+> its T-x-y where it emitted one, its ports' streams), each opening the
+> plot already focused on that unit; a unit with nothing to plot is shown
+> greyed with "nothing published"; the unit's F1 to its theory as on the
+> flowsheet.  Read from what the result publishes per unit, never
+> inferred from a unit's type.  Status: dispatched 2026-10-25.
+
 > **C155. THE LAMINAR-TURBULENT TRANSITION IS NOT A CURVE (Vitor,
 > 2026-10-25: "na analise dimensional usaste o metodo de Churchill para
 > fazer uma interpolacao entre laminar / turbulento, mas essa aplicacao
