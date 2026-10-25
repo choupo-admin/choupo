@@ -3567,7 +3567,28 @@ accepts today, and that is a policy call.
 >    tutorials/batch/plant/apalutamide01_tablets`.  Owed: check_energy_
 >    closure on the branch; merging with G2 (both touch
 >    check_batch_plan's fixtures and G2's probe is built from this case).
-> 6. **G4 `claude/c110-g4-debt-financing` (484b52f54)** -- opt-in
+> 6. **LANDED 2026-10-25 (`claude/c110-g4-revived`):** opt-in
+>    `economics { financing { debtFraction; basis; rate; graceYears;
+>    termYears; repayment; source; reason; [equityDiscountRate;] } }`, the
+>    loan computed inside the ONE cash-flow home `appraise`, the equity
+>    view (NPV, IRR, discounted payback, schedule, a second .ods sheet)
+>    BESIDE the unchanged project view; `financing.rate` and
+>    `.debtFraction` are sensitivity inputs whose project-NPV swing is
+>    exactly zero.  No new case: economics03 declares the loan (287 rows
+>    unmoved, 28 appended); the 16 other economics cases measured
+>    BYTE-IDENTICAL against a build of main (console + JSON, stderr, exit,
+>    every reports/economics file).  Stated defaults standing: interest
+>    during construction capitalised and depreciated with the plant
+>    (IAS 23 / NCRF 10), `basis` required, an undeclared equity rate falls
+>    back to the project's and is announced.  economics03's hand check
+>    corrected from the run (FCI 55.42 M, NPV 77.99 M EUR, IRR 21.99 %).
+>    Gate `check_debt_financing` (14 of 15 sabotages caught; the one that
+>    survives, a multiple-IRR guard that never fires, is stated).  Riding:
+>    three gates red on main fixed (check_decision_index -- six records
+>    indexed; check_models_catalogue -- 27 assets counted from the tree;
+>    check_sealed_corpus -- solvent01 sealed, golden unmoved).  NOT done:
+>    the GUI does not draw the equity view.  Original WIP:
+>    **G4 `claude/c110-g4-debt-financing` (484b52f54)** -- opt-in
 >    `economics { financing {} }`, the equity view beside the unchanged
 >    project view.  NEVER BUILT.  Owed (its report): build, byte identity
 >    of the twelve economics cases, the gate, the sabotages, the manifest.
