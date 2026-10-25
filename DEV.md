@@ -2061,9 +2061,24 @@ accepts today, and that is a policy call.
 > (fixed), W5 UNIQUAC gamma = 1 for an absent component (fixed), W6 the SRK
 > m(omega) attribution (Graboski-Daubert, comments fixed), W7 a flat T-x-y
 > (fixed); MISSING M1 no liquid-split check after a VL flash, M2 no
-> fugacity residual published; gate `check_thermo_limits`; its REFUTER is
-> running, and the flash fix reaches a shared path, so it lands only after
-> the refuter's corpus measurement.  Family (b) separations LANDED
+> fugacity residual published; gate `check_thermo_limits`.  LANDED with
+> its refutation (`claude/c131-refute-thermo`, report
+> `docs/design/review-c131-thermodynamics.md`): the refuter confirmed the
+> defects with a second, independent implementation, CORRECTED the
+> trivial-root refusal (it refused a real azeotrope -- bubbleT02's
+> ethanol/water -- and now refuses only a phi-phi package whose two roots
+> are one root), moved the lesson citations the inserted lines shifted,
+> and MEASURED the shared-path change on 598 case folders against main:
+> exit codes identical, no refusal fires anywhere, the JSON identical but
+> for flash09/10's T-x-y block (intended) and rounding in four UNIQUAC
+> cases; `--gui` 36/0 on main.  Its corrections: W1 reaches 24 cases, the
+> SRK m(omega) difference is larger than stated, M1 misses the existing
+> opt-in `phaseSet auto`, M2 is 20x larger (flash09 7.3e-6 in ln f).
+> PROPOSALS for Vitor, worst first: W1 phi_sat / Poynting in gamma-phi
+> (24 cases move), W2 bubble/dew T rebuilt on the incipient-phase
+> iteration with a Tb/Tc bracket, W3 the phi-phi liquid enthalpy from the
+> EoS liquid root, M1 an announcement, M2 a residual KPI, W6 Soave's or
+> Graboski-Daubert's slope.  Family (b) separations LANDED
 > (analyst `claude/c131-review-separations` + refuter
 > `claude/c131-refute-separations`, report
 > `docs/design/review-c131-separations.md` with its Refutation appendix):
