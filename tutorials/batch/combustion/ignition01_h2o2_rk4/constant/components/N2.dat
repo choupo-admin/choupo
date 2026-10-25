@@ -23,6 +23,9 @@ HvapTb      5577;         // J/mol
 Vliq        3.46e-5;      // m^3/mol  (34.6 cm^3/mol at Tb)
 diffusionVolume  18.5;          // Fuller diffusion volume [-]
 
+reviewStatus   interim;
+reviewReason   "idealGasHeatCapacity transcribed by machine from NASA/TP-2002-211556 and checked against the report itself, not yet read back against the page by a curator; the rest of this record is unchanged";
+
 standardThermochemistry
 {
     dHf_298   0.0;                // J/mol  -- element in standard state
@@ -38,16 +41,17 @@ vaporPressure
 
 idealGasHeatCapacity
 {
-    // CASE-LOCAL OVERRIDE for flame temperatures: the catalogue poly3 is a
-    // 250-1500 K process fit and EXTRAPOLATES WRONG at 2600 K (N2's turns
-    // NEGATIVE).  NASA-7 two-range form, GRI-Mech 3.0 thermo (7/30/99),
-    // valid 200-3500 K.
-    model    NASA7;
-    low      ( 3.29867700e+00 1.40824040e-03 -3.96322200e-06 5.64151500e-09 -2.44485400e-12 -1.02089990e+03 3.95037200e+00 );
-    high     ( 2.92664000e+00 1.48797680e-03 -5.68476000e-07 1.00970380e-10 -6.75335100e-15 -9.22797700e+02 5.98052800e+00 );
-    Tlow     200.0;
-    Tcommon  1000.0;
-    Thigh    3500.0;
+    //  CASE-LOCAL OVERRIDE for flame temperatures: the catalogue's Cp is a
+    //  process-range fit that does not reach them.
+    //  NASA/TP-2002-211556 eq. (1), Cp/R = a1/T^2 + a2/T + a3 + a4 T + a5 T^2
+    //  + a6 T^3 + a7 T^4; appendix D, p. 156, entry N2, a1..a7 as printed.
+    //  The report's 6000-20000 K interval is not transcribed.
+    model    NASA9;
+    Tlow     200;
+    Tcommon  1000;
+    Thigh    6000;
+    low      ( 2.210371497e+04 -3.818461820e+02 6.082738360e+00 -8.530914410e-03 1.384646189e-05 -9.625793620e-09 2.519705809e-12 );
+    high     ( 5.877124060e+05 -2.239249073e+03 6.066949220e+00 -6.139685500e-04 1.491806679e-07 -1.923105485e-11 1.061954386e-15 );
 }
 
 // Liquid Cp -- physically extrapolated stub (N2 is gas at any normal
@@ -63,3 +67,17 @@ liquidHeatCapacity
 
 // Friendly-name aliases (resolved to this file via the generated ALIASES index).
 aliases ( nitrogen );
+
+provenance
+{
+    idealGasHeatCapacity
+    {
+        origin        literature;
+        method        "NASA/TP-2002-211556 appendix D, p. 156, entry N2, a1..a7 of the 200-1000 K and 1000-6000 K intervals, as printed";
+        methodVersion "NASA/TP-2002-211556";
+        uncertainty   "not quantified by source";
+        notes         "read by bin/curate/nasa_tp2002_to_choupo.py, which holds H and S at 298.15 K to the printed values";
+    }
+    source   "McBride, Zehe & Gordon, NASA Glenn Coefficients for Calculating Thermodynamic Properties of Individual Species, NASA/TP-2002-211556 (2002)";
+    licence  publicDomain;    // US government work (NASA), 17 U.S.C. 105
+}

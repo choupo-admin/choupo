@@ -12,7 +12,7 @@
 
   THE RADICAL DATABASE AT WORK: stoichiometric H2/air adiabatic flame,
   equilibrium by Gibbs minimisation over the FULL radical pool
-  (H, O, OH, HO2, H2O2 -- GRI-Mech 3.0 / Burcat NASA-7 thermo) plus
+  (H, O, OH, HO2, H2O2 -- the catalogue's NASA-7-derived radical records) plus
   equilibrium thermal NO.
 
       1 H2 + 0.5 O2 + 1.88 N2   at 298.15 K, 1 atm, adiabatic.
@@ -31,8 +31,9 @@
      the catalogue's poly3 Cp fits are 250-1500 K PROCESS fits; extrapolated
      to 2641 K, N2's cubic turns NEGATIVE (-33 J/mol/K) and water's reads
      45 instead of ~56.  The case-local overrides switch the four stable
-     species to the NASA-7 two-range form (GRI-Mech 3.0, valid 200-3500 K)
-     -- the same source as the radical entries.  Run it once with the
+     species to the NASA-9 polynomials of NASA/TP-2002-211556 (public
+     domain, valid 200-6000 K; until 2026-10-25 they were GRI-Mech 3.0's
+     NASA-7, which grants no redistribution).  Run it once with the
      overrides removed to SEE the 250 K error a silent extrapolation buys.
 \*---------------------------------------------------------------------------*/
 

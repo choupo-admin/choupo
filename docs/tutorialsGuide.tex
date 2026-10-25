@@ -112,7 +112,8 @@ kinetics at all: expect the adiabatic flame temperature to land within a few
 K of literature when radicals (H, O, OH\dots) are IN the pool, and to
 overshoot by $\sim$100--250\,K when they are not (dissociation is
 endothermic).  Above $\sim$1500\,K the catalogue's polynomial $c_p$ fits
-extrapolate WRONG -- combustion cases carry case-local NASA-7 overrides,
+extrapolate WRONG -- combustion cases carry case-local NASA-9 overrides
+(NASA/TP-2002-211556),
 and the case headers say so.
 
 \medskip
@@ -204,11 +205,11 @@ $\mathrm{H_2 + M}$, $E_a \sim 105$\,kcal), branching multiplies them
 ($\mathrm{H + O_2 \to O + OH}$: one in, two out), termination removes them.
 Ignition is the race between branching and termination; the induction time
 is set by the SLOW build-up, then heat release runs away.  Rate constants
-$k = A T^b e^{-E_a/RT}$ come VERBATIM from cited mechanisms (GRI-Mech 3.0,
-\'O Conaire 2004, Glarborg 2018) in their native units -- the engine
+$k = A T^b e^{-E_a/RT}$ come VERBATIM from cited papers (\'O Conaire 2004,
+Glarborg 2018) in their native units -- the engine
 converts and announces.  Reverse rates from equilibrium: the kinetic
 end-state must land on the Gibbs equilibrium (the two-engine handshake the
-NOx tutorial pins at 98.9\,\%).  Expect stiffness ratios of $10^6$--$10^8$
+NOx tutorial pins at 99.99\,\%).  Expect stiffness ratios of $10^6$--$10^8$
 (use Rosenbrock23), ignition delays in $\mu$s validated against shock-tube
 data, and thermal NO forming over SECONDS -- the timescale gap behind
 quench-based NOx control. \theoryref{the combustion/kinetics chapter}}
@@ -489,7 +490,7 @@ crystallisers where all of it sets duties and yields.
 
 \paragraph{The combustion path.}
 \texttt{gibbs06\_h2\_flame\_radicals} (the radical pool at equilibrium; the
-$c_p$ extrapolation trap), \texttt{ignition01\_h2o2} (GRI kinetics, the
+$c_p$ extrapolation trap), \texttt{ignition01\_h2o2} (\'O Conaire kinetics, the
 stiffness lesson via the \texttt{\_rk4} twin), \texttt{ignition02\_h2air\_slack}
 (quantitative: $\tau_{\mathrm{ign}}$ vs shock-tube data),
 \texttt{nox01\_zeldovich\_postflame} (thermal NO; kinetics meets Gibbs at

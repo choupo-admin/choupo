@@ -77,15 +77,6 @@ propertyManifest
             type          adopted;
             adoptedAt     "2026-07-17";
         }
-        "components/NNH.dat"
-        {
-            type          imported;
-            sha256        "baeebf63b2adbf2af9bfa3891fa91d68e89e81b3e63ba418288a740894f870eb";
-            computationalSha256 "fe284d0f44257361c1c2b738db2f2fca02bccedcaafbfbe0d20616d751211003";
-            origin        "data/standards/components/NNH.dat";
-            originSha256  "49fa47f31b42d77ca777ecfc50f6e094f9f25e65a994010cf5ae5bb019c5bdc9";
-            release       Choupo-2607;
-        }
         "components/NO.dat"
         {
             type          adopted;

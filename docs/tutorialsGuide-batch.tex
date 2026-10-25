@@ -684,7 +684,7 @@ THE ANCHOR: T\_min\_final\_K sits BELOW the declared 298.15 K by a visible margi
   \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (bomb) at (0.0,-0.0) {\textbf{bomb}\\[-1pt]{\tiny batchReactor}};
 \end{tikzpicture}
 \end{tutscheme}
-\tutwhat{Adiabatic constant-V H2/O2 ignition at 1100 K (GRI-Mech 3.0 H/O kinetics, curated thermo); Rosenbrock23 stiff solver; reports ignition delay}
+\tutwhat{Adiabatic constant-V H2/O2 ignition at 1100 K (O Conaire 2004 H2/O2 kinetics, NASA-9 thermo); Rosenbrock23 stiff solver; reports ignition delay}
 \begin{tutnarrative}
 closed rigid vessel, stoichiometric H2/O2 in N2 at 1100 K.
 
@@ -695,12 +695,12 @@ mode adiabatic + energy gasConstantV: the first law dU = 0 in a fixed volume, wi
 solver \{ integrator Rosenbrock23; \} -- the L-stable stiff method. Swap to RK4 (see the ignition01\_h2o2\_rk4 sibling) and the same step blows up.
 
 \end{tutnarrative}
-\tutreadme{A closed rigid vessel holds a stoichiometric H$_2$/O$_2$ charge diluted in N$_2$ at 1100 K and \textasciitilde{}5 bar. A tiny H-radical seed starts chain branching; after a short induction the radical pool explodes and the mixture ignites --- a sharp temperature jump from 1100 K to \textasciitilde{}2440 K.}
+\tutreadme{A closed rigid vessel holds a stoichiometric H$_2$/O$_2$ charge diluted in N$_2$ at 1100 K and 5 bar. A trace H-radical seed starts chain branching; after a short induction the radical pool explodes and the mixture ignites --- a sharp temperature jump from 1100 K to \textasciitilde{}3078 K.}
 \tutreadme{and plot trajectory.csv (T and the radicals H/O/OH vs time). You will see:}
-\tutreadme{The ignition delay $\tau$\_ign (the time of maximum dT/dt) is $\approx$ 0.9 ms here.}
-\tutreadme{The radical lifetimes are \textasciitilde{}10??--10?? s while the induction runs over \textasciitilde{}10?$^3$ s --- a timescale separation of \textasciitilde{}10?. That is stiffness. An explicit method (RK4) is stability-limited to a step of order the $\ast$fastest$\ast$ scale, so it cannot take the \textasciitilde{}10?? s steps this case uses. The solver here is Rosenbrock23, an L-stable linearly-implicit method that steps by $\ast$accuracy$\ast$, not stability; at verbosity 3 it prints its stiffness verdict and step counts (the no-silent- crutch credo).}
-\tutreadme{See it fail on purpose --- the sibling case runs the same problem with explicit RK4 at the same step:}
-\tutreadme{It blows up to NaN within a few steps. (That case ships a .expect-nonconvergence marker, so bin/runTests skips it --- its whole point is to fail.) Switch the integrator back to Rosenbrock23 and the same step converges. $\ast$See, then decide$\ast$, applied to numerics.}
+\tutreadme{The ignition delay $\tau$\_ign (the time of maximum dT/dt, printed in the run's epilogue on the 1 $\mu$s write grid) is $\approx$ 8 $\mu$s here. The trace H seed is what makes it that short: the same mechanism without a seed, at 2 atm, gives the 43 $\mu$s of the shock-tube pin in ignition02\_h2air\_slack.}
+\tutreadme{The radical lifetimes are far shorter than the induction --- the solver prints a stiffness ratio of order 10?. That is stiffness. An explicit method (RK4) is stability-limited to a step of order the $\ast$fastest$\ast$ scale, so it cannot take the 1 $\mu$s steps this case uses. The solver here is Rosenbrock23, an L-stable linearly-implicit method that steps by $\ast$accuracy$\ast$, not stability; at verbosity 3 it prints its stiffness verdict and step counts (the no-silent- crutch credo).}
+\tutreadme{See it fail on purpose --- two siblings run the same problem at the same step with other integrators:}
+\tutreadme{(Both ship a .expect-nonconvergence marker --- their whole point is to fail.) $\ast$See, then decide$\ast$, applied to numerics.}
 \begin{tutgolden}
 \goldrow{kpi}{bomb}{P\_final}{500000}
 \goldrow{kpi}{bomb}{T\_final}{2641.48171412}
@@ -731,12 +731,10 @@ solver \{ integrator Rosenbrock23; \} -- the L-stable stiff method. Swap to RK4 
 WITNESS for the EulerSI integrator (semi-implicit Euler) -- an EXPECTED FAILURE: see .expect-nonconvergence for why first order at this step goes unphysical and how the engine now refuses instead of exiting 0. Registered model no case selected until 2026-08-22 (invariant I8).
 
 \end{tutnarrative}
-\tutreadme{A closed rigid vessel holds a stoichiometric H$_2$/O$_2$ charge diluted in N$_2$ at 1100 K and \textasciitilde{}5 bar. A tiny H-radical seed starts chain branching; after a short induction the radical pool explodes and the mixture ignites --- a sharp temperature jump from 1100 K to \textasciitilde{}2440 K.}
-\tutreadme{and plot trajectory.csv (T and the radicals H/O/OH vs time). You will see:}
-\tutreadme{The ignition delay $\tau$\_ign (the time of maximum dT/dt) is $\approx$ 0.9 ms here.}
-\tutreadme{The radical lifetimes are \textasciitilde{}10??--10?? s while the induction runs over \textasciitilde{}10?$^3$ s --- a timescale separation of \textasciitilde{}10?. That is stiffness. An explicit method (RK4) is stability-limited to a step of order the $\ast$fastest$\ast$ scale, so it cannot take the \textasciitilde{}10?? s steps this case uses. The solver here is Rosenbrock23, an L-stable linearly-implicit method that steps by $\ast$accuracy$\ast$, not stability; at verbosity 3 it prints its stiffness verdict and step counts (the no-silent- crutch credo).}
-\tutreadme{See it fail on purpose --- the sibling case runs the same problem with explicit RK4 at the same step:}
-\tutreadme{It blows up to NaN within a few steps. (That case ships a .expect-nonconvergence marker, so bin/runTests skips it --- its whole point is to fail.) Switch the integrator back to Rosenbrock23 and the same step converges. $\ast$See, then decide$\ast$, applied to numerics.}
+\tutreadme{The third integrator of the stiffness lesson. The same adiabatic constant-volume H$_2$/O$_2$ ignition as [ignition01\_h2o2](../ignition01\_h2o2/README.md) (Rosenbrock23, converges) and [ignition01\_h2o2\_rk4](../ignition01\_h2o2\_rk4/README.md) (explicit RK4, blows up), here with semi-implicit Euler (integrator EulerSI;) at the same deltaT = 1e-6 s.}
+\tutreadme{Semi-implicit Euler is A-stable, so it does not oscillate to infinity the way RK4 does --- the first steps are physical (T 1100 $\to$ 1102 $\to$ 1108 $\to$ 1139 K) --- but it is FIRST ORDER, and once the ignition transient starts one linearised step is wrong enough to drive the state unphysical. The integrator reports that it gave up, and the reactor refuses by name instead of exiting 0:}
+\tutreadme{.expect-nonconvergence records why that refusal exists (until 2026-08-22 this exact run reached a negative temperature and exited 0). L-stable second order converges, explicit fourth order blows up loudly, A-stable first order fails honestly: $\ast$see, then decide$\ast$, applied to numerics.}
+\tutreadme{Same as the sibling: the ? Conaire et al. (2004) H$_2$/O$_2$ mechanism (constant/reactions, shared with ignition02\_h2air\_slack) and NASA-9 heat capacities from NASA/TP-2002-211556 for H$_2$, O$_2$, N$_2$ and water. Until 2026-10-25 it ran a GRI-Mech 3.0 subset, replaced because GRI-Mech grants no redistribution (DEV.md ?4c C164); the failure it teaches did not change.}
 
 \clearpage
 \tutentry{ignition01\_h2o2\_rk4}{tutorials/batch/combustion/ignition01\_h2o2\_rk4}
@@ -745,7 +743,7 @@ WITNESS for the EulerSI integrator (semi-implicit Euler) -- an EXPECTED FAILURE:
   \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (bomb) at (0.0,-0.0) {\textbf{bomb}\\[-1pt]{\tiny batchReactor}};
 \end{tikzpicture}
 \end{tutscheme}
-\tutwhat{Adiabatic constant-V H2/O2 ignition at 1100 K (GRI-Mech 3.0 H/O kinetics, curated thermo); EXPLICIT RK4 -- fails on the stiff chemistry (the lesson)}
+\tutwhat{Adiabatic constant-V H2/O2 ignition at 1100 K (O Conaire 2004 H2/O2 kinetics, NASA-9 thermo); EXPLICIT RK4 -- fails on the stiff chemistry (the lesson)}
 \begin{tutnarrative}
 ignition01\_h2o2 -- closed rigid vessel, stoichiometric H2/O2 in N2 at 1100 K.
 
@@ -756,12 +754,12 @@ mode adiabatic + energy gasConstantV: the first law dU = 0 in a fixed volume, wi
 solver \{ integrator Rosenbrock23; \} -- the L-stable stiff method. Swap to RK4 (see the ignition01\_h2o2\_rk4 sibling) and the same step blows up.
 
 \end{tutnarrative}
-\tutreadme{This is the failure half of the stiffness lesson. It runs the exact same adiabatic constant-volume H$_2$/O$_2$ ignition as the sibling case [ignition01\_h2o2](../ignition01\_h2o2/README.md), but with the explicit RK4 integrator instead of the stiff Rosenbrock23 --- at the same fixed step (deltaT = 1e-5 s).}
-\tutreadme{trajectory.csv is a column of nan from the very first output step (t = 1e-4 s) onward --- there is no clean induction-then-jump, just immediate divergence:}
-\tutreadme{That immediate blow-up is the result. The radical lifetimes (\textasciitilde{}10??--10?? s) are six orders of magnitude shorter than the induction timescale (\textasciitilde{}10?$^3$ s) --- the chemistry is stiff. An explicit method like RK4 is stability-limited to a step of order the $\ast$fastest$\ast$ scale, so the \textasciitilde{}10?? s step this case uses is far too large: the integration is murdered by stability long before accuracy matters.}
-\tutreadme{Compare side-by-side with the stiff sibling: switch to (or open) ignition01\_h2o2, whose L-stable adaptive sub-stepping integrates the $\ast$same$\ast$ chemistry to a clean burned state (\textasciitilde{}2440 K). $\ast$See, then decide$\ast$, applied to numerics.}
-\tutreadme{This case ships a .expect-nonconvergence marker, so bin/runTests skips it --- its whole point is to fail, and it would otherwise trip the NaN guard.}
-\tutreadme{Same as the sibling: the thermodynamics is real curated Choupo data, but the reaction rates are synthetic (hand-chosen Arrhenius constants reproducing the chain-branching structure, not a published mechanism). Do not quote any number from this case as quantitative.}
+\tutreadme{This is the failure half of the stiffness lesson. It runs the exact same adiabatic constant-volume H$_2$/O$_2$ ignition as the sibling case [ignition01\_h2o2](../ignition01\_h2o2/README.md), but with the explicit RK4 integrator instead of the stiff Rosenbrock23 --- at the same fixed step (deltaT = 1e-6 s).}
+\tutreadme{The first step is still plausible (T 1100 $\to$ 1110 K); the second already throws the state out of the physical region (T near 8000 K, H$_2$ at zero), and the third is nan. The engine refuses rather than exit 0:}
+\tutreadme{That blow-up is the result. The stiff sibling prints a stiffness ratio of order 10? for this chemistry: an explicit method is stability-limited to a step of order the $\ast$fastest$\ast$ scale, so a step chosen for the $\ast$induction$\ast$ is murdered by stability long before accuracy matters.}
+\tutreadme{Compare side-by-side with ignition01\_h2o2, whose L-stable adaptive sub-stepping integrates the $\ast$same$\ast$ chemistry to a clean burned state (\textasciitilde{}3078 K), and with ignition01\_h2o2\_eulersi, which is A-stable but first order and fails honestly by name. $\ast$See, then decide$\ast$, applied to numerics.}
+\tutreadme{This case ships a .expect-nonconvergence marker, so bin/runTests counts it as an EXPECTED-FAIL --- its whole point is to fail.}
+\tutreadme{Same as the sibling: the ? Conaire et al. (2004) H$_2$/O$_2$ mechanism (constant/reactions, shared with ignition02\_h2air\_slack) and NASA-9 heat capacities from NASA/TP-2002-211556 for H$_2$, O$_2$, N$_2$ and water. Until 2026-10-25 it ran a GRI-Mech 3.0 subset, replaced because GRI-Mech grants no redistribution (DEV.md ?4c C164); the failure it teaches did not change.}
 
 \clearpage
 \tutentry{ignition02\_h2air\_slack}{tutorials/batch/combustion/ignition02\_h2air\_slack}
@@ -778,7 +776,7 @@ solver \{ integrator Rosenbrock23; \} -- the L-stable stiff method. Swap to RK4 
 \tutreadme{Stoichiometric H$_2$/air, 1100 K, 2 atm, constant volume --- the reflected-shock condition of Slack (1977) as compiled in ? Conaire et al. 2004 (Fig 8). Kinetics: the ? Conaire H$_2$/O$_2$ mechanism, Table I verbatim (19 reactions; two Troe falloffs; two summed pairs; A in cm$^3$-mol-s, Ea in kcal --- the engine converts and announces every one).}
 \tutreadme{Result: $\tau$\_ign (max dT/dt) = 43 $\mu$s vs the measured \textasciitilde{}40--60 $\mu$s window.}
 \tutreadme{Two lessons: 1. No seed. This mechanism self-initiates (R5: H$_2$ + M = 2H, Ea = 105 kcal/mol --- slow, but that slowness IS the induction chemistry). With the ignition01-style trace-H seed the delay collapses to 12 $\mu$s: initial conditions are physics, not knobs. 2. The engine now prints tau\_ign in the epilogue (time of max dT/dt on the write grid) whenever a vessel ignites --- no CSV spelunking.}
-\tutreadme{Run ignition01\_h2o2 (GRI kinetics, 5 bar) for the sibling case and the stiffness lesson (\_rk4).}
+\tutreadme{Run ignition01\_h2o2 (the same kinetics, 5 bar, trace-H seeded) for the sibling case and the stiffness lesson (\_rk4).}
 \begin{tutgolden}
 \goldrow{kpi}{bomb}{P\_final}{202650}
 \goldrow{kpi}{bomb}{T\_final}{3041.74576271}
@@ -809,9 +807,10 @@ solver \{ integrator Rosenbrock23; \} -- the L-stable stiff method. Swap to RK4 
 / flowsheetDict Thermal NOx in post-flame H2/air gas at 2125 K / 1 atm: the Zeldovich N-chemistry (Glarborg 2018 rate set) integrated in a batch reactor -- NO grows on the SECONDS scale while the O/H radical pool stays equilibrated, the classic separation of scales that makes thermal NOx a post-flame problem.
 
 \end{tutnarrative}
-\tutreadme{Hot burnt gas (lean H$_2$/air, 2125 K, 1 atm --- Homer \& Sutton Flame 1 as compiled in Glarborg 2018) held isothermal, starting from the equilibrated H/O radical pool with all nitrogen still as N$_2$. The Glarborg 2018 nitrogen chemistry (extended Zeldovich + NNH + N$_2$O routes, Tables 2/5 verbatim) then forms NO.}
+\tutreadme{Hot burnt gas (lean H$_2$/air, 2125 K, 1 atm --- Homer \& Sutton Flame 1 as compiled in Glarborg 2018) held isothermal, starting from the equilibrated H/O radical pool with all nitrogen still as N$_2$. The Glarborg 2018 nitrogen chemistry (extended Zeldovich + N$_2$O routes, Tables 2/5 verbatim) then forms NO.}
+\tutreadme{What is not carried. Glarborg's NNH route (R20--R24) is absent since 2026-10-25: NNH's thermo had come from GRI-Mech 3.0's thermo file, which grants no redistribution, and no public-domain primary for it was found (NASA/TP-2002-211556 has no NNH entry). The heat capacities of the flame species are NASA-9 polynomials from that report. On 2026-07-02, with the NNH route and the earlier thermo, the same table read 5227 / 5167 ppm (98.9 \%), 0.50 s and 1.56 s.}
 \tutreadme{1. The cross-engine pin. The kinetic plateau lands on the Gibbs equilibrium computed by a $\ast$different engine$\ast$ (steady Gibbs minimisation vs stiff batch integration). Kinetics choose the path and the clock; the destination belongs to the thermodynamics. Reverse rates come from the same equilibrium constants --- so this agreement is a genuine consistency check of the mechanism transcription + thermo, not a tautology. 2. NOx forms in engineering time. Ignition takes microseconds (ignition02: 43 $\mu$s); thermal NO takes seconds at 2125 K. That timescale gap is the whole basis of NOx control by quench: cool the gas before the Zeldovich clock runs.}
-\tutreadme{The burnt-gas initial pool was computed with this same thermo by a 14-species gibbsReactor at 2125 K/1 atm (25 \% H$_2$ / 17.5 \% O$_2$ / 57.5 \% N$_2$ feed); the equilibrium NO share was returned to N$_2$/O$_2$ elementally.}
+\tutreadme{The burnt-gas initial pool was computed by a gibbsReactor at 2125 K/1 atm (14 species on 2026-07-02; it still agrees with the current 13-species thermo to the printed digits) (25 \% H$_2$ / 17.5 \% O$_2$ / 57.5 \% N$_2$ feed); the equilibrium NO share was returned to N$_2$/O$_2$ elementally.}
 \begin{tutgolden}
 \goldrow{kpi}{postflame}{P\_final}{101325}
 \goldrow{kpi}{postflame}{T\_final}{2125}

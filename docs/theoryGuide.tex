@@ -3028,6 +3028,20 @@ which is precisely what the import reads off the polynomial
 (\code{standard\_enthalpies\_RT} and \code{standard\_entropies\_R}
 evaluated at $298.15$~K, $1$~atm).
 
+The combustion radicals of the catalogue (CH, HCO, CN, NCO, \dots) take the
+same two numbers, and their heat capacity, from the report's successor,
+McBride, Zehe \& Gordon, NASA/TP-2002-211556 (2002)\,\footnote{B.~J.~McBride,
+M.~J.~Zehe, S.~Gordon, \emph{NASA Glenn Coefficients for Calculating
+Thermodynamic Properties of Individual Species}, NASA/TP-2002-211556 (2002).
+A US-government work, in the public domain.}: $\Delta h^{\circ}_{f}$ from the
+record line of its appendix~D, $s^{\circ}_{298}$ from its Table~B1, and the
+nine-coefficient polynomial
+$C_p/R = a_1T^{-2} + a_2T^{-1} + a_3 + a_4T + a_5T^2 + a_6T^3 + a_7T^4$
+read as printed (\code{model NASA9}) --- no refit, so a reader can hold each
+record to its page (\file{bin/curate/nasa\_tp2002\_to\_choupo.py} prints the
+blocks and checks $H$ and $S$ at $298.15$~K against the report before it
+does).
+
 \paragraph{Two glass-box guards (why the import is trustworthy).}
 The tool refuses to write a number it cannot defend:
 \begin{itemize}[leftmargin=*]

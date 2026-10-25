@@ -11,11 +11,15 @@
   integrated with EXPLICIT RK4 -- the FAILURE half of the stiffness lesson.
 
   A stoichiometric H2/O2 charge diluted in N2 is held in a closed rigid vessel
-  at 1100 K.  KINETICS ARE REAL: the GRI-Mech 3.0 H/O subsystem (28 reactions,
-  verbatim; see constant/reactions).  With the NASA-7 Cp overrides (constant/
-  components/ -- the catalogue poly3 fits stop at 1500 K) the stiff run gives
-  tau_ign ~ 16 us (max dT/dt; 1100 K, 5 bar) and T_final = 2785 K (constant-V
-  flame).  A slow initiation seeds radicals; chain branching then runs away.
+  at 1100 K.  KINETICS: the O Conaire et al. 2004 H2/O2 mechanism (Int. J.
+  Chem. Kinet. 36, 603, Table I; the same constant/reactions as
+  ignition02_h2air_slack, where it is pinned against the Slack shock-tube
+  delays).  With the NASA-9 Cp overrides of NASA/TP-2002-211556 (constant/
+  components/ -- the catalogue's process-range Cp stops short of a flame) the
+  stiff run gives tau_ign ~ 8 us (max dT/dt on a 1 us grid; 1100 K, 5 bar,
+  trace-H seed) and T_final = 3078 K, the constant-V equilibrium of the charge.
+  (Until 2026-10-25 this case ran the GRI-Mech 3.0 H/O subset, which grants no
+  redistribution -- DEV.md 4c C164; see README.)  A slow initiation seeds radicals; chain branching then runs away.
   This is the SAME problem as the sibling case ignition01_h2o2 (which uses the
   stiff Rosenbrock23 solver), but here the solver is explicit RK4 at the same
   deltaT (1e-5 s).
@@ -31,13 +35,13 @@
 \*---------------------------------------------------------------------------*/
 
 application   choupoBatch;
-description   "Adiabatic constant-V H2/O2 ignition at 1100 K (GRI-Mech 3.0 H/O kinetics, curated thermo); EXPLICIT RK4 -- fails on the stiff chemistry (the lesson)";
+description   "Adiabatic constant-V H2/O2 ignition at 1100 K (O Conaire 2004 H2/O2 kinetics, NASA-9 thermo); EXPLICIT RK4 -- fails on the stiff chemistry (the lesson)";
 
 verbosity     3;
 
 // ---- Time integration ----
 startTime       0;          // s
-endTime         2.0e-4;      // s  (GRI kinetics ignite ~20x faster than the old synthetic set)
+endTime         2.0e-4;      // s  (the trace-H seed ignites it at ~8 us; equilibrium by ~50 us)
 deltaT          1.0e-6;     // s   (explicit RK4 takes this as a fixed step and
                             //      cannot survive the stiff chemistry at it --
                             //      that is the point; the stiff sibling

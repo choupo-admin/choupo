@@ -1082,7 +1082,10 @@ Vapour pressure defaults to Antoine
 corresponding-states alternative (\code{vaporPressure \{ model
 AmbroseWalton; \}}) covers estimated components.  Ideal-gas and liquid
 heat capacities are polynomials in $T$; species used at flame
-temperatures carry two-range NASA-7 forms (\code{model NASA7}).  Each
+temperatures carry two-range NASA polynomials --- the NASA Glenn
+nine-coefficient form read as NASA/TP-2002-211556 prints it
+(\code{model NASA9}), or the CHEMKIN seven-coefficient form
+(\code{model NASA7}).  Each
 component's
 \code{standardThermochemistry \{ dHf\_298; s\_298; referenceState; \}} block
 pins the formation datum --- the \code{referenceState} keyword
@@ -3156,8 +3159,8 @@ through quiet stretches, and shrinks through the runaway, with the step
 history printed at verbosity 3.  Trajectory rows still land on the
 clean \code{writeInterval} grid.  Compare
 \file{batch06\_adaptive\_runaway} with its fixed-step twin, and
-\file{ignition01\_h2o2} (real GRI-Mech H/O ignition, $\lambda \sim
-10^{15}$) with \file{ignition01\_h2o2\_rk4}, which blows up to NaN at
+\file{ignition01\_h2o2} (real \'O Conaire H/O ignition, a stiffness
+ratio $\sim 10^{7}$) with \file{ignition01\_h2o2\_rk4}, which blows up to NaN at
 the same \code{deltaT} --- the stiffness lesson on real chemistry.
 
 \subsection{\code{batchStill} --- Rayleigh and the batch rectifier}

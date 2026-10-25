@@ -1,63 +1,42 @@
-# ignition01_h2o2 — H₂/O₂ ignition, and why stiff chemistry needs a stiff solver
+# ignition01_h2o2_eulersi — the A-stable solver that fails honestly
 
-A closed rigid vessel holds a stoichiometric H₂/O₂ charge diluted in N₂ at
-1100 K and ~5 bar. A tiny H-radical seed starts chain branching; after a short
-**induction** the radical pool explodes and the mixture **ignites** — a sharp
-temperature jump from 1100 K to ~2440 K.
+The third integrator of the stiffness lesson.  The same adiabatic
+constant-volume H₂/O₂ ignition as [`ignition01_h2o2`](../ignition01_h2o2/README.md)
+(Rosenbrock23, converges) and
+[`ignition01_h2o2_rk4`](../ignition01_h2o2_rk4/README.md) (explicit RK4, blows
+up), here with **semi-implicit Euler** (`integrator EulerSI;`) at the same
+`deltaT = 1e-6 s`.
 
-Run it:
-
-```
-runCase tutorials/batch/combustion/ignition01_h2o2
-```
-
-and plot `trajectory.csv` (T and the radicals H/O/OH vs time). You will see:
-
-| phase | what happens | ~time |
-|---|---|---|
-| induction | T almost flat (1100→1200 K); H/O/OH grow **exponentially** from the seed | 0 → ~0.7 ms |
-| ignition  | chain branching outruns termination; T runs away to ~2440 K | ~0.7 → 1.0 ms |
-| equilibrium | the curated thermo pins the burned state; net rate → 0 | after ~1 ms |
-
-The **ignition delay** τ_ign (the time of maximum dT/dt) is ≈ **0.9 ms** here.
-
-## The lesson: stiffness
-
-The radical lifetimes are ~10⁻⁸–10⁻⁷ s while the induction runs over ~10⁻³ s —
-a timescale separation of ~10⁶. That is **stiffness**. An explicit method
-(RK4) is stability-limited to a step of order the *fastest* scale, so it cannot
-take the ~10⁻⁵ s steps this case uses. The solver here is **Rosenbrock23**, an
-L-stable linearly-implicit method that steps by *accuracy*, not stability; at
-verbosity 3 it prints its stiffness verdict and step counts (the no-silent-
-crutch credo).
-
-See it fail on purpose — the sibling case runs the **same** problem with
-explicit RK4 at the same step:
+Run it by hand:
 
 ```
-runCase tutorials/batch/combustion/ignition01_h2o2_rk4
+runCase tutorials/batch/combustion/ignition01_h2o2_eulersi
 ```
 
-It blows up to NaN within a few steps. (That case ships a
-`.expect-nonconvergence` marker, so `bin/runTests` skips it — its whole point is
-to fail.) Switch the integrator back to `Rosenbrock23` and the same step
-converges. *See, then decide*, applied to numerics.
+## What you see
 
-## ⚠️ Provenance — read before you quote a number
+Semi-implicit Euler is A-stable, so it does not oscillate to infinity the way
+RK4 does — the first steps are physical (T 1100 → 1102 → 1108 → 1139 K) — but
+it is FIRST ORDER, and once the ignition transient starts one linearised step
+is wrong enough to drive the state unphysical.  The integrator reports that it
+gave up, and the reactor refuses by name instead of exiting 0:
 
-- **The thermodynamics is REAL, curated Choupo data.** The equilibrium each
-  reversible step relaxes toward, the heat release, and the burned temperature
-  all come from the nine species' curated gas-phase thermo (`standardThermochemistry` +
-  `idealGasHeatCapacity`) in `data/standards/components/`, each individually
-  cited. So the burned state (~2440 K) is physically meaningful.
-- **The reaction RATES are REAL: the H/O subsystem of GRI-Mech 3.0, transcribed verbatim (28 reactions, third bodies, explicit colliders, the 2OH(+M) Troe falloff, both DUPLICATE pairs).** The Arrhenius constants in
-  `constant/reactions` are hand-chosen, illustrative values — **not** transcribed
-  from any published mechanism (GRI-Mech, Ó Conaire, Burke, San Diego, …). They
-  reproduce the chain-branching *structure* so there is something stiff to
-  integrate and an ignition delay to show. **Do not use τ_ign ≈ 0.9 ms as a
-  quantitative result** — it is qualitative. The canonical copy lives under
-  `data/proposed/mechanisms/h2o2_synthetic/` (the unverified tier); a curated
-  literature mechanism should replace it before any quantitative use.
+```
+ERROR: BatchReactor 'bomb': the 'EulerSI' integrator GAVE UP inside a
+0.000001 s step (accepted 1 sub-step(s) before a positivity/finiteness
+violation or step-floor).  Use a smaller deltaT or a stiff integrator
+(integrator Rosenbrock23;).
+```
 
-This case is **run-only** in the regression (smoke + NaN guard) — no KPI golden
-is pinned, precisely because the kinetics are illustrative.
+`.expect-nonconvergence` records why that refusal exists (until 2026-08-22
+this exact run reached a negative temperature and exited 0).  L-stable second
+order converges, explicit fourth order blows up loudly, A-stable first order
+fails honestly: *see, then decide*, applied to numerics.
+
+## Provenance
+
+Same as the sibling: the Ó Conaire et al. (2004) H₂/O₂ mechanism
+(`constant/reactions`, shared with `ignition02_h2air_slack`) and NASA-9 heat
+capacities from NASA/TP-2002-211556 for H₂, O₂, N₂ and water.  Until
+2026-10-25 it ran a GRI-Mech 3.0 subset, replaced because GRI-Mech grants no
+redistribution (DEV.md §4c C164); the failure it teaches did not change.

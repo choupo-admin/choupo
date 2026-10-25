@@ -18,8 +18,8 @@
   measured delays and the paper's own model read ~40-60 us on Fig 8.
   This run: tau_ign (max dT/dt) = 43 us -- inside the experimental window,
   NO radical seed (the O Conaire mechanism SELF-INITIATES through R5,
-  H2 + M = 2H; contrast ignition01, whose GRI H/O subset carries no pure
-  initiation channel and needs its trace-H seed).  Removing the seed vice
+  H2 + M = 2H; contrast ignition01, which runs the same mechanism
+  from a trace-H seed and so ignites in ~8 us).  Removing the seed vice
   moved tau from a too-fast 12 us to the honest 43 us: initial conditions
   are physics, not knobs.
 \*---------------------------------------------------------------------------*/
