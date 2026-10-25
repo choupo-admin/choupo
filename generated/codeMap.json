@@ -8178,6 +8178,7 @@
    "src/unitOperations/distillation/TrayHydraulics.H"
   ],
   "src/unitOperations/dynamic/DynamicCSTR.cpp": [
+   "src/core/Advisory.H",
    "src/core/Constants.H",
    "src/core/Dictionary.H",
    "src/core/Dimensions.H",
@@ -9122,6 +9123,7 @@
   ],
   "src/unitOperations/reactor/EquilibriumReactor.cpp": [
    "src/core/Advisory.H",
+   "src/core/Constants.H",
    "src/core/Dictionary.H",
    "src/core/Dimensions.H",
    "src/core/Identifiers.H",
@@ -9133,10 +9135,15 @@
    "src/thermo/Component.H",
    "src/thermo/PackageAudit.H",
    "src/thermo/ThermoPackage.H",
+   "src/thermo/equationOfState/EquationOfState.H",
    "src/thermo/reaction/Reaction.H",
    "src/unitOperations/UnitOperation.H",
+   "src/unitOperations/flash/IsothermalFlash.H",
+   "src/unitOperations/flash/PureSaturationPlateau.H",
+   "src/unitOperations/flash/StreamEquilibrium.H",
    "src/unitOperations/reactor/EquilibriumReactor.H",
    "src/unitOperations/reactor/PureSolidPhase.H",
+   "src/unitOperations/reactor/ReactorOutlet.H",
    "src/unitOperations/reactor/TemperatureApproach.H"
   ],
   "src/unitOperations/reactor/GibbsReactor.cpp": [
@@ -9965,6 +9972,7 @@
    "src/unitOperations/crystallisation/Crystalliser.cpp",
    "src/unitOperations/distillation/DistillationColumn.cpp",
    "src/unitOperations/distillation/ShortcutColumn.cpp",
+   "src/unitOperations/dynamic/DynamicCSTR.cpp",
    "src/unitOperations/electrochem/EDCell.cpp",
    "src/unitOperations/electrochem/ElectrodialysisStack.cpp",
    "src/unitOperations/electrochem/LimitingCurrent.cpp",
@@ -10249,6 +10257,7 @@
    "src/unitOperations/membrane/massTransfer/Polarisation.cpp",
    "src/unitOperations/membrane/transport/DSPM_DE.cpp",
    "src/unitOperations/reactor/CSTR.cpp",
+   "src/unitOperations/reactor/EquilibriumReactor.cpp",
    "src/unitOperations/reactor/GibbsReactor.cpp",
    "src/unitOperations/reactor/PFR.cpp",
    "src/unitOperations/reactor/PureSolidPhase.cpp",
@@ -15373,6 +15382,7 @@
    "src/thermo/phase/VaporPhase.cpp",
    "src/unitOperations/flash/IsothermalFlash.cpp",
    "src/unitOperations/flowsheet/Flowsheet.cpp",
+   "src/unitOperations/reactor/EquilibriumReactor.cpp",
    "src/unitOperations/reactor/PFR.cpp",
    "src/unitOperations/reactor/gibbsMethod/GibbsMethod.cpp"
   ],
@@ -16132,6 +16142,7 @@
    "src/unitOperations/mixer/Splitter.cpp",
    "src/unitOperations/reactor/CSTR.cpp",
    "src/unitOperations/reactor/ConversionReactor.cpp",
+   "src/unitOperations/reactor/EquilibriumReactor.cpp",
    "src/unitOperations/reactor/GibbsReactor.cpp",
    "src/unitOperations/reactor/PFR.cpp",
    "src/unitOperations/reactor/ReactorOutlet.cpp",
@@ -16171,6 +16182,7 @@
    "src/unitOperations/mixer/Splitter.cpp",
    "src/unitOperations/reactor/CSTR.cpp",
    "src/unitOperations/reactor/ConversionReactor.cpp",
+   "src/unitOperations/reactor/EquilibriumReactor.cpp",
    "src/unitOperations/reactor/GibbsReactor.cpp",
    "src/unitOperations/reactor/PFR.cpp",
    "src/unitOperations/reactor/ReactorOutlet.cpp",
@@ -16206,6 +16218,7 @@
    "src/unitOperations/mixer/Splitter.cpp",
    "src/unitOperations/reactor/CSTR.cpp",
    "src/unitOperations/reactor/ConversionReactor.cpp",
+   "src/unitOperations/reactor/EquilibriumReactor.cpp",
    "src/unitOperations/reactor/GibbsReactor.cpp",
    "src/unitOperations/reactor/PFR.cpp",
    "src/unitOperations/reactor/ReactorOutlet.cpp",
@@ -16540,6 +16553,7 @@
    "src/unitOperations/mixer/Mixer.cpp",
    "src/unitOperations/reactor/CSTR.cpp",
    "src/unitOperations/reactor/ConversionReactor.cpp",
+   "src/unitOperations/reactor/EquilibriumReactor.cpp",
    "src/unitOperations/reactor/PFR.cpp",
    "src/unitOperations/reactor/ReactorOutlet.cpp"
   ],
