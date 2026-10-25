@@ -30,6 +30,7 @@ License
 
 #include "core/DictAudit.H"
 #include "result/ResultEmitter.H"
+#include "thermo/RecordResolver.H"
 
 #include <algorithm>
 #include <cctype>
@@ -1131,6 +1132,10 @@ std::string Reader::evaluate(const std::vector<Publication>& pubs, int verbosity
         const std::string where = "view '" + (it.home.empty() ? std::string("case") : it.home)
                                 + "/" + it.name + "'";
         const std::string file = dir + "/" + it.name + ".csv";
+        //  The `file` this unit READS is a reference's input; what it WRITES
+        //  is this CSV and its sidecar, under the case's postProcessing/.  A
+        //  case run from inside the catalogue must not write there either.
+        records::refuseStandardsWrite(where, "view", file);
         {
             std::error_code ec;
             fs::create_directories(dir, ec);
