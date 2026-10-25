@@ -1555,6 +1555,11 @@ accepts today, and that is a policy call.
 > removed (his own complaint of 2026-10-25: a Plots menu beside plots
 > already on the main screen confuses).  If he still wants a Plots menu
 > after seeing it, it is one switch.  Status: dispatched 2026-10-25.
+> NARROWED the same hour (Vitor: "estive a ver melhor, e quando se clica
+> numa box, o painel de baixo mostra o resumo!  Se o painel puder ser
+> ajustado isso ja resolve muita coisa."): the card is DROPPED; the slice
+> is the draggable divider, the full-height toggle, and a click on a block
+> opening a collapsed details pane to a usable height.
 
 > **C152. ONE CASE, TWO MODES: PROCESS SIMULATION AND PROPERTIES & DATA
 > (Vitor, 2026-10-25: "os dados podem ser usados no DSPM-DE para gerar
