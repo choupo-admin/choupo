@@ -251,6 +251,53 @@ export function readCovariance(csv: string): Read<Covariance> {
   return { ok: true, read: { streams, cell } };
 }
 
+// ---- three answers, side by side (DEV.md 4c C137) ---------------------------
+
+/** One stream's three answers, as page 5 draws them.  NOTHING is computed:
+ *  every field is a cell the engine wrote.
+ *
+ *  `classical` and `flat` are the SAME cell of the honest operation, on
+ *  purpose.  The engine runs one reconciliation and the page reads it twice
+ *  -- as the minimiser of the weighted squares (classical) and as the mode
+ *  of the flat-prior posterior (Bayes) -- because they are one number; a
+ *  second run "for the Bayes panel" would be a second home for it.  What
+ *  the flat panel adds is the WIDTH, `flatSigma`, which the classical panel
+ *  does not claim.  The test holds the honest flows to the stationarity
+ *  condition of the weighted least squares, so the identity is checked
+ *  rather than assumed. */
+export interface ThreeAnswers {
+  stream: string;
+  reading: number | null;
+  sigma: number | null;
+  truth: number | null;
+  prior: number | null;
+  priorSigma: number | null;
+  classical: number;
+  flat: number;
+  flatSigma: number;
+  informative: number;
+  informativeSigma: number;
+}
+
+/** Join the honest and the yesterday operations stream by stream.  Refuses
+ *  rather than drawing a panel with a hole in it. */
+export function threeAnswers(honest: StreamTable, prior: StreamTable): Read<ThreeAnswers[]> {
+  const out: ThreeAnswers[] = [];
+  for (const h of honest.rows) {
+    const p = prior.rows.find((r) => r.stream === h.stream);
+    if (!p) return { ok: false, why: `the prior operation carries no stream '${h.stream}'` };
+    out.push({
+      stream: h.stream, reading: h.reading, sigma: h.sigma, truth: h.truth,
+      prior: p.prior, priorSigma: p.priorSigma,
+      classical: h.reconciled, flat: h.reconciled, flatSigma: h.sigmaReconciled,
+      informative: p.reconciled, informativeSigma: p.sigmaReconciled,
+    });
+  }
+  if (out.length !== prior.rows.length)
+    return { ok: false, why: "the prior operation carries a stream the honest one does not" };
+  return { ok: true, read: out };
+}
+
 // ---- the plant, as the page draws it ----------------------------------------
 
 /** The witness's network, drawn.  The topology is the case's

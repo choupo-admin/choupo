@@ -24,6 +24,19 @@
   posterior covariance.  No Kalman filter.  SYNTHETIC data: a small invented
   plant, said so on screen.
 
+  BAYES MADE VISIBLE AND CENTRAL (DEV.md 4c C137, Vitor, 2026-10-21: Bayes
+  could hardly be seen in the first part of the tool).  A PLACEMENT and
+  EMPHASIS change, no new engine physics: the prior / likelihood / posterior
+  framing opens page 1 (step 1) and is named again where each ingredient is
+  met (steps 2, 3, 6); page 2 says the answer is a DISTRIBUTION and draws it
+  narrowing (step 7); page 3 says the tests are FREQUENTIST and names the
+  Bayesian fault probability it does not build (steps 11, 12, 14); page 4
+  says exactly what the witness's 2 % prior width is and writes the
+  process-evolution widening the engine does not represent (steps 17, 18);
+  a fifth page sets the three answers side by side -- classical, Bayes with
+  a flat prior, Bayes with yesterday's prior (step 20).  The idea the page
+  is built on is Vitor's sentence, rendered in English as CENTRAL_IDEA.
+
   EVERY ENGINE CLAIM CARRIES THE LINE IT WAS READ AT, and
   tests/dataReconciliationLesson.test.ts holds each citation to the source
   text it names.  Every number the page shows is read from the witness's
@@ -34,10 +47,55 @@
 
 import type { LessonLimit, LessonStep } from "./lessonStep.js";
 
+/** The idea the whole page is built on: Vitor's sentence (DEV.md 4c C137),
+ *  rendered in English.  Drawn at the top of the tool and restated, in the
+ *  lesson's own words, by steps 1 and 20. */
+export const CENTRAL_IDEA = "Bayes is not merely a different way of calculating the same "
+  + "result.  It is a way of representing, and updating, what we know about "
+  + "the state of a process.";
+
+/** The three ingredients, one line each, drawn under CENTRAL_IDEA. */
+export const THREE_INGREDIENTS: readonly { word: string; means: string }[] = [
+  { word: "prior", means: "what was known before the meters were read; at the least, that the balances hold exactly" },
+  { word: "likelihood", means: "what the meters say: how probable today's readings are for each possible true state" },
+  { word: "posterior", means: "what is believed now: the prior times the likelihood, a distribution with a centre and a width" },
+];
+
 export const DR_STEPS: readonly LessonStep[] = [
   // ---- Page 1: why the measurements do not close a balance ------------------
   {
     n: 1,
+    title: "What was known, what the meters say, what is believed now",
+    body: "One idea runs through every page of this tool, and it is worth "
+      + "stating before any plant is drawn: Bayes is not merely a different "
+      + "way of calculating the same result -- it is a way of representing, "
+      + "and updating, what we know about the state of a process.  Three "
+      + "ingredients carry it.  The PRIOR is what was known about the true "
+      + "flows before the meters were read: at the very least that the mass "
+      + "balances hold exactly, and sometimes more, such as yesterday's "
+      + "estimate (page 4).  The LIKELIHOOD is what the meters say: how "
+      + "probable today's readings would be if the true flows were x, set by "
+      + "each meter's own uncertainty (step 2).  The POSTERIOR is what is "
+      + "believed now: the prior times the likelihood, by Bayes' rule.  So "
+      + "the answer is not a set of flows but a DISTRIBUTION over the flows, "
+      + "with a most probable point and a width -- and a narrower posterior "
+      + "is more knowledge.  The balances never become uncertain on the way: "
+      + "whatever else the prior says, it gives zero probability to every "
+      + "flow vector that does not close them.",
+    formula: String.raw`p(x \,|\, m) \;\propto\; p(m \,|\, x)\; p(x), \qquad p(x) = 0 \ \text{wherever}\ A\,x \ne 0`,
+    where: [
+      { sym: "p", means: "a probability density: p(x) the prior, p(m | x) the likelihood, p(x | m) the posterior", unit: "-" },
+      { sym: "x", means: "the vector of true flows, the state the page is uncertain about", unit: "t/h" },
+      { sym: "m", means: "the vector of the meters' readings", unit: "t/h" },
+      { sym: "A", means: "the balances, written as a matrix (step 3): A x = 0 says every node closes", unit: "-" },
+    ],
+    note: "The rest of page 1 builds the likelihood and the balances; page 2 "
+      + "reads the posterior; page 3 asks whether a meter has failed; page 4 "
+      + "makes the prior say more; page 5 sets the three answers side by "
+      + "side.",
+  },
+  {
+    n: 2,
     title: "A plant read at one instant",
     body: "The plant on this page is invented, and so are its numbers: a fresh "
       + "feed is mixed with a recycle, passes a reactor and a separator, and "
@@ -50,7 +108,9 @@ export const DR_STEPS: readonly LessonStep[] = [
       + "on the purge to 0.4 t/h -- and the case declares it beside the stream "
       + "it measures, not beside a day's reading.  Because the plant is "
       + "invented, its TRUE flows are known too, and the page shows them; no "
-      + "real plant can.",
+      + "real plant can.  In the words of step 1, this model of the meters IS "
+      + "the likelihood: it says how probable each reading is for every "
+      + "possible true flow.",
     formula: String.raw`m_j = x_j + \varepsilon_j, \qquad \varepsilon_j \sim \mathrm{N}(0,\ \sigma_j^2)`,
     where: [
       { sym: "m_j", means: "the reading of meter j", unit: "t/h" },
@@ -65,7 +125,7 @@ export const DR_STEPS: readonly LessonStep[] = [
       + "page would detect that.",
   },
   {
-    n: 2,
+    n: 3,
     title: "The balances the true flows obey",
     body: "At steady state each node neither gains nor loses mass, so what "
       + "flows in equals what flows out.  Write one row per node and one "
@@ -78,7 +138,8 @@ export const DR_STEPS: readonly LessonStep[] = [
       + "engine refuses a balance declared beside the ones it repeats: the "
       + "number of INDEPENDENT balances is the number every test below "
       + "counts with.  The balances are exact.  Unlike the meters, they are "
-      + "not an opinion about the plant.",
+      + "not an opinion about the plant -- in the words of step 1 they belong "
+      + "to the PRIOR, as the part of it that is certain.",
     formula: String.raw`A\,x = 0, \qquad A_{kj} = \begin{cases} +1 & \text{if stream } j \text{ enters node } k \\ -1 & \text{if stream } j \text{ leaves node } k \\ 0 & \text{otherwise} \end{cases}`,
     where: [
       { sym: "A", means: "the incidence matrix, one row per node balance and one column per stream", unit: "-" },
@@ -89,7 +150,7 @@ export const DR_STEPS: readonly LessonStep[] = [
     ],
   },
   {
-    n: 3,
+    n: 4,
     title: "The readings do not close them, and by how much noise alone would",
     body: "Put the readings into the balances and none of them closes.  That "
       + "is not a fault: it is what noisy meters do.  The residual of a "
@@ -127,7 +188,7 @@ export const DR_STEPS: readonly LessonStep[] = [
 
   // ---- Page 2: reconciliation, read twice --------------------------------
   {
-    n: 4,
+    n: 5,
     title: "Reconciliation: move the readings as little as their meters allow",
     body: "Look for the flows that close every balance and lie as close to "
       + "the readings as possible, where CLOSE is measured in each meter's "
@@ -151,10 +212,11 @@ export const DR_STEPS: readonly LessonStep[] = [
       + "does -- they assume it does not.",
   },
   {
-    n: 5,
+    n: 6,
     title: "The same answer, read as Bayes: the most probable true state",
     body: "Ask a different question: given these readings, which true flows "
-      + "are most PROBABLE?  Bayes' rule answers it with two ingredients.  "
+      + "are most PROBABLE?  Bayes' rule answers it with the ingredients of "
+      + "step 1, now written out.  "
       + "The likelihood says how probable the readings are if the flows were "
       + "x -- with Gaussian meters it is a product of seven bell curves, "
       + "each as wide as its meter's sigma.  The prior says what was known "
@@ -163,7 +225,7 @@ export const DR_STEPS: readonly LessonStep[] = [
       + "closes the balances, and zero probability on every one that does "
       + "not.  Multiply them and the posterior is the likelihood on the "
       + "balance subspace.  Its peak, the posterior MODE, is where the sum of "
-      + "squares in step 4 is smallest, because the exponential of minus "
+      + "squares in step 5 is smallest, because the exponential of minus "
       + "half of it is largest there.  So the two readings are one answer: "
       + "the sigmas are the likelihood, the balances are certain knowledge, "
       + "and the reconciled flows are the most probable true state.",
@@ -172,7 +234,7 @@ export const DR_STEPS: readonly LessonStep[] = [
         eq: String.raw`p(x \,|\, m) \propto p(m \,|\, x)\; p(x)` },
       { step: "The likelihood of independent Gaussian meters:",
         eq: String.raw`p(m \,|\, x) \propto \exp\!\left(-\frac{1}{2}\sum_{j} \frac{(m_j - x_j)^2}{\sigma_j^2}\right)` },
-      { step: "The flat prior on the balance subspace: a constant where A x = 0, zero elsewhere.  The posterior is then the likelihood restricted to that subspace, and minus twice its logarithm is the sum of squares plus a constant -- so the mode is the minimiser of step 4.",
+      { step: "The flat prior on the balance subspace: a constant where A x = 0, zero elsewhere.  The posterior is then the likelihood restricted to that subspace, and minus twice its logarithm is the sum of squares plus a constant -- so the mode is the minimiser of step 5.",
         eq: String.raw`-2 \ln p(x \,|\, m) = \sum_{j} \left(\frac{x_j - m_j}{\sigma_j}\right)^{2} + \text{const}, \qquad A\,x = 0` },
     ],
     formula: String.raw`\hat{x} = \operatorname*{arg\,max}_{A x = 0}\; p(x \,|\, m)`,
@@ -184,7 +246,34 @@ export const DR_STEPS: readonly LessonStep[] = [
       + "model is not linear -- neither happens on this page.",
   },
   {
-    n: 6,
+    n: 7,
+    title: "The answer is a distribution, not a set of flows",
+    body: "The most probable point is only half of what Bayes returns.  With "
+      + "Gaussian meters and linear balances the posterior is itself a "
+      + "Gaussian, so every reconciled flow comes with a standard deviation: "
+      + "a statement of how well the true flow is now KNOWN, not only where "
+      + "it most probably is.  And that width is narrower than the meter's.  "
+      + "A meter alone says one thing about its own stream; through the "
+      + "balances, every other meter says something about it too, because "
+      + "the flows they read are tied to it.  The drawing below puts the two "
+      + "beside each other for one stream at a time: the likelihood of the "
+      + "meter alone, centred on its reading and as wide as its sigma, and "
+      + "the posterior after the balances, centred on the reconciled flow "
+      + "and as wide as the engine's posterior standard deviation.  Then all "
+      + "seven at once.  Where those widths come from is page 4.",
+    formula: String.raw`x_j \,|\, m \;\sim\; \mathrm{N}\!\left(\hat{x}_j,\ \Sigma_{jj}\right), \qquad \sqrt{\Sigma_{jj}} \;<\; \sigma_j`,
+    where: [
+      { sym: "x_j", means: "the true flow of stream j, uncertain", unit: "t/h" },
+      { sym: "\\hat{x}_j", means: "the reconciled flow of stream j: the centre of its posterior", unit: "t/h" },
+      { sym: "\\Sigma_{jj}", means: "the posterior variance of stream j, the engine's sigmaReconciled squared (derived on page 4)", unit: "(t/h)²" },
+      { sym: "\\sigma_j", means: "the standard uncertainty of meter j", unit: "t/h" },
+      { sym: "\\mathrm{N}", means: "the normal (Gaussian) distribution, written with its mean and variance", unit: "-" },
+    ],
+    note: "The inequality is strict for a meter that appears in a balance "
+      + "with other meters; a meter in no balance would keep its own width.",
+  },
+  {
+    n: 8,
     title: "The answer in closed form, and what each balance did",
     body: "With the bound inactive the problem has a closed form.  Attach one "
       + "Lagrange multiplier to each balance, set the derivative of the "
@@ -199,7 +288,7 @@ export const DR_STEPS: readonly LessonStep[] = [
       + "-- its solver works on rows rescaled to sigma units and turns its "
       + "own multiplier back into this one.",
     derivation: [
-      { step: "The Lagrangian of step 4, with one multiplier per balance:",
+      { step: "The Lagrangian of step 5, with one multiplier per balance:",
         eq: String.raw`L = \frac{1}{2}(x - m)^{T} C^{-1} (x - m) + \lambda^{T} A\,x` },
       { step: "Stationary in x:",
         eq: String.raw`C^{-1}(\hat{x} - m) + A^{T}\lambda = 0 \;\Rightarrow\; \hat{x} = m - C\,A^{T}\lambda` },
@@ -224,7 +313,7 @@ export const DR_STEPS: readonly LessonStep[] = [
     },
   },
   {
-    n: 7,
+    n: 9,
     title: "Against the truth: closer on average, not meter by meter",
     body: "Because the plant is invented, the true flows are on the page.  "
       + "Measure the errors in meter sigmas, before and after, and take "
@@ -244,7 +333,7 @@ export const DR_STEPS: readonly LessonStep[] = [
 
   // ---- Page 3: gross errors -------------------------------------------------
   {
-    n: 8,
+    n: 10,
     title: "A meter that lies",
     body: "A meter can do worse than be noisy: it can be WRONG -- drifted out "
       + "of calibration, fouled, wired to the wrong transmitter.  Such a "
@@ -259,7 +348,7 @@ export const DR_STEPS: readonly LessonStep[] = [
       + "size below, and the engine runs again in your browser.",
   },
   {
-    n: 9,
+    n: 11,
     title: "The global test: is the whole snapshot consistent with noise?",
     body: "The objective at the answer -- the sum of squared adjustments, "
       + "each in its own meter's sigmas -- is a single number that says how "
@@ -271,9 +360,14 @@ export const DR_STEPS: readonly LessonStep[] = [
       + "the critical value; above it, the snapshot is not credible as noise "
       + "alone (DataReconciliation.cpp:740).  The honest snapshot scores "
       + "about 3.2 against a critical 9.49; the drifted one about 26.7.  The "
-      + "test says SOMETHING is wrong.  It does not say what.",
+      + "test says SOMETHING is wrong.  It does not say what.  And it is a "
+      + "FREQUENTIST test, not a Bayesian one, even on a page about Bayes: it "
+      + "assumes every meter healthy and asks how often noise alone would "
+      + "push the objective this high.  Its p-value is a probability of the "
+      + "DATA under that assumption, never the probability that the "
+      + "assumption is false (step 14).",
     derivation: [
-      { step: "The adjustments of the closed form, with the readings' residual r = A epsilon from step 3:",
+      { step: "The adjustments of the closed form, with the readings' residual r = A epsilon from step 4:",
         eq: String.raw`a = \hat{x} - m = -\,C\,A^{T}(A\,C\,A^{T})^{-1} r` },
       { step: "So the objective is a quadratic form in the residual, weighted by the inverse of its own covariance -- a sum of squares of independent standard normals:",
         eq: String.raw`\gamma = a^{T} C^{-1} a = r^{T} (A\,C\,A^{T})^{-1} r \sim \chi^2_{\nu}` },
@@ -290,7 +384,7 @@ export const DR_STEPS: readonly LessonStep[] = [
     ],
   },
   {
-    n: 10,
+    n: 12,
     title: "The measurement test: which meter?",
     body: "Each adjustment is random too, and its standard deviation is "
       + "known: it is the square root of a diagonal entry of the covariance "
@@ -303,7 +397,9 @@ export const DR_STEPS: readonly LessonStep[] = [
       + "seven meters is about 2.68 instead of 1.96.  On the drifted "
       + "snapshot F3 scores about -4.86 and is flagged; F2, its neighbour "
       + "across the reactor, scores about +2.57 -- pushed up by F3's error, "
-      + "and only just under the line.",
+      + "and only just under the line.  Frequentist too, like the global "
+      + "test: alpha is a promise about the long run of healthy snapshots, "
+      + "not a statement about this one.",
     derivation: [
       { step: "The adjustments are a linear map of the meter errors, so their covariance is:",
         eq: String.raw`V = \mathrm{Cov}(a) = C\,A^{T}(A\,C\,A^{T})^{-1} A\,C` },
@@ -323,7 +419,7 @@ export const DR_STEPS: readonly LessonStep[] = [
       + "marks such a meter not redundant rather than dividing by zero.",
   },
   {
-    n: 11,
+    n: 13,
     title: "Detected, not reconciled away",
     body: "Left in, the bad reading is not ignored: it is SPREAD.  The "
       + "reconciliation obeys the balances, so F3's 15 t/h has to go "
@@ -366,10 +462,43 @@ export const DR_STEPS: readonly LessonStep[] = [
       + "balance noticing -- and the unmeasured flows are no longer "
       + "determined; the engine refuses that by name.",
   },
+  {
+    n: 14,
+    title: "Two different questions: the frequentist test and a Bayesian one",
+    body: "The global test and the measurement test are FREQUENTIST, not "
+      + "Bayesian, and the difference is the question each asks.  A "
+      + "frequentist test fixes a hypothesis -- every meter healthy -- and "
+      + "asks how often noise alone would produce a statistic at least this "
+      + "large; alpha is a promise about the long run, that of all the "
+      + "healthy snapshots a plant will ever take, a fraction alpha will be "
+      + "flagged by mistake.  What it never returns is the probability that "
+      + "THIS meter is faulty, given THESE readings -- which is the question "
+      + "an operator actually asks.  A Bayesian answer to that question "
+      + "exists and is NOT built here.  It needs two things the tests do "
+      + "not: a prior probability that each meter has failed (from its "
+      + "maintenance history, say), and an error model for a FAULTY meter as "
+      + "well as for a healthy one (a bias of unknown size, or a much wider "
+      + "noise).  Bayes' rule over the hypotheses -- no meter faulty, meter 1 "
+      + "faulty, meter 2 faulty, and so on -- then returns the posterior "
+      + "probability of each.  Its answer moves with the failure prior and "
+      + "with the faulty-meter model, which is why it is not a drop-in "
+      + "replacement for the tests: it answers a different question, and "
+      + "needs more knowledge to do so.",
+    formula: String.raw`\mathrm{Pr}(H_j \,|\, m) = \frac{p(m \,|\, H_j)\; \mathrm{Pr}(H_j)}{\sum_{k=0}^{n} p(m \,|\, H_k)\; \mathrm{Pr}(H_k)}`,
+    where: [
+      { sym: "\\mathrm{Pr}", means: "the probability of a hypothesis: Pr(H_j) before the readings (the failure prior), Pr(H_j | m) after them", unit: "-" },
+      { sym: "H_j", means: "the hypothesis that meter j, and only meter j, is faulty", unit: "-" },
+      { sym: "H_k", means: "any one of the hypotheses: H_0 every meter healthy, H_1 to H_n one meter faulty", unit: "-" },
+      { sym: "p", means: "the probability density of the readings under a hypothesis, which needs an error model for the faulty meter", unit: "-" },
+      { sym: "k", means: "the index running over the hypotheses", unit: "-" },
+    ],
+    note: "Named and not computed: the engine publishes the frequentist tests "
+      + "only, and the page draws no fault probability.",
+  },
 
   // ---- Page 4: priors and the posterior covariance --------------------------
   {
-    n: 12,
+    n: 15,
     title: "What reconciliation buys: the posterior covariance",
     body: "The reconciled flows are random -- different noise, different "
       + "answer -- and their covariance is known in closed form: the meters' "
@@ -382,7 +511,13 @@ export const DR_STEPS: readonly LessonStep[] = [
       + "precise than any combination of the meters around it.  The "
       + "off-diagonal entries are not zero either: two reconciled flows "
       + "joined by a balance share information and are correlated (F2 and F3, "
-      + "tied by the reactor, come out perfectly so).",
+      + "tied by the reactor, come out perfectly so).  One matrix, two "
+      + "readings, again.  The derivation below is frequentist: it is the "
+      + "scatter of the reconciled flows over many snapshots of the same "
+      + "plant.  With a flat prior, the SAME matrix is the width of the "
+      + "posterior of step 7: how uncertain the true flows of THIS snapshot "
+      + "still are, given its readings.  On a linear Gaussian problem the two "
+      + "numbers coincide; the two questions do not.",
     derivation: [
       { step: "The reconciled flows are a linear map of the readings:",
         eq: String.raw`\hat{x} = \left(I - C\,A^{T}(A\,C\,A^{T})^{-1}A\right) m` },
@@ -397,7 +532,7 @@ export const DR_STEPS: readonly LessonStep[] = [
     ],
   },
   {
-    n: 13,
+    n: 16,
     title: "A prior that is not flat: combining two Gaussians",
     body: "A flat prior says nothing was known before the meters were read.  "
       + "Often something was: yesterday's reconciled flows, which cannot "
@@ -432,24 +567,63 @@ export const DR_STEPS: readonly LessonStep[] = [
     ],
   },
   {
-    n: 14,
+    n: 17,
     title: "Yesterday as today's prior",
     body: "The fourth operation of the witness uses yesterday's reconciled "
       + "flows as the prior, each with a width of 2 % of its value -- an "
       + "author's judgement of how far a flow may drift in a day, said so "
-      + "in the case file, because no meter supplies it.  Each reading and "
-      + "its prior combine as in step 13; then the same reconciliation, the "
+      + "in the case file, because no meter supplies it.  Be exact about "
+      + "what that 2 % is: it is ONE number per flow, and the engine reads it "
+      + "as the whole standard deviation of the prior "
+      + "(DataReconciliation.cpp:494).  It stands for two things at once -- "
+      + "how well yesterday's flows were known, and how far the plant may "
+      + "have moved since -- and nothing on this page separates them; step "
+      + "18 writes them apart.  Each reading and "
+      + "its prior combine as in step 16; then the same reconciliation, the "
       + "same tests, the same covariance.  The reconciled sigmas shrink "
       + "again -- the reactor-line flows from about 1.3 to about 0.9 t/h -- "
       + "and the prior-data conflict, about 4.0 against a chi-square with "
       + "seven degrees of freedom whose critical value is 14.07, says today's "
-      + "readings and yesterday's estimate are not at odds.  A conflict "
+      + "readings and yesterday's estimate are not at odds -- a check of the "
+      + "same frequentist kind as page 3's, asked of the prior.  A conflict "
       + "above its critical value would mean the plant moved, or a meter "
       + "did -- and that a prior which held yesterday's answer down is now "
       + "holding today's down with it.",
   },
   {
-    n: 15,
+    n: 18,
+    title: "A prior that knows the plant may have moved overnight",
+    body: "Yesterday's reconciliation ended with a posterior of its own, "
+      + "centred on yesterday's flows and as narrow as step 15 made it.  "
+      + "Using that posterior unchanged as today's prior would claim the "
+      + "plant stood still overnight.  If it may have moved -- a feed rate "
+      + "changed, a valve was trimmed -- by an amount judged to have a "
+      + "standard deviation q for each flow, then today's prior is WIDER than "
+      + "yesterday's posterior: the two variances add, as the errors of two "
+      + "independent steps do.  A plant that may have moved a lot has a large "
+      + "q and a weak prior, and today's meters decide almost alone; as q "
+      + "grows without limit the prior becomes flat on every flow and the "
+      + "answer returns to page 2's.  This widening is the prediction step of "
+      + "a Kalman filter, the step that filter repeats at every snapshot; "
+      + "this page does not go on to build the filter.  What the engine does "
+      + "TODAY is narrower, and it is said plainly: the prior file declares "
+      + "one width per flow, and the engine has no term for q of its own.  "
+      + "The witness's 2 % is that whole width, an author's single judgement "
+      + "-- not an evolution term added to a yesterday's posterior the case "
+      + "does not carry.  A case that wants the widening computes the sum "
+      + "below by hand and declares the result as the width.",
+    formula: String.raw`s_j^2 = \Sigma^{\mathrm{y}}_{jj} + q_j^2, \qquad q_j \to \infty \;\Rightarrow\; \text{the flat prior of page 2}`,
+    where: [
+      { sym: "s_j", means: "the width of today's prior on flow j: the sigma the prior file declares", unit: "t/h" },
+      { sym: "\\Sigma^{\\mathrm{y}}_{jj}", means: "the variance of yesterday's posterior for flow j (step 15, written for yesterday's snapshot)", unit: "(t/h)²" },
+      { sym: "q_j", means: "the process-evolution uncertainty: the standard deviation of how far flow j may have moved overnight", unit: "t/h" },
+    ],
+    note: "Yesterday's posterior was also CORRELATED across flows (step 15), "
+      + "and the prior the engine accepts is diagonal (step 19); a filter "
+      + "would carry the whole matrix forward.",
+  },
+  {
+    n: 19,
     title: "What a prior can do, and what it cannot",
     body: "A prior on a flow with no meter at all -- a soft sensor -- is "
       + "simply a pseudo-measurement on its own, and it enters the same "
@@ -461,10 +635,38 @@ export const DR_STEPS: readonly LessonStep[] = [
       + "independently -- a diagonal covariance.  Yesterday's reconciled "
       + "flows were in fact correlated, because they closed the balances "
       + "together; that information is not carried, and the run says so.  "
-      + "The textbook treatments of all four pages are Narasimhan and "
-      + "Jordache's Data Reconciliation and Gross Error Detection and "
+      + "The textbook treatments of everything on these pages are Narasimhan "
+      + "and Jordache's Data Reconciliation and Gross Error Detection and "
       + "Romagnoli and Sanchez's Data Processing and Reconciliation for "
       + "Chemical Process Operations.",
+  },
+
+  // ---- Page 5: three answers, side by side -----------------------------------
+  {
+    n: 20,
+    title: "Three answers to one snapshot",
+    body: "The same readings, the same balances, three answers.  CLASSICAL "
+      + "reconciliation returns a set of flows: the ones that close every "
+      + "balance and minimise the weighted squares of step 5.  It can attach "
+      + "a covariance to them, as step 15 did, but read classically that "
+      + "covariance is the scatter of the method's answer over repeated "
+      + "snapshots -- a statement about the estimator, not about what is "
+      + "known of this plant.  BAYES WITH A FLAT PRIOR returns the SAME flows, "
+      + "because they are the posterior mode (step 6), and with them a "
+      + "distribution: each true flow is now believed to lie within its "
+      + "posterior width, and the panel draws that belief.  BAYES WITH "
+      + "YESTERDAY'S PRIOR adds what was known before today's meters were "
+      + "read: the flows move, and every width narrows, because two sources "
+      + "of knowledge are combined under the same exact balances.  The first "
+      + "two panels agree on the flows and differ on what is claimed about "
+      + "them; the third differs on both.  That is the sense in which Bayes "
+      + "is not merely a different way of calculating the same result: it "
+      + "represents what is known about the state of the process, and "
+      + "updates it as knowledge arrives.",
+    note: "Every number in the three panels is the engine's: the first two "
+      + "are the honest operation of the witness, read twice; the third is "
+      + "its yesterday operation.  The frequentist tests of page 3 are drawn "
+      + "beneath, for both runs.",
   },
 ];
 
@@ -491,6 +693,24 @@ export const DR_LIMITS: readonly LessonLimit[] = [
     body: "The balances assume nothing accumulates.  A plant in transient, "
       + "or a recursive estimate that carries each snapshot's posterior into "
       + "the next (the Kalman filter), is outside this page.",
+  },
+  {
+    id: "one-prior-width",
+    title: "One width per prior, and no evolution term",
+    body: "The engine reads one standard deviation per prior flow and takes "
+      + "it as the prior's whole width.  It does not hold yesterday's "
+      + "posterior and a separate process-evolution uncertainty and add "
+      + "them; a case that wants that widening adds the two variances "
+      + "itself and declares the result.",
+  },
+  {
+    id: "frequentist-tests",
+    title: "The fault tests are frequentist only",
+    body: "The global and the measurement tests say how surprising the "
+      + "readings would be if every meter were healthy.  The posterior "
+      + "probability that a given meter is faulty -- which needs a failure "
+      + "prior and an error model for a faulty meter -- is named on page 3 "
+      + "and not computed.",
   },
   {
     id: "one-error",

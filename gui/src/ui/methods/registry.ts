@@ -1136,15 +1136,17 @@ export const METHOD_TOOLS: MethodTool[] = [
     label: "Data reconciliation, and how Bayes helps",
     discipline: "Hydraulics & control", kind: "construction", status: "live",
     teaches: "Why plant meters never close a mass balance, and what to "
-      + "believe instead: reconciliation moves each reading as little as its "
-      + "meter's uncertainty allows until every balance closes -- weighted "
-      + "least squares, and at the same time the Bayesian posterior mode "
-      + "with Gaussian meters and a flat prior.  Then plant a gross error on "
-      + "any meter and watch the chi-square global test reject the snapshot, "
-      + "the measurement test point at the meter, and the error smear over "
-      + "its neighbours until the meter is taken out of service; and finally "
-      + "add yesterday's estimate as a prior and see what the posterior "
-      + "covariance says the redundancy and the prior buy in precision.",
+      + "believe instead -- read through Bayes from the first page: a prior "
+      + "(what was known, at least the exact balances), a likelihood (what "
+      + "the meters say) and a posterior (what is believed now), whose most "
+      + "probable point is the weighted least squares answer and whose width "
+      + "is narrower than any meter's.  Then plant a gross error on any "
+      + "meter and watch the frequentist chi-square and measurement tests "
+      + "reject the snapshot and point at the meter, and the error smear "
+      + "over its neighbours until the meter is taken out of service; add "
+      + "yesterday's estimate as a prior; and set three answers side by "
+      + "side -- classical, Bayes with a flat prior, Bayes with yesterday's "
+      + "prior -- to see that Bayes represents and updates what is known.",
     //  No chapter of the Theory Guide treats reconciliation yet; Help opens
     //  the active-set QP section, the solver every answer on the page comes
     //  from (the reconciler hands its weighted least squares to it).
