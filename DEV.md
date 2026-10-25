@@ -1528,6 +1528,47 @@ accepts today, and that is a policy call.
 > final; }` layout draws what the steady flowsheet and the sizing pass
 > already hold.
 
+> **C154. A USER'S WALK THROUGH THE NANOFILTRAN CASE ON THE LIVE SITE
+> (Vitor, 2026-10-25: "O CPT Astra tambem decidiu ajudar e fez este review
+> para por a tua consideracao" -- an external review of f871943a in the
+> browser: run, log, dictionaries, results, F1, CSV export; kept OUT of
+> the tree).**  Its verdict: the case runs and is auditable; the first use
+> needs too much knowledge of Choupo's internals.  Commander's judgement,
+> point by point (agree unless said): P1 the Theory Guide's Born sentence
+> ("Like Donnan it scales with z_i^2") was WRONG -- the Donnan exponent is
+> linear in z_i -- FIXED d674ca3a9, with the chapter's opening gamma
+> qualified as the default of three activity choices (its P2); P1 "About
+> this case" shows the short description and the licence banner, not the
+> science -- show the three studies (A code to code, B CA30 measurements
+> with previously fitted parameters, C the stiff case and the mesh), that
+> the case IMPOSES J_v, and the calibration / digitisation caveats; P1
+> separate the RUN status from the STATUS OF THE EVIDENCE -- `no claim`
+> beside empty AAD columns reads as missing results on an op that fits
+> nothing: say "not applicable", and the purpose (code-to-code,
+> calibrated comparison) where the propsDict declares it -- never promote
+> to `validated` because it converged; P1 F1 on a dictionary key
+> (`poreRadius` opened the User Guide's `sec:gui`): key-aware help --
+> meaning, unit, the model it feeds -- from the schemas where they carry
+> it, else the block's help with its scope said; P2 navigation by the
+> three scientific questions (the Overview opened on study C's figures),
+> the map collapsed state and the selection kept across tabs (C153's
+> splitter covers the height), a scientific table (per J_v and ion: J_v,
+> c_bulk, c_wall, c_perm, R_obs, R_real, units) BEFORE the 97 raw
+> diagnostics, the selected figure at the panel's full width, the caveats
+> beside the figures (error bars = reading uncertainty; "nothing was
+> fitted" = by this run; N-1 vs N-2 mesh counting; the mesh study's
+> reference corrected for Davies only; 12 vs 88 iterations not a speed
+> measure), the Outline naming operations and views, inactive properties
+> marked (A_w in an imposed-flux bench), units shown in context without
+> recommending a grammar the parser does not accept; P3 the log navigator
+> on props cases jumps to OPERATIONS (it says "No unit banners found"),
+> repeated warnings grouped; the CSV export self-describing (quantity,
+> unit, label, source, what yError means) and the digitised-abscissa
+> mapping documented.  Its own limit, kept: the walk is a usability
+> trial, not a physical validation.  Status: the Born text fixed;
+> the rest DISPATCHED after C153 lands (same files: PropsView,
+> PropsDetails), one general, the reviewer's walk as the acceptance test.
+
 > **C153. THE PROPS SCREEN, SECOND PASS: A PANEL THAT RESIZES AND A BLOCK
 > THAT ANSWERS WHEN CLICKED (Vitor, 2026-10-25, on the NanoFiltran case
 > after C151 landed: "Ena pa! Ficou agora mesmo fixe e intuitivo!! ...
