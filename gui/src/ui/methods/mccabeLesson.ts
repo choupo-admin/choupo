@@ -299,15 +299,19 @@ export const MCCABE_QUIZ: readonly QuizQuestion[] = [
       + "line to the equilibrium curve stand for?",
     options: [
       "The material balance carrying you to the next stage",
-      "One ideal stage: the vapour and the liquid leaving it reach equilibrium",
+      "The equilibrium relation on one ideal stage: the leaving vapour and "
+        + "liquid are in equilibrium",
       "One real tray, with its efficiency already in it",
       "The pressure drop across one tray",
     ],
     correct: 1,
-    feedback: "Horizontal to the curve is one stage reaching equilibrium; "
-      + "vertical to the line is the material balance taking you to the next "
-      + "stage — the flash construction, walked (step 1).  The step is an "
-      + "IDEAL stage: a real tray falls short of equilibrium, and the "
+    feedback: "Horizontal is the equilibrium relation: on an ideal stage "
+      + "the vapour and the liquid that leave it are in equilibrium.  "
+      + "Vertical is the operating-line relation — the material balance "
+      + "between passing streams, linear because of constant molar "
+      + "overflow.  A full graphical step is one horizontal plus one "
+      + "vertical move — the flash construction, walked (step 1).  The "
+      + "stage is IDEAL: a real tray falls short of equilibrium, and the "
       + "E_MV knob is how this diagram counts real trays instead.",
   },
   {
@@ -356,7 +360,11 @@ export const MCCABE_QUIZ: readonly QuizQuestion[] = [
     correct: 3,
     feedback: "At total reflux both operating lines fall on the diagonal and "
       + "the staircase is as wide as it can be: the minimum number of stages, "
-      + "for infinite energy and zero product.  At minimum reflux the "
+      + "with zero net product.  R = L/D diverges because D → 0, not "
+      + "because the duties do — the reboiler and the condenser can run at "
+      + "finite duty with nothing drawn off.  Equivalently, for a fixed "
+      + "production the limiting design needs unbounded reflux and boil-up "
+      + "per unit of product.  At minimum reflux the "
       + "operating line touches the curve and the steps shrink to nothing at "
       + "the pinch.  Neither is buildable; every real design sits between "
       + "them (step 4).",

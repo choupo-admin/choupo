@@ -660,8 +660,9 @@ export const BUND_QUIZ: readonly QuizQuestion[] = [
     ],
     correct: 0,
     feedback: "Rain does not leave a bund by itself, and until it is pumped "
-      + "out it takes capacity the spill will need (step 7).  The rain is a "
-      + "term of its own beside the rule, not hidden in its margin, and "
+      + "out it takes capacity the spill will need (step 7).  Whatever design "
+      + "margin was used, standing rain occupies real containment volume and "
+      + "so reduces the capacity available at the instant of a spill; "
       + "pumping it out is what an operator does and what a design must not "
       + "assume has been done (step 16).",
     origins: ["reference"],

@@ -790,8 +790,13 @@ export const DR_QUIZ: readonly QuizQuestion[] = [
     correct: 0,
     feedback: "With Gaussian meters, minus twice the log of the posterior is "
       + "the weighted sum of squares plus a constant on the balance subspace, "
-      + "so its peak is the least-squares answer (step 6).  What Bayes adds is "
-      + "the width around it.  The flows MOVE only when the prior says more "
+      + "so with a flat prior the posterior mode — and here, the posterior "
+      + "being Gaussian, its mean too — is the least-squares answer (step 6).  "
+      + "What the Bayesian formulation changes is the reading: it turns the "
+      + "uncertainty into a posterior distribution and makes an informative "
+      + "prior explicit.  It does not own the uncertainty — classical "
+      + "reconciliation with a statistical error model can compute the "
+      + "reconciled covariance too.  The flows MOVE only when the prior says more "
       + "than the balances — yesterday's estimate, on page 5's third panel "
       + "(step 20).",
   },

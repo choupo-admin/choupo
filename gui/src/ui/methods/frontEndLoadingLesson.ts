@@ -331,9 +331,10 @@ export const FEL_QUIZ: readonly QuizQuestion[] = [
     correct: 1,
     feedback: "One family of sources counts FEL 0 to FEL 4, other owners "
       + "count three front-end stages, so FEL 1 is a feasibility study in one "
-      + "company and a concept screen in another.  What both agree on is the "
-      + "anchor: FEL 3 is FEED (step 2).  The estimate class is AACE's scale, "
-      + "a different one again.",
+      + "company and a concept screen in another.  In many widely used "
+      + "three-stage schemes FEL-3 corresponds to FEED/Define; always check "
+      + "the owner's stage definitions (step 2).  The estimate class is "
+      + "AACE's scale, a different one again.",
     origins: ["reference"],
   },
   {
@@ -397,14 +398,17 @@ export const FEL_QUIZ: readonly QuizQuestion[] = [
     options: [
       "Class 3, because the process work is FEED-level",
       "Class 1, because the engine computed it",
-      "A study-type, Class 4 estimate: the cost is still factored from an "
+      "A study / Class-4-type estimate: the cost is still factored from an "
         + "equipment list",
     ],
     correct: 2,
-    feedback: "The class is set by the estimating method and the maturity of "
-      + "the definition, not by how rigorous the process model is.  Choupo's "
-      + "basic design is FEL-3 in its process fidelity and a study-type "
-      + "estimate in its cost, and a FEED package holds much no simulator "
+    feedback: "Choupo may solve individual process items at FEED-like "
+      + "fidelity, but that does not make the project definition FEED.  Its "
+      + "capital estimate remains a study / Class-4-type estimate, because "
+      + "the class follows the maturity of the whole multidisciplinary "
+      + "project definition and the estimating basis, not the rigour of one "
+      + "process model; and AACE's accuracy is a range of ranges, which does "
+      + "not itself set the class.  A FEED package holds much no simulator "
       + "produces (step 8).",
     origins: ["reference"],
   },

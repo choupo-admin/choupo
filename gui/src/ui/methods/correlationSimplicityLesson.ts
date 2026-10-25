@@ -742,8 +742,9 @@ export const SIMPLICITY_QUIZ: readonly QuizQuestion[] = [
     q: "Between Re ≈ 2300 and 4000 Churchill's blend draws one smooth curve.  "
       + "What is that curve?",
     options: [
-      "An interpolation that keeps a solver continuous: in the band the "
-        + "friction factor is not a function of Re",
+      "An interpolation that keeps a solver continuous: in the transition "
+        + "band there is no unique, universal friction factor determined by "
+        + "Re alone",
       "The measured friction factor of the transition",
       "An average of the laminar and turbulent values, weighted by how often "
         + "the flow is turbulent",
@@ -751,9 +752,10 @@ export const SIMPLICITY_QUIZ: readonly QuizQuestion[] = [
     ],
     correct: 0,
     feedback: "In the band the regime depends on the disturbances the pipe "
-      + "meets and on its history, so at one Re the same pipe can carry "
-      + "laminar flow, turbulent flow or puffs of both: there is no single f "
-      + "to predict (step 14).  Every blending exponent gives a smooth curve "
+      + "meets, on its history and on its inlet geometry, so at one Re the "
+      + "same pipe can carry laminar flow, turbulent flow or puffs of both: "
+      + "there is no unique, universal f determined by Re alone (step 14).  "
+      + "Every blending exponent gives a smooth curve "
       + "there and nothing in the physics prefers one (step 13).  A design in "
       + "the band should be moved out of it.",
     origins: ["engine"],

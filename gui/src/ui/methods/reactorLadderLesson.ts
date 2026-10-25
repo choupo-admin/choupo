@@ -405,8 +405,14 @@ export const LADDER_QUIZ: readonly QuizQuestion[] = [
     feedback: "The Gibbs reactor is given species and no reactions, and "
       + "minimises the mixture's Gibbs energy; over these four species the "
       + "only reaction they permit is the shift, so the two must agree.  Add "
-      + "methane and they would not.  Pressure cancels here, because two "
-      + "moles of gas give two.",
+      + "methane and they would not.  Pressure is not the answer either.  "
+      + "This tool's witness declares an ideal-gas vapour, and for an "
+      + "ideal-gas reaction quotient the explicit pressure factor cancels "
+      + "because Δν = 0 (two moles of gas give two).  With a non-ideal "
+      + "equation of state the fugacity coefficients can still bring a "
+      + "pressure effect — but both reactors would then read the same "
+      + "coefficients from the same package, so pressure would move them "
+      + "together, not apart.",
   },
   {
     id: "approach-moves-k", steps: [4],
