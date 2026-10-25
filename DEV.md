@@ -1528,6 +1528,46 @@ accepts today, and that is a policy call.
 > final; }` layout draws what the steady flowsheet and the sizing pass
 > already hold.
 
+> **C155. THE LAMINAR-TURBULENT TRANSITION IS NOT A CURVE (Vitor,
+> 2026-10-25: "na analise dimensional usaste o metodo de Churchill para
+> fazer uma interpolacao entre laminar / turbulento, mas essa aplicacao
+> nao e a mais adequada: na regiao de transicao nenhuma correlacao
+> funciona porque e uma zona caotica de instabilidade.  Pequenas
+> perturbacoes do sistema podem influenciar o regime passar de laminar
+> para turbulento.  Historicamente o Reynolds parece que conseguiu
+> escoamento a Re de 10000, mas era muito instavel.  O mesmo equipamento
+> que esta no museu hoje nao permite isso devido a vibracao provocada por
+> camioes a passar na estrada.").**  Measured on main 92d96b8ec: the
+> correlation-simplicity EduTool presents Churchill as "a correlation for
+> the whole range ... built by joining" the asymptotes (step 13,
+> `correlationSimplicityLesson.ts`) and only in step 14 says the blend
+> "draws a smooth line through a region where the physics offers none";
+> the ENGINE documents Churchill as covering "laminar, transition AND
+> turbulent Re" (`Pipe.H:67`, `FrictionFactorCorrelation.H:61`) and a pipe
+> in the transition band is computed on it without saying that the number
+> is an interpolation, not a prediction (the band is named at
+> `FrictionFactorCorrelation.cpp:50-53` for Colebrook/Haaland only).
+> Scope (his words are the specification): (1) the lesson teaches the
+> transition as a region of INSTABILITY -- intermittent turbulent puffs,
+> a critical Reynolds number that depends on the disturbance level (inlet,
+> vibration, roughness), hysteresis -- where no correlation predicts the
+> friction factor and the regime itself is not determined by Re alone;
+> Churchill's blend is presented as a smooth INTERPOLATION for continuity
+> in a solver, never as physics of the transition; (2) the history:
+> Reynolds 1883 and his carefully undisturbed apparatus, the much lower
+> critical Re observed when the same apparatus was re-run in a modern,
+> vibrating environment, and the modern measurement of sustained
+> turbulence onset near Re ~ 2000 -- EVERY historical figure checked
+> against a primary or authoritative source before it is taught (Reynolds,
+> Phil. Trans. R. Soc. 174 (1883); the re-runs of his apparatus at
+> Manchester; Avila et al., Science 333 (2011) on the onset of sustained
+> turbulence), the anecdote as he recalls it is the question, not the
+> answer; (3) the engine ANNOUNCES a pipe whose Re falls in the
+> transition band: the friction factor is Churchill's interpolation, the
+> regime is not determined there, the design should move out of the band
+> -- an announcement, no number moved; the "covering transition" wording
+> corrected in the headers.  Status: dispatched 2026-10-25.
+
 > **C154. A USER'S WALK THROUGH THE NANOFILTRAN CASE ON THE LIVE SITE
 > (Vitor, 2026-10-25: "O CPT Astra tambem decidiu ajudar e fez este review
 > para por a tua consideracao" -- an external review of f871943a in the
