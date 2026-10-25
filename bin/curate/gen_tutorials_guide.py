@@ -120,6 +120,91 @@ def readme_paras(case: Path):
     paras = [re.sub(r"\s+", " ", p).strip() for p in txt.split("\n\n")]
     return [p for p in paras if len(p) > 60][:6]
 
+#  A README MAY BE THE CARD (DEV.md 4c C166).  The default card pastes the
+#  primary dict's leading comment, which is written for the case's AUTHOR
+#  (every difference handled, every anchor sized) -- for a case that teaches
+#  three things at once that is a wall of text a student cannot use.  A case
+#  whose README carries the marker below is telling the generator that the
+#  README is the card: it is set as the story, in order, with its headings,
+#  bullets and markdown tables kept, and the dict's comment is NOT pasted (it
+#  stays in the dict, where the README points).  Code blocks are dropped (the
+#  golden table still comes from `expected`).  Opt-in, so no other card moves.
+CARD_MARK = "<!-- tutorials-guide: card -->"
+
+
+def readme_card(case: Path):
+    """[(kind, text)] with kind in heading | para | item, or None when the
+    README does not declare itself the card."""
+    p = case / "README.md"
+    if not p.exists():
+        return None
+    txt = p.read_text(errors="replace")
+    if CARD_MARK not in txt:
+        return None
+    txt = txt.replace(CARD_MARK, "")
+    txt = re.sub(r"```.*?```", "", txt, flags=re.S)
+    out = []
+    for block in txt.split("\n\n"):
+        rows = [ln for ln in block.splitlines() if re.match(r"^\s*\|.*\|\s*$", ln)]
+        if len(rows) >= 2 and re.match(r"^\s*\|[\s:|-]+\|\s*$", rows[1]):
+            #  a markdown table: header, alignment row, body
+            cells = lambda ln: [c.strip() for c in ln.strip().strip("|").split("|")]
+            align = "".join("r" if c.endswith(":") else "l" for c in cells(rows[1]))
+            out.append(("table", (align, [cells(r) for r in [rows[0]] + rows[2:]])))
+        lines = [ln for ln in block.splitlines() if not re.match(r"^\s*\|.*\|\s*$", ln)]
+        if not any(l.strip() for l in lines):
+            continue
+        if lines and lines[0].startswith("# "):        # the title: the entry has its own
+            lines = lines[1:]
+        if lines and lines[0].startswith("## "):
+            out.append(("heading", lines[0][3:].strip()))
+            lines = lines[1:]
+        items, cur = [], []
+        for ln in lines:
+            if re.match(r"^\s*[*-]\s+", ln):
+                if cur:
+                    items.append(" ".join(cur))
+                cur = [re.sub(r"^\s*[*-]\s+", "", ln)]
+            else:
+                cur.append(ln.strip())
+        if cur:
+            items.append(" ".join(cur))
+        bullet = any(re.match(r"^\s*[*-]\s+", ln) for ln in lines)
+        for it in items:
+            it = re.sub(r"\s+", " ", it.replace("**", "").replace("`", "")).strip()
+            if it:
+                out.append(("item" if bullet else "para", it))
+    return out
+
+
+def card_tex(card) -> str:
+    tex, in_list = [], False
+    for kind, text in card:
+        if kind == "item" and not in_list:
+            tex.append("\\begin{itemize}")
+            in_list = True
+        if kind != "item" and in_list:
+            tex.append("\\end{itemize}")
+            in_list = False
+        if kind == "table":
+            align, rows = text
+            tex.append("\n{\\footnotesize\\noindent\\begin{tabular}{@{}" + align + "@{}}")
+            for k, r in enumerate(rows):
+                tex.append(" & ".join(latex_escape(c.replace("`", "")) for c in r) + " \\\\")
+                if k == 0:
+                    tex.append("\\hline")
+            tex.append("\\end{tabular}}\n")
+        elif kind == "heading":
+            tex.append("\n\\textbf{" + latex_escape(text) + "}\n")
+        elif kind == "item":
+            tex.append("\\item " + latex_escape(text))
+        else:
+            tex.append(latex_escape(text) + "\n")
+    if in_list:
+        tex.append("\\end{itemize}")
+    return "\n".join(tex)
+
+
 def expected_rows(case: Path):
     p = case / "expected"
     if not p.exists():
@@ -340,14 +425,19 @@ for cat in CATS:
                 out.append("\\end{tutscheme}")
             if desc:
                 out.append(f"\\tutwhat{{{latex_escape(desc)}}}")
-            if paras:
+            card = readme_card(c)
+            if card:
+                out.append("\\begin{tutnarrative}")
+                out.append(card_tex(card))
+                out.append("\\end{tutnarrative}")
+            elif paras:
                 out.append("\\begin{tutnarrative}")
                 for pp in paras:
                     if pp.lower() == desc.lower():
                         continue
                     out.append(latex_escape(pp) + "\n")
                 out.append("\\end{tutnarrative}")
-            for pp in readme_paras(c):
+            for pp in ([] if card else readme_paras(c)):
                 out.append("\\tutreadme{" + latex_escape(pp) + "}")
             rows = expected_rows(c)
             if rows:
