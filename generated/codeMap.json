@@ -6585,7 +6585,6 @@
    "src/thermo/ThermoPackage.H"
   ],
   "src/thermo/SaturationCurves.cpp": [
-   "src/core/Constants.H",
    "src/core/Dictionary.H",
    "src/core/Dimensions.H",
    "src/core/Identifiers.H",
@@ -6596,8 +6595,7 @@
    "src/thermo/Component.H",
    "src/thermo/PackageAudit.H",
    "src/thermo/SaturationCurves.H",
-   "src/thermo/ThermoPackage.H",
-   "src/thermo/equationOfState/EquationOfState.H"
+   "src/thermo/ThermoPackage.H"
   ],
   "src/thermo/SealCheck.cpp": [
    "src/core/DictCanonical.H",
@@ -9508,7 +9506,6 @@
    "src/streams/ProcessStream.H",
    "src/thermo/Component.H",
    "src/thermo/PackageAudit.H",
-   "src/thermo/SaturationCurves.H",
    "src/thermo/ThermoPackage.H",
    "src/unitOperations/UnitOperation.H",
    "src/unitOperations/flash/IncipientPhase.H",
@@ -9526,7 +9523,6 @@
    "src/streams/ProcessStream.H",
    "src/thermo/Component.H",
    "src/thermo/PackageAudit.H",
-   "src/thermo/SaturationCurves.H",
    "src/thermo/ThermoPackage.H",
    "src/thermo/activityCoefficient/ActivityModel.H",
    "src/unitOperations/UnitOperation.H",
@@ -10211,7 +10207,6 @@
    "src/propertyOps/VaporPressureFit.cpp",
    "src/thermo/Component.cpp",
    "src/thermo/PackageAudit.cpp",
-   "src/thermo/SaturationCurves.cpp",
    "src/thermo/ThermoPackage.cpp",
    "src/thermo/ThermoPackageBuilder.cpp",
    "src/thermo/activityCoefficient/ActivityModel.cpp",
@@ -14691,9 +14686,7 @@
    "src/unitOperations/batch/BatchUnitOperation.cpp",
    "src/unitOperations/batch/FixedBedAdsorber.cpp",
    "src/unitOperations/distillation/DistillationColumn.cpp",
-   "src/unitOperations/flowsheet/Flowsheet.cpp",
-   "src/unitOperations/saturation/BubblePoint.cpp",
-   "src/unitOperations/saturation/DewPoint.cpp"
+   "src/unitOperations/flowsheet/Flowsheet.cpp"
   ],
   "src/thermo/SealCheck.H": [
    "src/applications/choupoBatch/main.cpp",
@@ -15361,7 +15354,6 @@
    "src/propertyOps/PropertyPoint.cpp",
    "src/propertyOps/Speciate.cpp",
    "src/thermo/PackageAudit.cpp",
-   "src/thermo/SaturationCurves.cpp",
    "src/thermo/ThermoPackage.cpp",
    "src/thermo/ThermoPackageBuilder.cpp",
    "src/thermo/equationOfState/EquationOfState.cpp",
