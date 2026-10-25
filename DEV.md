@@ -1501,6 +1501,39 @@ accepts today, and that is a policy call.
 > final; }` layout draws what the steady flowsheet and the sizing pass
 > already hold.
 
+> **C152. ONE CASE, TWO MODES: PROCESS SIMULATION AND PROPERTIES & DATA
+> (Vitor, 2026-10-25: "os dados podem ser usados no DSPM-DE para gerar
+> previsoes, ou ... estimativa de parametros ... o caso que se prepare
+> para estimar parametros pode depois expandir para a simulacao do
+> processo ... o ideal era os dados experimentais e o ajuste estarem auto
+> contidos no caso do processo final!"; then "Tens de pensar tu melhor
+> como isso se resolve!  Eu posso abrir o caso em modo de simulacao de
+> processo ou em modo de trabalhar com as propriedades e ajustes e data
+> sets experimentais!").**  DESIGN, the commander's on his delegation:
+> (1) an APPLICATION IS A RUN, NOT THE CASE'S IDENTITY (OpenFOAM: blockMesh,
+> a solver and postProcess all run on one case folder) -- a case may carry
+> `system/propsDict` (Properties & data mode, choupoProps) AND
+> `system/flowsheetDict` (Process mode, choupoSolve) side by side, over
+> ONE shared `constant/`; `controlDict.application` stays the DEFAULT
+> mode, `runCase <case> props|process` picks the other, and a case with
+> one dict is unchanged; (2) information flows ONE WAY: Properties mode
+> WRITES records into `constant/` (a fitted membrane, a rate law, a
+> pair), Process mode only READS them; (3) every written record carries
+> its PROVENANCE and a FINGERPRINT of the dataset and of the fit block
+> that produced it (origin fitted, fittedInCase, the held-out verdict);
+> Process mode REFUSES a record whose fingerprint no longer matches its
+> inputs, naming the remedy "run the case in Properties mode", never
+> using a stale fit in silence; (4) a prediction is the same operation
+> grammar with no free parameters; an estimation is `fitParameters` with
+> a `residual { kind membrane; ... }` and an `output { record ...; }`;
+> (5) the GUI opens a case with both dicts on a mode switch -- Process
+> (the flowsheet) | Properties & data (the calculation map, C151) -- and a
+> unit that reads a fitted record links to the fit that wrote it.
+> Witness: a membrane case -- lab rejections, the DSPM-DE fit, the
+> fitted membrane record, a spiral-wound stage that uses it.  Dispatched
+> 2026-10-25 with C149's membrane fit (engine side); the GUI mode switch
+> joins C151.
+
 > **C151. A PROPS CASE GETS STRUCTURE: A CALCULATION MAP, A TREE BY
 > DISCIPLINE, F1 TO THE THEORY, AND ONE HOME FOR ITS FIGURES (Vitor,
 > 2026-10-25, reviewing C147's screen: a "Plots" menu beside plots already
