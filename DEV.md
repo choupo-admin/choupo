@@ -1701,6 +1701,20 @@ accepts today, and that is a policy call.
 > adaptive, 1.4e-3); a declared fouling law lags under adaptive stepping;
 > the electroneutral film's message misdescribes a constant k_film; SDEM's
 > advisory names the wrong unit.
+> C157b LANDED 2026-10-25 (`claude/c157b-fit-round-trip`): the record a
+> run writes INTO the case (any op's `x-choupo.writes` slot of kind
+> `record`, read off the schema -- nothing names membrane) is read back
+> from the worker's MEMFS and carried into the open case (the next run and
+> the next download), announced in the Log; the top Run, Ctrl+Enter and
+> the menu run the MODE on screen (`binaryForMode`, mirroring
+> `bin/runCase`), the props result kept in its own slots so a fit never
+> replaces the Process streams.  The researcher's round trip now CLOSES
+> (download -> edit a rejection -> open -> Process refuses the stale fit
+> -> re-fit -> Process green -> the second download carries the new
+> record).  `--gui` 36/0 on main.  FOUND, not fixed (engine): a fit run in
+> the browser records `fittedInCase case;` -- the engine takes the case
+> name from the working directory, which is always `/case` in the worker;
+> the fingerprints are unaffected.
 
 > **C156. THE PLOTS PAGE NAVIGATES BY UNIT TOO (Vitor, 2026-10-25, on
 > ammonia02_full_plant's Plots page: "do lado esquerdo devia de haver uma
