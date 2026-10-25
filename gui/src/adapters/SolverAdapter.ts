@@ -694,11 +694,11 @@ export interface RunResult {
    *  package speciates, refused points by name, the appearance events.  Read
    *  by the Explorer's phase-split lens; absent when no such op ran. */
   phaseSplitScans?: PhaseSplitScanBlock[];
-  /** THE POST-PROCESSING DICTIONARY (DEV.md 4c C147): the plots and tables a
-   *  case's `system/postProcessDict` declares, as the engine resolved them -- titles,
-   *  axes, units, each series' role and source.  The numbers are the CSVs the
-   *  engine wrote to postProcessing/postProcessDict/ (in `csvFiles`); the Plot
-   *  workspace draws them and computes nothing.  Absent without a postProcessDict. */
+  /** THE RUN'S VIEWS (DEV.md 4c C147, C149): each op's defaults and the views a
+   *  propsDict declares, as the engine resolved them -- titles, axes, units, each
+   *  series' role and source.  The numbers are the CSVs the engine wrote under
+   *  postProcessing/<op>/ (in `csvFiles`); the review screen draws them and
+   *  computes nothing.  Absent where no operation published a view. */
   postProcessing?: PostProcessingBlock;
 }
 

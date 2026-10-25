@@ -104,6 +104,14 @@ for (const [path, mod] of Object.entries(GLOB)) {
   RAW[name] = (mod as { default?: RawSchema }).default ?? (mod as RawSchema);
 }
 
+/** An operation type's own description (its schema's), or undefined where no
+ *  schema describes it -- what the review screen says an operation DID, so the
+ *  sentence has one home: the schema beside the grammar it documents. */
+export function operationDescription(opType: string): string | undefined {
+  const d = RAW[opType]?.description;
+  return typeof d === "string" && d.trim() ? d : undefined;
+}
+
 export function operationSchemaFor(unitType: string): OperationSchema | null {
   const raw = RAW[unitType];
   if (!raw || !raw.properties) return null;

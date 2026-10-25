@@ -931,48 +931,64 @@ full one.  Reference: `tutorials/props/electrolyte/pitzer_seawater_verify`;
 gate `check_restricted_network`.  (The old `constant/electrolyte/`
 sidecar is fully retired.)
 
-## Post-processing: `system/postProcessDict` (choupoProps, DEV.md 4c C147)
+## Views: the figures and tables of a props run (choupoProps, DEV.md 4c C147, C149)
 
-A case may DECLARE the plots and tables it wants over what the run
-PUBLISHES -- an op's diagnostics, an op's published tables (the
-`poreTransport` bench publishes `points` and `pore`), and case-local
-REFERENCE files under `constant/` with their citation.  The engine refuses
-any name it cannot resolve (listing what IS published), holds every unit the
-source publishes to the declared one, computes differences, and writes
-`postProcessing/postProcessDict/<name>.csv` + `<name>.json` every run; the GUI's
-Plot workspace draws them under "Post-processing".  The GUI computes nothing.
+EVERY operation publishes its DEFAULT views with nothing declared: a fit
+(`fitParameters`) its parity (fitted against measured), its residuals, its
+parameter table (value, standard error, 95 % half-width) and, for an
+isotherm, the isotherm itself (data markers, fitted lines, every T); a bench
+its model curves (`poreTransport`: the observed rejection of every ion
+against J_v, and the pore's ions and potential where it writes its profile;
+`polarisationIndex`: Gamma, the observed and real rejections, the dataset
+row by row).  A case adds the views its paper needs in a `views ( ... );`
+list in the SAME propsDict, after the operations, over what the run
+PUBLISHES -- an op's diagnostics, an op's published tables, and case-local
+REFERENCE files under `constant/` declared in `references ( ... );` with
+their citation.  The engine refuses any name it cannot resolve (listing what
+IS published), holds every unit the source publishes to the declared one,
+computes differences, and writes `postProcessing/<op>/<view>.csv` + `.json`
+(titles, units, series roles, sources) every run -- `postProcessing/case/`
+for a view across operations or beside a reference -- listing them in
+`postProcessing/views.index`.  The GUI's review screen draws them and
+computes nothing.
 
 ```
 references ( { name nf; file "constant/reference/x.csv"; role reference;   // | experiment
                citation "..."; units { N "-"; Na_molm3 "mol/m3"; } } );
-plots
+views
 (
+    //  the shorthand: one source, one x, a list of y (one series per y)
+    { name gamma; type series; op table1; table rows; x C_b_Cl_molm3; y ( Gamma_Na Gamma_Cl ); }
+    //  the long form: any sources, a reference set over the model
     {
-        name   gridStudy;  title "...";
-        xAxis  { label "N"; unit "-"; scale log; }
-        yAxis  { label "permeate Na+"; unit "mol/m3"; scale linear; }
+        name   gridStudy;  type series;  title "...";
+        xAxis  { label "N"; unit "-"; scale log; }        // unit/label optional: the
+        yAxis  { label "permeate Na+"; unit "mol/m3"; }   //   series' published unit
         series
         (
             { name choupo; label "Choupo"; ops ( N10 N20 N50 ); x poreNodes_p1; y c_perm_Na_p1; }
-            { name paper;  label "Table 2"; reference nf; select { variant paper; } x N; y Na_molm3; style markers; }
             { name pore;   label "pore";   op N50; table pore; select { point 1; } x x_um; y psi_V; }
             { name d;      label "Choupo vs paper"; difference ( choupo paper ); relative yes; }
         );
+        overlay ( { name paper; label "Table 2"; reference nf; select { variant paper; } x N; y Na_molm3; style markers; } );
     }
-);
-tables
-(
-    { name grid; title "..."; x { label "N"; unit "-"; } columns ( <series> ... ); }       // one row per x
-    { name t2;   title "..."; columns ( { name Na; label "Na+"; unit "mol/m3"; } );         // one row per record
+    { name grid; type table; x N; y ( ... ); }                       // a series table: one row per x
+    { name t2;   type table; columns ( { name Na; label "Na+"; unit "mol/m3"; } );   // one row per record
       rows ( { name paper; label "Table 2"; reference nf; select { variant paper; N 350; } cells { Na Na_molm3; } }
              { name choupo; label "Choupo"; op N350; cells { Na c_perm_Na_p1; } }
              { name d; label "Choupo vs Table 2"; difference ( choupo paper ); relative yes; } ); }
 );
 ```
 
-A reference file lives under `constant/` (never outside the case); a key
-nothing reads is REFUSED (not warned); a run without a postProcessDict removes a
-stale `postProcessing/postProcessDict/`.  Witness:
+`type` is `series | profile | parity | residuals | table` (a parity view
+holds its x and y to one unit).  A view's folder is its top-level `op`, or
+the ONE op every series draws from; anything else is `case/`.  A declared
+view of a default's name in the same folder REPLACES it, said once.  A
+reference file lives under `constant/` (never outside the case); a key
+nothing reads is REFUSED (not warned); every file the last run wrote is
+removed before the next writes (and nothing else).  Witnesses:
 `tutorials/props/membrane/nanofiltran_geraldesAlves2008` (the NanoFiltran
-paper's tables and figures); gate `check_postprocessing`; record
+paper's tables and figures), `polarisation01_geraldes_afonso_table1`,
+`tutorials/props/adsorption/isotherm02_fit_jaschik` (the fit defaults);
+gate `check_postprocessing`; record
 `docs/design/a-post-processing-dictionary.md`.

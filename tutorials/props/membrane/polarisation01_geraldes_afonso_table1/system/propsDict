@@ -84,3 +84,85 @@ operations
         dataset  "constant/experimental/bowen1998_table1";
     }
 );
+
+/*---------------------------------------------------------------------------*\
+  THE CASE STUDY OF GERALDES & AFONSO (2007) AS FIGURES (DEV.md 4c C147,
+  C149).  The op `table1` already publishes its DEFAULT views with nothing
+  declared here: `gamma` (Gamma_i = (C_m - C_b)/C_b of every ion, row by row
+  of the dataset), `rejection` (the rejection the cell MEASURES, 1 - C_p/C_b,
+  against the one the membrane makes, 1 - C_p/C_m) and `rows` (Table 1 row
+  by row with the model's wall).  The `views` below split the same rows by
+  DYE LEVEL and draw them against the feed chloride, which is how the
+  paper's Fig. 7 reads them (its open symbols).
+
+  Every number is the op's: its published `rows` table (one row per
+  measured operating point; src/propertyOps/PolarisationIndex.H).  The
+  engine writes postProcessing/table1/<view>.csv (+ .json) every run and the
+  GUI's review screen draws them.  The grammar:
+  docs/design/a-post-processing-dictionary.md.
+
+  WHAT IS NOT HERE.  The paper's own Gamma values (Fig. 7, both its open and
+  filled symbols) are not in the tree -- the 2007 paper was not available to
+  this slice, and a figure nobody digitised cannot be quoted -- so every
+  Gamma below is Choupo's prediction, set against the MEASURED inputs of
+  Table 1, never against the paper's model.  check_polarisation_coupling
+  recomputes every Gamma independently in Python (1e-8).
+\*---------------------------------------------------------------------------*/
+
+views
+(
+    {
+        name    gamma_dye4;
+        type    series;
+        title   "Polarisation index of every ion against feed chloride, 4 mol/m3 of dye (Table 1 rows 1-5; the paper's Fig. 7, open symbols)";
+        xAxis   { label "feed chloride, C_b,Cl"; unit "mol/m3"; scale linear; }
+        yAxis   { label "polarisation index Gamma_i = (C_m - C_b)/C_b"; unit "-"; scale linear; }
+        series
+        (
+            { name dye; label "dye3- Choupo"; op table1; table rows; select { C_b_dye_molm3 4; } x C_b_Cl_molm3; y Gamma_dye; style linesMarkers; group dye; }
+            { name Na;  label "Na+ Choupo";   op table1; table rows; select { C_b_dye_molm3 4; } x C_b_Cl_molm3; y Gamma_Na;  style linesMarkers; group Na; }
+            { name Cl;  label "Cl- Choupo";   op table1; table rows; select { C_b_dye_molm3 4; } x C_b_Cl_molm3; y Gamma_Cl;  style linesMarkers; group Cl; }
+        );
+    }
+    {
+        name    gamma_dye37;
+        type    series;
+        title   "Polarisation index of every ion against feed chloride, 37 mol/m3 of dye (Table 1 rows 6-10; the paper's Fig. 7, open symbols)";
+        xAxis   { label "feed chloride, C_b,Cl"; unit "mol/m3"; scale linear; }
+        yAxis   { label "polarisation index Gamma_i = (C_m - C_b)/C_b"; unit "-"; scale linear; }
+        series
+        (
+            { name dye; label "dye3- Choupo"; op table1; table rows; select { C_b_dye_molm3 37; } x C_b_Cl_molm3; y Gamma_dye; style linesMarkers; group dye; }
+            { name Na;  label "Na+ Choupo";   op table1; table rows; select { C_b_dye_molm3 37; } x C_b_Cl_molm3; y Gamma_Na;  style linesMarkers; group Na; }
+            { name Cl;  label "Cl- Choupo";   op table1; table rows; select { C_b_dye_molm3 37; } x C_b_Cl_molm3; y Gamma_Cl;  style linesMarkers; group Cl; }
+        );
+    }
+    {
+        name    rejection_dye4;
+        type    series;
+        title   "What the cell measures and what the membrane does, 4 mol/m3 of dye: observed rejection 1 - C_p/C_b (from Table 1) against real rejection 1 - C_p/C_m (Choupo's wall)";
+        xAxis   { label "feed chloride, C_b,Cl"; unit "mol/m3"; scale linear; }
+        yAxis   { label "rejection"; unit "-"; scale linear; }
+        series
+        (
+            { name obsNa;  label "Na+ observed (Table 1)";  op table1; table rows; select { C_b_dye_molm3 4; } x C_b_Cl_molm3; y Robs_Na;  style markers; group Na; }
+            { name realNa; label "Na+ real (Choupo wall)";  op table1; table rows; select { C_b_dye_molm3 4; } x C_b_Cl_molm3; y Rreal_Na; style lines;   group Na; }
+            { name obsCl;  label "Cl- observed (Table 1)";  op table1; table rows; select { C_b_dye_molm3 4; } x C_b_Cl_molm3; y Robs_Cl;  style markers; group Cl; }
+            { name realCl; label "Cl- real (Choupo wall)";  op table1; table rows; select { C_b_dye_molm3 4; } x C_b_Cl_molm3; y Rreal_Cl; style lines;   group Cl; }
+        );
+    }
+    {
+        name    rejection_dye37;
+        type    series;
+        title   "What the cell measures and what the membrane does, 37 mol/m3 of dye: observed rejection 1 - C_p/C_b (from Table 1) against real rejection 1 - C_p/C_m (Choupo's wall)";
+        xAxis   { label "feed chloride, C_b,Cl"; unit "mol/m3"; scale linear; }
+        yAxis   { label "rejection"; unit "-"; scale linear; }
+        series
+        (
+            { name obsNa;  label "Na+ observed (Table 1)";  op table1; table rows; select { C_b_dye_molm3 37; } x C_b_Cl_molm3; y Robs_Na;  style markers; group Na; }
+            { name realNa; label "Na+ real (Choupo wall)";  op table1; table rows; select { C_b_dye_molm3 37; } x C_b_Cl_molm3; y Rreal_Na; style lines;   group Na; }
+            { name obsCl;  label "Cl- observed (Table 1)";  op table1; table rows; select { C_b_dye_molm3 37; } x C_b_Cl_molm3; y Robs_Cl;  style markers; group Cl; }
+            { name realCl; label "Cl- real (Choupo wall)";  op table1; table rows; select { C_b_dye_molm3 37; } x C_b_Cl_molm3; y Rreal_Cl; style lines;   group Cl; }
+        );
+    }
+);

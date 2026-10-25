@@ -242,6 +242,44 @@ export const WITNESS_OUTPUTS: readonly WitnessOutput[] = [
     readBy: ["phaseSplitScan.test.ts"],
     stdout: true,
   },
+  //  A props run's VIEWS (DEV.md 4c C149): the result block's `postProcessing`
+  //  description, held to the CSVs the same run wrote under postProcessing/.
+  //  The CSV entries come first and the stdout one last, so the files on
+  //  disk when the test reads them are the last run's -- the run whose log it
+  //  reads.  isotherm02 carries the generic fit defaults, polarisation01 a
+  //  bench's defaults and the views its propsDict declares.
+  {
+    caseDir: "tutorials/props/adsorption/isotherm02_fit_jaschik",
+    file: "postProcessing/fit_jaschik/parity.csv",
+    readBy: ["postProcessing.test.ts"],
+  },
+  {
+    caseDir: "tutorials/props/adsorption/isotherm02_fit_jaschik",
+    file: "postProcessing/fit_jaschik/parameters.csv",
+    readBy: ["postProcessing.test.ts"],
+  },
+  {
+    caseDir: "tutorials/props/adsorption/isotherm02_fit_jaschik",
+    file: "log.choupoProps",
+    readBy: ["postProcessing.test.ts"],
+    stdout: true,
+  },
+  {
+    caseDir: "tutorials/props/membrane/polarisation01_geraldes_afonso_table1",
+    file: "postProcessing/table1/rejection_dye4.csv",
+    readBy: ["postProcessing.test.ts"],
+  },
+  {
+    caseDir: "tutorials/props/membrane/polarisation01_geraldes_afonso_table1",
+    file: "postProcessing/table1/rows.csv",
+    readBy: ["postProcessing.test.ts"],
+  },
+  {
+    caseDir: "tutorials/props/membrane/polarisation01_geraldes_afonso_table1",
+    file: "log.choupoProps",
+    readBy: ["postProcessing.test.ts"],
+    stdout: true,
+  },
 ];
 
 /** What `witnessSetup.ts` found for each declared output, keyed by

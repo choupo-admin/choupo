@@ -106,7 +106,7 @@ const CASE_FILES = import.meta.glob(
     // run would be drawn as this run's answer, even by a run that wrote none.
     // (`trajectory.csv` was the one name excluded before; the rule covers it.)
     //  `constant/reference/*.csv` is the same kind of INPUT (DEV.md 4c C147):
-    //  the reference data a case's system/postProcessDict sets beside its run.
+    //  the reference data a case's views set beside its run.
     "!../../../tutorials/**/!(experimental|reference)/*.csv",
     "!../../../tutorials/**/!(constant)/experimental/*.csv",
     "!../../../tutorials/**/!(constant)/reference/*.csv",

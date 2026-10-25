@@ -57,6 +57,14 @@ import { formatSig } from "../state/displayUnits.js";
 import { Plot, darkLayout, PLOT_CONFIG } from "./plotting/plotly.js";
 
 /** Pull the ordered parameter paths for a named fit op out of the propsDict. */
+/** The colour of each curation verdict word -- its MEANING (the badge here
+ *  and the props review screen's verdict strip), never a ranking of the model.
+ *  One table, held to the engine's verdictOf() by check_verdict_parity. */
+export const CURATION_COLOUR: Record<string, string> = {
+  validated: "teal", notValidated: "red", heldOutPerformed: "yellow",
+  validationRefused: "orange", notClaimed: "gray",
+};
+
 function paramPathsFor(propsDict: JsonDict | undefined, opName: string): string[] {
   const ops = (propsDict?.["operations"] ?? []) as JsonDict[];
   const op = ops.find((o) => o["name"] === opName);
@@ -153,10 +161,7 @@ function OneFit({ fit, paths }: { fit: OperationResult; paths: string[] }) {
    *  so they sit side by side, each labelled with the question it answers. */
   const cur = fit.curation ?? {};
   const cVerdict = cur.verdict;
-  const cColor: Record<string, string> = {
-    validated: "teal", notValidated: "red", heldOutPerformed: "yellow",
-    validationRefused: "orange", notClaimed: "gray",
-  };
+  const cColor = CURATION_COLOUR;
   const cMeans: Record<string, string> = {
     validated:
       "the model reproduced evidence it never saw, inside a band declared BEFORE the fit",

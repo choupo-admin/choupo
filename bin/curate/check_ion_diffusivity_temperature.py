@@ -28,7 +28,7 @@ WHAT THIS GATE CHECKS (every case is RUN here):
       without the model publish the same streams, KPIs and profiles BIT FOR
       BIT, and neither carries a D(T) advisory.
   (d) THE PORE.  A twin of the paper case's stiff op N50 (part C, the former
-      nanofiltran02; one op, 50 nodes, T = 298 K, no postProcessDict) with the
+      nanofiltran02; one op, 50 nodes, T = 298 K, no views) with the
       model declared prints the factor this gate recomputes and its permeate
       Na+ moves (|dc/c| > 1e-3: the trace ion amplifies a 0.4 % D); without
       it the op is unchanged from the shipped case's own op.
@@ -218,8 +218,9 @@ def main():
         for tag, visc in (("nf", False), ("nfv", True)):
             d = tmp / tag
             copy_case(NF02, d)
-            #  one op: the case's postProcessDict names ops this twin does not carry
-            (d / "system/postProcessDict").unlink(missing_ok=True)
+            #  one op -- and the case's `references`/`views`, which follow the
+            #  operations list and name ops this twin does not carry, go with
+            #  the rest of the file
             p = d / "system/propsDict"
             s = p.read_text()
             i = s.index("operations")

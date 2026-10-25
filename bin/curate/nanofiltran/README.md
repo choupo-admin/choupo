@@ -142,7 +142,7 @@ and writes `paper.tsv` (and `fig4_profiles.tsv`), the reference of
 paper since DEV.md 4c C147 (Vitor: "Nao multipliques casos!"): part C is
 section 4.2 (Table 2, Fig. 4), part B section 4.1 (Fig. 3: Bowen &
 Mohammad's measured CA30 rejections), part A the code-to-code matrix of
-`regenerate.py`.  The case's `system/postProcessDict` generates the paper's tables
+`regenerate.py`.  The `views` of the case's propsDict generate the paper's tables
 and figures from the run, beside NanoFiltran's numbers exported into its
 `constant/reference/` by `export_case.py` (`--check`, held by
 `bin/curate/check_postprocessing.py`).  The paper itself is

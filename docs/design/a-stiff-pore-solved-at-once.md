@@ -1364,7 +1364,7 @@ Vítor: "Não multipliques casos!  Faz um caso único!  Com um pós-processament
 para gerar os plots adequados."  The three cases this record names --
 nanofiltran01 (§9-§12), nanofiltran02 and nanofiltran03 (§13) -- are parts A,
 C and B of `tutorials/props/membrane/nanofiltran_geraldesAlves2008`, every
-anchor and band kept row for row, and its `system/postProcessDict` generates Table 2
+anchor and band kept row for row, and the `views` of its propsDict generate Table 2
 (accounted at N = 350 and over the grid), Fig. 3 (both dye levels, with the
 measurements), Fig. 4 (c_i(x) and ψ(x) against NanoFiltran corrected and as
 received; NanoFiltran's whole profile now sits in

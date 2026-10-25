@@ -58,6 +58,10 @@ int PoreTransportBench::run(const DictPtr& dict,
     using namespace membrane;
     diag_.clear();
     tables_.clear();
+    ions_.clear();
+    poreIons_.clear();
+    nPoints_ = 0;
+    profileWritten_ = false;
     const std::string opName = dict->name().empty() ? type() : dict->name();
     const std::string site   = "poreTransport '" + opName + "'";
 
@@ -291,7 +295,7 @@ int PoreTransportBench::run(const DictPtr& dict,
                 row.push_back(static_cast<scalar>(sol.pore.newtonTotal));
                 row.push_back(static_cast<scalar>(sol.pore.nodes));
             }
-            if (p == 0) pointsTab.columns = cols;
+            if (p == 0) { pointsTab.columns = cols; ions_ = names; }
             else
             {
                 bool same = cols.size() == pointsTab.columns.size();
@@ -337,7 +341,7 @@ int PoreTransportBench::run(const DictPtr& dict,
     //  porosityOverThickness), each ion species' concentration (summed over
     //  the salts that carry it) and the potential in volts on the same
     //  reference as dPsi_m_V.  It is published to the run whether or not the
-    //  case asks for a file (DEV.md 4c C147: a `system/postProcessDict` names it);
+    //  case asks for a file (DEV.md 4c C147, C149: a view names it);
     //  `profile <file>.csv;` writes the same rows to disk, a props case's
     //  CSV being a run output.
     if (!profiles.empty())
@@ -376,6 +380,7 @@ int PoreTransportBench::run(const DictPtr& dict,
                 tab.rows.push_back(std::move(row));
             }
         }
+        poreIons_ = species;
         tables_.push_back(std::move(tab));
     }
     if (dict->found("profile"))
@@ -400,11 +405,13 @@ int PoreTransportBench::run(const DictPtr& dict,
                 csv << (c ? "," : "") << row[c];
             csv << "\n";
         }
+        profileWritten_ = true;
         std::cout << "\n  pore profiles written to " << path << " (" << profiles.size()
                   << " point(s); x over the equivalent thickness dx/A_k = "
                   << std::setprecision(4) << 1.0e6 / mem.porosityOverThickness() << " um)\n";
     }
     diag_["n_points"] = static_cast<scalar>(Jvs.size());
+    nPoints_ = Jvs.size();
     diag_["permeateCharge_max"] = chargeMax;
     std::cout << "\n  R_real = 1 - c_perm/c_wall, R_obs = 1 - c_perm/c_bulk."
                  "  Nothing was fitted.\n"
@@ -421,6 +428,38 @@ std::string PoreTransportBench::diagnosticUnit(const std::string& key) const
         || starts("poreContinuations") || starts("poreNodes")
         || key == "n_points" || key == "permeateCharge_max") return "-";
     return {};
+}
+
+
+std::string PoreTransportBench::defaultViews(const std::string& op) const
+{
+    std::string out;
+    if (nPoints_ >= 2 && !ions_.empty())
+    {
+        std::string ys;
+        for (const auto& i : ions_) ys += " Robs_" + i;
+        out += "{ name rejection; type series; op " + op + "; table points; x Jv_mps; y (" + ys
+             + " ); style linesMarkers; title \"" + op + ": observed rejection of every ion"
+               " against the permeate flux\"; xAxis { label \"permeate flux J_v\"; scale log; }"
+               " yAxis { label \"observed rejection R_obs = 1 - c_p/c_b\"; } }\n";
+    }
+    if (profileWritten_ && !poreIons_.empty())
+    {
+        std::string ys;
+        for (const auto& i : poreIons_) ys += " c_" + i + "_molm3";
+        const std::string pt = std::to_string(nPoints_);
+        out += "{ name pore; type profile; op " + op + "; table pore; select { point " + pt
+             + "; } x x_um; y (" + ys + " ); style lines; title \"" + op + ": the ions across"
+               " the pore (J_v point " + pt + ")\"; xAxis { label \"position across the"
+               " equivalent thickness, x\"; } yAxis { label \"concentration in the pore\";"
+               " scale log; } }\n";
+        out += "{ name potential; type profile; op " + op + "; table pore; select { point " + pt
+             + "; } x x_um; y ( psi_V ); style lines; title \"" + op + ": the potential across"
+               " the pore (J_v point " + pt + "; psi_m = 0 at the feed-side wall)\"; xAxis {"
+               " label \"position across the equivalent thickness, x\"; } yAxis { label"
+               " \"potential psi\"; } }\n";
+    }
+    return out;
 }
 
 } // namespace Choupo

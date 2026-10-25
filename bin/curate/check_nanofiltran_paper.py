@@ -18,7 +18,7 @@ geraldes_alves2008_fig3.csv (Fig. 3, digitised).
 
 ONE CASE PER PAPER (DEV.md 4c C147).  The former nanofiltran02 (Table 2,
 Fig. 4) and nanofiltran03 (Fig. 3) are parts C and B of
-tutorials/props/membrane/nanofiltran_geraldesAlves2008, whose postProcessDict
+tutorials/props/membrane/nanofiltran_geraldesAlves2008, whose propsDict views
 generates the paper's tables and figures (held by check_postprocessing).
 Below, "nanofiltran02" and "nanofiltran03" name those parts: their ops, the
 part of the propsDict header that documents them, and their anchor rows of

@@ -1013,14 +1013,33 @@ int FitParameters::run(const DictPtr& dict,
     //  The NAMED pair's indices (iF1/iF2, resolved for the LM above), never
     //  slots 0/1 (forum #87-P1: in a package whose components are not ordered
     //  (LK, HK) the parity plotted a DIFFERENT pair than the one optimised).
-    if (!parityPath.empty())
+    //  THE FIT'S POINTS, published whether or not a parity CSV is asked for
+    //  (DEV.md 4c C149: any fit earns its parity and residuals views); the
+    //  CSV, when declared, is written from the same numbers.
     {
-        std::ofstream pcsv(parityPath);
-        //  P_Pa is a COLUMN and not a header note: a parity plot of a fit
-        //  spanning three isobars is unreadable without it -- the same x with
-        //  two different T's is not scatter, it is two experiments.
-        pcsv << (kindP ? "x_1,T_K,P_exp_Pa,P_model_Pa,residual_rel\n"
-                       : "x_1,P_Pa,T_exp,T_model,residual\n");
+        PublishedTable tab;
+        tab.name = "fitPoints";
+        tab.description = "one row per datum: the measured bubble point and the fitted one";
+        const char* fixed = kindP ? "T_K" : "P_Pa";
+        const char* fixedU = kindP ? "K" : "Pa";
+        const char* measU = kindP ? "Pa" : "K";
+        const char* resU = kindP ? "-" : "K";
+        tab.columns.push_back({ "point", "-" });
+        tab.columns.push_back({ "x_1", "-" });
+        tab.columns.push_back({ fixed, fixedU });
+        tab.columns.push_back({ "measured", measU });
+        tab.columns.push_back({ "model", measU });
+        tab.columns.push_back({ "residual", resU });
+        std::ofstream pcsv;
+        if (!parityPath.empty())
+        {
+            pcsv.open(parityPath);
+            //  P_Pa is a COLUMN and not a header note: a parity plot of a fit
+            //  spanning three isobars is unreadable without it -- the same x with
+            //  two different T's is not scatter, it is two experiments.
+            pcsv << (kindP ? "x_1,T_K,P_exp_Pa,P_model_Pa,residual_rel\n"
+                           : "x_1,P_Pa,T_exp,T_model,residual\n");
+        }
         for (std::size_t k = 0; k < N; ++k)
         {
             sVector x(thermo.n(), 0.0);
@@ -1029,15 +1048,23 @@ int FitParameters::run(const DictPtr& dict,
             {
                 auto br = BubblePoint::pressure(thermo, x, pExp[k], tExp[k]);
                 const scalar Pm = (br.converged && !br.belowFloor) ? br.P : std::nan("");
-                pcsv << xExp[k] << "," << pExp[k] << "," << tExp[k] << "," << Pm
-                     << "," << ((Pm - tExp[k]) / tExp[k]) << "\n";
+                if (pcsv.is_open())
+                    pcsv << xExp[k] << "," << pExp[k] << "," << tExp[k] << "," << Pm
+                         << "," << ((Pm - tExp[k]) / tExp[k]) << "\n";
+                tab.rows.push_back(std::vector<scalar>{ static_cast<scalar>(k + 1), xExp[k],
+                    pExp[k], tExp[k], Pm, (Pm - tExp[k]) / tExp[k] });
                 continue;
             }
             auto br = BubblePoint::compute(thermo, x, pExp[k]);
             const scalar Tm = br.converged ? br.T : std::nan("");
-            pcsv << xExp[k] << "," << pExp[k] << "," << tExp[k] << "," << Tm
-                 << "," << (Tm - tExp[k]) << "\n";
+            if (pcsv.is_open())
+                pcsv << xExp[k] << "," << pExp[k] << "," << tExp[k] << "," << Tm
+                     << "," << (Tm - tExp[k]) << "\n";
+            tab.rows.push_back(std::vector<scalar>{ static_cast<scalar>(k + 1), xExp[k],
+                pExp[k], tExp[k], Tm, Tm - tExp[k] });
         }
+        tables_.clear();
+        tables_.push_back(std::move(tab));
     }
 
     if (verbosity >= 2)
@@ -1235,6 +1262,8 @@ int FitParameters::run(const DictPtr& dict,
             diag_["fit." + std::to_string(i) + ".at_bound"] = pinned ? 1.0 : 0.0;
         }
         diag_["params_at_bound"] = static_cast<scalar>(atBound);
+        paramPaths_.clear();
+        for (const auto& ps : params) paramPaths_.push_back(ps.path);
 
         if (verbosity >= 2)
         {
@@ -1987,6 +2016,28 @@ scalar isoResiduals(IsoMode mode, const sVector& th, scalar tRef,
     return chi2;
 }
 
+// THE FIT'S POINTS, as a published table (DEV.md 4c C149): the dataset and
+// the fitted surface at each point -- the model value is q + r sigma, the
+// residual's own definition read backwards, so nothing is evaluated twice.
+PublishedTable isoFitPoints(IsoMode mode, const sVector& th, scalar tRef,
+                            const std::vector<IsoPoint>& data)
+{
+    sVector r;
+    isoResiduals(mode, th, tRef, data, r, nullptr);
+    PublishedTable tab;
+    tab.name = "fitPoints";
+    tab.description = "one row per isotherm datum: the measured loading and the fitted one";
+    tab.columns = { {"point", "-"}, {"p_Pa", "Pa"}, {"T_K", "K"}, {"measured", "mol/kg"},
+                    {"model", "mol/kg"}, {"residual", "mol/kg"}, {"sigma", "mol/kg"} };
+    for (std::size_t k = 0; k < data.size(); ++k)
+    {
+        const scalar qm = data[k].q + r[k] * data[k].sigma;
+        tab.rows.push_back({ static_cast<scalar>(k + 1), data[k].p, data[k].T, data[k].q,
+                             qm, qm - data[k].q, data[k].sigma });
+    }
+    return tab;
+}
+
 // Per-component step caps: a trust-region safeguard against an early wild
 // step, NOT a bound on the parameter (nothing is clamped at the optimum).
 // ln-space columns cap at 5 (a factor e^5 per step); the NATURAL dH_ads
@@ -2441,6 +2492,14 @@ int FitParameters::runIsothermFit(const DictPtr& dict, int verbosity)
 
     diag_["n_data"]   = static_cast<scalar>(n);
     diag_["bp_max"]   = bpMax;
+    tables_.clear();
+    isoTemperatures_.clear();
+    for (const auto& d : data)
+        if (std::find(isoTemperatures_.begin(), isoTemperatures_.end(), d.T)
+            == isoTemperatures_.end())
+            isoTemperatures_.push_back(d.T);
+    isoUnweighted_ = std::all_of(data.begin(), data.end(),
+                                 [](const IsoPoint& d) { return d.sigma == 1.0; });
     diag_["single_T"] = singleT ? 1.0 : 0.0;
     diag_["henry_regime"] = henryRegime ? 1.0 : 0.0;
 
@@ -2510,6 +2569,7 @@ int FitParameters::runIsothermFit(const DictPtr& dict, int verbosity)
         }
         const bool endo = henryOk && (mode == IsoMode::HenryMulti) && dH > 0.0;
         diag_["endothermic_suspicious"] = endo ? 1.0 : 0.0;
+        tables_.push_back(isoFitPoints(mode, fit.th, tRefEff, data));
 
         if (verbosity >= 2)
         {
@@ -2684,6 +2744,7 @@ int FitParameters::runIsothermFit(const DictPtr& dict, int verbosity)
     diag_["identifiable"] = statOk ? 1.0 : 0.0;
     diag_["max_abs_corr"] = maxAbsCorr;
     diag_["endothermic_suspicious"] = endo ? 1.0 : 0.0;
+    tables_.push_back(isoFitPoints(mode, fit.th, tRefEff, data));
     if (statOk)
     {
         diag_["fit.q_max.value"]  = qm;
@@ -2942,6 +3003,59 @@ int FitParameters::runIsothermFit(const DictPtr& dict, int verbosity)
     }
 
     return fit.converged ? 0 : 1;
+}
+
+//  The units of the isotherm fit's diagnostics, where the fit knows them.
+std::string FitParameters::diagnosticUnit(const std::string& key) const
+{
+    auto starts = [&](const char* p) { return key.rfind(p, 0) == 0; };
+    if (isoTemperatures_.empty()) return {};
+    if (starts("fit.q_max.")) return "mol/kg";
+    if (starts("fit.b_ref.") || starts("fit.b_at_T.")) return "1/Pa";
+    if (starts("fit.dH_ads.")) return "J/mol";
+    if (starts("fit.henry_slope.")) return "mol/kg/Pa";
+    //  rms = sqrt(chi2/n) over (q - q_data)/sigma: a loading only where sigma
+    //  is the unweighted 1 mol/kg; weighted (relative or a sigma column) it is
+    //  a pure number
+    if (key == "rms") return isoUnweighted_ ? "mol/kg" : "-";
+    if (key == "T_data") return "K";
+    return {};
+}
+
+//  fit.<i>.<stat> is the i-th declared parameter: name it by its path.
+std::string FitParameters::diagnosticLabel(const std::string& key) const
+{
+    if (key.rfind("fit.", 0) != 0) return {};
+    const auto dot = key.find('.', 4);
+    if (dot == std::string::npos) return {};
+    const std::string idx = key.substr(4, dot - 4);
+    if (idx.empty() || idx.find_first_not_of("0123456789") != std::string::npos) return {};
+    const std::size_t i = std::stoul(idx);
+    return i < paramPaths_.size() ? paramPaths_[i] : std::string();
+}
+
+//  THE ISOTHERM ITSELF (DEV.md 4c C149): the data of every temperature as
+//  markers and the fitted surface through them as a line -- the figure a
+//  reviewer reads first; the parity, residuals and parameters come generically.
+std::string FitParameters::defaultViews(const std::string& op) const
+{
+    if (isoTemperatures_.empty()) return {};
+    std::string s = "{ name isotherm; type series; title \"" + op + ": loading against pressure"
+                    " -- the data (markers) and the fitted isotherm (lines), every temperature\";"
+                    " xAxis { label \"pressure p\"; } yAxis { label \"loading q\"; } series ( ";
+    for (std::size_t i = 0; i < isoTemperatures_.size(); ++i)
+    {
+        std::ostringstream T; T << std::setprecision(12) << isoTemperatures_[i];
+        std::ostringstream lab; lab << std::fixed << std::setprecision(2) << isoTemperatures_[i];
+        const std::string g = "T" + std::to_string(i + 1);
+        s += "{ name data" + g + "; label \"measured, " + lab.str() + " K\"; op " + op
+           + "; table fitPoints; select { T_K " + T.str() + "; } x p_Pa; y measured; style markers;"
+             " group " + g + "; } ";
+        s += "{ name model" + g + "; label \"fitted, " + lab.str() + " K\"; op " + op
+           + "; table fitPoints; select { T_K " + T.str() + "; } x p_Pa; y model; style lines;"
+             " group " + g + "; } ";
+    }
+    return s + "); }\n";
 }
 
 } // namespace Choupo

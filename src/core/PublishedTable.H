@@ -31,8 +31,8 @@ File
 Description
     A NAMED TABLE AN OPERATION PUBLISHES (2026-10-24, DEV.md 4c C147): rows
     of numbers under named columns, each column carrying its unit.  It is
-    the record a post-processing dictionary (`system/postProcessDict`, read by
-    src/postProcessing/postProcessDict/PostProcessDict) names -- `op N350; table pore;
+    the record a view (the propsDict's `views ( ... )` or an op's defaults,
+    read by src/postProcessing/views/Views) names -- `op N350; table pore;
     x x_um; y c_Na_molm3;` -- instead of re-parsing a CSV the op happened
     to write.
 
@@ -70,7 +70,7 @@ struct PublishedTable
 {
     struct Column
     {
-        std::string name;    // a word: what a postProcessDict names
+        std::string name;    // a word: what a view names
         std::string unit;    // "-" for a dimensionless number, never empty
     };
 

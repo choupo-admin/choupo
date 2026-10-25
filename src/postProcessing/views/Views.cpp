@@ -26,7 +26,7 @@ License
     Required legal notices:  see NOTICE
 \*---------------------------------------------------------------------------*/
 
-#include "postProcessing/postProcessDict/PostProcessDict.H"
+#include "postProcessing/views/Views.H"
 
 #include "core/DictAudit.H"
 #include "result/ResultEmitter.H"
@@ -46,7 +46,7 @@ License
 #include <variant>
 
 namespace Choupo {
-namespace postProcessDict {
+namespace views {
 
 namespace fs = std::filesystem;
 
@@ -56,7 +56,7 @@ const scalar NaN = std::numeric_limits<scalar>::quiet_NaN();
 
 [[noreturn]] void refuse(const std::string& where, const std::string& what)
 {
-    throw std::runtime_error("system/postProcessDict, " + where + ": " + what);
+    throw std::runtime_error("system/propsDict views, " + where + ": " + what);
 }
 
 std::string joined(const std::vector<std::string>& v, std::size_t cap = 40)
@@ -326,17 +326,16 @@ Series readSeries(const DictPtr& d, const std::string& at)
 
 struct Axis { std::string label, unit, scale; };
 
+//  An axis may be omitted, or name only its label: its unit is then the one
+//  the drawn series PUBLISH (and they must agree), its label their column.
 Axis readAxis(const DictPtr& d, const std::string& key, const std::string& where,
               bool needScale)
 {
-    if (!d->found(key)) refuse(where, "declare `" + key + " { label \"...\"; unit \"...\"; }`");
+    Axis ax{ "", "", "linear" };
+    if (!d->found(key)) return ax;
     const DictPtr a = d->subDict(key);
-    Axis ax;
-    if (!a->found("label") || !a->found("unit"))
-        refuse(where, "`" + key + " {}` declares `label` and `unit` (\"-\" for a"
-               " dimensionless axis)");
-    ax.label = a->lookupWord("label");
-    ax.unit  = a->lookupWord("unit");
+    ax.label = a->lookupWordOrDefault("label", "");
+    ax.unit  = a->lookupWordOrDefault("unit", "");
     if (needScale)
     {
         ax.scale = a->lookupWordOrDefault("scale", "linear");
@@ -350,6 +349,7 @@ Axis readAxis(const DictPtr& d, const std::string& key, const std::string& where
 struct Row
 {
     std::string name, label, role, kind, source;   // kind: op | reference | difference
+    std::string unit;                              // a row's own unit (a parameter table)
     std::string op, ref;
     std::vector<Match> select;
     std::vector<std::pair<std::string, std::string>> cells;   // column -> key
@@ -363,6 +363,9 @@ struct Column { std::string name, label, unit; };
 struct Item
 {
     std::string name, title, kind, shape;   // kind plot|table; shape series|rows
+    std::string type;                       // series | profile | parity | residuals | table
+    std::string home;                       // the op it is about ("" = the case)
+    std::string origin;                     // declared | default
     Axis xAxis, yAxis;                      // plot axes; a series table uses xAxis
     std::vector<Series> series;             // plot series / series-table columns
     std::vector<Column> columns;            // rows table
@@ -374,7 +377,6 @@ struct Item
 // ============================================================================
 struct Reader::Impl
 {
-    DictPtr dict;
     std::vector<std::string> declaredOps;
     std::vector<Reference> refs;
     std::vector<Item> items;
@@ -412,259 +414,377 @@ struct Reader::Impl
                 refuse(where, "`select { " + m.column + " ...; }` -- reference '" + r.name
                        + "' has no such column.  Columns: " + joined(r.header));
     }
+
+    void checkSeries(Series& s, const std::string& where,
+                     const std::vector<Series>& earlier) const;
+    Item parseView(const DictPtr& v, const std::string& at, const std::string& origin,
+                   const std::string& home) const;
 };
 
-Reader::Reader(const std::string& path, const std::vector<std::string>& declaredOps)
+//  Each series' sources, checked against the dict alone.
+void Reader::Impl::checkSeries(Series& s, const std::string& where,
+                               const std::vector<Series>& earlier) const
+{
+    if (s.kind == "op-table") checkOp(s.op, where);
+    else if (s.kind == "ops") for (const auto& o : s.ops) checkOp(o, where);
+    else if (s.kind == "reference")
+    {
+        const Reference& r = refNamed(s.ref, where);
+        checkRefColumns(r, { s.xKey, s.yKey, s.eKey }, s.select, where);
+        s.role = r.role;
+    }
+    else
+    {
+        for (const auto& nm : { s.diffA, s.diffB })
+        {
+            const bool known = std::any_of(earlier.begin(), earlier.end(),
+                [&](const Series& e) { return e.name == nm && e.kind != "difference"; });
+            if (!known)
+            {
+                std::vector<std::string> names;
+                for (const auto& e : earlier) if (e.kind != "difference") names.push_back(e.name);
+                refuse(where, "`difference ( " + s.diffA + " " + s.diffB + " );` -- '" + nm
+                       + "' is not a series declared BEFORE it.  Series: " + joined(names));
+            }
+        }
+    }
+    for (const auto& e : earlier)
+        if (e.name == s.name) refuse(where, "a second series named '" + s.name + "'");
+}
+
+//  THE SHORTHAND an author (or an AI) writes most: one source, one x, a LIST
+//  of y -- `op table1; table rows; x C_b_Cl_molm3; y ( Gamma_dye Gamma_Na );`
+//  or `ops ( a b c ); x <diag>; y ( <diag> ... );` -- expanded into one series
+//  per y, each named and labelled by its column.  Written out, it is exactly
+//  what the long form says.
+static std::vector<Series> shorthandSeries(const DictPtr& v, const std::string& where)
+{
+    std::vector<Series> out;
+    if (!v->found("y")) return out;
+    const auto ys = v->lookupWordList("y");
+    if (ys.empty()) refuse(where, "`y ( );` is empty");
+    if (!v->found("x")) refuse(where, "`y ( ... );` needs `x <name>;` -- what the source"
+                               " publishes on the abscissa");
+    const std::string x = v->lookupWord("x");
+    for (const auto& y : ys)
+    {
+        Series s;
+        s.name = y; s.label = y; s.xKey = x; s.yKey = y; s.role = "computed";
+        s.style = v->lookupWordOrDefault("style", "");
+        if (v->found("ops")) { s.kind = "ops"; s.ops = v->lookupWordList("ops"); }
+        else if (v->found("op") && v->found("table"))
+        {
+            s.kind = "op-table"; s.op = v->lookupWord("op"); s.table = v->lookupWord("table");
+            s.select = readSelect(v, where);
+        }
+        else
+            refuse(where, "`y ( ... );` reads from `op <op>; table <t>;` or `ops ( ... );`"
+                   " -- name the source");
+        out.push_back(std::move(s));
+    }
+    return out;
+}
+
+//  THE HOME of a view that names no `op` at its top: the one operation every
+//  series (or row) of it draws from, when there is exactly one and nothing
+//  else -- a view of one op's numbers belongs in that op's folder whether it
+//  says `op` once or once per series; a view with a reference, a difference
+//  across sources or several ops is about the case and lands in case/.
+static Item settledHome(Item it)
+{
+    if (!it.home.empty()) return it;
+    std::string only;
+    bool single = true;
+    auto take = [&](const std::string& op)
+    {
+        if (op.empty()) { single = false; return; }
+        if (only.empty()) only = op;
+        else if (only != op) single = false;
+    };
+    for (const auto& s : it.series)
+    {
+        if (s.kind == "op-table") take(s.op);
+        else if (s.kind == "ops" && s.ops.size() == 1) take(s.ops.front());
+        else if (s.kind == "difference") continue;     // over series already counted
+        else single = false;
+    }
+    for (const auto& r : it.rows)
+    {
+        if (r.kind == "op") take(r.op);
+        else if (r.kind == "difference") continue;
+        else single = false;
+    }
+    if (single && !only.empty()) it.home = only;
+    return it;
+}
+
+Item Reader::Impl::parseView(const DictPtr& v, const std::string& at,
+                             const std::string& origin, const std::string& home) const
+{
+    Item it;
+    it.origin = origin;
+    if (!v->found("name")) refuse(at, "declare `name <word>;`");
+    it.name = v->lookupWord("name");
+    std::string where = "view '" + it.name + "'";
+    if (!isWord(it.name))
+        refuse(where, "a name is a word (letters, digits, _): it names the file"
+               " postProcessing/<op>/" + it.name + ".csv");
+    if (!v->found("type"))
+        refuse(where, "declare `type <word>;` -- Accepted: series, profile, parity,"
+               " residuals, table");
+    it.type = v->lookupWord("type");
+    if (it.type != "series" && it.type != "profile" && it.type != "parity"
+        && it.type != "residuals" && it.type != "table")
+        refuse(where, "`type " + it.type + ";` -- Accepted: series, profile, parity,"
+               " residuals, table");
+    //  THE HOME of a view is the operation it is about (its folder,
+    //  postProcessing/<op>/); a view drawing several operations names none and
+    //  lands in postProcessing/case/.
+    it.home = v->found("op") ? v->lookupWord("op") : home;
+    if (!it.home.empty()) checkOp(it.home, where);
+    where = "view '" + (it.home.empty() ? std::string("case") : it.home) + "/" + it.name + "'";
+    it.title = v->found("title") ? v->lookupWord("title") : std::string();
+
+    if (it.type != "table")
+    {
+        it.kind = "plot";
+        it.xAxis = readAxis(v, "xAxis", where, true);
+        it.yAxis = readAxis(v, "yAxis", where, true);
+        std::vector<DictPtr> sl;
+        if (v->found("series")) sl = v->lookupDictList("series");
+        std::vector<Series> shorthand = shorthandSeries(v, where);
+        if (!shorthand.empty() && !sl.empty())
+            refuse(where, "declare the series EITHER as `y ( ... );` (one per column) OR as"
+                   " `series ( { ... } );`, not both -- add more with `overlay ( ... );`");
+        for (auto& s : shorthand)
+        {
+            checkSeries(s, where + ", series '" + s.name + "'", it.series);
+            it.series.push_back(std::move(s));
+        }
+        for (std::size_t j = 0; j < sl.size(); ++j)
+        {
+            Series s = readSeries(sl[j], where + ", series[" + std::to_string(j) + "]");
+            checkSeries(s, where + ", series '" + s.name + "'", it.series);
+            if (!s.declaredUnit.empty())
+                refuse(where + ", series '" + s.name + "'", "a plot series takes its unit"
+                       " from the view's axis; `unit` belongs to a table column");
+            it.series.push_back(std::move(s));
+        }
+        //  `overlay ( <series> ... );` -- the data (an experiment, a reference) set
+        //  over the model; a series in the long form, read the same way.
+        if (v->found("overlay"))
+        {
+            const auto ol = v->lookupDictList("overlay");
+            for (std::size_t j = 0; j < ol.size(); ++j)
+            {
+                Series s = readSeries(ol[j], where + ", overlay[" + std::to_string(j) + "]");
+                checkSeries(s, where + ", overlay '" + s.name + "'", it.series);
+                it.series.push_back(std::move(s));
+            }
+        }
+        if (it.series.empty())
+            refuse(where, "a " + it.type + " view draws at least one series -- `y ( ... );`,"
+                   " `series ( ... );` or `overlay ( ... );`");
+        if (it.title.empty())
+        {
+            std::string ys;
+            for (const auto& s : it.series) ys += (ys.empty() ? "" : ", ") + s.yKey;
+            it.title = (it.home.empty() ? std::string() : it.home + ": ") + ys
+                     + " against " + it.series.front().xKey;
+        }
+        return settledHome(std::move(it));
+    }
+
+    it.kind = "table";
+    const bool seriesShape = v->found("x");
+    const bool rowsShape = v->found("rows");
+    if (seriesShape == rowsShape)
+        refuse(where, "a table is EITHER a series table (`x` and `y ( ... )` or `columns ("
+               " <series> ... )`: one row per x value) OR a rows table (`columns ( { name;"
+               " label; unit; } ... );` and `rows ( ... );`: one row per record) -- this"
+               " one declares " + std::string(seriesShape ? "both" : "neither"));
+    if (it.title.empty()) it.title = it.name;
+    if (seriesShape)
+    {
+        it.shape = "series";
+        //  `x` is a word (the shorthand's abscissa) or a block naming the axis
+        if (v->found("x") && std::holds_alternative<DictPtr>(v->entryValue("x")))
+            it.xAxis = readAxis(v, "x", where, false);
+        else
+            it.xAxis = Axis{ v->found("x") ? v->lookupWord("x") : std::string(), "", "linear" };
+        std::vector<Series> shorthand = shorthandSeries(v, where);
+        for (auto& s : shorthand)
+        {
+            checkSeries(s, where + ", column '" + s.name + "'", it.series);
+            it.series.push_back(std::move(s));
+        }
+        if (v->found("columns"))
+        {
+            const auto cl = v->lookupDictList("columns");
+            for (std::size_t j = 0; j < cl.size(); ++j)
+            {
+                Series s = readSeries(cl[j], where + ", columns[" + std::to_string(j) + "]");
+                checkSeries(s, where + ", column '" + s.name + "'", it.series);
+                it.series.push_back(std::move(s));
+            }
+        }
+        if (it.series.empty()) refuse(where, "the table has no columns");
+        return settledHome(std::move(it));
+    }
+    it.shape = "rows";
+    if (!v->found("columns")) refuse(where, "declare `columns ( { name; label; unit; } ... );`");
+    const auto cl = v->lookupDictList("columns");
+    if (cl.empty()) refuse(where, "`columns ( );` is empty");
+    for (std::size_t j = 0; j < cl.size(); ++j)
+    {
+        const DictPtr& c = cl[j];
+        const std::string cw = where + ", columns[" + std::to_string(j) + "]";
+        if (!c->found("name"))
+            refuse(cw, "a rows-table column declares `name <word>;` (and optionally"
+                   " `label`, and `unit` -- or each row its own `unit`)");
+        Column col{ c->lookupWord("name"), "", c->found("unit") ? c->lookupWord("unit") : "" };
+        col.label = c->found("label") ? c->lookupWord("label") : col.name;
+        if (!isWord(col.name)) refuse(cw, "a column name is a word");
+        for (const auto& o : it.columns)
+            if (o.name == col.name) refuse(cw, "a second column named '" + col.name + "'");
+        it.columns.push_back(col);
+    }
+    const auto rl = v->lookupDictList("rows");
+    if (rl.empty()) refuse(where, "`rows ( );` is empty");
+    for (std::size_t j = 0; j < rl.size(); ++j)
+    {
+        const DictPtr& r = rl[j];
+        Row row;
+        const std::string rat = where + ", rows[" + std::to_string(j) + "]";
+        if (!r->found("name")) refuse(rat, "declare `name <word>;`");
+        row.name = r->lookupWord("name");
+        const std::string rw = where + ", row '" + row.name + "'";
+        if (!isWord(row.name)) refuse(rw, "a row name is a word");
+        for (const auto& o : it.rows)
+            if (o.name == row.name) refuse(rw, "a second row named '" + row.name + "'");
+        row.label = r->found("label") ? r->lookupWord("label") : row.name;
+        if (r->found("unit")) row.unit = r->lookupWord("unit");
+        int n = 0;
+        if (r->found("op"))         { ++n; row.kind = "op"; }
+        if (r->found("reference"))  { ++n; row.kind = "reference"; }
+        if (r->found("difference")) { ++n; row.kind = "difference"; }
+        if (n != 1)
+            refuse(rw, "a row names exactly ONE source -- `op <op>;`, `reference"
+                   " <ref>;` or `difference ( <a> <b> );` -- and this one names "
+                   + std::to_string(n));
+        if (row.kind == "difference")
+        {
+            const auto ab = r->lookupWordList("difference");
+            if (ab.size() != 2) refuse(rw, "`difference ( <a> <b> );` names two rows: a - b");
+            row.diffA = ab[0]; row.diffB = ab[1];
+            const std::string rel = r->lookupWordOrDefault("relative", "no");
+            if (rel != "yes" && rel != "no") refuse(rw, "`relative " + rel + ";` -- yes or no");
+            row.relative = rel == "yes";
+            row.role = "difference";
+            for (const auto& nm : { row.diffA, row.diffB })
+            {
+                const bool known = std::any_of(it.rows.begin(), it.rows.end(),
+                    [&](const Row& e) { return e.name == nm && e.kind != "difference"; });
+                if (!known)
+                {
+                    std::vector<std::string> names;
+                    for (const auto& e : it.rows) if (e.kind != "difference") names.push_back(e.name);
+                    refuse(rw, "`difference ( " + row.diffA + " " + row.diffB + " );` -- '"
+                           + nm + "' is not a row declared BEFORE it.  Rows: " + joined(names));
+                }
+            }
+        }
+        else
+        {
+            if (!r->found("cells"))
+                refuse(rw, "declare `cells { <column> <name>; ... }` -- which"
+                       " published number fills each column");
+            const DictPtr cs = r->subDict("cells");
+            for (const auto& c : cs->keys())
+            {
+                const bool known = std::any_of(it.columns.begin(), it.columns.end(),
+                    [&](const Column& col) { return col.name == c; });
+                if (!known)
+                {
+                    std::vector<std::string> names;
+                    for (const auto& col : it.columns) names.push_back(col.name);
+                    refuse(rw, "`cells { " + c + " ...; }` -- the table has no column '"
+                           + c + "'.  Columns: " + joined(names));
+                }
+                row.cells.push_back({ c, cs->lookupWord(c) });
+            }
+            if (row.kind == "op")
+            {
+                row.op = r->lookupWord("op");
+                checkOp(row.op, rw);
+                row.role = "computed";
+            }
+            else
+            {
+                row.ref = r->lookupWord("reference");
+                row.select = readSelect(r, rw);
+                if (row.select.empty())
+                    refuse(rw, "a reference row declares `select { ... }`, which"
+                           " must keep exactly one record of the reference");
+                const Reference& ref = refNamed(row.ref, rw);
+                std::vector<std::string> cols;
+                for (const auto& c : row.cells) cols.push_back(c.second);
+                checkRefColumns(ref, cols, row.select, rw);
+                row.role = ref.role;
+            }
+        }
+        it.rows.push_back(std::move(row));
+    }
+    return settledHome(std::move(it));
+}
+
+namespace {
+//  A view nothing reads part of refuses: the views grammar is new, and owes no
+//  corpus a tolerance.
+void refuseUnread(const Dictionary& d, const std::string& where)
+{
+    const auto unread = dictAudit::auditTree(d, where);
+    if (unread.empty()) return;
+    std::string msg = "keys nothing reads:";
+    for (const auto& f : unread)
+        msg += "\n    " + f.where + ": `" + f.key + "`"
+             + (f.suggestion.empty() ? "" : " (did you mean `" + f.suggestion + "`?)");
+    refuse(where, msg);
+}
+}
+
+Reader::Reader(const DictPtr& propsDict, const std::vector<std::string>& declaredOps)
     : impl_(std::make_unique<Impl>())
 {
     Impl& I = *impl_;
     I.declaredOps = declaredOps;
-    I.dict = Dictionary::fromFile(path);
-    const DictPtr& D = I.dict;
-
-    if (D->found("references"))
+    if (propsDict->found("references"))
     {
-        const auto list = D->lookupDictList("references");
+        const auto list = propsDict->lookupDictList("references");
         for (std::size_t k = 0; k < list.size(); ++k)
         {
             Reference r = readReference(list[k], k);
             for (const auto& o : I.refs)
                 if (o.name == r.name) refuse("reference '" + r.name + "'", "declared twice");
             I.refs.push_back(std::move(r));
+            refuseUnread(*list[k], "propsDict references[" + std::to_string(k) + "]");
         }
     }
-
-    std::set<std::string> itemNames;
-    auto claim = [&](const std::string& nm, const std::string& where)
+    if (propsDict->found("views"))
     {
-        if (!isWord(nm)) refuse(where, "a name is a word (letters, digits, _): it names the"
-                                " file postProcessing/postProcessDict/" + nm + ".csv");
-        if (!itemNames.insert(nm).second)
-            refuse(where, "the name '" + nm + "' is taken by another plot or table --"
-                   " both would write postProcessing/postProcessDict/" + nm + ".csv");
-    };
-
-    //  Each series' sources, checked against the dict alone.
-    auto checkSeries = [&](Series& s, const std::string& where,
-                           const std::vector<Series>& earlier)
-    {
-        if (s.kind == "op-table") I.checkOp(s.op, where);
-        else if (s.kind == "ops") for (const auto& o : s.ops) I.checkOp(o, where);
-        else if (s.kind == "reference")
-        {
-            const Reference& r = I.refNamed(s.ref, where);
-            I.checkRefColumns(r, { s.xKey, s.yKey, s.eKey }, s.select, where);
-            s.role = r.role;
-        }
-        else
-        {
-            for (const auto& nm : { s.diffA, s.diffB })
-            {
-                const bool known = std::any_of(earlier.begin(), earlier.end(),
-                    [&](const Series& e) { return e.name == nm && e.kind != "difference"; });
-                if (!known)
-                {
-                    std::vector<std::string> names;
-                    for (const auto& e : earlier) if (e.kind != "difference") names.push_back(e.name);
-                    refuse(where, "`difference ( " + s.diffA + " " + s.diffB + " );` -- '" + nm
-                           + "' is not a series declared BEFORE it.  Series: " + joined(names));
-                }
-            }
-        }
-        for (const auto& e : earlier)
-            if (e.name == s.name) refuse(where, "a second series named '" + s.name + "'");
-    };
-
-    if (D->found("plots"))
-    {
-        const auto list = D->lookupDictList("plots");
+        const auto list = propsDict->lookupDictList("views");
         for (std::size_t k = 0; k < list.size(); ++k)
         {
-            const DictPtr& p = list[k];
-            Item it;
-            it.kind = "plot";
-            const std::string at = "plots[" + std::to_string(k) + "]";
-            if (!p->found("name")) refuse(at, "declare `name <word>;`");
-            it.name = p->lookupWord("name");
-            const std::string where = "plot '" + it.name + "'";
-            claim(it.name, where);
-            if (!p->found("title")) refuse(where, "declare `title \"...\";`");
-            it.title = p->lookupWord("title");
-            it.xAxis = readAxis(p, "xAxis", where, true);
-            it.yAxis = readAxis(p, "yAxis", where, true);
-            if (!p->found("series")) refuse(where, "declare `series ( { ... } ... );`");
-            const auto sl = p->lookupDictList("series");
-            if (sl.empty()) refuse(where, "`series ( );` is empty");
-            for (std::size_t j = 0; j < sl.size(); ++j)
-            {
-                Series s = readSeries(sl[j], where + ", series[" + std::to_string(j) + "]");
-                checkSeries(s, where + ", series '" + s.name + "'", it.series);
-                if (!s.declaredUnit.empty())
-                    refuse(where + ", series '" + s.name + "'", "a plot series takes its unit"
-                           " from the plot's axis; `unit` belongs to a table column");
-                it.series.push_back(std::move(s));
-            }
+            const std::string at = "propsDict views[" + std::to_string(k) + "]";
+            Item it = I.parseView(list[k], at, "declared", "");
+            for (const auto& o : I.items)
+                if (o.home == it.home && o.name == it.name)
+                    refuse("view '" + it.name + "'", "a second view named '" + it.name
+                           + "' in postProcessing/" + (it.home.empty() ? "case" : it.home)
+                           + "/ -- both would write one file");
             I.items.push_back(std::move(it));
+            refuseUnread(*list[k], at);
         }
-    }
-
-    if (D->found("tables"))
-    {
-        const auto list = D->lookupDictList("tables");
-        for (std::size_t k = 0; k < list.size(); ++k)
-        {
-            const DictPtr& t = list[k];
-            Item it;
-            it.kind = "table";
-            const std::string at = "tables[" + std::to_string(k) + "]";
-            if (!t->found("name")) refuse(at, "declare `name <word>;`");
-            it.name = t->lookupWord("name");
-            const std::string where = "table '" + it.name + "'";
-            claim(it.name, where);
-            if (!t->found("title")) refuse(where, "declare `title \"...\";`");
-            it.title = t->lookupWord("title");
-            const bool seriesShape = t->found("x");
-            const bool rowsShape = t->found("rows");
-            if (seriesShape == rowsShape)
-                refuse(where, "a table is EITHER a series table (`x { label; unit; }` and"
-                       " `columns ( <series> ... );`: one row per x value) OR a rows table"
-                       " (`columns ( { name; label; unit; } ... );` and `rows ( ... );`:"
-                       " one row per record) -- this one declares "
-                       + std::string(seriesShape ? "both" : "neither"));
-            if (!t->found("columns")) refuse(where, "declare `columns ( ... );`");
-            const auto cl = t->lookupDictList("columns");
-            if (cl.empty()) refuse(where, "`columns ( );` is empty");
-            if (seriesShape)
-            {
-                it.shape = "series";
-                it.xAxis = readAxis(t, "x", where, false);
-                for (std::size_t j = 0; j < cl.size(); ++j)
-                {
-                    Series s = readSeries(cl[j], where + ", columns[" + std::to_string(j) + "]");
-                    checkSeries(s, where + ", column '" + s.name + "'", it.series);
-                    it.series.push_back(std::move(s));
-                }
-            }
-            else
-            {
-                it.shape = "rows";
-                for (std::size_t j = 0; j < cl.size(); ++j)
-                {
-                    const DictPtr& c = cl[j];
-                    const std::string cw = where + ", columns[" + std::to_string(j) + "]";
-                    if (!c->found("name") || !c->found("unit"))
-                        refuse(cw, "a rows-table column declares `name <word>;` and"
-                               " `unit \"...\";` (and optionally `label`)");
-                    Column col{ c->lookupWord("name"), "", c->lookupWord("unit") };
-                    col.label = c->found("label") ? c->lookupWord("label") : col.name;
-                    if (!isWord(col.name)) refuse(cw, "a column name is a word");
-                    for (const auto& o : it.columns)
-                        if (o.name == col.name) refuse(cw, "a second column named '" + col.name + "'");
-                    it.columns.push_back(col);
-                }
-                const auto rl = t->lookupDictList("rows");
-                if (rl.empty()) refuse(where, "`rows ( );` is empty");
-                for (std::size_t j = 0; j < rl.size(); ++j)
-                {
-                    const DictPtr& r = rl[j];
-                    Row row;
-                    const std::string rat = where + ", rows[" + std::to_string(j) + "]";
-                    if (!r->found("name")) refuse(rat, "declare `name <word>;`");
-                    row.name = r->lookupWord("name");
-                    const std::string rw = where + ", row '" + row.name + "'";
-                    if (!isWord(row.name)) refuse(rw, "a row name is a word");
-                    for (const auto& o : it.rows)
-                        if (o.name == row.name) refuse(rw, "a second row named '" + row.name + "'");
-                    row.label = r->found("label") ? r->lookupWord("label") : row.name;
-                    int n = 0;
-                    if (r->found("op"))         { ++n; row.kind = "op"; }
-                    if (r->found("reference"))  { ++n; row.kind = "reference"; }
-                    if (r->found("difference")) { ++n; row.kind = "difference"; }
-                    if (n != 1)
-                        refuse(rw, "a row names exactly ONE source -- `op <op>;`, `reference"
-                               " <ref>;` or `difference ( <a> <b> );` -- and this one names "
-                               + std::to_string(n));
-                    if (row.kind == "difference")
-                    {
-                        const auto ab = r->lookupWordList("difference");
-                        if (ab.size() != 2) refuse(rw, "`difference ( <a> <b> );` names two rows: a - b");
-                        row.diffA = ab[0]; row.diffB = ab[1];
-                        const std::string rel = r->lookupWordOrDefault("relative", "no");
-                        if (rel != "yes" && rel != "no") refuse(rw, "`relative " + rel + ";` -- yes or no");
-                        row.relative = rel == "yes";
-                        row.role = "difference";
-                        for (const auto& nm : { row.diffA, row.diffB })
-                        {
-                            const bool known = std::any_of(it.rows.begin(), it.rows.end(),
-                                [&](const Row& e) { return e.name == nm && e.kind != "difference"; });
-                            if (!known)
-                            {
-                                std::vector<std::string> names;
-                                for (const auto& e : it.rows) if (e.kind != "difference") names.push_back(e.name);
-                                refuse(rw, "`difference ( " + row.diffA + " " + row.diffB + " );` -- '"
-                                       + nm + "' is not a row declared BEFORE it.  Rows: " + joined(names));
-                            }
-                        }
-                    }
-                    else
-                    {
-                        if (!r->found("cells"))
-                            refuse(rw, "declare `cells { <column> <name>; ... }` -- which"
-                                   " published number fills each column");
-                        const DictPtr cs = r->subDict("cells");
-                        for (const auto& c : cs->keys())
-                        {
-                            const bool known = std::any_of(it.columns.begin(), it.columns.end(),
-                                [&](const Column& col) { return col.name == c; });
-                            if (!known)
-                            {
-                                std::vector<std::string> names;
-                                for (const auto& col : it.columns) names.push_back(col.name);
-                                refuse(rw, "`cells { " + c + " ...; }` -- the table has no column '"
-                                       + c + "'.  Columns: " + joined(names));
-                            }
-                            row.cells.push_back({ c, cs->lookupWord(c) });
-                        }
-                        if (row.kind == "op")
-                        {
-                            row.op = r->lookupWord("op");
-                            I.checkOp(row.op, rw);
-                            row.role = "computed";
-                        }
-                        else
-                        {
-                            row.ref = r->lookupWord("reference");
-                            row.select = readSelect(r, rw);
-                            if (row.select.empty())
-                                refuse(rw, "a reference row declares `select { ... }`, which"
-                                       " must keep exactly one record of the reference");
-                            const Reference& ref = I.refNamed(row.ref, rw);
-                            std::vector<std::string> cols;
-                            for (const auto& c : row.cells) cols.push_back(c.second);
-                            I.checkRefColumns(ref, cols, row.select, rw);
-                            row.role = ref.role;
-                        }
-                    }
-                    it.rows.push_back(std::move(row));
-                }
-            }
-            I.items.push_back(std::move(it));
-        }
-    }
-
-    if (I.items.empty())
-        refuse("the dictionary", "declares no `plots ( ... );` and no `tables ( ... );`");
-
-    //  A NEW DICTIONARY OWES NO CORPUS A TOLERANCE: a key nothing reads is a
-    //  silent instruction, and here it is refused, not warned.
-    const auto unread = dictAudit::auditTree(*D, "postProcessDict");
-    if (!unread.empty())
-    {
-        std::string msg = "keys nothing reads:";
-        for (const auto& f : unread)
-            msg += "\n    " + f.where + ": `" + f.key + "`"
-                 + (f.suggestion.empty() ? "" : " (did you mean `" + f.suggestion + "`?)");
-        refuse("the dictionary", msg);
     }
 }
 
@@ -830,7 +950,7 @@ void resolveSeries(Series& s, const std::vector<Publication>& pubs,
 void checkUnit(const std::string& published, bool isPublished, const std::string& declared,
                const std::string& what, const std::string& where)
 {
-    if (isPublished && published != declared)
+    if (isPublished && !declared.empty() && published != declared)
         refuse(where, what + " is published in '" + published + "' and declared in '"
                + declared + "' -- a plot or table states the unit of what it draws");
 }
@@ -871,21 +991,125 @@ std::string shortNumber(scalar v)
 
 } // namespace
 
+//  THE DEFAULT VIEWS ANY FIT EARNS, from what it published -- one home, so an
+//  operation that publishes a `fitPoints` table (measured, model, residual
+//  beside its abscissae) and fit.<p>.value diagnostics gets the same parity,
+//  residuals and parameter table as every other fit, whatever it fits.
+static std::string genericDefaultViews(const Publication& pub)
+{
+    std::string out;
+    for (const auto& tab : pub.tables)
+    {
+        if (tab.name != "fitPoints") continue;
+        if (tab.columnIndex("measured") < 0 || tab.columnIndex("model") < 0
+            || tab.columnIndex("residual") < 0 || tab.columns.size() < 5)
+            continue;
+        const std::string abscissa = tab.columns[1].name;
+        out += "{ name parity; type parity; title \"" + pub.name + ": fitted against measured\";"
+               " xAxis { label \"measured\"; } yAxis { label \"fitted\"; }"
+               " series ( { name points; label \"data against the fitted model\"; op " + pub.name
+             + "; table fitPoints; x measured; y model; style markers; } ); }\n";
+        out += "{ name residuals; type residuals; title \"" + pub.name + ": residual (fitted - measured)"
+               " against " + abscissa + "\"; yAxis { label \"residual\"; }"
+               " series ( { name residual; label \"fitted - measured\"; op " + pub.name
+             + "; table fitPoints; x " + abscissa + "; y residual; style markers; } ); }\n";
+    }
+    std::vector<std::string> params;
+    for (const auto& kv : pub.diagnostics)
+    {
+        const std::string& k = kv.first;
+        if (k.size() > 10 && k.rfind("fit.", 0) == 0 && k.compare(k.size() - 6, 6, ".value") == 0)
+            params.push_back(k.substr(4, k.size() - 10));
+    }
+    //  index-keyed parameters (fit.0, fit.1, ...) in the order they were declared
+    auto index = [](const std::string& s) -> long
+    {
+        return (!s.empty() && s.find_first_not_of("0123456789") == std::string::npos)
+             ? std::stol(s) : -1;
+    };
+    std::stable_sort(params.begin(), params.end(), [&](const std::string& a, const std::string& b)
+    {
+        const long ia = index(a), ib = index(b);
+        return (ia >= 0 && ib >= 0) ? ia < ib : false;
+    });
+    if (!params.empty())
+    {
+        out += "{ name parameters; type table; title \"" + pub.name + ": fitted parameters --"
+               " value, standard error and 95 % confidence half-width\";"
+               " columns ( { name value; label \"value\"; } { name stderr; label \"standard error\"; }"
+               " { name ci95; label \"95 % half-width\"; } ); rows ( ";
+        for (const auto& pnm : params)
+        {
+            //  a row name is a word: a parameter keyed by its index (fit.0.value)
+            //  becomes p0, and its LABEL is what the op says it is (its path)
+            std::string word = std::isalpha(static_cast<unsigned char>(pnm[0])) ? "" : "p";
+            for (const char c : pnm) word += (std::isalnum(static_cast<unsigned char>(c)) ? c : '_');
+            const auto u = pub.units.find("fit." + pnm + ".value");
+            const auto lb = pub.labels.find("fit." + pnm + ".value");
+            const std::string label = lb != pub.labels.end() ? lb->second : pnm;
+            out += "{ name " + word + "; label \"" + label + "\";";
+            if (u != pub.units.end() && !u->second.empty()) out += " unit \"" + u->second + "\";";
+            out += " op " + pub.name + "; cells { value fit." + pnm + ".value;";
+            if (pub.diagnostics.count("fit." + pnm + ".stderr")) out += " stderr fit." + pnm + ".stderr;";
+            if (pub.diagnostics.count("fit." + pnm + ".ci95")) out += " ci95 fit." + pnm + ".ci95;";
+            out += " } } ";
+        }
+        out += "); }\n";
+    }
+    return out;
+}
+
 std::string Reader::evaluate(const std::vector<Publication>& pubs, int verbosity)
 {
     Impl& I = *impl_;
-    std::error_code ec;
-    fs::remove_all(outputDir(), ec);
-    fs::create_directories(outputDir(), ec);
-    if (ec) refuse("the dictionary", std::string("cannot create ") + outputDir() + ": " + ec.message());
+    clearStale();
 
-    std::cout << "\n========  Post-processing (system/postProcessDict)  ========\n"
-              << "  " << I.items.size() << " item(s) -> " << outputDir() << "/<name>.csv"
-              << " (+ <name>.json: titles, units, series roles and sources)\n";
+    //  THE DEFAULT VIEWS, from what each operation published (DEV.md 4c C149):
+    //  the op's own (PropertyOperation::defaultViews, written in this grammar)
+    //  and the generic ones any fit earns (parity and residuals from a
+    //  `fitPoints` table, the parameter table from its fit.<p>.* diagnostics).
+    //  A DECLARED view of the same name in the same folder replaces a default,
+    //  said once.  The defaults come first: an operation's own figures, then
+    //  what the case added.
+    std::vector<Item> defaults;
+    //  each op's default declarations, as text, carried on the result block: a
+    //  reader (a gate, a student) sees the very entries that drew its figures
+    std::vector<std::pair<std::string, std::string>> declarations;
+    for (const auto& pub : pubs)
+    {
+        const std::string text = pub.defaultViews + genericDefaultViews(pub);
+        if (text.empty()) continue;
+        declarations.push_back({ pub.name, text });
+        const DictPtr d = Dictionary::fromString("views ( " + text + " );",
+                                                 "default views of " + pub.name);
+        const auto list = d->lookupDictList("views");
+        for (std::size_t k = 0; k < list.size(); ++k)
+        {
+            Item it = I.parseView(list[k], "default view of operation '" + pub.name + "'",
+                                  "default", pub.name);
+            const bool replaced = std::any_of(I.items.begin(), I.items.end(),
+                [&](const Item& o) { return o.home == it.home && o.name == it.name; });
+            if (replaced)
+            {
+                std::cout << "  [views] " << pub.name << "/" << it.name << ": the propsDict"
+                             " declares a view of this name -- it replaces the default\n";
+                continue;
+            }
+            defaults.push_back(std::move(it));
+        }
+    }
+    I.items.insert(I.items.begin(), std::make_move_iterator(defaults.begin()),
+                   std::make_move_iterator(defaults.end()));
+    std::vector<std::string> written;
+    if (I.items.empty()) return std::string();
+
+    std::cout << "\n========  Views (the propsDict's `views` + each operation's defaults)  ========\n"
+              << "  " << I.items.size() << " view(s) -> " << outputDir() << "/<op>/<view>.csv"
+              << " (+ .json: titles, units, series roles and sources)\n";
 
     std::ostringstream block;
-    block << "{ \"source\": \"system/postProcessDict\", \"directory\": " << q(outputDir())
-          << ",\n    \"references\": [";
+    block << "{ \"source\": \"system/propsDict views + operation defaults\", \"directory\": "
+          << q(outputDir()) << ",\n    \"references\": [";
     for (std::size_t k = 0; k < I.refs.size(); ++k)
     {
         const auto& r = I.refs[k];
@@ -893,15 +1117,29 @@ std::string Reader::evaluate(const std::vector<Publication>& pubs, int verbosity
               << q(r.file) << ", \"role\": " << q(r.role) << ", \"citation\": "
               << q(r.citation) << " }";
     }
+    block << "\n    ],\n    \"defaults\": [";
+    for (std::size_t k = 0; k < declarations.size(); ++k)
+        block << (k ? "," : "") << "\n      { \"op\": " << q(declarations[k].first)
+              << ", \"declaration\": " << q(declarations[k].second) << " }";
     block << "\n    ],\n    \"items\": [";
 
     for (std::size_t n = 0; n < I.items.size(); ++n)
     {
         Item& it = I.items[n];
-        const std::string where = it.kind + " '" + it.name + "'";
-        const std::string file = std::string(outputDir()) + "/" + it.name + ".csv";
+        const std::string dir = std::string(outputDir()) + "/"
+                              + (it.home.empty() ? std::string("case") : it.home);
+        const std::string where = "view '" + (it.home.empty() ? std::string("case") : it.home)
+                                + "/" + it.name + "'";
+        const std::string file = dir + "/" + it.name + ".csv";
+        {
+            std::error_code ec;
+            fs::create_directories(dir, ec);
+            if (ec) refuse(where, "cannot create " + dir + ": " + ec.message());
+        }
         std::ostringstream js;
-        js << "{ \"name\": " << q(it.name) << ", \"kind\": " << q(it.kind);
+        js << "{ \"name\": " << q(it.name) << ", \"op\": " << q(it.home)
+           << ", \"origin\": " << q(it.origin) << ", \"type\": " << q(it.type)
+           << ", \"kind\": " << q(it.kind);
         if (it.kind == "table") js << ", \"shape\": " << q(it.shape);
         js << ", \"title\": " << q(it.title) << ", \"file\": " << q(file);
 
@@ -918,6 +1156,16 @@ std::string Reader::evaluate(const std::vector<Publication>& pubs, int verbosity
                 const std::string sw = where + ", series '" + s.name + "'";
                 resolveSeries(s, pubs, I.refs, std::vector<Series>(it.series.begin(),
                               it.series.begin() + static_cast<long>(j)), sw);
+                //  An axis that names no unit takes the one its series PUBLISH; the
+                //  next series is then held to it like a declared one.
+                if (it.xAxis.unit.empty() && s.xPublished && s.kind != "difference")
+                    it.xAxis.unit = s.xUnit;
+                if (it.kind == "plot" && it.yAxis.unit.empty() && s.yPublished
+                    && s.kind != "difference")
+                    it.yAxis.unit = s.yUnit;
+                if (it.xAxis.label.empty()) it.xAxis.label = s.xKey;
+                if (it.kind == "plot" && it.yAxis.label.empty())
+                    it.yAxis.label = it.series.size() == 1 ? s.yKey : std::string();
                 checkUnit(s.xUnit, s.xPublished, it.xAxis.unit, "x ('" + s.xKey + "')", sw);
                 const std::string yDecl = it.kind == "plot" ? it.yAxis.unit
                                         : (s.declaredUnit.empty() ? s.yUnit : s.declaredUnit);
@@ -939,19 +1187,28 @@ std::string Reader::evaluate(const std::vector<Publication>& pubs, int verbosity
                     }
                 }
                 if (!s.xPublished || !s.yPublished)
-                    std::cout << "  [postProcessDict] " << sw << ": its source publishes no unit for "
+                    std::cout << "  [views] " << sw << ": its source publishes no unit for "
                               << (!s.xPublished ? "'" + s.xKey + "'" : std::string())
                               << (!s.xPublished && !s.yPublished ? " and " : "")
                               << (!s.yPublished ? "'" + s.yKey + "'" : std::string())
                               << " -- the declared unit is taken as the author's statement\n";
                 if (s.dropped > 0)
-                    std::cout << "  [postProcessDict] " << sw << ": " << s.dropped << " row(s) of the"
+                    std::cout << "  [views] " << sw << ": " << s.dropped << " row(s) of the"
                                  " reference carry no number on an axis and are not drawn\n";
             }
         }
 
+        if (it.type == "parity" && it.xAxis.unit != it.yAxis.unit)
+            refuse(where, "a parity view sets a model against what it models: x is in '"
+                   + it.xAxis.unit + "' and y in '" + it.yAxis.unit + "'");
         if (it.kind == "plot")
         {
+            if (it.yAxis.label.empty())
+            {
+                std::string ys;
+                for (const auto& s : it.series) if (s.kind != "difference") ys += (ys.empty() ? "" : ", ") + s.yKey;
+                it.yAxis.label = ys;
+            }
             csv << "series,x,y,yError\n";
             for (const auto& s : it.series)
                 for (std::size_t i = 0; i < s.x.size(); ++i)
@@ -976,8 +1233,10 @@ std::string Reader::evaluate(const std::vector<Publication>& pubs, int verbosity
                    << ", \"points\": " << s.x.size() << " }";
             }
             js << "] }";
-            std::cout << "  plot  " << std::left << std::setw(26) << it.name << std::right
-                      << it.series.size() << " series -- " << it.title << "\n";
+            std::cout << "  " << std::left << std::setw(10) << it.type
+                      << std::setw(40) << ((it.home.empty() ? std::string("case") : it.home) + "/" + it.name)
+                      << std::right << it.series.size() << " series -- " << it.title
+                      << (it.origin == "default" ? "  (default)" : "") << "\n";
             if (verbosity >= 3)
                 for (const auto& s : it.series)
                     std::cout << "        " << s.name << ": " << s.x.size() << " point(s), "
@@ -1066,7 +1325,9 @@ std::string Reader::evaluate(const std::vector<Publication>& pubs, int verbosity
                         std::string u; bool pub = false;
                         const scalar v = diagOf(p, key, rw, &u, &pub);
                         const std::size_t k = colIdx(c);
-                        checkUnit(u, pub, it.columns[k].unit, "'" + key + "'", rw);
+                        checkUnit(u, pub, row.unit.empty() ? it.columns[k].unit : row.unit,
+                                  "'" + key + "'", rw);
+                        if (row.unit.empty() && it.columns[k].unit.empty() && pub) row.unit = u;
                         row.values[k] = v;
                     }
                     row.source = "operation " + row.op;
@@ -1091,7 +1352,9 @@ std::string Reader::evaluate(const std::vector<Publication>& pubs, int verbosity
                     for (const auto& [c, col] : row.cells)
                     {
                         const std::size_t k = colIdx(c);
-                        checkUnit(r->units.at(col), true, it.columns[k].unit, "'" + col + "'", rw);
+                        checkUnit(r->units.at(col), true,
+                                  row.unit.empty() ? it.columns[k].unit : row.unit,
+                                  "'" + col + "'", rw);
                         row.values[k] = parseNumber((*hit)[r->column(col)]);
                     }
                     row.source = "reference " + row.ref + " where " + selectText(row.select);
@@ -1145,29 +1408,56 @@ std::string Reader::evaluate(const std::vector<Publication>& pubs, int verbosity
                 const auto& row = it.rows[k];
                 js << (k ? ", " : "") << "{ \"name\": " << q(row.name) << ", \"label\": "
                    << q(row.label) << ", \"role\": " << q(row.role) << ", \"source\": "
-                   << q(row.source) << ", \"relative\": " << (row.relative ? "true" : "false")
-                   << " }";
+                   << q(row.source) << ", \"unit\": " << q(row.unit)
+                   << ", \"relative\": " << (row.relative ? "true" : "false") << " }";
             }
             js << "] }";
             printTable(it.title, head, body);
         }
         csv.close();
-        const std::string sidecar = std::string(outputDir()) + "/" + it.name + ".json";
+        const std::string sidecar = dir + "/" + it.name + ".json";
+        written.push_back(file);
+        written.push_back(sidecar);
         std::ofstream side(sidecar);
         if (!side) refuse(where, "cannot write " + sidecar);
         side << js.str() << "\n";
         block << (n ? "," : "") << "\n      " << js.str();
     }
     block << "\n    ] }";
+    {
+        std::ofstream idx(indexFile());
+        idx << "# the view files the last run wrote -- removed by the next (a run output)\n";
+        for (const auto& f : written) idx << f << "\n";
+    }
     std::cout << "=====================================================\n";
     return block.str();
 }
 
+//  A DERIVATIVE view must not outlive its declaration: every file the last run
+//  wrote is listed in postProcessing/views.index and removed before the next
+//  writes, with the folders it leaves empty -- never anything it did not write.
 void clearStale()
 {
+    std::ifstream idx(indexFile());
+    std::string line;
+    std::set<std::string> dirs;
+    while (std::getline(idx, line))
+    {
+        if (line.empty() || line[0] == '#') continue;
+        if (line.rfind(std::string(outputDir()) + "/", 0) != 0 || line.find("..") != std::string::npos)
+            continue;
+        std::error_code ec;
+        fs::remove(line, ec);
+        dirs.insert(fs::path(line).parent_path().string());
+    }
+    idx.close();
     std::error_code ec;
-    if (fs::exists(outputDir(), ec)) fs::remove_all(outputDir(), ec);
+    for (const auto& d : dirs)
+        if (fs::is_directory(d, ec) && fs::is_empty(d, ec)) fs::remove(d, ec);
+    fs::remove(indexFile(), ec);
+    if (fs::is_directory(outputDir(), ec) && fs::is_empty(outputDir(), ec))
+        fs::remove(outputDir(), ec);
 }
 
-} // namespace postProcessDict
+} // namespace views
 } // namespace Choupo

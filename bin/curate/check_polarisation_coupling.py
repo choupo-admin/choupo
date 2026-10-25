@@ -113,6 +113,8 @@ import subprocess
 import sys
 import tempfile
 from pathlib import Path
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+from props_views import strip_views  # noqa: E402
 
 ROOT = Path(__file__).resolve().parents[2]
 BUILD = ROOT / "build" / "linux64Gcc"
@@ -214,13 +216,13 @@ def solve_paper(Jv, k, D, z, cb, cp, T):
 
 
 def build_props_probe(dst, ions, close_by, dataset_text, policy):
-    #  without the case's postProcessDict: a probe changes the ions its figures
-    #  name, and those figures are check_postprocessing's (DEV.md 4c C147)
+    #  without the case's views: a probe changes the ions its figures name, and
+    #  those figures are check_postprocessing's (DEV.md 4c C147, C149)
     shutil.copytree(PROPS_CASE, dst, ignore=shutil.ignore_patterns(
-        "log.*", "expected", "reports", "postProcessDict", "postProcessing"))
+        "log.*", "expected", "reports", "postProcessing"))
     (dst / "constant" / "experimental" / "probe.dat").write_text(dataset_text)
     pd = dst / "system" / "propsDict"
-    t = pd.read_text()
+    t = strip_views(pd.read_text())
     t = re.sub(r"ions\s*\([^)]*\);", "ions ( " + " ".join(ions) + " );", t)
     t = re.sub(r"closeBy\s+\w+;", ("closeBy " + close_by + ";") if close_by else "", t)
     t = re.sub(r'dataset\s+"[^"]*";', 'dataset "constant/experimental/probe";', t)
@@ -344,7 +346,9 @@ def main():
         def probe_refusal(label, mutate, must_contain):
             dd = tmp / label
             shutil.copytree(PROPS_CASE, dd, ignore=shutil.ignore_patterns(
-                "log.*", "expected", "reports", "postProcessDict", "postProcessing"))
+                "log.*", "expected", "reports", "postProcessing"))
+            pdd = dd / "system" / "propsDict"
+            pdd.write_text(strip_views(pdd.read_text()))
             mutate(dd)
             rc, out = run("choupoProps", dd)
             missing = [m for m in must_contain if m not in out]

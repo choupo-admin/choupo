@@ -56,7 +56,7 @@ Description
 #include "core/DictCanonical.H"
 #include "core/Dictionary.H"
 #include "result/ResultEmitter.H"
-#include "postProcessing/postProcessDict/PostProcessDict.H"
+#include "postProcessing/views/Views.H"
 #include "core/ThermoResolution.H"
 #include "core/Units.H"
 #include "curation/AqueousGraph.H"
@@ -616,23 +616,21 @@ try
     std::vector<OpResult> opResults;
     std::map<std::string, std::vector<std::string>> opBlocks;
 
-    //  THE POST-PROCESSING DICTIONARY (DEV.md 4c C147), PARSED BEFORE THE
-    //  OPERATIONS RUN: what the dict alone can refute -- its grammar, a
-    //  reference file, an operation the propsDict does not declare -- is
-    //  refused before the run it guards is spent.  Its names of published
-    //  things are resolved after the operations (postProcessDict::Reader::evaluate).
-    std::unique_ptr<postProcessDict::Reader> plotReader;
-    std::vector<postProcessDict::Publication> publications;
-    if (std::filesystem::exists("system/postProcessDict"))
+    //  THE VIEWS (DEV.md 4c C147/C149): the propsDict's `views` and
+    //  `references`, PARSED BEFORE THE OPERATIONS RUN -- what the dict alone
+    //  can refute (the grammar, a reference file, an operation the propsDict
+    //  does not declare) is refused before the run it guards is spent.  Each
+    //  operation's default views and every name of a published thing are
+    //  resolved after them (views::Reader::evaluate).
+    std::vector<views::Publication> publications;
+    std::unique_ptr<views::Reader> viewReader;
     {
         std::vector<std::string> declared;
         for (std::size_t k = 0; k < opsList.size(); ++k)
             declared.push_back(opsList[k]->lookupWordOrDefault("name",
                 opsList[k]->lookupWord("type") + "_" + std::to_string(k)));
-        plotReader = std::make_unique<postProcessDict::Reader>("system/postProcessDict", declared);
+        viewReader = std::make_unique<views::Reader>(propsDict, declared);
     }
-    else
-        postProcessDict::clearStale();
     for (std::size_t k = 0; k < opsList.size(); ++k)
     {
         const auto& opDict = opsList[k];
@@ -696,10 +694,15 @@ try
 
         opResults.push_back({ opName, opType, diags, opProv,
                               op->headline(), op->curation() });
-        if (plotReader)
         {
-            postProcessDict::Publication pub{ opName, opType, diags, {}, op->publishedTables() };
-            for (const auto& kv : diags) pub.units[kv.first] = op->diagnosticUnit(kv.first);
+            views::Publication pub{ opName, opType, diags, {}, {}, op->publishedTables(), {} };
+            for (const auto& kv : diags)
+            {
+                pub.units[kv.first] = op->diagnosticUnit(kv.first);
+                const std::string lab = op->diagnosticLabel(kv.first);
+                if (!lab.empty()) pub.labels[kv.first] = lab;
+            }
+            pub.defaultViews = op->defaultViews(opName);
             publications.push_back(std::move(pub));
         }
         //  The op's OWN top-level block, if it publishes one (2026-10-20,
@@ -921,8 +924,7 @@ try
     //  After every operation and every experimental dataset, before the
     //  machine channel opens (its console tables are for a human).
     std::string postProcessingBlock;
-    if (plotReader)
-        postProcessingBlock = plotReader->evaluate(publications, verbosity);
+    postProcessingBlock = viewReader->evaluate(publications, verbosity);
 
     // --- Structured result emitter (JSON) -------------------------------
     // D-c (forum #67/#73): announced BEFORE the JSON stream opens -- an
@@ -1181,7 +1183,7 @@ try
 
     //  The post-processing dictionary's items (DEV.md 4c C147): titles,
     //  units, series roles and sources; the numbers are the CSVs under
-    //  postProcessing/postProcessDict/.  Absent when the case declares no postProcessDict.
+    //  postProcessing/<op>/.  Absent when the run has no view.
     if (!postProcessingBlock.empty())
         std::cout << ",\n  \"postProcessing\": " << postProcessingBlock;
 

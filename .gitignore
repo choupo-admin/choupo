@@ -113,8 +113,8 @@ tutorials/**/postProcessing/
 # covers sectored plants AND archived tutorials/props/old/.  Experimental
 # datasets that ship with a case (rare) live under constant/experimental/
 # and are whitelisted below -- as is constant/reference/, the REFERENCE data a
-# case's system/postProcessDict sets beside its run (another program's numbers, a
-# published table; DEV.md 4c C147): a case INPUT, never a run output.
+# case's views set beside its run (another program's numbers, a published
+# table; DEV.md 4c C147): a case INPUT, never a run output.
 tutorials/**/*.csv
 tutorials/**/balanceTrajectory.meta
 !tutorials/**/constant/experimental/*.csv

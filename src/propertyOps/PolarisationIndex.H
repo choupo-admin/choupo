@@ -74,9 +74,9 @@ Description
     `row`, `J_v_mps`, per ion `C_b_<ion>_molm3`, `C_p_<ion>_molm3`,
     `C_m_<ion>_molm3`, `k_<ion>_mps`, `phi_<ion>`, `Xi_<ion>`, `Gamma_<ion>`,
     `Robs_<ion>` = 1 - C_p/C_b (what the cell measures) and `Rreal_<ion>` =
-    1 - C_p/C_m (what the membrane does), and `xi_Vpm` -- so a
-    `system/postProcessDict` draws one series per ion over the rows (the
-    paper's Fig. 7) instead of a list of keys.  Nothing here is a fit: the
+    1 - C_p/C_m (what the membrane does), and `xi_Vpm` -- so a view (its
+    defaults below, or the propsDict's `views`) draws one series per ion
+    over the rows (the paper's Fig. 7) instead of a list of keys.  Nothing here is a fit: the
     correlation's constants and the ions' D are the case's inputs, the
     Gamma are predictions, and the bench says which is which.
 \*---------------------------------------------------------------------------*/
@@ -103,11 +103,16 @@ public:
     { return { "n_rows", "chargeResidual_max", "Re" }; }
     std::vector<PublishedTable> publishedTables() const override { return tables_; }
     std::string diagnosticUnit(const std::string& key) const override;
+    //  DEFAULT VIEWS (DEV.md 4c C149): Gamma of every ion row by row, the
+    //  observed (from the data) and real (from the wall) rejections, and the
+    //  dataset with the model's answer as a table.
+    std::string defaultViews(const std::string& opName) const override;
 
 private:
     inline static const std::string type_ = "polarisationIndex";
     std::map<std::string, scalar> diag_;
     std::vector<PublishedTable> tables_;
+    std::vector<std::string> ions_;
 };
 
 } // namespace Choupo

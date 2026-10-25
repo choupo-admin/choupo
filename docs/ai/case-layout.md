@@ -14,14 +14,13 @@ are the source of truth.
 │   ├── flowsheetDict        REQUIRED for solve/batch/ctrl --
 │   │                                   topology (units + connections)
 │   ├── propsDict            REQUIRED for choupoProps INSTEAD of
-│   │                                   flowsheetDict
+│   │                                   flowsheetDict (+ its `views`:
+│   │                                   dict-syntax.md, "Views")
 │   ├── solverDict           OPTIONAL  per-unit-op solver options
 │   ├── outerDict            OPTIONAL  outer driver (sweep /
 │   │                                   optimization / DesignSpec)
-│   ├── layoutDict           OPTIONAL  the plot plan of the SIZED items
-│   │                                   (bin/choupo-layout --draft)
-│   └── postProcessDict             OPTIONAL  plots + tables over published numbers
-│                                       (choupoProps; dict-syntax.md)
+│   └── layoutDict           OPTIONAL  the plot plan of the SIZED items
+│                                       (bin/choupo-layout --draft)
 ├── constant/
 │   ├── thermoPhysPropDict   REQUIRED; the thermophysical system (v2
 │   │                          grammar).  Declares `recordType
@@ -112,7 +111,7 @@ MAIN/SECTORS    where we are in the plant
 converged       where we ended       (the same two halves, solved)      [run output]
 design          how big the equipment is (one sheet per item)           [run output]
 iterations      how the solver got there (numerical history, never physical time)  [run output]
-postProcessing  what we report       (with `reportsLayout postProcessing;`; else reports/)  [run output]
+postProcessing  what we report       (with `reportsLayout postProcessing;`; else reports/; choupoProps: every op's views)  [run output]
 ```
 
 `0/` and `converged/` carry the plant's WHOLE geography —

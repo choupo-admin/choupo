@@ -7,9 +7,9 @@ the REFERENCE data its post-processing dictionary sets beside Choupo's.
 
 WHY (2026-10-24, DEV.md 4c C147).  The case
 tutorials/props/membrane/nanofiltran_geraldesAlves2008 generates the NanoFiltran
-paper's tables and figures with `system/postProcessDict`, and a plot of Choupo against
+paper's tables and figures with its propsDict `views`, and a plot of Choupo against
 NanoFiltran needs NanoFiltran's numbers IN the case: a case is self-contained,
-and a reference a postProcessDict reads lives under its constant/.  Their ONE home
+and a reference a view reads lives under its constant/.  Their ONE home
 stays here -- paper.tsv and fig4_profiles.tsv (regenerate_paper.py), reference.tsv
 (regenerate.py), and the digitised Fig. 3 CSV the case already carries -- and the
 case files are a DECLARED projection of them: re-keyed, never recomputed, except

@@ -2566,7 +2566,10 @@
   "tutorials/props/membrane/nanofiltran_geraldesAlves2008": {
    "application": "choupoProps",
    "ops": [
-    "poreTransport"
+    "poreTransport",
+    "profile",
+    "series",
+    "table"
    ],
    "thermo": {
     "formulation": "gammaPhi",
@@ -2582,7 +2585,8 @@
   "tutorials/props/membrane/polarisation01_geraldes_afonso_table1": {
    "application": "choupoProps",
    "ops": [
-    "polarisationIndex"
+    "polarisationIndex",
+    "series"
    ],
    "thermo": {
     "formulation": "gammaPhi",
@@ -9035,6 +9039,9 @@
    "ppr78Kij": [
     "tutorials/props/molecular/ppr78Kij01_ch4_co2_h2"
    ],
+   "profile": [
+    "tutorials/props/membrane/nanofiltran_geraldesAlves2008"
+   ],
    "propertyPoint": [
     "tutorials/props/compare/acetone01_ipa_water_azeotrope",
     "tutorials/props/compare/acetone04_acetone_water_vle",
@@ -9111,6 +9118,10 @@
     "tutorials/props/electrolyte/softener_brackish",
     "tutorials/props/thermoTest/model4_speciation_scaling"
    ],
+   "series": [
+    "tutorials/props/membrane/nanofiltran_geraldesAlves2008",
+    "tutorials/props/membrane/polarisation01_geraldes_afonso_table1"
+   ],
    "solubilityParameter": [
     "tutorials/props/molecular/solubility01_hildebrand_ladder"
    ],
@@ -9130,6 +9141,9 @@
    ],
    "steamTables": [
     "tutorials/props/steam/steam01_if97_verification"
+   ],
+   "table": [
+    "tutorials/props/membrane/nanofiltran_geraldesAlves2008"
    ],
    "thielePellet": [
     "tutorials/props/reactor/thiele01_sphere_first_order",

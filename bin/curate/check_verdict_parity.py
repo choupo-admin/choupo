@@ -15,6 +15,14 @@ the five verdicts a SECOND time, in TypeScript:
                                                 verdict reached the machine
                                                 channel and the fit panel began
                                                 drawing it
+    gui/src/ui/FitStatsPanel.tsx                CURATION_COLOUR{} -- the
+                                                FIFTH, a colour per verdict,
+                                                drawn by the fit panel and the
+                                                props review screen's verdict
+                                                strip (DEV.md 4c C149); held
+                                                here since that day, when it
+                                                was found unchecked inside the
+                                                panel as `cColor`
 
 That is a scientific vocabulary with three homes -- FOUR since 2026-09-04, when
 the fit panel began drawing them too -- and the GUI tests could not
@@ -38,7 +46,7 @@ engine can no longer produce.  Both directions fail here.
 
 WHAT THIS GATE CHECKS.
 
-  (a) SET PARITY, FOUR ways.  The literals returned by verdictOf(), the
+  (a) SET PARITY, FIVE ways.  The literals returned by verdictOf(), the
       members of the TS union, and the keys of the renderer's table must be
       the SAME set.  Checked in both directions, because the two failures are
       different lies: a value only in C++ is a verdict the GUI cannot draw
@@ -229,6 +237,13 @@ def ts_fit_keys(text: str) -> set:
     return set(re.findall(r"^\s*([A-Za-z]+):", m.group(1), re.M)) if m else set()
 
 
+def ts_colour_keys(text: str) -> set:
+    """The verdict colour table -- one colour per verdict either surface draws."""
+    m = re.search(r"export const CURATION_COLOUR: Record<string, string> = \{(.*?)\n\};",
+                  text, re.S)
+    return set(re.findall(r"([A-Za-z]+)\s*:", m.group(1))) if m else set()
+
+
 def main() -> int:
     failures = []
 
@@ -236,13 +251,15 @@ def main() -> int:
     union = ts_union(TS_UNION.read_text())
     render = ts_render_keys(TS_RENDER.read_text())
     fitkeys = ts_fit_keys(TS_FIT.read_text())
+    colours = ts_colour_keys(TS_FIT.read_text())
 
     #  An empty harvest is a gate that cannot run, and a check that cannot run
     #  must not pass (the check_true_ions lesson, 2026-08-05).
     for label, got, path in (("verdictOf()", cpp, CPP),
                              ("CurationVerdict union", union, TS_UNION),
                              ("VERDICT renderer table", render, TS_RENDER),
-                             ("fit panel cMeans table", fitkeys, TS_FIT)):
+                             ("fit panel cMeans table", fitkeys, TS_FIT),
+                             ("CURATION_COLOUR table", colours, TS_FIT)):
         if not got:
             failures.append(
                 f"harvested NOTHING from {label} ({path.relative_to(ROOT)}) -- "
@@ -271,6 +288,12 @@ def main() -> int:
                 f"the engine can publish and the panel cannot explain draws a "
                 f"grey badge with no sentence beside it -- the reader sees a "
                 f"word and is told nothing about what it means.")
+        if cpp != colours:
+            failures.append(
+                f"verdictOf() and CURATION_COLOUR disagree: "
+                f"only in C++ {sorted(cpp - colours) or '-'}, "
+                f"only in the table {sorted(colours - cpp) or '-'}.  A verdict "
+                f"with no colour draws grey, which reads as 'no claim'.")
 
     #  (b) THE CENSUS -- zero exceptions.  Any output string in src/ carrying
     #  the bare word must live in a file that CONSUMES a partition.
@@ -303,10 +326,11 @@ def main() -> int:
 
     print(f"check_verdict_parity: OK -- the {len(cpp)} curation verdicts "
           f"({', '.join(sorted(cpp))}) are spelled identically in "
-          f"all FOUR of their homes -- CurationDossier.cpp (the authority), "
-          f"the TS union, the Component Inspector's renderer table and the fit "
-          f"panel's meaning table, the last added 2026-09-04 when the verdict "
-          f"reached the machine channel; every "
+          f"all FIVE of their homes -- CurationDossier.cpp (the authority), "
+          f"the TS union, the Component Inspector's renderer table, the fit "
+          f"panel's meaning table (added 2026-09-04 when the verdict reached "
+          f"the machine channel) and the verdict colour table the fit panel "
+          f"and the props review screen draw (held since 2026-10-24); every "
           f"human-visible \"validation\" in src/ ({scanned} file(s) carry the "
           f"word in an output string) sits where a partition is CONSUMED.  Does NOT check the dossier's written JSON, nor whether "
           f"a verdict is correct for a given fit.")

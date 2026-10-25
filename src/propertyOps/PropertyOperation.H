@@ -140,17 +140,33 @@ public:
 
     // NAMED TABLES THE OP PUBLISHES (2026-10-24, DEV.md 4c C147): a profile,
     // a per-point table -- rows under named columns with units -- that a
-    // post-processing dictionary (`system/postProcessDict`) names and draws.  Empty
+    // view (the propsDict's `views ( ... )`, or the op's own defaults) names
+    // and draws.  Empty
     // (the default) MEANS "this op publishes no table".  A table is an
     // IN-MEMORY publication: a CSV the op writes is a projection of it, never
     // a second reader's source.
     virtual std::vector<PublishedTable> publishedTables() const { return {}; }
 
     // THE UNIT OF A DIAGNOSTIC, where the op knows it ("-" dimensionless;
-    // empty = not published).  A postProcessDict axis declaring a unit is held to
-    // it; a diagnostic with no published unit takes the axis's declared unit
-    // as the author's statement, and the sidecar says so.
+    // empty = not published).  A view's axis declaring a unit is held to it;
+    // a diagnostic with no published unit takes the axis's declared unit as
+    // the author's statement, and the sidecar says so.
     virtual std::string diagnosticUnit(const std::string& /*key*/) const
+    { return {}; }
+
+    // WHAT A DIAGNOSTIC IS CALLED, where its key does not say it (a fit's
+    // fit.<i>.value is the parameter at the i-th declared path); empty = the
+    // key is its own name.  A label only: a view still names the KEY.
+    virtual std::string diagnosticLabel(const std::string& /*key*/) const
+    { return {}; }
+
+    // THE OP'S OWN DEFAULT VIEWS (DEV.md 4c C149), as entries of the
+    // propsDict's `views ( ... )` grammar (src/postProcessing/views/Views.H),
+    // `opName` being the name the case gave this op: the figures a reviewer
+    // needs with nothing declared (a bench's model curves, a dataset's
+    // per-row quantities).  Empty = none of its own; any fit also earns the
+    // generic parity, residuals and parameter table from what it publishes.
+    virtual std::string defaultViews(const std::string& /*opName*/) const
     { return {}; }
 
     // Optional setters used by ops that need to RE-BUILD the thermoPackage

@@ -27,14 +27,16 @@ License
 \*---------------------------------------------------------------------------*/
 
 /*---------------------------------------------------------------------------*\
-  postProcessing -- THE POST-PROCESSING DICTIONARY, AS THE GUI READS IT
-  (DEV.md 4c C147).
+  postProcessing -- A PROPS RUN'S VIEWS, AS THE GUI READS THEM
+  (DEV.md 4c C147, C149).
 
-  A case's `system/postProcessDict` declares named plots and tables over what the
-  run PUBLISHES; the ENGINE resolves every name, checks every unit, computes
-  every difference and writes `postProcessing/postProcessDict/<name>.csv` beside a
-  description that rides the result JSON's `postProcessing` block.  This
-  module is the GUI's half, and it COMPUTES NOTHING:
+  Every props operation publishes its DEFAULT views (a fit its parity,
+  residuals and parameters; a bench its curves) and a case's propsDict adds
+  its own in `views ( ... )`; the ENGINE resolves every name, checks every
+  unit, computes every difference and writes `postProcessing/<op>/<view>.csv`
+  (`postProcessing/case/` for a view across operations) beside a description
+  that rides the result JSON's `postProcessing` block.  This module is the
+  GUI's half, and it COMPUTES NOTHING:
 
     * `shapePostProcessing` polices the TYPES of the block (an item with no
       name, kind or file is dropped, never guessed);
@@ -49,6 +51,16 @@ License
 
 export interface PostAxis { label: string; unit: string; scale: "linear" | "log" }
 
+/** Where a view comes from and what it is: the op it belongs to ("" = the
+ *  case), whether the op published it by default or the propsDict declared it,
+ *  and its declared type. */
+export interface PostOrigin {
+  op: string;
+  origin: "default" | "declared";
+  /** series | profile | parity | residuals | table */
+  type: string;
+}
+
 export interface PostSeries {
   name: string;
   label: string;
@@ -56,6 +68,8 @@ export interface PostSeries {
   role: string;
   /** lines | markers | linesMarkers, or "" for the role's default */
   style: string;
+  /** series sharing a group share a colour (one ion across sources); "" none */
+  group: string;
   source: string;
   xUnit: string;
   yUnit: string;
@@ -63,11 +77,19 @@ export interface PostSeries {
   points: number;
 }
 
-export interface PostColumn { name: string; label: string; unit: string; role?: string; source?: string }
+export interface PostColumn {
+  name: string; label: string; unit: string; role?: string; source?: string;
+  /** a series-table column that is a RELATIVE difference (drawn as a percentage) */
+  relative?: boolean;
+}
 
-export interface PostRow { name: string; label: string; role: string; source: string; relative: boolean }
+export interface PostRow {
+  name: string; label: string; role: string; source: string; relative: boolean;
+  /** a row's own unit (a parameter table: each parameter its own); "" none */
+  unit: string;
+}
 
-export interface PostPlot {
+export interface PostPlot extends PostOrigin {
   kind: "plot";
   name: string;
   title: string;
@@ -77,7 +99,7 @@ export interface PostPlot {
   series: PostSeries[];
 }
 
-export interface PostSeriesTable {
+export interface PostSeriesTable extends PostOrigin {
   kind: "table";
   shape: "series";
   name: string;
@@ -87,7 +109,7 @@ export interface PostSeriesTable {
   columns: PostColumn[];
 }
 
-export interface PostRowsTable {
+export interface PostRowsTable extends PostOrigin {
   kind: "table";
   shape: "rows";
   name: string;
@@ -105,6 +127,8 @@ export interface PostProcessingBlock {
   source: string;
   directory: string;
   references: PostReference[];
+  /** each op's default declarations, as the engine wrote them (its grammar) */
+  defaults: { op: string; declaration: string }[];
   items: PostItem[];
 }
 
@@ -125,33 +149,40 @@ export function shapePostProcessing(raw: unknown): PostProcessingBlock | undefin
   for (const it of arr(r.items)) {
     const name = str(it?.name), file = str(it?.file), title = str(it?.title);
     if (!name || !file) continue;
+    const from: PostOrigin = {
+      op: str(it.op), origin: it.origin === "default" ? "default" : "declared",
+      type: str(it.type) || (it.kind === "plot" ? "series" : "table"),
+    };
     if (it.kind === "plot") {
       items.push({
+        ...from,
         kind: "plot", name, title, file, xAxis: axis(it.xAxis), yAxis: axis(it.yAxis),
         series: arr(it.series).filter((s) => typeof s?.name === "string").map((s) => ({
           name: s.name, label: str(s.label) || s.name, role: str(s.role), style: str(s.style),
-          source: str(s.source), xUnit: str(s.x?.unit), yUnit: str(s.y?.unit),
+          group: str(s.group), source: str(s.source), xUnit: str(s.x?.unit), yUnit: str(s.y?.unit),
           yError: s.yError === true, points: typeof s.points === "number" ? s.points : 0,
         })),
       });
     } else if (it.kind === "table" && it.shape === "series") {
       items.push({
+        ...from,
         kind: "table", shape: "series", name, title, file,
         x: { label: str(it.x?.label), unit: str(it.x?.unit) },
         columns: arr(it.columns).filter((c) => typeof c?.name === "string").map((c) => ({
           name: c.name, label: str(c.label) || c.name, unit: str(c.unit),
-          role: str(c.role), source: str(c.source),
+          role: str(c.role), source: str(c.source), relative: c.relative === true,
         })),
       });
     } else if (it.kind === "table" && it.shape === "rows") {
       items.push({
+        ...from,
         kind: "table", shape: "rows", name, title, file,
         columns: arr(it.columns).filter((c) => typeof c?.name === "string").map((c) => ({
           name: c.name, label: str(c.label) || c.name, unit: str(c.unit),
         })),
         rows: arr(it.rows).filter((w) => typeof w?.name === "string").map((w) => ({
           name: w.name, label: str(w.label) || w.name, role: str(w.role),
-          source: str(w.source), relative: w.relative === true,
+          source: str(w.source), relative: w.relative === true, unit: str(w.unit),
         })),
       });
     }
@@ -161,6 +192,9 @@ export function shapePostProcessing(raw: unknown): PostProcessingBlock | undefin
     source: str(r.source), directory: str(r.directory),
     references: arr(r.references).filter((x) => typeof x?.name === "string").map((x) => ({
       name: x.name, file: str(x.file), role: str(x.role), citation: str(x.citation),
+    })),
+    defaults: arr(r.defaults).filter((d) => typeof d?.op === "string").map((d) => ({
+      op: d.op, declaration: str(d.declaration),
     })),
     items,
   };
@@ -219,4 +253,23 @@ export function formatCell(v: number | null, relative = false): string {
   const a = Math.abs(v);
   if (a !== 0 && (a < 1e-3 || a >= 1e6)) return v.toExponential(5);
   return Number(v.toPrecision(6)).toString();
+}
+
+/** The views in the order a reviewer reads them: what the propsDict DECLARED
+ *  first (the figures the case's author chose, a paper's), in declaration
+ *  order; then each operation's defaults, op by op in the order the run
+ *  published them.  Each group carries its op ("" = across operations). */
+export interface ViewGroup { op: string; origin: "declared" | "default"; items: PostItem[] }
+
+export function viewGroups(block: PostProcessingBlock): ViewGroup[] {
+  const out: ViewGroup[] = [];
+  const declared = block.items.filter((i) => i.origin === "declared");
+  if (declared.length > 0) out.push({ op: "", origin: "declared", items: declared });
+  for (const it of block.items) {
+    if (it.origin !== "default") continue;
+    const g = out.find((x) => x.origin === "default" && x.op === it.op);
+    if (g) g.items.push(it);
+    else out.push({ op: it.op, origin: "default", items: [it] });
+  }
+  return out;
 }

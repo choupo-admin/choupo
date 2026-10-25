@@ -440,7 +440,7 @@ export function extractStructured(log: string,
   building?: GmpBuilding;
   /** The phase-split scans a choupoProps run published (DEV.md 4c C118). */
   phaseSplitScans?: PhaseSplitScanBlock[];
-  /** The case's system/postProcessDict items (DEV.md 4c C147), as the engine wrote them. */
+  /** The run's views (DEV.md 4c C147, C149), as the engine wrote them. */
   postProcessing?: PostProcessingBlock;
 } {
   const beginIdx = log.lastIndexOf(BEGIN_MARK);
@@ -687,8 +687,8 @@ export function extractStructured(log: string,
 //  the TYPES policed by the lens's own module, nothing computed.
 ...(shapePhaseSplitScans(parsed.phaseSplitScans).length > 0
       ? { phaseSplitScans: shapePhaseSplitScans(parsed.phaseSplitScans) } : {}),
-//  The post-processing dictionary (DEV.md 4c C147): the description only --
-//  the numbers are the harvested postProcessing/postProcessDict/<name>.csv files.
+//  The run's views (DEV.md 4c C147, C149): the description only -- the
+//  numbers are the harvested postProcessing/<op>/<view>.csv files.
 ...(shapePostProcessing(parsed.postProcessing)
       ? { postProcessing: shapePostProcessing(parsed.postProcessing)! } : {}),
   };
@@ -1141,7 +1141,7 @@ interface ResultPayload {
   building?: unknown;
   /** The phase-split scans (DEV.md 4c C118), shaped by case/phaseSplitScan. */
   phaseSplitScans?: unknown;
-  /** The postProcessDict items (DEV.md 4c C147), shaped by case/postProcessing. */
+  /** The run's views (DEV.md 4c C147, C149), shaped by case/postProcessing. */
   postProcessing?: unknown;
   version: number;
   converged: boolean;

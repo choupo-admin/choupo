@@ -47,6 +47,12 @@ License
       │                    selected item's detail                     │
       └──────────────────────────────────────────────────────────────┘
 
+  A PROPS-ONLY case (a propsDict, no flowsheet) lands on the REVIEW SCREEN
+  instead (ReviewScreen, DEV.md 4c C149): what each operation did, its
+  figures and tables, and THIS surface whole in a collapsed Audit below them
+  -- the thermo readiness shown on the screen itself only where the case
+  creates or estimates a component.
+
   The FIRST, default pill is the thermo READINESS (component coverage + binary
   pair matrix) -- "is my thermo ready for a process, and what's a gap".  Every
   comparison overlays model curves with the raw lab data (red points), so the
@@ -109,6 +115,8 @@ import {
 } from "./plotting/CsvAutoPlot.js";
 import { Plot, PLOT_CONFIG, PLOT_COLORS, darkLayout } from "./plotting/plotly.js";
 import { GibbsMapPanel } from "./GibbsMapPanel.js";
+import { ReviewScreen } from "./ReviewScreen.js";
+import { readinessProminent } from "../case/reviewScreen.js";
 import { propsOpHelpLink, propsTheoryLink } from "../case/modelDocs.js";
 import { ThermoView } from "./ThermoView.js";
 import { guideUrl, openGuide } from "../help/guideLinks.js";
@@ -349,7 +357,10 @@ function buildTargetItems(opts: {
 
   // constant/ CSVs are the case's curated INPUT datasets (cited experimental
   // tables), not run results -- they feed overlays, never standalone panels.
-  const modelCsvNames = csvNames.filter((n) => !n.startsWith("exp_") && !n.startsWith("constant/"));
+  // postProcessing/ CSVs are the run's VIEWS, drawn by the review screen
+  // from their own description -- never re-plotted here as anonymous scans.
+  const modelCsvNames = csvNames.filter((n) => !n.startsWith("exp_") && !n.startsWith("constant/")
+    && !n.startsWith("postProcessing/"));
   const expCsvNames = csvNames.filter((n) => n.startsWith("exp_"));
   const consumed = new Set<string>();
 
@@ -721,6 +732,54 @@ export function PropsView() {
     return () => window.removeEventListener("keydown", onKey);
   }, [theoryHref]);
 
+  // The NAVIGATOR: pills (grouped) over the selected item's full-width detail
+  // -- a flowsheet case's whole body, a props-only case's Audit.
+  const reviewOps = (targets[0]?.propsDict?.["operations"] ?? []) as JsonDict[];
+  const navigator = (
+    <Box style={{ flex: 1, minHeight: 0, display: "flex", flexDirection: "column" }}>
+      <Group justify="space-between" gap="md" px="md" py={6} wrap="nowrap"
+        style={{ flex: "0 0 auto", borderBottom: "1px solid light-dark(var(--mantine-color-gray-3), var(--mantine-color-dark-5))",
+                 background: "light-dark(var(--mantine-color-white), var(--mantine-color-dark-8))" }}>
+        <Group gap="lg" wrap="wrap" style={{ flex: 1, minWidth: 0 }}>
+          {showNav ? GROUP_ORDER.map((g) => {
+            const gi = items.filter((i) => i.group === g);
+            if (gi.length === 0) return null;
+            return (
+              <Group key={g} gap={4} wrap="nowrap" align="center">
+                <Text size="10px" c="dimmed" tt="uppercase" fw={700} style={{ letterSpacing: 0.4 }}>
+                  {GROUP_LABEL[g] ?? g}
+                </Text>
+                {gi.map((i) => (
+                  <Button key={i.key} size="compact-xs" radius="xl"
+                    variant={i.key === selectedKey ? "filled" : "default"}
+                    color={i.key === selectedKey ? "cyan" : "gray"}
+                    onClick={() => setSelectedKey(i.key)}>
+                    <Text size="xs" ff="monospace">{i.label}</Text>
+                  </Button>
+                ))}
+              </Group>
+            );
+          }) : selectedItem && (
+            <Text size="10px" c="dimmed" tt="uppercase" fw={700} style={{ letterSpacing: 0.4 }}>
+              {GROUP_LABEL[selectedItem.group] ?? selectedItem.group}
+            </Text>
+          )}
+        </Group>
+        {theoryHref && (
+          <Anchor href={theoryHref} target="_blank" rel="noopener" c="accent.4"
+            style={{ flex: "0 0 auto" }} title="Open the Properties Guide at this section">
+            <Group gap={4} wrap="nowrap" align="center">
+              <IconExternalLink size={13} /><Text size="xs">Theory</Text>
+            </Group>
+          </Anchor>
+        )}
+      </Group>
+      <Box style={{ flex: 1, minWidth: 0, minHeight: 0, position: "relative" }}>
+        {selectedItem?.node}
+      </Box>
+    </Box>
+  );
+
   return (
     <Box style={{ width: "100%", height: "100%", display: "flex", flexDirection: "column",
       background: "light-dark(var(--mantine-color-gray-0), var(--mantine-color-dark-7))" }}>
@@ -836,49 +895,16 @@ export function PropsView() {
         </Group>
       </Box>
 
-      {/* Body: pills (grouped) over the selected item's full-width detail. */}
-      <Box style={{ flex: 1, minHeight: 0, display: "flex", flexDirection: "column" }}>
-        <Group justify="space-between" gap="md" px="md" py={6} wrap="nowrap"
-          style={{ flex: "0 0 auto", borderBottom: "1px solid light-dark(var(--mantine-color-gray-3), var(--mantine-color-dark-5))",
-                   background: "light-dark(var(--mantine-color-white), var(--mantine-color-dark-8))" }}>
-          <Group gap="lg" wrap="wrap" style={{ flex: 1, minWidth: 0 }}>
-            {showNav ? GROUP_ORDER.map((g) => {
-              const gi = items.filter((i) => i.group === g);
-              if (gi.length === 0) return null;
-              return (
-                <Group key={g} gap={4} wrap="nowrap" align="center">
-                  <Text size="10px" c="dimmed" tt="uppercase" fw={700} style={{ letterSpacing: 0.4 }}>
-                    {GROUP_LABEL[g] ?? g}
-                  </Text>
-                  {gi.map((i) => (
-                    <Button key={i.key} size="compact-xs" radius="xl"
-                      variant={i.key === selectedKey ? "filled" : "default"}
-                      color={i.key === selectedKey ? "cyan" : "gray"}
-                      onClick={() => setSelectedKey(i.key)}>
-                      <Text size="xs" ff="monospace">{i.label}</Text>
-                    </Button>
-                  ))}
-                </Group>
-              );
-            }) : selectedItem && (
-              <Text size="10px" c="dimmed" tt="uppercase" fw={700} style={{ letterSpacing: 0.4 }}>
-                {GROUP_LABEL[selectedItem.group] ?? selectedItem.group}
-              </Text>
-            )}
-          </Group>
-          {theoryHref && (
-            <Anchor href={theoryHref} target="_blank" rel="noopener" c="accent.4"
-              style={{ flex: "0 0 auto" }} title="Open the Properties Guide at this section">
-              <Group gap={4} wrap="nowrap" align="center">
-                <IconExternalLink size={13} /><Text size="xs">Theory</Text>
-              </Group>
-            </Anchor>
-          )}
-        </Group>
-        <Box style={{ flex: 1, minWidth: 0, minHeight: 0, position: "relative" }}>
-          {selectedItem?.node}
+      {/* Body: a props-only case's REVIEW SCREEN, the navigator whole in its
+          Audit; a flowsheet case's navigator as it was. */}
+      {!hasFlowsheet && hasProps ? (
+        <Box style={{ flex: 1, minHeight: 0, position: "relative" }}>
+          <ReviewScreen ops={reviewOps} result={runs.get(targets[0]?.caseName ?? "")}
+            readiness={readinessProminent(reviewOps)
+              ? <Box style={{ position: "absolute", inset: 0 }}><ThermoView /></Box> : undefined}
+            audit={navigator} />
         </Box>
-      </Box>
+      ) : navigator}
     </Box>
   );
 }

@@ -97,8 +97,8 @@ Description
     count the pore was solved on (the abscissa of a grid study).  Every
     diagnostic publishes its unit (diagnosticUnit).
 
-    PUBLISHED TABLES (DEV.md 4c C147), named so a `system/postProcessDict` draws
-    them: `points`, one row per J_v point carrying the per-point diagnostics
+    PUBLISHED TABLES (DEV.md 4c C147), named so a view (the propsDict's
+    `views`, or this op's defaults) draws them: `points`, one row per J_v point carrying the per-point diagnostics
     as columns (c_bulk_/c_wall_/c_perm_<ion>_molm3, Rreal_/Robs_<ion>, and
     dPsi_m_V, poreNewton, poreNodes where a pore was solved); and `pore`,
     every point's solved pore -- point, Jv_mps, node, xi, x_um,
@@ -128,11 +128,20 @@ public:
     { return { "n_points", "permeateCharge_max" }; }
     std::vector<PublishedTable> publishedTables() const override { return tables_; }
     std::string diagnosticUnit(const std::string& key) const override;
+    //  DEFAULT VIEWS (DEV.md 4c C149): the observed rejection of every ion
+    //  against J_v where the op ran two points or more, and -- where the op
+    //  writes its profile -- the ions and the potential across the pore of
+    //  its last point.
+    std::string defaultViews(const std::string& opName) const override;
 
 private:
     inline static const std::string type_ = "poreTransport";
     std::map<std::string, scalar> diag_;
     std::vector<PublishedTable> tables_;
+    std::vector<std::string> ions_;          // the ion species, first-appearance order
+    std::vector<std::string> poreIons_;      // those the pore carries (an excluded one does not)
+    std::size_t nPoints_ = 0;
+    bool profileWritten_ = false;
 };
 
 } // namespace Choupo

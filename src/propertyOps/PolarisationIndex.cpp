@@ -222,6 +222,8 @@ int PolarisationIndex::run(const DictPtr& dict,
     //  The `rows` table (DEV.md 4c C147): the same numbers as the per-row
     //  diagnostics and the console, one row per operating point.
     tables_.clear();
+    ions_.clear();
+    for (std::size_t s = 0; s < n; ++s) ions_.push_back(sol[s].name);
     PublishedTable rowsTab;
     rowsTab.name = "rows";
     rowsTab.description = "one row per measured operating point: the feed, permeate and"
@@ -335,6 +337,32 @@ std::string PolarisationIndex::diagnosticUnit(const std::string& key) const
     if (starts("Gamma_") || key == "Re" || key == "n_rows"
         || key == "chargeResidual_max") return "-";
     return {};
+}
+
+
+std::string PolarisationIndex::defaultViews(const std::string& op) const
+{
+    if (ions_.empty()) return {};
+    std::string gam, rej, tab;
+    for (const auto& i : ions_) gam += " Gamma_" + i;
+    for (const auto& i : ions_)
+        rej += "{ name obs" + i + "; label \"" + i + " observed, 1 - C_p/C_b (data)\"; op " + op
+             + "; table rows; x row; y Robs_" + i + "; style markers; group " + i + "; } "
+               "{ name real" + i + "; label \"" + i + " real, 1 - C_p/C_m (wall)\"; op " + op
+             + "; table rows; x row; y Rreal_" + i + "; style lines; group " + i + "; } ";
+    for (const auto& i : ions_) tab += " C_b_" + i + "_molm3";
+    tab += " J_v_mps";
+    for (const auto& i : ions_) tab += " Gamma_" + i;
+    tab += " xi_Vpm";
+    return "{ name gamma; type series; op " + op + "; table rows; x row; y (" + gam
+         + " ); style linesMarkers; title \"" + op + ": polarisation index of every ion, row by"
+           " row of the dataset\"; xAxis { label \"row of the dataset\"; } yAxis { label"
+           " \"Gamma_i = (C_m - C_b)/C_b\"; } }\n"
+           "{ name rejection; type series; op " + op + "; title \"" + op + ": the rejection the"
+           " data shows (observed) and the one the membrane makes (real)\"; xAxis { label"
+           " \"row of the dataset\"; } yAxis { label \"rejection\"; } series ( " + rej + "); }\n"
+           "{ name rows; type table; op " + op + "; table rows; x row; y (" + tab + " ); title \""
+         + op + ": the dataset row by row and the model's wall\"; }\n";
 }
 
 } // namespace Choupo

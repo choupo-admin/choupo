@@ -181,7 +181,23 @@ private:
     std::vector<std::string> headline_ =
         { "chi2_reduced", "converged", "identifiable" };
 
+    // PUBLISHED TABLE `fitPoints` (DEV.md 4c C149): one row per data point,
+    // `point`, the abscissae (isotherm: p_Pa, T_K; a bubble fit: x_1 and the
+    // fixed coordinate), `measured`, `model` and `residual` (model -
+    // measured; relative for P_bubble), each with its unit -- from which any
+    // fit earns its default parity and residuals views
+    // (src/postProcessing/views), and the parameter table from fit.<p>.*.
+    std::vector<PublishedTable> publishedTables() const override { return tables_; }
+    std::string diagnosticUnit(const std::string& key) const override;
+    std::string diagnosticLabel(const std::string& key) const override;
+    std::string defaultViews(const std::string& opName) const override;
+
 private:
+    std::vector<PublishedTable> tables_;
+    std::vector<std::string> paramPaths_;   // fit.<i>.* is the parameter at paramPaths_[i]
+    std::vector<scalar> isoTemperatures_;   // the distinct T of an isotherm dataset
+    bool isoUnweighted_ = true;              // every sigma the unweighted 1 mol/kg
+
     // residual.kind == isotherm: self-contained analytic-Jacobian LM on the
     // van't Hoff Langmuir surface (no thermoPackage rebuild --- the isotherm
     // record is pair data, not a thermo model).  Declared here, implemented

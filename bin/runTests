@@ -3956,13 +3956,16 @@ PYEOF
     fi
     rm -f /tmp/nanofiltranpaper.$$
 
-    # POST-PROCESSING gate (2026-10-24, DEV.md 4c C147).  A case's
-    # system/postProcessDict declares plots and tables over what the run PUBLISHES;
-    # on the NanoFiltran paper's one case every declared item is produced,
-    # every written number is recomputed from the source the dict names
-    # (this gate's own reading of the dict), the tables meet the golden's
-    # anchors, 13 refusals fire by name, and a stale view is removed.  4
-    # by-hand sabotages in its docstring.
+    # VIEWS gate (2026-10-24, DEV.md 4c C147, C149).  Every props operation
+    # publishes DEFAULT views (a fit its parity, residuals and parameters; a
+    # bench its curves) and a propsDict adds its own in `views ( ... )`, over
+    # what the run PUBLISHES.  On three witnesses (the NanoFiltran paper's one
+    # case, polarisation01, isotherm02) every view is produced and nothing
+    # else, every written number is recomputed from the source the view names
+    # (this gate's own reading of it), the paper's tables meet the golden's
+    # anchors, a fit's defaults are one table whose rms is the op's, 14
+    # refusals fire by name, and a stale view is removed.  6 by-hand sabotages
+    # in its docstring.
     if "$ROOT/bin/curate/check_postprocessing.py" > /tmp/postprocessing.$$ 2>&1; then
         printf "PASS  %-40s  (%s)\n" "postprocessing-gate" "$(grep -m1 '^check_postprocessing: OK' /tmp/postprocessing.$$)"
         pass=$((pass+1))
