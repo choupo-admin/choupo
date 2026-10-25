@@ -176,6 +176,9 @@ export interface OpMapMeta {
   /** How the op's per-point numbers tabulate (case/opPointTable.ts, DEV.md
    *  4c C154): its keys with `{p}` / `{ion}` slots and their labels. */
   pointTable?: PointTableDecl;
+  /** further tables of the same op, drawn after `pointTable` (DEV.md 4c
+   *  C165: the partition at each face, the potentials and the numerics) */
+  pointTables?: PointTableDecl[];
 }
 
 /** The map declaration of an op type, or null where its schema carries none

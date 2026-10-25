@@ -54,7 +54,7 @@ import { IconFileCode, IconHelp } from "@tabler/icons-react";
 import type { OperationResult, RunResult } from "../adapters/SolverAdapter.js";
 import type { PostItem, PostReference } from "../case/postProcessing.js";
 import { operationMapMeta } from "../case/operationSchemas.js";
-import { pointTable } from "../case/opPointTable.js";
+import { pointTable, type PointTableDecl } from "../case/opPointTable.js";
 import {
   domIdOfView, neighbours, viewDomId, viewsOf,
   type MapNode, type MapTarget, type PropsMap,
@@ -169,9 +169,16 @@ function NodeList({ title, ids, map, onSelect }: {
   );
 }
 
-/** The op's numbers as its type tabulates them (case/opPointTable.ts). */
-function PointTableView({ r }: { r: OperationResult }) {
-  const t = pointTable(operationMapMeta(r.type)?.pointTable, r);
+/** The op's numbers as its type tabulates them (case/opPointTable.ts): the
+ *  first table, then any further ones the type declares. */
+function PointTableViews({ r }: { r: OperationResult }) {
+  const meta = operationMapMeta(r.type);
+  const decls = [meta?.pointTable, ...(meta?.pointTables ?? [])];
+  return <>{decls.map((decl, i) => <PointTableView key={i} decl={decl} r={r} />)}</>;
+}
+
+function PointTableView({ decl, r }: { decl: PointTableDecl | undefined; r: OperationResult }) {
+  const t = pointTable(decl, r);
   if (!t) return null;
   const fmt = (v: number | null) => (v === null ? "" : Number(v.toPrecision(6)).toString());
   const head = (c: { label: string; unit: string }) => (c.unit && c.unit !== "-" ? `${c.label} [${c.unit}]` : c.label);
@@ -186,7 +193,7 @@ function PointTableView({ r }: { r: OperationResult }) {
               <Table.Th>point</Table.Th>
               {t.columns.slice(0, t.nPerPoint).map((c, i) =>
                 <Table.Th key={`p${i}`} style={{ whiteSpace: "nowrap" }}>{head(c)}</Table.Th>)}
-              <Table.Th>ion</Table.Th>
+              {t.perIon && <Table.Th>ion</Table.Th>}
               {t.columns.slice(t.nPerPoint).map((c, i) =>
                 <Table.Th key={`i${i}`} style={{ whiteSpace: "nowrap" }}>{head(c)}</Table.Th>)}
             </Table.Tr>
@@ -197,7 +204,7 @@ function PointTableView({ r }: { r: OperationResult }) {
                 <Table.Td ff="monospace">{row.point}</Table.Td>
                 {row.cells.slice(0, t.nPerPoint).map((v, i) =>
                   <Table.Td key={`p${i}`} ff="monospace" ta="right">{fmt(v)}</Table.Td>)}
-                <Table.Td ff="monospace" fw={600}>{row.ion}</Table.Td>
+                {t.perIon && <Table.Td ff="monospace" fw={600}>{row.ion}</Table.Td>}
                 {row.cells.slice(t.nPerPoint).map((v, i) =>
                   <Table.Td key={`i${i}`} ff="monospace" ta="right">{fmt(v)}</Table.Td>)}
               </Table.Tr>
@@ -302,7 +309,7 @@ export function SelectionDetails({ id, map, result, rows, strip, onSelect, onAct
       <Header kind={kind} title={title} detail={detail} onActivate={onActivate}
         help={first.member.target} source={many ? undefined : first.member.source} />
       {kind === "operation" && strip(rows.filter((r) => opNames.includes(r.name)))}
-      {kind === "operation" && !many && results[0] && <PointTableView r={results[0]} />}
+      {kind === "operation" && !many && results[0] && <PointTableViews r={results[0]} />}
       {kind === "operation" && !many && results[0] && (
         <Diagnostics r={results[0]} folded={!!operationMapMeta(results[0].type)?.pointTable} />
       )}

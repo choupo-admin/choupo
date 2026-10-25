@@ -351,14 +351,34 @@ const PROPS_MODEL_DEST: Record<string, ModelDest> = {
   gammaPhi:           { guide: "theory", dest: "ch:fugacity" },
 };
 
+// THE SAME WORD IN ANOTHER SLOT IS ANOTHER EQUATION (DEV.md 4c C165).  The
+// table above is keyed by the bare token, which is right while a token names
+// ONE model wherever it is written -- and wrong for `ideal`: in a package's
+// activity slot it is Raoult's ideal solution (ch:ideal-mixing), but in a
+// DSPM-DE law's `transportParameters.activity` it is the choice of the
+// activity RATIO in the pore's partition at each face (gamma = 1 both sides),
+// and a student who pressed F1 there landed on the Raoult chapter.  So a slot
+// that gives its words their own meaning is resolved here FIRST, keyed
+// "<op type>.<slot key>:<token>"; everything else falls through to the bare
+// token.  The three DSPM-DE activity words all land on the partition
+// equation, whose activity ratio is what each of them chooses.
+const SLOT_MODEL_DEST: Record<string, ModelDest> = {
+  "poreTransport.transportParameters.activity:ideal":              { guide: "theory", dest: "eq:dspmde-partition" },
+  "poreTransport.transportParameters.activity:wallDavies":         { guide: "theory", dest: "eq:dspmde-partition" },
+  "poreTransport.transportParameters.activity:bulkOverPoreDavies": { guide: "theory", dest: "eq:dspmde-partition" },
+};
+
 // A link that opens the theory at the section deriving a given property MODEL
 // (activity / EOS / vapour-pressure / transport / reference-state token), or
 // null if the model has no dedicated section yet.  `model` is the exact dict
 // token (NRTL, SRK, AmbroseWalton, ...) -- the same string the C++ factory
-// dispatches on.
-export function propsModelTheoryLink(model: string): string | null {
+// dispatches on.  `slot`, when the caller knows it, names WHERE the token was
+// written (an op type and its model-slot key): a slot that gives the word its
+// own meaning is resolved first (SLOT_MODEL_DEST).
+export function propsModelTheoryLink(model: string, slot?: { opType: string; key?: string }): string | null {
   if (!model) return null;
-  const m = PROPS_MODEL_DEST[model];
+  const s = slot?.key ? SLOT_MODEL_DEST[`${slot.opType}.${slot.key}:${model}`] : undefined;
+  const m = s ?? PROPS_MODEL_DEST[model];
   if (!m) return null;
   return guideUrl(m.guide === "props" ? "propsGuide" : "theoryGuide", m.dest);
 }

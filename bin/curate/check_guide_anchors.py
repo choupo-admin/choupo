@@ -135,6 +135,10 @@ def main() -> int:
     OBJ_TABLES = [
         ("OP_DEST", r'^\s*"?([A-Za-z0-9_-]+)"?:\s*\{\s*pdf:\s*"([A-Za-z]+)\.pdf",\s*dest:\s*"([^"]+)"', None),
         ("PROPS_MODEL_DEST", r'^\s*"?([A-Za-z0-9_-]+)"?:\s*\{\s*guide:\s*"(theory|props)",\s*dest:\s*"([^"]+)"', {"theory": "theoryGuide", "props": "propsGuide"}),
+        #  The slot-scoped model words (DEV.md 4c C165): keyed
+        #  "<op type>.<slot key>:<token>", so the key is a quoted string with
+        #  dots and a colon in it.
+        ("SLOT_MODEL_DEST", r'^\s*"([^"]+)":\s*\{\s*guide:\s*"(theory|props)",\s*dest:\s*"([^"]+)"', {"theory": "theoryGuide", "props": "propsGuide"}),
     ]
     for table, pattern, alias in OBJ_TABLES:
         m = re.search(r"const " + table + r"\b[^{]*\{(.*?)\n\};", src, re.S)

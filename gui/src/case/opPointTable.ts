@@ -44,6 +44,15 @@ License
   engine wrote it, and every unit is the op's own (`units`, the
   diagnosticUnit the engine publishes beside each number).  A cell the op did
   not publish stays empty.  Nothing is computed.
+
+  TWO WIDENINGS (DEV.md 4c C165), both still reading only what was published:
+  a `perIon` key may OMIT `{p}` -- a number the op publishes once per ion
+  (the pore geometry's lambda, K_d, K_c, Phi_S), repeated on that ion's row
+  at every point -- so the ions and points are read off every key that
+  carries both slots; and a table with NO `perIon` is one row per point (the
+  potentials and the numerics), its points read off its first `perPoint`
+  key.  An op type may declare further tables after the first
+  (`x-choupo.pointTables`).
 \*---------------------------------------------------------------------------*/
 
 import type { OperationResult } from "../adapters/SolverAdapter.js";
@@ -52,7 +61,8 @@ export interface PointTableDecl {
   title: string;
   definitions?: string;
   perPoint?: { key: string; label: string }[];
-  perIon: { key: string; label: string }[];
+  /** absent or empty: one row per point (perPoint only) */
+  perIon?: { key: string; label: string }[];
 }
 
 export interface PointTable {
@@ -60,6 +70,8 @@ export interface PointTable {
   definitions: string;
   /** how many of `columns` are per point (before the ion column) */
   nPerPoint: number;
+  /** false for a per-point table: no ion column */
+  perIon: boolean;
   /** column heads, each with its unit ("" = none published) */
   columns: { label: string; unit: string }[];
   /** one row per (point, ion): the point number, the ion, then the cells */
@@ -71,22 +83,34 @@ const esc = (s: string) => s.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
 /** The table, or null when the op type declares none or published nothing
  *  that matches it. */
 export function pointTable(decl: PointTableDecl | undefined, r: OperationResult | undefined): PointTable | null {
-  if (!decl || !r || !Array.isArray(decl.perIon) || decl.perIon.length === 0) return null;
+  if (!decl || !r) return null;
+  const perIonDecl = Array.isArray(decl.perIon) ? decl.perIon : [];
+  const perPointDecl = Array.isArray(decl.perPoint) ? decl.perPoint : [];
+  const byIon = perIonDecl.length > 0;
   const d = r.diagnostics;
-  const first = decl.perIon[0]!.key;
-  const re = new RegExp("^" + esc(first).replace("\\{ion\\}", "([A-Za-z0-9]+)").replace("\\{p\\}", "(\\d+)") + "$");
-  const ionFirst = first.indexOf("{ion}") < first.indexOf("{p}");
+  //  The ions and points are read off EVERY declared key that carries the
+  //  slots (in declaration order), so a column the op did not publish never
+  //  hides the ones it did.
+  const slotted = byIon
+    ? perIonDecl.filter((c) => c.key.includes("{ion}") && c.key.includes("{p}")).map((c) => c.key)
+    : perPointDecl.filter((c) => c.key.includes("{p}")).map((c) => c.key);
+  if (slotted.length === 0) return null;
   const ions: string[] = [];
   const points = new Set<number>();
-  for (const k of Object.keys(d)) {
-    const m = re.exec(k);
-    if (!m) continue;
-    const ion = ionFirst ? m[1]! : m[2]!;
-    const p = Number(ionFirst ? m[2] : m[1]);
-    if (!ions.includes(ion)) ions.push(ion);
-    points.add(p);
+  for (const pk of slotted) {
+    const ionFirst = pk.indexOf("{ion}") < pk.indexOf("{p}");
+    const re = new RegExp("^" + esc(pk).replace("\\{ion\\}", "([A-Za-z0-9]+)").replace("\\{p\\}", "(\\d+)") + "$");
+    for (const k of Object.keys(d)) {
+      const m = re.exec(k);
+      if (!m) continue;
+      if (!byIon) { points.add(Number(m[1])); continue; }
+      const ion = ionFirst ? m[1]! : m[2]!;
+      const p = Number(ionFirst ? m[2] : m[1]);
+      if (!ions.includes(ion)) ions.push(ion);
+      points.add(p);
+    }
   }
-  if (ions.length === 0) return null;
+  if (points.size === 0 || (byIon && ions.length === 0)) return null;
   const key = (pat: string, p: number, ion = "") => pat.replace("{p}", String(p)).replace("{ion}", ion);
   const unitOf = (pat: string) => {
     for (const p of points) for (const ion of ions.length ? ions : [""]) {
@@ -95,16 +119,17 @@ export function pointTable(decl: PointTableDecl | undefined, r: OperationResult 
     }
     return "";
   };
-  const perPoint = decl.perPoint ?? [];
-  const columns = [...perPoint, ...decl.perIon].map((c) => ({ label: c.label, unit: unitOf(c.key) }));
+  const perPoint = perPointDecl;
+  const columns = [...perPoint, ...perIonDecl].map((c) => ({ label: c.label, unit: unitOf(c.key) }));
   const rows: PointTable["rows"] = [];
   for (const p of [...points].sort((a, b) => a - b))
-    for (const ion of ions) {
+    for (const ion of byIon ? ions : [""]) {
       const cells = [
         ...perPoint.map((c) => d[key(c.key, p)] ?? null),
-        ...decl.perIon.map((c) => d[key(c.key, p, ion)] ?? null),
+        ...perIonDecl.map((c) => d[key(c.key, p, ion)] ?? null),
       ].map((v) => (typeof v === "number" && Number.isFinite(v) ? v : null));
       rows.push({ point: p, ion, cells });
     }
-  return { title: decl.title, definitions: decl.definitions ?? "", nPerPoint: perPoint.length, columns, rows };
+  return { title: decl.title, definitions: decl.definitions ?? "", nPerPoint: perPoint.length,
+    perIon: byIon, columns, rows };
 }

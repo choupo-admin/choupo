@@ -355,8 +355,8 @@ function packageModels(thermo: JsonDict | null | undefined): { role: string; tok
   return out;
 }
 
-function modelTarget(token: string, fallbackOpType: string, role: string): MapTarget {
-  const url = propsModelTheoryLink(token);
+function modelTarget(token: string, fallbackOpType: string, role: string, slotKey?: string): MapTarget {
+  const url = propsModelTheoryLink(token, { opType: fallbackOpType, key: slotKey });
   if (url) return { kind: "guide", url, label: `theory of ${token}` };
   return {
     kind: "guide", url: propsOpHelpLink(fallbackOpType),
@@ -492,7 +492,7 @@ export function buildFine(input: MapInput): { nodes: Map<string, Fine>; edges: F
       if (!law) law = tok;
       const mid = `model:${slot.role}:${tok}`;
       const f = add({ id: mid, kind: "model", role: slot.role, order, law: `${op.type}:${law}`,
-        member: { id: mid, label: tok, detail: slot.role, target: modelTarget(tok, op.type, slot.role) } });
+        member: { id: mid, label: tok, detail: slot.role, target: modelTarget(tok, op.type, slot.role, slot.key) } });
       f.order = Math.min(f.order, order);
       edges.push({ from: mid, to: id, flow: "model" });
     }
