@@ -1547,7 +1547,7 @@ accepts today, and that is a policy call.
 > partition was chosen after measuring others and the header says so).
 > Gate `check_fit_then_simulate` (S1-S4 caught).  No existing golden
 > moved.  Validated: props + membranes + batch/membrane + unsteady 157/0,
-> `--fast` 76/0, the generated artefacts; `--gui` running at commit.  Riding with it: the
+> `--fast` 76/0, the generated artefacts, `--gui` 34/1, the one failure fixed and its test file re-run green (the run-log lesson cited `bin/runCase` lines the two-mode dispatch had moved, +47).  Riding with it: the
 > view writer (C147) now refuses a path inside data/standards/
 > (`check_standards_write_guard` had gone red on main).  NOT done, named:
 > the thermophysical package (ion radii, D0) is not fingerprinted; SDEM,
