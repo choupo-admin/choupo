@@ -171,10 +171,10 @@
   EVERY DESIGN NUMBER BELOW IS AN AUTHOR-SET DESIGN ASSUMPTION, declared
   with its reason on its line, and none cites a source because none was
   read.  The rules they follow:
-    * pressureDesign = 1.1 x the highest operating pressure the item sees,
-      rounded UP to a whole bar.  The whole loop shares one: 1.1 x 151.27 bar
-      (the make-up compressor discharge, the loop's highest pressure) ->
-      167 bar.  For a compressor the value is recorded only: the
+    * pressureDesign (GAUGE) = max(1.1 x Pg, Pg + 1.7 bar), the Design Guide's
+      preliminary rule on the GAUGE operating pressure, rounded UP (not 1.1 x
+      the absolute, as before C150 R01).  The loop shares one: 151.27 bar abs
+      = 150.26 bar g -> 166 bar g.  For a compressor the value is recorded only: the
       correlation folds the discharge pressure into the power (F_P = 1).
     * MATERIAL, one rule: SS316 where the process side exceeds the carbon
       steel record's maxT (700 K) -- the converter outlet is at 733 K;
@@ -303,13 +303,13 @@ sizing
     (
         //  ---- compressors: the shaft power is the unit's own result ------
         { unitName N2Boost;      type compressor;  material carbonSteel;      // dry N2, 474 K discharge
-          designRules { pressureDesign 34; } }                                 // 1.1 x 30.2 bar
+          designRules { pressureDesign 33; } }                                 // 30.2 bar abs = 29.19 bar g; max(1.1 x, +1.7 bar) -> 33 bar g
         { unitName MakeupComp1;  type compressor;  material carbonSteel;      // H2/N2, 420 K discharge
-          designRules { pressureDesign 74; } }                                 // 1.1 x 66.7 bar
+          designRules { pressureDesign 73; } }                                 // 66.7 bar abs = 65.69 bar g; max(1.1 x, +1.7 bar) -> 73 bar g
         { unitName MakeupComp2;  type compressor;  material carbonSteel;      // H2/N2, 425 K discharge
-          designRules { pressureDesign 167; } }                                // the loop's
+          designRules { pressureDesign 166; } }                                // the loop's
         { unitName RecycleComp;  type compressor;  material SS304;            // suction at -20 C
-          designRules { pressureDesign 167; } }                                // the loop's
+          designRules { pressureDesign 166; } }                                // the loop's
 
         //  ---- the six exchangers: DESIGNED in detail (Kern), see header ----
         //  Every geometry and fouling number below is AUTHOR-SET (see the
@@ -317,7 +317,7 @@ sizing
         //  area and both pressure drops are the design's RESULTS.
         { unitName N2Cooler;     type shellTubeHX;  material carbonSteel;
           designRules { utility coolingWater;      // 25 -> 35 C, the plant tower
-                        pressureDesign 34;
+                        pressureDesign 33;
                         design { method Kern;
                                  processSide tube;            // the 30 bar gas in the tubes
                                  tubeOD 25.4 mm;  tubeID 19.86 mm;   // 1 in, 2.77 mm wall
@@ -332,7 +332,7 @@ sizing
                                } } }
         { unitName Intercooler;  type shellTubeHX;  material carbonSteel;
           designRules { utility coolingWater;
-                        pressureDesign 74;
+                        pressureDesign 73;
                         design { method Kern;  processSide tube;
                                  tubeOD 25.4 mm;  tubeID 19.86 mm;  tubeLength 6.096 m;
                                  tubePitch 31.75 mm;  tubePattern square;  tubePasses 2;
@@ -343,7 +343,7 @@ sizing
                                } } }
         { unitName Aftercooler;  type shellTubeHX;  material carbonSteel;
           designRules { utility coolingWater;
-                        pressureDesign 167;
+                        pressureDesign 166;
                         design { method Kern;  processSide tube;
                                  tubeOD 25.4 mm;  tubeID 19.86 mm;  tubeLength 6.096 m;
                                  tubePitch 31.75 mm;  tubePattern square;  tubePasses 2;
@@ -354,7 +354,7 @@ sizing
                                } } }
         { unitName WaterCooler;  type shellTubeHX;  material carbonSteel;
           designRules { utility coolingWater;      // part of the NH3 condenses: gas-film basis
-                        pressureDesign 167;
+                        pressureDesign 166;
                         design { method Kern;  processSide tube;
                                  tubeOD 25.4 mm;  tubeID 19.86 mm;  tubeLength 6.096 m;
                                  tubePitch 31.75 mm;  tubePattern square;  tubePasses 2;
@@ -365,7 +365,7 @@ sizing
                                } } }
         { unitName Chiller;      type shellTubeHX;  material SS304;            // process side to -20 C
           designRules { utility refrigerationNH3;  // -33.3 C, ammonia boiling at 1 atm
-                        pressureDesign 167;
+                        pressureDesign 166;
                         design { method Kern;  processSide tube;   // a kettle: gas in the tubes
                                  tubeOD 25.4 mm;  tubeID 19.86 mm;  tubeLength 6.096 m;
                                  tubePitch 31.75 mm;  tubePattern triangular;  // clean refrigerant
@@ -376,7 +376,7 @@ sizing
                                  fouling { tubeSide 0.0002 m2.K/W;  shellSide 0.0002 m2.K/W; }
                                } } }
         { unitName FEHE;         type shellTubeHX;  material SS316;            // hot side 733 K
-          designRules { pressureDesign 167;
+          designRules { pressureDesign 166;
                         design { method Kern;
                                  tubeStream HotEffluent;      // the hot effluent in the tubes
                                  tubeOD 25.4 mm;  tubeID 19.86 mm;  tubeLength 6.096 m;
@@ -394,7 +394,7 @@ sizing
           designRules { spaceVelocity 20000;        // 1/h, Nm3 gas / (m3 catalyst h) -- ASSUMED
                         spaceVelocityBasis normal;  // the basis the number is quoted on
                         flowKey N_in_mol_s;         // GHSV is on the INLET gas
-                        L_over_D 6;  pressureDesign 167;
+                        L_over_D 6;  pressureDesign 166;
                         corrosionAllow 0.003;  jointEfficiency 1.0; }
           inventory { held ( { stream HotEffluent;  fraction 0.40; } ); } }
                                                   // bed voidage -- ASSUMED;
@@ -404,21 +404,21 @@ sizing
         { unitName Separator;    type vessel;  material SS304;                 // -20 C
           designRules { residenceTime 45;           // s of vapour, a knock-out drum
                         flowKey F_beta;  flowUnit kmol/s;
-                        L_over_D 3;  pressureDesign 167;
+                        L_over_D 3;  pressureDesign 166;
                         corrosionAllow 0.003;  jointEfficiency 1.0; }
           inventory { held ( { stream RawLiquid;     fraction 0.25; }     // liquid level -- ASSUMED
                              { stream UnreactedGas;  fraction 0.75; } ); } }
         { unitName LetdownHP;    type vessel;  material SS304;                 // -20 C
           designRules { residenceTime 60;           // s of vapour -- a LOWER BOUND, see header
                         flowKey F_beta;  flowUnit kmol/s;
-                        L_over_D 3;  pressureDesign 22;                        // 1.1 x 20 bar
+                        L_over_D 3;  pressureDesign 21;                        // 20 bar abs = 18.99 bar g; max(1.1 x, +1.7 bar) -> 21 bar g
                         corrosionAllow 0.003;  jointEfficiency 1.0; }
           inventory { held ( { stream LetdownLiquid; fraction 0.50; }     // liquid level -- ASSUMED
                              { stream LetdownGas;    fraction 0.50; } ); } }
         { unitName StorageFlash; type vessel;  material SS304;                 // -35 C
           designRules { residenceTime 60;           // s of vapour -- a LOWER BOUND, see header
                         flowKey F_beta;  flowUnit kmol/s;
-                        L_over_D 3;  pressureDesign 2;                         // 1.1 x 1.013 bar
+                        L_over_D 3;  pressureDesign 2;                         // 1.013 bar abs = 0 bar g; the +1.7 bar floor -> 2 bar g
                         corrosionAllow 0.003;  jointEfficiency 1.0; }
           inventory { held ( { stream ProductNH3;    fraction 0.50; }     // liquid level -- ASSUMED
                              { stream FlashGas;      fraction 0.50; } ); } }

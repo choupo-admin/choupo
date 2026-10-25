@@ -80,9 +80,12 @@
   EVERY DESIGN NUMBER BELOW IS AN AUTHOR-SET ASSUMPTION, declared with its
   reason on its line, for the students to replace with their own design;
   none cites a source because none was read.  The rules they follow:
-    * pressureDesign = 1.1 x the highest operating pressure the item sees,
-      rounded UP to a whole bar: 33 bar on the 30 bar side, 2 bar on the
-      1.5 bar side (the degasser and the lights column);
+    * pressureDesign is GAUGE (DEV.md 4c C86) and is the Design Guide's
+      PRELIMINARY rule, max(1.1 x Pg, Pg + 1.7 bar), on the highest GAUGE
+      operating pressure Pg the item sees, rounded UP to a whole bar: 32
+      bar g on the 30 bar abs side, 3 bar g on the 1.5 bar abs side (the
+      degasser and the lights column), where the +1.7 bar floor decides
+      (DEV.md 4c C150 R01; until then 1.1 x the ABSOLUTE pressure);
     * MATERIAL: SS316 on every item, because every one of them touches
       acetic acid hot.  Whether SS316 resists acetic acid at 460 K is NOT
       checked here: the material records carry no corrosion data.  It is the
@@ -101,17 +104,17 @@ sizing
           designRules { utility steamHP;        // 525 K condensing: LMTD computed
                         U 200;                  // W/m2/K, gas film against
                                                 // condensing steam -- ASSUMED
-                        pressureDesign 33; } }  // 1.1 x 30 bar
+                        pressureDesign 32; } }  // 30 bar abs = 28.99 bar g; max(1.1 x, +1.7 bar) -> 32 bar g
 
         //  ---- the product cooler: ~404 -> 313.15 K against cooling water --
-        //  Liquid acid at 1.5 bar, so the design pressure is the 1.5 bar
-        //  side's 2 bar (the rule in the header).  The plan box in
+        //  Liquid acid at 1.5 bar abs, so the design pressure is the 1.5 bar
+        //  side's 3 bar g (the rule in the header).  The plan box in
         //  system/layoutDict is drawn from the area this prints.
         { unitName acidCooler;  type shellTubeHX;  material SS316;
           designRules { utility coolingWater;   // 298.15 -> 308.15 K: LMTD computed
                         U 500;                  // W/m2/K, a liquid organic against
                                                 // cooling water -- ASSUMED
-                        pressureDesign 2; } }   // 1.1 x 1.5 bar, rounded up
+                        pressureDesign 3; } }   // 1.5 bar abs = 0.49 bar g; max(1.1 x, +1.7 bar) -> 3 bar g
 
         //  ---- the reactor: a vessel on a declared volume ---------------
         //  THE HAND CALCULATION (base case, redo it when the plant moves):
@@ -123,19 +126,19 @@ sizing
         //    is what would size the reactor; this is a placeholder for it.
         { unitName reactor;  type vessel;  material SS316;
           designRules { volume 3;               // m3 -- the hand calculation above
-                        L_over_D 3;  pressureDesign 33;
+                        L_over_D 3;  pressureDesign 32;
                         corrosionAllow 0.003;  jointEfficiency 1.0; } }
 
         //  ---- the drums: vapour residence (see the header) --------------
         { unitName condenser;  type vessel;  material SS316;
           designRules { residenceTime 45;       // s of vapour, a knock-out drum -- ASSUMED
                         flowKey F_beta;  flowUnit kmol/s;     // the vapour leg
-                        L_over_D 3;  pressureDesign 33;
+                        L_over_D 3;  pressureDesign 32;
                         corrosionAllow 0.003;  jointEfficiency 1.0; } }
         { unitName degasser;   type vessel;  material SS316;
           designRules { residenceTime 60;       // s of vapour -- a LOWER BOUND, see header
                         flowKey F_beta;  flowUnit kmol/s;
-                        L_over_D 3;  pressureDesign 2;
+                        L_over_D 3;  pressureDesign 3;
                         corrosionAllow 0.003;  jointEfficiency 1.0; } }
 
         //  ---- the lights column: shell, trays, condenser, reboiler -------
@@ -158,7 +161,7 @@ sizing
         { unitName lightsColumn;  type distillationColumn;  material SS316;
           designRules { traySpacing 0.50;       // m -- the SAME spacing as the
                                                 // unit's hydraulics block
-                        pressureDesign 2;       // 1.1 x 1.5 bar, rounded up
+                        pressureDesign 3;       // 1.5 bar abs = 0.49 bar g; max(1.1 x, +1.7 bar) -> 3 bar g
                         corrosionAllow 0.003;  jointEfficiency 1.0;
                         disengagementHeight 1.2;  // m above the top tray -- ASSUMED
                         sumpHeight 1.5;           // m below the bottom tray -- ASSUMED
@@ -167,11 +170,11 @@ sizing
                         condenser { U 500;      // W/m2/K, condensing vapour against
                                                 // water -- ASSUMED
                                     LMTD 97;    // K -- the hand calculation above
-                                    pressureDesign 2; }
+                                    pressureDesign 3; }
                         reboiler  { U 800;      // W/m2/K, boiling acid against
                                                 // condensing steam -- ASSUMED
                                     LMTD 53;    // K -- the hand calculation above
-                                    pressureDesign 2; } } }
+                                    pressureDesign 3; } } }
     );
 
     //  ---- the two tanks: linked to the flowsheet units that hold them ----

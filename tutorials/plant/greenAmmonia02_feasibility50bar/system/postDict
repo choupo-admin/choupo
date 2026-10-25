@@ -55,8 +55,10 @@
   EffluentCooler and the FeedPreheater (oil side 350 C) are carbon steel.
 
   N_np (Turton's labour count: compressors, exchangers, reactors) = 3 + 6 +
-  1 = 10, counted from this flowsheet.  pressureDesign: 1.1 x the loop's
-  highest pressure (the make-up discharge, 50.4 bar), rounded up: 56 bar.
+  1 = 10, counted from this flowsheet.  pressureDesign (GAUGE): the Design
+  Guide's preliminary rule, max(1.1 x Pg, Pg + 1.7 bar), on the loop's
+  highest GAUGE pressure (the make-up discharge, 50.4 bar abs = 49.39 bar g),
+  rounded up: 55 bar g (DEV.md 4c C150 R01; it was 1.1 x the absolute).
 \*---------------------------------------------------------------------------*/
 pinchPass
 {
@@ -69,57 +71,57 @@ sizing
     (
         //  ---- compressors: the shaft power is the unit's own result ------
         { unitName N2Boost;      type compressor;  material carbonSteel;
-          designRules { pressureDesign 34; } }                                 // 1.1 x 30.2 bar
+          designRules { pressureDesign 33; } }                                 // 30.2 bar abs = 29.19 bar g; max(1.1 x, +1.7 bar) -> 33 bar g
         { unitName MakeupComp1;  type compressor;  material carbonSteel;
-          designRules { pressureDesign 56; } }                                 // the loop's, 1.1 x ~50.5 bar
+          designRules { pressureDesign 55; } }                                 // the loop's, 50.4 bar abs -> 55 bar g
         { unitName RecycleComp;  type compressor;  material SS304;            // suction at -20 C
-          designRules { pressureDesign 56; } }
+          designRules { pressureDesign 55; } }
 
         //  ---- six exchangers on an ASSUMED U (FEL-2 fidelity) ----------
         { unitName N2Cooler;     type shellTubeHX;  material carbonSteel;
           designRules { U 300;                     // W/m2/K, N2 at 30 bar against water
                         utility coolingWater;
-                        pressureDesign 34; } }
+                        pressureDesign 33; } }
         { unitName Aftercooler;  type shellTubeHX;  material carbonSteel;
           designRules { U 500;                     // W/m2/K, H2/N2 at 50 bar against water
                         utility coolingWater;
-                        pressureDesign 56; } }
+                        pressureDesign 55; } }
         { unitName FeedPreheater; type shellTubeHX; material carbonSteel;     // oil side at 350 C < 700 K
           designRules { U 400;                     // W/m2/K, loop gas against hot oil
                         utility dowthermA;         // 350 -> 270 C, what the allocation picks at 320 C
-                        pressureDesign 56; } }
+                        pressureDesign 55; } }
         { unitName EffluentCooler; type shellTubeHX; material carbonSteel;    // inlet at 673 K < 700 K
           designRules { U 500;                     // W/m2/K, loop effluent at 50 bar against water
                         utility coolingWater;
-                        pressureDesign 56; } }
+                        pressureDesign 55; } }
         { unitName WaterCooler;  type shellTubeHX;  material carbonSteel;
           designRules { U 500;                     // W/m2/K, loop effluent at 50 bar against water
                         utility coolingWater;
-                        pressureDesign 56; } }
+                        pressureDesign 55; } }
         { unitName Chiller;      type shellTubeHX;  material SS304;            // process side to -20 C
           designRules { U 500;                     // W/m2/K, loop gas against boiling ammonia
                         utility refrigerationNH3;  // -33.3 C, ammonia boiling at 1 atm
-                        pressureDesign 56; } }
+                        pressureDesign 55; } }
 
         //  ---- the converter: a catalyst vessel on a declared basis ------
         { unitName Converter;    type vessel;  material carbonSteel;           // 673 K outlet < 700 K
           designRules { spaceVelocity 20000;        // 1/h, Nm3 gas / (m3 catalyst h) -- ASSUMED
                         spaceVelocityBasis normal;
                         flowKey N_in_mol_s;
-                        L_over_D 6;  pressureDesign 56;
+                        L_over_D 6;  pressureDesign 55;
                         corrosionAllow 0.003;  jointEfficiency 1.0; }
           inventory { held ( { stream HotEffluent;  fraction 0.40; } ); } }
 
         //  ---- the drums: vapour residence (base case's basis) ----------
         { unitName Separator;    type vessel;  material SS304;
           designRules { residenceTime 45;  flowKey F_beta;  flowUnit kmol/s;
-                        L_over_D 3;  pressureDesign 56;
+                        L_over_D 3;  pressureDesign 55;
                         corrosionAllow 0.003;  jointEfficiency 1.0; }
           inventory { held ( { stream RawLiquid;     fraction 0.25; }
                              { stream UnreactedGas;  fraction 0.75; } ); } }
         { unitName LetdownHP;    type vessel;  material SS304;
           designRules { residenceTime 60;  flowKey F_beta;  flowUnit kmol/s;
-                        L_over_D 3;  pressureDesign 22;
+                        L_over_D 3;  pressureDesign 21;
                         corrosionAllow 0.003;  jointEfficiency 1.0; }
           inventory { held ( { stream LetdownLiquid; fraction 0.50; }
                              { stream LetdownGas;    fraction 0.50; } ); } }

@@ -856,14 +856,16 @@ export const MATERIALS_LIMITS: readonly LessonLimit[] = [
       + "equipment and by solid versus clad construction; the records have "
       + "no field for either, and clad plate cannot be declared." },
   { id: "gauge-margin",
-    title: "One pressure, read as gauge, written as absolute",
+    title: "One pressure, read as gauge, and how a case must write it",
     body: "The wall and the pressure factor both read the case's "
       + "pressureDesign as a GAUGE pressure "
       + "(src/postProcessing/sizing/VesselMechanics.H:58-60, "
       + "VesselMechanics.cpp:29 and src/postProcessing/costing/"
-      + "Turton.cpp:661-667), but most cases derive it as 1.1 times an "
-      + "ABSOLUTE stream pressure, so one bar of their margin is the "
-      + "atmosphere.  And the exchanger pressure factor is a polynomial its "
+      + "Turton.cpp:661-667).  The plant cases that once derived it as 1.1 "
+      + "times an ABSOLUTE stream pressure -- one bar of their margin the "
+      + "atmosphere -- derive it on the GAUGE operating pressure by the "
+      + "Design Guide's preliminary rule since the C150 review; a case you "
+      + "write must do the same.  And the exchanger pressure factor is a polynomial its "
       + "source states up to 140 bar g; an ammonia loop's exchangers sit "
       + "above that, and the engine evaluates it there and says so on the "
       + "costing line, F_P EXTRAPOLATED (src/postProcessing/costing/"

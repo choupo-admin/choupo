@@ -121,7 +121,7 @@ ROOT = Path(__file__).resolve().parents[2]
 SOLVE = ROOT / "build" / "linux64Gcc" / "choupoSolve"
 CASE = ROOT / "tutorials/plant/greenAmmonia03_basicDesign"
 ENTRY = "        { unitName CONVERTER;  type converterShell;  material SS316;\n" \
-        "          designRules { pressureDesign  167; } }\n"
+        "          designRules { pressureDesign  166; } }\n"
 
 
 def run(case):
@@ -410,12 +410,12 @@ def main() -> int:
 
     probes = [
         ("a D in the shell's designRules",
-         lambda t: t.replace(ENTRY, ENTRY.replace("pressureDesign  167;",
-                                                  "pressureDesign  167;  D 3.0 m;")),
+         lambda t: t.replace(ENTRY, ENTRY.replace("pressureDesign  166;",
+                                                  "pressureDesign  166;  D 3.0 m;")),
          "second home for the converter's diameter"),
         ("an H smaller than the stack",
-         lambda t: t.replace(ENTRY, ENTRY.replace("pressureDesign  167;",
-                                                  "pressureDesign  167;  H 5 m;")),
+         lambda t: t.replace(ENTRY, ENTRY.replace("pressureDesign  166;",
+                                                  "pressureDesign  166;  H 5 m;")),
          "SMALLER than its members"),
         ("the entry before its members",
          lambda t: t.replace(ENTRY, "").replace(
@@ -425,7 +425,7 @@ def main() -> int:
          lambda t: t.replace(ENTRY, ENTRY.replace("unitName CONVERTER;", "unitName REACTOR;")),
          "REACTOR"),
         ("a shell rated below a member",
-         lambda t: t.replace(ENTRY, ENTRY.replace("pressureDesign  167;", "pressureDesign  150;")),
+         lambda t: t.replace(ENTRY, ENTRY.replace("pressureDesign  166;", "pressureDesign  150;")),
          "rated below what it contains"),
         ("a bed at its own L_over_D",
          ("CONVERTER/Bed2/system/flowsheetDict",
