@@ -160,6 +160,39 @@ int Absorber::solve(const DictPtr& dict,
             " only in the sense that it is a number.");
     }
 
+    //  ---- MATERIAL THIS METHOD HAS NO ROUTE FOR MUST REFUSE --------------
+    //
+    //  Found by the C131 separations review (2026-10-25).  The method moves a
+    //  SOLUTE between the phases, holds the SOLVENT in the liquid and an INERT
+    //  in the gas -- and an inert that arrived with the SOLVENT stream (a gas
+    //  dissolved in the wash, a second solvent component such as an amine)
+    //  had no row at all: the molar-flow loop below wrote `V_in * y_in` for it
+    //  and nothing for its liquid, so it left in neither outlet.  Measured on
+    //  absorber01 with 5 kmol/h of N2 in the wash: 97.469 % mass closure,
+    //  exit 0.  Where such a component goes is a modelling claim (absorbed,
+    //  stripped into the gas, carried through) that a Kremser cascade does
+    //  not make, so it is refused by name.  A TRACE (below 1e-12 of the
+    //  solvent stream -- round-off an upstream unit can hand over) is carried
+    //  through in the liquid instead, so a recycle is not killed by a
+    //  rounding error and nothing is ever deleted.
+    constexpr scalar kTraceFraction = 1.0e-12;
+    for (std::size_t i = 0; i < n; ++i)
+        if (!isSolute[i] && i != iSolv && L_in * x_in[i] > kTraceFraction * L_in)
+            throw std::runtime_error("Absorber: the solvent stream carries "
+                + std::to_string(L_in * x_in[i] * 3600.0) + " kmol/h of '"
+                + thermo.comp(i).name() + "', which is neither the solvent '"
+                + solv + "' nor a solute this unit transfers.\n"
+                "        This method moves SOLUTES (`role solute;` with a Henry"
+                " pair against the solvent) between the phases, holds the"
+                " solvent in the liquid and every other component in the gas;"
+                " it has no rule for a non-solute that arrives in the LIQUID"
+                " (absorbed, stripped or carried through are three different"
+                " answers, and Kremser makes none of them).\n"
+                "        Refused rather than run: this component would leave in"
+                " neither outlet.  Remove it from the solvent stream, declare it"
+                " a solute with a Henry pair, or model the column rigorously"
+                " (`distillationColumn` with `model simultaneous;`).");
+
     // ---- Energy data (heat-of-absorption balance; isothermal fallback) -
     const scalar T0 = 0.5 * (T_gas + T_sol);
     scalar Cp_L = 0.0, Cp_V = 0.0;
@@ -268,7 +301,8 @@ int Absorber::solve(const DictPtr& dict,
             //  that wanted it otherwise would have to model solvent
             //  volatility, which Kremser does not.
             else if (i == iSolv)  { liqMol[i][j] = L_in * x_in[i] + V_in * y_in[i]; }
-            else                  { gasMol[i][j] = V_in * y_in[i]; }       // inert stays gas
+            else                  { gasMol[i][j] = V_in * y_in[i];         // inert stays gas
+                                    liqMol[i][j] = L_in * x_in[i]; }       // ...and a trace (above) in the liquid
             Vj += gasMol[i][j]; Lj += liqMol[i][j];
         }
         for (std::size_t i = 0; i < n; ++i)

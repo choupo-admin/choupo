@@ -162,6 +162,15 @@ COMPETITOR_NAMED_TREES = {
         "paper's comparison with the same open (GPL-3.0) reference simulator, "
         "by Vitor's decision for the papers; every closed simulator stays "
         "banned there (DEV.md 4c C126)"),
+    #  A PATH PREFIX, not a directory: the C131 phase-2 review records
+    #  (docs/design/review-c131-<family>.md), one per family.
+    "docs/design/review-c131-": (
+        {"dwsim"},
+        "the C131 phase-2 review records, which compare each family with the "
+        "same open (GPL-3.0) reference simulator 'cited by commit, nothing "
+        "copied' (Vitor's commission, DEV.md 4c C131) -- the name and the "
+        "file paths are the evidence; every closed simulator stays banned "
+        "there"),
 }
 
 #  Binary and generated files are skipped: `generated/` is rebuilt from the

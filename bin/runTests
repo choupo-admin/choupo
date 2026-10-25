@@ -5265,6 +5265,18 @@ PYEOF
     fi
     rm -f /tmp/lcp.$$
 
+    if "$ROOT/bin/curate/check_kremser_inventory.py" > /tmp/kri.$$ 2>&1; then
+        printf "PASS  %-40s  (%s)\n" "check_kremser_inventory" \
+            "$(gate_claim check_kremser_inventory /tmp/kri.$$)"
+        pass=$((pass+1))
+    else
+        printf "FAIL  %-40s  (a Kremser column deleted material it could not route)\n" \
+            "check_kremser_inventory"
+        cat /tmp/kri.$$
+        fail=$((fail+1))
+    fi
+    rm -f /tmp/kri.$$
+
     # check_degenerate_limits runs AFTER the case loop now (2026-09-27): its
     # arm A7 reads every MESH column case, and the loop's own pass is cached.
 

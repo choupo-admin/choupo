@@ -31,6 +31,7 @@ License
 #include "thermo/henrysLaw/HenrysLawRegistry.H"
 #include "thermo/ThermoPackage.H"
 
+#include <algorithm>
 #include <cmath>
 #include <iomanip>
 #include <iostream>
@@ -105,6 +106,89 @@ int Stripper::solve(const DictPtr& dict,
     for (std::size_t i = 0; i < n; ++i)
         isSolute[i] = (thermo.comp(i).role() == "solute" && !solv.empty()
                     && HenrysLawRegistry::has(thermo.comp(i).name(), solv));
+
+    //  ---- THE ABSORBER'S REFUSALS, AND TWO OF ITS OWN (C131 review) ------
+    //
+    //  The Absorber learnt on 2026-08-12 to refuse a package with no solvent
+    //  and a gas with no solute; this class carries the same classification
+    //  and the same molar-flow loop and never learnt it.  With no solvent
+    //  every component fell into the `inert` branch, which writes only the
+    //  GAS, so the whole rich liquid left in neither outlet at exit 0.
+    //
+    //  Two more holes have the same shape (found by the same review,
+    //  measured on stripper01_NH3_water, exit 0 both times):
+    //    * the solvent arriving in the STRIPPING GAS -- live steam, the
+    //      commonest stripping medium there is: the solvent branch writes the
+    //      liquid's solvent alone, so 20 kmol/h of steam in 100 kmol/h of gas
+    //      vanished (91.807 % mass closure, a 1363 kW first-law hole);
+    //    * a non-solute arriving in the RICH LIQUID (a dissolved inert): the
+    //      inert branch writes the gas's alone, so 5 kmol/h of N2 vanished
+    //      (96.986 %) while `recovery_N2` read 1 -- "100 % stripped" -- of
+    //      material that reached neither outlet.
+    //  Where either should go is a modelling claim the method does not make
+    //  (steam condenses or passes; an inert is stripped or carried), so both
+    //  REFUSE by name.  A TRACE below 1e-12 of its stream is carried through in
+    //  the phase it arrived in, so round-off from upstream never kills a
+    //  recycle and nothing is ever deleted.
+    if (solv.empty())
+        throw std::runtime_error("Stripper: this package names no SOLVENT, so"
+            " the unit cannot tell which component holds the solute and which"
+            " is stripped out of it.\n"
+            "        The Kremser method here reads HENRY'S LAW, not the"
+            " activity model -- a `gammaPhi` package with UNIFAC or NRTL"
+            " carries no answer it can use.\n"
+            "        Declare the dilute-solution formulation instead:\n"
+            "                equilibrium { formulation diluteSolution;"
+            " liquid { solvent { component <name>; ... } solutes { ... } } }\n"
+            "        (see tutorials/steady/absorption/stripper01_NH3_water)."
+            "  Refused rather than run: with no solvent every component is"
+            " inert and the whole liquid feed would vanish.");
+    if (std::none_of(isSolute.begin(), isSolute.end(), [](bool b){ return b; }))
+    {
+        std::string present;
+        for (std::size_t i = 0; i < n; ++i)
+            if (x_in[i] > 1.0e-9 && thermo.comp(i).name() != solv)
+                present += (present.empty() ? "" : ", ") + thermo.comp(i).name();
+        throw std::runtime_error("Stripper: not one component is a SOLUTE this"
+            " unit can strip out of '" + solv + "'.\n"
+            "        A component transfers only when its record declares"
+            " `role solute;` AND a Henry pair <component>-" + solv + " exists."
+            "  Present in the liquid besides the solvent: "
+            + (present.empty() ? std::string("none") : present) + ".\n"
+            "        Refused rather than run: with no solute there is nothing"
+            " to strip, and every non-solvent component of the liquid would"
+            " vanish.");
+    }
+    constexpr scalar kTraceFraction = 1.0e-12;
+    if (iSolv < n && V_in * y_in[iSolv] > kTraceFraction * V_in)
+        throw std::runtime_error("Stripper: the stripping gas carries "
+            + std::to_string(V_in * y_in[iSolv] * 3600.0) + " kmol/h of the"
+            " SOLVENT '" + solv + "' (steam stripping, if the solvent is"
+            " water).\n"
+            "        This method holds the solvent in the liquid and has no"
+            " rule for solvent that arrives as VAPOUR: whether it condenses"
+            " (and pays the stripping heat) or passes overhead is the"
+            " solvent's own vapour-liquid equilibrium, which a Kremser"
+            " cascade on Henry's law does not solve.\n"
+            "        Refused rather than run: that solvent would leave in"
+            " neither outlet.  Strip with a gas that carries no solvent, or"
+            " model a steam stripper rigorously with `distillationColumn`"
+            " (`model simultaneous;` -- see"
+            " tutorials/steady/distillation/stripper01_sour_water).");
+    for (std::size_t i = 0; i < n; ++i)
+        if (!isSolute[i] && i != iSolv && L_in * x_in[i] > kTraceFraction * L_in)
+            throw std::runtime_error("Stripper: the liquid feed carries "
+                + std::to_string(L_in * x_in[i] * 3600.0) + " kmol/h of '"
+                + thermo.comp(i).name() + "', which is neither the solvent '"
+                + solv + "' nor a solute this unit transfers.\n"
+                "        This method strips SOLUTES (`role solute;` with a"
+                " Henry pair against the solvent), holds the solvent in the"
+                " liquid and every other component in the gas; it has no rule"
+                " for a non-solute that arrives in the LIQUID.\n"
+                "        Refused rather than run: this component would leave in"
+                " neither outlet.  Remove it from the liquid feed, declare it a"
+                " solute with a Henry pair, or model the column rigorously"
+                " (`distillationColumn` with `model simultaneous;`).");
 
     // ---- Energy data (heat of desorption; isothermal fallback) ---------
     const scalar T0 = 0.5 * (T_liq + T_gas);
@@ -202,8 +286,13 @@ int Stripper::solve(const DictPtr& dict,
         for (std::size_t i = 0; i < n; ++i)
         {
             if (isSolute[i])      { gasMol[i][j] = V_in * ys[i][j]; liqMol[i][j] = L_in * xs[i][j]; }
-            else if (i == iSolv)  { liqMol[i][j] = L_in * x_in[i]; }       // solvent stays liquid
-            else                  { gasMol[i][j] = V_in * y_in[i]; }       // inert stripping gas
+            //  The solvent stays liquid and the inert stays gas; a TRACE of
+            //  either in the other stream (the refusals above) is carried
+            //  through in the phase it arrived in, so nothing is deleted.
+            else if (i == iSolv)  { liqMol[i][j] = L_in * x_in[i];         // solvent stays liquid
+                                    gasMol[i][j] = V_in * y_in[i]; }
+            else                  { gasMol[i][j] = V_in * y_in[i];         // inert stripping gas
+                                    liqMol[i][j] = L_in * x_in[i]; }
             Vj += gasMol[i][j]; Lj += liqMol[i][j];
         }
         for (std::size_t i = 0; i < n; ++i)
