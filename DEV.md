@@ -1617,6 +1617,46 @@ accepts today, and that is a policy call.
 > DRAFTS for his review -- the first wave (a handful of tools across
 > disciplines) goes to him as a sample before the rest are written.
 > Status: recorded; the first wave dispatched after C154 lands.
+> REVIEWED 2026-10-25 (Vitor: "APROVADO COM CORRECOES" on the sample of
+> 34 questions in 6 tools, branch `claude/c158-quiz-sample`): no structural
+> problem in the shared component or the idea -- the quizzes test the
+> difference between hypothesis, model, physical limit, measurement and
+> engine result.  All eight land before the merge; (2), (3) and (6)
+> are the ones he called MANDATORY before the quiz spreads to the other
+> tools, the rest make the language as rigorous as the engine.  (1) McCabe-Thiele Q1: a horizontal
+> step is NOT "one ideal stage" -- it is the equilibrium relation of one
+> ideal stage (the leaving vapour and liquid in equilibrium); the feedback
+> says horizontal = equilibrium, vertical = operating line (material
+> balance, linear by constant molar overflow).  (2) McCabe Q4: total
+> reflux is NOT "infinite energy" -- minimum stages but zero net product;
+> R = L/D diverges because D -> 0, and for a fixed production the reflux
+> and boil-up per unit product are unbounded.  (3) Data reconciliation
+> Q3: Bayes does NOT add "the width" -- WLS with a statistical error model
+> also gives the reconciled covariance; with a flat prior the posterior
+> mode (and here the mean) IS the WLS answer, and Bayes makes the
+> uncertainty a posterior distribution and makes informative priors
+> explicit.  (4) Correlation simplicity Q6: not "the friction factor is
+> not a function of Re" but "in the transition band there is no unique,
+> universal friction factor determined by Re alone" (disturbances,
+> history, inlet geometry).  (5) Bund Q4: keep the answer, drop "the rain
+> is a term of its own ... not hidden in its margin"; say that whatever
+> margin was used, standing rain occupies real containment volume and
+> reduces what is available at the instant of a spill.  (6) Reactor
+> ladder Q3: the explicit pressure factor cancels in an IDEAL-GAS reaction
+> quotient because delta-nu = 0; with a non-ideal EoS the fugacity
+> coefficients can still bring a pressure effect (say the tool is ideal
+> gas if it is).  (7) FEL Q2: not "FEL 3 is FEED" as a universal anchor --
+> "in many widely used three-stage schemes FEL-3 corresponds to
+> FEED/Define; always check the owner's stage definitions."  (8) FEL Q6:
+> Choupo may solve individual process items at FEED-like fidelity, which
+> does not make the project definition FEED; its capital estimate stays a
+> study / Class-4-type estimate because the class follows the maturity of
+> the whole multidisciplinary definition (AACE: accuracy is a range of
+> ranges and does not set the class).  Kept as written, by name: the bund
+> quiz (primary vs secondary containment, other tanks' footprint, the
+> drain valve, low/wide vs high/narrow) and the reactor ladder's declared
+> 0.90 against 0.841 at equilibrium.  The four open questions put with
+> the sample were not answered and stay open.
 
 > **C157. CHOUPO READY FOR AN OUTSIDE MEMBRANE RESEARCHER (Vitor,
 > 2026-10-25, with an e-mail of 2026-10-21 from a water-treatment R&D
@@ -1715,6 +1755,30 @@ accepts today, and that is a policy call.
 > the browser records `fittedInCase case;` -- the engine takes the case
 > name from the working directory, which is always `/case` in the worker;
 > the fingerprints are unaffected.
+> NIGHTINGALE RECEIVED 2026-10-25 (Vitor sent the paper; a copy kept out
+> of the tree, publisher's PDF).  READ BACK: the paper has ONE table,
+> Table I (crystal, Stokes and hydrated radii at 25 C, p. 1383).  The
+> eight stored radii (H 2.82, Na 3.58, K 3.31, Ca 4.12, Mg 4.28, Cl 3.32,
+> OH 3.00, SO4 3.79 A) match it to the digit.  It gives r_H for Li 3.82,
+> Sr 4.12, Ba 4.04, Fe2+ 4.28, Mn2+ 4.38, CO3 3.94, NO3 3.35, F 3.52,
+> Br 3.30, NH4 3.31 and I 3.31 -- NOT PO4 (the line above said it did),
+> HCO3 or the hydrogen phosphates, which keep refusing.  TWO FINDINGS:
+> (a) `parameters/electrolyte/PROVENANCE.md` says "Nightingale's Table
+> III reports BOTH the effective hydrated radii AND the limiting ionic
+> conductances lambda0" and that the eight D0 are derived from "the same
+> paper's lambda0": there is no Table III and no lambda0 in the paper, so
+> the eight D0 are attributed to a source that does not contain them
+> (falsely sourced, the class the 2026-08-05 honesty slice names).
+> Recomputing the paper's Eq. (1), r_s = 0.820 z/(lambda0 eta0), with
+> the stored lambda0 reproduces Table I's Stokes radii to its rounding
+> for seven ions (within 1.1 %) and NOT for H+ (0.263 against 0.28, -6 %),
+> so the stored values are consistent with, not taken from, the paper.
+> (b) Nightingale's two Grotthuss entries (H+, OH-) are parenthesised in
+> his table, i.e. extrapolated from his calibration curve.  Slice C161
+> (`claude/c161-nightingale-radii`): the eleven radii with page and table
+> cited, the false sentence corrected, the eight D0 pinned as a debt with
+> two remedies for Vitor (re-source to the public-domain PHREEQC `-dw`
+> the 14 new ions already use, or name a primary for lambda0).
 
 > **C156. THE PLOTS PAGE NAVIGATES BY UNIT TOO (Vitor, 2026-10-25, on
 > ammonia02_full_plant's Plots page: "do lado esquerdo devia de haver uma
