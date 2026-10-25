@@ -1528,6 +1528,34 @@ accepts today, and that is a policy call.
 > final; }` layout draws what the steady flowsheet and the sizing pass
 > already hold.
 
+> **C153. THE PROPS SCREEN, SECOND PASS: A PANEL THAT RESIZES AND A BLOCK
+> THAT ANSWERS WHEN CLICKED (Vitor, 2026-10-25, on the NanoFiltran case
+> after C151 landed: "Ena pa! Ficou agora mesmo fixe e intuitivo!! ...
+> Mas ainda temos de fazer umas afinacoes: o painel que fica por baixo
+> nao e ajustavel.  Sera que pode ficar noutro menu de 'Plots'?  Aqui
+> ainda estou na duvida.  Depois quando se clica nas caixas nao se veem
+> la nada: nas operacoes unitarias ha uma box onde se pode clicar na
+> teoria F1 e ver as coisas mais importantes.  Temos de refletir sobre
+> isto.").**  Measured: the flowsheet's unit selection opens a FLOATING
+> CARD over the canvas (FlowCanvas.tsx, "Selection card (top-right)":
+> appears only when something is selected, foldable, Esc clears it, the
+> credo's "pop-out beats modal"); the props map's selection only updates
+> the details pane BELOW the map, which is a fixed height and out of view
+> when the map fills the screen -- so a click looks like nothing.
+> Commander's reading, put to him and taken as the stated default (a
+> reversible GUI step): (1) the SAME selection card on the props map --
+> the block's kind and name, its 3-5 most important numbers (verdict,
+> AAD, the fitted parameters +- their 95 % half-widths, the model's key
+> choices), the F1 theory button, "open in propsDict", and its figures as
+> thumbnails that open full size; one component shared with the flowsheet
+> card's frame, not a copy; (2) the map / details split becomes a
+> DRAGGABLE divider (the size remembered as a reader preference, like
+> the card's fold), with a "figures full height" toggle -- NOT a separate
+> Plots menu, because a second door to the same figures is what C151
+> removed (his own complaint of 2026-10-25: a Plots menu beside plots
+> already on the main screen confuses).  If he still wants a Plots menu
+> after seeing it, it is one switch.  Status: dispatched 2026-10-25.
+
 > **C152. ONE CASE, TWO MODES: PROCESS SIMULATION AND PROPERTIES & DATA
 > (Vitor, 2026-10-25: "os dados podem ser usados no DSPM-DE para gerar
 > previsoes, ou ... estimativa de parametros ... o caso que se prepare
