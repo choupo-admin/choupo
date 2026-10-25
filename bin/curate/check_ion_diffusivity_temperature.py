@@ -223,7 +223,7 @@ def main():
             #  the rest of the file
             p = d / "system/propsDict"
             s = p.read_text()
-            i = s.index("operations")
+            i = s.index("\noperations\n(") + 1   # the list, never a comment naming it
             op = re.search(r"\{\s*name\s+N50;.*?\n    \}", s, re.S).group(0)
             p.write_text(s[:i] + "operations\n(\n" + op + "\n);\n")
             if visc:

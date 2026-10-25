@@ -232,7 +232,7 @@ byte-identical.  The golden carries the three old goldens' 444 rows VERBATIM
 (values, tolerances, claims, comments), plus 151 rows appended by
 `--record-append` (112 newly published: `c_bulk_<ion>_p<p>`, the abscissa of
 Fig. 3, and `poreNodes_p<p>`, the abscissa of the grid study; 39 part-A
-diagnostics published since C142/C145 and never pinned) and 40 `csv` rows
+diagnostics published since C142/C145 and never pinned) and 39 `csv` rows
 pinning the differences the views compute — the only numbers they write that
 are not a projection of something already pinned.
 

@@ -1108,8 +1108,8 @@
     },
     "check_verdict_parity": {
       "exit": 0,
-      "claim": "check_verdict_parity: OK -- the 5 curation verdicts (heldOutPerformed, notClaimed, notValidated, validated, validationRefused) are spelled identically in all FOUR of their homes -- CurationDossier.cpp (the authority), the TS union, the Component Inspector's renderer table and the fit panel's meaning table, the last added 2026-09-04 when the verdict reached the machine channel; every human-visible \"validation\" in src/ (4 file(s) carry the word in an output string) sits where a partition is CONSUMED.  Does NOT check the dossier's written JSON, nor whether a verdict is correct for a given fit.",
-      "seconds": 0.2
+      "claim": "check_verdict_parity: OK -- the 5 curation verdicts (heldOutPerformed, notClaimed, notValidated, validated, validationRefused) are spelled identically in all FIVE of their homes -- CurationDossier.cpp (the authority), the TS union, the Component Inspector's renderer table, the fit panel's meaning table (added 2026-09-04 when the verdict reached the machine channel) and the verdict colour table the fit panel and the props review screen draw (held since 2026-10-24); every human-visible \"validation\" in src/ (4 file(s) carry the word in an output string) sits where a partition is CONSUMED.  Does NOT check the dossier's written JSON, nor whether a verdict is correct for a given fit.",
+      "seconds": 0.3
     },
     "check_viewport_units": {
       "exit": 0,
@@ -1259,12 +1259,12 @@
     "check_ion_diffusivity_temperature": {
       "exit": 0,
       "claim": "check_ion_diffusivity_temperature: OK -- the ion D0 (25 C) is corrected by Stokes-Einstein on the package's own liquid viscosity in the membrane film (inlet k moves by exactly f^0.75), the DSPM-DE pore (its trace Na+ moves) and the ED stack (its KPI = the factor recomputed from the water Vogel record); with no viscosity model the run announces an uncorrected D0; at 298.15 K the model moves no number bit for bit.  NOT checked: Stokes-Einstein's validity for an ion, a neutral solute's D, or the massTransfer block's own viscosity against the package's.",
-      "seconds": 0.7
+      "seconds": 0.8
     },
     "check_postprocessing": {
       "exit": 0,
-      "claim": "check_postprocessing: OK -- the paper case's 6 reference files are their sources' export; 17 postProcessDict items over 2 witness cases are produced (CSV + sidecar = the result block, nothing else in postProcessing/postProcessDict/); 9191 written numbers recomputed by this gate's own reading of each postProcessDict from the run's diagnostics, the ops' published tables (rebuilt from what else the run publishes), the reference files and the differences, to 1e-12; the paper's tables meet 59 anchors of its golden; 13 refusals fire by name; a stale file and an undeclared view are removed.  NOT CHECKED: that a plot is the right one for the paper, the GUI's drawing (its own tests), units beyond their spelling, the interior pore profile node by node, the op-table columns no witness draws.",
-      "seconds": 7.7
+      "claim": "check_postprocessing: OK -- the paper case's 6 reference files are their sources' export; 41 views (each operation's defaults, then the propsDict's) over 3 witness cases are produced (CSV + sidecar = the result block, the index = the files, nothing else in postProcessing/); 13637 written numbers recomputed by this gate's own reading of each view from the run's diagnostics, the ops' published tables (rebuilt from what else the run publishes), the reference files and the differences, to the CSV's 12 figures; the paper's tables meet 59 anchors of its golden; 4 fits' default views are one table whose rms is the op's own; 14 refusals fire by name; a listed stale file goes, an author's own file stays, a declared view replaces a default aloud, and a case without views keeps only the defaults.  NOT CHECKED: that a view is the right one for the paper, the GUI's drawing (its own tests), units beyond their spelling, a fit's model value point by point, the bubble-point fits' defaults, the interior pore profile node by node.",
+      "seconds": 7.3
     }
   }
 }

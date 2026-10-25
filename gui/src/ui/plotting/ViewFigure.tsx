@@ -151,7 +151,8 @@ function PlotFigure({ item, csv }: { item: PostPlot; csv: string }) {
              type: item.xAxis.scale === "log" ? "log" : "linear", automargin: true },
     yaxis: { ...darkLayout.yaxis, title: { text: axisTitle(item.yAxis) },
              type: item.yAxis.scale === "log" ? "log" : "linear", automargin: true },
-    legend: { ...darkLayout.legend, orientation: "h", y: -0.22, x: 0, font: { size: 11 } },
+    //  below the axis title, never over it: anchored by its top, well clear
+    legend: { ...darkLayout.legend, orientation: "h", x: 0, y: -0.3, yanchor: "top", font: { size: 11 } },
     showlegend: traces.length > 1,
   };
   if (item.type === "residuals")
@@ -166,7 +167,7 @@ function PlotFigure({ item, csv }: { item: PostPlot; csv: string }) {
   return (
     <Stack gap={4}>
       <ExportButtons item={item} csv={csv} png={save} />
-      <Box style={{ height: 330 + 18 * Math.max(0, Math.ceil(nLegend / 2) - 1) }}
+      <Box style={{ height: 340 + 20 * Math.max(0, Math.ceil(nLegend / 2) - 1) }}
         data-view-plot={`${item.op || "case"}/${item.name}`}>
         <Plot data={traces} layout={layout} config={{ ...PLOT_CONFIG,
             toImageButtonOptions: { ...PLOT_CONFIG.toImageButtonOptions, filename: exportName(item) } }}
