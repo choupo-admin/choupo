@@ -1779,6 +1779,15 @@ accepts today, and that is a policy call.
 > cited, the false sentence corrected, the eight D0 pinned as a debt with
 > two remedies for Vitor (re-source to the public-domain PHREEQC `-dw`
 > the 14 new ions already use, or name a primary for lambda0).
+> C161 LANDED 2026-10-25 (cca7169b2): the eleven radii, the corrected
+> PROVENANCE.md (the eight D0 now said to be UNSOURCED), the absences
+> buried; a DSPM-DE probe that refused 'Li' by name runs LiCl.  FOUND,
+> the next blocker for a real water: Na2CO3 and NH4Cl declare no
+> `dissociatesTo` (DSPM-DE refuses them: "no electrolyte{ cation; anion; }
+> block"), and no nitrate, fluoride or bromide salt record exists, so the
+> ions have their data and their salts do not -- a curation slice whose
+> blast radius (cases carrying Na2CO3/NH4Cl gain a species decomposition)
+> is measured before it is dispatched.
 
 > **C156. THE PLOTS PAGE NAVIGATES BY UNIT TOO (Vitor, 2026-10-25, on
 > ammonia02_full_plant's Plots page: "do lado esquerdo devia de haver uma
