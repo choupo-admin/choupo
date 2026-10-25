@@ -52,7 +52,7 @@ import {
 import { useMethodRun } from "../../case/methodRun.js";
 import { OriginMark, type OriginKind } from "./origin.js";
 import { LessonLimits, Tex, lessonStepper } from "./lessonStep.js";
-import { SIMPLICITY_LIMITS, SIMPLICITY_STEPS } from "./correlationSimplicityLesson.js";
+import { SIMPLICITY_LIMITS, SIMPLICITY_SOURCES, SIMPLICITY_STEPS } from "./correlationSimplicityLesson.js";
 import {
   BASE_DIMS, PROBLEMS, blend, curveOf, dimsOf, fitDecade, groupTex, hakenEigenvalues, hakenRun,
   keysOf, localSlope, parseSweepCsv, piGroups, q, reachWithin, rref, wiggle,
@@ -126,9 +126,20 @@ interface PlotProps {
   yLabel: string;
   yDomain?: readonly [number, number];
   xDomain?: readonly [number, number];
-  bands?: readonly { x0: number; x1: number; label: string }[];
+  bands?: readonly PlotBand[];
   height?: number;
 }
+/** A shaded x-interval.  `note` is a second, short line under the label --
+ *  a few words, never prose (an SVG does not reflow). */
+interface PlotBand { x0: number; x1: number; label: string; note?: string }
+
+/** THE TRANSITION IS NOT A CURVE (DEV.md 4c C155).  The engine's band, 2300
+ *  to 4000 (FrictionFactorCorrelation.cpp), shaded on every friction plot and
+ *  labelled for what it is: a region where Re does not decide the regime, so
+ *  no value read off a curve inside it is a prediction. */
+const TRANSITION_BAND: PlotBand = {
+  x0: 2300, x1: 4000, label: "transition", note: "regime not determined by Re",
+};
 
 function niceLinearTicks(lo: number, hi: number, want = 6): number[] {
   const span = hi - lo;
@@ -222,6 +233,10 @@ function CurvePlot({ series, xLog = true, yLog = true, xLabel, yLabel, yDomain, 
               width={Math.max(0, sx(Math.min(b.x1, x1)) - sx(Math.max(b.x0, x0)))}
               height={H - T - B} fill={INK} opacity={0.12} />
             <text x={sx(Math.max(b.x0, x0)) + 3} y={T + 12} fontSize={11} fill={INK}>{b.label}</text>
+            {b.note && (
+              <text x={sx(Math.max(b.x0, x0)) + 3} y={T + 25} fontSize={10} fill={INK}
+                fontStyle="italic">{b.note}</text>
+            )}
           </g>
         ))}
         {xt.map((v) => (
@@ -598,7 +613,7 @@ export function AsymptotesPage({ moody }: { moody: SweepTable }): JSX.Element {
       <Panel title="the Moody plane, from the engine" origin={["engine", "page"]}
         originNote="the curves are the engine's sweep run in this browser; the local slopes are taken on this page">
         <CurvePlot xLabel="Re" yLabel="f (Darcy)" height={340} yDomain={[5e-3, 1]}
-          bands={[{ x0: 2300, x1: 4000, label: "transition" }]}
+          bands={[TRANSITION_BAND]}
           series={[
             ...curves.map(({ e, c }, i) => ({ label: `Colebrook, ${label(e)}`, x: c.Re, y: c.y,
               color: slot(i) })),
@@ -608,9 +623,11 @@ export function AsymptotesPage({ moody }: { moody: SweepTable }): JSX.Element {
           Below Re = 2300 the engine substitutes the exact laminar law for Colebrook, so every
           roughness falls on one line; the dashed line is the same law published beside
           Churchill&apos;s expression, continued past 2300 until it leaves the plot.
+          The shaded band is the engine&apos;s transition band: there the regime is not
+          determined by Re, and the curves drawn through it are not predictions (step 14).
         </Text>
         <CurvePlot xLabel="Re" yLabel="local slope d ln f / d ln Re" yLog={false}
-          yDomain={[-1.1, 0.1]} bands={[{ x0: 2300, x1: 4000, label: "transition" }]}
+          yDomain={[-1.1, 0.1]} bands={[TRANSITION_BAND]}
           series={curves.map(({ e, c, s }, i) => ({ label: label(e), ...brokenAtRegimes(c, s),
             color: slot(i) }))} />
         <Box style={{ overflowX: "auto" }}>
@@ -849,7 +866,7 @@ export function PracticePage({ moody, nusselt }: { moody: SweepTable; nusselt: S
           </Badge>
           <Badge tt="none" variant="light">at n = {n}: {fmtSig(100 * devN, 3)} %</Badge>
         </Group>
-        <CurvePlot xLabel="Re" yLabel="f (Darcy)" yDomain={[1e-3, 1]}
+        <CurvePlot xLabel="Re" yLabel="f (Darcy)" yDomain={[1e-3, 1]} bands={[TRANSITION_BAND]}
           series={[
             { label: "laminar asymptote 64/Re", x: ch.fL.Re, y: ch.fL.y, color: SLOT[2], dash: "4 4" },
             { label: "turbulent branch f_t", x: ch.fT.Re, y: ch.fT.y, color: SLOT[3], dash: "4 4" },
@@ -859,16 +876,19 @@ export function PracticePage({ moody, nusselt }: { moody: SweepTable; nusselt: S
         <Text size="xs" c="dimmed">
           The two asymptotes and Churchill&apos;s f are the engine&apos;s (columns
           fL_Churchill, fT_Churchill, f_Churchill); the blend is computed on the page from the
-          two asymptotes alone.
+          two asymptotes alone. Inside the shaded band every n draws a smooth curve and none
+          of them is the friction factor of a real pipe: the blend is an interpolation that
+          keeps a solver continuous, not a model of the transition.
         </Text>
       </Panel>
 
       {step(14)}
-      <Panel title="where no mechanism dominates" origin={["engine", "page"]}
+      <Panel title="the transition band: the correlations disagree, and Re does not decide the regime"
+        origin={["engine", "page"]}
         originNote="the correlations are the engine's sweep; the spread is computed on this page">
         <RoughnessPicker keys={keys} value={eT} onChange={setEpsT} />
         <CurvePlot xLabel="Re" yLabel="spread s (0.1 = 10 %)" yLog={false} height={240}
-          xDomain={[1e3, 1e5]} bands={[{ x0: 2300, x1: 4000, label: "transition" }]}
+          xDomain={[1e3, 1e5]} bands={[TRANSITION_BAND]}
           series={[
             { label: `friction, ε/D = ${fmtSig(eT, 2)}`, x: spread.fc[0]!.Re, y: spread.sf, color: SLOT[0] },
             { label: `Nusselt (tube-side), Pr = ${fmtSig(pr, 2)}`, x: spread.nc[0]!.Re, y: spread.sn,
@@ -906,10 +926,23 @@ export function PracticePage({ moody, nusselt }: { moody: SweepTable; nusselt: S
           † the engine flags the point as outside that correlation&apos;s own window (below
           2300 a substituted laminar law, or an extrapolation; Blasius at any ε/D above zero,
           because it has no roughness term). The Nusselt spread is Gnielinski against
-          Dittus-Boelter only -- Kern is a shell-side correlation and is left out.
+          Dittus-Boelter only -- Kern is a shell-side correlation and is left out. A row
+          inside the band is what each correlation RETURNS there, not what a pipe at that Re
+          does: the regime itself is not determined by Re in the band.
         </Text>
         <EngineSource />
       </Panel>
+
+      {step(15)}
+      <Box>
+        <Title order={5}>Sources of step 15, and how each was read</Title>
+        {SIMPLICITY_SOURCES.map((s) => (
+          <Box key={s.id} mt={6}>
+            <Text size="sm">{s.cite}</Text>
+            <Text size="xs" c="dimmed">{s.used}</Text>
+          </Box>
+        ))}
+      </Box>
     </Stack>
   );
 }

@@ -291,13 +291,13 @@ void churchillAB(const FrictionContext& c, scalar& A, scalar& B)
 }
 
 // -------------------------------------------------------------------------
-//  Churchill (1977).  One expression for ALL Re and all eps/D:
+//  Churchill (1977).  One expression for every Re and eps/D:
 //     f = 8 [ (8/Re)^12 + 1/(A+B)^1.5 ]^(1/12)
 //     A = { -2.457 ln[ (7/Re)^0.9 + 0.27 eps/D ] }^16,  B = (37530/Re)^16
 //
 //  The only one of the four that answers below Re = 2300 without a
-//  substitution -- it CONTAINS the laminar law as its own limit, which is
-//  the property worth showing a student.
+//  substitution (it CONTAINS the laminar law as its own limit); through
+//  the transition band its f is an interpolation, not physics (C155).
 // -------------------------------------------------------------------------
 class Churchill : public FrictionFactorCorrelation
 {
@@ -315,8 +315,8 @@ public:
         const scalar term = std::pow(8.0 / c.Re, 12.0)
                           + 1.0 / std::pow(A + B, 1.5);
         r.f = 8.0 * std::pow(term, 1.0 / 12.0);
-        //  No validity note: the window IS all Re.  Saying nothing here is
-        //  the correct report, and it is why this correlation is the default.
+        //  No validity note: the expression is defined for every Re.  In the
+        //  transition band f is an interpolation; the PIPE announces it (C155).
         return r;
     }
 
@@ -341,8 +341,8 @@ public:
 
 private:
     std::string type_ = "Churchill";
-    std::string window_ = "ALL Re (laminar, transition and turbulent) and all "
-                          "eps/D -- the only built-in with no gap";
+    std::string window_ = "every Re and eps/D; through 2300 <= Re < 4000 an "
+                          "interpolation, not a prediction (regime not set by Re)";
     std::string cite_ = "Churchill, S. W. (1977), Chem. Eng. 84(24), 91-92";
 };
 
