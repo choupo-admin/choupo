@@ -97,10 +97,33 @@ Description
     count the pore was solved on (the abscissa of a grid study).  Every
     diagnostic publishes its unit (diagnosticUnit).
 
+    WHY EACH ION WAS HELD BACK (DEV.md 4c C165), from the law's own
+    TransportSolution::IonState: once per op and ion `lambda_<ion>`,
+    `Kd_<ion>`, `Kc_<ion>`, `PhiS_<ion>`, `bornFactor_<ion>` (the geometry,
+    T and the dielectrics; K_d and K_c absent for an EXCLUDED ion); per
+    point and ion `Pe_<ion>_p<p>`, the activity ratio, Donnan factor and
+    partition at each face (`gammaRatioFeed_`, `donnanFeed_`,
+    `partitionFeed_`, `gammaRatioPerm_`, `donnanPerm_`, `partitionPerm_`)
+    and the pore's face concentrations `c_poreFeed_` / `c_porePerm_`
+    [mol/m3, summed over salts like c_wall]; per point the three potential
+    steps `psiDonnanFeed_V_p<p>` + `psiPore_V_p<p>` + `psiDonnanPerm_V_p<p>`
+    = `dPsi_m_V_p<p>`, `permeateCharge_p<p>`, the Newton's final
+    `poreResidual_p<p>` against `poreTolerance` and the closure checks
+    `poreElectroneutral_p<p>`, `poreCurrent_p<p>`, `poreFluxConstancy_p<p>`
+    and `poreStiffness_p<p>`.  Each partition is read off the solved pore,
+    so partition = Phi_S x Born x gamma ratio x Donnan is a CHECK
+    (bin/curate/check_pore_partition.py), not an identity by construction.
+    The bench tells the law it carries no salt-basis stream
+    (TransportContext::streamCarriesSalts = false), so the module's warning
+    about a mixed salt's two legs on the permeate stream is not raised here.
+
     PUBLISHED TABLES (DEV.md 4c C147), named so a view (the propsDict's
     `views`, or this op's defaults) draws them: `points`, one row per J_v point carrying the per-point diagnostics
     as columns (c_bulk_/c_wall_/c_perm_<ion>_molm3, Rreal_/Robs_<ion>, and
-    dPsi_m_V, poreNewton, poreNodes where a pore was solved); and `pore`,
+    the per-point WHY columns of C165 -- partitions, Donnan and activity
+    factors, Pe, the pore's face concentrations, permeateCharge -- and
+    dPsi_m_V, poreNewton, poreNodes, the three potential steps and the
+    numerics where a pore was solved); and `pore`,
     every point's solved pore -- point, Jv_mps, node, xi, x_um,
     c_<ion>_molm3, psi_V: the columns of the `profile` CSV, which is written
     FROM it -- with or without the CSV.
@@ -129,9 +152,10 @@ public:
     std::vector<PublishedTable> publishedTables() const override { return tables_; }
     std::string diagnosticUnit(const std::string& key) const override;
     //  DEFAULT VIEWS (DEV.md 4c C149): the observed rejection of every ion
-    //  against J_v where the op ran two points or more, and -- where the op
-    //  writes its profile -- the ions and the potential across the pore of
-    //  its last point.
+    //  against J_v where the op ran two points or more, and -- for EVERY op
+    //  that solved a pore since C165 (until then only one writing its
+    //  `profile` CSV) -- the ions and the potential across the pore of its
+    //  last point.
     std::string defaultViews(const std::string& opName) const override;
 
 private:
@@ -141,7 +165,6 @@ private:
     std::vector<std::string> ions_;          // the ion species, first-appearance order
     std::vector<std::string> poreIons_;      // those the pore carries (an excluded one does not)
     std::size_t nPoints_ = 0;
-    bool profileWritten_ = false;
 };
 
 } // namespace Choupo

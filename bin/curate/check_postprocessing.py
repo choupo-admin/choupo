@@ -42,7 +42,9 @@ THE ARMS.
       every cell of every table from the source it names: an operation's
       diagnostics in the result JSON, its published tables rebuilt from what
       else the run publishes (`points` from those diagnostics and its J_v,
-      `pore` from the profile CSV the op writes, `rows` from its dataset and
+      `pore` from the profile CSV the op writes -- or, for an op that writes
+      none (every op draws its pore since DEV.md 4c C165), its two END points
+      from the face concentrations and potential steps it publishes, `rows` from its dataset and
       its Gamma, `fitPoints` from its dataset), a reference file, a
       difference (a - b, or (a - b)/|b|) -- to the CSV's 12 significant
       figures (half a unit in the 12th: 5e-12 relative).
@@ -340,6 +342,28 @@ class Sources:
         flat = [float(v) for v in r["data"]]
         return [tuple(flat[k:k + 3]) for k in range(0, len(flat), 3)]
 
+    def pore_ends(self, op, s):
+        """The two END POINTS of a `pore` series of an op that writes no profile
+        CSV (DEV.md 4c C165: every op draws its pore, one CSV wrote only N350's):
+        x = 0 and x = dx/A_k from the membrane record, y from the face
+        concentrations and potential steps the op publishes.  The interior has
+        no second source; it is not recomputed, and the count says so."""
+        sel = s.get("select") or {}
+        P = int(float(sel["point"]))
+        d = self.diag[op]
+        mem = self.ops[op]["membrane"]
+        txt = (self.dir / "constant" / "assets" / (mem + ".dat")).read_text()
+        akdx = float(re.search(r"^\s*porosityOverThickness\s+([-+0-9.eE]+)", txt, re.M).group(1))
+        y = s["y"]
+        if y == "psi_V":
+            a = d["psiDonnanFeed_V_p%d" % P]
+            ends = (a, a + d["psiPore_V_p%d" % P])
+        else:
+            ion = re.fullmatch(r"c_(\w+?)_molm3", y).group(1)
+            ends = (d["c_poreFeed_%s_p%d" % (ion, P)], d["c_porePerm_%s_p%d" % (ion, P)])
+        return [(0.0, ends[0], TOL * abs(ends[0]) + 1e-11),
+                (1.0e6 / akdx, ends[1], TOL * abs(ends[1]) + 1e-11)]
+
     def op_table(self, op, table):
         """The op's published table, rebuilt from what else the run published."""
         if table == "pore":
@@ -356,7 +380,7 @@ class Sources:
                     m = re.fullmatch(r"(.+)_p%d" % p, k)
                     if m:
                         base = m.group(1)
-                        if base.startswith(("c_bulk_", "c_wall_", "c_perm_")):
+                        if base.startswith(("c_bulk_", "c_wall_", "c_perm_", "c_poreFeed_", "c_porePerm_")):
                             base += "_molm3"
                         r[base] = v
                 rows.append(r)
@@ -463,6 +487,9 @@ def folder(home):
     return home or "case"
 
 
+NENDS = [0]     # pore series checked at their two ends only (no profile CSV)
+
+
 def arm_bcd(tmp, witness=CASE):
     case = copy_full(tmp / witness.name, witness)
     rc, out, res = run(case)
@@ -508,6 +535,7 @@ def arm_bcd(tmp, witness=CASE):
 
     src = Sources(case, res, refs)
     ncells = 0
+    nends = NENDS
     tables = {}
     for h, v, origin in views:
         where = "%s view %s/%s" % (witness.name, folder(h), v["name"])
@@ -521,9 +549,21 @@ def arm_bcd(tmp, witness=CASE):
                 got.setdefault(r["series"], []).append((num(r["x"]), num(r["y"])))
             done = {}
             for s in series_of(v):
+                have = got.get(s["name"], [])
+                if s.get("table") == "pore" and not src.ops[s["op"]].get("profile"):
+                    ends = src.pore_ends(s["op"], s)
+                    nends[0] += 1
+                    if len(have) < 2:
+                        fails.append("(c) %s series %s: %d points written" % (where, s["name"], len(have)))
+                        continue
+                    for (xa, ya), (xb, yb, eb) in zip((have[0], have[-1]), ends):
+                        ncells += 2
+                        if not (close(xa, xb) and within(ya, yb, eb)):
+                            fails.append("(c) %s series %s: end (%r, %r) written, (%r, %r) published"
+                                         % (where, s["name"], xa, ya, xb, yb))
+                    continue
                 want_pts = src.series(s, done)
                 done[s["name"]] = want_pts
-                have = got.get(s["name"], [])
                 if len(have) != len(want_pts):
                     fails.append("(c) %s series %s: %d points written, %d published"
                                  % (where, s["name"], len(have), len(want_pts)))
@@ -826,8 +866,10 @@ def main():
           " without views keeps only the defaults.  NOT CHECKED: that a view is the right one"
           " for the paper, the GUI's drawing (its own tests), units beyond their spelling, a"
           " fit's model value point by point, the bubble-point fits' defaults, the interior"
-          " pore profile node by node."
-          % (6, nviews, len(WITNESSES), ncells, nanch, nfit, fired))
+          " pore profile node by node, and -- for the %d pore series of ops that write no"
+          " profile CSV -- anything but their two ends (the face concentrations and"
+          " potential steps the op publishes)."
+          % (6, nviews, len(WITNESSES), ncells, nanch, nfit, fired, NENDS[0]))
     return 0
 
 

@@ -61,7 +61,6 @@ int PoreTransportBench::run(const DictPtr& dict,
     ions_.clear();
     poreIons_.clear();
     nPoints_ = 0;
-    profileWritten_ = false;
     const std::string opName = dict->name().empty() ? type() : dict->name();
     const std::string site   = "poreTransport '" + opName + "'";
 
@@ -222,13 +221,20 @@ int PoreTransportBench::run(const DictPtr& dict,
         TransportContext ctx{ thermo, soluteIdx, B_s, mem.A_w(), polar, hyd,
                               2.0e5, 1.0e5, T, c_b, *osm, &mem, nullptr };
         ctx.imposedJv = Jvs[p];
+        ctx.streamCarriesSalts = false;    // ion rows, no salt-basis stream
         const TransportSolution sol = model->localFluxes(ctx);
 
         //  Sum the ion rows by species (an ion carried by two salts appears
         //  once per salt), keeping first-appearance order.
+        //  The partition factors of a species are its own (r, D, z), so
+        //  the first row of it carries them; the face partitions are ratios
+        //  that every row of one species shares, so the first row's IS the
+        //  species' (two salts' Cl- see one psi and one activity ratio); the
+        //  pore's face CONCENTRATIONS are summed like c_wall and c_perm.
         std::vector<std::string> names;
         std::vector<int> zs;
         std::vector<scalar> cb, cw, cp;
+        std::vector<TransportSolution::IonState> why;
         for (const auto& st : sol.ions)
         {
             const auto it = std::find(names.begin(), names.end(), st.name);
@@ -236,11 +242,14 @@ int PoreTransportBench::run(const DictPtr& dict,
             {
                 names.push_back(st.name); zs.push_back(st.z);
                 cb.push_back(st.c_bulk); cw.push_back(st.c_wall); cp.push_back(st.c_perm);
+                why.push_back(st);
             }
             else
             {
                 const std::size_t k = std::size_t(it - names.begin());
                 cb[k] += st.c_bulk; cw[k] += st.c_wall; cp[k] += st.c_perm;
+                why[k].c_poreFeed += st.c_poreFeed;     // concentrations sum,
+                why[k].c_porePerm += st.c_porePerm;     // ratios are shared
             }
         }
         scalar q = 0.0, qa = 0.0;
@@ -276,6 +285,63 @@ int PoreTransportBench::run(const DictPtr& dict,
             diag_["Rreal_"  + names[k] + tag] = Rr;
             diag_["Robs_"   + names[k] + tag] = Ro;
         }
+        //  WHY EACH ION WAS REJECTED (DEV.md 4c C165): the factors of its
+        //  partition at each face, as the law used them (IonState).  The
+        //  geometric ones -- lambda, the hindrance pair, Phi_S and the Born
+        //  factor -- depend on the ion, the pore and T only, so they are
+        //  published ONCE per op (no _p); the face factors per point.
+        bool anyWhy = false;
+        for (const auto& w : why) anyWhy = anyWhy || w.hasPartition;
+        if (anyWhy)
+        {
+            std::cout << "    why:  ion       lambda      Phi_S    Born     | feed face: gamma-ratio"
+                         "  Donnan      c_pore/c_wall | permeate face: gamma-ratio  Donnan"
+                         "      c_pore/c_perm\n";
+            for (std::size_t k = 0; k < names.size(); ++k)
+            {
+                const auto& w = why[k];
+                if (!w.hasPartition) continue;
+                const std::string& n = names[k];
+                if (p == 0)
+                {
+                    diag_["lambda_" + n]     = w.lambda;
+                    diag_["PhiS_" + n]       = w.steric;
+                    diag_["bornFactor_" + n] = w.born;
+                    if (!w.excluded) { diag_["Kd_" + n] = w.Kd; diag_["Kc_" + n] = w.Kc; }
+                }
+                diag_["partitionFeed_" + n + tag] = w.partitionFeed;
+                diag_["partitionPerm_" + n + tag] = w.partitionPerm;
+                char b[260];
+                if (w.excluded)
+                {
+                    std::snprintf(b, sizeof(b),
+                        "          %-8s %10.6f %10.3e %10.3e  | EXCLUDED (lambda >= 1): no pore"
+                        " unknown, both partitions 0\n", n.c_str(),
+                        static_cast<double>(w.lambda), static_cast<double>(w.steric),
+                        static_cast<double>(w.born));
+                    std::cout << b;
+                    continue;
+                }
+                diag_["c_poreFeed_" + n + tag]     = w.c_poreFeed;
+                diag_["c_porePerm_" + n + tag]     = w.c_porePerm;
+                diag_["Pe_" + n + tag]             = w.peclet;
+                diag_["gammaRatioFeed_" + n + tag] = w.activityFeed;
+                diag_["donnanFeed_" + n + tag]     = w.donnanFeed;
+                diag_["gammaRatioPerm_" + n + tag] = w.activityPerm;
+                diag_["donnanPerm_" + n + tag]     = w.donnanPerm;
+                std::snprintf(b, sizeof(b),
+                    "          %-8s %10.6f %10.3e %10.3e  |  %10.4e  %11.4e  %11.4e     |  %10.4e"
+                    "  %11.4e  %11.4e\n", n.c_str(),
+                    static_cast<double>(w.lambda), static_cast<double>(w.steric),
+                    static_cast<double>(w.born), static_cast<double>(w.activityFeed),
+                    static_cast<double>(w.donnanFeed), static_cast<double>(w.partitionFeed),
+                    static_cast<double>(w.activityPerm), static_cast<double>(w.donnanPerm),
+                    static_cast<double>(w.partitionPerm));
+                std::cout << b;
+            }
+            std::cout << "          (each partition = Phi_S x Born x gamma-ratio x Donnan, read"
+                         " off the solved pore)\n";
+        }
         {
             //  The columns are fixed by the first point (every point solves the
             //  same feed, so the same ions); a point that disagrees refuses.
@@ -291,14 +357,54 @@ int PoreTransportBench::run(const DictPtr& dict,
                 row.push_back(cb[k]); row.push_back(cw[k]); row.push_back(cp[k]);
                 row.push_back(1.0 - cp[k] / cw[k]); row.push_back(1.0 - cp[k] / cb[k]);
             }
+            for (std::size_t k = 0; k < names.size(); ++k)
+            {
+                const auto& w = why[k];
+                if (!w.hasPartition) continue;
+                cols.push_back({ "partitionFeed_" + names[k], "-" });
+                cols.push_back({ "partitionPerm_" + names[k], "-" });
+                row.push_back(w.partitionFeed); row.push_back(w.partitionPerm);
+                if (w.excluded) continue;
+                cols.push_back({ "c_poreFeed_" + names[k] + "_molm3", "mol/m3" });
+                cols.push_back({ "c_porePerm_" + names[k] + "_molm3", "mol/m3" });
+                cols.push_back({ "Pe_" + names[k], "-" });
+                row.push_back(w.c_poreFeed); row.push_back(w.c_porePerm);
+                row.push_back(w.peclet);
+                cols.push_back({ "gammaRatioFeed_" + names[k], "-" });
+                cols.push_back({ "donnanFeed_" + names[k], "-" });
+                cols.push_back({ "gammaRatioPerm_" + names[k], "-" });
+                cols.push_back({ "donnanPerm_" + names[k], "-" });
+                row.push_back(w.activityFeed); row.push_back(w.donnanFeed);
+                row.push_back(w.activityPerm); row.push_back(w.donnanPerm);
+            }
+            cols.push_back({ "permeateCharge", "-" });
+            row.push_back(charge);
             if (sol.hasPoreProfile)
             {
+                const scalar VT = constant::R * T / constant::F;
+                const auto& pp = sol.poreProfile;
                 cols.push_back({ "dPsi_m_V", "V" });
                 cols.push_back({ "poreNewton", "-" });
                 cols.push_back({ "poreNodes", "-" });
-                row.push_back(sol.poreProfile.psiPerm * constant::R * T / constant::F);
+                row.push_back(pp.psiPerm * VT);
                 row.push_back(static_cast<scalar>(sol.pore.newtonTotal));
                 row.push_back(static_cast<scalar>(sol.pore.nodes));
+                cols.push_back({ "psiDonnanFeed_V", "V" });
+                cols.push_back({ "psiPore_V", "V" });
+                cols.push_back({ "psiDonnanPerm_V", "V" });
+                cols.push_back({ "poreResidual", "-" });
+                cols.push_back({ "poreElectroneutral", "-" });
+                cols.push_back({ "poreCurrent", "-" });
+                cols.push_back({ "poreFluxConstancy", "-" });
+                cols.push_back({ "poreStiffness", "-" });
+                row.push_back(pp.psi.front() * VT);
+                row.push_back((pp.psi.back() - pp.psi.front()) * VT);
+                row.push_back((pp.psiPerm - pp.psi.back()) * VT);
+                row.push_back(sol.pore.residualMax);
+                row.push_back(sol.pore.electroneutralMax);
+                row.push_back(sol.pore.currentMax);
+                row.push_back(sol.pore.fluxConstancyMax);
+                row.push_back(sol.pore.stiffnessMax);
             }
             if (p == 0) { pointsTab.columns = cols; ions_ = names; }
             else
@@ -315,6 +421,7 @@ int PoreTransportBench::run(const DictPtr& dict,
         }
         std::cout << "    permeate charge |sum z c| / sum |z| c = "
                   << std::scientific << std::setprecision(2) << charge << "\n";
+        diag_["permeateCharge" + tag] = charge;
         if (sol.hasPoreProfile)
         {
             //  THE POTENTIAL DIFFERENCE ACROSS THE MEMBRANE, as Geraldes &
@@ -329,12 +436,45 @@ int PoreTransportBench::run(const DictPtr& dict,
             diag_["poreNewton" + tag]       = static_cast<scalar>(sol.pore.newtonTotal);
             diag_["poreContinuations" + tag] = static_cast<scalar>(sol.pore.continuations);
             diag_["poreNodes" + tag]        = static_cast<scalar>(sol.pore.nodes);
+            //  THE THREE POTENTIAL STEPS that make dPsi_m (DEV.md 4c C165),
+            //  each read off the solved pore, in the order a cation crosses:
+            //  the feed-side Donnan jump psi(0) - 0 (solution at the wall to
+            //  the pore's first node), the pore's own drop psi(1) - psi(0),
+            //  and the permeate-side jump psi_p - psi(1).  They sum to
+            //  dPsi_m_V by construction of the reference; a gate holds it.
+            const auto& pp = sol.poreProfile;
+            const scalar psiDF = pp.psi.front() * VT;
+            const scalar psiPo = (pp.psi.back() - pp.psi.front()) * VT;
+            const scalar psiDP = (pp.psiPerm - pp.psi.back()) * VT;
+            diag_["psiDonnanFeed_V" + tag] = psiDF;
+            diag_["psiPore_V" + tag]       = psiPo;
+            diag_["psiDonnanPerm_V" + tag] = psiDP;
+            //  THE NUMERICS OF THIS POINT (C165): the station Newton's final
+            //  ||F||_2 on the normalised rows against the tolerance it was
+            //  held to, and the closure checks measured on the answer --
+            //  the worst node's electroneutrality, the zero current and the
+            //  flux constancy (each interval's fitted flux against J_v
+            //  c_perm, relative to the two terms it nets) -- and the
+            //  stiffness, the migration flux against the net flux.
+            diag_["poreResidual" + tag]       = sol.pore.residualMax;
+            diag_["poreElectroneutral" + tag] = sol.pore.electroneutralMax;
+            diag_["poreCurrent" + tag]        = sol.pore.currentMax;
+            diag_["poreFluxConstancy" + tag]  = sol.pore.fluxConstancyMax;
+            diag_["poreStiffness" + tag]      = sol.pore.stiffnessMax;
+            if (p == 0) diag_["poreTolerance"] = sol.pore.tolerance;
             std::cout << "    potential difference across the membrane psi_p - psi_m = "
                       << std::fixed << std::setprecision(6) << dPsi << " V;  pore "
                       << sol.pore.nodes << " nodes, " << sol.pore.newtonTotal
                       << " Newton iterations"
                       << (p == 0 ? " (from the seed)" : " (warm-started from the previous point)")
-                      << (sol.pore.continuations > 0 ? ", by continuation" : "") << "\n";
+                      << (sol.pore.continuations > 0 ? ", by continuation" : "") << "\n"
+                      << "      = feed Donnan jump " << psiDF << " V + pore " << psiPo
+                      << " V + permeate Donnan jump " << psiDP << " V;  ||F|| = "
+                      << std::scientific << std::setprecision(2) << sol.pore.residualMax
+                      << " (tolerance " << sol.pore.tolerance << "), electroneutrality "
+                      << sol.pore.electroneutralMax << ", current " << sol.pore.currentMax
+                      << ", flux constancy " << sol.pore.fluxConstancyMax << "\n"
+                      << std::fixed << std::setprecision(6);   // the stream as before
             profiles.push_back(sol.poreProfile);
         }
     }
@@ -410,7 +550,6 @@ int PoreTransportBench::run(const DictPtr& dict,
                 csv << (c ? "," : "") << row[c];
             csv << "\n";
         }
-        profileWritten_ = true;
         std::cout << "\n  pore profiles written to " << path << " (" << profiles.size()
                   << " point(s); x over the equivalent thickness dx/A_k = "
                   << std::setprecision(4) << 1.0e6 / mem.porosityOverThickness() << " um)\n";
@@ -427,12 +566,20 @@ int PoreTransportBench::run(const DictPtr& dict,
 std::string PoreTransportBench::diagnosticUnit(const std::string& key) const
 {
     auto starts = [&](const char* p) { return key.rfind(p, 0) == 0; };
-    if (starts("c_bulk_") || starts("c_wall_") || starts("c_perm_")) return "mol/m3";
-    if (starts("dPsi_m_V")) return "V";
+    if (starts("c_bulk_") || starts("c_wall_") || starts("c_perm_")
+        || starts("c_poreFeed_") || starts("c_porePerm_")) return "mol/m3";
+    if (starts("dPsi_m_V") || starts("psiDonnanFeed_V") || starts("psiPore_V")
+        || starts("psiDonnanPerm_V")) return "V";
     if (starts("Jv_p")) return "m/s";
     if (starts("Rreal_") || starts("Robs_") || starts("poreNewton")
         || starts("poreContinuations") || starts("poreNodes")
-        || key == "n_points" || key == "permeateCharge_max") return "-";
+        || starts("lambda_") || starts("Pe_") || starts("Kd_") || starts("Kc_") || starts("PhiS_")
+        || starts("bornFactor_") || starts("gammaRatioFeed_") || starts("gammaRatioPerm_")
+        || starts("donnanFeed_") || starts("donnanPerm_") || starts("partitionFeed_")
+        || starts("partitionPerm_") || starts("permeateCharge")
+        || starts("poreResidual") || starts("poreTolerance") || starts("poreElectroneutral")
+        || starts("poreCurrent") || starts("poreFluxConstancy") || starts("poreStiffness")
+        || key == "n_points") return "-";
     return {};
 }
 
@@ -449,7 +596,11 @@ std::string PoreTransportBench::defaultViews(const std::string& op) const
                " against the permeate flux\"; xAxis { label \"permeate flux J_v\"; scale log; }"
                " yAxis { label \"observed rejection R_obs = 1 - c_p/c_b\"; } }\n";
     }
-    if (profileWritten_ && !poreIons_.empty())
+    //  The pore of EVERY op (DEV.md 4c C165): the `pore` table is published
+    //  for every op that solved one, so its two default views are drawn for
+    //  every op, at its LAST J_v point (one point per op, as before -- a
+    //  view per point would multiply the files by the point count).
+    if (!poreIons_.empty())
     {
         std::string ys;
         for (const auto& i : poreIons_) ys += " c_" + i + "_molm3";

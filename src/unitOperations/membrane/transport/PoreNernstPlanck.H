@@ -380,6 +380,13 @@ struct PoreSolution
     std::vector<scalar> cWall;               // with a wall: C_m [mol/m3]
     std::vector<scalar> cWallExcluded;       // PoreWall::excluded's C_m [mol/m3]
     scalar xiPrime = 0.0;                    // with a coupled wall: (F/RT) xi [1/m]
+    //  With PoreProblem::activity: the ln of the activity ratio each face's
+    //  partition used at the answer -- ln(gamma_wall/gamma_0) at the feed
+    //  face, ln(gamma_perm/gamma_N) at the permeate face -- evaluated by the
+    //  residual's own Davies home on the answer's ionic strengths.  Empty
+    //  without it (the caller's feedSide/permSide then hold every factor).
+    std::vector<scalar> lnActivityFeed;      // [ion]
+    std::vector<scalar> lnActivityPerm;      // [ion]
 
     //  measured on the answer (see the header)
     scalar fluxConstancyMax  = 0.0;  // |N_k - J_v c_perm| / (terms + |J_v c_perm|)

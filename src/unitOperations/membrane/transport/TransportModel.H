@@ -111,6 +111,7 @@ struct PoreAccount
     long   newtonTotal       = 0;   // Newton iterations, every solve summed
     int    continuations     = 0;   // solves reached by continuation in J_v
     scalar residualMax       = 0.0; // ||F||_2 of the normalised rows
+    scalar tolerance         = 0.0; // the Newton's ||F||_2 tolerance in force
     scalar fluxConstancyMax  = 0.0; // |N_k - J_v c_perm| / the terms balanced
     scalar fluxRelativeMax   = 0.0; // |N_k - J_v c_perm| / J_v c_perm
     scalar stiffnessMax      = 0.0; // migration flux / net flux
@@ -136,6 +137,7 @@ struct PoreAccount
         newtonTotal      += o.newtonTotal;
         continuations    += o.continuations;
         residualMax       = std::max(residualMax, o.residualMax);
+        tolerance         = std::max(tolerance, o.tolerance);
         fluxConstancyMax  = std::max(fluxConstancyMax, o.fluxConstancyMax);
         fluxRelativeMax   = std::max(fluxRelativeMax, o.fluxRelativeMax);
         stiffnessMax      = std::max(stiffnessMax, o.stiffnessMax);
@@ -178,6 +180,46 @@ struct TransportSolution
         scalar      c_bulk = 0.0;
         scalar      c_wall = 0.0;
         scalar      c_perm = 0.0;
+        //  WHY THE ION WAS REJECTED (DEV.md 4c C165): the factors of its
+        //  partition at each face, as the law USED them -- set by DSPM-DE
+        //  where the pore was solved (`hasPartition`), absent otherwise.
+        //  lambda = r_i/r_p; Kd, Kc the hindrance pair; steric = Phi_S =
+        //  (1 - lambda)^2; born = exp(-dW_i/kT) (1 with Born off); at the
+        //  FEED face activityFeed = the activity ratio the partition carried
+        //  (gamma_wall under wallDavies, gamma_wall/gamma_pore(0) under
+        //  bulkOverPoreDavies, 1 under ideal), donnanFeed = exp(-z psi(0))
+        //  (psi relative to the feed-side solution at the wall) and
+        //  partitionFeed = c_pore(0)/c_wall, the SOLVED pore's own ratio; at
+        //  the PERMEATE face activityPerm (gamma_perm/gamma_pore(1) under
+        //  bulkOverPoreDavies, else 1), donnanPerm = exp(-z (psi(1) - psi_p))
+        //  and partitionPerm = c_pore(1)/c_perm.  The law's equations make
+        //  partition = steric x born x activity x donnan at each face; the
+        //  partitions are read off the solved state, not formed from the
+        //  factors, so the identity is a CHECK (bin/curate/
+        //  check_nanofiltran_paper.py).  An ion the pore EXCLUDES
+        //  (`excluded`, lambda >= 1) has steric 0 and both partitions 0, and
+        //  no hindrance, Donnan or activity factor (no pore unknown).
+        //  The pore's own face concentrations [mol/m^3] -- c_pore(0) and
+        //  c_pore(1), the two inner steps of bulk -> wall -> pore inlet ->
+        //  pore outlet -> permeate -- and the ion's pore Peclet number
+        //  Pe_i = K_c J_v / (K_d D_i A_k/dx), convection against hindered
+        //  diffusion across the layer (Theory Guide eq:dspmde-transmission).
+        bool        hasPartition  = false;
+        bool        excluded      = false;
+        scalar      lambda        = 0.0;
+        scalar      Kd            = 0.0;
+        scalar      Kc            = 0.0;
+        scalar      steric        = 0.0;
+        scalar      born          = 1.0;
+        scalar      activityFeed  = 1.0;
+        scalar      donnanFeed    = 1.0;
+        scalar      partitionFeed = 0.0;
+        scalar      activityPerm  = 1.0;
+        scalar      donnanPerm    = 1.0;
+        scalar      partitionPerm = 0.0;
+        scalar      c_poreFeed    = 0.0;
+        scalar      c_porePerm    = 0.0;
+        scalar      peclet        = 0.0;
     };
     std::vector<IonState> ions;
     //  The SOLVED PORE's own profile at this station (DSPM-DE), for a caller
@@ -241,6 +283,12 @@ struct TransportContext
     //  this J_v.  NaN (every unit) means the law closes J_w itself.  Only
     //  DSPM-DE honours it; a caller handing it to another law must refuse.
     scalar imposedJv = std::numeric_limits<scalar>::quiet_NaN();
+    //  Whether the caller carries the answer on a SALT-basis stream (every
+    //  membrane unit: true).  The props bench publishes ion by ion and has
+    //  no stream, so it says false, and a law's warning about what the
+    //  STREAM cannot carry (DSPM-DE: a salt's two legs in a mixture) is not
+    //  raised there (DEV.md 4c C165).
+    bool streamCarriesSalts = true;
 };
 
 class TransportModel

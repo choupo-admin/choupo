@@ -938,7 +938,8 @@ EVERY operation publishes its DEFAULT views with nothing declared: a fit
 parameter table (value, standard error, 95 % half-width) and, for an
 isotherm, the isotherm itself (data markers, fitted lines, every T); a bench
 its model curves (`poreTransport`: the observed rejection of every ion
-against J_v, and the pore's ions and potential where it writes its profile;
+against J_v, and the pore's ions and potential at its last point -- every op
+since DEV.md 4c C165;
 `polarisationIndex`: Gamma, the observed and real rejections, the dataset
 row by row).  A case adds the views its paper needs in a `views ( ... );`
 list in the SAME propsDict, after the operations, over what the run

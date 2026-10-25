@@ -881,6 +881,7 @@ TransportSolution DSPM_DE::localFluxes(const TransportContext& ctx) const
     acc.newtonTotal       = sol.iterationsTotal;
     acc.continuations     = sol.continuationSteps > 0 ? 1 : 0;
     acc.residualMax       = sol.residual;
+    acc.tolerance         = settings.tolerance;
     acc.fluxConstancyMax  = sol.fluxConstancyMax;
     acc.fluxRelativeMax   = sol.fluxRelativeMax;
     acc.stiffnessMax      = sol.stiffnessRatio;
@@ -912,6 +913,13 @@ TransportSolution DSPM_DE::localFluxes(const TransportContext& ctx) const
     // measurable salt permeate conc = (ion permeate / stoich) -- electroneutral,
     // so cation and anion give the same salt conc to numerical accuracy; we take
     // the cation leg (stoich-normalised) as the salt representative.
+    //  The partition factors at each face, as the station USED them, and
+    //  the solved pore's own face ratios (IonState): published so a reader
+    //  can see WHY each ion was rejected (DEV.md 4c C165).  Nothing here
+    //  feeds the solve.
+    std::vector<int> poreSlot(Ni, -1);
+    for (std::size_t m = 0; m < present.size(); ++m) poreSlot[present[m]] = int(m);
+    const std::size_t Nn = sol.psi.size() - 1;
     for (std::size_t i = 0; i < Ni; ++i)
     {
         TransportSolution::IonState st;
@@ -920,6 +928,35 @@ TransportSolution DSPM_DE::localFluxes(const TransportContext& ctx) const
         st.c_bulk = ions[i].c_bulk;
         st.c_wall = cwall[i];
         st.c_perm = c_perm_ion[i];
+        if (ions[i].c_bulk > 0.0)
+        {
+            st.hasPartition = true;
+            st.lambda = ions[i].lambda;
+            st.born   = std::exp(-ions[i].dWkT);
+            if (poreSlot[i] < 0)                    // excluded: lambda >= 1
+            {
+                st.excluded = true;
+                st.steric   = 0.0;
+            }
+            else
+            {
+                const std::size_t m = std::size_t(poreSlot[i]);
+                const scalar z = scalar(ions[i].z);
+                st.Kd = ions[i].Kd; st.Kc = ions[i].Kc; st.steric = ions[i].Phi;
+                st.activityFeed = sol.lnActivityFeed.empty()
+                                ? gFixed[i] : std::exp(sol.lnActivityFeed[m]);
+                st.activityPerm = sol.lnActivityPerm.empty()
+                                ? 1.0 : std::exp(sol.lnActivityPerm[m]);
+                st.donnanFeed    = std::exp(-z * sol.psi.front());
+                st.donnanPerm    = std::exp(-z * (sol.psi[Nn] - sol.psiPerm));
+                st.partitionFeed = sol.c.front()[m] / sol.cWall[m];
+                st.partitionPerm = sol.c[Nn][m] / sol.cPerm[m];
+                st.c_poreFeed    = sol.c.front()[m];
+                st.c_porePerm    = sol.c[Nn][m];
+                st.peclet        = ions[i].Kc * sol.Jv
+                                 / (ions[i].Kd * ions[i].D * AkdX);
+            }
+        }
         out.ions.push_back(st);
     }
     for (std::size_t s = 0; s < Ns; ++s)
@@ -953,7 +990,7 @@ TransportSolution DSPM_DE::localFluxes(const TransportContext& ctx) const
         for (std::size_t i = 0; i < Ni; ++i)
             if (ions[i].salt == s && ions[i].z < 0)
                 anion_perm = c_perm_ion[i] / std::max(ions[i].stoich, 1);
-        if (got && anion_perm >= 0.0
+        if (ctx.streamCarriesSalts && got && anion_perm >= 0.0
             && std::abs(anion_perm - salt_perm)
                    > 1.0e-6 * std::max(std::abs(salt_perm), std::abs(anion_perm)) + 1.0e-12)
         {

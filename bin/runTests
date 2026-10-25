@@ -4100,6 +4100,26 @@ PYEOF
     fi
     rm -f /tmp/nanofiltranpaper.$$
 
+    # PORE-PARTITION gate (2026-10-25, DEV.md 4c C165).  WHY the DSPM-DE
+    # pore held each ion back, as the props bench now publishes it: every
+    # face partition equals Phi_S x Born x gamma ratio x Donnan, the Donnan
+    # factors are the named potential steps', the three steps sum to
+    # dPsi_m, the drawn profiles' ends are the published face
+    # concentrations, the geometry and Pe are their definitions' (from the
+    # records), the activity ratios the declared treatment's, ||F|| is below
+    # the tolerance, every op draws its pore, the bench raises no stream
+    # advisory, and the schema's point tables name published keys.
+    # By-hand sabotages in the C165 commit message.
+    if "$ROOT/bin/curate/check_pore_partition.py" > /tmp/porepartition.$$ 2>&1; then
+        printf "PASS  %-40s  (%s)\n" "pore-partition-gate" "$(grep -m1 '^check_pore_partition: OK' /tmp/porepartition.$$)"
+        pass=$((pass+1))
+    else
+        printf "FAIL  %-40s  (run bin/curate/check_pore_partition.py)\n" "pore-partition-gate"
+        cat /tmp/porepartition.$$
+        fail=$((fail+1))
+    fi
+    rm -f /tmp/porepartition.$$
+
     # VIEWS gate (2026-10-24, DEV.md 4c C147, C149).  Every props operation
     # publishes DEFAULT views (a fit its parity, residuals and parameters; a
     # bench its curves) and a propsDict adds its own in `views ( ... )`, over

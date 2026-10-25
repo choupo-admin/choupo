@@ -177,6 +177,53 @@ FluxTerms fittedFlux(const PoreIon& ion, scalar Jv, scalar h,
     return { Ph * bernoulli(-ah) * ck, Ph * bernoulli(ah) * ck1 };
 }
 
+// THE FACE ACTIVITIES of `activity bulkOverPoreDavies` (PoreActivity): the
+// Davies ln gamma, and its derivative in I, on the solution side of the feed
+// face (the wall, ionic strength I_wall -- the excluded ions' film counted),
+// on the pore side of the feed face (node 0), on the pore side of the
+// permeate face (node N) and in the permeate.  ONE home: the residual reads
+// it inside every evaluation, and solveFrom reads it once on the answer so
+// the ratio the partitions (5)-(6) USED is published, not re-derived.
+struct FaceActivities
+{
+    explicit FaceActivities(std::size_t Ni)
+        : lgW(Ni, 0.0), dgW(Ni, 0.0), lg0(Ni, 0.0), dg0(Ni, 0.0),
+          lgN(Ni, 0.0), dgN(Ni, 0.0), lgP(Ni, 0.0), dgP(Ni, 0.0) {}
+    std::vector<scalar> lgW, dgW, lg0, dg0, lgN, dgN, lgP, dgP;
+};
+
+FaceActivities faceActivities(const PoreProblem& pb, const scalar* cWall,
+                              const scalar* c0, const scalar* cN,
+                              const scalar* cpN, const scalar* cWallExcluded)
+{
+    const std::size_t Ni = pb.ions.size();
+    FaceActivities A(Ni);
+    scalar Iw = 0.0, I0 = 0.0, IN = 0.0, Ip = 0.0;
+    for (std::size_t i = 0; i < Ni; ++i)
+    {
+        const scalar z2 = scalar(pb.ions[i].z) * scalar(pb.ions[i].z);
+        if (cWall) Iw += 0.5 * z2 * cWall[i];
+        I0 += 0.5 * z2 * c0[i];
+        IN += 0.5 * z2 * cN[i];
+        Ip += 0.5 * z2 * cpN[i];
+    }
+    if (cWallExcluded)
+        for (std::size_t e = 0; e < pb.wall.excluded.size(); ++e)
+        {
+            const scalar ze = scalar(pb.wall.excluded[e].z);
+            Iw += 0.5 * ze * ze * cWallExcluded[e];
+        }
+    for (std::size_t i = 0; i < Ni; ++i)
+    {
+        const int z = pb.ions[i].z;
+        if (cWall) A.lgW[i] = daviesLnGamma(z, Iw / 1000.0, pb.activity.Asolution, &A.dgW[i]);
+        A.lg0[i] = daviesLnGamma(z, I0 / 1000.0, pb.activity.Apore, &A.dg0[i]);
+        A.lgN[i] = daviesLnGamma(z, IN / 1000.0, pb.activity.Apore, &A.dgN[i]);
+        A.lgP[i] = daviesLnGamma(z, Ip / 1000.0, pb.activity.Asolution, &A.dgP[i]);
+    }
+    return A;
+}
+
 // The wall of the ions that do not enter the pore (PoreWall::excluded): the
 // interface balance at zero permeate, at the station's J_v and field.
 WallAtField excludedWall(const PoreProblem& pb, scalar Jv, scalar xiPrime)
@@ -245,33 +292,14 @@ sVector evaluate(const PoreProblem& pb, const Context& C, const sVector& x,
     }
 
     // ---- the face activities (bulkOverPoreDavies) ---------------------------
-    std::vector<scalar> lgW(Ni, 0.0), dgW(Ni, 0.0), lg0(Ni, 0.0), dg0(Ni, 0.0),
-                        lgN(Ni, 0.0), dgN(Ni, 0.0), lgP(Ni, 0.0), dgP(Ni, 0.0);
-    if (actOn)
-    {
-        scalar Iw = 0.0, I0 = 0.0, IN = 0.0, Ip = 0.0;
-        for (std::size_t i = 0; i < Ni; ++i)
-        {
-            const scalar z2 = scalar(pb.ions[i].z) * scalar(pb.ions[i].z);
-            if (wallOn) Iw += 0.5 * z2 * W.c_m[i];
-            I0 += 0.5 * z2 * c[0][i];
-            IN += 0.5 * z2 * c[N][i];
-            Ip += 0.5 * z2 * cp[N][i];
-        }
-        for (std::size_t e = 0; e < Ne; ++e)
-        {
-            const scalar ze = scalar(pb.wall.excluded[e].z);
-            Iw += 0.5 * ze * ze * WE.c_m[e];
-        }
-        for (std::size_t i = 0; i < Ni; ++i)
-        {
-            const int z = pb.ions[i].z;
-            if (wallOn) lgW[i] = daviesLnGamma(z, Iw / 1000.0, pb.activity.Asolution, &dgW[i]);
-            lg0[i] = daviesLnGamma(z, I0 / 1000.0, pb.activity.Apore, &dg0[i]);
-            lgN[i] = daviesLnGamma(z, IN / 1000.0, pb.activity.Apore, &dgN[i]);
-            lgP[i] = daviesLnGamma(z, Ip / 1000.0, pb.activity.Asolution, &dgP[i]);
-        }
-    }
+    const FaceActivities FA = actOn
+        ? faceActivities(pb, wallOn ? W.c_m.data() : nullptr, c[0], c[N], cp[N],
+                         Ne > 0 ? WE.c_m.data() : nullptr)
+        : FaceActivities(Ni);
+    const std::vector<scalar>& lgW = FA.lgW; const std::vector<scalar>& dgW = FA.dgW;
+    const std::vector<scalar>& lg0 = FA.lg0; const std::vector<scalar>& dg0 = FA.dg0;
+    const std::vector<scalar>& lgN = FA.lgN; const std::vector<scalar>& dgN = FA.dgN;
+    const std::vector<scalar>& lgP = FA.lgP; const std::vector<scalar>& dgP = FA.dgP;
 
     sVector F(x.size(), 0.0);
     //  J[row block][column block][row slot][column slot] += value
@@ -682,6 +710,23 @@ PoreSolution solveFrom(const PoreProblem& pb, const PoreSettings& s, sVector x0)
                 q += ze * out.cWallExcluded[e]; qa += std::abs(ze) * out.cWallExcluded[e];
             }
             out.wallChargeMax = qa > 0.0 ? std::abs(q) / qa : 0.0;
+        }
+    }
+
+    //  The activity ratio each face's partition USED at the answer
+    //  (bulkOverPoreDavies), read from the residual's own home -- the
+    //  caller publishes it beside the steric, Born and Donnan factors.
+    if (pb.activity.active && pb.wall.active)
+    {
+        const FaceActivities FA = faceActivities(pb, out.cWall.data(), out.c[0].data(),
+            out.c[N].data(), out.cPerm.data(),
+            out.cWallExcluded.empty() ? nullptr : out.cWallExcluded.data());
+        out.lnActivityFeed.resize(Ni);
+        out.lnActivityPerm.resize(Ni);
+        for (std::size_t i = 0; i < Ni; ++i)
+        {
+            out.lnActivityFeed[i] = FA.lgW[i] - FA.lg0[i];
+            out.lnActivityPerm[i] = FA.lgP[i] - FA.lgN[i];
         }
     }
 
