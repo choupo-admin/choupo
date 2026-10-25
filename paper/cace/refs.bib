@@ -2,7 +2,9 @@
 % Engineering draft (DEV.md 4c C126).  Merged from ../paper.bib, the white
 % paper's ../whitepaper/whitepaper.bib and the JOSS paper's ../joss/paper.bib
 % (first occurrence of each key kept; the source of each entry is noted).
-% TODO B8 (authors): every entry to be checked against the item itself.
+% B8: every entry with a DOI was checked against Crossref on 2026-10-25
+% (title, authors, journal, volume, pages, year); entries Crossref cannot
+% resolve carry a `TODO` note in the entry itself.
 
 % from ../paper.bib
 @article{michelsen1982,
@@ -144,7 +146,8 @@
   volume  = {45},
   number  = {8},
   pages   = {155--163},
-  year    = {1966}
+  year    = {1966},
+  note    = {TODO (authors): no DOI; volume and pages not checked}
 }
 
 % from ../paper.bib
@@ -277,7 +280,10 @@
   volume  = {24},
   number  = {3},
   pages   = {185--194},
-  year    = {1986}
+  year    = {1986},
+  note    = {no DOI assigned; the journal's page
+             https://www.kiche.or.kr/journal/kcer/view/all/24/3/185 serves
+             the full text}
 }
 
 % from ../whitepaper/whitepaper.bib
@@ -290,7 +296,8 @@
   volume  = {79},
   number  = {5},
   pages   = {458--473},
-  year    = {1960}
+  year    = {1960},
+  doi     = {10.1109/TCE.1960.6367296}
 }
 
 % from ../whitepaper/whitepaper.bib
@@ -302,7 +309,8 @@
   volume  = {1},
   number  = {4},
   pages   = {1047--1100},
-  year    = {1972}
+  year    = {1972},
+  doi     = {10.1063/1.3253108}
 }
 
 % from ../whitepaper/whitepaper.bib
@@ -316,7 +324,8 @@
   volume  = {46},
   number  = {6},
   pages   = {1011--1040},
-  year    = {1982}
+  year    = {1982},
+  doi     = {10.1016/0016-7037(82)90056-4}
 }
 
 % from ../whitepaper/whitepaper.bib
@@ -325,7 +334,9 @@
   title       = {Standard for Models and Simulations},
   institution = {NASA},
   number      = {NASA-STD-7009},
-  year        = {2008}
+  year        = {2008},
+  note        = {TODO (authors): cite the revision read (7009 of 2008, or
+                 7009A of 2016)}
 }
 
 % from ../whitepaper/whitepaper.bib
@@ -335,6 +346,9 @@
   title   = {Isobaric Vapor--Liquid Equilibrium for Acetone + Methanol +
              Phosphate Ionic Liquids},
   journal = {Journal of Chemical \& Engineering Data},
+  volume  = {60},
+  number  = {3},
+  pages   = {612--620},
   year    = {2015},
   doi     = {10.1021/je5007373}
 }
@@ -347,6 +361,9 @@
              Vapor--Liquid Equilibria for Acetone + Methanol +
              1-Ethyl-3-methylimidazolium Trifluoromethanesulfonate},
   journal = {Journal of Chemical \& Engineering Data},
+  volume  = {52},
+  number  = {1},
+  pages   = {141--147},
   year    = {2007},
   doi     = {10.1021/je0603170}
 }
@@ -387,26 +404,27 @@
   booktitle = {Proceedings of the American Petroleum Institute},
   volume    = {43},
   pages     = {57},
-  year      = {1963}
+  year      = {1963},
+  note      = {TODO (authors): volume and page as the literature cites
+               them; not checked against the proceedings (no DOI)}
 }
 
-% from ../whitepaper/whitepaper.bib
-@misc{rosen1977,
-  author       = {Rosen, E. M. and Pauls, A. C.},
-  howpublished = {Computers \& Chemical Engineering, 1 (1977) 11 -- the
-                  {FLOWTRAN} solutions of the {Cavett} problem, as cited in
-                  the Choupo case header},
-  year         = {1977}
+% revision 2: completed from Crossref (review point 10)
+@article{rosen1977,
+  author  = {Rosen, Edward M. and Pauls, Allen C.},
+  title   = {Computer aided chemical process design: the {FLOWTRAN} system},
+  journal = {Computers \& Chemical Engineering},
+  volume  = {1},
+  number  = {1},
+  pages   = {11--21},
+  year    = {1977},
+  doi     = {10.1016/0098-1354(77)80003-3}
 }
 
-% from ../whitepaper/whitepaper.bib
-@misc{rosen2005,
-  author       = {Rosen, E. M.},
-  title        = {Revisiting the {Cavett} problem},
-  howpublished = {CACHE News, Fall 2005 (the article's full title also names
-                  a commercial simulator; shortened here)},
-  year         = {2005}
-}
+% revision 2: the 2005 CACHE News article cited in revision 1 (rosen2005) is
+% no longer cited -- its full title names a commercial simulator, and
+% shortening a title to hide it is what review point 10 objects to (TODO B11
+% in main.tex).
 
 % from ../joss/paper.bib
 @incollection{ahrens2005,
@@ -461,14 +479,16 @@
   year    = {2025},
   publisher = {Zenodo},
   doi     = {10.5281/zenodo.17620923},
-  url     = {https://www.cantera.org}
+  url     = {https://www.cantera.org},
+  note    = {TODO (authors): the Zenodo DOI is a DataCite DOI and could not
+             be checked through Crossref; confirm it on zenodo.org}
 }
 
 % from ../joss/paper.bib
 @article{frenkel2003,
   author  = {Frenkel, Michael and Chirico, Robert D. and Diky, Vladimir V. and
-             Dong, Qian and Frenkel, Sergey and Franchois, Paul R. and
-             Embry, Darren L. and Teague, Tim L. and Marsh, Kenneth N. and
+             Dong, Qian and Frenkel, Svetlana and Franchois, Paul R. and
+             Embry, Dale L. and Teague, Thomas L. and Marsh, Kenneth N. and
              Wilhoit, Randolph C.},
   title   = {{ThermoML} -- An {XML}-Based Approach for Storage and Exchange of
              Experimental and Critically Evaluated Thermophysical and
@@ -479,4 +499,121 @@
   pages   = {2--13},
   year    = {2003},
   doi     = {10.1021/je025645o}
+}
+
+% ---------------------------------------------------------------- revision 2
+% Added 2026-10-25; each checked against Crossref by DOI or by query.
+
+@article{xu1989,
+  author  = {Xu, Jianguo and Froment, Gilbert F.},
+  title   = {Methane steam reforming, methanation and water-gas shift:
+             {I}. Intrinsic kinetics},
+  journal = {AIChE Journal},
+  volume  = {35},
+  number  = {1},
+  pages   = {88--96},
+  year    = {1989},
+  doi     = {10.1002/aic.690350109}
+}
+
+@article{vandenbussche1996,
+  author  = {Vanden Bussche, K. M. and Froment, G. F.},
+  title   = {A steady-state kinetic model for methanol synthesis and the
+             water gas shift reaction on a commercial
+             {Cu/ZnO/Al$_2$O$_3$} catalyst},
+  journal = {Journal of Catalysis},
+  volume  = {161},
+  number  = {1},
+  pages   = {1--10},
+  year    = {1996},
+  doi     = {10.1006/jcat.1996.0156}
+}
+
+@article{yaroshchuk2013,
+  author  = {Yaroshchuk, Andriy and Bruening, Merlin L. and
+             Lic{\'o}n Bernal, Edxon Eduardo},
+  title   = {Solution-Diffusion--Electro-Migration model and its uses for
+             analysis of nanofiltration, pressure-retarded osmosis and
+             forward osmosis in multi-ionic solutions},
+  journal = {Journal of Membrane Science},
+  volume  = {447},
+  pages   = {463--476},
+  year    = {2013},
+  doi     = {10.1016/j.memsci.2013.07.047}
+}
+
+@article{bowen2002,
+  author  = {Bowen, W. Richard and Welfoot, Julian S.},
+  title   = {Modelling the performance of membrane nanofiltration --
+             critical assessment and model development},
+  journal = {Chemical Engineering Science},
+  volume  = {57},
+  number  = {7},
+  pages   = {1121--1137},
+  year    = {2002},
+  doi     = {10.1016/S0009-2509(01)00413-4}
+}
+
+@article{dechadilok2006,
+  author  = {Dechadilok, Panadda and Deen, William M.},
+  title   = {Hindrance factors for diffusion and convection in pores},
+  journal = {Industrial \& Engineering Chemistry Research},
+  volume  = {45},
+  number  = {21},
+  pages   = {6953--6959},
+  year    = {2006},
+  doi     = {10.1021/ie051387n}
+}
+
+@article{geraldes2007,
+  author  = {Geraldes, V{\'i}tor and Afonso, Maria Din{\'a}},
+  title   = {Prediction of the concentration polarization in the
+             nanofiltration/reverse osmosis of dilute multi-ionic solutions},
+  journal = {Journal of Membrane Science},
+  volume  = {300},
+  number  = {1--2},
+  pages   = {20--27},
+  year    = {2007},
+  doi     = {10.1016/j.memsci.2007.04.025}
+}
+
+@article{geraldes2008,
+  author  = {Geraldes, V{\'i}tor and Brites Alves, Ana Maria},
+  title   = {Computer program for simulation of mass transport in
+             nanofiltration membranes},
+  journal = {Journal of Membrane Science},
+  volume  = {321},
+  number  = {2},
+  pages   = {172--182},
+  year    = {2008},
+  doi     = {10.1016/j.memsci.2008.04.054}
+}
+
+@article{scharfetter1969,
+  author  = {Scharfetter, D. L. and Gummel, H. K.},
+  title   = {Large-signal analysis of a silicon {Read} diode oscillator},
+  journal = {IEEE Transactions on Electron Devices},
+  volume  = {16},
+  number  = {1},
+  pages   = {64--77},
+  year    = {1969},
+  doi     = {10.1109/T-ED.1969.16566}
+}
+
+@book{oberkampf2010,
+  author    = {Oberkampf, William L. and Roy, Christopher J.},
+  title     = {Verification and Validation in Scientific Computing},
+  publisher = {Cambridge University Press},
+  address   = {Cambridge},
+  year      = {2010},
+  doi       = {10.1017/CBO9780511760396}
+}
+
+@techreport{jcgm2008,
+  author      = {{Joint Committee for Guides in Metrology}},
+  title       = {Evaluation of measurement data -- Guide to the expression of
+                 uncertainty in measurement},
+  institution = {JCGM},
+  number      = {JCGM 100:2008},
+  year        = {2008}
 }

@@ -77,63 +77,116 @@ shift, and the overall reforming to CO2 -- with a "catalyst loading" of
 ## Comparison
 
 Run `python3 -I benchmarks/dwsim/compare.py reforming01_methane_steam_pfr`
-(needs `make all`).
+(needs `make all`).  It prints two tables: the case as built (the article's
+rate laws) and the variant `sampleKinetics` (the sample's OWN stored rate
+expressions, below).
 
-Measured 2026-10-21 on this branch:
+Measured 2026-10-25 at the commit that set `nSteps 25600` (the grid study
+below):
 
 ```
 Benchmark E -- methane steam reforming PFR, 1000 K, 1 atm (Xu & Froment 1989; PR78 + E-PPR78)
 ---------------------------------------------------------------------------------------------
                                                   reference        Choupo  Choupo - ref         rel %
-product F [mol/s]                                    9.7677        9.7444       -0.0233       -0.2388
+product F [mol/s]                                    9.7677        9.7800        0.0124        0.1264
 product T [K]                                     1000.0000     1000.0000             0             0
 product P [Pa]                                   1.0074e+05    1.0132e+05      584.4354        0.5801
-product x_CH4                                        0.0702        0.0716        0.0014        1.9449
-product x_H2                                         0.6687        0.6684   -3.4463e-04       -0.0515
-product x_water                                      0.0469        0.0466   -3.3625e-04       -0.7171
-product x_CO2                                        0.0233        0.0250        0.0017        7.3014
-product x_CO                                         0.1909        0.1885       -0.0024       -1.2498
-CH4 conversion                                       0.7532        0.7490       -0.0042       -0.5576
-reactor duty [kW] (isothermal, + endothermic)     1221.8095      460.1334     -761.6761      -62.3400
-The sample's own equilibrium correlations and its atm pressures are findings (README).
+product x_CH4                                        0.0702        0.0695   -7.2005e-04       -1.0258
+product x_H2                                         0.6687        0.6693    5.5380e-04        0.0828
+product x_water                                      0.0469        0.0467   -1.9468e-04       -0.4152
+product x_CO2                                        0.0233        0.0228   -5.2537e-04       -2.2546
+product x_CO                                         0.1909        0.1918    8.8629e-04        0.4643
+CH4 conversion                                       0.7532        0.7554        0.0022        0.2952
+reactor duty [kW] (isothermal, + endothermic)     1221.8095      464.8782     -756.9313      -61.9517
 
-  reference PFR: pressure drop 584.435409531521 Pa (not reproduced), stored residence time 2.18277079629982 s
-  Choupo: first-law residual 0 kW (energy exchanged (the larger of: sum of |declared duties and work|, and |Q boundary|)); converged True
-  Choupo T profile: 1000.00 K at the inlet, 1000.00 K at the outlet (isothermal by construction)
+Benchmark E, variant sampleKinetics -- the sample's own rate expressions in both programs
+-----------------------------------------------------------------------------------------
+                                                  reference        Choupo  Choupo - ref         rel %
+product F [mol/s]                                    9.7677        9.7931        0.0254        0.2605
+product x_CH4                                        0.0702        0.0687       -0.0015       -2.1106
+product x_H2                                         0.6687        0.6703        0.0015        0.2280
+product x_water                                      0.0469        0.0461   -7.8607e-04       -1.6765
+product x_CO2                                        0.0233        0.0226   -6.9534e-04       -2.9840
+product x_CO                                         0.1909        0.1923        0.0014        0.7532
+CH4 conversion                                       0.7532        0.7578        0.0046        0.6081
+reactor duty [kW] (isothermal, + endothermic)     1221.8095      466.4000     -755.4095      -61.8271
 ```
+
+Both Choupo runs close the reactor's first law to 3e-14 kW in the
+engine's own report.
+
+## The grid study (2026-10-25)
+
+The inlet carries 1 % hydrogen and every rate divides by a power of p_H2,
+so the first millimetres of the bed are stiff.  The case was first built
+with 400 RK4 steps; refined (same case, `nSteps` only, CH4 conversion):
+
+| steps | article kinetics | sampleKinetics |
+|---:|---:|---:|
+| 400 | 0.7490 | 0.7510 |
+| 1 600 | 0.7516 | 0.7539 |
+| 6 400 | 0.7549 | 0.7573 |
+| 25 600 | 0.7554 | 0.7578 |
+| 102 400 | 0.7554 | 0.7578 |
+
+At 400 steps the outlet was 0.85 % short of its own limit -- larger than
+the 0.56 % gap it was then compared on.  The case now runs 25 600 steps
+(0.4 s).  20 steps (the sample's stored `dV 0.05` over 1 m3) refuses by
+name in Choupo: the first step drives p_H2 to zero and the rate law has no
+value there.
+
+## The same equations in both programs: `variants/sampleKinetics`
+
+`variants/sampleKinetics/constant/reactions` writes the sample's three
+stored rate strings as Choupo expressions: partial pressures in atm, rates
+in kmol/(kg h), its rounded pre-exponentials, its own K correlations and
+its two truncated denominators (the R1/R2/P1/P2 labels resolved by the
+order of each stoichiometry list, which is also the only order under which
+each numerator is the article's rate).  So the two programs integrate the
+same rate laws over the same volume, flow and catalyst basis.  What is
+left between them:
+
+* **CH4 conversion 0.7578 here against 0.7532 stored (+0.61 %)**, CO2
+  -3.0 %, water -1.7 %.  With the rate laws equal, this is the
+  implementation: the integration of each program and the 584 Pa Ergun
+  drop this case does not reproduce.  The drop was measured NOT to explain
+  it (the variant at the mean pressure, 101 033 Pa: conversion 0.7581, the
+  other way).  A coarse integration lowers the conversion in Choupo's own
+  runs (above), and the sample stores a volume increment of 0.05 m3 (20
+  increments), which is CONSISTENT with its lower conversion -- but the
+  stored state does not say how it integrates each increment, so that is a
+  hypothesis, not a measurement.
+* **The duty: 466.40 kW here against 1221.81 kW stored, with the same rate
+  laws.**  So the 2.6x is not a difference in kinetics.  Choupo's duty is
+  the heat of reaction of its own conversion (below); the sample's is not
+  the heat of reaction of the conversion it stores.
 
 ## Findings on Choupo's side
 
-* **The outlet agrees to a few per cent and the conversion to half a per
-  cent** (CH4 conversion 0.7490 against 0.7532; H2 0.6684 against 0.6687;
-  CO 0.1885 against 0.1909; CO2 0.0250 against 0.0233, +7.3 %, the largest
-  relative gap).  The gas residence time agrees to 1e-4 (2.1826 against
-  2.1828 s), which checks the volume, the flow and the catalyst basis the
-  two programs integrate over.
-* **Both beds are RATE-limited, so the composition gap is kinetic and not
-  thermodynamic.**  Steam reforming leaves both outlets about a third short
-  of equilibrium (1 - Q/K1 = 0.35 here, 0.38 for the sample against its own
-  K1), and the shift runs in REVERSE at both (1 - Q/K2 = -0.34, -0.21).  At
-  such outlets every difference in the rate expressions shows: the
-  sample's atm partial pressures against the article's bar, its two
-  truncated denominators, its rounded pre-exponentials and its own K
-  correlations (all findings on its side).  Which of them moves the
-  outlet by how much is NOT measured here: an ablation would have to run
-  the sample's numbers, which this benchmark does not read into a case.
-* **The kij is worth nothing here, measured:** the same bed with every kij
-  0 gives the same outlet to every printed digit and a duty 0.015 kW
-  lower (460.119 against 460.133 kW).  The rate laws read IDEAL partial
-  pressures, as the article writes them, and at 1 atm and 1000 K the PR78
-  departure is tens of watts.
-* **The duty: 460.13 kW here against the sample's stored 1221.81 kW.**
-  Choupo's closes the bed's first law to 0.000 kW in its own report and is
-  the heat of reaction of its conversion: 2.0806 mol/s of CH4 x
-  dH_I(1000 K) 225.21 kJ/mol less 0.2436 mol/s of CO2 x 34.80 kJ/mol
-  (460.08 kW; the 0.05 kW left is the PR78 departure).
-  The same arithmetic on the SAMPLE's stored outlet gives 463.3 kW (its
-  own `reactionHeat` values, at 298 K: 421 kW).  Its stored duty is 2.6
-  times the heat of reaction of the conversion it stores; nothing in the
-  stored state accounts for the rest (findings on the reference side).
+* **With the article's rate laws the outlet agrees to a few per cent and
+  the conversion to 0.3 %** (CH4 conversion 0.7554 against 0.7532; H2
+  0.6693 against 0.6687; CO 0.1918 against 0.1909; CO2 0.0228 against
+  0.0233, -2.3 %, the largest relative gap).  The gas residence time agrees
+  to 1e-4 (2.1826 against 2.1828 s), which checks the volume, the flow and
+  the catalyst basis the two programs integrate over.
+* **Writing the sample's own departures from the article** (variant above)
+  moves Choupo's conversion from 0.7554 to 0.7578: the rate-law
+  differences found on the reference side are worth +0.3 % in conversion
+  here, the same size as the gap left by the implementations.
+* **Both beds are RATE-limited**: steam reforming leaves both outlets about
+  a third short of equilibrium (1 - Q/K1 = 0.35 here, 0.38 for the sample
+  against its own K1, at the 400-step outlet; re-read at 25 600 steps
+  before quoting), and the shift runs in reverse at both.
+* **The kij is worth nothing here, measured** (at 400 steps): every kij 0
+  gave the same outlet to every printed digit and a duty 0.015 kW lower.
+  The rate laws read IDEAL partial pressures, as the article writes them,
+  and at 1 atm and 1000 K the PR78 departure is tens of watts.
+* **The duty** closes the bed's first law to 3e-14 kW in the engine's own
+  report and is the heat of reaction of its conversion (at 400 steps:
+  2.0806 mol/s of CH4 x dH_I(1000 K) 225.21 kJ/mol less 0.2436 mol/s of
+  CO2 x 34.80 kJ/mol = 460.08 kW against 460.13 kW published; the 0.05 kW
+  left is the PR78 departure).  The same arithmetic on the SAMPLE's stored
+  outlet gives 463.3 kW (its own `reactionHeat` values, at 298 K: 421 kW).
 * **Not reproduced, stated:** the Ergun pressure drop (the sample's
   outlet is at 100 740.6 Pa, Choupo's at the inlet's 101 325 Pa).  The T
   profile is flat at 1000.00 K on both sides (isothermal by construction).

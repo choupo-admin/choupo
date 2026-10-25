@@ -31,7 +31,12 @@ units
         operation
         {
             V_R              1 m3;           // the sample's reactor volume
-            nSteps           400;
+            nSteps           25600;          // RK4 steps, GRID-CONVERGED (2026-10-25): the inlet carries
+                                             // 1 % H2 and every rate divides by p_H2^n, so the first
+                                             // millimetres are stiff.  CH4 conversion 0.7490 / 0.7516 /
+                                             // 0.7549 / 0.7554 / 0.7554 at 400 / 1600 / 6400 / 25600 /
+                                             // 102400 steps -- 400 (the first choice) was 0.85 % short
+                                             // of its own limit, more than the gap it was compared on
             thermalMode      isothermal;     // at the feed's 1000 K
             catalystLoading  0.386;          // kg/m3, the sample's value (README)
         }

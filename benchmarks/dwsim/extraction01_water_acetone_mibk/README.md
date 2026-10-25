@@ -8,11 +8,19 @@ github.com/DanWBR/dwsim; the file itself says BuildVersion 8.8.0.0, SavedOn
 extracted with 277.33 mol/s (100 t/h) of pure MIBK in a 4-stage
 counter-current column, everything at 298.15 K and 1 atm.
 
-**Status: BLOCKED on the engine.**  Choupo does not produce an answer for
-this problem today -- its liquid-liquid flash misses splits the problem
-needs (findings C1-C3).  Everything else is in place, so the comparison
-fills in the day the engine is fixed; an engine change was outside this
-commission and was not made.
+**Status (re-measured 2026-10-25): RUNS AND CONVERGES.**  The three
+engine defects this case exposed (C1-C3 below, kept as the record of how
+they were found) were fixed on the development line: the stability test
+carries ln gamma, every split is finished by a Newton on equal activities,
+and a non-converged cascade refuses.  Today the NRTL `extractor` and the
+four-flash `stageCascade` agree with each other to every printed digit
+(extract 984.05 mol/s, raffinate 293.29 mol/s, acetone recovery 1.0000;
+the reference stores 911.32 / 366.01 / 0.9991), and the UNIFAC variant
+REFUSES by name (exit 2).  The two programs do not solve the same problem:
+the reference column is ADIABATIC and cools by 13.4 K (R1), Choupo's
+`extractor` is isothermal by construction, and temperature moves the
+split, so these numbers are a comparison of two problems, not of two
+implementations.  The 2026-10-20 table below is the BLOCKED state, kept.
 
 | file | what it is |
 |---|---|

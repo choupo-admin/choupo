@@ -14,18 +14,25 @@
   its azeotrope to the HP column, which takes acetone out of the bottom and
   returns its own azeotrope to the LP column.
 
-  STAGES, counted as Choupo counts them -- condenser = stage 1, reboiler =
-  stage nStages -- and as the reference sample's own stage list does
-  (Condensador, Estagio_1 ... Estagio_N-2, Refervedor):
-      LP: 40 stages; fresh feed on "Estagio_15" = stage 16.
-      HP: 20 stages; feed on "Estagio_10" = stage 11.
+  STAGES.  The sample lists Condensador, Estagio_1 ... Estagio_N-2,
+  Refervedor -- its TOTAL condenser counted as a stage.  Choupo's nStages
+  counts EQUILIBRIUM stages, stage 1 the top tray and the total condenser
+  above it (the column's own announcement, since the 2026-10 column
+  corrections), so the sample's N maps to nStages N - 1 and Estagio_k to
+  stage k:
+      LP: 39 equilibrium stages; fresh feed on "Estagio_15" = stage 15.
+      HP: 19 equilibrium stages; feed on "Estagio_10" = stage 10.
+  (Re-mapped 2026-10-25 from 40/20 and 16/11, the reading of the condenser
+  as stage 1 that the column no longer has.  Measured: every duty moved by
+  under 0.01 kW and every product flow by under 1e-4 relative -- at reflux
+  ratios of 35 and 40 one stage more or less is invisible here.)
   ONE DEVIATION, stated: the sample attaches the recycle to the LP
-  CONDENSER (stage 1); here it enters stage 2, the top tray.  Measured
-  2026-10-20: Choupo's MESH column ACCEPTS a feed on stage 1 in its
-  multi-feed form and then leaves that feed's composition out of the
-  condenser's component balance (DistillationColumn.cpp, the `j == 0` row
-  of the component residual), so the LP column published a 109.27 % mass
-  closure at exit 0.  README, "Findings on Choupo's side".
+  CONDENSER; here it enters stage 2 (Estagio_2).  A Choupo condenser takes
+  no feed, and a feed on stage 1 REFUSES by name (the MESH writes stage 1
+  with no feed term).  Measured 2026-10-20, before that refusal existed:
+  the multi-feed column ACCEPTED a stage-1 feed and left it out of the
+  balance, publishing a 109.27 % mass closure at exit 0.  README, "Findings
+  on Choupo's side", C1.
 
   SPECIFICATIONS.  The sample fixes each column by its reflux ratio (LP 35,
   HP 40) and its BOTTOMS molar flow (0.5 mol/s each).  Choupo's column takes
@@ -63,14 +70,14 @@ units
 
         operation
         {
-            nStages        40;
+            nStages        39;
             refluxRatio    35;
             distillateRate 2.361749 mol/s;
             P              1 atm;
             feeds
             (
-                { stream feed;     stage 16; }
-                { stream recycle;  stage 2;  }   // the sample: stage 1 (header)
+                { stream feed;     stage 15; }
+                { stream recycle;  stage 2;  }   // the sample: its condenser (header); stage 1 refuses a feed
             );
         }
     }
@@ -90,8 +97,8 @@ units
 
         operation
         {
-            nStages        20;
-            feedStage      11;
+            nStages        19;
+            feedStage      10;
             refluxRatio    40;
             distillateRate 1.862448 mol/s;
             P              6 atm;

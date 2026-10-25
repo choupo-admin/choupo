@@ -64,6 +64,29 @@ python3 -I benchmarks/dwsim/compare.py distillation01_methanol_acetone_pressure_
 column carries them too (its LP liquid traffic falls from 82.7 to
 72.9 mol/s down the column).
 
+## Re-measured 2026-10-25, after the column corrections
+
+C1 is fixed (a feed or side draw on stage 1 now REFUSES by name, and this
+case keeps the recycle on stage 2) and C2 is settled: a column's condenser
+is `condenser { type total|partial; }`, total by default and announced,
+and nStages counts the EQUILIBRIUM stages -- stage 1 the top tray, the
+total condenser above it.  The sample counts its condenser as a stage, so
+the case was RE-MAPPED (system/flowsheetDict header): LP 39 equilibrium
+stages with the fresh feed on stage 15, HP 19 with its feed on stage 10
+(they were 40/16 and 20/11).  Measured: one stage less moves every duty by
+under 0.01 kW and every product flow by under 1e-4 relative at these
+reflux ratios.  `compare.py` now aligns Choupo's stage k with the sample's
+Estagio_k (it had aligned the top tray with the condenser).
+
+Against the table below (2026-10-20), every row is unchanged to its
+printed digits EXCEPT: HP condenser 2046.14 kW NRTL / 2045.24 UNIFAC
+against the reference's 2054.66 (-0.41 %); HP reboiler 2062.55 / 2061.60
+against 2076.52 (-0.67 %); LP duties +0.01 kW.  The stage profiles, now
+aligned: HP max |dT| 2.06 K (stage 15) and max |dx_MeOH| 0.023 (stage 3) --
+the 0.085 printed below was the misalignment; LP max |dT| 9.86 K (stage 19)
+and max |dx_MeOH| 0.746 (stage 17), the pinched front of "What agrees"
+below.  The plant first law closes to +0.079 kW on both variants.
+
 ## The comparison (measured 2026-10-20, this tree)
 
 ```

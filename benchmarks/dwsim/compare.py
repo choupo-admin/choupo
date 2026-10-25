@@ -296,18 +296,25 @@ def case_B(case, work):
     print('  Choupo NRTL: first-law residual %+.4f kW (%s)' % (geb.get('residual_kW', float('nan')),
                                                              geb.get('residual_basis', '')))
 
-    # Stage profiles, stage j against stage j (condenser = 1).
+    # Stage profiles.  The reference's list is Condensador, Estagio_1 ...
+    # Estagio_N-2, Refervedor; Choupo's profile row j is its equilibrium stage
+    # j + 1 (stage 1 the top tray, the total condenser above it), which is the
+    # reference's Estagio_(j+1) -- its list index j + 1.  (Until 2026-10-25
+    # this compared row j with list index j, the condenser reading the column
+    # no longer has.)
     for unit, refu, n in (('LP', LPr, 40), ('HP', HPr, 20)):
         prof = res['profiles'][unit]['columns']
-        dT = [prof['T'][j] - refu['Tf'][j] for j in range(n)]
-        dx = [prof['x_methanol'][j] - refu['xf_methanol'][j] for j in range(n)]
-        jT = max(range(n), key=lambda j: abs(dT[j]))
-        jx = max(range(n), key=lambda j: abs(dx[j]))
-        print('\n%s stage profile, Choupo NRTL - reference (stage 1 = condenser)' % unit)
+        m = n - 1
+        dT = [prof['T'][j] - refu['Tf'][j + 1] for j in range(m)]
+        dx = [prof['x_methanol'][j] - refu['xf_methanol'][j + 1] for j in range(m)]
+        jT = max(range(m), key=lambda j: abs(dT[j]))
+        jx = max(range(m), key=lambda j: abs(dx[j]))
+        print('\n%s stage profile, Choupo NRTL - reference (equilibrium stage k = the reference\'s Estagio_k;'
+              ' the last is the reboiler)' % unit)
         print('  stage   T_ref [K]  T_Choupo   dT [K]    x_MeOH_ref  x_MeOH_Choupo   dx')
-        for j in sorted(set([0, 1, n // 4, n // 2, 3 * n // 4, n - 1, jT, jx])):
+        for j in sorted(set([0, 1, m // 4, m // 2, 3 * m // 4, m - 1, jT, jx])):
             print('  %5d   %8.3f  %8.3f  %+7.3f    %9.6f   %9.6f   %+9.6f'
-                  % (j + 1, refu['Tf'][j], prof['T'][j], dT[j], refu['xf_methanol'][j],
+                  % (j + 1, refu['Tf'][j + 1], prof['T'][j], dT[j], refu['xf_methanol'][j + 1],
                      prof['x_methanol'][j], dx[j]))
         print('  max |dT| %.3f K at stage %d;  max |dx_MeOH| %.4f at stage %d' % (abs(dT[jT]), jT + 1, abs(dx[jx]), jx + 1))
 
@@ -750,6 +757,32 @@ def case_E(case, work):
     if 'T' in prof:
         print('  Choupo T profile: %.2f K at the inlet, %.2f K at the outlet (isothermal by construction)'
               % (prof['T'][0], prof['T'][-1]))
+
+    # THE SAME EQUATIONS (variants/sampleKinetics): the sample's own stored rate
+    # expressions -- atm, its rounded A, its K correlations, its truncated
+    # denominators -- written as Choupo expressions, so the two programs integrate
+    # the same rate laws and what is left between them is the implementation
+    # (and the 584 Pa Ergun drop the case does not reproduce).
+    vp = scratch_copy(case, 'sampleKinetics', work)
+    subprocess.run([INIT0, vp], cwd=ROOT, capture_output=True, text=True)
+    vcode, vres, _ = run(SOLVE, vp)
+    print('\n[Choupo, sampleKinetics] exit %d, converged %s, NaN-free %s'
+          % (vcode, vres and vres.get('converged'), nan_free(vres)))
+    rows = []
+
+    def addv(label, refv, v):
+        rows.append([label, refv, v, None if refv is None or v is None else v - refv, rel(v, refv)])
+
+    addv('product F [mol/s]', p['F'], stv(vres, 'product', 'F'))
+    for rc, cc in (('methane', 'CH4'), ('hydrogen', 'H2'), ('water', 'water'), ('carbonDioxide', 'CO2'),
+                   ('carbonMonoxide', 'CO')):
+        addv('product x_' + cc, p['x'].get(rc), stv(vres, 'product', 'x_' + cc))
+    addv('CH4 conversion', 1 - p['F'] * p['x']['methane'] / feedCH4,
+         None if vres is None else 1 - stv(vres, 'product', 'F') * stv(vres, 'product', 'x_CH4') / feedCH4)
+    addv('reactor duty [kW] (isothermal, + endothermic)', E['eSTR000'], kp(vres, 'PFR', 'Q_kW'))
+    table('Benchmark E, variant sampleKinetics -- the sample\'s own rate expressions in both programs',
+          cols, rows, 'Same rate laws on both sides; the sample\'s Ergun drop (584 Pa) is not reproduced.')
+    plant_lines(vres, 'Choupo, sampleKinetics')
 
 
 CASES = {
