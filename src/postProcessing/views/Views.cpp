@@ -41,6 +41,8 @@ License
 #include <iomanip>
 #include <iostream>
 #include <limits>
+#include <map>
+#include <memory>
 #include <set>
 #include <sstream>
 #include <stdexcept>
