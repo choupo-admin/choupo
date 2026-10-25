@@ -185,6 +185,24 @@ describe("the design consequence, and the honest half", () => {
     expect(prose(SRC)).toContain("models sensible heat only");
   });
 
+  it("qualifies the DUTY of a phase change and the scope of U·A·LMTD (C150 R14)", () => {
+    //  A warning on the outlet does not validate a sensible duty: the page
+    //  says the engine announces the DUTY, and that the plain U·A·LMTD check
+    //  holds only for one pass with both sides single-phase.
+    const l = prose(ENTU_LIMITS.find((x) => x.id === "sensible-only")!.body);
+    expect(l).toContain("is NOT the duty of a condenser or an evaporator");
+    expect(l).toContain("the DUTY (not only the outlet) rests on a sensible model");
+    expect(l).toContain("the same RATIO but not the same physics");
+    const n = prose(step(1).note!);
+    expect(n).toContain("Q = U·A·F·ΔT_lm");
+    expect(n).not.toMatch(/if they disagree, one of them is wrong\.$/);
+    const src = readFileSync(new URL(
+      "../../src/unitOperations/heatTransfer/HeatExchanger.cpp", import.meta.url),
+      "utf-8");
+    expect(src).toContain("a side changed phase: ");
+    expect(src).toContain("implied F = Q /");
+  });
+
   it("names the fouling, pressure-drop and arrangement gaps concretely", () => {
     const byId = Object.fromEntries(ENTU_LIMITS.map((l) => [l.id, l]));
     expect(prose(byId["no-fouling"]!.body)).toContain("no fouling term");

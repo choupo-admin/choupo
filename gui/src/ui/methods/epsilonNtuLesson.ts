@@ -75,7 +75,15 @@ export const ENTU_STEPS: readonly LessonStep[] = [
     note: "Choupo's exchanger takes the second route: it solves the duty and "
       + "both outlets from ε-NTU, and only then computes the LMTD, printing "
       + "U·A·LMTD beside the duty as a cross-check.  Two routes to one number "
-      + "is worth the arithmetic; if they disagree, one of them is wrong.",
+      + "is worth the arithmetic — but only where the two routes describe the "
+      + "same exchanger.  Q = U·A·ΔT_lm holds as written for a SINGLE-pass, "
+      + "purely counter- or co-current exchanger with both streams "
+      + "single-phase; there, a disagreement means one of them is wrong.  A "
+      + "1-shell / 2-tube-pass exchanger obeys Q = U·A·F·ΔT_lm with a "
+      + "correction factor F below one, so the plain product is EXPECTED to "
+      + "exceed Q (the engine prints the F that the two numbers imply); and "
+      + "across a phase change the log-mean of the terminal temperatures is "
+      + "not the driving force at all, so the check says nothing there.",
   },
   {
     n: 2,
@@ -215,9 +223,19 @@ export const ENTU_LIMITS: readonly { id: string; title: string; body: string }[]
       + "ε-NTU. The outlet STATE is found afterwards from the enthalpy, so a "
       + "stream may leave partly boiled (a pure one at its saturation "
       + "temperature, its vapour fraction carried as a pin), but the duty "
-      + "that boiled it came from a sensible c_p. With the knobs you can only "
-      + "approach C_r = 0 by starving one side's flow, which reaches the same "
-      + "ratio by a different road.",
+      + "that boiled it came from a sensible c_p — so such a duty is NOT the "
+      + "duty of a condenser or an evaporator, and the engine says so: when "
+      + "either outlet leaves in a different phase from its inlet, the run "
+      + "announces that the DUTY (not only the outlet) rests on a sensible "
+      + "model and that U·A·LMTD is no check there. On this page's witness "
+      + "the knobs keep both sides liquid (the hot inlet stops at 390 K, "
+      + "below the 393 K saturation of water at the case's 2 bar), so the "
+      + "exercise stays in the domain the model covers. With the knobs you "
+      + "can only approach C_r = 0 by starving one side's flow, which reaches "
+      + "the same RATIO but not the same physics: a starved stream swings "
+      + "through the whole temperature difference while the other side "
+      + "barely moves, whereas a boiling stream holds its temperature because "
+      + "its heat goes into latent change.",
   },
   {
     id: "constant-U",
