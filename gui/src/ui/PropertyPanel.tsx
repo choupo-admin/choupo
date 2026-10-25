@@ -121,6 +121,7 @@ import {
   type DisplayPrefs,
 } from "../state/displayUnits.js";
 import { useStore } from "../state/store.js";
+import { recordFit } from "../case/caseModes.js";
 
 // Normalise a raw flowsheetDict stream into the StreamSpec the panel reads --
 // mirrors toGraph.readFlowsheet: composition from molarComposition /
@@ -344,6 +345,31 @@ function OpDetails({ op }: { op: JsonDict }) {
   );
 }
 
+/** A unit whose membrane is a record a Properties-mode fit WROTE: say which
+ *  fit, from the record's own `fit {}` block, and offer the way to it
+ *  (DEV.md 4c C151/C152). */
+function FittedMembraneLink({ unit }: { unit: UnitSpec }) {
+  const rawFiles = useStore((s) => s.caseFiles.rawFiles);
+  const focusProps = useStore((s) => s.focusProps);
+  const membrane = unit.operation?.["membrane"];
+  if (typeof membrane !== "string") return null;
+  const fit = recordFit(rawFiles, membrane);
+  if (!fit) return null;
+  return (
+    <Alert color="grape" variant="light" p="xs" data-fitted-membrane={membrane}>
+      <Text size="xs">
+        Membrane <Text span ff="monospace" fw={600}>{membrane}</Text> was FITTED by operation{" "}
+        <Text span ff="monospace" fw={600}>{fit.operation}</Text>
+        {fit.verdict ? <> (verdict <Text span fw={600}>{fit.verdict}</Text>)</> : null} of this case.
+      </Text>
+      <Anchor component="button" type="button" size="xs" mt={4}
+        onClick={() => focusProps(`op:${fit.operation}`)}>
+        Open the fit in Properties &amp; data
+      </Anchor>
+    </Alert>
+  );
+}
+
 function UnitDetails({
   unit,
   kpis,
@@ -399,6 +425,8 @@ function UnitDetails({
           </Anchor>
         )}
       </Stack>
+
+      <FittedMembraneLink unit={unit} />
 
       {(unit.type === "heatExchanger" || hasKernSheet) && kpis && (
         <HeatExchangerDatasheet unit={unit} kpis={kpis} />

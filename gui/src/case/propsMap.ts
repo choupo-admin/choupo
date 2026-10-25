@@ -79,11 +79,12 @@ import {
 import { propsModelTheoryLink, propsOpHelpLink } from "./modelDocs.js";
 import { locatePropsBlocks, type BlockLines } from "./propsDictLocate.js";
 import { firstSentence } from "./reviewScreen.js";
+import { recordNameOfPath, unitsReadingRecord } from "./caseModes.js";
 
 export const PROPS_DICT_PATH = "system/propsDict";
 export const THERMO_DICT_PATH = "constant/thermoPhysPropDict";
 
-export type BlockKind = "data" | "model" | "operation" | "view";
+export type BlockKind = "data" | "model" | "operation" | "view" | "unit";
 /** What a wire carries -- each its own colour AND dash, so colour is never
  *  the only cue (ui/PropsMap.tsx draws the legend). */
 export type FlowKind = "measured" | "reference" | "record" | "model" | "result" | "proposal";
@@ -93,6 +94,8 @@ export type MapTarget =
   | { kind: "guide"; url: string; label: string }
   | { kind: "view"; domId: string; label: string }
   | { kind: "case"; path: string; line?: number; endLine?: number; label: string }
+  /** a unit of the case's flowsheet: switch to Process mode and select it */
+  | { kind: "process"; unit: string; label: string }
   | { kind: "none"; label: string };
 
 export interface MapMember {
@@ -165,6 +168,8 @@ export interface PropsMap {
 
 export interface MapInput {
   propsDict: JsonDict | null | undefined;
+  /** a two-mode case's flowsheet: the units that read a record an op writes */
+  flowsheet?: JsonDict | null;
   thermo?: JsonDict | null;
   rawFiles?: Record<string, string>;
   post?: PostProcessingBlock | null;
@@ -407,6 +412,28 @@ export function buildFine(input: MapInput): { nodes: Map<string, Fine>; edges: F
       let values = valuesAt(op.dict, s.key);
       if (values.length === 0 && s.default) values = [s.default];
       for (const v of values) {
+        if (writes && s.kind === "record") {
+          //  A RECORD written into the case (DEV.md 4c C152): one node per
+          //  record, and every flowsheet unit that reads it after it.
+          const name = recordNameOfPath(v);
+          const rid = `record:${name}`;
+          const path = caseFile(raw, v);
+          add({ id: rid, kind: "view", role: "record", order, member: {
+            id: rid, label: name, detail: `${s.label}: ${v}`,
+            target: path ? caseTarget(path, undefined, `open ${path}`)
+              : { kind: "none", label: `${v}: written by ${op.name} in Properties mode; not in the case yet` } } });
+          edges.push({ from: id, to: rid, flow: "proposal" });
+          for (const u of unitsReadingRecord(input.flowsheet, name)) {
+            const uid = `unit:${u}`;
+            const unit = (Array.isArray(input.flowsheet?.["units"]) ? input.flowsheet!["units"] as JsonValue[] : [])
+              .find((x) => isDict(x) && x["name"] === u) as JsonDict | undefined;
+            add({ id: uid, kind: "unit", role: "process unit", order, member: {
+              id: uid, label: u, detail: `${String(unit?.["type"] ?? "unit")} -- reads membrane ${name}`,
+              target: { kind: "process", unit: u, label: `${u} in Process mode` } } });
+            edges.push({ from: rid, to: uid, flow: "record" });
+          }
+          continue;
+        }
         if (writes) {
           const oid = `out:${op.name}:${s.key}`;
           add({ id: oid, kind: "view", role: "proposal", order, member: {
@@ -535,7 +562,7 @@ export const MAX_ROWS = 5;
  *  choices half-hidden reads as a different law. */
 export const maxRows = (kind: BlockKind) => (kind === "model" ? 10 : MAX_ROWS);
 
-const COLUMN: Record<BlockKind, number> = { data: 0, model: 1, operation: 2, view: 3 };
+const COLUMN: Record<BlockKind, number> = { data: 0, model: 1, operation: 2, view: 3, unit: 4 };
 
 export function blockHeight(b: Pick<MapBlock, "members" | "badges" | "expanded" | "kind">): number {
   const max = maxRows(b.kind);
@@ -551,7 +578,10 @@ export function derivePropsMap(input: MapInput): PropsMap {
 
   //  STUDIES: components of op / view / reference / data-file / inline links
   const uf = new UnionFind();
-  const joins = (n: Fine | undefined) => !!n && n.kind !== "model" && n.role !== "record";
+  //  records (read or written), models and process units are SHARED: they
+  //  sit with their first consumer and never weld two studies together
+  const joins = (n: Fine | undefined) => !!n && n.kind !== "model" && n.kind !== "unit"
+    && n.role !== "record";
   for (const e of edges) {
     const a = nodes.get(e.from); const b = nodes.get(e.to);
     if (joins(a) && joins(b)) uf.join(e.from, e.to);
@@ -586,7 +616,8 @@ export function derivePropsMap(input: MapInput): PropsMap {
     const band = bandOf(n);
     const key = n.kind === "model" ? `model:${n.law ?? n.id}`
       : n.kind === "operation" ? `op:${band}:${n.role}`
-      : n.kind === "view" ? `view:${band}:${n.role === "proposal" ? "proposal" : "views"}`
+      : n.kind === "view" ? `view:${band}:${n.role === "proposal" || n.role === "record" ? n.role : "views"}`
+      : n.kind === "unit" ? `unit:${band}`
       : `data:${band}:${n.role}`;
     const g = groups.get(key) ?? { key, kind: n.kind, role: n.role, band, fine: [] };
     g.fine.push(n);
@@ -642,7 +673,11 @@ export function derivePropsMap(input: MapInput): PropsMap {
             : first.member.detail;
         }
       } else if (g.kind === "view") {
-        if (g.role === "proposal") {
+        if (g.role === "record") {
+          role = "records written";
+          if (members.length > 1) title = plural(members.length, "record");
+          subtitle = "written into the case -- the flowsheet reads it";
+        } else if (g.role === "proposal") {
           role = "records written";
           if (members.length > 1) title = plural(members.length, "record");
           subtitle = "a proposal for a human to promote, never the catalogue";
@@ -656,6 +691,10 @@ export function derivePropsMap(input: MapInput): PropsMap {
           }
           subtitle = first.member.detail.slice(0, 110);
         }
+      } else if (g.kind === "unit") {
+        role = "process unit";
+        if (members.length > 1) title = plural(members.length, "unit");
+        subtitle = first.member.detail;
       } else {
         role = DATA_ROLE_WORD[g.role] ?? g.role;
         if (members.length > 1) title = plural(members.length, g.role === "inline" ? "inline set" : g.role === "record" ? "record" : "dataset");
@@ -689,12 +728,13 @@ export function derivePropsMap(input: MapInput): PropsMap {
   const bands: MapBand[] = [];
   let y = 0;
   const framed = studyRoots.length > 1 || (studyRoots.length === 1 && hasLoose);
+  const nCols = blocks.some((b) => b.kind === "unit") ? 5 : 4;
   for (let bi = 0; bi < nBands; ++bi) {
     const inBand = blocks.filter((b) => b.band === bi);
     if (inBand.length === 0) continue;
     const top = y + (framed ? BAND_PAD + BAND_LABEL : 0);
     let bottom = top;
-    for (const kind of ["data", "model", "operation", "view"] as BlockKind[]) {
+    for (const kind of ["data", "model", "operation", "view", "unit"] as BlockKind[]) {
       const col = inBand.filter((b) => b.kind === kind).sort((a, b) => ordOf(a) - ordOf(b));
       let cy = top;
       for (const b of col) {
@@ -714,12 +754,12 @@ export function derivePropsMap(input: MapInput): PropsMap {
     const title = isStudy
       ? `Ops, views and data that refer to each other in system/propsDict: ${viewsIn.map((m) => m.label).slice(0, 8).join(", ")}${viewsIn.length > 8 ? ", ..." : ""}`
       : "Operations that no view of the propsDict draws from";
-    const w = (framed ? 2 * BAND_PAD : 0) + 4 * COL_W + 3 * COL_GAP;
+    const w = (framed ? 2 * BAND_PAD : 0) + nCols * COL_W + (nCols - 1) * COL_GAP;
     const h = bottom - y + (framed ? BAND_PAD : 0);
     bands.push({ index: bi, label, title, framed, x: 0, y, w, h });
     y += h + BAND_GAP;
   }
-  const width = (framed ? 2 * BAND_PAD : 0) + 4 * COL_W + 3 * COL_GAP;
+  const width = (framed ? 2 * BAND_PAD : 0) + nCols * COL_W + (nCols - 1) * COL_GAP;
   const order = [...nodes.values()].sort((p, q) => p.order - q.order);
   return {
     nodes: order.map((n) => ({ id: n.id, kind: n.kind, role: n.role, member: n.member })),
@@ -838,7 +878,7 @@ export function caseTree(map: PropsMap, propsDict: JsonDict | null | undefined,
   const ops = declaredOps(propsDict);
   const viewKids = (opId: string): CaseTreeNode[] => neighbours(map, opId).down
     .map((v) => map.nodes.find((n) => n.id === v))
-    .filter((n): n is MapNode => !!n && n.kind === "view" && n.role !== "proposal")
+    .filter((n): n is MapNode => !!n && n.kind === "view" && n.role !== "proposal" && n.role !== "record")
     .map((n) => leaf(n));
   const shelves: CaseTreeNode[] = [];
   for (const d of [...disciplines, "Undeclared"]) {
@@ -865,14 +905,18 @@ export function caseTree(map: PropsMap, propsDict: JsonDict | null | undefined,
   if (shelves.length) out.push({ id: "folder:ops", label: "Operations", folder: true, children: shelves });
 
   //  views no operation feeds (drawn from references alone)
-  const orphan = byKind("view").filter((n) => n.role !== "proposal"
+  const orphan = byKind("view").filter((n) => n.role !== "proposal" && n.role !== "record"
     && !map.links.some((l) => l.to === n.id && l.from.startsWith("op:")));
   if (orphan.length) out.push({ id: "folder:views", label: "Views across the case", folder: true,
     children: orphan.map((n) => leaf(n)) });
 
-  const written = byKind("view").filter((n) => n.role === "proposal");
+  const written = byKind("view").filter((n) => n.role === "proposal" || n.role === "record");
   if (written.length) out.push({ id: "folder:records", label: "Records produced", folder: true,
     children: written.map((n) => leaf(n)) });
+
+  const units = byKind("unit");
+  if (units.length) out.push({ id: "folder:units", label: "Process units", folder: true,
+    children: units.map((n) => leaf(n)) });
 
   out.push({ id: "folder:myplots", label: "My plots", folder: true,
     children: myPlots.map((p) => ({ id: `myplot:${p.id}`, label: p.title, detail: p.file, children: [] })) });

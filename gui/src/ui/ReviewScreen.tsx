@@ -256,7 +256,7 @@ function OtherPlots({ files, csvFiles }: { files: string[]; csvFiles: { [f: stri
   );
 }
 
-export function ReviewScreen({ ops, result, readiness, audit, propsDict, thermo, rawFiles, caseKey }: {
+export function ReviewScreen({ ops, result, readiness, audit, propsDict, thermo, rawFiles, caseKey, flowsheet }: {
   ops: JsonDict[];
   result: RunResult | undefined;
   /** the thermo readiness, drawn here (a case that creates a component) */
@@ -268,6 +268,8 @@ export function ReviewScreen({ ops, result, readiness, audit, propsDict, thermo,
   rawFiles?: Record<string, string>;
   /** the case's name: My plots are remembered per case */
   caseKey?: string;
+  /** a two-mode case's flowsheet (the units that read a fitted record) */
+  flowsheet?: JsonDict | null;
 }) {
   const ran = result?.status === "done";
   const rows = verdictRows(ops, result?.operationResults ?? [], result?.validation);
@@ -275,9 +277,14 @@ export function ReviewScreen({ ops, result, readiness, audit, propsDict, thermo,
   const groups = block ? viewGroups(block) : [];
   const csvFiles = result?.csvFiles ?? {};
   const openCaseAt = useStore((s) => s.openCaseAt);
+  const setCaseMode = useStore((s) => s.setCaseMode);
+  const selectNode = useStore((s) => s.selectNode);
   const narrow = useMediaQuery("(max-width: 900px)") ?? false;
 
   const [selected, setSelected] = useState<string>("");
+  //  a selection asked for from outside (a unit's link to its fit, C152)
+  const propsFocus = useStore((s) => s.propsFocus);
+  useEffect(() => { if (propsFocus) setSelected(propsFocus.id); }, [propsFocus]);
   const [expanded, setExpanded] = useState<Set<string>>(new Set());
   const [mapFolded, setMapFolded] = useState(false);
   const [treeOpen, setTreeOpen] = useState(false);
@@ -286,8 +293,8 @@ export function ReviewScreen({ ops, result, readiness, audit, propsDict, thermo,
   useEffect(() => { setMyPlots(loadPlots(key)); setSelected(""); }, [key]);
 
   const map = useMemo(() => derivePropsMap({
-    propsDict, thermo, rawFiles, post: block ?? null, results: result?.operationResults, expanded,
-  }), [propsDict, thermo, rawFiles, block, result, expanded]);
+    propsDict, thermo, rawFiles, post: block ?? null, results: result?.operationResults, expanded, flowsheet,
+  }), [propsDict, thermo, rawFiles, block, result, expanded, flowsheet]);
   const verdicts = useMemo(() => new Map(rows.filter((r) => r.verdict).map((r) => [r.name, r.verdict])), [rows]);
   const tree = useMemo(() => caseTree(map, propsDict, PROPS_DISCIPLINES, myPlots, verdicts),
     [map, propsDict, myPlots, verdicts]);
@@ -310,8 +317,9 @@ export function ReviewScreen({ ops, result, readiness, audit, propsDict, thermo,
     if (t.kind === "guide") openGuide(t.url);
     else if (t.kind === "case") openCaseAt(t.path, t.line, t.endLine);
     else if (t.kind === "view") setSelected(`view:${t.domId}`);
+    else if (t.kind === "process") { setCaseMode("process"); selectNode(t.unit); }
     else notifications.show({ message: t.label, color: "gray", autoClose: 4000 });
-  }, [openCaseAt]);
+  }, [openCaseAt, setCaseMode, selectNode]);
 
   //  the DOORS a figure or a verdict row opens on its declaring block
   useEffect(() => {

@@ -53,6 +53,7 @@ import { useReducedMotion } from "@mantine/hooks";
 import { Suspense, lazy, useEffect, useState } from "react";
 
 import { useStore, hasCaseOpen } from "../state/store.js";
+import { useCaseMode } from "../state/useCaseMode.js";
 import { useStaleResult } from "../state/useStaleResult.js";
 import { useLayoutPopOutFollow } from "../state/useLayoutPopOut.js";
 import { layoutKeyOf } from "../case/layoutPopOut.js";
@@ -130,9 +131,9 @@ const LayoutPopOutTab = lazy(() =>
 export function AppShell() {
   // Derive page mode from caseFiles: props cases carry a propsDict
   // and no flowsheet; everything else uses the flowsheet view.
-  const isPropsCase = useStore(
-    (s) => Boolean(s.caseFiles.propsDict) && !s.caseFiles.flowsheet,
-  );
+  //  ... and a two-mode case shown in Properties & data (DEV.md 4c C152):
+  //  one home for the answer, state/useCaseMode.ts.
+  const isPropsCase = useCaseMode().propsView;
   const activeWorkspace = useStore((s) => s.activeWorkspace);
   const stale = useStaleResult();
   // Keep an open ?layout= tab current with this tab's run and declared case
@@ -259,7 +260,10 @@ export function AppShell() {
       //  owns F1 there too (the selected map block or tree node, else the
       //  selected panel): answering here as well opened two tabs per press
       //  (found 2026-10-25, DEV.md 4c C151).
-      if (s.activeWorkspace === null && s.caseFiles.propsDict && !s.caseFiles.flowsheet) return;
+      if (s.activeWorkspace === null && s.caseFiles.propsDict
+          && (!s.caseFiles.flowsheet || s.caseModeFor[s.tutorialName] === "props"
+              || (s.caseModeFor[s.tutorialName] === undefined
+                  && s.caseFiles.controlDict?.["application"] === "choupoProps"))) return;
       const kind = tabKindFor({
         hasCase: hasCaseOpen(s.tutorialName),
         activeWorkspace: s.activeWorkspace,

@@ -103,6 +103,7 @@ import { downloadComponentProposal } from "../case/saveCase.js";
 import { caseHasUserCode, USER_CODE_MSG } from "../case/userCode.js";
 import { tutorialByName } from "../cases/tutorials.js";
 import { useStore } from "../state/store.js";
+import { useCaseMode } from "../state/useCaseMode.js";
 import type { JsonDict } from "../dict/index.js";
 import { DecisionLedger, buildLedger } from "./DecisionLedger.js";
 import { FitStatsPanel } from "./FitStatsPanel.js";
@@ -523,6 +524,11 @@ export function PropsView() {
   const flowsheetRunAt = useStore((s) => s.flowsheetRunAt);
 
   const hasFlowsheet = Boolean(caseFiles.flowsheet);
+  //  A two-mode case shown in Properties & data gets the props-case screen
+  //  (DEV.md 4c C152); its runs are this view's own, as a flowsheet case's.
+  const caseMode = useCaseMode();
+  const setCaseMode = useStore((s) => s.setCaseMode);
+  const twoModeProps = caseMode.modes !== null && caseMode.propsView;
   // A composite plant whose sectors are not yet WIRED (children present, no
   // connections) is in the CURATION phase -- its flowsheet can never run, so
   // the "Simulate process" affordance would be a dead end.  Mirror TopBar's
@@ -850,7 +856,8 @@ export function PropsView() {
             </Text>
           ) : (
             <Button size="xs" variant={consolidated ? "filled" : "light"} color={consolidated ? "teal" : "gray"}
-              rightSection={<IconArrowRight size={14} />} onClick={() => setActiveWorkspace(null)}
+              rightSection={<IconArrowRight size={14} />}
+              onClick={() => (caseMode.modes ? setCaseMode("process") : setActiveWorkspace(null))}
               title="Go to the flowsheet -- it runs on the foundation you just validated">
               Simulate process
             </Button>
@@ -897,11 +904,11 @@ export function PropsView() {
 
       {/* Body: a props-only case's REVIEW SCREEN, the navigator whole in its
           Audit; a flowsheet case's navigator as it was. */}
-      {!hasFlowsheet && hasProps ? (
+      {(!hasFlowsheet || twoModeProps) && hasProps ? (
         <Box style={{ flex: 1, minHeight: 0, position: "relative" }}>
           <ReviewScreen ops={reviewOps} result={runs.get(targets[0]?.caseName ?? "")}
             propsDict={targets[0]?.propsDict} thermo={caseFiles.thermoPackage}
-            rawFiles={caseFiles.rawFiles} caseKey={tutorialName}
+            rawFiles={caseFiles.rawFiles} caseKey={tutorialName} flowsheet={caseFiles.flowsheet}
             readiness={readinessProminent(reviewOps)
               ? <Box style={{ position: "absolute", inset: 0 }}><ThermoView /></Box> : undefined}
             audit={navigator} />

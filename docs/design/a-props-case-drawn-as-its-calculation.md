@@ -173,6 +173,29 @@ details pane), a dataset or record its file in the Case tab.
   are also one collapsed "Other plots" section of the overview.  One home for
   every figure of a props case.
 
+## 6b. One case, two modes (C152's GUI half)
+
+A case carrying BOTH `system/flowsheetDict` and `system/propsDict` runs in
+either mode (C152, `docs/design/one-case-two-modes.md` on that branch).  The
+GUI reads the rule `bin/curate/case_manifest.py` writes into
+`generated/caseManifest.json` -- both dicts, both modes; Properties & data by
+default only where `application` is choupoProps -- off the case files it has
+already loaded (`gui/src/case/caseModes.ts`), the same fact by the same rule.
+
+* A **mode switch** (Process | Properties & data) sits in the menu row of a
+  two-mode case only; Properties & data IS the props-case screen above, and
+  Process drops the `Props` view, so there is one door to each.
+  `state/useCaseMode.ts` is the one home every surface asks.
+* On the map, a `fitParameters` op that writes `output.record` draws the
+  chain DATA -> the fit -> the RECORD it writes -> the flowsheet UNIT whose
+  `operation.membrane` names it (a fifth column, PROCESS); F1 on the unit
+  switches to Process and selects it.
+* In Process, a unit whose membrane record carries a `fit {}` block says which
+  operation fitted it and opens that operation in Properties & data -- read
+  off the record itself, so it holds before any run.
+* A Process run that refuses a STALE fit shows its remedy as a button that
+  switches to Properties & data.
+
 ## 7. Gates and tests
 
 * `gui/tests/propsMap.test.ts`: the registry coverage of `x-choupo`; the

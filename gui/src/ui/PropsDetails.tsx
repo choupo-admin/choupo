@@ -55,7 +55,7 @@ import type { VerdictRow } from "../case/reviewScreen.js";
 import { ViewFigure } from "./plotting/ViewFigure.js";
 
 const KIND_WORD: Record<string, string> = {
-  data: "DATA", model: "MODEL", operation: "OPERATION", view: "VIEW",
+  data: "DATA", model: "MODEL", operation: "OPERATION", view: "VIEW", unit: "PROCESS UNIT",
 };
 
 /** The figure items of the run, keyed by the DOM id a view member carries. */
@@ -126,7 +126,7 @@ function Header({ kind, title, detail, help, source, onActivate }: {
         {help && help.kind !== "case" && (
           <Button size="compact-xs" variant="light" leftSection={<IconHelp size={13} />}
             onClick={() => onActivate(help)} title={help.label}>
-            {help.kind === "view" ? "Show the figure" : "Theory (F1)"}
+            {help.kind === "view" ? "Show the figure" : help.kind === "process" ? "Show it in Process (F1)" : "Theory (F1)"}
           </Button>
         )}
         {help && help.kind === "case" && (

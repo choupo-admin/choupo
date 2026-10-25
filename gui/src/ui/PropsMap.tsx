@@ -52,7 +52,7 @@ import {
 import "@xyflow/react/dist/style.css";
 import { ActionIcon, Badge, Box, Group, Text, Tooltip, useComputedColorScheme } from "@mantine/core";
 import {
-  IconArrowsMaximize, IconArrowsMinimize, IconChartDots, IconDatabase, IconHelp,
+  IconArrowsMaximize, IconArrowsMinimize, IconBuildingFactory2, IconChartDots, IconDatabase, IconHelp,
   IconMathFunction, IconSettings2,
 } from "@tabler/icons-react";
 
@@ -66,6 +66,7 @@ const KIND: Record<BlockKind, { word: string; color: string; radius: number; Ico
   model:     { word: "MODEL",     color: "violet", radius: 16, Icon: IconMathFunction },
   operation: { word: "OPERATION", color: "cyan",   radius: 4,  Icon: IconSettings2 },
   view:      { word: "VIEW",      color: "teal",   radius: 4,  Icon: IconChartDots },
+  unit:      { word: "PROCESS",   color: "orange", radius: 4,  Icon: IconBuildingFactory2 },
 };
 
 /** One look per wire: what flows, its colour and its dash. */
@@ -75,7 +76,7 @@ export const FLOW: Record<FlowKind, { word: string; stroke: string; dash?: strin
   record:    { word: "record (equipment, substance)", stroke: "#868e96", dash: "2 4", width: 1.8 },
   model:     { word: "model",              stroke: "#7048e8", dash: "10 4 2 4", width: 2 },
   result:    { word: "results",            stroke: "#0ca678", width: 2.6 },
-  proposal:  { word: "record proposed",    stroke: "#d6336c", dash: "4 3", width: 2 },
+  proposal:  { word: "record written",    stroke: "#d6336c", dash: "4 3", width: 2 },
 };
 
 export interface PropsMapHandlers {

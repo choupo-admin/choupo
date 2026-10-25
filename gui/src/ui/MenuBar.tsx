@@ -96,6 +96,7 @@ import {
   Group,
   Menu,
   Modal,
+  SegmentedControl,
   Stack,
   Text,
 } from "@mantine/core";
@@ -103,6 +104,8 @@ import { useDisclosure, useHotkeys } from "@mantine/hooks";
 import { notifications } from "@mantine/notifications";
 import { IconCheck, IconChevronDown, IconSearch } from "@tabler/icons-react";
 
+import { useCaseMode } from "../state/useCaseMode.js";
+import { MODE_LABEL, type CaseMode } from "../case/caseModes.js";
 import { useStore, reopenLastCase, lastCaseLabel, hasCaseOpen, isIsolatedTab, type WorkspaceKey } from "../state/store.js";
 import {
   WORKSPACES, captionOf, visibleWorkspacesFor, type WorkspaceEntry,
@@ -155,7 +158,6 @@ export function MenuBar({ availableWidthPx, onRowWidth }: {
   const runStatus = useStore((s) => s.runStatus);
   const runResult = useStore((s) => s.runResult);
   const flowsheet = useStore((s) => s.caseFiles.flowsheet);
-  const propsDict = useStore((s) => s.caseFiles.propsDict);
   const caseFiles = useStore((s) => s.caseFiles);
   const showIntro = useStore((s) => s.showIntro);
   const canDownloadZip = Boolean(caseFiles.rawFiles && Object.keys(caseFiles.rawFiles).length > 0);
@@ -175,7 +177,11 @@ export function MenuBar({ availableWidthPx, onRowWidth }: {
   // allowed lives in workspaces.ts (allowedWorkspaceLabels) -- one home, and
   // the modes are in every set because they are modes, not because four
   // hand-written sets each happened to name them.
-  const isPropsCase = Boolean(propsDict) && !flowsheet;
+  //  A two-mode case (case/caseModes.ts) is a props case while it is SHOWN
+  //  in Properties & data: one home for that answer, state/useCaseMode.ts.
+  const caseMode = useCaseMode();
+  const setCaseMode = useStore((s) => s.setCaseMode);
+  const isPropsCase = caseMode.propsView;
   const application =
     typeof caseFiles.controlDict?.["application"] === "string"
       ? (caseFiles.controlDict["application"] as string)
@@ -191,7 +197,10 @@ export function MenuBar({ availableWidthPx, onRowWidth }: {
     isPropsCase,
     application,
     hasPid,
-  }, WORKSPACES);
+  }, WORKSPACES)
+    //  A two-mode case reaches its props screen through the MODE switch; a
+    //  second door to it in Process mode would be the duplicate C151 removed.
+    .filter((w) => !(caseMode.modes && caseMode.mode === "process" && w.key === "props"));
   /* Every visible workspace is a VIEW of this case now — the two modes left
    * the row for their own tabs (workspaces.ts).  The name is kept because the
    * narrow chooser is labelled `Views:` and reads from this. */
@@ -494,7 +503,7 @@ export function MenuBar({ availableWidthPx, onRowWidth }: {
    * trigger does not render, and re-measuring both ghosts on every tool switch
    * would be measuring a shape nothing draws. */
   const lineupSignature =
-    `${tabKind}|${visibleWorkspaces.map((w) => captionOf(w)).join(",")}@${activeWorkspace ?? "none"}`
+    `${tabKind}|${caseMode.modes ? caseMode.mode : "-"}|${visibleWorkspaces.map((w) => captionOf(w)).join(",")}@${activeWorkspace ?? "none"}`
     + `|tool=${tabKind === "tool" ? activeTool : "-"}`;
   const expandedRow  = useIntrinsicWidth(`expanded|${lineupSignature}`);
   const collapsedRow = useIntrinsicWidth(`collapsed|${lineupSignature}`);
@@ -614,6 +623,18 @@ export function MenuBar({ availableWidthPx, onRowWidth }: {
         )}
 
         {/* --- Run ------------------------------------------------------ */}
+
+        {/* --- Mode (a case with both dicts, DEV.md 4c C151/C152) --------
+            Process or Properties & data: the canvas the case is shown in.
+            A case with one dict shows no switch. */}
+        {caseMode.modes && (
+          <SegmentedControl size="xs" radius="sm" data-case-mode={caseMode.mode}
+            value={caseMode.mode}
+            onChange={(v) => setCaseMode(v as CaseMode)}
+            data={caseMode.modes.modes.map((m) => ({ value: m, label: MODE_LABEL[m] }))}
+            styles={{ root: { alignSelf: "center", marginRight: 6 }, label: { fontSize: 12, padding: "1px 8px" } }}
+          />
+        )}
 
         {/* --- Workspaces -------------------------------------------------
             Top-level toggles.  Active workspace is highlighted; clicking

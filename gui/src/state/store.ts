@@ -299,6 +299,16 @@ interface AppState {
   caseFocus: { path: string; line?: number; endLine?: number; seq: number } | null;
   /** Open the Case tab at that file and those lines. */
   openCaseAt: (path: string, line?: number, endLine?: number) => void;
+  /** The mode a TWO-MODE case is shown in (case/caseModes.ts), per case
+   *  name: absent = the case's default.  Keyed by case so moving between
+   *  cases never carries one case's choice into another. */
+  caseModeFor: { [caseName: string]: "process" | "props" };
+  setCaseMode: (mode: "process" | "props") => void;
+  /** A request to select one object of the props Results screen (a map
+   *  member id, e.g. `op:<name>`), from outside it -- a flowsheet unit's link
+   *  to the fit that wrote its membrane.  `seq` makes a repeat a new request. */
+  propsFocus: { id: string; seq: number } | null;
+  focusProps: (id: string) => void;
 
   // Assistant console (a real `claude -c` session via the local bridge) — the
   // BOTTOM DOCK of the shell.  Its SHAPE (dock / fold / height) is a reader
@@ -859,6 +869,15 @@ export const useStore = create<AppState>((set, get) => ({
   setActiveWorkspace: (key) => set({ activeWorkspace: key }),
 
   caseFocus: null,
+  caseModeFor: {},
+  propsFocus: null,
+  focusProps: (id) =>
+    set((s) => ({
+      caseModeFor: { ...s.caseModeFor, [s.tutorialName]: "props" }, activeWorkspace: null,
+      propsFocus: { id, seq: (s.propsFocus?.seq ?? 0) + 1 },
+    })),
+  setCaseMode: (mode) =>
+    set((s) => ({ caseModeFor: { ...s.caseModeFor, [s.tutorialName]: mode }, activeWorkspace: null })),
   openCaseAt: (path, line, endLine) =>
     set((s) => ({
       activeWorkspace: "case",
