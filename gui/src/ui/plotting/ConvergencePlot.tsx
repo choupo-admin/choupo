@@ -41,11 +41,17 @@ import { Plot, PLOT_COLORS, PLOT_CONFIG, darkLayout } from "./plotly.js";
 const DEFAULT_RECYCLE_TOL = 1e-5;
 
 export function ConvergencePlot({
-  curves,
+  curves: allCurves,
   tolerance = DEFAULT_RECYCLE_TOL,
+  unit,
 }: {
   curves: ConvergenceCurve[];
   tolerance?: number;
+  /** FOCUS on one unit (the Plots navigator's units tree, DEV.md 4c C156):
+   *  draw that unit's own inner-solve curve and, as context, the GLOBAL
+   *  recycle curves -- never the other units' traces.  The curve is the one
+   *  the engine keyed by this unit's name; nothing is recomputed. */
+  unit?: string;
 }) {
   // A converged inner solve can report residual EXACTLY 0 (or below machine
   // precision); on a log axis that is -infinity and the curve plunges
@@ -62,6 +68,9 @@ export function ConvergencePlot({
   // unit-level drops read as background, not as the main signal.
   const isGlobal = (label: string) =>
     /global|mass balance|energy balance/i.test(label);
+  const curves = unit === undefined
+    ? allCurves
+    : allCurves.filter((c) => c.label === unit || isGlobal(c.label));
 
   // --- the teaching line: read the curves, state what the student is seeing.
   // A GLOBAL (recycle) curve means a tear loop closed; only inner solves means
@@ -176,7 +185,11 @@ export function ConvergencePlot({
       data={data}
       layout={{
 ...darkLayout,
-        title: { text: "Convergence residuals — global (bold) vs inner solves (faded)", font: {...darkLayout.font, size: 13 } },
+        title: { text: unit === undefined
+          ? "Convergence residuals — global (bold) vs inner solves (faded)"
+          : globals.length > 0
+            ? `Convergence residuals — ${unit} (faded) vs global (bold)`
+            : `Convergence residuals — ${unit}`, font: {...darkLayout.font, size: 13 } },
         xaxis: {...darkLayout.xaxis,
           title: { text: "iteration  (pseudo-time — the march to the fixed point, not physical time)" },
           dtick: 1 },
