@@ -1265,6 +1265,11 @@
       "exit": 0,
       "claim": "check_postprocessing: OK -- the paper case's 6 reference files are their sources' export; 41 views (each operation's defaults, then the propsDict's) over 3 witness cases are produced (CSV + sidecar = the result block, the index = the files, nothing else in postProcessing/); 13637 written numbers recomputed by this gate's own reading of each view from the run's diagnostics, the ops' published tables (rebuilt from what else the run publishes), the reference files and the differences, to the CSV's 12 figures; the paper's tables meet 59 anchors of its golden; 4 fits' default views are one table whose rms is the op's own; 14 refusals fire by name; a listed stale file goes, an author's own file stays, a declared view replaces a default aloud, and a case without views keeps only the defaults.  NOT CHECKED: that a view is the right one for the paper, the GUI's drawing (its own tests), units beyond their spelling, a fit's model value point by point, the bubble-point fits' defaults, the interior pore profile node by node.",
       "seconds": 7.3
+    },
+    "check_fit_then_simulate": {
+      "exit": 0,
+      "claim": "check_fit_then_simulate: OK -- (a) zero-noise data the props bench generated at r_p 0.62 nm, X_d -25 are fitted back to 1e-5 (identifiable, chi2 < 1e-12, validated); (b) the witness membrane24 fits r_p 0.6748 nm, X_d -10.525 mol/m3 to Fernandez de Labastida & Yaroshchuk 2021 (verdict validated) and rewrites its record byte-identically at 6 figures; (c) Process mode reads it and names the fit; (d) a moved dataset, fit block, base record or hand-edited value refuses Process mode with the remedy, a comment does not, and the remedy works; (e) runCase runs both modes and refuses a missing one; (f) six grammar refusals fire.  NOT CHECKED: that NF270 is this pore (the held-out salts are of the same study), the other three laws on real data, and the thermophysical package, which is not fingerprinted",
+      "seconds": 6.9
     }
   }
 }

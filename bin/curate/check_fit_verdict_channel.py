@@ -58,7 +58,8 @@ WHAT IT DOES NOT DO, stated so its OK line cannot be read wider:
     call `CurationDossier::verdictOf` in the C++ and requires each to have a
     `curation()` override, rather than trusting the witnesses to cover them.
 """
-import json, re, shutil, subprocess, sys, tempfile
+import json
+import re, re, shutil, subprocess, sys, tempfile
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[2]
@@ -192,8 +193,16 @@ def main():
     # (e) every op that DECIDES a verdict must publish one
     deciders, publishers = set(), set()
     for f in (ROOT / "src" / "propertyOps").glob("*.cpp"):
-        if "CurationDossier::verdictOf" in f.read_text():
-            deciders.add(f.stem)
+        t = f.read_text()
+        if "CurationDossier::verdictOf" in t:
+            #  An op is its CLASS, not its file: a class may define its methods
+            #  in several translation units (FitParameters' membrane residual,
+            #  FitParametersMembrane.cpp, DEV.md 4c C149).  The class is read
+            #  off the methods the file DEFINES (`int FitParameters::run...`);
+            #  a file defining none falls back to its stem, as before.
+            owners = set(re.findall(r"^\w[\w:<>,\s]*?\b([A-Z]\w*)::\w+\s*\(", t, re.M))
+            owners.discard("CurationDossier")
+            deciders |= owners if owners else {f.stem}
     for f in (ROOT / "src" / "propertyOps").glob("*.H"):
         if "curation() const override" in f.read_text():
             publishers.add(f.stem)
