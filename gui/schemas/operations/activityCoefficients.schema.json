@@ -2,6 +2,7 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://choupo.org/schemas/operations/activityCoefficients.schema.json",
   "title": "activityCoefficients operation",
+  "x-choupo": {"discipline": "Thermodynamics", "activity": "evaluate", "package": true},
   "description": "Liquid activity coefficients of a MOLECULAR mixture at one temperature and composition, straight from the declared activity model. The glass-box counterpart of a VLE calculation: the gammas are what make a flash a flash, and this op prints them on their own so the model's behaviour can be read rather than inferred from a split. Change the declared model and the numbers move — which is the lesson.",
   "type": "object",
   "properties": {

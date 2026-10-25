@@ -2,6 +2,7 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://choupo.org/schemas/operations/hConsistency.schema.json",
   "title": "hConsistency operation",
+  "x-choupo": {"discipline": "Thermodynamics", "activity": "curate", "package": true},
   "description": "Enthalpy-surface identity audit: checks that the assembled package's enthalpy route is internally consistent for the named components at one temperature. A pure numerical identity on the package's own H surface — it needs no experimental data and answers a question the tutorials cannot: whether the rungs a component's record pins actually compose.",
   "type": "object",
   "properties": {

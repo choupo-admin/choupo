@@ -2,6 +2,7 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://choupo.org/schemas/operations/purePhaseDiagram.schema.json",
   "title": "purePhaseDiagram operation",
+  "x-choupo": {"discipline": "Thermodynamics", "activity": "scan", "package": true},
   "description": "Pure-component P-T phase diagram: the vapour-pressure curve from the component's own model, and — when the case declares the solid's data — the sublimation and melting curves meeting it at the triple point. The solid block is CASE data (axiom 4): triple point, heats of fusion and sublimation, and the fusion volume change (negative for water, which is why its melting line leans backwards — the lesson the reference case exists for).",
   "type": "object",
   "properties": {

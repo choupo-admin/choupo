@@ -2,6 +2,7 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://choupo.org/schemas/operations/exchange.schema.json",
   "title": "exchange operation",
+  "x-choupo": {"discipline": "Separation", "activity": "evaluate", "package": true, "data": [{"key": "exchange.resin", "kind": "record", "label": "resin record", "file": "constant/assets/{}.dat"}]},
   "description": "Ion-exchange equilibrium on the props bench: the declared water contacts a resin at a declared dose and the op reports the exchanged composition, the resin loading and the pH. The `exchange {}` block accepts resin, resinDose and CEC and NOTHING else — the capacity nameplate lives in the resin's own record, and an unknown key refuses by name with the grammar. `pH solve;` asks for the proton balance to be solved rather than given.",
   "type": "object",
   "properties": {

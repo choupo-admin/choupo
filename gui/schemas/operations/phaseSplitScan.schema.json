@@ -2,6 +2,7 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://choupo.org/schemas/operations/phaseSplitScan.schema.json",
   "title": "Phase split along T or P",
+  "x-choupo": {"discipline": "Thermodynamics", "activity": "scan", "package": true},
   "description": "The full phase split of ONE fixed feed swept along temperature (at fixed pressure) or pressure (at fixed temperature): at every grid point one isothermal flash through the flash unit's own solver (IsothermalFlash::solveCore) under the case's thermophysical system -- vapour, one or two liquids, crystallising solids declared in phases ( ... ), minerals precipitating from a speciated solution. Publishes per point the amount of every phase present (V, L1, L2, each solid by name), each phase's composition, the flash's own observables (pH, solidFraction, the crystal's activity beside its saturation value), the solved species where the package speciates; announces every phase appearance / disappearance between consecutive points and every record-level extrapolation at the first point that raised it. A point the flash cannot serve is published as REFUSED by name and the scan continues (no fallback). Output: a CSV (swept variable first) and the top-level result block phaseSplitScans. Not modelled: nucleation / supercooling, a solid no record declares, solute inclusion in a crystal.",
   "type": "object",
   "properties": {

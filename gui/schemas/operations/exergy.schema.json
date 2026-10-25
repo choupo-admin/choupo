@@ -2,6 +2,7 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://choupo.org/schemas/operations/exergy.schema.json",
   "title": "exergy operation",
+  "x-choupo": {"discipline": "Thermodynamics", "activity": "evaluate", "package": true},
   "description": "PHYSICAL (thermo-mechanical) flow exergy of a mixture state against a DECLARED dead state: b = (h − h0) − T0·(s − s0), every term the engine's own H_real/S_real at the same composition, both legs published so the total re-adds. The dead state is the problem's declaration — a missing `deadState {}` REFUSES (an exergy is a statement about a state AND an environment, and the engine does not choose the plant's environment). CHEMICAL exergy refuses by name: it needs a standard-environment model (Szargut) nobody has curated.",
   "type": "object",
   "properties": {

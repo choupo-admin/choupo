@@ -2,6 +2,7 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://choupo.org/schemas/operations/elementalComposition.schema.json",
   "title": "elementalComposition operation",
+  "x-choupo": {"discipline": "Data", "activity": "evaluate"},
   "description": "Glass-box surface of the ONE shared formula parser (src/thermo/ElementComposition) that every balance diagnostic uses. Decomposes chemical formulas into their per-element atom counts and reports them, so the parser a student relies on for the element balance can be exercised and read directly. Give `formulas`, `components`, or both; a formula it cannot parse is REFUSED by name rather than silently skipped.",
   "type": "object",
   "properties": {

@@ -2,6 +2,7 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://choupo.org/schemas/operations/heatTransferBench.schema.json",
   "title": "heatTransferBench operation",
+  "x-choupo": {"discipline": "Transport", "activity": "compare"},
   "description": "Self-check of the heat-transfer correlation library against its own textbook worked examples: every built-in correlation is evaluated at its published example's conditions and held to the printed answer within a declared tolerance. Runs with NO configuration — the bench IS the test — and the tolerances exist only to honour textbook rounding and chart-reading scatter, never to loosen a failing correlation.",
   "type": "object",
   "properties": {

@@ -194,7 +194,12 @@ def render() -> str:
         for op in members:
             f = SCHEMAS / (op + ".schema.json")
             schema = json.loads(f.read_text())
-            L.append("\\paragraph{\\code{%s}}" % op.replace("_", "\\_"))
+            #  `op:<type>` is the named destination the GUI's F1 opens for an
+            #  op with no chapter of its own (gui/src/case/modelDocs.ts,
+            #  propsOpHelpLink): every op reaches its own entry, never the
+            #  guide's cover (DEV.md 4c C151).
+            L.append("\\paragraph{\\code{%s}}\\label{op:%s}"
+                     % (op.replace("_", "\\_"), op))
             desc = schema.get("description", "").strip()
             if desc:
                 L.append(tex_escape(desc))

@@ -2,6 +2,7 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://choupo.org/schemas/operations/explainProperty.schema.json",
   "title": "explainProperty operation",
+  "x-choupo": {"discipline": "Thermodynamics", "activity": "evaluate", "package": true},
   "description": "The derivation LEDGER of one mixture property at one state: every term with the record field or model it came from (the `s_298`/`dHf_298` datum, the Cp integral as a difference of two engine calls, the mixing and pressure lines, the EoS residual), re-added and checked against the engine's own assembled value at round-off. The op computes no thermodynamics of its own and REFUSES if its explanation and the engine disagree, if the property is not one it can explain, or if a `pureFluids {}` fundamental-equation override answers the state (that route's ledger is the release's own equation, not datum-plus-integral).",
   "type": "object",
   "properties": {

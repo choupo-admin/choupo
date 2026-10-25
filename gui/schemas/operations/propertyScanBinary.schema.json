@@ -2,6 +2,7 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://choupo.org/schemas/operations/propertyScanBinary.schema.json",
   "title": "propertyScanBinary operation",
+  "x-choupo": {"discipline": "Thermodynamics", "activity": "scan", "package": true},
   "description": "Binary liquid-liquid map at one (T, P): samples the mixing Gibbs energy g_mix across the whole composition axis AND resolves the binodal by an LL flash of a declared feed. The two views teach each other — the g_mix curve SHOWS the common tangent, the flash FINDS it. The feed must lie INSIDE the miscibility gap or the flash rightly reports one phase; for an asymmetric binodal that is not the equimolar point, which is exactly the lesson the water/1-butanol case carries.",
   "type": "object",
   "properties": {

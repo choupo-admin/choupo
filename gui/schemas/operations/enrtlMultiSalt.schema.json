@@ -2,6 +2,7 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://choupo.org/schemas/operations/enrtlMultiSalt.schema.json",
   "title": "enrtlMultiSalt operation",
+  "x-choupo": {"discipline": "Thermodynamics", "activity": "scan", "models": [{"fixed": "eNRTL", "role": "electrolyte activity"}]},
   "description": "Multi-salt symmetric eNRTL bench: the mean-ionic gammas of two (or more) salts sharing an ion, swept across the mixing fraction at constant total molality — the Harned-rule experiment. Two formulations run side by side by declaration: `published` (the industrial expressions exactly as printed) and `refined` (gamma as the EXACT Gibbs-Duhem-consistent derivative of the same excess Gibbs energy, the chain rule kept through the composition-dependent mixing rules). The difference between them is measured, not asserted.",
   "type": "object",
   "properties": {

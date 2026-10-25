@@ -2,6 +2,7 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://choupo.org/schemas/operations/enrtlMixedSolvent.schema.json",
   "title": "enrtlMixedSolvent operation",
+  "x-choupo": {"discipline": "Thermodynamics", "activity": "fit", "models": [{"fixed": "eNRTL", "role": "electrolyte activity"}], "data": [{"key": "systems", "kind": "inline", "label": "measured mean-ionic gammas"}]},
   "description": "Mixed-solvent eNRTL bench: the mean-ionic activity coefficient of a salt in water-alcohol mixtures, regressed system by system against published data. The case SPELLS OUT the binary tau parameters and the alcohol's own constants so it reads as its own citation — defaults exist (the published water-ethanol-NaCl set) but a case that states them teaches where every number came from. Each entry of `systems` is one solvent composition with its Debye-Hückel A_phi and its measured (m, gamma) points; the op reports the deviation per system.",
   "type": "object",
   "properties": {

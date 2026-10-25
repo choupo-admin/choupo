@@ -81,6 +81,7 @@ interface RawProperty {
 interface RawSchema {
   title?: string;
   description?: string;
+  "x-choupo"?: unknown;
   properties?: { [k: string]: RawProperty };
   required?: string[];
 }
@@ -110,6 +111,74 @@ for (const [path, mod] of Object.entries(GLOB)) {
 export function operationDescription(opType: string): string | undefined {
   const d = RAW[opType]?.description;
   return typeof d === "string" && d.trim() ? d : undefined;
+}
+
+/* ---- THE CALCULATION-MAP DECLARATION of a props op (DEV.md 4c C151) -------
+
+   A props op's schema carries, beside its grammar, ONE block that says where
+   the op sits in a case's calculation map: its DISCIPLINE (the tree's shelf),
+   its ACTIVITY (evaluate / scan / fit / estimate / compare / curate), whether
+   it reads the case's thermo package, which of its keys name a MODEL, which
+   name the DATA it reads, and which name a RECORD it writes.  The map and the
+   tree are DERIVED from this and from the propsDict; nothing here is a second
+   list of op types -- the schema file IS the op's entry (case/propsMap.ts).
+
+   The block is `"x-choupo"`, an annotation keyword a JSON-Schema validator
+   ignores, so the grammar the schema states is unchanged.  A key path is
+   dotted (`transportParameters.activity`), `[]` walks a list of dicts
+   (`evidence[].dataset`), and "" means "always" (a record the op reads by
+   construction, e.g. constant/reactions). */
+
+export const PROPS_DISCIPLINES = [
+  "Thermodynamics", "Transport", "Kinetics", "Separation", "Data", "Safety",
+] as const;
+export type PropsDiscipline = typeof PROPS_DISCIPLINES[number];
+
+export const PROPS_ACTIVITIES = [
+  "evaluate", "scan", "fit", "estimate", "compare", "curate",
+] as const;
+export type PropsActivity = typeof PROPS_ACTIVITIES[number];
+
+/** A key of the op that names a model, or a model the op IS (`fixed`). */
+export interface OpModelSlot { key?: string; fixed?: string; role: string; default?: string }
+/** What a data key holds: measured data, another source's numbers, an
+ *  equipment/substance RECORD, numbers written in the propsDict itself, or (for
+ *  `writes`) a record the op proposes. */
+export type OpDataKind = "experiment" | "reference" | "record" | "inline" | "proposal";
+export interface OpDataSlot {
+  key: string; kind: OpDataKind; label: string;
+  /** where a record named by the key lives in the case, `{}` = its name */
+  file?: string;
+  /** the value the engine takes when the key is absent */
+  default?: string;
+}
+export interface OpMapMeta {
+  discipline: PropsDiscipline;
+  activity: PropsActivity;
+  disciplineBy?: { key: string; map: Record<string, PropsDiscipline> };
+  activityBy?: { key: string; map?: Record<string, PropsActivity>; present?: PropsActivity };
+  package?: boolean;
+  packageUnless?: { key: string; in: string[] };
+  models?: OpModelSlot[];
+  data?: OpDataSlot[];
+  writes?: OpDataSlot[];
+}
+
+/** The map declaration of an op type, or null where its schema carries none
+ *  (a flowsheet unit, or a props op nobody has declared -- which a test
+ *  refuses for every REGISTERED props op). */
+export function operationMapMeta(opType: string): OpMapMeta | null {
+  const x = RAW[opType]?.["x-choupo"];
+  if (!x || typeof x !== "object") return null;
+  const m = x as OpMapMeta;
+  if (!(PROPS_DISCIPLINES as readonly string[]).includes(m.discipline)) return null;
+  if (!(PROPS_ACTIVITIES as readonly string[]).includes(m.activity)) return null;
+  return m;
+}
+
+/** Every op type whose schema declares a map block. */
+export function mappedOperationTypes(): string[] {
+  return Object.keys(RAW).filter((t) => operationMapMeta(t) !== null).sort();
 }
 
 export function operationSchemaFor(unitType: string): OperationSchema | null {

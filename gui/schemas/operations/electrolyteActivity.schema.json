@@ -2,6 +2,7 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://choupo.org/schemas/operations/electrolyteActivity.schema.json",
   "title": "electrolyteActivity operation",
+  "x-choupo": {"discipline": "Thermodynamics", "activity": "scan", "package": true},
   "description": "Mean-ionic activity and osmotic coefficients of the salt the CASE's declared thermophysical system carries — the package's own electrolyte surface, exercised directly. Where `pitzerActivity` names its salt by two ions and is the model's bench, this op takes the salt from the declaration and is the PACKAGE's bench: the numbers here are exactly what the flowsheet units will see, which is the point of running it before them.",
   "type": "object",
   "properties": {

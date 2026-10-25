@@ -2,6 +2,7 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://choupo.org/schemas/operations/vaporPressureFit.schema.json",
   "title": "vaporPressureFit operation",
+  "x-choupo": {"discipline": "Thermodynamics", "activity": "fit", "models": [{"fixed": "Antoine", "role": "vapour-pressure form"}], "data": [{"key": "dataset", "kind": "experiment", "label": "measured dataset"}, {"key": "evidence[].dataset", "kind": "experiment", "label": "measured dataset"}]},
   "description": "Least-squares fit of measured vapour-pressure data to the Antoine form, producing the A, B and C a component record carries. Like `heatCapacityFit`, this is curation made visible: the residuals are reported beside the coefficients so the fit is judged, not just taken.",
   "type": "object",
   "properties": {

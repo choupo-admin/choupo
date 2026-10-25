@@ -2,6 +2,7 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://choupo.org/schemas/operations/frictionBench.schema.json",
   "title": "frictionBench operation",
+  "x-choupo": {"discipline": "Transport", "activity": "compare"},
   "description": "The Darcy friction factor's correlation library, in two parts. VERIFY (always): every registered correlation — Blasius, Colebrook-White, Haaland, Churchill — reproduces its own published anchor, and the deviation is printed beside the correlation's validity window and its primary citation. COMPARE (optional): all four are evaluated at the SAME Re and roughness, and the spread is published TWICE — over all of them, and over only those inside their stated windows. The two are reported apart because collapsing them would say 'the correlations disagree by 26 %' when the truth is 'three agree within 2 % and one was asked a question it was never fitted for'. The bench never says which correlation is right: that depends on the pipe, and ranking them would hide the choice the engineer has to make.",
   "type": "object",
   "properties": {

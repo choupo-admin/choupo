@@ -2,6 +2,7 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://choupo.org/schemas/operations/steamTables.schema.json",
   "title": "steamTables operation",
+  "x-choupo": {"discipline": "Thermodynamics", "activity": "evaluate", "models": [{"fixed": "IAPWS-IF97", "role": "water and steam"}]},
   "description": "IAPWS-IF97 industrial water/steam properties. This is a propsDict operation under choupoProps (like propertyPoint), NOT a flowsheet unit. At startup it self-checks the transcribed coefficients against the release verification tables and REFUSES the run on any deviation above 1e-8. Give exactly ONE mode block per operation: point, saturation or isobar. CSV columns are canonical SI (h, u, s, cp, cv in J/kg-based units). Tutorial tutorials/props/steam/steam01_if97_verification locks every release verification table as a golden KPI at reltol 1e-8.",
   "type": "object",
   "properties": {

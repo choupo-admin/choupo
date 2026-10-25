@@ -2,6 +2,7 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://choupo.org/schemas/operations/isothermEval.schema.json",
   "title": "isothermEval operation",
+  "x-choupo": {"discipline": "Separation", "activity": "evaluate", "data": [{"key": "adsorbent", "kind": "record", "label": "adsorbent record", "file": "constant/assets/{}.dat"}]},
   "description": "Evaluates a curated adsorption isotherm — the loading of one adsorbate on one adsorbent as a function of pressure and temperature — from the adsorbent record's own parameters. The glass-box surface of what a fixed-bed or TSA unit uses internally, so the isotherm a breakthrough case runs on can be plotted and checked before the bed is ever solved.",
   "type": "object",
   "properties": {

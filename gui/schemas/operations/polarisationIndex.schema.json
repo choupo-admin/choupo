@@ -2,6 +2,7 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://choupo.org/schemas/operations/polarisationIndex.schema.json",
   "title": "polarisationIndex operation",
+  "x-choupo": {"discipline": "Separation", "activity": "evaluate", "models": [{"fixed": "GeraldesAfonso2007", "role": "multi-ionic polarisation"}, {"key": "massTransfer.model", "role": "film mass transfer"}, {"key": "polarisation.suctionCorrection", "role": "suction correction"}, {"key": "polarisation.ionCoupling", "role": "ion coupling"}], "data": [{"key": "dataset", "kind": "experiment", "label": "measured rows"}]},
   "description": "The PROPS BENCH of the multi-ionic concentration-polarisation model of Geraldes & Afonso (J. Membr. Sci. 300 (2007) 20): for every row of a measured dataset (bulk and permeate concentration per ion, volume flux) it prices each ion's mass-transfer coefficient on the ion's OWN diffusivity from the declared correlation, corrects it for suction, and solves the wall concentrations coupled by ONE interface potential gradient fixed by electroneutrality -- no film thickness, no fitted parameter. Publishes per row the polarisation index Gamma_<ion> = (C_m - C_b)/C_b, xi and the wall charge residual, and per ion k_<ion>. Witness polarisation01_geraldes_afonso_table1; gate check_polarisation_coupling recomputes Eqs. (25)-(28) independently.",
   "type": "object",
   "properties": {

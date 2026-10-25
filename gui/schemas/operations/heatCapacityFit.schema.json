@@ -2,6 +2,7 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://choupo.org/schemas/operations/heatCapacityFit.schema.json",
   "title": "heatCapacityFit operation",
+  "x-choupo": {"discipline": "Thermodynamics", "activity": "fit", "models": [{"fixed": "polynomial", "role": "heat-capacity form"}], "data": [{"key": "dataset", "kind": "experiment", "label": "measured dataset"}, {"key": "evidence[].dataset", "kind": "experiment", "label": "measured dataset"}]},
   "description": "Least-squares polynomial fit of measured heat-capacity data, producing the `coefficients ( ... )` list a component record carries. The fit is a CURATION act made visible: the residuals and the recovered coefficients are reported so the student can judge the fit before promoting it into a `.dat`.",
   "type": "object",
   "properties": {

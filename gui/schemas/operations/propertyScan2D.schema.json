@@ -2,6 +2,7 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://choupo.org/schemas/operations/propertyScan2D.schema.json",
   "title": "propertyScan2D operation",
+  "x-choupo": {"discipline": "Thermodynamics", "activity": "scan", "package": true},
   "description": "Two-dimensional property sweep: varies two state variables on a regular grid and evaluates each property at every node. Writes one CSV row per node; failed evaluations are written as NaN.",
   "type": "object",
   "properties": {

@@ -80,6 +80,12 @@ export interface WorkspaceEntry {
   /** The `?workspace=` deep-link key.  `null` = the flowsheet canvas itself
    *  (activeWorkspace === null), handled by label in openWorkspace. */
   key: WorkspaceKey | null;
+  /** What the menu SHOWS when it is not the label.  The label stays the
+   *  entry's identity (the lineup, the deep links and the tests speak it);
+   *  the caption is a context's own word for the same view -- a props case
+   *  calls its `Props` view "Results", because there it IS the results
+   *  (DEV.md 4c C151).  Absent = the label. */
+  caption?: string;
 }
 
 /** A MODE: a thing that needs no case — it synthesizes its own — and is
@@ -193,7 +199,8 @@ export interface WorkspaceContext {
  *                    on-ramp is the WelcomeScreen's own, not a menu of views
  *                    of a case that is not there.
  *    intro        -> nothing (the intro screen owns the window)
- *    choupoProps  -> Props · Plots · Log · Case       (no canvas/streams/duties)
+ *    choupoProps  -> Results (the Props view) · Log · Case   (no canvas/streams/
+ *                    duties, and no Plots: the review screen holds the figures)
  *    choupoSolve  -> the full steady set              (streams, variables, pinch)
  *    choupoBatch/Ctrl -> Flowsheet · Props · Plots · Log · Case
  *                        (no steady-only Streams/Variables/Pinch/Reports)
@@ -206,7 +213,12 @@ export function allowedWorkspaceLabels(ctx: WorkspaceContext): Set<string> {
   if (!ctx.hasCase) return new Set();
   if (ctx.showIntro) return new Set();
   if (ctx.isPropsCase || ctx.application === "choupoProps") {
-    return new Set(["Props", "Plots", "Log", "Case", "Literature"]);
+    //  NO `Plots` (DEV.md 4c C151, Vitor 2026-10-25: a "Plots" menu beside the
+    //  plots already on the main screen confuses).  In a props case that entry
+    //  drew the same PropsView a second time; the review screen is the ONE
+    //  home of a props case's figures, the free CSV plots in its collapsed
+    //  "Other plots" section.
+    return new Set(["Props", "Log", "Case", "Literature"]);
   }
   if (ctx.application === "choupoBatch" || ctx.application === "choupoCtrl"
       || ctx.application === "choupoSemiContinuous") {
@@ -227,5 +239,17 @@ export function visibleWorkspacesFor(
   workspaces: readonly WorkspaceEntry[] = WORKSPACES,
 ): WorkspaceEntry[] {
   const allowed = allowedWorkspaceLabels(ctx);
-  return workspaces.filter((w) => allowed.has(w.label));
+  const props = ctx.isPropsCase || ctx.application === "choupoProps";
+  return workspaces
+    .filter((w) => allowed.has(w.label))
+    .map((w) => (props && w.key === "props" ? { ...w, caption: PROPS_CASE_RESULTS } : w));
+}
+
+/** The word a props case's menu uses for its Props view: there it is the
+ *  review screen of the run, so it is called what it is. */
+export const PROPS_CASE_RESULTS = "Results";
+
+/** What the menu shows for an entry. */
+export function captionOf(w: WorkspaceEntry): string {
+  return w.caption ?? w.label;
 }

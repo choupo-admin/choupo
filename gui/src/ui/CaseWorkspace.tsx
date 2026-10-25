@@ -70,7 +70,7 @@ License
   not take a column away.
 \*---------------------------------------------------------------------------*/
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useReducedMotion } from "@mantine/hooks";
 import { Box, Group, ScrollArea, SegmentedControl, Stack, Text } from "@mantine/core";
 import { FileTree } from "./FileTree.js";
@@ -314,6 +314,26 @@ export function CaseWorkspace() {
   const narrow = !useFitsOneRow(CASE_PANES_ONE_ROW_PX);
   const [pane, setPane] = useState<CasePane>("contents");
 
+  /* A BLOCK ASKED FOR FROM ELSEWHERE (DEV.md 4c C151): the props review
+   * screen and its calculation map send an operation, a view or a dataset
+   * here with the lines that declare it.  The file is opened, the lines are
+   * MARKED (a band down the gutter and a tint, so the block reads as one
+   * thing) and scrolled to; the mark stays until another file is chosen. */
+  const caseFocus = useStore((s) => s.caseFocus);
+  const [mark, setMark] = useState<{ path: string; line: number; endLine: number } | null>(null);
+  useEffect(() => {
+    if (!caseFocus || raw[caseFocus.path] === undefined) return;
+    setActivePath(caseFocus.path);
+    setPane("contents");
+    const line = caseFocus.line ?? 1;
+    setMark(caseFocus.line ? { path: caseFocus.path, line, endLine: caseFocus.endLine ?? line } : null);
+    //  two frames: the first paints the file, the second has its line divs
+    requestAnimationFrame(() => requestAnimationFrame(() =>
+      document.getElementById(`ln-${line}`)?.scrollIntoView({ block: "start", behavior: "auto" })));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [caseFocus?.seq]);
+  const marked = (i: number) => !!mark && mark.path === active && i + 1 >= mark.line && i + 1 <= mark.endLine;
+
   /* The file list is a PANEL CONTRACT rail (ui/panelContract.tsx) — draggable,
    * foldable, remembered — but ONLY in the wide posture, and that exception is
    * argued rather than assumed.  Narrow shows ONE pane at a time, chosen by the
@@ -331,6 +351,7 @@ export function CaseWorkspace() {
 
   const selectFile = (path: string) => {
     setActivePath(path);
+    setMark(null);
     setPane("contents");    // desk: no-op; phone: the tap has to go somewhere
   };
 
@@ -455,6 +476,10 @@ export function CaseWorkspace() {
                       lineHeight: 1.55,
                       color: "light-dark(var(--mantine-color-gray-8), var(--mantine-color-dark-0))",
                       minHeight: "1.55em",
+                      ...(marked(i) ? {
+                        background: "light-dark(var(--mantine-color-yellow-1), rgba(250, 204, 21, 0.12))",
+                        boxShadow: "inset 3px 0 0 var(--mantine-color-yellow-6)",
+                      } : {}),
                     }}
                     dangerouslySetInnerHTML={{ __html: html }}
                   />

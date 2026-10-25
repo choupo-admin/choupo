@@ -19,7 +19,7 @@ Operations run in the order written, each independent of the others.  In the tab
 
 \subsection{Evaluating a state}
 
-\paragraph{\code{propertyPoint}}
+\paragraph{\code{propertyPoint}}\label{op:propertyPoint}
 Single-point property evaluation: at a given (T, P, composition) the thermo package reports every property the chosen models can compute (Psat, gamma\_i, K\_i, Cp\_ig, H, S, Z, v, ...). Results print to the run log.
 
 \begin{tabular}{@{}p{0.30\linewidth}p{0.62\linewidth}@{}}
@@ -35,7 +35,7 @@ Single-point property evaluation: at a given (T, P, composition) the thermo pack
 \quad (and 13 more)
 \end{tutoriallink}
 
-\paragraph{\code{explainProperty}}
+\paragraph{\code{explainProperty}}\label{op:explainProperty}
 The derivation LEDGER of one mixture property at one state: every term with the record field or model it came from (the \code{s\_298}/\code{dHf\_298} datum, the Cp integral as a difference of two engine calls, the mixing and pressure lines, the EoS residual), re-added and checked against the engine's own assembled value at round-off. The op computes no thermodynamics of its own and REFUSES if its explanation and the engine disagree, if the property is not one it can explain, or if a \code{pureFluids \{\}} fundamental-equation override answers the state (that route's ledger is the release's own equation, not datum-plus-integral).
 
 \begin{tabular}{@{}p{0.30\linewidth}p{0.62\linewidth}@{}}
@@ -50,7 +50,7 @@ The derivation LEDGER of one mixture property at one state: every term with the 
 \file{tutorials/props/molecular/entropy01\_air\_ledger}
 \end{tutoriallink}
 
-\paragraph{\code{exergy}}
+\paragraph{\code{exergy}}\label{op:exergy}
 PHYSICAL (thermo-mechanical) flow exergy of a mixture state against a DECLARED dead state: b = (h $-$ h0) $-$ T0$\cdot$(s $-$ s0), every term the engine's own H\_real/S\_real at the same composition, both legs published so the total re-adds. The dead state is the problem's declaration — a missing \code{deadState \{\}} REFUSES (an exergy is a statement about a state AND an environment, and the engine does not choose the plant's environment). CHEMICAL exergy refuses by name: it needs a standard-environment model (Szargut) nobody has curated.
 
 \begin{tabular}{@{}p{0.30\linewidth}p{0.62\linewidth}@{}}
@@ -65,7 +65,7 @@ PHYSICAL (thermo-mechanical) flow exergy of a mixture state against a DECLARED d
 \file{tutorials/props/molecular/exergy01\_air\_dead\_state}
 \end{tutoriallink}
 
-\paragraph{\code{mixingRules}}
+\paragraph{\code{mixingRules}}\label{op:mixingRules}
 The van der Waals ONE-FLUID DECOMPOSITION of a cubic EoS's mixture parameters at one state: every pure a\_i(T) and b\_i, every binary k\_ij as constructed, and every pair's additive term in a\_mix = Sum\_i Sum\_j y\_i y\_j (1 - k\_ij) sqrt(a\_i a\_j), b\_mix = Sum\_i y\_i b\_i — plus the identity that re-adds the terms to the a\_mix the engine runs (a gap REFUSES). The numbers come from the SAME buildMix the hot path executes; a ternary needs three binary decisions and the table shows which were declared and which run the announced k\_ij = 0 default. A model with no one-fluid rule (idealGas, PC-SAFT) refuses by name.
 
 \begin{tabular}{@{}p{0.30\linewidth}p{0.62\linewidth}@{}}
@@ -79,7 +79,7 @@ The van der Waals ONE-FLUID DECOMPOSITION of a cubic EoS's mixture parameters at
 \file{tutorials/props/molecular/mixrules01\_natural\_gas}
 \end{tutoriallink}
 
-\paragraph{\code{propertyScan1D}}
+\paragraph{\code{propertyScan1D}}\label{op:propertyScan1D}
 One-dimensional property sweep: varies one state variable (T, P or a mole fraction) over n evenly-spaced points and evaluates the requested properties at each. Writes one CSV row per point.
 
 \begin{tabular}{@{}p{0.30\linewidth}p{0.62\linewidth}@{}}
@@ -97,7 +97,7 @@ One-dimensional property sweep: varies one state variable (T, P or a mole fracti
 \quad (and 22 more)
 \end{tutoriallink}
 
-\paragraph{\code{propertyScan2D}}
+\paragraph{\code{propertyScan2D}}\label{op:propertyScan2D}
 Two-dimensional property sweep: varies two state variables on a regular grid and evaluates each property at every node. Writes one CSV row per node; failed evaluations are written as NaN.
 
 \begin{tabular}{@{}p{0.30\linewidth}p{0.62\linewidth}@{}}
@@ -115,7 +115,7 @@ Two-dimensional property sweep: varies two state variables on a regular grid and
 \file{tutorials/props/scan/scan2d01\_co2\_compressibility}
 \end{tutoriallink}
 
-\paragraph{\code{propertyScanBinary}}
+\paragraph{\code{propertyScanBinary}}\label{op:propertyScanBinary}
 Binary liquid-liquid map at one (T, P): samples the mixing Gibbs energy g\_mix across the whole composition axis AND resolves the binodal by an LL flash of a declared feed. The two views teach each other — the g\_mix curve SHOWS the common tangent, the flash FINDS it. The feed must lie INSIDE the miscibility gap or the flash rightly reports one phase; for an asymmetric binodal that is not the equimolar point, which is exactly the lesson the water/1-butanol case carries.
 
 \begin{tabular}{@{}p{0.30\linewidth}p{0.62\linewidth}@{}}
@@ -132,7 +132,7 @@ Binary liquid-liquid map at one (T, P): samples the mixing Gibbs energy g\_mix a
 \file{tutorials/props/scan/binary01\_lle\_water\_nbutanol}
 \end{tutoriallink}
 
-\paragraph{\code{propertyScanTernary}}
+\paragraph{\code{propertyScanTernary}}\label{op:propertyScanTernary}
 Ternary map at one (T, P): sweeps the composition simplex and reports the phase behaviour — the LLE solubility envelope with tie-lines, or a VLE/VLLE audit — from the declared activity model. The map is the model's fingerprint: change the declared model and the envelope moves.
 
 \begin{tabular}{@{}p{0.30\linewidth}p{0.62\linewidth}@{}}
@@ -152,7 +152,7 @@ Ternary map at one (T, P): sweeps the composition simplex and reports the phase 
 \quad (and 2 more)
 \end{tutoriallink}
 
-\paragraph{\code{purePhaseDiagram}}
+\paragraph{\code{purePhaseDiagram}}\label{op:purePhaseDiagram}
 Pure-component P-T phase diagram: the vapour-pressure curve from the component's own model, and — when the case declares the solid's data — the sublimation and melting curves meeting it at the triple point. The solid block is CASE data (axiom 4): triple point, heats of fusion and sublimation, and the fusion volume change (negative for water, which is why its melting line leans backwards — the lesson the reference case exists for).
 
 \begin{tabular}{@{}p{0.30\linewidth}p{0.62\linewidth}@{}}
@@ -168,7 +168,7 @@ Pure-component P-T phase diagram: the vapour-pressure curve from the component's
 \file{tutorials/props/scan/phase01\_water\_full}
 \end{tutoriallink}
 
-\paragraph{\code{psychrometricChart}}
+\paragraph{\code{psychrometricChart}}\label{op:psychrometricChart}
 Psychrometric chart for ANY carrier + condensable pair, generated from the package's own models rather than copied from a handbook: saturation line, constant-relative-humidity curves and wet-bulb lines over a declared temperature span. Carrier and condensable are NOT interchangeable — only the condensable needs a vapour-pressure model, and the op refuses by name when it has none. Air-water is one instance, not the definition; the reference case runs N2-water.
 
 \begin{tabular}{@{}p{0.30\linewidth}p{0.62\linewidth}@{}}
@@ -191,7 +191,7 @@ Psychrometric chart for ANY carrier + condensable pair, generated from the packa
 \quad (and 1 more)
 \end{tutoriallink}
 
-\paragraph{\code{steamTables}}
+\paragraph{\code{steamTables}}\label{op:steamTables}
 IAPWS-IF97 industrial water/steam properties. This is a propsDict operation under choupoProps (like propertyPoint), NOT a flowsheet unit. At startup it self-checks the transcribed coefficients against the release verification tables and REFUSES the run on any deviation above 1e-8. Give exactly ONE mode block per operation: point, saturation or isobar. CSV columns are canonical SI (h, u, s, cp, cv in J/kg-based units). Tutorial tutorials/props/steam/steam01\_if97\_verification locks every release verification table as a golden KPI at reltol 1e-8.
 
 \begin{tabular}{@{}p{0.30\linewidth}p{0.62\linewidth}@{}}
@@ -210,7 +210,7 @@ IAPWS-IF97 industrial water/steam properties. This is a propsDict operation unde
 
 \subsection{Mixtures and activity}
 
-\paragraph{\code{activityCoefficients}}
+\paragraph{\code{activityCoefficients}}\label{op:activityCoefficients}
 Liquid activity coefficients of a MOLECULAR mixture at one temperature and composition, straight from the declared activity model. The glass-box counterpart of a VLE calculation: the gammas are what make a flash a flash, and this op prints them on their own so the model's behaviour can be read rather than inferred from a split. Change the declared model and the numbers move — which is the lesson.
 
 \begin{tabular}{@{}p{0.30\linewidth}p{0.62\linewidth}@{}}
@@ -226,7 +226,7 @@ Liquid activity coefficients of a MOLECULAR mixture at one temperature and compo
 \file{tutorials/props/molecular/nrtl01\_ethanol\_water\_package}
 \end{tutoriallink}
 
-\paragraph{\code{gibbsMap}}
+\paragraph{\code{gibbsMap}}\label{op:gibbsMap}
 Equilibrium map over a (T, P) grid by Gibbs minimisation: at every grid point the declared species set equilibrates over the element balance, and the declared metric (a species' mole fraction, an element's recovery) is contoured. The chart's pedagogical weapons are the two DECLARED boxes: an \code{industrialWindow} (where industry actually operates — for ammonia, NOT where equilibrium is best, because the catalyst rules) and a \code{kineticBand} (the user-declared region where kinetics kill the approach), both watermarked with their labels so the map says why the plant is not at the thermodynamic optimum.
 
 \begin{tabular}{@{}p{0.30\linewidth}p{0.62\linewidth}@{}}
@@ -251,7 +251,7 @@ Equilibrium map over a (T, P) grid by Gibbs minimisation: at every grid point th
 \quad (and 6 more)
 \end{tutoriallink}
 
-\paragraph{\code{vleConsistency}}
+\paragraph{\code{vleConsistency}}\label{op:vleConsistency}
 Gibbs-Duhem thermodynamic-consistency test on MEASURED binary VLE data. Back-computes the activity coefficients from the data itself by modified Raoult (gamma\_i = y\_i P / (x\_i Psat\_i(T))), then reports the pointwise Gibbs-Duhem residual, the Herington area test (pass if |D-J| < 10) and the infinite-dilution gammas. Needs measured y: a bubble-T-vs-x set alone cannot run it, and testing an NRTL or Wilson CURVE is a tautology since those are consistent by construction. The CSV carries x1, lnGamma1, lnGamma2, lnRatio, gdResidual.
 
 \begin{tabular}{@{}p{0.30\linewidth}p{0.62\linewidth}@{}}
@@ -270,7 +270,7 @@ Gibbs-Duhem thermodynamic-consistency test on MEASURED binary VLE data. Back-com
 \file{tutorials/props/compare/compare\_vle\_etoh\_water}
 \end{tutoriallink}
 
-\paragraph{\code{hConsistency}}
+\paragraph{\code{hConsistency}}\label{op:hConsistency}
 Enthalpy-surface identity audit: checks that the assembled package's enthalpy route is internally consistent for the named components at one temperature. A pure numerical identity on the package's own H surface — it needs no experimental data and answers a question the tutorials cannot: whether the rungs a component's record pins actually compose.
 
 \begin{tabular}{@{}p{0.30\linewidth}p{0.62\linewidth}@{}}
@@ -288,7 +288,7 @@ Enthalpy-surface identity audit: checks that the assembled package's enthalpy ro
 
 \subsection{Electrolytes}
 
-\paragraph{\code{speciate}}
+\paragraph{\code{speciate}}\label{op:speciate}
 Aqueous speciation: distributes the declared analytical totals over the curated equilibrium network and reports every species, its activity coefficient, the ionic strength, the water activity and the mineral saturation indices. By default it is SI-ONLY — it says which solids are supersaturated without precipitating any. Adding an \code{equilibrate \{ minerals ( ... ) \}} block lets the NAMED solids precipitate to their SI = 0 ceiling; naming the allowed set is the author's decision and is required, because which solid a brine is permitted to drop is chemistry, not a default.
 
 \begin{tabular}{@{}p{0.30\linewidth}p{0.62\linewidth}@{}}
@@ -319,7 +319,7 @@ Aqueous speciation: distributes the declared analytical totals over the curated 
 \quad (and 11 more)
 \end{tutoriallink}
 
-\paragraph{\code{pitzerActivity}}
+\paragraph{\code{pitzerActivity}}\label{op:pitzerActivity}
 Mean-ionic activity coefficient and osmotic coefficient of ONE salt by the Pitzer ion-interaction model, as a function of molality. The salt is named by its two ions and its stoichiometry is DERIVED from electroneutrality (Ca + Cl gives CaCl2), so the case never restates what the charges already say. The pair parameters come from the curated catalogue; a missing pair is an error, not a zero.
 
 \begin{tabular}{@{}p{0.30\linewidth}p{0.62\linewidth}@{}}
@@ -339,7 +339,7 @@ Mean-ionic activity coefficient and osmotic coefficient of ONE salt by the Pitze
 \quad (and 6 more)
 \end{tutoriallink}
 
-\paragraph{\code{electrolyteActivity}}
+\paragraph{\code{electrolyteActivity}}\label{op:electrolyteActivity}
 Mean-ionic activity and osmotic coefficients of the salt the CASE's declared thermophysical system carries — the package's own electrolyte surface, exercised directly. Where \code{pitzerActivity} names its salt by two ions and is the model's bench, this op takes the salt from the declaration and is the PACKAGE's bench: the numbers here are exactly what the flowsheet units will see, which is the point of running it before them.
 
 \begin{tabular}{@{}p{0.30\linewidth}p{0.62\linewidth}@{}}
@@ -355,7 +355,7 @@ Mean-ionic activity and osmotic coefficients of the salt the CASE's declared the
 \file{tutorials/props/electrolyte/pitzer02\_nacl\_package}
 \end{tutoriallink}
 
-\paragraph{\code{enrtlMultiSalt}}
+\paragraph{\code{enrtlMultiSalt}}\label{op:enrtlMultiSalt}
 Multi-salt symmetric eNRTL bench: the mean-ionic gammas of two (or more) salts sharing an ion, swept across the mixing fraction at constant total molality — the Harned-rule experiment. Two formulations run side by side by declaration: \code{published} (the industrial expressions exactly as printed) and \code{refined} (gamma as the EXACT Gibbs-Duhem-consistent derivative of the same excess Gibbs energy, the chain rule kept through the composition-dependent mixing rules). The difference between them is measured, not asserted.
 
 \begin{tabular}{@{}p{0.30\linewidth}p{0.62\linewidth}@{}}
@@ -374,7 +374,7 @@ Multi-salt symmetric eNRTL bench: the mean-ionic gammas of two (or more) salts s
 \file{tutorials/props/electrolyte/enrtl\_multisalt\_nacl\_kcl}
 \end{tutoriallink}
 
-\paragraph{\code{enrtlMixedSolvent}}
+\paragraph{\code{enrtlMixedSolvent}}\label{op:enrtlMixedSolvent}
 Mixed-solvent eNRTL bench: the mean-ionic activity coefficient of a salt in water-alcohol mixtures, regressed system by system against published data. The case SPELLS OUT the binary tau parameters and the alcohol's own constants so it reads as its own citation — defaults exist (the published water-ethanol-NaCl set) but a case that states them teaches where every number came from. Each entry of \code{systems} is one solvent composition with its Debye-Hückel A\_phi and its measured (m, gamma) points; the op reports the deviation per system.
 
 \begin{tabular}{@{}p{0.30\linewidth}p{0.62\linewidth}@{}}
@@ -391,7 +391,7 @@ Mixed-solvent eNRTL bench: the mean-ionic activity coefficient of a salt in wate
 \file{tutorials/props/electrolyte/enrtl\_mixed\_nacl\_ethanol\_esteso}
 \end{tutoriallink}
 
-\paragraph{\code{scalingScan}}
+\paragraph{\code{scalingScan}}\label{op:scalingScan}
 Concentration scan of a water analysis, the RO/evaporator scaling audit: the declared analysis is concentrated point by point along a recovery axis, the full speciation is solved at each point, and every mineral's saturation index is reported — WHERE each scale becomes possible, before any membrane is sized. Takes the same solution-definition keys as \code{speciate} (totals, pH incl. \code{solve}, atmosphere for an open system, temperature, equilibrate for allowed precipitation); adds the recovery axis and, with an equilibrate block, a \code{feedFlow} that turns precipitation into kg/day. \code{feedFlow} without \code{equilibrate} is REFUSED — it only feeds a rate an SI-only scan does not compute — and a bare number is refused too: it needs a volumetric unit.
 
 \begin{tabular}{@{}p{0.30\linewidth}p{0.62\linewidth}@{}}
@@ -416,7 +416,7 @@ Concentration scan of a water analysis, the RO/evaporator scaling audit: the dec
 \quad (and 4 more)
 \end{tutoriallink}
 
-\paragraph{\code{exchange}}
+\paragraph{\code{exchange}}\label{op:exchange}
 Ion-exchange equilibrium on the props bench: the declared water contacts a resin at a declared dose and the op reports the exchanged composition, the resin loading and the pH. The \code{exchange \{\}} block accepts resin, resinDose and CEC and NOTHING else — the capacity nameplate lives in the resin's own record, and an unknown key refuses by name with the grammar. \code{pH solve;} asks for the proton balance to be solved rather than given.
 
 \begin{tabular}{@{}p{0.30\linewidth}p{0.62\linewidth}@{}}
@@ -439,7 +439,7 @@ Ion-exchange equilibrium on the props bench: the declared water contacts a resin
 
 \subsection{Fitting and estimating}
 
-\paragraph{\code{fitParameters}}
+\paragraph{\code{fitParameters}}\label{op:fitParameters}
 Levenberg-Marquardt regression of thermophysical-model parameters against experimental data, and the SCORING of a package as it stands. Two modes, and the difference matters: \code{fit} (default) adjusts the listed parameters and writes a fit log (chi\textasciicircum{}2 and the parameter trajectory per iteration) plus a parity CSV at the optimum; \code{evaluate} changes nothing and only scores — 'how good are the pairs I already have against MY data?' — so in that mode a \code{parameters} list is OPTIONAL and, when present, is a pinned what-if whose entries carry \code{value} rather than the fit vocabulary of initial/min/max.
 
 \begin{tabular}{@{}p{0.30\linewidth}p{0.62\linewidth}@{}}
@@ -461,7 +461,7 @@ Levenberg-Marquardt regression of thermophysical-model parameters against experi
 \quad (and 17 more)
 \end{tutoriallink}
 
-\paragraph{\code{vaporPressureFit}}
+\paragraph{\code{vaporPressureFit}}\label{op:vaporPressureFit}
 Least-squares fit of measured vapour-pressure data to the Antoine form, producing the A, B and C a component record carries. Like \code{heatCapacityFit}, this is curation made visible: the residuals are reported beside the coefficients so the fit is judged, not just taken.
 
 \begin{tabular}{@{}p{0.30\linewidth}p{0.62\linewidth}@{}}
@@ -480,7 +480,7 @@ Least-squares fit of measured vapour-pressure data to the Antoine form, producin
 \quad (and 1 more)
 \end{tutoriallink}
 
-\paragraph{\code{heatCapacityFit}}
+\paragraph{\code{heatCapacityFit}}\label{op:heatCapacityFit}
 Least-squares polynomial fit of measured heat-capacity data, producing the \code{coefficients ( ... )} list a component record carries. The fit is a CURATION act made visible: the residuals and the recovered coefficients are reported so the student can judge the fit before promoting it into a \code{.dat}.
 
 \begin{tabular}{@{}p{0.30\linewidth}p{0.62\linewidth}@{}}
@@ -499,7 +499,7 @@ Least-squares polynomial fit of measured heat-capacity data, producing the \code
 \file{tutorials/props/fit/cp01\_polynomial\_recovery}
 \end{tutoriallink}
 
-\paragraph{\code{estimateComponent}}
+\paragraph{\code{estimateComponent}}\label{op:estimateComponent}
 Group-contribution estimation of a component's constants — curation made visible, like the fit ops: the estimate is computed, compared against a reference where one is given, and written as a promotable draft, never silently into the catalogue.  THREE routes by \code{model}: a group method (Joback for small molecules, vanKrevelen for a polymer repeat unit) decomposes the molecule into \code{groups}; a scalar-anchored method (RiaziDaubert) builds a petroleum PSEUDO-component from \code{anchors \{ Tb; SG; \}} and needs no groups — the record it writes says loudly that a cut is a LUMP of hundreds of species, not a molecule; and the polymer route adds a \code{polymer \{\}} block whose packing factor k is visible, never hidden, because rho = M0/(k$\cdot$Vw) and k IS the assumption.
 
 \begin{tabular}{@{}p{0.30\linewidth}p{0.62\linewidth}@{}}
@@ -522,7 +522,7 @@ Group-contribution estimation of a component's constants — curation made visib
 \quad (and 6 more)
 \end{tutoriallink}
 
-\paragraph{\code{dataReconciliation}}
+\paragraph{\code{dataReconciliation}}\label{op:dataReconciliation}
 Steady-state data reconciliation of a flow network. Mass-flow readings, each with its meter's declared standard uncertainty, are adjusted as little as their uncertainties allow until every node mass balance closes: min Sum ((x - m)/sigma)\textasciicircum{}2 subject to A x = 0, solved by the engine's one weighted least squares (the reconciler built for the aqueous laboratory analysis). With Gaussian meter noise and a flat prior this is the Bayesian posterior mode; its covariance C - V, V = C A\textasciicircum{}T (A C A\textasciicircum{}T)\textasciicircum{}-1 A C, is published. Beside the answer: each balance's residual at the readings and its standard deviation, the chi-square global test with rank(A) degrees of freedom, the measurement test (each adjustment over its own standard deviation, against a Sidak-corrected two-sided normal critical value), and, for a meter taken out of service, the balances projected onto the remaining meters and the excluded reading's offset from what the rest of the plant says. An optional diagonal Gaussian prior per flow is combined with each reading by precision weighting, which is exact. Linear mass balances only.
 
 \begin{tabular}{@{}p{0.30\linewidth}p{0.62\linewidth}@{}}
@@ -544,7 +544,7 @@ Steady-state data reconciliation of a flow network. Mass-flow readings, each wit
 
 \subsection{Benches}
 
-\paragraph{\code{kinetics1D}}
+\paragraph{\code{kinetics1D}}\label{op:kinetics1D}
 One-dimensional batch kinetics bench: integrates c(t) for an nth-order rate, overlays a measured dataset when one is declared, and — with a \code{fit} list — regresses the rate constant or the Arrhenius pair (k0, Ea) from the data. The MODEL-DISCRIMINATION lesson lives here: the same dataset run at order 1 and order 2 shows which residuals carry structure, which is adequacy, not consistency.
 
 \begin{tabular}{@{}p{0.30\linewidth}p{0.62\linewidth}@{}}
@@ -564,7 +564,7 @@ One-dimensional batch kinetics bench: integrates c(t) for an nth-order rate, ove
 \file{tutorials/props/kinetics/rate01\_arrhenius\_recovery}
 \end{tutoriallink}
 
-\paragraph{\code{heatTransferBench}}
+\paragraph{\code{heatTransferBench}}\label{op:heatTransferBench}
 Self-check of the heat-transfer correlation library against its own textbook worked examples: every built-in correlation is evaluated at its published example's conditions and held to the printed answer within a declared tolerance. Runs with NO configuration — the bench IS the test — and the tolerances exist only to honour textbook rounding and chart-reading scatter, never to loosen a failing correlation.
 
 \begin{tabular}{@{}p{0.30\linewidth}p{0.62\linewidth}@{}}
@@ -581,7 +581,7 @@ Self-check of the heat-transfer correlation library against its own textbook wor
 \quad (and 1 more)
 \end{tutoriallink}
 
-\paragraph{\code{isothermEval}}
+\paragraph{\code{isothermEval}}\label{op:isothermEval}
 Evaluates a curated adsorption isotherm — the loading of one adsorbate on one adsorbent as a function of pressure and temperature — from the adsorbent record's own parameters. The glass-box surface of what a fixed-bed or TSA unit uses internally, so the isotherm a breakthrough case runs on can be plotted and checked before the bed is ever solved.
 
 \begin{tabular}{@{}p{0.30\linewidth}p{0.62\linewidth}@{}}
@@ -599,7 +599,7 @@ Evaluates a curated adsorption isotherm — the loading of one adsorbate on one 
 \file{tutorials/props/adsorption/isotherm01\_eval\_13x\_co2}
 \end{tutoriallink}
 
-\paragraph{\code{elementalComposition}}
+\paragraph{\code{elementalComposition}}\label{op:elementalComposition}
 Glass-box surface of the ONE shared formula parser (src/thermo/ElementComposition) that every balance diagnostic uses. Decomposes chemical formulas into their per-element atom counts and reports them, so the parser a student relies on for the element balance can be exercised and read directly. Give \code{formulas}, \code{components}, or both; a formula it cannot parse is REFUSED by name rather than silently skipped.
 
 \begin{tabular}{@{}p{0.30\linewidth}p{0.62\linewidth}@{}}
@@ -617,7 +617,7 @@ Glass-box surface of the ONE shared formula parser (src/thermo/ElementCompositio
 
 \subsection{Other}
 
-\paragraph{\code{enthalpyConcentration}}
+\paragraph{\code{enthalpyConcentration}}\label{op:enthalpyConcentration}
 The saturated-liquid and saturated-vapour enthalpy loci of a BINARY at ONE pressure — the data an enthalpy-concentration (Ponchon-Savarit) construction is drawn on; the construction itself belongs to a drawing tool. Every row is one equilibrium: it carries BOTH ends of a tie line (the liquid x1 with h\_liquid, the vapour y1 with H\_vapour) at the ONE temperature they share, so a consumer never pairs rows by index and never interpolates one end of a tie. \code{role bubble} rows put x1 on the uniform grid, \code{role dew} rows put y1 on it; both are solved through the SAME bubble-point kernel, a dew node being the inversion y\_eq(x) = y1. The op REFUSES up front unless the thermophysical system has EXACTLY 2 components, and unless every component can be priced on the project's one enthalpy datum (the elements at 298.15 K): it names any component with no route to that datum, any component with no idealGasHeatCapacity\{\} block (no saturated-vapour leg), and any component whose standardThermochemistry.referenceState is off the ideal-gas rung — no private Cp integral is ever substituted. A node that cannot be solved (bubble Newton not converged, a non-monotonic y\_eq(x1) that has no single-valued dew inversion, a y1 outside the converged bubble image, an enthalpy kernel refusal) is PUBLISHED as a refusal row with its status, never dropped. Diagnostics headline lambda = H\_vapour $-$ h\_liquid over the locus, the spread of which measures what constant molar overflow costs.
 
 \begin{tabular}{@{}p{0.30\linewidth}p{0.62\linewidth}@{}}
@@ -633,7 +633,7 @@ The saturated-liquid and saturated-vapour enthalpy loci of a BINARY at ONE press
 \file{tutorials/props/scan/hxy01\_ethanol\_water\_1atm}
 \end{tutoriallink}
 
-\paragraph{\code{freezingPoint}}
+\paragraph{\code{freezingPoint}}\label{op:freezingPoint}
 Freezing-point curve T\_f(m) of a single salt in water, solved as chemical-potential equality between an actual crystallising SolidPhase (ice) and the Pitzer surface's water activity: f\_solid(T) = a\_w(m,T)*Psat(T). The first case-reachable consumer of the crystal; its announced approximations (no dCp term, sub-freezing Psat extrapolation) fire on every run. Diagnostics: T\_f and depression at the grid end, the dilute-limit slope against nu*K\_f (the derived cryoscopic constant), and the depression AAD against a measured dataset via the standard validation block.
 
 \begin{tabular}{@{}p{0.30\linewidth}p{0.62\linewidth}@{}}
@@ -652,7 +652,7 @@ Freezing-point curve T\_f(m) of a single salt in water, solved as chemical-poten
 \file{tutorials/props/electrolyte/fpd01\_nacl\_freezing}
 \end{tutoriallink}
 
-\paragraph{\code{frictionBench}}
+\paragraph{\code{frictionBench}}\label{op:frictionBench}
 The Darcy friction factor's correlation library, in two parts. VERIFY (always): every registered correlation — Blasius, Colebrook-White, Haaland, Churchill — reproduces its own published anchor, and the deviation is printed beside the correlation's validity window and its primary citation. COMPARE (optional): all four are evaluated at the SAME Re and roughness, and the spread is published TWICE — over all of them, and over only those inside their stated windows. The two are reported apart because collapsing them would say 'the correlations disagree by 26 \%' when the truth is 'three agree within 2 \% and one was asked a question it was never fitted for'. The bench never says which correlation is right: that depends on the pipe, and ranking them would hide the choice the engineer has to make.
 
 \begin{tabular}{@{}p{0.30\linewidth}p{0.62\linewidth}@{}}
@@ -669,7 +669,7 @@ The Darcy friction factor's correlation library, in two parts. VERIFY (always): 
 \quad (and 1 more)
 \end{tutoriallink}
 
-\paragraph{\code{hansenMixture}}
+\paragraph{\code{hansenMixture}}\label{op:hansenMixture}
 The Hansen distance Ra\textasciicircum{}2 = 4(dD - dD,t)\textasciicircum{}2 + (dP - dP,t)\textasciicircum{}2 + (dH - dH,t)\textasciicircum{}2 of DECLARED solvents from a DECLARED target (a solute, polymer or resin record carrying \code{hansen \{ dD; dP; dH; Tref; [R0]; \}}), pure one by one (a screen: no \code{composition \{\}}) or blended two at a time along a composition sweep in a declared basis (volume | mass | mole; mass and mole are converted to volume fractions through the records' Vliq and MW, printed per point). The blend's triple is the volume-fraction average of the solvents' -- stated on every run as an approximation (no excess volume, each solvent keeps its own split). RED = Ra/R0 is published only where the target declares R0; no cut-off is invented. Every \code{hansen \{\}} block carries its reference temperature Tref, the parameters are HELD CONSTANT at it (no correction exists), and the declared T decides the phase check alone: at every blend point the case's activity model is asked, by Michelsen's tangent-plane test, whether the pair is one liquid, and a WORD is published per point -- \code{homogeneous} (the rule applies), \code{twoPhase} (the op REFUSES to represent the pair as one solvent: no average, no Ra, no RED for that point), \code{notVerified} (an ideal liquid or an authorised ideal default cannot decide); a pure solvent is \code{pure}. Ra is a compatibility indicator in this approach, never a saturation concentration, and the run says so. Output: one CSV row per point (composition in both bases, the mixed triple, the Teas fractions, Ra, RED, the phase word, the TPD tm), the minimum and the pure ends as diagnostics, and the top-level result block \code{hansenMixtures}. Refuses by name: no target, a target or solvent with no \code{hansen \{\}}, a block with no Tref, a solvent not in the thermophysical system or without Vliq, other than two solvents under a sweep, an unknown basis word.
 
 \begin{tabular}{@{}p{0.30\linewidth}p{0.62\linewidth}@{}}
@@ -689,7 +689,7 @@ The Hansen distance Ra\textasciicircum{}2 = 4(dD - dD,t)\textasciicircum{}2 + (d
 \quad (and 2 more)
 \end{tutoriallink}
 
-\paragraph{\code{phaseEnvelope}}
+\paragraph{\code{phaseEnvelope}}\label{op:phaseEnvelope}
 The P-T phase envelope of a MIXTURE at fixed feed composition: the bubble curve (V/F -> 0) and the dew curve (V/F -> 1) traced in the (T, P) plane and written as a long-form CSV (P\_Pa, T\_K, curve). An envelope is drawn to find the CRICONDENTHERM -- the highest temperature at which the feed can hold a liquid, what a pipeline is designed against -- and the retrograde region beside it, and both live at the nose, which no single-specification march can close: this trace does NOT close it, says so on every run, and names Michelsen's arc-length continuation with a switching specification (Fluid Phase Equilib. 4 (1980) 1) as the algorithm that would. The bubble and dew solves are BubblePoint::compute and DewPoint::compute -- the same routines the bubbleT and dewT units call, so neither saturation residual exists twice. Marching in pressure, the temperature maximum is not a turning point for the specification, so an INTERIOR maximum is reported as a BRACKETED cricondentherm naming the two pressures it lies between; an endpoint maximum is not reported, because it says where the range stops and not where the mixture peaks. A point that CONVERGED but is discontinuous with its branch is discarded and the branch ends there: the bubble curve is monotonically increasing in P up to the critical point (physics, not a heuristic) and the dew curve gets a continuity test, because both saturation solvers bracket T in 200-700 K and are warm-started, so Newton can land on a different root and report success -- which it did, drawing a bubble temperature FALLING with pressure and publishing a cricondentherm that was the resulting spike. A branch that produces no point at all is reported as never having started, which is a different finding from a branch that stopped, and has a different remedy.
 
 \begin{tabular}{@{}p{0.30\linewidth}p{0.62\linewidth}@{}}
@@ -706,7 +706,7 @@ The P-T phase envelope of a MIXTURE at fixed feed composition: the bubble curve 
 \quad (and 1 more)
 \end{tutoriallink}
 
-\paragraph{\code{phaseSplitScan}}
+\paragraph{\code{phaseSplitScan}}\label{op:phaseSplitScan}
 The full phase split of ONE fixed feed swept along temperature (at fixed pressure) or pressure (at fixed temperature): at every grid point one isothermal flash through the flash unit's own solver (IsothermalFlash::solveCore) under the case's thermophysical system -- vapour, one or two liquids, crystallising solids declared in phases ( ... ), minerals precipitating from a speciated solution. Publishes per point the amount of every phase present (V, L1, L2, each solid by name), each phase's composition, the flash's own observables (pH, solidFraction, the crystal's activity beside its saturation value), the solved species where the package speciates; announces every phase appearance / disappearance between consecutive points and every record-level extrapolation at the first point that raised it. A point the flash cannot serve is published as REFUSED by name and the scan continues (no fallback). Output: a CSV (swept variable first) and the top-level result block phaseSplitScans. Not modelled: nucleation / supercooling, a solid no record declares, solute inclusion in a crystal.
 
 \begin{tabular}{@{}p{0.30\linewidth}p{0.62\linewidth}@{}}
@@ -725,7 +725,7 @@ The full phase split of ONE fixed feed swept along temperature (at fixed pressur
 \file{tutorials/props/thermo/phaseSplit01\_freeze\_water\_ethanol}
 \end{tutoriallink}
 
-\paragraph{\code{polarisationIndex}}
+\paragraph{\code{polarisationIndex}}\label{op:polarisationIndex}
 The PROPS BENCH of the multi-ionic concentration-polarisation model of Geraldes \& Afonso (J. Membr. Sci. 300 (2007) 20): for every row of a measured dataset (bulk and permeate concentration per ion, volume flux) it prices each ion's mass-transfer coefficient on the ion's OWN diffusivity from the declared correlation, corrects it for suction, and solves the wall concentrations coupled by ONE interface potential gradient fixed by electroneutrality -- no film thickness, no fitted parameter. Publishes per row the polarisation index Gamma\_<ion> = (C\_m - C\_b)/C\_b, xi and the wall charge residual, and per ion k\_<ion>. Witness polarisation01\_geraldes\_afonso\_table1; gate check\_polarisation\_coupling recomputes Eqs. (25)-(28) independently.
 
 \begin{tabular}{@{}p{0.30\linewidth}p{0.62\linewidth}@{}}
@@ -744,7 +744,7 @@ The PROPS BENCH of the multi-ionic concentration-polarisation model of Geraldes 
 \file{tutorials/props/membrane/polarisation01\_geraldes\_afonso\_table1}
 \end{tutoriallink}
 
-\paragraph{\code{poreTransport}}
+\paragraph{\code{poreTransport}}\label{op:poreTransport}
 The PROPS BENCH of the DSPM-DE transport law at IMPOSED permeate fluxes: the same TransportModel the spiral-wound module marches, built through the same factory, the same \code{transportParameters} reader and the same wall kernel, handed J\_v instead of closing J\_w = A\_w (dP - dpi) -- the way NanoFiltran (Geraldes \& Alves 2008) takes it.  Publishes per J\_v point p and per ion species c\_bulk\_<ion>\_p<p>, c\_wall\_<ion>\_p<p>, c\_perm\_<ion>\_p<p> (mol/m3), Rreal\_<ion>\_p<p> = 1 - c\_perm/c\_wall and Robs\_<ion>\_p<p> = 1 - c\_perm/c\_bulk, and permeateCharge\_max; where the pore was solved also dPsi\_m\_V\_p<p> (the potential difference across the membrane as Geraldes \& Alves 2008 define it: the permeate's potential against the feed-side solution at the wall, both Donnan jumps included, CODATA volts) and poreNewton\_p<p> / poreContinuations\_p<p> (the station's Newton iterations; the first point from the seed, each later one warm-started) and poreNodes\_p<p>; every diagnostic carries its unit.  Two named TABLES a view draws (the propsDict's \code{views}, or this op's defaults): \code{points} (one row per J\_v point, the per-point diagnostics as columns) and \code{pore} (every point's solved c\_i(x) and psi(x); the \code{profile} CSV is written from it).  An ion as large as the pore (lambda >= 1) is EXCLUDED: no pore unknown, permeate 0, its film counted in the wall's electroneutrality (announced).  Witness nanofiltran\_geraldesAlves2008, the NanoFiltran paper's one case (gates check\_nanofiltran\_reference, check\_nanofiltran\_paper, check\_postprocessing).  The film is built from the \code{polarisation \{\}} policy directly (not buildPolarisation), because the feed is declared as salts and DSPM-DE hands the kernel each ion's own z and D.
 
 \begin{tabular}{@{}p{0.30\linewidth}p{0.62\linewidth}@{}}
@@ -768,7 +768,7 @@ The PROPS BENCH of the DSPM-DE transport law at IMPOSED permeate fluxes: the sam
 \file{tutorials/props/membrane/nanofiltran\_geraldesAlves2008}
 \end{tutoriallink}
 
-\paragraph{\code{ppr78Kij}}
+\paragraph{\code{ppr78Kij}}\label{op:ppr78Kij}
 The PPR78 / E-PPR78 group-contribution binary interaction parameters of the PR78 equation of state (Jaubert, Privat \& Mutelet, AIChE J. 56 (2010) 3225, Eq. 7; Xu, Lasala, Privat \& Jaubert, Int. J. Greenh. Gas Control 56 (2017) 126, Eq. 4), EVALUATED ONCE at a declared temperature and WRITTEN INTO THE CASE as a kij SET record (\code{recordType eosBinaryInteractionSet}) that the phi-phi package then declares beside its cited pair records (DEV.md 4c C123, route P: the kij a unit runs on are constants in a file the student can read, evaluated at the temperature the unit declares, never a hidden kij(T) inside the cubic). k\_ij = [E\_ij - (delta\_i - delta\_j)\textasciicircum{}2] / (2 delta\_i delta\_j) with delta\_i = sqrt(a\_i(T))/b\_i taken from Choupo's own PR78 (one home) and E\_ij the double sum over the molecules' DECLARED group decompositions on the table's A\_kl, B\_kl (MPa). A pair whose group interaction the table lacks REFUSES by name (never zero); a pair evaluated outside the T range its parameters were fitted on is written \code{extrapolated yes;} with the window, and every run that reads the set repeats it.
 
 \begin{tabular}{@{}p{0.30\linewidth}p{0.62\linewidth}@{}}
@@ -785,7 +785,7 @@ The PPR78 / E-PPR78 group-contribution binary interaction parameters of the PR78
 \file{tutorials/props/molecular/ppr78Kij01\_ch4\_co2\_h2}
 \end{tutoriallink}
 
-\paragraph{\code{rateLawBench}}
+\paragraph{\code{rateLawBench}}\label{op:rateLawBench}
 A rate law written in the case, on the bench, without a reactor around it. The law is the case's own: \code{reaction <name>;} names a reaction of constant/reactions whose kinetics are \code{type expression;}, and the bench prints it back as the engine PARSED it, every number with its unit. LOCUS (optional): sweep temperature at fixed conversions of a key reactant, walked from a base mixture along the reaction's own stoichiometry, and locate the temperature of the greatest value of a reported quantity -- for a reversible exothermic reaction the locus DESCENDS, the curve a quench converter zigzags about. POINTS (optional): the law at states the case declares. What is published is the case's choice (\code{report}). The bench holds no anchors of its own: a law's checks are a gate's (bin/curate/check\_ammonia\_rate.py for the ammonia law). It replaced the ammonia-only \code{ammoniaRateBench} on 2026-10-12 (DEV.md 4c C67), when the Dyson \& Simon law left the engine for the case.
 
 \begin{tabular}{@{}p{0.30\linewidth}p{0.62\linewidth}@{}}
@@ -801,7 +801,7 @@ A rate law written in the case, on the bench, without a reactor around it. The l
 \file{tutorials/props/kinetics/ammoniaRate01\_dyson\_simon}
 \end{tutoriallink}
 
-\paragraph{\code{reactionCurve}}
+\paragraph{\code{reactionCurve}}\label{op:reactionCurve}
 OPEN-LOOP IDENTIFICATION off a trajectory somebody else recorded. Given a CSV written by a choupoCtrl run, one column driven and one column watched, it cuts the record into step SEGMENTS, fits a first-order-plus-dead-time surrogate (K, tau, theta) to each by Nelder-Mead on the sum of squared residuals, and applies the classical tuning rules to the segment the reader nominates. It solves no plant and integrates nothing: the experiment must already exist on disk, and the op reads it. THE SURROGATE IS A SURROGATE — the record is whatever the plant did, an FOPDT is three numbers, and the statement that the second is standing in for the first reaches the reader at the site AND in the end-of-run caveat block. A segment whose response has not SETTLED yields no time constant, because both K and tau are read off the end of the curve; the steady-state test that decides this is declared, not assumed. A dead time smaller than the record's own sampling interval is UNRESOLVED, and every rule that divides by theta (Ziegler-Nichols, Cohen-Coon) is then REFUSED BY NAME for that segment — a controller gain computed from a number the experiment could not measure is a number with nothing behind it. IMC survives there, because its algebra never divides by theta. NOTHING IN CHOUPO EVER CLOSES A LOOP ON THESE SETTINGS: the published gains are what each rule says, not a claim that they work.
 
 \begin{tabular}{@{}p{0.30\linewidth}p{0.62\linewidth}@{}}
@@ -822,7 +822,7 @@ OPEN-LOOP IDENTIFICATION off a trajectory somebody else recorded. Given a CSV wr
 \file{tutorials/ctrl/ctrl17\_step\_reaction\_curve}
 \end{tutoriallink}
 
-\paragraph{\code{reactionGibbs}}
+\paragraph{\code{reactionGibbs}}\label{op:reactionGibbs}
 The standard reaction thermochemistry of declared reactions -- dH, dS, dG and ln K at each listed temperature -- priced on the catalogue's formation data with EVERY species on a DECLARED standard state (idealGas | pureLiquid | pureSolid) and every datum's rung named in the run. The ONE surface is the elements/formation convention at 298.15 K (dHf\_298 + third-law s\_298). At 298.15 K a species on a rung its record declares is priced from that rung's own pair with no heat capacity integrated (the integral is zero there), which is what lets a record with a datum and no Cp block answer at the datum temperature and nowhere else; at any other T, or on a phase the record does not declare, the potential comes from the phase-aware h\_formation/s\_formation walk, which REFUSES by name where the record lacks the leg. It solves no equilibrium and knows nothing about a rate: exergonic means the equilibrium permits it, not that anything makes it go. Built for the biological nitrogen-fixation routes (a solid sugar and liquid water beside gases), which the ideal-gas-rung route every reactor uses refuses.
 
 \begin{tabular}{@{}p{0.30\linewidth}p{0.62\linewidth}@{}}
@@ -840,7 +840,7 @@ The standard reaction thermochemistry of declared reactions -- dH, dS, dG and ln
 \quad (and 1 more)
 \end{tutoriallink}
 
-\paragraph{\code{solubilityParameter}}
+\paragraph{\code{solubilityParameter}}\label{op:solubilityParameter}
 The Hildebrand solubility parameter, delta = sqrt((dHvap(T) - R T) / V\_m), for every component of the case, plus the pairwise |delta\_i - delta\_j| table that is what the question usually is: the smaller the gap, the more likely two liquids mix. Delta is DERIVED and never stored -- the latent heat comes from the same Watson correlation the enthalpy legs use, and the molar volume from the record's Vliq -- so a stored value would be a second home for a fact the record already fixes. Where a record declares a published delta as an ANCHOR, the deviation is printed beside the derived number; that column is a check on the derivation and never an input to it, and it exists because all three ways this arithmetic fails are silent (a dropped RT term, a wrong V\_m unit, and Pa\textasciicircum{}0.5 reported where the literature uses MPa\textasciicircum{}0.5 -- a factor of 31.6 that still reads as a solubility parameter). Refuses by name for a component with no Tc, no HvapTb or no Vliq, and at a temperature at or above Tc, where there is no liquid and delta is not defined. States on every call that the cohesive energy it measures INCLUDES hydrogen bonding and that one number cannot separate it from dispersion and polarity -- it cannot tell a polar solvent from a hydrogen-bonding one of the same cohesive energy density, so a close pair is a CANDIDATE and never a verdict -- and names Hansen's three-parameter split as what would: the \code{hansenMixture} operation computes the Hansen distance of declared solvents and blends from a declared target, from \code{hansen \{ dD; dP; dH; Tref; \}} blocks the records carry (the catalogue carries none; witnesses carry case-local ones with a citation per value).
 
 \begin{tabular}{@{}p{0.30\linewidth}p{0.62\linewidth}@{}}
@@ -855,7 +855,7 @@ The Hildebrand solubility parameter, delta = sqrt((dHvap(T) - R T) / V\_m), for 
 \file{tutorials/props/molecular/solubility01\_hildebrand\_ladder}
 \end{tutoriallink}
 
-\paragraph{\code{thielePellet}}
+\paragraph{\code{thielePellet}}\label{op:thielePellet}
 The PROPS BENCH for one catalyst pellet: it resolves the pellet from its asset record and its effective diffusivity from the ONE home that owns that resolution, solves the isothermal first-order intraparticle boundary-value problem numerically, and VERIFIES that answer against the closed form. It publishes the concentration field c(r)/c\_s, the Thiele modulus phi with the effectiveness factor eta it produces, the Weisz-Prater observable modulus eta*phi\textasciicircum{}2, and — swept — the classical eta(phi) family over the three geometries. The physics is NOT here: it lives in unitOperations/reactor/pellet/PelletDiffusion, which the four reactors that today assume eta = 1 will reach. The op judges nothing: it publishes phi, eta and the field, announces what it assumed (isothermal, first-order, one pellet size, external film neglected), and leaves the reader to decide whether diffusion matters in their case. A run whose numerical answer misses the declared verification tolerances exits 1.
 
 \begin{tabular}{@{}p{0.30\linewidth}p{0.62\linewidth}@{}}
@@ -882,7 +882,7 @@ The PROPS BENCH for one catalyst pellet: it resolves the pellet from its asset r
 \quad (and 1 more)
 \end{tutoriallink}
 
-\paragraph{\code{transportBench}}
+\paragraph{\code{transportBench}}\label{op:transportBench}
 The transport-correlation bench, in two parts. VERIFY (always): every registered model of the five transport families — gas viscosity (Chung, ChapmanEnskog), gas thermal conductivity (Eucken, modifiedEucken), gas binary diffusivity (Fuller), liquid viscosity (Andrade, Vogel, chemsepEq101), liquid thermal conductivity (SatoRiedel, chemsepEq16) — plus the shared Wilke phi\_ij mixing factor reproduces its own anchor, and the deviation is printed beside the model's validity window, its PRIMARY citation and the KIND of anchor: 'theory' (an identity kinetic theory supplies, such as Eucken's monatomic limit) or 'arithmetic' (the correlation's own closed form at a stated point, or — for ChapmanEnskog — Svehla's 1962 printed viscosity reproduced from his own constants within a tolerance the anchor DECLARES and the bench prints). The kind is printed because the catalogue holds NO measured transport data, so a 0.000 \% on an arithmetic anchor proves a transcription and nothing else. COMPARE (optional): every registered gas-viscosity and gas-conductivity model is evaluated for every component of the case at one (T, P), each with its computable window verdict; a component a model cannot price (ChapmanEnskog on a record with no lennardJones block) is LISTED as not evaluable, by reason, never skipped in silence; then the case's declared mixing rules give the mixture mu (Wilke) and k (Wassiljewa / Mason-Saxena) at the declared or equimolar composition, and the spread across models is published per family — a real disagreement where two models could answer, and 0 with a sentence saying a spread over one is not agreement where only one could. The bench never ranks the models.
 
 \begin{tabular}{@{}p{0.30\linewidth}p{0.62\linewidth}@{}}

@@ -2,6 +2,7 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://choupo.org/schemas/operations/psychrometricChart.schema.json",
   "title": "psychrometricChart operation",
+  "x-choupo": {"discipline": "Thermodynamics", "activity": "scan", "package": true},
   "description": "Psychrometric chart for ANY carrier + condensable pair, generated from the package's own models rather than copied from a handbook: saturation line, constant-relative-humidity curves and wet-bulb lines over a declared temperature span. Carrier and condensable are NOT interchangeable — only the condensable needs a vapour-pressure model, and the op refuses by name when it has none. Air-water is one instance, not the definition; the reference case runs N2-water.",
   "type": "object",
   "properties": {

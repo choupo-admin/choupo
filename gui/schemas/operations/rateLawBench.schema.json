@@ -2,6 +2,7 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://choupo.org/schemas/operations/rateLawBench.schema.json",
   "title": "rateLawBench operation",
+  "x-choupo": {"discipline": "Kinetics", "activity": "evaluate", "data": [{"key": "", "kind": "record", "label": "reaction library", "file": "constant/reactions"}]},
   "description": "A rate law written in the case, on the bench, without a reactor around it. The law is the case's own: `reaction <name>;` names a reaction of constant/reactions whose kinetics are `type expression;`, and the bench prints it back as the engine PARSED it, every number with its unit. LOCUS (optional): sweep temperature at fixed conversions of a key reactant, walked from a base mixture along the reaction's own stoichiometry, and locate the temperature of the greatest value of a reported quantity -- for a reversible exothermic reaction the locus DESCENDS, the curve a quench converter zigzags about. POINTS (optional): the law at states the case declares. What is published is the case's choice (`report`). The bench holds no anchors of its own: a law's checks are a gate's (bin/curate/check_ammonia_rate.py for the ammonia law). It replaced the ammonia-only `ammoniaRateBench` on 2026-10-12 (DEV.md 4c C67), when the Dyson & Simon law left the engine for the case.",
   "type": "object",
   "properties": {

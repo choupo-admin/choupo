@@ -2,6 +2,7 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://choupo.org/schemas/operations/propertyPoint.schema.json",
   "title": "propertyPoint operation",
+  "x-choupo": {"discipline": "Thermodynamics", "activity": "evaluate", "package": true},
   "description": "Single-point property evaluation: at a given (T, P, composition) the thermo package reports every property the chosen models can compute (Psat, gamma_i, K_i, Cp_ig, H, S, Z, v, ...). Results print to the run log.",
   "type": "object",
   "properties": {

@@ -125,6 +125,70 @@ def main() -> int:
                     f"so the link opens the guide at page one and the reader "
                     f"is told nothing")
 
+    #  THE TWO OBJECT-SHAPED TABLES (2026-10-25, DEV.md 4c C151).  OP_DEST
+    #  (a props op's F1) and PROPS_MODEL_DEST (a model token's theory) name
+    #  their guide PER ENTRY -- `{ pdf: "theoryGuide.pdf", dest: ... }` and
+    #  `{ guide: "theory", dest: ... }` -- and the calculation map routes every
+    #  model block and every op block through them.  They were outside this
+    #  gate until then, so a renamed label behind a map block would have
+    #  opened page one in silence.
+    OBJ_TABLES = [
+        ("OP_DEST", r'^\s*"?([A-Za-z0-9_-]+)"?:\s*\{\s*pdf:\s*"([A-Za-z]+)\.pdf",\s*dest:\s*"([^"]+)"', None),
+        ("PROPS_MODEL_DEST", r'^\s*"?([A-Za-z0-9_-]+)"?:\s*\{\s*guide:\s*"(theory|props)",\s*dest:\s*"([^"]+)"', {"theory": "theoryGuide", "props": "propsGuide"}),
+    ]
+    for table, pattern, alias in OBJ_TABLES:
+        m = re.search(r"const " + table + r"\b[^{]*\{(.*?)\n\};", src, re.S)
+        if not m:
+            fails.append(f"harvested NO entries from {table} -- its shape "
+                         "changed, so this gate is blind there rather than "
+                         "satisfied")
+            continue
+        body = re.sub(r"//[^\n]*", "", m.group(1))
+        entries = re.findall(pattern, body, re.M)
+        if not entries:
+            fails.append(f"harvested NO entries from {table} -- its shape "
+                         "changed, so this gate is blind there rather than "
+                         "satisfied")
+            continue
+        per_table[table] = (len(entries), "per-entry guide")
+        for key, g, dest in entries:
+            guide = alias[g] if alias else g
+            if guide not in GUIDES:
+                fails.append(f"{table}[{key}] names guide '{g}', which is not one of {sorted(GUIDES)}")
+                continue
+            if guide not in cache:
+                cache[guide] = labels_of(GUIDES[guide])
+            checked += 1
+            if dest not in cache[guide]:
+                fails.append(
+                    f"{table}[{key}] -> \"{dest}\", which is NOT a \\label in "
+                    f"{guide}.tex -- the link opens the guide at page one")
+
+    #  THE FALLBACK: an op with no OP_DEST entry opens `op:<type>` in the
+    #  Props Guide (propsOpHelpLink).  Every props op schema must therefore
+    #  have that label -- bin/curate/props_ops_reference.py writes it.
+    if "`op:${opType}`" in src or "op:${opType}" in src:
+        units = set()
+        for rel in ("src/unitOperations/UnitOperation.cpp",
+                    "src/unitOperations/batch/BatchUnitOperation.cpp",
+                    "src/unitOperations/dynamic/DynamicUnitOperation.cpp"):
+            p = ROOT / rel
+            if p.exists():
+                units |= set(re.findall(r'reg(?:isterType)?\(\s*"([A-Za-z0-9]+)"', p.read_text()))
+        ops = sorted(p.name.replace(".schema.json", "")
+                     for p in (ROOT / "gui" / "schemas" / "operations").glob("*.schema.json")
+                     if p.name.replace(".schema.json", "") not in units)
+        if "propsGuide" not in cache:
+            cache["propsGuide"] = labels_of(GUIDES["propsGuide"])
+        for op in ops:
+            checked += 1
+            if f"op:{op}" not in cache["propsGuide"]:
+                fails.append(f"propsOpHelpLink falls back to \"op:{op}\", which is "
+                             "NOT a \\label in propsGuide.tex -- regenerate "
+                             "docs/propsGuide-operations.tex "
+                             "(bin/curate/props_ops_reference.py)")
+        per_table["op:<type> fallback"] = (len(ops), "propsGuide")
+
     if fails:
         print("check_guide_anchors: FAILED")
         for f in fails:

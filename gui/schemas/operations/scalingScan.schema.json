@@ -2,6 +2,7 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://choupo.org/schemas/operations/scalingScan.schema.json",
   "title": "scalingScan operation",
+  "x-choupo": {"discipline": "Thermodynamics", "activity": "scan", "package": true, "models": [{"key": "activityModel", "role": "aqueous activity"}]},
   "description": "Concentration scan of a water analysis, the RO/evaporator scaling audit: the declared analysis is concentrated point by point along a recovery axis, the full speciation is solved at each point, and every mineral's saturation index is reported — WHERE each scale becomes possible, before any membrane is sized. Takes the same solution-definition keys as `speciate` (totals, pH incl. `solve`, atmosphere for an open system, temperature, equilibrate for allowed precipitation); adds the recovery axis and, with an equilibrate block, a `feedFlow` that turns precipitation into kg/day. `feedFlow` without `equilibrate` is REFUSED — it only feeds a rate an SI-only scan does not compute — and a bare number is refused too: it needs a volumetric unit.",
   "type": "object",
   "properties": {

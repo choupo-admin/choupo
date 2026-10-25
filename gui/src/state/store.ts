@@ -291,6 +291,14 @@ interface AppState {
   markFlowsheetRun: () => void;
   panels: { [K in PanelKey]: boolean };
   activeWorkspace: WorkspaceKey | null;
+  /** A request to show ONE block of a case file in the Case tab: the file,
+   *  and the lines to scroll to and mark (the props review screen and its
+   *  calculation map link every operation, view and dataset to the lines
+   *  that declare it -- DEV.md 4c C151).  Read by CaseWorkspace; a new
+   *  request replaces the old.  `seq` makes a repeated click a new request. */
+  caseFocus: { path: string; line?: number; endLine?: number; seq: number } | null;
+  /** Open the Case tab at that file and those lines. */
+  openCaseAt: (path: string, line?: number, endLine?: number) => void;
 
   // Assistant console (a real `claude -c` session via the local bridge) — the
   // BOTTOM DOCK of the shell.  Its SHAPE (dock / fold / height) is a reader
@@ -849,6 +857,13 @@ export const useStore = create<AppState>((set, get) => ({
     })),
 
   setActiveWorkspace: (key) => set({ activeWorkspace: key }),
+
+  caseFocus: null,
+  openCaseAt: (path, line, endLine) =>
+    set((s) => ({
+      activeWorkspace: "case",
+      caseFocus: { path, line, endLine, seq: (s.caseFocus?.seq ?? 0) + 1 },
+    })),
 
   agentOpen: bootSession?.agentOpen ?? false,
   toggleAgent: () => set((s) => ({ agentOpen: !s.agentOpen })),

@@ -2,6 +2,7 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://choupo.org/schemas/operations/pitzerActivity.schema.json",
   "title": "pitzerActivity operation",
+  "x-choupo": {"discipline": "Thermodynamics", "activity": "scan", "models": [{"fixed": "pitzer", "role": "ion-interaction activity"}], "data": [{"key": "validation", "kind": "inline", "label": "published reference points"}]},
   "description": "Mean-ionic activity coefficient and osmotic coefficient of ONE salt by the Pitzer ion-interaction model, as a function of molality. The salt is named by its two ions and its stoichiometry is DERIVED from electroneutrality (Ca + Cl gives CaCl2), so the case never restates what the charges already say. The pair parameters come from the curated catalogue; a missing pair is an error, not a zero.",
   "type": "object",
   "properties": {

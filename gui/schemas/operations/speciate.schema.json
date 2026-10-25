@@ -2,6 +2,7 @@
  "$schema": "https://json-schema.org/draft/2020-12/schema",
  "$id": "https://choupo.org/schemas/operations/speciate.schema.json",
  "title": "speciate operation",
+ "x-choupo": {"discipline": "Thermodynamics", "activity": "evaluate", "package": true, "models": [{"key": "activityModel", "role": "aqueous activity"}]},
  "description": "Aqueous speciation: distributes the declared analytical totals over the curated equilibrium network and reports every species, its activity coefficient, the ionic strength, the water activity and the mineral saturation indices. By default it is SI-ONLY — it says which solids are supersaturated without precipitating any. Adding an `equilibrate { minerals ( ... ) }` block lets the NAMED solids precipitate to their SI = 0 ceiling; naming the allowed set is the author's decision and is required, because which solid a brine is permitted to drop is chemistry, not a default.",
  "type": "object",
  "properties": {

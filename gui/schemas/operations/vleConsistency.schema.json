@@ -2,6 +2,7 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://choupo.org/schemas/operations/vleConsistency.schema.json",
   "title": "vleConsistency operation",
+  "x-choupo": {"discipline": "Data", "activity": "curate", "package": true, "data": [{"key": "dataset", "kind": "experiment", "label": "measured dataset"}]},
   "description": "Gibbs-Duhem thermodynamic-consistency test on MEASURED binary VLE data. Back-computes the activity coefficients from the data itself by modified Raoult (gamma_i = y_i P / (x_i Psat_i(T))), then reports the pointwise Gibbs-Duhem residual, the Herington area test (pass if |D-J| < 10) and the infinite-dilution gammas. Needs measured y: a bubble-T-vs-x set alone cannot run it, and testing an NRTL or Wilson CURVE is a tautology since those are consistent by construction. The CSV carries x1, lnGamma1, lnGamma2, lnRatio, gdResidual.",
   "type": "object",
   "properties": {

@@ -2,6 +2,7 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://choupo.org/schemas/operations/kinetics1D.schema.json",
   "title": "kinetics1D operation",
+  "x-choupo": {"discipline": "Kinetics", "activity": "evaluate", "activityBy": {"key": "fit", "present": "fit"}, "models": [{"fixed": "ratelaw", "role": "nth-order rate law"}], "data": [{"key": "dataset", "kind": "experiment", "label": "measured dataset"}]},
   "description": "One-dimensional batch kinetics bench: integrates c(t) for an nth-order rate, overlays a measured dataset when one is declared, and — with a `fit` list — regresses the rate constant or the Arrhenius pair (k0, Ea) from the data. The MODEL-DISCRIMINATION lesson lives here: the same dataset run at order 1 and order 2 shows which residuals carry structure, which is adequacy, not consistency.",
   "type": "object",
   "properties": {

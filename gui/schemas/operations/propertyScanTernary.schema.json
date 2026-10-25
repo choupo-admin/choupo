@@ -2,6 +2,7 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://choupo.org/schemas/operations/propertyScanTernary.schema.json",
   "title": "propertyScanTernary operation",
+  "x-choupo": {"discipline": "Thermodynamics", "activity": "scan", "package": true},
   "description": "Ternary map at one (T, P): sweeps the composition simplex and reports the phase behaviour — the LLE solubility envelope with tie-lines, or a VLE/VLLE audit — from the declared activity model. The map is the model's fingerprint: change the declared model and the envelope moves.",
   "type": "object",
   "properties": {

@@ -105,7 +105,7 @@ import { IconCheck, IconChevronDown, IconSearch } from "@tabler/icons-react";
 
 import { useStore, reopenLastCase, lastCaseLabel, hasCaseOpen, isIsolatedTab, type WorkspaceKey } from "../state/store.js";
 import {
-  WORKSPACES, visibleWorkspacesFor, type WorkspaceEntry,
+  WORKSPACES, captionOf, visibleWorkspacesFor, type WorkspaceEntry,
 } from "./workspaces.js";
 import { popOutHelpTopics } from "./helpTopicsPopOut.js";
 import {
@@ -494,7 +494,7 @@ export function MenuBar({ availableWidthPx, onRowWidth }: {
    * trigger does not render, and re-measuring both ghosts on every tool switch
    * would be measuring a shape nothing draws. */
   const lineupSignature =
-    `${tabKind}|${visibleWorkspaces.map((w) => w.label).join(",")}@${activeWorkspace ?? "none"}`
+    `${tabKind}|${visibleWorkspaces.map((w) => captionOf(w)).join(",")}@${activeWorkspace ?? "none"}`
     + `|tool=${tabKind === "tool" ? activeTool : "-"}`;
   const expandedRow  = useIntrinsicWidth(`expanded|${lineupSignature}`);
   const collapsedRow = useIntrinsicWidth(`collapsed|${lineupSignature}`);
@@ -656,7 +656,7 @@ export function MenuBar({ availableWidthPx, onRowWidth }: {
                 },
               }}
             >
-              {w.label}
+              {captionOf(w)}
             </Button>
           );
         })}
@@ -950,7 +950,7 @@ function ViewsMenu({ views, isActive, isDisabled, disabledHint, onPick, px }: {
   const label = (
     <Text span fz={13} fw={400} c="dimmed">
       Views:{" "}
-      <Text span fz={13} fw={600} c="accent">{current ? current.label : "none"}</Text>
+      <Text span fz={13} fw={600} c="accent">{current ? captionOf(current) : "none"}</Text>
     </Text>
   );
   return (
@@ -975,7 +975,7 @@ function ViewsMenu({ views, isActive, isDisabled, disabledHint, onPick, px }: {
             onClick={() => { if (!disabled) onPick(w.label, w.key); }}
             styles={{ itemLabel: { fontWeight: active ? 600 : 400 } }}
           >
-            {w.label}
+            {captionOf(w)}
           </Menu.Item>
         );
       })}
