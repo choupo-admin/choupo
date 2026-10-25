@@ -2007,7 +2007,36 @@ accepts today, and that is a policy call.
 > (fixed); MISSING M1 no liquid-split check after a VL flash, M2 no
 > fugacity residual published; gate `check_thermo_limits`; its REFUTER is
 > running, and the flash fix reaches a shared path, so it lands only after
-> the refuter's corpus measurement.  Family (b) separations IN FLIGHT;
+> the refuter's corpus measurement.  Family (b) separations LANDED
+> (analyst `claude/c131-review-separations` + refuter
+> `claude/c131-refute-separations`, report
+> `docs/design/review-c131-separations.md` with its Refutation appendix):
+> FIXED -- the Kremser stripper deleted a solvent arriving in its
+> stripping gas (stripper01 + 20 kmol/h steam: mass 91.807 %, 1363 kW
+> first-law hole, exit 0), stripper and absorber deleted a non-solute
+> arriving in their liquid (96.986 % / 97.469 %), the stripper lacked the
+> absorber's no-solvent refusal (60.926 %) -- all now REFUSE by name
+> (gate `check_kremser_inventory`); the full MESH priced a two-phase feed
+> as a blend at z and two feeds on one stage at a molar-average T, and the
+> same fix closed 6.916 kW the CMO `simultaneous` duty block left on
+> column04 (arms (j), (k) of `check_feed_thermal_state`).  36 column /
+> absorber / stripper cases PASS, `--fast` 76/0, no golden moved.
+> PROPOSALS for Vitor: P1 the CMO columns use q = 1 - vf, so a subcooled
+> feed is priced in the duty but not in the internal flows (column01 at
+> 300 K: x_D identical to 9 digits, Q_reb +260 kW) and `feedQuality 1.29;`
+> is REFUSED as a contradiction, so no case can express it -- q from the
+> feed enthalpies, announced, moves column05/13, crystalliser09,
+> aceticAcid02, heatlink02; P2 an extractor duty (M1: -143.75 kW
+> unattributed with a 330 K solvent); P3 the crystalliser's Newton stop
+> normalised and checked; P5 the MSMPR CV named by definition and basis;
+> P6 the Kirkbride feed stage vs the FUG lesson (the lesson counts the
+> feed stage nowhere); P7 live steam / humid air through the stripper's gas
+> (now REFUSED -- humid air is the normal air-stripper inlet); M9 `model
+> fullMESH;` with a reaction block silently runs CMO (a refusal by name,
+> moves nothing).  The check_doctrine exemption for
+> `docs/design/review-c131-` (the word `dwsim` only) lets the review
+> records name the open reference simulator.  Family (c) reactors IN
+> FLIGHT;
 > C112 wave B IN FLIGHT.  Owed to Vitor, unchanged: C139 and C140 start
 > with their scope.
 
