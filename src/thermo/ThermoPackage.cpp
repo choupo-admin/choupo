@@ -1511,6 +1511,20 @@ scalar ThermoPackage::speciesPhaseEnthalpy(std::size_t i, scalar T,
     // dissolved-gas HENRY rung; until it exists, the Watson-slope leg
     // survives as the ANNOUNCED fallback (#106: estimation/validation/
     // fallback -- explicitly announced, never the silent state surface).
+    //
+    // NOT FOR A NONVOLATILE, and not for a record with no ideal-gas Cp
+    // either: the ONE home of that decision is
+    // Component::requireWatsonSlopeLiquidFallback, which the sensible leg
+    // (Component::Hliq_pure) calls too (DEV.md 4c C162).  Until 2026-10-25
+    // this leg announced the fallback for a `role nonvolatile;` component
+    // and priced it through h_pure_ig -- the reference CLAUDE.md sec.5
+    // forbids for a nonvolatile -- while the sensible leg refused.  It
+    // refuses BEFORE announcing: an announcement of a fallback that is then
+    // refused describes a computation that does not happen.  The rungs
+    // above (the dissolved/crystalline rung, a declared liquid Cp) are
+    // untouched, and the electrolyte branch of H_liquid_formation prices its
+    // salt before this leg is ever asked.
+    c.requireWatsonSlopeLiquidFallback("formation-datum");
     if (AdvisoryLog::instance().add("thermo", "warning",
             "speciesPhaseEnthalpy " + c.name(),
             "no liquidHeatCapacity: liquid leg falls back to the"

@@ -621,6 +621,17 @@ public:
     //  routing a dissolved salt's enthalpy through the ideal-gas reference is
     //  forbidden outright (settled 2026-06-29).  A nonvolatile, or a record
     //  with no ideal-gas Cp either, keeps the refusal it always had.
+    //
+    //  THE DECISION HAS ONE HOME, and it is the function below (DEV.md 4c
+    //  C162).  The FORMATION leg used to announce the fallback for a
+    //  nonvolatile and price it anyway while this leg refused -- the same
+    //  defect as above, the other way round, on the leg the energy report and
+    //  every `priceState` unit price on.  Both legs now ask
+    //  `requireWatsonSlopeLiquidFallback` first; it returns when the fallback
+    //  is admissible and THROWS the refusal when it is not.  `leg` names the
+    //  caller's leg in the message ("sensible" / "formation-datum"), so a
+    //  reader can tell which surface refused.
+    void   requireWatsonSlopeLiquidFallback(const char* leg) const;
     scalar Hliq_pure   (scalar T_K, scalar Tref_K = 298.15) const;
     scalar Hvap_pure   (scalar T_K, scalar Tref_K = 298.15) const;
     scalar Hvap_latent (scalar T_K) const;
