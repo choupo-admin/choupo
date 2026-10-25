@@ -2931,7 +2931,8 @@ PYEOF
     # -- an announced Watson-slope fallback on the formation-datum leg and a
     # hard refusal on the sensible one.  Both legs now take the fallback; this
     # pins that AND the two refusals that must survive it, because the danger
-    # of turning a refusal into an answer is turning every refusal into one.
+    # of turning a refusal into an answer is turning every refusal into one --
+    # on BOTH legs, through one home (arm A6, DEV.md 4c C162).
     if "$ROOT/bin/curate/check_liquid_cp_fallback.py" > /tmp/lcp.$$ 2>&1; then
         printf "PASS  %-40s  (%s)\n" "liquid-cp-fallback-gate" \
             "$(tail -1 /tmp/lcp.$$)"

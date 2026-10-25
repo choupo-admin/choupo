@@ -309,7 +309,15 @@ public:
     //
     //   liquid:  solution-tier solute -> Hf_crystal + dHsoln + INT cp_aq
     //            (the m->0 STANDARD state -- see ReferenceContext)
-    //            volatile              -> h_pure_ig(T) - Hvap(T)
+    //            declared liquid Cp    -> h_formation(T, "liquid")
+    //            no liquid Cp          -> h_pure_ig(T) - Hvap(T), ANNOUNCED
+    //                                     (the Watson-slope fallback) --
+    //                                     REFUSED for a nonvolatile or a
+    //                                     record with no ideal-gas Cp, by
+    //                                     the ONE home both liquid legs call,
+    //                                     Component::
+    //                                     requireWatsonSlopeLiquidFallback
+    //                                     (DEV.md 4c C162)
     //   gas:     h_pure_ig(T)
     //
     // ReferenceContext is the TYPED contract for what the returned number
