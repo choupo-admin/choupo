@@ -173,6 +173,17 @@ describe("each page SAYS the engine fact it rests on", () => {
     expect(tear).toMatch(/does not topologically sort|never topologically/i);
   });
 
+  it("tear: step 1 does not describe the retired stale-seed answer as today's", () => {
+    //  C150 R27 (2026-10-25): step 1 said, in the present tense, that a unit
+    //  whose feed is not yet computed "will happily read" 0/ and exit 0 --
+    //  while step 7 (and the engine, run by check_sequential_plan) refuse
+    //  that plan before any unit is solved.  One page, two behaviours.
+    const s1 = TEAR_STEPS[0]!.body;
+    expect(s1).not.toMatch(/will happily read/);
+    expect(s1).toMatch(/refuses the plan by name/);
+    expect(TEAR_STEPS[0]!.note ?? "").toMatch(/check_sequential_plan/);
+  });
+
   it("Wegstein: the two clamp defaults are DIFFERENT and the page says so", () => {
     //  The Wegstein class defaults to [-5, 0] and the recycle loop constructs
     //  it with [-1, 0].  A page that quoted only the class pair would be

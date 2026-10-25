@@ -44,16 +44,22 @@ export const TEAR_STEPS: readonly LessonStep[] = [
       + "flattened unit list and executes it IN DECLARED ORDER. It does not "
       + "topologically sort it for you, and it does not decide for itself "
       + "which unit is ready. When it reaches a unit it reads that unit's "
-      + "inlet streams out of the registry and solves it — so a unit whose "
-      + "feed has not been computed yet will happily read the value sitting "
-      + "in the case's 0/ directory and give you a wrong answer with a "
-      + "successful exit code.",
-    note: "That failure used to be silent. The 0/ completeness contract "
-      + "pre-seeds every stream, so the historical \"input stream not in "
-      + "registry\" guard could no longer fire, and two different mistakes — "
-      + "an undeclared recycle, and an acyclic flowsheet declared in the "
-      + "wrong order — both produced a plausible number at exit 0. The plan "
-      + "validation of step 7 exists because of that.",
+      + "inlet streams out of the registry and solves it — so if a unit's "
+      + "feed had not been computed yet, it would read the value sitting in "
+      + "the case's 0/ directory and give a wrong answer with a successful "
+      + "exit code. Choupo does not let that happen today: before any unit "
+      + "runs, it checks that every inlet is a feed, the output of an "
+      + "EARLIER unit, or a declared tear, and refuses the plan by name "
+      + "otherwise (step 7).",
+    note: "That failure used to be silent, which is why step 7 exists. The "
+      + "0/ completeness contract pre-seeds every stream, so the historical "
+      + "\"input stream not in registry\" guard could no longer fire, and two "
+      + "different mistakes — an undeclared recycle, and an acyclic "
+      + "flowsheet declared in the wrong order — both produced a plausible "
+      + "number at exit 0 until the plan validation was added (2026-07-25). "
+      + "Both now refuse, MISSING TEAR and INVALID ORDER, before a single "
+      + "unit is solved, and a refused plan writes no converged/ "
+      + "(check_sequential_plan runs both through the binary).",
   },
   {
     n: 2,

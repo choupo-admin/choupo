@@ -2713,6 +2713,34 @@ PYEOF
     fi
     rm -f /tmp/ctwr.$$
 
+    # C150 wave 2 (2026-10-25): four engine claims a second EduTools review
+    # asked to be RUN rather than cited.  Each was run against the parent
+    # build and failed there (the plan gate by a by-hand sabotage of its
+    # throw, since that contract already held).
+    #   gibbs-condensables     two condensables never yield a published
+    #                          supersaturated gas (R07)
+    #   departure-convention   every EoS's S_residual is the (T, P)
+    #                          departure S_real adds it to (R08)
+    #   exchanger-phase-change a side that crosses saturation qualifies the
+    #                          eps-NTU DUTY; U.A.LMTD says what it checks (R14)
+    #   sequential-plan        MISSING TEAR / INVALID ORDER / FORWARD TEAR
+    #                          refuse through the binary (R27)
+    for _c150 in check_gibbs_condensables:gibbs-condensables-gate \
+                 check_departure_convention:departure-convention-gate \
+                 check_exchanger_phase_change:exchanger-phase-change-gate \
+                 check_sequential_plan:sequential-plan-gate; do
+        _c150g=${_c150%%:*}; _c150l=${_c150##*:}
+        if "$ROOT/bin/curate/$_c150g.py" > /tmp/c150.$$ 2>&1; then
+            printf "PASS  %-40s  (%s)\n" "$_c150l" "$(tail -1 /tmp/c150.$$)"
+            pass=$((pass+1))
+        else
+            printf "FAIL  %-40s  (run bin/curate/%s.py)\n" "$_c150l" "$_c150g"
+            cat /tmp/c150.$$
+            fail=$((fail+1))
+        fi
+        rm -f /tmp/c150.$$
+    done
+
     # Batch dryer (the drying curve): the GAB equilibrium moisture and the
     # air's water activity recomputed from the case's OWN records (Antoine
     # fit, molar masses, declared air), the constant-rate flux closing as
