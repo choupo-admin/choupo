@@ -1528,6 +1528,25 @@ accepts today, and that is a policy call.
 > final; }` layout draws what the steady flowsheet and the sizing pass
 > already hold.
 
+> **C167. THE SUITE USES EVERY CORE (Vitor, 2026-10-25, watching the
+> sweep on his 10-core laptop: "aquilo passa a maioria do tempo a usar so
+> um core.  Nao era possivel usar mais cores e correr mais casos ao mesmo
+> tempo?").**  Today the case walk is SERIAL (bin/runTests, the
+> `for case_dir in "${CASES[@]}"` loop) and so is every gate; the cores
+> shorten only the build and vitest.  Scope: measure first where the
+> wall clock goes (cases against gates, from build/suiteTimings.csv of a
+> full sweep); then run the case walk N-wide (default nproc, a `-j N`
+> flag and an env override) and the gates that share no state N-wide,
+> with the printed report in the SAME order and the SAME verdict as a
+> serial run (the output is read by people, runtests_verdict.py and the
+> timings tool); anything that mutates the tree or shared files
+> (check_gate_selftest's sabotages, the destructive journal, record
+> modes, gates that rebuild) stays serial and alone; `-j 1` reproduces
+> today's behaviour exactly.  Proof: one serial and one parallel full
+> sweep on the same commit give identical result lines (order and
+> verdict) -- a full sweep run here for that purpose, under C163.
+> Status: recorded; dispatched the same turn.
+
 > **C166. NANOFILTRAN IN CHOUPO, EXPLAINED SO A PHD STUDENT CAN REIMPLEMENT
 > IT (Vitor, 2026-10-25, with two review notes from another session --
 > "Puxao de orelhas: o DSPM-DE esta mal explicado no Theory Guide" and
