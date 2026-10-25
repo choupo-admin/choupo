@@ -1732,63 +1732,31 @@ accepts today, and that is a policy call.
 > everywhere at ~2x cost but publish a permeate no discrete profile carries:
 > recorded, not built.
 
-> **C143. AN EDUTOOL ON A NEGATIVE CASE OF PROCESS ECONOMICS: THE SINES
-> PTA PLANT (ARTLANT) AND THE PUBLIC BANK'S LOSS (Vitor, 2026-10-24:
-> "Achas que podes fazer um EduTools sobre o caso em que a CGD perdeu 400 M
-> euros em Sines.  E um caso negativo para mostrar o que nao se deve fazer
-> em analise economica de processos quimicos.  Usa factos confirmados e
-> nada de especulacao porque eu sou professor associado do IST e a CGD e
-> uma empresa publica.  Todo o case study tem de ser feito de forma seria e
-> sem insinuacoes de corrupcao").**  The case, identified 2026-10-24 from
-> press coverage and to be confirmed on primary sources: Artlant's
-> purified terephthalic acid (PTA) plant in Sines, a La Seda de Barcelona
-> project financed by Caixa Geral de Depositos, which also became a
-> shareholder; insolvent in 2017 and sold in liquidation to Indorama
-> Ventures for EUR 28 M.  The loss figure DEPENDS ON THE METRIC (the EY
-> audit's 2015 exposure of EUR 350.8 M with 60 % recognised lost that year;
-> press totals above EUR 500 M) -- the tool must say which number it uses
-> and why.  RULES, from his words: every fact cited to a PRIMARY public
-> document (the EY audit of CGD 2000-2015, the parliamentary inquiry
-> reports, CGD and La Seda filings, the insolvency proceedings, Indorama's
-> release), opinion columns and blogs never used as sources; no motive,
-> intent or wrongdoing attributed to any person, and individuals not named
-> where the lesson does not need them; the lesson is the ECONOMIC ANALYSIS
-> (margin cycle and feedstock spread, market capacity, captive-customer
-> dependence, lender-turned-shareholder concentration, sensitivity and
-> downside cases).  Market numbers come from licence-compatible sources or
-> are labelled SYNTHETIC.  Phase 1 (dispatched 2026-10-24): a read-only
-> fact dossier with every claim sourced and its confidence stated.  The
-> pedagogical scope is put to Vitor with the dossier BEFORE anything is
-> built.
-> PHASE 1 DONE (2026-10-24): the dossier (economics only) confirms the
-> number he named -- the inquiry report, p.323: "O envolvimento global da
-> CGD neste projeto, resultou em perdas de pelo menos EUR 400M".  SCOPE
-> PUT TO HIM; RULING (2026-10-24): "Deixa a politica de fora" -- no
-> government, no political finding or testimony, no names of persons,
-> institutions only.  Phase 2 dispatched the same day: a research record
-> under docs/design/ and a NOTES EduTool on "Process design & economics"
-> (the chain PX -> PTA -> PET, the plan's NPV, its sensitivity to the
-> spread and to the merchant share, the risk department's written
-> warnings as the concepts that catch them, the outcome with the loss
-> metrics defined and not added).
-> LANDED 2026-10-24 (EduTool `sines-pta`, record
-> docs/design/the-sines-pta-plant-a-negative-case.md) on his delegation
-> ("Avanca como achares melhor"), screenshots shown first.  The 2017
-> insolvency is NOT stated (no primary document read confirms it); the
-> calculator's synthetic defaults put the break-even spread at 236 US$/t
-> and the page says they are teaching values.
-> EXTERNAL REVIEW (2026-10-24, an external reviewer's eleven points relayed
-> by Vitor, an Associate Professor at a public university): the page
-> claimed the appraisal "was not done" (unsupported: the business plan was
-> not read), carried a tone of censure, sat its illustrative NPV too close
-> to reading as a historical valuation, mixed 2014-2017 spreads with
-> decision-time information, read "up to 450 kt/yr" as a purchase, turned
-> two different capex perimeters into an overrun, and generalised project
-> finance, subordination and import parity beyond the documents.  The
-> commander agrees with all eleven; the revision was dispatched the same
-> day, with a fact-by-fact status list (confirmed / attributed / own
-> calculation / assumption), public links, an institutional note, and no
-> wording that moves editorial responsibility to the AI.
+> **C143. AN EDUTOOL ON ECONOMIC APPRAISAL AND PROJECT RISK: THE SINES PTA
+> PLANT (Vitor, 2026-10-24).**  His rules: confirmed facts only, no
+> speculation, a serious treatment with no insinuation of wrongdoing (he
+> is an Associate Professor at a public university and the bank is a
+> public company); his ruling the same day: politics stays out --
+> institutions only, no persons.  The case: Artlant's purified
+> terephthalic acid plant in Sines, a La Seda de Barcelona project
+> financed by Caixa Geral de Depositos, which also became a shareholder;
+> sold in liquidation in 2017.  Every fact cited to a primary public
+> document (the inquiry report of 2019, the EY audit of 2000-2015, La
+> Seda's CNMV filings, Indorama's reports), with its period and its kind
+> (documented / attributed conclusion / own calculation / assumption).
+> REVISED 2026-10-25 on an external review of eleven points relayed by
+> Vitor, all accepted: the page states purpose, not judgement; each risk
+> card separates risk identified, condition recommended, what the
+> documents record of the decision, and the later outcome, presuming no
+> link; the calculator is a simplified pre-tax unfinanced appraisal with
+> an "Illustrative teaching scenario" notice beside its results;
+> decision-time information is separated from later information; the
+> offtake maximum, the capital perimeters and the sale figures are kept
+> as the documents give them; public links; an institutional note.  No
+> wording of the first version remains in the tree (git history is
+> kept, his choice).  Record:
+> docs/design/the-sines-pta-plant-appraisal-and-project-risk.md.  Final
+> editorial validation is the author's.
 
 > **C142. A PORE SOLVER BETTER THAN NANOFILTRAN, WITH NANOFILTRAN ONLY AS
 > THE COMPARISON (Vitor, 2026-10-24: "Eu quero que facas um solver melhor!
