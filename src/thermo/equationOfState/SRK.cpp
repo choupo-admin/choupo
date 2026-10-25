@@ -55,7 +55,9 @@ namespace {
         //      m = 0.480 + 1.574 w - 0.176 w^2 ;
         //  the coefficients below are Graboski & Daubert, Ind. Eng. Chem.
         //  Process Des. Dev. 17 (1978) 443, refitted to API vapour pressures.
-        //  They differ by ~1e-3 in m over 0 <= w <= 0.6.  This comment used to
+        //  They differ most for the LIGHT components: by 5.1e-3 in m at w = 0
+        //  (CH4 4.8e-3, N2 4.2e-3, H2 at w = -0.22 1.1e-2), crossing near
+        //  w = 0.32 and differing by 1.1e-3 at w = 0.6.  This comment used to
         //  credit Soave 1972, and the Theory Guide's footnote calls Soave's
         //  own form the "rounded" one, which inverts the history.  Whether to
         //  run Soave's form (the one a kij regressed on the original SRK was

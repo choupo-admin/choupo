@@ -133,10 +133,11 @@ DewPoint::Result DewPoint::compute(const ThermoPackage& thermo,
     //  dew T for a liquid composition that is not the incipient liquid, and
     //  the last Newton's verdict says nothing about that (the flash's rule,
     //  DEV.md 4c C131).  And a trivial root (every present K = 1) is not a
-    //  dew point at all (thermo/SaturationCurves.H, trivialSaturationK).
+    //  dew point at all (thermo/SaturationCurves.H, trivialSaturationRoot).
     if (maxOuter > 1 && !(out.compDelta < compTol))
         out.converged = false;
-    if (out.converged && trivialSaturationK(thermo.Kvec(Tdew, P, x, y), y))
+    if (out.converged
+        && trivialSaturationRoot(thermo, Tdew, P, y, thermo.Kvec(Tdew, P, x, y)))
         out.converged = false;
     return out;
 }
@@ -254,7 +255,7 @@ int DewPoint::solve(const DictPtr& dict,
     totalNewtonIter = res.newtonIterations;
 
     auto K = thermo.Kvec(Tdew, P, x, y);
-    if (!converged && trivialSaturationK(K, y))
+    if (!converged && trivialSaturationRoot(thermo, Tdew, P, y, K))
         std::cout << "  [dewT] the root found is TRIVIAL: every present K = 1"
                      " at T = " << std::fixed << std::setprecision(4) << Tdew
                   << " K, so the liquid was priced as the vapour itself (one"

@@ -101,6 +101,24 @@ inline bool trivialSaturationK(const sVector& K, const sVector& comp,
     return present >= 2;
 }
 
+/// K = 1 FOR EVERY COMPONENT IS ALSO AN AZEOTROPE, so the K test above is
+/// necessary and not sufficient (C131 refutation).  Measured: bubbleT02's
+/// UNIQUAC ethanol + water at its own azeotrope (x_ethanol = 0.8310270237,
+/// 1.01325 bar, a gamma-phi ideal-gas package with no cubic anywhere) gives
+/// |K - 1| < 1e-12 at a GENUINE bubble point, and the K test alone refused it
+/// as "the vapour was priced on the liquid's own root".  The trivial root
+/// exists only where BOTH fugacities are read off ONE equation of state:
+///   * a gamma-phi package prices the liquid on gamma Psat and the vapour on
+///     its own EoS -- K = 1 there is an azeotrope, never a trivial root;
+///   * a phi-phi package whose EoS can name its liquid root separately is
+///     trivial only when the two roots at the given phase's composition are
+///     the SAME root (one real root of the cubic); two distinct roots with
+///     K = 1 are an EoS azeotrope.  A phi-phi EoS that cannot name its liquid
+///     root (no `hasLiquidRoot()`) is judged by K alone.
+bool trivialSaturationRoot(const ThermoPackage& thermo, scalar T, scalar P,
+                           const sVector& comp, const sVector& K,
+                           scalar tol = 1.0e-9);
+
 /// Stored binary T-x-y locus.  Both vectors share the same temperature
 /// axis: Tbubble[i] is the bubble-T of liquid xBubble[i] AND the dew-T
 /// of vapour yDew[i].

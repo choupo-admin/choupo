@@ -29,10 +29,27 @@ License
 #include "SaturationCurves.H"
 
 #include "solver/NewtonRaphson.H"
+#include "thermo/equationOfState/EquationOfState.H"
 
+#include <algorithm>
+#include <cmath>
 #include <stdexcept>
 
 namespace Choupo {
+
+//  The trivial root needs BOTH fugacities off ONE equation of state; the
+//  header says why the K test alone refuses a genuine azeotrope.
+bool trivialSaturationRoot(const ThermoPackage& thermo, scalar T, scalar P,
+                           const sVector& comp, const sVector& K, scalar tol)
+{
+    if (!trivialSaturationK(K, comp, tol)) return false;
+    if (thermo.vleWorld() != "phiPhi" || !thermo.hasEos()) return false;
+    const EquationOfState& eos = thermo.eos();
+    if (!eos.hasLiquidRoot()) return true;
+    const scalar vV = eos.molarVolume(T, P, comp);
+    const scalar vL = eos.molarVolumeLiquid(T, P, comp);
+    return std::abs(vV - vL) <= 1.0e-9 * std::max(std::abs(vV), std::abs(vL));
+}
 
 scalar bubbleT(const ThermoPackage& thermo,
                const sVector& x,
@@ -93,11 +110,11 @@ BinaryTxy binaryTxy(const ThermoPackage& thermo, scalar P, int nPoints)
         Tguess   = T;
 
         auto K = thermo.Kvec(T, P, x, x);
-        //  A trivial root is not a point of the diagram (trivialSaturationK):
+        //  A trivial root is not a point of the diagram (trivialSaturationRoot):
         //  on phi-phi N2 + CH4 every bubble T came back as the 350 K seed with
         //  K = 1, and the flat line was published as the T-x-y block.  The
         //  caller treats a throw as "no diagram" -- better none than a false one.
-        if (trivialSaturationK(K, x))
+        if (trivialSaturationRoot(thermo, T, P, x, K))
             throw std::runtime_error("binaryTxy: trivial bubble-point root"
                 " (every K = 1 at T = " + std::to_string(T) + " K, x1 = "
                 + std::to_string(x1) + ") -- the vapour was priced on the"

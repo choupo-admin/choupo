@@ -96,8 +96,8 @@ BubblePoint::Result BubblePoint::compute(const ThermoPackage& thermo,
     for (std::size_t i = 0; i < n; ++i) out.y[i] = K[i] * x[i];
     out.iterations = r.iterations;
     //  A trivial root (every present K = 1) is not a bubble point
-    //  (thermo/SaturationCurves.H, trivialSaturationK).
-    out.converged  = r.converged && !trivialSaturationK(K, x);
+    //  (thermo/SaturationCurves.H, trivialSaturationRoot).
+    out.converged  = r.converged && !trivialSaturationRoot(thermo, Tbub, P, x, K);
     out.residual   = r.residual;
     return out;
 }
@@ -292,7 +292,7 @@ int BubblePoint::solve(const DictPtr& dict,
         r.y.assign(n, 0.0);
         for (std::size_t i = 0; i < n; ++i) r.y[i] = K[i] * x[i];
         r.iterations = raw.iterations;
-        r.converged  = raw.converged && !trivialSaturationK(K, x);
+        r.converged  = raw.converged && !trivialSaturationRoot(thermo, Tbub, P, x, K);
         r.residual   = raw.residual;
     }
     else
@@ -303,7 +303,7 @@ int BubblePoint::solve(const DictPtr& dict,
     if (!r.converged)
     {
         const auto Kt = thermo.Kvec(r.T, P, x, x);
-        if (trivialSaturationK(Kt, x))
+        if (trivialSaturationRoot(thermo, r.T, P, x, Kt))
             std::cout << "  [bubbleT] the root found is TRIVIAL: every present"
                          " K = 1 at T = " << std::fixed << std::setprecision(4)
                       << r.T << " K, so the vapour was priced as the liquid itself"

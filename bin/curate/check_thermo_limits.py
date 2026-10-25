@@ -33,6 +33,16 @@ through the real binary; nothing in the tree is written.
       report NOT converged, naming the trivial root, and a genuine bubble
       point (bubbleT01, ideal gas vapour) to stay converged.
 
+  (c') AN AZEOTROPE IS NOT A TRIVIAL ROOT.  Every K = 1 is ALSO the
+      signature of a genuine azeotropic bubble point; the first cut of the
+      refusal tested K alone and refused bubbleT02's UNIQUAC ethanol + water
+      at its own azeotrope (x_ethanol = 0.8310270237, gamma-phi, ideal-gas
+      vapour, no cubic anywhere), exit 2 with "the vapour was priced on the
+      liquid's own root".  The refusal is now scoped to a phi-phi package
+      whose two roots coincide (`trivialSaturationRoot`).  The arm requires
+      that probe to stay converged, and first proves the probe still sits at
+      the azeotrope (|K - 1| <= 1e-9 read back from the run).
+
   (e) THE T-x-y BLOCK.  The diagnostic sweep in choupoSolve published, for
       flash09, a "diagram" whose every bubble T was the 350 K seed.  The arm
       requires flash09's result to carry NO Tbubble array and the log to say
@@ -201,6 +211,56 @@ for f in (satProbe("bubbleT", ("0.149515816249", "0.850484183751"),
     if f:
         fails.append(f)
 
+#  (c') A GENUINE BUBBLE POINT WITH EVERY K = 1: AN AZEOTROPE.  The trivial-
+#  root test must not refuse it (C131 refutation): bubbleT02's UNIQUAC
+#  ethanol + water at its own azeotrope, gamma-phi with an ideal-gas vapour,
+#  has |K - 1| < 1e-9 for both components at a real saturation point, and a
+#  K-only test refused it as "the vapour was priced on the liquid's own
+#  root".  The probe first proves it sits AT the azeotrope (both |K - 1| <=
+#  1e-9 read back from the run), so it cannot pass vacuously if the engine's
+#  numbers drift: then it fails asking to be re-bisected.
+X_AZ = 0.8310270237177609
+with tempfile.TemporaryDirectory() as td:
+    case = Path(td) / "az"
+    shutil.copytree(uniquacBase, case)
+    feed = case / "0/feed"
+    t = feed.read_text()
+    t2 = re.sub(r"ethanol\s+30 kmol/h;", "ethanol    %.16g kmol/h;" % (100 * X_AZ), t)
+    t2 = re.sub(r"water\s+70 kmol/h;", "water    %.16g kmol/h;" % (100 * (1 - X_AZ)), t2)
+    fd = case / "system/flowsheetDict"
+    ft = fd.read_text()
+    ft2 = ft.replace("operation   { P 1.01325 bar; }",
+                     "operation   { P 1.01325 bar; Tinit 351.0186; }", 1)
+    if t2 == t or ft2 == ft:
+        fails.append("(c') bubbleT02's 0/feed or flowsheetDict changed shape --"
+                     " re-point the azeotrope probe")
+    else:
+        feed.write_text(t2)
+        fd.write_text(ft2)
+        rc, out = run(solve, case)
+        m = re.search(r'"bubble02": \{[^}]*"y_ethanol": ([0-9.eE+-]+),'
+                      r' "y_water": ([0-9.eE+-]+)', out)
+        if re.search(r"root found is TRIVIAL", out):
+            #  The refusal itself certifies every K = 1 to 1e-9 at the probe,
+            #  i.e. that the probe sits at the azeotrope.
+            fails.append("(c') a GENUINE azeotropic bubble point (every K ="
+                         " 1, gamma-phi, no cubic) was refused as a trivial"
+                         f" root (exit {rc})")
+        elif not m:
+            fails.append(f"(c') the azeotrope probe published no y (exit {rc})")
+        else:
+            ke = float(m.group(1)) / X_AZ
+            kw = float(m.group(2)) / (1 - X_AZ)
+            if max(abs(ke - 1), abs(kw - 1)) > 1e-9:
+                fails.append("(c') the probe no longer sits at the UNIQUAC"
+                             f" azeotrope (K = {ke:.12f}, {kw:.12f}) -- re-bisect"
+                             " X_AZ; the arm cannot test the refusal elsewhere")
+            elif rc != 0 or not re.search(r"Converged:\s+yes", out) \
+                    or re.search(r"root found is TRIVIAL", out):
+                fails.append("(c') a GENUINE azeotropic bubble point (every K ="
+                             " 1, gamma-phi, no cubic) was refused as a trivial"
+                             f" root (exit {rc})")
+
 with tempfile.TemporaryDirectory() as td:
     case = Path(td) / "b01"
     shutil.copytree(bubble01, case)
@@ -238,7 +298,8 @@ print("thermo-limits: OK -- (a) " + claimA + ", continuous to 1e-6;"
       " (b) flash02 capped at maxOuterIter 1 refuses naming the exhausted"
       " loop, uncapped converges; (c)/(d) flash09's phi-phi SRK liquid and"
       " vapour give TRIVIAL bubble/dew roots that are reported NOT converged,"
-      " bubbleT01 stays converged; (e) flash09 publishes no T-x-y block and"
+      " bubbleT01 and the UNIQUAC ethanol-water azeotrope (every K = 1, a"
+      " genuine bubble point) stay converged; (e) flash09 publishes no T-x-y block and"
       " says why, flash01 keeps its.  NOT covered: the y = x pricing and the"
       " 200-700 K bracket themselves, a pure component on a liquid-only root,"
       " phi_sat in gamma-phi, the phi-phi liquid enthalpy.")
