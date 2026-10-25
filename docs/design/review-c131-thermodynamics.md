@@ -527,3 +527,163 @@ above. Each fix was then reverted on its own and the gate re-run; see §5a.
 6. **W6** Soave's slope or Graboski & Daubert's (Vítor's model decision),
    and the guide wording.
 7. **M4** the two Theory Guide passages.
+
+---
+
+## Refutation
+
+Refuter's appendix, 2026-10-25, branch `claude/c131-refute-thermo` (from
+`claude/c131-review-thermo` at `72aa7e855`).  Each claim was re-derived,
+each witness re-run on TWO builds made for this purpose -- `origin/main`
+(engine source identical to `4c9d4142f`; main moved only in `gui/`, `DEV.md`
+and `docs/` since) and this branch -- and every number the analyst took from
+the independent Python was re-taken with a SECOND independent
+implementation written for the refutation: the cubic's real roots by the
+closed (Cardano / trigonometric) form instead of bisection, one general
+two-parameter cubic for PR and SRK instead of two hand-expanded ones, and
+the enthalpy departure by Gibbs-Helmholtz, `H^R = -R T^2 d(sum y ln
+phi)/dT` by central difference, which shares no algebra with the analyst's
+closed-form `H^R`.  The analyst's `srk.py` was also read for errors of its
+own: its root bracketing, its `ln phi` and `H^R` forms, its `da/dT` and its
+cross term are correct, and the two codes agree on `ln phi` to 5.6e-17 at
+flash09's split.  Scratch witnesses are not in the tree.
+
+**Sources.**  No primary text was available here for a page check.  The
+physics of W1 is re-derived below and does not depend on an equation
+number; Smith, Van Ness & Abbott's "gamma/phi formulation" as Eqs. 14.1-14.2
+of the 7th edition is consistent with secondary course material but was
+NOT read on the page, so the equation numbers stay unverified.  For W6 the
+attribution is confirmed against a secondary source (Wikipedia, "Cubic
+equations of state": the 0.48508/1.55171/0.15613 form "is actually due to
+Graboski and Daubert"; Soave's original is 0.480/1.574/0.176); Soave 1972
+and Graboski & Daubert 1978 themselves were not read.
+
+### Verdicts
+
+| # | Verdict | Evidence / correction |
+|---|---------|-----------------------|
+| W1 | **CONFIRMED WITH CORRECTION** (reach) | Re-derived: a pure liquid at P = Psat has f^L = phi^sat Psat and f^V = phi^V(Psat) Psat, so K = 1 needs phi^sat in the numerator; without it K = 1/phi^V. Second implementation, propane PR at 15 bar: at 310 K phi^V = 0.78468, K = 1.10480 (engine 1.1048); root of the engine's equation 305.230 K; Antoine Tsat 316.311 K; with phi^sat restored the root is 316.311 K EXACTLY (the pure limit comes back, as it must); PR's own Tsat(15 bar) 317.016 K. Engine: flC3 identical on main and branch ("superheated vapor", V/F 1.000000). Reach: 23 cases declare it at case level, PLUS `perUnitThermo01_srk_nrtl`, whose turbine carries a per-unit `fugacityModel SRK` override -- 24, not 23. |
+| W2 | **CONFIRMED** (defect); the analyst's **fix needed a correction** | Code read on `origin/main`: `Kvec(T, P, x, x)` at `BubblePoint.cpp:65` and `:248`, `SaturationCurves.cpp:45`; `[200, 700]` at `BubblePoint.cpp:82-83`, `:265-266`, `SaturationCurves.cpp:58-59` and in `DewPoint.cpp`; the phi-phi package is assembled with an `ideal` activity dict (`ThermoPackageBuilder.cpp:2959-2960`), so `DewPoint`'s `isIdeal` skips the x iteration there. Witnesses on main: bub 200.0000 K "yes"; dewpp 251.8350 K "yes" for both units; bubC3 228.6311 K "yes". Second implementation: phi-phi PR C3/nC4 at 10 bar, bubble 320.692 K, dew 332.785 K (secant on an incipient-phase fixed point, not bisection); at 251.835 K the cubic has ONE root at z; witness 3 has one root, Z = 0.05555, phi = 0.06236 = Psat/P. **The fix's test was wrong in principle**: every K = 1 is ALSO an azeotrope. Witness: bubbleT02's UNIQUAC ethanol + water at its own azeotrope (x_ethanol = 0.8310270237177609, `Tinit 351.0186`, gamma-phi with an ideal-gas vapour, no cubic anywhere): main "Converged: yes", exit 0; the analyst's branch "the root found is TRIVIAL ... (one root of the cubic for both phases) ... NOT converged", then `Flowsheet: unit 'bubble02' failed to converge`, exit 2. Corrected here (below). |
+| W3 | **CONFIRMED** | Code: the only `H_residual` call in `ThermoPackage.cpp` is the vapour one (`:1216`). Second implementation (Gibbs-Helmholtz departure) at flash09's published split: vapour -45 234.37 against the engine's -45 234.37 (diff 0.00); liquid -74 578.50 against -73 993.94 (diff +584.56 J/mol); latent 29 344.1 against 28 759.6, 1.99 % short. The analyst's number, by a route that shares no formula with his. |
+| W4 | **CONFIRMED**; fix correct and minimal | fmax2 (flash02 with `maxOuterIter 1`): main exit 0, "Converged: yes", V/F 0.890095; branch exit 2, "did NOT converge in 1 iteration(s) ... last \|dx\|2 = 1.953e-01". `phaseTrivial` and `compDelta` are set on every exit path of the loop (`IsothermalFlash.cpp:1244-1612`), so the flag cannot fire on a single-phase verdict or on a converged break. No case in the corpus reaches the cap (measured, below). |
+| W5 | **CONFIRMED**; fix correct | The combinatorial written in phi/x and theta/phi is Abrams & Prausnitz's term for term, and identical to `UNIFAC.cpp:303-306`. uq on main: gamma_ethanol(x = 0) = 1, (1e-9) = 7.71143861; branch: 7.71143867 / 7.71143861 / 7.70501687 at 1e-4. The slope from the 1e-4 point (64.2 per unit x) predicts the 6.4e-8 step observed between x = 0 and 1e-9, so the x = 0 value is the limit and not another number. Corpus: the three UNIQUAC cases that move do so at <= 8.5e-9 relative (bubbleT02's Newton trace) or only below 1e-8 absolute (vlle01, cstr07): rounding, as claimed. |
+| W6 | **CONFIRMED WITH CORRECTION** (size) | The attribution holds (secondary source, above). The size does not: Delta m = m_GD - m_Soave = 5.08e-3 at omega = 0, 4.8e-3 for CH4, 4.2e-3 for N2, 1.1e-2 for H2 (omega = -0.216); it CROSSES ZERO at omega = 0.318 (and 0.80) and is 1.1e-3 at 0.6. The analyst's example, omega = 0.344, sits next to the crossing, where the difference is smallest; "~1e-3 over 0..0.6" and "about 1e-3 relative on every SRK row" understate it up to five-fold for exactly the light gases (N2, CH4, H2) the SRK cases are made of. The `SRK.cpp` comment is corrected here. |
+| W7 | **CONFIRMED**; fix correct | flash09 AND `flash10_ch4propane_pcsaft` (a second phi-phi case the report does not name) lose their T-x-y block on the branch and say why; flash01 keeps its. Residual, not caused here: a NON-trivial T-x-y on an EoS package is still priced at y = x (W2's algorithm proposal). |
+| W8 | **CONFIRMED** (as a rule; no witness exists) | Right by reading: `compDelta` is the last outer step, and the loop's only early exit is `compDelta < compTol`. Pre-existing and not touched: `outerIterations` reports maxOuter + 1 when the loop is exhausted. |
+| M1 | **CONFIRMED WITH CORRECTION** | llvl: subcooled liquid, exit 0, no word; ll0 on the same feed: tm_min = -4.0006e-02, LL split beta 0.412292. The report omits that an opt-in `phaseSet auto` already exists (`IsothermalFlash.cpp:1716-1729`); it tests the FEED, and only when the package declares two liquid phases. Run on the witness it says "one liquid declared -- nothing to split into" and the subcooled verdict stands, so the gap is real exactly where the proposed announcement would help: a package whose activity model can split but which declares one liquid. |
+| M2 | **CONFIRMED, stronger than stated** | flash09's own published split (x, y from its result JSON, 12 digits) leaves ln(x phi^L) - ln(y phi^V) = +7.29e-6 (N2) and -6.36e-6 (CH4) by both implementations -- twenty times the 3.4e-7 the report quotes on the PR case. |
+| M3 | **CONFIRMED** | Three homes, two option sets: `compute` (FD 1e-3 K, maxStep 25, maxIter 60), the verbose copy (`BubblePoint.cpp:248-270`, the same, "keep them in sync"), `SaturationCurves::bubbleT` (FD 0.25 K, maxStep 15, maxIter 30). |
+| M4 | **CONFIRMED** | `docs/theoryGuide.tex:672` writes phi^sat; `:686-687` says "not yet the full LL flash (§9 of CLAUDE.md)" -- stale. |
+
+### The correction made to the W2 fix
+
+`trivialSaturationRoot(thermo, T, P, comp, K)` (`src/thermo/SaturationCurves.{H,cpp}`)
+replaces the K-only test at all six call sites.  K = 1 for every present
+component is trivial only in a **phi-phi** package (a gamma-phi package
+prices the liquid on gamma Psat and the vapour on its own EoS, so K = 1
+there is an azeotrope), and, where the EoS can name its liquid root
+(`hasLiquidRoot()`: SRK, PC-SAFT), only when the vapour and liquid molar
+volumes at the given composition are the SAME root; two distinct roots with
+K = 1 are an EoS azeotrope.  A phi-phi EoS that cannot name its liquid root
+(PR) is judged by K alone, as before.  The gate gains arm **(c')**: the
+UNIQUAC azeotrope probe must stay converged, and the arm first proves that
+the probe still sits at the azeotrope (both |K - 1| <= 1e-9 read back from
+the run), so it cannot pass vacuously if the engine's numbers drift.
+
+### The analyst's tests against `origin/main`
+
+The branch's `check_thermo_limits.py`, run against the `origin/main` build:
+every one of the analyst's arms FAILS -- (a) gamma(x = 0) = 1, (b) capped
+flash02 exit 0, (c) trivial bubble root converged, (d) trivial dew root
+converged, (e) flash09 carries the flat Tbubble array and says nothing.
+Arm (c') passes on main (main has no refusal to misfire).  Sabotage:
+`trivialSaturationRoot` reduced to the K-only test (the analyst's
+semantics), rebuilt and the gate run -- "(c') a GENUINE azeotropic bubble
+point (every K = 1, gamma-phi, no cubic) was refused as a trivial root
+(exit 2)"; restored, rebuilt, every arm passes.
+
+### Does the cap-reached flash change move any case?  Measured.
+
+An A/B over every case directory (`*.cho`) under `tutorials/steady/` and
+`tutorials/plant/` -- 391 of them, sector sub-folders included -- and,
+beyond what was asked, the 207 under `tutorials/props/`, `unsteady/`,
+`batch/` and `ctrl/` (the props scans call `solveCore` too).  Each was run by the `origin/main` build and by
+this branch's build, comparing the exit code and the whole result JSON
+(installation paths normalised), and grepping the branch log for every new
+announcement (`did NOT converge`, `TRIVIAL`, `T-x-y block omitted`,
+`flash outer loop exhausted`).
+
+* **steady + plant, exit codes: identical in every case** (280 exit 0 on
+  both, 106 exit 2 on both: the sector sub-folders, which are not
+  standalone cases, and the deliberate refusal witnesses).  Five
+  `buildCode` cases (`userOp01-03`, `twoSectorDemo/SECTOR_R`, `SECTOR_S`)
+  are outside the A/B (run through `bin/runTests` instead, below).
+* **props / unsteady / batch / ctrl: exit codes identical** (202 exit 0, 1
+  exit 1, 3 exit 2, on both); the result JSON differs only by installation
+  paths, except `batch07_lhhw_methylAcetate` (UNIQUAC), in numbers below
+  1e-8 absolute.  `userEstimate01_linear_tb` (`buildCode`) is outside it.
+* **The exhausted-flash refusal (W4) fires in NO case.**  Nor do the dew
+  cap (W8) and the trivial-root refusal.
+* **Result JSON: identical** except (i) `flash09_n2ch4_stryjek` and
+  `flash10_ch4propane_pcsaft`, whose T-x-y block is omitted (W7, said in
+  the log); (ii) three UNIQUAC cases at rounding level (W5): `bubbleT02` at
+  <= 8.5e-9 relative in its Newton trace, `vlle01` and `cstr07` only in
+  numbers below 1e-8 absolute (round-off residuals); (iii) nine cases whose
+  JSON carries the installation path of a record, which differs between the
+  two checkouts and nothing else.
+* The branch build is this branch: the analyst's fixes plus the W2
+  correction.  The correction can only REMOVE refusals (it narrows the
+  test), and no case refuses on either build.
+
+### `bin/runTests --gui`
+
+The validation the analyst could not run.  On the analyst's changes:
+**gui-tests FAILED, 56 tests in 2 files** (`runLog.test.ts`,
+`caseAssembly.test.ts`).  Every one is a `file:line` citation that the
+fixes' own line insertions moved: `choupoSolve/main.cpp` +5 below the
+`[txy]` catch, `IsothermalFlash.cpp` +24 below the W4 block,
+`BubblePoint.cpp` +3 / +14.  The analyst's commit carries the same 56 (the
+shifts are his; the W2 correction here moves no cited line).  The 56 were
+moved by the edit's own line map (difflib over `origin/main` against the
+tree), never by searching for the cited text, so a citation can only follow
+its own line.  After: **gui-tests PASS 6326 / 6326, gui-typecheck PASS, and
+33 of the 34 gates that read `gui/` PASS; the one FAIL is `check_doctrine`**
+(below), which is about this report and not about `gui/`.
+
+### Other gates
+
+On this branch: `check_compile_clean`, `check_std_includes`,
+`check_layering`, `check_inlet_resolution` (it reads `BubblePoint.cpp`),
+`check_glossary_bans`, `check_doc_references`, `check_lesson_symbols`,
+`check_thermo_limits`, `check_debt_registry`, `check_ownership_index`,
+`check_wasm_dialect` and `gate_manifest --check` pass; `bin/runTests` on
+the five `buildCode` cases and on every case whose JSON moved (bubbleT02,
+vlle01, cstr07, flash09, flash10, batch07) gives PASS 11 / FAIL 0 against
+their goldens.  **`check_doctrine` FAILS, 22 sites, all in this file**: the
+report names the open reference simulator in `docs/design/`, which the
+2026-09-24 ruling (`docs/design/no-competitor-is-named-here.md`) closed and
+the gate enforces outside `benchmarks/` and the three paper trees.  The
+analyst's "check_doctrine passes" was true when it was taken and false at
+the commit: the gate scans TRACKED files, and its log (10:22) predates the
+commit that first tracked this report (10:52).
+
+### Safe to land?
+
+**Not as `72aa7e855` stands.**  Three things had to change, and two are
+done here:
+
+1. DONE -- the trivial-root refusal refused a genuine azeotrope (W2 above).
+2. DONE -- 56 EduTool citations into the lines the fixes moved (`--gui`).
+3. **OPEN, and it is Vitor's** -- `check_doctrine`.  C131 asks for the
+   comparison with the open reference "cited by commit" and for reference
+   defects to be "offered upstream"; the 2026-09-24 ruling says the tree
+   names no other simulator, and C126's exemption covers the papers only.
+   Either a name-limited exemption for the C131 review records (the C126
+   shape, that one name only), or the report describes the product by what it
+   is (the gate's own remedy) and its §6 upstream notes leave the tree.
+   Changing the gate's rule is not the refuter's to take (CLAUDE.md §0,
+   rule 5); every other family's report will meet the same gate.
+
+The branch merges into the current `origin/main` without conflict
+(`git merge-tree`); `check_theory_citations`' one failure here is the
+Deen 1987 bibitem that `origin/main` fixed after this branch was cut.
