@@ -532,4 +532,25 @@ GibbsPrimalSeed gibbsPrimalSeed(const std::vector<std::vector<scalar>>& A,
     return out;
 }
 
+std::string supersaturatedCondensables(const GibbsProblem& p,
+                                       const GibbsEquilibrium& eq, scalar T,
+                                       const std::vector<bool>& condensed)
+{
+    const auto& thermo = *p.thermo;
+    std::string m;
+    if (!(eq.Ntotal_gas > 0.0)) return m;
+    for (std::size_t i = 0; i < p.N(); ++i)
+    {
+        if (!p.condensable[i]) continue;
+        if (i < condensed.size() && condensed[i]) continue;
+        const scalar Psat = thermo.Psat(p.compIdx[i], T);
+        const scalar yP   = eq.nGas[i] / eq.Ntotal_gas * p.P;
+        if (!(yP > Psat * (1.0 + 1.0e-6))) continue;
+        m += (m.empty() ? "" : ", ") + thermo.comp(p.compIdx[i]).name()
+           + " (y P = " + std::to_string(yP) + " Pa > Psat = "
+           + std::to_string(Psat) + " Pa)";
+    }
+    return m;
+}
+
 } // namespace Choupo

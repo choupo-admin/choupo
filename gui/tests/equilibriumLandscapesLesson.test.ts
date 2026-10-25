@@ -168,10 +168,14 @@ describe("what the page declines to claim", () => {
     expect(prose(l.body)).toContain("fugacityModel idealGas");
   });
 
-  it("names the one-condensable branch and says no witness reaches the silent one", () => {
+  it("names the one-condensable branch and says no witness reaches the counted one", () => {
     const l = LANDSCAPE_LIMITS.find((x) => x.id === "gas-phase-metric")!;
     expect(prose(l.body)).toContain("ElementPotential.cpp:71");
     expect(prose(l.body)).toContain("no cell reaches that second branch");
+    //  C150 R07: the second branch is no longer silent -- the map counts
+    //  and announces it, and the page must not say otherwise.
+    expect(prose(l.body)).toContain("n_supersaturated_not_condensed");
+    expect(prose(l.body)).not.toMatch(/converged and unannounced\.\s+On these/);
   });
 
   it("says the sugar route is priced at the datum only, as a refusal", () => {

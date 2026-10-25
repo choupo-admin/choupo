@@ -61,9 +61,13 @@ Description
     species, solves the gas-only Newton on the element totals b - A_c L, and
     BISECTS L until the gas leaves exactly saturated, y_c P = Psat_c (the
     residual is monotone in L).  The equations above are what that search
-    converges to.  With SEVERAL species supersaturated the method returns
-    the gas-only answer (the reactiveFlash / directMin methods carry a
-    multi-component liquid).  So a case with no condensation takes the path
+    converges to.  With SEVERAL species supersaturated -- in the gas-only
+    answer, or in the gas left after condensing the one -- the answer is not
+    the equilibrium: it is returned MARKED (`supersaturatedNotCondensed`,
+    the species named) and the gibbsReactor REFUSES it by name (2026-10-25,
+    C150 R07; until then it was returned as the answer, converged and
+    unannounced).  The reactiveFlash / directMin methods carry a
+    multi-component liquid.  So a case with no condensation takes the path
     verbatim.
 \*---------------------------------------------------------------------------*/
 

@@ -66,9 +66,9 @@ GibbsEquilibrium ElementPotential::equilibrium(const GibbsProblem& p, scalar T,
     }
     if (nSuper == 0) return eq;     // single gas phase is stable
 
-    // 3. Two-phase (V + L) for ONE condensable (a pure liquid).  With SEVERAL
-    //    supersaturated this returns the gas-only answer; reactiveFlash / directMin do V+L.
-    if (nSuper > 1) return eq;
+    // 3. Two-phase (V + L) for ONE condensable (a pure liquid).  SEVERAL supersaturated: the gas-only
+    //    answer is returned MARKED, and the reactor refuses it by name (C150 R07); reactiveFlash / directMin do V+L.
+    if (nSuper > 1) { eq.supersaturatedNotCondensed = supersaturatedCondensables(p, eq, T); return eq; }
 
     // Robust 1-D solve: find L (moles of the condensable in the liquid) such
     // that the gas leaves exactly saturated, y_c P = Psat_c.  The gas element
@@ -118,7 +118,21 @@ GibbsEquilibrium ElementPotential::equilibrium(const GibbsProblem& p, scalar T,
     two.nLiq[c] = L;
     two.Ntotal_liq = L;
     two.twoPhase = (L > 1.0e-10 * (two.Ntotal_gas + L));
-    if (!two.twoPhase || !two.converged) return eq;
+    if (!two.twoPhase || !two.converged)
+    {   //  The gas-only answer, with `c` supersaturated in it, is NOT the
+        //  equilibrium: marked, never passed off as one (C150 R07).
+        eq.supersaturatedNotCondensed = supersaturatedCondensables(p, eq, T);
+        return eq;
+    }
+    //  Condensing ONE species changes the gas every other condensable sits
+    //  in, so each is tested again at the answer (the rule the pure-solid
+    //  path applies to the solids still absent): one left supersaturated
+    //  makes this a liquid of several species, which this method cannot
+    //  carry, and the answer is marked rather than published as the
+    //  equilibrium (C150 R07).
+    std::vector<bool> condensed(p.N(), false);
+    condensed[c] = true;
+    two.supersaturatedNotCondensed = supersaturatedCondensables(p, two, T, condensed);
     return two;
 }
 

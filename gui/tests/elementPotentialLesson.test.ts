@@ -281,7 +281,7 @@ const ANCHORS: readonly [string, number, string][] = [
   ["NewtonND.cpp", 428, "Backtracking line search"],
   ["NewtonND.cpp", 449, "if (normFNew < normF) break"],
   ["ElementPotential.cpp", 63, "if (y_i * P > Psat)"],
-  ["ElementPotential.cpp", 71, "if (nSuper > 1) return eq"],
+  ["ElementPotential.cpp", 71, "if (nSuper > 1) { eq.supersaturatedNotCondensed"],
   ["ElementPotential.cpp", 79, "const scalar sat_y = PsatC / P"],
   ["ElementPotential.cpp", 110, "L = 0.5 * (Llo + Lhi)"],
   ["GibbsSolidPhase.cpp", 105, "scalar a = -g_over_RT"],
@@ -390,5 +390,24 @@ describe("the witnesses", () => {
         expect(Math.abs(a[k]! - b[k]!), `${unit}.${k} vs ${srcUnit}.${k}`)
           .toBeLessThanOrEqual(1e-9 * Math.max(1, Math.abs(a[k]!)));
     }
+  });
+});
+
+//  C150 R07 (2026-10-25): two condensables are REFUSED by the reactor, not
+//  answered with the gas-only state.  The limit used to say "the run does not
+//  announce it", which the engine no longer does; the page must say what the
+//  engine does, and must not offer reactiveFlash as the general remedy (its
+//  liquid is chosen on the gas-only answer and it is refused the same way).
+describe("the one-condensable limit says the engine refuses", () => {
+  const l = EP_LIMITS.find((x) => x.id === "one-condensable")!;
+  it("states the refusal and its remedy", () => {
+    expect(l.body).toMatch(/REFUSES the run/);
+    expect(l.body).toMatch(/directMin/);
+    expect(l.body).not.toMatch(/does not\s+announce it/);
+  });
+  it("the engine's refusal carries the same remedy", () => {
+    const src = read("src/unitOperations/reactor/GibbsReactor.cpp");
+    expect(src).toMatch(/so it is not the equilibrium, and no answer/);
+    expect(src).toMatch(/Use `model directMin;`/);
   });
 });

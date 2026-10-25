@@ -244,6 +244,10 @@ GibbsEquilibrium DirectMin::equilibrium(const GibbsProblem& p, scalar T,
                          " (announced).\n";
         gas.stopReason = "two-phase minimisation failed; gas-only answer"
                          " (announced)";
+        //  Announced is not enough when that gas leaves a condensable
+        //  supersaturated: it is then not the equilibrium, and the reactor
+        //  refuses it (C150 R07) -- the same test the other methods apply.
+        gas.supersaturatedNotCondensed = supersaturatedCondensables(p, gas, T);
         return gas;
     }
 

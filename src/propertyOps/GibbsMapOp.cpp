@@ -222,11 +222,11 @@ int GibbsMapOp::run(const DictPtr& dict, const ThermoPackage& thermo, int verbos
     for (std::size_t i = 0; i < N; ++i) if (isSolid[i]) csv << ",s_" << spNames[i];
     csv << "\n" << std::scientific << std::setprecision(8);
 
-    int nBad = 0;
+    int nBad = 0, nSuperCells = 0;     // + cells whose gas a condensable supersaturates (R07)
     //  WHY a cell did not converge, as the solver said it -- the first cause
     //  seen, reported once beside the count, so "unconverged" is never a
     //  bare number (the Newton routes fill `notConvergedCause`).
-    std::string firstCause;
+    std::string firstCause, firstSuper;
     scalar firstBadT = 0.0, firstBadP = 0.0;
     for (int it = 0; it < nT; ++it)
     {
@@ -238,7 +238,7 @@ int GibbsMapOp::run(const DictPtr& dict, const ThermoPackage& thermo, int verbos
                                   : P0 + (P1 - P0) * f;
             prob.P = P;
             resolveDirection(T);
-            GibbsEquilibrium eq = solver.solve(prob, T, {});
+            GibbsEquilibrium eq = solver.solve(prob, T, {});  if (!eq.supersaturatedNotCondensed.empty() && nSuperCells++ == 0) firstSuper = "T = " + std::to_string(T) + " K, P = " + std::to_string(P) + " Pa: " + eq.supersaturatedNotCondensed;
             csv << T << "," << P << "," << prob.dTapproach << ","
                 << (eq.converged ? 1 : 0) << ",";
             if (eq.converged)
@@ -349,6 +349,25 @@ int GibbsMapOp::run(const DictPtr& dict, const ThermoPackage& thermo, int verbos
                   << " K, P = " << firstBadP << " Pa) says: "
                   << (firstCause.empty() ? std::string("(the solver gave no cause)")
                                          : firstCause) << "\n";
+
+    //  CELLS WHOSE GAS IS NOT THE EQUILIBRIUM (2026-10-25, C150 R07).  The
+    //  element-potential kernel condenses ONE pure liquid; where a second
+    //  condensable stays supersaturated the cell's gas answer is not the
+    //  equilibrium.  The reactor refuses such a state; a MAP keeps its other
+    //  cells, so it COUNTS these, says so on every run that has one, and
+    //  publishes the count -- the cells themselves are written as computed
+    //  (the gas the kernel returned), never silently passed off as the rest.
+    if (nSuperCells > 0)
+    {
+        diag_["n_supersaturated_not_condensed"] = static_cast<scalar>(nSuperCells);
+        std::ostringstream m;
+        m << nSuperCells << " of " << nT * nP << " cells leave a condensable"
+             " supersaturated that this kernel cannot condense (it carries ONE"
+             " pure liquid), so their gas is NOT the equilibrium; first: "
+          << firstSuper;
+        std::cout << "  [gibbsMap] " << m.str() << "\n";
+        AdvisoryLog::instance().add("validity", "warning", "gibbsMap", m.str() + ".");
+    }
 
     if (verbosity >= 2)
         std::cout << "gibbsMap: " << nT << " x " << nP << " grid ("

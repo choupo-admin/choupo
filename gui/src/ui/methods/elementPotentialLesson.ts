@@ -345,13 +345,20 @@ export const EP_LIMITS: readonly LessonLimit[] = [
   },
   {
     id: "one-condensable",
-    title: "One condensing species, and the method says nothing when there are two.",
+    title: "One condensing species; a second one is refused by name.",
     body: "The element-potential method adds a liquid of ONE pure "
-      + "condensable.  With two species supersaturated at once it returns "
-      + "the gas-only answer (ElementPotential.cpp:71) and the run does not "
-      + "announce it; the reactiveFlash and directMin methods carry a "
-      + "multi-component liquid.  Two pure solids supersaturated at once are "
-      + "REFUSED by name.",
+      + "condensable.  With two species supersaturated at once, or a second "
+      + "one left supersaturated after the first has condensed, the gas it "
+      + "returns is not the equilibrium: the method marks it "
+      + "(ElementPotential.cpp:71) and the reactor REFUSES the run, naming "
+      + "each species with its y·P and Psat and pointing at directMin, which "
+      + "carries a multi-component liquid by minimising G directly.  Until "
+      + "2026-10-25 this answer was published, converged and unannounced.  "
+      + "reactiveFlash also carries several condensables, but in this "
+      + "implementation it chooses them on the gas-only answer, so it is "
+      + "refused the same way when a species saturates only after the "
+      + "others condense.  Two pure solids supersaturated at once are "
+      + "REFUSED by name too.",
   },
   {
     id: "equilibrium-not-duty",

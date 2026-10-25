@@ -807,6 +807,35 @@ int GibbsReactor::solve(const DictPtr& dict,
                       << " written to " << newtonLogPath << "\n";
     }
 
+    //  A GAS ANSWER THAT LEAVES A CONDENSABLE SUPERSATURATED IS NOT THE
+    //  EQUILIBRIUM (2026-10-25, DEV.md 4c C150 R07).  The element-potential
+    //  method condenses ONE pure liquid; with two condensables supersaturated
+    //  it used to hand back the gas-only answer, converged and unannounced,
+    //  and after condensing one it never re-tested the others -- a problem
+    //  different from the one posed, published at exit 0.  The method now
+    //  MARKS such an answer (GibbsEquilibrium::supersaturatedNotCondensed)
+    //  and the reactor refuses it here, on the FINAL solve only (an adiabatic
+    //  outer Newton's trial temperatures may pass through such a state on the
+    //  way to an answer that has none).  The table above and the log are
+    //  already written, so the refused state can still be read.
+    if (!eq.supersaturatedNotCondensed.empty())
+        throw std::runtime_error("GibbsReactor (" + modelName + "): at T = "
+            + std::to_string(T_final) + " K the answer leaves "
+            + eq.supersaturatedNotCondensed + " -- supersaturated in the gas"
+              " (y_i P > Psat_i), so it is not the equilibrium, and no answer"
+              " is published.  "
+            + (modelName == "reactiveFlash"
+                 ? std::string("`reactiveFlash` condenses the condensables"
+                     " supersaturated in the GAS-ONLY answer and nothing"
+                     " else, so a species that saturates only once the others"
+                     " have condensed (or a liquid its Newton could not"
+                     " close) is outside it.")
+                 : "The `" + modelName + "` method condenses ONE pure liquid"
+                     " and cannot carry a liquid of several condensables.")
+            + "  Use `model directMin;` (a multi-component liquid by direct"
+              " minimisation of G), or declare only the condensable the"
+              " exercise is about.");
+
     return eq.converged ? 0 : 1;
 }
 

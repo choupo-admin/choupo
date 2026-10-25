@@ -117,6 +117,12 @@ struct GibbsEquilibrium
     //  derivative-free route earned INSTEAD of a residual and which the
     //  reactor's report reads as "this was a simplex".
     std::string         notConvergedCause;
+    //  CONDENSABLES THE METHOD LEFT SUPERSATURATED (C150 R07): non-empty when
+    //  the returned answer has y_i P > Psat_i for a condensable it did not
+    //  condense -- named, with both pressures.  Such an answer is NOT the
+    //  equilibrium; the reactor refuses it on its final solve.  Empty on
+    //  every answer that is.
+    std::string         supersaturatedNotCondensed;
 
     //  PURE SOLID PHASES (2026-09-27, C14).  Filled ONLY by
     //  `GibbsMethod::solve` when the problem declares a species whose record
@@ -182,6 +188,17 @@ using GibbsLog = std::function<void(const GibbsLogRecord&)>;
 void refuseGibbsLogPath(const std::string& path);
 long writeGibbsLogCsv(const std::string& path,
                       const std::vector<GibbsLogRecord>& records);
+
+//  THE ONE TEST of "a condensable is left supersaturated" (C150 R07): every
+//  condensable of `p` not marked in `condensed` (empty: none is) whose
+//  y_i P exceeds Psat_i(T) by more than 1e-6 relative, in `eq`'s gas, named
+//  with both pressures -- the empty string when there is none.  The
+//  element-potential, reactive-flash and direct-minimisation methods call
+//  it on the answer they return, so none publishes a gas a condensable
+//  would leave as the equilibrium.
+std::string supersaturatedCondensables(const GibbsProblem& p,
+                                       const GibbsEquilibrium& eq, scalar T,
+                                       const std::vector<bool>& condensed = {});
 
 // Shared single-gas-phase Gibbs solve (the element-potential Newton),
 // used by elementPotential and as the nested gas equilibrium of reactiveFlash.

@@ -119,7 +119,20 @@ GibbsEquilibrium ReactiveFlash::equilibrium(const GibbsProblem& p, scalar T,
     two.Ntotal_liq = Lsum;
     two.twoPhase   = (Lsum > 1.0e-10 * (two.Ntotal_gas + Lsum));
     two.converged  = r.converged && two.converged;
-    if (!two.twoPhase || !two.converged) return eq;
+    //  NEITHER RETURN MAY PASS A SUPERSATURATED GAS OFF AS THE EQUILIBRIUM
+    //  (C150 R07).  The active set is decided on the GAS-ONLY answer; a
+    //  condensable that saturates only once the others have condensed is
+    //  outside it, and a failed Newton hands back the gas-only answer with
+    //  the active set still supersaturated.  Both are marked, and the
+    //  reactor refuses them by name.
+    if (!two.twoPhase || !two.converged)
+    {
+        eq.supersaturatedNotCondensed = supersaturatedCondensables(p, eq, T);
+        return eq;
+    }
+    std::vector<bool> inLiquid(N, false);
+    for (std::size_t a = 0; a < K; ++a) inLiquid[act[a]] = true;
+    two.supersaturatedNotCondensed = supersaturatedCondensables(p, two, T, inLiquid);
     return two;
 }
 
