@@ -67,8 +67,6 @@ import { caseDescription } from "../case/caseDescription";
 import { boundaryForStream } from "../case/modelBoundary.js";
 import { tutorialByName } from "../cases/tutorials.js";
 import { useStore, hasCaseOpen } from "../state/store.js";
-import { useCaseMode } from "../state/useCaseMode.js";
-import { staleFitRefusal } from "../case/caseModes.js";
 import { useStaleResult } from "../state/useStaleResult.js";
 import { findRunStream, popOutStreamByName } from "./streamPopOut.js";
 import { popOutUnitInternals } from "./unitFocus.js";
@@ -286,10 +284,6 @@ function CanvasInner({ flowsheet, scrubInstant }: {
   const runResult = useStore((s) => s.runResult);
   const stale = useStaleResult();
   const runStatus = useStore((s) => s.runStatus);
-  const runLog = useStore((s) => s.runLog);
-  const setCaseMode = useStore((s) => s.setCaseMode);
-  const twoModes = useCaseMode().modes !== null;
-  const staleFit = twoModes && runStatus === "error" ? staleFitRefusal(runLog) : null;
   /*  THE RUN CONTROL AND THE RESULT BADGE ARE ONE FACT, derived once.  They
       were computed separately and disagreed after a FAILED run: the badge's
       condition was satisfied by the PREVIOUS result, which is still loaded on
@@ -1542,17 +1536,6 @@ function CanvasInner({ flowsheet, scrubInstant }: {
                  hue, in both schemes.  The `Reset` button beside it was
                  already legible for exactly this reason -- `variant="default"`
                  brings a surface of its own.  */}
-            {/*  A STALE FIT REFUSED (DEV.md 4c C152): a Process-mode run that
-                 met a fitted record no longer matching what fitted it names
-                 its remedy -- re-run the fit in Properties & data.  The remedy
-                 is a button, not a sentence to copy. */}
-            {staleFit && runStatus !== "running" && (
-              <Button size="xs" color="grape" variant="filled" data-stale-fit=""
-                title={staleFit}
-                onClick={() => setCaseMode("props")}>
-                Stale fit -- re-fit it in Properties &amp; data
-              </Button>
-            )}
             {rc.badge && (
               <Badge size="sm" color={rc.badge.color} variant="filled"
                 title={rc.badge.title}>

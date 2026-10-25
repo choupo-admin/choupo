@@ -64,6 +64,7 @@ import { CaseWorkspace } from "./CaseWorkspace.js";
 import { selectedUnitTypeIn, tabHelp, tabKindFor } from "./tabChrome.js";
 import { getActiveMethodTool } from "./methods/registry.js";
 import { FlowCanvas } from "./FlowCanvas.js";
+import { StaleFitBanner } from "./StaleFitBanner.js";
 import { WelcomeScreen } from "./WelcomeScreen.js";
 import { CaseIntro } from "./CaseIntro.js";
 import { ExpiredTabPanel } from "./ExpiredTabPanel.js";
@@ -521,7 +522,10 @@ export function AppShell() {
         ) : activeWorkspace === "reports" ? (
           <ReportsWorkspace />
         ) : (
-          <FlowCanvas />
+          <>
+            <FlowCanvas />
+            <StaleFitBanner />
+          </>
         )}
       </Box>
 
