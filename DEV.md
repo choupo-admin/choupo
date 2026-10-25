@@ -1532,7 +1532,29 @@ accepts today, and that is a policy call.
 > Witness: a membrane case -- lab rejections, the DSPM-DE fit, the
 > fitted membrane record, a spiral-wound stage that uses it.  Dispatched
 > 2026-10-25 with C149's membrane fit (engine side); the GUI mode switch
-> joins C151.
+> joins C151.  ENGINE SIDE LANDED 2026-10-25 (`claude/c152-two-modes`):
+> `fitParameters residual { kind membrane; model DSPM-DE|SDEM|
+> solutionDiffusion|constantRejection; }` (one dataset row = one operating
+> point, evaluated through the units' own transport law and polarisation),
+> `output { record "constant/assets/<name>.dat"; }` writing a `kind NF`
+> record with per-value uncertainty, the verdict and SHA-256 fingerprints
+> of its inputs; a unit that reads a STALE fitted record refuses by name
+> with the remedy `runCase <case> props`; `runCase <case> props|process`;
+> goldens `expected` (default mode) + `expected.<mode>`; `caseManifest`
+> carries `modes`.  Witness `steady/membranes/membrane24_fit_then_simulate`
+> (FdL 2021 NF270: r_p 0.675 +- 0.034 nm, X_d -10.5 +- 4.1 mol/m3,
+> correlation -0.96, held-out sulfates AAD 0.93 points, `validated`; the
+> partition was chosen after measuring others and the header says so).
+> Gate `check_fit_then_simulate` (S1-S4 caught).  No existing golden
+> moved.  Validated: props + membranes + batch/membrane + unsteady 157/0,
+> `--fast` 76/0, the generated artefacts; `--gui` running at commit.  Riding with it: the
+> view writer (C147) now refuses a path inside data/standards/
+> (`check_standards_write_guard` had gone red on main).  NOT done, named:
+> the thermophysical package (ion radii, D0) is not fingerprinted; SDEM,
+> solutionDiffusion and constantRejection residuals have no real-data
+> witness; a spiral module fed a subset of the package's salts prints
+> R_obs 100 % and "no B_s" for the absent ones (display only).  The GUI
+> mode switch is C151's.
 
 > **C151. A PROPS CASE GETS STRUCTURE: A CALCULATION MAP, A TREE BY
 > DISCIPLINE, F1 TO THE THEORY, AND ONE HOME FOR ITS FIGURES (Vitor,
