@@ -271,6 +271,7 @@ void BatchDiafilter::initialise(const DictPtr&       unitDict,
 
     n0_  = state_.n;
     V0_  = volumeOf(state_.n);
+    Sperm_.assign(soluteIdx_.size(), 0.0);
     state_.V = V0_;
     nLastDischarge_ = state_.n;
 
@@ -391,19 +392,23 @@ BatchDiafilter::Fluxes BatchDiafilter::evaluate(const sVector& n) const
 }
 
 // ---------------------------------------------------------------------------
-//  the packed ODE:  Y = [ n_0 .. n_{N-1}, diavolumes ]
+//  the packed ODE:  Y = [ n_0 .. n_{N-1}, V_perm, S_0 .. S_{Ns-1} ]
 // ---------------------------------------------------------------------------
 sVector BatchDiafilter::odeState() const
 {
     sVector y = state_.n;
     y.push_back(Vperm_);
+    y.insert(y.end(), Sperm_.begin(), Sperm_.end());
     return y;
 }
 
 std::size_t BatchDiafilter::odeNPositive() const
 {
     //  Every mole number, and the permeated volume -- all monotone in the
-    //  physics and all meaningless below zero.
+    //  physics and all meaningless below zero.  (The rows after them, the
+    //  permeate-weighted integrals S_s, are positive too, but they sit
+    //  after V_perm and the integrator's guard marks a contiguous prefix;
+    //  their derivative c_b Q_p is non-negative by construction.)
     return state_.n.size() + 1;
 }
 
@@ -412,6 +417,7 @@ void BatchDiafilter::setOdeState(const sVector& y)
     const std::size_t N = state_.n.size();
     for (std::size_t i = 0; i < N; ++i) state_.n[i] = y[i];
     Vperm_   = y[N];
+    for (std::size_t s = 0; s < Sperm_.size(); ++s) Sperm_[s] = y[N + 1 + s];
     state_.V = volumeOf(state_.n);
 }
 
@@ -423,7 +429,7 @@ sVector BatchDiafilter::odeDerivative(const sVector& y) const
     sVector n(y.begin(), y.begin() + static_cast<long>(N));
     const Fluxes f = evaluate(n);
 
-    sVector d(N + 1, 0.0);
+    sVector d(N + 1 + Ns, 0.0);
 
     //  Solutes: what the membrane passes leaves; what the diafiltrate
     //  carries arrives.  A pure-solvent diafiltrate carries nothing, which
@@ -449,6 +455,14 @@ sVector BatchDiafilter::odeDerivative(const sVector& y) const
     //  the trajectory and the ledgers cannot disagree about how much has
     //  gone through.
     d[N] = f.Q_p;
+
+    //  The permeate-weighted integral of the bulk concentration, per
+    //  solute: dS_s/dt = c_b,s Q_p.  It feeds nothing back (no derivative
+    //  reads S), so it cannot change the trajectory; it is integrated here,
+    //  beside the inventory and V_perm, so the time-averaged rejection in
+    //  kpis() is built from states the integrator accepted together.
+    for (std::size_t s = 0; s < Ns; ++s)
+        d[N + 1 + s] = f.c_b[s] * f.Q_p;
     return d;
 }
 
@@ -593,6 +607,46 @@ std::map<std::string, scalar> BatchDiafilter::kpis() const
         k["R_initial_" + nm] = R0_s_[s];
         k["R_final_"   + nm] = R;
         k["recovery_"  + nm] = (n0_[i] > 0.0) ? state_.n[i] / n0_[i] : 0.0;
+
+        //  THE CAMPAIGN'S REJECTION, a TIME average -- the batch counterpart
+        //  of the spiral module's R_obs_<solute>, which is a SPATIAL average
+        //  (the mixed permeate of the channel against the inlet feed).
+        //  Three integrated states, no quadrature of its own:
+        //
+        //    c_permPooled  = (n0 - n) / V_perm      the pooled permeate:
+        //                    every drop collected since t = 0, mixed.  Exact
+        //                    -- a solute has no inlet here, so what left
+        //                    the inventory went through the membrane (the
+        //                    same difference the permeate ledger records).
+        //    c_bMeanPerm   = S / V_perm,  S = INTEGRAL c_b dV_perm
+        //                    the retentate's bulk concentration averaged
+        //                    over the campaign, weighted by the permeate
+        //                    rate at each instant (dV_perm = Q_p dt).
+        //    R_avg         = 1 - c_permPooled / c_bMeanPerm
+        //                  = INTEGRAL R_obs(t) c_b Q_p dt / INTEGRAL c_b Q_p dt
+        //                    so R_avg IS a weighted mean of the instantaneous
+        //                    R_obs and lies between its extremes.
+        //    R_avgVsInitialFeed = 1 - c_permPooled / c_bInitial
+        //                    the pooled permeate against the CHARGE -- what a
+        //                    rig reports when it analyses the collected
+        //                    permeate and the feed it started from.  Not a
+        //                    mean of R_obs: a concentrating retentate puts it
+        //                    BELOW R_avg, a washed-out solute ABOVE it (for
+        //                    0 <= R_obs <= 1) -- it describes the operation.
+        //
+        //  Published only once something has permeated: before that the
+        //  pooled permeate is 0/0 and there is no rejection to state.
+        if (Vperm_ > 0.0 && s < Sperm_.size() && Sperm_[s] > 0.0 && V0_ > 0.0)
+        {
+            const scalar cPool  = (n0_[i] - state_.n[i]) / Vperm_;
+            const scalar cMean  = Sperm_[s] / Vperm_;
+            const scalar cInit  = n0_[i] / V0_;
+            k["c_permPooled_"       + nm] = cPool;
+            k["c_bMeanPerm_"        + nm] = cMean;
+            k["c_bInitial_"         + nm] = cInit;
+            k["R_avg_"              + nm] = 1.0 - cPool / cMean;
+            k["R_avgVsInitialFeed_" + nm] = 1.0 - cPool / cInit;
+        }
 
         //  THE LESSON, and it is published only where the law it quotes
         //  applies.  Constant-volume diafiltration is the case a student

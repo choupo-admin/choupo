@@ -166,8 +166,9 @@ public:
 
     void step(scalar t, scalar dt) override;
 
-    //  A clean autonomous ODE on [n..., Vpermeated]: the adaptive driver
-    //  owns the integration, as it does for the batch reactor.
+    //  A clean autonomous ODE on [n..., Vpermeated, S_solute...]: the
+    //  adaptive driver owns the integration, as it does for the batch
+    //  reactor.
     bool        hasOdeForm()   const override { return true; }
     sVector     odeState()     const override;
     void        setOdeState(const sVector& y) override;
@@ -177,7 +178,9 @@ public:
     const BatchState& state() const override { return state_; }
     std::string holdupNotRestored() const override
     { return "the permeated volume V_perm (it sets the fouling resistance and"
-             " the diavolume count)"; }
+             " the diavolume count) and the campaign's permeate-weighted"
+             " integrals of the bulk concentration (the time-averaged"
+             " rejection R_avg_<solute> restarts from the restart instant)"; }
 
 protected:
     BatchState& mutableState() override { return state_; }
@@ -264,6 +267,17 @@ private:
     scalar Vperm_      = 0.0;   // m^3 permeated since t = 0
     scalar diavolumes() const
     { return (constantVolume_ && V0_ > 0.0) ? Vperm_ / V0_ : 0.0; }
+
+    //  THE CAMPAIGN'S TIME AVERAGE, per solute: S_s = INTEGRAL c_b,s dV_perm
+    //  = INTEGRAL c_b,s(t) Q_p(t) dt [kmol] -- the bulk concentration the
+    //  membrane saw, weighted by what it let through at that instant.
+    //  Integrated by the SAME integrator on the SAME accepted steps as the
+    //  inventory and V_perm (rows N+1.. of the ODE state), so the average
+    //  rejection R_avg = 1 - (n0 - n)/S is built from three integrated
+    //  states and no quadrature of its own.  The permeated solute (n0 - n)
+    //  is the inventory difference, the same difference the permeate
+    //  ledger records.  See kpis() for the published definitions.
+    sVector Sperm_;
 
     //  The inventory and permeated volume at the last boundary collection:
     //  every ledger record below is a DIFFERENCE against these, never a

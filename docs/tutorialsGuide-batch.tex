@@ -1184,7 +1184,7 @@ WHAT IS PINNED AND WHAT IS NOT. The golden pins the answer this model gives; NOT
 \goldrow{kpi}{campaign}{mass\_kg\_amend\_in}{54.5637624826}
 \goldrow{kpi}{campaign}{mass\_kg\_amend\_out}{0}
 \goldrow{kpi}{campaign}{mass\_kg\_external\_out}{54.5637624826}
-\goldmore{41}
+\goldmore{51}
 \end{tutgolden}
 
 \clearpage
@@ -1228,7 +1228,49 @@ WHAT TO READ. `A\_eff\_over\_A\_w` in the trajectory is the permeance the membra
 \goldrow{kpi}{campaign}{mass\_kg\_amend\_in}{47.5260962641}
 \goldrow{kpi}{campaign}{mass\_kg\_amend\_out}{0}
 \goldrow{kpi}{campaign}{mass\_kg\_external\_out}{47.5260962641}
-\goldmore{42}
+\goldmore{52}
+\end{tutgolden}
+
+\clearpage
+\tutentry{diafilter03\_dspmde\_batch}{tutorials/batch/membrane/diafilter03\_dspmde\_batch}
+\begin{tutscheme}
+\begin{tikzpicture}[>={Stealth[length=2mm]}, every node/.style={font=\scriptsize}]
+  \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (retentate) at (0.0,-0.0) {\textbf{retentate}\\[-1pt]{\tiny batchDiafilter}};
+\end{tikzpicture}
+\end{tutscheme}
+\tutwhat{Batch NF concentration on the DSPM-DE pore model: the observed rejection per instant and the campaign's time-averaged rejection}
+\begin{tutnarrative}
+batch CONCENTRATION of a two-salt brine on the DSPM-DE pore model, and the rejection of a whole campaign stated as a TIME average.
+
+THE OPERATION. The charge of diafilter01 (10 litres, 0.02 kmol/m3 each of NaCl and MgSO4) sits behind 1 m2 of NF270 at 10 bar with NO make-up solvent, so the vessel shrinks and both salts concentrate. The membrane is the pore tier of the curated NF270 record (`NF270\_dspmde`: pore radius, A\_k/dx, a constant volumetric charge, a pore dielectric constant), and the transport law is DSPM-DE -- steric, Donnan and dielectric exclusion with the extended Nernst-Planck equations SOLVED across the pore -- asked at every instant of the integration, exactly as the spiral module asks it at every station of its channel. The film is the declared k\_film with the default film theory (announced).
+
+WHAT THE RUN SHOWS. The observed rejection is not a property of the membrane alone; it moves with the solution the membrane sees. As the retentate concentrates the NaCl rejection FALLS (0.691 at the start, 0.554 at the end of this run) while the MgSO4 rejection RISES slightly (0.973 $\to$ 0.979). In DSPM-DE two things push the monovalent salt the same way -- a bulk concentration growing past the fixed charge weakens the Donnan exclusion, and a growing share of retained divalent ions changes what must cross to keep the permeate neutral -- and this run does not separate them. The flux falls with the osmotic pressure (244 $\to$ 116 LMH) and the volume reduction reaches 3.9. Read `R\_obs\_<salt>` in the trajectory against `V\_m3`.
+
+THE REJECTION OF THE CAMPAIGN. A batch rig is usually judged by the permeate it COLLECTED, not by one instant, and two time averages of the rejection are published at the end (DEFINED in BatchDiafilter.cpp, kpis(), and in docs/ai/membrane-research.md).
+
+R\_avg = 1 - c\_permPooled / c\_bMeanPerm, where c\_permPooled = (n\_0 - n) / V\_perm is the pooled permeate (every drop collected, mixed) and c\_bMeanPerm = INTEGRAL c\_b dV\_perm / V\_perm is the retentate's bulk concentration averaged over what permeated. It is a weighted mean of the instantaneous R\_obs (weights c\_b Q\_p), so it lies between the smallest and the largest of them (NaCl 0.635).
+
+R\_avgVsInitialFeed = 1 - c\_permPooled / c\_bInitial compares the pooled permeate with the CHARGE and, because the retentate only concentrates, lies below R\_avg (NaCl 0.467) -- the number a laboratory gets by analysing its collected permeate against the feed it started from, and a reminder that it is not the membrane's rejection. The steady spiral module states the SPATIAL counterpart: its R\_obs is the mixed permeate of the whole channel against the inlet feed.
+
+WHAT IS VERIFIED AND WHAT IS NOT. Verified (check\_diafiltration): the DSPM-DE pore model runs inside the batch vessel at every instant; matter is conserved to machine precision; the two averages reproduce from the published integrals and from the trajectory; R\_avg lies inside the range of R\_obs; the pooled-permeate rejection lies below it, as it must when the retentate concentrates. NOT validated: no number here is compared with a measured batch filtration. The pore parameters are the record's case-fitted pedagogical set (`provenance fittedToCase`, fitted against membrane10\_dspmde\_divalent), so the rejections are those of a representative loose NF membrane, not a claim about a particular element. In a MIXED feed the salt basis carries each salt's cation leg through the pore and the run says so; fouling is not declared; k\_film is declared, not correlated with a stirrer or a channel.
+
+\end{tutnarrative}
+\begin{tutgolden}
+\goldrow{kpi}{campaign}{element\_Cl\_closure\_rel}{0}
+\goldrow{kpi}{campaign}{element\_H\_closure\_rel}{1.03422137392e-12}
+\goldrow{kpi}{campaign}{element\_Mg\_closure\_rel}{0}
+\goldrow{kpi}{campaign}{element\_Na\_closure\_rel}{0}
+\goldrow{kpi}{campaign}{element\_O\_closure\_rel}{1.03273316665e-12}
+\goldrow{kpi}{campaign}{element\_S\_closure\_rel}{0}
+\goldrow{kpi}{campaign}{element\_worst\_closure\_rel}{1.03422137392e-12}
+\goldrow{kpi}{campaign}{energy\_balance\_available}{0}
+\goldrow{kpi}{campaign}{energy\_records\_invalid}{0}
+\goldrow{kpi}{campaign}{energy\_records\_valid}{0}
+\goldrow{kpi}{campaign}{mass\_closure\_rel}{1.03031994669e-12}
+\goldrow{kpi}{campaign}{mass\_kg\_external\_out}{7.46972743873}
+\goldrow{kpi}{campaign}{mass\_kg\_final}{2.56615820568}
+\goldrow{kpi}{campaign}{mass\_kg\_initial}{10.0358856444}
+\goldmore{40}
 \end{tutgolden}
 
 \subsection{plant}

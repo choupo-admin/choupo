@@ -1,0 +1,97 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+  diafilter03_dspmde_batch  --  batch CONCENTRATION of a two-salt brine on
+  the DSPM-DE pore model, and the rejection of a whole campaign stated as
+  a TIME average.
+
+  THE OPERATION.  The charge of diafilter01 (10 litres, 0.02 kmol/m3 each
+  of NaCl and MgSO4) sits behind 1 m2 of NF270 at 10 bar with NO make-up
+  solvent, so the vessel shrinks and both salts concentrate.  The membrane
+  is the pore tier of the curated NF270 record (`NF270_dspmde`: pore
+  radius, A_k/dx, a constant volumetric charge, a pore dielectric
+  constant), and the transport law is DSPM-DE -- steric, Donnan and
+  dielectric exclusion with the extended Nernst-Planck equations SOLVED
+  across the pore -- asked at every instant of the integration, exactly as
+  the spiral module asks it at every station of its channel.  The film is
+  the declared k_film with the default film theory (announced).
+
+  WHAT THE RUN SHOWS.  The observed rejection is not a property of the
+  membrane alone; it moves with the solution the membrane sees.  As the
+  retentate concentrates the NaCl rejection FALLS (0.691 at the start,
+  0.554 at the end of this run) while the MgSO4 rejection RISES slightly
+  (0.973 -> 0.979).  In DSPM-DE two things push the monovalent salt the
+  same way -- a bulk concentration growing past the fixed charge weakens
+  the Donnan exclusion, and a growing share of retained divalent ions
+  changes what must cross to keep the permeate neutral -- and this run
+  does not separate them.  The flux falls with the osmotic
+  pressure (244 -> 116 LMH) and the volume reduction reaches 3.9.  Read
+  `R_obs_<salt>` in the trajectory against `V_m3`.
+
+  THE REJECTION OF THE CAMPAIGN.  A batch rig is usually judged by the
+  permeate it COLLECTED, not by one instant, and two time averages of the
+  rejection are published at the end (DEFINED in BatchDiafilter.cpp,
+  kpis(), and in docs/ai/membrane-research.md).
+
+  R_avg = 1 - c_permPooled / c_bMeanPerm, where c_permPooled =
+  (n_0 - n) / V_perm is the pooled permeate (every drop collected, mixed)
+  and c_bMeanPerm = INTEGRAL c_b dV_perm / V_perm is the retentate's bulk
+  concentration averaged over what permeated.  It is a weighted mean of
+  the instantaneous R_obs (weights c_b Q_p), so it lies between the
+  smallest and the largest of them (NaCl 0.635).
+
+  R_avgVsInitialFeed = 1 - c_permPooled / c_bInitial compares the pooled
+  permeate with the CHARGE and, because the retentate only concentrates,
+  lies below R_avg (NaCl 0.467) -- the number a laboratory gets by
+  analysing its collected permeate against the feed it started from, and a
+  reminder that it is not the membrane's rejection.
+  The steady spiral module states the SPATIAL counterpart: its R_obs is
+  the mixed permeate of the whole channel against the inlet feed.
+
+  WHAT IS VERIFIED AND WHAT IS NOT.  Verified (check_diafiltration): the
+  DSPM-DE pore model runs inside the batch vessel at every instant;
+  matter is conserved to machine precision; the two averages reproduce
+  from the published integrals and from the trajectory; R_avg lies inside
+  the range of R_obs; the pooled-permeate rejection lies below it, as it
+  must when the retentate concentrates.  NOT validated: no number here is
+  compared with a measured batch filtration.  The pore parameters are the
+  record's case-fitted pedagogical set (`provenance fittedToCase`, fitted
+  against membrane10_dspmde_divalent), so the rejections are those of a
+  representative loose NF membrane, not a claim about a particular
+  element.  In a MIXED feed the salt basis carries each salt's cation leg
+  through the pore and the run says so; fouling is not declared; k_film is
+  declared, not correlated with a stirrer or a channel.
+\*---------------------------------------------------------------------------*/
+
+units
+(
+    {
+        name        retentate;
+        type        batchDiafilter;
+
+        operation
+        {
+            membrane     NF270_dspmde;       // the pore tier of the curated record
+            transport    DSPM-DE;            // the solved pore, at every instant
+            mode         concentration;      // no make-up: the vessel shrinks
+
+            area         1.0;                // m2 -- membrane area
+            P_feed       10 bar;             // transmembrane driving pressure
+            P_permeate   0 bar;              // atmospheric permeate side
+            rho          1000;               // kg/m3 -- declared, never defaulted
+
+            k_film       1.0e-4 m/s;         // DECLARED: a well-stirred cell
+
+            osmotic
+            {
+                model    vanHoff;
+            }
+        }
+    }
+);
