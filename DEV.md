@@ -1582,7 +1582,23 @@ accepts today, and that is a policy call.
 > wave 3 the wording points across the remaining tools (R09-R13, R17-R25,
 > R27, R28), "neste exemplo / neste modelo / nesta implementacao" rather
 > than universal claims, limitations placed beside the numbers.  The
-> review itself is kept out of the tree.
+> review itself is kept out of the tree.  WAVE 1 LANDED 2026-10-25
+> (`claude/c150-wave1`): C112 G11 (overpressure points 1-4, 10, 11) and G12
+> (five EduTools on points 5, 8, 9, 12-14; the pool-fire helpers pure in
+> `poolFire.ts`), R01-R06 and R26 -- the relief-valve basis now says its
+> MAWP is ASSUMED equal to the design pressure and relieves at set + 10 %
+> (8 `basis` rows of greenAmmonia03 moved, wording only, no number), and
+> an exchanger priced above CAPCOST 2017's 140 bar g pressure-factor
+> ceiling is announced `[validity] ... EXTRAPOLATED` (never clamped).
+> Found while rebasing: main's `gui-tests` were red -- the C131 adiabatic
+> mixer moved greenAmmonia03's converged streams in the 10th digit and
+> nothing re-copied the two letdown witnesses that copy them
+> (`letdown01` 0/RawLiquid + 0/Purge, `letdown02` purge + liquidLP); they
+> are re-copied, no golden moved.  Validated: `--gui` 35/0 (6228 tests),
+> the four cases, check_relief_valve, check_cost_provenance,
+> check_design_sheet, the generated artefacts.  OPEN: the R01 design-
+> pressure branch (`claude/c150-r01-design-pressure`, 285 rows in 5
+> cases) must be rebased onto this before its rows are reviewed; waves 2-3.
 
 > **C149. THE RESULTS A RESEARCHER RECEIVES: PLOTS FIRST, AND FITTING A
 > MEMBRANE TO HIS OWN DATA (Vitor, 2026-10-24, with screenshots of the live
