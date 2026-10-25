@@ -54,7 +54,7 @@ export interface ComponentMeta {
    *  an `electrolyte{}` block, an ion stoichiometry (`dissociatesTo`) or a
    *  van't Hoff `dissociation > 1`.  Declared facts, never a name test. */
   isSaltOrMineral: boolean;
-  /** `tags ( combustion ... )`: a GRI-Mech / Burcat gas-phase species whose
+  /** `tags ( combustion ... )`: a combustion gas-phase species whose
    *  reason to exist is a mechanism, not a separation. */
   isCombustion: boolean;
   /** Gas at room temperature: the declared normal boiling point sits below

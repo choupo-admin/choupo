@@ -30,9 +30,8 @@
 """
 import_nasa.py -- NASA-7 polynomial importer for Choupo .dat files
 
-  Reads NASA-7 polynomial thermo data (the format used by CHEMKIN /
-  Cantera / GRI-Mech / Burcat's database) and produces Choupo
-  component .dat files.  For every species the script:
+  Reads NASA-7 polynomial thermo data (the CHEMKIN card format) and
+  produces Choupo component .dat files.  For every species the script:
 
     1. Fits the NASA-7 Cp/R polynomial to the degree-3 form Choupo
        uses (`Cp = a0 + a1*T + a2*T^2 + a3*T^3`) over a chosen T
@@ -52,8 +51,18 @@ import_nasa.py -- NASA-7 polynomial importer for Choupo .dat files
     bin/import_nasa.py                            # generate the shipped subset
     bin/import_nasa.py --outdir data/standards/components
     bin/import_nasa.py --species H O N CH3        # subset
-    bin/import_nasa.py --thermo gri30.thermo      # import EXTRA species from a
-                                                  # CHEMKIN thermo file you supply
+    bin/import_nasa.py --thermo my.thermo --outdir data/local/components
+                                                  # EXTRA species from a CHEMKIN
+                                                  # thermo file you supply -- LOCAL ONLY
+
+  --thermo IS LOCAL-ONLY (2026-10-25, DEV.md 4c C164).  The CHEMKIN thermo
+  files people actually hold are mechanism files with no redistribution
+  grant (GRI-Mech 3.0's, which 17 catalogue records had been generated from
+  until that day) or NonCommercial compilations (BURCAT.THR).  So a value
+  read through --thermo may land in data/local/ for your own work and
+  comparison, and the tool REFUSES an --outdir under data/standards/ or
+  tutorials/ -- the public tree takes a NASA polynomial only from a
+  public-domain primary, read by bin/curate/nasa_tp2002_to_choupo.py.
 
   Embedded data
   -------------
@@ -586,6 +595,20 @@ def main() -> int:
     args = p.parse_args()
 
     outdir = Path(args.outdir)
+    if args.thermo:
+        #  LOCAL ONLY: a CHEMKIN file you supply carries no licence this tool
+        #  can verify, and the files in circulation are no-grant mechanisms or
+        #  NonCommercial compilations (see the module docstring).
+        public = [here.parent / "data" / "standards", here.parent / "tutorials"]
+        o = outdir.resolve()
+        for pub in public:
+            if o == pub.resolve() or pub.resolve() in o.parents:
+                sys.exit(f"import_nasa: REFUSED -- --thermo writes only outside "
+                         f"the public tree, and --outdir {outdir} is under "
+                         f"{pub.relative_to(here.parent)}/.  Use --outdir "
+                         f"data/local/components (your private tier); a value "
+                         f"for data/standards/ comes from a public-domain primary "
+                         f"(bin/curate/nasa_tp2002_to_choupo.py).")
     outdir.mkdir(parents=True, exist_ok=True)
 
     db = dict(NASA7_INLINE)
