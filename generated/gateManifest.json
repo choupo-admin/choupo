@@ -1290,6 +1290,11 @@
       "exit": 0,
       "claim": "check_sequential_plan: OK -- process03_recycle solves as shipped; with its tear removed it refuses MISSING TEAR, with a forward tear declared FORWARD TEAR, and process01 declared in reverse order refuses INVALID ORDER; no refused plan writes converged/ (4 of the 7 named refusals fired; OFF-CYCLE, UNKNOWN, INLET and UNCONSUMED not fired here)",
       "seconds": 0.1
+    },
+    "check_bund_arithmetic": {
+      "exit": 0,
+      "claim": "check_bund_arithmetic: OK -- the C++ bund arithmetic (BundArithmetic.H) reproduces the 15 examples the secondary-containment EduTool's test pins (1e-14), every one of its 7 functions pinned and twinned in bund.ts; the green-ammonia witness's tankFarm bund (7480 m2 x 4 m, two declared tank footprints, its rule and rain) is the green_* pins and equals its golden's gross, displaced, net and required volumes (1e-9); PlantLayout.cpp calls the header and carries none of its arithmetic.  NOT CHECKED: the page's teaching beyond the engine (slope, freeboard, useful capacity, scenarios -- the EduTool's own test), whether a capacity rule is right, and that the layout check runs (check_plant_layout).",
+      "seconds": 0.3
     }
   }
 }
