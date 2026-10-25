@@ -253,7 +253,10 @@ export const DR_STEPS: readonly LessonStep[] = [
   {
     n: 7,
     title: "The answer is a distribution, not a set of flows",
-    body: "The most probable point is only half of what Bayes returns.  With "
+    body: "The Bayesian formulation turns the answer into a posterior "
+      + "distribution, not only its most probable point (classical "
+      + "reconciliation with a statistical error model computes the same "
+      + "reconciled covariance).  With "
       + "Gaussian meters and linear balances the posterior is itself a "
       + "Gaussian, so every reconciled flow comes with a standard deviation: "
       + "a statement of how well the true flow is now KNOWN, not only where "

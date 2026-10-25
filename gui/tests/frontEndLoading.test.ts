@@ -284,7 +284,9 @@ describe("the stages are the research record's", () => {
       const name = st.name.replace(/ \(.*\)$/, "");
       expect(prose(RECORD)).toContain(`${st.label} ${name}`);
     }
-    //  Both numberings put FEED at FEL 3 -- the page's anchor.
+    //  Both numberings shown put FEED at FEL 3, as many widely used
+    //  three-stage schemes do; the page says to check the owner's own
+    //  stage definitions, so this holds the two it draws, not a rule.
     for (const nb of FEL_NUMBERINGS)
       expect(nb.stages.find((s) => /^FEL.3$/.test(s.label))!.name)
         .toMatch(/FEED|basic engineering/i);

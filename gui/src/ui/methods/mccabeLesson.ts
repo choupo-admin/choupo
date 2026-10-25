@@ -43,7 +43,8 @@ export const MCCABE_STEPS: readonly LessonStep[] = [
       + "vapour from the one below.  The staircase is not a new idea — it is "
       + "the flash construction walked repeatedly, and every corner of it is "
       + "one of the two things you already know.",
-    note: "Horizontal to the curve = one ideal stage reaching equilibrium.  "
+    note: "Horizontal to the curve = the equilibrium relation of one ideal "
+      + "stage: the vapour and liquid leaving it are in equilibrium.  "
       + "Vertical to the line = the material balance carrying you to the next "
       + "stage.  That is the whole construction.",
   },
@@ -192,8 +193,9 @@ y &= \frac{\bar L}{\bar V}\,x - \frac{B}{\bar V}\,x_B
     title: "Two limits bracket every real column",
     body: "TOTAL REFLUX (R → ∞) collapses both operating lines onto the "
       + "diagonal.  The staircase is then as wide as it can be and you get "
-      + "the MINIMUM number of stages — for infinite energy and zero "
-      + "product.  MINIMUM REFLUX (R → R_min) is the opposite: the operating "
+      + "the MINIMUM number of stages — with zero net product: R = L/D "
+      + "diverges because D → 0, while the reboiler and condenser duties can "
+      + "stay finite.  MINIMUM REFLUX (R → R_min) is the opposite: the operating "
       + "line touches the equilibrium curve, and at that pinch the steps "
       + "become infinitely small, so you need infinitely many.  Minimum "
       + "energy, infinite column.",

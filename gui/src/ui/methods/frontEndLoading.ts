@@ -310,8 +310,9 @@ export const FEL_STAGES: readonly FelStage[] = [
       + "on each bed's own cross-section, interbed coolers raising steam, and "
       + "every exchanger designed.  "
       + "The cost beside them stays equipment-factored, which is a Class 4 "
-      + "method, so a Choupo 'basic design' is FEL-3 in its process fidelity "
-      + "and a study-type estimate in its cost.",
+      + "method: Choupo may solve individual process items at FEED-like "
+      + "fidelity, but that does not make the project definition FEED, and "
+      + "its capital estimate remains a study / Class-4-type estimate.",
     choupoCases: [
       "plant/ammoniaReactor04_kineticSizing",
       "plant/greenAmmonia03_basicDesign",
