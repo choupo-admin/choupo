@@ -240,9 +240,47 @@ if [ -z "${CHOUPO_SUITE_TIMED:-}" ]; then
         *)
             mkdir -p "$ROOT/build"
             _raw="$ROOT/build/suiteTimings.raw"; : > "$_raw"
+            #  PROGRESS (Vitor, 2026-10-25: "devia de aparecer a % de casos
+            #  que correram!").  A sweep run as `bin/runTests > log 2>&1`
+            #  shows nothing on the terminal for half an hour, so when stdout
+            #  is NOT a terminal the count of result lines is written to the
+            #  controlling terminal (/dev/tty) on one rewritten line --
+            #  never into the log, which people and runtests_verdict.py read.
+            #  The total is the item count of the LAST sweep's
+            #  suiteTimings.csv when one exists (exact for an unchanged
+            #  corpus), else the estimate the run itself prints as
+            #  `[plan] items: ~N`, marked with a tilde; the percentage is
+            #  held at 99 until the verdict line arrives.  CHOUPO_PROGRESS_TO
+            #  names another sink (a file), for testing without a terminal.
+            _prog="${CHOUPO_PROGRESS_TO:-}"
+            if [ -z "$_prog" ] && [ ! -t 1 ] && { : > /dev/tty; } 2>/dev/null; then
+                _prog=/dev/tty
+            fi
+            _total=0; _approx=""
+            if [ -f "$ROOT/build/suiteTimings.csv" ] && [ $# -eq 0 ]; then
+                _total=$(( $(wc -l < "$ROOT/build/suiteTimings.csv") - 1 ))
+            fi
+            _done=0
             CHOUPO_SUITE_TIMED=1 "$0" "$@" 2>&1 | while IFS= read -r _line; do
                 printf '%s\t%s\n' "$EPOCHREALTIME" "$_line" >> "$_raw"
                 printf '%s\n' "$_line"
+                [ -n "$_prog" ] || continue
+                case "$_line" in
+                    "[plan] items: ~"*)
+                        if [ "$_total" -le 0 ]; then
+                            _total=${_line#\[plan\] items: \~}; _approx="~"
+                        fi ;;
+                    "PASS "[0-9]*" / FAIL "*)
+                        printf '\r[runTests] %d items, 100%% -- %s\n' "$_done" "$_line" >> "$_prog" 2>/dev/null ;;
+                    "PASS "*|"FAIL "*|"EXPECTED-FAIL "*|"KNOWN-BROKEN "*)
+                        _done=$((_done+1))
+                        if [ "$_total" -gt 0 ]; then
+                            _pct=$(( 100 * _done / _total )); [ "$_pct" -gt 99 ] && _pct=99
+                            printf '\r[runTests] %d/%s%d items (%d%%)   ' "$_done" "$_approx" "$_total" "$_pct" >> "$_prog" 2>/dev/null
+                        else
+                            printf '\r[runTests] %d items done   ' "$_done" >> "$_prog" 2>/dev/null
+                        fi ;;
+                esac
             done
             _rc=${PIPESTATUS[0]}
             "$ROOT/bin/curate/suite_timings.py" "$_raw" "$ROOT/build/suiteTimings.csv" || true
@@ -1190,6 +1228,7 @@ if [ "${1:-}" = "--gui" ]; then
 fi
 
 # --- gather cases ---------------------------------------------------------
+PLAN_CASE_ARGS=$#   # the progress estimate counts gate sites only on a full sweep
 CASES=()
 if [ "$#" -gt 0 ]; then
     #  An argument may be a CASE or a DIRECTORY OF CASES.  Passing
@@ -1260,6 +1299,16 @@ else
         done < <(find "tutorials/plant" -path '*/system/controlDict' 2>/dev/null | sort)
     fi
 fi
+
+# --- the planned size, for the progress line (2026-10-25) -------------------
+#  An ESTIMATE: every case, plus (on a full sweep, which alone runs the
+#  gates) one per gate site that prints a PASS row.
+#  The wrapper above uses it only when no earlier sweep's suiteTimings.csv
+#  gives the real count.  Printed once; it starts with no result word, so
+#  no verdict reader counts it.
+_plan_gates=0
+[ "${PLAN_CASE_ARGS:-0}" -eq 0 ] && _plan_gates=$(grep -c 'printf "PASS  %-40s' "$0")
+echo "[plan] items: ~$(( ${#CASES[@]} + _plan_gates ))"
 
 # --- suite single-pass output cache (2026-08-24) ----------------------------
 #  The corpus-sweeping meta-gates (unread-keys, closure-ledger, utility-
