@@ -1528,6 +1528,50 @@ accepts today, and that is a policy call.
 > final; }` layout draws what the steady flowsheet and the sizing pass
 > already hold.
 
+> **C168. A USABILITY AND ACCESSIBILITY AUDIT OF THE RESULTS GUI, BEFORE ANY
+> REDESIGN (Vitor, 2026-10-25, forwarding a second opinion written on the
+> Bowen study of the NanoFiltran case: "CHOUPO -- GUI UX Redesign Audit").**
+> The text asks the redesign to follow Nielsen's ten heuristics, ISO
+> 9241-110 and WCAG 2.2 AA with progressive disclosure, under six
+> non-negotiables that are this project's own: the glass box (every result
+> traceable to data, models, operations, numerical methods and the source
+> dictionaries); exact identifiers kept beside any friendly title; the GUI
+> a viewer and runner, never an editor; nothing hard-coded for one case
+> (derived from case metadata and object relations); edge semantics kept
+> (reference, dependency, model coupling, calculation order, produced
+> result); model components not shown as competing models.  Priorities it
+> names: P0 the information hierarchy (the physical system, question and
+> objective first; one identifiable primary action -- competing run
+> controls removed or scoped; results primary after a run; an empty state
+> before one; implementation metadata out of the centre); P1 the
+> calculation map (a simplified semantic overview by default, the full
+> graph expandable, data / models / operations / outputs told apart,
+> coupled submodels shown as coupled, no repeated status labels, a
+> selection showing purpose, inputs, outputs, assumptions, dependencies
+> and provenance, output -> operation -> model navigation, still useful
+> with recycles); scientific presentation (titles, units, results and
+> measured comparisons prominent, validity and limits explained, theory
+> tied to the concept, unavailable / pending / failed / stale / done told
+> apart, nothing invented); one primary navigation, less duplication
+> between tree, graph and details; accessibility (contrast, 200 % zoom,
+> keyboard and visible focus, accessible names, no colour-only status or
+> edge meaning, target sizes).  Acceptance on THREE cases -- a simple
+> properties calculation, the membrane benchmark with measured data, a
+> complex flowsheet with recycles -- for a new user (find the problem, run
+> it, find and read the results, which models and data made them, reach
+> the dictionaries and the theory) and an expert (the whole graph and
+> provenance, nothing lost); the zero-FAIL suite.  FIRST DELIVERABLE,
+> before any code: an inventory of the GUI components, a map of the
+> present information architecture, the proposed generic interface, the
+> reuse / modify / remove list, testable acceptance criteria.  Scope:
+> that deliverable, MEASURED on the rendered site (the C165 method:
+> a headless browser here, screenshots, nothing claimed from the source
+> alone; contrast and focus measured, not eyeballed), weighed against
+> docs/ai/gui-credo.md -- where a heuristic and the credo disagree the
+> disagreement is named, not silently resolved.  Then the commander
+> decides the first slice under C163, Vitor reviewing after.
+> Status: recorded; the audit dispatched the same turn.
+
 > **C167. THE SUITE USES EVERY CORE (Vitor, 2026-10-25, watching the
 > sweep on his 10-core laptop: "aquilo passa a maioria do tempo a usar so
 > um core.  Nao era possivel usar mais cores e correr mais casos ao mesmo
