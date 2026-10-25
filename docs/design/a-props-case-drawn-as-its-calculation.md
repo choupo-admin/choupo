@@ -10,6 +10,18 @@ monumental ... podia haver um data set com uma seta para um bloco de modelo de
 transporte e aí com um F1 chegávamos à página da teoria"; "Temos de ir por
 tentativa e erro.  Avança."  This is the first prototype he tests.
 
+## 0. The task the screen answers (CLAUDE.md §10, 2026-10-25)
+
+*An engineer arrives with a laboratory dataset and a case an assistant wrote
+around it; he needs to see what data he has, which model the case applies to
+it, what each operation concluded and how well it agrees with his data, the
+figures that show it, the lines of the propsDict that asked for it, and where
+the theory is.*  The screen answers in that order: the tree (what he has,
+shelved by discipline), the map (which model applies to which data and feeds
+which figure), the details below it (verdict, agreement, numbers, figures),
+the Case link (the lines), F1 (the theory).  The audit -- every raw number
+the engine publishes -- stays one fold below, never the answer.
+
 ## 1. What was measured before anything was built
 
 * 46 props operation types are registered (`src/propertyOps/PropertyOperation.cpp`
