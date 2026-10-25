@@ -61,7 +61,7 @@ import { RESULT_WORKSPACES } from "./workspaces.js";
 import { AgentConsole } from "./AgentConsole.js";
 import { agentRowPx } from "./panelFold.js";
 import { CaseWorkspace } from "./CaseWorkspace.js";
-import { selectedUnitTypeIn, tabHelp, tabKindFor } from "./tabChrome.js";
+import { selectedUnitIn, selectedUnitTypeIn, tabHelp, tabKindFor } from "./tabChrome.js";
 import { getActiveMethodTool } from "./methods/registry.js";
 import { FlowCanvas } from "./FlowCanvas.js";
 import { StaleFitBanner } from "./StaleFitBanner.js";
@@ -273,6 +273,7 @@ export function AppShell() {
         kind,
         toolId: getActiveMethodTool(),
         selectedUnitType: selectedUnitTypeIn(s.selectedNodeId, s.caseFiles.flowsheet),
+        selectedUnit: selectedUnitIn(s.selectedNodeId, s.caseFiles.flowsheet),
         activeWorkspace: s.activeWorkspace,
       }).url);
     };

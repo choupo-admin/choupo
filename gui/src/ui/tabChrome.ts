@@ -76,7 +76,7 @@ License
   derivation, and the call sites hand it the state they already subscribe to.
 \*---------------------------------------------------------------------------*/
 
-import { helpUrl, resolveHelp } from "../help/helpMap.js";
+import { helpUrl, resolveHelp, unitHelpContext } from "../help/helpMap.js";
 import {
   METHOD_TOOLS, theoryUrl, type MethodToolId,
 } from "./methods/registry.js";
@@ -172,6 +172,10 @@ export interface TabHelp {
   url: string;
   /** The wording of the menu item that opens it. */
   item: string;
+  /** Further sections offered beside it (`seeAlso` in docs/help-index.json:
+   *  a model's numerical method, say), each with its own menu wording.
+   *  Empty when the index names none; F1 always opens `url`. */
+  seeAlso: { url: string; item: string }[];
 }
 
 export function tabHelp(args: {
@@ -179,6 +183,10 @@ export function tabHelp(args: {
   /** The open EduTool, when the kind is `tool` (registry.getActiveMethodTool). */
   toolId?: MethodToolId | null;
   selectedUnitType?: string | null;
+  /** The selected unit's own dictionary (`selectedUnitIn`).  When given, F1
+   *  resolves by the membrane transport LAW the unit runs where it runs one
+   *  (help/helpMap.unitHelpContext), not by its type alone. */
+  selectedUnit?: Record<string, unknown> | null;
   activeWorkspace?: string | null;
 }): TabHelp {
   if (TAB_CHROME[args.kind].help === "tool") {
@@ -188,15 +196,22 @@ export function tabHelp(args: {
     // exactly the lie being removed; every live tool declares one, and
     // tests/methodTheoryAnchors.test.ts is what keeps that true.
     if (tool?.theory) {
-      return { url: theoryUrl(tool.theory), item: `Theory: ${tool.label}` };
+      return { url: theoryUrl(tool.theory), item: `Theory: ${tool.label}`, seeAlso: [] };
     }
   }
+  const ctx = unitHelpContext(args.selectedUnit);
+  const target = resolveHelp({
+    selectedUnitType: ctx.type ?? args.selectedUnitType,
+    selectedTransport: ctx.transport,
+    activeWorkspace: args.activeWorkspace,
+  });
   return {
-    url: helpUrl(resolveHelp({
-      selectedUnitType: args.selectedUnitType,
-      activeWorkspace: args.activeWorkspace,
-    })),
+    url: helpUrl(target),
     item: "Help on current view",
+    seeAlso: (target.seeAlso ?? []).map((t) => ({
+      url: helpUrl(t),
+      item: `See also: ${t.title ?? t.anchor ?? "the guide"}`,
+    })),
   };
 }
 
@@ -210,8 +225,19 @@ export function selectedUnitTypeIn(
   selectedNodeId: string | null,
   flowsheet: Record<string, unknown> | undefined,
 ): string | null {
+  return (selectedUnitIn(selectedNodeId, flowsheet)?.["type"] as string | undefined) ?? null;
+}
+
+/** The selected unit's whole dictionary (its `operation {}` included), which
+ *  is what F1 needs for a unit whose help depends on a DECLARED word rather
+ *  than on its type -- a membrane module's `transport` law (DEV.md 4c C166).
+ *  Same lookup as `selectedUnitTypeIn`, one home for both. */
+export function selectedUnitIn(
+  selectedNodeId: string | null,
+  flowsheet: Record<string, unknown> | undefined,
+): Record<string, unknown> | null {
   if (!selectedNodeId || !selectedNodeId.startsWith("unit:") || !flowsheet) return null;
   const name = selectedNodeId.slice("unit:".length);
   const units = (flowsheet["units"] ?? []) as Array<Record<string, unknown>>;
-  return (units.find((u) => u["name"] === name)?.["type"] as string | undefined) ?? null;
+  return units.find((u) => u["name"] === name) ?? null;
 }

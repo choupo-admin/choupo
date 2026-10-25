@@ -112,7 +112,7 @@ import {
 } from "./workspaces.js";
 import { popOutHelpTopics } from "./helpTopicsPopOut.js";
 import {
-  selectedUnitTypeIn, TAB_CHROME, tabHelp, tabKindFor,
+  selectedUnitIn, selectedUnitTypeIn, TAB_CHROME, tabHelp, tabKindFor,
 } from "./tabChrome.js";
 import {
   METHOD_DISCIPLINES, METHOD_TOOLS, setActiveMethodTool, useActiveMethodTool,
@@ -279,6 +279,7 @@ export function MenuBar({ availableWidthPx, onRowWidth }: {
     kind: tabKind,
     toolId: activeTool,
     selectedUnitType: selectedUnitTypeIn(selectedNodeId, flowsheet),
+    selectedUnit: selectedUnitIn(selectedNodeId, flowsheet),
     activeWorkspace,
   });
 
@@ -698,6 +699,15 @@ export function MenuBar({ availableWidthPx, onRowWidth }: {
           >
             {help.item}
           </Menu.Item>
+          {/* SEE ALSO (DEV.md 4c C166): the sections the index offers beside
+              the one F1 opens -- from a model to its numerical method, so a
+              reader who landed on the DSPM-DE model reaches how the pore is
+              solved in one click.  Nothing here when the index names none. */}
+          {help.seeAlso.map((s) => (
+            <Menu.Item key={s.url} onClick={() => openGuide(s.url)}>
+              {s.item}
+            </Menu.Item>
+          ))}
           {/* The full topic -> guide-section index (docs/help-index.json),
               rendered as a deep-linking table of contents in a pop-out tab.
               A viewer, not an editor: it only opens the guides. */}

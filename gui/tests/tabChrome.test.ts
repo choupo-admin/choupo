@@ -52,7 +52,7 @@ License
 import { describe, it, expect } from "vitest";
 
 import {
-  TAB_CHROME, tabChromeFor, tabHelp, tabKindFor, selectedUnitTypeIn,
+  TAB_CHROME, tabChromeFor, tabHelp, tabKindFor, selectedUnitIn, selectedUnitTypeIn,
   type TabKind,
 } from "../src/ui/tabChrome.js";
 import { METHOD_TOOLS, theoryUrl } from "../src/ui/methods/registry.js";
@@ -186,6 +186,20 @@ describe("selectedUnitTypeIn", () => {
   it("reads the selected unit's type, and nothing else's", () => {
     expect(selectedUnitTypeIn("unit:F1", flowsheet)).toBe("flash");
     expect(selectedUnitTypeIn("unit:M1", flowsheet)).toBe("mixer");
+  });
+
+  it("hands F1 the selected unit's whole dictionary, so a declared law can decide (C166)", () => {
+    const fs = { units: [{ name: "NF", type: "spiralWoundModule",
+                           operation: { transport: "DSPM-DE" } }] };
+    expect(selectedUnitIn("unit:NF", fs)).toBe(fs.units[0]);
+    expect(selectedUnitIn("stream:S1", fs)).toBeNull();
+    const help = tabHelp({ kind: "case", selectedUnit: selectedUnitIn("unit:NF", fs) });
+    expect(help.url).toContain(encodeURIComponent("sec:dspmde-model"));
+    expect(help.seeAlso.length).toBeGreaterThan(0);
+    expect(help.seeAlso[0]!.item.startsWith("See also: ")).toBe(true);
+    //  the type alone still answers by type
+    expect(tabHelp({ kind: "case", selectedUnitType: "spiralWoundModule" }).url)
+      .toContain(encodeURIComponent("ch:membrane"));
   });
 
   it("answers null where there is nothing to read", () => {

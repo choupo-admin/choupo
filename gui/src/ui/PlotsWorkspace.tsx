@@ -95,7 +95,7 @@ import {
 } from "../case/unitPlots.js";
 import { parseUnitBanners } from "../case/unitBanner.js";
 import { openGuide } from "../help/guideLinks.js";
-import { selectedUnitTypeIn, tabHelp } from "./tabChrome.js";
+import { selectedUnitIn, selectedUnitTypeIn, tabHelp } from "./tabChrome.js";
 
 import { useMeasuredBoxWidth } from "./methods/methodsChrome.js";
 import {
@@ -206,7 +206,8 @@ export function PlotsWorkspace() {
   //  the unit's type), never a second table.
   const openUnitTheory = (unit: string) => {
     openGuide(tabHelp({
-      kind: "case", selectedUnitType: unitTypeOf(unit), activeWorkspace: null,
+      kind: "case", selectedUnitType: unitTypeOf(unit),
+      selectedUnit: selectedUnitIn(`unit:${unit}`, flowsheet), activeWorkspace: null,
     }).url);
   };
 
