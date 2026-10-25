@@ -1603,6 +1603,11 @@ accepts today, and that is a policy call.
 > The container suite's six FAILs are cleared on main: the four probes
 > (60a308466, 817ea51af -- the pump probe; `studies` dropped by
 > props_views.strip_views), the bibliography and the census (9638d1cd9).
+> THE CONTAINER SWEEP ENDED (fd688e4ce): PASS 759 / FAIL 7 /
+> KNOWN-BROKEN 0 / EXPECTED-FAIL 6.  The seventh FAIL is check_mass_closure
+> on userOp03_case_rate_law (133.333 %): the C67 witness reacts compA
+> (MW 30) to compB (MW 50) at nu -1/+1 -- a case defect, the engine right
+> to report it; dispatched (`claude/fix-userop03-mass`).
 
 > **C160. THERMODYNAMICS AND KINETICS TOP NOTCH: A PARITY PROGRAMME
 > AGAINST AN OPEN REFERENCE LIBRARY (Vitor, 2026-10-25, a programme text
