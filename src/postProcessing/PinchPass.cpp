@@ -15,6 +15,9 @@ License
 
 #include "PinchPass.H"
 
+#include "core/Advisory.H"
+#include "result/EnergyItems.H"   // unitHeatDuties, isProcessToProcessExchanger
+
 #include "core/Dictionary.H"
 #include "result/SimulationResult.H"
 #include "core/Units.H"
@@ -26,6 +29,7 @@ License
 #include <iomanip>
 #include <iostream>
 #include <set>
+#include <sstream>
 #include <stdexcept>
 #include <vector>
 
@@ -69,6 +73,14 @@ composite(const std::vector<Segment>& segs, bool hot, scalar shift)
     return pts;
 }
 
+//  A CSV cell for a number, at the precision the curves file uses.
+std::string num(scalar v)
+{
+    std::ostringstream o;
+    o << std::setprecision(10) << v;
+    return o.str();
+}
+
 } // anonymous
 
 PinchPass::PinchPass(const DictPtr& dict)
@@ -103,40 +115,188 @@ int PinchPass::run(SimulationResult& result)
         return -1.0;
     };
 
-    std::vector<Segment> segs;
-    scalar heatCur = 0.0, coolCur = 0.0;    // raw unintegrated duties [W]
-    for (const auto& u : result.topology)
+    //  THE POPULATION IS PUBLISHED, AND SO IS WHAT IT LEAVES OUT (2026-10-25,
+    //  DEV.md 4c C150 R16).  This pass reads the generic `Q` KPI, which only
+    //  heater / phaseChanger / isothermalFlash / heatExchanger publish; every
+    //  other heat duty the plant carries -- a column's reboiler and
+    //  condenser, a reactor's Q_kW, a crystalliser's cooling -- has its ONE
+    //  home in `reporting::unitHeatDuties` and was simply absent, so the
+    //  printed "targets" were those of an incomplete population with nothing
+    //  saying so.  Now every boundary heat duty is either a SEGMENT below or
+    //  an EXCLUDED row with its reason, the targets are labelled as the
+    //  targets of the extracted segments, and both lists go to
+    //  reports/pinch/population.csv.  No duty is added to the population
+    //  here: which of them to extract, and how (a column's two ports as two
+    //  slices, a reactor at which temperature), is a methodology decision
+    //  this slice names rather than takes.
+    //
+    //  A PROCESS-TO-PROCESS EXCHANGER IS HEAT ALREADY RECOVERED.  Its `Q` used
+    //  to enter as ONE hot segment (its cold side never seen) and to be
+    //  counted as current COOLING, so the "integration could recover" line
+    //  offered the recovered heat as a further saving.  It now enters as BOTH
+    //  its sides -- the streams the pinch method extracts from an existing
+    //  match -- and its duty is counted in neither current-utility sum, nor
+    //  in the utility-placement violations below.
+    struct PopRow
     {
-        auto ku = result.kpis.find(u.name);
-        if (ku == result.kpis.end()) continue;
-        auto q = ku->second.find("Q");
-        if (q == ku->second.end() || std::abs(q->second) < 1.0e-6) continue;
-        const scalar Tin  = processT(u.ins);
-        const scalar Tout = processT(u.outs);
-        if (Tin <= 0.0 || Tout <= 0.0) continue;   // no process side found
+        std::string unit, kpi, role, side, reason;
+        scalar Tin = 0.0, Tout = 0.0, Q = 0.0, CP = 0.0;
+    };
+    std::vector<PopRow> population;
 
+    std::vector<Segment> segs;
+    std::vector<bool> recovered;            // per segment: an exchanger side
+    scalar heatCur = 0.0, coolCur = 0.0;    // raw unintegrated duties [W]
+    scalar excludedW = 0.0;
+    int    nExcluded = 0;
+    auto addSegment = [&](const std::string& unit, scalar Tin, scalar Tout,
+                          scalar Qabs, bool hotByDuty, bool isRecovered,
+                          const std::string& side)
+    {
         Segment s;
-        s.unit = u.name;
-        scalar dT = Tout - Tin;
+        s.unit = unit;
+        const scalar dT = Tout - Tin;
+        PopRow r;
+        r.unit = unit; r.kpi = "Q"; r.Tin = Tin; r.Tout = Tout;
         if (std::abs(dT) < latentWidth_)
         {
             //  Near-isothermal duty (latent): a slice of width latentWidth_
             //  centred on the unit temperature -- the standard treatment.
             const scalar Tc = 0.5 * (Tin + Tout);
-            s.hot = q->second < 0.0;
+            s.hot = hotByDuty;
             s.Tlo = Tc - 0.5 * latentWidth_;
             s.Thi = Tc + 0.5 * latentWidth_;
-            s.CP  = std::abs(q->second) / latentWidth_;
+            s.CP  = Qabs / latentWidth_;
+            r.reason = "near-isothermal: a latent slice of latentWidth";
         }
         else
         {
             s.hot = dT < 0.0;                       // cooled -> heat source
             s.Tlo = std::min(Tin, Tout);
             s.Thi = std::max(Tin, Tout);
-            s.CP  = std::abs(q->second) / std::abs(dT);
+            s.CP  = Qabs / std::abs(dT);
         }
-        (s.hot ? coolCur : heatCur) += std::abs(q->second);
+        if (!isRecovered) (s.hot ? coolCur : heatCur) += Qabs;
+        r.role = isRecovered ? "recovered" : "segment";
+        r.side = side.empty() ? (s.hot ? "hot" : "cold") : side;
+        r.Q = (s.hot ? -1.0 : 1.0) * Qabs;
+        r.CP = s.CP;
+        population.push_back(r);
         segs.push_back(std::move(s));
+        recovered.push_back(isRecovered);
+    };
+    auto exclude = [&](const std::string& unit, const std::string& kpi,
+                       scalar W, const std::string& reason)
+    {
+        PopRow r;
+        r.unit = unit; r.kpi = kpi; r.role = "excluded"; r.Q = W;
+        r.reason = reason;
+        population.push_back(r);
+        excludedW += std::abs(W);
+        ++nExcluded;
+    };
+    for (const auto& u : result.topology)
+    {
+        auto ku = result.kpis.find(u.name);
+        if (ku == result.kpis.end()) continue;
+        const auto& kp = ku->second;
+        auto q = kp.find("Q");
+        const bool hasQ = q != kp.end() && std::abs(q->second) >= 1.0e-6;
+        const bool exchanger = reporting::isProcessToProcessExchanger(u.type);
+        if (hasQ && exchanger)
+        {
+            auto f = [&](const char* k) -> scalar
+            { auto it = kp.find(k); return it == kp.end() ? -1.0 : it->second; };
+            const scalar Thi = f("T_hot_in"),  Tho = f("T_hot_out");
+            const scalar Tci = f("T_cold_in"), Tco = f("T_cold_out");
+            if (Thi > 0.0 && Tho > 0.0 && Tci > 0.0 && Tco > 0.0)
+            {
+                addSegment(u.name + " [hot side]",  Thi, Tho,
+                           std::abs(q->second), true,  true, "hot");
+                addSegment(u.name + " [cold side]", Tci, Tco,
+                           std::abs(q->second), false, true, "cold");
+            }
+            else
+                exclude(u.name, "Q", q->second, "a process-to-process"
+                        " exchanger publishing no per-side temperatures");
+            continue;
+        }
+        bool tookGeneric = false;
+        if (hasQ)
+        {
+            const scalar Tin  = processT(u.ins);
+            const scalar Tout = processT(u.outs);
+            if (Tin > 0.0 && Tout > 0.0)
+            {
+                addSegment(u.name, Tin, Tout, std::abs(q->second),
+                           q->second < 0.0, false, "");
+                tookGeneric = true;
+            }
+            else
+            {
+                exclude(u.name, "Q", q->second, "no process-side inlet and"
+                        " outlet temperature to place it at");
+                tookGeneric = true;     // its Q_kW twin is the same duty
+            }
+        }
+        if (exchanger) continue;        // recovered heat, never a boundary duty
+        for (const auto& d : reporting::unitHeatDuties(kp, u.name))
+        {
+            if (std::abs(d.W) < 1.0e-6) continue;
+            if (tookGeneric && d.port.empty()) continue;   // the Q_kW twin
+            exclude(u.name, d.kpi, d.W, "a boundary heat duty published as `"
+                    + d.kpi + "`; this pass reads only the generic `Q` of a"
+                      " unit with a process inlet and outlet");
+        }
+    }
+
+    //  The population, printed before anything is computed from it.
+    std::cout << "[pinch] population: " << segs.size() << " segment"
+              << (segs.size() == 1 ? "" : "s")
+              << " extracted (generic duty `Q` on a process inlet/outlet;"
+                 " an exchanger's two sides as recovered heat)\n";
+    for (const auto& r : population)
+    {
+        if (r.role == "excluded") continue;
+        std::cout << "[pinch]   " << r.role << "  " << r.unit << "  "
+                  << r.side << "  " << r.Tin << " -> " << r.Tout << " K  "
+                  << r.Q / 1.0e3 << " kW  CP " << r.CP / 1.0e3 << " kW/K"
+                  << (r.reason.empty() ? "" : "  (" + r.reason + ")") << "\n";
+    }
+    if (nExcluded > 0)
+    {
+        std::cout << "[pinch] NOT in the population: " << nExcluded
+                  << " heat dut" << (nExcluded == 1 ? "y" : "ies") << ", "
+                  << excludedW / 1.0e3 << " kW in all -- the targets below"
+                     " are NOT the plant's:\n";
+        for (const auto& r : population)
+            if (r.role == "excluded")
+                std::cout << "[pinch]   excluded  " << r.unit << "  " << r.kpi
+                          << " = " << r.Q / 1.0e3 << " kW  -- " << r.reason
+                          << "\n";
+        std::ostringstream m;
+        m << nExcluded << " boundary heat dut" << (nExcluded == 1 ? "y" : "ies")
+          << " (" << excludedW / 1.0e3 << " kW) are not in the pinch"
+             " population, so Q_H,min / Q_C,min are the targets of the "
+          << segs.size() << " extracted segment"
+          << (segs.size() == 1 ? "" : "s")
+          << ", not of the plant (reports/pinch/population.csv lists them)";
+        AdvisoryLog::instance().add("validity", "warning", "pinchPass",
+                                    m.str() + ".");
+    }
+    {
+        namespace fs = std::filesystem;
+        fs::create_directories("reports/pinch");
+        std::ofstream pcsv("reports/pinch/population.csv");
+        pcsv << "unit,kpi,role,side,T_in_K,T_out_K,Q_kW,CP_kW_K,reason\n"
+             << std::setprecision(10);
+        for (const auto& r : population)
+            pcsv << r.unit << "," << r.kpi << "," << r.role << "," << r.side
+                 << "," << (r.role == "excluded" ? std::string() : num(r.Tin))
+                 << "," << (r.role == "excluded" ? std::string() : num(r.Tout))
+                 << "," << r.Q / 1.0e3 << ","
+                 << (r.role == "excluded" ? std::string() : num(r.CP / 1.0e3))
+                 << "," << r.reason << "\n";
     }
     if (segs.empty())
     {
@@ -196,16 +356,36 @@ int PinchPass::run(SimulationResult& result)
     std::cout.precision(6);                           // the table's setprecision(2) must not leak
     const scalar QHmin = -minCascade;                 // >= 0
     const scalar QCmin = cascade + QHmin;
-    std::cout << "[pinch] targets: Q_H,min = " << QHmin / 1.0e3
+    std::cout << "[pinch] targets of the " << segs.size() << " extracted"
+                 " segment" << (segs.size() == 1 ? "" : "s")
+              << (nExcluded > 0 ? " (NOT the plant's: " + std::to_string(nExcluded)
+                                  + (nExcluded == 1 ? " heat duty" : " heat duties")
+                                  + " excluded, listed above)"
+                                : std::string(" (every boundary heat duty is"
+                                              " in the population)"))
+              << ": Q_H,min = " << QHmin / 1.0e3
               << " kW, Q_C,min = " << QCmin / 1.0e3
               << " kW, pinch at T* = " << Tpinch
               << " K (hot " << Tpinch - hs << " K / cold "
               << Tpinch - cs << " K)\n";
-    std::cout << "[pinch] current (unintegrated) duties: heating "
+    //  The current duties are the UTILITY-served ones: an exchanger's duty is
+    //  heat already recovered and is in neither sum.
+    std::cout << "[pinch] current (unintegrated) utility duties of the"
+                 " extracted segments: heating "
               << heatCur / 1.0e3 << " kW vs target " << QHmin / 1.0e3
               << " kW; cooling " << coolCur / 1.0e3 << " kW vs target "
-              << QCmin / 1.0e3 << " kW -- integration could recover "
-              << (heatCur - QHmin) / 1.0e3 << " kW of heating.\n";
+              << QCmin / 1.0e3 << " kW -- ";
+    if (heatCur >= QHmin)
+        std::cout << "integration of these segments could recover "
+                  << (heatCur - QHmin) / 1.0e3 << " kW of heating.\n";
+    else
+        //  Below the target is possible only through an EXISTING match that
+        //  runs closer than dTmin: the target is then a statement about the
+        //  approach, never a saving.
+        std::cout << "the current utilities are BELOW this dTmin's target by "
+                  << (QHmin - heatCur) / 1.0e3 << " kW of heating: an existing"
+                     " exchanger runs closer than dTmin, so this target is no"
+                     " saving.\n";
 
     // ---- 3. composite curves CSV -------------------------------------------
     namespace fs = std::filesystem;
@@ -320,8 +500,10 @@ int PinchPass::run(SimulationResult& result)
     std::cout << "[pinch] candidate matches (" << rows.size()
               << " pair(s), " << admissible << " admissible) ->"
                  " reports/pinch/candidateMatches.csv\n";
-    for (const auto& s : segs)
+    for (std::size_t si = 0; si < segs.size(); ++si)
     {
+        const Segment& s = segs[si];
+        if (recovered[si]) continue;    // an exchanger side: no utility to misplace
         if (s.hot)
         {
             auto [ok, A] = clip(s, TpHot, true);
@@ -367,6 +549,12 @@ int PinchPass::run(SimulationResult& result)
     k["dTmin_K"]           = dTmin_;
     k["Q_heat_current_kW"] = heatCur / 1.0e3;
     k["Q_cool_current_kW"] = coolCur / 1.0e3;
+    //  What the targets are the targets OF (C150 R16): the segment count and
+    //  the boundary heat duties left out, so a reader of the KPIs alone can
+    //  tell a plant target from the target of a partial population.
+    k["segments"]          = static_cast<scalar>(segs.size());
+    k["duties_excluded"]   = static_cast<scalar>(nExcluded);
+    k["Q_excluded_kW"]     = excludedW / 1.0e3;
     k["candidates_total"]      = static_cast<scalar>(rows.size());
     k["candidates_admissible"] = static_cast<scalar>(admissible);
     k["violation_heat_below_pinch_kW"] = heatBelow / 1.0e3;

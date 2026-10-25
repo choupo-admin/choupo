@@ -220,7 +220,16 @@ describe("the honest half", () => {
     expect(prose(limit("constant-cp").body))
       .toContain("CP = |Q| / |T_out − T_in|");
     expect(prose(limit("constant-cp").body)).toContain("latentWidth");
-    expect(prose(limit("stream-population").body)).toContain("NET duty");
+    //  C150 R16 (2026-10-25): this line used to pin "enters as its NET
+    //  duty", which was false -- a column publishes no generic `Q` and was
+    //  absent from the population altogether.  The page now says what the
+    //  pass does: every other duty is listed as excluded, and an exchanger's
+    //  recovered heat is never offered back as a saving.
+    const pop = prose(limit("stream-population").body);
+    expect(pop).not.toContain("NET duty");
+    expect(pop).toContain("Every other heat duty is NOT in it");
+    expect(pop).toContain("reports/pinch/population.csv");
+    expect(pop).toContain("counted in neither current-utility total");
   });
 
   it("admits that the capital half of the ΔT_min trade is not computed", () => {

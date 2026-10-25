@@ -54,6 +54,7 @@ import {
   parseCandidateMatches,
   parseCompositeCurves,
   pinchOverrides,
+  populationScope,
   type CandidateMatch,
 } from "../src/ui/methods/PinchCompositeTool.js";
 
@@ -376,5 +377,34 @@ describe("the module source honours the pinch pass's wording doctrine", () => {
     // And the CSV-path constants the tool reads are the worker's key shape.
     expect(src).toContain(COMPOSITE_CURVES_CSV_PATH);
     expect(src).toContain(CANDIDATE_MATCHES_CSV_PATH);
+  });
+});
+
+//  C150 R16 (2026-10-25): the targets chip says what the targets are the
+//  targets OF, from the engine's own population KPIs -- and says nothing
+//  when a run predates them.
+describe("populationScope words the engine's population, never computes it", () => {
+  it("a complete population reads as such", () => {
+    const s = populationScope({ segments: 4, duties_excluded: 0, Q_excluded_kW: 0 })!;
+    expect(s.partial).toBe(false);
+    expect(s.label).toContain("targets of the 4 extracted segments");
+    expect(s.label).toContain("every boundary heat duty is in the population");
+  });
+  it("a partial population says NOT the plant's, with the excluded kW", () => {
+    const s = populationScope({ segments: 2, duties_excluded: 1, Q_excluded_kW: 1.8795 })!;
+    expect(s.partial).toBe(true);
+    expect(s.label).toContain("NOT of the plant");
+    expect(s.label).toContain("1 heat duty (1.9 kW)");
+    expect(s.label).toContain("reports/pinch/population.csv");
+  });
+  it("claims nothing for a run without the KPIs", () => {
+    expect(populationScope({ Q_H_min_kW: 1 })).toBeNull();
+    expect(populationScope(undefined)).toBeNull();
+  });
+  it("the engine publishes the three KPIs the chip reads", () => {
+    const src = readFileSync(join(dirname(fileURLToPath(import.meta.url)),
+      "../../src/postProcessing/PinchPass.cpp"), "utf-8");
+    for (const k of ["segments", "duties_excluded", "Q_excluded_kW"])
+      expect(src).toContain(`k["${k}"]`);
   });
 });

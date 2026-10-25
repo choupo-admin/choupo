@@ -81,3 +81,6 @@ kpi     coolerH1               vf_out           0                1e-4
 kpi     coolerH2               vf_out           0                1e-4
 kpi     heaterC1               vf_out           0                1e-4
 kpi     heaterC2               vf_out           0                1e-4
+kpi     pinch                  Q_excluded_kW    0                1e-4
+kpi     pinch                  duties_excluded  0                1e-4
+kpi     pinch                  segments         4                1e-4

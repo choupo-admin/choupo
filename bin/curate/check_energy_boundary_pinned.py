@@ -82,7 +82,7 @@ derived.  Three arms hold that:
       +8.84 kW of heat and -8.84 kW of shaft work, which is precisely the
       physics the single total was hiding.
 
-  (f) ONE HOME, in source.  `energyItemKpis()` in `src/reporting/BalanceMath.H`
+  (f) ONE HOME, in source.  `energyItemKpis()` in `src/result/EnergyItems.H` (moved out of reporting/BalanceMath.H 2026-10-25)
       carries the item names AND their kind; `isEnergyItemKpi` and
       `isWorkItemKpi` both read it, so membership and kind cannot disagree,
       and there is no catch-all -- a name the map does not carry is not an
@@ -360,28 +360,28 @@ def check_witness(rel, shape, problems):
 #  -- the claim is one home for the item list and its kind, and a heat half
 #  that is DERIVED rather than separately accumulated.
 def check_one_home(problems):
-    bm = (ROOT / "src/reporting/BalanceMath.H").read_text(errors="replace")
+    bm = (ROOT / "src/result/EnergyItems.H").read_text(errors="replace")
     #  The map is the ONE list; `isEnergyItemKpi` must read it rather than
     #  carry a second literal set of the same names.
     if "energyItemKpis()" not in bm:
-        problems.append("src/reporting/BalanceMath.H: no `energyItemKpis()` -- "
+        problems.append("src/result/EnergyItems.H: no `energyItemKpis()` -- "
                         "the one home for an energy item's name AND its kind is gone.")
         return
     body = bm.split("inline bool isEnergyItemKpi")[1].split("}")[0] \
         if "inline bool isEnergyItemKpi" in bm else ""
     if "energyItemKpis()" not in body:
         problems.append(
-            "src/reporting/BalanceMath.H: `isEnergyItemKpi` no longer reads "
+            "src/result/EnergyItems.H: `isEnergyItemKpi` no longer reads "
             "`energyItemKpis()` -- membership and kind are back in two homes, "
             "so a KPI can be an energy item nobody classified.")
     if re.search(r"isEnergyItemKpi[\s\S]{0,400}?std::set<std::string>", bm):
         problems.append(
-            "src/reporting/BalanceMath.H: `isEnergyItemKpi` carries its own "
+            "src/result/EnergyItems.H: `isEnergyItemKpi` carries its own "
             "std::set of item names beside the kind map -- two homes for one "
             "list, which is how a name gains membership without a kind.")
     if "isWorkItemKpi" not in bm or "energyItemKpis()" not in bm.split("isWorkItemKpi")[-1]:
         problems.append(
-            "src/reporting/BalanceMath.H: `isWorkItemKpi` is missing or no "
+            "src/result/EnergyItems.H: `isWorkItemKpi` is missing or no "
             "longer reads `energyItemKpis()`.")
     rep = (ROOT / "src/reporting/EnergyBalanceReport.cpp").read_text(errors="replace")
     if not re.search(r"Qheat\s*=\s*Qext\s*-\s*Wshaft", rep):
@@ -482,7 +482,7 @@ def main() -> int:
           f"deliberately given none of its own).  The classification itself is held on "
           f"{len(WITNESSES)} named witness(es) -- work-only, heat-only and a net-work producer "
           f"whose two terms a single total cannot express -- and on the ONE source home for an "
-          f"item's name and kind (src/reporting/BalanceMath.H `energyItemKpis`).  "
+          f"item's name and kind (src/result/EnergyItems.H `energyItemKpis`).  "
           + (f"{nother} `boundary` row(s) name ANOTHER ledger (today: `mass`, the "
              f"plant material summary) and are outside this gate's subject -- counted "
              f"here rather than dropped, and held by the golden itself and by "

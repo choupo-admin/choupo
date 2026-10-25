@@ -29,6 +29,18 @@ Probes, through the real choupoSolve binary:
                cascade models exactly that representation, so a pass that
                quietly kept the sensible branch fails by value
                (sabotage-verified: branch disabled -> 3 probes fail).
+  POPULATION   (C150 R16, 2026-10-25) the targets say what they are the
+               targets OF.  P1 the witness: 4 segments, nothing excluded.
+               P2 process02_reactor_hx_flash + this postDict: the reactor's
+               duty, published as `Q_kW`, is LISTED as excluded
+               (population.csv, KPIs duties_excluded / Q_excluded_kW) and the
+               targets line says NOT the plant's.  P3 heatExchanger01 + a
+               pinchPass at dTmin 10 K: the exchanger enters as BOTH sides,
+               neither current-utility total counts its duty, and the targets
+               equal this script's cascade over the two sides.  Measured
+               against the parent build: P1/P2 had no population KPIs, and
+               P3 entered the hot side alone with Q_cool_current 93.79 kW and
+               Q_C,min 93.79 kW for a plant that needs no utility.
 
 Exit 1 listing failures."""
 import csv
@@ -220,6 +232,89 @@ def main() -> int:
                         failures.append(f"latent: pinch.{key} = {got},"
                                         f" independent slice model = {ref}")
 
+        # ---- POPULATION (C150 R16, 2026-10-25) ------------------------------
+        #  The targets must say what they are the targets OF.  P1: the
+        #  witness extracts four segments and leaves nothing out.  P2: a
+        #  plant whose reactor publishes its duty as `Q_kW` (not the generic
+        #  `Q`) has that duty LISTED as excluded, its kW summed into the KPIs,
+        #  and the targets labelled NOT the plant's.  P3: a two-stream
+        #  exchanger is heat ALREADY recovered -- both sides enter, and its
+        #  duty is in neither current-utility total (the parent build entered
+        #  its hot side alone and counted 93.79 kW of it as current COOLING,
+        #  with Q_C,min = 93.79 kW for a plant that needs no utility).
+        k = kpi_block(run(copy(tmp, "pop1"))[1]) or {}
+        if (k.get("segments"), k.get("duties_excluded"),
+                k.get("Q_excluded_kW")) != (4.0, 0.0, 0.0):
+            failures.append(f"P1: witness population segments/excluded/kW ="
+                            f" {k.get('segments')}/{k.get('duties_excluded')}"
+                            f"/{k.get('Q_excluded_kW')} (expected 4/0/0)")
+
+        p2 = tmp / "pop2"
+        shutil.copytree(ROOT / "tutorials" / "steady" / "flowsheets"
+                        / "process02_reactor_hx_flash", p2,
+                        ignore=shutil.ignore_patterns("expected", "log.*",
+                                                      "reports", "converged"))
+        shutil.copy(CASE / "system" / "postDict", p2 / "system" / "postDict")
+        rc, out = run(p2)
+        k = kpi_block(out) or {}
+        mq = re.search(r'"reactor": \{[^{}]*"Q_kW": ([-+0-9.eE]+)', out)
+        qr = abs(float(mq.group(1))) if mq else None
+        if rc != 0 or qr is None:
+            failures.append(f"P2: process02 + pinchPass: exit {rc}, reactor"
+                            f" Q_kW {'found' if mq else 'MISSING'}")
+        else:
+            if k.get("duties_excluded") != 1.0 or \
+                    abs((k.get("Q_excluded_kW") or 0.0) - qr) > 1e-6 * max(1, qr):
+                failures.append(f"P2: duties_excluded {k.get('duties_excluded')}"
+                                f", Q_excluded_kW {k.get('Q_excluded_kW')}"
+                                f" (expected 1 and the reactor's {qr})")
+            if "(NOT the plant's: 1 heat duty excluded" not in out:
+                failures.append("P2: the targets line does not say they are"
+                                " NOT the plant's")
+            pop = p2 / "reports" / "pinch" / "population.csv"
+            rows = list(csv.DictReader(open(pop))) if pop.exists() else []
+            if not any(r["unit"] == "reactor" and r["role"] == "excluded"
+                       and r["kpi"] == "Q_kW" for r in rows):
+                failures.append("P2: population.csv does not list the"
+                                " reactor's Q_kW as excluded")
+
+        p3 = tmp / "pop3"
+        shutil.copytree(ROOT / "tutorials" / "steady" / "heat"
+                        / "heatExchanger01_water_water", p3,
+                        ignore=shutil.ignore_patterns("expected", "log.*",
+                                                      "reports", "converged"))
+        (p3 / "system" / "postDict").write_text(
+            (CASE / "system" / "postDict").read_text()
+            .replace("dTmin   20 K;", "dTmin   10 K;"))
+        rc, out = run(p3)
+        k = kpi_block(out) or {}
+        mh = re.search(r'"hx": (\{[^{}]*\})', out)
+        if rc != 0 or not mh or not k:
+            failures.append(f"P3: heatExchanger01 + pinchPass: exit {rc}")
+        else:
+            hx = json.loads(mh.group(1))
+            q = hx["Q_kW"] * 1000.0
+            streams = [
+                (True, hx["T_hot_in"], hx["T_hot_out"],
+                 q / (hx["T_hot_in"] - hx["T_hot_out"])),
+                (False, hx["T_cold_in"], hx["T_cold_out"],
+                 q / (hx["T_cold_out"] - hx["T_cold_in"])),
+            ]
+            qh3, qc3, _ = problem_table(streams, 10.0)
+            if k.get("Q_heat_current_kW") != 0.0 or \
+                    k.get("Q_cool_current_kW") != 0.0:
+                failures.append(f"P3: recovered heat counted as current"
+                                f" utility (heating"
+                                f" {k.get('Q_heat_current_kW')}, cooling"
+                                f" {k.get('Q_cool_current_kW')} kW)")
+            if k.get("segments") != 2.0:
+                failures.append(f"P3: segments {k.get('segments')} (expected"
+                                " the exchanger's two sides)")
+            for key, ref in (("Q_H_min_kW", qh3), ("Q_C_min_kW", qc3)):
+                if abs((k.get(key) or 0.0) - ref) > 1e-6 * max(1.0, abs(ref)):
+                    failures.append(f"P3: pinch.{key} = {k.get(key)},"
+                                    f" independent two-side cascade = {ref}")
+
     if failures:
         print("check_pinch_p1: FAIL")
         for f in failures:
@@ -227,7 +322,11 @@ def main() -> int:
         return 1
     print("check_pinch_p1: OK -- witness targets equal the independent"
           " cascade (107.5 / 40 / 353.15), CSV coherent, negative silent,"
-          " dTmin<=0 refused")
+          " dTmin<=0 refused; the population is published and labelled --"
+          " an excluded Q_kW duty is listed and the targets say NOT the"
+          " plant's, and a two-stream exchanger enters as both sides with its"
+          " duty in neither current-utility total (no duty is ADDED to the"
+          " population: columns, reactors and crystallisers stay excluded)")
     return 0
 
 

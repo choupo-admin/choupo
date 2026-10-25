@@ -61,12 +61,21 @@ Description
         `latentWidth` centred on the unit temperature -- the standard
         composite-curve treatment of latent duty.
       * The stream population is the units' GENERIC `Q` KPI paired with
-        the FIRST non-utility inlet/outlet stream: multi-duty equipment
-        (a column's reboiler + condenser) enters as its net unless
-        modelled as separate units.
-      * The current-vs-target line sums the units' raw heating/cooling
-        duties -- heat already recovered through drawn heat-links is
-        counted at the units it still touches.
+        the FIRST non-utility inlet/outlet stream.  Every OTHER boundary
+        heat duty (`reporting::unitHeatDuties`: a column's reboiler and
+        condenser, a reactor's Q_kW, ...) is NOT in it -- this header
+        used to say a column "enters as its net", and it entered not at
+        all -- and is now LISTED as excluded with its reason
+        (console, reports/pinch/population.csv, KPIs `segments`,
+        `duties_excluded`, `Q_excluded_kW`), the targets labelled as the
+        extracted segments' (2026-10-25, C150 R16).
+      * A two-stream exchanger (`reporting::isProcessToProcessExchanger`
+        with its four terminal temperatures) is heat ALREADY recovered:
+        both its sides enter as segments and its duty is counted in
+        neither current-utility total nor in the violation diagnostics.
+      * The current-vs-target line sums the remaining units' raw
+        heating/cooling duties -- heat recovered through a drawn
+        heat-link is still counted at the units it touches.
       * `dTmin` here is the PROCESS-process approach of the targeting
         exercise, declared in this pass's own block.  The
         `utilityAllocation` report's `dTmin` is the duty-to-UTILITY

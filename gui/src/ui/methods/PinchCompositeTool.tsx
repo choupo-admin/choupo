@@ -305,6 +305,33 @@ export function crossCheckAgainstKpis(
   return rows;
 }
 
+// ---- WHAT THE TARGETS ARE THE TARGETS OF (C150 R16) --------------------------
+
+/** The engine publishes how many segments it extracted and how many boundary
+ *  heat duties it left OUT of the population (`segments`, `duties_excluded`,
+ *  `Q_excluded_kW` on the "pinch" row).  A target drawn without that is a
+ *  plant target only when nothing was left out, so the chip says which it is.
+ *  Returns null when the run predates those KPIs (nothing to claim either
+ *  way).  Pure: the engine decides, this only words it. */
+export function populationScope(
+  kpis: { [key: string]: number } | undefined,
+): { label: string; partial: boolean } | null {
+  if (!kpis) return null;
+  const n = kpis["segments"], ex = kpis["duties_excluded"];
+  if (typeof n !== "number" || typeof ex !== "number") return null;
+  const seg = `${n} extracted segment${n === 1 ? "" : "s"}`;
+  if (ex > 0) {
+    const q = kpis["Q_excluded_kW"];
+    return { partial: true,
+      label: `targets of the ${seg}, NOT of the plant · ${ex} heat `
+        + `dut${ex === 1 ? "y" : "ies"}`
+        + (typeof q === "number" ? ` (${fmt(q)} kW)` : "")
+        + " outside the population — reports/pinch/population.csv" };
+  }
+  return { partial: false,
+    label: `targets of the ${seg} · every boundary heat duty is in the population` };
+}
+
 // ---- SVG chart geometry -----------------------------------------------------
 
 const W = 640, H = 420;
@@ -695,6 +722,16 @@ export function PinchCompositeTool(): JSX.Element {
               + `pinch T* ${fmt(kpis["T_pinch_K"], 2)} K · `
               + `ΔTmin ${fmt(kpis["dTmin_K"], 0)} K`
             : "no pinch KPI row in this run — curves shown, targets unverified"}
+        </Badge>
+      )}
+      {/*  WHAT THE TARGETS ARE THE TARGETS OF (C150 R16): the engine says
+           how many segments it extracted and which heat duties it left out;
+           a target of a partial population must not read as the plant's.  */}
+      {active && !emptyCurrentRun && populationScope(kpis) && (
+        <Badge variant="light"
+          color={populationScope(kpis)!.partial ? "red" : "gray"} size="lg"
+          styles={{ root: { textTransform: "none" } }}>
+          {populationScope(kpis)!.label}
         </Badge>
       )}
       {/*  THE EXCESS, DECOMPOSED -- the one identity on this page a reader can

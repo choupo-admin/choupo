@@ -334,18 +334,29 @@ export const PINCH_LIMITS: readonly { id: string; title: string; body: string }[
       + "latentWidth, 1 K by default, with Q ≠ 0) enters as a "
       + "near-isothermal slice of that width at the unit's temperature — the "
       + "standard composite-curve treatment of latent duty, and a visible "
-      + "approximation on the curve.",
+      + "approximation on the curve. The 1 K width is itself an assumption "
+      + "you declare (latentWidth in the postDict): it moves the boundaries "
+      + "of the problem table, and the pass runs no sensitivity on it, so a "
+      + "target that sits on a latent slice is worth re-running at another "
+      + "width.",
   },
   {
     id: "stream-population",
     title: "The streams are read off the units, not declared.",
     body: "The population is each unit's generic Q KPI paired with its first "
-      + "non-utility inlet/outlet stream. Multi-duty equipment — a column "
-      + "carrying both a reboiler and a condenser — therefore enters as its "
-      + "NET duty unless the flowsheet models the two as separate units. The "
-      + "current-versus-target line sums raw duties, so heat already "
-      + "recovered through drawn heat-links is still counted at the units it "
-      + "touches.",
+      + "non-utility inlet/outlet stream — which only heaters, coolers, "
+      + "phase changers, flash drums and two-stream exchangers publish. Every "
+      + "other heat duty is NOT in it: a column's reboiler and condenser, a "
+      + "reactor's duty, a crystalliser's cooling. The pass lists each duty "
+      + "it leaves out, with its kW, beside the targets (and in "
+      + "reports/pinch/population.csv), and says that the targets are then "
+      + "those of the extracted segments, not of the plant — in this "
+      + "implementation, separating a column's two duties or placing a "
+      + "reactor's heat at a temperature is a modelling choice nobody has "
+      + "made yet, so they are named rather than guessed. A two-stream "
+      + "exchanger is heat ALREADY recovered: it enters as both of its "
+      + "sides, and its duty is counted in neither current-utility total, so "
+      + "it can never be offered back as a further saving.",
   },
   {
     id: "no-area-or-cost",

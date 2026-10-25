@@ -583,3 +583,6 @@ kpi     economics              sens_utility_steamGenerationHP_value_low 0.8     
 kpi     economics              C_OL             1085711.54872    1e-4
 kpi     economics              operatingPositions 13.1889158008    1e-4
 kpi     economics              operatorsPerShift 2.93087017795    1e-4
+kpi     pinch                  Q_excluded_kW    22304.9972935    1e-4
+kpi     pinch                  duties_excluded  1                1e-4
+kpi     pinch                  segments         9                1e-4

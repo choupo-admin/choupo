@@ -13,7 +13,7 @@ every cstr, conversionReactor, equilibriumReactor, pfr and crystalliser in
 the corpus.  Not allocated, not listed unserved, absent from C_UT and from
 the economics' count of unpriced duties.  Two readers asking "does this unit
 have a duty" with two key lists.  The answer has ONE home now,
-`reporting::unitHeatDuties` (src/reporting/BalanceMath.H), derived from the
+`reporting::unitHeatDuties` (src/result/EnergyItems.H, moved out of reporting/BalanceMath.H 2026-10-25), derived from the
 same `energyItemKpis()` the first law reads.
 
 WHAT THIS CHECKS:
@@ -27,7 +27,7 @@ WHAT THIS CHECKS:
       prices it so; it was a 4.44 kW cooling duty only while the feed was
       priced as a vapour) -- a TSA with two ported duties, a crystalliser, a
       cooling tower): every boundary heat duty the run publishes (|Q| >= 1 W,
-      keys and ports READ from `heatDutyPorts()` in BalanceMath.H, never
+      keys and ports READ from `heatDutyPorts()` in result/EnergyItems.H, never
       typed here) has an allocation row on its port.
   (c) THE WITNESS.  greenAmmoniaPEQ_baseCase: the Converter's row is the
       DECLARED steamGenerationHP, allocated, its duty the unit's own Q_kW,
@@ -128,8 +128,8 @@ def run(case: Path):
 
 
 def duty_ports():
-    """[(kpi, port)] from heatDutyPorts() in BalanceMath.H -- READ, not typed."""
-    src = (ROOT / "src/reporting/BalanceMath.H").read_text(errors="replace")
+    """[(kpi, port)] from heatDutyPorts() in result/EnergyItems.H -- READ, not typed."""
+    src = (ROOT / "src/result/EnergyItems.H").read_text(errors="replace")
     m = re.search(r"heatDutyPorts\(\)\s*\{(.*?)return ports;", src, re.S)
     if not m:
         return []
@@ -152,7 +152,7 @@ def main() -> int:
         if lit in ua:
             fail.append(f"(a) UtilityAllocationReport.cpp reads {lit} itself --"
                         " a second key list for 'this unit has a duty'")
-    bm = strip_comments((ROOT / "src/reporting/BalanceMath.H")
+    bm = strip_comments((ROOT / "src/result/EnergyItems.H")
                         .read_text(errors="replace"))
     body = bm.split("unitHeatDuties(", 1)[-1] if "unitHeatDuties(" in bm else ""
     if "energyItemKpis()" not in body or "isInternalMediumDutyKpi" not in body:
@@ -172,7 +172,7 @@ def main() -> int:
         fail.append("(a) EconomicsPass counts a CARRIED row as an unpriced duty")
     ports = duty_ports()
     if len(ports) < 3:
-        fail.append("(a) could not read heatDutyPorts() from BalanceMath.H")
+        fail.append("(a) could not read heatDutyPorts() from result/EnergyItems.H")
     claims.append(f"source: one home, {len(ports)} duty port(s) read")
 
     td = Path(tempfile.mkdtemp(prefix="c52_"))

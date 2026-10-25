@@ -530,10 +530,16 @@ pinchPass { dTmin 20 K; }         // pinch TARGETS (P1): the Linnhoff-Flower
                                   // reports/pinch/compositeCurves.csv
 ```
 
-`pinchPass` extracts every duty-carrying unit's segment from the
-converged result (CP = |Q|/|ΔT| between its process-side inlet/outlet
-temperatures; a near-isothermal duty enters as a `latentWidth` slice,
-default 1 K).  It only TARGETS — it never rewrites the network — and its
+`pinchPass` extracts a segment for each unit publishing the generic `Q`
+duty (heater, phaseChanger, isothermalFlash; a two-stream heatExchanger
+enters as BOTH its sides, as recovered heat) from the converged result
+(CP = |Q|/|ΔT| between its process-side inlet/outlet temperatures; a
+near-isothermal duty enters as a `latentWidth` slice, default 1 K).  Every
+other heat duty (a column's reboiler/condenser, a reactor's `Q_kW`) is
+NOT extracted: the pass lists it as excluded (console,
+`reports/pinch/population.csv`, KPIs `segments` / `duties_excluded` /
+`Q_excluded_kW`) and labels the targets as the extracted segments', not
+the plant's.  It only TARGETS — it never rewrites the network — and its
 method hypotheses (constant CP per segment, the latent slice, first
 non-utility stream pairing) are stated in `src/postProcessing/PinchPass.H`.
 Its `dTmin` is the process–process approach of the targeting exercise, a

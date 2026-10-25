@@ -826,7 +826,7 @@
    "src/thermo/heatCapacity/HeatCapacityModel.H"
   ],
   "HeatDutyPort": [
-   "src/reporting/BalanceMath.H"
+   "src/result/EnergyItems.H"
   ],
   "HeatExchanger": [
    "src/unitOperations/heatTransfer/HeatExchanger.H"
@@ -1913,7 +1913,7 @@
    "src/reporting/BalanceMath.H"
   ],
   "UnitHeatDuty": [
-   "src/reporting/BalanceMath.H"
+   "src/result/EnergyItems.H"
   ],
   "UnitIO": [
    "src/reporting/Topology.H"
@@ -3940,14 +3940,21 @@
    "src/core/Units.H",
    "src/postProcessing/PinchPass.H",
    "src/postProcessing/PostProcessor.H",
+   "src/reporting/BalanceMath.H",
    "src/result/SimulationResult.H",
    "src/result/UnitProfile.H",
    "src/solver/Convergence.H",
    "src/streams/ProcessStream.H",
+   "src/streams/StreamMass.H",
    "src/thermo/Component.H",
+   "src/thermo/ElementComposition.H",
    "src/thermo/PackageAudit.H",
    "src/thermo/SaturationCurves.H",
-   "src/thermo/ThermoPackage.H"
+   "src/thermo/ThermoPackage.H",
+   "src/unitOperations/UnitOperation.H",
+   "src/unitOperations/flash/IsothermalFlash.H",
+   "src/unitOperations/flash/PureSaturationPlateau.H",
+   "src/unitOperations/flash/StreamEquilibrium.H"
   ],
   "src/postProcessing/PostProcessor.cpp": [
    "src/core/Advisory.H",
@@ -8475,6 +8482,7 @@
    "src/unitOperations/heatTransfer/Psychrometry.H"
   ],
   "src/unitOperations/heatTransfer/CoolingTower.cpp": [
+   "src/core/Advisory.H",
    "src/core/Dictionary.H",
    "src/core/Dimensions.H",
    "src/core/Identifiers.H",
@@ -9955,6 +9963,7 @@
    "src/unitOperations/flash/IsothermalFlash.cpp",
    "src/unitOperations/flowsheet/Flowsheet.cpp",
    "src/unitOperations/heatTransfer/ConvectiveDryer.cpp",
+   "src/unitOperations/heatTransfer/CoolingTower.cpp",
    "src/unitOperations/heatTransfer/EvaporativeDryer.cpp",
    "src/unitOperations/heatTransfer/Evaporator.cpp",
    "src/unitOperations/heatTransfer/HeatExchanger.cpp",
@@ -13003,6 +13012,7 @@
    "src/reporting/EnergyBalanceReport.cpp"
   ],
   "src/reporting/BalanceMath.H": [
+   "src/postProcessing/PinchPass.cpp",
    "src/reporting/ElementBalanceReport.cpp",
    "src/reporting/EnergyBalanceReport.cpp",
    "src/reporting/MassBalanceReport.cpp",
@@ -13818,6 +13828,7 @@
   "src/streams/StreamMass.H": [
    "src/applications/choupoSolve/main.cpp",
    "src/io/DesignSheetWriter.cpp",
+   "src/postProcessing/PinchPass.cpp",
    "src/postProcessing/sizing/ReliefValveSize.cpp",
    "src/reporting/ElementBalanceReport.cpp",
    "src/reporting/EnergyBalanceReport.cpp",
@@ -14257,6 +14268,7 @@
   "src/thermo/ElementComposition.H": [
    "src/applications/choupoBatch/main.cpp",
    "src/dynamicDriver/DynamicDriver.cpp",
+   "src/postProcessing/PinchPass.cpp",
    "src/propertyOps/ElementCompositionOp.cpp",
    "src/reporting/ElementBalanceReport.cpp",
    "src/reporting/EnergyBalanceReport.cpp",
@@ -15853,6 +15865,7 @@
   "src/unitOperations/UnitOperation.H": [
    "src/applications/choupoSolve/main.cpp",
    "src/dynamicDriver/DynamicDriver.cpp",
+   "src/postProcessing/PinchPass.cpp",
    "src/postProcessing/sizing/GasStoreSize.cpp",
    "src/postProcessing/sizing/ReliefValveSize.cpp",
    "src/postProcessing/sizing/ShellTubeHX.cpp",
@@ -16066,6 +16079,7 @@
   ],
   "src/unitOperations/flash/IsothermalFlash.H": [
    "src/dynamicDriver/DynamicDriver.cpp",
+   "src/postProcessing/PinchPass.cpp",
    "src/postProcessing/sizing/ShellTubeHX.cpp",
    "src/propertyOps/PhaseSplitScan.cpp",
    "src/propertyOps/PropertyEvaluator.cpp",
@@ -16110,6 +16124,7 @@
   ],
   "src/unitOperations/flash/PureSaturationPlateau.H": [
    "src/dynamicDriver/DynamicDriver.cpp",
+   "src/postProcessing/PinchPass.cpp",
    "src/postProcessing/sizing/ShellTubeHX.cpp",
    "src/reporting/ElementBalanceReport.cpp",
    "src/reporting/EnergyBalanceReport.cpp",
@@ -16145,6 +16160,7 @@
   ],
   "src/unitOperations/flash/StreamEquilibrium.H": [
    "src/dynamicDriver/DynamicDriver.cpp",
+   "src/postProcessing/PinchPass.cpp",
    "src/postProcessing/sizing/ShellTubeHX.cpp",
    "src/reporting/ElementBalanceReport.cpp",
    "src/reporting/EnergyBalanceReport.cpp",
