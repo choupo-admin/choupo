@@ -18657,9 +18657,16 @@ interface (Bowen \& Welfoot, Eq.~7):
    \underbrace{\exp\!\Bigl(-\tfrac{\Delta W_i}{k_B T}\Bigr)}_{\text{Born}},
    \label{eq:dspmde-partition}
 \end{equation}
-with $\gamma_i$ the activity coefficient of ion $i$ at the wall
-(Davies, \S\ref{ch:electrolytes}), evaluated once per channel station
---- not inside the inner solve.  The three factors are:
+with $\gamma_i$ the activity coefficient of ion $i$ at the wall in the
+DEFAULT choice, \code{activity wallDavies;} (Davies,
+\S\ref{ch:electrolytes}, evaluated once per channel station at the bulk
+ionic strength, outside the inner solve).  That is one choice among
+three: in general the partition carries the RATIO of the activity
+coefficients on the two sides of each face,
+$\gamma_{\text{solution}}/\gamma_{\text{pore}}$, and
+\code{bulkOverPoreDavies} evaluates both, inside the station's Newton
+(\code{ideal} sets them to~1) --- see \emph{The same model in two
+programs} below.  The three factors are:
 
 \paragraph{Steric.}  A finite ion cannot reach within $r_i$ of the pore
 wall.  The geometric partition for a sphere in a cylinder is
@@ -18702,8 +18709,11 @@ costs Born solvation energy
 \end{equation}
 (Bowen \& Welfoot, Eq.~16; $e$ the elementary charge, $\varepsilon_0$
 the vacuum permittivity) --- the very same Born form already met in the
-eNRTL solvent-shift of \S\ref{ch:electrolytes}.  Like Donnan it scales
-with $z_i^2$, so it reinforces divalent exclusion --- and, unlike
+eNRTL solvent-shift of \S\ref{ch:electrolytes}.  It scales with
+$z_i^2$, where the Donnan exponent is LINEAR in $z_i$: Donnan excludes a
+co-ion and attracts a counter-ion by the sign of its charge, while Born
+excludes both signs alike and divalent ions four times as strongly as
+monovalent ones.  So it reinforces divalent exclusion --- and, unlike
 Donnan, it rejects \emph{both} ions of a divalent salt, which is why
 $\mathrm{MgSO_4}$ can be held above what charge alone would give.  Set
 $\varepsilon_p<\varepsilon_b$ in the \file{.dat} to turn it on.

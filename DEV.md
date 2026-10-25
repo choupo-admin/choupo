@@ -2034,7 +2034,7 @@ accepts today, and that is a policy call.
 > (now REFUSED -- humid air is the normal air-stripper inlet); M9 `model
 > fullMESH;` with a reaction block silently runs CMO (a refusal by name,
 > moves nothing).  The check_doctrine exemption for
-> the review-record filename prefix (the word `dwsim` only) lets the review
+> the review-record filename prefix (that one product name only) lets the review
 > records name the open reference simulator.  Family (c) reactors IN
 > FLIGHT;
 > C112 wave B IN FLIGHT.  Owed to Vitor, unchanged: C139 and C140 start
