@@ -1501,6 +1501,38 @@ accepts today, and that is a policy call.
 > final; }` layout draws what the steady flowsheet and the sizing pass
 > already hold.
 
+> **C151. A PROPS CASE GETS STRUCTURE: A CALCULATION MAP, A TREE BY
+> DISCIPLINE, F1 TO THE THEORY, AND ONE HOME FOR ITS FIGURES (Vitor,
+> 2026-10-25, reviewing C147's screen: a "Plots" menu beside plots already
+> on the main screen confuses; "os dicionarios do caso sao muito
+> importantes para consulta"; "nao ha nenhuma tree para nos guiarmos?
+> Fica tudo ao molho? E baralhas termodinamica, cinetica quimica,
+> transporte em membranas?"; "No flowsheet ... F1 e vamos ter a pagina
+> exata da explicacao da operacao unitaria.  Aqui o help e uma confusao
+> monumental ... podia haver um data set com uma seta para um bloco de
+> modelo de transporte e ai com um F1 chegavamos a pagina da teoria";
+> "Temos de ir por tentativa e erro.  Avanca").**  Measured: 46 props
+> operations in a flat list; `tutorials/props/` folders mix discipline
+> (thermo, kinetics, membrane, transport ...) with activity (fit,
+> estimate, compare, scan, curation ...); F1 is handled per workspace in
+> AppShell.tsx:231-255 and ExploreWorkspace.tsx:1083-1100.  Phase 1,
+> dispatched: (1) a CALCULATION MAP -- the props case drawn like a
+> flowsheet: data blocks (the datasets and references the propsDict
+> names), model blocks (the thermo package pieces and the law an op uses:
+> DSPM-DE, an isotherm, a rate law), operation blocks (predict / fit /
+> scan / estimate), view blocks (the figures), arrows from what each op
+> reads to what it writes, DERIVED from the propsDict and each op type's
+> declared inputs, never drawn by hand; F1 or a click on any block opens
+> the Theory Guide (or the EduTool) at its section, the same gesture as a
+> unit in the flowsheet; (2) the TREE by discipline (Thermodynamics,
+> Transport, Kinetics, Separation, Data, Safety) with the activity as a
+> tag, each op type declaring both in ONE home (its schema); (3) the
+> menu: Results is the one home of a props case's figures (the Plots tab
+> leaves props cases; free CSV plots move into Results, collapsed); Case
+> stays, named Case, and every operation and view links to its block in
+> the propsDict.  Phase 2 (folders by discipline) waits on his look at
+> phase 1.
+
 > **C150. A SECOND EXTERNAL REVIEW OF THE EDUTOOLS, R01-R28 (Vitor,
 > 2026-10-25, a review of 63 EduTools relayed for the commander to judge
 > and act on).**  It asks, per point, confirmed / partly / not confirmed,
