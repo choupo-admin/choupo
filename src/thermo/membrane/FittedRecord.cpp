@@ -135,7 +135,7 @@ void verifyFresh(const Membrane& m, const std::string& recordPath,
                 + " -- the fit that wrote it cannot be checked." + remedy);
         const std::string now = fitBlockSha256(p.string(), f.operation, who);
         if (now != f.fitBlockSha256)
-            stale("the fit block (operation '" + f.operation + "' in", f.propsDict + ")",
+            stale("the fit block of operation '" + f.operation + "' in", f.propsDict,
                   f.fitBlockSha256, now);
     }
     //  The base record whose values the fit held fixed.
@@ -146,7 +146,7 @@ void verifyFresh(const Membrane& m, const std::string& recordPath,
                   " cannot be checked." + remedy);
         const std::string now = canonical::sha256OfFile(baseRecordPath);
         if (now != f.baseRecordSha256)
-            stale("its base record", f.baseRecord + " (" + baseRecordPath + ")",
+            stale("its base record " + f.baseRecord + ",", baseRecordPath,
                   f.baseRecordSha256, now);
     }
 
@@ -155,8 +155,9 @@ void verifyFresh(const Membrane& m, const std::string& recordPath,
     const std::string line = "membrane '" + m.name() + "' is a FITTED record: operation '"
         + f.operation + "' of case '" + f.fittedInCase + "' (Properties mode) wrote it"
         + (f.verdict.empty() ? std::string() : ", held-out verdict " + f.verdict)
-        + "; its " + std::to_string(f.datasets.size() + 2)
-        + " input fingerprints (datasets, fit block, base record) match";
+        + "; its fingerprints match -- " + std::to_string(f.datasets.size())
+        + " dataset(s), the fit block, the base record " + f.baseRecord
+        + " and the record's own values";
     if (AdvisoryLog::instance().addAnnouncedOnce("fittedRecord:" + m.name(), "provenance",
                                                  "info", "membrane '" + m.name() + "'", line))
         std::cout << "  [fitted] " << line << "\n";

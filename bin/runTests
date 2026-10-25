@@ -3849,6 +3849,25 @@ PYEOF
     # the flat cell's one-face channel recomputes from what was published,
     # the limits announce without refusing, and the two spirals' rated
     # tests are run and PRINTED beside the data sheet as a measurement.
+    # Fit-then-simulate gate (2026-10-25, DEV.md 4c C149/C152): ONE case, TWO
+    # modes.  A membrane fitted in Properties mode (fitParameters, residual
+    # kind membrane) writes a record whose fingerprints Process mode checks:
+    # zero-noise data the bench generated are fitted back to 1e-5, the
+    # witness rewrites its record byte-identically, Process mode names the
+    # fit, a moved dataset / fit block / base record / hand-edited value
+    # refuses with the remedy and a comment does not, runCase runs both
+    # modes, six grammar refusals fire.  By-hand sabotages in
+    # docs/design/one-case-two-modes.md section 8.
+    if "$ROOT/bin/curate/check_fit_then_simulate.py" > /tmp/fitsim.$$ 2>&1; then
+        printf "PASS  %-40s  (%s)\n" "fit-then-simulate-gate" "$(grep -m1 '^check_fit_then_simulate: OK' /tmp/fitsim.$$)"
+        pass=$((pass+1))
+    else
+        printf "FAIL  %-40s  (run bin/curate/check_fit_then_simulate.py)\n" "fit-then-simulate-gate"
+        cat /tmp/fitsim.$$
+        fail=$((fail+1))
+    fi
+    rm -f /tmp/fitsim.$$
+
     if "$ROOT/bin/curate/check_membrane_modules.py" > /tmp/modules.$$ 2>&1; then
         printf "PASS  %-40s  (%s)\n" "membrane-modules-gate" "$(grep -m1 '^check_membrane_modules: OK' /tmp/modules.$$)"
         pass=$((pass+1))
