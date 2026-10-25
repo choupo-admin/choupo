@@ -1629,7 +1629,15 @@ accepts today, and that is a policy call.
 > (asked 2026-10-22, answered in chat with three options, never recorded:
 > deoxo + dryer, deoxo + moving the make-up point, or the electrolyser
 > package already covers it; the ~10 ppm oxygenate limit unverified --
-> his decision); (6) dropped work still MISSING: G4 debt financing
+> his decision -- RULED on his delegation 2026-10-25, "Decide como achares
+> melhor": the base case stays as it is, because it already says why --
+> greenAmmoniaPEQ_baseCase/system/flowsheetDict lists "the H2O + O2 of the
+> hydrogen (the feed here is pure H2)" among "WHAT IS NOT IN THIS CASE,
+> and is the groups' work"; the oxygen removal (deoxo + dryer, or an
+> electrolyser package that delivers synthesis-grade hydrogen) is a design
+> decision the student groups must take and defend; the pre-2026-10-01
+> version of the case carried a deoxo and a dryer, in git history as a
+> worked reference); (6) dropped work still MISSING: G4 debt financing
 > (`claude/c110-g4-debt-financing` 484b52f54), G9 fold long trains
 > (`backup/g-af5c1d01a52ae83b4`), G5 batch Gantt
 > (`backup/g-aa0b7a24502e7bf75`, re-base on G2's multiproduct JSON);
