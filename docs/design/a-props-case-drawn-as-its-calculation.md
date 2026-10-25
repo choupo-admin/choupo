@@ -205,7 +205,8 @@ already loaded (`gui/src/case/caseModes.ts`), the same fact by the same rule.
 * In Process, a unit whose membrane record carries a `fit {}` block says which
   operation fitted it and opens that operation in Properties & data -- read
   off the record itself, so it holds before any run.
-* A Process run that refuses a STALE fit shows its remedy as a button that
+* A Process run that refuses a STALE fit shows the engine's sentence and its
+  remedy as a button over the canvas (`StaleFitBanner`) that
   switches to Properties & data.
 
 ## 7. Gates and tests
@@ -215,6 +216,10 @@ already loaded (`gui/src/case/caseModes.ts`), the same fact by the same rule.
   estimate_acetone; F1 per block kind; the tree.
 * `gui/tests/workspaceKinds.test.ts`: Plots absent on a props case, present on
   flowsheet cases; the Results caption.
+* `gui/tests/caseModes.test.ts`: the GUI's mode rule against
+  `generated/caseManifest.json` over every case; membrane24's datasets ->
+  fit -> record -> Stage; the record naming its fit; ctrl17; the stale-fit
+  refusal read off a log.
 * `bin/curate/check_guide_anchors.py` now holds `OP_DEST`, `PROPS_MODEL_DEST`
   and the `op:<type>` fallback for every props op, beside the two tables it
   held.
@@ -231,3 +236,12 @@ already loaded (`gui/src/case/caseModes.ts`), the same fact by the same rule.
 * A study's frame label is derived, not authored.
 * "My plots" lives in the browser (localStorage), not in the case: a plot a
   reader wants the case to carry is a view in the propsDict.
+* In a two-mode case the Properties & data run is the props view's own
+  (as it was for a flowsheet case carrying a propsDict); the top bar's Run
+  still runs `application`.  One run control per mode is the next step.
+* ctrl17's props ops read `trajectory.csv`, a file its OWN Process run writes;
+  the map draws it as a dataset "not in this case's files" -- a wire from the
+  Process run to that dataset would say what it is.
+* The mode rule is held to `generated/caseManifest.json` over every case, but
+  no case in the corpus defaults to Properties & data, so only the fixture
+  test holds that half.
