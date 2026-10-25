@@ -223,7 +223,7 @@
     },
     "check_decision_index": {
       "exit": 0,
-      "claim": "check_decision_index: OK -- all 154 design record(s) appear in the index, and its stated counts (104 state a rejected alternative, 50 do not) are recounted from the table rather than trusted.  Whether an `alt` mark is TRUE is a reading judgement and is deliberately not claimed.",
+      "claim": "check_decision_index: OK -- all 180 design record(s) appear in the index, and its stated counts (124 state a rejected alternative, 56 do not) are recounted from the table rather than trusted.  Whether an `alt` mark is TRUE is a reading judgement and is deliberately not claimed.",
       "seconds": 0.0
     },
     "check_default_reports": {
@@ -433,8 +433,8 @@
     },
     "check_feed_thermal_state": {
       "exit": 0,
-      "claim": "check_feed_thermal_state: OK -- a distillation column takes its feed's thermal state from the STREAM, resolving it where the stream leaves it unpinned, and REFUSES an `operation.feedQuality` that contradicts it, naming both numbers and both remedies; an agreeing feedQuality passes silently and a case with none runs; neither duty site prices the distillate at the top tray's temperature instead of the one it publishes; and the flagship column01_benzene_toluene closes its plant-boundary first law at or below 1e-6 kW, read from the engine's own report; a feed that resolves single-phase VAPOUR is not read as a saturated liquid, in the single-feed branch and in the `feeds ( ... )` multi-feed branch, which refuses a contradicting `quality` naming the resolved state and prices a two-phase and a vapour feed as the energy report does (H_products - H_feeds = Q_reboiler + Q_condenser to 1e-6 kW).  SCANNED: fixture cases written by this gate (six single-feed variants, two multi-feed) and src/unitOperations/distillation/DistillationColumn.cpp.  NOT CHECKED: the plant boundary of a multi-feed column (the report drops its duties as an internal exchanger's); an inline `feeds` entry on the single-feed branch; whether a DECLARED feed state is true of the feed; and the reactive distillate temperature, which is knowingly the top tray's and says so.",
-      "seconds": 0.5
+      "claim": "check_feed_thermal_state: OK -- a distillation column takes its feed's thermal state from the STREAM, resolving it where the stream leaves it unpinned, and REFUSES an `operation.feedQuality` that contradicts it, naming both numbers and both remedies; an agreeing feedQuality passes silently and a case with none runs; neither duty site prices the distillate at the top tray's temperature instead of the one it publishes; and the flagship column01_benzene_toluene closes its plant-boundary first law at or below 1e-6 kW, read from the engine's own report; a feed that resolves single-phase VAPOUR is not read as a saturated liquid, in the single-feed branch and in the `feeds ( ... )` multi-feed branch, which refuses a contradicting `quality` naming the resolved state and prices a two-phase and a vapour feed as the energy report does (H_products - H_feeds = Q_reboiler + Q_condenser to 1e-6 kW); and the full MESH's stage energy rows price every feed by its own resolution, never the merged blend (source arm (j)).  SCANNED: fixture cases written by this gate (six single-feed variants, two multi-feed) and src/unitOperations/distillation/DistillationColumn.cpp.  NOT CHECKED: the plant boundary of a multi-feed column (the report drops its duties as an internal exchanger's); an inline `feeds` entry on the single-feed branch; whether a DECLARED feed state is true of the feed; and the reactive distillate temperature, which is knowingly the top tray's and says so.",
+      "seconds": 0.3
     },
     "check_first_path_agrees": {
       "exit": 0,
@@ -1300,6 +1300,11 @@
       "exit": 0,
       "claim": "check_debt_financing: OK -- the gate's loan helper reproduces a schedule written out by hand (annuity, linear, capitalisation); on economics03_startup_years with an annuity loan (0.5 x FCI, 6 %, two grace years, eight repayments, equity at 12 %) and a linear one (0.6 x FCI + WC, no grace, the equity rate defaulted and announced), every draw, capitalised interest, interest, principal, balance, tax and equity cash flow recomputes by hand from the project's published cash flow, the loan clears, the equity NPV, IRR and payback recompute; the project's cashFlow.csv is byte-identical and its every KPI and result field unmoved with the loan; a one-year construction accrues no interest during construction and says why; `financing.rate` and `financing.debtFraction` leave the project NPV exactly where it was and their equity NPVs recompute; 14 malformed declarations refuse by name; economics01 as shipped and economics03 with its loan removed print, publish and write nothing of a loan; every financing scalar is a pinned KPI and financing.csv, the .ods equity sheet and the printed schedule equal the JSON schedule; the shipped witness economics03_startup_years recomputes against the loan it declares, its every project KPI equals that of a copy of it with the loan removed, and its golden pins all 28 financing KPIs it publishes; and the loan's arithmetic lives inside appraise().  NOT COVERED: whether the terms are sensible, a country's tax law on capitalised interest, the equity multiple-IRR guard firing (no case has an ambiguous equity IRR), and byte identity against the previous build (measured, not gated).",
       "seconds": 1.3
+    },
+    "check_kremser_inventory": {
+      "exit": 0,
+      "claim": "check_kremser_inventory: OK -- the stripper refuses steam in its stripping gas (K1), a non-solute in its rich liquid (K2) and a package with no solvent (K4), the absorber a non-solute in its solvent (K3) and a package with no solvent (K4); a trace below 1e-12 of its stream is carried, not deleted (K5); absorber01 and stripper01 as shipped close at 100.000 % (K6).  NOT CHECKED: whether the Kremser answer is right, the lumped-Cp energy residuals, the absorber's solvent-in-gas rule.",
+      "seconds": 0.3
     }
   }
 }

@@ -757,8 +757,17 @@ KPIs: `W_in`, `W_electric` (= η·W_in).  See [`energy.md`](energy.md).
 
 ### `distillationColumn`  (alias `column`)
 Rigorous multistage MESH column (Mass / Equilibrium / Summation / entHalpy)
-with two selectable `model`s — both solve the *same* stage equations, they
-differ only in the numerical strategy:
+with three selectable `model`s.  `WangHenke` and `simultaneous` solve the
+*same* constant-molal-overflow (CMO) stage equations -- the flows `L`, `V` fixed
+section by section from `q = 1 - vf` of each feed, no stage energy balance --
+and differ only in the numerical strategy; `fullMESH` adds the energy
+balance.  (Wang & Henke's 1966 method updates `V_j` from the energy balance
+each pass; the `WangHenke` model here keeps the bubble-point loop and drops
+that step.)  Under CMO a subcooled liquid feed counts as saturated (`q = 1`)
+and a superheated vapour as saturated vapour (`q = 0`): the sensible heat
+reaches the reboiler duty (the plug that closes the column) but not the
+internal flows or the profile -- use
+`fullMESH` when that matters.
 
 - `WangHenke`     (**default**; sequential bubble-point).  Each outer pass
   solves the component balances by a tridiagonal (Thomas) sweep at frozen
@@ -772,7 +781,7 @@ differ only in the numerical strategy:
   `max|Δx|` is under the declared `compositionTol` (default 1e-6).  The
   report prints all three residuals; `maxOuterIter` (default 200) is what a
   slowly contracting close-boiling column may need to raise.
-- `simultaneous`  (aliases `MESH`, `NaphtaliSandholm`, `fullMESH`).  Newton-ND on the
+- `simultaneous`  (constant molal overflow, like `WangHenke`).  Newton-ND on the
   whole block at once — unknowns are the per-stage `(x_{1..n-1}, T_j)`,
   residuals the n−1 component balances plus the bubble-point
   `Σ Kᵢxᵢ − 1 = 0` per stage with `Kⱼ(Tⱼ)` live (Armijo backtracking).
@@ -783,6 +792,14 @@ differ only in the numerical strategy:
   no feed and no side draw on stage 1 -- `feedStage`, every `feeds` entry
   and every `sideDraws` entry take 2..nStages; stage 1 is refused by name
   (its balance carries no feed term, so the feed would be lost).
+- `fullMESH`  (aliases `MESH`, `NaphtaliSandholm` -- they are NOT aliases of
+  `simultaneous`: `DistillationColumn.cpp` runs all three names as the full
+  MESH).  Converges the `simultaneous` CMO problem first, then promotes the
+  stage flows `V_j`, `L_j` to unknowns and adds a per-stage total-mass and
+  ENERGY balance, so the traffic follows the real latent heats instead of
+  CMO.  A two-phase feed enters each energy row at its own equilibrium
+  (x, y), the same pricing the duty and the energy report use.  Same stage-1
+  restriction.  Murphree efficiency is refused (Wang-Henke only).
 
 See theory: §Distillation (Wang-Henke) and §Rigorous MESH Newton.
 Reference: Wang & Henke, *Hydrocarbon Process.* 45 (1966) 155;

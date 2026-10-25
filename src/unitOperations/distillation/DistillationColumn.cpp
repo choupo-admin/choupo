@@ -1679,9 +1679,37 @@ int DistillationColumn::solveSimultaneous(const DictPtr& dict,
     std::vector<scalar>  Ffeed(N, 0.0), feedLiq(N, 0.0), feedTmol(N, 0.0),
                          Udraw(N, 0.0), Wdraw(N, 0.0);
     std::vector<sVector> feedComp(N, sVector(n, 0.0));
-    auto addFeed = [&](std::size_t j, scalar Ff, scalar qf, scalar Tff, const sVector& zf) {
+    //  EVERY FEED IS KEPT AS ITSELF for the full MESH's stage energy rows
+    //  (C131 review, 2026-10-25).  The rows used to price stage j's feed as
+    //  q hL(z, T) + (1-q) hV(z, T) on the MERGED per-stage scalars: a quality
+    //  blend at the overall composition for a two-phase feed (the 5.51 kW
+    //  `feedEnthalpy` below exists to avoid, on column01), and a
+    //  molar-average temperature for two feeds sharing a stage.  The duty
+    //  block below prices the same feed at its equilibrium (x, y), so under
+    //  `fullMESH` the profile was solved against one feed enthalpy and the
+    //  reboiler duty closed against another.  Each feed is priced once, by
+    //  its own state, in `stageFeedEnthalpy` below.
+    struct FeedRecord
+    {
+        std::size_t j = 0;
+        scalar F = 0.0, q = 1.0, T = 0.0;
+        sVector z;
+        std::optional<FeedThermalState> state; // its resolution, when it is a stream
+        //  A resolved two-phase VAPOUR-liquid split, or nothing.
+        const FlashSolution* vlSplit() const
+        {
+            return (state && state->split && !state->split->liquidLiquid
+                    && !state->split->threePhase) ? &*state->split : nullptr;
+        }
+    };
+    std::vector<FeedRecord> feedRecords;
+    auto addFeed = [&](std::size_t j, scalar Ff, scalar qf, scalar Tff, const sVector& zf,
+                       const FeedThermalState* st = nullptr) {
         Ffeed[j] += Ff; feedLiq[j] += qf * Ff; feedTmol[j] += Ff * Tff;
         for (std::size_t i = 0; i < n; ++i) feedComp[j][i] += Ff * zf[i];
+        FeedRecord r; r.j = j; r.F = Ff; r.q = qf; r.T = Tff; r.z = zf;
+        if (st) r.state = *st;
+        feedRecords.push_back(std::move(r));
     };
 
     // Representative primary-feed scalars (initial-guess anchor, profile marker,
@@ -1693,20 +1721,15 @@ int DistillationColumn::solveSimultaneous(const DictPtr& dict,
     //  EVERY FEED'S THERMAL STATE IS RESOLVED FROM ITS STREAM, IN BOTH
     //  BRANCHES (the single-feed one since 2026-09-12; the multi-feed one
     //  since 2026-10-05, DEV.md §4d D1, decided by Vítor in C35).  Each
-    //  resolution is kept per STAGE so the duty block below can price a
-    //  two-phase feed at its equilibrium compositions (x, y), the rule
-    //  `reporting/BalanceMath.H` prices the same stream by.  A stage that
-    //  receives MORE than one feed is a mixture of two declarations, and no
-    //  single resolution describes it: it keeps the blend at the merged q.
-    //  The multi-feed branch used to read each stream's CARRIED `vf`, so an
-    //  unpinned feed that resolves vapour or two-phase reached the MESH as a
-    //  liquid -- not live on the corpus that day (measured, see DEV.md D1).
-    std::vector<std::optional<FeedThermalState>> stageFeedState(N);
-    std::vector<int>                             stageFeedCount(N, 0);
-    auto noteFeed = [&](std::size_t j, const FeedThermalState* st) {
-        if (++stageFeedCount[j] == 1 && st) stageFeedState[j] = *st;
-        else                                stageFeedState[j].reset();
-    };
+    //  resolution is kept with its FEED (`FeedRecord`, above) so the duty
+    //  block and the full MESH's energy rows can price a two-phase feed at
+    //  its equilibrium compositions (x, y), the rule `reporting/BalanceMath.H`
+    //  prices the same stream by -- feed by feed, so two feeds sharing a
+    //  stage are two terms (until C131 such a stage kept the blend at its
+    //  merged q).  The multi-feed branch used to read each stream's CARRIED
+    //  `vf`, so an unpinned feed that resolves vapour or two-phase reached the
+    //  MESH as a liquid -- not live on the corpus that day (measured, see
+    //  DEV.md D1).
 
     if (multiFeed)   // ---- feeds are flowsheet streams, mapped to stages ----------
     {
@@ -1760,8 +1783,7 @@ int DistillationColumn::solveSimultaneous(const DictPtr& dict,
                         " T and P (or its `phase gas|liquid;` pin) so the two"
                         " can never disagree.");
             }
-            addFeed(st - 1, Ff, qf, Tfe, zf);
-            noteFeed(st - 1, &fst);
+            addFeed(st - 1, Ff, qf, Tfe, zf, &fst);
             if (first) { Tf = Tfe; NF = st; q = qf; z = zf; first = false; }
         }
     }
@@ -1784,8 +1806,8 @@ int DistillationColumn::solveSimultaneous(const DictPtr& dict,
         refuseContradictoryFeedQuality(operDict, feedDict, primaryFeedState,
                                        Tf, dict->name());
         q = 1.0 - primaryFeedState.vf;
-        addFeed(NF - 1, feedDict->lookupScalar("F", Dims::molarFlow), q, Tf, z);
-        noteFeed(NF - 1, &primaryFeedState);
+        addFeed(NF - 1, feedDict->lookupScalar("F", Dims::molarFlow), q, Tf, z,
+                &primaryFeedState);
 
         // legacy INLINE extra feeds (a side channel -- NOT on the flowsheet graph,
         // so the plant-boundary balance misses them; prefer `inputs (...)` streams).
@@ -1803,12 +1825,11 @@ int DistillationColumn::solveSimultaneous(const DictPtr& dict,
                 const scalar Tfe = fe->lookupScalarOrDefault("T", Tf, Dims::temperature);
                 addFeed(st - 1, Ff, qf, Tfe, readComp(fe->subDict("composition")));
                 //  An inline feed is a dict declaration, not a stream: it has
-                //  no state to resolve, so its stage keeps the blend.  MERGED
-                //  onto a resolved feed's stage it makes that stage's material
-                //  a mixture of two declarations, and `noteFeed` drops the
-                //  resolution rather than apply it to material it is not
-                //  about.  No corpus case does this.
-                noteFeed(st - 1, nullptr);
+                //  no state to resolve, so it is priced at its declared q (a
+                //  blend at its own z).  Its q DEFAULTS to 1 when `quality` is
+                //  not declared, and that default is not announced -- a gap
+                //  recorded in docs/design/review-c131-separations.md (M5).
+                //  No corpus case uses an inline feed.
             }
     }
     // side draws:  sideDraws ( { stage k; phase liquid|vapor; rate ..; } ... )
@@ -2459,6 +2480,25 @@ int DistillationColumn::solveSimultaneous(const DictPtr& dict,
                 + std::to_string(lambdaMean) + " kJ/kmol) -- the energy rows"
                 " have no scale to be measured against.");
         const scalar energyScale = balanceScale / lambdaMean;
+        //  Each stage's feed enthalpy [kW], on the SAME surface as the rows
+        //  (Hliquid / Hvapour), summed feed by feed: a resolved two-phase feed
+        //  at its equilibrium compositions, (1-beta) hL(x) + beta hV(y);
+        //  anything else at its own q, z and T (q is 0 or 1 for a resolved
+        //  single-phase stream, so that is the phase's own enthalpy).  See
+        //  `FeedRecord` above.  Fixed by the feeds, so computed once.
+        std::vector<scalar> stageFeedEnthalpy(N, 0.0);
+        for (const auto& r : feedRecords)
+        {
+            if (const FlashSolution* sp = r.vlSplit())
+            {
+                const scalar b = sp->V_over_F;
+                stageFeedEnthalpy[r.j] += r.F * ((1.0 - b) * thermo.Hliquid(r.T, sp->x)
+                                                +        b  * thermo.Hvapour(r.T, sp->y));
+            }
+            else
+                stageFeedEnthalpy[r.j] += r.F * (r.q * thermo.Hliquid(r.T, r.z)
+                                                + (1.0 - r.q) * thermo.Hvapour(r.T, r.z));
+        }
         if (verbosity >= 2)
         {
             std::ostringstream f;
@@ -2528,12 +2568,9 @@ int DistillationColumn::solveSimultaneous(const DictPtr& dict,
                 else if (j == N-1)
                     g[j*mv + n+1] = (Ls[N-1] - Bf) * balanceScale; // bottoms spec
                 else {                                             // ENERGY balance (enthalpy residual)
-                    const scalar hFj = (Ffeed[j] > 0.0)
-                        ? qfeed[j]*hL(zfeed[j], feedT[j]) + (1.0-qfeed[j])*hV(zfeed[j], feedT[j])
-                        : 0.0;
                     g[j*mv + n+1] = energyScale * (
                           Ls[j-1]*hL(xs[j-1],Ts[j-1]) + Vs[j+1]*hV(ys[j+1],Ts[j+1])
-                        + Ffeed[j]*hFj
+                        + stageFeedEnthalpy[j]
                         - (Ls[j]+Udraw[j])*hL(xs[j],Ts[j]) - (Vs[j]+Wdraw[j])*hV(ys[j],Ts[j]));
                 }
             }
@@ -2790,19 +2827,19 @@ int DistillationColumn::solveSimultaneous(const DictPtr& dict,
             }
         }
         scalar Hin = 0.0;
-        for (std::size_t j = 0; j < N; ++j)
+        //  FEED BY FEED (C131 review): a feed RESOLVED from its stream (both
+        //  branches) is priced at its own resolution -- the equilibrium
+        //  compositions when it splits, the rule `reporting/BalanceMath.H`
+        //  prices the same stream by -- and an inline feed at its declared q.
+        //  Two feeds on one stage are two terms, never one blend at a merged
+        //  composition and a molar-average temperature.
+        for (const auto& r : feedRecords)
         {
-            if (Ffeed[j] <= 0.0) continue;
-            //  Where a stage's ONE feed was RESOLVED from its stream (both
-            //  branches), price it at the equilibrium compositions -- the
-            //  rule `reporting/BalanceMath.H` prices the same stream by.  A
-            //  stage holding an inline feed, or more than one feed, keeps
-            //  the blend at its merged q.
-            if (stageFeedState[j])
-                Hin += feedEnthalpy(*stageFeedState[j], Ffeed[j], feedT[j], P,
-                                    zfeed[j], thermo, elem);
+            if (r.F <= 0.0) continue;
+            if (r.state)
+                Hin += feedEnthalpy(*r.state, r.F, r.T, P, r.z, thermo, elem);
             else
-                Hin += H(Ffeed[j], feedT[j], 1.0 - qfeed[j], zfeed[j]);
+                Hin += H(r.F, r.T, 1.0 - r.q, r.z);
         }
         const scalar dH = Hout - Hin;
         kpis_["Q_condenser_kW"] = Q_cond;

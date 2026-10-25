@@ -95,6 +95,21 @@ WHAT THIS GATE CHECKS.
       because the report does not yet count a multi-feed column's duties at
       its plant boundary (see NOT CHECKED).
 
+  (j) SOURCE: the FULL MESH's stage energy rows price each feed by its own
+      resolution (C131 separations review, 2026-10-25).  They used to write
+      the feed term as `qfeed[j]*hL(zfeed[j], feedT[j]) + (1-qfeed[j])*hV(..)`
+      -- a quality blend at the overall composition for a two-phase feed (the
+      blend the duty block stopped using on 2026-09-12) and a molar-average
+      temperature for two feeds sharing a stage -- so under `fullMESH` the
+      profile was solved against one feed enthalpy and the reboiler duty
+      closed against another.  Measured on column01 run under `fullMESH`
+      with its two-phase 370 K feed: x_D 0.938169 -> 0.938924 and
+      Q_reboiler 657.290 -> 657.175 kW when the rows price the split; every
+      corpus fullMESH case (column06/07/08, single-phase feeds) is unmoved to
+      12 figures.  A SOURCE arm: no output the engine publishes (the profile
+      carries no V_j, L_j) separates the two pricings when both close the
+      column's own balance through the reboiler plug.
+
 WHAT THIS GATE DOES NOT CHECK, said plainly rather than implied:
 
   * THE PLANT BOUNDARY OF A MULTI-FEED COLUMN.  The energy report classifies
@@ -517,6 +532,21 @@ def main() -> int:
                 "live on every non-reactive column in the corpus before "
                 "2026-09-12.")
 
+        # ---- (j) SOURCE: the full MESH prices each feed by itself ---------
+        #  Counted, not detected (the arm (f) rule): any energy row that
+        #  rebuilds a stage's feed enthalpy from the MERGED per-stage scalars
+        #  `qfeed[j]` / `zfeed[j]` is the blend back.
+        blend = len(re.findall(r"qfeed\[j\]\s*\*\s*hL\(\s*zfeed\[j\]", src))
+        if blend or "stageFeedEnthalpy[j]" not in src:
+            failures.append(
+                f"(j) the full MESH's stage energy rows price the feed from "
+                f"the merged per-stage q and z ({blend} blend site(s)"
+                + ("" if "stageFeedEnthalpy[j]" in src else
+                   ", and no `stageFeedEnthalpy[j]` term") + ").  A two-phase "
+                "feed then enters the rows as a quality blend at z while the "
+                "duty block prices its equilibrium (x, y) -- x_D 0.938169 "
+                "against 0.938924 on column01 under fullMESH.")
+
         # ---- (g) OUTPUT: the flagship's own first law ---------------------
         #  Read from the engine's report.  This gate computes no balance of
         #  its own: a second home for the first law is the defect one band up
@@ -568,7 +598,9 @@ def main() -> int:
           "branch, which refuses a contradicting `quality` naming the "
           "resolved state and prices a two-phase and a vapour feed as the "
           "energy report does (H_products - H_feeds = Q_reboiler + "
-          "Q_condenser to 1e-6 kW).  SCANNED: fixture cases written by this "
+          "Q_condenser to 1e-6 kW); and the full MESH's stage energy rows "
+          "price every feed by its own resolution, never the merged blend "
+          "(source arm (j)).  SCANNED: fixture cases written by this "
           "gate (six single-feed variants, two multi-feed) and "
           "src/unitOperations/distillation/DistillationColumn.cpp.  NOT "
           "CHECKED: the plant boundary of a multi-feed column (the report "
