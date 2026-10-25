@@ -1007,6 +1007,33 @@ accepts today, and that is a policy call.
 > process (the green-ammonia design chain), investigate a model (batch
 > electrodialysis), teach with AI (the exercise is Vitor's to choose:
 > the reviewer's five steps or one of his own).
+> **BOTH REVISIONS DONE 2026-10-25 (`claude/c126-papers-revision`), every
+> engine number re-read from a run on one commit (supplement S1 lists the
+> commands).**  C&CE (23 pp + a supplement): a state-of-the-art table over
+> six observables; convergence / physical consistency / acceptance defined
+> and answered apart on Cavett (first law +0.0019 kW of 396 325 kW
+> exchanged, against -549 319 before the mixer fix); the benchmark as two
+> controlled exercises -- same equations (case E with the sample's own rate
+> laws written into Choupo: CH4 conversion 0.7578 vs 0.7532; it exposed
+> 400 RK4 steps not grid-converged, now 25 600) and different models
+> (A/B/D, each conclusion cut to what the runs show; B re-mapped to
+> equilibrium stages, D with its knock-out drum); the curation rule argued
+> statistically (U95, chi-square); nanofiltration with its equations,
+> verification (NanoFiltran 7.9e-7) kept apart from validation, the
+> membrane24 fit and its held-out sulfates' transmission error stated;
+> two causal claims withdrawn.  `benchmarks/` changed: reforming01 nSteps
+> and a `sampleKinetics` variant, distillation01 stage mapping, compare.py.
+> JOSS (~2000 words): three capabilities, one example each -- the green-
+> ammonia chain, batch electrodialysis, teach with AI on the REVIEWER'S
+> five steps as a stated default Vitor may replace.  Response-to-reviewer
+> drafts in both `reviews/`.  OWED BY VITOR: authors, affiliations,
+> ORCIDs, CRediT, funding; the release tag and Zenodo DOI; whether to cite
+> the 2005 CACHE News Cavett article (its title names a commercial
+> simulator); the upstream offer of the reference-side findings; JOSS
+> timing.  UNVERIFIED, marked TODO: every cell of the state-of-the-art
+> table against each tool's current release; several bibliographic
+> details Crossref could not confirm; the FLOWTRAN light ends against
+> Rosen & Pauls; the journals' AI-declaration wording.
 > **THE TWO OPEN DECISIONS, DELEGATED (Vitor, 2026-10-21: "Nao me pecas
 > nada e decide tu de forma sensata").  Commander's decisions:**
 > (a) **Compressor with liquid in its suction: REFUSE by name**, quoting the
