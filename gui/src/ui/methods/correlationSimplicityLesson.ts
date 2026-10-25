@@ -459,8 +459,8 @@ export const SIMPLICITY_STEPS: readonly LessonStep[] = [
     body: "Between Re of about 2300 and 4000 -- the band the engine names at "
       + "FrictionFactorCorrelation.cpp:52-53 -- neither asymptote holds, and "
       + "what is missing there is not a better correlation.  Laminar flow in "
-      + "a straight pipe is linearly stable: a small enough disturbance dies "
-      + "away.  Above a Reynolds number of about 2000 a LARGE enough "
+      + "a straight pipe is, as far as is known, linearly stable at every Re: "
+      + "a small enough disturbance dies away.  Above a Reynolds number of about 2000 a LARGE enough "
       + "disturbance makes it turbulent instead, so whether a given pipe runs "
       + "laminar or turbulent depends on the disturbances it meets -- how the "
       + "fluid entered, how still the supply is, vibration reaching the line, "
@@ -537,11 +537,13 @@ export const SIMPLICITY_STEPS: readonly LessonStep[] = [
       + "for very long times, Avila and co-authors (The onset of turbulence "
       + "in pipe flow) found that puff decay and puff splitting balance near "
       + "Re = 2040, and Mukund and Hof (The critical point of the transition "
-      + "to turbulence in pipe flow) that below 2020 every flow they followed "
-      + "returned to laminar while at 2060 and above turbulence persisted.  "
-      + "The 2300 of the textbooks, and of the engine's band, is a "
-      + "convention: by Mukund and Hof's account it goes back to Schiller's "
-      + "report, in 1921, of a jump in the friction factor near 2320.",
+      + "to turbulence in pipe flow) that at 2020 every flow they followed "
+      + "eventually returned to laminar while at 2060 and above turbulence "
+      + "persisted.  The 2300 of the textbooks, and of the engine's band, is "
+      + "a convention, not that critical point; among the earlier proposals "
+      + "Mukund and Hof list Schiller's, who in 1921 reported a discontinuous "
+      + "change in the friction factor at 2320 and took it as the critical "
+      + "point.",
     note: "Every figure in this step is taken from a source in the list at "
       + "the foot of this page, read as that list says; the page computes "
       + "none of them.",
@@ -575,10 +577,11 @@ export const SIMPLICITY_SOURCES: readonly SimplicitySource[] = [
       + "2000 to about 13 000 depending on the care with which the pipe was "
       + "set up, and his real critical value close to 2000; the linear "
       + "stability of laminar pipe flow and the dependence of the natural "
-      + "transition point on finite disturbances; puffs; Schiller's 2320 of "
-      + "1921; the balance point 2040 attributed to Avila and co-authors; and "
-      + "their own result, laminar at 2020 and sustained turbulence at 2060 "
-      + "and above." },
+      + "transition point on finite disturbances; puffs; Schiller's "
+      + "friction-factor discontinuity at 2320, reported in 1921; the balance "
+      + "point 2040 attributed to Avila and co-authors; and their own result, "
+      + "every flow eventually laminar at 2020 and sustained turbulence at "
+      + "2060 and above." },
   { id: "avila-2011",
     cite: "K. Avila, D. Moxey, A. de Lozar, M. Avila, D. Barkley and B. Hof, "
       + "The onset of turbulence in pipe flow, Science 333 (2011) 192-196",

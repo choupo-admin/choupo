@@ -760,8 +760,11 @@ export const METHOD_TOOLS: MethodTool[] = [
       + "layer), and the narrow range and generous tolerance a power law is "
       + "fitted with -- the dimensional matrix reduced exactly, the Moody "
       + "plane and its local slopes, a one-decade fit whose exponent drifts, "
-      + "and Churchill's expression rebuilt from its two asymptotes, every "
-      + "curve the engine's own.",
+      + "and Churchill's expression rebuilt from its two asymptotes as the "
+      + "interpolation it is, every curve the engine's own -- and why the "
+      + "laminar-turbulent transition band is a region of instability where "
+      + "Re alone does not decide the regime, from Reynolds' 1883 apparatus "
+      + "to the measured onset of sustained turbulence.",
     theory: "ch:why-transport",
   },
   //  COMMISSIONED 2026-10-11 (DEV.md 4c C64): "sabes como habitualmente se
